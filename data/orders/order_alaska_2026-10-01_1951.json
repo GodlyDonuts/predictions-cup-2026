@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "competition": "Midterm Elections Predictions Cup",
+  "currency": "SUSQies",
+  "real_money": false,
+  "source": "Official authenticated cloud-browser UI only",
+  "market_id": 377,
+  "market_url": "https://sig.thesuper.market/markets/377",
+  "market_title": "Will the Democratic Party win the Alaska Senate?",
+  "action": "buy",
+  "outcome": "NO",
+  "order_type": "limit",
+  "requested_quantity": 5000,
+  "limit_price": 0.33,
+  "maximum_total_cost": 1650.0,
+  "submitted_once": true,
+  "submit_attempt_count": 1,
+  "submitted_at_utc_approximate": "2026-10-01T19:51:35Z",
+  "status": "fully_filled_verified",
+  "verified_at_utc": "2026-10-01T19:53:13Z",
+  "filled_quantity": 5000,
+  "total_cost": 1649.50,
+  "average_fill_price_derived": 0.3299,
+  "average_fill_price_ui_rounded": 0.330,
+  "cash_before": 94401.38,
+  "cash_after": 92751.88,
+  "open_order_quantity": 0,
+  "account_open_orders": 0,
+  "order_id": null,
+  "order_id_status": "Not exposed in inspected official UI",
+  "fees_displayed": null,
+  "fee_notes": "No fee line appeared in ticket. Official footer states zero cost, fee, or financial obligation. Trade debit matches actual fills and was within simulated-currency cap.",
+  "verification_evidence": [
+    "Before submit: exact market title, Buy No highlighted, Limit selected, Amount 1650 SUSQies, Limit Price 33%, approximately 5000 shares, estimated net cost 1650.00.",
+    "After processing: market-specific holdings changed from no position to NO 5,000 shares; cash changed to 92751.88 SUSQies.",
+    "Portfolio: five positions; Alaska NO 5,000; 'You have no open orders.'",
+    "Transaction History: Oct 1, 2026 Buy Will the Democratic Party win the Alaska Senate? 5,000 NO @ 0.330 SUSQies; amount -1649.50 SUSQies."
+  ],
+  "other_positions_unchanged": [
+    {"title": "Will the Democratic Party win the Rhode Island Senate?", "outcome": "YES", "quantity": 2072, "average_cost_ui": 0.965},
+    {"title": "Will the Democratic Party win the Massachusetts Senate?", "outcome": "YES", "quantity": 2061, "average_cost_ui": 0.970},
+    {"title": "Will the Democratic Party win the Florida Senate?", "outcome": "YES", "quantity": 12500, "average_cost_ui": 0.120},
+    {"title": "Will the Democratic Party win the North Carolina Senate?", "outcome": "NO", "quantity": 1538, "average_cost_ui": 0.065}
+  ],
+  "settlement": {
+    "scheduled_ui": "2026-11-04 12:00 PM EST",
+    "rule": "YES if the winning U.S. Senate Alaska candidate is affiliated with the Democratic Party, NO otherwise. A fusion ticket counts for every party on that ticket.",
+    "source": "Official election results from relevant election authorities",
+    "certification": "Final certified election results; recounts or legal challenges can delay resolution.",
+    "sponsor_discretion": "Susquehanna reserves discretion to update rules, outcomes, or resolution, including after resolution/end date."
+  },
+  "uncertainties": [
+    "Exact execution timestamp and order ID were not visible in UI; submission timestamp is approximate.",
+    "Dashboard valuation marks differ from executable orderbook prices and should not be used as executable liquidation quotes.",
+    "Following fill, ticket displayed partial availability for a hypothetical next 5000-share order; this was not a partial fill of this completed order.",
+    "Transaction export attempt timed out and reset browser kernel after authoritative on-screen fill confirmation; no additional trade submit occurred."
+  ]
+}

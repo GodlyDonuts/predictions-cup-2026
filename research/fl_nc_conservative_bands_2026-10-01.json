@@ -1,0 +1,44 @@
+{
+  "prepared_at_utc": "2026-10-01T19:51:00Z",
+  "purpose": "Provisional subjective conservative decision thresholds, not calibrated forecast or trade instruction",
+  "decisions": [
+    {
+      "market_id": 354,
+      "outcome": "Florida Democratic Senate winner",
+      "side": "YES",
+      "subjective_working_probability_band": [
+        0.08,
+        0.3
+      ],
+      "illustrative_central_value": 0.2,
+      "conservative_max_all_in_buy_price": 0.06,
+      "buffer_below_lower_working_probability": 0.02,
+      "severe_downside_sensitivity_probability": 0.03338
+    },
+    {
+      "market_id": 277,
+      "outcome": "North Carolina non-Democratic Senate winner",
+      "side": "NO",
+      "subjective_working_probability_band": [
+        0.05,
+        0.2
+      ],
+      "illustrative_central_value": 0.1,
+      "conservative_max_all_in_buy_price": 0.035,
+      "buffer_below_lower_working_probability": 0.015,
+      "severe_downside_sensitivity_probability": 0.02275
+    }
+  ],
+  "flags": [
+    "No incremental exposure supported at historic entry quotes .120 FL and .065 NC under this lower-scenario rule",
+    "Subjective bands are neither confidence intervals nor guaranteed bounds",
+    "Subjective ceilings are policy hurdles, not intrinsic values",
+    "NC candidate probability approximates party-NO outcome only after exact settlement mapping",
+    "No trades, account API access, or signed-in browser actions performed",
+    "Current holdings must be reconciled by execution worker",
+    "Call the Map is market-free per its statement but first-cycle hobby model with page inconsistencies and disclosed Senate bias",
+    "Research-only subjective hurdles, not standing executable limits or authorization for automated orders",
+    "Four-position scenario arithmetic preserves its earlier observation time; a later Alaska fill is recorded separately in data/portfolio/latest.json"
+  ],
+  "report_path": "research/fl_nc_conservative_bands_2026-10-01.md"
+}

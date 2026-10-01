@@ -3,3 +3,4 @@ market_id,market,side,action,shares,average_price,cost_susqies,order_id,status,s
 379,Democratic Massachusetts Senate,YES,BUY,2061,0.970,1999.17,896197,filled,,2026-10-01T18:52:00Z,Cloud browser holdings review
 277,Democratic North Carolina Senate,NO,BUY,1538,0.065,99.97,890948,filled,,2026-10-01T18:55:00Z,Cloud browser holdings review
 354,Democratic Florida Senate,YES,BUY,12500,0.120,1500.00,910025,filled,2026-10-01T18:44:12Z,2026-10-01T18:47:09Z,Order detail and later holdings review
+377,Democratic Alaska Senate,NO,BUY,5000,0.3299,1649.50,,filled,2026-10-01T19:51:35Z,2026-10-01T19:53:13Z,Official cloud browser holdings and transaction history; submission time approximate; average derived from debit; order ID not exposed; data/orders/order_alaska_2026-10-01_1951.json

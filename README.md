@@ -13,7 +13,7 @@ The challenge uses free, nonredeemable SUSQies. This repository does not contain
 
 ## Current snapshot
 
-As observed October 1, 2026, 18:50–18:55 UTC: **94,401.38 SUSQies cash**, four filled positions, no open orders. Total original position cost is **5,598.62**. These are historical observations, not live account state.
+As observed October 1, 2026, 19:52:07–19:53:13 UTC: **92,751.88 SUSQies cash**, five filled positions, no open orders. Total original position cost is **7,248.12**. These are historical observations, not live account state.
 
 | Market | Side | Shares | Average entry | Cost |
 |---|---|---:|---:|---:|
@@ -21,6 +21,11 @@ As observed October 1, 2026, 18:50–18:55 UTC: **94,401.38 SUSQies cash**, four
 | Democratic Massachusetts Senate | YES | 2,061 | 0.970 | 1,999.17 |
 | Democratic Florida Senate | YES | 12,500 | 0.120 | 1,500.00 |
 | Democratic North Carolina Senate | NO | 1,538 | 0.065 | 99.97 |
+| Democratic Alaska Senate | NO | 5,000 | 0.3299 (derived) | 1,649.50 |
+
+The Alaska transaction history displays a rounded 0.330 average; 0.3299 is derived from its exact 1,649.50 debit / 5,000 shares. Its order ID was not exposed. See the [order audit](data/orders/order_alaska_2026-10-01_1951.json).
+
+Latest research: [Florida/NC conservative scenarios](research/fl_nc_conservative_bands_2026-10-01.md) and [new-race shortlist](research/new_edges_2026-10-01.md). Their subjective bands are not calibrated forecasts or standing execution limits.
 
 Portfolio tournament marks differ substantially from market-detail marks and executable depth. Their formula is unverified. Final rank follows total SUSQies after all markets settle; interim marks are provisional. See the [source-linked valuation review](research/execution_valuation_review_2026-10-01.md).
 

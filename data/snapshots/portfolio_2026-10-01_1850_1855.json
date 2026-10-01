@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "observed_window_start_utc": "2026-10-01T18:50:00Z",
+  "observed_window_end_utc": "2026-10-01T18:55:00Z",
+  "cash_exact_verified_at_utc": "2026-10-01T18:53:00Z",
+  "open_orders_verified_window_utc": [
+    "2026-10-01T18:50:00Z",
+    "2026-10-01T18:51:00Z"
+  ],
+  "tournament": "Midterm Elections",
+  "tournament_slug": "midterm-elections",
+  "currency": "SUSQies (nonmonetary, nonredeemable contest points)",
+  "initial_cash": "100000.00",
+  "cash_verified": "94401.38",
+  "position_cost_basis_total": "5598.62",
+  "positions": [
+    {
+      "market_id": 277,
+      "title": "Democratic Party wins North Carolina Senate",
+      "side": "NO",
+      "shares": 1538,
+      "average_price": 0.065,
+      "cost": 99.97,
+      "order_id": 890948,
+      "status": "fully filled"
+    },
+    {
+      "market_id": 387,
+      "title": "Democratic Party wins Rhode Island Senate",
+      "side": "YES",
+      "shares": 2072,
+      "average_price": 0.965,
+      "cost": 1999.48,
+      "order_id": null,
+      "status": "fully filled"
+    },
+    {
+      "market_id": 379,
+      "title": "Democratic Party wins Massachusetts Senate",
+      "side": "YES",
+      "shares": 2061,
+      "average_price": 0.97,
+      "cost": 1999.17,
+      "order_id": 896197,
+      "status": "fully filled"
+    },
+    {
+      "market_id": 354,
+      "title": "Democratic Party wins Florida Senate",
+      "side": "YES",
+      "shares": 12500,
+      "average_price": 0.12,
+      "cost": 1500.0,
+      "order_id": 910025,
+      "status": "fully filled"
+    }
+  ],
+  "open_orders": [],
+  "source": "Signed-in cloud browser holdings and market-detail review; see research/execution_valuation_review_2026-10-01.md",
+  "notes": [
+    "Historical snapshot, not live state; reconcile before action.",
+    "Tournament valuation formula unverified; portfolio marks differ from market detail and executable depth.",
+    "No realized gain/loss inferred from displayed marks.",
+    "General simulated fee schedule unverified; fill costs reconcile exactly to cash.",
+    "Order ID for Rhode Island was not recorded; do not fabricate it."
+  ]
+}

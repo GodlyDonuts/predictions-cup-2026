@@ -1,18 +1,18 @@
 {
   "schema_version": 1,
-  "observed_window_start_utc": "2026-10-01T18:50:00Z",
-  "observed_window_end_utc": "2026-10-01T18:55:00Z",
-  "cash_exact_verified_at_utc": "2026-10-01T18:53:00Z",
+  "observed_window_start_utc": "2026-10-01T19:52:07Z",
+  "observed_window_end_utc": "2026-10-01T19:53:13Z",
+  "cash_exact_verified_at_utc": "2026-10-01T19:52:07Z",
   "open_orders_verified_window_utc": [
-    "2026-10-01T18:50:00Z",
-    "2026-10-01T18:51:00Z"
+    "2026-10-01T19:52:36Z",
+    "2026-10-01T19:53:13Z"
   ],
   "tournament": "Midterm Elections",
   "tournament_slug": "midterm-elections",
   "currency": "SUSQies (nonmonetary, nonredeemable contest points)",
   "initial_cash": "100000.00",
-  "cash_verified": "94401.38",
-  "position_cost_basis_total": "5598.62",
+  "cash_verified": "92751.88",
+  "position_cost_basis_total": "7248.12",
   "positions": [
     {
       "market_id": 277,
@@ -50,18 +50,38 @@
       "side": "YES",
       "shares": 12500,
       "average_price": 0.12,
-      "cost": 1500.0,
+      "cost": 1500,
       "order_id": 910025,
       "status": "fully filled"
+    },
+    {
+      "market_id": 377,
+      "title": "Democratic Party wins Alaska Senate",
+      "side": "NO",
+      "shares": 5000,
+      "average_price": 0.3299,
+      "average_price_basis": "Derived from exact transaction debit divided by filled shares",
+      "average_price_ui_rounded": 0.33,
+      "cost": 1649.5,
+      "order_id": null,
+      "order_id_status": "Not exposed in inspected official UI",
+      "status": "fully filled",
+      "submitted_at_utc_approximate": "2026-10-01T19:51:35Z",
+      "verified_at_utc": "2026-10-01T19:53:13Z",
+      "source": "data/orders/order_alaska_2026-10-01_1951.json"
     }
   ],
   "open_orders": [],
-  "source": "Signed-in cloud browser holdings and market-detail review; see research/execution_valuation_review_2026-10-01.md",
+  "source": "Official signed-in cloud browser holdings, exact cash, open orders and transaction history; see data/orders/order_alaska_2026-10-01_1951.json. Prior four cost bases preserved from the earlier verified snapshot.",
   "notes": [
     "Historical snapshot, not live state; reconcile before action.",
     "Tournament valuation formula unverified; portfolio marks differ from market detail and executable depth.",
     "No realized gain/loss inferred from displayed marks.",
     "General simulated fee schedule unverified; fill costs reconcile exactly to cash.",
-    "Order ID for Rhode Island was not recorded; do not fabricate it."
+    "Order ID for Rhode Island was not recorded; do not fabricate it.",
+    "The prior four position quantities were unchanged in this observation window.",
+    "Alaska order ID and exact execution timestamp were not exposed; submission time is approximate. Rounded UI average 0.330 is not the exact effective average 0.3299.",
+    "No fee line was displayed; an exact cash debit is not a verified general transaction-fee schedule.",
+    "The read-only transaction-export attempt timed out after on-screen fill confirmation; no replacement order was submitted."
   ]
 }
