@@ -1,28 +1,41 @@
 # Current state
 
-Last portfolio review: **2026-10-01 22:01:18–22:01:47 UTC**. Fresh reload verified **zero open orders and unchanged remaining holdings at 22:01:18**; fill quantities/prices were verified at **22:01:35**; cash displayed **97,370.24** to two decimal places at **22:01:47**. These are historical observations and need fresh reconciliation before any action.
+Last portfolio review: **2026-10-01 22:21:59–22:22:36 UTC**. The terminal portfolio showed only MA 2,061 YES at **22:21:59**. The completed Florida sale and **zero open orders** were reverified at **22:22:30**; cash displayed **98,157.74** to two decimal places at **22:22:36**. These are historical observations and need fresh reconciliation before any action.
 
 ## Account reconciliation
 
 - Starting simulated cash: **100,000.00 SUSQies**
-- Observed cash display: **97,370.24 SUSQies**, two decimal places; exact hidden account precision was not exposed
-- Separate quantity × price ledger cash: **97,370.245 SUSQies**
-- Remaining FIFO position cost: **2,899.170 SUSQies**
-- Arithmetic cash plus remaining FIFO cost: **100,269.415 SUSQies**, an accounting identity rather than current liquidation value
-- Third-session realized P&L: **190.380 SUSQies**; cumulative realized P&L: **269.415 SUSQies**, under the recorded analytical FIFO aggregate-lot convention
-- Open orders: **none observed at 22:01:18 UTC**
-- Arithmetic reconciliation: 89,820.050 + 5,784.845 + 1,650.000 + 115.350 = **97,370.245**
+- Observed cash display: **98,157.74 SUSQies**, two decimal places; exact hidden account precision was not exposed
+- Separate quantity × price ledger cash: **98,157.745 SUSQies**
+- Remaining FIFO position cost: **1,999.170 SUSQies**
+- Arithmetic cash plus remaining FIFO cost: **100,156.915 SUSQies**, an accounting identity rather than current liquidation value
+- Fourth-session realized P&L: **−112.500 SUSQies**; cumulative realized P&L: **156.915 SUSQies**, under the recorded analytical FIFO aggregate-lot convention
+- Open orders: **none observed at 22:22:30 UTC**
+- Arithmetic reconciliation: 97,370.245 + (7,500 × 0.105) = **98,157.745**
 
-The display is 0.005 below ledger arithmetic. Both observations are retained separately. The UI's hidden balance precision and rounding method are unknown; no fee, rounding adjustment, or hidden balance is invented. Rounded per-fill UI amounts are preserved in the audit but are not summed to force reconciliation. In schema 2, `cash_verified` and `cash_exact_verified_at_utc` are null; explicit `cash_displayed` and `cash_arithmetic_from_verified_qty_price` fields carry the distinct values.
+The display is 0.005 below ledger arithmetic. Both observations are retained separately. The UI's hidden balance precision and rounding method are unknown; no fee, rounding adjustment, or hidden balance is invented. In schema 2, `cash_verified` and `cash_exact_verified_at_utc` remain null; explicit `cash_displayed` and `cash_arithmetic_from_verified_qty_price` fields carry the distinct values.
 
 | Remaining market | Side | Shares | FIFO cost | Acquisition price |
 |---|---|---:|---:|---:|
 | Democratic Massachusetts Senate (379) | YES | 2,061 | 1,999.170 | 0.970 |
-| Democratic Florida Senate (354) | YES | 7,500 | 900.000 | 0.120 |
 
-RI, AK and NC holdings are zero. Remaining holdings have 2,899.170 of recorded acquisition cost and retain unrealized/liquidation risk; the 269.415 realized gain does not remove that risk.
+FL, RI, AK and NC holdings are zero. The remaining MA holding retains unrealized/liquidation risk; the 156.915 realized gain is not whole-account liquidation profit.
 
-Machine-readable historical view: [`data/portfolio/latest.json`](../data/portfolio/latest.json). Immutable [22:01 snapshot](../data/snapshots/portfolio_2026-10-01_2201.json). Append-only [trade ledger](../data/trade_ledger.csv). Prior [21:26 snapshot](../data/snapshots/portfolio_2026-10-01_2126.json) and earlier snapshots are unchanged.
+Machine-readable historical view: [`data/portfolio/latest.json`](../data/portfolio/latest.json). Immutable [22:22 snapshot](../data/snapshots/portfolio_2026-10-01_2222.json). Append-only [trade ledger](../data/trade_ledger.csv). Prior [22:01 snapshot](../data/snapshots/portfolio_2026-10-01_2201.json) and all earlier snapshots are unchanged.
+
+## Completed 22:19 Florida-exit session
+
+The [immutable source audit](../data/orders/session_2026-10-01_2219.json) is preserved byte-for-byte. One limit sell was submitted at **22:21:19.621 UTC**: **7,500 Florida YES at 0.105**, immediately and completely filled. The transaction history confirmed **787.50** displayed proceeds; exact quantity × price proceeds are **787.500**. The completed order ID was not exposed and remains **null** in the audit, with the ledger order-ID cell blank. Exact execution timestamps and unexposed fill/exchange IDs remain unknown; the submission timestamp is not substituted for execution time.
+
+Preflight found the full 7,500 shares owned and zero open orders. At **22:21:02.949**, the bid was **0.105 for 17,392 shares**, sufficient for this sale. The audit separately records the settled ticket, estimated proceeds and absence of an oversell warning before the one submission. Terminal holdings and transaction history confirmed FL quantity zero, MA 2,061 unchanged and zero open orders. No cancellation was required.
+
+This disposal consumes the final 7,500-share Florida lot acquired at 0.120, for **900.000** FIFO cost. Session realized P&L is **787.500 − 900.000 = −112.500**; cumulative realized P&L is **269.415 − 112.500 = 156.915**. The ledger appends exactly **one executed aggregate** and preserves all 15 prior rows byte-for-byte. Its `cost_susqies` value is **−787.500**, the existing sign convention for sale proceeds. No canceled or unsubmitted intent creates a trade row.
+
+The decision was risk reduction after a materially lower public Florida reference price. The [public-reference research bundle](../research/public_reference_2026-10-01/public_reference_report_2026-10-01.md) retains observation times, depth and settlement differences; these external prices are not guaranteed fair probabilities or arbitrage. The earlier 21:32 Florida order was canceled unfilled; this later executed sale is a distinct order and session.
+
+## Historical sessions
+
+The following descriptions apply only to their original observation windows, not current holdings.
 
 ## Completed 21:32 inventory-sale session
 
@@ -95,7 +108,7 @@ The portfolio page uses tournament valuation prices whose formula remains unveri
 
 See the [execution and valuation review](../research/execution_valuation_review_2026-10-01.md) for historical depth and observation windows. Quotes were not captured simultaneously and are stale for execution.
 
-Under standard 0-or-1 settlement and no further trades, fees, refunds or sponsor interventions, ledger-arithmetic endpoints for the two remaining positions are **97,370.245** if both lose and **106,931.245 SUSQies** if both win. These use the separate arithmetic balance, not an asserted hidden UI balance; they are scenarios, not forecasts or executable valuations.
+Under standard 0-or-1 settlement and no further trades, fees, refunds or sponsor interventions, ledger-arithmetic endpoints for the one remaining MA position are **98,157.745** if it loses and **100,218.745 SUSQies** if it wins. These use the separate arithmetic balance, not an asserted hidden UI balance; they are scenarios, not forecasts or executable valuations.
 
 ## Current operating mode
 

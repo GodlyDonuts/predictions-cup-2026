@@ -13,18 +13,19 @@ The challenge uses free, nonredeemable SUSQies. This repository does not contain
 
 ## Current snapshot
 
-Historical observations on October 1, 2026, **22:01:18–22:01:47 UTC**: cash UI displayed **97,370.24 SUSQies** to two decimals; separate exact quantity × price ledger arithmetic is **97,370.245**. Exact hidden account precision was not exposed. **No open orders** was verified at **22:01:18 UTC**. This is not live account state.
+Historical observations on October 1, 2026, **22:21:59–22:22:36 UTC**: cash UI displayed **98,157.74 SUSQies** to two decimals; separate exact quantity × price ledger arithmetic is **98,157.745**. Exact hidden account precision was not exposed. **No open orders** was reverified at **22:22:30 UTC**. This is not live account state.
 
 | Remaining market | Side | Shares | Acquisition price | Remaining FIFO cost |
 |---|---|---:|---:|---:|
 | Democratic Massachusetts Senate | YES | 2,061 | 0.970 | 1,999.170 |
-| Democratic Florida Senate | YES | 7,500 | 0.120 | 900.000 |
 
-The third session fully sold **6,187 RI YES at 0.935**, **5,000 AK NO at 0.330**, and **1,538 NC NO at 0.075**. FL 7,500 and MA 2,061 sale orders were canceled entirely unfilled. Actual cancellation submissions were 22:00:12 and 22:00:36, after the 22:00 target. See the [terminal source audit](data/orders/session_2026-10-01_2132.json), [immutable snapshot](data/snapshots/portfolio_2026-10-01_2201.json), and [full reconciliation](docs/CURRENT_STATE.md).
+The fourth session fully exited **7,500 Florida YES at 0.105**, with **787.500 SUSQies** proceeds and **−112.500** analytical FIFO realized P&L against **900.000** remaining basis. The one order filled immediately; its ID was not exposed and remains unknown. See the [terminal source audit](data/orders/session_2026-10-01_2219.json), [immutable snapshot](data/snapshots/portfolio_2026-10-01_2222.json), and [full reconciliation](docs/CURRENT_STATE.md).
 
-Analytical FIFO realized gain is **190.380** for this session and **269.415 SUSQies cumulative**. The two remaining holdings have **2,899.170** FIFO basis and retain unrealized/liquidation risk. Arithmetic cash plus remaining cost equals 100,269.415; this is not current liquidation value. Keep the two-decimal cash display separate from milli-SUSQ ledger arithmetic; do not force equality by rounding individual fills or inventing a hidden balance.
+Cumulative analytical FIFO realized gain is **156.915 SUSQies**. The sole remaining holding has **1,999.170** FIFO basis and retains unrealized/liquidation risk. Arithmetic cash plus remaining cost equals **100,156.915**; this is not current liquidation value. Keep the two-decimal cash display separate from milli-SUSQ ledger arithmetic; do not force equality by rounding individual fills or inventing a hidden balance.
 
-All previous session audits and snapshots remain unchanged and historical, including the [21:02 audit](data/orders/session_2026-10-01_2102.json) and [21:26 snapshot](data/snapshots/portfolio_2026-10-01_2126.json). The append-only ledger adds only three executed aggregates. Canceled quantities are not trades. Exact execution timestamps and unexposed IDs remain unknown. No bot execution handoff occurs.
+All previous session audits and snapshots remain unchanged and historical, including the [21:32 audit](data/orders/session_2026-10-01_2132.json) and [22:01 snapshot](data/snapshots/portfolio_2026-10-01_2201.json). This update appends exactly one executed aggregate, preserving all 15 prior ledger rows. Earlier canceled Florida/MA orders remain canceled historical orders. Exact execution timestamps and unexposed IDs remain unknown. No bot execution handoff occurs.
+
+Fresh [public-reference research](research/public_reference_2026-10-01/public_reference_report_2026-10-01.md) informed the Florida risk reduction. External prices carry depth, age and settlement limitations; they are not guaranteed fair values or arbitrage.
 
 Latest research: [Florida/NC conservative scenarios](research/fl_nc_conservative_bands_2026-10-01.md) and [new-race shortlist](research/new_edges_2026-10-01.md). Their subjective bands are not calibrated forecasts or standing execution limits.
 

@@ -1,0 +1,103 @@
+{
+  "session": "2026-10-01_2219",
+  "status": "COMPLETED",
+  "finalized_at": "2026-10-01T22:23:18.833386+00:00",
+  "source": "Official SIG Predictions Cup cloud-browser UI",
+  "reason": "Parent-authorized risk reduction: parent reports fresh public Kalshi Democratic FL bid/ask9.7/9.8c reference, weakening the prior higher directional thesis. External reference is not a guarantee or arbitrage; settlement wording differs. Accept up to112.50SUSQies realized loss versus900basis.",
+  "authorization_scope": {
+    "market_id": 354,
+    "side": "YES",
+    "action": "SELL",
+    "quantity": 7500,
+    "limit_price": "0.105",
+    "only_if_fresh_best_bid_at_least": "0.105",
+    "no_shorting": true,
+    "no_other_orders": true,
+    "cancel_remaining_at": "2026-10-01T22:35:00Z"
+  },
+  "preflight": {
+    "portfolio_observed_at": "2026-10-01T22:19:30Z",
+    "open_orders": 0,
+    "holdings": [
+      {
+        "market_id": 354,
+        "side": "YES",
+        "quantity": 7500
+      },
+      {
+        "market_id": 379,
+        "side": "YES",
+        "quantity": 2061
+      }
+    ],
+    "cash_displayed": "97370.24",
+    "cash_arithmetic_from_prior_verified_fills": "97370.245"
+  },
+  "pre_submission_evidence": {
+    "observed_at": "2026-10-01T22:21:02.949Z",
+    "best_yes_bid": {
+      "price": "0.105",
+      "quantity": 17392
+    },
+    "best_yes_ask": {
+      "price": "0.120",
+      "quantity": 9064
+    },
+    "ticket_shares": 7500,
+    "ticket_limit_percent": "10.5",
+    "ticket_estimated_proceeds": "787.50",
+    "current_owned_shares": 7500,
+    "oversell_warning_absent": true,
+    "note": "The transient stale oversell preview after field entry was allowed to settle; submission occurred only after exact7500owned shares,787.50proceeds and no warning were visible."
+  },
+  "order": {
+    "market_id": 354,
+    "market_title": "Will the Democratic Party win the Florida Senate?",
+    "url": "https://sig.thesuper.market/markets/354?tournament=midterm-elections",
+    "side": "YES",
+    "action": "SELL",
+    "type": "LIMIT",
+    "quantity": 7500,
+    "price": "0.105",
+    "submitted_at": "2026-10-01T22:21:19.621Z",
+    "submission_count": 1,
+    "order_id": null,
+    "order_id_note": "Not exposed before immediate complete fill; no orderID fabricated. Verified by zero resulting FL position, completed transaction row, full proceeds, and zero open orders.",
+    "status": "FILLED",
+    "filled_quantity": 7500,
+    "remaining_quantity": 0,
+    "fill_price": "0.105",
+    "actual_proceeds_displayed": "787.50",
+    "actual_proceeds_arithmetic": "787.500",
+    "transaction_observed_at": "2026-10-01T22:22:30Z",
+    "transaction_row": "Oct1,2026 Sell Will the Democratic Party win the Florida Senate? 7,500YES@0.105SUSQies +787.50SUSQies",
+    "cancellation_required": false,
+    "cancellation_reason": "Entire order filled and zero open orders verified before cutoff."
+  },
+  "terminal": {
+    "portfolio_observed_at": "2026-10-01T22:21:59Z",
+    "transaction_and_no_orders_reverified_at": "2026-10-01T22:22:30Z",
+    "open_orders": 0,
+    "holdings": [
+      {
+        "market_id": 379,
+        "side": "YES",
+        "quantity": 2061,
+        "basis": "1999.170"
+      }
+    ],
+    "cash_displayed": "98157.74",
+    "cash_displayed_precision_decimal_places": 2,
+    "cash_observed_at": "2026-10-01T22:22:36Z",
+    "cash_arithmetic_from_verified_fills": "98157.745",
+    "fl_remaining_quantity": 0
+  },
+  "accounting": {
+    "session_basis_sold": "900.000",
+    "session_realized_pnl": "-112.500",
+    "cumulative_realized_fifo_gain": "156.915",
+    "note": "Arithmetic precision retained; cash UI is2decimals. Analytical realized P&L is separate from whole-account liquidation P&L and platform marked P&L."
+  },
+  "prior_audits_preserved": true,
+  "no_additional_orders": true
+}
