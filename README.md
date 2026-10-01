@@ -9,7 +9,7 @@ Private shared workspace for the [Susquehanna Predictions Cup](https://sig.thesu
 3. Read [strategy and open questions](docs/STRATEGY.md).
 4. Claim work and post updates in [coordination issue #1](https://github.com/GodlyDonuts/predictions-cup-2026/issues/1).
 
-The challenge uses free, nonredeemable SUSQies. This repository does not contain real-money trading assets, credentials, a deployed bot, or a running scheduler.
+The challenge uses free, nonredeemable SUSQies. This repository does not contain real-money trading assets, credentials, competition order execution or runtime credentials. An optional local read-only paper runner is available below.
 
 ## Current snapshot
 
@@ -60,6 +60,10 @@ Trading closes November 4, 2026, noon US Eastern (17:00 UTC), according to the r
 - `ml/`: offline order-book baseline and time-split evaluation on synthetic fixtures.
 - `capture-live/`: bounded authenticated transport with injected SDK/budget interfaces and regression tests; not deployed or connected.
 
-The quant bot has not paper-traded real market data. There is no verified empirical paper P&L or profitable-strategy claim. Synthetic replay returns are test fixtures, separate from dot's recorded contest trades. Combining code on main does not start a runner or transfer execution ownership.
+The local quant runner now paper-trades fresh official API data using hypothetical taker fills in a separate bankroll. These simulated fills are not actual contest trades or evidence of profitable strategy performance. Synthetic fixture results remain separate. dot retains contest execution ownership.
 
 Aggregate offline validation on Windows: 216 selected tests passed. Two additional POSIX-specific tests fail here (Unix mode 0600 and graceful child SIGTERM); neither Unix permissions nor graceful SIGTERM behavior is verified on Windows. This is correctness testing with synthetic inputs, not strategy performance evidence.
+
+## Working paper runner
+
+See [live-paper/README.md](live-paper/README.md). Run `./Start-Paper.ps1` on the approved Windows host, open http://127.0.0.1:8787/ for stats, and use `./Stop-Paper.ps1` to stop. The dashboard shows the rolling-mean strategy, small buy-and-hold control, no-trade baseline, realized/marked/liquidation P&L, fees, drawdown, signals and collection skips. Replay saved captures without network calls to compare parameters.99 relevant tests pass; actual GET capture, hypothetical control fills, dashboard, restricted Windows runtime ACLs, graceful stop and journal-backed resume were checked locally on October1. This runner submits zero competition orders.
