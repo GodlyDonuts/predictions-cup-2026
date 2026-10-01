@@ -3,7 +3,7 @@
 This isolated package adds a supported Supabase SDK adapter to reviewed feed PR #6
 (f21c1e8556a6c13fc024521cb089cdee9527124e). It does not modify feed/, paper/, ml/ or bot/.
 The host injects the documented SDK `createClient`, a credential already held in memory,
-and a real shared account admission authority. There is no autonomous CLI or credential
+and a real serialized admission authority covering all declared clients. There is no autonomous CLI or credential
 loader here: importing these modules creates no client, reads no secrets and sends no traffic.
 
 ## Offline verification
@@ -11,12 +11,12 @@ loader here: importing these modules creates no client, reads no secrets and sen
 From this branch's repository root, Node.js 22+:
 
 ```sh
-node --test capture-live/*.test.mjs bot/*.test.mjs
+node --test capture-live/*.test.mjs capture-live-review-regressions.test.mjs bot/*.test.mjs
 node --check capture-live/transport.mjs
 node --check capture-live/pilot.mjs
 ```
 
-14 transport/pilot tests plus the 11 scanner tests pass on Node 24.19.0. All injected
+17 transport/pilot tests, all five independently supplied review regressions, and 11 scanner tests pass on Node 24.19.0. All injected
 SDKs, tokens, books and transports in tests are invented. The deterministic fake-clock
 pilot captures one synthetic exchange; that verifies orchestration only. It is not a
 live connection, market-data sample, calibrated fill model or evidence of profitable ML.
@@ -33,15 +33,15 @@ supported @supabase/supabase-js SDK version and dependency lockfile before deplo
   never put it in config, JSON, command-line arguments, manifests or logs.
 - `createClient`: documented Supabase SDK factory. Auth persistence, automatic session
   refresh and URL session detection are disabled. No browser-session extraction.
-- `budget`: `{sharedAuthority: true, admit, cooldown}` from a real account-wide service.
+- `budget`: `{sharedAuthority: true, admit, cooldown}` from a real serialized allocator shared by every declared client.
   Every request passes `{method, path, cost: 1, signal}` to admission. Cooldowns pass
   finite milliseconds and a manual-review sentinel for excessive Retry-After.
-  The flag is an interface assertion, not a distributed implementation or proof.
+  The flag is an interface assertion, not a distributed implementation or proof. A reserved single-client pilot can use one host allocator only after exclusive-process checks, a full quiet rate window and coordination of all known callers. This does not control unknown external clients; production multi-client use needs a shared service.
 - `tokenSetupApproved: true`: only after actual separate authorization/review required
   by AGENTS.md and feed/README.md. A software flag cannot grant human authorization.
 
 The only REST POST allowed is `/realtime/token`, which costs one write request and
-creates an ephemeral three-hour realtime credential. GET allows only the configured
+creates an ephemeral three-hour realtime credential carrying account/org claims. The adapter subscribes to one allowlisted market; the credential itself is not restricted to that market. GET allows only the configured
 market's tournament orderbook. No order placement, cancellation or account subscription
 exists. SDK connection parameters come only from successful official token bootstrap;
 HTTPS is mandatory and refresh may not change origin. The SIG key goes only to the
@@ -56,7 +56,7 @@ Unknown/malformed snapshot state remains unready. Settlement invalidation blocks
 pilot pending separate authoritative market-state reconciliation. Errors stop safely
 and the summary is limited to counters/state; raw SDK errors and auth are not logged.
 STOP is checked before any transport/capture call, queued waits are interruptible,
-and a hard deadline bounds uncooperative subscription/recovery calls and cleanup.
+and a hard deadline bounds uncooperative subscription/recovery calls and cleanup. Normal healthy observation-window expiry is duration_complete; user stop is stopped; deadline during an incomplete operation and any sink/callback failure are blocked. Construction, event and final-summary append failures are contained and cleanup always runs. captureCommitted means the synchronous sink acknowledged the final append, not source completeness.
 The caller must check STOP before credential loading or opening the Capture sink too.
 
 Inject the reviewed exclusive `Capture` sink from feed/capture.mjs. Capture only normalized
@@ -68,13 +68,13 @@ eligibility remain false. No unattributed trade becomes a paper fill. No P&L is 
 ## Unfinished live pilot gates
 
 No token was minted, existing credential loaded, SDK installed, authenticated request
-sent or real market capture performed for this revision. A service-backed shared GET/POST
-budget with cooldown propagation has not been provided or deployed. Token setup is
+sent or real market capture performed for this revision. The pinned SDK host and real
+serialized GET/POST allocator/exclusive-client checks are still missing. Token setup is
 awaiting the separate review/authorization in the current repository instructions.
 There is no committed real-data fixture, latency benchmark or completeness claim.
 
 The integration is reviewable code with offline tests, not a finished operating host.
-Before pilot: provide/review the SDK host and pinned runtime, shared account authority,
+Before pilot: provide/review the SDK host and pinned runtime, a serialized allocator covering every pilot GET/auth call,
 approved ephemeral-token setup, fresh read-only account/market reconciliation and explicit
 small request reservation agreed with the sole executor. Preserve concurrent order ownership;
 a capture pilot must not touch orders. Publish the actual outcome and sanitized provenance
@@ -90,3 +90,25 @@ The web reader could not load the reference during this revision; the existing s
 public API specification/guide and exact reviewed contract were used. Recheck the public
 reference before live integration. No undocumented socket protocol was implemented.
 
+
+## Review corrections and Windows verification
+
+The independent five-case artifact is included byte-for-byte at repository root. It now
+passes: synchronous ACK/error cannot revive a dead channel; durable authPosts survives
+credential redaction; close aborts queued admission before fetch; healthy deadline is
+distinct from stop/operation failure; sink failure cannot escape SDK callbacks or claim
+completion. Secret redaction is unchanged. Three extra tests cover uncooperative admission,
+construction/final-summary sink failure and explicit user stop.
+
+The expanded suite selected 101 tests and passed all on Windows from an isolated
+STOP-free verification directory. Two upstream POSIX-oriented cases were explicitly
+excluded: filesystem mode 0600 (Windows stat reports 0666 despite the requested mode),
+and graceful SIGTERM delivery to a child process (Windows signal semantics differ).
+The initial workspace run also hit the intentional root STOP in a malformed-input CLI
+test; that test passes in the isolated verification directory. feed/ source and tests
+remain unchanged. This is neither a complete Linux-suite pass nor a Windows private-ACL
+security verification. Before real capture, verify output ACLs and host stop handling.
+
+The safe numeric request counter is now authPosts. Internal close cancellation is combined
+with caller signals, admissions recheck lifecycle state, and stale channel generations
+are ignored. No metadata/secret field was exempted from the capture sanitizer.

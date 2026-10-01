@@ -37,7 +37,7 @@ test('token expiry renews authentication and ignores old-channel callbacks',asyn
  f.setNow(f.getNow()+10800000-30000);assert.equal(t.refreshDue(),true);
  await t.subscribe({topic:scope.topic,onEvent:()=>n++});
  old.handlers.market_batch({payload:{}});old.status('CHANNEL_ERROR');
- assert.equal(n,0);assert.equal(d,0);assert.equal(t.counts.tokenWrites,2);await t.close();
+ assert.equal(n,0);assert.equal(d,0);assert.equal(t.counts.authPosts,2);await t.close();
 });
 test('malformed bootstrap destination and expired token fail closed without subscription',async()=>{
  for(const patch of [{supabaseUrl:'http://evil.example'},{expiresAt:'2000-01-01T00:00:00Z'}]){
@@ -78,7 +78,7 @@ test('lost acknowledgments are bounded and old channels are removed',async()=>{
 });
 test('pilot stops on hard deadline even when injected subscription never resolves',async()=>{
  let closed=0;const transport={counts:{},subscribe:()=>new Promise(()=>{}),close:async()=>closed++};
- const report=await capturePilot({scope,transport,durationMs:20});assert.equal(report.outcome,'stopped');assert.equal(closed,1);
+ const report=await capturePilot({scope,transport,durationMs:20});assert.equal(report.outcome,'blocked');assert.equal(closed,1);
 });
 test('invalid snapshot retries stop at recovery bound and never fabricate readiness',async()=>{
  const f=fixture();const t=new BookTransport({...f.options,fetchFn:async(url)=>({ok:true,json:async()=>url.endsWith('/realtime/token')?{token:'t',anonKey:'a',supabaseUrl:'https://project.supabase.co',expiresAt:new Date(f.getNow()+10800000).toISOString()}:{contexts:[]}})});
@@ -100,4 +100,24 @@ test('events before acknowledgment retain original callback receive time',async(
  await capturePilot({scope,transport,capture:{append:r=>rows.push(r)},durationMs:1000,now:f.options.now,sleep:async ms=>f.setNow(f.getNow()+ms)});
  const row=rows.find(r=>r.kind==='event');assert.equal(row.receivedAt,new Date(originalTime).toISOString());
  assert.ok(Date.parse(row.observedAt)>Date.parse(row.receivedAt));
+});
+
+
+test('close rejects an uncooperative queued admission without needing its release',async()=>{
+ const f=fixture();f.options.budget.admit=()=>new Promise(()=>{});const t=new BookTransport(f.options);
+ const request=t.readSnapshot({method:'GET',path:snapshotPath(scope)});const rejected=assert.rejects(request,/TRANSPORT_ABORTED/);
+ await t.close();await rejected;assert.equal(f.calls.length,0);
+});
+test('construction and final-summary sink failures close resources and report blocked',async()=>{
+ for(const failKind of ['config','summary']){
+  const f=fixture();const t=new BookTransport(f.options);let failed=false;
+  const result=await capturePilot({scope,transport:t,capture:{append:r=>{if(r.kind===failKind){failed=true;throw new Error('secret diagnostic');}}},durationMs:1000,now:f.options.now,sleep:async ms=>f.setNow(f.getNow()+ms)});
+  assert.equal(failed,true);assert.equal(result.outcome,'blocked');assert.equal(result.captureCommitted,false);assert.equal(t.closed,true);
+  if(failKind==='config')assert.equal(f.calls.length,0);
+ }
+});
+test('user stop during healthy capture remains distinct from ordinary duration completion',async()=>{
+ const f=fixture();const t=new BookTransport(f.options);let stop=false;
+ const result=await capturePilot({scope,transport:t,durationMs:1000,shouldStop:()=>stop,now:f.options.now,sleep:async ms=>{f.setNow(f.getNow()+ms);stop=true;}});
+ assert.equal(result.outcome,'stopped');assert.equal(t.closed,true);
 });
