@@ -1,83 +1,41 @@
 {
-  "schema_version": 1,
-  "observed_window_start_utc": "2026-10-01T21:26:00Z",
-  "observed_window_end_utc": "2026-10-01T21:26:19Z",
-  "cash_exact_verified_at_utc": "2026-10-01T21:26:19Z",
+  "schema_version": 2,
+  "observed_window_start_utc": "2026-10-01T22:01:18Z",
+  "observed_window_end_utc": "2026-10-01T22:01:47Z",
+  "cash_exact_verified_at_utc": null,
   "open_orders_verified_window_utc": [
-    "2026-10-01T21:26:00Z"
+    "2026-10-01T22:01:18Z"
   ],
   "tournament": "Midterm Elections",
   "tournament_slug": "midterm-elections",
   "currency": "SUSQies (nonmonetary, nonredeemable contest points)",
   "initial_cash": "100000.00",
-  "cash_verified": "89820.05",
-  "position_cost_basis_total": "10258.985",
+  "cash_verified": null,
+  "position_cost_basis_total": "2899.170",
   "positions": [
-    {
-      "market_id": 277,
-      "title": "Democratic Party wins North Carolina Senate",
-      "side": "NO",
-      "shares": 1538,
-      "average_price": 0.065,
-      "cost": 99.97,
-      "order_id": 890948,
-      "status": "fully filled",
-      "holdings_verified_at_utc": "2026-10-01T21:26:19Z"
-    },
-    {
-      "market_id": 387,
-      "title": "Democratic Party wins Rhode Island Senate",
-      "side": "YES",
-      "shares": 6187,
-      "average_price": null,
-      "cost": "5684.845",
-      "order_id": null,
-      "status": "two acquisition lots remain after partial FIFO disposal",
-      "verified_at_utc": "2026-10-01T21:26:19Z",
-      "source": "data/orders/session_2026-10-01_2102.json",
-      "lots": [
-        {
-          "shares": 1187,
-          "average_price": "0.935",
-          "cost": "1109.845",
-          "order_id": 1023469,
-          "intent_id": "dot-20261001T203632-RI387-BYES-5000-0935",
-          "executed_at_utc": null,
-          "verified_at_utc": "2026-10-01T20:58:06Z",
-          "source": "data/orders/session_2026-10-01_2036.json",
-          "original_shares": 4756,
-          "disposed_shares_fifo": 3569
-        },
-        {
-          "shares": 5000,
-          "average_price": "0.915",
-          "cost": "4575.00",
-          "order_id": 1056531,
-          "intent_id": "dot-20261001T210902-387-BUY-YES-5000-0.915",
-          "executed_at_utc": null,
-          "submitted_at_utc": "2026-10-01T21:09:21Z",
-          "verified_at_utc": "2026-10-01T21:13:20Z",
-          "source": "data/orders/session_2026-10-01_2102.json"
-        }
-      ],
-      "average_price_exact_ratio": {
-        "cost_numerator": "5684.845",
-        "shares_denominator": 6187
-      },
-      "average_price_basis": "Exact remaining FIFO cost 5684.845 / 6187; two acquisition lots. Do not substitute a rounded average for lot accounting.",
-      "order_id_status": "Remaining portions of buy orders 1023469 and 1056531",
-      "holdings_verified_at_utc": "2026-10-01T21:26:19Z"
-    },
     {
       "market_id": 379,
       "title": "Democratic Party wins Massachusetts Senate",
       "side": "YES",
       "shares": 2061,
-      "average_price": 0.97,
-      "cost": 1999.17,
+      "average_price": "0.970",
+      "cost": "1999.170",
       "order_id": 896197,
-      "status": "fully filled",
-      "holdings_verified_at_utc": "2026-10-01T21:26:19Z"
+      "status": "Position unchanged; third-session sale canceled without any fill",
+      "holdings_verified_at_utc": "2026-10-01T22:01:18Z",
+      "holdings_source": "data/orders/session_2026-10-01_2132.json",
+      "lots": [
+        {
+          "shares": 2061,
+          "average_price": "0.970",
+          "cost": "1999.170",
+          "order_id": 896197,
+          "executed_at_utc": null,
+          "submitted_at_utc": null,
+          "verified_at_utc": "2026-10-01T18:52:00Z",
+          "source": "data/trade_ledger.csv"
+        }
+      ]
     },
     {
       "market_id": 354,
@@ -85,9 +43,9 @@
       "side": "YES",
       "shares": 7500,
       "average_price": "0.120",
-      "cost": "900.00",
+      "cost": "900.000",
       "order_id": 910025,
-      "status": "7500 shares remain after 5000-share FIFO disposal",
+      "status": "Position unchanged; third-session sale canceled without any fill",
       "verified_at_utc": "2026-10-01T21:26:19Z",
       "source": "data/orders/session_2026-10-01_2102.json",
       "lots": [
@@ -96,7 +54,7 @@
           "original_shares": 12500,
           "disposed_shares_fifo": 5000,
           "average_price": "0.120",
-          "cost": "900.00",
+          "cost": "900.000",
           "order_id": 910025,
           "executed_at_utc": null,
           "submitted_at_utc": "2026-10-01T18:44:12Z",
@@ -104,89 +62,103 @@
           "source": "data/orders/order_910025.json"
         }
       ],
-      "holdings_verified_at_utc": "2026-10-01T21:26:19Z"
-    },
-    {
-      "market_id": 377,
-      "title": "Democratic Party wins Alaska Senate",
-      "side": "NO",
-      "shares": 5000,
-      "average_price": "0.315",
-      "average_price_basis": "The later 5000-share acquisition lot remains after FIFO disposal of the original aggregate lot.",
-      "cost": "1575.00",
-      "order_id": 1026814,
-      "order_id_status": "Remaining acquisition order 1026814; disposed original acquisition order ID remains unknown in prior records",
-      "status": "5000-share 0.315 acquisition lot remains",
-      "verified_at_utc": "2026-10-01T21:26:19Z",
-      "source": "data/orders/session_2026-10-01_2102.json",
-      "lots": [
-        {
-          "shares": 5000,
-          "average_price": "0.315",
-          "cost": "1575.00",
-          "order_id": 1026814,
-          "intent_id": "dot-20261001T203632-AK377-BNO-5000-0315",
-          "executed_at_utc": null,
-          "submitted_at_utc": "2026-10-01T20:40:25Z",
-          "verified_at_utc": "2026-10-01T20:58:30Z",
-          "source": "data/orders/session_2026-10-01_2036.json"
-        }
-      ],
-      "holdings_verified_at_utc": "2026-10-01T21:26:19Z"
+      "holdings_verified_at_utc": "2026-10-01T22:01:18Z",
+      "holdings_source": "data/orders/session_2026-10-01_2132.json"
     }
   ],
   "open_orders": [],
-  "source": "Official signed-in cloud browser terminal holdings, exact cash, no-open-orders state and transaction-history fills; data/orders/session_2026-10-01_2102.json. Unchanged positions retain their earlier verified acquisition records.",
+  "source": "Official signed-in cloud browser terminal holdings, two-decimal displayed cash, no-open-orders state and transaction-history fill quantities/prices; data/orders/session_2026-10-01_2132.json. Unchanged positions retain prior verified acquisition records.",
   "notes": [
-    "Historical observation only; refresh cash, holdings, orders and fills before any new action.",
-    "All costs and realized P&L derived here use exact decimal accounting. Half-cent FIFO amounts are retained; 79.04 is a display rounding of exact 79.035 only.",
-    "Cash plus remaining FIFO cost is 100079.035 = initial 100000.00 plus realized 79.035. Remaining cost is not current liquidation value or portfolio value.",
-    "RI old 0.935 lot now has 1187 shares costing 1109.845; new 0.915 lot has 5000 shares costing 4575.00. Aggregate cost 5684.845 is retained exactly as a decimal string.",
-    "AK first 5000-share aggregate lot costing 1649.50 is fully disposed under FIFO; its acquisition order ID remains unknown. The 5000-share 0.315 lot costing 1575.00 remains.",
-    "RI sell 1050409 was canceled after 3569 fills; 1187 unfilled shares canceled. Pre-cancel remaining 1742 fell by 555 shares before cancel finalization. These 555 shares are included once within 3569.",
-    "Cancellation target was 21:25:00 UTC; one actual cancel submitted at 21:25:12. No open orders verified at 21:26:00 and exact cash verified at 21:26:19.",
-    "The three canceled unsubmitted intents and 1187 canceled RI shares are not trades. AK and FL sells were already filled and were not canceled.",
-    "Exact execution timestamps, per-fill IDs and exchange IDs were not supplied by the browser audit and remain unknown. Order submission and verification times are not execution timestamps.",
-    "The immutable audit retains interim observations, including the AK proceeds_verified_by_cash_change field 695.31. That is not the terminal proceeds total; filled quantity and terminal cash reconcile to AK total 1650.00.",
-    "No fee line was displayed; exact observed costs/proceeds reconcile to cash. A general transaction-fee schedule is not inferred.",
-    "Tournament valuation formula remains unverified; portfolio marks, detail prices, executable depth, remaining risk and realized P&L are distinct."
+    "Historical observation only; refresh cash, holdings, open orders and recent fills before any new action.",
+    "Schema 2 explicitly separates two-decimal UI cash from exact quantity x tick price ledger arithmetic. No verified hidden-precision cash balance is asserted.",
+    "Realized P&L uses exact decimal/rational FIFO accounting. Summed rounded UI fill-row amounts are not used for proceeds.",
+    "Exact fill-row execution timestamps, fill IDs and exchange IDs were not supplied. Submission and verification times are not execution timestamps.",
+    "RI 6187 YES, AK 5000 NO and NC 1538 NO sold completely. FL 7500 YES and MA 2061 YES sale orders were canceled entirely unfilled and create no ledger trade rows.",
+    "The cancellation target was 22:00:00 UTC. FL cancellation was actually submitted at 22:00:12 and MA at 22:00:36, once each. Zero open orders and unchanged holdings were verified after fresh reload at 22:01:18.",
+    "Fill rows were verified at 22:01:35 and the two-decimal displayed cash at 22:01:47. No further FL or MA fills were observed during cancellation.",
+    "Arithmetic cash plus remaining FIFO cost is 100269.415 = initial 100000.000 plus cumulative realized 269.415. This identity is accounting only; remaining basis is not current liquidation value or tournament portfolio value.",
+    "Previous immutable audits and snapshots remain historical and unchanged. No fee or hidden rounding adjustment is invented to reconcile the 0.005 UI/arithmetic difference.",
+    "Tournament valuation formula and current executable depth remain unverified. Realized profit excludes unrealized losses/gains and liquidation risk on the remaining positions. No bot execution handoff is authorized by this snapshot."
   ],
-  "realized_pnl_total": "79.035",
-  "realized_pnl_basis": "Analytical FIFO aggregate-lot convention: RI 3569 x (0.950 - 0.935) = 53.535; AK first 5000-share lot proceeds 1650.00 less exact aggregate cost 1649.50 = 0.50; FL 5000 x (0.125 - 0.120) = 25.00. Prior realized P&L was 0.00. No valuation marks used.",
-  "session_audit": "data/orders/session_2026-10-01_2102.json",
-  "realized_pnl_total_rounded": "79.04",
-  "previous_session_audit": "data/orders/session_2026-10-01_2036.json",
-  "previous_snapshot": "data/snapshots/portfolio_2026-10-01_2058.json",
-  "cash_plus_remaining_cost": "100079.035",
+  "realized_pnl_total": "269.415",
+  "realized_pnl_basis": "Analytical FIFO aggregate-lot convention using recorded acquisition costs and exact verified quantity x tick price proceeds. Prior cumulative 79.035 plus third-session 190.380 = 269.415. Distinct from unexplained platform valuation P&L and remaining unrealized/liquidation risk.",
+  "session_audit": "data/orders/session_2026-10-01_2132.json",
+  "previous_session_audit": "data/orders/session_2026-10-01_2102.json",
+  "previous_snapshot": "data/snapshots/portfolio_2026-10-01_2126.json",
   "realized_pnl_by_market": [
     {
-      "market_id": 387,
-      "side": "YES",
-      "shares_sold": 3569,
-      "proceeds": "3390.55",
-      "fifo_disposed_cost": "3337.015",
-      "realized_pnl": "53.535"
-    },
-    {
-      "market_id": 377,
+      "market_id": 277,
       "side": "NO",
-      "shares_sold": 5000,
-      "proceeds": "1650.00",
-      "fifo_disposed_cost": "1649.50",
-      "realized_pnl": "0.50"
+      "shares_sold": 1538,
+      "proceeds": "115.350",
+      "fifo_disposed_cost": "99.970",
+      "realized_pnl": "15.380"
     },
     {
       "market_id": 354,
       "side": "YES",
       "shares_sold": 5000,
-      "proceeds": "625.00",
-      "fifo_disposed_cost": "600.00",
-      "realized_pnl": "25.00"
+      "proceeds": "625.000",
+      "fifo_disposed_cost": "600.000",
+      "realized_pnl": "25.000"
+    },
+    {
+      "market_id": 377,
+      "side": "NO",
+      "shares_sold": 10000,
+      "proceeds": "3300.000",
+      "fifo_disposed_cost": "3224.500",
+      "realized_pnl": "75.500"
+    },
+    {
+      "market_id": 387,
+      "side": "YES",
+      "shares_sold": 11828,
+      "proceeds": "11174.875",
+      "fifo_disposed_cost": "11021.340",
+      "realized_pnl": "153.535"
     }
   ],
   "settlement_scenarios": {
-    "assumptions": "No further trades, fees, refunds, sponsor interventions or nonstandard settlements; each position pays 0 or 1 per share. These endpoints are scenarios, not forecasts or executable valuations.",
-    "all_positions_lose_total": "89820.05",
-    "all_positions_win_total": "112106.05"
-  }
+    "assumptions": "No further trades, fees, refunds, sponsor interventions or nonstandard settlements; each remaining position pays 0 or 1 per share. Arithmetic scenarios use ledger cash, not a verified hidden account balance. These are scenarios, not forecasts or executable valuations.",
+    "cash_basis": "cash_arithmetic_from_verified_qty_price",
+    "all_positions_lose_arithmetic_total": "97370.245",
+    "all_positions_win_arithmetic_total": "106931.245"
+  },
+  "cash_displayed": "97370.24",
+  "cash_display_precision_decimal_places": 2,
+  "cash_display_verified_at_utc": "2026-10-01T22:01:47Z",
+  "cash_arithmetic_from_verified_qty_price": "97370.245",
+  "cash_arithmetic_basis": "Prior recorded 89820.050 plus exact verified integer quantities times displayed tick prices: 5784.845 + 1650.000 + 115.350. This is ledger arithmetic, not verified hidden account balance.",
+  "cash_display_minus_arithmetic": "-0.005",
+  "session_realized_pnl": "190.380",
+  "cash_arithmetic_plus_remaining_cost": "100269.415",
+  "cash_precision_note": "The UI displayed 97370.24 to two decimal places. Exact account cash was not exposed. Preserve 97370.245 as quantity x price ledger arithmetic separately; do not round individual fills to force equality or infer a hidden balance/rounding rule. cash_verified and cash_exact_verified_at_utc are null for this observation.",
+  "session_realized_pnl_by_market": [
+    {
+      "market_id": 387,
+      "side": "YES",
+      "shares_sold": 6187,
+      "proceeds": "5784.845",
+      "fifo_disposed_cost": "5684.845",
+      "realized_pnl": "100.000"
+    },
+    {
+      "market_id": 377,
+      "side": "NO",
+      "shares_sold": 5000,
+      "proceeds": "1650.000",
+      "fifo_disposed_cost": "1575.000",
+      "realized_pnl": "75.000"
+    },
+    {
+      "market_id": 277,
+      "side": "NO",
+      "shares_sold": 1538,
+      "proceeds": "115.350",
+      "fifo_disposed_cost": "99.970",
+      "realized_pnl": "15.380"
+    }
+  ],
+  "realized_pnl_by_market_scope": "Cumulative all recorded sales, including the first RI at-cost disposal; recomputed from the append-only ledger with exact rational FIFO lot allocation."
 }

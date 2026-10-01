@@ -1,26 +1,51 @@
 # Current state
 
-Last portfolio review: **2026-10-01 21:26:00–21:26:19 UTC**. A fresh reload verified **zero open orders at 21:26:00**, and exact cash and terminal holdings were verified at **21:26:19**. Data is historical and needs fresh reconciliation before any action.
+Last portfolio review: **2026-10-01 22:01:18–22:01:47 UTC**. Fresh reload verified **zero open orders and unchanged remaining holdings at 22:01:18**; fill quantities/prices were verified at **22:01:35**; cash displayed **97,370.24** to two decimal places at **22:01:47**. These are historical observations and need fresh reconciliation before any action.
 
 ## Account reconciliation
 
 - Starting simulated cash: **100,000.00 SUSQies**
-- Current verified cash: **89,820.05 SUSQies**
-- Remaining FIFO position cost: **10,258.985 SUSQies**, retaining half-cent precision
-- Cash plus remaining cost: **100,079.035 SUSQies**
-- Realized P&L: **79.035 SUSQies** exact (**79.04** rounded for display), under the analytical FIFO aggregate-lot convention
-- Open orders: **none observed at 21:26:00 UTC**
-- Session cash reconciliation: 88,729.50 − 4,575.00 + 3,390.55 + 1,650.00 + 625.00 = **89,820.05**
+- Observed cash display: **97,370.24 SUSQies**, two decimal places; exact hidden account precision was not exposed
+- Separate quantity × price ledger cash: **97,370.245 SUSQies**
+- Remaining FIFO position cost: **2,899.170 SUSQies**
+- Arithmetic cash plus remaining FIFO cost: **100,269.415 SUSQies**, an accounting identity rather than current liquidation value
+- Third-session realized P&L: **190.380 SUSQies**; cumulative realized P&L: **269.415 SUSQies**, under the recorded analytical FIFO aggregate-lot convention
+- Open orders: **none observed at 22:01:18 UTC**
+- Arithmetic reconciliation: 89,820.050 + 5,784.845 + 1,650.000 + 115.350 = **97,370.245**
 
-| Market | Side | Shares | Remaining FIFO cost | Acquisition prices |
-|---|---|---:|---:|---|
-| Democratic Rhode Island Senate (387) | YES | 6,187 | 5,684.845 | 1,187 at 0.935 + 5,000 at 0.915 |
-| Democratic Massachusetts Senate (379) | YES | 2,061 | 1,999.17 | 0.970 |
-| Democratic Alaska Senate (377) | NO | 5,000 | 1,575.00 | 0.315 remaining lot |
-| Democratic Florida Senate (354) | YES | 7,500 | 900.00 | 0.120 |
-| Democratic North Carolina Senate (277) | NO | 1,538 | 99.97 | 0.065 |
+The display is 0.005 below ledger arithmetic. Both observations are retained separately. The UI's hidden balance precision and rounding method are unknown; no fee, rounding adjustment, or hidden balance is invented. Rounded per-fill UI amounts are preserved in the audit but are not summed to force reconciliation. In schema 2, `cash_verified` and `cash_exact_verified_at_utc` are null; explicit `cash_displayed` and `cash_arithmetic_from_verified_qty_price` fields carry the distinct values.
 
-Machine-readable current view: [`data/portfolio/latest.json`](../data/portfolio/latest.json). Immutable [21:26 snapshot](../data/snapshots/portfolio_2026-10-01_2126.json). Append-only [trade ledger](../data/trade_ledger.csv). Prior [20:58 snapshot](../data/snapshots/portfolio_2026-10-01_2058.json) is unchanged.
+| Remaining market | Side | Shares | FIFO cost | Acquisition price |
+|---|---|---:|---:|---:|
+| Democratic Massachusetts Senate (379) | YES | 2,061 | 1,999.170 | 0.970 |
+| Democratic Florida Senate (354) | YES | 7,500 | 900.000 | 0.120 |
+
+RI, AK and NC holdings are zero. Remaining holdings have 2,899.170 of recorded acquisition cost and retain unrealized/liquidation risk; the 269.415 realized gain does not remove that risk.
+
+Machine-readable historical view: [`data/portfolio/latest.json`](../data/portfolio/latest.json). Immutable [22:01 snapshot](../data/snapshots/portfolio_2026-10-01_2201.json). Append-only [trade ledger](../data/trade_ledger.csv). Prior [21:26 snapshot](../data/snapshots/portfolio_2026-10-01_2126.json) and earlier snapshots are unchanged.
+
+## Completed 21:32 inventory-sale session
+
+The [immutable source audit](../data/orders/session_2026-10-01_2132.json) is preserved byte-for-byte. All five submitted orders are terminal:
+
+| Order | Outcome | Exact verified quantity × price proceeds | FIFO cost disposed | Session realized P&L |
+|---|---|---:|---:|---:|
+| RI YES sell 1080906 | 6,187 filled at 0.935 | 5,784.845 | 5,684.845 | 100.000 |
+| AK NO sell 1082747 | 5,000 filled at 0.330 | 1,650.000 | 1,575.000 | 75.000 |
+| NC NO sell 1088818 | 1,538 filled at 0.075 | 115.350 | 99.970 | 15.380 |
+| FL YES sell 1084839 | 7,500 at 0.125 canceled unfilled | 0.000 | 0.000 | 0.000 |
+| MA YES sell 1086473 | 2,061 at 0.975 canceled unfilled | 0.000 | 0.000 | 0.000 |
+| **Session totals** | **12,725 shares sold** | **7,550.195** | **7,359.815** | **190.380** |
+
+The 22:00:00 cancellation target is separate from actual submissions: FL at **22:00:12**, MA at **22:00:36**, once each. Fresh reload at **22:01:18** found no open orders and unchanged MA 2,061 / FL 7,500 holdings. No additional FL/MA fill was observed. The immutable audit retains the actual cancellation times even where its brief notes describe the target hour.
+
+All RI fill-row quantities sum to 6,187, including one combined 469-share row. AK fills are 648 + 20 + 4,332; NC is 1,538. Their exact displayed tick prices and quantities determine proceeds without rounding each fill. The ledger appends exactly three executed order aggregates and excludes the two canceled unfilled orders. It preserves all old bytes, uses negative `cost_susqies` for proceeds, and retains milli-SUSQ precision. No precise execution timestamp or unexposed fill/exchange ID is fabricated.
+
+RI disposal consumes the remaining 1,187-share 0.935 lot (1,109.845 cost) plus the 5,000-share 0.915 lot (4,575.000 cost). AK consumes its remaining 5,000-share 0.315 lot. NC consumes its 1,538-share 0.065 lot. Session FIFO gain is **100.000 + 75.000 + 15.380 = 190.380**; prior cumulative 79.035 + 190.380 = **269.415**. Cumulative per-market totals in the snapshot are replayed from all ledger sales, including the earlier RI at-cost sale. Platform weighted-average basis, tournament marks, and executable liquidation value are separate concepts.
+
+## Earlier historical sessions
+
+The following descriptions apply only to their original observation windows, not current holdings.
 
 ## Completed 21:02 discretionary session
 
@@ -66,22 +91,22 @@ The ledger adds only three actual trade aggregates, not canceled unfilled quotes
 
 ## Important limitations
 
-The portfolio page uses tournament valuation prices whose formula remains unverified. Its marks differed sharply from detail-page prices. Neither is a guaranteed full-position exit price. Current displayed gains/losses are not realized P&L. No fee line surfaced; exact cash reconciliation does not establish a general fee schedule. Realized gain excludes all remaining position risk.
+The portfolio page uses tournament valuation prices whose formula remains unverified. Its marks differed sharply from detail-page prices. Neither is a guaranteed full-position exit price. Current displayed gains/losses are not realized P&L. No fee or hidden-precision rule is inferred. Realized gain excludes all remaining position risk.
 
 See the [execution and valuation review](../research/execution_valuation_review_2026-10-01.md) for historical depth and observation windows. Quotes were not captured simultaneously and are stale for execution.
 
-If no further trades, fees, refunds, sponsor interventions or nonstandard settlements occur, the final payoff endpoints for these five positions are **89,820.05** if all lose and **112,106.05 SUSQies** if all win. These are settlement scenarios, not forecasts or executable valuations.
+Under standard 0-or-1 settlement and no further trades, fees, refunds or sponsor interventions, ledger-arithmetic endpoints for the two remaining positions are **97,370.245** if both lose and **106,931.245 SUSQies** if both win. These use the separate arithmetic balance, not an asserted hidden UI balance; they are scenarios, not forecasts or executable valuations.
 
 ## Current operating mode
 
 - dot remains the sole execution coordinator, under separate user authorization
 - Codex/Drogon remains research, quantitative strategy and development only; experimental bot remains paper-only and bot API writes disabled
 - This reconciliation created no order, API key, runner, schedule, webhook or ownership handoff
-- The ownership record and independent code branches are unchanged; review current rules and exact market resolution conditions before relying on any forecast
+- The ownership record and unrelated repository blobs remain unchanged; no independent code branch is merged or force-updated
 
 ## Next useful work
 
 1. Refresh cash, holdings, orders and fills before any new trade proposal or execution
-2. Keep isolated paper/replay PR #5 and feed-collector PR #6 separate from execution; synthetic tests are not evidence of profitable strategy or a live-trading gate pass
-3. Investigate the valuation discrepancy without assuming it is a bug or an arbitrage opportunity
+2. Keep paper/replay PR #5, read-only feed PR #6 and offline ML PR #7 separate from execution; synthetic tests are not evidence of profitable strategy or a live-trading gate pass
+3. Investigate the valuation and cash-display precision questions without assuming a bug, fee, or arbitrage opportunity
 4. Review [Florida/NC conservative scenarios](../research/fl_nc_conservative_bands_2026-10-01.md) and the [new-race shortlist](../research/new_edges_2026-10-01.md). Subjective bands and illustrative price hurdles are not calibrated probabilities or standing executable limits

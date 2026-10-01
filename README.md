@@ -13,19 +13,18 @@ The challenge uses free, nonredeemable SUSQies. This repository does not contain
 
 ## Current snapshot
 
-As observed October 1, 2026, **21:26:00–21:26:19 UTC**: **89,820.05 SUSQies cash**, five positions with **10,258.985** remaining FIFO cost, and **no open orders verified at 21:26:00 UTC**. Realized P&L is **79.035** exact (**79.04** rounded), under the documented analytical FIFO aggregate-lot convention. These are historical observations, not live account state.
+Historical observations on October 1, 2026, **22:01:18–22:01:47 UTC**: cash UI displayed **97,370.24 SUSQies** to two decimals; separate exact quantity × price ledger arithmetic is **97,370.245**. Exact hidden account precision was not exposed. **No open orders** was verified at **22:01:18 UTC**. This is not live account state.
 
-| Market | Side | Shares | Acquisition prices | Remaining FIFO cost |
-|---|---|---:|---|---:|
-| Democratic Rhode Island Senate | YES | 6,187 | 1,187 at 0.935 + 5,000 at 0.915 | 5,684.845 |
-| Democratic Massachusetts Senate | YES | 2,061 | 0.970 | 1,999.17 |
-| Democratic Florida Senate | YES | 7,500 | 0.120 | 900.00 |
-| Democratic North Carolina Senate | NO | 1,538 | 0.065 | 99.97 |
-| Democratic Alaska Senate | NO | 5,000 | 0.315 remaining lot | 1,575.00 |
+| Remaining market | Side | Shares | Acquisition price | Remaining FIFO cost |
+|---|---|---:|---:|---:|
+| Democratic Massachusetts Senate | YES | 2,061 | 0.970 | 1,999.170 |
+| Democratic Florida Senate | YES | 7,500 | 0.120 | 900.000 |
 
-The second session bought 5,000 RI YES at 0.915 and sold 3,569 RI YES at 0.950, 5,000 AK NO at 0.330 and 5,000 FL YES at 0.125. One RI cancellation followed a 555-share fill/cancel race; the final 1,187 unfilled shares were canceled. The 555 are included once in total fills. Cash plus exact remaining FIFO cost is 100,079.035; remaining position risk is excluded from realized gain. See the [terminal session audit](data/orders/session_2026-10-01_2102.json), [immutable snapshot](data/snapshots/portfolio_2026-10-01_2126.json), and [full reconciliation](docs/CURRENT_STATE.md).
+The third session fully sold **6,187 RI YES at 0.935**, **5,000 AK NO at 0.330**, and **1,538 NC NO at 0.075**. FL 7,500 and MA 2,061 sale orders were canceled entirely unfilled. Actual cancellation submissions were 22:00:12 and 22:00:36, after the 22:00 target. See the [terminal source audit](data/orders/session_2026-10-01_2132.json), [immutable snapshot](data/snapshots/portfolio_2026-10-01_2201.json), and [full reconciliation](docs/CURRENT_STATE.md).
 
-The [20:36 session audit](data/orders/session_2026-10-01_2036.json) and [20:58 snapshot](data/snapshots/portfolio_2026-10-01_2058.json) remain unchanged. The append-only trade ledger uses negative signed cash cost for sale proceeds; canceled quantities and unsubmitted intents are excluded from trade totals. Exact execution timestamps and unexposed IDs remain unknown.
+Analytical FIFO realized gain is **190.380** for this session and **269.415 SUSQies cumulative**. The two remaining holdings have **2,899.170** FIFO basis and retain unrealized/liquidation risk. Arithmetic cash plus remaining cost equals 100,269.415; this is not current liquidation value. Keep the two-decimal cash display separate from milli-SUSQ ledger arithmetic; do not force equality by rounding individual fills or inventing a hidden balance.
+
+All previous session audits and snapshots remain unchanged and historical, including the [21:02 audit](data/orders/session_2026-10-01_2102.json) and [21:26 snapshot](data/snapshots/portfolio_2026-10-01_2126.json). The append-only ledger adds only three executed aggregates. Canceled quantities are not trades. Exact execution timestamps and unexposed IDs remain unknown. No bot execution handoff occurs.
 
 Latest research: [Florida/NC conservative scenarios](research/fl_nc_conservative_bands_2026-10-01.md) and [new-race shortlist](research/new_edges_2026-10-01.md). Their subjective bands are not calibrated forecasts or standing execution limits.
 
