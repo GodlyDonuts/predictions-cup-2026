@@ -1,0 +1,17 @@
+{
+  "observed_at_utc": "2026-10-01T18:31:48Z",
+  "tournament": "Midterm Elections",
+  "initial_cash": 100000,
+  "currency": "SUSQies (nonmonetary contest points)",
+  "positions": [
+    {"market_id":277,"title":"Democratic Party wins North Carolina Senate","side":"NO","shares":1538,"average_price":0.065,"cost":99.97,"order_id":890948,"status":"fully filled"},
+    {"market_id":387,"title":"Democratic Party wins Rhode Island Senate","side":"YES","shares":2072,"average_price":0.965,"cost":1999.48,"order_id":null,"status":"fully filled"},
+    {"market_id":379,"title":"Democratic Party wins Massachusetts Senate","side":"YES","shares":2061,"average_price":0.970,"cost":1999.17,"order_id":896197,"status":"fully filled"}
+  ],
+  "open_orders": [],
+  "cash_calculated_from_fills":95901.38,
+  "cash_display_rounded":95901,
+  "displayed_account_value_rounded":98865,
+  "displayed_holdings_value":2963.55,
+  "notes":["Portfolio valuation differs substantially from executable bids; no realized profit claimed.","Orders were price-capped. These are simulated contest positions, not actual financial assets.","General fee schedule remains unverified; these fill costs reconcile with displayed cash.","Quotes are time-specific. Reconcile fresh state before further actions."]
+}

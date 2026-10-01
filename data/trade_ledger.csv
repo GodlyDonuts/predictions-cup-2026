@@ -1,0 +1,5 @@
+market_id,market,side,action,shares,average_price,cost_susqies,order_id,status,submitted_at_utc,verified_at_utc,source
+387,Democratic Rhode Island Senate,YES,BUY,2072,0.965,1999.48,,filled,,2026-10-01T18:51:00Z,Cloud browser holdings review; order ID not recorded
+379,Democratic Massachusetts Senate,YES,BUY,2061,0.970,1999.17,896197,filled,,2026-10-01T18:52:00Z,Cloud browser holdings review
+277,Democratic North Carolina Senate,NO,BUY,1538,0.065,99.97,890948,filled,,2026-10-01T18:55:00Z,Cloud browser holdings review
+354,Democratic Florida Senate,YES,BUY,12500,0.120,1500.00,910025,filled,2026-10-01T18:44:12Z,2026-10-01T18:47:09Z,Order detail and later holdings review

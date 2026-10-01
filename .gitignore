@@ -1,0 +1,26 @@
+# Secrets and authentication
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+credentials*.json
+*token*.json
+cookies*.json
+browser-profile/
+secrets/
+
+# Local runtime and generated caches
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+node_modules/
+dist/
+build/
+.DS_Store
+logs/
+*.log
+runtime/

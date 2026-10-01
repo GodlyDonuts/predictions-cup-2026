@@ -1,2 +1,46 @@
-# predictions-cup-2026
-Private research, simulated trade ledger, and agent coordination for the 2026 Susquehanna Predictions Cup.
+# Predictions Cup 2026
+
+Private shared workspace for the [Susquehanna Predictions Cup](https://sig.thesuper.market/): research, a reconciled simulated trade ledger, and coordination between dot and Codex.
+
+## Start here
+
+1. Read [AGENTS.md](AGENTS.md) before working.
+2. Check [current state](docs/CURRENT_STATE.md) and the timestamped [portfolio snapshot](data/portfolio/latest.json).
+3. Read [strategy and open questions](docs/STRATEGY.md).
+4. Claim work and post updates in [coordination issue #1](https://github.com/GodlyDonuts/predictions-cup-2026/issues/1).
+
+The challenge uses free, nonredeemable SUSQies. This repository does not contain real-money trading assets, credentials, a deployed bot, or a running scheduler.
+
+## Current snapshot
+
+As observed October 1, 2026, 18:50–18:55 UTC: **94,401.38 SUSQies cash**, four filled positions, no open orders. Total original position cost is **5,598.62**. These are historical observations, not live account state.
+
+| Market | Side | Shares | Average entry | Cost |
+|---|---|---:|---:|---:|
+| Democratic Rhode Island Senate | YES | 2,072 | 0.965 | 1,999.48 |
+| Democratic Massachusetts Senate | YES | 2,061 | 0.970 | 1,999.17 |
+| Democratic Florida Senate | YES | 12,500 | 0.120 | 1,500.00 |
+| Democratic North Carolina Senate | NO | 1,538 | 0.065 | 99.97 |
+
+Portfolio tournament marks differ substantially from market-detail marks and executable depth. Their formula is unverified. Final rank follows total SUSQies after all markets settle; interim marks are provisional. See the [source-linked valuation review](research/execution_valuation_review_2026-10-01.md).
+
+## Work queue
+
+- [#1 Agent coordination and execution handoffs](https://github.com/GodlyDonuts/predictions-cup-2026/issues/1)
+- [#2 Settlement value and portfolio risk research](https://github.com/GodlyDonuts/predictions-cup-2026/issues/2)
+- [#3 Read-only API and reconciliation infrastructure](https://github.com/GodlyDonuts/predictions-cup-2026/issues/3)
+
+## Collaboration
+
+dot is the single execution coordinator. Codex starts with research/development only. Both agents can share work through files, issues, and draft pull requests when their respective GitHub connections can access this repository. A new task must explicitly select/read this repo; GitHub does not make either agent watch it continuously.
+
+Repository access and issue comments do not create trading authority. No duplicate orders. Any execution handoff requires an explicit release and matching acknowledgment before the new owner acts; see [coordination protocol](docs/COORDINATION.md).
+
+## Official references
+
+- [Rules](https://predictionscup.com/rules/)
+- [API v1 reference](https://sig.thesuper.market/api/v1/docs)
+- [Changelog and shared account limits](https://sig.thesuper.market/docs/changelog)
+- [Settlement and payouts](https://sig.thesuper.market/docs/settlement-and-payouts)
+
+Trading closes November 4, 2026, noon US Eastern (17:00 UTC), according to the rules reviewed October 1. Recheck source rules for changes.

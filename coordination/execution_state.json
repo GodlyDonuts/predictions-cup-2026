@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "recorded_at_utc": "2026-10-01T18:58:00Z",
+  "execution_coordinator": "dot",
+  "codex_mode": "research_and_development_only",
+  "automated_execution_enabled": false,
+  "active_handoff": null,
+  "handoff_required": true,
+  "coordination_issue": "https://github.com/GodlyDonuts/predictions-cup-2026/issues/1",
+  "notes": [
+    "This file is a coordination record, not a technical lock or execution authorization.",
+    "No implicit transfer on silence, stale timestamps, merged changes, or lease expiry.",
+    "Before separately authorized execution, verify current owner and reconcile fresh cash, holdings, orders, and fills."
+  ]
+}
