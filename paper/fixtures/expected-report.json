@@ -1,0 +1,331 @@
+{
+  "schemaVersion": 1,
+  "experiment": "scripted_passive_vs_no_trade",
+  "datasetClaim": "Uncalibrated replay; fixture is synthetic, not empirical performance",
+  "inputs": {
+    "eventFileSha256": "41569c03a5279e9ece5bc038c2cdfcb86c3432b938eff4a66b2f3ee2b4abc83e",
+    "configFileSha256": "d1276af3142a397cde9d89473289f4a74b8c69cd67a6aaf7e8c8c55f73533332"
+  },
+  "splitManifest": {
+    "schemaVersion": 1,
+    "kind": "chronological-split",
+    "basis": "receivedAt",
+    "parameters": {
+      "trainEnd": "2026-01-01T00:00:00.200Z",
+      "validationEnd": "2026-01-01T00:00:00.400Z",
+      "labelHorizonMs": 20,
+      "embargoMs": 10
+    },
+    "source": {
+      "checksumAlgorithm": "sha256",
+      "checksumEncoding": "canonical-json-v1",
+      "checksum": "a7e57d484590ae9cedac78c8ceed2c7d2bdd23569c55b34a259e18efa9383dc2",
+      "eventCount": 17,
+      "firstReceivedAt": "2026-01-01T00:00:00.000Z",
+      "lastReceivedAt": "2026-01-01T00:00:00.500Z"
+    },
+    "semantics": {
+      "partitionIntervals": "[startInclusive, endExclusive); null means unbounded",
+      "embargoIntervals": "[startInclusive, endExclusive); zero width excludes nothing",
+      "labelInterval": "[receivedAt, receivedAt + labelHorizonMs]",
+      "purge": "Exclude train/validation rows when label end >= the next nominal cut",
+      "timestampGroups": "All rows with the same receivedAt share one assignment or exclusion",
+      "claims": "Split assignment only; no model training, label-maturity or performance claim"
+    },
+    "embargoWindows": [
+      {
+        "cut": "trainEnd",
+        "startInclusive": "2026-01-01T00:00:00.190Z",
+        "endExclusive": "2026-01-01T00:00:00.210Z"
+      },
+      {
+        "cut": "validationEnd",
+        "startInclusive": "2026-01-01T00:00:00.390Z",
+        "endExclusive": "2026-01-01T00:00:00.410Z"
+      }
+    ],
+    "partitions": {
+      "train": {
+        "startInclusive": null,
+        "endExclusive": "2026-01-01T00:00:00.200Z",
+        "eventIds": [
+          "snapshot-0",
+          "submit-20",
+          "trade-50",
+          "trade-80",
+          "mark-100",
+          "submit-120",
+          "trade-160"
+        ]
+      },
+      "validation": {
+        "startInclusive": "2026-01-01T00:00:00.200Z",
+        "endExclusive": "2026-01-01T00:00:00.400Z",
+        "eventIds": [
+          "trade-210",
+          "clock-240",
+          "snapshot-300",
+          "mark-320",
+          "mark-330",
+          "mark-340"
+        ]
+      },
+      "test": {
+        "startInclusive": "2026-01-01T00:00:00.400Z",
+        "endExclusive": null,
+        "eventIds": [
+          "clock-420",
+          "snapshot-450",
+          "clock-500"
+        ]
+      }
+    },
+    "excluded": [
+      {
+        "eventId": "cancel-180",
+        "receivedAt": "2026-01-01T00:00:00.180Z",
+        "nominalPartition": "train",
+        "reasons": [
+          "label-horizon:trainEnd"
+        ]
+      }
+    ],
+    "counts": {
+      "source": 17,
+      "train": 7,
+      "validation": 6,
+      "test": 3,
+      "excluded": 1
+    }
+  },
+  "scriptedPassive": {
+    "schemaVersion": 1,
+    "mode": "offline_paper_only",
+    "asOf": "2026-01-01T00:00:00.500Z",
+    "assumptions": {
+      "fillModel": "explicit_trade_pessimistic_queue",
+      "costs": {
+        "feeBps": 10,
+        "feePerShare": "0.000100",
+        "assumption": "unverified_scenario"
+      },
+      "noProfitabilityClaim": true,
+      "syntheticUntilRealDatasetValidated": true,
+      "liveExecutionSupported": false,
+      "eligibleForStrategyPromotion": false,
+      "queuePessimismIsNotAPnlLowerBound": true
+    },
+    "cash": "99.795400",
+    "reservedCash": "0.000000",
+    "realizedPnl": "0.596400",
+    "totalFees": "0.004600",
+    "positions": [
+      {
+        "instrument": "synthetic:YES",
+        "quantity": 2,
+        "costBasis": "0.801000",
+        "marks": {
+          "reference": {
+            "price": "0.500",
+            "occurredAt": "2026-01-01T00:00:00.320Z",
+            "receivedAt": "2026-01-01T00:00:00.320Z",
+            "stale": false,
+            "value": "1.000000"
+          },
+          "last": {
+            "price": "0.600",
+            "occurredAt": "2026-01-01T00:00:00.340Z",
+            "receivedAt": "2026-01-01T00:00:00.340Z",
+            "stale": false,
+            "value": "1.200000"
+          },
+          "tournament": {
+            "price": "0.950",
+            "occurredAt": "2026-01-01T00:00:00.330Z",
+            "receivedAt": "2026-01-01T00:00:00.330Z",
+            "stale": false,
+            "value": "1.900000"
+          }
+        },
+        "referenceUnrealizedPnl": "0.199000",
+        "executable": {
+          "bookFresh": true,
+          "estimatedNetProceeds": "0.000000",
+          "estimatedFees": "0.000000",
+          "soldQuantity": 0,
+          "unsoldQuantity": 2,
+          "fullPositionValue": null,
+          "levels": []
+        }
+      }
+    ],
+    "remainingCostBasis": "0.801000",
+    "referenceEquity": "100.795400",
+    "referenceUnrealizedPnl": "0.199000",
+    "estimatedExecutableEquity": null,
+    "partialExecutableCash": "99.795400",
+    "executableComplete": false,
+    "depthComplete": false,
+    "estimatedLiquidationFeeFundingRequired": "0.000000",
+    "liquidationFeeFundingShortfall": "0.000000",
+    "orders": [
+      {
+        "orderId": "o-20",
+        "instrument": "synthetic:YES",
+        "action": "buy",
+        "quantity": 5,
+        "remaining": 0,
+        "limitPrice": "0.400000",
+        "status": "filled",
+        "reason": null,
+        "queueAhead": "0"
+      },
+      {
+        "orderId": "o-120",
+        "instrument": "synthetic:YES",
+        "action": "sell",
+        "quantity": 5,
+        "remaining": 2,
+        "limitPrice": "0.600000",
+        "status": "cancelled",
+        "reason": null,
+        "queueAhead": "0"
+      }
+    ],
+    "fills": [
+      {
+        "orderId": "o-20",
+        "eventId": "trade-50",
+        "instrument": "synthetic:YES",
+        "action": "buy",
+        "quantity": 2,
+        "price": "0.400000",
+        "notional": "0.800000",
+        "fee": "0.001000",
+        "occurredAt": "2026-01-01T00:00:00.050Z",
+        "receivedAt": "2026-01-01T00:00:00.050Z",
+        "model": "explicit_trade_pessimistic_queue"
+      },
+      {
+        "orderId": "o-20",
+        "eventId": "trade-80",
+        "instrument": "synthetic:YES",
+        "action": "buy",
+        "quantity": 3,
+        "price": "0.400000",
+        "notional": "1.200000",
+        "fee": "0.001500",
+        "occurredAt": "2026-01-01T00:00:00.080Z",
+        "receivedAt": "2026-01-01T00:00:00.080Z",
+        "model": "explicit_trade_pessimistic_queue"
+      },
+      {
+        "orderId": "o-120",
+        "eventId": "trade-160",
+        "instrument": "synthetic:YES",
+        "action": "sell",
+        "quantity": 2,
+        "price": "0.600000",
+        "notional": "1.200000",
+        "fee": "0.001400",
+        "occurredAt": "2026-01-01T00:00:00.160Z",
+        "receivedAt": "2026-01-01T00:00:00.160Z",
+        "model": "explicit_trade_pessimistic_queue"
+      },
+      {
+        "orderId": "o-120",
+        "eventId": "trade-210",
+        "instrument": "synthetic:YES",
+        "action": "sell",
+        "quantity": 1,
+        "price": "0.600000",
+        "notional": "0.600000",
+        "fee": "0.000700",
+        "occurredAt": "2026-01-01T00:00:00.210Z",
+        "receivedAt": "2026-01-01T00:00:00.210Z",
+        "model": "explicit_trade_pessimistic_queue"
+      }
+    ],
+    "metrics": {
+      "duplicates": 0,
+      "staleVersions": 0,
+      "staleEvidence": 0,
+      "gaps": 0,
+      "rejectedOrders": 0,
+      "ownAggressorExcluded": 0,
+      "simulatedWriteRequests": 3,
+      "submittedShares": "10",
+      "filledShares": "8",
+      "fillRatio": "8/10",
+      "turnover": "3.800000",
+      "observedReferenceMaxDrawdown": "0.000000",
+      "equityObservations": 15,
+      "incompleteEquityObservations": 2,
+      "drawdownComplete": false,
+      "realizedPnlPerWriteRequest": {
+        "numerator": "0.596400",
+        "denominator": 3
+      },
+      "sharpe": null,
+      "adverseSelection": null,
+      "fillCalibration": null,
+      "unavailableMetricsReason": "No regular-return series, fixed-horizon post-fill labels, or authoritative real order/fill calibration dataset"
+    },
+    "noTradeBaseline": {
+      "cash": "100.000000",
+      "pnl": "0.000000"
+    },
+    "audit": [
+      {
+        "at": "2026-01-01T00:00:00.030Z",
+        "reason": "activated",
+        "orderId": "o-20",
+        "queueAhead": "3"
+      },
+      {
+        "at": "2026-01-01T00:00:00.080Z",
+        "reason": "filled",
+        "orderId": "o-20"
+      },
+      {
+        "at": "2026-01-01T00:00:00.130Z",
+        "reason": "activated",
+        "orderId": "o-120",
+        "queueAhead": "2"
+      },
+      {
+        "at": "2026-01-01T00:00:00.230Z",
+        "reason": "cancelled",
+        "orderId": "o-120"
+      }
+    ]
+  },
+  "noTrade": {
+    "cash": "100.000000",
+    "realizedPnl": "0.000000",
+    "totalFees": "0.000000",
+    "referenceEquity": "100.000000",
+    "metrics": {
+      "duplicates": 0,
+      "staleVersions": 0,
+      "staleEvidence": 0,
+      "gaps": 0,
+      "rejectedOrders": 0,
+      "ownAggressorExcluded": 0,
+      "simulatedWriteRequests": 0,
+      "submittedShares": "0",
+      "filledShares": "0",
+      "fillRatio": null,
+      "turnover": "0.000000",
+      "observedReferenceMaxDrawdown": "0.000000",
+      "equityObservations": 14,
+      "incompleteEquityObservations": 0,
+      "drawdownComplete": true,
+      "realizedPnlPerWriteRequest": null,
+      "sharpe": null,
+      "adverseSelection": null,
+      "fillCalibration": null,
+      "unavailableMetricsReason": "No regular-return series, fixed-horizon post-fill labels, or authoritative real order/fill calibration dataset"
+    }
+  }
+}

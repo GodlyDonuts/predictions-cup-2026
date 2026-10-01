@@ -1,0 +1,7 @@
+{
+  "name": "predictions-cup-offline-paper",
+  "private": true,
+  "type": "module",
+  "scripts": {"test": "node --test", "replay": "node cli.mjs --events fixtures/synthetic.jsonl --config fixtures/config.json"},
+  "engines": {"node": ">=22"}
+}
