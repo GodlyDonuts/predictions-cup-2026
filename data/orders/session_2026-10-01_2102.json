@@ -1,0 +1,364 @@
+{
+  "session_started_at_utc": "2026-10-01T21:02:05Z",
+  "status": "COMPLETED",
+  "execution_coordinator": "dot",
+  "browser_executor": "manage_cup_trading_session",
+  "tournament": "Midterm Elections",
+  "currency": "Free nonmonetary nonredeemable SUSQies",
+  "new_buy_commitment_cap": "4675.00",
+  "cancel_remaining_by_utc": "2026-10-01T21:25:00Z",
+  "no_open_orders_verified_at_start_utc": "2026-10-01T21:02:05Z",
+  "prior_session_audit": "session_2026-10-01_2036.json",
+  "initial_holdings": [
+    {
+      "market_id": 387,
+      "side": "YES",
+      "shares": 4756,
+      "basis": "4446.86"
+    },
+    {
+      "market_id": 379,
+      "side": "YES",
+      "shares": 2061,
+      "basis": "1999.17"
+    },
+    {
+      "market_id": 377,
+      "side": "NO",
+      "shares": 10000,
+      "basis": "3224.50"
+    },
+    {
+      "market_id": 354,
+      "side": "YES",
+      "shares": 12500,
+      "basis": "1500.00"
+    },
+    {
+      "market_id": 277,
+      "side": "NO",
+      "shares": 1538,
+      "basis": "99.97"
+    }
+  ],
+  "cash": {
+    "prior_session_final_ui": "88729.50",
+    "current_exact_ui": "89820.05",
+    "verified_at_utc": "2026-10-01T21:26:19Z"
+  },
+  "orders": [
+    {
+      "intent_id": "dot-20261001T210902-387-BUY-YES-5000-0.915",
+      "market_id": 387,
+      "action": "BUY",
+      "side": "YES",
+      "quantity": 5000,
+      "limit": "0.915",
+      "max_cost": "4575.00",
+      "order_id": 1056531,
+      "status": "FILLED",
+      "filled_quantity": 5000,
+      "remaining_quantity": 0,
+      "submitted_at_utc": "2026-10-01T21:09:21Z",
+      "last_verified_at_utc": "2026-10-01T21:13:20Z",
+      "pricing_rule": "min(0.935,best_bid+0.005,best_ask-0.005), floor0.005tick; nonemptybook and ask>=0.900",
+      "pricing_evidence": {
+        "observed_at_utc": "2026-10-01T21:09:14Z",
+        "yes_best_bid": "0.910",
+        "yes_best_bid_qty": 5494,
+        "yes_best_ask": "0.950",
+        "yes_best_ask_aggregate_qty": 6749,
+        "derived_limit": "0.915",
+        "own_price_after_submission": "0.915",
+        "own_qty": 5000
+      },
+      "cost": "4575.00"
+    },
+    {
+      "intent_id": "dot-20261001T210205-387-SELL-YES-4756-0.950",
+      "market_id": 387,
+      "action": "SELL",
+      "side": "YES",
+      "quantity": 4756,
+      "limit": "0.950",
+      "max_cost": null,
+      "order_id": 1050409,
+      "status": "CANCELED",
+      "filled_quantity": 3569,
+      "remaining_quantity": 0,
+      "submitted_at_utc": "2026-10-01T21:03:33Z",
+      "last_verified_at_utc": "2026-10-01T21:26:19Z",
+      "proceeds": "3390.55",
+      "canceled_quantity": 1187,
+      "cancel_submitted_at_utc": "2026-10-01T21:25:12Z",
+      "cancel_submissions": 1
+    },
+    {
+      "intent_id": "dot-20261001T210205-377-SELL-NO-5000-0.330",
+      "market_id": 377,
+      "action": "SELL",
+      "side": "NO",
+      "quantity": 5000,
+      "limit": "0.330",
+      "max_cost": null,
+      "order_id": 1052464,
+      "status": "FILLED",
+      "filled_quantity": 5000,
+      "remaining_quantity": 0,
+      "submitted_at_utc": "2026-10-01T21:05:32Z",
+      "last_verified_at_utc": "2026-10-01T21:26:00Z",
+      "proceeds_verified_by_cash_change": "695.31",
+      "proceeds": "1650.00"
+    },
+    {
+      "intent_id": "dot-20261001T210205-354-SELL-YES-5000-0.125",
+      "market_id": 354,
+      "action": "SELL",
+      "side": "YES",
+      "quantity": 5000,
+      "limit": "0.125",
+      "max_cost": null,
+      "order_id": 1054809,
+      "status": "FILLED",
+      "filled_quantity": 5000,
+      "remaining_quantity": 0,
+      "submitted_at_utc": "2026-10-01T21:07:36Z",
+      "last_verified_at_utc": "2026-10-01T21:26:00Z",
+      "proceeds": "625.00"
+    }
+  ],
+  "notes": [
+    "No other orders or repricing authorized.",
+    "Each submission once, all sell quantities manually set and preview warning absent before submission.",
+    "No expiry control exposed in prior UI, manual cancellation required by21:25UTC.",
+    "AKpartial sale proceeds621.39 confirmed via exact cash increase88729.50 to89350.89. Cost-basis attribution not assumed; realizedPnL not yet asserted.",
+    "Only RI1050409 remained at21:25UTC. Submitted one cancellation; 555additionalshares filled before cancellation finalized. Reconciled terminal quantities and exact cash; no duplicate cancel or order. AK1052464 andFL1054809 alreadyfilled and were not canceled."
+  ],
+  "amendment_context": [
+    {
+      "at_utc": "2026-10-01T21:02:50Z",
+      "observation": "RI bid0.835x150,0.83x3902; ask0.95x18603; paused0.920buy for parent review"
+    },
+    {
+      "at_utc": "2026-10-01T21:03:25Z",
+      "observation": "RI bid recovered0.94; ask0.95; submitted already-authorized owned-share sell0.95 before amendment arrived"
+    },
+    {
+      "at_utc": "2026-10-01T21:03:50Z",
+      "parent_request": "Amend unsubmitted RIbuy to0.840 max4200 and RIsell0.945. RIsell0.950 had already been accepted. Reported timing and paused RI amendments for exact direction."
+    },
+    {
+      "at_utc": "2026-10-01T21:04:58Z",
+      "parent_request": "Keep accepted RIsell0.950, cancel unsubmitted0.945 replacement; singleRIbuy subject to boundedpassiverule, no automatic repricingafteracceptance."
+    }
+  ],
+  "last_reconciled_at_utc": "2026-10-01T21:26:19Z",
+  "actual_new_buy_commitment": "4575.00",
+  "canceled_unsubmitted_intents": [
+    {
+      "market_id": 387,
+      "action": "BUY",
+      "side": "YES",
+      "quantity": 5000,
+      "limit": "0.920"
+    },
+    {
+      "market_id": 387,
+      "action": "BUY",
+      "side": "YES",
+      "quantity": 5000,
+      "limit": "0.840"
+    },
+    {
+      "market_id": 387,
+      "action": "SELL",
+      "side": "YES",
+      "quantity": 4756,
+      "limit": "0.945"
+    }
+  ],
+  "holdings_at_last_reconciliation": [
+    {
+      "market_id": 387,
+      "side": "YES",
+      "shares": 6187
+    },
+    {
+      "market_id": 379,
+      "side": "YES",
+      "shares": 2061
+    },
+    {
+      "market_id": 377,
+      "side": "NO",
+      "shares": 5000
+    },
+    {
+      "market_id": 354,
+      "side": "YES",
+      "shares": 7500
+    },
+    {
+      "market_id": 277,
+      "side": "NO",
+      "shares": 1538
+    }
+  ],
+  "cash_observations": [
+    {
+      "at_utc": "2026-10-01T21:13:20Z",
+      "exact_ui": "84849.81",
+      "source": "RI market Amount balance"
+    },
+    {
+      "at_utc": "2026-10-01T21:16:21Z",
+      "exact_ui": "86584.51",
+      "source": "RI market Amount balance"
+    },
+    {
+      "at_utc": "2026-10-01T21:19:16Z",
+      "exact_ui": "86852.41",
+      "source": "RI market Amount balance"
+    },
+    {
+      "at_utc": "2026-10-01T21:22:30Z",
+      "exact_ui": "87712.16",
+      "source": "RI market Amount balance"
+    }
+  ],
+  "completed_at_utc": "2026-10-01T21:26:19Z",
+  "open_orders": [],
+  "no_open_orders_verified_at_utc": "2026-10-01T21:26:00Z",
+  "cancel_fill_race": {
+    "pre_cancel_snapshot_at_utc": "2026-10-01T21:24:46Z",
+    "RI_remaining_pre_cancel": 1742,
+    "additional_fill_before_cancel_finalized": 555,
+    "additional_fill_proceeds": "527.25",
+    "final_canceled_quantity": 1187,
+    "verification": "Fresh portfolio reload showsRI6187YES and zeroopenorders; transactionhistory shows555YES sell@0.950 for527.25."
+  },
+  "fifo_analysis": {
+    "authority": "Parent explicitly provided confirmed FIFO aggregate-lot convention at21:25:26UTC",
+    "realized_RI_exact": "53.535",
+    "realized_AK_exact": "0.50",
+    "realized_FL_exact": "25.00",
+    "realized_total_exact": "79.035",
+    "realized_total_rounded": "79.04",
+    "caution": "Analytical FIFO lot convention; not derived from unexplained portfolio valuation P&L or weighted-average displayed basis. Remaining unrealized risk is excluded."
+  },
+  "cash_reconciliation": "88729.50 -4575.00 +3390.55 +1650.00 +625.00 =89820.05",
+  "session_fill_events_ui": [
+    {
+      "market_id": 387,
+      "action": "BUY",
+      "side": "YES",
+      "qty": 3104,
+      "price": "0.915",
+      "cost": "2840.16"
+    },
+    {
+      "market_id": 387,
+      "action": "BUY",
+      "side": "YES",
+      "qty": 1896,
+      "price": "0.915",
+      "cost": "1734.84"
+    },
+    {
+      "market_id": 387,
+      "action": "SELL",
+      "side": "YES",
+      "qty": 1826,
+      "price": "0.950",
+      "proceeds": "1734.70"
+    },
+    {
+      "market_id": 387,
+      "action": "SELL",
+      "side": "YES",
+      "qty": 282,
+      "price": "0.950",
+      "proceeds": "267.90"
+    },
+    {
+      "market_id": 387,
+      "action": "SELL",
+      "side": "YES",
+      "qty": 1,
+      "price": "0.950",
+      "proceeds": "0.95"
+    },
+    {
+      "market_id": 387,
+      "action": "SELL",
+      "side": "YES",
+      "qty": 903,
+      "price": "0.950",
+      "proceeds": "857.85"
+    },
+    {
+      "market_id": 387,
+      "action": "SELL",
+      "side": "YES",
+      "qty": 1,
+      "price": "0.950",
+      "proceeds": "0.95"
+    },
+    {
+      "market_id": 387,
+      "action": "SELL",
+      "side": "YES",
+      "qty": 1,
+      "price": "0.950",
+      "proceeds": "0.95"
+    },
+    {
+      "market_id": 387,
+      "action": "SELL",
+      "side": "YES",
+      "qty": 555,
+      "price": "0.950",
+      "proceeds": "527.25"
+    },
+    {
+      "market_id": 377,
+      "action": "SELL",
+      "side": "NO",
+      "qty": 1883,
+      "price": "0.330",
+      "proceeds": "621.39"
+    },
+    {
+      "market_id": 377,
+      "action": "SELL",
+      "side": "NO",
+      "qty": 224,
+      "price": "0.330",
+      "proceeds": "73.92"
+    },
+    {
+      "market_id": 377,
+      "action": "SELL",
+      "side": "NO",
+      "qty": 1,
+      "price": "0.330",
+      "proceeds": "0.33"
+    },
+    {
+      "market_id": 377,
+      "action": "SELL",
+      "side": "NO",
+      "qty": 2892,
+      "price": "0.330",
+      "proceeds": "954.36"
+    },
+    {
+      "market_id": 354,
+      "action": "SELL",
+      "side": "YES",
+      "qty": 5000,
+      "price": "0.125",
+      "proceeds": "625.00"
+    }
+  ]
+}
