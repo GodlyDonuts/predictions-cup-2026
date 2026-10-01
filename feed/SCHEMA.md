@@ -4,7 +4,7 @@
 
 Each JSONL record has `format`, `schemaVersion`, sequential `captureIndex`, `kind` and local `observedAt` (UTC). Collector records also have configured `topic` and subscription `epoch`. Stored observations are append-only; status reports are derived. `config` includes the explicit tournament/market/exchange scope and freshness policy.
 
-`event` holds original receive time `receivedAt`, supported event name, and a normalized allowlisted payload. `market_batch` includes:
+Pre-subscription-ack buffering preserves callback-time receipt separately from local drain/processing time. `event` holds original receive time `receivedAt`, supported event name, and a normalized allowlisted payload. `market_batch` includes:
 
 - `delivery`: model, topic revision range and source engine sequence bounds. Free-form correlation diagnostics are omitted deliberately
 - `books[]`: exchangeId (canonical string), asOf `{sequence, at}`, nextExpiryAt, expiryKnown, bids/asks of numeric `{price, quantity}` in YES perspective
@@ -15,7 +15,7 @@ Each JSONL record has `format`, `schemaVersion`, sequential `captureIndex`, `kin
 
 `snapshot` contains receivedAt and normalized books from the matched authoritative context. `recovery_started`, `recovery_finished`, `invalidation`, `disconnected`, `subscribed`, `stopped`, `rejected` and the CLI's final `summary` describe local lifecycle. A captured snapshot alone does not prove accepted recovery: check the later recovery result and invalidations. A failed/discarded recovery cannot be promoted to a valid segment by ignoring lifecycle records.
 
-`trade_observed` is a deduplicated derived convenience row with `continuousAtReceipt`. It is not a fill, label of aggressor side, guarantee of complete history or assurance of source authenticity. Do not double count it and the containing batch's trades. Retain original `event` rows for audit, duplicates, gaps and dataset reconstruction. This capture is intentionally not a full raw wire archive; unknown fields, auth diagnostics and free text are stripped.
+`trade_observed` is a deduplicated derived convenience row with `continuousAtReceipt`. If any trade in a batch has unknown sequence, every derived row in that batch is marked noncontinuous, regardless of trade ordering. It is not a fill, label of aggressor side, guarantee of complete history or assurance of source authenticity. Do not double count it and the containing batch's trades. Retain original `event` rows for audit, duplicates, gaps and dataset reconstruction. This capture is intentionally not a full raw wire archive; unknown fields, auth diagnostics and free text are stripped.
 
 Metrics cover configured/observed/versioned exchange counts, accepted/duplicate/out-of-order batches, gaps, schema errors, books applied/older books, trade-ID duplicates/evictions, reconnects, recoveries/discards and negative-clock-skew samples. Event age and recovery response latency report count, sum, mean and max milliseconds. Event age combines source/arrival clocks and includes provider batching/backlog; it is not pure network RTT or order latency. No percentile or full-universe coverage claim is made.
 

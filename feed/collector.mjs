@@ -67,9 +67,12 @@ export class MarketCollector {
     const named = new Set([...p.trades, ...p.bookDirty].map(x => x.exchangeId));
     if ([...named].some(id => !p.books.some(b => b.exchangeId === id))) this.invalidate('MISSING_BOOK');
     if (p.marketSettled.length) this.invalidate('SETTLEMENT');
+    // A batch is one continuity boundary: never label an earlier ordered item
+    // continuous before discovering a later unorderable trade in this batch.
+    if (p.trades.some(t => t.sequence === null)) this.invalidate('UNSEQUENCED_TRADE');
     for (const t of p.trades) {
       this.sample('eventAge', receivedMs - Date.parse(t.executedAt));
-      if (t.sequence === null) { this.invalidate('UNSEQUENCED_TRADE'); continue; }
+      if (t.sequence === null) continue;
       if (this.seenTrades.has(t.id)) { this.metrics.duplicateTrades++; continue; }
       this.seenTrades.set(t.id, t.sequence); this.metrics.trades++;
       if (this.seenTrades.size > this.maxTradeIds) { this.seenTrades.delete(this.seenTrades.keys().next().value); this.metrics.tradeIdEvictions++; }
@@ -90,6 +93,9 @@ export class MarketCollector {
     try { books = parseSnapshot(raw, this.scope); observedMs = Date.parse(timestamp(receivedAt)); requireThat(observedMs >= ticket.startedMs && observedMs <= this.now() + 1000, 'INVALID_RECEIPT'); }
     catch { this.metrics.schemaErrors++; this.invalidate('SCHEMA'); return false; }
     this.record('snapshot', {receivedAt: new Date(observedMs).toISOString(), books});
+    // Local recovery policy requires every authoritative book to be versioned,
+    // even if a newer push could otherwise replace an unversioned REST book.
+    if (books.some(b => b.asOf === null)) { this.invalidate('RECOVERY_FAILED'); return false; }
     for (const b of books) {
       const held = this.books.get(b.exchangeId);
       // An ordinal distinguishes pushes DURING recovery, even in the same ms;

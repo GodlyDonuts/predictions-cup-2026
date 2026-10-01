@@ -66,3 +66,11 @@ test('interruptible wait honors signals and invalid values',async()=>{
 test('later direct recovery abort also stops and closes the existing subscription',async()=>{
  const s=setup({requestTimeoutMs:1000});assert.ok(await s.rt.connect());s.c.invalidate('STALE');s.adapter.readSnapshot=async()=>new Promise(()=>{});const ac=new AbortController();const w=s.rt.recover({signal:ac.signal});setTimeout(()=>ac.abort(),10);await assert.rejects(w,/STOPPED/);assert.equal(s.c.state,'stopped');assert.ok(s.calls.includes('close'));
 });
+test('pre-ack buffering retains callback receipt time independently of drain time',async()=>{
+ let now=start;const rows=[];const c=new MarketCollector(scope,{now:()=>now,capture:{append:r=>rows.push(r)}});const s=setup({collector:c});s.rt.collector=c;s.adapter.subscribe=async({onEvent})=>{onEvent('market_batch',batch());now+=5000;};assert.ok(await s.rt.connect());const event=rows.find(x=>x.kind==='event');assert.equal(event.receivedAt,new Date(start).toISOString());assert.equal(event.observedAt,new Date(start+5000).toISOString());assert.equal(c.metrics.eventAge.maxMs,0);await s.rt.stop();
+});
+test('overflowing Retry-After halts recovery and requires central manual review',async()=>{
+ assert.equal(retryAfterMs('9'.repeat(400),start),Number.MAX_SAFE_INTEGER);assert.equal(retryAfterMs('9'.repeat(100)+'.5',start),Number.MAX_SAFE_INTEGER);
+ let requests=0,cooldown;const s=setup({budget:{cooldown:async o=>{cooldown=o;}}});s.adapter.readSnapshot=async()=>{requests++;throw new RecoveryError({status:503,retryAfter:'9'.repeat(400)});};assert.equal(await s.rt.connect(),false);assert.equal(requests,1);assert.equal(cooldown.retryAfterMs,Number.MAX_SAFE_INTEGER);assert.equal(cooldown.requiresManualReview,true);assert.equal(s.c.state,'disconnected');
+ assert.throws(()=>new OfflineRuntime({collector:s.c,maxWaitMs:Number.MAX_SAFE_INTEGER}));
+});

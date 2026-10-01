@@ -65,7 +65,7 @@ export function book(v, scope, rest = false) {
   // REST does not currently promise nextExpiryAt; do not invent it.
   if (!rest) requireThat(Object.hasOwn(v, 'nextExpiryAt'));
   return {exchangeId, asOf: version(v.asOf, rest), nextExpiryAt: v.nextExpiryAt == null ? null : timestamp(v.nextExpiryAt),
-    expiryKnown: Object.hasOwn(v, 'nextExpiryAt'), bids: levels(v.bids, -1), asks: levels(v.asks, 1)};
+    expiryKnown: !rest && Object.hasOwn(v, 'nextExpiryAt'), bids: levels(v.bids, -1), asks: levels(v.asks, 1)};
 }
 function trade(v, scope) {
   object(v); scopeCheck(v, scope);

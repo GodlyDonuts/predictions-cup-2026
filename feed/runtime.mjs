@@ -14,7 +14,11 @@ export async function interruptibleWait(ms, {signal, shouldStop = () => false, s
 export function retryAfterMs(header, now) {
   if (typeof header !== 'string' || !header.trim()) return 0;
   const text = header.trim();
-  const n = /^\d+(?:\.\d+)?$/.test(text) ? Number(text) * 1000 : (/GMT$/i.test(text) ? Date.parse(text) - now : NaN);
+  const numeric = /^\d+(?:\.\d+)?$/.test(text);
+  const n = numeric ? Number(text) * 1000 : (/GMT$/i.test(text) ? Date.parse(text) - now : NaN);
+  // Saturation is a manual-review sentinel, never a scheduled wait or an
+  // earlier retry. Overflowing valid decimal headers must not become zero.
+  if (numeric && (!Number.isFinite(n) || n >= Number.MAX_SAFE_INTEGER)) return Number.MAX_SAFE_INTEGER;
   return Number.isFinite(n) ? Math.max(0, n) : 0;
 }
 export function backoff(attempt, {baseMs = 250, maxMs = 30000, random = Math.random} = {}) {
@@ -36,7 +40,7 @@ export class AccountReadBudget {
   }
   async cooldown(ms, {signal} = {}) {
     requireThat(Number.isFinite(ms) && ms >= 0, 'INVALID_DELAY');
-    await this.cooldownCallback({accountScope: this.accountScope, retryAfterMs: ms, signal});
+    await this.cooldownCallback({accountScope: this.accountScope, retryAfterMs: ms, requiresManualReview: ms === Number.MAX_SAFE_INTEGER, signal});
   }
 }
 export class DisabledTransport {
@@ -49,7 +53,7 @@ export class DisabledTransport {
 // token minting or order-write method is supplied. Integration needs review.
 export class OfflineRuntime {
   constructor({collector, adapter = new DisabledTransport(), budget, enabled = false, maxAttempts = 5, maxWaitMs = 120000, requestTimeoutMs = 20000, random = Math.random, sleep = timer, shouldStop = () => false}) {
-    requireThat(Number.isInteger(maxAttempts) && maxAttempts > 0 && maxAttempts <= 20 && Number.isFinite(maxWaitMs) && maxWaitMs >= 0 && Number.isFinite(requestTimeoutMs) && requestTimeoutMs > 0);
+    requireThat(Number.isInteger(maxAttempts) && maxAttempts > 0 && maxAttempts <= 20 && Number.isFinite(maxWaitMs) && maxWaitMs >= 0 && maxWaitMs <= 86400000 && Number.isFinite(requestTimeoutMs) && requestTimeoutMs > 0);
     this.controller = new AbortController(); this.collector = collector; this.adapter = adapter; this.budget = budget; this.enabled = enabled; this.maxAttempts = maxAttempts;
     this.maxWaitMs = maxWaitMs; this.requestTimeoutMs = requestTimeoutMs; this.random = random; this.sleep = sleep; this.shouldStop = shouldStop;
   }
@@ -115,11 +119,12 @@ export class OfflineRuntime {
           const nextEpoch = this.collector.epoch + 1; const pending = []; let subscribed = false;
           await this.call(s => this.adapter.subscribe({topic: this.collector.scope.topic, signal: s,
             onEvent: (event, payload) => {
-              if (subscribed) this.collector.ingest(event, payload, {epoch: nextEpoch});
-              else { requireThat(pending.length < 1000, 'SUBSCRIPTION_BUFFER_FULL'); pending.push([event, payload]); }
+              const receivedAt = new Date(this.collector.now()).toISOString();
+              if (subscribed) this.collector.ingest(event, payload, {epoch: nextEpoch, receivedAt});
+              else { requireThat(pending.length < 1000, 'SUBSCRIPTION_BUFFER_FULL'); pending.push([event, payload, receivedAt]); }
             }}), signal);
           this.guard(signal); this.collector.subscribed(reason); subscribed = true;
-          for (const [event, payload] of pending) this.collector.ingest(event, payload, {epoch: nextEpoch});
+          for (const [event, payload, receivedAt] of pending) this.collector.ingest(event, payload, {epoch: nextEpoch, receivedAt});
           const recovered = await this.recover({signal});
           if (!recovered) { this.collector.disconnected('RECOVERY_FAILED'); await this.closeBounded(); }
           return recovered;

@@ -51,3 +51,6 @@ test('REST permits null version and omitted expiry; pushed stream requires versi
 test('scope validation rejects duplicate IDs and malformed tournament IDs',()=>{
  assert.throws(()=>config({...scope,exchangeIds:['701','701']}));assert.throws(()=>config({...scope,tournamentId:'secret'}));
 });
+test('REST expiry knowledge remains unknown even when an extension supplies null',()=>{
+ const rest=parseSnapshot(snapshot(),cfg);assert.equal(rest[0].expiryKnown,false);const pushed=parseEvent('market_batch',batch(),cfg).payload.books[0];assert.equal(pushed.nextExpiryAt,null);assert.equal(pushed.expiryKnown,true);
+});
