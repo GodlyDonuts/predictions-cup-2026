@@ -108,6 +108,45 @@ test('trade/book version mismatch requires authoritative resync', () => {
   const r = run([snapshot(), order(), trade(2, {bookSequence: '0'}), trade(3)]);
   assert.equal(r.fills.length, 0); assert.equal(r.metrics.gaps, 1);
 });
+test('in-flight authoritative snapshot sourced before gap cannot resurrect an old book', () => {
+  const r = run([snapshot(0, {bids: []}), order(), event('gap', 5, {instrument: 'synthetic:YES', reason: 'disconnect'}),
+    snapshot(6, {occurredAt: timestamp(2), sequence: '2', bids: []}),
+    trade(7, {sequence: '3', bookSequence: '2', quantity: 5})]);
+  assert.equal(r.fills.length, 0); assert.equal(r.cash, '100.000000');
+  assert.ok(r.audit.some(x => x.reason === 'snapshot_before_recovery_barrier'));
+});
+test('mismatched trade establishes sequence and source-time floors independent from applied book', () => {
+  const r = run([snapshot(0, {bids: []}), order(), trade(5, {sequence: '5', bookSequence: '0', quantity: 5}),
+    snapshot(6, {occurredAt: timestamp(2), sequence: '2', bids: []}),
+    snapshot(7, {sequence: '4', bids: []}), trade(8, {sequence: '3', bookSequence: '4', quantity: 5}),
+    snapshot(9, {sequence: '5', bids: []}), trade(10, {sequence: '6', bookSequence: '5', quantity: 2})]);
+  assert.equal(r.fills.length, 1); assert.equal(r.fills[0].eventId, 'trade-10'); assert.equal(r.fills[0].quantity, 2);
+});
+test('gap before first book and boundary-equal resync remain blocked until later authoritative source', () => {
+  const r = run([event('gap', 5, {instrument: 'synthetic:YES', reason: 'initial disconnect'}),
+    snapshot(6, {occurredAt: timestamp(5), sequence: '3', bids: []}), order(7),
+    snapshot(8, {sequence: '4', authoritative: false, bids: []}), order(9),
+    snapshot(10, {sequence: '4', bids: []}), order(11), trade(12, {sequence: '5', bookSequence: '4', quantity: 2})]);
+  assert.equal(r.orders[0].reason, 'book_not_fresh_at_submission'); assert.equal(r.orders[1].reason, 'book_not_fresh_at_submission');
+  assert.equal(r.fills.length, 1); assert.equal(r.fills[0].orderId, 'o-11');
+});
+test('observed higher versions during invalid state cannot be rolled back by later resync', () => {
+  const r = run([snapshot(0, {bids: []}), order(), event('gap', 3, {instrument: 'synthetic:YES', reason: 'disconnect'}),
+    trade(4, {sequence: '20', quantity: 5}), snapshot(5, {sequence: '10', bids: []}),
+    snapshot(6, {sequence: '21', occurredAt: timestamp(2), bids: []}), snapshot(7, {sequence: '20', bids: []}),
+    snapshot(8, {sequence: '21', bids: []}), trade(9, {sequence: '22', bookSequence: '21', quantity: 2})]);
+  assert.equal(r.fills.length, 1); assert.equal(r.fills[0].eventId, 'trade-9');
+});
+test('repeated gaps raise recovery time floor without lowering observed sequence', () => {
+  const r = run([snapshot(0, {bids: []}), order(), event('gap', 3, {instrument: 'synthetic:YES', reason: 'first gap'}),
+    snapshot(4, {sequence: '20', occurredAt: timestamp(2), bids: []}),
+    event('gap', 6, {instrument: 'synthetic:YES', reason: 'second gap'}),
+    snapshot(7, {sequence: '20', occurredAt: timestamp(5), bids: []}), order(8),
+    snapshot(9, {sequence: '19', bids: []}), order(10),
+    snapshot(11, {sequence: '20', bids: []}), trade(12, {sequence: '21', bookSequence: '20', quantity: 2})]);
+  assert.equal(r.orders[1].reason, 'book_not_fresh_at_submission'); assert.equal(r.orders[2].reason, 'book_not_fresh_at_submission');
+  assert.equal(r.fills.length, 1); assert.equal(r.fills[0].eventId, 'trade-12');
+});
 test('replenishment is conservatively moved ahead, cancellation is never inferred', () => {
   const r = run([snapshot(), order(), trade(2, {quantity: 5}), snapshot(3, {sequence: '3', bids: [level('0.400', 20)]}), trade(4, {bookSequence: '3', quantity: 19})]);
   assert.equal(r.fills.length, 0); assert.equal(r.orders[0].queueAhead, '1');

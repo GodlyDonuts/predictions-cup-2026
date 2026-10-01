@@ -80,8 +80,13 @@ and config byte checksums plus the canonical event checksum appear in every CLI 
    gap events from the source's documented semantics.
 8. Both source age and receipt age must be within `maxDataAgeMs`; `nextExpiryAt` makes
    depth stale at the exact boundary. Missing, stale, mismatched and gap-invalidated
-   evidence cannot fill or admit orders. A newer authoritative snapshot is necessary
-   after a gap. Recovery of books does not reconstruct missed trades.
+   evidence cannot fill or admit orders. Recovery retains a source-time and observed-
+   sequence barrier independently from the last applied book, including gaps before
+   the first book. An authoritative snapshot must be sourced strictly after the last
+   invalidation/receipt of skipped evidence and have a sequence at least as high as
+   every version observed during recovery. An in-flight pre-gap snapshot cannot
+   restore freshness or roll back the watermark. Recovery of books does not
+   reconstruct missed trades.
 
 Pessimistic queue assumptions are **not a mathematical lower bound on P&L**: omitted
 fills can omit losses as well as gains. Own paper orders never alter the historical

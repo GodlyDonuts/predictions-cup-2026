@@ -10,7 +10,7 @@ const min = (a, b) => a < b ? a : b;
 export class PaperEngine {
   constructor(config) {
     this.config = validateConfig(config); this.initialCash = amount(config.initialCash); this.cash = this.initialCash;
-    this.books = new Map(); this.orders = new Map(); this.positions = new Map(); this.marks = new Map(); this.seen = new Map(); this.tradeEvidence = new Map();
+    this.books = new Map(); this.orders = new Map(); this.positions = new Map(); this.marks = new Map(); this.seen = new Map(); this.tradeEvidence = new Map(); this.recoveryBarriers = new Map();
     this.now = null; this.actions = []; this.ordinal = 0; this.fills = []; this.audit = [];
     this.realized = 0n; this.totalFees = 0n; this.turnover = 0n; this.submittedShares = 0n; this.filledShares = 0n;
     this.highWater = this.initialCash; this.maxDrawdown = 0n; this.equityObservations = 0; this.incompleteEquityObservations = 0;
@@ -31,6 +31,12 @@ export class PaperEngine {
     const b = this.books.get(instrument);
     return b && !b.invalid && at >= b.received && at - b.received <= this.config.maxDataAgeMs &&
       at - b.occurred <= this.config.maxDataAgeMs && (b.expiry === null || at < b.expiry);
+  }
+  invalidate(instrument, observedSequence = 0n, at = this.now) {
+    const book = this.books.get(instrument); const old = this.recoveryBarriers.get(instrument);
+    if (book) book.invalid = true;
+    const sequenceFloor = [observedSequence, book?.watermark || 0n, old?.sequence || 0n].reduce((a, b) => a > b ? a : b);
+    this.recoveryBarriers.set(instrument, {sequence: sequenceFloor, time: Math.max(at, old?.time ?? at)});
   }
   schedule(at, kind, order) {
     if (!Number.isSafeInteger(at)) throw new Error('Scheduled timestamp overflow');
@@ -103,9 +109,18 @@ export class PaperEngine {
   }
   snapshot(e) {
     const old = this.books.get(e.instrument); const seq = sequence(e.sequence); const occurred = instant(e.occurredAt);
+    const barrier = this.recoveryBarriers.get(e.instrument);
+    if (barrier) {
+      // Even an unusable snapshot proves that this sequence has been observed. Keep
+      // the recovery barrier independent from the last successfully applied book.
+      if (seq > barrier.sequence) barrier.sequence = seq;
+      if (!e.authoritative || seq < barrier.sequence || occurred <= barrier.time) {
+        this.stats.staleVersions++; this.note('snapshot_before_recovery_barrier', {eventId: e.eventId}); return;
+      }
+    }
     if (old && (seq < old.watermark || (seq === old.watermark && occurred < old.watermarkTime))) { this.stats.staleVersions++; return; }
     if (old && occurred < old.watermarkTime) {
-      old.invalid = true; this.stats.gaps++; this.note('backward_snapshot_time_requires_resync', {eventId: e.eventId}); return;
+      this.invalidate(e.instrument, seq); this.stats.gaps++; this.note('backward_snapshot_time_requires_resync', {eventId: e.eventId}); return;
     }
     if (old && seq === old.sequence && occurred === old.occurred) {
       const content = x => ({instrument: x.instrument, sequence: x.sequence, occurredAt: x.occurredAt, bids: x.bids, asks: x.asks, nextExpiryAt: x.nextExpiryAt});
@@ -117,6 +132,7 @@ export class PaperEngine {
     const b = {sequence: seq, watermark: seq, watermarkTime: occurred, received: this.now, occurred,
       expiry: e.nextExpiryAt === null ? null : instant(e.nextExpiryAt), invalid: false, bids: make(e.bids), asks: make(e.asks), source: structuredClone(e)};
     this.books.set(e.instrument, b);
+    this.recoveryBarriers.delete(e.instrument);
     // Disappearing/cancelled depth is never inferred to have traded. Replenishment is
     // pessimistically placed ahead; historical order-level priority is unavailable.
     for (const o of this.orders.values()) {
@@ -173,9 +189,12 @@ export class PaperEngine {
       }
     }
     if (b && seq <= b.watermark) { this.stats.staleVersions++; return; }
-    if (!this.bookFresh(e.instrument) || this.now - occurred > this.config.maxDataAgeMs) { this.stats.staleEvidence++; this.note('stale_trade_evidence', {eventId: e.eventId}); return; }
+    if (!this.bookFresh(e.instrument) || this.now - occurred > this.config.maxDataAgeMs) {
+      // Skipped evidence still advances the recovery floor, never the applied book.
+      this.invalidate(e.instrument, seq); this.stats.staleEvidence++; this.note('stale_trade_evidence', {eventId: e.eventId}); return;
+    }
     if (sequence(e.bookSequence) !== b.sequence || occurred < b.watermarkTime) {
-      b.invalid = true; this.stats.gaps++; this.note('trade_book_mismatch_requires_resync', {eventId: e.eventId}); return;
+      this.invalidate(e.instrument, seq); this.stats.gaps++; this.note('trade_book_mismatch_requires_resync', {eventId: e.eventId}); return;
     }
     this.tradeEvidence.set(evidenceKey, evidence);
     b.watermark = seq; b.watermarkTime = occurred;
@@ -207,7 +226,7 @@ export class PaperEngine {
     if (e.type === 'submit') this.submit(e);
     if (e.type === 'cancel') this.cancel(e);
     if (e.type === 'gap') {
-      const b = this.books.get(e.instrument); if (b) b.invalid = true;
+      this.invalidate(e.instrument);
       this.stats.gaps++; this.note('gap_requires_authoritative_resync', {instrument: e.instrument, detail: e.reason});
     }
     if (e.type === 'mark') {
