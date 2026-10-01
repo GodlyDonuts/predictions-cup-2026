@@ -1,0 +1,11 @@
+{
+  "baseUrl": "https://sig.thesuper.market/api/v1",
+  "tournamentSlug": "midterm-elections",
+  "tournamentId": "bda92870-621e-47b0-bc3c-3602c5c26f55",
+  "minimumEdge": 0.02,
+  "maxPackageCost": 250,
+  "maxSharesPerLeg": 250,
+  "cashReserve": 80000,
+  "readIntervalMs": 1500,
+  "cycleIntervalMs": 60000
+}
