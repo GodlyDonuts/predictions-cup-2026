@@ -1,0 +1,257 @@
+{
+  "prepared_at_utc": "2026-10-01T19:28:00Z",
+  "purpose": "Source-specific forecast observations for research. Not a calibrated house probability or trade instruction.",
+  "scope": "Public read-only sources. No private API requests, credentials, trades, or publication.",
+  "critical_dependency": "DDHQ assigns 25% prediction-market input to all four current holdings. Its output is not independent of Kalshi/Polymarket.",
+  "observations": [
+    {
+      "source": "Race to the WH",
+      "url": "https://www.racetothewh.com/senate/26",
+      "source_update_label": "Oct 1, 2:58 PM ET",
+      "source_update_utc": "2026-10-01T18:58:00Z",
+      "retrieved_between_utc": [
+        "2026-10-01T19:22:36Z",
+        "2026-10-01T19:23:23Z"
+      ],
+      "method": "Rendered public cloud-browser chart and tooltip",
+      "race": "Florida US Senate special",
+      "candidate": "Angie Nixon",
+      "party": "Democratic",
+      "win_probability": 0.278,
+      "projected_margin_dem_pp": -4.4,
+      "market_input_weight": null,
+      "flags": [
+        "Model output only; no calibrated house probability",
+        "Market-input dependency not independently established"
+      ]
+    },
+    {
+      "source": "Race to the WH",
+      "url": "https://www.racetothewh.com/senate/26",
+      "source_update_label": "Oct 1, 2:58 PM ET",
+      "source_update_utc": "2026-10-01T18:58:00Z",
+      "retrieved_at_utc": "2026-10-01T19:23:12Z",
+      "method": "Rendered public cloud-browser tooltip",
+      "race": "North Carolina US Senate",
+      "candidate": "Roy Cooper",
+      "party": "Democratic",
+      "win_probability": 0.916,
+      "opponent_name": "Michael Whatley",
+      "opponent_win_probability": 0.084,
+      "projected_margin_dem_pp": 14.1,
+      "flags": [
+        "Candidate probability must be mapped to exact party contract",
+        "Other-winner probability not separately displayed"
+      ]
+    },
+    {
+      "source": "Race to the WH",
+      "url": "https://www.racetothewh.com/senate/26",
+      "source_update_label": "Oct 1, 2:58 PM ET",
+      "source_update_utc": "2026-10-01T18:58:00Z",
+      "retrieved_at_utc": "2026-10-01T19:23:23Z",
+      "method": "Rendered public cloud-browser tooltip",
+      "race": "Massachusetts US Senate",
+      "candidate": "Edward Markey",
+      "party": "Democratic",
+      "win_probability": 0.998,
+      "projected_margin_dem_pp": 29.2,
+      "flags": [
+        "Extreme tail requires calibration; not certain"
+      ]
+    },
+    {
+      "source": "Race to the WH",
+      "url": "https://www.racetothewh.com/senate/26",
+      "source_update_label": "Oct 1, 2:58 PM ET",
+      "source_update_utc": "2026-10-01T18:58:00Z",
+      "retrieved_at_utc": "2026-10-01T19:22:36Z",
+      "method": "Rendered public cloud-browser chart",
+      "race": "US Senate control",
+      "party": "Democratic",
+      "win_probability": 0.717,
+      "flags": [
+        "Verify control/caucus predicate before mapping"
+      ]
+    },
+    {
+      "source": "DDHQ",
+      "url": "https://votes.decisiondeskhq.com/races/2026-11-03/florida-us-senate-special-election-general/forecast",
+      "source_update_label": "Oct 1, 2:21 PM",
+      "source_update_utc": null,
+      "retrieved_at_utc": "2026-10-01T19:24:38Z",
+      "method": "Public webpage retrieved by web tool",
+      "race": "Florida US Senate special",
+      "candidate": "Angie Nixon",
+      "party": "Democratic",
+      "win_probability": 0.23,
+      "projected_margin_dem_pp": -6,
+      "component_weights": {
+        "fundamentals": 0.53,
+        "polls": 0.22,
+        "markets": 0.25
+      },
+      "flags": [
+        "Rounded display",
+        "Forecast timestamp timezone not explicitly labeled",
+        "Market-inclusive; not independent of market odds"
+      ]
+    },
+    {
+      "source": "DDHQ",
+      "url": "https://votes.decisiondeskhq.com/races/2026-11-03/north-carolina-us-senate-general-election/forecast",
+      "source_update_label": "Oct 1, 2:21 PM",
+      "source_update_utc": null,
+      "retrieved_at_utc": "2026-10-01T19:24:38Z",
+      "method": "Public webpage retrieved by web tool",
+      "race": "North Carolina US Senate",
+      "candidate": "Roy Cooper",
+      "party": "Democratic",
+      "win_probability": 0.82,
+      "opponent_name": "Michael Whatley",
+      "opponent_win_probability": 0.18,
+      "projected_margin_dem_pp": 8,
+      "component_weights": {
+        "fundamentals": 0.3,
+        "polls": 0.45,
+        "markets": 0.25
+      },
+      "flags": [
+        "Rounded display",
+        "Forecast timestamp timezone not explicitly labeled",
+        "Market-inclusive; not independent of market odds"
+      ]
+    },
+    {
+      "source": "DDHQ",
+      "url": "https://votes.decisiondeskhq.com/races/2026-11-03/massachusetts-us-senate-general-election/forecast",
+      "source_update_label": "Sep 30, 2:13 PM",
+      "source_update_utc": null,
+      "retrieved_at_utc": "2026-10-01T19:24:38Z",
+      "method": "Public webpage retrieved by web tool",
+      "race": "Massachusetts US Senate",
+      "candidate": "Edward Markey",
+      "party": "Democratic",
+      "win_probability": null,
+      "win_probability_display": "main card 99%; headline >99%",
+      "projected_margin_dem_pp": 29,
+      "component_weights": {
+        "fundamentals": 0.59,
+        "polls": 0.16,
+        "markets": 0.25
+      },
+      "flags": [
+        "Header/card rounding discrepancy; no precise numeric probability assigned",
+        "Older race snapshot than overview",
+        "Market-inclusive; not independent of market odds"
+      ]
+    },
+    {
+      "source": "DDHQ",
+      "url": "https://votes.decisiondeskhq.com/races/2026-11-03/rhode-island-us-senate-general-election/forecast",
+      "source_update_label": "Sep 29, 2:25 PM",
+      "source_update_utc": null,
+      "retrieved_at_utc": "2026-10-01T19:24:38Z",
+      "method": "Public webpage retrieved by web tool",
+      "race": "Rhode Island US Senate",
+      "candidate": "Jack Reed",
+      "party": "Democratic",
+      "win_probability": null,
+      "win_probability_display": "main card 99%; headline >99%",
+      "projected_margin_dem_pp": 26,
+      "component_weights": {
+        "fundamentals": 0.7,
+        "polls": 0.05,
+        "markets": 0.25
+      },
+      "flags": [
+        "Header/card rounding discrepancy; no precise numeric probability assigned",
+        "Older race snapshot than overview",
+        "Market-inclusive; not independent of market odds"
+      ]
+    },
+    {
+      "source": "DDHQ",
+      "url": "https://votes.decisiondeskhq.com/forecast/2026/senate",
+      "source_update_label": "Oct 1, 2:21 PM",
+      "source_update_utc": null,
+      "retrieved_at_utc": "2026-10-01T19:24:29Z",
+      "method": "Public webpage retrieved by web tool",
+      "race": "US Senate control",
+      "party": "Democratic",
+      "win_probability": 0.54,
+      "flags": [
+        "Rounded display",
+        "Forecast timestamp timezone not explicitly labeled",
+        "Do not overwrite individual-race timestamps with overview timestamp"
+      ]
+    }
+  ],
+  "poll_quality_flags": [
+    {
+      "source": "Change Research",
+      "url": "https://changeresearch.com/research/2026/2026-09-28-florida-aapor-methodology-statement",
+      "publication_date": "2026-09-28",
+      "fieldwork_start": "2026-09-25",
+      "fieldwork_end": "2026-09-27",
+      "race": "Florida US Senate special",
+      "sponsor": "Freedom Project USA",
+      "results_pct": {
+        "Angie Nixon": 47,
+        "Ashley Moody": 48
+      },
+      "sample_size_likely_voters": null,
+      "flags": [
+        "Contradictory sample counts 1063 versus 1107",
+        "English-only online recruitment",
+        "Sponsor must remain in provenance",
+        "Do not infer win probability from vote share"
+      ]
+    },
+    {
+      "source": "UNF PORL",
+      "url": "https://static1.squarespace.com/static/6994d571bce3436c60d86870/t/6a637f8ec8249053ae278f02/1784905614403/UNF%2BPORL%2BSummer%2BStatewide%2B2026%2BFLLV%2B-%2BPress%2BRelease.pdf",
+      "publication_date": "2026-07-20",
+      "fieldwork_start": "2026-07-08",
+      "fieldwork_end": "2026-07-17",
+      "race": "Florida US Senate special",
+      "sample_size_likely_voters": 848,
+      "results_pct": {
+        "Angie Nixon": 42,
+        "Ashley Moody": 50
+      },
+      "flags": [
+        "Old fieldwork",
+        "Pre-primary named matchup",
+        "Self-funded; phone and text-to-web; English and Spanish"
+      ]
+    },
+    {
+      "source": "Catawba College / YouGov",
+      "url": "https://www.catawba.edu/news/all-news/2026/yougov-39/",
+      "publication_date": "2026-09-30",
+      "fieldwork_start": "2026-09-04",
+      "fieldwork_end": "2026-09-15",
+      "race": "North Carolina US Senate",
+      "sample_size_likely_voters": 885,
+      "results_pct": {
+        "Roy Cooper": 47,
+        "Michael Whatley": 35
+      },
+      "results_with_leaners_pct": {
+        "Roy Cooper": 48,
+        "Michael Whatley": 37
+      },
+      "flags": [
+        "Publication date differs materially from fieldwork end",
+        "Do not infer win probability from vote share"
+      ]
+    }
+  ],
+  "access_limits": {
+    "VoteHub": "Cloudflare verification remained after one reload; stopped; no current probabilities obtained",
+    "Silver Bulletin": "October 1 full forecast subscriber-only; no bypass or current full values",
+    "Race to the WH": "Visible chart values verified; machine-readable export not verified; Rhode Island tooltip not verified"
+  },
+  "execution_status": "No execution. New trades remain contingent on fresh executable quotes, exact contract mapping and quantitative validation."
+}
