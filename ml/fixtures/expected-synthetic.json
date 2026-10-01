@@ -1,0 +1,73 @@
+{
+  "warning": "SYNTHETIC-ONLY SOFTWARE CHECK. Not market evidence, calibrated fills, strategy P&L or a trained market edge.",
+  "sourceSha256": "331141e36e67b9c196386b5af3ba60579fe3872c14f602ac879f0d2d8d0441e8",
+  "counts": {
+    "train": {
+      "samples": 126,
+      "sessions": 6,
+      "instruments": 1
+    },
+    "validation": {
+      "samples": 102,
+      "sessions": 5,
+      "instruments": 1
+    },
+    "test": {
+      "samples": 102,
+      "sessions": 5,
+      "instruments": 1
+    }
+  },
+  "coverage": {
+    "sourceRows": 384,
+    "sourceBooks": 384,
+    "acceptedBooks": 384,
+    "warmup": 16,
+    "labeled": 336,
+    "missingLabels": 32,
+    "excluded": 0,
+    "labelCoverageOfSourceBooks": 0.875,
+    "reasons": {}
+  },
+  "selectedAlpha": 0.01,
+  "validation": {
+    "count": 102,
+    "mae": 0.0008818184724448013,
+    "zeroChangeMae": 0.0010833457843137286,
+    "trainMeanMae": 0.001082697303143483,
+    "rmse": 0.0010571277398117673,
+    "meanTarget": 0.00016903598039215672,
+    "units": "YES price change, range of book midprice [0,1]",
+    "uncertainty": {
+      "method": "whole-session cluster bootstrap, percentile, ridge MAE minus zero-change MAE",
+      "sessionCount": 5,
+      "seed": 20261001,
+      "replicates": 1000,
+      "maeDifference95": [
+        -0.00024545065288321594,
+        -0.00015232111309036676
+      ],
+      "caveat": "Descriptive only; assumes sessions represent independent blocks. Overlapping labels and common regimes reduce effective sample size. Not a significance or profitability claim."
+    }
+  },
+  "test": {
+    "count": 102,
+    "mae": 0.0008311191528184083,
+    "zeroChangeMae": 0.0011092995098039207,
+    "trainMeanMae": 0.001109698579209461,
+    "rmse": 0.0010083459863844738,
+    "meanTarget": 0.000055883431372549375,
+    "units": "YES price change, range of book midprice [0,1]",
+    "uncertainty": {
+      "method": "whole-session cluster bootstrap, percentile, ridge MAE minus zero-change MAE",
+      "sessionCount": 5,
+      "seed": 20261001,
+      "replicates": 1000,
+      "maeDifference95": [
+        -0.0003533958437824193,
+        -0.00020289575608865788
+      ],
+      "caveat": "Descriptive only; assumes sessions represent independent blocks. Overlapping labels and common regimes reduce effective sample size. Not a significance or profitability claim."
+    }
+  }
+}
