@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "horizonMs": 2000,
+  "toleranceMs": 500,
+  "maxSourceAgeMs": 1500,
+  "maxGapMs": 1500,
+  "trainEnd": "2026-10-01T00:03:00.000Z",
+  "validationEnd": "2026-10-01T00:05:30.000Z",
+  "embargoMs": 2500,
+  "alphas": [0.01, 0.1, 1, 10],
+  "seed": 20261001,
+  "minSamples": {"train": 30, "validation": 20, "test": 20},
+  "minSessions": {"train": 2, "validation": 2, "test": 2},
+  "bootstrapReplicates": 1000
+}
