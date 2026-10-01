@@ -32,10 +32,10 @@
   "selectedAlpha": 0.01,
   "validation": {
     "count": 102,
-    "mae": 0.0008818184724448013,
+    "mae": 0.0008813975353849315,
     "zeroChangeMae": 0.0010833457843137286,
     "trainMeanMae": 0.001082697303143483,
-    "rmse": 0.0010571277398117673,
+    "rmse": 0.0010572104619492716,
     "meanTarget": 0.00016903598039215672,
     "units": "YES price change, range of book midprice [0,1]",
     "uncertainty": {
@@ -44,18 +44,18 @@
       "seed": 20261001,
       "replicates": 1000,
       "maeDifference95": [
-        -0.00024545065288321594,
-        -0.00015232111309036676
+        -0.0002464383023778193,
+        -0.00015188153129201375
       ],
       "caveat": "Descriptive only; assumes sessions represent independent blocks. Overlapping labels and common regimes reduce effective sample size. Not a significance or profitability claim."
     }
   },
   "test": {
     "count": 102,
-    "mae": 0.0008311191528184083,
+    "mae": 0.0008313925844556973,
     "zeroChangeMae": 0.0011092995098039207,
-    "trainMeanMae": 0.001109698579209461,
-    "rmse": 0.0010083459863844738,
+    "trainMeanMae": 0.0011096985792094609,
+    "rmse": 0.0010085498350860002,
     "meanTarget": 0.000055883431372549375,
     "units": "YES price change, range of book midprice [0,1]",
     "uncertainty": {
@@ -64,8 +64,8 @@
       "seed": 20261001,
       "replicates": 1000,
       "maeDifference95": [
-        -0.0003533958437824193,
-        -0.00020289575608865788
+        -0.0003525913928313489,
+        -0.00020308454966853586
       ],
       "caveat": "Descriptive only; assumes sessions represent independent blocks. Overlapping labels and common regimes reduce effective sample size. Not a significance or profitability claim."
     }

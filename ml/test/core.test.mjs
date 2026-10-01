@@ -101,3 +101,8 @@ test('barriers at ambiguous same-instrument timestamps reject the dataset', () =
   const rows = shortRows(); rows[4] = { ...barrier(rows[4]), availableAt: rows[3].availableAt, receivedAt: rows[3].receivedAt };
   assert.throws(() => build(rows), /AMBIGUOUS_INSTRUMENT_TIME/);
 });
+test('source checksum is strictly a string, never regex-coerced JSON', () => {
+  for (const replacement of [Array(1).fill('a'.repeat(64)), { toString: 'a'.repeat(64) }, null, 123]) {
+    const rows = shortRows(); rows[0].provenance.sourceSha256 = replacement; assert.throws(() => dataset(rows), /SOURCE_HASH/);
+  }
+});

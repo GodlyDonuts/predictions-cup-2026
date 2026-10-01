@@ -67,7 +67,7 @@ export function parseDataset(text) {
   if (header.format !== FORMAT || header.schemaVersion !== 1 || !['synthetic', 'real'].includes(header.dataKind) || header.normalization !== 'quality-segmented-books-v1') fail('DATASET_FORMAT');
   id(header.datasetId, 'datasetId');
   exact(header.provenance, ['sourceSha256', 'normalizerVersion'], 'provenance');
-  if (!/^[a-f0-9]{64}$/.test(header.provenance.sourceSha256)) fail('SOURCE_HASH');
+  if (typeof header.provenance.sourceSha256 !== 'string' || !/^[a-f0-9]{64}$/.test(header.provenance.sourceSha256)) fail('SOURCE_HASH');
   id(header.provenance.normalizerVersion, 'normalizerVersion');
   const seen = new Set(); let prior = null;
   const rows = values.map((r, index) => {

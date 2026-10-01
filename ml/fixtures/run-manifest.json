@@ -11,15 +11,15 @@
   "configFileSha256": "22cfe3d7d9b3449b3fc5279e4925e13c412d3dedc8a015bb1e066131e9ede307",
   "configCanonicalSha256": "fea00be9b65420d25fb17521f8fe3a3f52c0e5ab8f79acf76530b728217adb6d",
   "runtime": {
-    "implementationSha256": "9ef29c5c51fbd5a82cd3707f77711febf9569070ce49a86bc9411165e24effb3",
+    "implementationSha256": "f6743ca4066365abe3176b0b4a92f91c0e20da38dce0bfa5c3c24aec93821e63",
     "files": [
       {
         "path": "ml/core.mjs",
-        "sha256": "2fe0f0d10212ca4328e4a40fc5a4af1f2c28dd393943990a61356d4e39cbd183"
+        "sha256": "23164d6a8d61e69102c18827cb5bda159c96f4e4490fd24d53a16336f9be7a6d"
       },
       {
         "path": "ml/model.mjs",
-        "sha256": "ddc42d9463575c9a3b8648c3a5ce91da148df751ced73b6f85d776212879b453"
+        "sha256": "d9a88849212435030afacdfbb6970824c852de647afbb57daf27bfa8920dd438"
       },
       {
         "path": "ml/experiment.mjs",
@@ -47,7 +47,7 @@
       "--config",
       "ml/fixtures/config.json",
       "--out",
-      "ml/runs/synthetic-dev-v1"
+      "ml/runs/synthetic-dev-v2"
     ],
     [
       "node",
@@ -58,11 +58,11 @@
       "--config",
       "ml/fixtures/config.json",
       "--selection",
-      "ml/runs/synthetic-dev-v1/selection.json",
+      "ml/runs/synthetic-dev-v2/selection.json",
       "--out",
-      "ml/runs/synthetic-final-v1"
+      "ml/runs/synthetic-final-v2"
     ]
   ],
   "golden": "ml/fixtures/expected-synthetic.json",
-  "goldenSha256": "4bcc1929ca9cc75e9a323872a9f1f4771f96252d9c5cb3488b20cdc1ae46f1a1"
+  "goldenSha256": "58bad14fe92a980397da06c5ff79c0caa1c0ddcb5741945f70466711d3ca7e2b"
 }

@@ -1,6 +1,10 @@
 import { FEATURE_NAMES, hash, canonical } from './core.mjs';
 const finite = xs => { if (xs.some(x => !Number.isFinite(x))) throw new Error('NONFINITE_MODEL'); };
-const mean = xs => xs.reduce((a, b) => a + b, 0) / xs.length;
+const mean = xs => {
+  let sum = 0, correction = 0;
+  for (const x of xs) { const adjusted = x - correction, next = sum + adjusted; correction = (next - sum) - adjusted; sum = next; }
+  return sum / xs.length;
+};
 /** Train-only standardization, centered target, unpenalized intercept. Objective:
  * mean((y - intercept - z*w)^2) + alpha * sum(w^2). */
 export function fitRidge(samples, alpha) {
@@ -9,12 +13,17 @@ export function fitRidge(samples, alpha) {
   for (const s of samples) { if (s.x.length !== d) throw new Error('FEATURE_DIMENSION'); finite([...s.x, s.y]); }
   const means = Array.from({ length: d }, (_, j) => mean(samples.map(s => s.x[j])));
   const scales = means.map((m, j) => Math.sqrt(mean(samples.map(s => (s.x[j] - m) ** 2))) || 1);
-  const intercept = mean(samples.map(s => s.y));
+  const trainingTargetMean = mean(samples.map(s => s.y));
+  const normalized = samples.map(s => s.x.map((x, j) => (x - means[j]) / scales[j]));
+  // Rounded feature means need not make floating-point standardized columns
+  // zero-mean, particularly for adjacent representable near-constant prices.
+  // Center the actual transformed data and restore its offset in the intercept.
+  const standardizedMeans = means.map((_, j) => mean(normalized.map(z => z[j])));
   const matrix = Array.from({ length: d }, () => Array(d + 1).fill(0));
-  for (const s of samples) {
-    const z = s.x.map((x, j) => (x - means[j]) / scales[j]);
+  for (let i = 0; i < samples.length; i++) {
+    const s = samples[i], z = normalized[i].map((x, j) => x - standardizedMeans[j]);
     for (let j = 0; j < d; j++) {
-      matrix[j][d] += z[j] * (s.y - intercept) / samples.length;
+      matrix[j][d] += z[j] * (s.y - trainingTargetMean) / samples.length;
       for (let k = 0; k < d; k++) matrix[j][k] += z[j] * z[k] / samples.length;
     }
   }
@@ -33,8 +42,9 @@ export function fitRidge(samples, alpha) {
     }
   }
   const weights = matrix.map(row => row[d]);
-  finite([...means, ...scales, intercept, ...weights]);
-  return { family: 'ridge-forward-mid-change', featureNames: FEATURE_NAMES, alpha, means, scales, intercept, weights, trainCount: samples.length, trainingRowsSha256: hash(canonical(samples.map(s => ({ rowId: s.rowId, x: s.x, y: s.y })))) };
+  const intercept = trainingTargetMean - standardizedMeans.reduce((sum, m, j) => sum + m * weights[j], 0);
+  finite([...means, ...scales, ...standardizedMeans, trainingTargetMean, intercept, ...weights]);
+  return { family: 'ridge-forward-mid-change', featureNames: FEATURE_NAMES, alpha, means, scales, standardizedMeans, trainingTargetMean, intercept, weights, trainCount: samples.length, trainingRowsSha256: hash(canonical(samples.map(s => ({ rowId: s.rowId, x: s.x, y: s.y })))) };
 }
 export function predict(model, x) {
   if (x.length !== model.weights.length) throw new Error('FEATURE_DIMENSION');
@@ -43,8 +53,9 @@ export function predict(model, x) {
 }
 export function metrics(samples, model) {
   if (!samples.length) throw new Error('NO_EVALUATION_SAMPLES');
+  finite([model.trainingTargetMean]);
   const pairs = samples.map(s => [predict(model, s.x), s.y]);
-  return { count: pairs.length, mae: mean(pairs.map(([p, y]) => Math.abs(p - y))), zeroChangeMae: mean(pairs.map(([, y]) => Math.abs(y))), trainMeanMae: mean(pairs.map(([, y]) => Math.abs(model.intercept - y))), rmse: Math.sqrt(mean(pairs.map(([p, y]) => (p - y) ** 2))), meanTarget: mean(pairs.map(([, y]) => y)), units: 'YES price change, range of book midprice [0,1]' };
+  return { count: pairs.length, mae: mean(pairs.map(([p, y]) => Math.abs(p - y))), zeroChangeMae: mean(pairs.map(([, y]) => Math.abs(y))), trainMeanMae: mean(pairs.map(([, y]) => Math.abs(model.trainingTargetMean - y))), rmse: Math.sqrt(mean(pairs.map(([p, y]) => (p - y) ** 2))), meanTarget: mean(pairs.map(([, y]) => y)), units: 'YES price change, range of book midprice [0,1]' };
 }
 export function selectModel(train, validation, alphas) {
   const candidates = alphas.map(alpha => { const model = fitRidge(train, alpha); return { alpha, validation: metrics(validation, model), model }; });

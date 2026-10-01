@@ -25,8 +25,8 @@ test('bad fit dimensions, missing samples and nonfinite features fail', () => {
 });
 test('scaler uses training rows exclusively and zero-change/train-prior metrics are correct', () => {
   const p = prepared(), rows = p.split.partitions.train, model = fitRidge(rows, 1);
-  for (let j = 0; j < FEATURE_NAMES.length; j++) assert.equal(model.means[j], rows.reduce((s, r) => s + r.x[j], 0) / rows.length);
-  const m = metrics([{ x: [0, 0, 0, 0, 0], y: .2 }, { x: [0, 0, 0, 0, 0], y: -.4 }], { weights: [0, 0, 0, 0, 0], means: [0, 0, 0, 0, 0], scales: [1, 1, 1, 1, 1], intercept: .1 });
+  for (let j = 0; j < FEATURE_NAMES.length; j++) assert.ok(Math.abs(model.means[j] - rows.reduce((s, r) => s + r.x[j], 0) / rows.length) < 1e-12);
+  const m = metrics([{ x: [0, 0, 0, 0, 0], y: .2 }, { x: [0, 0, 0, 0, 0], y: -.4 }], { weights: [0, 0, 0, 0, 0], means: [0, 0, 0, 0, 0], scales: [1, 1, 1, 1, 1], intercept: .1, trainingTargetMean: .1 });
   assert.ok(Math.abs(m.mae - .3) < 1e-12); assert.ok(Math.abs(m.zeroChangeMae - .3) < 1e-12); assert.equal(m.trainMeanMae, m.mae);
 });
 test('validation chooses candidate; ties select ascending first alpha', () => {
@@ -68,4 +68,25 @@ test('seeded randomized information intervals never overlap across admitted part
     for (const [left, right] of [[p.train, p.validation], [p.validation, p.test], [p.train, p.test]]) for (const a of left) for (const b of right) { assert.ok(a.end < b.featureStart); tested++; }
   }
   assert.ok(tested > 100000);
+});
+test('adjacent binary64 features retain a genuinely unpenalized intercept', () => {
+  const rows = Array.from({ length: 10 }, (_, i) => ({ rowId: `${i}`, x: [i % 2 ? .10000000000000002 : .1, 0, 0, 0, 0], y: i % 2 ? .01 : -.01 }));
+  const m = fitRidge(rows, .01), zs = rows.map(r => (r.x[0] - m.means[0]) / m.scales[0]);
+  const zMean = zs.reduce((a, b) => a + b, 0) / rows.length;
+  const variance = zs.reduce((sum, z) => sum + (z - zMean) ** 2, 0) / rows.length;
+  const covariance = zs.reduce((sum, z, i) => sum + (z - zMean) * rows[i].y, 0) / rows.length;
+  const exactWeight = covariance / (variance + .01), exactIntercept = -zMean * exactWeight;
+  for (let i = 0; i < rows.length; i++) assert.ok(Math.abs(predict(m, rows[i].x) - (exactIntercept + zs[i] * exactWeight)) < 1e-14);
+  const averageResidual = rows.reduce((sum, r) => sum + predict(m, r.x) - r.y, 0) / rows.length;
+  assert.ok(Math.abs(averageResidual) < 1e-15); assert.ok(Math.abs(m.intercept) > .005); assert.equal(m.trainingTargetMean, 0);
+  const score = metrics(rows, m); assert.ok(Math.abs(score.trainMeanMae - .01) < 1e-15);
+});
+test('constant near-roundoff feature offsets do not change rank-deficient ridge predictions', () => {
+  const rows = Array.from({ length: 10 }, (_, i) => ({ rowId: `${i}`, x: [.1, .1, .1, .1, .1], y: i / 100 }));
+  for (const alpha of [.000001, .01, 1e6]) {
+    const m = fitRidge(rows, alpha);
+    assert.ok(m.weights.every(w => Math.abs(w) < 1e-14));
+    assert.ok(rows.every(r => Math.abs(predict(m, r.x) - .045) < 1e-14));
+  }
+  assert.throws(() => fitRidge(rows, 0), /FIT_INPUT/);
 });

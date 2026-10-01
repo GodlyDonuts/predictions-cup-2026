@@ -14,8 +14,8 @@ node --test bot/*.test.mjs ml/test/*.test.mjs
 
 # The parent directory must already exist. Each output directory must be NEW.
 mkdir -p ml/runs
-node ml/cli.mjs develop --input ml/fixtures/synthetic-books.jsonl --config ml/fixtures/config.json --out ml/runs/synthetic-dev-v1
-node ml/cli.mjs final --input ml/fixtures/synthetic-books.jsonl --config ml/fixtures/config.json --selection ml/runs/synthetic-dev-v1/selection.json --out ml/runs/synthetic-final-v1
+node ml/cli.mjs develop --input ml/fixtures/synthetic-books.jsonl --config ml/fixtures/config.json --out ml/runs/synthetic-dev-v2
+node ml/cli.mjs final --input ml/fixtures/synthetic-books.jsonl --config ml/fixtures/config.json --selection ml/runs/synthetic-dev-v2/selection.json --out ml/runs/synthetic-final-v2
 
 # Optional deterministic fixture regeneration; this refuses to overwrite a file.
 node ml/generate-fixture.mjs /tmp/new-synthetic-books.jsonl
@@ -50,7 +50,7 @@ Only training samples fit feature means/scales and the target mean. Zero-varianc
 
 `mean(squared error) + alpha * sum(squared coefficients)`
 
-The intercept is not penalized. Positive candidate alphas are declared in the config before the run; the smallest validation MAE wins, with the first/smallest alpha breaking exact ties. Validation is model-selection data, not an unbiased performance estimate. The frozen model is still trained on training only; validation is not silently added to the training set for final scoring.
+The intercept is not penalized. Compensated training means reduce summation error; the actual standardized columns are explicitly re-centered before solving, and their offsets are restored in the prediction intercept. This matters for adjacent binary64 prices whose rounded training means leave nonzero standardized means. The training-target mean is stored separately and remains the prior baseline, independent of that intercept correction. Positive candidate alphas are declared in the config before the run; the smallest validation MAE wins, with the first/smallest alpha breaking exact ties. Validation is model-selection data, not an unbiased performance estimate. The frozen model is still trained on training only; validation is not silently added to the training set for final scoring.
 
 `develop` reports train/validation scores and test counts/row IDs only, and writes a selection artifact. It emits no test metrics, predictions, features or targets. `final` requires that artifact and reproduces training/validation selection, checking exact source, config, implementation and model hashes before accessing the test score. Editing the dataset, alpha or runtime invalidates the selection. A new explicit final run is required for test output. This is reproducible held-out evaluation, **not a tamper-proof holdout service**: repeated final runs, tuning configuration after seeing test results or unrelated manual exploration can still invalidate the experiment. Future work should pre-register the experiment and reserve genuinely unseen captures.
 
