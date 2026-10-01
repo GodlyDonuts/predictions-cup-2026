@@ -1,0 +1,403 @@
+{
+  "observed_at_utc": "2026-10-01T22:13:16.198860+00:00",
+  "url": "https://external-api.kalshi.com/trade-api/v2/events/KXAKSENATE-26NOV03",
+  "http_headers": {
+    "Date": "Thu, 01 Oct 2026 22:13:16 GMT",
+    "Content-Type": "application/json",
+    "Transfer-Encoding": "chunked",
+    "Connection": "close",
+    "content-security-policy": "default-src 'none';",
+    "strict-transport-security": "max-age=31536000; includeSubDomains",
+    "vary": "Accept-Encoding",
+    "x-content-type-options": "nosniff"
+  },
+  "data": {
+    "event": {
+      "category": "Elections",
+      "collateral_return_type": "MECNET",
+      "event_ticker": "KXAKSENATE-26NOV03",
+      "exchange_index": 0,
+      "last_updated_ts": "0001-01-01T00:00:00Z",
+      "mutually_exclusive": true,
+      "series_ticker": "KXAKSENATE",
+      "settlement_sources": [
+        {
+          "name": "the State of Alaska",
+          "url": "https://www.elections.alaska.gov/election-results/"
+        },
+        {
+          "name": "United States Congress",
+          "url": "https://www.congress.gov/"
+        }
+      ],
+      "strike_period": "",
+      "sub_title": "in 2026",
+      "title": "Alaska Senate winner? (Person)"
+    },
+    "markets": [
+      {
+        "can_close_early": true,
+        "close_time": "2027-11-03T15:00:00Z",
+        "created_time": "2026-01-31T03:40:38.175066Z",
+        "custom_strike": {
+          "Option": "Dan Sullivan"
+        },
+        "early_close_condition": "This market will close and expire early if the election winner is officially declared or certified.",
+        "event_ticker": "KXAKSENATE-26NOV03",
+        "exchange_index": 0,
+        "expected_expiration_time": "2026-11-10T15:00:00Z",
+        "expiration_time": "2027-11-03T15:00:00Z",
+        "expiration_value": "",
+        "last_price_dollars": "0.3100",
+        "latest_expiration_time": "2027-11-03T15:00:00Z",
+        "market_type": "binary",
+        "no_ask_dollars": "0.7100",
+        "no_bid_dollars": "0.7000",
+        "no_sub_title": "Dan Sullivan",
+        "notional_value_dollars": "1.0000",
+        "open_interest_fp": "91733.94",
+        "open_time": "2026-01-31T04:30:00Z",
+        "previous_price_dollars": "0.3200",
+        "previous_yes_ask_dollars": "0.3000",
+        "previous_yes_bid_dollars": "0.2800",
+        "price_level_structure": "tapered_deci_cent",
+        "price_ranges": [
+          {
+            "end": "0.1000",
+            "start": "0.0000",
+            "step": "0.0010"
+          },
+          {
+            "end": "0.9000",
+            "start": "0.1000",
+            "step": "0.0100"
+          },
+          {
+            "end": "1.0000",
+            "start": "0.9000",
+            "step": "0.0010"
+          }
+        ],
+        "result": "",
+        "rules_primary": "If Dan Sullivan wins the 2026 Alaska Senate election, then the market resolves to Yes.",
+        "rules_secondary": "For parliamentary elections, the party or coalition with the most seats wins. If two parties tie in seats: the one entering government will resolve to Yes and all others to No. If both or neither enter government, the one with the higher share of the vote will resolve to Yes and all others to No. For coalitions/alliances, only those formally registered with electoral authorities before the nomination deadline count, not post-election governing arrangements. Overhang seats, leveling seats, and appointed seats count only if specified. For referenda/plebiscites, the specified option achieves the required threshold per applicable law (simple majority, supermajority, dual majority, turnout requirements). If multiple thresholds exist (e.g., majority of votes AND majority of states), all must be met. For presidential or direct elections, the candidate who wins according to the electoral system (electoral college, popular vote, or runoff as applicable) and either (i) is inaugurated/sworn in/takes office, or (ii) the scheduled inauguration date passes without a different candidate taking office is the winner.  \n\nThe market resolves based on the official certification or declaration by the relevant electoral authority. Contested results are resolved based on the final certified outcome by the appropriate electoral authority or highest court with jurisdiction. In cases of competing claims (two presidents, disputed succession), the individual recognized by the hierarchical majority of Source Agencies prevails. The market remains open until the rescheduled election or two years from the original date, whichever comes first. Repeated postponements count towards the 2-year deadline.  If results are annulled by a court/authority AFTER announcement but BEFORE the winner takes office, the Contract remains open until re-run election or expiration.",
+        "settlement_bounds_type": "default",
+        "settlement_timer_seconds": 1800,
+        "status": "active",
+        "strike_type": "custom",
+        "subtitle": "Dan Sullivan:: Current incumbent, Republican",
+        "ticker": "KXAKSENATE-26NOV03-DSUL",
+        "title": "Will Dan Sullivan win the 2026 Alaska Senate race?",
+        "updated_time": "2026-08-08T16:56:20.984644Z",
+        "volume_24h_fp": "584.80",
+        "volume_fp": "147195.04",
+        "yes_ask_dollars": "0.3000",
+        "yes_ask_size_fp": "88.00",
+        "yes_bid_dollars": "0.2900",
+        "yes_bid_size_fp": "96.56",
+        "yes_sub_title": "Dan Sullivan"
+      },
+      {
+        "can_close_early": true,
+        "close_time": "2027-11-03T15:00:00Z",
+        "created_time": "2026-01-31T03:40:38.175066Z",
+        "custom_strike": {
+          "Option": "Mary Peltola"
+        },
+        "early_close_condition": "This market will close and expire early if the election winner is officially declared or certified.",
+        "event_ticker": "KXAKSENATE-26NOV03",
+        "exchange_index": 0,
+        "expected_expiration_time": "2026-11-10T15:00:00Z",
+        "expiration_time": "2027-11-03T15:00:00Z",
+        "expiration_value": "",
+        "last_price_dollars": "0.7000",
+        "latest_expiration_time": "2027-11-03T15:00:00Z",
+        "market_type": "binary",
+        "no_ask_dollars": "0.3100",
+        "no_bid_dollars": "0.3000",
+        "no_sub_title": "Mary Peltola",
+        "notional_value_dollars": "1.0000",
+        "open_interest_fp": "131193.39",
+        "open_time": "2026-01-31T04:30:00Z",
+        "previous_price_dollars": "0.7200",
+        "previous_yes_ask_dollars": "0.7200",
+        "previous_yes_bid_dollars": "0.7100",
+        "price_level_structure": "tapered_deci_cent",
+        "price_ranges": [
+          {
+            "end": "0.1000",
+            "start": "0.0000",
+            "step": "0.0010"
+          },
+          {
+            "end": "0.9000",
+            "start": "0.1000",
+            "step": "0.0100"
+          },
+          {
+            "end": "1.0000",
+            "start": "0.9000",
+            "step": "0.0010"
+          }
+        ],
+        "result": "",
+        "rules_primary": "If Mary Peltola wins the 2026 Alaska Senate election, then the market resolves to Yes.",
+        "rules_secondary": "For parliamentary elections, the party or coalition with the most seats wins. If two parties tie in seats: the one entering government will resolve to Yes and all others to No. If both or neither enter government, the one with the higher share of the vote will resolve to Yes and all others to No. For coalitions/alliances, only those formally registered with electoral authorities before the nomination deadline count, not post-election governing arrangements. Overhang seats, leveling seats, and appointed seats count only if specified. For referenda/plebiscites, the specified option achieves the required threshold per applicable law (simple majority, supermajority, dual majority, turnout requirements). If multiple thresholds exist (e.g., majority of votes AND majority of states), all must be met. For presidential or direct elections, the candidate who wins according to the electoral system (electoral college, popular vote, or runoff as applicable) and either (i) is inaugurated/sworn in/takes office, or (ii) the scheduled inauguration date passes without a different candidate taking office is the winner.  \n\nThe market resolves based on the official certification or declaration by the relevant electoral authority. Contested results are resolved based on the final certified outcome by the appropriate electoral authority or highest court with jurisdiction. In cases of competing claims (two presidents, disputed succession), the individual recognized by the hierarchical majority of Source Agencies prevails. The market remains open until the rescheduled election or two years from the original date, whichever comes first. Repeated postponements count towards the 2-year deadline.  If results are annulled by a court/authority AFTER announcement but BEFORE the winner takes office, the Contract remains open until re-run election or expiration.",
+        "settlement_bounds_type": "default",
+        "settlement_timer_seconds": 1800,
+        "status": "active",
+        "strike_type": "custom",
+        "subtitle": ":: Democratic",
+        "ticker": "KXAKSENATE-26NOV03-MPEL",
+        "title": "Will Mary Peltola win the 2026 Alaska Senate race?",
+        "updated_time": "2026-08-08T16:56:20.989038Z",
+        "volume_24h_fp": "2449.29",
+        "volume_fp": "173015.80",
+        "yes_ask_dollars": "0.7000",
+        "yes_ask_size_fp": "168.93",
+        "yes_bid_dollars": "0.6900",
+        "yes_bid_size_fp": "2.24",
+        "yes_sub_title": "Mary Peltola"
+      },
+      {
+        "can_close_early": true,
+        "close_time": "2027-11-03T15:00:00Z",
+        "created_time": "2026-01-31T03:40:38.175066Z",
+        "custom_strike": {
+          "Option": "Ann Diener"
+        },
+        "early_close_condition": "This market will close and expire early if the election winner is officially declared or certified.",
+        "event_ticker": "KXAKSENATE-26NOV03",
+        "exchange_index": 0,
+        "expected_expiration_time": "2026-11-10T15:00:00Z",
+        "expiration_time": "2027-11-03T15:00:00Z",
+        "expiration_value": "",
+        "last_price_dollars": "0.0010",
+        "latest_expiration_time": "2027-11-03T15:00:00Z",
+        "market_type": "binary",
+        "no_ask_dollars": "1.0000",
+        "no_bid_dollars": "0.9980",
+        "no_sub_title": "Ann Diener",
+        "notional_value_dollars": "1.0000",
+        "open_interest_fp": "4811.00",
+        "open_time": "2026-01-31T04:30:00Z",
+        "previous_price_dollars": "0.0010",
+        "previous_yes_ask_dollars": "0.0020",
+        "previous_yes_bid_dollars": "0.0000",
+        "price_level_structure": "tapered_deci_cent",
+        "price_ranges": [
+          {
+            "end": "0.1000",
+            "start": "0.0000",
+            "step": "0.0010"
+          },
+          {
+            "end": "0.9000",
+            "start": "0.1000",
+            "step": "0.0100"
+          },
+          {
+            "end": "1.0000",
+            "start": "0.9000",
+            "step": "0.0010"
+          }
+        ],
+        "result": "",
+        "rules_primary": "If Ann Diener wins the 2026 Alaska Senate election, then the market resolves to Yes.",
+        "rules_secondary": "For parliamentary elections, the party or coalition with the most seats wins. If two parties tie in seats: the one entering government will resolve to Yes and all others to No. If both or neither enter government, the one with the higher share of the vote will resolve to Yes and all others to No. For coalitions/alliances, only those formally registered with electoral authorities before the nomination deadline count, not post-election governing arrangements. Overhang seats, leveling seats, and appointed seats count only if specified. For referenda/plebiscites, the specified option achieves the required threshold per applicable law (simple majority, supermajority, dual majority, turnout requirements). If multiple thresholds exist (e.g., majority of votes AND majority of states), all must be met. For presidential or direct elections, the candidate who wins according to the electoral system (electoral college, popular vote, or runoff as applicable) and either (i) is inaugurated/sworn in/takes office, or (ii) the scheduled inauguration date passes without a different candidate taking office is the winner.  \n\nThe market resolves based on the official certification or declaration by the relevant electoral authority. Contested results are resolved based on the final certified outcome by the appropriate electoral authority or highest court with jurisdiction. In cases of competing claims (two presidents, disputed succession), the individual recognized by the hierarchical majority of Source Agencies prevails. The market remains open until the rescheduled election or two years from the original date, whichever comes first. Repeated postponements count towards the 2-year deadline.  If results are annulled by a court/authority AFTER announcement but BEFORE the winner takes office, the Contract remains open until re-run election or expiration.",
+        "settlement_bounds_type": "default",
+        "settlement_timer_seconds": 1800,
+        "status": "active",
+        "strike_type": "custom",
+        "subtitle": ":: Democratic",
+        "ticker": "KXAKSENATE-26NOV03-ADIE",
+        "title": "Will Ann Diener win the 2026 Alaska Senate race?",
+        "updated_time": "2026-08-08T16:56:20.993068Z",
+        "volume_24h_fp": "0.00",
+        "volume_fp": "8893.50",
+        "yes_ask_dollars": "0.0020",
+        "yes_ask_size_fp": "300.00",
+        "yes_bid_dollars": "0.0000",
+        "yes_bid_size_fp": "0.00",
+        "yes_sub_title": "Ann Diener"
+      },
+      {
+        "can_close_early": true,
+        "close_time": "2027-11-03T15:00:00Z",
+        "created_time": "2026-01-31T03:40:38.175066Z",
+        "custom_strike": {
+          "Option": "Richard Grayson"
+        },
+        "early_close_condition": "This market will close and expire early if the election winner is officially declared or certified.",
+        "event_ticker": "KXAKSENATE-26NOV03",
+        "exchange_index": 0,
+        "expected_expiration_time": "2026-11-10T15:00:00Z",
+        "expiration_time": "2027-11-03T15:00:00Z",
+        "expiration_value": "",
+        "last_price_dollars": "0.0010",
+        "latest_expiration_time": "2027-11-03T15:00:00Z",
+        "market_type": "binary",
+        "no_ask_dollars": "1.0000",
+        "no_bid_dollars": "0.9990",
+        "no_sub_title": "Richard Grayson",
+        "notional_value_dollars": "1.0000",
+        "open_interest_fp": "3047.00",
+        "open_time": "2026-01-31T04:30:00Z",
+        "previous_price_dollars": "0.0010",
+        "previous_yes_ask_dollars": "0.0010",
+        "previous_yes_bid_dollars": "0.0000",
+        "price_level_structure": "tapered_deci_cent",
+        "price_ranges": [
+          {
+            "end": "0.1000",
+            "start": "0.0000",
+            "step": "0.0010"
+          },
+          {
+            "end": "0.9000",
+            "start": "0.1000",
+            "step": "0.0100"
+          },
+          {
+            "end": "1.0000",
+            "start": "0.9000",
+            "step": "0.0010"
+          }
+        ],
+        "result": "",
+        "rules_primary": "If Richard Grayson wins the 2026 Alaska Senate election, then the market resolves to Yes.",
+        "rules_secondary": "For parliamentary elections, the party or coalition with the most seats wins. If two parties tie in seats: the one entering government will resolve to Yes and all others to No. If both or neither enter government, the one with the higher share of the vote will resolve to Yes and all others to No. For coalitions/alliances, only those formally registered with electoral authorities before the nomination deadline count, not post-election governing arrangements. Overhang seats, leveling seats, and appointed seats count only if specified. For referenda/plebiscites, the specified option achieves the required threshold per applicable law (simple majority, supermajority, dual majority, turnout requirements). If multiple thresholds exist (e.g., majority of votes AND majority of states), all must be met. For presidential or direct elections, the candidate who wins according to the electoral system (electoral college, popular vote, or runoff as applicable) and either (i) is inaugurated/sworn in/takes office, or (ii) the scheduled inauguration date passes without a different candidate taking office is the winner.  \n\nThe market resolves based on the official certification or declaration by the relevant electoral authority. Contested results are resolved based on the final certified outcome by the appropriate electoral authority or highest court with jurisdiction. In cases of competing claims (two presidents, disputed succession), the individual recognized by the hierarchical majority of Source Agencies prevails. The market remains open until the rescheduled election or two years from the original date, whichever comes first. Repeated postponements count towards the 2-year deadline.  If results are annulled by a court/authority AFTER announcement but BEFORE the winner takes office, the Contract remains open until re-run election or expiration.",
+        "settlement_bounds_type": "default",
+        "settlement_timer_seconds": 1800,
+        "status": "active",
+        "strike_type": "custom",
+        "subtitle": ":: Green",
+        "ticker": "KXAKSENATE-26NOV03-RGRA",
+        "title": "Will Richard Grayson win the 2026 Alaska Senate race?",
+        "updated_time": "2026-08-08T16:56:20.99995Z",
+        "volume_24h_fp": "0.00",
+        "volume_fp": "7288.00",
+        "yes_ask_dollars": "0.0010",
+        "yes_ask_size_fp": "500.00",
+        "yes_bid_dollars": "0.0000",
+        "yes_bid_size_fp": "0.00",
+        "yes_sub_title": "Richard Grayson"
+      },
+      {
+        "can_close_early": true,
+        "close_time": "2027-11-03T15:00:00Z",
+        "created_time": "2026-01-31T03:40:38.175066Z",
+        "custom_strike": {
+          "Option": "Sid Hill"
+        },
+        "early_close_condition": "This market will close and expire early if the election winner is officially declared or certified.",
+        "event_ticker": "KXAKSENATE-26NOV03",
+        "exchange_index": 0,
+        "expected_expiration_time": "2026-11-10T15:00:00Z",
+        "expiration_time": "2027-11-03T15:00:00Z",
+        "expiration_value": "",
+        "last_price_dollars": "0.0010",
+        "latest_expiration_time": "2027-11-03T15:00:00Z",
+        "market_type": "binary",
+        "no_ask_dollars": "1.0000",
+        "no_bid_dollars": "0.9990",
+        "no_sub_title": "Sid Hill",
+        "notional_value_dollars": "1.0000",
+        "open_interest_fp": "3047.00",
+        "open_time": "2026-01-31T04:30:00Z",
+        "previous_price_dollars": "0.0010",
+        "previous_yes_ask_dollars": "0.0010",
+        "previous_yes_bid_dollars": "0.0000",
+        "price_level_structure": "tapered_deci_cent",
+        "price_ranges": [
+          {
+            "end": "0.1000",
+            "start": "0.0000",
+            "step": "0.0010"
+          },
+          {
+            "end": "0.9000",
+            "start": "0.1000",
+            "step": "0.0100"
+          },
+          {
+            "end": "1.0000",
+            "start": "0.9000",
+            "step": "0.0010"
+          }
+        ],
+        "result": "",
+        "rules_primary": "If Sid Hill wins the 2026 Alaska Senate election, then the market resolves to Yes.",
+        "rules_secondary": "For parliamentary elections, the party or coalition with the most seats wins. If two parties tie in seats: the one entering government will resolve to Yes and all others to No. If both or neither enter government, the one with the higher share of the vote will resolve to Yes and all others to No. For coalitions/alliances, only those formally registered with electoral authorities before the nomination deadline count, not post-election governing arrangements. Overhang seats, leveling seats, and appointed seats count only if specified. For referenda/plebiscites, the specified option achieves the required threshold per applicable law (simple majority, supermajority, dual majority, turnout requirements). If multiple thresholds exist (e.g., majority of votes AND majority of states), all must be met. For presidential or direct elections, the candidate who wins according to the electoral system (electoral college, popular vote, or runoff as applicable) and either (i) is inaugurated/sworn in/takes office, or (ii) the scheduled inauguration date passes without a different candidate taking office is the winner.  \n\nThe market resolves based on the official certification or declaration by the relevant electoral authority. Contested results are resolved based on the final certified outcome by the appropriate electoral authority or highest court with jurisdiction. In cases of competing claims (two presidents, disputed succession), the individual recognized by the hierarchical majority of Source Agencies prevails. The market remains open until the rescheduled election or two years from the original date, whichever comes first. Repeated postponements count towards the 2-year deadline.  If results are annulled by a court/authority AFTER announcement but BEFORE the winner takes office, the Contract remains open until re-run election or expiration.",
+        "settlement_bounds_type": "default",
+        "settlement_timer_seconds": 1800,
+        "status": "active",
+        "strike_type": "custom",
+        "subtitle": ":: Independent",
+        "ticker": "KXAKSENATE-26NOV03-SHIL",
+        "title": "Will Sid Hill win the 2026 Alaska Senate race?",
+        "updated_time": "2026-08-08T16:56:21.004935Z",
+        "volume_24h_fp": "0.00",
+        "volume_fp": "7248.00",
+        "yes_ask_dollars": "0.0010",
+        "yes_ask_size_fp": "515.00",
+        "yes_bid_dollars": "0.0000",
+        "yes_bid_size_fp": "0.00",
+        "yes_sub_title": "Sid Hill"
+      },
+      {
+        "can_close_early": true,
+        "close_time": "2027-11-03T15:00:00Z",
+        "created_time": "2026-06-10T16:30:58.078715Z",
+        "custom_strike": {
+          "Option": "Daniel J. Sullivan"
+        },
+        "early_close_condition": "This market will close and expire early if the election winner is officially declared or certified.",
+        "event_ticker": "KXAKSENATE-26NOV03",
+        "exchange_index": 0,
+        "expected_expiration_time": "2026-11-10T15:00:00Z",
+        "expiration_time": "2027-11-03T15:00:00Z",
+        "expiration_value": "",
+        "last_price_dollars": "0.0100",
+        "latest_expiration_time": "2027-11-03T15:00:00Z",
+        "market_type": "binary",
+        "no_ask_dollars": "1.0000",
+        "no_bid_dollars": "0.9900",
+        "no_sub_title": "Daniel J. Sullivan",
+        "notional_value_dollars": "1.0000",
+        "occurrence_datetime": "2026-11-03T15:00:00Z",
+        "open_interest_fp": "5307.33",
+        "open_time": "2026-06-10T17:00:00Z",
+        "previous_price_dollars": "0.0100",
+        "previous_yes_ask_dollars": "0.0100",
+        "previous_yes_bid_dollars": "0.0000",
+        "price_level_structure": "linear_cent",
+        "price_ranges": [
+          {
+            "end": "1.0000",
+            "start": "0.0000",
+            "step": "0.0100"
+          }
+        ],
+        "result": "",
+        "rules_primary": "If Daniel J. Sullivan wins the 2026 Alaska Senate election, then the market resolves to Yes.",
+        "rules_secondary": "",
+        "settlement_bounds_type": "default",
+        "settlement_timer_seconds": 1800,
+        "status": "active",
+        "strike_type": "custom",
+        "subtitle": "Daniel J. Sullivan",
+        "ticker": "KXAKSENATE-26NOV03-DJSUL",
+        "title": "Will Daniel J. Sullivan win 2026 Alaska Senate race?",
+        "updated_time": "2026-08-08T16:56:21.011656Z",
+        "volume_24h_fp": "467.59",
+        "volume_fp": "6256.75",
+        "yes_ask_dollars": "0.0100",
+        "yes_ask_size_fp": "12762.52",
+        "yes_bid_dollars": "0.0000",
+        "yes_bid_size_fp": "0.00",
+        "yes_sub_title": "Daniel J. Sullivan"
+      }
+    ]
+  }
+}

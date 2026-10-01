@@ -1,0 +1,54 @@
+{
+  "observed_at_utc": "2026-10-01T22:14:30.248248+00:00",
+  "url": "https://external-api.kalshi.com/trade-api/v2/series/KXAKSENATE",
+  "http_headers": {
+    "Date": "Thu, 01 Oct 2026 22:14:30 GMT",
+    "Content-Type": "application/json",
+    "Content-Length": "1178",
+    "Connection": "close",
+    "cache-control": "public, max-age=15",
+    "content-security-policy": "default-src 'none';",
+    "strict-transport-security": "max-age=31536000; includeSubDomains",
+    "vary": "Accept-Encoding, Accept-Language",
+    "x-content-type-options": "nosniff"
+  },
+  "data": {
+    "series": {
+      "additional_prohibitions": [
+        "Persons who are employed by any of the Source Agencies are not permitted to trade on the Contract.",
+        "Persons who hold any material, non-public information on the Underlying are not permitted to trade on the Contract.",
+        "Any candidate currently listed as a market within this event"
+      ],
+      "categories": [
+        "Elections"
+      ],
+      "category": "Elections",
+      "contract_terms_url": "https://assets.kalshi.com/contract_terms/ELECTION.pdf",
+      "contract_url": "https://assets.kalshi.com/regulatory/product-certifications/ELECTION.pdf",
+      "exchange_index": 0,
+      "fee_multiplier": 1,
+      "fee_type": "quadratic",
+      "frequency": "one_off",
+      "last_updated_ts": "2026-09-28T17:07:34.897189Z",
+      "settlement_sources": [
+        {
+          "name": "or equivalent electoral authority of the relevant jurisdiction; the formal proclamation by the head of state or government when constitutionally required; for religious elections",
+          "url": "https://kalshi.com/"
+        },
+        {
+          "name": "in hierarchical order: Primary Sources: the official electoral commission",
+          "url": "https://kalshi.com/"
+        },
+        {
+          "name": "constitutional court",
+          "url": "https://kalshi.com/"
+        }
+      ],
+      "tags": [
+        "US Elections"
+      ],
+      "ticker": "KXAKSENATE",
+      "title": "Who will win the Alaska Senate race?"
+    }
+  }
+}

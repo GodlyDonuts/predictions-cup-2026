@@ -1,0 +1,212 @@
+{
+  "observed_at_utc": "2026-10-01T22:15:13.838228+00:00",
+  "url": "https://external-api.kalshi.com/trade-api/v2/markets?series_ticker=GOVPARTYMI&status=open",
+  "http_headers": {
+    "Date": "Thu, 01 Oct 2026 22:15:13 GMT",
+    "Content-Type": "application/json",
+    "Transfer-Encoding": "chunked",
+    "Connection": "close",
+    "cache-control": "public, max-age=15",
+    "content-security-policy": "default-src 'none';",
+    "strict-transport-security": "max-age=31536000; includeSubDomains",
+    "vary": "Accept-Encoding, Accept-Language",
+    "x-content-type-options": "nosniff",
+    "x-kalshi-cache-hits": "0"
+  },
+  "data": {
+    "cursor": "",
+    "markets": [
+      {
+        "can_close_early": true,
+        "close_time": "2027-11-03T15:00:00Z",
+        "created_time": "2025-01-28T01:36:13.888058Z",
+        "custom_strike": {
+          "Party": "Mike Duggan",
+          "State": "Michigan"
+        },
+        "early_close_condition": "This market will close early following the first person to be sworn in as governor pursuant to the 2026 gubernatorial election.",
+        "event_ticker": "GOVPARTYMI-26",
+        "exchange_index": 0,
+        "expected_expiration_time": "2027-01-01T15:00:00Z",
+        "expiration_time": "2027-11-03T15:00:00Z",
+        "expiration_value": "",
+        "last_price_dollars": "0.0020",
+        "latest_expiration_time": "2027-11-03T15:00:00Z",
+        "market_type": "binary",
+        "no_ask_dollars": "0.9980",
+        "no_bid_dollars": "0.9950",
+        "no_sub_title": "Mike Duggan",
+        "notional_value_dollars": "1.0000",
+        "open_interest_fp": "58403.22",
+        "open_time": "2025-01-28T15:00:00Z",
+        "previous_price_dollars": "0.0020",
+        "previous_yes_ask_dollars": "0.0060",
+        "previous_yes_bid_dollars": "0.0020",
+        "price_level_structure": "tapered_deci_cent",
+        "price_ranges": [
+          {
+            "end": "0.1000",
+            "start": "0.0000",
+            "step": "0.0010"
+          },
+          {
+            "end": "0.9000",
+            "start": "0.1000",
+            "step": "0.0100"
+          },
+          {
+            "end": "1.0000",
+            "start": "0.9000",
+            "step": "0.0010"
+          }
+        ],
+        "result": "",
+        "rules_primary": "If a representative of the Mike Duggan (Independent) party is inaugurated as the governor of Michigan pursuant to the 2026 election, then the market resolves to Yes.",
+        "rules_secondary": "This market is eligible for accelerated determination after a consensus of media organizations project the winner. See full rules for details.",
+        "settlement_bounds_type": "default",
+        "settlement_timer_seconds": 14,
+        "status": "active",
+        "strike_type": "custom",
+        "subtitle": ":: Independent",
+        "ticker": "GOVPARTYMI-26-MD",
+        "title": "Will the Mike Duggan party win the governorship in Michigan",
+        "updated_time": "2026-09-15T21:48:52.793157Z",
+        "volume_24h_fp": "0.00",
+        "volume_fp": "124338.00",
+        "yes_ask_dollars": "0.0050",
+        "yes_ask_size_fp": "5.01",
+        "yes_bid_dollars": "0.0020",
+        "yes_bid_size_fp": "2963.35",
+        "yes_sub_title": "Mike Duggan"
+      },
+      {
+        "can_close_early": true,
+        "close_time": "2027-11-03T15:00:00Z",
+        "created_time": "2025-01-25T21:17:08.121755Z",
+        "custom_strike": {
+          "political_party": "9244ed4c-9dfd-45cc-8211-996dc902f315",
+          "politician": "2117e10e-38dd-4687-bf52-10f9e2495e85"
+        },
+        "early_close_condition": "This market will close early following the first person to be sworn in as governor pursuant to the 2026 gubernatorial election.",
+        "event_ticker": "GOVPARTYMI-26",
+        "exchange_index": 0,
+        "expected_expiration_time": "2027-01-01T15:00:00Z",
+        "expiration_time": "2027-11-03T15:00:00Z",
+        "expiration_value": "",
+        "last_price_dollars": "0.0860",
+        "latest_expiration_time": "2027-11-03T15:00:00Z",
+        "market_type": "binary",
+        "no_ask_dollars": "0.9260",
+        "no_bid_dollars": "0.9140",
+        "no_sub_title": "John James",
+        "notional_value_dollars": "1.0000",
+        "occurrence_datetime": "2027-01-01T15:00:00Z",
+        "open_interest_fp": "105212.02",
+        "open_time": "2025-01-26T15:00:00Z",
+        "previous_price_dollars": "0.0870",
+        "previous_yes_ask_dollars": "0.0860",
+        "previous_yes_bid_dollars": "0.0720",
+        "price_level_structure": "tapered_deci_cent",
+        "price_ranges": [
+          {
+            "end": "0.1000",
+            "start": "0.0000",
+            "step": "0.0010"
+          },
+          {
+            "end": "0.9000",
+            "start": "0.1000",
+            "step": "0.0100"
+          },
+          {
+            "end": "1.0000",
+            "start": "0.9000",
+            "step": "0.0010"
+          }
+        ],
+        "result": "",
+        "rules_primary": "If a representative of the Republican party is inaugurated as the governor of Michigan pursuant to the 2026 election, then the market resolves to Yes.",
+        "rules_secondary": "This market is eligible for accelerated determination after a consensus of media organizations project the winner. See full rules for details.",
+        "settlement_bounds_type": "default",
+        "settlement_timer_seconds": 14,
+        "status": "active",
+        "strike_type": "structured",
+        "subtitle": "Republican:: Republican party",
+        "ticker": "GOVPARTYMI-26-R",
+        "title": "Will the Republican party win the governorship in Michigan",
+        "updated_time": "2026-09-15T21:48:53.852315Z",
+        "volume_24h_fp": "3079.50",
+        "volume_fp": "160748.03",
+        "yes_ask_dollars": "0.0860",
+        "yes_ask_size_fp": "99.03",
+        "yes_bid_dollars": "0.0740",
+        "yes_bid_size_fp": "17.61",
+        "yes_sub_title": "John James"
+      },
+      {
+        "can_close_early": true,
+        "close_time": "2027-11-03T15:00:00Z",
+        "created_time": "2025-01-25T21:17:08.121754Z",
+        "custom_strike": {
+          "political_party": "57fa2293-3102-463b-9087-68cd9f6da0a6",
+          "politician": "c8d011b3-32bf-4952-a9b9-e7d4ed86381e"
+        },
+        "early_close_condition": "This market will close early following the first person to be sworn in as governor pursuant to the 2026 gubernatorial election.",
+        "event_ticker": "GOVPARTYMI-26",
+        "exchange_index": 0,
+        "expected_expiration_time": "2027-01-01T15:00:00Z",
+        "expiration_time": "2027-11-03T15:00:00Z",
+        "expiration_value": "",
+        "last_price_dollars": "0.9180",
+        "latest_expiration_time": "2027-11-03T15:00:00Z",
+        "market_type": "binary",
+        "no_ask_dollars": "0.0820",
+        "no_bid_dollars": "0.0750",
+        "no_sub_title": "Jocelyn Benson",
+        "notional_value_dollars": "1.0000",
+        "occurrence_datetime": "2027-01-01T15:00:00Z",
+        "open_interest_fp": "60249.15",
+        "open_time": "2025-01-26T15:00:00Z",
+        "previous_price_dollars": "0.9180",
+        "previous_yes_ask_dollars": "0.9270",
+        "previous_yes_bid_dollars": "0.9180",
+        "price_level_structure": "tapered_deci_cent",
+        "price_ranges": [
+          {
+            "end": "0.1000",
+            "start": "0.0000",
+            "step": "0.0010"
+          },
+          {
+            "end": "0.9000",
+            "start": "0.1000",
+            "step": "0.0100"
+          },
+          {
+            "end": "1.0000",
+            "start": "0.9000",
+            "step": "0.0010"
+          }
+        ],
+        "result": "",
+        "rules_primary": "If a representative of the Democratic party is inaugurated as the governor of Michigan pursuant to the 2026 election, then the market resolves to Yes.",
+        "rules_secondary": "This market is eligible for accelerated determination after a consensus of media organizations project the winner. See full rules for details.",
+        "settlement_bounds_type": "default",
+        "settlement_timer_seconds": 14,
+        "status": "active",
+        "strike_type": "structured",
+        "subtitle": "Democratic:: Democratic party",
+        "ticker": "GOVPARTYMI-26-D",
+        "title": "Will the Democratic party win the governorship in Michigan",
+        "updated_time": "2026-09-15T21:48:51.647186Z",
+        "volume_24h_fp": "1130.72",
+        "volume_fp": "79990.20",
+        "yes_ask_dollars": "0.9250",
+        "yes_ask_size_fp": "645.36",
+        "yes_bid_dollars": "0.9180",
+        "yes_bid_size_fp": "240.71",
+        "yes_sub_title": "Jocelyn Benson"
+      }
+    ]
+  }
+}

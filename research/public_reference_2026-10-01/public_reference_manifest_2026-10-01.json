@@ -1,0 +1,278 @@
+{
+  "created_at_utc": "2026-10-01T22:18:23.647316+00:00",
+  "scope": "Read-only public Kalshi reference data; no authentication or trades",
+  "report_file": "public_reference_report_2026-10-01.md",
+  "report_sha256": "ba53928e07417d766568680a44822bac715b0b0653cac62f9691661941c6d327",
+  "snapshots": [
+    {
+      "filename": "GOVPARTYAZ_markets.json",
+      "sha256": "528cf05bf79cd270ae962e545130c0fd66f13a201313374131f780e20e9e1d29",
+      "bytes": 6069,
+      "observed_at_utc": "2026-10-01T22:15:13.918822+00:00",
+      "http_date": "Thu, 01 Oct 2026 22:15:13 GMT",
+      "official_source_url": "https://external-api.kalshi.com/trade-api/v2/markets?series_ticker=GOVPARTYAZ&status=open",
+      "included_in_repository": true,
+      "repository_path": "research/public_reference_2026-10-01/raw/GOVPARTYAZ_markets.json"
+    },
+    {
+      "filename": "GOVPARTYMI_markets.json",
+      "sha256": "96a9f6c18cd0ee67bb0c76611e709dadbcb5a8dce7c58f10bcf4889c59521265",
+      "bytes": 8644,
+      "observed_at_utc": "2026-10-01T22:15:13.838228+00:00",
+      "http_date": "Thu, 01 Oct 2026 22:15:13 GMT",
+      "official_source_url": "https://external-api.kalshi.com/trade-api/v2/markets?series_ticker=GOVPARTYMI&status=open",
+      "included_in_repository": true,
+      "repository_path": "research/public_reference_2026-10-01/raw/GOVPARTYMI_markets.json"
+    },
+    {
+      "filename": "KXAKSENATE-26NOV03.json",
+      "sha256": "47d5278fb63d86ebb704c57a830405dc970ccc9773fd27023067aaa0a26dbef9",
+      "bytes": 24164,
+      "observed_at_utc": "2026-10-01T22:13:16.198860+00:00",
+      "http_date": "Thu, 01 Oct 2026 22:13:16 GMT",
+      "official_source_url": "https://external-api.kalshi.com/trade-api/v2/events/KXAKSENATE-26NOV03",
+      "included_in_repository": true,
+      "repository_path": "research/public_reference_2026-10-01/raw/KXAKSENATE-26NOV03.json"
+    },
+    {
+      "filename": "SENATEAK-26.json",
+      "sha256": "825df6f56be52f0e90279114545dddc50861a1407ce2b8ef2c1b1c4be080474d",
+      "bytes": 6362,
+      "observed_at_utc": "2026-10-01T22:13:16.184360+00:00",
+      "http_date": "Thu, 01 Oct 2026 22:13:16 GMT",
+      "official_source_url": "https://external-api.kalshi.com/trade-api/v2/events/SENATEAK-26",
+      "included_in_repository": true,
+      "repository_path": "research/public_reference_2026-10-01/raw/SENATEAK-26.json"
+    },
+    {
+      "filename": "SENATEFLS-26.json",
+      "sha256": "ba7d8bc6af41305ec4e90304c6a1081d72f336362d98d22b96e79626cd8357ff",
+      "bytes": 6496,
+      "observed_at_utc": "2026-10-01T22:13:16.220081+00:00",
+      "http_date": "Thu, 01 Oct 2026 22:13:16 GMT",
+      "official_source_url": "https://external-api.kalshi.com/trade-api/v2/events/SENATEFLS-26",
+      "included_in_repository": true,
+      "repository_path": "research/public_reference_2026-10-01/raw/SENATEFLS-26.json"
+    },
+    {
+      "filename": "SENATEMA-26.json",
+      "sha256": "15fb3da4d51a2acf3122baf3e40b851f799bae804cb41544f65c7bde0932e458",
+      "bytes": 6500,
+      "observed_at_utc": "2026-10-01T22:13:16.226466+00:00",
+      "http_date": "Thu, 01 Oct 2026 22:13:16 GMT",
+      "official_source_url": "https://external-api.kalshi.com/trade-api/v2/events/SENATEMA-26",
+      "included_in_repository": true,
+      "repository_path": "research/public_reference_2026-10-01/raw/SENATEMA-26.json"
+    },
+    {
+      "filename": "SENATENC-26.json",
+      "sha256": "1fa3940ebfddd1a7685acd7352e538ed5d7d4dabd64053cd14b7bc3d43fae202",
+      "bytes": 6376,
+      "observed_at_utc": "2026-10-01T22:13:16.220921+00:00",
+      "http_date": "Thu, 01 Oct 2026 22:13:16 GMT",
+      "official_source_url": "https://external-api.kalshi.com/trade-api/v2/events/SENATENC-26",
+      "included_in_repository": true,
+      "repository_path": "research/public_reference_2026-10-01/raw/SENATENC-26.json"
+    },
+    {
+      "filename": "SENATERI-26.json",
+      "sha256": "06d15bf0cb7e745895d85250d543eceeaf0cac4db4a4a92d330b77bdd6673d02",
+      "bytes": 6430,
+      "observed_at_utc": "2026-10-01T22:13:16.161798+00:00",
+      "http_date": "Thu, 01 Oct 2026 22:13:16 GMT",
+      "official_source_url": "https://external-api.kalshi.com/trade-api/v2/events/SENATERI-26",
+      "included_in_repository": true,
+      "repository_path": "research/public_reference_2026-10-01/raw/SENATERI-26.json"
+    },
+    {
+      "filename": "events_GOVPARTYAZ-26.json",
+      "sha256": "6637f75424371764e7d98a04f98bda5b724bc69b7742d5693ce407bdd17ece15",
+      "bytes": 6571,
+      "observed_at_utc": "2026-10-01T22:16:06.402594+00:00",
+      "http_date": "Thu, 01 Oct 2026 22:16:06 GMT",
+      "official_source_url": "https://external-api.kalshi.com/trade-api/v2/events/GOVPARTYAZ-26",
+      "included_in_repository": true,
+      "repository_path": "research/public_reference_2026-10-01/raw/events_GOVPARTYAZ-26.json"
+    },
+    {
+      "filename": "events_GOVPARTYMI-26.json",
+      "sha256": "ef11a0de2a00dfb71da905d70935cf142ff7e0db6bb797ff28d56dccac07d3d2",
+      "bytes": 9160,
+      "observed_at_utc": "2026-10-01T22:16:06.435183+00:00",
+      "http_date": "Thu, 01 Oct 2026 22:16:06 GMT",
+      "official_source_url": "https://external-api.kalshi.com/trade-api/v2/events/GOVPARTYMI-26",
+      "included_in_repository": true,
+      "repository_path": "research/public_reference_2026-10-01/raw/events_GOVPARTYMI-26.json"
+    },
+    {
+      "filename": "kalshi_elections_series.json",
+      "sha256": "34d7edbc2fe2bf5a1c80ee160ad135cc23858a7efcdc02688a602d6c9fe1b70b",
+      "bytes": 4338182,
+      "observed_at_utc": "2026-10-01T22:14:55.531182+00:00",
+      "http_date": null,
+      "official_source_url": "https://external-api.kalshi.com/trade-api/v2/series?category=Elections",
+      "included_in_repository": false,
+      "repository_path": null,
+      "omission_reason": "Discovery-only all-election-series catalog (1,984 series; 4,338,182 bytes). Relevant event, orderbook and contract-series snapshots are separately included; broad unrelated discovery output is unnecessary for this report."
+    },
+    {
+      "filename": "markets_GOVPARTYAZ-26-D_orderbook.json",
+      "sha256": "cdbad4263799e7f61eb208bc407bfc1e88a89bca7dba0938e56e1023813dc113",
+      "bytes": 3751,
+      "observed_at_utc": "2026-10-01T22:16:06.508829+00:00",
+      "http_date": "Thu, 01 Oct 2026 22:16:06 GMT",
+      "official_source_url": "https://external-api.kalshi.com/trade-api/v2/markets/GOVPARTYAZ-26-D/orderbook",
+      "included_in_repository": true,
+      "repository_path": "research/public_reference_2026-10-01/raw/markets_GOVPARTYAZ-26-D_orderbook.json"
+    },
+    {
+      "filename": "markets_GOVPARTYMI-26-D_orderbook.json",
+      "sha256": "d848f60b2b21f8db4413a4795811a0e3891cac9713a7fddc3e3d44944bec2ed1",
+      "bytes": 4607,
+      "observed_at_utc": "2026-10-01T22:16:06.494219+00:00",
+      "http_date": "Thu, 01 Oct 2026 22:16:06 GMT",
+      "official_source_url": "https://external-api.kalshi.com/trade-api/v2/markets/GOVPARTYMI-26-D/orderbook",
+      "included_in_repository": true,
+      "repository_path": "research/public_reference_2026-10-01/raw/markets_GOVPARTYMI-26-D_orderbook.json"
+    },
+    {
+      "filename": "markets_KXAKSENATE-26NOV03-MPEL_orderbook.json",
+      "sha256": "e75f3158c02e9ed6078ea512ca87aa31f01481b66f535687f79140b5a1d06768",
+      "bytes": 4478,
+      "observed_at_utc": "2026-10-01T22:14:25.598150+00:00",
+      "http_date": "Thu, 01 Oct 2026 22:14:25 GMT",
+      "official_source_url": "https://external-api.kalshi.com/trade-api/v2/markets/KXAKSENATE-26NOV03-MPEL/orderbook",
+      "included_in_repository": true,
+      "repository_path": "research/public_reference_2026-10-01/raw/markets_KXAKSENATE-26NOV03-MPEL_orderbook.json"
+    },
+    {
+      "filename": "markets_SENATEAK-26-D_orderbook.json",
+      "sha256": "f049ae6dad35b4fb05486c9d0c00b2f27b5e3273d861a67ccd8e4d57ea18cc9e",
+      "bytes": 5242,
+      "observed_at_utc": "2026-10-01T22:14:25.509184+00:00",
+      "http_date": "Thu, 01 Oct 2026 22:14:25 GMT",
+      "official_source_url": "https://external-api.kalshi.com/trade-api/v2/markets/SENATEAK-26-D/orderbook",
+      "included_in_repository": true,
+      "repository_path": "research/public_reference_2026-10-01/raw/markets_SENATEAK-26-D_orderbook.json"
+    },
+    {
+      "filename": "markets_SENATEFLS-26-D_orderbook.json",
+      "sha256": "7c78824264fb83d75a8d9486ecd21e1d529d9f093cf8d75a2c4662fb0ece03e1",
+      "bytes": 7926,
+      "observed_at_utc": "2026-10-01T22:14:25.515160+00:00",
+      "http_date": "Thu, 01 Oct 2026 22:14:25 GMT",
+      "official_source_url": "https://external-api.kalshi.com/trade-api/v2/markets/SENATEFLS-26-D/orderbook",
+      "included_in_repository": true,
+      "repository_path": "research/public_reference_2026-10-01/raw/markets_SENATEFLS-26-D_orderbook.json"
+    },
+    {
+      "filename": "markets_SENATEMA-26-D_orderbook.json",
+      "sha256": "287596c8a0d8ac5ddab392e0bc8a89d0230b04eb0c6d84a84944f584bde45c22",
+      "bytes": 3452,
+      "observed_at_utc": "2026-10-01T22:14:25.508237+00:00",
+      "http_date": "Thu, 01 Oct 2026 22:14:25 GMT",
+      "official_source_url": "https://external-api.kalshi.com/trade-api/v2/markets/SENATEMA-26-D/orderbook",
+      "included_in_repository": true,
+      "repository_path": "research/public_reference_2026-10-01/raw/markets_SENATEMA-26-D_orderbook.json"
+    },
+    {
+      "filename": "markets_SENATENC-26-D_orderbook.json",
+      "sha256": "2f33dc37ce1e4a288275e8a851b24d366aefa94629cb4c2f55b086c1c177ece4",
+      "bytes": 5781,
+      "observed_at_utc": "2026-10-01T22:14:25.504640+00:00",
+      "http_date": "Thu, 01 Oct 2026 22:14:25 GMT",
+      "official_source_url": "https://external-api.kalshi.com/trade-api/v2/markets/SENATENC-26-D/orderbook",
+      "included_in_repository": true,
+      "repository_path": "research/public_reference_2026-10-01/raw/markets_SENATENC-26-D_orderbook.json"
+    },
+    {
+      "filename": "markets_SENATERI-26-D_orderbook.json",
+      "sha256": "f123eb21e77cb42b1540b92050c05249bc4f5a8947c2091de9d26eecd50a9fc2",
+      "bytes": 2731,
+      "observed_at_utc": "2026-10-01T22:14:25.597521+00:00",
+      "http_date": "Thu, 01 Oct 2026 22:14:25 GMT",
+      "official_source_url": "https://external-api.kalshi.com/trade-api/v2/markets/SENATERI-26-D/orderbook",
+      "included_in_repository": true,
+      "repository_path": "research/public_reference_2026-10-01/raw/markets_SENATERI-26-D_orderbook.json"
+    },
+    {
+      "filename": "series_KXAKSENATE.json",
+      "sha256": "c2365841b5b855e7a9f2c9caf2158a2a36c5bdb45732f570a5db6cda8c9346f8",
+      "bytes": 2072,
+      "observed_at_utc": "2026-10-01T22:14:30.248248+00:00",
+      "http_date": "Thu, 01 Oct 2026 22:14:30 GMT",
+      "official_source_url": "https://external-api.kalshi.com/trade-api/v2/series/KXAKSENATE",
+      "included_in_repository": true,
+      "repository_path": "research/public_reference_2026-10-01/raw/series_KXAKSENATE.json"
+    },
+    {
+      "filename": "series_SENATEAK.json",
+      "sha256": "3a9c32b1e53e8469f256fe43531362cf9bfc5bca0ef03d4affe401752615592a",
+      "bytes": 3226,
+      "observed_at_utc": "2026-10-01T22:14:30.312046+00:00",
+      "http_date": "Thu, 01 Oct 2026 22:14:30 GMT",
+      "official_source_url": "https://external-api.kalshi.com/trade-api/v2/series/SENATEAK",
+      "included_in_repository": true,
+      "repository_path": "research/public_reference_2026-10-01/raw/series_SENATEAK.json"
+    },
+    {
+      "filename": "series_SENATEFLS.json",
+      "sha256": "e2624e9da8d394cfb0540f841bf8a6c170fffb14cbb0808ff2a625c5f0824df2",
+      "bytes": 3244,
+      "observed_at_utc": "2026-10-01T22:14:30.242446+00:00",
+      "http_date": "Thu, 01 Oct 2026 22:14:30 GMT",
+      "official_source_url": "https://external-api.kalshi.com/trade-api/v2/series/SENATEFLS",
+      "included_in_repository": true,
+      "repository_path": "research/public_reference_2026-10-01/raw/series_SENATEFLS.json"
+    },
+    {
+      "filename": "series_SENATEMA.json",
+      "sha256": "f8b5e965731e300f71c1e68f862fe51a9ccdbc5db6b2b964194c1eb305740f25",
+      "bytes": 3233,
+      "observed_at_utc": "2026-10-01T22:14:30.276160+00:00",
+      "http_date": "Thu, 01 Oct 2026 22:14:30 GMT",
+      "official_source_url": "https://external-api.kalshi.com/trade-api/v2/series/SENATEMA",
+      "included_in_repository": true,
+      "repository_path": "research/public_reference_2026-10-01/raw/series_SENATEMA.json"
+    },
+    {
+      "filename": "series_SENATENC.json",
+      "sha256": "8f762b3d8fc6d8ded95b2b7142f1b886698788fca8ca39a5c1931a85a264c65c",
+      "bytes": 3234,
+      "observed_at_utc": "2026-10-01T22:14:30.264333+00:00",
+      "http_date": "Thu, 01 Oct 2026 22:14:30 GMT",
+      "official_source_url": "https://external-api.kalshi.com/trade-api/v2/series/SENATENC",
+      "included_in_repository": true,
+      "repository_path": "research/public_reference_2026-10-01/raw/series_SENATENC.json"
+    },
+    {
+      "filename": "series_SENATERI.json",
+      "sha256": "7b7c74533ae06d892ec24051d0b34397994a6dc8b4ff60bfe76ce42cc149054f",
+      "bytes": 3232,
+      "observed_at_utc": "2026-10-01T22:14:30.198249+00:00",
+      "http_date": "Thu, 01 Oct 2026 22:14:30 GMT",
+      "official_source_url": "https://external-api.kalshi.com/trade-api/v2/series/SENATERI",
+      "included_in_repository": true,
+      "repository_path": "research/public_reference_2026-10-01/raw/series_SENATERI.json"
+    }
+  ],
+  "limitations": [
+    "Observation and HTTP Date timestamps are retrieval times, not exchange per-order quote timestamps.",
+    "No Polymarket API JSON was retrieved: unauthenticated Gamma request returned HTTP 403.",
+    "Official public web page observations and rules links are cited in report; web-tool caches may be stale.",
+    "No fresh simulation book comparison or independent calibrated election probability is established by this report."
+  ],
+  "source_report_sha256": "cd55a2b3814f55b5aec336c2f0a03208f7c001c0e65effe0202792744db157cb",
+  "report_repository_path": "research/public_reference_2026-10-01/public_reference_report_2026-10-01.md",
+  "source_manifest_sha256": "305bd857ce1c2efbafe846d0d8e56edb4299af988b3d15a8c52c10337cd03961",
+  "publication_created_at_utc": "2026-10-01T22:22:26.724581+00:00",
+  "repository_root": "GodlyDonuts/predictions-cup-2026",
+  "repository_directory": "research/public_reference_2026-10-01",
+  "publication_notes": [
+    "Repository paths are relative to the repository root. Original filenames and snapshot SHA-256, bytes, observation times, HTTP Date values and source URLs are preserved.",
+    "Snapshot hashes refer to the saved UTF-8 JSON wrapper bytes including retrieval metadata, not a separately captured HTTP wire response.",
+    "24 required source snapshots copied byte-for-byte to raw/. The 4.3 MB discovery-only all-series catalog is intentionally omitted; its original provenance entry remains.",
+    "Report attribution and relative paths were sanitized for publication; source_report_sha256 and source_manifest_sha256 preserve the original input lineage.",
+    "The original broad discovery snapshot had no HTTP Date captured; null is retained, not inferred."
+  ]
+}
