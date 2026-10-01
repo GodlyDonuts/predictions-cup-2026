@@ -7,6 +7,10 @@ import {metadataPairs,planPair} from './strategy.mjs';
 
 process.chdir(path.dirname(fileURLToPath(import.meta.url)));
 if(process.argv.includes('--live'))throw new Error('Live execution disabled: dot owns execution. Resolve ownership and implement a shared lease before enabling trading.');
+if(fs.existsSync('STOP')){
+  console.log(JSON.stringify({event:'stopped',reason:'STOP_present',mode:'read_only'}));
+  process.exit(0);
+}
 const cfg=JSON.parse(fs.readFileSync('config.json','utf8'));
 const once=process.argv.includes('--once');
 const sample=process.argv.includes('--sample');
