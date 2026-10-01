@@ -36,7 +36,8 @@ export class PaperEngine {
     const book = this.books.get(instrument); const old = this.recoveryBarriers.get(instrument);
     if (book) book.invalid = true;
     const sequenceFloor = [observedSequence, book?.watermark || 0n, old?.sequence || 0n].reduce((a, b) => a > b ? a : b);
-    this.recoveryBarriers.set(instrument, {sequence: sequenceFloor, time: Math.max(at, old?.time ?? at)});
+    this.recoveryBarriers.set(instrument, {sequence: sequenceFloor, time: Math.max(at, old?.time ?? at),
+      observedSourceTime: Math.max(at, old?.observedSourceTime ?? at)});
   }
   schedule(at, kind, order) {
     if (!Number.isSafeInteger(at)) throw new Error('Scheduled timestamp overflow');
@@ -114,7 +115,8 @@ export class PaperEngine {
       // Even an unusable snapshot proves that this sequence has been observed. Keep
       // the recovery barrier independent from the last successfully applied book.
       if (seq > barrier.sequence) barrier.sequence = seq;
-      if (!e.authoritative || seq < barrier.sequence || occurred <= barrier.time) {
+      barrier.observedSourceTime = Math.max(barrier.observedSourceTime, occurred);
+      if (!e.authoritative || seq < barrier.sequence || occurred <= barrier.time || occurred < barrier.observedSourceTime) {
         this.stats.staleVersions++; this.note('snapshot_before_recovery_barrier', {eventId: e.eventId}); return;
       }
     }

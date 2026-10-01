@@ -147,6 +147,15 @@ test('repeated gaps raise recovery time floor without lowering observed sequence
   assert.equal(r.orders[1].reason, 'book_not_fresh_at_submission'); assert.equal(r.orders[2].reason, 'book_not_fresh_at_submission');
   assert.equal(r.fills.length, 1); assert.equal(r.fills[0].eventId, 'trade-12');
 });
+test('rejected recovery snapshots retain maximum observed source time as well as sequence', () => {
+  const r = run([snapshot(0, {bids: []}), order(), event('gap', 5, {instrument: 'synthetic:YES', reason: 'disconnect'}),
+    snapshot(10, {sequence: '10', authoritative: false, bids: []}),
+    snapshot(11, {sequence: '10', occurredAt: timestamp(8), bids: []}), order(12),
+    snapshot(13, {sequence: '10', occurredAt: timestamp(10), bids: []}),
+    trade(14, {sequence: '11', bookSequence: '10', quantity: 2})]);
+  assert.equal(r.orders[1].reason, 'book_not_fresh_at_submission');
+  assert.equal(r.fills.length, 1); assert.equal(r.fills[0].eventId, 'trade-14');
+});
 test('replenishment is conservatively moved ahead, cancellation is never inferred', () => {
   const r = run([snapshot(), order(), trade(2, {quantity: 5}), snapshot(3, {sequence: '3', bids: [level('0.400', 20)]}), trade(4, {bookSequence: '3', quantity: 19})]);
   assert.equal(r.fills.length, 0); assert.equal(r.orders[0].queueAhead, '1');

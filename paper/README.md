@@ -84,7 +84,10 @@ and config byte checksums plus the canonical event checksum appear in every CLI 
    sequence barrier independently from the last applied book, including gaps before
    the first book. An authoritative snapshot must be sourced strictly after the last
    invalidation/receipt of skipped evidence and have a sequence at least as high as
-   every version observed during recovery. An in-flight pre-gap snapshot cannot
+   every version observed during recovery. Its source time must also be at least the
+   highest source timestamp observed on rejected recovery snapshots; an authoritative
+   upgrade at the same sequence/time is allowed, a timestamp rollback is not.
+   An in-flight pre-gap snapshot cannot
    restore freshness or roll back the watermark. Recovery of books does not
    reconstruct missed trades.
 
