@@ -22,11 +22,11 @@ The supplied key is stored outside Git and OneDrive, encrypted with Windows DPAP
 
 ## Candidate strategy
 
-For two opposing **party winner** contracts concerning the same single-seat general-election race, buying NO on both pays at least one SUSQie per pair under consistent normal settlement. A third-party winner would pay both NO sides. The scanner matches structured `raceId`, `stageId`, `electionDate`, settlement date, and `resolutionType`; market titles alone do not prove a relationship.
+Opposing party-winner contracts with matching structured race, stage, election date, and valid settlement date are **unverified metadata hypotheses**. Matching metadata does not prove single-seat rules, exclusive winners, or a settlement truth table. Fusion or joint endorsement could allow both YES contracts to settle positively, losing both NO legs. The scanner publishes no minimum payout or minimum profit and cannot emit an executable structural signal. Exact source-backed resolution rules and all possible settlement outcomes must be checked before any hedge claim.
 
-NO purchase cost is the complement of an executable YES bid. The scanner uses order-book quantities, not displayed valuations or last-traded prices, and rounds cost upward to the 0.005 tick. It requires a gross quote difference of at least 0.02 per share and uses at most 25% of top-level depth, 250 shares per leg, and 250 SUSQies per package, preserving an 80,000 cash research reserve. Existing holdings in either contract exclude that pair. These are research sizing assumptions, not a user-approved execution allocation.
+Hypothetical NO quote cost is the complement of a YES bid, rounded upward to the 0.005 tick. The scanner requires a quote difference of at least 0.02 from one unit; this is a filter, not an expected return or guaranteed edge. Research sizing uses at most 25% of top-level depth, 250 shares per leg, and 250 SUSQies per package, preserving an 80,000 cash reserve. Existing holdings or any own open order on either exchange exclude the pair entirely. An open order with an unknown exchange excludes all pairs conservatively. This prevents our own resting liquidity from supporting a quote estimate. Account and book observations can still become stale.
 
-All candidate cost/profit accounting uses integer thousandths of a SUSQie and decimal strings. Costs, mark-to-market valuations, and gross normal-settlement payout floors are distinct. None of the calculated floor is realized profit.
+Cost accounting uses integer thousandths and decimal strings. Candidate records carry `classification: unverified_metadata_hypothesis`, `settlementVerified: false`, and `eligibleForExecution: false`. Historical records from older scanner versions must not be interpreted as verified signals.
 
 Candidates are **not approved for execution**: sequential books can be stale, fees are unverified, orders can fill unequally, and refunds/rule changes can invalidate the relationship. API multi-leg placement is atomic admission, not a guarantee of equal fills. A future executor needs fresh complete account reconciliation, verified rules/fees, a real shared lease, a central per-account limiter, persisted intents, uncertain-result recovery, and bounded partial-fill handling before enabling any orders.
 
@@ -35,14 +35,14 @@ Candidates are **not approved for execution**: sequential books can be stale, fe
 - `data/status.json`: timestamp and latest completed read-only scan.
 - `data/portfolio.json`: timestamped account positions and observed cash.
 - `data/orders.json`: historical open-order observation.
-- `data/pairs.json`: structurally verified candidate relationships.
-- `data/opportunities.json`: gross pricing candidates, limitations, book versions and observation times.
+- `data/pairs.json`: unverified metadata matches.
+- `data/opportunities.json`: unverified quote hypotheses, limitations, book versions and observation times.
 - `data/sources/`: append-only source responses with request/receipt timestamps.
 - `logs/bot.jsonl`: scanner progress and findings; no credentials.
 
 Runtime files stay local and are ignored by Git. Snapshots are historical observations, not live promises. Price quotes should never be executed from these files without fresh revalidation.
 
-REST admissions are spaced 1.5 seconds apart (at most about 40/minute), with four network reads in flight during metadata discovery. This limiter applies to this process only; every agent and key shares the account's 100-read/30-write budget. It leaves headroom but does not coordinate another host. Agree on allocations in issue #1 before concurrently running other high-rate clients. The research implementation does not yet use realtime feeds or perform replay/backtesting of a complete tournament strategy.
+REST admissions are spaced 1.5 seconds apart (at most about 40/minute), with four network reads in flight during metadata discovery. Cooldowns and retries use the same serialized admission queue, maintaining spacing after a pause; Retry-After supports delta seconds and HTTP dates with a finite fallback. This limiter applies to this process only; every agent and key shares the account's 100-read/30-write budget. It leaves headroom but does not coordinate another host. Agree on allocations in issue #1 before concurrently running other high-rate clients. The research implementation does not yet use realtime feeds or perform replay/backtesting of a complete tournament strategy.
 
 There is no evidence yet that this narrow strategy will win or even find sufficient opportunities. External fair-value forecasts and correlated portfolio risk research remain necessary for a broader competition strategy.
 

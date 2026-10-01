@@ -1,14 +1,14 @@
-// Two different party winners in the same single-seat race cannot both win.
-// Buying NO on both pays at least one unit per matched pair, even if a third party wins.
+// Metadata matches are research hypotheses, not proof of exclusive settlement.
 export function raceIdentity(node) {
   const d = node?.contract_details;
   if (node?.node_type !== 'contract' || node.contract_type !== 'Election Outcome' ||
       d?.resolutionType !== 'Party Winner' || d?.raceStage !== 'General' ||
-      !d.raceId || !d.stageId || !d.electionDate || !d.winnerName) return null;
+      !d.raceId || !d.stageId || !d.electionDate || !d.winnerName ||
+      !node.settlement_date || !Number.isFinite(Date.parse(node.settlement_date))) return null;
   return JSON.stringify([d.raceId, d.stageId, d.electionDate, node.settlement_date, d.resolutionType]);
 }
 
-export function verifiedPairs(markets, nodes) {
+export function metadataPairs(markets, nodes) {
   const groups = new Map();
   for (const m of markets) {
     if (m.status !== 'open' || m.isComposite || m.exchanges?.length !== 1) continue;
@@ -41,10 +41,13 @@ function noOffer(book) {
   return {priceMills, quantity:Math.floor(bid.quantity)};
 }
 
-export function planPair(pair, books, cfg, cash, positions = []) {
+export function planPair(pair, books, cfg, cash, positions = [], openOrders = []) {
   if (pair.length !== 2 || pair[0].exchangeId === pair[1].exchangeId) return null;
   // Avoid interacting with the user's existing holdings or previously filled packages.
   if (positions.some(p => pair.some(m => m.exchangeId === p.exchangeId) && p.quantity !== 0)) return null;
+  // Conservatively exclude the entire exchange, independent of order side/price.
+  // Unknown order identifiers cannot establish which books are unaffected.
+  if (openOrders.some(o => o.exchangeId == null || pair.some(m => String(m.exchangeId) === String(o.exchangeId)))) return null;
   const offers = pair.map(m => noOffer(books[m.exchangeId]));
   if (offers.some(o => !o)) return null;
   const cost = offers[0].priceMills + offers[1].priceMills;
@@ -53,7 +56,8 @@ export function planPair(pair, books, cfg, cash, positions = []) {
   const quantity = Math.floor(Math.min(cfg.maxSharesPerLeg, ...offers.map(o => o.quantity * 0.25),
     toMills(cfg.maxPackageCost) / cost, Math.max(0, toMills(cash) - toMills(cfg.cashReserve)) / cost));
   if (quantity < 1) return null;
-  return {pair, quantity, unitCost:formatMills(cost), minimumPayout:quantity, minimumProfit:formatMills(edge*quantity),
+  return {pair, quantity, unitCost:formatMills(cost), classification:'unverified_metadata_hypothesis',
+    settlementVerified:false, eligibleForExecution:false, quoteDifference:formatMills(edge),
     worstCaseCost:formatMills(cost*quantity),
     legs:pair.map((m,i) => ({exchangeId:m.exchangeId,side:'no',action:'buy',quantity,
       price:Number(formatMills(offers[i].priceMills)),tournamentId:cfg.tournamentId}))};

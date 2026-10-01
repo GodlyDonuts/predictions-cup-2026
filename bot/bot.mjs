@@ -3,7 +3,7 @@ import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {setTimeout as sleep} from 'node:timers/promises';
 import {Api,loadKey} from './api.mjs';
-import {verifiedPairs,planPair} from './strategy.mjs';
+import {metadataPairs,planPair} from './strategy.mjs';
 
 process.chdir(path.dirname(fileURLToPath(import.meta.url)));
 if(process.argv.includes('--live'))throw new Error('Live execution disabled: dot owns execution. Resolve ownership and implement a shared lease before enabling trading.');
@@ -61,9 +61,9 @@ async function cycle() {
   }));
   const failed=verification.find(r=>r.status==='rejected');if(failed)throw failed.reason;
   if(shouldStop())return;
-  const pairs=verifiedPairs(sample?candidates:markets,nodes);
+  const pairs=metadataPairs(sample?candidates:markets,nodes);
   save('pairs',pairs);
-  log('scan_start',{mode:'read_only',balance:tournament.myBalance,markets:markets.length,verifiedPairs:pairs.length});
+  log('scan_start',{mode:'read_only',balance:tournament.myBalance,markets:markets.length,metadataPairs:pairs.length});
   const opportunities=[];let scanned=0;
   for(const pair of pairs){
     if(shouldStop())return;
@@ -72,12 +72,12 @@ async function cycle() {
       const s=await source(`/exchanges/${leg.exchangeId}/orderbook?depth=5&${scope()}`);
       books[leg.exchangeId]=s.response;observationWindow.push({exchangeId:leg.exchangeId,requestStartedAt:s.requestStartedAt,receivedAt:s.receivedAt,asOf:s.response.asOf});
     }
-    const plan=planPair(pair,books,cfg,tournament.myBalance,portfolio.positions);
+    const plan=planPair(pair,books,cfg,tournament.myBalance,portfolio.positions,orders);
     if(plan){
       const candidate={...plan,observationWindow,feesVerified:false,eligibleForExecution:false,
-        limitations:['Sequential snapshots can be stale','Partial fills can create directional exposure','Fee schedule and exceptional settlement cases need verification']};
+        limitations:['Exact settlement rules and exclusive outcomes are unverified','Sequential snapshots can be stale','Partial fills can create directional exposure','Fee schedule and exceptional settlement cases need verification']};
       opportunities.push(candidate);
-      log('research_candidate',{titles:pair.map(p=>p.title),quantity:plan.quantity,cost:plan.worstCaseCost,grossMinimumProfitBeforeFees:plan.minimumProfit});
+      log('research_candidate',{titles:pair.map(p=>p.title),classification:plan.classification,quantity:plan.quantity,cost:plan.worstCaseCost,quoteDifference:plan.quoteDifference});
     }
     scanned++;if(scanned%20===0)log('book_scan_progress',{scanned,total:pairs.length});
   }
