@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "initialCash": "100.000000",
+  "maxDataAgeMs": 10000,
+  "orderLatencyMs": 10,
+  "cancelLatencyMs": 50,
+  "maxPositionShares": 50,
+  "costs": {"feeBps": 10, "feePerShare": "0.000100", "assumption": "unverified_scenario"},
+  "split": {"trainEnd": "2026-01-01T00:00:00.200Z", "validationEnd": "2026-01-01T00:00:00.400Z", "labelHorizonMs": 20, "embargoMs": 10}
+}

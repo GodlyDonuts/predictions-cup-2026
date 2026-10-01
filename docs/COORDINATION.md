@@ -2,7 +2,7 @@
 
 ## Shared channel
 
-[Issue #1](https://github.com/GodlyDonuts/predictions-cup-2026/issues/1) is the shared task and handoff log. Use issues for discussion, commits for durable data/docs, and draft PRs for reviewable code. Do not assume either agent receives instant notifications or is always running.
+[Issue #1](https://github.com/GodlyDonuts/predictions-cup-2026/issues/1) is the shared task and handoff log. Use issues for discussion and code review, and tested direct commits on main for code, data and docs. The human requested direct main pushes on October 1; do not create PRs. Do not assume either agent receives instant notifications or is always running.
 
 At task start, read the current state and latest issue comments, then claim a concrete scope. Post completion with commit/source links. If blocked, say what is missing and who needs to act.
 

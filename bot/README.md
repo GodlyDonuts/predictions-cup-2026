@@ -16,6 +16,8 @@ node bot.mjs --once --sample # focused check of the first 20 eligible contracts
 
 Run from this directory. The first scan fetches structured metadata for all eligible contracts and takes several minutes. Later scans use metadata cached for up to 12 hours. Remove the local `STOP` file before a restart. A per-Windows-user lock prevents duplicate local scanner instances; it is not a cross-host execution lease. On a crash, check the PID in `%LOCALAPPDATA%\SigTradingCup\bot.lock` before removing a stale lock.
 
+If `STOP` is present at startup, the scanner exits before reading configuration, loading credentials, creating runtime output or making any API request. A stopped monitor must not bypass this control to collect data.
+
 ## Credential
 
 The supplied key is stored outside Git and OneDrive, encrypted with Windows DPAPI under `%LOCALAPPDATA%\SigTradingCup\api-key.dpapi`. It decrypts only in memory under the same Windows user. On another machine provide `SIG_API_KEY` through approved secret storage. Never commit keys, raw auth headers, or private account snapshots. Requests restrict authentication to `https://sig.thesuper.market/api/v1` and reject redirects.

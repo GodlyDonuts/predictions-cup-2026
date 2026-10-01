@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "mode": "read_only_scaffold",
+  "state": "stopped",
+  "topic": "tournament:11111111-1111-4111-8111-111111111111:market:277",
+  "epoch": 2,
+  "revision": 1,
+  "reasons": [],
+  "coverage": {
+    "configuredExchanges": 2,
+    "observedExchanges": 2,
+    "versionedExchanges": 2,
+    "booksReady": false,
+    "tradeTapeComplete": false,
+    "universeComplete": false
+  },
+  "metrics": {
+    "events": 5,
+    "acceptedBatches": 3,
+    "duplicateBatches": 1,
+    "outOfOrderBatches": 0,
+    "gaps": 1,
+    "schemaErrors": 0,
+    "booksApplied": 19,
+    "olderBooks": 0,
+    "trades": 1,
+    "duplicateTrades": 0,
+    "tradeIdEvictions": 0,
+    "reconnects": 1,
+    "recoveries": 6,
+    "recoveryDiscards": 0,
+    "clockSkewSamples": 0,
+    "eventAge": {
+      "count": 8,
+      "sumMs": 900,
+      "maxMs": 200,
+      "meanMs": 112.5
+    },
+    "recoveryLatency": {
+      "count": 6,
+      "sumMs": 0,
+      "maxMs": 0,
+      "meanMs": 0
+    }
+  }
+}

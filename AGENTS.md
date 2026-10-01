@@ -8,7 +8,7 @@ Work only on the 2026 Susquehanna Predictions Cup in this repository. Read `READ
 
 - **dot:** single execution coordinator for any simulated order separately authorized by the user.
 - **Codex:** initially research and development only. Do not place, modify, or cancel orders; enable an autonomous trader; create API keys; or change account settings as part of repository setup/research.
-- Use separate branches and draft PRs for code changes. Claim work in issue #1 before overlapping edits, and link results/commits when done.
+- Per the human's October 1 instruction, push tested code changes directly to main; do not create PRs. Review code through issue #1 and commit links. Claim work in issue #1 before overlapping edits, and link results/commits when done.
 
 ## One execution owner
 

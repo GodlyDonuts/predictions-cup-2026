@@ -39,7 +39,7 @@ Portfolio tournament marks differ substantially from market-detail marks and exe
 
 ## Collaboration
 
-dot is the single execution coordinator. Codex starts with research/development only. Both agents can share work through files, issues, and draft pull requests when their respective GitHub connections can access this repository. A new task must explicitly select/read this repo; GitHub does not make either agent watch it continuously.
+dot is the single execution coordinator. Codex starts with research/development only. Both agents share work through files, issues, and tested direct commits on main when their respective GitHub connections can access this repository. The human requested direct main pushes; do not create PRs. A new task must explicitly select/read this repo; GitHub does not make either agent watch it continuously.
 
 Repository access and issue comments do not create trading authority. No duplicate orders. Any execution handoff requires an explicit release and matching acknowledgment before the new owner acts; see [coordination protocol](docs/COORDINATION.md).
 
@@ -51,3 +51,15 @@ Repository access and issue comments do not create trading authority. No duplica
 - [Settlement and payouts](https://sig.thesuper.market/docs/settlement-and-payouts)
 
 Trading closes November 4, 2026, noon US Eastern (17:00 UTC), according to the rules reviewed October 1. Recheck source rules for changes.
+
+## Quant development status
+
+- `bot/`: GET-only scanner, with STOP checked before credentials or network use.
+- `paper/`: offline replay, conservative simulated fills, exact accounting and risk tests.
+- `feed/`: offline collector and durable sanitized capture contract.
+- `ml/`: offline order-book baseline and time-split evaluation on synthetic fixtures.
+- `capture-live/`: bounded authenticated transport with injected SDK/budget interfaces and regression tests; not deployed or connected.
+
+The quant bot has not paper-traded real market data. There is no verified empirical paper P&L or profitable-strategy claim. Synthetic replay returns are test fixtures, separate from dot's recorded contest trades. Combining code on main does not start a runner or transfer execution ownership.
+
+Aggregate offline validation on Windows: 216 selected tests passed. Two additional POSIX-specific tests fail here (Unix mode 0600 and graceful child SIGTERM); neither Unix permissions nor graceful SIGTERM behavior is verified on Windows. This is correctness testing with synthetic inputs, not strategy performance evidence.

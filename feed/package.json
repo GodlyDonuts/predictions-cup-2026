@@ -1,0 +1,7 @@
+{
+  "name": "predictions-cup-readonly-feed-scaffold",
+  "private": true,
+  "type": "module",
+  "engines": {"node": ">=22"},
+  "scripts": {"test": "node --test test/*.test.mjs", "replay": "node cli.mjs --replay fixtures/scenario.jsonl"}
+}

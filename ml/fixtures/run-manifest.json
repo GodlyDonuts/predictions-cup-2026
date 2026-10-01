@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "dataKind": "synthetic",
+  "warning": "SYNTHETIC-ONLY SOFTWARE CHECK. No observed market performance.",
+  "fixtureGenerator": "ml/generate-fixture.mjs",
+  "fixtureGeneratorSha256": "5975acacaeb6e5e793631e551c423331199fcc987de9a86f2767dc2287054d73",
+  "fixtureSeed": 20261001,
+  "input": "ml/fixtures/synthetic-books.jsonl",
+  "inputSha256": "331141e36e67b9c196386b5af3ba60579fe3872c14f602ac879f0d2d8d0441e8",
+  "config": "ml/fixtures/config.json",
+  "configFileSha256": "22cfe3d7d9b3449b3fc5279e4925e13c412d3dedc8a015bb1e066131e9ede307",
+  "configCanonicalSha256": "fea00be9b65420d25fb17521f8fe3a3f52c0e5ab8f79acf76530b728217adb6d",
+  "runtime": {
+    "implementationSha256": "f6743ca4066365abe3176b0b4a92f91c0e20da38dce0bfa5c3c24aec93821e63",
+    "files": [
+      {
+        "path": "ml/core.mjs",
+        "sha256": "23164d6a8d61e69102c18827cb5bda159c96f4e4490fd24d53a16336f9be7a6d"
+      },
+      {
+        "path": "ml/model.mjs",
+        "sha256": "d9a88849212435030afacdfbb6970824c852de647afbb57daf27bfa8920dd438"
+      },
+      {
+        "path": "ml/experiment.mjs",
+        "sha256": "e2bff7a97b205077f67d58d5a995e7b21fb2c82e6629a427357c96fbc71d69ef"
+      },
+      {
+        "path": "ml/cli.mjs",
+        "sha256": "2bd8436985ac24bf85f45f24f97cb305d36d7922354673190f27cd77e74d8886"
+      }
+    ]
+  },
+  "testedNode": "v24.19.0",
+  "commands": [
+    [
+      "node",
+      "--test",
+      "ml/test/*.test.mjs"
+    ],
+    [
+      "node",
+      "ml/cli.mjs",
+      "develop",
+      "--input",
+      "ml/fixtures/synthetic-books.jsonl",
+      "--config",
+      "ml/fixtures/config.json",
+      "--out",
+      "ml/runs/synthetic-dev-v2"
+    ],
+    [
+      "node",
+      "ml/cli.mjs",
+      "final",
+      "--input",
+      "ml/fixtures/synthetic-books.jsonl",
+      "--config",
+      "ml/fixtures/config.json",
+      "--selection",
+      "ml/runs/synthetic-dev-v2/selection.json",
+      "--out",
+      "ml/runs/synthetic-final-v2"
+    ]
+  ],
+  "golden": "ml/fixtures/expected-synthetic.json",
+  "goldenSha256": "58bad14fe92a980397da06c5ff79c0caa1c0ddcb5741945f70466711d3ca7e2b"
+}
