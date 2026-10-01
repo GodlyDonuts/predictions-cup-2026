@@ -1,0 +1,228 @@
+{
+  "session_started_at_utc": "2026-10-01T20:36:32Z",
+  "last_reconciled_at_utc": "2026-10-01T20:58:30Z",
+  "execution_coordinator": "dot",
+  "tournament": "Midterm Elections",
+  "tournament_slug": "midterm-elections",
+  "currency": "Free nonmonetary nonredeemable SUSQies",
+  "submission_method": "Official signed-in UI, each order submitted once",
+  "new_buy_commitment_cap": "6250.00",
+  "cancel_remaining_by_utc": "2026-10-01T20:57:00Z",
+  "expiry_ui": "No expiry control exposed; resting orders require manual cancellation",
+  "cash": {
+    "before_session_exact_ui": "92751.88",
+    "after_RI_sell_exact_ui": "94751.36",
+    "after_RI_sell_verified_at_utc": "2026-10-01T20:39:53Z",
+    "after_AK_one_share_fill_exact_ui": null,
+    "current_portfolio_display_rounded": "88,730",
+    "current_exact_ui": "88729.50",
+    "current_exact_verified_at_utc": "2026-10-01T20:58:30Z"
+  },
+  "orders": [
+    {
+      "intent_id": "dot-20261001T203632-RI387-BYES-5000-0935",
+      "market_id": 387,
+      "action": "BUY",
+      "side": "YES",
+      "quantity": 5000,
+      "limit": "0.935",
+      "max_cost": "4675.00",
+      "submitted_at_utc": "2026-10-01T20:37:20Z",
+      "order_id": 1023469,
+      "status": "CANCELED",
+      "filled_quantity": 4756,
+      "remaining_quantity": 0,
+      "exact_price_verified": "Book showed Includes 5000 of yours at 0.935; portfolio price rounds to 0.94",
+      "last_verified_at_utc": "2026-10-01T20:58:06Z",
+      "canceled_quantity": 244,
+      "cancel_submitted_at_utc": "2026-10-01T20:57:06Z",
+      "cancel_submissions": 1,
+      "cost": "4446.86"
+    },
+    {
+      "intent_id": "dot-20261001T203632-RI387-SYES-2072-0965",
+      "market_id": 387,
+      "action": "SELL",
+      "side": "YES",
+      "quantity": 2072,
+      "limit": "0.965",
+      "submitted_at_utc": "2026-10-01T20:38:38Z",
+      "order_id": null,
+      "status": "FILLED",
+      "filled_quantity": 2072,
+      "remaining_quantity": 0,
+      "proceeds": "1999.48",
+      "realized_pnl": "0.00",
+      "verification": "100-share initial fill followed by zero RI holdings, no remaining sell order, and exact cash increase 1999.48. Completed order ID not exposed before fill; not fabricated. Transaction history confirms separate sell fills 100 @0.965 for96.50 and1972 @0.965 for1902.98.",
+      "last_verified_at_utc": "2026-10-01T20:57:59Z"
+    },
+    {
+      "intent_id": "dot-20261001T203632-AK377-BNO-5000-0315",
+      "market_id": 377,
+      "exchange_id": 1066,
+      "action": "BUY",
+      "side": "NO",
+      "quantity": 5000,
+      "limit": "0.315",
+      "max_cost": "1575.00",
+      "submitted_at_utc": "2026-10-01T20:40:25Z",
+      "order_id": 1026814,
+      "status": "FILLED",
+      "filled_quantity": 5000,
+      "remaining_quantity": 0,
+      "exact_price_verified": "Own complement YES ask at 0.685; portfolio NO Buy 5000, later remaining4999; price rounded to0.32",
+      "last_verified_at_utc": "2026-10-01T20:58:30Z",
+      "cost": "1575.00"
+    },
+    {
+      "intent_id": "dot-20261001T203632-AK377-SNO-5000-0335",
+      "market_id": 377,
+      "exchange_id": 1066,
+      "action": "SELL",
+      "side": "NO",
+      "quantity": 5000,
+      "limit": "0.335",
+      "submitted_at_utc": "2026-10-01T20:42:00Z",
+      "order_id": 1028485,
+      "status": "CANCELED",
+      "filled_quantity": 0,
+      "remaining_quantity": 0,
+      "exact_price_verified": "Own complement YES bid at0.665; portfolio NO Sell5000, price rounds0.34",
+      "last_verified_at_utc": "2026-10-01T20:58:06Z",
+      "canceled_quantity": 5000,
+      "cancel_submitted_at_utc": "2026-10-01T20:57:19Z",
+      "cancel_submissions": 1
+    },
+    {
+      "intent_id": "dot-20261001T203632-FL354-SYES-5000-0130",
+      "market_id": 354,
+      "action": "SELL",
+      "side": "YES",
+      "quantity": 5000,
+      "limit": "0.130",
+      "submitted_at_utc": "2026-10-01T20:43:17Z",
+      "order_id": 1030028,
+      "status": "CANCELED",
+      "filled_quantity": 0,
+      "remaining_quantity": 0,
+      "exact_price_verified": "Book showed Includes5000 of yours at0.13; portfolio YES Sell5000",
+      "last_verified_at_utc": "2026-10-01T20:58:06Z",
+      "canceled_quantity": 5000,
+      "cancel_submitted_at_utc": "2026-10-01T20:57:39Z",
+      "cancel_submissions": 1
+    }
+  ],
+  "holdings_at_last_reconciliation": [
+    {
+      "market_id": 387,
+      "side": "YES",
+      "shares": 4756
+    },
+    {
+      "market_id": 379,
+      "side": "YES",
+      "shares": 2061
+    },
+    {
+      "market_id": 377,
+      "side": "NO",
+      "shares": 10000
+    },
+    {
+      "market_id": 354,
+      "side": "YES",
+      "shares": 12500
+    },
+    {
+      "market_id": 277,
+      "side": "NO",
+      "shares": 1538
+    }
+  ],
+  "notes": [
+    "All sell previews verified not to exceed holdings after input debounce; no synthetic opposite-side conversion.",
+    "No market orders, no additional orders or repricing authorized.",
+    "Displayed tournament account marks differ from detail prices and are not realized P&L.",
+    "No fees or legal acceptance step surfaced. RI cash change reconciles exactly with share-price proceeds.",
+    "Portfolio holdings/open-order quantities may remain static even while transaction history updates; reload before reconciliation.",
+    "All three then-resting remainders canceled starting at20:57UTC, each submitted once; fresh portfolio reload verified zero open orders at20:58:06UTC. Florida hidden-state wait timed out briefly, then visible state and reload confirmed cancellation; no retry was submitted.",
+    "Final RI4756YES basis4446.86; MA2061YES basis1999.17; AK10000NO basis3224.50; FL12500YES basis1500.00; NC1538NO basis99.97. Aggregate basis11270.50 plus cash88729.50 equals initial100000.00."
+  ],
+  "cash_observations": [
+    {
+      "at_utc": "2026-10-01T20:48:32Z",
+      "exact_ui": "89073.48",
+      "source": "RI market ticket Amount balance"
+    },
+    {
+      "at_utc": "2026-10-01T20:54:36Z",
+      "exact_ui": "88729.50",
+      "source": "AK market ticket Amount balance"
+    }
+  ],
+  "status": "COMPLETED",
+  "completed_at_utc": "2026-10-01T20:58:30Z",
+  "open_orders": [],
+  "no_open_orders_verified_at_utc": "2026-10-01T20:58:06Z",
+  "session_realized_pnl": "0.00",
+  "session_realized_pnl_basis": "Only completed sale was RI2072 at0.965, equal to original entry basis1999.48; other session sells unfilled and canceled.",
+  "cancel_fill_race": "No additional fills observed: final quantities match pre-cancel snapshot and cash88729.50 unchanged.",
+  "session_fill_events_ui": [
+    {
+      "market_id": 387,
+      "side": "YES",
+      "action": "SELL",
+      "qty": 100,
+      "price": "0.965",
+      "displayed_proceeds": "96.50"
+    },
+    {
+      "market_id": 387,
+      "side": "YES",
+      "action": "SELL",
+      "qty": 1972,
+      "price": "0.965",
+      "displayed_proceeds": "1902.98"
+    },
+    {
+      "market_id": 387,
+      "side": "YES",
+      "action": "BUY",
+      "qty": 4756,
+      "price": "0.935",
+      "displayed_cost": "4446.86"
+    },
+    {
+      "market_id": 377,
+      "side": "NO",
+      "action": "BUY",
+      "qty": 1,
+      "price": "0.315",
+      "displayed_cost": "0.32"
+    },
+    {
+      "market_id": 377,
+      "side": "NO",
+      "action": "BUY",
+      "qty": 3907,
+      "price": "0.315",
+      "displayed_cost": "1230.70"
+    },
+    {
+      "market_id": 377,
+      "side": "NO",
+      "action": "BUY",
+      "qty": 2,
+      "price": "0.315",
+      "displayed_cost": "0.63"
+    },
+    {
+      "market_id": 377,
+      "side": "NO",
+      "action": "BUY",
+      "qty": 1090,
+      "price": "0.315",
+      "displayed_cost": "343.35"
+    }
+  ]
+}

@@ -1,18 +1,17 @@
 {
   "schema_version": 1,
-  "observed_window_start_utc": "2026-10-01T19:52:07Z",
-  "observed_window_end_utc": "2026-10-01T19:53:13Z",
-  "cash_exact_verified_at_utc": "2026-10-01T19:52:07Z",
+  "observed_window_start_utc": "2026-10-01T20:57:59Z",
+  "observed_window_end_utc": "2026-10-01T20:58:30Z",
+  "cash_exact_verified_at_utc": "2026-10-01T20:58:30Z",
   "open_orders_verified_window_utc": [
-    "2026-10-01T19:52:36Z",
-    "2026-10-01T19:53:13Z"
+    "2026-10-01T20:58:06Z"
   ],
   "tournament": "Midterm Elections",
   "tournament_slug": "midterm-elections",
   "currency": "SUSQies (nonmonetary, nonredeemable contest points)",
   "initial_cash": "100000.00",
-  "cash_verified": "92751.88",
-  "position_cost_basis_total": "7248.12",
+  "cash_verified": "88729.50",
+  "position_cost_basis_total": "11270.50",
   "positions": [
     {
       "market_id": 277,
@@ -28,11 +27,27 @@
       "market_id": 387,
       "title": "Democratic Party wins Rhode Island Senate",
       "side": "YES",
-      "shares": 2072,
-      "average_price": 0.965,
-      "cost": 1999.48,
-      "order_id": null,
-      "status": "fully filled"
+      "shares": 4756,
+      "average_price": 0.935,
+      "cost": 4446.86,
+      "order_id": 1023469,
+      "status": "4756 filled; 244 unfilled remainder canceled",
+      "order_status": "CANCELED",
+      "submitted_at_utc": "2026-10-01T20:37:20Z",
+      "verified_at_utc": "2026-10-01T20:58:06Z",
+      "source": "data/orders/session_2026-10-01_2036.json",
+      "lots": [
+        {
+          "shares": 4756,
+          "average_price": "0.935",
+          "cost": "4446.86",
+          "order_id": 1023469,
+          "intent_id": "dot-20261001T203632-RI387-BYES-5000-0935",
+          "executed_at_utc": null,
+          "verified_at_utc": "2026-10-01T20:58:06Z",
+          "source": "data/orders/session_2026-10-01_2036.json"
+        }
+      ]
     },
     {
       "market_id": 379,
@@ -58,30 +73,57 @@
       "market_id": 377,
       "title": "Democratic Party wins Alaska Senate",
       "side": "NO",
-      "shares": 5000,
-      "average_price": 0.3299,
-      "average_price_basis": "Derived from exact transaction debit divided by filled shares",
-      "average_price_ui_rounded": 0.33,
-      "cost": 1649.5,
+      "shares": 10000,
+      "average_price": 0.32245,
+      "average_price_basis": "Aggregate remaining cost 3224.50 / 10000 shares; first lot 5000 for1649.50 plus session lot5000 for1575.00",
+      "cost": 3224.5,
       "order_id": null,
-      "order_id_status": "Not exposed in inspected official UI",
-      "status": "fully filled",
-      "submitted_at_utc_approximate": "2026-10-01T19:51:35Z",
-      "verified_at_utc": "2026-10-01T19:53:13Z",
-      "source": "data/orders/order_alaska_2026-10-01_1951.json"
+      "order_id_status": "Aggregate of two buy orders: original unknown; session order1026814",
+      "status": "two fully filled buy lots",
+      "verified_at_utc": "2026-10-01T20:58:30Z",
+      "source": "data/orders/session_2026-10-01_2036.json",
+      "lots": [
+        {
+          "shares": 5000,
+          "average_price": "0.3299",
+          "average_price_basis": "Derived from exact transaction debit divided by filled shares",
+          "average_price_ui_rounded": "0.330",
+          "cost": "1649.50",
+          "order_id": null,
+          "executed_at_utc": null,
+          "submitted_at_utc_approximate": "2026-10-01T19:51:35Z",
+          "verified_at_utc": "2026-10-01T19:53:13Z",
+          "source": "data/orders/order_alaska_2026-10-01_1951.json"
+        },
+        {
+          "shares": 5000,
+          "average_price": "0.315",
+          "cost": "1575.00",
+          "order_id": 1026814,
+          "intent_id": "dot-20261001T203632-AK377-BNO-5000-0315",
+          "executed_at_utc": null,
+          "submitted_at_utc": "2026-10-01T20:40:25Z",
+          "verified_at_utc": "2026-10-01T20:58:30Z",
+          "source": "data/orders/session_2026-10-01_2036.json"
+        }
+      ]
     }
   ],
   "open_orders": [],
-  "source": "Official signed-in cloud browser holdings, exact cash, open orders and transaction history; see data/orders/order_alaska_2026-10-01_1951.json. Prior four cost bases preserved from the earlier verified snapshot.",
+  "source": "Official signed-in cloud browser final holdings, exact cash, no-open-orders state and transaction history; see data/orders/session_2026-10-01_2036.json. Unchanged positions retain their earlier verified acquisition records.",
   "notes": [
-    "Historical snapshot, not live state; reconcile before action.",
-    "Tournament valuation formula unverified; portfolio marks differ from market detail and executable depth.",
-    "No realized gain/loss inferred from displayed marks.",
-    "General simulated fee schedule unverified; fill costs reconcile exactly to cash.",
-    "Order ID for Rhode Island was not recorded; do not fabricate it.",
-    "The prior four position quantities were unchanged in this observation window.",
-    "Alaska order ID and exact execution timestamp were not exposed; submission time is approximate. Rounded UI average 0.330 is not the exact effective average 0.3299.",
-    "No fee line was displayed; an exact cash debit is not a verified general transaction-fee schedule.",
-    "The read-only transaction-export attempt timed out after on-screen fill confirmation; no replacement order was submitted."
-  ]
+    "Historical observation only; refresh cash, holdings, orders and fills before any new action.",
+    "Tournament valuation formula remains unverified; portfolio marks, market-detail prices, executable depth and realized P&L are distinct.",
+    "Cash plus remaining FIFO cost equals initial100000.00; realized P&L is0.00. Position cost is not current liquidation value.",
+    "RI original2072 YES were sold for1999.48 at0.965, exactly their original cost. Current4756 YES are the new0.935 lot.",
+    "RI buy1023469 filled4756 of5000;244 remainder canceled. AK sell1028485 and FL sell1030028 canceled without fills.",
+    "AK buy1026814 filled5000 at0.315. Aggregate10000-share basis is3224.50, not the rounded account mark.",
+    "RI completed sell order ID and exact execution timestamps were not exposed and remain unknown. Original AK order ID remains unknown.",
+    "No fee line was displayed; costs/proceeds reconcile exactly to cash. A general transaction-fee schedule is not inferred.",
+    "Cancellation submissions started at20:57:06 UTC; all three then-resting remainders were absent on reload at20:58:06 UTC. Exact cash was verified at20:58:30 UTC.",
+    "No additional cancel/fill race was observed: final holdings match the pre-cancel quantities and cash88729.50 was unchanged."
+  ],
+  "realized_pnl_total": "0.00",
+  "realized_pnl_basis": "FIFO: original RI YES 2072 lot disposed at its 1999.48 cost; all other sales unfilled. No gains inferred from valuation marks.",
+  "session_audit": "data/orders/session_2026-10-01_2036.json"
 }

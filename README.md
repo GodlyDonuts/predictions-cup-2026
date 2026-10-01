@@ -13,17 +13,17 @@ The challenge uses free, nonredeemable SUSQies. This repository does not contain
 
 ## Current snapshot
 
-As observed October 1, 2026, 19:52:07–19:53:13 UTC: **92,751.88 SUSQies cash**, five filled positions, no open orders. Total original position cost is **7,248.12**. These are historical observations, not live account state.
+As observed October 1, 2026, **20:57:59–20:58:30 UTC**: **88,729.50 SUSQies cash**, five positions with **11,270.50** remaining FIFO cost, and **no open orders verified at 20:58:06 UTC**. Realized P&L is **0.00**. These are historical observations, not live account state.
 
-| Market | Side | Shares | Average entry | Cost |
+| Market | Side | Shares | Average entry | Remaining cost |
 |---|---|---:|---:|---:|
-| Democratic Rhode Island Senate | YES | 2,072 | 0.965 | 1,999.48 |
+| Democratic Rhode Island Senate | YES | 4,756 | 0.935 | 4,446.86 |
 | Democratic Massachusetts Senate | YES | 2,061 | 0.970 | 1,999.17 |
 | Democratic Florida Senate | YES | 12,500 | 0.120 | 1,500.00 |
 | Democratic North Carolina Senate | NO | 1,538 | 0.065 | 99.97 |
-| Democratic Alaska Senate | NO | 5,000 | 0.3299 (derived) | 1,649.50 |
+| Democratic Alaska Senate | NO | 10,000 | 0.32245 (aggregate) | 3,224.50 |
 
-The Alaska transaction history displays a rounded 0.330 average; 0.3299 is derived from its exact 1,649.50 debit / 5,000 shares. Its order ID was not exposed. See the [order audit](data/orders/order_alaska_2026-10-01_1951.json).
+The 20:36 session sold the original 2,072 RI YES at cost, bought 4,756 RI YES at 0.935 and 5,000 AK NO at 0.315, and canceled every remaining quote. AK retains two acquisition lots. See the [terminal session audit](data/orders/session_2026-10-01_2036.json), [immutable snapshot](data/snapshots/portfolio_2026-10-01_2058.json), and [full reconciliation](docs/CURRENT_STATE.md). The trade ledger uses negative signed cash cost for sale proceeds; canceled unfilled quotes are excluded from trade totals.
 
 Latest research: [Florida/NC conservative scenarios](research/fl_nc_conservative_bands_2026-10-01.md) and [new-race shortlist](research/new_edges_2026-10-01.md). Their subjective bands are not calibrated forecasts or standing execution limits.
 
