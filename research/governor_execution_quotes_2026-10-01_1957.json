@@ -1,0 +1,47 @@
+{
+  "captured_at_utc": "2026-10-01T19:57:00Z",
+  "source": "Official authenticated cloud-browser UI; no API calls",
+  "trades_placed_for_these_markets": false,
+  "markets": [
+    {
+      "market_id": 168,
+      "title": "Will the Democratic Party win the Iowa Governor?",
+      "url": "https://sig.thesuper.market/markets/168",
+      "quote_time_utc": "2026-10-01T19:55:36Z",
+      "yes_asks": [[0.845,100],[0.85,796],[0.855,692],[0.86,307],[0.865,500],[0.87,1010],[0.885,1000],[0.895,360]],
+      "yes_bids": [[0.835,35],[0.825,750],[0.82,485],[0.815,483],[0.805,1000],[0.765,1111],[0.76,25],[0.735,952]],
+      "no_asks_derived_from_yes_bids": [[0.165,35],[0.175,750],[0.18,485],[0.185,483],[0.195,1000],[0.235,1111],[0.24,25],[0.265,952]],
+      "no_best_ask_ui": 0.165,
+      "no_best_bid_ui": 0.155,
+      "position": 0
+    },
+    {
+      "market_id": 368,
+      "title": "Will the Democratic Party win the Alaska Governor?",
+      "url": "https://sig.thesuper.market/markets/368",
+      "quote_time_utc": "2026-10-01T19:56:40Z",
+      "yes_asks": [[0.755,1854],[0.765,331],[0.78,1073],[0.785,8349],[0.79,1410],[0.795,250],[0.80,1200],[0.805,400]],
+      "yes_bids": [[0.745,1426],[0.735,150],[0.73,323],[0.725,472],[0.72,450],[0.71,250],[0.70,172],[0.685,100],[0.66,1060],[0.63,400]],
+      "no_asks_derived_from_yes_bids": [[0.255,1426],[0.265,150],[0.27,323],[0.275,472],[0.28,450],[0.29,250],[0.30,172],[0.315,100],[0.34,1060],[0.37,400]],
+      "no_best_ask_ui": 0.255,
+      "no_best_bid_ui": 0.245,
+      "position": 0,
+      "specific_resolution_caveat": "Info provides generic party affiliation and fusion-ticket rule only. It does not name a candidate or explicitly adjudicate Democratic/Nonpartisan joint-ticket treatment. Do not substitute candidate-win forecast for contract probability without checking affiliations."
+    }
+  ],
+  "settlement_rules_verified_for_both": {
+    "scheduled_ui": "November 4, 2026 at 12:00 PM EST",
+    "rule": "Market resolves YES if winning candidate is affiliated with specified party, NO otherwise. A candidate running on a fusion ticket counts for every party on that ticket, so multiple party markets may resolve YES for the same race.",
+    "source": "Official election results from relevant election authorities",
+    "certification": "Final certified election results. Recounts/legal challenges may delay resolution.",
+    "sponsor_discretion": "Susquehanna may update rules, outcomes, or resolution at any time, including after resolution/end date.",
+    "status": "Active",
+    "settlement_field_warning": "Info shows a Settlement YES field even while Active; do not treat this as an already resolved outcome."
+  },
+  "execution_warnings": [
+    "Quotes are point-in-time and can move quickly; refresh before an order.",
+    "Orderbooks, market history, and dashboard valuation marks differ. Use executable side and depth for execution decisions.",
+    "No fee line shown; official site footer says zero cost, fee, or financial obligation and non-monetary contest-specific SUSQies.",
+    "NO ladder entries here are arithmetic complements of observed YES bid depth; UI independently confirms best NO ask."
+  ]
+}
