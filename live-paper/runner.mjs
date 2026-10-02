@@ -21,6 +21,7 @@ import {planBasketBooks} from './basket-book-plan.mjs';
 import {basketCodeIdentity} from './basket-watch.mjs';
 import {createBasketRelationshipReader} from './basket-relations.mjs';
 import {createContractEvidenceReader} from './contract-evidence.mjs';
+import {checkpointCoverage} from './coverage-checkpoint.mjs';
 import {createBookPublication} from './book-publication.mjs';
 import {createBasketFollowupSource} from './basket-followup-source.mjs';
 import {createComparisonRiskSource} from './comparison-risk-source.mjs';
@@ -283,7 +284,7 @@ try{
       let bulkPrices=null,bulkPriceError=null;
       if(!stopping&&api.cooldown<=Date.now()){
         try{
-          const sweep=await collectMarketSweep({api,universe,coverage,enabled:!!marketSweep,managedMarketIds:competition?.managedMarketIds()||[],isStopped:()=>stopping,now:Date.now,onSnapshot:snapshot=>pricePublication?.publish(snapshot),onCoverage:next=>atomicJson(coverageFile,next)});
+          const sweep=await collectMarketSweep({api,universe,coverage,enabled:!!marketSweep,managedMarketIds:competition?.managedMarketIds()||[],isStopped:()=>stopping,now:Date.now,onSnapshot:snapshot=>pricePublication?.publish(snapshot),onCoverage:next=>checkpointCoverage(coverageFile,next,{canCommit:()=>!stopping,onFault:fault=>{runtime.coveragePersistenceFault={at:new Date().toISOString(),...fault};}})});
           coverage=sweep.coverage;bulkPrices=sweep.primarySnapshot;bulkPriceError=sweep.error;
           runtime.marketSweep={enabled:!!marketSweep,requestedBatches:sweep.requestedBatches,completedBatches:sweep.completedBatches,complete:sweep.complete,riskPriority:sweep.riskPriority,publication:pricePublication?.status()||null};
           runtime.breadth={universeSize:universe.exchanges.length,observedExchanges:Object.keys(coverage?.quotes||{}).length,lastCollectionAt:coverage?.updatedAt||null,error:bulkPriceError};
