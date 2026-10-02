@@ -1,6 +1,7 @@
 import {digest} from './model.mjs';
 import {dipDepthPlan} from './dip-shadow.mjs';
 import {historicalReference} from './history.mjs';
+import {historyAllocation} from './history-allocation.mjs';
 
 // Risk membership only: a research wallet never contributes execution leads.
 export function shockCollectionRisk(state, bank, universe) {
@@ -26,5 +27,5 @@ export function collectionInputs(sources, universe, coverage, now) {
   for(const lead of dipDepthPlan(state,bank,coverage,now))if(lead.reason==='historical_discount_lead')candidates.add(lead.marketId);
   for(const spec of universe.exchanges)if(historicalReference(state.histories[spec.exchangeId],state.bookHistory[spec.exchangeId],new Date(now).toISOString(),bank.policy).ready)usable.add(spec.marketId);
  }
- return {heldMarketIds:[...held],pendingMarketIds:[...pending],candidateMarketIds:[...candidates],usableMarketIds:[...usable]};
+ return {heldMarketIds:[...held],pendingMarketIds:[...pending],candidateMarketIds:[...candidates],usableMarketIds:[...usable],historyAllocation:historyAllocation(sources,universe,coverage,now)};
 }
