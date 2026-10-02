@@ -32,6 +32,7 @@ const activeCohorts = [
   {name: 'stream-book-v2', manifest: 'stream-book-v2-active.json', directory: 'stream-book-v2-cohorts', script: 'live-paper/stream-book-watch-v2.mjs', stop: 'STREAM_BOOK_V2_STOP', globalLock: 'stream-book-gateway.lock', captureInput: true},
   {name: 'stream-dip-v2', manifest: 'stream-dip-v2-active.json', directory: 'stream-dip-v2-cohorts', script: 'live-paper/stream-dip-watch-v2.mjs', stop: 'STREAM_DIP_V2_STOP', globalLock: 'stream-dip.lock', captureInput: true},
   {name: 'stream-recovery', manifest: 'stream-recovery-active.json', directory: 'stream-recovery-cohorts', script: 'live-paper/stream-recovery-watch.mjs', stop: 'STREAM_RECOVERY_STOP', globalLock: 'stream-recovery.lock', captureInput: true},
+  {name: 'public-recovery', manifest: 'public-recovery-active.json', directory: 'public-recovery-cohorts', script: 'live-paper/public-recovery-watch.mjs', stop: 'PUBLIC_RECOVERY_STOP', globalLock: 'public-recovery.lock', publicInput: true},
 ];
 const cohortName = value => typeof value === 'string' && /^[a-z][a-z0-9-]{0,63}$/.test(value)
   && !/^(con|prn|aux|nul|com[1-9]|lpt[1-9])$/.test(value);
@@ -98,7 +99,7 @@ export function probeLocalProcesses(pids) {
 
 // Metadata scan only: do not deserialize market/account payloads. No claim of
 // full hash-chain verification is made; the actual workers own that validation.
-export async function sourceMetadata(file, wanted = []) {
+export async function sourceMetadata(file, wanted = [], publicFormat = false) {
   try {
     const stat = fs.statSync(file), target = new Set(wanted.filter(Number.isSafeInteger)), clocks = {}, hashes = {};
     if (!stat.size) return {available: false, reason: 'empty_source', clocks};
@@ -106,7 +107,9 @@ export async function sourceMetadata(file, wanted = []) {
     try { fs.readSync(fd, lastByte, 0, 1, stat.size - 1); } finally { fs.closeSync(fd); }
     let latest = null, pending = null, malformed = 0;
     const inspect = line => {
-      const head = /^\{"sequence":(\d+),"previous":"[a-f0-9]*","at":"([^"]+)"/.exec(line);
+      const head = (publicFormat
+        ? /^\{"schemaVersion":1,"kind":"(?:session_start|session_stop|book|invalidation)","sequence":(\d+),"previousHash":"[a-f0-9]*","sessionId":"[^"]+","tournamentId":"[^"]+","scopeHash":"[a-f0-9]{64}","at":"([^"]+)"/
+        : /^\{"sequence":(\d+),"previous":"[a-f0-9]*","at":"([^"]+)"/).exec(line);
       const tail = /,"hash":"([a-f0-9]{64})"\}$/.exec(line);
       if (!head || !tail || !safeTime(head[2])) { malformed++; return; }
       const row = {sequence: Number(head[1]), at: safeTime(head[2]), hash: tail[1]};
@@ -116,7 +119,8 @@ export async function sourceMetadata(file, wanted = []) {
     for await (const line of lines) { if (pending !== null) inspect(pending); pending = line; }
     if (lastByte[0] === 10 && pending !== null) inspect(pending);
     return {available: latest !== null, ...latest, modifiedAt: stat.mtime.toISOString(), clocks, hashes, malformedMetadataRows: malformed,
-      partialTailExcluded: lastByte[0] !== 10, integrityVerified: false};
+      partialTailExcluded: lastByte[0] !== 10, integrityVerified: false,
+      ...(publicFormat ? {kind:'public_book_publication',maxAgeMs:20000} : {})};
   } catch { return {available: false, reason: 'source_unavailable', clocks: {}, integrityVerified: false}; }
 }
 
@@ -204,13 +208,16 @@ export async function fleetHealth({runtimeDir, workspaceDir = path.dirname(path.
       stops: [...globalStops, stopFile(path.join(runtimeDir, spec.stop), 'worker_stop')]};
   });
   inputs.push(...activeCohorts.map(spec => activeCohortInput(runtimeDir, spec, globalStops)).filter(Boolean));
-  const source = await sourceMetadata(path.join(runtimeDir, 'journal.jsonl'), inputs.map(x => x.report?.sourceSequence));
+  const [source, publicSource] = await Promise.all([
+    sourceMetadata(path.join(runtimeDir, 'journal.jsonl'), inputs.filter(x=>!x.spec.publicInput).map(x => x.report?.sourceSequence)),
+    sourceMetadata(path.join(runtimeDir, 'public-books.jsonl'), inputs.filter(x=>x.spec.publicInput).map(x => x.report?.sourceSequence),true)
+  ]);
   const processes = await probeProcesses(inputs.flatMap(x => x.claims.map(c => c.pid)));
   const official = json(path.join(runtimeDir, 'competition-stats.json')).value, realtime = json(path.join(runtimeDir, 'realtime-stats.json')).value;
   const passiveSource = captureMetadata(runtimeDir, inputs.find(x => x.spec.name === 'passive')?.bank);
   const executionStop = stopFile(path.join(runtimeDir, 'EXECUTION_STOP'), 'execution_stop');
   now ??= Date.now(); // Assess after local reads so their receipt clocks cannot appear future-dated merely because probing took time.
-  const workers = inputs.map(x => assessWorker({...x, processes, source: x.spec.name === 'passive' ? passiveSource : x.spec.captureInput ? captureMetadata(runtimeDir,x.bank) : source}, now));
+  const workers = inputs.map(x => assessWorker({...x, processes, source: x.spec.name === 'passive' ? passiveSource : x.spec.publicInput ? publicSource : x.spec.captureInput ? captureMetadata(runtimeDir,x.bank) : source}, now));
   const executionTime = safeTime(official?.updatedAt), realtimeTime = safeTime(realtime?.at);
   const realtimeHealth = workerHealth({updatedAt: realtimeTime, status: 'fresh'}, now);
   const realtimeMarketsValid = Array.isArray(realtime?.markets) && realtime.markets.length > 0 && realtime.markets.every(m => m && typeof m.ready === 'boolean');

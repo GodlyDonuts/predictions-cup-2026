@@ -242,3 +242,17 @@ test('corrected source and paper manifests resolve versioned paths and shared si
  write(path.join(dir,'realtime-session.json'),{file:b.sourceFile});fs.writeFileSync(path.join(dir,b.sourceFile),'{}\n');fs.utimesSync(path.join(dir,b.sourceFile),new Date(at(-1000)),new Date(at(-1000)));
  const r=await fleetHealth({runtimeDir:dir,workspaceDir:dir,now,probeProcesses:()=>processes});for(const [name]of specs){const w=r.workers.find(x=>x.name===name);assert.equal(w.status,'running');assert.equal(w.source.kind,'realtime_capture');assert.equal(w.process.identity,'matches_expected_script');}
 });
+
+test('public recovery health uses its publication hash and source clock, not REST journal sequence',async t=>{
+ const dir=fs.mkdtempSync(path.join(os.tmpdir(),'fleet-public-recovery-'));t.after(()=>fs.rmSync(dir,{recursive:true,force:true}));
+ const cohort='public-test',root=path.join(dir,'public-recovery-cohorts',cohort);fs.mkdirSync(root,{recursive:true});
+ const write=(p,v)=>fs.writeFileSync(p,JSON.stringify(v)),b={...bank,sourceFile:'public-books.jsonl'},h=createHash('sha256').update(JSON.stringify(b)).digest('hex'),sourceHash='f'.repeat(64);
+ write(path.join(dir,'public-recovery-active.json'),{schemaVersion:1,cohort,bankHash:h});write(path.join(root,'bank.json'),b);
+ write(path.join(root,'stats.json'),{status:'running',updatedAt:at(-1000),pid:123,cohort,bankHash:h,sourceSequence:1,sourceHash});
+ const row={schemaVersion:1,kind:'book',sequence:1,previousHash:'',sessionId:'fixture',tournamentId:'bda92870-621e-47b0-bc3c-3602c5c26f55',scopeHash:'a'.repeat(64),at:at(-1000),payload:{privateSentinel:'DO_NOT_EXPORT'},hash:sourceHash};fs.writeFileSync(path.join(dir,'public-books.jsonl'),JSON.stringify(row)+'\n');
+ fs.writeFileSync(path.join(dir,'public-recovery.lock'),'123');fs.writeFileSync(path.join(root,'pid.txt'),'123');
+ const options={runtimeDir:dir,workspaceDir:dir,now,probeProcesses:()=>({123:{alive:true,commandLine:'node live-paper/public-recovery-watch.mjs --name '+cohort,startedAt:at(-60000)}})};
+ const get=async()=>{const r=await fleetHealth(options);assert.equal(JSON.stringify(r).includes('DO_NOT_EXPORT'),false);return r.workers.find(x=>x.name==='public-recovery');};
+ let w=await get();assert.equal(w.status,'running');assert.equal(w.source.kind,'public_book_publication');assert.equal(w.source.identity,'matches_source_record');
+ write(path.join(root,'stats.json'),{status:'running',updatedAt:at(-1000),pid:123,cohort,bankHash:h,sourceSequence:1,sourceHash:'b'.repeat(64)});assert.equal((await get()).status,'lineage_mismatch');
+});
