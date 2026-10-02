@@ -30,6 +30,7 @@ import {loadNetworkBudget,networkInterval} from './transport-network-budget.mjs'
 import {collectionCycleWait} from './cycle-wait.mjs';
 import {loadMarketSweep,collectMarketSweep} from './market-sweep.mjs';
 import {createMarketPricePublication} from './market-price-publication.mjs';
+import {readMarketHistoryInputs} from './market-history-inputs.mjs';
 import {createClient} from '@supabase/supabase-js';
 import {Capture} from '../feed/capture.mjs';
 import {createRealtimeHost} from './realtime-host.mjs';
@@ -70,6 +71,8 @@ function schedulingInputs(){
   sources.push({state,bank,healthy});
  }
  const inputs=collectionInputs(sources,universe,coverage,Date.now());
+ const historyScreen=readMarketHistoryInputs(runtimeDir,universe,Date.now());runtime.marketHistoryScreen=historyScreen;
+ if(historyScreen.available)inputs.candidateMarketIds=[...new Set([...historyScreen.candidateMarketIds,...inputs.candidateMarketIds])];
   const shockBankFile=path.join(runtimeDir,'shock-bank.json');
   if(fs.existsSync(shockBankFile)){
    const risk=shockCollectionRisk(JSON.parse(fs.readFileSync(path.join(runtimeDir,'shock-state.json'))),JSON.parse(fs.readFileSync(shockBankFile)),universe);
@@ -159,7 +162,7 @@ try{
   comparisonRiskSource=createComparisonRiskSource({runtimeDir,universe,now:Date.now});
   bookPublication=createBookPublication({file:path.join(runtimeDir,'public-books.jsonl'),universe,sessionId:randomUUID(),now:Date.now,canOperate:()=>!stopping});
   depthPlan=validateDepthPlan(JSON.parse(fs.readFileSync(path.join(root,'depth-plan.json'),'utf8')),c,universe);
-  const dipFile=path.join(runtimeDir,'dip-bank.json');if(fs.existsSync(dipFile)){dipBank=JSON.parse(fs.readFileSync(dipFile));validateDipPolicy(dipBank.policy);if(dipBank.universe.hash!==universe.hash||dipBank.config.feeBps!==0||dipBank.policy.historyReadsPerCycle!==2||dipBank.policy.comparisonBooksPerCycle!==2||dipBank.policy.dynamicBooksPerCycle!==2)throw Error('Invalid dip collection plan');runtime.collectionPlan={mode:'diversified_dip',historyReads:officialSync?1:2,fullBookBudget:4,managedCapacity:3,bulkReads:1,accountReads:'positions plus paginated orders',readIntervalMs:c.readIntervalMs};}
+  const dipFile=path.join(runtimeDir,'dip-bank.json');if(fs.existsSync(dipFile)){dipBank=JSON.parse(fs.readFileSync(dipFile));validateDipPolicy(dipBank.policy);if(dipBank.universe.hash!==universe.hash||dipBank.config.feeBps!==0||dipBank.policy.historyReadsPerCycle!==2||dipBank.policy.comparisonBooksPerCycle!==2||dipBank.policy.dynamicBooksPerCycle!==2)throw Error('Invalid dip collection plan');runtime.collectionPlan={mode:'diversified_dip',historyReads:officialSync?1:2,fullBookBudget:4,managedCapacity:3,bulkReads:marketSweep?Math.ceil(universe.exchanges.length/100):1,accountReads:'positions plus paginated orders',readIntervalMs:c.readIntervalMs};}
   const coverageFile=path.join(runtimeDir,'price-coverage.json');
   const scaleFile=path.join(runtimeDir,'dip-scale-bank.json');if(fs.existsSync(scaleFile)){scaleBank=JSON.parse(fs.readFileSync(scaleFile));validateConfig(scaleBank.config);validateDipPolicy(scaleBank.policy);if(!dipBank||scaleBank.universe.hash!==universe.hash||scaleBank.policy.profile!=='scale')throw Error('Invalid scaled dip bank');}
   const responsiveFile=path.join(runtimeDir,'dip-responsive-bank.json');if(fs.existsSync(responsiveFile)){responsiveBank=JSON.parse(fs.readFileSync(responsiveFile));validateConfig(responsiveBank.config);validateDipPolicy(responsiveBank.policy);if(responsiveBank.universe.hash!==universe.hash||responsiveBank.policy.executionPolicy!=='responsive_v2')throw Error('Invalid responsive bank');}

@@ -1,0 +1,13 @@
+import fs from 'node:fs';import path from 'node:path';import readline from 'node:readline';import {createHash} from 'node:crypto';import {fileURLToPath} from 'node:url';import {validateUniverse} from './breadth.mjs';import {createMarketHistory,observeMarketHistory,rankMarketHistory} from './market-history.mjs';
+export async function auditMarketHistory(){
+const root=path.dirname(path.dirname(fileURLToPath(import.meta.url))),rt=path.join(process.env.LOCALAPPDATA,'SigTradingCup/paper-runtime'),u=validateUniverse(JSON.parse(fs.readFileSync(path.join(root,'live-paper/price-universe.json'))),JSON.parse(fs.readFileSync(path.join(root,'live-paper/config.json'))).tournamentId),state=createMarketHistory(u);
+const digest=x=>createHash('sha256').update(JSON.stringify(x)).digest('hex');const sources=[],observed=[];
+for(const name of ['journal.jsonl','market-prices.jsonl']){
+ const file=path.join(rt,name);if(!fs.existsSync(file))continue;const size=fs.statSync(file).size;if(size===0)continue;let sequence=0,previous='',consumed=0,observations=0;const lines=readline.createInterface({input:fs.createReadStream(file,{start:0,end:size-1}),crlfDelay:Infinity});
+ for await(const line of lines){consumed+=Buffer.byteLength(line)+1;if(consumed>size){consumed-=Buffer.byteLength(line)+1;break;}const row=JSON.parse(line),{hash,...body}=row;if(row.sequence!==sequence+1||row.previous!==previous||digest(body)!==hash)throw Error('MARKET_HISTORY_SOURCE_CHAIN');sequence=row.sequence;previous=hash;const snapshot=name==='journal.jsonl'?row.event?.bulkPrices:row.event?.snapshot;if(snapshot){observed.push(snapshot);observations++;}}
+ sources.push({name,sequence,hash:previous,observations,bytes:consumed<=size?consumed:size});
+}
+const seen=new Set();observed.sort((a,b)=>Date.parse(a.receivedAt)-Date.parse(b.receivedAt));for(const snapshot of observed){const id=digest(snapshot);if(seen.has(id))continue;seen.add(id);observeMarketHistory(state,snapshot,u);}
+const report={schemaVersion:1,...rankMarketHistory(state,u,new Date().toISOString()),sources,sourceObservations:state.observations,meaning:'Read-only screening: historical bids are counterfactual recovery references, not forecasts or executable fills.'};const file=path.join(root,'data/market-history-live-audit.json');fs.writeFileSync(file,JSON.stringify(report,null,2)+'\n');return {state,report,universe:u};
+}
+if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.url)){const {report}=await auditMarketHistory();console.log(JSON.stringify({sources:report.sources,counts:report.counts,topLeads:report.leads.slice(0,5),networkRequests:0,executable:false}));}
