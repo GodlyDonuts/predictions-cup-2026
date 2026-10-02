@@ -1,4 +1,4 @@
-import {readVerifiedSource} from './journal-lines.mjs';
+import {readIncrementalSource,incrementalSourceMetrics} from './incremental-journal.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
@@ -67,7 +67,7 @@ export function advanceBasketRecord(input,record,bank){
 function append(file,row){const fd=fs.openSync(file,'a',0o600),bytes=Buffer.from(JSON.stringify(row)+'\n');try{let n=0;while(n<bytes.length){const written=fs.writeSync(fd,bytes,n,bytes.length-n);if(written<=0)throw Error('Basket journal short write');n+=written;}fs.fsyncSync(fd);}finally{fs.closeSync(fd);}}
 export function openBasketWatch(runtime,{initialize=false,cutoff=new Date().toISOString(),definitions,codeIdentity=basketCodeIdentity()}={}){
  const bankFile=path.join(runtime,'basket-bank.json'),journalFile=path.join(runtime,'basket-journal.jsonl');
- let records=readVerifiedSource(path.join(runtime,'journal.jsonl'));if(!records)throw Error('Basket source temporarily incomplete');
+ let records=readIncrementalSource(path.join(runtime,'journal.jsonl'));if(!records)throw Error('Basket source temporarily incomplete');
  let bank;
  if(initialize){
   if(fs.existsSync(bankFile)||fs.existsSync(journalFile))throw Error('Refusing to replace existing basket cohort');
@@ -84,7 +84,7 @@ export function openBasketWatch(runtime,{initialize=false,cutoff=new Date().toIS
   if(digest(output.state)!==body.stateHash||digest(output.observations)!==body.observationsHash||digest(body.observations)!==body.observationsHash)throw Error('Basket replay mismatch');state=output.state;previous=hash;
  }
  const consume=()=>{
-  records=readVerifiedSource(path.join(runtime,'journal.jsonl'));if(!records)return null;bound(bank,records);
+  records=readIncrementalSource(path.join(runtime,'journal.jsonl'));if(!records)return null;bound(bank,records);
   if(records.length<state.sourceSequence||records[state.sourceSequence-1]?.hash!==state.lastRecordHash)throw Error('Basket source changed');
   let consumed=0;
   for(const record of records.slice(state.sourceSequence)){
@@ -93,7 +93,7 @@ export function openBasketWatch(runtime,{initialize=false,cutoff=new Date().toIS
   }
   atomicJson(path.join(runtime,'basket-state.json'),state);return consumed;
  };
- const status=()=>({schemaVersion:1,mode:'dual_no_basket_measurement',bankHash:digest(bank),cutoff:bank.cutoff,sourceSequence:state.sourceSequence,sourceHash:state.lastRecordHash,journalSequence:sequence,journalHash:previous,pairs:bank.pairs.map(p=>({pairId:p.id,...basketReport(state.pairs[p.id],p.bank)})),networkRequests:0,ordersSubmitted:0,simulatedFills:null,pnl:null,eligibleForExecution:false});
+ const status=()=>({schemaVersion:1,sourceReadMetrics:incrementalSourceMetrics(path.join(runtime,'journal.jsonl')),mode:'dual_no_basket_measurement',bankHash:digest(bank),cutoff:bank.cutoff,sourceSequence:state.sourceSequence,sourceHash:state.lastRecordHash,journalSequence:sequence,journalHash:previous,pairs:bank.pairs.map(p=>({pairId:p.id,...basketReport(state.pairs[p.id],p.bank)})),networkRequests:0,ordersSubmitted:0,simulatedFills:null,pnl:null,eligibleForExecution:false});
  return {consume,status,bank};
 }
 

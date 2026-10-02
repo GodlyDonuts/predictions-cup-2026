@@ -1,4 +1,4 @@
-import {readVerifiedSource} from './journal-lines.mjs';
+import {readIncrementalSource,incrementalSourceMetrics} from './incremental-journal.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
@@ -119,13 +119,13 @@ if(process.argv[1]&&fileURLToPath(import.meta.url)===process.argv[1]){
  function publish(status,reason){
   const now=new Date().toISOString(),extra=[];
   for(const [name,cohort]of cohorts){const r={...shadowReport(cohort.state,cohort.bank,now),status:status==='stopped'?'stopped':cohort.status,reason:cohort.reason};atomicJson(path.join(cohort.root,'ml-stats.json'),r);extra.push({name,report:r});}
-  atomicJson(path.join(dir,'ml-stats.json'),combineReports({...shadowReport(s,bank,now),status,reason},extra));
+  atomicJson(path.join(dir,'ml-stats.json'),{...combineReports({...shadowReport(s,bank,now),status,reason},extra),sourceReadMetrics:incrementalSourceMetrics(path.join(dir,'journal.jsonl'))});
  }
  const stopped=()=>fs.existsSync(path.join(dir,'ML_STOP'))||fs.existsSync(path.join(dir,'STOP'))||fs.existsSync(path.join(workspace,'STOP'));
  do{
   if(stopped())break;
   try{
-   const records=readVerifiedSource(path.join(dir,'journal.jsonl'));
+   const records=readIncrementalSource(path.join(dir,'journal.jsonl'));
    discover();
    if(!records){if(++partialReads>=4)throw Error('Persistent incomplete source journal');publish('awaiting_committed_capture');}
    else{partialReads=0;s=advanceShadow(s,records,bank);atomicJson(stateFile,s);

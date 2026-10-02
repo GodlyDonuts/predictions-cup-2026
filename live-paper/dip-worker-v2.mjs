@@ -1,4 +1,4 @@
-import {readVerifiedSource} from './journal-lines.mjs';
+import {readIncrementalSource,incrementalSourceMetrics} from './incremental-journal.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
@@ -31,14 +31,14 @@ export function openDipWorker({runtimeDir,cohort='dip',workspaceDir=workspace,no
  }
  async function publish(status,fault){
   let coverage;try{coverage=JSON.parse(fs.readFileSync(path.join(runtimeDir,'price-coverage.json')));}catch{}
-  phase='report';const report={...dipReport(state,bank,new Date(now()).toISOString(),coverage),status,...(fault?{fault}:{}),hostVersion:'dip-worker-v2-chunked-source'};
+  phase='report';const report={...dipReport(state,bank,new Date(now()).toISOString(),coverage),status,...(fault?{fault}:{}),hostVersion:'dip-worker-v2-incremental-source',sourceReadMetrics:incrementalSourceMetrics(path.join(runtimeDir,'journal.jsonl'))};
   phase='stats';await writeJson(path.join(runtimeDir,cohort+'-stats.json'),report,{canCommit:()=>owned()&&(status!=='running'||!stopped())});lastStatus=status;
  }
  async function poll(){
   if(closed||failed||busy)throw Error('Dip host is not available');busy=true;let attemptedSourceSequence=null;
   try{
    if(stopped()){await publish('stopped');return {status:'stopped',sourceSequence:state.sourceSequence};}
-   phase='verify_source';const records=readVerifiedSource(path.join(runtimeDir,'journal.jsonl'));
+   phase='verify_source';const records=readIncrementalSource(path.join(runtimeDir,'journal.jsonl'));
    if(!records){if(++partials>3)throw Error('Incomplete source');await publish('awaiting_capture');}
    else{
     partials=0;phase='advance';const candidate=advanceDip(state,records,bank);attemptedSourceSequence=candidate.sourceSequence;

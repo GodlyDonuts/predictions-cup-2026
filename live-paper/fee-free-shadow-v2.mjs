@@ -1,4 +1,4 @@
-import {readVerifiedSource} from './journal-lines.mjs';
+import {readIncrementalSource,incrementalSourceMetrics} from './incremental-journal.mjs';
 import fs from 'node:fs';import path from 'node:path';import {fileURLToPath} from 'node:url';
 import {verifySource} from './ml-shadow.mjs';import {scopedSnapshots} from './depth-scope.mjs';
 import {digest,initialState,normalizeBook,observe,invalidate,sampleEquity,report,assertState} from './model.mjs';
@@ -27,6 +27,6 @@ if(process.argv[1]&&fileURLToPath(import.meta.url)===process.argv[1]){
  const dir=process.env.SIG_PAPER_DIR||path.join(process.env.LOCALAPPDATA,'SigTradingCup','paper-runtime'),workspace=path.dirname(path.dirname(fileURLToPath(import.meta.url))),release=lock(path.join(dir,'fee-free-shadow.lock'));process.on('exit',release);
  const bank=JSON.parse(fs.readFileSync(path.join(dir,'fee-free-bank.json'))),statePath=path.join(dir,'fee-free-state.json');let s=JSON.parse(fs.readFileSync(statePath)),partial=0;
  const stopped=()=>['STOP','FEE_FREE_STOP'].some(f=>fs.existsSync(path.join(dir,f)))||fs.existsSync(path.join(workspace,'STOP'));
- const publish=(status)=>atomicJson(path.join(dir,'fee-free-stats.json'),{...feeFreeReport(s,bank,new Date().toISOString()),status});
- try{do{if(stopped())break;const records=readVerifiedSource(path.join(dir,'journal.jsonl'));if(!records){if(++partial>=4)throw Error('Incomplete source');publish('awaiting_capture');}else{partial=0;s=advanceFeeFree(s,records,bank);atomicJson(statePath,s);publish('running');}if(process.argv.includes('--once'))break;for(let i=0;i<75;i++){if(stopped())break;await new Promise(r=>setTimeout(r,200));}}while(!stopped());if(stopped())publish('stopped');}catch{publish('failed');process.exitCode=1;}
+ const publish=(status)=>atomicJson(path.join(dir,'fee-free-stats.json'),{...feeFreeReport(s,bank,new Date().toISOString()),status,sourceReadMetrics:incrementalSourceMetrics(path.join(dir,'journal.jsonl'))});
+ try{do{if(stopped())break;const records=readIncrementalSource(path.join(dir,'journal.jsonl'));if(!records){if(++partial>=4)throw Error('Incomplete source');publish('awaiting_capture');}else{partial=0;s=advanceFeeFree(s,records,bank);atomicJson(statePath,s);publish('running');}if(process.argv.includes('--once'))break;for(let i=0;i<75;i++){if(stopped())break;await new Promise(r=>setTimeout(r,200));}}while(!stopped());if(stopped())publish('stopped');}catch{publish('failed');process.exitCode=1;}
 }

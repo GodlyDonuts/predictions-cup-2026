@@ -1,4 +1,4 @@
-import {readVerifiedSource} from './journal-lines.mjs';
+import {readIncrementalSource,incrementalSourceMetrics} from './incremental-journal.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
@@ -159,11 +159,11 @@ export async function runShock({dir, initialize = false, once = false, workspace
     }
     if (digest(bank.codeIdentity) !== digest(shockCodeIdentity())) throw Error('Frozen shock code changed; new cohort required');
     let partials = 0;
-    const publish = status => { atomicJson(path.join(dir, 'shock-state.json'), state); atomicJson(path.join(dir, 'shock-stats.json'), {...shockReport(state, bank), status}); };
+    const publish = status => { atomicJson(path.join(dir, 'shock-state.json'), state); atomicJson(path.join(dir, 'shock-stats.json'), {...shockReport(state, bank), status,sourceReadMetrics:incrementalSourceMetrics(path.join(dir,'journal.jsonl'))}); };
     try {
       do {
         if (stopped()) break;
-        const records = readVerifiedSource(path.join(dir,'journal.jsonl'));
+        const records = readIncrementalSource(path.join(dir,'journal.jsonl'));
         if (!records) { if (++partials > 3) throw Error('Incomplete source'); publish('awaiting_capture'); }
         else {
           partials = 0; const next = advanceShock(state, records, bank);

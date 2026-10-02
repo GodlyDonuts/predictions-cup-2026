@@ -1,8 +1,8 @@
 import fs from 'node:fs';import {createHash} from 'node:crypto';
-export function* journalLines(file,{chunkBytes=1048576,maxRecordBytes=16777216}={}){
+export function* journalLines(file,{chunkBytes=1048576,maxRecordBytes=16777216,startByte=0,endByte=null,onRead=()=>{}}={}){
  if(!Number.isSafeInteger(chunkBytes)||chunkBytes<1||chunkBytes>1048576||!Number.isSafeInteger(maxRecordBytes)||maxRecordBytes<chunkBytes)throw Error('INVALID_JOURNAL_READ_LIMIT');
- const fd=fs.openSync(file,'r'),size=fs.fstatSync(fd).size;let pos=0,tail=Buffer.alloc(0);
- try{while(pos<size){const b=Buffer.alloc(Math.min(chunkBytes,size-pos)),n=fs.readSync(fd,b,0,b.length,pos);if(n<1)throw Error('JOURNAL_READ_TRUNCATED');pos+=n;const data=Buffer.concat([tail,b.subarray(0,n)]);let begin=0,end;while((end=data.indexOf(10,begin))>=0){if(end-begin>maxRecordBytes)throw Error('JOURNAL_RECORD_TOO_LARGE');yield data.subarray(begin,end).toString('utf8');begin=end+1;}tail=data.subarray(begin);if(tail.length>maxRecordBytes)throw Error('JOURNAL_RECORD_TOO_LARGE');}if(tail.length){const e=Error('Incomplete paper journal: manual recovery required');e.code='JOURNAL_INCOMPLETE_TAIL';throw e;}}
+ const fd=fs.openSync(file,'r'),actual=fs.fstatSync(fd).size,size=endByte??actual;if(!Number.isSafeInteger(startByte)||startByte<0||!Number.isSafeInteger(size)||size<startByte||size>actual){fs.closeSync(fd);throw Error('INVALID_JOURNAL_READ_RANGE');}let pos=startByte,tail=Buffer.alloc(0);
+ try{while(pos<size){const b=Buffer.alloc(Math.min(chunkBytes,size-pos)),n=fs.readSync(fd,b,0,b.length,pos);if(n<1)throw Error('JOURNAL_READ_TRUNCATED');pos+=n;onRead(n);const data=Buffer.concat([tail,b.subarray(0,n)]);let begin=0,end;while((end=data.indexOf(10,begin))>=0){if(end-begin>maxRecordBytes)throw Error('JOURNAL_RECORD_TOO_LARGE');yield data.subarray(begin,end).toString('utf8');begin=end+1;}tail=data.subarray(begin);if(tail.length>maxRecordBytes)throw Error('JOURNAL_RECORD_TOO_LARGE');}if(tail.length){const e=Error('Incomplete paper journal: manual recovery required');e.code='JOURNAL_INCOMPLETE_TAIL';throw e;}}
  finally{fs.closeSync(fd);}
 }
 // Verify original complete bytes and hashes first, then omit unused historical
