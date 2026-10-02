@@ -184,7 +184,7 @@ export function sampleEquity(s,c,now){
 
 // Standalone ML paper wallets reuse the reviewed delayed-fill/FIFO/risk engine.
 // Forecast is net expected future exit proceeds per share, not midpoint profit.
-export function stepForecast(input,b,c,{exitValue,horizonMs,minimumEdge}){
+export function stepForecast(input,b,c,{exitValue,netEdge,horizonMs,minimumEdge}){
   if(!Number.isSafeInteger(horizonMs)||horizonMs<1000||!Number.isFinite(minimumEdge)||minimumEdge<=0)throw Error('Invalid forecast policy');
   const previous=input.books[b.instrument];
   const same=previous&&previous.sequence===b.sequence&&instantNs(previous.sourceAt)===instantNs(b.sourceAt);
@@ -197,9 +197,9 @@ export function stepForecast(input,b,c,{exitValue,horizonMs,minimumEdge}){
   if(!st.pending[id]){
     const pos=st.positions[id],bid=amount(b.bids[0].price);
     if(pos){if(Date.parse(at)-Date.parse(pos.enteredAt)>=horizonMs||amount(pos.cost)/BigInt(pos.quantity)-bid>=amount(c.stopLoss))enqueue(st,b,'sell',pos.quantity,bid-TICK*BigInt(c.slippageTicks),at,'ml_horizon_or_stop');}
-    else if(Number.isFinite(exitValue)&&exitValue>=0&&exitValue<=1){
+    else if(netEdge!==undefined?Number.isFinite(netEdge)&&netEdge>=minimumEdge:Number.isFinite(exitValue)&&exitValue>=0&&exitValue<=1){
       const ask=amount(b.asks[0].price)+TICK*BigInt(c.slippageTicks),entry=Number(ask+fee(ask,1,costs(c)))/1e6;
-      if(exitValue-entry>=minimumEdge)enqueue(st,b,'buy',c.orderShares,ask,at,'ml_net_exit_forecast');
+      if(netEdge!==undefined||exitValue-entry>=minimumEdge)enqueue(st,b,'buy',c.orderShares,ask,at,netEdge!==undefined?'ml_net_roundtrip_forecast':'ml_net_exit_forecast');
     }
   }
   assertState(s,c);return s;

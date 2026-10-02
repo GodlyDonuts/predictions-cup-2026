@@ -48,6 +48,7 @@ test('candidate cost telemetry counts unique decisions and resumed source batche
  assert.deepEqual(advanceShadow(s,records,bank),s);
  for(const p of Object.values(s.predictions)){assert.ok(p.netEdge>.08);assert.ok(p.entryCost>.415);}
  const aligned={...bank,targetPolicy:'delayed_fifo_roundtrip_net_v1'},fresh={...initial,bankHash:digest(aligned)},next=advanceShadow(fresh,records,aligned);for(const p of Object.values(next.predictions))assert.ok(Math.abs(p.netEdge-.1)<1e-12);
+ const expensive=structuredClone(records);for(const r of expensive){const b=r.event.sourceSnapshots[0].data.contexts[0].orderbook.exchanges[0];b.bids[0].price=.94;b.asks[0].price=.95;}const high=advanceShadow(fresh,expensive,aligned);for(const w of Object.values(high.wallets))assert.equal(w.strategies.mean_reversion.intents,1);for(const m of Object.values(high.signalMetrics)){assert.equal(m.invalidForecast,0);assert.equal(m.edgePass,1);}
  const unknown={...bank,targetPolicy:'unknown'};assert.throws(()=>advanceShadow({...initial,bankHash:digest(unknown)},[],unknown),/Unsupported target/);
 });
 test('future development observations cannot change fitted weights or training normalization',()=>{

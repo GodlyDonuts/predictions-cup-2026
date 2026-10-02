@@ -72,11 +72,11 @@ export function advanceShadow(input,records,bank,{allowUnboundFixture=false}={})
     const w=state.wallets[id]??initialState(c,id,bank.trainingCaptureThrough);
     const same=w.books[b.instrument]?.versionKey===b.versionKey;
     const ask=amount(b.asks[0].price)+TICK*BigInt(c.slippageTicks),entryCost=Number(ask+fee(ask,1,{feeBps:c.feeBps,feePerShare:'0.000000'}))/1e6;
-    const exitValue=history.length>=6?(targetPolicy(bank.targetPolicy)===ROUND_TRIP?entryCost:mid)+predict(model,x):null;
-    const netEdge=exitValue===null?null:exitValue-entryCost;
+    const roundtrip=targetPolicy(bank.targetPolicy)===ROUND_TRIP,forecast=history.length>=6?predict(model,x):null;
+    const exitValue=roundtrip||forecast===null?null:mid+forecast,netEdge=roundtrip?forecast:exitValue===null?null:exitValue-entryCost;
     state.signalMetrics??={};const metrics=state.signalMetrics[id]??={observations:0,warmup:0,invalidForecast:0,edgeBelowMargin:0,edgePass:0,zeroTopAskCapacity:0};
-    if(!same){metrics.observations++;if(exitValue===null)metrics.warmup++;else if(!Number.isFinite(exitValue)||exitValue<0||exitValue>1)metrics.invalidForecast++;else if(netEdge<margin)metrics.edgeBelowMargin++;else metrics.edgePass++;if(Math.floor(b.asks[0].quantity*c.depthFractionBps/10000)<1)metrics.zeroTopAskCapacity++;}
-    state.wallets[id]=stepForecast(w,b,c,{exitValue,horizonMs:model.horizon*1000,minimumEdge:margin});
+    if(!same){metrics.observations++;if(history.length<6)metrics.warmup++;else if(roundtrip?!Number.isFinite(netEdge):!Number.isFinite(exitValue)||exitValue<0||exitValue>1)metrics.invalidForecast++;else if(netEdge<margin)metrics.edgeBelowMargin++;else metrics.edgePass++;if(Math.floor(b.asks[0].quantity*c.depthFractionBps/10000)<1)metrics.zeroTopAskCapacity++;}
+    state.wallets[id]=stepForecast(w,b,c,{exitValue,...(roundtrip?{netEdge}:{}),horizonMs:model.horizon*1000,minimumEdge:margin});
     state.predictions[id]={at:b.receivedAt,exitValue,netEdge,entryCost,modelRmse:model.rmse,margin,instrument:b.instrument,warmupRemaining:Math.max(0,6-history.length)};
     if(!same)advanced=true;
    }
