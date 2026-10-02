@@ -36,3 +36,9 @@ Initialize a new named cohort once, then run or resume it:
 ```
 
 Never reinitialize an existing cohort or remove an unknown lock/STOP to force a restart. The global `stream-dip.lock` enforces one local consumer. Journals and bank files live in restricted runtime storage, while atomic `stats.json` is only a derived projection. The worker contains two prospective paper wallets; neither changes the official pilot's strategy or limits. Zero added fees do not remove spreads, adverse ticks, depth constraints or losses.
+
+## Versioned recovery correction awaiting source migration
+
+The frozen version-1 capture validator can retain an obsolete expired stream timestamp and reject all newer REST recoveries. A real-capture comparison reproduced this. `passive-capture-v2.mjs` corrects that behavior without changing version 1: a verified newer REST engine version whose source time is beyond the old expired timestamp can supersede the old barrier. REST does not promise `nextExpiryAt`, so expiry knowledge remains unknown; a REST null is never represented as proof of no future expiry. Older, unverified or pre-expiry snapshots cannot clear the barrier. Known expired pushed books still fail, and same-version conflicting expiry metadata fails closed.
+
+The current gateway/consumer remain frozen on version 1. The correction requires a separately frozen version-2 gateway and paper cohort (or an explicit validated source handoff that preserves accounting). It is tested and compared against actual capture, but is not yet connected to the running source. Do not edit their frozen import closure in place or reset old wallet accounting to hide an interrupted window.
