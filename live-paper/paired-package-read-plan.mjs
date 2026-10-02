@@ -1,6 +1,7 @@
 import fs from 'node:fs';import path from 'node:path';import {createHash} from 'node:crypto';
 const hash=x=>createHash('sha256').update(JSON.stringify(x)).digest('hex');
 const name=x=>typeof x==='string'&&/^[a-z][a-z0-9-]{0,63}$/.test(x)&&!/^(con|prn|aux|nul|com[1-9]|lpt[1-9])$/.test(x);
+export const PACKAGE_OBSERVATION_INTERVAL_MS=60000;
 // This is a bounded observation allocation, not position/trade authority.
 export function readPairedPackageFocus(runtimeDir,universe,now=Date.now()){
  const file=path.join(runtimeDir,'paired-package-active.json');if(!fs.existsSync(file))return null;
@@ -13,16 +14,25 @@ export function readPairedPackageFocus(runtimeDir,universe,now=Date.now()){
   if(bank.markets.length!==2||!['381','382'].every(id=>bank.markets.some(m=>m.marketId===id&&universe.exchanges.some(x=>x.marketId===id&&x.exchangeId===m.exchangeId))))throw Error();
   const wallet=stats.wallets?.sequential_dual_no;if(!wallet)throw Error();
   const needed=wallet.pending!==null||wallet.activePackage?.stage==='orphan_exit_blocked';
-  if(!needed)return {available:true,needed:false,marketIds:[]};
+  if(!needed)return {available:true,needed:false,marketIds:bank.markets.map(m=>m.marketId),cohort:manifest.cohort,bankHash:manifest.bankHash,reason:'scoped_paper_pair_periodic_observation'};
   if(wallet.pending&&!bank.markets.some(m=>m.marketId===wallet.pending.marketId&&m.exchangeId===wallet.pending.exchangeId))throw Error();
   return {available:true,needed:true,marketIds:bank.markets.map(m=>m.marketId),cohort:manifest.cohort,bankHash:manifest.bankHash,reason:'scoped_counterfactual_pending_or_orphan_observation'};
  }catch{return {available:false,needed:false,marketIds:[],reason:'paper_package_focus_unavailable'};}
 }
-export function focusPairedPackageReads(plan,focus){
- if(!focus?.available||!focus.needed)return plan;
+export function focusPairedPackageReads(plan,focus,{now,lastAttempts}={}){
+ if(!focus?.available)return plan;
+ if(!focus.needed){
+  if(now===undefined||lastAttempts===undefined)return plan;
+  if(!Number.isSafeInteger(now)||now<0||!lastAttempts||typeof lastAttempts!=='object'||Array.isArray(lastAttempts))throw Error('INVALID_PACKAGE_OBSERVATION_CLOCK');
+  const clocks=(focus.marketIds||[]).map(id=>{const value=lastAttempts[id];if(value===undefined)return 0;const at=Date.parse(value);if(typeof value!=='string'||!Number.isFinite(at)||at>now)throw Error('INVALID_PACKAGE_ATTEMPT_CLOCK');return at;});
+  if(clocks.length!==2||now-Math.min(...clocks)<PACKAGE_OBSERVATION_INTERVAL_MS)return plan;
+ }
  const wanted=focus.marketIds;if(wanted?.length!==2||new Set(wanted).size!==2||wanted.some(id=>!['381','382'].includes(id)))throw Error('INVALID_PACKAGE_READ_SCOPE');
  const reads=plan.reads.map(x=>({...x})),present=new Set(reads.map(x=>x.marketId)),missing=wanted.filter(id=>!present.has(id));
- const slots=reads.map((x,i)=>({x,i})).filter(({x})=>['comparison','discovery'].includes(x.reason)&&!wanted.includes(x.marketId));
+ // Basket plans can reserve legs while retaining a comparison/discovery reason.
+ // Preserve those identities, not just explicit managed reason strings.
+ const basketIds=plan.basketMeasurement?.marketIds||[];
+ const slots=reads.map((x,i)=>({x,i})).filter(({x})=>['comparison','discovery'].includes(x.reason)&&!wanted.includes(x.marketId)&&!basketIds.includes(x.marketId));
  if(slots.length<missing.length)return {...plan,paperPackageFocus:{reason:'managed_risk_retains_capacity',marketIds:[]}};
  for(let i=0;i<missing.length;i++)reads[slots[i].i]={marketId:missing[i],reason:'paper_package',path:'supplementalDepth'};
  const admitted=new Set(reads.map(x=>x.marketId));return {...plan,reads,entryMarketIds:plan.entryMarketIds.filter(id=>admitted.has(id)),paperPackageFocus:{reason:focus.reason,marketIds:wanted,requestsAdded:0,replacedSlots:missing.length,executionAuthority:false}};
