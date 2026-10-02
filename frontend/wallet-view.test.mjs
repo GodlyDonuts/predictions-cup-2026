@@ -1,5 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
 import {paperWalletView,paperCohorts,walletConnection} from './app/wallet-view.mjs';
 import {GET} from './app/api/wallets/route.js';
 
@@ -26,6 +29,8 @@ test('official connection cannot say fresh for missing sections, errors, stale o
 });
 
 test('wallet route includes responsive paper and uses only fixed loopback endpoints',async t=>{
+ const dir=fs.mkdtempSync(path.join(os.tmpdir(),'sig-wallet-route-')),previous=process.env.SIG_PAPER_DIR;process.env.SIG_PAPER_DIR=dir;
+ t.after(()=>{if(previous===undefined)delete process.env.SIG_PAPER_DIR;else process.env.SIG_PAPER_DIR=previous;fs.rmSync(dir,{recursive:true,force:true});});
  const calls=[];t.mock.method(globalThis,'fetch',async url=>{calls.push(String(url));assert.match(String(url),/^http:\/\/127\.0\.0\.1:8787\/api\/(account|execution|dip|dip-scale|dip-responsive|shock)$/);return {ok:true,json:async()=>String(url).endsWith('/account')?{available:true,positions:[],pending:[],trades:[],health:{status:'partial'}}:String(url).endsWith('/execution')?{status:'monitoring',ordersSubmitted:2,fills:[{}],privateField:'must-not-export'}:report()};});
  const result=await (await GET()).json();assert.deepEqual(result.wallets.map(x=>x.id),['official',...paperCohorts.map(([id])=>id)]);assert.equal(calls.length,6);assert.ok(calls.includes('http://127.0.0.1:8787/api/shock'));assert.ok(calls.includes('http://127.0.0.1:8787/api/dip-responsive'));assert.equal(result.execution.ordersSubmitted,2);assert.equal(result.execution.attributedFills,1);assert.ok(!JSON.stringify(result).includes('must-not-export'));
  assert.equal(result.wallets.find(x=>x.id==='dip-responsive').metrics.referencePnl,'-4.000000');
