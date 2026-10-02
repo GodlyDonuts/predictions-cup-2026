@@ -58,22 +58,45 @@ export function shadowReport(s,bank,now){
  const candidates=Object.entries(s.wallets).map(([id,w])=>{assertState(w,bank.config);const r=report(w,bank.config,now).strategies.mean_reversion;return {id,cash:r.cash,realizedPnl:r.realizedPnl,referencePnl:r.referencePnl,liquidationPnl:r.liquidationPnl,intents:r.intents,fills:r.fills,closedTrades:r.closedTrades,fees:r.fees,positions:r.positions.map(p=>({instrument:p.instrument,quantity:p.quantity,unsoldShares:p.unsoldShares})),prediction:s.predictions[id],signalMetrics:s.signalMetrics?.[id]||null};});
  return {mode:'prospective_ml_paper',updatedAt:now,bankHash:s.bankHash,trainingCaptureThrough:bank.trainingCaptureThrough,captureThrough:s.captureThrough,modelsAttempted:bank.candidatesAttempted,modelsTrained:bank.modelsTrained,modelRejections:bank.rejected.length,candidateWallets:candidates.length,sourceSequence:s.sourceSequence,candidates,competitionOrders:0,networkRequests:0,profitabilityEstablished:false,limitations:bank.limitations};
 }
+export function combineReports(base,cohorts){
+ const reports=[{name:'ridge-original',report:base},...cohorts];
+ return {...base,status:base.status==='failed'?'failed':reports.some(x=>x.report.status==='failed')?'degraded':base.status,modelsAttempted:reports.reduce((n,x)=>n+x.report.modelsAttempted,0),modelsTrained:reports.reduce((n,x)=>n+x.report.modelsTrained,0),modelRejections:reports.reduce((n,x)=>n+(x.report.modelRejections||0),0),candidateWallets:reports.reduce((n,x)=>n+x.report.candidateWallets,0),cohorts:reports.map(({name,report:r})=>({name,status:r.status,bankHash:r.bankHash,trainingCaptureThrough:r.trainingCaptureThrough,modelsTrained:r.modelsTrained,candidateWallets:r.candidateWallets})),candidates:reports.flatMap(({name,report:r})=>r.candidates.map(c=>({...c,id:name+'/'+c.id,cohort:name})))};
+}
 if(process.argv[1]&&fileURLToPath(import.meta.url)===process.argv[1]){
  const dir=process.env.SIG_PAPER_DIR||path.join(process.env.LOCALAPPDATA,'SigTradingCup','paper-runtime'),workspace=path.dirname(path.dirname(fileURLToPath(import.meta.url)));
  const release=lock(path.join(dir,'ml-shadow.lock'));process.on('exit',release);
  const bank=JSON.parse(fs.readFileSync(path.join(dir,'ml-bank.json'),'utf8'));
  const stateFile=path.join(dir,'ml-shadow-state.json');let s=fs.existsSync(stateFile)?JSON.parse(fs.readFileSync(stateFile,'utf8')):{schemaVersion:1,bankHash:digest(bank),sourceSequence:0,sourceHash:null,wallets:{},histories:{},predictions:{}};
  const once=process.argv.includes('--once');let failed=false,partialReads=0;
+ const cohorts=new Map(),cohortRoot=path.join(dir,'ml-cohorts');
+ function discover(){
+  if(!fs.existsSync(cohortRoot))return;
+  for(const entry of fs.readdirSync(cohortRoot,{withFileTypes:true})){
+   if(!entry.isDirectory()||!/^([a-z0-9][a-z0-9-]{0,63})$/.test(entry.name)||cohorts.has(entry.name))continue;
+   const root=path.join(cohortRoot,entry.name),file=path.join(root,'ml-bank.json');if(!fs.existsSync(file))continue;
+   const b=JSON.parse(fs.readFileSync(file,'utf8')),statePath=path.join(root,'ml-shadow-state.json');
+   const state=fs.existsSync(statePath)?JSON.parse(fs.readFileSync(statePath,'utf8')):{schemaVersion:1,bankHash:digest(b),sourceSequence:0,sourceHash:null,wallets:{},histories:{},predictions:{}};
+   cohorts.set(entry.name,{root,bank:b,state,status:'running'});
+  }
+ }
+ function publish(status,reason){
+  const now=new Date().toISOString(),extra=[];
+  for(const [name,cohort]of cohorts){const r={...shadowReport(cohort.state,cohort.bank,now),status:status==='stopped'?'stopped':cohort.status,reason:cohort.reason};atomicJson(path.join(cohort.root,'ml-stats.json'),r);extra.push({name,report:r});}
+  atomicJson(path.join(dir,'ml-stats.json'),combineReports({...shadowReport(s,bank,now),status,reason},extra));
+ }
  const stopped=()=>fs.existsSync(path.join(dir,'ML_STOP'))||fs.existsSync(path.join(dir,'STOP'))||fs.existsSync(path.join(workspace,'STOP'));
  do{
   if(stopped())break;
   try{
    const records=verifySource(fs.readFileSync(path.join(dir,'journal.jsonl'),'utf8'));
-   if(!records){if(++partialReads>=4)throw Error('Persistent incomplete source journal');atomicJson(path.join(dir,'ml-stats.json'),{...shadowReport(s,bank,new Date().toISOString()),status:'awaiting_committed_capture'});}
-   else{partialReads=0;s=advanceShadow(s,records,bank);atomicJson(stateFile,s);atomicJson(path.join(dir,'ml-stats.json'),{...shadowReport(s,bank,new Date().toISOString()),status:'running'});}
-  }catch(e){atomicJson(path.join(dir,'ml-stats.json'),{...shadowReport(s,bank,new Date().toISOString()),status:'failed',reason:e.message});failed=true;break;}
+   discover();
+   if(!records){if(++partialReads>=4)throw Error('Persistent incomplete source journal');publish('awaiting_committed_capture');}
+   else{partialReads=0;s=advanceShadow(s,records,bank);atomicJson(stateFile,s);
+    for(const cohort of cohorts.values()){if(cohort.status==='failed')continue;try{cohort.state=advanceShadow(cohort.state,records,cohort.bank);atomicJson(path.join(cohort.root,'ml-shadow-state.json'),cohort.state);}catch{cohort.status='failed';cohort.reason='Cohort verification failed';}}
+    publish('running');}
+  }catch(e){publish('failed',e.message);failed=true;break;}
   if(!once)for(let n=0;n<75;n++){if(stopped())break;await new Promise(r=>setTimeout(r,200));}
  }while(!once);
- if(!failed&&!once)atomicJson(path.join(dir,'ml-stats.json'),{...shadowReport(s,bank,new Date().toISOString()),status:'stopped'});
+ if(!failed&&!once)publish('stopped');
  if(failed)process.exitCode=1;
 }

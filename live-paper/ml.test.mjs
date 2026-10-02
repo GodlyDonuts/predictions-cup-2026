@@ -1,10 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import {fitRidge,predict,features,trainBank} from './ml-bank.mjs';
+import {fitRidge,fitStumps,predict,features,trainBank} from './ml-bank.mjs';
 import {createHash} from 'node:crypto';
 import {initialState,stepForecast,assertState,report,digest} from './model.mjs';
-import {advanceShadow,verifySource} from './ml-shadow.mjs';
+import {advanceShadow,verifySource,combineReports} from './ml-shadow.mjs';
 const c=JSON.parse(fs.readFileSync(new URL('./config.json',import.meta.url)));
 const start=Date.parse('2026-10-01T23:00:00Z'),at=n=>new Date(start+n*1000).toISOString();
 function book(n){return {marketId:'377',exchangeId:'9',instrument:'9:YES',sequence:String(n),sourceAt:at(n),receivedAt:at(n),requestStartedAt:at(n),versionKey:n+':'+at(n),bids:[{price:'0.400000',quantity:10000}],asks:[{price:'0.410000',quantity:10000}]};}
@@ -14,6 +14,14 @@ test('ridge normalization uses training only and fits a known relationship; dege
 });
 test('ML features contain only current book and prior observations',()=>{
  const b=book(30),h=[{at:at(0),mid:.395}];const x=features(b,h);assert.equal(x.length,12);assert.ok(Math.abs(x[2]-.01)<1e-10);assert.equal(x[10],30);assert.equal(features(b,[])[2],0);
+});
+test('regularized stumps learn nonlinear training structure with finite constant-data fallback',()=>{
+ const rows=Array.from({length:80},(_,i)=>({x:[1,i/80],y:i<40?-.03:.04})),m=fitStumps(rows,2,64,.1,5);
+ assert.ok(predict(m,[1,.1])<-.015);assert.ok(predict(m,[1,.9])>.02);assert.ok(m.stumps.every(s=>s.threshold>=0&&s.threshold<=1));
+ const flat=fitStumps(rows.map(r=>({x:[1,0],y:.02})),2,16,.05,5);assert.equal(flat.stumps.length,0);assert.ok(Math.abs(predict(flat,[1,9])-.02)<1e-12);
+});
+test('cohort aggregation keeps wallets distinct and reports a failed cohort as degraded',()=>{
+ const r={status:'running',modelsAttempted:128,modelsTrained:96,candidateWallets:1,candidates:[{id:'same',cash:'100000'}]};const all=combineReports(r,[{name:'nonlinear',report:{...r,status:'failed'}}]);assert.equal(all.modelsTrained,192);assert.equal(all.candidateWallets,2);assert.notEqual(all.candidates[0].id,all.candidates[1].id);assert.equal(all.status,'degraded');assert.equal(r.candidates[0].id,'same');
 });
 test('forecast wallets charge entry/exit costs, fill only later, survive FIFO and reject duplicate fills',()=>{
  const policy={exitValue:.5,horizonMs:30000,minimumEdge:.005};let s=initialState(c,'ml',at(0));s=stepForecast(s,book(1),c,policy);assert.equal(s.strategies.mean_reversion.fills.length,0);s=stepForecast(s,book(31),c,policy);assert.equal(s.strategies.mean_reversion.fills.length,1);assert.equal(s.strategies.mean_reversion.cash,'99995.845850');s=stepForecast(s,book(61),c,policy);s=stepForecast(s,book(91),c,policy);assertState(s,c);assert.equal(s.strategies.mean_reversion.fills.length,2);assert.equal(s.strategies.mean_reversion.realized,'-0.208100');assert.equal(report(s,c,at(91)).strategies.mean_reversion.closedTrades,1);
@@ -46,8 +54,10 @@ test('future development observations cannot change fitted weights or training n
   const data={contexts:[{type:'tournament',tournament:{id:c.tournamentId},orderbook:{exchanges:[{exchangeId:'9',option:'YES',asOf:{at:time,sequence:n},bids:[{price:Number(bid.toFixed(3)),quantity:10000}],asks:[{price:Number((bid+.01).toFixed(3)),quantity:10000}]}]}}]};
   const body={sequence:n+1,previous,at:time,state:{},event:{type:'cycle',clockAt:time,accountExclusions:[],sourceSnapshots:[{endpoint:'/markets/377/orderbook?tournamentId='+c.tournamentId,receivedAt:time,requestStartedAt:time,data}]}};const hash=createHash('sha256').update(JSON.stringify(body)).digest('hex');previous=hash;return JSON.stringify({...body,hash});
  }).join('\n')+'\n';}
- const first=trainBank(capture(false),c),changed=trainBank(capture(true),c);assert.equal(first.modelsTrained,128);
- for(const m of first.models){const other=changed.models.find(x=>x.id===m.id);assert.deepEqual(other.weights,m.weights);assert.deepEqual(other.means,m.means);assert.deepEqual(other.scales,m.scales);assert.ok(Date.parse(m.maxTrainingLabelAt)<Date.parse(first.developmentSplitAt));}
+ for(const family of ['ridge','boosted_stumps']){
+  const first=trainBank(capture(false),c,{family}),changed=trainBank(capture(true),c,{family});assert.equal(first.modelsTrained,128);
+  for(const m of first.models){const other=changed.models.find(x=>x.id===m.id);assert.deepEqual(other.weights,m.weights);assert.deepEqual(other.means,m.means);assert.deepEqual(other.scales,m.scales);assert.deepEqual(other.stumps,m.stumps);assert.equal(other.base,m.base);assert.ok(Date.parse(m.maxTrainingLabelAt)<Date.parse(first.developmentSplitAt));}
+ }
 });
 
 

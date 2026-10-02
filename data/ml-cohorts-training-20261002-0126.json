@@ -1,0 +1,258 @@
+[
+  {
+    "name": "stumps-20261002-0126",
+    "family": "boosted_stumps",
+    "sourceHash": "2711a93b15b26f0e20a403c3674689c3826f5b6f61fb7b705ca2f0903f79998d",
+    "configHash": "a82e415ea924e4c5722bd9dbd64dc071ecee54d76880acc47e00f834717e8375",
+    "cutoff": "2026-10-02T01:25:36.909Z",
+    "developmentSplitAt": "2026-10-02T00:45:38.546Z",
+    "snapshots": 519,
+    "attempted": 128,
+    "trained": 128,
+    "selected": [
+      {
+        "id": "stumps-h60-f6-n64-r0.1-leaf5",
+        "horizon": 60,
+        "trainRows": 237,
+        "testRows": 153,
+        "rmse": 0.003917235780828089,
+        "baselineRmse": 0.00425452682791068,
+        "beatsPersistence": true
+      },
+      {
+        "id": "stumps-h60-f6-n64-r0.1-leaf10",
+        "horizon": 60,
+        "trainRows": 237,
+        "testRows": 153,
+        "rmse": 0.003917235780828089,
+        "baselineRmse": 0.00425452682791068,
+        "beatsPersistence": true
+      },
+      {
+        "id": "stumps-h60-f9-n64-r0.1-leaf5",
+        "horizon": 60,
+        "trainRows": 237,
+        "testRows": 153,
+        "rmse": 0.003974843624565885,
+        "baselineRmse": 0.00425452682791068,
+        "beatsPersistence": true
+      },
+      {
+        "id": "stumps-h180-f9-n64-r0.05-leaf5",
+        "horizon": 180,
+        "trainRows": 186,
+        "testRows": 118,
+        "rmse": 0.004178125688483965,
+        "baselineRmse": 0.004666734581325825,
+        "beatsPersistence": true
+      },
+      {
+        "id": "stumps-h180-f9-n64-r0.05-leaf10",
+        "horizon": 180,
+        "trainRows": 186,
+        "testRows": 118,
+        "rmse": 0.004178125688483965,
+        "baselineRmse": 0.004666734581325825,
+        "beatsPersistence": true
+      },
+      {
+        "id": "stumps-h180-f9-n64-r0.1-leaf5",
+        "horizon": 180,
+        "trainRows": 186,
+        "testRows": 118,
+        "rmse": 0.0042045662599506884,
+        "baselineRmse": 0.004666734581325825,
+        "beatsPersistence": true
+      },
+      {
+        "id": "stumps-h300-f6-n64-r0.1-leaf5",
+        "horizon": 300,
+        "trainRows": 146,
+        "testRows": 87,
+        "rmse": 0.0038829331196504717,
+        "baselineRmse": 0.004759807751116233,
+        "beatsPersistence": true
+      },
+      {
+        "id": "stumps-h300-f6-n64-r0.1-leaf10",
+        "horizon": 300,
+        "trainRows": 146,
+        "testRows": 87,
+        "rmse": 0.0038829331196504717,
+        "baselineRmse": 0.004759807751116233,
+        "beatsPersistence": true
+      },
+      {
+        "id": "stumps-h300-f6-n64-r0.05-leaf5",
+        "horizon": 300,
+        "trainRows": 146,
+        "testRows": 87,
+        "rmse": 0.0039976454370539115,
+        "baselineRmse": 0.004759807751116233,
+        "beatsPersistence": true
+      },
+      {
+        "id": "stumps-h600-f6-n16-r0.1-leaf5",
+        "horizon": 600,
+        "trainRows": 68,
+        "testRows": 37,
+        "rmse": 0.0050349048701146155,
+        "baselineRmse": 0.00556946586307879,
+        "beatsPersistence": true
+      },
+      {
+        "id": "stumps-h600-f6-n64-r0.05-leaf5",
+        "horizon": 600,
+        "trainRows": 68,
+        "testRows": 37,
+        "rmse": 0.005039003929233811,
+        "baselineRmse": 0.00556946586307879,
+        "beatsPersistence": true
+      },
+      {
+        "id": "stumps-h600-f6-n16-r0.05-leaf5",
+        "horizon": 600,
+        "trainRows": 68,
+        "testRows": 37,
+        "rmse": 0.005058210385384107,
+        "baselineRmse": 0.00556946586307879,
+        "beatsPersistence": true
+      }
+    ],
+    "rejected": [],
+    "limitations": [
+      "Short correlated capture; no profitability established",
+      "Chronological development split with training labels purged at split; not untouched future validation",
+      "Top bid label is not verified full-size exit liquidity",
+      "No guarantee of future depth, latency, settlement equivalence or execution"
+    ]
+  },
+  {
+    "name": "ridge-20261002-0126",
+    "family": "ridge",
+    "sourceHash": "2711a93b15b26f0e20a403c3674689c3826f5b6f61fb7b705ca2f0903f79998d",
+    "configHash": "a82e415ea924e4c5722bd9dbd64dc071ecee54d76880acc47e00f834717e8375",
+    "cutoff": "2026-10-02T01:25:36.909Z",
+    "developmentSplitAt": "2026-10-02T00:45:38.546Z",
+    "snapshots": 519,
+    "attempted": 128,
+    "trained": 128,
+    "selected": [
+      {
+        "id": "ridge-h60-f9-l10",
+        "horizon": 60,
+        "trainRows": 237,
+        "testRows": 153,
+        "rmse": 0.00385513988683013,
+        "baselineRmse": 0.00425452682791068,
+        "beatsPersistence": true
+      },
+      {
+        "id": "ridge-h60-f9-l100",
+        "horizon": 60,
+        "trainRows": 237,
+        "testRows": 153,
+        "rmse": 0.0038701970463437914,
+        "baselineRmse": 0.00425452682791068,
+        "beatsPersistence": true
+      },
+      {
+        "id": "ridge-h60-f12-l100",
+        "horizon": 60,
+        "trainRows": 237,
+        "testRows": 153,
+        "rmse": 0.003917905250707141,
+        "baselineRmse": 0.00425452682791068,
+        "beatsPersistence": true
+      },
+      {
+        "id": "ridge-h180-f12-l100",
+        "horizon": 180,
+        "trainRows": 186,
+        "testRows": 118,
+        "rmse": 0.004081343136320332,
+        "baselineRmse": 0.004666734581325825,
+        "beatsPersistence": true
+      },
+      {
+        "id": "ridge-h180-f9-l100",
+        "horizon": 180,
+        "trainRows": 186,
+        "testRows": 118,
+        "rmse": 0.004108355311727108,
+        "baselineRmse": 0.004666734581325825,
+        "beatsPersistence": true
+      },
+      {
+        "id": "ridge-h180-f6-l100",
+        "horizon": 180,
+        "trainRows": 186,
+        "testRows": 118,
+        "rmse": 0.004177678489821353,
+        "baselineRmse": 0.004666734581325825,
+        "beatsPersistence": true
+      },
+      {
+        "id": "ridge-h300-f6-l10",
+        "horizon": 300,
+        "trainRows": 146,
+        "testRows": 87,
+        "rmse": 0.004185879303056007,
+        "baselineRmse": 0.004759807751116233,
+        "beatsPersistence": true
+      },
+      {
+        "id": "ridge-h300-f6-l100",
+        "horizon": 300,
+        "trainRows": 146,
+        "testRows": 87,
+        "rmse": 0.004187608671524077,
+        "baselineRmse": 0.004759807751116233,
+        "beatsPersistence": true
+      },
+      {
+        "id": "ridge-h300-f4-l10",
+        "horizon": 300,
+        "trainRows": 146,
+        "testRows": 87,
+        "rmse": 0.00418957315699458,
+        "baselineRmse": 0.004759807751116233,
+        "beatsPersistence": true
+      },
+      {
+        "id": "ridge-h600-f4-l100",
+        "horizon": 600,
+        "trainRows": 68,
+        "testRows": 37,
+        "rmse": 0.005071110817607833,
+        "baselineRmse": 0.00556946586307879,
+        "beatsPersistence": true
+      },
+      {
+        "id": "ridge-h600-f4-l1000",
+        "horizon": 600,
+        "trainRows": 68,
+        "testRows": 37,
+        "rmse": 0.005073257135757228,
+        "baselineRmse": 0.00556946586307879,
+        "beatsPersistence": true
+      },
+      {
+        "id": "ridge-h600-f6-l1000",
+        "horizon": 600,
+        "trainRows": 68,
+        "testRows": 37,
+        "rmse": 0.005079688738458302,
+        "baselineRmse": 0.00556946586307879,
+        "beatsPersistence": true
+      }
+    ],
+    "rejected": [],
+    "limitations": [
+      "Short correlated capture; no profitability established",
+      "Chronological development split with training labels purged at split; not untouched future validation",
+      "Top bid label is not verified full-size exit liquidity",
+      "No guarantee of future depth, latency, settlement equivalence or execution"
+    ]
+  }
+]

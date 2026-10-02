@@ -1,4 +1,5 @@
 import fs from 'node:fs';
+import {randomUUID} from 'node:crypto';
 import {fileURLToPath} from 'node:url';
 import {replayJournal} from './replay.mjs';
 import {initialState,observe,normalizeBook,invalidate,digest} from './model.mjs';
@@ -40,8 +41,27 @@ export function fitRidge(rows,width,lambda){
  for(let i=0;i<width;i++){let p=i;for(let j=i+1;j<width;j++)if(Math.abs(a[j][i])>Math.abs(a[p][i]))p=j;[a[i],a[p]]=[a[p],a[i]];if(Math.abs(a[i][i])<1e-12)throw Error('Singular model');const v=a[i][i];for(let j=i;j<=width;j++)a[i][j]/=v;for(let k=0;k<width;k++)if(k!==i){const f=a[k][i];for(let j=i;j<=width;j++)a[k][j]-=f*a[i][j];}}
  return {width,lambda,means,scales,weights:a.map(r=>r[width])};
 }
-export const predict=(m,x)=>m.weights.reduce((n,w,j)=>n+w*(x[j]-m.means[j])/m.scales[j],0);
-export function trainBank(raw,c){
+export function fitStumps(rows,width,iterations,learningRate,minLeaf){
+ if(rows.length<20||minLeaf<2||iterations<1||learningRate<=0||learningRate>1)throw Error('Invalid boosted training data');
+ const base=rows.reduce((n,r)=>n+r.y,0)/rows.length,predictions=rows.map(()=>base),stumps=[];
+ const splits=[];
+ for(let feature=1;feature<width;feature++){
+  const sorted=rows.map(r=>r.x[feature]).sort((a,b)=>a-b),thresholds=new Set();
+  for(let q=1;q<9;q++)thresholds.add(sorted[Math.floor(sorted.length*q/9)]);
+  for(const threshold of thresholds){const left=[],right=[];rows.forEach((r,i)=>(r.x[feature]<=threshold?left:right).push(i));if(left.length>=minLeaf&&right.length>=minLeaf)splits.push({feature,threshold,left,right});}
+ }
+ for(let step=0;step<iterations;step++){
+  const residuals=rows.map((r,i)=>r.y-predictions[i]);let best=null;
+  for(const split of splits){const l=split.left.reduce((n,i)=>n+residuals[i],0),r=split.right.reduce((n,i)=>n+residuals[i],0),gain=l*l/(split.left.length+10)+r*r/(split.right.length+10);if(!best||gain>best.gain)best={...split,gain,leftValue:learningRate*l/(split.left.length+10),rightValue:learningRate*r/(split.right.length+10)};}
+  if(!best||best.gain<1e-15)break;
+  stumps.push({feature:best.feature,threshold:best.threshold,leftValue:best.leftValue,rightValue:best.rightValue});
+  rows.forEach((r,i)=>predictions[i]+=r.x[best.feature]<=best.threshold?best.leftValue:best.rightValue);
+ }
+ return {family:'boosted_stumps',width,iterations,learningRate,minLeaf,base,stumps};
+}
+export const predict=(m,x)=>m.family==='boosted_stumps'?m.stumps.reduce((n,s)=>n+(x[s.feature]<=s.threshold?s.leftValue:s.rightValue),m.base):m.weights.reduce((n,w,j)=>n+w*(x[j]-m.means[j])/m.scales[j],0);
+export function trainBank(raw,c,{family='ridge'}={}){
+ if(!['ridge','boosted_stumps'].includes(family))throw Error('Unsupported model family');
  const source=captureRows(raw,c),rows=source.rows;
  if(rows.length<80)throw Error('Need at least 80 accepted snapshots before model fitting');
  const split=rows[Math.floor(rows.length*.65)].at,models=[],rejected=[];
@@ -57,16 +77,21 @@ export function trainBank(raw,c){
    labels.push({...r,labelAt:future.at,persistence,y:Number(exit-fee(exit,1,{feeBps:c.feeBps,feePerShare:'0.000000'}))/1e6-r.mid});
   }
   const train=labels.filter(r=>Date.parse(r.labelAt)<Date.parse(split)),test=labels.filter(r=>Date.parse(r.at)>=Date.parse(split));
-  for(const width of [4,6,9,12])for(const lambda of [.01,.1,1,10,100,1000,10000,100000]){
-   const id=`ridge-h${horizon}-f${width}-l${lambda}`;
+  const variants=[];
+  for(const width of [4,6,9,12]){
+   if(family==='ridge')for(const lambda of [.01,.1,1,10,100,1000,10000,100000])variants.push({width,lambda,id:`ridge-h${horizon}-f${width}-l${lambda}`});
+   else for(const iterations of [16,64])for(const learningRate of [.05,.1])for(const minLeaf of [5,10])variants.push({width,iterations,learningRate,minLeaf,id:`stumps-h${horizon}-f${width}-n${iterations}-r${learningRate}-leaf${minLeaf}`});
+  }
+  for(const {id,width,lambda,iterations,learningRate,minLeaf} of variants){
    if(train.length<20||test.length<10){rejected.push({id,reason:'insufficient_matured_labels',train:train.length,test:test.length});continue;}
-   const model=fitRidge(train,width,lambda),errors=test.map(r=>predict(model,r.x)-r.y),rmse=Math.sqrt(errors.reduce((n,v)=>n+v*v,0)/errors.length),baselineRmse=Math.sqrt(test.reduce((n,r)=>n+(r.y-r.persistence)**2,0)/test.length);
+   const model=family==='ridge'?fitRidge(train,width,lambda):fitStumps(train,width,iterations,learningRate,minLeaf);
+   const errors=test.map(r=>predict(model,r.x)-r.y),rmse=Math.sqrt(errors.reduce((n,v)=>n+v*v,0)/errors.length),baselineRmse=Math.sqrt(test.reduce((n,r)=>n+(r.y-r.persistence)**2,0)/test.length);
    models.push({id,horizon,...model,trainRows:train.length,testRows:test.length,rmse,baselineRmse,baseline:'Current bid persists, with the same assumed exit tick and fee',beatsPersistence:rmse<baselineRmse,maxTrainingLabelAt:new Date(Math.max(...train.map(r=>Date.parse(r.labelAt)))).toISOString()});
   }
  }
  const selected=[60,180,300,600].flatMap(h=>models.filter(m=>m.horizon===h).sort((a,b)=>a.rmse-b.rmse).slice(0,3));
- return {schemaVersion:1,createdAt:new Date().toISOString(),config:c,configHash:digest(c),sourceHash:source.sourceHash,sourceRecords:source.sourceRecords,trainingCaptureThrough:source.cutoff,developmentSplitAt:split,acceptedSnapshots:rows.length,candidatesAttempted:128,modelsTrained:models.length,models,rejected,selected,selection:'Three lowest development-split RMSE per horizon; exploration only, all tried variants retained',target:'Future haircut-free best bid minus adverse exit tick and assumed exit fee, relative to current midpoint; entry costs charged separately',limitations:['Short correlated capture; no profitability established','Chronological development split with training labels purged at split; not untouched future validation','Top bid label is not verified full-size exit liquidity','No guarantee of future depth, latency, settlement equivalence or execution']};
+ return {schemaVersion:1,family,createdAt:new Date().toISOString(),config:c,configHash:digest(c),sourceHash:source.sourceHash,sourceRecords:source.sourceRecords,trainingCaptureThrough:source.cutoff,developmentSplitAt:split,acceptedSnapshots:rows.length,candidatesAttempted:128,modelsTrained:models.length,models,rejected,selected,selection:'Three lowest development-split RMSE per horizon; exploration only, all tried variants retained',target:'Future haircut-free best bid minus adverse exit tick and assumed exit fee, relative to current midpoint; entry costs charged separately',limitations:['Short correlated capture; no profitability established','Chronological development split with training labels purged at split; not untouched future validation','Top bid label is not verified full-size exit liquidity','No guarantee of future depth, latency, settlement equivalence or execution']};
 }
 if(process.argv[1]&&fileURLToPath(import.meta.url)===process.argv[1]){
- const arg=n=>process.argv[process.argv.indexOf(n)+1];const bank=trainBank(fs.readFileSync(arg('--journal'),'utf8'),JSON.parse(fs.readFileSync(arg('--config'),'utf8')));fs.writeFileSync(arg('--out'),JSON.stringify(bank,null,2));console.log(JSON.stringify({attempted:bank.candidatesAttempted,trained:bank.modelsTrained,shadowModels:bank.selected.length,snapshots:bank.acceptedSnapshots,cutoff:bank.trainingCaptureThrough}));
+ const arg=n=>{const i=process.argv.indexOf(n);if(i<0||!process.argv[i+1])throw Error('Required '+n);return process.argv[i+1];};const family=process.argv.includes('--family')?arg('--family'):'ridge';const bank=trainBank(fs.readFileSync(arg('--journal'),'utf8'),JSON.parse(fs.readFileSync(arg('--config'),'utf8')),{family});const out=arg('--out');if(fs.existsSync(out))throw Error('Refusing to overwrite an existing frozen model bank');const tmp=out+'.'+randomUUID()+'.tmp';fs.writeFileSync(tmp,JSON.stringify(bank,null,2),{flag:'wx',mode:0o600});try{fs.linkSync(tmp,out);}finally{fs.unlinkSync(tmp);}console.log(JSON.stringify({attempted:bank.candidatesAttempted,trained:bank.modelsTrained,shadowModels:bank.selected.length,snapshots:bank.acceptedSnapshots,cutoff:bank.trainingCaptureThrough}));
 }
