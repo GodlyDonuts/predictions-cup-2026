@@ -21,6 +21,7 @@ const specs = [
   ...['dip', 'dip-scale', 'dip-responsive'].map(name => ({name, script: 'live-paper/dip-shadow.mjs', stop: 'DIP_STOP', cohortArgument: name})),
   {name: 'shock', script: 'live-paper/shock-shadow.mjs', stop: 'SHOCK_STOP'},
   {name: 'passive', script: 'live-paper/passive-watch.mjs', stop: 'PASSIVE_STOP', lock: 'passive-watch.lock'},
+  {name: 'basket', script: 'live-paper/basket-watch.mjs', stop: 'BASKET_STOP', lock: 'basket-watch.lock'},
 ];
 function json(file) { try { const stat = fs.statSync(file); if (stat.size > 4 * 1024 * 1024) return {error: 'oversized'};
   const value = JSON.parse(fs.readFileSync(file, 'utf8'));

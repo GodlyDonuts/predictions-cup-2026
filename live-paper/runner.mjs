@@ -16,6 +16,10 @@ import {validateDipPolicy} from './dip-shadow.mjs';
 import {accountPositions,accountOrders,accountFills,accountPnl,accountView} from './account.mjs';
 import {createSchedulerState,validateSchedulerState,planBookReads,planHistoryReads,recordSchedulerAttempts} from './book-scheduler.mjs';
 import {collectionInputs,shockCollectionRisk} from './collection-inputs.mjs';
+import {basketCandidates} from './basket-inputs.mjs';
+import {planBasketBooks} from './basket-book-plan.mjs';
+import {basketCodeIdentity} from './basket-watch.mjs';
+import {createBasketRelationshipReader} from './basket-relations.mjs';
 import {CompetitionController} from '../execution/controller.mjs';
 import {loadNetworkBudget,networkInterval} from './network-budget.mjs';
 import {createClient} from '@supabase/supabase-js';
@@ -37,7 +41,7 @@ process.on('exit',cleanup);
 const control=new AbortController();let stopping=false;
 const stop=()=>{stopping=true;control.abort();};process.on('SIGINT',stop);process.on('SIGTERM',stop);
 const stopWatch=setInterval(()=>{if(fs.existsSync(stopFile)||fs.existsSync(paperStop)||fs.existsSync(collectorStop))stop();},200);
-let journal,state,api,server,heartbeat,competition,realtime,realtimeCapture;
+let journal,state,api,server,heartbeat,competition,realtime,realtimeCapture,basketRelationships;
 let universe,coverage,depthPlan,dipBank,scaleBank,responsiveBank,scheduler,schedulerScope;const recentReadTimings=[];
 const schedulerFile=path.join(runtimeDir,'book-scheduler.json');
 function recordAttempt(kind,marketId){scheduler=recordSchedulerAttempts(scheduler,schedulerScope,{[kind+'MarketIds']:[marketId],attemptedAt:new Date().toISOString()});atomicJson(schedulerFile,scheduler);}
@@ -56,6 +60,19 @@ function schedulingInputs(){
   }
   inputs.priorityManagedMarketIds=competition?.managedMarketIds()||[];
   inputs.heldMarketIds=[...new Set([...inputs.heldMarketIds,...inputs.priorityManagedMarketIds])];return inputs;
+}
+function basketMeasurementPlan(basePlan,excluded){
+ if(!dipBank)return basePlan;
+ try{
+  const file=path.join(runtimeDir,'basket-bank.json');
+  if(!fs.existsSync(file)){runtime.basketMeasurement={reason:'not_initialized'};return basePlan;}
+  const bank=JSON.parse(fs.readFileSync(file)),stats=JSON.parse(fs.readFileSync(path.join(runtimeDir,'basket-stats.json')));
+  if(bank.mode!=='dual_no_basket_measurement'||stats.bankHash!==digest(bank)||digest(bank.codeIdentity)!==digest(basketCodeIdentity()))throw Error('Basket measurement identity mismatch');
+  if(workerHealth(stats).status!=='running'||fs.existsSync(path.join(runtimeDir,'BASKET_STOP'))){runtime.basketMeasurement={reason:'observer_unavailable'};return basePlan;}
+  const now=Date.now(),candidates=basketCandidates(bank.definitions,coverage,universe,now),excludedMarketIds=universe.exchanges.filter(m=>excluded.has(m.exchangeId)).map(m=>m.marketId);
+  const plan=planBasketBooks(basePlan,schedulerScope,{candidates,excludedMarketIds,cycle:runtime.cycles,now});
+  runtime.basketMeasurement=plan.basketMeasurement;return plan;
+ }catch{runtime.basketMeasurement={reason:'observer_invalid_or_unavailable'};return basePlan;}
 }
 let accountCache={errors:{}},officialSync=false;
 function publishAccount(){atomicJson(path.join(runtimeDir,'official-account.json'),accountCache);}
@@ -93,7 +110,8 @@ try{
   schedulerScope={universe,coreMarketIds:c.marketIds};scheduler=fs.existsSync(schedulerFile)?validateSchedulerState(JSON.parse(fs.readFileSync(schedulerFile)),schedulerScope):createSchedulerState(schedulerScope);
   if(fs.existsSync(coverageFile)){coverage=JSON.parse(fs.readFileSync(coverageFile,'utf8'));if(coverage.universeHash!==universe.hash)coverage=null;}
   if(journal.last&&journal.last.state.engineRevision!==state.engineRevision)commit({type:'paper_engine_upgrade',fromRevision:journal.last.state.engineRevision||1,toRevision:state.engineRevision});
-  api=new ReadClient(loadKey(),{interval:c.readIntervalMs,networkBudget,signal:control.signal,authorizeDispatch:spec=>realtime?.authorizes(spec)===true||competition?.transport.authorizeRequest(spec)===true,onAdmission:next=>atomicJson(path.join(runtimeDir,'rate.json'),{next,manualReview:next===null}),onTiming:event=>{validateTiming(event);fs.appendFileSync(path.join(runtimeDir,'read-timings.jsonl'),JSON.stringify(event)+'\n',{mode:0o600});recentReadTimings.push(event);if(recentReadTimings.length>1000)recentReadTimings.shift();runtime.readTiming=timingSummary(recentReadTimings);}});
+  api=new ReadClient(loadKey(),{interval:c.readIntervalMs,networkBudget,signal:control.signal,authorizeDispatch:spec=>basketRelationships?.authorizes(spec)===true||realtime?.authorizes(spec)===true||competition?.transport.authorizeRequest(spec)===true,onAdmission:next=>atomicJson(path.join(runtimeDir,'rate.json'),{next,manualReview:next===null}),onTiming:event=>{validateTiming(event);fs.appendFileSync(path.join(runtimeDir,'read-timings.jsonl'),JSON.stringify(event)+'\n',{mode:0o600});recentReadTimings.push(event);if(recentReadTimings.length>1000)recentReadTimings.shift();runtime.readTiming=timingSummary(recentReadTimings);}});
+  basketRelationships=createBasketRelationshipReader({tournamentId:c.tournamentId,now:Date.now,dispatch:spec=>api.dispatch(spec),canOperate:()=>!stopping&&!api.manualReview&&!fs.existsSync(stopFile)&&!fs.existsSync(paperStop)&&!fs.existsSync(collectorStop)&&!fs.existsSync(path.join(runtimeDir,'BASKET_STOP'))});
   runtime.networkBudget={mode:networkBudget?'coordinated_sole_client':'default',intervalMs:networkIntervalMs,completionPacing:api.completionPacing};
   if(runtime.collectionPlan)runtime.collectionPlan.readIntervalMs=networkIntervalMs;
   const activationFile=path.join(runtimeDir,'competition-activation.json');
@@ -124,6 +142,7 @@ try{
     if(req.url==='/api/execution'){res.setHeader('Content-Type','application/json');try{return res.end(fs.readFileSync(path.join(runtimeDir,'competition-stats.json')));}catch{return res.end(JSON.stringify({mode:'official_quant_execution',status:'not_enabled',ordersSubmitted:0}));}}
     if(req.url==='/api/realtime'){res.setHeader('Content-Type','application/json');return res.end(JSON.stringify(realtime?realtime.status():{mode:'market_capture_only',status:'not_enabled'}));}
     if(req.url==='/api/passive'){res.setHeader('Content-Type','application/json');try{const r=JSON.parse(fs.readFileSync(path.join(runtimeDir,'passive-stats.json')));return res.end(JSON.stringify({...r,workerHealth:workerHealth({reportedAt:r.reportedAt,status:r.runtime?.status})}));}catch{res.writeHead(503);return res.end(JSON.stringify({mode:'passive_opportunity_measurement',status:'unavailable',simulatedFills:null,pnl:null}));}}
+    if(req.url==='/api/basket'){res.setHeader('Content-Type','application/json');try{const r=JSON.parse(fs.readFileSync(path.join(runtimeDir,'basket-stats.json')));return res.end(JSON.stringify({...r,workerHealth:workerHealth(r)}));}catch{res.writeHead(503);return res.end(JSON.stringify({mode:'dual_no_basket_measurement',status:'unavailable',simulatedFills:null,pnl:null}));}}
     if(req.url==='/api/ml'){res.setHeader('Content-Type','application/json');try{const r=JSON.parse(fs.readFileSync(path.join(runtimeDir,'ml-stats.json'),'utf8'));return res.end(JSON.stringify({...r,workerHealth:workerHealth(r)}));}catch{res.writeHead(503);return res.end(JSON.stringify({status:'unavailable'}));}}
     if(req.url==='/api/dip'){res.setHeader('Content-Type','application/json');try{const r=JSON.parse(fs.readFileSync(path.join(runtimeDir,'dip-stats.json'),'utf8'));return res.end(JSON.stringify({...r,workerHealth:workerHealth(r),collectorStatus:runtime.status,collectionPlan:runtime.collectionPlan}));}catch{res.writeHead(503);return res.end(JSON.stringify({status:'unavailable'}));}}
     if(req.url==='/api/dip-scale'||req.url==='/api/dip-responsive'||req.url==='/api/shock'){res.setHeader('Content-Type','application/json');try{const r=JSON.parse(fs.readFileSync(path.join(runtimeDir,req.url==='/api/shock'?'shock-stats.json':req.url==='/api/dip-responsive'?'dip-responsive-stats.json':'dip-scale-stats.json'),'utf8'));return res.end(JSON.stringify({...r,workerHealth:workerHealth(r),collectorStatus:runtime.status,collectionPlan:runtime.collectionPlan}));}catch{res.writeHead(503);return res.end(JSON.stringify({status:'unavailable'}));}}
@@ -141,6 +160,12 @@ try{
   }});
   if(!journal.last&&!stopping)commit({type:'started',config:c});
   runtime.status=stopping?'stopping':'running';persistStatus();
+  if(!stopping&&fs.existsSync(path.join(runtimeDir,'basket-bank.json'))){
+    const capture=await basketRelationships.capture();
+    atomicJson(path.join(runtimeDir,'basket-relationships.json'),capture);
+    commit({type:'basket_relationship_capture',clockAt:capture.finishedAt,capture});
+    runtime.basketRelationships={at:capture.finishedAt,complete:capture.complete,reason:capture.reasonCode,relationships:capture.relationships.length,pages:capture.snapshots.length,evidenceHash:capture.evidenceHash};
+  }
   const cyclesArg=process.argv.indexOf('--cycles');const maxCycles=cyclesArg===-1?Infinity:Number(process.argv[cyclesArg+1]);
   if(!Number.isInteger(maxCycles)&&maxCycles!==Infinity||maxCycles<1)throw Error('Invalid cycle bound');
   while(!stopping&&runtime.cycles<maxCycles){
@@ -156,7 +181,8 @@ try{
       if(officialSync){try{accountCache.orders=accountOrders(orders,new Date().toISOString());delete accountCache.errors.orders;publishAccount();}catch{accountCache.errors.orders={at:new Date().toISOString(),reason:'unavailable_or_invalid'};publishAccount();}}
       // Freeze one plan before metadata selection; do not resample shadow state
       // or reorder candidates between the controller and these book requests.
-      const planned=dipBank?planBookReads(scheduler,schedulerScope,schedulingInputs()):{reads:[...c.marketIds.map(marketId=>({marketId,path:'sourceSnapshots'})),...depthPlan.marketIds.map(marketId=>({marketId,path:'supplementalDepth'}))],entryMarketIds:[]};
+      const basePlan=dipBank?planBookReads(scheduler,schedulerScope,schedulingInputs()):{reads:[...c.marketIds.map(marketId=>({marketId,path:'sourceSnapshots'})),...depthPlan.marketIds.map(marketId=>({marketId,path:'supplementalDepth'}))],entryMarketIds:[]};
+      const planned=basketMeasurementPlan(basePlan,excluded);
       if(competition)try{await competition.beforeBooks({positions,orders,ordersAt:new Date().toISOString(),candidateMarketIds:planned.entryMarketIds});}catch(e){competition.failure(e);}
       const supplementalDepth=[];
       for(const spec of planned.reads){
@@ -186,7 +212,7 @@ try{
           runtime.breadth={universeSize:universe.exchanges.length,observedExchanges:Object.keys(coverage.quotes).length,lastCollectionAt:coverage.updatedAt,error:null};
         }catch(e){if(!stopping&&(api.manualReview||e.status===401||e.status===403))throw e;bulkPriceError=stopping?'stopped':e.status?'http_'+e.status:e.message;runtime.breadth={...runtime.breadth,error:bulkPriceError};}
       }
-      const at=new Date().toISOString();sampleEquity(state,c,at);assertState(state,c);commit({type:'cycle',clockAt:at,sourceSnapshots:events,supplementalDepth,entryMarketIds:[...new Set([...planned.entryMarketIds,...(planned.managedMarketIds||[])])],bulkPrices,bulkPriceError,accountExclusions:[...excluded],exclusionObservedAt:positions.receivedAt});cycleCommitted=true;
+      const at=new Date().toISOString();sampleEquity(state,c,at);assertState(state,c);commit({type:'cycle',clockAt:at,sourceSnapshots:events,supplementalDepth,basketMeasurement:planned.basketMeasurement||null,entryMarketIds:[...new Set([...planned.entryMarketIds,...(planned.managedMarketIds||[])])],bulkPrices,bulkPriceError,accountExclusions:[...excluded],exclusionObservedAt:positions.receivedAt});cycleCommitted=true;
       if(realtime&&!stopping&&api.cooldown<=Date.now())await realtime.service();
       runtime.cycles++;runtime.lastCycleAt=at;runtime.status=stopping?'stopping':successful?'running':'degraded';persistStatus();
       console.log(JSON.stringify({at,event:'paper_cycle',cycle:runtime.cycles,observations:state.observations,fills:Object.fromEntries(Object.entries(state.strategies).map(([k,s])=>[k,s.fills.length])),competitionOrders:competition?Object.values(competition.state.intents).filter(i=>Number.isSafeInteger(i.orderId)&&i.orderId>0).length:0}));

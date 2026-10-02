@@ -7,6 +7,10 @@ import {fileURLToPath} from 'node:url';
 import vm from 'node:vm';
 import * as scheduler from './book-scheduler.mjs';
 import {collectionInputs,shockCollectionRisk} from './collection-inputs.mjs';
+import {basketCandidates} from './basket-inputs.mjs';
+import {planBasketBooks} from './basket-book-plan.mjs';
+import {basketCodeIdentity} from './basket-watch.mjs';
+import {createBasketRelationshipReader} from './basket-relations.mjs';
 import {networkInterval,validateNetworkBudget} from './network-budget.mjs';
 import {connectTournament} from './connection.mjs';
 import {validateTiming,timingSummary} from './read-timing.mjs';
@@ -25,13 +29,14 @@ const source=fs.readFileSync(path.join(root,'runner.mjs'),'utf8');
 
 // Only module wiring is replaced. The real runner body executes with an in-memory
 // journal/filesystem, synthetic API/key, fake clock/server/process and no network.
-async function run(stopAt,{dipEnabled=false,officialSync=false}={}){
+async function run(stopAt,{dipEnabled=false,officialSync=false,invalidBasket=false}={}){
   let startupFailures=0;
   let now=Date.parse('2026-10-02T02:00:00Z'),cycle=0,stopped=false,triggered=false;
   const commits=[],memory=new Map(),listeners={},requests=[];
   if(dipEnabled)memory.set(path.join('/synthetic','SigTradingCup','paper-runtime','dip-bank.json'),JSON.stringify({policy:JSON.parse(fs.readFileSync(path.join(root,'dip-policy.json'))),config:{...config,feeBps:0},universe:breadth.validateUniverse(universe,config.tournamentId)}));
   if(dipEnabled){const dir=path.join('/synthetic','SigTradingCup','paper-runtime'),bank=JSON.parse(memory.get(path.join(dir,'dip-bank.json')));memory.set(path.join(dir,'dip-state.json'),JSON.stringify({bankHash:model.digest(bank),wallet:model.initialState(config,'fixture',new Date(now).toISOString()),histories:{},bookHistory:{}}));}
   if(officialSync)memory.set(path.join('/synthetic','SigTradingCup','paper-runtime','official-sync.json'),JSON.stringify({enabled:true}));
+  if(invalidBasket)memory.set(path.join('/synthetic','SigTradingCup','paper-runtime','basket-bank.json'),'{invalid');
   const iso=()=>new Date(now).toISOString();
   const stop=()=>{triggered=true;stopped=true;listeners.SIGTERM();};
   const interrupt=stage=>{if(cycle===2&&stage===stopAt){stop();throw Error('Stopped');}};
@@ -91,7 +96,7 @@ async function run(stopAt,{dipEnabled=false,officialSync=false}={}){
     memory.set(p,JSON.stringify(v));
   };
   const bindings={...model,...breadth,...depth,...scheduler,collectionInputs,shockCollectionRisk,networkInterval,loadNetworkBudget:file=>mockfs.existsSync(file)?validateNetworkBudget(JSON.parse(mockfs.readFileSync(file))):null,connectTournament,validateTiming,timingSummary,historyEndpoint,normalizeHistory,validateDipPolicy,workerHealth,baselineView,accountPositions,accountOrders,accountFills,accountPnl,accountView,fs:mockfs,path,http:{createServer:()=>({once(){},listen(p,h,f){f();},close(){}})},randomUUID,fileURLToPath,
-    loadKey:()=> 'SYNTHETIC',Journal,ReadClient,lock:()=>()=>{},atomicJson,exclusionSet,
+    loadKey:()=> 'SYNTHETIC',Journal,ReadClient,lock:()=>()=>{},atomicJson,exclusionSet,basketCandidates,planBasketBooks,basketCodeIdentity,createBasketRelationshipReader,
     sampleEquity(s,c,at){if(stopAt==='sampling-failure'&&cycle===2){stop();throw Error('Synthetic sample failure');}return model.sampleEquity(s,c,at);},
     process,console:{log(){},error(){}},AbortController,structuredClone,Date:Clock,setInterval:()=>1,clearInterval(){},moduleUrl:new URL('./runner.mjs',import.meta.url).href};
   const body=source.replace(/^import .*;\r?\n/gm,'').replaceAll('import.meta.url','moduleUrl');
@@ -122,6 +127,13 @@ test('a journal failure concurrent with STOP fails closed without a later state-
 test('ordinary bounded completion remains source/accounting equivalent',async()=>{
   const r=await run('none'),last=r.commits.at(-1),replay=replayJournal(r.commits.map(x=>JSON.stringify(x)).join('\n')+'\n',config);
   assert.equal(r.process.exitCode,0);assert.equal(last.state.observations,8);assert.equal(replay.observations,8);assert.equal(replay.strategies.buy_hold_benchmark.fills,4);
+});
+
+test('invalid optional basket observer preserves original book reads and official candidate metadata',async()=>{
+ const base=await run('none',{dipEnabled:true}),r=await run('none',{dipEnabled:true,invalidBasket:true});
+ assert.equal(r.process.exitCode,0);assert.deepEqual(r.requests.filter(p=>p.startsWith('/markets/')),base.requests.filter(p=>p.startsWith('/markets/')));
+ assert.deepEqual(r.commits.filter(c=>c.event.type==='cycle').map(c=>c.event.entryMarketIds),base.commits.filter(c=>c.event.type==='cycle').map(c=>c.event.entryMarketIds));
+ const stats=JSON.parse([...r.memory.entries()].find(([p])=>p.endsWith('paper-runtime'+path.sep+'stats.json'))[1]);assert.equal(stats.runtime.basketMeasurement.reason,'observer_invalid_or_unavailable');
 });
 
 test('runner persists startup backoff, recovers into ordinary collection and stops during retry',async()=>{
