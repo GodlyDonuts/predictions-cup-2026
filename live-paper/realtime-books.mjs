@@ -23,8 +23,11 @@ export class RealtimeBooks {
       const scope = config({tournamentId, marketId: market.marketId, exchangeIds: [market.exchangeId]});
       requireThat(!this.#markets.has(scope.marketId) && !exchangeIds.has(scope.exchangeIds[0]), 'DUPLICATE_MARKET_SCOPE');
       exchangeIds.add(scope.exchangeIds[0]);
-      const collector = new MarketCollector(scope, {now: () => this.#clock(), staleMs, capture});
-      this.#markets.set(scope.marketId, {scope, collector, connectionId: null, connections: new Set(), subscribedNs: null, lastReceiptNs: null, ticket: null, knownExpiry: null});
+      const snapshotReceipt = {requestStartedAt: null};
+      const normalizedCapture = capture === null ? null : {append: record => capture.append(record.kind === 'snapshot' && snapshotReceipt.requestStartedAt !== null
+        ? {...record, requestStartedAt: snapshotReceipt.requestStartedAt} : record)};
+      const collector = new MarketCollector(scope, {now: () => this.#clock(), staleMs, capture: normalizedCapture});
+      this.#markets.set(scope.marketId, {scope, collector, snapshotReceipt, connectionId: null, connections: new Set(), subscribedNs: null, lastReceiptNs: null, ticket: null, knownExpiry: null});
     }
   }
   #clock() {
@@ -131,7 +134,12 @@ export class RealtimeBooks {
       const raw = response.data.contexts.find(c => c?.type === 'tournament' && c.tournament?.id === entry.scope.tournamentId).orderbook.exchanges;
       requireThat(raw.every(book => book.option === 'YES'), 'SNAPSHOT_OPTION_MISMATCH');
       entry.lastReceiptNs = receivedNs;
-      const recovered = entry.collector.completeRecovery(ticket, response.data, {receivedAt: response.receivedAt});
+      // The existing collector owns normalized snapshot/recovery ordering. Add
+      // the actual queued REST dispatch time only to the snapshot it records.
+      entry.snapshotReceipt.requestStartedAt = timestamp(response.requestStartedAt);
+      let recovered;
+      try { recovered = entry.collector.completeRecovery(ticket, response.data, {receivedAt: response.receivedAt}); }
+      finally { entry.snapshotReceipt.requestStartedAt = null; }
       // REST omits expiry metadata. An equal engine version cannot erase a
       // deadline already learned from the full pushed book of that version.
       const held = entry.collector.books.get(entry.scope.exchangeIds[0])?.book;

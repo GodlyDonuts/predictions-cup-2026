@@ -22,8 +22,10 @@ export function createRealtimeHost({dispatch, createClient, scope, canOperate, s
       && fences.get(spec.beforeDispatch) === spec.endpoint;
   }
   function status() {
+    const transport=client.status();
     return {schemaVersion: 1, mode: 'read_only_market_capture', executionAuthorized: false,
-      at: new Date(now()).toISOString(), transport: client.status(), recoveryAttempts, recoverySuccesses,
+      at: new Date(now()).toISOString(), transport, marketStreamObserved:transport.eventsReceived>0,
+      dataEvidence:transport.eventsReceived>0?'market_frames_observed':'awaiting_first_market_frame',recoveryAttempts,recoverySuccesses,
       lastRecoveryAt, lastCode, retryAt: retryAt ? new Date(retryAt).toISOString() : null,
       markets: books.status().markets.map(({books: rows, ...market}) => ({...market, availableBooks: rows.length}))};
   }

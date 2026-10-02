@@ -35,6 +35,12 @@ export function createRealtimeClient({dispatch, createClient, tournamentId, mark
   let credentials = null, sdk = null, sdkTokenSlot = null, channels = new Map(), generation = 0, connectionCounter = 0;
   let stopped = false, state = 'idle', lastCode = null, tail = Promise.resolve(), refreshTimer = null, stopTimer = null;
   let tokenRequests = 0, eventsReceived = 0, rejectedEvents = 0, callbackFailures = 0;
+  const diagnostics = {socketMessages: 0, sdkErrors: 0, broadcastCallbacks: 0, namedCallbacks: 0,
+    knownBroadcasts: {market_batch: 0, book_dirty: 0, market_settled: 0}, unknownBroadcasts: 0,
+    droppedCallbacks: {retired: 0, stopped: 0, notJoined: 0},
+    heartbeat: {sent: 0, ok: 0, error: 0, timeout: 0, unknown: 0, lastStatus: null, lastAt: null}};
+  const connectionState = () => { try { const v = sdk?.realtime?.connectionState?.();
+    return ['connecting', 'open', 'closing', 'closed'].includes(v) ? v : 'unknown'; } catch { return 'unknown'; } };
   const fences = new WeakSet();
   const abortWaiters = new Set();
   const allowed = () => { try { return !stopped && !signal?.aborted && canOperate() === true; } catch { return false; } };
@@ -50,6 +56,7 @@ export function createRealtimeClient({dispatch, createClient, tournamentId, mark
   const arm = (fn, ms, unref = true) => { const timer = setTimer(fn, ms); if (unref) timer?.unref?.(); return timer; };
   const status = () => freeze({schemaVersion: 1, mode: 'realtime_market_capture_only', state, lastCode, tournamentId,
     tokenRequests, eventsReceived, rejectedEvents, callbackFailures,
+    diagnostics: {...structuredClone(diagnostics), connectionState: connectionState()},
     markets: scopes.map(s => { const c = channels.get(s.marketId); return {marketId: s.marketId, exchangeId: s.exchangeIds[0],
       subscribed: c?.joined === true, connectionId: c?.connectionId ?? null, revision: c?.revision ?? null}; }),
     accountChannels: 0, orderWrites: 0});
@@ -113,7 +120,18 @@ export function createRealtimeClient({dispatch, createClient, tournamentId, mark
       lastCode = 'REALTIME_HANDSHAKE_TIMEOUT'; record.reject?.(error(lastCode)); record.reject = null;
     }, handshakeTimeoutMs, false);
     let channel = client.channel(record.scope.topic, {config: {private: true}});
+    // Diagnostics only: never forward or retain a wildcard event's name/payload.
+    // Count before admission guards so a retired or unjoined callback is visible.
+    channel = channel.on('broadcast', {event: '*'}, message => {
+      diagnostics.broadcastCallbacks++;
+      const name = typeof message?.event === 'string' ? message.event.toLowerCase() : null;
+      if (EVENTS.includes(name)) diagnostics.knownBroadcasts[name]++; else diagnostics.unknownBroadcasts++;
+      if (localGeneration !== generation || sdk !== client) diagnostics.droppedCallbacks.retired++;
+      else if (!allowed()) diagnostics.droppedCallbacks.stopped++;
+      else if (!record.joined) diagnostics.droppedCallbacks.notJoined++;
+    });
     for (const event of EVENTS) channel = channel.on('broadcast', {event}, message => {
+      diagnostics.namedCallbacks++;
       if (!current() || !record.joined) return;
       const receivedAt = stamp(); let parsed, payload;
       try {
@@ -172,12 +190,24 @@ export function createRealtimeClient({dispatch, createClient, tournamentId, mark
       // heartbeats, even after setAuth(token). Pin it to this private SDK epoch;
       // it must never fall back to the anon key or mint tokens on heartbeats.
       const tokenSlot = {token: credentials.token}; sdkTokenSlot = tokenSlot;
+      const localGeneration = generation;
       sdk = createClient(credentials.url, credentials.anonKey, {accessToken: async () => tokenSlot.token,
         auth: {persistSession: false, autoRefreshToken: false, detectSessionInUrl: false},
-        realtime: {logger: () => {}, reconnectAfterMs: () => 60000, sessionStorage}});
+        realtime: {logger: kind => {
+          // The SDK supplies sensitive text and payload as later arguments;
+          // this callback deliberately does not accept or inspect either.
+          if (generation !== localGeneration || !allowed()) return;
+          if (kind === 'receive') diagnostics.socketMessages++;
+          else if (kind === 'error') diagnostics.sdkErrors++;
+        }, reconnectAfterMs: () => 60000, sessionStorage}});
       requireThat(sdk && typeof sdk.channel === 'function' && typeof sdk.removeAllChannels === 'function'
         && typeof sdk.realtime?.setAuth === 'function' && typeof sdk.realtime?.disconnect === 'function', 'REALTIME_SDK_INVALID');
-      const client = sdk, localGeneration = generation;
+      const client = sdk;
+      client.realtime.onHeartbeat?.(value => {
+        if (generation !== localGeneration || sdk !== client || !allowed()) return;
+        const key = ['sent', 'ok', 'error', 'timeout'].includes(value) ? value : 'unknown';
+        diagnostics.heartbeat[key]++; diagnostics.heartbeat.lastStatus = key; diagnostics.heartbeat.lastAt = stamp();
+      });
       await bounded(Promise.resolve().then(() => client.realtime.setAuth(credentials.token))); guard();
       requireThat(client === sdk && generation === localGeneration, 'REALTIME_STOPPED');
       channels = new Map(scopes.map(scope => [scope.marketId, {scope, joined: false, joins: 0, connectionId: null, revision: null, timer: null, reject: null}]));

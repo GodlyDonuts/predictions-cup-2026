@@ -185,3 +185,30 @@ test('equal-version REST cannot erase a known pushed expiry deadline', () => {
   f.advance(1000); assert.equal(f.view().ready, false); assert.ok(f.view().reasons.includes('EXPIRY'));
   assert.equal(f.recover([book(701, 102, 1000)]), true); assert.equal(f.view().nextKnownExpiryAt, null);
 });
+
+test('snapshot capture retains actual REST dispatch time separately from queue ticket and receipt', () => {
+  const records = [], f = fixture({capture: {append: row => records.push(structuredClone(row))}}); f.subscribe();
+  const ticket = f.bridge.beginSnapshot({marketId, connectionId});
+  f.advance(12000); const response = f.response(ticket, [book(701, 101, 11900)], {requestStartedAt: at(10000)});
+  assert.equal(f.bridge.completeSnapshot(ticket, response), true);
+  const captured = records.find(row => row.kind === 'snapshot');
+  assert.equal(captured.requestStartedAt, '2026-10-01T21:00:10.000000000Z');
+  assert.equal(captured.receivedAt, at(12000));
+  assert.equal(captured.books[0].asOf.at, '2026-10-01T21:00:11.900000000Z');
+  assert.ok(records.some(row => row.kind === 'recovery_finished' && row.booksReady));
+  assert.ok(records.filter(row => row.kind !== 'snapshot').every(row => row.requestStartedAt === undefined));
+});
+
+test('failed or invalidated snapshot attempts never acquire another request receipt or recovery success', () => {
+  const records = [], f = fixture({capture: {append: row => records.push(structuredClone(row))}}); f.subscribe();
+  const invalid = f.bridge.beginSnapshot({marketId, connectionId});
+  assert.equal(f.bridge.completeSnapshot(invalid, f.response(invalid, undefined, {requestStartedAt: at(-1)})), false);
+  const stale = f.bridge.beginSnapshot({marketId, connectionId});
+  f.bridge.invalidate({marketId, connectionId, reason: 'GAP'});
+  assert.equal(f.bridge.completeSnapshot(stale, f.response(stale)), false);
+  assert.equal(records.some(row => row.kind === 'snapshot'), false);
+  assert.equal(records.some(row => row.kind === 'recovery_finished' && row.booksReady), false);
+  f.advance(1000); assert.equal(f.recover(), true);
+  assert.equal(records.filter(row => row.kind === 'snapshot').length, 1);
+  assert.equal(records.find(row => row.kind === 'snapshot').requestStartedAt, '2026-10-01T21:00:01.000000000Z');
+});

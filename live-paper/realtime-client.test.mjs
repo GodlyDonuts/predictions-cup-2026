@@ -24,14 +24,15 @@ function fixture(options = {}) {
   x.createClient = (url, key, opts) => {
     if (x.factoryError) throw Object.assign(Error(TOKEN), {code: 'REALTIME_' + TOKEN});
     const sdk = {url, key, opts, channels: [], auth: [], removed: 0, disconnected: 0};
-    sdk.realtime = {setAuth: async token => { sdk.auth.push(token); if (x.authHang) return new Promise(() => {}); }, disconnect: () => { sdk.disconnected++; }};
+    sdk.realtime = {setAuth: async token => { sdk.auth.push(token); if (x.authHang) return new Promise(() => {}); }, disconnect: () => { sdk.disconnected++; },
+      connectionState: () => 'open', onHeartbeat: callback => { sdk.heartbeat = callback; }};
     sdk.removeAllChannels = async () => { sdk.removed++; };
     sdk.channel = (topic, config) => {
       if (x.channelError) throw Error(TOKEN);
       const ch = {topic, config, handlers: new Map()};
       ch.on = (kind, filter, fn) => { assert.equal(kind, 'broadcast'); ch.handlers.set(filter.event, fn); return ch; };
       ch.subscribe = fn => { ch.notify = fn; if (x.autoJoin !== false) queueMicrotask(() => fn('SUBSCRIBED')); return ch; };
-      ch.push = (event, payload) => ch.handlers.get(event)?.({payload});
+      ch.push = (event, payload) => { ch.handlers.get('*')?.({event, payload}); ch.handlers.get(event)?.({event, payload}); };
       sdk.channels.push(ch); return ch;
     };
     x.sdkCalls.push(sdk); return sdk;
@@ -60,7 +61,7 @@ test('one token write uses both unforgeable queue fences, authenticates before p
   const sdk = x.sdkCalls[0]; assert.deepEqual(sdk.auth, [TOKEN + '1']);
   assert.equal(sdk.opts.auth.persistSession, false); assert.equal(sdk.opts.auth.autoRefreshToken, false); assert.equal(sdk.opts.realtime.reconnectAfterMs(1), 60000);
   assert.deepEqual(sdk.channels.map(c => c.topic), markets.map(m => `tournament:${tournamentId}:market:${m.marketId}`));
-  assert.ok(sdk.channels.every(c => c.config.config.private && c.handlers.size === 3));
+  assert.ok(sdk.channels.every(c => c.config.config.private && c.handlers.size === 4));
   assert.equal(x.subscribed.length, 2); assert.ok(x.resync.every(r => r.reason === 'INITIAL'));
   assert.equal(x.client.status().state, 'subscribed'); assert.equal(JSON.stringify(x.client.status()).includes('sensitive'), false);
   assert.equal(x.client.authorizes({method: 'POST', endpoint: '/realtime/token', beforeDispatch() {}, beforeNetwork() {}}), false);
@@ -147,4 +148,41 @@ test('malformed, non-HTTPS and overlong token lifetimes fail closed before SDK r
     {expiresAt: new Date(startTime + 4 * 3600000).toISOString()}, {expiresAt: new Date(startTime + 1000).toISOString()}, {token: 'bad'}]) {
     const x = fixture({tokenOverride}); await assert.rejects(x.client.start(), /REALTIME_TOKEN_INVALID/); assert.equal(x.sdkCalls.length, 0); await x.client.stop();
   }
+});
+
+test('diagnostics count known, unknown, filtered callbacks and heartbeat health without arbitrary text', async () => {
+  const x = fixture(); await x.client.start(); const sdk = x.sdkCalls[0], ch = sdk.channels[0];
+  sdk.opts.realtime.logger('receive', TOKEN, {token: TOKEN}); sdk.opts.realtime.logger('error', TOKEN);
+  sdk.heartbeat('sent', TOKEN); sdk.heartbeat('ok', TOKEN); sdk.heartbeat(TOKEN);
+  ch.push(TOKEN, {token: TOKEN}); ch.push('market_batch', batch());
+  ch.notify('CHANNEL_ERROR'); ch.push('market_batch', batch());
+  let d = x.client.status().diagnostics;
+  assert.equal(d.socketMessages, 1); assert.equal(d.sdkErrors, 1); assert.equal(d.broadcastCallbacks, 3);
+  assert.equal(d.knownBroadcasts.market_batch, 2); assert.equal(d.unknownBroadcasts, 1); assert.equal(d.namedCallbacks, 2);
+  assert.equal(d.droppedCallbacks.notJoined, 1); assert.equal(d.heartbeat.ok, 1); assert.equal(d.heartbeat.unknown, 1);
+  assert.equal(d.connectionState, 'open'); assert.equal(JSON.stringify(d).includes(TOKEN), false);
+  await x.client.stop(); ch.push('market_batch', batch());
+  d = x.client.status().diagnostics; assert.equal(d.droppedCallbacks.retired, 1); assert.equal(x.events.length, 1);
+});
+
+test('installed SDK routes documented private broadcast envelopes to wildcard and named bindings offline', async () => {
+  let official, requests = 0, sockets = 0;
+  class NeverConnect { constructor() { sockets++; throw Error('Unexpected socket'); } }
+  const x = fixture({clientOptions: {createClient: (url, key, options) => {
+    official = createOfficialClient(url, key, {...options, global: {fetch: async () => { requests++; throw Error('Unexpected HTTP'); }},
+      realtime: {...options.realtime, transport: NeverConnect}});
+    const channel = official.channel.bind(official);
+    official.channel = (...args) => { const c = channel(...args); c.subscribe = cb => { queueMicrotask(() => cb('SUBSCRIBED')); return c; };
+      c.unsubscribe = async () => 'ok'; return c; };
+    return official;
+  }}});
+  await x.client.start();
+  const c = official.getChannels()[0], socket = official.realtime.socketAdapter.getSocket();
+  const incoming = (event, payload) => socket.onConnMessage({data: JSON.stringify([null, null, c.topic, 'broadcast', {type: 'broadcast', event, payload}])});
+  incoming('market_batch', batch()); incoming(TOKEN, {token: TOKEN});
+  const d = x.client.status().diagnostics;
+  assert.equal(d.socketMessages, 2); assert.equal(d.broadcastCallbacks, 2); assert.equal(d.namedCallbacks, 1);
+  assert.equal(d.knownBroadcasts.market_batch, 1); assert.equal(d.unknownBroadcasts, 1); assert.equal(x.events.length, 1);
+  assert.equal(JSON.stringify(x.client.status()).includes(TOKEN), false); assert.equal(requests, 0); assert.equal(sockets, 0);
+  await x.client.stop();
 });
