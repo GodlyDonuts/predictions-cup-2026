@@ -29,6 +29,16 @@ export function diversification(s,bank,marketId){
  return {allowed:true,reason:'within_diversification_limits'};
 }
 function invalidateDip(s,market,at,reason){invalidate(s.wallet,market,at,reason);for(const [id,p]of Object.entries(s.wallet.strategies.mean_reversion.pending))if(p.action==='buy'&&(market===null||s.wallet.books[id]?.marketId===market)){delete s.wallet.strategies.mean_reversion.pending[id];s.wallet.strategies.mean_reversion.expiredIntents++;}}
+function receiptOrderedSnapshots(event,cycleAt){
+ if(!Number.isFinite(Date.parse(cycleAt)))throw Error('Invalid dip cycle clock');
+ // The journal preserves core/supplemental provenance, not network read order.
+ // Invalid receipts remain invalid book inputs; use the cycle clock only to
+ // order their invalidation. Equal clocks retain the original journal order.
+ return [...(event.sourceSnapshots||[]),...(event.supplementalDepth||[])].map((snap,index)=>{
+  const observedAt=snap.skipped?snap.at:snap.receivedAt,at=Number.isFinite(Date.parse(observedAt))?observedAt:cycleAt;
+  return {snap,at,index};
+ }).sort((a,b)=>Date.parse(a.at)-Date.parse(b.at)||a.index-b.index);
+}
 export function createDip(raw,c,universe,policy,identities){
  validateConfig(c);validateDipPolicy(policy);const u=validateUniverse(universe,c.tournamentId);if(c.strategyUniverse!==(policy.profile==='scale'?'diversified-dip-scale-v1':'diversified-dip-v1')||c.feeBps!==0||u.exchanges.some(x=>!c.marketIds.includes(x.marketId)||x.option!=='YES'))throw Error('Dip universe scope mismatch');
  const records=verifySource(raw);if(!records?.length)throw Error('Complete history source required');const cutoff=records.at(-1).event.clockAt||records.at(-1).at;
@@ -43,10 +53,10 @@ export function advanceDip(input,records,bank){
   if(e.type==='market_history'){const h=e.history;if(h?.tournamentId!==c.tournamentId||universe.get(h.marketId)?.exchangeId!==h.exchangeId||Date.parse(h.receivedAt)>Date.parse(at))throw Error('Historical capture scope mismatch');s.histories[h.exchangeId]=h;continue;}
   if(e.type==='account_read_outage'){if(prospective)invalidateDip(s,null,at,'account_outage');continue;}
   if(e.type!=='cycle')continue;const acceptedFresh=new Set();
-  for(const snap of [...(e.sourceSnapshots||[]),...(e.supplementalDepth||[])]){
-   if(snap.skipped){if(prospective&&!(snap.skipped==='Missing/stale engine version'&&acceptedFresh.has(snap.marketId)))invalidateDip(s,snap.marketId,snap.at||at,snap.skipped);continue;}
+  for(const {snap,at:observedAt} of receiptOrderedSnapshots(e,at)){
+   if(snap.skipped){if(prospective&&!(snap.skipped==='Missing/stale engine version'&&acceptedFresh.has(snap.marketId)))invalidateDip(s,snap.marketId,observedAt,snap.skipped);continue;}
    const id=/^\/markets\/(\d+)\/orderbook\?/.exec(snap.endpoint||'')?.[1],spec=universe.get(id);if(!spec)continue;let b;
-   try{if(!Array.isArray(e.accountExclusions))throw Error('Missing reconciled exclusion list');b=normalizeBook(snap.data,id,c.tournamentId,snap.receivedAt,snap.requestStartedAt,c.maxDataAgeMs,new Set(e.accountExclusions),'authoritative_receipt_v1');if(b.exchangeId!==spec.exchangeId)throw Error('Identity changed');acceptedFresh.add(id);}catch{if(prospective)invalidateDip(s,id,snap.receivedAt,'invalid_book');continue;}
+   try{if(!Array.isArray(e.accountExclusions))throw Error('Missing reconciled exclusion list');b=normalizeBook(snap.data,id,c.tournamentId,snap.receivedAt,snap.requestStartedAt,c.maxDataAgeMs,new Set(e.accountExclusions),'authoritative_receipt_v1');if(b.exchangeId!==spec.exchangeId)throw Error('Identity changed');acceptedFresh.add(id);}catch{if(prospective)invalidateDip(s,id,observedAt,'invalid_book');continue;}
    if(prospective&&Date.parse(b.requestStartedAt)>Date.parse(bank.cutoff)){
     const reference=historicalReference(s.histories[b.exchangeId],s.bookHistory[b.exchangeId],b.requestStartedAt,p),ask=Number(amount(b.asks[0].price)+TICK*BigInt(c.slippageTicks))/1e6,bid=Number(amount(b.bids[0].price)-TICK*BigInt(c.slippageTicks))/1e6;
     const signal=dipSignal(reference,ask,bid,p),risk=diversification(s,bank,id),st=s.wallet.strategies.mean_reversion,wasHeld=Boolean(st.positions[b.instrument]),cooldown=Date.parse(s.cooldowns[id]||'')>Date.parse(b.receivedAt);

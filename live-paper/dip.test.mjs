@@ -37,3 +37,48 @@ test('scaled allocation is a separately bounded profile with one-percent market 
  const scaled={...p,profile:'scale',maxOpenMarkets:100,maxPerState:4,maxPerOffice:50,maxMarketCost:'1000.000000'},config={...c,strategyUniverse:'diversified-dip-scale-v1',orderShares:1000,maxPositionShares:2000,maxExposure:'50000.000000',cashReserve:'50000.000000'};
  assert.equal(validateDipPolicy(scaled),scaled);assert.equal(validateConfig(config),config);assert.throws(()=>validateDipPolicy({...scaled,maxOpenMarkets:101}));assert.throws(()=>validateDipPolicy({...scaled,maxMarketCost:'2000.000000'}));assert.throws(()=>validateConfig({...config,cashReserve:'10000.000000'}));assert.throws(()=>validateConfig({...config,maxExposure:'100000.000000'}));
 });
+
+function journal(events){let previous='';return events.map((event,i)=>{const body={sequence:i+1,previous,at:event.clockAt,event,state:{}},hash=digest(body);previous=hash;return JSON.stringify({...body,hash})+'\n';}).join('');}
+const receiptMarkets=['305','277','355','370'],receiptExchange=id=>String(2000+Number(id));
+function receiptSnapshot(id,at,sequence=1){return {endpoint:'/markets/'+id+'/orderbook?tournamentId='+c.tournamentId+'&depth=200',receivedAt:at,requestStartedAt:new Date(Date.parse(at)-100).toISOString(),data:{contexts:[{type:'tournament',tournament:{id:c.tournamentId},orderbook:{exchanges:[{exchangeId:receiptExchange(id),option:'YES',asOf:{at:'2026-10-02T09:18:00Z',sequence},bids:[{price:.545,quantity:10000}],asks:[{price:.550,quantity:10000}]}]}}]}};}
+function receiptFixture(){
+ const cutoff='2026-10-02T09:19:40.000Z',events=receiptMarkets.map(id=>({type:'market_history',clockAt:cutoff,history:{marketId:id,exchangeId:receiptExchange(id),tournamentId:c.tournamentId,receivedAt:cutoff,coverage:{complete:true},candles:Array.from({length:8},(_,i)=>({time:new Date(Date.parse('2026-10-02T08:43:00Z')+i*300000).toISOString(),vwap:.6}))}}));
+ const cfg={...c,marketIds:receiptMarkets,strategyUniverse:'diversified-dip-v1'},universe={tournamentId:c.tournamentId,exchanges:receiptMarkets.map(marketId=>({marketId,exchangeId:receiptExchange(marketId),option:'YES'}))};
+ const {bank,state}=createDip(journal(events),cfg,universe,p,Object.fromEntries(receiptMarkets.map(id=>[id,{state:id,office:'Federal'}])));
+ const cycle={type:'cycle',clockAt:'2026-10-02T09:20:09.727Z',accountExclusions:[],entryMarketIds:['355'],sourceSnapshots:[receiptSnapshot('305','2026-10-02T09:19:59.819Z'),receiptSnapshot('277','2026-10-02T09:20:03.109Z')],supplementalDepth:[receiptSnapshot('355','2026-10-02T09:19:56.565Z'),receiptSnapshot('370','2026-10-02T09:20:06.351Z')]};
+ return {events,bank,state,cycle};
+}
+
+test('cycle 834 read order replays supplemental before cores and preserves subsequent fill accounting',()=>{
+ const {events,bank,state,cycle}=receiptFixture(),original=JSON.stringify({events,bank,state,cycle});
+ const next=structuredClone(cycle);next.clockAt='2026-10-02T09:20:39.727Z';
+ for(const snap of [...next.sourceSnapshots,...next.supplementalDepth]){snap.receivedAt=new Date(Date.parse(snap.receivedAt)+30000).toISOString();snap.requestStartedAt=new Date(Date.parse(snap.requestStartedAt)+30000).toISOString();snap.data.contexts[0].orderbook.exchanges[0].asOf.sequence=2;}
+ const records=verifySource(journal([...events,cycle,next])),first=advanceDip(state,verifySource(journal([...events,cycle])),bank),resumed=advanceDip(first,records,bank),replayed=advanceDip(state,records,bank);
+ assert.equal(first.wallet.lastAt,'2026-10-02T09:20:06.351Z');assert.equal(first.wallet.observations,4);
+ assert.deepEqual(Object.keys(first.wallet.books),['2355:YES','2305:YES','2277:YES','2370:YES']);
+ assert.deepEqual(resumed,replayed);assert.deepEqual(advanceDip(resumed,records,bank),resumed);
+ const chronological=[cycle,next].map(e=>({...e,sourceSnapshots:[...e.sourceSnapshots,...e.supplementalDepth].sort((a,b)=>Date.parse(a.receivedAt)-Date.parse(b.receivedAt)),supplementalDepth:[]}));
+ const expected=advanceDip(state,verifySource(journal([...events,...chronological])),bank);
+ assert.deepEqual(replayed.wallet,expected.wallet);assert.deepEqual(replayed.bookHistory,expected.bookHistory);assert.deepEqual(replayed.signals,expected.signals);
+ const strategy=replayed.wallet.strategies.mean_reversion;assert.equal(strategy.fills.length,4);assert.equal(strategy.cash,'99977.800000');assert.equal(strategy.fees,'0.000000');assert.equal(Object.keys(strategy.positions).length,4);
+ assert.equal(JSON.stringify({events,bank,state,cycle}),original);assert.equal(replayed.bankHash,state.bankHash);assert.equal(replayed.wallet.startedAt,bank.cutoff);
+});
+
+test('equal receipt clocks retain deterministic original order across both journal arrays',()=>{
+ const {events,bank,state,cycle}=receiptFixture(),at='2026-10-02T09:20:00.000Z';
+ for(const snap of [...cycle.sourceSnapshots,...cycle.supplementalDepth]){snap.receivedAt=at;snap.requestStartedAt='2026-10-02T09:19:59.900Z';}
+ const result=advanceDip(state,verifySource(journal([...events,cycle])),bank);
+ assert.deepEqual(Object.keys(result.wallet.books),receiptMarkets.map(id=>receiptExchange(id)+':YES'));assert.equal(result.wallet.observations,4);
+ assert.deepEqual(Object.values(result.wallet.strategies.mean_reversion.pending).map(x=>x.id),[1,2,3,4]);
+});
+
+test('invalid receipt and skipped clocks cannot become books or poison the invalidation clock',()=>{
+ for(const invalid of ['not-a-clock',null,undefined]){
+  const {events,bank,state,cycle}=receiptFixture(),first=advanceDip(state,verifySource(journal([...events,cycle])),bank),bad=receiptSnapshot('355','2026-10-02T09:20:11.000Z',2);bad.receivedAt=invalid;
+  const next={type:'cycle',clockAt:'2026-10-02T09:20:15.000Z',accountExclusions:[],sourceSnapshots:[bad,{marketId:'305',skipped:'http_503',at:invalid}],supplementalDepth:[receiptSnapshot('370','2026-10-02T09:20:12.000Z',2)]};
+  const result=advanceDip(first,verifySource(journal([...events,cycle,next])),bank),strategy=result.wallet.strategies.mean_reversion;
+  assert.equal(result.wallet.observations,5);assert.equal(result.wallet.lastAt,'2026-10-02T09:20:12.000Z');assert.equal(result.wallet.books['2355:YES'].receivedAt,'2026-10-02T09:19:56.565Z');
+  assert.deepEqual(result.wallet.invalidated['2355:YES'],{at:next.clockAt,reason:'invalid_book'});assert.deepEqual(result.wallet.invalidated['2305:YES'],{at:next.clockAt,reason:'http_503'});
+  assert.equal(strategy.pending['2355:YES'],undefined);assert.equal(strategy.pending['2305:YES'],undefined);assert.equal(strategy.fills.filter(f=>f.instrument==='2355:YES').length,0);
+ }
+});

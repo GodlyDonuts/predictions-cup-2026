@@ -15,6 +15,7 @@ const plain=x=>x!==null&&typeof x==='object'&&!Array.isArray(x)&&Object.getProto
 const safeKey=x=>!['__proto__','constructor','prototype'].includes(x);
 const instant=x=>typeof x==='string'&&Number.isFinite(Date.parse(x))&&new Date(x).toISOString()===x;
 const emptyControl=()=>({schemaVersion:1,exits:{},cancellations:{}});
+const referenceInputHash=(shadow,exchangeId)=>digest({exchangeId,history:shadow.histories?.[exchangeId]??null,bookHistory:shadow.bookHistory?.[exchangeId]??[]});
 function validateControl(state){
  const c=state.control;
  if(!plain(c)||c.schemaVersion!==1||Object.keys(c).some(k=>!['schemaVersion','exits','cancellations'].includes(k))||!plain(c.exits)||!plain(c.cancellations))throw Error('INVALID_EXECUTION_CONTROL');
@@ -56,6 +57,28 @@ export class CompetitionController {
   try{return digest(JSON.parse(fs.readFileSync(path.join(this.runtimeDir,'competition-activation.json'))))===this.activationHash;}catch{return false;}
  }
  canWrite(){return this.bootstrapped===true&&this.canOperate();}
+ responsiveReference(expectedHash){
+  // Worker projections are published separately. A mixed publication is
+  // temporarily ineligible; never combine a new state with an old heartbeat.
+  try{
+   const bank=JSON.parse(fs.readFileSync(path.join(this.runtimeDir,'dip-responsive-bank.json'))),shadow=JSON.parse(fs.readFileSync(path.join(this.runtimeDir,'dip-responsive-state.json'))),stats=JSON.parse(fs.readFileSync(path.join(this.runtimeDir,'dip-responsive-stats.json'))),hash=digest(bank),now=this.now();
+   const deny=code=>({ok:false,code});
+   if(bank.policy?.executionPolicy!=='responsive_v2'||shadow.bankHash!==hash||stats.bankHash!==hash||(expectedHash!==undefined&&expectedHash!==hash))return deny('REFERENCE_BANK_MISMATCH');
+   if(stats.status!=='running')return deny('REFERENCE_WORKER_NOT_RUNNING');
+   if(!instant(stats.updatedAt)||Date.parse(stats.updatedAt)>now||now-Date.parse(stats.updatedAt)>60000)return deny('REFERENCE_WORKER_STALE');
+   if(!Number.isSafeInteger(bank.sourceRecords)||bank.sourceRecords<1||!Number.isSafeInteger(shadow.sourceSequence)||shadow.sourceSequence<bank.sourceRecords||typeof shadow.lastRecordHash!=='string'||!/^[a-f0-9]{64}$/.test(shadow.lastRecordHash)||stats.sourceSequence!==shadow.sourceSequence||stats.sourceHash!==shadow.lastRecordHash)return deny('REFERENCE_SOURCE_MISMATCH');
+   return {ok:true,bank,shadow,proof:{bankHash:hash,sourceSequence:shadow.sourceSequence,sourceHash:shadow.lastRecordHash}};
+  }catch{return {ok:false,code:'REFERENCE_WORKER_UNAVAILABLE'};}
+ }
+ entryReferenceAdmitted(i,permit,now){
+  // An identical expired replay can only retrieve an earlier acceptance; it
+  // cannot create a live entry and remains available for reconciliation.
+  if(i.action!=='buy'||permit.retry===true&&this.currentPermit.retry===true&&now>=Date.parse(i.expirationDate))return true;
+  const ref=this.responsiveReference(i.attribution.modelHash),proof=this.currentPermit.referenceProof;
+  if(!ref.ok){this.reason=ref.code;return false;}
+  if(!proof||proof.bankHash!==ref.proof.bankHash||ref.proof.sourceSequence<proof.sourceSequence||(ref.proof.sourceSequence===proof.sourceSequence&&ref.proof.sourceHash!==proof.sourceHash)||proof.referenceHash!==referenceInputHash(ref.shadow,i.exchangeId)){this.reason='REFERENCE_SOURCE_CHANGED';return false;}
+  return true;
+ }
  checkedBook(response,marketId){
   const b=normalizeBook(response.data,marketId,TID,response.receivedAt,response.requestStartedAt,20000,new Set(),'authoritative_receipt_v1');
   const expected=this.universe.exchanges.filter(x=>x.marketId===marketId);
@@ -155,6 +178,7 @@ export class CompetitionController {
   }
   if(spec.method!=='POST'||permit.kind!==undefined||this.currentPermit.kind!==undefined)return false;
   const i=this.state.intents[permit.intentId];if(!i||i.payloadHash!==payloadHash(spec.body)||spec.bodyJson!==i.bodyJson)return false;
+  if(!this.entryReferenceAdmitted(i,permit,this.now()))return false;
   const r=beginDispatch(this.state,i.intentId,{snapshot:this.currentPermit.snapshot,now:this.now(),retry:permit.retry===true});if(!r.ok){this.reason=r.code;return false;}
   this.ledger.markDispatching(i.intentId,{retry:permit.retry===true});this.commit(r,{type:'dispatch_admitted',intentId:i.intentId});return true;
  }
@@ -168,6 +192,7 @@ export class CompetitionController {
    return ['cash','positions','orders'].every(k=>{const p=e.snapshot?.[k];return p?.tournamentId===TID&&Number.isFinite(Date.parse(p.at))&&Date.parse(p.at)<=now&&now-Date.parse(p.at)<=this.state.policy.maxAccountAgeMs&&(k==='cash'||p.complete===true&&Array.isArray(p.rows));});
   }
   if(spec.method!=='POST'||i.status!=='dispatching'||i.payloadHash!==payloadHash(spec.body)||i.bodyJson!==spec.bodyJson)return false;
+  if(!this.entryReferenceAdmitted(i,permit,now))return false;
   if(permit.retry===true&&this.currentPermit.retry===true&&now>=Date.parse(i.expirationDate))return true;
   const r=revalidateIntentEvidence(this.state,i.intentId,this.currentPermit.snapshot,now);if(!r.ok)this.reason=r.code;return r.ok;
  }
@@ -182,8 +207,8 @@ export class CompetitionController {
    this.status='cancel_pending_reconciliation';this.reason='CANCEL_UNCONFIRMED';
   }finally{this.currentPermit=null;this.publish();}
  }
- async submit(i,snapshot,retry=false){
-  this.currentPermit={intentId:i.intentId,snapshot,retry};
+ async submit(i,snapshot,retry=false,referenceProof=null){
+  this.currentPermit={intentId:i.intentId,snapshot,retry,referenceProof};
   try{const r=await this.transport.place(i.body,{permit:{intentId:i.intentId,runId:this.activation.runId,retry},lease:this.lease});this.record(recordPlacement(this.state,i.intentId,{status:r.status,response:r.data},this.now()),i.intentId,'placement_response');}
   catch(e){
    if(this.state.intents[i.intentId]?.status==='dispatching')this.record(recordPlacement(this.state,i.intentId,{status:e.status??null,code:e.apiCode||'TRANSPORT_UNCONFIRMED',retryAfterMs:e.retryAfterMs??0},this.now()),i.intentId,'placement_uncertain');
@@ -195,8 +220,14 @@ export class CompetitionController {
   const marketId=/^\/markets\/(\d+)\/orderbook/.exec(response.endpoint)?.[1];
   if(!this.canWrite()||this.active()||!this.selected.includes(marketId)||!this.markets[marketId]||this.now()-Date.parse(this.markets[marketId].at)>180000)return;
   const b=this.checkedBook(response,marketId),owned=this.state.owned[b.exchangeId];
-  const bank=JSON.parse(fs.readFileSync(path.join(this.runtimeDir,'dip-responsive-bank.json'))),shadow=JSON.parse(fs.readFileSync(path.join(this.runtimeDir,'dip-responsive-state.json')));
-  if(shadow.bankHash!==digest(bank)||bank.policy.executionPolicy!=='responsive_v2')throw Error('PILOT_REFERENCE_IDENTITY_CHANGED');
+  let bank,shadow,referenceProof;
+  if(owned){
+   bank=JSON.parse(fs.readFileSync(path.join(this.runtimeDir,'dip-responsive-bank.json')));
+   const entries=Object.values(this.state.intents).filter(i=>i.exchangeId===b.exchangeId&&i.action==='buy'&&i.filledQuantity>0),hash=digest(bank);
+   if(bank.policy?.executionPolicy!=='responsive_v2'||!entries.length||entries.some(i=>i.attribution.modelHash!==hash))throw Error('PILOT_REFERENCE_IDENTITY_CHANGED');
+  }
+  else{const ref=this.responsiveReference();if(!ref.ok){this.status='reference_blocked';this.reason=ref.code;this.publish();return;}({bank,shadow}=ref);referenceProof={...ref.proof,referenceHash:referenceInputHash(shadow,b.exchangeId)};}
+  const bankHash=digest(bank);
   const ask=micros(b.asks[0].price),bid=micros(b.bids[0].price);let action,limit,quantity,reason;
   if(owned){
    const entry=Object.values(this.state.intents).filter(i=>i.exchangeId===b.exchangeId&&i.action==='buy'&&i.filledQuantity>0).at(-1),age=this.now()-Date.parse(entry?.reconciledFills?.[0]?.filledAt||entry?.preparedAt||new Date(this.now()).toISOString()),avg=micros(owned.cost)/BigInt(owned.quantity);
@@ -218,11 +249,11 @@ export class CompetitionController {
   const available=(action==='buy'?b.asks:b.bids).filter(x=>micros(x.price)===limit).reduce((n,x)=>n+x.quantity,0);
   quantity=Math.min(quantity,Number(micros(this.activation.maxOrderCost)/limit),Math.floor(available*this.activation.depthFractionBps/10000));
   if(!Number.isSafeInteger(quantity)||quantity<1)return;
-  const spec={intentId:'intent-'+randomUUID(),idempotencyKey:randomUUID(),marketId,exchangeId:b.exchangeId,side:'yes',action,quantity,price:formatMicros(limit),expirationDate:new Date(this.now()+30000).toISOString(),attribution:{runId:this.activation.runId,strategyId:'historical-dip-responsive-v2',modelHash:shadow.bankHash,signalId:b.versionKey,reason}};
+  const spec={intentId:'intent-'+randomUUID(),idempotencyKey:randomUUID(),marketId,exchangeId:b.exchangeId,side:'yes',action,quantity,price:formatMicros(limit),expirationDate:new Date(this.now()+30000).toISOString(),attribution:{runId:this.activation.runId,strategyId:'historical-dip-responsive-v2',modelHash:bankHash,signalId:b.versionKey,reason}};
   const snapshot=this.snapshot({tournamentId:TID,marketId,exchangeId:b.exchangeId,at:b.receivedAt,requestStartedAt:b.requestStartedAt,bids:b.bids,asks:b.asks}),r=prepareIntent(this.state,spec,snapshot,this.now());
   if(!r.ok){this.reason=r.code;this.publish();return;}
-  this.ledger.prepareIntent({method:'POST',path:'/orders',intentId:spec.intentId,idempotencyKey:spec.idempotencyKey,body:r.intent.body,bodyJson:r.intent.bodyJson,payloadHash:r.intent.payloadHash,attribution:{ownerId:'Codex',runId:this.activation.runId,strategyId:spec.attribution.strategyId,modelHash:shadow.bankHash,marketId,exchangeId:b.exchangeId}});
-  this.commit(r,{type:'intent_prepared',intentId:spec.intentId,reason});await this.submit(r.intent,snapshot);
+  this.ledger.prepareIntent({method:'POST',path:'/orders',intentId:spec.intentId,idempotencyKey:spec.idempotencyKey,body:r.intent.body,bodyJson:r.intent.bodyJson,payloadHash:r.intent.payloadHash,attribution:{ownerId:'Codex',runId:this.activation.runId,strategyId:spec.attribution.strategyId,modelHash:bankHash,marketId,exchangeId:b.exchangeId}});
+  this.commit(r,{type:'intent_prepared',intentId:spec.intentId,reason,referenceProof});await this.submit(r.intent,snapshot,false,referenceProof);
  }
  publish(){
   const intents=Object.values(this.state.intents),fills=intents.flatMap(i=>i.reconciledFills.map(f=>({...f,action:i.action,marketId:i.marketId,exchangeId:i.exchangeId,orderId:i.orderId})));let cashFlow=0n;

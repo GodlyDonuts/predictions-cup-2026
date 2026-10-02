@@ -18,11 +18,12 @@ function fixture(t, options = {}) {
   const activation = {schemaVersion: 1, ownerId: 'Codex', tournamentId: TID, runId: 'sig-pilot-fixture', enabled: true, formerWriterStopCommentId: 5947535773, feeBps: 0, maxOrderCost: '25.000000', maxAggregateCost: '100.000000', maxCumulativeBuyCost: '100.000000', maxManagedMarkets: 3, depthFractionBps: 100, startedAt: stamp(time - 1000), entryExpiresAt: stamp(time + 6 * 3600000 - 1000)};
   fs.writeFileSync(path.join(dir, 'competition-activation.json'), JSON.stringify(activation));
   const policy = {...JSON.parse(fs.readFileSync(new URL('../live-paper/dip-policy.json', import.meta.url))), executionPolicy: 'responsive_v2', requireScheduledEntry: true, maxOpenMarkets: 3, maximumHoldMs: options.maximumHoldMs || 1000, cooldownMs: 1};
-  const bank = {policy, identities: {'377': {state: 'FL', office: 'Senate'}, '378': {state: 'GA', office: 'Senate'}}};
+  const bank = {sourceRecords: 1, policy, identities: {'377': {state: 'FL', office: 'Senate'}, '378': {state: 'GA', office: 'Senate'}}};
   fs.writeFileSync(path.join(dir, 'dip-responsive-bank.json'), JSON.stringify(bank));
   function seedHistory(center = .55) {
     const candles = Array.from({length: 8}, (_, n) => ({time: stamp(time - (45 - n * 5) * 60000), vwap: center}));
-    fs.writeFileSync(path.join(dir, 'dip-responsive-state.json'), JSON.stringify({bankHash: digest(bank), histories: {'700': {receivedAt: stamp(time - 5000), coverage: {complete: true}, candles}}, bookHistory: {}}));
+    fs.writeFileSync(path.join(dir, 'dip-responsive-state.json'), JSON.stringify({bankHash: digest(bank), sourceSequence: 1, lastRecordHash: 'a'.repeat(64), histories: {'700': {receivedAt: stamp(time - 5000), coverage: {complete: true}, candles}}, bookHistory: {}}));
+    fs.writeFileSync(path.join(dir, 'dip-responsive-stats.json'), JSON.stringify({bankHash: digest(bank), sourceSequence: 1, sourceHash: 'a'.repeat(64), updatedAt: stamp(time), status: 'running'}));
   }
   seedHistory(options.noSignal ? .50 : .55);
   const server = {cash: 100000, quantities: {...(options.externalQuantity ? {'701': options.externalQuantity} : {})}, orders: new Map(), operations: new Map(), posts: [], deletes: [], fraction: options.partial ? .5 : 1, ambiguity: options.ambiguous === true, beforeGuard: null, afterGuard: null, marketOpen: true, ignoreExpiry: false, staleFills: false, cancelAmbiguous: false, fillOnCancel: false, rejectNext: false, wrongBootstrapBook: false};
@@ -91,7 +92,7 @@ function fixture(t, options = {}) {
   async function cycle(options = {}) { await before(options); await controller.onBook(book(options)); }
   t.after(() => { try { controller?.close(); } finally { const target = path.resolve(dir); assert.ok(target.startsWith(path.resolve(os.tmpdir()) + path.sep)); fs.rmSync(target, {recursive: true, force: true}); } });
   start();
-  return {get controller() { return controller; }, server, api, dir, activation, before, cycle, book, seedHistory, stop() { stopped = true; }, advance(ms) { time += ms; }, restart() { controller.close(); return start(); }};
+  return {get controller() { return controller; }, get now() { return time; }, server, api, dir, activation, before, cycle, book, seedHistory, stop() { stopped = true; }, advance(ms) { time += ms; }, restart() { controller.close(); return start(); }};
 }
 
 test('qualifying signal journals one official BUY, reconciles it, then sells only owned inventory', async t => {
@@ -257,4 +258,84 @@ test('controller metadata is validated on durable replay', async t => {
   const f = fixture(t); await f.cycle(); const state = structuredClone(f.controller.state); state.control.cancellations.bad = {phase: 'dispatching'};
   f.controller.journal.commit(state, {type: 'invented_corruption'});
   assert.throws(() => f.restart(), /INVALID_CANCEL_CONTROL/);
+});
+
+function changeProjection(f, name, patch) {
+  const file = path.join(f.dir, 'dip-responsive-' + name + '.json');
+  fs.writeFileSync(file, JSON.stringify({...JSON.parse(fs.readFileSync(file)), ...patch}));
+}
+
+test('a fresh qualifying book cannot use a failed, stale, future or mismatched responsive worker', async t => {
+  const cases = [
+    ['stats', {status: 'failed'}, 'REFERENCE_WORKER_NOT_RUNNING'],
+    ['stats', {status: 'awaiting_capture'}, 'REFERENCE_WORKER_NOT_RUNNING'],
+    ['stats', {updatedAt: stamp(0)}, 'REFERENCE_WORKER_STALE'],
+    ['stats', {updatedAt: '2099-01-01T00:00:00.000Z'}, 'REFERENCE_WORKER_STALE'],
+    ['stats', {bankHash: 'b'.repeat(64)}, 'REFERENCE_BANK_MISMATCH'],
+    ['stats', {sourceSequence: 2}, 'REFERENCE_SOURCE_MISMATCH'],
+    ['stats', {sourceHash: 'b'.repeat(64)}, 'REFERENCE_SOURCE_MISMATCH'],
+    ['state', {sourceSequence: 0}, 'REFERENCE_SOURCE_MISMATCH'],
+    ['state', {lastRecordHash: 'bad'}, 'REFERENCE_SOURCE_MISMATCH'],
+  ];
+  for (const [name, patch, reason] of cases) await t.test(reason + ' ' + JSON.stringify(patch), async sub => {
+    const f = fixture(sub); changeProjection(f, name, patch); await f.cycle();
+    assert.equal(f.server.posts.length, 0); assert.equal(Object.keys(f.controller.state.intents).length, 0);
+    assert.equal(f.controller.status, 'reference_blocked'); assert.equal(f.controller.reason, reason);
+  });
+});
+
+test('worker failure or relevant reference mutation after selection blocks at both queue fences', async t => {
+  for (const phase of ['beforeGuard', 'afterGuard']) for (const change of ['failed', 'reference_changed', 'stale']) await t.test(phase + ' ' + change, async sub => {
+    const f = fixture(sub);
+    f.server[phase] = () => {
+      if (change === 'failed') changeProjection(f, 'stats', {status: 'failed'});
+      else if (change === 'stale') changeProjection(f, 'stats', {updatedAt: stamp(f.now - 60001)});
+      else {changeProjection(f, 'state', {sourceSequence: 2, lastRecordHash: 'b'.repeat(64), histories: {}});changeProjection(f, 'stats', {sourceSequence: 2, sourceHash: 'b'.repeat(64)});}
+    };
+    await f.cycle(); assert.equal(f.server.posts.length, 0);
+    const intent = Object.values(f.controller.state.intents)[0]; assert.equal(intent.status, phase === 'beforeGuard' ? 'closed' : 'uncertain');
+    assert.equal(intent.attempts, phase === 'beforeGuard' ? 0 : 1);
+    assert.equal(f.controller.reason, change === 'failed' ? 'REFERENCE_WORKER_NOT_RUNNING' : change === 'stale' ? 'REFERENCE_WORKER_STALE' : 'REFERENCE_SOURCE_CHANGED');
+  });
+});
+
+test('unrelated coherent worker progress preserves the relevant market reference permit', async t => {
+  const f = fixture(t);
+  f.server.afterGuard = () => {
+    const state = JSON.parse(fs.readFileSync(path.join(f.dir, 'dip-responsive-state.json')));
+    changeProjection(f, 'state', {sourceSequence: 2, lastRecordHash: 'b'.repeat(64), histories: {...state.histories, '701': {unrelated: true}}});
+    changeProjection(f, 'stats', {sourceSequence: 2, sourceHash: 'b'.repeat(64)});
+  };
+  await f.cycle(); assert.equal(f.server.posts.length, 1); assert.equal(f.controller.active().status, 'acknowledged');
+  const journal = fs.readFileSync(path.join(f.dir, 'competition', 'core-journal.jsonl'), 'utf8').trim().split('\n').map(JSON.parse);
+  const proof = journal.find(r => r.event.type === 'intent_prepared').event.referenceProof;
+  assert.equal(proof.sourceSequence, 1); assert.equal(proof.sourceHash, 'a'.repeat(64)); assert.match(proof.referenceHash, /^[a-f0-9]{64}$/);
+});
+
+test('failed or missing responsive projections cannot prevent owned liquidation or official reconciliation', async t => {
+  const f = fixture(t); await f.cycle(); changeProjection(f, 'stats', {status: 'failed'}); await f.before();
+  assert.equal(f.controller.state.owned['700'].quantity, 20); assert.equal(f.controller.active(), undefined);
+  fs.unlinkSync(path.join(f.dir, 'dip-responsive-state.json')); fs.unlinkSync(path.join(f.dir, 'dip-responsive-stats.json'));
+  f.restart(); f.advance(2000); await f.cycle({bid: .465, ask: .470});
+  assert.equal(f.server.posts.length, 2); assert.equal(f.server.posts[1].body.action, 'sell');
+  await f.before(); assert.deepEqual(f.controller.state.owned, {}); assert.deepEqual(f.controller.state.control.exits, {});
+});
+
+test('failed worker does not prevent expired exact-key recovery of an earlier ambiguous buy', async t => {
+  const f = fixture(t, {ambiguous: true}); await f.cycle(); const original = f.server.posts[0];
+  changeProjection(f, 'stats', {status: 'failed'}); f.restart(); f.advance(120000); await f.before();
+  assert.equal(f.server.posts.length, 2); assert.equal(f.server.orders.size, 1); assert.equal(f.server.posts[1].bodyJson, original.bodyJson);
+  await f.before(); assert.equal(f.controller.state.owned['700'].quantity, 20);
+});
+
+test('owned exit policy remains pinned to the filled entry bank even without worker projections', async t => {
+  const f = fixture(t, {maximumHoldMs: 3600000}); await f.cycle(); await f.before();
+  const file = path.join(f.dir, 'dip-responsive-bank.json'), original = fs.readFileSync(file, 'utf8'), bank = JSON.parse(original);
+  fs.unlinkSync(path.join(f.dir, 'dip-responsive-state.json')); fs.unlinkSync(path.join(f.dir, 'dip-responsive-stats.json'));
+  fs.writeFileSync(file, JSON.stringify({...bank, policy: {...bank.policy, stopLoss: '0.100000'}}));
+  await f.before(); await assert.rejects(f.controller.onBook(f.book({bid: .465, ask: .470})), /PILOT_REFERENCE_IDENTITY_CHANGED/);
+  assert.equal(f.server.posts.length, 1); assert.deepEqual(f.controller.state.control.exits, {});
+  fs.writeFileSync(file, original); await f.controller.onBook(f.book({bid: .465, ask: .470}));
+  assert.equal(f.server.posts.length, 2); assert.equal(f.server.posts[1].body.action, 'sell');
+  const sale = f.controller.active(); assert.equal(sale.attribution.modelHash, digest(bank));
 });

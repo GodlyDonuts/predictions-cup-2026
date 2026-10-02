@@ -30,7 +30,7 @@ function fixture(t,{owned=false}={}){
   r=reconcileIntent(c.state,i.intentId,{at:iso(now),snapshot:account,order:{id:i.orderId,exchangeId:i.exchangeId,tournamentId:TID,side:'yes',action:i.action,priceLimit:Number(i.price),expirationDate:i.expirationDate,open:false,quantity:i.quantity},fills:{complete:true,orderId:i.orderId,exchangeId:i.exchangeId,tournamentId:TID,totalQuantityFilled:filled,rows:filled?[{id:i.orderId+1000,quantity:filled,price:Number(i.price),side:'yes',filledAt:iso(now)}]:[]}},now);assert.equal(r.ok,true,r.code);c.state=r.state;refresh();
  }
  if(owned){
-  const spec={intentId:'fixture-buy',idempotencyKey:'fixture-buy-key',marketId:'377',exchangeId:'700',side:'yes',action:'buy',quantity:20,price:'0.500000',expirationDate:iso(now+90000),attribution:{runId:'sig-pilot-review',strategyId:'fixture'}};
+  const spec={intentId:'fixture-buy',idempotencyKey:'fixture-buy-key',marketId:'377',exchangeId:'700',side:'yes',action:'buy',quantity:20,price:'0.500000',expirationDate:iso(now+90000),attribution:{runId:'sig-pilot-review',strategyId:'fixture',modelHash:digest(bank)}};
   const r=prepareIntent(c.state,spec,snapshot(),now);assert.equal(r.ok,true,r.code);c.state=r.state;terminal(r.intent,20);
  }
  refresh();
