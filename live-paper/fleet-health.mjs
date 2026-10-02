@@ -24,6 +24,12 @@ const specs = [
   {name: 'basket', script: 'live-paper/basket-watch.mjs', stop: 'BASKET_STOP', lock: 'basket-watch.lock'},
   {name: 'performance', script: 'execution/performance-watch.mjs', stop: 'PERFORMANCE_STOP', lock: 'performance-watch.lock', derivedProjection: true},
 ];
+const activeCohorts = [
+  {name: 'entry-comparison', manifest: 'entry-comparison-active.json', directory: 'entry-comparisons', script: 'live-paper/entry-comparison-watch.mjs', stop: 'ENTRY_COMPARISON_STOP'},
+  {name: 'limit-entry', manifest: 'limit-entry-active.json', directory: 'limit-entry-cohorts', script: 'live-paper/limit-entry-watch.mjs', stop: 'LIMIT_ENTRY_STOP'},
+];
+const cohortName = value => typeof value === 'string' && /^[a-z][a-z0-9-]{0,63}$/.test(value)
+  && !/^(con|prn|aux|nul|com[1-9]|lpt[1-9])$/.test(value);
 function json(file) { try { const stat = fs.statSync(file); if (stat.size > 4 * 1024 * 1024) return {error: 'oversized'};
   const value = JSON.parse(fs.readFileSync(file, 'utf8'));
   return value && typeof value === 'object' && !Array.isArray(value) ? {value, modifiedAt: stat.mtime.toISOString()} : {error: 'invalid_schema'};
@@ -31,6 +37,31 @@ function json(file) { try { const stat = fs.statSync(file); if (stat.size > 4 * 
 function pidFile(file) { try { const stat = fs.statSync(file); const value = stat.size < 100 ? pid(fs.readFileSync(file, 'utf8').trim()) : null;
   return {present: true, pid: value, modifiedAt: stat.mtime.toISOString()}; } catch { return {present: false, pid: null, modifiedAt: null}; } }
 function stopFile(file, provenance) { try { return {present: true, provenance, modifiedAt: fs.statSync(file).mtime.toISOString()}; } catch { return {present: false, provenance, modifiedAt: null}; } }
+function activeCohortInput(runtimeDir, spec, globalStops) {
+  const manifest = json(path.join(runtimeDir, spec.manifest));
+  if (manifest.error === 'missing') return null;
+  const value = manifest.value, keys = ['schemaVersion', 'cohort', 'bankHash'];
+  const invalid = reason => ({spec, manifestError: reason, reportPresent: true, bankPresent: false, claims: [], lock: {}, stops: globalStops});
+  if (!value || Object.keys(value).length !== keys.length || Object.keys(value).some(key => !keys.includes(key))
+    || value.schemaVersion !== 1 || !cohortName(value.cohort) || !hash(value.bankHash)) return invalid('invalid_active_manifest');
+  const scopedSpec = {...spec, activeCohort: true, cohortArgument: value.cohort, manifestBankHash: value.bankHash};
+  const dir = path.join(runtimeDir, spec.directory, value.cohort);
+  // An on-disk junction/symlink must not turn a valid cohort name into an
+  // arbitrary file reader. Missing cohort files remain explicitly unavailable.
+  try {
+    if (fs.realpathSync(dir) !== path.join(fs.realpathSync(runtimeDir), spec.directory, value.cohort)) return invalid('active_cohort_path_escape');
+    for (const name of ['stats.json', 'bank.json', 'pid.txt', 'worker.lock']) {
+      const file = path.join(dir, name);
+      try { if (fs.realpathSync(file) !== path.join(fs.realpathSync(dir), name)) return invalid('active_cohort_path_escape'); }
+      catch (error) { if (error.code !== 'ENOENT') return invalid('active_cohort_path_unavailable'); }
+    }
+  } catch { return {...invalid('active_cohort_path_unavailable'), spec: scopedSpec}; }
+  const r = json(path.join(dir, 'stats.json')), b = json(path.join(dir, 'bank.json')),
+    p = pidFile(path.join(dir, 'pid.txt')), l = pidFile(path.join(dir, 'worker.lock'));
+  const claims = [{source: 'pid_file', ...p}, {source: 'lock', ...l}, {source: 'report', pid: pid(r.value?.pid), modifiedAt: r.modifiedAt}].filter(c => c.pid);
+  return {spec: scopedSpec, report: r.value, bank: b.value, reportPresent: true, bankPresent: b.value !== undefined, claims, lock: l,
+    stops: [...globalStops, stopFile(path.join(runtimeDir, spec.stop), 'worker_stop'), stopFile(path.join(dir, 'STOP'), 'cohort_stop')]};
+}
 function captureMetadata(runtimeDir, bank) {
   try {
     if (!bank || typeof bank.sourceFile !== 'string' || !/^realtime-[A-Za-z0-9._-]+\.jsonl$/.test(bank.sourceFile)) throw Error();
@@ -85,7 +116,7 @@ export async function sourceMetadata(file, wanted = []) {
 }
 
 export function assessWorker(input, now = Date.now()) {
-  const {spec, report = {}, bank, reportPresent, bankPresent, claims = [], lock = {}, processes = {}, source = {}, stops = []} = input;
+  const {spec, report = {}, bank, reportPresent, bankPresent, claims = [], lock = {}, processes = {}, source = {}, stops = [], manifestError} = input;
   const reportedStatus = status(report.status ?? report.runtime?.status), timestamp = report.updatedAt ?? report.reportedAt;
   const heartbeat = workerHealth({updatedAt: timestamp, status: reportedStatus}, now);
   const reportedPids = [...new Set(claims.map(c => c.pid).filter(Boolean))], processId = reportedPids.length === 1 ? reportedPids[0] : null;
@@ -108,7 +139,8 @@ export function assessWorker(input, now = Date.now()) {
       && report.sourceFile === bank.sourceFile && report.codeIdentity && bank.codeIdentity && sha(report.codeIdentity) === sha(bank.codeIdentity)
       && Array.isArray(bank.scope?.markets) && bank.scope.markets.length > 0 && Array.isArray(report.markets)
       && report.markets.length === bank.scope.markets.length && report.markets.every(m => m && typeof m.ready === 'boolean' && m.sourceHash === bank.sourceHash) ? 'reported_session_matches' : 'mismatch';
-    else lineage.status = hash(report.bankHash) === sha(bank) ? 'reported_bank_matches' : 'mismatch';
+    else lineage.status = hash(report.bankHash) === sha(bank)
+      && (!spec.activeCohort || spec.manifestBankHash === sha(bank) && report.cohort === spec.cohortArgument) ? 'reported_bank_matches' : 'mismatch';
     lineage.cutoff = safeTime(bank.cutoff); lineage.frozenSourceHash = hash(bank.sourceHash);
   }
   const sequence = Number.isSafeInteger(report.sourceSequence) ? report.sourceSequence : null;
@@ -120,6 +152,7 @@ export function assessWorker(input, now = Date.now()) {
   const sourceDelayMs = processedAt && source.at ? Math.max(0, Date.parse(source.at) - Date.parse(processedAt)) : null;
   const activeStops = stops.filter(s => s.present), configured = !!(reportPresent || bankPresent || claims.length || lock.present), reasons = [];
   if (reportedStatus === 'failed') reasons.push('worker_reported_failure');
+  if (manifestError) reasons.push(manifestError);
   if (processState !== 'alive') reasons.push('process_' + processState);
   if (identity !== 'matches_expected_script' && probe.alive === true) reasons.push('process_identity_' + identity);
   if (['stale_worker', 'invalid_heartbeat'].includes(heartbeat.status)) reasons.push(heartbeat.status);
@@ -133,7 +166,7 @@ export function assessWorker(input, now = Date.now()) {
   if (sourceIdentity === 'mismatch') reasons.push('source_record_hash_mismatch');
   if (!lock.present && processState === 'alive') reasons.push('worker_lock_missing');
   if (activeStops.length) reasons.push('stop_marker_present');
-  let overall = !configured ? 'not_initialized' : reportedStatus === 'failed' ? 'failed' : lineage.status === 'mismatch' || sourceIdentity === 'mismatch' ? 'lineage_mismatch'
+  let overall = !configured ? 'not_initialized' : reportedStatus === 'failed' ? 'failed' : manifestError ? 'manifest_invalid' : lineage.status === 'mismatch' || sourceIdentity === 'mismatch' ? 'lineage_mismatch'
     : ['wrong_process', 'conflicting_pid_claims'].includes(processState) ? 'pid_conflict' : processState === 'exited' ? 'exited'
       : activeStops.length ? processState === 'alive' ? 'stop_pending' : 'stopped' : heartbeat.status === 'invalid_heartbeat' ? 'invalid_clock'
         : heartbeat.status === 'stale_worker' ? 'stale_heartbeat' : reasons.includes('source_replay_lag') ? 'source_lag'
@@ -141,7 +174,7 @@ export function assessWorker(input, now = Date.now()) {
           : reasons.includes('source_stale') ? 'source_stale' : reasons.includes('source_unavailable') ? 'source_unavailable'
             : reasons.includes('source_metadata_invalid') || lineage.status === 'unavailable' || processState !== 'alive' || identity !== 'matches_expected_script' || !lock.present ? 'unverified'
             : reportedStatus === 'running' ? 'running' : reportedStatus;
-  return {name: spec.name, status: overall, configured, reportedStatus, pid: processId,
+  return {name: spec.name, ...(spec.activeCohort ? {cohort: spec.cohortArgument, manifestBankHash: spec.manifestBankHash} : {}), status: overall, configured, reportedStatus, pid: processId,
     process: {status: processState, identity, startedAt: safeTime(probe.startedAt), claims: claims.map(c => ({source: c.source, pid: c.pid}))},
     heartbeat: {updatedAt: safeTime(timestamp), ageMs: heartbeat.heartbeatAgeMs},
     source: {kind: source.kind ?? 'collector_journal', available: source.available === true, processedSequence: sequence, latestSequence: source.sequence ?? null, lagRecords: lag, processedAt,
@@ -165,6 +198,7 @@ export async function fleetHealth({runtimeDir, workspaceDir = path.dirname(path.
     return {spec, report: r.value, bank: b.value, reportPresent: r.error !== 'missing', bankPresent: b.value !== undefined, claims, lock: l,
       stops: [...globalStops, stopFile(path.join(runtimeDir, spec.stop), 'worker_stop')]};
   });
+  inputs.push(...activeCohorts.map(spec => activeCohortInput(runtimeDir, spec, globalStops)).filter(Boolean));
   const source = await sourceMetadata(path.join(runtimeDir, 'journal.jsonl'), inputs.map(x => x.report?.sourceSequence));
   const processes = await probeProcesses(inputs.flatMap(x => x.claims.map(c => c.pid)));
   const official = json(path.join(runtimeDir, 'competition-stats.json')).value, realtime = json(path.join(runtimeDir, 'realtime-stats.json')).value;
@@ -176,7 +210,7 @@ export async function fleetHealth({runtimeDir, workspaceDir = path.dirname(path.
   const realtimeHealth = workerHealth({updatedAt: realtimeTime, status: 'fresh'}, now);
   const realtimeMarketsValid = Array.isArray(realtime?.markets) && realtime.markets.length > 0 && realtime.markets.every(m => m && typeof m.ready === 'boolean');
   return {schemaVersion: 1, mode: 'read_only_local_fleet_diagnostic', checkedAt: new Date(now).toISOString(),
-    status: !workers.some(w => w.configured) ? 'not_initialized' : workers.some(w => w.configured && ['failed', 'exited', 'pid_conflict', 'lineage_mismatch'].includes(w.status)) ? 'attention_required'
+    status: !workers.some(w => w.configured) ? 'not_initialized' : workers.some(w => w.configured && ['failed', 'exited', 'pid_conflict', 'lineage_mismatch', 'manifest_invalid'].includes(w.status)) ? 'attention_required'
       : workers.some(w => w.configured && w.status !== 'running') ? 'degraded' : 'running',
     workers, source: {...source, clocks: undefined, hashes: undefined},
     officialContext: {execution: {status: status(official?.status), updatedAt: executionTime,

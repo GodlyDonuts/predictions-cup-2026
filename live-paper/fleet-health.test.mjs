@@ -48,6 +48,60 @@ test('staged dip hosts accept only the two exact scripts and one exact cohort ar
   b.processes[123].commandLine = '"C:\\Program Files\\node.exe" "C:\\Project Space\\live-paper\\dip-worker.mjs" --name "dip"';
   assert.equal(assessWorker(b, now).process.identity, 'matches_expected_script');
 });
+
+function activeFixture(t, name = 'limit-entry') {
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'fleet-active-'));t.after(()=>fs.rmSync(dir,{recursive:true,force:true}));
+  const cohort='prospective-fixture',subdir=name==='limit-entry'?'limit-entry-cohorts':'entry-comparisons',root=path.join(dir,subdir,cohort);fs.mkdirSync(root,{recursive:true});
+  const manifest={schemaVersion:1,cohort,bankHash},write=(file,value)=>fs.writeFileSync(file,JSON.stringify(value));
+  write(path.join(dir,name+'-active.json'),manifest);write(path.join(root,'bank.json'),bank);
+  write(path.join(root,'stats.json'),{...base().report,cohort,pid:123,sourceHash:'d'.repeat(64)});
+  fs.writeFileSync(path.join(root,'pid.txt'),'123');fs.writeFileSync(path.join(root,'worker.lock'),'123');
+  fs.writeFileSync(path.join(dir,'journal.jsonl'),JSON.stringify({sequence:20,previous:'',at:at(-500),event:{type:'cycle',clockAt:at(-500)},hash:'d'.repeat(64)})+'\n');
+  const processes={123:{alive:true,commandLine:'node live-paper/'+name+'-watch.mjs --name '+cohort,startedAt:at(-100000)}};
+  const options={runtimeDir:dir,workspaceDir:dir,collectorLockPath:path.join(dir,'bot.lock'),now,probeProcesses:()=>processes};
+  return {dir,root,manifest,write,processes,options,name};
+}
+
+test('active comparison manifests add scoped workers with verified bank, source, script and cohort identities',async t=>{
+  for(const name of ['entry-comparison','limit-entry']){
+    const f=activeFixture(t,name),before=fs.readFileSync(path.join(f.root,'stats.json'));const result=await fleetHealth(f.options),worker=result.workers.find(x=>x.name===name);
+    assert.equal(worker.status,'running');assert.equal(worker.cohort,f.manifest.cohort);assert.equal(worker.manifestBankHash,bankHash);assert.equal(worker.source.identity,'matches_source_record');
+    assert.equal(result.runtimeWrites,0);assert.deepEqual(fs.readFileSync(path.join(f.root,'stats.json')),before);
+    f.processes[123].commandLine='node live-paper/'+name+'-watch.mjs --name wrong';assert.equal((await fleetHealth(f.options)).workers.find(x=>x.name===name).status,'pid_conflict');
+    f.processes[123].commandLine='node live-paper/'+name+'-watch.mjs --name wrong --name '+f.manifest.cohort;assert.equal((await fleetHealth(f.options)).workers.find(x=>x.name===name).status,'pid_conflict');
+  }
+});
+
+test('active cohort STOP variants apply and a failed exited report remains failed after its heartbeat ages',async t=>{
+  const f=activeFixture(t);
+  for(const marker of [path.join(f.dir,'STOP'),path.join(f.dir,'LIMIT_ENTRY_STOP'),path.join(f.root,'STOP')]){
+    fs.writeFileSync(marker,'private-stop-sentinel');const result=await fleetHealth(f.options),worker=result.workers.find(x=>x.name==='limit-entry');assert.equal(worker.status,'stop_pending');assert.equal(JSON.stringify(result).includes('private-stop-sentinel'),false);fs.unlinkSync(marker);
+  }
+  const report=JSON.parse(fs.readFileSync(path.join(f.root,'stats.json')));report.status='failed';report.updatedAt=at(-3600000);f.write(path.join(f.root,'stats.json'),report);f.processes[123].alive=false;
+  const result=await fleetHealth(f.options);assert.equal(result.workers.find(x=>x.name==='limit-entry').status,'failed');assert.equal(result.status,'attention_required');
+});
+
+test('malformed and escaping active manifests fail closed without exporting their content',async t=>{
+  const f=activeFixture(t);
+  for(const manifest of [{...f.manifest,cohort:'../private-sentinel'},{...f.manifest,cohort:'con'},{...f.manifest,bankHash:'private-sentinel'},{...f.manifest,extra:'private-sentinel'},[]]){
+    f.write(path.join(f.dir,'limit-entry-active.json'),manifest);const result=await fleetHealth(f.options),worker=result.workers.find(x=>x.name==='limit-entry');assert.equal(worker.status,'manifest_invalid');assert.equal(result.status,'attention_required');assert.equal(JSON.stringify(result).includes('private-sentinel'),false);
+  }
+  f.write(path.join(f.dir,'limit-entry-active.json'),{...f.manifest,cohort:'missing-cohort'});assert.equal((await fleetHealth(f.options)).workers.find(x=>x.name==='limit-entry').status,'manifest_invalid');
+  fs.unlinkSync(path.join(f.dir,'limit-entry-active.json'));assert.equal((await fleetHealth(f.options)).workers.some(x=>x.name==='limit-entry'),false);
+});
+
+test('active manifest must pin the actual bank and report cohort, independent of a fresh heartbeat',async t=>{
+  const f=activeFixture(t);f.write(path.join(f.dir,'limit-entry-active.json'),{...f.manifest,bankHash:'f'.repeat(64)});
+  assert.equal((await fleetHealth(f.options)).workers.find(x=>x.name==='limit-entry').status,'lineage_mismatch');
+  f.write(path.join(f.dir,'limit-entry-active.json'),f.manifest);const report=JSON.parse(fs.readFileSync(path.join(f.root,'stats.json')));report.cohort='other-cohort';f.write(path.join(f.root,'stats.json'),report);
+  assert.equal((await fleetHealth(f.options)).workers.find(x=>x.name==='limit-entry').status,'lineage_mismatch');
+});
+
+test('cohort directory junction cannot redirect manifest reads outside the permitted subtree',async t=>{
+  const f=activeFixture(t),outside=fs.mkdtempSync(path.join(os.tmpdir(),'fleet-outside-'));t.after(()=>fs.rmSync(outside,{recursive:true,force:true}));
+  const alias=path.join(f.dir,'limit-entry-cohorts','redirected');fs.symlinkSync(outside,alias,'junction');f.write(path.join(f.dir,'limit-entry-active.json'),{...f.manifest,cohort:'redirected'});
+  const result=await fleetHealth(f.options);assert.equal(result.workers.find(x=>x.name==='limit-entry').status,'manifest_invalid');assert.equal(result.runtimeWrites,0);
+});
 test('worker ahead of the captured source snapshot cannot report running', () => {
   const b = base(); b.report.sourceSequence = 99; b.source.sequence = 20;
   const r = assessWorker(b, now); assert.equal(r.status, 'source_snapshot_unverified');
