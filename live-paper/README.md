@@ -36,3 +36,9 @@ node live-paper/replay.mjs --journal "$env:LOCALAPPDATA/SigTradingCup/paper-runt
 ```
 
 Replay verifies the complete source journal chain and runs without credentials or network access. Compare configurations using copies of the configuration file, preserve the original run's config and source checksum, and use unseen future captures to evaluate changes. The default replay is whole-path parameter exploration, not a held-out performance result. Synthetic correctness tests and short live samples do not establish profitable strategy performance.
+
+## Review fixes, engine revision 3
+
+The initial revision had five independently reproduced evidence defects. Revision 3 preserves journal event-clock/outage/skip timing in replay; compares source timestamps at nanosecond precision; rejects incompatible equal versions and conflicting tournament contexts; aborts incomplete or unmappable account reconciliation; derives round-trip win counts from the complete durable fill ledger; and persists a manual-review stop sentinel for overflowing Retry-After. Identical source versions cannot create new fills. `sellExecutions` is separate from completed flat-to-flat trades and their cumulative win rate.
+
+Original journals are preserved. Resuming revision 2 canonicalizes consumed version keys and recomputes reported round trips without changing cash, fees, FIFO lots or fills. Historical optimization results remain unvalidated until corrected replay and independent re-review. A rate record with `manualReview: true` never schedules a guessed earlier retry; inspect the service condition and record before an intentional restart. Nine targeted review regressions cover the reproduced cases in addition to the existing tests.

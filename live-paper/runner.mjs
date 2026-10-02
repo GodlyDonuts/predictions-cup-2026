@@ -4,8 +4,8 @@ import http from 'node:http';
 import {randomUUID} from 'node:crypto';
 import {fileURLToPath} from 'node:url';
 import {loadKey} from '../bot/api.mjs';
-import {initialState,normalizeBook,observe,report,assertState,sampleEquity,validateConfig,restoreState} from './model.mjs';
-import {Journal,lock,ReadClient,atomicJson} from './runtime.mjs';
+import {initialState,normalizeBook,observe,report,assertState,sampleEquity,validateConfig,restoreState,invalidate} from './model.mjs';
+import {Journal,lock,ReadClient,atomicJson,exclusionSet} from './runtime.mjs';
 
 const root=path.dirname(fileURLToPath(import.meta.url)),workspace=path.dirname(root);
 if(process.argv.includes('--live'))throw Error('Competition order execution is disabled');
@@ -26,9 +26,9 @@ let runtime={status:'starting',pid:process.pid,runtimeDir,readRequests:0,errors:
 function persistStatus(){const r=report(state,c);atomicJson(path.join(runtimeDir,'stats.json'),{...r,runtime:{...runtime,readRequests:api?.requests||0}});return r;}
 try{
   journal=new Journal(path.join(runtimeDir,'journal.jsonl'));state=journal.last?restoreState(journal.last.state,c):initialState(c,randomUUID(),new Date().toISOString());assertState(state,c);
-  if(journal.last&&journal.last.state.engineRevision!==state.engineRevision)journal.commit(state,{type:'entry_lot_schema_upgrade',fromRevision:1,toRevision:2});
-  api=new ReadClient(loadKey(),{interval:c.readIntervalMs,signal:control.signal,onAdmission:next=>atomicJson(path.join(runtimeDir,'rate.json'),{next})});
-  if(fs.existsSync(path.join(runtimeDir,'rate.json')))api.next=JSON.parse(fs.readFileSync(path.join(runtimeDir,'rate.json'))).next;
+  if(journal.last&&journal.last.state.engineRevision!==state.engineRevision)journal.commit(state,{type:'paper_engine_upgrade',fromRevision:journal.last.state.engineRevision||1,toRevision:state.engineRevision});
+  api=new ReadClient(loadKey(),{interval:c.readIntervalMs,signal:control.signal,onAdmission:next=>atomicJson(path.join(runtimeDir,'rate.json'),{next,manualReview:next===null})});
+  if(fs.existsSync(path.join(runtimeDir,'rate.json'))){const rate=JSON.parse(fs.readFileSync(path.join(runtimeDir,'rate.json')));if(rate.manualReview||rate.next===null)throw Error('Rate cooldown requires manual review');if(!Number.isFinite(rate.next)||rate.next<0||rate.next>8640000000000000)throw Error('Invalid persisted rate state');api.next=rate.next;}
   runtime.status='connecting';persistStatus();
   const html=fs.readFileSync(path.join(root,'dashboard.html'));
   server=http.createServer((req,res)=>{
@@ -51,7 +51,7 @@ try{
       const positions=await api.request('/tournaments/'+c.tournamentSlug+'/portfolio/positions');
       if(!Array.isArray(positions.data.positions))throw Error('Invalid real holdings response');
       const orders=await api.orders();
-      const excluded=new Set([...positions.data.positions.filter(p=>p.quantity!==0),...orders].map(p=>String(p.exchangeId)));
+      const excluded=exclusionSet(positions.data.positions,orders);
       for(const marketId of c.marketIds){
         if(stopping)break;
         try{
@@ -59,12 +59,12 @@ try{
           events.push(r);
           const b=normalizeBook(r.data,marketId,c.tournamentId,r.receivedAt,r.requestStartedAt,c.maxDataAgeMs,excluded);
           try{state=observe(state,b,c);}catch(e){e.fatal=true;throw e;}successful++;
-        }catch(e){if(stopping)break;if(e.fatal||e.status===401||e.status===403)throw e;const reason=e.status?'http_'+e.status:e.message;state.skips[marketId]={at:new Date().toISOString(),reason};events.push({marketId,skipped:reason});if(e.status===429||e.status===503)break;}
+        }catch(e){if(stopping)break;if(e.fatal||api.manualReview||e.status===401||e.status===403)throw e;const reason=e.status?'http_'+e.status:e.message,at=new Date().toISOString();state.skips[marketId]={at,reason};invalidate(state,marketId,at,reason);events.push({marketId,skipped:reason,at});if(e.status===429||e.status===503)break;}
       }
-      const at=new Date().toISOString();sampleEquity(state,c,at);assertState(state,c);journal.commit(state,{type:'cycle',sourceSnapshots:events,accountExclusions:[...excluded],exclusionObservedAt:positions.receivedAt});
+      const at=new Date().toISOString();sampleEquity(state,c,at);assertState(state,c);journal.commit(state,{type:'cycle',clockAt:at,sourceSnapshots:events,accountExclusions:[...excluded],exclusionObservedAt:positions.receivedAt});
       runtime.cycles++;runtime.lastCycleAt=at;runtime.status=stopping?'stopping':successful?'running':'degraded';persistStatus();
       console.log(JSON.stringify({at,event:'paper_cycle',cycle:runtime.cycles,observations:state.observations,fills:Object.fromEntries(Object.entries(state.strategies).map(([k,s])=>[k,s.fills.length])),competitionOrders:0}));
-    }catch(e){if(stopping)break;runtime.errors.push({at:new Date().toISOString(),reason:e.status?'http_'+e.status:'Account reconciliation or durable recording failed'});runtime.errors=runtime.errors.slice(-20);runtime.status=e.recoverable?'degraded':'failed';persistStatus();if(e.recoverable){journal.commit(state,{type:'account_read_outage',reason:e.status?'http_'+e.status:'connection_unavailable'});await api.pause(Math.max(10000,api.cooldown-Date.now()));continue;}throw Error('Paper runner stopped: '+runtime.errors.at(-1).reason);}
+    }catch(e){if(stopping)break;const at=new Date().toISOString();invalidate(state,null,at,'account_reconciliation_unavailable');runtime.errors.push({at,reason:e.status?'http_'+e.status:e.message});runtime.errors=runtime.errors.slice(-20);runtime.status=e.recoverable?'degraded':'failed';persistStatus();if(e.recoverable){journal.commit(state,{type:'account_read_outage',clockAt:at,reason:e.status?'http_'+e.status:'connection_unavailable'});await api.pause(Math.max(10000,api.cooldown-Date.now()));continue;}throw Error('Paper runner stopped: '+runtime.errors.at(-1).reason);}
     if(!stopping&&runtime.cycles<maxCycles)await api.pause(Math.max(1000,c.cycleIntervalMs-(Date.now()-cycleStart)));
   }
   runtime.status='stopped';journal.commit(state,{type:'stopped'});persistStatus();

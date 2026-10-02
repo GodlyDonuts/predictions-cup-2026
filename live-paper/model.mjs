@@ -1,5 +1,6 @@
 import {amount, money, price, fee, TICK, SCALE} from '../paper/fixed.mjs';
 import {createHash} from 'node:crypto';
+import {timestamp,instantNs} from '../feed/contract.mjs';
 
 export const digest = value => createHash('sha256').update(JSON.stringify(value)).digest('hex');
 export function validateConfig(c) {
@@ -17,8 +18,10 @@ export function validateConfig(c) {
 export function normalizeBook(response, marketId, tournamentId, receivedAt, requestStartedAt, maxAge, excluded=new Set()) {
   const now=Date.parse(receivedAt),started=Date.parse(requestStartedAt);
   if(!Number.isFinite(now)||!Number.isFinite(started)||now<started||now-started>maxAge)throw Error('Slow or invalid snapshot observation');
-  const context=response.contexts?.find(x=>x.tournament?.id===tournamentId);
-  if(!context||context.type!=='tournament')throw Error('Missing exact tournament book context');
+  const contexts=response.contexts?.filter(x=>x.tournament?.id===tournamentId);
+  if(!contexts?.length||contexts.some(x=>x.type!=='tournament'))throw Error('Missing exact tournament book context');
+  if(contexts.some(x=>digest(x.orderbook)!==digest(contexts[0].orderbook)))throw Error('Conflicting tournament contexts');
+  const context=contexts[0];
   const exchanges=context.orderbook?.exchanges;
   if(!Array.isArray(exchanges)||exchanges.length!==1||exchanges[0].option!=='YES')throw Error('Only verified single YES exchange books supported');
   const e=exchanges[0], id=String(e.exchangeId),version=e.asOf;
@@ -32,12 +35,24 @@ export function normalizeBook(response, marketId, tournamentId, receivedAt, requ
   };
   const bids=levels(e.bids,true),asks=levels(e.asks,false);
   if(!bids.length||!asks.length||amount(bids[0].price)>=amount(asks[0].price))throw Error('Missing, locked or crossed market');
-  return {marketId:String(marketId),exchangeId:id,instrument:id+':YES',receivedAt,requestStartedAt,sourceAt:version.at,sequence:String(version.sequence),versionKey:String(version.sequence)+':'+version.at,bids,asks};
+  const sourceAt=timestamp(version.at);
+  return {marketId:String(marketId),exchangeId:id,instrument:id+':YES',receivedAt,requestStartedAt,sourceAt,sequence:String(version.sequence),versionKey:String(version.sequence)+':'+sourceAt,bids,asks};
+}
+
+export function invalidate(s,marketId,at,reason){s.invalidated??={};for(const[id,b]of Object.entries(s.books))if(marketId===null||b.marketId===String(marketId))s.invalidated[id]={at,reason};}
+
+export function roundTripStats(fills){
+  const positions={};let closed=0,winners=0;
+  for(const f of fills){const p=positions[f.instrument]??={quantity:0,lots:[],pnl:0n};const n=amount(f.price)*BigInt(f.quantity),charge=amount(f.fee);
+    if(f.action==='buy'){p.quantity+=f.quantity;p.lots.push({quantity:f.quantity,cost:n+charge});}
+    else{let left=f.quantity,basis=0n;while(left){const l=p.lots[0];if(!l)throw Error('Round-trip ledger oversell');const q=Math.min(left,l.quantity),used=q===l.quantity?l.cost:l.cost*BigInt(q)/BigInt(l.quantity);basis+=used;l.cost-=used;l.quantity-=q;left-=q;if(!l.quantity)p.lots.shift();}p.quantity-=f.quantity;p.pnl+=n-charge-basis;if(!p.quantity){closed++;if(p.pnl>0n)winners++;p.pnl=0n;}}
+  }
+  return {closedTrades:closed,winningTrades:winners,winRate:closed?winners/closed:null};
 }
 
 export function initialState(c,runId,at) {
   validateConfig(c);
-  return {schemaVersion:1,engineRevision:2,runId,startedAt:at,configHash:digest(c),lastAt:at,observations:0,skips:{},books:{},histories:{},strategies:Object.fromEntries(['mean_reversion','buy_hold_benchmark'].map(name=>[name,{cash:c.initialCash,realized:'0.000000',fees:'0.000000',turnover:'0.000000',positions:{},pending:{},fills:[],intents:0,expiredIntents:0,consumedVersions:{},equityCurve:[],peak:c.initialCash,maxDrawdown:'0.000000',closedTrades:0,winningTrades:0}]))};
+  return {schemaVersion:1,engineRevision:3,runId,startedAt:at,configHash:digest(c),lastAt:at,observations:0,skips:{},books:{},histories:{},strategies:Object.fromEntries(['mean_reversion','buy_hold_benchmark'].map(name=>[name,{cash:c.initialCash,realized:'0.000000',fees:'0.000000',turnover:'0.000000',positions:{},pending:{},fills:[],intents:0,expiredIntents:0,consumedVersions:{},equityCurve:[],peak:c.initialCash,maxDrawdown:'0.000000',closedTrades:0,winningTrades:0}]))};
 }
 
 export function restoreState(input,c){
@@ -51,7 +66,8 @@ export function restoreState(input,c){
     }
     s.engineRevision=2;
   }
-  if(s.engineRevision!==2)throw Error('Unknown engine revision');assertState(s,c);return s;
+  if(s.engineRevision===2){for(const st of Object.values(s.strategies))for(const[id,key]of Object.entries(st.consumedVersions)){const sep=key.indexOf(':');st.consumedVersions[id]=key.slice(0,sep)+':'+timestamp(key.slice(sep+1));}s.engineRevision=3;s.evidenceValidation='legacy_run_requires_corrected_replay_and_independent_review';}
+  if(s.engineRevision!==3)throw Error('Unknown engine revision');assertState(s,c);return s;
 }
 
 export function assertState(s,c) {
@@ -107,8 +123,14 @@ export function observe(input,b,c) {
   const s=structuredClone(input),at=b.receivedAt,id=b.instrument;
   if(Date.parse(at)<Date.parse(s.lastAt))throw Error('Observation time moved backward');
   const prev=s.books[id];
-  if(prev&&(BigInt(b.sequence)<BigInt(prev.sequence)||Date.parse(b.sourceAt)<Date.parse(prev.sourceAt)))throw Error('Book version rollback');
+  const sameVersion=prev&&BigInt(b.sequence)===BigInt(prev.sequence)&&instantNs(b.sourceAt)===instantNs(prev.sourceAt);
+  if(prev&&(BigInt(b.sequence)<BigInt(prev.sequence)||instantNs(b.sourceAt)<instantNs(prev.sourceAt)))throw Error('Book version rollback');
+  if(sameVersion&&digest({bids:b.bids,asks:b.asks})!==digest({bids:prev.bids,asks:prev.asks}))throw Error('Conflicting equal book version');
+  b={...b,sourceAt:timestamp(b.sourceAt),versionKey:b.sequence+':'+timestamp(b.sourceAt)};
+  if(s.invalidated?.[id]&&Date.parse(b.requestStartedAt)<=Date.parse(s.invalidated[id].at))throw Error('Pre-invalidation snapshot cannot recover');
+  if(s.invalidated)delete s.invalidated[id];
   s.observations++;s.lastAt=at;s.books[id]=b;
+  if(sameVersion){assertState(s,c);return s;}
   const mid=(Number(amount(b.bids[0].price))+Number(amount(b.asks[0].price)))/2;
   const hist=s.histories[id]||[];const recent=hist.slice(-c.lookback);const mean=recent.length?recent.reduce((n,x)=>n+x,0)/recent.length:mid;
   const sd=recent.length?Math.sqrt(recent.reduce((n,x)=>n+(x-mean)**2,0)/recent.length):0;
@@ -141,7 +163,7 @@ export function report(s,c,now=new Date().toISOString()) {
   for(const [name,st]of Object.entries(s.strategies)){
     let reference=amount(st.cash),liquidation=amount(st.cash),referenceComplete=true,liquidationComplete=true;const positions=[];
     for(const [id,pos]of Object.entries(st.positions)){
-      const b=s.books[id];let proceeds=0n,left=pos.quantity;const fresh=b&&age(id)>=0&&age(id)<=c.maxDataAgeMs+c.cycleIntervalMs*4;
+      const b=s.books[id];let proceeds=0n,left=pos.quantity;const fresh=b&&!s.invalidated?.[id]&&age(id)>=0&&age(id)<=c.maxDataAgeMs+c.cycleIntervalMs*4;
       if(fresh){reference+=(amount(b.bids[0].price)+amount(b.asks[0].price))*BigInt(pos.quantity)/2n;for(const l of b.bids){const q=Math.min(left,Math.floor(l.quantity*c.depthFractionBps/10000));if(q){const p=amount(l.price)-TICK*BigInt(c.slippageTicks);if(p<TICK)break;const n=p*BigInt(q);proceeds+=n-fee(n,q,costs(c));left-=q;}if(!left)break;}}
       if(!fresh)referenceComplete=false;if(!fresh||left)liquidationComplete=false;liquidation+=proceeds;
       const labels={'377':'Alaska Senate','354':'Florida Senate','277':'North Carolina Senate','305':'Michigan Governor'};
@@ -150,9 +172,9 @@ export function report(s,c,now=new Date().toISOString()) {
     const equity=referenceComplete?reference:null,liq=liquidationComplete?liquidation:null;
     const curve=st.equityCurve;let peak=amount(st.peak),dd=amount(st.maxDrawdown);
     if(equity!==null){if(equity>peak)peak=equity;if(peak-equity>dd)dd=peak-equity;}
-    strategies[name]={cash:st.cash,realizedPnl:st.realized,referenceEquity:equity===null?null:money(equity),referencePnl:equity===null?null:money(equity-amount(c.initialCash)),estimatedLiquidationEquity:liq===null?null:money(liq),liquidationPnl:liq===null?null:money(liq-amount(c.initialCash)),fees:st.fees,turnover:st.turnover,filledShares:st.fills.reduce((n,f)=>n+f.quantity,0),fills:st.fills.length,intents:st.intents,pending:Object.values(st.pending),expiredIntents:st.expiredIntents,closedTrades:st.closedTrades,winRate:st.closedTrades?st.winningTrades/st.closedTrades:null,maxObservedDrawdown:money(dd),positions,equityCurve:curve.slice(-500),recentFills:st.fills.slice(-25)};
+    strategies[name]={cash:st.cash,realizedPnl:st.realized,referenceEquity:equity===null?null:money(equity),referencePnl:equity===null?null:money(equity-amount(c.initialCash)),estimatedLiquidationEquity:liq===null?null:money(liq),liquidationPnl:liq===null?null:money(liq-amount(c.initialCash)),fees:st.fees,turnover:st.turnover,filledShares:st.fills.reduce((n,f)=>n+f.quantity,0),fills:st.fills.length,intents:st.intents,pending:Object.values(st.pending),expiredIntents:st.expiredIntents,...roundTripStats(st.fills),sellExecutions:st.closedTrades,maxObservedDrawdown:money(dd),positions,equityCurve:curve.slice(-500),recentFills:st.fills.slice(-25)};
   }
-  return {schemaVersion:1,engineRevision:s.engineRevision,mode:'live_data_paper_only',runId:s.runId,startedAt:s.startedAt,lastObservationAt:s.lastAt,reportedAt:now,initialCash:c.initialCash,configHash:s.configHash,observations:s.observations,coveredExchanges:Object.keys(s.books).length,scope:c.marketIds,signals:s.signals||{},skips:s.skips,strategies,noTradeBaseline:{cash:c.initialCash,pnl:'0.000000'},ordersSentToCompetition:0,assumptions:{fillModel:'Hypothetical taker at subsequent REST snapshot; NOT a verified actual fill',feeBps:c.feeBps,feeStatus:'unverified_scenario',slippageTicks:c.slippageTicks,depthFractionBps:c.depthFractionBps,source:'official API v1, fixed tournament',passiveFillEvidence:false,completeTradeTape:false,strategyProfitabilityEstablished:false,mark:'midpoint of fresh bid/ask; not tournament valuation'},config:c};
+  return {schemaVersion:1,evidenceValidation:s.evidenceValidation||'pending_independent_review',engineRevision:s.engineRevision,mode:'live_data_paper_only',runId:s.runId,startedAt:s.startedAt,lastObservationAt:s.lastAt,reportedAt:now,initialCash:c.initialCash,configHash:s.configHash,observations:s.observations,coveredExchanges:Object.keys(s.books).length,scope:c.marketIds,signals:s.signals||{},skips:s.skips,strategies,noTradeBaseline:{cash:c.initialCash,pnl:'0.000000'},ordersSentToCompetition:0,assumptions:{fillModel:'Hypothetical taker at subsequent REST snapshot; NOT a verified actual fill',feeBps:c.feeBps,feeStatus:'unverified_scenario',slippageTicks:c.slippageTicks,depthFractionBps:c.depthFractionBps,source:'official API v1, fixed tournament',passiveFillEvidence:false,completeTradeTape:false,strategyProfitabilityEstablished:false,mark:'midpoint of fresh bid/ask; not tournament valuation'},config:c};
 }
 
 export function sampleEquity(s,c,now){

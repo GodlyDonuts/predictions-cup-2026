@@ -1,7 +1,15 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import {createHash} from 'node:crypto';
-import {retryAfterMs} from '../bot/api.mjs';
+import {retryAfterMs} from '../feed/runtime.mjs';
+
+export function exclusionSet(positions,orders){
+  if(!Array.isArray(positions)||!Array.isArray(orders))throw Error('Incomplete account reconciliation');
+  const ids=new Set();for(const row of [...positions,...orders]){
+    if(!row||typeof row!=='object'||typeof row.exchangeId!=='string'||!/^([1-9]\d*)$/.test(row.exchangeId)||!Number.isSafeInteger(Number(row.exchangeId))||!Number.isSafeInteger(row.quantity)||row.quantity<0)throw Error('Unmappable account exposure');
+    if(row.quantity>0)ids.add(row.exchangeId);
+  }return ids;
+}
 
 export function atomicJson(file,value){const tmp=file+'.tmp';fs.writeFileSync(tmp,JSON.stringify(value,null,2),{mode:0o600});fs.renameSync(tmp,file);}
 export class Journal {
@@ -34,17 +42,18 @@ export class ReadClient {
   async perform(endpoint){
     const patterns=[/^\/tournaments\/midterm-elections$/, /^\/tournaments\/midterm-elections\/portfolio\/positions$/, /^\/orders\?status=open&limit=200&tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55(?:&cursor=[A-Za-z0-9%._~-]+)?$/, /^\/markets\/\d+\/orderbook\?tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55&depth=20$/];
     if(!patterns.some(p=>p.test(endpoint)))throw Error('Endpoint outside paper GET allowlist');
+    if(this.manualReview)throw Error('Rate cooldown requires manual review');
     await this.pause(Math.max(0,Math.max(this.next,this.cooldown)-this.now()));
     if(this.signal?.aborted)throw Error('Stopped');
     this.next=this.now()+this.interval;this.requests++;this.onAdmission(this.next);
     const requestStartedAt=new Date(this.now()).toISOString();
     let response;
     try{response=await this.fetch('https://sig.thesuper.market/api/v1'+endpoint,{method:'GET',redirect:'error',signal:this.signal?AbortSignal.any([this.signal,AbortSignal.timeout(20000)]):AbortSignal.timeout(20000),headers:{Authorization:'Bearer '+this.#key}});}catch{const err=Error(this.signal?.aborted?'Stopped':'Market API connection unavailable');err.recoverable=!this.signal?.aborted;throw err;}
-    if(!response.ok){if(response.status===429||response.status===503){this.cooldown=this.now()+Math.max(response.status===429?60000:10000,retryAfterMs(response.headers.get('Retry-After'),this.now()));this.onAdmission(Math.max(this.next,this.cooldown));}const err=Error('Market API HTTP '+response.status);err.status=response.status;err.recoverable=[429,500,502,503,504].includes(response.status);throw err;}
+    if(!response.ok){if(response.status===429||response.status===503){const delay=Math.max(response.status===429?60000:10000,retryAfterMs(response.headers.get('Retry-After'),this.now()));if(delay===Number.MAX_SAFE_INTEGER||delay>8640000000000000-this.now()){this.manualReview=true;this.onAdmission(null);throw Error('Rate cooldown requires manual review');}this.cooldown=this.now()+delay;this.onAdmission(Math.max(this.next,this.cooldown));}const err=Error('Market API HTTP '+response.status);err.status=response.status;err.recoverable=[429,500,502,503,504].includes(response.status);throw err;}
     let data;try{data=await response.json();}catch{throw Error('Invalid market API JSON');}
     if(this.signal?.aborted)throw Error('Stopped');
     return{endpoint,requestStartedAt,receivedAt:new Date(this.now()).toISOString(),data};
   }
-  async orders(){const out=[];let cursor;const seen=new Set();do{const r=await this.request('/orders?status=open&limit=200&tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55'+(cursor?'&cursor='+encodeURIComponent(cursor):''));if(!Array.isArray(r.data.data))throw Error('Invalid open orders response');out.push(...r.data.data);const pg=r.data.pagination;cursor=pg?.hasMore?pg.nextCursor:null;if(pg?.hasMore&&(!cursor||seen.has(cursor)))throw Error('Incomplete order pagination');seen.add(cursor);}while(cursor);return out;}
+  async orders(){const out=[];let cursor;const seen=new Set();do{const r=await this.request('/orders?status=open&limit=200&tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55'+(cursor?'&cursor='+encodeURIComponent(cursor):''));if(!Array.isArray(r.data.data))throw Error('Invalid open orders response');exclusionSet([],r.data.data);out.push(...r.data.data);const pg=r.data.pagination;if(!pg||typeof pg.hasMore!=='boolean')throw Error('Incomplete order pagination');cursor=pg.hasMore?pg.nextCursor:null;if(pg.hasMore&&(typeof cursor!=='string'||!cursor||seen.has(cursor)))throw Error('Incomplete order pagination');seen.add(cursor);}while(cursor);return out;}
   close(){this.#key='';}
 }
