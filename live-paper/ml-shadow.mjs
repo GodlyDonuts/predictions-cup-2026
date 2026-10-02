@@ -7,6 +7,7 @@ import {features,predict} from './ml-bank.mjs';
 import {amount,fee,TICK} from '../paper/fixed.mjs';
 import {scopedSnapshots} from './depth-scope.mjs';
 import {historyPolicy,resetHistory} from './history-policy.mjs';
+import {updateContext,contextFeatures} from './breadth-context.mjs';
 
 export function verifySource(raw){
  if(!raw||!raw.endsWith('\n'))return null;
@@ -38,7 +39,7 @@ export function advanceShadow(input,records,bank){
    let b;try{b=normalizeBook(snap.data,match[1],c.tournamentId,snap.receivedAt,snap.requestStartedAt,c.maxDataAgeMs,new Set(e.accountExclusions));}catch{resetHistory(state.histories,match[1],policy);for(const w of Object.values(state.wallets))invalidate(w,match[1],snap.receivedAt,'invalid_book');continue;}
    let history=state.histories[b.instrument]||[];
    if(history.length&&Date.parse(b.receivedAt)-Date.parse(history.at(-1).at)>120000)history=[];
-   const x=features(b,history),mid=x[11];let advanced=false;
+   const base=features(b,history),x=bank.breadthContext?[...base,...contextFeatures(state.breadth,b,c.tournamentId)]:base,mid=x[11];let advanced=false;
    for(const model of bank.selected)for(const margin of [.005,.01,.015]){
     const id=model.id+'-edge'+margin;
     const w=state.wallets[id]??initialState(c,id,bank.trainingCaptureThrough);
@@ -54,6 +55,7 @@ export function advanceShadow(input,records,bank){
    }
    if(advanced)state.histories[b.instrument]=[...history,{at:b.receivedAt,mid,marketId:b.marketId}].slice(-30);
   }
+  if(bank.breadthContext)state.breadth=updateContext(state.breadth,e.bulkPrices,state.captureThrough);
  }
  return state;
 }

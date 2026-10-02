@@ -6,6 +6,7 @@ import {initialState,observe,normalizeBook,invalidate,digest} from './model.mjs'
 import {amount,fee,TICK} from '../paper/fixed.mjs';
 import {scopedSnapshots} from './depth-scope.mjs';
 import {historyPolicy as validateHistoryPolicy,resetHistory,LEGACY,ISOLATED} from './history-policy.mjs';
+import {updateContext,contextFeatures} from './breadth-context.mjs';
 
 const num=x=>Number(amount(x))/1e6;
 export function features(book,history){
@@ -14,10 +15,10 @@ export function features(book,history){
  const delta=n=>history.length>=n?mid-history[history.length-n].mid:0;
  return [1,num(book.asks[0].price)-num(book.bids[0].price),delta(1),delta(3),delta(6),(book.bids[0].quantity-book.asks[0].quantity)/(book.bids[0].quantity+book.asks[0].quantity),(bid-ask)/(bid+ask),Math.log1p(bid),Math.log1p(ask),(Date.parse(book.receivedAt)-Date.parse(book.sourceAt))/1000,history.length?(Date.parse(book.receivedAt)-Date.parse(history.at(-1).at))/1000:0,mid];
 }
-export function captureRows(raw,c,{historyPolicy=LEGACY,since=null}={}){
+export function captureRows(raw,c,{historyPolicy=LEGACY,since=null,breadthContext=false}={}){
  validateHistoryPolicy(historyPolicy);
  if(since!==null&&(typeof since!=='string'||!Number.isFinite(Date.parse(since))))throw Error('Invalid training window');
- const verified=replayJournal(raw,c);let s=null,segment=0;const histories={},rows=[],marketSegments={};
+ const verified=replayJournal(raw,c);let s=null,segment=0,context=null;const histories={},rows=[],marketSegments={};
  const reset=marketId=>{resetHistory(histories,marketId,historyPolicy);if(historyPolicy===LEGACY||marketId===null)segment++;else marketSegments[marketId]=(marketSegments[marketId]||0)+1;};
  for(const line of raw.trimEnd().split('\n')){
   const r=JSON.parse(line),e=r.event;
@@ -32,9 +33,10 @@ export function captureRows(raw,c,{historyPolicy=LEGACY,since=null}={}){
    try{b=normalizeBook(snap.data,m[1],c.tournamentId,snap.receivedAt,snap.requestStartedAt,c.maxDataAgeMs,new Set(e.accountExclusions));}catch{reset(m[1]);continue;}
    const prev=s.books[b.instrument];s=observe(s,b,c);if(prev?.versionKey===s.books[b.instrument].versionKey)continue;
    let h=histories[b.instrument]||[];if(h.length&&Date.parse(b.receivedAt)-Date.parse(h.at(-1).at)>120000){if(historyPolicy===ISOLATED)marketSegments[b.marketId]=(marketSegments[b.marketId]||0)+1;else segment++;h=[];}
-   const x=features(b,h),row={at:b.receivedAt,marketId:b.marketId,instrument:b.instrument,segment:historyPolicy===ISOLATED?segment+':'+(marketSegments[b.marketId]||0):segment,x,mid:x[11],bid:num(b.bids[0].price),ask:num(b.asks[0].price),book:b};
+   const base=features(b,h),x=breadthContext?[...base,...contextFeatures(context,b,c.tournamentId)]:base,row={at:b.receivedAt,marketId:b.marketId,instrument:b.instrument,segment:historyPolicy===ISOLATED?segment+':'+(marketSegments[b.marketId]||0):segment,x,mid:x[11],bid:num(b.bids[0].price),ask:num(b.asks[0].price),book:b};
    rows.push(row);histories[b.instrument]=[...h,row].slice(-30);
   }
+  if(breadthContext)context=updateContext(context,e.bulkPrices,e.clockAt||r.at);
  }
  return {rows,sourceHash:verified.replay.sourceHash,sourceRecords:verified.replay.sourceRecords,cutoff:verified.replay.finalEventClock};
 }
@@ -73,10 +75,11 @@ export function instrumentCoverage(train,test,marketIds){
   return {marketId,train:a.length,test:b.length,trainingInstruments,testInstruments,eligible:a.length>=8&&b.length>=4&&testInstruments.every(id=>trainingInstruments.includes(id))};
  });
 }
-export function trainBank(raw,c,{family='ridge',historyPolicy=LEGACY,since=null,requireInstrumentCoverage=false}={}){
+export function trainBank(raw,c,{family='ridge',historyPolicy=LEGACY,since=null,requireInstrumentCoverage=false,breadthContext=false}={}){
  if(!['ridge','boosted_stumps'].includes(family))throw Error('Unsupported model family');
  if(typeof requireInstrumentCoverage!=='boolean')throw Error('Invalid coverage requirement');
- const source=captureRows(raw,c,{historyPolicy,since}),rows=source.rows;
+ if(typeof breadthContext!=='boolean')throw Error('Invalid breadth feature selection');
+ const source=captureRows(raw,c,{historyPolicy,since,breadthContext}),rows=source.rows;
  if(rows.length<80)throw Error('Need at least 80 accepted snapshots before model fitting');
  const split=rows[Math.floor(rows.length*.65)].at,models=[],rejected=[];
  for(const horizon of [60,180,300,600]){
@@ -93,7 +96,7 @@ export function trainBank(raw,c,{family='ridge',historyPolicy=LEGACY,since=null,
   const train=labels.filter(r=>Date.parse(r.labelAt)<Date.parse(split)),test=labels.filter(r=>Date.parse(r.at)>=Date.parse(split));
   const coverage=instrumentCoverage(train,test,c.marketIds);
   const variants=[];
-  for(const width of [4,6,9,12]){
+  for(const width of (breadthContext?[12,15,17,19]:[4,6,9,12])){
    if(family==='ridge')for(const lambda of [.01,.1,1,10,100,1000,10000,100000])variants.push({width,lambda,id:`ridge-h${horizon}-f${width}-l${lambda}`});
    else for(const iterations of [16,64])for(const learningRate of [.05,.1])for(const minLeaf of [5,10])variants.push({width,iterations,learningRate,minLeaf,id:`stumps-h${horizon}-f${width}-n${iterations}-r${learningRate}-leaf${minLeaf}`});
   }
@@ -106,8 +109,8 @@ export function trainBank(raw,c,{family='ridge',historyPolicy=LEGACY,since=null,
   }
  }
  const selected=[60,180,300,600].flatMap(h=>models.filter(m=>m.horizon===h).sort((a,b)=>a.rmse-b.rmse).slice(0,3));
- return {schemaVersion:1,family,historyPolicy,trainingWindowStart:since,requireInstrumentCoverage,createdAt:new Date().toISOString(),config:c,configHash:digest(c),sourceHash:source.sourceHash,sourceRecords:source.sourceRecords,trainingCaptureThrough:source.cutoff,developmentSplitAt:split,acceptedSnapshots:rows.length,candidatesAttempted:128,modelsTrained:models.length,models,rejected,selected,selection:'Three lowest development-split RMSE per horizon; exploration only, all tried variants retained',target:'Future haircut-free best bid minus adverse exit tick and assumed exit fee, relative to current midpoint; entry costs charged separately',limitations:['Short correlated capture; no profitability established','Chronological development split with training labels purged at split; not untouched future validation','Top bid label is not verified full-size exit liquidity','No guarantee of future depth, latency, settlement equivalence or execution']};
+ return {schemaVersion:1,family,historyPolicy,trainingWindowStart:since,requireInstrumentCoverage,breadthContext,createdAt:new Date().toISOString(),config:c,configHash:digest(c),sourceHash:source.sourceHash,sourceRecords:source.sourceRecords,trainingCaptureThrough:source.cutoff,developmentSplitAt:split,acceptedSnapshots:rows.length,candidatesAttempted:128,modelsTrained:models.length,models,rejected,selected,selection:'Three lowest development-split RMSE per horizon; exploration only, all tried variants retained',target:'Future haircut-free best bid minus adverse exit tick and assumed exit fee, relative to current midpoint; entry costs charged separately',limitations:['Short correlated capture; no profitability established','Chronological development split with training labels purged at split; not untouched future validation','Top bid label is not verified full-size exit liquidity','No guarantee of future depth, latency, settlement equivalence or execution']};
 }
 if(process.argv[1]&&fileURLToPath(import.meta.url)===process.argv[1]){
- const arg=n=>{const i=process.argv.indexOf(n);if(i<0||!process.argv[i+1])throw Error('Required '+n);return process.argv[i+1];};const family=process.argv.includes('--family')?arg('--family'):'ridge';const bank=trainBank(fs.readFileSync(arg('--journal'),'utf8'),JSON.parse(fs.readFileSync(arg('--config'),'utf8')),{family,historyPolicy:process.argv.includes('--history-policy')?arg('--history-policy'):LEGACY,since:process.argv.includes('--since')?arg('--since'):null,requireInstrumentCoverage:process.argv.includes('--require-instrument-coverage')});const out=arg('--out');if(fs.existsSync(out))throw Error('Refusing to overwrite an existing frozen model bank');const tmp=out+'.'+randomUUID()+'.tmp';fs.writeFileSync(tmp,JSON.stringify(bank,null,2),{flag:'wx',mode:0o600});try{fs.linkSync(tmp,out);}finally{fs.unlinkSync(tmp);}console.log(JSON.stringify({attempted:bank.candidatesAttempted,trained:bank.modelsTrained,shadowModels:bank.selected.length,snapshots:bank.acceptedSnapshots,cutoff:bank.trainingCaptureThrough}));
+ const arg=n=>{const i=process.argv.indexOf(n);if(i<0||!process.argv[i+1])throw Error('Required '+n);return process.argv[i+1];};const family=process.argv.includes('--family')?arg('--family'):'ridge';const bank=trainBank(fs.readFileSync(arg('--journal'),'utf8'),JSON.parse(fs.readFileSync(arg('--config'),'utf8')),{family,historyPolicy:process.argv.includes('--history-policy')?arg('--history-policy'):LEGACY,since:process.argv.includes('--since')?arg('--since'):null,requireInstrumentCoverage:process.argv.includes('--require-instrument-coverage'),breadthContext:process.argv.includes('--breadth-context')});const out=arg('--out');if(fs.existsSync(out))throw Error('Refusing to overwrite an existing frozen model bank');const tmp=out+'.'+randomUUID()+'.tmp';fs.writeFileSync(tmp,JSON.stringify(bank,null,2),{flag:'wx',mode:0o600});try{fs.linkSync(tmp,out);}finally{fs.unlinkSync(tmp);}console.log(JSON.stringify({attempted:bank.candidatesAttempted,trained:bank.modelsTrained,shadowModels:bank.selected.length,snapshots:bank.acceptedSnapshots,cutoff:bank.trainingCaptureThrough}));
 }
