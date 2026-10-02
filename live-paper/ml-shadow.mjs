@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
+import {createHash} from 'node:crypto';
 import {digest,initialState,normalizeBook,stepForecast,report,invalidate,assertState} from './model.mjs';
 import {atomicJson,lock} from './runtime.mjs';
 import {features,predict} from './ml-bank.mjs';
@@ -11,21 +12,33 @@ import {updateContext,contextFeatures} from './breadth-context.mjs';
 
 export function verifySource(raw){
  if(!raw||!raw.endsWith('\n'))return null;
- let previous='',clock=-Infinity;const records=[];
- for(const [i,line]of raw.trimEnd().split('\n').entries()){
+ let previous='',clock=-Infinity;const records=[],prefixHashes=[],prefix=createHash('sha256');
+ for(const [i,line]of raw.slice(0,-1).split('\n').entries()){
   let r;try{r=JSON.parse(line);}catch{throw Error('Source JSON invalid');}
   const {hash,...body}=r;
   if(r.sequence!==i+1||r.previous!==previous||hash!==digest(body))throw Error('Source integrity failure');
   const next=Date.parse(r.event?.clockAt||r.at);if(!Number.isFinite(next)||next<clock)throw Error('Source clock rollback');clock=next;
-  previous=hash;records.push(r);
+  prefix.update(line+'\n');prefixHashes.push(prefix.copy().digest('hex'));previous=hash;records.push(r);
  }
- return records;
+ Object.defineProperty(records,'prefixHashes',{value:prefixHashes});return records;
+}
+
+export function bindTrainingSource(records,bank){
+ if(bank.sourceHash===undefined&&bank.sourceRecords===undefined)return null;
+ const n=bank.sourceRecords;
+ if(!Number.isSafeInteger(n)||n<1||n>records.length||typeof bank.sourceHash!=='string'||!/^[a-f0-9]{64}$/.test(bank.sourceHash))throw Error('Invalid frozen training source');
+ const hash=records.prefixHashes?.[n-1]||createHash('sha256').update(records.slice(0,n).map(r=>JSON.stringify(r)).join('\n')+'\n').digest('hex');
+ if(hash!==bank.sourceHash||Date.parse(records[n-1].event?.clockAt||records[n-1].at)!==Date.parse(bank.trainingCaptureThrough))throw Error('Frozen training source mismatch');
+ return {sourceRecords:n,sourceHash:hash,lastRecordHash:records[n-1].hash};
 }
 
 export function advanceShadow(input,records,bank){
  const state=structuredClone(input),c=bank.config;
  const policy=historyPolicy(bank.historyPolicy);
  if(state.bankHash!==digest(bank))throw Error('Frozen model bank changed');
+ const binding=bindTrainingSource(records,bank);
+ if(state.sourceBinding&&digest(state.sourceBinding)!==digest(binding))throw Error('Frozen training binding changed');
+ if(binding)state.sourceBinding=binding;
  if(state.sourceSequence>records.length||(state.sourceSequence&&records[state.sourceSequence-1].hash!==state.sourceHash))throw Error('Source prefix changed on resume');
  for(const r of records){
   if(r.sequence<=state.sourceSequence)continue;
@@ -42,6 +55,14 @@ export function advanceShadow(input,records,bank){
    const base=features(b,history),x=bank.breadthContext?[...base,...contextFeatures(state.breadth,b,c.tournamentId)]:base,mid=x[11];let advanced=false;
    for(const model of bank.selected)for(const margin of [.005,.01,.015]){
     const id=model.id+'-edge'+margin;
+    if(bank.requireInstrumentCoverage){
+     const support=model.coverage?.find(x=>x.marketId===b.marketId);
+     if(!support?.eligible||!support.trainingInstruments?.includes(b.instrument)){
+      state.unsupportedInstruments??={};state.unsupportedInstruments[id+':'+b.instrument]={modelId:model.id,marketId:b.marketId,instrument:b.instrument,at:b.receivedAt,reason:'not_in_frozen_training_support'};
+      const old=state.wallets[id];if(old){invalidate(old,b.marketId,b.receivedAt,'unsupported_instrument');delete old.strategies.mean_reversion.pending[b.instrument];}
+      continue;
+     }
+    }
     const w=state.wallets[id]??initialState(c,id,bank.trainingCaptureThrough);
     const same=w.books[b.instrument]?.versionKey===b.versionKey;
     const exitValue=history.length>=6?mid+predict(model,x):null;
@@ -61,11 +82,11 @@ export function advanceShadow(input,records,bank){
 }
 export function shadowReport(s,bank,now){
  const candidates=Object.entries(s.wallets).map(([id,w])=>{assertState(w,bank.config);const r=report(w,bank.config,now).strategies.mean_reversion;return {id,cash:r.cash,realizedPnl:r.realizedPnl,referencePnl:r.referencePnl,liquidationPnl:r.liquidationPnl,intents:r.intents,fills:r.fills,closedTrades:r.closedTrades,fees:r.fees,positions:r.positions.map(p=>({instrument:p.instrument,quantity:p.quantity,unsoldShares:p.unsoldShares})),prediction:s.predictions[id],signalMetrics:s.signalMetrics?.[id]||null};});
- return {mode:'prospective_ml_paper',updatedAt:now,bankHash:s.bankHash,trainingCaptureThrough:bank.trainingCaptureThrough,captureThrough:s.captureThrough,modelsAttempted:bank.candidatesAttempted,modelsTrained:bank.modelsTrained,modelRejections:bank.rejected.length,candidateWallets:candidates.length,sourceSequence:s.sourceSequence,candidates,competitionOrders:0,networkRequests:0,profitabilityEstablished:false,limitations:bank.limitations};
+ return {mode:'prospective_ml_paper',updatedAt:now,bankHash:s.bankHash,sourceBinding:s.sourceBinding||null,unsupportedInstruments:Object.values(s.unsupportedInstruments||{}),targetPolicy:bank.targetPolicy||'legacy_decision_time_bid_forecast_not_executable_roundtrip_target',trainingCaptureThrough:bank.trainingCaptureThrough,captureThrough:s.captureThrough,modelsAttempted:bank.candidatesAttempted,modelsTrained:bank.modelsTrained,modelRejections:bank.rejected.length,candidateWallets:candidates.length,sourceSequence:s.sourceSequence,candidates,competitionOrders:0,networkRequests:0,profitabilityEstablished:false,limitations:bank.limitations};
 }
 export function combineReports(base,cohorts){
  const reports=[{name:'ridge-original',report:base},...cohorts];
- return {...base,status:base.status==='failed'?'failed':reports.some(x=>x.report.status==='failed')?'degraded':base.status,modelsAttempted:reports.reduce((n,x)=>n+x.report.modelsAttempted,0),modelsTrained:reports.reduce((n,x)=>n+x.report.modelsTrained,0),modelRejections:reports.reduce((n,x)=>n+(x.report.modelRejections||0),0),candidateWallets:reports.reduce((n,x)=>n+x.report.candidateWallets,0),cohorts:reports.map(({name,report:r})=>({name,status:r.status,bankHash:r.bankHash,trainingCaptureThrough:r.trainingCaptureThrough,modelsTrained:r.modelsTrained,candidateWallets:r.candidateWallets})),candidates:reports.flatMap(({name,report:r})=>r.candidates.map(c=>({...c,id:name+'/'+c.id,cohort:name})))};
+ return {...base,status:base.status==='failed'?'failed':reports.some(x=>x.report.status==='failed')?'degraded':base.status,modelsAttempted:reports.reduce((n,x)=>n+x.report.modelsAttempted,0),modelsTrained:reports.reduce((n,x)=>n+x.report.modelsTrained,0),modelRejections:reports.reduce((n,x)=>n+(x.report.modelRejections||0),0),candidateWallets:reports.reduce((n,x)=>n+x.report.candidateWallets,0),cohorts:reports.map(({name,report:r})=>({name,status:r.status,bankHash:r.bankHash,sourceBinding:r.sourceBinding,targetPolicy:r.targetPolicy,trainingCaptureThrough:r.trainingCaptureThrough,modelsTrained:r.modelsTrained,candidateWallets:r.candidateWallets})),candidates:reports.flatMap(({name,report:r})=>r.candidates.map(c=>({...c,id:name+'/'+c.id,cohort:name})))};
 }
 if(process.argv[1]&&fileURLToPath(import.meta.url)===process.argv[1]){
  const dir=process.env.SIG_PAPER_DIR||path.join(process.env.LOCALAPPDATA,'SigTradingCup','paper-runtime'),workspace=path.dirname(path.dirname(fileURLToPath(import.meta.url)));
