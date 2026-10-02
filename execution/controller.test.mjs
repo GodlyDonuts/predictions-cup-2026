@@ -16,6 +16,8 @@ function fixture(t, options = {}) {
   let time = Date.now() + 1000, stopped = false, controller;
   const universe = {exchanges: [{marketId: '377', exchangeId: '700', option: 'YES'}, {marketId: '378', exchangeId: '701', option: 'YES'}]};
   const activation = {schemaVersion: 1, ownerId: 'Codex', tournamentId: TID, runId: 'sig-pilot-fixture', enabled: true, formerWriterStopCommentId: 5947535773, feeBps: 0, maxOrderCost: '25.000000', maxAggregateCost: '100.000000', maxCumulativeBuyCost: '100.000000', maxManagedMarkets: 3, depthFractionBps: 100, startedAt: stamp(time - 1000), entryExpiresAt: stamp(time + 6 * 3600000 - 1000)};
+  if(options.entryStartsInMs!==undefined)activation.startedAt=stamp(time+options.entryStartsInMs);
+  if(options.entryEndsInMs!==undefined)activation.entryExpiresAt=stamp(time+options.entryEndsInMs);
   fs.writeFileSync(path.join(dir, 'competition-activation.json'), JSON.stringify(activation));
   const policy = {...JSON.parse(fs.readFileSync(new URL('../live-paper/dip-policy.json', import.meta.url))), executionPolicy: 'responsive_v2', requireScheduledEntry: true, maxOpenMarkets: 3, maximumHoldMs: options.maximumHoldMs || 1000, cooldownMs: 1};
   const bank = {sourceRecords: 1, policy, identities: {'377': {state: 'FL', office: 'Senate'}, '378': {state: 'GA', office: 'Senate'}}};
@@ -131,6 +133,70 @@ test('STOP after durable admission prevents network and retains uncertainty for 
   assert.equal(f.server.posts.length, 0); assert.equal(f.controller.active().status, 'uncertain'); assert.equal(f.controller.active().attempts, 1);
 });
 
+test('entry authorization opens at startedAt and closes exactly at entryExpiresAt', async t => {
+  await t.test('future start and exact start', async t => {
+    const f = fixture(t, {entryStartsInMs: 1000, entryEndsInMs: 2000}); await f.before();
+    f.advance(Date.parse(f.activation.startedAt) - f.now - 1); await f.controller.onBook(f.book());
+    assert.equal(f.server.posts.length, 0); assert.equal(Object.keys(f.controller.state.intents).length, 0);
+    assert.equal(f.controller.reason, 'ENTRY_WINDOW_NOT_STARTED');
+    f.advance(1); await f.controller.onBook(f.book()); assert.equal(f.server.posts.length, 1);
+  });
+  await t.test('exact expiry', async t => {
+    const f = fixture(t, {entryEndsInMs: 1000}); await f.before();
+    f.advance(Date.parse(f.activation.entryExpiresAt) - f.now); await f.controller.onBook(f.book());
+    assert.equal(f.server.posts.length, 0); assert.equal(Object.keys(f.controller.state.intents).length, 0);
+    assert.equal(f.controller.reason, 'ENTRY_WINDOW_CLOSED');
+  });
+});
+
+test('a prepared BUY cannot cross authorization expiry at either queue fence', async t => {
+  for (const phase of ['beforeGuard', 'afterGuard']) await t.test(phase, async t => {
+    const f = fixture(t, {entryEndsInMs: 1000});
+    f.server[phase] = () => f.advance(Date.parse(f.activation.entryExpiresAt) - f.now);
+    await f.cycle(); assert.equal(f.server.posts.length, 0); assert.equal(f.controller.reason, 'ENTRY_WINDOW_CLOSED');
+    const i = Object.values(f.controller.state.intents)[0];
+    assert.equal(i.status, phase === 'beforeGuard' ? 'closed' : 'uncertain');
+    assert.equal(i.attempts, phase === 'beforeGuard' ? 0 : 1);
+    assert.ok(Date.parse(i.expirationDate) > f.now, 'the original order itself is still unexpired');
+  });
+});
+
+test('latched owned exits remain available outside either end of the BUY authorization window', async t => {
+  for (const mode of ['expired', 'future']) await t.test(mode, async t => {
+    const f = fixture(t, {entryEndsInMs: 1000, maximumHoldMs: 3600000}); await f.cycle(); await f.before();
+    await f.cycle({bid: .465, ask: .470, depth: 10});
+    assert.equal(f.controller.state.control.exits['700'].reason, 'stop_loss'); assert.equal(f.server.posts.length, 1);
+    if (mode === 'expired') f.advance(2000);
+    else {
+      f.activation.startedAt = stamp(f.now + 60000); f.activation.entryExpiresAt = stamp(f.now + 3600000);
+      fs.writeFileSync(path.join(f.dir, 'competition-activation.json'), JSON.stringify(f.activation));
+    }
+    f.restart(); await f.cycle({bid: .495, ask: .500});
+    assert.equal(f.server.posts.length, 2); assert.equal(f.server.posts[1].body.action, 'sell');
+    assert.equal(f.controller.active().attribution.reason, 'latched_stop_loss');
+    await f.before(); assert.deepEqual(f.controller.state.owned, {}); assert.deepEqual(f.controller.state.control.exits, {});
+  });
+});
+
+test('expired known BUY cleanup and official fill reconciliation continue after the entry window closes', async t => {
+  const f = fixture(t, {entryEndsInMs: 1000, partial: true}); f.server.ignoreExpiry = true; await f.cycle();
+  const id = f.controller.active().orderId; f.advance(31000); await f.before();
+  assert.deepEqual(f.server.deletes, [id]); assert.equal(f.server.posts.length, 1);
+  await f.before(); assert.equal(f.controller.active(), undefined); assert.equal(f.controller.state.owned['700'].quantity, 10);
+});
+
+test('closed entry window blocks unexpired ambiguous retry but permits expired exact-key recovery', async t => {
+  const f = fixture(t, {entryEndsInMs: 1000, ambiguous: true}); await f.cycle(); const original = f.server.posts[0];
+  f.advance(2000);
+  await assert.rejects(f.controller.submit(f.controller.active(), null, true), /INVALID_EXECUTION_PERMIT/);
+  assert.equal(f.controller.reason, 'ENTRY_WINDOW_CLOSED'); assert.equal(f.server.posts.length, 1);
+  assert.equal(f.controller.active().status, 'uncertain');
+  changeProjection(f, 'stats', {status: 'failed'}); f.advance(120000); f.restart(); await f.before();
+  assert.equal(f.server.posts.length, 2); assert.equal(f.server.posts[1].bodyJson, original.bodyJson);
+  assert.equal(f.server.posts[1].body.idempotencyKey, original.body.idempotencyKey); assert.equal(f.server.orders.size, 1);
+  await f.before(); assert.equal(f.controller.state.owned['700'].quantity, 20); assert.equal(f.controller.active(), undefined);
+});
+
 test('a book that becomes stale in the shared queue cannot dispatch its prepared intent', async t => {
   const f = fixture(t); f.server.beforeGuard = () => f.advance(21000); await f.cycle();
   assert.equal(f.server.posts.length, 0); const intent = Object.values(f.controller.state.intents)[0];
@@ -167,6 +233,11 @@ test('100 SUSQ cumulative entry budget survives completed exits and blocks a fif
   f.restart(); f.seedHistory(); await f.cycle({depth: 10000});
   const buys = f.server.posts.filter(x => x.body.action === 'buy'); assert.equal(buys.length, 4); assert.equal(buys.reduce((n, x) => n + x.body.price * x.body.quantity, 0), 100);
   assert.equal(f.server.posts.length, 8); assert.equal(f.controller.active(), undefined);
+  const activationFile=path.join(f.dir,'competition-activation.json'),original=JSON.parse(fs.readFileSync(activationFile));
+  const renewed={...original,startedAt:stamp(f.now),entryExpiresAt:stamp(f.now+6*3600000)};
+  Object.assign(f.activation,renewed);fs.writeFileSync(activationFile,JSON.stringify(renewed));f.restart();f.seedHistory();await f.cycle({depth:10000});
+  assert.equal(f.controller.activation.runId,original.runId);assert.equal(f.server.posts.length,8,'renewing the authorization window cannot replenish purchases');
+  assert.equal(Object.values(f.controller.state.intents).filter(i=>i.action==='buy').length,4);assert.equal(f.controller.active(),undefined);
 });
 
 test('bootstrap uses only official scoped reads and blocks writes until schema compatibility succeeds', async t => {

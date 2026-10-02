@@ -57,6 +57,13 @@ export class CompetitionController {
   try{return digest(JSON.parse(fs.readFileSync(path.join(this.runtimeDir,'competition-activation.json'))))===this.activationHash;}catch{return false;}
  }
  canWrite(){return this.bootstrapped===true&&this.canOperate();}
+ entryWindowAdmitted(now){
+  const start=Date.parse(this.activation.startedAt),end=Date.parse(this.activation.entryExpiresAt);
+  if(!Number.isFinite(now)||!Number.isFinite(start)||!Number.isFinite(end)){this.reason='INVALID_ACTIVATION_CLOCK';return false;}
+  if(now<start){this.reason='ENTRY_WINDOW_NOT_STARTED';return false;}
+  if(now>=end){this.reason='ENTRY_WINDOW_CLOSED';return false;}
+  return true;
+ }
  responsiveReference(expectedHash){
   // Worker projections are published separately. A mixed publication is
   // temporarily ineligible; never combine a new state with an old heartbeat.
@@ -73,7 +80,11 @@ export class CompetitionController {
  entryReferenceAdmitted(i,permit,now){
   // An identical expired replay can only retrieve an earlier acceptance; it
   // cannot create a live entry and remains available for reconciliation.
-  if(i.action!=='buy'||permit.retry===true&&this.currentPermit.retry===true&&now>=Date.parse(i.expirationDate))return true;
+  if(i.action!=='buy')return true;
+  if(permit.retry===true&&this.currentPermit.retry===true&&i.attempts>0&&now>=Date.parse(i.expirationDate))return true;
+  // A queued purchase must remain inside the authorization window at both
+  // dispatch fences. An unexpired retry could still be its first acceptance.
+  if(!this.entryWindowAdmitted(now))return false;
   const ref=this.responsiveReference(i.attribution.modelHash),proof=this.currentPermit.referenceProof;
   if(!ref.ok){this.reason=ref.code;return false;}
   if(!proof||proof.bankHash!==ref.proof.bankHash||ref.proof.sourceSequence<proof.sourceSequence||(ref.proof.sourceSequence===proof.sourceSequence&&ref.proof.sourceHash!==proof.sourceHash)||proof.referenceHash!==referenceInputHash(ref.shadow,i.exchangeId)){this.reason='REFERENCE_SOURCE_CHANGED';return false;}
@@ -249,7 +260,7 @@ export class CompetitionController {
    if(!obligation&&bid<avg+micros(bank.policy.takeProfit))return;
    action='sell';limit=bid;quantity=owned.quantity;reason=obligation?'latched_'+obligation.reason:'take_profit';
   }else{
-   if(this.now()>Date.parse(this.activation.entryExpiresAt)){this.status='entry_window_closed';this.publish();return;}
+   if(!this.entryWindowAdmitted(this.now())){this.status=this.reason==='ENTRY_WINDOW_NOT_STARTED'?'entry_window_not_started':'entry_window_closed';this.publish();return;}
    const identity=bank.identities[marketId];if(!identity?.state||!identity?.office)return;
    if(Object.values(this.state.owned).some(p=>bank.identities[p.marketId]?.state===identity.state))return;
    if(this.account.positions.rows.some(p=>p.exchangeId===b.exchangeId&&p.quantity!==0)||this.account.orders.rows.some(o=>o.exchangeId===b.exchangeId))return;
