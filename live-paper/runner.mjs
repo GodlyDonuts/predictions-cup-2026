@@ -15,14 +15,16 @@ import {historyEndpoint,normalizeHistory} from './history.mjs';
 import {validateDipPolicy} from './dip-shadow.mjs';
 import {accountPositions,accountOrders,accountFills,accountPnl,accountView} from './account.mjs';
 import {createSchedulerState,validateSchedulerState,planBookReads,planHistoryReads,recordSchedulerAttempts} from './book-scheduler.mjs';
-import {collectionInputs} from './collection-inputs.mjs';
+import {collectionInputs,shockCollectionRisk} from './collection-inputs.mjs';
 import {CompetitionController} from '../execution/controller.mjs';
+import {loadNetworkBudget,networkInterval} from './network-budget.mjs';
 
 const root=path.dirname(fileURLToPath(import.meta.url)),workspace=path.dirname(root);
 if(process.argv.includes('--live'))throw Error('Competition order execution is disabled');
 const configFile=process.argv.includes('--config')?path.resolve(process.argv[process.argv.indexOf('--config')+1]):path.join(root,'config.json');
 const c=validateConfig(JSON.parse(fs.readFileSync(configFile,'utf8')));
 const runtimeDir=process.env.SIG_PAPER_DIR||path.join(process.env.LOCALAPPDATA||workspace,'SigTradingCup','paper-runtime');
+const networkBudget=loadNetworkBudget(path.join(runtimeDir,'coordinated-network-budget.json')),networkIntervalMs=networkInterval(c.readIntervalMs,networkBudget);
 const stopFile=path.join(workspace,'STOP'),paperStop=path.join(runtimeDir,'STOP'),collectorStop=path.join(runtimeDir,'COLLECTOR_STOP');
 if(fs.existsSync(stopFile)||fs.existsSync(paperStop)||fs.existsSync(collectorStop)){console.log(JSON.stringify({status:'stopped',reason:'STOP_present'}));process.exit(0);}
 fs.mkdirSync(runtimeDir,{recursive:true,mode:0o700});
@@ -44,6 +46,11 @@ function schedulingInputs(){
   sources.push({state,bank,healthy});
  }
  const inputs=collectionInputs(sources,universe,coverage,Date.now());
+  const shockBankFile=path.join(runtimeDir,'shock-bank.json');
+  if(fs.existsSync(shockBankFile)){
+   const risk=shockCollectionRisk(JSON.parse(fs.readFileSync(path.join(runtimeDir,'shock-state.json'))),JSON.parse(fs.readFileSync(shockBankFile)),universe);
+   for(const key of ['heldMarketIds','pendingMarketIds'])inputs[key]=[...new Set([...inputs[key],...risk[key]])];
+  }
   inputs.priorityManagedMarketIds=competition?.managedMarketIds()||[];
   inputs.heldMarketIds=[...new Set([...inputs.heldMarketIds,...inputs.priorityManagedMarketIds])];return inputs;
 }
@@ -82,10 +89,13 @@ try{
   schedulerScope={universe,coreMarketIds:c.marketIds};scheduler=fs.existsSync(schedulerFile)?validateSchedulerState(JSON.parse(fs.readFileSync(schedulerFile)),schedulerScope):createSchedulerState(schedulerScope);
   if(fs.existsSync(coverageFile)){coverage=JSON.parse(fs.readFileSync(coverageFile,'utf8'));if(coverage.universeHash!==universe.hash)coverage=null;}
   if(journal.last&&journal.last.state.engineRevision!==state.engineRevision)commit({type:'paper_engine_upgrade',fromRevision:journal.last.state.engineRevision||1,toRevision:state.engineRevision});
-  api=new ReadClient(loadKey(),{interval:c.readIntervalMs,signal:control.signal,authorizeDispatch:spec=>competition?.transport.authorizeRequest(spec)===true,onAdmission:next=>atomicJson(path.join(runtimeDir,'rate.json'),{next,manualReview:next===null}),onTiming:event=>{validateTiming(event);fs.appendFileSync(path.join(runtimeDir,'read-timings.jsonl'),JSON.stringify(event)+'\n',{mode:0o600});recentReadTimings.push(event);if(recentReadTimings.length>1000)recentReadTimings.shift();runtime.readTiming=timingSummary(recentReadTimings);}});
+  api=new ReadClient(loadKey(),{interval:c.readIntervalMs,networkBudget,signal:control.signal,authorizeDispatch:spec=>competition?.transport.authorizeRequest(spec)===true,onAdmission:next=>atomicJson(path.join(runtimeDir,'rate.json'),{next,manualReview:next===null}),onTiming:event=>{validateTiming(event);fs.appendFileSync(path.join(runtimeDir,'read-timings.jsonl'),JSON.stringify(event)+'\n',{mode:0o600});recentReadTimings.push(event);if(recentReadTimings.length>1000)recentReadTimings.shift();runtime.readTiming=timingSummary(recentReadTimings);}});
+  runtime.networkBudget={mode:networkBudget?'coordinated_sole_client':'default',intervalMs:networkIntervalMs,completionPacing:api.completionPacing};
+  if(runtime.collectionPlan)runtime.collectionPlan.readIntervalMs=networkIntervalMs;
   const activationFile=path.join(runtimeDir,'competition-activation.json');
   if(fs.existsSync(activationFile)&&JSON.parse(fs.readFileSync(activationFile)).enabled===true)competition=new CompetitionController({runtimeDir,api,universe,config:c,isStopped:()=>stopping,activation:JSON.parse(fs.readFileSync(activationFile))});
   if(fs.existsSync(path.join(runtimeDir,'rate.json'))){const rate=JSON.parse(fs.readFileSync(path.join(runtimeDir,'rate.json')));if(rate.manualReview||rate.next===null)throw Error('Rate cooldown requires manual review');if(!Number.isFinite(rate.next)||rate.next<0||rate.next>8640000000000000)throw Error('Invalid persisted rate state');api.next=rate.next;}
+  if(networkBudget)commit({type:'collection_network_budget',clockAt:new Date().toISOString(),cadencePolicy:{mode:'coordinated_sole_client',intervalMs:api.interval,completionPacing:true}});
   runtime.status='connecting';persistStatus();
   const html=fs.readFileSync(path.join(root,'dashboard.html'));
   server=http.createServer((req,res)=>{
@@ -96,7 +106,7 @@ try{
     if(req.url==='/api/execution'){res.setHeader('Content-Type','application/json');try{return res.end(fs.readFileSync(path.join(runtimeDir,'competition-stats.json')));}catch{return res.end(JSON.stringify({mode:'official_quant_execution',status:'not_enabled',ordersSubmitted:0}));}}
     if(req.url==='/api/ml'){res.setHeader('Content-Type','application/json');try{const r=JSON.parse(fs.readFileSync(path.join(runtimeDir,'ml-stats.json'),'utf8'));return res.end(JSON.stringify({...r,workerHealth:workerHealth(r)}));}catch{res.writeHead(503);return res.end(JSON.stringify({status:'unavailable'}));}}
     if(req.url==='/api/dip'){res.setHeader('Content-Type','application/json');try{const r=JSON.parse(fs.readFileSync(path.join(runtimeDir,'dip-stats.json'),'utf8'));return res.end(JSON.stringify({...r,workerHealth:workerHealth(r),collectorStatus:runtime.status,collectionPlan:runtime.collectionPlan}));}catch{res.writeHead(503);return res.end(JSON.stringify({status:'unavailable'}));}}
-    if(req.url==='/api/dip-scale'||req.url==='/api/dip-responsive'){res.setHeader('Content-Type','application/json');try{const r=JSON.parse(fs.readFileSync(path.join(runtimeDir,req.url==='/api/dip-responsive'?'dip-responsive-stats.json':'dip-scale-stats.json'),'utf8'));return res.end(JSON.stringify({...r,workerHealth:workerHealth(r),collectorStatus:runtime.status,collectionPlan:runtime.collectionPlan}));}catch{res.writeHead(503);return res.end(JSON.stringify({status:'unavailable'}));}}
+    if(req.url==='/api/dip-scale'||req.url==='/api/dip-responsive'||req.url==='/api/shock'){res.setHeader('Content-Type','application/json');try{const r=JSON.parse(fs.readFileSync(path.join(runtimeDir,req.url==='/api/shock'?'shock-stats.json':req.url==='/api/dip-responsive'?'dip-responsive-stats.json':'dip-scale-stats.json'),'utf8'));return res.end(JSON.stringify({...r,workerHealth:workerHealth(r),collectorStatus:runtime.status,collectionPlan:runtime.collectionPlan}));}catch{res.writeHead(503);return res.end(JSON.stringify({status:'unavailable'}));}}
     if(req.url==='/api/breadth'){res.setHeader('Content-Type','application/json');return res.end(JSON.stringify({...(coverage||{universeSize:universe.exchanges.length,quotes:{}}),collectionAgeMs:coverage?Date.now()-Date.parse(coverage.updatedAt):null}));}
     if(req.url==='/'){res.setHeader('Content-Type','text/html; charset=utf-8');return res.end(html);}res.writeHead(404);res.end();
   });

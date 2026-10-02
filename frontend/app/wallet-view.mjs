@@ -1,4 +1,4 @@
-export const paperCohorts=[['dip-responsive','Responsive dip'],['dip-scale','Scaled dip'],['dip','Conservative dip']];
+export const paperCohorts=[['dip-responsive','Responsive dip'],['shock','Shock rebound'],['dip-scale','Scaled dip'],['dip','Conservative dip']];
 export function paperWalletView(d,id,name){
  if(!d?.strategy)throw Error('Unavailable');const s=d.strategy;
  return {id,name,available:true,updatedAt:d.updatedAt,status:d.workerHealth?.status??d.status,collectorStatus:d.collectorStatus,observations:d.observations,markets:d.universeSize,histories:d.historiesAvailable,feeBps:d.feeBps,

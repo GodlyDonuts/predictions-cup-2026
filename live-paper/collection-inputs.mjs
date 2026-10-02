@@ -2,6 +2,16 @@ import {digest} from './model.mjs';
 import {dipDepthPlan} from './dip-shadow.mjs';
 import {historicalReference} from './history.mjs';
 
+// Risk membership only: a research wallet never contributes execution leads.
+export function shockCollectionRisk(state, bank, universe) {
+ if(state?.bankHash!==digest(bank)||bank?.name!=='shock-rebound-shadow-v1'||bank.config?.tournamentId!==universe.tournamentId||!Array.isArray(bank.markets))throw Error('Shock collection identity mismatch');
+ const official=new Map(universe.exchanges.map(x=>[x.marketId,x])),members=new Map();
+ for(const m of bank.markets){const o=official.get(m.marketId);if(!o||o.exchangeId!==m.exchangeId||o.option!=='YES'||members.has(m.marketId))throw Error('Shock collection scope mismatch');members.set(m.marketId,m.exchangeId);}
+ const st=state.wallet?.strategies?.mean_reversion;
+ const collect=rows=>{if(!rows||typeof rows!=='object'||Array.isArray(rows))throw Error('Invalid shock holdings');return [...new Set(Object.keys(rows).map(id=>{const b=state.wallet.books?.[id],exchange=b&&members.get(b.marketId);if(!exchange||b.exchangeId!==exchange||id!==exchange+':YES')throw Error('Unmapped shock managed market');return b.marketId;}))];};
+ return {heldMarketIds:collect(st?.positions),pendingMarketIds:collect(st?.pending)};
+}
+
 // A stopped worker may still hold inventory; keep servicing it while suppressing
 // new candidates. Source identity mismatches must not silently hide positions.
 export function collectionInputs(sources, universe, coverage, now) {

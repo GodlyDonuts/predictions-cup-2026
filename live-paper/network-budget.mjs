@@ -1,0 +1,19 @@
+import fs from 'node:fs';
+
+// Operator coordination is separate from every frozen strategy configuration.
+// All account requests still use one serialized client; there is no token burst.
+const keys = ['schemaVersion', 'ownerId', 'enabled', 'intervalMs', 'soleAccountClient', 'formerWriterStopCommentId'];
+export function validateNetworkBudget(value) {
+  if (!value || typeof value !== 'object' || Array.isArray(value) || Object.keys(value).length !== keys.length
+    || Object.keys(value).some(key => !keys.includes(key)) || value.schemaVersion !== 1 || value.ownerId !== 'Codex'
+    || value.enabled !== true || value.soleAccountClient !== true || value.formerWriterStopCommentId !== 5947535773
+    || value.intervalMs !== 3000) throw Error('Invalid coordinated network budget');
+  return Object.freeze({...value});
+}
+export function loadNetworkBudget(file) {
+  return fs.existsSync(file) ? validateNetworkBudget(JSON.parse(fs.readFileSync(file, 'utf8'))) : null;
+}
+export function networkInterval(interval = 6000, budget = null) {
+  if (!Number.isSafeInteger(interval) || interval < 5000) throw Error('Read budget requires >=5 second pacing unless explicitly coordinated');
+  return budget === null ? interval : validateNetworkBudget(budget).intervalMs;
+}

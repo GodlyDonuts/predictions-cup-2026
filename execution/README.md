@@ -2,7 +2,7 @@
 
 Codex is the sole execution owner under the human's October 2 reassignment. Daenerys is an advisory researcher. Her stopped-worker acknowledgement is issue #1 comment 5947535773. Existing account holdings are not adopted into this bot's inventory.
 
-The executor runs inside the single collector. It shares that collector's serialized six-second admission, persistent cooldown and Retry-After handling. It does not add another network worker. Without a valid restricted-runtime `competition-activation.json`, the collector remains read-only.
+The executor runs inside the single collector. It shares serialized admission, persistent cooldown and Retry-After handling. Default pacing remains six seconds. A separately recorded sole-account-client network budget can select conservative three-second completion spacing, below the documented 100-read and 30-write per-minute limits; it never changes frozen trading policies or increases order risk limits. It does not add another network worker. Without a valid restricted-runtime `competition-activation.json`, the collector remains read-only.
 
 The first pilot permits up to 25 SUSQies per order, 100 SUSQies of aggregate attributed cost, 100 SUSQies of cumulative new purchases, and three managed markets. Entries use separate states where cached identity is available. These are loss-containment limits, not evidence of a profitable strategy. Closing a position does not replenish the cumulative purchase budget. There are zero added fees. Spread, depth, failed execution and price changes still matter.
 

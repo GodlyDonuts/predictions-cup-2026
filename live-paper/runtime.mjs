@@ -3,6 +3,7 @@ import path from 'node:path';
 import {createHash} from 'node:crypto';
 import {retryAfterMs} from '../feed/runtime.mjs';
 import {allowedHistoryEndpoint} from './history.mjs';
+import {networkInterval} from './network-budget.mjs';
 
 export function exclusionSet(positions,orders){
   if(!Array.isArray(positions)||!Array.isArray(orders))throw Error('Incomplete account reconciliation');
@@ -41,8 +42,8 @@ export function lock(file){fs.mkdirSync(path.dirname(file),{recursive:true});con
 
 export class ReadClient {
   #key;
-  constructor(key,{interval=6000,fetchFn=fetch,signal,now=Date.now,sleepFn=ms=>new Promise(r=>setTimeout(r,ms)),onAdmission=()=>{},onTiming=()=>{},authorizeDispatch}={}){
-    if(interval<5000)throw Error('Read budget requires >=5 second pacing');this.#key=key;this.interval=interval;this.fetch=fetchFn;this.signal=signal;this.now=now;this.sleep=sleepFn;this.next=0;this.cooldown=0;this.requests=0;this.onAdmission=onAdmission;this.onTiming=onTiming;this.tail=Promise.resolve();this.authorizeDispatch=authorizeDispatch;
+  constructor(key,{interval=6000,networkBudget=null,fetchFn=fetch,signal,now=Date.now,sleepFn=ms=>new Promise(r=>setTimeout(r,ms)),onAdmission=()=>{},onTiming=()=>{},authorizeDispatch}={}){
+    this.#key=key;this.interval=networkInterval(interval,networkBudget);this.completionPacing=networkBudget!==null;this.fetch=fetchFn;this.signal=signal;this.now=now;this.sleep=sleepFn;this.next=0;this.cooldown=0;this.requests=0;this.onAdmission=onAdmission;this.onTiming=onTiming;this.tail=Promise.resolve();this.authorizeDispatch=authorizeDispatch;
   }
   async pause(ms){const until=this.now()+ms;while(this.now()<until){if(this.signal?.aborted)throw Error('Stopped');await this.sleep(Math.min(200,until-this.now()));}}
   request(endpoint){const queuedAt=this.now();const result=this.tail.then(()=>this.perform(endpoint,queuedAt));this.tail=result.catch(()=>{});return result;}
@@ -85,6 +86,9 @@ export class ReadClient {
       event.outcome='success';return{endpoint,requestStartedAt,receivedAt:new Date(this.now()).toISOString(),data,...(dispatch?{status:response.status??200,retryAfterMs:0}:{})};
     }catch(e){if(this.signal?.aborted)event.outcome='aborted';throw e;}finally{
       const finished=this.now();event.finishedAt=new Date(finished).toISOString();event.totalMs=Math.max(0,finished-queuedAt);if(admittedAt!==null){event.serviceMs=Math.max(0,finished-admittedAt);if(headersAt===null)event.headersMs=event.serviceMs;}else event.admissionWaitMs=Math.max(0,finished-executingAt);
+      // Faster coordinated mode reserves before fetch and again after completion.
+      // This prevents a slow durable admission from creating a catch-up burst.
+      if(this.completionPacing&&admittedAt!==null&&!this.manualReview){this.next=Math.max(this.next,finished+this.interval,this.cooldown);this.onAdmission(this.next);}
       try{this.onTiming(event);}catch{this.manualReview=true;this.onAdmission(null);throw Error('Read timing recording failed');}
     }
   }
