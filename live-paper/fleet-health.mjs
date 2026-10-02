@@ -22,6 +22,7 @@ const specs = [
   {name: 'shock', script: 'live-paper/shock-shadow.mjs', stop: 'SHOCK_STOP'},
   {name: 'passive', script: 'live-paper/passive-watch.mjs', stop: 'PASSIVE_STOP', lock: 'passive-watch.lock'},
   {name: 'basket', script: 'live-paper/basket-watch.mjs', stop: 'BASKET_STOP', lock: 'basket-watch.lock'},
+  {name: 'performance', script: 'execution/performance-watch.mjs', stop: 'PERFORMANCE_STOP', lock: 'performance-watch.lock', derivedProjection: true},
 ];
 function json(file) { try { const stat = fs.statSync(file); if (stat.size > 4 * 1024 * 1024) return {error: 'oversized'};
   const value = JSON.parse(fs.readFileSync(file, 'utf8'));
@@ -99,7 +100,7 @@ export function assessWorker(input, now = Date.now()) {
   if (probe.startedAt && oldestClaim.length && Date.parse(probe.startedAt) > Math.min(...oldestClaim) + 5000) identity = 'pid_reused_after_claim';
   const processState = reportedPids.length > 1 ? 'conflicting_pid_claims' : processId === null ? 'unknown_pid' : probe.alive === false ? 'exited'
     : probe.alive !== true ? 'unverified' : ['different_process', 'pid_reused_after_claim'].includes(identity) ? 'wrong_process' : 'alive';
-  let lineage = {status: spec.name === 'collector' ? 'not_applicable' : 'unavailable', bankHash: bank ? sha(bank) : null, reportedBankHash: hash(report.bankHash)};
+  let lineage = {status: spec.name === 'collector' || spec.derivedProjection ? 'not_applicable' : 'unavailable', bankHash: bank ? sha(bank) : null, reportedBankHash: hash(report.bankHash)};
   if (bank && spec.name !== 'collector') {
     if (spec.name === 'passive') lineage.status = report.sessionId === bank.sessionId && report.cutoff === bank.cutoff
       && report.sourceFile === bank.sourceFile && report.codeIdentity && bank.codeIdentity && sha(report.codeIdentity) === sha(bank.codeIdentity)
@@ -155,7 +156,7 @@ export async function fleetHealth({runtimeDir, workspaceDir = path.dirname(path.
   const globalStops = [stopFile(path.join(workspaceDir, 'STOP'), 'workspace_stop'), stopFile(path.join(runtimeDir, 'STOP'), 'runtime_stop')];
   const inputs = specs.map(spec => {
     const r = json(path.join(runtimeDir, (spec.stats ?? spec.name + '-stats') + '.json')),
-      b = spec.name === 'collector' ? {} : json(path.join(runtimeDir, spec.name + '-bank.json')),
+      b = spec.name === 'collector' || spec.derivedProjection ? {} : json(path.join(runtimeDir, spec.name + '-bank.json')),
       p = pidFile(path.join(runtimeDir, spec.pid ?? spec.name + '-pid.txt')),
       l = pidFile(spec.name === 'collector' ? collectorLockPath : path.join(runtimeDir, spec.lock ?? spec.name + '-shadow.lock'));
     const claims = [{source: 'pid_file', ...p}, {source: 'lock', ...l}, {source: 'report', pid: pid(r.value?.runtime?.pid ?? r.value?.pid), modifiedAt: r.modifiedAt}].filter(c => c.pid);
