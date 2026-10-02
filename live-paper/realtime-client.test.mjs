@@ -27,6 +27,7 @@ function fixture(options = {}) {
     sdk.realtime = {setAuth: async token => { sdk.auth.push(token); if (x.authHang) return new Promise(() => {}); }, disconnect: () => { sdk.disconnected++; }};
     sdk.removeAllChannels = async () => { sdk.removed++; };
     sdk.channel = (topic, config) => {
+      if (x.channelError) throw Error(TOKEN);
       const ch = {topic, config, handlers: new Map()};
       ch.on = (kind, filter, fn) => { assert.equal(kind, 'broadcast'); ch.handlers.set(filter.event, fn); return ch; };
       ch.subscribe = fn => { ch.notify = fn; if (x.autoJoin !== false) queueMicrotask(() => fn('SUBSCRIBED')); return ch; };
@@ -135,6 +136,11 @@ test('subscription handshake must succeed, and STOP interrupts a hung auth hands
   assert.equal(x.client.status().state, 'failed'); await x.client.stop();
   const auth = fixture({authHang: true}); const pending = auth.client.start(); await settle(); const halted = assert.rejects(pending, /REALTIME_STOPPED/);
   await auth.client.stop(); await halted; assert.equal(auth.sdkCalls[0].channels.length, 0);
+});
+test('synchronous provider channel failure cleans pending handshakes and returns only a sanitized code', async () => {
+  const x = fixture({channelError: true}); await assert.rejects(x.client.start(), e => e.message === 'REALTIME_CONNECTION_FAILED');
+  assert.equal(x.sdkCalls[0].removed, 1); assert.equal(x.sdkCalls[0].disconnected, 1);
+  assert.equal(JSON.stringify(x.client.status()).includes(TOKEN), false); await x.client.stop();
 });
 test('malformed, non-HTTPS and overlong token lifetimes fail closed before SDK receives credentials', async () => {
   for (const tokenOverride of [{supabaseUrl: 'http://project.example.test'}, {supabaseUrl: 'https://user:pass@project.example.test'}, {supabaseUrl: 'https://project.example.test/?token=x'},

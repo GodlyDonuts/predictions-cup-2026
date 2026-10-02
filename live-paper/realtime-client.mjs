@@ -103,6 +103,10 @@ export function createRealtimeClient({dispatch, createClient, tournamentId, mark
   function wire(record, client, localGeneration, reason) {
     let resolve;
     const ready = new Promise((yes, no) => { resolve = yes; record.reject = no; });
+    // If provider channel setup throws synchronously, closeActive rejects this
+    // waiter before Promise.all can receive it. Keep that cleanup rejection
+    // handled; the original setup failure still rejects establish().
+    ready.catch(() => {});
     const current = () => localGeneration === generation && sdk === client && allowed();
     record.timer = arm(() => {
       if (!current() || record.joined) return;
