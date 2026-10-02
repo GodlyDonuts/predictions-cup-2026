@@ -45,7 +45,7 @@ try{
   server=http.createServer((req,res)=>{
     res.setHeader('Cache-Control','no-store');res.setHeader('X-Content-Type-Options','nosniff');
     if(req.method!=='GET'){res.writeHead(405);return res.end();}
-    if(req.url==='/api/stats'){res.setHeader('Content-Type','application/json');return res.end(JSON.stringify({...report(state,c),runtime:{...runtime,readRequests:api.requests}}));}
+    if(req.url==='/api/stats'){res.setHeader('Content-Type','application/json');const legacy=report(state,c);let primary=legacy;try{const baseline=JSON.parse(fs.readFileSync(path.join(runtimeDir,'fee-free-stats.json'),'utf8'));if(baseline.config.feeBps!==0)throw Error('Invalid baseline fee');primary={...baseline,legacyFeeStress:{feeBps:c.feeBps,runId:legacy.runId,strategies:legacy.strategies},baselineWorkerStatus:baseline.status};}catch{primary={...legacy,feeScenario:'historical_fee_stress',baselineWorkerStatus:'unavailable'};}return res.end(JSON.stringify({...primary,runtime:{...runtime,readRequests:api.requests}}));}
     if(req.url==='/api/ml'){res.setHeader('Content-Type','application/json');try{return res.end(fs.readFileSync(path.join(runtimeDir,'ml-stats.json'),'utf8'));}catch{res.writeHead(503);return res.end(JSON.stringify({status:'unavailable'}));}}
     if(req.url==='/api/breadth'){res.setHeader('Content-Type','application/json');return res.end(JSON.stringify({...(coverage||{universeSize:universe.exchanges.length,quotes:{}}),collectionAgeMs:coverage?Date.now()-Date.parse(coverage.updatedAt):null}));}
     if(req.url==='/'){res.setHeader('Content-Type','text/html; charset=utf-8');return res.end(html);}res.writeHead(404);res.end();

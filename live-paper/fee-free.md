@@ -1,0 +1,9 @@
+# Zero additional fee paper baseline
+
+The human requested zero trading fees on October 2. The primary paper baseline now uses **feeBps: 0**. `fee-free-config.json` is the zero-fee policy preset; `config.json` remains the frozen original collector/10 bps stress configuration required to preserve its journal and wallet accounting. Historical fees are not removed retroactively.
+
+`fee-free-shadow.mjs` reads the same single collector journal, makes no API requests, and maintains independent prospective rolling-mean and small-control wallets in restricted runtime `fee-free-bank.json`, `fee-free-state.json` and `fee-free-stats.json`. Its bank binds config, exact source prefix and cutoff. Only subsequent source records can supply entries/fills, resume is idempotent, and zero fees are enforced at creation and advancement. STOP provenance and exclusive worker lock remain enforced. `Start-FeeFree.ps1` restarts this previously initialized worker without creating/resetting wallets.
+
+The dashboard `/api/stats` presents the fee-free baseline when its report exists, with its worker status and separate original `legacyFeeStress` results. If the baseline report is unavailable, fallback is explicitly marked historical fee stress and unavailable baseline status. ML reports label every candidate/cohort with fee basis points and fee scenario. Original immutable model banks remain historical stress cohorts. New zero-fee model families are retrained under their own config/source/target hashes and future cutoffs; historical costs and fills are preserved.
+
+Zero additional explicit fee is a requested baseline supported by the observed historical quantity-price ledger reconciliation, not a universal promise about future undocumented platform fees. One adverse tick and existing delayed sampled-depth/risk assumptions remain conservative execution assumptions; they are separate from fees. Paper fills never send contest orders.

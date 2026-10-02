@@ -1,0 +1,54 @@
+{
+  "at": "2026-10-02T05:56:05.552Z",
+  "userDirective": "Zero additional explicit trading fee baseline",
+  "baseline": {
+    "bankHash": "39982ac4e65d067e45e061defc67f8c1d0616ec9e8a2fb222cb5aae834451729",
+    "feeBps": 0,
+    "cutoff": "2026-10-02T05:52:36.416Z",
+    "sourceRecords": 430,
+    "sourceHash": "b3b18715caff6515f9e6d9437a4fbddecdc14b9e1fdf5199503254aea81ef128",
+    "status": "running",
+    "observations": 0
+  },
+  "cohorts": [
+    {
+      "name": "fee-free-ridge-20261002-0550",
+      "bankHash": "55762b649af793ccf9800051b11945c5b0aaa9c6a65ad3bc29f7b5f83de3e7f6",
+      "feeBps": 0,
+      "sourceHash": "b3b18715caff6515f9e6d9437a4fbddecdc14b9e1fdf5199503254aea81ef128",
+      "sourceRecords": 430,
+      "cutoff": "2026-10-02T05:52:36.416Z",
+      "modelsTrained": 64,
+      "modelsAttempted": 128,
+      "selectedModels": 6,
+      "configuredProspectiveWallets": 18,
+      "activeWallets": 0
+    },
+    {
+      "name": "fee-free-stumps-20261002-0550",
+      "bankHash": "9513f231f520e83da0381808dbf1b5ce4d2d9933cdfa05f221da99bc4fa0cfe3",
+      "feeBps": 0,
+      "sourceHash": "b3b18715caff6515f9e6d9437a4fbddecdc14b9e1fdf5199503254aea81ef128",
+      "sourceRecords": 430,
+      "cutoff": "2026-10-02T05:52:36.416Z",
+      "modelsTrained": 64,
+      "modelsAttempted": 128,
+      "selectedModels": 6,
+      "configuredProspectiveWallets": 18,
+      "activeWallets": 0
+    }
+  ],
+  "processes": {
+    "collector": 11328,
+    "ml": 32096,
+    "feeFree": 15012,
+    "managedCollectorSession": 11776
+  },
+  "legacyStressRunsPreserved": true,
+  "legacyPrefixAndLedgerReplayVerified": true,
+  "tests": 123,
+  "networkCollectors": 1,
+  "additionalApiRequests": 0,
+  "competitionOrders": 0,
+  "profitabilityEstablished": false
+}

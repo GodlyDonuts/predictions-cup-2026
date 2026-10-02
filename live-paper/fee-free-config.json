@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "initialCash": "100000.000000",
+  "tournamentSlug": "midterm-elections",
+  "tournamentId": "bda92870-621e-47b0-bc3c-3602c5c26f55",
+  "marketIds": [
+    "377",
+    "354",
+    "277",
+    "305"
+  ],
+  "readIntervalMs": 6000,
+  "cycleIntervalMs": 30000,
+  "maxDataAgeMs": 20000,
+  "latencyMs": 1000,
+  "feeBps": 0,
+  "slippageTicks": 1,
+  "depthFractionBps": 100,
+  "orderShares": 10,
+  "maxPositionShares": 50,
+  "maxExposure": "1000.000000",
+  "cashReserve": "99000.000000",
+  "warmupObservations": 5,
+  "lookback": 30,
+  "entryZ": 1.5,
+  "minEdge": "0.015000",
+  "exitAfterMs": 600000,
+  "stopLoss": "0.030000",
+  "port": 8787
+}
