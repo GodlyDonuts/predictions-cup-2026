@@ -1,0 +1,552 @@
+{
+  "complete_raw_reproduction_available_in_this_bundle": false,
+  "files": [
+    {
+      "bytes": 298555,
+      "omission_reason": "Raw/catalog/intermediate evidence retained outside this compact publication; hash only does not reproduce or authenticate omitted bytes",
+      "published_as": null,
+      "representation": "omitted",
+      "sha256": "7a47afd2ad5a797f955b7d103d83226c38565f3a863b1dd3c04fbce7bcfb47b0",
+      "source_file": "all_returned_event_metadata.json"
+    },
+    {
+      "bytes": 270,
+      "published_as": "source_scripts/books_public.py",
+      "representation": "exact_bytes",
+      "sha256": "a8727f81d30b766d8c032580cd745e7349a5d06a66a07511324e0c1070ffbc57",
+      "source_file": "books_public.py"
+    },
+    {
+      "bytes": 4508,
+      "published_as": "candidate_event_ids.json",
+      "representation": "exact_bytes",
+      "sha256": "82892d928fdf89da06a3627c970b2f2f3a4016a076b291ac554117da0d7d6b98",
+      "source_file": "candidate_event_ids.json"
+    },
+    {
+      "bytes": 55083,
+      "published_as": "candidate_or_nonstandard_markets.json",
+      "representation": "exact_bytes",
+      "sha256": "3f942e53717b2a232b1f5dadc534e2f38f20922fc416e177ee3c8dd975f4996b",
+      "source_file": "candidate_or_nonstandard_markets.json"
+    },
+    {
+      "bytes": 3034,
+      "published_as": "source_scripts/collect_public.py",
+      "representation": "exact_bytes",
+      "sha256": "d6329ee1a0c83ae3f6cfb2319fd7541b90f67bec56bd80984f425fb2e2b39b16",
+      "source_file": "collect_public.py"
+    },
+    {
+      "bytes": 4989,
+      "published_as": "coverage.json",
+      "representation": "exact_bytes",
+      "sha256": "60e2a3503908fb8ede9c94b3bf1966b0f9ce4291b556a00d5206b4d9cf8c4157",
+      "source_file": "coverage.json"
+    },
+    {
+      "bytes": 4941,
+      "published_as": "coverage_report.md",
+      "representation": "exact_bytes",
+      "sha256": "d7c489d356a8b811c59161bbd0b04cf719a7b199d759daada8eab887915a1a7c",
+      "source_file": "coverage_report.md"
+    },
+    {
+      "bytes": 1930,
+      "published_as": "deliverable_manifest.json",
+      "representation": "exact_bytes",
+      "sha256": "b64ebf11c6e178da62527baeeb9233e27ef9ba9252bf5d8f28b4fd81ac84bd2e",
+      "source_file": "deliverable_manifest.json"
+    },
+    {
+      "bytes": 602033,
+      "omission_reason": "Raw/catalog/intermediate evidence retained outside this compact publication; hash only does not reproduce or authenticate omitted bytes",
+      "published_as": null,
+      "representation": "omitted",
+      "sha256": "1f51394ff8f8ba210de91253a41117eaa04c3b44f27e9d9840c96e56278096eb",
+      "source_file": "eligible_series_catalog.json"
+    },
+    {
+      "bytes": 1475,
+      "published_as": "excluded_events.json",
+      "representation": "exact_bytes",
+      "sha256": "0bf8accb64e13e4a25747cbff5757570315d0e888fda86d6a3a2480743499d8b",
+      "source_file": "excluded_events.json"
+    },
+    {
+      "bytes": 932,
+      "published_as": "source_scripts/expand_public.py",
+      "representation": "exact_bytes",
+      "sha256": "a9fe55f14e1bd531e993d841732c87d57dd7af6e579c91a16cad180e8f2b6c5b",
+      "source_file": "expand_public.py"
+    },
+    {
+      "bytes": 10874,
+      "published_as": "source_scripts/finalize_public.py",
+      "representation": "exact_bytes",
+      "sha256": "ac3b6eb194faf72cf348d71fd0d4ef30ccdb1df5db8e4d2ea18ce0f3cc5b5c41",
+      "source_file": "finalize_public.py"
+    },
+    {
+      "bytes": 10016,
+      "published_as": "source_scripts/normalize_public.py",
+      "representation": "exact_bytes",
+      "sha256": "f12d40c3fd48db7a328ab86f8c664ce02c77b9f62393f7a55b774470bd839fc9",
+      "source_file": "normalize_public.py"
+    },
+    {
+      "bytes": 2880202,
+      "omission_reason": "Raw/catalog/intermediate evidence retained outside this compact publication; hash only does not reproduce or authenticate omitted bytes",
+      "published_as": null,
+      "representation": "omitted",
+      "sha256": "59a52a79afaecc99af9eef399c7b1997c55f3f9f2aab066cfa23d46455a15dc3",
+      "source_file": "observed_events.json"
+    },
+    {
+      "bytes": 36406,
+      "published_as": "orderbook_snapshots.json",
+      "representation": "exact_bytes",
+      "sha256": "c09b7ce46465bc91eb38f032e18ec7a357654160610b664e2590b509f78941ae",
+      "source_file": "orderbook_snapshots.json"
+    },
+    {
+      "bytes": 2357,
+      "published_as": "orderbook_tops.csv",
+      "representation": "exact_bytes",
+      "sha256": "47955b9a492a47415e972e2f5a0eb86d971df92bedeb0bba6bf62d347eba48ad",
+      "source_file": "orderbook_tops.csv"
+    },
+    {
+      "bytes": 6457,
+      "published_as": "qa_summary.txt",
+      "representation": "exact_bytes",
+      "sha256": "f10bf0957acae7bc0fdcffd198bf5f4d05cdf3ae0dc1d7c8c450d0ce58a76d2c",
+      "source_file": "qa_summary.txt"
+    },
+    {
+      "bytes": 18506793,
+      "omission_reason": "Raw/catalog/intermediate evidence retained outside this compact publication; hash only does not reproduce or authenticate omitted bytes",
+      "published_as": null,
+      "receipt_utc": "2026-10-02T05:14:36.851615+00:00",
+      "representation": "omitted",
+      "sent_utc": "2026-10-02T05:14:24.183260+00:00",
+      "sha256": "7b04da40c9bbf3dfa16b10aeaca87e48aedd662cffc2ed2328258021799d84b6",
+      "source_file": "raw/001_series.json",
+      "status": 200,
+      "url": "https://external-api.kalshi.com/trade-api/v2/series"
+    },
+    {
+      "bytes": 154225,
+      "omission_reason": "Raw/catalog/intermediate evidence retained outside this compact publication; hash only does not reproduce or authenticate omitted bytes",
+      "published_as": null,
+      "receipt_utc": "2026-10-02T05:15:54.615017+00:00",
+      "representation": "omitted",
+      "sent_utc": "2026-10-02T05:15:48.615972+00:00",
+      "sha256": "ccc17536f45084e5becf0db55ccd2af38711f2e64cc7dcaa80f84c46e34bfbbe",
+      "source_file": "raw/002_candidate_events_1.json",
+      "status": 200,
+      "url": "https://external-api.kalshi.com/trade-api/v2/events?tickers=GOVPARTY-NH-26%2CGOVPARTYAL-26%2CGOVPARTYAR-26%2CGOVPARTYAZ-26%2CGOVPARTYCA-26%2CGOVPARTYCO-26%2CGOVPARTYCT-26%2CGOVPARTYDE-26%2CGOVPARTYFL-26%2CGOVPARTYGA-26%2CGOVPARTYHI-26%2CGOVPARTYIA-26%2CGOVPARTYID-26%2CGOVPARTYIL-26%2CGOVPARTYIN-26%2CGOVPARTYKS-26%2CGOVPARTYKY-26%2CGOVPARTYLA-26%2CGOVPARTYMA-26%2CGOVPARTYMD-26%2CGOVPARTYME-26%2CGOVPARTYMI-26%2CGOVPARTYMN-26%2CGOVPARTYMO-26%2CGOVPARTYMS-26%2CGOVPARTYMT-26%2CGOVPARTYNC-26%2CGOVPARTYND-26%2CGOVPARTYNE-26%2CGOVPARTYNH-26%2CGOVPARTYNJ-26%2CGOVPARTYNM-26%2CGOVPARTYNV-26%2CGOVPARTYNY-26%2CGOVPARTYOH-26%2CGOVPARTYOK-26%2CGOVPARTYOR-26%2CGOVPARTYPA-26%2CGOVPARTYRI-26%2CGOVPARTYSC-26%2CGOVPARTYSD-26%2CGOVPARTYTN-26%2CGOVPARTYTX-26%2CGOVPARTYUT-26%2CGOVPARTYVA-26%2CGOVPARTYVT-26%2CGOVPARTYWA-26%2CGOVPARTYWI-26%2CGOVPARTYWV-26%2CGOVPARTYWY-26&with_nested_markets=true&limit=200"
+    },
+    {
+      "bytes": 197036,
+      "omission_reason": "Raw/catalog/intermediate evidence retained outside this compact publication; hash only does not reproduce or authenticate omitted bytes",
+      "published_as": null,
+      "receipt_utc": "2026-10-02T05:16:03.132291+00:00",
+      "representation": "omitted",
+      "sent_utc": "2026-10-02T05:15:57.615270+00:00",
+      "sha256": "e3501185a269cbf5c12b722a0a85d11b0421b2b6878fa5a5bcacdab426cf13ad",
+      "source_file": "raw/003_candidate_events_2.json",
+      "status": 200,
+      "url": "https://external-api.kalshi.com/trade-api/v2/events?tickers=HOUSEAKAL-26%2CHOUSEAZ1-26%2CHOUSEAZ2-26%2CHOUSEAZ6-26%2CHOUSEAZ7S-26%2CHOUSECA13-26%2CHOUSECA21-26%2CHOUSECA22-26%2CHOUSECA27-26%2CHOUSECA3-26%2CHOUSECA40-26%2CHOUSECA41-26%2CHOUSECA45-26%2CHOUSECA47-26%2CHOUSECA49-26%2CHOUSECA9-26%2CHOUSECO3-26%2CHOUSECO8-26%2CHOUSECT5-26%2CHOUSEFL1-26%2CHOUSEFL13-26%2CHOUSEFL23-26%2CHOUSEFL6-26%2CHOUSEIA1-26%2CHOUSEIA3-26%2CHOUSEIL17-26%2CHOUSEIN1-26%2CHOUSEME2-26%2CHOUSEMI10-26%2CHOUSEMI3-26%2CHOUSEMI4-26%2CHOUSEMI7-26%2CHOUSEMI8-26%2CHOUSEMN2-26%2CHOUSEMT1-26%2CHOUSENC1-26%2CHOUSENE2-26%2CHOUSENH1-26%2CHOUSENH2-26%2CHOUSENJ09-26%2CHOUSENJ5-26%2CHOUSENJ7-26%2CHOUSENJ9-26%2CHOUSENM2-26%2CHOUSENV1-26%2CHOUSENV3-26%2CHOUSENV4-26%2CHOUSENY17-26%2CHOUSENY18-26%2CHOUSENY19-26&with_nested_markets=true&limit=200"
+    },
+    {
+      "bytes": 159733,
+      "omission_reason": "Raw/catalog/intermediate evidence retained outside this compact publication; hash only does not reproduce or authenticate omitted bytes",
+      "published_as": null,
+      "receipt_utc": "2026-10-02T05:16:11.287560+00:00",
+      "representation": "omitted",
+      "sent_utc": "2026-10-02T05:16:06.132795+00:00",
+      "sha256": "7c021067b720484eb7b38928be41657b9b50432b4fc1b62cb6b74eb971c437bd",
+      "source_file": "raw/004_candidate_events_3.json",
+      "status": 200,
+      "url": "https://external-api.kalshi.com/trade-api/v2/events?tickers=HOUSENY21-26%2CHOUSENY22-26%2CHOUSENY3-26%2CHOUSENY4-26%2CHOUSEOH1-26%2CHOUSEOH13-26%2CHOUSEOH9-26%2CHOUSEOR5-26%2CHOUSEPA1-26%2CHOUSEPA10-26%2CHOUSEPA17-26%2CHOUSEPA7-26%2CHOUSEPA8-26%2CHOUSEPARTY-MI07-26%2CHOUSETN7-26%2CHOUSETN7S-26%2CHOUSETX15-26%2CHOUSETX18S-26%2CHOUSETX28-26%2CHOUSETX34-26%2CHOUSEVA1-26%2CHOUSEVA11S-26%2CHOUSEVA2-26%2CHOUSEVA7-26%2CHOUSEWA3-26%2CHOUSEWI1-26%2CHOUSEWI3-26%2CSENATEAK-26%2CSENATEAL-26%2CSENATEAR-26%2CSENATEAZ-26%2CSENATECA-26%2CSENATECO-26%2CSENATECT-26%2CSENATEDE-26%2CSENATEFL-26%2CSENATEFLS-26%2CSENATEGA-26%2CSENATEHI-26%2CSENATEIA-26%2CSENATEID-26%2CSENATEIL-26%2CSENATEIN-26%2CSENATEKS-26%2CSENATEKY-26%2CSENATELA-26%2CSENATEMA-26%2CSENATEMD-26%2CSENATEME-26%2CSENATEMI-26&with_nested_markets=true&limit=200"
+    },
+    {
+      "bytes": 52337,
+      "omission_reason": "Raw/catalog/intermediate evidence retained outside this compact publication; hash only does not reproduce or authenticate omitted bytes",
+      "published_as": null,
+      "receipt_utc": "2026-10-02T05:16:19.090045+00:00",
+      "representation": "omitted",
+      "sent_utc": "2026-10-02T05:16:14.287782+00:00",
+      "sha256": "e59fcec2a54b7cb258bc696624211976bbbd66907bdf2602ceb0a9a785e52c91",
+      "source_file": "raw/005_candidate_events_4.json",
+      "status": 200,
+      "url": "https://external-api.kalshi.com/trade-api/v2/events?tickers=SENATEMN-26%2CSENATEMO-26%2CSENATEMS-26%2CSENATEMT-26%2CSENATENC-26%2CSENATEND-26%2CSENATENE-26%2CSENATENES-26%2CSENATENH-26%2CSENATENJ-26%2CSENATENM-26%2CSENATENV-26%2CSENATENY-26%2CSENATEOH-26%2CSENATEOHS-26%2CSENATEOK-26%2CSENATEOR-26%2CSENATEPA-26%2CSENATEPARTY-26%2CSENATEPARTY-AZ-26%2CSENATEPARTY-FL-26%2CSENATEPARTY-MD-26%2CSENATEPARTY-MI-26%2CSENATEPARTY-MT-26%2CSENATEPARTY-NE-26%2CSENATEPARTY-NV-26%2CSENATEPARTY-OH-26%2CSENATEPARTY-PA-26%2CSENATEPARTY-TX-26%2CSENATEPARTY-WI-26%2CSENATEPARTYCA-26%2CSENATEPARTYCT-26%2CSENATEPARTYDE-26%2CSENATEPARTYHI-26%2CSENATEPARTYIN-26%2CSENATEPARTYMA-26%2CSENATEPARTYME-26%2CSENATEPARTYMN-26%2CSENATEPARTYMO-26%2CSENATEPARTYMS-26%2CSENATEPARTYND-26%2CSENATEPARTYNES-26%2CSENATEPARTYNJ-26%2CSENATEPARTYNM-26%2CSENATEPARTYNY-26%2CSENATEPARTYRI-26%2CSENATEPARTYTN-26%2CSENATEPARTYUT-26%2CSENATEPARTYVA-26%2CSENATEPARTYVT-26&with_nested_markets=true&limit=200"
+    },
+    {
+      "bytes": 37167,
+      "omission_reason": "Raw/catalog/intermediate evidence retained outside this compact publication; hash only does not reproduce or authenticate omitted bytes",
+      "published_as": null,
+      "receipt_utc": "2026-10-02T05:16:27.655451+00:00",
+      "representation": "omitted",
+      "sent_utc": "2026-10-02T05:16:22.090261+00:00",
+      "sha256": "0672cbd6e9aab6d381b01968686438d346d660640daffa90af1777d4c8861f38",
+      "source_file": "raw/006_candidate_events_5.json",
+      "status": 200,
+      "url": "https://external-api.kalshi.com/trade-api/v2/events?tickers=SENATEPARTYWA-26%2CSENATEPARTYWY-26%2CSENATERI-26%2CSENATESC-26%2CSENATESD-26%2CSENATETN-26%2CSENATETX-26%2CSENATEUT-26%2CSENATEVA-26%2CSENATEVT-26%2CSENATEWA-26%2CSENATEWI-26%2CSENATEWV-26%2CSENATEWY-26&with_nested_markets=true&limit=200"
+    },
+    {
+      "bytes": 840081,
+      "omission_reason": "Raw/catalog/intermediate evidence retained outside this compact publication; hash only does not reproduce or authenticate omitted bytes",
+      "published_as": null,
+      "receipt_utc": "2026-10-02T05:16:35.795842+00:00",
+      "representation": "omitted",
+      "sent_utc": "2026-10-02T05:16:30.655687+00:00",
+      "sha256": "c2727c507a1daeb8066a58a915494737dbeab0b901acde95eda1047f8807acdf",
+      "source_file": "raw/007_kxhouserace_events_1.json",
+      "status": 200,
+      "url": "https://external-api.kalshi.com/trade-api/v2/events?series_ticker=KXHOUSERACE&with_nested_markets=true&limit=200"
+    },
+    {
+      "bytes": 637456,
+      "omission_reason": "Raw/catalog/intermediate evidence retained outside this compact publication; hash only does not reproduce or authenticate omitted bytes",
+      "published_as": null,
+      "receipt_utc": "2026-10-02T05:17:13.237908+00:00",
+      "representation": "omitted",
+      "sent_utc": "2026-10-02T05:17:06.183967+00:00",
+      "sha256": "d80c071998aaa5e5501339364265401c9a62885a3687a5e61d42f516fe23dd33",
+      "source_file": "raw/008_kxhouserace_events_2.json",
+      "status": 200,
+      "url": "https://external-api.kalshi.com/trade-api/v2/events?series_ticker=KXHOUSERACE&with_nested_markets=true&limit=200&cursor=CgYIkKDv2QYSE0tYSE9VU0VSQUNFLU1BMDUtMjY"
+    },
+    {
+      "bytes": 4440,
+      "omission_reason": "Raw/catalog/intermediate evidence retained outside this compact publication; hash only does not reproduce or authenticate omitted bytes",
+      "published_as": null,
+      "receipt_utc": "2026-10-02T05:17:20.332947+00:00",
+      "representation": "omitted",
+      "sent_utc": "2026-10-02T05:17:16.238110+00:00",
+      "sha256": "9b310c5c1c3f033ff5b5904d2ffc3ad6cbca81dd9eadbc1d296fc2f6f7e6b759",
+      "source_file": "raw/009_series_events_KXHOUSETX32.json",
+      "status": 200,
+      "url": "https://external-api.kalshi.com/trade-api/v2/events?series_ticker=KXHOUSETX32&with_nested_markets=true&limit=200"
+    },
+    {
+      "bytes": 4433,
+      "omission_reason": "Raw/catalog/intermediate evidence retained outside this compact publication; hash only does not reproduce or authenticate omitted bytes",
+      "published_as": null,
+      "receipt_utc": "2026-10-02T05:17:28.840384+00:00",
+      "representation": "omitted",
+      "sent_utc": "2026-10-02T05:17:23.333103+00:00",
+      "sha256": "131893ccab928c04cccaee322590c0743e02263eb40247f912e400cba0ba8eac",
+      "source_file": "raw/010_series_events_KXHOUSEUT03.json",
+      "status": 200,
+      "url": "https://external-api.kalshi.com/trade-api/v2/events?series_ticker=KXHOUSEUT03&with_nested_markets=true&limit=200"
+    },
+    {
+      "bytes": 4409,
+      "omission_reason": "Raw/catalog/intermediate evidence retained outside this compact publication; hash only does not reproduce or authenticate omitted bytes",
+      "published_as": null,
+      "receipt_utc": "2026-10-02T05:17:36.749397+00:00",
+      "representation": "omitted",
+      "sent_utc": "2026-10-02T05:17:31.840591+00:00",
+      "sha256": "59056383b45f3496a144083a08983142a09a2a380d3a95cc292d1d497c37b2ec",
+      "source_file": "raw/011_series_events_KXHOUSEMO5.json",
+      "status": 200,
+      "url": "https://external-api.kalshi.com/trade-api/v2/events?series_ticker=KXHOUSEMO5&with_nested_markets=true&limit=200"
+    },
+    {
+      "bytes": 4428,
+      "omission_reason": "Raw/catalog/intermediate evidence retained outside this compact publication; hash only does not reproduce or authenticate omitted bytes",
+      "published_as": null,
+      "receipt_utc": "2026-10-02T05:17:44.050708+00:00",
+      "representation": "omitted",
+      "sent_utc": "2026-10-02T05:17:39.749572+00:00",
+      "sha256": "3749e34d1781c05338cf0003b6ca5e96f2c245ad6bd5fcce1d5ad7ea3f4c6f84",
+      "source_file": "raw/012_series_events_KXHOUSEUT01.json",
+      "status": 200,
+      "url": "https://external-api.kalshi.com/trade-api/v2/events?series_ticker=KXHOUSEUT01&with_nested_markets=true&limit=200"
+    },
+    {
+      "bytes": 42,
+      "omission_reason": "Raw/catalog/intermediate evidence retained outside this compact publication; hash only does not reproduce or authenticate omitted bytes",
+      "published_as": null,
+      "receipt_utc": "2026-10-02T05:17:52.043708+00:00",
+      "representation": "omitted",
+      "sent_utc": "2026-10-02T05:17:47.050873+00:00",
+      "sha256": "911bfc23385421a80349ad4759bd64904153e23f752cc59140f20eb07c201e90",
+      "source_file": "raw/013_series_events_KXSENATEID.json",
+      "status": 200,
+      "url": "https://external-api.kalshi.com/trade-api/v2/events?series_ticker=KXSENATEID&with_nested_markets=true&limit=200"
+    },
+    {
+      "bytes": 4436,
+      "omission_reason": "Raw/catalog/intermediate evidence retained outside this compact publication; hash only does not reproduce or authenticate omitted bytes",
+      "published_as": null,
+      "receipt_utc": "2026-10-02T05:18:00.800063+00:00",
+      "representation": "omitted",
+      "sent_utc": "2026-10-02T05:17:55.043877+00:00",
+      "sha256": "1be603c83b72913e0e924f570447c2b10265c0540d7324ca76885d3cf4d26082",
+      "source_file": "raw/014_series_events_KXHOUSEIN7.json",
+      "status": 200,
+      "url": "https://external-api.kalshi.com/trade-api/v2/events?series_ticker=KXHOUSEIN7&with_nested_markets=true&limit=200"
+    },
+    {
+      "bytes": 4436,
+      "omission_reason": "Raw/catalog/intermediate evidence retained outside this compact publication; hash only does not reproduce or authenticate omitted bytes",
+      "published_as": null,
+      "receipt_utc": "2026-10-02T05:18:09.441774+00:00",
+      "representation": "omitted",
+      "sent_utc": "2026-10-02T05:18:03.800247+00:00",
+      "sha256": "c7d6d978ac9ee2861543e4a2fe6ab58a69d94e2d2ee70ffa6cfa8d32989fb3ac",
+      "source_file": "raw/015_series_events_KXHOUSEUT02.json",
+      "status": 200,
+      "url": "https://external-api.kalshi.com/trade-api/v2/events?series_ticker=KXHOUSEUT02&with_nested_markets=true&limit=200"
+    },
+    {
+      "bytes": 4474,
+      "omission_reason": "Raw/catalog/intermediate evidence retained outside this compact publication; hash only does not reproduce or authenticate omitted bytes",
+      "published_as": null,
+      "receipt_utc": "2026-10-02T05:18:17.292048+00:00",
+      "representation": "omitted",
+      "sent_utc": "2026-10-02T05:18:12.441969+00:00",
+      "sha256": "91fc7bc672a853d54bcd5d306c74d53e5037ed5b9ec37b6895d2202efb231862",
+      "source_file": "raw/016_series_events_KXHOUSENC11.json",
+      "status": 200,
+      "url": "https://external-api.kalshi.com/trade-api/v2/events?series_ticker=KXHOUSENC11&with_nested_markets=true&limit=200"
+    },
+    {
+      "bytes": 4432,
+      "omission_reason": "Raw/catalog/intermediate evidence retained outside this compact publication; hash only does not reproduce or authenticate omitted bytes",
+      "published_as": null,
+      "receipt_utc": "2026-10-02T05:18:25.585649+00:00",
+      "representation": "omitted",
+      "sent_utc": "2026-10-02T05:18:20.292219+00:00",
+      "sha256": "f3d32dc5280b79424773119cf7daff6a4997ec77ec489173953d873d3df6703a",
+      "source_file": "raw/017_series_events_KXHOUSEWA8.json",
+      "status": 200,
+      "url": "https://external-api.kalshi.com/trade-api/v2/events?series_ticker=KXHOUSEWA8&with_nested_markets=true&limit=200"
+    },
+    {
+      "bytes": 4441,
+      "omission_reason": "Raw/catalog/intermediate evidence retained outside this compact publication; hash only does not reproduce or authenticate omitted bytes",
+      "published_as": null,
+      "receipt_utc": "2026-10-02T05:18:33.099128+00:00",
+      "representation": "omitted",
+      "sent_utc": "2026-10-02T05:18:28.585818+00:00",
+      "sha256": "de61876bd8aa024d4eb010a6f72ca364c023715f229fef6bc344fa45d97283f6",
+      "source_file": "raw/018_series_events_KXHOUSETX9.json",
+      "status": 200,
+      "url": "https://external-api.kalshi.com/trade-api/v2/events?series_ticker=KXHOUSETX9&with_nested_markets=true&limit=200"
+    },
+    {
+      "bytes": 513,
+      "omission_reason": "Raw/catalog/intermediate evidence retained outside this compact publication; hash only does not reproduce or authenticate omitted bytes",
+      "published_as": null,
+      "receipt_utc": "2026-10-02T05:18:40.821005+00:00",
+      "representation": "omitted",
+      "sent_utc": "2026-10-02T05:18:36.099333+00:00",
+      "sha256": "3aa6ad9067c4f53e04aeaa128a88b6a570d687b0d877f99810a51f994ebe60e0",
+      "source_file": "raw/019_series_events_KXHOUSENJ11SPECIAL.json",
+      "status": 200,
+      "url": "https://external-api.kalshi.com/trade-api/v2/events?series_ticker=KXHOUSENJ11SPECIAL&with_nested_markets=true&limit=200"
+    },
+    {
+      "bytes": 42,
+      "omission_reason": "Raw/catalog/intermediate evidence retained outside this compact publication; hash only does not reproduce or authenticate omitted bytes",
+      "published_as": null,
+      "receipt_utc": "2026-10-02T05:18:49.005232+00:00",
+      "representation": "omitted",
+      "sent_utc": "2026-10-02T05:18:43.821176+00:00",
+      "sha256": "911bfc23385421a80349ad4759bd64904153e23f752cc59140f20eb07c201e90",
+      "source_file": "raw/020_series_events_KXSENATEAR.json",
+      "status": 200,
+      "url": "https://external-api.kalshi.com/trade-api/v2/events?series_ticker=KXSENATEAR&with_nested_markets=true&limit=200"
+    },
+    {
+      "bytes": 42,
+      "omission_reason": "Raw/catalog/intermediate evidence retained outside this compact publication; hash only does not reproduce or authenticate omitted bytes",
+      "published_as": null,
+      "receipt_utc": "2026-10-02T05:18:57.026700+00:00",
+      "representation": "omitted",
+      "sent_utc": "2026-10-02T05:18:52.005384+00:00",
+      "sha256": "911bfc23385421a80349ad4759bd64904153e23f752cc59140f20eb07c201e90",
+      "source_file": "raw/021_series_events_KXGOVPARTYFL.json",
+      "status": 200,
+      "url": "https://external-api.kalshi.com/trade-api/v2/events?series_ticker=KXGOVPARTYFL&with_nested_markets=true&limit=200"
+    },
+    {
+      "bytes": 4412,
+      "omission_reason": "Raw/catalog/intermediate evidence retained outside this compact publication; hash only does not reproduce or authenticate omitted bytes",
+      "published_as": null,
+      "receipt_utc": "2026-10-02T05:19:04.822861+00:00",
+      "representation": "omitted",
+      "sent_utc": "2026-10-02T05:19:00.026876+00:00",
+      "sha256": "74f889dc1c3b1c778dc0af30150a17047e5440ac581bb4f650ab3eed55229836",
+      "source_file": "raw/022_series_events_KXSENATELA.json",
+      "status": 200,
+      "url": "https://external-api.kalshi.com/trade-api/v2/events?series_ticker=KXSENATELA&with_nested_markets=true&limit=200"
+    },
+    {
+      "bytes": 42,
+      "omission_reason": "Raw/catalog/intermediate evidence retained outside this compact publication; hash only does not reproduce or authenticate omitted bytes",
+      "published_as": null,
+      "receipt_utc": "2026-10-02T05:19:15.706806+00:00",
+      "representation": "omitted",
+      "sent_utc": "2026-10-02T05:19:07.823032+00:00",
+      "sha256": "911bfc23385421a80349ad4759bd64904153e23f752cc59140f20eb07c201e90",
+      "source_file": "raw/023_series_events_KXSENATECO.json",
+      "status": 200,
+      "url": "https://external-api.kalshi.com/trade-api/v2/events?series_ticker=KXSENATECO&with_nested_markets=true&limit=200"
+    },
+    {
+      "bytes": 42,
+      "omission_reason": "Raw/catalog/intermediate evidence retained outside this compact publication; hash only does not reproduce or authenticate omitted bytes",
+      "published_as": null,
+      "receipt_utc": "2026-10-02T05:19:22.016429+00:00",
+      "representation": "omitted",
+      "sent_utc": "2026-10-02T05:19:18.707007+00:00",
+      "sha256": "911bfc23385421a80349ad4759bd64904153e23f752cc59140f20eb07c201e90",
+      "source_file": "raw/024_series_events_KXSENATEOK.json",
+      "status": 200,
+      "url": "https://external-api.kalshi.com/trade-api/v2/events?series_ticker=KXSENATEOK&with_nested_markets=true&limit=200"
+    },
+    {
+      "bytes": 441,
+      "omission_reason": "Raw/catalog/intermediate evidence retained outside this compact publication; hash only does not reproduce or authenticate omitted bytes",
+      "published_as": null,
+      "receipt_utc": "2026-10-02T05:19:31.438448+00:00",
+      "representation": "omitted",
+      "sent_utc": "2026-10-02T05:19:25.016630+00:00",
+      "sha256": "37c8f8405f38cafe7f193c566d36f8c796cd820b9bde2a4ae60f1f8d4281919b",
+      "source_file": "raw/025_series_events_KXHOUSENY21.json",
+      "status": 200,
+      "url": "https://external-api.kalshi.com/trade-api/v2/events?series_ticker=KXHOUSENY21&with_nested_markets=true&limit=200"
+    },
+    {
+      "bytes": 4466,
+      "omission_reason": "Raw/catalog/intermediate evidence retained outside this compact publication; hash only does not reproduce or authenticate omitted bytes",
+      "published_as": null,
+      "receipt_utc": "2026-10-02T05:19:41.005190+00:00",
+      "representation": "omitted",
+      "sent_utc": "2026-10-02T05:19:34.438660+00:00",
+      "sha256": "fa2af787a69c4394f48ed454ee0b84ae9b76ff212cb946ff70ee1686309cf184",
+      "source_file": "raw/026_series_events_KXGOVPARTYAK.json",
+      "status": 200,
+      "url": "https://external-api.kalshi.com/trade-api/v2/events?series_ticker=KXGOVPARTYAK&with_nested_markets=true&limit=200"
+    },
+    {
+      "bytes": 4467,
+      "omission_reason": "Raw/catalog/intermediate evidence retained outside this compact publication; hash only does not reproduce or authenticate omitted bytes",
+      "published_as": null,
+      "receipt_utc": "2026-10-02T05:19:50.580833+00:00",
+      "representation": "omitted",
+      "sent_utc": "2026-10-02T05:19:44.005352+00:00",
+      "sha256": "be56c7887073f16a93bb55a5db86db53f58b9dded3a129106b701946751936a5",
+      "source_file": "raw/027_series_events_KXHOUSETX35.json",
+      "status": 200,
+      "url": "https://external-api.kalshi.com/trade-api/v2/events?series_ticker=KXHOUSETX35&with_nested_markets=true&limit=200"
+    },
+    {
+      "bytes": 4445,
+      "omission_reason": "Raw/catalog/intermediate evidence retained outside this compact publication; hash only does not reproduce or authenticate omitted bytes",
+      "published_as": null,
+      "receipt_utc": "2026-10-02T05:20:00.384744+00:00",
+      "representation": "omitted",
+      "sent_utc": "2026-10-02T05:19:53.580996+00:00",
+      "sha256": "537044c3828a32df0cdb52d78b2120d829b31021dda27998d56c60f34e5dfc28",
+      "source_file": "raw/028_series_events_KXHOUSEVA10.json",
+      "status": 200,
+      "url": "https://external-api.kalshi.com/trade-api/v2/events?series_ticker=KXHOUSEVA10&with_nested_markets=true&limit=200"
+    },
+    {
+      "bytes": 1091,
+      "published_as": "raw/029_orderbook_HOUSEVA1-26-D.json",
+      "receipt_utc": "2026-10-02T05:20:37.714763+00:00",
+      "representation": "exact_bytes",
+      "sent_utc": "2026-10-02T05:20:29.688491+00:00",
+      "sha256": "be0b6179c8307f99daab20bf4a5a1af10e784a3004169995a13e5b6e50bf4cca",
+      "source_file": "raw/029_orderbook_HOUSEVA1-26-D.json",
+      "status": 200,
+      "url": "https://external-api.kalshi.com/trade-api/v2/markets/HOUSEVA1-26-D/orderbook"
+    },
+    {
+      "bytes": 927,
+      "published_as": "raw/030_orderbook_HOUSENH1-26-R.json",
+      "receipt_utc": "2026-10-02T05:20:45.911132+00:00",
+      "representation": "exact_bytes",
+      "sent_utc": "2026-10-02T05:20:40.714908+00:00",
+      "sha256": "4df0aeec80cc2268b81441056009f78387c905089aeaf1ac0eb22d74b6cb9450",
+      "source_file": "raw/030_orderbook_HOUSENH1-26-R.json",
+      "status": 200,
+      "url": "https://external-api.kalshi.com/trade-api/v2/markets/HOUSENH1-26-R/orderbook"
+    },
+    {
+      "bytes": 1657,
+      "published_as": "raw/031_orderbook_SENATEAK-26-D.json",
+      "receipt_utc": "2026-10-02T05:20:54.810329+00:00",
+      "representation": "exact_bytes",
+      "sent_utc": "2026-10-02T05:20:48.911288+00:00",
+      "sha256": "9c0407308b57cf569532106fa7bae6e652bf037be214e6167c5db31987a2db87",
+      "source_file": "raw/031_orderbook_SENATEAK-26-D.json",
+      "status": 200,
+      "url": "https://external-api.kalshi.com/trade-api/v2/markets/SENATEAK-26-D/orderbook"
+    },
+    {
+      "bytes": 2499,
+      "published_as": "raw/032_orderbook_SENATEFLS-26-D.json",
+      "receipt_utc": "2026-10-02T05:21:02.419887+00:00",
+      "representation": "exact_bytes",
+      "sent_utc": "2026-10-02T05:20:57.810592+00:00",
+      "sha256": "24d8b4e655f1f30e30806024b4c52302ec5e42d8aa79685c758395962e26a7b0",
+      "source_file": "raw/032_orderbook_SENATEFLS-26-D.json",
+      "status": 200,
+      "url": "https://external-api.kalshi.com/trade-api/v2/markets/SENATEFLS-26-D/orderbook"
+    },
+    {
+      "bytes": 1795,
+      "published_as": "raw/033_orderbook_SENATENC-26-D.json",
+      "receipt_utc": "2026-10-02T05:21:09.723329+00:00",
+      "representation": "exact_bytes",
+      "sent_utc": "2026-10-02T05:21:05.420075+00:00",
+      "sha256": "0a1c8af21148096f711a83d7ae4d36c32f6ccd5ce6ff760225fadeb44bc38a6e",
+      "source_file": "raw/033_orderbook_SENATENC-26-D.json",
+      "status": 200,
+      "url": "https://external-api.kalshi.com/trade-api/v2/markets/SENATENC-26-D/orderbook"
+    },
+    {
+      "bytes": 1445,
+      "published_as": "raw/034_orderbook_GOVPARTYMI-26-D.json",
+      "receipt_utc": "2026-10-02T05:21:16.977518+00:00",
+      "representation": "exact_bytes",
+      "sent_utc": "2026-10-02T05:21:12.723451+00:00",
+      "sha256": "b4ee507f21b2f4c1534c86f6468d7d6a95ae314944d98febef40ac9b0c72e817",
+      "source_file": "raw/034_orderbook_GOVPARTYMI-26-D.json",
+      "status": 200,
+      "url": "https://external-api.kalshi.com/trade-api/v2/markets/GOVPARTYMI-26-D/orderbook"
+    },
+    {
+      "bytes": 1797712,
+      "omission_reason": "Duplicate tabular representation",
+      "published_as": null,
+      "representation": "omitted",
+      "sha256": "d40b555469e86ee2dce66c03131852efcca4598db30d6171dc5a91a8436c2714",
+      "source_file": "reference.csv"
+    },
+    {
+      "bytes": 3730681,
+      "published_as": "reference.json.gz",
+      "representation": "gzip_uncompressed_bytes",
+      "sha256": "bfa0d2095071986841a2ef302385a7565f0574c4d13a2b909edb6eec6bb1cb1b",
+      "source_file": "reference.json"
+    },
+    {
+      "bytes": 25495,
+      "published_as": "request_log.jsonl",
+      "representation": "exact_bytes",
+      "sha256": "208bc4488b53f50bce8a75d45735dac0e238d1a3f7200b0abf2c736784c68c93",
+      "source_file": "request_log.jsonl"
+    }
+  ],
+  "scope": "Original public capture and derived files only; excludes Python bytecode"
+}

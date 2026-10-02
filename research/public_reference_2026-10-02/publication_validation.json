@@ -1,0 +1,44 @@
+{
+  "all_logged_api_requests_status_200": true,
+  "all_original_deliverable_manifest_hashes_match": true,
+  "credential_pattern_scan_passed": true,
+  "event_ticker_count": 496,
+  "full_books": 6,
+  "limitations": [
+    "Credential scan is heuristic; source fields and request headers also inspected",
+    "Omitted raw catalog/event data prevents full raw-to-normalized reproduction from this bundle alone",
+    "No new prices collected; quotes remain mixed-time historical leads with unknown source quote age",
+    "No application code or repository regression tests changed or run"
+  ],
+  "logged_api_requests": 34,
+  "market_count": 993,
+  "party_counts": {
+    "Democratic": 496,
+    "Independent": 1,
+    "Republican": 496
+  },
+  "race_counts_by_office": {
+    "Governor": 34,
+    "House": 427,
+    "Senate": 35
+  },
+  "race_key_count": 496,
+  "reference_csv_rows": 993,
+  "reference_csv_ticker_set_matches_json": true,
+  "reference_gzip_roundtrip_equal": true,
+  "reference_json": {
+    "bytes": 3730681,
+    "sha256": "bfa0d2095071986841a2ef302385a7565f0574c4d13a2b909edb6eec6bb1cb1b"
+  },
+  "reference_json_gz": {
+    "bytes": 129544,
+    "gzip_filename": "",
+    "gzip_mtime": 0,
+    "sha256": "b4c4c2cf6cfc1de7b5e505356422d741de49a81aee230f4880fda1ebe195b034"
+  },
+  "request_log_only_anonymous_market_get_sources": true,
+  "scope": "Offline packaging validation; no new market requests",
+  "separate_nonstandard_markets": 14,
+  "status": "passed",
+  "unique_ticker_count": 993
+}

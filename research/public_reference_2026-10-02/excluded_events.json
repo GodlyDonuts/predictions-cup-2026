@@ -1,0 +1,42 @@
+[
+  {
+    "event_ticker": "KXHOUSERACE-CA37-26",
+    "reason": "No confirmed 2026 election in returned event metadata/rules",
+    "source_file": "raw/008_kxhouserace_events_2.json"
+  },
+  {
+    "event_ticker": "KXHOUSERACE-CA34-26",
+    "reason": "No confirmed 2026 election in returned event metadata/rules",
+    "source_file": "raw/008_kxhouserace_events_2.json"
+  },
+  {
+    "event_ticker": "KXHOUSERACE-CA29-26",
+    "reason": "No confirmed 2026 election in returned event metadata/rules",
+    "source_file": "raw/008_kxhouserace_events_2.json"
+  },
+  {
+    "event_ticker": "KXHOUSERACE-CA14-26",
+    "reason": "No confirmed 2026 election in returned event metadata/rules",
+    "source_file": "raw/008_kxhouserace_events_2.json"
+  },
+  {
+    "event_ticker": "KXHOUSERACE-CA12-26",
+    "reason": "No confirmed 2026 election in returned event metadata/rules",
+    "source_file": "raw/008_kxhouserace_events_2.json"
+  },
+  {
+    "event_ticker": "KXHOUSERACE-CA11-26",
+    "reason": "No confirmed 2026 election in returned event metadata/rules",
+    "source_file": "raw/008_kxhouserace_events_2.json"
+  },
+  {
+    "event_ticker": "KXHOUSERACE-CA07-26",
+    "reason": "No confirmed 2026 election in returned event metadata/rules",
+    "source_file": "raw/008_kxhouserace_events_2.json"
+  },
+  {
+    "event_ticker": "KXHOUSERACE-CA04-26",
+    "reason": "No confirmed 2026 election in returned event metadata/rules",
+    "source_file": "raw/008_kxhouserace_events_2.json"
+  }
+]

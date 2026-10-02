@@ -1,0 +1,53 @@
+{
+  "validated": "JSON/CSV counts; uniqueness; scope; party-rule verification; active status; unknown quote-age; official source/terms; request cap; six full books; non-crossed tops",
+  "files": {
+    "orderbook_tops.csv": {
+      "bytes": 2357,
+      "sha256": "47955b9a492a47415e972e2f5a0eb86d971df92bedeb0bba6bf62d347eba48ad"
+    },
+    "all_returned_event_metadata.json": {
+      "bytes": 298555,
+      "sha256": "7a47afd2ad5a797f955b7d103d83226c38565f3a863b1dd3c04fbce7bcfb47b0"
+    },
+    "orderbook_snapshots.json": {
+      "bytes": 36406,
+      "sha256": "c09b7ce46465bc91eb38f032e18ec7a357654160610b664e2590b509f78941ae"
+    },
+    "candidate_event_ids.json": {
+      "bytes": 4508,
+      "sha256": "82892d928fdf89da06a3627c970b2f2f3a4016a076b291ac554117da0d7d6b98"
+    },
+    "excluded_events.json": {
+      "bytes": 1475,
+      "sha256": "0bf8accb64e13e4a25747cbff5757570315d0e888fda86d6a3a2480743499d8b"
+    },
+    "eligible_series_catalog.json": {
+      "bytes": 602033,
+      "sha256": "1f51394ff8f8ba210de91253a41117eaa04c3b44f27e9d9840c96e56278096eb"
+    },
+    "reference.json": {
+      "bytes": 3730681,
+      "sha256": "bfa0d2095071986841a2ef302385a7565f0574c4d13a2b909edb6eec6bb1cb1b"
+    },
+    "reference.csv": {
+      "bytes": 1797712,
+      "sha256": "d40b555469e86ee2dce66c03131852efcca4598db30d6171dc5a91a8436c2714"
+    },
+    "candidate_or_nonstandard_markets.json": {
+      "bytes": 55083,
+      "sha256": "3f942e53717b2a232b1f5dadc534e2f38f20922fc416e177ee3c8dd975f4996b"
+    },
+    "observed_events.json": {
+      "bytes": 2880202,
+      "sha256": "59a52a79afaecc99af9eef399c7b1997c55f3f9f2aab066cfa23d46455a15dc3"
+    },
+    "coverage.json": {
+      "bytes": 4989,
+      "sha256": "60e2a3503908fb8ede9c94b3bf1966b0f9ce4291b556a00d5206b4d9cf8c4157"
+    },
+    "coverage_report.md": {
+      "bytes": 4941,
+      "sha256": "d7c489d356a8b811c59161bbd0b04cf719a7b199d759daada8eab887915a1a7c"
+    }
+  }
+}

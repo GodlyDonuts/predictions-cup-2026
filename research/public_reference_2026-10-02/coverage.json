@@ -1,0 +1,194 @@
+{
+  "generic_party_markets": 993,
+  "distinct_races_with_generic_party_markets": 496,
+  "market_counts_by_office": {
+    "Governor": 68,
+    "House": 855,
+    "Senate": 70
+  },
+  "race_counts_by_office": {
+    "House": 427,
+    "Senate": 35,
+    "Governor": 34
+  },
+  "party_counts": {
+    "Democratic": 496,
+    "Republican": 496,
+    "Independent": 1
+  },
+  "market_statuses": {
+    "active": 993
+  },
+  "all_series_catalog_size": 14567,
+  "eligible_contract_terms_series_count": 235,
+  "legacy_candidate_event_ids_queried": 214,
+  "legacy_candidate_event_ids_found": 134,
+  "legacy_series_no_conventional_2026_event_found": [
+    "GOVPARTYKS",
+    "GOVPARTYVA",
+    "SENATEPARTYHI",
+    "SENATEAZ",
+    "GOVPARTYUT",
+    "SENATEPARTY-MI",
+    "SENATEPARTYNJ",
+    "SENATEOH",
+    "SENATEPARTY-MD",
+    "SENATEPARTYUT",
+    "SENATEPARTYVA",
+    "SENATEPARTY-OH",
+    "SENATEFL",
+    "SENATEPARTY-AZ",
+    "SENATEPARTYWY",
+    "GOVPARTY-NH",
+    "SENATEWA",
+    "SENATEPARTYIN",
+    "HOUSEPARTY-MI07",
+    "SENATEPARTYMA",
+    "GOVPARTYWA",
+    "SENATEMD",
+    "GOVPARTYMO",
+    "SENATEPARTY-PA",
+    "HOUSETN7S",
+    "SENATENY",
+    "SENATEMO",
+    "SENATECT",
+    "HOUSENJ09",
+    "SENATEWI",
+    "SENATEVT",
+    "SENATEPARTYVT",
+    "SENATEPARTYCA",
+    "SENATEIN",
+    "GOVPARTYMS",
+    "GOVPARTYDE",
+    "SENATEPARTYMN",
+    "SENATEUT",
+    "SENATEPARTY-NE",
+    "SENATEPARTY-FL",
+    "GOVPARTYMT",
+    "HOUSEFL1",
+    "SENATEPARTY",
+    "HOUSEAZ7S",
+    "SENATEPA",
+    "SENATEPARTYNES",
+    "HOUSETN7",
+    "SENATEPARTYMO",
+    "SENATEND",
+    "HOUSETX18S",
+    "GOVPARTYNH",
+    "HOUSENY21",
+    "SENATEPARTYME",
+    "GOVPARTYNJ",
+    "SENATEPARTYCT",
+    "GOVPARTYKY",
+    "SENATEPARTY-NV",
+    "GOVPARTYND",
+    "SENATEPARTYTN",
+    "SENATEPARTYNY",
+    "GOVPARTYWV",
+    "SENATEPARTYWA",
+    "GOVPARTYNC",
+    "SENATEPARTY-MT",
+    "HOUSEFL6",
+    "SENATEPARTYND",
+    "SENATENES",
+    "HOUSEVA11S",
+    "SENATENV",
+    "GOVPARTYIN",
+    "SENATECA",
+    "SENATEPARTY-WI",
+    "SENATEPARTYDE",
+    "SENATEPARTY-TX",
+    "SENATEPARTYMS",
+    "SENATEPARTYRI",
+    "SENATEHI",
+    "GOVPARTYLA",
+    "SENATEPARTYNM",
+    "SENATEKY"
+  ],
+  "kx_series_enumerated": 21,
+  "kxhouserace_pages": 2,
+  "kxhouserace_events": 359,
+  "all_returned_events": 508,
+  "events_returned_with_no_nested_market": [
+    {
+      "event_ticker": "HOUSENH2-26",
+      "title": "Which party will win the House race for NH-02?",
+      "year_verification": "explicit_2026"
+    },
+    {
+      "event_ticker": "HOUSECA40-26",
+      "title": "CA-40 House winner?",
+      "year_verification": "explicit_2026"
+    },
+    {
+      "event_ticker": "KXHOUSERACE-CA37-26",
+      "title": "CA-37 House winner?",
+      "year_verification": "26_suffix_only_no_markets"
+    },
+    {
+      "event_ticker": "KXHOUSERACE-CA34-26",
+      "title": "CA-34 House winner?",
+      "year_verification": "26_suffix_only_no_markets"
+    },
+    {
+      "event_ticker": "KXHOUSERACE-CA29-26",
+      "title": "CA-29 House winner?",
+      "year_verification": "26_suffix_only_no_markets"
+    },
+    {
+      "event_ticker": "KXHOUSERACE-CA14-26",
+      "title": "CA-14 House winner?",
+      "year_verification": "26_suffix_only_no_markets"
+    },
+    {
+      "event_ticker": "KXHOUSERACE-CA12-26",
+      "title": "CA-12 House winner?",
+      "year_verification": "26_suffix_only_no_markets"
+    },
+    {
+      "event_ticker": "KXHOUSERACE-CA11-26",
+      "title": "CA-11 House winner?",
+      "year_verification": "26_suffix_only_no_markets"
+    },
+    {
+      "event_ticker": "KXHOUSERACE-CA07-26",
+      "title": "CA-07 House winner?",
+      "year_verification": "26_suffix_only_no_markets"
+    },
+    {
+      "event_ticker": "KXHOUSERACE-CA04-26",
+      "title": "CA-04 House winner?",
+      "year_verification": "26_suffix_only_no_markets"
+    },
+    {
+      "event_ticker": "KXHOUSENJ11SPECIAL-26",
+      "title": "NJ-11 Special Election winner?",
+      "year_verification": "explicit_2026"
+    },
+    {
+      "event_ticker": "KXHOUSENY21-26",
+      "title": "Which party will win the House race for NY-21?",
+      "year_verification": "explicit_2026"
+    }
+  ],
+  "named_candidate_or_nonstandard_markets_separate": 14,
+  "top_yes_price_and_size_missing": 0,
+  "zero_yes_bid_size_count": 1,
+  "zero_yes_ask_size_count": 0,
+  "no_side_top_size_unknown_count": 993,
+  "source_quote_age_unknown_count": 993,
+  "api_request_count": 34,
+  "documentation_page_retrievals": 6,
+  "total_public_requests": 40,
+  "status_codes": {
+    "200": 34
+  },
+  "full_book_count": 6,
+  "public_api_collection_start_utc": "2026-10-02T05:14:24.183260+00:00",
+  "public_api_collection_end_utc": "2026-10-02T05:21:16.977518+00:00",
+  "top_market_quote_receipt_start_utc": "2026-10-02T05:15:54.615017+00:00",
+  "top_market_quote_receipt_end_utc": "2026-10-02T05:20:00.384744+00:00",
+  "orderbook_receipt_start_utc": "2026-10-02T05:20:37.714763+00:00",
+  "orderbook_receipt_end_utc": "2026-10-02T05:21:16.977518+00:00",
+  "exhaustive_coverage_claim": false
+}
