@@ -33,6 +33,8 @@ The shadow worker makes zero API requests and reads the existing journal every 1
 
 ## Original strategy defaults
 
+ML worker status distinguishes waiting for a concurrent journal append, running, stopped and failed. A partial read advances no cursor or wallet; it retries at the next poll and fails after four consecutive incomplete reads. A completed corrupt chain or backward event clock fails immediately. Status retains candidate accounting during waiting/failure. `ML_STOP` in the runtime directory stops only the ML worker within its 200ms sleep checks, leaving the collector running; inspect/remove that marker for an intended ML restart. Per-candidate telemetry reports unique observations, warmup, invalid forecasts, cost-margin passes/rejections and zero top-ask capacity. These counts begin when telemetry is installed and are not reconstructed as historical totals.
+
 - Four fixed single-YES contracts: Alaska Senate, Florida Senate, North Carolina Senate and Michigan Governor. This is not whole-universe coverage.
 - Each strategy has an independent 100,000-SUSQie paper bankroll; funds are not transferred from the contest account.
 - A lagged rolling-mean mean-reversion strategy waits for five observations and a 1.5 z-score dislocation with minimum expected edge after assumed costs. Its signal is an uncalibrated quantitative hypothesis.

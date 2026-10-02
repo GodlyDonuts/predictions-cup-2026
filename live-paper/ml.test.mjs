@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import {fitRidge,predict,features,trainBank} from './ml-bank.mjs';
 import {createHash} from 'node:crypto';
 import {initialState,stepForecast,assertState,report,digest} from './model.mjs';
-import {advanceShadow} from './ml-shadow.mjs';
+import {advanceShadow,verifySource} from './ml-shadow.mjs';
 const c=JSON.parse(fs.readFileSync(new URL('./config.json',import.meta.url)));
 const start=Date.parse('2026-10-01T23:00:00Z'),at=n=>new Date(start+n*1000).toISOString();
 function book(n){return {marketId:'377',exchangeId:'9',instrument:'9:YES',sequence:String(n),sourceAt:at(n),receivedAt:at(n),requestStartedAt:at(n),versionKey:n+':'+at(n),bids:[{price:'0.400000',quantity:10000}],asks:[{price:'0.410000',quantity:10000}]};}
@@ -25,6 +25,20 @@ test('no future-only signal or insufficient cost edge manufactures an entry',()=
 test('shadow replay detects frozen-bank changes and source-prefix substitution on resume',()=>{
  const bank={config:c,selected:[],trainingCaptureThrough:at(0)},s={bankHash:digest(bank),sourceSequence:1,sourceHash:'original',wallets:{},histories:{},predictions:{}};
  assert.throws(()=>advanceShadow(s,[{sequence:1,hash:'replacement'}],bank),/prefix/);assert.throws(()=>advanceShadow({...s,bankHash:'other'},[],bank),/bank/);
+});
+test('partial capture waits without processing; complete corruption and backward clocks fail',()=>{
+ const body={sequence:1,previous:'',at:at(0),event:{type:'started'},state:{}},hash=digest(body),raw=JSON.stringify({...body,hash})+'\n';
+ assert.equal(verifySource(raw.slice(0,-1)),null);assert.equal(verifySource(''),null);assert.equal(verifySource(raw).length,1);
+ assert.throws(()=>verifySource(raw.replace('started','changed')),/integrity/);
+ const next={sequence:2,previous:hash,at:at(-1),event:{type:'stopped'},state:{}};assert.throws(()=>verifySource(raw+JSON.stringify({...next,hash:digest(next)})+'\n'),/clock rollback/);
+});
+test('candidate cost telemetry counts unique decisions and resumed source batches exactly once',()=>{
+ const bank={config:c,trainingCaptureThrough:at(0),selected:[{id:'constant',horizon:60,weights:[.1],means:[0],scales:[1],rmse:.02}]};
+ const records=Array.from({length:7},(_,i)=>{const n=i+1,b=book(n*30),data={contexts:[{type:'tournament',tournament:{id:c.tournamentId},orderbook:{exchanges:[{exchangeId:'9',option:'YES',asOf:{at:b.sourceAt,sequence:n*30},bids:[{price:.4,quantity:10000}],asks:[{price:.41,quantity:10000}]}]}}]};return {sequence:n,hash:'record'+n,at:b.receivedAt,event:{type:'cycle',clockAt:b.receivedAt,accountExclusions:[],sourceSnapshots:[{endpoint:'/markets/377/orderbook?tournamentId='+c.tournamentId,requestStartedAt:b.requestStartedAt,receivedAt:b.receivedAt,data}]}};});
+ const initial={bankHash:digest(bank),sourceSequence:0,sourceHash:null,wallets:{},histories:{},predictions:{}},s=advanceShadow(initial,records,bank);
+ for(const m of Object.values(s.signalMetrics)){assert.equal(m.observations,7);assert.equal(m.warmup,6);assert.equal(m.edgePass,1);}
+ assert.deepEqual(advanceShadow(s,records,bank),s);
+ for(const p of Object.values(s.predictions)){assert.ok(p.netEdge>.08);assert.ok(p.entryCost>.415);}
 });
 test('future development observations cannot change fitted weights or training normalization',()=>{
  function capture(changed){let previous='';return Array.from({length:180},(_,n)=>{
