@@ -6,9 +6,11 @@
 
 At task start, read the current state and latest issue comments, then claim a concrete scope. Post completion with commit/source links. If blocked, say what is missing and who needs to act.
 
-## Initial ownership
+## Current ownership
 
-`coordination/execution_state.json` records dot as the execution coordinator. Codex is research/development-only initially. The state file is a visible record, not an authorization token or technical mutex.
+The human explicitly reassigned sole execution ownership to Codex on October 2. Daenerys is an advisory researcher only. This direct instruction supersedes the original dot RELEASE requirement. Daenerys confirmed the account worker stopped and no in-flight writes or ambiguity in issue comment 5947535773; Codex acknowledged that stop. The state file is a visible record, not a technical mutex. Existing positions are not automatically attributed to the bot.
+
+The protocol below applies to any subsequent agent-initiated transfer; it does not grant an advisory agent veto over the human's reassignment.
 
 ## Safe handoff
 

@@ -1,15 +1,24 @@
 {
-  "schema_version": 1,
-  "recorded_at_utc": "2026-10-01T18:58:00Z",
-  "execution_coordinator": "dot",
-  "codex_mode": "research_and_development_only",
+  "schema_version": 2,
+  "recorded_at_utc": "2026-10-02T07:46:45.034Z",
+  "execution_coordinator": "Codex",
+  "codex_mode": "sole_execution_owner",
+  "daenerys_mode": "advisory_research_only",
   "automated_execution_enabled": false,
+  "authority": "Direct human instruction in Codex chat on 2026-10-02; full executive ownership of competition bot",
+  "former_owner_stopped": {
+    "comment_id": 5947535773,
+    "confirmed_at_utc": "2026-10-02T07:39:03Z",
+    "in_flight_ambiguity": false
+  },
+  "activation_state": "implementing_and_validating_bounded_executor",
   "active_handoff": null,
-  "handoff_required": true,
+  "handoff_required": false,
   "coordination_issue": "https://github.com/GodlyDonuts/predictions-cup-2026/issues/1",
   "notes": [
-    "This file is a coordination record, not a technical lock or execution authorization.",
-    "No implicit transfer on silence, stale timestamps, merged changes, or lease expiry.",
-    "Before separately authorized execution, verify current owner and reconcile fresh cash, holdings, orders, and fills."
+    "This is a coordination record, not a lock or credential.",
+    "Only the single Codex executor may write; all clients share one admission budget.",
+    "Fresh scoped account reconciliation and durable idempotent intent precede orders.",
+    "Future agent-initiated ownership transfers need a named explicit handoff; direct human instructions take precedence."
   ]
 }

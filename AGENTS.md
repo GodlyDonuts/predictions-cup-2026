@@ -6,15 +6,15 @@ Work only on the 2026 Susquehanna Predictions Cup in this repository. Read `READ
 
 ## Roles
 
-- **dot:** single execution coordinator for any simulated order separately authorized by the user.
-- **Codex:** initially research and development only. Do not place, modify, or cancel orders; enable an autonomous trader; create API keys; or change account settings as part of repository setup/research.
+- **Codex:** sole execution owner and bot engineer under the human's explicit October 2 reassignment. May implement and operate bounded competition trading using existing approved credentials after fresh reconciliation and tested controls.
+- **Daenerys / dot:** advisory researcher only. No contest-order submissions, cancellations, bot ownership decisions, account/API-key changes, or execution loops. Source-backed research is advice; Codex decides whether to use it.
 - Per the human's October 1 instruction, push tested code changes directly to main; do not create PRs. Review code through issue #1 and commit links. Claim work in issue #1 before overlapping edits, and link results/commits when done.
 
 ## One execution owner
 
 Use `coordination/execution_state.json` plus issue #1 as the visible ownership record. A Git file is a coordination record, not a distributed lock or sufficient execution authorization. Future execution infrastructure must enforce one active writer with a real shared lock/lease and fail closed on uncertainty.
 
-The current owner must explicitly release a named handoff and the incoming owner must acknowledge the same identifier. Update the ownership record and reconcile live account state before the incoming owner submits anything. No implicit handoff from silence, a stale timestamp, a merged PR, a restarted process, or an expired lease. Stop if records conflict.
+The human's explicit October 2 reassignment supersedes the earlier dot RELEASE prerequisite. Daenerys confirmed no writes in flight and a stopped account worker in issue comment 5947535773. Codex acknowledged sole ownership. Any later agent-initiated transfer still requires the current owner to release a named handoff and the incoming owner to acknowledge it. Update the ownership record and reconcile live account state before the incoming owner submits anything. No implicit handoff from silence, a stale timestamp, a merged PR, a restarted process, or an expired lease. Stop if records conflict.
 
 ## Reconciliation and duplicate prevention
 
