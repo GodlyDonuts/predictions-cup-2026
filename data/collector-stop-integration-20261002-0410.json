@@ -1,0 +1,86 @@
+{
+  "at": "2026-10-02T04:10:54.737Z",
+  "patchHash": "270efb06eea8f2801f8412c102dcf626f60e8c3b0247ead83b5eb532c17d4dea",
+  "baseCommit": "52d3d93624c330ee646c64a4ebedc8e462f113f3",
+  "livePaperTests": {
+    "pass": 97,
+    "fail": 0
+  },
+  "aggregate": {
+    "pass": 273,
+    "fail": 2,
+    "total": 275,
+    "failures": [
+      "Pre-existing Windows POSIX mode assertion in unchanged feed/test/capture_cli.test.mjs",
+      "Pre-existing Windows SIGTERM exit-code assertion in unchanged feed/test/capture_cli.test.mjs"
+    ]
+  },
+  "preUpgradePrefix": {
+    "bytes": 14839182,
+    "hash": "1f007db7992a38faf1f3c5afa45f7852cfc667c5296d8c78bf1f83b80c32a6b2",
+    "preserved": true
+  },
+  "preUpgradeReplay": {
+    "observations": 990,
+    "ledgerMatches": true
+  },
+  "hostValidation": "actual_Windows_in_progress_STOP_replay_passed",
+  "historicalEvidence": "Original journal retained; old STOP-affected evidence pending per-boundary audit; this verified prefix reconstructs observations and cash/fees/fills exactly",
+  "hostStopRequestedAt": "2026-10-02T04:14:27.068Z",
+  "hostStopObserved": {
+    "observations": 991,
+    "lastCommittedObservations": 990,
+    "pid": 32464,
+    "inProgressCycle": true,
+    "mutation": "source_skip_invalidation",
+    "changedMarkets": [
+      "354",
+      "377"
+    ]
+  },
+  "startupRetry": {
+    "failedPid": 24132,
+    "reason": "Market API connection unavailable",
+    "retryPid": 32464
+  },
+  "postStop": {
+    "at": "2026-10-02T04:15:08.262Z",
+    "observations": 991,
+    "addedAcceptedObservations": 1,
+    "sourceRecords": 277,
+    "lastEvent": "stopped",
+    "strategies": {
+      "mean_reversion": {
+        "cash": "100000.000000",
+        "fees": "0.000000",
+        "fills": 0,
+        "realized": "0.000000"
+      },
+      "buy_hold_benchmark": {
+        "cash": "99974.099125",
+        "fees": "0.025875",
+        "fills": 4,
+        "realized": "0.000000"
+      }
+    },
+    "ledgerMatches": true,
+    "oldPrefixPreserved": true
+  },
+  "resumed": {
+    "at": "2026-10-02T04:20:38.806Z",
+    "collectorPid": 11116,
+    "collectorStatus": "running",
+    "startupRetry": null,
+    "mlPid": 22900,
+    "mlStatus": "running",
+    "wallets": 243
+  },
+  "startupRecovery": {
+    "implemented": true,
+    "sharedSerializedClient": true,
+    "persistentBackoff": true,
+    "maximumLocalDelayMs": 60000,
+    "longerServiceDelayHonored": true,
+    "liveStatus": "running"
+  }
+}

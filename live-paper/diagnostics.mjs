@@ -3,6 +3,7 @@ import {fileURLToPath} from 'node:url';
 import {replayJournal} from './replay.mjs';
 import {initialState,normalizeBook,observe,invalidate} from './model.mjs';
 import {amount,fee,TICK} from '../paper/fixed.mjs';
+import {scopedSnapshots} from './depth-scope.mjs';
 
 function distribution(values){
   const sorted=values.filter(Number.isFinite).sort((a,b)=>a-b);
@@ -22,7 +23,8 @@ export function diagnoseJournal(raw,c){
     if(event.type==='account_read_outage'){if(state)invalidate(state,null,clock,event.reason);continue;}
     if(event.type!=='cycle')continue;
     const excluded=new Set(event.accountExclusions);
-    for(const [index,e] of event.sourceSnapshots.entries()){
+    const snapshots=scopedSnapshots(event,c);
+    for(const [index,e] of snapshots.entries()){
       if(e.skipped){increment(skipReasons,e.skipped);if(state)invalidate(state,e.marketId,e.at||r.state?.skips?.[e.marketId]?.at||clock,e.skipped);continue;}
       const match=/^\/markets\/(\d+)\/orderbook\?/.exec(e.endpoint||'');
       if(!match||!c.marketIds.includes(match[1]))continue;
@@ -32,7 +34,7 @@ export function diagnoseJournal(raw,c){
       catch(err){
         // The collector appends a raw successful-HTTP response followed by its
         // validation skip. That adjacent event is the authoritative skip count.
-        const next=event.sourceSnapshots[index+1];
+        const next=snapshots[index+1];
         if(!next?.skipped||String(next.marketId)!==match[1])increment(skipReasons,err.message);
         invalidate(state,match[1],e.receivedAt,err.message);continue;
       }

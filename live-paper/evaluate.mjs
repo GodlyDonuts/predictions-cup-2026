@@ -3,6 +3,7 @@ import {fileURLToPath} from 'node:url';
 import {createHash} from 'node:crypto';
 import {replayJournal} from './replay.mjs';
 import {digest,validateConfig} from './model.mjs';
+import {scopedSnapshots} from './depth-scope.mjs';
 
 export function validatePlan(p){
   const created=Date.parse(p.createdAt),start=Date.parse(p.startAt),end=Date.parse(p.endAt);
@@ -29,15 +30,19 @@ export function evaluateJournal(raw,plan){
     const r=JSON.parse(line),e=r.event,clock=e.clockAt||r.at,t=Date.parse(clock);
     if(t<start)continue;
     if(e.type==='cycle'){
+      const scoped=scopedSnapshots(e,plan.baseConfig);
       if(!Array.isArray(e.accountExclusions)||e.accountExclusions.some(id=>typeof id!=='string'||!/^([1-9]\d*)$/.test(id)||!Number.isSafeInteger(Number(id))))throw Error('Incomplete window account exclusions');
       const reconciliation=Date.parse(e.exclusionObservedAt);
-      if(!Number.isFinite(reconciliation)||reconciliation<start||reconciliation>=end){excludedSnapshots+=e.sourceSnapshots.length;continue;}
-      const snapshots=e.sourceSnapshots.filter(s=>{
+      if(!Number.isFinite(reconciliation)||reconciliation<start||reconciliation>=end){excludedSnapshots+=scoped.length;continue;}
+      const eligible=s=>{
         const received=Date.parse(s.receivedAt||s.at||clock),requested=Date.parse(s.requestStartedAt||s.at||clock);
-        const eligible=Number.isFinite(received)&&Number.isFinite(requested)&&requested>=start&&requested>=reconciliation&&received>=requested&&received<end;
-        if(!eligible)excludedSnapshots++;return eligible;
-      });
-      if(snapshots.length)append({...e,clockAt:new Date(Math.min(t,end)).toISOString(),sourceSnapshots:snapshots},new Date(Math.min(t,end)).toISOString());
+        const inside=Number.isFinite(received)&&Number.isFinite(requested)&&requested>=start&&requested>=reconciliation&&received>=requested&&received<=t&&received<end;
+        if(!inside)excludedSnapshots++;return inside;
+      };
+      const kept=new Set(scoped.filter(eligible));
+      const sourceSnapshots=(e.sourceSnapshots||[]).filter(s=>kept.has(s));
+      const supplementalDepth=(e.supplementalDepth||[]).filter(s=>kept.has(s));
+      if(kept.size)append({...e,clockAt:new Date(Math.min(t,end)).toISOString(),sourceSnapshots,supplementalDepth},new Date(Math.min(t,end)).toISOString());
     }else if(e.type==='account_read_outage'&&t<end)append(e,clock);
   }
   const completed=Date.parse(original.replay.finalEventClock)>=end;
