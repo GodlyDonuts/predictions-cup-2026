@@ -154,7 +154,7 @@ export class CompetitionController {
   if(r.intent.status==='reconciled'&&this.now()>=Date.parse(r.intent.expirationDate))await this.cancelExpired(r.intent,{at:evidenceAt,snapshot:this.snapshot(),order:order.data});
  }
  async beforeBooks({positions,orders,ordersAt,candidateMarketIds}){
-  this.selected=[];this.currentPermit=null;this.assertLedgers();
+  this.selected=[];this.reconciliationRiskOnly=false;this.currentPermit=null;this.assertLedgers();
   if(!this.canOperate()){this.status='stopped';this.publish();return;}
   const needsBootstrap=!this.bootstrapped;
   if(needsBootstrap&&!(await this.bootstrap()).complete)return;
@@ -165,13 +165,15 @@ export class CompetitionController {
   if(active?.orderId){
    await this.reconcile(active);
    const residual=this.state.owned[active.exchangeId];
-   // Reconciliation refreshed the account and cash. A terminal slice may leave
-   // a latched exit for the owned book already planned in this collector cycle.
+   // Reconciliation refreshed account and cash. A terminal BUY creates owned
+   // risk; a terminal SELL slice may leave a latched residual. Both must use
+   // the owned book already planned in this cycle rather than wait a cycle.
    // Keep this path reduce-only; uncertain/open orders and new entries still wait.
-   if(active.action==='sell'&&this.state.intents[active.intentId]?.status==='closed'&&!this.active()&&residual?.marketId===active.marketId&&this.state.control.exits[active.exchangeId]){
+   if(this.state.intents[active.intentId]?.status==='closed'&&!this.active()&&residual?.marketId===active.marketId
+      &&(active.action==='buy'||active.action==='sell'&&this.state.control.exits[active.exchangeId])){
     const id=residual.marketId;delete this.markets[id];
     const r=await this.transport.market(id),ctx=r.data.contexts[0];
-    if(ctx.status==='open'&&ctx.settledWith===null&&r.data.status==='open'&&!r.data.isComposite&&!r.data.isMultiOutcome){this.markets[id]={at:r.receivedAt,title:r.data.title,status:'open'};this.selected=[id];}
+    if(ctx.status==='open'&&ctx.settledWith===null&&r.data.status==='open'&&!r.data.isComposite&&!r.data.isMultiOutcome){this.markets[id]={at:r.receivedAt,title:r.data.title,status:'open'};this.selected=[id];this.reconciliationRiskOnly=true;}
    }
    this.publish();return;
   }
@@ -243,6 +245,7 @@ export class CompetitionController {
   const marketId=/^\/markets\/(\d+)\/orderbook/.exec(response.endpoint)?.[1];
   if(!this.canWrite()||this.active()||!this.selected.includes(marketId)||!this.markets[marketId]||this.now()-Date.parse(this.markets[marketId].at)>180000)return;
   const b=this.checkedBook(response,marketId),owned=this.state.owned[b.exchangeId];
+  if(this.reconciliationRiskOnly&&!owned)return;
   let bank,shadow,referenceProof;
   if(owned){
    bank=JSON.parse(fs.readFileSync(path.join(this.runtimeDir,'dip-responsive-bank.json')));

@@ -309,7 +309,9 @@ test('cancel/fill race with lost cancellation response never permits a new order
   const f = fixture(t, {partial: true}); f.server.ignoreExpiry = true; await f.cycle();
   const id = f.controller.active().intentId; f.server.cancelAmbiguous = true; f.server.fillOnCancel = true; f.advance(31000); await f.before();
   assert.equal(f.controller.state.control.cancellations[id].phase, 'uncertain'); assert.ok(f.controller.active()); assert.equal(f.server.posts.length, 1);
-  f.restart(); await f.cycle(); assert.equal(f.server.posts.length, 1); assert.equal(f.controller.active(), undefined); assert.equal(f.controller.state.owned['700'].quantity, 20); assert.equal(f.controller.state.control.cancellations[id].phase, 'reconciled');
+  f.restart(); await f.before(); assert.equal(f.server.posts.length, 1); assert.equal(f.controller.active(), undefined); assert.equal(f.controller.state.owned['700'].quantity, 20); assert.equal(f.controller.state.control.cancellations[id].phase, 'reconciled');
+  assert.equal(f.controller.reconciliationRiskOnly,true);
+  await f.controller.onBook(f.book());assert.equal(f.server.posts.length,2);assert.equal(f.server.posts[1].body.action,'sell');assert.equal(f.server.posts[1].body.quantity,20,'only reconciled owned shares may be liquidated after the cancellation race resolves');
 });
 
 test('cleanup cannot cancel an unrelated order or a known order without an active expiry permit', async t => {

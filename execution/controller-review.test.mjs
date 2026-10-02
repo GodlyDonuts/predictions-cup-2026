@@ -37,7 +37,9 @@ function fixture(t,{owned=false}={}){
  }
  refresh();
  function book({exchangeId='700',bid=.495,ask=.5,bidQuantity=10000}={}){return {endpoint:'/markets/377/orderbook?tournamentId='+TID+'&depth=20',receivedAt:iso(now),requestStartedAt:iso(now),data:{contexts:[{type:'tournament',tournament:{id:TID},orderbook:{exchanges:[{exchangeId,option:'YES',asOf:{at:iso(now),sequence:now},bids:[{price:bid,quantity:bidQuantity}],asks:[{price:ask,quantity:10000}]}]}}]}};}
- return {controller:c,submitted,book,terminal,acknowledge,snapshot,get now(){return now;},advance(ms){now+=ms;refresh();historyRefresh();}};
+ function beginBuy(){const spec={intentId:'fixture-pending-buy',idempotencyKey:'fixture-pending-buy-key',marketId:'377',exchangeId:'700',side:'yes',action:'buy',quantity:20,price:'0.500000',expirationDate:iso(now+90000),attribution:{runId:'sig-pilot-review',strategyId:'fixture',modelHash:digest(bank)}};
+  const r=prepareIntent(c.state,spec,snapshot(),now);assert.equal(r.ok,true,r.code);c.state=r.state;submitted.push(r.intent);acknowledge(r.intent);return r.intent;}
+ return {controller:c,submitted,book,terminal,acknowledge,snapshot,beginBuy,get now(){return now;},advance(ms){now+=ms;refresh();historyRefresh();}};
 }
 
 function reconciliationCycle(f,{filled=5,pending=false,marketOpen=true,afterMetadata}={}){
@@ -47,6 +49,27 @@ function reconciliationCycle(f,{filled=5,pending=false,marketOpen=true,afterMeta
  return {before,metadata};
 }
 
+test('terminal BUY reconciliation immediately evaluates the same-cycle owned risk book',async t=>{
+ const f=fixture(t);const buy=f.beginBuy();assert.equal(buy.action,'buy');
+ const cycle=reconciliationCycle(f,{filled:2});await cycle.before();
+ assert.deepEqual(f.controller.selected,['377']);assert.equal(f.controller.reconciliationRiskOnly,true);assert.deepEqual(cycle.metadata,['377']);
+ await f.controller.onBook({...f.book({exchangeId:'701'}),endpoint:'/markets/378/orderbook?tournamentId='+TID+'&depth=20'});assert.equal(f.submitted.length,1);
+ await f.controller.onBook(f.book({bid:.43,ask:.435}));assert.equal(f.submitted.length,2);assert.equal(f.submitted[1].action,'sell');assert.equal(f.submitted[1].quantity,2);assert.equal(f.submitted[1].attribution.reason,'latched_stop_loss');
+});
+test('a terminal BUY with no fill, open ambiguity or invalid metadata cannot enter the same-cycle risk path',async t=>{
+ for(const mode of ['zero','pending','uncertain','closed_market'])await t.test(mode,async t=>{
+  const f=fixture(t);f.beginBuy();
+  const cycle=reconciliationCycle(f,{filled:mode==='zero'?0:2,pending:['pending','uncertain'].includes(mode),marketOpen:mode!=='closed_market'});
+  if(mode==='uncertain'){f.controller.state=structuredClone(f.controller.state);f.controller.state.intents[f.submitted[0].intentId].status='uncertain';}
+  await cycle.before();assert.deepEqual(f.controller.selected,[]);await f.controller.onBook(f.book({bid:.43,ask:.435}));assert.equal(f.submitted.length,1);
+ });
+});
+test('terminal BUY risk selection permits profit exits but no replacement entry when inventory is absent',async t=>{
+ const f=fixture(t);f.beginBuy();const cycle=reconciliationCycle(f,{filled:2});await cycle.before();
+ await f.controller.onBook(f.book({bid:.515,ask:.520}));assert.equal(f.submitted[1].action,'sell');assert.equal(f.submitted[1].attribution.reason,'take_profit');
+ const g=fixture(t);g.beginBuy();await reconciliationCycle(g,{filled:2}).before();g.controller.state=structuredClone(g.controller.state);delete g.controller.state.owned['700'];
+ await g.controller.onBook(g.book());assert.equal(g.submitted.length,1,'reduce-only fence must not turn a disappeared position into a buy');
+});
 test('terminal partial SELL reconciliation enables only its latched residual on the same-cycle fresh book',async t=>{
  const f=fixture(t,{owned:true});f.advance(2000);await f.controller.onBook(f.book({bid:.465,ask:.470}));f.acknowledge(f.submitted[0]);
  const cycle=reconciliationCycle(f);await cycle.before();
@@ -55,6 +78,16 @@ test('terminal partial SELL reconciliation enables only its latched residual on 
  await f.controller.onBook(f.book({bid:.490,ask:.495}));assert.equal(f.submitted.length,2,'fresh owned book after terminal reconciliation must not lose a collector cycle');
  assert.equal(f.submitted[1].action,'sell');assert.equal(f.submitted[1].quantity,15);assert.equal(f.submitted[1].attribution.reason,'latched_stop_loss');
  await f.controller.onBook(f.book({bid:.490,ask:.495}));assert.equal(f.submitted.length,2,'an active slice blocks duplicate book dispatch');
+});
+test('newly reconciled BUY exits retain fresh evidence and depth participation fences',async t=>{
+ for(const mode of ['cash','positions','orders','book','depth'])await t.test(mode,async t=>{
+  const f=fixture(t);f.beginBuy();await reconciliationCycle(f,{filled:2}).before();const book=f.book({bid:.43,ask:.435,bidQuantity:mode==='depth'?99:10000});
+  if(mode==='book')book.receivedAt=iso(f.now-200001);
+  else if(mode==='cash')f.controller.cash.at=iso(f.now-200001);
+  else if(mode!=='depth')f.controller.account[mode].at=iso(f.now-200001);
+  if(mode==='book')await assert.rejects(f.controller.onBook(book));else await f.controller.onBook(book);
+  assert.equal(f.submitted.length,1,'stale evidence or zero admitted depth cannot submit a sale');
+ });
 });
 
 test('reconciliation must close a latched SELL with an owned residual before any same-cycle selection',async t=>{
