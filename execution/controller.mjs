@@ -151,7 +151,19 @@ export class CompetitionController {
   let active=this.active();
   if(active?.status==='prepared'){this.record(abandonPreparedIntent(this.state,active.intentId,'RESTARTED_BEFORE_DISPATCH',this.now()),active.intentId,'abandoned');active=null;}
   if(active?.status==='dispatching'){const r=recordPlacement(this.state,active.intentId,{status:null,code:'RESTART_UNCONFIRMED'},this.now());this.record(r,active.intentId,'interrupted_submission');active=this.active();}
-  if(active?.orderId){await this.reconcile(active);this.publish();return;}
+  if(active?.orderId){
+   await this.reconcile(active);
+   const residual=this.state.owned[active.exchangeId];
+   // Reconciliation refreshed the account and cash. A terminal slice may leave
+   // a latched exit for the owned book already planned in this collector cycle.
+   // Keep this path reduce-only; uncertain/open orders and new entries still wait.
+   if(active.action==='sell'&&this.state.intents[active.intentId]?.status==='closed'&&!this.active()&&residual?.marketId===active.marketId&&this.state.control.exits[active.exchangeId]){
+    const id=residual.marketId;delete this.markets[id];
+    const r=await this.transport.market(id),ctx=r.data.contexts[0];
+    if(ctx.status==='open'&&ctx.settledWith===null&&r.data.status==='open'&&!r.data.isComposite&&!r.data.isMultiOutcome){this.markets[id]={at:r.receivedAt,title:r.data.title,status:'open'};this.selected=[id];}
+   }
+   this.publish();return;
+  }
   if(active){
    this.status='submission_uncertain';this.reason=active.reasonCode;
    // Recovery is deliberate: do not turn an ambiguous request into a new entry.

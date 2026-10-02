@@ -11,6 +11,7 @@ import {basketCandidates} from './basket-inputs.mjs';
 import {planBasketBooks} from './basket-book-plan.mjs';
 import {basketCodeIdentity} from './basket-watch.mjs';
 import {createBasketRelationshipReader} from './basket-relations.mjs';
+import {timestamp} from '../feed/contract.mjs';
 import {networkInterval,validateNetworkBudget} from './network-budget.mjs';
 import {connectTournament} from './connection.mjs';
 import {validateTiming,timingSummary} from './read-timing.mjs';
@@ -29,14 +30,16 @@ const source=fs.readFileSync(path.join(root,'runner.mjs'),'utf8');
 
 // Only module wiring is replaced. The real runner body executes with an in-memory
 // journal/filesystem, synthetic API/key, fake clock/server/process and no network.
-async function run(stopAt,{dipEnabled=false,officialSync=false,invalidBasket=false}={}){
+async function run(stopAt,{dipEnabled=false,officialSync=false,invalidBasket=false,basketEnabled=false}={}){
   let startupFailures=0;
   let now=Date.parse('2026-10-02T02:00:00Z'),cycle=0,stopped=false,triggered=false;
-  const commits=[],memory=new Map(),listeners={},requests=[],publications=[];
+  const commits=[],memory=new Map(),listeners={},requests=[],publications=[],claimWrites=[],pairReadClaims=[];
+  const fixtureStart=now,stamp=offset=>new Date(fixtureStart+offset).toISOString();
   if(dipEnabled)memory.set(path.join('/synthetic','SigTradingCup','paper-runtime','dip-bank.json'),JSON.stringify({policy:JSON.parse(fs.readFileSync(path.join(root,'dip-policy.json'))),config:{...config,feeBps:0},universe:breadth.validateUniverse(universe,config.tournamentId)}));
   if(dipEnabled){const dir=path.join('/synthetic','SigTradingCup','paper-runtime'),bank=JSON.parse(memory.get(path.join(dir,'dip-bank.json')));memory.set(path.join(dir,'dip-state.json'),JSON.stringify({bankHash:model.digest(bank),wallet:model.initialState(config,'fixture',new Date(now).toISOString()),histories:{},bookHistory:{}}));}
   if(officialSync)memory.set(path.join('/synthetic','SigTradingCup','paper-runtime','official-sync.json'),JSON.stringify({enabled:true}));
   if(invalidBasket)memory.set(path.join('/synthetic','SigTradingCup','paper-runtime','basket-bank.json'),'{invalid');
+  if(basketEnabled){const dir=path.join('/synthetic','SigTradingCup','paper-runtime'),bank={mode:'dual_no_basket_measurement',codeIdentity:basketCodeIdentity(),definitions:[]};memory.set(path.join(dir,'basket-bank.json'),JSON.stringify(bank));memory.set(path.join(dir,'basket-stats.json'),JSON.stringify({bankHash:model.digest(bank),status:'running',updatedAt:stamp(0)}));}
   const iso=()=>new Date(now).toISOString();
   const stop=()=>{triggered=true;stopped=true;listeners.SIGTERM();};
   const interrupt=stage=>{if(cycle===2&&stage===stopAt){stop();throw Error('Stopped');}};
@@ -65,6 +68,7 @@ async function run(stopAt,{dipEnabled=false,officialSync=false,invalidBasket=fal
       if(cycle===1&&endpoint.includes('/price-history?')&&stopAt==='history-stop'){stop();throw Error('Stopped');}
       if(endpoint.endsWith('/portfolio/positions'))cycle++;
       const market=/^\/markets\/(\d+)\/orderbook/.exec(endpoint)?.[1];
+      if(['381','382'].includes(market)){const saved=JSON.parse(memory.get(path.join('/synthetic','SigTradingCup','paper-runtime','book-scheduler.json'))||'{}');pairReadClaims.push({market,claims:Object.keys(saved.basketFollowups?.claims||{}).length});}
       if(endpoint.includes('/portfolio/fills?')){this.requests++;requests.push(endpoint);now+=6000;return {receivedAt:iso(),data:{data:[],pagination:{hasMore:false},coverage:{complete:true},privateField:'do-not-export'}};}
       if(endpoint.includes('/portfolio/pnl?')){this.requests++;requests.push(endpoint);now+=6000;return {receivedAt:iso(),data:{period:'day',totalAccountValue:100000,totalHoldingsValue:0,totalCostBasis:0,unrealizedPnl:0,periodPnl:0,privateField:'do-not-export'}};}
       const stage=endpoint.includes('/price-history?')?'history':endpoint.endsWith('/portfolio/positions')?'positions':market?'book-'+market:endpoint.startsWith('/exchanges/prices?')?'bulk-admission':'tournament';
@@ -93,17 +97,56 @@ async function run(stopAt,{dipEnabled=false,officialSync=false,invalidBasket=fal
   const process={argv:['node',path.join(root,'runner.mjs'),'--cycles','2'],env:{LOCALAPPDATA:'/synthetic'},pid:12345,on:(name,f)=>listeners[name]=f,exit(){throw Error('Unexpected exit');},exitCode:0};
   const atomicJson=(p,v)=>{
     if(stopAt==='status-publication'&&cycle===2&&!triggered&&p.endsWith('stats.json')&&v.runtime?.cycles===2){stop();throw Error('Synthetic status failure');}
+    if(p.endsWith('book-scheduler.json')&&v.basketFollowups){
+      if(stopAt==='claim-recording-failure')throw Error('Injected claim persistence failure');
+      if(stopAt==='attempt-recording-failure'&&v.bookAttempts>0){stop();throw Error('Injected attempt persistence failure');}
+      claimWrites.push({at:iso(),bookAttempts:v.bookAttempts,claims:structuredClone(v.basketFollowups.claims),requestCount:requests.length});
+    }
     memory.set(p,JSON.stringify(v));
+    if(stopAt==='claim-stop'&&p.endsWith('book-scheduler.json')&&v.basketFollowups&&!triggered)stop();
   };
-  const bindings={...model,...breadth,...depth,...scheduler,collectionInputs,shockCollectionRisk,networkInterval,loadNetworkBudget:file=>mockfs.existsSync(file)?validateNetworkBudget(JSON.parse(mockfs.readFileSync(file))):null,connectTournament,validateTiming,timingSummary,historyEndpoint,normalizeHistory,validateDipPolicy,workerHealth,baselineView,accountPositions,accountOrders,accountFills,accountPnl,accountView,fs:mockfs,path,http:{createServer:()=>({once(){},listen(p,h,f){f();},close(){}})},randomUUID,fileURLToPath,
-    loadKey:()=> 'SYNTHETIC',Journal,ReadClient,lock:()=>()=>{},atomicJson,exclusionSet,basketCandidates,planBasketBooks,basketCodeIdentity,createBasketRelationshipReader,
+  const bindings={...model,...breadth,...depth,...scheduler,collectionInputs,shockCollectionRisk,networkInterval,loadNetworkBudget:file=>mockfs.existsSync(file)?validateNetworkBudget(JSON.parse(mockfs.readFileSync(file))):null,connectTournament,validateTiming,timingSummary,historyEndpoint,normalizeHistory,validateDipPolicy,workerHealth:(report,at=now)=>workerHealth(report,at),baselineView,accountPositions,accountOrders,accountFills,accountPnl,accountView,fs:mockfs,path,http:{createServer:()=>({once(){},listen(p,h,f){f();},close(){}})},randomUUID,fileURLToPath,
+    loadKey:()=> 'SYNTHETIC',Journal,ReadClient,lock:()=>()=>{},atomicJson,durableAtomicJson:atomicJson,exclusionSet,basketCandidates,planBasketBooks,basketCodeIdentity,createBasketRelationshipReader,
     createBookPublication({canOperate}){return {publishBook({marketId,response}){if(stopAt==='public-book-recording-failure'&&cycle===2)throw Error('Synthetic public journal failure');if(canOperate())publications.push({kind:'book',marketId,receivedAt:response.receivedAt,at:iso(),requestCount:requests.length});},invalidate({marketId,reason}){publications.push({kind:'invalidation',marketId,reason,at:iso()});},close(reason){publications.push({kind:'closed',reason,at:iso()});}};},
+    createBasketFollowupSource({bank}){return {poll(){
+      if(stopAt==='followup-source-failure')throw Error('Injected damaged source');
+      return [{tournamentId:config.tournamentId,observerBankHash:model.digest(bank),pairId:'b'.repeat(64),sourceSequence:123,sourceHash:'c'.repeat(64),cutoff:stamp(-3600000),marketIds:['381','382'],exchangeIds:['1070','1071'],
+        sourceMeasurement:{reason:'paired_depth_measurement',cycle:0,every:4,marketIds:['381','382'],exchangeIds:['1070','1071'],receivedAt:stamp(-10000)},
+        observation:{pairId:'b'.repeat(64),at:stamp(1000),status:'apparent_positive_basket',apparentPositive:true,newPairEvidence:true,independentPair:false,positivePersistenceCount:1,eligibleForExecution:false,fills:null,pnl:null,pairReceipts:[stamp(0),stamp(1000)],pairVersions:['10:'+timestamp(stamp(0)),'11:'+timestamp(stamp(1000))],basket:{quantity:5,totalCost:'4.975000',conditionalMargin:'0.025000',marginalUnitCost:'0.995000',depthFractionBps:100}}}];
+    },status(){return {status:'running',sourceSequence:123,observerSequence:1};},close(){}};},
     sampleEquity(s,c,at){if(stopAt==='sampling-failure'&&cycle===2){stop();throw Error('Synthetic sample failure');}return model.sampleEquity(s,c,at);},
     process,console:{log(){},error(){}},AbortController,structuredClone,Date:Clock,setInterval:()=>1,clearInterval(){},moduleUrl:new URL('./runner.mjs',import.meta.url).href};
   const body=source.replace(/^import .*;\r?\n/gm,'').replaceAll('import.meta.url','moduleUrl');
   await vm.runInNewContext('(async()=>{'+body+'\n})()',bindings);
-  return {commits,process,memory,requests,publications,triggered};
+  return {commits,process,memory,requests,publications,triggered,claimWrites,pairReadClaims};
 }
+
+test('followup claim is durably installed before pair reads and remains through scheduler attempts',async()=>{
+ const r=await run(null,{dipEnabled:true,basketEnabled:true});assert.equal(r.process.exitCode,0);
+ assert.ok(r.claimWrites.length>0);assert.equal(r.claimWrites[0].bookAttempts,0);
+ assert.deepEqual(r.pairReadClaims.slice(0,2),[{market:'381',claims:1},{market:'382',claims:1}]);
+ const saved=JSON.parse([...r.memory.entries()].find(([p])=>p.endsWith('book-scheduler.json'))[1]);assert.equal(Object.keys(saved.basketFollowups.claims).length,1);
+ const cycle=r.commits.find(r=>r.event.type==='cycle');assert.equal(cycle.event.basketMeasurement.reason,'paired_depth_followup');assert.equal(cycle.event.entryMarketIds.includes('381'),false);
+ assert.equal(r.requests.filter(p=>p.includes('/orderbook?')).length,8);
+});
+
+test('failed followup claim publication cannot dispatch either leg or silently fall back after an uncertain save',async()=>{
+ const r=await run('claim-recording-failure',{dipEnabled:true,basketEnabled:true});assert.equal(r.process.exitCode,1);assert.equal(r.pairReadClaims.length,0);assert.equal(r.requests.filter(p=>p.includes('/orderbook?')).length,0);
+});
+
+test('STOP after durable followup claim leaves it consumed without reading the pair',async()=>{
+ const r=await run('claim-stop',{dipEnabled:true,basketEnabled:true});assert.equal(r.process.exitCode,0);assert.equal(r.triggered,true);assert.equal(r.pairReadClaims.length,0);assert.equal(r.claimWrites.length,1);
+});
+
+test('later scheduler replacement failure preserves the claim and fails before a read even with STOP',async()=>{
+ const r=await run('attempt-recording-failure',{dipEnabled:true,basketEnabled:true});assert.equal(r.process.exitCode,1);assert.equal(r.triggered,true);assert.equal(r.pairReadClaims.length,0);assert.equal(r.claimWrites.length,1);
+ const saved=JSON.parse([...r.memory.entries()].find(([p])=>p.endsWith('book-scheduler.json'))[1]);assert.equal(saved.bookAttempts,0);assert.equal(Object.keys(saved.basketFollowups.claims).length,1);
+});
+
+test('damaged optional followup source preserves original collector book budget and candidates',async()=>{
+ const base=await run(null,{dipEnabled:true}),r=await run('followup-source-failure',{dipEnabled:true,basketEnabled:true});assert.equal(r.process.exitCode,0);assert.equal(r.claimWrites.length,0);
+ assert.deepEqual(r.requests.filter(p=>p.includes('/orderbook?')),base.requests.filter(p=>p.includes('/orderbook?')));
+});
 
 test('public depth is published at receipt before the later cycle journal, without extra reads',async()=>{
  const r=await run(null),books=r.publications.filter(p=>p.kind==='book'),bookReads=r.requests.filter(p=>p.includes('/orderbook?'));

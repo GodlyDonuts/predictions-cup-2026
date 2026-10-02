@@ -21,6 +21,8 @@ import {planBasketBooks} from './basket-book-plan.mjs';
 import {basketCodeIdentity} from './basket-watch.mjs';
 import {createBasketRelationshipReader} from './basket-relations.mjs';
 import {createBookPublication} from './book-publication.mjs';
+import {createBasketFollowupSource} from './basket-followup-source.mjs';
+import {atomicJson as durableAtomicJson} from '../execution/ledger.mjs';
 import {CompetitionController} from '../execution/controller.mjs';
 import {loadNetworkBudget,networkInterval} from './network-budget.mjs';
 import {createClient} from '@supabase/supabase-js';
@@ -42,10 +44,14 @@ process.on('exit',cleanup);
 const control=new AbortController();let stopping=false;
 const stop=()=>{stopping=true;control.abort();};process.on('SIGINT',stop);process.on('SIGTERM',stop);
 const stopWatch=setInterval(()=>{if(fs.existsSync(stopFile)||fs.existsSync(paperStop)||fs.existsSync(collectorStop))stop();},200);
-let journal,state,api,server,heartbeat,competition,realtime,realtimeCapture,basketRelationships,bookPublication;
+let journal,state,api,server,heartbeat,competition,realtime,realtimeCapture,basketRelationships,bookPublication,basketFollowupSource,basketFollowupBankHash;
 let universe,coverage,depthPlan,dipBank,scaleBank,responsiveBank,scheduler,schedulerScope;const recentReadTimings=[];
 const schedulerFile=path.join(runtimeDir,'book-scheduler.json');
-function recordAttempt(kind,marketId){scheduler=recordSchedulerAttempts(scheduler,schedulerScope,{[kind+'MarketIds']:[marketId],attemptedAt:new Date().toISOString()});atomicJson(schedulerFile,scheduler);}
+function saveScheduler(next){
+ try{durableAtomicJson(schedulerFile,next);scheduler=next;}
+ catch{const e=Error('Book scheduler recording failed');e.durableRecordingFailed=true;e.fatal=true;throw e;}
+}
+function recordAttempt(kind,marketId){saveScheduler(recordSchedulerAttempts(scheduler,schedulerScope,{[kind+'MarketIds']:[marketId],attemptedAt:new Date().toISOString()}));}
 function schedulingInputs(){
  const sources=[];
  for(const [name,bank] of [['dip',dipBank],['dip-scale',scaleBank],['dip-responsive',responsiveBank]])if(bank){
@@ -64,6 +70,7 @@ function schedulingInputs(){
 }
 function basketMeasurementPlan(basePlan,excluded){
  if(!dipBank)return basePlan;
+ let plan;
  try{
   const file=path.join(runtimeDir,'basket-bank.json');
   if(!fs.existsSync(file)){runtime.basketMeasurement={reason:'not_initialized'};return basePlan;}
@@ -71,9 +78,18 @@ function basketMeasurementPlan(basePlan,excluded){
   if(bank.mode!=='dual_no_basket_measurement'||stats.bankHash!==digest(bank)||digest(bank.codeIdentity)!==digest(basketCodeIdentity()))throw Error('Basket measurement identity mismatch');
   if(workerHealth(stats).status!=='running'||fs.existsSync(path.join(runtimeDir,'BASKET_STOP'))){runtime.basketMeasurement={reason:'observer_unavailable'};return basePlan;}
   const now=Date.now(),candidates=basketCandidates(bank.definitions,coverage,universe,now),excludedMarketIds=universe.exchanges.filter(m=>excluded.has(m.exchangeId)).map(m=>m.marketId);
-  const plan=planBasketBooks(basePlan,schedulerScope,{candidates,excludedMarketIds,cycle:runtime.cycles,now});
-  runtime.basketMeasurement=plan.basketMeasurement;return plan;
+  const bankHash=digest(bank);
+  if(!basketFollowupSource||basketFollowupBankHash!==bankHash){basketFollowupSource?.close();basketFollowupSource=createBasketFollowupSource({runtimeDir,bank,universe,now:Date.now});basketFollowupBankHash=bankHash;}
+  const followups=basketFollowupSource.poll();
+  runtime.basketFollowupSource={...basketFollowupSource.status(),candidates:followups.length};
+  plan=planBasketBooks(basePlan,schedulerScope,{candidates,followups,excludedMarketIds,cycle:runtime.cycles,now});
  }catch{runtime.basketMeasurement={reason:'observer_invalid_or_unavailable'};return basePlan;}
+ // A consumed research anchor must survive a crash before either pair read.
+ // Install this state before recordAttempt so later writes preserve the claim.
+ if(plan.basketMeasurement?.persistSchedulerStateBeforeReads){
+  saveScheduler(plan.state);
+ }
+ runtime.basketMeasurement=plan.basketMeasurement;return plan;
 }
 let accountCache={errors:{}},officialSync=false;
 function publishAccount(){atomicJson(path.join(runtimeDir,'official-account.json'),accountCache);}
@@ -226,4 +242,4 @@ try{
   }
   runtime.status='stopped';commit({type:'stopped'});persistStatus();
 }catch(e){const stopped=stopping&&!e.durableRecordingFailed;if(state){runtime.status=stopped?'stopped':'failed';runtime.errors.push({at:new Date().toISOString(),reason:stopped?'stop_requested':e.message});try{persistStatus();}catch{}}console.error(stopped?'Paper runner stopped':'Paper runner failed; see local stats');process.exitCode=stopped?0:1;
-}finally{clearInterval(stopWatch);clearInterval(heartbeat);try{publishBookEvent('close',stopping||runtime.status==='stopped'?'STOP':'COLLECTOR_FAILURE');}finally{try{await realtime?.stop();}finally{realtimeCapture?.close();competition?.close();api?.close();server?.close();cleanup();}}}
+}finally{clearInterval(stopWatch);clearInterval(heartbeat);try{publishBookEvent('close',stopping||runtime.status==='stopped'?'STOP':'COLLECTOR_FAILURE');}finally{try{await realtime?.stop();}finally{basketFollowupSource?.close();realtimeCapture?.close();competition?.close();api?.close();server?.close();cleanup();}}}
