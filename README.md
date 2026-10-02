@@ -9,7 +9,7 @@ Private shared workspace for the [Susquehanna Predictions Cup](https://sig.thesu
 3. Read [strategy and open questions](docs/STRATEGY.md).
 4. Claim work and post updates in [coordination issue #1](https://github.com/GodlyDonuts/predictions-cup-2026/issues/1).
 
-The challenge uses free, nonredeemable SUSQies. This repository does not contain real-money trading assets, credentials, competition order execution or runtime credentials. An optional local read-only paper runner is available below.
+The challenge uses free, nonredeemable SUSQies. No real-money trading assets or credentials are stored here. The new bounded official competition executor is described in [execution/README.md](execution/README.md); activation and journals stay in restricted local runtime storage.
 
 ## Current snapshot
 
@@ -26,7 +26,7 @@ Cumulative analytical FIFO realized gain remains **156.915 SUSQies**. Remaining 
 
 RI's final UI marked value/P&L was **4,604.50 / −20.51**; MA's was **1,975.37 / −23.80**. These are marks, not fills. The RI bid at **06:06:14** was **0.900 × 40,855**, sufficient for a historical gross **4,500.000** liquidation scenario and **−125.000** versus RI basis before fees or quote movement. No sale at that bid occurred; whole-account liquidation value is unknown without contemporaneous MA depth.
 
-See the [RI derived audit](data/orders/session_2026-10-02_ri_value.json), [MA derived audit](data/orders/session_2026-10-02_ma_exit.json), [cancellation summary](data/orders/cancellations_2026-10-02_0606.json), [immutable snapshot](data/snapshots/portfolio_2026-10-02_0606.json), [full-ledger replay and source/projection hashes](data/snapshots/reconciliation_2026-10-02_0606.json), and [full reconciliation](docs/CURRENT_STATE.md). All previous audits and snapshots remain unchanged and historical. No bot execution handoff occurs.
+See the [RI derived audit](data/orders/session_2026-10-02_ri_value.json), [MA derived audit](data/orders/session_2026-10-02_ma_exit.json), [cancellation summary](data/orders/cancellations_2026-10-02_0606.json), [immutable snapshot](data/snapshots/portfolio_2026-10-02_0606.json), [full-ledger replay and source/projection hashes](data/snapshots/reconciliation_2026-10-02_0606.json), and [full reconciliation](docs/CURRENT_STATE.md). All previous audits and snapshots remain unchanged and historical. That historical account update did not transfer bot ownership; the human reassigned ownership later, as recorded below.
 
 Research context: [official UNH abstract](https://scholars.unh.edu/survey_center_polls/1009/) and [public Kalshi book observed at 05:41:04 UTC](data/snapshots/ri_public_book_2026-10-02_0540.json). External prices have depth, age and settlement limitations; they are not guaranteed fair values, booked profit or risk-free arbitrage. The earlier [Florida risk-reduction research](research/public_reference_2026-10-01/public_reference_report_2026-10-01.md) remains historical.
 
@@ -42,9 +42,9 @@ Portfolio tournament marks differ substantially from market-detail marks and exe
 
 ## Collaboration
 
-dot is the single execution coordinator. Codex starts with research/development only. Both agents share work through files, issues, and tested direct commits on main when their respective GitHub connections can access this repository. The human requested direct main pushes; do not create PRs. A new task must explicitly select/read this repo; GitHub does not make either agent watch it continuously.
+The human explicitly appointed Codex sole execution owner on October 2. Daenerys / dot is an advisory researcher only and confirmed her account worker stopped with no in-flight ambiguity (issue comment 5947535773). Both agents share work through files, issues, and tested direct commits on main when their respective GitHub connections can access this repository. The human requested direct main pushes; do not create PRs. A new task must explicitly select/read this repo; GitHub does not make either agent watch it continuously.
 
-Repository access and issue comments do not create trading authority. No duplicate orders. Any execution handoff requires an explicit release and matching acknowledgment before the new owner acts; see [coordination protocol](docs/COORDINATION.md).
+Repository access and issue comments do not create trading authority. No duplicate orders. The direct human reassignment supersedes the original dot RELEASE prerequisite. Any subsequent agent-initiated transfer still requires an explicit release and acknowledgment; see [coordination protocol](docs/COORDINATION.md).
 
 ## Official references
 
@@ -55,7 +55,11 @@ Repository access and issue comments do not create trading authority. No duplica
 
 Trading closes November 4, 2026, noon US Eastern (17:00 UTC), according to the rules reviewed October 1. Recheck source rules for changes.
 
-## Quant development status
+## Current execution milestone
+
+The first production pilot is bounded to 25 SUSQies per order, 100 aggregate attributed cost, 100 cumulative purchases and three markets. It requires qualified signals, durable immutable idempotency, fresh reconciliation, an exclusive writer and zero added fees. Test results establish correctness, not profitability. The local Next.js terminal at http://127.0.0.1:3000 separates official account trades, bot attribution and independent paper wallets. See [execution documentation](execution/README.md).
+
+## Historical quant development status
 
 - `bot/`: GET-only scanner, with STOP checked before credentials or network use.
 - `paper/`: offline replay, conservative simulated fills, exact accounting and risk tests.
@@ -63,10 +67,10 @@ Trading closes November 4, 2026, noon US Eastern (17:00 UTC), according to the r
 - `ml/`: offline order-book baseline and time-split evaluation on synthetic fixtures.
 - `capture-live/`: bounded authenticated transport with injected SDK/budget interfaces and regression tests; not deployed or connected.
 
-The local quant runner now paper-trades fresh official API data using hypothetical taker fills in a separate bankroll. These simulated fills are not actual contest trades or evidence of profitable strategy performance. Synthetic fixture results remain separate. dot retains contest execution ownership.
+The local quant runner now paper-trades fresh official API data using hypothetical taker fills in a separate bankroll. These simulated fills are not actual contest trades or evidence of profitable strategy performance. Synthetic fixture results remain separate. Codex owns contest execution; prior account holdings remain separate from bot-attributed inventory.
 
 Aggregate offline validation on Windows: 216 selected tests passed. Two additional POSIX-specific tests fail here (Unix mode 0600 and graceful child SIGTERM); neither Unix permissions nor graceful SIGTERM behavior is verified on Windows. This is correctness testing with synthetic inputs, not strategy performance evidence.
 
 ## Working paper runner
 
-See [live-paper/README.md](live-paper/README.md). Run `./Start-Paper.ps1` on the approved Windows host, open http://127.0.0.1:8787/ for stats, and use `./Stop-Paper.ps1` to stop. The dashboard shows the rolling-mean strategy, small buy-and-hold control, no-trade baseline, realized/marked/liquidation P&L, fees, drawdown, signals and collection skips. Replay saved captures without network calls to compare parameters.99 relevant tests pass; actual GET capture, hypothetical control fills, dashboard, restricted Windows runtime ACLs, graceful stop and journal-backed resume were checked locally on October1. This runner submits zero competition orders.
+See [live-paper/README.md](live-paper/README.md). Run `./Start-Paper.ps1` on the approved Windows host, open http://127.0.0.1:8787/ for stats, and use `./Stop-Paper.ps1` to stop. The dashboard shows the rolling-mean strategy, small buy-and-hold control, no-trade baseline, realized/marked/liquidation P&L, fees, drawdown, signals and collection skips. Replay saved captures without network calls to compare parameters.99 relevant tests pass; actual GET capture, hypothetical control fills, dashboard, restricted Windows runtime ACLs, graceful stop and journal-backed resume were checked locally on October1. The collector remains read-only unless a valid local competition activation is present; the reviewed executor then shares the same serialized API queue.

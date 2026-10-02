@@ -2,6 +2,7 @@ import fs from 'node:fs';import path from 'node:path';import {fileURLToPath} fro
 import {verifySource} from './ml-shadow.mjs';import {scopedSnapshots} from './depth-scope.mjs';
 import {digest,initialState,normalizeBook,observe,invalidate,sampleEquity,report,assertState} from './model.mjs';
 import {atomicJson,lock} from './runtime.mjs';
+import {marketDataHealth} from './worker-health.mjs';
 export function createFeeFree(raw,c){
  if(c.feeBps!==0)throw Error('Fee-free baseline requires zero fees');const records=verifySource(raw);if(!records?.length)throw Error('Complete source required');const last=records.at(-1),cutoff=last.event.clockAt||last.at;
  const bank={schemaVersion:1,name:'fee-free-baseline',config:structuredClone(c),sourceRecords:records.length,sourceHash:records.prefixHashes.at(-1),cutoff};
@@ -20,7 +21,7 @@ export function advanceFeeFree(input,records,bank){
   }sampleEquity(s.wallet,c,at);
  }assertState(s.wallet,c);return s;
 }
-export function feeFreeReport(s,bank,at){const r=report(s.wallet,bank.config,at),books=Object.entries(s.wallet.books);const dataHealth={invalidated:books.filter(([id])=>s.wallet.invalidated?.[id]).length,coveredMarkets:new Set(books.map(([,b])=>b.marketId)).size,expectedMarkets:bank.config.marketIds.length,invalidClocks:books.filter(([,b])=>!Number.isFinite(Date.parse(b.receivedAt))||Date.parse(b.receivedAt)>Date.parse(at)).length};return {...r,dataHealth,assumptions:{...r.assumptions,feeStatus:'human_requested_zero_additional_explicit_fee_baseline'},mode:'prospective_fee_free_paper_baseline',feeScenario:'zero_additional_explicit_fee_baseline',cutoff:bank.cutoff,bankHash:s.bankHash,sourceSequence:s.sourceSequence,lastRecordHash:s.lastRecordHash,networkRequests:0,competitionOrders:0};}
+export function feeFreeReport(s,bank,at){const r=report(s.wallet,bank.config,at),dataHealth=marketDataHealth(s.wallet,bank.config,at);return {...r,dataHealth,assumptions:{...r.assumptions,feeStatus:'human_requested_zero_additional_explicit_fee_baseline'},mode:'prospective_fee_free_paper_baseline',feeScenario:'zero_additional_explicit_fee_baseline',cutoff:bank.cutoff,bankHash:s.bankHash,sourceSequence:s.sourceSequence,lastRecordHash:s.lastRecordHash,networkRequests:0,competitionOrders:0};}
 if(process.argv[1]&&fileURLToPath(import.meta.url)===process.argv[1]){
  const dir=process.env.SIG_PAPER_DIR||path.join(process.env.LOCALAPPDATA,'SigTradingCup','paper-runtime'),workspace=path.dirname(path.dirname(fileURLToPath(import.meta.url))),release=lock(path.join(dir,'fee-free-shadow.lock'));process.on('exit',release);
  const bank=JSON.parse(fs.readFileSync(path.join(dir,'fee-free-bank.json'))),statePath=path.join(dir,'fee-free-state.json');let s=JSON.parse(fs.readFileSync(statePath)),partial=0;

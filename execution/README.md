@@ -1,0 +1,17 @@
+# Official competition executor
+
+Codex is the sole execution owner under the human's October 2 reassignment. Daenerys is an advisory researcher. Her stopped-worker acknowledgement is issue #1 comment 5947535773. Existing account holdings are not adopted into this bot's inventory.
+
+The executor runs inside the single collector. It shares that collector's serialized six-second admission, persistent cooldown and Retry-After handling. It does not add another network worker. Without a valid restricted-runtime `competition-activation.json`, the collector remains read-only.
+
+The first pilot permits up to 25 SUSQies per order, 100 SUSQies of aggregate attributed cost, 100 SUSQies of cumulative new purchases, and three managed markets. Entries use separate states where cached identity is available. These are loss-containment limits, not evidence of a profitable strategy. Closing a position does not replenish the cumulative purchase budget. There are zero added fees. Spread, depth, failed execution and price changes still matter.
+
+Entry signals compare fresh executable prices against causal historical references. They are hypotheses about price reversals, not certified fair values. An eligible signal still needs fresh explicitly scoped cash, complete positions/open orders, current market metadata and sufficient book depth. No order is created merely to demonstrate a fill. Competition results must be attributed from official per-order fills; paper fills and prior account trades are separate.
+
+`core.mjs` contains exact/conservative money, risk checks, immutable intent state and FIFO attribution. `ledger.mjs` owns the exclusive process lease and fsynced intent journal. `transport.mjs` validates official API requests and invokes ownership, STOP and durable-intent checks after queueing, with another fence immediately before network traffic. `controller.mjs` connects those components to the collector. Public status is available at the collector's read-only `/api/execution` route.
+
+Each intent has one immutable idempotency key and canonical request body. Unknown outcomes block new intents. Recovery uses the same request, following the official API's idempotency contract, and never changes an uncertain intent's terms. All fill pages, current order state and fresh account state must agree before inventory is attributed. The core journal and intent journal must agree on startup. Corrupt/partial journals or an existing execution lock fail closed; neither accounting nor a lock is silently reset.
+
+Create `EXECUTION_STOP` in the restricted paper runtime to fence account writes. Workspace/runtime `STOP` and `COLLECTOR_STOP` also stop the host. Runtime activation can be disabled to fence writes. Do not delete a STOP or stale lock without checking its provenance and the owning process. A shutdown does not prove that an already dispatched order was canceled: reconcile its official order and fills on recovery.
+
+Tests use mocked HTTP and isolated local journals. They establish implementation behavior, not profitability or real fills. Live readiness additionally depends on actual API response compatibility, current data freshness, source identity, order/fill reconciliation and honest subsequent performance. Increase pilot limits only through a recorded policy change supported by actual results; do not edit a live frozen policy or erase its original accounting.

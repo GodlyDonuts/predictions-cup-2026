@@ -1,7 +1,9 @@
 import fs from 'node:fs';import path from 'node:path';import {createDip} from './dip-shadow.mjs';
 const arg=n=>{const i=process.argv.indexOf(n);if(i<0||!process.argv[i+1])throw Error('Missing '+n);return process.argv[i+1];};
-const scaled=process.argv.includes('--scale'),name=scaled?'dip-scale':'dip',dir=path.resolve(arg('--runtime')),universe=JSON.parse(fs.readFileSync(arg('--universe'))),identityInput=JSON.parse(fs.readFileSync(arg('--identities'))),base=JSON.parse(fs.readFileSync(arg('--config'))),policy=JSON.parse(fs.readFileSync(new URL('./dip-policy.json',import.meta.url)));
+const scaled=process.argv.includes('--scale'),responsive=process.argv.includes('--responsive');if(scaled&&responsive)throw Error('Choose one cohort');
+const name=responsive?'dip-responsive':scaled?'dip-scale':'dip',dir=path.resolve(arg('--runtime')),universe=JSON.parse(fs.readFileSync(arg('--universe'))),identityInput=JSON.parse(fs.readFileSync(arg('--identities'))),base=JSON.parse(fs.readFileSync(arg('--config'))),policy=JSON.parse(fs.readFileSync(new URL('./dip-policy.json',import.meta.url)));
 if(scaled)Object.assign(policy,{profile:'scale',maxOpenMarkets:100,maxPerState:4,maxPerOffice:50,maxMarketCost:'1000.000000'});
+if(responsive)Object.assign(policy,{executionPolicy:'responsive_v2',requireScheduledEntry:true,maxOpenMarkets:3});
 if(fs.existsSync(path.join(dir,name+'-bank.json'))||fs.existsSync(path.join(dir,name+'-state.json')))throw Error('Refusing to replace existing dip accounting');
 const c={...base,feeBps:0,strategyUniverse:scaled?'diversified-dip-scale-v1':'diversified-dip-v1',marketIds:[...new Set(universe.exchanges.map(x=>x.marketId))],orderShares:scaled?1000:25,maxPositionShares:scaled?2000:50,maxExposure:scaled?'50000.000000':'5000.000000',cashReserve:scaled?'50000.000000':'95000.000000',stopLoss:policy.stopLoss,exitAfterMs:policy.maximumHoldMs};
 if(identityInput.tournamentId!==c.tournamentId||identityInput.kind!=='derived_cached_market_identity')throw Error('Identity input scope mismatch');

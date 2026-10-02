@@ -29,9 +29,13 @@ export function accountPnl(response){
  return {at:response.receivedAt,accountValue:d.totalAccountValue,holdingsValue:d.totalHoldingsValue,costBasis:d.totalCostBasis,unrealizedPnl:d.unrealizedPnl,periodPnl:d.periodPnl,period:'day'};
 }
 export function accountView(cache,collectorStatus,now,identities={}){
- const ages=Object.fromEntries(['positions','orders','fills','pnl'].map(k=>[k,cache[k]?.at?Math.max(0,Date.parse(now)-Date.parse(cache[k].at)):null]));
+ const required=['positions','orders','fills','pnl'],clock=Date.parse(now),maxAgeMs=300000;
+ const sections=Object.fromEntries(required.map(k=>{const at=cache[k]?.at??null,age=at===null?null:clock-Date.parse(at),valid=age!==null&&Number.isFinite(age)&&age>=0;return [k,{at,ageMs:valid?age:null,status:at===null?'missing':!valid?'invalid_clock':cache.errors?.[k]?'degraded':age>maxAgeMs?'stale':'fresh'}];}));
+ const ages=Object.fromEntries(required.map(k=>[k,sections[k].ageMs]));
+ const missingSections=required.filter(k=>sections[k].status==='missing'),invalidClockSections=required.filter(k=>sections[k].status==='invalid_clock'),staleSections=required.filter(k=>sections[k].status==='stale'),errorSections=Object.keys(cache.errors??{});
+ const health={status:invalidClockSections.length||!Number.isFinite(clock)?'invalid_clock':missingSections.length===required.length?'unavailable':missingSections.length?'partial':errorSections.length||collectorStatus!=='running'?'degraded':staleSections.length?'stale':'fresh',sections,missingSections,invalidClockSections,staleSections,errorSections,maxAgeMs};
  const labels=new Map((cache.positions?.rows??[]).map(x=>[x.exchangeId,x.label]));
  const label=x=>labels.get(x.exchangeId)||identities[x.marketId]?.title||'Exchange '+x.exchangeId;
  const orderMap=new Map([...(cache.orderHistory?.rows??[]),...(cache.orders?.rows??[])].map(x=>[x.id,x]));
- return {mode:'official_account',available:!!(cache.positions||cache.fills||cache.pnl),updatedAt:now,collectorStatus,ages,sourceTimes:Object.fromEntries(['positions','orders','fills','pnl'].map(k=>[k,cache[k]?.at??null])),positions:(cache.positions?.rows??[]).map(x=>({...x,label:label(x)})),pending:(cache.orders?.rows??[]).map(x=>({...x,label:label(x)})),trades:(cache.fills?.rows??[]).map(x=>({...x,label:label(x),action:orderMap.get(x.orderId)?.action??null})),metrics:cache.pnl??null,fillHistory:{displayed:cache.fills?.rows.length??0,hasMore:cache.fills?.hasMore??null},errors:cache.errors??{}};
+ return {mode:'official_account',available:required.some(k=>cache[k]),updatedAt:now,collectorStatus,ages,health,sourceTimes:Object.fromEntries(required.map(k=>[k,sections[k].at])),positions:(cache.positions?.rows??[]).map(x=>({...x,label:label(x)})),pending:(cache.orders?.rows??[]).map(x=>({...x,label:label(x)})),trades:(cache.fills?.rows??[]).map(x=>({...x,label:label(x),action:orderMap.get(x.orderId)?.action??null})),metrics:cache.pnl??null,fillHistory:{displayed:cache.fills?.rows.length??0,hasMore:cache.fills?.hasMore??null},errors:cache.errors??{}};
 }

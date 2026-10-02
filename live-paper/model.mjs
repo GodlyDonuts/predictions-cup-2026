@@ -170,7 +170,7 @@ export function report(s,c,now=new Date().toISOString()) {
       if(fresh){reference+=(amount(b.bids[0].price)+amount(b.asks[0].price))*BigInt(pos.quantity)/2n;for(const l of b.bids){const q=Math.min(left,Math.floor(l.quantity*c.depthFractionBps/10000));if(q){const p=amount(l.price)-TICK*BigInt(c.slippageTicks);if(p<TICK)break;const n=p*BigInt(q);proceeds+=n-fee(n,q,costs(c));left-=q;}if(!left)break;}}
       if(!fresh)referenceComplete=false;if(!fresh||left)liquidationComplete=false;liquidation+=proceeds;
       const labels={'377':'Alaska Senate','354':'Florida Senate','277':'North Carolina Senate','305':'Michigan Governor'};
-      positions.push({instrument:id,label:(labels[b?.marketId]||'Market '+b?.marketId)+' Democratic YES',...pos,observationAgeMs:fresh?age(id):null,estimatedProceeds:money(proceeds),unsoldShares:left});
+      positions.push({instrument:id,label:(labels[b?.marketId]||'Market '+b?.marketId)+' Democratic YES',...pos,observationAgeMs:fresh?age(id):null,quoteReceivedAt:b?.receivedAt??null,quoteAgeMs:Number.isFinite(age(id))&&age(id)>=0?age(id):null,quoteInvalidated:!!s.invalidated?.[id],estimatedProceeds:money(proceeds),unsoldShares:left});
     }
     const equity=referenceComplete?reference:null,liq=liquidationComplete?liquidation:null;
     const curve=st.equityCurve;let peak=amount(st.peak),dd=amount(st.maxDrawdown);
@@ -208,14 +208,45 @@ export function stepForecast(input,b,c,{exitValue,netEdge,horizonMs,minimumEdge}
   assertState(s,c);return s;
 }
 
-// A distinct prospective dip wallet; no change to frozen ML/rolling-mean semantics.
-export function stepDip(input,b,c,{reference,allowEntry,minimumEdge,takeProfit,horizonMs,maxMarketCost}){
+// Responsive exits keep every limit decision causal: a replacement can only fill
+// on a later request after latency. A gap reprices risk exits, never invents a fill.
+function responsiveDipExits(s,b,c,{eligible,ask,takeProfit,horizonMs,maxMarketCost,sameVersion}){
+ const st=s.strategies.mean_reversion,id=b.instrument,at=b.receivedAt,heldAtStart=Boolean(st.positions[id]);
+ if(sameVersion&&!st.pending[id]&&!heldAtStart)return;
+ const pending=st.pending[id];let riskReason=pending?.exitPolicy==='risk_reprice_v2'?pending.reason:null;
+ if(pending){
+  if(Date.parse(at)-Date.parse(pending.createdAt)>c.maxDataAgeMs+c.cycleIntervalMs*4){delete st.pending[id];st.expiredIntents++;}
+  else if(Date.parse(b.requestStartedAt)>=Date.parse(pending.createdAt)+c.latencyMs)fillIntent(st,pending,b,c,at);
+ }
+ const pos=st.positions[id],bid=amount(b.bids[0].price)-TICK*BigInt(c.slippageTicks);
+ if(pos){
+  const avg=amount(pos.cost)/BigInt(pos.quantity);
+  riskReason??=avg-bid>=amount(c.stopLoss)?'dip_stop':Date.parse(at)-Date.parse(pos.enteredAt)>=horizonMs?'dip_timeout':null;
+  const waiting=st.pending[id];
+  if(riskReason&&(!waiting||waiting.action==='sell'&&(waiting.exitPolicy!=='risk_reprice_v2'||bid<amount(waiting.limit)))){
+   // Risk remains latched through partial fills and temporary price recoveries.
+   // Clamp to the lowest valid price; unavailable depth remains unsold inventory.
+   enqueue(st,b,'sell',pos.quantity,bid<TICK?TICK:bid,at,riskReason);
+   st.pending[id].exitPolicy='risk_reprice_v2';
+  }else if(!waiting&&bid-avg>=amount(takeProfit))enqueue(st,b,'sell',pos.quantity,bid,at,'dip_take_profit');
+ }else if(!st.pending[id]&&eligible&&!heldAtStart){
+  const shares=Math.min(c.orderShares,Number(amount(maxMarketCost)/ask));if(shares>0)enqueue(st,b,'buy',shares,ask,at,'historical_discount');
+ }
+}
+
+// A distinct prospective dip wallet; frozen cohorts retain legacy execution.
+export function stepDip(input,b,c,{reference,allowEntry,minimumEdge,takeProfit,horizonMs,maxMarketCost,executionPolicy='legacy_v1'}){
+ if(!['legacy_v1','responsive_v2'].includes(executionPolicy))throw Error('Unknown dip execution policy');
  if(typeof allowEntry!=='boolean'||!Number.isFinite(minimumEdge)||minimumEdge<=0||!Number.isSafeInteger(horizonMs)||horizonMs<1000||amount(takeProfit)<=0n||amount(maxMarketCost)<=0n)throw Error('Invalid dip policy');
  const previous=input.books[b.instrument],s=observe(input,b,c),id=b.instrument,at=b.receivedAt;
  s.strategies=structuredClone(input.strategies);b=s.books[id];const st=s.strategies.mean_reversion;
  const ask=amount(b.asks[0].price)+TICK*BigInt(c.slippageTicks),entry=Number(ask)/1e6,edge=Number.isFinite(reference)?reference-entry:null;
  const eligible=allowEntry&&Number.isFinite(edge)&&edge>=minimumEdge;
  if(st.pending[id]?.action==='buy'&&!eligible){delete st.pending[id];st.expiredIntents++;}
+ if(executionPolicy==='responsive_v2'){
+  responsiveDipExits(s,b,c,{eligible,ask,takeProfit,horizonMs,maxMarketCost,sameVersion:previous?.versionKey===b.versionKey});
+  assertState(s,c);return s;
+ }
  if(previous?.versionKey===b.versionKey&&!st.pending[id]){assertState(s,c);return s;}
  const pending=st.pending[id];if(pending){if(Date.parse(at)-Date.parse(pending.createdAt)>c.maxDataAgeMs+c.cycleIntervalMs*4){delete st.pending[id];st.expiredIntents++;}else fillIntent(st,pending,b,c,at);}
  if(!st.pending[id]){

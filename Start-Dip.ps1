@@ -1,4 +1,4 @@
-param([ValidateSet('dip','dip-scale')][string]$CohortName='dip')
+param([ValidateSet('dip','dip-scale','dip-responsive')][string]$CohortName='dip')
 $ErrorActionPreference='Stop'
 $taskRuntime=if($env:SIG_PAPER_DIR){[IO.Path]::GetFullPath($env:SIG_PAPER_DIR)}else{Join-Path $env:LOCALAPPDATA 'SigTradingCup\paper-runtime'}
 foreach($taskStop in @((Join-Path $PSScriptRoot 'STOP'),(Join-Path $taskRuntime 'STOP'),(Join-Path $taskRuntime 'DIP_STOP'))){if(Test-Path -LiteralPath $taskStop){throw 'STOP exists; inspect its provenance'}}

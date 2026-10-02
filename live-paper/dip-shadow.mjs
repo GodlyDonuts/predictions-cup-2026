@@ -6,6 +6,8 @@ export function validateDipPolicy(p){
  if(p?.name!=='diversified-dip-v1'||p.schemaVersion!==1||p.feeBps!==0)throw Error('Invalid dip policy');
  for(const k of ['lookbackMs','historyCacheAgeMs','minimumSamples','minimumSpanMs','lastHistoricalObservationAgeMs','maximumHoldMs','cooldownMs','maxOpenMarkets','maxPerState','maxPerOffice','maxUnknownIdentity'])if(!Number.isSafeInteger(p[k])||p[k]<1)throw Error('Invalid dip limit');
  if(p.profile!==undefined&&p.profile!=='scale')throw Error('Unknown dip profile');const scaled=p.profile==='scale';
+ if(p.executionPolicy!==undefined&&p.executionPolicy!=='responsive_v2')throw Error('Unknown dip execution policy');
+ if(p.executionPolicy==='responsive_v2'&&(p.maxOpenMarkets>3||p.requireScheduledEntry!==true))throw Error('Responsive cohort exceeds collection capacity');
  if(p.minimumSamples<8||p.minimumSpanMs<1800000||p.maxOpenMarkets>(scaled?100:20)||p.maxPerState>(scaled?4:3)||p.maxPerOffice>(scaled?50:6)||p.maxUnknownIdentity!==1||p.lookbackMs>86400000||p.maximumHoldMs>21600000||amount(p.maxMarketCost)>amount(scaled?'1000.000000':'50.000000'))throw Error('Unsafe dip limits');
  for(const k of ['minimumDip','minimumRelativeDip','maximumDip','minimumZ','maximumSpread','minimumPrice','maximumPrice'])if(!Number.isFinite(p[k])||p[k]<=0)throw Error('Invalid dip signal');
  if(p.minimumDip>=p.maximumDip||p.minimumPrice>=p.maximumPrice||p.maximumPrice>=1||p.maximumSpread>.05||amount(p.takeProfit)<=0n||amount(p.stopLoss)<=0n||amount(p.maxMarketCost)<=0n)throw Error('Invalid dip costs');return p;
@@ -49,7 +51,8 @@ export function advanceDip(input,records,bank){
     const reference=historicalReference(s.histories[b.exchangeId],s.bookHistory[b.exchangeId],b.requestStartedAt,p),ask=Number(amount(b.asks[0].price)+TICK*BigInt(c.slippageTicks))/1e6,bid=Number(amount(b.bids[0].price)-TICK*BigInt(c.slippageTicks))/1e6;
     const signal=dipSignal(reference,ask,bid,p),risk=diversification(s,bank,id),st=s.wallet.strategies.mean_reversion,wasHeld=Boolean(st.positions[b.instrument]),cooldown=Date.parse(s.cooldowns[id]||'')>Date.parse(b.receivedAt);
     s.signals[b.exchangeId]={...signal,marketId:id,exchangeId:b.exchangeId,at:b.receivedAt,risk,cooldown};
-    s.wallet=stepDip(s.wallet,b,c,{reference:reference.ready?reference.center-Number(TICK*BigInt(c.slippageTicks))/1e6:null,allowEntry:signal.admitted&&risk.allowed&&!cooldown,minimumEdge:p.minimumDip,takeProfit:p.takeProfit,horizonMs:p.maximumHoldMs,maxMarketCost:p.maxMarketCost});
+    const scheduled=!p.requireScheduledEntry||(Array.isArray(e.entryMarketIds)&&e.entryMarketIds.includes(id));
+    s.wallet=stepDip(s.wallet,b,c,{reference:reference.ready?reference.center-Number(TICK*BigInt(c.slippageTicks))/1e6:null,allowEntry:signal.admitted&&risk.allowed&&!cooldown&&scheduled,minimumEdge:p.minimumDip,takeProfit:p.takeProfit,horizonMs:p.maximumHoldMs,maxMarketCost:p.maxMarketCost,executionPolicy:p.executionPolicy});
     if(wasHeld&&!s.wallet.strategies.mean_reversion.positions[b.instrument])s.cooldowns[id]=new Date(Date.parse(b.receivedAt)+p.cooldownMs).toISOString();
    }
    appendBook(s,b,p);
@@ -72,7 +75,7 @@ export function dipReport(s,bank,at,coverage){
  return {mode:'diversified_historical_dip_paper',updatedAt:at,feeBps:0,bankHash:s.bankHash,cutoff:bank.cutoff,sourceSequence:s.sourceSequence,sourceHash:s.lastRecordHash,observations:r.observations,universeSize:bank.universe.exchanges.length,historiesAvailable:Object.keys(s.histories).length,bookHistoriesAvailable:Object.keys(s.bookHistory).length,signals:s.signals,depthPlan:dipDepthPlan(s,bank,coverage,Date.parse(at)),strategy:v,performance:dipPerformance(s.wallet.strategies.mean_reversion.fills,v.positions,at),policy:bank.policy,config:bank.config,networkRequests:0,competitionOrders:0,profitabilityEstablished:false};
 }
 if(process.argv[1]&&fileURLToPath(import.meta.url)===process.argv[1]){
- const argIndex=process.argv.indexOf('--name'),name=argIndex<0?'dip':process.argv[argIndex+1];if(!['dip','dip-scale'].includes(name))throw Error('Unknown dip worker');
+ const argIndex=process.argv.indexOf('--name'),name=argIndex<0?'dip':process.argv[argIndex+1];if(!['dip','dip-scale','dip-responsive'].includes(name))throw Error('Unknown dip worker');
  const dir=process.env.SIG_PAPER_DIR||path.join(process.env.LOCALAPPDATA,'SigTradingCup','paper-runtime'),workspace=path.dirname(path.dirname(fileURLToPath(import.meta.url))),release=lock(path.join(dir,name+'-shadow.lock'));process.on('exit',release);
  const bank=JSON.parse(fs.readFileSync(path.join(dir,name+'-bank.json'))),file=path.join(dir,name+'-state.json');let s=JSON.parse(fs.readFileSync(file)),partials=0;
  const stopped=()=>['STOP','DIP_STOP'].some(f=>fs.existsSync(path.join(dir,f)))||fs.existsSync(path.join(workspace,'STOP'));
