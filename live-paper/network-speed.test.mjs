@@ -27,3 +27,12 @@ test('slow persistence, stale write permits and manual-review failures still pre
  await assert.rejects(client.dispatch({method:'POST',endpoint:'/orders',beforeDispatch:async()=>{},beforeNetwork:async()=>{if(now>10000)throw Error('STALE');}}),/STALE/);assert.equal(calls,0);assert.equal(persisted,2500);
  client.manualReview=true;await assert.rejects(client.request(route),/manual review/);assert.equal(calls,0);
 });
+test('STOP while queued behind a read prevents the faster client from sending a write',async()=>{
+ let now=0,writes=0;const control=new AbortController(),client=new ReadClient('FAKE',{networkBudget:budget,signal:control.signal,now:()=>now,sleepFn:async ms=>{now+=ms;control.abort();},authorizeDispatch:()=>true,fetchFn:async(_url,o)=>{if(o.method!=='GET')writes++;return ok();}});
+ await client.request(route);await assert.rejects(client.dispatch({method:'POST',endpoint:'/orders',beforeDispatch:async()=>{},beforeNetwork:async()=>{}}),/Stopped/);assert.equal(writes,0);
+});
+test('overflowing Retry-After and failed timing publication retain their persistent manual-review fences',async()=>{
+ for(const fail of ['retry','timing']){let persisted,calls=0;const client=new ReadClient('FAKE',{networkBudget:budget,now:()=>0,onAdmission:n=>persisted=n,onTiming:()=>{if(fail==='timing')throw Error('PRIVATE_DETAIL');},fetchFn:async()=>{calls++;return fail==='retry'?{ok:false,status:429,headers:new Headers({'Retry-After':'99999999999999999999999999999999999'})}:ok();}});
+  await assert.rejects(client.request(route));assert.equal(client.manualReview,true);assert.equal(persisted,null);await assert.rejects(client.request(route));assert.equal(calls,1);
+ }
+});
