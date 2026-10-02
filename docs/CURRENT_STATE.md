@@ -133,13 +133,17 @@ Under standard 0-or-1 settlement and no further trades, fees, refunds or sponsor
 
 ## Current operating mode
 
-The historical portfolio review above remains an observation from 06:06 UTC. Under the human's subsequent October 2 reassignment, Codex is sole execution owner and Daenerys is an advisory researcher. Daenerys confirmed the former account worker stopped, with no outstanding write ambiguity, in issue comment 5947535773.
+Codex is the sole execution owner under the human's October 2 reassignment. Daenerys remains advisory; the former account worker was confirmed stopped in issue comment 5947535773. The historical portfolio observations above are preserved separately from current bot-attributed activity.
 
-A bounded Codex pilot is deployed from commit 1c25f85d71eec2928ec7f4b6953dc374f0d08dae. It requires current scoped API reconciliation before writes, maintains separate attributed inventory, and does not adopt the historical holdings above. Runtime status is shown in the local dashboard. Initial limits are 25 SUSQies per order, 100 aggregate attributed cost, 100 cumulative purchases and three markets, with zero added fees. The ownership record states deployment status; it is not a mutex or proof of a fill.
+The same small pilot run, `sig-pilot-20261002-0824`, was renewed at **2026-10-02 14:18:24.002 UTC**, with new entries authorized until **20:18:24.002 UTC**. The original authorization is archived. Cumulative accounting was retained: **4.360 SUSQ** of the unchanged 100 SUSQ cumulative purchase ceiling has been consumed. Limits remain 25 SUSQ per order, 100 SUSQ aggregate attributed cost, three markets, 1% displayed depth and zero added fees. The ownership file is a coordination record, not an execution lock.
+
+The collector restarted with the authorization-window correction in commit 8d5c4d4a7a52c82f0702e57ca62398d145a2ce5a. Fresh official account, market and book bootstrap completed at **14:19:11.843 UTC**. At 14:19:54, six attributed orders were reconciled across two completed roundtrips, with no open bot intent or bot-owned inventory and **+0.035 SUSQ realized P&L**. That tiny sample does not establish profitability or justify scaling; it excludes the older unrelated holdings described above. Current runtime observations are displayed in the local dashboard.
+
+BUY authorization is rechecked at preparation and both queued dispatch fences. Owned exits, cancellation and reconciliation remain available outside the entry window; any expired recovery reuses the previously attempted exact key and payload.
 
 ## Next useful work
 
-1. Refresh cash, holdings, orders and fills before any new trade proposal or execution
-2. Keep paper/replay PR #5, read-only feed PR #6 and offline ML PR #7 separate from execution; synthetic tests are not evidence of profitable strategy or a live-trading gate pass
-3. Investigate the valuation and cash-display precision questions without assuming a bug, fee, or arbitrage opportunity
-4. Review [Florida/NC conservative scenarios](../research/fl_nc_conservative_bands_2026-10-01.md) and the [new-race shortlist](../research/new_edges_2026-10-01.md). Subjective bands and illustrative price hurdles are not calibrated probabilities or standing executable limits
+1. Keep one collector and all existing workers healthy, preserving frozen banks, source journals and cumulative risk limits.
+2. Compare the fixed dip/rebound wallets on subsequent live observations; recent quiet price paths have produced no qualifying signals.
+3. Test price-protected entry execution prospectively under unchanged discount gates. Two observed official entries caught short-lived ask concessions; this motivates a test, not a profitability claim. A quote touch or depth disappearance is insufficient proof of a resting fill.
+4. Monitor actual completed-trade economics and fresh account reconciliation before any scaling or further pilot-window renewal.

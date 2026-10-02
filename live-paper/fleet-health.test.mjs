@@ -30,6 +30,24 @@ test('script identity requires a complete path token, including quoted absolute 
   b.processes[123].commandLine = '"C:\\Program Files\\nodejs\\node.exe" "C:\\Project Space\\live-paper\\dip-shadow.mjs" --name dip';
   assert.equal(assessWorker(b, now).process.identity, 'matches_expected_script');
 });
+
+test('staged dip hosts accept only the two exact scripts and one exact cohort argument', () => {
+  const b = base(); b.spec.alternateScripts = ['live-paper/dip-worker.mjs'];
+  for (const script of ['dip-shadow', 'dip-worker']) {
+    b.processes[123].commandLine = 'node live-paper/' + script + '.mjs --name dip';
+    assert.equal(assessWorker(b, now).process.identity, 'matches_expected_script');
+  }
+  for (const command of ['node live-paper/dip-worker.mjs --name dip-scale',
+    'node live-paper/dip-worker.mjs --name dip-scale --name dip',
+    'node live-paper/dip-worker.mjs --name dip --name dip',
+    'node live-paper/dip-worker.mjs.backup --name dip',
+    'node other-live-paper/dip-worker.mjs --name dip']) {
+    b.processes[123].commandLine = command;
+    assert.equal(assessWorker(b, now).process.identity, 'different_process', command);
+  }
+  b.processes[123].commandLine = '"C:\\Program Files\\node.exe" "C:\\Project Space\\live-paper\\dip-worker.mjs" --name "dip"';
+  assert.equal(assessWorker(b, now).process.identity, 'matches_expected_script');
+});
 test('worker ahead of the captured source snapshot cannot report running', () => {
   const b = base(); b.report.sourceSequence = 99; b.source.sequence = 20;
   const r = assessWorker(b, now); assert.equal(r.status, 'source_snapshot_unverified');

@@ -18,7 +18,7 @@ const specs = [
   {name: 'collector', stats: 'stats', pid: 'pid.txt', script: 'live-paper/runner.mjs', stop: 'COLLECTOR_STOP'},
   {name: 'fee-free', script: 'live-paper/fee-free-shadow.mjs', stop: 'FEE_FREE_STOP'},
   {name: 'ml', script: 'live-paper/ml-shadow.mjs', stop: 'ML_STOP'},
-  ...['dip', 'dip-scale', 'dip-responsive'].map(name => ({name, script: 'live-paper/dip-shadow.mjs', stop: 'DIP_STOP', cohortArgument: name})),
+  ...['dip', 'dip-scale', 'dip-responsive'].map(name => ({name, script: 'live-paper/dip-shadow.mjs', alternateScripts: ['live-paper/dip-worker.mjs'], stop: 'DIP_STOP', cohortArgument: name})),
   {name: 'shock', script: 'live-paper/shock-shadow.mjs', stop: 'SHOCK_STOP'},
   {name: 'passive', script: 'live-paper/passive-watch.mjs', stop: 'PASSIVE_STOP', lock: 'passive-watch.lock'},
   {name: 'basket', script: 'live-paper/basket-watch.mjs', stop: 'BASKET_STOP', lock: 'basket-watch.lock'},
@@ -92,10 +92,12 @@ export function assessWorker(input, now = Date.now()) {
   const probe = processId === null ? {} : processes[processId] ?? {};
   const command = typeof probe.commandLine === 'string' ? probe.commandLine.replaceAll('\\', '/').toLowerCase() : null;
   const tokens = command?.match(/"[^"]*"|'[^']*'|[^\s]+/g)?.map(token => token.replace(/^["']|["']$/g, '')) ?? [];
-  const expectedScript = spec.script.toLowerCase();
-  const scriptMatches = tokens.some(token => token === expectedScript || token.endsWith('/' + expectedScript));
+  const expectedScripts = [spec.script, ...(spec.alternateScripts || [])].map(s => s.toLowerCase());
+  const scriptMatches = tokens.some(token => expectedScripts.some(script => token === script || token.endsWith('/' + script)));
+  const cohortFlags = tokens.map((token,index) => token === '--name' ? index : -1).filter(index => index >= 0);
+  const cohortMatches = !spec.cohortArgument || (cohortFlags.length === 1 && tokens[cohortFlags[0] + 1] === spec.cohortArgument);
   let identity = command === null ? 'unverified' : scriptMatches
-    && (!spec.cohortArgument || new RegExp('--name[ =]+["\']?' + spec.cohortArgument + '(?:["\']|\\s|$)').test(command)) ? 'matches_expected_script' : 'different_process';
+    && cohortMatches ? 'matches_expected_script' : 'different_process';
   const oldestClaim = claims.filter(c => c.pid === processId && c.modifiedAt).map(c => Date.parse(c.modifiedAt));
   if (probe.startedAt && oldestClaim.length && Date.parse(probe.startedAt) > Math.min(...oldestClaim) + 5000) identity = 'pid_reused_after_claim';
   const processState = reportedPids.length > 1 ? 'conflicting_pid_claims' : processId === null ? 'unknown_pid' : probe.alive === false ? 'exited'

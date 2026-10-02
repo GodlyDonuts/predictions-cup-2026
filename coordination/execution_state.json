@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "recorded_at_utc": "2026-10-02T08:25:30.900Z",
+  "recorded_at_utc": "2026-10-02T14:18:24.002Z",
   "execution_coordinator": "Codex",
   "codex_mode": "sole_execution_owner",
   "daenerys_mode": "advisory_research_only",
@@ -21,7 +21,7 @@
     "Fresh scoped account reconciliation and durable idempotent intent precede orders.",
     "Future agent-initiated ownership transfers need a named explicit handoff; direct human instructions take precedence."
   ],
-  "code_commit": "1c25f85d71eec2928ec7f4b6953dc374f0d08dae",
+  "code_commit": "8d5c4d4a7a52c82f0702e57ca62398d145a2ce5a",
   "pilot": {
     "run_id": "sig-pilot-20261002-0824",
     "max_order_cost_susq": "25.000000",
@@ -29,6 +29,17 @@
     "max_cumulative_purchases_susq": "100.000000",
     "max_managed_markets": 3,
     "added_fee_bps": 0,
-    "entry_expires_at_utc": "2026-10-02T14:24:18.364Z"
-  }
+    "entry_expires_at_utc": "2026-10-02T20:18:24.002Z",
+    "authorization_window_started_at_utc": "2026-10-02T14:18:24.002Z",
+    "cumulative_purchase_budget_reset": false
+  },
+  "authorization_history": [
+    {
+      "started_at_utc": "2026-10-02T08:24:18.364Z",
+      "entry_expires_at_utc": "2026-10-02T14:24:18.364Z",
+      "activation_sha256": "8cb05a53b1ce4a635d52e94f1eb967bef938c57d3024d0b951c301e4365be890",
+      "replaced_at_utc": "2026-10-02T14:18:24.002Z",
+      "reason": "Continued human-authorized small pilot under same run and cumulative limits; prior authorization archived locally."
+    }
+  ]
 }
