@@ -48,7 +48,7 @@ function fairOrder(ids, state, scope, kind) {
 }
 
 function inputsOf(inputs, scope) {
-  return Object.fromEntries(['heldMarketIds', 'pendingMarketIds', 'candidateMarketIds', 'excludedMarketIds', 'usableMarketIds'].map(key => [key, proposals(inputs[key], scope, key)]));
+  return Object.fromEntries(['priorityManagedMarketIds', 'heldMarketIds', 'pendingMarketIds', 'candidateMarketIds', 'excludedMarketIds', 'usableMarketIds'].map(key => [key, proposals(inputs[key], scope, key)]));
 }
 
 export function createSchedulerState(scope) {
@@ -66,7 +66,8 @@ export function validateSchedulerState(state, scope) {
 export function planBookReads(state, rawScope, inputs = {}, {budget = 4, managedCapacity = 3, comparisonSlots = 2} = {}) {
   const scope = scopeOf(rawScope), copy = checkedState(state, scope), values = inputsOf(inputs, scope);
   if (!Number.isSafeInteger(budget) || budget < 1 || budget > 4 || !Number.isSafeInteger(managedCapacity) || managedCapacity < 0 || managedCapacity >= budget || !Number.isSafeInteger(comparisonSlots) || comparisonSlots < 0 || comparisonSlots > budget) throw Error('Invalid scheduler book budget or headroom');
-  const managedMarketIds = unique([...values.heldMarketIds, ...values.pendingMarketIds]);
+  const priorityManagedMarketIds = values.priorityManagedMarketIds, priorityManaged = new Set(priorityManagedMarketIds);
+  const managedMarketIds = unique([...priorityManagedMarketIds, ...values.heldMarketIds, ...values.pendingMarketIds]);
   const excluded = new Set(values.excludedMarketIds), managed = new Set(managedMarketIds), reads = [], selected = new Set();
   const add = (marketId, reason) => {
     if (reads.length >= budget || selected.has(marketId) || excluded.has(marketId)) return false;
@@ -74,7 +75,10 @@ export function planBookReads(state, rawScope, inputs = {}, {budget = 4, managed
     reads.push({...scope.markets.get(marketId), path: scope.core.has(marketId) ? 'sourceSnapshots' : 'supplementalDepth', reason});
     return true;
   };
-  for (const marketId of fairOrder(managedMarketIds, copy, scope, 'book')) add(marketId, 'held_or_pending');
+  // Actual obligations must keep their slots even when shadow wallets hold many
+  // markets. Retain persisted fairness inside each group and share one budget.
+  for (const marketId of fairOrder(priorityManagedMarketIds, copy, scope, 'book')) add(marketId, 'priority_held_or_pending');
+  for (const marketId of fairOrder(managedMarketIds.filter(value => !priorityManaged.has(value)), copy, scope, 'book')) add(marketId, 'held_or_pending');
   const availableCapacity = Math.max(0, managedCapacity - managed.size), entryMarketIds = [];
   for (const marketId of fairOrder(values.candidateMarketIds.filter(value => !managed.has(value)), copy, scope, 'book')) {
     if (entryMarketIds.length >= availableCapacity) break;
@@ -87,7 +91,7 @@ export function planBookReads(state, rawScope, inputs = {}, {budget = 4, managed
   }
   for (const marketId of fairOrder(scope.marketIds.filter(value => !scope.core.has(value)), copy, scope, 'book')) add(marketId, 'discovery');
   return {
-    state: copy, reads, managedCapacity, managedMarketIds, availableCapacity, entryMarketIds,
+    state: copy, reads, managedCapacity, managedMarketIds, priorityManagedMarketIds, availableCapacity, entryMarketIds,
     overCapacity: managed.size > managedCapacity,
     unserviceableManagedMarketIds: managedMarketIds.filter(value => excluded.has(value)),
     deferredCandidateMarketIds: values.candidateMarketIds.filter(value => !managed.has(value) && !entryMarketIds.includes(value)),
@@ -101,8 +105,9 @@ export function planBookReads(state, rawScope, inputs = {}, {budget = 4, managed
 export function planHistoryReads(state, rawScope, inputs = {}, {budget = 1, activeSetLimit = 8, discoveryEvery = 4} = {}) {
   const scope = scopeOf(rawScope), copy = checkedState(state, scope), values = inputsOf(inputs, scope);
   if (!Number.isSafeInteger(budget) || budget < 1 || budget > 2 || !Number.isSafeInteger(activeSetLimit) || activeSetLimit < 1 || activeSetLimit > 8 || !Number.isSafeInteger(discoveryEvery) || discoveryEvery < 2 || discoveryEvery > 8) throw Error('Invalid scheduler history budget');
-  const excluded = new Set(values.excludedMarketIds), managed = unique([...values.heldMarketIds, ...values.pendingMarketIds]);
+  const excluded = new Set(values.excludedMarketIds), managed = unique([...values.priorityManagedMarketIds, ...values.heldMarketIds, ...values.pendingMarketIds]);
   const priority = unique([
+    ...fairOrder(values.priorityManagedMarketIds, copy, scope, 'history'),
     ...fairOrder(managed, copy, scope, 'history'),
     ...fairOrder(values.candidateMarketIds, copy, scope, 'book'),
     // Stable universe order keeps the retained usable set bounded across reads.

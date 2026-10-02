@@ -44,7 +44,8 @@ function schedulingInputs(){
   sources.push({state,bank,healthy});
  }
  const inputs=collectionInputs(sources,universe,coverage,Date.now());
- inputs.heldMarketIds=[...new Set([...inputs.heldMarketIds,...(competition?.managedMarketIds()||[])])];return inputs;
+  inputs.priorityManagedMarketIds=competition?.managedMarketIds()||[];
+  inputs.heldMarketIds=[...new Set([...inputs.heldMarketIds,...inputs.priorityManagedMarketIds])];return inputs;
 }
 let accountCache={errors:{}},officialSync=false;
 function publishAccount(){atomicJson(path.join(runtimeDir,'official-account.json'),accountCache);}
@@ -123,8 +124,10 @@ try{
       const orders=await api.orders();
       const excluded=exclusionSet(positions.data.positions,orders);
       if(officialSync){try{accountCache.orders=accountOrders(orders,new Date().toISOString());delete accountCache.errors.orders;publishAccount();}catch{accountCache.errors.orders={at:new Date().toISOString(),reason:'unavailable_or_invalid'};publishAccount();}}
-      if(competition)try{await competition.beforeBooks({positions,orders,ordersAt:new Date().toISOString(),candidateMarketIds:schedulingInputs().candidateMarketIds});}catch(e){competition.failure(e);}
+      // Freeze one plan before metadata selection; do not resample shadow state
+      // or reorder candidates between the controller and these book requests.
       const planned=dipBank?planBookReads(scheduler,schedulerScope,schedulingInputs()):{reads:[...c.marketIds.map(marketId=>({marketId,path:'sourceSnapshots'})),...depthPlan.marketIds.map(marketId=>({marketId,path:'supplementalDepth'}))],entryMarketIds:[]};
+      if(competition)try{await competition.beforeBooks({positions,orders,ordersAt:new Date().toISOString(),candidateMarketIds:planned.entryMarketIds});}catch(e){competition.failure(e);}
       const supplementalDepth=[];
       for(const spec of planned.reads){
         if(stopping||api.cooldown>Date.now())break;
@@ -155,7 +158,7 @@ try{
       }
       const at=new Date().toISOString();sampleEquity(state,c,at);assertState(state,c);commit({type:'cycle',clockAt:at,sourceSnapshots:events,supplementalDepth,entryMarketIds:[...new Set([...planned.entryMarketIds,...(planned.managedMarketIds||[])])],bulkPrices,bulkPriceError,accountExclusions:[...excluded],exclusionObservedAt:positions.receivedAt});cycleCommitted=true;
       runtime.cycles++;runtime.lastCycleAt=at;runtime.status=stopping?'stopping':successful?'running':'degraded';persistStatus();
-      console.log(JSON.stringify({at,event:'paper_cycle',cycle:runtime.cycles,observations:state.observations,fills:Object.fromEntries(Object.entries(state.strategies).map(([k,s])=>[k,s.fills.length])),competitionOrders:competition?Object.values(competition.state.intents).filter(i=>i.attempts>0).length:0}));
+      console.log(JSON.stringify({at,event:'paper_cycle',cycle:runtime.cycles,observations:state.observations,fills:Object.fromEntries(Object.entries(state.strategies).map(([k,s])=>[k,s.fills.length])),competitionOrders:competition?Object.values(competition.state.intents).filter(i=>Number.isSafeInteger(i.orderId)&&i.orderId>0).length:0}));
     }catch(e){if(e.durableRecordingFailed)throw e;if(stopping){if(!cycleCommitted)state=checkpoint;break;}const at=new Date().toISOString();invalidate(state,null,at,'account_reconciliation_unavailable');runtime.errors.push({at,reason:e.status?'http_'+e.status:e.message});runtime.errors=runtime.errors.slice(-20);runtime.status=e.recoverable?'degraded':'failed';persistStatus();if(e.recoverable){commit({type:'account_read_outage',clockAt:at,reason:e.status?'http_'+e.status:'connection_unavailable'});await pauseUntilNextRead(Math.max(10000,api.cooldown-Date.now()));continue;}throw Error('Paper runner stopped: '+runtime.errors.at(-1).reason);}
     if(!stopping&&runtime.cycles<maxCycles)await pauseUntilNextRead(Math.max(1000,c.cycleIntervalMs-(Date.now()-cycleStart)));
   }

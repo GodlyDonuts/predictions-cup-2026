@@ -134,6 +134,7 @@ test('a book that becomes stale in the shared queue cannot dispatch its prepared
   const f = fixture(t); f.server.beforeGuard = () => f.advance(21000); await f.cycle();
   assert.equal(f.server.posts.length, 0); const intent = Object.values(f.controller.state.intents)[0];
   assert.equal(intent.status, 'closed'); assert.equal(intent.attempts, 0); assert.equal(f.controller.reason, 'STALE_BOOK_EVIDENCE');
+  const stats=JSON.parse(fs.readFileSync(path.join(f.dir,'competition-stats.json')));assert.equal(stats.ordersSubmitted,0);assert.equal(stats.dispatchAttempts,0);assert.equal(stats.unconfirmedIntents,0);
 });
 
 test('stale full-account snapshot prevents preparation even with a fresh book', async t => {
@@ -249,6 +250,7 @@ test('cleanup cannot cancel an unrelated order or a known order without an activ
 test('slow durable admission cannot dispatch stale evidence at the final network fence', async t => {
   const f = fixture(t); f.server.afterGuard = () => f.advance(25000); await f.cycle();
   assert.equal(f.server.posts.length, 0); assert.equal(f.controller.active().status, 'uncertain'); assert.equal(f.controller.reason, 'STALE_BOOK_EVIDENCE');
+  const stats=JSON.parse(fs.readFileSync(path.join(f.dir,'competition-stats.json')));assert.equal(stats.ordersSubmitted,0);assert.equal(stats.dispatchAttempts,1);assert.equal(stats.unconfirmedIntents,1);
 });
 
 test('controller metadata is validated on durable replay', async t => {

@@ -1,9 +1,65 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createSchedulerState, validateSchedulerState, planBookReads, planHistoryReads, recordSchedulerAttempts} from './book-scheduler.mjs';
+import {CompetitionController} from '../execution/controller.mjs';
 
 const scope = (count = 12) => ({universe: {tournamentId: 'fixture-tournament', exchanges: Array.from({length: count}, (_, index) => ({marketId: String(index + 1), exchangeId: String(index + 101), option: 'YES'}))}, coreMarketIds: ['1', '2', '3', '4']});
 const ids = plan => plan.reads.map(read => read.marketId);
+
+// Exercise the actual controller selection method with read-only metadata mocks.
+async function selectControllerBooks(plan, s, ownedMarketIds = []) {
+  const metadataReads = [], controller = {
+    bootstrapped: true, state: {owned: Object.fromEntries(ownedMarketIds.map(id => [id, {marketId: id}]))}, universe: s.universe, markets: {},
+    assertLedgers() {}, canOperate() { return true; }, setAccount() {}, active() {}, async cashRefresh() {}, publish() {},
+    transport: {async market(id) { metadataReads.push(id); return {receivedAt: new Date().toISOString(), data: {title: 'Fixture', status: 'open', contexts: [{status: 'open', settledWith: null}]}}; }},
+  };
+  await CompetitionController.prototype.beforeBooks.call(controller, {positions: [], orders: [], ordersAt: new Date().toISOString(), candidateMarketIds: plan.entryMarketIds});
+  return {selected: controller.selected, metadataReads};
+}
+
+test('one frozen book plan supplies controller candidates when the raw first candidate is deferred', async () => {
+  const s = scope(), raw = {heldMarketIds: ['1', '2'], candidateMarketIds: ['5', '6']};
+  const state = recordSchedulerAttempts(createSchedulerState(s), s, {bookMarketIds: ['5']});
+  const planned = planBookReads(state, s, raw);
+  assert.deepEqual(planned.entryMarketIds, ['6']);
+  assert.ok(!ids(planned).includes(raw.candidateMarketIds[0]), 'Original raw-first selection had no scheduled book');
+  const controller = await selectControllerBooks(planned, s);
+  assert.deepEqual(controller.selected, ['6']);
+  assert.deepEqual(controller.metadataReads, ['6']);
+  assert.ok(controller.selected.every(id => ids(planned).includes(id)));
+  raw.candidateMarketIds.reverse();
+  assert.deepEqual(controller.selected, planned.entryMarketIds, 'Later shadow input changes cannot change the retained cycle plan');
+});
+
+test('actual obligations receive books before any number of shadow holdings and paper slots remain fair', async () => {
+  const s = scope(), official = ['9', '10', '11'], shadow = ['1', '2', '3', '4', '5', '6', '7', '8'];
+  const inputs = {priorityManagedMarketIds: official, heldMarketIds: [...shadow, ...official], candidateMarketIds: ['12']};
+  let state = recordSchedulerAttempts(createSchedulerState(s), s, {bookMarketIds: official});
+  const seenShadow = new Set();
+  for (let cycle = 0; cycle < shadow.length; cycle++) {
+    const planned = planBookReads(state, s, inputs);
+    assert.equal(planned.reads.length, 4);
+    assert.deepEqual(new Set(ids(planned).slice(0, 3)), new Set(official));
+    assert.equal(planned.reads[3].reason, 'held_or_pending');
+    assert.deepEqual(planned.entryMarketIds, []);
+    const controller = await selectControllerBooks(planned, s, official);
+    assert.ok(controller.selected.every(id => ids(planned).includes(id)));
+    seenShadow.add(planned.reads[3].marketId);
+    state = JSON.parse(JSON.stringify(recordSchedulerAttempts(state, s, {bookMarketIds: ids(planned)})));
+  }
+  assert.deepEqual(seenShadow, new Set(shadow));
+});
+
+test('priority obligations preserve partial-attempt fairness, capacity and history membership', () => {
+  const s = scope(), inputs = {priorityManagedMarketIds: ['9', '10', '11'], heldMarketIds: ['1', '2', '3', '4', '5', '6', '7', '8', '9'], candidateMarketIds: ['12']};
+  const state = recordSchedulerAttempts(createSchedulerState(s), s, {bookMarketIds: ['9']});
+  const planned = planBookReads(JSON.parse(JSON.stringify(state)), s, inputs);
+  assert.deepEqual(ids(planned).slice(0, 3), ['10', '11', '9']);
+  assert.equal(new Set(ids(planned)).size, 4);
+  assert.equal(planned.availableCapacity, 0);
+  assert.deepEqual(planHistoryReads(state, s, inputs).activeMarketIds.slice(0, 3), ['9', '10', '11']);
+  assert.throws(() => planBookReads(state, s, {priorityManagedMarketIds: ['999']}), /foreign/);
+});
 
 test('held core and supplemental positions precede candidates and preserve replay paths', () => {
   const s = scope(), state = createSchedulerState(s);
