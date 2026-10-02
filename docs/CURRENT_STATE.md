@@ -133,10 +133,9 @@ Under standard 0-or-1 settlement and no further trades, fees, refunds or sponsor
 
 ## Current operating mode
 
-- dot remains the sole execution coordinator, under separate user authorization
-- Codex/Drogon remains research, quantitative strategy and development only; experimental bot remains paper-only and bot API writes disabled
-- This reconciliation created no order, API key, runner, schedule, webhook or ownership handoff
-- The ownership record and unrelated repository blobs remain unchanged; no independent code branch is merged or force-updated
+The historical portfolio review above remains an observation from 06:06 UTC. Under the human's subsequent October 2 reassignment, Codex is sole execution owner and Daenerys is an advisory researcher. Daenerys confirmed the former account worker stopped, with no outstanding write ambiguity, in issue comment 5947535773.
+
+A bounded Codex pilot is deployed from commit 1c25f85d71eec2928ec7f4b6953dc374f0d08dae. It requires current scoped API reconciliation before writes, maintains separate attributed inventory, and does not adopt the historical holdings above. Runtime status is shown in the local dashboard. Initial limits are 25 SUSQies per order, 100 aggregate attributed cost, 100 cumulative purchases and three markets, with zero added fees. The ownership record states deployment status; it is not a mutex or proof of a fill.
 
 ## Next useful work
 
