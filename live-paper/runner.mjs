@@ -163,7 +163,7 @@ try{
   if(journal.last&&journal.last.state.engineRevision!==state.engineRevision)commit({type:'paper_engine_upgrade',fromRevision:journal.last.state.engineRevision||1,toRevision:state.engineRevision});
   api=new ReadClient(loadKey(),{interval:c.readIntervalMs,networkBudget,signal:control.signal,authorizeDispatch:spec=>basketRelationships?.authorizes(spec)===true||realtime?.authorizes(spec)===true||competition?.transport.authorizeRequest(spec)===true,onAdmission:next=>atomicJson(path.join(runtimeDir,'rate.json'),{next,manualReview:next===null}),onTiming:event=>{validateTiming(event);fs.appendFileSync(path.join(runtimeDir,'read-timings.jsonl'),JSON.stringify(event)+'\n',{mode:0o600});recentReadTimings.push(event);if(recentReadTimings.length>1000)recentReadTimings.shift();runtime.readTiming=timingSummary(recentReadTimings);}});
   basketRelationships=createBasketRelationshipReader({tournamentId:c.tournamentId,now:Date.now,dispatch:spec=>api.dispatch(spec),canOperate:()=>!stopping&&!api.manualReview&&!fs.existsSync(stopFile)&&!fs.existsSync(paperStop)&&!fs.existsSync(collectorStop)&&!fs.existsSync(path.join(runtimeDir,'BASKET_STOP'))});
-  runtime.networkBudget={mode:networkBudget?'coordinated_sole_client':'default',intervalMs:networkIntervalMs,completionPacing:api.completionPacing};
+  runtime.networkBudget={mode:networkBudget?'coordinated_sole_client':'default',schemaVersion:networkBudget?.schemaVersion??null,intervalMs:networkIntervalMs,writeIntervalMs:api.writeInterval,completionPacing:api.completionPacing};
   if(runtime.collectionPlan)runtime.collectionPlan.readIntervalMs=networkIntervalMs;
   const activationFile=path.join(runtimeDir,'competition-activation.json');
   if(fs.existsSync(activationFile)&&JSON.parse(fs.readFileSync(activationFile)).enabled===true)competition=new CompetitionController({runtimeDir,api,universe,config:c,isStopped:()=>stopping,activation:JSON.parse(fs.readFileSync(activationFile))});
@@ -182,7 +182,7 @@ try{
       runtime.realtime={mode:'market_capture_only',recoveryBudgetPerCycle:1};
     }
   }
-  if(networkBudget)commit({type:'collection_network_budget',clockAt:new Date().toISOString(),cadencePolicy:{mode:'coordinated_sole_client',intervalMs:api.interval,completionPacing:true}});
+  if(networkBudget)commit({type:'collection_network_budget',clockAt:new Date().toISOString(),cadencePolicy:{mode:'coordinated_sole_client',schemaVersion:networkBudget.schemaVersion,intervalMs:api.interval,writeIntervalMs:api.writeInterval,completionPacing:true}});
   runtime.status='connecting';persistStatus();
   const html=fs.readFileSync(path.join(root,'dashboard.html'));
   server=http.createServer((req,res)=>{
