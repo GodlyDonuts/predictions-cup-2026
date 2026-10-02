@@ -1,0 +1,292 @@
+{
+  "created_at_utc": "2026-10-02T05:41:33Z",
+  "venue": "Susquehanna Predictions Cup",
+  "tournament": "Midterm Elections",
+  "currency": "SUSQies",
+  "observation_method": "Read-only fresh cloud-browser UI: actual orderbook tables and Info tab; no card-price inference, no API polling, no orders/cancels/account changes",
+  "quote_timestamp_scope": "UTC browser observation time, not exchange source/update time; the UI exposes no orderbook update timestamp",
+  "comparison_status": "Numeric differences only against parent-supplied external bid references observed around 05:15\u201305:20 UTC; external source quote age and exact settlement equivalence are not independently verified in this pass. Not a synchronized or executable arbitrage claim.",
+  "general_rule": {
+    "winning_party": "YES if the winning candidate is affiliated with specified party, NO otherwise",
+    "fusion_ticket": "Candidate counts for every party on fusion ticket; more than one party market can resolve YES",
+    "data_source": "Official election results from relevant election authorities",
+    "resolution": "Final, certified election results; recounts or legal challenges can delay resolution until certification",
+    "discretion": "Susquehanna may at sole discretion update rules, outcomes, or resolution at any time including after resolution or end date",
+    "displayed_resolution_time": "11/4/2026 at 12:00 PM EST",
+    "year_and_stage_caveat": "Info rule prose does not explicitly name 2026 or general election. 2026 is explicit in resolution date; 2026 midterm general election is supported by Midterm Elections tournament context, not an explicit general-election clause."
+  },
+  "markets": [
+    {
+      "market_id": 382,
+      "title": "Will the Republican Party win the New Hampshire Senate?",
+      "url": "https://sig.thesuper.market/markets/382?tournament=midterm-elections",
+      "side_checked": "NO",
+      "book_observed_at_utc": "2026-10-02T05:39:10Z",
+      "info_observed_at_utc": "2026-10-02T05:39:31Z",
+      "party": "Republican Party",
+      "race_exact_info": "U.S. Senate New Hampshire",
+      "asks": [
+        {
+          "price": 0.84,
+          "quantity": 3125
+        },
+        {
+          "price": 0.845,
+          "quantity": 31253
+        },
+        {
+          "price": 0.85,
+          "quantity": 45362
+        },
+        {
+          "price": 0.855,
+          "quantity": 100
+        },
+        {
+          "price": 0.86,
+          "quantity": 4279
+        },
+        {
+          "price": 0.865,
+          "quantity": 9906
+        },
+        {
+          "price": 0.87,
+          "quantity": 11610
+        }
+      ],
+      "bids": [
+        {
+          "price": 0.835,
+          "quantity": 964
+        },
+        {
+          "price": 0.82,
+          "quantity": 192
+        },
+        {
+          "price": 0.8,
+          "quantity": 420
+        },
+        {
+          "price": 0.785,
+          "quantity": 1000
+        },
+        {
+          "price": 0.775,
+          "quantity": 9988
+        }
+      ],
+      "supplied_previous_ask": 0.8,
+      "supplied_external_bid": 0.85,
+      "supplied_external_bid_size": null,
+      "numeric_external_bid_minus_current_ask": 0.01,
+      "connection_warning_observed": false,
+      "comparability_warning": "Certified election result based on winner affiliation, rather than seating. Do not equate Republican NO automatically with Democratic YES; fusion tickets and third parties matter. External seating-based settlement is not exact equivalent."
+    },
+    {
+      "market_id": 168,
+      "title": "Will the Democratic Party win the Iowa Governor?",
+      "url": "https://sig.thesuper.market/markets/168",
+      "side_checked": "YES",
+      "book_observed_at_utc": "2026-10-02T05:39:49Z",
+      "info_observed_at_utc": "2026-10-02T05:39:58Z",
+      "party": "Democratic Party",
+      "race_exact_info": "Governor of Iowa",
+      "asks": [
+        {
+          "price": 0.82,
+          "quantity": 23663
+        },
+        {
+          "price": 0.825,
+          "quantity": 1004
+        },
+        {
+          "price": 0.835,
+          "quantity": 2360
+        },
+        {
+          "price": 0.84,
+          "quantity": 350
+        },
+        {
+          "price": 0.845,
+          "quantity": 6931
+        },
+        {
+          "price": 0.85,
+          "quantity": 7743
+        },
+        {
+          "price": 0.855,
+          "quantity": 5845
+        }
+      ],
+      "bids": [
+        {
+          "price": 0.765,
+          "quantity": 1328
+        },
+        {
+          "price": 0.76,
+          "quantity": 19369
+        },
+        {
+          "price": 0.755,
+          "quantity": 500
+        },
+        {
+          "price": 0.75,
+          "quantity": 500
+        },
+        {
+          "price": 0.735,
+          "quantity": 4123
+        }
+      ],
+      "supplied_previous_ask": 0.815,
+      "supplied_external_bid": 0.84,
+      "supplied_external_bid_size": 1954,
+      "numeric_external_bid_minus_current_ask": 0.02,
+      "connection_warning_observed": false,
+      "comparability_warning": "Exact external party/year/stage and settlement rule remain unverified in this pass. Old 0.815 ask gone."
+    },
+    {
+      "market_id": 203,
+      "title": "Will the Democratic Party win the CA-48 House race?",
+      "url": "https://sig.thesuper.market/markets/203",
+      "side_checked": "YES",
+      "book_observed_at_utc": "2026-10-02T05:40:20Z",
+      "info_observed_at_utc": "2026-10-02T05:40:30Z",
+      "party": "Democratic Party",
+      "race_exact_info": "U.S. House California District 48",
+      "asks": [
+        {
+          "price": 0.89,
+          "quantity": 4000
+        },
+        {
+          "price": 0.9,
+          "quantity": 194
+        },
+        {
+          "price": 0.91,
+          "quantity": 224
+        },
+        {
+          "price": 0.915,
+          "quantity": 6636
+        },
+        {
+          "price": 0.92,
+          "quantity": 200
+        },
+        {
+          "price": 0.925,
+          "quantity": 200
+        }
+      ],
+      "bids": [
+        {
+          "price": 0.88,
+          "quantity": 122
+        },
+        {
+          "price": 0.875,
+          "quantity": 100
+        },
+        {
+          "price": 0.865,
+          "quantity": 100
+        },
+        {
+          "price": 0.855,
+          "quantity": 1613
+        },
+        {
+          "price": 0.83,
+          "quantity": 5492
+        }
+      ],
+      "supplied_previous_ask": 0.865,
+      "supplied_external_bid": 0.89,
+      "supplied_external_bid_size": 630,
+      "numeric_external_bid_minus_current_ask": 0,
+      "connection_warning_observed": false,
+      "comparability_warning": "No district map/boundary or redistricting clarification present in Info. 2026 California District 48 identity must be verified independently against external contract; old-boundary demographics/candidates must not be assumed. Old positive price gap is gone."
+    },
+    {
+      "market_id": 305,
+      "title": "Will the Democratic Party win the Michigan Governor?",
+      "url": "https://sig.thesuper.market/markets/305",
+      "side_checked": "YES",
+      "book_observed_at_utc": "2026-10-02T05:41:10Z",
+      "info_observed_at_utc": "2026-10-02T05:41:06Z",
+      "party": "Democratic Party",
+      "race_exact_info": "Governor of Michigan",
+      "asks": [
+        {
+          "price": 0.895,
+          "quantity": 1810
+        },
+        {
+          "price": 0.9,
+          "quantity": 95
+        },
+        {
+          "price": 0.92,
+          "quantity": 7135
+        },
+        {
+          "price": 0.93,
+          "quantity": 144
+        },
+        {
+          "price": 0.94,
+          "quantity": 100
+        },
+        {
+          "price": 0.95,
+          "quantity": 100
+        }
+      ],
+      "bids": [
+        {
+          "price": 0.88,
+          "quantity": 1100
+        },
+        {
+          "price": 0.855,
+          "quantity": 5331
+        },
+        {
+          "price": 0.835,
+          "quantity": 46835
+        },
+        {
+          "price": 0.83,
+          "quantity": 5492
+        },
+        {
+          "price": 0.81,
+          "quantity": 5628
+        }
+      ],
+      "supplied_previous_ask": 0.895,
+      "supplied_external_bid": 0.918,
+      "supplied_external_bid_size": 238,
+      "numeric_external_bid_minus_current_ask": 0.023,
+      "connection_warning_observed": true,
+      "connection_warning_detail": "At 05:40:49 UI displayed Reconnecting\u2026 prices may be out of date. One ordinary reload at 05:41:10 cleared warning and rendered same 0.895 \u00d7 1810 best ask. No exchange source timestamp available, so reload confirms fresh retrieval only, not age of underlying quotes. 0.925 \u00d7 205 from earlier observation absent after reload.",
+      "comparability_warning": "Exact external party/year/stage and settlement rule remain unverified in this pass; external bid size only 238 in supplied reference."
+    }
+  ],
+  "ranking_by_numeric_gap_only": [
+    305,
+    168,
+    382,
+    203
+  ],
+  "conclusion": "Michigan and Iowa remain the larger price-only leads, but all positive gaps rely on unsynchronized external references and unverified exact external predicates. NH shrank to 0.010. CA-48 gap is zero. No trades were taken."
+}

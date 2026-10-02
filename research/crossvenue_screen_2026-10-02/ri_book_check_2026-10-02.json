@@ -1,0 +1,239 @@
+{
+  "schema_version": 1,
+  "task": "Read-only fresh UI executable-book and settlement-rules check",
+  "checked_date_utc": "2026-10-02",
+  "browser": "Dedicated cloud Chrome; separate agent-created tabs 78 and 79; no API calls or orders",
+  "identity": {
+    "display_name": "happy-birch-7511",
+    "observed_at_utc": "2026-10-02T05:39:37Z",
+    "source": "Open account menu on market 388"
+  },
+  "tournament": {
+    "display_name": "Midterm Elections",
+    "currency": "SUSQies",
+    "year": 2026,
+    "year_evidence": "Both market Info pages and page contest footer display 2026 dates",
+    "available_balance_susqies": 98157.74
+  },
+  "timing": {
+    "timestamp_type": "Observer/system UTC completion timestamps; not exchange timestamps",
+    "first_387_observation_utc": "2026-10-02T05:38:21Z",
+    "first_388_observation_utc": "2026-10-02T05:38:56Z",
+    "sequential_lag_seconds": 35,
+    "additional_388_direct_no_book_utc": "2026-10-02T05:39:13Z",
+    "rules_388_observed_utc": "2026-10-02T05:39:27Z",
+    "rules_387_observed_utc": "2026-10-02T05:39:44Z",
+    "latest_387_book_utc": "2026-10-02T05:40:59Z",
+    "latest_observation_warning": "Latest 387 book is 106 seconds newer than direct 388 NO book; not simultaneous quotes."
+  },
+  "markets": [
+    {
+      "market_id": 387,
+      "url": "https://sig.thesuper.market/markets/387",
+      "title": "Will the Democratic Party win the Rhode Island Senate?",
+      "desired_action": "BUY YES",
+      "best_ask": 0.925,
+      "best_ask_quantity": 29113,
+      "best_bid": 0.91,
+      "best_bid_quantity": 3863,
+      "asks": [
+        {
+          "price": 0.925,
+          "quantity": 29113
+        },
+        {
+          "price": 0.93,
+          "quantity": 15051
+        },
+        {
+          "price": 0.935,
+          "quantity": 3068
+        },
+        {
+          "price": 0.94,
+          "quantity": 600
+        },
+        {
+          "price": 0.95,
+          "quantity": 6912
+        },
+        {
+          "price": 0.965,
+          "quantity": 46
+        },
+        {
+          "price": 0.97,
+          "quantity": 175
+        },
+        {
+          "price": 0.975,
+          "quantity": 37062
+        },
+        {
+          "price": 0.98,
+          "quantity": 3422
+        },
+        {
+          "price": 0.985,
+          "quantity": 36423
+        },
+        {
+          "price": 0.99,
+          "quantity": 16353
+        },
+        {
+          "price": 0.995,
+          "quantity": 420518
+        }
+      ],
+      "price_ceiling": 0.94,
+      "displayed_max_shares_at_or_below_ceiling": 47832,
+      "computed_cost_at_ceiling_depth": 44359.535,
+      "vwap_at_ceiling_depth": 0.9274028892791437,
+      "own_position_ui": "No open positions in this market",
+      "quote_evidence": "YES selected in Orderbook outcome perspective; top ask table and separate Buy Yes 0.925 SUSQies button",
+      "no_order_submitted": true,
+      "initial_observation": {
+        "best_ask": 0.925,
+        "best_ask_quantity": 39923,
+        "best_bid": 0.91,
+        "best_bid_quantity": 3863,
+        "asks": [
+          {
+            "price": 0.925,
+            "quantity": 39923
+          },
+          {
+            "price": 0.93,
+            "quantity": 15051
+          },
+          {
+            "price": 0.935,
+            "quantity": 3068
+          },
+          {
+            "price": 0.94,
+            "quantity": 600
+          },
+          {
+            "price": 0.95,
+            "quantity": 6912
+          },
+          {
+            "price": 0.965,
+            "quantity": 46
+          },
+          {
+            "price": 0.97,
+            "quantity": 175
+          },
+          {
+            "price": 0.975,
+            "quantity": 37062
+          },
+          {
+            "price": 0.98,
+            "quantity": 3422
+          },
+          {
+            "price": 0.985,
+            "quantity": 36423
+          },
+          {
+            "price": 0.99,
+            "quantity": 16353
+          },
+          {
+            "price": 0.995,
+            "quantity": 420518
+          }
+        ],
+        "displayed_max_shares_at_or_below_ceiling": 58642,
+        "computed_cost_at_ceiling_depth": 54358.785,
+        "vwap_at_ceiling_depth": 0.9269599433852871
+      },
+      "bid_levels_latest": [
+        {
+          "price": 0.91,
+          "quantity": 3863
+        },
+        {
+          "price": 0.9,
+          "quantity": 2222
+        },
+        {
+          "price": 0.895,
+          "quantity": 1000
+        }
+      ],
+      "latest_observation_utc": "2026-10-02T05:40:59Z"
+    },
+    {
+      "market_id": 388,
+      "url": "https://sig.thesuper.market/markets/388",
+      "title": "Will the Republican Party win the Rhode Island Senate?",
+      "desired_action": "BUY NO",
+      "best_ask": 0.94,
+      "best_ask_quantity": 3862,
+      "asks": [
+        {
+          "price": 0.94,
+          "quantity": 3862
+        },
+        {
+          "price": 0.96,
+          "quantity": 18261
+        },
+        {
+          "price": 0.97,
+          "quantity": 21151
+        },
+        {
+          "price": 0.98,
+          "quantity": 5943
+        },
+        {
+          "price": 0.985,
+          "quantity": 101546
+        },
+        {
+          "price": 0.99,
+          "quantity": 463336
+        },
+        {
+          "price": 0.995,
+          "quantity": 417584
+        }
+      ],
+      "price_ceiling": 0.95,
+      "displayed_max_shares_at_or_below_ceiling": 3862,
+      "computed_cost_at_ceiling_depth": 3630.28,
+      "vwap_at_ceiling_depth": 0.94,
+      "best_bid_initial": 0.875,
+      "best_bid_quantity_initial": 1714,
+      "best_bid_later": 0.9,
+      "best_bid_quantity_later": 2222,
+      "own_position_ui": "No open positions in this market",
+      "quote_evidence": "Initial YES bid .060 x3862 and Buy No .940 button; subsequently selected NO perspective and confirmed direct NO ask table",
+      "no_order_submitted": true
+    }
+  ],
+  "rules": {
+    "common_verbatim": "This market will resolve based on which party wins U.S. Senate Rhode Island. Market resolves to \"YES\" if the winning candidate is affiliated with the specified party, \"NO\" otherwise. A candidate running on a fusion ticket counts for every party on that ticket, so more than one party's market can resolve \"YES\" for the same race.",
+    "data_source": "Official election results from relevant election authorities",
+    "certification": "Resolution is based on final, certified election results",
+    "delay": "In case of recounts or legal challenges, resolution may be delayed until final results are certified",
+    "discretion": "Susquehanna may, at our sole discretion, update the rules, outcomes, or resolution of this market at any time, including after the resolution date or end date.",
+    "displayed_resolves": "11/4/2026 at 12:00 PM EST",
+    "status": "Active",
+    "logical_caveat": "Democratic YES and Republican NO generally express the same directional view but are not identical contingent claims. Fusion tickets or non-Democratic/non-Republican winners can differ."
+  },
+  "caveats": [
+    "Observed resting UI depth is not a guaranteed future fill; subsequent cancellations/trades can change it.",
+    "No real-money or mock orders were submitted.",
+    "Kalshi comparison quotes were only supplied as stale leads by parent and not independently checked in this task.",
+    "No portfolio-wide order check performed; parent had latest portfolio information and local market UI shows no positions.",
+    "An initial new-tab navigation to market 388 timed out, but tab inventory showed it loaded and its visible UI was then read successfully.",
+    "Unrelated guide, API collector, credentials, and user computer were not used or changed."
+  ]
+}

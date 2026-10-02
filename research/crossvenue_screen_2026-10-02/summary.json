@@ -1,0 +1,42 @@
+{
+  "generated_at_utc": "2026-10-02T05:36:19.831492+00:00",
+  "local_analysis_network_requests": 0,
+  "additional_Cup_or_public_reference_requests": 0,
+  "read_only_GitHub_source_fetches": 2,
+  "orders_by_screen": 0,
+  "bulk_rows": 237,
+  "identity_rows": 237,
+  "exact_id_intersection": 237,
+  "strict_full_identity_joins": 0,
+  "strict_executable_crossvenue_opportunities": 0,
+  "conditional_unique_office_state_district_party_joins": 226,
+  "unmatched_cup_markets": 11,
+  "ambiguous_multiple_reference_candidates": 0,
+  "conditional_side_rows": 452,
+  "conditional_quote_gap_rows": 451,
+  "conditional_positive_gap_side_rows": 99,
+  "conditional_positive_gap_distinct_cup_markets": 99,
+  "cup_year_from_official_tournament_context": 237,
+  "cup_regular_special_verified": 0,
+  "identity_live_reverified_today": 49,
+  "unmatched_reason_counts": {
+    "no_exact_office_state_district_party_reference": 4,
+    "generic_independent_not_present_no_candidate_substitution": 3,
+    "chamber_control_not_in_reference_scope": 4
+  },
+  "public_contracts": 993,
+  "public_source_quote_age_known": 0,
+  "cup_source_quote_age_known": 0,
+  "cup_depth_rows": 0,
+  "source_commit": "3175b7c12c12626f15c925eaf1d5a6ba27a215aa",
+  "bulk_file_url": "https://github.com/GodlyDonuts/predictions-cup-2026/blob/3175b7c12c12626f15c925eaf1d5a6ba27a215aa/data/evidence/breadth-20261002-0525/leads.json",
+  "bulk_sha256": "4054acf1eacca0db6f5b641f7b205a0ed6366da413fb1c7fce13d1a7e732d9ec",
+  "bulk_sha256_matches_manifest": true,
+  "complement_evidence": {
+    "url": "https://sig.thesuper.market/docs/markets-and-trading",
+    "saved_evidence_file": "/workspace/shared/predictions_cup/first_place_strategy_requirements_2026-10-01.md",
+    "line": 36,
+    "interpretation": "Single-contract YES/NO share one complementary book. Cup NO ask = 1 - same-contract YES bid. No quantity derived because bulk source has none. Distinct party contracts are never treated as complements."
+  },
+  "strict_join_note": "Cup year 2026 is supported by official tournament scope; individual titles still omit stage, regular/special type, and full resolution rules. Race-party matches are conditional UI-verification leads, not asserted settlement-equivalent contracts. Florida Senate is explicitly special in the public reference and remains a flagged type-check lead."
+}

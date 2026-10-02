@@ -1,0 +1,685 @@
+{
+  "task": "Read-only Alaska Democratic/Republican linked-market check",
+  "observed_date_utc": "2026-10-02",
+  "browser": "dot cloud browser, dedicated research tabs 76 and 77",
+  "read_only": true,
+  "orders_submitted": 0,
+  "orders_cancelled": 0,
+  "api_poller_used": false,
+  "market_identity": {
+    "platform": "https://sig.thesuper.market/",
+    "sponsor": "Susquehanna International Group, LLP",
+    "platform_operator": "The Super Market",
+    "tournament_visible_label": "Midterm Elections",
+    "official_competition": "2026 Midterm Elections Competition",
+    "currency": "SUSQies",
+    "non_monetary": true,
+    "free_cup_was_descriptive_not_literal_exchange_name": true,
+    "official_rules_url": "https://predictionscup.com/rules/",
+    "official_rules_updated": "2026-09-30",
+    "democratic": {
+      "market_id": 377,
+      "url": "https://sig.thesuper.market/markets/377",
+      "title": "Will the Democratic Party win the Alaska Senate?"
+    },
+    "republican": {
+      "market_id": 378,
+      "url": "https://sig.thesuper.market/markets/378",
+      "title": "Will the Republican Party win the Alaska Senate?"
+    }
+  },
+  "conclusion": {
+    "latest_below_par_no_pair": false,
+    "latest_best_pair_cost_susqies": 1.025,
+    "historical_observed_below_par_no_pair": true,
+    "historical_best_pair_cost_susqies": 0.985,
+    "risk_free_arbitrage_proven": false,
+    "summary": "A fleeting conditional NO-pair price gap was directly displayed, then disappeared when the Republican NO best ask rose from 0.640 to 0.680. No transaction was attempted."
+  },
+  "snapshot_method": "Sequential actual rendered NO order-book snapshots plus visible Buy NO controls, not card prices or inferred complements. Collection timestamps are local UTC times immediately before reading UI state, not exchange timestamps. Depth is displayed availability, not promised execution; two-leg execution is non-atomic.",
+  "snapshots": [
+    {
+      "phase": "initial_direct_NO_books",
+      "democratic_collected_utc": "2026-10-02T05:33:47.473Z",
+      "republican_collected_utc": "2026-10-02T05:33:47.993Z",
+      "sequential_collection_start_lag_seconds": 0.52,
+      "democratic": {
+        "no_asks_ascending_price_quantity": [
+          [
+            0.345,
+            478
+          ],
+          [
+            0.355,
+            1000
+          ],
+          [
+            0.36,
+            811
+          ],
+          [
+            0.37,
+            46071
+          ],
+          [
+            0.415,
+            741
+          ],
+          [
+            0.425,
+            30586
+          ],
+          [
+            0.43,
+            26643
+          ],
+          [
+            0.435,
+            30022
+          ]
+        ],
+        "no_best_bid": {
+          "price": 0.32,
+          "quantity": 899
+        },
+        "buy_no_ui": 0.345,
+        "yes_best_bid": {
+          "price": 0.655,
+          "quantity": 478
+        },
+        "yes_best_ask": {
+          "price": 0.68,
+          "quantity": 899
+        }
+      },
+      "republican": {
+        "no_asks_ascending_price_quantity": [
+          [
+            0.64,
+            60922
+          ],
+          [
+            0.68,
+            1171
+          ],
+          [
+            0.69,
+            10562
+          ],
+          [
+            0.695,
+            8985
+          ],
+          [
+            0.7,
+            10327
+          ],
+          [
+            0.705,
+            15028
+          ],
+          [
+            0.72,
+            173
+          ],
+          [
+            0.725,
+            1187
+          ]
+        ],
+        "no_best_bid": {
+          "price": 0.635,
+          "quantity": 1000
+        },
+        "buy_no_ui": 0.64,
+        "yes_best_bid": {
+          "price": 0.36,
+          "quantity": 60922
+        },
+        "yes_best_ask": {
+          "price": 0.365,
+          "quantity": 1000
+        }
+      },
+      "hypothetical_pair_ladder": [
+        {
+          "quantity": 478,
+          "d_no_ask": 0.345,
+          "r_no_ask": 0.64,
+          "pair_cost": 0.985,
+          "total_cost": 470.83,
+          "conditional_gross_edge_to_one": 7.17
+        },
+        {
+          "quantity": 1000,
+          "d_no_ask": 0.355,
+          "r_no_ask": 0.64,
+          "pair_cost": 0.995,
+          "total_cost": 995,
+          "conditional_gross_edge_to_one": 5
+        },
+        {
+          "quantity": 811,
+          "d_no_ask": 0.36,
+          "r_no_ask": 0.64,
+          "pair_cost": 1.0,
+          "total_cost": 811,
+          "conditional_gross_edge_to_one": 0
+        }
+      ],
+      "below_par_pairs": 1478,
+      "cost_of_below_par_pairs": 1465.83,
+      "conditional_gross_edge_to_one": 12.17,
+      "condition": "All paired shares fill at displayed levels and the two YES predicates cannot both occur, with no adverse rule/settlement change. This condition is not proven."
+    },
+    {
+      "phase": "final_direct_NO_books",
+      "democratic_collected_utc": "2026-10-02T05:35:08.481Z",
+      "republican_collected_utc": "2026-10-02T05:35:09.485Z",
+      "sequential_collection_start_lag_seconds": 1.004,
+      "democratic": {
+        "no_asks_ascending_price_quantity": [
+          [
+            0.345,
+            478
+          ],
+          [
+            0.355,
+            1000
+          ],
+          [
+            0.36,
+            811
+          ],
+          [
+            0.37,
+            46071
+          ],
+          [
+            0.415,
+            741
+          ],
+          [
+            0.43,
+            26643
+          ],
+          [
+            0.435,
+            30022
+          ],
+          [
+            0.445,
+            30000
+          ],
+          [
+            0.455,
+            30000
+          ],
+          [
+            0.465,
+            30000
+          ],
+          [
+            0.475,
+            2500
+          ],
+          [
+            0.525,
+            31866
+          ],
+          [
+            0.53,
+            30000
+          ],
+          [
+            0.535,
+            14171
+          ],
+          [
+            0.545,
+            26528
+          ],
+          [
+            0.55,
+            1928
+          ],
+          [
+            0.565,
+            28
+          ],
+          [
+            0.57,
+            697
+          ],
+          [
+            0.615,
+            14419
+          ],
+          [
+            0.635,
+            101
+          ],
+          [
+            0.645,
+            155
+          ],
+          [
+            0.66,
+            735
+          ],
+          [
+            0.665,
+            9418
+          ],
+          [
+            0.67,
+            30303
+          ],
+          [
+            0.72,
+            1071
+          ],
+          [
+            0.73,
+            3213
+          ],
+          [
+            0.745,
+            58978
+          ],
+          [
+            0.785,
+            101
+          ],
+          [
+            0.795,
+            219510
+          ],
+          [
+            0.845,
+            9832
+          ],
+          [
+            0.85,
+            300000
+          ],
+          [
+            0.86,
+            9527
+          ],
+          [
+            0.87,
+            10260
+          ],
+          [
+            0.88,
+            18345
+          ],
+          [
+            0.9,
+            10000
+          ],
+          [
+            0.91,
+            69098
+          ],
+          [
+            0.915,
+            17647
+          ],
+          [
+            0.925,
+            69098
+          ],
+          [
+            0.93,
+            51428
+          ],
+          [
+            0.935,
+            100000
+          ],
+          [
+            0.94,
+            30000
+          ],
+          [
+            0.945,
+            30000
+          ],
+          [
+            0.95,
+            130000
+          ],
+          [
+            0.955,
+            33333
+          ],
+          [
+            0.96,
+            188480
+          ],
+          [
+            0.965,
+            20000
+          ],
+          [
+            0.97,
+            313969
+          ],
+          [
+            0.98,
+            450095
+          ],
+          [
+            0.985,
+            100000
+          ],
+          [
+            0.99,
+            870415
+          ],
+          [
+            0.995,
+            72028
+          ]
+        ],
+        "no_best_bid": {
+          "price": 0.32,
+          "quantity": 899
+        },
+        "buy_no_ui": 0.345,
+        "buy_yes_ui": 0.68,
+        "sell_yes_ui": 0.655,
+        "sell_no_ui": 0.32
+      },
+      "republican": {
+        "no_asks_ascending_price_quantity": [
+          [
+            0.68,
+            93
+          ],
+          [
+            0.69,
+            11265
+          ],
+          [
+            0.695,
+            8985
+          ],
+          [
+            0.7,
+            10327
+          ],
+          [
+            0.705,
+            15028
+          ],
+          [
+            0.72,
+            173
+          ],
+          [
+            0.725,
+            1187
+          ],
+          [
+            0.73,
+            1606
+          ],
+          [
+            0.745,
+            710
+          ],
+          [
+            0.75,
+            21836
+          ],
+          [
+            0.765,
+            800
+          ],
+          [
+            0.77,
+            30217
+          ],
+          [
+            0.775,
+            15451
+          ],
+          [
+            0.78,
+            448
+          ],
+          [
+            0.785,
+            310
+          ],
+          [
+            0.79,
+            4131
+          ],
+          [
+            0.795,
+            14934
+          ],
+          [
+            0.815,
+            138982
+          ],
+          [
+            0.82,
+            657
+          ],
+          [
+            0.825,
+            682733
+          ],
+          [
+            0.835,
+            25500
+          ],
+          [
+            0.845,
+            9677
+          ],
+          [
+            0.85,
+            146122
+          ],
+          [
+            0.855,
+            100000
+          ],
+          [
+            0.865,
+            97228
+          ],
+          [
+            0.87,
+            1295
+          ],
+          [
+            0.875,
+            6940
+          ],
+          [
+            0.885,
+            260
+          ],
+          [
+            0.91,
+            10000
+          ],
+          [
+            0.915,
+            17647
+          ],
+          [
+            0.93,
+            83119
+          ],
+          [
+            0.935,
+            157
+          ],
+          [
+            0.94,
+            15000
+          ],
+          [
+            0.945,
+            30927
+          ],
+          [
+            0.95,
+            150000
+          ],
+          [
+            0.955,
+            33333
+          ],
+          [
+            0.96,
+            187500
+          ],
+          [
+            0.965,
+            10101
+          ],
+          [
+            0.97,
+            300000
+          ],
+          [
+            0.98,
+            452347
+          ],
+          [
+            0.985,
+            557840
+          ],
+          [
+            0.99,
+            880267
+          ],
+          [
+            0.995,
+            572000
+          ]
+        ],
+        "no_best_bid": {
+          "price": 0.635,
+          "quantity": 1000
+        },
+        "buy_no_ui": 0.68,
+        "buy_yes_ui": 0.365,
+        "sell_yes_ui": 0.32,
+        "sell_no_ui": 0.635
+      },
+      "hypothetical_best_pair_quantity": 93,
+      "hypothetical_best_pair_cost_per_pair": 1.025,
+      "below_par_pairs": 0
+    }
+  ],
+  "resolution": {
+    "same_race": true,
+    "race": "U.S. Senate Alaska",
+    "party_d": "Democratic Party",
+    "party_r": "Republican Party",
+    "year_and_stage": "2026 general election inferred from 2026 Midterm Elections competition, market dates, and official 2026 general candidate list; year/stage are not explicitly in the short market predicate",
+    "scheduled_resolution_display": "11/4/2026 at 12:00 PM EST",
+    "status_display": "Active",
+    "settlement_field_display": "YES on both, despite Active status; not treated as a completed resolution",
+    "predicate_text": "This market will resolve based on which party wins U.S. Senate Alaska. Market resolves to \"YES\" if the winning candidate is affiliated with the specified party, \"NO\" otherwise. A candidate running on a fusion ticket counts for every party on that ticket, so more than one party's market can resolve \"YES\" for the same race.",
+    "source_and_finality": "Official election results from relevant election authorities; final certified results; recounts or legal challenges may delay resolution",
+    "discretion": "Susquehanna may at its sole discretion update rules, outcomes or resolution at any time, including after the resolution date or end date",
+    "payoff_truth_table_no_pair": [
+      {
+        "winner_affiliation": "D only",
+        "no_d": 0,
+        "no_r": 1,
+        "total": 1
+      },
+      {
+        "winner_affiliation": "R only",
+        "no_d": 1,
+        "no_r": 0,
+        "total": 1
+      },
+      {
+        "winner_affiliation": "neither D nor R",
+        "no_d": 1,
+        "no_r": 1,
+        "total": 2
+      },
+      {
+        "winner_affiliation": "both D and R under fusion/affiliation interpretation",
+        "no_d": 0,
+        "no_r": 0,
+        "total": 0
+      }
+    ],
+    "floor_one_proven": false,
+    "reason": "Current official candidate labels do not identify a D/R fusion candidate, supporting mutual exclusivity under a registered-affiliation interpretation. But market text uses broad affiliated wording and explicitly permits fusion, without defining affiliation/fusion precisely or contractually guaranteeing exclusivity. Discretionary changes remain possible."
+  },
+  "official_election_evidence": {
+    "candidate_url": "https://www.elections.alaska.gov/candidates/?election=26genr",
+    "heading": "2026 General Election",
+    "election_date": "2026-11-03",
+    "page_updated_display": "September 25, 2026 at 8:16 am",
+    "senate_candidates": [
+      {
+        "name": "Gerald L. Heikes",
+        "affiliation": "Registered Republican",
+        "certified": true
+      },
+      {
+        "name": "Sidney Sid Hill",
+        "affiliation": "Undeclared",
+        "certified": true,
+        "write_in": true
+      },
+      {
+        "name": "Heather McElwain",
+        "affiliation": "Registered Libertarian",
+        "certified": true,
+        "write_in": true
+      },
+      {
+        "name": "Mary Peltola",
+        "affiliation": "Registered Democrat",
+        "certified": true
+      },
+      {
+        "name": "Dan S. Sullivan",
+        "affiliation": "Registered Republican",
+        "certified": true
+      },
+      {
+        "name": "Daniel J. Sullivan Jr.",
+        "affiliation": "Registered Republican",
+        "certified": true
+      }
+    ],
+    "d_r_dual_listed_senate_candidate_found": false,
+    "election_information_url": "https://www.elections.alaska.gov/election-information/",
+    "election_information_summary": "U.S. Senator uses ranked-choice voting that produces one winning candidate. Registration affiliation does not imply party nomination, endorsement, approval or association. Tabulation rounds start after final ballot counting on the fifteenth day following election day; results remain unofficial until certified."
+  },
+  "competition_timing_note": "Official Cup rules lock positions at the competition end and base final rankings on verified total SUSQies after all markets resolve; the Nov 4 scheduled market date does not guarantee final Alaska certification that day.",
+  "actions_taken": [
+    "Opened dedicated cloud browser research tabs",
+    "Viewed Chart and Info tabs",
+    "Toggled orderbook outcome perspective to NO",
+    "Read official Alaska and Cup pages",
+    "Saved this JSON"
+  ],
+  "limitations": [
+    "Displayed book liquidity can move or disappear before execution",
+    "Sequential snapshots are not an atomic combined book",
+    "No submit or transaction confirmation was performed",
+    "No exchange backend identifier or API data was read",
+    "No guarantee that both predicates cannot resolve YES",
+    "All amounts are non-monetary SUSQies, not real money"
+  ]
+}

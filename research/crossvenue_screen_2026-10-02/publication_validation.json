@@ -1,0 +1,33 @@
+{
+  "bulk_sha256_matches_pinned_record": true,
+  "counts": {
+    "ambiguous": 0,
+    "conditional_race_party_matches": 226,
+    "cup_identities": 237,
+    "identity_id_intersection_with_bulk": 237,
+    "live_reverified_identities": 49,
+    "positive_stale_gaps": 99,
+    "ranked_side_comparisons": 451,
+    "separate_party_pairs": 117,
+    "suppressed_side_comparisons": 1,
+    "top_candidates": 10,
+    "ui_shortlist": 5,
+    "unmatched": 11
+  },
+  "credential_key_and_value_pattern_scan_passed": true,
+  "exact_decimal_gap_math": true,
+  "gzip_roundtrip_checks_passed": true,
+  "identity_archived_catalog_hash_matches": true,
+  "limitations": [
+    "Titles do not establish settlement equivalence",
+    "Screen and book audits have different clocks; historical positions and balances are not current state",
+    "Credential scans are heuristic and were supplemented by inspection of audit fields",
+    "No application tests run for this data-only publication"
+  ],
+  "no_order_or_portfolio_mutations": true,
+  "offline_reproduction_includes_omitted_duplicate_files": true,
+  "offline_reproduction_outputs_exact": 10,
+  "scope": "Offline checks only",
+  "status": "passed",
+  "unknown_quantity_and_quote_age_preserved": true
+}

@@ -1,0 +1,202 @@
+{
+  "audit_privacy_note": "RI audit contains authorized historical simulated-account alias and balance; no credentials or unrelated private data. Audit no-position/no-order statements apply only to each observation time.",
+  "original_absolute_paths_note": "Unchanged source files contain original producer workspace paths. These are provenance strings, not paths expected to exist in this checkout.",
+  "original_files": [
+    {
+      "bytes": 16227,
+      "original_name": "alaska_complement_check_2026-10-02.json",
+      "original_source_group": "identity_or_book_audit",
+      "published_as": "alaska_complement_check_2026-10-02.json",
+      "published_bytes": 16227,
+      "published_sha256": "d5e1fc3cbb842971f28e2f21c7e4565eeb68a8324c520c8d1cc71ae1b6568f62",
+      "representation": "exact_bytes",
+      "sha256": "d5e1fc3cbb842971f28e2f21c7e4565eeb68a8324c520c8d1cc71ae1b6568f62"
+    },
+    {
+      "bytes": 2113879,
+      "omission_reason": "The 451 ranked rows are published in conditional_crossvenue_leads.json.gz; the one suppressed row is preserved separately in suppressed_side_observations.json",
+      "original_name": "all_joined_side_observations.json",
+      "original_source_group": "screen",
+      "published_as": null,
+      "representation": "omitted_duplicate",
+      "sha256": "a1eb437e31e8dcc05dd2fb5f20faa327571391c7e84feb562475f352678aca07"
+    },
+    {
+      "bytes": 13652,
+      "original_name": "build_screen.py",
+      "original_source_group": "screen",
+      "published_as": "build_screen.py",
+      "published_bytes": 13652,
+      "published_sha256": "977225c395f12d8a079beccea5b1b683ec8f2df1eddf9380e74c518a933fa959",
+      "representation": "exact_bytes",
+      "sha256": "977225c395f12d8a079beccea5b1b683ec8f2df1eddf9380e74c518a933fa959"
+    },
+    {
+      "bytes": 474047,
+      "omission_reason": "CSV duplicates the ranked JSON",
+      "original_name": "conditional_crossvenue_leads.csv",
+      "original_source_group": "screen",
+      "published_as": null,
+      "representation": "omitted_duplicate",
+      "sha256": "dd9d71fbd50cba92cf943608408cb781742b6e7d1eaf07942f66cfd9c04ac9db"
+    },
+    {
+      "bytes": 2109482,
+      "original_name": "conditional_crossvenue_leads.json",
+      "original_source_group": "screen",
+      "published_as": "conditional_crossvenue_leads.json.gz",
+      "published_bytes": 68702,
+      "published_sha256": "3a719a40db1165326e80564c267e87d438ae6c461e3b9bef3ead636062dd38a7",
+      "representation": "gzip_uncompressed_bytes",
+      "sha256": "cc57cc044f254149830882ffeedf5edd925135e4c90c2f67ff23332981d14b5b"
+    },
+    {
+      "bytes": 118088,
+      "original_name": "cup_bulk_leads.json",
+      "original_source_group": "screen",
+      "published_as": "cup_bulk_leads.json.gz",
+      "published_bytes": 4556,
+      "published_sha256": "a20992213730b7bd8b8b5c71c03b0d9e4100f5057de5f14d9db63677946da93d",
+      "representation": "gzip_uncompressed_bytes",
+      "sha256": "4054acf1eacca0db6f5b641f7b205a0ed6366da413fb1c7fce13d1a7e732d9ec"
+    },
+    {
+      "bytes": 102739,
+      "original_name": "cup_separate_party_pair_diagnostics.json",
+      "original_source_group": "screen",
+      "published_as": "cup_separate_party_pair_diagnostics.json.gz",
+      "published_bytes": 4959,
+      "published_sha256": "02c7a955d0ad18c3e65ed18cb8b44ad184a408439cbbd9e6434c2b04e49ab861",
+      "representation": "gzip_uncompressed_bytes",
+      "sha256": "55312da986b2ea058187e0fcd4342ba105e1278ac9fa5b7aeac88b966f8f8a90"
+    },
+    {
+      "bytes": 383192,
+      "original_name": "join_records.json",
+      "original_source_group": "screen",
+      "published_as": "join_records.json.gz",
+      "published_bytes": 9383,
+      "published_sha256": "09dc1f23977c14a9c444630837dda764b08ceb84d44f98e49572d56c800ec47a",
+      "representation": "gzip_uncompressed_bytes",
+      "sha256": "4e12c889eb4f9d2367434a6abc737272d98d7ffd6ad97f569782706ef6f52bfe"
+    },
+    {
+      "bytes": 23979,
+      "original_name": "report.md",
+      "original_source_group": "screen",
+      "published_as": "report.md",
+      "published_bytes": 23979,
+      "published_sha256": "48d7d104b99c6809084b74facf883a391790f9a386fb4147d4384ad448a9b10d",
+      "representation": "exact_bytes",
+      "sha256": "48d7d104b99c6809084b74facf883a391790f9a386fb4147d4384ad448a9b10d"
+    },
+    {
+      "bytes": 2330,
+      "original_name": "summary.json",
+      "original_source_group": "screen",
+      "published_as": "summary.json",
+      "published_bytes": 2330,
+      "published_sha256": "2534f1c52bfc3774a2dc1338636904418278923d664272f6b473dec8255b2c71",
+      "representation": "exact_bytes",
+      "sha256": "2534f1c52bfc3774a2dc1338636904418278923d664272f6b473dec8255b2c71"
+    },
+    {
+      "bytes": 47628,
+      "original_name": "top10_candidates.json",
+      "original_source_group": "screen",
+      "published_as": "top10_candidates.json",
+      "published_bytes": 47628,
+      "published_sha256": "e7edc79dd1c4f80ee9a814d110225171aa529ecd9f07beecd9e9a570afb39c59",
+      "representation": "exact_bytes",
+      "sha256": "e7edc79dd1c4f80ee9a814d110225171aa529ecd9f07beecd9e9a570afb39c59"
+    },
+    {
+      "bytes": 26399,
+      "original_name": "ui_check_shortlist.json",
+      "original_source_group": "screen",
+      "published_as": "ui_check_shortlist.json",
+      "published_bytes": 26399,
+      "published_sha256": "cb90d97f5cf01c3974effb96f72e5e9e4bc7c662e056b0fb59d73b61c60097d7",
+      "representation": "exact_bytes",
+      "sha256": "cb90d97f5cf01c3974effb96f72e5e9e4bc7c662e056b0fb59d73b61c60097d7"
+    },
+    {
+      "bytes": 420340,
+      "original_name": "unmatched_and_ambiguous.json",
+      "original_source_group": "screen",
+      "published_as": "unmatched_and_ambiguous.json.gz",
+      "published_bytes": 10195,
+      "published_sha256": "070715e6c4eb78dd201bf2dbb243e667470af613addd61bf649566e83b3a2664",
+      "representation": "gzip_uncompressed_bytes",
+      "sha256": "a0734cff1e4488290fba445d48058a31875571ccd5f134d04bad79ae21abcd82"
+    },
+    {
+      "bytes": 12290,
+      "original_name": "write_report.py",
+      "original_source_group": "screen",
+      "published_as": "write_report.py",
+      "published_bytes": 12290,
+      "published_sha256": "cb968c317babb77b5316214b2b1771af82741a1d1418f0ba9716033dc7e51737",
+      "representation": "exact_bytes",
+      "sha256": "cb968c317babb77b5316214b2b1771af82741a1d1418f0ba9716033dc7e51737"
+    },
+    {
+      "bytes": 195088,
+      "original_name": "cup_ui_identity_map_2026-10-02.json",
+      "original_source_group": "identity_or_book_audit",
+      "published_as": "cup_ui_identity_map_2026-10-02.json.gz",
+      "published_bytes": 6436,
+      "published_sha256": "a86b9a2620b119564f335ba5a6f68a17956bf8acbee78b90a7340e6c784fc548",
+      "representation": "gzip_uncompressed_bytes",
+      "sha256": "d57c32fc3f0259ce99c780e9bf83e48dd6167fe2c033567cd6e32185bfa5784c"
+    },
+    {
+      "bytes": 77726,
+      "original_name": "public_market_inventory_2026-10-01_184851.json",
+      "original_source_group": "identity_or_book_audit",
+      "published_as": "public_market_inventory_2026-10-01_184851.json.gz",
+      "published_bytes": 4625,
+      "published_sha256": "95cedfa93f6b289b534b710236a151ca462d745069c6f512bb3ce80417db4683",
+      "representation": "gzip_uncompressed_bytes",
+      "sha256": "d1ed18f3aa338a16fafd3baea0620fc2ed6879d246d2be5f1ee1cea6dbdcfbdc"
+    },
+    {
+      "bytes": 7709,
+      "original_name": "ri_book_check_2026-10-02.json",
+      "original_source_group": "identity_or_book_audit",
+      "published_as": "ri_book_check_2026-10-02.json",
+      "published_bytes": 7709,
+      "published_sha256": "3267741903bfa4ea7097fb92b7e27bd2c67d14ce84e8b0be6b77cb34f59686fd",
+      "representation": "exact_bytes",
+      "sha256": "3267741903bfa4ea7097fb92b7e27bd2c67d14ce84e8b0be6b77cb34f59686fd"
+    },
+    {
+      "bytes": 9243,
+      "original_name": "secondary_book_checks_2026-10-02.json",
+      "original_source_group": "identity_or_book_audit",
+      "published_as": "secondary_book_checks_2026-10-02.json",
+      "published_bytes": 9243,
+      "published_sha256": "32935883bf6529d0a13cac280fb691d208cbf9c678396a3fa721821727c79288",
+      "representation": "exact_bytes",
+      "sha256": "32935883bf6529d0a13cac280fb691d208cbf9c678396a3fa721821727c79288"
+    }
+  ],
+  "original_screen_generated_at_utc": "2026-10-02T05:36:19.831492+00:00",
+  "pinned_repository_inputs": {
+    "cup_bulk": {
+      "commit": "3175b7c12c12626f15c925eaf1d5a6ba27a215aa",
+      "path": "data/evidence/breadth-20261002-0525/leads.json",
+      "sha256": "4054acf1eacca0db6f5b641f7b205a0ed6366da413fb1c7fce13d1a7e732d9ec",
+      "url": "https://github.com/GodlyDonuts/predictions-cup-2026/blob/3175b7c12c12626f15c925eaf1d5a6ba27a215aa/data/evidence/breadth-20261002-0525/leads.json"
+    },
+    "public_reference": {
+      "commit": "c0782e9a6214ca9009bd70924737df64d00f4330",
+      "directory": "research/public_reference_2026-10-02",
+      "orderbook_snapshots_sha256": "c09b7ce46465bc91eb38f032e18ec7a357654160610b664e2590b509f78941ae",
+      "reference_gzip_sha256": "b4c4c2cf6cfc1de7b5e505356422d741de49a81aee230f4880fda1ebe195b034",
+      "reference_json_sha256": "bfa0d2095071986841a2ef302385a7565f0574c4d13a2b909edb6eec6bb1cb1b",
+      "url": "https://github.com/GodlyDonuts/predictions-cup-2026/tree/c0782e9a6214ca9009bd70924737df64d00f4330/research/public_reference_2026-10-02"
+    }
+  },
+  "scope": "Historical challenge research only; exact original bytes or lossless gzip; no market requests/orders during packaging"
+}
