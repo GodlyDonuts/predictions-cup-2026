@@ -20,7 +20,12 @@ position lots, placement acknowledgement and aggregate reservations are separate
 requirements and are not implemented by this projection.
 
 Decimal complements, principal cost and remaining hard-limit reservations use
-integer micros. Identical repeated fill deliveries deduplicate; conflicting IDs,
+integer micros. Numeric prices accept only each official tick's canonical double
+and exact complementary-tick/double-complement representations, which occur in cached historical REST
+NO fills. No proximity tolerance or arbitrary rounding is used; exact decimal
+strings cannot borrow those numeric exceptions. The original API number's string
+and its representation classification remain in each projected fill.
+Identical repeated fill deliveries deduplicate; conflicting IDs,
 changed/missing history, scope/sign/time errors, overfills, exceeded limits and
 mutated prior projections reject. A complete page-history flag cannot regress,
 but is caller evidence, not proof of complete exchange reporting. Projection

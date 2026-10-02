@@ -53,3 +53,9 @@ test('complete history cannot silently revert to incomplete',()=>{
   const p=project([fill],binding,{...options,complete:true});
   assert.throws(()=>project([fill],binding,{...options,prior:p}),/COMPLETE_HISTORY_REGRESSION/);
 });
+test('known numeric complementary-tick artifact retains provenance and uses exact effective cost',()=>{
+  const raw=0.32999999999999996,p=project([{...fill,price:raw}],{...binding,sideRelativeLimit:'0.675000'});
+  assert.equal(p.principalCost,'2.010000');assert.equal(p.fills[0].effectivePrice,'0.670000');
+  assert.equal(p.fills[0].rawApiPrice,String(raw));assert.equal(p.fills[0].priceRepresentation,'binary_tick_complement');
+  assert.throws(()=>project([{...fill,price:.330000000001}],{...binding,sideRelativeLimit:'0.675000'}),/UNRECOGNIZED/);
+});

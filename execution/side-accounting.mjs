@@ -1,4 +1,5 @@
 import {decimalMicros, formatMicros, payloadHash, canonicalPayload} from './core.mjs';
+import {normalizeOfficialFillTick} from './api-tick-price.mjs';
 
 const SCALE = 1_000_000n;
 const requireThat = (ok, code) => { if (!ok) throw Error(code); };
@@ -7,7 +8,7 @@ const time = x => typeof x === 'string' && Number.isFinite(Date.parse(x));
 const sideOf = x => { requireThat(x === 'yes' || x === 'no', 'INVALID_OUTCOME_SIDE'); return x; };
 const priceOf = x => {
   requireThat(typeof x === 'string' || typeof x === 'number' && Number.isFinite(x), 'MISSING_EXECUTION_PRICE');
-  const p = decimalMicros(String(x));
+  const p = decimalMicros(normalizeOfficialFillTick(x).price);
   requireThat(p >= 0n && p <= SCALE, 'INVALID_EXECUTION_PRICE');
   return p;
 };
@@ -57,7 +58,8 @@ export function projectBoundBuyFills(binding, rows, {
     const effectivePrice = effectiveFillPrice(row.price, row.side, source), p = decimalMicros(effectivePrice);
     requireThat(p <= limit, 'FILL_OUTSIDE_SIDE_RELATIVE_BUY_LIMIT');
     const fill = {id: row.id, signedQuantity: row.quantity, quantity: Math.abs(row.quantity),
-      rawPrice: formatMicros(priceOf(row.price)), effectivePrice, filledAt: row.filledAt};
+      rawPrice: formatMicros(priceOf(row.price)), rawApiPrice: String(row.price),
+      priceRepresentation: normalizeOfficialFillTick(row.price).representation, effectivePrice, filledAt: row.filledAt};
     if (seen.has(row.id)) requireThat(canonicalPayload(seen.get(row.id)) === canonicalPayload(fill), 'CONFLICTING_DUPLICATE_FILL');
     else seen.set(row.id, fill);
   }
