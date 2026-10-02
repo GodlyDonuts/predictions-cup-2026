@@ -12,6 +12,7 @@ import {basketCandidates} from './basket-inputs.mjs';
 import {planBasketBooks} from './basket-book-plan.mjs';
 import {basketCodeIdentity} from './basket-watch.mjs';
 import {createBasketRelationshipReader} from './basket-relations.mjs';
+import {createContractEvidenceReader} from './contract-evidence.mjs';
 import {timestamp} from '../feed/contract.mjs';
 import {networkInterval,validateNetworkBudget} from './network-budget.mjs';
 import {collectionCycleWait} from './cycle-wait.mjs';
@@ -33,7 +34,7 @@ const source=fs.readFileSync(path.join(root,'runner.mjs'),'utf8');
 
 // Only module wiring is replaced. The real runner body executes with an in-memory
 // journal/filesystem, synthetic API/key, fake clock/server/process and no network.
-async function run(stopAt,{dipEnabled=false,officialSync=false,invalidBasket=false,basketEnabled=false,samplingEnabled=false,riskUnavailable=false,comparisonHeld=[],comparisonPending=[],maxCycles=2,requestMs=6000,officialRiskSchedule=null,marketSweepEnabled=false,historyCandidates=[]}={}){
+async function run(stopAt,{dipEnabled=false,officialSync=false,invalidBasket=false,basketEnabled=false,contractEvidenceEnabled=false,samplingEnabled=false,riskUnavailable=false,comparisonHeld=[],comparisonPending=[],maxCycles=2,requestMs=6000,officialRiskSchedule=null,marketSweepEnabled=false,historyCandidates=[]}={}){
   let startupFailures=0;
   let now=Date.parse('2026-10-02T02:00:00Z'),cycle=0,stopped=false,triggered=false;
   const commits=[],memory=new Map(),listeners={},requests=[],publications=[],claimWrites=[],pairReadClaims=[];
@@ -63,8 +64,21 @@ async function run(stopAt,{dipEnabled=false,officialSync=false,invalidBasket=fal
     }
   }
   class ReadClient{
-    constructor(key,{onAdmission=()=>{}}={}){this.requests=0;this.cooldown=0;this.next=0;this.onAdmission=onAdmission;}
+    constructor(key,{onAdmission=()=>{},authorizeDispatch}={}){this.requests=0;this.cooldown=0;this.next=0;this.onAdmission=onAdmission;this.authorizeDispatch=authorizeDispatch;}
     close(){}
+    async dispatch(spec){
+      if(!contractEvidenceEnabled)throw Error('Synthetic dispatch unavailable');
+      assert.equal(this.authorizeDispatch(spec),true);spec.beforeDispatch();spec.beforeNetwork();
+      const requestStartedAt=iso();this.requests++;requests.push(spec.endpoint);now+=requestMs;
+      if(spec.endpoint.startsWith('/relationships?'))return {endpoint:spec.endpoint,status:200,requestStartedAt,receivedAt:iso(),data:{data:[],pagination:{limit:200,hasMore:false,nextCursor:null}}};
+      if(stopAt==='contract-stop'){stop();throw Error('Stopped');}
+      if(stopAt==='contract-outage'){const e=Error('Synthetic unavailable');e.status=503;throw e;}
+      const marketId=/^\/markets\/(\d+)/.exec(spec.endpoint)[1],s=universe.exchanges.find(x=>x.marketId===marketId);
+      const contexts=[{type:'tournament',tournament:{id:config.tournamentId},status:'open',settledWith:null,settledOn:null,exchanges:[{id:s.exchangeId}]}];
+      const root={node_id:String(Number(marketId)+1),contract_id:String(Number(marketId)+1),node_type:'contract',contract_type:'Election Outcome',settlement_date:'2026-11-04T17:00:00.000Z',settled_with:null,contract_details:{raceId:'62972',stageId:'98102',usState:'NH',raceName:'U.S. Senate New Hampshire',raceStage:'General',winnerName:marketId==='381'?'Democratic Party':'Republican Party',officeLevel:'Federal',contractType:'Election Outcome',electionDate:'2026-11-03',resolutionType:'Party Winner'}};
+      const data=spec.endpoint.includes('/nodes?')?{market_id:marketId,root,contexts}:{id:marketId,status:'open',settledWith:null,settledOn:null,settlementDate:root.settlement_date,isComposite:false,isMultiOutcome:false,exchanges:[{id:s.exchangeId}],contexts};
+      return {endpoint:spec.endpoint,status:200,requestStartedAt,receivedAt:iso(),data};
+    }
     async pause(delay){
       pauses.push({cycle,delay});
       if(cycle===0&&stopAt==='startup-stop'){stop();throw Error('Stopped');}
@@ -121,7 +135,7 @@ async function run(stopAt,{dipEnabled=false,officialSync=false,invalidBasket=fal
     if(stopAt==='claim-stop'&&p.endsWith('book-scheduler.json')&&v.basketFollowups&&!triggered)stop();
   };
   const bindings={readMarketHistoryInputs:()=>({available:historyCandidates.length>0,candidateMarketIds:historyCandidates}),collectMarketSweep,loadMarketSweep:()=>marketSweepEnabled?{cycleIntervalMs:10000}:null,createMarketPricePublication:()=>({publish(snapshot){if(stopAt==='price-recording-failure')throw Error('Synthetic price durability failure');pricePublications.push(snapshot);},status:()=>({sequence:pricePublications.length})}),collectionCycleWait,CompetitionController:class{constructor(){this.state={intents:{}};this.transport={authorizeRequest:()=>false};}managedMarketIds(){return officialRiskSchedule?.[Math.max(0,cycle-1)]||[];}async beforeBooks(){officialCalls.push({kind:"reconcile",cycle});}async onBook(){officialCalls.push({kind:"book",cycle});}failure(e){throw e;}close(){}},...model,...breadth,...depth,...scheduler,planComparisonSampling,recordComparisonAttempt,createComparisonRiskSource:()=>({poll:()=>({configured:samplingEnabled,available:!riskUnavailable,cohort:'fixture',bankHash:'a'.repeat(64),heldMarketIds:comparisonHeld,pendingMarketIds:comparisonPending}),close(){}}),collectionInputs,shockCollectionRisk,networkInterval,loadNetworkBudget:file=>mockfs.existsSync(file)?validateNetworkBudget(JSON.parse(mockfs.readFileSync(file))):null,connectTournament,validateTiming,timingSummary,historyEndpoint,normalizeHistory,validateDipPolicy,workerHealth:(report,at=now)=>workerHealth(report,at),baselineView,accountPositions,accountOrders,accountFills,accountPnl,accountView,fs:mockfs,path,http:{createServer:()=>({once(){},listen(p,h,f){f();},close(){}})},randomUUID,fileURLToPath,
-    loadKey:()=> 'SYNTHETIC',Journal,ReadClient,lock:()=>()=>{},atomicJson,durableAtomicJson:atomicJson,exclusionSet,basketCandidates,planBasketBooks,basketCodeIdentity,createBasketRelationshipReader,
+    loadKey:()=> 'SYNTHETIC',Journal,ReadClient,lock:()=>()=>{},atomicJson,durableAtomicJson:atomicJson,exclusionSet,basketCandidates,planBasketBooks,basketCodeIdentity,createBasketRelationshipReader,createContractEvidenceReader,
     createBookPublication({canOperate}){return {publishBook({marketId,response}){if(stopAt==='public-book-recording-failure'&&cycle===2)throw Error('Synthetic public journal failure');if(canOperate())publications.push({kind:'book',marketId,receivedAt:response.receivedAt,at:iso(),requestCount:requests.length});},invalidate({marketId,reason}){publications.push({kind:'invalidation',marketId,reason,at:iso()});},close(reason){publications.push({kind:'closed',reason,at:iso()});}};},
     createBasketFollowupSource({bank}){return {poll(){
       if(stopAt==='followup-source-failure')throw Error('Injected damaged source');
@@ -135,6 +149,22 @@ async function run(stopAt,{dipEnabled=false,officialSync=false,invalidBasket=fal
   await vm.runInNewContext('(async()=>{'+body+'\n})()',bindings);
   return {pricePublications,commits,process,memory,requests,publications,triggered,claimWrites,pairReadClaims,samplingWrites,samplingRequests,pauses,officialCalls};
 }
+
+test('real runner captures four scoped metadata reads once before cycles and grants no order eligibility',async()=>{
+  const r=await run(null,{basketEnabled:true,contractEvidenceEnabled:true,maxCycles:2});assert.equal(r.process.exitCode,0);
+  const evidence=r.commits.filter(x=>x.event.type==='contract_pair_evidence');assert.equal(evidence.length,1);
+  assert.equal(evidence[0].event.evidence.orderEligible,false);
+  assert.equal(r.requests.filter(p=>/^\/markets\/(381|382)(\/nodes)?\?tournamentId=/.test(p)).length,4);
+  assert.equal(r.commits.filter(x=>x.event.type==='cycle').length,2);
+});
+test('metadata outage stays non-authoritative and STOP prevents further startup reads',async()=>{
+  for(const stopAt of ['contract-outage','contract-stop']){
+    const r=await run(stopAt,{basketEnabled:true,contractEvidenceEnabled:true,maxCycles:2});
+    assert.equal(r.commits.filter(x=>x.event.type==='contract_pair_evidence').length,0);
+    assert.equal(r.requests.filter(p=>/^\/markets\/(381|382)(\/nodes)?\?tournamentId=/.test(p)).length,1);
+    assert.equal(r.commits.filter(x=>x.event.type==='cycle').length,stopAt==='contract-stop'?0:2);
+  }
+});
 
 test('paired sampling persists before requests and preserves four books per cycle',async()=>{
  const r=await run(null,{dipEnabled:true,samplingEnabled:true,maxCycles:4});assert.equal(r.process.exitCode,0);

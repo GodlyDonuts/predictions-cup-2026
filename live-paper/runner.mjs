@@ -20,6 +20,7 @@ import {basketCandidates} from './basket-inputs.mjs';
 import {planBasketBooks} from './basket-book-plan.mjs';
 import {basketCodeIdentity} from './basket-watch.mjs';
 import {createBasketRelationshipReader} from './basket-relations.mjs';
+import {createContractEvidenceReader} from './contract-evidence.mjs';
 import {createBookPublication} from './book-publication.mjs';
 import {createBasketFollowupSource} from './basket-followup-source.mjs';
 import {createComparisonRiskSource} from './comparison-risk-source.mjs';
@@ -50,7 +51,7 @@ process.on('exit',cleanup);
 const control=new AbortController();let stopping=false;
 const stop=()=>{stopping=true;control.abort();};process.on('SIGINT',stop);process.on('SIGTERM',stop);
 const stopWatch=setInterval(()=>{if(fs.existsSync(stopFile)||fs.existsSync(paperStop)||fs.existsSync(collectorStop))stop();},200);
-let journal,state,api,server,heartbeat,competition,realtime,realtimeCapture,basketRelationships,bookPublication,basketFollowupSource,basketFollowupBankHash,comparisonRiskSource;
+let journal,state,api,server,heartbeat,competition,realtime,realtimeCapture,basketRelationships,contractEvidence,bookPublication,basketFollowupSource,basketFollowupBankHash,comparisonRiskSource;
 const samplingSessionId=randomUUID();
 let universe,coverage,depthPlan,dipBank,scaleBank,responsiveBank,scheduler,schedulerScope;const recentReadTimings=[];
 const schedulerFile=path.join(runtimeDir,'book-scheduler.json');
@@ -169,8 +170,9 @@ try{
   schedulerScope={universe,coreMarketIds:c.marketIds};scheduler=fs.existsSync(schedulerFile)?validateSchedulerState(JSON.parse(fs.readFileSync(schedulerFile)),schedulerScope):createSchedulerState(schedulerScope);
   if(fs.existsSync(coverageFile)){coverage=JSON.parse(fs.readFileSync(coverageFile,'utf8'));if(coverage.universeHash!==universe.hash)coverage=null;}
   if(journal.last&&journal.last.state.engineRevision!==state.engineRevision)commit({type:'paper_engine_upgrade',fromRevision:journal.last.state.engineRevision||1,toRevision:state.engineRevision});
-  api=new ReadClient(loadKey(),{interval:c.readIntervalMs,networkBudget,signal:control.signal,authorizeDispatch:spec=>basketRelationships?.authorizes(spec)===true||realtime?.authorizes(spec)===true||competition?.transport.authorizeRequest(spec)===true,onAdmission:next=>atomicJson(path.join(runtimeDir,'rate.json'),{next,manualReview:next===null}),onTiming:event=>{validateTiming(event);fs.appendFileSync(path.join(runtimeDir,'read-timings.jsonl'),JSON.stringify(event)+'\n',{mode:0o600});recentReadTimings.push(event);if(recentReadTimings.length>1000)recentReadTimings.shift();runtime.readTiming=timingSummary(recentReadTimings);}});
+  api=new ReadClient(loadKey(),{interval:c.readIntervalMs,networkBudget,signal:control.signal,authorizeDispatch:spec=>contractEvidence?.authorizes(spec)===true||basketRelationships?.authorizes(spec)===true||realtime?.authorizes(spec)===true||competition?.transport.authorizeRequest(spec)===true,onAdmission:next=>atomicJson(path.join(runtimeDir,'rate.json'),{next,manualReview:next===null}),onTiming:event=>{validateTiming(event);fs.appendFileSync(path.join(runtimeDir,'read-timings.jsonl'),JSON.stringify(event)+'\n',{mode:0o600});recentReadTimings.push(event);if(recentReadTimings.length>1000)recentReadTimings.shift();runtime.readTiming=timingSummary(recentReadTimings);}});
   basketRelationships=createBasketRelationshipReader({tournamentId:c.tournamentId,now:Date.now,dispatch:spec=>api.dispatch(spec),canOperate:()=>!stopping&&!api.manualReview&&!fs.existsSync(stopFile)&&!fs.existsSync(paperStop)&&!fs.existsSync(collectorStop)&&!fs.existsSync(path.join(runtimeDir,'BASKET_STOP'))});
+  contractEvidence=createContractEvidenceReader({tournamentId:c.tournamentId,legs:[{marketId:'381',exchangeId:'1070',contractId:'382'},{marketId:'382',exchangeId:'1071',contractId:'383'}],now:Date.now,dispatch:spec=>api.dispatch(spec),canOperate:()=>!stopping&&!api.manualReview&&!fs.existsSync(stopFile)&&!fs.existsSync(paperStop)&&!fs.existsSync(collectorStop)&&!fs.existsSync(path.join(runtimeDir,'BASKET_STOP'))});
   runtime.networkBudget={mode:networkBudget?'coordinated_sole_client':'default',schemaVersion:networkBudget?.schemaVersion??null,intervalMs:networkIntervalMs,writeIntervalMs:api.writeInterval,completionPacing:api.completionPacing};
   if(runtime.collectionPlan)runtime.collectionPlan.readIntervalMs=networkIntervalMs;
   const activationFile=path.join(runtimeDir,'competition-activation.json');
@@ -227,6 +229,17 @@ try{
     atomicJson(path.join(runtimeDir,'basket-relationships.json'),capture);
     commit({type:'basket_relationship_capture',clockAt:capture.finishedAt,capture});
     runtime.basketRelationships={at:capture.finishedAt,complete:capture.complete,reason:capture.reasonCode,relationships:capture.relationships.length,pages:capture.snapshots.length,evidenceHash:capture.evidenceHash};
+    if(!stopping&&api.cooldown<=Date.now()){
+      try{
+        const evidence=await contractEvidence.capture();
+        atomicJson(path.join(runtimeDir,'contract-pair-evidence.json'),evidence);
+        commit({type:'contract_pair_evidence',clockAt:evidence.finishedAt,evidence});
+        runtime.contractPairEvidence={at:evidence.finishedAt,validUntil:evidence.validUntil,evidenceHash:evidence.evidenceHash,orderEligible:false,status:'captured'};
+      }catch(e){
+        if(e.durableRecordingFailed||api.manualReview||e.status===401||e.status===403)throw e;
+        runtime.contractPairEvidence={at:new Date().toISOString(),status:stopping?'stopped':'unavailable',orderEligible:false,reason:e.status?'http_'+e.status:/^CONTRACT_[A-Z_]+$/.test(e.message)?e.message:'capture_unavailable'};
+      }
+    }
   }
   const cyclesArg=process.argv.indexOf('--cycles');const maxCycles=cyclesArg===-1?Infinity:Number(process.argv[cyclesArg+1]);
   if(!Number.isInteger(maxCycles)&&maxCycles!==Infinity||maxCycles<1)throw Error('Invalid cycle bound');
