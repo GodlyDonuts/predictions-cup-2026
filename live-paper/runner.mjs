@@ -35,6 +35,7 @@ try{
     res.setHeader('Cache-Control','no-store');res.setHeader('X-Content-Type-Options','nosniff');
     if(req.method!=='GET'){res.writeHead(405);return res.end();}
     if(req.url==='/api/stats'){res.setHeader('Content-Type','application/json');return res.end(JSON.stringify({...report(state,c),runtime:{...runtime,readRequests:api.requests}}));}
+    if(req.url==='/api/ml'){res.setHeader('Content-Type','application/json');try{return res.end(fs.readFileSync(path.join(runtimeDir,'ml-stats.json'),'utf8'));}catch{res.writeHead(503);return res.end(JSON.stringify({status:'unavailable'}));}}
     if(req.url==='/'){res.setHeader('Content-Type','text/html; charset=utf-8');return res.end(html);}res.writeHead(404);res.end();
   });
   await new Promise((resolve,reject)=>{server.once('error',reject);server.listen(c.port,'127.0.0.1',resolve);});

@@ -18,6 +18,21 @@ Workspace `STOP` and runtime `STOP` abort pending reads. An intended restart req
 
 ## Defaults and interpretation
 
+## ML bank and prospective candidate wallets
+
+Train locally from the one collector's verified capture, then start the shadow worker:
+
+```powershell
+node live-paper/ml-bank.mjs --journal "$env:LOCALAPPDATA/SigTradingCup/paper-runtime/journal.jsonl" --config live-paper/config.json --out "$env:LOCALAPPDATA/SigTradingCup/paper-runtime/ml-bank.json"
+./Start-ML.ps1
+```
+
+The bank tries 128 ridge configurations: four future exit horizons, four feature subsets and eight regularization strengths. Insufficient matured labels reject a configuration explicitly. Features use current depth/spread/source age and preceding observations. Training normalization fits only training data; training labels crossing the chronological development split are purged. All attempted models and rejection reasons remain in the frozen local bank. Three lowest development RMSE models per usable horizon each spawn three paper margins, with independent cash. This selection is exploratory and the short correlated development split does not establish profitability. The target forecasts future best-bid proceeds after adverse exit tick/assumed fee; entry ask/tick/fee are charged separately. Full-size future exit depth is unproven, so targets are hypotheses rather than fills.
+
+The shadow worker makes zero API requests and reads the existing journal every 15 seconds. Predictions, intents and fills start strictly after the frozen training capture cutoff, with six fresh observations for warmup. It shares the reviewed delayed taker, exact FIFO, depth, reserve, position and exposure machinery. Positions exit at the candidate horizon or existing stop rule, using a subsequent usable bid with costs; no price touch or midpoint recovery creates a fill. Source prefix and model-bank hash must match on restart. Cash, fills, history and intents persist atomically. Failed verification stops the worker and publishes failed status; incomplete concurrent journal reads may require restart after inspection. Runtime files contain the full model bank, `ml-shadow-state.json`, `ml-stats.json` and a distinct worker lock, under the existing restricted runtime directory. Do not overwrite a bank while its worker is active; use a separately named cohort/runtime for retraining. Workspace/runtime STOP halt both paper processes. Dashboard `/api/ml` presents all candidate wallets; stale update timestamps indicate a stopped worker. Existing collector requests and rate allocation are unchanged.
+
+## Original strategy defaults
+
 - Four fixed single-YES contracts: Alaska Senate, Florida Senate, North Carolina Senate and Michigan Governor. This is not whole-universe coverage.
 - Each strategy has an independent 100,000-SUSQie paper bankroll; funds are not transferred from the contest account.
 - A lagged rolling-mean mean-reversion strategy waits for five observations and a 1.5 z-score dislocation with minimum expected edge after assumed costs. Its signal is an uncalibrated quantitative hypothesis.

@@ -181,3 +181,26 @@ export function sampleEquity(s,c,now){
   const r=report(s,c,now);
   for(const [name,v]of Object.entries(r.strategies)){const st=s.strategies[name];if(v.referenceEquity!==null){const eq=amount(v.referenceEquity);if(eq>amount(st.peak))st.peak=v.referenceEquity;const dd=amount(st.peak)-eq;if(dd>amount(st.maxDrawdown))st.maxDrawdown=money(dd);st.equityCurve.push({at:now,referenceEquity:v.referenceEquity,liquidationEquity:v.estimatedLiquidationEquity});if(st.equityCurve.length>5000)st.equityCurve.shift();}}
 }
+
+// Standalone ML paper wallets reuse the reviewed delayed-fill/FIFO/risk engine.
+// Forecast is net expected future exit proceeds per share, not midpoint profit.
+export function stepForecast(input,b,c,{exitValue,horizonMs,minimumEdge}){
+  if(!Number.isSafeInteger(horizonMs)||horizonMs<1000||!Number.isFinite(minimumEdge)||minimumEdge<=0)throw Error('Invalid forecast policy');
+  const previous=input.books[b.instrument];
+  const same=previous&&previous.sequence===b.sequence&&instantNs(previous.sourceAt)===instantNs(b.sourceAt);
+  const s=observe(input,b,c),st=structuredClone(input.strategies.mean_reversion);
+  b=s.books[b.instrument];
+  s.strategies.mean_reversion=st;
+  if(same){assertState(s,c);return s;}
+  const at=b.receivedAt,id=b.instrument,pending=st.pending[id];
+  if(pending){if(Date.parse(at)-Date.parse(pending.createdAt)>c.maxDataAgeMs+c.cycleIntervalMs*4){delete st.pending[id];st.expiredIntents++;}else fillIntent(st,pending,b,c,at);}
+  if(!st.pending[id]){
+    const pos=st.positions[id],bid=amount(b.bids[0].price);
+    if(pos){if(Date.parse(at)-Date.parse(pos.enteredAt)>=horizonMs||amount(pos.cost)/BigInt(pos.quantity)-bid>=amount(c.stopLoss))enqueue(st,b,'sell',pos.quantity,bid-TICK*BigInt(c.slippageTicks),at,'ml_horizon_or_stop');}
+    else if(Number.isFinite(exitValue)&&exitValue>=0&&exitValue<=1){
+      const ask=amount(b.asks[0].price)+TICK*BigInt(c.slippageTicks),entry=Number(ask+fee(ask,1,costs(c)))/1e6;
+      if(exitValue-entry>=minimumEdge)enqueue(st,b,'buy',c.orderShares,ask,at,'ml_net_exit_forecast');
+    }
+  }
+  assertState(s,c);return s;
+}

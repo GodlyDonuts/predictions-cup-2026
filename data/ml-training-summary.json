@@ -1,0 +1,293 @@
+{
+  "attempted": 128,
+  "trained": 96,
+  "selected": [
+    {
+      "id": "ridge-h60-f9-l1000",
+      "horizon": 60,
+      "trainRows": 197,
+      "testRows": 78,
+      "rmse": 0.005916457231382882,
+      "baselineRmse": 0.006065088067722577,
+      "beatsPersistence": true
+    },
+    {
+      "id": "ridge-h60-f9-l100",
+      "horizon": 60,
+      "trainRows": 197,
+      "testRows": 78,
+      "rmse": 0.005921494490661154,
+      "baselineRmse": 0.006065088067722577,
+      "beatsPersistence": true
+    },
+    {
+      "id": "ridge-h60-f12-l1000",
+      "horizon": 60,
+      "trainRows": 197,
+      "testRows": 78,
+      "rmse": 0.005934978805735541,
+      "baselineRmse": 0.006065088067722577,
+      "beatsPersistence": true
+    },
+    {
+      "id": "ridge-h180-f4-l100",
+      "horizon": 180,
+      "trainRows": 168,
+      "testRows": 38,
+      "rmse": 0.0063174564962259015,
+      "baselineRmse": 0.007814211623028502,
+      "beatsPersistence": true
+    },
+    {
+      "id": "ridge-h180-f6-l100",
+      "horizon": 180,
+      "trainRows": 168,
+      "testRows": 38,
+      "rmse": 0.0063636689033831,
+      "baselineRmse": 0.007814211623028502,
+      "beatsPersistence": true
+    },
+    {
+      "id": "ridge-h180-f6-l10",
+      "horizon": 180,
+      "trainRows": 168,
+      "testRows": 38,
+      "rmse": 0.006561594949786116,
+      "baselineRmse": 0.007814211623028502,
+      "beatsPersistence": true
+    },
+    {
+      "id": "ridge-h300-f4-l0.01",
+      "horizon": 300,
+      "trainRows": 136,
+      "testRows": 14,
+      "rmse": 0.009573942149355275,
+      "baselineRmse": 0.012451770313034656,
+      "beatsPersistence": true
+    },
+    {
+      "id": "ridge-h300-f4-l0.1",
+      "horizon": 300,
+      "trainRows": 136,
+      "testRows": 14,
+      "rmse": 0.009575775079955665,
+      "baselineRmse": 0.012451770313034656,
+      "beatsPersistence": true
+    },
+    {
+      "id": "ridge-h300-f4-l1",
+      "horizon": 300,
+      "trainRows": 136,
+      "testRows": 14,
+      "rmse": 0.009593898729721263,
+      "baselineRmse": 0.012451770313034656,
+      "beatsPersistence": true
+    }
+  ],
+  "acceptedSnapshots": 393,
+  "sourceHash": "6cb1ad8e57b590f0689ec95eb0122d6462c64afaef55239e30051adc8b50510b",
+  "trainingCaptureThrough": "2026-10-02T00:57:01.944Z",
+  "developmentSplitAt": "2026-10-02T00:23:55.211Z",
+  "bankHash": "fc0d2511dc533164524d3b753a0c60ba33e9b80a0059061ef4f576bf34db2ca8",
+  "rejected": [
+    {
+      "id": "ridge-h600-f4-l0.01",
+      "reason": "insufficient_matured_labels",
+      "train": 68,
+      "test": 0
+    },
+    {
+      "id": "ridge-h600-f4-l0.1",
+      "reason": "insufficient_matured_labels",
+      "train": 68,
+      "test": 0
+    },
+    {
+      "id": "ridge-h600-f4-l1",
+      "reason": "insufficient_matured_labels",
+      "train": 68,
+      "test": 0
+    },
+    {
+      "id": "ridge-h600-f4-l10",
+      "reason": "insufficient_matured_labels",
+      "train": 68,
+      "test": 0
+    },
+    {
+      "id": "ridge-h600-f4-l100",
+      "reason": "insufficient_matured_labels",
+      "train": 68,
+      "test": 0
+    },
+    {
+      "id": "ridge-h600-f4-l1000",
+      "reason": "insufficient_matured_labels",
+      "train": 68,
+      "test": 0
+    },
+    {
+      "id": "ridge-h600-f4-l10000",
+      "reason": "insufficient_matured_labels",
+      "train": 68,
+      "test": 0
+    },
+    {
+      "id": "ridge-h600-f4-l100000",
+      "reason": "insufficient_matured_labels",
+      "train": 68,
+      "test": 0
+    },
+    {
+      "id": "ridge-h600-f6-l0.01",
+      "reason": "insufficient_matured_labels",
+      "train": 68,
+      "test": 0
+    },
+    {
+      "id": "ridge-h600-f6-l0.1",
+      "reason": "insufficient_matured_labels",
+      "train": 68,
+      "test": 0
+    },
+    {
+      "id": "ridge-h600-f6-l1",
+      "reason": "insufficient_matured_labels",
+      "train": 68,
+      "test": 0
+    },
+    {
+      "id": "ridge-h600-f6-l10",
+      "reason": "insufficient_matured_labels",
+      "train": 68,
+      "test": 0
+    },
+    {
+      "id": "ridge-h600-f6-l100",
+      "reason": "insufficient_matured_labels",
+      "train": 68,
+      "test": 0
+    },
+    {
+      "id": "ridge-h600-f6-l1000",
+      "reason": "insufficient_matured_labels",
+      "train": 68,
+      "test": 0
+    },
+    {
+      "id": "ridge-h600-f6-l10000",
+      "reason": "insufficient_matured_labels",
+      "train": 68,
+      "test": 0
+    },
+    {
+      "id": "ridge-h600-f6-l100000",
+      "reason": "insufficient_matured_labels",
+      "train": 68,
+      "test": 0
+    },
+    {
+      "id": "ridge-h600-f9-l0.01",
+      "reason": "insufficient_matured_labels",
+      "train": 68,
+      "test": 0
+    },
+    {
+      "id": "ridge-h600-f9-l0.1",
+      "reason": "insufficient_matured_labels",
+      "train": 68,
+      "test": 0
+    },
+    {
+      "id": "ridge-h600-f9-l1",
+      "reason": "insufficient_matured_labels",
+      "train": 68,
+      "test": 0
+    },
+    {
+      "id": "ridge-h600-f9-l10",
+      "reason": "insufficient_matured_labels",
+      "train": 68,
+      "test": 0
+    },
+    {
+      "id": "ridge-h600-f9-l100",
+      "reason": "insufficient_matured_labels",
+      "train": 68,
+      "test": 0
+    },
+    {
+      "id": "ridge-h600-f9-l1000",
+      "reason": "insufficient_matured_labels",
+      "train": 68,
+      "test": 0
+    },
+    {
+      "id": "ridge-h600-f9-l10000",
+      "reason": "insufficient_matured_labels",
+      "train": 68,
+      "test": 0
+    },
+    {
+      "id": "ridge-h600-f9-l100000",
+      "reason": "insufficient_matured_labels",
+      "train": 68,
+      "test": 0
+    },
+    {
+      "id": "ridge-h600-f12-l0.01",
+      "reason": "insufficient_matured_labels",
+      "train": 68,
+      "test": 0
+    },
+    {
+      "id": "ridge-h600-f12-l0.1",
+      "reason": "insufficient_matured_labels",
+      "train": 68,
+      "test": 0
+    },
+    {
+      "id": "ridge-h600-f12-l1",
+      "reason": "insufficient_matured_labels",
+      "train": 68,
+      "test": 0
+    },
+    {
+      "id": "ridge-h600-f12-l10",
+      "reason": "insufficient_matured_labels",
+      "train": 68,
+      "test": 0
+    },
+    {
+      "id": "ridge-h600-f12-l100",
+      "reason": "insufficient_matured_labels",
+      "train": 68,
+      "test": 0
+    },
+    {
+      "id": "ridge-h600-f12-l1000",
+      "reason": "insufficient_matured_labels",
+      "train": 68,
+      "test": 0
+    },
+    {
+      "id": "ridge-h600-f12-l10000",
+      "reason": "insufficient_matured_labels",
+      "train": 68,
+      "test": 0
+    },
+    {
+      "id": "ridge-h600-f12-l100000",
+      "reason": "insufficient_matured_labels",
+      "train": 68,
+      "test": 0
+    }
+  ],
+  "metadataCorrection": "Persistence forecast baseline corrected; source prefix, selected models, fitted weights and all paper wallet accounting retained",
+  "limitations": [
+    "Short correlated capture; no profitability established",
+    "Chronological development split with training labels purged at split; not untouched future validation",
+    "Top bid label is not verified full-size exit liquidity",
+    "No guarantee of future depth, latency, settlement equivalence or execution"
+  ]
+}
