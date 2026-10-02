@@ -22,14 +22,20 @@ export function diagnoseJournal(raw,c){
     if(event.type==='account_read_outage'){if(state)invalidate(state,null,clock,event.reason);continue;}
     if(event.type!=='cycle')continue;
     const excluded=new Set(event.accountExclusions);
-    for(const e of event.sourceSnapshots){
+    for(const [index,e] of event.sourceSnapshots.entries()){
       if(e.skipped){increment(skipReasons,e.skipped);if(state)invalidate(state,e.marketId,e.at||r.state?.skips?.[e.marketId]?.at||clock,e.skipped);continue;}
       const match=/^\/markets\/(\d+)\/orderbook\?/.exec(e.endpoint||'');
       if(!match||!c.marketIds.includes(match[1]))continue;
       state??=initialState(c,'diagnostics',e.requestStartedAt);
       let b;
       try{b=normalizeBook(e.data,match[1],c.tournamentId,e.receivedAt,e.requestStartedAt,c.maxDataAgeMs,excluded);}
-      catch(err){increment(skipReasons,err.message);invalidate(state,match[1],e.receivedAt,err.message);continue;}
+      catch(err){
+        // The collector appends a raw successful-HTTP response followed by its
+        // validation skip. That adjacent event is the authoritative skip count.
+        const next=event.sourceSnapshots[index+1];
+        if(!next?.skipped||String(next.marketId)!==match[1])increment(skipReasons,err.message);
+        invalidate(state,match[1],e.receivedAt,err.message);continue;
+      }
       const m=markets[b.marketId]??={accepted:0,duplicates:0,uniqueVersions:0,gateCounts:{},latencyMs:[],sourceAgeMs:[],samplingGapMs:[],spread:[],zScore:[],entryEdge:[],usableAskShares:[],lastAt:null};
       const prev=state.books[b.instrument],priorIntents=state.strategies.mean_reversion.intents;
       const history=(state.histories[b.instrument]||[]).slice(-c.lookback);
