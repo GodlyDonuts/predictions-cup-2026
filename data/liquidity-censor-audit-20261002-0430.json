@@ -1,0 +1,3254 @@
+{
+  "schemaVersion": 1,
+  "createdAt": "2026-10-02T04:29:53.737Z",
+  "sourceHash": "24d9e9b7661fbdf76bd3fb794d0df6e778931dd0b0ce75472e5e1936c4d88ae9",
+  "sourceRecords": 287,
+  "captureThrough": "2026-10-02T04:29:46.233Z",
+  "windowStart": "2026-10-02T02:11:00.000Z",
+  "targetPolicy": "delayed_fifo_roundtrip_net_v1",
+  "decisionCount": 498,
+  "captureHealth": {
+    "accountReadOutages": 8,
+    "scopedSkips": {
+      "Market API connection unavailable": 38
+    }
+  },
+  "markets": {
+    "277": {
+      "uniqueDecisions": 83,
+      "warmup": 36,
+      "latencyMs": {
+        "count": 83,
+        "min": 261,
+        "median": 6310,
+        "p95": 16780,
+        "max": 18561
+      },
+      "sourceAgeMs": {
+        "count": 83,
+        "min": 5607,
+        "median": 5705,
+        "p95": 5776,
+        "max": 5802
+      },
+      "gapMs": {
+        "count": 82,
+        "min": 55519,
+        "median": 82060,
+        "p95": 144039,
+        "max": 452306
+      },
+      "spread": {
+        "count": 83,
+        "min": 0.0050000000000000044,
+        "median": 0.015000000000000013,
+        "p95": 0.02499999999999991,
+        "max": 0.029999999999999916
+      },
+      "askCapacity": {
+        "count": 83,
+        "min": 6856,
+        "median": 9245,
+        "p95": 9321,
+        "max": 12196
+      },
+      "bidCapacity": {
+        "count": 83,
+        "min": 670,
+        "median": 1710,
+        "p95": 2083,
+        "max": 2301
+      },
+      "quoteUnchanged": 46,
+      "continuousPairs": 73,
+      "segmentBreaks": 9,
+      "askDepthChange": {
+        "count": 73,
+        "min": -3017,
+        "median": 0,
+        "p95": 142,
+        "max": 2978
+      },
+      "bidDepthChange": {
+        "count": 73,
+        "min": -563,
+        "median": 0,
+        "p95": 354,
+        "max": 614
+      },
+      "nextBidChange": {
+        "count": 73,
+        "min": -0.0050000000000000044,
+        "median": 0,
+        "p95": 0,
+        "max": 0.0050000000000000044
+      },
+      "nextEntryCostChange": {
+        "count": 73,
+        "min": -0.020019999999999927,
+        "median": 0,
+        "p95": 0.010009999999999963,
+        "max": 0.020019999999999927
+      },
+      "horizons": {
+        "60": {
+          "decisions": 83,
+          "reasons": {
+            "decision_warmup": 36,
+            "segment_boundary": 27,
+            "completed": 16,
+            "entry_unfilled": 4
+          },
+          "enteredDecisions": 39,
+          "openDecisions": 23,
+          "missingLiquidation": 23,
+          "missingReference": 23,
+          "realizedPnl": {
+            "count": 83,
+            "min": -0.413605,
+            "median": 0,
+            "p95": 0,
+            "max": 0
+          },
+          "cashDelta": {
+            "count": 83,
+            "min": -9.35935,
+            "median": 0,
+            "p95": 0,
+            "max": 0
+          },
+          "fees": {
+            "count": 83,
+            "min": 0,
+            "median": 0,
+            "p95": 0.018405,
+            "max": 0.018615
+          },
+          "referencePnl": {
+            "count": 60,
+            "min": -0.413605,
+            "median": 0,
+            "p95": 0,
+            "max": 0
+          },
+          "liquidationPnl": {
+            "count": 60,
+            "min": -0.413605,
+            "median": 0,
+            "p95": 0,
+            "max": 0
+          },
+          "outcomesByReason": {
+            "decision_warmup": {
+              "count": 36,
+              "openDecisions": 0,
+              "missingLiquidation": 0,
+              "realizedPnl": {
+                "count": 36,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              },
+              "liquidationPnl": {
+                "count": 36,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              },
+              "fees": {
+                "count": 36,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              }
+            },
+            "segment_boundary": {
+              "count": 27,
+              "openDecisions": 23,
+              "missingLiquidation": 23,
+              "realizedPnl": {
+                "count": 27,
+                "min": -0.37674,
+                "median": -0.080535,
+                "p95": 0,
+                "max": 0
+              },
+              "liquidationPnl": {
+                "count": 4,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              },
+              "fees": {
+                "count": 27,
+                "min": 0,
+                "median": 0.01208,
+                "p95": 0.01754,
+                "max": 0.01769
+              }
+            },
+            "completed": {
+              "count": 16,
+              "openDecisions": 0,
+              "missingLiquidation": 0,
+              "realizedPnl": {
+                "count": 16,
+                "min": -0.413605,
+                "median": -0.26835,
+                "p95": -0.14475,
+                "max": -0.1329
+              },
+              "liquidationPnl": {
+                "count": 16,
+                "min": -0.413605,
+                "median": -0.26835,
+                "p95": -0.14475,
+                "max": -0.1329
+              },
+              "fees": {
+                "count": 16,
+                "min": 0.0129,
+                "median": 0.01835,
+                "p95": 0.01861,
+                "max": 0.018615
+              }
+            },
+            "entry_unfilled": {
+              "count": 4,
+              "openDecisions": 0,
+              "missingLiquidation": 0,
+              "realizedPnl": {
+                "count": 4,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              },
+              "liquidationPnl": {
+                "count": 4,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              },
+              "fees": {
+                "count": 4,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              }
+            }
+          }
+        },
+        "180": {
+          "decisions": 83,
+          "reasons": {
+            "decision_warmup": 36,
+            "segment_boundary": 31,
+            "completed": 12,
+            "entry_unfilled": 4
+          },
+          "enteredDecisions": 39,
+          "openDecisions": 27,
+          "missingLiquidation": 27,
+          "missingReference": 27,
+          "realizedPnl": {
+            "count": 83,
+            "min": -0.413605,
+            "median": 0,
+            "p95": 0,
+            "max": 0
+          },
+          "cashDelta": {
+            "count": 83,
+            "min": -9.35935,
+            "median": 0,
+            "p95": 0,
+            "max": 0
+          },
+          "fees": {
+            "count": 83,
+            "min": 0,
+            "median": 0,
+            "p95": 0.0184,
+            "max": 0.018615
+          },
+          "referencePnl": {
+            "count": 56,
+            "min": -0.413605,
+            "median": 0,
+            "p95": 0,
+            "max": 0
+          },
+          "liquidationPnl": {
+            "count": 56,
+            "min": -0.413605,
+            "median": 0,
+            "p95": 0,
+            "max": 0
+          },
+          "outcomesByReason": {
+            "decision_warmup": {
+              "count": 36,
+              "openDecisions": 0,
+              "missingLiquidation": 0,
+              "realizedPnl": {
+                "count": 36,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              },
+              "liquidationPnl": {
+                "count": 36,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              },
+              "fees": {
+                "count": 36,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              }
+            },
+            "segment_boundary": {
+              "count": 31,
+              "openDecisions": 27,
+              "missingLiquidation": 27,
+              "realizedPnl": {
+                "count": 31,
+                "min": -0.37674,
+                "median": -0.080535,
+                "p95": 0,
+                "max": 0
+              },
+              "liquidationPnl": {
+                "count": 4,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              },
+              "fees": {
+                "count": 31,
+                "min": 0,
+                "median": 0.01203,
+                "p95": 0.01754,
+                "max": 0.01769
+              }
+            },
+            "completed": {
+              "count": 12,
+              "openDecisions": 0,
+              "missingLiquidation": 0,
+              "realizedPnl": {
+                "count": 12,
+                "min": -0.413605,
+                "median": -0.26845,
+                "p95": -0.15474,
+                "max": -0.14289
+              },
+              "liquidationPnl": {
+                "count": 12,
+                "min": -0.413605,
+                "median": -0.26845,
+                "p95": -0.15474,
+                "max": -0.14289
+              },
+              "fees": {
+                "count": 12,
+                "min": 0.01289,
+                "median": 0.01835,
+                "p95": 0.01861,
+                "max": 0.018615
+              }
+            },
+            "entry_unfilled": {
+              "count": 4,
+              "openDecisions": 0,
+              "missingLiquidation": 0,
+              "realizedPnl": {
+                "count": 4,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              },
+              "liquidationPnl": {
+                "count": 4,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              },
+              "fees": {
+                "count": 4,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              }
+            }
+          }
+        },
+        "600": {
+          "decisions": 83,
+          "reasons": {
+            "decision_warmup": 36,
+            "segment_boundary": 35,
+            "completed": 8,
+            "entry_unfilled": 4
+          },
+          "enteredDecisions": 39,
+          "openDecisions": 31,
+          "missingLiquidation": 31,
+          "missingReference": 31,
+          "realizedPnl": {
+            "count": 83,
+            "min": -0.413605,
+            "median": 0,
+            "p95": 0,
+            "max": 0
+          },
+          "cashDelta": {
+            "count": 83,
+            "min": -9.35935,
+            "median": 0,
+            "p95": 0,
+            "max": 0
+          },
+          "fees": {
+            "count": 83,
+            "min": 0,
+            "median": 0,
+            "p95": 0.01656,
+            "max": 0.018615
+          },
+          "referencePnl": {
+            "count": 52,
+            "min": -0.413605,
+            "median": 0,
+            "p95": 0,
+            "max": 0
+          },
+          "liquidationPnl": {
+            "count": 52,
+            "min": -0.413605,
+            "median": 0,
+            "p95": 0,
+            "max": 0
+          },
+          "outcomesByReason": {
+            "decision_warmup": {
+              "count": 36,
+              "openDecisions": 0,
+              "missingLiquidation": 0,
+              "realizedPnl": {
+                "count": 36,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              },
+              "liquidationPnl": {
+                "count": 36,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              },
+              "fees": {
+                "count": 36,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              }
+            },
+            "segment_boundary": {
+              "count": 35,
+              "openDecisions": 31,
+              "missingLiquidation": 31,
+              "realizedPnl": {
+                "count": 35,
+                "min": -0.37674,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              },
+              "liquidationPnl": {
+                "count": 4,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              },
+              "fees": {
+                "count": 35,
+                "min": 0,
+                "median": 0.00935,
+                "p95": 0.01572,
+                "max": 0.01769
+              }
+            },
+            "completed": {
+              "count": 8,
+              "openDecisions": 0,
+              "missingLiquidation": 0,
+              "realizedPnl": {
+                "count": 8,
+                "min": -0.413605,
+                "median": -0.313405,
+                "p95": -0.17472,
+                "max": -0.15288
+              },
+              "liquidationPnl": {
+                "count": 8,
+                "min": -0.413605,
+                "median": -0.313405,
+                "p95": -0.17472,
+                "max": -0.15288
+              },
+              "fees": {
+                "count": 8,
+                "min": 0.01288,
+                "median": 0.01656,
+                "p95": 0.01861,
+                "max": 0.018615
+              }
+            },
+            "entry_unfilled": {
+              "count": 4,
+              "openDecisions": 0,
+              "missingLiquidation": 0,
+              "realizedPnl": {
+                "count": 4,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              },
+              "liquidationPnl": {
+                "count": 4,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              },
+              "fees": {
+                "count": 4,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              }
+            }
+          }
+        }
+      }
+    },
+    "305": {
+      "uniqueDecisions": 82,
+      "warmup": 34,
+      "latencyMs": {
+        "count": 82,
+        "min": 258,
+        "median": 4960,
+        "p95": 17982,
+        "max": 19759
+      },
+      "sourceAgeMs": {
+        "count": 82,
+        "min": 5588,
+        "median": 5705,
+        "p95": 5778,
+        "max": 5811
+      },
+      "gapMs": {
+        "count": 81,
+        "min": 54302,
+        "median": 82217,
+        "p95": 130489,
+        "max": 1443431
+      },
+      "spread": {
+        "count": 82,
+        "min": 0.0050000000000000044,
+        "median": 0.010000000000000009,
+        "p95": 0.015000000000000013,
+        "max": 0.020000000000000018
+      },
+      "askCapacity": {
+        "count": 82,
+        "min": 5624,
+        "median": 12632,
+        "p95": 13001,
+        "max": 14477
+      },
+      "bidCapacity": {
+        "count": 82,
+        "min": 1144,
+        "median": 1733,
+        "p95": 2287,
+        "max": 2887
+      },
+      "quoteUnchanged": 39,
+      "continuousPairs": 75,
+      "segmentBreaks": 6,
+      "askDepthChange": {
+        "count": 75,
+        "min": -1909,
+        "median": 0,
+        "p95": 100,
+        "max": 1918
+      },
+      "bidDepthChange": {
+        "count": 75,
+        "min": -1043,
+        "median": 0,
+        "p95": 418,
+        "max": 717
+      },
+      "nextBidChange": {
+        "count": 75,
+        "min": -0.015000000000000013,
+        "median": 0,
+        "p95": 0.0050000000000000044,
+        "max": 0.0050000000000000044
+      },
+      "nextEntryCostChange": {
+        "count": 75,
+        "min": -0.010009999999999963,
+        "median": 0,
+        "p95": 0,
+        "max": 0.005005000000000037
+      },
+      "horizons": {
+        "60": {
+          "decisions": 82,
+          "reasons": {
+            "decision_warmup": 34,
+            "completed": 20,
+            "segment_boundary": 27,
+            "entry_unfilled": 1
+          },
+          "enteredDecisions": 41,
+          "openDecisions": 21,
+          "missingLiquidation": 21,
+          "missingReference": 21,
+          "realizedPnl": {
+            "count": 82,
+            "min": -0.232785,
+            "median": 0,
+            "p95": 0,
+            "max": 0
+          },
+          "cashDelta": {
+            "count": 82,
+            "min": -9.25925,
+            "median": -0.016795,
+            "p95": 0,
+            "max": 0
+          },
+          "fees": {
+            "count": 82,
+            "min": 0,
+            "median": 0,
+            "p95": 0.017785,
+            "max": 0.01779
+          },
+          "referencePnl": {
+            "count": 61,
+            "min": -0.232785,
+            "median": 0,
+            "p95": 0,
+            "max": 0
+          },
+          "liquidationPnl": {
+            "count": 61,
+            "min": -0.232785,
+            "median": 0,
+            "p95": 0,
+            "max": 0
+          },
+          "outcomesByReason": {
+            "decision_warmup": {
+              "count": 34,
+              "openDecisions": 0,
+              "missingLiquidation": 0,
+              "realizedPnl": {
+                "count": 34,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              },
+              "liquidationPnl": {
+                "count": 34,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              },
+              "fees": {
+                "count": 34,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              }
+            },
+            "completed": {
+              "count": 20,
+              "openDecisions": 0,
+              "missingLiquidation": 0,
+              "realizedPnl": {
+                "count": 20,
+                "min": -0.232785,
+                "median": -0.04364,
+                "p95": -0.016795,
+                "max": -0.016795
+              },
+              "liquidationPnl": {
+                "count": 20,
+                "min": -0.232785,
+                "median": -0.04364,
+                "p95": -0.016795,
+                "max": -0.016795
+              },
+              "fees": {
+                "count": 20,
+                "min": 0.00179,
+                "median": 0.001795,
+                "p95": 0.01779,
+                "max": 0.01779
+              }
+            },
+            "segment_boundary": {
+              "count": 27,
+              "openDecisions": 21,
+              "missingLiquidation": 21,
+              "realizedPnl": {
+                "count": 27,
+                "min": -0.201015,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              },
+              "liquidationPnl": {
+                "count": 6,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              },
+              "fees": {
+                "count": 27,
+                "min": 0,
+                "median": 0.00276,
+                "p95": 0.01428,
+                "max": 0.016915
+              }
+            },
+            "entry_unfilled": {
+              "count": 1,
+              "openDecisions": 0,
+              "missingLiquidation": 0,
+              "realizedPnl": {
+                "count": 1,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              },
+              "liquidationPnl": {
+                "count": 1,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              },
+              "fees": {
+                "count": 1,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              }
+            }
+          }
+        },
+        "180": {
+          "decisions": 82,
+          "reasons": {
+            "decision_warmup": 34,
+            "segment_boundary": 33,
+            "completed": 14,
+            "entry_unfilled": 1
+          },
+          "enteredDecisions": 41,
+          "openDecisions": 27,
+          "missingLiquidation": 27,
+          "missingReference": 27,
+          "realizedPnl": {
+            "count": 82,
+            "min": -0.232785,
+            "median": 0,
+            "p95": 0,
+            "max": 0
+          },
+          "cashDelta": {
+            "count": 82,
+            "min": -9.25925,
+            "median": -0.016795,
+            "p95": 0,
+            "max": 0
+          },
+          "fees": {
+            "count": 82,
+            "min": 0,
+            "median": 0,
+            "p95": 0.01428,
+            "max": 0.01779
+          },
+          "referencePnl": {
+            "count": 55,
+            "min": -0.232785,
+            "median": 0,
+            "p95": 0,
+            "max": 0
+          },
+          "liquidationPnl": {
+            "count": 55,
+            "min": -0.232785,
+            "median": 0,
+            "p95": 0,
+            "max": 0
+          },
+          "outcomesByReason": {
+            "decision_warmup": {
+              "count": 34,
+              "openDecisions": 0,
+              "missingLiquidation": 0,
+              "realizedPnl": {
+                "count": 34,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              },
+              "liquidationPnl": {
+                "count": 34,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              },
+              "fees": {
+                "count": 34,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              }
+            },
+            "segment_boundary": {
+              "count": 33,
+              "openDecisions": 27,
+              "missingLiquidation": 27,
+              "realizedPnl": {
+                "count": 33,
+                "min": -0.201015,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              },
+              "liquidationPnl": {
+                "count": 6,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              },
+              "fees": {
+                "count": 33,
+                "min": 0,
+                "median": 0.00184,
+                "p95": 0.01252,
+                "max": 0.016915
+              }
+            },
+            "completed": {
+              "count": 14,
+              "openDecisions": 0,
+              "missingLiquidation": 0,
+              "realizedPnl": {
+                "count": 14,
+                "min": -0.232785,
+                "median": -0.04364,
+                "p95": -0.016795,
+                "max": -0.016795
+              },
+              "liquidationPnl": {
+                "count": 14,
+                "min": -0.232785,
+                "median": -0.04364,
+                "p95": -0.016795,
+                "max": -0.016795
+              },
+              "fees": {
+                "count": 14,
+                "min": 0.00179,
+                "median": 0.001795,
+                "p95": 0.01779,
+                "max": 0.01779
+              }
+            },
+            "entry_unfilled": {
+              "count": 1,
+              "openDecisions": 0,
+              "missingLiquidation": 0,
+              "realizedPnl": {
+                "count": 1,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              },
+              "liquidationPnl": {
+                "count": 1,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              },
+              "fees": {
+                "count": 1,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              }
+            }
+          }
+        },
+        "600": {
+          "decisions": 82,
+          "reasons": {
+            "decision_warmup": 34,
+            "segment_boundary": 47,
+            "entry_unfilled": 1
+          },
+          "enteredDecisions": 41,
+          "openDecisions": 41,
+          "missingLiquidation": 41,
+          "missingReference": 41,
+          "realizedPnl": {
+            "count": 82,
+            "min": -0.13068,
+            "median": 0,
+            "p95": 0,
+            "max": 0
+          },
+          "cashDelta": {
+            "count": 82,
+            "min": -9.25925,
+            "median": -0.905905,
+            "p95": 0,
+            "max": 0
+          },
+          "fees": {
+            "count": 82,
+            "min": 0,
+            "median": 0,
+            "p95": 0.00925,
+            "max": 0.01428
+          },
+          "referencePnl": {
+            "count": 41,
+            "min": 0,
+            "median": 0,
+            "p95": 0,
+            "max": 0
+          },
+          "liquidationPnl": {
+            "count": 41,
+            "min": 0,
+            "median": 0,
+            "p95": 0,
+            "max": 0
+          },
+          "outcomesByReason": {
+            "decision_warmup": {
+              "count": 34,
+              "openDecisions": 0,
+              "missingLiquidation": 0,
+              "realizedPnl": {
+                "count": 34,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              },
+              "liquidationPnl": {
+                "count": 34,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              },
+              "fees": {
+                "count": 34,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              }
+            },
+            "segment_boundary": {
+              "count": 47,
+              "openDecisions": 41,
+              "missingLiquidation": 41,
+              "realizedPnl": {
+                "count": 47,
+                "min": -0.13068,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              },
+              "liquidationPnl": {
+                "count": 6,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              },
+              "fees": {
+                "count": 47,
+                "min": 0,
+                "median": 0.00184,
+                "p95": 0.00925,
+                "max": 0.01428
+              }
+            },
+            "entry_unfilled": {
+              "count": 1,
+              "openDecisions": 0,
+              "missingLiquidation": 0,
+              "realizedPnl": {
+                "count": 1,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              },
+              "liquidationPnl": {
+                "count": 1,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              },
+              "fees": {
+                "count": 1,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              }
+            }
+          }
+        }
+      }
+    },
+    "342": {
+      "uniqueDecisions": 82,
+      "warmup": 23,
+      "latencyMs": {
+        "count": 82,
+        "min": 240,
+        "median": 7886,
+        "p95": 17876,
+        "max": 18694
+      },
+      "sourceAgeMs": {
+        "count": 82,
+        "min": 5624,
+        "median": 5710,
+        "p95": 5779,
+        "max": 5793
+      },
+      "gapMs": {
+        "count": 81,
+        "min": 50767,
+        "median": 81507,
+        "p95": 119141,
+        "max": 189358
+      },
+      "spread": {
+        "count": 82,
+        "min": 0.004999999999999949,
+        "median": 0.015000000000000013,
+        "p95": 0.025000000000000022,
+        "max": 0.030000000000000027
+      },
+      "askCapacity": {
+        "count": 82,
+        "min": 1612,
+        "median": 2816,
+        "p95": 3431,
+        "max": 3460
+      },
+      "bidCapacity": {
+        "count": 82,
+        "min": 1776,
+        "median": 2199,
+        "p95": 2400,
+        "max": 2436
+      },
+      "quoteUnchanged": 37,
+      "continuousPairs": 77,
+      "segmentBreaks": 4,
+      "askDepthChange": {
+        "count": 77,
+        "min": -1478,
+        "median": 0,
+        "p95": 636,
+        "max": 1479
+      },
+      "bidDepthChange": {
+        "count": 77,
+        "min": -365,
+        "median": 0,
+        "p95": 167,
+        "max": 334
+      },
+      "nextBidChange": {
+        "count": 77,
+        "min": -0.024999999999999967,
+        "median": 0,
+        "p95": 0.0050000000000000044,
+        "max": 0.015000000000000013
+      },
+      "nextEntryCostChange": {
+        "count": 77,
+        "min": -0.025024999999999964,
+        "median": 0,
+        "p95": 0.015015,
+        "max": 0.020020000000000038
+      },
+      "horizons": {
+        "60": {
+          "decisions": 82,
+          "reasons": {
+            "decision_warmup": 23,
+            "entry_unfilled": 25,
+            "completed": 24,
+            "segment_boundary": 10
+          },
+          "enteredDecisions": 30,
+          "openDecisions": 6,
+          "missingLiquidation": 6,
+          "missingReference": 6,
+          "realizedPnl": {
+            "count": 82,
+            "min": -0.374665,
+            "median": 0,
+            "p95": 0,
+            "max": 0
+          },
+          "cashDelta": {
+            "count": 82,
+            "min": -2.93293,
+            "median": 0,
+            "p95": 0,
+            "max": 0
+          },
+          "fees": {
+            "count": 82,
+            "min": 0,
+            "median": 0,
+            "p95": 0.00764,
+            "max": 0.009665
+          },
+          "referencePnl": {
+            "count": 76,
+            "min": -0.374665,
+            "median": 0,
+            "p95": 0,
+            "max": 0
+          },
+          "liquidationPnl": {
+            "count": 76,
+            "min": -0.374665,
+            "median": 0,
+            "p95": 0,
+            "max": 0
+          },
+          "outcomesByReason": {
+            "decision_warmup": {
+              "count": 23,
+              "openDecisions": 0,
+              "missingLiquidation": 0,
+              "realizedPnl": {
+                "count": 23,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              },
+              "liquidationPnl": {
+                "count": 23,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              },
+              "fees": {
+                "count": 23,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              }
+            },
+            "entry_unfilled": {
+              "count": 25,
+              "openDecisions": 0,
+              "missingLiquidation": 0,
+              "realizedPnl": {
+                "count": 25,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              },
+              "liquidationPnl": {
+                "count": 25,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              },
+              "fees": {
+                "count": 25,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              }
+            },
+            "completed": {
+              "count": 24,
+              "openDecisions": 0,
+              "missingLiquidation": 0,
+              "realizedPnl": {
+                "count": 24,
+                "min": -0.374665,
+                "median": -0.10382,
+                "p95": -0.03095,
+                "max": -0.015935
+              },
+              "liquidationPnl": {
+                "count": 24,
+                "min": -0.374665,
+                "median": -0.10382,
+                "p95": -0.03095,
+                "max": -0.015935
+              },
+              "fees": {
+                "count": 24,
+                "min": 0.000935,
+                "median": 0.00382,
+                "p95": 0.008695,
+                "max": 0.009665
+              }
+            },
+            "segment_boundary": {
+              "count": 10,
+              "openDecisions": 6,
+              "missingLiquidation": 6,
+              "realizedPnl": {
+                "count": 10,
+                "min": -0.04192,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              },
+              "liquidationPnl": {
+                "count": 4,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              },
+              "fees": {
+                "count": 10,
+                "min": 0,
+                "median": 0.000495,
+                "p95": 0.0029,
+                "max": 0.00293
+              }
+            }
+          }
+        },
+        "180": {
+          "decisions": 82,
+          "reasons": {
+            "decision_warmup": 23,
+            "entry_unfilled": 25,
+            "completed": 21,
+            "segment_boundary": 13
+          },
+          "enteredDecisions": 30,
+          "openDecisions": 9,
+          "missingLiquidation": 9,
+          "missingReference": 9,
+          "realizedPnl": {
+            "count": 82,
+            "min": -0.374665,
+            "median": 0,
+            "p95": 0,
+            "max": 0
+          },
+          "cashDelta": {
+            "count": 82,
+            "min": -2.93293,
+            "median": 0,
+            "p95": 0,
+            "max": 0
+          },
+          "fees": {
+            "count": 82,
+            "min": 0,
+            "median": 0,
+            "p95": 0.00764,
+            "max": 0.009665
+          },
+          "referencePnl": {
+            "count": 73,
+            "min": -0.374665,
+            "median": 0,
+            "p95": 0,
+            "max": 0
+          },
+          "liquidationPnl": {
+            "count": 73,
+            "min": -0.374665,
+            "median": 0,
+            "p95": 0,
+            "max": 0
+          },
+          "outcomesByReason": {
+            "decision_warmup": {
+              "count": 23,
+              "openDecisions": 0,
+              "missingLiquidation": 0,
+              "realizedPnl": {
+                "count": 23,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              },
+              "liquidationPnl": {
+                "count": 23,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              },
+              "fees": {
+                "count": 23,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              }
+            },
+            "entry_unfilled": {
+              "count": 25,
+              "openDecisions": 0,
+              "missingLiquidation": 0,
+              "realizedPnl": {
+                "count": 25,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              },
+              "liquidationPnl": {
+                "count": 25,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              },
+              "fees": {
+                "count": 25,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              }
+            },
+            "completed": {
+              "count": 21,
+              "openDecisions": 0,
+              "missingLiquidation": 0,
+              "realizedPnl": {
+                "count": 21,
+                "min": -0.374665,
+                "median": -0.12384,
+                "p95": -0.02194,
+                "max": -0.01094
+              },
+              "liquidationPnl": {
+                "count": 21,
+                "min": -0.374665,
+                "median": -0.12384,
+                "p95": -0.02194,
+                "max": -0.01094
+              },
+              "fees": {
+                "count": 21,
+                "min": 0.00094,
+                "median": 0.00382,
+                "p95": 0.00955,
+                "max": 0.009665
+              }
+            },
+            "segment_boundary": {
+              "count": 13,
+              "openDecisions": 9,
+              "missingLiquidation": 9,
+              "realizedPnl": {
+                "count": 13,
+                "min": -0.04192,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              },
+              "liquidationPnl": {
+                "count": 4,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              },
+              "fees": {
+                "count": 13,
+                "min": 0,
+                "median": 0.00097,
+                "p95": 0.0029,
+                "max": 0.00293
+              }
+            }
+          }
+        },
+        "600": {
+          "decisions": 82,
+          "reasons": {
+            "decision_warmup": 23,
+            "entry_unfilled": 25,
+            "completed": 20,
+            "segment_boundary": 14
+          },
+          "enteredDecisions": 30,
+          "openDecisions": 10,
+          "missingLiquidation": 10,
+          "missingReference": 10,
+          "realizedPnl": {
+            "count": 82,
+            "min": -0.374665,
+            "median": 0,
+            "p95": 0,
+            "max": 0
+          },
+          "cashDelta": {
+            "count": 82,
+            "min": -2.93293,
+            "median": 0,
+            "p95": 0,
+            "max": 0
+          },
+          "fees": {
+            "count": 82,
+            "min": 0,
+            "median": 0,
+            "p95": 0.00764,
+            "max": 0.009665
+          },
+          "referencePnl": {
+            "count": 72,
+            "min": -0.374665,
+            "median": 0,
+            "p95": 0,
+            "max": 0
+          },
+          "liquidationPnl": {
+            "count": 72,
+            "min": -0.374665,
+            "median": 0,
+            "p95": 0,
+            "max": 0
+          },
+          "outcomesByReason": {
+            "decision_warmup": {
+              "count": 23,
+              "openDecisions": 0,
+              "missingLiquidation": 0,
+              "realizedPnl": {
+                "count": 23,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              },
+              "liquidationPnl": {
+                "count": 23,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              },
+              "fees": {
+                "count": 23,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              }
+            },
+            "entry_unfilled": {
+              "count": 25,
+              "openDecisions": 0,
+              "missingLiquidation": 0,
+              "realizedPnl": {
+                "count": 25,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              },
+              "liquidationPnl": {
+                "count": 25,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              },
+              "fees": {
+                "count": 25,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              }
+            },
+            "completed": {
+              "count": 20,
+              "openDecisions": 0,
+              "missingLiquidation": 0,
+              "realizedPnl": {
+                "count": 20,
+                "min": -0.374665,
+                "median": -0.12384,
+                "p95": -0.025955,
+                "max": -0.015935
+              },
+              "liquidationPnl": {
+                "count": 20,
+                "min": -0.374665,
+                "median": -0.12384,
+                "p95": -0.025955,
+                "max": -0.015935
+              },
+              "fees": {
+                "count": 20,
+                "min": 0.000935,
+                "median": 0.00382,
+                "p95": 0.009625,
+                "max": 0.009665
+              }
+            },
+            "segment_boundary": {
+              "count": 14,
+              "openDecisions": 10,
+              "missingLiquidation": 10,
+              "realizedPnl": {
+                "count": 14,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              },
+              "liquidationPnl": {
+                "count": 4,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              },
+              "fees": {
+                "count": 14,
+                "min": 0,
+                "median": 0.00097,
+                "p95": 0.002475,
+                "max": 0.00293
+              }
+            }
+          }
+        }
+      }
+    },
+    "354": {
+      "uniqueDecisions": 85,
+      "warmup": 21,
+      "latencyMs": {
+        "count": 85,
+        "min": 228,
+        "median": 6035,
+        "p95": 17922,
+        "max": 19862
+      },
+      "sourceAgeMs": {
+        "count": 85,
+        "min": 5585,
+        "median": 5714,
+        "p95": 5775,
+        "max": 5841
+      },
+      "gapMs": {
+        "count": 84,
+        "min": 56587,
+        "median": 81775,
+        "p95": 115670,
+        "max": 1009068
+      },
+      "spread": {
+        "count": 85,
+        "min": 0.0049999999999999906,
+        "median": 0.009999999999999995,
+        "p95": 0.030000000000000013,
+        "max": 0.03500000000000002
+      },
+      "askCapacity": {
+        "count": 85,
+        "min": 1519,
+        "median": 2271,
+        "p95": 2668,
+        "max": 2804
+      },
+      "bidCapacity": {
+        "count": 85,
+        "min": 4132,
+        "median": 8377,
+        "p95": 13663,
+        "max": 13766
+      },
+      "quoteUnchanged": 56,
+      "continuousPairs": 79,
+      "segmentBreaks": 5,
+      "askDepthChange": {
+        "count": 79,
+        "min": -513,
+        "median": 0,
+        "p95": 358,
+        "max": 568
+      },
+      "bidDepthChange": {
+        "count": 79,
+        "min": -5325,
+        "median": -2,
+        "p95": 2361,
+        "max": 7208
+      },
+      "nextBidChange": {
+        "count": 79,
+        "min": -0.0050000000000000044,
+        "median": 0,
+        "p95": 0,
+        "max": 0.0050000000000000044
+      },
+      "nextEntryCostChange": {
+        "count": 79,
+        "min": -0.02002000000000001,
+        "median": 0,
+        "p95": 0.0050050000000000094,
+        "max": 0.02002000000000001
+      },
+      "horizons": {
+        "60": {
+          "decisions": 85,
+          "reasons": {
+            "decision_warmup": 21,
+            "entry_unfilled": 16,
+            "completed": 43,
+            "segment_boundary": 5
+          },
+          "enteredDecisions": 46,
+          "openDecisions": 3,
+          "missingLiquidation": 3,
+          "missingReference": 3,
+          "realizedPnl": {
+            "count": 85,
+            "min": -0.36196,
+            "median": -0.04025,
+            "p95": 0,
+            "max": 0
+          },
+          "cashDelta": {
+            "count": 85,
+            "min": -1.25125,
+            "median": -0.12188,
+            "p95": 0,
+            "max": 0
+          },
+          "fees": {
+            "count": 85,
+            "min": 0,
+            "median": 0.00115,
+            "p95": 0.0024,
+            "max": 0.00244
+          },
+          "referencePnl": {
+            "count": 82,
+            "min": -0.36196,
+            "median": -0.06069,
+            "p95": 0,
+            "max": 0
+          },
+          "liquidationPnl": {
+            "count": 82,
+            "min": -0.36196,
+            "median": -0.06069,
+            "p95": 0,
+            "max": 0
+          },
+          "outcomesByReason": {
+            "decision_warmup": {
+              "count": 21,
+              "openDecisions": 0,
+              "missingLiquidation": 0,
+              "realizedPnl": {
+                "count": 21,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              },
+              "liquidationPnl": {
+                "count": 21,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              },
+              "fees": {
+                "count": 21,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              }
+            },
+            "entry_unfilled": {
+              "count": 16,
+              "openDecisions": 0,
+              "missingLiquidation": 0,
+              "realizedPnl": {
+                "count": 16,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              },
+              "liquidationPnl": {
+                "count": 16,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              },
+              "fees": {
+                "count": 16,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              }
+            },
+            "completed": {
+              "count": 43,
+              "openDecisions": 0,
+              "missingLiquidation": 0,
+              "realizedPnl": {
+                "count": 43,
+                "min": -0.36196,
+                "median": -0.17233,
+                "p95": -0.12188,
+                "max": -0.04025
+              },
+              "liquidationPnl": {
+                "count": 43,
+                "min": -0.36196,
+                "median": -0.17233,
+                "p95": -0.12188,
+                "max": -0.04025
+              },
+              "fees": {
+                "count": 43,
+                "min": 0.00025,
+                "median": 0.00235,
+                "p95": 0.0024,
+                "max": 0.00244
+              }
+            },
+            "segment_boundary": {
+              "count": 5,
+              "openDecisions": 3,
+              "missingLiquidation": 3,
+              "realizedPnl": {
+                "count": 5,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              },
+              "liquidationPnl": {
+                "count": 2,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              },
+              "fees": {
+                "count": 5,
+                "min": 0,
+                "median": 0.00116,
+                "p95": 0.00125,
+                "max": 0.00125
+              }
+            }
+          }
+        },
+        "180": {
+          "decisions": 85,
+          "reasons": {
+            "decision_warmup": 21,
+            "entry_unfilled": 16,
+            "completed": 41,
+            "segment_boundary": 7
+          },
+          "enteredDecisions": 46,
+          "openDecisions": 5,
+          "missingLiquidation": 5,
+          "missingReference": 5,
+          "realizedPnl": {
+            "count": 85,
+            "min": -0.36196,
+            "median": 0,
+            "p95": 0,
+            "max": 0
+          },
+          "cashDelta": {
+            "count": 85,
+            "min": -1.25125,
+            "median": -0.12188,
+            "p95": 0,
+            "max": 0
+          },
+          "fees": {
+            "count": 85,
+            "min": 0,
+            "median": 0.00115,
+            "p95": 0.0024,
+            "max": 0.00244
+          },
+          "referencePnl": {
+            "count": 80,
+            "min": -0.36196,
+            "median": -0.04025,
+            "p95": 0,
+            "max": 0
+          },
+          "liquidationPnl": {
+            "count": 80,
+            "min": -0.36196,
+            "median": -0.04025,
+            "p95": 0,
+            "max": 0
+          },
+          "outcomesByReason": {
+            "decision_warmup": {
+              "count": 21,
+              "openDecisions": 0,
+              "missingLiquidation": 0,
+              "realizedPnl": {
+                "count": 21,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              },
+              "liquidationPnl": {
+                "count": 21,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              },
+              "fees": {
+                "count": 21,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              }
+            },
+            "entry_unfilled": {
+              "count": 16,
+              "openDecisions": 0,
+              "missingLiquidation": 0,
+              "realizedPnl": {
+                "count": 16,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              },
+              "liquidationPnl": {
+                "count": 16,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              },
+              "fees": {
+                "count": 16,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              }
+            },
+            "completed": {
+              "count": 41,
+              "openDecisions": 0,
+              "missingLiquidation": 0,
+              "realizedPnl": {
+                "count": 41,
+                "min": -0.36196,
+                "median": -0.187315,
+                "p95": -0.06069,
+                "max": -0.04025
+              },
+              "liquidationPnl": {
+                "count": 41,
+                "min": -0.36196,
+                "median": -0.187315,
+                "p95": -0.06069,
+                "max": -0.04025
+              },
+              "fees": {
+                "count": 41,
+                "min": 0.00025,
+                "median": 0.00235,
+                "p95": 0.0024,
+                "max": 0.00244
+              }
+            },
+            "segment_boundary": {
+              "count": 7,
+              "openDecisions": 5,
+              "missingLiquidation": 5,
+              "realizedPnl": {
+                "count": 7,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              },
+              "liquidationPnl": {
+                "count": 2,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              },
+              "fees": {
+                "count": 7,
+                "min": 0,
+                "median": 0.00125,
+                "p95": 0.00125,
+                "max": 0.00125
+              }
+            }
+          }
+        },
+        "600": {
+          "decisions": 85,
+          "reasons": {
+            "decision_warmup": 21,
+            "entry_unfilled": 16,
+            "completed": 36,
+            "segment_boundary": 12
+          },
+          "enteredDecisions": 46,
+          "openDecisions": 10,
+          "missingLiquidation": 10,
+          "missingReference": 10,
+          "realizedPnl": {
+            "count": 85,
+            "min": -0.36196,
+            "median": 0,
+            "p95": 0,
+            "max": 0
+          },
+          "cashDelta": {
+            "count": 85,
+            "min": -1.25125,
+            "median": -0.12188,
+            "p95": 0,
+            "max": 0
+          },
+          "fees": {
+            "count": 85,
+            "min": 0,
+            "median": 0.00115,
+            "p95": 0.0024,
+            "max": 0.00249
+          },
+          "referencePnl": {
+            "count": 75,
+            "min": -0.36196,
+            "median": 0,
+            "p95": 0,
+            "max": 0
+          },
+          "liquidationPnl": {
+            "count": 75,
+            "min": -0.36196,
+            "median": 0,
+            "p95": 0,
+            "max": 0
+          },
+          "outcomesByReason": {
+            "decision_warmup": {
+              "count": 21,
+              "openDecisions": 0,
+              "missingLiquidation": 0,
+              "realizedPnl": {
+                "count": 21,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              },
+              "liquidationPnl": {
+                "count": 21,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              },
+              "fees": {
+                "count": 21,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              }
+            },
+            "entry_unfilled": {
+              "count": 16,
+              "openDecisions": 0,
+              "missingLiquidation": 0,
+              "realizedPnl": {
+                "count": 16,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              },
+              "liquidationPnl": {
+                "count": 16,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              },
+              "fees": {
+                "count": 16,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              }
+            },
+            "completed": {
+              "count": 36,
+              "openDecisions": 0,
+              "missingLiquidation": 0,
+              "realizedPnl": {
+                "count": 36,
+                "min": -0.36196,
+                "median": -0.197305,
+                "p95": -0.045705,
+                "max": -0.04025
+              },
+              "liquidationPnl": {
+                "count": 36,
+                "min": -0.36196,
+                "median": -0.197305,
+                "p95": -0.045705,
+                "max": -0.04025
+              },
+              "fees": {
+                "count": 36,
+                "min": 0.00025,
+                "median": 0.002315,
+                "p95": 0.0024,
+                "max": 0.00249
+              }
+            },
+            "segment_boundary": {
+              "count": 12,
+              "openDecisions": 10,
+              "missingLiquidation": 10,
+              "realizedPnl": {
+                "count": 12,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              },
+              "liquidationPnl": {
+                "count": 2,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              },
+              "fees": {
+                "count": 12,
+                "min": 0,
+                "median": 0.00125,
+                "p95": 0.00125,
+                "max": 0.00125
+              }
+            }
+          }
+        }
+      }
+    },
+    "376": {
+      "uniqueDecisions": 83,
+      "warmup": 26,
+      "latencyMs": {
+        "count": 83,
+        "min": 213,
+        "median": 5020,
+        "p95": 17516,
+        "max": 19727
+      },
+      "sourceAgeMs": {
+        "count": 83,
+        "min": 5586,
+        "median": 5713,
+        "p95": 5773,
+        "max": 5948
+      },
+      "gapMs": {
+        "count": 82,
+        "min": 48383,
+        "median": 82175,
+        "p95": 125003,
+        "max": 1315307
+      },
+      "spread": {
+        "count": 83,
+        "min": 0.0049999999999999906,
+        "median": 0.015,
+        "p95": 0.039999999999999994,
+        "max": 0.05
+      },
+      "askCapacity": {
+        "count": 83,
+        "min": 706,
+        "median": 1668,
+        "p95": 3399,
+        "max": 3424
+      },
+      "bidCapacity": {
+        "count": 83,
+        "min": 57197,
+        "median": 58057,
+        "p95": 58187,
+        "max": 63163
+      },
+      "quoteUnchanged": 32,
+      "continuousPairs": 76,
+      "segmentBreaks": 6,
+      "askDepthChange": {
+        "count": 76,
+        "min": -1788,
+        "median": 1,
+        "p95": 343,
+        "max": 940
+      },
+      "bidDepthChange": {
+        "count": 76,
+        "min": -4994,
+        "median": -3,
+        "p95": 153,
+        "max": 5010
+      },
+      "nextBidChange": {
+        "count": 76,
+        "min": -0.020000000000000004,
+        "median": 0,
+        "p95": 0.015,
+        "max": 0.024999999999999994
+      },
+      "nextEntryCostChange": {
+        "count": 76,
+        "min": -0.045045,
+        "median": 0,
+        "p95": 0.010010000000000005,
+        "max": 0.045045
+      },
+      "horizons": {
+        "60": {
+          "decisions": 83,
+          "reasons": {
+            "decision_warmup": 26,
+            "completed": 40,
+            "entry_unfilled": 8,
+            "segment_boundary": 9
+          },
+          "enteredDecisions": 46,
+          "openDecisions": 6,
+          "missingLiquidation": 6,
+          "missingReference": 6,
+          "realizedPnl": {
+            "count": 83,
+            "min": -0.576735,
+            "median": 0,
+            "p95": 0,
+            "max": 0
+          },
+          "cashDelta": {
+            "count": 83,
+            "min": -0.95095,
+            "median": -0.035145,
+            "p95": 0,
+            "max": 0
+          },
+          "fees": {
+            "count": 83,
+            "min": 0,
+            "median": 0.000155,
+            "p95": 0.00153,
+            "max": 0.001735
+          },
+          "referencePnl": {
+            "count": 77,
+            "min": -0.576735,
+            "median": -0.02016,
+            "p95": 0,
+            "max": 0
+          },
+          "liquidationPnl": {
+            "count": 77,
+            "min": -0.576735,
+            "median": -0.02016,
+            "p95": 0,
+            "max": 0
+          },
+          "outcomesByReason": {
+            "decision_warmup": {
+              "count": 26,
+              "openDecisions": 0,
+              "missingLiquidation": 0,
+              "realizedPnl": {
+                "count": 26,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              },
+              "liquidationPnl": {
+                "count": 26,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              },
+              "fees": {
+                "count": 26,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              }
+            },
+            "completed": {
+              "count": 40,
+              "openDecisions": 0,
+              "missingLiquidation": 0,
+              "realizedPnl": {
+                "count": 40,
+                "min": -0.576735,
+                "median": -0.226215,
+                "p95": -0.025155,
+                "max": -0.02016
+              },
+              "liquidationPnl": {
+                "count": 40,
+                "min": -0.576735,
+                "median": -0.226215,
+                "p95": -0.025155,
+                "max": -0.02016
+              },
+              "fees": {
+                "count": 40,
+                "min": 0.000145,
+                "median": 0.00116,
+                "p95": 0.00165,
+                "max": 0.001735
+              }
+            },
+            "entry_unfilled": {
+              "count": 8,
+              "openDecisions": 0,
+              "missingLiquidation": 0,
+              "realizedPnl": {
+                "count": 8,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              },
+              "liquidationPnl": {
+                "count": 8,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              },
+              "fees": {
+                "count": 8,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              }
+            },
+            "segment_boundary": {
+              "count": 9,
+              "openDecisions": 6,
+              "missingLiquidation": 6,
+              "realizedPnl": {
+                "count": 9,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              },
+              "liquidationPnl": {
+                "count": 3,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              },
+              "fees": {
+                "count": 9,
+                "min": 0,
+                "median": 0.00025,
+                "p95": 0.00095,
+                "max": 0.00095
+              }
+            }
+          }
+        },
+        "180": {
+          "decisions": 83,
+          "reasons": {
+            "decision_warmup": 26,
+            "completed": 38,
+            "entry_unfilled": 8,
+            "segment_boundary": 11
+          },
+          "enteredDecisions": 46,
+          "openDecisions": 8,
+          "missingLiquidation": 8,
+          "missingReference": 8,
+          "realizedPnl": {
+            "count": 83,
+            "min": -0.576735,
+            "median": 0,
+            "p95": 0,
+            "max": 0
+          },
+          "cashDelta": {
+            "count": 83,
+            "min": -0.95095,
+            "median": -0.035145,
+            "p95": 0,
+            "max": 0
+          },
+          "fees": {
+            "count": 83,
+            "min": 0,
+            "median": 0.000155,
+            "p95": 0.00153,
+            "max": 0.001735
+          },
+          "referencePnl": {
+            "count": 75,
+            "min": -0.576735,
+            "median": -0.025155,
+            "p95": 0,
+            "max": 0
+          },
+          "liquidationPnl": {
+            "count": 75,
+            "min": -0.576735,
+            "median": -0.025155,
+            "p95": 0,
+            "max": 0
+          },
+          "outcomesByReason": {
+            "decision_warmup": {
+              "count": 26,
+              "openDecisions": 0,
+              "missingLiquidation": 0,
+              "realizedPnl": {
+                "count": 26,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              },
+              "liquidationPnl": {
+                "count": 26,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              },
+              "fees": {
+                "count": 26,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              }
+            },
+            "completed": {
+              "count": 38,
+              "openDecisions": 0,
+              "missingLiquidation": 0,
+              "realizedPnl": {
+                "count": 38,
+                "min": -0.576735,
+                "median": -0.185955,
+                "p95": -0.025155,
+                "max": -0.025155
+              },
+              "liquidationPnl": {
+                "count": 38,
+                "min": -0.576735,
+                "median": -0.185955,
+                "p95": -0.025155,
+                "max": -0.025155
+              },
+              "fees": {
+                "count": 38,
+                "min": 0.000145,
+                "median": 0.00116,
+                "p95": 0.00162,
+                "max": 0.001735
+              }
+            },
+            "entry_unfilled": {
+              "count": 8,
+              "openDecisions": 0,
+              "missingLiquidation": 0,
+              "realizedPnl": {
+                "count": 8,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              },
+              "liquidationPnl": {
+                "count": 8,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              },
+              "fees": {
+                "count": 8,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              }
+            },
+            "segment_boundary": {
+              "count": 11,
+              "openDecisions": 8,
+              "missingLiquidation": 8,
+              "realizedPnl": {
+                "count": 11,
+                "min": -0.01015,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              },
+              "liquidationPnl": {
+                "count": 3,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              },
+              "fees": {
+                "count": 11,
+                "min": 0,
+                "median": 0.000595,
+                "p95": 0.00095,
+                "max": 0.00095
+              }
+            }
+          }
+        },
+        "600": {
+          "decisions": 83,
+          "reasons": {
+            "decision_warmup": 26,
+            "completed": 32,
+            "entry_unfilled": 8,
+            "segment_boundary": 17
+          },
+          "enteredDecisions": 46,
+          "openDecisions": 14,
+          "missingLiquidation": 14,
+          "missingReference": 14,
+          "realizedPnl": {
+            "count": 83,
+            "min": -0.576735,
+            "median": 0,
+            "p95": 0,
+            "max": 0
+          },
+          "cashDelta": {
+            "count": 83,
+            "min": -0.95095,
+            "median": -0.03045,
+            "p95": 0,
+            "max": 0
+          },
+          "fees": {
+            "count": 83,
+            "min": 0,
+            "median": 0.00016,
+            "p95": 0.00153,
+            "max": 0.001735
+          },
+          "referencePnl": {
+            "count": 69,
+            "min": -0.576735,
+            "median": 0,
+            "p95": 0,
+            "max": 0
+          },
+          "liquidationPnl": {
+            "count": 69,
+            "min": -0.576735,
+            "median": 0,
+            "p95": 0,
+            "max": 0
+          },
+          "outcomesByReason": {
+            "decision_warmup": {
+              "count": 26,
+              "openDecisions": 0,
+              "missingLiquidation": 0,
+              "realizedPnl": {
+                "count": 26,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              },
+              "liquidationPnl": {
+                "count": 26,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              },
+              "fees": {
+                "count": 26,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              }
+            },
+            "completed": {
+              "count": 32,
+              "openDecisions": 0,
+              "missingLiquidation": 0,
+              "realizedPnl": {
+                "count": 32,
+                "min": -0.576735,
+                "median": -0.125675,
+                "p95": -0.02016,
+                "max": -0.02016
+              },
+              "liquidationPnl": {
+                "count": 32,
+                "min": -0.576735,
+                "median": -0.125675,
+                "p95": -0.02016,
+                "max": -0.02016
+              },
+              "fees": {
+                "count": 32,
+                "min": 0.000145,
+                "median": 0.000955,
+                "p95": 0.00162,
+                "max": 0.001735
+              }
+            },
+            "entry_unfilled": {
+              "count": 8,
+              "openDecisions": 0,
+              "missingLiquidation": 0,
+              "realizedPnl": {
+                "count": 8,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              },
+              "liquidationPnl": {
+                "count": 8,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              },
+              "fees": {
+                "count": 8,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              }
+            },
+            "segment_boundary": {
+              "count": 17,
+              "openDecisions": 14,
+              "missingLiquidation": 14,
+              "realizedPnl": {
+                "count": 17,
+                "min": -0.09135,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              },
+              "liquidationPnl": {
+                "count": 3,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              },
+              "fees": {
+                "count": 17,
+                "min": 0,
+                "median": 0.00072,
+                "p95": 0.00095,
+                "max": 0.00143
+              }
+            }
+          }
+        }
+      }
+    },
+    "377": {
+      "uniqueDecisions": 83,
+      "warmup": 19,
+      "latencyMs": {
+        "count": 83,
+        "min": 226,
+        "median": 3529,
+        "p95": 18075,
+        "max": 19360
+      },
+      "sourceAgeMs": {
+        "count": 83,
+        "min": 5615,
+        "median": 5708,
+        "p95": 5775,
+        "max": 5785
+      },
+      "gapMs": {
+        "count": 82,
+        "min": 52827,
+        "median": 80117,
+        "p95": 116291,
+        "max": 226015
+      },
+      "spread": {
+        "count": 83,
+        "min": 0.0050000000000000044,
+        "median": 0.010000000000000009,
+        "p95": 0.020000000000000018,
+        "max": 0.08000000000000007
+      },
+      "askCapacity": {
+        "count": 83,
+        "min": 1789,
+        "median": 3450,
+        "p95": 3981,
+        "max": 4185
+      },
+      "bidCapacity": {
+        "count": 83,
+        "min": 516,
+        "median": 1847,
+        "p95": 2636,
+        "max": 3402
+      },
+      "quoteUnchanged": 36,
+      "continuousPairs": 79,
+      "segmentBreaks": 3,
+      "askDepthChange": {
+        "count": 79,
+        "min": -1666,
+        "median": 1,
+        "p95": 403,
+        "max": 1538
+      },
+      "bidDepthChange": {
+        "count": 79,
+        "min": -918,
+        "median": -1,
+        "p95": 533,
+        "max": 2563
+      },
+      "nextBidChange": {
+        "count": 79,
+        "min": -0.07500000000000007,
+        "median": 0,
+        "p95": 0.010000000000000009,
+        "max": 0.020000000000000018
+      },
+      "nextEntryCostChange": {
+        "count": 79,
+        "min": -0.010010000000000074,
+        "median": 0,
+        "p95": 0.005005000000000037,
+        "max": 0.010010000000000074
+      },
+      "horizons": {
+        "60": {
+          "decisions": 83,
+          "reasons": {
+            "decision_warmup": 19,
+            "completed": 36,
+            "entry_unfilled": 14,
+            "segment_boundary": 14
+          },
+          "enteredDecisions": 46,
+          "openDecisions": 10,
+          "missingLiquidation": 10,
+          "missingReference": 10,
+          "realizedPnl": {
+            "count": 83,
+            "min": -0.298315,
+            "median": 0,
+            "p95": 0,
+            "max": 0
+          },
+          "cashDelta": {
+            "count": 83,
+            "min": -6.901895,
+            "median": -0.06408,
+            "p95": 0,
+            "max": 0
+          },
+          "fees": {
+            "count": 83,
+            "min": 0,
+            "median": 0.004065,
+            "p95": 0.01355,
+            "max": 0.0136
+          },
+          "referencePnl": {
+            "count": 73,
+            "min": -0.298315,
+            "median": 0,
+            "p95": 0,
+            "max": 0
+          },
+          "liquidationPnl": {
+            "count": 73,
+            "min": -0.298315,
+            "median": 0,
+            "p95": 0,
+            "max": 0
+          },
+          "outcomesByReason": {
+            "decision_warmup": {
+              "count": 19,
+              "openDecisions": 0,
+              "missingLiquidation": 0,
+              "realizedPnl": {
+                "count": 19,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              },
+              "liquidationPnl": {
+                "count": 19,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              },
+              "fees": {
+                "count": 19,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              }
+            },
+            "completed": {
+              "count": 36,
+              "openDecisions": 0,
+              "missingLiquidation": 0,
+              "realizedPnl": {
+                "count": 36,
+                "min": -0.298315,
+                "median": -0.15356,
+                "p95": -0.049035,
+                "max": -0.00945
+              },
+              "liquidationPnl": {
+                "count": 36,
+                "min": -0.298315,
+                "median": -0.15356,
+                "p95": -0.049035,
+                "max": -0.00945
+              },
+              "fees": {
+                "count": 36,
+                "min": 0.0027,
+                "median": 0.01345,
+                "p95": 0.01356,
+                "max": 0.0136
+              }
+            },
+            "entry_unfilled": {
+              "count": 14,
+              "openDecisions": 0,
+              "missingLiquidation": 0,
+              "realizedPnl": {
+                "count": 14,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              },
+              "liquidationPnl": {
+                "count": 14,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              },
+              "fees": {
+                "count": 14,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              }
+            },
+            "segment_boundary": {
+              "count": 14,
+              "openDecisions": 10,
+              "missingLiquidation": 10,
+              "realizedPnl": {
+                "count": 14,
+                "min": -0.18804,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              },
+              "liquidationPnl": {
+                "count": 4,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              },
+              "fees": {
+                "count": 14,
+                "min": 0,
+                "median": 0.00682,
+                "p95": 0.0107,
+                "max": 0.01078
+              }
+            }
+          }
+        },
+        "180": {
+          "decisions": 83,
+          "reasons": {
+            "decision_warmup": 19,
+            "completed": 30,
+            "entry_unfilled": 14,
+            "segment_boundary": 20
+          },
+          "enteredDecisions": 46,
+          "openDecisions": 16,
+          "missingLiquidation": 16,
+          "missingReference": 16,
+          "realizedPnl": {
+            "count": 83,
+            "min": -0.3133,
+            "median": 0,
+            "p95": 0,
+            "max": 0
+          },
+          "cashDelta": {
+            "count": 83,
+            "min": -6.901895,
+            "median": -0.06408,
+            "p95": 0,
+            "max": 0
+          },
+          "fees": {
+            "count": 83,
+            "min": 0,
+            "median": 0.004065,
+            "p95": 0.01355,
+            "max": 0.0136
+          },
+          "referencePnl": {
+            "count": 67,
+            "min": -0.3133,
+            "median": 0,
+            "p95": 0,
+            "max": 0
+          },
+          "liquidationPnl": {
+            "count": 67,
+            "min": -0.3133,
+            "median": 0,
+            "p95": 0,
+            "max": 0
+          },
+          "outcomesByReason": {
+            "decision_warmup": {
+              "count": 19,
+              "openDecisions": 0,
+              "missingLiquidation": 0,
+              "realizedPnl": {
+                "count": 19,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              },
+              "liquidationPnl": {
+                "count": 19,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              },
+              "fees": {
+                "count": 19,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              }
+            },
+            "completed": {
+              "count": 30,
+              "openDecisions": 0,
+              "missingLiquidation": 0,
+              "realizedPnl": {
+                "count": 30,
+                "min": -0.3133,
+                "median": -0.15356,
+                "p95": -0.044415,
+                "max": -0.03405
+              },
+              "liquidationPnl": {
+                "count": 30,
+                "min": -0.3133,
+                "median": -0.15356,
+                "p95": -0.044415,
+                "max": -0.03405
+              },
+              "fees": {
+                "count": 30,
+                "min": 0.0027,
+                "median": 0.013445,
+                "p95": 0.01356,
+                "max": 0.0136
+              }
+            },
+            "entry_unfilled": {
+              "count": 14,
+              "openDecisions": 0,
+              "missingLiquidation": 0,
+              "realizedPnl": {
+                "count": 14,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              },
+              "liquidationPnl": {
+                "count": 14,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              },
+              "fees": {
+                "count": 14,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              }
+            },
+            "segment_boundary": {
+              "count": 20,
+              "openDecisions": 16,
+              "missingLiquidation": 16,
+              "realizedPnl": {
+                "count": 20,
+                "min": -0.18804,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              },
+              "liquidationPnl": {
+                "count": 4,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              },
+              "fees": {
+                "count": 20,
+                "min": 0,
+                "median": 0.00685,
+                "p95": 0.0107,
+                "max": 0.01078
+              }
+            }
+          }
+        },
+        "600": {
+          "decisions": 83,
+          "reasons": {
+            "decision_warmup": 19,
+            "completed": 23,
+            "entry_unfilled": 14,
+            "segment_boundary": 27
+          },
+          "enteredDecisions": 46,
+          "openDecisions": 23,
+          "missingLiquidation": 23,
+          "missingReference": 23,
+          "realizedPnl": {
+            "count": 83,
+            "min": -0.26355,
+            "median": 0,
+            "p95": 0,
+            "max": 0
+          },
+          "cashDelta": {
+            "count": 83,
+            "min": -6.9069,
+            "median": -0.07938,
+            "p95": 0,
+            "max": 0
+          },
+          "fees": {
+            "count": 83,
+            "min": 0,
+            "median": 0.00274,
+            "p95": 0.0135,
+            "max": 0.0136
+          },
+          "referencePnl": {
+            "count": 60,
+            "min": -0.26355,
+            "median": 0,
+            "p95": 0,
+            "max": 0
+          },
+          "liquidationPnl": {
+            "count": 60,
+            "min": -0.26355,
+            "median": 0,
+            "p95": 0,
+            "max": 0
+          },
+          "outcomesByReason": {
+            "decision_warmup": {
+              "count": 19,
+              "openDecisions": 0,
+              "missingLiquidation": 0,
+              "realizedPnl": {
+                "count": 19,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              },
+              "liquidationPnl": {
+                "count": 19,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              },
+              "fees": {
+                "count": 19,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              }
+            },
+            "completed": {
+              "count": 23,
+              "openDecisions": 0,
+              "missingLiquidation": 0,
+              "realizedPnl": {
+                "count": 23,
+                "min": -0.26355,
+                "median": -0.1422,
+                "p95": -0.079065,
+                "max": -0.049035
+              },
+              "liquidationPnl": {
+                "count": 23,
+                "min": -0.26355,
+                "median": -0.1422,
+                "p95": -0.079065,
+                "max": -0.049035
+              },
+              "fees": {
+                "count": 23,
+                "min": 0.004035,
+                "median": 0.013455,
+                "p95": 0.01355,
+                "max": 0.0136
+              }
+            },
+            "entry_unfilled": {
+              "count": 14,
+              "openDecisions": 0,
+              "missingLiquidation": 0,
+              "realizedPnl": {
+                "count": 14,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              },
+              "liquidationPnl": {
+                "count": 14,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              },
+              "fees": {
+                "count": 14,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              }
+            },
+            "segment_boundary": {
+              "count": 27,
+              "openDecisions": 23,
+              "missingLiquidation": 23,
+              "realizedPnl": {
+                "count": 27,
+                "min": -0.01135,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              },
+              "liquidationPnl": {
+                "count": 4,
+                "min": 0,
+                "median": 0,
+                "p95": 0,
+                "max": 0
+              },
+              "fees": {
+                "count": 27,
+                "min": 0,
+                "median": 0.0068,
+                "p95": 0.0069,
+                "max": 0.00747
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "interpretation": {
+    "networkRequests": 0,
+    "liveWalletsChanged": false,
+    "profitabilityEstablished": false,
+    "decisionUnit": "Unique accepted scoped book; warmup and every outcome retained",
+    "counterfactual": "Independent flat-wallet entry probes using the preserved v1 label admission; not actual ML signals or a portfolio",
+    "quoteUnchanged": "Top bid/ask prices unchanged across adjacent accepted versions in one uninterrupted segment; not continuous persistence",
+    "depthChange": "Observed capacity difference at sampled levels; not proven replenishment or queue evidence",
+    "nextPriceChange": "Next sampled book change with corresponding gap distribution; not signal-conditioned execution quality",
+    "limitations": [
+      "Overlapping probes are correlated and cannot be summed as portfolio PnL or independent trades",
+      "Open inventory and missing liquidation are retained; zero realized PnL on an open probe does not mean zero loss",
+      "Segment boundaries/outages suppress executable marks; stale or insufficient depth liquidation is unavailable",
+      "REST snapshots do not establish maker fills or effective independent sample size",
+      "Historical STOP-affected capture evidence still requires per-boundary audit; this report is exploratory"
+    ]
+  }
+}

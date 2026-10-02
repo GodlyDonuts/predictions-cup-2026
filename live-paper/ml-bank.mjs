@@ -39,7 +39,7 @@ export function captureRows(raw,c,{historyPolicy=LEGACY,since=null,breadthContex
   }
   if(breadthContext)context=updateContext(context,e.bulkPrices,e.clockAt||r.at);
  }
- return {rows,sourceHash:verified.replay.sourceHash,sourceRecords:verified.replay.sourceRecords,cutoff:verified.replay.finalEventClock};
+ return {rows,finalSegments:Object.fromEntries(c.marketIds.map(m=>[m,historyPolicy===ISOLATED?segment+':'+(marketSegments[m]||0):segment])),sourceHash:verified.replay.sourceHash,sourceRecords:verified.replay.sourceRecords,cutoff:verified.replay.finalEventClock};
 }
 export function fitRidge(rows,width,lambda){
  if(rows.length<20)throw Error('Insufficient training labels');
