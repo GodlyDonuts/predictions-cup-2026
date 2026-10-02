@@ -16,12 +16,12 @@ const safeTime = x => typeof x === 'string' && Number.isFinite(Date.parse(x)) ? 
 const count = x => Number.isSafeInteger(x) && x >= 0 ? x : null;
 const specs = [
   {name: 'collector', stats: 'stats', pid: 'pid.txt', script: 'live-paper/runner.mjs', stop: 'COLLECTOR_STOP'},
-  {name: 'fee-free', script: 'live-paper/fee-free-shadow.mjs', stop: 'FEE_FREE_STOP'},
-  {name: 'ml', script: 'live-paper/ml-shadow.mjs', stop: 'ML_STOP'},
-  ...['dip', 'dip-scale', 'dip-responsive'].map(name => ({name, script: 'live-paper/dip-shadow.mjs', alternateScripts: ['live-paper/dip-worker.mjs'], stop: 'DIP_STOP', cohortArgument: name})),
-  {name: 'shock', script: 'live-paper/shock-shadow.mjs', stop: 'SHOCK_STOP'},
+  {name: 'fee-free', script: 'live-paper/fee-free-shadow.mjs', alternateScripts:['live-paper/fee-free-shadow-v2.mjs'], stop: 'FEE_FREE_STOP'},
+  {name: 'ml', script: 'live-paper/ml-shadow.mjs', alternateScripts:['live-paper/ml-shadow-v2.mjs'], stop: 'ML_STOP'},
+  ...['dip', 'dip-scale', 'dip-responsive'].map(name => ({name, script: 'live-paper/dip-shadow.mjs', alternateScripts: ['live-paper/dip-worker.mjs','live-paper/dip-worker-v2.mjs'], stop: 'DIP_STOP', cohortArgument: name})),
+  {name: 'shock', script: 'live-paper/shock-shadow.mjs', alternateScripts:['live-paper/shock-shadow-v2.mjs'], stop: 'SHOCK_STOP'},
   {name: 'passive', script: 'live-paper/passive-watch.mjs', stop: 'PASSIVE_STOP', lock: 'passive-watch.lock'},
-  {name: 'basket', script: 'live-paper/basket-watch.mjs', stop: 'BASKET_STOP', lock: 'basket-watch.lock'},
+  {name: 'basket', script: 'live-paper/basket-watch.mjs', alternateScripts:['live-paper/basket-watch-v2.mjs'], stop: 'BASKET_STOP', lock: 'basket-watch.lock'},
   {name: 'performance', script: 'execution/performance-watch.mjs', stop: 'PERFORMANCE_STOP', lock: 'performance-watch.lock', derivedProjection: true},
 ];
 const activeCohorts = [

@@ -1,4 +1,5 @@
 import fs from 'node:fs';
+import {journalLines} from './journal-lines.mjs';
 import path from 'node:path';
 import {createHash} from 'node:crypto';
 import {retryAfterMs} from '../feed/runtime.mjs';
@@ -23,8 +24,8 @@ export function atomicJson(file,value){const tmp=file+'.tmp';fs.writeFileSync(tm
 export class Journal {
   constructor(file){this.file=file;this.sequence=0;this.previous='';this.last=null;
     if(fs.existsSync(file)){
-      const raw=fs.readFileSync(file,'utf8');if(raw&&!raw.endsWith('\n'))throw Error('Incomplete paper journal: manual recovery required');
-      for(const line of raw.split('\n').filter(Boolean)){
+      for(const line of journalLines(file)){
+        if(!line)continue;
         const r=JSON.parse(line),{hash,...body}=r;
         if(body.sequence!==this.sequence+1||body.previous!==this.previous||hash!==this.hash(body))throw Error('Journal integrity failure');
         this.sequence=body.sequence;this.previous=hash;this.last=body;
