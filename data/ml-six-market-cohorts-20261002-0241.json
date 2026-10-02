@@ -1,0 +1,558 @@
+{
+  "createdAt": "2026-10-02T02:41:23.032Z",
+  "profitabilityEstablished": false,
+  "cohorts": [
+    {
+      "name": "six-ridge-20261002-0241",
+      "bankHash": "3d4c2f5fabe21a910f3778ed821904169454fa02a44693194ea00b31c67a36ee",
+      "family": "ridge",
+      "sourceHash": "26fd8b884686765e12e7a4f23c6f5666bd7c946e1a5b0ea4ba86977d84a3a9b6",
+      "configHash": "cff83314ead1764d5eac3f7cbf681e751de685b1fea4ea71f20a02b492cc7426",
+      "marketIds": [
+        "377",
+        "354",
+        "277",
+        "305",
+        "342",
+        "376"
+      ],
+      "trainingWindowStart": "2026-10-02T02:11:00Z",
+      "trainingCaptureThrough": "2026-10-02T02:39:29.679Z",
+      "developmentSplitAt": "2026-10-02T02:29:40.478Z",
+      "historyPolicy": "market-isolated-v2",
+      "requireInstrumentCoverage": true,
+      "acceptedSnapshots": 128,
+      "attempted": 128,
+      "trained": 32,
+      "rejected": 96,
+      "rejectionReasons": [
+        "insufficient_instrument_coverage",
+        "insufficient_matured_labels"
+      ],
+      "selected": [
+        {
+          "id": "ridge-h60-f6-l10",
+          "horizon": 60,
+          "trainRows": 76,
+          "testRows": 37,
+          "coverage": [
+            {
+              "marketId": "377",
+              "train": 13,
+              "test": 6,
+              "trainingInstruments": [
+                "1066:YES"
+              ],
+              "testInstruments": [
+                "1066:YES"
+              ],
+              "eligible": true
+            },
+            {
+              "marketId": "354",
+              "train": 13,
+              "test": 7,
+              "trainingInstruments": [
+                "1043:YES"
+              ],
+              "testInstruments": [
+                "1043:YES"
+              ],
+              "eligible": true
+            },
+            {
+              "marketId": "277",
+              "train": 11,
+              "test": 5,
+              "trainingInstruments": [
+                "966:YES"
+              ],
+              "testInstruments": [
+                "966:YES"
+              ],
+              "eligible": true
+            },
+            {
+              "marketId": "305",
+              "train": 13,
+              "test": 5,
+              "trainingInstruments": [
+                "994:YES"
+              ],
+              "testInstruments": [
+                "994:YES"
+              ],
+              "eligible": true
+            },
+            {
+              "marketId": "342",
+              "train": 13,
+              "test": 7,
+              "trainingInstruments": [
+                "1031:YES"
+              ],
+              "testInstruments": [
+                "1031:YES"
+              ],
+              "eligible": true
+            },
+            {
+              "marketId": "376",
+              "train": 13,
+              "test": 7,
+              "trainingInstruments": [
+                "1065:YES"
+              ],
+              "testInstruments": [
+                "1065:YES"
+              ],
+              "eligible": true
+            }
+          ],
+          "rmse": 0.003905748729806225,
+          "baselineRmse": 0.004105864707951294
+        },
+        {
+          "id": "ridge-h60-f6-l1",
+          "horizon": 60,
+          "trainRows": 76,
+          "testRows": 37,
+          "coverage": [
+            {
+              "marketId": "377",
+              "train": 13,
+              "test": 6,
+              "trainingInstruments": [
+                "1066:YES"
+              ],
+              "testInstruments": [
+                "1066:YES"
+              ],
+              "eligible": true
+            },
+            {
+              "marketId": "354",
+              "train": 13,
+              "test": 7,
+              "trainingInstruments": [
+                "1043:YES"
+              ],
+              "testInstruments": [
+                "1043:YES"
+              ],
+              "eligible": true
+            },
+            {
+              "marketId": "277",
+              "train": 11,
+              "test": 5,
+              "trainingInstruments": [
+                "966:YES"
+              ],
+              "testInstruments": [
+                "966:YES"
+              ],
+              "eligible": true
+            },
+            {
+              "marketId": "305",
+              "train": 13,
+              "test": 5,
+              "trainingInstruments": [
+                "994:YES"
+              ],
+              "testInstruments": [
+                "994:YES"
+              ],
+              "eligible": true
+            },
+            {
+              "marketId": "342",
+              "train": 13,
+              "test": 7,
+              "trainingInstruments": [
+                "1031:YES"
+              ],
+              "testInstruments": [
+                "1031:YES"
+              ],
+              "eligible": true
+            },
+            {
+              "marketId": "376",
+              "train": 13,
+              "test": 7,
+              "trainingInstruments": [
+                "1065:YES"
+              ],
+              "testInstruments": [
+                "1065:YES"
+              ],
+              "eligible": true
+            }
+          ],
+          "rmse": 0.003942687987002817,
+          "baselineRmse": 0.004105864707951294
+        },
+        {
+          "id": "ridge-h60-f6-l0.1",
+          "horizon": 60,
+          "trainRows": 76,
+          "testRows": 37,
+          "coverage": [
+            {
+              "marketId": "377",
+              "train": 13,
+              "test": 6,
+              "trainingInstruments": [
+                "1066:YES"
+              ],
+              "testInstruments": [
+                "1066:YES"
+              ],
+              "eligible": true
+            },
+            {
+              "marketId": "354",
+              "train": 13,
+              "test": 7,
+              "trainingInstruments": [
+                "1043:YES"
+              ],
+              "testInstruments": [
+                "1043:YES"
+              ],
+              "eligible": true
+            },
+            {
+              "marketId": "277",
+              "train": 11,
+              "test": 5,
+              "trainingInstruments": [
+                "966:YES"
+              ],
+              "testInstruments": [
+                "966:YES"
+              ],
+              "eligible": true
+            },
+            {
+              "marketId": "305",
+              "train": 13,
+              "test": 5,
+              "trainingInstruments": [
+                "994:YES"
+              ],
+              "testInstruments": [
+                "994:YES"
+              ],
+              "eligible": true
+            },
+            {
+              "marketId": "342",
+              "train": 13,
+              "test": 7,
+              "trainingInstruments": [
+                "1031:YES"
+              ],
+              "testInstruments": [
+                "1031:YES"
+              ],
+              "eligible": true
+            },
+            {
+              "marketId": "376",
+              "train": 13,
+              "test": 7,
+              "trainingInstruments": [
+                "1065:YES"
+              ],
+              "testInstruments": [
+                "1065:YES"
+              ],
+              "eligible": true
+            }
+          ],
+          "rmse": 0.0039506905649767865,
+          "baselineRmse": 0.004105864707951294
+        }
+      ]
+    },
+    {
+      "name": "six-stumps-20261002-0241",
+      "bankHash": "f5644590ccc7dc3115c2e1ee6def0b2877ab2c2101d0cdf33396bfd666b155a4",
+      "family": "boosted_stumps",
+      "sourceHash": "26fd8b884686765e12e7a4f23c6f5666bd7c946e1a5b0ea4ba86977d84a3a9b6",
+      "configHash": "cff83314ead1764d5eac3f7cbf681e751de685b1fea4ea71f20a02b492cc7426",
+      "marketIds": [
+        "377",
+        "354",
+        "277",
+        "305",
+        "342",
+        "376"
+      ],
+      "trainingWindowStart": "2026-10-02T02:11:00Z",
+      "trainingCaptureThrough": "2026-10-02T02:39:29.679Z",
+      "developmentSplitAt": "2026-10-02T02:29:40.478Z",
+      "historyPolicy": "market-isolated-v2",
+      "requireInstrumentCoverage": true,
+      "acceptedSnapshots": 128,
+      "attempted": 128,
+      "trained": 32,
+      "rejected": 96,
+      "rejectionReasons": [
+        "insufficient_instrument_coverage",
+        "insufficient_matured_labels"
+      ],
+      "selected": [
+        {
+          "id": "stumps-h60-f4-n64-r0.1-leaf5",
+          "horizon": 60,
+          "trainRows": 76,
+          "testRows": 37,
+          "coverage": [
+            {
+              "marketId": "377",
+              "train": 13,
+              "test": 6,
+              "trainingInstruments": [
+                "1066:YES"
+              ],
+              "testInstruments": [
+                "1066:YES"
+              ],
+              "eligible": true
+            },
+            {
+              "marketId": "354",
+              "train": 13,
+              "test": 7,
+              "trainingInstruments": [
+                "1043:YES"
+              ],
+              "testInstruments": [
+                "1043:YES"
+              ],
+              "eligible": true
+            },
+            {
+              "marketId": "277",
+              "train": 11,
+              "test": 5,
+              "trainingInstruments": [
+                "966:YES"
+              ],
+              "testInstruments": [
+                "966:YES"
+              ],
+              "eligible": true
+            },
+            {
+              "marketId": "305",
+              "train": 13,
+              "test": 5,
+              "trainingInstruments": [
+                "994:YES"
+              ],
+              "testInstruments": [
+                "994:YES"
+              ],
+              "eligible": true
+            },
+            {
+              "marketId": "342",
+              "train": 13,
+              "test": 7,
+              "trainingInstruments": [
+                "1031:YES"
+              ],
+              "testInstruments": [
+                "1031:YES"
+              ],
+              "eligible": true
+            },
+            {
+              "marketId": "376",
+              "train": 13,
+              "test": 7,
+              "trainingInstruments": [
+                "1065:YES"
+              ],
+              "testInstruments": [
+                "1065:YES"
+              ],
+              "eligible": true
+            }
+          ],
+          "rmse": 0.004204977095455391,
+          "baselineRmse": 0.004105864707951294
+        },
+        {
+          "id": "stumps-h60-f6-n64-r0.1-leaf5",
+          "horizon": 60,
+          "trainRows": 76,
+          "testRows": 37,
+          "coverage": [
+            {
+              "marketId": "377",
+              "train": 13,
+              "test": 6,
+              "trainingInstruments": [
+                "1066:YES"
+              ],
+              "testInstruments": [
+                "1066:YES"
+              ],
+              "eligible": true
+            },
+            {
+              "marketId": "354",
+              "train": 13,
+              "test": 7,
+              "trainingInstruments": [
+                "1043:YES"
+              ],
+              "testInstruments": [
+                "1043:YES"
+              ],
+              "eligible": true
+            },
+            {
+              "marketId": "277",
+              "train": 11,
+              "test": 5,
+              "trainingInstruments": [
+                "966:YES"
+              ],
+              "testInstruments": [
+                "966:YES"
+              ],
+              "eligible": true
+            },
+            {
+              "marketId": "305",
+              "train": 13,
+              "test": 5,
+              "trainingInstruments": [
+                "994:YES"
+              ],
+              "testInstruments": [
+                "994:YES"
+              ],
+              "eligible": true
+            },
+            {
+              "marketId": "342",
+              "train": 13,
+              "test": 7,
+              "trainingInstruments": [
+                "1031:YES"
+              ],
+              "testInstruments": [
+                "1031:YES"
+              ],
+              "eligible": true
+            },
+            {
+              "marketId": "376",
+              "train": 13,
+              "test": 7,
+              "trainingInstruments": [
+                "1065:YES"
+              ],
+              "testInstruments": [
+                "1065:YES"
+              ],
+              "eligible": true
+            }
+          ],
+          "rmse": 0.004351672102070821,
+          "baselineRmse": 0.004105864707951294
+        },
+        {
+          "id": "stumps-h60-f9-n64-r0.1-leaf5",
+          "horizon": 60,
+          "trainRows": 76,
+          "testRows": 37,
+          "coverage": [
+            {
+              "marketId": "377",
+              "train": 13,
+              "test": 6,
+              "trainingInstruments": [
+                "1066:YES"
+              ],
+              "testInstruments": [
+                "1066:YES"
+              ],
+              "eligible": true
+            },
+            {
+              "marketId": "354",
+              "train": 13,
+              "test": 7,
+              "trainingInstruments": [
+                "1043:YES"
+              ],
+              "testInstruments": [
+                "1043:YES"
+              ],
+              "eligible": true
+            },
+            {
+              "marketId": "277",
+              "train": 11,
+              "test": 5,
+              "trainingInstruments": [
+                "966:YES"
+              ],
+              "testInstruments": [
+                "966:YES"
+              ],
+              "eligible": true
+            },
+            {
+              "marketId": "305",
+              "train": 13,
+              "test": 5,
+              "trainingInstruments": [
+                "994:YES"
+              ],
+              "testInstruments": [
+                "994:YES"
+              ],
+              "eligible": true
+            },
+            {
+              "marketId": "342",
+              "train": 13,
+              "test": 7,
+              "trainingInstruments": [
+                "1031:YES"
+              ],
+              "testInstruments": [
+                "1031:YES"
+              ],
+              "eligible": true
+            },
+            {
+              "marketId": "376",
+              "train": 13,
+              "test": 7,
+              "trainingInstruments": [
+                "1065:YES"
+              ],
+              "testInstruments": [
+                "1065:YES"
+              ],
+              "eligible": true
+            }
+          ],
+          "rmse": 0.004406127710858845,
+          "baselineRmse": 0.004105864707951294
+        }
+      ]
+    }
+  ]
+}

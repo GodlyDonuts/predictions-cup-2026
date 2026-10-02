@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {resetHistory,ISOLATED,LEGACY,historyPolicy} from './history-policy.mjs';
-import {captureRows} from './ml-bank.mjs';
+import {captureRows,instrumentCoverage} from './ml-bank.mjs';
 import {advanceShadow} from './ml-shadow.mjs';
 import {digest} from './model.mjs';
 const c=JSON.parse(fs.readFileSync(new URL('./config.json',import.meta.url)));
@@ -22,4 +22,11 @@ test('new-policy shadow warms unaffected market; legacy remains reset; account o
  function run(policy){const bank={config:c,historyPolicy:policy,trainingCaptureThrough:at(0),selected:[{id:'flat',horizon:60,weights:[0],means:[0],scales:[1],rmse:.01}]};const initial={bankHash:digest(bank),sourceSequence:0,sourceHash:null,wallets:{},histories:{},predictions:{}};return {bank,state:advanceShadow(initial,records(),bank)};}
  const a=run(ISOLATED),b=run(LEGACY);assert.equal(Object.values(a.state.signalMetrics)[0].warmup,6);assert.equal(Object.values(b.state.signalMetrics)[0].warmup,8);
  const outage={sequence:9,hash:'outage',at:at(9),event:{type:'account_read_outage',clockAt:at(9)}};assert.deepEqual(advanceShadow(a.state,[...records(),outage],a.bank).histories,{});
+});
+test('training window starts with fresh history and explicit instrument support excludes unseen IDs',()=>{
+ const raw=records().map(r=>JSON.stringify(r)).join('\n')+'\n';
+ const rows=captureRows(raw,c,{historyPolicy:ISOLATED,since:at(5)}).rows;assert.equal(rows.length,4);assert.equal(rows[0].at,at(5));assert.equal(rows[0].x[2],0);assert.equal(rows[0].x[10],0);
+ assert.throws(()=>captureRows(raw,c,{since:'nonsense'}),/window/);
+ const a=Array.from({length:8},()=>({marketId:'377',instrument:'1066:YES'})),b=Array.from({length:4},()=>({marketId:'377',instrument:'1066:YES'}));
+ assert.equal(instrumentCoverage(a,b,['377'])[0].eligible,true);assert.equal(instrumentCoverage(a,b,['354'])[0].eligible,false);assert.equal(instrumentCoverage(a.slice(0,7),b,['377'])[0].eligible,false);assert.equal(instrumentCoverage(a,[...b.slice(0,3),{marketId:'377',instrument:'999:YES'}],['377'])[0].eligible,false);
 });

@@ -58,6 +58,7 @@ test('future development observations cannot change fitted weights or training n
   const first=trainBank(capture(false),c,{family,historyPolicy}),changed=trainBank(capture(true),c,{family,historyPolicy});assert.equal(first.modelsTrained,128);
   for(const m of first.models){const other=changed.models.find(x=>x.id===m.id);assert.deepEqual(other.weights,m.weights);assert.deepEqual(other.means,m.means);assert.deepEqual(other.scales,m.scales);assert.deepEqual(other.stumps,m.stumps);assert.equal(other.base,m.base);assert.ok(Date.parse(m.maxTrainingLabelAt)<Date.parse(first.developmentSplitAt));}
  }
+ const guarded=trainBank(capture(false),c,{historyPolicy:'market-isolated-v2',requireInstrumentCoverage:true});assert.equal(guarded.modelsTrained,0);assert.equal(guarded.rejected.length,128);assert.ok(guarded.rejected.every(r=>r.reason==='insufficient_instrument_coverage'));
 });
 
 
