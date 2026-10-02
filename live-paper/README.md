@@ -37,6 +37,14 @@ node live-paper/replay.mjs --journal "$env:LOCALAPPDATA/SigTradingCup/paper-runt
 
 Replay verifies the complete source journal chain and runs without credentials or network access. Compare configurations using copies of the configuration file, preserve the original run's config and source checksum, and use unseen future captures to evaluate changes. The default replay is whole-path parameter exploration, not a held-out performance result. Synthetic correctness tests and short live samples do not establish profitable strategy performance.
 
+For an offline explanation of missing entries, run:
+
+```powershell
+node live-paper/diagnostics.mjs --journal "$env:LOCALAPPDATA/SigTradingCup/paper-runtime/journal.jsonl" --config live-paper/config.json
+```
+
+Diagnostics verify the captured journal prefix and report source/config hashes, per-market accepted versus duplicate versions, explicit skip reasons, request-to-receipt latency, source age, sampling gaps, spread and entry-edge distributions, and overlapping warmup/variance/z-score/cost gates. Identical versions do not extend signal history. Counts distinguish passing both signal gates from actual new intents. Top-ask depth capacity is a current snapshot diagnostic, not a future fill guarantee. The edge is the strategy's lagged-mean hypothesis less ask, adverse tick and assumed entry fee; subsequent exit costs are additional. No parameters are fitted or changed, no credentials are loaded, and no network requests are made. A partial concurrent append fails validation; retry after that append finishes. Save aggregate output rather than publishing original account snapshots.
+
 ## Review fixes, engine revision 3
 
 The initial revision had five independently reproduced evidence defects. Revision 3 preserves journal event-clock/outage/skip timing in replay; compares source timestamps at nanosecond precision; rejects incompatible equal versions and conflicting tournament contexts; aborts incomplete or unmappable account reconciliation; derives round-trip win counts from the complete durable fill ledger; and persists a manual-review stop sentinel for overflowing Retry-After. Identical source versions cannot create new fills. `sellExecutions` is separate from completed flat-to-flat trades and their cumulative win rate.

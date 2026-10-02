@@ -1,0 +1,290 @@
+{
+  "schemaVersion": 1,
+  "sourceHash": "60c001aa2f82f39ba7a1488f176f29dca66672789abd2877d4377b1417e03e27",
+  "configHash": "a82e415ea924e4c5722bd9dbd64dc071ecee54d76880acc47e00f834717e8375",
+  "sourceRecords": 69,
+  "finalEventClock": "2026-10-02T00:19:13.266Z",
+  "observations": 237,
+  "markets": {
+    "277": {
+      "accepted": 59,
+      "duplicates": 0,
+      "uniqueVersions": 59,
+      "gateCounts": {
+        "warmup": 5,
+        "zeroTopAskCapacity": 1,
+        "postWarmup": 54,
+        "zBelowThreshold": 53,
+        "edgeBelowThreshold": 54,
+        "zPass": 1
+      },
+      "latencyMs": {
+        "count": 59,
+        "min": 256,
+        "median": 6832,
+        "p95": 16719,
+        "max": 17698
+      },
+      "sourceAgeMs": {
+        "count": 59,
+        "min": 5942,
+        "median": 5991,
+        "p95": 6045,
+        "max": 7600
+      },
+      "samplingGapMs": {
+        "count": 58,
+        "min": 30402,
+        "median": 51662,
+        "p95": 122530,
+        "max": 423951
+      },
+      "spread": {
+        "count": 59,
+        "min": 0.005,
+        "median": 0.015,
+        "p95": 0.02,
+        "max": 0.025
+      },
+      "zScore": {
+        "count": 57,
+        "min": -3.6742346141747673,
+        "median": -0.34956331860726897,
+        "p95": 0.762000762001149,
+        "max": 2.539618953609063
+      },
+      "entryEdge": {
+        "count": 59,
+        "min": -0.02345,
+        "median": -0.01495,
+        "p95": -0.01345,
+        "max": -0.008435
+      },
+      "usableAskShares": {
+        "count": 59,
+        "min": 0,
+        "median": 24,
+        "p95": 34,
+        "max": 35
+      },
+      "lastAt": "2026-10-02T00:18:55.829Z"
+    },
+    "305": {
+      "accepted": 59,
+      "duplicates": 0,
+      "uniqueVersions": 59,
+      "gateCounts": {
+        "warmup": 5,
+        "postWarmup": 54,
+        "zBelowThreshold": 54,
+        "edgeBelowThreshold": 54
+      },
+      "latencyMs": {
+        "count": 59,
+        "min": 222,
+        "median": 2195,
+        "p95": 15852,
+        "max": 16682
+      },
+      "sourceAgeMs": {
+        "count": 59,
+        "min": 5944,
+        "median": 5992,
+        "p95": 6026,
+        "max": 6052
+      },
+      "samplingGapMs": {
+        "count": 58,
+        "min": 31356,
+        "median": 49072,
+        "p95": 115122,
+        "max": 441259
+      },
+      "spread": {
+        "count": 59,
+        "min": 0.005,
+        "median": 0.01,
+        "p95": 0.015,
+        "max": 0.02
+      },
+      "zScore": {
+        "count": 54,
+        "min": -6.333333333333333,
+        "median": 0.35355339059324076,
+        "p95": 0.7223151185146152,
+        "max": 0.7223151185146152
+      },
+      "entryEdge": {
+        "count": 59,
+        "min": -0.01593,
+        "median": -0.010636538461538498,
+        "p95": -0.009925,
+        "max": -0.009925
+      },
+      "usableAskShares": {
+        "count": 59,
+        "min": 1,
+        "median": 3,
+        "p95": 113,
+        "max": 116
+      },
+      "lastAt": "2026-10-02T00:19:13.266Z"
+    },
+    "354": {
+      "accepted": 60,
+      "duplicates": 0,
+      "uniqueVersions": 60,
+      "gateCounts": {
+        "warmup": 5,
+        "postWarmup": 55,
+        "zeroVariance": 17,
+        "zBelowThreshold": 42,
+        "edgeBelowThreshold": 55,
+        "zPass": 13
+      },
+      "latencyMs": {
+        "count": 60,
+        "min": 281,
+        "median": 858,
+        "p95": 17226,
+        "max": 18816
+      },
+      "sourceAgeMs": {
+        "count": 60,
+        "min": 5942,
+        "median": 5987,
+        "p95": 6024,
+        "max": 6082
+      },
+      "samplingGapMs": {
+        "count": 59,
+        "min": 30392,
+        "median": 49905,
+        "p95": 114266,
+        "max": 433657
+      },
+      "spread": {
+        "count": 60,
+        "min": 0.005,
+        "median": 0.015,
+        "p95": 0.015,
+        "max": 0.015
+      },
+      "zScore": {
+        "count": 38,
+        "min": -4.216691570992364,
+        "median": -0.5,
+        "p95": 3.0735042819928773,
+        "max": 4.582575694955832
+      },
+      "entryEdge": {
+        "count": 60,
+        "min": -0.014375,
+        "median": -0.012625,
+        "p95": -0.004115,
+        "max": -0.0037816666666666715
+      },
+      "usableAskShares": {
+        "count": 60,
+        "min": 1,
+        "median": 120,
+        "p95": 206,
+        "max": 206
+      },
+      "lastAt": "2026-10-02T00:18:47.717Z"
+    },
+    "377": {
+      "accepted": 59,
+      "duplicates": 0,
+      "uniqueVersions": 59,
+      "gateCounts": {
+        "warmup": 5,
+        "postWarmup": 54,
+        "zBelowThreshold": 45,
+        "edgeBelowThreshold": 54,
+        "zPass": 9,
+        "zeroTopAskCapacity": 1
+      },
+      "latencyMs": {
+        "count": 59,
+        "min": 267,
+        "median": 935,
+        "p95": 13419,
+        "max": 19203
+      },
+      "sourceAgeMs": {
+        "count": 59,
+        "min": 5941,
+        "median": 5988,
+        "p95": 6021,
+        "max": 6044
+      },
+      "samplingGapMs": {
+        "count": 58,
+        "min": 30799,
+        "median": 48448,
+        "p95": 81931,
+        "max": 436189
+      },
+      "spread": {
+        "count": 59,
+        "min": 0.005,
+        "median": 0.01,
+        "p95": 0.03,
+        "max": 0.04
+      },
+      "zScore": {
+        "count": 57,
+        "min": -7,
+        "median": 0.48012543690802695,
+        "p95": 1.9540783537075488,
+        "max": 2.2857142857142856
+      },
+      "entryEdge": {
+        "count": 59,
+        "min": -0.03446,
+        "median": -0.010037826086956542,
+        "p95": 0.011918333333333373,
+        "max": 0.013335
+      },
+      "usableAskShares": {
+        "count": 59,
+        "min": 0,
+        "median": 12,
+        "p95": 50,
+        "max": 61
+      },
+      "lastAt": "2026-10-02T00:18:41.801Z"
+    }
+  },
+  "skipReasons": {
+    "Market API connection unavailable": 4
+  },
+  "latencyMs": {
+    "count": 237,
+    "min": 222,
+    "median": 2149,
+    "p95": 16636,
+    "max": 19203
+  },
+  "sourceAgeMs": {
+    "count": 237,
+    "min": 5941,
+    "median": 5989,
+    "p95": 6031,
+    "max": 7600
+  },
+  "interpretation": {
+    "networkRequests": 0,
+    "parametersChanged": false,
+    "gateCountsOverlap": true,
+    "edgeUnits": "SUSQies per share; lagged mean less ask, adverse tick and assumed entry fee",
+    "scope": "Exploratory coverage and entry diagnostics, not profitability evidence",
+    "limitations": [
+      "Four-market sequential REST sampling misses intracycle changes",
+      "Entry edge excludes subsequent exit costs and is an uncalibrated hypothesis",
+      "Depth capacity is current top ask only; it is not a future fill guarantee",
+      "Duplicate versions are accepted for freshness but do not extend signal history"
+    ]
+  }
+}
