@@ -13,19 +13,22 @@ The challenge uses free, nonredeemable SUSQies. This repository does not contain
 
 ## Current snapshot
 
-Historical observations on October 1, 2026, **22:21:59–22:22:36 UTC**: cash UI displayed **98,157.74 SUSQies** to two decimals; separate exact quantity × price ledger arithmetic is **98,157.745**. Exact hidden account precision was not exposed. **No open orders** was reverified at **22:22:30 UTC**. This is not live account state.
+Historical observations on October 2, 2026, **06:06:14–06:06:57 UTC**: cash UI displayed **93,532.74 SUSQies** to two decimals; separate exact quantity × price ledger arithmetic is **93,532.745**. Exact hidden account precision was not exposed. **No open orders** was verified at **06:06:57 UTC**. This is not live account state.
 
 | Remaining market | Side | Shares | Acquisition price | Remaining FIFO cost |
 |---|---|---:|---:|---:|
 | Democratic Massachusetts Senate | YES | 2,061 | 0.970 | 1,999.170 |
+| Democratic Rhode Island Senate | YES | 5,000 | 0.925 | 4,625.000 |
 
-The fourth session fully exited **7,500 Florida YES at 0.105**, with **787.500 SUSQies** proceeds and **−112.500** analytical FIFO realized P&L against **900.000** remaining basis. The one order filled immediately; its ID was not exposed and remains unknown. See the [terminal source audit](data/orders/session_2026-10-01_2219.json), [immutable snapshot](data/snapshots/portfolio_2026-10-01_2222.json), and [full reconciliation](docs/CURRENT_STATE.md).
+Exactly one new executed aggregate: **BUY 5,000 RI YES at 0.925**, cost **4,625.000**, submitted approximately **05:45:48** and verified **05:46:44 UTC**. The buy order ID remains unknown. RI exit **1513474 at 0.955** and MA exit **1497695 at 0.975** were both **canceled with zero fills**; neither creates a sell ledger row. All **16 prior ledger rows** are preserved byte-for-byte, for **17 executed aggregates** total.
 
-Cumulative analytical FIFO realized gain is **156.915 SUSQies**. The sole remaining holding has **1,999.170** FIFO basis and retains unrealized/liquidation risk. Arithmetic cash plus remaining cost equals **100,156.915**; this is not current liquidation value. Keep the two-decimal cash display separate from milli-SUSQ ledger arithmetic; do not force equality by rounding individual fills or inventing a hidden balance.
+Cumulative analytical FIFO realized gain remains **156.915 SUSQies**. Remaining FIFO basis is **6,624.170**; arithmetic cash plus basis is **100,156.915**, not current liquidation value. Keep the two-decimal cash display separate from milli-SUSQ ledger arithmetic; do not invent a hidden balance or rounding adjustment.
 
-All previous session audits and snapshots remain unchanged and historical, including the [21:32 audit](data/orders/session_2026-10-01_2132.json) and [22:01 snapshot](data/snapshots/portfolio_2026-10-01_2201.json). This update appends exactly one executed aggregate, preserving all 15 prior ledger rows. Earlier canceled Florida/MA orders remain canceled historical orders. Exact execution timestamps and unexposed IDs remain unknown. No bot execution handoff occurs.
+RI's final UI marked value/P&L was **4,604.50 / −20.51**; MA's was **1,975.37 / −23.80**. These are marks, not fills. The RI bid at **06:06:14** was **0.900 × 40,855**, sufficient for a historical gross **4,500.000** liquidation scenario and **−125.000** versus RI basis before fees or quote movement. No sale at that bid occurred; whole-account liquidation value is unknown without contemporaneous MA depth.
 
-Fresh [public-reference research](research/public_reference_2026-10-01/public_reference_report_2026-10-01.md) informed the Florida risk reduction. External prices carry depth, age and settlement limitations; they are not guaranteed fair values or arbitrage.
+See the [RI derived audit](data/orders/session_2026-10-02_ri_value.json), [MA derived audit](data/orders/session_2026-10-02_ma_exit.json), [cancellation summary](data/orders/cancellations_2026-10-02_0606.json), [immutable snapshot](data/snapshots/portfolio_2026-10-02_0606.json), [full-ledger replay and source/projection hashes](data/snapshots/reconciliation_2026-10-02_0606.json), and [full reconciliation](docs/CURRENT_STATE.md). All previous audits and snapshots remain unchanged and historical. No bot execution handoff occurs.
+
+Research context: [official UNH abstract](https://scholars.unh.edu/survey_center_polls/1009/) and [public Kalshi book observed at 05:41:04 UTC](data/snapshots/ri_public_book_2026-10-02_0540.json). External prices have depth, age and settlement limitations; they are not guaranteed fair values, booked profit or risk-free arbitrage. The earlier [Florida risk-reduction research](research/public_reference_2026-10-01/public_reference_report_2026-10-01.md) remains historical.
 
 Latest research: [Florida/NC conservative scenarios](research/fl_nc_conservative_bands_2026-10-01.md) and [new-race shortlist](research/new_edges_2026-10-01.md). Their subjective bands are not calibrated forecasts or standing execution limits.
 

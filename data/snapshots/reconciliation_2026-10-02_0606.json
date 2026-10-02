@@ -1,0 +1,326 @@
+{
+  "schema_version": 1,
+  "record_kind": "exact_ledger_reconciliation_and_audit_provenance",
+  "account_observations_final_at_utc": "2026-10-02T06:06:57Z",
+  "prior_commit": "bdcbd6f0088b86684b0caee106dc745385bde8b1",
+  "prior_ledger_sha256": "a0cb59855f79d69ab48e23e2e2544e303890d13a0b96880b7b2325c4295bea91",
+  "ledger_sha256": "b9b6fc67a0ff7e755e6cc526b59cace944ecdeb1ebffb9acffb3ff3ac437fadf",
+  "prior_ledger_bytes": 4527,
+  "prior_ledger_bytes_preserved": true,
+  "prior_executed_aggregates": 16,
+  "appended_executed_aggregates": 1,
+  "total_executed_aggregates": 17,
+  "appended_trade": {
+    "market_id": 387,
+    "side": "YES",
+    "action": "BUY",
+    "quantity": 5000,
+    "price": "0.925",
+    "cost": "4625.000",
+    "order_id": null,
+    "submitted_at_utc_approx": "2026-10-02T05:45:48Z",
+    "verified_at_utc": "2026-10-02T05:46:44Z",
+    "executed_at_utc": null
+  },
+  "canceled_zero_fill_order_ids": [
+    "1497695",
+    "1513474"
+  ],
+  "added_sell_rows": 0,
+  "cash_displayed": "93532.74",
+  "cash_display_precision_decimal_places": 2,
+  "hidden_account_cash": null,
+  "cash_arithmetic": "93532.745",
+  "cash_display_minus_arithmetic": "-0.005",
+  "remaining_fifo_cost": "6624.170",
+  "cumulative_fifo_realized_pnl": "156.915",
+  "session_realized_pnl": "0.000",
+  "cash_plus_cost": "100156.915",
+  "holdings": [
+    {
+      "market_id": 379,
+      "side": "YES",
+      "shares": 2061,
+      "basis": "1999.170"
+    },
+    {
+      "market_id": 387,
+      "side": "YES",
+      "shares": 5000,
+      "basis": "4625.000"
+    }
+  ],
+  "verification": {
+    "decimal_full_ledger_replay": true,
+    "independent_rational_fifo_replay": true,
+    "every_qty_price_product_checked": true,
+    "no_oversells": true,
+    "unchanged_cumulative_realized_by_market": true,
+    "snapshot_equals_latest": true,
+    "prior_session_descriptions_preserved": true,
+    "readme_nonportfolio_content_preserved": true
+  },
+  "audit_projections": [
+    {
+      "published_path": "data/orders/session_2026-10-02_ri_value.json",
+      "original_source_sha256": "d66ab72414f775832ff713a0c0a7152d02315f57c7bab84fe362c71da73982bb",
+      "published_projection_sha256": "076e4280e9971f03304e9c5d4baed63ebd2908212922204a249339bd420f6632",
+      "original_source_in_repository": false
+    },
+    {
+      "published_path": "data/orders/session_2026-10-02_ma_exit.json",
+      "original_source_sha256": "718ab862878314b14927e49d94be0e88ec4709e09594306668f9c32f92f6b560",
+      "published_projection_sha256": "e2423c40ea93733c66f96cab1477e828a4f9197a94444672dd7cfd078efa89d1",
+      "original_source_in_repository": false
+    }
+  ],
+  "provenance_note": "Published audit projections are distinct from unchanged original source records. Game observations, terminal order facts, uncertainty and public research provenance are retained; coordination and chat metadata are excluded.",
+  "public_reference": {
+    "path": "data/snapshots/ri_public_book_2026-10-02_0540.json",
+    "sha256": "6fe6962e2c5c2fdf198e66677a4241ab1970096b73e9793c1072e48d438c4945",
+    "exact_source_copy": true,
+    "source_url": "https://external-api.kalshi.com/trade-api/v2/markets/SENATERI-26-D/orderbook",
+    "received_at_utc": "2026-10-02T05:41:04.489068+00:00"
+  },
+  "ledger_replay": [
+    {
+      "row": 1,
+      "market_id": 387,
+      "side": "YES",
+      "action": "BUY",
+      "shares": 2072,
+      "signed_cash_cost": "1999.480",
+      "cash_arithmetic_after": "98000.520",
+      "fifo_disposed_cost": "0.000",
+      "realized_pnl": "0.000"
+    },
+    {
+      "row": 2,
+      "market_id": 379,
+      "side": "YES",
+      "action": "BUY",
+      "shares": 2061,
+      "signed_cash_cost": "1999.170",
+      "cash_arithmetic_after": "96001.350",
+      "fifo_disposed_cost": "0.000",
+      "realized_pnl": "0.000"
+    },
+    {
+      "row": 3,
+      "market_id": 277,
+      "side": "NO",
+      "action": "BUY",
+      "shares": 1538,
+      "signed_cash_cost": "99.970",
+      "cash_arithmetic_after": "95901.380",
+      "fifo_disposed_cost": "0.000",
+      "realized_pnl": "0.000"
+    },
+    {
+      "row": 4,
+      "market_id": 354,
+      "side": "YES",
+      "action": "BUY",
+      "shares": 12500,
+      "signed_cash_cost": "1500.000",
+      "cash_arithmetic_after": "94401.380",
+      "fifo_disposed_cost": "0.000",
+      "realized_pnl": "0.000"
+    },
+    {
+      "row": 5,
+      "market_id": 377,
+      "side": "NO",
+      "action": "BUY",
+      "shares": 5000,
+      "signed_cash_cost": "1649.500",
+      "cash_arithmetic_after": "92751.880",
+      "fifo_disposed_cost": "0.000",
+      "realized_pnl": "0.000"
+    },
+    {
+      "row": 6,
+      "market_id": 387,
+      "side": "YES",
+      "action": "SELL",
+      "shares": 2072,
+      "signed_cash_cost": "-1999.480",
+      "cash_arithmetic_after": "94751.360",
+      "fifo_disposed_cost": "1999.480",
+      "realized_pnl": "0.000"
+    },
+    {
+      "row": 7,
+      "market_id": 387,
+      "side": "YES",
+      "action": "BUY",
+      "shares": 4756,
+      "signed_cash_cost": "4446.860",
+      "cash_arithmetic_after": "90304.500",
+      "fifo_disposed_cost": "0.000",
+      "realized_pnl": "0.000"
+    },
+    {
+      "row": 8,
+      "market_id": 377,
+      "side": "NO",
+      "action": "BUY",
+      "shares": 5000,
+      "signed_cash_cost": "1575.000",
+      "cash_arithmetic_after": "88729.500",
+      "fifo_disposed_cost": "0.000",
+      "realized_pnl": "0.000"
+    },
+    {
+      "row": 9,
+      "market_id": 387,
+      "side": "YES",
+      "action": "BUY",
+      "shares": 5000,
+      "signed_cash_cost": "4575.000",
+      "cash_arithmetic_after": "84154.500",
+      "fifo_disposed_cost": "0.000",
+      "realized_pnl": "0.000"
+    },
+    {
+      "row": 10,
+      "market_id": 387,
+      "side": "YES",
+      "action": "SELL",
+      "shares": 3569,
+      "signed_cash_cost": "-3390.550",
+      "cash_arithmetic_after": "87545.050",
+      "fifo_disposed_cost": "3337.015",
+      "realized_pnl": "53.535"
+    },
+    {
+      "row": 11,
+      "market_id": 377,
+      "side": "NO",
+      "action": "SELL",
+      "shares": 5000,
+      "signed_cash_cost": "-1650.000",
+      "cash_arithmetic_after": "89195.050",
+      "fifo_disposed_cost": "1649.500",
+      "realized_pnl": "0.500"
+    },
+    {
+      "row": 12,
+      "market_id": 354,
+      "side": "YES",
+      "action": "SELL",
+      "shares": 5000,
+      "signed_cash_cost": "-625.000",
+      "cash_arithmetic_after": "89820.050",
+      "fifo_disposed_cost": "600.000",
+      "realized_pnl": "25.000"
+    },
+    {
+      "row": 13,
+      "market_id": 387,
+      "side": "YES",
+      "action": "SELL",
+      "shares": 6187,
+      "signed_cash_cost": "-5784.845",
+      "cash_arithmetic_after": "95604.895",
+      "fifo_disposed_cost": "5684.845",
+      "realized_pnl": "100.000"
+    },
+    {
+      "row": 14,
+      "market_id": 377,
+      "side": "NO",
+      "action": "SELL",
+      "shares": 5000,
+      "signed_cash_cost": "-1650.000",
+      "cash_arithmetic_after": "97254.895",
+      "fifo_disposed_cost": "1575.000",
+      "realized_pnl": "75.000"
+    },
+    {
+      "row": 15,
+      "market_id": 277,
+      "side": "NO",
+      "action": "SELL",
+      "shares": 1538,
+      "signed_cash_cost": "-115.350",
+      "cash_arithmetic_after": "97370.245",
+      "fifo_disposed_cost": "99.970",
+      "realized_pnl": "15.380"
+    },
+    {
+      "row": 16,
+      "market_id": 354,
+      "side": "YES",
+      "action": "SELL",
+      "shares": 7500,
+      "signed_cash_cost": "-787.500",
+      "cash_arithmetic_after": "98157.745",
+      "fifo_disposed_cost": "900.000",
+      "realized_pnl": "-112.500"
+    },
+    {
+      "row": 17,
+      "market_id": 387,
+      "side": "YES",
+      "action": "BUY",
+      "shares": 5000,
+      "signed_cash_cost": "4625.000",
+      "cash_arithmetic_after": "93532.745",
+      "fifo_disposed_cost": "0.000",
+      "realized_pnl": "0.000"
+    }
+  ],
+  "artifact_hashes": {
+    "README.md": {
+      "sha256": "d47bccc69696b717fa5e49d9753e5a6523d36058e7fc33405c315b01fb6d6d95",
+      "git_blob_sha1": "d94b07bd5d54b2812e9c5d974d746d47de1ccb57",
+      "bytes": 7389
+    },
+    "docs/CURRENT_STATE.md": {
+      "sha256": "177f3f85d624b853a65efd68bf755d7901cfb324596bd10b1a55f1c82d04c323",
+      "git_blob_sha1": "dac8ed2282eba8a1cd479948e3475a7ec72c590e",
+      "bytes": 16960
+    },
+    "data/trade_ledger.csv": {
+      "sha256": "b9b6fc67a0ff7e755e6cc526b59cace944ecdeb1ebffb9acffb3ff3ac437fadf",
+      "git_blob_sha1": "5eb8f311718ebb30d0c997dcccadbd8fee4ecd64",
+      "bytes": 4907
+    },
+    "data/portfolio/latest.json": {
+      "sha256": "fa81196b54a0860af1cb8743f9ecec17428cb60920c5ddb36e6d48d2667cd751",
+      "git_blob_sha1": "65ba40d932e15ba3860844053965821de033d81a",
+      "bytes": 8995
+    },
+    "data/snapshots/portfolio_2026-10-02_0606.json": {
+      "sha256": "fa81196b54a0860af1cb8743f9ecec17428cb60920c5ddb36e6d48d2667cd751",
+      "git_blob_sha1": "65ba40d932e15ba3860844053965821de033d81a",
+      "bytes": 8995
+    },
+    "data/orders/session_2026-10-02_ri_value.json": {
+      "sha256": "076e4280e9971f03304e9c5d4baed63ebd2908212922204a249339bd420f6632",
+      "git_blob_sha1": "a963f12aca48014cb01e304b0607c5d4eca664d0",
+      "bytes": 8172
+    },
+    "data/orders/session_2026-10-02_ma_exit.json": {
+      "sha256": "e2423c40ea93733c66f96cab1477e828a4f9197a94444672dd7cfd078efa89d1",
+      "git_blob_sha1": "3095991a21ddedacc65a56015508c3bdcd0000b5",
+      "bytes": 7538
+    },
+    "data/orders/cancellations_2026-10-02_0606.json": {
+      "sha256": "f39cfc42dd28d7e41908770d2735798469feef99ef0f1c61ad70ded0757320c5",
+      "git_blob_sha1": "af7894e48571e1587782a064aa0c99dd7d1c5405",
+      "bytes": 1614
+    },
+    "data/snapshots/ri_public_book_2026-10-02_0540.json": {
+      "sha256": "6fe6962e2c5c2fdf198e66677a4241ab1970096b73e9793c1072e48d438c4945",
+      "git_blob_sha1": "0b491f51d989f0505b8071c99f5823c5c49a4e3c",
+      "bytes": 2514
+    }
+  },
+  "limitations": [
+    "This is historical game accounting, not live state or proof of strategy profitability.",
+    "UI marks are not fills; the RI bid-based liquidation scenario was not executed.",
+    "Hidden cash precision, exact buy order ID and fill timestamps remain unknown."
+  ]
+}

@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "record_kind": "terminal_unfilled_order_cancellations",
+  "currency": "Nonmonetary SUSQies",
+  "final_account_wide_zero_orders_verified_at_utc": "2026-10-02T06:06:57Z",
+  "final_open_order_count": 0,
+  "orders": [
+    {
+      "order_id": "1497695",
+      "market_id": 379,
+      "side": "YES",
+      "action": "SELL",
+      "quantity": 2061,
+      "limit": "0.975",
+      "filled_quantity": 0,
+      "canceled_quantity": 2061,
+      "status": "canceled",
+      "proceeds": "0.000",
+      "realized_pnl": "0.000",
+      "cancel_clicked_at_utc": "2026-10-02T05:10:14Z",
+      "cancel_verified_at_utc": "2026-10-02T05:11:34Z",
+      "effective_server_cancellation_time": null,
+      "executed_trade_ledger_rows": 0,
+      "source": "data/orders/session_2026-10-02_ma_exit.json"
+    },
+    {
+      "order_id": "1513474",
+      "market_id": 387,
+      "side": "YES",
+      "action": "SELL",
+      "quantity": 5000,
+      "limit": "0.955",
+      "filled_quantity": 0,
+      "canceled_quantity": 5000,
+      "status": "canceled",
+      "proceeds": "0.000",
+      "realized_pnl": "0.000",
+      "cancel_clicked_at_utc_approx": "2026-10-02T06:05:52Z",
+      "own_order_removed_by_utc": "2026-10-02T06:06:14Z",
+      "cancel_verified_at_utc": "2026-10-02T06:06:57Z",
+      "effective_server_cancellation_time": null,
+      "executed_trade_ledger_rows": 0,
+      "source": "data/orders/session_2026-10-02_ri_value.json"
+    }
+  ],
+  "note": "These records describe historical canceled orders only. No sell fill is inferred from quotes, marked values, cancellation, or estimated ticket proceeds."
+}

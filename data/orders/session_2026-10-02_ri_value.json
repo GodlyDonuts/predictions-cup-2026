@@ -1,0 +1,223 @@
+{
+  "schema_version": 1,
+  "session": "2026-10-02 RI relative-value game position",
+  "status": "completed_exit_canceled_position_held",
+  "final_verified_at_utc": "2026-10-02T06:06:57Z",
+  "venue": {
+    "name": "Susquehanna Predictions Cup",
+    "url": "https://sig.thesuper.market/markets/387",
+    "tournament": "Midterm Elections",
+    "currency": "SUSQies",
+    "currency_non_monetary": true,
+    "real_money_venue_accessed": false
+  },
+  "account": {
+    "display_name": "happy-birch-7511",
+    "identity_verified_at_utc": "2026-10-02T05:39:37Z"
+  },
+  "research_context": {
+    "kind": "Researched relative-value position; not risk-free cross-venue arbitrage",
+    "primary_poll_url": "https://scholars.unh.edu/survey_center_polls/1009/",
+    "primary_poll_finding_source": "Official UNH September 24 abstract describing Reed comfortably ahead of McKay, observed by the assistant during the session.",
+    "kalshi_public_reference": {
+      "source_url": "https://external-api.kalshi.com/trade-api/v2/markets/SENATERI-26-D/orderbook",
+      "received_at_utc": "2026-10-02T05:41:04.489068+00:00",
+      "http_date": "Fri, 02 Oct 2026 05:41:04 GMT",
+      "http_status": 200,
+      "snapshot": "data/snapshots/ri_public_book_2026-10-02_0540.json",
+      "yes_bids": [
+        {
+          "price": 0.988,
+          "quantity": 31
+        },
+        {
+          "price": 0.987,
+          "quantity": 215.16
+        },
+        {
+          "price": 0.986,
+          "quantity": 486
+        },
+        {
+          "price": 0.985,
+          "quantity": 10000
+        }
+      ],
+      "provenance": "Public Kalshi order book observed by the assistant; retained source response supports the quoted bids. External reference only, not an executable Cup quote or an independent review."
+    }
+  },
+  "preflight": {
+    "portfolio_verified_at_utc": "2026-10-02T05:45:15Z",
+    "positions": [
+      {
+        "market": "Democratic Massachusetts Senate",
+        "outcome": "YES",
+        "quantity": 2061
+      }
+    ],
+    "open_order_count": 0,
+    "ri_quantity": 0,
+    "cash_displayed": 98157.74,
+    "market_quote_observed_at_utc": "2026-10-02T05:44:29Z",
+    "yes_best_ask": 0.925,
+    "yes_best_ask_quantity": 29107,
+    "yes_best_bid": 0.91,
+    "yes_best_bid_quantity": 3863,
+    "buy_form_observed_at_utc": "2026-10-02T05:45:34Z",
+    "form_preview_quantity": 5000,
+    "form_preview_cost": 4625
+  },
+  "buy": {
+    "accepted_count": 1,
+    "submitted_at_utc_approx": "2026-10-02T05:45:48Z",
+    "order_id": null,
+    "limit_price": 0.925,
+    "requested_quantity": 5000,
+    "filled_quantity": 5000,
+    "fill_price": 0.925,
+    "filled_cost_susqies": 4625,
+    "market_fill_verified_at_utc": "2026-10-02T05:46:04Z",
+    "portfolio_fill_verified_at_utc": "2026-10-02T05:46:44Z",
+    "portfolio_transaction_text": "5,000 YES @ 0.925 SUSQies; −4625.00 SUSQies",
+    "unfilled_remainder": 0,
+    "open_orders_verified_zero_before_exit": true,
+    "cancel_needed": false,
+    "exact_execution_timestamp_utc": null,
+    "order_id_unknown": true
+  },
+  "sell": {
+    "accepted_count": 1,
+    "side": "SELL",
+    "outcome": "YES",
+    "covered": true,
+    "quantity": 5000,
+    "limit_price": 0.955,
+    "order_id": "1513474",
+    "attempts": [
+      {
+        "submitted_at_utc_approx": "2026-10-02T05:46:50Z",
+        "outcome": "failed",
+        "failure_observed_at_utc": "2026-10-02T05:47:20Z",
+        "site_message": "Trade failed — Service temporarily unavailable. Please retry.",
+        "subsequent_zero_open_orders_verified_at_utc": "2026-10-02T05:47:49Z"
+      },
+      {
+        "submitted_at_utc_approx": "2026-10-02T05:47:55Z",
+        "outcome": "accepted",
+        "market_own_order_verified_at_utc": "2026-10-02T05:49:08Z",
+        "portfolio_id_verified_at_utc": "2026-10-02T05:50:19Z"
+      }
+    ],
+    "filled_quantity": 0,
+    "proceeds_susqies": 0,
+    "canceled_quantity": 5000,
+    "final_status": "canceled",
+    "cancel_submitted_at_utc_approx": "2026-10-02T06:05:52Z",
+    "cancel_market_acknowledged_by_utc": "2026-10-02T06:06:14Z",
+    "cancel_action_count": 1,
+    "account_wide_zero_orders_verified_at_utc": "2026-10-02T06:06:57Z",
+    "portfolio_limit_display_rounded": 0.95,
+    "exact_limit_evidence": "Market own-order row and cancellation dialog both displayed 0.955; dialog total 4775.00"
+  },
+  "observations": [
+    {
+      "time_utc": "2026-10-02T05:50:19Z",
+      "remaining_sell": 5000,
+      "ri_position": 5000
+    },
+    {
+      "time_utc": "2026-10-02T05:53:37Z",
+      "remaining_sell": 5000,
+      "ri_position": 5000,
+      "cash_displayed": 93532.74,
+      "yes_best_bid": 0.915,
+      "yes_best_ask": 0.925
+    },
+    {
+      "time_utc": "2026-10-02T05:56:06Z",
+      "remaining_sell": 5000,
+      "ri_position": 5000,
+      "yes_best_bid": 0.915,
+      "yes_best_ask": 0.92
+    },
+    {
+      "time_utc": "2026-10-02T05:58:17Z",
+      "remaining_sell": 5000,
+      "ri_position": 5000,
+      "yes_best_bid": 0.9,
+      "yes_best_ask": 0.92
+    },
+    {
+      "time_utc": "2026-10-02T06:00:36Z",
+      "remaining_sell": 5000,
+      "ri_position": 5000,
+      "yes_best_bid": 0.9,
+      "yes_best_ask": 0.92
+    },
+    {
+      "time_utc": "2026-10-02T06:03:17Z",
+      "remaining_sell": 5000,
+      "ri_position": 5000,
+      "yes_best_bid": 0.905,
+      "yes_best_ask": 0.92
+    },
+    {
+      "time_utc": "2026-10-02T06:06:14Z",
+      "remaining_sell": 0,
+      "ri_position": 5000,
+      "cash_displayed": 93532.74,
+      "yes_best_bid": 0.9,
+      "yes_best_bid_quantity": 40855,
+      "yes_best_ask": 0.92,
+      "yes_best_ask_quantity": 337
+    }
+  ],
+  "final_state": {
+    "open_order_count": 0,
+    "open_order_evidence": "Portfolio: You have no open orders.",
+    "ri_yes_quantity": 5000,
+    "ri_average_cost": 0.925,
+    "ma_yes_quantity": 2061,
+    "ma_average_cost": 0.97,
+    "cash_displayed": 93532.74,
+    "cash_display_source": "Market trading form at 06:06:14 UTC",
+    "cash_portfolio_rounded_display": 93533,
+    "account_value_rounded_display": 100113,
+    "total_holdings_marked_value_display": 6579.87,
+    "ri_marked_value_display": 4604.5,
+    "ri_unrealized_pnl_display": -20.51,
+    "ma_marked_value_display": 1975.37,
+    "ma_unrealized_pnl_display": -23.8,
+    "realized_ri_pnl": 0,
+    "ri_position_retained": true
+  },
+  "arithmetic_separate_from_display": {
+    "cash_initial_minus_buy_cost": 93532.74,
+    "cash_delta": -4625,
+    "ri_marked_value_minus_cost": -20.5,
+    "ri_immediate_liquidation_at_observed_bid": 4500,
+    "ri_liquidation_value_minus_cost": -125,
+    "account_value_cash_plus_displayed_holdings": 100112.61
+  },
+  "caveats": [
+    "All timestamps are observer UTC; submission times marked approximate and exact server timestamps were not exposed.",
+    "Portfolio formats the sell limit as 0.95, while exact market and cancellation-dialog price was 0.955.",
+    "Site transaction dates displayed Oct 1, 2026 although observer UTC date was Oct 2; no unsupported server-time inference made.",
+    "Portfolio loading was intermittently slow; empty/loading placeholders were never interpreted as zero orders.",
+    "Marked P&L differs from actionable liquidation P&L; the position was not sold at 0.900.",
+    "No extra buy, reprice, short sale, or forced liquidation occurred.",
+    "Transaction/order details absent from UI are null rather than inferred."
+  ],
+  "cash_precision": {
+    "display_decimal_places": 2,
+    "hidden_account_cash": null,
+    "note": "Cash fields are visible two-decimal UI amounts. Arithmetic based on displayed cash is distinct from the full exact-price ledger replay."
+  },
+  "provenance": {
+    "record_kind": "sanitized_derived_game_audit",
+    "original_source_sha256": "d66ab72414f775832ff713a0c0a7152d02315f57c7bab84fe362c71da73982bb",
+    "original_source_in_repository": false,
+    "projection_note": "Trade and observation facts retained; coordination and chat metadata omitted. Cash field names clarify visible display precision. Original source bytes remain unchanged; this projection has a separate digest in the reconciliation record.",
+    "reconciliation_record": "data/snapshots/reconciliation_2026-10-02_0606.json"
+  }
+}

@@ -1,0 +1,193 @@
+{
+  "schema_version": 1,
+  "status": "completed_canceled_unfilled",
+  "competition": "Susquehanna Predictions Cup 2026 Midterm Elections",
+  "instrument": "non-monetary SUSQies simulation",
+  "rules_url": "https://predictionscup.com/rules/",
+  "rules_verified_at_utc": "2026-10-02T04:50:44Z",
+  "rules_evidence": "Section 3 says free-to-enter; no actual securities, financial products or election contracts; zero participant cost/deposit; SUSQies have no monetary or redeemable value.",
+  "market": {
+    "id": 379,
+    "title": "Will the Democratic Party win the Massachusetts Senate?",
+    "url": "https://sig.thesuper.market/markets/379",
+    "settlement_rules_ui": "This market will resolve based on which party wins U.S. Senate Massachusetts. Market resolves to \"YES\" if the winning candidate is affiliated with the specified party, \"NO\" otherwise. A candidate running on a fusion ticket counts for every party on that ticket, so more than one party's market can resolve \"YES\" for the same race.",
+    "source_ui": "Official election results from relevant election authorities",
+    "final_certification_required": true
+  },
+  "preflight": {
+    "at_utc": "2026-10-02T04:53:57Z",
+    "positions_count_ui": 1,
+    "yes_quantity_ui": 2061,
+    "average_ui": 0.97,
+    "open_orders_ui": "You have no open orders.",
+    "cash_display_rounded_ui": 98158,
+    "cash_display_ui": 98157.74,
+    "cash_display_observed_at_utc": "2026-10-02T04:54:21Z",
+    "account_value_display_rounded_ui": 100122,
+    "cost_basis_arithmetic": 1999.17,
+    "source_book_at_utc": "2026-10-02T04:54:42Z",
+    "best_bid": {
+      "price": 0.97,
+      "quantity": 485
+    },
+    "best_ask": {
+      "price": 0.975,
+      "quantity": 889
+    },
+    "decision_formula": "best bid below .975; max(.975, best ask-.005) = .975"
+  },
+  "order": {
+    "order_id": "1497695",
+    "market_id": 379,
+    "side": "YES",
+    "action": "SELL",
+    "type": "LIMIT",
+    "quantity": 2061,
+    "limit": 0.975,
+    "pre_submit_timestamp_utc": "2026-10-02T04:55:26Z",
+    "submission_click_observed_complete_at_utc": "2026-10-02T04:55:34Z",
+    "confirmation_at_utc": "2026-10-02T04:55:38Z",
+    "server_submission_timestamp": null,
+    "cancellation_deadline_utc": "2026-10-02T05:10:26Z",
+    "ticket_ui": [
+      "Shares 2061",
+      "Limit Price (Sell at this probability or better) 97.5 %",
+      "Estimated Proceeds +2009.47 SUSQies",
+      "No matching orders available at this price",
+      "Place Sell Limit Order (97.5%)"
+    ],
+    "receipt_ui": [
+      "Order placed",
+      "Your sell limit order is open in the orderbook."
+    ],
+    "own_order_book_ui": {
+      "quantity": 2061,
+      "price": 0.975,
+      "volume_display": 2009.47,
+      "text": "Includes 2061 of yours"
+    },
+    "portfolio_record_ui": {
+      "cancel_button": "Cancel order 1497695",
+      "market": "Will the Democratic Party win the Massachusetts Senate?",
+      "side": "YES",
+      "action": "Sell",
+      "quantity": 2061,
+      "limit_display": "0.97 SUSQies",
+      "placed_display": "Oct 1"
+    },
+    "display_discrepancies": [
+      "Ticket and order book display .975; portfolio open orders limit displays only .97 (two decimals). No API or hidden-state lookup was used."
+    ],
+    "maximum_proceeds_arithmetic": 2009.475,
+    "observed_filled_quantity": 0,
+    "fill_receipts": [],
+    "actual_proceeds_ui": null,
+    "actual_profit_arithmetic": null,
+    "cancellation_attempts": [
+      {
+        "click_completed_at_utc": "2026-10-02T05:10:14Z",
+        "target_ui": "Cancel order 1497695",
+        "observed_result": "Button disabled, then re-enabled by 05:10:23; no visible receipt; order still present in pre-reload view",
+        "final_result": "Success verified after portfolio refresh; no retry was needed."
+      }
+    ],
+    "cancellation_verified_at_utc": "2026-10-02T05:11:34Z",
+    "cancellation_effective_server_timestamp": null,
+    "cancellation_receipt_ui": null,
+    "cancellation_evidence_ui": "Open Orders You have no open orders.",
+    "canceled_quantity": 2061,
+    "realized_pnl_from_fills_arithmetic": 0
+  },
+  "observations": [
+    {
+      "at_utc": "2026-10-02T04:56:59Z",
+      "open_orders_count_ui": 1,
+      "order_id": "1497695",
+      "remaining_quantity_ui": 2061,
+      "position_quantity_ui": 2061,
+      "cash_display_rounded_ui": 98158,
+      "fill_status": "No fill observed"
+    },
+    {
+      "at_utc": "2026-10-02T05:02:14Z",
+      "open_orders_count_ui": 1,
+      "order_id": "1497695",
+      "remaining_quantity_ui": 2061,
+      "position_quantity_ui": 2061,
+      "cash_display_rounded_ui": 98158,
+      "fill_status": "No fill observed",
+      "holdings_value_ui": 1964.23,
+      "unrealized_pnl_ui": -34.94
+    },
+    {
+      "at_utc": "2026-10-02T05:07:21Z",
+      "open_orders_count_ui": 1,
+      "order_id": "1497695",
+      "remaining_quantity_ui": 2061,
+      "position_quantity_ui": 2061,
+      "cash_display_rounded_ui": 98158,
+      "fill_status": "No fill observed",
+      "holdings_value_ui": 1964.25,
+      "unrealized_pnl_ui": -34.92
+    },
+    {
+      "at_utc": "2026-10-02T05:11:34Z",
+      "open_orders_count_ui": 0,
+      "open_orders_evidence_ui": "You have no open orders.",
+      "positions_count_ui": 1,
+      "position_quantity_ui": 2061,
+      "average_price_ui": 0.97,
+      "cash_display_rounded_ui": 98158,
+      "account_value_display_rounded_ui": 100122,
+      "holdings_value_ui": 1964.26,
+      "unrealized_pnl_ui": -34.91,
+      "transaction_history_latest_ui": "Sell Will the Democratic Party win the Florida Senate? 7,500 YES @ 0.105 SUSQies +787.50 SUSQies",
+      "ma_sell_fill_displayed": false
+    },
+    {
+      "at_utc": "2026-10-02T05:11:55Z",
+      "market_id": 379,
+      "position_quantity_ui": 2061,
+      "cash_display_ui": 98157.74,
+      "own_order_book_row_present": false,
+      "best_bid": {
+        "price": 0.97,
+        "quantity": 510
+      },
+      "best_ask": {
+        "price": 0.975,
+        "quantity": 879
+      }
+    }
+  ],
+  "final_account": {
+    "positions_count_ui": 1,
+    "market_id": 379,
+    "side": "YES",
+    "quantity_ui": 2061,
+    "average_price_ui": 0.97,
+    "cash_display_ui": 98157.74,
+    "cash_display_rounded_ui": 98158,
+    "cash_change_arithmetic": 0,
+    "cost_basis_arithmetic": 1999.17,
+    "open_orders_count_ui": 0
+  },
+  "completed_at_utc": "2026-10-02T05:11:55Z",
+  "activity_summary": {
+    "order_submission_count": 1,
+    "cancel_submission_count": 1,
+    "other_order_actions": 0
+  },
+  "observation_notes": [
+    "Cancellation clicked at 05:10:14 UTC, before the 05:10:26 target. The UI did not immediately remove the row; the terminal no-open-orders state was verified after refresh at 05:11:34. Exact effective server cancellation time is unknown.",
+    "The order filled zero shares and contributes zero sale proceeds, zero realized P&L, and no executed-trade ledger row.",
+    "UI cash values are two-decimal displays; hidden cash precision was not exposed."
+  ],
+  "provenance": {
+    "record_kind": "sanitized_derived_game_audit",
+    "original_source_sha256": "718ab862878314b14927e49d94be0e88ec4709e09594306668f9c32f92f6b560",
+    "original_source_in_repository": false,
+    "projection_note": "Order and observation facts retained; coordination and chat metadata omitted. Cash field names clarify visible display precision. Original source bytes remain unchanged; this projection has a separate digest in the reconciliation record.",
+    "reconciliation_record": "data/snapshots/reconciliation_2026-10-02_0606.json"
+  }
+}

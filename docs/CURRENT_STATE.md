@@ -1,27 +1,48 @@
 # Current state
 
-Last portfolio review: **2026-10-01 22:21:59–22:22:36 UTC**. The terminal portfolio showed only MA 2,061 YES at **22:21:59**. The completed Florida sale and **zero open orders** were reverified at **22:22:30**; cash displayed **98,157.74** to two decimal places at **22:22:36**. These are historical observations and need fresh reconciliation before any action.
+Last portfolio review: **2026-10-02 06:06:14–06:06:57 UTC**. Cash displayed **93,532.74** to two decimal places at **06:06:14**. The terminal portfolio at **06:06:57** confirmed **RI 5,000 YES**, **MA 2,061 YES**, and **zero open orders**. These are historical observations and need fresh reconciliation before any action.
 
 ## Account reconciliation
 
 - Starting simulated cash: **100,000.00 SUSQies**
-- Observed cash display: **98,157.74 SUSQies**, two decimal places; exact hidden account precision was not exposed
-- Separate quantity × price ledger cash: **98,157.745 SUSQies**
-- Remaining FIFO position cost: **1,999.170 SUSQies**
+- Observed cash display: **93,532.74 SUSQies**, two decimal places; exact hidden account precision was not exposed
+- Separate quantity × price ledger cash: **93,532.745 SUSQies**
+- Remaining FIFO position cost: **6,624.170 SUSQies**
 - Arithmetic cash plus remaining FIFO cost: **100,156.915 SUSQies**, an accounting identity rather than current liquidation value
-- Fourth-session realized P&L: **−112.500 SUSQies**; cumulative realized P&L: **156.915 SUSQies**, under the recorded analytical FIFO aggregate-lot convention
-- Open orders: **none observed at 22:22:30 UTC**
-- Arithmetic reconciliation: 97,370.245 + (7,500 × 0.105) = **98,157.745**
+- October 2 session realized P&L: **0.000 SUSQies**; cumulative realized P&L: **156.915 SUSQies**, under the recorded analytical FIFO aggregate-lot convention
+- Open orders: **none observed at 06:06:57 UTC**
+- Arithmetic reconciliation: 98,157.745 − (5,000 × 0.925) = **93,532.745**
 
-The display is 0.005 below ledger arithmetic. Both observations are retained separately. The UI's hidden balance precision and rounding method are unknown; no fee, rounding adjustment, or hidden balance is invented. In schema 2, `cash_verified` and `cash_exact_verified_at_utc` remain null; explicit `cash_displayed` and `cash_arithmetic_from_verified_qty_price` fields carry the distinct values.
+The display is 0.005 below ledger arithmetic. Both are retained separately. The UI's hidden balance precision and rounding method are unknown; no fee, rounding adjustment, or hidden balance is invented. In schema 2, `cash_verified` and `cash_exact_verified_at_utc` remain null; explicit `cash_displayed` and `cash_arithmetic_from_verified_qty_price` fields carry the distinct values.
 
 | Remaining market | Side | Shares | FIFO cost | Acquisition price |
 |---|---|---:|---:|---:|
 | Democratic Massachusetts Senate (379) | YES | 2,061 | 1,999.170 | 0.970 |
+| Democratic Rhode Island Senate (387) | YES | 5,000 | 4,625.000 | 0.925 |
 
-FL, RI, AK and NC holdings are zero. The remaining MA holding retains unrealized/liquidation risk; the 156.915 realized gain is not whole-account liquidation profit.
+FL, AK and NC holdings are zero. MA and RI retain unrealized/liquidation risk; the 156.915 realized gain is not whole-account liquidation profit.
 
-Machine-readable historical view: [`data/portfolio/latest.json`](../data/portfolio/latest.json). Immutable [22:22 snapshot](../data/snapshots/portfolio_2026-10-01_2222.json). Append-only [trade ledger](../data/trade_ledger.csv). Prior [22:01 snapshot](../data/snapshots/portfolio_2026-10-01_2201.json) and all earlier snapshots are unchanged.
+Machine-readable historical view: [`data/portfolio/latest.json`](../data/portfolio/latest.json). Immutable [06:06 snapshot](../data/snapshots/portfolio_2026-10-02_0606.json), [full-ledger replay and provenance](../data/snapshots/reconciliation_2026-10-02_0606.json), and append-only [trade ledger](../data/trade_ledger.csv). The prior [22:22 snapshot](../data/snapshots/portfolio_2026-10-01_2222.json) and all earlier snapshots are unchanged.
+
+## Completed October 2 Rhode Island session
+
+Exactly one new executed aggregate is recorded: **BUY 5,000 RI YES at 0.925**, cost **4,625.000 SUSQies**, submitted approximately **05:45:48 UTC** and verified in portfolio transaction history at **05:46:44 UTC**. The completed buy order ID was not exposed and remains null, with a blank ledger order-ID cell. Exact fill execution timestamps are unknown; submission and verification times are not execution times. All **16 prior ledger rows are preserved byte-for-byte**, giving **17 executed aggregates** after the append.
+
+Covered sell **1513474**, **5,000 at 0.955**, filled **zero** shares. One initial request failed with an explicit service-unavailable message; zero open orders was verified before a second attempt was accepted. Cancellation was clicked approximately **06:05:52**, own-order removal was observed by **06:06:14**, and account-wide zero open orders was confirmed at **06:06:57 UTC**. Effective server cancellation time is unknown. The position remains held; no sell row or realized gain is recorded.
+
+The earlier Massachusetts exit **1497695**, **2,061 YES at 0.975**, also filled **zero** shares. Cancellation was clicked **05:10:14**, with terminal zero orders verified **05:11:34 UTC**; MA inventory and basis are unchanged. The [cancellation summary](../data/orders/cancellations_2026-10-02_0606.json) distinguishes the two terminal orders and their actual observation times.
+
+The [RI audit](../data/orders/session_2026-10-02_ri_value.json) and [MA audit](../data/orders/session_2026-10-02_ma_exit.json) are sanitized derived game-observation records. Their original source hashes and separate published-projection hashes are retained in the reconciliation record; original source bytes are unchanged. The [official UNH source](https://scholars.unh.edu/survey_center_polls/1009/) and [public Kalshi response observed at 05:41:04 UTC](../data/snapshots/ri_public_book_2026-10-02_0540.json) provide research context. Those are external references with settlement and depth limitations, not risk-free cross-venue arbitrage or booked profit.
+
+### UI marks versus historical liquidation depth
+
+At the final portfolio observation, RI marked value was **4,604.50** with displayed unrealized P&L **−20.51**; MA marked value was **1,975.37** with displayed unrealized P&L **−23.80**. These are UI marks, not fills. RI marked value minus recorded basis is separately **−20.500**, leaving a 0.010 discrepancy with its displayed P&L; no fee or precision rule is inferred. The holdings total was **6,579.87**; cash-display plus holdings arithmetic was **100,112.61**, while the rounded account display was **100,113**.
+
+At **06:06:14 UTC**, RI's displayed bid was **0.900 × 40,855 shares**, sufficient depth for the 5,000-share position. This supports a historical **4,500.000 gross liquidation scenario**, or **−125.000** against the **4,625.000** basis, before fees, latency or quote movement. **No sale at 0.900 occurred.** A contemporaneous MA executable book was not captured in the final review, so whole-account liquidation value is unknown.
+
+## Earlier historical sessions
+
+The following session descriptions retain their original observation windows and accounting; they are not the current portfolio.
 
 ## Completed 22:19 Florida-exit session
 
@@ -108,7 +129,7 @@ The portfolio page uses tournament valuation prices whose formula remains unveri
 
 See the [execution and valuation review](../research/execution_valuation_review_2026-10-01.md) for historical depth and observation windows. Quotes were not captured simultaneously and are stale for execution.
 
-Under standard 0-or-1 settlement and no further trades, fees, refunds or sponsor interventions, ledger-arithmetic endpoints for the one remaining MA position are **98,157.745** if it loses and **100,218.745 SUSQies** if it wins. These use the separate arithmetic balance, not an asserted hidden UI balance; they are scenarios, not forecasts or executable valuations.
+Under standard 0-or-1 settlement and no further trades, fees, refunds or sponsor interventions, ledger-arithmetic endpoints for the two remaining MA/RI positions are **93,532.745** if both lose and **100,593.745 SUSQies** if both win. These use the separate arithmetic balance, not an asserted hidden UI balance; they are scenarios, not forecasts or executable valuations.
 
 ## Current operating mode
 
