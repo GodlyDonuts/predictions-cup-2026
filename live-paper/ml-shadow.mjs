@@ -9,6 +9,7 @@ import {amount,fee,TICK} from '../paper/fixed.mjs';
 import {scopedSnapshots} from './depth-scope.mjs';
 import {historyPolicy,resetHistory} from './history-policy.mjs';
 import {updateContext,contextFeatures} from './breadth-context.mjs';
+import {ROUND_TRIP,targetPolicy} from './roundtrip-target.mjs';
 
 export function verifySource(raw){
  if(!raw||!raw.endsWith('\n'))return null;
@@ -24,6 +25,7 @@ export function verifySource(raw){
 }
 
 export function requireSourceMetadata(bank){
+ targetPolicy(bank.targetPolicy);
  if(!Number.isSafeInteger(bank.sourceRecords)||bank.sourceRecords<1||typeof bank.sourceHash!=='string'||!/^[a-f0-9]{64}$/.test(bank.sourceHash)||!Number.isFinite(Date.parse(bank.trainingCaptureThrough)))throw Error('Missing or invalid frozen training source metadata');
 }
 export function bindTrainingSource(records,bank,{allowUnboundFixture=false}={}){
@@ -38,7 +40,7 @@ export function bindTrainingSource(records,bank,{allowUnboundFixture=false}={}){
 
 export function advanceShadow(input,records,bank,{allowUnboundFixture=false}={}){
  const state=structuredClone(input),c=bank.config;
- const policy=historyPolicy(bank.historyPolicy);
+ const policy=historyPolicy(bank.historyPolicy);targetPolicy(bank.targetPolicy);
  if(state.bankHash!==digest(bank))throw Error('Frozen model bank changed');
  const binding=bindTrainingSource(records,bank,{allowUnboundFixture});
  if(state.sourceBinding&&digest(state.sourceBinding)!==digest(binding))throw Error('Frozen training binding changed');
@@ -69,8 +71,8 @@ export function advanceShadow(input,records,bank,{allowUnboundFixture=false}={})
     }
     const w=state.wallets[id]??initialState(c,id,bank.trainingCaptureThrough);
     const same=w.books[b.instrument]?.versionKey===b.versionKey;
-    const exitValue=history.length>=6?mid+predict(model,x):null;
     const ask=amount(b.asks[0].price)+TICK*BigInt(c.slippageTicks),entryCost=Number(ask+fee(ask,1,{feeBps:c.feeBps,feePerShare:'0.000000'}))/1e6;
+    const exitValue=history.length>=6?(targetPolicy(bank.targetPolicy)===ROUND_TRIP?entryCost:mid)+predict(model,x):null;
     const netEdge=exitValue===null?null:exitValue-entryCost;
     state.signalMetrics??={};const metrics=state.signalMetrics[id]??={observations:0,warmup:0,invalidForecast:0,edgeBelowMargin:0,edgePass:0,zeroTopAskCapacity:0};
     if(!same){metrics.observations++;if(exitValue===null)metrics.warmup++;else if(!Number.isFinite(exitValue)||exitValue<0||exitValue>1)metrics.invalidForecast++;else if(netEdge<margin)metrics.edgeBelowMargin++;else metrics.edgePass++;if(Math.floor(b.asks[0].quantity*c.depthFractionBps/10000)<1)metrics.zeroTopAskCapacity++;}

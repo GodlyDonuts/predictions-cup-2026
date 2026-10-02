@@ -7,6 +7,7 @@ import {amount,fee,TICK} from '../paper/fixed.mjs';
 import {scopedSnapshots} from './depth-scope.mjs';
 import {historyPolicy as validateHistoryPolicy,resetHistory,LEGACY,ISOLATED} from './history-policy.mjs';
 import {updateContext,contextFeatures} from './breadth-context.mjs';
+import {ROUND_TRIP,LEGACY_TARGET,targetPolicy as validateTarget,roundTripLabel} from './roundtrip-target.mjs';
 
 const num=x=>Number(amount(x))/1e6;
 export function features(book,history){
@@ -33,7 +34,7 @@ export function captureRows(raw,c,{historyPolicy=LEGACY,since=null,breadthContex
    try{b=normalizeBook(snap.data,m[1],c.tournamentId,snap.receivedAt,snap.requestStartedAt,c.maxDataAgeMs,new Set(e.accountExclusions));}catch{reset(m[1]);continue;}
    const prev=s.books[b.instrument];s=observe(s,b,c);if(prev?.versionKey===s.books[b.instrument].versionKey)continue;
    let h=histories[b.instrument]||[];if(h.length&&Date.parse(b.receivedAt)-Date.parse(h.at(-1).at)>120000){if(historyPolicy===ISOLATED)marketSegments[b.marketId]=(marketSegments[b.marketId]||0)+1;else segment++;h=[];}
-   const base=features(b,h),x=breadthContext?[...base,...contextFeatures(context,b,c.tournamentId)]:base,row={at:b.receivedAt,marketId:b.marketId,instrument:b.instrument,segment:historyPolicy===ISOLATED?segment+':'+(marketSegments[b.marketId]||0):segment,x,mid:x[11],bid:num(b.bids[0].price),ask:num(b.asks[0].price),book:b};
+   const base=features(b,h),x=breadthContext?[...base,...contextFeatures(context,b,c.tournamentId)]:base,row={at:b.receivedAt,marketId:b.marketId,instrument:b.instrument,historyLength:h.length,segment:historyPolicy===ISOLATED?segment+':'+(marketSegments[b.marketId]||0):segment,x,mid:x[11],bid:num(b.bids[0].price),ask:num(b.asks[0].price),book:b};
    rows.push(row);histories[b.instrument]=[...h,row].slice(-30);
   }
   if(breadthContext)context=updateContext(context,e.bulkPrices,e.clockAt||r.at);
@@ -75,17 +76,20 @@ export function instrumentCoverage(train,test,marketIds){
   return {marketId,train:a.length,test:b.length,trainingInstruments,testInstruments,eligible:a.length>=8&&b.length>=4&&testInstruments.every(id=>trainingInstruments.includes(id))};
  });
 }
-export function trainBank(raw,c,{family='ridge',historyPolicy=LEGACY,since=null,requireInstrumentCoverage=false,breadthContext=false}={}){
+export function trainBank(raw,c,{family='ridge',historyPolicy=LEGACY,since=null,requireInstrumentCoverage=false,breadthContext=false,targetPolicy=LEGACY_TARGET}={}){
+ validateTarget(targetPolicy);
  if(!['ridge','boosted_stumps'].includes(family))throw Error('Unsupported model family');
  if(typeof requireInstrumentCoverage!=='boolean')throw Error('Invalid coverage requirement');
  if(typeof breadthContext!=='boolean')throw Error('Invalid breadth feature selection');
  const source=captureRows(raw,c,{historyPolicy,since,breadthContext}),rows=source.rows;
  if(rows.length<80)throw Error('Need at least 80 accepted snapshots before model fitting');
- const split=rows[Math.floor(rows.length*.65)].at,models=[],rejected=[];
+ const split=rows[Math.floor(rows.length*.65)].at,models=[],rejected=[],labelDiagnostics=[];
  for(const horizon of [60,180,300,600]){
-  const labels=[];
+  const labels=[],reasons={};
   for(let i=0;i<rows.length;i++){
-   const r=rows[i];let future;
+   const r=rows[i];
+   if(targetPolicy===ROUND_TRIP){const result=roundTripLabel(rows,i,c,horizon*1000);if(result.label)labels.push(result.label);else reasons[result.reason]=(reasons[result.reason]||0)+1;continue;}
+   let future;
    for(let j=i+1;j<rows.length;j++){const f=rows[j];if(f.instrument!==r.instrument)continue;if(f.segment!==r.segment)break;const dt=Date.parse(f.at)-Date.parse(r.at);if(dt>=horizon*1000){if(dt<=horizon*1000+120000)future=f;break;}}
    if(!future)continue;
    const exit=amount(future.book.bids[0].price)-TICK*BigInt(c.slippageTicks);if(exit<=0n)continue;
@@ -94,6 +98,7 @@ export function trainBank(raw,c,{family='ridge',historyPolicy=LEGACY,since=null,
    labels.push({...r,labelAt:future.at,persistence,y:Number(exit-fee(exit,1,{feeBps:c.feeBps,feePerShare:'0.000000'}))/1e6-r.mid});
   }
   const train=labels.filter(r=>Date.parse(r.labelAt)<Date.parse(split)),test=labels.filter(r=>Date.parse(r.at)>=Date.parse(split));
+  labelDiagnostics.push({horizon,accepted:labels.length,train:train.length,test:test.length,rejected:reasons});
   const coverage=instrumentCoverage(train,test,c.marketIds);
   const variants=[];
   for(const width of (breadthContext?[12,15,17,19]:[4,6,9,12])){
@@ -105,12 +110,12 @@ export function trainBank(raw,c,{family='ridge',historyPolicy=LEGACY,since=null,
    if(requireInstrumentCoverage&&coverage.some(x=>!x.eligible)){rejected.push({id,reason:'insufficient_instrument_coverage',coverage});continue;}
    const model=family==='ridge'?fitRidge(train,width,lambda):fitStumps(train,width,iterations,learningRate,minLeaf);
    const errors=test.map(r=>predict(model,r.x)-r.y),rmse=Math.sqrt(errors.reduce((n,v)=>n+v*v,0)/errors.length),baselineRmse=Math.sqrt(test.reduce((n,r)=>n+(r.y-r.persistence)**2,0)/test.length);
-   models.push({id,horizon,...model,coverage,trainRows:train.length,testRows:test.length,rmse,baselineRmse,baseline:'Current bid persists, with the same assumed exit tick and fee',beatsPersistence:rmse<baselineRmse,maxTrainingLabelAt:new Date(Math.max(...train.map(r=>Date.parse(r.labelAt)))).toISOString()});
+   models.push({id,horizon,...model,coverage,trainRows:train.length,testRows:test.length,rmse,baselineRmse,baseline:targetPolicy===ROUND_TRIP?'Decision book unchanged, entry and exit ticks and quantity-rounded fees':'Current bid persists, with the same assumed exit tick and fee',beatsPersistence:rmse<baselineRmse,maxTrainingLabelAt:new Date(Math.max(...train.map(r=>Date.parse(r.labelAt)))).toISOString()});
   }
  }
  const selected=[60,180,300,600].flatMap(h=>models.filter(m=>m.horizon===h).sort((a,b)=>a.rmse-b.rmse).slice(0,3));
- return {schemaVersion:1,family,historyPolicy,trainingWindowStart:since,requireInstrumentCoverage,breadthContext,createdAt:new Date().toISOString(),config:c,configHash:digest(c),sourceHash:source.sourceHash,sourceRecords:source.sourceRecords,trainingCaptureThrough:source.cutoff,developmentSplitAt:split,acceptedSnapshots:rows.length,candidatesAttempted:128,modelsTrained:models.length,models,rejected,selected,selection:'Three lowest development-split RMSE per horizon; exploration only, all tried variants retained',target:'Future haircut-free best bid minus adverse exit tick and assumed exit fee, relative to current midpoint; entry costs charged separately',limitations:['Short correlated capture; no profitability established','Chronological development split with training labels purged at split; not untouched future validation','Top bid label is not verified full-size exit liquidity','No guarantee of future depth, latency, settlement equivalence or execution']};
+ return {schemaVersion:1,targetPolicy,labelDiagnostics,family,historyPolicy,trainingWindowStart:since,requireInstrumentCoverage,breadthContext,createdAt:new Date().toISOString(),config:c,configHash:digest(c),sourceHash:source.sourceHash,sourceRecords:source.sourceRecords,trainingCaptureThrough:source.cutoff,developmentSplitAt:split,acceptedSnapshots:rows.length,candidatesAttempted:128,modelsTrained:models.length,models,rejected,selected,selection:'Three lowest development-split RMSE per horizon; exploration only, all tried variants retained',target:targetPolicy===ROUND_TRIP?'Conditional net realized round-trip PnL per filled share from delayed entry, post-fill holding/stop and delayed FIFO exit':'Future haircut-free best bid minus adverse exit tick and assumed exit fee, relative to current midpoint; entry costs charged separately',limitations:[...(targetPolicy===ROUND_TRIP?['Labels conditional on admitted entry and completed exit; censored/no-fill decisions excluded and counted, selection bias possible','Flat-wallet counterfactual sizing; live wallet exposure and cash can differ']:[]),'Short correlated capture; no profitability established','Chronological development split with training labels purged at split; not untouched future validation','Top bid label is not verified full-size exit liquidity','No guarantee of future depth, latency, settlement equivalence or execution']};
 }
 if(process.argv[1]&&fileURLToPath(import.meta.url)===process.argv[1]){
- const arg=n=>{const i=process.argv.indexOf(n);if(i<0||!process.argv[i+1])throw Error('Required '+n);return process.argv[i+1];};const family=process.argv.includes('--family')?arg('--family'):'ridge';const bank=trainBank(fs.readFileSync(arg('--journal'),'utf8'),JSON.parse(fs.readFileSync(arg('--config'),'utf8')),{family,historyPolicy:process.argv.includes('--history-policy')?arg('--history-policy'):LEGACY,since:process.argv.includes('--since')?arg('--since'):null,requireInstrumentCoverage:process.argv.includes('--require-instrument-coverage'),breadthContext:process.argv.includes('--breadth-context')});const out=arg('--out');if(fs.existsSync(out))throw Error('Refusing to overwrite an existing frozen model bank');const tmp=out+'.'+randomUUID()+'.tmp';fs.writeFileSync(tmp,JSON.stringify(bank,null,2),{flag:'wx',mode:0o600});try{fs.linkSync(tmp,out);}finally{fs.unlinkSync(tmp);}console.log(JSON.stringify({attempted:bank.candidatesAttempted,trained:bank.modelsTrained,shadowModels:bank.selected.length,snapshots:bank.acceptedSnapshots,cutoff:bank.trainingCaptureThrough}));
+ const arg=n=>{const i=process.argv.indexOf(n);if(i<0||!process.argv[i+1])throw Error('Required '+n);return process.argv[i+1];};const family=process.argv.includes('--family')?arg('--family'):'ridge';const bank=trainBank(fs.readFileSync(arg('--journal'),'utf8'),JSON.parse(fs.readFileSync(arg('--config'),'utf8')),{family,historyPolicy:process.argv.includes('--history-policy')?arg('--history-policy'):LEGACY,since:process.argv.includes('--since')?arg('--since'):null,requireInstrumentCoverage:process.argv.includes('--require-instrument-coverage'),breadthContext:process.argv.includes('--breadth-context'),targetPolicy:process.argv.includes('--target-policy')?arg('--target-policy'):LEGACY_TARGET});const out=arg('--out');if(fs.existsSync(out))throw Error('Refusing to overwrite an existing frozen model bank');const tmp=out+'.'+randomUUID()+'.tmp';fs.writeFileSync(tmp,JSON.stringify(bank,null,2),{flag:'wx',mode:0o600});try{fs.linkSync(tmp,out);}finally{fs.unlinkSync(tmp);}console.log(JSON.stringify({attempted:bank.candidatesAttempted,trained:bank.modelsTrained,shadowModels:bank.selected.length,snapshots:bank.acceptedSnapshots,cutoff:bank.trainingCaptureThrough}));
 }

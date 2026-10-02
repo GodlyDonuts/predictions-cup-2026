@@ -1,0 +1,329 @@
+{
+  "createdAt": "2026-10-02T03:46:07.008Z",
+  "policy": "delayed_fifo_roundtrip_net_v1",
+  "profitabilityEstablished": false,
+  "cohorts": [
+    {
+      "name": "roundtrip-ridge-20261002-0345",
+      "bankHash": "edb91bccb602205b26a05c2c760f02b6cdf77b0b2340636c9a05d05589994b55",
+      "sourceHash": "2eec84bc1ab1b3fed4b6b89d0a7b3a7872c498793440eeedff8b168a29b800a4",
+      "sourceRecords": 259,
+      "cutoff": "2026-10-02T03:44:37.143Z",
+      "acceptedSnapshots": 412,
+      "modelsTrained": 0,
+      "selectedModels": 0,
+      "labels": [
+        {
+          "horizon": 60,
+          "accepted": 150,
+          "train": 114,
+          "test": 19,
+          "rejected": {
+            "decision_warmup": 129,
+            "entry_unfilled": 49,
+            "segment_boundary": 67,
+            "exit_censored": 10,
+            "entry_censored": 7
+          }
+        },
+        {
+          "horizon": 180,
+          "accepted": 134,
+          "train": 108,
+          "test": 9,
+          "rejected": {
+            "decision_warmup": 129,
+            "entry_unfilled": 49,
+            "segment_boundary": 82,
+            "exit_censored": 11,
+            "entry_censored": 7
+          }
+        },
+        {
+          "horizon": 300,
+          "accepted": 123,
+          "train": 100,
+          "test": 4,
+          "rejected": {
+            "decision_warmup": 129,
+            "entry_unfilled": 49,
+            "segment_boundary": 93,
+            "exit_censored": 11,
+            "entry_censored": 7
+          }
+        },
+        {
+          "horizon": 600,
+          "accepted": 108,
+          "train": 90,
+          "test": 0,
+          "rejected": {
+            "decision_warmup": 129,
+            "entry_unfilled": 49,
+            "segment_boundary": 108,
+            "exit_censored": 11,
+            "entry_censored": 7
+          }
+        }
+      ],
+      "selected": [],
+      "coverageRejections": [
+        {
+          "id": "ridge-h60-f12-l0.01",
+          "reason": "insufficient_instrument_coverage",
+          "coverage": [
+            {
+              "marketId": "377",
+              "train": 27,
+              "test": 3,
+              "trainingInstruments": [
+                "1066:YES"
+              ],
+              "testInstruments": [
+                "1066:YES"
+              ],
+              "eligible": false
+            },
+            {
+              "marketId": "354",
+              "train": 28,
+              "test": 4,
+              "trainingInstruments": [
+                "1043:YES"
+              ],
+              "testInstruments": [
+                "1043:YES"
+              ],
+              "eligible": true
+            },
+            {
+              "marketId": "277",
+              "train": 5,
+              "test": 0,
+              "trainingInstruments": [
+                "966:YES"
+              ],
+              "testInstruments": [],
+              "eligible": false
+            },
+            {
+              "marketId": "305",
+              "train": 6,
+              "test": 5,
+              "trainingInstruments": [
+                "994:YES"
+              ],
+              "testInstruments": [
+                "994:YES"
+              ],
+              "eligible": false
+            },
+            {
+              "marketId": "342",
+              "train": 17,
+              "test": 3,
+              "trainingInstruments": [
+                "1031:YES"
+              ],
+              "testInstruments": [
+                "1031:YES"
+              ],
+              "eligible": false
+            },
+            {
+              "marketId": "376",
+              "train": 31,
+              "test": 4,
+              "trainingInstruments": [
+                "1065:YES"
+              ],
+              "testInstruments": [
+                "1065:YES"
+              ],
+              "eligible": true
+            }
+          ]
+        },
+        {
+          "id": "ridge-h180-f12-l0.01",
+          "reason": "insufficient_matured_labels",
+          "train": 108,
+          "test": 9
+        },
+        {
+          "id": "ridge-h300-f12-l0.01",
+          "reason": "insufficient_matured_labels",
+          "train": 100,
+          "test": 4
+        },
+        {
+          "id": "ridge-h600-f12-l0.01",
+          "reason": "insufficient_matured_labels",
+          "train": 90,
+          "test": 0
+        }
+      ]
+    },
+    {
+      "name": "roundtrip-stumps-20261002-0345",
+      "bankHash": "5cfeb6c66b383e0cab44575057d5b4553b64303cd963be6f443c34799520644e",
+      "sourceHash": "2eec84bc1ab1b3fed4b6b89d0a7b3a7872c498793440eeedff8b168a29b800a4",
+      "sourceRecords": 259,
+      "cutoff": "2026-10-02T03:44:37.143Z",
+      "acceptedSnapshots": 412,
+      "modelsTrained": 0,
+      "selectedModels": 0,
+      "labels": [
+        {
+          "horizon": 60,
+          "accepted": 150,
+          "train": 114,
+          "test": 19,
+          "rejected": {
+            "decision_warmup": 129,
+            "entry_unfilled": 49,
+            "segment_boundary": 67,
+            "exit_censored": 10,
+            "entry_censored": 7
+          }
+        },
+        {
+          "horizon": 180,
+          "accepted": 134,
+          "train": 108,
+          "test": 9,
+          "rejected": {
+            "decision_warmup": 129,
+            "entry_unfilled": 49,
+            "segment_boundary": 82,
+            "exit_censored": 11,
+            "entry_censored": 7
+          }
+        },
+        {
+          "horizon": 300,
+          "accepted": 123,
+          "train": 100,
+          "test": 4,
+          "rejected": {
+            "decision_warmup": 129,
+            "entry_unfilled": 49,
+            "segment_boundary": 93,
+            "exit_censored": 11,
+            "entry_censored": 7
+          }
+        },
+        {
+          "horizon": 600,
+          "accepted": 108,
+          "train": 90,
+          "test": 0,
+          "rejected": {
+            "decision_warmup": 129,
+            "entry_unfilled": 49,
+            "segment_boundary": 108,
+            "exit_censored": 11,
+            "entry_censored": 7
+          }
+        }
+      ],
+      "selected": [],
+      "coverageRejections": [
+        {
+          "id": "stumps-h60-f12-n16-r0.05-leaf5",
+          "reason": "insufficient_instrument_coverage",
+          "coverage": [
+            {
+              "marketId": "377",
+              "train": 27,
+              "test": 3,
+              "trainingInstruments": [
+                "1066:YES"
+              ],
+              "testInstruments": [
+                "1066:YES"
+              ],
+              "eligible": false
+            },
+            {
+              "marketId": "354",
+              "train": 28,
+              "test": 4,
+              "trainingInstruments": [
+                "1043:YES"
+              ],
+              "testInstruments": [
+                "1043:YES"
+              ],
+              "eligible": true
+            },
+            {
+              "marketId": "277",
+              "train": 5,
+              "test": 0,
+              "trainingInstruments": [
+                "966:YES"
+              ],
+              "testInstruments": [],
+              "eligible": false
+            },
+            {
+              "marketId": "305",
+              "train": 6,
+              "test": 5,
+              "trainingInstruments": [
+                "994:YES"
+              ],
+              "testInstruments": [
+                "994:YES"
+              ],
+              "eligible": false
+            },
+            {
+              "marketId": "342",
+              "train": 17,
+              "test": 3,
+              "trainingInstruments": [
+                "1031:YES"
+              ],
+              "testInstruments": [
+                "1031:YES"
+              ],
+              "eligible": false
+            },
+            {
+              "marketId": "376",
+              "train": 31,
+              "test": 4,
+              "trainingInstruments": [
+                "1065:YES"
+              ],
+              "testInstruments": [
+                "1065:YES"
+              ],
+              "eligible": true
+            }
+          ]
+        },
+        {
+          "id": "stumps-h180-f12-n16-r0.05-leaf5",
+          "reason": "insufficient_matured_labels",
+          "train": 108,
+          "test": 9
+        },
+        {
+          "id": "stumps-h300-f12-n16-r0.05-leaf5",
+          "reason": "insufficient_matured_labels",
+          "train": 100,
+          "test": 4
+        },
+        {
+          "id": "stumps-h600-f12-n16-r0.05-leaf5",
+          "reason": "insufficient_matured_labels",
+          "train": 90,
+          "test": 0
+        }
+      ]
+    }
+  ]
+}

@@ -47,6 +47,8 @@ test('candidate cost telemetry counts unique decisions and resumed source batche
  for(const m of Object.values(s.signalMetrics)){assert.equal(m.observations,7);assert.equal(m.warmup,6);assert.equal(m.edgePass,1);}
  assert.deepEqual(advanceShadow(s,records,bank),s);
  for(const p of Object.values(s.predictions)){assert.ok(p.netEdge>.08);assert.ok(p.entryCost>.415);}
+ const aligned={...bank,targetPolicy:'delayed_fifo_roundtrip_net_v1'},fresh={...initial,bankHash:digest(aligned)},next=advanceShadow(fresh,records,aligned);for(const p of Object.values(next.predictions))assert.ok(Math.abs(p.netEdge-.1)<1e-12);
+ const unknown={...bank,targetPolicy:'unknown'};assert.throws(()=>advanceShadow({...initial,bankHash:digest(unknown)},[],unknown),/Unsupported target/);
 });
 test('future development observations cannot change fitted weights or training normalization',()=>{
  function capture(changed){let previous='';return Array.from({length:180},(_,n)=>{
@@ -54,8 +56,8 @@ test('future development observations cannot change fitted weights or training n
   const data={contexts:[{type:'tournament',tournament:{id:c.tournamentId},orderbook:{exchanges:[{exchangeId:'9',option:'YES',asOf:{at:time,sequence:n},bids:[{price:Number(bid.toFixed(3)),quantity:10000}],asks:[{price:Number((bid+.01).toFixed(3)),quantity:10000}]}]}}]};
   const body={sequence:n+1,previous,at:time,state:{},event:{type:'cycle',clockAt:time,accountExclusions:[],sourceSnapshots:[{endpoint:'/markets/377/orderbook?tournamentId='+c.tournamentId,receivedAt:time,requestStartedAt:time,data}]}};const hash=createHash('sha256').update(JSON.stringify(body)).digest('hex');previous=hash;return JSON.stringify({...body,hash});
  }).join('\n')+'\n';}
- for(const family of ['ridge','boosted_stumps'])for(const historyPolicy of ['global-reset-v1','market-isolated-v2']){
-  const first=trainBank(capture(false),c,{family,historyPolicy}),changed=trainBank(capture(true),c,{family,historyPolicy});assert.equal(first.modelsTrained,128);
+ for(const family of ['ridge','boosted_stumps'])for(const historyPolicy of ['global-reset-v1','market-isolated-v2'])for(const targetPolicy of ['legacy_decision_time_bid_forecast_not_executable_roundtrip_target','delayed_fifo_roundtrip_net_v1']){
+  const first=trainBank(capture(false),c,{family,historyPolicy,targetPolicy}),changed=trainBank(capture(true),c,{family,historyPolicy,targetPolicy});assert.equal(first.modelsTrained,128);if(targetPolicy.startsWith('delayed'))assert.equal(first.labelDiagnostics[0].rejected.decision_warmup,6);
   for(const m of first.models){const other=changed.models.find(x=>x.id===m.id);assert.deepEqual(other.weights,m.weights);assert.deepEqual(other.means,m.means);assert.deepEqual(other.scales,m.scales);assert.deepEqual(other.stumps,m.stumps);assert.equal(other.base,m.base);assert.ok(Date.parse(m.maxTrainingLabelAt)<Date.parse(first.developmentSplitAt));}
  }
  const guarded=trainBank(capture(false),c,{historyPolicy:'market-isolated-v2',requireInstrumentCoverage:true});assert.equal(guarded.modelsTrained,0);assert.equal(guarded.rejected.length,128);assert.ok(guarded.rejected.every(r=>r.reason==='insufficient_instrument_coverage'));
