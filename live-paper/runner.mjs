@@ -64,6 +64,7 @@ function saveScheduler(next){
 function recordAttempt(kind,marketId,samplingPlanId){
  const at=new Date().toISOString();let next=recordSchedulerAttempts(scheduler,schedulerScope,{[kind+'MarketIds']:[marketId],attemptedAt:at});
  if(kind==='book'&&samplingPlanId)next=recordComparisonAttempt(next,schedulerScope,{marketId,at,planId:samplingPlanId});
+ if(kind==='book'&&['381','382'].includes(marketId))next.packageReadLastAttemptAt={...(next.packageReadLastAttemptAt||{}),[marketId]:at};
  saveScheduler(next);
 }
 function schedulingInputs(){
@@ -259,7 +260,7 @@ try{
       // Freeze one plan before metadata selection; do not resample shadow state
       // or reorder candidates between the controller and these book requests.
       const basePlan=dipBank?planBookReads(scheduler,schedulerScope,schedulingInputs()):{reads:[...c.marketIds.map(marketId=>({marketId,path:'sourceSnapshots'})),...depthPlan.marketIds.map(marketId=>({marketId,path:'supplementalDepth'}))],entryMarketIds:[]};
-      const planned=focusPairedPackageReads(comparisonSamplingPlan(basketMeasurementPlan(basePlan,excluded)),readPairedPackageFocus(runtimeDir,universe,Date.now()),{now:Date.now(),lastAttempts:scheduler?.bookLastAttempt||{}});
+      const planned=focusPairedPackageReads(comparisonSamplingPlan(basketMeasurementPlan(basePlan,excluded)),readPairedPackageFocus(runtimeDir,universe,Date.now()),{now:Date.now(),lastAttempts:scheduler?.packageReadLastAttemptAt||{}});
       runtime.paperPackageFocus=planned.paperPackageFocus||null;
       if(competition)try{await competition.beforeBooks({positions,orders,ordersAt:new Date().toISOString(),candidateMarketIds:planned.entryMarketIds});}catch(e){competition.failure(e);}
       const supplementalDepth=[],samplingReservations=[],samplingReceipts=[];
