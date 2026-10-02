@@ -31,6 +31,7 @@ const activeCohorts = [
   {name: 'stream-dip', manifest: 'stream-dip-active.json', directory: 'stream-dip-cohorts', script: 'live-paper/stream-dip-watch.mjs', stop: 'STREAM_DIP_STOP', globalLock: 'stream-dip.lock', captureInput: true},
   {name: 'stream-book-v2', manifest: 'stream-book-v2-active.json', directory: 'stream-book-v2-cohorts', script: 'live-paper/stream-book-watch-v2.mjs', stop: 'STREAM_BOOK_V2_STOP', globalLock: 'stream-book-gateway.lock', captureInput: true},
   {name: 'stream-dip-v2', manifest: 'stream-dip-v2-active.json', directory: 'stream-dip-v2-cohorts', script: 'live-paper/stream-dip-watch-v2.mjs', stop: 'STREAM_DIP_V2_STOP', globalLock: 'stream-dip.lock', captureInput: true},
+  {name: 'stream-recovery', manifest: 'stream-recovery-active.json', directory: 'stream-recovery-cohorts', script: 'live-paper/stream-recovery-watch.mjs', stop: 'STREAM_RECOVERY_STOP', globalLock: 'stream-recovery.lock', captureInput: true},
 ];
 const cohortName = value => typeof value === 'string' && /^[a-z][a-z0-9-]{0,63}$/.test(value)
   && !/^(con|prn|aux|nul|com[1-9]|lpt[1-9])$/.test(value);

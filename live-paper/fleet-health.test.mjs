@@ -235,7 +235,7 @@ test('stream dip health pins its own cohort and singleton while observing the sh
 test('corrected source and paper manifests resolve versioned paths and shared singleton locks',async t=>{
  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'fleet-stream-v2-'));t.after(()=>fs.rmSync(dir,{recursive:true,force:true}));
  const write=(p,v)=>fs.writeFileSync(p,JSON.stringify(v)),b={...bank,sourceFile:'realtime-stream.jsonl'},h=createHash('sha256').update(JSON.stringify(b)).digest('hex');
- const specs=[['stream-book-v2','stream-book-v2-cohorts','stream-book-watch-v2.mjs','stream-book-gateway.lock',123],['stream-dip-v2','stream-dip-v2-cohorts','stream-dip-watch-v2.mjs','stream-dip.lock',124]],processes={};
+ const specs=[['stream-book-v2','stream-book-v2-cohorts','stream-book-watch-v2.mjs','stream-book-gateway.lock',123],['stream-dip-v2','stream-dip-v2-cohorts','stream-dip-watch-v2.mjs','stream-dip.lock',124],['stream-recovery','stream-recovery-cohorts','stream-recovery-watch.mjs','stream-recovery.lock',125]],processes={};
  for(const [name,directory,script,lock,pid]of specs){const cohort=name+'-fixture',root=path.join(dir,directory,cohort);fs.mkdirSync(root,{recursive:true});
   write(path.join(dir,name+'-active.json'),{schemaVersion:1,cohort,bankHash:h});write(path.join(root,'bank.json'),b);write(path.join(root,'stats.json'),{status:'running',updatedAt:at(-1000),pid,cohort,bankHash:h,sourceBytes:3});
   fs.writeFileSync(path.join(dir,lock),String(pid));fs.writeFileSync(path.join(root,'pid.txt'),String(pid));processes[pid]={alive:true,commandLine:'node live-paper/'+script+' --name '+cohort,startedAt:at(-60000)};}
