@@ -6,7 +6,7 @@ import {advanceDip,dipReport} from './dip-shadow.mjs';
 import {verifySource} from './ml-shadow.mjs';
 import {digest} from './model.mjs';
 import {lock} from './runtime.mjs';
-import {atomicPaperJson,paperFault,persistPaperFault} from './paper-persistence.mjs';
+import {atomicPaperJson,paperFault,persistPaperFault,PaperPersistenceError} from './paper-persistence.mjs';
 
 const workspace=path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const cohorts=['dip','dip-scale','dip-responsive'];
@@ -47,6 +47,7 @@ export function openDipWorker({runtimeDir,cohort='dip',workspaceDir=workspace,no
    }
    return {status:lastStatus,sourceSequence:state.sourceSequence};
   }catch(error){
+   if(error instanceof PaperPersistenceError&&error.details.phase==='guard'&&error.details.osCode==='COMMIT_BLOCKED'&&stopped()&&owned()){await publish('stopped');return {status:'stopped',sourceSequence:state.sourceSequence};}
    failed=true;lastStatus='failed';const fault=await diagnose(error,attemptedSourceSequence);
    try{await publish('failed',fault);}catch(publishError){await diagnose(publishError,attemptedSourceSequence);}
    return {status:'failed',sourceSequence:state.sourceSequence,fault};
