@@ -8,6 +8,7 @@ import {Journal} from '../live-paper/runtime.mjs';
 import {normalizeBook,digest} from '../live-paper/model.mjs';
 import {historicalReference} from '../live-paper/history.mjs';
 import {dipSignal} from '../live-paper/dip-shadow.mjs';
+import {openEntryDecisionAudit,assessEntryGates} from './decision-audit.mjs';
 
 const TID='bda92870-621e-47b0-bc3c-3602c5c26f55',SLUG='midterm-elections';
 const micros=x=>decimalMicros(String(x));
@@ -44,6 +45,7 @@ export class CompetitionController {
   this.ledger=openLedger({dir:this.dir,ownerId:'Codex',runId:activation.runId,scope:TID,isStopped:()=>!this.canWrite(),now});
   try{
    this.journal=new Journal(path.join(this.dir,'core-journal.jsonl'));
+   this.entryAudit=openEntryDecisionAudit(path.join(this.dir,'decisions.jsonl'),activation.runId);
    this.state=this.journal.last?validateExecutionState(validateControl(this.journal.last.state)):validateExecutionState({...createExecutionState({tournamentId:TID,policy:{maxOrderCost:activation.maxOrderCost,maxAggregateCost:activation.maxAggregateCost,maxCumulativeBuyCost:activation.maxCumulativeBuyCost,maxManagedMarkets:3,cashReserve:'90000.000000'}}),control:emptyControl()});
    if(this.state.tournamentId!==TID||this.state.policy.maxOrderCost!==activation.maxOrderCost||this.state.policy.maxAggregateCost!==activation.maxAggregateCost||this.state.policy.maxCumulativeBuyCost!==activation.maxCumulativeBuyCost)throw Error('CORE_POLICY_MISMATCH');
    this.assertLedgers();
@@ -241,6 +243,10 @@ export class CompetitionController {
    else throw e;
   }finally{this.currentPermit=null;this.publish();}
  }
+ entryDecision(book,code,details={}){
+  this.entryAudit.record({book,clockAt:new Date(this.now()).toISOString(),code,...details});
+  if(code!=='INTENT_READY'){this.status=code==='REFERENCE_BLOCKED'?'reference_blocked':code==='WINDOW_BLOCKED'?(details.detailCode==='ENTRY_WINDOW_NOT_STARTED'?'entry_window_not_started':'entry_window_closed'):'entry_rejected';this.reason=['REFERENCE_BLOCKED','WINDOW_BLOCKED','PREPARE_REJECTED'].includes(code)?details.detailCode:code;this.publish();}
+ }
  async onBook(response){
   const marketId=/^\/markets\/(\d+)\/orderbook/.exec(response.endpoint)?.[1];
   if(!this.canWrite()||this.active()||!this.selected.includes(marketId)||!this.markets[marketId]||this.now()-Date.parse(this.markets[marketId].at)>180000)return;
@@ -252,7 +258,7 @@ export class CompetitionController {
    const entries=Object.values(this.state.intents).filter(i=>i.exchangeId===b.exchangeId&&i.action==='buy'&&i.filledQuantity>0),hash=digest(bank);
    if(bank.policy?.executionPolicy!=='responsive_v2'||!entries.length||entries.some(i=>i.attribution.modelHash!==hash))throw Error('PILOT_REFERENCE_IDENTITY_CHANGED');
   }
-  else{const ref=this.responsiveReference();if(!ref.ok){this.status='reference_blocked';this.reason=ref.code;this.publish();return;}({bank,shadow}=ref);referenceProof={...ref.proof,referenceHash:referenceInputHash(shadow,b.exchangeId)};}
+  else{const ref=this.responsiveReference();if(!ref.ok){this.entryDecision(b,'REFERENCE_BLOCKED',{detailCode:ref.code});return;}({bank,shadow}=ref);referenceProof={...ref.proof,referenceHash:referenceInputHash(shadow,b.exchangeId)};}
   const bankHash=digest(bank);
   const ask=micros(b.asks[0].price),bid=micros(b.bids[0].price);let action,limit,quantity,reason;
   if(owned){
@@ -263,21 +269,22 @@ export class CompetitionController {
    if(!obligation&&bid<avg+micros(bank.policy.takeProfit))return;
    action='sell';limit=bid;quantity=owned.quantity;reason=obligation?'latched_'+obligation.reason:'take_profit';
   }else{
-   if(!this.entryWindowAdmitted(this.now())){this.status=this.reason==='ENTRY_WINDOW_NOT_STARTED'?'entry_window_not_started':'entry_window_closed';this.publish();return;}
-   const identity=bank.identities[marketId];if(!identity?.state||!identity?.office)return;
-   if(Object.values(this.state.owned).some(p=>bank.identities[p.marketId]?.state===identity.state))return;
-   if(this.account.positions.rows.some(p=>p.exchangeId===b.exchangeId&&p.quantity!==0)||this.account.orders.rows.some(o=>o.exchangeId===b.exchangeId))return;
-   const last=Object.values(this.state.intents).filter(i=>i.exchangeId===b.exchangeId&&i.status==='closed').at(-1);if(last&&this.now()-Date.parse(last.closedAt)<bank.policy.cooldownMs)return;
-   const ref=historicalReference(shadow.histories[b.exchangeId],shadow.bookHistory[b.exchangeId],b.requestStartedAt,bank.policy),signal=dipSignal(ref,Number(ask+5000n)/1e6,Number(bid-5000n)/1e6,bank.policy);if(!signal.admitted)return;
+   if(!this.entryWindowAdmitted(this.now())){this.entryDecision(b,'WINDOW_BLOCKED',{modelHash:bankHash,referenceProof,detailCode:this.reason});return;}
+   const identity=bank.identities[marketId];if(!identity?.state||!identity?.office){this.entryDecision(b,'UNKNOWN_IDENTITY',{modelHash:bankHash,referenceProof});return;}
+   if(Object.values(this.state.owned).some(p=>bank.identities[p.marketId]?.state===identity.state)){this.entryDecision(b,'STATE_CONCENTRATION',{modelHash:bankHash,referenceProof});return;}
+   if(this.account.positions.rows.some(p=>p.exchangeId===b.exchangeId&&p.quantity!==0)||this.account.orders.rows.some(o=>o.exchangeId===b.exchangeId)){this.entryDecision(b,'EXTERNAL_EXPOSURE',{modelHash:bankHash,referenceProof});return;}
+   const last=Object.values(this.state.intents).filter(i=>i.exchangeId===b.exchangeId&&i.status==='closed').at(-1);if(last&&this.now()-Date.parse(last.closedAt)<bank.policy.cooldownMs){this.entryDecision(b,'COOLDOWN',{modelHash:bankHash,referenceProof});return;}
+   const ref=historicalReference(shadow.histories[b.exchangeId],shadow.bookHistory[b.exchangeId],b.requestStartedAt,bank.policy),signal=dipSignal(ref,Number(ask+5000n)/1e6,Number(bid-5000n)/1e6,bank.policy);if(!signal.admitted){this.entryDecision(b,'SIGNAL_BLOCKED',{modelHash:bankHash,referenceProof,assessment:assessEntryGates(ref,Number(ask+5000n)/1e6,Number(bid-5000n)/1e6,bank.policy)});return;}
    const cumulative=Object.values(this.state.intents).filter(i=>i.action==='buy'&&i.attempts>0).reduce((n,i)=>n+micros(i.price)*BigInt(i.quantity),0n);
    action='buy';limit=ask;quantity=Number((micros(this.activation.maxCumulativeBuyCost)-cumulative)/limit);reason='historical_discount';
   }
   const available=(action==='buy'?b.asks:b.bids).filter(x=>micros(x.price)===limit).reduce((n,x)=>n+x.quantity,0);
   quantity=Math.min(quantity,Number(micros(this.activation.maxOrderCost)/limit),Math.floor(available*this.activation.depthFractionBps/10000));
-  if(!Number.isSafeInteger(quantity)||quantity<1)return;
+  if(!Number.isSafeInteger(quantity)||quantity<1){if(action==='buy')this.entryDecision(b,'ZERO_EXECUTABLE_SIZE',{modelHash:bankHash,referenceProof});return;}
   const spec={intentId:'intent-'+randomUUID(),idempotencyKey:randomUUID(),marketId,exchangeId:b.exchangeId,side:'yes',action,quantity,price:formatMicros(limit),expirationDate:new Date(this.now()+30000).toISOString(),attribution:{runId:this.activation.runId,strategyId:'historical-dip-responsive-v2',modelHash:bankHash,signalId:b.versionKey,reason}};
   const snapshot=this.snapshot({tournamentId:TID,marketId,exchangeId:b.exchangeId,at:b.receivedAt,requestStartedAt:b.requestStartedAt,bids:b.bids,asks:b.asks}),r=prepareIntent(this.state,spec,snapshot,this.now());
-  if(!r.ok){this.reason=r.code;this.publish();return;}
+  if(!r.ok){if(action==='buy')this.entryDecision(b,'PREPARE_REJECTED',{modelHash:bankHash,referenceProof,detailCode:r.code});else{this.reason=r.code;this.publish();}return;}
+  if(action==='buy')this.entryDecision(b,'INTENT_READY',{modelHash:bankHash,referenceProof});
   this.ledger.prepareIntent({method:'POST',path:'/orders',intentId:spec.intentId,idempotencyKey:spec.idempotencyKey,body:r.intent.body,bodyJson:r.intent.bodyJson,payloadHash:r.intent.payloadHash,attribution:{ownerId:'Codex',runId:this.activation.runId,strategyId:spec.attribution.strategyId,modelHash:bankHash,marketId,exchangeId:b.exchangeId}});
   this.commit(r,{type:'intent_prepared',intentId:spec.intentId,reason,referenceProof});await this.submit(r.intent,snapshot,false,referenceProof);
  }
@@ -285,7 +292,7 @@ export class CompetitionController {
   const intents=Object.values(this.state.intents),fills=intents.flatMap(i=>i.reconciledFills.map(f=>({...f,action:i.action,marketId:i.marketId,exchangeId:i.exchangeId,orderId:i.orderId})));let cashFlow=0n;
   for(const f of fills)cashFlow+=(f.action==='sell'?1n:-1n)*micros(f.price)*BigInt(f.quantity);
   const cost=Object.values(this.state.owned).reduce((n,p)=>n+micros(p.cost),0n),realized=cashFlow+cost;
-  atomicJson(path.join(this.runtimeDir,'competition-stats.json'),{mode:'official_quant_execution',owner:'Codex',runId:this.activation.runId,updatedAt:new Date(this.now()).toISOString(),status:this.status,reason:this.reason,readiness:this.readiness,limits:{maxOrderCost:this.activation.maxOrderCost,maxAggregateCost:this.activation.maxAggregateCost,maxCumulativeBuyCost:this.activation.maxCumulativeBuyCost,maxManagedMarkets:3,limitExpiryMs:30000},ordersSubmitted:intents.filter(i=>i.orderId).length,dispatchAttempts:intents.reduce((n,i)=>n+i.attempts,0),unconfirmedIntents:intents.filter(i=>i.attempts>0&&!i.orderId&&i.status!=='closed').length,openIntent:this.active()?{intentId:this.active().intentId,status:this.active().status,orderId:this.active().orderId}:null,positions:this.state.owned,exitObligations:this.state.control.exits,cancellations:this.state.control.cancellations,fills,realizedPnl:(realized<0n?'-':'')+formatMicros(realized<0n?-realized:realized),addedFees:'0.000000',profitabilityEstablished:false});
+  atomicJson(path.join(this.runtimeDir,'competition-stats.json'),{mode:'official_quant_execution',owner:'Codex',runId:this.activation.runId,updatedAt:new Date(this.now()).toISOString(),status:this.status,reason:this.reason,readiness:this.readiness,limits:{maxOrderCost:this.activation.maxOrderCost,maxAggregateCost:this.activation.maxAggregateCost,maxCumulativeBuyCost:this.activation.maxCumulativeBuyCost,maxManagedMarkets:3,limitExpiryMs:30000},ordersSubmitted:intents.filter(i=>i.orderId).length,dispatchAttempts:intents.reduce((n,i)=>n+i.attempts,0),unconfirmedIntents:intents.filter(i=>i.attempts>0&&!i.orderId&&i.status!=='closed').length,openIntent:this.active()?{intentId:this.active().intentId,status:this.active().status,orderId:this.active().orderId}:null,positions:this.state.owned,exitObligations:this.state.control.exits,cancellations:this.state.control.cancellations,fills,realizedPnl:(realized<0n?'-':'')+formatMicros(realized<0n?-realized:realized),addedFees:'0.000000',entryDecisions:this.entryAudit?.status()||null,profitabilityEstablished:false});
  }
  failure(error){const transient=[429,500,502,503,504].includes(error?.status)||error?.code==='REQUEST_UNCONFIRMED';this.halted=!transient;this.status=transient?'reconciliation_retry':'blocked';this.reason=typeof error?.code==='string'?error.code:'EXECUTION_RECONCILIATION_UNAVAILABLE';this.publish();}
  close(){this.ledger.close();}

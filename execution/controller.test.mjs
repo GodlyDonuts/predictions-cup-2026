@@ -412,3 +412,6 @@ test('owned exit policy remains pinned to the filled entry bank even without wor
   assert.equal(f.server.posts.length, 2); assert.equal(f.server.posts[1].body.action, 'sell');
   const sale = f.controller.active(); assert.equal(sale.attribution.modelHash, digest(bank));
 });
+
+test('selected rejected signal is durably source-linked with failed gates and no intent',async t=>{const f=fixture(t,{noSignal:true});await f.cycle();const rows=fs.readFileSync(path.join(f.dir,'competition/decisions.jsonl'),'utf8').trim().split('\n').map(JSON.parse);const d=rows.at(-1).event.decision;assert.equal(d.code,'SIGNAL_BLOCKED');assert.equal(d.marketId,'377');assert.equal(d.referenceProof.sourceHash,'a'.repeat(64));assert(d.assessment.failed.includes('minimumDiscount'));assert.equal(f.server.posts.length,0);assert.equal(f.controller.entryAudit.status().counts.SIGNAL_BLOCKED,1);});
+test('audit recording failure before an eligible intent cannot submit or prepare an order',async t=>{const f=fixture(t);await f.before();f.controller.entryAudit.record=()=>{throw Error('Injected audit recording failure');};await assert.rejects(f.controller.onBook(f.book()),/audit recording failure/);assert.equal(f.server.posts.length,0);assert.equal(Object.keys(f.controller.state.intents).length,0);});
