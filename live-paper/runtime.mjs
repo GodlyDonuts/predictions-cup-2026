@@ -5,10 +5,16 @@ import {retryAfterMs} from '../feed/runtime.mjs';
 
 export function exclusionSet(positions,orders){
   if(!Array.isArray(positions)||!Array.isArray(orders))throw Error('Incomplete account reconciliation');
-  const ids=new Set();for(const row of [...positions,...orders]){
-    if(!row||typeof row!=='object'||typeof row.exchangeId!=='string'||!/^([1-9]\d*)$/.test(row.exchangeId)||!Number.isSafeInteger(Number(row.exchangeId))||!Number.isSafeInteger(row.quantity)||row.quantity<0)throw Error('Unmappable account exposure');
-    if(row.quantity>0)ids.add(row.exchangeId);
-  }return ids;
+  const ids=new Set();
+  const validate=row=>{
+    if(!row||typeof row!=='object'||Array.isArray(row)||typeof row.exchangeId!=='string'||!/^([1-9]\d*)$/.test(row.exchangeId)||!Number.isSafeInteger(Number(row.exchangeId))||!Number.isSafeInteger(row.quantity))throw Error('Unmappable account exposure');
+  };
+  // Tournament positions are signed: YES is positive, NO is negative.
+  // Either side owns this exchange's depth; a valid zero position is flat.
+  for(const row of positions){validate(row);if(row.quantity!==0)ids.add(row.exchangeId);}
+  // Order quantity is unsigned and strictly positive, irrespective of side.
+  for(const row of orders){validate(row);if(row.quantity<=0)throw Error('Unmappable account exposure');ids.add(row.exchangeId);}
+  return ids;
 }
 
 export function atomicJson(file,value){const tmp=file+'.tmp';fs.writeFileSync(tmp,JSON.stringify(value,null,2),{mode:0o600});fs.renameSync(tmp,file);}
