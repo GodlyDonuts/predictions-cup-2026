@@ -5,6 +5,7 @@ import {digest,initialState,normalizeBook,stepForecast,report,invalidate,assertS
 import {atomicJson,lock} from './runtime.mjs';
 import {features,predict} from './ml-bank.mjs';
 import {amount,fee,TICK} from '../paper/fixed.mjs';
+import {scopedSnapshots} from './depth-scope.mjs';
 
 export function verifySource(raw){
  if(!raw||!raw.endsWith('\n'))return null;
@@ -29,7 +30,7 @@ export function advanceShadow(input,records,bank){
   if(Date.parse(state.captureThrough)<=Date.parse(bank.trainingCaptureThrough))continue;
   if(e.type==='account_read_outage'){for(const wallet of Object.values(state.wallets))invalidate(wallet,null,state.captureThrough,'account_outage');state.histories={};continue;}
   if(e.type!=='cycle')continue;
-  for(const snap of e.sourceSnapshots){
+  for(const snap of scopedSnapshots(e,c)){
    if(snap.skipped){for(const wallet of Object.values(state.wallets))invalidate(wallet,snap.marketId,snap.at||state.captureThrough,snap.skipped);state.histories={};continue;}
    const match=/^\/markets\/(\d+)\/orderbook\?/.exec(snap.endpoint||'');if(!match||!c.marketIds.includes(match[1])||Date.parse(snap.requestStartedAt)<=Date.parse(bank.trainingCaptureThrough))continue;
    let b;try{b=normalizeBook(snap.data,match[1],c.tournamentId,snap.receivedAt,snap.requestStartedAt,c.maxDataAgeMs,new Set(e.accountExclusions));}catch{state.histories={};for(const w of Object.values(state.wallets))invalidate(w,match[1],snap.receivedAt,'invalid_book');continue;}

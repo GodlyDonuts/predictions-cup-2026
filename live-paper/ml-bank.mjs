@@ -4,6 +4,7 @@ import {fileURLToPath} from 'node:url';
 import {replayJournal} from './replay.mjs';
 import {initialState,observe,normalizeBook,invalidate,digest} from './model.mjs';
 import {amount,fee,TICK} from '../paper/fixed.mjs';
+import {scopedSnapshots} from './depth-scope.mjs';
 
 const num=x=>Number(amount(x))/1e6;
 export function features(book,history){
@@ -18,7 +19,7 @@ export function captureRows(raw,c){
   const r=JSON.parse(line),e=r.event;
   if(e.type==='account_read_outage'){segment++;for(const id of Object.keys(histories))histories[id]=[];if(s)invalidate(s,null,e.clockAt||r.at,e.reason);continue;}
   if(e.type!=='cycle')continue;
-  for(const snap of e.sourceSnapshots){
+  for(const snap of scopedSnapshots(e,c)){
    if(snap.skipped){segment++;for(const id of Object.keys(histories))histories[id]=[];if(s)invalidate(s,snap.marketId,snap.at||r.at,snap.skipped);continue;}
    const m=/^\/markets\/(\d+)\/orderbook\?/.exec(snap.endpoint||'');if(!m||!c.marketIds.includes(m[1]))continue;
    s??=initialState(c,'features',snap.requestStartedAt);let b;

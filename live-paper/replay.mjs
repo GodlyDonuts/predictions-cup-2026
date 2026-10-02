@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import {fileURLToPath} from 'node:url';
 import {createHash} from 'node:crypto';
 import {initialState,normalizeBook,observe,sampleEquity,report,validateConfig,invalidate} from './model.mjs';
+import {scopedSnapshots} from './depth-scope.mjs';
 
 export function replayJournal(raw,c){
   validateConfig(c);if(!raw||!raw.endsWith('\n'))throw Error('Incomplete capture journal');
@@ -13,7 +14,7 @@ export function replayJournal(raw,c){
     if(!Number.isFinite(Date.parse(eventClock))||(clock&&Date.parse(eventClock)<Date.parse(clock)))throw Error('Journal clock rollback');clock=eventClock;
     if(body.event.type!=='cycle'){if(state&&body.event.type==='account_read_outage')invalidate(state,null,clock,body.event.reason);continue;}
     const excluded=new Set(body.event.accountExclusions);let cycleAt=null;
-    for(const e of body.event.sourceSnapshots){
+    for(const e of scopedSnapshots(body.event,c)){
       if(e.skipped){if(state){const at=e.at||body.state?.skips?.[e.marketId]?.at||clock;state.skips[e.marketId]={at,reason:e.skipped};invalidate(state,e.marketId,at,e.skipped);}continue;}
       if(!e.endpoint)continue;
       const match=/^\/markets\/(\d+)\/orderbook\?/.exec(e.endpoint);if(!match||!c.marketIds.includes(match[1]))continue;
