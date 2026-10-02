@@ -6,6 +6,7 @@ import {instantNs} from '../feed/contract.mjs';
 import {atomicJson,lock} from '../live-paper/runtime.mjs';
 import {validateUniverse} from '../live-paper/breadth.mjs';
 import {measureExecutionPerformance} from './performance.mjs';
+import {createBookPublicationState,applyBookPublication} from '../live-paper/book-publication.mjs';
 
 const time=x=>typeof x==='string'&&Number.isFinite(Date.parse(x));
 // Projection only. It cannot read credentials or dispatch an account request.
@@ -65,25 +66,42 @@ export function openPerformanceTail(file,capture){
  };
 }
 
+// Once the immediate stream is present it owns the entire book projection.
+// Missing, invalidated, or closed-session books must never fall back to older
+// cycle snapshots. Original journal identity remains independently verified.
+export function createPerformanceBookSource(universe,legacy){
+ let state=null;
+ return {
+  usePublication(){state??=createBookPublicationState(universe);},
+  consume(record){if(!state)throw Error('PUBLICATION_NOT_ATTACHED');state=applyBookPublication(state,record);},
+  status(){return state?{books:Object.values(state.books),bookSource:'immediate_publication',publicationSequence:state.sequence,publicationHash:state.hash,publicationAt:state.lastAt,publicationSessionId:state.sessionId,publicationClosed:state.closed}:{books:legacy.status().books,bookSource:'cycle_journal',publicationSequence:null,publicationHash:null,publicationAt:null,publicationSessionId:null,publicationClosed:null};},
+ };
+}
+
 async function main(){
  const workspace=path.dirname(path.dirname(fileURLToPath(import.meta.url))),runtime=process.env.SIG_PAPER_DIR||path.join(process.env.LOCALAPPDATA,'SigTradingCup','paper-runtime');
  const stop=()=>[path.join(workspace,'STOP'),path.join(runtime,'STOP'),path.join(runtime,'PERFORMANCE_STOP')].some(p=>fs.existsSync(p));
  if(stop())throw Error('STOP_EXISTS');
- const release=lock(path.join(runtime,'performance-watch.lock'));let ending=false,capture;
+ const release=lock(path.join(runtime,'performance-watch.lock'));let ending=false,capture,bookSource;
  process.on('SIGINT',()=>ending=true);process.on('SIGTERM',()=>ending=true);
  const reportFile=path.join(runtime,'performance-stats.json');
- const publish=(status,report={})=>{const source=capture?.status();atomicJson(reportFile,{...report,mode:'official_execution_performance',status,pid:process.pid,updatedAt:new Date().toISOString(),sourceSequence:source?.sourceSequence??null,sourceHash:source?.sourceHash??null,sourceAt:source?.sourceAt??null,networkRequests:0,ordersSubmitted:0});};
+ const publish=(status,report={})=>{const source=capture?.status(),{books,...publication}=bookSource?.status()||{};atomicJson(reportFile,{...report,...publication,mode:'official_execution_performance',status,pid:process.pid,updatedAt:new Date().toISOString(),sourceSequence:source?.sourceSequence??null,sourceHash:source?.sourceHash??null,sourceAt:source?.sourceAt??null,networkRequests:0,ordersSubmitted:0});};
  try{
   const config=JSON.parse(fs.readFileSync(path.join(workspace,'live-paper/config.json'))),universe=validateUniverse(JSON.parse(fs.readFileSync(path.join(workspace,'live-paper/price-universe.json'))),config.tournamentId);
   capture=createPerformanceCapture(universe);const poll=openPerformanceTail(path.join(runtime,'journal.jsonl'),capture);
+  bookSource=createPerformanceBookSource(universe,capture);let pollPublication;
+  const publicationFile=path.join(runtime,'public-books.jsonl');
   publish('initializing');
   while(!ending&&!stop()){
    while(poll()){if(ending||stop())break;}
    if(ending||stop())break;
+   if(!pollPublication&&fs.existsSync(publicationFile)){bookSource.usePublication();pollPublication=openPerformanceTail(publicationFile,bookSource);}
+   if(pollPublication)while(pollPublication()){if(ending||stop())break;}
+   if(ending||stop())break;
    try{
     const execution=JSON.parse(fs.readFileSync(path.join(runtime,'competition-stats.json'))),now=Date.now();
     if(execution.mode!=='official_quant_execution'||execution.owner!=='Codex'||execution.addedFees!=='0.000000'||!time(execution.updatedAt)||now<Date.parse(execution.updatedAt)||now-Date.parse(execution.updatedAt)>60000)throw Error('EXECUTION_SNAPSHOT_UNAVAILABLE');
-    const report=measureExecutionPerformance({tournamentId:config.tournamentId,positions:execution.positions,fills:execution.fills,books:capture.status().books,now});
+    const report=measureExecutionPerformance({tournamentId:config.tournamentId,positions:execution.positions,fills:execution.fills,books:bookSource.status().books,now});
     publish('running',{...report,runId:execution.runId,executionUpdatedAt:execution.updatedAt,executionHash:digest(execution),executionLedgerHash:digest({runId:execution.runId,positions:execution.positions,fills:execution.fills})});
    }catch{publish('unavailable',{reason:'EXECUTION_EVIDENCE_UNAVAILABLE'});}
    if(process.argv.includes('--once'))break;

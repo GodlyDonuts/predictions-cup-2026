@@ -6,7 +6,8 @@ import path from 'node:path';
 import {spawnSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
 import {digest} from '../live-paper/model.mjs';
-import {createPerformanceCapture,openPerformanceTail} from './performance-watch.mjs';
+import {createPerformanceCapture,openPerformanceTail,createPerformanceBookSource} from './performance-watch.mjs';
+import {createBookPublication} from '../live-paper/book-publication.mjs';
 
 const tournamentId='bda92870-621e-47b0-bc3c-3602c5c26f55';
 const base=Date.parse('2026-10-02T12:00:00.000Z'),at=ms=>new Date(base+ms).toISOString();
@@ -31,6 +32,39 @@ function temporary(t){
   t.after(()=>{const target=path.resolve(dir);if(path.dirname(target)!==path.resolve(os.tmpdir())||!path.basename(target).startsWith('sig-performance-test-'))throw Error('Unsafe test cleanup');fs.rmSync(target,{recursive:true,force:true});});
   return dir;
 }
+
+test('immediate stream replaces cycle books as a whole and never resurrects invalidated or closed-session depth',t=>{
+ const f=fixture();f.cycle([snapshot('1',1000),snapshot('2',1200)],2000);
+ const source=createPerformanceBookSource(universe,f.capture);
+ assert.equal(source.status().bookSource,'cycle_journal');assert.equal(source.status().books.length,2);
+ const file=path.join(temporary(t),'public-books.jsonl');let clock=base;
+ const writer=createBookPublication({file,universe,sessionId:'first',now:()=>clock});
+ source.usePublication();assert.equal(source.status().books.length,0);
+ const poll=openPerformanceTail(file,source);poll();assert.equal(source.status().publicationClosed,false);
+ clock=base+3000;assert.equal(writer.publishBook({marketId:'1',response:snapshot('1',3000,2)}),true);poll();
+ assert.deepEqual(source.status().books.map(x=>x.exchangeId),['101']);assert.equal(source.status().books[0].receivedAt,at(3000));
+ clock=base+3100;writer.invalidate({marketId:'1',reason:'BOOK_READ_FAILED'});poll();assert.equal(source.status().books.length,0);
+ f.cycle([snapshot('1',3200,3),snapshot('2',3300,2)],3500);assert.equal(source.status().books.length,0);
+ clock=base+4000;writer.publishBook({marketId:'2',response:snapshot('2',4000,3)});poll();assert.equal(source.status().books.length,1);
+ clock=base+4100;writer.invalidate({reason:'ACCOUNT_OUTAGE'});poll();assert.equal(source.status().books.length,0);
+ clock=base+5000;writer.publishBook({marketId:'1',response:snapshot('1',5000,4)});poll();
+ clock=base+5100;writer.close('STOP');poll();assert.equal(source.status().publicationClosed,true);assert.equal(source.status().books.length,0);
+ clock=base+5200;const next=createBookPublication({file,universe,sessionId:'second',now:()=>clock});poll();
+ assert.equal(source.status().publicationSessionId,'second');assert.equal(source.status().publicationClosed,false);assert.equal(source.status().books.length,0);
+ next.close('STOP');
+});
+
+test('immediate projection processes a new receipt before any later cycle and fails on damaged append',t=>{
+ const f=fixture();f.cycle([snapshot('1',1000)],2000);
+ const source=createPerformanceBookSource(universe,f.capture),file=path.join(temporary(t),'public-books.jsonl');let clock=base+2100;
+ const writer=createBookPublication({file,universe,sessionId:'fast',now:()=>clock});source.usePublication();const poll=openPerformanceTail(file,source);poll();
+ clock=base+2300;writer.publishBook({marketId:'1',response:snapshot('1',2300,2)});poll();
+ assert.equal(f.capture.status().sourceAt,at(2000));assert.equal(source.status().books[0].receivedAt,at(2300));
+ const expected=structuredClone(source.status());writer.close('STOP');poll();
+ const replay=createPerformanceBookSource(universe,f.capture);replay.usePublication();const tail=openPerformanceTail(file,replay);while(tail()){}
+ assert.deepEqual(replay.status(),source.status());assert.equal(expected.publicationSequence,2);
+ fs.appendFileSync(file,JSON.stringify({sequence:4,hash:'bad'})+'\n');assert.throws(tail);assert.equal(replay.status().publicationClosed,true);
+});
 
 test('source hash, sequence and predecessor must all match before projection advances',()=>{
   const f=fixture(),first=f.cycle([snapshot('1',1000)],2000),before=structuredClone(f.capture.status());

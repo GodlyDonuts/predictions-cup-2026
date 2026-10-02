@@ -20,6 +20,7 @@ import {basketCandidates} from './basket-inputs.mjs';
 import {planBasketBooks} from './basket-book-plan.mjs';
 import {basketCodeIdentity} from './basket-watch.mjs';
 import {createBasketRelationshipReader} from './basket-relations.mjs';
+import {createBookPublication} from './book-publication.mjs';
 import {CompetitionController} from '../execution/controller.mjs';
 import {loadNetworkBudget,networkInterval} from './network-budget.mjs';
 import {createClient} from '@supabase/supabase-js';
@@ -41,7 +42,7 @@ process.on('exit',cleanup);
 const control=new AbortController();let stopping=false;
 const stop=()=>{stopping=true;control.abort();};process.on('SIGINT',stop);process.on('SIGTERM',stop);
 const stopWatch=setInterval(()=>{if(fs.existsSync(stopFile)||fs.existsSync(paperStop)||fs.existsSync(collectorStop))stop();},200);
-let journal,state,api,server,heartbeat,competition,realtime,realtimeCapture,basketRelationships;
+let journal,state,api,server,heartbeat,competition,realtime,realtimeCapture,basketRelationships,bookPublication;
 let universe,coverage,depthPlan,dipBank,scaleBank,responsiveBank,scheduler,schedulerScope;const recentReadTimings=[];
 const schedulerFile=path.join(runtimeDir,'book-scheduler.json');
 function recordAttempt(kind,marketId){scheduler=recordSchedulerAttempts(scheduler,schedulerScope,{[kind+'MarketIds']:[marketId],attemptedAt:new Date().toISOString()});atomicJson(schedulerFile,scheduler);}
@@ -84,6 +85,7 @@ async function collectAccountExtra(){
 let runtime={status:'starting',pid:process.pid,runtimeDir,readRequests:0,errors:[],cycles:0,lastCycleAt:null,dashboard:'http://127.0.0.1:'+c.port};
 function persistStatus(){const r=report(state,c);if(realtime)atomicJson(path.join(runtimeDir,'realtime-stats.json'),{...realtime.status(),pid:process.pid});atomicJson(path.join(runtimeDir,'stats.json'),{...r,runtime:{...runtime,readRequests:api?.requests||0}});return r;}
 function commit(event){try{journal.commit(state,event);}catch{const e=Error('Paper journal recording failed');e.durableRecordingFailed=true;throw e;}}
+function publishBookEvent(method,value){try{return bookPublication?.[method](value);}catch{const e=Error('Public book recording failed');e.durableRecordingFailed=true;e.fatal=true;throw e;}}
 async function collectHistory(limit=2){
  const inputs=schedulingInputs(),bookPlan=planBookReads(scheduler,schedulerScope,inputs);
  const plan=planHistoryReads(scheduler,schedulerScope,{...inputs,candidateMarketIds:bookPlan.entryMarketIds},{budget:limit});
@@ -102,6 +104,7 @@ try{
   const syncFile=path.join(runtimeDir,'official-sync.json');officialSync=fs.existsSync(syncFile)&&JSON.parse(fs.readFileSync(syncFile)).enabled===true;
   if(officialSync){const file=path.join(runtimeDir,'official-account.json');if(fs.existsSync(file))accountCache=JSON.parse(fs.readFileSync(file));accountCache.errors??={};}
   universe=validateUniverse(JSON.parse(fs.readFileSync(path.join(root,'price-universe.json'),'utf8')),c.tournamentId);
+  bookPublication=createBookPublication({file:path.join(runtimeDir,'public-books.jsonl'),universe,sessionId:randomUUID(),now:Date.now,canOperate:()=>!stopping});
   depthPlan=validateDepthPlan(JSON.parse(fs.readFileSync(path.join(root,'depth-plan.json'),'utf8')),c,universe);
   const dipFile=path.join(runtimeDir,'dip-bank.json');if(fs.existsSync(dipFile)){dipBank=JSON.parse(fs.readFileSync(dipFile));validateDipPolicy(dipBank.policy);if(dipBank.universe.hash!==universe.hash||dipBank.config.feeBps!==0||dipBank.policy.historyReadsPerCycle!==2||dipBank.policy.comparisonBooksPerCycle!==2||dipBank.policy.dynamicBooksPerCycle!==2)throw Error('Invalid dip collection plan');runtime.collectionPlan={mode:'diversified_dip',historyReads:officialSync?1:2,fullBookBudget:4,managedCapacity:3,bulkReads:1,accountReads:'positions plus paginated orders',readIntervalMs:c.readIntervalMs};}
   const coverageFile=path.join(runtimeDir,'price-coverage.json');
@@ -153,6 +156,7 @@ try{
   heartbeat=setInterval(()=>{try{persistStatus();}catch{runtime.status='failed';stop();}},3000);
   await connectTournament(api,c,{stopped:()=>stopping,now:Date.now,pause:pauseUntilNextRead,onRetry:async({attempts,delay,reason})=>{
     const at=new Date().toISOString();invalidate(state,null,at,'startup_connection_unavailable');
+    publishBookEvent('invalidate',{marketId:null,reason:'ACCOUNT_OUTAGE'});
     if(journal.last)commit({type:'account_read_outage',clockAt:at,reason,phase:'startup'});
     api.next=Math.max(api.next,Date.now()+delay);api.onAdmission(Math.max(api.next,api.cooldown));
     runtime.status='connecting_retry';runtime.startupRetry={attempts,delay,reason,at};persistStatus();
@@ -187,17 +191,18 @@ try{
       const supplementalDepth=[];
       for(const spec of planned.reads){
         if(stopping||api.cooldown>Date.now())break;
-        const marketId=spec.marketId,target=spec.path==='sourceSnapshots'?events:supplementalDepth;
+        const marketId=spec.marketId,target=spec.path==='sourceSnapshots'?events:supplementalDepth;let receivedBook=false;
         recordAttempt('book',marketId);
         try{
           const r=await api.request('/markets/'+marketId+'/orderbook?tournamentId='+c.tournamentId+'&depth=20');
           target.push(r);
+          receivedBook=true;publishBookEvent('publishBook',{marketId,response:r});
           if(competition)try{await competition.onBook(r);}catch(e){competition.failure(e);}
           const b=normalizeBook(r.data,marketId,c.tournamentId,r.receivedAt,r.requestStartedAt,c.maxDataAgeMs,excluded,spec.path==='sourceSnapshots'?'event_age_v1':dipBank?'authoritative_receipt_v1':'event_age_v1');
           if(b.exchangeId!==universe.exchanges.find(x=>x.marketId===marketId).exchangeId)throw Error('Book exchange identity mismatch');
           if(spec.path==='sourceSnapshots'){try{state=observe(state,b,c);}catch(e){e.fatal=true;throw e;}}
           successful++;
-        }catch(e){if(stopping)break;if(e.fatal||api.manualReview||e.status===401||e.status===403)throw e;const reason=e.status?'http_'+e.status:e.message,at=new Date().toISOString();if(spec.path==='sourceSnapshots'){state.skips[marketId]={at,reason};invalidate(state,marketId,at,reason);}target.push({marketId,skipped:reason,at});if(e.status===429||e.status===503)break;}
+        }catch(e){if(e.durableRecordingFailed)throw e;if(stopping)break;if(!receivedBook)publishBookEvent('invalidate',{marketId,reason:'BOOK_READ_FAILED'});if(e.fatal||api.manualReview||e.status===401||e.status===403)throw e;const reason=e.status?'http_'+e.status:e.message,at=new Date().toISOString();if(spec.path==='sourceSnapshots'){state.skips[marketId]={at,reason};invalidate(state,marketId,at,reason);}target.push({marketId,skipped:reason,at});if(e.status===429||e.status===503)break;}
       }
       runtime.scheduling={managedMarketIds:planned.managedMarketIds,entryMarketIds:planned.entryMarketIds,overCapacity:planned.overCapacity,reads:planned.reads};
       runtime.supplementalDepth={marketIds:planned.reads.filter(x=>x.path==='supplementalDepth').map(x=>x.marketId),observations:supplementalDepth.filter(x=>x.endpoint).length,skips:supplementalDepth.filter(x=>x.skipped).map(x=>({marketId:x.marketId,reason:x.skipped}))};
@@ -216,9 +221,9 @@ try{
       if(realtime&&!stopping&&api.cooldown<=Date.now())await realtime.service();
       runtime.cycles++;runtime.lastCycleAt=at;runtime.status=stopping?'stopping':successful?'running':'degraded';persistStatus();
       console.log(JSON.stringify({at,event:'paper_cycle',cycle:runtime.cycles,observations:state.observations,fills:Object.fromEntries(Object.entries(state.strategies).map(([k,s])=>[k,s.fills.length])),competitionOrders:competition?Object.values(competition.state.intents).filter(i=>Number.isSafeInteger(i.orderId)&&i.orderId>0).length:0}));
-    }catch(e){if(e.durableRecordingFailed)throw e;if(stopping){if(!cycleCommitted)state=checkpoint;break;}const at=new Date().toISOString();invalidate(state,null,at,'account_reconciliation_unavailable');runtime.errors.push({at,reason:e.status?'http_'+e.status:e.message});runtime.errors=runtime.errors.slice(-20);runtime.status=e.recoverable?'degraded':'failed';persistStatus();if(e.recoverable){commit({type:'account_read_outage',clockAt:at,reason:e.status?'http_'+e.status:'connection_unavailable'});await pauseUntilNextRead(Math.max(10000,api.cooldown-Date.now()));continue;}throw Error('Paper runner stopped: '+runtime.errors.at(-1).reason);}
+    }catch(e){if(e.durableRecordingFailed)throw e;if(stopping){if(!cycleCommitted)state=checkpoint;break;}const at=new Date().toISOString();invalidate(state,null,at,'account_reconciliation_unavailable');publishBookEvent('invalidate',{marketId:null,reason:'ACCOUNT_OUTAGE'});runtime.errors.push({at,reason:e.status?'http_'+e.status:e.message});runtime.errors=runtime.errors.slice(-20);runtime.status=e.recoverable?'degraded':'failed';persistStatus();if(e.recoverable){commit({type:'account_read_outage',clockAt:at,reason:e.status?'http_'+e.status:'connection_unavailable'});await pauseUntilNextRead(Math.max(10000,api.cooldown-Date.now()));continue;}throw Error('Paper runner stopped: '+runtime.errors.at(-1).reason);}
     if(!stopping&&runtime.cycles<maxCycles)await pauseUntilNextRead(Math.max(1000,c.cycleIntervalMs-(Date.now()-cycleStart)));
   }
   runtime.status='stopped';commit({type:'stopped'});persistStatus();
 }catch(e){const stopped=stopping&&!e.durableRecordingFailed;if(state){runtime.status=stopped?'stopped':'failed';runtime.errors.push({at:new Date().toISOString(),reason:stopped?'stop_requested':e.message});try{persistStatus();}catch{}}console.error(stopped?'Paper runner stopped':'Paper runner failed; see local stats');process.exitCode=stopped?0:1;
-}finally{clearInterval(stopWatch);clearInterval(heartbeat);try{await realtime?.stop();}finally{realtimeCapture?.close();competition?.close();api?.close();server?.close();cleanup();}}
+}finally{clearInterval(stopWatch);clearInterval(heartbeat);try{publishBookEvent('close',stopping||runtime.status==='stopped'?'STOP':'COLLECTOR_FAILURE');}finally{try{await realtime?.stop();}finally{realtimeCapture?.close();competition?.close();api?.close();server?.close();cleanup();}}}

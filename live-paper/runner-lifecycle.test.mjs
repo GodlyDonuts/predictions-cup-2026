@@ -32,7 +32,7 @@ const source=fs.readFileSync(path.join(root,'runner.mjs'),'utf8');
 async function run(stopAt,{dipEnabled=false,officialSync=false,invalidBasket=false}={}){
   let startupFailures=0;
   let now=Date.parse('2026-10-02T02:00:00Z'),cycle=0,stopped=false,triggered=false;
-  const commits=[],memory=new Map(),listeners={},requests=[];
+  const commits=[],memory=new Map(),listeners={},requests=[],publications=[];
   if(dipEnabled)memory.set(path.join('/synthetic','SigTradingCup','paper-runtime','dip-bank.json'),JSON.stringify({policy:JSON.parse(fs.readFileSync(path.join(root,'dip-policy.json'))),config:{...config,feeBps:0},universe:breadth.validateUniverse(universe,config.tournamentId)}));
   if(dipEnabled){const dir=path.join('/synthetic','SigTradingCup','paper-runtime'),bank=JSON.parse(memory.get(path.join(dir,'dip-bank.json')));memory.set(path.join(dir,'dip-state.json'),JSON.stringify({bankHash:model.digest(bank),wallet:model.initialState(config,'fixture',new Date(now).toISOString()),histories:{},bookHistory:{}}));}
   if(officialSync)memory.set(path.join('/synthetic','SigTradingCup','paper-runtime','official-sync.json'),JSON.stringify({enabled:true}));
@@ -97,12 +97,27 @@ async function run(stopAt,{dipEnabled=false,officialSync=false,invalidBasket=fal
   };
   const bindings={...model,...breadth,...depth,...scheduler,collectionInputs,shockCollectionRisk,networkInterval,loadNetworkBudget:file=>mockfs.existsSync(file)?validateNetworkBudget(JSON.parse(mockfs.readFileSync(file))):null,connectTournament,validateTiming,timingSummary,historyEndpoint,normalizeHistory,validateDipPolicy,workerHealth,baselineView,accountPositions,accountOrders,accountFills,accountPnl,accountView,fs:mockfs,path,http:{createServer:()=>({once(){},listen(p,h,f){f();},close(){}})},randomUUID,fileURLToPath,
     loadKey:()=> 'SYNTHETIC',Journal,ReadClient,lock:()=>()=>{},atomicJson,exclusionSet,basketCandidates,planBasketBooks,basketCodeIdentity,createBasketRelationshipReader,
+    createBookPublication({canOperate}){return {publishBook({marketId,response}){if(stopAt==='public-book-recording-failure'&&cycle===2)throw Error('Synthetic public journal failure');if(canOperate())publications.push({kind:'book',marketId,receivedAt:response.receivedAt,at:iso(),requestCount:requests.length});},invalidate({marketId,reason}){publications.push({kind:'invalidation',marketId,reason,at:iso()});},close(reason){publications.push({kind:'closed',reason,at:iso()});}};},
     sampleEquity(s,c,at){if(stopAt==='sampling-failure'&&cycle===2){stop();throw Error('Synthetic sample failure');}return model.sampleEquity(s,c,at);},
     process,console:{log(){},error(){}},AbortController,structuredClone,Date:Clock,setInterval:()=>1,clearInterval(){},moduleUrl:new URL('./runner.mjs',import.meta.url).href};
   const body=source.replace(/^import .*;\r?\n/gm,'').replaceAll('import.meta.url','moduleUrl');
   await vm.runInNewContext('(async()=>{'+body+'\n})()',bindings);
-  return {commits,process,memory,requests,triggered};
+  return {commits,process,memory,requests,publications,triggered};
 }
+
+test('public depth is published at receipt before the later cycle journal, without extra reads',async()=>{
+ const r=await run(null),books=r.publications.filter(p=>p.kind==='book'),bookReads=r.requests.filter(p=>p.includes('/orderbook?'));
+ assert.equal(r.process.exitCode,0);assert.equal(books.length,bookReads.length);assert.ok(books.length>0);
+ for(const b of books){assert.equal(b.at,b.receivedAt);assert.equal(r.requests[b.requestCount-1],'/markets/'+b.marketId+'/orderbook?tournamentId='+config.tournamentId+'&depth=20');}
+ const cycles=r.commits.filter(c=>c.event.type==='cycle');assert.ok(books.some(b=>Date.parse(b.at)<Date.parse(cycles[0].at)));
+ assert.equal(r.publications.at(-1).kind,'closed');assert.equal(r.publications.at(-1).reason,'STOP');
+});
+test('public depth source records outage and STOP without retaining a live session',async()=>{
+ const r=await run('outage-wait');assert.equal(r.process.exitCode,0);assert.ok(r.publications.some(p=>p.kind==='invalidation'&&p.marketId===null&&p.reason==='ACCOUNT_OUTAGE'));assert.equal(r.publications.at(-1).kind,'closed');assert.equal(r.publications.at(-1).reason,'STOP');
+});
+test('public depth durability failure remains fatal and always closes publication',async()=>{
+ const r=await run('public-book-recording-failure');assert.equal(r.process.exitCode,1);assert.equal(r.publications.at(-1).kind,'closed');assert.equal(r.publications.at(-1).reason,'COLLECTOR_FAILURE');assert.equal(r.commits.filter(c=>c.event.type==='cycle').length,1);
+});
 
 for(const stage of ['positions','orders',...config.marketIds.map(id=>'book-'+id),'book-342','book-376','bulk-admission','bulk-response','cycle-wait','outage-wait','cycle-commit','sampling-failure','status-publication']){
   test('STOP at '+stage+' preserves replayable committed accounting',async()=>{
