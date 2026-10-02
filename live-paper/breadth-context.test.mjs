@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {updateContext,contextFeatures} from './breadth-context.mjs';
 import {captureRows} from './ml-bank.mjs';
-import {advanceShadow} from './ml-shadow.mjs';
+import {advanceShadow as productionAdvanceShadow} from './ml-shadow.mjs';
 import {digest} from './model.mjs';
 const c=JSON.parse(fs.readFileSync(new URL('./config.json',import.meta.url))),zero=Date.parse('2026-10-02T01:00:00Z'),at=n=>new Date(zero+n*1000).toISOString();
 const bulk=n=>({tournamentId:c.tournamentId,receivedAt:at(n),executable:false,depthAvailable:false,quotes:[{exchangeId:'1066',marketId:'377',bestBid:.5,bestAsk:.51}],missingIds:[]});
@@ -22,3 +22,6 @@ test('training and shadow use previous-cycle breadth only; future bulk perturbat
  const changed=structuredClone(records);changed.at(-1).event.bulkPrices.quotes[0].bestBid=.8;changed.at(-1).event.bulkPrices.quotes[0].bestAsk=.9;let hash='';for(const r of changed){r.previous=hash;const {hash:old,...body}=r;r.hash=digest(body);hash=r.hash;}
  assert.deepEqual(captureRows(changed.map(r=>JSON.stringify(r)).join('\n')+'\n',c,{breadthContext:true}).rows.map(r=>r.x),rows.map(r=>r.x));
 });
+
+// Explicitly unbound synthetic fixtures; production never passes this option.
+const advanceShadow=(...args)=>productionAdvanceShadow(...args,{allowUnboundFixture:true});

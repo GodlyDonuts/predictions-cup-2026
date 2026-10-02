@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import {fitRidge,fitStumps,predict,features,trainBank} from './ml-bank.mjs';
 import {createHash} from 'node:crypto';
 import {initialState,stepForecast,assertState,report,digest} from './model.mjs';
-import {advanceShadow,verifySource,combineReports} from './ml-shadow.mjs';
+import {advanceShadow as productionAdvanceShadow,verifySource,combineReports} from './ml-shadow.mjs';
 const c=JSON.parse(fs.readFileSync(new URL('./config.json',import.meta.url)));
 const start=Date.parse('2026-10-01T23:00:00Z'),at=n=>new Date(start+n*1000).toISOString();
 function book(n){return {marketId:'377',exchangeId:'9',instrument:'9:YES',sequence:String(n),sourceAt:at(n),receivedAt:at(n),requestStartedAt:at(n),versionKey:n+':'+at(n),bids:[{price:'0.400000',quantity:10000}],asks:[{price:'0.410000',quantity:10000}]};}
@@ -62,3 +62,6 @@ test('future development observations cannot change fitted weights or training n
 });
 
 
+
+// Explicitly unbound synthetic fixtures; production never passes this option.
+const advanceShadow=(...args)=>productionAdvanceShadow(...args,{allowUnboundFixture:true});

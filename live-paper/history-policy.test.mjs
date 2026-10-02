@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {resetHistory,ISOLATED,LEGACY,historyPolicy} from './history-policy.mjs';
 import {captureRows,instrumentCoverage} from './ml-bank.mjs';
-import {advanceShadow} from './ml-shadow.mjs';
+import {advanceShadow as productionAdvanceShadow} from './ml-shadow.mjs';
 import {digest} from './model.mjs';
 const c=JSON.parse(fs.readFileSync(new URL('./config.json',import.meta.url)));
 const at=n=>new Date(Date.parse('2026-10-02T01:00:00Z')+n*30000).toISOString();
@@ -30,3 +30,6 @@ test('training window starts with fresh history and explicit instrument support 
  const a=Array.from({length:8},()=>({marketId:'377',instrument:'1066:YES'})),b=Array.from({length:4},()=>({marketId:'377',instrument:'1066:YES'}));
  assert.equal(instrumentCoverage(a,b,['377'])[0].eligible,true);assert.equal(instrumentCoverage(a,b,['354'])[0].eligible,false);assert.equal(instrumentCoverage(a.slice(0,7),b,['377'])[0].eligible,false);assert.equal(instrumentCoverage(a,[...b.slice(0,3),{marketId:'377',instrument:'999:YES'}],['377'])[0].eligible,false);
 });
+
+// Explicitly unbound synthetic fixtures; production never passes this option.
+const advanceShadow=(...args)=>productionAdvanceShadow(...args,{allowUnboundFixture:true});

@@ -23,8 +23,12 @@ export function verifySource(raw){
  Object.defineProperty(records,'prefixHashes',{value:prefixHashes});return records;
 }
 
-export function bindTrainingSource(records,bank){
- if(bank.sourceHash===undefined&&bank.sourceRecords===undefined)return null;
+export function requireSourceMetadata(bank){
+ if(!Number.isSafeInteger(bank.sourceRecords)||bank.sourceRecords<1||typeof bank.sourceHash!=='string'||!/^[a-f0-9]{64}$/.test(bank.sourceHash)||!Number.isFinite(Date.parse(bank.trainingCaptureThrough)))throw Error('Missing or invalid frozen training source metadata');
+}
+export function bindTrainingSource(records,bank,{allowUnboundFixture=false}={}){
+ if(allowUnboundFixture&&bank.sourceHash===undefined&&bank.sourceRecords===undefined)return null;
+ requireSourceMetadata(bank);
  const n=bank.sourceRecords;
  if(!Number.isSafeInteger(n)||n<1||n>records.length||typeof bank.sourceHash!=='string'||!/^[a-f0-9]{64}$/.test(bank.sourceHash))throw Error('Invalid frozen training source');
  const hash=records.prefixHashes?.[n-1]||createHash('sha256').update(records.slice(0,n).map(r=>JSON.stringify(r)).join('\n')+'\n').digest('hex');
@@ -32,11 +36,11 @@ export function bindTrainingSource(records,bank){
  return {sourceRecords:n,sourceHash:hash,lastRecordHash:records[n-1].hash};
 }
 
-export function advanceShadow(input,records,bank){
+export function advanceShadow(input,records,bank,{allowUnboundFixture=false}={}){
  const state=structuredClone(input),c=bank.config;
  const policy=historyPolicy(bank.historyPolicy);
  if(state.bankHash!==digest(bank))throw Error('Frozen model bank changed');
- const binding=bindTrainingSource(records,bank);
+ const binding=bindTrainingSource(records,bank,{allowUnboundFixture});
  if(state.sourceBinding&&digest(state.sourceBinding)!==digest(binding))throw Error('Frozen training binding changed');
  if(binding)state.sourceBinding=binding;
  if(state.sourceSequence>records.length||(state.sourceSequence&&records[state.sourceSequence-1].hash!==state.sourceHash))throw Error('Source prefix changed on resume');
@@ -92,6 +96,7 @@ if(process.argv[1]&&fileURLToPath(import.meta.url)===process.argv[1]){
  const dir=process.env.SIG_PAPER_DIR||path.join(process.env.LOCALAPPDATA,'SigTradingCup','paper-runtime'),workspace=path.dirname(path.dirname(fileURLToPath(import.meta.url)));
  const release=lock(path.join(dir,'ml-shadow.lock'));process.on('exit',release);
  const bank=JSON.parse(fs.readFileSync(path.join(dir,'ml-bank.json'),'utf8'));
+ requireSourceMetadata(bank);
  const stateFile=path.join(dir,'ml-shadow-state.json');let s=fs.existsSync(stateFile)?JSON.parse(fs.readFileSync(stateFile,'utf8')):{schemaVersion:1,bankHash:digest(bank),sourceSequence:0,sourceHash:null,wallets:{},histories:{},predictions:{}};
  const once=process.argv.includes('--once');let failed=false,partialReads=0;
  const cohorts=new Map(),cohortRoot=path.join(dir,'ml-cohorts');
@@ -101,6 +106,7 @@ if(process.argv[1]&&fileURLToPath(import.meta.url)===process.argv[1]){
    if(!entry.isDirectory()||!/^([a-z0-9][a-z0-9-]{0,63})$/.test(entry.name)||cohorts.has(entry.name))continue;
    const root=path.join(cohortRoot,entry.name),file=path.join(root,'ml-bank.json');if(!fs.existsSync(file))continue;
    const b=JSON.parse(fs.readFileSync(file,'utf8')),statePath=path.join(root,'ml-shadow-state.json');
+   requireSourceMetadata(b);
    const state=fs.existsSync(statePath)?JSON.parse(fs.readFileSync(statePath,'utf8')):{schemaVersion:1,bankHash:digest(b),sourceSequence:0,sourceHash:null,wallets:{},histories:{},predictions:{}};
    cohorts.set(entry.name,{root,bank:b,state,status:'running'});
   }
