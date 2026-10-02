@@ -29,6 +29,8 @@ const activeCohorts = [
   {name: 'limit-entry', manifest: 'limit-entry-active.json', directory: 'limit-entry-cohorts', script: 'live-paper/limit-entry-watch.mjs', stop: 'LIMIT_ENTRY_STOP'},
   {name: 'stream-book', manifest: 'stream-book-active.json', directory: 'stream-book-cohorts', script: 'live-paper/stream-book-watch.mjs', stop: 'STREAM_BOOK_STOP', globalLock: 'stream-book-gateway.lock', captureInput: true},
   {name: 'stream-dip', manifest: 'stream-dip-active.json', directory: 'stream-dip-cohorts', script: 'live-paper/stream-dip-watch.mjs', stop: 'STREAM_DIP_STOP', globalLock: 'stream-dip.lock', captureInput: true},
+  {name: 'stream-book-v2', manifest: 'stream-book-v2-active.json', directory: 'stream-book-v2-cohorts', script: 'live-paper/stream-book-watch-v2.mjs', stop: 'STREAM_BOOK_V2_STOP', globalLock: 'stream-book-gateway.lock', captureInput: true},
+  {name: 'stream-dip-v2', manifest: 'stream-dip-v2-active.json', directory: 'stream-dip-v2-cohorts', script: 'live-paper/stream-dip-watch-v2.mjs', stop: 'STREAM_DIP_V2_STOP', globalLock: 'stream-dip.lock', captureInput: true},
 ];
 const cohortName = value => typeof value === 'string' && /^[a-z][a-z0-9-]{0,63}$/.test(value)
   && !/^(con|prn|aux|nul|com[1-9]|lpt[1-9])$/.test(value);
