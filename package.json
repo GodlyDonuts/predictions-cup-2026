@@ -1,0 +1,16 @@
+{
+  "name": "sig-trading-cup-bot",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test",
+    "scan": "node bot.mjs --once",
+    "start": "node bot.mjs"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "2.117.2"
+  }
+}
