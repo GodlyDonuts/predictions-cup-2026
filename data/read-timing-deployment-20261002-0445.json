@@ -1,0 +1,27 @@
+{
+  "createdAt": "2026-10-02T04:44:34.594Z",
+  "paperTests": 106,
+  "preDeploySource": {
+    "hash": "3927d8f34809ee9a365db97a21d8d33ea9a26cc9ba46ce32ad418c78e7f64490",
+    "bytes": 17244151,
+    "records": 312,
+    "observations": 997
+  },
+  "stopReplayMatches": true,
+  "budget": {
+    "intervalMs": 6000,
+    "concurrency": 1,
+    "timeoutMs": 20000,
+    "changed": false
+  },
+  "liveTiming": {
+    "at": "2026-10-02T04:46:16.799Z",
+    "records": 4,
+    "collectorPid": 27896,
+    "collectorStatus": "degraded",
+    "mlPid": 23240,
+    "mlStatus": "running",
+    "wallets": 243
+  },
+  "originalPrefixPreserved": true
+}

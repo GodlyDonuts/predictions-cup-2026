@@ -1,0 +1,116 @@
+{
+  "schemaVersion": 1,
+  "sourceHash": "2a1f294c2610ac5525ece3c91e9a6d8fea522fbefe7fb6aefa8a52daf020e3a4",
+  "sourceBytes": 2554,
+  "partialTailExcluded": false,
+  "firstQueuedAt": "2026-10-02T04:44:35.920Z",
+  "lastFinishedAt": "2026-10-02T04:47:56.159Z",
+  "records": 8,
+  "groups": {
+    "tournament": {
+      "requests": 1,
+      "outcomes": {
+        "success": 1
+      },
+      "queueWaitMs": {
+        "count": 1,
+        "median": 0,
+        "p95": 0,
+        "max": 0
+      },
+      "admissionWaitMs": {
+        "count": 1,
+        "median": 1,
+        "p95": 1,
+        "max": 1
+      },
+      "headersMs": {
+        "count": 1,
+        "median": 6399,
+        "p95": 6399,
+        "max": 6399
+      },
+      "bodyMs": {
+        "count": 1,
+        "median": 4,
+        "p95": 4,
+        "max": 4
+      },
+      "serviceMs": {
+        "count": 1,
+        "median": 6403,
+        "p95": 6403,
+        "max": 6403
+      },
+      "totalMs": {
+        "count": 1,
+        "median": 6404,
+        "p95": 6404,
+        "max": 6404
+      }
+    },
+    "positions": {
+      "requests": 7,
+      "outcomes": {
+        "http_error": 1,
+        "connection_error": 6
+      },
+      "queueWaitMs": {
+        "count": 7,
+        "median": 0,
+        "p95": 0,
+        "max": 0
+      },
+      "admissionWaitMs": {
+        "count": 7,
+        "median": 1,
+        "p95": 2,
+        "max": 2
+      },
+      "headersMs": {
+        "count": 7,
+        "median": 20014,
+        "p95": 20015,
+        "max": 20015
+      },
+      "bodyMs": {
+        "count": 0,
+        "median": null,
+        "p95": null,
+        "max": null
+      },
+      "serviceMs": {
+        "count": 7,
+        "median": 20014,
+        "p95": 20015,
+        "max": 20015
+      },
+      "totalMs": {
+        "count": 7,
+        "median": 20016,
+        "p95": 20016,
+        "max": 20017
+      }
+    }
+  },
+  "outsideClientGapMs": {
+    "count": 7,
+    "median": 10009,
+    "p95": 10016,
+    "max": 10018
+  },
+  "interpretation": {
+    "networkRequests": 0,
+    "headersMs": "Time to headers or failed/cancelled header wait",
+    "bodyMs": "Time reading and parsing JSON, including failed reads; HTTP-error bodies are not read",
+    "queueWaitMs": "Waiting behind earlier calls on this same serialized client",
+    "admissionWaitMs": "Pacing/cooldown wait plus admission publication",
+    "outsideClientGapMs": "Caller dependency/processing/explicit sleep or restart time; cannot isolate CPU work from backoff",
+    "rateOrConcurrencyChanged": false,
+    "limitations": [
+      "Wall-clock durations, not a server-internal trace",
+      "Small correlated samples do not justify a higher request budget",
+      "No credentials, URLs, cursors, headers, account bodies or error messages are recorded"
+    ]
+  }
+}

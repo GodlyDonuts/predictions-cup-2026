@@ -6,6 +6,7 @@ import {randomUUID} from 'node:crypto';
 import {fileURLToPath} from 'node:url';
 import vm from 'node:vm';
 import {connectTournament} from './connection.mjs';
+import {validateTiming,timingSummary} from './read-timing.mjs';
 import * as model from './model.mjs';
 import * as breadth from './breadth.mjs';
 import * as depth from './depth-scope.mjs';
@@ -76,7 +77,7 @@ async function run(stopAt){
     if(stopAt==='status-publication'&&cycle===2&&!triggered&&p.endsWith('stats.json')&&v.runtime?.cycles===2){stop();throw Error('Synthetic status failure');}
     memory.set(p,JSON.stringify(v));
   };
-  const bindings={...model,...breadth,...depth,connectTournament,fs:mockfs,path,http:{createServer:()=>({once(){},listen(p,h,f){f();},close(){}})},randomUUID,fileURLToPath,
+  const bindings={...model,...breadth,...depth,connectTournament,validateTiming,timingSummary,fs:mockfs,path,http:{createServer:()=>({once(){},listen(p,h,f){f();},close(){}})},randomUUID,fileURLToPath,
     loadKey:()=> 'SYNTHETIC',Journal,ReadClient,lock:()=>()=>{},atomicJson,exclusionSet,
     sampleEquity(s,c,at){if(stopAt==='sampling-failure'&&cycle===2){stop();throw Error('Synthetic sample failure');}return model.sampleEquity(s,c,at);},
     process,console:{log(){},error(){}},AbortController,structuredClone,Date:Clock,setInterval:()=>1,clearInterval(){},moduleUrl:new URL('./runner.mjs',import.meta.url).href};

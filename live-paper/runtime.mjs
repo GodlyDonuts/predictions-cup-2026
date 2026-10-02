@@ -40,28 +40,38 @@ export function lock(file){fs.mkdirSync(path.dirname(file),{recursive:true});con
 
 export class ReadClient {
   #key;
-  constructor(key,{interval=6000,fetchFn=fetch,signal,now=Date.now,sleepFn=ms=>new Promise(r=>setTimeout(r,ms)),onAdmission=()=>{}}={}){
-    if(interval<5000)throw Error('Read budget requires >=5 second pacing');this.#key=key;this.interval=interval;this.fetch=fetchFn;this.signal=signal;this.now=now;this.sleep=sleepFn;this.next=0;this.cooldown=0;this.requests=0;this.onAdmission=onAdmission;this.tail=Promise.resolve();
+  constructor(key,{interval=6000,fetchFn=fetch,signal,now=Date.now,sleepFn=ms=>new Promise(r=>setTimeout(r,ms)),onAdmission=()=>{},onTiming=()=>{}}={}){
+    if(interval<5000)throw Error('Read budget requires >=5 second pacing');this.#key=key;this.interval=interval;this.fetch=fetchFn;this.signal=signal;this.now=now;this.sleep=sleepFn;this.next=0;this.cooldown=0;this.requests=0;this.onAdmission=onAdmission;this.onTiming=onTiming;this.tail=Promise.resolve();
   }
   async pause(ms){const until=this.now()+ms;while(this.now()<until){if(this.signal?.aborted)throw Error('Stopped');await this.sleep(Math.min(200,until-this.now()));}}
-  request(endpoint){const result=this.tail.then(()=>this.perform(endpoint));this.tail=result.catch(()=>{});return result;}
-  async perform(endpoint){
+  request(endpoint){const queuedAt=this.now();const result=this.tail.then(()=>this.perform(endpoint,queuedAt));this.tail=result.catch(()=>{});return result;}
+  async perform(endpoint,queuedAt=this.now()){
+    const executingAt=this.now();
     const patterns=[/^\/tournaments\/midterm-elections$/, /^\/tournaments\/midterm-elections\/portfolio\/positions$/, /^\/orders\?status=open&limit=200&tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55(?:&cursor=[A-Za-z0-9%._~-]+)?$/, /^\/markets\/\d+\/orderbook\?tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55&depth=20$/];
     const bulk=/^\/exchanges\/prices\?ids=([1-9]\d*(?:,[1-9]\d*)*)&tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55$/.exec(endpoint);
     const ids=bulk?.[1].split(',');
     const allowedBulk=ids&&ids.length<=100&&new Set(ids).size===ids.length&&ids.every(x=>Number.isSafeInteger(Number(x)));
     if(!patterns.some(p=>p.test(endpoint))&&!allowedBulk)throw Error('Endpoint outside paper GET allowlist');
-    if(this.manualReview)throw Error('Rate cooldown requires manual review');
-    await this.pause(Math.max(0,Math.max(this.next,this.cooldown)-this.now()));
-    if(this.signal?.aborted)throw Error('Stopped');
-    this.next=this.now()+this.interval;this.requests++;this.onAdmission(this.next);
-    const requestStartedAt=new Date(this.now()).toISOString();
-    let response;
-    try{response=await this.fetch('https://sig.thesuper.market/api/v1'+endpoint,{method:'GET',redirect:'error',signal:this.signal?AbortSignal.any([this.signal,AbortSignal.timeout(20000)]):AbortSignal.timeout(20000),headers:{Authorization:'Bearer '+this.#key}});}catch{const err=Error(this.signal?.aborted?'Stopped':'Market API connection unavailable');err.recoverable=!this.signal?.aborted;throw err;}
-    if(!response.ok){if(response.status===429||response.status===503){const delay=Math.max(response.status===429?60000:10000,retryAfterMs(response.headers.get('Retry-After'),this.now()));if(delay===Number.MAX_SAFE_INTEGER||delay>8640000000000000-this.now()){this.manualReview=true;this.onAdmission(null);throw Error('Rate cooldown requires manual review');}this.cooldown=this.now()+delay;this.onAdmission(Math.max(this.next,this.cooldown));}const err=Error('Market API HTTP '+response.status);err.status=response.status;err.recoverable=[429,500,502,503,504].includes(response.status);throw err;}
-    let data;try{data=await response.json();}catch{throw Error('Invalid market API JSON');}
-    if(this.signal?.aborted)throw Error('Stopped');
-    return{endpoint,requestStartedAt,receivedAt:new Date(this.now()).toISOString(),data};
+    const kind=endpoint.startsWith('/markets/')?'book':endpoint.startsWith('/orders?')?'orders':endpoint.startsWith('/exchanges/prices?')?'prices':endpoint.endsWith('/portfolio/positions')?'positions':'tournament';
+    const event={schemaVersion:1,kind,marketId:kind==='book'?/^\/markets\/(\d+)\//.exec(endpoint)[1]:null,queuedAt:new Date(queuedAt).toISOString(),admittedAt:null,finishedAt:null,queueWaitMs:Math.max(0,executingAt-queuedAt),admissionWaitMs:null,headersMs:null,bodyMs:null,serviceMs:null,totalMs:null,statusCode:null,outcome:'blocked'};
+    let admittedAt=null,headersAt=null;
+    try{
+      if(this.manualReview)throw Error('Rate cooldown requires manual review');
+      await this.pause(Math.max(0,Math.max(this.next,this.cooldown)-this.now()));
+      if(this.signal?.aborted){event.outcome='aborted';throw Error('Stopped');}
+      this.next=this.now()+this.interval;this.requests++;this.onAdmission(this.next);
+      admittedAt=this.now();event.admittedAt=new Date(admittedAt).toISOString();event.admissionWaitMs=Math.max(0,admittedAt-executingAt);
+      const requestStartedAt=event.admittedAt;let response;
+      try{response=await this.fetch('https://sig.thesuper.market/api/v1'+endpoint,{method:'GET',redirect:'error',signal:this.signal?AbortSignal.any([this.signal,AbortSignal.timeout(20000)]):AbortSignal.timeout(20000),headers:{Authorization:'Bearer '+this.#key}});}catch{event.outcome=this.signal?.aborted?'aborted':'connection_error';const err=Error(this.signal?.aborted?'Stopped':'Market API connection unavailable');err.recoverable=!this.signal?.aborted;throw err;}
+      headersAt=this.now();event.headersMs=Math.max(0,headersAt-admittedAt);event.statusCode=response.status??200;
+      if(!response.ok){event.outcome='http_error';if(response.status===429||response.status===503){const delay=Math.max(response.status===429?60000:10000,retryAfterMs(response.headers.get('Retry-After'),this.now()));if(delay===Number.MAX_SAFE_INTEGER||delay>8640000000000000-this.now()){this.manualReview=true;this.onAdmission(null);throw Error('Rate cooldown requires manual review');}this.cooldown=this.now()+delay;this.onAdmission(Math.max(this.next,this.cooldown));}const err=Error('Market API HTTP '+response.status);err.status=response.status;err.recoverable=[429,500,502,503,504].includes(response.status);throw err;}
+      let data;try{data=await response.json();}catch{event.outcome=this.signal?.aborted?'aborted':'body_error';throw Error('Invalid market API JSON');}finally{event.bodyMs=Math.max(0,this.now()-headersAt);}
+      if(this.signal?.aborted){event.outcome='aborted';throw Error('Stopped');}
+      event.outcome='success';return{endpoint,requestStartedAt,receivedAt:new Date(this.now()).toISOString(),data};
+    }catch(e){if(this.signal?.aborted)event.outcome='aborted';throw e;}finally{
+      const finished=this.now();event.finishedAt=new Date(finished).toISOString();event.totalMs=Math.max(0,finished-queuedAt);if(admittedAt!==null){event.serviceMs=Math.max(0,finished-admittedAt);if(headersAt===null)event.headersMs=event.serviceMs;}else event.admissionWaitMs=Math.max(0,finished-executingAt);
+      try{this.onTiming(event);}catch{this.manualReview=true;this.onAdmission(null);throw Error('Read timing recording failed');}
+    }
   }
   async orders(){const out=[];let cursor;const seen=new Set();do{const r=await this.request('/orders?status=open&limit=200&tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55'+(cursor?'&cursor='+encodeURIComponent(cursor):''));if(!Array.isArray(r.data.data))throw Error('Invalid open orders response');exclusionSet([],r.data.data);out.push(...r.data.data);const pg=r.data.pagination;if(!pg||typeof pg.hasMore!=='boolean')throw Error('Incomplete order pagination');cursor=pg.hasMore?pg.nextCursor:null;if(pg.hasMore&&(typeof cursor!=='string'||!cursor||seen.has(cursor)))throw Error('Incomplete order pagination');seen.add(cursor);}while(cursor);return out;}
   close(){this.#key='';}
