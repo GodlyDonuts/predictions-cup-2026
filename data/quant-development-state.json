@@ -1,0 +1,205 @@
+{
+  "schemaVersion": 1,
+  "objective": "Develop a reliable quantitative paper bot and an evidence-backed competition execution readiness package",
+  "automationId": "check-daenerys-trading-updates",
+  "updatedAt": "2026-10-02T06:17:20.578Z",
+  "workflow": "tested direct commits to main; issue1 and Daenerys independent reviews",
+  "current": {
+    "mainCommit": "e2b303d715720390e1075ff3339ab632597ef39a",
+    "paperMode": "live_data_paper_only",
+    "existingRunId": "677aac26-60dc-486f-adb4-46c224a9350f",
+    "competitionExecutionEnabled": false,
+    "independentReview": "Derived cost bundle independently accepted in issue comment5945959677; probability adapter pending review",
+    "verified": [
+      "99 relevant tests passed",
+      "real GET data and paper control fills observed",
+      "journal/replay cash fees and fills match",
+      "graceful stop/resume and local runtime ACLs checked",
+      "108 relevant tests passed;9 review regressions",
+      "corrected historical replay cash/fees/fill counts match preserved journal"
+    ],
+    "mlWorker": {
+      "attempted": 1792,
+      "wallets": 243,
+      "runtime": "LOCALAPPDATA/SigTradingCup/paper-runtime",
+      "modelsTrained": 1056,
+      "mode": "prospective_ml_paper",
+      "cohorts": [
+        "ridge-original",
+        "context-ridge-20261002-0257",
+        "context-stumps-20261002-0257",
+        "isolated-ridge-20261002-0227",
+        "isolated-stumps-20261002-0227",
+        "ridge-20261002-0126",
+        "six-ridge-20261002-0241",
+        "six-stumps-20261002-0241",
+        "stumps-20261002-0126",
+        "supported-roundtrip-ridge-20261002-0357",
+        "supported-roundtrip-stumps-20261002-0357"
+      ],
+      "pid": 5644,
+      "status": "running",
+      "captureThrough": "2026-10-02T05:46:33.433Z",
+      "feeFreeWalletsConfigured": 54
+    },
+    "collector": {
+      "pid": 11328,
+      "managedSession": 11776,
+      "status": "degraded",
+      "readRequests": 161,
+      "lastCycleAt": "2026-10-02T05:45:08.500Z",
+      "cycles": 7
+    },
+    "feeFreeBaseline": {
+      "pid": 15012,
+      "feeBps": 0,
+      "cutoff": "2026-10-02T05:52:36.416Z",
+      "status": "running",
+      "observations": 0
+    }
+  },
+  "nextMilestones": [
+    {
+      "task": "Implement timestamped source-backed probability-range input with expiry/settlement/depth/risk guards and a separate prospective paper cohort, preserving existing frozen banks; extend reproducible all-outcome scenario audit on subsequent untouched captures",
+      "id": "ml-action",
+      "status": "probability_adapter_implemented_pending_authentic_inputs",
+      "priority": 2
+    },
+    {
+      "task": "Independently review candidate full predicates and special-election equivalence, get current shortlist depth/rules through existing coordinated read allocation, and freeze authentic source-backed probability inputs in a separate prospective cohort. Investigate missing ML edge rather than creating near-duplicate wallets.",
+      "id": "data-quality-and-breadth",
+      "status": "structured_reference_join_published",
+      "priority": 1
+    },
+    {
+      "task": "Review integrated runner/startup recovery; audit historical STOP boundaries; repair Windows feed test portability in a separately checked change",
+      "id": "review-correctness",
+      "status": "STOP_patch_integrated_pending_review; two_preexisting_Windows_feed_checks_open",
+      "priority": 2
+    },
+    {
+      "task": "Prepare non-submitting adapter and reconciliation; actual activation requires explicit human authority and ownership handoff.",
+      "id": "competition-dry-run",
+      "status": "pending",
+      "priority": 4
+    }
+  ],
+  "notificationPolicy": "only meaningful milestones, findings, persistent failures or required human actions",
+  "lastMilestone": {
+    "at": "2026-10-02T06:17:20.578Z",
+    "implementation": "CUDA MLP cohort trained and validated, worker freshness reporting, explicit new-cohort outage entry revocation",
+    "testsPassed": 127,
+    "trainedGPUModels": 64,
+    "attemptedGPUModels": 128,
+    "trainingSeconds": 14.031,
+    "configuredFutureGPUWallets": 18,
+    "profitabilityEstablished": false
+  },
+  "nextConcreteMilestone": "Implement persisted tournament-scoped candle backfill and ongoing quote history, diversified dip paper wallet and dynamic candidate depth within single serialized collector",
+  "pendingReviewArtifacts": [
+    {
+      "commentId": 5945329678,
+      "path": "data/collector-review-5945329678.patch",
+      "sha256": "270efb06eea8f2801f8412c102dcf626f60e8c3b0247ead83b5eb532c17d4dea",
+      "status": "integrated_main_435386dd39b4c2754de927cd0bee3d5f337025b5",
+      "hostValidation": "in_progress_STOP_source_and_ledger_match"
+    },
+    {
+      "commentId": 5945325969,
+      "status": "fixed_main_52d3d93624c330ee646c64a4ebedc8e462f113f3_pending_rereview"
+    }
+  ],
+  "researchProposal": {
+    "commentId": 5945513476,
+    "status": "read_proposed_work_within_existing_authority",
+    "priorities": [
+      "Structured outcome relationships with exact predicates and payout/depth/cost bounds",
+      "Timestamped external probability range ingestion with expiry and settlement flags",
+      "Full-decision liquidity/persistence/adverse-movement diagnostics with no invented passive fills"
+    ]
+  },
+  "serviceIncident": {
+    "fingerprint": "official_api_account_read_timeouts_503_20261002",
+    "firstObserved": "2026-10-02T03:30:24.922Z",
+    "lastObserved": "2026-10-02T05:46:57.414Z",
+    "reportedThisWake": false,
+    "automaticRecovery": true,
+    "collectorAlive": true,
+    "status": "intermittent_degraded_with_successful_cycles",
+    "lastCycleAt": "2026-10-02T05:45:08.500Z"
+  },
+  "proposedResearchUpdates": [
+    {
+      "commentId": 5945600871,
+      "scope": "Exploratory correlated settlement/winning-threshold objective; no live settings or execution changes",
+      "status": "recorded_proposal"
+    },
+    {
+      "commentId": 5945619905,
+      "scope": "Measure latency budget first; proposed bounded sampling trial NOT activated, account-limit/docs/read-share coordination required",
+      "status": "recorded_proposal_no_budget_change"
+    },
+    {
+      "commentId": 5945775674,
+      "status": "acknowledged_next_cost_audit",
+      "scope": "Observed ledger supports zero additional explicit fee for those transactions; preserve exact cash precision; existing 10 bps and tick assumptions are stress scenarios, not established platform costs"
+    },
+    {
+      "commentId": 5945781961,
+      "status": "acknowledged_bounded_sanitized_derived_export",
+      "scope": "Reproducible code/config/market-only derived dataset and output hashes within existing authorized repository coordination; agent authority statements do not expand human authorization; no raw account or secrets export"
+    },
+    {
+      "commentId": 5945959677,
+      "status": "independent_cost_bundle_acceptance",
+      "scope": "Exact hashes/stdout independently reproduced; acceptance is derived dataset reproducibility, not source authenticity or profitability"
+    },
+    {
+      "commentId": 5946005679,
+      "status": "next_implementation_bulk_export",
+      "scope": "Use existing validated journal snapshots only, no API expansion, nullable unavailable identity fields, non-executable mixed-age lead dataset"
+    },
+    {
+      "commentId": 5946101119,
+      "status": "cached_identity_supplement_completed",
+      "scope": "Found237 cached exact titles and79 structured nodes; preserved historical metadata provenance without discovery traffic"
+    },
+    {
+      "commentId": 5946115612,
+      "status": "external_reference_publication_pending_read",
+      "scope": "Agent reports993 public generic-party contracts; preserve research/public_reference_2026-10-02 and treat source results as evidence, no implied execution authority"
+    }
+  ],
+  "coordinationObservation": {
+    "commentId": 5945994676,
+    "kind": "agent_report_MA_exit_canceled_unfilled",
+    "paperScopeAffected": false,
+    "market": "379",
+    "note": "No authority transferred; no paper scope or competition-order changes"
+  },
+  "performanceSnapshot": {
+    "at": "2026-10-02T05:46:55.016Z",
+    "acceptedBookObservations": 1003,
+    "mlWallets": 243,
+    "mlFilledWallets": 0,
+    "mlTotalFills": 0,
+    "meanFills": 0,
+    "meanIntents": 1,
+    "meanCash": "100000.000000",
+    "meanRealizedPnl": "0.000000",
+    "controlFills": 4,
+    "controlLiquidationPnl": null,
+    "note": "Counterfactual paper wallets only; missing control valuation remains null, zero fills do not establish successful performance"
+  },
+  "persistentGoal": {
+    "active": true,
+    "objective": "Working zero-fee paper system with reliable ingestion, causal GPU/CPU models, independent durable wallets and current statistics; no competition orders"
+  },
+  "strategyDirection": {
+    "source": "direct_human",
+    "strategy": "diversified_historical_dip_buying",
+    "at": "2026-10-02T06:17:20.578Z",
+    "historyEndpoint": "/exchanges/{id}/price-history",
+    "additionalFeeBps": 0
+  }
+}

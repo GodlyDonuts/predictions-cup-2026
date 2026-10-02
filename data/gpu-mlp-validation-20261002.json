@@ -1,0 +1,22 @@
+{
+  "at": "2026-10-02T06:08:53.576Z",
+  "cohort": "fee-free-gpu-mlp-20261002-0610",
+  "models": 64,
+  "selected": 6,
+  "configuredWallets": 18,
+  "maxAbsoluteInferenceError": 1.0408340855860843e-17,
+  "sourceHash": "14e0cd26ff895b97d28ebd486bd39133243e2954f39f5e0c8cf51adf36ccce59",
+  "sourceRecords": 452,
+  "cutoff": "2026-10-02T06:06:53.658Z",
+  "trainingRuntime": {
+    "device": "NVIDIA GeForce RTX 3060 Ti",
+    "torch": "2.14.1+cu126",
+    "seconds": 14.03099999999904,
+    "epochs": 500,
+    "dtype": "float64"
+  },
+  "feeBps": 0,
+  "normalization": "training-only verified",
+  "split": "training labels strictly before development boundary verified",
+  "profitabilityEstablished": false
+}

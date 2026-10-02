@@ -8,6 +8,7 @@ import {scopedSnapshots} from './depth-scope.mjs';
 import {historyPolicy as validateHistoryPolicy,resetHistory,LEGACY,ISOLATED} from './history-policy.mjs';
 import {updateContext,contextFeatures} from './breadth-context.mjs';
 import {ROUND_TRIP,LEGACY_TARGET,targetPolicy as validateTarget,roundTripLabel} from './roundtrip-target.mjs';
+import {predictMLP} from './gpu-inference.mjs';
 
 const num=x=>Number(amount(x))/1e6;
 export function features(book,history){
@@ -69,7 +70,7 @@ export function fitStumps(rows,width,iterations,learningRate,minLeaf){
  }
  return {family:'boosted_stumps',width,iterations,learningRate,minLeaf,base,stumps};
 }
-export const predict=(m,x)=>m.family==='boosted_stumps'?m.stumps.reduce((n,s)=>n+(x[s.feature]<=s.threshold?s.leftValue:s.rightValue),m.base):m.weights.reduce((n,w,j)=>n+w*(x[j]-m.means[j])/m.scales[j],0);
+export const predict=(m,x)=>m.family==='gpu_mlp'?predictMLP(m,x):m.family==='boosted_stumps'?m.stumps.reduce((n,s)=>n+(x[s.feature]<=s.threshold?s.leftValue:s.rightValue),m.base):m.weights.reduce((n,w,j)=>n+w*(x[j]-m.means[j])/m.scales[j],0);
 export function instrumentCoverage(train,test,marketIds){
  return marketIds.map(marketId=>{
   const a=train.filter(r=>r.marketId===marketId),b=test.filter(r=>r.marketId===marketId),trainingInstruments=[...new Set(a.map(r=>r.instrument))],testInstruments=[...new Set(b.map(r=>r.instrument))];

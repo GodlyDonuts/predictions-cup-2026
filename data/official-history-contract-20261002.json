@@ -1,0 +1,226 @@
+{
+  "retrievedAt": "2026-10-02T06:14:25.725Z",
+  "url": "https://sig.thesuper.market/api/v1/openapi.json",
+  "version": "1.0.0",
+  "path": "/exchanges/{id}/price-history",
+  "description": "Returns OHLCV candles computed from trade history. All prices are YES-normalized, and buckets with no trades are omitted (sparse series). Without `from`, the response contains the newest `limit` candles ending at `to`. With `from`, candles are returned forward from that timestamp; if the requested window exceeds the bucket cap, the response contains the oldest `limit` candles and `coverage.complete` is false. For a capped explicit-from page, response `to` is the next candle's start and is an exclusive continuation boundary. Response `from` and `to` describe the window actually served. An explicit `from` or `to` is floored to the selected resolution's candle boundary; a range whose floored end is not after its floored start returns 400 `VALIDATION_ERROR`. Pass `tournamentId` for one explicit accessible tournament. When an organization-bound key omits it, the request uses the organization's default tournament; an unbound key uses public-global trade history.",
+  "parameters": [
+    {
+      "schema": {
+        "type": "string",
+        "description": "Exchange ID.",
+        "example": "36"
+      },
+      "required": true,
+      "description": "Exchange ID.",
+      "name": "id",
+      "in": "path"
+    },
+    {
+      "schema": {
+        "type": "string",
+        "description": "When provided, returns candles computed from that accessible tournament's trades. Omit for the organization's default tournament with an organization-bound key or public-global history with an unbound key.",
+        "example": "550e8400-e29b-41d4-a716-446655440000"
+      },
+      "required": false,
+      "description": "When provided, returns candles computed from that accessible tournament's trades. Omit for the organization's default tournament with an organization-bound key or public-global history with an unbound key.",
+      "name": "tournamentId",
+      "in": "query"
+    },
+    {
+      "schema": {
+        "type": "string",
+        "enum": [
+          "1m",
+          "5m",
+          "1h",
+          "1d",
+          "1w"
+        ],
+        "default": "1h",
+        "description": "Candle size. Buckets are aligned to UTC multiples of the resolution measured from the Unix epoch, so `1w` buckets begin on Thursdays.",
+        "example": "1h"
+      },
+      "required": false,
+      "description": "Candle size. Buckets are aligned to UTC multiples of the resolution measured from the Unix epoch, so `1w` buckets begin on Thursdays.",
+      "name": "resolution",
+      "in": "query"
+    },
+    {
+      "schema": {
+        "type": "string",
+        "description": "ISO-8601 start timestamp (inclusive). Floored down to the selected resolution's bucket boundary; the response `from` reflects the floored value. When omitted, returns the newest candles up to `to`.",
+        "example": "2025-01-01T00:00:00.000Z"
+      },
+      "required": false,
+      "description": "ISO-8601 start timestamp (inclusive). Floored down to the selected resolution's bucket boundary; the response `from` reflects the floored value. When omitted, returns the newest candles up to `to`.",
+      "name": "from",
+      "in": "query"
+    },
+    {
+      "schema": {
+        "type": "string",
+        "description": "ISO-8601 end timestamp (exclusive). When supplied, floored down to the selected resolution's bucket boundary. Defaults to now (not floored).",
+        "example": "2026-01-01T00:00:00.000Z"
+      },
+      "required": false,
+      "description": "ISO-8601 end timestamp (exclusive). When supplied, floored down to the selected resolution's bucket boundary. Defaults to now (not floored).",
+      "name": "to",
+      "in": "query"
+    },
+    {
+      "schema": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 1000,
+        "default": 200,
+        "description": "Maximum number of candles to return (max 1000). Selects the newest candles when `from` is omitted and the oldest candles forward from an explicit `from`.",
+        "example": 200
+      },
+      "required": false,
+      "description": "Maximum number of candles to return (max 1000). Selects the newest candles when `from` is omitted and the oldest candles forward from an explicit `from`.",
+      "name": "limit",
+      "in": "query"
+    }
+  ],
+  "candle": {
+    "type": "object",
+    "properties": {
+      "time": {
+        "type": "string",
+        "example": "2025-06-14T12:00:00.000Z",
+        "description": "ISO-8601 bucket start time."
+      },
+      "open": {
+        "type": [
+          "number",
+          "null"
+        ],
+        "example": 0.41
+      },
+      "high": {
+        "type": [
+          "number",
+          "null"
+        ],
+        "example": 0.55
+      },
+      "low": {
+        "type": [
+          "number",
+          "null"
+        ],
+        "example": 0.38
+      },
+      "close": {
+        "type": [
+          "number",
+          "null"
+        ],
+        "example": 0.5
+      },
+      "vwap": {
+        "type": [
+          "number",
+          "null"
+        ],
+        "example": 0.46,
+        "description": "Volume-weighted average YES price."
+      },
+      "volume": {
+        "type": "number",
+        "example": 1200
+      },
+      "tradeCount": {
+        "type": "integer",
+        "example": 14
+      }
+    },
+    "required": [
+      "time",
+      "open",
+      "high",
+      "low",
+      "close",
+      "vwap",
+      "volume",
+      "tradeCount"
+    ]
+  },
+  "response": {
+    "description": "OHLCV candle series.",
+    "content": {
+      "application/json": {
+        "schema": {
+          "type": "object",
+          "properties": {
+            "exchangeId": {
+              "type": "string",
+              "example": "36"
+            },
+            "marketId": {
+              "type": "string",
+              "example": "26"
+            },
+            "resolution": {
+              "type": "string",
+              "enum": [
+                "1m",
+                "5m",
+                "1h",
+                "1d",
+                "1w"
+              ],
+              "example": "1h"
+            },
+            "from": {
+              "type": "string",
+              "example": "1970-01-01T00:00:00.000Z"
+            },
+            "to": {
+              "type": "string",
+              "example": "2026-04-04T00:00:00.000Z"
+            },
+            "candles": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/Candle"
+              }
+            },
+            "coverage": {
+              "type": "object",
+              "properties": {
+                "complete": {
+                  "type": "boolean",
+                  "example": true,
+                  "description": "False only when an explicit `from` window was truncated by the candle limit."
+                },
+                "projectedThroughSequence": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "example": 184233,
+                  "description": "Latest trading-engine sequence these candles are complete through — the lower of the reporting projection's position and the event-ingest position, since both write this store. Null when either has no checkpoint, including on a deployment the engine has never touched."
+                }
+              },
+              "required": [
+                "complete",
+                "projectedThroughSequence"
+              ]
+            }
+          },
+          "required": [
+            "exchangeId",
+            "marketId",
+            "resolution",
+            "from",
+            "to",
+            "candles",
+            "coverage"
+          ]
+        }
+      }
+    }
+  }
+}
