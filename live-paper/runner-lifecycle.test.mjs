@@ -6,6 +6,7 @@ import {randomUUID} from 'node:crypto';
 import {fileURLToPath} from 'node:url';
 import vm from 'node:vm';
 import * as scheduler from './book-scheduler.mjs';
+import {planComparisonSampling,recordComparisonAttempt} from './comparison-sampling.mjs';
 import {collectionInputs,shockCollectionRisk} from './collection-inputs.mjs';
 import {basketCandidates} from './basket-inputs.mjs';
 import {planBasketBooks} from './basket-book-plan.mjs';
@@ -30,11 +31,14 @@ const source=fs.readFileSync(path.join(root,'runner.mjs'),'utf8');
 
 // Only module wiring is replaced. The real runner body executes with an in-memory
 // journal/filesystem, synthetic API/key, fake clock/server/process and no network.
-async function run(stopAt,{dipEnabled=false,officialSync=false,invalidBasket=false,basketEnabled=false}={}){
+async function run(stopAt,{dipEnabled=false,officialSync=false,invalidBasket=false,basketEnabled=false,samplingEnabled=false,riskUnavailable=false,comparisonHeld=[],comparisonPending=[],maxCycles=2}={}){
   let startupFailures=0;
   let now=Date.parse('2026-10-02T02:00:00Z'),cycle=0,stopped=false,triggered=false;
   const commits=[],memory=new Map(),listeners={},requests=[],publications=[],claimWrites=[],pairReadClaims=[];
   const fixtureStart=now,stamp=offset=>new Date(fixtureStart+offset).toISOString();
+  const samplingWrites=[],samplingRequests=[];
+  if(samplingEnabled)memory.set(path.join('/synthetic','SigTradingCup','paper-runtime','comparison-sampling.json'),JSON.stringify({schemaVersion:1,mode:'paired_comparison_two_attempts_v1',enabled:true,cohort:'fixture',bankHash:'a'.repeat(64)}));
+  if(samplingEnabled)memory.set(path.join('/synthetic','SigTradingCup','paper-runtime','entry-comparison-active.json'),JSON.stringify({schemaVersion:1,cohort:'fixture',bankHash:'a'.repeat(64)}));
   if(dipEnabled)memory.set(path.join('/synthetic','SigTradingCup','paper-runtime','dip-bank.json'),JSON.stringify({policy:JSON.parse(fs.readFileSync(path.join(root,'dip-policy.json'))),config:{...config,feeBps:0},universe:breadth.validateUniverse(universe,config.tournamentId)}));
   if(dipEnabled){const dir=path.join('/synthetic','SigTradingCup','paper-runtime'),bank=JSON.parse(memory.get(path.join(dir,'dip-bank.json')));memory.set(path.join(dir,'dip-state.json'),JSON.stringify({bankHash:model.digest(bank),wallet:model.initialState(config,'fixture',new Date(now).toISOString()),histories:{},bookHistory:{}}));}
   if(officialSync)memory.set(path.join('/synthetic','SigTradingCup','paper-runtime','official-sync.json'),JSON.stringify({enabled:true}));
@@ -68,6 +72,7 @@ async function run(stopAt,{dipEnabled=false,officialSync=false,invalidBasket=fal
       if(cycle===1&&endpoint.includes('/price-history?')&&stopAt==='history-stop'){stop();throw Error('Stopped');}
       if(endpoint.endsWith('/portfolio/positions'))cycle++;
       const market=/^\/markets\/(\d+)\/orderbook/.exec(endpoint)?.[1];
+      if(market&&samplingEnabled){const saved=JSON.parse(memory.get(path.join('/synthetic','SigTradingCup','paper-runtime','book-scheduler.json'))||'{}');samplingRequests.push({market,sampling:structuredClone(saved.comparisonSampling)});}
       if(['381','382'].includes(market)){const saved=JSON.parse(memory.get(path.join('/synthetic','SigTradingCup','paper-runtime','book-scheduler.json'))||'{}');pairReadClaims.push({market,claims:Object.keys(saved.basketFollowups?.claims||{}).length});}
       if(endpoint.includes('/portfolio/fills?')){this.requests++;requests.push(endpoint);now+=6000;return {receivedAt:iso(),data:{data:[],pagination:{hasMore:false},coverage:{complete:true},privateField:'do-not-export'}};}
       if(endpoint.includes('/portfolio/pnl?')){this.requests++;requests.push(endpoint);now+=6000;return {receivedAt:iso(),data:{period:'day',totalAccountValue:100000,totalHoldingsValue:0,totalCostBasis:0,unrealizedPnl:0,periodPnl:0,privateField:'do-not-export'}};}
@@ -94,8 +99,13 @@ async function run(stopAt,{dipEnabled=false,officialSync=false,invalidBasket=fal
     if(['config.json','price-universe.json','depth-plan.json','dashboard.html'].some(n=>p===path.join(root,n)))return fs.readFileSync(p,'utf8');
     throw Error('Unexpected file access '+p);
   }};
-  const process={argv:['node',path.join(root,'runner.mjs'),'--cycles','2'],env:{LOCALAPPDATA:'/synthetic'},pid:12345,on:(name,f)=>listeners[name]=f,exit(){throw Error('Unexpected exit');},exitCode:0};
+  const process={argv:['node',path.join(root,'runner.mjs'),'--cycles',String(maxCycles)],env:{LOCALAPPDATA:'/synthetic'},pid:12345,on:(name,f)=>listeners[name]=f,exit(){throw Error('Unexpected exit');},exitCode:0};
   const atomicJson=(p,v)=>{
+    if(p.endsWith('book-scheduler.json')&&v.comparisonSampling){
+      if(stopAt==='sampling-plan-persistence')throw Error('Synthetic sampling persistence failure');
+      samplingWrites.push({at:iso(),requestCount:requests.length,state:structuredClone(v.comparisonSampling)});
+      if(stopAt==='sampling-plan-stop'&&!triggered)stop();
+    }
     if(stopAt==='status-publication'&&cycle===2&&!triggered&&p.endsWith('stats.json')&&v.runtime?.cycles===2){stop();throw Error('Synthetic status failure');}
     if(p.endsWith('book-scheduler.json')&&v.basketFollowups){
       if(stopAt==='claim-recording-failure')throw Error('Injected claim persistence failure');
@@ -105,7 +115,7 @@ async function run(stopAt,{dipEnabled=false,officialSync=false,invalidBasket=fal
     memory.set(p,JSON.stringify(v));
     if(stopAt==='claim-stop'&&p.endsWith('book-scheduler.json')&&v.basketFollowups&&!triggered)stop();
   };
-  const bindings={...model,...breadth,...depth,...scheduler,collectionInputs,shockCollectionRisk,networkInterval,loadNetworkBudget:file=>mockfs.existsSync(file)?validateNetworkBudget(JSON.parse(mockfs.readFileSync(file))):null,connectTournament,validateTiming,timingSummary,historyEndpoint,normalizeHistory,validateDipPolicy,workerHealth:(report,at=now)=>workerHealth(report,at),baselineView,accountPositions,accountOrders,accountFills,accountPnl,accountView,fs:mockfs,path,http:{createServer:()=>({once(){},listen(p,h,f){f();},close(){}})},randomUUID,fileURLToPath,
+  const bindings={...model,...breadth,...depth,...scheduler,planComparisonSampling,recordComparisonAttempt,createComparisonRiskSource:()=>({poll:()=>({configured:samplingEnabled,available:!riskUnavailable,cohort:'fixture',bankHash:'a'.repeat(64),heldMarketIds:comparisonHeld,pendingMarketIds:comparisonPending}),close(){}}),collectionInputs,shockCollectionRisk,networkInterval,loadNetworkBudget:file=>mockfs.existsSync(file)?validateNetworkBudget(JSON.parse(mockfs.readFileSync(file))):null,connectTournament,validateTiming,timingSummary,historyEndpoint,normalizeHistory,validateDipPolicy,workerHealth:(report,at=now)=>workerHealth(report,at),baselineView,accountPositions,accountOrders,accountFills,accountPnl,accountView,fs:mockfs,path,http:{createServer:()=>({once(){},listen(p,h,f){f();},close(){}})},randomUUID,fileURLToPath,
     loadKey:()=> 'SYNTHETIC',Journal,ReadClient,lock:()=>()=>{},atomicJson,durableAtomicJson:atomicJson,exclusionSet,basketCandidates,planBasketBooks,basketCodeIdentity,createBasketRelationshipReader,
     createBookPublication({canOperate}){return {publishBook({marketId,response}){if(stopAt==='public-book-recording-failure'&&cycle===2)throw Error('Synthetic public journal failure');if(canOperate())publications.push({kind:'book',marketId,receivedAt:response.receivedAt,at:iso(),requestCount:requests.length});},invalidate({marketId,reason}){publications.push({kind:'invalidation',marketId,reason,at:iso()});},close(reason){publications.push({kind:'closed',reason,at:iso()});}};},
     createBasketFollowupSource({bank}){return {poll(){
@@ -118,8 +128,39 @@ async function run(stopAt,{dipEnabled=false,officialSync=false,invalidBasket=fal
     process,console:{log(){},error(){}},AbortController,structuredClone,Date:Clock,setInterval:()=>1,clearInterval(){},moduleUrl:new URL('./runner.mjs',import.meta.url).href};
   const body=source.replace(/^import .*;\r?\n/gm,'').replaceAll('import.meta.url','moduleUrl');
   await vm.runInNewContext('(async()=>{'+body+'\n})()',bindings);
-  return {commits,process,memory,requests,publications,triggered,claimWrites,pairReadClaims};
+  return {commits,process,memory,requests,publications,triggered,claimWrites,pairReadClaims,samplingWrites,samplingRequests};
 }
+
+test('paired sampling persists before requests and preserves four books per cycle',async()=>{
+ const r=await run(null,{dipEnabled:true,samplingEnabled:true,maxCycles:4});assert.equal(r.process.exitCode,0);
+ const cycles=r.commits.filter(x=>x.event.type==='cycle');assert.equal(cycles.length,4);
+ assert.equal(r.requests.filter(x=>x.includes('/orderbook?')).length,16);
+ assert.ok(r.samplingWrites.length>0);assert.ok(r.samplingRequests.every(x=>x.sampling));
+ assert.ok(cycles.every(x=>x.event.comparisonSampling?.planId));
+ assert.ok(cycles.every(x=>x.event.comparisonSampling.reservations.length<=2));
+ assert.equal(new Set(cycles[0].event.comparisonSampling.reservations.map(x=>x.marketId)).size,2);
+ assert.deepEqual(cycles[0].event.comparisonSampling.reservations.map(x=>x.marketId),cycles[1].event.comparisonSampling.reservations.map(x=>x.marketId));
+ assert.ok(cycles.every(x=>x.event.entryMarketIds.length===0),'sampling never creates execution leads');
+ const start=r.commits.find(x=>x.event.type==='session_start');assert.ok(start);assert.ok(start.sequence<cycles[0].sequence);
+ assert.equal(start.event.sessionId,r.commits.find(x=>x.event.type==='comparison_sampling_session').event.sessionId);
+});
+
+test('sampling persistence failure and STOP occur before any scheduled book',async()=>{
+ for(const code of ['sampling-plan-persistence','sampling-plan-stop']){
+  const r=await run(code,{dipEnabled:true,samplingEnabled:true});assert.equal(r.process.exitCode,code==='sampling-plan-persistence'?1:0);
+  assert.equal(r.requests.filter(x=>x.includes('/orderbook?')).length,0);
+ }
+});
+
+test('unavailable comparison evidence retains held books but disables optional overlays',async()=>{
+ const r=await run(null,{dipEnabled:true,samplingEnabled:true,riskUnavailable:true,basketEnabled:true,comparisonHeld:['305'],comparisonPending:['277']});
+ assert.equal(r.process.exitCode,0);assert.equal(r.samplingWrites.length,0);assert.equal(r.claimWrites.length,0);
+ for(const row of r.commits.filter(x=>x.event.type==='cycle')){
+  assert.equal(row.event.comparisonSampling,null);
+  assert.ok(row.event.sourceSnapshots.some(x=>x.endpoint?.startsWith('/markets/305/')));
+  assert.ok(row.event.sourceSnapshots.some(x=>x.endpoint?.startsWith('/markets/277/')));
+ }
+});
 
 test('followup claim is durably installed before pair reads and remains through scheduler attempts',async()=>{
  const r=await run(null,{dipEnabled:true,basketEnabled:true});assert.equal(r.process.exitCode,0);

@@ -22,6 +22,8 @@ import {basketCodeIdentity} from './basket-watch.mjs';
 import {createBasketRelationshipReader} from './basket-relations.mjs';
 import {createBookPublication} from './book-publication.mjs';
 import {createBasketFollowupSource} from './basket-followup-source.mjs';
+import {createComparisonRiskSource} from './comparison-risk-source.mjs';
+import {planComparisonSampling,recordComparisonAttempt} from './comparison-sampling.mjs';
 import {atomicJson as durableAtomicJson} from '../execution/ledger.mjs';
 import {CompetitionController} from '../execution/controller.mjs';
 import {loadNetworkBudget,networkInterval} from './network-budget.mjs';
@@ -44,14 +46,19 @@ process.on('exit',cleanup);
 const control=new AbortController();let stopping=false;
 const stop=()=>{stopping=true;control.abort();};process.on('SIGINT',stop);process.on('SIGTERM',stop);
 const stopWatch=setInterval(()=>{if(fs.existsSync(stopFile)||fs.existsSync(paperStop)||fs.existsSync(collectorStop))stop();},200);
-let journal,state,api,server,heartbeat,competition,realtime,realtimeCapture,basketRelationships,bookPublication,basketFollowupSource,basketFollowupBankHash;
+let journal,state,api,server,heartbeat,competition,realtime,realtimeCapture,basketRelationships,bookPublication,basketFollowupSource,basketFollowupBankHash,comparisonRiskSource;
+const samplingSessionId=randomUUID();
 let universe,coverage,depthPlan,dipBank,scaleBank,responsiveBank,scheduler,schedulerScope;const recentReadTimings=[];
 const schedulerFile=path.join(runtimeDir,'book-scheduler.json');
 function saveScheduler(next){
  try{durableAtomicJson(schedulerFile,next);scheduler=next;}
  catch{const e=Error('Book scheduler recording failed');e.durableRecordingFailed=true;e.fatal=true;throw e;}
 }
-function recordAttempt(kind,marketId){saveScheduler(recordSchedulerAttempts(scheduler,schedulerScope,{[kind+'MarketIds']:[marketId],attemptedAt:new Date().toISOString()}));}
+function recordAttempt(kind,marketId,samplingPlanId){
+ const at=new Date().toISOString();let next=recordSchedulerAttempts(scheduler,schedulerScope,{[kind+'MarketIds']:[marketId],attemptedAt:at});
+ if(kind==='book'&&samplingPlanId)next=recordComparisonAttempt(next,schedulerScope,{marketId,at,planId:samplingPlanId});
+ saveScheduler(next);
+}
 function schedulingInputs(){
  const sources=[];
  for(const [name,bank] of [['dip',dipBank],['dip-scale',scaleBank],['dip-responsive',responsiveBank]])if(bank){
@@ -65,11 +72,17 @@ function schedulingInputs(){
    const risk=shockCollectionRisk(JSON.parse(fs.readFileSync(path.join(runtimeDir,'shock-state.json'))),JSON.parse(fs.readFileSync(shockBankFile)),universe);
    for(const key of ['heldMarketIds','pendingMarketIds'])inputs[key]=[...new Set([...inputs[key],...risk[key]])];
   }
+  const comparisonRisk=comparisonRiskSource?.poll();
+  if(comparisonRisk){
+   runtime.comparisonRisk=comparisonRisk;
+   for(const key of ['heldMarketIds','pendingMarketIds'])inputs[key]=[...new Set([...inputs[key],...comparisonRisk[key]])];
+  }
   inputs.priorityManagedMarketIds=competition?.managedMarketIds()||[];
   inputs.heldMarketIds=[...new Set([...inputs.heldMarketIds,...inputs.priorityManagedMarketIds])];return inputs;
 }
 function basketMeasurementPlan(basePlan,excluded){
  if(!dipBank)return basePlan;
+ if(runtime.comparisonRisk?.configured&&!runtime.comparisonRisk.available){runtime.basketMeasurement={reason:'comparison_risk_unavailable'};return basePlan;}
  let plan;
  try{
   const file=path.join(runtimeDir,'basket-bank.json');
@@ -90,6 +103,24 @@ function basketMeasurementPlan(basePlan,excluded){
   saveScheduler(plan.state);
  }
  runtime.basketMeasurement=plan.basketMeasurement;return plan;
+}
+function comparisonSamplingPlan(basePlan){
+ let planned;
+ try{
+  const file=path.join(runtimeDir,'comparison-sampling.json');
+  if(!fs.existsSync(file)){runtime.comparisonSampling={enabled:false,reason:'not_configured'};return basePlan;}
+  const config=JSON.parse(fs.readFileSync(file,'utf8')),risk=runtime.comparisonRisk;
+  if(!config||Object.keys(config).sort().join(',')!=='bankHash,cohort,enabled,mode,schemaVersion'||config.schemaVersion!==1||config.mode!=='paired_comparison_two_attempts_v1'||config.enabled!==true)throw Error('Invalid sampling configuration');
+  if(!risk?.configured||!risk.available||risk.cohort!==config.cohort||risk.bankHash!==config.bankHash){runtime.comparisonSampling={enabled:false,reason:'comparison_evidence_unavailable'};return basePlan;}
+  planned=planComparisonSampling(basePlan,schedulerScope,{now:Date.now(),sessionId:samplingSessionId});
+  planned.comparisonSampling=planned.measurement;
+ }catch{runtime.comparisonSampling={enabled:false,reason:'sampling_evidence_invalid'};return basePlan;}
+ // Persist the phase before metadata or book work; an unattempted member stays
+ // pending. A later pre-request reservation may be consumed by STOP/failure,
+ // which is an uncertain attempt, never an observed quote or simulated fill.
+ saveScheduler(planned.state);
+ runtime.comparisonSampling=planned.comparisonSampling;
+ return planned;
 }
 let accountCache={errors:{}},officialSync=false;
 function publishAccount(){atomicJson(path.join(runtimeDir,'official-account.json'),accountCache);}
@@ -120,6 +151,7 @@ try{
   const syncFile=path.join(runtimeDir,'official-sync.json');officialSync=fs.existsSync(syncFile)&&JSON.parse(fs.readFileSync(syncFile)).enabled===true;
   if(officialSync){const file=path.join(runtimeDir,'official-account.json');if(fs.existsSync(file))accountCache=JSON.parse(fs.readFileSync(file));accountCache.errors??={};}
   universe=validateUniverse(JSON.parse(fs.readFileSync(path.join(root,'price-universe.json'),'utf8')),c.tournamentId);
+  comparisonRiskSource=createComparisonRiskSource({runtimeDir,universe,now:Date.now});
   bookPublication=createBookPublication({file:path.join(runtimeDir,'public-books.jsonl'),universe,sessionId:randomUUID(),now:Date.now,canOperate:()=>!stopping});
   depthPlan=validateDepthPlan(JSON.parse(fs.readFileSync(path.join(root,'depth-plan.json'),'utf8')),c,universe);
   const dipFile=path.join(runtimeDir,'dip-bank.json');if(fs.existsSync(dipFile)){dipBank=JSON.parse(fs.readFileSync(dipFile));validateDipPolicy(dipBank.policy);if(dipBank.universe.hash!==universe.hash||dipBank.config.feeBps!==0||dipBank.policy.historyReadsPerCycle!==2||dipBank.policy.comparisonBooksPerCycle!==2||dipBank.policy.dynamicBooksPerCycle!==2)throw Error('Invalid dip collection plan');runtime.collectionPlan={mode:'diversified_dip',historyReads:officialSync?1:2,fullBookBudget:4,managedCapacity:3,bulkReads:1,accountReads:'positions plus paginated orders',readIntervalMs:c.readIntervalMs};}
@@ -179,6 +211,8 @@ try{
     if(dipBank&&!stopping)await collectHistory();
   }});
   if(!journal.last&&!stopping)commit({type:'started',config:c});
+  if(!stopping&&fs.existsSync(path.join(runtimeDir,'entry-comparison-active.json')))commit({type:'session_start',clockAt:new Date().toISOString(),sessionId:samplingSessionId,scope:'collector'});
+  if(!stopping&&fs.existsSync(path.join(runtimeDir,'comparison-sampling.json')))commit({type:'comparison_sampling_session',clockAt:new Date().toISOString(),sessionId:samplingSessionId,mode:'paired_comparison_two_attempts_v1',authorization:'read_allocation_only'});
   runtime.status=stopping?'stopping':'running';persistStatus();
   if(!stopping&&fs.existsSync(path.join(runtimeDir,'basket-bank.json'))){
     const capture=await basketRelationships.capture();
@@ -202,16 +236,19 @@ try{
       // Freeze one plan before metadata selection; do not resample shadow state
       // or reorder candidates between the controller and these book requests.
       const basePlan=dipBank?planBookReads(scheduler,schedulerScope,schedulingInputs()):{reads:[...c.marketIds.map(marketId=>({marketId,path:'sourceSnapshots'})),...depthPlan.marketIds.map(marketId=>({marketId,path:'supplementalDepth'}))],entryMarketIds:[]};
-      const planned=basketMeasurementPlan(basePlan,excluded);
+      const planned=comparisonSamplingPlan(basketMeasurementPlan(basePlan,excluded));
       if(competition)try{await competition.beforeBooks({positions,orders,ordersAt:new Date().toISOString(),candidateMarketIds:planned.entryMarketIds});}catch(e){competition.failure(e);}
-      const supplementalDepth=[];
+      const supplementalDepth=[],samplingReservations=[],samplingReceipts=[];
       for(const spec of planned.reads){
         if(stopping||api.cooldown>Date.now())break;
         const marketId=spec.marketId,target=spec.path==='sourceSnapshots'?events:supplementalDepth;let receivedBook=false;
-        recordAttempt('book',marketId);
+        const samplingMember=planned.comparisonSampling?.reservationMarketIds?.includes(marketId);
+        recordAttempt('book',marketId,samplingMember?planned.comparisonSampling.planId:null);
+        if(samplingMember)samplingReservations.push({marketId,at:new Date().toISOString()});
         try{
           const r=await api.request('/markets/'+marketId+'/orderbook?tournamentId='+c.tournamentId+'&depth=20');
           target.push(r);
+          if(planned.comparisonSampling?.planId)samplingReceipts.push({marketId,requestStartedAt:r.requestStartedAt,receivedAt:r.receivedAt});
           receivedBook=true;publishBookEvent('publishBook',{marketId,response:r});
           if(competition)try{await competition.onBook(r);}catch(e){competition.failure(e);}
           const b=normalizeBook(r.data,marketId,c.tournamentId,r.receivedAt,r.requestStartedAt,c.maxDataAgeMs,excluded,spec.path==='sourceSnapshots'?'event_age_v1':dipBank?'authoritative_receipt_v1':'event_age_v1');
@@ -233,7 +270,7 @@ try{
           runtime.breadth={universeSize:universe.exchanges.length,observedExchanges:Object.keys(coverage.quotes).length,lastCollectionAt:coverage.updatedAt,error:null};
         }catch(e){if(!stopping&&(api.manualReview||e.status===401||e.status===403))throw e;bulkPriceError=stopping?'stopped':e.status?'http_'+e.status:e.message;runtime.breadth={...runtime.breadth,error:bulkPriceError};}
       }
-      const at=new Date().toISOString();sampleEquity(state,c,at);assertState(state,c);commit({type:'cycle',clockAt:at,sourceSnapshots:events,supplementalDepth,basketMeasurement:planned.basketMeasurement||null,entryMarketIds:[...new Set([...planned.entryMarketIds,...(planned.managedMarketIds||[])])],bulkPrices,bulkPriceError,accountExclusions:[...excluded],exclusionObservedAt:positions.receivedAt});cycleCommitted=true;
+      const at=new Date().toISOString();sampleEquity(state,c,at);assertState(state,c);commit({type:'cycle',clockAt:at,sourceSnapshots:events,supplementalDepth,basketMeasurement:planned.basketMeasurement||null,comparisonSampling:planned.comparisonSampling?{...planned.comparisonSampling,reservations:samplingReservations,receipts:samplingReceipts}:null,entryMarketIds:[...new Set([...planned.entryMarketIds,...(planned.managedMarketIds||[])])],bulkPrices,bulkPriceError,accountExclusions:[...excluded],exclusionObservedAt:positions.receivedAt});cycleCommitted=true;
       if(realtime&&!stopping&&api.cooldown<=Date.now())await realtime.service();
       runtime.cycles++;runtime.lastCycleAt=at;runtime.status=stopping?'stopping':successful?'running':'degraded';persistStatus();
       console.log(JSON.stringify({at,event:'paper_cycle',cycle:runtime.cycles,observations:state.observations,fills:Object.fromEntries(Object.entries(state.strategies).map(([k,s])=>[k,s.fills.length])),competitionOrders:competition?Object.values(competition.state.intents).filter(i=>Number.isSafeInteger(i.orderId)&&i.orderId>0).length:0}));
@@ -242,4 +279,4 @@ try{
   }
   runtime.status='stopped';commit({type:'stopped'});persistStatus();
 }catch(e){const stopped=stopping&&!e.durableRecordingFailed;if(state){runtime.status=stopped?'stopped':'failed';runtime.errors.push({at:new Date().toISOString(),reason:stopped?'stop_requested':e.message});try{persistStatus();}catch{}}console.error(stopped?'Paper runner stopped':'Paper runner failed; see local stats');process.exitCode=stopped?0:1;
-}finally{clearInterval(stopWatch);clearInterval(heartbeat);try{publishBookEvent('close',stopping||runtime.status==='stopped'?'STOP':'COLLECTOR_FAILURE');}finally{try{await realtime?.stop();}finally{basketFollowupSource?.close();realtimeCapture?.close();competition?.close();api?.close();server?.close();cleanup();}}}
+}finally{clearInterval(stopWatch);clearInterval(heartbeat);try{publishBookEvent('close',stopping||runtime.status==='stopped'?'STOP':'COLLECTOR_FAILURE');}finally{try{await realtime?.stop();}finally{comparisonRiskSource?.close();basketFollowupSource?.close();realtimeCapture?.close();competition?.close();api?.close();server?.close();cleanup();}}}
