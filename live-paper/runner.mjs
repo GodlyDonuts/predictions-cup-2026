@@ -27,6 +27,7 @@ import {planComparisonSampling,recordComparisonAttempt} from './comparison-sampl
 import {atomicJson as durableAtomicJson} from '../execution/ledger.mjs';
 import {CompetitionController} from '../execution/controller.mjs';
 import {loadNetworkBudget,networkInterval} from './transport-network-budget.mjs';
+import {collectionCycleWait} from './cycle-wait.mjs';
 import {createClient} from '@supabase/supabase-js';
 import {Capture} from '../feed/capture.mjs';
 import {createRealtimeHost} from './realtime-host.mjs';
@@ -275,7 +276,10 @@ try{
       runtime.cycles++;runtime.lastCycleAt=at;runtime.status=stopping?'stopping':successful?'running':'degraded';persistStatus();
       console.log(JSON.stringify({at,event:'paper_cycle',cycle:runtime.cycles,observations:state.observations,fills:Object.fromEntries(Object.entries(state.strategies).map(([k,s])=>[k,s.fills.length])),competitionOrders:competition?Object.values(competition.state.intents).filter(i=>Number.isSafeInteger(i.orderId)&&i.orderId>0).length:0}));
     }catch(e){if(e.durableRecordingFailed)throw e;if(stopping){if(!cycleCommitted)state=checkpoint;break;}const at=new Date().toISOString();invalidate(state,null,at,'account_reconciliation_unavailable');publishBookEvent('invalidate',{marketId:null,reason:'ACCOUNT_OUTAGE'});runtime.errors.push({at,reason:e.status?'http_'+e.status:e.message});runtime.errors=runtime.errors.slice(-20);runtime.status=e.recoverable?'degraded':'failed';persistStatus();if(e.recoverable){commit({type:'account_read_outage',clockAt:at,reason:e.status?'http_'+e.status:'connection_unavailable'});await pauseUntilNextRead(Math.max(10000,api.cooldown-Date.now()));continue;}throw Error('Paper runner stopped: '+runtime.errors.at(-1).reason);}
-    if(!stopping&&runtime.cycles<maxCycles)await pauseUntilNextRead(Math.max(1000,c.cycleIntervalMs-(Date.now()-cycleStart)));
+    if(!stopping&&runtime.cycles<maxCycles){
+      runtime.cycleWait=collectionCycleWait({cycleStartedAt:cycleStart,now:Date.now(),cycleIntervalMs:c.cycleIntervalMs,managedMarketIds:competition?.managedMarketIds()||[]});
+      if(runtime.cycleWait.delayMs>0)await pauseUntilNextRead(runtime.cycleWait.delayMs);
+    }
   }
   runtime.status='stopped';commit({type:'stopped'});persistStatus();
 }catch(e){const stopped=stopping&&!e.durableRecordingFailed;if(state){runtime.status=stopped?'stopped':'failed';runtime.errors.push({at:new Date().toISOString(),reason:stopped?'stop_requested':e.message});try{persistStatus();}catch{}}console.error(stopped?'Paper runner stopped':'Paper runner failed; see local stats');process.exitCode=stopped?0:1;

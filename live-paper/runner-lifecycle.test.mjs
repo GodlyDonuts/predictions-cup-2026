@@ -14,6 +14,7 @@ import {basketCodeIdentity} from './basket-watch.mjs';
 import {createBasketRelationshipReader} from './basket-relations.mjs';
 import {timestamp} from '../feed/contract.mjs';
 import {networkInterval,validateNetworkBudget} from './network-budget.mjs';
+import {collectionCycleWait} from './cycle-wait.mjs';
 import {connectTournament} from './connection.mjs';
 import {validateTiming,timingSummary} from './read-timing.mjs';
 import * as model from './model.mjs';
@@ -31,12 +32,13 @@ const source=fs.readFileSync(path.join(root,'runner.mjs'),'utf8');
 
 // Only module wiring is replaced. The real runner body executes with an in-memory
 // journal/filesystem, synthetic API/key, fake clock/server/process and no network.
-async function run(stopAt,{dipEnabled=false,officialSync=false,invalidBasket=false,basketEnabled=false,samplingEnabled=false,riskUnavailable=false,comparisonHeld=[],comparisonPending=[],maxCycles=2}={}){
+async function run(stopAt,{dipEnabled=false,officialSync=false,invalidBasket=false,basketEnabled=false,samplingEnabled=false,riskUnavailable=false,comparisonHeld=[],comparisonPending=[],maxCycles=2,requestMs=6000,officialRiskSchedule=null}={}){
   let startupFailures=0;
   let now=Date.parse('2026-10-02T02:00:00Z'),cycle=0,stopped=false,triggered=false;
   const commits=[],memory=new Map(),listeners={},requests=[],publications=[],claimWrites=[],pairReadClaims=[];
   const fixtureStart=now,stamp=offset=>new Date(fixtureStart+offset).toISOString();
-  const samplingWrites=[],samplingRequests=[];
+  const samplingWrites=[],samplingRequests=[],pauses=[],officialCalls=[];
+  if(officialRiskSchedule)memory.set(path.join('/synthetic','SigTradingCup','paper-runtime','competition-activation.json'),JSON.stringify({enabled:true}));
   if(samplingEnabled)memory.set(path.join('/synthetic','SigTradingCup','paper-runtime','comparison-sampling.json'),JSON.stringify({schemaVersion:1,mode:'paired_comparison_two_attempts_v1',enabled:true,cohort:'fixture',bankHash:'a'.repeat(64)}));
   if(samplingEnabled)memory.set(path.join('/synthetic','SigTradingCup','paper-runtime','entry-comparison-active.json'),JSON.stringify({schemaVersion:1,cohort:'fixture',bankHash:'a'.repeat(64)}));
   if(dipEnabled)memory.set(path.join('/synthetic','SigTradingCup','paper-runtime','dip-bank.json'),JSON.stringify({policy:JSON.parse(fs.readFileSync(path.join(root,'dip-policy.json'))),config:{...config,feeBps:0},universe:breadth.validateUniverse(universe,config.tournamentId)}));
@@ -62,11 +64,12 @@ async function run(stopAt,{dipEnabled=false,officialSync=false,invalidBasket=fal
     constructor(key,{onAdmission=()=>{}}={}){this.requests=0;this.cooldown=0;this.next=0;this.onAdmission=onAdmission;}
     close(){}
     async pause(delay){
+      pauses.push({cycle,delay});
       if(cycle===0&&stopAt==='startup-stop'){stop();throw Error('Stopped');}
       if(cycle===0)now+=delay;
       if((cycle===1&&stopAt==='cycle-wait')||(cycle===2&&stopAt==='outage-wait')){stop();throw Error('Stopped');}
     }
-    async orders(){if(stopped)throw Error('Read after stop');interrupt('orders');this.requests++;now+=6000;return [];}
+    async orders(){if(stopped)throw Error('Read after stop');interrupt('orders');this.requests++;now+=requestMs;return [];}
     async request(endpoint){
       if(stopped)throw Error('Read after stop');
       if(cycle===1&&endpoint.includes('/price-history?')&&stopAt==='history-stop'){stop();throw Error('Stopped');}
@@ -74,10 +77,10 @@ async function run(stopAt,{dipEnabled=false,officialSync=false,invalidBasket=fal
       const market=/^\/markets\/(\d+)\/orderbook/.exec(endpoint)?.[1];
       if(market&&samplingEnabled){const saved=JSON.parse(memory.get(path.join('/synthetic','SigTradingCup','paper-runtime','book-scheduler.json'))||'{}');samplingRequests.push({market,sampling:structuredClone(saved.comparisonSampling)});}
       if(['381','382'].includes(market)){const saved=JSON.parse(memory.get(path.join('/synthetic','SigTradingCup','paper-runtime','book-scheduler.json'))||'{}');pairReadClaims.push({market,claims:Object.keys(saved.basketFollowups?.claims||{}).length});}
-      if(endpoint.includes('/portfolio/fills?')){this.requests++;requests.push(endpoint);now+=6000;return {receivedAt:iso(),data:{data:[],pagination:{hasMore:false},coverage:{complete:true},privateField:'do-not-export'}};}
-      if(endpoint.includes('/portfolio/pnl?')){this.requests++;requests.push(endpoint);now+=6000;return {receivedAt:iso(),data:{period:'day',totalAccountValue:100000,totalHoldingsValue:0,totalCostBasis:0,unrealizedPnl:0,periodPnl:0,privateField:'do-not-export'}};}
+      if(endpoint.includes('/portfolio/fills?')){this.requests++;requests.push(endpoint);now+=requestMs;return {receivedAt:iso(),data:{data:[],pagination:{hasMore:false},coverage:{complete:true},privateField:'do-not-export'}};}
+      if(endpoint.includes('/portfolio/pnl?')){this.requests++;requests.push(endpoint);now+=requestMs;return {receivedAt:iso(),data:{period:'day',totalAccountValue:100000,totalHoldingsValue:0,totalCostBasis:0,unrealizedPnl:0,periodPnl:0,privateField:'do-not-export'}};}
       const stage=endpoint.includes('/price-history?')?'history':endpoint.endsWith('/portfolio/positions')?'positions':market?'book-'+market:endpoint.startsWith('/exchanges/prices?')?'bulk-admission':'tournament';
-      interrupt(stage);this.requests++;requests.push(endpoint);now+=6000;
+      interrupt(stage);this.requests++;requests.push(endpoint);now+=requestMs;
       if(stage==='tournament'&&['startup-recover','startup-stop','startup-auth'].includes(stopAt)&&startupFailures++<2){const e=Error('Synthetic startup outage');e.recoverable=stopAt!=='startup-auth';throw e;}
       if(stage==='tournament')return {data:{id:config.tournamentId,currencyName:'SUSQies',status:'active',isPendingEnrolment:false}};
       if(stage==='history'){const id=/\/exchanges\/(\d+)\//.exec(endpoint)[1],to=new URLSearchParams(endpoint.split('?')[1]).get('to');return {endpoint,requestStartedAt:iso(),receivedAt:iso(),data:{exchangeId:id,marketId:universe.exchanges.find(x=>x.exchangeId===id).marketId,resolution:'1m',from:new Date(Date.parse(to)-3600000).toISOString(),to,candles:[],coverage:{complete:true,projectedThroughSequence:1}}};}
@@ -115,7 +118,7 @@ async function run(stopAt,{dipEnabled=false,officialSync=false,invalidBasket=fal
     memory.set(p,JSON.stringify(v));
     if(stopAt==='claim-stop'&&p.endsWith('book-scheduler.json')&&v.basketFollowups&&!triggered)stop();
   };
-  const bindings={...model,...breadth,...depth,...scheduler,planComparisonSampling,recordComparisonAttempt,createComparisonRiskSource:()=>({poll:()=>({configured:samplingEnabled,available:!riskUnavailable,cohort:'fixture',bankHash:'a'.repeat(64),heldMarketIds:comparisonHeld,pendingMarketIds:comparisonPending}),close(){}}),collectionInputs,shockCollectionRisk,networkInterval,loadNetworkBudget:file=>mockfs.existsSync(file)?validateNetworkBudget(JSON.parse(mockfs.readFileSync(file))):null,connectTournament,validateTiming,timingSummary,historyEndpoint,normalizeHistory,validateDipPolicy,workerHealth:(report,at=now)=>workerHealth(report,at),baselineView,accountPositions,accountOrders,accountFills,accountPnl,accountView,fs:mockfs,path,http:{createServer:()=>({once(){},listen(p,h,f){f();},close(){}})},randomUUID,fileURLToPath,
+  const bindings={collectionCycleWait,CompetitionController:class{constructor(){this.state={intents:{}};this.transport={authorizeRequest:()=>false};}managedMarketIds(){return officialRiskSchedule?.[Math.max(0,cycle-1)]||[];}async beforeBooks(){officialCalls.push({kind:"reconcile",cycle});}async onBook(){officialCalls.push({kind:"book",cycle});}failure(e){throw e;}close(){}},...model,...breadth,...depth,...scheduler,planComparisonSampling,recordComparisonAttempt,createComparisonRiskSource:()=>({poll:()=>({configured:samplingEnabled,available:!riskUnavailable,cohort:'fixture',bankHash:'a'.repeat(64),heldMarketIds:comparisonHeld,pendingMarketIds:comparisonPending}),close(){}}),collectionInputs,shockCollectionRisk,networkInterval,loadNetworkBudget:file=>mockfs.existsSync(file)?validateNetworkBudget(JSON.parse(mockfs.readFileSync(file))):null,connectTournament,validateTiming,timingSummary,historyEndpoint,normalizeHistory,validateDipPolicy,workerHealth:(report,at=now)=>workerHealth(report,at),baselineView,accountPositions,accountOrders,accountFills,accountPnl,accountView,fs:mockfs,path,http:{createServer:()=>({once(){},listen(p,h,f){f();},close(){}})},randomUUID,fileURLToPath,
     loadKey:()=> 'SYNTHETIC',Journal,ReadClient,lock:()=>()=>{},atomicJson,durableAtomicJson:atomicJson,exclusionSet,basketCandidates,planBasketBooks,basketCodeIdentity,createBasketRelationshipReader,
     createBookPublication({canOperate}){return {publishBook({marketId,response}){if(stopAt==='public-book-recording-failure'&&cycle===2)throw Error('Synthetic public journal failure');if(canOperate())publications.push({kind:'book',marketId,receivedAt:response.receivedAt,at:iso(),requestCount:requests.length});},invalidate({marketId,reason}){publications.push({kind:'invalidation',marketId,reason,at:iso()});},close(reason){publications.push({kind:'closed',reason,at:iso()});}};},
     createBasketFollowupSource({bank}){return {poll(){
@@ -128,7 +131,7 @@ async function run(stopAt,{dipEnabled=false,officialSync=false,invalidBasket=fal
     process,console:{log(){},error(){}},AbortController,structuredClone,Date:Clock,setInterval:()=>1,clearInterval(){},moduleUrl:new URL('./runner.mjs',import.meta.url).href};
   const body=source.replace(/^import .*;\r?\n/gm,'').replaceAll('import.meta.url','moduleUrl');
   await vm.runInNewContext('(async()=>{'+body+'\n})()',bindings);
-  return {commits,process,memory,requests,publications,triggered,claimWrites,pairReadClaims,samplingWrites,samplingRequests};
+  return {commits,process,memory,requests,publications,triggered,claimWrites,pairReadClaims,samplingWrites,samplingRequests,pauses,officialCalls};
 }
 
 test('paired sampling persists before requests and preserves four books per cycle',async()=>{
@@ -251,4 +254,15 @@ test('STOP or durable recording failure during historical backfill cannot contin
 
 test('official sync replaces historical slots and stores only curated account projections outside the paper journal',async()=>{
  const r=await run('none',{dipEnabled:true,officialSync:true});assert.equal(r.process.exitCode,0);assert.equal(r.requests.filter(x=>x.includes('/price-history?')).length,2);assert.equal(r.requests.filter(x=>x.includes('/portfolio/fills?')||x.includes('/portfolio/pnl?')).length,2);const cache=JSON.parse(r.memory.get(path.join('/synthetic','SigTradingCup','paper-runtime','official-account.json')));assert.equal(cache.pnl.accountValue,100000);assert.equal(cache.fills.rows.length,0);assert.ok(!JSON.stringify(cache).includes('do-not-export'));assert.ok(!JSON.stringify(r.commits).includes('do-not-export'));assert.equal(replayJournal(r.commits.map(x=>JSON.stringify(x)).join('\n')+'\n',config).observations,4);
+});
+test('real runner skips its cycle-floor idle for owned or pending official risk and retains reconciliation before books',async()=>{
+ const flat=await run('none',{requestMs:100}),risk=await run('none',{requestMs:100,officialRiskSchedule:[['277'],['277']]});
+ assert.equal(risk.process.exitCode,0);assert.ok(flat.pauses.some(p=>p.cycle===1&&p.delay>20000));assert.equal(risk.pauses.filter(p=>p.cycle===1).length,0);
+ for(const cycle of [1,2]){const calls=risk.officialCalls.filter(x=>x.cycle===cycle);assert.equal(calls[0].kind,'reconcile');assert.equal(calls.filter(x=>x.kind==='book').length,6);}
+ assert.deepEqual(risk.requests,flat.requests,'risk skips idle without changing endpoints or dropping account reconciliation');
+});
+test('flat transition restores the original cycle wait and STOP/outage still stop or back off',async()=>{
+ const cleared=await run('none',{maxCycles:3,requestMs:100,officialRiskSchedule:[['277'],[],[]]});assert.equal(cleared.process.exitCode,0);assert.equal(cleared.pauses.filter(p=>p.cycle===1).length,0);assert.ok(cleared.pauses.some(p=>p.cycle===2&&p.delay>20000));
+ const stopped=await run('positions',{requestMs:100,officialRiskSchedule:[['277'],['277']]});assert.equal(stopped.process.exitCode,0);assert.equal(stopped.requests.filter(x=>x.includes('/orderbook?')).length,6);assert.equal(stopped.commits.filter(x=>x.event.type==='cycle').length,1);
+ const outage=await run('outage-wait',{requestMs:100,maxCycles:3,officialRiskSchedule:[['277'],['277'],['277']]});assert.equal(outage.process.exitCode,0);assert.ok(outage.pauses.some(p=>p.cycle===2&&p.delay>=10000));assert.equal(outage.commits.filter(x=>x.event.type==='account_read_outage').length,1);
 });
