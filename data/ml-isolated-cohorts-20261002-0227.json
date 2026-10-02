@@ -1,0 +1,236 @@
+{
+  "createdAt": "2026-10-02T02:26:17.851Z",
+  "profitabilityEstablished": false,
+  "cohorts": [
+    {
+      "name": "isolated-ridge-20261002-0227",
+      "hash": "b9390cf6096ff4b6b4a17055491967f43b33fe431446e85633c036d7cfdab2c4",
+      "policy": "market-isolated-v2",
+      "trained": 128,
+      "attempted": 128,
+      "cutoff": "2026-10-02T02:24:20.434Z",
+      "sourceHash": "9fd50dd7607c89b01f21fec4070fddddeb6a68c9072677a5bb37f18e4573fccb",
+      "configHash": "a82e415ea924e4c5722bd9dbd64dc071ecee54d76880acc47e00f834717e8375",
+      "selected": [
+        {
+          "id": "ridge-h60-f12-l100",
+          "horizon": 60,
+          "trainRows": 401,
+          "testRows": 215,
+          "rmse": 0.004586066988327957,
+          "baselineRmse": 0.005075662655786796
+        },
+        {
+          "id": "ridge-h60-f9-l100",
+          "horizon": 60,
+          "trainRows": 401,
+          "testRows": 215,
+          "rmse": 0.0046008270636620175,
+          "baselineRmse": 0.005075662655786796
+        },
+        {
+          "id": "ridge-h60-f9-l10",
+          "horizon": 60,
+          "trainRows": 401,
+          "testRows": 215,
+          "rmse": 0.004603833102358864,
+          "baselineRmse": 0.005075662655786796
+        },
+        {
+          "id": "ridge-h180-f9-l100",
+          "horizon": 180,
+          "trainRows": 354,
+          "testRows": 179,
+          "rmse": 0.005697806658960522,
+          "baselineRmse": 0.006357816308473395
+        },
+        {
+          "id": "ridge-h180-f12-l100",
+          "horizon": 180,
+          "trainRows": 354,
+          "testRows": 179,
+          "rmse": 0.0057068858990484295,
+          "baselineRmse": 0.006357816308473395
+        },
+        {
+          "id": "ridge-h180-f9-l10",
+          "horizon": 180,
+          "trainRows": 354,
+          "testRows": 179,
+          "rmse": 0.0057161560266202486,
+          "baselineRmse": 0.006357816308473395
+        },
+        {
+          "id": "ridge-h300-f12-l1000",
+          "horizon": 300,
+          "trainRows": 304,
+          "testRows": 149,
+          "rmse": 0.006637414169438724,
+          "baselineRmse": 0.007456094439805717
+        },
+        {
+          "id": "ridge-h300-f9-l1000",
+          "horizon": 300,
+          "trainRows": 304,
+          "testRows": 149,
+          "rmse": 0.0066381470567378744,
+          "baselineRmse": 0.007456094439805717
+        },
+        {
+          "id": "ridge-h300-f9-l100",
+          "horizon": 300,
+          "trainRows": 304,
+          "testRows": 149,
+          "rmse": 0.006650158231706373,
+          "baselineRmse": 0.007456094439805717
+        },
+        {
+          "id": "ridge-h600-f12-l1000",
+          "horizon": 600,
+          "trainRows": 209,
+          "testRows": 101,
+          "rmse": 0.007104228725838904,
+          "baselineRmse": 0.007779610393283619
+        },
+        {
+          "id": "ridge-h600-f9-l1000",
+          "horizon": 600,
+          "trainRows": 209,
+          "testRows": 101,
+          "rmse": 0.007106836028946716,
+          "baselineRmse": 0.007779610393283619
+        },
+        {
+          "id": "ridge-h600-f4-l1000",
+          "horizon": 600,
+          "trainRows": 209,
+          "testRows": 101,
+          "rmse": 0.007108109508549225,
+          "baselineRmse": 0.007779610393283619
+        }
+      ]
+    },
+    {
+      "name": "isolated-stumps-20261002-0227",
+      "hash": "30b54c5710f499d61f15a2a9f85ec96f0987eba9a2814739096d4e7a2b7cb5de",
+      "policy": "market-isolated-v2",
+      "trained": 128,
+      "attempted": 128,
+      "cutoff": "2026-10-02T02:24:20.434Z",
+      "sourceHash": "9fd50dd7607c89b01f21fec4070fddddeb6a68c9072677a5bb37f18e4573fccb",
+      "configHash": "a82e415ea924e4c5722bd9dbd64dc071ecee54d76880acc47e00f834717e8375",
+      "selected": [
+        {
+          "id": "stumps-h60-f6-n64-r0.1-leaf5",
+          "horizon": 60,
+          "trainRows": 401,
+          "testRows": 215,
+          "rmse": 0.004665049147392211,
+          "baselineRmse": 0.005075662655786796
+        },
+        {
+          "id": "stumps-h60-f6-n64-r0.1-leaf10",
+          "horizon": 60,
+          "trainRows": 401,
+          "testRows": 215,
+          "rmse": 0.004665049147392211,
+          "baselineRmse": 0.005075662655786796
+        },
+        {
+          "id": "stumps-h60-f6-n64-r0.05-leaf5",
+          "horizon": 60,
+          "trainRows": 401,
+          "testRows": 215,
+          "rmse": 0.0046898062206799564,
+          "baselineRmse": 0.005075662655786796
+        },
+        {
+          "id": "stumps-h180-f12-n64-r0.05-leaf5",
+          "horizon": 180,
+          "trainRows": 354,
+          "testRows": 179,
+          "rmse": 0.005824737543121739,
+          "baselineRmse": 0.006357816308473395
+        },
+        {
+          "id": "stumps-h180-f12-n64-r0.05-leaf10",
+          "horizon": 180,
+          "trainRows": 354,
+          "testRows": 179,
+          "rmse": 0.005824737543121739,
+          "baselineRmse": 0.006357816308473395
+        },
+        {
+          "id": "stumps-h180-f6-n64-r0.05-leaf5",
+          "horizon": 180,
+          "trainRows": 354,
+          "testRows": 179,
+          "rmse": 0.005841120244312753,
+          "baselineRmse": 0.006357816308473395
+        },
+        {
+          "id": "stumps-h300-f12-n64-r0.05-leaf5",
+          "horizon": 300,
+          "trainRows": 304,
+          "testRows": 149,
+          "rmse": 0.006446556157403786,
+          "baselineRmse": 0.007456094439805717
+        },
+        {
+          "id": "stumps-h300-f12-n16-r0.1-leaf5",
+          "horizon": 300,
+          "trainRows": 304,
+          "testRows": 149,
+          "rmse": 0.006489055293947429,
+          "baselineRmse": 0.007456094439805717
+        },
+        {
+          "id": "stumps-h300-f12-n16-r0.05-leaf5",
+          "horizon": 300,
+          "trainRows": 304,
+          "testRows": 149,
+          "rmse": 0.00657212058972603,
+          "baselineRmse": 0.007456094439805717
+        },
+        {
+          "id": "stumps-h600-f4-n16-r0.05-leaf5",
+          "horizon": 600,
+          "trainRows": 209,
+          "testRows": 101,
+          "rmse": 0.007302953372404974,
+          "baselineRmse": 0.007779610393283619
+        },
+        {
+          "id": "stumps-h600-f4-n16-r0.05-leaf10",
+          "horizon": 600,
+          "trainRows": 209,
+          "testRows": 101,
+          "rmse": 0.007302953372404974,
+          "baselineRmse": 0.007779610393283619
+        },
+        {
+          "id": "stumps-h600-f4-n16-r0.1-leaf5",
+          "horizon": 600,
+          "trainRows": 209,
+          "testRows": 101,
+          "rmse": 0.007480862632342787,
+          "baselineRmse": 0.007779610393283619
+        }
+      ]
+    }
+  ],
+  "resetEvidence": [
+    {
+      "historyPolicy": "global-reset-v1",
+      "rows": 704,
+      "continuousSegments": 115,
+      "priorHistoryAvailable": 601
+    },
+    {
+      "historyPolicy": "market-isolated-v2",
+      "rows": 704,
+      "continuousSegments": 48,
+      "priorHistoryAvailable": 656
+    }
+  ]
+}

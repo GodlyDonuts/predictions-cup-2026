@@ -6,6 +6,7 @@ import {atomicJson,lock} from './runtime.mjs';
 import {features,predict} from './ml-bank.mjs';
 import {amount,fee,TICK} from '../paper/fixed.mjs';
 import {scopedSnapshots} from './depth-scope.mjs';
+import {historyPolicy,resetHistory} from './history-policy.mjs';
 
 export function verifySource(raw){
  if(!raw||!raw.endsWith('\n'))return null;
@@ -22,6 +23,7 @@ export function verifySource(raw){
 
 export function advanceShadow(input,records,bank){
  const state=structuredClone(input),c=bank.config;
+ const policy=historyPolicy(bank.historyPolicy);
  if(state.bankHash!==digest(bank))throw Error('Frozen model bank changed');
  if(state.sourceSequence>records.length||(state.sourceSequence&&records[state.sourceSequence-1].hash!==state.sourceHash))throw Error('Source prefix changed on resume');
  for(const r of records){
@@ -31,9 +33,9 @@ export function advanceShadow(input,records,bank){
   if(e.type==='account_read_outage'){for(const wallet of Object.values(state.wallets))invalidate(wallet,null,state.captureThrough,'account_outage');state.histories={};continue;}
   if(e.type!=='cycle')continue;
   for(const snap of scopedSnapshots(e,c)){
-   if(snap.skipped){for(const wallet of Object.values(state.wallets))invalidate(wallet,snap.marketId,snap.at||state.captureThrough,snap.skipped);state.histories={};continue;}
+   if(snap.skipped){for(const wallet of Object.values(state.wallets))invalidate(wallet,snap.marketId,snap.at||state.captureThrough,snap.skipped);resetHistory(state.histories,snap.marketId,policy);continue;}
    const match=/^\/markets\/(\d+)\/orderbook\?/.exec(snap.endpoint||'');if(!match||!c.marketIds.includes(match[1])||Date.parse(snap.requestStartedAt)<=Date.parse(bank.trainingCaptureThrough))continue;
-   let b;try{b=normalizeBook(snap.data,match[1],c.tournamentId,snap.receivedAt,snap.requestStartedAt,c.maxDataAgeMs,new Set(e.accountExclusions));}catch{state.histories={};for(const w of Object.values(state.wallets))invalidate(w,match[1],snap.receivedAt,'invalid_book');continue;}
+   let b;try{b=normalizeBook(snap.data,match[1],c.tournamentId,snap.receivedAt,snap.requestStartedAt,c.maxDataAgeMs,new Set(e.accountExclusions));}catch{resetHistory(state.histories,match[1],policy);for(const w of Object.values(state.wallets))invalidate(w,match[1],snap.receivedAt,'invalid_book');continue;}
    let history=state.histories[b.instrument]||[];
    if(history.length&&Date.parse(b.receivedAt)-Date.parse(history.at(-1).at)>120000)history=[];
    const x=features(b,history),mid=x[11];let advanced=false;
@@ -50,7 +52,7 @@ export function advanceShadow(input,records,bank){
     state.predictions[id]={at:b.receivedAt,exitValue,netEdge,entryCost,modelRmse:model.rmse,margin,instrument:b.instrument,warmupRemaining:Math.max(0,6-history.length)};
     if(!same)advanced=true;
    }
-   if(advanced)state.histories[b.instrument]=[...history,{at:b.receivedAt,mid}].slice(-30);
+   if(advanced)state.histories[b.instrument]=[...history,{at:b.receivedAt,mid,marketId:b.marketId}].slice(-30);
   }
  }
  return state;

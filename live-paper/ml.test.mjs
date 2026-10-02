@@ -54,8 +54,8 @@ test('future development observations cannot change fitted weights or training n
   const data={contexts:[{type:'tournament',tournament:{id:c.tournamentId},orderbook:{exchanges:[{exchangeId:'9',option:'YES',asOf:{at:time,sequence:n},bids:[{price:Number(bid.toFixed(3)),quantity:10000}],asks:[{price:Number((bid+.01).toFixed(3)),quantity:10000}]}]}}]};
   const body={sequence:n+1,previous,at:time,state:{},event:{type:'cycle',clockAt:time,accountExclusions:[],sourceSnapshots:[{endpoint:'/markets/377/orderbook?tournamentId='+c.tournamentId,receivedAt:time,requestStartedAt:time,data}]}};const hash=createHash('sha256').update(JSON.stringify(body)).digest('hex');previous=hash;return JSON.stringify({...body,hash});
  }).join('\n')+'\n';}
- for(const family of ['ridge','boosted_stumps']){
-  const first=trainBank(capture(false),c,{family}),changed=trainBank(capture(true),c,{family});assert.equal(first.modelsTrained,128);
+ for(const family of ['ridge','boosted_stumps'])for(const historyPolicy of ['global-reset-v1','market-isolated-v2']){
+  const first=trainBank(capture(false),c,{family,historyPolicy}),changed=trainBank(capture(true),c,{family,historyPolicy});assert.equal(first.modelsTrained,128);
   for(const m of first.models){const other=changed.models.find(x=>x.id===m.id);assert.deepEqual(other.weights,m.weights);assert.deepEqual(other.means,m.means);assert.deepEqual(other.scales,m.scales);assert.deepEqual(other.stumps,m.stumps);assert.equal(other.base,m.base);assert.ok(Date.parse(m.maxTrainingLabelAt)<Date.parse(first.developmentSplitAt));}
  }
 });
