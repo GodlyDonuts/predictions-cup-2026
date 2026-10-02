@@ -4,7 +4,7 @@ import {fileURLToPath} from 'node:url';
 import {createHash} from 'node:crypto';
 import {digest,initialState,normalizeBook,stepForecast,report,invalidate,assertState} from './model.mjs';
 import {atomicJson,lock} from './runtime.mjs';
-import {features,predict} from './ml-bank.mjs';
+import {features,predict,validateTrainingScope} from './ml-bank.mjs';
 import {amount,fee,TICK} from '../paper/fixed.mjs';
 import {scopedSnapshots} from './depth-scope.mjs';
 import {historyPolicy,resetHistory} from './history-policy.mjs';
@@ -25,7 +25,7 @@ export function verifySource(raw){
 }
 
 export function requireSourceMetadata(bank){
- targetPolicy(bank.targetPolicy);
+ targetPolicy(bank.targetPolicy);validateTrainingScope(bank.trainingScope,bank.requireInstrumentCoverage,bank.targetPolicy);
  if(!Number.isSafeInteger(bank.sourceRecords)||bank.sourceRecords<1||typeof bank.sourceHash!=='string'||!/^[a-f0-9]{64}$/.test(bank.sourceHash)||!Number.isFinite(Date.parse(bank.trainingCaptureThrough)))throw Error('Missing or invalid frozen training source metadata');
 }
 export function bindTrainingSource(records,bank,{allowUnboundFixture=false}={}){
@@ -40,7 +40,7 @@ export function bindTrainingSource(records,bank,{allowUnboundFixture=false}={}){
 
 export function advanceShadow(input,records,bank,{allowUnboundFixture=false}={}){
  const state=structuredClone(input),c=bank.config;
- const policy=historyPolicy(bank.historyPolicy);targetPolicy(bank.targetPolicy);
+ const policy=historyPolicy(bank.historyPolicy);targetPolicy(bank.targetPolicy);validateTrainingScope(bank.trainingScope,bank.requireInstrumentCoverage,bank.targetPolicy);
  if(state.bankHash!==digest(bank))throw Error('Frozen model bank changed');
  const binding=bindTrainingSource(records,bank,{allowUnboundFixture});
  if(state.sourceBinding&&digest(state.sourceBinding)!==digest(binding))throw Error('Frozen training binding changed');

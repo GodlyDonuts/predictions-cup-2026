@@ -1,0 +1,1822 @@
+{
+  "createdAt": "2026-10-02T03:55:40.930Z",
+  "targetPolicy": "delayed_fifo_roundtrip_net_v1",
+  "trainingScope": "supported-instruments-v1",
+  "profitabilityEstablished": false,
+  "cohorts": [
+    {
+      "name": "supported-roundtrip-ridge-20261002-0357",
+      "bankHash": "952a15893092763539a530127b362fa1f428bf8c5bfb0ebafc9b5c7e76ade382",
+      "sourceHash": "1e253c82726cab5f84dc804e142fcb057a313bc5edcb11d10be9f05b063faa51",
+      "sourceRecords": 266,
+      "cutoff": "2026-10-02T03:54:09.397Z",
+      "acceptedSnapshots": 453,
+      "modelsTrained": 32,
+      "selectedModels": 3,
+      "labels": [
+        {
+          "horizon": 60,
+          "accepted": 169,
+          "train": 83,
+          "test": 22,
+          "beforeSupport": {
+            "train": 122,
+            "test": 31
+          },
+          "excludedUnsupported": {
+            "train": 39,
+            "test": 9
+          },
+          "rejected": {
+            "decision_warmup": 131,
+            "entry_unfilled": 60,
+            "segment_boundary": 71,
+            "exit_censored": 15,
+            "entry_censored": 7
+          },
+          "markets": [
+            {
+              "marketId": "277",
+              "observations": 75,
+              "accepted": 16,
+              "rejected": {
+                "decision_warmup": 28,
+                "segment_boundary": 23,
+                "entry_unfilled": 4,
+                "exit_censored": 3,
+                "entry_censored": 1
+              },
+              "coverage": {
+                "marketId": "277",
+                "train": 5,
+                "test": 6,
+                "trainingInstruments": [
+                  "966:YES"
+                ],
+                "testInstruments": [
+                  "966:YES"
+                ],
+                "eligible": false
+              }
+            },
+            {
+              "marketId": "305",
+              "observations": 75,
+              "accepted": 14,
+              "rejected": {
+                "decision_warmup": 30,
+                "segment_boundary": 19,
+                "entry_unfilled": 1,
+                "exit_censored": 10,
+                "entry_censored": 1
+              },
+              "coverage": {
+                "marketId": "305",
+                "train": 9,
+                "test": 5,
+                "trainingInstruments": [
+                  "994:YES"
+                ],
+                "testInstruments": [
+                  "994:YES"
+                ],
+                "eligible": true
+              }
+            },
+            {
+              "marketId": "342",
+              "observations": 77,
+              "accepted": 24,
+              "rejected": {
+                "decision_warmup": 18,
+                "entry_unfilled": 25,
+                "segment_boundary": 7,
+                "exit_censored": 2,
+                "entry_censored": 1
+              },
+              "coverage": {
+                "marketId": "342",
+                "train": 18,
+                "test": 6,
+                "trainingInstruments": [
+                  "1031:YES"
+                ],
+                "testInstruments": [
+                  "1031:YES"
+                ],
+                "eligible": true
+              }
+            },
+            {
+              "marketId": "354",
+              "observations": 75,
+              "accepted": 42,
+              "rejected": {
+                "decision_warmup": 18,
+                "entry_unfilled": 10,
+                "segment_boundary": 3,
+                "entry_censored": 2
+              },
+              "coverage": {
+                "marketId": "354",
+                "train": 29,
+                "test": 5,
+                "trainingInstruments": [
+                  "1043:YES"
+                ],
+                "testInstruments": [
+                  "1043:YES"
+                ],
+                "eligible": true
+              }
+            },
+            {
+              "marketId": "376",
+              "observations": 76,
+              "accepted": 40,
+              "rejected": {
+                "decision_warmup": 19,
+                "entry_unfilled": 8,
+                "segment_boundary": 9
+              },
+              "coverage": {
+                "marketId": "376",
+                "train": 34,
+                "test": 3,
+                "trainingInstruments": [
+                  "1065:YES"
+                ],
+                "testInstruments": [
+                  "1065:YES"
+                ],
+                "eligible": false
+              }
+            },
+            {
+              "marketId": "377",
+              "observations": 75,
+              "accepted": 33,
+              "rejected": {
+                "decision_warmup": 18,
+                "entry_unfilled": 12,
+                "segment_boundary": 10,
+                "entry_censored": 2
+              },
+              "coverage": {
+                "marketId": "377",
+                "train": 27,
+                "test": 6,
+                "trainingInstruments": [
+                  "1066:YES"
+                ],
+                "testInstruments": [
+                  "1066:YES"
+                ],
+                "eligible": true
+              }
+            }
+          ]
+        },
+        {
+          "horizon": 180,
+          "accepted": 147,
+          "train": 45,
+          "test": 8,
+          "beforeSupport": {
+            "train": 116,
+            "test": 18
+          },
+          "excludedUnsupported": {
+            "train": 71,
+            "test": 10
+          },
+          "rejected": {
+            "decision_warmup": 131,
+            "entry_unfilled": 60,
+            "segment_boundary": 87,
+            "exit_censored": 21,
+            "entry_censored": 7
+          },
+          "markets": [
+            {
+              "marketId": "277",
+              "observations": 75,
+              "accepted": 12,
+              "rejected": {
+                "decision_warmup": 28,
+                "segment_boundary": 24,
+                "entry_unfilled": 4,
+                "exit_censored": 6,
+                "entry_censored": 1
+              },
+              "coverage": {
+                "marketId": "277",
+                "train": 5,
+                "test": 3,
+                "trainingInstruments": [
+                  "966:YES"
+                ],
+                "testInstruments": [
+                  "966:YES"
+                ],
+                "eligible": false
+              }
+            },
+            {
+              "marketId": "305",
+              "observations": 75,
+              "accepted": 10,
+              "rejected": {
+                "decision_warmup": 30,
+                "segment_boundary": 23,
+                "entry_unfilled": 1,
+                "exit_censored": 10,
+                "entry_censored": 1
+              },
+              "coverage": {
+                "marketId": "305",
+                "train": 7,
+                "test": 3,
+                "trainingInstruments": [
+                  "994:YES"
+                ],
+                "testInstruments": [
+                  "994:YES"
+                ],
+                "eligible": false
+              }
+            },
+            {
+              "marketId": "342",
+              "observations": 77,
+              "accepted": 21,
+              "rejected": {
+                "decision_warmup": 18,
+                "entry_unfilled": 25,
+                "segment_boundary": 10,
+                "exit_censored": 2,
+                "entry_censored": 1
+              },
+              "coverage": {
+                "marketId": "342",
+                "train": 17,
+                "test": 4,
+                "trainingInstruments": [
+                  "1031:YES"
+                ],
+                "testInstruments": [
+                  "1031:YES"
+                ],
+                "eligible": true
+              }
+            },
+            {
+              "marketId": "354",
+              "observations": 75,
+              "accepted": 39,
+              "rejected": {
+                "decision_warmup": 18,
+                "entry_unfilled": 10,
+                "segment_boundary": 5,
+                "exit_censored": 1,
+                "entry_censored": 2
+              },
+              "coverage": {
+                "marketId": "354",
+                "train": 28,
+                "test": 4,
+                "trainingInstruments": [
+                  "1043:YES"
+                ],
+                "testInstruments": [
+                  "1043:YES"
+                ],
+                "eligible": true
+              }
+            },
+            {
+              "marketId": "376",
+              "observations": 76,
+              "accepted": 38,
+              "rejected": {
+                "decision_warmup": 19,
+                "entry_unfilled": 8,
+                "segment_boundary": 11
+              },
+              "coverage": {
+                "marketId": "376",
+                "train": 34,
+                "test": 2,
+                "trainingInstruments": [
+                  "1065:YES"
+                ],
+                "testInstruments": [
+                  "1065:YES"
+                ],
+                "eligible": false
+              }
+            },
+            {
+              "marketId": "377",
+              "observations": 75,
+              "accepted": 27,
+              "rejected": {
+                "decision_warmup": 18,
+                "entry_unfilled": 12,
+                "segment_boundary": 14,
+                "exit_censored": 2,
+                "entry_censored": 2
+              },
+              "coverage": {
+                "marketId": "377",
+                "train": 25,
+                "test": 2,
+                "trainingInstruments": [
+                  "1066:YES"
+                ],
+                "testInstruments": [
+                  "1066:YES"
+                ],
+                "eligible": false
+              }
+            }
+          ]
+        },
+        {
+          "horizon": 300,
+          "accepted": 132,
+          "train": 0,
+          "test": 0,
+          "beforeSupport": {
+            "train": 105,
+            "test": 11
+          },
+          "excludedUnsupported": {
+            "train": 105,
+            "test": 11
+          },
+          "rejected": {
+            "decision_warmup": 131,
+            "entry_unfilled": 60,
+            "segment_boundary": 99,
+            "exit_censored": 24,
+            "entry_censored": 7
+          },
+          "markets": [
+            {
+              "marketId": "277",
+              "observations": 75,
+              "accepted": 10,
+              "rejected": {
+                "decision_warmup": 28,
+                "segment_boundary": 25,
+                "entry_unfilled": 4,
+                "exit_censored": 7,
+                "entry_censored": 1
+              },
+              "coverage": {
+                "marketId": "277",
+                "train": 3,
+                "test": 2,
+                "trainingInstruments": [
+                  "966:YES"
+                ],
+                "testInstruments": [
+                  "966:YES"
+                ],
+                "eligible": false
+              }
+            },
+            {
+              "marketId": "305",
+              "observations": 75,
+              "accepted": 5,
+              "rejected": {
+                "decision_warmup": 30,
+                "segment_boundary": 28,
+                "entry_unfilled": 1,
+                "exit_censored": 10,
+                "entry_censored": 1
+              },
+              "coverage": {
+                "marketId": "305",
+                "train": 3,
+                "test": 2,
+                "trainingInstruments": [
+                  "994:YES"
+                ],
+                "testInstruments": [
+                  "994:YES"
+                ],
+                "eligible": false
+              }
+            },
+            {
+              "marketId": "342",
+              "observations": 77,
+              "accepted": 20,
+              "rejected": {
+                "decision_warmup": 18,
+                "entry_unfilled": 25,
+                "segment_boundary": 11,
+                "exit_censored": 2,
+                "entry_censored": 1
+              },
+              "coverage": {
+                "marketId": "342",
+                "train": 17,
+                "test": 3,
+                "trainingInstruments": [
+                  "1031:YES"
+                ],
+                "testInstruments": [
+                  "1031:YES"
+                ],
+                "eligible": false
+              }
+            },
+            {
+              "marketId": "354",
+              "observations": 75,
+              "accepted": 37,
+              "rejected": {
+                "decision_warmup": 18,
+                "entry_unfilled": 10,
+                "segment_boundary": 6,
+                "exit_censored": 2,
+                "entry_censored": 2
+              },
+              "coverage": {
+                "marketId": "354",
+                "train": 26,
+                "test": 3,
+                "trainingInstruments": [
+                  "1043:YES"
+                ],
+                "testInstruments": [
+                  "1043:YES"
+                ],
+                "eligible": false
+              }
+            },
+            {
+              "marketId": "376",
+              "observations": 76,
+              "accepted": 36,
+              "rejected": {
+                "decision_warmup": 19,
+                "entry_unfilled": 8,
+                "segment_boundary": 13
+              },
+              "coverage": {
+                "marketId": "376",
+                "train": 32,
+                "test": 1,
+                "trainingInstruments": [
+                  "1065:YES"
+                ],
+                "testInstruments": [
+                  "1065:YES"
+                ],
+                "eligible": false
+              }
+            },
+            {
+              "marketId": "377",
+              "observations": 75,
+              "accepted": 24,
+              "rejected": {
+                "decision_warmup": 18,
+                "entry_unfilled": 12,
+                "segment_boundary": 16,
+                "exit_censored": 3,
+                "entry_censored": 2
+              },
+              "coverage": {
+                "marketId": "377",
+                "train": 24,
+                "test": 0,
+                "trainingInstruments": [
+                  "1066:YES"
+                ],
+                "testInstruments": [],
+                "eligible": false
+              }
+            }
+          ]
+        },
+        {
+          "horizon": 600,
+          "accepted": 111,
+          "train": 0,
+          "test": 0,
+          "beforeSupport": {
+            "train": 91,
+            "test": 3
+          },
+          "excludedUnsupported": {
+            "train": 91,
+            "test": 3
+          },
+          "rejected": {
+            "decision_warmup": 131,
+            "entry_unfilled": 60,
+            "segment_boundary": 115,
+            "exit_censored": 29,
+            "entry_censored": 7
+          },
+          "markets": [
+            {
+              "marketId": "277",
+              "observations": 75,
+              "accepted": 8,
+              "rejected": {
+                "decision_warmup": 28,
+                "segment_boundary": 25,
+                "entry_unfilled": 4,
+                "exit_censored": 9,
+                "entry_censored": 1
+              },
+              "coverage": {
+                "marketId": "277",
+                "train": 2,
+                "test": 0,
+                "trainingInstruments": [
+                  "966:YES"
+                ],
+                "testInstruments": [],
+                "eligible": false
+              }
+            },
+            {
+              "marketId": "305",
+              "observations": 75,
+              "accepted": 0,
+              "rejected": {
+                "decision_warmup": 30,
+                "segment_boundary": 33,
+                "entry_unfilled": 1,
+                "exit_censored": 10,
+                "entry_censored": 1
+              },
+              "coverage": {
+                "marketId": "305",
+                "train": 0,
+                "test": 0,
+                "trainingInstruments": [],
+                "testInstruments": [],
+                "eligible": false
+              }
+            },
+            {
+              "marketId": "342",
+              "observations": 77,
+              "accepted": 20,
+              "rejected": {
+                "decision_warmup": 18,
+                "entry_unfilled": 25,
+                "segment_boundary": 11,
+                "exit_censored": 2,
+                "entry_censored": 1
+              },
+              "coverage": {
+                "marketId": "342",
+                "train": 17,
+                "test": 3,
+                "trainingInstruments": [
+                  "1031:YES"
+                ],
+                "testInstruments": [
+                  "1031:YES"
+                ],
+                "eligible": false
+              }
+            },
+            {
+              "marketId": "354",
+              "observations": 75,
+              "accepted": 30,
+              "rejected": {
+                "decision_warmup": 18,
+                "entry_unfilled": 10,
+                "segment_boundary": 10,
+                "exit_censored": 5,
+                "entry_censored": 2
+              },
+              "coverage": {
+                "marketId": "354",
+                "train": 22,
+                "test": 0,
+                "trainingInstruments": [
+                  "1043:YES"
+                ],
+                "testInstruments": [],
+                "eligible": false
+              }
+            },
+            {
+              "marketId": "376",
+              "observations": 76,
+              "accepted": 32,
+              "rejected": {
+                "decision_warmup": 19,
+                "entry_unfilled": 8,
+                "segment_boundary": 17
+              },
+              "coverage": {
+                "marketId": "376",
+                "train": 29,
+                "test": 0,
+                "trainingInstruments": [
+                  "1065:YES"
+                ],
+                "testInstruments": [],
+                "eligible": false
+              }
+            },
+            {
+              "marketId": "377",
+              "observations": 75,
+              "accepted": 21,
+              "rejected": {
+                "decision_warmup": 18,
+                "entry_unfilled": 12,
+                "segment_boundary": 19,
+                "exit_censored": 3,
+                "entry_censored": 2
+              },
+              "coverage": {
+                "marketId": "377",
+                "train": 21,
+                "test": 0,
+                "trainingInstruments": [
+                  "1066:YES"
+                ],
+                "testInstruments": [],
+                "eligible": false
+              }
+            }
+          ]
+        }
+      ],
+      "selected": [
+        {
+          "id": "ridge-h60-f12-l1",
+          "horizon": 60,
+          "trainRows": 83,
+          "testRows": 22,
+          "rmse": 0.006681020721150132,
+          "baselineRmse": 0.0036425490013550573,
+          "maxTrainingLabelAt": "2026-10-02T03:12:27.584Z",
+          "coverage": [
+            {
+              "marketId": "377",
+              "train": 27,
+              "test": 6,
+              "trainingInstruments": [
+                "1066:YES"
+              ],
+              "testInstruments": [
+                "1066:YES"
+              ],
+              "eligible": true
+            },
+            {
+              "marketId": "354",
+              "train": 29,
+              "test": 5,
+              "trainingInstruments": [
+                "1043:YES"
+              ],
+              "testInstruments": [
+                "1043:YES"
+              ],
+              "eligible": true
+            },
+            {
+              "marketId": "277",
+              "train": 5,
+              "test": 6,
+              "trainingInstruments": [
+                "966:YES"
+              ],
+              "testInstruments": [
+                "966:YES"
+              ],
+              "eligible": false
+            },
+            {
+              "marketId": "305",
+              "train": 9,
+              "test": 5,
+              "trainingInstruments": [
+                "994:YES"
+              ],
+              "testInstruments": [
+                "994:YES"
+              ],
+              "eligible": true
+            },
+            {
+              "marketId": "342",
+              "train": 18,
+              "test": 6,
+              "trainingInstruments": [
+                "1031:YES"
+              ],
+              "testInstruments": [
+                "1031:YES"
+              ],
+              "eligible": true
+            },
+            {
+              "marketId": "376",
+              "train": 34,
+              "test": 3,
+              "trainingInstruments": [
+                "1065:YES"
+              ],
+              "testInstruments": [
+                "1065:YES"
+              ],
+              "eligible": false
+            }
+          ]
+        },
+        {
+          "id": "ridge-h60-f12-l0.1",
+          "horizon": 60,
+          "trainRows": 83,
+          "testRows": 22,
+          "rmse": 0.006724205688256268,
+          "baselineRmse": 0.0036425490013550573,
+          "maxTrainingLabelAt": "2026-10-02T03:12:27.584Z",
+          "coverage": [
+            {
+              "marketId": "377",
+              "train": 27,
+              "test": 6,
+              "trainingInstruments": [
+                "1066:YES"
+              ],
+              "testInstruments": [
+                "1066:YES"
+              ],
+              "eligible": true
+            },
+            {
+              "marketId": "354",
+              "train": 29,
+              "test": 5,
+              "trainingInstruments": [
+                "1043:YES"
+              ],
+              "testInstruments": [
+                "1043:YES"
+              ],
+              "eligible": true
+            },
+            {
+              "marketId": "277",
+              "train": 5,
+              "test": 6,
+              "trainingInstruments": [
+                "966:YES"
+              ],
+              "testInstruments": [
+                "966:YES"
+              ],
+              "eligible": false
+            },
+            {
+              "marketId": "305",
+              "train": 9,
+              "test": 5,
+              "trainingInstruments": [
+                "994:YES"
+              ],
+              "testInstruments": [
+                "994:YES"
+              ],
+              "eligible": true
+            },
+            {
+              "marketId": "342",
+              "train": 18,
+              "test": 6,
+              "trainingInstruments": [
+                "1031:YES"
+              ],
+              "testInstruments": [
+                "1031:YES"
+              ],
+              "eligible": true
+            },
+            {
+              "marketId": "376",
+              "train": 34,
+              "test": 3,
+              "trainingInstruments": [
+                "1065:YES"
+              ],
+              "testInstruments": [
+                "1065:YES"
+              ],
+              "eligible": false
+            }
+          ]
+        },
+        {
+          "id": "ridge-h60-f12-l0.01",
+          "horizon": 60,
+          "trainRows": 83,
+          "testRows": 22,
+          "rmse": 0.006736024542164531,
+          "baselineRmse": 0.0036425490013550573,
+          "maxTrainingLabelAt": "2026-10-02T03:12:27.584Z",
+          "coverage": [
+            {
+              "marketId": "377",
+              "train": 27,
+              "test": 6,
+              "trainingInstruments": [
+                "1066:YES"
+              ],
+              "testInstruments": [
+                "1066:YES"
+              ],
+              "eligible": true
+            },
+            {
+              "marketId": "354",
+              "train": 29,
+              "test": 5,
+              "trainingInstruments": [
+                "1043:YES"
+              ],
+              "testInstruments": [
+                "1043:YES"
+              ],
+              "eligible": true
+            },
+            {
+              "marketId": "277",
+              "train": 5,
+              "test": 6,
+              "trainingInstruments": [
+                "966:YES"
+              ],
+              "testInstruments": [
+                "966:YES"
+              ],
+              "eligible": false
+            },
+            {
+              "marketId": "305",
+              "train": 9,
+              "test": 5,
+              "trainingInstruments": [
+                "994:YES"
+              ],
+              "testInstruments": [
+                "994:YES"
+              ],
+              "eligible": true
+            },
+            {
+              "marketId": "342",
+              "train": 18,
+              "test": 6,
+              "trainingInstruments": [
+                "1031:YES"
+              ],
+              "testInstruments": [
+                "1031:YES"
+              ],
+              "eligible": true
+            },
+            {
+              "marketId": "376",
+              "train": 34,
+              "test": 3,
+              "trainingInstruments": [
+                "1065:YES"
+              ],
+              "testInstruments": [
+                "1065:YES"
+              ],
+              "eligible": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "supported-roundtrip-stumps-20261002-0357",
+      "bankHash": "489a56311eade9c3e824b6fcd5349f92ca759c8c42f68a6f55f3778b08acb4ad",
+      "sourceHash": "1e253c82726cab5f84dc804e142fcb057a313bc5edcb11d10be9f05b063faa51",
+      "sourceRecords": 266,
+      "cutoff": "2026-10-02T03:54:09.397Z",
+      "acceptedSnapshots": 453,
+      "modelsTrained": 32,
+      "selectedModels": 3,
+      "labels": [
+        {
+          "horizon": 60,
+          "accepted": 169,
+          "train": 83,
+          "test": 22,
+          "beforeSupport": {
+            "train": 122,
+            "test": 31
+          },
+          "excludedUnsupported": {
+            "train": 39,
+            "test": 9
+          },
+          "rejected": {
+            "decision_warmup": 131,
+            "entry_unfilled": 60,
+            "segment_boundary": 71,
+            "exit_censored": 15,
+            "entry_censored": 7
+          },
+          "markets": [
+            {
+              "marketId": "277",
+              "observations": 75,
+              "accepted": 16,
+              "rejected": {
+                "decision_warmup": 28,
+                "segment_boundary": 23,
+                "entry_unfilled": 4,
+                "exit_censored": 3,
+                "entry_censored": 1
+              },
+              "coverage": {
+                "marketId": "277",
+                "train": 5,
+                "test": 6,
+                "trainingInstruments": [
+                  "966:YES"
+                ],
+                "testInstruments": [
+                  "966:YES"
+                ],
+                "eligible": false
+              }
+            },
+            {
+              "marketId": "305",
+              "observations": 75,
+              "accepted": 14,
+              "rejected": {
+                "decision_warmup": 30,
+                "segment_boundary": 19,
+                "entry_unfilled": 1,
+                "exit_censored": 10,
+                "entry_censored": 1
+              },
+              "coverage": {
+                "marketId": "305",
+                "train": 9,
+                "test": 5,
+                "trainingInstruments": [
+                  "994:YES"
+                ],
+                "testInstruments": [
+                  "994:YES"
+                ],
+                "eligible": true
+              }
+            },
+            {
+              "marketId": "342",
+              "observations": 77,
+              "accepted": 24,
+              "rejected": {
+                "decision_warmup": 18,
+                "entry_unfilled": 25,
+                "segment_boundary": 7,
+                "exit_censored": 2,
+                "entry_censored": 1
+              },
+              "coverage": {
+                "marketId": "342",
+                "train": 18,
+                "test": 6,
+                "trainingInstruments": [
+                  "1031:YES"
+                ],
+                "testInstruments": [
+                  "1031:YES"
+                ],
+                "eligible": true
+              }
+            },
+            {
+              "marketId": "354",
+              "observations": 75,
+              "accepted": 42,
+              "rejected": {
+                "decision_warmup": 18,
+                "entry_unfilled": 10,
+                "segment_boundary": 3,
+                "entry_censored": 2
+              },
+              "coverage": {
+                "marketId": "354",
+                "train": 29,
+                "test": 5,
+                "trainingInstruments": [
+                  "1043:YES"
+                ],
+                "testInstruments": [
+                  "1043:YES"
+                ],
+                "eligible": true
+              }
+            },
+            {
+              "marketId": "376",
+              "observations": 76,
+              "accepted": 40,
+              "rejected": {
+                "decision_warmup": 19,
+                "entry_unfilled": 8,
+                "segment_boundary": 9
+              },
+              "coverage": {
+                "marketId": "376",
+                "train": 34,
+                "test": 3,
+                "trainingInstruments": [
+                  "1065:YES"
+                ],
+                "testInstruments": [
+                  "1065:YES"
+                ],
+                "eligible": false
+              }
+            },
+            {
+              "marketId": "377",
+              "observations": 75,
+              "accepted": 33,
+              "rejected": {
+                "decision_warmup": 18,
+                "entry_unfilled": 12,
+                "segment_boundary": 10,
+                "entry_censored": 2
+              },
+              "coverage": {
+                "marketId": "377",
+                "train": 27,
+                "test": 6,
+                "trainingInstruments": [
+                  "1066:YES"
+                ],
+                "testInstruments": [
+                  "1066:YES"
+                ],
+                "eligible": true
+              }
+            }
+          ]
+        },
+        {
+          "horizon": 180,
+          "accepted": 147,
+          "train": 45,
+          "test": 8,
+          "beforeSupport": {
+            "train": 116,
+            "test": 18
+          },
+          "excludedUnsupported": {
+            "train": 71,
+            "test": 10
+          },
+          "rejected": {
+            "decision_warmup": 131,
+            "entry_unfilled": 60,
+            "segment_boundary": 87,
+            "exit_censored": 21,
+            "entry_censored": 7
+          },
+          "markets": [
+            {
+              "marketId": "277",
+              "observations": 75,
+              "accepted": 12,
+              "rejected": {
+                "decision_warmup": 28,
+                "segment_boundary": 24,
+                "entry_unfilled": 4,
+                "exit_censored": 6,
+                "entry_censored": 1
+              },
+              "coverage": {
+                "marketId": "277",
+                "train": 5,
+                "test": 3,
+                "trainingInstruments": [
+                  "966:YES"
+                ],
+                "testInstruments": [
+                  "966:YES"
+                ],
+                "eligible": false
+              }
+            },
+            {
+              "marketId": "305",
+              "observations": 75,
+              "accepted": 10,
+              "rejected": {
+                "decision_warmup": 30,
+                "segment_boundary": 23,
+                "entry_unfilled": 1,
+                "exit_censored": 10,
+                "entry_censored": 1
+              },
+              "coverage": {
+                "marketId": "305",
+                "train": 7,
+                "test": 3,
+                "trainingInstruments": [
+                  "994:YES"
+                ],
+                "testInstruments": [
+                  "994:YES"
+                ],
+                "eligible": false
+              }
+            },
+            {
+              "marketId": "342",
+              "observations": 77,
+              "accepted": 21,
+              "rejected": {
+                "decision_warmup": 18,
+                "entry_unfilled": 25,
+                "segment_boundary": 10,
+                "exit_censored": 2,
+                "entry_censored": 1
+              },
+              "coverage": {
+                "marketId": "342",
+                "train": 17,
+                "test": 4,
+                "trainingInstruments": [
+                  "1031:YES"
+                ],
+                "testInstruments": [
+                  "1031:YES"
+                ],
+                "eligible": true
+              }
+            },
+            {
+              "marketId": "354",
+              "observations": 75,
+              "accepted": 39,
+              "rejected": {
+                "decision_warmup": 18,
+                "entry_unfilled": 10,
+                "segment_boundary": 5,
+                "exit_censored": 1,
+                "entry_censored": 2
+              },
+              "coverage": {
+                "marketId": "354",
+                "train": 28,
+                "test": 4,
+                "trainingInstruments": [
+                  "1043:YES"
+                ],
+                "testInstruments": [
+                  "1043:YES"
+                ],
+                "eligible": true
+              }
+            },
+            {
+              "marketId": "376",
+              "observations": 76,
+              "accepted": 38,
+              "rejected": {
+                "decision_warmup": 19,
+                "entry_unfilled": 8,
+                "segment_boundary": 11
+              },
+              "coverage": {
+                "marketId": "376",
+                "train": 34,
+                "test": 2,
+                "trainingInstruments": [
+                  "1065:YES"
+                ],
+                "testInstruments": [
+                  "1065:YES"
+                ],
+                "eligible": false
+              }
+            },
+            {
+              "marketId": "377",
+              "observations": 75,
+              "accepted": 27,
+              "rejected": {
+                "decision_warmup": 18,
+                "entry_unfilled": 12,
+                "segment_boundary": 14,
+                "exit_censored": 2,
+                "entry_censored": 2
+              },
+              "coverage": {
+                "marketId": "377",
+                "train": 25,
+                "test": 2,
+                "trainingInstruments": [
+                  "1066:YES"
+                ],
+                "testInstruments": [
+                  "1066:YES"
+                ],
+                "eligible": false
+              }
+            }
+          ]
+        },
+        {
+          "horizon": 300,
+          "accepted": 132,
+          "train": 0,
+          "test": 0,
+          "beforeSupport": {
+            "train": 105,
+            "test": 11
+          },
+          "excludedUnsupported": {
+            "train": 105,
+            "test": 11
+          },
+          "rejected": {
+            "decision_warmup": 131,
+            "entry_unfilled": 60,
+            "segment_boundary": 99,
+            "exit_censored": 24,
+            "entry_censored": 7
+          },
+          "markets": [
+            {
+              "marketId": "277",
+              "observations": 75,
+              "accepted": 10,
+              "rejected": {
+                "decision_warmup": 28,
+                "segment_boundary": 25,
+                "entry_unfilled": 4,
+                "exit_censored": 7,
+                "entry_censored": 1
+              },
+              "coverage": {
+                "marketId": "277",
+                "train": 3,
+                "test": 2,
+                "trainingInstruments": [
+                  "966:YES"
+                ],
+                "testInstruments": [
+                  "966:YES"
+                ],
+                "eligible": false
+              }
+            },
+            {
+              "marketId": "305",
+              "observations": 75,
+              "accepted": 5,
+              "rejected": {
+                "decision_warmup": 30,
+                "segment_boundary": 28,
+                "entry_unfilled": 1,
+                "exit_censored": 10,
+                "entry_censored": 1
+              },
+              "coverage": {
+                "marketId": "305",
+                "train": 3,
+                "test": 2,
+                "trainingInstruments": [
+                  "994:YES"
+                ],
+                "testInstruments": [
+                  "994:YES"
+                ],
+                "eligible": false
+              }
+            },
+            {
+              "marketId": "342",
+              "observations": 77,
+              "accepted": 20,
+              "rejected": {
+                "decision_warmup": 18,
+                "entry_unfilled": 25,
+                "segment_boundary": 11,
+                "exit_censored": 2,
+                "entry_censored": 1
+              },
+              "coverage": {
+                "marketId": "342",
+                "train": 17,
+                "test": 3,
+                "trainingInstruments": [
+                  "1031:YES"
+                ],
+                "testInstruments": [
+                  "1031:YES"
+                ],
+                "eligible": false
+              }
+            },
+            {
+              "marketId": "354",
+              "observations": 75,
+              "accepted": 37,
+              "rejected": {
+                "decision_warmup": 18,
+                "entry_unfilled": 10,
+                "segment_boundary": 6,
+                "exit_censored": 2,
+                "entry_censored": 2
+              },
+              "coverage": {
+                "marketId": "354",
+                "train": 26,
+                "test": 3,
+                "trainingInstruments": [
+                  "1043:YES"
+                ],
+                "testInstruments": [
+                  "1043:YES"
+                ],
+                "eligible": false
+              }
+            },
+            {
+              "marketId": "376",
+              "observations": 76,
+              "accepted": 36,
+              "rejected": {
+                "decision_warmup": 19,
+                "entry_unfilled": 8,
+                "segment_boundary": 13
+              },
+              "coverage": {
+                "marketId": "376",
+                "train": 32,
+                "test": 1,
+                "trainingInstruments": [
+                  "1065:YES"
+                ],
+                "testInstruments": [
+                  "1065:YES"
+                ],
+                "eligible": false
+              }
+            },
+            {
+              "marketId": "377",
+              "observations": 75,
+              "accepted": 24,
+              "rejected": {
+                "decision_warmup": 18,
+                "entry_unfilled": 12,
+                "segment_boundary": 16,
+                "exit_censored": 3,
+                "entry_censored": 2
+              },
+              "coverage": {
+                "marketId": "377",
+                "train": 24,
+                "test": 0,
+                "trainingInstruments": [
+                  "1066:YES"
+                ],
+                "testInstruments": [],
+                "eligible": false
+              }
+            }
+          ]
+        },
+        {
+          "horizon": 600,
+          "accepted": 111,
+          "train": 0,
+          "test": 0,
+          "beforeSupport": {
+            "train": 91,
+            "test": 3
+          },
+          "excludedUnsupported": {
+            "train": 91,
+            "test": 3
+          },
+          "rejected": {
+            "decision_warmup": 131,
+            "entry_unfilled": 60,
+            "segment_boundary": 115,
+            "exit_censored": 29,
+            "entry_censored": 7
+          },
+          "markets": [
+            {
+              "marketId": "277",
+              "observations": 75,
+              "accepted": 8,
+              "rejected": {
+                "decision_warmup": 28,
+                "segment_boundary": 25,
+                "entry_unfilled": 4,
+                "exit_censored": 9,
+                "entry_censored": 1
+              },
+              "coverage": {
+                "marketId": "277",
+                "train": 2,
+                "test": 0,
+                "trainingInstruments": [
+                  "966:YES"
+                ],
+                "testInstruments": [],
+                "eligible": false
+              }
+            },
+            {
+              "marketId": "305",
+              "observations": 75,
+              "accepted": 0,
+              "rejected": {
+                "decision_warmup": 30,
+                "segment_boundary": 33,
+                "entry_unfilled": 1,
+                "exit_censored": 10,
+                "entry_censored": 1
+              },
+              "coverage": {
+                "marketId": "305",
+                "train": 0,
+                "test": 0,
+                "trainingInstruments": [],
+                "testInstruments": [],
+                "eligible": false
+              }
+            },
+            {
+              "marketId": "342",
+              "observations": 77,
+              "accepted": 20,
+              "rejected": {
+                "decision_warmup": 18,
+                "entry_unfilled": 25,
+                "segment_boundary": 11,
+                "exit_censored": 2,
+                "entry_censored": 1
+              },
+              "coverage": {
+                "marketId": "342",
+                "train": 17,
+                "test": 3,
+                "trainingInstruments": [
+                  "1031:YES"
+                ],
+                "testInstruments": [
+                  "1031:YES"
+                ],
+                "eligible": false
+              }
+            },
+            {
+              "marketId": "354",
+              "observations": 75,
+              "accepted": 30,
+              "rejected": {
+                "decision_warmup": 18,
+                "entry_unfilled": 10,
+                "segment_boundary": 10,
+                "exit_censored": 5,
+                "entry_censored": 2
+              },
+              "coverage": {
+                "marketId": "354",
+                "train": 22,
+                "test": 0,
+                "trainingInstruments": [
+                  "1043:YES"
+                ],
+                "testInstruments": [],
+                "eligible": false
+              }
+            },
+            {
+              "marketId": "376",
+              "observations": 76,
+              "accepted": 32,
+              "rejected": {
+                "decision_warmup": 19,
+                "entry_unfilled": 8,
+                "segment_boundary": 17
+              },
+              "coverage": {
+                "marketId": "376",
+                "train": 29,
+                "test": 0,
+                "trainingInstruments": [
+                  "1065:YES"
+                ],
+                "testInstruments": [],
+                "eligible": false
+              }
+            },
+            {
+              "marketId": "377",
+              "observations": 75,
+              "accepted": 21,
+              "rejected": {
+                "decision_warmup": 18,
+                "entry_unfilled": 12,
+                "segment_boundary": 19,
+                "exit_censored": 3,
+                "entry_censored": 2
+              },
+              "coverage": {
+                "marketId": "377",
+                "train": 21,
+                "test": 0,
+                "trainingInstruments": [
+                  "1066:YES"
+                ],
+                "testInstruments": [],
+                "eligible": false
+              }
+            }
+          ]
+        }
+      ],
+      "selected": [
+        {
+          "id": "stumps-h60-f19-n64-r0.1-leaf10",
+          "horizon": 60,
+          "trainRows": 83,
+          "testRows": 22,
+          "rmse": 0.006474886294733206,
+          "baselineRmse": 0.0036425490013550573,
+          "maxTrainingLabelAt": "2026-10-02T03:12:27.584Z",
+          "coverage": [
+            {
+              "marketId": "377",
+              "train": 27,
+              "test": 6,
+              "trainingInstruments": [
+                "1066:YES"
+              ],
+              "testInstruments": [
+                "1066:YES"
+              ],
+              "eligible": true
+            },
+            {
+              "marketId": "354",
+              "train": 29,
+              "test": 5,
+              "trainingInstruments": [
+                "1043:YES"
+              ],
+              "testInstruments": [
+                "1043:YES"
+              ],
+              "eligible": true
+            },
+            {
+              "marketId": "277",
+              "train": 5,
+              "test": 6,
+              "trainingInstruments": [
+                "966:YES"
+              ],
+              "testInstruments": [
+                "966:YES"
+              ],
+              "eligible": false
+            },
+            {
+              "marketId": "305",
+              "train": 9,
+              "test": 5,
+              "trainingInstruments": [
+                "994:YES"
+              ],
+              "testInstruments": [
+                "994:YES"
+              ],
+              "eligible": true
+            },
+            {
+              "marketId": "342",
+              "train": 18,
+              "test": 6,
+              "trainingInstruments": [
+                "1031:YES"
+              ],
+              "testInstruments": [
+                "1031:YES"
+              ],
+              "eligible": true
+            },
+            {
+              "marketId": "376",
+              "train": 34,
+              "test": 3,
+              "trainingInstruments": [
+                "1065:YES"
+              ],
+              "testInstruments": [
+                "1065:YES"
+              ],
+              "eligible": false
+            }
+          ]
+        },
+        {
+          "id": "stumps-h60-f12-n64-r0.1-leaf10",
+          "horizon": 60,
+          "trainRows": 83,
+          "testRows": 22,
+          "rmse": 0.006551285638490876,
+          "baselineRmse": 0.0036425490013550573,
+          "maxTrainingLabelAt": "2026-10-02T03:12:27.584Z",
+          "coverage": [
+            {
+              "marketId": "377",
+              "train": 27,
+              "test": 6,
+              "trainingInstruments": [
+                "1066:YES"
+              ],
+              "testInstruments": [
+                "1066:YES"
+              ],
+              "eligible": true
+            },
+            {
+              "marketId": "354",
+              "train": 29,
+              "test": 5,
+              "trainingInstruments": [
+                "1043:YES"
+              ],
+              "testInstruments": [
+                "1043:YES"
+              ],
+              "eligible": true
+            },
+            {
+              "marketId": "277",
+              "train": 5,
+              "test": 6,
+              "trainingInstruments": [
+                "966:YES"
+              ],
+              "testInstruments": [
+                "966:YES"
+              ],
+              "eligible": false
+            },
+            {
+              "marketId": "305",
+              "train": 9,
+              "test": 5,
+              "trainingInstruments": [
+                "994:YES"
+              ],
+              "testInstruments": [
+                "994:YES"
+              ],
+              "eligible": true
+            },
+            {
+              "marketId": "342",
+              "train": 18,
+              "test": 6,
+              "trainingInstruments": [
+                "1031:YES"
+              ],
+              "testInstruments": [
+                "1031:YES"
+              ],
+              "eligible": true
+            },
+            {
+              "marketId": "376",
+              "train": 34,
+              "test": 3,
+              "trainingInstruments": [
+                "1065:YES"
+              ],
+              "testInstruments": [
+                "1065:YES"
+              ],
+              "eligible": false
+            }
+          ]
+        },
+        {
+          "id": "stumps-h60-f15-n64-r0.1-leaf10",
+          "horizon": 60,
+          "trainRows": 83,
+          "testRows": 22,
+          "rmse": 0.006551285638490876,
+          "baselineRmse": 0.0036425490013550573,
+          "maxTrainingLabelAt": "2026-10-02T03:12:27.584Z",
+          "coverage": [
+            {
+              "marketId": "377",
+              "train": 27,
+              "test": 6,
+              "trainingInstruments": [
+                "1066:YES"
+              ],
+              "testInstruments": [
+                "1066:YES"
+              ],
+              "eligible": true
+            },
+            {
+              "marketId": "354",
+              "train": 29,
+              "test": 5,
+              "trainingInstruments": [
+                "1043:YES"
+              ],
+              "testInstruments": [
+                "1043:YES"
+              ],
+              "eligible": true
+            },
+            {
+              "marketId": "277",
+              "train": 5,
+              "test": 6,
+              "trainingInstruments": [
+                "966:YES"
+              ],
+              "testInstruments": [
+                "966:YES"
+              ],
+              "eligible": false
+            },
+            {
+              "marketId": "305",
+              "train": 9,
+              "test": 5,
+              "trainingInstruments": [
+                "994:YES"
+              ],
+              "testInstruments": [
+                "994:YES"
+              ],
+              "eligible": true
+            },
+            {
+              "marketId": "342",
+              "train": 18,
+              "test": 6,
+              "trainingInstruments": [
+                "1031:YES"
+              ],
+              "testInstruments": [
+                "1031:YES"
+              ],
+              "eligible": true
+            },
+            {
+              "marketId": "376",
+              "train": 34,
+              "test": 3,
+              "trainingInstruments": [
+                "1065:YES"
+              ],
+              "testInstruments": [
+                "1065:YES"
+              ],
+              "eligible": false
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
