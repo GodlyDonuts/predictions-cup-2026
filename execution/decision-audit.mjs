@@ -1,11 +1,13 @@
 import fs from 'node:fs';import {Journal} from '../live-paper/runtime.mjs';
+import {evaluateEntryGates} from './entry-gates.mjs';
 const codes=new Set(['REFERENCE_BLOCKED','WINDOW_BLOCKED','UNKNOWN_IDENTITY','STATE_CONCENTRATION','EXTERNAL_EXPOSURE','COOLDOWN','SIGNAL_BLOCKED','ZERO_EXECUTABLE_SIZE','PREPARE_REJECTED','INTENT_READY']);
 const instant=x=>typeof x==='string'&&Number.isFinite(Date.parse(x))&&new Date(x).toISOString()===x;
 const number=x=>typeof x==='number'&&Number.isFinite(x)?x:null;
 export function assessEntryGates(reference,ask,bid,policy){
  if(!reference.ready)return {referenceReady:false,referenceReason:typeof reference.reason==='string'&&/^[a-z_]{1,100}$/.test(reference.reason)?reference.reason:'unavailable',failed:['reference'],reference:null};
+ const {tests}=evaluateEntryGates(reference,ask,bid,policy);
+ ask=Number(ask);bid=Number(bid);
  const discount=reference.center-ask,relative=discount/Math.max(reference.center,.001),z=discount/reference.robustDeviation;
- const tests={price:ask>=policy.minimumPrice&&ask<=policy.maximumPrice,spread:ask>bid&&ask-bid<=policy.maximumSpread,minimumDiscount:discount>=policy.minimumDip,relativeDiscount:relative>=policy.minimumRelativeDip,maximumDiscount:discount<=policy.maximumDip,robustZ:z>=policy.minimumZ};
  return {referenceReady:true,referenceReason:null,reference:{center:number(reference.center),robustDeviation:number(reference.robustDeviation),samples:Number.isSafeInteger(reference.samples)?reference.samples:null,firstAt:instant(reference.firstAt)?reference.firstAt:null,lastAt:instant(reference.lastAt)?reference.lastAt:null,discount:number(discount),relativeDiscount:number(relative),z:number(z),effectiveAsk:number(ask),effectiveBid:number(bid)},failed:Object.keys(tests).filter(k=>!tests[k]),tests};
 }
 function curatedAssessment(value){

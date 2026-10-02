@@ -7,7 +7,7 @@ import {OrderTransport} from './transport.mjs';
 import {Journal} from '../live-paper/runtime.mjs';
 import {normalizeBook,digest} from '../live-paper/model.mjs';
 import {historicalReference} from '../live-paper/history.mjs';
-import {dipSignal} from '../live-paper/dip-shadow.mjs';
+import {evaluateEntryGates} from './entry-gates.mjs';
 import {openEntryDecisionAudit,assessEntryGates} from './decision-audit.mjs';
 
 const TID='bda92870-621e-47b0-bc3c-3602c5c26f55',SLUG='midterm-elections';
@@ -274,7 +274,7 @@ export class CompetitionController {
    if(Object.values(this.state.owned).some(p=>bank.identities[p.marketId]?.state===identity.state)){this.entryDecision(b,'STATE_CONCENTRATION',{modelHash:bankHash,referenceProof});return;}
    if(this.account.positions.rows.some(p=>p.exchangeId===b.exchangeId&&p.quantity!==0)||this.account.orders.rows.some(o=>o.exchangeId===b.exchangeId)){this.entryDecision(b,'EXTERNAL_EXPOSURE',{modelHash:bankHash,referenceProof});return;}
    const last=Object.values(this.state.intents).filter(i=>i.exchangeId===b.exchangeId&&i.status==='closed').at(-1);if(last&&this.now()-Date.parse(last.closedAt)<bank.policy.cooldownMs){this.entryDecision(b,'COOLDOWN',{modelHash:bankHash,referenceProof});return;}
-   const ref=historicalReference(shadow.histories[b.exchangeId],shadow.bookHistory[b.exchangeId],b.requestStartedAt,bank.policy),signal=dipSignal(ref,Number(ask+5000n)/1e6,Number(bid-5000n)/1e6,bank.policy);if(!signal.admitted){this.entryDecision(b,'SIGNAL_BLOCKED',{modelHash:bankHash,referenceProof,assessment:assessEntryGates(ref,Number(ask+5000n)/1e6,Number(bid-5000n)/1e6,bank.policy)});return;}
+   const ref=historicalReference(shadow.histories[b.exchangeId],shadow.bookHistory[b.exchangeId],b.requestStartedAt,bank.policy),effectiveAsk=formatMicros(ask+5000n),effectiveBid=bid>=5000n?formatMicros(bid-5000n):'-'+formatMicros(5000n-bid),signal=evaluateEntryGates(ref,effectiveAsk,effectiveBid,bank.policy);if(!signal.admitted){this.entryDecision(b,'SIGNAL_BLOCKED',{modelHash:bankHash,referenceProof,assessment:assessEntryGates(ref,effectiveAsk,effectiveBid,bank.policy)});return;}
    const cumulative=Object.values(this.state.intents).filter(i=>i.action==='buy'&&i.attempts>0).reduce((n,i)=>n+micros(i.price)*BigInt(i.quantity),0n);
    action='buy';limit=ask;quantity=Number((micros(this.activation.maxCumulativeBuyCost)-cumulative)/limit);reason='historical_discount';
   }

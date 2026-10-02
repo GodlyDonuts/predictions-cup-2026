@@ -415,3 +415,17 @@ test('owned exit policy remains pinned to the filled entry bank even without wor
 
 test('selected rejected signal is durably source-linked with failed gates and no intent',async t=>{const f=fixture(t,{noSignal:true});await f.cycle();const rows=fs.readFileSync(path.join(f.dir,'competition/decisions.jsonl'),'utf8').trim().split('\n').map(JSON.parse);const d=rows.at(-1).event.decision;assert.equal(d.code,'SIGNAL_BLOCKED');assert.equal(d.marketId,'377');assert.equal(d.referenceProof.sourceHash,'a'.repeat(64));assert(d.assessment.failed.includes('minimumDiscount'));assert.equal(f.server.posts.length,0);assert.equal(f.controller.entryAudit.status().counts.SIGNAL_BLOCKED,1);});
 test('audit recording failure before an eligible intent cannot submit or prepare an order',async t=>{const f=fixture(t);await f.before();f.controller.entryAudit.record=()=>{throw Error('Injected audit recording failure');};await assert.rejects(f.controller.onBook(f.book()),/audit recording failure/);assert.equal(f.server.posts.length,0);assert.equal(Object.keys(f.controller.state.intents).length,0);});
+test('production exact spread boundary submits original hard ask limit with unchanged buffers',async t=>{
+ const f=fixture(t);f.seedHistory(.28);await f.cycle({ask:.255,bid:.245});
+ assert.equal(f.server.posts.length,1);assert.equal(f.server.posts[0].body.price,.255);
+ assert.equal(f.controller.entryAudit.status().counts.INTENT_READY,1);
+});
+test('production precision correction cannot admit an insufficient observed discount',async t=>{
+ const f=fixture(t);f.seedHistory(.275);await f.cycle({ask:.255,bid:.245});
+ assert.equal(f.server.posts.length,0);const d=f.controller.entryAudit.status().lastDecision;
+ assert.equal(d.assessment.tests.spread,true);assert.equal(d.assessment.tests.minimumDiscount,false);
+});
+test('modeled zero bid allowance fails entry price without halting collection',async t=>{
+ const f=fixture(t);f.seedHistory(.025);await f.cycle({ask:.010,bid:.005});
+ assert.equal(f.server.posts.length,0);assert.equal(f.controller.entryAudit.status().lastDecision.code,'SIGNAL_BLOCKED');
+});
