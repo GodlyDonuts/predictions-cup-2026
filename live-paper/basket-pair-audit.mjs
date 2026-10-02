@@ -1,0 +1,14 @@
+import fs from'node:fs';import path from'node:path';import {createHash} from'node:crypto';import {fileURLToPath} from'node:url';
+import {journalLines} from './journal-lines.mjs';import {digest} from './model.mjs';import {advanceBasketRecord,basketCodeIdentity} from './basket-watch.mjs';import {advanceCompleteBasketRecord} from './basket-pair-capture.mjs';
+export function auditBasketPairs(runtime){
+ const bank=JSON.parse(fs.readFileSync(path.join(runtime,'basket-bank.json')));if(digest(bank.codeIdentity)!==digest(basketCodeIdentity()))throw Error('ORIGINAL_BASKET_CODE_CHANGED');
+ const make=()=>({bankHash:digest(bank),sourceSequence:bank.sourceRecords,lastRecordHash:null,pairs:Object.fromEntries(bank.pairs.map(p=>[p.id,structuredClone(p.initialState)]))});let original=make(),successor=make(),previous='',sequence=0,last=-Infinity,observations=[];const prefix=createHash('sha256'),file=path.join(runtime,'journal.jsonl'),size=fs.statSync(file).size;
+ for(const line of journalLines(file,{endByte:size})){const row=JSON.parse(line),{hash,...body}=row,at=Date.parse(row.at);if(row.sequence!==sequence+1||row.previous!==previous||digest(body)!==hash||!Number.isFinite(at)||at<last)throw Error('BASKET_PAIR_AUDIT_SOURCE');sequence=row.sequence;previous=hash;last=at;prefix.update(line+'\n');
+  if(sequence===bank.sourceRecords){if(prefix.copy().digest('hex')!==bank.sourceHash)throw Error('BASKET_PAIR_ORIGIN_CHANGED');original.lastRecordHash=successor.lastRecordHash=hash;}
+  if(sequence>bank.sourceRecords){original=advanceBasketRecord(original,row,bank).state;const next=advanceCompleteBasketRecord(successor,row,bank);successor=next.state;observations.push(...next.observations);}
+ }
+ if(sequence<bank.sourceRecords)throw Error('BASKET_PAIR_ORIGIN_MISSING');
+ const pairs=bank.pairs.map(p=>({pairId:p.id,marketIds:p.bank.legs.map(l=>l.marketId),proofStatus:p.bank.settlementProof.status,original:original.pairs[p.id].counts,completePair:successor.pairs[p.id].counts,lastCompleteObservation:successor.pairs[p.id].lastObservation}));
+ return {schemaVersion:1,checkedAt:new Date().toISOString(),originalBankHash:digest(bank),source:{sequence,hash:previous,bytes:size},pairs,observations,executionAuthority:false,ordersSubmitted:0,networkRequests:0,fills:null,pnl:null,meaning:'Historical complete-pair diagnostic with original source/cutoff/policy. No original projection or journal is changed; a prospective successor requires its own later cutoff.'};
+}
+if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.url)){const rt=path.join(process.env.LOCALAPPDATA,'SigTradingCup/paper-runtime'),r=auditBasketPairs(rt);fs.writeFileSync('data/basket-complete-pair-live-audit.json',JSON.stringify(r,null,2)+'\n');console.log(JSON.stringify({...r,observations:undefined,pairs:r.pairs.map(p=>({...p,lastCompleteObservation:undefined}))}));}

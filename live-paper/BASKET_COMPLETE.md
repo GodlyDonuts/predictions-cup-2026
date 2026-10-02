@@ -1,0 +1,11 @@
+# Complete-pair basket observer
+
+This successor processes the collector's explicitly planned two-leg depth measurements as one observation. The original frozen basket bank, observer, statistics and journal are preserved separately.
+
+The original per-leg observer clears its positive anchor when a newly refreshed first leg encounters a stale old second leg. That transitional state can erase valid earlier complete-pair evidence before the second fresh leg arrives. The successor validates both legs through the original clock/version/depth checks, restores only the prior derived economic fields after the intermediate first-half calculation, and publishes only the complete second-half result. It never restores invalidated depth or clocks, exposes an intermediate observation, or credits an extra mixed old/new pair. A stale complete pair, account exclusion, outage, failed/missing leg or non-paired plan invalidates the relevant evidence.
+
+`node live-paper/basket-pair-audit.mjs` independently verifies the original source prefix and full subsequent hash chain, then compares the two projections historically. Historical observations are not new fills, reused liquidity, continuous availability or a prospective test.
+
+`./Start-CompleteBasket.ps1 -Name basket-complete-20261002-v1 -Initialize -KeepSession` freezes a new future bank and starts a separate local observer. It reads the existing collector journal incrementally, makes zero API calls, and records every source advance plus observation/state hashes in its own fsynced journal. Restart replays against the original source prefix, cutoff and pinned code before processing new rows. Use the same name without `-Initialize` to resume; never replace a frozen bank. A new code hypothesis requires a new cohort.
+
+The conditional dual-NO floor requires mutually exclusive YES settlement predicates. It excludes refunds, voids and overrides. Metadata similarity and independent quote confirmations do not establish that proof. Two displayed legs are not reserved liquidity; atomic placement does not guarantee equal fills. Classification remains unverified, execution authority remains false, and fills/P&L remain null. The successor does not change the competition executor, risk limits, account budget or existing collection plan.
