@@ -47,7 +47,10 @@ export class ReadClient {
   request(endpoint){const result=this.tail.then(()=>this.perform(endpoint));this.tail=result.catch(()=>{});return result;}
   async perform(endpoint){
     const patterns=[/^\/tournaments\/midterm-elections$/, /^\/tournaments\/midterm-elections\/portfolio\/positions$/, /^\/orders\?status=open&limit=200&tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55(?:&cursor=[A-Za-z0-9%._~-]+)?$/, /^\/markets\/\d+\/orderbook\?tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55&depth=20$/];
-    if(!patterns.some(p=>p.test(endpoint)))throw Error('Endpoint outside paper GET allowlist');
+    const bulk=/^\/exchanges\/prices\?ids=([1-9]\d*(?:,[1-9]\d*)*)&tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55$/.exec(endpoint);
+    const ids=bulk?.[1].split(',');
+    const allowedBulk=ids&&ids.length<=100&&new Set(ids).size===ids.length&&ids.every(x=>Number.isSafeInteger(Number(x)));
+    if(!patterns.some(p=>p.test(endpoint))&&!allowedBulk)throw Error('Endpoint outside paper GET allowlist');
     if(this.manualReview)throw Error('Rate cooldown requires manual review');
     await this.pause(Math.max(0,Math.max(this.next,this.cooldown)-this.now()));
     if(this.signal?.aborted)throw Error('Stopped');

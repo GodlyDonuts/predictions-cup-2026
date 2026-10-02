@@ -51,6 +51,10 @@ ML worker status distinguishes waiting for a concurrent journal append, running,
 
 ## Test and refine against captured data
 
+The same serialized collector also rotates the 237 catalogued tournament exchanges through the documented `/exchanges/prices` endpoint, with at most 100 IDs per batch and one batch after each four-book cycle. Every request shares the existing six-second admission interval, Retry-After persistence and account read budget. Existing frozen models still use the four depth books. Bulk responses add breadth for later cross-market feature development without changing wallet signals or fills. Public observations are recorded in each journal cycle's `bulkPrices` field; missing IDs and collection errors are explicit. The catalogue was observed October 1 and must be refreshed when tournament membership changes.
+
+Inspect http://127.0.0.1:8787/api/breadth for the latest collection cache. Each exchange carries its own request and receipt times; the endpoint's newest collection age does not describe every cached quote. The official bulk schema has no source timestamp or depth: its bid/ask/latest-price observations are non-executable and cannot prove current quote freshness, fill capacity or profitable arbitrage. Missing exchanges are removed from the cache after their next batch; invalid or incomplete batches never replace valid coverage. Account state and credentials are excluded.
+
 ```powershell
 node --test live-paper/*.test.mjs
 node live-paper/replay.mjs --journal "$env:LOCALAPPDATA/SigTradingCup/paper-runtime/journal.jsonl" --config live-paper/config.json

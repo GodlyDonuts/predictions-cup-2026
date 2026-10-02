@@ -1,0 +1,1191 @@
+{
+  "tournamentId": "bda92870-621e-47b0-bc3c-3602c5c26f55",
+  "catalogueObservedAt": "2026-10-01",
+  "exchanges": [
+    {
+      "exchangeId": "1077",
+      "marketId": "388",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "1076",
+      "marketId": "387",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "1075",
+      "marketId": "386",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "1074",
+      "marketId": "385",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "1073",
+      "marketId": "384",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "1072",
+      "marketId": "383",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "1071",
+      "marketId": "382",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "1070",
+      "marketId": "381",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "1069",
+      "marketId": "380",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "1068",
+      "marketId": "379",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "1067",
+      "marketId": "378",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "1066",
+      "marketId": "377",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "1065",
+      "marketId": "376",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "1064",
+      "marketId": "375",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "1063",
+      "marketId": "374",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "1062",
+      "marketId": "373",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "1061",
+      "marketId": "372",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "1060",
+      "marketId": "371",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "1059",
+      "marketId": "370",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "1058",
+      "marketId": "369",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "1057",
+      "marketId": "368",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "1055",
+      "marketId": "366",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "1054",
+      "marketId": "365",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "1053",
+      "marketId": "364",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "1052",
+      "marketId": "363",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "1051",
+      "marketId": "362",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "1050",
+      "marketId": "361",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "1049",
+      "marketId": "360",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "1048",
+      "marketId": "359",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "1047",
+      "marketId": "358",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "1046",
+      "marketId": "357",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "1045",
+      "marketId": "356",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "1044",
+      "marketId": "355",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "1043",
+      "marketId": "354",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "1042",
+      "marketId": "353",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "1041",
+      "marketId": "352",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "1040",
+      "marketId": "351",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "1039",
+      "marketId": "350",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "1038",
+      "marketId": "349",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "1037",
+      "marketId": "348",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "1036",
+      "marketId": "347",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "1035",
+      "marketId": "346",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "1034",
+      "marketId": "345",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "1033",
+      "marketId": "344",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "1032",
+      "marketId": "343",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "1031",
+      "marketId": "342",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "1030",
+      "marketId": "341",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "1029",
+      "marketId": "340",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "1028",
+      "marketId": "339",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "1027",
+      "marketId": "338",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "1026",
+      "marketId": "337",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "1025",
+      "marketId": "336",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "1024",
+      "marketId": "335",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "1023",
+      "marketId": "334",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "1022",
+      "marketId": "333",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "1021",
+      "marketId": "332",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "1020",
+      "marketId": "331",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "1019",
+      "marketId": "330",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "1018",
+      "marketId": "329",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "1017",
+      "marketId": "328",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "1016",
+      "marketId": "327",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "1015",
+      "marketId": "326",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "1014",
+      "marketId": "325",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "1013",
+      "marketId": "324",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "1012",
+      "marketId": "323",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "1011",
+      "marketId": "322",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "1010",
+      "marketId": "321",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "1009",
+      "marketId": "320",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "1008",
+      "marketId": "319",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "1007",
+      "marketId": "318",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "1006",
+      "marketId": "317",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "1005",
+      "marketId": "316",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "1004",
+      "marketId": "315",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "1003",
+      "marketId": "314",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "1002",
+      "marketId": "313",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "1001",
+      "marketId": "312",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "1000",
+      "marketId": "311",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "999",
+      "marketId": "310",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "998",
+      "marketId": "309",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "997",
+      "marketId": "308",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "996",
+      "marketId": "307",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "995",
+      "marketId": "306",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "994",
+      "marketId": "305",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "993",
+      "marketId": "304",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "992",
+      "marketId": "303",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "991",
+      "marketId": "302",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "990",
+      "marketId": "301",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "989",
+      "marketId": "300",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "988",
+      "marketId": "299",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "987",
+      "marketId": "298",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "986",
+      "marketId": "297",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "985",
+      "marketId": "296",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "984",
+      "marketId": "295",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "983",
+      "marketId": "294",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "982",
+      "marketId": "293",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "981",
+      "marketId": "292",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "980",
+      "marketId": "291",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "979",
+      "marketId": "290",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "978",
+      "marketId": "289",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "977",
+      "marketId": "288",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "976",
+      "marketId": "287",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "975",
+      "marketId": "286",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "974",
+      "marketId": "285",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "973",
+      "marketId": "284",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "972",
+      "marketId": "283",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "971",
+      "marketId": "282",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "970",
+      "marketId": "281",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "969",
+      "marketId": "280",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "968",
+      "marketId": "279",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "967",
+      "marketId": "278",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "966",
+      "marketId": "277",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "965",
+      "marketId": "276",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "964",
+      "marketId": "275",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "963",
+      "marketId": "274",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "962",
+      "marketId": "273",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "961",
+      "marketId": "272",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "960",
+      "marketId": "271",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "959",
+      "marketId": "270",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "958",
+      "marketId": "269",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "957",
+      "marketId": "268",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "956",
+      "marketId": "267",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "955",
+      "marketId": "266",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "954",
+      "marketId": "265",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "953",
+      "marketId": "264",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "952",
+      "marketId": "263",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "951",
+      "marketId": "262",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "950",
+      "marketId": "261",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "949",
+      "marketId": "260",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "948",
+      "marketId": "259",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "947",
+      "marketId": "258",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "946",
+      "marketId": "257",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "945",
+      "marketId": "256",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "944",
+      "marketId": "255",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "943",
+      "marketId": "254",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "942",
+      "marketId": "253",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "941",
+      "marketId": "252",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "940",
+      "marketId": "251",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "939",
+      "marketId": "250",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "938",
+      "marketId": "249",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "937",
+      "marketId": "248",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "936",
+      "marketId": "247",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "935",
+      "marketId": "246",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "934",
+      "marketId": "245",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "933",
+      "marketId": "244",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "932",
+      "marketId": "243",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "931",
+      "marketId": "242",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "930",
+      "marketId": "241",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "929",
+      "marketId": "240",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "928",
+      "marketId": "239",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "927",
+      "marketId": "238",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "926",
+      "marketId": "237",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "925",
+      "marketId": "236",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "924",
+      "marketId": "235",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "923",
+      "marketId": "234",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "922",
+      "marketId": "233",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "921",
+      "marketId": "232",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "920",
+      "marketId": "231",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "919",
+      "marketId": "230",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "918",
+      "marketId": "229",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "917",
+      "marketId": "228",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "916",
+      "marketId": "227",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "915",
+      "marketId": "226",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "914",
+      "marketId": "225",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "913",
+      "marketId": "224",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "912",
+      "marketId": "223",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "911",
+      "marketId": "222",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "910",
+      "marketId": "221",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "909",
+      "marketId": "220",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "908",
+      "marketId": "219",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "907",
+      "marketId": "218",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "906",
+      "marketId": "217",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "905",
+      "marketId": "216",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "904",
+      "marketId": "215",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "903",
+      "marketId": "214",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "902",
+      "marketId": "213",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "901",
+      "marketId": "212",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "900",
+      "marketId": "211",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "899",
+      "marketId": "210",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "898",
+      "marketId": "209",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "897",
+      "marketId": "208",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "896",
+      "marketId": "207",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "895",
+      "marketId": "206",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "894",
+      "marketId": "205",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "893",
+      "marketId": "204",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "892",
+      "marketId": "203",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "891",
+      "marketId": "202",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "890",
+      "marketId": "201",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "889",
+      "marketId": "200",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "888",
+      "marketId": "199",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "887",
+      "marketId": "198",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "886",
+      "marketId": "197",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "885",
+      "marketId": "196",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "884",
+      "marketId": "195",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "883",
+      "marketId": "194",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "882",
+      "marketId": "193",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "881",
+      "marketId": "192",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "880",
+      "marketId": "191",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "879",
+      "marketId": "190",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "878",
+      "marketId": "189",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "877",
+      "marketId": "188",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "876",
+      "marketId": "187",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "875",
+      "marketId": "186",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "874",
+      "marketId": "185",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "873",
+      "marketId": "184",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "872",
+      "marketId": "183",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "871",
+      "marketId": "182",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "870",
+      "marketId": "181",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "869",
+      "marketId": "180",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "868",
+      "marketId": "179",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "867",
+      "marketId": "178",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "866",
+      "marketId": "177",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "865",
+      "marketId": "176",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "864",
+      "marketId": "175",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "863",
+      "marketId": "174",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "862",
+      "marketId": "173",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "861",
+      "marketId": "172",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "860",
+      "marketId": "171",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "859",
+      "marketId": "170",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "858",
+      "marketId": "169",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "857",
+      "marketId": "168",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "856",
+      "marketId": "167",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "855",
+      "marketId": "166",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "854",
+      "marketId": "165",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "853",
+      "marketId": "164",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "852",
+      "marketId": "163",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "851",
+      "marketId": "162",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "850",
+      "marketId": "161",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "849",
+      "marketId": "160",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "848",
+      "marketId": "159",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "847",
+      "marketId": "158",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "846",
+      "marketId": "157",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "845",
+      "marketId": "156",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "844",
+      "marketId": "155",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "843",
+      "marketId": "154",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "842",
+      "marketId": "153",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "841",
+      "marketId": "152",
+      "option": "YES"
+    },
+    {
+      "exchangeId": "840",
+      "marketId": "151",
+      "option": "YES"
+    }
+  ]
+}
