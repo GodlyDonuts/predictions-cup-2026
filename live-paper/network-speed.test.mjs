@@ -1,5 +1,5 @@
 import test from 'node:test';import assert from 'node:assert/strict';
-import {ReadClient} from './runtime.mjs';import {validateNetworkBudget,networkWriteInterval} from './network-budget.mjs';
+import {ReadClient} from './transport-runtime.mjs';import {validateNetworkBudget,networkWriteInterval} from './transport-network-budget.mjs';
 const budget={schemaVersion:2,ownerId:'Codex',enabled:true,intervalMs:1000,writeIntervalMs:2500,soleAccountClient:true,formerWriterStopCommentId:5947535773};
 const route='/tournaments/midterm-elections';const ok=()=>({ok:true,status:200,json:async()=>({})});
 test('v2 permits only explicit coordinated read/write pacing; old defaults remain',()=>{

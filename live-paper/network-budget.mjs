@@ -2,18 +2,13 @@ import fs from 'node:fs';
 
 // Operator coordination is separate from every frozen strategy configuration.
 // All account requests still use one serialized client; there is no token burst.
-const baseKeys = ['schemaVersion', 'ownerId', 'enabled', 'intervalMs', 'soleAccountClient', 'formerWriterStopCommentId'];
+const keys = ['schemaVersion', 'ownerId', 'enabled', 'intervalMs', 'soleAccountClient', 'formerWriterStopCommentId'];
 export function validateNetworkBudget(value) {
-  const keys = value?.schemaVersion === 2 ? [...baseKeys, 'writeIntervalMs'] : baseKeys;
   if (!value || typeof value !== 'object' || Array.isArray(value) || Object.keys(value).length !== keys.length
-    || Object.keys(value).some(key => !keys.includes(key)) || ![1,2].includes(value.schemaVersion) || value.ownerId !== 'Codex'
+    || Object.keys(value).some(key => !keys.includes(key)) || value.schemaVersion !== 1 || value.ownerId !== 'Codex'
     || value.enabled !== true || value.soleAccountClient !== true || value.formerWriterStopCommentId !== 5947535773
-    || (value.schemaVersion === 1 ? value.intervalMs !== 3000 : value.intervalMs !== 1000 || value.writeIntervalMs !== 2500)) throw Error('Invalid coordinated network budget');
+    || value.intervalMs !== 3000) throw Error('Invalid coordinated network budget');
   return Object.freeze({...value});
-}
-export function networkWriteInterval(interval = 6000, budget = null) {
-  const read = networkInterval(interval, budget);
-  return budget?.schemaVersion === 2 ? validateNetworkBudget(budget).writeIntervalMs : read;
 }
 export function loadNetworkBudget(file) {
   return fs.existsSync(file) ? validateNetworkBudget(JSON.parse(fs.readFileSync(file, 'utf8'))) : null;
