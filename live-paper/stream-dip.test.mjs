@@ -77,3 +77,13 @@ test('input cannot spend more than a hundred or turn a foreign tournament into a
  const x=structuredClone(s);x.wallets.latency_1000.cumulativeBuys='100.000000';
  const y=step(x,book(1,1000),b);assert.equal(y.wallets.latency_1000.outcomes.length,0);assert.equal(y.wallets.latency_1000.gateCounts.budget,1);
 });
+test('expiry waits for verified source evidence so delayed adverse fills survive',()=>{
+ const {b,s}=fixture();let x=step(s,book(1,1000),b);
+ x=advanceStreamDip(x,[],b,{availableAt:at(40000),evidenceThrough:at(1000),allowDecisions:false});
+ assert.equal(streamDipReport(x,b,at(40000)).wallets.latency_1000.clockExpiredAwaitingSource,1);
+ x=advanceStreamDip(x,[book(2,2500)],b,{availableAt:at(41000),evidenceThrough:at(2500),allowDecisions:false});
+ assert.equal(x.wallets.latency_1000.positions['377'].quantity,10);
+ x=advanceStreamDip(x,[],b,{availableAt:at(42000),evidenceThrough:at(32000),allowDecisions:false});
+ assert.equal(x.wallets.latency_3000.outcomes[0].status,'expired');
+ assert.throws(()=>advanceStreamDip(x,[],b,{availableAt:at(43000),evidenceThrough:at(31000)}),/EVIDENCE_CLOCK/);
+});

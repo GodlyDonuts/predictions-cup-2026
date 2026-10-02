@@ -218,3 +218,17 @@ test('stream gateway health uses its capture and global lock, not the unrelated 
  assert.equal((await get()).status,'running');assert.equal((await get()).source.kind,'realtime_capture');
  write(path.join(dir,'realtime-session.json'),{file:'realtime-changed.jsonl'});assert.equal((await get()).status,'source_unavailable');
 });
+test('stream dip health pins its own cohort and singleton while observing the shared capture',async t=>{
+ const dir=fs.mkdtempSync(path.join(os.tmpdir(),'fleet-stream-dip-'));t.after(()=>fs.rmSync(dir,{recursive:true,force:true}));
+ const cohort='stream-dip-fixture',root=path.join(dir,'stream-dip-cohorts',cohort);fs.mkdirSync(root,{recursive:true});
+ const b={...bank,sourceFile:'realtime-stream.jsonl'},h=createHash('sha256').update(JSON.stringify(b)).digest('hex'),write=(p,v)=>fs.writeFileSync(p,JSON.stringify(v));
+ write(path.join(dir,'stream-dip-active.json'),{schemaVersion:1,cohort,bankHash:h});write(path.join(root,'bank.json'),b);
+ write(path.join(root,'stats.json'),{status:'running',updatedAt:at(-1000),pid:123,cohort,bankHash:h,sourceBytes:3});
+ write(path.join(dir,'realtime-session.json'),{file:b.sourceFile});fs.writeFileSync(path.join(dir,b.sourceFile),'{}\n');fs.utimesSync(path.join(dir,b.sourceFile),new Date(at(-1000)),new Date(at(-1000)));
+ fs.writeFileSync(path.join(dir,'stream-dip.lock'),'123');fs.writeFileSync(path.join(root,'pid.txt'),'123');
+ const options={runtimeDir:dir,workspaceDir:dir,now,probeProcesses:()=>({123:{alive:true,commandLine:'node live-paper/stream-dip-watch.mjs --name '+cohort,startedAt:at(-60000)}})};
+ const get=async()=>(await fleetHealth(options)).workers.find(w=>w.name==='stream-dip');
+ assert.equal((await get()).status,'running');assert.equal((await get()).source.kind,'realtime_capture');
+ write(path.join(root,'stats.json'),{status:'awaiting_verified_input',updatedAt:at(-1000),pid:123,cohort,bankHash:h,sourceBytes:3});assert.equal((await get()).status,'awaiting_verified_input');
+ fs.writeFileSync(path.join(dir,'STREAM_DIP_STOP'),'private-stop-provenance');assert.equal((await get()).status,'stop_pending');
+});

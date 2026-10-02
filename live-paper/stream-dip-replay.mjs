@@ -28,7 +28,7 @@ export function replayStreamDip({inputBank,source,checkpoints,markets=inputBank.
    state=advanceStreamDip(state,out.events,bank,{availableAt:body.availableAt});events+=out.events.length;lastAt=body.availableAt;}
   need(body.stateHash===streamDigest(adapter),'STREAM_DIP_REPLAY_INPUT_STATE');
  }
- return {bank,state,warm,report:{...streamDipReport(state,bank,lastAt),mode:'retrospective_stream_dip_development_replay',
+ return {bank,state,warm,verifiedInputState:adapter,report:{...streamDipReport(state,bank,lastAt),mode:'retrospective_stream_dip_development_replay',
   sourcePrefixHash:inputBank.sourceHash,inputCheckpointCount:checkpointCount,inputJournalHash:previous,inputCaptureIndex:adapter.capture.captureIndex,
   sourceBytes:offset,eventsConsumed:events,initialStateHash:firstHash,finalStateHash:streamDipHash(state),
   evidence:'actual_capture_replayed_with_recorded_gateway_availability_not_a_live_strategy_run',

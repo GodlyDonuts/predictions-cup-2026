@@ -106,7 +106,8 @@ function decide(s,w,e,at,bank){const id=e.marketId,p=bank.policy,b=e.book,now=in
  const reserved=Object.values(w.pending).filter(x=>x.side==='buy').reduce((n,x)=>n+amount(x.limit)*BigInt(x.remaining),0n),budget=amount(p.cumulativeBuyBudget)-amount(w.cumulativeBuys)-reserved;
  let qty=Math.min(p.orderShares,Number(amount(p.maxMarketCost)/limit),Number(budget/limit),Number((amount(w.cash)-reserved)/limit));
  if(qty<1){inc(w.gateCounts,'budget');return;}submit(w,e,at,'buy',qty,money(limit),p,limit===ask?'native_dip':'conditional_one_tick_lower');inc(w.gateCounts,'admitted');}
-export function advanceStreamDip(input,events,bank,{availableAt}){checkBank(bank);need(input.bankHash===streamDipHash(bank),'STREAM_DIP_BANK_CHANGED');const now=instant(availableAt);
+export function advanceStreamDip(input,events,bank,{availableAt,evidenceThrough=availableAt,allowDecisions=true}){checkBank(bank);need(input.bankHash===streamDipHash(bank),'STREAM_DIP_BANK_CHANGED');const now=instant(availableAt),watermark=instant(evidenceThrough);
+ need(watermark<=now&&(!input.lastEvidenceThrough||watermark>=instant(input.lastEvidenceThrough))&&typeof allowDecisions==='boolean','STREAM_DIP_EVIDENCE_CLOCK');
  need(now>=instant(bank.cutoff)&&(!input.lastAvailableAt||now>=instant(input.lastAvailableAt)),'STREAM_DIP_HOST_CLOCK');const s=structuredClone(input),last=new Map();
  for(const e of events){need(e.eventId===s.lastEventId+1&&instant(e.availableAt)<=now&&instant(e.confirmedAt)<=now,'STREAM_DIP_EVENT_ORDER');
   need(e.tournamentId===bank.tournamentId&&bank.markets.some(x=>x.marketId===e.marketId&&x.exchangeId===e.exchangeId),'STREAM_DIP_SCOPE');s.lastEventId=e.eventId;
@@ -121,9 +122,9 @@ export function advanceStreamDip(input,events,bank,{availableAt}){checkBank(bank
  }
  // Resolve the entire ordered evidence batch before expiring old orders or making
  // new decisions. A delayed consumer cannot erase an adverse pre-expiry fill.
- for(const w of Object.values(s.wallets)){for(const [id,o]of Object.entries(w.pending))if(now>=instant(o.expiresAt))resolve(w,id,availableAt,'expired');
-  for(const e of last.values())decide(s,w,e,availableAt,bank);assertWallet(w,bank.policy);}
- for(const e of last.values())appendHistory(s,e,bank.policy);s.lastAvailableAt=availableAt;return s;}
+ for(const w of Object.values(s.wallets)){for(const [id,o]of Object.entries(w.pending))if(watermark>=instant(o.expiresAt))resolve(w,id,availableAt,'expired');
+  if(allowDecisions)for(const e of last.values())decide(s,w,e,availableAt,bank);assertWallet(w,bank.policy);}
+ for(const e of last.values())appendHistory(s,e,bank.policy);s.lastAvailableAt=availableAt;s.lastEvidenceThrough=evidenceThrough;return s;}
 export function streamDipReport(s,bank,at){need(s.bankHash===streamDipHash(bank),'STREAM_DIP_REPORT_BANK');const now=instant(at);
  return {mode:bank.mode,bankHash:s.bankHash,inputBankHash:bank.inputBankHash,updatedAt:at,cutoff:bank.cutoff,lastEventId:s.lastEventId,
  warmBooks:s.warmBooks,observations:s.observations,networkRequests:0,competitionOrders:0,feeBps:0,profitabilityEstablished:false,
@@ -132,4 +133,5 @@ export function streamDipReport(s,bank,at){need(s.bankHash===streamDipHash(bank)
   if(mark===null)complete=false;else liquidation+=amount(mark);return {marketId:id,...pos,liquidationValue:mark,markReady:mark!==null};});
  return [name,{cash:w.cash,realizedPnl:w.realizedPnl,cumulativeBuys:w.cumulativeBuys,closedTrades:w.closedTrades,positions,pending:Object.values(w.pending),
   totalPnl:complete?money(amount(w.cash)+liquidation-amount(bank.policy.initialCash)):null,marksComplete:complete,
+  clockExpiredAwaitingSource:Object.values(w.pending).filter(o=>now>=instant(o.expiresAt)).length,
   gateCounts:w.gateCounts,signals:w.signals,orders:w.outcomes.length,fills:w.fills.length,recentFills:w.fills.slice(-30),outcomes:w.outcomes.slice(-50)}];}))};}
