@@ -50,6 +50,7 @@ test('stopped, stale and temporarily missing heartbeats never hide held or pendi
  const f=fixture(t),last=f.risk(),r=f.reader();assert.equal(r.poll().available,true);
  for(const status of ['stopped','failed','awaiting_capture']){f.publish(last,{status});const s=r.poll();assert.equal(s.available,false);assert.equal(s.reason,'COMPARISON_WORKER_NOT_RUNNING');assert.deepEqual(s.heldMarketIds,['377']);assert.deepEqual(s.pendingMarketIds,['354']);}
  f.setNow(f.now+60001);f.publish(last,{updatedAt:stamp(16000)});assert.equal(r.poll().reason,'COMPARISON_WORKER_STALE');fs.unlinkSync(f.stats);assert.equal(r.poll().reason,'COMPARISON_WORKER_UNAVAILABLE');
+ f.publish(last,{updatedAt:stamp(f.now+1)});assert.equal(r.poll().reason,'COMPARISON_WORKER_STALE','future heartbeat must not enable sampling');
  f.publish(last);assert.equal(r.poll().available,true,'worker health recovers without restarting the evidence reader');
 });
 
@@ -98,4 +99,9 @@ test('strict manifest names, code identity and trusted universe mapping reject f
   if(['code','scope'].includes(mode)){const bank=JSON.parse(fs.readFileSync(f.bankFile));if(mode==='code')bank.codeIdentity['live-paper/model.mjs']='0'.repeat(64);else bank.universe.exchanges[0].exchangeId='9999';fs.writeFileSync(f.bankFile,JSON.stringify(bank));manifest.bankHash=digest(bank);}
   fs.writeFileSync(f.manifest,JSON.stringify(manifest));const s=f.reader().poll();assert.equal(s.available,false);assert.deepEqual(s.heldMarketIds,[]);assert.deepEqual(s.pendingMarketIds,[]);
  });
+});
+
+test('an oversized incomplete record cannot grow the stream buffer without bound or erase risk',t=>{
+ const f=fixture(t);f.risk();const r=f.reader();assert.equal(r.poll().available,true);
+ fs.appendFileSync(f.journal,Buffer.alloc(16*1024*1024,32));const bad=r.poll();assert.equal(bad.available,false);assert.equal(bad.reason,'INVALID_COMPARISON_RECORD_SIZE');assert.deepEqual(bad.heldMarketIds,['377']);assert.deepEqual(bad.pendingMarketIds,['354']);assert.equal(r.poll().available,false);
 });
