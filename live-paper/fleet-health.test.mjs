@@ -7,6 +7,12 @@ import {createHash} from 'node:crypto';
 import {assessWorker, fleetHealth, sourceMetadata} from './fleet-health.mjs';
 const now = Date.parse('2026-10-02T10:00:00.000Z'), at = delta => new Date(now + delta).toISOString();
 const bank = {name: 'fixture', cutoff: at(-600000), sourceHash: 'a'.repeat(64)}, bankHash = createHash('sha256').update(JSON.stringify(bank)).digest('hex');
+test('intentional terminal session remains visible; STOP alone cannot hide failures',()=>{
+ const b=base();b.processes[123]={alive:false};b.lock={present:false};b.stops=[{present:true,provenance:'cohort_stop',modifiedAt:at(-100)}];
+ for(const reported of ['stopped','source_session_ended']){b.report.status=reported;const v=assessWorker(b,now);assert.equal(v.status,reported);assert.equal(v.process.status,'exited');assert.equal(v.stops.length,1);}
+ b.report.status='running';assert.equal(assessWorker(b,now).status,'exited');b.report.status='failed';assert.equal(assessWorker(b,now).status,'failed');
+ b.report.status='source_session_ended';b.lock={present:true};assert.equal(assessWorker(b,now).status,'exited');b.lock={present:false};b.stops=[];assert.equal(assessWorker(b,now).status,'exited');
+});
 const base = () => ({spec: {name: 'dip', script: 'live-paper/dip-shadow.mjs', cohortArgument: 'dip'}, reportPresent: true, bankPresent: true, bank,
   report: {status: 'running', updatedAt: at(-1000), sourceSequence: 20, bankHash}, claims: [{source: 'pid_file', pid: 123, modifiedAt: at(-60000)}],
   lock: {present: true}, processes: {123: {alive: true, commandLine: 'node live-paper/dip-shadow.mjs --name dip', startedAt: at(-61000)}},

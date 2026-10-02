@@ -176,7 +176,9 @@ export function assessWorker(input, now = Date.now()) {
   if (!lock.present && processState === 'alive') reasons.push('worker_lock_missing');
   if (activeStops.length) reasons.push('stop_marker_present');
   let overall = !configured ? 'not_initialized' : reportedStatus === 'failed' ? 'failed' : manifestError ? 'manifest_invalid' : lineage.status === 'mismatch' || sourceIdentity === 'mismatch' ? 'lineage_mismatch'
-    : ['wrong_process', 'conflicting_pid_claims'].includes(processState) ? 'pid_conflict' : processState === 'exited' ? 'exited'
+    : ['wrong_process', 'conflicting_pid_claims'].includes(processState) ? 'pid_conflict'
+      : processState === 'exited' && activeStops.length && !lock.present && ['stopped','source_session_ended'].includes(reportedStatus) ? reportedStatus
+      : processState === 'exited' ? 'exited'
       : activeStops.length ? processState === 'alive' ? 'stop_pending' : 'stopped' : heartbeat.status === 'invalid_heartbeat' ? 'invalid_clock'
         : heartbeat.status === 'stale_worker' ? 'stale_heartbeat' : reasons.includes('source_replay_lag') ? 'source_lag'
           : reasons.includes('worker_ahead_of_source_snapshot') ? 'source_snapshot_unverified'
