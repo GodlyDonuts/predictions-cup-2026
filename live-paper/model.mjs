@@ -8,14 +8,17 @@ export function validateConfig(c) {
   for(const k of ['readIntervalMs','cycleIntervalMs','maxDataAgeMs','latencyMs','feeBps','slippageTicks','depthFractionBps','orderShares','maxPositionShares','warmupObservations','lookback','exitAfterMs','port'])
     if(!Number.isSafeInteger(c[k])||c[k]<0)throw Error('Invalid '+k);
   if(c.readIntervalMs<5000||c.cycleIntervalMs<10000||c.maxDataAgeMs<1000||c.orderShares<1||c.maxPositionShares<c.orderShares||c.warmupObservations<2||c.lookback<c.warmupObservations||c.depthFractionBps<1||c.depthFractionBps>1000||c.feeBps>10000||c.slippageTicks>5||c.latencyMs<1||c.port<1024||c.port>65535||c.exitAfterMs<1000)throw Error('Unsafe paper limits');
-  if(!Array.isArray(c.marketIds)||c.marketIds.length<1||c.marketIds.length>8||new Set(c.marketIds).size!==c.marketIds.length||c.marketIds.some(x=>!/^\d+$/.test(x)))throw Error('Invalid market scope');
+  const diversified=['diversified-dip-v1','diversified-dip-scale-v1'].includes(c.strategyUniverse),scaled=c.strategyUniverse==='diversified-dip-scale-v1';if(c.strategyUniverse!==undefined&&!diversified)throw Error('Unknown strategy universe');
+  if(diversified&&(c.feeBps!==0||c.maxPositionShares>(scaled?2000:200)||amount(c.maxExposure)>amount(c.initialCash)/(scaled?2n:10n)||amount(c.cashReserve)<amount(c.initialCash)*(scaled?5n:9n)/10n))throw Error('Unsafe diversified paper scope');
+  if(!Array.isArray(c.marketIds)||c.marketIds.length<1||c.marketIds.length>(diversified?300:8)||new Set(c.marketIds).size!==c.marketIds.length||c.marketIds.some(x=>!/^\d+$/.test(x)))throw Error('Invalid market scope');
   if(c.tournamentId!=='bda92870-621e-47b0-bc3c-3602c5c26f55'||c.tournamentSlug!=='midterm-elections')throw Error('Invalid tournament scope');
   if(!Number.isFinite(c.entryZ)||c.entryZ<0||amount(c.minEdge)<=0n||amount(c.stopLoss)<=0n||amount(c.maxExposure)<=0n||amount(c.maxExposure)>amount(c.initialCash)||amount(c.cashReserve)<0n||amount(c.cashReserve)>=amount(c.initialCash))throw Error('Invalid strategy risk parameters');
   return c;
 }
 
 // Source numbers represent decimal ticks; immediately convert to exact integers.
-export function normalizeBook(response, marketId, tournamentId, receivedAt, requestStartedAt, maxAge, excluded=new Set()) {
+export function normalizeBook(response, marketId, tournamentId, receivedAt, requestStartedAt, maxAge, excluded=new Set(),freshnessPolicy='event_age_v1') {
+  if(!['event_age_v1','authoritative_receipt_v1'].includes(freshnessPolicy))throw Error('Unknown book freshness policy');
   const now=Date.parse(receivedAt),started=Date.parse(requestStartedAt);
   if(!Number.isFinite(now)||!Number.isFinite(started)||now<started||now-started>maxAge)throw Error('Slow or invalid snapshot observation');
   const contexts=response.contexts?.filter(x=>x.tournament?.id===tournamentId);
@@ -25,7 +28,7 @@ export function normalizeBook(response, marketId, tournamentId, receivedAt, requ
   const exchanges=context.orderbook?.exchanges;
   if(!Array.isArray(exchanges)||exchanges.length!==1||exchanges[0].option!=='YES')throw Error('Only verified single YES exchange books supported');
   const e=exchanges[0], id=String(e.exchangeId),version=e.asOf;
-  if(!/^\d+$/.test(id)||!version||!Number.isSafeInteger(version.sequence)||version.sequence<0||!Number.isFinite(Date.parse(version.at))||Date.parse(version.at)>now+2000||now-Date.parse(version.at)>maxAge)throw Error('Missing/stale engine version');
+  if(!/^\d+$/.test(id)||!version||!Number.isSafeInteger(version.sequence)||version.sequence<0||!Number.isFinite(Date.parse(version.at))||Date.parse(version.at)>now+2000||freshnessPolicy==='event_age_v1'&&now-Date.parse(version.at)>maxAge)throw Error('Missing/stale engine version');
   if(excluded.has(id))throw Error('Exchange has real account holdings or open orders');
   const levels=(rows,descending)=>{
     if(!Array.isArray(rows))throw Error('Missing depth');
@@ -36,7 +39,7 @@ export function normalizeBook(response, marketId, tournamentId, receivedAt, requ
   const bids=levels(e.bids,true),asks=levels(e.asks,false);
   if(!bids.length||!asks.length||amount(bids[0].price)>=amount(asks[0].price))throw Error('Missing, locked or crossed market');
   const sourceAt=timestamp(version.at);
-  return {marketId:String(marketId),exchangeId:id,instrument:id+':YES',receivedAt,requestStartedAt,sourceAt,sequence:String(version.sequence),versionKey:String(version.sequence)+':'+sourceAt,bids,asks};
+  return {marketId:String(marketId),exchangeId:id,instrument:id+':YES',receivedAt,requestStartedAt,sourceAt,sequence:String(version.sequence),versionKey:String(version.sequence)+':'+sourceAt,bids,asks,...(freshnessPolicy==='authoritative_receipt_v1'?{freshnessPolicy,sourceEventAgeMs:now-Date.parse(version.at)}:{})};
 }
 
 export function invalidate(s,marketId,at,reason){s.invalidated??={};for(const[id,b]of Object.entries(s.books))if(marketId===null||b.marketId===String(marketId))s.invalidated[id]={at,reason};}
@@ -203,4 +206,22 @@ export function stepForecast(input,b,c,{exitValue,netEdge,horizonMs,minimumEdge}
     }
   }
   assertState(s,c);return s;
+}
+
+// A distinct prospective dip wallet; no change to frozen ML/rolling-mean semantics.
+export function stepDip(input,b,c,{reference,allowEntry,minimumEdge,takeProfit,horizonMs,maxMarketCost}){
+ if(typeof allowEntry!=='boolean'||!Number.isFinite(minimumEdge)||minimumEdge<=0||!Number.isSafeInteger(horizonMs)||horizonMs<1000||amount(takeProfit)<=0n||amount(maxMarketCost)<=0n)throw Error('Invalid dip policy');
+ const previous=input.books[b.instrument],s=observe(input,b,c),id=b.instrument,at=b.receivedAt;
+ s.strategies=structuredClone(input.strategies);b=s.books[id];const st=s.strategies.mean_reversion;
+ const ask=amount(b.asks[0].price)+TICK*BigInt(c.slippageTicks),entry=Number(ask)/1e6,edge=Number.isFinite(reference)?reference-entry:null;
+ const eligible=allowEntry&&Number.isFinite(edge)&&edge>=minimumEdge;
+ if(st.pending[id]?.action==='buy'&&!eligible){delete st.pending[id];st.expiredIntents++;}
+ if(previous?.versionKey===b.versionKey&&!st.pending[id]){assertState(s,c);return s;}
+ const pending=st.pending[id];if(pending){if(Date.parse(at)-Date.parse(pending.createdAt)>c.maxDataAgeMs+c.cycleIntervalMs*4){delete st.pending[id];st.expiredIntents++;}else fillIntent(st,pending,b,c,at);}
+ if(!st.pending[id]){
+  const pos=st.positions[id],bid=amount(b.bids[0].price)-TICK*BigInt(c.slippageTicks);
+  if(pos){const avg=amount(pos.cost)/BigInt(pos.quantity);if(bid-avg>=amount(takeProfit)||avg-bid>=amount(c.stopLoss)||Date.parse(at)-Date.parse(pos.enteredAt)>=horizonMs)enqueue(st,b,'sell',pos.quantity,bid,at,bid-avg>=amount(takeProfit)?'dip_take_profit':'dip_stop_or_timeout');}
+  else if(eligible){const shares=Math.min(c.orderShares,Number(amount(maxMarketCost)/ask));if(shares>0)enqueue(st,b,'buy',shares,ask,at,'historical_discount');}
+ }
+ assertState(s,c);return s;
 }

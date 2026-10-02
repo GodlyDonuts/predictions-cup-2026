@@ -11,16 +11,16 @@ export function advanceFeeFree(input,records,bank){
  const s=structuredClone(input),c=bank.config;if(c.feeBps!==0||s.bankHash!==digest(bank)||records?.prefixHashes?.[bank.sourceRecords-1]!==bank.sourceHash||records[s.sourceSequence-1]?.hash!==s.lastRecordHash)throw Error('Fee-free source/bank changed');assertState(s.wallet,c);
  const revoke=market=>{for(const st of Object.values(s.wallet.strategies))for(const [id,p]of Object.entries(st.pending))if(p.action==='buy'&&(market===null||s.wallet.books[id]?.marketId===market)){delete st.pending[id];st.expiredIntents++;}};
  for(const r of records){if(r.sequence<=s.sourceSequence)continue;s.sourceSequence=r.sequence;s.lastRecordHash=r.hash;const e=r.event,at=e.clockAt||r.at;
-  if(e.type==='account_read_outage'){invalidate(s.wallet,null,at,'account_outage');revoke(null);continue;}if(e.type!=='cycle')continue;
+  if(e.type==='account_read_outage'){s.wallet.skips.account={at,reason:e.reason||'account_outage'};invalidate(s.wallet,null,at,'account_outage');revoke(null);continue;}if(e.type!=='cycle')continue;
   for(const snap of scopedSnapshots(e,c)){
-   if(snap.skipped){invalidate(s.wallet,snap.marketId,snap.at||at,snap.skipped);revoke(snap.marketId);continue;}
+   if(snap.skipped){s.wallet.skips[snap.marketId]={at:snap.at||at,reason:snap.skipped};invalidate(s.wallet,snap.marketId,snap.at||at,snap.skipped);revoke(snap.marketId);continue;}
    const m=/^\/markets\/(\d+)\/orderbook\?/.exec(snap.endpoint||'');if(!m||!c.marketIds.includes(m[1])||Date.parse(snap.requestStartedAt)<=Date.parse(bank.cutoff))continue;
-   let b;try{b=normalizeBook(snap.data,m[1],c.tournamentId,snap.receivedAt,snap.requestStartedAt,c.maxDataAgeMs,new Set(e.accountExclusions));}catch{invalidate(s.wallet,m[1],snap.receivedAt,'invalid_book');revoke(m[1]);continue;}
+   let b;try{b=normalizeBook(snap.data,m[1],c.tournamentId,snap.receivedAt,snap.requestStartedAt,c.maxDataAgeMs,new Set(e.accountExclusions));}catch{s.wallet.skips[m[1]]={at:snap.receivedAt,reason:'invalid_book'};invalidate(s.wallet,m[1],snap.receivedAt,'invalid_book');revoke(m[1]);continue;}
    s.wallet=observe(s.wallet,b,c);
   }sampleEquity(s.wallet,c,at);
  }assertState(s.wallet,c);return s;
 }
-export function feeFreeReport(s,bank,at){const r=report(s.wallet,bank.config,at);return {...r,assumptions:{...r.assumptions,feeStatus:'human_requested_zero_additional_explicit_fee_baseline'},mode:'prospective_fee_free_paper_baseline',feeScenario:'zero_additional_explicit_fee_baseline',cutoff:bank.cutoff,bankHash:s.bankHash,sourceSequence:s.sourceSequence,lastRecordHash:s.lastRecordHash,networkRequests:0,competitionOrders:0};}
+export function feeFreeReport(s,bank,at){const r=report(s.wallet,bank.config,at),books=Object.entries(s.wallet.books);const dataHealth={invalidated:books.filter(([id])=>s.wallet.invalidated?.[id]).length,coveredMarkets:new Set(books.map(([,b])=>b.marketId)).size,expectedMarkets:bank.config.marketIds.length,invalidClocks:books.filter(([,b])=>!Number.isFinite(Date.parse(b.receivedAt))||Date.parse(b.receivedAt)>Date.parse(at)).length};return {...r,dataHealth,assumptions:{...r.assumptions,feeStatus:'human_requested_zero_additional_explicit_fee_baseline'},mode:'prospective_fee_free_paper_baseline',feeScenario:'zero_additional_explicit_fee_baseline',cutoff:bank.cutoff,bankHash:s.bankHash,sourceSequence:s.sourceSequence,lastRecordHash:s.lastRecordHash,networkRequests:0,competitionOrders:0};}
 if(process.argv[1]&&fileURLToPath(import.meta.url)===process.argv[1]){
  const dir=process.env.SIG_PAPER_DIR||path.join(process.env.LOCALAPPDATA,'SigTradingCup','paper-runtime'),workspace=path.dirname(path.dirname(fileURLToPath(import.meta.url))),release=lock(path.join(dir,'fee-free-shadow.lock'));process.on('exit',release);
  const bank=JSON.parse(fs.readFileSync(path.join(dir,'fee-free-bank.json'))),statePath=path.join(dir,'fee-free-state.json');let s=JSON.parse(fs.readFileSync(statePath)),partial=0;

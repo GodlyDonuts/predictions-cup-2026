@@ -1,0 +1,8 @@
+{
+ "schemaVersion":1,"name":"diversified-dip-v1","feeBps":0,
+ "lookbackMs":21600000,"historyCacheAgeMs":3600000,"minimumSamples":8,"minimumSpanMs":1800000,"lastHistoricalObservationAgeMs":2700000,
+ "minimumDip":0.02,"minimumRelativeDip":0.03,"maximumDip":0.10,"minimumZ":1.5,"maximumSpread":0.02,"minimumPrice":0.05,"maximumPrice":0.95,
+ "takeProfit":"0.010000","stopLoss":"0.030000","maximumHoldMs":3600000,"cooldownMs":900000,
+ "maxOpenMarkets":12,"maxPerState":2,"maxPerOffice":6,"maxUnknownIdentity":1,"maxMarketCost":"50.000000",
+ "historyReadsPerCycle":2,"comparisonBooksPerCycle":2,"dynamicBooksPerCycle":2
+}

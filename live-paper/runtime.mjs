@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {createHash} from 'node:crypto';
 import {retryAfterMs} from '../feed/runtime.mjs';
+import {allowedHistoryEndpoint} from './history.mjs';
 
 export function exclusionSet(positions,orders){
   if(!Array.isArray(positions)||!Array.isArray(orders))throw Error('Incomplete account reconciliation');
@@ -47,12 +48,12 @@ export class ReadClient {
   request(endpoint){const queuedAt=this.now();const result=this.tail.then(()=>this.perform(endpoint,queuedAt));this.tail=result.catch(()=>{});return result;}
   async perform(endpoint,queuedAt=this.now()){
     const executingAt=this.now();
-    const patterns=[/^\/tournaments\/midterm-elections$/, /^\/tournaments\/midterm-elections\/portfolio\/positions$/, /^\/orders\?status=open&limit=200&tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55(?:&cursor=[A-Za-z0-9%._~-]+)?$/, /^\/markets\/\d+\/orderbook\?tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55&depth=20$/];
+    const patterns=[/^\/tournaments\/midterm-elections$/, /^\/tournaments\/midterm-elections\/portfolio\/fills\?limit=100$/, /^\/tournaments\/midterm-elections\/portfolio\/pnl\?period=day$/, /^\/orders\?status=all&limit=200&tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55$/, /^\/tournaments\/midterm-elections\/portfolio\/positions$/, /^\/orders\?status=open&limit=200&tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55(?:&cursor=[A-Za-z0-9%._~-]+)?$/, /^\/markets\/\d+\/orderbook\?tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55&depth=20$/];
     const bulk=/^\/exchanges\/prices\?ids=([1-9]\d*(?:,[1-9]\d*)*)&tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55$/.exec(endpoint);
     const ids=bulk?.[1].split(',');
     const allowedBulk=ids&&ids.length<=100&&new Set(ids).size===ids.length&&ids.every(x=>Number.isSafeInteger(Number(x)));
-    if(!patterns.some(p=>p.test(endpoint))&&!allowedBulk)throw Error('Endpoint outside paper GET allowlist');
-    const kind=endpoint.startsWith('/markets/')?'book':endpoint.startsWith('/orders?')?'orders':endpoint.startsWith('/exchanges/prices?')?'prices':endpoint.endsWith('/portfolio/positions')?'positions':'tournament';
+    if(!patterns.some(p=>p.test(endpoint))&&!allowedBulk&&!allowedHistoryEndpoint(endpoint))throw Error('Endpoint outside paper GET allowlist');
+    const kind=endpoint.includes('/portfolio/fills?')?'fills':endpoint.includes('/portfolio/pnl?')?'pnl':endpoint.includes('/price-history?')?'history':endpoint.startsWith('/markets/')?'book':endpoint.startsWith('/orders?')?'orders':endpoint.startsWith('/exchanges/prices?')?'prices':endpoint.endsWith('/portfolio/positions')?'positions':'tournament';
     const event={schemaVersion:1,kind,marketId:kind==='book'?/^\/markets\/(\d+)\//.exec(endpoint)[1]:null,queuedAt:new Date(queuedAt).toISOString(),admittedAt:null,finishedAt:null,queueWaitMs:Math.max(0,executingAt-queuedAt),admissionWaitMs:null,headersMs:null,bodyMs:null,serviceMs:null,totalMs:null,statusCode:null,outcome:'blocked'};
     let admittedAt=null,headersAt=null;
     try{

@@ -1,0 +1,11 @@
+import {amount,money} from '../paper/fixed.mjs';
+export function dipPerformance(fills,positions,now){
+ const inventory=new Map(),episodes=new Map(),completed=[];let soldBasis=0n,realized=0n,buyCost=0n,soldShares=0;
+ for(const f of fills){const lots=inventory.get(f.instrument)||[],ep=episodes.get(f.instrument)||{instrument:f.instrument,cost:0n,pnl:0n,shares:0},notional=amount(f.price)*BigInt(f.quantity),charge=amount(f.fee);
+  if(f.action==='buy'){const cost=notional+charge;lots.push({quantity:f.quantity,cost});buyCost+=cost;ep.cost+=cost;ep.shares+=f.quantity;}
+  else if(f.action==='sell'){let left=f.quantity,basis=0n;while(left){const lot=lots[0];if(!lot)throw Error('Performance ledger oversell');const q=Math.min(left,lot.quantity),part=q===lot.quantity?lot.cost:lot.cost*BigInt(q)/BigInt(lot.quantity);basis+=part;lot.cost-=part;lot.quantity-=q;left-=q;if(!lot.quantity)lots.shift();}const pnl=notional-charge-basis;soldBasis+=basis;soldShares+=f.quantity;realized+=pnl;ep.pnl+=pnl;if(!lots.length){completed.push({instrument:f.instrument,cost:money(ep.cost),pnl:money(ep.pnl),shares:ep.shares,closedAt:f.at});episodes.delete(f.instrument);}}
+  else throw Error('Invalid performance fill');inventory.set(f.instrument,lots);if(lots.length)episodes.set(f.instrument,ep);
+ }
+ const wins=completed.filter(e=>amount(e.pnl)>0n),losses=completed.filter(e=>amount(e.pnl)<0n),positive=completed.reduce((n,e)=>n+(amount(e.pnl)>0n?amount(e.pnl):0n),0n),negative=completed.reduce((n,e)=>n+(amount(e.pnl)<0n?-amount(e.pnl):0n),0n),openCost=[...inventory.values()].flat().reduce((n,l)=>n+l.cost,0n);
+ return {closedRoundTrips:completed.length,wins:wins.length,losses:losses.length,breakeven:completed.length-wins.length-losses.length,winRate:completed.length?wins.length/completed.length:null,realizedPnl:money(realized),totalEntryCost:money(buyCost),soldCostBasis:money(soldBasis),openCostBasis:money(openCost),fillWeightedRealizedReturn:soldBasis?Number(realized)/Number(soldBasis):null,realizedPnlPerSoldShare:soldShares?Number(realized)/1e6/soldShares:null,closedProfitFactor:negative?Number(positive)/Number(negative):null,oldestInventoryAgeMs:positions.length?Math.max(...positions.map(p=>Math.max(0,Date.parse(now)-Date.parse(p.enteredAt)))):null,recentClosedEpisodes:completed.slice(-25)};
+}

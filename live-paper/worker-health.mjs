@@ -10,6 +10,6 @@ export function baselineView(baseline,legacy,runtime,now=Date.now()){
  const health=workerHealth(baseline,now),bookAge=now-Date.parse(baseline.lastObservationAt);
  return {...baseline,baselineWorkerStatus:health.status,baselineHeartbeatAgeMs:health.heartbeatAgeMs,
   baselineBookAgeMs:baseline.observations&&Number.isFinite(bookAge)?bookAge:null,
-  baselineDataStatus:!baseline.observations?'awaiting_first_accepted_book':bookAge>baseline.config.maxDataAgeMs?'stale_market_data':'fresh_market_data',
+  baselineDataStatus:!baseline.observations?'awaiting_first_accepted_book':baseline.dataHealth?.invalidated?'invalidated_market_data':!Number.isFinite(bookAge)||bookAge<0||baseline.dataHealth?.invalidClocks?'invalid_market_clock':bookAge>baseline.config.maxDataAgeMs?'stale_market_data':baseline.dataHealth&&baseline.dataHealth.coveredMarkets<baseline.dataHealth.expectedMarkets?'partial_market_coverage':'fresh_market_data',
   legacyFeeStress:{feeBps:legacy.config.feeBps,runId:legacy.runId,strategies:legacy.strategies},runtime};
 }

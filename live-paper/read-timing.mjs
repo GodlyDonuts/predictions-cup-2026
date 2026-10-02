@@ -9,7 +9,7 @@ export function timingSummary(events){
 }
 export function validateTiming(e){
  const fields=['schemaVersion','kind','marketId','queuedAt','admittedAt','finishedAt','queueWaitMs','admissionWaitMs','headersMs','bodyMs','serviceMs','totalMs','statusCode','outcome'];
- if(!e||typeof e!=='object'||Array.isArray(e)||Object.keys(e).some(k=>!fields.includes(k))||e.schemaVersion!==1||!['tournament','positions','orders','book','prices'].includes(e.kind)||!['success','connection_error','http_error','body_error','aborted','blocked'].includes(e.outcome))throw Error('Invalid timing schema');
+ if(!e||typeof e!=='object'||Array.isArray(e)||Object.keys(e).some(k=>!fields.includes(k))||e.schemaVersion!==1||!['tournament','positions','orders','book','prices','history','fills','pnl'].includes(e.kind)||!['success','connection_error','http_error','body_error','aborted','blocked'].includes(e.outcome))throw Error('Invalid timing schema');
  if(e.marketId!==null&&(typeof e.marketId!=='string'||!/^([1-9]\d*)$/.test(e.marketId)))throw Error('Invalid timing market');
  for(const k of ['queuedAt','finishedAt'])if(typeof e[k]!=='string'||!Number.isFinite(Date.parse(e[k])))throw Error('Invalid timing clock');
  if(e.admittedAt!==null&&(typeof e.admittedAt!=='string'||!Number.isFinite(Date.parse(e.admittedAt))))throw Error('Invalid timing admission');
