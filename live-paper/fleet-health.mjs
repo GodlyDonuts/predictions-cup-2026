@@ -27,6 +27,7 @@ const specs = [
 const activeCohorts = [
   {name: 'entry-comparison', manifest: 'entry-comparison-active.json', directory: 'entry-comparisons', script: 'live-paper/entry-comparison-watch.mjs', stop: 'ENTRY_COMPARISON_STOP'},
   {name: 'limit-entry', manifest: 'limit-entry-active.json', directory: 'limit-entry-cohorts', script: 'live-paper/limit-entry-watch.mjs', stop: 'LIMIT_ENTRY_STOP'},
+  {name: 'stream-book', manifest: 'stream-book-active.json', directory: 'stream-book-cohorts', script: 'live-paper/stream-book-watch.mjs', stop: 'STREAM_BOOK_STOP', globalLock: 'stream-book-gateway.lock', captureInput: true},
 ];
 const cohortName = value => typeof value === 'string' && /^[a-z][a-z0-9-]{0,63}$/.test(value)
   && !/^(con|prn|aux|nul|com[1-9]|lpt[1-9])$/.test(value);
@@ -57,7 +58,7 @@ function activeCohortInput(runtimeDir, spec, globalStops) {
     }
   } catch { return {...invalid('active_cohort_path_unavailable'), spec: scopedSpec}; }
   const r = json(path.join(dir, 'stats.json')), b = json(path.join(dir, 'bank.json')),
-    p = pidFile(path.join(dir, 'pid.txt')), l = pidFile(path.join(dir, 'worker.lock'));
+    p = pidFile(path.join(dir, 'pid.txt')), l = pidFile(spec.globalLock ? path.join(runtimeDir,spec.globalLock) : path.join(dir, 'worker.lock'));
   const claims = [{source: 'pid_file', ...p}, {source: 'lock', ...l}, {source: 'report', pid: pid(r.value?.pid), modifiedAt: r.modifiedAt}].filter(c => c.pid);
   return {spec: scopedSpec, report: r.value, bank: b.value, reportPresent: true, bankPresent: b.value !== undefined, claims, lock: l,
     stops: [...globalStops, stopFile(path.join(runtimeDir, spec.stop), 'worker_stop'), stopFile(path.join(dir, 'STOP'), 'cohort_stop')]};
@@ -205,7 +206,7 @@ export async function fleetHealth({runtimeDir, workspaceDir = path.dirname(path.
   const passiveSource = captureMetadata(runtimeDir, inputs.find(x => x.spec.name === 'passive')?.bank);
   const executionStop = stopFile(path.join(runtimeDir, 'EXECUTION_STOP'), 'execution_stop');
   now ??= Date.now(); // Assess after local reads so their receipt clocks cannot appear future-dated merely because probing took time.
-  const workers = inputs.map(x => assessWorker({...x, processes, source: x.spec.name === 'passive' ? passiveSource : source}, now));
+  const workers = inputs.map(x => assessWorker({...x, processes, source: x.spec.name === 'passive' ? passiveSource : x.spec.captureInput ? captureMetadata(runtimeDir,x.bank) : source}, now));
   const executionTime = safeTime(official?.updatedAt), realtimeTime = safeTime(realtime?.at);
   const realtimeHealth = workerHealth({updatedAt: realtimeTime, status: 'fresh'}, now);
   const realtimeMarketsValid = Array.isArray(realtime?.markets) && realtime.markets.length > 0 && realtime.markets.every(m => m && typeof m.ready === 'boolean');
