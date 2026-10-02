@@ -38,6 +38,18 @@ test('frozen prefix seeds observations but never fills; rebound fills only a lat
   assert.equal(shockReport(s, bank, at(42)).cumulativeBuyCost, '1.695000'); assert.equal(st.realized, '0.060000');
   assert.deepEqual(advance(s, events, bank), s);
 });
+test('bounded server clock skew preserves raw source clocks and uses receipt time for prospective fills', () => {
+  const events = prefix(), {bank, state} = createShock(source(events), config, universe);
+  for (const [t, seq, bid, ask] of [[30, 20, .545, .550], [32, 21, .555, .560], [34, 22, .555, .560]]) {
+    const e = cycle(t, seq, bid, ask); e.sourceSnapshots[0].data.contexts[0].orderbook.exchanges[0].asOf.at = at(t + .130); events.push(e);
+  }
+  const s = advance(state, events, bank), fill = s.wallet.strategies.mean_reversion.fills[0];
+  assert.equal(s.wallet.strategies.mean_reversion.fills.length, 1); assert.equal(fill.at, at(34));
+  assert.equal(Date.parse(fill.sourceAt), zero + 34130); assert.equal(s.wallet.books['1066:YES'].receivedAt, at(34));
+  const future = cycle(36, 23, .555, .560); future.sourceSnapshots[0].data.contexts[0].orderbook.exchanges[0].asOf.at = at(38.001);
+  events.push(future); assert.equal(advance(s, events, bank).signals['377'].reason, 'invalid_or_excluded_book');
+  assert.equal(bank.cohortId, 'shock-rebound-' + at(0)); assert.equal(state.wallet.runId, bank.cohortId);
+});
 test('original maximum entry price remains binding after confirmation and outage revokes pending buys', () => {
   const events = prefix(), {bank, state} = createShock(source(events), config, universe);
   events.push(cycle(30, 20, .545, .550), cycle(32, 21, .555, .560)); let s = advance(state, events, bank);
@@ -98,7 +110,7 @@ test('source-prefix tampering, config changes, wrong exchange and account exclus
   const events = prefix(), {bank, state} = createShock(source(events), config, universe);
   const changed = structuredClone(events); changed[0].clockAt = at(-601);
   assert.throws(() => advance(state, changed, bank), /source or bank changed/);
-  assert.throws(() => advance(state, events, {...bank, cutoff: at(1)}), /source or bank changed/);
+  assert.throws(() => advance(state, events, {...bank, cutoff: at(1)}), /source or bank changed|Invalid frozen shock cohort/);
   events.push(cycle(30, 20, .545, .550), cycle(32, 21, .555, .560, 10000, {accountExclusions: ['1066']}));
   const s = advance(state, events, bank); assert.equal(s.signals['377'].reason, 'invalid_or_excluded_book'); assert.deepEqual(s.wallet.strategies.mean_reversion.pending, {});
   const wrong = prefix(); const foreign = cycle(30, 20, .545, .550); foreign.sourceSnapshots[0].data.contexts[0].orderbook.exchanges[0].exchangeId = '1067'; wrong.push(foreign);

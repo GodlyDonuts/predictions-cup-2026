@@ -16,7 +16,7 @@ export function shockCodeIdentity() {
 }
 function checkBank(bank) {
   validateConfig(bank.config);
-  if (bank.name !== 'shock-rebound-shadow-v1' || bank.config.feeBps !== 0 || bank.config.marketIds.length > 4
+  if (bank.name !== 'shock-rebound-shadow-v1' || bank.cohortId !== 'shock-rebound-' + bank.cutoff || bank.config.feeBps !== 0 || bank.config.marketIds.length > 4
     || bank.policy.maxOpenMarkets !== 3 || bank.policy.cumulativeBuyBudget !== '100.000000'
     || amount(bank.config.maxExposure) > amount('100.000000') || bank.config.slippageTicks !== 1
     || bank.config.depthFractionBps > 100 || bank.config.orderShares > 10) throw Error('Invalid frozen shock cohort');
@@ -32,13 +32,13 @@ export function createShock(raw, config, universe, codeIdentity = shockCodeIdent
     if (matches.length !== 1 || universe.tournamentId !== c.tournamentId) throw Error('Shock universe scope mismatch');
     return createShockRebound({...matches[0], sourceHash, cutoff, config: {maxDataAgeMs: c.maxDataAgeMs}});
   });
-  const bank = {schemaVersion: 1, name: 'shock-rebound-shadow-v1', config: c, cutoff, sourceHash, sourceRecords: records.length,
+  const bank = {schemaVersion: 1, name: 'shock-rebound-shadow-v1', cohortId: 'shock-rebound-' + cutoff, config: c, cutoff, sourceHash, sourceRecords: records.length,
     codeIdentity: clone(codeIdentity), markets: markets.map(x => x.bank), policy: {maxOpenMarkets: 3, cumulativeBuyBudget: '100.000000',
       entryLifetimeMs: 60000, takeProfit: '0.010000', maximumHoldMs: 600000, maxMarketCost: '25.000000'}};
   checkBank(bank);
   const state = {schemaVersion: 1, bankHash: digest(bank), sourceSequence: 0, lastRecordHash: null,
     candidates: Object.fromEntries(markets.map(x => [x.bank.marketId, x.state])), proposals: {}, signals: {}, diagnosticCounts: {},
-    wallet: initialState(c, bank.name, cutoff)};
+    wallet: initialState(c, bank.cohortId, cutoff)};
   return {bank, state: advanceShock(state, records, bank)};
 }
 function revoke(s, bank, marketId, at, reason) {
@@ -129,7 +129,7 @@ export function shockReport(s, bank, at = new Date().toISOString()) {
   strategy.pending = Object.entries(st.pending).map(([instrument, p]) => ({...p, instrument, label: label(instrument)}));
   strategy.positions = strategy.positions.map(p => ({...p, label: label(p.instrument)}));
   strategy.recentFills = strategy.recentFills.map(f => ({...f, label: label(f.instrument)}));
-  return {mode: 'prospective_shock_rebound_paper', updatedAt: at, bankHash: s.bankHash, cutoff: bank.cutoff, sourceSequence: s.sourceSequence,
+  return {mode: 'prospective_shock_rebound_paper', cohortId: bank.cohortId, updatedAt: at, bankHash: s.bankHash, cutoff: bank.cutoff, sourceSequence: s.sourceSequence,
     feeBps: 0, universeSize: bank.markets.length, historiesAvailable: Object.values(s.candidates).filter(v => v.history.length > 0).length,
     sourceHash: s.lastRecordHash, frozenSourceHash: bank.sourceHash, codeIdentity: bank.codeIdentity, marketIds: bank.config.marketIds,
     observations: r.observations, signals: s.signals, diagnosticCounts: s.diagnosticCounts, historyCounts: Object.fromEntries(Object.entries(s.candidates).map(([id, v]) => [id, v.history.length])),

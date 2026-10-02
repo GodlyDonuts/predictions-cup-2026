@@ -7,7 +7,7 @@ import {instantNs, timestamp} from '../feed/contract.mjs';
 export const SHOCK_REBOUND_DEFAULTS = Object.freeze({
   lookbackMs: 1800000, minimumSamples: 8, minimumSpanMs: 300000,
   shockWindowMs: 120000, maxAnchorAgeMs: 240000, trendWindowMs: 900000,
-  minimumTrendSpanMs: 300000, maxDataAgeMs: 15000, maxObservationGapMs: 120000,
+  minimumTrendSpanMs: 300000, maxDataAgeMs: 15000, maxSourceClockSkewMs: 2000, maxObservationGapMs: 120000,
   maxReboundWaitMs: 120000, minConfirmationDelayMs: 1000, cooldownMs: 60000,
   minimumShock: '0.020000', maximumShock: '0.100000', minimumRoom: '0.010000',
   maximumEffectiveSpread: '0.020000', minimumPrice: '0.050000', maximumPrice: '0.950000',
@@ -27,6 +27,7 @@ function config(input) {
     need(Number.isSafeInteger(c[k]) && c[k] > 0, 'Invalid shock config: ' + k);
   need(Number.isSafeInteger(c.slippageTicks) && c.slippageTicks >= 1 && c.slippageTicks <= 5 && c.feeBps === 0, 'Unsupported costs');
   need(c.depthFractionBps <= 100 && c.orderShares <= 100 && c.minimumSamples >= 8, 'Unsafe sizing or history');
+  need(c.maxSourceClockSkewMs <= 2000, 'Source clock skew exceeds supported tolerance');
   need(c.lookbackMs >= c.trendWindowMs && c.trendWindowMs >= c.minimumTrendSpanMs + c.shockWindowMs
     && c.maxAnchorAgeMs >= c.shockWindowMs && c.minimumSpanMs >= c.shockWindowMs
     && c.maxReboundWaitMs >= c.minConfirmationDelayMs, 'Inconsistent time windows');
@@ -57,7 +58,10 @@ function checkedBook(b, bank, s) {
   const at = instant(b.receivedAt), requestAt = instant(b.requestStartedAt), source = instantNs(b.sourceAt);
   sequence(b.sequence);
   need(b.versionKey === b.sequence + ':' + timestamp(b.sourceAt), 'Book version mismatch');
-  need(requestAt <= at && at - requestAt <= c.maxDataAgeMs && source <= BigInt(at) * 1000000n, 'Noncausal or stale response');
+  // The official engine clock may lead the capture clock slightly. Preserve its
+  // raw timestamp; causal feature/latency clocks continue to use local receipts.
+  need(requestAt <= at && at - requestAt <= c.maxDataAgeMs
+    && source <= (BigInt(at) + BigInt(c.maxSourceClockSkewMs)) * 1000000n, 'Noncausal or stale response');
   if (s.last) {
     need(at >= s.last.at && requestAt >= s.last.requestAt, 'Receipt rollback');
     need(BigInt(b.sequence) >= BigInt(s.last.sequence) && source >= BigInt(s.last.sourceNs), 'Source rollback');

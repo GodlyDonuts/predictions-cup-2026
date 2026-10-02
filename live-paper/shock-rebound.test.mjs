@@ -70,7 +70,7 @@ test('cutoff, lagged reference, frozen source/config and identity prevent lookah
 });
 test('invalid clocks, source rollback, stale requests and missing liquidity fail closed', () => {
   const {state, bank} = warm();
-  assert.throws(() => advanceShockRebound(state, quote(30, 20, undefined, undefined, {sourceAt: at(31), versionKey: '20:' + timestamp(at(31))}), bank), /Noncausal/);
+  assert.throws(() => advanceShockRebound(state, quote(30, 20, undefined, undefined, {sourceAt: at(32.001), versionKey: '20:' + timestamp(at(32.001))}), bank), /Noncausal/);
   assert.throws(() => advanceShockRebound(state, quote(30, 1), bank), /rollback/);
   assert.throws(() => advanceShockRebound(state, quote(30, 20, undefined, undefined, {requestStartedAt: at(0)}), bank), /stale/);
   const armed = shock(state, bank).state;
@@ -143,4 +143,26 @@ test('maximum total shock includes exact boundary, delayed expiry and confirmati
   const oldTrough = {...armed, armed: {...armed.armed, troughBid: '0.095000', troughAt: zero + 31000}};
   const bounce = advanceShockRebound(oldTrough, quote(34, 22, '0.105000', '0.110000'), bank);
   assert.equal(bounce.signal, null); assert.equal(bounce.diagnostic.reason, 'maximum_shock_breached');
+});
+test('bounded source clock lead preserves raw timestamps and strict local causality', () => {
+  const {state, bank} = warm();
+  assert.equal(bank.config.maxSourceClockSkewMs, 2000);
+  const shifted = (t, seq, bid = '0.545000', ask = '0.550000', skew = .130) =>
+    quote(t, seq, bid, ask, {sourceAt: timestamp(at(t + skew)), versionKey: seq + ':' + timestamp(at(t + skew))});
+  const first = shifted(30, 20), armed = advanceShockRebound(state, first, bank);
+  assert.equal(armed.diagnostic.reason, 'shock_armed');
+  assert.equal(armed.state.last.sourceNs, String(BigInt(Date.parse(at(30.130))) * 1000000n));
+  assert.equal(armed.state.history.at(-1).at, zero + 30000);
+  const confirmed = advanceShockRebound(armed.state, shifted(32, 21, '0.555000', '0.560000'), bank);
+  assert.equal(confirmed.signal.at, at(32));
+  assert.equal(confirmed.signal.sourceVersion, '21:' + timestamp(at(32.130)));
+  assert.doesNotThrow(() => advanceShockRebound(state, shifted(30, 20, undefined, undefined, 2), bank));
+  assert.throws(() => advanceShockRebound(state, shifted(30, 20, undefined, undefined, 2.001), bank), /Noncausal/);
+  assert.throws(() => advanceShockRebound(state, {...first, requestStartedAt: at(30.001)}, bank), /Noncausal/);
+  assert.throws(() => advanceShockRebound(armed.state, shifted(29, 21), bank), /Receipt rollback/);
+  assert.throws(() => advanceShockRebound(armed.state, {...shifted(32, 21), requestStartedAt: at(29)}, bank), /Receipt rollback/);
+  assert.throws(() => advanceShockRebound(armed.state, shifted(32, 21, undefined, undefined, -2), bank), /Source rollback/);
+  assert.throws(() => warm({maxSourceClockSkewMs: 2001}), /skew exceeds/);
+  const tight = warm({maxSourceClockSkewMs: 100});
+  assert.throws(() => advanceShockRebound(tight.state, first, tight.bank), /Noncausal/);
 });
