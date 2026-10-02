@@ -3,7 +3,7 @@ import path from 'node:path';
 import {createHash} from 'node:crypto';
 import {retryAfterMs} from '../feed/runtime.mjs';
 import {allowedHistoryEndpoint} from './history.mjs';
-import {networkInterval} from './network-budget.mjs';
+import {networkInterval,networkWriteInterval} from './network-budget.mjs';
 
 export function exclusionSet(positions,orders){
   if(!Array.isArray(positions)||!Array.isArray(orders))throw Error('Incomplete account reconciliation');
@@ -43,7 +43,7 @@ export function lock(file){fs.mkdirSync(path.dirname(file),{recursive:true});con
 export class ReadClient {
   #key;
   constructor(key,{interval=6000,networkBudget=null,fetchFn=fetch,signal,now=Date.now,sleepFn=ms=>new Promise(r=>setTimeout(r,ms)),onAdmission=()=>{},onTiming=()=>{},authorizeDispatch}={}){
-    this.#key=key;this.interval=networkInterval(interval,networkBudget);this.completionPacing=networkBudget!==null;this.fetch=fetchFn;this.signal=signal;this.now=now;this.sleep=sleepFn;this.next=0;this.cooldown=0;this.requests=0;this.onAdmission=onAdmission;this.onTiming=onTiming;this.tail=Promise.resolve();this.authorizeDispatch=authorizeDispatch;
+    this.#key=key;this.interval=networkInterval(interval,networkBudget);this.writeInterval=networkWriteInterval(interval,networkBudget);this.completionPacing=networkBudget!==null;this.fetch=fetchFn;this.signal=signal;this.now=now;this.sleep=sleepFn;this.next=0;this.cooldown=0;this.requests=0;this.onAdmission=onAdmission;this.onTiming=onTiming;this.tail=Promise.resolve();this.authorizeDispatch=authorizeDispatch;
   }
   async pause(ms){const until=this.now()+ms;while(this.now()<until){if(this.signal?.aborted)throw Error('Stopped');await this.sleep(Math.min(200,until-this.now()));}}
   request(endpoint){const queuedAt=this.now();const result=this.tail.then(()=>this.perform(endpoint,queuedAt));this.tail=result.catch(()=>{});return result;}
@@ -54,6 +54,7 @@ export class ReadClient {
   }
   async perform(endpoint,queuedAt=this.now(),dispatch){
     const executingAt=this.now();
+    const interval=dispatch&&dispatch.method!=='GET'?this.writeInterval:this.interval;
     const patterns=[/^\/tournaments\/midterm-elections$/, /^\/tournaments\/midterm-elections\/portfolio\/fills\?limit=100$/, /^\/tournaments\/midterm-elections\/portfolio\/pnl\?period=day$/, /^\/orders\?status=all&limit=200&tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55$/, /^\/tournaments\/midterm-elections\/portfolio\/positions$/, /^\/orders\?status=open&limit=200&tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55(?:&cursor=[A-Za-z0-9%._~-]+)?$/, /^\/markets\/\d+\/orderbook\?tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55&depth=20$/];
     const bulk=/^\/exchanges\/prices\?ids=([1-9]\d*(?:,[1-9]\d*)*)&tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55$/.exec(endpoint);
     const ids=bulk?.[1].split(',');
@@ -73,7 +74,7 @@ export class ReadClient {
         if(dispatch.beforeDispatch)await dispatch.beforeDispatch();
         if(this.signal?.aborted)throw Error('Stopped');
       }
-      this.next=this.now()+this.interval;this.requests++;this.onAdmission(this.next);
+      this.next=this.now()+interval;this.requests++;this.onAdmission(this.next);
       if(dispatch?.beforeNetwork)await dispatch.beforeNetwork();
       if(this.signal?.aborted)throw Error('Stopped');
       admittedAt=this.now();event.admittedAt=new Date(admittedAt).toISOString();event.admissionWaitMs=Math.max(0,admittedAt-executingAt);
@@ -88,7 +89,7 @@ export class ReadClient {
       const finished=this.now();event.finishedAt=new Date(finished).toISOString();event.totalMs=Math.max(0,finished-queuedAt);if(admittedAt!==null){event.serviceMs=Math.max(0,finished-admittedAt);if(headersAt===null)event.headersMs=event.serviceMs;}else event.admissionWaitMs=Math.max(0,finished-executingAt);
       // Faster coordinated mode reserves before fetch and again after completion.
       // This prevents a slow durable admission from creating a catch-up burst.
-      if(this.completionPacing&&admittedAt!==null&&!this.manualReview){this.next=Math.max(this.next,finished+this.interval,this.cooldown);this.onAdmission(this.next);}
+      if(this.completionPacing&&admittedAt!==null&&!this.manualReview){this.next=Math.max(this.next,finished+interval,this.cooldown);this.onAdmission(this.next);}
       try{this.onTiming(event);}catch{this.manualReview=true;this.onAdmission(null);throw Error('Read timing recording failed');}
     }
   }
