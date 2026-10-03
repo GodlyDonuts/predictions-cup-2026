@@ -13,10 +13,11 @@ export function anchorFocusMarkets(stats,universe){
  for(const wallet of Object.values(stats.wallets)){
   need(Array.isArray(wallet.positions)&&Array.isArray(wallet.pending));
   for(const position of wallet.positions){const marketId=byInstrument.get(position.instrument);need(valid.has(marketId)&&Number.isSafeInteger(position.quantity)&&position.quantity>0);markets.set(marketId,'held');}
-  // The frozen report omits pending map keys. Held instruments cover all sell
-  // intents; buy candidates are the causal signals at their actual creation
-  // receipt. Coincident receipts may include more than one paper candidate.
-  for(const intent of wallet.pending){need(['buy','sell'].includes(intent.action));if(intent.action==='sell'){need(wallet.positions.length>0);continue;}
+  // Corrected hosts project the original pending-map key. Retired v1 reports
+  // retain their historical timestamp mapping for compatibility only.
+  for(const intent of wallet.pending){need(['buy','sell'].includes(intent.action));
+   if(stats.hostVersion===2||intent.instrument!==undefined){const marketId=byInstrument.get(intent.instrument);need(valid.has(marketId)&&intent.marketId===marketId);if(intent.action==='sell')need(wallet.positions.some(p=>p.instrument===intent.instrument));else if(!markets.has(marketId))markets.set(marketId,'entry_pending');continue;}
+   if(intent.action==='sell'){need(wallet.positions.length>0);continue;}
    const candidates=stats.signals.filter(s=>s.actualAvailableAt===intent.createdAt);need(candidates.length>0);
    for(const signal of candidates){need(valid.has(signal.marketId));if(!markets.has(signal.marketId))markets.set(signal.marketId,'entry_pending');}
   }
