@@ -1,0 +1,146 @@
+{
+  "schema_version": 1,
+  "record_kind": "immutable_exact_ak_buy_and_unfilled_covered_exit_reconciliation",
+  "immutable": true,
+  "repository_base_commit": "474984aa1ba017f096d4731c824274b9aad745c4",
+  "source_evidence": {
+    "path": "data/collector-evidence/ga-ak-projection-20261003-0815.json",
+    "commit": "d08dee0570ef3ce0af845f51ae9b4c4d0bd22205",
+    "url": "https://github.com/GodlyDonuts/predictions-cup-2026/blob/d08dee0570ef3ce0af845f51ae9b4c4d0bd22205/data/collector-evidence/ga-ak-projection-20261003-0815.json",
+    "excerpt_sha256": "bffceaec8d6c0203124f1c460de2fae2cbde02894f02c7f6368d4576ad460f62",
+    "excerpt_git_blob_sha1": "10c5cf295f0dd6fa1626649265f26b8e5a9743bd",
+    "excerpt_bytes": 4619,
+    "reported_full_source_projection_sha256": "aca347f99493165d132c8d587d606a3ba9a732c939138cc196bc1895d0f0d209",
+    "captured_at_utc": "2026-10-03T08:13:15.145Z",
+    "fills_observed_at_utc": "2026-10-03T08:12:38.737Z",
+    "order_history_observed_at_utc": "2026-10-03T08:12:03.392Z",
+    "account_history_has_more": true,
+    "curated_excerpt_independently_read_and_hashed": true,
+    "original_http_body_headers_inspected": false,
+    "full_projection_bytes_independently_inspected": false,
+    "reported_full_projection_hash_independently_recomputed": false
+  },
+  "selected_order_checks": [
+    {
+      "order_id": "4505792",
+      "quantity": 10000,
+      "cost": "8945.420",
+      "fill_ids_unique": true,
+      "identifiers_and_closed_buy_fields_match": true,
+      "integer_milli_cost": 8945420,
+      "decimal_and_rational_agree": true
+    },
+    {
+      "order_id": "4547722",
+      "quantity": 20000,
+      "cost": "5876.635",
+      "fill_ids_unique": true,
+      "identifiers_and_closed_buy_fields_match": true,
+      "integer_milli_cost": 5876635,
+      "decimal_and_rational_agree": true
+    }
+  ],
+  "latest_parent_ak_and_sell_observation_at_utc": "2026-10-03T08:14:34Z",
+  "ledger": {
+    "path": "data/trade_ledger.csv",
+    "prior_sha256": "1a8c9e971a08cc39ed76da6a40883a94899f4210caca5d9dfb22722d671bddf0",
+    "sha256": "94fa031f42c6130b69024acfb434201fd53ce60d0e21d77f3c5952025338a5e0",
+    "prior_bytes": 6333,
+    "prior_byte_prefix_preserved": true,
+    "prior_rows": 20,
+    "total_rows": 21,
+    "appended_rows": 1,
+    "appended_order_id": "4547722",
+    "appended_quantity": 20000,
+    "appended_cost": "5876.635",
+    "ledger_only_cash": "65571.790",
+    "ledger_only_realized": "156.915"
+  },
+  "retired_adjustment": {
+    "source": "data/orders/daenerys_2026-10-03_ak369_yes_buy_001_observed_0758.json",
+    "quantity": 20000,
+    "replaced_by_ledger_row": 21,
+    "additional_inventory_on_reconciliation": 0
+  },
+  "active_adjustments": [
+    {
+      "source": "data/snapshots/bot_adjustment_reconciliation_2026-10-03_0701.json",
+      "cash_change": "-0.380",
+      "realized_change": "-0.380",
+      "inventory": 0
+    }
+  ],
+  "combined_recorded_price_arithmetic": {
+    "cash": "65571.410",
+    "historical_ui_cash": "65571.41",
+    "total_basis": "34585.125",
+    "cash_plus_basis": "100156.535",
+    "analytical_realized": "156.535",
+    "verified_hidden_cash": null,
+    "fees_verified": false
+  },
+  "active_order": {
+    "source": "data/orders/daenerys_2026-10-03_ak369_yes_sell_001_open_0814.json",
+    "order_id": "4561585",
+    "quantity": 10000,
+    "remaining": 10000,
+    "filled_observed": 0,
+    "limit": "0.365",
+    "covered_by_ak_holding": 20000,
+    "in_executed_ledger": false
+  },
+  "validation": {
+    "full_21_row_decimal_fifo": true,
+    "full_21_row_independent_rational_fifo": true,
+    "ga_and_ak_unique_fill_ids_and_order_fields_checked": true,
+    "both_costs_match_decimal_rational_and_integer_milli_products": true,
+    "published_excerpt_hash_verified": true,
+    "original_full_projection_hash_not_independently_verified": true,
+    "has_more_true_preserved": true,
+    "prior_20_ledger_rows_byte_preserved": true,
+    "ak_buy_included_once": true,
+    "covered_sell_excluded": true,
+    "prior_observed_layer_retired": true,
+    "snapshot_equals_latest": true
+  },
+  "limitations": [
+    "The published selected curated API projection excerpt was independently read and hashed. Original HTTP bodies/headers and the full source projection bytes were not inspected; its reported full-projection hash is distinct from the checked excerpt hash.",
+    "accountHistoryHasMore=true: account pagination is incomplete. Selected unique fills sum to their selected closed BUY order quantities; no full-account history completeness is asserted.",
+    "Execution/order-created timestamps come from selected projection fields; parent UI click and verification timestamps remain separate.",
+    "Exact price-product principal is distinct from undisclosed fees, hidden cash precision and platform display rounding. No fee or hidden-balance claim is introduced.",
+    "Projection observation clocks are evidence provenance, not fresh later account positions. Holdings/open-order claims use their explicitly dated parent UI observations.",
+    "No account network/API/UI/trading call was performed by this record-maintenance worker."
+  ],
+  "artifact_hashes": {
+    "data/orders/daenerys_2026-10-03_ak369_yes_buy_001_exact_0815.json": {
+      "sha256": "3a79996070d55ade40c93a3f631a83f1ef7c271e2aa57327dd43e9dd30fd7d20",
+      "bytes": 5413,
+      "git_blob_sha1": "00eb006f57b0a83c5c907cee64c89048fab33873"
+    },
+    "data/orders/daenerys_2026-10-03_ak369_yes_sell_001_open_0814.json": {
+      "sha256": "78d0ba82195ad282c5add86c8d8fc2fc89d8a020b30bcdab6fd15d6804ab859a",
+      "bytes": 2099,
+      "git_blob_sha1": "b6fb0df9fd18f687060e9ab66880c3e647537a90"
+    },
+    "data/portfolio/latest.json": {
+      "sha256": "15ca8d6c0c8d186308982a7258867973f2fd717adf9336f1fc5319b4b93bd831",
+      "bytes": 17293,
+      "git_blob_sha1": "bf5479ddaa150c37c01a992c1e8fd1c23482c60c"
+    },
+    "data/snapshots/portfolio_2026-10-03_0814.json": {
+      "sha256": "15ca8d6c0c8d186308982a7258867973f2fd717adf9336f1fc5319b4b93bd831",
+      "bytes": 17293,
+      "git_blob_sha1": "bf5479ddaa150c37c01a992c1e8fd1c23482c60c"
+    },
+    "data/trade_ledger.csv": {
+      "sha256": "94fa031f42c6130b69024acfb434201fd53ce60d0e21d77f3c5952025338a5e0",
+      "bytes": 6848,
+      "git_blob_sha1": "87add5412de151953d0a12761d7a78a7f0c8443a"
+    },
+    "docs/CURRENT_STATE.md": {
+      "sha256": "21e782951987d60aa2e7a9b4e6d9243d3592eb1144382d303b1be96ee029db44",
+      "bytes": 42515,
+      "git_blob_sha1": "c3c1615dcace2145c2db8e32f05ca1cd734dfb5b"
+    }
+  }
+}

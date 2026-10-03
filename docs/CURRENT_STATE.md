@@ -1,5 +1,33 @@
 # Current state
 
+## Latest historical update: exact AK fills and covered exit, October 3, 08:14 UTC
+
+Fresh parent UI observation at **08:14:34 UTC** confirmed **20,000 AK369 YES held** and all **10,000 shares remaining** on covered sell **4561585**. The sell was submitted once **08:04:20**, accepted **08:04:56**, and its market own-order row confirmed exact limit **0.365 at 08:05:25**. Portfolio's **0.36** is rounded. **No exit fill, proceeds or realized gain is recorded**. Parent review/cancel target: **08:45 UTC**.
+
+### Published curated source now supports both GA and AK fill products
+
+The independently inspected [selected curated projection excerpt](../data/collector-evidence/ga-ak-projection-20261003-0815.json), published in commit **d08dee0570ef3ce0af845f51ae9b4c4d0bd22205**, contains matching closed BUY order fields and selected GA/AK fills. Excerpt SHA-256 is **bffceaec8d6c0203124f1c460de2fae2cbde02894f02c7f6368d4576ad460f62**. Its separately reported full source-projection hash is **aca347f99493165d132c8d587d606a3ba9a732c939138cc196bc1895d0f0d209**; this worker did not inspect or rehash those full projection bytes.
+
+Excerpt capture: **08:13:15.145**; fills observed **08:12:38.737**; order history observed **08:12:03.392 UTC**. These differ from the earlier relayed **08:07:20.306** observation and are evidence clocks, not newer account holdings. **accountHistoryHasMore=true**; global account pagination is incomplete. Selected unique fills sum to each selected closed BUY quantity. This is a curated API projection excerpt, **not original HTTP bodies/headers or fee proof**.
+
+AK BUY order **4547722 / exchange1058** contains five fills, all at projected execution time **07:57:16.338 UTC**:
+
+- **18780665:**16,555 at 0.295 = **4,883.725**
+- **18780660:**1,408 at 0.290 = **408.320**
+- **18780655:**20 at 0.290 = **5.800**
+- **18780650:**1,403 at 0.290 = **406.870**
+- **18780645:**614 at 0.280 = **171.920**
+
+Total **20,000 / 5,876.635**; exact weighted average **0.29383175**. Decimal, rational and integer-milli arithmetic agree. The observed transaction5,876.63 and ticket/mark-derived5,876.64 are each0.005 away from this source-supported principal; their original records remain intact and no platform rounding or fee rule is inferred. GA order4505792's matching identity fields and four fills also match the earlier reported **8,945.420** principal.
+
+### Accounting boundary
+
+Ledger **row21** records the terminal AK buy, preserving all 20 prior rows byte-for-byte. The old separate AK observed-cost layer is retired; the already-held20,000 shares are not acquired or debited again. Ledger-only cash **65,571.790** plus the unchanged bot adjustment**−0.380** gives recorded-price cash **65,571.410**. Prior UI cash**65,571.41** agrees at displayed precision, but hidden cash/fees remain unverified and no new08:14 cash reading is claimed.
+
+Total acquisition basis is **34,585.125**; cash plus basis **100,156.535**; analytical realized remains **156.535**. The sell stays outside the executed ledger and does not reduce holdings or add3,650 potential proceeds. Other holdings' older observation timestamps remain unchanged. The exact new source is historical evidence, not a new account-state query by this worker.
+
+Records: [AK exact-buy audit](../data/orders/daenerys_2026-10-03_ak369_yes_buy_001_exact_0815.json), [covered-sell observations](../data/orders/daenerys_2026-10-03_ak369_yes_sell_001_open_0814.json), [reconciliation](../data/snapshots/reconciliation_2026-10-03_0814.json), [portfolio snapshot](../data/snapshots/portfolio_2026-10-03_0814.json). Parent [execution update](https://github.com/GodlyDonuts/predictions-cup-2026/issues/1#issuecomment-5967087580); [prepared sell](https://github.com/GodlyDonuts/predictions-cup-2026/issues/1#issuecomment-5967002066). Earlier observations and their original uncertainty remain preserved below.
+
 ## Latest historical account observation: Alaska entry, October 3, 07:57–07:58 UTC
 
 The parent submitted **one BUY20,000 YES** for **Republican Alaska Governor market369**, limit **0.295**, maximum principal **5,900.000**, at **07:57:16 UTC**. The full **20,000-share holding** and **zero open orders** were confirmed at **07:58:02**; history was inspected at **07:58:37**. The completed order/exchange IDs and exact fill breakdown were not exposed. This is a new Daenerys position, separate from the earlier closed bot roundtrips in market369.
