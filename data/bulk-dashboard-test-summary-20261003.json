@@ -1,0 +1,40 @@
+{
+  "at": "2026-10-03T18:41:41.623Z",
+  "frontendTests": {
+    "passed": 32,
+    "failed": 0,
+    "files": [
+      "bulk-dip-view",
+      "comparison-view",
+      "executable-edge-view",
+      "wallet-view",
+      "performance-freshness",
+      "execution-view",
+      "recovery-view",
+      "limit-entry-view"
+    ]
+  },
+  "backendIntegratedTests": {
+    "passed": 81,
+    "failed": 0,
+    "evidence": "data/dip-markout-integrated-tests.txt"
+  },
+  "productionBuild": {
+    "success": true,
+    "buildId": "_nGuPZLQDQtNRv8oddlrI"
+  },
+  "browserChecks": {
+    "officialAvailable": true,
+    "officialPilotLabeledHistorical": true,
+    "bulkWallets": [
+      1000,
+      3000
+    ],
+    "trackedMarkets": 237,
+    "paperFills": 0
+  },
+  "dashboardPid": 24624,
+  "competitionOrders": 0,
+  "profitabilityEstablished": false
+}
+
