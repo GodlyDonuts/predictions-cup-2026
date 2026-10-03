@@ -1,0 +1,106 @@
+{
+  "name": "confirmed-rebound-path-20261003-v2",
+  "cutoff": "2026-10-03T20:10:02.497Z",
+  "baseBank": {
+    "name": "dip-markout-20261003-v1",
+    "cutoff": "2026-10-03T18:21:44.156Z",
+    "universeHash": "3dad67c230d98e690dbea72c8bbffb4cd1baff2ee5a2276b79314ad6f41e1560",
+    "protocol": {
+      "schemaVersion": 1,
+      "mode": "causal_quote_and_depth_markout_study",
+      "grossConcessions": [
+        "0.005000",
+        "0.010000",
+        "0.015000",
+        "0.020000"
+      ],
+      "latenciesMs": [
+        1000,
+        3000
+      ],
+      "cooldownMs": 900000,
+      "horizonMs": 300000,
+      "labelLatenessMs": 60000,
+      "candidateLifetimeMs": 60000,
+      "entryLifetimeMs": 60000,
+      "referencePolicy": {
+        "historyMs": 600000,
+        "minimumMinutes": 5,
+        "minimumSpanMs": 240000,
+        "maximumGapMs": 90000,
+        "maximumAnchorRange": "0.015000",
+        "minimumNetConcession": "0.010000",
+        "maximumBidDrop": "0.040000",
+        "maximumSpread": "0.020000",
+        "horizonMs": 300000,
+        "cooldownMs": 900000,
+        "cumulativeBuyBudget": "100.000000",
+        "maxOpenMarkets": 3,
+        "latenciesMs": [
+          1000,
+          3000
+        ]
+      },
+      "feeBps": 0,
+      "entryLimitPadTicks": 1,
+      "depthFractionBps": 100,
+      "orderShares": 1,
+      "priceScenarios": [
+        "observed_depth_price",
+        "one_adverse_tick_each_side"
+      ],
+      "developmentPurgeMs": 480000
+    },
+    "codeIdentity": {
+      "./dip-markout-study.mjs": "329e3bc3669dac602fa147c78beb8041cb39fa90366aba70d3f6a56746cde25f",
+      "./bulk-dip-diagnostic.mjs": "ffda926a05d17c82ffebec023af66a6884ff8e6036dfb19d12b45b39a3a616e0",
+      "./bid-anchor.mjs": "05e98b7867be8cc59969b694db3605f8df8dcad13d5cbdd5b0cda014f6f8f27a",
+      "./model.mjs": "3cb8bbd7d31b478fe917270393954382373695149310243eec8b78440d207a2e",
+      "./book-publication.mjs": "b396e11a8316e525e2756611d293b55ff56b334692c497b00670b13f05842729",
+      "./market-price-publication.mjs": "542646294d92e106c6ea4975bec78950d6228f979329502149f64dc0b13be9f1",
+      "./breadth.mjs": "62823ebfd65e157eae1c865b3fa5f19bc811d453e12824516b38f27d56730f08",
+      "../paper/fixed.mjs": "a0947ef49854d4a3bf4bce88034aaef5d8aabbdc7e29dff3a7b9b4bc01b072f7"
+    }
+  },
+  "protocol": {
+    "schemaVersion": 2,
+    "terminalReasons": "latched_after_deadline_expiry",
+    "dipThreshold": "0.010000",
+    "latenciesMs": [
+      1000,
+      3000
+    ],
+    "horizonsMs": [
+      60000,
+      180000,
+      300000
+    ],
+    "signal": {
+      "minimumInitialDiscount": "0.010000",
+      "minimumRemainingDiscount": "0.005000",
+      "confirmationTicks": 1,
+      "confirmationLifetimeMs": 120000,
+      "maximumQuoteGapMs": 90000,
+      "maximumReceiptLagMs": 20000,
+      "entryLifetimeMs": 60000
+    },
+    "confirmationLifetimeMs": 60000,
+    "entryLifetimeMs": 60000,
+    "labelLatenessMs": 60000,
+    "maximumSpread": "0.020000",
+    "depthFractionBps": 100,
+    "orderShares": 1,
+    "feeBps": 0,
+    "priceScenarios": [
+      "observed_price",
+      "one_adverse_tick_each_side"
+    ],
+    "developmentPurgeMs": 660000
+  },
+  "codeIdentity": {
+    "./rebound-entry.mjs": "341bd572d15924d9e24165c40726748ca9352f8ca735460186a22f5b91cc02e6",
+    "./rebound-path-study-v2.mjs": "575b5c978cdae1afc2941bf539fd5b114b63f6bf21acdcbc915dfaef310d190a",
+    "./dip-markout-study.mjs": "329e3bc3669dac602fa147c78beb8041cb39fa90366aba70d3f6a56746cde25f",
+    "../execution/ledger.mjs": "523ee3fd04f995983ee3ffc03b5ee8dbdf629a718ba91c17d08026fe2411b5c4"
+  }
+}

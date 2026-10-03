@@ -43,6 +43,7 @@ import {readEdgeObservationFocus,planEdgeObservation} from './edge-observation-p
 import {prioritizeEdgeTrials} from './edge-trial-projection.mjs';
 import {readAnchorReadFocus,prioritizeAnchorReads} from './bid-anchor-read-focus.mjs';
 import {readBulkReadFocus,mergePaperReadFocus} from './bulk-dip-read-focus.mjs';
+import {openDiagnosticFocus,diagnosticDepthFocus} from './diagnostic-read-focus.mjs';
 
 const root=path.dirname(fileURLToPath(import.meta.url)),workspace=path.dirname(root);
 if(process.argv.includes('--live'))throw Error('Competition order execution is disabled');
@@ -62,6 +63,12 @@ const stopWatch=setInterval(()=>{if(fs.existsSync(stopFile)||fs.existsSync(paper
 let journal,state,api,server,heartbeat,competition,realtime,realtimeCapture,basketRelationships,contractEvidence,bookPublication,basketFollowupSource,basketFollowupBankHash,comparisonRiskSource;
 const samplingSessionId=randomUUID();
 let universe,coverage,depthPlan,dipBank,scaleBank,responsiveBank,scheduler,schedulerScope;const recentReadTimings=[];
+let diagnosticSource,diagnosticLoading=false,diagnosticFailed=false;
+function collectDiagnosticFocus(){
+ if(!diagnosticSource&&!diagnosticLoading&&!diagnosticFailed){diagnosticLoading=true;try{const source=openDiagnosticFocus(runtimeDir,universe,{deferBootstrap:true});source.initialize({stopped:()=>stopping}).then(()=>{diagnosticSource=source;diagnosticLoading=false;}).catch(()=>{diagnosticFailed=true;diagnosticLoading=false;});}catch{diagnosticFailed=true;diagnosticLoading=false;}}
+ if(!diagnosticSource){runtime.diagnosticReadFocus={status:diagnosticFailed?'failed':'loading',executionAuthority:false};return null;}
+ try{diagnosticSource.consume();const projection=diagnosticSource.project({pid:process.pid,id:samplingSessionId},'collector-diagnostic');const focus=diagnosticDepthFocus(projection,universe,{pid:process.pid,lockId:samplingSessionId});runtime.diagnosticReadFocus={status:focus?'running':'unavailable',...focus,projection};return focus;}catch{diagnosticFailed=true;diagnosticSource=null;runtime.diagnosticReadFocus={status:'failed',executionAuthority:false};return null;}
+}
 const schedulerFile=path.join(runtimeDir,'book-scheduler.json');
 function saveScheduler(next){
  try{durableAtomicJson(schedulerFile,next);scheduler=next;}
@@ -276,7 +283,8 @@ try{
       const observation=planEdgeObservation(pairedPlan,scheduler,universe,{focus:observationFocus,now:Date.now(),excludedMarketIds:observationExclusions,coverage});
       if(observation.state!==scheduler)saveScheduler(observation.state);
       const trialPlan=prioritizeEdgeTrials(observation.plan,observationFocus,universe,{now:Date.now(),excludedMarketIds:observationExclusions});
-      const bulkFocus=readBulkReadFocus(runtimeDir,universe,Date.now()),paperFocus=mergePaperReadFocus(readAnchorReadFocus(runtimeDir,universe,Date.now()),bulkFocus);
+      const diagnosticFocus=collectDiagnosticFocus();
+      const bulkFocus=readBulkReadFocus(runtimeDir,universe,Date.now()),paperFocus=mergePaperReadFocus(readAnchorReadFocus(runtimeDir,universe,Date.now()),bulkFocus,diagnosticFocus);
       const planned=prioritizeAnchorReads(trialPlan,paperFocus,{excludedMarketIds:observationExclusions,lastAttempts:scheduler?.bookLastAttempt||{}});runtime.bulkDipReadFocus=bulkFocus;runtime.bidAnchorReadFocus=planned.bidAnchorReadFocus||null;runtime.edgeObservation=planned.edgeObservation||null;runtime.edgeTrialObservation=planned.edgeTrialObservation||null;
       runtime.paperPackageFocus=planned.paperPackageFocus||null;
       if(competition)try{await competition.beforeBooks({positions,orders,ordersAt:new Date().toISOString(),candidateMarketIds:planned.entryMarketIds});}catch(e){competition.failure(e);}

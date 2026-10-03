@@ -1,0 +1,6 @@
+import fs from 'node:fs';import path from 'node:path';import{createHash}from'node:crypto';import{atomicJson}from'../execution/ledger.mjs';
+const rt=path.join(process.env.LOCALAPPDATA,'SigTradingCup/paper-runtime'),sha=b=>createHash('sha256').update(b).digest('hex');
+const cohorts=['executable-edge-cohorts/executable-edge-20261003-v2','bid-anchor-live-cohorts/bid-anchor-live-20261003-v1','bulk-dip-cohorts/bulk-dip-live-20261003-v1','bulk-dip-cohorts/bulk-dip-live-20261003-v2'];
+const banks=cohorts.map(cohort=>{const dir=path.join(rt,cohort),bank=fs.readFileSync(path.join(dir,'bank.json')),journal=fs.readFileSync(path.join(dir,'journal.jsonl'));return{cohort,bankBytes:bank.length,bankSha256:sha(bank),journalBytes:journal.length,journalSha256:sha(journal)};});
+const protocols=['dip-markout-protocol-20261003-v1.json','rebound-path-protocol-20261003-v1.json','rebound-path-protocol-20261003-v2.json','passive-entry-protocol-20261003-v1.json'].map(file=>({file,sha256:sha(fs.readFileSync('data/'+file))}));
+atomicJson('data/diagnostic-preservation-before-20261003.json',{at:new Date().toISOString(),banks,protocols,pids:JSON.parse(fs.readFileSync('data/current-runtime-pids.json')),competitionOrders:0});console.log(JSON.stringify({preservedBanks:banks.length,protocols:protocols.length}));

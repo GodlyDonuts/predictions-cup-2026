@@ -1,0 +1,147 @@
+{
+  "at": "2026-10-03T20:02:28.780Z",
+  "statsAt": "2026-10-03T20:02:28.394Z",
+  "mode": "first_frozen_bulk_prospective_paper_entry",
+  "bankHash": "6bd8e1bb9715f3925834b5684f1d88c6bf7c6241215714f8126d120d54dfadcf",
+  "cutoff": "2026-10-03T17:44:20.476Z",
+  "journalSequence": 1401,
+  "journalHash": "4af78684ab594e223a58840184ade1c873040510384d653a1636707a2e9c846d",
+  "journalChainVerified": true,
+  "frozenCodeVerified": true,
+  "signal": {
+    "actualAvailableAt": "2026-10-03T19:58:29.914Z",
+    "admitted": true,
+    "anchor": "0.845000",
+    "at": "2026-10-03T19:58:29.254Z",
+    "concession": "0.010000",
+    "historyFirstAt": "2026-10-03T19:48:37.882Z",
+    "historyLastAt": "2026-10-03T19:57:37.316Z",
+    "marketId": "290",
+    "modeledReference": "0.840000",
+    "reason": "ask_concession",
+    "samples": 10,
+    "sourceHash": "551ac9589efc6ea5fdc41a25f597463f28eb8decca2c072b9b4ccec47fa7ea91",
+    "sourceSequence": 11785,
+    "version": "26087688:2026-10-03T19:58:29.413070800Z"
+  },
+  "wallets": {
+    "1000": {
+      "fill": {
+        "action": "buy",
+        "at": "2026-10-03T19:59:04.461Z",
+        "depthFractionBps": 100,
+        "fee": "0.000000",
+        "instrument": "979:YES",
+        "intentId": 1,
+        "model": "hypothetical_next_snapshot_taker",
+        "price": "0.830000",
+        "quantity": 1,
+        "slippageTicks": 1,
+        "sourceAt": "2026-10-03T19:59:04.625187300Z",
+        "sourceVersion": "26096059:2026-10-03T19:59:04.625187300Z"
+      },
+      "position": {
+        "cost": "0.830000",
+        "enteredAt": "2026-10-03T19:59:04.461Z",
+        "estimatedProceeds": "0.815000",
+        "instrument": "979:YES",
+        "label": "Market 290 Democratic YES",
+        "lots": [
+          {
+            "cost": "0.830000",
+            "quantity": 1
+          }
+        ],
+        "observationAgeMs": 21708,
+        "quantity": 1,
+        "quoteAgeMs": 21708,
+        "quoteInvalidated": false,
+        "quoteReceivedAt": "2026-10-03T20:02:06.686Z",
+        "unsoldShares": 0
+      },
+      "realizedPnl": "0.000000",
+      "liquidationPnl": "-0.015000",
+      "closedTrades": 0,
+      "entrySource": {
+        "sequence": 11789,
+        "hash": "1dd571853609d3e3c2e4c5dc69c077079d7a9d167dd2b957b6a40d00a582eaf2",
+        "requestStartedAt": "2026-10-03T19:59:04.265Z",
+        "receivedAt": "2026-10-03T19:59:04.461Z",
+        "availableAt": "2026-10-03T19:59:04.465Z",
+        "versionKey": "26096059:2026-10-03T19:59:04.625187300Z",
+        "bestAsk": {
+          "price": "0.825000",
+          "quantity": 9982
+        },
+        "bestBid": {
+          "price": "0.820000",
+          "quantity": 624
+        }
+      }
+    },
+    "3000": {
+      "fill": {
+        "action": "buy",
+        "at": "2026-10-03T19:59:04.461Z",
+        "depthFractionBps": 100,
+        "fee": "0.000000",
+        "instrument": "979:YES",
+        "intentId": 1,
+        "model": "hypothetical_next_snapshot_taker",
+        "price": "0.830000",
+        "quantity": 1,
+        "slippageTicks": 1,
+        "sourceAt": "2026-10-03T19:59:04.625187300Z",
+        "sourceVersion": "26096059:2026-10-03T19:59:04.625187300Z"
+      },
+      "position": {
+        "cost": "0.830000",
+        "enteredAt": "2026-10-03T19:59:04.461Z",
+        "estimatedProceeds": "0.815000",
+        "instrument": "979:YES",
+        "label": "Market 290 Democratic YES",
+        "lots": [
+          {
+            "cost": "0.830000",
+            "quantity": 1
+          }
+        ],
+        "observationAgeMs": 21708,
+        "quantity": 1,
+        "quoteAgeMs": 21708,
+        "quoteInvalidated": false,
+        "quoteReceivedAt": "2026-10-03T20:02:06.686Z",
+        "unsoldShares": 0
+      },
+      "realizedPnl": "0.000000",
+      "liquidationPnl": "-0.015000",
+      "closedTrades": 0,
+      "entrySource": {
+        "sequence": 11789,
+        "hash": "1dd571853609d3e3c2e4c5dc69c077079d7a9d167dd2b957b6a40d00a582eaf2",
+        "requestStartedAt": "2026-10-03T19:59:04.265Z",
+        "receivedAt": "2026-10-03T19:59:04.461Z",
+        "availableAt": "2026-10-03T19:59:04.465Z",
+        "versionKey": "26096059:2026-10-03T19:59:04.625187300Z",
+        "bestAsk": {
+          "price": "0.825000",
+          "quantity": 9982
+        },
+        "bestBid": {
+          "price": "0.820000",
+          "quantity": 624
+        }
+      }
+    }
+  },
+  "dashboardExchangeIdentityVerified": true,
+  "networkRequests": 0,
+  "competitionOrders": 0,
+  "profitabilityEstablished": false,
+  "independentOpportunities": 1,
+  "limitations": [
+    "Two latency wallets simulate the same opportunity and are not independent trades.",
+    "Local hypothetical next-snapshot taker fills; no platform orders.",
+    "Liquidation values are timestamped depth estimates with configured adverse ticks, not realized proceeds."
+  ]
+}
