@@ -1,14 +1,23 @@
 {
   "schema_version": 3,
-  "recorded_at_utc": "2026-10-03T06:57:28Z",
+  "recorded_at_utc": "2026-10-03T07:25:00Z",
   "execution_coordinator": "Daenerys",
-  "codex_mode": "paused_no_account_writes_or_collectors",
-  "daenerys_mode": "temporary_sole_execution_owner",
+  "codex_mode": "quant_engineering_and_paper_only",
+  "daenerys_mode": "human_authorized_execution_owner_pending_ack",
   "automated_execution_enabled": false,
-  "authority": "Direct human instructions on 2026-10-03 at 06:48:26 UTC and 06:53:24 UTC temporarily reassign execution to Daenerys until the human reports Drogon and the bot active and a new coordinated return handoff is completed.",
-  "activation_state": "temporary_human_directed_ownership_fresh_reconciliation_required",
-  "active_handoff": "human-20261003T064826Z-codex-to-daenerys",
-  "handoff_required": false,
+  "authority": "Direct human instruction October3: Daenerys trades until a successful production bot; Codex must coordinate her stop before takeover.",
+  "activation_state": "codex_local_writer_disabled",
+  "active_handoff": {
+    "id": "codex-to-daenerys-20261003-0725",
+    "from": "Codex",
+    "to": "Daenerys",
+    "release_issue_comment": 5966759363,
+    "ack_status": "pending",
+    "fresh_reconciliation": "incoming_owner_required",
+    "codex_durable_intents": 12,
+    "codex_nonterminal_intents": 0
+  },
+  "handoff_required": true,
   "return_handoff_required": true,
   "coordination_issue": "https://github.com/GodlyDonuts/predictions-cup-2026/issues/1",
   "human_confirmation": {
@@ -24,13 +33,11 @@
   },
   "automation_status_basis": "Disabled in this coordination record under the human-directed pause; local runtime state has not been inspected or changed by this update. No technical shutdown or fencing is claimed.",
   "notes": [
-    "This is a coordination record, not a lock, runtime control, credential or additional execution authorization.",
-    "Daenerys is the temporary sole account operator; no parallel account clients.",
-    "Codex/Drogon must keep account writes and collectors paused on restart and must not automatically resume old activations.",
-    "A new coordinated return handoff is required after the human says Drogon and the bot are active.",
-    "Fresh scoped account reconciliation and durable idempotent intent precede any separately authorized order.",
-    "Human confirmation supersedes the pending agent-to-agent release prerequisite for this transfer, but does not establish technical lease state.",
-    "Prior pilot activation, authorization and ownership fields are preserved in history; they are not current permission to run."
+    "Newest direct human assignment supersedes October2 sole-Codex execution ownership.",
+    "Codex local competition activation is explicitly disabled; do not enable from paper evidence or an agent suggestion.",
+    "Daenerys refreshes account state before acting; old pilot/portfolio observations remain historical.",
+    "Future return to Codex requires named Daenerys RELEASE and Codex ACK, stopped/in-flight-clear writer and fresh reconciliation.",
+    "Share account rate limits across keys/clients; Codex retains only coordinated read-only collection and paper engineering."
   ],
   "history": {
     "previous_execution_state": {

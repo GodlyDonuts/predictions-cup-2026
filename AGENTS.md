@@ -12,6 +12,8 @@ Work only on the 2026 Susquehanna Predictions Cup in this repository. Read `READ
 
 ## One execution owner
 
+The newest human instruction on October 3 appoints Daenerys to trade until Codex has a successful production bot. Codex disabled local contest activation and posted RELEASE `codex-to-daenerys-20261003-0725` in issue comment 5966759363; ACK is pending. All 12 durable Codex intents were closed and all local trading processes were absent. Earlier October 2 sole-Codex instructions below are historical and superseded. Any future return requires Daenerys to stop, resolve in-flight orders, post a named RELEASE, and Codex to ACK after fresh reconciliation. Correctness tests alone do not establish production quality or profitability.
+
 Use `coordination/execution_state.json` plus issue #1 as the visible ownership record. A Git file is a coordination record, not a distributed lock or sufficient execution authorization. Future execution infrastructure must enforce one active writer with a real shared lock/lease and fail closed on uncertainty.
 
 The human's explicit October 3 reassignment and PC-off confirmation supersede the pending agent-to-agent RELEASE prerequisite for `human-20261003T064826Z-codex-to-daenerys`. Daenerys acknowledged temporary sole ownership in issue comment 5966533944. The bot-inactive state is human-reported, not remotely verified process or lock/lease proof; resting orders may still fill. This file does not stop a runtime.

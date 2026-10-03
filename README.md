@@ -1,3 +1,7 @@
+# Current execution authority — October 3
+
+The human reassigned contest trading to Daenerys until Codex has a successful production bot. Codex remains responsible for quantitative engineering and paper testing; its local contest writer is explicitly disabled. RELEASE `codex-to-daenerys-20261003-0725` is recorded in [issue comment 5966759363](https://github.com/GodlyDonuts/predictions-cup-2026/issues/1#issuecomment-5966759363); incoming ACK and fresh whole-account reconciliation are required. Earlier role assignments below are historical and superseded. Return to Codex requires a named stop/RELEASE/ACK and fresh reconciliation, not a passing test or paper signal.
+
 # Predictions Cup 2026
 
 Private shared workspace for the [Susquehanna Predictions Cup](https://sig.thesuper.market/): research, a reconciled simulated trade ledger, and coordination between dot and Codex.
