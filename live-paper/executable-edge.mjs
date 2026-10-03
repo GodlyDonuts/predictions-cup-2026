@@ -27,7 +27,8 @@ export function advanceExecutableEdge(input,row,bank,{availableAt,allowDecisions
  if(['session_start','session_stop','invalidation'].includes(row.kind)){revoke(s,row.kind==='invalidation'?row.payload.marketId:null,row.at,row.kind);return s;}
  if(row.kind!=='book')return s;const b=row.payload.book,id=b.marketId,c=bank.config,p=bank.policy;
  need(bank.universe.exchanges.some(x=>x.marketId===id&&x.exchangeId===b.exchangeId)&&b.tournamentId===c.tournamentId,'EDGE_FOREIGN_BOOK');
- if(at-instant(b.receivedAt)>c.maxDataAgeMs||instant(b.receivedAt)>at){count(s,'stale_consumer_book');revoke(s,id,availableAt,'stale');return s;}
+ if(at-instant(b.receivedAt)>c.maxDataAgeMs||instant(b.receivedAt)>at){count(s,'stale_consumer_book');revoke(s,id,row.at,'stale');return s;}
+ const barrier=s.wallet.invalidated?.[b.instrument];if(barrier){need(instant(b.requestStartedAt)>=instant(barrier.at),'EDGE_REQUEST_PRECEDES_BARRIER');if(b.requestStartedAt===barrier.at)delete s.wallet.invalidated[b.instrument];}
  const prior=s.seen[id],independent=!prior||prior!==b.versionKey;s.seen[id]=b.versionKey;
  const f=edgeFeatures(b),ask=amount(b.asks[0].price)+TICK,bid=amount(b.bids[0].price)-TICK,depth=b.asks[0].quantity>=100&&b.bids[0].quantity>=100;
  let t=s.trials[id];
