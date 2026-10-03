@@ -1,0 +1,185 @@
+{
+  "at": "2026-10-03T23:11:16.996Z",
+  "mode": "live_read_only_speed_and_public_trade_capture",
+  "collector": 21864,
+  "collectorStatus": "running",
+  "cycles": 3,
+  "bookPublisher": {
+    "revision": 2,
+    "startupReplayMs": 3431.1270000000004,
+    "frozenPublisherFileChanged": false
+  },
+  "startupToConnectionMs": 24662.428,
+  "tradeTape": {
+    "status": "running",
+    "schemaVersion": 1,
+    "pages": 2,
+    "tradesCaptured": 65,
+    "duplicates": 0,
+    "lastAt": "2026-10-03T23:10:40.719Z",
+    "journalSequence": 2,
+    "journalHash": "7183c39c0bac427bbdcc2347050d8b5c1242fc99c41175c5f70a4b68bd2318b4",
+    "markets": [
+      {
+        "marketId": "297",
+        "exchangeId": "986",
+        "pages": 1,
+        "tradesCaptured": 6,
+        "lastReceiptAt": "2026-10-03T23:09:25.372Z",
+        "latestTradeAt": "2026-10-03T23:04:47.936Z",
+        "windowFrom": null,
+        "windowTo": null,
+        "paginationPending": false,
+        "projectedThroughSequence": 28256912,
+        "reportedCoverageComplete": true
+      },
+      {
+        "marketId": "363",
+        "exchangeId": "1052",
+        "pages": 1,
+        "tradesCaptured": 59,
+        "lastReceiptAt": "2026-10-03T23:10:40.719Z",
+        "latestTradeAt": "2026-10-03T23:09:01.788Z",
+        "windowFrom": null,
+        "windowTo": null,
+        "paginationPending": false,
+        "projectedThroughSequence": 28272357,
+        "reportedCoverageComplete": true
+      }
+    ],
+    "executionAuthority": false,
+    "networkClientsAdded": 0,
+    "completeTapeProven": false,
+    "counterfactualFillsProven": false
+  },
+  "sourcePages": [
+    {
+      "sequence": 1,
+      "marketId": "297",
+      "exchangeId": "986",
+      "from": "2026-10-03T22:39:22.000Z",
+      "to": "2026-10-03T23:09:22.000Z",
+      "receivedAt": "2026-10-03T23:09:25.372Z",
+      "responseHash": "684f393a397a7def14b523f39f8c1001b07c01da5dc22e224cc243da6839c816",
+      "receivedCount": 6,
+      "duplicates": 0,
+      "paginationPending": false,
+      "coverage": {
+        "complete": true,
+        "projectedThroughSequence": 28256912
+      }
+    },
+    {
+      "sequence": 2,
+      "marketId": "363",
+      "exchangeId": "1052",
+      "from": "2026-10-03T22:40:38.000Z",
+      "to": "2026-10-03T23:10:38.000Z",
+      "receivedAt": "2026-10-03T23:10:40.719Z",
+      "responseHash": "921f3857d9f89301f30ffb8ec4b1ddc1e9b13da5a63ed57f26714cd432cbfd0c",
+      "receivedCount": 59,
+      "duplicates": 0,
+      "paginationPending": false,
+      "coverage": {
+        "complete": true,
+        "projectedThroughSequence": 28272357
+      }
+    }
+  ],
+  "networkBudget": {
+    "mode": "coordinated_shared_read_only",
+    "schemaVersion": 3,
+    "intervalMs": 3000,
+    "writeIntervalMs": 3000,
+    "completionPacing": true,
+    "maxReadsPerMinute": 20,
+    "writesEnabled": false,
+    "executionOwner": "Daenerys"
+  },
+  "auxiliaryReadAllocation": {
+    "historyReads": 1,
+    "tapeReads": 0,
+    "totalReads": 1
+  },
+  "fleet": {
+    "metrics": 11792,
+    "collector": 21864,
+    "dashboard": 19284,
+    "paper": 3472,
+    "contestActivation": false
+  },
+  "preserved": [
+    {
+      "cohort": "source-probability-20261003-v1",
+      "bankHash": "55621b9b28d4b471f94c461cdbc0af4e35260dfac5c0d27f8d46cc93fd3b9ba4",
+      "bankFileUnchanged": true,
+      "journalPrefixUnchanged": true,
+      "frozenSourcesUnchanged": true
+    },
+    {
+      "cohort": "nh-canonical-capacity-20261003-v1",
+      "bankHash": "2b85533f12e29476a485d8b729bb9feca692f080e60daf58297a04e0aa542b4e",
+      "bankFileUnchanged": true,
+      "journalPrefixUnchanged": true,
+      "frozenSourcesUnchanged": true
+    }
+  ],
+  "paper": {
+    "updatedAt": "2026-10-03T23:11:16.347Z",
+    "failed": false,
+    "sourceClosed": false,
+    "wallets": {
+      "1000": {
+        "fills": 2,
+        "closedTrades": 0,
+        "realizedPnl": "0.000000",
+        "liquidationPnl": "-0.035000",
+        "fees": "0.000000",
+        "positions": [
+          {
+            "instrument": "1052:YES",
+            "quantity": 1,
+            "cost": "0.905000",
+            "quoteAgeMs": 22776
+          },
+          {
+            "instrument": "986:YES",
+            "quantity": 1,
+            "cost": "0.895000",
+            "quoteAgeMs": 19567
+          }
+        ]
+      },
+      "3000": {
+        "fills": 2,
+        "closedTrades": 0,
+        "realizedPnl": "0.000000",
+        "liquidationPnl": "-0.035000",
+        "fees": "0.000000",
+        "positions": [
+          {
+            "instrument": "1052:YES",
+            "quantity": 1,
+            "cost": "0.905000",
+            "quoteAgeMs": 22776
+          },
+          {
+            "instrument": "986:YES",
+            "quantity": 1,
+            "cost": "0.895000",
+            "quoteAgeMs": 19567
+          }
+        ]
+      }
+    }
+  },
+  "tests": {
+    "topLevelPassed": 16,
+    "originalContractCasesAgainstFastPublisher": 12,
+    "leafChecks": 27
+  },
+  "newApiClients": 0,
+  "extraBackgroundProcesses": 0,
+  "competitionOrders": 0,
+  "profitabilityEstablished": false
+}

@@ -1,0 +1,10 @@
+import fs from 'node:fs';import path from 'node:path';import {performance} from 'node:perf_hooks';
+import * as old from '../live-paper/book-publication.mjs';import * as fast from '../live-paper/book-publication-v2.mjs';import {digest} from '../live-paper/model.mjs';import {canonicalJson,atomicJson} from '../execution/ledger.mjs';
+const rt=path.join(process.env.LOCALAPPDATA,'SigTradingCup/paper-runtime'),universe=JSON.parse(fs.readFileSync('live-paper/price-universe.json')),raw=fs.readFileSync(path.join(rt,'public-books.jsonl')),complete=raw.subarray(0,raw.lastIndexOf(10)+1),rows=complete.toString().split('\n').slice(0,-1).map(JSON.parse);
+const prefix=rows.slice(0,400);let a=old.createBookPublicationState(universe),b=fast.createBookPublicationState(universe);let clock=performance.now();for(const r of prefix)a=old.applyBookPublication(a,r);const oldPrefixMs=performance.now()-clock;
+clock=performance.now();for(const r of prefix)b=fast.applyBookPublication(b,r);const fastPrefixMs=performance.now()-clock;if(canonicalJson(a)!==canonicalJson(b))throw Error('Legacy prefix mismatch');
+clock=performance.now();let all=fast.createBookPublicationState(universe);for(const r of rows)all=fast.applyBookPublication(all,r);const fullFastMs=performance.now()-clock;
+if(all.sequence!==rows.at(-1).sequence||all.hash!==rows.at(-1).hash)throw Error('Complete source mismatch');
+const result={at:new Date().toISOString(),mode:'actual_capture_reducer_benchmark',prefixRows:prefix.length,oldPrefixMs,fastPrefixMs,prefixSpeedup:oldPrefixMs/fastPrefixMs,
+ fullRows:rows.length,fullBytes:complete.length,fullFastMs,sourceSequence:all.sequence,sourceHash:all.hash,terminalStateHash:digest(all),prefixStatesExactlyEqual:true,
+ oldFrozenSourceUnchanged:true,fullSourceValidated:true,limitation:'Prefix speedup is measured on that prefix; no invented full-legacy timing. This benchmark has no trading or profitability implication.'};atomicJson('data/book-publication-v2-benchmark-20261003.json',result);console.log(JSON.stringify(result));

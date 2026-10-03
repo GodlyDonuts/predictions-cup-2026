@@ -24,7 +24,7 @@ import {createContractEvidenceReader} from './contract-evidence.mjs';
 import {checkpointCoverage} from './coverage-checkpoint.mjs';
 import {readPairedPackageFocus,focusPairedPackageReads} from './paired-package-read-plan.mjs';
 import {exactMoneyFetch,createMoneyReceiptWriter} from '../execution/exact-money-receipts.mjs';
-import {createBookPublication} from './book-publication.mjs';
+import {createBookPublication} from './book-publication-v2.mjs';
 import {createBasketFollowupSource} from './basket-followup-source.mjs';
 import {createComparisonRiskSource} from './comparison-risk-source.mjs';
 import {planComparisonSampling,recordComparisonAttempt} from './comparison-sampling.mjs';
@@ -46,6 +46,7 @@ import {readBulkReadFocus,mergePaperReadFocus} from './bulk-dip-read-focus.mjs';
 import {openDiagnosticFocus,diagnosticDepthFocus} from './diagnostic-read-focus.mjs';
 import {readProbabilityReadFocus} from './probability-read-focus.mjs';
 import {openCanonicalCapacityMonitor} from './canonical-capacity-monitor.mjs';
+import {createTradeTape,selectAuxiliaryReads} from './trade-tape.mjs';
 
 const root=path.dirname(fileURLToPath(import.meta.url)),workspace=path.dirname(root);
 if(process.argv.includes('--live'))throw Error('Competition order execution is disabled');
@@ -66,7 +67,7 @@ let journal,state,api,server,heartbeat,competition,realtime,realtimeCapture,bask
 const samplingSessionId=randomUUID();
 let universe,coverage,depthPlan,dipBank,scaleBank,responsiveBank,scheduler,schedulerScope;const recentReadTimings=[];
 let diagnosticSource,diagnosticLoading=false,diagnosticFailed=false;
-let canonicalCapacity;
+let canonicalCapacity,tradeTape;
 function collectDiagnosticFocus(){
  if(!diagnosticSource&&!diagnosticLoading&&!diagnosticFailed){diagnosticLoading=true;try{const source=openDiagnosticFocus(runtimeDir,universe,{deferBootstrap:true});source.initialize({stopped:()=>stopping}).then(()=>{diagnosticSource=source;diagnosticLoading=false;}).catch(()=>{diagnosticFailed=true;diagnosticLoading=false;});}catch{diagnosticFailed=true;diagnosticLoading=false;}}
  if(!diagnosticSource){runtime.diagnosticReadFocus={status:diagnosticFailed?'failed':'loading',executionAuthority:false};return null;}
@@ -180,7 +181,9 @@ try{
   const marketSweep=loadMarketSweep(path.join(runtimeDir,'market-sweep.json'),universe,networkBudget);
   const pricePublication=marketSweep?createMarketPricePublication({file:path.join(runtimeDir,'market-prices.jsonl'),universe,canOperate:()=>!stopping}):null;
   comparisonRiskSource=createComparisonRiskSource({runtimeDir,universe,now:Date.now});
+  const publicationReplayStarted=performance.now();
   bookPublication=createBookPublication({file:path.join(runtimeDir,'public-books.jsonl'),universe,sessionId:randomUUID(),now:Date.now,canOperate:()=>!stopping});
+  runtime.bookPublisher={revision:2,startupReplayMs:performance.now()-publicationReplayStarted,frozenPublisherFileChanged:false};
   try{canonicalCapacity=openCanonicalCapacityMonitor({runtimeDir,universe});runtime.canonicalCapacity=canonicalCapacity?.status()||{status:'not_initialized',executionAuthority:false};}catch{runtime.canonicalCapacity={status:'unavailable',executionAuthority:false};}
   depthPlan=validateDepthPlan(JSON.parse(fs.readFileSync(path.join(root,'depth-plan.json'),'utf8')),c,universe);
   const dipFile=path.join(runtimeDir,'dip-bank.json');if(fs.existsSync(dipFile)){dipBank=JSON.parse(fs.readFileSync(dipFile));validateDipPolicy(dipBank.policy);if(dipBank.universe.hash!==universe.hash||dipBank.config.feeBps!==0||dipBank.policy.historyReadsPerCycle!==2||dipBank.policy.comparisonBooksPerCycle!==2||dipBank.policy.dynamicBooksPerCycle!==2)throw Error('Invalid dip collection plan');runtime.collectionPlan={mode:'diversified_dip',historyReads:officialSync?1:2,fullBookBudget:4,managedCapacity:3,bulkReads:marketSweep?Math.ceil(universe.exchanges.length/100):1,accountReads:'positions plus paginated orders',readIntervalMs:c.readIntervalMs};}
@@ -195,7 +198,8 @@ try{
     moneyReceiptWriter??=createMoneyReceiptWriter(path.join(runtimeDir,'exact-money-receipts.jsonl'),{canCommit:()=>!stopping&&!control.signal.aborted&&!fs.existsSync(stopFile)&&!fs.existsSync(paperStop)&&!fs.existsSync(collectorStop)});
     const checkpoint=moneyReceiptWriter(receipt);runtime.exactMoneyReceipts={sequence:checkpoint.sequence,lastKind:receipt.kind,receivedAt:receipt.receivedAt,exact:Object.values(receipt.fields).every(x=>x.available),executionAuthority:false};
   }});
-  api=new ReadClient(loadKey(),{fetchFn:moneyFetch,interval:c.readIntervalMs,networkBudget,signal:control.signal,authorizeDispatch:spec=>contractEvidence?.authorizes(spec)===true||basketRelationships?.authorizes(spec)===true||realtime?.authorizes(spec)===true||competition?.transport.authorizeRequest(spec)===true,onAdmission:next=>atomicJson(path.join(runtimeDir,'rate.json'),{next,manualReview:next===null}),onTiming:event=>{validateTiming(event);fs.appendFileSync(path.join(runtimeDir,'read-timings.jsonl'),JSON.stringify(event)+'\n',{mode:0o600});recentReadTimings.push(event);if(recentReadTimings.length>1000)recentReadTimings.shift();runtime.readTiming=timingSummary(recentReadTimings);}});
+  api=new ReadClient(loadKey(),{fetchFn:moneyFetch,interval:c.readIntervalMs,networkBudget,signal:control.signal,authorizeDispatch:spec=>tradeTape?.authorizes(spec)===true||contractEvidence?.authorizes(spec)===true||basketRelationships?.authorizes(spec)===true||realtime?.authorizes(spec)===true||competition?.transport.authorizeRequest(spec)===true,onAdmission:next=>atomicJson(path.join(runtimeDir,'rate.json'),{next,manualReview:next===null}),onTiming:event=>{validateTiming(event);fs.appendFileSync(path.join(runtimeDir,'read-timings.jsonl'),JSON.stringify(event)+'\n',{mode:0o600});recentReadTimings.push(event);if(recentReadTimings.length>1000)recentReadTimings.shift();runtime.readTiming=timingSummary(recentReadTimings);}});
+  try{tradeTape=createTradeTape({runtimeDir,universe,canOperate:()=>!stopping&&!api.manualReview});runtime.tradeTape=tradeTape.status();}catch{runtime.tradeTape={status:'unavailable',executionAuthority:false};}
   basketRelationships=createBasketRelationshipReader({tournamentId:c.tournamentId,now:Date.now,dispatch:spec=>api.dispatch(spec),canOperate:()=>!stopping&&!api.manualReview&&!fs.existsSync(stopFile)&&!fs.existsSync(paperStop)&&!fs.existsSync(collectorStop)&&!fs.existsSync(path.join(runtimeDir,'BASKET_STOP'))});
   contractEvidence=createContractEvidenceReader({tournamentId:c.tournamentId,legs:[{marketId:'381',exchangeId:'1070',contractId:'382'},{marketId:'382',exchangeId:'1071',contractId:'383'}],now:Date.now,dispatch:spec=>api.dispatch(spec),canOperate:()=>!stopping&&!api.manualReview&&!fs.existsSync(stopFile)&&!fs.existsSync(paperStop)&&!fs.existsSync(collectorStop)&&!fs.existsSync(path.join(runtimeDir,'BASKET_STOP'))});
   runtime.networkBudget={mode:networkBudget?.schemaVersion===3?'coordinated_shared_read_only':networkBudget?'coordinated_sole_client':'default',schemaVersion:networkBudget?.schemaVersion??null,intervalMs:networkIntervalMs,writeIntervalMs:api.writeInterval,completionPacing:api.completionPacing,...(networkBudget?.schemaVersion===3?{maxReadsPerMinute:20,writesEnabled:false,executionOwner:'Daenerys'}:{})};
@@ -218,7 +222,7 @@ try{
     }
   }
   if(networkBudget)commit({type:'collection_network_budget',clockAt:new Date().toISOString(),cadencePolicy:{mode:runtime.networkBudget.mode,schemaVersion:networkBudget.schemaVersion,intervalMs:api.interval,writeIntervalMs:api.writeInterval,completionPacing:true,...(networkBudget.schemaVersion===3?{maxReadsPerMinute:20,writesEnabled:false}:{})}});
-  runtime.status='connecting';persistStatus();
+  runtime.startupToConnectionMs=performance.now();runtime.status='connecting';persistStatus();
   const html=fs.readFileSync(path.join(root,'dashboard.html'));
   server=http.createServer((req,res)=>{
     res.setHeader('Cache-Control','no-store');res.setHeader('X-Content-Type-Options','nosniff');
@@ -271,7 +275,14 @@ try{
   while(!stopping&&runtime.cycles<maxCycles){
     const cycleStart=Date.now(),checkpoint=structuredClone(state);const events=[];let successful=0,cycleCommitted=false;
     try{
-      if(dipBank)await collectHistory(officialSync?1:2);
+      if(dipBank){
+        const auxiliary=selectAuxiliaryReads(officialSync?1:2,runtime.cycles);runtime.auxiliaryReadAllocation=auxiliary;
+        if(auxiliary.tapeReads&&tradeTape&&!stopping&&api.cooldown<=Date.now()){
+          try{runtime.tradeTape=await tradeTape.collect(spec=>api.dispatch(spec),['363','297','381','382']);}
+          catch(e){if(e.durableRecordingFailed||api.manualReview||e.status===401||e.status===403)throw e;if(!stopping)runtime.tradeTape={...tradeTape.status(),status:'degraded',lastErrorAt:new Date().toISOString(),reason:e.status?'http_'+e.status:/^TRADE_TAPE_[A-Z_]+$/.test(e.message)?e.message:'trade_tape_unavailable'};}
+        }
+        if(auxiliary.historyReads)await collectHistory(auxiliary.historyReads);
+      }
       if(officialSync&&!stopping&&api.cooldown<=Date.now())await collectAccountExtra();
       const positions=await api.request('/tournaments/'+c.tournamentSlug+'/portfolio/positions');
       if(!Array.isArray(positions.data.positions))throw Error('Invalid real holdings response');
