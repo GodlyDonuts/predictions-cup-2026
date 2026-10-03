@@ -41,6 +41,7 @@ import {createRealtimeHost} from './realtime-host.mjs';
 import {paperExperimentRetired} from './experiment-retirement.mjs';
 import {readEdgeObservationFocus,planEdgeObservation} from './edge-observation-plan.mjs';
 import {prioritizeEdgeTrials} from './edge-trial-projection.mjs';
+import {readAnchorReadFocus,prioritizeAnchorReads} from './bid-anchor-read-focus.mjs';
 
 const root=path.dirname(fileURLToPath(import.meta.url)),workspace=path.dirname(root);
 if(process.argv.includes('--live'))throw Error('Competition order execution is disabled');
@@ -273,7 +274,8 @@ try{
       const observationFocus=readEdgeObservationFocus(runtimeDir,universe,Date.now()),observationExclusions=universe.exchanges.filter(x=>excluded.has(x.exchangeId)).map(x=>x.marketId);
       const observation=planEdgeObservation(pairedPlan,scheduler,universe,{focus:observationFocus,now:Date.now(),excludedMarketIds:observationExclusions});
       if(observation.state!==scheduler)saveScheduler(observation.state);
-      const planned=prioritizeEdgeTrials(observation.plan,observationFocus,universe,{now:Date.now(),excludedMarketIds:observationExclusions});runtime.edgeObservation=planned.edgeObservation||null;runtime.edgeTrialObservation=planned.edgeTrialObservation||null;
+      const trialPlan=prioritizeEdgeTrials(observation.plan,observationFocus,universe,{now:Date.now(),excludedMarketIds:observationExclusions});
+      const planned=prioritizeAnchorReads(trialPlan,readAnchorReadFocus(runtimeDir,universe,Date.now()),{excludedMarketIds:observationExclusions});runtime.bidAnchorReadFocus=planned.bidAnchorReadFocus||null;runtime.edgeObservation=planned.edgeObservation||null;runtime.edgeTrialObservation=planned.edgeTrialObservation||null;
       runtime.paperPackageFocus=planned.paperPackageFocus||null;
       if(competition)try{await competition.beforeBooks({positions,orders,ordersAt:new Date().toISOString(),candidateMarketIds:planned.entryMarketIds});}catch(e){competition.failure(e);}
       const supplementalDepth=[],samplingReservations=[],samplingReceipts=[];
