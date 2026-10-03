@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "record_kind": "immutable_covered_sell_terminal_cancellation_observation",
+  "immutable": true,
+  "source": "parent observed official signed-in cloud portfolio UI",
+  "repository_base_commit": "55739a61793e8c89533880722ab3b215f9819008",
+  "intent_id": "daenerys-20261003-ak369-yes-sell-001",
+  "platform_order_id": "4561585",
+  "market_id": 369,
+  "tournament": "Midterm Elections",
+  "side": "YES",
+  "action": "SELL",
+  "requested_quantity": 10000,
+  "limit_price_exact": "0.365",
+  "prior_portfolio_rounded_limit_display": "0.36",
+  "prior_acceptance_record": "data/orders/daenerys_2026-10-03_ak369_yes_sell_001_open_0814.json",
+  "pre_cancel": {
+    "observed_at_utc": "2026-10-03T08:44:08Z",
+    "remaining_quantity": 10000,
+    "ak_owned_quantity": 20000
+  },
+  "cancel_clicked_at_utc": "2026-10-03T08:44:18Z",
+  "cancel_click_count": 1,
+  "effective_server_cancel_at_utc": null,
+  "terminal_verification": {
+    "observed_at_utc": "2026-10-03T08:44:31Z",
+    "ui_text": "You have no open orders",
+    "cancel_buttons_present": false,
+    "account_open_order_count": 0,
+    "ak_owned_quantity": 20000,
+    "other_holdings_unchanged": [
+      {
+        "market_id": 387,
+        "side": "YES",
+        "quantity": 19621
+      },
+      {
+        "market_id": 379,
+        "side": "YES",
+        "quantity": 2061
+      },
+      {
+        "market_id": 259,
+        "side": "NO",
+        "quantity": 10000
+      }
+    ],
+    "observed_execution_ambiguity": false
+  },
+  "status": "canceled_unfilled_observed",
+  "filled_quantity": 0,
+  "canceled_quantity": 10000,
+  "remaining_quantity": 0,
+  "sale_proceeds_recorded": "0.000",
+  "realized_pnl_change": "0.000",
+  "new_executed_ledger_rows": 0,
+  "review_deadline_utc": "2026-10-03T08:45:00Z",
+  "deadline_satisfied": true,
+  "terminal_verified_seconds_before_deadline": 29,
+  "cancel_monitor_no_longer_needed_for_this_order": true,
+  "source_comment": "https://github.com/GodlyDonuts/predictions-cup-2026/issues/1#issuecomment-5967306275",
+  "limitations": [
+    "This is a sanitized transcription of the parent operator's signed-in official cloud-portfolio UI observations, not an independently fetched API cancellation receipt.",
+    "Cancellation click and terminal verification times are observer UTC; effective server cancellation time was not exposed.",
+    "No fill/sale was observed. Terminal zero open orders, absent cancel buttons and unchanged holdings follow the single cancellation. Historical observations do not guarantee later live state.",
+    "No fresh cash display was supplied in this terminal update. Earlier UI cash65571.41 and recorded-price arithmetic65571.410 remain separate from hidden account precision/fees.",
+    "No account network/API/UI/trading call was made by this record-maintenance worker."
+  ]
+}

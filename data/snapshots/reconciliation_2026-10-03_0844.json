@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "record_kind": "immutable_zero_fill_cancellation_reconciliation",
+  "immutable": true,
+  "repository_base_commit": "55739a61793e8c89533880722ab3b215f9819008",
+  "source_record": "data/orders/daenerys_2026-10-03_ak369_yes_sell_001_canceled_0844.json",
+  "terminal_verified_at_utc": "2026-10-03T08:44:31Z",
+  "ledger": {
+    "path": "data/trade_ledger.csv",
+    "sha256": "94fa031f42c6130b69024acfb434201fd53ce60d0e21d77f3c5952025338a5e0",
+    "bytes": 6848,
+    "rows": 21,
+    "unchanged": true,
+    "appended_rows": 0,
+    "sell4561585_absent": true
+  },
+  "order": {
+    "id": "4561585",
+    "filled": 0,
+    "canceled": 10000,
+    "remaining": 0,
+    "cancel_click_count": 1,
+    "no_execution_ambiguity_observed": true,
+    "deadline_satisfied": true
+  },
+  "portfolio": {
+    "open_orders": 0,
+    "positions_unchanged": true,
+    "shares_by_market": {
+      "379": 2061,
+      "387": 19621,
+      "259": 10000,
+      "369": 20000
+    },
+    "recorded_price_cash": "65571.410",
+    "recorded_acquisition_basis": "34585.125",
+    "analytical_realized": "156.535",
+    "realized_change": "0.000",
+    "fresh_cash_observation_supplied": false
+  },
+  "validation": {
+    "ledger_hash_unchanged": true,
+    "decimal_and_fraction_cash_agree": true,
+    "cash_basis_identity": "100156.535",
+    "no_sale_row": true,
+    "no_position_or_lot_change": true,
+    "snapshot_equals_latest": true,
+    "original_doc_content_preserved": true
+  },
+  "limitations": [
+    "This is a sanitized transcription of the parent operator's signed-in official cloud-portfolio UI observations, not an independently fetched API cancellation receipt.",
+    "Cancellation click and terminal verification times are observer UTC; effective server cancellation time was not exposed.",
+    "No fill/sale was observed. Terminal zero open orders, absent cancel buttons and unchanged holdings follow the single cancellation. Historical observations do not guarantee later live state.",
+    "No fresh cash display was supplied in this terminal update. Earlier UI cash65571.41 and recorded-price arithmetic65571.410 remain separate from hidden account precision/fees.",
+    "No account network/API/UI/trading call was made by this record-maintenance worker."
+  ],
+  "artifact_hashes": {
+    "data/orders/daenerys_2026-10-03_ak369_yes_sell_001_canceled_0844.json": {
+      "sha256": "8358d0099b4fc8207d63b852a50a0e55ecd3523988bff9c4f1846692e2970784",
+      "bytes": 2813,
+      "git_blob_sha1": "d84f9a5d3bbdee8b0265c23a92176fb8b3d1c3d1"
+    },
+    "data/portfolio/latest.json": {
+      "sha256": "12e4d9cf33f7b9ba22ece3640aeff47e208cff31295a7f5c478405a0ccc7f005",
+      "bytes": 15979,
+      "git_blob_sha1": "fb2d0548bcc477cd6f01806183d03ce2092af54b"
+    },
+    "data/snapshots/portfolio_2026-10-03_0844.json": {
+      "sha256": "12e4d9cf33f7b9ba22ece3640aeff47e208cff31295a7f5c478405a0ccc7f005",
+      "bytes": 15979,
+      "git_blob_sha1": "fb2d0548bcc477cd6f01806183d03ce2092af54b"
+    },
+    "docs/CURRENT_STATE.md": {
+      "sha256": "21b9c3e6b995abe16d213aac92e4015129ef83037d7890262710deb2f2466a73",
+      "bytes": 44340,
+      "git_blob_sha1": "c73f14a8fb1f3c03b557548467295bb5da73bd19"
+    }
+  }
+}

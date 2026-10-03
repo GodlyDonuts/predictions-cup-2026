@@ -1,5 +1,15 @@
 # Current state
 
+## Latest historical account observation: exit canceled, October 3, 08:44 UTC
+
+Covered AK sell **4561585** is terminal with **10,000 canceled and zero observed fills**. At **08:44:08 UTC**, all 10,000 remained and AK holdings were 20,000. The parent clicked cancel **exactly once at 08:44:18**. At **08:44:31**, the official portfolio explicitly said **“You have no open orders”**, no cancel buttons remained, and AK still showed 20,000. No fill or execution ambiguity was observed. Effective server-cancel time was not exposed.
+
+The **08:45 review/cancel deadline was satisfied** before it arrived. There is no remaining order-specific cancellation task. RI YES 19,621, MA YES 2,061 and GA NO 10,000 were unchanged in the parent's terminal portfolio observation. No other order remains open as of 08:44:31.
+
+The **21-row executed ledger is unchanged byte-for-byte**: this cancellation creates no sale row, proceeds, inventory reduction or realized gain. Recorded-price cash remains **65,571.410**, acquisition basis **34,585.125**, and analytical realized P&L **156.535**. No fresh cash display was supplied; the earlier 65,571.41 UI observation retains its original provenance and is not relabeled an 08:44 measurement. Exact hidden balance/fees remain unverified.
+
+The prior accepted-order audit and all earlier snapshots remain immutable. New records: [terminal cancellation audit](../data/orders/daenerys_2026-10-03_ak369_yes_sell_001_canceled_0844.json), [historical portfolio](../data/snapshots/portfolio_2026-10-03_0844.json), [reconciliation](../data/snapshots/reconciliation_2026-10-03_0844.json). [Issue1 terminal notice](https://github.com/GodlyDonuts/predictions-cup-2026/issues/1#issuecomment-5967306275) notifies Drogon; execution ownership is unchanged. No account calls were made by this record worker.
+
 ## Latest historical update: exact AK fills and covered exit, October 3, 08:14 UTC
 
 Fresh parent UI observation at **08:14:34 UTC** confirmed **20,000 AK369 YES held** and all **10,000 shares remaining** on covered sell **4561585**. The sell was submitted once **08:04:20**, accepted **08:04:56**, and its market own-order row confirmed exact limit **0.365 at 08:05:25**. Portfolio's **0.36** is rounded. **No exit fill, proceeds or realized gain is recorded**. Parent review/cancel target: **08:45 UTC**.

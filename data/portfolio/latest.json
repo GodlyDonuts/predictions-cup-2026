@@ -1,10 +1,10 @@
 {
-  "schema_version": 8,
-  "observed_window_start_utc": "2026-10-03T08:04:20Z",
-  "observed_window_end_utc": "2026-10-03T08:14:34Z",
+  "schema_version": 9,
+  "observed_window_start_utc": "2026-10-03T08:44:08Z",
+  "observed_window_end_utc": "2026-10-03T08:44:31Z",
   "cash_exact_verified_at_utc": null,
   "open_orders_verified_window_utc": [
-    "2026-10-03T08:14:34Z"
+    "2026-10-03T08:44:31Z"
   ],
   "tournament": "Midterm Elections",
   "tournament_slug": "midterm-elections",
@@ -21,9 +21,9 @@
       "average_price": "0.970",
       "cost": "1999.170",
       "order_id": 896197,
-      "status": "2061 shares unchanged in parent-reported 07:40 portfolio observation",
-      "holdings_verified_at_utc": "2026-10-03T07:40:09Z",
-      "holdings_source": "data/orders/daenerys_2026-10-03_ga259_no_buy_001_observed_0740.json",
+      "status": "Holding unchanged in parent terminal portfolio observation; no open orders",
+      "holdings_verified_at_utc": "2026-10-03T08:44:31Z",
+      "holdings_source": "data/orders/daenerys_2026-10-03_ak369_yes_sell_001_canceled_0844.json",
       "lots": [
         {
           "shares": 2061,
@@ -45,9 +45,9 @@
       "average_price": "0.905",
       "cost": "17763.900",
       "order_id": null,
-      "status": "19621 shares retained; order4482453 terminal with12621 fills and2379 canceled; no remaining open order",
-      "holdings_verified_at_utc": "2026-10-03T07:40:09Z",
-      "holdings_source": "data/orders/daenerys_2026-10-03_ga259_no_buy_001_observed_0740.json",
+      "status": "Holding unchanged in parent terminal portfolio observation; no open orders",
+      "holdings_verified_at_utc": "2026-10-03T08:44:31Z",
+      "holdings_source": "data/orders/daenerys_2026-10-03_ak369_yes_sell_001_canceled_0844.json",
       "lots": [
         {
           "shares": 5000,
@@ -100,9 +100,9 @@
       "cost_displayed": "8945.42",
       "cost_display_precision_decimal_places": 2,
       "order_id": "4505792",
-      "status": "10000-share holding/zero orders verified by parent07:40:09; exact peer-reported fill cost added later without a new trade",
-      "holdings_verified_at_utc": "2026-10-03T07:40:09Z",
-      "holdings_source": "data/orders/daenerys_2026-10-03_ga259_no_buy_001_observed_0740.json",
+      "status": "Holding unchanged in parent terminal portfolio observation; no open orders",
+      "holdings_verified_at_utc": "2026-10-03T08:44:31Z",
+      "holdings_source": "data/orders/daenerys_2026-10-03_ak369_yes_sell_001_canceled_0844.json",
       "lots": [
         {
           "shares": 10000,
@@ -144,9 +144,9 @@
       "alternative_display_derived_cost": "5876.64",
       "cost_display_precision_decimal_places": 2,
       "order_id": "4547722",
-      "status": "20000 shares held at08:14:34;10000-share covered sell4561585 remains wholly unfilled",
-      "holdings_verified_at_utc": "2026-10-03T08:14:34Z",
-      "holdings_source": "data/orders/daenerys_2026-10-03_ak369_yes_sell_001_open_0814.json",
+      "status": "Holding unchanged in parent terminal portfolio observation; no open orders",
+      "holdings_verified_at_utc": "2026-10-03T08:44:31Z",
+      "holdings_source": "data/orders/daenerys_2026-10-03_ak369_yes_sell_001_canceled_0844.json",
       "lots": [
         {
           "shares": 20000,
@@ -174,42 +174,20 @@
       "reconciliation_source": "data/orders/daenerys_2026-10-03_ak369_yes_buy_001_exact_0815.json"
     }
   ],
-  "open_orders": [
-    {
-      "order_id": "4561585",
-      "intent_id": "daenerys-20261003-ak369-yes-sell-001",
-      "market_id": 369,
-      "side": "YES",
-      "action": "SELL",
-      "quantity": 10000,
-      "limit_price": "0.365",
-      "portfolio_rounded_limit_display": "0.36",
-      "remaining_quantity": 10000,
-      "observed_filled_quantity": 0,
-      "covered_by_owned_quantity": 20000,
-      "status": "accepted_open_unfilled",
-      "verified_at_utc": "2026-10-03T08:14:34Z",
-      "exact_limit_verified_at_utc": "2026-10-03T08:05:25Z",
-      "review_or_cancel_target_utc": "2026-10-03T08:45:00Z",
-      "source": "data/orders/daenerys_2026-10-03_ak369_yes_sell_001_open_0814.json"
-    }
-  ],
-  "source": "Parent signed-in UI observations with independently inspected published curated GA/AK projection excerpt; original HTTP and hidden precision not verified",
+  "open_orders": [],
+  "source": "Parent observed official signed-in cloud portfolio UI; recorded costs retain their earlier documented and curated-projection sources",
   "notes": [
-    "The published selected curated API projection excerpt was independently read and hashed. Original HTTP bodies/headers and the full source projection bytes were not inspected; its reported full-projection hash is distinct from the checked excerpt hash.",
-    "accountHistoryHasMore=true: account pagination is incomplete. Selected unique fills sum to their selected closed BUY order quantities; no full-account history completeness is asserted.",
-    "Execution/order-created timestamps come from selected projection fields; parent UI click and verification timestamps remain separate.",
-    "Exact price-product principal is distinct from undisclosed fees, hidden cash precision and platform display rounding. No fee or hidden-balance claim is introduced.",
-    "Projection observation clocks are evidence provenance, not fresh later account positions. Holdings/open-order claims use their explicitly dated parent UI observations.",
-    "No account network/API/UI/trading call was performed by this record-maintenance worker.",
-    "Latest parent08:14:34 observation confirms AK20000 held and covered sell10000 remaining. No exit fill/profit has been recorded.",
-    "Prior RI/MA/GA holding observation timestamps are retained; current sell observation does not reverify the rest of the account."
+    "This is a sanitized transcription of the parent operator's signed-in official cloud-portfolio UI observations, not an independently fetched API cancellation receipt.",
+    "Cancellation click and terminal verification times are observer UTC; effective server cancellation time was not exposed.",
+    "No fill/sale was observed. Terminal zero open orders, absent cancel buttons and unchanged holdings follow the single cancellation. Historical observations do not guarantee later live state.",
+    "No fresh cash display was supplied in this terminal update. Earlier UI cash65571.41 and recorded-price arithmetic65571.410 remain separate from hidden account precision/fees.",
+    "No account network/API/UI/trading call was made by this record-maintenance worker."
   ],
   "realized_pnl_total": "156.535",
-  "realized_pnl_basis": "21-row historical FIFO realized156.915 plus separate prior bot roundtrip−0.380. New buy accounting and unfilled covered sell create no realized sale.",
-  "session_audit": "data/orders/daenerys_2026-10-03_ak369_yes_buy_001_exact_0815.json",
-  "previous_session_audit": "data/orders/daenerys_2026-10-03_ak369_yes_buy_001_observed_0758.json",
-  "previous_snapshot": "data/snapshots/portfolio_2026-10-03_0758.json",
+  "realized_pnl_basis": "Unchanged21-row historical FIFO realized156.915 plus prior bot roundtrip−0.380. Cancellation with zero fills creates no sale or realized P&L.",
+  "session_audit": "data/orders/daenerys_2026-10-03_ak369_yes_sell_001_canceled_0844.json",
+  "previous_session_audit": "data/orders/daenerys_2026-10-03_ak369_yes_sell_001_open_0814.json",
+  "previous_snapshot": "data/snapshots/portfolio_2026-10-03_0814.json",
   "realized_pnl_by_market": [
     {
       "market_id": 277,
@@ -269,29 +247,27 @@
     }
   ],
   "settlement_scenarios": {
-    "assumptions": "Fixed recorded holdings; assume covered sell4561585 does not fill and no further trades, fees, refunds or nonstandard settlements. Each51682 share pays0 or1. Uses exact recorded-price arithmetic, not verified hidden balance.",
+    "assumptions": "Fixed recorded holdings after confirmed zero open orders; no further trades, fees, refunds or nonstandard settlements. Each51682 held share pays0 or1. Uses exact recorded-price arithmetic, not verified hidden balance.",
     "all_positions_lose_arithmetic_total": "65571.410",
     "all_positions_win_arithmetic_total": "117253.410",
-    "pending_sell_fills_included": false,
     "total_recorded_held_shares": 51682,
-    "open_order_at_parent_observation": "4561585"
+    "open_orders_at_parent_observation": 0
   },
   "cash_displayed": "65571.41",
   "cash_display_precision_decimal_places": 2,
   "cash_display_verified_at_utc": null,
   "cash_arithmetic_from_verified_qty_price": null,
-  "cash_arithmetic_basis": "21-row exact recorded acquisition/sale price products plus separate historical bot adjustment−0.380. Published curated GA/AK fills checked; original HTTP/fees/hidden account cash remain distinct unknowns. No sell4561585 fill is included.",
+  "cash_arithmetic_basis": "Unchanged21-row exact recorded price products plus separate historical bot adjustment−0.380. Sell4561585 canceled with zero observed fills and creates no proceeds/debit or inventory change.",
   "cash_display_minus_arithmetic": "0.000",
   "session_realized_pnl": "0.000",
   "cash_arithmetic_plus_remaining_cost": "100156.535",
-  "cash_precision_note": "Earlier parent UI cash65571.41 agrees numerically with recorded-price arithmetic65571.410 to displayed precision; this is not independent proof of hidden account balance or fee rules. No fresh08:14 cash observation was supplied.",
+  "cash_precision_note": "No new cash display supplied at08:44. Earlier parent UI65571.41 remains separate from unchanged recorded-price arithmetic65571.410 and unknown hidden account precision/fees.",
   "session_realized_pnl_by_market": [],
   "realized_pnl_by_market_scope": "Cumulative historical ledger sales plus separate 12-row UI fill adjustment. The latter has no verified order grouping and remains outside the order-aggregate ledger.",
   "session_audits": [
-    "data/orders/daenerys_2026-10-03_ak369_yes_buy_001_exact_0815.json",
-    "data/orders/daenerys_2026-10-03_ak369_yes_sell_001_open_0814.json"
+    "data/orders/daenerys_2026-10-03_ak369_yes_sell_001_canceled_0844.json"
   ],
-  "reconciliation_record": "data/snapshots/reconciliation_2026-10-03_0814.json",
+  "reconciliation_record": "data/snapshots/reconciliation_2026-10-03_0844.json",
   "valuation_observations": {
     "kind": "No new marks supplied for latest order review; older mark observations remain in immutable historical records",
     "whole_account_marked_value": null,
@@ -307,9 +283,9 @@
       387
     ]
   },
-  "record_kind": "historical_0814_portfolio_with_published_curated_fill_evidence",
+  "record_kind": "historical_0844_portfolio_after_unfilled_exit_cancellation",
   "observed_window_start_is_approximate": false,
-  "immutable_snapshot": "data/snapshots/portfolio_2026-10-03_0814.json",
+  "immutable_snapshot": "data/snapshots/portfolio_2026-10-03_0844.json",
   "numeric_exchange_id": null,
   "cash_display_window_is_approximate": true,
   "trade_ledger_coverage": {
@@ -318,7 +294,6 @@
     "sha256": "94fa031f42c6130b69024acfb434201fd53ce60d0e21d77f3c5952025338a5e0",
     "ledger_only_cash": "65571.790",
     "ak_buy4547722_included_once": true,
-    "unfilled_sell4561585_excluded": true,
     "retired_derived_adjustments": [
       {
         "path": "data/orders/daenerys_2026-10-03_ri387_buy_002_partial_0730.json",
@@ -352,11 +327,11 @@
         "cash_change": "-0.380",
         "remaining_inventory": 0
       }
-    ]
+    ],
+    "canceled_zero_fill_sell4561585_excluded": true
   },
   "source_observation_records": [
-    "data/orders/daenerys_2026-10-03_ak369_yes_buy_001_exact_0815.json",
-    "data/orders/daenerys_2026-10-03_ak369_yes_sell_001_open_0814.json"
+    "data/orders/daenerys_2026-10-03_ak369_yes_sell_001_canceled_0844.json"
   ],
   "unresolved_cost_markets": [],
   "reconciliation_evidence_observed_at_utc": "2026-10-03T08:12:38.737Z",
@@ -385,5 +360,13 @@
     259,
     369
   ],
-  "original_http_source_verified": false
+  "original_http_source_verified": false,
+  "last_terminal_order": {
+    "order_id": "4561585",
+    "status": "canceled_unfilled_observed",
+    "canceled_quantity": 10000,
+    "filled_quantity": 0,
+    "verified_at_utc": "2026-10-03T08:44:31Z",
+    "source": "data/orders/daenerys_2026-10-03_ak369_yes_sell_001_canceled_0844.json"
+  }
 }

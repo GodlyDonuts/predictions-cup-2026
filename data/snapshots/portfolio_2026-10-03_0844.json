@@ -1,0 +1,372 @@
+{
+  "schema_version": 9,
+  "observed_window_start_utc": "2026-10-03T08:44:08Z",
+  "observed_window_end_utc": "2026-10-03T08:44:31Z",
+  "cash_exact_verified_at_utc": null,
+  "open_orders_verified_window_utc": [
+    "2026-10-03T08:44:31Z"
+  ],
+  "tournament": "Midterm Elections",
+  "tournament_slug": "midterm-elections",
+  "currency": "SUSQies (nonmonetary, nonredeemable contest points)",
+  "initial_cash": "100000.00",
+  "cash_verified": null,
+  "position_cost_basis_total": "34585.125",
+  "positions": [
+    {
+      "market_id": 379,
+      "title": "Democratic Party wins Massachusetts Senate",
+      "side": "YES",
+      "shares": 2061,
+      "average_price": "0.970",
+      "cost": "1999.170",
+      "order_id": 896197,
+      "status": "Holding unchanged in parent terminal portfolio observation; no open orders",
+      "holdings_verified_at_utc": "2026-10-03T08:44:31Z",
+      "holdings_source": "data/orders/daenerys_2026-10-03_ak369_yes_sell_001_canceled_0844.json",
+      "lots": [
+        {
+          "shares": 2061,
+          "average_price": "0.970",
+          "cost": "1999.170",
+          "order_id": 896197,
+          "executed_at_utc": null,
+          "submitted_at_utc": null,
+          "verified_at_utc": "2026-10-01T18:52:00Z",
+          "source": "data/trade_ledger.csv"
+        }
+      ]
+    },
+    {
+      "market_id": 387,
+      "title": "Democratic Party wins Rhode Island Senate",
+      "side": "YES",
+      "shares": 19621,
+      "average_price": "0.905",
+      "cost": "17763.900",
+      "order_id": null,
+      "status": "Holding unchanged in parent terminal portfolio observation; no open orders",
+      "holdings_verified_at_utc": "2026-10-03T08:44:31Z",
+      "holdings_source": "data/orders/daenerys_2026-10-03_ak369_yes_sell_001_canceled_0844.json",
+      "lots": [
+        {
+          "shares": 5000,
+          "average_price": "0.925",
+          "cost": "4625.000",
+          "order_id": null,
+          "executed_at_utc": null,
+          "submitted_at_utc": "2026-10-02T05:45:48Z",
+          "submission_time_is_approximate": true,
+          "verified_at_utc": "2026-10-02T05:46:44Z",
+          "source": "data/orders/session_2026-10-02_ri_value.json"
+        },
+        {
+          "shares": 2000,
+          "average_price": "0.890",
+          "cost": "1780.000",
+          "order_id": "4419984",
+          "executed_at_utc": null,
+          "submitted_at_utc": "2026-10-03T07:01:16Z",
+          "submission_time_is_approximate": true,
+          "verified_at_utc": "2026-10-03T07:23:58Z",
+          "source": "data/orders/daenerys_2026-10-03_ri387_buy_001_terminal_0723.json",
+          "accounting_layer": "trade_ledger_row_18"
+        },
+        {
+          "shares": 12621,
+          "average_price": "0.900",
+          "cost": "11358.900",
+          "order_id": "4482453",
+          "executed_at_utc": null,
+          "submitted_at_utc": "2026-10-03T07:29:27Z",
+          "verified_at_utc": "2026-10-03T07:30:18Z",
+          "source": "data/orders/daenerys_2026-10-03_ri387_buy_002_terminal_0738.json",
+          "accounting_layer": "trade_ledger_row_19",
+          "terminal_order_verified_at_utc": "2026-10-03T07:38:54Z"
+        }
+      ],
+      "average_price_is_ui_display": true,
+      "exact_average_price_ratio": "17763.900 / 19621"
+    },
+    {
+      "market_id": 259,
+      "title": "Republican Party wins Georgia Senate",
+      "side": "NO",
+      "shares": 10000,
+      "average_price": "0.894542",
+      "average_price_is_ui_display": false,
+      "exact_average_price": "0.894542",
+      "cost": "8945.420",
+      "cost_displayed": "8945.42",
+      "cost_display_precision_decimal_places": 2,
+      "order_id": "4505792",
+      "status": "Holding unchanged in parent terminal portfolio observation; no open orders",
+      "holdings_verified_at_utc": "2026-10-03T08:44:31Z",
+      "holdings_source": "data/orders/daenerys_2026-10-03_ak369_yes_sell_001_canceled_0844.json",
+      "lots": [
+        {
+          "shares": 10000,
+          "average_price_displayed": "0.895",
+          "exact_average_price": "0.894542",
+          "cost": "8945.420",
+          "cost_displayed": "8945.42",
+          "order_id": "4505792",
+          "executed_at_utc": "2026-10-03T07:39:38.324Z",
+          "submitted_at_utc": "2026-10-03T07:39:38Z",
+          "verified_at_utc": "2026-10-03T07:40:17Z",
+          "source": "data/orders/daenerys_2026-10-03_ga259_no_buy_001_peer_fills_0751.json",
+          "accounting_layer": "trade_ledger_row_20",
+          "average_price": "0.894542",
+          "exchange_id": 948,
+          "execution_time_source": "peer_reported_api_projection",
+          "submission_time_is_approximate": true,
+          "raw_source_independently_verified": false,
+          "curated_source": "data/collector-evidence/ga-ak-projection-20261003-0815.json",
+          "curated_source_independently_inspected": true
+        }
+      ],
+      "average_price_displayed": "0.895",
+      "cost_source": "Exact products validated against published curated projection excerpt; original HTTP not inspected",
+      "exchange_id": 948,
+      "identifier_source": "published_curated_projection_excerpt",
+      "reconciliation_source": "data/collector-evidence/ga-ak-projection-20261003-0815.json"
+    },
+    {
+      "market_id": 369,
+      "title": "Republican Party wins Alaska Governor",
+      "side": "YES",
+      "shares": 20000,
+      "average_price": "0.29383175",
+      "average_price_is_ui_display": false,
+      "exact_average_price": "0.29383175",
+      "cost": "5876.635",
+      "cost_displayed": "5876.63",
+      "alternative_display_derived_cost": "5876.64",
+      "cost_display_precision_decimal_places": 2,
+      "order_id": "4547722",
+      "status": "Holding unchanged in parent terminal portfolio observation; no open orders",
+      "holdings_verified_at_utc": "2026-10-03T08:44:31Z",
+      "holdings_source": "data/orders/daenerys_2026-10-03_ak369_yes_sell_001_canceled_0844.json",
+      "lots": [
+        {
+          "shares": 20000,
+          "average_price_displayed": "0.294",
+          "exact_average_price": "0.29383175",
+          "cost": "5876.635",
+          "cost_displayed": "5876.63",
+          "order_id": "4547722",
+          "executed_at_utc": "2026-10-03T07:57:16.338Z",
+          "submitted_at_utc": "2026-10-03T07:57:16Z",
+          "verified_at_utc": "2026-10-03T07:58:37Z",
+          "source": "data/orders/daenerys_2026-10-03_ak369_yes_buy_001_exact_0815.json",
+          "accounting_layer": "trade_ledger_row_21",
+          "average_price": "0.29383175",
+          "exchange_id": 1058,
+          "execution_time_source": "published_curated_api_projection_excerpt",
+          "curated_source_independently_inspected": true,
+          "original_http_independently_verified": false
+        }
+      ],
+      "average_price_displayed": "0.294",
+      "cost_source": "Exact selected fill products validated against published curated projection excerpt",
+      "exchange_id": 1058,
+      "identifier_source": "published_curated_projection_excerpt",
+      "reconciliation_source": "data/orders/daenerys_2026-10-03_ak369_yes_buy_001_exact_0815.json"
+    }
+  ],
+  "open_orders": [],
+  "source": "Parent observed official signed-in cloud portfolio UI; recorded costs retain their earlier documented and curated-projection sources",
+  "notes": [
+    "This is a sanitized transcription of the parent operator's signed-in official cloud-portfolio UI observations, not an independently fetched API cancellation receipt.",
+    "Cancellation click and terminal verification times are observer UTC; effective server cancellation time was not exposed.",
+    "No fill/sale was observed. Terminal zero open orders, absent cancel buttons and unchanged holdings follow the single cancellation. Historical observations do not guarantee later live state.",
+    "No fresh cash display was supplied in this terminal update. Earlier UI cash65571.41 and recorded-price arithmetic65571.410 remain separate from hidden account precision/fees.",
+    "No account network/API/UI/trading call was made by this record-maintenance worker."
+  ],
+  "realized_pnl_total": "156.535",
+  "realized_pnl_basis": "Unchanged21-row historical FIFO realized156.915 plus prior bot roundtrip−0.380. Cancellation with zero fills creates no sale or realized P&L.",
+  "session_audit": "data/orders/daenerys_2026-10-03_ak369_yes_sell_001_canceled_0844.json",
+  "previous_session_audit": "data/orders/daenerys_2026-10-03_ak369_yes_sell_001_open_0814.json",
+  "previous_snapshot": "data/snapshots/portfolio_2026-10-03_0814.json",
+  "realized_pnl_by_market": [
+    {
+      "market_id": 277,
+      "side": "NO",
+      "shares_sold": 1538,
+      "proceeds": "115.350",
+      "fifo_disposed_cost": "99.970",
+      "realized_pnl": "15.380"
+    },
+    {
+      "market_id": 313,
+      "side": "YES",
+      "shares_sold": 2,
+      "proceeds": "1.470",
+      "fifo_disposed_cost": "1.610",
+      "realized_pnl": "-0.140"
+    },
+    {
+      "market_id": 354,
+      "side": "YES",
+      "shares_sold": 12504,
+      "proceeds": "1412.980",
+      "fifo_disposed_cost": "1500.440",
+      "realized_pnl": "-87.460"
+    },
+    {
+      "market_id": 369,
+      "side": "YES",
+      "shares_sold": 33,
+      "proceeds": "8.250",
+      "fifo_disposed_cost": "8.170",
+      "realized_pnl": "0.080"
+    },
+    {
+      "market_id": 370,
+      "side": "YES",
+      "shares_sold": 12,
+      "proceeds": "10.500",
+      "fifo_disposed_cost": "10.860",
+      "realized_pnl": "-0.360"
+    },
+    {
+      "market_id": 377,
+      "side": "NO",
+      "shares_sold": 10000,
+      "proceeds": "3300.000",
+      "fifo_disposed_cost": "3224.500",
+      "realized_pnl": "75.500"
+    },
+    {
+      "market_id": 387,
+      "side": "YES",
+      "shares_sold": 11828,
+      "proceeds": "11174.875",
+      "fifo_disposed_cost": "11021.340",
+      "realized_pnl": "153.535"
+    }
+  ],
+  "settlement_scenarios": {
+    "assumptions": "Fixed recorded holdings after confirmed zero open orders; no further trades, fees, refunds or nonstandard settlements. Each51682 held share pays0 or1. Uses exact recorded-price arithmetic, not verified hidden balance.",
+    "all_positions_lose_arithmetic_total": "65571.410",
+    "all_positions_win_arithmetic_total": "117253.410",
+    "total_recorded_held_shares": 51682,
+    "open_orders_at_parent_observation": 0
+  },
+  "cash_displayed": "65571.41",
+  "cash_display_precision_decimal_places": 2,
+  "cash_display_verified_at_utc": null,
+  "cash_arithmetic_from_verified_qty_price": null,
+  "cash_arithmetic_basis": "Unchanged21-row exact recorded price products plus separate historical bot adjustment−0.380. Sell4561585 canceled with zero observed fills and creates no proceeds/debit or inventory change.",
+  "cash_display_minus_arithmetic": "0.000",
+  "session_realized_pnl": "0.000",
+  "cash_arithmetic_plus_remaining_cost": "100156.535",
+  "cash_precision_note": "No new cash display supplied at08:44. Earlier parent UI65571.41 remains separate from unchanged recorded-price arithmetic65571.410 and unknown hidden account precision/fees.",
+  "session_realized_pnl_by_market": [],
+  "realized_pnl_by_market_scope": "Cumulative historical ledger sales plus separate 12-row UI fill adjustment. The latter has no verified order grouping and remains outside the order-aggregate ledger.",
+  "session_audits": [
+    "data/orders/daenerys_2026-10-03_ak369_yes_sell_001_canceled_0844.json"
+  ],
+  "reconciliation_record": "data/snapshots/reconciliation_2026-10-03_0844.json",
+  "valuation_observations": {
+    "kind": "No new marks supplied for latest order review; older mark observations remain in immutable historical records",
+    "whole_account_marked_value": null,
+    "positions": []
+  },
+  "liquidation_observations": {
+    "whole_account_liquidation_value": null,
+    "positions": [],
+    "missing_contemporaneous_full_position_depth_markets": [
+      259,
+      369,
+      379,
+      387
+    ]
+  },
+  "record_kind": "historical_0844_portfolio_after_unfilled_exit_cancellation",
+  "observed_window_start_is_approximate": false,
+  "immutable_snapshot": "data/snapshots/portfolio_2026-10-03_0844.json",
+  "numeric_exchange_id": null,
+  "cash_display_window_is_approximate": true,
+  "trade_ledger_coverage": {
+    "path": "data/trade_ledger.csv",
+    "rows": 21,
+    "sha256": "94fa031f42c6130b69024acfb434201fd53ce60d0e21d77f3c5952025338a5e0",
+    "ledger_only_cash": "65571.790",
+    "ak_buy4547722_included_once": true,
+    "retired_derived_adjustments": [
+      {
+        "path": "data/orders/daenerys_2026-10-03_ri387_buy_002_partial_0730.json",
+        "order_id": "4482453",
+        "quantity": 12621,
+        "cost": "11358.900",
+        "reason": "Now included exactly once as terminal ledger row 19; retained immutable source not active adjustment"
+      },
+      {
+        "path": "data/orders/daenerys_2026-10-03_ga259_no_buy_001_observed_0740.json",
+        "market_id": 259,
+        "quantity": 10000,
+        "displayed_cost": "8945.42",
+        "reason": "Peer-reported exact cost8945.420 matches displayed amount and is included once in terminal ledger row20; observed-precision layer retired"
+      },
+      {
+        "path": "data/orders/daenerys_2026-10-03_ak369_yes_buy_001_observed_0758.json",
+        "market_id": 369,
+        "quantity": 20000,
+        "observed_costs": [
+          "5876.63",
+          "5876.64"
+        ],
+        "reason": "Exact selected fill principal5876.635 now included once in terminal ledger row21; old observed-precision layer retired"
+      }
+    ],
+    "active_separate_adjustments": [
+      {
+        "kind": "historical_bot_ui_fills",
+        "path": "data/snapshots/bot_adjustment_reconciliation_2026-10-03_0701.json",
+        "cash_change": "-0.380",
+        "remaining_inventory": 0
+      }
+    ],
+    "canceled_zero_fill_sell4561585_excluded": true
+  },
+  "source_observation_records": [
+    "data/orders/daenerys_2026-10-03_ak369_yes_sell_001_canceled_0844.json"
+  ],
+  "unresolved_cost_markets": [],
+  "reconciliation_evidence_observed_at_utc": "2026-10-03T08:12:38.737Z",
+  "reconciliation_evidence_is_new_account_state": false,
+  "cash_arithmetic_from_recorded_qty_price": "65571.410",
+  "cash_display_timing_note": "After the AK entry per parent; exact cash observation timestamp not supplied",
+  "curated_projection_evidence": {
+    "path": "data/collector-evidence/ga-ak-projection-20261003-0815.json",
+    "commit": "d08dee0570ef3ce0af845f51ae9b4c4d0bd22205",
+    "url": "https://github.com/GodlyDonuts/predictions-cup-2026/blob/d08dee0570ef3ce0af845f51ae9b4c4d0bd22205/data/collector-evidence/ga-ak-projection-20261003-0815.json",
+    "excerpt_sha256": "bffceaec8d6c0203124f1c460de2fae2cbde02894f02c7f6368d4576ad460f62",
+    "excerpt_git_blob_sha1": "10c5cf295f0dd6fa1626649265f26b8e5a9743bd",
+    "excerpt_bytes": 4619,
+    "reported_full_source_projection_sha256": "aca347f99493165d132c8d587d606a3ba9a732c939138cc196bc1895d0f0d209",
+    "captured_at_utc": "2026-10-03T08:13:15.145Z",
+    "fills_observed_at_utc": "2026-10-03T08:12:38.737Z",
+    "order_history_observed_at_utc": "2026-10-03T08:12:03.392Z",
+    "account_history_has_more": true,
+    "curated_excerpt_independently_read_and_hashed": true,
+    "original_http_body_headers_inspected": false,
+    "full_projection_bytes_independently_inspected": false,
+    "reported_full_projection_hash_independently_recomputed": false
+  },
+  "position_cost_basis_source_note": "Exact recorded price products; GA and AK source fields verified against published curated excerpt. Original full projection/HTTP not inspected.",
+  "curated_projection_evidence_verified_markets": [
+    259,
+    369
+  ],
+  "original_http_source_verified": false,
+  "last_terminal_order": {
+    "order_id": "4561585",
+    "status": "canceled_unfilled_observed",
+    "canceled_quantity": 10000,
+    "filled_quantity": 0,
+    "verified_at_utc": "2026-10-03T08:44:31Z",
+    "source": "data/orders/daenerys_2026-10-03_ak369_yes_sell_001_canceled_0844.json"
+  }
+}
