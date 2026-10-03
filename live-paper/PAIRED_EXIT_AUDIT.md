@@ -1,0 +1,11 @@
+# Paired exit economics audit
+
+`auditPairedExits({bank, sourceBytes, journalBytes})` replays the original frozen sequential paired-NO experiment. It verifies publication scope/session/hash chains, bank source prefix, original engine code identity, v4 host identity, every checkpoint and the final state hash. It inspects only source records consumed by saved checkpoints. It makes no network calls and changes no running wallet or collector.
+
+`measurePairedExit` reports each held lot's executable top-depth quantity, proportional acquired basis rounded upward, sale margin with and without the existing two adverse sale ticks, and the fixed profit-target surplus. Original acquired basis retains the entry ticks. Freshness, clock, skew, missing sides and insufficient depth remain explicit exclusions. Quote opportunities are measurements, not queue fills or independent trades. Repeated checkpoints are not additional market observations. Open holding durations are right-censored.
+
+Run correctness checks with `node --test live-paper/paired-exit-audit.test.mjs`. For real evidence, copy the complete newline-terminated journal prefix first, then its immutable bank and sanitized public source. Pass those copied bytes to the exported function and preserve the resulting report alongside the original hashes. Snapshot copying writes separate files; the audit itself has no runtime mutation or execution authority.
+
+Observed original experiment through 2026-10-03 00:09:31.851 UTC: 1,265 verified checkpoints, 80 distinct fresh paired quote versions, six open lots, 12 hypothetical fills and zero closed roundtrips. Every lot's best measured raw sale margin remained negative, including when sale padding was removed. Frozen depth-aware liquidation P&L at that checkpoint was -1.210000 SUSQ. Fees were zero. The conditional normal-settlement scenario was +0.460000 SUSQ and is not realized profit. This supports rejecting the experiment as demonstrated frequent profitable turnover; it does not establish that future exits cannot improve or that a different execution strategy is profitable.
+
+Do not retrofit entry costs, alter the frozen bank, erase losing lots, assume continuous coverage, or deploy a new contest strategy from this historical diagnostic. Compare new hypotheses with independently preserved prospective accounting and subsequent observations.
