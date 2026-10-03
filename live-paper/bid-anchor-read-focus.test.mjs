@@ -25,3 +25,5 @@ test('fresh active lock, original checkpoint and complete stats binding are requ
  atomicJson(path.join(dir,'worker.lock'),{...lock,id:'other-owner'});assert.equal(readAnchorReadFocus(rt,universe,now),null);atomicJson(path.join(dir,'worker.lock'),lock);
  fs.writeFileSync(path.join(rt,'BID_ANCHOR_LIVE_STOP'),'human');assert.equal(readAnchorReadFocus(rt,universe,now),null);
 });
+
+test("held wallets rotate fairly through two optional slots using persisted read attempts",()=>{const plan={reads:[{marketId:"1",reason:"held"},{marketId:"2",reason:"managed"},{marketId:"3",reason:"discovery"},{marketId:"4",reason:"discovery"}],entryMarketIds:[]},focus={markets:[{marketId:"5",phase:"held"},{marketId:"6",phase:"held"},{marketId:"7",phase:"held"}]};assert.deepEqual(prioritizeAnchorReads(plan,focus,{lastAttempts:{5:10,6:11}}).bidAnchorReadFocus.marketIds,["7","5"]);});

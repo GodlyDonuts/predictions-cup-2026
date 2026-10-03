@@ -275,7 +275,7 @@ try{
       const observation=planEdgeObservation(pairedPlan,scheduler,universe,{focus:observationFocus,now:Date.now(),excludedMarketIds:observationExclusions});
       if(observation.state!==scheduler)saveScheduler(observation.state);
       const trialPlan=prioritizeEdgeTrials(observation.plan,observationFocus,universe,{now:Date.now(),excludedMarketIds:observationExclusions});
-      const planned=prioritizeAnchorReads(trialPlan,readAnchorReadFocus(runtimeDir,universe,Date.now()),{excludedMarketIds:observationExclusions});runtime.bidAnchorReadFocus=planned.bidAnchorReadFocus||null;runtime.edgeObservation=planned.edgeObservation||null;runtime.edgeTrialObservation=planned.edgeTrialObservation||null;
+      const planned=prioritizeAnchorReads(trialPlan,readAnchorReadFocus(runtimeDir,universe,Date.now()),{excludedMarketIds:observationExclusions,lastAttempts:scheduler?.bookLastAttempt||{}});runtime.bidAnchorReadFocus=planned.bidAnchorReadFocus||null;runtime.edgeObservation=planned.edgeObservation||null;runtime.edgeTrialObservation=planned.edgeTrialObservation||null;
       runtime.paperPackageFocus=planned.paperPackageFocus||null;
       if(competition)try{await competition.beforeBooks({positions,orders,ordersAt:new Date().toISOString(),candidateMarketIds:planned.entryMarketIds});}catch(e){competition.failure(e);}
       const supplementalDepth=[],samplingReservations=[],samplingReceipts=[];
