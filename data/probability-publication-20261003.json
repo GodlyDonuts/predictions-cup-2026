@@ -1,0 +1,74 @@
+{
+  "at": "2026-10-03T22:09:50Z",
+  "coreCommit": "58d7cf247166feee3ea3f7c37a1d130e6ddf01ee",
+  "leanCommit": "28d06252bd3e39bf8baf823bc9550fddda26c632",
+  "preservedIncomingCommit": "b9a2b38f6434db4afc21d92e9ef61a26ed54086c",
+  "exactFiles": [
+    {
+      "path": "live-paper/probability-receipt-observe.mjs",
+      "sha": "e1c36a683fa3984b331441ceda261a4d08b3c506"
+    },
+    {
+      "path": "live-paper/probability-read-focus.test.mjs",
+      "sha": "30fab81e9b4366194d167a31eb69a58d972c214f"
+    },
+    {
+      "path": "docs/PROBABILITY_PAPER.md",
+      "sha": "7912615d70e0973427e2f7a341728e21a571c916"
+    },
+    {
+      "path": "data/deploy-probability-paper-20261003.ps1",
+      "sha": "a3bb53a52f0b9930654e07e21e1005ff86d15adc"
+    },
+    {
+      "path": "data/lean-probability-paper-20261003.ps1",
+      "sha": "f32c47d89859dfd5be2b89e1b64b3c7071bb788c"
+    },
+    {
+      "path": "data/probability-preservation-before-20261003.json",
+      "sha": "aec445686849984b973b011bdd74472253795096"
+    },
+    {
+      "path": "data/probability-freeze-20261003-v1.json",
+      "sha": "cce882b98c7c6a09c48f406f54abe644ebf4dadb"
+    },
+    {
+      "path": "data/probability-paper-deployment-20261003.json",
+      "sha": "ed55f21626de01f70687c55a67113517b1b95059"
+    },
+    {
+      "path": "data/probability-dashboard-deployment-20261003.json",
+      "sha": "97a74e29ab850b451bb71214a1da3a9d51c9d00e"
+    },
+    {
+      "path": "data/probability-lean-deployment-20261003.json",
+      "sha": "574e65555f6cb15e36657b227c5c1884bccb17fd"
+    },
+    {
+      "path": "data/verify-probability-live-20261003.mjs",
+      "sha": "9baa351d35b0c19d07e129e8e840af967f494179"
+    },
+    {
+      "path": "data/current-runtime-pids.json",
+      "sha": "e33de1905b0ade664ccaaa7f635f80152050c295"
+    },
+    {
+      "path": "live-paper/payout-capacity.md",
+      "sha": "e1edc999dd6c2f7aa4a8d803f208e00451da04f7"
+    },
+    {
+      "path": "live-paper/payout-capacity.mjs",
+      "sha": "b690e707ff8a37d5b96160362a76955f62280d1a"
+    },
+    {
+      "path": "live-paper/payout-capacity.test.mjs",
+      "sha": "79fbad1da1690b0ca78bacbecaf1eac14dcf8044"
+    }
+  ],
+  "preservedIncomingFiles": 3,
+  "testsPassed": 37,
+  "fullLiveReplayEvidence": "data/probability-live-verification-20261003.json",
+  "writeTimeoutsResolved": true,
+  "competitionOrders": 0,
+  "profitabilityEstablished": false
+}
