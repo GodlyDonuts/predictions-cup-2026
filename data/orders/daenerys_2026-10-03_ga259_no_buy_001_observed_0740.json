@@ -1,0 +1,90 @@
+{
+  "schema_version": 1,
+  "record_kind": "immutable_completed_acquisition_observed_precision_pending_exact_fills",
+  "immutable": true,
+  "source": "parent observed official signed-in UI",
+  "repository_base_commit": "47a82daf0fe1f7c791346e1e4d53dc2a88dd8695",
+  "intent_id": "daenerys-20261003-ga259-no-buy-001",
+  "platform_order_id": null,
+  "platform_order_id_note": "Completed order ID not exposed in UI or supplied CSV",
+  "owner": "Daenerys / dot",
+  "tournament": "Midterm Elections",
+  "numeric_exchange_id": null,
+  "market_id": 259,
+  "market_title": "Republican Party wins Georgia Senate",
+  "side": "NO",
+  "action": "BUY",
+  "order_type": "LIMIT",
+  "requested_quantity": 10000,
+  "limit_price": "0.895",
+  "maximum_principal_susqies": "8950.000",
+  "submitted_at_utc": "2026-10-03T07:39:38Z",
+  "submit_click_count": 1,
+  "retry_count": 0,
+  "status": "fully_filled_observed",
+  "filled_quantity": 10000,
+  "remaining_quantity": 0,
+  "holdings_and_zero_orders_verified_at_utc": "2026-10-03T07:40:09Z",
+  "transaction_history_verified_at_utc": "2026-10-03T07:40:17Z",
+  "exact_execution_time_utc": null,
+  "fill_breakdown": null,
+  "observed_precision": {
+    "average_price_displayed": "0.895",
+    "average_price_decimal_places": 3,
+    "aggregate_cost_displayed": "8945.42",
+    "aggregate_amount_decimal_places": 2,
+    "export_signed_amount": "-8945.42",
+    "exact_underlying_cost": null,
+    "quantity_times_rounded_average": "8950.000",
+    "rounded_average_product_minus_displayed_amount": "4.580",
+    "difference_not_classified_as_fee": true
+  },
+  "cash_observation": {
+    "displayed": "71448.04",
+    "precision_decimal_places": 2,
+    "exact_observation_time_utc": null,
+    "parent_observation_window": "2026-10-03 approximately 07:40 UTC",
+    "exact_cash": null
+  },
+  "accounting_treatment": {
+    "executed_aggregate_appended_to_ledger": false,
+    "separate_completed_acquisition_at_observed_precision": true,
+    "quantity_in_portfolio": 10000,
+    "displayed_debit_in_bridge": "8945.42",
+    "exact_cost_not_asserted": true,
+    "retire_observed_precision_adjustment_when_exact_aggregate_is_recorded": true
+  },
+  "sources": {
+    "intent_comment": "https://github.com/GodlyDonuts/predictions-cup-2026/issues/1#issuecomment-5966825237",
+    "completion_comment": "https://github.com/GodlyDonuts/predictions-cup-2026/issues/1#issuecomment-5966858454",
+    "exact_reconciliation_request": "https://github.com/GodlyDonuts/predictions-cup-2026/issues/1#issuecomment-5966866303",
+    "official_export": {
+      "path": "data/exports/transactions_2026-10-03_0741.csv",
+      "sha256": "0f67bfe1ba38e649b7553e1a7896bb9568434be7aa9bec1f165ae813c6b8c5d1",
+      "bytes": 2364,
+      "data_rows": 24,
+      "source": "Official website transaction-history CSV downloaded by parent at approximately 07:41 UTC",
+      "exact_source_bytes_preserved": true,
+      "complete_account_history_claimed": false,
+      "columns": [
+        "Date",
+        "Activity",
+        "Market",
+        "Detail",
+        "Amount",
+        "Realized P&L"
+      ],
+      "sanitization_check": "Complete file inspected: only contest dates, buy/sell activity, market descriptions, rounded details/amounts and blank realized-P&L cells; no credential, auth header, identity or unrelated personal field present",
+      "precision_note": "The export repeats rounded aggregate prices and two-decimal amounts. It does not expose order IDs, exact fill timestamps or underlying execution prices."
+    }
+  },
+  "exact_reconciliation_pending": true,
+  "limitations": [
+    "Parent-supplied official signed-in UI observations; this worker did not independently access the account. The attached repository CSV is an exact copy of the supplied official export, not raw API fills.",
+    "Exact server execution/cancellation times and the numeric exchange ID were not exposed; observer timestamps are not execution timestamps.",
+    "Cash/amount displays and GA average price have limited precision. No hidden balance, rounding convention, fee or fill-price breakdown is inferred.",
+    "All portfolio observations stop at the supplied 07:40 window. The later CSV download is provenance, not a claim of later holdings/order state.",
+    "The parent is the only account operator. This record worker made no account network/API/UI/trading calls.",
+    "10000 x the rounded displayed 0.895 is not the observed acquisition amount and is not booked as actual cost. Displayed 8945.42 is not asserted to establish exact underlying fill cost. No invented allocation across earlier book levels."
+  ]
+}

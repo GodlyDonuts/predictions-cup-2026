@@ -1,0 +1,167 @@
+{
+  "schema_version": 1,
+  "record_kind": "immutable_terminal_ri_and_observed_precision_ga_reconciliation",
+  "immutable": true,
+  "source": "parent observed official signed-in UI",
+  "repository_base_commit": "47a82daf0fe1f7c791346e1e4d53dc2a88dd8695",
+  "account_observations_end_utc": "2026-10-03T07:40:17Z",
+  "export_provenance": {
+    "path": "data/exports/transactions_2026-10-03_0741.csv",
+    "sha256": "0f67bfe1ba38e649b7553e1a7896bb9568434be7aa9bec1f165ae813c6b8c5d1",
+    "bytes": 2364,
+    "data_rows": 24,
+    "source": "Official website transaction-history CSV downloaded by parent at approximately 07:41 UTC",
+    "exact_source_bytes_preserved": true,
+    "complete_account_history_claimed": false,
+    "columns": [
+      "Date",
+      "Activity",
+      "Market",
+      "Detail",
+      "Amount",
+      "Realized P&L"
+    ],
+    "sanitization_check": "Complete file inspected: only contest dates, buy/sell activity, market descriptions, rounded details/amounts and blank realized-P&L cells; no credential, auth header, identity or unrelated personal field present",
+    "precision_note": "The export repeats rounded aggregate prices and two-decimal amounts. It does not expose order IDs, exact fill timestamps or underlying execution prices."
+  },
+  "ledger": {
+    "path": "data/trade_ledger.csv",
+    "prior_sha256": "37119325bcaff6c79f7a4747178257bafea34a2d02cc7a16d219e164a4f9d486",
+    "sha256": "89a41fae53db6817d384c4f9e417e66b4c73485efe7f05922885eb9594b1b17d",
+    "prior_bytes": 5319,
+    "prior_byte_prefix_preserved": true,
+    "prior_rows": 18,
+    "appended_rows": 1,
+    "total_rows": 19,
+    "appended_order_id": "4482453",
+    "appended_quantity": 12621,
+    "appended_cost": "11358.900",
+    "ledger_only_cash": "80393.845",
+    "ledger_only_realized": "156.915"
+  },
+  "retired_adjustment": {
+    "source": "data/orders/daenerys_2026-10-03_ri387_buy_002_partial_0730.json",
+    "quantity": 12621,
+    "cost": "11358.900",
+    "replaced_by_ledger_row": 19,
+    "new_cash_debit_on_transfer": "0.000"
+  },
+  "active_adjustments": [
+    {
+      "source": "data/snapshots/bot_adjustment_reconciliation_2026-10-03_0701.json",
+      "kind": "historical_bot_roundtrips",
+      "cash_change": "-0.380",
+      "realized_change": "-0.380"
+    },
+    {
+      "source": "data/orders/daenerys_2026-10-03_ga259_no_buy_001_observed_0740.json",
+      "kind": "completed_acquisition_observed_precision",
+      "market_id": 259,
+      "side": "NO",
+      "quantity": 10000,
+      "displayed_debit": "8945.42",
+      "exact_debit": null,
+      "not_in_exact_order_aggregate_ledger": true
+    }
+  ],
+  "exact_supported_values": {
+    "cash_before_ga_price_product_arithmetic": "80393.465",
+    "ri_cost": "17763.900",
+    "ma_cost": "1999.170",
+    "known_ri_ma_basis": "19763.070",
+    "analytical_realized": "156.535",
+    "ga_exact_cost": null,
+    "current_exact_cash": null,
+    "current_exact_total_basis": null
+  },
+  "display_based_bridge_only": {
+    "cash_before_ga_exact_price_product_arithmetic": "80393.465",
+    "ga_observed_two_decimal_debit": "8945.42",
+    "cash_after_displayed_debit_arithmetic": "71448.045",
+    "known_ri_ma_basis": "19763.070",
+    "basis_including_observed_ga_amount": "28708.490",
+    "bridge_cash_plus_bridge_basis": "100156.535",
+    "exact_current_cash_or_ga_cost_claimed": false,
+    "note": "Arithmetic bridge combines exact historical price products with a two-decimal observed GA amount. The cash-plus-basis identity cancels that same provisional amount and does not verify its precision."
+  },
+  "positions": [
+    {
+      "market_id": 379,
+      "side": "YES",
+      "quantity": 2061,
+      "exact_cost": "1999.170"
+    },
+    {
+      "market_id": 387,
+      "side": "YES",
+      "quantity": 19621,
+      "exact_cost": "17763.900"
+    },
+    {
+      "market_id": 259,
+      "side": "NO",
+      "quantity": 10000,
+      "exact_cost": null
+    }
+  ],
+  "open_orders": {
+    "count": 0,
+    "verified_at_utc": "2026-10-03T07:40:09Z"
+  },
+  "validation": {
+    "decimal_full_19_row_fifo_replay": true,
+    "independent_fraction_full_19_row_fifo_replay": true,
+    "original_18_row_bytes_preserved": true,
+    "terminal_ri_in_ledger_once": true,
+    "prior_partial_adjustment_retired_without_double_debit": true,
+    "ga_not_booked_as_10000_times_rounded_average": true,
+    "ga_exact_cost_fields_null": true,
+    "snapshot_equals_latest": true,
+    "csv_exact_source_hash_verified": true,
+    "complete_csv_structure_inspected_for_secrets": true
+  },
+  "limitations": [
+    "Parent-supplied official signed-in UI observations; this worker did not independently access the account. The attached repository CSV is an exact copy of the supplied official export, not raw API fills.",
+    "Exact server execution/cancellation times and the numeric exchange ID were not exposed; observer timestamps are not execution timestamps.",
+    "Cash/amount displays and GA average price have limited precision. No hidden balance, rounding convention, fee or fill-price breakdown is inferred.",
+    "All portfolio observations stop at the supplied 07:40 window. The later CSV download is provenance, not a claim of later holdings/order state.",
+    "The parent is the only account operator. This record worker made no account network/API/UI/trading calls."
+  ],
+  "artifact_hashes": {
+    "data/orders/daenerys_2026-10-03_ri387_buy_002_terminal_0738.json": {
+      "sha256": "2f7f2ccafe60068074f6c569d98d430d4a4a07bedd44ffa2d5e8a20b4ed0cb06",
+      "bytes": 2343,
+      "git_blob_sha1": "701383e75297873d2eebc893c9f27b94fe1a883c"
+    },
+    "data/orders/daenerys_2026-10-03_ga259_no_buy_001_observed_0740.json": {
+      "sha256": "1aac5fa33c61b89b53b51d31c10961230325a4faa14bb6e97f3eb088a49067c3",
+      "bytes": 4582,
+      "git_blob_sha1": "215ac4d31792b7848ce5a45aab32e67c38c635b2"
+    },
+    "data/exports/transactions_2026-10-03_0741.csv": {
+      "sha256": "0f67bfe1ba38e649b7553e1a7896bb9568434be7aa9bec1f165ae813c6b8c5d1",
+      "bytes": 2364,
+      "git_blob_sha1": "e648520e71bf2a426f2c82af74ec53eff3a3cef0"
+    },
+    "data/snapshots/portfolio_2026-10-03_0740.json": {
+      "sha256": "4d71e8ebfa8cceb34fdaceca1adb98525bb5ca6101f298f9da55a5dfdb1cfccb",
+      "bytes": 12033,
+      "git_blob_sha1": "bde4d21c0bf85e67f236b38f85d1d1da838c2d58"
+    },
+    "data/portfolio/latest.json": {
+      "sha256": "4d71e8ebfa8cceb34fdaceca1adb98525bb5ca6101f298f9da55a5dfdb1cfccb",
+      "bytes": 12033,
+      "git_blob_sha1": "bde4d21c0bf85e67f236b38f85d1d1da838c2d58"
+    },
+    "data/trade_ledger.csv": {
+      "sha256": "89a41fae53db6817d384c4f9e417e66b4c73485efe7f05922885eb9594b1b17d",
+      "bytes": 5776,
+      "git_blob_sha1": "5ae8fce24bc79c8142e74a8ec3ac35b7fe4a745c"
+    },
+    "docs/CURRENT_STATE.md": {
+      "sha256": "e30f39e4a7a184f73cc658dfcbb3a0a941dfa1cc519b20f0be2307514fcbffbd",
+      "bytes": 32193,
+      "git_blob_sha1": "ab43fc261afaffc246ab4dfb4f46686cf98334f2"
+    }
+  }
+}

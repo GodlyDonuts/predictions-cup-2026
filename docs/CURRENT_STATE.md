@@ -1,5 +1,29 @@
 # Current state
 
+## Latest historical account observation: October 3, 07:38–07:40 UTC
+
+The parent operator's official signed-in website observations establish **zero open orders at 07:40:09 UTC**, with **RI YES 19,621**, **MA YES 2,061**, and **GA market 259 NO 10,000**. The latest history confirmation was **07:40:17**. This is historical state, not a later live-state assertion.
+
+### Rhode Island terminal reconciliation
+
+Order **4482453** is terminal: **12,621 RI YES filled at 0.900**, exact displayed quantity × price cost **11,358.900**; **2,379 canceled** after one cancel click at **07:38:32**. Zero orders and unchanged RI 19,621 were verified **07:38:54 UTC**. Exact execution and server-cancel times remain unknown.
+
+The ledger appends this as **row 19**, preserving all original 18 rows byte-for-byte. The old separate 12,621-share partial-fill adjustment is retired from the derived accounting: **moving the same fill into the ledger creates no new debit or holding**. RI basis remains **17,763.900** and MA **1,999.170**. Ledger-only cash is **80,393.845**; after the preserved bot adjustment **−0.380**, known pre-GA arithmetic is still **80,393.465**.
+
+### Georgia acquisition: filled quantity verified, exact cost unresolved
+
+New intent **daenerys-20261003-ga259-no-buy-001** requested BUY **10,000 NO** in **Republican Georgia Senate market 259**, limit **0.895**, principal cap **8,950.000**. One click at **07:39:38** was followed by the full 10,000-share holding and zero open orders at **07:40:09**. History at **07:40:17** showed displayed average **0.895** and aggregate cost **8,945.42**. The completed order ID and underlying fills were not exposed.
+
+The official CSV downloaded at approximately **07:41 UTC** repeats **10000 NO @ 0.895 / −8945.42**. The three-decimal average is rounded: **10,000 × 0.895 = 8,950.000 is not the observed acquisition amount**. The **4.580** difference is not labeled a fee, and no fill allocation is invented. The two-decimal 8,945.42 display also does not establish hidden execution precision.
+
+GA is retained as a **completed holding in a separate observed-precision acquisition record**, not an open order or unsupported exact ledger aggregate. Current exact GA cost, exact total basis and exact post-GA price-product cash therefore remain **null** in the derived view. A separately labeled arithmetic bridge is **80,393.465 − displayed 8,945.42 = 71,448.045**, compared with observed UI cash **71,448.04**. That bridge is not an asserted exact cash balance. Known RI/MA basis is **19,763.070**; adding the same displayed GA amount gives a mixed-precision basis bridge **28,708.490**. Their sum cancels the provisional amount and is not evidence of its precision.
+
+Analytical realized P&L remains **156.535**; these acquisitions created no realized sales. No exact new settlement endpoint or whole-account liquidation gain is claimed. Exact GA fills/order ID have been requested through the existing bounded read-only collector; they will be reconciled in a separate later record without rewriting this observation or double-counting GA.
+
+Sources: [GA prepared intent](https://github.com/GodlyDonuts/predictions-cup-2026/issues/1#issuecomment-5966825237), [reported outcomes](https://github.com/GodlyDonuts/predictions-cup-2026/issues/1#issuecomment-5966858454), [exact-data request](https://github.com/GodlyDonuts/predictions-cup-2026/issues/1#issuecomment-5966866303). Immutable records: [RI terminal audit](../data/orders/daenerys_2026-10-03_ri387_buy_002_terminal_0738.json), [GA observed-precision audit](../data/orders/daenerys_2026-10-03_ga259_no_buy_001_observed_0740.json), [official CSV bytes](../data/exports/transactions_2026-10-03_0741.csv), [reconciliation](../data/snapshots/reconciliation_2026-10-03_0740.json) and [portfolio snapshot](../data/snapshots/portfolio_2026-10-03_0740.json).
+
+The supplied CSV contains a limited set of displayed transactions; it is not asserted to be the full account history. Its exact original bytes are preserved, including its final newline state, with SHA-256 **0f67bfe1ba38e649b7553e1a7896bb9568434be7aa9bec1f165ae813c6b8c5d1**. It contains only contest transaction columns and no observed secrets. Prior historical blocks remain unchanged below.
+
 ## Latest historical account observation: October 3, 07:23–07:30 UTC
 
 This timestamped update supersedes only the earlier portfolio observations below. The parent operator supplied the official signed-in website observations; this worker did not access the account. All previous audit/snapshot files remain immutable.
