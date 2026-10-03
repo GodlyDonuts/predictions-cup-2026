@@ -1,4 +1,5 @@
 import fs from 'node:fs';import path from 'node:path';import {digest} from './model.mjs';
+import {validateUniverse} from './breadth.mjs';
 export const EDGE_OBSERVATION_MS=420000;
 const need=(ok)=>{if(!ok)throw Error('INVALID_EDGE_OBSERVATION');};
 export function readEdgeObservationFocus(runtimeDir,universe,now=Date.now()){
@@ -11,7 +12,8 @@ export function readEdgeObservationFocus(runtimeDir,universe,now=Date.now()){
   need(digest(bank)===manifest.bankHash&&bank.universe.tournamentId===universe.tournamentId&&stats.bankHash===manifest.bankHash&&stats.cohort===manifest.cohort&&stats.mode==='execution_aware_online_paper'&&stats.failed===false&&stats.sourceClosed===false&&stats.networkRequests===0&&stats.competitionOrders===0);
   const lock=JSON.parse(fs.readFileSync(path.join(dir,'worker.lock')));
   need(Number.isSafeInteger(lock.pid)&&lock.pid>0&&typeof lock.id==='string'&&lock.id.length>0&&now>=Date.parse(stats.updatedAt)&&now-Date.parse(stats.updatedAt)<=20000);process.kill(lock.pid,0);
-  need(bank.universe.hash===universe.hash&&digest(bank.universe.exchanges)===digest(universe.exchanges));return {bankHash:manifest.bankHash};
+  const canonical=validateUniverse(bank.universe,universe.tournamentId);
+  need(canonical.hash===universe.hash&&digest(canonical.exchanges)===digest(universe.exchanges));return {bankHash:manifest.bankHash};
  }catch{return null;}
 }
 // Fixed observation blocks change read allocation only, never execution leads.
