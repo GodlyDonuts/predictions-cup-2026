@@ -1,0 +1,9 @@
+# Pending trial observation
+
+The observational executable-edge-observe wrapper calls the unchanged frozen openExecutableEdge host. The original code identities, bank, cutoff, state reducer, intent logic and journal format remain unchanged. It replaces the existing worker; it does not add another wallet, model or process. Every restart replays the same original journal.
+
+After a normal checkpoint/status publication, the wrapper writes trial-observation.json with only trial market, phase, preparation/fill time and observation deadlines. Bank/state/source/journal hashes, live lock nonce/PID and wrapper/helper hash bind this optional projection. The collector rejects stale, stopped, mismatched or altered projections and falls back to ordinary observation blocks. It cannot authorize a trade from this data.
+
+Filled trials become read priorities forty seconds before their five-minute deadline through the sixty-second outcome allowance. Overdue filled trials can receive one later quote to record censoring in the original engine; no invented late result is generated. Still-valid unfilled trials can receive the causal later quote before their thirty-second expiry. Expired unfilled trials are not chased. Optional priorities replace at most two comparison/discovery/paper slots, preserve official managed reads and reservations, and never increase the four-book budget. If protected risk fills capacity, measurements remain unavailable rather than competing for extra requests.
+
+The current engine can still reject thin-depth outcomes, so this is improved observation and accounting evidence, not proof of profit. Deadlines cannot guarantee a quote within a platform outage or account cooldown. Preserve all missing and negative results. OBSERVER_STOP in the cohort provides graceful wrapper shutdown; ordinary global/collector stops and original engine fences remain authoritative.

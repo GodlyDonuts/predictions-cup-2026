@@ -1,5 +1,6 @@
 import fs from 'node:fs';import path from 'node:path';import {digest} from './model.mjs';
 import {validateUniverse} from './breadth.mjs';
+import {createHash} from 'node:crypto';
 export const EDGE_OBSERVATION_MS=420000;
 const need=(ok)=>{if(!ok)throw Error('INVALID_EDGE_OBSERVATION');};
 export function readEdgeObservationFocus(runtimeDir,universe,now=Date.now()){
@@ -13,7 +14,12 @@ export function readEdgeObservationFocus(runtimeDir,universe,now=Date.now()){
   const lock=JSON.parse(fs.readFileSync(path.join(dir,'worker.lock')));
   need(Number.isSafeInteger(lock.pid)&&lock.pid>0&&typeof lock.id==='string'&&lock.id.length>0&&now>=Date.parse(stats.updatedAt)&&now-Date.parse(stats.updatedAt)<=20000);process.kill(lock.pid,0);
   const canonical=validateUniverse(bank.universe,universe.tournamentId);
-  need(canonical.hash===universe.hash&&digest(canonical.exchanges)===digest(universe.exchanges));return {bankHash:manifest.bankHash};
+  need(canonical.hash===universe.hash&&digest(canonical.exchanges)===digest(universe.exchanges));const focus={bankHash:manifest.bankHash};
+  const projectionFile=path.join(dir,'trial-observation.json');
+  if(fs.existsSync(projectionFile)){try{const projection=JSON.parse(fs.readFileSync(projectionFile)),{projectionHash,...body}=projection;
+   const wrapperHash=createHash('sha256').update(fs.readFileSync(new URL('./executable-edge-observe.mjs',import.meta.url))).update(fs.readFileSync(new URL('./edge-trial-projection.mjs',import.meta.url))).digest('hex');
+   need(digest(body)===projectionHash&&projection.wrapperHash===wrapperHash&&projection.schemaVersion===1&&projection.mode==='edge_trial_observation_only'&&projection.workerState==='running'&&projection.pid===lock.pid&&projection.lockId===lock.id&&projection.bankHash===stats.bankHash&&projection.stateHash===stats.stateHash&&projection.sourceSequence===stats.sourceSequence&&projection.sourceHash===stats.sourceHash&&projection.journalSequence===stats.journalSequence&&projection.journalHash===stats.journalHash&&projection.sourceClosed===false&&projection.networkRequests===0&&projection.ordersSubmitted===0&&now>=Date.parse(projection.updatedAt)&&now-Date.parse(projection.updatedAt)<=20000);focus.trials=projection.trials;}catch{}}
+  return focus;
  }catch{return null;}
 }
 // Fixed observation blocks change read allocation only, never execution leads.

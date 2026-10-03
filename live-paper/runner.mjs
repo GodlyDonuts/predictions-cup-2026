@@ -40,6 +40,7 @@ import {Capture} from '../feed/capture.mjs';
 import {createRealtimeHost} from './realtime-host.mjs';
 import {paperExperimentRetired} from './experiment-retirement.mjs';
 import {readEdgeObservationFocus,planEdgeObservation} from './edge-observation-plan.mjs';
+import {prioritizeEdgeTrials} from './edge-trial-projection.mjs';
 
 const root=path.dirname(fileURLToPath(import.meta.url)),workspace=path.dirname(root);
 if(process.argv.includes('--live'))throw Error('Competition order execution is disabled');
@@ -269,9 +270,10 @@ try{
       // or reorder candidates between the controller and these book requests.
       const basePlan=dipBank?planBookReads(scheduler,schedulerScope,schedulingInputs()):{reads:[...c.marketIds.map(marketId=>({marketId,path:'sourceSnapshots'})),...depthPlan.marketIds.map(marketId=>({marketId,path:'supplementalDepth'}))],entryMarketIds:[]};
       const pairedPlan=focusPairedPackageReads(comparisonSamplingPlan(basketMeasurementPlan(basePlan,excluded)),readPairedPackageFocus(runtimeDir,universe,Date.now()),{now:Date.now(),lastAttempts:scheduler?.packageReadLastAttemptAt||{}});
-      const observation=planEdgeObservation(pairedPlan,scheduler,universe,{focus:readEdgeObservationFocus(runtimeDir,universe,Date.now()),now:Date.now(),excludedMarketIds:universe.exchanges.filter(x=>excluded.has(x.exchangeId)).map(x=>x.marketId)});
+      const observationFocus=readEdgeObservationFocus(runtimeDir,universe,Date.now()),observationExclusions=universe.exchanges.filter(x=>excluded.has(x.exchangeId)).map(x=>x.marketId);
+      const observation=planEdgeObservation(pairedPlan,scheduler,universe,{focus:observationFocus,now:Date.now(),excludedMarketIds:observationExclusions});
       if(observation.state!==scheduler)saveScheduler(observation.state);
-      const planned=observation.plan;runtime.edgeObservation=planned.edgeObservation||null;
+      const planned=prioritizeEdgeTrials(observation.plan,observationFocus,universe,{now:Date.now(),excludedMarketIds:observationExclusions});runtime.edgeObservation=planned.edgeObservation||null;runtime.edgeTrialObservation=planned.edgeTrialObservation||null;
       runtime.paperPackageFocus=planned.paperPackageFocus||null;
       if(competition)try{await competition.beforeBooks({positions,orders,ordersAt:new Date().toISOString(),candidateMarketIds:planned.entryMarketIds});}catch(e){competition.failure(e);}
       const supplementalDepth=[],samplingReservations=[],samplingReceipts=[];
@@ -304,7 +306,7 @@ try{
           runtime.breadth={universeSize:universe.exchanges.length,observedExchanges:Object.keys(coverage?.quotes||{}).length,lastCollectionAt:coverage?.updatedAt||null,error:bulkPriceError};
         }catch(e){if(e.durableRecordingFailed||!stopping&&(api.manualReview||e.status===401||e.status===403))throw e;bulkPriceError=stopping?'stopped':e.status?'http_'+e.status:e.message;runtime.breadth={...runtime.breadth,error:bulkPriceError};}
       }
-      const at=new Date().toISOString();sampleEquity(state,c,at);assertState(state,c);commit({type:'cycle',clockAt:at,sourceSnapshots:events,supplementalDepth,basketMeasurement:planned.basketMeasurement||null,edgeObservation:planned.edgeObservation||null,comparisonSampling:planned.comparisonSampling?{...planned.comparisonSampling,reservations:samplingReservations,receipts:samplingReceipts}:null,entryMarketIds:[...new Set([...planned.entryMarketIds,...(planned.managedMarketIds||[])])],bulkPrices,bulkPriceError,accountExclusions:[...excluded],exclusionObservedAt:positions.receivedAt});cycleCommitted=true;
+      const at=new Date().toISOString();sampleEquity(state,c,at);assertState(state,c);commit({type:'cycle',clockAt:at,sourceSnapshots:events,supplementalDepth,basketMeasurement:planned.basketMeasurement||null,edgeObservation:planned.edgeObservation||null,edgeTrialObservation:planned.edgeTrialObservation||null,comparisonSampling:planned.comparisonSampling?{...planned.comparisonSampling,reservations:samplingReservations,receipts:samplingReceipts}:null,entryMarketIds:[...new Set([...planned.entryMarketIds,...(planned.managedMarketIds||[])])],bulkPrices,bulkPriceError,accountExclusions:[...excluded],exclusionObservedAt:positions.receivedAt});cycleCommitted=true;
       if(realtime&&!stopping&&api.cooldown<=Date.now())await realtime.service();
       runtime.cycles++;runtime.lastCycleAt=at;runtime.status=stopping?'stopping':successful?'running':'degraded';persistStatus();
       console.log(JSON.stringify({at,event:'paper_cycle',cycle:runtime.cycles,observations:state.observations,fills:Object.fromEntries(Object.entries(state.strategies).map(([k,s])=>[k,s.fills.length])),competitionOrders:competition?Object.values(competition.state.intents).filter(i=>Number.isSafeInteger(i.orderId)&&i.orderId>0).length:0}));
