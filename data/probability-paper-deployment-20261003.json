@@ -1,0 +1,14 @@
+{
+  "at": "2026-10-03T21:41:32.0665292Z",
+  "pids": {
+    "metrics": 11792,
+    "collector": 19196,
+    "dashboard": 25148,
+    "paper": 15608,
+    "contestActivation": false
+  },
+  "cohort": "source-probability-20261003-v1",
+  "extraBackgroundProcesses": 0,
+  "newApiClients": 0,
+  "competitionWrites": false
+}
