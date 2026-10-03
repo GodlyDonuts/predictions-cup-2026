@@ -1,0 +1,190 @@
+{
+  "at": "2026-10-03T17:16:31.260Z",
+  "sourceSequence": 10705,
+  "sourceHash": "5b5a57e7cd1c0a640aac12a784f610ea0c54dbbef22ef000756fb0bbb5c24fc0",
+  "sourceBytes": 21104964,
+  "sourcePrefixSha256": "5e9bb83c40dd03afb617fa73e0797eb9194c35dfae2c5f14744e04ab6378d945",
+  "sourceClosed": true,
+  "markets": [
+    {
+      "marketId": "387",
+      "outcome": "YES",
+      "exchangeId": "1076",
+      "status": "historical_captured_yes_book",
+      "capturedOutcome": "YES",
+      "receivedAt": "2026-10-03T01:02:50.317Z",
+      "sourceAt": "2026-10-03T01:02:50.695829600Z",
+      "ageMs": 58420943,
+      "requestStartedAt": "2026-10-03T01:02:50.037Z",
+      "version": "14801567:2026-10-03T01:02:50.695829600Z",
+      "sourceSequence": 7287,
+      "sourceHash": "c99dec2df07f00f0586063ac619794c2327cd76693268ff756477485d8d3f47b",
+      "bids": [
+        {
+          "price": "0.920000",
+          "quantity": 5943
+        },
+        {
+          "price": "0.915000",
+          "quantity": 19182
+        },
+        {
+          "price": "0.910000",
+          "quantity": 35750
+        }
+      ],
+      "asks": [
+        {
+          "price": "0.925000",
+          "quantity": 200
+        },
+        {
+          "price": "0.930000",
+          "quantity": 90
+        },
+        {
+          "price": "0.935000",
+          "quantity": 4985
+        }
+      ],
+      "currentlyUsable": false
+    },
+    {
+      "marketId": "379",
+      "outcome": "YES",
+      "exchangeId": "1068",
+      "status": "historical_captured_yes_book",
+      "capturedOutcome": "YES",
+      "receivedAt": "2026-10-03T01:13:42.448Z",
+      "sourceAt": "2026-10-03T01:13:42.751246000Z",
+      "ageMs": 57768812,
+      "requestStartedAt": "2026-10-03T01:13:42.250Z",
+      "version": "14885621:2026-10-03T01:13:42.751246000Z",
+      "sourceSequence": 7445,
+      "sourceHash": "439a4bd039e8eeb74bad327ebdcf1b280ae5e4741e2b288cd3ffe77a7f2991fb",
+      "bids": [
+        {
+          "price": "0.935000",
+          "quantity": 2746
+        },
+        {
+          "price": "0.930000",
+          "quantity": 1628
+        },
+        {
+          "price": "0.925000",
+          "quantity": 5480
+        }
+      ],
+      "asks": [
+        {
+          "price": "0.945000",
+          "quantity": 446
+        },
+        {
+          "price": "0.950000",
+          "quantity": 400
+        },
+        {
+          "price": "0.955000",
+          "quantity": 899
+        }
+      ],
+      "currentlyUsable": false
+    },
+    {
+      "marketId": "259",
+      "outcome": "NO",
+      "exchangeId": "948",
+      "status": "requested_no_book_unavailable_yes_book_is_separate",
+      "capturedOutcome": "YES",
+      "receivedAt": "2026-10-03T01:12:55.335Z",
+      "sourceAt": "2026-10-03T01:12:55.645502700Z",
+      "ageMs": 57815925,
+      "requestStartedAt": "2026-10-03T01:12:55.145Z",
+      "version": "14880713:2026-10-03T01:12:55.645502700Z",
+      "sourceSequence": 7433,
+      "sourceHash": "8b4e9ae7f568c1ebc7de9b3a3519c65f70944f4c36d04c1a35ab7ca6c5923e9c",
+      "bids": [
+        {
+          "price": "0.080000",
+          "quantity": 1249
+        },
+        {
+          "price": "0.075000",
+          "quantity": 107249
+        },
+        {
+          "price": "0.065000",
+          "quantity": 12396
+        }
+      ],
+      "asks": [
+        {
+          "price": "0.085000",
+          "quantity": 75
+        },
+        {
+          "price": "0.090000",
+          "quantity": 203
+        },
+        {
+          "price": "0.105000",
+          "quantity": 2375
+        }
+      ],
+      "currentlyUsable": false
+    },
+    {
+      "marketId": "369",
+      "outcome": "YES",
+      "exchangeId": "1058",
+      "status": "historical_captured_yes_book",
+      "capturedOutcome": "YES",
+      "receivedAt": "2026-10-03T01:03:45.615Z",
+      "sourceAt": "2026-10-03T01:03:45.990917300Z",
+      "ageMs": 58365645,
+      "requestStartedAt": "2026-10-03T01:03:45.394Z",
+      "version": "14809084:2026-10-03T01:03:45.990917300Z",
+      "sourceSequence": 7302,
+      "sourceHash": "b8d2f5db57379c502a65c855481d8c45291f96029f031f8ab04dadc760f51013",
+      "bids": [
+        {
+          "price": "0.250000",
+          "quantity": 15563
+        },
+        {
+          "price": "0.245000",
+          "quantity": 11364
+        },
+        {
+          "price": "0.240000",
+          "quantity": 6678
+        }
+      ],
+      "asks": [
+        {
+          "price": "0.275000",
+          "quantity": 3261
+        },
+        {
+          "price": "0.280000",
+          "quantity": 12682
+        },
+        {
+          "price": "0.285000",
+          "quantity": 2600
+        }
+      ],
+      "currentlyUsable": false
+    }
+  ],
+  "limitations": [
+    "No new API requests; requested holdings are historical research priorities, not a fresh holdings reconciliation.",
+    "NO depth is unavailable in the YES-only capture; no complemented depth or fill is invented.",
+    "Paper fees zero and modeled adverse tick0.005; official fees are not independently proved by these books.",
+    "Historical captured depth does not prove current liquidity, order eligibility or expected profit."
+  ],
+  "networkRequests": 0,
+  "contestOrders": 0
+}
