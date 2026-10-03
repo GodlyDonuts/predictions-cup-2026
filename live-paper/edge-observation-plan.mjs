@@ -1,6 +1,7 @@
 import fs from 'node:fs';import path from 'node:path';import {digest} from './model.mjs';
 import {validateUniverse} from './breadth.mjs';
 import {createHash} from 'node:crypto';
+import {canonicalJson} from '../execution/ledger.mjs';
 export const EDGE_OBSERVATION_MS=420000;
 const need=(ok)=>{if(!ok)throw Error('INVALID_EDGE_OBSERVATION');};
 export function readEdgeObservationFocus(runtimeDir,universe,now=Date.now()){
@@ -17,8 +18,11 @@ export function readEdgeObservationFocus(runtimeDir,universe,now=Date.now()){
   need(canonical.hash===universe.hash&&digest(canonical.exchanges)===digest(universe.exchanges));const focus={bankHash:manifest.bankHash};
   const projectionFile=path.join(dir,'trial-observation.json');
   if(fs.existsSync(projectionFile)){try{const projection=JSON.parse(fs.readFileSync(projectionFile)),{projectionHash,...body}=projection;
+   // The writer's digest uses this schema's insertion order; atomicJson stores
+   // sorted keys. Restore that fixed order, including trial fields, for proof.
+   const ordered={schemaVersion:body.schemaVersion,mode:body.mode,workerState:body.workerState,pid:body.pid,lockId:body.lockId,wrapperHash:body.wrapperHash,updatedAt:body.updatedAt,bankHash:body.bankHash,stateHash:body.stateHash,sourceSequence:body.sourceSequence,sourceHash:body.sourceHash,journalSequence:body.journalSequence,journalHash:body.journalHash,sourceClosed:body.sourceClosed,trials:body.trials.map(t=>({marketId:t.marketId,phase:t.phase,preparedAt:t.preparedAt,filledAt:t.filledAt,dueAt:t.dueAt,expiresAt:t.expiresAt})),networkRequests:body.networkRequests,ordersSubmitted:body.ordersSubmitted};
    const wrapperHash=createHash('sha256').update(fs.readFileSync(new URL('./executable-edge-observe.mjs',import.meta.url))).update(fs.readFileSync(new URL('./edge-trial-projection.mjs',import.meta.url))).digest('hex');
-   need(digest(body)===projectionHash&&projection.wrapperHash===wrapperHash&&projection.schemaVersion===1&&projection.mode==='edge_trial_observation_only'&&projection.workerState==='running'&&projection.pid===lock.pid&&projection.lockId===lock.id&&projection.bankHash===stats.bankHash&&projection.stateHash===stats.stateHash&&projection.sourceSequence===stats.sourceSequence&&projection.sourceHash===stats.sourceHash&&projection.journalSequence===stats.journalSequence&&projection.journalHash===stats.journalHash&&projection.sourceClosed===false&&projection.networkRequests===0&&projection.ordersSubmitted===0&&now>=Date.parse(projection.updatedAt)&&now-Date.parse(projection.updatedAt)<=20000);focus.trials=projection.trials;}catch{}}
+   need(canonicalJson(ordered)===canonicalJson(body)&&digest(ordered)===projectionHash&&projection.wrapperHash===wrapperHash&&projection.schemaVersion===1&&projection.mode==='edge_trial_observation_only'&&projection.workerState==='running'&&projection.pid===lock.pid&&projection.lockId===lock.id&&projection.bankHash===stats.bankHash&&projection.stateHash===stats.stateHash&&projection.sourceSequence===stats.sourceSequence&&projection.sourceHash===stats.sourceHash&&projection.journalSequence===stats.journalSequence&&projection.journalHash===stats.journalHash&&projection.sourceClosed===false&&projection.networkRequests===0&&projection.ordersSubmitted===0&&now>=Date.parse(projection.updatedAt)&&now-Date.parse(projection.updatedAt)<=20000);focus.trials=projection.trials;}catch{}}
   return focus;
  }catch{return null;}
 }
