@@ -1,10 +1,10 @@
 {
-  "schema_version": 2,
-  "observed_window_start_utc": "2026-10-02T06:06:14Z",
-  "observed_window_end_utc": "2026-10-02T06:06:57Z",
+  "schema_version": 3,
+  "observed_window_start_utc": "2026-10-03T06:55:00Z",
+  "observed_window_end_utc": "2026-10-03T07:01:51Z",
   "cash_exact_verified_at_utc": null,
   "open_orders_verified_window_utc": [
-    "2026-10-02T06:06:57Z"
+    "2026-10-03T07:01:51Z"
   ],
   "tournament": "Midterm Elections",
   "tournament_slug": "midterm-elections",
@@ -21,9 +21,9 @@
       "average_price": "0.970",
       "cost": "1999.170",
       "order_id": 896197,
-      "status": "Position unchanged; exit 1497695 canceled with zero fills",
-      "holdings_verified_at_utc": "2026-10-02T06:06:57Z",
-      "holdings_source": "data/orders/session_2026-10-02_ri_value.json",
+      "status": "Existing position unchanged at acceptance observation; pending RI order not included in inventory",
+      "holdings_verified_at_utc": "2026-10-03T07:01:51Z",
+      "holdings_source": "data/snapshots/takeover_observations_2026-10-03_0655_0701.json",
       "lots": [
         {
           "shares": 2061,
@@ -45,9 +45,9 @@
       "average_price": "0.925",
       "cost": "4625.000",
       "order_id": null,
-      "status": "Buy fully filled; covered exit 1513474 canceled with zero fills; position retained",
-      "holdings_verified_at_utc": "2026-10-02T06:06:57Z",
-      "holdings_source": "data/orders/session_2026-10-02_ri_value.json",
+      "status": "Existing position unchanged at acceptance observation; pending RI order not included in inventory",
+      "holdings_verified_at_utc": "2026-10-03T07:01:51Z",
+      "holdings_source": "data/snapshots/takeover_observations_2026-10-03_0655_0701.json",
       "lots": [
         {
           "shares": 5000,
@@ -63,27 +63,41 @@
       ]
     }
   ],
-  "open_orders": [],
-  "source": "Official signed-in cloud-browser transaction history, terminal holdings and zero-open-orders state; game-audit projections linked in session_audits. Two-decimal cash display observed on the market trading form at 06:06:14 UTC. MA acquisition records remain unchanged.",
-  "notes": [
-    "Historical observation only; refresh cash, holdings, open orders and recent fills before any new action.",
-    "Schema 2 keeps two-decimal UI cash separate from exact-price ledger arithmetic; hidden cash precision is unknown.",
-    "Exactly one new trade aggregate: RI YES 5000 at 0.925, cost 4625.000. The buy order ID and exact execution timestamps were not exposed; submission time is approximate.",
-    "RI covered sell 1513474 at 0.955 and MA sell 1497695 at 0.975 filled zero shares, were canceled, and create no sell ledger row or realized P&L.",
-    "Account-wide zero open orders verified at 06:06:57 UTC. RI cancel clicked approximately 06:05:52, with own-order removal observed by 06:06:14; effective server time unknown.",
-    "Cash plus remaining FIFO cost equals initial 100000.000 plus cumulative realized gain 156.915; remaining basis is not current liquidation or tournament value.",
-    "Portfolio displayed RI marked value 4604.50 and unrealized P&L -20.51. Mark minus recorded cost is separately -20.500; the 0.010 difference is not corrected by inventing fees or precision.",
-    "Portfolio displayed MA marked value 1975.37 and unrealized P&L -23.80. These and the RI marks are not fills.",
-    "RI bid 0.900 for 40855 shares at 06:06:14 supports a historical gross liquidation scenario of 4500.000 for 5000 shares and -125.000 versus basis, before fees or quote movement. No sale at 0.900 occurred.",
-    "No contemporaneous MA executable depth is claimed, so whole-account liquidation value is unknown.",
-    "Public UNH and Kalshi observations inform research only; an external price gap is neither booked profit nor risk-free cross-venue arbitrage.",
-    "Previous audits and snapshots remain unchanged. No hidden rounding adjustment or bot execution handoff is implied."
+  "open_orders": [
+    {
+      "order_id": "4419984",
+      "intent_id": "daenerys-20261003-ri387-buy-001",
+      "market_id": 387,
+      "side": "YES",
+      "action": "BUY",
+      "quantity": 3000,
+      "limit_price": "0.890",
+      "maximum_principal_susqies": "2670.000",
+      "observed_filled_quantity": 0,
+      "remaining_quantity": 3000,
+      "status": "accepted_open_unfilled",
+      "verified_at_utc": "2026-10-03T07:01:51Z",
+      "review_or_cancel_target_utc": "2026-10-03T07:30:00Z",
+      "source": "data/orders/daenerys_2026-10-03_ri387_buy_001_accepted.json"
+    }
   ],
-  "realized_pnl_total": "156.915",
-  "realized_pnl_basis": "Analytical FIFO aggregate-lot convention using recorded acquisitions and exact verified quantity x tick price sale proceeds. Both October 2 exits filled zero; cumulative realized P&L remains 156.915. Distinct from UI marks and remaining unrealized/liquidation risk.",
-  "session_audit": "data/orders/session_2026-10-02_ri_value.json",
-  "previous_session_audit": "data/orders/session_2026-10-02_ma_exit.json",
-  "previous_snapshot": "data/snapshots/portfolio_2026-10-01_2222.json",
+  "source": "parent observed official signed-in UI",
+  "notes": [
+    "The source is the parent operator's signed-in official website observation and supplied transcription, not raw API data, independently re-observed evidence, or an attached screenshot.",
+    "Twelve displayed fill rows do not establish twelve unique orders. Fill IDs, order IDs, numeric exchange ID, exact execution timestamps and order grouping were not exposed.",
+    "The UI displayed Oct 2, 2026 for these rows. The date is retained as displayed and is not converted into an invented UTC execution time.",
+    "Observation/verification and approximate submission times are not execution timestamps.",
+    "Quantity multiplied by displayed tick price is analytical accounting. Hidden precision, account cash and fees are unverified; no fee or rounding adjustment is inferred.",
+    "The historical 17-row order-aggregate ledger remains unchanged. These additional rows are a separate adjustment layer and must not be imported again without de-duplication and supported order attribution.",
+    "The bot attribution is parent-reported context; exact attribution to bot order or intent IDs is not independently established by these UI rows.",
+    "Order 4419984 was accepted and unfilled as of 07:01:51 UTC. It is not an executed ledger trade and may subsequently fill or be canceled.",
+    "All observations are historical and do not establish live account state. Marks and accounting profit are not executable liquidation profit."
+  ],
+  "realized_pnl_total": "156.535",
+  "realized_pnl_basis": "Analytical historical FIFO 156.915 plus separately reconciled post-snapshot UI fill rows -0.380. Bot order attribution/grouping and hidden precision/fees remain unverified. This is not whole-account liquidation profit.",
+  "session_audit": "data/orders/daenerys_2026-10-03_ri387_buy_001_accepted.json",
+  "previous_session_audit": "data/orders/session_2026-10-02_ri_value.json",
+  "previous_snapshot": "data/snapshots/portfolio_2026-10-02_0606.json",
   "realized_pnl_by_market": [
     {
       "market_id": 277,
@@ -94,12 +108,36 @@
       "realized_pnl": "15.380"
     },
     {
+      "market_id": 313,
+      "side": "YES",
+      "shares_sold": 2,
+      "proceeds": "1.470",
+      "fifo_disposed_cost": "1.610",
+      "realized_pnl": "-0.140"
+    },
+    {
       "market_id": 354,
       "side": "YES",
-      "shares_sold": 12500,
-      "proceeds": "1412.500",
-      "fifo_disposed_cost": "1500.000",
-      "realized_pnl": "-87.500"
+      "shares_sold": 12504,
+      "proceeds": "1412.980",
+      "fifo_disposed_cost": "1500.440",
+      "realized_pnl": "-87.460"
+    },
+    {
+      "market_id": 369,
+      "side": "YES",
+      "shares_sold": 33,
+      "proceeds": "8.250",
+      "fifo_disposed_cost": "8.170",
+      "realized_pnl": "0.080"
+    },
+    {
+      "market_id": 370,
+      "side": "YES",
+      "shares_sold": 12,
+      "proceeds": "10.500",
+      "fifo_disposed_cost": "10.860",
+      "realized_pnl": "-0.360"
     },
     {
       "market_id": 377,
@@ -119,72 +157,109 @@
     }
   ],
   "settlement_scenarios": {
-    "assumptions": "No further trades, fees, refunds, sponsor interventions or nonstandard settlements; each remaining position pays 0 or 1 per share. Arithmetic scenarios use ledger cash, not a verified hidden account balance. These are scenarios, not forecasts or executable valuations.",
-    "cash_basis": "cash_arithmetic_from_verified_qty_price",
-    "all_positions_lose_arithmetic_total": "93532.745",
-    "all_positions_win_arithmetic_total": "100593.745"
+    "assumptions": "Illustrative fixed-inventory scenarios: cancel or assume no fills in resting order 4419984, no further trades, fees, refunds, sponsor interventions or nonstandard settlements, and each existing position pays 0 or 1 per share. These do not model outstanding-order execution and are not forecasts or live valuations.",
+    "cash_basis": "historical ledger plus separate UI fill adjustment arithmetic",
+    "all_positions_lose_arithmetic_total": "93532.365",
+    "all_positions_win_arithmetic_total": "100593.365",
+    "pending_order_fills_included": false
   },
-  "cash_displayed": "93532.74",
+  "cash_displayed": "93532.37",
   "cash_display_precision_decimal_places": 2,
-  "cash_display_verified_at_utc": "2026-10-02T06:06:14Z",
-  "cash_arithmetic_from_verified_qty_price": "93532.745",
-  "cash_arithmetic_basis": "Prior ledger arithmetic 98157.745 minus verified 5000 shares x 0.925 = 4625.000 cost. Full 17-row Decimal and rational FIFO replay agrees; not a verified hidden account balance.",
-  "cash_display_minus_arithmetic": "-0.005",
-  "session_realized_pnl": "0.000",
-  "cash_arithmetic_plus_remaining_cost": "100156.915",
-  "cash_precision_note": "The UI displayed 93532.74 to two decimal places. Exact account cash was not exposed. Preserve 93532.745 as full-ledger quantity x price arithmetic separately; do not round individual fills or infer a hidden balance/rounding rule. cash_verified and cash_exact_verified_at_utc remain null.",
-  "session_realized_pnl_by_market": [],
-  "realized_pnl_by_market_scope": "Cumulative all recorded sales, including the first RI at-cost disposal; recomputed from the append-only ledger with exact rational FIFO lot allocation.",
-  "session_audits": [
-    "data/orders/session_2026-10-02_ma_exit.json",
-    "data/orders/session_2026-10-02_ri_value.json"
+  "cash_display_verified_at_utc": null,
+  "cash_arithmetic_from_verified_qty_price": "93532.365",
+  "cash_arithmetic_basis": "Unchanged historical 17-row ledger arithmetic 93532.745 plus separate 12-row UI fill adjustment -0.380. The ledger alone has not been extended and does not represent the combined cash. Hidden account cash and fees remain unverified.",
+  "cash_display_minus_arithmetic": "0.005",
+  "session_realized_pnl": "-0.380",
+  "cash_arithmetic_plus_remaining_cost": "100156.535",
+  "cash_precision_note": "93532.37 is a two-decimal UI observation before order acceptance; 93532.365 is separate exact displayed quantity x price arithmetic. No hidden cash value, fee, reservation or rounding convention is inferred. No post-acceptance cash display was supplied.",
+  "session_realized_pnl_by_market": [
+    {
+      "market_id": 313,
+      "market_title": "Republican Party wins Vermont Governor",
+      "side": "YES",
+      "bought_quantity": 2,
+      "sold_quantity": 2,
+      "buy_cost": "1.610",
+      "sell_proceeds": "1.470",
+      "realized_pnl": "-0.140",
+      "ending_adjustment_quantity": 0
+    },
+    {
+      "market_id": 354,
+      "market_title": "Democratic Party wins Florida Senate",
+      "side": "YES",
+      "bought_quantity": 4,
+      "sold_quantity": 4,
+      "buy_cost": "0.440",
+      "sell_proceeds": "0.480",
+      "realized_pnl": "0.040",
+      "ending_adjustment_quantity": 0
+    },
+    {
+      "market_id": 369,
+      "market_title": "Republican Party wins Alaska Governor",
+      "side": "YES",
+      "bought_quantity": 33,
+      "sold_quantity": 33,
+      "buy_cost": "8.170",
+      "sell_proceeds": "8.250",
+      "realized_pnl": "0.080",
+      "ending_adjustment_quantity": 0
+    },
+    {
+      "market_id": 370,
+      "market_title": "Democratic Party wins Massachusetts Governor",
+      "side": "YES",
+      "bought_quantity": 12,
+      "sold_quantity": 12,
+      "buy_cost": "10.860",
+      "sell_proceeds": "10.500",
+      "realized_pnl": "-0.360",
+      "ending_adjustment_quantity": 0
+    }
   ],
-  "order_cancellations": "data/orders/cancellations_2026-10-02_0606.json",
-  "reconciliation_record": "data/snapshots/reconciliation_2026-10-02_0606.json",
+  "realized_pnl_by_market_scope": "Cumulative historical ledger sales plus separate 12-row UI fill adjustment. The latter has no verified order grouping and remains outside the order-aggregate ledger.",
+  "session_audits": [
+    "data/snapshots/takeover_observations_2026-10-03_0655_0701.json",
+    "data/orders/daenerys_2026-10-03_ri387_buy_001_accepted.json"
+  ],
+  "reconciliation_record": "data/snapshots/bot_adjustment_reconciliation_2026-10-03_0701.json",
   "valuation_observations": {
-    "observed_at_utc": "2026-10-02T06:06:57Z",
-    "kind": "UI tournament marks; not execution receipts",
-    "cash_rounded_ui": "93533",
-    "account_value_rounded_ui": "100113",
-    "total_holdings_marked_value_ui": "6579.87",
-    "positions": [
-      {
-        "market_id": 387,
-        "side": "YES",
-        "marked_value_ui": "4604.50",
-        "unrealized_pnl_ui": "-20.51",
-        "marked_value_minus_recorded_basis_arithmetic": "-20.500"
-      },
-      {
-        "market_id": 379,
-        "side": "YES",
-        "marked_value_ui": "1975.37",
-        "unrealized_pnl_ui": "-23.80",
-        "marked_value_minus_recorded_basis_arithmetic": "-23.800"
-      }
-    ],
-    "displayed_cash_plus_displayed_holdings_arithmetic": "100112.61",
-    "ledger_cash_plus_displayed_holdings_arithmetic": "100112.615",
-    "mark_formula_verified": false
+    "observed_at_utc_approx": "2026-10-03T06:55:00Z",
+    "kind": "UI tournament marks, not execution receipts",
+    "account_value_rounded_ui": "99984",
+    "total_holdings_marked_value_ui": "6451.68",
+    "displayed_cash_plus_displayed_holdings_arithmetic": "99984.05",
+    "ledger_plus_adjustment_cash_plus_displayed_holdings_arithmetic": "99984.045",
+    "mark_formula_verified": false,
+    "positions": []
   },
   "liquidation_observations": {
     "whole_account_liquidation_value": null,
-    "positions": [
-      {
-        "market_id": 387,
-        "side": "YES",
-        "observed_at_utc": "2026-10-02T06:06:14Z",
-        "bid_price": "0.900",
-        "bid_quantity": 40855,
-        "position_quantity": 5000,
-        "gross_proceeds_at_observed_depth": "4500.000",
-        "gross_pnl_versus_basis": "-125.000",
-        "executed": false,
-        "caveat": "Historical displayed depth sufficient for 5000 shares; before fees, latency or price movement. No fill occurred at this bid."
-      }
+    "positions": [],
+    "missing_contemporaneous_full_position_depth_markets": [
+      379,
+      387
     ],
-    "missing_current_depth_markets": [
-      379
-    ]
+    "note": "No current whole-account executable liquidation valuation supplied. Prior depth observations remain only in immutable historical snapshots."
+  },
+  "record_kind": "derived_historical_portfolio_with_separate_fill_adjustment",
+  "observed_window_start_is_approximate": true,
+  "source_observation_record": "data/snapshots/takeover_observations_2026-10-03_0655_0701.json",
+  "immutable_snapshot": "data/snapshots/portfolio_2026-10-03_0701.json",
+  "numeric_exchange_id": null,
+  "cash_display_observation_window_utc": [
+    "2026-10-03T06:55:00Z",
+    "2026-10-03T07:01:00Z"
+  ],
+  "cash_display_window_is_approximate": true,
+  "trade_ledger_coverage": {
+    "path": "data/trade_ledger.csv",
+    "rows": 17,
+    "sha256": "b9b6fc67a0ff7e755e6cc526b59cace944ecdeb1ebffb9acffb3ff3ac437fadf",
+    "through_prior_snapshot": "data/snapshots/portfolio_2026-10-02_0606.json",
+    "subsequent_observed_fill_rows_recorded_separately": 12,
+    "adjustment_record": "data/snapshots/bot_adjustment_reconciliation_2026-10-03_0701.json",
+    "no_pending_order_executions_added": true
   }
 }

@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "record_kind": "immutable_pending_order_acceptance_observation",
+  "immutable": true,
+  "source": "parent observed official signed-in UI",
+  "intent_id": "daenerys-20261003-ri387-buy-001",
+  "owner": "Daenerys / dot",
+  "handoff_id": "human-20261003T064826Z-codex-to-daenerys",
+  "ownership_commit_verified_before_submit": "6609731e21150c0ed06c67b8c12d8330dbb64f5b",
+  "tournament": "Midterm Elections",
+  "execution_route": "Official signed-in website",
+  "numeric_exchange_id": null,
+  "exchange_id_note": "Numeric exchange ID was not exposed. Midterm Elections context was explicitly selected; no guessed API exchange ID.",
+  "market_id": 387,
+  "market_title": "Democratic Party wins Rhode Island Senate",
+  "side": "YES",
+  "action": "BUY",
+  "order_type": "LIMIT",
+  "quantity": 3000,
+  "limit_price": "0.890",
+  "maximum_principal_susqies": "2670.000",
+  "intent_recorded_at_utc_approx": "2026-10-03T07:00:00Z",
+  "preflight_zero_open_orders_at_utc": "2026-10-03T07:01:07Z",
+  "submitted_at_utc_approx": "2026-10-03T07:01:16Z",
+  "submit_click_count": 1,
+  "retry_count": 0,
+  "platform_order_id": "4419984",
+  "accepted_order_verified_at_utc": "2026-10-03T07:01:51Z",
+  "status_at_observation": "accepted_open_unfilled",
+  "observed_filled_quantity": 0,
+  "remaining_quantity": 3000,
+  "exact_execution_time_utc": null,
+  "account_open_order_count": 1,
+  "holdings_unchanged_at_observation": [
+    {
+      "market_id": 387,
+      "side": "YES",
+      "quantity": 5000
+    },
+    {
+      "market_id": 379,
+      "side": "YES",
+      "quantity": 2061
+    }
+  ],
+  "review_or_cancel_target_utc": "2026-10-03T07:30:00Z",
+  "review_plan": "Parent account operator to review/cancel if unfilled at target or earlier on material change; this record does not perform an action.",
+  "excluded_from_executed_ledger": true,
+  "filled_cost_susqies_observed": "0.000",
+  "reserved_cash_susqies": null,
+  "cash_reservation_or_debit_not_inferred": true,
+  "rationale_source": "https://github.com/GodlyDonuts/predictions-cup-2026/issues/1#issuecomment-5966573510",
+  "pretrade_source": "https://github.com/GodlyDonuts/predictions-cup-2026/issues/1#issuecomment-5966556594",
+  "acceptance_source": "https://github.com/GodlyDonuts/predictions-cup-2026/issues/1#issuecomment-5966585592",
+  "observation_record": "data/snapshots/takeover_observations_2026-10-03_0655_0701.json",
+  "risk_if_fully_filled": {
+    "additional_principal_at_risk": "2670.000",
+    "ri_total_principal_including_prior_lot": "7295.000",
+    "scenario_only_not_actual_fill": true
+  },
+  "limitations": [
+    "The source is the parent operator's signed-in official website observation and supplied transcription, not raw API data, independently re-observed evidence, or an attached screenshot.",
+    "Twelve displayed fill rows do not establish twelve unique orders. Fill IDs, order IDs, numeric exchange ID, exact execution timestamps and order grouping were not exposed.",
+    "The UI displayed Oct 2, 2026 for these rows. The date is retained as displayed and is not converted into an invented UTC execution time.",
+    "Observation/verification and approximate submission times are not execution timestamps.",
+    "Quantity multiplied by displayed tick price is analytical accounting. Hidden precision, account cash and fees are unverified; no fee or rounding adjustment is inferred.",
+    "The historical 17-row order-aggregate ledger remains unchanged. These additional rows are a separate adjustment layer and must not be imported again without de-duplication and supported order attribution.",
+    "The bot attribution is parent-reported context; exact attribution to bot order or intent IDs is not independently established by these UI rows.",
+    "Order 4419984 was accepted and unfilled as of 07:01:51 UTC. It is not an executed ledger trade and may subsequently fill or be canceled.",
+    "All observations are historical and do not establish live account state. Marks and accounting profit are not executable liquidation profit."
+  ]
+}

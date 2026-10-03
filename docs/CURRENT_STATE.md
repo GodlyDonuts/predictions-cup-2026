@@ -1,5 +1,33 @@
 # Current state
 
+## Latest historical account observation: October 3, 06:55–07:01 UTC
+
+The following new observation supersedes the older account summary below only for its stated times. Current ownership is unchanged. The source is **the parent operator's observed official signed-in UI**, transcribed into a sanitized immutable record; this is not raw API evidence or an independently inspected screenshot.
+
+- Before the new order, UI cash displayed **93,532.37 SUSQies** to two decimals. Exact cash-observation time within approximately 06:55–07:01 and hidden cash precision were not exposed; no post-acceptance cash display is asserted
+- Holdings were **RI market 387 YES 5,000 at displayed average 0.925** and **MA market 379 YES 2,061 at 0.970**, unchanged at **07:01:51 UTC**. Historical remaining FIFO costs stay **4,625.000** and **1,999.170**, total **6,624.170**
+- Account-wide zero open orders was observed at approximately **06:55:40** and at **07:01:07 UTC**
+- At **07:01:51 UTC**, the account had one accepted resting order: **4419984**, intent **daenerys-20261003-ri387-buy-001**, **BUY 3,000 RI YES at limit 0.890**, remaining **3,000**, **zero fills observed**. One submission click was made approximately **07:01:16 UTC**, with no retry. Principal cap **2,670.000**; review/cancel target **07:30 UTC**. This is not an executed ledger trade
+- Execution context was explicitly selected **Midterm Elections** on the official website; the numeric exchange ID was not exposed and remains null
+
+### Separate post-ledger fill adjustment
+
+The parent observed **12 additional displayed fill rows**, all dated **Oct 2, 2026** in the UI, across AK Republican Governor 369, VT Republican Governor 313, MA Democratic Governor 370 and FL Democratic Senate 354. The supplied reverse-chronological row order is preserved and separately replayed oldest-first. Exact execution times, fill IDs, order IDs and order grouping remain unknown: **12 fill rows are not asserted to be 12 orders**.
+
+Exact Decimal products give purchases **21.080**, sale proceeds **20.700**, and net cash/analytical realized change **−0.380 SUSQies**, with **zero ending adjustment inventory**. Market changes are AK 369 **+0.080**, VT 313 **−0.140**, MA 370 **−0.360**, FL 354 **+0.040**. Parent-reported bot attribution is not independent order-ID attribution.
+
+The original **17-row executed-order aggregate ledger remains byte-for-byte unchanged**. A separate immutable adjustment layer bridges its **93,532.745** cash arithmetic to **93,532.365** and analytical realized **156.915** to **156.535**. The ledger alone therefore does not represent the latest combined cash. The **93,532.37** display is **0.005 above** combined arithmetic; no hidden balance, rounding convention or fee is invented. Cash arithmetic plus unchanged position basis equals **100,156.535**, an accounting identity, not liquidation value. Future reconciliation must avoid double-counting this adjustment if underlying orders are later identified.
+
+### Marks, audit links and limits
+
+At approximately **06:55 UTC**, holdings were marked **6,451.68** and rounded account value was **99,984**. These are provisional valuation marks. Current whole-account executable liquidation value is unknown. The unfilled order is not deducted from cash or counted as acquired inventory; cash reservation behavior was not observed.
+
+Sources: [pretrade observation](https://github.com/GodlyDonuts/predictions-cup-2026/issues/1#issuecomment-5966556594), [intent](https://github.com/GodlyDonuts/predictions-cup-2026/issues/1#issuecomment-5966573510), [acceptance](https://github.com/GodlyDonuts/predictions-cup-2026/issues/1#issuecomment-5966585592). Records: [immutable UI transcription](../data/snapshots/takeover_observations_2026-10-03_0655_0701.json), [exact adjustment reconciliation](../data/snapshots/bot_adjustment_reconciliation_2026-10-03_0701.json), [pending-order acceptance](../data/orders/daenerys_2026-10-03_ri387_buy_001_accepted.json), [immutable derived portfolio](../data/snapshots/portfolio_2026-10-03_0701.json), and [derived latest view](../data/portfolio/latest.json).
+
+Validation replays the original 17 rows with Decimal and independent rational FIFO, replays all 12 additional rows with exact Decimal products and independent rational net cash, checks no oversells and zero adjustment inventory, and verifies unchanged baseline hashes. All original source audits/snapshots and the ledger are retained. The documentation below is preserved as historical context, including its older times and arithmetic. No account API, UI, order or cancellation action was performed by the record-maintenance worker.
+
+## Preserved October 2 account history and ownership context
+
 **Current ownership, October 3:** Daenerys / dot is the temporary sole execution owner under the human's 06:48:26 UTC instruction and 06:53:24 UTC confirmation that the bot is inactive and the PC is off. [Acknowledgment and scope](https://github.com/GodlyDonuts/predictions-cup-2026/issues/1#issuecomment-5966533944); handoff `human-20261003T064826Z-codex-to-daenerys`. Codex / Drogon must keep account writes and collectors paused, including on restart, until a new coordinated return handoff after the human says the bot is active. Old activations must not resume automatically.
 
 The PC-off/bot-inactive state is human-reported, not a remotely verified process stop or shared-lock/lease proof. This documentation change does not control a runtime. Resting orders may still fill; fresh account reconciliation is required before any action. Prior pilot observations remain historical.
