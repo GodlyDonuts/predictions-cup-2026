@@ -1,0 +1,161 @@
+{
+  "schemaVersion": 1,
+  "kind": "selected_official_account_projection",
+  "capturedAt": "2026-10-03T08:13:15.145Z",
+  "source": "Existing serialized official API v1 read collector, curated official-account.json projection",
+  "sourceProjectionSha256": "aca347f99493165d132c8d587d606a3ba9a732c939138cc196bc1895d0f0d209",
+  "fillsObservedAt": "2026-10-03T08:12:38.737Z",
+  "orderHistoryObservedAt": "2026-10-03T08:12:03.392Z",
+  "accountHistoryHasMore": true,
+  "orders": [
+    {
+      "marketId": "259",
+      "exchangeId": "948",
+      "side": "no",
+      "orderId": 4505792,
+      "quantity": 10000,
+      "orderProjection": {
+        "id": 4505792,
+        "instrument": "948:NO",
+        "exchangeId": "948",
+        "side": "no",
+        "action": "buy",
+        "quantity": 10000,
+        "limit": 0.895,
+        "createdAt": "2026-10-03T07:39:38.324Z",
+        "open": false
+      },
+      "fills": [
+        {
+          "id": 18596674,
+          "orderId": 4505792,
+          "instrument": "948:NO",
+          "exchangeId": "948",
+          "marketId": "259",
+          "side": "no",
+          "quantity": 9534,
+          "price": 0.895,
+          "at": "2026-10-03T07:39:38.324Z"
+        },
+        {
+          "id": 18596668,
+          "orderId": 4505792,
+          "instrument": "948:NO",
+          "exchangeId": "948",
+          "marketId": "259",
+          "side": "no",
+          "quantity": 36,
+          "price": 0.89,
+          "at": "2026-10-03T07:39:38.324Z"
+        },
+        {
+          "id": 18596663,
+          "orderId": 4505792,
+          "instrument": "948:NO",
+          "exchangeId": "948",
+          "marketId": "259",
+          "side": "no",
+          "quantity": 410,
+          "price": 0.885,
+          "at": "2026-10-03T07:39:38.324Z"
+        },
+        {
+          "id": 18596657,
+          "orderId": 4505792,
+          "instrument": "948:NO",
+          "exchangeId": "948",
+          "marketId": "259",
+          "side": "no",
+          "quantity": 20,
+          "price": 0.88,
+          "at": "2026-10-03T07:39:38.324Z"
+        }
+      ],
+      "priceProductPrincipal": "8945.420"
+    },
+    {
+      "marketId": "369",
+      "exchangeId": "1058",
+      "side": "yes",
+      "orderId": 4547722,
+      "quantity": 20000,
+      "orderProjection": {
+        "id": 4547722,
+        "instrument": "1058:YES",
+        "exchangeId": "1058",
+        "side": "yes",
+        "action": "buy",
+        "quantity": 20000,
+        "limit": 0.295,
+        "createdAt": "2026-10-03T07:57:16.338Z",
+        "open": false
+      },
+      "fills": [
+        {
+          "id": 18780665,
+          "orderId": 4547722,
+          "instrument": "1058:YES",
+          "exchangeId": "1058",
+          "marketId": "369",
+          "side": "yes",
+          "quantity": 16555,
+          "price": 0.295,
+          "at": "2026-10-03T07:57:16.338Z"
+        },
+        {
+          "id": 18780660,
+          "orderId": 4547722,
+          "instrument": "1058:YES",
+          "exchangeId": "1058",
+          "marketId": "369",
+          "side": "yes",
+          "quantity": 1408,
+          "price": 0.29,
+          "at": "2026-10-03T07:57:16.338Z"
+        },
+        {
+          "id": 18780655,
+          "orderId": 4547722,
+          "instrument": "1058:YES",
+          "exchangeId": "1058",
+          "marketId": "369",
+          "side": "yes",
+          "quantity": 20,
+          "price": 0.29,
+          "at": "2026-10-03T07:57:16.338Z"
+        },
+        {
+          "id": 18780650,
+          "orderId": 4547722,
+          "instrument": "1058:YES",
+          "exchangeId": "1058",
+          "marketId": "369",
+          "side": "yes",
+          "quantity": 1403,
+          "price": 0.29,
+          "at": "2026-10-03T07:57:16.338Z"
+        },
+        {
+          "id": 18780645,
+          "orderId": 4547722,
+          "instrument": "1058:YES",
+          "exchangeId": "1058",
+          "marketId": "369",
+          "side": "yes",
+          "quantity": 614,
+          "price": 0.28,
+          "at": "2026-10-03T07:57:16.338Z"
+        }
+      ],
+      "priceProductPrincipal": "5876.635"
+    }
+  ],
+  "limitations": [
+    "Selected original curated projection fields; original HTTP response bodies and headers are not stored in this proof.",
+    "Price-product principal is separate from undisclosed fees and exact hidden cash precision.",
+    "Account pagination may be incomplete; selected fills are unique and sum to each reported terminal order quantity.",
+    "These are Daenerys executions; no Codex bot trade attribution or later account-state assertion."
+  ],
+  "networkRequests": 0,
+  "contestOrders": 0
+}

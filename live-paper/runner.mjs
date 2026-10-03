@@ -272,7 +272,7 @@ try{
       const basePlan=dipBank?planBookReads(scheduler,schedulerScope,schedulingInputs()):{reads:[...c.marketIds.map(marketId=>({marketId,path:'sourceSnapshots'})),...depthPlan.marketIds.map(marketId=>({marketId,path:'supplementalDepth'}))],entryMarketIds:[]};
       const pairedPlan=focusPairedPackageReads(comparisonSamplingPlan(basketMeasurementPlan(basePlan,excluded)),readPairedPackageFocus(runtimeDir,universe,Date.now()),{now:Date.now(),lastAttempts:scheduler?.packageReadLastAttemptAt||{}});
       const observationFocus=readEdgeObservationFocus(runtimeDir,universe,Date.now()),observationExclusions=universe.exchanges.filter(x=>excluded.has(x.exchangeId)).map(x=>x.marketId);
-      const observation=planEdgeObservation(pairedPlan,scheduler,universe,{focus:observationFocus,now:Date.now(),excludedMarketIds:observationExclusions});
+      const observation=planEdgeObservation(pairedPlan,scheduler,universe,{focus:observationFocus,now:Date.now(),excludedMarketIds:observationExclusions,coverage});
       if(observation.state!==scheduler)saveScheduler(observation.state);
       const trialPlan=prioritizeEdgeTrials(observation.plan,observationFocus,universe,{now:Date.now(),excludedMarketIds:observationExclusions});
       const planned=prioritizeAnchorReads(trialPlan,readAnchorReadFocus(runtimeDir,universe,Date.now()),{excludedMarketIds:observationExclusions,lastAttempts:scheduler?.bookLastAttempt||{}});runtime.bidAnchorReadFocus=planned.bidAnchorReadFocus||null;runtime.edgeObservation=planned.edgeObservation||null;runtime.edgeTrialObservation=planned.edgeTrialObservation||null;

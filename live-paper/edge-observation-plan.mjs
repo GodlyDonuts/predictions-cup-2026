@@ -4,6 +4,18 @@ import {createHash} from 'node:crypto';
 import {canonicalJson} from '../execution/ledger.mjs';
 export const EDGE_OBSERVATION_MS=420000;
 const need=(ok)=>{if(!ok)throw Error('INVALID_EDGE_OBSERVATION');};
+// Bulk prices have no executable size or quote clock. They only select which
+// books deserve sustained measurement; they never admit an entry or fill.
+export function rankObservationHints(coverage,universe,{now,lastAttempts={}}={}){
+ if(!Number.isSafeInteger(now)||now<0||!coverage||coverage.universeHash!==universe.hash||coverage.tournamentId!==universe.tournamentId||coverage.executable!==false||coverage.depthAvailable!==false||coverage.sourceTimestamp!==null||!coverage.quotes)return [];
+ const hints=[];
+ for(const spec of universe.exchanges){const q=coverage.quotes[spec.exchangeId];if(!q||q.marketId!==spec.marketId||q.exchangeId!==spec.exchangeId||q.option!==spec.option||q.option!=='YES'||q.crossed!==false)continue;
+  const receipt=Date.parse(q.receivedAt),request=Date.parse(q.requestStartedAt),bid=q.bestBid,ask=q.bestAsk;
+  if(!Number.isFinite(receipt)||!Number.isFinite(request)||request>receipt||receipt>now||now-receipt>120000||typeof bid!=='number'||typeof ask!=='number'||!Number.isFinite(bid)||!Number.isFinite(ask)||bid<.05||ask>.95||ask<=bid||ask-bid>.020000000001)continue;
+  hints.push({marketId:spec.marketId,spread:Math.round((ask-bid)*1e6),lastAttempt:lastAttempts[spec.marketId]||0});
+ }
+ return hints.sort((a,b)=>a.spread-b.spread||a.lastAttempt-b.lastAttempt||Number(a.marketId)-Number(b.marketId)).map(x=>x.marketId);
+}
 export function readEdgeObservationFocus(runtimeDir,universe,now=Date.now()){
  try{
   if(fs.existsSync(path.join(runtimeDir,'EXECUTABLE_EDGE_STOP')))return null;
@@ -28,7 +40,7 @@ export function readEdgeObservationFocus(runtimeDir,universe,now=Date.now()){
 }
 // Fixed observation blocks change read allocation only, never execution leads.
 // All protected risk, basket and comparison reservations outrank paper sampling.
-export function planEdgeObservation(plan,state,universe,{focus,now,excludedMarketIds=[]}={}){
+export function planEdgeObservation(plan,state,universe,{focus,now,excludedMarketIds=[],coverage}={}){
  if(!focus||plan.comparisonSampling||plan.basketMeasurement?.marketIds?.length||plan.paperPackageFocus?.marketIds?.length)return {plan,state};
  need(Number.isSafeInteger(now)&&now>=0&&/^[a-f0-9]{64}$/.test(focus.bankHash));
  const valid=new Set(universe.exchanges.map(x=>x.marketId)),excluded=new Set(excludedMarketIds);
@@ -39,7 +51,9 @@ export function planEdgeObservation(plan,state,universe,{focus,now,excludedMarke
  let block=saved;
  if(!block||block.bankHash!==focus.bankHash||now>=block.until||block.marketIds.some(id=>excluded.has(id))){
   const choices=slots.filter(({read})=>read.reason==='discovery'&&valid.has(read.marketId));if(choices.length<2)return {plan,state};
-  block={bankHash:focus.bankHash,startedAt:now,until:now+EDGE_OBSERVATION_MS,marketIds:choices.slice(0,2).map(({read})=>read.marketId)};
+  const discovery=choices[0].read.marketId,protectedIds=new Set(plan.reads.filter(x=>!['discovery','comparison'].includes(x.reason)).map(x=>x.marketId));
+  const hint=rankObservationHints(coverage,universe,{now,lastAttempts:state.bookLastAttempt||{}}).find(id=>id!==discovery&&!excluded.has(id)&&!protectedIds.has(id));
+  block={bankHash:focus.bankHash,startedAt:now,until:now+EDGE_OBSERVATION_MS,marketIds:[discovery,hint||choices[1].read.marketId]};
  }
  const present=new Set(plan.reads.map(x=>x.marketId)),missing=block.marketIds.filter(id=>!present.has(id)),replaceable=slots.filter(({read})=>!block.marketIds.includes(read.marketId)).sort((a,b)=>Number(a.read.reason!=='discovery')-Number(b.read.reason!=='discovery'));
  if(missing.length>replaceable.length)return {plan,state};
