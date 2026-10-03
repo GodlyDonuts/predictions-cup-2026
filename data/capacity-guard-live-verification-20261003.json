@@ -1,0 +1,250 @@
+{
+  "at": "2026-10-03T23:23:06.018Z",
+  "collector": 11864,
+  "status": "running",
+  "cycles": 5,
+  "highWater": {
+    "schemaVersion": 1,
+    "cohort": "nh-canonical-capacity-20261003-v1",
+    "bankHash": "2b85533f12e29476a485d8b729bb9feca692f080e60daf58297a04e0aa542b4e",
+    "bytes": 54806,
+    "sequence": 18,
+    "tailHash": "cb7d38c3bd976bb431070175c91aaa175aadc0854bad327dbc12b93637fc7bf5",
+    "prefixHash": "61776eeba2591860af2e11ed492cc91a7cf0e857618fd83e5f7249ab603a6bad",
+    "matchesOriginalJournal": true
+  },
+  "guardEnabled": true,
+  "capacity": {
+    "schemaVersion": 1,
+    "mode": "canonical_no_capacity_observation",
+    "cohort": "nh-canonical-capacity-20261003-v1",
+    "bankHash": "2b85533f12e29476a485d8b729bb9feca692f080e60daf58297a04e0aa542b4e",
+    "updatedAt": "2026-10-03T23:23:03.129Z",
+    "failed": false,
+    "sourceSequence": 13128,
+    "journalSequence": 18,
+    "journalHash": "cb7d38c3bd976bb431070175c91aaa175aadc0854bad327dbc12b93637fc7bf5",
+    "counts": {
+      "conditional_positive_capacity": 17,
+      "account_not_causal_or_fresh": 1
+    },
+    "last": {
+      "schemaVersion": 1,
+      "mode": "canonical_no_conditional_capacity",
+      "evaluatedAt": "2026-10-03T23:22:30.640Z",
+      "reviewId": "nh-canonical-capacity-20261003-v1",
+      "reviewHash": "395668856995593bb4b227f9e4a3a259a0cfd50bf633d974da5e242fc0665d7a",
+      "policyHash": "61edda171c2728db6b5486d49c2c87b29f51d69bd6ba774b8e5a55ff1d0602d9",
+      "representation": "documented_same_exchange_yes_bid_complement",
+      "nativeNoObserved": false,
+      "scenarioCompletenessVerified": false,
+      "executionAuthority": false,
+      "ordersSubmitted": 0,
+      "ruleBindingKind": "manual_review_attestation_not_live_api_metadata",
+      "networkRequests": 0,
+      "fills": null,
+      "realizedPnl": null,
+      "profitabilityEstablished": false,
+      "reason": "conditional_positive_capacity",
+      "positiveConditionalCapacity": true,
+      "stopReason": "capital_limit",
+      "matchedQuantity": "6",
+      "acquisitionCost": "5.875000",
+      "conditionalOrdinaryMinimumProfit": "0.125000",
+      "stressedMinimumProfit": "-5.875000",
+      "maximumSingleLegCostAtRisk": "4.675000",
+      "segments": [
+        {
+          "quantity": "1",
+          "noPrices": [
+            "0.195000",
+            "0.770000"
+          ],
+          "adverseUnitCost": "0.975000"
+        },
+        {
+          "quantity": "5",
+          "noPrices": [
+            "0.195000",
+            "0.775000"
+          ],
+          "adverseUnitCost": "0.980000"
+        }
+      ],
+      "scenarios": [
+        {
+          "id": "Democratic_winner",
+          "category": "ordinary",
+          "payouts": [
+            0,
+            1
+          ],
+          "profit": "0.125000"
+        },
+        {
+          "id": "Republican_winner",
+          "category": "ordinary",
+          "payouts": [
+            1,
+            0
+          ],
+          "profit": "0.125000"
+        },
+        {
+          "id": "other_winner",
+          "category": "ordinary",
+          "payouts": [
+            1,
+            1
+          ],
+          "profit": "6.125000"
+        },
+        {
+          "id": "dual_party_or_admin_zero_stress",
+          "category": "exception",
+          "payouts": [
+            0,
+            0
+          ],
+          "profit": "-5.875000"
+        }
+      ],
+      "sources": [
+        {
+          "marketId": "381",
+          "exchangeId": "1070",
+          "requestStartedAt": "2026-10-03T23:22:27.216Z",
+          "receivedAt": "2026-10-03T23:22:27.408Z",
+          "publicationSequence": 13127,
+          "publicationHash": "0f9aa6e36da1ee01d9d1d0a55742b6b30bf023783f8125ee24f1136511afdbc8",
+          "versionKey": "28408429:2026-10-03T23:22:27.864562800Z"
+        },
+        {
+          "marketId": "382",
+          "exchangeId": "1071",
+          "requestStartedAt": "2026-10-03T23:22:30.415Z",
+          "receivedAt": "2026-10-03T23:22:30.629Z",
+          "publicationSequence": 13128,
+          "publicationHash": "49955e918aad6bda033b1d195b8e4bcc90f984c46bb8d1c4142386520c578734",
+          "versionKey": "28408961:2026-10-03T23:22:31.085493600Z"
+        }
+      ],
+      "limitations": [
+        "Canonical YES-bid complement, not independently captured NO depth.",
+        "Current snapshot capacity is not atomic liquidity, a fill, a queue model or a profitable near-term exit.",
+        "Ordinary election assumptions can fail through fusion, affiliation, rule changes or administrative settlement.",
+        "Zero-payout exception stress may lose the full package cost; an unmatched-leg cap does not cover that loss."
+      ]
+    },
+    "executionAuthority": false,
+    "competitionOrders": 0,
+    "networkRequests": 0,
+    "profitabilityEstablished": false,
+    "externalHighWater": true
+  },
+  "trades": {
+    "status": "running",
+    "schemaVersion": 1,
+    "pages": 11,
+    "tradesCaptured": 126,
+    "duplicates": 3,
+    "lastAt": "2026-10-03T23:22:07.845Z",
+    "journalSequence": 11,
+    "journalHash": "cce1cae0bff277dabe55dd18c96f045f18fb9db5ae65065b48065dbd94f391e0",
+    "markets": [
+      {
+        "marketId": "297",
+        "exchangeId": "986",
+        "pages": 3,
+        "tradesCaptured": 7,
+        "lastReceiptAt": "2026-10-03T23:19:30.109Z",
+        "latestTradeAt": "2026-10-03T23:18:26.714Z",
+        "windowFrom": null,
+        "windowTo": null,
+        "paginationPending": false,
+        "projectedThroughSequence": 28371969,
+        "reportedCoverageComplete": true
+      },
+      {
+        "marketId": "363",
+        "exchangeId": "1052",
+        "pages": 3,
+        "tradesCaptured": 61,
+        "lastReceiptAt": "2026-10-03T23:20:57.022Z",
+        "latestTradeAt": "2026-10-03T23:16:26.644Z",
+        "windowFrom": null,
+        "windowTo": null,
+        "paginationPending": false,
+        "projectedThroughSequence": 28390455,
+        "reportedCoverageComplete": true
+      },
+      {
+        "marketId": "381",
+        "exchangeId": "1070",
+        "pages": 3,
+        "tradesCaptured": 41,
+        "lastReceiptAt": "2026-10-03T23:22:07.845Z",
+        "latestTradeAt": "2026-10-03T23:21:34.818Z",
+        "windowFrom": null,
+        "windowTo": null,
+        "paginationPending": false,
+        "projectedThroughSequence": 28403864,
+        "reportedCoverageComplete": true
+      },
+      {
+        "marketId": "382",
+        "exchangeId": "1071",
+        "pages": 2,
+        "tradesCaptured": 17,
+        "lastReceiptAt": "2026-10-03T23:17:47.450Z",
+        "latestTradeAt": "2026-10-03T23:15:08.753Z",
+        "windowFrom": null,
+        "windowTo": null,
+        "paginationPending": false,
+        "projectedThroughSequence": 28353301,
+        "reportedCoverageComplete": true
+      }
+    ],
+    "executionAuthority": false,
+    "networkClientsAdded": 0,
+    "completeTapeProven": false,
+    "counterfactualFillsProven": false
+  },
+  "bookPublisher": {
+    "revision": 2,
+    "startupReplayMs": 6207.847600000001,
+    "frozenPublisherFileChanged": false
+  },
+  "networkBudget": {
+    "mode": "coordinated_shared_read_only",
+    "schemaVersion": 3,
+    "intervalMs": 3000,
+    "writeIntervalMs": 3000,
+    "completionPacing": true,
+    "maxReadsPerMinute": 20,
+    "writesEnabled": false,
+    "executionOwner": "Daenerys"
+  },
+  "preserved": [
+    {
+      "cohort": "source-probability-20261003-v1",
+      "bankHash": "55621b9b28d4b471f94c461cdbc0af4e35260dfac5c0d27f8d46cc93fd3b9ba4",
+      "originalBankCodeAndJournalPrefixPreserved": true
+    },
+    {
+      "cohort": "nh-canonical-capacity-20261003-v1",
+      "bankHash": "2b85533f12e29476a485d8b729bb9feca692f080e60daf58297a04e0aa542b4e",
+      "originalBankCodeAndJournalPrefixPreserved": true
+    }
+  ],
+  "reviewComments": [
+    5974323747,
+    5974335480
+  ],
+  "newGuardChecks": 6,
+  "newProbabilityContractChecks": 2,
+  "totalChecksWithImportedProbabilityFixtures": 13,
+  "extraProcesses": 0,
+  "contestActivation": false,
+  "profitabilityEstablished": false
+}

@@ -62,3 +62,5 @@ Sources:
 - https://github.com/GodlyDonuts/predictions-cup-2026/issues/1#issuecomment-5973997375
 - https://github.com/GodlyDonuts/predictions-cup-2026/issues/1#issuecomment-5974024230
 - https://www.londonderrynh.gov/DocumentCenter/View/3063
+
+The collector additionally wraps the frozen monitor with canonical-capacity-guard.mjs. A separate fsynced high-water projection binds the accepted journal prefix, byte count, sequence and tail across restart, detecting valid-prefix truncation of the original journal while that anchor survives. Existing published stats also supply a bootstrap sequence floor. This does not authenticate deliberate coordinated rollback of both the journal and every independent anchor. Optional NH pairing is skipped if either leg is already a protected risk read, preserving held-risk order and avoiding nonadjacent measurements. The frozen evaluator, bank, journal and original monitor source remain unchanged.

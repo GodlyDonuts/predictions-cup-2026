@@ -47,6 +47,7 @@ import {openDiagnosticFocus,diagnosticDepthFocus} from './diagnostic-read-focus.
 import {readProbabilityReadFocus} from './probability-read-focus.mjs';
 import {openCanonicalCapacityMonitor} from './canonical-capacity-monitor.mjs';
 import {createTradeTape,selectAuxiliaryReads} from './trade-tape.mjs';
+import {guardCanonicalCapacity} from './canonical-capacity-guard.mjs';
 
 const root=path.dirname(fileURLToPath(import.meta.url)),workspace=path.dirname(root);
 if(process.argv.includes('--live'))throw Error('Competition order execution is disabled');
@@ -184,7 +185,7 @@ try{
   const publicationReplayStarted=performance.now();
   bookPublication=createBookPublication({file:path.join(runtimeDir,'public-books.jsonl'),universe,sessionId:randomUUID(),now:Date.now,canOperate:()=>!stopping});
   runtime.bookPublisher={revision:2,startupReplayMs:performance.now()-publicationReplayStarted,frozenPublisherFileChanged:false};
-  try{canonicalCapacity=openCanonicalCapacityMonitor({runtimeDir,universe});runtime.canonicalCapacity=canonicalCapacity?.status()||{status:'not_initialized',executionAuthority:false};}catch{runtime.canonicalCapacity={status:'unavailable',executionAuthority:false};}
+  try{canonicalCapacity=guardCanonicalCapacity(openCanonicalCapacityMonitor({runtimeDir,universe}));runtime.canonicalCapacity=canonicalCapacity?.status()||{status:'not_initialized',executionAuthority:false};}catch{runtime.canonicalCapacity={status:'unavailable',executionAuthority:false};}
   depthPlan=validateDepthPlan(JSON.parse(fs.readFileSync(path.join(root,'depth-plan.json'),'utf8')),c,universe);
   const dipFile=path.join(runtimeDir,'dip-bank.json');if(fs.existsSync(dipFile)){dipBank=JSON.parse(fs.readFileSync(dipFile));validateDipPolicy(dipBank.policy);if(dipBank.universe.hash!==universe.hash||dipBank.config.feeBps!==0||dipBank.policy.historyReadsPerCycle!==2||dipBank.policy.comparisonBooksPerCycle!==2||dipBank.policy.dynamicBooksPerCycle!==2)throw Error('Invalid dip collection plan');runtime.collectionPlan={mode:'diversified_dip',historyReads:officialSync?1:2,fullBookBudget:4,managedCapacity:3,bulkReads:marketSweep?Math.ceil(universe.exchanges.length/100):1,accountReads:'positions plus paginated orders',readIntervalMs:c.readIntervalMs};}
   const coverageFile=path.join(runtimeDir,'price-coverage.json');
