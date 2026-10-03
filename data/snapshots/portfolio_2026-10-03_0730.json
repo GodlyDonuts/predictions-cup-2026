@@ -1,0 +1,255 @@
+{
+  "schema_version": 4,
+  "observed_window_start_utc": "2026-10-03T07:23:20Z",
+  "observed_window_end_utc": "2026-10-03T07:30:18Z",
+  "cash_exact_verified_at_utc": null,
+  "open_orders_verified_window_utc": [
+    "2026-10-03T07:29:56Z"
+  ],
+  "tournament": "Midterm Elections",
+  "tournament_slug": "midterm-elections",
+  "currency": "SUSQies (nonmonetary, nonredeemable contest points)",
+  "initial_cash": "100000.00",
+  "cash_verified": null,
+  "position_cost_basis_total": "19763.070",
+  "positions": [
+    {
+      "market_id": 379,
+      "title": "Democratic Party wins Massachusetts Senate",
+      "side": "YES",
+      "shares": 2061,
+      "average_price": "0.970",
+      "cost": "1999.170",
+      "order_id": 896197,
+      "status": "2061 shares unchanged in parent-reported new portfolio observation",
+      "holdings_verified_at_utc": "2026-10-03T07:29:56Z",
+      "holdings_source": "data/orders/daenerys_2026-10-03_ri387_buy_002_partial_0730.json",
+      "lots": [
+        {
+          "shares": 2061,
+          "average_price": "0.970",
+          "cost": "1999.170",
+          "order_id": 896197,
+          "executed_at_utc": null,
+          "submitted_at_utc": null,
+          "verified_at_utc": "2026-10-01T18:52:00Z",
+          "source": "data/trade_ledger.csv"
+        }
+      ]
+    },
+    {
+      "market_id": 387,
+      "title": "Democratic Party wins Rhode Island Senate",
+      "side": "YES",
+      "shares": 19621,
+      "average_price": "0.905",
+      "cost": "17763.900",
+      "order_id": null,
+      "status": "Original 5000 shares plus 2000 terminal order 4419984 shares plus 12621 confirmed open-order 4482453 shares; remaining 2379 not held",
+      "holdings_verified_at_utc": "2026-10-03T07:29:56Z",
+      "holdings_source": "data/orders/daenerys_2026-10-03_ri387_buy_002_partial_0730.json",
+      "lots": [
+        {
+          "shares": 5000,
+          "average_price": "0.925",
+          "cost": "4625.000",
+          "order_id": null,
+          "executed_at_utc": null,
+          "submitted_at_utc": "2026-10-02T05:45:48Z",
+          "submission_time_is_approximate": true,
+          "verified_at_utc": "2026-10-02T05:46:44Z",
+          "source": "data/orders/session_2026-10-02_ri_value.json"
+        },
+        {
+          "shares": 2000,
+          "average_price": "0.890",
+          "cost": "1780.000",
+          "order_id": "4419984",
+          "executed_at_utc": null,
+          "submitted_at_utc": "2026-10-03T07:01:16Z",
+          "submission_time_is_approximate": true,
+          "verified_at_utc": "2026-10-03T07:23:58Z",
+          "source": "data/orders/daenerys_2026-10-03_ri387_buy_001_terminal_0723.json",
+          "accounting_layer": "trade_ledger_row_18"
+        },
+        {
+          "shares": 12621,
+          "average_price": "0.900",
+          "cost": "11358.900",
+          "order_id": "4482453",
+          "executed_at_utc": null,
+          "submitted_at_utc": "2026-10-03T07:29:27Z",
+          "verified_at_utc": "2026-10-03T07:30:18Z",
+          "source": "data/orders/daenerys_2026-10-03_ri387_buy_002_partial_0730.json",
+          "accounting_layer": "separate_open_order_partial_fill_adjustment"
+        }
+      ],
+      "average_price_is_ui_display": true,
+      "exact_average_price_ratio": "17763.900 / 19621"
+    }
+  ],
+  "open_orders": [
+    {
+      "order_id": "4482453",
+      "intent_id": "daenerys-20261003-ri387-buy-002",
+      "market_id": 387,
+      "side": "YES",
+      "action": "BUY",
+      "quantity": 15000,
+      "limit_price": "0.900",
+      "maximum_principal_susqies": "13500.000",
+      "observed_filled_quantity": 12621,
+      "remaining_quantity": 2379,
+      "status": "partially_filled_open",
+      "verified_at_utc": "2026-10-03T07:29:56Z",
+      "fills_verified_at_utc": "2026-10-03T07:30:18Z",
+      "review_or_cancel_target_utc": "2026-10-03T07:40:00Z",
+      "source": "data/orders/daenerys_2026-10-03_ri387_buy_002_partial_0730.json"
+    }
+  ],
+  "source": "parent observed official signed-in UI",
+  "notes": [
+    "This is a sanitized transcription of the parent account operator's official signed-in website observations, not raw API data, an attached screenshot or independent account re-observation.",
+    "All reported times are observer UTC. Exact fill execution times and effective server cancellation time were not exposed and remain null.",
+    "Midterm Elections website context was selected; numeric exchange ID was not exposed and is not guessed.",
+    "Cash displays and displayed averages are rounded UI values, distinct from exact quantity x displayed tick price accounting. Hidden precision, fees and reservation rules remain unverified.",
+    "These observations are historical. Later order fills/cancellations are not assumed. Accounting gain and marked values are not whole-account executable liquidation profit.",
+    "The parent is the only account operator. This record-maintenance worker made no account network/API/UI/trading call.",
+    "The 18th ledger aggregate records only order 4419984's 2000 executed shares. Order 4482453's 12621 confirmed executed shares are already included in this portfolio and cash as a separate adjustment; never subtract this cost again when adding its terminal aggregate."
+  ],
+  "realized_pnl_total": "156.535",
+  "realized_pnl_basis": "Historical ledger FIFO realized 156.915 plus separately reconciled bot roundtrips -0.380. The newly recorded RI purchases create no realized P&L.",
+  "session_audit": "data/orders/daenerys_2026-10-03_ri387_buy_002_partial_0730.json",
+  "previous_session_audit": "data/orders/daenerys_2026-10-03_ri387_buy_001_accepted.json",
+  "previous_snapshot": "data/snapshots/portfolio_2026-10-03_0701.json",
+  "realized_pnl_by_market": [
+    {
+      "market_id": 277,
+      "side": "NO",
+      "shares_sold": 1538,
+      "proceeds": "115.350",
+      "fifo_disposed_cost": "99.970",
+      "realized_pnl": "15.380"
+    },
+    {
+      "market_id": 313,
+      "side": "YES",
+      "shares_sold": 2,
+      "proceeds": "1.470",
+      "fifo_disposed_cost": "1.610",
+      "realized_pnl": "-0.140"
+    },
+    {
+      "market_id": 354,
+      "side": "YES",
+      "shares_sold": 12504,
+      "proceeds": "1412.980",
+      "fifo_disposed_cost": "1500.440",
+      "realized_pnl": "-87.460"
+    },
+    {
+      "market_id": 369,
+      "side": "YES",
+      "shares_sold": 33,
+      "proceeds": "8.250",
+      "fifo_disposed_cost": "8.170",
+      "realized_pnl": "0.080"
+    },
+    {
+      "market_id": 370,
+      "side": "YES",
+      "shares_sold": 12,
+      "proceeds": "10.500",
+      "fifo_disposed_cost": "10.860",
+      "realized_pnl": "-0.360"
+    },
+    {
+      "market_id": 377,
+      "side": "NO",
+      "shares_sold": 10000,
+      "proceeds": "3300.000",
+      "fifo_disposed_cost": "3224.500",
+      "realized_pnl": "75.500"
+    },
+    {
+      "market_id": 387,
+      "side": "YES",
+      "shares_sold": 11828,
+      "proceeds": "11174.875",
+      "fifo_disposed_cost": "11021.340",
+      "realized_pnl": "153.535"
+    }
+  ],
+  "settlement_scenarios": {
+    "assumptions": "Fixed-inventory scenario: assume no further fills of order 4482453 and no further trades, fees, refunds or nonstandard settlement; each held share pays 0 or 1. These are not forecasts or executable valuations.",
+    "cash_basis": "ledger plus bot adjustment minus confirmed partial-order fill cost",
+    "all_positions_lose_arithmetic_total": "80393.465",
+    "all_positions_win_arithmetic_total": "102075.465",
+    "further_pending_order_fills_included": false
+  },
+  "cash_displayed": "80393.46",
+  "cash_display_precision_decimal_places": 2,
+  "cash_display_verified_at_utc": "2026-10-03T07:29:42Z",
+  "cash_arithmetic_from_verified_qty_price": "80393.465",
+  "cash_arithmetic_basis": "18-row ledger cash 91752.745 plus separate historical bot adjustment -0.380 less confirmed partial order 4482453 cost 11358.900. The open-order fill adjustment must be retired when its terminal aggregate is added to the ledger.",
+  "cash_display_minus_arithmetic": "-0.005",
+  "session_realized_pnl": "0.000",
+  "cash_arithmetic_plus_remaining_cost": "100156.535",
+  "cash_precision_note": "Observed UI cash 80393.46 is separate from exact quantity x price arithmetic 80393.465; no hidden cash precision, rounding convention, fees or reserved cash inferred.",
+  "session_realized_pnl_by_market": [],
+  "realized_pnl_by_market_scope": "Cumulative historical ledger sales plus separate 12-row UI fill adjustment. The latter has no verified order grouping and remains outside the order-aggregate ledger.",
+  "session_audits": [
+    "data/orders/daenerys_2026-10-03_ri387_buy_001_terminal_0723.json",
+    "data/orders/daenerys_2026-10-03_ri387_buy_002_partial_0730.json"
+  ],
+  "reconciliation_record": "data/snapshots/reconciliation_2026-10-03_0730.json",
+  "valuation_observations": {
+    "kind": "No new valuation mark supplied for this observation window",
+    "whole_account_marked_value": null,
+    "positions": []
+  },
+  "liquidation_observations": {
+    "whole_account_liquidation_value": null,
+    "positions": [],
+    "missing_contemporaneous_full_position_depth_markets": [
+      379,
+      387
+    ]
+  },
+  "record_kind": "derived_historical_portfolio_with_bot_and_open_order_fill_adjustments",
+  "observed_window_start_is_approximate": false,
+  "immutable_snapshot": "data/snapshots/portfolio_2026-10-03_0730.json",
+  "numeric_exchange_id": null,
+  "cash_display_observation_window_utc": [
+    "2026-10-03T07:29:42Z",
+    "2026-10-03T07:29:42Z"
+  ],
+  "cash_display_window_is_approximate": false,
+  "trade_ledger_coverage": {
+    "path": "data/trade_ledger.csv",
+    "rows": 18,
+    "sha256": "37119325bcaff6c79f7a4747178257bafea34a2d02cc7a16d219e164a4f9d486",
+    "cash_from_ledger_alone": "91752.745",
+    "terminal_order_4419984_included_once": true,
+    "separate_adjustments": [
+      {
+        "kind": "historical_bot_ui_fills",
+        "path": "data/snapshots/bot_adjustment_reconciliation_2026-10-03_0701.json",
+        "cash_change": "-0.380",
+        "ending_inventory": 0
+      },
+      {
+        "kind": "open_order_confirmed_partial_fill",
+        "path": "data/orders/daenerys_2026-10-03_ri387_buy_002_partial_0730.json",
+        "order_id": "4482453",
+        "quantity": 12621,
+        "cash_change": "-11358.900",
+        "retire_when_terminal_aggregate_is_recorded": true
+      }
+    ]
+  },
+  "source_observation_records": [
+    "data/orders/daenerys_2026-10-03_ri387_buy_001_terminal_0723.json",
+    "data/orders/daenerys_2026-10-03_ri387_buy_002_partial_0730.json"
+  ]
+}

@@ -1,5 +1,27 @@
 # Current state
 
+## Latest historical account observation: October 3, 07:23–07:30 UTC
+
+This timestamped update supersedes only the earlier portfolio observations below. The parent operator supplied the official signed-in website observations; this worker did not access the account. All previous audit/snapshot files remain immutable.
+
+- **Order 4419984 is terminal:** 2,000 RI YES bought at **0.890**, cost **1,780.000**; 1,000 unfilled shares canceled. Fresh holdings/order observation was **07:23:20**; one cancel click at **07:23:31**; explicit zero open orders and the 2,000-share history fill verified at **07:23:58 UTC**. Exact fill and server-cancel times remain unknown
+- Browser-control timeout interrupted observation approximately **07:12–07:22**. No order actions occurred in that gap. Reset recovered the same signed-in browser without new authentication
+- The old order added RI holdings to **7,000**, basis **6,405.000**, displayed average **0.915**. UI cash **91,752.37** is separate from arithmetic **91,752.365**
+- The parent recorded a distinct larger intent after the user's explicit **07:10** tournament-upside instruction: **daenerys-20261003-ri387-buy-002**, BUY **15,000 RI YES at limit 0.900**, maximum principal **13,500.000**. Fresh zero open orders at **07:29:19**, then one submission click at **07:29:27 UTC**
+- At **07:29:56 UTC**, order **4482453** had **2,379 remaining** and RI holdings were **19,621**. History at **07:30:18** confirmed **12,621 bought at 0.900**, cost **11,358.900**. No later fill is assumed. Review/cancel remainder target: **07:40 UTC**
+
+### Exact combined accounting and ledger boundary
+
+The append-only ledger now has **18 executed order aggregates**: only terminal order 4419984's **2,000 executed shares** were added; all original 17 rows remain byte-for-byte unchanged. Ledger-only cash is **91,752.745**. Apply the preserved separate bot adjustment **−0.380**, then the open order's already confirmed fill cost **−11,358.900**, to obtain combined cash **80,393.465**. UI cash was **80,393.46 at 07:29:42**, a separate two-decimal observation; no hidden rounding method or fee is invented.
+
+Order 4482453's confirmed 12,621 shares are already counted in cash and holdings through a **separate partial-fill adjustment**, although its terminal aggregate is not yet in the ledger. When a terminal aggregate is later recorded, retire this adjustment rather than deducting its cost twice. The unfilled 2,379 shares create no holding or executed cost.
+
+RI basis is **17,763.900 for 19,621 shares**; displayed average **0.905** is not substituted for the exact basis ratio **17,763.900 / 19,621**. MA stays **2,061 shares**, basis **1,999.170**. Combined basis **19,763.070** plus cash arithmetic **80,393.465** equals **100,156.535**. Analytical realized P&L remains **156.535**; buys add no realized gain. Whole-account executable liquidation value is unknown.
+
+If all remaining 2,379 fill at the limit, the additional cost would be **2,141.100** and RI would reach **22,000 shares / 19,905.000 principal**, about **19.9% of initial capital**. This is a risk scenario, not an observed fill. Numeric exchange ID, exact execution times, hidden precision and fees remain unexposed; the selected website context is Midterm Elections.
+
+Sources and immutable records: [terminal source comment](https://github.com/GodlyDonuts/predictions-cup-2026/issues/1#issuecomment-5966750966), [new intent](https://github.com/GodlyDonuts/predictions-cup-2026/issues/1#issuecomment-5966767946), [terminal order audit](../data/orders/daenerys_2026-10-03_ri387_buy_001_terminal_0723.json), [partial order audit](../data/orders/daenerys_2026-10-03_ri387_buy_002_partial_0730.json), [exact reconciliation](../data/snapshots/reconciliation_2026-10-03_0730.json), and [immutable portfolio snapshot](../data/snapshots/portfolio_2026-10-03_0730.json). The historical blocks below retain their original observation times and are not later live-state claims.
+
 ## Latest historical account observation: October 3, 06:55–07:01 UTC
 
 The following new observation supersedes the older account summary below only for its stated times. Current ownership is unchanged. The source is **the parent operator's observed official signed-in UI**, transcribed into a sanitized immutable record; this is not raw API evidence or an independently inspected screenshot.

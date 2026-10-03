@@ -1,0 +1,92 @@
+{
+  "schema_version": 1,
+  "record_kind": "immutable_open_order_partial_fill_observation",
+  "immutable": true,
+  "source": "parent observed official signed-in UI",
+  "repository_base_commit": "5c09038ff1046b435cec1719cd8478ef01900d47",
+  "intent_id": "daenerys-20261003-ri387-buy-002",
+  "platform_order_id": "4482453",
+  "owner": "Daenerys / dot",
+  "tournament": "Midterm Elections",
+  "numeric_exchange_id": null,
+  "market_id": 387,
+  "market_title": "Democratic Party wins Rhode Island Senate",
+  "side": "YES",
+  "action": "BUY",
+  "order_type": "LIMIT",
+  "requested_quantity": 15000,
+  "limit_price": "0.900",
+  "maximum_principal_susqies": "13500.000",
+  "sizing_context": {
+    "user_clarification_at_utc_approx": "2026-10-03T07:10:00Z",
+    "parent_report": "User explicitly requested more aggressive tournament-upside positioning; parent increased the independently sized follow-on intent after fresh depth review. This is not an uncertain retry of order 4419984.",
+    "prepared_intent_comment": "https://github.com/GodlyDonuts/predictions-cup-2026/issues/1#issuecomment-5966767946"
+  },
+  "preflight_zero_open_orders_at_utc": "2026-10-03T07:29:19Z",
+  "submitted_at_utc": "2026-10-03T07:29:27Z",
+  "submit_click_count": 1,
+  "retry_count": 0,
+  "open_order_observation": {
+    "observed_at_utc": "2026-10-03T07:29:56Z",
+    "ri_yes_quantity": 19621,
+    "remaining_quantity": 2379,
+    "limit_price": "0.900",
+    "status": "partially_filled_open"
+  },
+  "confirmed_fill": {
+    "transaction_history_verified_at_utc": "2026-10-03T07:30:18Z",
+    "action": "BUY",
+    "side": "YES",
+    "quantity": 12621,
+    "price": "0.900",
+    "exact_qty_price_cost": "11358.900",
+    "exact_execution_time_utc": null,
+    "fill_id": null
+  },
+  "cash_observation": {
+    "observed_at_utc": "2026-10-03T07:29:42Z",
+    "displayed": "80393.46",
+    "precision_decimal_places": 2,
+    "separate_cash_arithmetic": "80393.465",
+    "display_minus_arithmetic": "-0.005",
+    "hidden_cash": null
+  },
+  "derived_position": {
+    "ri_quantity": 19621,
+    "ri_fifo_cost": "17763.900",
+    "ri_average_price_displayed": "0.905",
+    "ri_exact_average_price_ratio": "17763.900 / 19621",
+    "ma_quantity": 2061,
+    "ma_fifo_cost": "1999.170",
+    "total_fifo_cost": "19763.070",
+    "analytical_realized_pnl": "156.535"
+  },
+  "review_or_cancel_target_utc": "2026-10-03T07:40:00Z",
+  "status_not_asserted_after_utc": "2026-10-03T07:30:18Z",
+  "remaining_quantity_last_observed_at_utc": "2026-10-03T07:29:56Z",
+  "accounting_treatment": {
+    "executed_aggregate_appended_to_ledger": false,
+    "separate_partial_fill_adjustment_counted": true,
+    "quantity_counted": 12621,
+    "cash_cost_counted": "11358.900",
+    "must_retire_adjustment_when_terminal_order_aggregate_enters_ledger": true,
+    "terminal_quantity_not_assumed": true
+  },
+  "if_remainder_fills_at_limit_scenario": {
+    "additional_quantity": 2379,
+    "additional_cost": "2141.100",
+    "ri_total_quantity": 22000,
+    "ri_total_principal": "19905.000",
+    "percentage_of_initial_capital": "19.905",
+    "scenario_not_a_fill": true
+  },
+  "limitations": [
+    "This is a sanitized transcription of the parent account operator's official signed-in website observations, not raw API data, an attached screenshot or independent account re-observation.",
+    "All reported times are observer UTC. Exact fill execution times and effective server cancellation time were not exposed and remain null.",
+    "Midterm Elections website context was selected; numeric exchange ID was not exposed and is not guessed.",
+    "Cash displays and displayed averages are rounded UI values, distinct from exact quantity x displayed tick price accounting. Hidden precision, fees and reservation rules remain unverified.",
+    "These observations are historical. Later order fills/cancellations are not assumed. Accounting gain and marked values are not whole-account executable liquidation profit.",
+    "The parent is the only account operator. This record-maintenance worker made no account network/API/UI/trading call.",
+    "Prepared book-based expected cost is not booked; actual observed fill cost is 12621 x 0.900 = 11358.900. No fill of the remaining 2379 shares is assumed."
+  ]
+}

@@ -1,0 +1,80 @@
+{
+  "schema_version": 1,
+  "record_kind": "immutable_terminal_order_observation",
+  "immutable": true,
+  "source": "parent observed official signed-in UI",
+  "repository_base_commit": "5c09038ff1046b435cec1719cd8478ef01900d47",
+  "intent_id": "daenerys-20261003-ri387-buy-001",
+  "platform_order_id": "4419984",
+  "owner": "Daenerys / dot",
+  "tournament": "Midterm Elections",
+  "numeric_exchange_id": null,
+  "market_id": 387,
+  "side": "YES",
+  "action": "BUY",
+  "order_type": "LIMIT",
+  "quantity_requested": 3000,
+  "limit_price": "0.890",
+  "original_acceptance_record": "data/orders/daenerys_2026-10-03_ri387_buy_001_accepted.json",
+  "submitted_at_utc_approx": "2026-10-03T07:01:16Z",
+  "observation_gap": {
+    "start_utc_approx": "2026-10-03T07:12:00Z",
+    "end_utc_approx": "2026-10-03T07:22:00Z",
+    "cause": "Browser-control timeout",
+    "order_actions_during_gap": 0,
+    "recovery": "Browser-control session reset; same signed-in browser recovered; no new authentication"
+  },
+  "before_cancel": {
+    "observed_at_utc": "2026-10-03T07:23:20Z",
+    "ri_yes_quantity": 7000,
+    "open_order_remaining_quantity": 1000
+  },
+  "cancel_clicked_at_utc": "2026-10-03T07:23:31Z",
+  "cancel_click_count": 1,
+  "effective_server_cancel_at_utc": null,
+  "terminal_verified_at_utc": "2026-10-03T07:23:58Z",
+  "status": "partially_filled_remainder_canceled",
+  "filled_quantity": 2000,
+  "fill_price": "0.890",
+  "filled_cost_susqies": "1780.000",
+  "canceled_quantity": 1000,
+  "remaining_quantity": 0,
+  "account_open_order_count": 0,
+  "no_further_fill_cancel_race_observed": true,
+  "transaction_history_evidence": {
+    "verified_at_utc": "2026-10-03T07:23:58Z",
+    "action": "BUY",
+    "quantity": 2000,
+    "side": "YES",
+    "price": "0.890",
+    "exact_execution_time_utc": null,
+    "fill_id": null
+  },
+  "terminal_portfolio": {
+    "ri_yes_quantity": 7000,
+    "ri_average_price_displayed": "0.915",
+    "ri_fifo_basis": "6405.000",
+    "ma_yes_quantity": 2061,
+    "ma_fifo_basis": "1999.170",
+    "cash_displayed": "91752.37",
+    "cash_displayed_exact_observation_time_utc": null,
+    "cash_arithmetic": "91752.365",
+    "analytical_realized_pnl": "156.535"
+  },
+  "ledger_inclusion": {
+    "path": "data/trade_ledger.csv",
+    "row_number_excluding_header": 18,
+    "quantity": 2000,
+    "signed_cash_cost": "1780.000",
+    "only_executed_quantity_included": true
+  },
+  "source_comment": "https://github.com/GodlyDonuts/predictions-cup-2026/issues/1#issuecomment-5966750966",
+  "limitations": [
+    "This is a sanitized transcription of the parent account operator's official signed-in website observations, not raw API data, an attached screenshot or independent account re-observation.",
+    "All reported times are observer UTC. Exact fill execution times and effective server cancellation time were not exposed and remain null.",
+    "Midterm Elections website context was selected; numeric exchange ID was not exposed and is not guessed.",
+    "Cash displays and displayed averages are rounded UI values, distinct from exact quantity x displayed tick price accounting. Hidden precision, fees and reservation rules remain unverified.",
+    "These observations are historical. Later order fills/cancellations are not assumed. Accounting gain and marked values are not whole-account executable liquidation profit.",
+    "The parent is the only account operator. This record-maintenance worker made no account network/API/UI/trading call."
+  ]
+}
