@@ -1,0 +1,43 @@
+{
+  "historicalAnchorFailure": {
+    "at": "2026-10-03T18:42:24.705Z",
+    "cohort": "bid-anchor-live-20261003-v1",
+    "competitionOrders": 0,
+    "mode": "bid_anchor_companion_failed_closed",
+    "networkRequests": 0
+  },
+  "pids": {
+    "metrics": 11792,
+    "collector": 18392,
+    "dashboard": 24624,
+    "paper": 26024,
+    "contestActivation": false
+  },
+  "at": "2026-10-03T19:05:54.0479448Z",
+  "cohorts": [
+    {
+      "cohort": "executable-edge-cohorts/executable-edge-20261003-v2",
+      "journalBytes": 2240390,
+      "journalHash": "a654d95d4a18937f38187e252f7d225abd1bc934dc2ee69dd211910b551ea6ec",
+      "bankHash": "3d31c5eb9e56e62ed4bdca15627e386910c16e5026929b605db93dbc7108477f"
+    },
+    {
+      "cohort": "bid-anchor-live-cohorts/bid-anchor-live-20261003-v1",
+      "journalBytes": 1418786,
+      "journalHash": "25e6a7566eb09c889eb279c0ed243a906cb3cd63ba461cf34a3a30c700deae2d",
+      "bankHash": "43a2a1619dfa820aedb9689de8aa6c2bfee2e8088e929dd271bb1089e2937928"
+    },
+    {
+      "cohort": "bulk-dip-cohorts/bulk-dip-live-20261003-v1",
+      "journalBytes": 114427,
+      "journalHash": "2394332de939227d7be08523cde2744cca2c9c0001a42094ae9430fd0514c7f2",
+      "bankHash": "86e1a9e270ddfa2db1ff8b363cda566a91fbb87f1dff0785027b23356d0f0245"
+    },
+    {
+      "cohort": "bulk-dip-cohorts/bulk-dip-live-20261003-v2",
+      "journalBytes": 496315,
+      "journalHash": "cafd9c9b854852569a9073a22cda5cdfb653d8b9ba94a117f93c058e251521a1",
+      "bankHash": "d9d1163da9a846932c91af97d337d03da41eaa9b4879ff3333683575cb6252b9"
+    }
+  ]
+}

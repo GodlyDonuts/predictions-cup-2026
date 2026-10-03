@@ -14,7 +14,7 @@ export function bulkDipWalletViews(report,manifest,bank,{workerAlive=false,now=D
   throw Error('Bulk paper identity unavailable');
  const universe=bank.universe?.exchanges;
  if(!Array.isArray(universe)||!universe.length||universe.some(x=>!/^[0-9]+$/.test(x.marketId)||!/^[0-9]+$/.test(x.exchangeId)||x.option!=='YES'))throw Error('Bulk paper scope unavailable');
- const scope=new Map(universe.map(x=>[`${x.marketId}:YES`,x]));
+ const scope=new Map(universe.map(x=>[`${x.exchangeId}:YES`,x]));
  if(scope.size!==universe.length||new Set(universe.map(x=>x.exchangeId)).size!==universe.length)throw Error('Bulk paper scope ambiguous');
  const latencies=bank.policy?.latenciesMs;
  if(!Array.isArray(latencies)||latencies.length!==2||latencies[0]!==1000||latencies[1]!==3000)throw Error('Bulk paper wallets unavailable');
