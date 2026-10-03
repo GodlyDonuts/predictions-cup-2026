@@ -1,5 +1,26 @@
 # Current state
 
+## Latest historical account observation: Alaska entry, October 3, 07:57–07:58 UTC
+
+The parent submitted **one BUY20,000 YES** for **Republican Alaska Governor market369**, limit **0.295**, maximum principal **5,900.000**, at **07:57:16 UTC**. The full **20,000-share holding** and **zero open orders** were confirmed at **07:58:02**; history was inspected at **07:58:37**. The completed order/exchange IDs and exact fill breakdown were not exposed. This is a new Daenerys position, separate from the earlier closed bot roundtrips in market369.
+
+### Preserve the display discrepancy; do not invent exact cost
+
+- Transaction history: **20,000 YES @ rounded0.294**, displayed amount **−5,876.63**
+- Earlier ticket estimate: **5,876.64**
+- Portfolio marked value **5,410.56** and displayed unrealized P&L **−466.08** imply **5,876.64** by subtraction, which is still mark/display arithmetic, not a fill receipt
+- Cash ticket after the entry: **65,571.41**; its exact observation timestamp and hidden precision were not supplied
+
+Neither displayed amount resolves exact execution cost. No half-cent value, midpoint, fee or fill allocation is inferred. **20,000×rounded0.294=5,880.000 is not booked as actual cost.** The completed holding is added through a separate observed-precision acquisition record; the exact 20-row ledger remains byte-for-byte unchanged pending fill evidence.
+
+Recorded pre-AK cash arithmetic **71,448.045** gives two **display-only bridges**: subtracting history5,876.63 gives **65,571.415**; subtracting estimate/mark-derived5,876.64 gives **65,571.405**. Neither is claimed as exact current cash. Known RI/MA/GA recorded basis is **28,708.490**, including peer-reported GA fills. Exact AK cost, current total basis and current recorded-price cash remain null. Analytical realized P&L remains **156.535** because no new sale occurred.
+
+Existing RI19,621, MA2,061 and GA NO10,000 are carried forward from their earlier records, with their actual older observation timestamps retained. No new independent observation of those holdings is asserted here. The AK20,000 plus those recorded holdings total51,682 shares. Full-position liquidation value remains unknown.
+
+The former **08:15 remainder review/cancel target is inactive** because all20,000 filled and zero orders were verified. Exact AK evidence is already requested from the existing bounded collector; no duplicate request or additional account client was created by this worker.
+
+Sources: [prepared intent](https://github.com/GodlyDonuts/predictions-cup-2026/issues/1#issuecomment-5966948773), [outcome and existing-source request](https://github.com/GodlyDonuts/predictions-cup-2026/issues/1#issuecomment-5966987423), [immutable acquisition audit](../data/orders/daenerys_2026-10-03_ak369_yes_buy_001_observed_0758.json), [reconciliation](../data/snapshots/reconciliation_2026-10-03_0758.json), [portfolio snapshot](../data/snapshots/portfolio_2026-10-03_0758.json). All prior records and historical text remain unchanged below.
+
 ## GA exact-fill enrichment: 07:51 projection, account state still as of 07:40
 
 The parent relayed **Drogon's authorized read-only projection** from `official-account.json`, observed **2026-10-03 07:51:34.012 UTC**, reporting `hasMore=false`. This is explicitly **peer-reported evidence**. This record worker has not independently inspected the original raw API response/projection file; sanitized source proof has been requested. The projection time does **not** establish fresh post-07:40 account holdings or open orders.

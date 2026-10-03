@@ -1,17 +1,17 @@
 {
-  "schema_version": 6,
-  "observed_window_start_utc": "2026-10-03T07:38:32Z",
-  "observed_window_end_utc": "2026-10-03T07:40:17Z",
+  "schema_version": 7,
+  "observed_window_start_utc": "2026-10-03T07:57:16Z",
+  "observed_window_end_utc": "2026-10-03T07:58:37Z",
   "cash_exact_verified_at_utc": null,
   "open_orders_verified_window_utc": [
-    "2026-10-03T07:40:09Z"
+    "2026-10-03T07:58:02Z"
   ],
   "tournament": "Midterm Elections",
   "tournament_slug": "midterm-elections",
   "currency": "SUSQies (nonmonetary, nonredeemable contest points)",
   "initial_cash": "100000.00",
   "cash_verified": null,
-  "position_cost_basis_total": "28708.490",
+  "position_cost_basis_total": null,
   "positions": [
     {
       "market_id": 379,
@@ -128,25 +128,56 @@
       "exchange_id": 948,
       "identifier_source": "peer_reported_projection",
       "reconciliation_source": "data/orders/daenerys_2026-10-03_ga259_no_buy_001_peer_fills_0751.json"
+    },
+    {
+      "market_id": 369,
+      "title": "Republican Party wins Alaska Governor",
+      "side": "YES",
+      "shares": 20000,
+      "average_price": "0.294",
+      "average_price_is_ui_display": true,
+      "exact_average_price": null,
+      "cost": null,
+      "cost_displayed": "5876.63",
+      "alternative_display_derived_cost": "5876.64",
+      "cost_display_precision_decimal_places": 2,
+      "order_id": null,
+      "status": "Full20000-share holding verified; zero open orders; exact cost/order ID pending reconciliation",
+      "holdings_verified_at_utc": "2026-10-03T07:58:02Z",
+      "holdings_source": "data/orders/daenerys_2026-10-03_ak369_yes_buy_001_observed_0758.json",
+      "lots": [
+        {
+          "shares": 20000,
+          "average_price_displayed": "0.294",
+          "exact_average_price": null,
+          "cost": null,
+          "cost_displayed": "5876.63",
+          "order_id": null,
+          "executed_at_utc": null,
+          "submitted_at_utc": "2026-10-03T07:57:16Z",
+          "verified_at_utc": "2026-10-03T07:58:37Z",
+          "source": "data/orders/daenerys_2026-10-03_ak369_yes_buy_001_observed_0758.json",
+          "accounting_layer": "separate_completed_acquisition_observed_precision"
+        }
+      ]
     }
   ],
   "open_orders": [],
-  "source": "Parent observed official signed-in UI, enriched by peer-reported Drogon exact GA fill projection; raw projection not independently inspected",
+  "source": "Parent observed official signed-in UI for AK/cash/orders; earlier RI/MA/GA history retained, with peer-reported GA fill evidence",
   "notes": [
-    "Fill IDs, exchange/order IDs and exact execution timestamp are peer-reported from Drogon through the parent; this worker has not independently inspected the original raw API response or projection file.",
-    "The reported projection observation time 07:51:34.012Z is evidence provenance, not a fresh account-state claim. Parent holdings and zero-open-order observations remain at 07:40:09Z, history at07:40:17Z.",
-    "Price products and their exact Decimal/rational arithmetic do not establish hidden account balance precision, fee treatment or the platform cash rounding rule.",
-    "The parent click time is approximate and kept separate from the peer-reported API execution timestamp. Numeric exchange948 applies only to this reported GA order, not inferred RI/MA contexts.",
-    "All earlier source audits, official CSV and snapshots remain immutable; evidence enrichment does not rewrite the original limited-precision observations.",
-    "No account network, API, UI or trading call was made by this record-maintenance worker.",
-    "GA order4505792 is now recorded exactly once as a terminal aggregate; this is evidence/accounting enrichment of the already-held10000 shares, not a new buy.",
-    "Cash arithmetic and basis are exact calculations on recorded source numbers; GA raw-source confirmation and hidden balance/fee precision remain distinct uncertainties."
+    "Source is the parent operator's official signed-in UI observation, not raw API fill data or independent account inspection by this worker.",
+    "Transaction amount5876.63, earlier ticket estimate5876.64 and mark/P&L-derived5876.64 remain distinct limited-precision observations; none establishes exact underlying fill cost. No midpoint, half-cent amount or fee is inferred.",
+    "The UI average0.294 is rounded:20000 times0.294=5880.000 is not asserted actual acquisition cost. Fill allocation and completed order/exchange IDs remain unknown.",
+    "Existing RI/MA/GA positions are carried forward from earlier observations and unaffected by this recorded AK buy; their older observation timestamps are retained rather than falsely refreshed.",
+    "The parent is the only account operator. This worker made no account network, API, UI or trading calls.",
+    "Prior bot market369 roundtrips ended with zero inventory and remain in their separate−0.380 adjustment. This new20000-share holding is Daenerys-owned and must not be attributed to the bot.",
+    "The08:15 remainder-review target is inactive because this entry is fully filled; no cancel is pending."
   ],
   "realized_pnl_total": "156.535",
-  "realized_pnl_basis": "20-row historical FIFO realized156.915 plus separate bot adjustment -0.380. GA acquisition evidence enrichment creates no new trade or realized sale.",
-  "session_audit": "data/orders/daenerys_2026-10-03_ga259_no_buy_001_peer_fills_0751.json",
-  "previous_session_audit": "data/orders/daenerys_2026-10-03_ga259_no_buy_001_observed_0740.json",
-  "previous_snapshot": "data/snapshots/portfolio_2026-10-03_0740.json",
+  "realized_pnl_basis": "20-row historical FIFO realized156.915 plus separate prior bot roundtrip−0.380. The new AK20000-share acquisition is separate from closed bot lots and creates no realized sale.",
+  "session_audit": "data/orders/daenerys_2026-10-03_ak369_yes_buy_001_observed_0758.json",
+  "previous_session_audit": "data/orders/daenerys_2026-10-03_ga259_no_buy_001_peer_fills_0751.json",
+  "previous_snapshot": "data/snapshots/portfolio_2026-10-03_0740_enriched_0751.json",
   "realized_pnl_by_market": [
     {
       "market_id": 277,
@@ -206,46 +237,54 @@
     }
   ],
   "settlement_scenarios": {
-    "assumptions": "Historical fixed holdings: no further trades, fees, refunds or nonstandard settlement; each31682 held share pays0 or1. Uses recorded-price cash arithmetic incorporating peer-reported GA fills, not independently verified hidden cash. Scenarios, not forecasts or liquidation values.",
-    "all_positions_lose_arithmetic_total": "71448.045",
-    "all_positions_win_arithmetic_total": "103130.045",
-    "evidence_precision": "GA reported execution prices; raw proof pending",
-    "total_held_shares": 31682,
+    "exact_scenarios": null,
+    "reason": "Exact AK acquisition cost and current recorded-price cash are unresolved; no new exact settlement endpoints asserted",
+    "total_recorded_held_shares": 51682,
     "open_orders_at_parent_observation": 0
   },
-  "cash_displayed": "71448.04",
+  "cash_displayed": "65571.41",
   "cash_display_precision_decimal_places": 2,
   "cash_display_verified_at_utc": null,
   "cash_arithmetic_from_verified_qty_price": null,
-  "cash_arithmetic_basis": "Exact arithmetic from the 20 recorded order aggregates plus the separate historical bot adjustment -0.380. GA exact fills are peer-reported and independently arithmetic-checked, but raw source proof has not been inspected. This is not verified hidden account cash.",
-  "cash_display_minus_arithmetic": "-0.005",
+  "cash_arithmetic_basis": "Recorded pre-AK cash arithmetic71448.045 includes peer-reported GA fills. Current AK cost is unresolved; two separate display-only bridges are provided without claiming exact cash.",
+  "cash_display_minus_arithmetic": null,
   "session_realized_pnl": "0.000",
-  "cash_arithmetic_plus_remaining_cost": "100156.535",
-  "cash_precision_note": "UI cash71448.04 remains a historical two-decimal observation; exact recorded-price arithmetic71448.045 uses peer-reported GA fills. Hidden cash precision, fee treatment and platform rounding are still unknown.",
+  "cash_arithmetic_plus_remaining_cost": null,
+  "cash_precision_note": "UI65571.41 does not determine exact AK cost. History amount5876.63 and ticket/mark-derived5876.64 disagree at displayed precision; neither a half-cent value nor a rounding rule is inferred.",
   "session_realized_pnl_by_market": [],
   "realized_pnl_by_market_scope": "Cumulative historical ledger sales plus separate 12-row UI fill adjustment. The latter has no verified order grouping and remains outside the order-aggregate ledger.",
   "session_audits": [
-    "data/orders/daenerys_2026-10-03_ga259_no_buy_001_observed_0740.json",
-    "data/orders/daenerys_2026-10-03_ga259_no_buy_001_peer_fills_0751.json"
+    "data/orders/daenerys_2026-10-03_ak369_yes_buy_001_observed_0758.json"
   ],
-  "reconciliation_record": "data/snapshots/reconciliation_2026-10-03_0740_enriched_0751.json",
+  "reconciliation_record": "data/snapshots/reconciliation_2026-10-03_0758.json",
   "valuation_observations": {
-    "kind": "No new valuation marks supplied for this observation window",
-    "whole_account_marked_value": null,
-    "positions": []
+    "kind": "AK-only displayed mark and P&L; not execution cost or liquidation evidence",
+    "exact_observation_time_utc": null,
+    "positions": [
+      {
+        "market_id": 369,
+        "side": "YES",
+        "marked_value_ui": "5410.56",
+        "unrealized_pnl_ui": "-466.08",
+        "mark_minus_displayed_pnl_arithmetic": "5876.64",
+        "exact_basis_not_established": true
+      }
+    ],
+    "whole_account_marked_value": null
   },
   "liquidation_observations": {
     "whole_account_liquidation_value": null,
     "positions": [],
     "missing_contemporaneous_full_position_depth_markets": [
       259,
+      369,
       379,
       387
     ]
   },
-  "record_kind": "historical_0740_portfolio_enriched_with_peer_reported_ga_fills",
+  "record_kind": "historical_0758_portfolio_with_unresolved_ak_cost_precision",
   "observed_window_start_is_approximate": false,
-  "immutable_snapshot": "data/snapshots/portfolio_2026-10-03_0740_enriched_0751.json",
+  "immutable_snapshot": "data/snapshots/portfolio_2026-10-03_0758.json",
   "numeric_exchange_id": null,
   "cash_display_window_is_approximate": true,
   "trade_ledger_coverage": {
@@ -276,25 +315,49 @@
         "path": "data/snapshots/bot_adjustment_reconciliation_2026-10-03_0701.json",
         "cash_change": "-0.380",
         "remaining_inventory": 0
+      },
+      {
+        "kind": "completed_ak_acquisition_observed_precision",
+        "path": "data/orders/daenerys_2026-10-03_ak369_yes_buy_001_observed_0758.json",
+        "market_id": 369,
+        "side": "YES",
+        "quantity": 20000,
+        "transaction_displayed_debit": "5876.63",
+        "alternative_ticket_or_mark_derived_amount": "5876.64",
+        "exact_debit": null,
+        "retire_when_exact_aggregate_is_recorded": true
       }
     ]
   },
   "source_observation_records": [
-    "data/orders/daenerys_2026-10-03_ri387_buy_002_terminal_0738.json",
-    "data/orders/daenerys_2026-10-03_ga259_no_buy_001_observed_0740.json",
-    "data/orders/daenerys_2026-10-03_ga259_no_buy_001_peer_fills_0751.json"
+    "data/orders/daenerys_2026-10-03_ak369_yes_buy_001_observed_0758.json"
   ],
-  "cash_display_observation_window_utc_approx": [
-    "2026-10-03T07:40:00Z",
-    "2026-10-03T07:41:00Z"
+  "unresolved_cost_markets": [
+    369
   ],
-  "unresolved_cost_markets": [],
   "reconciliation_evidence_observed_at_utc": "2026-10-03T07:51:34.012Z",
   "reconciliation_evidence_is_new_account_state": false,
-  "cash_arithmetic_from_recorded_qty_price": "71448.045",
-  "legacy_verified_price_product_field_note": "The older field remains null because new GA exact-price inputs are peer-reported rather than independently raw-API-verified; use cash_arithmetic_from_recorded_qty_price with its provenance.",
-  "position_cost_basis_source_note": "Exact acquisition price products, including peer-reported GA fill products; independent raw-source verification pending",
+  "cash_arithmetic_from_recorded_qty_price": null,
   "raw_source_verification_pending_markets": [
     259
+  ],
+  "cash_display_timing_note": "After the AK entry per parent; exact cash observation timestamp not supplied",
+  "known_recorded_position_cost_subtotal": "28708.490",
+  "known_basis_source_note": "RI/MA documented acquisitions and peer-reported exact GA fill products; GA raw-source verification remains pending",
+  "display_based_accounting_bridges": [
+    {
+      "input": "transaction_history_two_decimal_amount",
+      "ak_amount": "5876.63",
+      "cash_arithmetic_using_displayed_amount": "65571.415",
+      "total_basis_using_displayed_amount": "34585.120",
+      "exact_cash_or_cost_claimed": false
+    },
+    {
+      "input": "earlier_ticket_estimate_or_mark_minus_displayed_pnl",
+      "ak_amount": "5876.64",
+      "cash_arithmetic_using_displayed_amount": "65571.405",
+      "total_basis_using_displayed_amount": "34585.130",
+      "exact_cash_or_cost_claimed": false
+    }
   ]
 }

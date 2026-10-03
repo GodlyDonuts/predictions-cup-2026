@@ -1,0 +1,87 @@
+{
+  "schema_version": 1,
+  "record_kind": "immutable_completed_ak_acquisition_observed_precision_pending_exact_fills",
+  "immutable": true,
+  "repository_base_commit": "c584e6ae31a73472b8fc44fa57216c7d5870c754",
+  "source": "parent observed official signed-in UI",
+  "intent_id": "daenerys-20261003-ak369-yes-buy-001",
+  "owner": "Daenerys / dot",
+  "bot_attributed_inventory": false,
+  "market_id": 369,
+  "market_title": "Republican Party wins Alaska Governor",
+  "side": "YES",
+  "action": "BUY",
+  "order_type": "LIMIT",
+  "tournament": "Midterm Elections",
+  "numeric_exchange_id": null,
+  "platform_order_id": null,
+  "requested_quantity": 20000,
+  "limit_price": "0.295",
+  "maximum_principal_susqies": "5900.000",
+  "submit_clicked_at_utc": "2026-10-03T07:57:16Z",
+  "submit_click_count": 1,
+  "retry_count": 0,
+  "status": "fully_filled_observed",
+  "filled_quantity": 20000,
+  "remaining_quantity": 0,
+  "holdings_and_zero_open_orders_verified_at_utc": "2026-10-03T07:58:02Z",
+  "transaction_history_verified_at_utc": "2026-10-03T07:58:37Z",
+  "exact_execution_time_utc": null,
+  "fill_breakdown": null,
+  "observed_amounts": {
+    "average_price_displayed": "0.294",
+    "average_price_decimal_places": 3,
+    "transaction_signed_amount_displayed": "-5876.63",
+    "transaction_amount_decimal_places": 2,
+    "earlier_ticket_estimate": "5876.64",
+    "portfolio_marked_value_displayed": "5410.56",
+    "portfolio_unrealized_pnl_displayed": "-466.08",
+    "marked_value_minus_displayed_pnl_arithmetic": "5876.64",
+    "exact_fill_cost": null,
+    "fees": null,
+    "source_disagreement_not_resolved_by_inference": true
+  },
+  "cash_observation": {
+    "displayed": "65571.41",
+    "precision_decimal_places": 2,
+    "exact_observation_time_utc": null,
+    "timing_note": "After the AK entry, per parent; no exact cash observation timestamp supplied",
+    "exact_cash": null
+  },
+  "accounting_treatment": {
+    "included_as_20000_share_holding": true,
+    "executed_aggregate_added_to_ledger": false,
+    "separate_completed_acquisition_observed_precision": true,
+    "retire_adjustment_when_exact_terminal_aggregate_is_recorded": true
+  },
+  "previous_remainder_review_target_utc": "2026-10-03T08:15:00Z",
+  "remainder_review_target_active": false,
+  "remainder_review_target_reason": "All20000 shares filled and zero orders verified; no unfilled remainder to cancel",
+  "sources": {
+    "prepared_intent": "https://github.com/GodlyDonuts/predictions-cup-2026/issues/1#issuecomment-5966948773",
+    "outcome_and_exact_source_request": "https://github.com/GodlyDonuts/predictions-cup-2026/issues/1#issuecomment-5966987423"
+  },
+  "display_only_bridges": [
+    {
+      "input": "transaction_history_two_decimal_amount",
+      "ak_amount": "5876.63",
+      "cash_arithmetic_using_displayed_amount": "65571.415",
+      "total_basis_using_displayed_amount": "34585.120",
+      "exact_cash_or_cost_claimed": false
+    },
+    {
+      "input": "earlier_ticket_estimate_or_mark_minus_displayed_pnl",
+      "ak_amount": "5876.64",
+      "cash_arithmetic_using_displayed_amount": "65571.405",
+      "total_basis_using_displayed_amount": "34585.130",
+      "exact_cash_or_cost_claimed": false
+    }
+  ],
+  "limitations": [
+    "Source is the parent operator's official signed-in UI observation, not raw API fill data or independent account inspection by this worker.",
+    "Transaction amount5876.63, earlier ticket estimate5876.64 and mark/P&L-derived5876.64 remain distinct limited-precision observations; none establishes exact underlying fill cost. No midpoint, half-cent amount or fee is inferred.",
+    "The UI average0.294 is rounded:20000 times0.294=5880.000 is not asserted actual acquisition cost. Fill allocation and completed order/exchange IDs remain unknown.",
+    "Existing RI/MA/GA positions are carried forward from earlier observations and unaffected by this recorded AK buy; their older observation timestamps are retained rather than falsely refreshed.",
+    "The parent is the only account operator. This worker made no account network, API, UI or trading calls."
+  ]
+}

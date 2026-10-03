@@ -1,0 +1,90 @@
+{
+  "schema_version": 1,
+  "record_kind": "immutable_ak_observed_precision_reconciliation",
+  "immutable": true,
+  "repository_base_commit": "c584e6ae31a73472b8fc44fa57216c7d5870c754",
+  "account_observation_window_end_utc": "2026-10-03T07:58:37Z",
+  "source_record": "data/orders/daenerys_2026-10-03_ak369_yes_buy_001_observed_0758.json",
+  "ledger": {
+    "path": "data/trade_ledger.csv",
+    "sha256": "1a8c9e971a08cc39ed76da6a40883a94899f4210caca5d9dfb22722d671bddf0",
+    "bytes": 6333,
+    "rows": 20,
+    "unchanged": true,
+    "appended_rows": 0,
+    "ledger_only_cash": "71448.425"
+  },
+  "known_pre_ak_recorded_price_arithmetic": {
+    "cash": "71448.045",
+    "ri_ma_ga_basis": "28708.490",
+    "ga_exact_prices_peer_reported": true,
+    "ga_raw_source_independently_verified": false
+  },
+  "ak": {
+    "quantity": 20000,
+    "exact_cost": null,
+    "history_amount_displayed": "5876.63",
+    "ticket_estimate": "5876.64",
+    "mark_minus_displayed_pnl": "5876.64",
+    "exact_average_price": null,
+    "order_id": null,
+    "pending_orders": 0
+  },
+  "display_only_bridges": [
+    {
+      "input": "transaction_history_two_decimal_amount",
+      "ak_amount": "5876.63",
+      "cash_arithmetic_using_displayed_amount": "65571.415",
+      "total_basis_using_displayed_amount": "34585.120",
+      "exact_cash_or_cost_claimed": false
+    },
+    {
+      "input": "earlier_ticket_estimate_or_mark_minus_displayed_pnl",
+      "ak_amount": "5876.64",
+      "cash_arithmetic_using_displayed_amount": "65571.405",
+      "total_basis_using_displayed_amount": "34585.130",
+      "exact_cash_or_cost_claimed": false
+    }
+  ],
+  "current_exact_cash": null,
+  "current_exact_total_basis": null,
+  "analytical_realized": "156.535",
+  "validation": {
+    "ledger_byte_hash_unchanged": true,
+    "decimal_and_fraction_baseline_cash_agree": true,
+    "display_bridges_computed_without_precision_promotion": true,
+    "rounded_average_not_used_as_cost": true,
+    "no_order_id_or_fill_breakdown_invented": true,
+    "earlier_position_observation_timestamps_preserved": true,
+    "snapshot_equals_latest": true
+  },
+  "limitations": [
+    "Source is the parent operator's official signed-in UI observation, not raw API fill data or independent account inspection by this worker.",
+    "Transaction amount5876.63, earlier ticket estimate5876.64 and mark/P&L-derived5876.64 remain distinct limited-precision observations; none establishes exact underlying fill cost. No midpoint, half-cent amount or fee is inferred.",
+    "The UI average0.294 is rounded:20000 times0.294=5880.000 is not asserted actual acquisition cost. Fill allocation and completed order/exchange IDs remain unknown.",
+    "Existing RI/MA/GA positions are carried forward from earlier observations and unaffected by this recorded AK buy; their older observation timestamps are retained rather than falsely refreshed.",
+    "The parent is the only account operator. This worker made no account network, API, UI or trading calls."
+  ],
+  "artifact_hashes": {
+    "data/orders/daenerys_2026-10-03_ak369_yes_buy_001_observed_0758.json": {
+      "sha256": "ebe99d3283cfda35e3a52e29895ceb83af310b2bd335bf1811ce83a610f8902a",
+      "bytes": 4090,
+      "git_blob_sha1": "c1b597641cb0b1435cb2bc25567e2d6959fc39dc"
+    },
+    "data/portfolio/latest.json": {
+      "sha256": "e4ae1eaebb49a4f467a2ff44e09e994e31317871dceaea8ce7c6f8633c8ff248",
+      "bytes": 14924,
+      "git_blob_sha1": "e2a784f3afbf91192ca995297873cd4dad3e7d13"
+    },
+    "data/snapshots/portfolio_2026-10-03_0758.json": {
+      "sha256": "e4ae1eaebb49a4f467a2ff44e09e994e31317871dceaea8ce7c6f8633c8ff248",
+      "bytes": 14924,
+      "git_blob_sha1": "e2a784f3afbf91192ca995297873cd4dad3e7d13"
+    },
+    "docs/CURRENT_STATE.md": {
+      "sha256": "d111ef6a2ab2d4f2b7f52ca4c762335b0c63bf764cca6da506757893c52e71a5",
+      "bytes": 38639,
+      "git_blob_sha1": "165223beb263f146dd038468d1251754f20ba2c9"
+    }
+  }
+}
