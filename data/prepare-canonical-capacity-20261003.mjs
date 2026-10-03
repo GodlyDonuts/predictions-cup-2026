@@ -1,0 +1,24 @@
+import fs from 'node:fs';import path from 'node:path';import {createHash} from 'node:crypto';
+import {digest} from '../live-paper/model.mjs';import {CANONICAL_NO_POLICY,validateCapacityReview} from '../live-paper/canonical-no-capacity.mjs';import {capacityCodeIdentity} from '../live-paper/canonical-capacity-monitor.mjs';
+const sha=b=>createHash('sha256').update(b).digest('hex'),rt=path.join(process.env.LOCALAPPDATA,'SigTradingCup/paper-runtime'),cohort='nh-canonical-capacity-20261003-v1',dir=path.join(rt,'canonical-capacity-cohorts',cohort);
+if(fs.existsSync(path.join(dir,'bank.json'))||fs.existsSync('data/canonical-capacity-bank-20261003-v1.json'))throw Error('Existing frozen cohort must not be overwritten');
+const input=JSON.parse(fs.readFileSync('data/canonical-capacity-research-input.json')),evidence=input.map(s=>({commentId:s.id,url:s.url,contentHash:sha(s.body),provenance:'Daenerys manual signed-in browser transcript summary, not authenticated API metadata'}));
+const captures=[];const sources=[['platform-complement.html','https://sig.thesuper.market/docs/markets-and-trading'],['NH-sample-ballot.pdf','https://www.londonderrynh.gov/DocumentCenter/View/3063']];
+fs.mkdirSync(dir,{recursive:true});
+for(const [file,url]of sources){const response=await fetch(url,{redirect:'follow'});if(!response.ok)throw Error('Public source unavailable');const bytes=Buffer.from(await response.arrayBuffer());fs.writeFileSync(path.join(dir,file),bytes,{flag:'wx',mode:0o600});captures.push({url,file,contentHash:sha(bytes),bytes:bytes.length,observedAt:new Date().toISOString()});}
+const recordedAt=new Date().toISOString(),bindings=[['381','1070','Democratic Party'],['382','1071','Republican Party']].map(([marketId,exchangeId,winnerAffiliation])=>({marketId,exchangeId,outcome:'NO',event:'2026 New Hampshire U.S. Senate general election',resolution:'final certified winner party affiliation',winnerAffiliation,fusion:'all parties listed for the winner count',administrative:'sponsor may change rules or outcome; delays/void/refund not excluded',manualInfoAt:'2026-10-03T22:11:30Z through 2026-10-03T22:11:43Z',provenance:evidence[0].url}));
+const review={schemaVersion:1,id:cohort,kind:'conditional_no_pair_review',tournamentId:'bda92870-621e-47b0-bc3c-3602c5c26f55',recordedAt,expiresAt:new Date(Date.parse(recordedAt)+21600000).toISOString(),evidenceHash:digest({evidence,captures,bindings}),
+ legs:bindings.map(b=>({marketId:b.marketId,exchangeId:b.exchangeId,outcome:'NO',rulesHash:digest(b),binding:b})),
+ assumptions:['Current Senate ballot maps Chris Pappas Democratic, John E. Sununu Republican, Edmond Laplante Constitution, plus write-in; ordinary single winner affiliations are exclusive.',
+  'Same ballot demonstrates dual-party nomination for other offices, so fusion is a real contrary possibility and zero-payout stress is required.',
+  'Exact rules are peer-supplied manual transcript evidence. Rules hashes bind that attestation, not live API authenticity or scenario completeness.',
+  'Uncovered SELL YES is documented BUY NO at complement; YES bid rungs provide the canonical same-exchange NO acquisition depth, not independent native-NO observations.',
+  'Fees are set to zero under the direct human instruction. Each acquired leg still includes one adverse 0.005 tick; displayed depth is discounted to one percent.',
+  'Normal settlement surplus is not a forecast of a profitable resale or guaranteed completion of two legs.'],
+ scenarios:[{id:'Democratic_winner',category:'ordinary',payouts:[0,1]},{id:'Republican_winner',category:'ordinary',payouts:[1,0]},{id:'other_winner',category:'ordinary',payouts:[1,1]},
+  {id:'dual_party_or_admin_zero_stress',category:'exception',payouts:[0,0]}],evidence,captures};validateCapacityReview(review);
+const bytes=fs.readFileSync(path.join(rt,'public-books.jsonl')),prefix=bytes.subarray(0,bytes.lastIndexOf(10)+1),last=JSON.parse(prefix.toString().split('\n').at(-2)),cutoff=new Date().toISOString();if(Date.parse(last.at)>Date.parse(cutoff))throw Error('Future source');
+const bank={schemaVersion:1,name:cohort,tournamentId:review.tournamentId,cutoff,review,policy:CANONICAL_NO_POLICY,codeIdentity:capacityCodeIdentity(),sourcePrefixBytes:prefix.length,sourcePrefixHash:sha(prefix),sourcePrefixSequence:last.sequence,sourcePrefixJournalHash:last.hash};
+for(const file of [path.join(dir,'bank.json'),'data/canonical-capacity-bank-20261003-v1.json'])fs.writeFileSync(file,JSON.stringify(bank,null,2)+'\n',{flag:'wx',mode:0o600});
+fs.writeFileSync(path.join(dir,'journal.jsonl'),'',{flag:'wx',mode:0o600});fs.writeFileSync(path.join(rt,'canonical-capacity-active.json'),JSON.stringify({cohort,bankHash:digest(bank)}),{flag:'wx',mode:0o600});
+console.log(JSON.stringify({cohort,bankHash:digest(bank),cutoff,sourcePrefixSequence:last.sequence,reviewExpiresAt:review.expiresAt,newApiClients:0,competitionOrders:0}));
