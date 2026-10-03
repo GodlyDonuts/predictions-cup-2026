@@ -1,0 +1,109 @@
+{
+  "schema_version": 1,
+  "record_kind": "immutable_peer_fill_enriched_historical_reconciliation",
+  "immutable": true,
+  "repository_base_commit": "f037e820e636162999a5caab22c6fa06c24d0437",
+  "account_state_as_of_utc": "2026-10-03T07:40:17Z",
+  "peer_projection_observed_at_utc": "2026-10-03T07:51:34.012Z",
+  "new_account_state_asserted": false,
+  "source_record": "data/orders/daenerys_2026-10-03_ga259_no_buy_001_peer_fills_0751.json",
+  "raw_projection_independently_verified": false,
+  "ledger": {
+    "path": "data/trade_ledger.csv",
+    "prior_sha256": "89a41fae53db6817d384c4f9e417e66b4c73485efe7f05922885eb9594b1b17d",
+    "sha256": "1a8c9e971a08cc39ed76da6a40883a94899f4210caca5d9dfb22722d671bddf0",
+    "prior_bytes": 5776,
+    "prior_byte_prefix_preserved": true,
+    "prior_rows": 19,
+    "appended_rows": 1,
+    "total_rows": 20,
+    "appended_market": 259,
+    "appended_order_id": "4505792",
+    "appended_quantity": 10000,
+    "appended_cost": "8945.420",
+    "derived_weighted_average": "0.894542",
+    "ledger_only_cash": "71448.425",
+    "ledger_only_realized": "156.915"
+  },
+  "ga_arithmetic": {
+    "decimal_sum": "8945.420",
+    "independent_fraction_sum": "447271/50",
+    "integer_milli_sum": 8945420,
+    "quantity_sum": 10000,
+    "matches_original_ui_export_amount": true
+  },
+  "retired_adjustment": {
+    "source": "data/orders/daenerys_2026-10-03_ga259_no_buy_001_observed_0740.json",
+    "quantity": 10000,
+    "displayed_cost": "8945.42",
+    "replaced_by_ledger_row": 20,
+    "additional_cash_debit_relative_to_bridge": "0.000"
+  },
+  "active_adjustments": [
+    {
+      "source": "data/snapshots/bot_adjustment_reconciliation_2026-10-03_0701.json",
+      "cash_change": "-0.380",
+      "realized_change": "-0.380",
+      "remaining_inventory": 0
+    }
+  ],
+  "combined_recorded_price_arithmetic": {
+    "cash": "71448.045",
+    "ui_cash_display": "71448.04",
+    "ui_cash_minus_arithmetic": "-0.005",
+    "verified_hidden_cash": null,
+    "ri_basis": "17763.900",
+    "ma_basis": "1999.170",
+    "ga_basis": "8945.420",
+    "total_basis": "28708.490",
+    "cash_plus_basis": "100156.535",
+    "analytical_realized": "156.535",
+    "source_note": "GA fill products are peer-reported, independently arithmetic-checked, not independently raw-source-verified"
+  },
+  "validation": {
+    "decimal_full_20_row_fifo_replay": true,
+    "independent_fraction_full_20_row_fifo_replay": true,
+    "integer_milli_and_fraction_ga_fill_replay": true,
+    "ga_fill_ids_unique": true,
+    "original_19_row_bytes_preserved": true,
+    "ga_order_in_ledger_once": true,
+    "ga_observed_adjustment_retired_without_double_debit": true,
+    "holdings_unchanged_from_parent_0740_observation": true,
+    "snapshot_equals_latest": true
+  },
+  "limitations": [
+    "Fill IDs, exchange/order IDs and exact execution timestamp are peer-reported from Drogon through the parent; this worker has not independently inspected the original raw API response or projection file.",
+    "The reported projection observation time 07:51:34.012Z is evidence provenance, not a fresh account-state claim. Parent holdings and zero-open-order observations remain at 07:40:09Z, history at07:40:17Z.",
+    "Price products and their exact Decimal/rational arithmetic do not establish hidden account balance precision, fee treatment or the platform cash rounding rule.",
+    "The parent click time is approximate and kept separate from the peer-reported API execution timestamp. Numeric exchange948 applies only to this reported GA order, not inferred RI/MA contexts.",
+    "All earlier source audits, official CSV and snapshots remain immutable; evidence enrichment does not rewrite the original limited-precision observations.",
+    "No account network, API, UI or trading call was made by this record-maintenance worker."
+  ],
+  "artifact_hashes": {
+    "data/orders/daenerys_2026-10-03_ga259_no_buy_001_peer_fills_0751.json": {
+      "sha256": "f4995a81177709995af27464c134281dae99abc8317119a30de1ef27a064c161",
+      "bytes": 4563,
+      "git_blob_sha1": "9ed2786b145b25314c70e9183dd790f251ffae68"
+    },
+    "data/snapshots/portfolio_2026-10-03_0740_enriched_0751.json": {
+      "sha256": "2f6ccc7c3ac4b241ca4f5e04d16a38553750c6381a5561554232c421e580e3a9",
+      "bytes": 13395,
+      "git_blob_sha1": "2414bc737ec199ce8e22631b1c127c8db28312c9"
+    },
+    "data/portfolio/latest.json": {
+      "sha256": "2f6ccc7c3ac4b241ca4f5e04d16a38553750c6381a5561554232c421e580e3a9",
+      "bytes": 13395,
+      "git_blob_sha1": "2414bc737ec199ce8e22631b1c127c8db28312c9"
+    },
+    "data/trade_ledger.csv": {
+      "sha256": "1a8c9e971a08cc39ed76da6a40883a94899f4210caca5d9dfb22722d671bddf0",
+      "bytes": 6333,
+      "git_blob_sha1": "bfedbf785f616486dc1ba3ba7460e0b048f41cda"
+    },
+    "docs/CURRENT_STATE.md": {
+      "sha256": "0ec6a1bbbec78d7674c0e5fdd77f44d8bc2e0d6cfed49b36f8e0916b14787124",
+      "bytes": 35621,
+      "git_blob_sha1": "5d89dac4e15fcce998d8008dea00941af812cbee"
+    }
+  }
+}

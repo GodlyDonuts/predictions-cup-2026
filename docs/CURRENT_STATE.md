@@ -1,5 +1,28 @@
 # Current state
 
+## GA exact-fill enrichment: 07:51 projection, account state still as of 07:40
+
+The parent relayed **Drogon's authorized read-only projection** from `official-account.json`, observed **2026-10-03 07:51:34.012 UTC**, reporting `hasMore=false`. This is explicitly **peer-reported evidence**. This record worker has not independently inspected the original raw API response/projection file; sanitized source proof has been requested. The projection time does **not** establish fresh post-07:40 account holdings or open orders.
+
+Reported GA market **259 NO**, order **4505792**, exchange **948**, contains four fills, all with reported API execution time **07:39:38.324 UTC**:
+
+- Fill **18596657**: **20 at 0.880**, cost **17.600**
+- Fill **18596663**: **410 at 0.885**, cost **362.850**
+- Fill **18596668**: **36 at 0.890**, cost **32.040**
+- Fill **18596674**: **9,534 at 0.895**, cost **8,532.930**
+
+Decimal, independent rational and integer-milli arithmetic agree: **10,000 shares**, cost **8,945.420**, exact weighted average **0.894542**. This matches the original UI/export amount **8,945.42** and explains why its rounded average **0.895** must not be multiplied to assert an **8,950** execution cost. Fees and hidden precision are still not inferred. These fills belong to Daenerys's previously observed order, not Codex bot-attributed inventory. The parent's approximate click at **07:39:38** remains separate from the reported API execution timestamp.
+
+### Ledger integration without another debit
+
+The terminal GA aggregate is now **ledger row 20**, preserving the original 19-row byte prefix. Its prior separate observed-precision acquisition layer is retired. This adds **no new holding or cash debit** relative to the earlier accounting bridge: it enriches the same already-held 10,000 shares with reported fill evidence.
+
+Ledger-only cash arithmetic is **71,448.425**; the separate bot adjustment **−0.380** yields **71,448.045**. This is exact arithmetic on recorded numbers, including peer-reported GA prices, **not verified hidden account cash**. The observed UI remains **71,448.04**. Acquisition basis is RI **17,763.900**, MA **1,999.170**, GA **8,945.420**, total **28,708.490**. Cash arithmetic plus basis is **100,156.535**; analytical realized P&L remains **156.535**.
+
+The derived view uses `cash_arithmetic_from_recorded_qty_price` for the enriched value and explicitly retains the peer-source limitation. The older “verified” price-input field remains null rather than suggesting independent raw-API verification. Holdings **RI19,621 / MA2,061 / GA NO10,000**, and zero open orders, still refer to the parent's **07:40:09** observation; history verification was **07:40:17**. Numeric exchange948 applies to the reported GA order only.
+
+Sources: [parent receipt of peer report](https://github.com/GodlyDonuts/predictions-cup-2026/issues/1#issuecomment-5966940428), [original reconciliation request](https://github.com/GodlyDonuts/predictions-cup-2026/issues/1#issuecomment-5966866303), [immutable peer-fill transcription](../data/orders/daenerys_2026-10-03_ga259_no_buy_001_peer_fills_0751.json), [reconciliation](../data/snapshots/reconciliation_2026-10-03_0740_enriched_0751.json), [enriched historical snapshot](../data/snapshots/portfolio_2026-10-03_0740_enriched_0751.json). Original observations, limited-precision audit and official CSV remain unchanged below and in their immutable files.
+
 ## Latest historical account observation: October 3, 07:38–07:40 UTC
 
 The parent operator's official signed-in website observations establish **zero open orders at 07:40:09 UTC**, with **RI YES 19,621**, **MA YES 2,061**, and **GA market 259 NO 10,000**. The latest history confirmation was **07:40:17**. This is historical state, not a later live-state assertion.

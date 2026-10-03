@@ -1,0 +1,300 @@
+{
+  "schema_version": 6,
+  "observed_window_start_utc": "2026-10-03T07:38:32Z",
+  "observed_window_end_utc": "2026-10-03T07:40:17Z",
+  "cash_exact_verified_at_utc": null,
+  "open_orders_verified_window_utc": [
+    "2026-10-03T07:40:09Z"
+  ],
+  "tournament": "Midterm Elections",
+  "tournament_slug": "midterm-elections",
+  "currency": "SUSQies (nonmonetary, nonredeemable contest points)",
+  "initial_cash": "100000.00",
+  "cash_verified": null,
+  "position_cost_basis_total": "28708.490",
+  "positions": [
+    {
+      "market_id": 379,
+      "title": "Democratic Party wins Massachusetts Senate",
+      "side": "YES",
+      "shares": 2061,
+      "average_price": "0.970",
+      "cost": "1999.170",
+      "order_id": 896197,
+      "status": "2061 shares unchanged in parent-reported 07:40 portfolio observation",
+      "holdings_verified_at_utc": "2026-10-03T07:40:09Z",
+      "holdings_source": "data/orders/daenerys_2026-10-03_ga259_no_buy_001_observed_0740.json",
+      "lots": [
+        {
+          "shares": 2061,
+          "average_price": "0.970",
+          "cost": "1999.170",
+          "order_id": 896197,
+          "executed_at_utc": null,
+          "submitted_at_utc": null,
+          "verified_at_utc": "2026-10-01T18:52:00Z",
+          "source": "data/trade_ledger.csv"
+        }
+      ]
+    },
+    {
+      "market_id": 387,
+      "title": "Democratic Party wins Rhode Island Senate",
+      "side": "YES",
+      "shares": 19621,
+      "average_price": "0.905",
+      "cost": "17763.900",
+      "order_id": null,
+      "status": "19621 shares retained; order4482453 terminal with12621 fills and2379 canceled; no remaining open order",
+      "holdings_verified_at_utc": "2026-10-03T07:40:09Z",
+      "holdings_source": "data/orders/daenerys_2026-10-03_ga259_no_buy_001_observed_0740.json",
+      "lots": [
+        {
+          "shares": 5000,
+          "average_price": "0.925",
+          "cost": "4625.000",
+          "order_id": null,
+          "executed_at_utc": null,
+          "submitted_at_utc": "2026-10-02T05:45:48Z",
+          "submission_time_is_approximate": true,
+          "verified_at_utc": "2026-10-02T05:46:44Z",
+          "source": "data/orders/session_2026-10-02_ri_value.json"
+        },
+        {
+          "shares": 2000,
+          "average_price": "0.890",
+          "cost": "1780.000",
+          "order_id": "4419984",
+          "executed_at_utc": null,
+          "submitted_at_utc": "2026-10-03T07:01:16Z",
+          "submission_time_is_approximate": true,
+          "verified_at_utc": "2026-10-03T07:23:58Z",
+          "source": "data/orders/daenerys_2026-10-03_ri387_buy_001_terminal_0723.json",
+          "accounting_layer": "trade_ledger_row_18"
+        },
+        {
+          "shares": 12621,
+          "average_price": "0.900",
+          "cost": "11358.900",
+          "order_id": "4482453",
+          "executed_at_utc": null,
+          "submitted_at_utc": "2026-10-03T07:29:27Z",
+          "verified_at_utc": "2026-10-03T07:30:18Z",
+          "source": "data/orders/daenerys_2026-10-03_ri387_buy_002_terminal_0738.json",
+          "accounting_layer": "trade_ledger_row_19",
+          "terminal_order_verified_at_utc": "2026-10-03T07:38:54Z"
+        }
+      ],
+      "average_price_is_ui_display": true,
+      "exact_average_price_ratio": "17763.900 / 19621"
+    },
+    {
+      "market_id": 259,
+      "title": "Republican Party wins Georgia Senate",
+      "side": "NO",
+      "shares": 10000,
+      "average_price": "0.894542",
+      "average_price_is_ui_display": false,
+      "exact_average_price": "0.894542",
+      "cost": "8945.420",
+      "cost_displayed": "8945.42",
+      "cost_display_precision_decimal_places": 2,
+      "order_id": "4505792",
+      "status": "10000-share holding/zero orders verified by parent07:40:09; exact peer-reported fill cost added later without a new trade",
+      "holdings_verified_at_utc": "2026-10-03T07:40:09Z",
+      "holdings_source": "data/orders/daenerys_2026-10-03_ga259_no_buy_001_observed_0740.json",
+      "lots": [
+        {
+          "shares": 10000,
+          "average_price_displayed": "0.895",
+          "exact_average_price": "0.894542",
+          "cost": "8945.420",
+          "cost_displayed": "8945.42",
+          "order_id": "4505792",
+          "executed_at_utc": "2026-10-03T07:39:38.324Z",
+          "submitted_at_utc": "2026-10-03T07:39:38Z",
+          "verified_at_utc": "2026-10-03T07:40:17Z",
+          "source": "data/orders/daenerys_2026-10-03_ga259_no_buy_001_peer_fills_0751.json",
+          "accounting_layer": "trade_ledger_row_20",
+          "average_price": "0.894542",
+          "exchange_id": 948,
+          "execution_time_source": "peer_reported_api_projection",
+          "submission_time_is_approximate": true,
+          "raw_source_independently_verified": false
+        }
+      ],
+      "average_price_displayed": "0.895",
+      "cost_source": "Exact products of peer-reported fill prices; raw projection not independently inspected",
+      "exchange_id": 948,
+      "identifier_source": "peer_reported_projection",
+      "reconciliation_source": "data/orders/daenerys_2026-10-03_ga259_no_buy_001_peer_fills_0751.json"
+    }
+  ],
+  "open_orders": [],
+  "source": "Parent observed official signed-in UI, enriched by peer-reported Drogon exact GA fill projection; raw projection not independently inspected",
+  "notes": [
+    "Fill IDs, exchange/order IDs and exact execution timestamp are peer-reported from Drogon through the parent; this worker has not independently inspected the original raw API response or projection file.",
+    "The reported projection observation time 07:51:34.012Z is evidence provenance, not a fresh account-state claim. Parent holdings and zero-open-order observations remain at 07:40:09Z, history at07:40:17Z.",
+    "Price products and their exact Decimal/rational arithmetic do not establish hidden account balance precision, fee treatment or the platform cash rounding rule.",
+    "The parent click time is approximate and kept separate from the peer-reported API execution timestamp. Numeric exchange948 applies only to this reported GA order, not inferred RI/MA contexts.",
+    "All earlier source audits, official CSV and snapshots remain immutable; evidence enrichment does not rewrite the original limited-precision observations.",
+    "No account network, API, UI or trading call was made by this record-maintenance worker.",
+    "GA order4505792 is now recorded exactly once as a terminal aggregate; this is evidence/accounting enrichment of the already-held10000 shares, not a new buy.",
+    "Cash arithmetic and basis are exact calculations on recorded source numbers; GA raw-source confirmation and hidden balance/fee precision remain distinct uncertainties."
+  ],
+  "realized_pnl_total": "156.535",
+  "realized_pnl_basis": "20-row historical FIFO realized156.915 plus separate bot adjustment -0.380. GA acquisition evidence enrichment creates no new trade or realized sale.",
+  "session_audit": "data/orders/daenerys_2026-10-03_ga259_no_buy_001_peer_fills_0751.json",
+  "previous_session_audit": "data/orders/daenerys_2026-10-03_ga259_no_buy_001_observed_0740.json",
+  "previous_snapshot": "data/snapshots/portfolio_2026-10-03_0740.json",
+  "realized_pnl_by_market": [
+    {
+      "market_id": 277,
+      "side": "NO",
+      "shares_sold": 1538,
+      "proceeds": "115.350",
+      "fifo_disposed_cost": "99.970",
+      "realized_pnl": "15.380"
+    },
+    {
+      "market_id": 313,
+      "side": "YES",
+      "shares_sold": 2,
+      "proceeds": "1.470",
+      "fifo_disposed_cost": "1.610",
+      "realized_pnl": "-0.140"
+    },
+    {
+      "market_id": 354,
+      "side": "YES",
+      "shares_sold": 12504,
+      "proceeds": "1412.980",
+      "fifo_disposed_cost": "1500.440",
+      "realized_pnl": "-87.460"
+    },
+    {
+      "market_id": 369,
+      "side": "YES",
+      "shares_sold": 33,
+      "proceeds": "8.250",
+      "fifo_disposed_cost": "8.170",
+      "realized_pnl": "0.080"
+    },
+    {
+      "market_id": 370,
+      "side": "YES",
+      "shares_sold": 12,
+      "proceeds": "10.500",
+      "fifo_disposed_cost": "10.860",
+      "realized_pnl": "-0.360"
+    },
+    {
+      "market_id": 377,
+      "side": "NO",
+      "shares_sold": 10000,
+      "proceeds": "3300.000",
+      "fifo_disposed_cost": "3224.500",
+      "realized_pnl": "75.500"
+    },
+    {
+      "market_id": 387,
+      "side": "YES",
+      "shares_sold": 11828,
+      "proceeds": "11174.875",
+      "fifo_disposed_cost": "11021.340",
+      "realized_pnl": "153.535"
+    }
+  ],
+  "settlement_scenarios": {
+    "assumptions": "Historical fixed holdings: no further trades, fees, refunds or nonstandard settlement; each31682 held share pays0 or1. Uses recorded-price cash arithmetic incorporating peer-reported GA fills, not independently verified hidden cash. Scenarios, not forecasts or liquidation values.",
+    "all_positions_lose_arithmetic_total": "71448.045",
+    "all_positions_win_arithmetic_total": "103130.045",
+    "evidence_precision": "GA reported execution prices; raw proof pending",
+    "total_held_shares": 31682,
+    "open_orders_at_parent_observation": 0
+  },
+  "cash_displayed": "71448.04",
+  "cash_display_precision_decimal_places": 2,
+  "cash_display_verified_at_utc": null,
+  "cash_arithmetic_from_verified_qty_price": null,
+  "cash_arithmetic_basis": "Exact arithmetic from the 20 recorded order aggregates plus the separate historical bot adjustment -0.380. GA exact fills are peer-reported and independently arithmetic-checked, but raw source proof has not been inspected. This is not verified hidden account cash.",
+  "cash_display_minus_arithmetic": "-0.005",
+  "session_realized_pnl": "0.000",
+  "cash_arithmetic_plus_remaining_cost": "100156.535",
+  "cash_precision_note": "UI cash71448.04 remains a historical two-decimal observation; exact recorded-price arithmetic71448.045 uses peer-reported GA fills. Hidden cash precision, fee treatment and platform rounding are still unknown.",
+  "session_realized_pnl_by_market": [],
+  "realized_pnl_by_market_scope": "Cumulative historical ledger sales plus separate 12-row UI fill adjustment. The latter has no verified order grouping and remains outside the order-aggregate ledger.",
+  "session_audits": [
+    "data/orders/daenerys_2026-10-03_ga259_no_buy_001_observed_0740.json",
+    "data/orders/daenerys_2026-10-03_ga259_no_buy_001_peer_fills_0751.json"
+  ],
+  "reconciliation_record": "data/snapshots/reconciliation_2026-10-03_0740_enriched_0751.json",
+  "valuation_observations": {
+    "kind": "No new valuation marks supplied for this observation window",
+    "whole_account_marked_value": null,
+    "positions": []
+  },
+  "liquidation_observations": {
+    "whole_account_liquidation_value": null,
+    "positions": [],
+    "missing_contemporaneous_full_position_depth_markets": [
+      259,
+      379,
+      387
+    ]
+  },
+  "record_kind": "historical_0740_portfolio_enriched_with_peer_reported_ga_fills",
+  "observed_window_start_is_approximate": false,
+  "immutable_snapshot": "data/snapshots/portfolio_2026-10-03_0740_enriched_0751.json",
+  "numeric_exchange_id": null,
+  "cash_display_window_is_approximate": true,
+  "trade_ledger_coverage": {
+    "path": "data/trade_ledger.csv",
+    "rows": 20,
+    "sha256": "1a8c9e971a08cc39ed76da6a40883a94899f4210caca5d9dfb22722d671bddf0",
+    "ledger_only_cash": "71448.425",
+    "ga_order4505792_included_once": true,
+    "retired_derived_adjustments": [
+      {
+        "path": "data/orders/daenerys_2026-10-03_ri387_buy_002_partial_0730.json",
+        "order_id": "4482453",
+        "quantity": 12621,
+        "cost": "11358.900",
+        "reason": "Now included exactly once as terminal ledger row 19; retained immutable source not active adjustment"
+      },
+      {
+        "path": "data/orders/daenerys_2026-10-03_ga259_no_buy_001_observed_0740.json",
+        "market_id": 259,
+        "quantity": 10000,
+        "displayed_cost": "8945.42",
+        "reason": "Peer-reported exact cost8945.420 matches displayed amount and is included once in terminal ledger row20; observed-precision layer retired"
+      }
+    ],
+    "active_separate_adjustments": [
+      {
+        "kind": "historical_bot_ui_fills",
+        "path": "data/snapshots/bot_adjustment_reconciliation_2026-10-03_0701.json",
+        "cash_change": "-0.380",
+        "remaining_inventory": 0
+      }
+    ]
+  },
+  "source_observation_records": [
+    "data/orders/daenerys_2026-10-03_ri387_buy_002_terminal_0738.json",
+    "data/orders/daenerys_2026-10-03_ga259_no_buy_001_observed_0740.json",
+    "data/orders/daenerys_2026-10-03_ga259_no_buy_001_peer_fills_0751.json"
+  ],
+  "cash_display_observation_window_utc_approx": [
+    "2026-10-03T07:40:00Z",
+    "2026-10-03T07:41:00Z"
+  ],
+  "unresolved_cost_markets": [],
+  "reconciliation_evidence_observed_at_utc": "2026-10-03T07:51:34.012Z",
+  "reconciliation_evidence_is_new_account_state": false,
+  "cash_arithmetic_from_recorded_qty_price": "71448.045",
+  "legacy_verified_price_product_field_note": "The older field remains null because new GA exact-price inputs are peer-reported rather than independently raw-API-verified; use cash_arithmetic_from_recorded_qty_price with its provenance.",
+  "position_cost_basis_source_note": "Exact acquisition price products, including peer-reported GA fill products; independent raw-source verification pending",
+  "raw_source_verification_pending_markets": [
+    259
+  ]
+}

@@ -1,0 +1,100 @@
+{
+  "schema_version": 1,
+  "record_kind": "immutable_peer_reported_exact_fill_transcription",
+  "immutable": true,
+  "repository_base_commit": "f037e820e636162999a5caab22c6fa06c24d0437",
+  "source": {
+    "reporting_peer": "Drogon / Codex",
+    "relay": "parent account operator via authorized delegation",
+    "reported_projection_name": "official-account.json",
+    "reported_projection_observed_at_utc": "2026-10-03T07:51:34.012Z",
+    "reported_has_more": false,
+    "projection_file_independently_inspected": false,
+    "raw_api_response_independently_verified": false,
+    "raw_source_file_or_checksum": null,
+    "supporting_parent_comment": "https://github.com/GodlyDonuts/predictions-cup-2026/issues/1#issuecomment-5966940428",
+    "original_request": "https://github.com/GodlyDonuts/predictions-cup-2026/issues/1#issuecomment-5966866303",
+    "coverage_note": "hasMore=false is preserved as peer-reported metadata; no broader historical completeness is inferred"
+  },
+  "intent_id": "daenerys-20261003-ga259-no-buy-001",
+  "owner": "Daenerys / dot",
+  "bot_attributed_inventory": false,
+  "market_id": 259,
+  "side": "NO",
+  "action": "BUY",
+  "platform_order_id": "4505792",
+  "exchange_id": 948,
+  "identifier_source": "peer_reported_projection",
+  "tournament": "Midterm Elections",
+  "requested_quantity": 10000,
+  "limit_price": "0.895",
+  "maximum_principal_susqies": "8950.000",
+  "parent_submit_click_at_utc_approx": "2026-10-03T07:39:38Z",
+  "parent_ui_holdings_and_zero_orders_at_utc": "2026-10-03T07:40:09Z",
+  "parent_ui_history_verified_at_utc": "2026-10-03T07:40:17Z",
+  "fills": [
+    {
+      "fill_id": "18596657",
+      "quantity": 20,
+      "price": "0.880",
+      "quantity_price_cost": "17.600",
+      "reported_executed_at_utc": "2026-10-03T07:39:38.324Z",
+      "timestamp_source": "peer_reported_api_projection"
+    },
+    {
+      "fill_id": "18596663",
+      "quantity": 410,
+      "price": "0.885",
+      "quantity_price_cost": "362.850",
+      "reported_executed_at_utc": "2026-10-03T07:39:38.324Z",
+      "timestamp_source": "peer_reported_api_projection"
+    },
+    {
+      "fill_id": "18596668",
+      "quantity": 36,
+      "price": "0.890",
+      "quantity_price_cost": "32.040",
+      "reported_executed_at_utc": "2026-10-03T07:39:38.324Z",
+      "timestamp_source": "peer_reported_api_projection"
+    },
+    {
+      "fill_id": "18596674",
+      "quantity": 9534,
+      "price": "0.895",
+      "quantity_price_cost": "8532.930",
+      "reported_executed_at_utc": "2026-10-03T07:39:38.324Z",
+      "timestamp_source": "peer_reported_api_projection"
+    }
+  ],
+  "aggregate": {
+    "quantity": 10000,
+    "exact_reported_price_product_cost": "8945.420",
+    "exact_weighted_average_price": "0.894542",
+    "integer_milli_cost": 8945420,
+    "observed_ui_average_price": "0.895",
+    "observed_ui_export_cost": "8945.42",
+    "exact_cost_matches_observed_two_decimal_amount": true,
+    "fee_amount": null,
+    "fee_treatment_verified": false,
+    "status_supported_by_parent_ui": "fully_filled",
+    "remaining_quantity": 0
+  },
+  "ledger_inclusion": {
+    "path": "data/trade_ledger.csv",
+    "row_number_excluding_header": 20,
+    "quantity": 10000,
+    "weighted_average_price": "0.894542",
+    "signed_cash_cost": "8945.420",
+    "prior_observed_precision_adjustment": "data/orders/daenerys_2026-10-03_ga259_no_buy_001_observed_0740.json",
+    "prior_adjustment_retired": true,
+    "incremental_debit_relative_to_prior_display_based_bridge": "0.000"
+  },
+  "limitations": [
+    "Fill IDs, exchange/order IDs and exact execution timestamp are peer-reported from Drogon through the parent; this worker has not independently inspected the original raw API response or projection file.",
+    "The reported projection observation time 07:51:34.012Z is evidence provenance, not a fresh account-state claim. Parent holdings and zero-open-order observations remain at 07:40:09Z, history at07:40:17Z.",
+    "Price products and their exact Decimal/rational arithmetic do not establish hidden account balance precision, fee treatment or the platform cash rounding rule.",
+    "The parent click time is approximate and kept separate from the peer-reported API execution timestamp. Numeric exchange948 applies only to this reported GA order, not inferred RI/MA contexts.",
+    "All earlier source audits, official CSV and snapshots remain immutable; evidence enrichment does not rewrite the original limited-precision observations.",
+    "No account network, API, UI or trading call was made by this record-maintenance worker."
+  ]
+}
