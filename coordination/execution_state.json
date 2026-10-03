@@ -1,9 +1,9 @@
 {
   "schema_version": 3,
-  "recorded_at_utc": "2026-10-03T07:25:00Z",
+  "recorded_at_utc": "2026-10-03T07:33:20Z",
   "execution_coordinator": "Daenerys",
   "codex_mode": "quant_engineering_and_paper_only",
-  "daenerys_mode": "human_authorized_execution_owner_pending_ack",
+  "daenerys_mode": "temporary_sole_execution_owner",
   "automated_execution_enabled": false,
   "authority": "Direct human instruction October3: Daenerys trades until a successful production bot; Codex must coordinate her stop before takeover.",
   "activation_state": "codex_local_writer_disabled",
@@ -12,12 +12,21 @@
     "from": "Codex",
     "to": "Daenerys",
     "release_issue_comment": 5966759363,
-    "ack_status": "pending",
-    "fresh_reconciliation": "incoming_owner_required",
+    "ack_status": "acknowledged",
+    "fresh_reconciliation": "Incoming owner reported official UI reconciliation at 2026-10-03T07:23:58Z in the ACK. Historical observation only; refresh before each subsequent dispatch.",
     "codex_durable_intents": 12,
-    "codex_nonterminal_intents": 0
+    "codex_nonterminal_intents": 0,
+    "ack_issue_comment": 5966761902,
+    "ack_url": "https://github.com/GodlyDonuts/predictions-cup-2026/issues/1#issuecomment-5966761902",
+    "ack_posted_at_utc": "2026-10-03T07:27:09Z",
+    "ack_text_time_utc": "2026-10-03T07:26:00Z",
+    "ack_text_time_precision": "minute",
+    "linked_human_handoff_id": "human-20261003T064826Z-codex-to-daenerys",
+    "release_evidence_source": "https://github.com/GodlyDonuts/predictions-cup-2026/issues/1#issuecomment-5966759363",
+    "release_evidence_scope": "Codex-reported local activation disabled and all 12 durable intents terminal; not independently reverified by this documentation update.",
+    "release_evidence_file_publication": "Referenced data/daenerys-execution-release.json was absent from main 5c09038; issue release evidence remains available."
   },
-  "handoff_required": true,
+  "handoff_required": false,
   "return_handoff_required": true,
   "coordination_issue": "https://github.com/GodlyDonuts/predictions-cup-2026/issues/1",
   "human_confirmation": {
@@ -31,7 +40,7 @@
     "in_flight_write_ambiguity": null,
     "resting_orders_may_still_fill": true
   },
-  "automation_status_basis": "Disabled in this coordination record under the human-directed pause; local runtime state has not been inspected or changed by this update. No technical shutdown or fencing is claimed.",
+  "automation_status_basis": "Codex reported local competition activation archived and enabled=false in RELEASE 5966759363. This ACK synchronization does not independently inspect or change the runtime and does not establish a cross-host lock or limiter.",
   "notes": [
     "Newest direct human assignment supersedes October2 sole-Codex execution ownership.",
     "Codex local competition activation is explicitly disabled; do not enable from paper evidence or an agent suggestion.",
@@ -102,7 +111,66 @@
         "outgoing_agent_release_observed": false,
         "release_requirement_superseded_by_direct_human_confirmation": true,
         "technical_runtime_stop_verified": false
+      },
+      {
+        "handoff_id": "codex-to-daenerys-20261003-0725",
+        "kind": "codex_release_and_daenerys_ack_for_existing_human_reassignment",
+        "linked_human_handoff_id": "human-20261003T064826Z-codex-to-daenerys",
+        "from": "Codex",
+        "to": "Daenerys",
+        "release_issue_comment": 5966759363,
+        "release_url": "https://github.com/GodlyDonuts/predictions-cup-2026/issues/1#issuecomment-5966759363",
+        "incoming_ack_comment_id": 5966761902,
+        "incoming_ack_url": "https://github.com/GodlyDonuts/predictions-cup-2026/issues/1#issuecomment-5966761902",
+        "incoming_ack_posted_at_utc": "2026-10-03T07:27:09Z",
+        "codex_durable_intents": 12,
+        "codex_nonterminal_intents": 0,
+        "runtime_evidence_basis": "Codex report in release comment; no independent runtime inspection by this documentation update."
+      }
+    ],
+    "release_records": [
+      {
+        "source_commit": "5c09038ff1046b435cec1719cd8478ef01900d47",
+        "source_blob_sha": "88fd605da28eabeee0245c466760d3f1fac9c0a5",
+        "recorded_at_utc": "2026-10-03T07:25:00Z",
+        "execution_coordinator": "Daenerys",
+        "codex_mode": "quant_engineering_and_paper_only",
+        "daenerys_mode": "human_authorized_execution_owner_pending_ack",
+        "automated_execution_enabled": false,
+        "authority": "Direct human instruction October3: Daenerys trades until a successful production bot; Codex must coordinate her stop before takeover.",
+        "activation_state": "codex_local_writer_disabled",
+        "active_handoff": {
+          "id": "codex-to-daenerys-20261003-0725",
+          "from": "Codex",
+          "to": "Daenerys",
+          "release_issue_comment": 5966759363,
+          "ack_status": "pending",
+          "fresh_reconciliation": "incoming_owner_required",
+          "codex_durable_intents": 12,
+          "codex_nonterminal_intents": 0
+        },
+        "handoff_required": true,
+        "return_handoff_required": true,
+        "automation_status_basis": "Disabled in this coordination record under the human-directed pause; local runtime state has not been inspected or changed by this update. No technical shutdown or fencing is claimed.",
+        "notes": [
+          "Newest direct human assignment supersedes October2 sole-Codex execution ownership.",
+          "Codex local competition activation is explicitly disabled; do not enable from paper evidence or an agent suggestion.",
+          "Daenerys refreshes account state before acting; old pilot/portfolio observations remain historical.",
+          "Future return to Codex requires named Daenerys RELEASE and Codex ACK, stopped/in-flight-clear writer and fresh reconciliation.",
+          "Share account rate limits across keys/clients; Codex retains only coordinated read-only collection and paper engineering."
+        ]
       }
     ]
+  },
+  "read_client_coordination": {
+    "source_url": "https://github.com/GodlyDonuts/predictions-cup-2026/issues/1#issuecomment-5966761902",
+    "codex_max_rest_read_admissions_per_minute": 20,
+    "codex_writes_allowed": false,
+    "single_codex_collector_required": true,
+    "enforced_setting_report_required_before_restart": true,
+    "enforced_setting_verified_by_this_update": false,
+    "browser_internal_request_counts_fully_observable": false,
+    "cross_host_limiter_verified": false,
+    "offline_paper_and_dashboard_processing": "May process existing captures without account calls."
   }
 }

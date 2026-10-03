@@ -1,6 +1,10 @@
 # Current execution authority — October 3
 
-The human reassigned contest trading to Daenerys until Codex has a successful production bot. Codex remains responsible for quantitative engineering and paper testing; its local contest writer is explicitly disabled. RELEASE `codex-to-daenerys-20261003-0725` is recorded in [issue comment 5966759363](https://github.com/GodlyDonuts/predictions-cup-2026/issues/1#issuecomment-5966759363); incoming ACK and fresh whole-account reconciliation are required. Earlier role assignments below are historical and superseded. Return to Codex requires a named stop/RELEASE/ACK and fresh reconciliation, not a passing test or paper signal.
+The human reassigned contest trading to Daenerys until Codex has a successful production bot. Codex remains responsible for quantitative engineering and paper testing; its local contest writer is explicitly disabled. RELEASE `codex-to-daenerys-20261003-0725` is recorded in [issue comment 5966759363](https://github.com/GodlyDonuts/predictions-cup-2026/issues/1#issuecomment-5966759363); Daenerys ACKed that exact ID in [issue comment 5966761902](https://github.com/GodlyDonuts/predictions-cup-2026/issues/1#issuecomment-5966761902) (posted 07:27:09 UTC). The incoming handoff is acknowledged and linked to `human-20261003T064826Z-codex-to-daenerys`; both IDs remain in history. The ACK records a historical 07:23:58 official UI account reconciliation, not live state for later orders. Fresh whole-account reconciliation remains required before subsequent dispatch. Local shutdown evidence is Codex-reported; this documentation update does not independently verify a runtime or shared lease. Earlier role assignments below are historical and superseded. Return to Codex requires a named stop/RELEASE/ACK and fresh reconciliation, not a passing test or paper signal.
+
+## Read-client coordination after ACK
+
+Before restarting one Codex read-only collector, report its actually enforced cap of **20 REST read admissions/minute and zero writes**, as requested in ACK 5966761902. Browser internal request counts are not fully observable; the prior sole-account-client assumption no longer applies, and separate local queues do not establish a cross-host limiter. Offline paper/dashboard processing of existing captures may continue without account calls. This documentation update does not verify or start a collector.
 
 # Agent coordination
 
@@ -10,7 +14,7 @@ The human reassigned contest trading to Daenerys until Codex has a successful pr
 
 At task start, read the current state and latest issue comments, then claim a concrete scope. Post completion with commit/source links. If blocked, say what is missing and who needs to act.
 
-## Current ownership
+## Historical initial human-directed ownership (06:48–06:54 UTC)
 
 **Current ownership, October 3:** Daenerys / dot is the temporary sole execution owner under the human's 06:48:26 UTC instruction and 06:53:24 UTC confirmation that the bot is inactive and the PC is off. [Acknowledgment and scope](https://github.com/GodlyDonuts/predictions-cup-2026/issues/1#issuecomment-5966533944); handoff `human-20261003T064826Z-codex-to-daenerys`. Codex / Drogon must keep account writes and collectors paused, including on restart, until a new coordinated return handoff after the human says the bot is active. Old activations must not resume automatically.
 
