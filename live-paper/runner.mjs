@@ -44,6 +44,7 @@ import {prioritizeEdgeTrials} from './edge-trial-projection.mjs';
 import {readAnchorReadFocus,prioritizeAnchorReads} from './bid-anchor-read-focus.mjs';
 import {readBulkReadFocus,mergePaperReadFocus} from './bulk-dip-read-focus.mjs';
 import {openDiagnosticFocus,diagnosticDepthFocus} from './diagnostic-read-focus.mjs';
+import {readProbabilityReadFocus} from './probability-read-focus.mjs';
 
 const root=path.dirname(fileURLToPath(import.meta.url)),workspace=path.dirname(root);
 if(process.argv.includes('--live'))throw Error('Competition order execution is disabled');
@@ -284,7 +285,7 @@ try{
       if(observation.state!==scheduler)saveScheduler(observation.state);
       const trialPlan=prioritizeEdgeTrials(observation.plan,observationFocus,universe,{now:Date.now(),excludedMarketIds:observationExclusions});
       const diagnosticFocus=collectDiagnosticFocus();
-      const bulkFocus=readBulkReadFocus(runtimeDir,universe,Date.now()),paperFocus=mergePaperReadFocus(readAnchorReadFocus(runtimeDir,universe,Date.now()),bulkFocus,diagnosticFocus);
+      const bulkFocus=readBulkReadFocus(runtimeDir,universe,Date.now()),probabilityFocus=readProbabilityReadFocus(runtimeDir,universe,Date.now()),paperFocus=mergePaperReadFocus(readAnchorReadFocus(runtimeDir,universe,Date.now()),bulkFocus,probabilityFocus,diagnosticFocus);runtime.probabilityReadFocus=probabilityFocus;
       const planned=prioritizeAnchorReads(trialPlan,paperFocus,{excludedMarketIds:observationExclusions,lastAttempts:scheduler?.bookLastAttempt||{}});runtime.bulkDipReadFocus=bulkFocus;runtime.bidAnchorReadFocus=planned.bidAnchorReadFocus||null;runtime.edgeObservation=planned.edgeObservation||null;runtime.edgeTrialObservation=planned.edgeTrialObservation||null;
       runtime.paperPackageFocus=planned.paperPackageFocus||null;
       if(competition)try{await competition.beforeBooks({positions,orders,ordersAt:new Date().toISOString(),candidateMarketIds:planned.entryMarketIds});}catch(e){competition.failure(e);}
