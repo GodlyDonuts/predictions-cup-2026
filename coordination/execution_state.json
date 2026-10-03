@@ -1,45 +1,101 @@
 {
-  "schema_version": 2,
-  "recorded_at_utc": "2026-10-02T14:18:24.002Z",
-  "execution_coordinator": "Codex",
-  "codex_mode": "sole_execution_owner",
-  "daenerys_mode": "advisory_research_only",
-  "automated_execution_enabled": true,
-  "authority": "Direct human instruction in Codex chat on 2026-10-02; full executive ownership of competition bot",
-  "former_owner_stopped": {
-    "comment_id": 5947535773,
-    "confirmed_at_utc": "2026-10-02T07:39:03Z",
-    "in_flight_ambiguity": false
-  },
-  "activation_state": "bounded_pilot_deployed_reconciliation_gated",
-  "active_handoff": null,
+  "schema_version": 3,
+  "recorded_at_utc": "2026-10-03T06:57:28Z",
+  "execution_coordinator": "Daenerys",
+  "codex_mode": "paused_no_account_writes_or_collectors",
+  "daenerys_mode": "temporary_sole_execution_owner",
+  "automated_execution_enabled": false,
+  "authority": "Direct human instructions on 2026-10-03 at 06:48:26 UTC and 06:53:24 UTC temporarily reassign execution to Daenerys until the human reports Drogon and the bot active and a new coordinated return handoff is completed.",
+  "activation_state": "temporary_human_directed_ownership_fresh_reconciliation_required",
+  "active_handoff": "human-20261003T064826Z-codex-to-daenerys",
   "handoff_required": false,
+  "return_handoff_required": true,
   "coordination_issue": "https://github.com/GodlyDonuts/predictions-cup-2026/issues/1",
-  "notes": [
-    "This is a coordination record, not a lock or credential.",
-    "Only the single Codex executor may write; all clients share one admission budget.",
-    "Fresh scoped account reconciliation and durable idempotent intent precede orders.",
-    "Future agent-initiated ownership transfers need a named explicit handoff; direct human instructions take precedence."
-  ],
-  "code_commit": "8d5c4d4a7a52c82f0702e57ca62398d145a2ce5a",
-  "pilot": {
-    "run_id": "sig-pilot-20261002-0824",
-    "max_order_cost_susq": "25.000000",
-    "max_aggregate_cost_susq": "100.000000",
-    "max_cumulative_purchases_susq": "100.000000",
-    "max_managed_markets": 3,
-    "added_fee_bps": 0,
-    "entry_expires_at_utc": "2026-10-02T20:18:24.002Z",
-    "authorization_window_started_at_utc": "2026-10-02T14:18:24.002Z",
-    "cumulative_purchase_budget_reset": false
+  "human_confirmation": {
+    "at_utc": "2026-10-03T06:53:24Z",
+    "reported_bot_active": false,
+    "reported_pc_power": "off",
+    "evidence_source": "Direct human statement, recorded in issue comment 5966533944",
+    "source_url": "https://github.com/GodlyDonuts/predictions-cup-2026/issues/1#issuecomment-5966533944",
+    "runtime_stop_remotely_verified": false,
+    "shared_writer_lease_verified": false,
+    "in_flight_write_ambiguity": null,
+    "resting_orders_may_still_fill": true
   },
-  "authorization_history": [
-    {
-      "started_at_utc": "2026-10-02T08:24:18.364Z",
-      "entry_expires_at_utc": "2026-10-02T14:24:18.364Z",
-      "activation_sha256": "8cb05a53b1ce4a635d52e94f1eb967bef938c57d3024d0b951c301e4365be890",
-      "replaced_at_utc": "2026-10-02T14:18:24.002Z",
-      "reason": "Continued human-authorized small pilot under same run and cumulative limits; prior authorization archived locally."
-    }
-  ]
+  "automation_status_basis": "Disabled in this coordination record under the human-directed pause; local runtime state has not been inspected or changed by this update. No technical shutdown or fencing is claimed.",
+  "notes": [
+    "This is a coordination record, not a lock, runtime control, credential or additional execution authorization.",
+    "Daenerys is the temporary sole account operator; no parallel account clients.",
+    "Codex/Drogon must keep account writes and collectors paused on restart and must not automatically resume old activations.",
+    "A new coordinated return handoff is required after the human says Drogon and the bot are active.",
+    "Fresh scoped account reconciliation and durable idempotent intent precede any separately authorized order.",
+    "Human confirmation supersedes the pending agent-to-agent release prerequisite for this transfer, but does not establish technical lease state.",
+    "Prior pilot activation, authorization and ownership fields are preserved in history; they are not current permission to run."
+  ],
+  "history": {
+    "previous_execution_state": {
+      "source_commit": "99b419656dab1e553c50080688d7442a19230b35",
+      "source_blob_sha": "8a0fdf6a48d7c23f3a930f552c92ed02a70c079a",
+      "state": {
+        "schema_version": 2,
+        "recorded_at_utc": "2026-10-02T14:18:24.002Z",
+        "execution_coordinator": "Codex",
+        "codex_mode": "sole_execution_owner",
+        "daenerys_mode": "advisory_research_only",
+        "automated_execution_enabled": true,
+        "authority": "Direct human instruction in Codex chat on 2026-10-02; full executive ownership of competition bot",
+        "former_owner_stopped": {
+          "comment_id": 5947535773,
+          "confirmed_at_utc": "2026-10-02T07:39:03Z",
+          "in_flight_ambiguity": false
+        },
+        "activation_state": "bounded_pilot_deployed_reconciliation_gated",
+        "active_handoff": null,
+        "handoff_required": false,
+        "coordination_issue": "https://github.com/GodlyDonuts/predictions-cup-2026/issues/1",
+        "notes": [
+          "This is a coordination record, not a lock or credential.",
+          "Only the single Codex executor may write; all clients share one admission budget.",
+          "Fresh scoped account reconciliation and durable idempotent intent precede orders.",
+          "Future agent-initiated ownership transfers need a named explicit handoff; direct human instructions take precedence."
+        ],
+        "code_commit": "8d5c4d4a7a52c82f0702e57ca62398d145a2ce5a",
+        "pilot": {
+          "run_id": "sig-pilot-20261002-0824",
+          "max_order_cost_susq": "25.000000",
+          "max_aggregate_cost_susq": "100.000000",
+          "max_cumulative_purchases_susq": "100.000000",
+          "max_managed_markets": 3,
+          "added_fee_bps": 0,
+          "entry_expires_at_utc": "2026-10-02T20:18:24.002Z",
+          "authorization_window_started_at_utc": "2026-10-02T14:18:24.002Z",
+          "cumulative_purchase_budget_reset": false
+        },
+        "authorization_history": [
+          {
+            "started_at_utc": "2026-10-02T08:24:18.364Z",
+            "entry_expires_at_utc": "2026-10-02T14:24:18.364Z",
+            "activation_sha256": "8cb05a53b1ce4a635d52e94f1eb967bef938c57d3024d0b951c301e4365be890",
+            "replaced_at_utc": "2026-10-02T14:18:24.002Z",
+            "reason": "Continued human-authorized small pilot under same run and cumulative limits; prior authorization archived locally."
+          }
+        ]
+      }
+    },
+    "handoffs": [
+      {
+        "handoff_id": "human-20261003T064826Z-codex-to-daenerys",
+        "kind": "direct_human_temporary_reassignment",
+        "from": "Codex",
+        "to": "Daenerys",
+        "requested_at_utc": "2026-10-03T06:48:26Z",
+        "confirmed_at_utc": "2026-10-03T06:53:24Z",
+        "incoming_ack_comment_id": 5966533944,
+        "incoming_ack_url": "https://github.com/GodlyDonuts/predictions-cup-2026/issues/1#issuecomment-5966533944",
+        "outgoing_agent_release_observed": false,
+        "release_requirement_superseded_by_direct_human_confirmation": true,
+        "technical_runtime_stop_verified": false
+      }
+    ]
+  }
 }

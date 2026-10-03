@@ -42,6 +42,12 @@ Portfolio tournament marks differ substantially from market-detail marks and exe
 
 ## Collaboration
 
+**Current ownership, October 3:** Daenerys / dot is the temporary sole execution owner under the human's 06:48:26 UTC instruction and 06:53:24 UTC confirmation that the bot is inactive and the PC is off. [Acknowledgment and scope](https://github.com/GodlyDonuts/predictions-cup-2026/issues/1#issuecomment-5966533944); handoff `human-20261003T064826Z-codex-to-daenerys`. Codex / Drogon must keep account writes and collectors paused, including on restart, until a new coordinated return handoff after the human says the bot is active. Old activations must not resume automatically.
+
+The PC-off/bot-inactive state is human-reported, not a remotely verified process stop or shared-lock/lease proof. This documentation change does not control a runtime. Resting orders may still fill; fresh account reconciliation is required before any action. Prior pilot observations remain historical.
+
+### Historical October 2 assignment
+
 The human explicitly appointed Codex sole execution owner on October 2. Daenerys / dot is an advisory researcher only and confirmed her account worker stopped with no in-flight ambiguity (issue comment 5947535773). Both agents share work through files, issues, and tested direct commits on main when their respective GitHub connections can access this repository. The human requested direct main pushes; do not create PRs. A new task must explicitly select/read this repo; GitHub does not make either agent watch it continuously.
 
 Repository access and issue comments do not create trading authority. No duplicate orders. The direct human reassignment supersedes the original dot RELEASE prerequisite. Any subsequent agent-initiated transfer still requires an explicit release and acknowledgment; see [coordination protocol](docs/COORDINATION.md).
@@ -55,7 +61,7 @@ Repository access and issue comments do not create trading authority. No duplica
 
 Trading closes November 4, 2026, noon US Eastern (17:00 UTC), according to the rules reviewed October 1. Recheck source rules for changes.
 
-## Current execution milestone
+## Historical production-pilot milestone (October 2)
 
 The first production pilot is bounded to 25 SUSQies per order, 100 aggregate attributed cost, 100 cumulative purchases and three markets. It requires qualified signals, durable immutable idempotency, fresh reconciliation, an exclusive writer and zero added fees. Test results establish correctness, not profitability. The local Next.js terminal at http://127.0.0.1:3000 separates official account trades, bot attribution and independent paper wallets. See [execution documentation](execution/README.md).
 
@@ -72,5 +78,7 @@ The local quant runner now paper-trades fresh official API data using hypothetic
 Aggregate offline validation on Windows: 216 selected tests passed. Two additional POSIX-specific tests fail here (Unix mode 0600 and graceful child SIGTERM); neither Unix permissions nor graceful SIGTERM behavior is verified on Windows. This is correctness testing with synthetic inputs, not strategy performance evidence.
 
 ## Working paper runner
+
+**Paused under the October 3 reassignment:** the commands below are retained as documentation, not permission to restart collectors or execution before the new return handoff.
 
 See [live-paper/README.md](live-paper/README.md). Run `./Start-Paper.ps1` on the approved Windows host, open http://127.0.0.1:8787/ for stats, and use `./Stop-Paper.ps1` to stop. The dashboard shows the rolling-mean strategy, small buy-and-hold control, no-trade baseline, realized/marked/liquidation P&L, fees, drawdown, signals and collection skips. Replay saved captures without network calls to compare parameters.99 relevant tests pass; actual GET capture, hypothetical control fills, dashboard, restricted Windows runtime ACLs, graceful stop and journal-backed resume were checked locally on October1. The collector remains read-only unless a valid local competition activation is present; the reviewed executor then shares the same serialized API queue.

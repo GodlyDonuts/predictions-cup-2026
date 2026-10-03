@@ -6,15 +6,17 @@ Work only on the 2026 Susquehanna Predictions Cup in this repository. Read `READ
 
 ## Roles
 
-- **Codex:** sole execution owner and bot engineer under the human's explicit October 2 reassignment. May implement and operate bounded competition trading using existing approved credentials after fresh reconciliation and tested controls.
-- **Daenerys / dot:** advisory researcher only. No contest-order submissions, cancellations, bot ownership decisions, account/API-key changes, or execution loops. Source-backed research is advice; Codex decides whether to use it.
+- **Daenerys / dot:** temporary sole execution owner under the human's explicit October 3 reassignment, subject to fresh account reconciliation and applicable safety/approval requirements. See [acknowledgment](https://github.com/GodlyDonuts/predictions-cup-2026/issues/1#issuecomment-5966533944) and `coordination/execution_state.json`.
+- **Codex / Drogon:** bot engineer with account writes and collectors paused, including on restart. Do not automatically resume previous activations. A new coordinated return handoff is required after the human says the bot is active. Offline work must preserve existing histories and frozen experiments.
 - Per the human's October 1 instruction, push tested code changes directly to main; do not create PRs. Review code through issue #1 and commit links. Claim work in issue #1 before overlapping edits, and link results/commits when done.
 
 ## One execution owner
 
 Use `coordination/execution_state.json` plus issue #1 as the visible ownership record. A Git file is a coordination record, not a distributed lock or sufficient execution authorization. Future execution infrastructure must enforce one active writer with a real shared lock/lease and fail closed on uncertainty.
 
-The human's explicit October 2 reassignment supersedes the earlier dot RELEASE prerequisite. Daenerys confirmed no writes in flight and a stopped account worker in issue comment 5947535773. Codex acknowledged sole ownership. Any later agent-initiated transfer still requires the current owner to release a named handoff and the incoming owner to acknowledge it. Update the ownership record and reconcile live account state before the incoming owner submits anything. No implicit handoff from silence, a stale timestamp, a merged PR, a restarted process, or an expired lease. Stop if records conflict.
+The human's explicit October 3 reassignment and PC-off confirmation supersede the pending agent-to-agent RELEASE prerequisite for `human-20261003T064826Z-codex-to-daenerys`. Daenerys acknowledged temporary sole ownership in issue comment 5966533944. The bot-inactive state is human-reported, not remotely verified process or lock/lease proof; resting orders may still fill. This file does not stop a runtime.
+
+Historical context: the October 2 reassignment made Codex sole owner; Daenerys confirmed no writes in flight and a stopped account worker in issue comment 5947535773, which Codex acknowledged. Any later agent-initiated transfer still requires the current owner to release a named handoff and the incoming owner to acknowledge it. Update the ownership record and reconcile live account state before the incoming owner submits anything. No implicit handoff from silence, a stale timestamp, a merged PR, a restarted process, or an expired lease. Stop if records conflict.
 
 ## Reconciliation and duplicate prevention
 

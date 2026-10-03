@@ -1,5 +1,9 @@
 # Current state
 
+**Current ownership, October 3:** Daenerys / dot is the temporary sole execution owner under the human's 06:48:26 UTC instruction and 06:53:24 UTC confirmation that the bot is inactive and the PC is off. [Acknowledgment and scope](https://github.com/GodlyDonuts/predictions-cup-2026/issues/1#issuecomment-5966533944); handoff `human-20261003T064826Z-codex-to-daenerys`. Codex / Drogon must keep account writes and collectors paused, including on restart, until a new coordinated return handoff after the human says the bot is active. Old activations must not resume automatically.
+
+The PC-off/bot-inactive state is human-reported, not a remotely verified process stop or shared-lock/lease proof. This documentation change does not control a runtime. Resting orders may still fill; fresh account reconciliation is required before any action. Prior pilot observations remain historical.
+
 Last portfolio review: **2026-10-02 06:06:14–06:06:57 UTC**. Cash displayed **93,532.74** to two decimal places at **06:06:14**. The terminal portfolio at **06:06:57** confirmed **RI 5,000 YES**, **MA 2,061 YES**, and **zero open orders**. These are historical observations and need fresh reconciliation before any action.
 
 ## Account reconciliation
@@ -131,7 +135,7 @@ See the [execution and valuation review](../research/execution_valuation_review_
 
 Under standard 0-or-1 settlement and no further trades, fees, refunds or sponsor interventions, ledger-arithmetic endpoints for the two remaining MA/RI positions are **93,532.745** if both lose and **100,593.745 SUSQies** if both win. These use the separate arithmetic balance, not an asserted hidden UI balance; they are scenarios, not forecasts or executable valuations.
 
-## Current operating mode
+## Historical operating mode (October 2)
 
 Codex is the sole execution owner under the human's October 2 reassignment. Daenerys remains advisory; the former account worker was confirmed stopped in issue comment 5947535773. The historical portfolio observations above are preserved separately from current bot-attributed activity.
 
@@ -141,7 +145,9 @@ The collector restarted with the authorization-window correction in commit 8d5c4
 
 BUY authorization is rechecked at preparation and both queued dispatch fences. Owned exits, cancellation and reconciliation remain available outside the entry window; any expired recovery reuses the previously attempted exact key and payload.
 
-## Next useful work
+## Historical bot work queue (paused)
+
+The following prior work queue is preserved for a future coordinated return; it does not authorize restarting workers, collectors or account writes during Daenerys's temporary ownership.
 
 1. Keep one collector and all existing workers healthy, preserving frozen banks, source journals and cumulative risk limits.
 2. Compare the fixed dip/rebound wallets on subsequent live observations; recent quiet price paths have produced no qualifying signals.
