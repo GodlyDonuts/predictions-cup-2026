@@ -1,0 +1,15 @@
+import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import os from 'node:os';import path from 'node:path';import {createHash} from 'node:crypto';
+import {createBookPublication} from './book-publication.mjs';import {BID_ANCHOR_POLICY} from './bid-anchor.mjs';import {replayBidAnchor} from './bid-anchor-replay.mjs';
+test('prospective source-prefix replay is deterministic and rejects changed original bytes',t=>{
+ const dir=fs.mkdtempSync(path.join(os.tmpdir(),'sig-anchor-replay-')),file=path.join(dir,'books.jsonl'),tid='bda92870-621e-47b0-bc3c-3602c5c26f55',universe={tournamentId:tid,exchanges:[{marketId:'1',exchangeId:'101',option:'YES'}]},at=n=>new Date(Date.parse('2026-10-03T00:00:00Z')+n).toISOString();let now=Date.parse(at(0)),seq=0;
+ const writer=createBookPublication({file,universe,sessionId:'anchor-test',now:()=>now,canOperate:()=>true});t.after(()=>{writer.close();assert.equal(path.dirname(path.resolve(dir)),path.resolve(os.tmpdir()));assert.ok(path.basename(dir).startsWith('sig-anchor-replay-'));fs.rmSync(dir,{recursive:true,force:true});});
+ const pub=(n,bid,ask)=>{now=Date.parse(at(n));assert.equal(writer.publishBook({marketId:'1',response:{endpoint:'/markets/1/orderbook?tournamentId='+tid+'&depth=20',requestStartedAt:at(n-100),receivedAt:at(n),data:{contexts:[{type:'tournament',tournament:{id:tid},orderbook:{exchanges:[{exchangeId:'101',option:'YES',asOf:{sequence:++seq,at:at(n-50)},bids:[{price:bid,quantity:1000}],asks:[{price:ask,quantity:1000}]}]}}]}}}),true);};
+ for(const n of [1000,61000,121000,181000,241000])pub(n,.45,.455);const prefix=fs.readFileSync(file),last=JSON.parse(prefix.toString().trim().split('\n').at(-1));
+ const bank={cutoff:at(250000),universe,policy:structuredClone(BID_ANCHOR_POLICY),config:{...JSON.parse(fs.readFileSync(new URL('./config.json',import.meta.url))),marketIds:['1'],strategyUniverse:'diversified-dip-v1',initialCash:'100.000000',cashReserve:'90.000000',maxExposure:'10.000000',feeBps:0,slippageTicks:1,depthFractionBps:100,orderShares:1,maxPositionShares:1,stopLoss:'0.020000'},sourcePrefixBytes:prefix.length,sourcePrefixHash:createHash('sha256').update(prefix).digest('hex'),sourcePrefixSequence:last.sequence,sourcePrefixJournalHash:last.hash};
+ assert.equal(replayBidAnchor(bank,prefix).signals.length,0);
+ pub(301000,.425,.43);pub(302200,.425,.43);pub(305000,.425,.43);pub(311000,.46,.465);pub(315000,.46,.465);
+ const bytes=fs.readFileSync(file),a=replayBidAnchor(bank,bytes),b=replayBidAnchor(bank,bytes);assert.deepEqual(a,b);assert.equal(a.signals.length,1);assert.equal(a.wallets[1000].realizedPnl,'0.020000');assert.equal(a.wallets[3000].realizedPnl,'0.020000');assert.equal(a.competitionOrders,0);assert.equal(a.profitabilityEstablished,false);
+ const changed=Buffer.from(bytes);changed[10]^=1;assert.throws(()=>replayBidAnchor(bank,changed),/PREFIX/);
+ assert.throws(()=>replayBidAnchor({...bank,sourcePrefixSequence:999},bytes),/PREFIX_CHAIN/);
+ assert.deepEqual(replayBidAnchor(bank,Buffer.concat([bytes,Buffer.from('{')])).wallets,a.wallets);
+});
