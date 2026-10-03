@@ -44,16 +44,18 @@ export function lock(file){fs.mkdirSync(path.dirname(file),{recursive:true});con
 export class ReadClient {
   #key;
   constructor(key,{interval=6000,networkBudget=null,fetchFn=fetch,signal,now=Date.now,sleepFn=ms=>new Promise(r=>setTimeout(r,ms)),onAdmission=()=>{},onTiming=()=>{},authorizeDispatch}={}){
-    this.#key=key;this.interval=networkInterval(interval,networkBudget);this.writeInterval=networkWriteInterval(interval,networkBudget);this.completionPacing=networkBudget!==null;this.fetch=fetchFn;this.signal=signal;this.now=now;this.sleep=sleepFn;this.next=0;this.cooldown=0;this.requests=0;this.onAdmission=onAdmission;this.onTiming=onTiming;this.tail=Promise.resolve();this.authorizeDispatch=authorizeDispatch;
+    this.#key=key;this.interval=networkInterval(interval,networkBudget);this.writeInterval=networkWriteInterval(interval,networkBudget);Object.defineProperty(this,'readOnly',{value:networkBudget?.schemaVersion===3,writable:false});this.completionPacing=networkBudget!==null;this.fetch=fetchFn;this.signal=signal;this.now=now;this.sleep=sleepFn;this.next=0;this.cooldown=0;this.requests=0;this.onAdmission=onAdmission;this.onTiming=onTiming;this.tail=Promise.resolve();this.authorizeDispatch=authorizeDispatch;
   }
   async pause(ms){const until=this.now()+ms;while(this.now()<until){if(this.signal?.aborted)throw Error('Stopped');await this.sleep(Math.min(200,until-this.now()));}}
   request(endpoint){const queuedAt=this.now();const result=this.tail.then(()=>this.perform(endpoint,queuedAt));this.tail=result.catch(()=>{});return result;}
   dispatch(spec){
+    if(this.readOnly&&spec.method!=='GET')throw Error('Shared account budget forbids Codex writes');
     const safe={method:spec.method,endpoint:spec.endpoint,body:spec.body===undefined?undefined:structuredClone(spec.body),bodyJson:spec.bodyJson,beforeDispatch:spec.beforeDispatch,beforeNetwork:spec.beforeNetwork};
     if(!this.authorizeDispatch||this.authorizeDispatch(safe)!==true)throw Error('Execution dispatch is not authorized');
     const queuedAt=this.now(),result=this.tail.then(()=>this.perform(safe.endpoint,queuedAt,safe));this.tail=result.catch(()=>{});return result;
   }
   async perform(endpoint,queuedAt=this.now(),dispatch){
+    if(this.readOnly&&dispatch&&dispatch.method!=='GET')throw Error('Shared account budget forbids Codex writes');
     const executingAt=this.now();
     const interval=dispatch&&dispatch.method!=='GET'?this.writeInterval:this.interval;
     const patterns=[/^\/tournaments\/midterm-elections$/, /^\/tournaments\/midterm-elections\/portfolio\/fills\?limit=100$/, /^\/tournaments\/midterm-elections\/portfolio\/pnl\?period=day$/, /^\/orders\?status=all&limit=200&tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55$/, /^\/tournaments\/midterm-elections\/portfolio\/positions$/, /^\/orders\?status=open&limit=200&tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55(?:&cursor=[A-Za-z0-9%._~-]+)?$/, /^\/markets\/\d+\/orderbook\?tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55&depth=20$/];
