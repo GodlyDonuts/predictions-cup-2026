@@ -1,0 +1,21 @@
+import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import path from 'node:path';import os from 'node:os';
+import {digest} from './model.mjs';import {planEdgeObservation,readEdgeObservationFocus,EDGE_OBSERVATION_MS} from './edge-observation-plan.mjs';
+const universe={tournamentId:'fixture',hash:'scope',exchanges:['1','2','3','4','5','6'].map(marketId=>({marketId,exchangeId:String(100+Number(marketId)),option:'YES'}))},focus={bankHash:'a'.repeat(64)};
+const plan={entryMarketIds:['3','4'],reads:[{marketId:'1',reason:'managed',path:'sourceSnapshots'},{marketId:'2',reason:'comparison',path:'sourceSnapshots'},{marketId:'3',reason:'discovery',path:'supplementalDepth'},{marketId:'4',reason:'discovery',path:'supplementalDepth'}]};
+test('block repeats next quotes and maturity reads without adding requests or entry authority; restarts retain deadline',()=>{
+ const first=planEdgeObservation(plan,{},universe,{focus,now:1000});assert.deepEqual(first.plan.edgeObservation.marketIds,['3','4']);assert.deepEqual(first.plan.entryMarketIds,[]);
+ const later={...plan,reads:plan.reads.map(x=>({...x,marketId:x.marketId==='3'?'5':x.marketId==='4'?'6':x.marketId}))};
+ const next=planEdgeObservation(later,JSON.parse(JSON.stringify(first.state)),universe,{focus,now:20000});assert.deepEqual(next.plan.reads.map(x=>x.marketId),['1','2','3','4']);assert.equal(next.plan.reads.length,plan.reads.length);assert.equal(next.plan.edgeObservation.until,1000+EDGE_OBSERVATION_MS);assert.equal(next.plan.edgeObservation.requestsAdded,0);assert.equal(next.plan.edgeObservation.executionAuthority,false);assert.equal(plan.reads[2].marketId,'3');
+ const rollover=planEdgeObservation(later,next.state,universe,{focus,now:first.state.edgeObservation.until});assert.deepEqual(rollover.plan.edgeObservation.marketIds,['5','6']);
+});
+test('official managed capacity, reserved experiments, exclusions and absent worker outrank sampling',()=>{
+ for(const overlay of [{comparisonSampling:{}},{basketMeasurement:{marketIds:['3','4']}},{paperPackageFocus:{marketIds:['3','4']}}])assert.equal(planEdgeObservation({...plan,...overlay},{},universe,{focus,now:1000}).state.edgeObservation,undefined);
+ assert.equal(planEdgeObservation(plan,{},universe,{focus:null,now:1000}).plan,plan);
+ const protectedPlan={...plan,reads:plan.reads.map((x,i)=>({...x,reason:i<3?'managed':'discovery'}))};assert.equal(planEdgeObservation(protectedPlan,{},universe,{focus,now:1000}).plan,protectedPlan);
+ assert.equal(planEdgeObservation(plan,{},universe,{focus,now:1000,excludedMarketIds:['3']}).plan,plan);
+ const saved=planEdgeObservation(plan,{},universe,{focus,now:1000}).state;assert.throws(()=>planEdgeObservation(plan,{edgeObservation:{...saved.edgeObservation,startedAt:2000}},universe,{focus,now:1500}),/INVALID_EDGE/);
+});
+test('focus requires same frozen universe, fresh stats, a live lock owner and no STOP',t=>{
+ const rt=fs.mkdtempSync(path.join(os.tmpdir(),'sig-edge-focus-'));t.after(()=>{assert.equal(path.dirname(path.resolve(rt)),path.resolve(os.tmpdir()));assert.ok(path.basename(rt).startsWith('sig-edge-focus-'));fs.rmSync(rt,{recursive:true,force:true});});const cohort='edge-test',dir=path.join(rt,'executable-edge-cohorts',cohort);fs.mkdirSync(dir,{recursive:true});const bank={universe},bankHash=digest(bank),now=Date.now(),stats={bankHash,cohort,mode:'execution_aware_online_paper',failed:false,sourceClosed:false,networkRequests:0,competitionOrders:0,updatedAt:new Date(now).toISOString()};
+ fs.writeFileSync(path.join(rt,'executable-edge-active.json'),JSON.stringify({cohort,bankHash}));fs.writeFileSync(path.join(dir,'bank.json'),JSON.stringify(bank));fs.writeFileSync(path.join(dir,'stats.json'),JSON.stringify(stats));fs.writeFileSync(path.join(dir,'worker.lock'),JSON.stringify({pid:process.pid,id:'owner'}));assert.deepEqual(readEdgeObservationFocus(rt,universe,now),{bankHash});assert.equal(readEdgeObservationFocus(rt,universe,now+20001),null);assert.equal(readEdgeObservationFocus(rt,{...universe,exchanges:universe.exchanges.slice(1)},now),null);fs.writeFileSync(path.join(dir,'STOP'),'human stop');assert.equal(readEdgeObservationFocus(rt,universe,now),null);
+});

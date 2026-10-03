@@ -1,0 +1,7 @@
+# Execution-aware observation blocks
+
+The collector reserves no additional requests or processes. When the frozen executable-edge paper worker has fresh verified stats and a live lock owner, two existing discovery slots are held on the same markets for seven minutes. This permits causal later-quote fill checks and five-minute markouts. Original core comparisons use remaining capacity. Official holdings/pending orders and existing experiment reservations always outrank this allocation. Account exclusions are never sampled as paper candidates.
+
+The block and wall-clock deadline persist in the book scheduler, including across collector restart. Each cycle records the allocation in its original journal. At expiry, currently fair discovery candidates start the next block. Stale/failed/stopped edge workers disable the optional allocation; no worker is started automatically. Ordinary collector/backoff pacing remains unchanged. Observed markets are removed from that cycle's execution candidate list: these are counterfactual measurements, not contest-order authorization.
+
+A completed observation block is not profitability evidence. Keep unfilled, missing, interrupted and negative results. The frozen current model/host/bank and wallet journals are unchanged. Small empirical category samples do not establish a repeatable edge, and spread/depth/latency remain trading costs even with zero fees.
