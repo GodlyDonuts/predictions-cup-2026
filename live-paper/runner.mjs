@@ -38,6 +38,7 @@ import {readMarketHistoryInputs} from './market-history-inputs.mjs';
 import {createClient} from '@supabase/supabase-js';
 import {Capture} from '../feed/capture.mjs';
 import {createRealtimeHost} from './realtime-host.mjs';
+import {paperExperimentRetired} from './experiment-retirement.mjs';
 
 const root=path.dirname(fileURLToPath(import.meta.url)),workspace=path.dirname(root);
 if(process.argv.includes('--live'))throw Error('Competition order execution is disabled');
@@ -70,7 +71,7 @@ function recordAttempt(kind,marketId,samplingPlanId){
 }
 function schedulingInputs(){
  const sources=[];
- for(const [name,bank] of [['dip',dipBank],['dip-scale',scaleBank],['dip-responsive',responsiveBank]])if(bank){
+ for(const [name,bank] of [['dip',dipBank],['dip-scale',scaleBank],['dip-responsive',responsiveBank]])if(bank&&!paperExperimentRetired(runtimeDir,'DIP_STOP')){
   const state=JSON.parse(fs.readFileSync(path.join(runtimeDir,name+'-state.json')));let healthy=false;
   try{const stats=JSON.parse(fs.readFileSync(path.join(runtimeDir,name+'-stats.json')));healthy=stats.bankHash===digest(bank)&&workerHealth(stats).status==='running';}catch{}
   sources.push({state,bank,healthy});
@@ -79,11 +80,11 @@ function schedulingInputs(){
  const historyScreen=readMarketHistoryInputs(runtimeDir,universe,Date.now());runtime.marketHistoryScreen=historyScreen;
  if(historyScreen.available)inputs.candidateMarketIds=[...new Set([...historyScreen.candidateMarketIds,...inputs.candidateMarketIds])];
   const shockBankFile=path.join(runtimeDir,'shock-bank.json');
-  if(fs.existsSync(shockBankFile)){
+  if(fs.existsSync(shockBankFile)&&!paperExperimentRetired(runtimeDir,'SHOCK_STOP')){
    const risk=shockCollectionRisk(JSON.parse(fs.readFileSync(path.join(runtimeDir,'shock-state.json'))),JSON.parse(fs.readFileSync(shockBankFile)),universe);
    for(const key of ['heldMarketIds','pendingMarketIds'])inputs[key]=[...new Set([...inputs[key],...risk[key]])];
   }
-  const comparisonRisk=comparisonRiskSource?.poll();
+  const comparisonRisk=paperExperimentRetired(runtimeDir,'ENTRY_COMPARISON_STOP')?{configured:false,available:true,reason:'OPERATOR_RETIRED_PAPER_EXPERIMENT',heldMarketIds:[],pendingMarketIds:[]}:comparisonRiskSource?.poll();
   if(comparisonRisk){
    runtime.comparisonRisk=comparisonRisk;
    for(const key of ['heldMarketIds','pendingMarketIds'])inputs[key]=[...new Set([...inputs[key],...comparisonRisk[key]])];
