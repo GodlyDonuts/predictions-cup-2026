@@ -280,6 +280,8 @@ pub struct Card {
     signal_diagnostics: SignalDiagnostics,
     economics: Economics,
     fills: Vec<Fill>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pending_read_intents: Option<Vec<crate::engine::PendingReadIntent>>,
 }
 #[derive(Default, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -311,8 +313,16 @@ pub struct Evaluation {
     pub competition_orders: u32,
     pub network_requests: u32,
     pub profitability_established: bool,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub intent_observation_schema_version: Option<u32>,
 }
 pub fn run(source: &Capture, d: &Declaration, workers: usize) -> Result<Evaluation, String> {
+    run_with_observation(source,d,workers,false)
+}
+pub fn run_observed(source: &Capture, d: &Declaration, workers: usize) -> Result<Evaluation, String> {
+    run_with_observation(source,d,workers,true)
+}
+fn run_with_observation(source: &Capture, d: &Declaration, workers: usize, observe: bool) -> Result<Evaluation, String> {
     let cutoff = d.validate(source)?;
     let strict = d.config.fill_clock_policy == FillClockPolicy::IndependentRequestLatencyV2;
     // V2 subsequent wallets have no intents/positions before actual declaration
@@ -503,6 +513,7 @@ pub fn run(source: &Capture, d: &Declaration, workers: usize) -> Result<Evaluati
                     point,
                     signal_diagnostics: diagnostics,
                     economics: audit,
+                    pending_read_intents: if observe { Some(wallet.pending_read_intents(&c)?) } else { None },
                     fills: wallet.fills,
                 })
             })
@@ -537,5 +548,6 @@ pub fn run(source: &Capture, d: &Declaration, workers: usize) -> Result<Evaluati
         competition_orders: 0,
         network_requests: 0,
         profitability_established: false,
+        intent_observation_schema_version: if observe { Some(1) } else { None },
     })
 }

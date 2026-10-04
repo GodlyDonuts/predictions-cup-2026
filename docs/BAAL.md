@@ -167,3 +167,28 @@ The paired-market review expired at 15:36:07.104 UTC on October 4; its held
 positions remain monitored without renewed entry authority. 111 relevant checks
 pass. See `data/native-discovery-benchmark-20261004.json` and
 `data/native-discovery-milestone-20261004.json` for measured deployment evidence.
+
+The V3 native continuation exposes pending intent instruments and their original
+decision versions, limits, quantities, latency floor and expiry. A separate
+verifier reconciles instrument scope, action/quantity against reconstructed
+inventory, exact money, intent uniqueness, clocks and declared counts before any
+read hint can enter scheduling. Expired entry confirmations stop requesting
+reads; held inventory stays protected. Host failure retains verified risk. The
+existing four-book budget still applies, with no additional API client or service.
+
+The original trading engine source and declaration are unchanged. Evaluation
+adds opt-in serialization through a const inspector; ordinary evaluation omits
+it. On the same 5.224 GB prefix, all 100 original scorecards match the active
+archived engine, and all 100 full/cached observed scorecards match each other.
+Cached observation took 4.40 seconds. The original host, binary, cache and outputs
+are retained. 171 Node checks and two Rust checks pass; no refit or wallet reset.
+See `data/native-intent-preparation-20261004.json` and
+`data/native-intent-milestone-20261004.json`.
+
+Current scarcity is measurable: individual frozen cases have only zero or one
+edge-qualified signal; most observations fail deviation or cost-adjusted-margin
+gates. There are no pending intents in the measured current cohort, so adding
+confirmation hints alone cannot establish profit or fix feature coverage.
+The next strategy comparison needs causal broad quote-history features, fresh
+depth for fills, a new future cutoff and independent wallet accounting, while
+retaining this sparse-depth cohort as an unchanged comparison.

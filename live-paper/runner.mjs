@@ -33,6 +33,7 @@ import {createBasketFollowupSource} from './basket-followup-source.mjs';
 import {createComparisonRiskSource} from './comparison-risk-source.mjs';
 import {openNativeDipHost} from './native-dip-host-v1.mjs';
 import {openNativeDipCacheHost} from './native-dip-host-v2.mjs';
+import {openNativeDipIntentHost} from './native-dip-host-v3.mjs';
 import {openCollectorMarketScreen} from './collector-market-screen-v1.mjs';
 import {planNativeDiscoveryBooks,recordNativeDiscoveryAttempt} from './native-discovery-plan-v1.mjs';
 import {planComparisonSampling,recordComparisonAttempt} from './comparison-sampling.mjs';
@@ -130,7 +131,7 @@ function schedulingInputs(){
   }
   if(noMaker)try{const risk=noMaker.status().riskMarketIds;inputs.heldMarketIds=[...new Set([...inputs.heldMarketIds,...risk])];}catch{runtime.noMaker={status:'failed',executionAuthority:false};noMaker=null;}
   if(baalPair)try{const risk=baalPair.status().riskMarketIds;inputs.heldMarketIds=[...new Set([...inputs.heldMarketIds,...risk])];}catch{runtime.baalPair={status:'failed',executionAuthority:false};baalPair=null;}
-  if(nativeDip){const risk=nativeDip.status();runtime.nativeDip=risk;inputs.heldMarketIds=[...new Set([...inputs.heldMarketIds,...risk.heldMarketIds])];}
+  if(nativeDip){const risk=nativeDip.status();runtime.nativeDip=risk;inputs.heldMarketIds=[...new Set([...inputs.heldMarketIds,...risk.heldMarketIds])];inputs.pendingMarketIds=[...new Set([...inputs.pendingMarketIds,...(risk.pendingMarketIds||[])])];}
   inputs.priorityManagedMarketIds=competition?.managedMarketIds()||[];
   inputs.heldMarketIds=[...new Set([...inputs.heldMarketIds,...inputs.priorityManagedMarketIds])];return inputs;
 }
@@ -214,7 +215,7 @@ try{
   const marketSweep=loadMarketSweep(path.join(runtimeDir,'market-sweep.json'),universe,networkBudget);
   const pricePublication=marketSweep?createMarketPricePublication({file:path.join(runtimeDir,'market-prices.jsonl'),universe,canOperate:()=>!stopping}):null;
   comparisonRiskSource=createComparisonRiskSource({runtimeDir,universe,now:Date.now});
-  nativeDip=fs.existsSync(path.join(runtimeDir,'native-dip-cache-active.json'))?openNativeDipCacheHost({runtimeDir,universe,signal:control.signal,canOperate:()=>!stopping}):openNativeDipHost({runtimeDir,universe,signal:control.signal,canOperate:()=>!stopping});
+  const nativeOptions={runtimeDir,universe,signal:control.signal,canOperate:()=>!stopping};nativeDip=fs.existsSync(path.join(runtimeDir,'native-dip-intent-active.json'))?openNativeDipIntentHost(nativeOptions):fs.existsSync(path.join(runtimeDir,'native-dip-cache-active.json'))?openNativeDipCacheHost(nativeOptions):openNativeDipHost(nativeOptions);
   nativeDip?.kick();
   if(nativeDip&&pricePublication)try{collectorMarketScreen=openCollectorMarketScreen({runtimeDir,universe,publisher:pricePublication,signal:control.signal,canOperate:()=>!stopping});collectorMarketScreen.initialize();}catch{const unavailable={available:false,status:'unavailable',reason:'COLLECTOR_MARKET_SCREEN_STARTUP_FAILED',candidateMarketIds:[],executionAuthority:false};collectorMarketScreen={projection:()=>unavailable,onPublished(){},close(){}};runtime.marketHistoryScreen=unavailable;}
   const publicationReplayStarted=performance.now();

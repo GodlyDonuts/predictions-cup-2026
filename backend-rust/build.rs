@@ -13,6 +13,7 @@ fn main() {
         "src/capture.rs",
         "src/cache.rs",
         "src/engine.rs",
+        "src/intent_observation.rs",
         "src/replay.rs",
         "src/trace.rs",
         "src/sweep.rs",

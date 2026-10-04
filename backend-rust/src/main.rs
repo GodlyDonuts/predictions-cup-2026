@@ -1,6 +1,6 @@
 mod capture;
 mod cache;
-mod engine;
+mod engine { include!("engine.rs"); include!("intent_observation.rs"); }
 mod evaluation;
 mod money;
 mod publication;
@@ -42,6 +42,8 @@ fn run() -> Result<(), String> {
         ],
         "prepare-cache" => vec!["--declaration","--journal","--end-byte","--expected-sha","--out"],
         "evaluate-cached" => vec!["--declaration","--journal","--end-byte","--expected-sha","--workers","--out","--cache","--cache-sha","--cache-source-sha","--cache-end-byte","--prior-end-byte","--prior-sha"],
+        "evaluate-observed" => vec!["--declaration","--journal","--end-byte","--expected-sha","--workers","--out"],
+        "evaluate-observed-cached" => vec!["--declaration","--journal","--end-byte","--expected-sha","--workers","--out","--cache","--cache-sha","--cache-source-sha","--cache-end-byte","--prior-end-byte","--prior-sha"],
         "trace" => vec!["--fixture"],
         _ => return Err("UNKNOWN_COMMAND".into()),
     };
@@ -79,7 +81,7 @@ fn run() -> Result<(), String> {
         println!("{}",serde_json::json!({"sourceVerified":true,"sourceRecords":result["sourceRecords"],"sourceBytes":end,"verifyMs":result["verifyMs"],"competitionOrders":0}));
         return Ok(());
     }
-    if matches!(command.as_str(), "evaluate" | "evaluate-cached" | "prepare-cache") {
+    if matches!(command.as_str(), "evaluate" | "evaluate-cached" | "prepare-cache" | "evaluate-observed" | "evaluate-observed-cached") {
         if Path::new(get("--out")?).exists() {
             return Err("OUTPUT_EXISTS_OR_UNAVAILABLE".into());
         }
@@ -90,7 +92,7 @@ fn run() -> Result<(), String> {
         let end = get("--end-byte")?
             .parse()
             .map_err(|_| "INVALID_SOURCE_PREFIX")?;
-        let cached=command=="evaluate-cached";
+        let cached=matches!(command.as_str(), "evaluate-cached" | "evaluate-observed-cached");
         let cache_end=if cached {get("--cache-end-byte")?.parse().map_err(|_|"CACHE_BINDING_INVALID")?}else{0};
         let seed=if cached {Some(cache::read(Path::new(get("--cache")?),get("--cache-sha")?,get("--cache-source-sha")?,cache_end,&d.config,true)?)}else{None};
         let expected=if cached {options.get("--expected-sha").copied()}else{Some(get("--expected-sha")?)};
@@ -113,7 +115,9 @@ fn run() -> Result<(), String> {
             .unwrap_or(&"8")
             .parse()
             .map_err(|_| "INVALID_REPLAY_WORKERS")?;
-        let result = evaluation::run(&source, &d, workers)?;
+        let result = if command.starts_with("evaluate-observed") {
+            evaluation::run_observed(&source, &d, workers)?
+        } else { evaluation::run(&source, &d, workers)? };
         let mut file = std::fs::OpenOptions::new()
             .write(true)
             .create_new(true)

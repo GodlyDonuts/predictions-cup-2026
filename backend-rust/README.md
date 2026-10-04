@@ -164,3 +164,15 @@ Node source-hash pass, refreshes after collection cycles, and preserves prior
 fills through an explicit execution continuation. No model profit follows from
 these measurements. See `data/native-cache-benchmark-20261004.json` and
 `data/native-cache-milestone-20261004.json`.
+
+`evaluate-observed` and `evaluate-observed-cached` accept the respective ordinary
+evaluation arguments and add a versioned, read-only `pendingReadIntents` array to
+each scorecard. Intent identity, instrument, action, quantity, limit, decision
+clock, exact source version, earliest independent request and expiry are exposed.
+The const inspector is included alongside unchanged `engine.rs`; it does not
+alter trading state. Ordinary evaluation omits the new fields. A new pinned
+build/cache and host continuation are required; old binaries, caches and outputs
+are retained. Before continuation, all original scorecard fields must match the
+active archived engine on the identical original prefix, and full/cached observed
+cards must agree. These fields request confirmation/risk reads only and grant no
+competition execution authority.
