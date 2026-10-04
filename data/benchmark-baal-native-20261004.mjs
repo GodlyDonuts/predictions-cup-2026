@@ -1,0 +1,18 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import assert from 'node:assert/strict';
+import {performance} from 'node:perf_hooks';
+import {readTrainingSource} from '../live-paper/training-source.mjs';
+import {replayFrozenPortfolioBank} from '../live-paper/portfolio-bank.mjs';
+import {replayNativeBank} from '../live-paper/rust-backend.mjs';
+const runtime=path.join(process.env.LOCALAPPDATA,'SigTradingCup','paper-runtime');
+const cohort=path.join(runtime,'research-cohorts','baal-net-20261004-e');
+const bankFile=path.join(cohort,'bank.json'),bank=JSON.parse(fs.readFileSync(bankFile,'utf8'));
+const endByte=4255286972,journal=path.join(runtime,'journal.jsonl');
+let t=performance.now();const source=readTrainingSource(journal,{endByte}),verifyMs=performance.now()-t;
+t=performance.now();const cards=await replayFrozenPortfolioBank(source,bank,{workers:4}),replayMs=performance.now()-t;
+const out=path.join(cohort,'native-benchmark-'+Date.now()+'.json');
+t=performance.now();const n=await replayNativeBank({journal,bank:bankFile,endByte,expectedSha:source.sourceHash,out,workers:8}),nativeWallMs=performance.now()-t;
+assert.deepEqual(n.replay.scorecards,cards);
+const result={at:new Date().toISOString(),sourceHash:source.sourceHash,sourceBytes:endByte,sourceRecords:source.sourceRecords,captureDays:(Date.parse(source.finalEventClock)-Date.parse(source.records[0].at))/86400000,weightsRefitted:false,js:{workers:4,verifyMs,replayMs,totalMs:verifyMs+replayMs},rust:{workers:8,verifyMs:n.capture.verify_ms,prepareMs:n.replay.prepareMs,replayMs:n.replay.replayMs,totalWallMs:nativeWallMs},endToEndSpeedup:(verifyMs+replayMs)/nativeWallMs,exactScorecards:cards.length,exactCheckpoints:cards.length*3,candidatesWithFills:cards.filter(c=>c.points.at(-1).fillExecutions>0).length,competitionOrders:0,networkRequests:0,profitabilityEstablished:false};
+fs.writeFileSync(new URL('./baal-native-benchmark-20261004.json',import.meta.url),JSON.stringify(result,null,2)+'\n',{flag:'wx'});console.log(JSON.stringify(result));

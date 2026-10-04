@@ -221,6 +221,22 @@ export async function trainPortfolioBankParallel(raw,config,{workers=4,...option
  while(!next.done){next=steps.next(await parallelPortfolioReplay(next.value,{workers}));}
  return next.value;
 }
+// Re-run existing frozen weights without fitting or changing selection. Used by
+// the native backend parity benchmark; the original byte prefix remains bound.
+export async function replayFrozenPortfolioBank(raw,bank,{workers=4}={}){
+ validateConfig(bank.config);
+ const s=source(raw,bank.config),windows=bank.portfolioSelection?.windows;
+ if(!windows||!Number.isSafeInteger(bank.sourceRecords)||bank.sourceRecords!==s.records.length
+    ||bank.sourceHash!==s.records.prefixHashes.at(-1)||bank.trainingCaptureThrough!==clock(s.records.at(-1)))throw Error('Frozen source mismatch');
+ const {fitRecords:start,selectionRecords:end}=windows;
+ if(!Number.isSafeInteger(start)||!Number.isSafeInteger(end)||start<1||start>=end||end>s.records.length
+    ||bank.portfolioSelection.fitSourceHash!==s.records.prefixHashes[start-1]
+    ||bank.portfolioSelection.developmentSourceHash!==s.records.prefixHashes[end-1])throw Error('Frozen replay windows mismatch');
+ if(bank.portfolioSelection.policy.validationBlocks!==3)throw Error('Unsupported native comparison checkpoints');
+ const checks=blockEnds(s,start,end,3),{parallelPortfolioReplay}=await import('./portfolio-replay-pool.mjs');
+ const paths=await parallelPortfolioReplay({s,config:bank.config,modelBank:{...bank,selected:bank.models,candidatePlan:undefined},startCount:start,endCounts:checks},{workers});
+ return bank.models.flatMap(model=>PAPER_EDGE_MARGINS.map(margin=>({id:model.id+'-edge'+margin,modelId:model.id,margin,rmse:model.rmse,points:paths.get(model.id+'-edge'+margin)}))).sort((a,b)=>a.id<b.id?-1:a.id>b.id?1:0);
+}
 // This receives only an already verified in-process source from the parent.
 export function replayPortfolioWorkerJob({records,prefixHashes,config,modelBank,startCount,endCounts},onProgress=()=>{}){
  Object.defineProperty(records,'prefixHashes',{value:prefixHashes});

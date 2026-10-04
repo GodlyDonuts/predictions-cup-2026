@@ -1,0 +1,28 @@
+{
+  "at": "2026-10-04T07:58:14.210Z",
+  "sourceHash": "a19efc0c0ff5d52f8ce851ce5665631d3e3c76899e3e46c3dbc7653723c62507",
+  "sourceBytes": 4255286972,
+  "sourceRecords": 9491,
+  "captureDays": 2.3126856134259257,
+  "weightsRefitted": false,
+  "js": {
+    "workers": 4,
+    "verifyMs": 40592.85400000001,
+    "replayMs": 87137.6303,
+    "totalMs": 127730.48430000001
+  },
+  "rust": {
+    "workers": 8,
+    "verifyMs": 11948,
+    "prepareMs": 4,
+    "replayMs": 107,
+    "totalWallMs": 12208.712200000009
+  },
+  "endToEndSpeedup": 10.462240587504382,
+  "exactScorecards": 384,
+  "exactCheckpoints": 1152,
+  "candidatesWithFills": 0,
+  "competitionOrders": 0,
+  "networkRequests": 0,
+  "profitabilityEstablished": false
+}

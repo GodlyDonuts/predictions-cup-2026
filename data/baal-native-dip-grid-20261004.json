@@ -1,0 +1,437 @@
+{
+  "at": "2026-10-04T08:13:26.293Z",
+  "source": {
+    "engine_hash": "e73f856bb271fb7753c317e673cb7d5473057151fa2c3ca58cfc373353bf1fc2",
+    "source_format": "verified_original_canonical_journal_v1",
+    "source_bytes": 4255286972,
+    "source_records": 9491,
+    "source_hash": "a19efc0c0ff5d52f8ce851ce5665631d3e3c76899e3e46c3dbc7653723c62507",
+    "first_at": 1790896721719,
+    "through": 1791096537756,
+    "cycles": 3782,
+    "accepted_books": 14633,
+    "invalid_books": 444,
+    "verify_ms": 11939
+  },
+  "sweep": {
+    "mode": "causal_multiday_dip_development_grid_v2",
+    "sourceHash": "a19efc0c0ff5d52f8ce851ce5665631d3e3c76899e3e46c3dbc7653723c62507",
+    "sourceRecords": 9491,
+    "captureDays": 2.3126856134259257,
+    "candidates": 2304,
+    "workers": 8,
+    "replayMs": 13684,
+    "selectionPolicy": "predeclared_grid_all_results_no_automatic_winner_or_activation",
+    "competitionOrders": 0,
+    "networkRequests": 0,
+    "profitabilityEstablished": false
+  },
+  "gaps": [
+    {
+      "gapSeconds": 120,
+      "candidates": 576,
+      "positive": 0,
+      "candidatesWithFills": 576,
+      "minClosed": 1,
+      "maxClosed": 9,
+      "best": {
+        "parameters": {
+          "lookback": 6,
+          "gapResetSeconds": 120,
+          "z": 0,
+          "minimumEdge": 0.01,
+          "horizonSeconds": 60,
+          "takeProfit": "0.005000"
+        },
+        "points": [
+          {
+            "at": "2026-10-02T23:48:38.292Z",
+            "conservativePnl": "-0.020000",
+            "liquidationPnl": "-0.020000",
+            "valuation": "depth_checked_liquidation_estimate",
+            "cash": "99.980000",
+            "realizedPnl": "-0.020000",
+            "fees": "0.000000",
+            "turnover": "1.720000",
+            "completedTrades": 1,
+            "fillExecutions": 2,
+            "intents": 3,
+            "expiredIntents": 1,
+            "pendingIntents": 0,
+            "openShares": 0,
+            "unsoldShares": 0,
+            "signalMetrics": {
+              "observations": 8666,
+              "warmup": 4174,
+              "invalidForecast": 0,
+              "edgeBelowMargin": 4486,
+              "edgePass": 6,
+              "zeroTopAskCapacity": 774
+            },
+            "unsupportedInstruments": 0
+          },
+          {
+            "at": "2026-10-03T18:41:00.404Z",
+            "conservativePnl": "-0.020000",
+            "liquidationPnl": "-0.020000",
+            "valuation": "depth_checked_liquidation_estimate",
+            "cash": "99.980000",
+            "realizedPnl": "-0.020000",
+            "fees": "0.000000",
+            "turnover": "1.720000",
+            "completedTrades": 1,
+            "fillExecutions": 2,
+            "intents": 3,
+            "expiredIntents": 1,
+            "pendingIntents": 0,
+            "openShares": 0,
+            "unsoldShares": 0,
+            "signalMetrics": {
+              "observations": 11638,
+              "warmup": 5365,
+              "invalidForecast": 0,
+              "edgeBelowMargin": 6267,
+              "edgePass": 6,
+              "zeroTopAskCapacity": 1166
+            },
+            "unsupportedInstruments": 0
+          },
+          {
+            "at": "2026-10-04T06:48:57.756Z",
+            "conservativePnl": "-0.020000",
+            "liquidationPnl": "-0.020000",
+            "valuation": "depth_checked_liquidation_estimate",
+            "cash": "99.980000",
+            "realizedPnl": "-0.020000",
+            "fees": "0.000000",
+            "turnover": "1.720000",
+            "completedTrades": 1,
+            "fillExecutions": 2,
+            "intents": 3,
+            "expiredIntents": 1,
+            "pendingIntents": 0,
+            "openShares": 0,
+            "unsoldShares": 0,
+            "signalMetrics": {
+              "observations": 14633,
+              "warmup": 6952,
+              "invalidForecast": 0,
+              "edgeBelowMargin": 7675,
+              "edgePass": 6,
+              "zeroTopAskCapacity": 1294
+            },
+            "unsupportedInstruments": 0
+          }
+        ]
+      },
+      "worstPnl": "-0.995000"
+    },
+    {
+      "gapSeconds": 900,
+      "candidates": 576,
+      "positive": 3,
+      "candidatesWithFills": 576,
+      "minClosed": 1,
+      "maxClosed": 13,
+      "best": {
+        "parameters": {
+          "lookback": 12,
+          "gapResetSeconds": 900,
+          "z": 1.5,
+          "minimumEdge": 0.005,
+          "horizonSeconds": 1800,
+          "takeProfit": "0.005000"
+        },
+        "points": [
+          {
+            "at": "2026-10-02T23:48:38.292Z",
+            "conservativePnl": "-0.660000",
+            "liquidationPnl": null,
+            "valuation": "cash_only_inventory_zero",
+            "cash": "99.340000",
+            "realizedPnl": "-0.025000",
+            "fees": "0.000000",
+            "turnover": "5.030000",
+            "completedTrades": 3,
+            "fillExecutions": 7,
+            "intents": 10,
+            "expiredIntents": 3,
+            "pendingIntents": 0,
+            "openShares": 1,
+            "unsoldShares": 1,
+            "signalMetrics": {
+              "observations": 8666,
+              "warmup": 3574,
+              "invalidForecast": 0,
+              "edgeBelowMargin": 5078,
+              "edgePass": 14,
+              "zeroTopAskCapacity": 774
+            },
+            "unsupportedInstruments": 0
+          },
+          {
+            "at": "2026-10-03T18:41:00.404Z",
+            "conservativePnl": "0.005000",
+            "liquidationPnl": "0.005000",
+            "valuation": "depth_checked_liquidation_estimate",
+            "cash": "100.005000",
+            "realizedPnl": "0.005000",
+            "fees": "0.000000",
+            "turnover": "7.385000",
+            "completedTrades": 5,
+            "fillExecutions": 10,
+            "intents": 14,
+            "expiredIntents": 4,
+            "pendingIntents": 0,
+            "openShares": 0,
+            "unsoldShares": 0,
+            "signalMetrics": {
+              "observations": 11638,
+              "warmup": 4746,
+              "invalidForecast": 0,
+              "edgeBelowMargin": 6875,
+              "edgePass": 17,
+              "zeroTopAskCapacity": 1166
+            },
+            "unsupportedInstruments": 0
+          },
+          {
+            "at": "2026-10-04T06:48:57.756Z",
+            "conservativePnl": "0.005000",
+            "liquidationPnl": "0.005000",
+            "valuation": "depth_checked_liquidation_estimate",
+            "cash": "100.005000",
+            "realizedPnl": "0.005000",
+            "fees": "0.000000",
+            "turnover": "7.385000",
+            "completedTrades": 5,
+            "fillExecutions": 10,
+            "intents": 15,
+            "expiredIntents": 5,
+            "pendingIntents": 0,
+            "openShares": 0,
+            "unsoldShares": 0,
+            "signalMetrics": {
+              "observations": 14633,
+              "warmup": 6138,
+              "invalidForecast": 0,
+              "edgeBelowMargin": 8477,
+              "edgePass": 18,
+              "zeroTopAskCapacity": 1294
+            },
+            "unsupportedInstruments": 0
+          }
+        ]
+      },
+      "worstPnl": "-0.995000"
+    },
+    {
+      "gapSeconds": 3600,
+      "candidates": 576,
+      "positive": 3,
+      "candidatesWithFills": 576,
+      "minClosed": 1,
+      "maxClosed": 13,
+      "best": {
+        "parameters": {
+          "lookback": 12,
+          "gapResetSeconds": 3600,
+          "z": 1.5,
+          "minimumEdge": 0.005,
+          "horizonSeconds": 1800,
+          "takeProfit": "0.005000"
+        },
+        "points": [
+          {
+            "at": "2026-10-02T23:48:38.292Z",
+            "conservativePnl": "-0.660000",
+            "liquidationPnl": null,
+            "valuation": "cash_only_inventory_zero",
+            "cash": "99.340000",
+            "realizedPnl": "-0.025000",
+            "fees": "0.000000",
+            "turnover": "5.030000",
+            "completedTrades": 3,
+            "fillExecutions": 7,
+            "intents": 10,
+            "expiredIntents": 3,
+            "pendingIntents": 0,
+            "openShares": 1,
+            "unsoldShares": 1,
+            "signalMetrics": {
+              "observations": 8666,
+              "warmup": 3478,
+              "invalidForecast": 0,
+              "edgeBelowMargin": 5174,
+              "edgePass": 14,
+              "zeroTopAskCapacity": 774
+            },
+            "unsupportedInstruments": 0
+          },
+          {
+            "at": "2026-10-03T18:41:00.404Z",
+            "conservativePnl": "0.005000",
+            "liquidationPnl": "0.005000",
+            "valuation": "depth_checked_liquidation_estimate",
+            "cash": "100.005000",
+            "realizedPnl": "0.005000",
+            "fees": "0.000000",
+            "turnover": "7.385000",
+            "completedTrades": 5,
+            "fillExecutions": 10,
+            "intents": 14,
+            "expiredIntents": 4,
+            "pendingIntents": 0,
+            "openShares": 0,
+            "unsoldShares": 0,
+            "signalMetrics": {
+              "observations": 11638,
+              "warmup": 4642,
+              "invalidForecast": 0,
+              "edgeBelowMargin": 6979,
+              "edgePass": 17,
+              "zeroTopAskCapacity": 1166
+            },
+            "unsupportedInstruments": 0
+          },
+          {
+            "at": "2026-10-04T06:48:57.756Z",
+            "conservativePnl": "0.005000",
+            "liquidationPnl": "0.005000",
+            "valuation": "depth_checked_liquidation_estimate",
+            "cash": "100.005000",
+            "realizedPnl": "0.005000",
+            "fees": "0.000000",
+            "turnover": "7.385000",
+            "completedTrades": 5,
+            "fillExecutions": 10,
+            "intents": 15,
+            "expiredIntents": 5,
+            "pendingIntents": 0,
+            "openShares": 0,
+            "unsoldShares": 0,
+            "signalMetrics": {
+              "observations": 14633,
+              "warmup": 6020,
+              "invalidForecast": 0,
+              "edgeBelowMargin": 8595,
+              "edgePass": 18,
+              "zeroTopAskCapacity": 1294
+            },
+            "unsupportedInstruments": 0
+          }
+        ]
+      },
+      "worstPnl": "-0.995000"
+    },
+    {
+      "gapSeconds": 21600,
+      "candidates": 576,
+      "positive": 3,
+      "candidatesWithFills": 576,
+      "minClosed": 1,
+      "maxClosed": 16,
+      "best": {
+        "parameters": {
+          "lookback": 12,
+          "gapResetSeconds": 21600,
+          "z": 1.5,
+          "minimumEdge": 0.005,
+          "horizonSeconds": 1800,
+          "takeProfit": "0.005000"
+        },
+        "points": [
+          {
+            "at": "2026-10-02T23:48:38.292Z",
+            "conservativePnl": "-0.660000",
+            "liquidationPnl": null,
+            "valuation": "cash_only_inventory_zero",
+            "cash": "99.340000",
+            "realizedPnl": "-0.025000",
+            "fees": "0.000000",
+            "turnover": "5.030000",
+            "completedTrades": 3,
+            "fillExecutions": 7,
+            "intents": 10,
+            "expiredIntents": 3,
+            "pendingIntents": 0,
+            "openShares": 1,
+            "unsoldShares": 1,
+            "signalMetrics": {
+              "observations": 8666,
+              "warmup": 3468,
+              "invalidForecast": 0,
+              "edgeBelowMargin": 5184,
+              "edgePass": 14,
+              "zeroTopAskCapacity": 774
+            },
+            "unsupportedInstruments": 0
+          },
+          {
+            "at": "2026-10-03T18:41:00.404Z",
+            "conservativePnl": "0.005000",
+            "liquidationPnl": "0.005000",
+            "valuation": "depth_checked_liquidation_estimate",
+            "cash": "100.005000",
+            "realizedPnl": "0.005000",
+            "fees": "0.000000",
+            "turnover": "7.385000",
+            "completedTrades": 5,
+            "fillExecutions": 10,
+            "intents": 14,
+            "expiredIntents": 4,
+            "pendingIntents": 0,
+            "openShares": 0,
+            "unsoldShares": 0,
+            "signalMetrics": {
+              "observations": 11638,
+              "warmup": 4531,
+              "invalidForecast": 0,
+              "edgeBelowMargin": 7090,
+              "edgePass": 17,
+              "zeroTopAskCapacity": 1166
+            },
+            "unsupportedInstruments": 0
+          },
+          {
+            "at": "2026-10-04T06:48:57.756Z",
+            "conservativePnl": "0.005000",
+            "liquidationPnl": "0.005000",
+            "valuation": "depth_checked_liquidation_estimate",
+            "cash": "100.005000",
+            "realizedPnl": "0.005000",
+            "fees": "0.000000",
+            "turnover": "7.385000",
+            "completedTrades": 5,
+            "fillExecutions": 10,
+            "intents": 17,
+            "expiredIntents": 7,
+            "pendingIntents": 0,
+            "openShares": 0,
+            "unsoldShares": 0,
+            "signalMetrics": {
+              "observations": 14633,
+              "warmup": 5784,
+              "invalidForecast": 0,
+              "edgeBelowMargin": 8829,
+              "edgePass": 20,
+              "zeroTopAskCapacity": 1294
+            },
+            "unsupportedInstruments": 0
+          }
+        ]
+      },
+      "worstPnl": "-0.995000"
+    }
+  ],
+  "receipt": {
+    "at": "2026-10-04T08:12:58.950Z",
+    "sourceHash": "a19efc0c0ff5d52f8ce851ce5665631d3e3c76899e3e46c3dbc7653723c62507",
+    "sourceBytes": 4255286972,
+    "engineHash": "e73f856bb271fb7753c317e673cb7d5473057151fa2c3ca58cfc373353bf1fc2",
+    "configFileHash": "9f0d7811deb5b0ab6b032f388af55f375aca45f94b0b1004a3e84115786e3ff7",
+    "binaryHash": "fa44710d6bdd523cd517ef7bb357543c98d3d98047e8c5f6aaf0b8757e59cb90",
+    "outputHash": "418cee5be0a8b9142ad5aeecd67e1c327985c7743d17a8e14b07a887372c6896",
+    "competitionOrders": 0
+  }
+}

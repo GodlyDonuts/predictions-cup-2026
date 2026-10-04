@@ -24,3 +24,10 @@ build/
 logs/
 *.log
 runtime/
+
+# Local capture, native artifacts and stop controls
+data/
+*.dpapi
+account.json
+STOP
+backend-rust/target/

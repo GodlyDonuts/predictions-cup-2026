@@ -1,0 +1,262 @@
+{
+  "schemaVersion": 1,
+  "at": "2026-10-04T08:17:48.745Z",
+  "scopeClaims": [
+    5977664356,
+    5977921554
+  ],
+  "engineHash": "e73f856bb271fb7753c317e673cb7d5473057151fa2c3ca58cfc373353bf1fc2",
+  "source": {
+    "sha256": "a19efc0c0ff5d52f8ce851ce5665631d3e3c76899e3e46c3dbc7653723c62507",
+    "bytes": 4255286972,
+    "records": 9491,
+    "days": 2.3126856134259257,
+    "cycles": 3782,
+    "acceptedBooks": 14633,
+    "invalidBooks": 444
+  },
+  "implementation": [
+    "Native original-prefix/hash/clock verification without allocating old state",
+    "Rayon parallel frozen ridge/stump inference and wallet replay",
+    "Integer cash/fee/FIFO accounting with independent ledger reconciliation",
+    "Causal multiday dip grid with variable historical gap windows and delayed take-profit exits",
+    "Source graph, source prefix, bank/config, binary and result hashes in immutable receipts",
+    "CLI/API adapter; no additional daemon, API client or contest execution"
+  ],
+  "benchmark": {
+    "at": "2026-10-04T07:58:14.210Z",
+    "sourceHash": "a19efc0c0ff5d52f8ce851ce5665631d3e3c76899e3e46c3dbc7653723c62507",
+    "sourceBytes": 4255286972,
+    "sourceRecords": 9491,
+    "captureDays": 2.3126856134259257,
+    "weightsRefitted": false,
+    "js": {
+      "workers": 4,
+      "verifyMs": 40592.85400000001,
+      "replayMs": 87137.6303,
+      "totalMs": 127730.48430000001
+    },
+    "rust": {
+      "workers": 8,
+      "verifyMs": 11948,
+      "prepareMs": 4,
+      "replayMs": 107,
+      "totalWallMs": 12208.712200000009
+    },
+    "endToEndSpeedup": 10.462240587504382,
+    "exactScorecards": 384,
+    "exactCheckpoints": 1152,
+    "candidatesWithFills": 0,
+    "competitionOrders": 0,
+    "networkRequests": 0,
+    "profitabilityEstablished": false
+  },
+  "releaseReplay": {
+    "exactCards": 384,
+    "exactCheckpoints": 1152,
+    "verifyMs": 12116,
+    "prepareMs": 3,
+    "replayMs": 131
+  },
+  "dipSweep": {
+    "candidates": 2304,
+    "workers": 8,
+    "verifyMs": 11939,
+    "replayMs": 13684,
+    "positiveVariants": 9,
+    "bestConservativePnl": "0.005000",
+    "bestCompletedTrades": 5,
+    "initialCash": "100.000000",
+    "feeBps": 0,
+    "gapStudies": [
+      {
+        "gapSeconds": 120,
+        "candidates": 576,
+        "positive": 0,
+        "minClosed": 1,
+        "maxClosed": 9,
+        "bestParameters": {
+          "lookback": 6,
+          "gapResetSeconds": 120,
+          "z": 0,
+          "minimumEdge": 0.01,
+          "horizonSeconds": 60,
+          "takeProfit": "0.005000"
+        },
+        "bestCheckpoints": [
+          {
+            "at": "2026-10-02T23:48:38.292Z",
+            "conservativePnl": "-0.020000",
+            "realizedPnl": "-0.020000",
+            "completedTrades": 1,
+            "openShares": 0,
+            "warmup": 4174
+          },
+          {
+            "at": "2026-10-03T18:41:00.404Z",
+            "conservativePnl": "-0.020000",
+            "realizedPnl": "-0.020000",
+            "completedTrades": 1,
+            "openShares": 0,
+            "warmup": 5365
+          },
+          {
+            "at": "2026-10-04T06:48:57.756Z",
+            "conservativePnl": "-0.020000",
+            "realizedPnl": "-0.020000",
+            "completedTrades": 1,
+            "openShares": 0,
+            "warmup": 6952
+          }
+        ],
+        "worstConservativePnl": "-0.995000"
+      },
+      {
+        "gapSeconds": 900,
+        "candidates": 576,
+        "positive": 3,
+        "minClosed": 1,
+        "maxClosed": 13,
+        "bestParameters": {
+          "lookback": 12,
+          "gapResetSeconds": 900,
+          "z": 1.5,
+          "minimumEdge": 0.005,
+          "horizonSeconds": 1800,
+          "takeProfit": "0.005000"
+        },
+        "bestCheckpoints": [
+          {
+            "at": "2026-10-02T23:48:38.292Z",
+            "conservativePnl": "-0.660000",
+            "realizedPnl": "-0.025000",
+            "completedTrades": 3,
+            "openShares": 1,
+            "warmup": 3574
+          },
+          {
+            "at": "2026-10-03T18:41:00.404Z",
+            "conservativePnl": "0.005000",
+            "realizedPnl": "0.005000",
+            "completedTrades": 5,
+            "openShares": 0,
+            "warmup": 4746
+          },
+          {
+            "at": "2026-10-04T06:48:57.756Z",
+            "conservativePnl": "0.005000",
+            "realizedPnl": "0.005000",
+            "completedTrades": 5,
+            "openShares": 0,
+            "warmup": 6138
+          }
+        ],
+        "worstConservativePnl": "-0.995000"
+      },
+      {
+        "gapSeconds": 3600,
+        "candidates": 576,
+        "positive": 3,
+        "minClosed": 1,
+        "maxClosed": 13,
+        "bestParameters": {
+          "lookback": 12,
+          "gapResetSeconds": 3600,
+          "z": 1.5,
+          "minimumEdge": 0.005,
+          "horizonSeconds": 1800,
+          "takeProfit": "0.005000"
+        },
+        "bestCheckpoints": [
+          {
+            "at": "2026-10-02T23:48:38.292Z",
+            "conservativePnl": "-0.660000",
+            "realizedPnl": "-0.025000",
+            "completedTrades": 3,
+            "openShares": 1,
+            "warmup": 3478
+          },
+          {
+            "at": "2026-10-03T18:41:00.404Z",
+            "conservativePnl": "0.005000",
+            "realizedPnl": "0.005000",
+            "completedTrades": 5,
+            "openShares": 0,
+            "warmup": 4642
+          },
+          {
+            "at": "2026-10-04T06:48:57.756Z",
+            "conservativePnl": "0.005000",
+            "realizedPnl": "0.005000",
+            "completedTrades": 5,
+            "openShares": 0,
+            "warmup": 6020
+          }
+        ],
+        "worstConservativePnl": "-0.995000"
+      },
+      {
+        "gapSeconds": 21600,
+        "candidates": 576,
+        "positive": 3,
+        "minClosed": 1,
+        "maxClosed": 16,
+        "bestParameters": {
+          "lookback": 12,
+          "gapResetSeconds": 21600,
+          "z": 1.5,
+          "minimumEdge": 0.005,
+          "horizonSeconds": 1800,
+          "takeProfit": "0.005000"
+        },
+        "bestCheckpoints": [
+          {
+            "at": "2026-10-02T23:48:38.292Z",
+            "conservativePnl": "-0.660000",
+            "realizedPnl": "-0.025000",
+            "completedTrades": 3,
+            "openShares": 1,
+            "warmup": 3468
+          },
+          {
+            "at": "2026-10-03T18:41:00.404Z",
+            "conservativePnl": "0.005000",
+            "realizedPnl": "0.005000",
+            "completedTrades": 5,
+            "openShares": 0,
+            "warmup": 4531
+          },
+          {
+            "at": "2026-10-04T06:48:57.756Z",
+            "conservativePnl": "0.005000",
+            "realizedPnl": "0.005000",
+            "completedTrades": 5,
+            "openShares": 0,
+            "warmup": 5784
+          }
+        ],
+        "worstConservativePnl": "-0.995000"
+      }
+    ]
+  },
+  "checks": {
+    "nodePassed": 36,
+    "nodeFailed": 0,
+    "rustPassed": 1,
+    "rustFailed": 0,
+    "scope": "Native parity, source integrity/clock/cutoff, frozen portfolio and worker/receipt ordering; bounded checks, not the full repository suite"
+  },
+  "limitations": [
+    "Native offline compute/replay migrated; Node still owns collection, dashboard and existing ML fitting.",
+    "Historical grid reuses development data; positive variants are correlated and selected after inspection.",
+    "Best positive result is one tick after five closes; it does not establish an edge or justify capital scaling.",
+    "Historical REST snapshots and modeled fills omit exchange queue behavior and counterfactual impact.",
+    "Replay accelerates stored data, not competition time or API rate limits."
+  ],
+  "networkRequests": 0,
+  "competitionOrders": 0,
+  "additionalPersistentProcesses": 0,
+  "productionActivation": false,
+  "profitabilityEstablished": false,
+  "next": "Use the native backend for subsequent untouched captures and execution-cost sensitivity; improve documented tournament realtime ingestion through the single collector to reduce sparse historical coverage."
+}

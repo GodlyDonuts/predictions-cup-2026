@@ -6,7 +6,10 @@
     "test": "node --test",
     "scan": "node bot.mjs --once",
     "start": "node bot.mjs",
-    "research:portfolio": "node live-paper/portfolio-bank.mjs"
+    "research:portfolio": "node live-paper/portfolio-bank.mjs",
+    "replay:rust": "node live-paper/rust-backend.mjs",
+    "sweep:rust": "node live-paper/rust-backend.mjs --mode sweep",
+    "test:rust-parity": "node --test live-paper/rust-backend.test.mjs"
   },
   "engines": {
     "node": ">=22"
