@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "at": "2026-10-04T22:04:48.451Z",
+  "classification": "progress",
+  "productionPilotRunning": true,
+  "profitabilityEstablished": false,
+  "readiness": {
+    "at": "2026-10-04T22:00:14.755Z",
+    "bookReceivedAt": "2026-10-04T22:00:14.753Z",
+    "complete": true,
+    "exchangeId": "986",
+    "marketId": "297"
+  },
+  "status": "waiting_for_signal",
+  "owner": "Codex",
+  "handoffId": "human-to-baal-20261004-2141",
+  "assignmentComment": 5984685670,
+  "ackComment": 5984845412,
+  "sourceBank": "88c694a845b5a9fe71d6d3a76a9a5df824dab197f89302e7d3faa6a1c82b2243",
+  "eligibleResearchMarkets": [],
+  "orders": 0,
+  "fills": 0,
+  "realizedPnl": "0.000000",
+  "fees": "0.000000",
+  "collector": {
+    "pid": 19576,
+    "status": "running",
+    "cycles": 15,
+    "errors": 0
+  },
+  "persistentServices": 3,
+  "extraServices": 0,
+  "readback": {
+    "firstCommit": "c05c07b7773b34ca5b9db4504ca40c22c01d4b3b",
+    "files": 24,
+    "repairCommit": "9e821665dda13db80ac3e4165b1990a3bf33556d",
+    "repairFiles": 3,
+    "gitBlobsMatch": true
+  },
+  "checks": {
+    "targeted": 71,
+    "failed": 0,
+    "skipped": 0,
+    "modelChecks": 9
+  },
+  "reconciliation": {
+    "at": "2026-10-04T21:58:28.228Z",
+    "receiptHash": "1cee89353c103c1e08d086b266db1d06009b6a12ffd1eb3f1d193bd874625645",
+    "complete": true,
+    "existingPositionExchanges": 6,
+    "openOrders": 0,
+    "historyOrders": 44,
+    "fills": 126,
+    "rawAccountStoredOnlyInRestrictedRuntime": true
+  },
+  "paperResult": {
+    "realizedPnl": "0.020000",
+    "closedTrades": 1,
+    "fills": 3,
+    "kind": "counterfactual_tiny_sample"
+  },
+  "historicalOfficialNet": "-0.380000",
+  "historicalJournalsPreserved": true,
+  "entryExpiresAt": "2026-10-05T03:59:22.131Z",
+  "remainingWork": [
+    "Qualify fresh unconditional contract forecasts and executable edges.",
+    "Preserve accounting through a tested frozen-bank transition.",
+    "Measure actual attributed order/fill reconciliation and honest net performance."
+  ]
+}

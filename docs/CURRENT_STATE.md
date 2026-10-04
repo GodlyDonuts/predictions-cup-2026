@@ -1,3 +1,13 @@
+# October4 live Baal pilot
+
+The newest direct human instruction assigns Codex/Baal execution ownership without requiring Daenerys approval. Assignment `human-to-baal-20261004-2141` is recorded in issue5984685670; fresh Codex ACK5984845412 follows complete scoped official cash/positions/orders/fill reconciliation. The rejected Daenerys RELEASE publication is not fabricated or treated as authority. Existing holdings retain their original attribution.
+
+The single collector now runs the checked native settlement executor. Bootstrap completed2026-10-04T22:00:14.755Z, with a fresh scoped official book and account reads. The1 SUSQie/order,10 aggregate,25 cumulative-purchase pilot uses zero fees, separate durable journals and one serialized schema4 queue. Three persistent services remain: collector, file-only paper worker and local Next.js dashboard. Current source bank has0 qualified forecasts; status is `waiting_for_signal`,0 orders and0 realized P&L. Production execution plumbing is working; profitability is unproven. Historical official net−0.380 and tiny counterfactual+0.020 realized remain separate.
+
+Primary-source historical election baseline V1 is published under `research/election-baseline-v1`. It predicted73/79 screened historical race directions correctly, with10.04point margin RMSE. That is outcome evidence, not executable market profit or unconditional2026 party-win calibration. Current drafts retain publication clocks, unvalidated generic-ballot transport and third-party limitations; no forecast was qualified to force a trade. Next work addresses unconditional opposing-candidate outcomes, current ballots and executable pricing, then preserves attribution through source-bank transitions. Live proof is `data/human-pilot-live-20261004.json`; current ownership is `coordination/execution_state.json`.
+
+Earlier records below are historical where ownership, activation or next steps conflict with this update.
+
 # Current state
 
 ## Latest historical account observation: exit canceled, October 3, 08:44 UTC
@@ -309,3 +319,4 @@ The following prior work queue is preserved for a future coordinated return; it 
 2. Compare the fixed dip/rebound wallets on subsequent live observations; recent quiet price paths have produced no qualifying signals.
 3. Test price-protected entry execution prospectively under unchanged discount gates. Two observed official entries caught short-lived ask concessions; this motivates a test, not a profitability claim. A quote touch or depth disappearance is insufficient proof of a resting fill.
 4. Monitor actual completed-trade economics and fresh account reconciliation before any scaling or further pilot-window renewal.
+

@@ -1,0 +1,122 @@
+{
+  "schemaVersion": 1,
+  "firstCommit": "c05c07b7773b34ca5b9db4504ca40c22c01d4b3b",
+  "firstTree": "0f316d2a6ff6e2d39af4d517e065a3fc499076b1",
+  "firstBlobs": [
+    {
+      "path": "execution/production-activation.mjs",
+      "sha": "c4729c48eccb534b9c58df578a814aa7da803a5c"
+    },
+    {
+      "path": "execution/production-authority.test.mjs",
+      "sha": "08860cbf75b0ad98b679db8ad21b93b6c3c1c42f"
+    },
+    {
+      "path": "execution/production-reconciliation.mjs",
+      "sha": "6162732a0f9260ed7d64c039c7f5c1c2821e4be5"
+    },
+    {
+      "path": "execution/production-reconciliation.test.mjs",
+      "sha": "0f0df2c2435f0089153347e811508b7a34d00ea5"
+    },
+    {
+      "path": "execution/production-launch.md",
+      "sha": "410dd3dd9f9b00742bce655cb8349674d3cf8d19"
+    },
+    {
+      "path": "execution/README.md",
+      "sha": "9e7aad68af512beef866bc2a752e1884ba2c8e29"
+    },
+    {
+      "path": "live-paper/transport-network-budget.mjs",
+      "sha": "366980dbf3c848cc8f0925101fe2b49223373ee2"
+    },
+    {
+      "path": "live-paper/runner.mjs",
+      "sha": "8d835063489a5b8840ae48eda0205a29c080c200"
+    },
+    {
+      "path": "coordination/execution_state.json",
+      "sha": "fd1549d2447a5e22b2bf26679163942d2ee4d0fc"
+    },
+    {
+      "path": "docs/COORDINATION.md",
+      "sha": "2b8de258ab2aec5ea8203ebe157ab5c9f2550d50"
+    },
+    {
+      "path": "data/reconcile-production-human-20261004.mjs",
+      "sha": "1c25f4176f365359639d2b038dd06f5e251216ff"
+    },
+    {
+      "path": "data/prepare-human-assignment-publication-20261004.mjs",
+      "sha": "1fd08f881ca0d23a3acd36ab1b8b9045bc8f9fae"
+    },
+    {
+      "path": "research/election-baseline-v1/README.md",
+      "sha": "739baa78a90bc476a9351b9a73fd929ccd44c27f"
+    },
+    {
+      "path": "research/election-baseline-v1/definition.json",
+      "sha": "8c4e2a52f0a0fba5f075688ec582b7d00acc86bb"
+    },
+    {
+      "path": "research/election-baseline-v1/definition-before-house-access.json",
+      "sha": "55db241dd5651be53fe8707e3ea1ef0c2c07fc04"
+    },
+    {
+      "path": "research/election-baseline-v1/download-sources.mjs",
+      "sha": "5260369dd100aa9cd7a607474f48d40e7a9e28a3"
+    },
+    {
+      "path": "research/election-baseline-v1/model.mjs",
+      "sha": "564d5d45a0f3d0a570c506df4c705afd86bc79cc"
+    },
+    {
+      "path": "research/election-baseline-v1/model.test.mjs",
+      "sha": "e8468ada7fa90bc86951b7ed3b05d3df9db93fe4"
+    },
+    {
+      "path": "research/election-baseline-v1/train.mjs",
+      "sha": "e0ec79ac3eedc5d9ca2461aee7acb309cc58c166"
+    },
+    {
+      "path": "research/election-baseline-v1/current-inputs.json",
+      "sha": "a64c0ac78083f4bdbe7ca42140552cdbcc2e88dd"
+    },
+    {
+      "path": "research/election-baseline-v1/model-summary.json",
+      "sha": "17db4d656f24ffcc4e514361d8843c08e8736490"
+    },
+    {
+      "path": "research/election-baseline-v1/source-crosschecks.json",
+      "sha": "8901b8baf78fd5c5d808de3edd4d0889dfe101bd"
+    },
+    {
+      "path": "research/election-baseline-v1/sources/PEJ5QU-manifest.json",
+      "sha": "e5766b08724285b85666c68e55ed6c10c7992356"
+    },
+    {
+      "path": "research/election-baseline-v1/sources/42MVDX-manifest.json",
+      "sha": "ea33006214f783023e714cc7b9a0a772bfc5f2f7"
+    }
+  ],
+  "repairCommit": "9e821665dda13db80ac3e4165b1990a3bf33556d",
+  "repairTree": "82487599b581f6a1bf977122da8ae8c84e8a0037",
+  "repairBlobs": [
+    {
+      "path": "execution/production-reconciliation.mjs",
+      "sha": "8edcded2da8967f08ce5618428a0062bf919fb26"
+    },
+    {
+      "path": "execution/production-reconciliation.test.mjs",
+      "sha": "537e1c3955eab07b3553b165739d658a90aaaced"
+    },
+    {
+      "path": "data/activate-human-pilot-20261004.mjs",
+      "sha": "5bd60539591bdc7df144ba252aa1523cc8465260"
+    }
+  ],
+  "assignmentComment": 5984685670,
+  "priorAck": 5984830913,
+  "ackComment": 5984845412
+}

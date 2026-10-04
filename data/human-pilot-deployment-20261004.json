@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "at": "2026-10-04T21:59:22.131Z",
+  "status": "bounded_executor_selected_startup_pending",
+  "handoffId": "human-to-baal-20261004-2141",
+  "assignmentCommentId": 5984685670,
+  "ackCommentId": 5984845412,
+  "activationHash": "60fbe755ff65d7409a21387f90f2d421c88ed7bcf7a3fb0e16407e7d73e56d20",
+  "handoffHash": "481237ef18f3a93288b3c3d9849a5173fc64178e20c6302e362fb5e22629f954",
+  "bankHash": "88c694a845b5a9fe71d6d3a76a9a5df824dab197f89302e7d3faa6a1c82b2243",
+  "receiptHash": "1cee89353c103c1e08d086b266db1d06009b6a12ffd1eb3f1d193bd874625645",
+  "reconciledAt": "2026-10-04T21:58:28.228Z",
+  "activatedRun": "sig-pilot-settlement-20261004-human",
+  "entryExpiresAt": "2026-10-05T03:59:22.131Z",
+  "limits": {
+    "maxOrderCost": "1.000000",
+    "maxAggregateCost": "10.000000",
+    "maxCumulativeBuyCost": "25.000000",
+    "feeBps": 0
+  },
+  "sizingCapitalMeaning": "Nominal100 SUSQie pilot risk basis; actual official cash is read separately on every decision.",
+  "qualifiedCurrentForecasts": 0,
+  "competitionOrdersSentByTransition": 0,
+  "historyReset": false,
+  "sourceGraphChanges": [
+    "live-paper/transport-network-budget.mjs"
+  ],
+  "sourceManifestSha256": "87a06c32dd3ab3bbf53e76e0b7eb58fc62723d7675427616ccbeba746c706178",
+  "technicalRemoteStopIndependentlyVerified": false,
+  "profitabilityEstablished": false
+}
