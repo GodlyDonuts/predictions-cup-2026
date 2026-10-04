@@ -52,11 +52,22 @@
     ]
   },
   "live": {
-    "status": "pending_single_collector_restart",
+    "status": "verified_collector_running_feed_blocked",
+    "collectorPid": 17136,
+    "paperPid": 11120,
+    "dashboardPid": 4596,
+    "persistentProcesses": 3,
+    "lastObservationAt": "2026-10-04T08:49:41.009Z",
+    "collectorReadRequests": 63,
     "expected": "blocked_shared_read_only_budget",
+    "actual": "blocked_shared_read_only_budget",
     "tokenPostsAuthorized": false,
+    "tokenDispatchAttempts": 0,
     "marketFramesVerified": false,
-    "universeCount": 237
+    "marketFrames": 0,
+    "universeCount": 237,
+    "desiredChannels": 1,
+    "activeChannels": 0
   },
   "limitations": [
     "POST /realtime/token is a platform write and is prohibited by current shared budget v3. No live WebSocket claim follows from offline tests.",
@@ -72,5 +83,24 @@
   },
   "productionActivation": false,
   "profitabilityEstablished": false,
-  "additionalPersistentProcesses": 0
+  "additionalPersistentProcesses": 0,
+  "deployedAt": "2026-10-04T08:50:18.213Z",
+  "codePublication": {
+    "sha": "8686ab32545100f7262057b320c2d70d7ef9752d",
+    "parent": "fbd563136652c54f0598e8f0cdf456ef455b1a55",
+    "tree": "d51428f0e18c985c789529c689c3bcbde50b2022",
+    "files": 12,
+    "verifiedAt": "2026-10-04 08:47:23 UTC",
+    "immutableReadBack": true
+  },
+  "preservation": {
+    "banks": 6,
+    "originalJournalPrefixes": true,
+    "accountingReset": false,
+    "frozenSourceGraph": "7593076b94117c1dcc743931beb725171b1c3fa95b86fee4ead7683c6609e838",
+    "frozenFiles": 36,
+    "noMakerHostFailed": false,
+    "pairHostFailed": false,
+    "networkBudgetUnchanged": true
+  }
 }
