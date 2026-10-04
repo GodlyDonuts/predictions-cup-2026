@@ -1,7 +1,8 @@
 import {MarketCollector} from '../feed/collector.mjs';
 import {config, parseEvent, parseSnapshot, snapshotPath, instantNs, timestamp, requireThat, numericId, compareVersion} from '../feed/contract.mjs';
 import {price} from '../paper/fixed.mjs';
-const invalidationReasons = new Set(['INITIAL', 'RECONNECT', 'REFRESH', 'SOCKET_ERROR', 'DISCONNECTED', 'GAP', 'RESYNC_REQUIRED', 'UNSEQUENCED_TRADE', 'SCHEMA', 'STALE', 'EXPIRY', 'MISSING_BOOK', 'SETTLEMENT', 'BOOK_DIRTY', 'VERSION_CONFLICT', 'RECOVERY_FAILED']);
+import {realtimeScopes} from './realtime-scope.mjs';
+const invalidationReasons = new Set(['INITIAL', 'RECONNECT', 'REFRESH', 'SOCKET_ERROR', 'DISCONNECTED', 'GAP', 'RESYNC_REQUIRED', 'UNSEQUENCED_TRADE', 'SCHEMA', 'STALE', 'PERIODIC', 'EXPIRY', 'MISSING_BOOK', 'SETTLEMENT', 'BOOK_DIRTY', 'VERSION_CONFLICT', 'RECOVERY_FAILED']);
 
 // Market-only, in-memory bridge. The host owns sockets and the shared REST queue.
 // Readiness permits capture only: account reconciliation and execution stay absent.
@@ -12,8 +13,8 @@ export class RealtimeBooks {
   #staleMs;
   #skewMs;
   #snapshotMs;
-  constructor({tournamentId, markets}, {now = Date.now, staleMs = 20000, maxClockSkewMs = 1000, maxSnapshotMs = 20000, capture = null} = {}) {
-    requireThat(Array.isArray(markets) && markets.length > 0 && markets.length <= 4, 'INVALID_MARKET_SCOPE');
+  constructor({tournamentId, markets, channelMode = 'per_market'}, {now = Date.now, staleMs = 20000, maxClockSkewMs = 1000, maxSnapshotMs = 20000, capture = null} = {}) {
+    realtimeScopes({tournamentId, markets, channelMode});
     for (const n of [staleMs, maxSnapshotMs]) requireThat(Number.isSafeInteger(n) && n > 0 && n <= 60000, 'INVALID_FRESHNESS_POLICY');
     requireThat(Number.isSafeInteger(maxClockSkewMs) && maxClockSkewMs >= 0 && maxClockSkewMs <= 1000 && typeof now === 'function', 'INVALID_CLOCK_POLICY');
     requireThat(capture === null || typeof capture?.append === 'function', 'INVALID_CAPTURE_SINK');

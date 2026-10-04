@@ -38,6 +38,7 @@ import {readMarketHistoryInputs} from './market-history-inputs.mjs';
 import {createClient} from '@supabase/supabase-js';
 import {Capture} from '../feed/capture.mjs';
 import {createRealtimeHost} from './realtime-host.mjs';
+import {realtimeCaptureScope} from './realtime-scope.mjs';
 import {paperExperimentRetired} from './experiment-retirement.mjs';
 import {readEdgeObservationFocus,planEdgeObservation} from './edge-observation-plan.mjs';
 import {prioritizeEdgeTrials} from './edge-trial-projection.mjs';
@@ -230,14 +231,14 @@ try{
   if(fs.existsSync(realtimeFile)){
     const activation=JSON.parse(fs.readFileSync(realtimeFile));
     if(activation.enabled===true){
-      if(activation.schemaVersion!==1||activation.mode!=='market_capture_only')throw Error('Invalid realtime capture activation');
+      const scope=realtimeCaptureScope(activation,c,universe);
       const file='realtime-'+new Date().toISOString().replace(/[:.]/g,'-')+'-'+randomUUID()+'.jsonl';
       realtimeCapture=new Capture(path.join(runtimeDir,file));
-      const scope={tournamentId:c.tournamentId,markets:c.marketIds.map(marketId=>({marketId,exchangeId:universe.exchanges.find(m=>m.marketId===marketId).exchangeId}))};
       realtime=createRealtimeHost({dispatch:spec=>api.dispatch(spec),createClient,scope,capture:realtimeCapture,signal:control.signal,
+        canMintToken:()=>api.readOnly!==true,
         canOperate:()=>!stopping&&!api.manualReview&&!fs.existsSync(stopFile)&&!fs.existsSync(paperStop)&&!fs.existsSync(collectorStop)&&!fs.existsSync(path.join(runtimeDir,'REALTIME_STOP'))});
       atomicJson(path.join(runtimeDir,'realtime-session.json'),{schemaVersion:1,file,startedAt:new Date().toISOString(),scope});
-      runtime.realtime={mode:'market_capture_only',recoveryBudgetPerCycle:1};
+      runtime.realtime={mode:'market_capture_only',channelMode:scope.channelMode,marketCount:scope.markets.length,recoveryBudgetPerCycle:1};
     }
   }
   if(networkBudget)commit({type:'collection_network_budget',clockAt:new Date().toISOString(),cadencePolicy:{mode:runtime.networkBudget.mode,schemaVersion:networkBudget.schemaVersion,intervalMs:api.interval,writeIntervalMs:api.writeInterval,completionPacing:true,...(networkBudget.schemaVersion===3?{maxReadsPerMinute:20,writesEnabled:false}:{})}});

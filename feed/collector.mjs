@@ -1,5 +1,5 @@
 import {config, parseEvent, parseSnapshot, compareVersion, timestamp, requireThat} from './contract.mjs';
-const REASONS = new Set(['INITIAL', 'RECONNECT', 'REFRESH', 'SOCKET_ERROR', 'DISCONNECTED', 'GAP', 'RESYNC_REQUIRED', 'UNSEQUENCED_TRADE', 'SCHEMA', 'STALE', 'EXPIRY', 'MISSING_BOOK', 'SETTLEMENT', 'BOOK_DIRTY', 'VERSION_CONFLICT', 'RECOVERY_FAILED']);
+const REASONS = new Set(['INITIAL', 'RECONNECT', 'REFRESH', 'SOCKET_ERROR', 'DISCONNECTED', 'GAP', 'RESYNC_REQUIRED', 'UNSEQUENCED_TRADE', 'SCHEMA', 'STALE', 'PERIODIC', 'EXPIRY', 'MISSING_BOOK', 'SETTLEMENT', 'BOOK_DIRTY', 'VERSION_CONFLICT', 'RECOVERY_FAILED']);
 export class MarketCollector {
   constructor(scope, {staleMs = 10000, now = Date.now, capture = null, maxTradeIds = 100000} = {}) {
     this.scope = config(scope); requireThat(Number.isFinite(staleMs) && staleMs > 0); requireThat(Number.isSafeInteger(maxTradeIds) && maxTradeIds > 0);

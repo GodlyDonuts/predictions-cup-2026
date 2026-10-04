@@ -186,3 +186,88 @@ test('installed SDK routes documented private broadcast envelopes to wildcard an
   assert.equal(JSON.stringify(x.client.status()).includes(TOKEN), false); assert.equal(requests, 0); assert.equal(sockets, 0);
   await x.client.stop();
 });
+
+function tournamentBatch(marketId, exchangeId, revision = 1, previousRevision = 0, override = {}) {
+  const inner = batch(revision, previousRevision, override);
+  if (inner.books) inner.books = inner.books.map(b => ({...b, exchangeId}));
+  return {marketId, batch: inner};
+}
+
+test('237-market universe joins exactly one topic; split frames retain independent revisions and newer duplicate books', async () => {
+  const universe = Array.from({length: 237}, (_, i) => ({marketId: String(i + 1), exchangeId: String(i + 1000)}));
+  const x = fixture({clientOptions: {channelMode: 'tournament', markets: universe}}); await x.client.start();
+  const sdk = x.sdkCalls[0], ch = sdk.channels[0];
+  assert.equal(sdk.channels.length, 1); assert.equal(ch.topic, `tournament:${tournamentId}:markets`);
+  assert.equal(ch.handlers.has('market_batch'), false); assert.equal(ch.handlers.has('markets_batch'), true);
+  assert.equal(x.client.status().activeChannels, 1); assert.equal(x.client.status().desiredChannels, 1);
+  assert.equal(x.subscribed.length, 237); assert.equal(x.writes, 1);
+  ch.push('markets_batch', {markets: [tournamentBatch('1', '1000', 8, 7), tournamentBatch('237', '1236', 40, 39)]});
+  ch.push('markets_batch', {markets: [tournamentBatch('2', '1001', 70, 69)]});
+  assert.equal(x.events.length, 3); assert.equal(x.resync.filter(v => v.reason === 'GAP').length, 0);
+  ch.push('markets_batch', {markets: [tournamentBatch('1', '1000', 10, 9), tournamentBatch('237', '1236', 41, 40)]});
+  assert.deepEqual(x.resync.filter(v => v.reason === 'GAP').map(v => v.marketId), ['1']);
+  const newer = tournamentBatch('1', '1000', 10, 9); newer.batch.books[0].asOf.sequence = 99;
+  ch.push('markets_batch', {markets: [newer]});
+  assert.equal(x.events.at(-1).payload.books[0].asOf.sequence, 99);
+  assert.equal(x.events.at(-1).payload.delivery.correlationId, '');
+  assert.equal(x.client.status().markets.find(v => v.marketId === '237').revision, 41);
+  assert.equal(JSON.stringify(x.events).includes('opaque-do-not-publish'), false);
+  await x.client.stop(); assert.equal(sdk.removed, 1); assert.equal(sdk.disconnected, 1);
+});
+
+test('malformed inner batch invalidates its market only; unknown market is ignored and cannot expand the allowlist', async () => {
+  const x = fixture({clientOptions: {channelMode: 'tournament'}}); await x.client.start(); const ch = x.sdkCalls[0].channels[0];
+  ch.push('markets_batch', {markets: [tournamentBatch('377', '1043'), tournamentBatch('354', '1043'), tournamentBatch('999', '9999')], token: TOKEN});
+  assert.equal(x.events.length, 1); assert.equal(x.events[0].marketId, '354');
+  assert.deepEqual(x.resync.filter(v => v.reason === 'SCHEMA').map(v => v.marketId), ['377']);
+  assert.equal(x.client.status().ignoredMarkets, 1); assert.equal(x.client.status().markets.length, 2);
+  assert.equal(JSON.stringify(x.events).includes(TOKEN), false);
+  ch.push('markets_batch', {markets: [tournamentBatch('377', '1066', 3, 2, {resyncRequired: true})]});
+  assert.equal(x.resync.at(-1).reason, 'RESYNC_REQUIRED');
+  ch.push('book_dirty', {marketId: '354', exchangeId: '1043', tournamentId, at: new Date(x.now).toISOString()});
+  assert.equal(x.resync.at(-1).marketId, '354'); assert.equal(x.resync.at(-1).reason, 'BOOK_DIRTY');
+  await x.client.stop();
+});
+
+test('ambiguous or overlong outer envelopes cannot partially advance revisions', async () => {
+  const x = fixture({clientOptions: {channelMode: 'tournament'}}); await x.client.start(); const ch = x.sdkCalls[0].channels[0];
+  for (const payload of [{markets: [tournamentBatch('377', '1066'), tournamentBatch(377, '1066')]}, {markets: new Array(301).fill(tournamentBatch('377', '1066'))}, {markets: [null]}, {markets: {}}]) {
+    const prior = x.events.length; ch.push('markets_batch', payload); assert.equal(x.events.length, prior);
+    assert.deepEqual(x.resync.slice(-2).map(v => [v.marketId, v.reason]), [['377', 'SCHEMA'], ['354', 'SCHEMA']]);
+    assert(x.client.status().markets.every(v => v.revision === null));
+  }
+  await x.client.stop();
+});
+
+test('tournament socket error and rejoin invalidate every member without extra token requests', async () => {
+  const x = fixture({clientOptions: {channelMode: 'tournament'}}); await x.client.start(); const ch = x.sdkCalls[0].channels[0];
+  const initial = x.client.status().markets.map(v => v.connectionId);
+  ch.push('markets_batch', {markets: [tournamentBatch('377', '1066'), tournamentBatch('354', '1043')]});
+  ch.notify('CHANNEL_ERROR'); assert.equal(x.disconnected.length, 2);
+  assert(x.client.status().markets.every(v => !v.subscribed));
+  ch.push('markets_batch', {markets: [tournamentBatch('377', '1066', 2, 1)]}); assert.equal(x.events.length, 2);
+  ch.notify('SUBSCRIBED'); assert(x.client.status().markets.every((v, i) => v.connectionId !== initial[i] && v.revision === null));
+  assert.deepEqual(x.resync.slice(-2).map(v => v.reason), ['RECONNECT', 'RECONNECT']); assert.equal(x.writes, 1);
+  await x.client.stop(); ch.push('markets_batch', {markets: [tournamentBatch('377', '1066')]}); assert.equal(x.events.length, 2);
+});
+
+test('token budget refusal performs no dispatch; policy revocation after admission blocks network and leaks no text', async () => {
+  const blocked = fixture({clientOptions: {canMintToken: () => false}});
+  await assert.rejects(blocked.client.start(), /REALTIME_TOKEN_BUDGET_BLOCKED/);
+  assert.equal(blocked.client.status().state, 'blocked'); assert.equal(blocked.client.status().tokenRequests, 0);
+  assert.equal(blocked.requests.length, 0); assert.equal(blocked.writes, 0); await blocked.client.stop();
+  let tokenAllowed = true;
+  const revoked = fixture({afterAdmission: () => { tokenAllowed = false; }, clientOptions: {canMintToken: () => tokenAllowed}});
+  await assert.rejects(revoked.client.start(), /REALTIME_TOKEN_BUDGET_BLOCKED/);
+  assert.equal(revoked.writes, 0); assert.equal(revoked.sdkCalls.length, 0); await revoked.client.stop();
+});
+
+test('refused tournament join tears down SDK and never automatically retries the rejected topic', async () => {
+  const x = fixture({autoJoin:false,clientOptions:{channelMode:'tournament'}});
+  const starting=x.client.start();await settle();const failed=assert.rejects(starting,/REALTIME_JOIN_REFUSED/);
+  const sdk=x.sdkCalls[0];sdk.channels[0].notify('CHANNEL_ERROR',Error('Unauthorized '+TOKEN));await failed;await settle();
+  assert.equal(x.client.status().state,'refused');assert.equal(sdk.disconnected,1);assert.equal(sdk.removed,1);
+  await assert.rejects(x.client.reconnect(),/REALTIME_JOIN_REFUSED/);await assert.rejects(x.client.start(),/REALTIME_JOIN_REFUSED/);
+  assert.equal(x.writes,1);assert.equal(x.sdkCalls.length,1);assert.equal(JSON.stringify(x.client.status()).includes(TOKEN),false);
+  x.autoJoin=true;await x.client.refresh();assert.equal(x.writes,2);assert.equal(x.client.status().state,'subscribed');await x.client.stop();
+});

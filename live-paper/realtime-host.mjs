@@ -3,9 +3,9 @@ import {createRealtimeClient} from './realtime-client.mjs';
 
 // One host, one existing serialized account dispatcher. Socket data is captured
 // separately and never passed to the official order controller by this module.
-export function createRealtimeHost({dispatch, createClient, scope, canOperate, signal, capture,
+export function createRealtimeHost({dispatch, createClient, scope, canOperate, canMintToken = () => true, signal, capture,
   now = Date.now, clientFactory = createRealtimeClient, silentRecoveryIntervalMs = 120000} = {}) {
-  if (typeof dispatch !== 'function' || typeof canOperate !== 'function' || !capture?.append) throw Error('REALTIME_HOST_DEPENDENCIES');
+  if (typeof dispatch !== 'function' || typeof canOperate !== 'function' || typeof canMintToken !== 'function' || !capture?.append) throw Error('REALTIME_HOST_DEPENDENCIES');
   if (!Number.isSafeInteger(silentRecoveryIntervalMs) || silentRecoveryIntervalMs < 60000 || silentRecoveryIntervalMs > 120000) throw Error('REALTIME_SILENT_RECOVERY_POLICY');
   const books = new RealtimeBooks(scope, {now, capture});
   const fences = new WeakMap();
@@ -14,9 +14,19 @@ export function createRealtimeHost({dispatch, createClient, scope, canOperate, s
   let quietRecoveryDeferrals = 0;
   const recovered = new Map();
   const allowed = () => !closed && !signal?.aborted && canOperate() === true;
-  const client = clientFactory({dispatch, createClient, ...scope, canOperate: allowed, signal, now,
+  const tokenAllowed = () => { try { return canMintToken() === true; } catch { return false; } };
+  const client = clientFactory({dispatch, createClient, ...scope, canOperate: allowed, canMintToken: tokenAllowed, signal, now,
     onSubscribed: event => books.subscribed(event), onEvent: event => books.ingest(event),
     onDisconnected: event => books.disconnected(event), onResyncRequired: event => books.invalidate(event)});
+  function marketStatus() {
+    const markets = books.status().markets;
+    for (const market of markets) {
+      const prior = recovered.get(market.marketId);
+      if (market.ready && prior?.connectionId === market.connectionId && now() - prior.at >= silentRecoveryIntervalMs)
+        books.invalidate({...market, reason:'PERIODIC'});
+    }
+    return books.status().markets;
+  }
   function authorizes(spec) {
     if (!allowed()) return false;
     if (client.authorizes(spec)) return true;
@@ -25,20 +35,28 @@ export function createRealtimeHost({dispatch, createClient, scope, canOperate, s
       && fences.get(spec.beforeDispatch) === spec.endpoint;
   }
   function status() {
-    const transport=client.status();
+    const blocked = !closed && allowed() && !tokenAllowed();
+    const transport=blocked ? {...client.status(), state:'blocked', lastCode:'REALTIME_TOKEN_BUDGET_BLOCKED'} : client.status();
     return {schemaVersion: 1, mode: 'read_only_market_capture', executionAuthorized: false,
       at: new Date(now()).toISOString(), transport, marketStreamObserved:transport.eventsReceived>0,
-      dataEvidence:transport.eventsReceived>0?'market_frames_observed':'awaiting_first_market_frame',recoveryAttempts,recoverySuccesses,
+      dataEvidence:blocked?'blocked_shared_read_only_budget':transport.eventsReceived>0?'market_frames_observed':'awaiting_first_market_frame',recoveryAttempts,recoverySuccesses,
       silentRecoveryIntervalMs,quietRecoveryDeferrals,
-      lastRecoveryAt, lastCode, retryAt: retryAt ? new Date(retryAt).toISOString() : null,
-      markets: books.status().markets.map(({books: rows, ...market}) => ({...market, availableBooks: rows.length}))};
+      lastRecoveryAt, lastCode:blocked?'REALTIME_TOKEN_BUDGET_BLOCKED':lastCode, retryAt: blocked ? null : retryAt ? new Date(retryAt).toISOString() : null,
+      markets: marketStatus().map(({books: rows, ...market}) => ({...market, availableBooks: rows.length}))};
   }
   async function service() {
     if (!allowed() || servicing) return false;
     servicing = true;
     try {
+      // Budget v3 forbids every POST, including ephemeral socket auth. Do not
+      // turn an intentional local policy block into recurring provider retries.
+      if (!tokenAllowed()) {
+        lastCode = 'REALTIME_TOKEN_BUDGET_BLOCKED'; retryAt = 0;
+        if (!['idle', 'stopped', 'blocked'].includes(client.status().state)) await client.stop();
+        return false;
+      }
       const state = client.status().state;
-      if (['idle', 'failed', 'reconnecting'].includes(state)) {
+      if (['idle', 'failed', 'reconnecting', 'blocked'].includes(state)) {
         if (now() < retryAt) return false;
         // Retry at most once a minute, independent of the provider's socket
         // retries, while the shared dispatcher also enforces persistent backoff.
@@ -47,7 +65,9 @@ export function createRealtimeHost({dispatch, createClient, scope, canOperate, s
         catch { lastCode = 'REALTIME_CONNECTION_UNAVAILABLE'; return false; }
       }
       if (!allowed()) return false;
-      const markets = books.status().markets;
+      if (client.status().state === 'refused') { lastCode = 'REALTIME_JOIN_REFUSED'; retryAt = 0; return false; }
+      if (client.status().state !== 'subscribed') return false;
+      const markets = marketStatus();
       for (let i = 0; i < markets.length; i++) {
         const index = (cursor + i) % markets.length, market = markets[index];
         if (!market.needsSnapshot || market.reasons.includes('SETTLEMENT')) continue;

@@ -5,7 +5,7 @@ import {ReadClient} from './runtime.mjs';
 
 const tournamentId='bda92870-621e-47b0-bc3c-3602c5c26f55';
 const scope={tournamentId,markets:[{marketId:'377',exchangeId:'1066'},{marketId:'354',exchangeId:'1040'}]};
-function fixture({failStart=false,stopOnAdmission=false}={}) {
+function fixture({failStart=false,stopOnAdmission=false,canMintToken=()=>true}={}) {
   let now=Date.parse('2026-10-02T10:00:00Z'),active=true,transportState='idle',options,starts=0,host,eventsReceived=0;
   const rows=[],calls=[],clientMarkets=scope.markets.map(m=>({...m,subscribed:false,connectionId:null}));
   const api=new ReadClient('SYNTHETIC', {now:()=>now,sleepFn:async ms=>{now+=ms;},authorizeDispatch:s=>host.authorizes(s),
@@ -15,7 +15,7 @@ function fixture({failStart=false,stopOnAdmission=false}={}) {
     }});
   const start=async()=>{starts++;if(failStart){transportState='failed';throw Error('DO NOT LEAK PROVIDER BODY');}
     transportState='subscribed';for(const m of clientMarkets){m.subscribed=true;m.connectionId='test-'+starts+'-'+m.marketId;options.onSubscribed({...m,reason:'INITIAL',receivedAt:new Date(now).toISOString()});}};
-  host=createRealtimeHost({dispatch:s=>api.dispatch(s),scope,canOperate:()=>active,capture:{append:r=>rows.push(r)},now:()=>now,
+  host=createRealtimeHost({dispatch:s=>api.dispatch(s),scope,canOperate:()=>active,canMintToken,capture:{append:r=>rows.push(r)},now:()=>now,
     clientFactory:o=>{options=o;return {start,reconnect:start,authorizes:()=>false,status:()=>({state:transportState,eventsReceived,markets:clientMarkets}),stop:async()=>{transportState='stopped';}};}});
   return {host,api,rows,calls,getStarts:()=>starts,advance:ms=>now+=ms,stop:()=>active=false,observeFrame:()=>eventsReceived++,resync:(reason)=>options.onResyncRequired({marketId:'377',connectionId:clientMarkets[0].connectionId,reason,receivedAt:new Date(now).toISOString()}),reconnect:()=>{transportState='reconnecting';}};
 }
@@ -50,3 +50,15 @@ test('stale ready books rotate through bounded recovery instead of stale capture
 test('first frame and explicit gaps bypass only the quiet stale deferral, retaining one recovery per call',async()=>{const f=fixture();await f.host.service();await f.host.service();f.advance(20000);assert.equal(await f.host.service(),false);f.resync('GAP');assert.equal(await f.host.service(),true);assert.equal(f.calls.length,3);f.observeFrame();assert.equal(await f.host.service(),true);assert.equal(f.calls.length,4);await f.host.stop();});
 
 test('reconnect is immediately bootstrapped despite prior successful quiet recovery',async()=>{const f=fixture();await f.host.service();await f.host.service();f.advance(60000);f.reconnect();assert.equal(await f.host.service(),true);assert.equal(f.getStarts(),2);assert.equal(f.calls.length,3);await f.host.stop();});
+
+test('known shared read-only budget blocks authentication without retries, queue admission or provider failures',async()=>{
+  let permission=false;
+  const f=fixture({canMintToken:()=>permission});
+  const initialRows=f.rows.length;
+  for(let i=0;i<100;i++){await f.host.service();f.advance(60000);}
+  assert.equal(f.getStarts(),0);assert.equal(f.calls.length,0);assert.equal(f.rows.length,initialRows);
+  assert.equal(f.host.status().transport.state,'blocked');assert.equal(f.host.status().lastCode,'REALTIME_TOKEN_BUDGET_BLOCKED');
+  assert.equal(f.host.status().dataEvidence,'blocked_shared_read_only_budget');assert.equal(f.host.status().retryAt,null);
+  permission=true;assert.equal(await f.host.service(),true);assert.equal(f.getStarts(),1);assert.equal(f.calls.length,1);
+  await f.host.stop();assert.notEqual(f.host.status().transport.state,'blocked');
+});

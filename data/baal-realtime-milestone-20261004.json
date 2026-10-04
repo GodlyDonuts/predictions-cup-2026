@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "at": "2026-10-04T08:42:33.744Z",
+  "claims": [
+    5978106312,
+    5978177207
+  ],
+  "source": "https://sig.thesuper.market/api/v1/docs#description/introduction",
+  "sourceReadAt": "2026-10-04T08:27:00Z",
+  "implemented": [
+    "One private tournament channel for a frozen 237-market universe",
+    "Independent per-market revisions, split-message routing, duplicate-book versions and scoped invalidation",
+    "Versioned activation preserves legacy four-market mode",
+    "Known token policy block performs zero dispatcher admissions",
+    "Refused joins close immediately and require explicit fresh authentication",
+    "Periodic REST validation remains mandatory under continuous fresh broadcasts",
+    "One recovery per collector cycle; shared REST pacing and cooldown unchanged"
+  ],
+  "checkedSourceHashes": {
+    "live-paper/realtime-scope.mjs": "3f77d06a8d58efa2f74c8d3050db73f03e9ce980a139dc021cda80d7f3179ddc",
+    "live-paper/realtime-scope.test.mjs": "69d981c1664164e7dc6861dce1050add59be3146781e54e1ac92187a4bd1791a",
+    "live-paper/realtime-client.mjs": "6f7c248964f50aab3b14267b49bfbd9b3a7e0f5a1c15a5db1ddce3650c8f0f71",
+    "live-paper/realtime-host.mjs": "8f50b08986587a2593ef2759af4ef0436d8246487fb8c10db01bcf5d1817b120",
+    "live-paper/realtime-books.mjs": "700681b74297f44c705f3bada89e86aaa25acf1132b14e47f06b02ed9f9224d4",
+    "live-paper/runner.mjs": "79a626b1bf10891449b6dfe356b792891f3fdbe3daa72f899e6bb6d761320ac8",
+    "live-paper/realtime-client.test.mjs": "056aeebc76dd5f135fcf41a3ce1fbca2b56ab4cf50b48dc75669daddd42b4384",
+    "live-paper/realtime-host.test.mjs": "21031858580c2e2fe2c6608ed1d390545e0549159151039f84fbd87770672e24",
+    "live-paper/realtime-integration.test.mjs": "a609f54128b7132c43337ec61b28ca3952cc566997481feaecec312e431a1d0d",
+    "feed/collector.mjs": "a258c59aabc23dfc805c4f3d0d857553f57f9095960c193a9bb5db4bd5261033",
+    "live-paper/REALTIME.md": "36e056d133ce21883e49f4cbbb87087d397f2d4c48255b178332b3194c29782d"
+  },
+  "checks": {
+    "focusedPassed": 61,
+    "feedCollectorContractRuntimePassed": 60,
+    "syntaxPassed": true,
+    "fullRepositorySuite": false
+  },
+  "existingWindowsTestFailures": {
+    "suite": "feed/test/capture_cli.test.mjs",
+    "passed": 8,
+    "failed": 2,
+    "baselineCommit": "fbd563136652c54f0598e8f0cdf456ef455b1a55",
+    "baselineTestGitBlob": "c1cd1183d1bae90594976885c2844f9df2e37790",
+    "failures": [
+      "Windows file mode is 0666 rather than POSIX 0600; actual restricted runtime uses Windows ACLs",
+      "Windows child.kill(SIGTERM) terminates child rather than running POSIX signal cleanup"
+    ],
+    "unchangedFiles": [
+      "feed/test/capture_cli.test.mjs",
+      "feed/capture.mjs",
+      "feed/cli.mjs"
+    ]
+  },
+  "live": {
+    "status": "pending_single_collector_restart",
+    "expected": "blocked_shared_read_only_budget",
+    "tokenPostsAuthorized": false,
+    "marketFramesVerified": false,
+    "universeCount": 237
+  },
+  "limitations": [
+    "POST /realtime/token is a platform write and is prohibited by current shared budget v3. No live WebSocket claim follows from offline tests.",
+    "One depth recovery per cycle cannot keep 237 markets individually reconciled every two minutes; overdue markets stay unavailable.",
+    "Socket capture does not establish paper profitability, executable liquidity, queue priority or official order authority."
+  ],
+  "accountBudget": {
+    "schemaVersion": 3,
+    "maxRestReadsPerMinute": 20,
+    "codexWrites": 0,
+    "executionOwner": "Daenerys",
+    "ack": 5966761902
+  },
+  "productionActivation": false,
+  "profitabilityEstablished": false,
+  "additionalPersistentProcesses": 0
+}

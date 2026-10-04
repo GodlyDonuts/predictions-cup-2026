@@ -8,7 +8,7 @@ const tournamentId = 'bda92870-621e-47b0-bc3c-3602c5c26f55';
 const scope = {tournamentId, markets: [{marketId: '377', exchangeId: '1066'}, {marketId: '354', exchangeId: '1043'}]};
 const budget = {schemaVersion: 1, ownerId: 'Codex', enabled: true, intervalMs: 3000, soleAccountClient: true, formerWriterStopCommentId: 5947535773};
 const secret = 'SYNTHETIC-PRIVATE-TOKEN-DO-NOT-CAPTURE';
-function fixture(t, {stopAtAdmission, rateLimitToken = false} = {}) {
+function fixture(t, {stopAtAdmission, rateLimitToken = false, tournamentMode = false} = {}) {
   let time = Date.parse('2026-10-02T12:00:00Z'), active = true, host, admissions = 0;
   const calls = [], records = [], sessions = [], server = new Map(scope.markets.map(m => [m.marketId, {sequence: 1, bid: .5, ask: .505}]));
   const at = () => new Date(time).toISOString();
@@ -35,7 +35,8 @@ function fixture(t, {stopAtAdmission, rateLimitToken = false} = {}) {
     session.realtime = {async setAuth(token) { assert.equal(token, secret); session.authenticated = true; }, disconnect() { session.disconnected = true; }};
     session.removeAllChannels = async () => { session.removed = true; };
     session.channel = (topic, configuration) => {
-      assert.equal(session.authenticated, true); assert.equal(configuration.config.private, true); assert.ok(topic.startsWith('tournament:' + tournamentId + ':market:'));
+      assert.equal(session.authenticated, true); assert.equal(configuration.config.private, true);
+      assert(tournamentMode?topic===`tournament:${tournamentId}:markets`:topic.startsWith('tournament:' + tournamentId + ':market:'));
       const channel = {topic, handlers: new Map()};
       channel.on = (kind, filter, callback) => { assert.equal(kind, 'broadcast'); channel.handlers.set(filter.event, callback); return channel; };
       channel.subscribe = callback => { channel.notify = callback; queueMicrotask(() => callback('SUBSCRIBED')); return channel; };
@@ -43,7 +44,7 @@ function fixture(t, {stopAtAdmission, rateLimitToken = false} = {}) {
     };
     return session;
   };
-  host = createRealtimeHost({dispatch: spec => api.dispatch(spec), createClient, scope, canOperate: () => active, now: () => time, capture: {append: record => records.push(structuredClone(record))}});
+  host = createRealtimeHost({dispatch: spec => api.dispatch(spec), createClient, scope:{...scope,channelMode:tournamentMode?'tournament':'per_market'}, canOperate: () => active, now: () => time, capture: {append: record => records.push(structuredClone(record))}});
   t.after(async () => { await host.stop(); api.close(); });
   function batch(marketId, revision, previousRevision, sequence) {
     const m = scope.markets.find(x => x.marketId === marketId); server.get(marketId).sequence = sequence;
@@ -102,4 +103,32 @@ test('token429 enforces the same persistent90second cooldown on subsequent ordin
   await f.api.request('/tournaments/midterm-elections');
   assert.equal(f.calls[1].at - f.calls[0].at, 90000);
   assert.equal(JSON.stringify(f.host.status()).includes(secret), false); assert.equal(f.sessions.length, 0);
+});
+
+test('tournament envelope runs through client, host, validated books and one shared REST recovery per service',async t=>{
+  const f=fixture(t,{tournamentMode:true});await f.host.service();
+  assert.equal(f.sessions[0].channels.length,1);assert.equal(f.host.status().recoverySuccesses,1);
+  const channel=f.sessions[0].channels[0];f.advance(1);
+  channel.push('markets_batch',{markets:[{marketId:'377',batch:f.batch('377',1,0,2)},{marketId:'354',batch:f.batch('354',40,39,2)}]});
+  assert.equal(f.host.status().markets[0].ready,true);assert.equal(f.host.status().markets[1].ready,false,'push cannot replace initial REST');
+  await f.host.service();assert.equal(f.host.status().recoverySuccesses,2);
+  assert(f.host.status().markets.every(m=>m.ready));
+  channel.push('markets_batch',{markets:[{marketId:'377',batch:f.batch('377',3,2,3)},{marketId:'354',batch:f.batch('354',41,40,3)}]});
+  assert.equal(f.host.status().markets[0].ready,false);assert.equal(f.host.status().markets[1].ready,true);
+  await f.host.service();assert.equal(f.host.status().recoverySuccesses,3);
+  assert.equal(f.calls.filter(c=>c.endpoint==='/realtime/token').length,1);
+  assert.equal(f.host.status().transport.activeChannels,1);assert.equal(JSON.stringify(f.records).includes(secret),false);
+});
+
+test('fresh continuous broadcasts cannot postpone mandatory periodic REST reconciliation',async t=>{
+  const f=fixture(t,{tournamentMode:true});await f.host.service();await f.host.service();
+  const channel=f.sessions[0].channels[0];
+  for(let i=1;i<=8;i++){
+    f.advance(15000);
+    channel.push('markets_batch',{markets:[{marketId:'377',batch:f.batch('377',i,i-1,i+1)},{marketId:'354',batch:f.batch('354',i,i-1,i+1)}]});
+  }
+  const due=f.host.status();assert(due.markets.every(m=>!m.ready&&m.reasons.includes('PERIODIC')));
+  const prior=f.calls.length;await f.host.service();assert.equal(f.calls.length,prior+1);
+  assert.equal(f.host.status().markets.filter(m=>m.ready).length,1);await f.host.service();
+  assert(f.host.status().markets.every(m=>m.ready));assert(f.records.some(r=>r.kind==='invalidation'&&r.reason==='PERIODIC'));
 });
