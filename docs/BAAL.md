@@ -276,3 +276,27 @@ it was running through 18:48:48.232. The three services and official ownership
 are unchanged. Evidence: `data/native-sides-milestone-20261004.json` and
 `data/native-sides-preservation-20261004.json`. The next economic comparison
 should test a distinct mechanism rather than multiplying weak dip wallets.
+
+The next completed Rust study compares fixed 15-minute continuation and reversal
+with a 0.020 move corroborated by both bid and ask, continuous observed history,
+and 5/30/120-minute horizons. It shares the original independent request, ask
+limit, exact cost and missing/censor logic. The 36 cases run over the same
+237 markets / 758,685 rows in 7.68 seconds including validation and output.
+All 169 Node and nine Rust checks pass. Original strict/boundary/endpoint cards
+and active wallet histories remain exact. No new wallet or service was deployed.
+
+On the captured period, baseline YES continuation averaged -0.020529 per share
+at five minutes across 293 complete paths; YES reversal averaged -0.015099
+across 203. NO continuation and reversal were also negative. Removing the
+additional 0.010 roundtrip slippage cushion arithmetically still leaves every
+fixed baseline mean negative. This arithmetic bound uses identical selected
+paths; it does not establish depth, a new strategy or executable zero slippage.
+Reversal's small midpoint recovery fails to cover the observed spread.
+
+The separate frozen protocol admits future signals only after 19:11:19.658 UTC
+in both request and publication clocks. The first finite probe retained two
+underlying signal events per side and no completed outcomes; duplicated cases
+are correlated. It is a quote probe, not a running paper wallet or contest bot.
+Evidence: `data/native-mechanisms-milestone-20261004.json`. The economic next step
+is source-backed fair probabilities or verified market relationships rather
+than another parameter grid on the same short price history.

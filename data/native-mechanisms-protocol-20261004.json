@@ -1,0 +1,89 @@
+{
+  "schemaVersion": 1,
+  "mode": "frozen_quote_mechanism_probe_v1",
+  "cohort": "baal-trend-mechanisms-20261004-v1",
+  "declaredAt": "2026-10-04T19:11:19.658Z",
+  "signalAfter": 1791141079658,
+  "claimComment": 5983314037,
+  "engineHash": "86624df409824feed494141f68dc2bf415352373e078c280b6b7b2a0981038bc",
+  "binaryHash": "6965fdf005930ede7b199476397c349695daba39e1025bc83bf90fd6fb6c7b91",
+  "runtimeLibraryHash": "13bf4e99b0193634ebdeb0bbdeff9753b39f1d04799183f664111014aabf4c2c",
+  "sourceHashes": {
+    "backend-rust/Cargo.toml": "3a8101ecd00e22806e08965027bf83446106b7a49ce7d3109906bf94319c0e55",
+    "backend-rust/Cargo.lock": "4383ec86092f34bd056cae9f5d36f49509af7a852d3d7f949abaca17ef892ff1",
+    "backend-rust/build.rs": "04b15373666a301eece17fa4b34e2b66c5c9afa250ae9c5a96a60f40d9046db2",
+    "backend-rust/.cargo/config.toml": "1b72d5f9ac743bb5e6e5a53ab41d3328e25a7b9d7a7cb86f06e653d17d5ec14d",
+    "backend-rust/src/main.rs": "081c258cac9a6f0bcdbd8f5c161fc8ed3363ed4c5f0e5a2045930a6f4fca8248",
+    "backend-rust/src/money.rs": "879298022b838d1ea2066e6594ebdaa05c3cf5a392b1b9fee7404f6981007f58",
+    "backend-rust/src/types.rs": "16e6b6b7eabf2854873042d85a97c7973f0bae0bcd702408260b08b821416c14",
+    "backend-rust/src/capture.rs": "a4b1cb67599cda13261cf3cd4adae9eedfb1781f0cfde2a166cccbaf8557ae48",
+    "backend-rust/src/cache.rs": "319abb6a2e3a36a60acd7a6d71ab6ff5f972639206ac9c385db33d8489ecfe39",
+    "backend-rust/src/engine.rs": "c6aab5faf22a78b2800d8397f44c939c6a97118321d7f63a9be129feccf4e4a0",
+    "backend-rust/src/intent_observation.rs": "2eda87351354cdae47a0e5026389c59e6fab216113587934b758a057b2977022",
+    "backend-rust/src/replay.rs": "4c68d020bf3ac27f097c780ba291107ca346976bb0bb02b051b5c33529c0fbc9",
+    "backend-rust/src/trace.rs": "b108f4c52c08e03da2bfc0bef8bbaec008a044976ecdb3f8fea2a4a4c83464f1",
+    "backend-rust/src/sweep.rs": "dabededa6574a3e68b953e2e1e9e0b7e48d43a86292d5458297c03ea8b2770a3",
+    "backend-rust/src/evaluation.rs": "2c6e1d7cadfdba5d46dd8f6ec21840f38b2f6c35c405b00711d92d2c05e6f252",
+    "backend-rust/src/publication.rs": "e3edfabaaf52a8e2cc52a25d0b60a6200eac8bb04d6bef44acf5301fc3b93a74",
+    "backend-rust/src/market_observations.rs": "d5367c4a741e117500a060409e769e0fcd7a6ecad0d4e940c57bba94377cb876",
+    "backend-rust/src/quote_wallet.rs": "94653c74171a82d8a1737d0412eac50ff6c486cdba83d5c9f866adeb759b042b",
+    "backend-rust/src/quote_replay.rs": "16f9db8d31176603cd8f361cbdbcc37dd66634aac2eb0ebdcd89347e7cdd2f30",
+    "backend-rust/src/quote_recovery_v2.rs": "e38b104e4527c1e0c388862a2073dbe73e64b500669fc17b9506436f92320b1e",
+    "backend-rust/src/quote_diagnostics.rs": "1141bcc6185bb4b01346514cf8a79bf71eec01063afcd88b7dd72c261c1d8be4",
+    "backend-rust/src/quote_markouts.rs": "f099823c093814e41d916f6fb52fd48af07d1ebc162c738be93d5b745c653d76",
+    "backend-rust/src/quote_sides.rs": "3cbb76433f205e7560c65f43488b2c5817fdd16f5883ada794cc2dd37cdff6ce",
+    "backend-rust/src/quote_endpoints.rs": "2640fe281ee023018c01e4f73ed726803eb8bac1c03afd5e8ea688dc65daa569",
+    "backend-rust/src/quote_mechanisms.rs": "093f4ed90008acccec7360fb5d14fa7508e8f0bea9872f90625b8f222a678586"
+  },
+  "baseCohort": "baal-quote-history-20261004-v1",
+  "baseDeclarationHash": "a87eb5b6c38a6ea1e12436ab0907abd728c97604b65f6c9caac8ce16939c1466",
+  "developmentInputHash": "8f80a837aed9ad874bff57affd77f26d4fe0a713e6b1c3b5d1d7a600f8be2a4d",
+  "families": [
+    "trend_continuation",
+    "trend_reversal"
+  ],
+  "contractSides": [
+    "YES",
+    "NO"
+  ],
+  "lookbackMs": 900000,
+  "minimumSpanMs": 840000,
+  "minimumDistinctMinutes": 10,
+  "minimumMidpointMove": "0.020000",
+  "minimumBidAndAskMove": "0.020000",
+  "maximumObservationGapMs": 120000,
+  "horizonMs": [
+    300000,
+    1800000,
+    7200000
+  ],
+  "scenarios": [
+    {
+      "id": "baseline_3s",
+      "latencyMs": 3000,
+      "slippageTicks": 1,
+      "depthFractionBps": 100
+    },
+    {
+      "id": "delay_10s",
+      "latencyMs": 10000,
+      "slippageTicks": 1,
+      "depthFractionBps": 100
+    },
+    {
+      "id": "stress_30s",
+      "latencyMs": 30000,
+      "slippageTicks": 2,
+      "depthFractionBps": 50
+    }
+  ],
+  "entry": "first_independent_request_after_latency_within_original_ask_limit_and120s",
+  "outcomes": "separate_strict_path_and_fixed_endpoint_views_no_intraperiod_stops_inferred",
+  "fees": 0,
+  "networkRequests": 0,
+  "competitionOrders": 0,
+  "additionalPersistentProcesses": 0,
+  "notAnActiveWalletOrExecutionBank": true,
+  "profitabilityEstablished": false,
+  "futureValidation": "Signals require both original request and publication strictly after this cutoff. Historical comparison is exploratory; prospective quote results still require independent executable-depth evidence."
+}

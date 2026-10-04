@@ -267,3 +267,30 @@ All 72 original live wallet cards/fills matched the archived engine on identical
 bytes. Fees remain zero; three live services are unchanged. These exploratory
 quote observations establish no executable profitable strategy. See
 `data/native-sides-milestone-20261004.json` for summaries and exact artifact hashes.
+
+`quote-mechanisms` compares fixed 15-minute trend continuation and reversal on
+both contract sides. It requires at least 14 minutes and ten distinct observed
+minutes, clears history on a publication or receipt gap over 120 seconds, and
+requires both bid and ask to move in the same direction by at least 0.020.
+Spread changes alone cannot trigger a signal. Fixed horizons are 5, 30 and
+120 minutes. It shares the original later-request ask-limit, deadline, horizon
+and exact spread/slippage path code. Fees are zero. It produces quote diagnostics,
+without a wallet, execution authority or extra collection process.
+
+Optional `--signal-after <epoch-ms>` admits signals only when both their original
+request and publication are strictly later. Proving a protocol was frozen before
+that cutoff remains the caller's responsibility. The archived protocol in
+`data/native-mechanisms-protocol-20261004.json` was frozen at 19:11:19.658 UTC and
+recorded in issue comment 5983420326 before the historical comparison. The finite
+`data/run-native-mechanisms-20261004.mjs --future` probe consumes prefix hashes from
+the existing archived host and always uses its own frozen binary. No daemon or
+API client is added. All original wallet and earlier diagnostic outputs persist.
+
+The 36-case historical comparison processed the same 758,685 rows / 237 markets
+in 7.68 seconds, including 3.95 seconds source verification and 1.69 seconds
+mechanism replay. This is a different workload from the 216-case dip study.
+All fixed baseline cases were negative even before the additional modelled
+slippage cushion. The initial post-cutoff probe has no completed price label yet.
+169 Node and nine Rust checks pass; all 648 original strict, boundary and endpoint
+cards plus 72 archived live wallet histories match exactly. See
+`data/native-mechanisms-milestone-20261004.json` for the economic attribution.

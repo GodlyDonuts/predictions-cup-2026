@@ -14,7 +14,7 @@ struct Observation{published_at:i64,request_started_at:i64,received_at:i64,seque
 impl Observation{fn from(q:&QuoteTick)->Option<Self>{Some(Self{published_at:q.at,request_started_at:q.request,received_at:q.received,sequence:q.sequence,bid:q.bid?,ask:q.ask?})}}
 #[derive(Serialize)]
 #[serde(rename_all="camelCase")]
-struct Episode{
+pub(crate) struct Episode{
  market:String,signal:Observation,reference_bid_micros:i128,status:String,
  entry:Option<Observation>,outcome:Option<Observation>,target_at:Option<i64>,
  midpoint_move_twice_micros:Option<i128>,spread_cost_twice_micros:Option<i128>,
@@ -86,7 +86,7 @@ fn market_run(m:&str,ticks:&[QuoteTick],boundaries:&[i64],through:i64,specs:&[Sp
  for (state,spec) in states.iter_mut().zip(specs){if let Some(e)=state.pending.as_ref(){let status=if through<=e.deadline(spec){"right_censored"}else if e.entry.is_some(){"outcome_not_observed"}else{"entry_not_observed"};state.finish(status);}}
  Ok(MarketResult{states,falling_rejections})
 }
-fn statistics(episodes:&[Episode])->Value{
+pub(crate) fn statistics(episodes:&[Episode])->Value{
  let mut statuses=BTreeMap::new();let mut values=Vec::new();let mut days=BTreeMap::<String,u64>::new();let mut markets=BTreeMap::<String,u64>::new();let(mut midpoint,mut spread,mut slip,mut latency)=(0i128,0i128,0i128,0i128);
  for e in episodes{*statuses.entry(e.status.clone()).or_insert(0u64)+=1;
   *days.entry(crate::engine::iso(e.signal.published_at)[..10].to_owned()).or_default()+=1;
@@ -98,6 +98,20 @@ fn statistics(episodes:&[Episode])->Value{
  json!({"episodes":episodes.len(),"observed":n,"statusCounts":statuses,"signalDays":days,"signalMarkets":markets,
  "quotedNetMarkout":{"mean":mean(values.iter().sum()),"median":quantile(0.5),"p10":quantile(0.1),"p90":quantile(0.9),"positive":values.iter().filter(|v|**v>0).count(),"negative":values.iter().filter(|v|**v<0).count(),"flat":values.iter().filter(|v|**v==0).count()},
  "meanMidpointMove":if n==0{Value::Null}else{json!(midpoint as f64/n as f64/2_000_000.0)},"meanSpreadCost":if n==0{Value::Null}else{json!(spread as f64/n as f64/2_000_000.0)},"meanSlippageCost":mean(slip),"meanLatencyAskMove":mean(latency),"profitabilityEstablished":false})
+}
+// Other quote-only mechanisms share precisely the same later-request, limit,
+// horizon and exact cost logic; frozen dip signal selection stays unchanged.
+pub(crate) struct PricePath{episode:Episode,spec:Spec}
+impl PricePath{
+ pub(crate) fn new(market:&str,q:&QuoteTick,reference:i128,p:&QuoteParameters,scenario:&Scenario)->Self{
+  let spec=Spec{strategy:"shared_quote_path".into(),p:p.clone(),scenario:scenario.clone(),corrected:false,key:0,book_boundary_guard:false};
+  Self{episode:Episode::new(market,q,reference,2*TICK*scenario.slippage_ticks),spec}
+ }
+ pub(crate) fn advance(&mut self,q:&QuoteTick)->Result<bool,String>{self.episode.advance(q,&self.spec)}
+ pub(crate) fn finish(mut self,status:Option<&str>)->Episode{if let Some(status)=status{self.episode.status=status.into();}self.episode}
+ pub(crate) fn final_status(&self,through:i64)->&'static str{
+  if through<=self.episode.deadline(&self.spec){"right_censored"}else if self.episode.entry.is_some(){"outcome_not_observed"}else{"entry_not_observed"}
+ }
 }
 pub fn run(capture:&MarketCapture,d:&QuoteDeclaration,ticks:&[QuoteTick],workers:usize)->Result<Value,String>{
  let started=Instant::now();if !(1..=32).contains(&workers){return Err("INVALID_REPLAY_WORKERS".into());}
