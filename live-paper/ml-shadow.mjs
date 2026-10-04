@@ -1,3 +1,4 @@
+import {validateCandidatePlan,modelMargins} from './candidate-plan.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
@@ -25,6 +26,7 @@ export function verifySource(raw){
 }
 
 export function requireSourceMetadata(bank){
+ validateCandidatePlan(bank);
  if(bank.forecastLifecycle!==undefined&&bank.forecastLifecycle!=='revoke-on-invalidation-v2')throw Error('Unknown frozen forecast lifecycle');
  targetPolicy(bank.targetPolicy);validateTrainingScope(bank.trainingScope,bank.requireInstrumentCoverage,bank.targetPolicy);
  if(!Number.isSafeInteger(bank.sourceRecords)||bank.sourceRecords<1||typeof bank.sourceHash!=='string'||!/^[a-f0-9]{64}$/.test(bank.sourceHash)||!Number.isFinite(Date.parse(bank.trainingCaptureThrough)))throw Error('Missing or invalid frozen training source metadata');
@@ -40,6 +42,7 @@ export function bindTrainingSource(records,bank,{allowUnboundFixture=false}={}){
 }
 
 export function advanceShadow(input,records,bank,{allowUnboundFixture=false}={}){
+ validateCandidatePlan(bank);
  const state=structuredClone(input),c=bank.config;
  const invalidateWallet=(wallet,market,at,reason)=>{invalidate(wallet,market,at,reason);if(bank.forecastLifecycle==='revoke-on-invalidation-v2')for(const [id,p]of Object.entries(wallet.strategies.mean_reversion.pending))if(p.action==='buy'&&(market===null||wallet.books[id]?.marketId===market)){delete wallet.strategies.mean_reversion.pending[id];wallet.strategies.mean_reversion.expiredIntents++;}};
  const policy=historyPolicy(bank.historyPolicy);targetPolicy(bank.targetPolicy);validateTrainingScope(bank.trainingScope,bank.requireInstrumentCoverage,bank.targetPolicy);
@@ -61,7 +64,7 @@ export function advanceShadow(input,records,bank,{allowUnboundFixture=false}={})
    let history=state.histories[b.instrument]||[];
    if(history.length&&Date.parse(b.receivedAt)-Date.parse(history.at(-1).at)>120000)history=[];
    const base=features(b,history),x=bank.breadthContext?[...base,...contextFeatures(state.breadth,b,c.tournamentId)]:base,mid=x[11];let advanced=false;
-   for(const model of bank.selected)for(const margin of [.005,.01,.015]){
+   for(const model of bank.selected)for(const margin of modelMargins(bank,model)){
     const id=model.id+'-edge'+margin;
     if(bank.requireInstrumentCoverage){
      const support=model.coverage?.find(x=>x.marketId===b.marketId);
@@ -90,7 +93,7 @@ export function advanceShadow(input,records,bank,{allowUnboundFixture=false}={})
 }
 export function shadowReport(s,bank,now){
  const candidates=Object.entries(s.wallets).map(([id,w])=>{assertState(w,bank.config);const r=report(w,bank.config,now).strategies.mean_reversion;return {id,cash:r.cash,realizedPnl:r.realizedPnl,referencePnl:r.referencePnl,liquidationPnl:r.liquidationPnl,intents:r.intents,fills:r.fills,closedTrades:r.closedTrades,fees:r.fees,positions:r.positions.map(p=>({instrument:p.instrument,quantity:p.quantity,unsoldShares:p.unsoldShares,cost:p.cost,enteredAt:p.enteredAt,observationAgeMs:p.observationAgeMs})),prediction:s.predictions[id],signalMetrics:s.signalMetrics?.[id]||null};});
- return {mode:'prospective_ml_paper',feeBps:bank.config.feeBps,feeScenario:bank.config.feeBps===0?'zero_additional_explicit_fee_baseline':'historical_fee_stress',updatedAt:now,bankHash:s.bankHash,sourceBinding:s.sourceBinding||null,unsupportedInstruments:Object.values(s.unsupportedInstruments||{}),targetPolicy:bank.targetPolicy||'legacy_decision_time_bid_forecast_not_executable_roundtrip_target',trainingCaptureThrough:bank.trainingCaptureThrough,captureThrough:s.captureThrough,modelsAttempted:bank.candidatesAttempted,modelsTrained:bank.modelsTrained,modelRejections:bank.rejected.length,candidateWallets:candidates.length,sourceSequence:s.sourceSequence,candidates,competitionOrders:0,networkRequests:0,profitabilityEstablished:false,limitations:bank.limitations};
+ return {mode:'prospective_ml_paper',candidatePlan:bank.candidatePlan??null,portfolioSelection:bank.portfolioSelection?{version:bank.portfolioSelection.version,decision:bank.portfolioSelection.decision,holdout:bank.portfolioSelection.holdout}:null,feeBps:bank.config.feeBps,feeScenario:bank.config.feeBps===0?'zero_additional_explicit_fee_baseline':'historical_fee_stress',updatedAt:now,bankHash:s.bankHash,sourceBinding:s.sourceBinding||null,unsupportedInstruments:Object.values(s.unsupportedInstruments||{}),targetPolicy:bank.targetPolicy||'legacy_decision_time_bid_forecast_not_executable_roundtrip_target',trainingCaptureThrough:bank.trainingCaptureThrough,captureThrough:s.captureThrough,modelsAttempted:bank.candidatesAttempted,modelsTrained:bank.modelsTrained,modelRejections:bank.rejected.length,candidateWallets:candidates.length,sourceSequence:s.sourceSequence,candidates,competitionOrders:0,networkRequests:0,profitabilityEstablished:false,limitations:bank.limitations};
 }
 export function combineReports(base,cohorts){
  const reports=[{name:'ridge-original',report:base},...cohorts];

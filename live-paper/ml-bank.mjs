@@ -87,7 +87,7 @@ export function trainingSupport(train,test,marketIds,scope='all-markets-v1'){
  const coverage=instrumentCoverage(train,test,marketIds),supported=new Set(coverage.filter(x=>x.eligible).flatMap(x=>x.trainingInstruments.map(id=>x.marketId+':'+id)));
  return {coverage,train:scope==='all-markets-v1'?train:train.filter(r=>supported.has(r.marketId+':'+r.instrument)),test:scope==='all-markets-v1'?test:test.filter(r=>supported.has(r.marketId+':'+r.instrument)),eligible:scope==='all-markets-v1'?coverage.every(x=>x.eligible):coverage.some(x=>x.eligible)};
 }
-export function trainBank(raw,c,{family='ridge',historyPolicy=ISOLATED,since=null,requireInstrumentCoverage=false,breadthContext=false,targetPolicy=ROUND_TRIP,trainingScope='all-markets-v1'}={}){
+export function trainBank(raw,c,{family='ridge',historyPolicy=ISOLATED,since=null,requireInstrumentCoverage=false,breadthContext=false,targetPolicy=ROUND_TRIP,trainingScope='all-markets-v1',developmentSplitAt=null}={}){
  validateTarget(targetPolicy);
  validateTrainingScope(trainingScope,requireInstrumentCoverage,targetPolicy);
  if(!['ridge','boosted_stumps'].includes(family))throw Error('Unsupported model family');
@@ -95,7 +95,8 @@ export function trainBank(raw,c,{family='ridge',historyPolicy=ISOLATED,since=nul
  if(typeof breadthContext!=='boolean')throw Error('Invalid breadth feature selection');
  const source=captureRows(raw,c,{historyPolicy,since,breadthContext}),rows=source.rows;
  if(rows.length<80)throw Error('Need at least 80 accepted snapshots before model fitting');
- const split=rows[Math.floor(rows.length*.65)].at,models=[],rejected=[],labelDiagnostics=[];
+ const split=developmentSplitAt??rows[Math.floor(rows.length*.65)].at,models=[],rejected=[],labelDiagnostics=[];
+ if(typeof split!=='string'||!Number.isFinite(Date.parse(split))||Date.parse(split)<=Date.parse(rows[0].at)||Date.parse(split)>=Date.parse(rows.at(-1).at))throw Error('Invalid development split');
  for(const horizon of [60,180,300,600]){
   const labels=[],reasons={},byMarket={};
   for(let i=0;i<rows.length;i++){
