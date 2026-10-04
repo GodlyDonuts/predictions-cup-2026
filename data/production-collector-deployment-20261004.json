@@ -1,0 +1,26 @@
+{
+  "at": "2026-10-04T20:49:43.656Z",
+  "oldCollectorPid": 27488,
+  "activationHash": "16a617a42ee62f5f9f822f919abbf11074076d208a68fb73374b056d1026bded",
+  "budgetHash": "6fb557e22369d74049758d5879cddca2047adb1f173deeb11bb5be9b9fe56e82",
+  "probabilityActiveHash": "78190ca707166fa77628e1d4763b060af2074b75692aada2f0bcfa89bbe271aa",
+  "probabilityBankHash": "ccf44ba66d259e518d81c2cc14fc3342214254918675860d31b96eecb81c26cd",
+  "oldManifestHash": "199d2bb3e8034b4592a093996ab405e5166e49c44d9a5f7043c192d21970f9b0",
+  "newManifestHash": "be1a95ac5b2bf7a3263fc461fd84ba7d1a2fc185478257e9f90b3d7c64087082",
+  "changed": [
+    "live-paper/transport-network-budget.mjs"
+  ],
+  "restWritesEnabled": false,
+  "readCap": 20,
+  "deploymentStopHash": "a43f0e6eba3efb10549a3f4db681bf0dcc2222107dcda40d521c4734c81aff24",
+  "checkedAt": "2026-10-04T20:54:48.846Z",
+  "newCollectorPid": 19632,
+  "lastCycleAt": "2026-10-04T20:54:39.054Z",
+  "collectorStatus": "running",
+  "probabilityWorkerHealthy": true,
+  "probabilityBankPreserved": true,
+  "activationPreserved": true,
+  "budgetPreserved": true,
+  "writesEnabled": false,
+  "metadataReadsCompleted": 3
+}

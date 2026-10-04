@@ -4,7 +4,7 @@ const fields=['schemaVersion','ownerId','enabled','universeHash','cycleIntervalM
 export function validateMarketSweep(value,universe,networkBudget){
  if(!value||typeof value!=='object'||Array.isArray(value)||Object.keys(value).length!==fields.length||Object.keys(value).some(k=>!fields.includes(k))
   ||value.schemaVersion!==1||value.ownerId!=='Codex'||value.enabled!==true||value.universeHash!==universe.hash||value.cycleIntervalMs!==10000
-  ||!Array.isArray(universe.exchanges)||universe.exchanges.length<1||universe.exchanges.length>300||![2,3].includes(validateNetworkBudget(networkBudget).schemaVersion))throw Error('INVALID_MARKET_SWEEP_SETTING');
+  ||!Array.isArray(universe.exchanges)||universe.exchanges.length<1||universe.exchanges.length>300||![2,3,4].includes(validateNetworkBudget(networkBudget).schemaVersion))throw Error('INVALID_MARKET_SWEEP_SETTING');
  return Object.freeze({...value});
 }
 export function loadMarketSweep(file,universe,networkBudget){return fs.existsSync(file)?validateMarketSweep(JSON.parse(fs.readFileSync(file,'utf8')),universe,networkBudget):null;}

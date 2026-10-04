@@ -115,8 +115,8 @@ export class OrderTransport {
     }
     requireThat(method === 'GET' && spec.body === undefined && spec.bodyJson === undefined, 'REQUEST_OUTSIDE_ALLOWLIST');
     if (endpoint === '/tournaments/' + scope.tournamentSlug || endpoint === '/tournaments/' + scope.tournamentSlug + '/portfolio/positions') return true;
-    const market = /^\/markets\/([1-9]\d*)(\/orderbook)?\?/.exec(endpoint);
-    if (market && scope.byMarket.has(market[1]) && endpoint === '/markets/' + market[1] + (market[2] || '') + '?tournamentId=' + scope.tournamentId + (market[2] ? '&depth=20' : '')) return true;
+    const market = /^\/markets\/([1-9]\d*)(\/orderbook|\/nodes)?\?/.exec(endpoint);
+    if (market && scope.byMarket.has(market[1]) && endpoint === '/markets/' + market[1] + (market[2] || '') + '?tournamentId=' + scope.tournamentId + (market[2]==='/orderbook' ? '&depth=20' : '')) return true;
     for (const status of ['all', 'open', 'closed', 'expired']) if (encodedCursor(endpoint, '/orders?status=' + status + '&limit=200&tournamentId=' + scope.tournamentId)) return true;
     if (own) { this.#owned(own[1]); return true; }
     const fills = /^\/orders\/([1-9]\d*)\/fills\?/.exec(endpoint);
@@ -170,6 +170,11 @@ export class OrderTransport {
   async orderbook(marketId) {
     const response = await this.#request({method: 'GET', endpoint: '/markets/' + marketId + '/orderbook?tournamentId=' + this.#scope.tournamentId + '&depth=20'});
     this.#marketContext(response.data, marketId, true);
+    return response;
+  }
+  async nodes(marketId) {
+    const response=await this.#request({method:'GET',endpoint:'/markets/'+marketId+'/nodes?tournamentId='+this.#scope.tournamentId}),data=response.data;
+    requireThat(data.market_id===marketId&&Array.isArray(data.contexts)&&data.contexts.length===1&&data.contexts[0].type==='tournament'&&data.contexts[0].tournament?.id===this.#scope.tournamentId&&object(data.root)&&data.root.node_type==='contract'&&data.root.contract_type==='Election Outcome','RESPONSE_SCOPE_MISMATCH');
     return response;
   }
   async positions() {

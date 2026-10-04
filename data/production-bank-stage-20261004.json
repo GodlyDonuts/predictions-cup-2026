@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "at": "2026-10-04T20:54:05.547Z",
+  "claimComment": 5984073274,
+  "status": "production_code_deployed_get_only_bank_staged",
+  "bankHash": "88c694a845b5a9fe71d6d3a76a9a5df824dab197f89302e7d3faa6a1c82b2243",
+  "bankFileHash": "52a05ecb5be020fd7a5bcb56b53dc294385e64568584884953d7d560250fa5f0",
+  "nativeBackend": {
+    "schemaVersion": 1,
+    "mode": "native_public_book_prefix_v1",
+    "binaryHash": "1b7e0c72c83097f99f12b85ba04dc9adbd28777449534d681fe2abe332d12880",
+    "engineHash": "9c2a38565f0baef68a2543ee67cff82bb92e4cd22fc74f250e89e025dbc7e45c",
+    "runtimeLibraryHash": "13bf4e99b0193634ebdeb0bbdeff9753b39f1d04799183f664111014aabf4c2c"
+  },
+  "metadata": [
+    {
+      "marketId": "297",
+      "exchangeId": "986",
+      "rootHash": "602ab50226bd130950b710740ae8a808370164b0db193738a0169662da4c52f1",
+      "receivedAt": "2026-10-04T20:50:49.121Z",
+      "sourceHash": "c831977812155ff44edc6cf359f6714b1ef224bd723cb0e65f5069b610d81890"
+    },
+    {
+      "marketId": "357",
+      "exchangeId": "1046",
+      "rootHash": "bc581dc5b1b693b7fc2ea278b5e8703e5838566030c6420e2b700eb968105eaa",
+      "receivedAt": "2026-10-04T20:52:18.085Z",
+      "sourceHash": "41d6d8dadbae9afef08ca80dbbc7ba728abe37fe4ab40aed55e5005f0a85c20a"
+    },
+    {
+      "marketId": "363",
+      "exchangeId": "1052",
+      "rootHash": "7d55eb130b989e31130d8aedec687767e32a02d429e35883e802562589e20c28",
+      "receivedAt": "2026-10-04T20:51:32.812Z",
+      "sourceHash": "7b4baef3c453693f28342567899fb9f7c4f8ab6e4853469e119997d28430ff65"
+    }
+  ],
+  "source": {
+    "bytes": 42560633,
+    "hash": "66fc6e6853a644b58ceb85c765d0e3989fb77a32c5da6f6fcba4d8411a4b4b3c",
+    "sequence": 19832,
+    "asOf": "2026-10-04T20:54:02.962Z"
+  },
+  "diagnostic": {
+    "walletKind": "isolated_counterfactual100_not_official_cash",
+    "decisionMs": 80.10870000000023,
+    "inputHash": "37e62fee984029c73045675264d40494ba81edaa39736a0713885bbf998f286d",
+    "outputHash": "b539bd3f4b43ebe2512bffbb95e7504a295facbf0efba6d8a4c4c8d1699f0b78",
+    "decisions": [
+      {
+        "candidateId": "297:YES",
+        "action": "observe",
+        "reason": "expired_research"
+      },
+      {
+        "candidateId": "357:YES",
+        "action": "observe",
+        "reason": "missing_research"
+      },
+      {
+        "candidateId": "363:YES",
+        "action": "observe",
+        "reason": "missing_book"
+      }
+    ],
+    "proposedMaximumCost": "0.000000",
+    "fills": 0
+  },
+  "activationEnabled": false,
+  "ownershipHandoffComplete": false,
+  "pendingReleaseComment": 5984085086,
+  "qualifiedCurrentResearch": 0,
+  "officialCashFreshlyReconciled": false,
+  "fees": 0,
+  "competitionOrders": 0,
+  "walletsReset": false,
+  "additionalPersistentProcesses": 0,
+  "profitabilityEstablished": false
+}

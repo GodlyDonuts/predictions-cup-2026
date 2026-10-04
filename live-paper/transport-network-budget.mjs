@@ -4,6 +4,11 @@ import fs from 'node:fs';
 // All account requests still use one serialized client; there is no token burst.
 const baseKeys = ['schemaVersion', 'ownerId', 'enabled', 'intervalMs', 'soleAccountClient', 'formerWriterStopCommentId'];
 export function validateNetworkBudget(value) {
+  if(value?.schemaVersion===4){
+    const keys=['schemaVersion','ownerId','enabled','intervalMs','writeIntervalMs','soleAccountClient','executionOwner','handoffId','releaseCommentId','ackCommentId','writesEnabled'];
+    if(Object.keys(value).length!==keys.length||Object.keys(value).some(k=>!keys.includes(k))||value.ownerId!=='Codex'||value.enabled!==true||value.intervalMs!==1000||value.writeIntervalMs!==2500||value.soleAccountClient!==true||value.executionOwner!=='Codex'||value.writesEnabled!==true||!/^daenerys-to-baal-[a-z0-9-]{1,70}$/.test(value.handoffId)||![value.releaseCommentId,value.ackCommentId].every(n=>Number.isSafeInteger(n)&&n>0))throw Error('Invalid production network budget');
+    return Object.freeze({...value});
+  }
   if(value?.schemaVersion===3){
     const keys=['schemaVersion','ownerId','enabled','intervalMs','soleAccountClient','executionOwner','ackCommentId','maxReadsPerMinute','writesEnabled'];
     if(Object.keys(value).length!==keys.length||Object.keys(value).some(k=>!keys.includes(k))||value.ownerId!=='Codex'||value.enabled!==true||value.intervalMs!==3000||value.soleAccountClient!==false||value.executionOwner!=='Daenerys'||value.ackCommentId!==5966761902||value.maxReadsPerMinute!==20||value.writesEnabled!==false)throw Error('Invalid shared read-only network budget');
@@ -18,7 +23,7 @@ export function validateNetworkBudget(value) {
 }
 export function networkWriteInterval(interval = 6000, budget = null) {
   const read = networkInterval(interval, budget);
-  return budget?.schemaVersion === 2 ? validateNetworkBudget(budget).writeIntervalMs : read;
+  return [2,4].includes(budget?.schemaVersion) ? validateNetworkBudget(budget).writeIntervalMs : read;
 }
 export function loadNetworkBudget(file) {
   return fs.existsSync(file) ? validateNetworkBudget(JSON.parse(fs.readFileSync(file, 'utf8'))) : null;

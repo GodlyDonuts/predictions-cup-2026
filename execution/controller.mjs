@@ -9,6 +9,7 @@ import {normalizeBook,digest} from '../live-paper/model.mjs';
 import {historicalReference} from '../live-paper/history.mjs';
 import {evaluateEntryGates} from './entry-gates.mjs';
 import {openEntryDecisionAudit,assessEntryGates} from './decision-audit.mjs';
+import {validateProductionActivation,productionHandoffCurrent} from './production-activation.mjs';
 
 const TID='bda92870-621e-47b0-bc3c-3602c5c26f55',SLUG='midterm-elections';
 const micros=x=>decimalMicros(String(x));
@@ -30,6 +31,7 @@ function validateControl(state){
  return state;
 }
 export function validateActivation(a){
+ if(a?.schemaVersion===2)return validateProductionActivation(a);
  if(a?.schemaVersion!==1||a.ownerId!=='Codex'||a.tournamentId!==TID||typeof a.runId!=='string'||!/^sig-pilot-[a-z0-9-]+$/.test(a.runId)||a.enabled!==true||a.formerWriterStopCommentId!==5947535773||a.feeBps!==0)throw Error('INVALID_ACTIVATION');
  if(micros(a.maxOrderCost)>25000000n||micros(a.maxOrderCost)<=0n||micros(a.maxAggregateCost)>100000000n||micros(a.maxCumulativeBuyCost)>100000000n||micros(a.maxCumulativeBuyCost)<micros(a.maxOrderCost)||a.maxManagedMarkets!==3||a.depthFractionBps!==100)throw Error('INVALID_PILOT_LIMITS');
  if(!Number.isFinite(Date.parse(a.startedAt))||!Number.isFinite(Date.parse(a.entryExpiresAt))||Date.parse(a.entryExpiresAt)<=Date.parse(a.startedAt)||Date.parse(a.entryExpiresAt)-Date.parse(a.startedAt)>21600000)throw Error('INVALID_ACTIVATION_WINDOW');
@@ -40,14 +42,15 @@ export function validateActivation(a){
 // Core and intent journals are both durable; inconsistency blocks all writes.
 export class CompetitionController {
  constructor({runtimeDir,api,universe,config,isStopped,activation,now=Date.now}){
-  this.dir=path.join(runtimeDir,'competition');this.runtimeDir=runtimeDir;this.api=api;this.universe=universe;this.config=config;this.now=now;this.isStopped=isStopped;
+  this.dir=activation?.schemaVersion===2?path.join(runtimeDir,'competition-runs',validateProductionActivation(activation).runId):path.join(runtimeDir,'competition');this.runtimeDir=runtimeDir;this.api=api;this.universe=universe;this.config=config;this.now=now;this.isStopped=isStopped;
   this.activation=validateActivation(activation);this.activationHash=digest(activation);this.status='reconciling';this.reason=null;this.selected=[];this.cash=null;this.account=null;this.markets={};this.currentPermit=null;this.bootstrapped=false;this.readiness={complete:false};
   this.ledger=openLedger({dir:this.dir,ownerId:'Codex',runId:activation.runId,scope:TID,isStopped:()=>!this.canWrite(),now});
   try{
    this.journal=new Journal(path.join(this.dir,'core-journal.jsonl'));
    this.entryAudit=openEntryDecisionAudit(path.join(this.dir,'decisions.jsonl'),activation.runId);
-   this.state=this.journal.last?validateExecutionState(validateControl(this.journal.last.state)):validateExecutionState({...createExecutionState({tournamentId:TID,policy:{maxOrderCost:activation.maxOrderCost,maxAggregateCost:activation.maxAggregateCost,maxCumulativeBuyCost:activation.maxCumulativeBuyCost,maxManagedMarkets:3,cashReserve:'90000.000000'}}),control:emptyControl()});
+   this.state=this.journal.last?validateExecutionState(validateControl(this.journal.last.state)):validateExecutionState({...createExecutionState({tournamentId:TID,policy:{maxOrderCost:activation.maxOrderCost,maxAggregateCost:activation.maxAggregateCost,maxCumulativeBuyCost:activation.maxCumulativeBuyCost,maxManagedMarkets:3,cashReserve:activation.schemaVersion===2?activation.cashReserve:'90000.000000',...(activation.schemaVersion===2?{maxAccountAgeMs:20000}:{})}}),control:emptyControl()});
    if(this.state.tournamentId!==TID||this.state.policy.maxOrderCost!==activation.maxOrderCost||this.state.policy.maxAggregateCost!==activation.maxAggregateCost||this.state.policy.maxCumulativeBuyCost!==activation.maxCumulativeBuyCost)throw Error('CORE_POLICY_MISMATCH');
+   if(activation.schemaVersion===2&&(this.state.policy.cashReserve!==activation.cashReserve||this.state.policy.maxAccountAgeMs!==20000))throw Error('CORE_POLICY_MISMATCH');
    this.assertLedgers();
    this.transport=new OrderTransport({scope:{tournamentId:TID,tournamentSlug:SLUG,exchanges:universe.exchanges},dispatch:s=>api.dispatch(s),now,canWrite:()=>this.canWrite(),ownsOrder:id=>Object.values(this.state.intents).some(i=>String(i.orderId)===String(id)),validateLease:lease=>{this.ledger.snapshot();return lease.runId===activation.runId&&lease.ownerId==='Codex'&&lease.scope===TID;},validatePermit:(permit,spec)=>this.admit(permit,spec),validateNetworkPermit:(permit,spec)=>this.networkAdmit(permit,spec)});
    this.lease={ownerId:'Codex',runId:activation.runId,scope:TID};
@@ -56,6 +59,7 @@ export class CompetitionController {
  }
  canOperate(){
   if(this.halted||this.isStopped()||fs.existsSync(path.join(this.runtimeDir,'EXECUTION_STOP')))return false;
+  if(this.activation.schemaVersion===2&&!productionHandoffCurrent(this.runtimeDir,this.activation))return false;
   try{return digest(JSON.parse(fs.readFileSync(path.join(this.runtimeDir,'competition-activation.json'))))===this.activationHash;}catch{return false;}
  }
  canWrite(){return this.bootstrapped===true&&this.canOperate();}
@@ -103,7 +107,7 @@ export class CompetitionController {
   try{
    if(!this.canOperate())throw Error('EXECUTION_STOPPED');
    await this.cashRefresh();await this.refreshAccount();
-   const marketId='377',market=await this.transport.market(marketId),ctx=market.data.contexts[0];
+   const marketId=this.activation.schemaVersion===2?this.bootstrapMarketId():'377',market=await this.transport.market(marketId),ctx=market.data.contexts[0];
    if(ctx.status!=='open'||ctx.settledWith!==null||market.data.status!=='open'||market.data.isComposite||market.data.isMultiOutcome)throw Error('BOOTSTRAP_MARKET_NOT_OPEN');
    const response=await this.transport.orderbook(marketId),book=this.checkedBook(response,marketId),now=this.now();
    for(const p of [this.cash,this.account.positions,this.account.orders])if(!Number.isFinite(Date.parse(p.at))||Date.parse(p.at)>now||now-Date.parse(p.at)>this.state.policy.maxAccountAgeMs)throw Error('STALE_BOOTSTRAP_ACCOUNT');

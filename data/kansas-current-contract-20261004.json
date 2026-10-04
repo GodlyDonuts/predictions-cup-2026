@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "observedAt": "2026-10-04T20:29:13.391Z",
+  "url": "https://sig.thesuper.market/markets/357",
+  "marketId": "357",
+  "publicContractDefinition": "Market Details\nElection Outcome\nCreated\n8/24/2026 at 04:57 PM\nResolves\n11/4/2026 at 12:00 PM EST\nFull Market Definition\n\nWill the Republican Party win the Kansas Senate?\n\nRules\nLeg 1\nWill the Republican Party win the Kansas Senate?\n\nThis market will resolve based on which party wins U.S. Senate Kansas. Market resolves to \"YES\" if the winning candidate is affiliated with the specified party, \"NO\" otherwise. A candidate running on a fusion ticket counts for every party on that ticket, so more than one party's market can resolve \"YES\" for the same race.\n\nData source: Official election results from relevant election authorities\nMarket resolves to \"YES\" if the condition is met, \"NO\" if not met\nResolution is based on final, certified election results\nIn case of recounts or legal challenges, resolution may be delayed until final results are certified\n\nDisclaimer: Susquehanna may, at our sole discretion, update the rules, outcomes, or resolution of this market at any time, including after the resolution date or end date.\n\n",
+  "source": "official_visible_Info_tab",
+  "fusionTicketsMayProduceMultipleYes": true,
+  "mutualExclusionProven": false,
+  "serverSettlementObserved": false,
+  "networkRequestsByScript": 0
+}

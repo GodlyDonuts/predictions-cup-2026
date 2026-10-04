@@ -41,6 +41,9 @@ import {planNativeDiscoveryBooks,recordNativeDiscoveryAttempt} from './native-di
 import {planComparisonSampling,recordComparisonAttempt} from './comparison-sampling.mjs';
 import {atomicJson as durableAtomicJson} from '../execution/ledger.mjs';
 import {CompetitionController} from '../execution/controller.mjs';
+import {SettlementCompetitionController} from '../execution/settlement-controller.mjs';
+import {validateProductionActivation,productionHandoffCurrent} from '../execution/production-activation.mjs';
+import {openProductionMetadata} from './production-metadata.mjs';
 import {loadNetworkBudget,networkInterval} from './transport-network-budget.mjs';
 import {collectionCycleWait} from './cycle-wait.mjs';
 import {loadMarketSweep,collectMarketSweep} from './market-sweep.mjs';
@@ -80,6 +83,11 @@ const configFile=process.argv.includes('--config')?path.resolve(process.argv[pro
 const c=validateConfig(JSON.parse(fs.readFileSync(configFile,'utf8')));
 const runtimeDir=process.env.SIG_PAPER_DIR||path.join(process.env.LOCALAPPDATA||workspace,'SigTradingCup','paper-runtime');
 const networkBudget=loadNetworkBudget(path.join(runtimeDir,'coordinated-network-budget.json')),networkIntervalMs=networkInterval(c.readIntervalMs,networkBudget);
+// Old enabled activations are historical evidence, never a restart permit.
+const productionActivationFile=path.join(runtimeDir,'competition-activation.json');
+const productionActivation=fs.existsSync(productionActivationFile)?JSON.parse(fs.readFileSync(productionActivationFile,'utf8')):null;
+if(productionActivation?.enabled===true){validateProductionActivation(productionActivation);if(!productionHandoffCurrent(runtimeDir,productionActivation)||networkBudget?.schemaVersion!==4||['handoffId','releaseCommentId','ackCommentId'].some(k=>networkBudget[k]!==productionActivation[k]))throw Error('PRODUCTION_HANDOFF_OR_BUDGET_REQUIRED');}
+else if(networkBudget?.schemaVersion===4)throw Error('PRODUCTION_BUDGET_WITHOUT_ACTIVATION');
 const stopFile=path.join(workspace,'STOP'),paperStop=path.join(runtimeDir,'STOP'),collectorStop=path.join(runtimeDir,'COLLECTOR_STOP');
 if(fs.existsSync(stopFile)||fs.existsSync(paperStop)||fs.existsSync(collectorStop)){console.log(JSON.stringify({status:'stopped',reason:'STOP_present'}));process.exit(0);}
 fs.mkdirSync(runtimeDir,{recursive:true,mode:0o700});
@@ -90,6 +98,7 @@ const control=new AbortController();let stopping=false;
 const stop=()=>{stopping=true;control.abort();};process.on('SIGINT',stop);process.on('SIGTERM',stop);
 const stopWatch=setInterval(()=>{if(fs.existsSync(stopFile)||fs.existsSync(paperStop)||fs.existsSync(collectorStop))stop();},200);
 let journal,state,api,server,heartbeat,competition,realtime,realtimeCapture,basketRelationships,contractEvidence,bookPublication,basketFollowupSource,basketFollowupBankHash,comparisonRiskSource;
+let productionMetadata;
 const samplingSessionId=randomUUID();
 let universe,coverage,depthPlan,dipBank,scaleBank,responsiveBank,scheduler,schedulerScope;const recentReadTimings=[];
 let diagnosticSource,diagnosticLoading=false,diagnosticFailed=false;
@@ -241,7 +250,8 @@ try{
     moneyReceiptWriter??=createMoneyReceiptWriter(path.join(runtimeDir,'exact-money-receipts.jsonl'),{canCommit:()=>!stopping&&!control.signal.aborted&&!fs.existsSync(stopFile)&&!fs.existsSync(paperStop)&&!fs.existsSync(collectorStop)});
     const checkpoint=moneyReceiptWriter(receipt);runtime.exactMoneyReceipts={sequence:checkpoint.sequence,lastKind:receipt.kind,receivedAt:receipt.receivedAt,exact:Object.values(receipt.fields).every(x=>x.available),executionAuthority:false};
   }});
-  api=new ReadClient(loadKey(),{fetchFn:moneyFetch,interval:c.readIntervalMs,networkBudget,signal:control.signal,authorizeDispatch:spec=>tradeTape?.authorizes(spec)===true||contractEvidence?.authorizes(spec)===true||basketRelationships?.authorizes(spec)===true||realtime?.authorizes(spec)===true||competition?.transport.authorizeRequest(spec)===true,onAdmission:next=>atomicJson(path.join(runtimeDir,'rate.json'),{next,manualReview:next===null}),onTiming:event=>{validateTiming(event);fs.appendFileSync(path.join(runtimeDir,'read-timings.jsonl'),JSON.stringify(event)+'\n',{mode:0o600});recentReadTimings.push(event);if(recentReadTimings.length>1000)recentReadTimings.shift();runtime.readTiming=timingSummary(recentReadTimings);}});
+  api=new ReadClient(loadKey(),{fetchFn:moneyFetch,interval:c.readIntervalMs,networkBudget,signal:control.signal,authorizeDispatch:spec=>productionMetadata?.authorizes(spec)===true||tradeTape?.authorizes(spec)===true||contractEvidence?.authorizes(spec)===true||basketRelationships?.authorizes(spec)===true||realtime?.authorizes(spec)===true||competition?.transport.authorizeRequest(spec)===true,onAdmission:next=>atomicJson(path.join(runtimeDir,'rate.json'),{next,manualReview:next===null}),onTiming:event=>{validateTiming(event);fs.appendFileSync(path.join(runtimeDir,'read-timings.jsonl'),JSON.stringify(event)+'\n',{mode:0o600});recentReadTimings.push(event);if(recentReadTimings.length>1000)recentReadTimings.shift();runtime.readTiming=timingSummary(recentReadTimings);}});
+  productionMetadata=openProductionMetadata({runtimeDir,universe,dispatch:spec=>api.dispatch(spec),canOperate:()=>!stopping,now:Date.now});
   try{const activeFile=path.join(runtimeDir,'no-maker-active.json'),revision=fs.existsSync(activeFile)?JSON.parse(fs.readFileSync(activeFile)).hostRevision||1:1;if(![1,2,3,4,5].includes(revision))throw Error('Unknown maker host revision');const selected=revision===5?{open:openNoMakerHostV5,path:'live-paper/no-maker-host-v5.mjs',name:'openNoMakerHostV5'}:revision===4?{open:openNoMakerHostV4,path:'live-paper/no-maker-host-v4.mjs',name:'openNoMakerHostV4'}:revision===3?{open:openNoMakerHostV3,path:'live-paper/no-maker-host-v3.mjs',name:'openNoMakerHostV3'}:revision===2?{open:openNoMakerHostV2,path:'live-paper/no-maker-host-v2.mjs',name:'openNoMakerHostV2'}:{open:openNoMakerHost,path:'live-paper/no-maker-host.mjs',name:'openNoMakerHost'};let factory=selected.open;if(fs.existsSync(activeFile)){const manifest=JSON.parse(fs.readFileSync(activeFile)),bank=JSON.parse(fs.readFileSync(path.join(runtimeDir,'no-maker-cohorts',manifest.cohort,'bank.json')));const module=await frozenPaperModule({runtimeDir,bank,modulePath:selected.path,fallback:{[selected.name]:factory}});factory=module[selected.name];}noMaker=factory({runtimeDir,canOperate:()=>!stopping&&!api.manualReview});runtime.noMaker=noMaker?.status()||{status:'not_initialized',executionAuthority:false};}catch{runtime.noMaker={status:'failed',executionAuthority:false};}
   try{const pairFile=path.join(runtimeDir,'baal-pair-active.json'),revision=fs.existsSync(pairFile)?JSON.parse(fs.readFileSync(pairFile)).hostRevision||1:1;if(![1,2,3,4].includes(revision))throw Error('Unknown pair host revision');let factory=revision===4?openBaalPairHostV4:revision===3?openBaalPairHostV3:revision===2?openBaalPairHostV2:openBaalPairHost;if(fs.existsSync(pairFile)){const manifest=JSON.parse(fs.readFileSync(pairFile)),bank=JSON.parse(fs.readFileSync(path.join(runtimeDir,'baal-pair-cohorts',manifest.cohort,'bank.json')));const module=await frozenPaperModule({runtimeDir,bank,modulePath:revision===4?'live-paper/baal-pair-host-v4.mjs':revision===3?'live-paper/baal-pair-host-v3.mjs':revision===2?'live-paper/baal-pair-host-v2.mjs':'live-paper/baal-pair-host.mjs',fallback:{openBaalPairHost:factory}});factory=module.openBaalPairHost;}baalPair=factory({runtimeDir,canOperate:()=>!stopping&&!api.manualReview});runtime.baalPair=baalPair?.status()||{status:'not_initialized',executionAuthority:false};}catch{runtime.baalPair={status:'failed',executionAuthority:false};}
   try{tradeTape=createTradeTape({runtimeDir,universe,canOperate:()=>!stopping&&!api.manualReview,onPage:row=>{if(noMaker)try{noMaker.onPage(row);runtime.noMaker=noMaker.status();}catch{runtime.noMaker={status:'failed',executionAuthority:false};noMaker=null;}}});runtime.tradeTape=tradeTape.status();}catch{runtime.tradeTape={status:'unavailable',executionAuthority:false};}
@@ -251,7 +261,7 @@ try{
   runtime.networkBudget={mode:networkBudget?.schemaVersion===3?'coordinated_shared_read_only':networkBudget?'coordinated_sole_client':'default',schemaVersion:networkBudget?.schemaVersion??null,intervalMs:networkIntervalMs,writeIntervalMs:api.writeInterval,completionPacing:api.completionPacing,...(networkBudget?.schemaVersion===3?{maxReadsPerMinute:20,writesEnabled:false,executionOwner:'Daenerys'}:{})};
   if(runtime.collectionPlan)runtime.collectionPlan.readIntervalMs=networkIntervalMs;
   const activationFile=path.join(runtimeDir,'competition-activation.json');
-  if(fs.existsSync(activationFile)&&JSON.parse(fs.readFileSync(activationFile)).enabled===true)competition=new CompetitionController({runtimeDir,api,universe,config:c,isStopped:()=>stopping,activation:JSON.parse(fs.readFileSync(activationFile))});
+  if(productionActivation?.enabled===true)competition=new SettlementCompetitionController({runtimeDir,api,universe,config:c,isStopped:()=>stopping,activation:productionActivation});
   if(fs.existsSync(path.join(runtimeDir,'rate.json'))){const rate=JSON.parse(fs.readFileSync(path.join(runtimeDir,'rate.json')));if(rate.manualReview||rate.next===null)throw Error('Rate cooldown requires manual review');if(!Number.isFinite(rate.next)||rate.next<0||rate.next>8640000000000000)throw Error('Invalid persisted rate state');api.next=rate.next;}
   const realtimeFile=path.join(runtimeDir,'realtime-capture.json');
   if(fs.existsSync(realtimeFile)){
@@ -324,6 +334,11 @@ try{
       if(dipBank){
         const makerStatus=noMaker?.status(),makerRisk=makerStatus?.riskMarketIds||[],makerActive=!!noMaker&&!makerStatus.failed&&(makerRisk.length>0||Date.now()<Date.parse(noMaker.bank.reviewExpiresAt));
         const auxiliary=baalReadAttention.reserve(officialSync?1:2,{makerActive});runtime.auxiliaryReadAllocation=auxiliary;
+        if(productionMetadata?.pending()&&(auxiliary.historyReads||auxiliary.tapeReads)&&!stopping&&api.cooldown<=Date.now()){
+          await productionMetadata.consumeOne();
+          if(auxiliary.historyReads)auxiliary.historyReads--;else auxiliary.tapeReads--;
+          runtime.productionMetadata={status:'requested_contract_read_completed',executionAuthority:false,additionalReadSlots:0};
+        }
         if(auxiliary.tapeReads&&tradeTape&&!stopping&&api.cooldown<=Date.now()){
           try{runtime.tradeTape=await tradeTape.collect(spec=>api.dispatch(spec),['363','297','381','382'],{priorityMarketIds:makerActive?(makerRisk.length?makerRisk:noMaker.bank.legs.map(l=>l.marketId)):[],recoveryWindows:makerStatus?.projectionRecoveryRequests||[]});}
           catch(e){if(e.durableRecordingFailed||api.manualReview||e.status===401||e.status===403)throw e;if(!stopping)runtime.tradeTape={...tradeTape.status(),status:'degraded',lastErrorAt:new Date().toISOString(),reason:e.status?'http_'+e.status:/^TRADE_TAPE_[A-Z_]+$/.test(e.message)?e.message:'trade_tape_unavailable'};}
@@ -346,7 +361,8 @@ try{
       if(nativeDip){for(const x of paperFocus.markets||[])if(['held','exit_pending','entry_pending'].includes(x.phase)){const key=x.phase==='entry_pending'?'pendingMarketIds':'heldMarketIds';inputs[key]=[...new Set([...inputs[key],x.marketId])];}
        const members=new Map(universe.exchanges.map(x=>[x.exchangeId+':YES',x.marketId])),legacy=state.strategies.mean_reversion;
        for(const [rows,key] of [[legacy.positions,'heldMarketIds'],[legacy.pending,'pendingMarketIds']])for(const id of Object.keys(rows)){const marketId=members.get(id);if(!marketId)throw Error('Unmapped original active paper risk');inputs[key]=[...new Set([...inputs[key],marketId])];}}
-      const basePlan=nativeDip?planNativeDiscoveryBooks(scheduler,schedulerScope,inputs,{screenedMarketIds:runtime.marketHistoryScreen?.candidateMarketIds||[],excludedMarketIds:universe.exchanges.filter(x=>excluded.has(x.exchangeId)).map(x=>x.marketId),ownedRiskMarketIds:probabilityFocus?.ownedRiskReads===true?probabilityFocus.markets.filter(x=>x.phase==='held').map(x=>x.marketId):[]}):dipBank?planBookReads(scheduler,schedulerScope,inputs):{reads:[...c.marketIds.map(marketId=>({marketId,path:'sourceSnapshots'})),...depthPlan.marketIds.map(marketId=>({marketId,path:'supplementalDepth'}))],entryMarketIds:[]};
+      const productionCandidates=competition?.eligibleMarketIds()||[];
+      const basePlan=nativeDip?planNativeDiscoveryBooks(scheduler,schedulerScope,inputs,{screenedMarketIds:[...new Set([...productionCandidates,...(runtime.marketHistoryScreen?.candidateMarketIds||[])])],excludedMarketIds:universe.exchanges.filter(x=>excluded.has(x.exchangeId)).map(x=>x.marketId),ownedRiskMarketIds:[...new Set([...(competition?.managedMarketIds()||[]),...(probabilityFocus?.ownedRiskReads===true?probabilityFocus.markets.filter(x=>x.phase==='held').map(x=>x.marketId):[])])]}):dipBank?planBookReads(scheduler,schedulerScope,inputs):{reads:[...c.marketIds.map(marketId=>({marketId,path:'sourceSnapshots'})),...depthPlan.marketIds.map(marketId=>({marketId,path:'supplementalDepth'}))],entryMarketIds:[]};
       const pairedPlan=focusPairedPackageReads(comparisonSamplingPlan(basketMeasurementPlan(basePlan,excluded)),readPairedPackageFocus(runtimeDir,universe,Date.now()),{now:Date.now(),lastAttempts:scheduler?.packageReadLastAttemptAt||{}});
       const observationFocus=readEdgeObservationFocus(runtimeDir,universe,Date.now()),observationExclusions=universe.exchanges.filter(x=>excluded.has(x.exchangeId)).map(x=>x.marketId);
       const observation=planEdgeObservation(pairedPlan,scheduler,universe,{focus:observationFocus,now:Date.now(),excludedMarketIds:observationExclusions,coverage});
@@ -360,7 +376,7 @@ try{
       runtime.makerPairFocus=planned.makerPairFocus||runtime.makerPairFocus||null;
       runtime.canonicalCapacityFocus=planned.canonicalCapacityFocus||null;
       runtime.paperPackageFocus=planned.paperPackageFocus||null;
-      if(competition)try{await competition.beforeBooks({positions,orders,ordersAt:new Date().toISOString(),candidateMarketIds:planned.entryMarketIds});}catch(e){competition.failure(e);}
+      if(competition)try{await competition.beforeBooks({positions,orders,ordersAt:new Date().toISOString(),candidateMarketIds:planned.reads.map(x=>x.marketId).filter(id=>productionCandidates.includes(id))});}catch(e){competition.failure(e);}
       const supplementalDepth=[],samplingReservations=[],samplingReceipts=[];
       for(const spec of planned.reads){
         if(stopping||api.cooldown>Date.now())break;
