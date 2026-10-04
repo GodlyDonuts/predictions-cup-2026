@@ -9,7 +9,9 @@ if($taskBudget.schemaVersion -ne 3 -or $taskBudget.maxReadsPerMinute -ne 20 -or 
 if((Get-Content -LiteralPath (Join-Path $taskRuntime 'competition-activation.json') -Raw|ConvertFrom-Json).enabled -ne $false){throw 'Contest activation changed'}
 $taskCollector=Get-CimInstance Win32_Process -Filter "ProcessId=$($taskPids.collector)"
 $taskPaper=Get-CimInstance Win32_Process -Filter "ProcessId=$($taskPids.paper)"
-if(!$taskCollector -or $taskCollector.CommandLine -notlike '*live-paper/runner.mjs*--config live-paper/config.json*' -or !$taskPaper -or $taskPaper.CommandLine -notlike '*probability-receipt-observe.mjs*--name source-probability-20261003-v1*'){throw 'Original process identities changed'}
+$taskConfig=Join-Path $taskWorkspace 'live-paper/config.json'
+$taskCollectorIdentity=$taskCollector -and $taskCollector.CommandLine -like '*live-paper/runner.mjs*' -and ($taskCollector.CommandLine.Contains('--config live-paper/config.json') -or $taskCollector.CommandLine.Contains('--config "'+$taskConfig+'"'))
+if(!$taskCollectorIdentity -or !$taskPaper -or $taskPaper.CommandLine -notlike '*probability-receipt-observe.mjs*--name source-probability-20261003-v1*'){throw 'Original process identities changed'}
 $taskReason=@{source='probability-owned-risk-20261004';at=[DateTime]::UtcNow.ToString('o');reason='Checked paper accounting continuation; same serialized read budget, no contest writes. Engineering reload, not a human STOP.'}|ConvertTo-Json -Compress
 [System.IO.File]::WriteAllText($taskMarker,$taskReason)
 $taskDeadline=[DateTime]::UtcNow.AddSeconds(40)

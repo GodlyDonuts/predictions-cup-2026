@@ -8,7 +8,7 @@ import {writeObservedProjections} from './executable-edge-observe.mjs';
 export async function runProbabilityReceipt(options){
  const bank=JSON.parse(fs.readFileSync(path.join(options.runtimeDir,'probability-receipt-cohorts',options.cohort,'bank.json')));
  const host=await frozenPaperModule({runtimeDir:options.runtimeDir,bank,modulePath:'live-paper/probability-receipt-host-v2.mjs',fallback:currentHost});
- const w=host.openProbabilityReceipt(options);let stopping=false;
+ const w=host.openProbabilityReceipt({...options,workspaceDir:options.workspaceDir||path.dirname(path.dirname(fileURLToPath(import.meta.url)))});let stopping=false;
  const end=()=>stopping=true,marker=path.join(w.dir,'OBSERVER_STOP');process.on('SIGINT',end);process.on('SIGTERM',end);
  try{
   if(fs.existsSync(marker))throw Error('PROBABILITY_HOST_OBSERVER_STOP');
