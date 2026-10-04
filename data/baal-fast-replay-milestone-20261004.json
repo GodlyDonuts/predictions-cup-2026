@@ -1,0 +1,984 @@
+{
+  "schemaVersion": 1,
+  "at": "2026-10-04T07:31:14.666Z",
+  "scopeClaims": [
+    5977383916,
+    5977484396,
+    5977638451
+  ],
+  "rustScopeClaim": 5977664356,
+  "source": {
+    "bytes": 4255286972,
+    "records": 9491,
+    "sha256": "a19efc0c0ff5d52f8ce851ce5665631d3e3c76899e3e46c3dbc7653723c62507",
+    "through": "2026-10-04T06:48:57.756Z",
+    "configuredMarkets": 237
+  },
+  "runs": [
+    {
+      "name": "baal-net-20261004-c",
+      "family": "ridge",
+      "horizons": [
+        60,
+        180,
+        300,
+        600
+      ],
+      "workers": 1,
+      "acceptedSnapshots": 11638,
+      "modelsTrained": 128,
+      "modelMarginPairs": 384,
+      "decision": "no_trade",
+      "sourceHash": "a19efc0c0ff5d52f8ce851ce5665631d3e3c76899e3e46c3dbc7653723c62507",
+      "bankHash": "41a19b98ff9566cda668f83118f969589767f170eea08e444d1dbf776d10cabf",
+      "configHash": "9f0d7811deb5b0ab6b032f388af55f375aca45f94b0b1004a3e84115786e3ff7",
+      "verifyMs": 28918.1552,
+      "fitAndReplayMs": 219440.0509,
+      "totalMs": 248359.61490000002,
+      "peakProcessRssMiB": 1035,
+      "windows": {
+        "fitAt": "2026-10-02T23:48:38.292Z",
+        "selectedAt": "2026-10-03T18:41:00.404Z",
+        "fitRecords": 4627,
+        "selectionRecords": 8099,
+        "finalAt": "2026-10-04T06:48:57.756Z"
+      },
+      "holdout": {
+        "status": "no_trade_selected",
+        "selectedCandidateId": null,
+        "assessment": "no_trade_selected",
+        "conservativePnl": "0.000000",
+        "realizedPnl": "0.000000",
+        "completedTrades": 0,
+        "openShares": 0,
+        "pendingIntents": 0,
+        "at": "2026-10-04T06:48:57.756Z"
+      },
+      "validationLeaders": [
+        {
+          "id": "ridge-h180-f12-l0.01-edge0.005",
+          "eligible": false,
+          "rejectionReasons": [
+            "insufficient_completed_trades",
+            "does_not_beat_no_trade",
+            "insufficient_positive_blocks"
+          ],
+          "blockPnl": [
+            "0.000000",
+            "0.000000",
+            "0.000000"
+          ],
+          "last": {
+            "at": "2026-10-03T18:41:00.404Z",
+            "conservativePnl": "0.000000",
+            "liquidationPnl": "0.000000",
+            "valuation": "depth_checked_liquidation_estimate",
+            "cash": "100.000000",
+            "realizedPnl": "0.000000",
+            "fees": "0.000000",
+            "turnover": "0.000000",
+            "completedTrades": 0,
+            "fillExecutions": 0,
+            "intents": 0,
+            "expiredIntents": 0,
+            "pendingIntents": 0,
+            "openShares": 0,
+            "unsoldShares": 0
+          }
+        },
+        {
+          "id": "ridge-h180-f12-l0.01-edge0.01",
+          "eligible": false,
+          "rejectionReasons": [
+            "insufficient_completed_trades",
+            "does_not_beat_no_trade",
+            "insufficient_positive_blocks"
+          ],
+          "blockPnl": [
+            "0.000000",
+            "0.000000",
+            "0.000000"
+          ],
+          "last": {
+            "at": "2026-10-03T18:41:00.404Z",
+            "conservativePnl": "0.000000",
+            "liquidationPnl": "0.000000",
+            "valuation": "depth_checked_liquidation_estimate",
+            "cash": "100.000000",
+            "realizedPnl": "0.000000",
+            "fees": "0.000000",
+            "turnover": "0.000000",
+            "completedTrades": 0,
+            "fillExecutions": 0,
+            "intents": 0,
+            "expiredIntents": 0,
+            "pendingIntents": 0,
+            "openShares": 0,
+            "unsoldShares": 0
+          }
+        },
+        {
+          "id": "ridge-h180-f12-l0.01-edge0.015",
+          "eligible": false,
+          "rejectionReasons": [
+            "insufficient_completed_trades",
+            "does_not_beat_no_trade",
+            "insufficient_positive_blocks"
+          ],
+          "blockPnl": [
+            "0.000000",
+            "0.000000",
+            "0.000000"
+          ],
+          "last": {
+            "at": "2026-10-03T18:41:00.404Z",
+            "conservativePnl": "0.000000",
+            "liquidationPnl": "0.000000",
+            "valuation": "depth_checked_liquidation_estimate",
+            "cash": "100.000000",
+            "realizedPnl": "0.000000",
+            "fees": "0.000000",
+            "turnover": "0.000000",
+            "completedTrades": 0,
+            "fillExecutions": 0,
+            "intents": 0,
+            "expiredIntents": 0,
+            "pendingIntents": 0,
+            "openShares": 0,
+            "unsoldShares": 0
+          }
+        },
+        {
+          "id": "ridge-h180-f12-l0.1-edge0.005",
+          "eligible": false,
+          "rejectionReasons": [
+            "insufficient_completed_trades",
+            "does_not_beat_no_trade",
+            "insufficient_positive_blocks"
+          ],
+          "blockPnl": [
+            "0.000000",
+            "0.000000",
+            "0.000000"
+          ],
+          "last": {
+            "at": "2026-10-03T18:41:00.404Z",
+            "conservativePnl": "0.000000",
+            "liquidationPnl": "0.000000",
+            "valuation": "depth_checked_liquidation_estimate",
+            "cash": "100.000000",
+            "realizedPnl": "0.000000",
+            "fees": "0.000000",
+            "turnover": "0.000000",
+            "completedTrades": 0,
+            "fillExecutions": 0,
+            "intents": 0,
+            "expiredIntents": 0,
+            "pendingIntents": 0,
+            "openShares": 0,
+            "unsoldShares": 0
+          }
+        },
+        {
+          "id": "ridge-h180-f12-l0.1-edge0.01",
+          "eligible": false,
+          "rejectionReasons": [
+            "insufficient_completed_trades",
+            "does_not_beat_no_trade",
+            "insufficient_positive_blocks"
+          ],
+          "blockPnl": [
+            "0.000000",
+            "0.000000",
+            "0.000000"
+          ],
+          "last": {
+            "at": "2026-10-03T18:41:00.404Z",
+            "conservativePnl": "0.000000",
+            "liquidationPnl": "0.000000",
+            "valuation": "depth_checked_liquidation_estimate",
+            "cash": "100.000000",
+            "realizedPnl": "0.000000",
+            "fees": "0.000000",
+            "turnover": "0.000000",
+            "completedTrades": 0,
+            "fillExecutions": 0,
+            "intents": 0,
+            "expiredIntents": 0,
+            "pendingIntents": 0,
+            "openShares": 0,
+            "unsoldShares": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "baal-net-20261004-d",
+      "family": "ridge",
+      "horizons": [
+        60,
+        180,
+        300,
+        600
+      ],
+      "workers": 1,
+      "acceptedSnapshots": 11638,
+      "modelsTrained": 128,
+      "modelMarginPairs": 384,
+      "decision": "no_trade",
+      "sourceHash": "a19efc0c0ff5d52f8ce851ce5665631d3e3c76899e3e46c3dbc7653723c62507",
+      "bankHash": "61b0f61c007797fbd227060953357006b01fdb8aab666d8b34e2cefcef64ff08",
+      "configHash": "9f0d7811deb5b0ab6b032f388af55f375aca45f94b0b1004a3e84115786e3ff7",
+      "verifyMs": 28174.3788,
+      "fitAndReplayMs": 251474.0559,
+      "totalMs": 279649.0915,
+      "peakProcessRssMiB": 967,
+      "windows": {
+        "fitAt": "2026-10-02T23:48:38.292Z",
+        "selectedAt": "2026-10-03T18:41:00.404Z",
+        "fitRecords": 4627,
+        "selectionRecords": 8099,
+        "finalAt": "2026-10-04T06:48:57.756Z"
+      },
+      "holdout": {
+        "status": "no_trade_selected",
+        "selectedCandidateId": null,
+        "assessment": "no_trade_selected",
+        "conservativePnl": "0.000000",
+        "realizedPnl": "0.000000",
+        "completedTrades": 0,
+        "openShares": 0,
+        "pendingIntents": 0,
+        "at": "2026-10-04T06:48:57.756Z"
+      },
+      "validationLeaders": [
+        {
+          "id": "ridge-h180-f12-l0.01-edge0.005",
+          "eligible": false,
+          "rejectionReasons": [
+            "insufficient_completed_trades",
+            "does_not_beat_no_trade",
+            "insufficient_positive_blocks"
+          ],
+          "blockPnl": [
+            "0.000000",
+            "0.000000",
+            "0.000000"
+          ],
+          "last": {
+            "at": "2026-10-03T18:41:00.404Z",
+            "conservativePnl": "0.000000",
+            "liquidationPnl": "0.000000",
+            "valuation": "depth_checked_liquidation_estimate",
+            "cash": "100.000000",
+            "realizedPnl": "0.000000",
+            "fees": "0.000000",
+            "turnover": "0.000000",
+            "completedTrades": 0,
+            "fillExecutions": 0,
+            "intents": 0,
+            "expiredIntents": 0,
+            "pendingIntents": 0,
+            "openShares": 0,
+            "unsoldShares": 0,
+            "signalMetrics": {
+              "observations": 1642,
+              "warmup": 415,
+              "invalidForecast": 0,
+              "edgeBelowMargin": 1227,
+              "edgePass": 0,
+              "zeroTopAskCapacity": 66
+            },
+            "unsupportedInstruments": 684
+          }
+        },
+        {
+          "id": "ridge-h180-f12-l0.01-edge0.01",
+          "eligible": false,
+          "rejectionReasons": [
+            "insufficient_completed_trades",
+            "does_not_beat_no_trade",
+            "insufficient_positive_blocks"
+          ],
+          "blockPnl": [
+            "0.000000",
+            "0.000000",
+            "0.000000"
+          ],
+          "last": {
+            "at": "2026-10-03T18:41:00.404Z",
+            "conservativePnl": "0.000000",
+            "liquidationPnl": "0.000000",
+            "valuation": "depth_checked_liquidation_estimate",
+            "cash": "100.000000",
+            "realizedPnl": "0.000000",
+            "fees": "0.000000",
+            "turnover": "0.000000",
+            "completedTrades": 0,
+            "fillExecutions": 0,
+            "intents": 0,
+            "expiredIntents": 0,
+            "pendingIntents": 0,
+            "openShares": 0,
+            "unsoldShares": 0,
+            "signalMetrics": {
+              "observations": 1642,
+              "warmup": 415,
+              "invalidForecast": 0,
+              "edgeBelowMargin": 1227,
+              "edgePass": 0,
+              "zeroTopAskCapacity": 66
+            },
+            "unsupportedInstruments": 684
+          }
+        },
+        {
+          "id": "ridge-h180-f12-l0.01-edge0.015",
+          "eligible": false,
+          "rejectionReasons": [
+            "insufficient_completed_trades",
+            "does_not_beat_no_trade",
+            "insufficient_positive_blocks"
+          ],
+          "blockPnl": [
+            "0.000000",
+            "0.000000",
+            "0.000000"
+          ],
+          "last": {
+            "at": "2026-10-03T18:41:00.404Z",
+            "conservativePnl": "0.000000",
+            "liquidationPnl": "0.000000",
+            "valuation": "depth_checked_liquidation_estimate",
+            "cash": "100.000000",
+            "realizedPnl": "0.000000",
+            "fees": "0.000000",
+            "turnover": "0.000000",
+            "completedTrades": 0,
+            "fillExecutions": 0,
+            "intents": 0,
+            "expiredIntents": 0,
+            "pendingIntents": 0,
+            "openShares": 0,
+            "unsoldShares": 0,
+            "signalMetrics": {
+              "observations": 1642,
+              "warmup": 415,
+              "invalidForecast": 0,
+              "edgeBelowMargin": 1227,
+              "edgePass": 0,
+              "zeroTopAskCapacity": 66
+            },
+            "unsupportedInstruments": 684
+          }
+        },
+        {
+          "id": "ridge-h180-f12-l0.1-edge0.005",
+          "eligible": false,
+          "rejectionReasons": [
+            "insufficient_completed_trades",
+            "does_not_beat_no_trade",
+            "insufficient_positive_blocks"
+          ],
+          "blockPnl": [
+            "0.000000",
+            "0.000000",
+            "0.000000"
+          ],
+          "last": {
+            "at": "2026-10-03T18:41:00.404Z",
+            "conservativePnl": "0.000000",
+            "liquidationPnl": "0.000000",
+            "valuation": "depth_checked_liquidation_estimate",
+            "cash": "100.000000",
+            "realizedPnl": "0.000000",
+            "fees": "0.000000",
+            "turnover": "0.000000",
+            "completedTrades": 0,
+            "fillExecutions": 0,
+            "intents": 0,
+            "expiredIntents": 0,
+            "pendingIntents": 0,
+            "openShares": 0,
+            "unsoldShares": 0,
+            "signalMetrics": {
+              "observations": 1642,
+              "warmup": 415,
+              "invalidForecast": 0,
+              "edgeBelowMargin": 1227,
+              "edgePass": 0,
+              "zeroTopAskCapacity": 66
+            },
+            "unsupportedInstruments": 684
+          }
+        },
+        {
+          "id": "ridge-h180-f12-l0.1-edge0.01",
+          "eligible": false,
+          "rejectionReasons": [
+            "insufficient_completed_trades",
+            "does_not_beat_no_trade",
+            "insufficient_positive_blocks"
+          ],
+          "blockPnl": [
+            "0.000000",
+            "0.000000",
+            "0.000000"
+          ],
+          "last": {
+            "at": "2026-10-03T18:41:00.404Z",
+            "conservativePnl": "0.000000",
+            "liquidationPnl": "0.000000",
+            "valuation": "depth_checked_liquidation_estimate",
+            "cash": "100.000000",
+            "realizedPnl": "0.000000",
+            "fees": "0.000000",
+            "turnover": "0.000000",
+            "completedTrades": 0,
+            "fillExecutions": 0,
+            "intents": 0,
+            "expiredIntents": 0,
+            "pendingIntents": 0,
+            "openShares": 0,
+            "unsoldShares": 0,
+            "signalMetrics": {
+              "observations": 1642,
+              "warmup": 415,
+              "invalidForecast": 0,
+              "edgeBelowMargin": 1227,
+              "edgePass": 0,
+              "zeroTopAskCapacity": 66
+            },
+            "unsupportedInstruments": 684
+          }
+        }
+      ]
+    },
+    {
+      "name": "baal-net-20261004-e",
+      "family": "ridge",
+      "horizons": [
+        60,
+        180,
+        300,
+        600
+      ],
+      "workers": 4,
+      "acceptedSnapshots": 11638,
+      "modelsTrained": 128,
+      "modelMarginPairs": 384,
+      "decision": "no_trade",
+      "sourceHash": "a19efc0c0ff5d52f8ce851ce5665631d3e3c76899e3e46c3dbc7653723c62507",
+      "bankHash": "d6cd89c761963b47f99ba5f1dae32871b8930ed32a523a1c056f09900a3cf301",
+      "configHash": "9f0d7811deb5b0ab6b032f388af55f375aca45f94b0b1004a3e84115786e3ff7",
+      "verifyMs": 28773.8021,
+      "fitAndReplayMs": 109754.8257,
+      "totalMs": 138529.2553,
+      "peakProcessRssMiB": 3720,
+      "windows": {
+        "fitAt": "2026-10-02T23:48:38.292Z",
+        "selectedAt": "2026-10-03T18:41:00.404Z",
+        "fitRecords": 4627,
+        "selectionRecords": 8099,
+        "finalAt": "2026-10-04T06:48:57.756Z"
+      },
+      "holdout": {
+        "status": "no_trade_selected",
+        "selectedCandidateId": null,
+        "assessment": "no_trade_selected",
+        "conservativePnl": "0.000000",
+        "realizedPnl": "0.000000",
+        "completedTrades": 0,
+        "openShares": 0,
+        "pendingIntents": 0,
+        "at": "2026-10-04T06:48:57.756Z"
+      },
+      "validationLeaders": [
+        {
+          "id": "ridge-h180-f12-l0.01-edge0.005",
+          "eligible": false,
+          "rejectionReasons": [
+            "insufficient_completed_trades",
+            "does_not_beat_no_trade",
+            "insufficient_positive_blocks"
+          ],
+          "blockPnl": [
+            "0.000000",
+            "0.000000",
+            "0.000000"
+          ],
+          "last": {
+            "at": "2026-10-03T18:41:00.404Z",
+            "conservativePnl": "0.000000",
+            "liquidationPnl": "0.000000",
+            "valuation": "depth_checked_liquidation_estimate",
+            "cash": "100.000000",
+            "realizedPnl": "0.000000",
+            "fees": "0.000000",
+            "turnover": "0.000000",
+            "completedTrades": 0,
+            "fillExecutions": 0,
+            "intents": 0,
+            "expiredIntents": 0,
+            "pendingIntents": 0,
+            "openShares": 0,
+            "unsoldShares": 0,
+            "signalMetrics": {
+              "observations": 1642,
+              "warmup": 415,
+              "invalidForecast": 0,
+              "edgeBelowMargin": 1227,
+              "edgePass": 0,
+              "zeroTopAskCapacity": 66
+            },
+            "unsupportedInstruments": 228
+          }
+        },
+        {
+          "id": "ridge-h180-f12-l0.01-edge0.01",
+          "eligible": false,
+          "rejectionReasons": [
+            "insufficient_completed_trades",
+            "does_not_beat_no_trade",
+            "insufficient_positive_blocks"
+          ],
+          "blockPnl": [
+            "0.000000",
+            "0.000000",
+            "0.000000"
+          ],
+          "last": {
+            "at": "2026-10-03T18:41:00.404Z",
+            "conservativePnl": "0.000000",
+            "liquidationPnl": "0.000000",
+            "valuation": "depth_checked_liquidation_estimate",
+            "cash": "100.000000",
+            "realizedPnl": "0.000000",
+            "fees": "0.000000",
+            "turnover": "0.000000",
+            "completedTrades": 0,
+            "fillExecutions": 0,
+            "intents": 0,
+            "expiredIntents": 0,
+            "pendingIntents": 0,
+            "openShares": 0,
+            "unsoldShares": 0,
+            "signalMetrics": {
+              "observations": 1642,
+              "warmup": 415,
+              "invalidForecast": 0,
+              "edgeBelowMargin": 1227,
+              "edgePass": 0,
+              "zeroTopAskCapacity": 66
+            },
+            "unsupportedInstruments": 228
+          }
+        },
+        {
+          "id": "ridge-h180-f12-l0.01-edge0.015",
+          "eligible": false,
+          "rejectionReasons": [
+            "insufficient_completed_trades",
+            "does_not_beat_no_trade",
+            "insufficient_positive_blocks"
+          ],
+          "blockPnl": [
+            "0.000000",
+            "0.000000",
+            "0.000000"
+          ],
+          "last": {
+            "at": "2026-10-03T18:41:00.404Z",
+            "conservativePnl": "0.000000",
+            "liquidationPnl": "0.000000",
+            "valuation": "depth_checked_liquidation_estimate",
+            "cash": "100.000000",
+            "realizedPnl": "0.000000",
+            "fees": "0.000000",
+            "turnover": "0.000000",
+            "completedTrades": 0,
+            "fillExecutions": 0,
+            "intents": 0,
+            "expiredIntents": 0,
+            "pendingIntents": 0,
+            "openShares": 0,
+            "unsoldShares": 0,
+            "signalMetrics": {
+              "observations": 1642,
+              "warmup": 415,
+              "invalidForecast": 0,
+              "edgeBelowMargin": 1227,
+              "edgePass": 0,
+              "zeroTopAskCapacity": 66
+            },
+            "unsupportedInstruments": 228
+          }
+        },
+        {
+          "id": "ridge-h180-f12-l0.1-edge0.005",
+          "eligible": false,
+          "rejectionReasons": [
+            "insufficient_completed_trades",
+            "does_not_beat_no_trade",
+            "insufficient_positive_blocks"
+          ],
+          "blockPnl": [
+            "0.000000",
+            "0.000000",
+            "0.000000"
+          ],
+          "last": {
+            "at": "2026-10-03T18:41:00.404Z",
+            "conservativePnl": "0.000000",
+            "liquidationPnl": "0.000000",
+            "valuation": "depth_checked_liquidation_estimate",
+            "cash": "100.000000",
+            "realizedPnl": "0.000000",
+            "fees": "0.000000",
+            "turnover": "0.000000",
+            "completedTrades": 0,
+            "fillExecutions": 0,
+            "intents": 0,
+            "expiredIntents": 0,
+            "pendingIntents": 0,
+            "openShares": 0,
+            "unsoldShares": 0,
+            "signalMetrics": {
+              "observations": 1642,
+              "warmup": 415,
+              "invalidForecast": 0,
+              "edgeBelowMargin": 1227,
+              "edgePass": 0,
+              "zeroTopAskCapacity": 66
+            },
+            "unsupportedInstruments": 228
+          }
+        },
+        {
+          "id": "ridge-h180-f12-l0.1-edge0.01",
+          "eligible": false,
+          "rejectionReasons": [
+            "insufficient_completed_trades",
+            "does_not_beat_no_trade",
+            "insufficient_positive_blocks"
+          ],
+          "blockPnl": [
+            "0.000000",
+            "0.000000",
+            "0.000000"
+          ],
+          "last": {
+            "at": "2026-10-03T18:41:00.404Z",
+            "conservativePnl": "0.000000",
+            "liquidationPnl": "0.000000",
+            "valuation": "depth_checked_liquidation_estimate",
+            "cash": "100.000000",
+            "realizedPnl": "0.000000",
+            "fees": "0.000000",
+            "turnover": "0.000000",
+            "completedTrades": 0,
+            "fillExecutions": 0,
+            "intents": 0,
+            "expiredIntents": 0,
+            "pendingIntents": 0,
+            "openShares": 0,
+            "unsoldShares": 0,
+            "signalMetrics": {
+              "observations": 1642,
+              "warmup": 415,
+              "invalidForecast": 0,
+              "edgeBelowMargin": 1227,
+              "edgePass": 0,
+              "zeroTopAskCapacity": 66
+            },
+            "unsupportedInstruments": 228
+          }
+        }
+      ]
+    },
+    {
+      "name": "baal-net-20261004-f",
+      "family": "ridge",
+      "horizons": [
+        900,
+        1800,
+        3600,
+        14400
+      ],
+      "workers": 4,
+      "acceptedSnapshots": 11638,
+      "modelsTrained": 128,
+      "modelMarginPairs": 384,
+      "decision": "no_trade",
+      "sourceHash": "a19efc0c0ff5d52f8ce851ce5665631d3e3c76899e3e46c3dbc7653723c62507",
+      "bankHash": "af3fb5ce845b9a06e5e14f08628aa6e426f66843bee0f76ed618e00b7058ff63",
+      "configHash": "9f0d7811deb5b0ab6b032f388af55f375aca45f94b0b1004a3e84115786e3ff7",
+      "verifyMs": 27452.9827,
+      "fitAndReplayMs": 123000.16329999999,
+      "totalMs": 150453.7771,
+      "peakProcessRssMiB": 3727,
+      "windows": {
+        "fitAt": "2026-10-02T23:48:38.292Z",
+        "selectedAt": "2026-10-03T18:41:00.404Z",
+        "fitRecords": 4627,
+        "selectionRecords": 8099,
+        "finalAt": "2026-10-04T06:48:57.756Z"
+      },
+      "holdout": {
+        "status": "no_trade_selected",
+        "selectedCandidateId": null,
+        "assessment": "no_trade_selected",
+        "conservativePnl": "0.000000",
+        "realizedPnl": "0.000000",
+        "completedTrades": 0,
+        "openShares": 0,
+        "pendingIntents": 0,
+        "at": "2026-10-04T06:48:57.756Z"
+      },
+      "validationLeaders": [
+        {
+          "id": "ridge-h14400-f12-l0.01-edge0.005",
+          "eligible": false,
+          "rejectionReasons": [
+            "insufficient_completed_trades",
+            "does_not_beat_no_trade",
+            "insufficient_positive_blocks"
+          ],
+          "blockPnl": [
+            "0.000000",
+            "0.000000",
+            "0.000000"
+          ],
+          "last": {
+            "at": "2026-10-03T18:41:00.404Z",
+            "conservativePnl": "0.000000",
+            "liquidationPnl": "0.000000",
+            "valuation": "depth_checked_liquidation_estimate",
+            "cash": "100.000000",
+            "realizedPnl": "0.000000",
+            "fees": "0.000000",
+            "turnover": "0.000000",
+            "completedTrades": 0,
+            "fillExecutions": 0,
+            "intents": 0,
+            "expiredIntents": 0,
+            "pendingIntents": 0,
+            "openShares": 0,
+            "unsoldShares": 0,
+            "signalMetrics": {
+              "observations": 689,
+              "warmup": 191,
+              "invalidForecast": 0,
+              "edgeBelowMargin": 498,
+              "edgePass": 0,
+              "zeroTopAskCapacity": 43
+            },
+            "unsupportedInstruments": 233
+          }
+        },
+        {
+          "id": "ridge-h14400-f12-l0.01-edge0.01",
+          "eligible": false,
+          "rejectionReasons": [
+            "insufficient_completed_trades",
+            "does_not_beat_no_trade",
+            "insufficient_positive_blocks"
+          ],
+          "blockPnl": [
+            "0.000000",
+            "0.000000",
+            "0.000000"
+          ],
+          "last": {
+            "at": "2026-10-03T18:41:00.404Z",
+            "conservativePnl": "0.000000",
+            "liquidationPnl": "0.000000",
+            "valuation": "depth_checked_liquidation_estimate",
+            "cash": "100.000000",
+            "realizedPnl": "0.000000",
+            "fees": "0.000000",
+            "turnover": "0.000000",
+            "completedTrades": 0,
+            "fillExecutions": 0,
+            "intents": 0,
+            "expiredIntents": 0,
+            "pendingIntents": 0,
+            "openShares": 0,
+            "unsoldShares": 0,
+            "signalMetrics": {
+              "observations": 689,
+              "warmup": 191,
+              "invalidForecast": 0,
+              "edgeBelowMargin": 498,
+              "edgePass": 0,
+              "zeroTopAskCapacity": 43
+            },
+            "unsupportedInstruments": 233
+          }
+        },
+        {
+          "id": "ridge-h14400-f12-l0.01-edge0.015",
+          "eligible": false,
+          "rejectionReasons": [
+            "insufficient_completed_trades",
+            "does_not_beat_no_trade",
+            "insufficient_positive_blocks"
+          ],
+          "blockPnl": [
+            "0.000000",
+            "0.000000",
+            "0.000000"
+          ],
+          "last": {
+            "at": "2026-10-03T18:41:00.404Z",
+            "conservativePnl": "0.000000",
+            "liquidationPnl": "0.000000",
+            "valuation": "depth_checked_liquidation_estimate",
+            "cash": "100.000000",
+            "realizedPnl": "0.000000",
+            "fees": "0.000000",
+            "turnover": "0.000000",
+            "completedTrades": 0,
+            "fillExecutions": 0,
+            "intents": 0,
+            "expiredIntents": 0,
+            "pendingIntents": 0,
+            "openShares": 0,
+            "unsoldShares": 0,
+            "signalMetrics": {
+              "observations": 689,
+              "warmup": 191,
+              "invalidForecast": 0,
+              "edgeBelowMargin": 498,
+              "edgePass": 0,
+              "zeroTopAskCapacity": 43
+            },
+            "unsupportedInstruments": 233
+          }
+        },
+        {
+          "id": "ridge-h14400-f12-l0.1-edge0.005",
+          "eligible": false,
+          "rejectionReasons": [
+            "insufficient_completed_trades",
+            "does_not_beat_no_trade",
+            "insufficient_positive_blocks"
+          ],
+          "blockPnl": [
+            "0.000000",
+            "0.000000",
+            "0.000000"
+          ],
+          "last": {
+            "at": "2026-10-03T18:41:00.404Z",
+            "conservativePnl": "0.000000",
+            "liquidationPnl": "0.000000",
+            "valuation": "depth_checked_liquidation_estimate",
+            "cash": "100.000000",
+            "realizedPnl": "0.000000",
+            "fees": "0.000000",
+            "turnover": "0.000000",
+            "completedTrades": 0,
+            "fillExecutions": 0,
+            "intents": 0,
+            "expiredIntents": 0,
+            "pendingIntents": 0,
+            "openShares": 0,
+            "unsoldShares": 0,
+            "signalMetrics": {
+              "observations": 689,
+              "warmup": 191,
+              "invalidForecast": 0,
+              "edgeBelowMargin": 498,
+              "edgePass": 0,
+              "zeroTopAskCapacity": 43
+            },
+            "unsupportedInstruments": 233
+          }
+        },
+        {
+          "id": "ridge-h14400-f12-l0.1-edge0.01",
+          "eligible": false,
+          "rejectionReasons": [
+            "insufficient_completed_trades",
+            "does_not_beat_no_trade",
+            "insufficient_positive_blocks"
+          ],
+          "blockPnl": [
+            "0.000000",
+            "0.000000",
+            "0.000000"
+          ],
+          "last": {
+            "at": "2026-10-03T18:41:00.404Z",
+            "conservativePnl": "0.000000",
+            "liquidationPnl": "0.000000",
+            "valuation": "depth_checked_liquidation_estimate",
+            "cash": "100.000000",
+            "realizedPnl": "0.000000",
+            "fees": "0.000000",
+            "turnover": "0.000000",
+            "completedTrades": 0,
+            "fillExecutions": 0,
+            "intents": 0,
+            "expiredIntents": 0,
+            "pendingIntents": 0,
+            "openShares": 0,
+            "unsoldShares": 0,
+            "signalMetrics": {
+              "observations": 689,
+              "warmup": 191,
+              "invalidForecast": 0,
+              "edgeBelowMargin": 498,
+              "edgePass": 0,
+              "zeroTopAskCapacity": 43
+            },
+            "unsupportedInstruments": 233
+          }
+        }
+      ]
+    }
+  ],
+  "exactParallelParity": {
+    "modelWeights": true,
+    "walletMetrics": true,
+    "sourceBytes": true,
+    "exception": "The diagnostic count now reports unsupported instruments per wallet rather than across three margins."
+  },
+  "speedup": {
+    "serialMs": 279649.0915,
+    "parallelMs": 138529.2553,
+    "ratio": 2.018700605113265,
+    "workers": 4,
+    "scope": "Complete frozen original-prefix verification plus fitting and validation; non-isolated wall-clock sample, not10x."
+  },
+  "checks": {
+    "passed": 63,
+    "failed": 0,
+    "scope": "source, chronology, causal labels, sequential/parallel portfolio parity, worker failure cleanup, frozen horizons and current ML consumers; bounded run"
+  },
+  "implementation": [
+    "Verified streamed original byte/hash prefixes without rewriting journals",
+    "Actual receipt ordering for new banks; missing-policy legacy order preserved",
+    "Indexed instrument label paths; same labels and outcomes",
+    "Parallel offline wallet replay with shared history-scope guard",
+    "Feature validation avoids unrelated portfolio simulation; same core version/clock checks",
+    "Explicit frozen holding horizons and entry-admission metrics"
+  ],
+  "findings": [
+    "Short-horizon comparison:384wallets,0intents/0fills;1642eligible observations each,415warmup,1227below margin,0edge passes.",
+    "Longer15min/30min/1h/4h comparison also chose no-trade; additional holding time alone has not produced a qualifying edge.",
+    "Longer experiment and repeats reuse the same historical source; these are development comparisons, not independent evidence."
+  ],
+  "workerIncident": {
+    "detected": "Forced Windows Node/V8 worker termination during callback rejection produced a native crash in regression testing.",
+    "corrected": "Workers close their message ports and exit normally; failure paths wait for exit; the rejecting-callback regression now passes."
+  },
+  "competitionOrders": 0,
+  "fees": 0,
+  "additionalCollectors": 0,
+  "persistentProcessesAdded": 0,
+  "productionActivation": false,
+  "profitabilityEstablished": false,
+  "next": "Implement and benchmark a native Rust replay/compute backend on the complete multi-day capture; preserve live collector and frozen histories."
+}

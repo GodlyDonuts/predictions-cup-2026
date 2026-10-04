@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import {randomUUID} from 'node:crypto';
 import {fileURLToPath} from 'node:url';
 import {replayJournal} from './replay.mjs';
-import {initialState,observe,normalizeBook,invalidate,digest} from './model.mjs';
+import {initialState,observe,normalizeBook,invalidate,digest,validateConfig} from './model.mjs';
 import {amount,fee,TICK} from '../paper/fixed.mjs';
 import {scopedSnapshots} from './depth-scope.mjs';
 import {historyPolicy as validateHistoryPolicy,resetHistory,LEGACY,ISOLATED} from './history-policy.mjs';
@@ -11,6 +11,10 @@ import {ROUND_TRIP,LEGACY_TARGET,targetPolicy as validateTarget,roundTripLabel} 
 import {predictMLP} from './gpu-inference.mjs';
 import {trainingOptions} from './training-options.mjs';
 import {netEdgeDiagnostics} from './execution-metrics.mjs';
+import {isVerifiedTrainingSource,readTrainingSource} from './training-source.mjs';
+import {orderedSnapshots,validateSnapshotOrder,LEGACY_SNAPSHOT_ORDER,RECEIPT_SNAPSHOT_ORDER} from './snapshot-order.mjs';
+import {instrumentLabelPaths} from './label-paths.mjs';
+import {DEFAULT_HORIZONS,trainingHorizons} from './training-horizons.mjs';
 
 const num=x=>Number(amount(x))/1e6;
 export function features(book,history){
@@ -19,21 +23,30 @@ export function features(book,history){
  const delta=n=>history.length>=n?mid-history[history.length-n].mid:0;
  return [1,num(book.asks[0].price)-num(book.bids[0].price),delta(1),delta(3),delta(6),(book.bids[0].quantity-book.asks[0].quantity)/(book.bids[0].quantity+book.asks[0].quantity),(bid-ask)/(bid+ask),Math.log1p(bid),Math.log1p(ask),(Date.parse(book.receivedAt)-Date.parse(book.sourceAt))/1000,history.length?(Date.parse(book.receivedAt)-Date.parse(history.at(-1).at))/1000:0,mid];
 }
-export function captureRows(raw,c,{historyPolicy=LEGACY,since=null,breadthContext=false}={}){
+export function captureRows(raw,c,{historyPolicy=LEGACY,since=null,breadthContext=false,snapshotOrderPolicy=LEGACY_SNAPSHOT_ORDER,observationValidation='features_only_v1'}={}){
+ validateConfig(c);
+ if(!['features_only_v1','legacy_portfolio_validation_v1'].includes(observationValidation))throw Error('Unknown feature observation validation');
+ validateSnapshotOrder(snapshotOrderPolicy);
  validateHistoryPolicy(historyPolicy);
  if(since!==null&&(typeof since!=='string'||!Number.isFinite(Date.parse(since))))throw Error('Invalid training window');
- const verified=replayJournal(raw,c);let s=null,segment=0,context=null;const histories={},rows=[],marketSegments={};
+ // Streamed inputs have already verified every original byte/hash and clock.
+ // Avoid replaying unrelated baseline portfolios merely to recover metadata.
+ const verified=isVerifiedTrainingSource(raw)?{replay:{sourceHash:raw.sourceHash,sourceRecords:raw.sourceRecords,finalEventClock:raw.finalEventClock}}:replayJournal(raw,c,{snapshotOrderPolicy});let s=null,segment=0,context=null;const histories={},rows=[],marketSegments={};
  const reset=marketId=>{resetHistory(histories,marketId,historyPolicy);if(historyPolicy===LEGACY||marketId===null)segment++;else marketSegments[marketId]=(marketSegments[marketId]||0)+1;};
- for(const line of raw.trimEnd().split('\n')){
-  const r=JSON.parse(line),e=r.event;
+ const records=isVerifiedTrainingSource(raw)?raw.records:raw.trimEnd().split('\n').map(JSON.parse);
+ for(const r of records){
+  const e=r.event;
   if(since!==null&&Date.parse(e.clockAt||r.at)<Date.parse(since))continue;
   if(e.type==='account_read_outage'){reset(null);if(s)invalidate(s,null,e.clockAt||r.at,e.reason);continue;}
   if(e.type!=='cycle')continue;
-  for(const snap of scopedSnapshots(e,c)){
+  for(const snap of orderedSnapshots(e,c,snapshotOrderPolicy,e.clockAt||r.at)){
    if(snap.skipped){reset(snap.marketId);if(s)invalidate(s,snap.marketId,snap.at||r.at,snap.skipped);continue;}
    const m=/^\/markets\/(\d+)\/orderbook\?/.exec(snap.endpoint||'');if(!m||!c.marketIds.includes(m[1]))continue;
    if(since!==null&&Date.parse(snap.requestStartedAt)<Date.parse(since))continue;
    s??=initialState(c,'features',snap.requestStartedAt);let b;
+   // Feature extraction needs the exact book chronology/version guards, not
+   // unrelated baseline strategy fills and their growing FIFO ledgers.
+   if(observationValidation==='features_only_v1'){s.strategies={};s.histories={};s.signals={};}
    try{b=normalizeBook(snap.data,m[1],c.tournamentId,snap.receivedAt,snap.requestStartedAt,c.maxDataAgeMs,new Set(e.accountExclusions));}catch{reset(m[1]);continue;}
    const prev=s.books[b.instrument];s=observe(s,b,c);if(prev?.versionKey===s.books[b.instrument].versionKey)continue;
    let h=histories[b.instrument]||[];if(h.length&&Date.parse(b.receivedAt)-Date.parse(h.at(-1).at)>120000){if(historyPolicy===ISOLATED)marketSegments[b.marketId]=(marketSegments[b.marketId]||0)+1;else segment++;h=[];}
@@ -42,6 +55,7 @@ export function captureRows(raw,c,{historyPolicy=LEGACY,since=null,breadthContex
   }
   if(breadthContext)context=updateContext(context,e.bulkPrices,e.clockAt||r.at);
  }
+ if(isVerifiedTrainingSource(raw)&&since===null&&!rows.length)throw Error('No accepted real source observations');
  return {rows,finalSegments:Object.fromEntries(c.marketIds.map(m=>[m,historyPolicy===ISOLATED?segment+':'+(marketSegments[m]||0):segment])),sourceHash:verified.replay.sourceHash,sourceRecords:verified.replay.sourceRecords,cutoff:verified.replay.finalEventClock};
 }
 export function fitRidge(rows,width,lambda){
@@ -87,21 +101,26 @@ export function trainingSupport(train,test,marketIds,scope='all-markets-v1'){
  const coverage=instrumentCoverage(train,test,marketIds),supported=new Set(coverage.filter(x=>x.eligible).flatMap(x=>x.trainingInstruments.map(id=>x.marketId+':'+id)));
  return {coverage,train:scope==='all-markets-v1'?train:train.filter(r=>supported.has(r.marketId+':'+r.instrument)),test:scope==='all-markets-v1'?test:test.filter(r=>supported.has(r.marketId+':'+r.instrument)),eligible:scope==='all-markets-v1'?coverage.every(x=>x.eligible):coverage.some(x=>x.eligible)};
 }
-export function trainBank(raw,c,{family='ridge',historyPolicy=ISOLATED,since=null,requireInstrumentCoverage=false,breadthContext=false,targetPolicy=ROUND_TRIP,trainingScope='all-markets-v1',developmentSplitAt=null}={}){
+export function trainBank(raw,c,{family='ridge',historyPolicy=ISOLATED,since=null,requireInstrumentCoverage=false,breadthContext=false,targetPolicy=ROUND_TRIP,trainingScope='all-markets-v1',developmentSplitAt=null,snapshotOrderPolicy=RECEIPT_SNAPSHOT_ORDER,onProgress=()=>{},horizons=DEFAULT_HORIZONS}={}){
+ horizons=trainingHorizons(horizons);
+ validateSnapshotOrder(snapshotOrderPolicy);
  validateTarget(targetPolicy);
  validateTrainingScope(trainingScope,requireInstrumentCoverage,targetPolicy);
  if(!['ridge','boosted_stumps'].includes(family))throw Error('Unsupported model family');
  if(typeof requireInstrumentCoverage!=='boolean')throw Error('Invalid coverage requirement');
  if(typeof breadthContext!=='boolean')throw Error('Invalid breadth feature selection');
- const source=captureRows(raw,c,{historyPolicy,since,breadthContext}),rows=source.rows;
+ const source=captureRows(raw,c,{historyPolicy,since,breadthContext,snapshotOrderPolicy}),rows=source.rows;
+ onProgress({phase:'features_complete',acceptedSnapshots:rows.length});
  if(rows.length<80)throw Error('Need at least 80 accepted snapshots before model fitting');
  const split=developmentSplitAt??rows[Math.floor(rows.length*.65)].at,models=[],rejected=[],labelDiagnostics=[];
+ const labelPaths=targetPolicy===ROUND_TRIP?instrumentLabelPaths(rows):null;
  if(typeof split!=='string'||!Number.isFinite(Date.parse(split))||Date.parse(split)<=Date.parse(rows[0].at)||Date.parse(split)>=Date.parse(rows.at(-1).at))throw Error('Invalid development split');
- for(const horizon of [60,180,300,600]){
+ for(const horizon of horizons){
+  onProgress({phase:'labels',horizon,modelsTrained:models.length});
   const labels=[],reasons={},byMarket={};
   for(let i=0;i<rows.length;i++){
    const r=rows[i];const diagnostic=byMarket[r.marketId]??={marketId:r.marketId,observations:0,accepted:0,rejected:{}};diagnostic.observations++;
-   if(targetPolicy===ROUND_TRIP){const result=roundTripLabel(rows,i,c,horizon*1000);if(result.label){labels.push(result.label);diagnostic.accepted++;}else {reasons[result.reason]=(reasons[result.reason]||0)+1;diagnostic.rejected[result.reason]=(diagnostic.rejected[result.reason]||0)+1;}continue;}
+   if(targetPolicy===ROUND_TRIP){const p=labelPaths[i],result=roundTripLabel(p.rows,p.index,c,horizon*1000);if(result.label){labels.push(result.label);diagnostic.accepted++;}else {reasons[result.reason]=(reasons[result.reason]||0)+1;diagnostic.rejected[result.reason]=(diagnostic.rejected[result.reason]||0)+1;}continue;}
    let future;
    for(let j=i+1;j<rows.length;j++){const f=rows[j];if(f.instrument!==r.instrument)continue;if(f.segment!==r.segment)break;const dt=Date.parse(f.at)-Date.parse(r.at);if(dt>=horizon*1000){if(dt<=horizon*1000+120000)future=f;break;}}
    if(!future)continue;
@@ -126,15 +145,16 @@ export function trainBank(raw,c,{family='ridge',historyPolicy=ISOLATED,since=nul
    const errors=test.map(r=>predict(model,r.x)-r.y),rmse=Math.sqrt(errors.reduce((n,v)=>n+v*v,0)/errors.length),baselineRmse=Math.sqrt(test.reduce((n,r)=>n+(r.y-r.persistence)**2,0)/test.length);
    models.push({id,horizon,...model,...(targetPolicy===ROUND_TRIP?{executionDiagnostics:netEdgeDiagnostics(test,test.map(r=>predict(model,r.x)))}:{}),coverage,trainRows:train.length,testRows:test.length,rmse,baselineRmse,baseline:targetPolicy===ROUND_TRIP?'Decision book unchanged, entry and exit ticks and quantity-rounded fees':'Current bid persists, with the same assumed exit tick and fee',beatsPersistence:rmse<baselineRmse,maxTrainingLabelAt:new Date(Math.max(...train.map(r=>Date.parse(r.labelAt)))).toISOString()});
   }
+  onProgress({phase:'horizon_complete',horizon,modelsTrained:models.length,acceptedLabels:labels.length});
  }
- const selected=[60,180,300,600].flatMap(h=>models.filter(m=>m.horizon===h).sort((a,b)=>a.rmse-b.rmse).slice(0,3));
- return {schemaVersion:1,targetPolicy,trainingScope,labelDiagnostics,family,historyPolicy,trainingWindowStart:since,requireInstrumentCoverage,breadthContext,createdAt:new Date().toISOString(),config:c,configHash:digest(c),sourceHash:source.sourceHash,sourceRecords:source.sourceRecords,trainingCaptureThrough:source.cutoff,developmentSplitAt:split,acceptedSnapshots:rows.length,candidatesAttempted:128,modelsTrained:models.length,models,rejected,selected,selection:'Three lowest development-split RMSE per horizon; exploration only, all tried variants retained',target:targetPolicy===ROUND_TRIP?'Conditional net realized round-trip PnL per filled share from delayed entry, post-fill holding/stop and delayed FIFO exit':'Future haircut-free best bid minus adverse exit tick and assumed exit fee, relative to current midpoint; entry costs charged separately',limitations:[...(targetPolicy===ROUND_TRIP?['Labels conditional on admitted entry and completed exit; censored/no-fill decisions excluded and counted, selection bias possible','Flat-wallet counterfactual sizing; live wallet exposure and cash can differ']:[]),'Short correlated capture; no profitability established','Chronological development split with training labels purged at split; not untouched future validation','Top bid label is not verified full-size exit liquidity','No guarantee of future depth, latency, settlement equivalence or execution']};
+ const selected=horizons.flatMap(h=>models.filter(m=>m.horizon===h).sort((a,b)=>a.rmse-b.rmse).slice(0,3));
+ return {schemaVersion:1,trainingHorizonsSeconds:horizons,snapshotOrderPolicy,targetPolicy,trainingScope,labelDiagnostics,family,historyPolicy,trainingWindowStart:since,requireInstrumentCoverage,breadthContext,createdAt:new Date().toISOString(),config:c,configHash:digest(c),sourceHash:source.sourceHash,sourceRecords:source.sourceRecords,trainingCaptureThrough:source.cutoff,developmentSplitAt:split,acceptedSnapshots:rows.length,candidatesAttempted:horizons.length*32,modelsTrained:models.length,models,rejected,selected,selection:'Three lowest development-split RMSE per horizon; exploration only, all tried variants retained',target:targetPolicy===ROUND_TRIP?'Conditional net realized round-trip PnL per filled share from delayed entry, post-fill holding/stop and delayed FIFO exit':'Future haircut-free best bid minus adverse exit tick and assumed exit fee, relative to current midpoint; entry costs charged separately',limitations:[...(targetPolicy===ROUND_TRIP?['Labels conditional on admitted entry and completed exit; censored/no-fill decisions excluded and counted, selection bias possible','Flat-wallet counterfactual sizing; live wallet exposure and cash can differ']:[]),'Short correlated capture; no profitability established','Chronological development split with training labels purged at split; not untouched future validation','Top bid label is not verified full-size exit liquidity','No guarantee of future depth, latency, settlement equivalence or execution']};
 }
 if(process.argv[1]&&fileURLToPath(import.meta.url)===process.argv[1]){
  const {journal,config,out,options}=trainingOptions(process.argv.slice(2));
  // Refuse an existing bank before loading the journal or fitting 128 models.
  if(fs.existsSync(out))throw Error('Refusing to overwrite an existing frozen model bank');
- const bank=trainBank(fs.readFileSync(journal,'utf8'),JSON.parse(fs.readFileSync(config,'utf8')),options);
+ const bank=trainBank(readTrainingSource(journal),JSON.parse(fs.readFileSync(config,'utf8')),options);
  bank.trainingDefaultsVersion='execution-aligned-cli-v1';
  const tmp=out+'.'+randomUUID()+'.tmp';
  fs.writeFileSync(tmp,JSON.stringify(bank,null,2),{flag:'wx',mode:0o600});

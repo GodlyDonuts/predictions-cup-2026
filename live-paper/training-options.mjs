@@ -1,10 +1,11 @@
 import {ROUND_TRIP, LEGACY_TARGET, targetPolicy} from './roundtrip-target.mjs';
 import {ISOLATED, historyPolicy} from './history-policy.mjs';
+import {parseTrainingHorizons} from './training-horizons.mjs';
 
 // New training uses executable targets. Frozen bank interpretation remains
 // unchanged, and historical options can still be requested explicitly.
 export function trainingOptions(argv) {
-  const valueFlags = new Set(['--journal', '--config', '--out', '--family', '--history-policy', '--since', '--target-policy', '--training-scope']);
+  const valueFlags = new Set(['--journal', '--config', '--out', '--family', '--history-policy', '--since', '--target-policy', '--training-scope','--horizons']);
   const switches = new Set(['--require-instrument-coverage', '--allow-undercovered-exploration', '--breadth-context']);
   const args = new Map();
   for (let i = 0; i < argv.length; i++) {
@@ -31,6 +32,6 @@ export function trainingOptions(argv) {
   return {
     journal: args.get('--journal'), config: args.get('--config'), out: args.get('--out'),
     options: {family, targetPolicy: target, historyPolicy: historyPolicy(args.get('--history-policy') ?? ISOLATED),
-      since, requireInstrumentCoverage: coverage, breadthContext: args.has('--breadth-context'), trainingScope: scope},
+      since, requireInstrumentCoverage: coverage, breadthContext: args.has('--breadth-context'), trainingScope: scope,...(args.has('--horizons')?{horizons:parseTrainingHorizons(args.get('--horizons'))}:{})},
   };
 }

@@ -12,10 +12,21 @@ import {ISOLATED, LEGACY} from './history-policy.mjs';
 import {trainBank} from './ml-bank.mjs';
 import {digest} from './model.mjs';
 import {advanceShadow, verifySource, requireSourceMetadata} from './ml-shadow-v2.mjs';
+import {DEFAULT_HORIZONS,trainingHorizons,parseTrainingHorizons} from './training-horizons.mjs';
 
 const required = ['--journal', 'capture.jsonl', '--config', 'config.json', '--out', 'new-bank.json'];
 const c = {...JSON.parse(fs.readFileSync(new URL('./config.json', import.meta.url))), marketIds: ['377']};
 const start = Date.parse('2026-10-01T23:00:00Z');
+
+test('explicit slower horizons retain purged labels and immutable model-specific holding times',()=>{
+ assert.deepEqual(trainingHorizons(),DEFAULT_HORIZONS);assert.deepEqual(parseTrainingHorizons('900,1800'),[900,1800]);
+ assert.deepEqual(trainingOptions([...required,'--horizons','900,1800']).options.horizons,[900,1800]);
+ const bank=trainBank(capture(),c,{horizons:[900,1800]});
+ assert.equal(bank.candidatesAttempted,64);assert.deepEqual(bank.trainingHorizonsSeconds,[900,1800]);
+ assert.ok(bank.models.length>0);for(const model of bank.models){assert.ok([900,1800].includes(model.horizon));assert.ok(Date.parse(model.maxTrainingLabelAt)<Date.parse(bank.developmentSplitAt));}
+ for(const horizons of [[],[60,60],[0],[61.1],[Infinity],[86401]])assert.throws(()=>trainBank('',c,{horizons}),/Invalid training horizons/);
+ for(const value of ['900,','-60','60.5','60,60'])assert.throws(()=>parseTrainingHorizons(value),/Invalid training horizons/);
+});
 function capture(count = 180) {
   let previous = '';
   return Array.from({length: count}, (_, n) => {

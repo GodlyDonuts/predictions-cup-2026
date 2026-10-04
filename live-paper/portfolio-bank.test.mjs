@@ -9,7 +9,7 @@ import {digest, initialState, stepForecast} from './model.mjs';
 import {trainBank} from './ml-bank.mjs';
 import {verifySource, advanceShadow, requireSourceMetadata} from './ml-shadow-v2.mjs';
 import {advanceShadow as originalShadow} from './ml-shadow.mjs';
-import {trainPortfolioBank, chronologicalPartitions, portfolioPoint, rankPortfolios} from './portfolio-bank.mjs';
+import {trainPortfolioBank, trainPortfolioBankParallel, chronologicalPartitions, portfolioPoint, rankPortfolios} from './portfolio-bank.mjs';
 import {PORTFOLIO_PLAN, modelMargins, validateCandidatePlan} from './candidate-plan.mjs';
 
 const c = {...JSON.parse(fs.readFileSync(new URL('./config.json', import.meta.url))), marketIds: ['377'], feeBps: 0};
@@ -40,6 +40,16 @@ const model = (id = 'synthetic') => ({id, horizon: 60, weights: [.08], means: [0
 const fakeBank = () => ({config: c, targetPolicy: 'delayed_fifo_roundtrip_net_v1', forecastLifecycle: 'revoke-on-invalidation-v2', selected: [model()], trainingCaptureThrough: at(0)});
 const empty = bank => ({bankHash: digest(bank), sourceSequence: 0, sourceHash: null, wallets: {}, histories: {}, predictions: {}});
 const point = (pnl, trades = 20, extra = {}) => ({conservativePnl: pnl, liquidationPnl: pnl, completedTrades: trades, ...extra});
+
+test('parallel replay preserves every sequential wallet checkpoint, frozen winner and untouched holdout',async()=>{
+ const raw=capture(),a=trainPortfolioBank(raw,c),progress=[];
+ const b=await trainPortfolioBankParallel(raw,c,{workers:2,onProgress:x=>progress.push(x)});
+ const stable=({createdAt,...rest})=>rest;
+ assert.deepEqual(stable(b),stable(a));assert.ok(progress.some(x=>x.worker===0));assert.ok(progress.some(x=>x.worker===1));
+ await assert.rejects(trainPortfolioBankParallel(raw,c,{workers:0}),/worker count/);
+ const empty=await trainPortfolioBankParallel(capture(300,{flat:true}),c,{workers:2});assert.equal(empty.portfolioSelection.decision,'no_trade');
+ await assert.rejects(trainPortfolioBankParallel(capture(120),c,{workers:2,onProgress:x=>{if(x.worker===0)throw Error('intentional_callback_failure');}}),/intentional_callback_failure/);
+});
 
 // These traces are synthetic policy tests, not observed competition returns.
 test('portfolio selection prefers actual sequential net results over lower prediction error', () => {

@@ -1,3 +1,4 @@
+import {orderedSnapshots,validateSnapshotOrder} from './snapshot-order.mjs';
 import {validateCandidatePlan,modelMargins} from './candidate-plan.mjs';
 import {readIncrementalSource,incrementalSourceMetrics} from './incremental-journal.mjs';
 import fs from 'node:fs';
@@ -27,7 +28,7 @@ export function verifySource(raw){
 }
 
 export function requireSourceMetadata(bank){
- validateCandidatePlan(bank);
+ validateCandidatePlan(bank);validateSnapshotOrder(bank.snapshotOrderPolicy);
  if(bank.forecastLifecycle!==undefined&&bank.forecastLifecycle!=='revoke-on-invalidation-v2')throw Error('Unknown frozen forecast lifecycle');
  targetPolicy(bank.targetPolicy);validateTrainingScope(bank.trainingScope,bank.requireInstrumentCoverage,bank.targetPolicy);
  if(!Number.isSafeInteger(bank.sourceRecords)||bank.sourceRecords<1||typeof bank.sourceHash!=='string'||!/^[a-f0-9]{64}$/.test(bank.sourceHash)||!Number.isFinite(Date.parse(bank.trainingCaptureThrough)))throw Error('Missing or invalid frozen training source metadata');
@@ -43,7 +44,7 @@ export function bindTrainingSource(records,bank,{allowUnboundFixture=false}={}){
 }
 
 export function advanceShadow(input,records,bank,{allowUnboundFixture=false}={}){
- validateCandidatePlan(bank);
+ validateCandidatePlan(bank);validateSnapshotOrder(bank.snapshotOrderPolicy);
  const state=structuredClone(input),c=bank.config;
  const invalidateWallet=(wallet,market,at,reason)=>{invalidate(wallet,market,at,reason);if(bank.forecastLifecycle==='revoke-on-invalidation-v2')for(const [id,p]of Object.entries(wallet.strategies.mean_reversion.pending))if(p.action==='buy'&&(market===null||wallet.books[id]?.marketId===market)){delete wallet.strategies.mean_reversion.pending[id];wallet.strategies.mean_reversion.expiredIntents++;}};
  const policy=historyPolicy(bank.historyPolicy);targetPolicy(bank.targetPolicy);validateTrainingScope(bank.trainingScope,bank.requireInstrumentCoverage,bank.targetPolicy);
@@ -58,7 +59,7 @@ export function advanceShadow(input,records,bank,{allowUnboundFixture=false}={})
   if(Date.parse(state.captureThrough)<=Date.parse(bank.trainingCaptureThrough))continue;
   if(e.type==='account_read_outage'){for(const wallet of Object.values(state.wallets))invalidateWallet(wallet,null,state.captureThrough,'account_outage');state.histories={};continue;}
   if(e.type!=='cycle')continue;
-  for(const snap of scopedSnapshots(e,c)){
+  for(const snap of orderedSnapshots(e,c,bank.snapshotOrderPolicy,e.clockAt||r.at)){
    if(snap.skipped){for(const wallet of Object.values(state.wallets))invalidateWallet(wallet,snap.marketId,snap.at||state.captureThrough,snap.skipped);resetHistory(state.histories,snap.marketId,policy);continue;}
    const match=/^\/markets\/(\d+)\/orderbook\?/.exec(snap.endpoint||'');if(!match||!c.marketIds.includes(match[1])||Date.parse(snap.requestStartedAt)<=Date.parse(bank.trainingCaptureThrough))continue;
    let b;try{b=normalizeBook(snap.data,match[1],c.tournamentId,snap.receivedAt,snap.requestStartedAt,c.maxDataAgeMs,new Set(e.accountExclusions));}catch{resetHistory(state.histories,match[1],policy);for(const w of Object.values(state.wallets))invalidateWallet(w,match[1],snap.receivedAt,'invalid_book');continue;}

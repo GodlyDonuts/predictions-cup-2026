@@ -10,15 +10,20 @@ import {ROUND_TRIP} from './roundtrip-target.mjs';
 import {ISOLATED} from './history-policy.mjs';
 import {PAPER_EDGE_MARGINS} from './execution-metrics.mjs';
 import {PORTFOLIO_PLAN, validateCandidatePlan} from './candidate-plan.mjs';
+import {isVerifiedTrainingSource,readTrainingSource,trainingSourcePrefix} from './training-source.mjs';
+import {DEFAULT_HORIZONS,parseTrainingHorizons} from './training-horizons.mjs';
 
 export const SELECTION_POLICY = Object.freeze({
   version: PORTFOLIO_PLAN, fitFraction: 0.6, selectionFraction: 0.2,
   validationBlocks: 3, minimumCompletedTrades: 20, minimumPositiveBlocks: 2,
 });
 const clock = r => r.event?.clockAt || r.at;
+const verifiedPortfolioSources=new WeakSet();
+export const isVerifiedPortfolioSource=value=>!!value&&typeof value==='object'&&verifiedPortfolioSources.has(value);
 
 function source(raw, config) {
-  const records = verifySource(raw);
+  const streamed = isVerifiedTrainingSource(raw);
+  const records = streamed ? raw.records : verifySource(raw);
   if (!records) throw Error('Complete immutable capture required');
   // Reject future-dated observations concealed inside an earlier journal event.
   for (const r of records) if (r.event.type === 'cycle') {
@@ -30,11 +35,12 @@ function source(raw, config) {
           || Date.parse(snap.requestStartedAt) > Date.parse(at))) throw Error('Invalid request chronology');
     }
   }
-  return {records, lines: raw.slice(0, -1).split('\n')};
+  const result={records, lines: streamed ? null : raw.slice(0, -1).split('\n'), verified:streamed?raw:null};
+  verifiedPortfolioSources.add(result);return result;
 }
 function prefix(s, n, includeRaw = false) {
   const records = s.records.slice(0, n);
-  const raw = includeRaw ? s.lines.slice(0, n).join('\n') + '\n' : undefined;
+  const raw = includeRaw ? (s.verified ? trainingSourcePrefix(s.verified,n) : s.lines.slice(0, n).join('\n') + '\n') : undefined;
   Object.defineProperty(records, 'prefixHashes', {value: s.records.prefixHashes.slice(0, n)});
   return {records, raw, sourceHash: s.records.prefixHashes[n - 1], sourceRecords: n, trainingCaptureThrough: clock(records.at(-1))};
 }
@@ -82,7 +88,7 @@ export function portfolioPoint(wallet, config, at) {
     unsoldShares: r.positions.reduce((n, x) => n + x.unsoldShares, 0)};
 }
 
-function replayCandidates(s, config, modelBank, startCount, endCounts) {
+function replayCandidates(s, config, modelBank, startCount, endCounts, onProgress=()=>{}) {
   const start = prefix(s, startCount);
   const bank = {...modelBank, config, configHash: digest(config),
     sourceHash: start.sourceHash, sourceRecords: start.sourceRecords,
@@ -93,6 +99,7 @@ function replayCandidates(s, config, modelBank, startCount, endCounts) {
   let state = {bankHash: digest(bank), sourceSequence: 0, sourceHash: null, wallets: {}, histories: {}, predictions: {}};
   const points = new Map();
   for (const end of endCounts) {
+    onProgress({phase:'portfolio_replay',throughRecords:end,selectedModels:bank.selected.length});
     const view = prefix(s, end);
     state = advanceShadow(state, view.records, bank);
     for (const model of bank.selected) {
@@ -101,7 +108,9 @@ function replayCandidates(s, config, modelBank, startCount, endCounts) {
         const id = model.id + '-edge' + margin;
         const w = state.wallets[id] ?? initialState(config, id, start.trainingCaptureThrough);
         const list = points.get(id) ?? [];
-        list.push(portfolioPoint(w, config, view.trainingCaptureThrough)); points.set(id, list);
+        list.push({...portfolioPoint(w, config, view.trainingCaptureThrough),
+          signalMetrics:state.signalMetrics?.[id]??null,
+          unsupportedInstruments:Object.keys(state.unsupportedInstruments||{}).filter(key=>key.startsWith(id+':')).length}); points.set(id, list);
       }
     }
   }
@@ -145,7 +154,7 @@ export function rankPortfolios(scorecards, options = {}) {
   return {winner: results.find(x => x.eligible) ?? null, results};
 }
 
-export function trainPortfolioBank(raw, config, {policy: options = {}, family = 'ridge', breadthContext = false} = {}) {
+function* portfolioTrainingSteps(raw, config, {policy: options = {}, family = 'ridge', breadthContext = false,onProgress=()=>{},horizons=DEFAULT_HORIZONS} = {}) {
   validateConfig(config);
   const policy = policyOptions(options), s = source(raw, config), cuts = chronologicalPartitions(s.records, policy);
   const development = prefix(s, cuts.selectionRecords, true);
@@ -153,10 +162,10 @@ export function trainPortfolioBank(raw, config, {policy: options = {}, family = 
   // entire holdout, is excluded from fitting. Selection compares ALL variants.
   const fitted = trainBank(development.raw, config, {family, breadthContext,
     historyPolicy: ISOLATED, targetPolicy: ROUND_TRIP, developmentSplitAt: cuts.fitAt,
-    requireInstrumentCoverage: false, trainingScope: 'all-markets-v1'});
+    requireInstrumentCoverage: false, trainingScope: 'all-markets-v1',onProgress,horizons});
   const validationBank = {...fitted, selected: fitted.models};
   const checkpoints = blockEnds(s, cuts.fitRecords, cuts.selectionRecords, policy.validationBlocks);
-  const paths = replayCandidates(s, config, validationBank, cuts.fitRecords, checkpoints);
+  const paths = yield {s,config,modelBank:validationBank,startCount:cuts.fitRecords,endCounts:checkpoints,onProgress};
   const cards = fitted.models.flatMap(model => PAPER_EDGE_MARGINS.map(margin => ({
     id: model.id + '-edge' + margin, modelId: model.id, margin, rmse: model.rmse,
     points: paths.get(model.id + '-edge' + margin),
@@ -168,7 +177,7 @@ export function trainPortfolioBank(raw, config, {policy: options = {}, family = 
   const selectionHash = digest({policy, candidatePlan, selected});
   let holdout;
   if (winner) {
-    const paths = replayCandidates(s, config, {...fitted, selected, candidatePlan}, cuts.selectionRecords, [s.records.length]);
+    const paths = yield {s,config,modelBank:{...fitted, selected, candidatePlan},startCount:cuts.selectionRecords,endCounts:[s.records.length],onProgress};
     const result = paths.get(winner.id)[0];
     const assessment = result.liquidationPnl === null ? 'unresolved_terminal_inventory'
       : amount(result.conservativePnl) <= 0n ? 'did_not_beat_no_trade'
@@ -200,8 +209,26 @@ export function trainPortfolioBank(raw, config, {policy: options = {}, family = 
   return bank;
 }
 
+export function trainPortfolioBank(raw,config,options={}){
+ const steps=portfolioTrainingSteps(raw,config,options);let next=steps.next();
+ while(!next.done){const j=next.value;next=steps.next(replayCandidates(j.s,j.config,j.modelBank,j.startCount,j.endCounts,j.onProgress));}
+ return next.value;
+}
+export async function trainPortfolioBankParallel(raw,config,{workers=4,...options}={}){
+ if(!Number.isSafeInteger(workers)||workers<1||workers>8)throw Error('Invalid offline replay worker count');
+ const {parallelPortfolioReplay}=await import('./portfolio-replay-pool.mjs');
+ const steps=portfolioTrainingSteps(raw,config,options);let next=steps.next();
+ while(!next.done){next=steps.next(await parallelPortfolioReplay(next.value,{workers}));}
+ return next.value;
+}
+// This receives only an already verified in-process source from the parent.
+export function replayPortfolioWorkerJob({records,prefixHashes,config,modelBank,startCount,endCounts},onProgress=()=>{}){
+ Object.defineProperty(records,'prefixHashes',{value:prefixHashes});
+ return replayCandidates({records},config,modelBank,startCount,endCounts,onProgress);
+}
+
 if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
-  const values = new Map(), flags = new Set(['--journal', '--config', '--out', '--family']);
+  const values = new Map(), flags = new Set(['--journal', '--config', '--out', '--family','--horizons']);
   for (let i = 2; i < process.argv.length; i += 2) {
     const k = process.argv[i], v = process.argv[i + 1];
     if (!flags.has(k) || values.has(k) || !v || v.startsWith('--')) throw Error('Invalid portfolio training arguments');
@@ -210,7 +237,7 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
   for (const k of ['--journal', '--config', '--out']) if (!values.has(k)) throw Error('Required ' + k);
   const out = values.get('--out');
   if (fs.existsSync(out)) throw Error('Refusing to overwrite a frozen portfolio bank');
-  const bank = trainPortfolioBank(fs.readFileSync(values.get('--journal'), 'utf8'), JSON.parse(fs.readFileSync(values.get('--config'), 'utf8')), {family: values.get('--family') ?? 'ridge'});
+  const bank = trainPortfolioBank(readTrainingSource(values.get('--journal')), JSON.parse(fs.readFileSync(values.get('--config'), 'utf8')), {family: values.get('--family') ?? 'ridge',horizons:values.has('--horizons')?parseTrainingHorizons(values.get('--horizons')):DEFAULT_HORIZONS});
   const tmp = out + '.' + randomUUID() + '.tmp';
   try {fs.writeFileSync(tmp, JSON.stringify(bank, null, 2), {flag: 'wx', mode: 0o600}); fs.linkSync(tmp, out);}
   finally {if (fs.existsSync(tmp)) fs.unlinkSync(tmp);}

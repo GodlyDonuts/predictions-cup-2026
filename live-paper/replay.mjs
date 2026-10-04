@@ -3,18 +3,23 @@ import {fileURLToPath} from 'node:url';
 import {createHash} from 'node:crypto';
 import {initialState,normalizeBook,observe,sampleEquity,report,validateConfig,invalidate} from './model.mjs';
 import {scopedSnapshots} from './depth-scope.mjs';
+import {isVerifiedTrainingSource,readTrainingSource} from './training-source.mjs';
+import {orderedSnapshots,validateSnapshotOrder,LEGACY_SNAPSHOT_ORDER} from './snapshot-order.mjs';
 
-export function replayJournal(raw,c){
-  validateConfig(c);if(!raw||!raw.endsWith('\n'))throw Error('Incomplete capture journal');
-  const sourceHash=createHash('sha256').update(raw).digest('hex');let previous='',sequence=0,state=null,cycles=0,clock=null;
-  for(const line of raw.split('\n').filter(Boolean)){
-    const r=JSON.parse(line),{hash,...body}=r;
-    if(body.sequence!==++sequence||body.previous!==previous||hash!==createHash('sha256').update(JSON.stringify(body)).digest('hex'))throw Error('Capture integrity failure');previous=hash;
+export function replayJournal(raw,c,{snapshotOrderPolicy=LEGACY_SNAPSHOT_ORDER}={}){
+  validateSnapshotOrder(snapshotOrderPolicy);
+  validateConfig(c);const streamed=isVerifiedTrainingSource(raw);
+  if(!streamed&&(typeof raw!=='string'||!raw||!raw.endsWith('\n')))throw Error('Incomplete capture journal');
+  const sourceHash=streamed?raw.sourceHash:createHash('sha256').update(raw).digest('hex');let previous='',sequence=0,state=null,cycles=0,clock=null;
+  const records=streamed?raw.records:raw.split('\n').filter(Boolean).map(JSON.parse);
+  for(const r of records){
+    const {hash,...body}=r;
+    if(body.sequence!==++sequence||body.previous!==previous||(!streamed&&hash!==createHash('sha256').update(JSON.stringify(body)).digest('hex')))throw Error('Capture integrity failure');previous=hash;
     const eventClock=body.event.clockAt||body.at;
     if(!Number.isFinite(Date.parse(eventClock))||(clock&&Date.parse(eventClock)<Date.parse(clock)))throw Error('Journal clock rollback');clock=eventClock;
     if(body.event.type!=='cycle'){if(state&&body.event.type==='account_read_outage')invalidate(state,null,clock,body.event.reason);continue;}
     const excluded=new Set(body.event.accountExclusions);let cycleAt=null;
-    for(const e of scopedSnapshots(body.event,c)){
+    for(const e of orderedSnapshots(body.event,c,snapshotOrderPolicy,clock)){
       if(e.skipped){if(state){const at=e.at||body.state?.skips?.[e.marketId]?.at||clock;state.skips[e.marketId]={at,reason:e.skipped};invalidate(state,e.marketId,at,e.skipped);}continue;}
       if(!e.endpoint)continue;
       const match=/^\/markets\/(\d+)\/orderbook\?/.exec(e.endpoint);if(!match||!c.marketIds.includes(match[1]))continue;
@@ -31,5 +36,5 @@ export function replayJournal(raw,c){
 if(process.argv[1]&&fileURLToPath(import.meta.url)===process.argv[1]){
   if(process.argv.includes('--live'))throw Error('Offline replay only');
   const arg=name=>{const i=process.argv.indexOf(name);if(i===-1||!process.argv[i+1])throw Error('Required '+name);return process.argv[i+1];};
-  console.log(JSON.stringify(replayJournal(fs.readFileSync(arg('--journal'),'utf8'),JSON.parse(fs.readFileSync(arg('--config'),'utf8'))),null,2));
+  console.log(JSON.stringify(replayJournal(readTrainingSource(arg('--journal')),JSON.parse(fs.readFileSync(arg('--config'),'utf8'))),null,2));
 }
