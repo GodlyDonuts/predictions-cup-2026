@@ -62,6 +62,7 @@ impl Declaration {
             || !matches!(
                 self.mode.as_str(),
                 "causal_dip_subsequent_v1" | "causal_dip_development_diagnostic_v1"
+                    | "causal_dip_subsequent_v2" | "causal_dip_development_diagnostic_v2"
             )
             || self.config.fee_bps != 0
             || !identifier(&self.cohort)
@@ -76,6 +77,9 @@ impl Declaration {
         {
             return Err("INVALID_EVALUATION_DECLARATION".into());
         }
+        if self.mode.ends_with("_v2")
+            != (self.config.fill_clock_policy == FillClockPolicy::IndependentRequestLatencyV2)
+        { return Err("EVALUATION_FILL_CLOCK_POLICY_MISMATCH".into()); }
         let cutoff = instant(&self.development.through)?;
         if instant(&self.declared_at)? <= cutoff
             || source.frames[self.development.records - 1].at != cutoff
@@ -310,6 +314,15 @@ pub struct Evaluation {
 }
 pub fn run(source: &Capture, d: &Declaration, workers: usize) -> Result<Evaluation, String> {
     let cutoff = d.validate(source)?;
+    let strict = d.config.fill_clock_policy == FillClockPolicy::IndependentRequestLatencyV2;
+    // V2 subsequent wallets have no intents/positions before actual declaration
+    // time. Earlier observations can only warm features, even after development.
+    let execution_start = if d.mode == "causal_dip_subsequent_v2" {
+        instant(&d.declared_at)?
+    } else { cutoff };
+    if strict && source.meta.through <= execution_start {
+        return Err("NO_POST_DECLARATION_DATA".into());
+    }
     if workers < 1 || workers > 32 {
         return Err("INVALID_REPLAY_WORKERS".into());
     }
@@ -360,14 +373,14 @@ pub fn run(source: &Capture, d: &Declaration, workers: usize) -> Result<Evaluati
                 } else {
                     DipExitPolicy::SnapshotLimit
                 };
-                let mut wallet = Wallet::new(&c, cutoff)?;
+                let mut wallet = Wallet::new(&c, execution_start)?;
                 let mut diagnostics = SignalDiagnostics::default();
                 let mut histories: HashMap<String, VecDeque<(i64, f64, String)>> = HashMap::new();
                 let mut versions: HashMap<String, (u64, i64)> = HashMap::new();
                 for (f, observations) in &frames {
                     if f.account_outage {
                         histories.clear();
-                        if f.sequence > d.development.records {
+                        if f.sequence > d.development.records && f.at > execution_start {
                             wallet.invalidate(None, f.at);
                         }
                     }
@@ -375,7 +388,7 @@ pub fn run(source: &Capture, d: &Declaration, workers: usize) -> Result<Evaluati
                         match o {
                             Shared::Invalid(market, at) => {
                                 histories.retain(|_, h| h.front().is_none_or(|v| v.2 != *market));
-                                if f.sequence > d.development.records && *at > cutoff {
+                                if f.sequence > d.development.records && *at > execution_start {
                                     wallet.invalidate(Some(market), *at);
                                 }
                             }
@@ -415,7 +428,8 @@ pub fn run(source: &Capture, d: &Declaration, workers: usize) -> Result<Evaluati
                                         };
                                     }
                                 }
-                                if f.sequence > d.development.records && b.received_at > cutoff {
+                                if f.sequence > d.development.records && b.received_at > execution_start
+                                    && (!strict || b.request_started_at > execution_start) {
                                     if wallet.step_dip_policy(
                                         b.clone(),
                                         &c,
@@ -497,22 +511,26 @@ pub fn run(source: &Capture, d: &Declaration, workers: usize) -> Result<Evaluati
     Ok(Evaluation {
         mode: d.mode.clone(),
         cohort: d.cohort.clone(),
-        evaluation_start: crate::engine::iso(cutoff),
+        evaluation_start: crate::engine::iso(execution_start),
         evaluation_through: crate::engine::iso(source.meta.through),
         development_records: d.development.records,
-        subsequent_records: source.frames.len() - d.development.records,
+        subsequent_records: if strict { source.frames.iter()
+            .filter(|f| f.sequence > d.development.records && f.at > execution_start).count()
+        } else { source.frames.len() - d.development.records },
         subsequent_cycles: source
             .frames
             .iter()
-            .filter(|f| f.sequence > d.development.records && f.is_cycle)
+            .filter(|f| f.sequence > d.development.records && f.at > execution_start && f.is_cycle)
             .count(),
         workers,
         replay_ms: started.elapsed().as_millis(),
         candidates: scorecards.len(),
         scorecards,
         wallet_initialization: "fresh_cash_no_development_positions_fills_or_pnl_prior_features_only",
-        evaluation_classification: if d.mode == "causal_dip_development_diagnostic_v1" {
+        evaluation_classification: if d.mode.starts_with("causal_dip_development_diagnostic_") {
             "reused_development_data_cost_diagnostic_not_holdout_or_profit_proof"
+        } else if strict {
+            "post_declaration_data_frozen_strategies_no_pre_declaration_wallet_activity"
         } else {
             "retrospective_subsequent_data_selection_provenance_external_not_live_prospective_trading"
         },

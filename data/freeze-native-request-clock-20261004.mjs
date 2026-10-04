@@ -1,0 +1,11 @@
+import fs from 'node:fs';import path from 'node:path';import assert from 'node:assert/strict';import {createHash} from 'node:crypto';
+const sha=b=>createHash('sha256').update(b).digest('hex');
+const runtime=path.join(process.env.LOCALAPPDATA,'SigTradingCup','paper-runtime');
+const old=path.join(runtime,'research-cohorts','baal-dip-subsequent-20261004-v1','declaration.json'),bytes=fs.readFileSync(old);
+assert.equal(sha(bytes),'eb1a6b525682762a323e68492096fd1f23e7ff080f4a51ce1bb832e594505456');
+const prior=JSON.parse(bytes);assert.equal(prior.config.feeBps,0);
+const cohort='baal-dip-request-clock-20261004-v2',dir=path.join(runtime,'research-cohorts',cohort);assert(!fs.existsSync(dir));fs.mkdirSync(dir,{mode:0o700});
+const declaration={...prior,mode:'causal_dip_subsequent_v2',cohort,declaredAt:new Date().toISOString(),config:{...prior.config,fillClockPolicy:'independent_request_latency_v2'}};
+const encoded=JSON.stringify(declaration,null,2)+'\n';fs.writeFileSync(path.join(dir,'declaration.json'),encoded,{flag:'wx',mode:0o600});
+const receipt={at:declaration.declaredAt,cohort,declarationHash:sha(encoded),priorDeclarationHash:sha(bytes),development:declaration.development,candidates:declaration.strategies.length*declaration.scenarios.length*2,strategiesUnchanged:true,scenariosUnchanged:true,parametersTuned:false,fillClockPolicy:declaration.config.fillClockPolicy,tradingStartsAfter:declaration.declaredAt,preDeclarationWalletActivity:false,fees:0,networkRequests:0,competitionOrders:0,profitabilityEstablished:false};
+fs.writeFileSync(path.join(dir,'declaration-receipt.json'),JSON.stringify(receipt,null,2)+'\n',{flag:'wx',mode:0o600});fs.writeFileSync('data/native-request-clock-declaration-20261004.json',JSON.stringify({receipt,declaration},null,2)+'\n',{flag:'wx'});console.log(JSON.stringify(receipt));

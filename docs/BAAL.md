@@ -61,3 +61,46 @@ October 4, 13:29 UTC: paired host V4/core V3 fixes a confirmed entry starvation 
 The correction retains that marker for at most the existing 120-second intent lifetime during a valid incoming refresh. Both legs must still have later independent requests/versions, current complete cofresh depth, positive reviewed capacity, fixed price caps and unchanged cash/depth/latency/risk constraints. Explicit exclusions, unavailable account, expired rules, boundaries, marker expiry or a complete ineligible pair clear it. Twenty-three focused checks pass, including actual serialized cycle spacing, hedge/orphan losses, restart accounting and declared frozen dependencies beyond static imports. The latter check covers a preparation failure: the initial new archive omitted an unused dependency still pinned by the bank; the complete 36-file archive was restored before starting, without changing the new bank/seed or any original wallet.
 
 Historical replay of the same decisions produces one counterfactual completed pair under the correction, with zero realized P&L, -0.035 liquidation P&L and +0.015 ordinary conditional settlement surplus. No parameter selection or profit claim follows. The new continuation `baal-no-pair-anchor-20261004-v4` subsequently made two hypothetical buys from independently later captured requests, completing one pair with cost 0.990. Through 13:28:58 it had zero realized P&L, -0.030 liquidation P&L, and +0.010 conditional ordinary settlement surplus; fusion/admin zero payout could lose the full 0.990. Original probability/maker/pair banks, journal prefixes and cash histories were preserved; native collector recovery, three services, zero fees and the 20-read allocation remain in place. The local dashboard displays the corrected pair's two hypothetical trades and two positions. This is a working paper entry path, not proven profitability or contest execution readiness. See data/pair-anchor-live-20261004.json and data/pair-anchor-milestone-20261004.json.
+
+October 4, 14:04 UTC: the native wallet now supports the explicit
+`fillClockPolicy: "independent_request_latency_v2"`. It requires the later book's
+request to start at least the configured latency after the intent decision;
+response time alone is insufficient. Liquidation freshness uses request age.
+Every accepted V2 fill includes its decision/request/receipt clocks and exact
+version lineage. Nanosecond timestamps and sequence IDs are strings to preserve
+values above JavaScript's safe integer range. The absent/default
+`receipt_latency_v1` policy remains solely for reproduction of frozen history.
+No active live wallet, source journal or collector binary was replaced.
+
+V2 evaluator declarations use `causal_dip_subsequent_v2` together with that
+strict clock. Trading starts after `declaredAt`, including independently started
+requests; all earlier books can only warm features. Missing post-declaration
+data and mismatched clock/declaration versions reject. For development reuse,
+`causal_dip_development_diagnostic_v2` explicitly retains a diagnostic label.
+Build with `./backend-rust/build.ps1 -Test` and run the existing
+`npm run evaluate:rust` adapter against an immutable declaration and source
+prefix. Declarations/results remain distinct from the running paper wallets.
+
+Twenty-one native Node checks and two Rust checks passed, with no skips. All 180
+legacy cards match the original historical comparison exactly. On that same
+2.31-day prefix the stricter clock verified 1,252 modeled fill clocks and changed
+zero wallet outcomes: the older observed snapshots already exceeded latency.
+The regression tests demonstrate the latent defect; it is not an explanation for
+the measured historical losses. The original numeric-clock receipt is retained
+as `data/native-request-clock-milestone-20261004-v1.json` before the lossless
+encoding correction.
+
+The unchanged 100 strategy/cost cases were frozen at 13:47:13.407 UTC. The full
+4.98 GB / 10,398-record / 2.61-day source processed in 13.25 seconds, including
+13.07 seconds of original-byte verification and 111 ms of parallel native
+comparison. Only the 35 records / 28 cycles after the freeze can contribute
+wallet activity. Through 14:03:40.666 UTC, 72 variants made a single identical
+paper entry; the other 28 stayed flat. This is one correlated source event on one
+instrument, not 72 independent trades or additive profit. Held variants have
+99.125 cash, one share, zero realized P&L and no completed trade. Their last
+liquidation marks are unavailable; the -0.875 cash-only inventory-zero floor is
+not a realized loss. Fees are zero, and the sample is too short to establish an
+edge. Three services and the serialized 20-read account allocation remain intact.
+See `data/native-request-clock-declaration-20261004.json` and
+`data/native-request-clock-milestone-20261004.json`; raw fills stay in restricted
+runtime storage. No contest orders or additional persistent process were added.

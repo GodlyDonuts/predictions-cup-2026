@@ -23,6 +23,7 @@ struct Intent {
     buy: bool,
     quantity: i64,
     limit: i128,
+    decision_version: (u64, i64),
     audit: Option<IntentAudit>,
 }
 #[derive(Clone, Debug)]
@@ -46,7 +47,22 @@ pub struct Fill {
     pub fee: String,
     pub at: i64,
     #[serde(skip_serializing_if = "Option::is_none")]
+    pub source_clock: Option<FillSourceClock>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub economics: Option<FillEconomics>,
+}
+#[derive(Clone, Serialize, Debug)]
+#[serde(rename_all = "camelCase")]
+pub struct FillSourceClock {
+    pub policy: &'static str,
+    pub decision_at: i64,
+    pub minimum_latency_ms: i64,
+    pub request_started_at: i64,
+    pub received_at: i64,
+    pub decision_sequence: String,
+    pub decision_source_ns: String,
+    pub fill_sequence: String,
+    pub fill_source_ns: String,
 }
 #[derive(Clone, Serialize, Debug)]
 #[serde(rename_all = "camelCase")]
@@ -84,6 +100,7 @@ pub struct Wallet {
     expired: u64,
     closed: u64,
     last_at: i64,
+    blocked_pre_latency_snapshots: u64,
     pub metrics: Metrics,
     pub unsupported: HashSet<String>,
 }
@@ -107,6 +124,10 @@ pub struct Point {
     pub unsold_shares: i64,
     pub signal_metrics: Option<Metrics>,
     pub unsupported_instruments: usize,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub fill_clock_policy: Option<&'static str>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub blocked_pre_latency_snapshots: Option<u64>,
 }
 pub fn iso(at: i64) -> String {
     chrono::DateTime::from_timestamp_millis(at)
@@ -132,6 +153,7 @@ impl Wallet {
             expired: 0,
             closed: 0,
             last_at: at,
+            blocked_pre_latency_snapshots: 0,
             metrics: Metrics::default(),
             unsupported: HashSet::new(),
         })
@@ -173,11 +195,19 @@ impl Wallet {
                 buy,
                 quantity,
                 limit,
+                decision_version: (b.sequence, b.source_ns),
                 audit,
             },
         );
     }
     fn fill(&mut self, p: &Intent, b: &Book, c: &Config) -> Result<(), String> {
+        if c.fill_clock_policy == FillClockPolicy::IndependentRequestLatencyV2
+            && (b.request_started_at < p.at + c.latency_ms
+                || (b.sequence, b.source_ns) == p.decision_version)
+        {
+            self.blocked_pre_latency_snapshots += 1;
+            return Ok(());
+        }
         if b.received_at - p.at < c.latency_ms
             || b.received_at == p.at
             || self.consumed.get(&b.instrument) == Some(&(b.sequence, b.source_ns))
@@ -280,6 +310,18 @@ impl Wallet {
                 price: money(price),
                 fee: money(charge),
                 at: b.received_at,
+                source_clock: (c.fill_clock_policy == FillClockPolicy::IndependentRequestLatencyV2)
+                    .then_some(FillSourceClock {
+                        policy: "independent_request_latency_v2",
+                        decision_at: p.at,
+                        minimum_latency_ms: c.latency_ms,
+                        request_started_at: b.request_started_at,
+                        received_at: b.received_at,
+                        decision_sequence: p.decision_version.0.to_string(),
+                        decision_source_ns: p.decision_version.1.to_string(),
+                        fill_sequence: b.sequence.to_string(),
+                        fill_source_ns: b.source_ns.to_string(),
+                    }),
                 economics: p.audit.as_ref().map(|audit| FillEconomics {
                     reason: audit.reason,
                     decision_at: audit.decision_at,
@@ -470,7 +512,9 @@ impl Wallet {
             shares += p.quantity;
             let mut left = p.quantity;
             if let Some(b) = self.books.get(id) {
-                let age = at - b.received_at;
+                let age = at - if c.fill_clock_policy == FillClockPolicy::IndependentRequestLatencyV2 {
+                    b.request_started_at
+                } else { b.received_at };
                 if !self.invalidated.contains_key(id) && age >= 0 && age <= c.max_data_age_ms {
                     for l in &b.bids {
                         let q = left.min(
@@ -527,6 +571,10 @@ impl Wallet {
                 None
             },
             unsupported_instruments: self.unsupported.len(),
+            fill_clock_policy: (c.fill_clock_policy == FillClockPolicy::IndependentRequestLatencyV2)
+                .then_some("independent_request_latency_v2"),
+            blocked_pre_latency_snapshots: (c.fill_clock_policy == FillClockPolicy::IndependentRequestLatencyV2)
+                .then_some(self.blocked_pre_latency_snapshots),
         })
     }
     pub fn verify(&self) -> Result<(), String> {
@@ -537,6 +585,16 @@ impl Wallet {
         let mut qty: HashMap<&str, i64> = HashMap::new();
         let mut lots: HashMap<&str, VecDeque<Lot>> = HashMap::new();
         for f in &self.fills {
+            if let Some(clock) = &f.source_clock {
+                if clock.policy != "independent_request_latency_v2"
+                    || clock.minimum_latency_ms < 1
+                    || clock.request_started_at < clock.decision_at + clock.minimum_latency_ms
+                    || clock.received_at < clock.request_started_at
+                    || f.at != clock.received_at
+                    || (clock.fill_sequence.as_str(), clock.fill_source_ns.as_str())
+                        == (clock.decision_sequence.as_str(), clock.decision_source_ns.as_str())
+                { return Err("FILL_CLOCK_CONSERVATION_FAILED".into()); }
+            }
             let notional = amount(&f.price)? * f.quantity as i128;
             let charge = amount(&f.fee)?;
             cash += if f.action == "buy" {

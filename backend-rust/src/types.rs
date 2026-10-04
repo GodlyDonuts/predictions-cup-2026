@@ -1,6 +1,15 @@
 use crate::money::amount;
 use serde::{Deserialize, Serialize};
 pub const TOURNAMENT: &str = "bda92870-621e-47b0-bc3c-3602c5c26f55";
+#[derive(Clone, Copy, Default, Deserialize, Debug, PartialEq, Eq)]
+pub enum FillClockPolicy {
+    // The default retains exact historical replay; new declarations opt in.
+    #[default]
+    #[serde(rename = "receipt_latency_v1")]
+    ReceiptLatencyV1,
+    #[serde(rename = "independent_request_latency_v2")]
+    IndependentRequestLatencyV2,
+}
 #[derive(Clone, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct Config {
@@ -18,6 +27,8 @@ pub struct Config {
     pub max_data_age_ms: i64,
     pub cycle_interval_ms: i64,
     pub latency_ms: i64,
+    #[serde(default)]
+    pub fill_clock_policy: FillClockPolicy,
     pub stop_loss: String,
 }
 impl Config {
