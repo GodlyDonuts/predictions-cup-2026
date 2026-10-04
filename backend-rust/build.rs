@@ -28,6 +28,7 @@ fn main() {
         "src/quote_sides.rs",
         "src/quote_endpoints.rs",
         "src/quote_mechanisms.rs",
+        "src/settlement_value.rs",
     ] {
         println!("cargo:rerun-if-changed={path}");
         let bytes = fs::read(Path::new(path)).expect("Missing native source graph");

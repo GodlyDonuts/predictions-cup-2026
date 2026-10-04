@@ -12,7 +12,7 @@ import {openProbabilityReceipt as v2Host} from './probability-receipt-host-v2.mj
 import {openProbabilityReceipt as nativeHost} from './probability-receipt-host-v3.mjs';
 import {exportProbabilityOpening,probabilityContinuationBundle} from './probability-continuation.mjs';
 import {exportNativeProbabilityOpening,nativeProbabilityContinuationBundle} from './probability-native-continuation.mjs';
-import {archiveNativePublication} from '../data/prepare-native-publication-runtime-20261004.mjs';
+import {archiveCheckedNativeGraph} from '../data/archive-checked-native-graph.mjs';
 import {atomicJson} from '../execution/ledger.mjs';
 import {runProbabilityReceipt} from './probability-receipt-observe-v3.mjs';
 import {projectProbabilityReadFocus,readProbabilityReadFocus} from './probability-read-focus.mjs';
@@ -26,7 +26,11 @@ async function fixture(t){
  t.after(()=>{for(const w of hosts)w.close();writer.close();assert.equal(path.dirname(dir),os.tmpdir());assert.ok(path.basename(dir).startsWith('sig-native-host-'));fs.rmSync(dir,{recursive:true,force:true});});
  const sha=b=>createHash('sha256').update(b).digest('hex'),scope=path.join(dir,'correctness-scope.json'),journalFile=path.join(dir,'public-books.jsonl'),prefix=fs.readFileSync(journalFile);fs.writeFileSync(scope,JSON.stringify(universe));
  const native=await readNativePublicationPrefix({journal:journalFile,scope,endByte:prefix.length,expectedSha:sha(prefix),out:path.join(dir,'correctness-native-prefix.json')});assert.deepEqual(native.state,writer.status());
- const binding=archiveNativePublication(dir,{bindingEvidence:{binaryHash:sha(fs.readFileSync(nativeExecutable)),engineHash:native.engineHash,exactStateParity:true}}),research={schemaVersion:1,id:'correctness-only',marketId,exchangeId,side:'YES',predicateHash:'a'.repeat(64),recordedAt:at(-1000),sourceAt:at(-1000),expiresAt:at(20000),lower:'0.950000',upper:'0.990000',method:'subjective_range',settlementReviewed:true,flags:[],sources:[{url:'https://example.org/correctness-only',contentHash:'b'.repeat(64)}]};
+ const checked={binaryHash:sha(fs.readFileSync(nativeExecutable)),engineHash:native.engineHash,exactStateParity:true};
+ assert.throws(()=>archiveCheckedNativeGraph(dir,{...checked,binaryHash:'0'.repeat(64)}),/UNCHECKED_BINARY/);
+ assert.throws(()=>archiveCheckedNativeGraph(dir,{...checked,engineHash:'0'.repeat(64)}),/SOURCE_GRAPH_CHANGED/);
+ assert.throws(()=>archiveCheckedNativeGraph(dir,{...checked,exactStateParity:false}),/UNCHECKED_BINARY/);
+ const binding=archiveCheckedNativeGraph(dir,checked),research={schemaVersion:1,id:'correctness-only',marketId,exchangeId,side:'YES',predicateHash:'a'.repeat(64),recordedAt:at(-1000),sourceAt:at(-1000),expiresAt:at(20000),lower:'0.950000',upper:'0.990000',method:'subjective_range',settlementReviewed:true,flags:[],sources:[{url:'https://example.org/correctness-only',contentHash:'b'.repeat(64)}]};
  clock=1000;const old=originalHost({runtimeDir:dir,workspaceDir:dir,cohort:'correctness-original',initialize:true,bundle:{identities:{[marketId]:{exchangeId,predicateHash:research.predicateHash}},research:[research]},now:()=>base+clock});hosts.push(old);
  const f={dir,binding,old,set:n=>clock=n,now:()=>base+clock,
   account(n,orders=[]){atomicJson(path.join(dir,'official-account.json'),{positions:{at:at(n),rows:[{exchangeId,quantity:1,private:'PRIVATE'}]},orders:{at:at(n),rows:orders.map(exchangeId=>({exchangeId,quantity:1,open:true,private:'PRIVATE'}))},errors:{},raw:'PRIVATE'});},

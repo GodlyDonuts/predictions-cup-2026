@@ -9,6 +9,7 @@ mod quote_markouts;
 mod quote_sides;
 mod quote_endpoints;
 mod quote_mechanisms;
+mod settlement_value;
 mod replay;
 mod sweep;
 mod trace;
@@ -24,6 +25,7 @@ fn run() -> Result<(), String> {
         "quote-side-markouts" => vec!["--declaration","--sources","--workers","--out"],
         "quote-side-endpoints" => vec!["--declaration","--sources","--workers","--out"],
         "quote-mechanisms" => vec!["--declaration","--sources","--workers","--signal-after","--out"],
+        "settlement-policy" => vec!["--input","--expected-sha","--out"],
         "capture" => vec!["--config", "--journal", "--end-byte", "--expected-sha"],
         "publication" => vec!["--scope", "--journal", "--end-byte", "--expected-sha", "--out"],
         "replay" => vec![
@@ -73,6 +75,19 @@ fn run() -> Result<(), String> {
             .copied()
             .ok_or_else(|| "MISSING_ARGUMENT".to_owned())
     };
+    if command == "settlement-policy" {
+        let bytes = fs::read(get("--input")?).map_err(|_|"SETTLEMENT_INPUT_OPEN")?;
+        let input_hash = format!("{:x}", Sha256::digest(&bytes));
+        if input_hash != get("--expected-sha")? { return Err("SETTLEMENT_INPUT_HASH".into()); }
+        let input: settlement_value::Input = serde_json::from_slice(&bytes).map_err(|_|"SETTLEMENT_INPUT_JSON")?;
+        let mut result = settlement_value::run(&input)?;
+        result["inputHash"] = serde_json::json!(input_hash);
+        let mut file = fs::OpenOptions::new().write(true).create_new(true).open(get("--out")?).map_err(|_|"OUTPUT_EXISTS_OR_UNAVAILABLE")?;
+        std::io::Write::write_all(&mut file, &serde_json::to_vec(&result).map_err(|_|"OUTPUT_INVALID")?).map_err(|_|"OUTPUT_WRITE_FAILED")?;
+        file.sync_all().map_err(|_|"OUTPUT_SYNC_FAILED")?;
+        println!("{}", serde_json::json!({"mode":result["mode"],"candidates":result["decisions"].as_array().unwrap().len(),"networkRequests":0,"competitionOrders":0,"profitabilityEstablished":false}));
+        return Ok(());
+    }
     if command=="quote-replay"||command=="quote-markouts"||command=="quote-side-markouts"||command=="quote-side-endpoints"||command=="quote-mechanisms" {
         if Path::new(get("--out")?).exists(){return Err("OUTPUT_EXISTS_OR_UNAVAILABLE".into());}
         let bytes=fs::read(get("--declaration")?).map_err(|_|"DECLARATION_OPEN_FAILED")?;
