@@ -6,6 +6,16 @@ import {createHash} from 'node:crypto';
 import {validateConfig} from './model.mjs';
 
 export const nativeExecutable=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'../backend-rust/target/release',process.platform==='win32'?'baal-backend.exe':'baal-backend');
+export async function readNativePublicationPrefix({journal,scope,endByte,expectedSha,out,executable=nativeExecutable,pinnedBinaryHash}){
+ validateBinding({endByte,expectedSha,out,workers:1});
+ const scopeFileHash=createHash('sha256').update(fs.readFileSync(scope)).digest('hex'),binaryHash=createHash('sha256').update(fs.readFileSync(executable)).digest('hex');
+ if(pinnedBinaryHash!==undefined&&binaryHash!==pinnedBinaryHash)throw Error('Native publication binary identity changed');
+ await invoke(executable,['publication','--journal',journal,'--scope',scope,'--end-byte',String(endByte),'--expected-sha',expectedSha,'--out',out]);
+ const result=JSON.parse(fs.readFileSync(out));
+ if(result.schemaVersion!==1||result.mode!=='native_public_book_prefix_v1'||result.sourceHash!==expectedSha||result.sourceBytes!==endByte||result.scopeFileHash!==scopeFileHash||!/^[a-f0-9]{64}$/.test(result.engineHash)||result.state?.sequence!==result.sourceRecords||result.state?.scopeHash!==result.scopeHash||result.state?.schemaVersion!==1||result.networkRequests!==0||result.competitionOrders!==0||createHash('sha256').update(fs.readFileSync(executable)).digest('hex')!==binaryHash)throw Error('Native publication binding mismatch');
+ fs.writeFileSync(out+'.receipt.json',JSON.stringify({at:new Date().toISOString(),mode:result.mode,sourceHash:expectedSha,sourceBytes:endByte,scopeFileHash,scopeHash:result.scopeHash,engineHash:result.engineHash,binaryHash,outputHash:createHash('sha256').update(fs.readFileSync(out)).digest('hex'),networkRequests:0,competitionOrders:0},null,2)+'\n',{flag:'wx',mode:0o600});
+ return result;
+}
 // The native backend consumes an explicit original-byte prefix. It cannot read
 // credentials, place orders, rewrite source records, or refit the supplied bank.
 export async function replayNativeBank({journal,bank,endByte,expectedSha,out,workers=8,executable=nativeExecutable}){

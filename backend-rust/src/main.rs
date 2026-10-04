@@ -2,6 +2,7 @@ mod capture;
 mod engine;
 mod evaluation;
 mod money;
+mod publication;
 mod replay;
 mod sweep;
 mod trace;
@@ -13,6 +14,7 @@ fn run() -> Result<(), String> {
     let command = args.first().ok_or("COMMAND_REQUIRED")?;
     let allowed = match command.as_str() {
         "capture" => vec!["--config", "--journal", "--end-byte", "--expected-sha"],
+        "publication" => vec!["--scope", "--journal", "--end-byte", "--expected-sha", "--out"],
         "replay" => vec![
             "--bank",
             "--journal",
@@ -58,6 +60,20 @@ fn run() -> Result<(), String> {
     };
     if command == "trace" {
         println!("{}", trace::run(Path::new(get("--fixture")?))?);
+        return Ok(());
+    }
+    if command == "publication" {
+        if Path::new(get("--out")?).exists() { return Err("OUTPUT_EXISTS_OR_UNAVAILABLE".into()); }
+        let scope_bytes = fs::read(get("--scope")?).map_err(|_| "SCOPE_OPEN_FAILED")?;
+        let scope_hash = format!("{:x}",Sha256::digest(&scope_bytes));
+        let scope: serde_json::Value = serde_json::from_slice(&scope_bytes).map_err(|_| "SCOPE_JSON_INVALID")?;
+        let end = get("--end-byte")?.parse().map_err(|_| "INVALID_SOURCE_PREFIX")?;
+        let mut result = publication::read_prefix(Path::new(get("--journal")?),end,get("--expected-sha")?,&scope)?;
+        result["scopeFileHash"] = serde_json::json!(scope_hash);
+        let mut file = std::fs::OpenOptions::new().write(true).create_new(true).open(get("--out")?).map_err(|_| "OUTPUT_EXISTS_OR_UNAVAILABLE")?;
+        std::io::Write::write_all(&mut file,&serde_json::to_vec(&result).map_err(|_| "OUTPUT_INVALID")?).map_err(|_| "OUTPUT_WRITE_FAILED")?;
+        file.sync_all().map_err(|_| "OUTPUT_SYNC_FAILED")?;
+        println!("{}",serde_json::json!({"sourceVerified":true,"sourceRecords":result["sourceRecords"],"sourceBytes":end,"verifyMs":result["verifyMs"],"competitionOrders":0}));
         return Ok(());
     }
     if command == "evaluate" {

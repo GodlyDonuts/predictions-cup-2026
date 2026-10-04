@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "at": "2026-10-04T10:52:36.566Z",
+  "mode": "same_prefix_publication_validation_benchmark",
+  "sourceBytes": 33146831,
+  "sourceRecords": 15879,
+  "sourceHash": "d726de8fe1e97939b0e613366bbd4fe38b8a3ee842d6b07d099dfe6e7285716a",
+  "scopeHash": "dad1ca43b7e5f5a1a130944a6034ea6a19a91f0106862fb1b3e2dbd36dd003c1",
+  "engineHash": "56706afa003ca4bf19eb68de209bfe64c24070dcf86a3c26336b6983a2dbb21e",
+  "binaryHash": "9eaf8bc6890ca63240a88af28030cbadfa885913438be69c5c6e3c5627bf8d61",
+  "jsMs": 48940.5383,
+  "nativeMs": 1498.6154,
+  "nativeVerifyMs": 1434.0172,
+  "speedup": 32.65717027864521,
+  "stateHash": "23a7444763da88cb0062e2cbf7497d0f9939088d478b9a75bf42e65669753cba",
+  "exactStateParity": true,
+  "networkRequests": 0,
+  "competitionOrders": 0,
+  "profitabilityEstablished": false
+}

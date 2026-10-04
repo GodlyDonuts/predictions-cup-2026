@@ -77,6 +77,27 @@ exposure limits, version reuse protection and exact FIFO accounting. The
 independent holdouts or prospective profitability. No automatic winner is activated.
 Captured price declines can contain information; a historical mean is a hypothesis.
 
+`publication --journal <file> --scope <universe.json> --end-byte <bytes>
+--expected-sha <sha256> --out <new-file>` validates a public quote-journal prefix
+and exports its exact consumer state. The streaming reducer verifies every
+record hash, chain, tournament/instrument scope, session boundary, invalidation,
+receipt clock, tick/depth ladder and version/rollback rule. Complete malformed
+records fail closed; explicit byte and original-byte hash bindings are required.
+Records are bounded to 8 MiB. This command accepts no account credentials and
+does not perform network requests or contest orders.
+
+On the October 4 captured 33.15 MB/15,879-record prefix, original JavaScript
+validation took 48.94 seconds and the native adapter took 1.50 seconds, a 32.66x
+speedup with exact complete-state equality. This measures validation and startup
+transport, separately from model fitting and platform request pacing. The active
+source-probability V3 paper host uses the pinned native binary and runtime library
+for prefix admission, then incremental JavaScript economics on new records. Its
+live cold start was 1.82 seconds. V1/V2 banks, journals, FIFO basis, cash and fills
+are preserved; the strategy and expired research were not reset or retrained.
+See `data/baal-native-publication-benchmark-20261004.json` and
+`data/probability-native-live-20261004.json`. This is a partial backend migration;
+live order execution and the complete collector remain outside this native path.
+
 Measured no-refit comparison on the original 4.25 GB/9,491-record/2.31-day prefix:
 127.73 seconds JavaScript (four workers) versus 12.21 seconds Rust (eight), 10.46x
 for this run. Verification dominates the native time. Model fitting is excluded

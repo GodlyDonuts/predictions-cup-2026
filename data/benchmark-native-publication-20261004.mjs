@@ -1,0 +1,17 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import assert from 'node:assert/strict';
+import {createHash,randomUUID} from 'node:crypto';
+import {performance} from 'node:perf_hooks';
+import {readNativePublicationPrefix,nativeExecutable} from '../live-paper/rust-backend.mjs';
+import {createBookPublicationState,applyBookPublication} from '../live-paper/book-publication.mjs';
+import {payloadHash} from '../execution/ledger.mjs';
+const runtime=path.join(process.env.LOCALAPPDATA,'SigTradingCup/paper-runtime'),sha=b=>createHash('sha256').update(b).digest('hex');
+const dir=path.join(runtime,'native-publication',randomUUID());fs.mkdirSync(dir,{recursive:true,mode:0o700});
+const journal=path.join(runtime,'public-books.jsonl'),raw=fs.readFileSync(journal),bytes=raw.subarray(0,raw.lastIndexOf(10)+1),sourceHash=sha(bytes);
+const scope=path.join(dir,'scope.json'),universe=JSON.parse(fs.readFileSync('live-paper/price-universe.json'));fs.writeFileSync(scope,JSON.stringify(universe)+'\n',{flag:'wx',mode:0o600});
+let start=performance.now();const native=await readNativePublicationPrefix({journal,scope,endByte:bytes.length,expectedSha:sourceHash,out:path.join(dir,'native.json')});const nativeMs=performance.now()-start;
+console.log(JSON.stringify({phase:'native',sourceBytes:bytes.length,sourceRecords:native.sourceRecords,nativeMs,nativeVerifyMs:native.verifyMs}));
+start=performance.now();let state=createBookPublicationState(universe);for(const line of bytes.toString().split('\n').slice(0,-1))state=applyBookPublication(state,JSON.parse(line));const jsMs=performance.now()-start;assert.deepEqual(native.state,state);
+const result={schemaVersion:1,at:new Date().toISOString(),mode:'same_prefix_publication_validation_benchmark',sourceBytes:bytes.length,sourceRecords:native.sourceRecords,sourceHash,scopeHash:native.scopeHash,engineHash:native.engineHash,binaryHash:sha(fs.readFileSync(nativeExecutable)),jsMs,nativeMs,nativeVerifyMs:native.verifyMs,speedup:jsMs/nativeMs,stateHash:payloadHash(state),exactStateParity:true,networkRequests:0,competitionOrders:0,profitabilityEstablished:false};
+fs.writeFileSync('data/baal-native-publication-benchmark-20261004.json',JSON.stringify(result,null,2)+'\n');console.log(JSON.stringify(result));

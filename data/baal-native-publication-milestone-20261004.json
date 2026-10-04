@@ -1,0 +1,47 @@
+{
+  "at": "2026-10-04T11:04:52.883Z",
+  "status": "active_native_prefix_transport",
+  "claimComment": 5979075828,
+  "cohort": "source-probability-native-20261004-v3",
+  "bankHash": "3e445d6b7f436cab79245ed588efa627734d8d2a4a6a6b788ac2873582ed4ef2",
+  "benchmark": {
+    "sourceRecords": 15879,
+    "sourceBytes": 33146831,
+    "jsMs": 48940.5383,
+    "nativeMs": 1498.6154,
+    "speedup": 32.65717027864521,
+    "exactStateParity": true
+  },
+  "startup": {
+    "coldBootMs": 1815.4019,
+    "nativeBinaryHash": "9eaf8bc6890ca63240a88af28030cbadfa885913438be69c5c6e3c5627bf8d61",
+    "nativeEngineHash": "56706afa003ca4bf19eb68de209bfe64c24070dcf86a3c26336b6983a2dbb21e",
+    "nativePrefixBytes": 33269822,
+    "nativePrefixRecords": 15932,
+    "nativeVerifyMs": 1464.6167
+  },
+  "frozenFiles": 54,
+  "nativeBackend": {
+    "schemaVersion": 1,
+    "mode": "native_public_book_prefix_v1",
+    "binaryHash": "9eaf8bc6890ca63240a88af28030cbadfa885913438be69c5c6e3c5627bf8d61",
+    "engineHash": "56706afa003ca4bf19eb68de209bfe64c24070dcf86a3c26336b6983a2dbb21e",
+    "runtimeLibraryHash": "13bf4e99b0193634ebdeb0bbdeff9753b39f1d04799183f664111014aabf4c2c"
+  },
+  "checks": {
+    "targetedNodePassed": 38,
+    "rustPassed": 2,
+    "productionNextBuild": true,
+    "fullRepositorySuite": false
+  },
+  "originalAccountingCarried": true,
+  "originalV1V2Preserved": true,
+  "remaining": {
+    "nativeMigration": "Live incremental economics, full collector and official executor remain outside native validation/replay.",
+    "economics": "Latest fresh liquidation PnL -0.010; one realized close +0.020 is not profitability."
+  },
+  "networkRequestsAdded": 0,
+  "persistentProcessesAdded": 0,
+  "competitionOrders": 0,
+  "profitabilityEstablished": false
+}

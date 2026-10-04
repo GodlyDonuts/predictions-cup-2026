@@ -1,0 +1,139 @@
+{
+  "at": "2026-10-04T11:01:04.319Z",
+  "cohort": "source-probability-native-20261004-v3",
+  "bankHash": "3e445d6b7f436cab79245ed588efa627734d8d2a4a6a6b788ac2873582ed4ef2",
+  "pids": {
+    "collector": 21456,
+    "dashboard": 6456,
+    "paper": 5624,
+    "metrics": null,
+    "contestActivation": false,
+    "retiredMetricsPid": 11792
+  },
+  "originalBankAndJournalUnchanged": true,
+  "originalWalletAccountingCarried": true,
+  "frozenFiles": 54,
+  "nativeBackend": {
+    "schemaVersion": 1,
+    "mode": "native_public_book_prefix_v1",
+    "binaryHash": "9eaf8bc6890ca63240a88af28030cbadfa885913438be69c5c6e3c5627bf8d61",
+    "engineHash": "56706afa003ca4bf19eb68de209bfe64c24070dcf86a3c26336b6983a2dbb21e",
+    "runtimeLibraryHash": "13bf4e99b0193634ebdeb0bbdeff9753b39f1d04799183f664111014aabf4c2c"
+  },
+  "startup": {
+    "coldBootMs": 1815.4019,
+    "nativeBinaryHash": "9eaf8bc6890ca63240a88af28030cbadfa885913438be69c5c6e3c5627bf8d61",
+    "nativeEngineHash": "56706afa003ca4bf19eb68de209bfe64c24070dcf86a3c26336b6983a2dbb21e",
+    "nativePrefixBytes": 33269822,
+    "nativePrefixRecords": 15932,
+    "nativeVerifyMs": 1464.6167
+  },
+  "sourceSequence": 15937,
+  "journalSequence": 6,
+  "sourceClosed": false,
+  "collectorStatus": "running",
+  "readFocus": {
+    "bankHash": "3e445d6b7f436cab79245ed588efa627734d8d2a4a6a6b788ac2873582ed4ef2",
+    "markets": [
+      {
+        "marketId": "297",
+        "phase": "held"
+      }
+    ],
+    "ownedRiskReads": true,
+    "executionAuthority": false
+  },
+  "heldRiskReads": {
+    "marketIds": [
+      "297"
+    ],
+    "replacedSlots": 1,
+    "requestsAdded": 0,
+    "executionAuthority": false
+  },
+  "wallets": {
+    "1000": {
+      "cash": "99.125000",
+      "realizedPnl": "0.020000",
+      "liquidationPnl": "-0.010000",
+      "lastDerivedQuoteLiquidationPnl": "-0.010000",
+      "fees": "0.000000",
+      "fills": 3,
+      "closedTrades": 1,
+      "positions": [
+        {
+          "instrument": "986:YES",
+          "quantity": 1,
+          "cost": "0.895000",
+          "quoteReceivedAt": "2026-10-04T11:00:54.478Z",
+          "observationAgeMs": 8480,
+          "quoteAgeMs": 8480,
+          "quoteInvalidated": false
+        }
+      ]
+    },
+    "3000": {
+      "cash": "99.125000",
+      "realizedPnl": "0.020000",
+      "liquidationPnl": "-0.010000",
+      "lastDerivedQuoteLiquidationPnl": "-0.010000",
+      "fees": "0.000000",
+      "fills": 3,
+      "closedTrades": 1,
+      "positions": [
+        {
+          "instrument": "986:YES",
+          "quantity": 1,
+          "cost": "0.895000",
+          "quoteReceivedAt": "2026-10-04T11:00:54.478Z",
+          "observationAgeMs": 8480,
+          "quoteAgeMs": 8480,
+          "quoteInvalidated": false
+        }
+      ]
+    }
+  },
+  "dashboardWallets": [
+    {
+      "id": "probability-1000",
+      "status": "running",
+      "metrics": {
+        "cash": "99.125000",
+        "realizedPnl": "0.020000",
+        "referencePnl": "-0.002500",
+        "referenceEquity": "99.997500",
+        "liquidationPnl": "-0.010000",
+        "equity": "99.990000",
+        "fills": 3,
+        "fees": "0.000000",
+        "drawdown": "0.002500"
+      }
+    },
+    {
+      "id": "probability-3000",
+      "status": "running",
+      "metrics": {
+        "cash": "99.125000",
+        "realizedPnl": "0.020000",
+        "referencePnl": "-0.002500",
+        "referenceEquity": "99.997500",
+        "liquidationPnl": "-0.010000",
+        "equity": "99.990000",
+        "fills": 3,
+        "fees": "0.000000",
+        "drawdown": "0.002500"
+      }
+    }
+  ],
+  "checks": {
+    "targetedPassed": 38,
+    "targetedFailed": 0,
+    "productionNextBuild": true,
+    "fullRepositorySuite": false,
+    "legacyRunnerHarness": "fails before requests at missing performance; reproduced without current runner edit"
+  },
+  "competitionOrders": 0,
+  "additionalReadSlots": 0,
+  "additionalPersistentProcesses": 0,
+  "profitabilityEstablished": false
+}
