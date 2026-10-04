@@ -1,0 +1,1513 @@
+{
+  "schemaVersion": 1,
+  "at": "2026-10-04T09:25:20.208Z",
+  "claimComments": [
+    5978288303,
+    5978438004
+  ],
+  "status": "native_causal_evaluator_implemented_tested",
+  "engineHash": "dfe1a00980a0a5cb363dd08d4e85e7200daf0af862466735e19cff3a9b8cd388",
+  "binaryHash": "53b7628fb3e64894eba2e478d1f27de50619425816ca000113dfd0a66cb9b8ce",
+  "sourceHashes": {
+    "backend-rust/Cargo.toml": "3a8101ecd00e22806e08965027bf83446106b7a49ce7d3109906bf94319c0e55",
+    "backend-rust/Cargo.lock": "4383ec86092f34bd056cae9f5d36f49509af7a852d3d7f949abaca17ef892ff1",
+    "backend-rust/build.rs": "31f35521373848b5bd493fb9323a05c95aba3d1a379407268f7d4013b037addf",
+    "backend-rust/.cargo/config.toml": "1b72d5f9ac743bb5e6e5a53ab41d3328e25a7b9d7a7cb86f06e653d17d5ec14d",
+    "backend-rust/src/main.rs": "bdaffdea821ed78db653188d6ca2c4ef9bcc6875d27a17a3e1d6ab4981fc4662",
+    "backend-rust/src/money.rs": "879298022b838d1ea2066e6594ebdaa05c3cf5a392b1b9fee7404f6981007f58",
+    "backend-rust/src/types.rs": "96cd4073ab6479ca95c92960666a632a954c8da7d0ca08f194eee2622c0348f2",
+    "backend-rust/src/capture.rs": "056ed271b4b98bbce281488d7be438c29f2bdbd1cbf6c832d7459297f864baeb",
+    "backend-rust/src/engine.rs": "719fe9790e72351ddb4815adf8a4f294b497e3e57cbae4da413e02019dc20b70",
+    "backend-rust/src/replay.rs": "4c68d020bf3ac27f097c780ba291107ca346976bb0bb02b051b5c33529c0fbc9",
+    "backend-rust/src/trace.rs": "b108f4c52c08e03da2bfc0bef8bbaec008a044976ecdb3f8fea2a4a4c83464f1",
+    "backend-rust/src/sweep.rs": "dabededa6574a3e68b953e2e1e9e0b7e48d43a86292d5458297c03ea8b2770a3",
+    "backend-rust/src/evaluation.rs": "991687431001989783104b9501534cff271eb4121c0c6bbbcbd060e291620cb4"
+  },
+  "implemented": [
+    "Original-byte prefix/clock/declaration binding",
+    "Fresh later wallets with prior-only feature warmup",
+    "Regular and experimental profit-floor/bounded-stop exits",
+    "Exact FIFO mid/spread/ladder/slippage/fee attribution",
+    "Separate flat-history/z/cost gate diagnostics",
+    "Eight-worker immutable cost/latency/depth comparisons",
+    "Explicit reused-development classification"
+  ],
+  "subsequent": {
+    "mode": "causal_dip_subsequent_v1",
+    "cohort": "baal-dip-subsequent-20261004-v1",
+    "evaluationStart": "2026-10-04T06:48:57.756Z",
+    "evaluationThrough": "2026-10-04T09:07:00.496Z",
+    "developmentRecords": 9491,
+    "subsequentRecords": 294,
+    "subsequentCycles": 231,
+    "workers": 8,
+    "replayMs": 93,
+    "candidates": 100,
+    "walletInitialization": "fresh_cash_no_development_positions_fills_or_pnl_prior_features_only",
+    "evaluationClassification": "retrospective_subsequent_data_selection_provenance_external_not_live_prospective_trading",
+    "competitionOrders": 0,
+    "networkRequests": 0,
+    "profitabilityEstablished": false,
+    "source": {
+      "engine_hash": "dfe1a00980a0a5cb363dd08d4e85e7200daf0af862466735e19cff3a9b8cd388",
+      "source_format": "verified_original_canonical_journal_v1",
+      "source_bytes": 4480806660,
+      "source_records": 9785,
+      "source_hash": "88add681dd3390fbb3485e5db9f3c83459ca6f7ff7e6314eb15fe70d81f99eb5",
+      "first_at": 1790896721719,
+      "through": 1791104820496,
+      "cycles": 4013,
+      "accepted_books": 15557,
+      "invalid_books": 444,
+      "verify_ms": 12208
+    },
+    "selection": {
+      "at": "2026-10-04T09:07:38.619Z",
+      "cohort": "baal-dip-subsequent-20261004-v1",
+      "endByte": 4480806660,
+      "sourceHash": "88add681dd3390fbb3485e5db9f3c83459ca6f7ff7e6314eb15fe70d81f99eb5",
+      "declarationHash": "eb1a6b525682762a323e68492096fd1f23e7ff080f4a51ce1bb832e594505456",
+      "selectionSourceHash": "a19efc0c0ff5d52f8ce851ce5665631d3e3c76899e3e46c3dbc7653723c62507",
+      "selectionSourceBytes": 4255286972,
+      "selectionSourceRecords": 9491,
+      "candidates": 100,
+      "marketDataWasCollectedEarlier": true,
+      "subsequentPerformanceNotInspectedBeforeDeclaration": true,
+      "evaluationType": "retrospective_subsequent_data_not_live_prospective_trading",
+      "competitionOrders": 0,
+      "networkRequests": 0
+    },
+    "feeBps": 0,
+    "initialCash": "100.000000",
+    "allCardsZeroFills": true,
+    "allCardsZeroPnl": true,
+    "unchangedComparedWithEarlierResult": true,
+    "performanceInspectedBeforeFurtherChanges": true,
+    "signalRows": [
+      {
+        "strategy": "development-positive-1",
+        "parameters": {
+          "lookback": 12,
+          "gapResetSeconds": 900,
+          "z": 1.5,
+          "minimumEdge": 0.005,
+          "horizonSeconds": 1800,
+          "takeProfit": "0.005000"
+        },
+        "observations": 924,
+        "warmup": 63,
+        "flatHistory": 140,
+        "belowZThreshold": 666,
+        "costAdjustedMarginFail": 55,
+        "edgeQualified": 0,
+        "maximumHistoricalReversion": 0.01541666666666669,
+        "maximumCostAdjustedEdge": -0.00041666666666664853
+      },
+      {
+        "strategy": "development-positive-2",
+        "parameters": {
+          "lookback": 12,
+          "gapResetSeconds": 900,
+          "z": 2,
+          "minimumEdge": 0.005,
+          "horizonSeconds": 1800,
+          "takeProfit": "0.005000"
+        },
+        "observations": 924,
+        "warmup": 63,
+        "flatHistory": 140,
+        "belowZThreshold": 685,
+        "costAdjustedMarginFail": 36,
+        "edgeQualified": 0,
+        "maximumHistoricalReversion": 0.01541666666666669,
+        "maximumCostAdjustedEdge": -0.00041666666666664853
+      },
+      {
+        "strategy": "development-positive-3",
+        "parameters": {
+          "lookback": 12,
+          "gapResetSeconds": 900,
+          "z": 2.5,
+          "minimumEdge": 0.005,
+          "horizonSeconds": 1800,
+          "takeProfit": "0.005000"
+        },
+        "observations": 924,
+        "warmup": 63,
+        "flatHistory": 140,
+        "belowZThreshold": 698,
+        "costAdjustedMarginFail": 23,
+        "edgeQualified": 0,
+        "maximumHistoricalReversion": 0.01541666666666669,
+        "maximumCostAdjustedEdge": -0.00041666666666664853
+      },
+      {
+        "strategy": "development-positive-4",
+        "parameters": {
+          "lookback": 12,
+          "gapResetSeconds": 3600,
+          "z": 1.5,
+          "minimumEdge": 0.005,
+          "horizonSeconds": 1800,
+          "takeProfit": "0.005000"
+        },
+        "observations": 924,
+        "warmup": 39,
+        "flatHistory": 144,
+        "belowZThreshold": 678,
+        "costAdjustedMarginFail": 63,
+        "edgeQualified": 0,
+        "maximumHistoricalReversion": 0.015833333333333255,
+        "maximumCostAdjustedEdge": 0.0033333333333331883
+      },
+      {
+        "strategy": "development-positive-5",
+        "parameters": {
+          "lookback": 12,
+          "gapResetSeconds": 3600,
+          "z": 2,
+          "minimumEdge": 0.005,
+          "horizonSeconds": 1800,
+          "takeProfit": "0.005000"
+        },
+        "observations": 924,
+        "warmup": 39,
+        "flatHistory": 144,
+        "belowZThreshold": 700,
+        "costAdjustedMarginFail": 41,
+        "edgeQualified": 0,
+        "maximumHistoricalReversion": 0.015833333333333255,
+        "maximumCostAdjustedEdge": 0.0033333333333331883
+      },
+      {
+        "strategy": "development-positive-6",
+        "parameters": {
+          "lookback": 12,
+          "gapResetSeconds": 3600,
+          "z": 2.5,
+          "minimumEdge": 0.005,
+          "horizonSeconds": 1800,
+          "takeProfit": "0.005000"
+        },
+        "observations": 924,
+        "warmup": 39,
+        "flatHistory": 144,
+        "belowZThreshold": 715,
+        "costAdjustedMarginFail": 26,
+        "edgeQualified": 0,
+        "maximumHistoricalReversion": 0.015833333333333255,
+        "maximumCostAdjustedEdge": 0.0033333333333331883
+      },
+      {
+        "strategy": "development-positive-7",
+        "parameters": {
+          "lookback": 12,
+          "gapResetSeconds": 21600,
+          "z": 1.5,
+          "minimumEdge": 0.005,
+          "horizonSeconds": 1800,
+          "takeProfit": "0.005000"
+        },
+        "observations": 924,
+        "warmup": 27,
+        "flatHistory": 144,
+        "belowZThreshold": 686,
+        "costAdjustedMarginFail": 67,
+        "edgeQualified": 0,
+        "maximumHistoricalReversion": 0.015833333333333255,
+        "maximumCostAdjustedEdge": 0.0033333333333331883
+      },
+      {
+        "strategy": "development-positive-8",
+        "parameters": {
+          "lookback": 12,
+          "gapResetSeconds": 21600,
+          "z": 2,
+          "minimumEdge": 0.005,
+          "horizonSeconds": 1800,
+          "takeProfit": "0.005000"
+        },
+        "observations": 924,
+        "warmup": 27,
+        "flatHistory": 144,
+        "belowZThreshold": 709,
+        "costAdjustedMarginFail": 44,
+        "edgeQualified": 0,
+        "maximumHistoricalReversion": 0.015833333333333255,
+        "maximumCostAdjustedEdge": 0.0033333333333331883
+      },
+      {
+        "strategy": "development-positive-9",
+        "parameters": {
+          "lookback": 12,
+          "gapResetSeconds": 21600,
+          "z": 2.5,
+          "minimumEdge": 0.005,
+          "horizonSeconds": 1800,
+          "takeProfit": "0.005000"
+        },
+        "observations": 924,
+        "warmup": 27,
+        "flatHistory": 144,
+        "belowZThreshold": 725,
+        "costAdjustedMarginFail": 28,
+        "edgeQualified": 0,
+        "maximumHistoricalReversion": 0.015833333333333255,
+        "maximumCostAdjustedEdge": 0.0033333333333331883
+      },
+      {
+        "strategy": "short-gap-control",
+        "parameters": {
+          "lookback": 6,
+          "gapResetSeconds": 120,
+          "z": 0,
+          "minimumEdge": 0.01,
+          "horizonSeconds": 60,
+          "takeProfit": "0.005000"
+        },
+        "observations": 924,
+        "warmup": 191,
+        "flatHistory": 456,
+        "belowZThreshold": 142,
+        "costAdjustedMarginFail": 135,
+        "edgeQualified": 0,
+        "maximumHistoricalReversion": 0.016666666666666607,
+        "maximumCostAdjustedEdge": 0.004166666666666541
+      }
+    ],
+    "receipt": {
+      "at": "2026-10-04T09:20:55.414Z",
+      "sourceHash": "88add681dd3390fbb3485e5db9f3c83459ca6f7ff7e6314eb15fe70d81f99eb5",
+      "sourceBytes": 4480806660,
+      "engineHash": "dfe1a00980a0a5cb363dd08d4e85e7200daf0af862466735e19cff3a9b8cd388",
+      "declarationFileHash": "eb1a6b525682762a323e68492096fd1f23e7ff080f4a51ce1bb832e594505456",
+      "binaryHash": "53b7628fb3e64894eba2e478d1f27de50619425816ca000113dfd0a66cb9b8ce",
+      "outputHash": "461dae1726486953214f2c17554c5d01db5694db1c2602447c2ebd48fc3ef5be",
+      "competitionOrders": 0
+    }
+  },
+  "developmentCosts": {
+    "classification": "reused_development_data_cost_diagnostic_not_holdout_or_profit_proof",
+    "source": {
+      "engine_hash": "dfe1a00980a0a5cb363dd08d4e85e7200daf0af862466735e19cff3a9b8cd388",
+      "source_format": "verified_original_canonical_journal_v1",
+      "source_bytes": 4255286972,
+      "source_records": 9491,
+      "source_hash": "a19efc0c0ff5d52f8ce851ce5665631d3e3c76899e3e46c3dbc7653723c62507",
+      "first_at": 1790896721719,
+      "through": 1791096537756,
+      "cycles": 3782,
+      "accepted_books": 14633,
+      "invalid_books": 444,
+      "verify_ms": 11530
+    },
+    "candidates": 180,
+    "replayMs": 1055,
+    "selection": {
+      "at": "2026-10-04T09:20:15.229Z",
+      "cohort": "baal-dip-development-costs-20261004-v1",
+      "evaluationType": "reused_development_data_cost_diagnostic_not_holdout_or_profit_proof",
+      "selectionPolicy": "all-nine-development-positive-plus-best-median-worst-per-gap-deduplicated",
+      "selectionSourceHash": "a19efc0c0ff5d52f8ce851ce5665631d3e3c76899e3e46c3dbc7653723c62507",
+      "selectionSourceRecords": 9491,
+      "selectionSourceBytes": 4255286972,
+      "endByte": 4255286972,
+      "sourceHash": "a19efc0c0ff5d52f8ce851ce5665631d3e3c76899e3e46c3dbc7653723c62507",
+      "declarationHash": "deb416abc36fbef61cb5cee44ecb4745d12828fd49db119661ad9e9e6614593c",
+      "strategies": 18,
+      "candidates": 180,
+      "competitionOrders": 0,
+      "networkRequests": 0
+    },
+    "exactHistoricalBaselines": 18,
+    "baselineEconomics": {
+      "strategy": "historical-positive-1",
+      "scenario": {
+        "id": "baseline",
+        "latencyMs": 3000,
+        "slippageTicks": 1,
+        "depthFractionBps": 100
+      },
+      "exitPolicy": "snapshot_limit_v1",
+      "conservativePnl": "0.005000",
+      "realizedPnl": "0.005000",
+      "completedTrades": 5,
+      "fillExecutions": 10,
+      "openShares": 0,
+      "netPnl": "0.005000",
+      "midMove": "0.082500",
+      "quotedSpreadAndLadderCost": "0.027500",
+      "slippageCost": "0.050000",
+      "fees": "0.000000",
+      "byExitReason": {
+        "HORIZON": "-0.020000",
+        "TAKE_PROFIT": "0.055000",
+        "STOP_LOSS": "-0.030000"
+      }
+    },
+    "sensitivity": [
+      {
+        "strategy": "historical-positive-1",
+        "scenario": {
+          "id": "baseline",
+          "latencyMs": 3000,
+          "slippageTicks": 1,
+          "depthFractionBps": 100
+        },
+        "exitPolicy": "snapshot_limit_v1",
+        "conservativePnl": "0.005000",
+        "realizedPnl": "0.005000",
+        "completedTrades": 5,
+        "fillExecutions": 10,
+        "openShares": 0,
+        "netPnl": "0.005000",
+        "midMove": "0.082500",
+        "quotedSpreadAndLadderCost": "0.027500",
+        "slippageCost": "0.050000",
+        "fees": "0.000000",
+        "byExitReason": {
+          "HORIZON": "-0.020000",
+          "TAKE_PROFIT": "0.055000",
+          "STOP_LOSS": "-0.030000"
+        }
+      },
+      {
+        "strategy": "historical-positive-1",
+        "scenario": {
+          "id": "baseline",
+          "latencyMs": 3000,
+          "slippageTicks": 1,
+          "depthFractionBps": 100
+        },
+        "exitPolicy": "profit_floor_stop_buffer_v1",
+        "conservativePnl": "0.000000",
+        "realizedPnl": "0.000000",
+        "completedTrades": 5,
+        "fillExecutions": 10,
+        "openShares": 0,
+        "netPnl": "0.000000",
+        "midMove": "0.080000",
+        "quotedSpreadAndLadderCost": "0.030000",
+        "slippageCost": "0.050000",
+        "fees": "0.000000",
+        "byExitReason": {
+          "STOP_LOSS": "-0.030000",
+          "HORIZON": "-0.020000",
+          "TAKE_PROFIT": "0.050000"
+        }
+      },
+      {
+        "strategy": "historical-positive-1",
+        "scenario": {
+          "id": "fast-read",
+          "latencyMs": 1000,
+          "slippageTicks": 1,
+          "depthFractionBps": 100
+        },
+        "exitPolicy": "snapshot_limit_v1",
+        "conservativePnl": "0.005000",
+        "realizedPnl": "0.005000",
+        "completedTrades": 5,
+        "fillExecutions": 10,
+        "openShares": 0,
+        "netPnl": "0.005000",
+        "midMove": "0.082500",
+        "quotedSpreadAndLadderCost": "0.027500",
+        "slippageCost": "0.050000",
+        "fees": "0.000000",
+        "byExitReason": {
+          "HORIZON": "-0.020000",
+          "TAKE_PROFIT": "0.055000",
+          "STOP_LOSS": "-0.030000"
+        }
+      },
+      {
+        "strategy": "historical-positive-1",
+        "scenario": {
+          "id": "fast-read",
+          "latencyMs": 1000,
+          "slippageTicks": 1,
+          "depthFractionBps": 100
+        },
+        "exitPolicy": "profit_floor_stop_buffer_v1",
+        "conservativePnl": "0.000000",
+        "realizedPnl": "0.000000",
+        "completedTrades": 5,
+        "fillExecutions": 10,
+        "openShares": 0,
+        "netPnl": "0.000000",
+        "midMove": "0.080000",
+        "quotedSpreadAndLadderCost": "0.030000",
+        "slippageCost": "0.050000",
+        "fees": "0.000000",
+        "byExitReason": {
+          "HORIZON": "-0.020000",
+          "TAKE_PROFIT": "0.050000",
+          "STOP_LOSS": "-0.030000"
+        }
+      },
+      {
+        "strategy": "historical-positive-1",
+        "scenario": {
+          "id": "slow-read",
+          "latencyMs": 15000,
+          "slippageTicks": 1,
+          "depthFractionBps": 100
+        },
+        "exitPolicy": "snapshot_limit_v1",
+        "conservativePnl": "0.005000",
+        "realizedPnl": "0.005000",
+        "completedTrades": 5,
+        "fillExecutions": 10,
+        "openShares": 0,
+        "netPnl": "0.005000",
+        "midMove": "0.082500",
+        "quotedSpreadAndLadderCost": "0.027500",
+        "slippageCost": "0.050000",
+        "fees": "0.000000",
+        "byExitReason": {
+          "STOP_LOSS": "-0.030000",
+          "HORIZON": "-0.020000",
+          "TAKE_PROFIT": "0.055000"
+        }
+      },
+      {
+        "strategy": "historical-positive-1",
+        "scenario": {
+          "id": "slow-read",
+          "latencyMs": 15000,
+          "slippageTicks": 1,
+          "depthFractionBps": 100
+        },
+        "exitPolicy": "profit_floor_stop_buffer_v1",
+        "conservativePnl": "0.000000",
+        "realizedPnl": "0.000000",
+        "completedTrades": 5,
+        "fillExecutions": 10,
+        "openShares": 0,
+        "netPnl": "0.000000",
+        "midMove": "0.080000",
+        "quotedSpreadAndLadderCost": "0.030000",
+        "slippageCost": "0.050000",
+        "fees": "0.000000",
+        "byExitReason": {
+          "STOP_LOSS": "-0.030000",
+          "HORIZON": "-0.020000",
+          "TAKE_PROFIT": "0.050000"
+        }
+      },
+      {
+        "strategy": "historical-positive-1",
+        "scenario": {
+          "id": "two-tick-cost",
+          "latencyMs": 3000,
+          "slippageTicks": 2,
+          "depthFractionBps": 100
+        },
+        "exitPolicy": "snapshot_limit_v1",
+        "conservativePnl": "-0.030000",
+        "realizedPnl": "-0.030000",
+        "completedTrades": 1,
+        "fillExecutions": 2,
+        "openShares": 0,
+        "netPnl": "-0.030000",
+        "midMove": "-0.005000",
+        "quotedSpreadAndLadderCost": "0.005000",
+        "slippageCost": "0.020000",
+        "fees": "0.000000",
+        "byExitReason": {
+          "STOP_LOSS": "-0.030000"
+        }
+      },
+      {
+        "strategy": "historical-positive-1",
+        "scenario": {
+          "id": "two-tick-cost",
+          "latencyMs": 3000,
+          "slippageTicks": 2,
+          "depthFractionBps": 100
+        },
+        "exitPolicy": "profit_floor_stop_buffer_v1",
+        "conservativePnl": "-0.030000",
+        "realizedPnl": "-0.030000",
+        "completedTrades": 1,
+        "fillExecutions": 2,
+        "openShares": 0,
+        "netPnl": "-0.030000",
+        "midMove": "-0.005000",
+        "quotedSpreadAndLadderCost": "0.005000",
+        "slippageCost": "0.020000",
+        "fees": "0.000000",
+        "byExitReason": {
+          "STOP_LOSS": "-0.030000"
+        }
+      },
+      {
+        "strategy": "historical-positive-1",
+        "scenario": {
+          "id": "half-depth",
+          "latencyMs": 3000,
+          "slippageTicks": 1,
+          "depthFractionBps": 50
+        },
+        "exitPolicy": "snapshot_limit_v1",
+        "conservativePnl": "0.005000",
+        "realizedPnl": "0.005000",
+        "completedTrades": 5,
+        "fillExecutions": 10,
+        "openShares": 0,
+        "netPnl": "0.005000",
+        "midMove": "0.082500",
+        "quotedSpreadAndLadderCost": "0.027500",
+        "slippageCost": "0.050000",
+        "fees": "0.000000",
+        "byExitReason": {
+          "STOP_LOSS": "-0.030000",
+          "HORIZON": "-0.020000",
+          "TAKE_PROFIT": "0.055000"
+        }
+      },
+      {
+        "strategy": "historical-positive-1",
+        "scenario": {
+          "id": "half-depth",
+          "latencyMs": 3000,
+          "slippageTicks": 1,
+          "depthFractionBps": 50
+        },
+        "exitPolicy": "profit_floor_stop_buffer_v1",
+        "conservativePnl": "0.000000",
+        "realizedPnl": "0.000000",
+        "completedTrades": 5,
+        "fillExecutions": 10,
+        "openShares": 0,
+        "netPnl": "0.000000",
+        "midMove": "0.080000",
+        "quotedSpreadAndLadderCost": "0.030000",
+        "slippageCost": "0.050000",
+        "fees": "0.000000",
+        "byExitReason": {
+          "HORIZON": "-0.020000",
+          "TAKE_PROFIT": "0.050000",
+          "STOP_LOSS": "-0.030000"
+        }
+      }
+    ],
+    "comparison": [
+      {
+        "strategy": "historical-positive-1",
+        "scenario": {
+          "id": "baseline",
+          "latencyMs": 3000,
+          "slippageTicks": 1,
+          "depthFractionBps": 100
+        },
+        "exitPolicy": "snapshot_limit_v1",
+        "conservativePnl": "0.005000",
+        "realizedPnl": "0.005000",
+        "completedTrades": 5,
+        "fillExecutions": 10,
+        "openShares": 0,
+        "netPnl": "0.005000",
+        "midMove": "0.082500",
+        "quotedSpreadAndLadderCost": "0.027500",
+        "slippageCost": "0.050000",
+        "fees": "0.000000",
+        "byExitReason": {
+          "HORIZON": "-0.020000",
+          "TAKE_PROFIT": "0.055000",
+          "STOP_LOSS": "-0.030000"
+        }
+      },
+      {
+        "strategy": "historical-positive-1",
+        "scenario": {
+          "id": "baseline",
+          "latencyMs": 3000,
+          "slippageTicks": 1,
+          "depthFractionBps": 100
+        },
+        "exitPolicy": "profit_floor_stop_buffer_v1",
+        "conservativePnl": "0.000000",
+        "realizedPnl": "0.000000",
+        "completedTrades": 5,
+        "fillExecutions": 10,
+        "openShares": 0,
+        "netPnl": "0.000000",
+        "midMove": "0.080000",
+        "quotedSpreadAndLadderCost": "0.030000",
+        "slippageCost": "0.050000",
+        "fees": "0.000000",
+        "byExitReason": {
+          "STOP_LOSS": "-0.030000",
+          "HORIZON": "-0.020000",
+          "TAKE_PROFIT": "0.050000"
+        }
+      },
+      {
+        "strategy": "historical-positive-2",
+        "scenario": {
+          "id": "baseline",
+          "latencyMs": 3000,
+          "slippageTicks": 1,
+          "depthFractionBps": 100
+        },
+        "exitPolicy": "snapshot_limit_v1",
+        "conservativePnl": "0.005000",
+        "realizedPnl": "0.005000",
+        "completedTrades": 5,
+        "fillExecutions": 10,
+        "openShares": 0,
+        "netPnl": "0.005000",
+        "midMove": "0.082500",
+        "quotedSpreadAndLadderCost": "0.027500",
+        "slippageCost": "0.050000",
+        "fees": "0.000000",
+        "byExitReason": {
+          "STOP_LOSS": "-0.030000",
+          "HORIZON": "-0.020000",
+          "TAKE_PROFIT": "0.055000"
+        }
+      },
+      {
+        "strategy": "historical-positive-2",
+        "scenario": {
+          "id": "baseline",
+          "latencyMs": 3000,
+          "slippageTicks": 1,
+          "depthFractionBps": 100
+        },
+        "exitPolicy": "profit_floor_stop_buffer_v1",
+        "conservativePnl": "0.000000",
+        "realizedPnl": "0.000000",
+        "completedTrades": 5,
+        "fillExecutions": 10,
+        "openShares": 0,
+        "netPnl": "0.000000",
+        "midMove": "0.080000",
+        "quotedSpreadAndLadderCost": "0.030000",
+        "slippageCost": "0.050000",
+        "fees": "0.000000",
+        "byExitReason": {
+          "STOP_LOSS": "-0.030000",
+          "TAKE_PROFIT": "0.050000",
+          "HORIZON": "-0.020000"
+        }
+      },
+      {
+        "strategy": "historical-positive-3",
+        "scenario": {
+          "id": "baseline",
+          "latencyMs": 3000,
+          "slippageTicks": 1,
+          "depthFractionBps": 100
+        },
+        "exitPolicy": "snapshot_limit_v1",
+        "conservativePnl": "0.005000",
+        "realizedPnl": "0.005000",
+        "completedTrades": 5,
+        "fillExecutions": 10,
+        "openShares": 0,
+        "netPnl": "0.005000",
+        "midMove": "0.082500",
+        "quotedSpreadAndLadderCost": "0.027500",
+        "slippageCost": "0.050000",
+        "fees": "0.000000",
+        "byExitReason": {
+          "STOP_LOSS": "-0.030000",
+          "TAKE_PROFIT": "0.055000",
+          "HORIZON": "-0.020000"
+        }
+      },
+      {
+        "strategy": "historical-positive-3",
+        "scenario": {
+          "id": "baseline",
+          "latencyMs": 3000,
+          "slippageTicks": 1,
+          "depthFractionBps": 100
+        },
+        "exitPolicy": "profit_floor_stop_buffer_v1",
+        "conservativePnl": "0.000000",
+        "realizedPnl": "0.000000",
+        "completedTrades": 5,
+        "fillExecutions": 10,
+        "openShares": 0,
+        "netPnl": "0.000000",
+        "midMove": "0.080000",
+        "quotedSpreadAndLadderCost": "0.030000",
+        "slippageCost": "0.050000",
+        "fees": "0.000000",
+        "byExitReason": {
+          "HORIZON": "-0.020000",
+          "STOP_LOSS": "-0.030000",
+          "TAKE_PROFIT": "0.050000"
+        }
+      },
+      {
+        "strategy": "historical-positive-4",
+        "scenario": {
+          "id": "baseline",
+          "latencyMs": 3000,
+          "slippageTicks": 1,
+          "depthFractionBps": 100
+        },
+        "exitPolicy": "snapshot_limit_v1",
+        "conservativePnl": "0.005000",
+        "realizedPnl": "0.005000",
+        "completedTrades": 5,
+        "fillExecutions": 10,
+        "openShares": 0,
+        "netPnl": "0.005000",
+        "midMove": "0.082500",
+        "quotedSpreadAndLadderCost": "0.027500",
+        "slippageCost": "0.050000",
+        "fees": "0.000000",
+        "byExitReason": {
+          "HORIZON": "-0.020000",
+          "TAKE_PROFIT": "0.055000",
+          "STOP_LOSS": "-0.030000"
+        }
+      },
+      {
+        "strategy": "historical-positive-4",
+        "scenario": {
+          "id": "baseline",
+          "latencyMs": 3000,
+          "slippageTicks": 1,
+          "depthFractionBps": 100
+        },
+        "exitPolicy": "profit_floor_stop_buffer_v1",
+        "conservativePnl": "0.000000",
+        "realizedPnl": "0.000000",
+        "completedTrades": 5,
+        "fillExecutions": 10,
+        "openShares": 0,
+        "netPnl": "0.000000",
+        "midMove": "0.080000",
+        "quotedSpreadAndLadderCost": "0.030000",
+        "slippageCost": "0.050000",
+        "fees": "0.000000",
+        "byExitReason": {
+          "TAKE_PROFIT": "0.050000",
+          "HORIZON": "-0.020000",
+          "STOP_LOSS": "-0.030000"
+        }
+      },
+      {
+        "strategy": "historical-positive-5",
+        "scenario": {
+          "id": "baseline",
+          "latencyMs": 3000,
+          "slippageTicks": 1,
+          "depthFractionBps": 100
+        },
+        "exitPolicy": "snapshot_limit_v1",
+        "conservativePnl": "0.005000",
+        "realizedPnl": "0.005000",
+        "completedTrades": 5,
+        "fillExecutions": 10,
+        "openShares": 0,
+        "netPnl": "0.005000",
+        "midMove": "0.082500",
+        "quotedSpreadAndLadderCost": "0.027500",
+        "slippageCost": "0.050000",
+        "fees": "0.000000",
+        "byExitReason": {
+          "TAKE_PROFIT": "0.055000",
+          "STOP_LOSS": "-0.030000",
+          "HORIZON": "-0.020000"
+        }
+      },
+      {
+        "strategy": "historical-positive-5",
+        "scenario": {
+          "id": "baseline",
+          "latencyMs": 3000,
+          "slippageTicks": 1,
+          "depthFractionBps": 100
+        },
+        "exitPolicy": "profit_floor_stop_buffer_v1",
+        "conservativePnl": "0.000000",
+        "realizedPnl": "0.000000",
+        "completedTrades": 5,
+        "fillExecutions": 10,
+        "openShares": 0,
+        "netPnl": "0.000000",
+        "midMove": "0.080000",
+        "quotedSpreadAndLadderCost": "0.030000",
+        "slippageCost": "0.050000",
+        "fees": "0.000000",
+        "byExitReason": {
+          "STOP_LOSS": "-0.030000",
+          "HORIZON": "-0.020000",
+          "TAKE_PROFIT": "0.050000"
+        }
+      },
+      {
+        "strategy": "historical-positive-6",
+        "scenario": {
+          "id": "baseline",
+          "latencyMs": 3000,
+          "slippageTicks": 1,
+          "depthFractionBps": 100
+        },
+        "exitPolicy": "snapshot_limit_v1",
+        "conservativePnl": "0.005000",
+        "realizedPnl": "0.005000",
+        "completedTrades": 5,
+        "fillExecutions": 10,
+        "openShares": 0,
+        "netPnl": "0.005000",
+        "midMove": "0.082500",
+        "quotedSpreadAndLadderCost": "0.027500",
+        "slippageCost": "0.050000",
+        "fees": "0.000000",
+        "byExitReason": {
+          "STOP_LOSS": "-0.030000",
+          "TAKE_PROFIT": "0.055000",
+          "HORIZON": "-0.020000"
+        }
+      },
+      {
+        "strategy": "historical-positive-6",
+        "scenario": {
+          "id": "baseline",
+          "latencyMs": 3000,
+          "slippageTicks": 1,
+          "depthFractionBps": 100
+        },
+        "exitPolicy": "profit_floor_stop_buffer_v1",
+        "conservativePnl": "0.000000",
+        "realizedPnl": "0.000000",
+        "completedTrades": 5,
+        "fillExecutions": 10,
+        "openShares": 0,
+        "netPnl": "0.000000",
+        "midMove": "0.080000",
+        "quotedSpreadAndLadderCost": "0.030000",
+        "slippageCost": "0.050000",
+        "fees": "0.000000",
+        "byExitReason": {
+          "TAKE_PROFIT": "0.050000",
+          "STOP_LOSS": "-0.030000",
+          "HORIZON": "-0.020000"
+        }
+      },
+      {
+        "strategy": "historical-positive-7",
+        "scenario": {
+          "id": "baseline",
+          "latencyMs": 3000,
+          "slippageTicks": 1,
+          "depthFractionBps": 100
+        },
+        "exitPolicy": "snapshot_limit_v1",
+        "conservativePnl": "0.005000",
+        "realizedPnl": "0.005000",
+        "completedTrades": 5,
+        "fillExecutions": 10,
+        "openShares": 0,
+        "netPnl": "0.005000",
+        "midMove": "0.082500",
+        "quotedSpreadAndLadderCost": "0.027500",
+        "slippageCost": "0.050000",
+        "fees": "0.000000",
+        "byExitReason": {
+          "HORIZON": "-0.020000",
+          "TAKE_PROFIT": "0.055000",
+          "STOP_LOSS": "-0.030000"
+        }
+      },
+      {
+        "strategy": "historical-positive-7",
+        "scenario": {
+          "id": "baseline",
+          "latencyMs": 3000,
+          "slippageTicks": 1,
+          "depthFractionBps": 100
+        },
+        "exitPolicy": "profit_floor_stop_buffer_v1",
+        "conservativePnl": "0.000000",
+        "realizedPnl": "0.000000",
+        "completedTrades": 5,
+        "fillExecutions": 10,
+        "openShares": 0,
+        "netPnl": "0.000000",
+        "midMove": "0.080000",
+        "quotedSpreadAndLadderCost": "0.030000",
+        "slippageCost": "0.050000",
+        "fees": "0.000000",
+        "byExitReason": {
+          "HORIZON": "-0.020000",
+          "STOP_LOSS": "-0.030000",
+          "TAKE_PROFIT": "0.050000"
+        }
+      },
+      {
+        "strategy": "historical-positive-8",
+        "scenario": {
+          "id": "baseline",
+          "latencyMs": 3000,
+          "slippageTicks": 1,
+          "depthFractionBps": 100
+        },
+        "exitPolicy": "snapshot_limit_v1",
+        "conservativePnl": "0.005000",
+        "realizedPnl": "0.005000",
+        "completedTrades": 5,
+        "fillExecutions": 10,
+        "openShares": 0,
+        "netPnl": "0.005000",
+        "midMove": "0.082500",
+        "quotedSpreadAndLadderCost": "0.027500",
+        "slippageCost": "0.050000",
+        "fees": "0.000000",
+        "byExitReason": {
+          "STOP_LOSS": "-0.030000",
+          "HORIZON": "-0.020000",
+          "TAKE_PROFIT": "0.055000"
+        }
+      },
+      {
+        "strategy": "historical-positive-8",
+        "scenario": {
+          "id": "baseline",
+          "latencyMs": 3000,
+          "slippageTicks": 1,
+          "depthFractionBps": 100
+        },
+        "exitPolicy": "profit_floor_stop_buffer_v1",
+        "conservativePnl": "0.000000",
+        "realizedPnl": "0.000000",
+        "completedTrades": 5,
+        "fillExecutions": 10,
+        "openShares": 0,
+        "netPnl": "0.000000",
+        "midMove": "0.080000",
+        "quotedSpreadAndLadderCost": "0.030000",
+        "slippageCost": "0.050000",
+        "fees": "0.000000",
+        "byExitReason": {
+          "STOP_LOSS": "-0.030000",
+          "HORIZON": "-0.020000",
+          "TAKE_PROFIT": "0.050000"
+        }
+      },
+      {
+        "strategy": "historical-positive-9",
+        "scenario": {
+          "id": "baseline",
+          "latencyMs": 3000,
+          "slippageTicks": 1,
+          "depthFractionBps": 100
+        },
+        "exitPolicy": "snapshot_limit_v1",
+        "conservativePnl": "0.005000",
+        "realizedPnl": "0.005000",
+        "completedTrades": 5,
+        "fillExecutions": 10,
+        "openShares": 0,
+        "netPnl": "0.005000",
+        "midMove": "0.082500",
+        "quotedSpreadAndLadderCost": "0.027500",
+        "slippageCost": "0.050000",
+        "fees": "0.000000",
+        "byExitReason": {
+          "TAKE_PROFIT": "0.055000",
+          "HORIZON": "-0.020000",
+          "STOP_LOSS": "-0.030000"
+        }
+      },
+      {
+        "strategy": "historical-positive-9",
+        "scenario": {
+          "id": "baseline",
+          "latencyMs": 3000,
+          "slippageTicks": 1,
+          "depthFractionBps": 100
+        },
+        "exitPolicy": "profit_floor_stop_buffer_v1",
+        "conservativePnl": "0.000000",
+        "realizedPnl": "0.000000",
+        "completedTrades": 5,
+        "fillExecutions": 10,
+        "openShares": 0,
+        "netPnl": "0.000000",
+        "midMove": "0.080000",
+        "quotedSpreadAndLadderCost": "0.030000",
+        "slippageCost": "0.050000",
+        "fees": "0.000000",
+        "byExitReason": {
+          "TAKE_PROFIT": "0.050000",
+          "HORIZON": "-0.020000",
+          "STOP_LOSS": "-0.030000"
+        }
+      },
+      {
+        "strategy": "gap-120-best",
+        "scenario": {
+          "id": "baseline",
+          "latencyMs": 3000,
+          "slippageTicks": 1,
+          "depthFractionBps": 100
+        },
+        "exitPolicy": "snapshot_limit_v1",
+        "conservativePnl": "-0.020000",
+        "realizedPnl": "-0.020000",
+        "completedTrades": 1,
+        "fillExecutions": 2,
+        "openShares": 0,
+        "netPnl": "-0.020000",
+        "midMove": "-0.005000",
+        "quotedSpreadAndLadderCost": "0.005000",
+        "slippageCost": "0.010000",
+        "fees": "0.000000",
+        "byExitReason": {
+          "HORIZON": "-0.020000"
+        }
+      },
+      {
+        "strategy": "gap-120-best",
+        "scenario": {
+          "id": "baseline",
+          "latencyMs": 3000,
+          "slippageTicks": 1,
+          "depthFractionBps": 100
+        },
+        "exitPolicy": "profit_floor_stop_buffer_v1",
+        "conservativePnl": "-0.020000",
+        "realizedPnl": "-0.020000",
+        "completedTrades": 1,
+        "fillExecutions": 2,
+        "openShares": 0,
+        "netPnl": "-0.020000",
+        "midMove": "-0.005000",
+        "quotedSpreadAndLadderCost": "0.005000",
+        "slippageCost": "0.010000",
+        "fees": "0.000000",
+        "byExitReason": {
+          "HORIZON": "-0.020000"
+        }
+      },
+      {
+        "strategy": "gap-120-median",
+        "scenario": {
+          "id": "baseline",
+          "latencyMs": 3000,
+          "slippageTicks": 1,
+          "depthFractionBps": 100
+        },
+        "exitPolicy": "snapshot_limit_v1",
+        "conservativePnl": "-0.030000",
+        "realizedPnl": "-0.030000",
+        "completedTrades": 1,
+        "fillExecutions": 2,
+        "openShares": 0,
+        "netPnl": "-0.030000",
+        "midMove": "-0.015000",
+        "quotedSpreadAndLadderCost": "0.005000",
+        "slippageCost": "0.010000",
+        "fees": "0.000000",
+        "byExitReason": {
+          "STOP_LOSS": "-0.030000"
+        }
+      },
+      {
+        "strategy": "gap-120-median",
+        "scenario": {
+          "id": "baseline",
+          "latencyMs": 3000,
+          "slippageTicks": 1,
+          "depthFractionBps": 100
+        },
+        "exitPolicy": "profit_floor_stop_buffer_v1",
+        "conservativePnl": "-0.030000",
+        "realizedPnl": "-0.030000",
+        "completedTrades": 1,
+        "fillExecutions": 2,
+        "openShares": 0,
+        "netPnl": "-0.030000",
+        "midMove": "-0.015000",
+        "quotedSpreadAndLadderCost": "0.005000",
+        "slippageCost": "0.010000",
+        "fees": "0.000000",
+        "byExitReason": {
+          "STOP_LOSS": "-0.030000"
+        }
+      },
+      {
+        "strategy": "gap-120-worst",
+        "scenario": {
+          "id": "baseline",
+          "latencyMs": 3000,
+          "slippageTicks": 1,
+          "depthFractionBps": 100
+        },
+        "exitPolicy": "snapshot_limit_v1",
+        "conservativePnl": "-0.995000",
+        "realizedPnl": "-0.075000",
+        "completedTrades": 3,
+        "fillExecutions": 7,
+        "openShares": 1,
+        "netPnl": "-0.075000",
+        "midMove": "-0.012500",
+        "quotedSpreadAndLadderCost": "0.032500",
+        "slippageCost": "0.030000",
+        "fees": "0.000000",
+        "byExitReason": {
+          "HORIZON": "-0.025000",
+          "STOP_LOSS": "-0.050000"
+        }
+      },
+      {
+        "strategy": "gap-120-worst",
+        "scenario": {
+          "id": "baseline",
+          "latencyMs": 3000,
+          "slippageTicks": 1,
+          "depthFractionBps": 100
+        },
+        "exitPolicy": "profit_floor_stop_buffer_v1",
+        "conservativePnl": "-0.995000",
+        "realizedPnl": "-0.075000",
+        "completedTrades": 3,
+        "fillExecutions": 7,
+        "openShares": 1,
+        "netPnl": "-0.075000",
+        "midMove": "-0.012500",
+        "quotedSpreadAndLadderCost": "0.032500",
+        "slippageCost": "0.030000",
+        "fees": "0.000000",
+        "byExitReason": {
+          "STOP_LOSS": "-0.050000",
+          "HORIZON": "-0.025000"
+        }
+      },
+      {
+        "strategy": "gap-900-median",
+        "scenario": {
+          "id": "baseline",
+          "latencyMs": 3000,
+          "slippageTicks": 1,
+          "depthFractionBps": 100
+        },
+        "exitPolicy": "snapshot_limit_v1",
+        "conservativePnl": "-0.040000",
+        "realizedPnl": "-0.040000",
+        "completedTrades": 5,
+        "fillExecutions": 10,
+        "openShares": 0,
+        "netPnl": "-0.040000",
+        "midMove": "0.047500",
+        "quotedSpreadAndLadderCost": "0.037500",
+        "slippageCost": "0.050000",
+        "fees": "0.000000",
+        "byExitReason": {
+          "STOP_LOSS": "-0.030000",
+          "HORIZON": "-0.050000",
+          "TAKE_PROFIT": "0.040000"
+        }
+      },
+      {
+        "strategy": "gap-900-median",
+        "scenario": {
+          "id": "baseline",
+          "latencyMs": 3000,
+          "slippageTicks": 1,
+          "depthFractionBps": 100
+        },
+        "exitPolicy": "profit_floor_stop_buffer_v1",
+        "conservativePnl": "-0.090000",
+        "realizedPnl": "-0.090000",
+        "completedTrades": 5,
+        "fillExecutions": 10,
+        "openShares": 0,
+        "netPnl": "-0.090000",
+        "midMove": "0.005000",
+        "quotedSpreadAndLadderCost": "0.045000",
+        "slippageCost": "0.050000",
+        "fees": "0.000000",
+        "byExitReason": {
+          "HORIZON": "-0.060000",
+          "STOP_LOSS": "-0.030000"
+        }
+      },
+      {
+        "strategy": "gap-900-worst",
+        "scenario": {
+          "id": "baseline",
+          "latencyMs": 3000,
+          "slippageTicks": 1,
+          "depthFractionBps": 100
+        },
+        "exitPolicy": "snapshot_limit_v1",
+        "conservativePnl": "-0.995000",
+        "realizedPnl": "-0.075000",
+        "completedTrades": 3,
+        "fillExecutions": 7,
+        "openShares": 1,
+        "netPnl": "-0.075000",
+        "midMove": "-0.012500",
+        "quotedSpreadAndLadderCost": "0.032500",
+        "slippageCost": "0.030000",
+        "fees": "0.000000",
+        "byExitReason": {
+          "STOP_LOSS": "-0.050000",
+          "HORIZON": "-0.025000"
+        }
+      },
+      {
+        "strategy": "gap-900-worst",
+        "scenario": {
+          "id": "baseline",
+          "latencyMs": 3000,
+          "slippageTicks": 1,
+          "depthFractionBps": 100
+        },
+        "exitPolicy": "profit_floor_stop_buffer_v1",
+        "conservativePnl": "-0.995000",
+        "realizedPnl": "-0.075000",
+        "completedTrades": 3,
+        "fillExecutions": 7,
+        "openShares": 1,
+        "netPnl": "-0.075000",
+        "midMove": "-0.012500",
+        "quotedSpreadAndLadderCost": "0.032500",
+        "slippageCost": "0.030000",
+        "fees": "0.000000",
+        "byExitReason": {
+          "HORIZON": "-0.025000",
+          "STOP_LOSS": "-0.050000"
+        }
+      },
+      {
+        "strategy": "gap-3600-median",
+        "scenario": {
+          "id": "baseline",
+          "latencyMs": 3000,
+          "slippageTicks": 1,
+          "depthFractionBps": 100
+        },
+        "exitPolicy": "snapshot_limit_v1",
+        "conservativePnl": "-0.040000",
+        "realizedPnl": "-0.040000",
+        "completedTrades": 5,
+        "fillExecutions": 10,
+        "openShares": 0,
+        "netPnl": "-0.040000",
+        "midMove": "0.047500",
+        "quotedSpreadAndLadderCost": "0.037500",
+        "slippageCost": "0.050000",
+        "fees": "0.000000",
+        "byExitReason": {
+          "STOP_LOSS": "-0.030000",
+          "HORIZON": "-0.050000",
+          "TAKE_PROFIT": "0.040000"
+        }
+      },
+      {
+        "strategy": "gap-3600-median",
+        "scenario": {
+          "id": "baseline",
+          "latencyMs": 3000,
+          "slippageTicks": 1,
+          "depthFractionBps": 100
+        },
+        "exitPolicy": "profit_floor_stop_buffer_v1",
+        "conservativePnl": "-0.090000",
+        "realizedPnl": "-0.090000",
+        "completedTrades": 5,
+        "fillExecutions": 10,
+        "openShares": 0,
+        "netPnl": "-0.090000",
+        "midMove": "0.005000",
+        "quotedSpreadAndLadderCost": "0.045000",
+        "slippageCost": "0.050000",
+        "fees": "0.000000",
+        "byExitReason": {
+          "HORIZON": "-0.060000",
+          "STOP_LOSS": "-0.030000"
+        }
+      },
+      {
+        "strategy": "gap-3600-worst",
+        "scenario": {
+          "id": "baseline",
+          "latencyMs": 3000,
+          "slippageTicks": 1,
+          "depthFractionBps": 100
+        },
+        "exitPolicy": "snapshot_limit_v1",
+        "conservativePnl": "-0.995000",
+        "realizedPnl": "-0.075000",
+        "completedTrades": 3,
+        "fillExecutions": 7,
+        "openShares": 1,
+        "netPnl": "-0.075000",
+        "midMove": "-0.012500",
+        "quotedSpreadAndLadderCost": "0.032500",
+        "slippageCost": "0.030000",
+        "fees": "0.000000",
+        "byExitReason": {
+          "HORIZON": "-0.025000",
+          "STOP_LOSS": "-0.050000"
+        }
+      },
+      {
+        "strategy": "gap-3600-worst",
+        "scenario": {
+          "id": "baseline",
+          "latencyMs": 3000,
+          "slippageTicks": 1,
+          "depthFractionBps": 100
+        },
+        "exitPolicy": "profit_floor_stop_buffer_v1",
+        "conservativePnl": "-0.995000",
+        "realizedPnl": "-0.075000",
+        "completedTrades": 3,
+        "fillExecutions": 7,
+        "openShares": 1,
+        "netPnl": "-0.075000",
+        "midMove": "-0.012500",
+        "quotedSpreadAndLadderCost": "0.032500",
+        "slippageCost": "0.030000",
+        "fees": "0.000000",
+        "byExitReason": {
+          "HORIZON": "-0.025000",
+          "STOP_LOSS": "-0.050000"
+        }
+      },
+      {
+        "strategy": "gap-21600-median",
+        "scenario": {
+          "id": "baseline",
+          "latencyMs": 3000,
+          "slippageTicks": 1,
+          "depthFractionBps": 100
+        },
+        "exitPolicy": "snapshot_limit_v1",
+        "conservativePnl": "-0.030000",
+        "realizedPnl": "-0.030000",
+        "completedTrades": 2,
+        "fillExecutions": 4,
+        "openShares": 0,
+        "netPnl": "-0.030000",
+        "midMove": "0.000000",
+        "quotedSpreadAndLadderCost": "0.010000",
+        "slippageCost": "0.020000",
+        "fees": "0.000000",
+        "byExitReason": {
+          "HORIZON": "-0.030000"
+        }
+      },
+      {
+        "strategy": "gap-21600-median",
+        "scenario": {
+          "id": "baseline",
+          "latencyMs": 3000,
+          "slippageTicks": 1,
+          "depthFractionBps": 100
+        },
+        "exitPolicy": "profit_floor_stop_buffer_v1",
+        "conservativePnl": "-0.030000",
+        "realizedPnl": "-0.030000",
+        "completedTrades": 2,
+        "fillExecutions": 4,
+        "openShares": 0,
+        "netPnl": "-0.030000",
+        "midMove": "0.000000",
+        "quotedSpreadAndLadderCost": "0.010000",
+        "slippageCost": "0.020000",
+        "fees": "0.000000",
+        "byExitReason": {
+          "HORIZON": "-0.030000"
+        }
+      },
+      {
+        "strategy": "gap-21600-worst",
+        "scenario": {
+          "id": "baseline",
+          "latencyMs": 3000,
+          "slippageTicks": 1,
+          "depthFractionBps": 100
+        },
+        "exitPolicy": "snapshot_limit_v1",
+        "conservativePnl": "-0.995000",
+        "realizedPnl": "-0.075000",
+        "completedTrades": 3,
+        "fillExecutions": 7,
+        "openShares": 1,
+        "netPnl": "-0.075000",
+        "midMove": "-0.012500",
+        "quotedSpreadAndLadderCost": "0.032500",
+        "slippageCost": "0.030000",
+        "fees": "0.000000",
+        "byExitReason": {
+          "HORIZON": "-0.025000",
+          "STOP_LOSS": "-0.050000"
+        }
+      },
+      {
+        "strategy": "gap-21600-worst",
+        "scenario": {
+          "id": "baseline",
+          "latencyMs": 3000,
+          "slippageTicks": 1,
+          "depthFractionBps": 100
+        },
+        "exitPolicy": "profit_floor_stop_buffer_v1",
+        "conservativePnl": "-0.995000",
+        "realizedPnl": "-0.075000",
+        "completedTrades": 3,
+        "fillExecutions": 7,
+        "openShares": 1,
+        "netPnl": "-0.075000",
+        "midMove": "-0.012500",
+        "quotedSpreadAndLadderCost": "0.032500",
+        "slippageCost": "0.030000",
+        "fees": "0.000000",
+        "byExitReason": {
+          "HORIZON": "-0.025000",
+          "STOP_LOSS": "-0.050000"
+        }
+      }
+    ],
+    "receipt": {
+      "at": "2026-10-04T09:20:28.702Z",
+      "sourceHash": "a19efc0c0ff5d52f8ce851ce5665631d3e3c76899e3e46c3dbc7653723c62507",
+      "sourceBytes": 4255286972,
+      "engineHash": "dfe1a00980a0a5cb363dd08d4e85e7200daf0af862466735e19cff3a9b8cd388",
+      "declarationFileHash": "deb416abc36fbef61cb5cee44ecb4745d12828fd49db119661ad9e9e6614593c",
+      "binaryHash": "53b7628fb3e64894eba2e478d1f27de50619425816ca000113dfd0a66cb9b8ce",
+      "outputHash": "78ecb5e61b5a62eef851baf1f61e49ead1815db50811f12280ab7f596ada500f",
+      "competitionOrders": 0
+    }
+  },
+  "checks": {
+    "nativeNodePassed": 13,
+    "nativeNodeFailed": 0,
+    "rustPassed": 1,
+    "rustFailed": 0,
+    "adjacentJsPreviouslyPassed": 23,
+    "fullRepositorySuite": false
+  },
+  "decisions": [
+    "No dip strategy or capital increase activated: tiny selected baseline gain is not robust to modeled cost",
+    "Experimental exit policy retained only for offline comparison: it did not improve measured development economics",
+    "Preserve original output/declaration/receipt and all live frozen wallets; diagnostics add new immutable outputs"
+  ],
+  "limitations": [
+    "Subsequent prices were collected before declaration; this is retrospective subsequent data, not live prospective trading",
+    "Historical grid selection and exit comparisons reuse development data; correlated cases are not independent samples",
+    "One tick after five closes is not established profitability",
+    "Snapshot fills omit exchange queue priority, impact and unobserved intrainterval movements",
+    "Unchanged latency outcomes on sparse snapshots cannot prove speed is unimportant in a dense live feed",
+    "Native compute/replay migrated; Node remains the live collector, dashboard and original fitting runtime"
+  ],
+  "networkRequests": 0,
+  "competitionOrders": 0,
+  "additionalPersistentProcesses": 0,
+  "productionActivation": false,
+  "profitabilityEstablished": false
+}

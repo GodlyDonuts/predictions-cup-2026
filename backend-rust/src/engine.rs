@@ -23,6 +23,17 @@ struct Intent {
     buy: bool,
     quantity: i64,
     limit: i128,
+    audit: Option<IntentAudit>,
+}
+#[derive(Clone, Debug)]
+struct IntentAudit {
+    reason: &'static str,
+    decision_at: i64,
+}
+#[derive(Clone, Copy, Debug)]
+pub enum DipExitPolicy {
+    SnapshotLimit,
+    ProfitFloorStopBuffer(u8),
 }
 #[derive(Clone, Serialize, Debug)]
 #[serde(rename_all = "camelCase")]
@@ -34,6 +45,17 @@ pub struct Fill {
     pub price: String,
     pub fee: String,
     pub at: i64,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub economics: Option<FillEconomics>,
+}
+#[derive(Clone, Serialize, Debug)]
+#[serde(rename_all = "camelCase")]
+pub struct FillEconomics {
+    pub reason: &'static str,
+    pub decision_at: i64,
+    pub quote_price: String,
+    pub mid_price: String,
+    pub slippage: String,
 }
 #[derive(Clone, Default, Serialize, Debug)]
 #[serde(rename_all = "camelCase")]
@@ -134,7 +156,14 @@ impl Wallet {
             self.expired += 1;
         }
     }
-    fn enqueue(&mut self, b: &Book, buy: bool, quantity: i64, limit: i128) {
+    fn enqueue(
+        &mut self,
+        b: &Book,
+        buy: bool,
+        quantity: i64,
+        limit: i128,
+        audit: Option<IntentAudit>,
+    ) {
         self.intents += 1;
         self.pending.insert(
             b.instrument.clone(),
@@ -144,6 +173,7 @@ impl Wallet {
                 buy,
                 quantity,
                 limit,
+                audit,
             },
         );
     }
@@ -250,6 +280,13 @@ impl Wallet {
                 price: money(price),
                 fee: money(charge),
                 at: b.received_at,
+                economics: p.audit.as_ref().map(|audit| FillEconomics {
+                    reason: audit.reason,
+                    decision_at: audit.decision_at,
+                    quote_price: money(l.price),
+                    mid_price: money((b.bids[0].price + b.asks[0].price) / 2),
+                    slippage: money((price - l.price).abs() * quantity as i128),
+                }),
             });
             remaining -= quantity;
             total += quantity;
@@ -269,7 +306,7 @@ impl Wallet {
         horizon_ms: i64,
         margin: f64,
     ) -> Result<bool, String> {
-        self.step_inner(b, c, net_edge, horizon_ms, margin, None)
+        self.step_inner(b, c, net_edge, horizon_ms, margin, None, None)
     }
     pub fn step_dip(
         &mut self,
@@ -283,7 +320,33 @@ impl Wallet {
         if take_profit <= 0 {
             return Err("INVALID_TAKE_PROFIT".into());
         }
-        self.step_inner(b, c, net_edge, horizon_ms, margin, Some(take_profit))
+        self.step_inner(b, c, net_edge, horizon_ms, margin, Some(take_profit), None)
+    }
+    pub fn step_dip_policy(
+        &mut self,
+        b: Arc<Book>,
+        c: &Config,
+        net_edge: Option<f64>,
+        horizon_ms: i64,
+        margin: f64,
+        take_profit: i128,
+        policy: DipExitPolicy,
+    ) -> Result<bool, String> {
+        if take_profit <= 0
+            || c.fee_bps != 0
+            || matches!(policy,DipExitPolicy::ProfitFloorStopBuffer(n) if n==0 || n>5)
+        {
+            return Err("INVALID_DIP_EXIT_POLICY".into());
+        }
+        self.step_inner(
+            b,
+            c,
+            net_edge,
+            horizon_ms,
+            margin,
+            Some(take_profit),
+            Some(policy),
+        )
     }
     fn step_inner(
         &mut self,
@@ -293,6 +356,7 @@ impl Wallet {
         horizon_ms: i64,
         margin: f64,
         take_profit: Option<i128>,
+        exit_policy: Option<DipExitPolicy>,
     ) -> Result<bool, String> {
         if horizon_ms < 1000 || !margin.is_finite() || margin <= 0.0 {
             return Err("INVALID_FORECAST_POLICY".into());
@@ -338,17 +402,49 @@ impl Wallet {
                 let profitable = take_profit.is_some_and(|edge| {
                     gross - fee(gross, c.fee_bps) - pos.cost >= edge * pos.quantity as i128
                 });
-                if profitable
-                    || b.received_at - pos.entered_at >= horizon_ms
-                    || pos.cost / pos.quantity as i128
-                        - if take_profit.is_some() {
-                            executable
-                        } else {
-                            b.bids[0].price
+                let timed_out = b.received_at - pos.entered_at >= horizon_ms;
+                let stop_loss = pos.cost / pos.quantity as i128
+                    - if take_profit.is_some() {
+                        executable
+                    } else {
+                        b.bids[0].price
+                    }
+                    >= amount(&c.stop_loss)?;
+                if profitable || timed_out || stop_loss {
+                    let reason = if profitable {
+                        "TAKE_PROFIT"
+                    } else if stop_loss {
+                        "STOP_LOSS"
+                    } else {
+                        "HORIZON"
+                    };
+                    let limit = match exit_policy {
+                        Some(DipExitPolicy::ProfitFloorStopBuffer(_)) if profitable => {
+                            // A sell limit is a resting tick, rounded upward. It
+                            // preserves the desired net gain instead of demanding
+                            // the entire decision-time bid survive order latency.
+                            let floor = (pos.cost
+                                + take_profit.unwrap() * pos.quantity as i128
+                                + pos.quantity as i128
+                                - 1)
+                                / pos.quantity as i128;
+                            (floor + TICK - 1) / TICK * TICK
                         }
-                        >= amount(&c.stop_loss)?
-                {
-                    self.enqueue(&b, false, pos.quantity, executable);
+                        Some(DipExitPolicy::ProfitFloorStopBuffer(buffer)) => {
+                            (executable - TICK * buffer as i128).max(TICK)
+                        }
+                        _ => executable,
+                    };
+                    self.enqueue(
+                        &b,
+                        false,
+                        pos.quantity,
+                        limit,
+                        exit_policy.map(|_| IntentAudit {
+                            reason,
+                            decision_at: b.received_at,
+                        }),
+                    );
                 }
             } else if net_edge.is_some_and(|x| x.is_finite() && x >= margin) {
                 self.enqueue(
@@ -356,6 +452,10 @@ impl Wallet {
                     true,
                     c.order_shares,
                     b.asks[0].price + TICK * c.slippage_ticks,
+                    exit_policy.map(|_| IntentAudit {
+                        reason: "ENTRY",
+                        decision_at: b.received_at,
+                    }),
                 );
             }
         }

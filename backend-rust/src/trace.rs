@@ -91,14 +91,39 @@ pub fn run(path: &Path) -> Result<Value, String> {
                 let horizon = op["horizonMs"].as_i64().ok_or("INVALID_FIXTURE")?;
                 let margin = op["minimumEdge"].as_f64().ok_or("INVALID_FIXTURE")?;
                 if let Some(profit) = op["takeProfit"].as_str() {
-                    wallet.step_dip(
-                        b,
-                        &f.config,
-                        op["netEdge"].as_f64(),
-                        horizon,
-                        margin,
-                        crate::money::amount(profit)?,
-                    )?;
+                    if let Some(policy) = op["exitPolicy"].as_str() {
+                        let policy = match policy {
+                            "snapshot_limit_v1" => crate::engine::DipExitPolicy::SnapshotLimit,
+                            "profit_floor_stop_buffer_v1" => {
+                                crate::engine::DipExitPolicy::ProfitFloorStopBuffer(
+                                    op["stopBufferTicks"]
+                                        .as_u64()
+                                        .filter(|n| *n <= 5)
+                                        .ok_or("INVALID_DIP_EXIT_POLICY")?
+                                        as u8,
+                                )
+                            }
+                            _ => return Err("INVALID_DIP_EXIT_POLICY".into()),
+                        };
+                        wallet.step_dip_policy(
+                            b,
+                            &f.config,
+                            op["netEdge"].as_f64(),
+                            horizon,
+                            margin,
+                            crate::money::amount(profit)?,
+                            policy,
+                        )?;
+                    } else {
+                        wallet.step_dip(
+                            b,
+                            &f.config,
+                            op["netEdge"].as_f64(),
+                            horizon,
+                            margin,
+                            crate::money::amount(profit)?,
+                        )?;
+                    }
                 } else {
                     wallet.step(b, &f.config, op["netEdge"].as_f64(), horizon, margin)?;
                 }

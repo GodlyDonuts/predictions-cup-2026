@@ -1,5 +1,6 @@
 mod capture;
 mod engine;
+mod evaluation;
 mod money;
 mod replay;
 mod sweep;
@@ -28,6 +29,14 @@ fn run() -> Result<(), String> {
             "--workers",
             "--out",
         ],
+        "evaluate" => vec![
+            "--declaration",
+            "--journal",
+            "--end-byte",
+            "--expected-sha",
+            "--workers",
+            "--out",
+        ],
         "trace" => vec!["--fixture"],
         _ => return Err("UNKNOWN_COMMAND".into()),
     };
@@ -49,6 +58,43 @@ fn run() -> Result<(), String> {
     };
     if command == "trace" {
         println!("{}", trace::run(Path::new(get("--fixture")?))?);
+        return Ok(());
+    }
+    if command == "evaluate" {
+        if Path::new(get("--out")?).exists() {
+            return Err("OUTPUT_EXISTS_OR_UNAVAILABLE".into());
+        }
+        let bytes = fs::read(get("--declaration")?).map_err(|_| "DECLARATION_OPEN_FAILED")?;
+        let declaration_hash = format!("{:x}", Sha256::digest(&bytes));
+        let d: evaluation::Declaration =
+            serde_json::from_slice(&bytes).map_err(|_| "DECLARATION_JSON_INVALID")?;
+        let end = get("--end-byte")?
+            .parse()
+            .map_err(|_| "INVALID_SOURCE_PREFIX")?;
+        let source = capture::read_capture(
+            Path::new(get("--journal")?),
+            end,
+            &d.config,
+            Some(get("--expected-sha")?),
+            true,
+        )?;
+        let workers = options
+            .get("--workers")
+            .unwrap_or(&"8")
+            .parse()
+            .map_err(|_| "INVALID_REPLAY_WORKERS")?;
+        let result = evaluation::run(&source, &d, workers)?;
+        let mut file = std::fs::OpenOptions::new()
+            .write(true)
+            .create_new(true)
+            .open(get("--out")?)
+            .map_err(|_| "OUTPUT_EXISTS_OR_UNAVAILABLE")?;
+        std::io::Write::write_all(&mut file,&serde_json::to_vec(&serde_json::json!({"capture":source.meta,"evaluation":result,"declarationFileHash":declaration_hash})).map_err(|_|"OUTPUT_INVALID")?).map_err(|_|"OUTPUT_WRITE_FAILED")?;
+        file.sync_all().map_err(|_| "OUTPUT_SYNC_FAILED")?;
+        println!(
+            "{}",
+            serde_json::json!({"sourceVerified":true,"candidates":result.candidates,"subsequentRecords":result.subsequent_records,"captureMs":source.meta.verify_ms,"replayMs":result.replay_ms,"competitionOrders":0,"profitabilityEstablished":false})
+        );
         return Ok(());
     }
     if command == "sweep" {

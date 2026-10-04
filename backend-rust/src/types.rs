@@ -120,6 +120,7 @@ pub struct Capture {
     pub meta: CaptureMeta,
     pub frames: Vec<Frame>,
     pub prefix_hashes: Vec<String>,
+    pub prefix_bytes: Vec<u64>,
 }
 pub fn instant(s: &str) -> Result<i64, String> {
     let t = chrono::DateTime::parse_from_rfc3339(s).map_err(|_| "INVALID_CLOCK")?;

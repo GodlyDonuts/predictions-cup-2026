@@ -176,6 +176,7 @@ pub fn read_capture(
     let mut frames = Vec::new();
     let mut prefix_hashes = Vec::new();
     let mut cycles = 0;
+    let mut prefix_bytes = Vec::new();
     let mut accepted = 0;
     let mut rejected = 0;
     loop {
@@ -227,6 +228,7 @@ pub fn read_capture(
         records += 1;
         previous = r.hash.to_owned();
         prefix_hashes.push(format!("{:x}", prefix.clone().finalize()));
+        prefix_bytes.push(bytes);
         let kind = text(&event, "type")?;
         if kind == "account_read_outage" {
             frames.push(Frame {
@@ -339,5 +341,6 @@ pub fn read_capture(
         },
         frames,
         prefix_hashes,
+        prefix_bytes,
     })
 }

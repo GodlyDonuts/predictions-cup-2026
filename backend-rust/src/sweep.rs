@@ -6,21 +6,41 @@ use crate::{
     types::*,
 };
 use rayon::prelude::*;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use std::{
     collections::{HashMap, VecDeque},
     sync::Arc,
     time::Instant,
 };
-#[derive(Clone, Serialize)]
-#[serde(rename_all = "camelCase")]
-struct Parameters {
-    lookback: usize,
-    gap_reset_seconds: i64,
-    z: f64,
-    minimum_edge: f64,
-    horizon_seconds: i64,
-    take_profit: String,
+#[derive(Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct Parameters {
+    pub lookback: usize,
+    pub gap_reset_seconds: i64,
+    pub z: f64,
+    pub minimum_edge: f64,
+    pub horizon_seconds: i64,
+    pub take_profit: String,
+}
+impl Parameters {
+    pub fn validate(&self) -> Result<(), String> {
+        if self.lookback < 1
+            || self.lookback > 1000
+            || self.gap_reset_seconds < 1
+            || self.gap_reset_seconds > 86400
+            || !self.z.is_finite()
+            || !(0.0..=10.0).contains(&self.z)
+            || !self.minimum_edge.is_finite()
+            || self.minimum_edge <= 0.0
+            || self.minimum_edge > 1.0
+            || self.horizon_seconds < 1
+            || self.horizon_seconds > 86400
+            || !(1..=100000).contains(&crate::money::amount(&self.take_profit)?)
+        {
+            return Err("INVALID_DIP_PARAMETERS".into());
+        }
+        Ok(())
+    }
 }
 #[derive(Serialize)]
 #[serde(rename_all = "camelCase")]

@@ -5,7 +5,7 @@ import os from 'node:os';
 import path from 'node:path';
 import {spawnSync} from 'node:child_process';
 import {createHash} from 'node:crypto';
-import {nativeExecutable,replayNativeBank,sweepNativeCapture} from './rust-backend.mjs';
+import {nativeExecutable,replayNativeBank,sweepNativeCapture,evaluateNativeCapture} from './rust-backend.mjs';
 import {initialState,stepForecast,invalidate,digest,normalizeBook} from './model.mjs';
 import {portfolioPoint,replayFrozenPortfolioBank,chronologicalPartitions,SELECTION_POLICY} from './portfolio-bank.mjs';
 import {verifySource} from './ml-shadow-v2.mjs';
@@ -117,5 +117,59 @@ test('full native dip grid preserves causal history gaps and sequential accounti
   const expected=compare(c,operations).points;
   const card=n.sweep.scorecards.find(x=>x.parameters.gapResetSeconds===gap&&x.parameters.lookback===6&&x.parameters.z===0&&x.parameters.minimumEdge===.005&&x.parameters.horizonSeconds===60);
   assert.deepEqual(card.points.map(({signalMetrics,unsupportedInstruments,...p})=>p),expected);
+ }
+});
+
+function tracePolicy(policy,operations){
+ const r=spawnSync(nativeExecutable,['trace','--fixture',file({config:c,startedAt:at(0),operations:operations.map(op=>op.kind==='book'?{...op,takeProfit:'0.005000',exitPolicy:policy,stopBufferTicks:2}:op)})],{windowsHide:true,encoding:'utf8'});
+ assert.equal(r.status,0,r.stderr);return JSON.parse(r.stdout);
+}
+test('profit-floor exit captures a later lower bid that still clears net gain; baseline remains pending',()=>{
+ const operations=[step(book(1000),.1,3600000),step(book(6000),null,3600000),step(book(11000,{bid:'.440',ask:'.450'}),null,3600000),step(book(15000,{bid:'.430',ask:'.440'}),null,3600000),point(15000)];
+ const baseline=tracePolicy('snapshot_limit_v1',operations),improved=tracePolicy('profit_floor_stop_buffer_v1',operations);
+ assert.equal(baseline.points[0].pendingIntents,1);assert.equal(baseline.points[0].completedTrades,0);
+ assert.equal(improved.points[0].completedTrades,1);assert.equal(improved.points[0].realizedPnl,'0.060000');
+ const exit=improved.fills.at(-1);assert.equal(exit.economics.reason,'TAKE_PROFIT');assert.equal(exit.economics.decisionAt,epoch+11000);
+ assert.equal(exit.economics.quotePrice,'0.430000');assert.equal(exit.economics.midPrice,'0.435000');assert.equal(exit.economics.slippage,'0.030000');
+ const below=tracePolicy('profit_floor_stop_buffer_v1',[...operations.slice(0,3),step(book(15000,{bid:'.420',ask:'.430'}),null,3600000),point(15000)]);
+ assert.equal(below.points[0].completedTrades,0,'a later price below the rounded net profit floor cannot fill');
+});
+test('stop buffer admits bounded adverse movement without claiming profit or crossing its loss bound',()=>{
+ const ops=[step(book(1000),.1,3600000),step(book(6000),null,3600000),step(book(11000,{bid:'.385',ask:'.395'}),null,3600000),step(book(15000,{bid:'.380',ask:'.390'}),null,3600000),point(15000)];
+ const baseline=tracePolicy('snapshot_limit_v1',ops),improved=tracePolicy('profit_floor_stop_buffer_v1',ops);
+ assert.equal(baseline.points[0].completedTrades,0);assert.equal(improved.points[0].realizedPnl,'-0.240000');assert.equal(improved.fills.at(-1).economics.reason,'STOP_LOSS');
+ const tooFar=tracePolicy('profit_floor_stop_buffer_v1',[...ops.slice(0,3),step(book(15000,{bid:'.365',ask:'.375'}),null,3600000),point(15000)]);
+ assert.equal(tooFar.points[0].completedTrades,0);assert.equal(tooFar.points[0].pendingIntents,1);
+});
+function declaration(raw){const rows=raw.trimEnd().split('\n'),prefix=rows.slice(0,60).join('\n')+'\n';return {schemaVersion:1,mode:'causal_dip_subsequent_v1',cohort:'test-subsequent',declaredAt:at(60*30000),config:c,development:{records:60,bytes:Buffer.byteLength(prefix),hash:createHash('sha256').update(prefix).digest('hex'),through:JSON.parse(rows[59]).at},strategies:[{id:'dip',parameters:{lookback:6,gapResetSeconds:900,z:0,minimumEdge:.005,horizonSeconds:60,takeProfit:'0.005000'}}],scenarios:[{id:'base',latencyMs:c.latencyMs,slippageTicks:c.slippageTicks,depthFractionBps:c.depthFractionBps}],stopBufferTicks:2};}
+test('subsequent evaluation starts a fresh wallet, uses prior-only warmup and reconciles exact mid/spread/slippage economics',async()=>{
+ const raw=fixtureCapture(),d=declaration(raw),out=path.join(root,++serial+'.json');
+ const n=await evaluateNativeCapture({journal:file(raw,'.jsonl'),declaration:file(d),endByte:Buffer.byteLength(raw),expectedSha:createHash('sha256').update(raw).digest('hex'),out,workers:2});
+ assert.equal(n.evaluation.candidates,2);assert.equal(n.evaluation.subsequentRecords,60);assert.equal(n.evaluation.profitabilityEstablished,false);
+ const h=[],ops=[],rows=verifySource(raw);
+ for(const [i,r]of rows.entries()){
+  const snap=r.event.sourceSnapshots[0],b=normalizeBook(snap.data,'377',c.tournamentId,snap.receivedAt,snap.requestStartedAt,c.maxDataAgeMs);
+  const mid=(Number(amount(b.bids[0].price))+Number(amount(b.asks[0].price)))/2e6;let netEdge=null;
+  if(h.length>=6){const mean=h.reduce((n,v)=>n+v,0)/h.length,sd=Math.sqrt(h.reduce((n,v)=>n+(v-mean)**2,0)/h.length);if(sd>0&&mean>=mid)netEdge=mean-(Number(amount(b.asks[0].price))+2*Number(TICK)*c.slippageTicks)/1e6;}
+  if(i>=60)ops.push({...step(b,netEdge,60000),takeProfit:'0.005000'});
+  h.push(mid);if(h.length>6)h.shift();
+ }
+ ops.push({kind:'point',at:rows.at(-1).at});const expected=compare(c,ops).points[0];
+ const base=n.evaluation.scorecards.find(x=>x.exitPolicy==='snapshot_limit_v1');assert.deepEqual((({signalMetrics,unsupportedInstruments,...v})=>v)(base.point),expected);
+ assert(base.fills.length>0);for(const card of n.evaluation.scorecards){assert(card.fills.every(f=>f.at>Date.parse(d.development.through)));assert.equal(card.economics.netPnl,card.point.realizedPnl);assert.equal(amount(card.economics.midMove)-amount(card.economics.quotedSpreadAndLadderCost)-amount(card.economics.slippageCost)-amount(card.economics.fees),amount(card.economics.netPnl));const diag=card.signalDiagnostics;assert.equal(diag.warmup+diag.flatHistory+diag.belowZThreshold+diag.costAdjustedMarginFail+diag.edgeQualified,card.point.signalMetrics.observations);assert.equal(diag.edgeQualified,card.point.signalMetrics.edgePass);}
+ const receipt=JSON.parse(fs.readFileSync(out+'.receipt.json'));assert.equal(receipt.declarationFileHash,n.declarationFileHash);
+});
+test('development diagnostics are labeled reused data; a constant history produces no manufactured dip',async()=>{
+ const raw=fixtureCapture().trimEnd().split('\n').map(line=>{const r=JSON.parse(line);const exchange=r.event.sourceSnapshots[0].data.contexts[0].orderbook.exchanges[0];exchange.bids[0].price=.4;exchange.asks[0].price=.41;return r;});
+ // Rebuild canonical source hashes after deliberately replacing test books.
+ let previousHash='';const rows=raw.map(r=>{delete r.hash;r.previous=previousHash;r.hash=digest(r);previousHash=r.hash;return JSON.stringify(r);});
+ const text=rows.join('\n')+'\n',d={...declaration(text),mode:'causal_dip_development_diagnostic_v1'},out=path.join(root,++serial+'.json');
+ const n=await evaluateNativeCapture({journal:file(text,'.jsonl'),declaration:file(d),endByte:Buffer.byteLength(text),expectedSha:createHash('sha256').update(text).digest('hex'),out,workers:2});
+ assert.match(n.evaluation.evaluationClassification,/reused_development/);for(const card of n.evaluation.scorecards){assert.equal(card.fills.length,0);assert.equal(card.point.intents,0);assert.equal(card.signalDiagnostics.edgeQualified,0);assert(card.signalDiagnostics.flatHistory+card.signalDiagnostics.costAdjustedMarginFail+card.signalDiagnostics.belowZThreshold>0);assert(Math.abs(card.signalDiagnostics.maximumHistoricalReversion)<1e-12);assert(card.signalDiagnostics.maximumCostAdjustedEdge<0);}
+});
+test('evaluation rejects altered development prefix, boundary, duplicated IDs and undeclared options',async()=>{
+ const raw=fixtureCapture(),d=declaration(raw),journal=file(raw,'.jsonl'),sha=createHash('sha256').update(raw).digest('hex');
+ for(const changed of [{...d,development:{...d.development,bytes:d.development.bytes+1}},{...d,development:{...d.development,hash:'0'.repeat(64)}},{...d,development:{...d.development,through:at(61*30000)}},{...d,strategies:[...d.strategies,...d.strategies]},{...d,leakedField:'must-not-be-interpreted'}]){
+  await assert.rejects(evaluateNativeCapture({journal,declaration:file(changed),endByte:Buffer.byteLength(raw),expectedSha:sha,out:path.join(root,++serial+'.json'),workers:2}),/EVALUATION|DECLARATION/);
  }
 });

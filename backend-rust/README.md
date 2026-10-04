@@ -1,7 +1,7 @@
 # Baal native replay backend
 
 Rust owns offline capture verification, frozen-model inference, wallet replay,
-exact accounting and a causal dip parameter grid. The live API collector and
+exact accounting, causal dip parameter grids and declared cost comparisons. The live API collector and
 Next.js dashboard still run in Node. Fitting existing ML banks remains JavaScript.
 This binary has no HTTP client, credentials or competition execution path.
 
@@ -16,6 +16,7 @@ $runtime = Join-Path $env:LOCALAPPDATA 'SigTradingCup/paper-runtime'
 $cohort = Join-Path $runtime 'research-cohorts/baal-net-20261004-e'
 npm run replay:rust -- --journal (Join-Path $runtime 'journal.jsonl') --bank (Join-Path $cohort 'bank.json') --end-byte 4255286972 --expected-sha a19efc0c0ff5d52f8ce851ce5665631d3e3c76899e3e46c3dbc7653723c62507 --out (Join-Path $cohort 'new-native-replay.json') --workers 8
 npm run sweep:rust -- --journal (Join-Path $runtime 'journal.jsonl') --config (Join-Path $cohort 'native-sweep-config.json') --end-byte 4255286972 --expected-sha a19efc0c0ff5d52f8ce851ce5665631d3e3c76899e3e46c3dbc7653723c62507 --out (Join-Path $cohort 'new-native-sweep.json') --workers 8
+npm run evaluate:rust -- --journal (Join-Path $runtime 'journal.jsonl') --declaration (Join-Path $runtime 'research-cohorts/baal-dip-subsequent-20261004-v1/declaration.json') --end-byte 4480806660 --expected-sha 88add681dd3390fbb3485e5db9f3c83459ca6f7ff7e6314eb15fe70d81f99eb5 --out (Join-Path $runtime 'research-cohorts/baal-dip-subsequent-20261004-v1/new-evaluation.json') --workers 8
 npm run test:rust-parity
 ```
 
@@ -32,6 +33,40 @@ histories and its snapshot ordering policy. Ridge and boosted stump models with
 up to 12 features are supported. Unknown/breadth/GPU bank policies fail closed.
 No weights are refitted and no production selection changes. Legacy ordering is
 preserved when absent; new banks use actual receipt ordering.
+
+The evaluator accepts a schema-1 declaration containing `mode`, `cohort`,
+`declaredAt`, the exact `config`, a `development` prefix binding
+(`records`, `bytes`, `hash`, `through`), named `strategies` with dip `parameters`,
+named `scenarios` with `latencyMs`, `slippageTicks`, `depthFractionBps`, and
+`stopBufferTicks` (1–5). It checks the original byte boundary, hash and clock.
+Prior records warm features only; the later wallet starts with fresh cash and
+no positions, fills or inherited P&L. Both `snapshot_limit_v1` and the experimental
+`profit_floor_stop_buffer_v1` use delayed, bounded, versioned ladder fills.
+Profit-floor take-profit limits round upward to preserve the required gain;
+stop/horizon buffers admit only a bounded additional adverse move. These remain
+offline counterfactual policies, with no exchange queue model or live deployment.
+
+Use `causal_dip_subsequent_v1` for a subsequent-data comparison, and
+`causal_dip_development_diagnostic_v1` for reused development data. The former
+does not itself prove that the data was untouched: selection provenance must be
+recorded separately. Data collected before a declaration is retrospective, even
+if its performance was not inspected. Never relabel development reuse as a holdout.
+
+Each scorecard contains distinct warmup, flat-history, z and cost-margin gates;
+maximum reversion/edge diagnostics are in probability units. Matched FIFO rows
+reconcile exact net P&L to midpoint movement minus quoted spread/ladder cost,
+modeled slippage and fees. Partial rows and related variants are correlated;
+their count is not an independent sample count. Unliquidated inventory remains
+charged in conservative P&L and is separate from realized trade economics.
+
+The October 4 subsequent comparison evaluated 100 cards over 294 newer records:
+zero fills, zero net P&L, with no cost-qualified entries. A separately labeled
+180-card development cost study took 11.53 seconds to verify 2.31 days/4.25 GB and
+1.06 seconds to simulate. The best historical baseline's five closes produced
+0.0825 midpoint gain minus 0.0275 spread/ladder cost and 0.0500 modeled slippage,
+leaving 0.0050. Two ticks of slippage made that variant negative; the alternative
+exit policy did not improve the baseline. No strategy or capital allocation was
+activated. Aggregate evidence is `data/baal-native-evaluation-20261004.json`.
 
 The dip grid processes every captured event across the whole timeline. It tests
 2,304 predeclared combinations of lookback, history-gap tolerance, z threshold,

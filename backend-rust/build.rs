@@ -15,6 +15,7 @@ fn main() {
         "src/replay.rs",
         "src/trace.rs",
         "src/sweep.rs",
+        "src/evaluation.rs",
     ] {
         println!("cargo:rerun-if-changed={path}");
         let bytes = fs::read(Path::new(path)).expect("Missing native source graph");
