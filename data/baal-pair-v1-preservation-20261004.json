@@ -1,0 +1,36 @@
+{
+  "at": "2026-10-04T01:54:47.954Z",
+  "cohort": "baal-no-pair-20261004-v1",
+  "bankHash": "c6461bcd1f41d3760bee44183358d0bdcbc48e15dfa3cacb381b7accccf7628a",
+  "bankFileHash": "8c53c28d2c6fb25a2e0d3b930b0a89f69a70c1cb49f2d82cb03baa185a229b55",
+  "journalPrefixBytes": 270444,
+  "journalPrefixHash": "1de76b930dcd0a2f0de75c58824c7a68847f5a7f877b5ad0f3a9864fa7120a89",
+  "openingStateFileHash": "31ad7d73b7a2a132dcebe99b7b7ff2329e6be271c31e0fc2f27926dba30f1033",
+  "reason": "full_depth_participation_execution_correction",
+  "accountingCarried": true,
+  "codeIdentity": {
+    "../execution/api-tick-price.mjs": "ba162da4a3d388b60e31280ebf02315c2de3407370d785d0c646b4c3f8ff463a",
+    "../execution/core.mjs": "8598dd7fd9574a9197b8791d9cd7801d27e2b71bc473515dba9e775924b458d4",
+    "../execution/ledger.mjs": "523ee3fd04f995983ee3ffc03b5ee8dbdf629a718ba91c17d08026fe2411b5c4",
+    "../feed/contract.mjs": "39b9b30a72093d99697bc03a3b20f88f1d835507219fc46f7a00bd28fe761465",
+    "../paper/fixed.mjs": "a0947ef49854d4a3bf4bce88034aaef5d8aabbdc7e29dff3a7b9b4bc01b072f7",
+    "./baal-pair-host.mjs": "746009c0bb3abd41600ba1ac8abad1ba23551b96471f6c80fdbe02d6aaf7442e",
+    "./baal-pair-paper.mjs": "5f85b61688212bf443942e11820631fa01830ae8a8ce1ceff963b1f5a95f43d0",
+    "./canonical-no-capacity.mjs": "9a32dd896051ca039d40405cbc7fad38cb9241de0e8cd94896ef35e46c0d3ee7",
+    "./journal-lines.mjs": "f8adff2bddc36b4e3d305dec9395fae9f51dff957e35313994b6147502cc6823",
+    "./model.mjs": "3cb8bbd7d31b478fe917270393954382373695149310243eec8b78440d207a2e",
+    "./probability-receipt.mjs": "5a3fad02baca0eb519642b2f1cc53ec06ec4bdad7829b937d13891ac52d4e8a6",
+    "./transport-runtime.mjs": "b73d835506ab09cfea69bce1eb16914f4cd6647a543e2f11627758e280008ea8"
+  },
+  "openingWallet": {
+    "cash": "100.000000",
+    "realizedPnl": "0.000000",
+    "fills": 0,
+    "positions": 0,
+    "pending": null
+  },
+  "newCohort": "baal-no-pair-20261004-v2",
+  "newBankHash": "2daa55e47a69bbb67c3667f12a48996d3692f3176a1c6761b94bee0223a180c0",
+  "accountingReset": false,
+  "competitionOrders": 0
+}

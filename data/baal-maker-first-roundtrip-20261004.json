@@ -1,0 +1,80 @@
+{
+  "schemaVersion": 1,
+  "at": "2026-10-04T01:32:46.279Z",
+  "cohort": "no-maker-tape-20261004-v3",
+  "bankHash": "b022b75032284b88746e847f950d8904817bf71802c41e94026f9d06ecefe582",
+  "exactStateReplay": true,
+  "sources": {
+    "makerJournal": {
+      "bytes": 1825043,
+      "sha256": "c4c8e03bbf139264c80f02974c32fe7fa9577798ff475584c9d6b884174782fb",
+      "sequence": 116,
+      "tailHash": "19ae4fc79d8ad907075ff9c47be3f53cd784ca504911acb156c617f1ab034d77"
+    },
+    "tradeTape": {
+      "bytes": 1129024,
+      "sha256": "5f0ccea67a6a5c157a8c1c3b4959ef922525bac5b0e1d3bfd53aa177919f373d",
+      "sequence": 126
+    },
+    "publicBooks": {
+      "bytes": 28676835,
+      "sha256": "1948619209b57173e39bd3025e068ff2ce64ebec77dbf9297e3a9f35bcf5aece",
+      "sequence": 13980
+    }
+  },
+  "roundtrips": [
+    {
+      "family": "improve_one_tick",
+      "marketId": "381",
+      "exchangeId": "1070",
+      "quantity": 1,
+      "entryPrice": "0.200000",
+      "entrySourceAt": "2026-10-04T00:48:15.161Z",
+      "entryKnownAt": "2026-10-04T00:48:56.829Z",
+      "entryBookedAt": "2026-10-04T00:48:56.838Z",
+      "entryTradeId": "29285045",
+      "entryTapeSequence": 83,
+      "entryTapeHash": "cb5f23bbbb8e2fe3ff532bab5d2abf5ec3df350c389fd64cd37200a35216ff71",
+      "normalizedTradeYesPrice": "0.805000",
+      "exitPrice": "0.185000",
+      "exitBookedAt": "2026-10-04T01:19:10.950Z",
+      "exitTrigger": "holding_limit",
+      "exitTriggerAt": "2026-10-04T01:18:30.652Z",
+      "exitRequestStartedAt": "2026-10-04T01:19:10.761Z",
+      "exitReceiptAt": "2026-10-04T01:19:10.945Z",
+      "exitPublicationSequence": 13889,
+      "exitPublicationHash": "6e2d8c8ca95153d19b51512dd4688f70f952822faa059f0a10636c8cafd23a3f",
+      "rawNoLiquidationBid": "0.190000",
+      "adverseExitTick": "0.005000",
+      "eligibleExitDepth": 35,
+      "realizedPnl": "-0.015000",
+      "fees": "0.000000",
+      "heldFromSourceMs": 1855789,
+      "actualCompetitionFill": false
+    }
+  ],
+  "wallets": {
+    "at_quote": {
+      "cash": "100.000000",
+      "realizedPnl": "0.000000",
+      "fills": 0,
+      "positions": 0
+    },
+    "improve_one_tick": {
+      "cash": "99.985000",
+      "realizedPnl": "-0.015000",
+      "fills": 2,
+      "positions": 0
+    }
+  },
+  "accountingContinuation": "no-maker-tape-20261004-v2",
+  "independentRoundtrips": 1,
+  "profitabilityEstablished": false,
+  "competitionOrders": 0,
+  "finding": "The paired capacity admission produced a standalone maker position. No partner fill completed a package. The holding-limit sale realized spread/adverse-tick cost; zero fees do not remove it.",
+  "limitations": [
+    "Strict price-through is a counterfactual fill, not proof of aggressor side or queue priority.",
+    "This first close includes the inherited V2 purchase and must not be added to predecessor accounting.",
+    "One correlated observation cannot establish profitability or select a strategy."
+  ]
+}

@@ -1,0 +1,33 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import {createHash} from 'node:crypto';
+import {payloadHash} from '../execution/ledger.mjs';
+import {frozenPaperModule} from './frozen-paper-runtime.mjs';
+const sha=x=>createHash('sha256').update(x).digest('hex');
+test('exact archived graph survives current transport changes and refuses corrupted dependencies', async t=>{
+  const runtimeDir=fs.mkdtempSync(path.join(os.tmpdir(),'sig-frozen-'));
+  t.after(()=>fs.rmSync(runtimeDir,{recursive:true,force:true}));
+  const content="export const revision='original';\n", file='live-paper/host.mjs';
+  const files={[file]:sha(content)}, snapshot=payloadHash(files), root=path.join(runtimeDir,'frozen-code',snapshot);
+  const bank={name:'saved-wallet',codeIdentity:{'./host.mjs':files[file]}};
+  fs.mkdirSync(path.join(root,'live-paper'),{recursive:true});
+  fs.writeFileSync(path.join(root,file),content);
+  fs.writeFileSync(path.join(root,'manifest.json'),JSON.stringify({files}));
+  fs.writeFileSync(path.join(runtimeDir,'frozen-code','index.json'),JSON.stringify({banks:{[payloadHash(bank)]:{snapshot}}}));
+  const options={runtimeDir,bank,modulePath:file,fallback:{revision:'new'}};
+  assert.equal((await frozenPaperModule(options)).revision,'original');
+  fs.writeFileSync(path.join(root,file),content+'// mutation');
+  await assert.rejects(frozenPaperModule(options),/FILE_CHANGED/);
+  fs.writeFileSync(path.join(root,file),content);
+  await assert.rejects(frozenPaperModule({...options,modulePath:'../host.mjs'}),/MODULE/);
+  const wrong={...bank,codeIdentity:{'./host.mjs':'bad'}};
+  fs.writeFileSync(path.join(runtimeDir,'frozen-code','index.json'),JSON.stringify({banks:{[payloadHash(wrong)]:{snapshot}}}));
+  await assert.rejects(frozenPaperModule({...options,bank:wrong}),/BANK_IDENTITY/);
+});
+test('unbound new banks retain normal host validation',async()=>{
+  const fallback={factory:'normal'};
+  assert.equal(await frozenPaperModule({runtimeDir:path.join(os.tmpdir(),'absent-sig-frozen-cache'),bank:{},modulePath:'live-paper/host.mjs',fallback}),fallback);
+});

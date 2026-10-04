@@ -1,0 +1,13 @@
+{
+  "extraProcesses": 0,
+  "paper": 3472,
+  "dashboard": 11936,
+  "retiredCollector": 11432,
+  "at": "2026-10-04T01:47:24.3299009Z",
+  "collector": 13412,
+  "persistentProcesses": 3,
+  "originalAccountingReset": false,
+  "competitionWrites": false,
+  "readAllocation": 20,
+  "newCohort": "baal-no-pair-20261004-v1"
+}

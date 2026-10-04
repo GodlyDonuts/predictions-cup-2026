@@ -1,0 +1,93 @@
+{
+  "at": "2026-10-04T01:17:47.646Z",
+  "cohort": "no-maker-tape-20261004-v3",
+  "bankHash": "b022b75032284b88746e847f950d8904817bf71802c41e94026f9d06ecefe582",
+  "codeIdentity": {
+    "../execution/api-tick-price.mjs": "ba162da4a3d388b60e31280ebf02315c2de3407370d785d0c646b4c3f8ff463a",
+    "../execution/core.mjs": "8598dd7fd9574a9197b8791d9cd7801d27e2b71bc473515dba9e775924b458d4",
+    "../execution/ledger.mjs": "523ee3fd04f995983ee3ffc03b5ee8dbdf629a718ba91c17d08026fe2411b5c4",
+    "../feed/contract.mjs": "39b9b30a72093d99697bc03a3b20f88f1d835507219fc46f7a00bd28fe761465",
+    "../paper/fixed.mjs": "a0947ef49854d4a3bf4bce88034aaef5d8aabbdc7e29dff3a7b9b4bc01b072f7",
+    "./canonical-entry-exit-study.mjs": "caac39b144328fa5914f83df7a1fea2f149f84bf9993dbb401ed980a45a828d5",
+    "./canonical-no-capacity.mjs": "9a32dd896051ca039d40405cbc7fad38cb9241de0e8cd94896ef35e46c0d3ee7",
+    "./journal-lines.mjs": "f8adff2bddc36b4e3d305dec9395fae9f51dff957e35313994b6147502cc6823",
+    "./model.mjs": "3cb8bbd7d31b478fe917270393954382373695149310243eec8b78440d207a2e",
+    "./no-maker-host-v3.mjs": "bdda148b6a29434233f3e6fa96a10151a6c84195982fae88cb13b43c2fe232c7",
+    "./no-maker-paper-v2.mjs": "30bdaf91ba82e3d359fd7f8cbcbac2130c0076fe70f49f8370d46da51928f2d5",
+    "./probability-receipt.mjs": "5a3fad02baca0eb519642b2f1cc53ec06ec4bdad7829b937d13891ac52d4e8a6",
+    "./transport-runtime.mjs": "b73d835506ab09cfea69bce1eb16914f4cd6647a543e2f11627758e280008ea8"
+  },
+  "prefixes": [
+    {
+      "file": "anonymous-trades.jsonl",
+      "bytes": 1008707,
+      "sha256": "0b38871f959764a4119da0bedd583df7e09f283b2c591307d347353bf76f0ddd"
+    },
+    {
+      "file": "public-books.jsonl",
+      "bytes": 28440471,
+      "sha256": "22626f1b5af703d5fed74be564b0120a09209b3f9369a879a35131208cb2b27c"
+    },
+    {
+      "file": "no-maker-cohorts/no-maker-tape-20261004-v3/journal.jsonl",
+      "bytes": 600427,
+      "sha256": "f0e2617179d33b16bd976cddb26564e7d03c0656d2eef83efab2420fd1369b07"
+    }
+  ],
+  "beforeTape": {
+    "986": {
+      "pages": 27,
+      "lastReceiptAt": "2026-10-04T01:15:07.796Z",
+      "medianIntervalMs": 286204,
+      "p95IntervalMs": 316295
+    },
+    "1052": {
+      "pages": 27,
+      "lastReceiptAt": "2026-10-04T01:16:18.909Z",
+      "medianIntervalMs": 285875,
+      "p95IntervalMs": 322223
+    },
+    "1070": {
+      "pages": 27,
+      "lastReceiptAt": "2026-10-04T01:17:29.436Z",
+      "medianIntervalMs": 285749,
+      "p95IntervalMs": 306578
+    },
+    "1071": {
+      "pages": 26,
+      "lastReceiptAt": "2026-10-04T01:13:56.869Z",
+      "medianIntervalMs": 285009,
+      "p95IntervalMs": 322406
+    }
+  },
+  "wallets": {
+    "at_quote": {
+      "cash": "100.000000",
+      "fills": 0,
+      "closedTrades": 0,
+      "realizedPnl": "0.000000",
+      "positions": [],
+      "unresolvedQuotes": 0
+    },
+    "improve_one_tick": {
+      "cash": "99.800000",
+      "fills": 1,
+      "closedTrades": 0,
+      "realizedPnl": "0.000000",
+      "positions": [
+        {
+          "cost": "0.200000",
+          "enteredAt": "2026-10-04T00:48:56.838Z",
+          "estimatedLiquidationProceeds": null,
+          "exchangeId": "1070",
+          "marketId": "381",
+          "quantity": 1,
+          "quoteAgeMs": null,
+          "sourceEntryAt": "2026-10-04T00:48:15.161Z"
+        }
+      ],
+      "unresolvedQuotes": 0
+    }
+  },
+  "competitionOrders": 0
+}

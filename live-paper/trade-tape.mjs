@@ -62,22 +62,25 @@ export function createTradeTape({runtimeDir,universe,now=Date.now,canOperate=()=
   next.seenIdentityVersion=2;state=next;
  }
  let attempts=fs.existsSync(attemptFile)?JSON.parse(fs.readFileSync(attemptFile)):{schemaVersion:1,scopeHash,markets:{}};
- check(attempts.schemaVersion===1&&attempts.scopeHash===scopeHash&&attempts.markets&&Object.entries(attempts.markets).every(([exchangeId,at])=>scope.exchanges.some(x=>x.exchangeId===exchangeId)&&clock(at)),'TRADE_TAPE_ATTEMPT_STATE_INVALID');
+ check(attempts.schemaVersion===1&&attempts.scopeHash===scopeHash&&attempts.markets&&Object.entries(attempts.markets).every(([exchangeId,at])=>scope.exchanges.some(x=>x.exchangeId===exchangeId)&&clock(at))
+  &&(attempts.attemptsReserved===undefined||Number.isSafeInteger(attempts.attemptsReserved)&&attempts.attemptsReserved>=0),'TRADE_TAPE_ATTEMPT_STATE_INVALID');
  function stats(){return {status:'running',schemaVersion:1,pages:state.pages,tradesCaptured:state.tradesCaptured,duplicates:state.duplicates,lastAt:state.lastAt,
   journalSequence:journal.sequence,journalHash:journal.previous,markets:Object.values(state.markets).map(m=>({marketId:m.marketId,exchangeId:m.exchangeId,pages:m.pages,tradesCaptured:m.tradesCaptured,
    lastReceiptAt:m.lastReceiptAt,lastAttemptAt:attempts.markets[m.exchangeId]||null,latestTradeAt:m.latestTradeAt,windowFrom:m.window?.from||null,windowTo:m.window?.to||null,paginationPending:!!m.window?.cursor,
    projectedThroughSequence:m.projectedThroughSequence,reportedCoverageComplete:m.reportedCoverageComplete})),executionAuthority:false,networkClientsAdded:0,completeTapeProven:false,counterfactualFillsProven:false};}
  function authorizes(spec){return !!pending&&canOperate()&&spec.method==='GET'&&spec.endpoint===pending.endpoint&&spec.body===undefined&&spec.bodyJson===undefined;}
- async function collect(dispatch,marketIds){
+ async function collect(dispatch,marketIds,{priorityMarketIds=[]}={}){
   check(!pending,'TRADE_TAPE_CONCURRENT_REQUEST');if(!canOperate())return stats();
   const candidates=[...new Set(marketIds)].map(m=>scope.exchanges.find(x=>x.marketId===m)).filter(Boolean);check(candidates.length>0,'TRADE_TAPE_NO_SCOPE');
   const lastAttempt=x=>Date.parse(attempts.markets[x.exchangeId]||state.markets[x.exchangeId]?.lastReceiptAt||'1970-01-01T00:00:00.000Z');
   candidates.sort((a,b)=>lastAttempt(a)-lastAttempt(b)||Number(a.marketId)-Number(b.marketId));
-  const chosen=candidates[0],prior=state.markets[chosen.exchangeId],to=new Date(Math.floor(now()/1000)*1000).toISOString();
+  check(Array.isArray(priorityMarketIds)&&priorityMarketIds.every(id=>candidates.some(c=>c.marketId===id)),'TRADE_TAPE_PRIORITY_SCOPE');
+  const priority=new Set(priorityMarketIds),ordinal=attempts.attemptsReserved||0,focused=candidates.filter(x=>priority.has(x.marketId)),discovery=candidates.filter(x=>!priority.has(x.marketId));
+  const chosen=(focused.length?(ordinal%4===3&&discovery.length?discovery:focused):candidates)[0],prior=state.markets[chosen.exchangeId],to=new Date(Math.floor(now()/1000)*1000).toISOString();
   const window=prior?.window||{from:new Date(prior?.completedTo?Math.max(0,Date.parse(prior.completedTo)-60000):Date.parse(to)-1800000).toISOString(),to,cursor:null,cursors:[]};
   const spec={...chosen,tournamentId:scope.tournamentId,from:window.from,to:window.to,cursor:window.cursor};pending={...spec,endpoint:tradeTapeEndpoint(spec)};
   try{
-   const nextAttempts={...attempts,markets:{...attempts.markets,[chosen.exchangeId]:new Date(now()).toISOString()}};
+   const nextAttempts={...attempts,attemptsReserved:ordinal+1,markets:{...attempts.markets,[chosen.exchangeId]:new Date(now()).toISOString()}};
    atomicJson(attemptFile,nextAttempts);attempts=nextAttempts;
    const response=await dispatch({method:'GET',endpoint:pending.endpoint}),page=normalizeTradeTape(response,spec);
    if(!canOperate())return stats();

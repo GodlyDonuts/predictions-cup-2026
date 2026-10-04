@@ -5,6 +5,12 @@ import {Journal} from './transport-runtime.mjs';import {digest} from './model.mj
 const tid='bda92870-621e-47b0-bc3c-3602c5c26f55',time=Date.parse('2026-10-03T23:00:00.000Z');
 const universe={tournamentId:tid,exchanges:[{marketId:'363',exchangeId:'1052',option:'YES'},{marketId:'297',exchangeId:'986',option:'YES'}]};
 const at=n=>new Date(time+n).toISOString();
+test('priority tape attempts survive failures/restarts with one fair discovery in four and unchanged successful receipts',async t=>{
+ const f=fixture(t),calls=[];let h;
+ for(let n=0;n<8;n++){f.setTime(n*4000);h=f.host();await assert.rejects(h.collect(async s=>{calls.push(new URL('https://example.test'+s.endpoint).pathname);throw Error('HTTP 503');},['297','363'],{priorityMarketIds:['363']}),/503/);}
+ assert.deepEqual(calls,['/exchanges/1052/trades','/exchanges/1052/trades','/exchanges/1052/trades','/exchanges/986/trades','/exchanges/1052/trades','/exchanges/1052/trades','/exchanges/1052/trades','/exchanges/986/trades']);
+ assert.equal(h.status().pages,0);assert.equal(h.status().markets.length,0);await assert.rejects(h.collect(async()=>{throw Error('must not dispatch');},['297','363'],{priorityMarketIds:['381']}),/PRIORITY_SCOPE/);
+});
 test('an incomplete page keeps the original window across restart until every page is complete',async t=>{
  const f=fixture(t);let h=f.host(),calls=[];
  const dispatch=async s=>{calls.push(s.endpoint);const r=response(s.endpoint,[],calls.length===1,calls.length===1?'A':null);if(calls.length===1)r.data.coverage.complete=false;return r;};

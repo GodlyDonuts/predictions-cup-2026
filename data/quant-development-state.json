@@ -4237,7 +4237,7 @@
       "probabilityWalletsVisible": true
     },
     "localLeanPublication": "published_verified",
-    "mainCommit": "5c4c923a958e5010a7a9a971c7e61277b1640c38",
+    "mainCommit": "e3834999cd12ce355d4353559e51812d48c223e0",
     "metrics": {
       "status": "retired_failed_historical_pilot_projection",
       "formerPid": 11792,
@@ -4309,9 +4309,9 @@
   },
   "currentProcesses": {
     "metrics": null,
-    "collector": 2648,
-    "dashboard": 11936,
-    "paper": 3472,
+    "collector": 14860,
+    "dashboard": 4596,
+    "paper": 11120,
     "contestActivation": false,
     "retiredMetricsPid": 11792
   },
@@ -4954,7 +4954,7 @@
   },
   "lastMilestone": {
     "at": "2026-10-04T01:04:36.472Z",
-    "status": "implemented_deployed_checked_publication_pending",
+    "status": "published_verified",
     "scopeClaim": 5975137430,
     "reviewFindings": [
       5975012805,
@@ -5037,10 +5037,13 @@
     },
     "executionOwner": "Daenerys",
     "competitionOrders": 0,
-    "profitabilityEstablished": false
+    "profitabilityEstablished": false,
+    "commit": "e3834999cd12ce355d4353559e51812d48c223e0",
+    "completionComment": 5975248286,
+    "all39FilesExactVerified": true
   },
   "latestMain": "0f205146801a150fcf9dbabc1caa4b02c946e4c2",
-  "latestMainCommit": "5c4c923a958e5010a7a9a971c7e61277b1640c38",
+  "latestMainCommit": "e3834999cd12ce355d4353559e51812d48c223e0",
   "latestOpportunityDiagnostic": {
     "asOf": "2026-10-02T09:04:24.208Z",
     "classification": "retrospective_development_not_profitability",
@@ -5595,7 +5598,11 @@
     "previousOperationalGoalCompletedAt": "2026-10-02T07:25:12.377Z",
     "status": "active"
   },
-  "previousGoalTurnClassification": "progress",
+  "previousGoalTurnClassification": {
+    "at": "2026-10-04T06:33:00.909Z",
+    "classification": "progress",
+    "reason": "Integrated two peer milestones, recovered missing services with preserved accounting, implemented source-cache separation and checked makerV4 restart proof;86checks and live verification. Goal remains active and profitability unproven."
+  },
   "previousMilestonesBeforeBulkV2": {
     "nextConcreteMilestone": "Implement compatible session-aware paper host retaining original frozen engine/bank/wallet and journal identity across collector maintenance; no accounting reset.",
     "nextMilestones": [
@@ -6622,7 +6629,7 @@
     "status": "running",
     "tests": 62
   },
-  "updatedAt": "2026-10-04T01:04:36.472Z",
+  "updatedAt": "2026-10-04T06:33:00.909Z",
   "workflow": "tested direct main; no PRs; unknown GitHub write outcomes checked before retry",
   "speedTapeMilestone": {
     "at": "2026-10-03T23:11:16.996Z",
@@ -6754,7 +6761,7 @@
   "botDisplayName": "Baal",
   "baalMilestone": {
     "at": "2026-10-04T01:04:36.472Z",
-    "status": "implemented_deployed_checked_publication_pending",
+    "status": "published_verified",
     "scopeClaim": 5975137430,
     "reviewFindings": [
       5975012805,
@@ -6837,7 +6844,10 @@
     },
     "executionOwner": "Daenerys",
     "competitionOrders": 0,
-    "profitabilityEstablished": false
+    "profitabilityEstablished": false,
+    "commit": "e3834999cd12ce355d4353559e51812d48c223e0",
+    "completionComment": 5975248286,
+    "all39FilesExactVerified": true
   },
   "previousNextBeforeBaal": {
     "nextConcreteMilestone": "Use received public trade-flow plus fresh source-backed forecasts to build a separately versioned, prospectively measured entry/exit strategy; distinguish settlement forecasts from short-horizon resale forecasts. No forced purchases or assumed maker fills. Daenerys retains contest execution pending a successful bot and named handoff.",
@@ -6852,19 +6862,94 @@
   "baalBacklog": [
     {
       "status": "active",
-      "task": "Use subsequent tape/book evidence to manage the inherited 381 NO paper position and diagnose actual exit economics. Do not force trades or claim proof from one modeled entry."
+      "task": "Obtain fresh signed-in NH381/382 rule evidence; preserve expiry and initialize source-bound continuation only after review."
     },
     {
       "status": "pending",
-      "task": "Review V3 continuous coverage and accounting continuation independently; preserve late pre-cancel prints and exact FIFO."
+      "task": "Bounded independent review of makerV4 consumed-frontier migration, frozen graph integration and paired V2 depth/FIFO/orphan economics."
     },
     {
       "status": "pending",
-      "task": "Improve useful paired/risk tape freshness within the existing 20-read allocation, without extra API clients or collector processes."
+      "task": "Build verified compact training capture; collector journal is4.22GB and whole-file string training cannot consume it directly. Preserve original hash chains and histories."
     },
     {
-      "status": "pending",
-      "task": "Obtain fresh source-backed review before the existing capacity review expires at 04:36:16.657 UTC; expiry must block new maker entries."
+      "status": "active",
+      "task": "Measure subsequent live paired/resale and maker fills; one audited maker roundtrip lost0.015, paired0fills. No scaling from tiny samples."
     }
-  ]
+  ],
+  "baalIteration": {
+    "at": "2026-10-04T06:33:00.909Z",
+    "status": "checked_live_paper_and_peer_integration_pending_push",
+    "peerBase": "2b7fc72302aaf07874e55467bb2671ab96a554ca",
+    "tests": {
+      "passed": 86,
+      "failed": 0,
+      "scope": "paired core/hosts/UI, makerV4, attention/tape, transport/timing/budget, portfolio selection; bounded run"
+    },
+    "verified": {
+      "at": "2026-10-04T06:30:19.586Z",
+      "pids": {
+        "metrics": null,
+        "collector": 14860,
+        "dashboard": 4596,
+        "paper": 11120,
+        "contestActivation": false,
+        "retiredMetricsPid": 11792
+      },
+      "sourceSnapshot": "7593076b94117c1dcc743931beb725171b1c3fa95b86fee4ead7683c6609e838",
+      "frozenBanksVerified": 6,
+      "migration": {
+        "predecessor": "no-maker-tape-20261004-v2",
+        "successor": "no-maker-tape-20261004-v3",
+        "consumedSequence": 91,
+        "sealedSequence": 91,
+        "hash": "145250e50ac6a76a5c64adff3eae97e29b2fcd8f9675bf3cb151fb85b6b6907e",
+        "matched": true
+      },
+      "wallets": {
+        "at_quote": {
+          "cash": "100.000000",
+          "realizedPnl": "0.000000",
+          "fees": "0.000000",
+          "fills": 0,
+          "closedTrades": 0,
+          "positions": 0
+        },
+        "improve_one_tick": {
+          "cash": "99.985000",
+          "realizedPnl": "-0.015000",
+          "fees": "0.000000",
+          "fills": 2,
+          "closedTrades": 1,
+          "positions": 0
+        }
+      },
+      "paired": {
+        "cohort": "baal-no-pair-20261004-v2",
+        "bankHash": "2daa55e47a69bbb67c3667f12a48996d3692f3176a1c6761b94bee0223a180c0",
+        "cash": "100.000000",
+        "realizedPnl": "0.000000",
+        "fills": 0,
+        "positions": 0,
+        "reviewCurrent": false,
+        "reviewExpiresAt": "2026-10-04T04:36:16.657Z"
+      },
+      "timingClocks": {
+        "monotonic": 127
+      },
+      "dashboardVerified": true,
+      "additionalCollectors": 0,
+      "readAdmissionsPerMinute": 20,
+      "competitionOrders": 0,
+      "accountingReset": false,
+      "profitabilityEstablished": false
+    },
+    "sourceAudit": "data/baal-maker-first-roundtrip-20261004.json",
+    "cadenceEvidence": "data/baal-attention-live-verification-20261004.json",
+    "entryExitDiagnostic": "data/canonical-entry-exit-subsequent-20261004.json",
+    "makerV4": "tested_not_activated",
+    "researchRequest": 5977302716,
+    "contestActivation": false,
+    "profitabilityEstablished": false
+  }
 }

@@ -1,0 +1,22 @@
+import fs from 'node:fs';import path from 'node:path';import {createHash} from 'node:crypto';
+import {payloadHash,atomicJson} from '../execution/ledger.mjs';import {BAAL_PAIR_POLICY} from '../live-paper/baal-pair-paper-v2.mjs';
+import {baalPairCodeIdentity} from '../live-paper/baal-pair-host-v2.mjs';import {baalPairCodeIdentity as priorCodeIdentity} from '../live-paper/baal-pair-host.mjs';
+const r=path.join(process.env.LOCALAPPDATA,'SigTradingCup/paper-runtime'),read=f=>JSON.parse(fs.readFileSync(f)),sha=b=>createHash('sha256').update(b).digest('hex'),need=(v,c)=>{if(!v)throw Error(c);};
+need(read(path.join(r,'COLLECTOR_STOP')).source==='baal-pair-depth-deployment-20261004'&&!fs.existsSync(path.join(r,'..','bot.lock')),'STOP_OR_LEASE');
+const name='baal-no-pair-20261004-v2',dir=path.join(r,'baal-pair-cohorts',name),active=read(path.join(r,'baal-pair-active.json')),prior=path.join(r,'baal-pair-cohorts',active.cohort);
+need(active.cohort==='baal-no-pair-20261004-v1'&&!fs.existsSync(dir),'NEW_COHORT_ONLY');
+const bankBytes=fs.readFileSync(path.join(prior,'bank.json')),priorBank=JSON.parse(bankBytes),priorJournal=fs.readFileSync(path.join(prior,'journal.jsonl'));
+need(priorJournal.at(-1)===10&&payloadHash(priorBank)===active.bankHash&&payloadHash(priorBank.codeIdentity)===payloadHash(priorCodeIdentity()),'PRIOR_IDENTITY');
+const rows=priorJournal.toString().trimEnd().split('\n').map(JSON.parse);let previous='';
+for(const [i,row]of rows.entries()){const{hash,...body}=row;need(row.sequence===i+1&&row.previous===previous&&sha(JSON.stringify(body))===hash,'PRIOR_CHAIN');previous=hash;}
+const seed=rows.at(-1).state.paper,seedBytes=Buffer.from(JSON.stringify(seed)),source=fs.readFileSync(path.join(r,'public-books.jsonl'));
+need(source.at(-1)===10,'SOURCE_COMPLETE');const tail=JSON.parse(source.subarray(source.lastIndexOf(10,source.length-2)+1,source.length-1)),cutoff=new Date().toISOString();
+need(Date.parse(cutoff)<Date.parse(priorBank.review.expiresAt),'CURRENT_REVIEW');
+const continuation={cohort:active.cohort,bankHash:active.bankHash,bankFileHash:sha(bankBytes),journalPrefixBytes:priorJournal.length,journalPrefixHash:sha(priorJournal),openingStateFileHash:sha(seedBytes),reason:'full_depth_participation_execution_correction',accountingCarried:true};
+const bank={...priorBank,name,hostRevision:2,cutoff,policy:BAAL_PAIR_POLICY,codeIdentity:baalPairCodeIdentity(),sourcePrefixBytes:source.length,sourcePrefixHash:sha(source),sourcePrefixSequence:tail.sequence,sourcePrefixTailHash:tail.hash,accountingContinuation:continuation};
+fs.mkdirSync(dir,{recursive:true,mode:0o700});fs.writeFileSync(path.join(dir,'opening-state.json'),seedBytes,{mode:0o600});atomicJson(path.join(dir,'bank.json'),bank);
+atomicJson(path.join(r,'baal-pair-active.json'),{schemaVersion:1,cohort:name,hostRevision:2,bankHash:payloadHash(bank),executionAuthority:false});
+fs.writeFileSync('data/baal-pair-bank-20261004-v2.json',JSON.stringify(bank,null,2)+'\n');
+const preserved={at:cutoff,...continuation,codeIdentity:priorBank.codeIdentity,openingWallet:{cash:seed.cash,realizedPnl:seed.realizedPnl,fills:seed.fills.length,positions:Object.keys(seed.positions).length,pending:seed.pending?.stage??null},newCohort:name,newBankHash:payloadHash(bank),accountingReset:false,competitionOrders:0};
+fs.writeFileSync('data/baal-pair-v1-preservation-20261004.json',JSON.stringify(preserved,null,2)+'\n');
+console.log(JSON.stringify({cohort:name,cutoff,bankHash:payloadHash(bank),accountingCarried:true,openingWallet:preserved.openingWallet,competitionOrders:0}));

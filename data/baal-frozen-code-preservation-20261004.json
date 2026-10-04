@@ -1,0 +1,70 @@
+{
+  "at": "2026-10-04T06:19:32.659Z",
+  "snapshot": "7593076b94117c1dcc743931beb725171b1c3fa95b86fee4ead7683c6609e838",
+  "files": {
+    "execution/api-tick-price.mjs": "ba162da4a3d388b60e31280ebf02315c2de3407370d785d0c646b4c3f8ff463a",
+    "execution/core.mjs": "8598dd7fd9574a9197b8791d9cd7801d27e2b71bc473515dba9e775924b458d4",
+    "execution/ledger.mjs": "523ee3fd04f995983ee3ffc03b5ee8dbdf629a718ba91c17d08026fe2411b5c4",
+    "feed/contract.mjs": "39b9b30a72093d99697bc03a3b20f88f1d835507219fc46f7a00bd28fe761465",
+    "paper/fixed.mjs": "a0947ef49854d4a3bf4bce88034aaef5d8aabbdc7e29dff3a7b9b4bc01b072f7",
+    "live-paper/canonical-entry-exit-study.mjs": "caac39b144328fa5914f83df7a1fea2f149f84bf9993dbb401ed980a45a828d5",
+    "live-paper/probability-receipt.mjs": "5a3fad02baca0eb519642b2f1cc53ec06ec4bdad7829b937d13891ac52d4e8a6",
+    "live-paper/model.mjs": "3cb8bbd7d31b478fe917270393954382373695149310243eec8b78440d207a2e",
+    "live-paper/probability-paper.mjs": "53569a7e2262355faf9601aae3a181eddbf91c26bc8eb0b2c990377a3ce72b3e",
+    "live-paper/ml-shadow.mjs": "95a4b0c705a4a26d6abf90326b9b2c4d29a7b955ea4737f472e00abfec46f396",
+    "live-paper/runtime.mjs": "2efad72e778ed5bd37387ae357b0cbd49dc1e2227db401a71684f68ce539471a",
+    "feed/runtime.mjs": "51327d008ad4c9c479b25c14186edeff02f7671bf5efcd367b4b42f06abc884d",
+    "live-paper/history.mjs": "d820b9d74752df3c2ecc28df3b1662bbc93080f4605db21a838d8957bf82c890",
+    "live-paper/network-budget.mjs": "a5a51f29a2ccd0cdf7a09a2a454907ddd98a74729f3edad0b7989855ff2dd435",
+    "live-paper/ml-bank.mjs": "4f5e95b8605cf44fbc6eedffd69b0b6dd371a87fd2e59b8bbfa9d240e01592b8",
+    "live-paper/replay.mjs": "363815a787aa7a7922fffbbde4f0e370737d2a66f5a4777d23308627e95b5907",
+    "live-paper/depth-scope.mjs": "6b8f329dcaf84e220bd708edd19c69703cc35362aca3acd0929b86e81749a92c",
+    "live-paper/history-policy.mjs": "1cf281e6e0410f5731e7d08106a479c77851575fb61d93cce51217058dcf291b",
+    "live-paper/breadth-context.mjs": "76b0c70bfac6db5a9d127fc4476e9b4c7b0a2af84d07e3c8a509446c510abbc4",
+    "live-paper/roundtrip-target.mjs": "be543efab3267aae8f28aba04a44d5050fdd3ab50e1f2b75210347d23e4853e9",
+    "live-paper/gpu-inference.mjs": "0d59a963ec3cc310af6a8e1b56616a4352f8319ec883184f64d367432c28fff8",
+    "live-paper/canonical-no-capacity.mjs": "9a32dd896051ca039d40405cbc7fad38cb9241de0e8cd94896ef35e46c0d3ee7",
+    "live-paper/journal-lines.mjs": "f8adff2bddc36b4e3d305dec9395fae9f51dff957e35313994b6147502cc6823",
+    "live-paper/no-maker-host.mjs": "d04436b5921503de833f0ef93deade912dab1c1a48ecb5cf00b61996a1fd044e",
+    "live-paper/transport-runtime.mjs": "b73d835506ab09cfea69bce1eb16914f4cd6647a543e2f11627758e280008ea8",
+    "live-paper/transport-network-budget.mjs": "067f1b664ee86a9437db679e749627534432f71c92b77c3d77c9a99d24635f2e",
+    "live-paper/no-maker-paper.mjs": "c8666b47c6857d6c16a73c3d868fec6e1d4bcfd9092ecd52cf34a4e30befc700",
+    "live-paper/no-maker-host-v2.mjs": "820e8d4d54fab81b51f49c65d227727ec9f162ac4de71a4373f6f2b7e9a00804",
+    "live-paper/no-maker-host-v3.mjs": "bdda148b6a29434233f3e6fa96a10151a6c84195982fae88cb13b43c2fe232c7",
+    "live-paper/no-maker-paper-v2.mjs": "30bdaf91ba82e3d359fd7f8cbcbac2130c0076fe70f49f8370d46da51928f2d5",
+    "live-paper/baal-pair-host.mjs": "746009c0bb3abd41600ba1ac8abad1ba23551b96471f6c80fdbe02d6aaf7442e",
+    "live-paper/baal-pair-paper.mjs": "5f85b61688212bf443942e11820631fa01830ae8a8ce1ceff963b1f5a95f43d0",
+    "live-paper/baal-pair-host-v2.mjs": "8f6cb8ea05694f0e60c263e22fb9d488597b7cc7486bdcd30a4e385823803065",
+    "live-paper/baal-pair-paper-v2.mjs": "61a995aff6db5a762a720c066228a6a51484c6a8994a0c45fe81edd3f79ada8c",
+    "live-paper/probability-receipt-host.mjs": "851c3344863149484b2e96a87c94c56b76bc7ee678d111d2d633eed96e1977f9",
+    "live-paper/book-publication.mjs": "b396e11a8316e525e2756611d293b55ff56b334692c497b00670b13f05842729"
+  },
+  "banks": [
+    {
+      "cohort": "no-maker-tape-20261004-v1",
+      "bankHash": "17b460652639c3f74fb68b39d3c459fb6971d89654125ec34b0c1d41bf2105ee"
+    },
+    {
+      "cohort": "no-maker-tape-20261004-v2",
+      "bankHash": "8f0994221bb3c74947d7380fe0365512ed3b225a7f2e0ab8b1b27e1fcb11f356"
+    },
+    {
+      "cohort": "no-maker-tape-20261004-v3",
+      "bankHash": "b022b75032284b88746e847f950d8904817bf71802c41e94026f9d06ecefe582"
+    },
+    {
+      "cohort": "baal-no-pair-20261004-v1",
+      "bankHash": "c6461bcd1f41d3760bee44183358d0bdcbc48e15dfa3cacb381b7accccf7628a"
+    },
+    {
+      "cohort": "baal-no-pair-20261004-v2",
+      "bankHash": "2daa55e47a69bbb67c3667f12a48996d3692f3176a1c6761b94bee0223a180c0"
+    },
+    {
+      "cohort": "source-probability-20261003-v1",
+      "bankHash": "388d48a75257016819e58f4899cda2cc7e5365251864a1afc6cef270fc9bf1fb"
+    }
+  ],
+  "accountingReset": false,
+  "competitionOrders": 0
+}

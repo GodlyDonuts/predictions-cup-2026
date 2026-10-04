@@ -1,0 +1,45 @@
+{
+  "at": "2026-10-04T01:47:24.193Z",
+  "cohort": "no-maker-tape-20261004-v3",
+  "bankHash": "b022b75032284b88746e847f950d8904817bf71802c41e94026f9d06ecefe582",
+  "prefixes": [
+    {
+      "file": "public-books.jsonl",
+      "bytes": 28908691,
+      "sha256": "a9cd1729ba2f368a8aa2c6f1c5e68dea3c536bf33a90fff021f5c2624ac23fd7"
+    },
+    {
+      "file": "anonymous-trades.jsonl",
+      "bytes": 1222645,
+      "sha256": "53e4643cf792e8945556a905a9ef29c58e960aeafda26359deecdaf6a9f9cc77"
+    },
+    {
+      "file": "no-maker-cohorts/no-maker-tape-20261004-v3/journal.jsonl",
+      "bytes": 3706683,
+      "sha256": "ec2a0b367d446468e71ee4424a98613335f6c1e05929e76807917499fb291326"
+    }
+  ],
+  "originalMakerWallets": {
+    "at_quote": {
+      "cash": "100.000000",
+      "realizedPnl": "0.000000",
+      "fills": 0,
+      "closedTrades": 0,
+      "positions": 0,
+      "pendingQuotes": 2
+    },
+    "improve_one_tick": {
+      "cash": "99.985000",
+      "realizedPnl": "-0.015000",
+      "fills": 2,
+      "closedTrades": 1,
+      "positions": 0,
+      "pendingQuotes": 2
+    }
+  },
+  "newCohort": "baal-no-pair-20261004-v1",
+  "newBankHash": "c6461bcd1f41d3760bee44183358d0bdcbc48e15dfa3cacb381b7accccf7628a",
+  "independentNewWallet": true,
+  "originalAccountingReset": false,
+  "competitionOrders": 0
+}

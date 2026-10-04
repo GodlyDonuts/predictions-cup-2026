@@ -1,0 +1,27 @@
+{
+  "competitionActivation": false,
+  "pids": {
+    "metrics": null,
+    "collector": 14860,
+    "dashboard": 4596,
+    "paper": 11120,
+    "contestActivation": false,
+    "retiredMetricsPid": 11792
+  },
+  "retiredExperimentStopMarkersRetained": true,
+  "accountingReset": false,
+  "readAdmissionsPerMinute": 20,
+  "recoveredLocks": [
+    {
+      "previousPid": 10876,
+      "kind": "collector"
+    },
+    {
+      "previousPid": 3472,
+      "kind": "paper"
+    }
+  ],
+  "competitionOrders": 0,
+  "startupOnly": true,
+  "at": "2026-10-04T06:22:56.1243838Z"
+}

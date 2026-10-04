@@ -1,0 +1,249 @@
+{
+  "schemaVersion": 1,
+  "at": "2026-10-04T01:32:47.554Z",
+  "scopeClaim": 5975281078,
+  "checksPassed": 47,
+  "pids": {
+    "metrics": null,
+    "collector": 11432,
+    "dashboard": 11936,
+    "paper": 3472,
+    "contestActivation": false,
+    "retiredMetricsPid": 11792
+  },
+  "cohort": "no-maker-tape-20261004-v3",
+  "bankHash": "b022b75032284b88746e847f950d8904817bf71802c41e94026f9d06ecefe582",
+  "preservedPrefixes": [
+    {
+      "file": "anonymous-trades.jsonl",
+      "bytes": 1008707,
+      "sha256": "0b38871f959764a4119da0bedd583df7e09f283b2c591307d347353bf76f0ddd"
+    },
+    {
+      "file": "public-books.jsonl",
+      "bytes": 28440471,
+      "sha256": "22626f1b5af703d5fed74be564b0120a09209b3f9369a879a35131208cb2b27c"
+    },
+    {
+      "file": "no-maker-cohorts/no-maker-tape-20261004-v3/journal.jsonl",
+      "bytes": 600427,
+      "sha256": "f0e2617179d33b16bd976cddb26564e7d03c0656d2eef83efab2420fd1369b07"
+    }
+  ],
+  "originalExperimentsPreserved": [
+    "source-probability-20261003-v1",
+    "nh-canonical-capacity-20261003-v1",
+    "no-maker-tape-20261004-v1",
+    "no-maker-tape-20261004-v2"
+  ],
+  "sourceTape": {
+    "bytes": 1129024,
+    "sha256": "5f0ccea67a6a5c157a8c1c3b4959ef922525bac5b0e1d3bfd53aa177919f373d",
+    "afterDeploymentPages": 19,
+    "route": [
+      {
+        "marketId": "381",
+        "requestStartedAt": "2026-10-04T01:18:17.179Z",
+        "receivedAt": "2026-10-04T01:18:17.349Z"
+      },
+      {
+        "marketId": "381",
+        "requestStartedAt": "2026-10-04T01:18:57.891Z",
+        "receivedAt": "2026-10-04T01:18:58.060Z"
+      },
+      {
+        "marketId": "382",
+        "requestStartedAt": "2026-10-04T01:19:33.245Z",
+        "receivedAt": "2026-10-04T01:19:33.414Z"
+      },
+      {
+        "marketId": "297",
+        "requestStartedAt": "2026-10-04T01:20:43.874Z",
+        "receivedAt": "2026-10-04T01:20:44.068Z"
+      },
+      {
+        "marketId": "381",
+        "requestStartedAt": "2026-10-04T01:21:19.205Z",
+        "receivedAt": "2026-10-04T01:21:19.367Z"
+      },
+      {
+        "marketId": "382",
+        "requestStartedAt": "2026-10-04T01:21:54.756Z",
+        "receivedAt": "2026-10-04T01:21:54.925Z"
+      },
+      {
+        "marketId": "381",
+        "requestStartedAt": "2026-10-04T01:23:05.814Z",
+        "receivedAt": "2026-10-04T01:23:05.997Z"
+      },
+      {
+        "marketId": "363",
+        "requestStartedAt": "2026-10-04T01:23:41.193Z",
+        "receivedAt": "2026-10-04T01:23:41.548Z"
+      },
+      {
+        "marketId": "382",
+        "requestStartedAt": "2026-10-04T01:24:16.721Z",
+        "receivedAt": "2026-10-04T01:24:16.883Z"
+      },
+      {
+        "marketId": "381",
+        "requestStartedAt": "2026-10-04T01:25:28.293Z",
+        "receivedAt": "2026-10-04T01:25:28.495Z"
+      },
+      {
+        "marketId": "382",
+        "requestStartedAt": "2026-10-04T01:26:03.642Z",
+        "receivedAt": "2026-10-04T01:26:03.858Z"
+      },
+      {
+        "marketId": "297",
+        "requestStartedAt": "2026-10-04T01:26:39.111Z",
+        "receivedAt": "2026-10-04T01:26:39.305Z"
+      },
+      {
+        "marketId": "381",
+        "requestStartedAt": "2026-10-04T01:27:50.837Z",
+        "receivedAt": "2026-10-04T01:27:51.092Z"
+      },
+      {
+        "marketId": "382",
+        "requestStartedAt": "2026-10-04T01:28:27.068Z",
+        "receivedAt": "2026-10-04T01:28:27.259Z"
+      },
+      {
+        "marketId": "381",
+        "requestStartedAt": "2026-10-04T01:29:03.094Z",
+        "receivedAt": "2026-10-04T01:29:03.488Z"
+      },
+      {
+        "marketId": "363",
+        "requestStartedAt": "2026-10-04T01:30:14.632Z",
+        "receivedAt": "2026-10-04T01:30:14.797Z"
+      },
+      {
+        "marketId": "382",
+        "requestStartedAt": "2026-10-04T01:30:49.995Z",
+        "receivedAt": "2026-10-04T01:30:50.278Z"
+      },
+      {
+        "marketId": "381",
+        "requestStartedAt": "2026-10-04T01:31:26.536Z",
+        "receivedAt": "2026-10-04T01:31:26.699Z"
+      },
+      {
+        "marketId": "382",
+        "requestStartedAt": "2026-10-04T01:32:37.038Z",
+        "receivedAt": "2026-10-04T01:32:37.214Z"
+      }
+    ]
+  },
+  "cadence": {
+    "381": {
+      "pages": 8,
+      "lastReceiptAt": "2026-10-04T01:31:26.699Z",
+      "intervalMs": {
+        "count": 7,
+        "median": 141307,
+        "p95": 143211
+      }
+    },
+    "382": {
+      "pages": 7,
+      "lastReceiptAt": "2026-10-04T01:32:37.214Z",
+      "intervalMs": {
+        "count": 6,
+        "median": 141958,
+        "p95": 143401
+      }
+    }
+  },
+  "beforeCadence": {
+    "986": {
+      "pages": 27,
+      "lastReceiptAt": "2026-10-04T01:15:07.796Z",
+      "medianIntervalMs": 286204,
+      "p95IntervalMs": 316295
+    },
+    "1052": {
+      "pages": 27,
+      "lastReceiptAt": "2026-10-04T01:16:18.909Z",
+      "medianIntervalMs": 285875,
+      "p95IntervalMs": 322223
+    },
+    "1070": {
+      "pages": 27,
+      "lastReceiptAt": "2026-10-04T01:17:29.436Z",
+      "medianIntervalMs": 285749,
+      "p95IntervalMs": 306578
+    },
+    "1071": {
+      "pages": 26,
+      "lastReceiptAt": "2026-10-04T01:13:56.869Z",
+      "medianIntervalMs": 285009,
+      "p95IntervalMs": 322406
+    }
+  },
+  "bookPlan": [
+    {
+      "marketId": "381",
+      "exchangeId": "1070",
+      "option": "YES",
+      "path": "supplementalDepth",
+      "reason": "held_or_pending"
+    },
+    {
+      "marketId": "382",
+      "exchangeId": "1071",
+      "option": "YES",
+      "path": "supplementalDepth",
+      "reason": "held_or_pending"
+    },
+    {
+      "marketId": "363",
+      "path": "supplementalDepth",
+      "reason": "bid_anchor_paper_risk"
+    },
+    {
+      "marketId": "277",
+      "exchangeId": "966",
+      "option": "YES",
+      "path": "sourceSnapshots",
+      "reason": "comparison"
+    }
+  ],
+  "auxiliaryReservations": 25,
+  "historyReceipts": 6,
+  "accountingReset": false,
+  "readAllocation": 20,
+  "additionalClients": 0,
+  "additionalProcesses": 0,
+  "competitionOrders": 0,
+  "competitionWritesEnabled": false,
+  "wallets": {
+    "at_quote": {
+      "cash": "100.000000",
+      "realizedPnl": "0.000000",
+      "fills": 0,
+      "closedTrades": 0,
+      "positions": 0,
+      "pendingQuotes": 2,
+      "fees": "0.000000"
+    },
+    "improve_one_tick": {
+      "cash": "99.985000",
+      "realizedPnl": "-0.015000",
+      "fills": 2,
+      "closedTrades": 1,
+      "positions": 0,
+      "pendingQuotes": 2,
+      "fees": "0.000000"
+    }
+  },
+  "profitabilityEstablished": false,
+  "limitations": [
+    "Cadence samples are subsequent but short and correlated; they measure observation service, not trading returns.",
+    "Focused reads replace existing optional slots and retain all protected obligations.",
+    "Counterfactual paper totals include predecessor accounting."
+  ]
+}

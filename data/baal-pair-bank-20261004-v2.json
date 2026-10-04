@@ -1,0 +1,202 @@
+{
+  "capacityPolicy": {
+    "adverseTicksPerLeg": 1,
+    "depthFractionBps": 100,
+    "feeEvidence": "direct_human_zero_fee_instruction",
+    "feePerShare": "0.000000",
+    "fixedFeePerLeg": "0.000000",
+    "maxAgeMs": 20000,
+    "maxCost": "25.000000",
+    "maxQuantity": 100000,
+    "maxSkewMs": 10000,
+    "maxUnmatchedCost": "5.000000",
+    "maximumAccountAgeMs": 20000,
+    "maximumReviewAgeMs": 21600000,
+    "minimumMarginalEdge": "0.010000",
+    "minimumTotalProfit": "0.005000",
+    "representation": "documented_same_exchange_yes_bid_complement",
+    "schemaVersion": 1
+  },
+  "codeIdentity": {
+    "./baal-pair-host-v2.mjs": "8f6cb8ea05694f0e60c263e22fb9d488597b7cc7486bdcd30a4e385823803065",
+    "./baal-pair-paper-v2.mjs": "61a995aff6db5a762a720c066228a6a51484c6a8994a0c45fe81edd3f79ada8c",
+    "./canonical-no-capacity.mjs": "9a32dd896051ca039d40405cbc7fad38cb9241de0e8cd94896ef35e46c0d3ee7",
+    "./probability-receipt.mjs": "5a3fad02baca0eb519642b2f1cc53ec06ec4bdad7829b937d13891ac52d4e8a6",
+    "./transport-runtime.mjs": "b73d835506ab09cfea69bce1eb16914f4cd6647a543e2f11627758e280008ea8",
+    "./journal-lines.mjs": "f8adff2bddc36b4e3d305dec9395fae9f51dff957e35313994b6147502cc6823",
+    "./model.mjs": "3cb8bbd7d31b478fe917270393954382373695149310243eec8b78440d207a2e",
+    "../execution/core.mjs": "8598dd7fd9574a9197b8791d9cd7801d27e2b71bc473515dba9e775924b458d4",
+    "../execution/api-tick-price.mjs": "ba162da4a3d388b60e31280ebf02315c2de3407370d785d0c646b4c3f8ff463a",
+    "../execution/ledger.mjs": "523ee3fd04f995983ee3ffc03b5ee8dbdf629a718ba91c17d08026fe2411b5c4",
+    "../paper/fixed.mjs": "a0947ef49854d4a3bf4bce88034aaef5d8aabbdc7e29dff3a7b9b4bc01b072f7",
+    "../feed/contract.mjs": "39b9b30a72093d99697bc03a3b20f88f1d835507219fc46f7a00bd28fe761465"
+  },
+  "competitionOrders": 0,
+  "cutoff": "2026-10-04T01:54:47.954Z",
+  "economics": "Fixed price-capped sequential NO pair; ordinary surplus is conditional, never booked as cash or P&L. Failed hedge/second sale creates an actual modeled orphan loss.",
+  "executionAuthority": false,
+  "mode": "baal_sequential_no_pair_paper",
+  "name": "baal-no-pair-20261004-v2",
+  "policy": {
+    "initialCash": "100.000000",
+    "quantity": 1,
+    "latencyMs": 3000,
+    "intentLifetimeMs": 120000,
+    "maxAgeMs": 20000,
+    "maxSkewMs": 10000,
+    "depthFractionBps": 100,
+    "adverseTicks": 1,
+    "maxOwnedAndReserved": "5.000000",
+    "cumulativeBuyBudget": "25.000000",
+    "minimumPackageMargin": "0.010000",
+    "takeProfit": "0.010000",
+    "packageStopLoss": "0.050000",
+    "maximumPairedHoldMs": 21600000,
+    "cooldownMs": 60000,
+    "feePerShare": "0.000000"
+  },
+  "review": {
+    "assumptions": [
+      "Current Senate ballot maps Chris Pappas Democratic, John E. Sununu Republican, Edmond Laplante Constitution, plus write-in; ordinary single winner affiliations are exclusive.",
+      "Same ballot demonstrates dual-party nomination for other offices, so fusion is a real contrary possibility and zero-payout stress is required.",
+      "Exact rules are peer-supplied manual transcript evidence. Rules hashes bind that attestation, not live API authenticity or scenario completeness.",
+      "Uncovered SELL YES is documented BUY NO at complement; YES bid rungs provide the canonical same-exchange NO acquisition depth, not independent native-NO observations.",
+      "Fees are set to zero under the direct human instruction. Each acquired leg still includes one adverse 0.005 tick; displayed depth is discounted to one percent.",
+      "Normal settlement surplus is not a forecast of a profitable resale or guaranteed completion of two legs."
+    ],
+    "captures": [
+      {
+        "bytes": 48988,
+        "contentHash": "128da77c746e56f79bba467846fc185374836a8243811aeb37f4daac050962de",
+        "file": "platform-complement.html",
+        "observedAt": "2026-10-03T22:36:15.170Z",
+        "url": "https://sig.thesuper.market/docs/markets-and-trading"
+      },
+      {
+        "bytes": 270244,
+        "contentHash": "8f2c3c825cd698afd6918e966686f5eaf2aa824b86c66a9a1d2b4dbe40c60d73",
+        "file": "NH-sample-ballot.pdf",
+        "observedAt": "2026-10-03T22:36:16.657Z",
+        "url": "https://www.londonderrynh.gov/DocumentCenter/View/3063"
+      }
+    ],
+    "evidence": [
+      {
+        "commentId": 5973997375,
+        "contentHash": "f2957cd87fb208b4bf55f63dcff1c131830710ba570139a89998d0ea495c6355",
+        "provenance": "Daenerys manual signed-in browser transcript summary, not authenticated API metadata",
+        "url": "https://github.com/GodlyDonuts/predictions-cup-2026/issues/1#issuecomment-5973997375"
+      },
+      {
+        "commentId": 5974024230,
+        "contentHash": "63156c21a7b21cb9dcaa7345c59d2499339daacd8512962c7c9ef424fab697cc",
+        "provenance": "Daenerys manual signed-in browser transcript summary, not authenticated API metadata",
+        "url": "https://github.com/GodlyDonuts/predictions-cup-2026/issues/1#issuecomment-5974024230"
+      }
+    ],
+    "evidenceHash": "1964232730c4e938082a56c7d7f6328c205a22dd46ff9c3e2330bb1a870bf8f3",
+    "expiresAt": "2026-10-04T04:36:16.657Z",
+    "id": "nh-canonical-capacity-20261003-v1",
+    "kind": "conditional_no_pair_review",
+    "legs": [
+      {
+        "binding": {
+          "administrative": "sponsor may change rules or outcome; delays/void/refund not excluded",
+          "event": "2026 New Hampshire U.S. Senate general election",
+          "exchangeId": "1070",
+          "fusion": "all parties listed for the winner count",
+          "manualInfoAt": "2026-10-03T22:11:30Z through 2026-10-03T22:11:43Z",
+          "marketId": "381",
+          "outcome": "NO",
+          "provenance": "https://github.com/GodlyDonuts/predictions-cup-2026/issues/1#issuecomment-5973997375",
+          "resolution": "final certified winner party affiliation",
+          "winnerAffiliation": "Democratic Party"
+        },
+        "exchangeId": "1070",
+        "marketId": "381",
+        "outcome": "NO",
+        "rulesHash": "964b1fa83cbb7aa863235692ada35ccc298014538b8291c7473aefb4cbb68ed7"
+      },
+      {
+        "binding": {
+          "administrative": "sponsor may change rules or outcome; delays/void/refund not excluded",
+          "event": "2026 New Hampshire U.S. Senate general election",
+          "exchangeId": "1071",
+          "fusion": "all parties listed for the winner count",
+          "manualInfoAt": "2026-10-03T22:11:30Z through 2026-10-03T22:11:43Z",
+          "marketId": "382",
+          "outcome": "NO",
+          "provenance": "https://github.com/GodlyDonuts/predictions-cup-2026/issues/1#issuecomment-5973997375",
+          "resolution": "final certified winner party affiliation",
+          "winnerAffiliation": "Republican Party"
+        },
+        "exchangeId": "1071",
+        "marketId": "382",
+        "outcome": "NO",
+        "rulesHash": "a133bb59004074d21edd3408745e5b420dba0ae7319429ccdbeb80e976064711"
+      }
+    ],
+    "recordedAt": "2026-10-03T22:36:16.657Z",
+    "scenarios": [
+      {
+        "category": "ordinary",
+        "id": "Democratic_winner",
+        "payouts": [
+          0,
+          1
+        ]
+      },
+      {
+        "category": "ordinary",
+        "id": "Republican_winner",
+        "payouts": [
+          1,
+          0
+        ]
+      },
+      {
+        "category": "ordinary",
+        "id": "other_winner",
+        "payouts": [
+          1,
+          1
+        ]
+      },
+      {
+        "category": "exception",
+        "id": "dual_party_or_admin_zero_stress",
+        "payouts": [
+          0,
+          0
+        ]
+      }
+    ],
+    "schemaVersion": 1,
+    "tournamentId": "bda92870-621e-47b0-bc3c-3602c5c26f55"
+  },
+  "schemaVersion": 1,
+  "sourcePrefixBytes": 29019540,
+  "sourcePrefixHash": "42043a73778b7b13d241f72b70db34b1d3066e31412e197e24238bd9d92ef671",
+  "sourcePrefixSequence": 14125,
+  "sourcePrefixTailHash": "0ee4a379899de644ac875e12d1ef7e16d1954e0992c9a609b8cc10e08c0a5e73",
+  "tournamentContext": {
+    "endDate": "2026-11-04T17:00:00Z",
+    "freshnessVerified": false,
+    "id": "bda92870-621e-47b0-bc3c-3602c5c26f55",
+    "source": "historical_local_official_v1_capture",
+    "startDate": "2026-10-01T16:00:00Z",
+    "status": "active"
+  },
+  "tournamentId": "bda92870-621e-47b0-bc3c-3602c5c26f55",
+  "hostRevision": 2,
+  "accountingContinuation": {
+    "cohort": "baal-no-pair-20261004-v1",
+    "bankHash": "c6461bcd1f41d3760bee44183358d0bdcbc48e15dfa3cacb381b7accccf7628a",
+    "bankFileHash": "8c53c28d2c6fb25a2e0d3b930b0a89f69a70c1cb49f2d82cb03baa185a229b55",
+    "journalPrefixBytes": 270444,
+    "journalPrefixHash": "1de76b930dcd0a2f0de75c58824c7a68847f5a7f877b5ad0f3a9864fa7120a89",
+    "openingStateFileHash": "31ad7d73b7a2a132dcebe99b7b7ff2329e6be271c31e0fc2f27926dba30f1033",
+    "reason": "full_depth_participation_execution_correction",
+    "accountingCarried": true
+  }
+}
