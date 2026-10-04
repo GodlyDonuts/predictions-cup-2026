@@ -1,0 +1,124 @@
+{
+  "at": "2026-10-04T10:24:28.893Z",
+  "cohort": "source-probability-owned-risk-20261004-v2",
+  "bankHash": "00e49283c6fb615001fbcb93a94125eba1917abd11b551d7b6e29530b4cddeaa",
+  "pids": {
+    "collector": 27628,
+    "dashboard": 8424,
+    "paper": 11552,
+    "metrics": null,
+    "contestActivation": false,
+    "retiredMetricsPid": 11792
+  },
+  "originalBankAndJournalUnchanged": true,
+  "originalWalletAccountingCarried": true,
+  "frozenFiles": 49,
+  "sourceSequence": 15695,
+  "journalSequence": 22,
+  "sourceClosed": false,
+  "collectorStatus": "running",
+  "readFocus": {
+    "bankHash": "00e49283c6fb615001fbcb93a94125eba1917abd11b551d7b6e29530b4cddeaa",
+    "markets": [
+      {
+        "marketId": "297",
+        "phase": "held"
+      }
+    ],
+    "ownedRiskReads": true,
+    "executionAuthority": false
+  },
+  "heldRiskReads": {
+    "marketIds": [
+      "297"
+    ],
+    "replacedSlots": 1,
+    "requestsAdded": 0,
+    "executionAuthority": false
+  },
+  "wallets": {
+    "1000": {
+      "cash": "99.125000",
+      "realizedPnl": "0.020000",
+      "liquidationPnl": "-0.010000",
+      "lastDerivedQuoteLiquidationPnl": "-0.010000",
+      "fees": "0.000000",
+      "fills": 3,
+      "closedTrades": 1,
+      "positions": [
+        {
+          "instrument": "986:YES",
+          "quantity": 1,
+          "cost": "0.895000",
+          "quoteReceivedAt": "2026-10-04T10:24:20.962Z",
+          "observationAgeMs": 6768,
+          "quoteAgeMs": 6768,
+          "quoteInvalidated": false
+        }
+      ]
+    },
+    "3000": {
+      "cash": "99.125000",
+      "realizedPnl": "0.020000",
+      "liquidationPnl": "-0.010000",
+      "lastDerivedQuoteLiquidationPnl": "-0.010000",
+      "fees": "0.000000",
+      "fills": 3,
+      "closedTrades": 1,
+      "positions": [
+        {
+          "instrument": "986:YES",
+          "quantity": 1,
+          "cost": "0.895000",
+          "quoteReceivedAt": "2026-10-04T10:24:20.962Z",
+          "observationAgeMs": 6768,
+          "quoteAgeMs": 6768,
+          "quoteInvalidated": false
+        }
+      ]
+    }
+  },
+  "dashboardWallets": [
+    {
+      "id": "probability-1000",
+      "status": "running",
+      "metrics": {
+        "cash": "99.125000",
+        "realizedPnl": "0.020000",
+        "referencePnl": "-0.002500",
+        "referenceEquity": "99.997500",
+        "liquidationPnl": "-0.010000",
+        "equity": "99.990000",
+        "fills": 3,
+        "fees": "0.000000",
+        "drawdown": "0.002500"
+      }
+    },
+    {
+      "id": "probability-3000",
+      "status": "running",
+      "metrics": {
+        "cash": "99.125000",
+        "realizedPnl": "0.020000",
+        "referencePnl": "-0.002500",
+        "referenceEquity": "99.997500",
+        "liquidationPnl": "-0.010000",
+        "equity": "99.990000",
+        "fills": 3,
+        "fees": "0.000000",
+        "drawdown": "0.002500"
+      }
+    }
+  ],
+  "checks": {
+    "targetedPassed": 30,
+    "targetedFailed": 0,
+    "productionNextBuild": true,
+    "fullRepositorySuite": false,
+    "legacyRunnerHarness": "fails before requests at missing performance; reproduced without current runner edit"
+  },
+  "competitionOrders": 0,
+  "additionalReadSlots": 0,
+  "additionalPersistentProcesses": 0,
+  "profitabilityEstablished": false
+}
