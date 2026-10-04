@@ -9,6 +9,8 @@ import {historyPolicy as validateHistoryPolicy,resetHistory,LEGACY,ISOLATED} fro
 import {updateContext,contextFeatures} from './breadth-context.mjs';
 import {ROUND_TRIP,LEGACY_TARGET,targetPolicy as validateTarget,roundTripLabel} from './roundtrip-target.mjs';
 import {predictMLP} from './gpu-inference.mjs';
+import {trainingOptions} from './training-options.mjs';
+import {netEdgeDiagnostics} from './execution-metrics.mjs';
 
 const num=x=>Number(amount(x))/1e6;
 export function features(book,history){
@@ -85,7 +87,7 @@ export function trainingSupport(train,test,marketIds,scope='all-markets-v1'){
  const coverage=instrumentCoverage(train,test,marketIds),supported=new Set(coverage.filter(x=>x.eligible).flatMap(x=>x.trainingInstruments.map(id=>x.marketId+':'+id)));
  return {coverage,train:scope==='all-markets-v1'?train:train.filter(r=>supported.has(r.marketId+':'+r.instrument)),test:scope==='all-markets-v1'?test:test.filter(r=>supported.has(r.marketId+':'+r.instrument)),eligible:scope==='all-markets-v1'?coverage.every(x=>x.eligible):coverage.some(x=>x.eligible)};
 }
-export function trainBank(raw,c,{family='ridge',historyPolicy=LEGACY,since=null,requireInstrumentCoverage=false,breadthContext=false,targetPolicy=LEGACY_TARGET,trainingScope='all-markets-v1'}={}){
+export function trainBank(raw,c,{family='ridge',historyPolicy=ISOLATED,since=null,requireInstrumentCoverage=false,breadthContext=false,targetPolicy=ROUND_TRIP,trainingScope='all-markets-v1'}={}){
  validateTarget(targetPolicy);
  validateTrainingScope(trainingScope,requireInstrumentCoverage,targetPolicy);
  if(!['ridge','boosted_stumps'].includes(family))throw Error('Unsupported model family');
@@ -121,12 +123,20 @@ export function trainBank(raw,c,{family='ridge',historyPolicy=LEGACY,since=null,
    if(requireInstrumentCoverage&&!support.eligible){rejected.push({id,reason:'insufficient_instrument_coverage',coverage});continue;}
    const model=family==='ridge'?fitRidge(train,width,lambda):fitStumps(train,width,iterations,learningRate,minLeaf);
    const errors=test.map(r=>predict(model,r.x)-r.y),rmse=Math.sqrt(errors.reduce((n,v)=>n+v*v,0)/errors.length),baselineRmse=Math.sqrt(test.reduce((n,r)=>n+(r.y-r.persistence)**2,0)/test.length);
-   models.push({id,horizon,...model,coverage,trainRows:train.length,testRows:test.length,rmse,baselineRmse,baseline:targetPolicy===ROUND_TRIP?'Decision book unchanged, entry and exit ticks and quantity-rounded fees':'Current bid persists, with the same assumed exit tick and fee',beatsPersistence:rmse<baselineRmse,maxTrainingLabelAt:new Date(Math.max(...train.map(r=>Date.parse(r.labelAt)))).toISOString()});
+   models.push({id,horizon,...model,...(targetPolicy===ROUND_TRIP?{executionDiagnostics:netEdgeDiagnostics(test,test.map(r=>predict(model,r.x)))}:{}),coverage,trainRows:train.length,testRows:test.length,rmse,baselineRmse,baseline:targetPolicy===ROUND_TRIP?'Decision book unchanged, entry and exit ticks and quantity-rounded fees':'Current bid persists, with the same assumed exit tick and fee',beatsPersistence:rmse<baselineRmse,maxTrainingLabelAt:new Date(Math.max(...train.map(r=>Date.parse(r.labelAt)))).toISOString()});
   }
  }
  const selected=[60,180,300,600].flatMap(h=>models.filter(m=>m.horizon===h).sort((a,b)=>a.rmse-b.rmse).slice(0,3));
  return {schemaVersion:1,targetPolicy,trainingScope,labelDiagnostics,family,historyPolicy,trainingWindowStart:since,requireInstrumentCoverage,breadthContext,createdAt:new Date().toISOString(),config:c,configHash:digest(c),sourceHash:source.sourceHash,sourceRecords:source.sourceRecords,trainingCaptureThrough:source.cutoff,developmentSplitAt:split,acceptedSnapshots:rows.length,candidatesAttempted:128,modelsTrained:models.length,models,rejected,selected,selection:'Three lowest development-split RMSE per horizon; exploration only, all tried variants retained',target:targetPolicy===ROUND_TRIP?'Conditional net realized round-trip PnL per filled share from delayed entry, post-fill holding/stop and delayed FIFO exit':'Future haircut-free best bid minus adverse exit tick and assumed exit fee, relative to current midpoint; entry costs charged separately',limitations:[...(targetPolicy===ROUND_TRIP?['Labels conditional on admitted entry and completed exit; censored/no-fill decisions excluded and counted, selection bias possible','Flat-wallet counterfactual sizing; live wallet exposure and cash can differ']:[]),'Short correlated capture; no profitability established','Chronological development split with training labels purged at split; not untouched future validation','Top bid label is not verified full-size exit liquidity','No guarantee of future depth, latency, settlement equivalence or execution']};
 }
 if(process.argv[1]&&fileURLToPath(import.meta.url)===process.argv[1]){
- const arg=n=>{const i=process.argv.indexOf(n);if(i<0||!process.argv[i+1])throw Error('Required '+n);return process.argv[i+1];};const family=process.argv.includes('--family')?arg('--family'):'ridge';const bank=trainBank(fs.readFileSync(arg('--journal'),'utf8'),JSON.parse(fs.readFileSync(arg('--config'),'utf8')),{family,historyPolicy:process.argv.includes('--history-policy')?arg('--history-policy'):LEGACY,since:process.argv.includes('--since')?arg('--since'):null,requireInstrumentCoverage:process.argv.includes('--require-instrument-coverage'),breadthContext:process.argv.includes('--breadth-context'),targetPolicy:process.argv.includes('--target-policy')?arg('--target-policy'):LEGACY_TARGET,trainingScope:process.argv.includes('--training-scope')?arg('--training-scope'):'all-markets-v1'});const out=arg('--out');if(fs.existsSync(out))throw Error('Refusing to overwrite an existing frozen model bank');const tmp=out+'.'+randomUUID()+'.tmp';fs.writeFileSync(tmp,JSON.stringify(bank,null,2),{flag:'wx',mode:0o600});try{fs.linkSync(tmp,out);}finally{fs.unlinkSync(tmp);}console.log(JSON.stringify({attempted:bank.candidatesAttempted,trained:bank.modelsTrained,shadowModels:bank.selected.length,snapshots:bank.acceptedSnapshots,cutoff:bank.trainingCaptureThrough}));
+ const {journal,config,out,options}=trainingOptions(process.argv.slice(2));
+ // Refuse an existing bank before loading the journal or fitting 128 models.
+ if(fs.existsSync(out))throw Error('Refusing to overwrite an existing frozen model bank');
+ const bank=trainBank(fs.readFileSync(journal,'utf8'),JSON.parse(fs.readFileSync(config,'utf8')),options);
+ bank.trainingDefaultsVersion='execution-aligned-cli-v1';
+ const tmp=out+'.'+randomUUID()+'.tmp';
+ fs.writeFileSync(tmp,JSON.stringify(bank,null,2),{flag:'wx',mode:0o600});
+ try{fs.linkSync(tmp,out);}finally{fs.unlinkSync(tmp);}
+ console.log(JSON.stringify({attempted:bank.candidatesAttempted,trained:bank.modelsTrained,shadowModels:bank.selected.length,snapshots:bank.acceptedSnapshots,cutoff:bank.trainingCaptureThrough,targetPolicy:bank.targetPolicy,requireInstrumentCoverage:bank.requireInstrumentCoverage,trainingScope:bank.trainingScope,profitabilityEstablished:false}));
 }

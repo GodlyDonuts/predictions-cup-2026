@@ -1,4 +1,4 @@
-import {metadataPairs,raceIdentity} from '../strategy.mjs';
+import {metadataPairs,raceIdentity} from '../bot/strategy.mjs';
 import {digest} from './model.mjs';
 import {amount,TICK,SCALE} from '../paper/fixed.mjs';
 
