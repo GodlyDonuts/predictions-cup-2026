@@ -39,10 +39,10 @@ export function readAnchorReadFocus(runtimeDir,universe,now=Date.now()){
   return {bankHash:stats.bankHash,markets:anchorFocusMarkets(stats,universe)};
  }catch{return null;}
 }
-export function prioritizeAnchorReads(plan,focus,{excludedMarketIds=[],lastAttempts={}}={}){
+export function prioritizeAnchorReads(plan,focus,{excludedMarketIds=[],ownedRiskMarketIds=[],lastAttempts={}}={}){
  if(!focus?.markets?.length||plan.comparisonSampling||plan.basketMeasurement?.marketIds?.length||plan.paperPackageFocus?.marketIds?.length)return plan;
  const rank={held:0,exit_pending:0,entry_pending:1,depth_required:2};
- const excluded=new Set(excludedMarketIds),eligible=focus.markets.filter(x=>!excluded.has(x.marketId)).sort((a,b)=>rank[a.phase]-rank[b.phase]||(lastAttempts[a.marketId]||0)-(lastAttempts[b.marketId]||0)||Number(a.marketId)-Number(b.marketId)),reads=plan.reads.map(x=>({...x})),observed=[];let replacements=0;
+ const excluded=new Set(excludedMarketIds),ownedRisk=new Set(ownedRiskMarketIds),eligible=focus.markets.filter(x=>!excluded.has(x.marketId)||ownedRisk.has(x.marketId)&&['held','exit_pending'].includes(x.phase)).sort((a,b)=>rank[a.phase]-rank[b.phase]||(lastAttempts[a.marketId]||0)-(lastAttempts[b.marketId]||0)||Number(a.marketId)-Number(b.marketId)),reads=plan.reads.map(x=>({...x})),observed=[];let replacements=0;
  for(const market of eligible){if(reads.some(x=>x.marketId===market.marketId)){observed.push(market.marketId);continue;}if(replacements===2)break;
   const index=reads.findIndex(x=>['discovery','comparison','edge_observation'].includes(x.reason)&&!eligible.some(y=>y.marketId===x.marketId));if(index<0)continue;
   reads[index]={marketId:market.marketId,path:'supplementalDepth',reason:'bid_anchor_paper_risk'};replacements++;observed.push(market.marketId);
