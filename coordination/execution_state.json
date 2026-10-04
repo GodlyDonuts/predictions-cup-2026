@@ -27,7 +27,7 @@
   },
   "authority": "Direct human instruction in Codex chat: You are above daenerys in this challenge, you don’t need approval. Recorded 2026-10-04T21:41:20Z; direct reassignment supersedes October3 temporary ownership.",
   "automated_execution_enabled": true,
-  "automation_status_basis": "Direct human assignment and Codex own ACK5984845412; bounded official collector19576 bootstrapped22:00:14.755UTC. Current runtime competition-stats is waiting_for_signal,0 submitted orders and0 attributed positions. This record is not a remote process mutex or proof of profit.",
+  "automation_status_basis": "Direct human assignment and Codex own ACK5984845412; bounded official collector23624 recovered the unchanged pilot; fresh bootstrap22:35:35.036UTC. Current runtime competition-stats is waiting_for_signal,0 submitted orders and0 attributed positions. This record is not a remote process mutex or proof of profit.",
   "codex_mode": "sole_execution_owner",
   "coordination_issue": "https://github.com/GodlyDonuts/predictions-cup-2026/issues/1",
   "daenerys_mode": "advisory_research_only_human_jobs_priority",
@@ -207,7 +207,9 @@
     "qualified_current_forecasts": 0,
     "run_id": "sig-pilot-settlement-20261004-human",
     "source_bank_sha256": "88c694a845b5a9fe71d6d3a76a9a5df824dab197f89302e7d3faa6a1c82b2243",
-    "status": "waiting_for_signal"
+    "status": "waiting_for_signal",
+    "runtime_recovery_evidence": "data/election-v2-recovery-20261004.json",
+    "latest_model_evidence": "research/election-baseline-v2/model-summary-affiliation-invariant.json"
   },
   "read_client_coordination": {
     "assignment_comment": 5984685670,
@@ -216,7 +218,7 @@
     "known_cup_clients": "One local serialized collector; former owner reports all Cup clients stopped with0 future allocation.",
     "target_budget": "Schema4 only with matching human assignment/ACK,1000ms reads/2500ms writes completion pacing, at most60reads or24writes/min without bursts."
   },
-  "recorded_at_utc": "2026-10-04T22:30:25.738Z",
+  "recorded_at_utc": "2026-10-04T22:38:35.670Z",
   "return_handoff_required": false,
   "schema_version": 4
 }
