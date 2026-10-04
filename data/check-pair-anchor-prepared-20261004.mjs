@@ -1,0 +1,10 @@
+import fs from 'node:fs';import path from 'node:path';import {payloadHash} from '../execution/ledger.mjs';import {Journal} from '../live-paper/transport-runtime.mjs';
+import {frozenPaperModule} from '../live-paper/frozen-paper-runtime.mjs';import {sourcePrefixHash} from '../live-paper/native-journal-restore.mjs';import * as next from '../live-paper/baal-pair-host-v4.mjs';
+const r=path.join(process.env.LOCALAPPDATA,'SigTradingCup/paper-runtime'),read=f=>JSON.parse(fs.readFileSync(f)),need=(v,c)=>{if(!v)throw Error('PAIR_PREPARED_'+c);};
+need(read(path.join(r,'COLLECTOR_STOP')).source==='pair-anchor-deployment-20261004'&&!fs.existsSync(path.join(r,'..','bot.lock'))&&!fs.existsSync('STOP')&&!fs.existsSync(path.join(r,'STOP')),'STOP_OR_LEASE');
+const preserved=read('data/pair-anchor-preservation-20261004.json'),active=read(path.join(r,'baal-pair-active.json')),dir=path.join(r,'baal-pair-cohorts',active.cohort),bank=read(path.join(dir,'bank.json')),stats=read(path.join(dir,'stats.json')),journal=new Journal(path.join(dir,'journal.jsonl'));
+need(active.cohort===preserved.cohort&&active.bankHash===preserved.bankHash&&active.hostRevision===4&&payloadHash(bank)===active.bankHash&&!stats.failed&&journal.sequence===1&&journal.last.event.kind==='genesis'&&stats.journalHash===journal.previous&&stats.cash===preserved.opening.cash&&stats.fills===preserved.opening.fills,'UNSTARTED_SUCCESSOR');
+const mod=await frozenPaperModule({runtimeDir:r,bank,modulePath:'live-paper/baal-pair-host-v4.mjs',fallback:next});need(payloadHash(mod.baalPairCodeIdentity())===payloadHash(bank.codeIdentity),'CODE_IDENTITY');
+need(Date.now()<Date.parse(bank.review.expiresAt)&&read(path.join(r,'competition-activation.json')).enabled===false,'REVIEW_OR_ACTIVATION');
+for(const[name,source]of [['public-books.jsonl',preserved.publicSource],['journal.jsonl',preserved.originalSource]])need(fs.statSync(path.join(r,name)).size===source.bytes&&await sourcePrefixHash(path.join(r,name),source.bytes)===source.hash,'SEALED_SOURCE_CHANGED');
+console.log(JSON.stringify({prepared:true,cohort:active.cohort,bankHash:active.bankHash,bankAndAccountingPreserved:true}));
