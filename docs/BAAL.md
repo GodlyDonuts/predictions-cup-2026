@@ -104,3 +104,25 @@ edge. Three services and the serialized 20-read account allocation remain intact
 See `data/native-request-clock-declaration-20261004.json` and
 `data/native-request-clock-milestone-20261004.json`; raw fills stay in restricted
 runtime storage. No contest orders or additional persistent process were added.
+
+The frozen 100-case Rust cohort now refreshes inside the single collector through
+`native-dip-host-v1.mjs`. Every three minutes it seals an original journal prefix,
+checks append continuity, verifies the pinned binary/declaration, and evaluates
+the unchanged wallets. Separate exact cash/FIFO/clock checks derive held-market
+read obligations. Those obligations use the existing four-book scheduler and
+remain protected when a replay fails; only a verified close releases them. A
+bounded, abortable native child adds no API client or persistent service. Frozen
+pair, maker and probability banks and their original journals are preserved.
+Ninety-six focused accounting, scheduling, host and actual runner checks pass.
+
+The first unique subsequent dip round trip closed before this integration was
+deployed. It lost 0.010 per participating wallet: +0.005 midpoint movement minus
+0.005 quoted spread/ladder cost and 0.010 two-sided slippage, with zero fees.
+Seventy-two copied results represent one correlated trade, not 72 independent
+experiments. The remaining 28 cases stayed flat. The initial automatic update
+verified 5.05 GB / 2.64 days and compared 100 cases in about 23 seconds including
+the separate append-continuity hash; native comparison itself took 124 ms.
+This is an engineering milestone, not profitability evidence. Pending intents
+still lack per-instrument risk hints, and shared read capacity can still limit
+freshness. API ingestion and Next remain Node; capture verification and wallet
+comparisons run in Rust. See `data/native-dip-host-milestone-20261004.json`.

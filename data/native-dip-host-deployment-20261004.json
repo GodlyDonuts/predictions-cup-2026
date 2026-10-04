@@ -1,0 +1,11 @@
+{
+  "competitionWrites": false,
+  "at": "2026-10-04T14:44:34.7899930Z",
+  "readAllocation": 20,
+  "persistentProcesses": 3,
+  "paper": 5624,
+  "dashboard": 6456,
+  "retiredCollector": 19596,
+  "collector": 23904,
+  "extraProcesses": 0
+}
