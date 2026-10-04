@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 2,
+  "id": "baal-election-party-margin-v2",
+  "declaredAt": "2026-10-04T22:21:37Z",
+  "target": "Final-stage strongest Republican versus strongest non-Republican candidate margin, divided by their combined votes; independent opponents included",
+  "minimumTrainingYear": 1990,
+  "developmentLastYear": 2018,
+  "ridgeGrid": [1, 5, 20],
+  "observedDiagnosticYears": [2020, 2022, 2024],
+  "features": ["intercept", "strictly prior presidential state lean", "six-year prior same-seat final margin adjusted for strictly prior national presidential margin", "signed prior winner on first-round general entrant list"],
+  "selection": "Expanding-cycle MSE through 2018; normalize only training rows. No selection on already observed 2020/2022/2024 diagnostics.",
+  "finalStagePolicy": "Use primary-source final-stage overrides where identified; otherwise certified GEN RUNOFF/runoff before gen. Odd-year Georgia regular runoff maps to preceding election cycle. Reject unresolved majority-runoff, RCV, duplicate ballot-line/mode and ambiguous party labels.",
+  "incumbencyPolicy": "Use first-round general entrants, never the outcome-selected finalist list. Overrides of outcomes do not alter entrant features.",
+  "limitations": [
+    "Final revised election returns and candidate identities are not original forecast vintages.",
+    "Candidate identity aliases, appointments and replacements can impair incumbency inference.",
+    "This margin model includes independent opponents but does not certify 2026 probability calibration or market profitability.",
+    "Complex elections without a verified final comparable margin are excluded explicitly.",
+    "An updated model fit does not renew expired polling, qualify a production forecast or reset any live budget or accounting."
+  ],
+  "qualifiedProductionForecasts": 0,
+  "profitabilityEstablished": false
+}

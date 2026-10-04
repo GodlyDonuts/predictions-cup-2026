@@ -1,0 +1,11 @@
+{
+  "observedAt": "2026-10-04T22:21:37Z",
+  "sources": [
+    {"filename":"federalelections2020.xlsx","url":"https://www.fec.gov/documents/4228/federalelections2020.xlsx","bytes":6251110,"sha256":"5073b6d2c76c86c941508dfb1a11cc497e8529b0068c5132aceb0f385c19352e"},
+    {"filename":"federalelections2016.xlsx","url":"https://www.fec.gov/documents/1890/federalelections2016.xlsx","bytes":1549194,"sha256":"b4a1d1383602bc388cfbdf1fbea2476476d32e0b44b44236d3a3910fa9782eb6"}
+  ],
+  "finalColumnClarification": "The 2016 override sourceLocation's GENERAL wording denotes the final general election stage. Its exact workbook column is GE RUNOFF ELECTION VOTES (LA), not GENERAL VOTES. The extraction check verifies this named column and both final counts.",
+  "originalMitSources": "../election-baseline-v1/sources/*-manifest.json",
+  "primaryPdfOverrides": ["https://www.fec.gov/documents/1738/FederalElections2002_Senate.pdf", "https://www.fec.gov/documents/1698/2014senate.pdf"],
+  "accountDataIncluded": false
+}

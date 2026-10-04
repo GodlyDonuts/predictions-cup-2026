@@ -1,0 +1,48 @@
+{
+  "at": "2026-10-04T22:30:25.738Z",
+  "id": "election-final-label-v2-20261004",
+  "kind": "checked_model_and_source_correction",
+  "sourceModel": "54fc1978a6bbf4296ed06bc5519819e65a15aa2a65c13b4ef10082f233f2c475",
+  "facts": {
+    "regularTrainingRows": 561,
+    "diagnosticRaces": 89,
+    "directionCorrect": 82,
+    "rmse": 0.11071513361331801,
+    "diagnosticsUntouched": false,
+    "qualifiedProductionForecasts": 0,
+    "screenedSenateMarkets": 31,
+    "missingPriorSeatMarkets": 3,
+    "screenNetworkRequests": 0,
+    "fees": 0,
+    "profitabilityEstablished": false
+  },
+  "checks": {
+    "nodeTestsPassed": 17,
+    "fecWorkbooksVerified": [
+      "2020:GA",
+      "2016:LA"
+    ],
+    "primaryFinalColumnNamesVerified": true
+  },
+  "limitations": [
+    "No original October forecast vintages.",
+    "Broader historical diagnostics are not comparable profit results or untouched selection data.",
+    "Current scenario sensitivities are assumptions, not calibrated confidence floors.",
+    "No live bank, cumulative purchase budget, attribution journal or frozen wallet changed."
+  ],
+  "remaining": [
+    "Produce current exact-contract forecasts from verified nominees and independently dated sources, with executable price/cost assessment.",
+    "Introduce any qualified bank transition without resetting run accounting or cumulative risk.",
+    "Measure actual subsequent attributed fills and net official performance."
+  ],
+  "codeHashes": {
+    "research/election-baseline-v2/model.mjs": "629b0cabbbbf957fd9cc8339ce021f459dac3d8849adb7ea42bcf56e2e9fbdca",
+    "research/election-baseline-v2/train.mjs": "a36de081edc648919ee2a366f61d8fc89f328ad938bf21686d3d829de8295178",
+    "research/election-baseline-v2/screen.mjs": "092c849ad197670f7eb586083f880238dc6a3598bfd29f6b1f698e9c769b2b24",
+    "research/election-baseline-v2/verify-fec-workbooks.py": "1e1361466bed631ad1021620f39d3bf004c43e6b5432afb6a587382e3d469b01"
+  },
+  "immutableReportFitReproduced": {
+    "initial": true,
+    "affiliationInvariant": true
+  }
+}

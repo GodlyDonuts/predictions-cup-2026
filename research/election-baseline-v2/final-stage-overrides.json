@@ -1,0 +1,38 @@
+[
+  {
+    "key": "2002:LA",
+    "sourceUrl": "https://www.fec.gov/documents/1738/FederalElections2002_Senate.pdf",
+    "sourceLocation": "Page 3, Louisiana, December 7 final column",
+    "finalElectionDate": "2002-12-07",
+    "reason": "MIT gen rows duplicate finalists from two stages and combine state totals. Use FEC final runoff only.",
+    "total": 1235296,
+    "candidates": [{"name":"MARY L. LANDRIEU","party":"DEMOCRAT","votes":638654},{"name":"SUZANNE HAIK TERRELL","party":"REPUBLICAN","votes":596642}]
+  },
+  {
+    "key": "2014:LA",
+    "sourceUrl": "https://www.fec.gov/documents/1698/2014senate.pdf",
+    "sourceLocation": "Page 6, Louisiana, December 6 final column",
+    "finalElectionDate": "2014-12-06",
+    "reason": "MIT gen candidate and total counts are inconsistent with FEC final-stage results. Do not treat aggregate gen as final margin.",
+    "total": 1273589,
+    "candidates": [{"name":"BILL CASSIDY","party":"REPUBLICAN","votes":712379},{"name":"MARY L. LANDRIEU","party":"DEMOCRAT","votes":561210}]
+  },
+  {
+    "key": "2016:LA",
+    "sourceUrl": "https://www.fec.gov/documents/1890/federalelections2016.xlsx",
+    "sourceLocation": "2016 US Senate Results by State; rows with Kennedy, John and Campbell, Foster; GENERAL columns",
+    "finalElectionDate": "2016-12-10",
+    "reason": "MIT gen includes multiple first-stage candidates with mixed stage values. FEC final runoff is Kennedy versus Campbell.",
+    "total": 884007,
+    "candidates": [{"name":"JOHN KENNEDY","party":"REPUBLICAN","votes":536191},{"name":"FOSTER CAMPBELL","party":"DEMOCRAT","votes":347816}]
+  },
+  {
+    "key": "2020:GA",
+    "sourceUrl": "https://www.fec.gov/documents/4228/federalelections2020.xlsx",
+    "sourceLocation": "12. US Senate Results by State; S-FULL TERM rows Ossoff, Jon and Perdue, David A.; GENERAL RUNOFF columns",
+    "finalElectionDate": "2021-01-05",
+    "reason": "2020 November plurality is not final winner. MIT 2021 runoff is unofficial and its counts differ from FEC certified results.",
+    "total": 4484902,
+    "candidates": [{"name":"JON OSSOFF","party":"DEMOCRAT","votes":2269923},{"name":"DAVID A. PERDUE","party":"REPUBLICAN","votes":2214979}]
+  }
+]

@@ -1,4 +1,8 @@
-# Current execution authority — October 3
+# Current execution authority — October 4
+
+Codex/Baal is the sole execution owner directly assigned by the human, with assignment [5984685670](https://github.com/GodlyDonuts/predictions-cup-2026/issues/1#issuecomment-5984685670) and own ACK refresh [5984845412](https://github.com/GodlyDonuts/predictions-cup-2026/issues/1#issuecomment-5984845412). The bounded zero-fee settlement pilot is live:1 SUSQie/order,10 aggregate attributed cost,25 cumulative purchases,3 markets, entries expire2026-10-05T03:59:22.131Z. No current qualifying forecast, order or profitability is claimed by this documentation. See coordination/execution_state.json, execution/production-launch.md and the live dashboard. Daenerys is advisory; her current human-directed job-application priority remains.
+
+# Historical superseded execution authority — October 3
 
 The human reassigned contest trading to Daenerys until Codex has a successful production bot. Codex remains responsible for quantitative engineering and paper testing; its local contest writer is explicitly disabled. RELEASE `codex-to-daenerys-20261003-0725` is recorded in [issue comment 5966759363](https://github.com/GodlyDonuts/predictions-cup-2026/issues/1#issuecomment-5966759363); incoming ACK and fresh whole-account reconciliation are required. Earlier role assignments below are historical and superseded. Return to Codex requires a named stop/RELEASE/ACK and fresh reconciliation, not a passing test or paper signal.
 

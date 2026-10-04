@@ -1,3 +1,5 @@
+> October4 final-label correction: the preserved73/79 result is against screened dataset labels, not verified final Senate winners. Georgia2020 used first-round plurality instead of the later runoff; Louisiana stage/count issues also require correction. See final-label-review.json and the separate V2. Original reports and frozen banks remain intact.
+
 # Historical election-margin baseline
 
 This regularized model predicts Republican two-party Senate vote margin from strictly earlier presidential state lean, the same seat's prior regular election, and inferred incumbent identity. It uses MIT Election Lab's CC0 Senate1976–2024 and president1976–2024 datasets, original CSV downloads with verified published checksums. Source versions and hashes are preserved in `sources/*-manifest.json`.

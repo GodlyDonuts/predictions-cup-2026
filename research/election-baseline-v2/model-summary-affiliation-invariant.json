@@ -1,0 +1,276 @@
+{
+  "schemaVersion": 2,
+  "id": "baal-election-party-margin-v2",
+  "revision": "affiliation-invariant",
+  "at": "2026-10-04T22:28:53.286Z",
+  "definitionHash": "878bb9a77c004849d4f89548686144affaebdfd27c9a0ea0278120e346ed4aec",
+  "overridesHash": "6141a20ef0298e33f9ce0815c2e8098e43a24ef660799ec46c718a2c1c2f7499",
+  "sourceManifests": [
+    {
+      "doi": "doi:10.7910/DVN/PEJ5QU",
+      "metadataUrl": "https://dataverse.harvard.edu/api/datasets/:persistentId/?persistentId=doi%3A10.7910%2FDVN%2FPEJ5QU",
+      "version": 8,
+      "minorVersion": 0,
+      "publicationDate": "2026-05-11T16:13:52Z",
+      "license": "CC0 1.0",
+      "files": [
+        {
+          "id": 13887039,
+          "filename": "1976-2024-senate-state.csv",
+          "originalFilename": "1976-2024-senate-state.csv",
+          "url": "https://dataverse.harvard.edu/api/access/datafile/13887039?format=original",
+          "bytes": 530501,
+          "sha256": "6f745db1b4a0026ad837e74428f9ed6f3f77fa51eb6f858b58ebdbc186fdb3bd",
+          "publishedChecksum": {
+            "type": "MD5",
+            "value": "0f8b51cf0f77a2ef0bff992f7a64d1b4"
+          },
+          "downloadedAt": "2026-10-04T21:18:38.053Z"
+        },
+        {
+          "id": 6708560,
+          "filename": "codebook-us-senate-1976_2024.md",
+          "originalFilename": "codebook-us-senate-1976–2024.md",
+          "url": "https://dataverse.harvard.edu/api/access/datafile/6708560?format=original",
+          "bytes": 3700,
+          "sha256": "221ca02977af4f2d3803340eab798cd9d09830e3b2c5254e700e0b2b45637333",
+          "publishedChecksum": {
+            "type": "MD5",
+            "value": "1cab4bc42b0ca632223b9b9a90c65f30"
+          },
+          "downloadedAt": "2026-10-04T21:18:38.249Z"
+        }
+      ]
+    },
+    {
+      "doi": "doi:10.7910/DVN/42MVDX",
+      "metadataUrl": "https://dataverse.harvard.edu/api/datasets/:persistentId/?persistentId=doi%3A10.7910%2FDVN%2F42MVDX",
+      "version": 10,
+      "minorVersion": 1,
+      "publicationDate": "2026-09-04T16:15:49Z",
+      "license": "CC0 1.0",
+      "files": [
+        {
+          "id": 13887042,
+          "filename": "1976-2024-president.csv",
+          "originalFilename": "1976-2024-president.csv",
+          "url": "https://dataverse.harvard.edu/api/access/datafile/13887042?format=original",
+          "bytes": 514108,
+          "sha256": "9936410a6dd4ecc8be7fe202c6dff5b5f8fee59d88f35ab542ed12879941dcb7",
+          "publishedChecksum": {
+            "type": "MD5",
+            "value": "405af83db7625cb35d8c19a5ebe029ff"
+          },
+          "downloadedAt": "2026-10-04T21:18:38.691Z"
+        },
+        {
+          "id": 7241480,
+          "filename": "codebook-us-president-1976-2020.md",
+          "originalFilename": "codebook-us-president-1976-2020.md",
+          "url": "https://dataverse.harvard.edu/api/access/datafile/7241480?format=original",
+          "bytes": 3176,
+          "sha256": "efed2007526e11ee38d21269841ef30712f7683772877f0d36b556449a6daad4",
+          "publishedChecksum": {
+            "type": "MD5",
+            "value": "d40a38c2847781b54f002aa893921ef8"
+          },
+          "downloadedAt": "2026-10-04T21:18:38.921Z"
+        }
+      ]
+    }
+  ],
+  "includedRaces": 802,
+  "rows": 561,
+  "corrections": [
+    {
+      "key": "2002:LA",
+      "reason": "MIT gen rows duplicate finalists from two stages and combine state totals. Use FEC final runoff only.",
+      "sourceUrl": "https://www.fec.gov/documents/1738/FederalElections2002_Senate.pdf",
+      "finalElectionDate": "2002-12-07"
+    },
+    {
+      "key": "2014:LA",
+      "reason": "MIT gen candidate and total counts are inconsistent with FEC final-stage results. Do not treat aggregate gen as final margin.",
+      "sourceUrl": "https://www.fec.gov/documents/1698/2014senate.pdf",
+      "finalElectionDate": "2014-12-06"
+    },
+    {
+      "key": "2016:LA",
+      "reason": "MIT gen includes multiple first-stage candidates with mixed stage values. FEC final runoff is Kennedy versus Campbell.",
+      "sourceUrl": "https://www.fec.gov/documents/1890/federalelections2016.xlsx",
+      "finalElectionDate": "2016-12-10"
+    },
+    {
+      "key": "2020:GA",
+      "reason": "2020 November plurality is not final winner. MIT 2021 runoff is unofficial and its counts differ from FEC certified results.",
+      "sourceUrl": "https://www.fec.gov/documents/4228/federalelections2020.xlsx",
+      "finalElectionDate": "2021-01-05"
+    }
+  ],
+  "development": [
+    {
+      "lambda": 1,
+      "metrics": {
+        "n": 378,
+        "rmse": 0.1911924085790182,
+        "mae": 0.1482191062898933,
+        "directionAccuracy": 0.7936507936507936,
+        "cycles": [
+          1996,
+          1998,
+          2000,
+          2002,
+          2004,
+          2006,
+          2008,
+          2010,
+          2012,
+          2014,
+          2016,
+          2018
+        ]
+      },
+      "cycleMse": 0.03630880297935771
+    },
+    {
+      "lambda": 5,
+      "metrics": {
+        "n": 378,
+        "rmse": 0.19129473426685345,
+        "mae": 0.1480312282633357,
+        "directionAccuracy": 0.7936507936507936,
+        "cycles": [
+          1996,
+          1998,
+          2000,
+          2002,
+          2004,
+          2006,
+          2008,
+          2010,
+          2012,
+          2014,
+          2016,
+          2018
+        ]
+      },
+      "cycleMse": 0.036343264190630116
+    },
+    {
+      "lambda": 20,
+      "metrics": {
+        "n": 378,
+        "rmse": 0.19186504710461674,
+        "mae": 0.1476931398271021,
+        "directionAccuracy": 0.791005291005291,
+        "cycles": [
+          1996,
+          1998,
+          2000,
+          2002,
+          2004,
+          2006,
+          2008,
+          2010,
+          2012,
+          2014,
+          2016,
+          2018
+        ]
+      },
+      "cycleMse": 0.03654623053267828
+    }
+  ],
+  "selectedLambda": 1,
+  "selectedUsingYearsThrough": 2018,
+  "residualRms": 0.1911924085790182,
+  "model": {
+    "lambda": 1,
+    "n": 561,
+    "trainedThroughYear": 2024,
+    "means": [
+      0,
+      0.04780859219398341,
+      0.0058641403015090325,
+      -0.0142602495543672
+    ],
+    "scales": [
+      1,
+      0.17325548260693321,
+      0.2976128306677842,
+      0.8031643279041712
+    ],
+    "coefficients": [
+      0.04344120788582156,
+      0.101110223537196,
+      0.05110838600122545,
+      0.10790493554318638
+    ]
+  },
+  "modelHash": "54fc1978a6bbf4296ed06bc5519819e65a15aa2a65c13b4ef10082f233f2c475",
+  "diagnostics": {
+    "n": 89,
+    "rmse": 0.11071513361331801,
+    "mae": 0.08801558460029334,
+    "directionAccuracy": 0.9213483146067416,
+    "cycles": [
+      2020,
+      2022,
+      2024
+    ],
+    "correctDirections": 82,
+    "brier": 0.0699124046534455,
+    "logLoss": 0.24204381685351498,
+    "byCycle": [
+      {
+        "n": 30,
+        "rmse": 0.11544220426528336,
+        "mae": 0.08694614749418832,
+        "directionAccuracy": 0.9333333333333333,
+        "cycles": [
+          2020
+        ]
+      },
+      {
+        "n": 30,
+        "rmse": 0.11509153555954096,
+        "mae": 0.0948802017739697,
+        "directionAccuracy": 0.9333333333333333,
+        "cycles": [
+          2022
+        ]
+      },
+      {
+        "n": 29,
+        "rmse": 0.10064600128889921,
+        "mae": 0.08202057073728856,
+        "directionAccuracy": 0.896551724137931,
+        "cycles": [
+          2024
+        ]
+      }
+    ],
+    "untouched": false,
+    "reason": "These cycles were already inspected in V1 and the runoff correction. Outcome diagnostics only; no historical market PnL or original forecast vintage."
+  },
+  "qualifiedProductionForecasts": 0,
+  "profitabilityEstablished": false,
+  "limitations": [
+    "Final revised election returns and candidate identities are not original forecast vintages.",
+    "Candidate identity aliases, appointments and replacements can impair incumbency inference.",
+    "This margin model includes independent opponents but does not certify 2026 probability calibration or market profitability.",
+    "Complex elections without a verified final comparable margin are excluded explicitly.",
+    "An updated model fit does not renew expired polling, qualify a production forecast or reset any live budget or accounting."
+  ],
+  "excludedRaces": 27,
+  "exclusionsByReason": {
+    "missing_comparable_party_opponent": 15,
+    "invalid_total": 4,
+    "majority_runoff_final_unverified": 1,
+    "writein_winner_affiliation_unverified": 1,
+    "no_certified_final_stage": 5,
+    "ranked_choice_final_margin_unverified": 1
+  },
+  "fullReportHash": "36772883b8809b6fcda7473bf56d4d1458f0851cfb005271db95cc822c2463e9",
+  "fullReportFilename": "model-report-affiliation-invariant.json"
+}
