@@ -108,8 +108,8 @@ publication startup measured 1.68 seconds; its separately measured prior V2
 startup was 5.44 seconds on a slightly smaller prefix. Eleven targeted integration
 checks passed with no skips. See `data/native-collector-benchmark-20261004.json`
 and `data/native-collector-live-20261004.json`. These timings describe the public
-publication stage, not overall collector startup or platform pacing. Restoring
-the separate approximately 4 GB collector journal remains JavaScript work.
+publication stage, not overall collector startup or platform pacing. The separate
+collector journal migration is measured below.
 
 Measured no-refit comparison on the original 4.25 GB/9,491-record/2.31-day prefix:
 127.73 seconds JavaScript (four workers) versus 12.21 seconds Rust (eight), 10.46x
@@ -117,3 +117,22 @@ for this run. Verification dominates the native time. Model fitting is excluded
 from both sides; this does not accelerate platform pacing. The original model
 comparison had zero trades. Full scorecards stay in the restricted local runtime;
 only aggregate measurements belong in Git.
+
+The independent `journal-restore` crate restores the original collector journal
+without changing its append/accounting interface. Build with
+`./backend-rust/journal-restore/build.ps1 -Test`. Its CLI requires `--journal`,
+`--end-byte`, `--expected-sha` and a new `--out` path. It validates compact
+JSON.stringify number/string/key semantics, record hashes, sequence and chain;
+accepts records up to 16 MiB and nesting up to 256; and returns the exact final
+record body into restricted runtime storage. The adapter independently binds the
+source prefix, rejects source/binary/library changes and responds to STOP while
+restoring. Original `Journal.commit` and FIFO/accounting reducers remain intact.
+
+On the same original 4.25 GB/9,491-record/2.31-day prefix, final Rust recovery took
+18.68 seconds including the independent Node source hash, versus 30.06 seconds
+JavaScript (1.61x). Initial prototypes measured only 1.01x and 1.20x; their
+receipts are preserved. Small-object key admission, exact integer fast paths,
+reusable line buffers and parsing only the final output removed the measured
+overhead. Full final-body and tail/sequence equality passed. This is recovery
+speed, separate from the 10.46x model replay measurement. See
+`data/journal-native-benchmark-20261004.json` and the live preservation receipts.

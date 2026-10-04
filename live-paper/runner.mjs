@@ -27,6 +27,8 @@ import {exactMoneyFetch,createMoneyReceiptWriter} from '../execution/exact-money
 import {createBookPublication} from './book-publication-v2.mjs';
 import {createNativeBookPublication} from './book-publication-v3.mjs';
 import {collectorNativePublicationConfig} from './collector-publication-native.mjs';
+import {collectorNativeJournalConfig} from './collector-journal-native.mjs';
+import {openNativeJournal} from './native-journal-restore.mjs';
 import {createBasketFollowupSource} from './basket-followup-source.mjs';
 import {createComparisonRiskSource} from './comparison-risk-source.mjs';
 import {planComparisonSampling,recordComparisonAttempt} from './comparison-sampling.mjs';
@@ -195,7 +197,10 @@ async function collectHistory(limit=2){
 }
 async function pauseUntilNextRead(ms){try{await api.pause(ms);}catch(e){if(!stopping)throw e;}}
 try{
-  journal=new Journal(path.join(runtimeDir,'journal.jsonl'));state=journal.last?restoreState(journal.last.state,c):initialState(c,randomUUID(),new Date().toISOString());assertState(state,c);
+  const journalStarted=performance.now(),nativeJournal=collectorNativeJournalConfig(runtimeDir),journalFile=path.join(runtimeDir,'journal.jsonl');
+  journal=nativeJournal?await openNativeJournal({runtimeDir,binding:nativeJournal.nativeBackend,file:journalFile,receiptDir:path.join(runtimeDir,'collector-native-journal-receipts'),signal:control.signal,canOperate:()=>!stopping&&!fs.existsSync(stopFile)&&!fs.existsSync(paperStop)&&!fs.existsSync(collectorStop)}):new Journal(journalFile);
+  state=journal.last?restoreState(journal.last.state,c):initialState(c,randomUUID(),new Date().toISOString());assertState(state,c);
+  runtime.originalJournal={revision:nativeJournal?2:1,startupReplayMs:performance.now()-journalStarted,...(nativeJournal?{native:journal.nativeRestore}:{})};
   const syncFile=path.join(runtimeDir,'official-sync.json');officialSync=fs.existsSync(syncFile)&&JSON.parse(fs.readFileSync(syncFile)).enabled===true;
   if(officialSync){const file=path.join(runtimeDir,'official-account.json');if(fs.existsSync(file))accountCache=JSON.parse(fs.readFileSync(file));accountCache.errors??={};}
   universe=validateUniverse(JSON.parse(fs.readFileSync(path.join(root,'price-universe.json'),'utf8')),c.tournamentId);

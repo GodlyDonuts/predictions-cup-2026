@@ -31,3 +31,4 @@ data/
 account.json
 STOP
 backend-rust/target/
+backend-rust/**/target/

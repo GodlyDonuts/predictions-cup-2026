@@ -1,0 +1,12 @@
+{
+  "collector": 21804,
+  "nativeJournalRevision": 2,
+  "extraProcesses": 0,
+  "at": "2026-10-04T12:43:22.6441666Z",
+  "competitionWrites": false,
+  "paper": 5624,
+  "persistentProcesses": 3,
+  "readAllocation": 20,
+  "dashboard": 6456,
+  "retiredCollector": 27920
+}
