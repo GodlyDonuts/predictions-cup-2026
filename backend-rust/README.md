@@ -5,6 +5,36 @@ exact accounting, causal dip parameter grids and declared cost comparisons. The 
 Next.js dashboard still run in Node. Fitting existing ML banks remains JavaScript.
 This binary has no HTTP client, credentials or competition execution path.
 
+`quote-replay --declaration <file> --sources <file> --workers 8 --out <new-file>`
+runs the separate full-universe historical-dip cohort. Its three compact inputs
+are public depth, non-executable quotes and private sanitized account eligibility.
+Each source descriptor binds original bytes/hash and frozen/prior checkpoints.
+All original prefixes are rehashed. Public session/invalidation/version checks
+reuse the existing native validator. Publication availability orders observations;
+quotes or eligibility at the same millisecond cannot inform a book decision.
+
+Features use one observation per market/minute, exclude the two most recent
+minutes, and compare current executable ask plus two-sided slippage with a lower
+historical bid quantile. Fixed 1/3/6-hour windows, optional rebound confirmation,
+holding horizons and 3/10/30-second latency/cost scenarios have independent wallets.
+Quotes supply no depth and never fill orders. Account evidence must be complete,
+published before the depth request, unexpired and exclude neither held side nor
+an open order in that market. Missing historical account evidence blocks buys;
+it is never backfilled using today's account snapshot. Account exclusions cancel
+pending buys while held paper inventory can still be reduced. New intents use
+publication availability; later independent requests/version/depth supply fills.
+Historical warmup contributes no cash, fills or inherited P&L to a new cohort.
+
+October 4 measured replay: 2.20 captured days, 146.37 MB, 237 markets, 24 fixed
+strategies / 72 scenario wallets in 4.13 seconds (3.41 source verification +
+0.49 feature/wallet replay seconds, plus process overhead). The old state-bearing
+input remains archived; all 100 original scorecards were exactly unchanged on
+their original source prefix. These are different workloads, not an identical
+strategy speed ratio or a profit result. The frozen host runs inside the single
+collector with no new API client/service and the same four-book/20-read budget.
+Original journals, banks and wallets are retained. Zero fees; profitability is
+unestablished. See `data/native-quote-preparation-20261004.json`.
+
 Build on this PC with `./backend-rust/build.ps1 -Test`. The task-local official
 Rust toolchain lives under `%LOCALAPPDATA%/SigTradingCup/rust-toolchain`; the helper
 sets only its child process environment. The Windows GNU LLVM build ships

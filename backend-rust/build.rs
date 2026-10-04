@@ -19,6 +19,9 @@ fn main() {
         "src/sweep.rs",
         "src/evaluation.rs",
         "src/publication.rs",
+        "src/market_observations.rs",
+        "src/quote_wallet.rs",
+        "src/quote_replay.rs",
     ] {
         println!("cargo:rerun-if-changed={path}");
         let bytes = fs::read(Path::new(path)).expect("Missing native source graph");

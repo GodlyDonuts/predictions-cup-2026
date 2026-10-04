@@ -192,3 +192,28 @@ confirmation hints alone cannot establish profit or fix feature coverage.
 The next strategy comparison needs causal broad quote-history features, fresh
 depth for fills, a new future cutoff and independent wallet accounting, while
 retaining this sparse-depth cohort as an unchanged comparison.
+
+The separate `baal-quote-history-20261004-v1` cohort is now running inside the
+collector: 237 markets, 24 fixed quote-history strategies and 72 independent
+latency/cost wallets. Its future cutoff was declared at
+2026-10-04T16:54:44.307Z. Quotes warm causal, minute-weighted historical references;
+only validated public depth on a later independent request can supply paper fills.
+Account eligibility is recorded before books in a small private sanitized
+journal. Missing historical eligibility never becomes a retroactive purchase.
+Zero fees; depth participation, slippage, reserve, exposure, version and source
+boundaries remain enforced. The original engine and all 100 prior scorecards
+were exactly preserved. Three services and the existing four-book/20-read budget
+remain; Daenerys retains competition execution and Codex's writer is disabled.
+
+Measured 2.20 captured days / 146.37 MB replay in 4.13 seconds; feature/wallet
+simulation was 0.49 seconds of that. This is a compact-source workload, not an
+identical-strategy speed comparison. The live check through
+2026-10-04T17:01:38.917Z recorded no fills or gains yet, but a pending market311
+entry entered the bounded confirmation read plan. The old sparse-depth cohort
+still has one unique losing roundtrip of -0.010 per participating copied wallet.
+Profitability is unestablished. 104 Node checks and three Rust checks pass.
+See `data/native-quote-preparation-20261004.json`,
+`data/native-quote-live-20261004.json` and
+`data/native-quote-milestone-20261004.json`. Continue subsequent confirmations and
+measured execution/cost diagnostics; signals, test fixtures and correlated
+wallet counts are not profit evidence.

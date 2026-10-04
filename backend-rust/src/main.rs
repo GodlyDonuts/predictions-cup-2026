@@ -1,9 +1,10 @@
 mod capture;
 mod cache;
-mod engine { include!("engine.rs"); include!("intent_observation.rs"); }
+mod engine { include!("engine.rs"); include!("intent_observation.rs"); include!("quote_wallet.rs"); }
 mod evaluation;
 mod money;
-mod publication;
+mod publication { include!("publication.rs"); include!("market_observations.rs"); }
+mod quote_replay;
 mod replay;
 mod sweep;
 mod trace;
@@ -14,6 +15,7 @@ fn run() -> Result<(), String> {
     let args: Vec<_> = std::env::args().skip(1).collect();
     let command = args.first().ok_or("COMMAND_REQUIRED")?;
     let allowed = match command.as_str() {
+        "quote-replay" => vec!["--declaration","--sources","--workers","--out"],
         "capture" => vec!["--config", "--journal", "--end-byte", "--expected-sha"],
         "publication" => vec!["--scope", "--journal", "--end-byte", "--expected-sha", "--out"],
         "replay" => vec![
@@ -63,6 +65,20 @@ fn run() -> Result<(), String> {
             .copied()
             .ok_or_else(|| "MISSING_ARGUMENT".to_owned())
     };
+    if command=="quote-replay" {
+        if Path::new(get("--out")?).exists(){return Err("OUTPUT_EXISTS_OR_UNAVAILABLE".into());}
+        let bytes=fs::read(get("--declaration")?).map_err(|_|"DECLARATION_OPEN_FAILED")?;
+        let d:quote_replay::QuoteDeclaration=serde_json::from_slice(&bytes).map_err(|_|"DECLARATION_JSON_INVALID")?;
+        let sources:publication::MarketSources=serde_json::from_slice(&fs::read(get("--sources")?).map_err(|_|"MARKET_SOURCES_OPEN")?).map_err(|_|"MARKET_SOURCES_JSON")?;
+        let capture=publication::read_market_sources(&sources,&d.universe)?;
+        let workers=options.get("--workers").unwrap_or(&"8").parse().map_err(|_|"INVALID_REPLAY_WORKERS")?;
+        let result=quote_replay::run(&capture,&d,&sources,workers)?;
+        let output=serde_json::json!({"capture":capture.meta,"evaluation":result,"declarationFileHash":format!("{:x}",Sha256::digest(&bytes))});
+        let mut file=std::fs::OpenOptions::new().write(true).create_new(true).open(get("--out")?).map_err(|_|"OUTPUT_EXISTS_OR_UNAVAILABLE")?;
+        std::io::Write::write_all(&mut file,&serde_json::to_vec(&output).map_err(|_|"OUTPUT_INVALID")?).map_err(|_|"OUTPUT_WRITE_FAILED")?;file.sync_all().map_err(|_|"OUTPUT_SYNC_FAILED")?;
+        println!("{}",serde_json::json!({"sourceVerified":true,"sourceDays":(capture.meta["through"].as_i64().unwrap_or(0)-capture.meta["firstAt"].as_i64().unwrap_or(0)) as f64/86400000.0,"sourceBytes":sources.books.bytes+sources.quotes.bytes+sources.eligibility.bytes,"captureMs":capture.meta["verifyMs"],"replayMs":result["replayMs"],"candidates":result["candidates"],"networkRequests":0,"competitionOrders":0,"profitabilityEstablished":false}));
+        return Ok(());
+    }
     if command == "trace" {
         println!("{}", trace::run(Path::new(get("--fixture")?))?);
         return Ok(());

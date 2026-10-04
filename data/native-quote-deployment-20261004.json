@@ -1,0 +1,12 @@
+{
+  "paper": 5624,
+  "competitionWrites": false,
+  "readAllocation": 20,
+  "collector": 27488,
+  "persistentProcesses": 3,
+  "dashboard": 6456,
+  "extraProcesses": 0,
+  "at": "2026-10-04T16:59:04.4802743Z",
+  "newCohort": "baal-quote-history-20261004-v1",
+  "retiredCollector": 17088
+}

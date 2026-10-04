@@ -34,6 +34,8 @@ import {createComparisonRiskSource} from './comparison-risk-source.mjs';
 import {openNativeDipHost} from './native-dip-host-v1.mjs';
 import {openNativeDipCacheHost} from './native-dip-host-v2.mjs';
 import {openNativeDipIntentHost} from './native-dip-host-v3.mjs';
+import {openNativeQuoteHost} from './native-quote-host-v1.mjs';
+import {createAccountEligibilityPublication} from './account-eligibility-publication-v1.mjs';
 import {openCollectorMarketScreen} from './collector-market-screen-v1.mjs';
 import {planNativeDiscoveryBooks,recordNativeDiscoveryAttempt} from './native-discovery-plan-v1.mjs';
 import {planComparisonSampling,recordComparisonAttempt} from './comparison-sampling.mjs';
@@ -91,7 +93,7 @@ let journal,state,api,server,heartbeat,competition,realtime,realtimeCapture,bask
 const samplingSessionId=randomUUID();
 let universe,coverage,depthPlan,dipBank,scaleBank,responsiveBank,scheduler,schedulerScope;const recentReadTimings=[];
 let diagnosticSource,diagnosticLoading=false,diagnosticFailed=false;
-let canonicalCapacity,tradeTape,noMaker,baalReadAttention,baalPair,nativeDip,collectorMarketScreen;
+let canonicalCapacity,tradeTape,noMaker,baalReadAttention,baalPair,nativeDip,nativeQuote,eligibilityPublication,collectorMarketScreen;
 function collectDiagnosticFocus(){
  if(!diagnosticSource&&!diagnosticLoading&&!diagnosticFailed){diagnosticLoading=true;try{const source=openDiagnosticFocus(runtimeDir,universe,{deferBootstrap:true});source.initialize({stopped:()=>stopping}).then(()=>{diagnosticSource=source;diagnosticLoading=false;}).catch(()=>{diagnosticFailed=true;diagnosticLoading=false;});}catch{diagnosticFailed=true;diagnosticLoading=false;}}
  if(!diagnosticSource){runtime.diagnosticReadFocus={status:diagnosticFailed?'failed':'loading',executionAuthority:false};return null;}
@@ -132,6 +134,7 @@ function schedulingInputs(){
   if(noMaker)try{const risk=noMaker.status().riskMarketIds;inputs.heldMarketIds=[...new Set([...inputs.heldMarketIds,...risk])];}catch{runtime.noMaker={status:'failed',executionAuthority:false};noMaker=null;}
   if(baalPair)try{const risk=baalPair.status().riskMarketIds;inputs.heldMarketIds=[...new Set([...inputs.heldMarketIds,...risk])];}catch{runtime.baalPair={status:'failed',executionAuthority:false};baalPair=null;}
   if(nativeDip){const risk=nativeDip.status();runtime.nativeDip=risk;inputs.heldMarketIds=[...new Set([...inputs.heldMarketIds,...risk.heldMarketIds])];inputs.pendingMarketIds=[...new Set([...inputs.pendingMarketIds,...(risk.pendingMarketIds||[])])];}
+  if(nativeQuote){const risk=nativeQuote.status();runtime.nativeQuote=risk;inputs.heldMarketIds=[...new Set([...inputs.heldMarketIds,...risk.heldMarketIds])];inputs.pendingMarketIds=[...new Set([...inputs.pendingMarketIds,...risk.pendingMarketIds])];}
   inputs.priorityManagedMarketIds=competition?.managedMarketIds()||[];
   inputs.heldMarketIds=[...new Set([...inputs.heldMarketIds,...inputs.priorityManagedMarketIds])];return inputs;
 }
@@ -217,6 +220,8 @@ try{
   comparisonRiskSource=createComparisonRiskSource({runtimeDir,universe,now:Date.now});
   const nativeOptions={runtimeDir,universe,signal:control.signal,canOperate:()=>!stopping};nativeDip=fs.existsSync(path.join(runtimeDir,'native-dip-intent-active.json'))?openNativeDipIntentHost(nativeOptions):fs.existsSync(path.join(runtimeDir,'native-dip-cache-active.json'))?openNativeDipCacheHost(nativeOptions):openNativeDipHost(nativeOptions);
   nativeDip?.kick();
+  eligibilityPublication=createAccountEligibilityPublication({file:path.join(runtimeDir,'account-eligibility.jsonl'),universe,canOperate:()=>!stopping});
+  nativeQuote=openNativeQuoteHost(nativeOptions);nativeQuote?.kick();
   if(nativeDip&&pricePublication)try{collectorMarketScreen=openCollectorMarketScreen({runtimeDir,universe,publisher:pricePublication,signal:control.signal,canOperate:()=>!stopping});collectorMarketScreen.initialize();}catch{const unavailable={available:false,status:'unavailable',reason:'COLLECTOR_MARKET_SCREEN_STARTUP_FAILED',candidateMarketIds:[],executionAuthority:false};collectorMarketScreen={projection:()=>unavailable,onPublished(){},close(){}};runtime.marketHistoryScreen=unavailable;}
   const publicationReplayStarted=performance.now();
   const nativePublication=collectorNativePublicationConfig(runtimeDir,universe),publicationOptions={file:path.join(runtimeDir,'public-books.jsonl'),universe,sessionId:randomUUID(),now:Date.now,canOperate:()=>!stopping};
@@ -331,6 +336,8 @@ try{
       if(officialSync){try{accountCache.positions=accountPositions(positions);delete accountCache.errors.positions;publishAccount();}catch{accountCache.errors.positions={at:new Date().toISOString(),reason:'unavailable_or_invalid'};publishAccount();}}
       const orders=await api.orders();
       const excluded=exclusionSet(positions.data.positions,orders);
+      const eligibilityOrdersAt=new Date().toISOString();
+      try{runtime.accountEligibility=eligibilityPublication?.publish({positions,orders,ordersAt:eligibilityOrdersAt});}catch{const e=Error('Account eligibility recording failed');e.durableRecordingFailed=true;e.fatal=true;throw e;}
       if(officialSync){try{accountCache.orders=accountOrders(orders,new Date().toISOString());delete accountCache.errors.orders;publishAccount();}catch{accountCache.errors.orders={at:new Date().toISOString(),reason:'unavailable_or_invalid'};publishAccount();}}
       // Freeze one plan before metadata selection; do not resample shadow state
       // or reorder candidates between the controller and these book requests.
@@ -390,6 +397,7 @@ try{
       const at=new Date().toISOString();sampleEquity(state,c,at);assertState(state,c);commit({type:'cycle',clockAt:at,sourceSnapshots:events,supplementalDepth,nativeDiscovery:planned.nativeDiscovery?{...planned.nativeDiscovery,source:runtime.marketHistoryScreen?.source||null}:null,basketMeasurement:planned.basketMeasurement||null,edgeObservation:planned.edgeObservation||null,edgeTrialObservation:planned.edgeTrialObservation||null,comparisonSampling:planned.comparisonSampling?{...planned.comparisonSampling,reservations:samplingReservations,receipts:samplingReceipts}:null,entryMarketIds:[...new Set([...planned.entryMarketIds,...(planned.managedMarketIds||[])])],bulkPrices,bulkPriceError,accountExclusions:[...excluded],exclusionObservedAt:positions.receivedAt});cycleCommitted=true;
       if(realtime&&!stopping&&api.cooldown<=Date.now())await realtime.service();
       nativeDip?.kick();if(nativeDip)runtime.nativeDip=nativeDip.status();
+      nativeQuote?.kick();if(nativeQuote)runtime.nativeQuote=nativeQuote.status();
       runtime.cycles++;runtime.lastCycleAt=at;runtime.status=stopping?'stopping':successful?'running':'degraded';persistStatus();
       console.log(JSON.stringify({at,event:'paper_cycle',cycle:runtime.cycles,observations:state.observations,fills:Object.fromEntries(Object.entries(state.strategies).map(([k,s])=>[k,s.fills.length])),competitionOrders:competition?Object.values(competition.state.intents).filter(i=>Number.isSafeInteger(i.orderId)&&i.orderId>0).length:0}));
     }catch(e){if(e.durableRecordingFailed)throw e;if(stopping){if(!cycleCommitted)state=checkpoint;break;}const at=new Date().toISOString();invalidate(state,null,at,'account_reconciliation_unavailable');publishBookEvent('invalidate',{marketId:null,reason:'ACCOUNT_OUTAGE'});runtime.errors.push({at,reason:e.status?'http_'+e.status:e.message});runtime.errors=runtime.errors.slice(-20);runtime.status=e.recoverable?'degraded':'failed';persistStatus();if(e.recoverable){commit({type:'account_read_outage',clockAt:at,reason:e.status?'http_'+e.status:'connection_unavailable'});await pauseUntilNextRead(Math.max(10000,api.cooldown-Date.now()));continue;}throw Error('Paper runner stopped: '+runtime.errors.at(-1).reason);}
@@ -400,4 +408,4 @@ try{
   }
   runtime.status='stopped';commit({type:'stopped'});persistStatus();
 }catch(e){const stopped=stopping&&!e.durableRecordingFailed;if(state){runtime.status=stopped?'stopped':'failed';runtime.errors.push({at:new Date().toISOString(),reason:stopped?'stop_requested':e.message});try{persistStatus();}catch{}}console.error(stopped?'Paper runner stopped':'Paper runner failed; see local stats');process.exitCode=stopped?0:1;
-}finally{clearInterval(stopWatch);clearInterval(heartbeat);try{publishBookEvent('close',stopping||runtime.status==='stopped'?'STOP':'COLLECTOR_FAILURE');}finally{try{collectorMarketScreen?.close();await nativeDip?.close();await realtime?.stop();}finally{comparisonRiskSource?.close();basketFollowupSource?.close();realtimeCapture?.close();competition?.close();api?.close();server?.close();cleanup();}}}
+}finally{clearInterval(stopWatch);clearInterval(heartbeat);try{publishBookEvent('close',stopping||runtime.status==='stopped'?'STOP':'COLLECTOR_FAILURE');}finally{try{collectorMarketScreen?.close();await nativeDip?.close();await nativeQuote?.close();await realtime?.stop();}finally{comparisonRiskSource?.close();basketFollowupSource?.close();realtimeCapture?.close();competition?.close();api?.close();server?.close();cleanup();}}}
