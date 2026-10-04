@@ -55,7 +55,13 @@
     "last_checked_at_utc": "2026-10-04T00:22:43.807Z",
     "last_observation": "Current direct research completed TN/WV sources and exact manual contract attestation; independent conditional-capacity code published b9a2b38. Historical job-application priority record superseded by current Cup activity.",
     "latestCursor": "74858de9-2f60-48b3-a784-e0f05edbd1a8:16",
-    "thread_id": "01a0f8cb-e876-739f-b149-0d446a5be0c3"
+    "thread_id": "01a0f8cb-e876-739f-b149-0d446a5be0c3",
+    "wait_cursor": "74858de9-2f60-48b3-a784-e0f05edbd1a8:18",
+    "last_compact_status": {
+      "status": "idle",
+      "latestTurn": "interrupted",
+      "newAssistantMessage": false
+    }
   },
   "exactMoneyMilestone": {
     "checks": 79,
@@ -85,2503 +91,2545 @@
         "id": 5938504064,
         "body_fingerprint": "fnv1a64-utf16:d36e3a88c0af11df",
         "updated_at": "2026-10-01T19:02:30Z",
-        "observed_at": "2026-10-04T00:19:18.094Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5938609174,
         "body_fingerprint": "fnv1a64-utf16:0c666c9e2f97027d",
         "updated_at": "2026-10-01T19:08:49Z",
-        "observed_at": "2026-10-04T00:19:18.152Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5938670456,
         "body_fingerprint": "fnv1a64-utf16:2e2c3e799e754008",
         "updated_at": "2026-10-01T19:12:04Z",
-        "observed_at": "2026-10-04T00:19:18.153Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5938701860,
         "body_fingerprint": "fnv1a64-utf16:422ea14c4c5e3daa",
         "updated_at": "2026-10-01T19:13:44Z",
-        "observed_at": "2026-10-04T00:19:18.154Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5938746800,
         "body_fingerprint": "fnv1a64-utf16:d7a894744c94b915",
         "updated_at": "2026-10-01T19:16:07Z",
-        "observed_at": "2026-10-04T00:19:18.155Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5938756862,
         "body_fingerprint": "fnv1a64-utf16:b758d8947a12427c",
         "updated_at": "2026-10-01T19:16:40Z",
-        "observed_at": "2026-10-04T00:19:18.155Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5938798482,
         "body_fingerprint": "fnv1a64-utf16:1d8d86a7e1cac92b",
         "updated_at": "2026-10-01T19:18:50Z",
-        "observed_at": "2026-10-04T00:19:18.155Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5938806865,
         "body_fingerprint": "fnv1a64-utf16:1c69c2f2f92534b3",
         "updated_at": "2026-10-01T19:19:16Z",
-        "observed_at": "2026-10-04T00:19:18.156Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5938895024,
         "body_fingerprint": "fnv1a64-utf16:828be0c340388fcc",
         "updated_at": "2026-10-01T19:23:47Z",
-        "observed_at": "2026-10-04T00:19:18.156Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5938995573,
         "body_fingerprint": "fnv1a64-utf16:a4d08a1dabdb6684",
         "updated_at": "2026-10-01T19:29:57Z",
-        "observed_at": "2026-10-04T00:19:18.156Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5939014153,
         "body_fingerprint": "fnv1a64-utf16:7745af453fa4e439",
         "updated_at": "2026-10-01T19:31:04Z",
-        "observed_at": "2026-10-04T00:19:18.156Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5939055555,
         "body_fingerprint": "fnv1a64-utf16:33525df4c8c38fca",
         "updated_at": "2026-10-01T19:33:42Z",
-        "observed_at": "2026-10-04T00:19:18.156Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5939175625,
         "body_fingerprint": "fnv1a64-utf16:b241389173102142",
         "updated_at": "2026-10-01T19:41:30Z",
-        "observed_at": "2026-10-04T00:19:18.157Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5939226678,
         "body_fingerprint": "fnv1a64-utf16:2c60f1a93236feb2",
         "updated_at": "2026-10-01T19:44:55Z",
-        "observed_at": "2026-10-04T00:19:18.157Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5939240082,
         "body_fingerprint": "fnv1a64-utf16:11f1a3c51d4d07ef",
         "updated_at": "2026-10-01T19:45:49Z",
-        "observed_at": "2026-10-04T00:19:18.157Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5939349616,
         "body_fingerprint": "fnv1a64-utf16:770f215a674393d0",
         "updated_at": "2026-10-01T19:52:48Z",
-        "observed_at": "2026-10-04T00:19:18.157Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5939392904,
         "body_fingerprint": "fnv1a64-utf16:f1e074fe30a7c8be",
         "updated_at": "2026-10-01T19:55:27Z",
-        "observed_at": "2026-10-04T00:19:18.157Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5939460087,
         "body_fingerprint": "fnv1a64-utf16:ac1a7eeb68b3386e",
         "updated_at": "2026-10-01T19:59:21Z",
-        "observed_at": "2026-10-04T00:19:18.158Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5939485233,
         "body_fingerprint": "fnv1a64-utf16:359d1d6b7ec8a2ed",
         "updated_at": "2026-10-01T20:00:53Z",
-        "observed_at": "2026-10-04T00:19:18.158Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5939491851,
         "body_fingerprint": "fnv1a64-utf16:583ba9faf1ca7c9e",
         "updated_at": "2026-10-01T20:01:17Z",
-        "observed_at": "2026-10-04T00:19:18.163Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5939497959,
         "body_fingerprint": "fnv1a64-utf16:35fd5ad382e5e208",
         "updated_at": "2026-10-01T20:01:40Z",
-        "observed_at": "2026-10-04T00:19:18.163Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5939519430,
         "body_fingerprint": "fnv1a64-utf16:dc8526649a152c5d",
         "updated_at": "2026-10-01T20:03:02Z",
-        "observed_at": "2026-10-04T00:19:18.163Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5939573195,
         "body_fingerprint": "fnv1a64-utf16:8a5e4b0f0be03c9b",
         "updated_at": "2026-10-01T20:06:19Z",
-        "observed_at": "2026-10-04T00:19:18.163Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5939604495,
         "body_fingerprint": "fnv1a64-utf16:4b5e6bf9271baa83",
         "updated_at": "2026-10-01T20:08:24Z",
-        "observed_at": "2026-10-04T00:19:18.163Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5939609614,
         "body_fingerprint": "fnv1a64-utf16:8f33432c0f254423",
         "updated_at": "2026-10-01T20:08:44Z",
-        "observed_at": "2026-10-04T00:19:18.163Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5940016013,
         "body_fingerprint": "fnv1a64-utf16:2b995fe6845b027b",
         "updated_at": "2026-10-01T20:33:29Z",
-        "observed_at": "2026-10-04T00:19:18.163Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5940020361,
         "body_fingerprint": "fnv1a64-utf16:41fe2d62737a7b88",
         "updated_at": "2026-10-01T20:33:46Z",
-        "observed_at": "2026-10-04T00:19:18.163Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5940070985,
         "body_fingerprint": "fnv1a64-utf16:b797ea09e154a6e4",
         "updated_at": "2026-10-01T20:36:50Z",
-        "observed_at": "2026-10-04T00:19:18.163Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5940197849,
         "body_fingerprint": "fnv1a64-utf16:e48bf7ea09439755",
         "updated_at": "2026-10-01T20:44:34Z",
-        "observed_at": "2026-10-04T00:19:18.163Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5940361818,
         "body_fingerprint": "fnv1a64-utf16:f903dfa3f5fbf290",
         "updated_at": "2026-10-01T20:55:41Z",
-        "observed_at": "2026-10-04T00:19:18.163Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5940441828,
         "body_fingerprint": "fnv1a64-utf16:df95e2cc6f625b09",
         "updated_at": "2026-10-01T21:00:15Z",
-        "observed_at": "2026-10-04T00:19:18.163Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5940470618,
         "body_fingerprint": "fnv1a64-utf16:c44c84e2b47d754a",
         "updated_at": "2026-10-01T21:01:49Z",
-        "observed_at": "2026-10-04T00:19:18.163Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5940474143,
         "body_fingerprint": "fnv1a64-utf16:6e3b331b44c6b1ef",
         "updated_at": "2026-10-01T21:02:01Z",
-        "observed_at": "2026-10-04T00:19:18.163Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5940524463,
         "body_fingerprint": "fnv1a64-utf16:335a9010a8581a0f",
         "updated_at": "2026-10-01T21:04:33Z",
-        "observed_at": "2026-10-04T00:19:18.164Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5940531030,
         "body_fingerprint": "fnv1a64-utf16:2c52b9c5a092c31a",
         "updated_at": "2026-10-01T21:04:51Z",
-        "observed_at": "2026-10-04T00:19:18.164Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5940544242,
         "body_fingerprint": "fnv1a64-utf16:5d253bb991507367",
         "updated_at": "2026-10-01T21:05:29Z",
-        "observed_at": "2026-10-04T00:19:18.164Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5940651135,
         "body_fingerprint": "fnv1a64-utf16:48e59841440dd81b",
         "updated_at": "2026-10-01T21:11:00Z",
-        "observed_at": "2026-10-04T00:19:18.164Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5940867682,
         "body_fingerprint": "fnv1a64-utf16:3a31c63e5dc800c6",
         "updated_at": "2026-10-01T21:21:40Z",
-        "observed_at": "2026-10-04T00:19:18.164Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5941009380,
         "body_fingerprint": "fnv1a64-utf16:5e9c1be34df1e647",
         "updated_at": "2026-10-01T21:29:31Z",
-        "observed_at": "2026-10-04T00:19:18.164Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5941029924,
         "body_fingerprint": "fnv1a64-utf16:f187abad29113988",
         "updated_at": "2026-10-01T21:30:45Z",
-        "observed_at": "2026-10-04T00:19:18.164Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5941077608,
         "body_fingerprint": "fnv1a64-utf16:ea32ecc02aa6aee1",
         "updated_at": "2026-10-01T21:33:34Z",
-        "observed_at": "2026-10-04T00:19:18.164Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5941109098,
         "body_fingerprint": "fnv1a64-utf16:724c19b86d9788ab",
         "updated_at": "2026-10-01T21:35:11Z",
-        "observed_at": "2026-10-04T00:19:18.164Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5941139822,
         "body_fingerprint": "fnv1a64-utf16:972e4f60f1b56c86",
         "updated_at": "2026-10-01T21:36:44Z",
-        "observed_at": "2026-10-04T00:19:18.164Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5941271557,
         "body_fingerprint": "fnv1a64-utf16:5c0f4ec58c0f1c1c",
         "updated_at": "2026-10-01T21:43:30Z",
-        "observed_at": "2026-10-04T00:19:18.164Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5941287546,
         "body_fingerprint": "fnv1a64-utf16:a6598cd768b6165b",
         "updated_at": "2026-10-01T21:44:36Z",
-        "observed_at": "2026-10-04T00:19:18.164Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5941432486,
         "body_fingerprint": "fnv1a64-utf16:a903f8445ceefc03",
         "updated_at": "2026-10-01T21:54:25Z",
-        "observed_at": "2026-10-04T00:19:18.164Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5941491341,
         "body_fingerprint": "fnv1a64-utf16:9caeff608c556577",
         "updated_at": "2026-10-01T22:00:20Z",
-        "observed_at": "2026-10-04T00:19:18.164Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5941495071,
         "body_fingerprint": "fnv1a64-utf16:0a3e93b02db172c2",
         "updated_at": "2026-10-01T21:59:00Z",
-        "observed_at": "2026-10-04T00:19:18.164Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5941557164,
         "body_fingerprint": "fnv1a64-utf16:5b62ffed8107a835",
         "updated_at": "2026-10-01T22:03:50Z",
-        "observed_at": "2026-10-04T00:19:18.164Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5941602913,
         "body_fingerprint": "fnv1a64-utf16:e76ddb02a4ce4dc2",
         "updated_at": "2026-10-01T22:07:38Z",
-        "observed_at": "2026-10-04T00:19:18.164Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5941606593,
         "body_fingerprint": "fnv1a64-utf16:6531600a35623a64",
         "updated_at": "2026-10-01T22:07:21Z",
-        "observed_at": "2026-10-04T00:19:18.164Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5941616713,
         "body_fingerprint": "fnv1a64-utf16:c858b0fbd844cfe2",
         "updated_at": "2026-10-01T22:08:01Z",
-        "observed_at": "2026-10-04T00:19:18.164Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5941657722,
         "body_fingerprint": "fnv1a64-utf16:5bd8dc9401c0afca",
         "updated_at": "2026-10-01T22:10:40Z",
-        "observed_at": "2026-10-04T00:19:18.164Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5941717690,
         "body_fingerprint": "fnv1a64-utf16:4259c4c4a7dce8a5",
         "updated_at": "2026-10-01T22:14:27Z",
-        "observed_at": "2026-10-04T00:19:18.164Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5941772619,
         "body_fingerprint": "fnv1a64-utf16:c9403bdf09e61aef",
         "updated_at": "2026-10-01T22:17:48Z",
-        "observed_at": "2026-10-04T00:19:18.164Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5941873738,
         "body_fingerprint": "fnv1a64-utf16:ae50a28418b01a3d",
         "updated_at": "2026-10-01T22:24:06Z",
-        "observed_at": "2026-10-04T00:19:18.164Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5941907392,
         "body_fingerprint": "fnv1a64-utf16:363d5395d28889da",
         "updated_at": "2026-10-01T22:26:11Z",
-        "observed_at": "2026-10-04T00:19:18.164Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5941918672,
         "body_fingerprint": "fnv1a64-utf16:fd7b77f877f58b5d",
         "updated_at": "2026-10-01T22:26:56Z",
-        "observed_at": "2026-10-04T00:19:18.164Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5941973351,
         "body_fingerprint": "fnv1a64-utf16:05060dbc98612835",
         "updated_at": "2026-10-01T22:30:32Z",
-        "observed_at": "2026-10-04T00:19:18.164Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5941994899,
         "body_fingerprint": "fnv1a64-utf16:ac9e7437480c7369",
         "updated_at": "2026-10-01T22:31:54Z",
-        "observed_at": "2026-10-04T00:19:18.164Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5942009140,
         "body_fingerprint": "fnv1a64-utf16:92bf4d81a3b511aa",
         "updated_at": "2026-10-01T22:32:45Z",
-        "observed_at": "2026-10-04T00:19:18.164Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5942009555,
         "body_fingerprint": "fnv1a64-utf16:09672aaca8746093",
         "updated_at": "2026-10-01T22:32:46Z",
-        "observed_at": "2026-10-04T00:19:18.164Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5942078917,
         "body_fingerprint": "fnv1a64-utf16:1de2f18b8cdac473",
         "updated_at": "2026-10-01T22:37:14Z",
-        "observed_at": "2026-10-04T00:19:18.164Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5942162971,
         "body_fingerprint": "fnv1a64-utf16:f82a0e75d242d24e",
         "updated_at": "2026-10-01T22:43:46Z",
-        "observed_at": "2026-10-04T00:19:18.164Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5942221267,
         "body_fingerprint": "fnv1a64-utf16:2ba97ee47b9388ee",
         "updated_at": "2026-10-01T22:49:03Z",
-        "observed_at": "2026-10-04T00:19:18.164Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5942232882,
         "body_fingerprint": "fnv1a64-utf16:34c31311c305b6e7",
         "updated_at": "2026-10-01T22:50:06Z",
-        "observed_at": "2026-10-04T00:19:18.164Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5942323920,
         "body_fingerprint": "fnv1a64-utf16:661c5eebf66675fd",
         "updated_at": "2026-10-01T22:58:29Z",
-        "observed_at": "2026-10-04T00:19:18.164Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5942350079,
         "body_fingerprint": "fnv1a64-utf16:201a43da82697441",
         "updated_at": "2026-10-01T23:00:52Z",
-        "observed_at": "2026-10-04T00:19:18.164Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5942359618,
         "body_fingerprint": "fnv1a64-utf16:9ea8e3bc6724b356",
         "updated_at": "2026-10-01T23:01:42Z",
-        "observed_at": "2026-10-04T00:19:18.164Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5942377170,
         "body_fingerprint": "fnv1a64-utf16:e76f60069a0c65a1",
         "updated_at": "2026-10-01T23:03:14Z",
-        "observed_at": "2026-10-04T00:19:18.164Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5942428404,
         "body_fingerprint": "fnv1a64-utf16:5ad07a58d92a35fb",
         "updated_at": "2026-10-01T23:07:56Z",
-        "observed_at": "2026-10-04T00:19:18.164Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5942443309,
         "body_fingerprint": "fnv1a64-utf16:c448929b6bf4cfb4",
         "updated_at": "2026-10-01T23:09:15Z",
-        "observed_at": "2026-10-04T00:19:18.164Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5942446344,
         "body_fingerprint": "fnv1a64-utf16:e58a278345fb750c",
         "updated_at": "2026-10-01T23:09:31Z",
-        "observed_at": "2026-10-04T00:19:18.164Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5942638034,
         "body_fingerprint": "fnv1a64-utf16:05df1eab48d97f70",
         "updated_at": "2026-10-01T23:27:07Z",
-        "observed_at": "2026-10-04T00:19:18.164Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5942652407,
         "body_fingerprint": "fnv1a64-utf16:65cfededb206f2ca",
         "updated_at": "2026-10-01T23:28:29Z",
-        "observed_at": "2026-10-04T00:19:18.164Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5942700820,
         "body_fingerprint": "fnv1a64-utf16:2aa554d7d92d05fe",
         "updated_at": "2026-10-01T23:33:09Z",
-        "observed_at": "2026-10-04T00:19:18.164Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5942864370,
         "body_fingerprint": "fnv1a64-utf16:f341a3a0504bc035",
         "updated_at": "2026-10-01T23:47:38Z",
-        "observed_at": "2026-10-04T00:19:18.164Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5942882897,
         "body_fingerprint": "fnv1a64-utf16:2a4eaf5c30bf8ae6",
         "updated_at": "2026-10-01T23:49:28Z",
-        "observed_at": "2026-10-04T00:19:18.164Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5942893506,
         "body_fingerprint": "fnv1a64-utf16:635015f394ba1770",
         "updated_at": "2026-10-01T23:50:31Z",
-        "observed_at": "2026-10-04T00:19:18.164Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5942933295,
         "body_fingerprint": "fnv1a64-utf16:35a44767b610405a",
         "updated_at": "2026-10-01T23:54:35Z",
-        "observed_at": "2026-10-04T00:19:18.164Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5943005343,
         "body_fingerprint": "fnv1a64-utf16:99cbcfeb869bed38",
         "updated_at": "2026-10-02T00:01:52Z",
-        "observed_at": "2026-10-04T00:19:18.164Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5943077308,
         "body_fingerprint": "fnv1a64-utf16:00180b2ff5ffe3ff",
         "updated_at": "2026-10-02T00:08:38Z",
-        "observed_at": "2026-10-04T00:19:18.164Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5943163755,
         "body_fingerprint": "fnv1a64-utf16:d7f9ef7b25c675be",
         "updated_at": "2026-10-02T00:16:55Z",
-        "observed_at": "2026-10-04T00:19:18.164Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5943199557,
         "body_fingerprint": "fnv1a64-utf16:89f493209d34ff19",
         "updated_at": "2026-10-02T00:20:24Z",
-        "observed_at": "2026-10-04T00:19:18.168Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5943219663,
         "body_fingerprint": "fnv1a64-utf16:03bce284b6f8a0b3",
         "updated_at": "2026-10-02T00:22:15Z",
-        "observed_at": "2026-10-04T00:19:18.168Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5943258120,
         "body_fingerprint": "fnv1a64-utf16:9fb4ca309d017fbc",
         "updated_at": "2026-10-02T00:26:00Z",
-        "observed_at": "2026-10-04T00:19:18.168Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5943314691,
         "body_fingerprint": "fnv1a64-utf16:87992eef742865e3",
         "updated_at": "2026-10-02T00:31:41Z",
-        "observed_at": "2026-10-04T00:19:18.168Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5943336765,
         "body_fingerprint": "fnv1a64-utf16:e79ee1fc92b09eb0",
         "updated_at": "2026-10-02T00:33:53Z",
-        "observed_at": "2026-10-04T00:19:18.168Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5943465394,
         "body_fingerprint": "fnv1a64-utf16:526bf2aaa5f9eec3",
         "updated_at": "2026-10-02T00:46:57Z",
-        "observed_at": "2026-10-04T00:19:18.168Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5943476676,
         "body_fingerprint": "fnv1a64-utf16:60509fb862b32cfa",
         "updated_at": "2026-10-02T00:48:07Z",
-        "observed_at": "2026-10-04T00:19:18.168Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5943500962,
         "body_fingerprint": "fnv1a64-utf16:95e703afdb2fc236",
         "updated_at": "2026-10-02T00:51:10Z",
-        "observed_at": "2026-10-04T00:19:18.168Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5943511264,
         "body_fingerprint": "fnv1a64-utf16:1a9148a4b595c559",
         "updated_at": "2026-10-02T00:51:40Z",
-        "observed_at": "2026-10-04T00:19:18.168Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5943520453,
         "body_fingerprint": "fnv1a64-utf16:7ce1c15ca418ae4a",
         "updated_at": "2026-10-02T00:52:35Z",
-        "observed_at": "2026-10-04T00:19:18.168Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5943550808,
         "body_fingerprint": "fnv1a64-utf16:96877b1f73737935",
         "updated_at": "2026-10-02T00:55:28Z",
-        "observed_at": "2026-10-04T00:19:18.168Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5943653419,
         "body_fingerprint": "fnv1a64-utf16:336c0574f302e35a",
         "updated_at": "2026-10-02T01:05:22Z",
-        "observed_at": "2026-10-04T00:19:18.168Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5943688748,
         "body_fingerprint": "fnv1a64-utf16:410c38b5dd62c6a3",
         "updated_at": "2026-10-02T01:08:59Z",
-        "observed_at": "2026-10-04T00:19:18.168Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5943712281,
         "body_fingerprint": "fnv1a64-utf16:eddf78dc759c2a91",
         "updated_at": "2026-10-02T01:11:18Z",
-        "observed_at": "2026-10-04T00:19:18.168Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5943840588,
         "body_fingerprint": "fnv1a64-utf16:c64507434a5db97b",
         "updated_at": "2026-10-02T01:24:21Z",
-        "observed_at": "2026-10-04T00:19:18.168Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5943883745,
         "body_fingerprint": "fnv1a64-utf16:be46b18689168697",
         "updated_at": "2026-10-02T01:28:50Z",
-        "observed_at": "2026-10-04T00:19:18.168Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5944006298,
         "body_fingerprint": "fnv1a64-utf16:d6b03cb183aff7aa",
         "updated_at": "2026-10-02T01:41:43Z",
-        "observed_at": "2026-10-04T00:19:18.168Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5944077856,
         "body_fingerprint": "fnv1a64-utf16:d2cda01d8c510e8e",
         "updated_at": "2026-10-02T01:48:43Z",
-        "observed_at": "2026-10-04T00:19:18.168Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5944124140,
         "body_fingerprint": "fnv1a64-utf16:c6e162a1e1a0b6ff",
         "updated_at": "2026-10-02T01:53:13Z",
-        "observed_at": "2026-10-04T00:19:18.168Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5944206787,
         "body_fingerprint": "fnv1a64-utf16:447c58fdc211d665",
         "updated_at": "2026-10-02T02:01:08Z",
-        "observed_at": "2026-10-04T00:19:18.168Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5944278924,
         "body_fingerprint": "fnv1a64-utf16:d15aeb01f28ce246",
         "updated_at": "2026-10-02T02:08:17Z",
-        "observed_at": "2026-10-04T00:19:18.168Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5944330444,
         "body_fingerprint": "fnv1a64-utf16:3d3730ce8952ff36",
         "updated_at": "2026-10-02T02:13:22Z",
-        "observed_at": "2026-10-04T00:19:18.168Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5944432732,
         "body_fingerprint": "fnv1a64-utf16:e282df421ab9c187",
         "updated_at": "2026-10-02T02:23:23Z",
-        "observed_at": "2026-10-04T00:19:18.168Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5944467634,
         "body_fingerprint": "fnv1a64-utf16:823fa404ed3c52f8",
         "updated_at": "2026-10-02T02:27:05Z",
-        "observed_at": "2026-10-04T00:19:18.169Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5944580269,
         "body_fingerprint": "fnv1a64-utf16:e27cea0fa3a4dfc9",
         "updated_at": "2026-10-02T02:38:34Z",
-        "observed_at": "2026-10-04T00:19:18.169Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5944610450,
         "body_fingerprint": "fnv1a64-utf16:91762299107c5790",
         "updated_at": "2026-10-02T02:41:51Z",
-        "observed_at": "2026-10-04T00:19:18.169Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5944727803,
         "body_fingerprint": "fnv1a64-utf16:a6618a3408913a5c",
         "updated_at": "2026-10-02T02:53:22Z",
-        "observed_at": "2026-10-04T00:19:18.169Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5944781044,
         "body_fingerprint": "fnv1a64-utf16:5eb955e4849afcdb",
         "updated_at": "2026-10-02T02:57:20Z",
-        "observed_at": "2026-10-04T00:19:18.169Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5944785255,
         "body_fingerprint": "fnv1a64-utf16:d406bc9483d3bb11",
         "updated_at": "2026-10-02T02:57:43Z",
-        "observed_at": "2026-10-04T00:19:18.169Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5944826215,
         "body_fingerprint": "fnv1a64-utf16:b46cc2b79db50ca6",
         "updated_at": "2026-10-02T03:01:29Z",
-        "observed_at": "2026-10-04T00:19:18.169Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5944829414,
         "body_fingerprint": "fnv1a64-utf16:5985e741d1857f08",
         "updated_at": "2026-10-02T03:01:49Z",
-        "observed_at": "2026-10-04T00:19:18.169Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5944843345,
         "body_fingerprint": "fnv1a64-utf16:394615a412998ae7",
         "updated_at": "2026-10-02T03:03:17Z",
-        "observed_at": "2026-10-04T00:19:18.169Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5944848772,
         "body_fingerprint": "fnv1a64-utf16:4f965b9462e464cf",
         "updated_at": "2026-10-02T03:03:51Z",
-        "observed_at": "2026-10-04T00:19:18.169Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5944896870,
         "body_fingerprint": "fnv1a64-utf16:bf154fb9e47a1993",
         "updated_at": "2026-10-02T03:08:43Z",
-        "observed_at": "2026-10-04T00:19:18.169Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5944927393,
         "body_fingerprint": "fnv1a64-utf16:09eb08bae2485d0a",
         "updated_at": "2026-10-02T03:11:58Z",
-        "observed_at": "2026-10-04T00:19:18.169Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5944983306,
         "body_fingerprint": "fnv1a64-utf16:b48eb70a977e355c",
         "updated_at": "2026-10-02T03:18:01Z",
-        "observed_at": "2026-10-04T00:19:18.169Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5945001049,
         "body_fingerprint": "fnv1a64-utf16:4d5e7b4c0e23d54b",
         "updated_at": "2026-10-02T03:20:02Z",
-        "observed_at": "2026-10-04T00:19:18.169Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5945028750,
         "body_fingerprint": "fnv1a64-utf16:3d44127a684605cb",
         "updated_at": "2026-10-02T03:23:11Z",
-        "observed_at": "2026-10-04T00:19:18.169Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5945047608,
         "body_fingerprint": "fnv1a64-utf16:28e0be60562834f8",
         "updated_at": "2026-10-02T03:25:18Z",
-        "observed_at": "2026-10-04T00:19:18.169Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5945152840,
         "body_fingerprint": "fnv1a64-utf16:188c39750e4421e3",
         "updated_at": "2026-10-02T03:37:27Z",
-        "observed_at": "2026-10-04T00:19:18.169Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5945169014,
         "body_fingerprint": "fnv1a64-utf16:7890f070e1b59575",
         "updated_at": "2026-10-02T03:39:22Z",
-        "observed_at": "2026-10-04T00:19:18.169Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5945185691,
         "body_fingerprint": "fnv1a64-utf16:70487760a25b8b25",
         "updated_at": "2026-10-02T03:41:20Z",
-        "observed_at": "2026-10-04T00:19:18.169Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5945242459,
         "body_fingerprint": "fnv1a64-utf16:82662079a49fde3a",
         "updated_at": "2026-10-02T03:47:58Z",
-        "observed_at": "2026-10-04T00:19:18.169Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5945297544,
         "body_fingerprint": "fnv1a64-utf16:f2e3ee883a1d9f96",
         "updated_at": "2026-10-02T03:53:10Z",
-        "observed_at": "2026-10-04T00:19:18.169Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5945325969,
         "body_fingerprint": "fnv1a64-utf16:4e3845ed051193b8",
         "updated_at": "2026-10-02T03:56:02Z",
-        "observed_at": "2026-10-04T00:19:18.169Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5945329678,
         "body_fingerprint": "fnv1a64-utf16:f1191af000f70908",
         "updated_at": "2026-10-02T03:56:29Z",
-        "observed_at": "2026-10-04T00:19:18.169Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5945340493,
         "body_fingerprint": "fnv1a64-utf16:71e22c6bf4daa44c",
         "updated_at": "2026-10-02T03:57:48Z",
-        "observed_at": "2026-10-04T00:19:18.169Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5945346637,
         "body_fingerprint": "fnv1a64-utf16:d5d1a7a058e0730e",
         "updated_at": "2026-10-02T03:58:33Z",
-        "observed_at": "2026-10-04T00:19:18.169Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5945364139,
         "body_fingerprint": "fnv1a64-utf16:ccf026d363cebfe4",
         "updated_at": "2026-10-02T04:00:37Z",
-        "observed_at": "2026-10-04T00:19:18.169Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5945425892,
         "body_fingerprint": "fnv1a64-utf16:f609494122f1c01a",
         "updated_at": "2026-10-02T04:07:42Z",
-        "observed_at": "2026-10-04T00:19:18.169Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5945459083,
         "body_fingerprint": "fnv1a64-utf16:06b8ff4f9596bc15",
         "updated_at": "2026-10-02T04:11:32Z",
-        "observed_at": "2026-10-04T00:19:18.169Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5945480815,
         "body_fingerprint": "fnv1a64-utf16:1f9f27beaa0e1603",
         "updated_at": "2026-10-02T04:14:03Z",
-        "observed_at": "2026-10-04T00:19:18.169Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5945484452,
         "body_fingerprint": "fnv1a64-utf16:b5d0468b674b411c",
         "updated_at": "2026-10-02T04:14:27Z",
-        "observed_at": "2026-10-04T00:19:18.169Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5945499747,
         "body_fingerprint": "fnv1a64-utf16:162728825a171b25",
         "updated_at": "2026-10-02T04:16:08Z",
-        "observed_at": "2026-10-04T00:19:18.169Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5945513476,
         "body_fingerprint": "fnv1a64-utf16:96600883dc9156c2",
         "updated_at": "2026-10-02T04:17:39Z",
-        "observed_at": "2026-10-04T00:19:18.169Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5945547656,
         "body_fingerprint": "fnv1a64-utf16:9fc7110865dabcf4",
         "updated_at": "2026-10-02T04:21:26Z",
-        "observed_at": "2026-10-04T00:19:18.169Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5945577917,
         "body_fingerprint": "fnv1a64-utf16:9a17077378520539",
         "updated_at": "2026-10-02T04:24:53Z",
-        "observed_at": "2026-10-04T00:19:18.169Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5945581065,
         "body_fingerprint": "fnv1a64-utf16:5e4b4465345ca80b",
         "updated_at": "2026-10-02T04:25:14Z",
-        "observed_at": "2026-10-04T00:19:18.169Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5945592385,
         "body_fingerprint": "fnv1a64-utf16:6186059a6a19d793",
         "updated_at": "2026-10-02T04:26:29Z",
-        "observed_at": "2026-10-04T00:19:18.169Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5945600871,
         "body_fingerprint": "fnv1a64-utf16:74a914f4f9c67dd8",
         "updated_at": "2026-10-02T04:27:26Z",
-        "observed_at": "2026-10-04T00:19:18.169Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5945619905,
         "body_fingerprint": "fnv1a64-utf16:d0d146bb5b95b6cf",
         "updated_at": "2026-10-02T04:29:36Z",
-        "observed_at": "2026-10-04T00:19:18.169Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5945658507,
         "body_fingerprint": "fnv1a64-utf16:ad868d41f65acdd9",
         "updated_at": "2026-10-02T04:34:01Z",
-        "observed_at": "2026-10-04T00:19:18.169Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5945703594,
         "body_fingerprint": "fnv1a64-utf16:46a66b3426a8a958",
         "updated_at": "2026-10-02T04:39:06Z",
-        "observed_at": "2026-10-04T00:19:18.169Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5945745886,
         "body_fingerprint": "fnv1a64-utf16:f3f86c143476c939",
         "updated_at": "2026-10-02T04:43:59Z",
-        "observed_at": "2026-10-04T00:19:18.169Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5945775674,
         "body_fingerprint": "fnv1a64-utf16:1d2956d1f0ae11b8",
         "updated_at": "2026-10-02T04:47:17Z",
-        "observed_at": "2026-10-04T00:19:18.169Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5945781961,
         "body_fingerprint": "fnv1a64-utf16:e942729f1bfe30b3",
         "updated_at": "2026-10-02T04:47:59Z",
-        "observed_at": "2026-10-04T00:19:18.169Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5945792298,
         "body_fingerprint": "fnv1a64-utf16:2ec926e1f4a9b105",
         "updated_at": "2026-10-02T04:49:09Z",
-        "observed_at": "2026-10-04T00:19:18.169Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5945792701,
         "body_fingerprint": "fnv1a64-utf16:abf9119a35b88f14",
         "updated_at": "2026-10-02T04:49:11Z",
-        "observed_at": "2026-10-04T00:19:18.169Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5945817100,
         "body_fingerprint": "fnv1a64-utf16:eafd554d646159ab",
         "updated_at": "2026-10-02T04:52:02Z",
-        "observed_at": "2026-10-04T00:19:18.169Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5945831843,
         "body_fingerprint": "fnv1a64-utf16:fbfe3484c87c4090",
         "updated_at": "2026-10-02T04:53:46Z",
-        "observed_at": "2026-10-04T00:19:18.169Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5945836623,
         "body_fingerprint": "fnv1a64-utf16:8bfd35773bafb2c7",
         "updated_at": "2026-10-02T04:54:18Z",
-        "observed_at": "2026-10-04T00:19:18.169Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5945854838,
         "body_fingerprint": "fnv1a64-utf16:d38414ac5d0e0512",
         "updated_at": "2026-10-02T04:56:26Z",
-        "observed_at": "2026-10-04T00:19:18.169Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5945868813,
         "body_fingerprint": "fnv1a64-utf16:118ce0143cbb17fb",
         "updated_at": "2026-10-02T04:58:05Z",
-        "observed_at": "2026-10-04T00:19:18.169Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5945959677,
         "body_fingerprint": "fnv1a64-utf16:9baddbf2f873efec",
         "updated_at": "2026-10-02T05:08:23Z",
-        "observed_at": "2026-10-04T00:19:18.169Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5945967818,
         "body_fingerprint": "fnv1a64-utf16:c6291674f72d268d",
         "updated_at": "2026-10-02T05:09:15Z",
-        "observed_at": "2026-10-04T00:19:18.169Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5945994676,
         "body_fingerprint": "fnv1a64-utf16:1026599ba2c13001",
         "updated_at": "2026-10-02T05:12:11Z",
-        "observed_at": "2026-10-04T00:19:18.169Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5946005679,
         "body_fingerprint": "fnv1a64-utf16:469064e4533c0f9c",
         "updated_at": "2026-10-02T05:13:27Z",
-        "observed_at": "2026-10-04T00:19:18.169Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5946013581,
         "body_fingerprint": "fnv1a64-utf16:08a219c9959a480b",
         "updated_at": "2026-10-02T05:14:21Z",
-        "observed_at": "2026-10-04T00:19:18.169Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5946027750,
         "body_fingerprint": "fnv1a64-utf16:cc54f9c04e599adb",
         "updated_at": "2026-10-02T05:15:53Z",
-        "observed_at": "2026-10-04T00:19:18.169Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5946101119,
         "body_fingerprint": "fnv1a64-utf16:d16dafb3411399b5",
         "updated_at": "2026-10-02T05:24:01Z",
-        "observed_at": "2026-10-04T00:19:18.169Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5946110433,
         "body_fingerprint": "fnv1a64-utf16:728a100a849657c3",
         "updated_at": "2026-10-02T05:25:01Z",
-        "observed_at": "2026-10-04T00:19:18.169Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5946115612,
         "body_fingerprint": "fnv1a64-utf16:3719c15d85d507a5",
         "updated_at": "2026-10-02T05:25:35Z",
-        "observed_at": "2026-10-04T00:19:18.169Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5946132149,
         "body_fingerprint": "fnv1a64-utf16:2b0a70845c18016a",
         "updated_at": "2026-10-02T05:27:19Z",
-        "observed_at": "2026-10-04T00:19:18.169Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5946138470,
         "body_fingerprint": "fnv1a64-utf16:6f15be855eb05c25",
         "updated_at": "2026-10-02T05:28:00Z",
-        "observed_at": "2026-10-04T00:19:18.169Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5946144607,
         "body_fingerprint": "fnv1a64-utf16:9d0382c4a0a37c75",
         "updated_at": "2026-10-02T05:28:41Z",
-        "observed_at": "2026-10-04T00:19:18.169Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5946150995,
         "body_fingerprint": "fnv1a64-utf16:2873f5131d6faa9f",
         "updated_at": "2026-10-02T05:29:24Z",
-        "observed_at": "2026-10-04T00:19:18.169Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5946156980,
         "body_fingerprint": "fnv1a64-utf16:06cdfbce6c5959e2",
         "updated_at": "2026-10-02T05:30:04Z",
-        "observed_at": "2026-10-04T00:19:18.169Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5946176136,
         "body_fingerprint": "fnv1a64-utf16:425bc21cce1077b2",
         "updated_at": "2026-10-02T05:32:10Z",
-        "observed_at": "2026-10-04T00:19:18.169Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5946250117,
         "body_fingerprint": "fnv1a64-utf16:80a512e746a49e5d",
         "updated_at": "2026-10-02T05:40:11Z",
-        "observed_at": "2026-10-04T00:19:18.169Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5946307788,
         "body_fingerprint": "fnv1a64-utf16:b23ea5cbbef961b5",
         "updated_at": "2026-10-02T05:45:57Z",
-        "observed_at": "2026-10-04T00:19:18.169Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5946316762,
         "body_fingerprint": "fnv1a64-utf16:551395507301edf9",
         "updated_at": "2026-10-02T05:46:56Z",
-        "observed_at": "2026-10-04T00:19:18.169Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5946332402,
         "body_fingerprint": "fnv1a64-utf16:07d4f5eda7827b37",
         "updated_at": "2026-10-02T05:48:42Z",
-        "observed_at": "2026-10-04T00:19:18.169Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5946343643,
         "body_fingerprint": "fnv1a64-utf16:f029046da36a31e1",
         "updated_at": "2026-10-02T05:49:55Z",
-        "observed_at": "2026-10-04T00:19:18.169Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5946361790,
         "body_fingerprint": "fnv1a64-utf16:dbc4cae2e9cc6a2c",
         "updated_at": "2026-10-02T05:51:57Z",
-        "observed_at": "2026-10-04T00:19:18.169Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5946438832,
         "body_fingerprint": "fnv1a64-utf16:0326ed685bbe7cd4",
         "updated_at": "2026-10-02T06:00:33Z",
-        "observed_at": "2026-10-04T00:19:18.169Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5946456333,
         "body_fingerprint": "fnv1a64-utf16:60d32c3ddd829e0a",
         "updated_at": "2026-10-02T06:02:25Z",
-        "observed_at": "2026-10-04T00:19:18.169Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5946460045,
         "body_fingerprint": "fnv1a64-utf16:3f9bb4246c8e354e",
         "updated_at": "2026-10-02T06:02:49Z",
-        "observed_at": "2026-10-04T00:19:18.169Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5946524574,
         "body_fingerprint": "fnv1a64-utf16:d489f611ddd4e8cc",
         "updated_at": "2026-10-02T06:08:04Z",
-        "observed_at": "2026-10-04T00:19:18.170Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5946561671,
         "body_fingerprint": "fnv1a64-utf16:38e3fdcc76555c8a",
         "updated_at": "2026-10-02T06:11:23Z",
-        "observed_at": "2026-10-04T00:19:18.170Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5946567849,
         "body_fingerprint": "fnv1a64-utf16:df3d969fd3fe1761",
         "updated_at": "2026-10-02T06:12:02Z",
-        "observed_at": "2026-10-04T00:19:18.170Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5946590053,
         "body_fingerprint": "fnv1a64-utf16:69cfaf87c508b523",
         "updated_at": "2026-10-02T06:14:20Z",
-        "observed_at": "2026-10-04T00:19:18.170Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5946669450,
         "body_fingerprint": "fnv1a64-utf16:bb5eae21f7f2fc34",
         "updated_at": "2026-10-02T06:22:31Z",
-        "observed_at": "2026-10-04T00:19:18.170Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5946683609,
         "body_fingerprint": "fnv1a64-utf16:330965a8a244cd94",
         "updated_at": "2026-10-02T06:23:48Z",
-        "observed_at": "2026-10-04T00:19:18.170Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5946694842,
         "body_fingerprint": "fnv1a64-utf16:a04006fa040ef369",
         "updated_at": "2026-10-02T06:24:55Z",
-        "observed_at": "2026-10-04T00:19:18.170Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5946799997,
         "body_fingerprint": "fnv1a64-utf16:9b43fb5cfde21392",
         "updated_at": "2026-10-02T06:35:25Z",
-        "observed_at": "2026-10-04T00:19:18.170Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5946892958,
         "body_fingerprint": "fnv1a64-utf16:0a01c434fc72f7f0",
         "updated_at": "2026-10-02T06:44:31Z",
-        "observed_at": "2026-10-04T00:19:18.170Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5947098796,
         "body_fingerprint": "fnv1a64-utf16:11ce3ff5cf92de03",
         "updated_at": "2026-10-02T07:04:19Z",
-        "observed_at": "2026-10-04T00:19:18.170Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5947322861,
         "body_fingerprint": "fnv1a64-utf16:3cd933f262f698a0",
         "updated_at": "2026-10-02T07:23:34Z",
-        "observed_at": "2026-10-04T00:19:18.170Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5947418282,
         "body_fingerprint": "fnv1a64-utf16:93fe6a44d24da0c5",
         "updated_at": "2026-10-02T07:32:04Z",
-        "observed_at": "2026-10-04T00:19:18.170Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5947437632,
         "body_fingerprint": "fnv1a64-utf16:716be2f921c9c379",
         "updated_at": "2026-10-02T07:33:47Z",
-        "observed_at": "2026-10-04T00:19:18.170Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5947521604,
         "body_fingerprint": "fnv1a64-utf16:6a57f20c74ae9c4d",
         "updated_at": "2026-10-02T07:38:14Z",
-        "observed_at": "2026-10-04T00:19:18.170Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5947535773,
         "body_fingerprint": "fnv1a64-utf16:e8653c8f9ae3caf0",
         "updated_at": "2026-10-02T07:39:03Z",
-        "observed_at": "2026-10-04T00:19:18.170Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5947569342,
         "body_fingerprint": "fnv1a64-utf16:159ffb26027ac45f",
         "updated_at": "2026-10-02T07:41:15Z",
-        "observed_at": "2026-10-04T00:19:18.170Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5947635990,
         "body_fingerprint": "fnv1a64-utf16:8e1ac701c2beb72a",
         "updated_at": "2026-10-02T07:45:36Z",
-        "observed_at": "2026-10-04T00:19:18.170Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5948124506,
         "body_fingerprint": "fnv1a64-utf16:1e95c7f1710171e8",
         "updated_at": "2026-10-02T08:23:49Z",
-        "observed_at": "2026-10-04T00:19:18.170Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5948259123,
         "body_fingerprint": "fnv1a64-utf16:3d06f80a05b4e8fc",
         "updated_at": "2026-10-02T08:32:15Z",
-        "observed_at": "2026-10-04T00:19:18.170Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5948626111,
         "body_fingerprint": "fnv1a64-utf16:db8ea9d3a71b190d",
         "updated_at": "2026-10-02T08:57:15Z",
-        "observed_at": "2026-10-04T00:19:18.170Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5948758132,
         "body_fingerprint": "fnv1a64-utf16:7201f7cfad07a3cb",
         "updated_at": "2026-10-02T09:05:34Z",
-        "observed_at": "2026-10-04T00:19:18.170Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5949468523,
         "body_fingerprint": "fnv1a64-utf16:0fcda666a1d48979",
         "updated_at": "2026-10-02T09:42:54Z",
-        "observed_at": "2026-10-04T00:19:18.170Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5949615087,
         "body_fingerprint": "fnv1a64-utf16:c9c08822da3e4e24",
         "updated_at": "2026-10-02T09:51:00Z",
-        "observed_at": "2026-10-04T00:19:18.170Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5949651869,
         "body_fingerprint": "fnv1a64-utf16:8f41343a1c22f7f0",
         "updated_at": "2026-10-02T09:52:58Z",
-        "observed_at": "2026-10-04T00:19:18.170Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5950052763,
         "body_fingerprint": "fnv1a64-utf16:e609b22d5e0a1243",
         "updated_at": "2026-10-02T10:12:03Z",
-        "observed_at": "2026-10-04T00:19:18.170Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5950196149,
         "body_fingerprint": "fnv1a64-utf16:669f50fcb6cb810a",
         "updated_at": "2026-10-02T10:18:41Z",
-        "observed_at": "2026-10-04T00:19:18.170Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5950609168,
         "body_fingerprint": "fnv1a64-utf16:11729428255488f0",
         "updated_at": "2026-10-02T10:41:55Z",
-        "observed_at": "2026-10-04T00:19:18.170Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5950697320,
         "body_fingerprint": "fnv1a64-utf16:8b1173a82ffd3192",
         "updated_at": "2026-10-02T10:46:56Z",
-        "observed_at": "2026-10-04T00:19:18.170Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5951336686,
         "body_fingerprint": "fnv1a64-utf16:5afee374fa9a075f",
         "updated_at": "2026-10-02T11:25:01Z",
-        "observed_at": "2026-10-04T00:19:18.170Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5951639980,
         "body_fingerprint": "fnv1a64-utf16:230b21c74a72a80d",
         "updated_at": "2026-10-02T11:43:37Z",
-        "observed_at": "2026-10-04T00:19:18.170Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5951709714,
         "body_fingerprint": "fnv1a64-utf16:7c7c5a2e765c463c",
         "updated_at": "2026-10-02T11:47:49Z",
-        "observed_at": "2026-10-04T00:19:18.170Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5951960074,
         "body_fingerprint": "fnv1a64-utf16:4822f39b7eb33ad8",
         "updated_at": "2026-10-02T12:07:02Z",
-        "observed_at": "2026-10-04T00:19:18.170Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5952029591,
         "body_fingerprint": "fnv1a64-utf16:f98c5cb59d55bbb9",
         "updated_at": "2026-10-02T12:11:46Z",
-        "observed_at": "2026-10-04T00:19:18.170Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5952118332,
         "body_fingerprint": "fnv1a64-utf16:74c2a64a91e762c8",
         "updated_at": "2026-10-02T12:16:11Z",
-        "observed_at": "2026-10-04T00:19:18.170Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5952318534,
         "body_fingerprint": "fnv1a64-utf16:d63a32a0a95ceaf1",
         "updated_at": "2026-10-02T12:27:21Z",
-        "observed_at": "2026-10-04T00:19:18.170Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5952388556,
         "body_fingerprint": "fnv1a64-utf16:fb0bd2efdfb5ec0f",
         "updated_at": "2026-10-02T12:31:55Z",
-        "observed_at": "2026-10-04T00:19:18.170Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5952430829,
         "body_fingerprint": "fnv1a64-utf16:cf6ec4358831b6d1",
         "updated_at": "2026-10-02T12:34:17Z",
-        "observed_at": "2026-10-04T00:19:18.170Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5952778876,
         "body_fingerprint": "fnv1a64-utf16:3e8a89e61716902b",
         "updated_at": "2026-10-02T12:53:22Z",
-        "observed_at": "2026-10-04T00:19:18.170Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5952820404,
         "body_fingerprint": "fnv1a64-utf16:a9e8ba6316d21151",
         "updated_at": "2026-10-02T12:55:37Z",
-        "observed_at": "2026-10-04T00:19:18.170Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5952883146,
         "body_fingerprint": "fnv1a64-utf16:32c4a0069365e706",
         "updated_at": "2026-10-02T12:58:29Z",
-        "observed_at": "2026-10-04T00:19:18.170Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5953415073,
         "body_fingerprint": "fnv1a64-utf16:ac796f518a058562",
         "updated_at": "2026-10-02T13:28:21Z",
-        "observed_at": "2026-10-04T00:19:18.170Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5953478072,
         "body_fingerprint": "fnv1a64-utf16:a6e6228bad4756f5",
         "updated_at": "2026-10-02T13:31:23Z",
-        "observed_at": "2026-10-04T00:19:18.170Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5954201019,
         "body_fingerprint": "fnv1a64-utf16:c680d251aa239527",
         "updated_at": "2026-10-02T14:04:58Z",
-        "observed_at": "2026-10-04T00:19:18.170Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5954676778,
         "body_fingerprint": "fnv1a64-utf16:042401bb3ab070a3",
         "updated_at": "2026-10-02T14:30:29Z",
-        "observed_at": "2026-10-04T00:19:18.170Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5954780493,
         "body_fingerprint": "fnv1a64-utf16:889e71bb8240ec1b",
         "updated_at": "2026-10-02T14:36:50Z",
-        "observed_at": "2026-10-04T00:19:18.170Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5955248238,
         "body_fingerprint": "fnv1a64-utf16:8e306480345d52be",
         "updated_at": "2026-10-02T15:04:34Z",
-        "observed_at": "2026-10-04T00:19:18.170Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5955717402,
         "body_fingerprint": "fnv1a64-utf16:75517710cddcf7c0",
         "updated_at": "2026-10-02T15:31:54Z",
-        "observed_at": "2026-10-04T00:19:18.170Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5955755126,
         "body_fingerprint": "fnv1a64-utf16:91334f82108172f4",
         "updated_at": "2026-10-02T15:33:44Z",
-        "observed_at": "2026-10-04T00:19:18.170Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5956010225,
         "body_fingerprint": "fnv1a64-utf16:7032cd982cd9b37f",
         "updated_at": "2026-10-02T15:47:53Z",
-        "observed_at": "2026-10-04T00:19:18.170Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5956047179,
         "body_fingerprint": "fnv1a64-utf16:1b90758d6c9645ae",
         "updated_at": "2026-10-02T15:50:09Z",
-        "observed_at": "2026-10-04T00:19:18.170Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5956476123,
         "body_fingerprint": "fnv1a64-utf16:010ec236ac1d5a78",
         "updated_at": "2026-10-02T16:16:44Z",
-        "observed_at": "2026-10-04T00:19:18.170Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5956501995,
         "body_fingerprint": "fnv1a64-utf16:3c107cce068a43c4",
         "updated_at": "2026-10-02T16:18:28Z",
-        "observed_at": "2026-10-04T00:19:18.170Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5956566146,
         "body_fingerprint": "fnv1a64-utf16:f47ab5a048fd4ffe",
         "updated_at": "2026-10-02T16:21:54Z",
-        "observed_at": "2026-10-04T00:19:18.170Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5956851668,
         "body_fingerprint": "fnv1a64-utf16:021b0595d6545a66",
         "updated_at": "2026-10-02T16:37:59Z",
-        "observed_at": "2026-10-04T00:19:18.170Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5956946158,
         "body_fingerprint": "fnv1a64-utf16:c723093bb5d6f323",
         "updated_at": "2026-10-02T16:43:21Z",
-        "observed_at": "2026-10-04T00:19:18.170Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5956978808,
         "body_fingerprint": "fnv1a64-utf16:b19d7abd44b3a86b",
         "updated_at": "2026-10-02T16:45:10Z",
-        "observed_at": "2026-10-04T00:19:18.170Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5957418696,
         "body_fingerprint": "fnv1a64-utf16:89d50127edf1f7c6",
         "updated_at": "2026-10-02T17:07:55Z",
-        "observed_at": "2026-10-04T00:19:18.170Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5957434653,
         "body_fingerprint": "fnv1a64-utf16:3362bdf5d21123fe",
         "updated_at": "2026-10-02T17:08:57Z",
-        "observed_at": "2026-10-04T00:19:18.170Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5957758796,
         "body_fingerprint": "fnv1a64-utf16:7b832311a6a39eef",
         "updated_at": "2026-10-02T17:29:04Z",
-        "observed_at": "2026-10-04T00:19:18.170Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5957789354,
         "body_fingerprint": "fnv1a64-utf16:2d63ee2acb1c49b9",
         "updated_at": "2026-10-02T17:31:01Z",
-        "observed_at": "2026-10-04T00:19:18.170Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5957889450,
         "body_fingerprint": "fnv1a64-utf16:cb065af56cba2a33",
         "updated_at": "2026-10-02T17:37:56Z",
-        "observed_at": "2026-10-04T00:19:18.170Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5957921729,
         "body_fingerprint": "fnv1a64-utf16:305307fb792a770a",
         "updated_at": "2026-10-02T17:39:46Z",
-        "observed_at": "2026-10-04T00:19:18.170Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5958167940,
         "body_fingerprint": "fnv1a64-utf16:2f3a97ea5a148e44",
         "updated_at": "2026-10-02T17:54:42Z",
-        "observed_at": "2026-10-04T00:19:18.170Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5958232820,
         "body_fingerprint": "fnv1a64-utf16:5fc5addcd18bb79f",
         "updated_at": "2026-10-02T17:58:11Z",
-        "observed_at": "2026-10-04T00:19:18.170Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5958349071,
         "body_fingerprint": "fnv1a64-utf16:baf2bd01f17ecf91",
         "updated_at": "2026-10-02T18:05:59Z",
-        "observed_at": "2026-10-04T00:19:18.170Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5958401418,
         "body_fingerprint": "fnv1a64-utf16:ff4bc7acab42c3bb",
         "updated_at": "2026-10-02T18:08:35Z",
-        "observed_at": "2026-10-04T00:19:18.170Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5958424982,
         "body_fingerprint": "fnv1a64-utf16:cc1e384bd783be3e",
         "updated_at": "2026-10-02T18:09:42Z",
-        "observed_at": "2026-10-04T00:19:18.170Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5958572526,
         "body_fingerprint": "fnv1a64-utf16:538a98df8ba6ca61",
         "updated_at": "2026-10-02T18:17:35Z",
-        "observed_at": "2026-10-04T00:19:18.170Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5958674736,
         "body_fingerprint": "fnv1a64-utf16:a549dc09017f0ff3",
         "updated_at": "2026-10-02T18:23:38Z",
-        "observed_at": "2026-10-04T00:19:18.170Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5958689400,
         "body_fingerprint": "fnv1a64-utf16:24a7748578290c40",
         "updated_at": "2026-10-02T18:24:35Z",
-        "observed_at": "2026-10-04T00:19:18.170Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5958847374,
         "body_fingerprint": "fnv1a64-utf16:9ab49a6ccba0ed80",
         "updated_at": "2026-10-02T18:34:56Z",
-        "observed_at": "2026-10-04T00:19:18.170Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5958964970,
         "body_fingerprint": "fnv1a64-utf16:16c54557e1a2c4ff",
         "updated_at": "2026-10-02T18:41:01Z",
-        "observed_at": "2026-10-04T00:19:18.170Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5959397801,
         "body_fingerprint": "fnv1a64-utf16:dedfd314a1977d3e",
         "updated_at": "2026-10-02T19:01:15Z",
-        "observed_at": "2026-10-04T00:19:18.170Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5959500767,
         "body_fingerprint": "fnv1a64-utf16:707ea1e4a4b2200e",
         "updated_at": "2026-10-02T19:05:38Z",
-        "observed_at": "2026-10-04T00:19:18.170Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5959526498,
         "body_fingerprint": "fnv1a64-utf16:1cd436c4b8181416",
         "updated_at": "2026-10-02T19:07:07Z",
-        "observed_at": "2026-10-04T00:19:18.170Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5959829432,
         "body_fingerprint": "fnv1a64-utf16:a165192eb1627e11",
         "updated_at": "2026-10-02T19:25:47Z",
-        "observed_at": "2026-10-04T00:19:18.170Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5959935639,
         "body_fingerprint": "fnv1a64-utf16:ee033265efff6ae8",
         "updated_at": "2026-10-02T19:31:32Z",
-        "observed_at": "2026-10-04T00:19:18.170Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5959969191,
         "body_fingerprint": "fnv1a64-utf16:e6abff1897fc960b",
         "updated_at": "2026-10-02T19:33:54Z",
-        "observed_at": "2026-10-04T00:19:18.170Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5960161795,
         "body_fingerprint": "fnv1a64-utf16:535016e670698dbb",
         "updated_at": "2026-10-02T19:46:39Z",
-        "observed_at": "2026-10-04T00:19:18.175Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5960295163,
         "body_fingerprint": "fnv1a64-utf16:1fde901e2599b2e6",
         "updated_at": "2026-10-02T19:53:24Z",
-        "observed_at": "2026-10-04T00:19:18.175Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5960391683,
         "body_fingerprint": "fnv1a64-utf16:9153a529f8af8d90",
         "updated_at": "2026-10-02T19:58:07Z",
-        "observed_at": "2026-10-04T00:19:18.175Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5960422875,
         "body_fingerprint": "fnv1a64-utf16:49aa9c3ebcec9181",
         "updated_at": "2026-10-02T19:59:41Z",
-        "observed_at": "2026-10-04T00:19:18.175Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5960685458,
         "body_fingerprint": "fnv1a64-utf16:9c4d1b133199c0cf",
         "updated_at": "2026-10-02T20:12:04Z",
-        "observed_at": "2026-10-04T00:19:18.175Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5960744927,
         "body_fingerprint": "fnv1a64-utf16:90da8d33510cd36c",
         "updated_at": "2026-10-02T20:15:31Z",
-        "observed_at": "2026-10-04T00:19:18.175Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5960919023,
         "body_fingerprint": "fnv1a64-utf16:bfdb0163e8387ae2",
         "updated_at": "2026-10-02T20:27:12Z",
-        "observed_at": "2026-10-04T00:19:18.175Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5960947768,
         "body_fingerprint": "fnv1a64-utf16:a8f77ba5c8df01fd",
         "updated_at": "2026-10-02T20:29:15Z",
-        "observed_at": "2026-10-04T00:19:18.175Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5961063074,
         "body_fingerprint": "fnv1a64-utf16:a11e37ff013f7a55",
         "updated_at": "2026-10-02T20:37:22Z",
-        "observed_at": "2026-10-04T00:19:18.175Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5961138129,
         "body_fingerprint": "fnv1a64-utf16:6b21d7cfc77fbf46",
         "updated_at": "2026-10-02T20:42:10Z",
-        "observed_at": "2026-10-04T00:19:18.175Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5961197371,
         "body_fingerprint": "fnv1a64-utf16:935f35fe3a575785",
         "updated_at": "2026-10-02T20:45:45Z",
-        "observed_at": "2026-10-04T00:19:18.175Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5961236586,
         "body_fingerprint": "fnv1a64-utf16:b42a0f56e426bb7a",
         "updated_at": "2026-10-02T20:48:09Z",
-        "observed_at": "2026-10-04T00:19:18.175Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5961389038,
         "body_fingerprint": "fnv1a64-utf16:97707a5a7c368503",
         "updated_at": "2026-10-02T20:59:37Z",
-        "observed_at": "2026-10-04T00:19:18.175Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5961575057,
         "body_fingerprint": "fnv1a64-utf16:e32a5af8747f392c",
         "updated_at": "2026-10-02T21:13:34Z",
-        "observed_at": "2026-10-04T00:19:18.175Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5961751823,
         "body_fingerprint": "fnv1a64-utf16:520bedc37705189c",
         "updated_at": "2026-10-02T21:27:50Z",
-        "observed_at": "2026-10-04T00:19:18.175Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5961793179,
         "body_fingerprint": "fnv1a64-utf16:b5343fdd5e9d3871",
         "updated_at": "2026-10-02T21:31:13Z",
-        "observed_at": "2026-10-04T00:19:18.175Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5961942950,
         "body_fingerprint": "fnv1a64-utf16:7dbd34a6972a0c10",
         "updated_at": "2026-10-02T21:43:00Z",
-        "observed_at": "2026-10-04T00:19:18.175Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5962096460,
         "body_fingerprint": "fnv1a64-utf16:8d15cd64ef5e5d32",
         "updated_at": "2026-10-02T21:55:23Z",
-        "observed_at": "2026-10-04T00:19:18.175Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5962217578,
         "body_fingerprint": "fnv1a64-utf16:840507bf21a847ff",
         "updated_at": "2026-10-02T22:05:49Z",
-        "observed_at": "2026-10-04T00:19:18.175Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5962259012,
         "body_fingerprint": "fnv1a64-utf16:0636913cbd92dff0",
         "updated_at": "2026-10-02T22:09:38Z",
-        "observed_at": "2026-10-04T00:19:18.175Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5962372945,
         "body_fingerprint": "fnv1a64-utf16:85b9e5fe6403e1a6",
         "updated_at": "2026-10-02T22:20:05Z",
-        "observed_at": "2026-10-04T00:19:18.175Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5962394997,
         "body_fingerprint": "fnv1a64-utf16:c73630cc6898c8ad",
         "updated_at": "2026-10-02T22:22:10Z",
-        "observed_at": "2026-10-04T00:19:18.175Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5962435307,
         "body_fingerprint": "fnv1a64-utf16:d17211e99b2e5fd7",
         "updated_at": "2026-10-02T22:25:46Z",
-        "observed_at": "2026-10-04T00:19:18.175Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5962456037,
         "body_fingerprint": "fnv1a64-utf16:4f53cddef92dc7ce",
         "updated_at": "2026-10-02T22:27:19Z",
-        "observed_at": "2026-10-04T00:19:18.175Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5962599729,
         "body_fingerprint": "fnv1a64-utf16:c9e673f58ef19d00",
         "updated_at": "2026-10-02T22:40:13Z",
-        "observed_at": "2026-10-04T00:19:18.175Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5962625061,
         "body_fingerprint": "fnv1a64-utf16:e4853c794df02bc5",
         "updated_at": "2026-10-02T22:42:41Z",
-        "observed_at": "2026-10-04T00:19:18.175Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5962726462,
         "body_fingerprint": "fnv1a64-utf16:1eb631aa48008ee7",
         "updated_at": "2026-10-02T22:52:48Z",
-        "observed_at": "2026-10-04T00:19:18.175Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5962739800,
         "body_fingerprint": "fnv1a64-utf16:100c18542e1c19da",
         "updated_at": "2026-10-02T22:54:00Z",
-        "observed_at": "2026-10-04T00:19:18.175Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5962904898,
         "body_fingerprint": "fnv1a64-utf16:b097832a32408147",
         "updated_at": "2026-10-02T23:10:33Z",
-        "observed_at": "2026-10-04T00:19:18.175Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5962947165,
         "body_fingerprint": "fnv1a64-utf16:994c5a5447accf2f",
         "updated_at": "2026-10-02T23:15:02Z",
-        "observed_at": "2026-10-04T00:19:18.175Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5963003594,
         "body_fingerprint": "fnv1a64-utf16:679e350965c6c2df",
         "updated_at": "2026-10-02T23:22:13Z",
-        "observed_at": "2026-10-04T00:19:18.175Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5963033754,
         "body_fingerprint": "fnv1a64-utf16:60819f64e832f68f",
         "updated_at": "2026-10-02T23:23:57Z",
-        "observed_at": "2026-10-04T00:19:18.175Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5963128921,
         "body_fingerprint": "fnv1a64-utf16:6d5e9cfb62819c74",
         "updated_at": "2026-10-02T23:34:23Z",
-        "observed_at": "2026-10-04T00:19:18.175Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5963143238,
         "body_fingerprint": "fnv1a64-utf16:2bef68fb09df5153",
         "updated_at": "2026-10-02T23:35:56Z",
-        "observed_at": "2026-10-04T00:19:18.175Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5963332141,
         "body_fingerprint": "fnv1a64-utf16:b78c10baf8988578",
         "updated_at": "2026-10-02T23:57:02Z",
-        "observed_at": "2026-10-04T00:19:18.175Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5963352240,
         "body_fingerprint": "fnv1a64-utf16:e1694e8b76fee34d",
         "updated_at": "2026-10-02T23:59:25Z",
-        "observed_at": "2026-10-04T00:19:18.175Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5963476597,
         "body_fingerprint": "fnv1a64-utf16:22c8075e30bdb0da",
         "updated_at": "2026-10-03T00:12:27Z",
-        "observed_at": "2026-10-04T00:19:18.175Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5963491939,
         "body_fingerprint": "fnv1a64-utf16:4dafd12ccdbfbff3",
         "updated_at": "2026-10-03T00:14:07Z",
-        "observed_at": "2026-10-04T00:19:18.175Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5963727862,
         "body_fingerprint": "fnv1a64-utf16:4bb335694d1f44ab",
         "updated_at": "2026-10-03T00:41:04Z",
-        "observed_at": "2026-10-04T00:19:18.175Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5963742965,
         "body_fingerprint": "fnv1a64-utf16:562876d2676e340a",
         "updated_at": "2026-10-03T00:42:56Z",
-        "observed_at": "2026-10-04T00:19:18.175Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5963835176,
         "body_fingerprint": "fnv1a64-utf16:b881038dc3ac2d51",
         "updated_at": "2026-10-03T00:54:01Z",
-        "observed_at": "2026-10-04T00:19:18.175Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5963844240,
         "body_fingerprint": "fnv1a64-utf16:9c3adf76af9ce79f",
         "updated_at": "2026-10-03T00:55:11Z",
-        "observed_at": "2026-10-04T00:19:18.175Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5963922257,
         "body_fingerprint": "fnv1a64-utf16:ba92826746d6ceaf",
         "updated_at": "2026-10-03T01:05:02Z",
-        "observed_at": "2026-10-04T00:19:18.175Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5963937064,
         "body_fingerprint": "fnv1a64-utf16:110d36be26d69b3c",
         "updated_at": "2026-10-03T01:06:55Z",
-        "observed_at": "2026-10-04T00:19:18.175Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5964028212,
         "body_fingerprint": "fnv1a64-utf16:af9bfc8be21b5dfb",
         "updated_at": "2026-10-03T01:18:50Z",
-        "observed_at": "2026-10-04T00:19:18.175Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5964036589,
         "body_fingerprint": "fnv1a64-utf16:0c2bcacdd9d737d9",
         "updated_at": "2026-10-03T01:19:57Z",
-        "observed_at": "2026-10-04T00:19:18.175Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5964093612,
         "body_fingerprint": "fnv1a64-utf16:61411b9e2acd2a7d",
         "updated_at": "2026-10-03T01:26:22Z",
-        "observed_at": "2026-10-04T00:19:18.175Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5964103365,
         "body_fingerprint": "fnv1a64-utf16:237d4edad5dd5472",
         "updated_at": "2026-10-03T01:27:39Z",
-        "observed_at": "2026-10-04T00:19:18.175Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5964207542,
         "body_fingerprint": "fnv1a64-utf16:505fdfb4496ea401",
         "updated_at": "2026-10-03T01:41:48Z",
-        "observed_at": "2026-10-04T00:19:18.175Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5964261377,
         "body_fingerprint": "fnv1a64-utf16:8a6b54c273ba090c",
         "updated_at": "2026-10-03T01:48:40Z",
-        "observed_at": "2026-10-04T00:19:18.175Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5964288734,
         "body_fingerprint": "fnv1a64-utf16:b1d5c30eb196deba",
         "updated_at": "2026-10-03T01:51:04Z",
-        "observed_at": "2026-10-04T00:19:18.175Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5964303960,
         "body_fingerprint": "fnv1a64-utf16:4e7629ac75de8e51",
         "updated_at": "2026-10-03T01:52:11Z",
-        "observed_at": "2026-10-04T00:19:18.175Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5964378874,
         "body_fingerprint": "fnv1a64-utf16:999e3ea327b8804e",
         "updated_at": "2026-10-03T02:01:14Z",
-        "observed_at": "2026-10-04T00:19:18.175Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5964395355,
         "body_fingerprint": "fnv1a64-utf16:e6c07e9f9cc06161",
         "updated_at": "2026-10-03T02:03:28Z",
-        "observed_at": "2026-10-04T00:19:18.175Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5966499910,
         "body_fingerprint": "fnv1a64-utf16:3cf8be1d06f2929d",
         "updated_at": "2026-10-03T06:49:52Z",
-        "observed_at": "2026-10-04T00:19:18.175Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5966516727,
         "body_fingerprint": "fnv1a64-utf16:5c650fb0c3f7f64a",
         "updated_at": "2026-10-03T06:52:25Z",
-        "observed_at": "2026-10-04T00:19:18.175Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5966533944,
         "body_fingerprint": "fnv1a64-utf16:39b38022a61c2f89",
         "updated_at": "2026-10-03T06:55:06Z",
-        "observed_at": "2026-10-04T00:19:18.175Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5966556594,
         "body_fingerprint": "fnv1a64-utf16:91b64cd0c75692c4",
         "updated_at": "2026-10-03T06:58:22Z",
-        "observed_at": "2026-10-04T00:19:18.175Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5966573510,
         "body_fingerprint": "fnv1a64-utf16:fdc973826bcfe326",
         "updated_at": "2026-10-03T07:00:56Z",
-        "observed_at": "2026-10-04T00:19:18.175Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5966577266,
         "body_fingerprint": "fnv1a64-utf16:7c2e022cb2716289",
         "updated_at": "2026-10-03T07:01:29Z",
-        "observed_at": "2026-10-04T00:19:18.176Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5966585592,
         "body_fingerprint": "fnv1a64-utf16:7c1b4020a8b9931e",
         "updated_at": "2026-10-03T07:02:42Z",
-        "observed_at": "2026-10-04T00:19:18.176Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5966600025,
         "body_fingerprint": "fnv1a64-utf16:e069d15eb280bbb7",
         "updated_at": "2026-10-03T07:04:51Z",
-        "observed_at": "2026-10-04T00:19:18.176Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5966669687,
         "body_fingerprint": "fnv1a64-utf16:88df890611fb5fd7",
         "updated_at": "2026-10-03T07:14:01Z",
-        "observed_at": "2026-10-04T00:19:18.176Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5966750966,
         "body_fingerprint": "fnv1a64-utf16:601440f1a2d7d1f9",
         "updated_at": "2026-10-03T07:25:34Z",
-        "observed_at": "2026-10-04T00:19:18.176Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5966759363,
         "body_fingerprint": "fnv1a64-utf16:8dcd46ceea8306a7",
         "updated_at": "2026-10-03T07:26:49Z",
-        "observed_at": "2026-10-04T00:19:18.176Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5966761902,
         "body_fingerprint": "fnv1a64-utf16:1ddc24a49c5b99f1",
         "updated_at": "2026-10-03T07:27:09Z",
-        "observed_at": "2026-10-04T00:19:18.176Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5966767946,
         "body_fingerprint": "fnv1a64-utf16:184d6fd2155227a6",
         "updated_at": "2026-10-03T07:28:00Z",
-        "observed_at": "2026-10-04T00:19:18.176Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5966794726,
         "body_fingerprint": "fnv1a64-utf16:c1d5e63703d3177b",
         "updated_at": "2026-10-03T07:31:57Z",
-        "observed_at": "2026-10-04T00:19:18.176Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5966803995,
         "body_fingerprint": "fnv1a64-utf16:b070d22104d9fd97",
         "updated_at": "2026-10-03T07:33:20Z",
-        "observed_at": "2026-10-04T00:19:18.176Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5966825237,
         "body_fingerprint": "fnv1a64-utf16:aa1809f835a86fd7",
         "updated_at": "2026-10-03T07:36:26Z",
-        "observed_at": "2026-10-04T00:19:18.176Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5966826111,
         "body_fingerprint": "fnv1a64-utf16:4600b3a0f03d1d39",
         "updated_at": "2026-10-03T07:36:34Z",
-        "observed_at": "2026-10-04T00:19:18.176Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5966839939,
         "body_fingerprint": "fnv1a64-utf16:f995719b791969ec",
         "updated_at": "2026-10-03T07:38:35Z",
-        "observed_at": "2026-10-04T00:19:18.176Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5966843029,
         "body_fingerprint": "fnv1a64-utf16:34fb0c554520e035",
         "updated_at": "2026-10-03T07:38:55Z",
-        "observed_at": "2026-10-04T00:19:18.176Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5966858454,
         "body_fingerprint": "fnv1a64-utf16:0877f7294a9481e7",
         "updated_at": "2026-10-03T07:41:11Z",
-        "observed_at": "2026-10-04T00:19:18.176Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5966864046,
         "body_fingerprint": "fnv1a64-utf16:38b4dadc74778f01",
         "updated_at": "2026-10-03T07:42:02Z",
-        "observed_at": "2026-10-04T00:19:18.176Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5966866303,
         "body_fingerprint": "fnv1a64-utf16:8ce72b27adb1c8f4",
         "updated_at": "2026-10-03T07:42:23Z",
-        "observed_at": "2026-10-04T00:19:18.176Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5966874764,
         "body_fingerprint": "fnv1a64-utf16:732ccc3112bee466",
         "updated_at": "2026-10-03T07:43:39Z",
-        "observed_at": "2026-10-04T00:19:18.176Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5966883504,
         "body_fingerprint": "fnv1a64-utf16:d63754d58a195f6d",
         "updated_at": "2026-10-03T07:45:00Z",
-        "observed_at": "2026-10-04T00:19:18.176Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5966921133,
         "body_fingerprint": "fnv1a64-utf16:39211555dd6372df",
         "updated_at": "2026-10-03T07:50:47Z",
-        "observed_at": "2026-10-04T00:19:18.176Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5966922988,
         "body_fingerprint": "fnv1a64-utf16:1039809a30480980",
         "updated_at": "2026-10-03T07:51:04Z",
-        "observed_at": "2026-10-04T00:19:18.176Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5966931922,
         "body_fingerprint": "fnv1a64-utf16:f0f8b6ba8f981f51",
         "updated_at": "2026-10-03T07:52:24Z",
-        "observed_at": "2026-10-04T00:19:18.176Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5966940428,
         "body_fingerprint": "fnv1a64-utf16:d30ae2268a05756f",
         "updated_at": "2026-10-03T07:53:46Z",
-        "observed_at": "2026-10-04T00:19:18.176Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5966948773,
         "body_fingerprint": "fnv1a64-utf16:24d6531cfd96fb4e",
         "updated_at": "2026-10-03T07:55:05Z",
-        "observed_at": "2026-10-04T00:19:18.176Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5966976444,
         "body_fingerprint": "fnv1a64-utf16:e99d54f8e3742586",
         "updated_at": "2026-10-03T07:59:29Z",
-        "observed_at": "2026-10-04T00:19:18.176Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5966987423,
         "body_fingerprint": "fnv1a64-utf16:05f761fb42687dee",
         "updated_at": "2026-10-03T08:01:07Z",
-        "observed_at": "2026-10-04T00:19:18.176Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5966993528,
         "body_fingerprint": "fnv1a64-utf16:8d0dcc48e47d62a8",
         "updated_at": "2026-10-03T08:01:59Z",
-        "observed_at": "2026-10-04T00:19:18.176Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5966995885,
         "body_fingerprint": "fnv1a64-utf16:2a60e950b3a22859",
         "updated_at": "2026-10-03T08:02:21Z",
-        "observed_at": "2026-10-04T00:19:18.176Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5967002066,
         "body_fingerprint": "fnv1a64-utf16:4d85341063752ca6",
         "updated_at": "2026-10-03T08:03:19Z",
-        "observed_at": "2026-10-04T00:19:18.176Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5967004176,
         "body_fingerprint": "fnv1a64-utf16:a66351463b5d94b9",
         "updated_at": "2026-10-03T08:03:37Z",
-        "observed_at": "2026-10-04T00:19:18.176Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5967006081,
         "body_fingerprint": "fnv1a64-utf16:720738b40d00cea6",
         "updated_at": "2026-10-03T08:03:53Z",
-        "observed_at": "2026-10-04T00:19:18.176Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5967040041,
         "body_fingerprint": "fnv1a64-utf16:28b7e5312f8ec681",
         "updated_at": "2026-10-03T08:08:31Z",
-        "observed_at": "2026-10-04T00:19:18.176Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5967040843,
         "body_fingerprint": "fnv1a64-utf16:116b43a2eac4ab4b",
         "updated_at": "2026-10-03T08:08:36Z",
-        "observed_at": "2026-10-04T00:19:18.176Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5967087580,
         "body_fingerprint": "fnv1a64-utf16:febbb311e33106f4",
         "updated_at": "2026-10-03T08:14:58Z",
-        "observed_at": "2026-10-04T00:19:18.176Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5967091669,
         "body_fingerprint": "fnv1a64-utf16:0a5a2d8748814046",
         "updated_at": "2026-10-03T08:15:35Z",
-        "observed_at": "2026-10-04T00:19:18.176Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5967091850,
         "body_fingerprint": "fnv1a64-utf16:3659692813ad56f3",
         "updated_at": "2026-10-03T08:15:37Z",
-        "observed_at": "2026-10-04T00:19:18.176Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5967099069,
         "body_fingerprint": "fnv1a64-utf16:46ace8361ec55cfd",
         "updated_at": "2026-10-03T08:16:40Z",
-        "observed_at": "2026-10-04T00:19:18.176Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5967120500,
         "body_fingerprint": "fnv1a64-utf16:f0df062967f73550",
         "updated_at": "2026-10-03T08:19:51Z",
-        "observed_at": "2026-10-04T00:19:18.176Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5967129180,
         "body_fingerprint": "fnv1a64-utf16:b0538d61db095491",
         "updated_at": "2026-10-03T08:21:07Z",
-        "observed_at": "2026-10-04T00:19:18.176Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5967150141,
         "body_fingerprint": "fnv1a64-utf16:8929af14a9301f8f",
         "updated_at": "2026-10-03T08:24:06Z",
-        "observed_at": "2026-10-04T00:19:18.176Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5967306275,
         "body_fingerprint": "fnv1a64-utf16:8760fad19c9b663b",
         "updated_at": "2026-10-03T08:45:46Z",
-        "observed_at": "2026-10-04T00:19:18.176Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5967345376,
         "body_fingerprint": "fnv1a64-utf16:8fd0d1a6c0f2a928",
         "updated_at": "2026-10-03T08:50:26Z",
-        "observed_at": "2026-10-04T00:19:18.176Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5967532890,
         "body_fingerprint": "fnv1a64-utf16:43a174e061f8a813",
         "updated_at": "2026-10-03T09:07:32Z",
-        "observed_at": "2026-10-04T00:19:18.176Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5971570386,
         "body_fingerprint": "fnv1a64-utf16:eb7f68d0e6b30a2a",
         "updated_at": "2026-10-03T17:17:52Z",
-        "observed_at": "2026-10-04T00:19:18.176Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5971581223,
         "body_fingerprint": "fnv1a64-utf16:ad2172a4efdc84e4",
         "updated_at": "2026-10-03T17:19:12Z",
-        "observed_at": "2026-10-04T00:19:18.176Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5971646485,
         "body_fingerprint": "fnv1a64-utf16:cdef09ee93483a43",
         "updated_at": "2026-10-03T17:27:10Z",
-        "observed_at": "2026-10-04T00:19:18.176Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5971664323,
         "body_fingerprint": "fnv1a64-utf16:e50bbcddd026100d",
         "updated_at": "2026-10-03T17:29:20Z",
-        "observed_at": "2026-10-04T00:19:18.176Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5971677512,
         "body_fingerprint": "fnv1a64-utf16:fe1a26560a84f86e",
         "updated_at": "2026-10-03T17:30:58Z",
-        "observed_at": "2026-10-04T00:19:18.176Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5971703582,
         "body_fingerprint": "fnv1a64-utf16:c3aa539fb50c37c2",
         "updated_at": "2026-10-03T17:34:08Z",
-        "observed_at": "2026-10-04T00:19:18.176Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5971714672,
         "body_fingerprint": "fnv1a64-utf16:c200b1538d77b982",
         "updated_at": "2026-10-03T17:35:23Z",
-        "observed_at": "2026-10-04T00:19:18.176Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5971804009,
         "body_fingerprint": "fnv1a64-utf16:30ee1c8ccdea6947",
         "updated_at": "2026-10-03T17:46:24Z",
-        "observed_at": "2026-10-04T00:19:18.176Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5971839994,
         "body_fingerprint": "fnv1a64-utf16:8eb7e67b6b154556",
         "updated_at": "2026-10-03T17:50:52Z",
-        "observed_at": "2026-10-04T00:19:18.176Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5971910748,
         "body_fingerprint": "fnv1a64-utf16:322d085de2e0d894",
         "updated_at": "2026-10-03T17:58:14Z",
-        "observed_at": "2026-10-04T00:19:18.176Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5971935514,
         "body_fingerprint": "fnv1a64-utf16:7ee51c220b3de9b7",
         "updated_at": "2026-10-03T18:01:19Z",
-        "observed_at": "2026-10-04T00:19:18.176Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5971976014,
         "body_fingerprint": "fnv1a64-utf16:b04cd9cb075b48ce",
         "updated_at": "2026-10-03T18:05:31Z",
-        "observed_at": "2026-10-04T00:19:18.176Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5972010444,
         "body_fingerprint": "fnv1a64-utf16:2d636f729c5171a1",
         "updated_at": "2026-10-03T18:09:19Z",
-        "observed_at": "2026-10-04T00:19:18.176Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5972049121,
         "body_fingerprint": "fnv1a64-utf16:ecaa16ffe7bc6982",
         "updated_at": "2026-10-03T18:13:37Z",
-        "observed_at": "2026-10-04T00:19:18.176Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5972202859,
         "body_fingerprint": "fnv1a64-utf16:fbe5d77ff872d256",
         "updated_at": "2026-10-03T18:31:50Z",
-        "observed_at": "2026-10-04T00:19:18.176Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5972307389,
         "body_fingerprint": "fnv1a64-utf16:28bb2c127b4b2c09",
         "updated_at": "2026-10-03T18:43:49Z",
-        "observed_at": "2026-10-04T00:19:18.176Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5972385507,
         "body_fingerprint": "fnv1a64-utf16:769e61a17128d5d4",
         "updated_at": "2026-10-03T18:52:04Z",
-        "observed_at": "2026-10-04T00:19:18.176Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5972534711,
         "body_fingerprint": "fnv1a64-utf16:b69a2cbc30591707",
         "updated_at": "2026-10-03T19:05:46Z",
-        "observed_at": "2026-10-04T00:19:18.176Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5972535389,
         "body_fingerprint": "fnv1a64-utf16:e65a89ad049a14b9",
         "updated_at": "2026-10-03T19:05:51Z",
-        "observed_at": "2026-10-04T00:19:18.176Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5972558886,
         "body_fingerprint": "fnv1a64-utf16:024e9dabb705880a",
         "updated_at": "2026-10-03T19:08:52Z",
-        "observed_at": "2026-10-04T00:19:18.176Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5972880961,
         "body_fingerprint": "fnv1a64-utf16:9d0a3ae7f4a9cdbd",
         "updated_at": "2026-10-03T19:50:45Z",
-        "observed_at": "2026-10-04T00:19:18.176Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5972914887,
         "body_fingerprint": "fnv1a64-utf16:857482487d388618",
         "updated_at": "2026-10-03T19:55:14Z",
-        "observed_at": "2026-10-04T00:19:18.176Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5972953224,
         "body_fingerprint": "fnv1a64-utf16:621d09873c88ac68",
         "updated_at": "2026-10-03T20:00:17Z",
-        "observed_at": "2026-10-04T00:19:18.176Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5972973306,
         "body_fingerprint": "fnv1a64-utf16:1e9d66d0a813b864",
         "updated_at": "2026-10-03T20:02:53Z",
-        "observed_at": "2026-10-04T00:19:18.176Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5972985273,
         "body_fingerprint": "fnv1a64-utf16:5c46394e56705b85",
         "updated_at": "2026-10-03T20:04:26Z",
-        "observed_at": "2026-10-04T00:19:18.176Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5973085483,
         "body_fingerprint": "fnv1a64-utf16:a2997c07ac4f9414",
         "updated_at": "2026-10-03T20:16:14Z",
-        "observed_at": "2026-10-04T00:19:18.176Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5973174354,
         "body_fingerprint": "fnv1a64-utf16:8041dd2b60f73a14",
         "updated_at": "2026-10-03T20:26:08Z",
-        "observed_at": "2026-10-04T00:19:18.176Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5973407684,
         "body_fingerprint": "fnv1a64-utf16:a66b26e2b6f6fcb8",
         "updated_at": "2026-10-03T20:56:37Z",
-        "observed_at": "2026-10-04T00:19:18.176Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5973461243,
         "body_fingerprint": "fnv1a64-utf16:f53ecfdad4b049ec",
         "updated_at": "2026-10-03T21:03:40Z",
-        "observed_at": "2026-10-04T00:19:18.176Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5973496978,
         "body_fingerprint": "fnv1a64-utf16:004758d779d9e738",
         "updated_at": "2026-10-03T21:08:28Z",
-        "observed_at": "2026-10-04T00:19:18.176Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5973534875,
         "body_fingerprint": "fnv1a64-utf16:89b6b28e97e3eb99",
         "updated_at": "2026-10-03T21:13:26Z",
-        "observed_at": "2026-10-04T00:19:18.176Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5973557936,
         "body_fingerprint": "fnv1a64-utf16:53366575a44db2e5",
         "updated_at": "2026-10-03T21:16:08Z",
-        "observed_at": "2026-10-04T00:19:18.176Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5973574570,
         "body_fingerprint": "fnv1a64-utf16:813b3b7c0d0fa1f0",
         "updated_at": "2026-10-03T21:17:59Z",
-        "observed_at": "2026-10-04T00:19:18.176Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5973598286,
         "body_fingerprint": "fnv1a64-utf16:31c2765cd1dd3454",
         "updated_at": "2026-10-03T21:20:12Z",
-        "observed_at": "2026-10-04T00:19:18.177Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5973614499,
         "body_fingerprint": "fnv1a64-utf16:d38e7a7611e2dd8e",
         "updated_at": "2026-10-03T21:22:02Z",
-        "observed_at": "2026-10-04T00:19:18.177Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5973675772,
         "body_fingerprint": "fnv1a64-utf16:1d8d1f936e8683d3",
         "updated_at": null,
-        "observed_at": "2026-10-04T00:19:18.177Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5973718138,
         "body_fingerprint": "fnv1a64-utf16:1edfe730275d305e",
         "updated_at": null,
-        "observed_at": "2026-10-04T00:19:18.177Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5973751578,
         "body_fingerprint": "fnv1a64-utf16:d23f8c84b9a9ecd1",
         "updated_at": null,
-        "observed_at": "2026-10-04T00:19:18.177Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5973756204,
         "body_fingerprint": "fnv1a64-utf16:3a06d043611012ce",
         "updated_at": null,
-        "observed_at": "2026-10-04T00:19:18.177Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5973970273,
         "body_fingerprint": "fnv1a64-utf16:4cd88684d5d92e2f",
         "updated_at": null,
-        "observed_at": "2026-10-04T00:19:18.177Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5973997375,
         "body_fingerprint": "fnv1a64-utf16:784dd78a1a8937aa",
         "updated_at": null,
-        "observed_at": "2026-10-04T00:19:18.177Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5974024230,
         "body_fingerprint": "fnv1a64-utf16:e5f6c1b031848cdc",
         "updated_at": null,
-        "observed_at": "2026-10-04T00:19:18.177Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5974049344,
         "body_fingerprint": "fnv1a64-utf16:078f764fc9701a5f",
         "updated_at": null,
-        "observed_at": "2026-10-04T00:19:18.177Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5974105176,
         "body_fingerprint": "fnv1a64-utf16:39eb11f18c5c5112",
         "updated_at": null,
-        "observed_at": "2026-10-04T00:19:18.177Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5974323747,
         "body_fingerprint": "fnv1a64-utf16:f98d1ac98f86a5ec",
         "updated_at": null,
-        "observed_at": "2026-10-04T00:19:18.177Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5974335480,
         "body_fingerprint": "fnv1a64-utf16:8f64aa1ed16c7070",
         "updated_at": null,
-        "observed_at": "2026-10-04T00:19:18.177Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5974335999,
         "body_fingerprint": "fnv1a64-utf16:ae63f09f26c7951d",
         "updated_at": null,
-        "observed_at": "2026-10-04T00:19:18.177Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5974381656,
         "body_fingerprint": "fnv1a64-utf16:3252b43f20bab79d",
         "updated_at": null,
-        "observed_at": "2026-10-04T00:19:18.177Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5974462399,
         "body_fingerprint": "fnv1a64-utf16:92ebe23ff71a678a",
         "updated_at": null,
-        "observed_at": "2026-10-04T00:19:18.177Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5974470676,
         "body_fingerprint": "fnv1a64-utf16:d88d308b0b45103a",
         "updated_at": null,
-        "observed_at": "2026-10-04T00:19:18.177Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5974512551,
         "body_fingerprint": "fnv1a64-utf16:c30fdce8d215436a",
         "updated_at": null,
-        "observed_at": "2026-10-04T00:19:18.177Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5974554942,
         "body_fingerprint": "fnv1a64-utf16:d1c937f8eef08672",
         "updated_at": null,
-        "observed_at": "2026-10-04T00:19:18.177Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5974574039,
         "body_fingerprint": "fnv1a64-utf16:cfd65213fad2b91e",
         "updated_at": null,
-        "observed_at": "2026-10-04T00:19:18.177Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5974585526,
         "body_fingerprint": "fnv1a64-utf16:5f4a7d4656214f26",
         "updated_at": null,
-        "observed_at": "2026-10-04T00:19:18.177Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5974710977,
         "body_fingerprint": "fnv1a64-utf16:c0542468068387f8",
         "updated_at": null,
-        "observed_at": "2026-10-04T00:19:18.177Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5974773546,
         "body_fingerprint": "fnv1a64-utf16:1253b3356422561e",
         "updated_at": null,
-        "observed_at": "2026-10-04T00:19:18.177Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
       },
       {
         "id": 5974855843,
         "body_fingerprint": "fnv1a64-utf16:8f4fefa929b3a912",
         "updated_at": null,
-        "observed_at": "2026-10-04T00:19:18.177Z"
+        "observed_at": "2026-10-04T01:04:36.472Z"
+      },
+      {
+        "id": 5974975630,
+        "body_fingerprint": "fnv1a64-utf16:2080f723d8bb4274",
+        "updated_at": null,
+        "observed_at": "2026-10-04T01:04:36.472Z"
+      },
+      {
+        "id": 5974999413,
+        "updated_at": null,
+        "body_fingerprint": "fnv1a64-utf16:51065ad0bb877d90",
+        "observed_at": "2026-10-04T01:04:36.472Z"
+      },
+      {
+        "id": 5975001153,
+        "updated_at": null,
+        "body_fingerprint": "fnv1a64-utf16:58e6c913e22cfb40",
+        "observed_at": "2026-10-04T01:04:36.472Z"
+      },
+      {
+        "id": 5975009380,
+        "updated_at": null,
+        "body_fingerprint": "fnv1a64-utf16:0817211ff2baf1f3",
+        "observed_at": "2026-10-04T01:04:36.472Z"
+      },
+      {
+        "id": 5975012805,
+        "updated_at": null,
+        "body_fingerprint": "fnv1a64-utf16:f987a01ed414873d",
+        "observed_at": "2026-10-04T01:04:36.472Z"
+      },
+      {
+        "id": 5975028449,
+        "updated_at": null,
+        "body_fingerprint": "fnv1a64-utf16:35eb6a506fe3178b",
+        "observed_at": "2026-10-04T01:04:36.472Z"
+      },
+      {
+        "id": 5975137430,
+        "updated_at": null,
+        "body_fingerprint": "fnv1a64-utf16:223b36f42230b3d6",
+        "observed_at": "2026-10-04T01:04:36.472Z"
       }
     ],
     "conversation_comments": [
@@ -2925,22 +2973,91 @@
     "updated_at": "2026-10-02T16:18:28Z"
   },
   "lastEngineeringMilestone": {
-    "at": "2026-10-04T00:22:43.807Z",
-    "status": "implemented_live_and_dashboard_verified",
-    "cohort": "no-maker-tape-20261004-v1",
-    "bankHash": "17b460652639c3f74fb68b39d3c459fb6971d89654125ec34b0c1d41bf2105ee",
-    "cutoff": "2026-10-03T23:59:44.865Z",
-    "claimComment": 5974855843,
-    "proof": "data/no-maker-live-verification-20261004.json",
-    "fillsPerWallet": 0,
-    "realizedPnlPerWallet": "0.000000",
-    "families": 2,
-    "readClientsAdded": 0,
-    "persistentWorkersAdded": 0,
+    "at": "2026-10-04T01:04:36.472Z",
+    "status": "implemented_deployed_checked_publication_pending",
+    "scopeClaim": 5975137430,
+    "reviewFindings": [
+      5975012805,
+      5975028449
+    ],
+    "hostRevision": 3,
+    "paperRevision": 2,
+    "cohort": "no-maker-tape-20261004-v3",
+    "bankHash": "b022b75032284b88746e847f950d8904817bf71802c41e94026f9d06ecefe582",
+    "cutoff": "2026-10-04T00:58:38.895Z",
+    "fixes": [
+      "paired admission reconsiders both actual books at causal second-receipt clock",
+      "continuous completed tape windows require sufficient projection checkpoints",
+      "incomplete tape window restarts at original first page",
+      "rejected account/stale books invalidate liquidation marks",
+      "client mark aging preserves unsold share count",
+      "Baal dashboard name"
+    ],
+    "accountingContinuation": {
+      "accountingCarried": true,
+      "bankFileHash": "afd89e4ed9da5082bb429c55f22ac65e943efa87f71a5c17d7498f808bb194af",
+      "bankHash": "8f0994221bb3c74947d7380fe0365512ed3b225a7f2e0ab8b1b27e1fcb11f356",
+      "cohort": "no-maker-tape-20261004-v2",
+      "journalPrefixBytes": 527914,
+      "journalPrefixHash": "904713d5b65ba6f635c82772af257277d195c93655471afc15fd7cbad6d0853b",
+      "openingStateFileHash": "34086c52381426aeda75ade510c04c5dd7fcb76a423ba587c2f4379380798f0e",
+      "openingWallets": {
+        "at_quote": {
+          "cash": "100.000000",
+          "fills": 0,
+          "positions": 0,
+          "realizedPnl": "0.000000",
+          "reserved": "0.000000",
+          "unresolvedQuotes": 0
+        },
+        "improve_one_tick": {
+          "cash": "99.800000",
+          "fills": 1,
+          "positions": 1,
+          "realizedPnl": "0.000000",
+          "reserved": "0.000000",
+          "unresolvedQuotes": 0
+        }
+      },
+      "reason": "coverage_and_rejected_mark_corrections"
+    },
+    "originalExperimentsPreserved": [
+      "source-probability-20261003-v1",
+      "nh-canonical-capacity-20261003-v1",
+      "no-maker-tape-20261004-v1",
+      "no-maker-tape-20261004-v2"
+    ],
+    "checksPassed": 56,
+    "productionBuild": "frontend-build-20261004-baal-final",
+    "proof": "data/baal-live-verification-20261004.json",
+    "latestSnapshot": {
+      "at": "2026-10-04T01:04:36.426Z",
+      "wallets": {
+        "at_quote": {
+          "cash": "100.000000",
+          "reserved": "0.000000",
+          "fees": "0.000000",
+          "fills": 0,
+          "closedTrades": 0,
+          "realizedPnl": "0.000000",
+          "positions": 0,
+          "unresolvedQuotes": 0
+        },
+        "improve_one_tick": {
+          "cash": "99.800000",
+          "reserved": "0.000000",
+          "fees": "0.000000",
+          "fills": 1,
+          "closedTrades": 0,
+          "realizedPnl": "0.000000",
+          "positions": 1,
+          "unresolvedQuotes": 0
+        }
+      }
+    },
+    "executionOwner": "Daenerys",
     "competitionOrders": 0,
-    "profitabilityEstablished": false,
-    "testsPassed": 35,
-    "productionBuildPassed": true
+    "profitabilityEstablished": false
   },
   "lastMilestone": {
     "at": "2026-10-03T21:00:44.431Z",
@@ -3083,7 +3200,7 @@
     },
     "review": 5946892958
   },
-  "last_checked_at_utc": "2026-10-04T00:22:43.807Z",
+  "last_checked_at_utc": "2026-10-04T01:04:36.472Z",
   "latestAcknowledgedHandoff": {
     "commentId": 5966761902,
     "id": "codex-to-daenerys-20261003-0725"
@@ -3236,10 +3353,10 @@
     }
   ],
   "publicationCompletion": {
-    "at": "2026-10-03T23:27:25.042Z",
-    "commit": "39e13cb0adfda8abd07337b8277b645a693da8bf",
-    "issueCommentId": 5974585526,
-    "verifiedFiles": 12
+    "commit": "5c4c923a958e5010a7a9a971c7e61277b1640c38",
+    "comment": 5974975630,
+    "exactFiles": 27,
+    "source": "checked_direct_main"
   },
   "publicationMilestone": {
     "allVerified": true,
@@ -3254,13 +3371,20 @@
     "status": "resolved"
   },
   "quantCurrent": {
-    "collector": 17956,
-    "paper": 3472,
-    "dashboard": 6744,
-    "persistentProcesses": 3,
+    "at": "2026-10-04T01:04:36.472Z",
+    "displayName": "Baal",
+    "cohort": "no-maker-tape-20261004-v3",
+    "bankHash": "b022b75032284b88746e847f950d8904817bf71802c41e94026f9d06ecefe582",
+    "pids": {
+      "metrics": null,
+      "collector": 2648,
+      "dashboard": 11936,
+      "paper": 3472,
+      "contestActivation": false,
+      "retiredMetricsPid": 11792
+    },
+    "competitionOrders": 0,
     "executionOwner": "Daenerys",
-    "contestWrites": false,
-    "makerCohort": "no-maker-tape-20261004-v1",
     "profitabilityEstablished": false
   },
   "researchProposal": {
@@ -3287,5 +3411,14 @@
     "commit": "970dd07d06de7cc7e9712c357878e37f879944d2",
     "completionIssueComment": 5962904898
   },
-  "updatedAt": "2026-10-04T00:22:43.807Z"
+  "updatedAt": "2026-10-04T01:04:36.472Z",
+  "botDisplayName": "Baal",
+  "baalHandled": {
+    "sourceOrderClaim": 5975009380,
+    "coverageGap": 5975012805,
+    "rejectedMark": 5975028449,
+    "at": "2026-10-04T01:04:36.472Z",
+    "status": "fixed_new_version_with_regressions",
+    "accountingContinuation": true
+  }
 }

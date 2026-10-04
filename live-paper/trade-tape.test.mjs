@@ -5,6 +5,16 @@ import {Journal} from './transport-runtime.mjs';import {digest} from './model.mj
 const tid='bda92870-621e-47b0-bc3c-3602c5c26f55',time=Date.parse('2026-10-03T23:00:00.000Z');
 const universe={tournamentId:tid,exchanges:[{marketId:'363',exchangeId:'1052',option:'YES'},{marketId:'297',exchangeId:'986',option:'YES'}]};
 const at=n=>new Date(time+n).toISOString();
+test('an incomplete page keeps the original window across restart until every page is complete',async t=>{
+ const f=fixture(t);let h=f.host(),calls=[];
+ const dispatch=async s=>{calls.push(s.endpoint);const r=response(s.endpoint,[],calls.length===1,calls.length===1?'A':null);if(calls.length===1)r.data.coverage.complete=false;return r;};
+ await h.collect(dispatch,['363']);h=f.host();f.setTime(4000);await h.collect(dispatch,['363']);
+ h=f.host();f.setTime(8000);await h.collect(async s=>{calls.push(s.endpoint);return response(s.endpoint,[],false);},['363']);
+ for(const endpoint of calls){const u=new URL('https://example.test'+endpoint);assert.equal(u.searchParams.get('from'),at(-1800000));assert.equal(u.searchParams.get('to'),at(0));}
+ assert.equal(new URL('https://example.test'+calls[2]).searchParams.get('cursor'),null,'retry starts at the first page');
+ h=f.host();f.setTime(12000);await h.collect(async s=>{assert.equal(new URL('https://example.test'+s.endpoint).searchParams.get('from'),at(-60000));return response(s.endpoint,[],false);},['363']);
+ assert.equal(h.status().pages,4);
+});
 const trade=(id='1',offset=-1000,side='NO')=>({id,createdAt:at(offset),price:.9,size:2,side,volume:.2});
 function response(endpoint,trades=[trade()],more=false,next=null){const u=new URL('https://example.test'+endpoint);return {endpoint,status:200,requestStartedAt:new Date(Math.max(time,Date.parse(u.searchParams.get('to')))).toISOString(),receivedAt:new Date(Math.max(time,Date.parse(u.searchParams.get('to')))+100).toISOString(),headers:{Authorization:'NEVER_RECORD'},data:{exchangeId:'1052',marketId:'363',from:u.searchParams.get('from'),to:u.searchParams.get('to'),data:trades,pagination:{limit:200,hasMore:more,nextCursor:next},coverage:{complete:true,projectedThroughSequence:123},rawAccount:'NEVER_RECORD'}};}
 function fixture(t){const runtimeDir=fs.mkdtempSync(path.join(os.tmpdir(),'sig-tape-'));t.after(()=>fs.rmSync(runtimeDir,{recursive:true,force:true}));let clock=time,allowed=true;return {runtimeDir,host:()=>createTradeTape({runtimeDir,universe,now:()=>clock,canOperate:()=>allowed}),setTime:x=>clock=time+x,stop:()=>allowed=false};}

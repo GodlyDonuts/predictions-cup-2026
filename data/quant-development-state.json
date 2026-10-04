@@ -4236,8 +4236,8 @@
       "makerWalletsVisible": true,
       "probabilityWalletsVisible": true
     },
-    "localLeanPublication": "pending_checked_direct_main",
-    "mainCommit": "39e13cb0adfda8abd07337b8277b645a693da8bf",
+    "localLeanPublication": "published_verified",
+    "mainCommit": "5c4c923a958e5010a7a9a971c7e61277b1640c38",
     "metrics": {
       "status": "retired_failed_historical_pilot_projection",
       "formerPid": 11792,
@@ -4252,7 +4252,8 @@
       "pid": 3472,
       "status": "running"
     },
-    "paperMode": "source_probability_and_inline_no_maker_paper"
+    "paperMode": "source_probability_and_inline_no_maker_paper",
+    "botDisplayName": "Baal"
   },
   "currentPaper": {
     "at": "2026-10-03T23:11:16.996Z",
@@ -4308,8 +4309,8 @@
   },
   "currentProcesses": {
     "metrics": null,
-    "collector": 17956,
-    "dashboard": 6744,
+    "collector": 2648,
+    "dashboard": 11936,
     "paper": 3472,
     "contestActivation": false,
     "retiredMetricsPid": 11792
@@ -4951,9 +4952,95 @@
     "result": "No default30min window defect; no from requests newest500 sparse1m candles",
     "stale": 5
   },
-  "lastMilestone": "Two prospective NO maker paper families live with dashboard; real taker resale economics falsified in measured development window; tape fairness/dedup defects fixed",
+  "lastMilestone": {
+    "at": "2026-10-04T01:04:36.472Z",
+    "status": "implemented_deployed_checked_publication_pending",
+    "scopeClaim": 5975137430,
+    "reviewFindings": [
+      5975012805,
+      5975028449
+    ],
+    "hostRevision": 3,
+    "paperRevision": 2,
+    "cohort": "no-maker-tape-20261004-v3",
+    "bankHash": "b022b75032284b88746e847f950d8904817bf71802c41e94026f9d06ecefe582",
+    "cutoff": "2026-10-04T00:58:38.895Z",
+    "fixes": [
+      "paired admission reconsiders both actual books at causal second-receipt clock",
+      "continuous completed tape windows require sufficient projection checkpoints",
+      "incomplete tape window restarts at original first page",
+      "rejected account/stale books invalidate liquidation marks",
+      "client mark aging preserves unsold share count",
+      "Baal dashboard name"
+    ],
+    "accountingContinuation": {
+      "accountingCarried": true,
+      "bankFileHash": "afd89e4ed9da5082bb429c55f22ac65e943efa87f71a5c17d7498f808bb194af",
+      "bankHash": "8f0994221bb3c74947d7380fe0365512ed3b225a7f2e0ab8b1b27e1fcb11f356",
+      "cohort": "no-maker-tape-20261004-v2",
+      "journalPrefixBytes": 527914,
+      "journalPrefixHash": "904713d5b65ba6f635c82772af257277d195c93655471afc15fd7cbad6d0853b",
+      "openingStateFileHash": "34086c52381426aeda75ade510c04c5dd7fcb76a423ba587c2f4379380798f0e",
+      "openingWallets": {
+        "at_quote": {
+          "cash": "100.000000",
+          "fills": 0,
+          "positions": 0,
+          "realizedPnl": "0.000000",
+          "reserved": "0.000000",
+          "unresolvedQuotes": 0
+        },
+        "improve_one_tick": {
+          "cash": "99.800000",
+          "fills": 1,
+          "positions": 1,
+          "realizedPnl": "0.000000",
+          "reserved": "0.000000",
+          "unresolvedQuotes": 0
+        }
+      },
+      "reason": "coverage_and_rejected_mark_corrections"
+    },
+    "originalExperimentsPreserved": [
+      "source-probability-20261003-v1",
+      "nh-canonical-capacity-20261003-v1",
+      "no-maker-tape-20261004-v1",
+      "no-maker-tape-20261004-v2"
+    ],
+    "checksPassed": 56,
+    "productionBuild": "frontend-build-20261004-baal-final",
+    "proof": "data/baal-live-verification-20261004.json",
+    "latestSnapshot": {
+      "at": "2026-10-04T01:04:36.426Z",
+      "wallets": {
+        "at_quote": {
+          "cash": "100.000000",
+          "reserved": "0.000000",
+          "fees": "0.000000",
+          "fills": 0,
+          "closedTrades": 0,
+          "realizedPnl": "0.000000",
+          "positions": 0,
+          "unresolvedQuotes": 0
+        },
+        "improve_one_tick": {
+          "cash": "99.800000",
+          "reserved": "0.000000",
+          "fees": "0.000000",
+          "fills": 1,
+          "closedTrades": 0,
+          "realizedPnl": "0.000000",
+          "positions": 1,
+          "unresolvedQuotes": 0
+        }
+      }
+    },
+    "executionOwner": "Daenerys",
+    "competitionOrders": 0,
+    "profitabilityEstablished": false
+  },
   "latestMain": "0f205146801a150fcf9dbabc1caa4b02c946e4c2",
-  "latestMainCommit": "0f205146801a150fcf9dbabc1caa4b02c946e4c2",
+  "latestMainCommit": "5c4c923a958e5010a7a9a971c7e61277b1640c38",
   "latestOpportunityDiagnostic": {
     "asOf": "2026-10-02T09:04:24.208Z",
     "classification": "retrospective_development_not_profitability",
@@ -5140,13 +5227,12 @@
     "retainedInputs": 21
   },
   "nextActions": [
-    "Inspect prospective NO maker quotes and anonymous print projection; diagnose fill availability, spread and inventory exits without forcing orders or counting touches as fills. Preserve cohort cutoff/hash/accounting.",
-    "Use already captured source/price breadth to discover more real spread/flow candidates; introduce a new named cohort if strategy or source-pinned host changes. Do not expand account read allocation.",
-    "Seek independent bounded review of maker fill/coverage/partial-inventory accounting and fixed tape dedup; address concrete findings directly on main.",
-    "Remove unnecessary legacy collector replay/writes with compatible versioned engineering so restarts and data processing become leaner; preserve original histories and frozen-bank consumers.",
-    "Renew exact-rule research in new cohorts when appropriate; conditional settlement surplus and subjective ranges are not short-term resale forecasts. Competition activation remains pending evidence and named handoff."
+    "Use subsequent tape/book evidence to manage the inherited 381 NO paper position and diagnose actual exit economics. Do not force trades or claim proof from one modeled entry.",
+    "Review V3 continuous coverage and accounting continuation independently; preserve late pre-cancel prints and exact FIFO.",
+    "Improve useful paired/risk tape freshness within the existing 20-read allocation, without extra API clients or collector processes.",
+    "Obtain fresh source-backed review before the existing capacity review expires at 04:36:16.657 UTC; expiry must block new maker entries."
   ],
-  "nextConcreteMilestone": "Use received public trade-flow plus fresh source-backed forecasts to build a separately versioned, prospectively measured entry/exit strategy; distinguish settlement forecasts from short-horizon resale forecasts. No forced purchases or assumed maker fills. Daenerys retains contest execution pending a successful bot and named handoff.",
+  "nextConcreteMilestone": "Use subsequent tape/book evidence to manage the inherited 381 NO paper position and diagnose actual exit economics. Do not force trades or claim proof from one modeled entry.",
   "nextImplementationMilestones": [
     "Use subsequent capacity and partial-leg/exit evidence to distinguish a repeatable profitable mechanism from conditional settlement surplus. Research more exact-rule candidates through Daenerys. Optimize the measured collector restart bottleneck with a compatible separately versioned publisher, preserving frozen bank code and journals. Keep one collector,20-read share,and four background processes.",
     "Keep probability paper accounting live and original frozen cohorts retired; do not scale negative dip models.",
@@ -6536,7 +6622,7 @@
     "status": "running",
     "tests": 62
   },
-  "updatedAt": "2026-10-04T00:22:43.807Z",
+  "updatedAt": "2026-10-04T01:04:36.472Z",
   "workflow": "tested direct main; no PRs; unknown GitHub write outcomes checked before retry",
   "speedTapeMilestone": {
     "at": "2026-10-03T23:11:16.996Z",
@@ -6603,7 +6689,33 @@
     "competitionOrders": 0,
     "profitabilityEstablished": false,
     "testsPassed": 35,
-    "productionBuildPassed": true
+    "productionBuildPassed": true,
+    "commit": "5c4c923a958e5010a7a9a971c7e61277b1640c38",
+    "completionComment": 5974975630,
+    "all27FilesExactVerified": true,
+    "latestSnapshot": {
+      "at": "2026-10-04T00:26:19.521Z",
+      "counts": {
+        "insufficient_spread_or_depth": 16,
+        "quote_buy": 4,
+        "quote_unfilled_projection_resolved": 4,
+        "source_boundary": 1
+      },
+      "wallets": {
+        "at_quote": {
+          "fills": 0,
+          "realizedPnl": "0.000000",
+          "reserved": "0.000000",
+          "positions": 0
+        },
+        "improve_one_tick": {
+          "fills": 0,
+          "realizedPnl": "0.000000",
+          "reserved": "0.000000",
+          "positions": 0
+        }
+      }
+    }
   },
   "canonicalEntryExitMilestone": {
     "cutoff": "2026-10-03T23:40:34.956Z",
@@ -6638,5 +6750,121 @@
     "freshCodexExecutionInactive": true,
     "stopProvenance": "Codex lean paper engineering",
     "pidReuseObserved": true
-  }
+  },
+  "botDisplayName": "Baal",
+  "baalMilestone": {
+    "at": "2026-10-04T01:04:36.472Z",
+    "status": "implemented_deployed_checked_publication_pending",
+    "scopeClaim": 5975137430,
+    "reviewFindings": [
+      5975012805,
+      5975028449
+    ],
+    "hostRevision": 3,
+    "paperRevision": 2,
+    "cohort": "no-maker-tape-20261004-v3",
+    "bankHash": "b022b75032284b88746e847f950d8904817bf71802c41e94026f9d06ecefe582",
+    "cutoff": "2026-10-04T00:58:38.895Z",
+    "fixes": [
+      "paired admission reconsiders both actual books at causal second-receipt clock",
+      "continuous completed tape windows require sufficient projection checkpoints",
+      "incomplete tape window restarts at original first page",
+      "rejected account/stale books invalidate liquidation marks",
+      "client mark aging preserves unsold share count",
+      "Baal dashboard name"
+    ],
+    "accountingContinuation": {
+      "accountingCarried": true,
+      "bankFileHash": "afd89e4ed9da5082bb429c55f22ac65e943efa87f71a5c17d7498f808bb194af",
+      "bankHash": "8f0994221bb3c74947d7380fe0365512ed3b225a7f2e0ab8b1b27e1fcb11f356",
+      "cohort": "no-maker-tape-20261004-v2",
+      "journalPrefixBytes": 527914,
+      "journalPrefixHash": "904713d5b65ba6f635c82772af257277d195c93655471afc15fd7cbad6d0853b",
+      "openingStateFileHash": "34086c52381426aeda75ade510c04c5dd7fcb76a423ba587c2f4379380798f0e",
+      "openingWallets": {
+        "at_quote": {
+          "cash": "100.000000",
+          "fills": 0,
+          "positions": 0,
+          "realizedPnl": "0.000000",
+          "reserved": "0.000000",
+          "unresolvedQuotes": 0
+        },
+        "improve_one_tick": {
+          "cash": "99.800000",
+          "fills": 1,
+          "positions": 1,
+          "realizedPnl": "0.000000",
+          "reserved": "0.000000",
+          "unresolvedQuotes": 0
+        }
+      },
+      "reason": "coverage_and_rejected_mark_corrections"
+    },
+    "originalExperimentsPreserved": [
+      "source-probability-20261003-v1",
+      "nh-canonical-capacity-20261003-v1",
+      "no-maker-tape-20261004-v1",
+      "no-maker-tape-20261004-v2"
+    ],
+    "checksPassed": 56,
+    "productionBuild": "frontend-build-20261004-baal-final",
+    "proof": "data/baal-live-verification-20261004.json",
+    "latestSnapshot": {
+      "at": "2026-10-04T01:04:36.426Z",
+      "wallets": {
+        "at_quote": {
+          "cash": "100.000000",
+          "reserved": "0.000000",
+          "fees": "0.000000",
+          "fills": 0,
+          "closedTrades": 0,
+          "realizedPnl": "0.000000",
+          "positions": 0,
+          "unresolvedQuotes": 0
+        },
+        "improve_one_tick": {
+          "cash": "99.800000",
+          "reserved": "0.000000",
+          "fees": "0.000000",
+          "fills": 1,
+          "closedTrades": 0,
+          "realizedPnl": "0.000000",
+          "positions": 1,
+          "unresolvedQuotes": 0
+        }
+      }
+    },
+    "executionOwner": "Daenerys",
+    "competitionOrders": 0,
+    "profitabilityEstablished": false
+  },
+  "previousNextBeforeBaal": {
+    "nextConcreteMilestone": "Use received public trade-flow plus fresh source-backed forecasts to build a separately versioned, prospectively measured entry/exit strategy; distinguish settlement forecasts from short-horizon resale forecasts. No forced purchases or assumed maker fills. Daenerys retains contest execution pending a successful bot and named handoff.",
+    "nextActions": [
+      "Inspect prospective NO maker quotes and anonymous print projection; diagnose fill availability, spread and inventory exits without forcing orders or counting touches as fills. Preserve cohort cutoff/hash/accounting.",
+      "Use already captured source/price breadth to discover more real spread/flow candidates; introduce a new named cohort if strategy or source-pinned host changes. Do not expand account read allocation.",
+      "Seek independent bounded review of maker fill/coverage/partial-inventory accounting and fixed tape dedup; address concrete findings directly on main.",
+      "Remove unnecessary legacy collector replay/writes with compatible versioned engineering so restarts and data processing become leaner; preserve original histories and frozen-bank consumers.",
+      "Renew exact-rule research in new cohorts when appropriate; conditional settlement surplus and subjective ranges are not short-term resale forecasts. Competition activation remains pending evidence and named handoff."
+    ]
+  },
+  "baalBacklog": [
+    {
+      "status": "active",
+      "task": "Use subsequent tape/book evidence to manage the inherited 381 NO paper position and diagnose actual exit economics. Do not force trades or claim proof from one modeled entry."
+    },
+    {
+      "status": "pending",
+      "task": "Review V3 continuous coverage and accounting continuation independently; preserve late pre-cancel prints and exact FIFO."
+    },
+    {
+      "status": "pending",
+      "task": "Improve useful paired/risk tape freshness within the existing 20-read allocation, without extra API clients or collector processes."
+    },
+    {
+      "status": "pending",
+      "task": "Obtain fresh source-backed review before the existing capacity review expires at 04:36:16.657 UTC; expiry must block new maker entries."
+    }
+  ]
 }

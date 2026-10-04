@@ -1,0 +1,145 @@
+{
+  "at": "2026-10-04T00:34:48.803Z",
+  "mode": "real_capture_source_order_admission_development_diagnostic",
+  "originalCohort": "no-maker-tape-20261004-v1",
+  "originalBankHash": "17b460652639c3f74fb68b39d3c459fb6971d89654125ec34b0c1d41bf2105ee",
+  "source": {
+    "bytes": 1359665,
+    "sha256": "736f5b8ca0024ae936c8d07f4e8d8b209a950af7a29597ec59527175e3888c3a",
+    "rows": 69,
+    "tailHash": "bb62300e9acf5917a26f0d8ccc24b4f8fb5e7a7f952eaf2c29e0b274ce14a7fa"
+  },
+  "missedCoherentFrames": 3,
+  "cases": [
+    {
+      "sequence": 35,
+      "recordHash": "002c47fb5af0388840e63e8fd29f89ff5ed36ec714b411f8da65c56aec7387cb",
+      "availableAt": "2026-10-04T00:16:34.220Z",
+      "omittedMarketId": "381",
+      "incomingMarketId": "382",
+      "sourceVersions": [
+        {
+          "marketId": "381",
+          "versionKey": "28975441:2026-10-04T00:16:29.566098600Z",
+          "publicationHash": "871ec6080e737d47dcf013cddccf58d6e6ea6b1f47d406e0025a19df98596ec7",
+          "requestStartedAt": "2026-10-04T00:16:28.805Z",
+          "receivedAt": "2026-10-04T00:16:29.719Z"
+        },
+        {
+          "marketId": "382",
+          "versionKey": "28975912:2026-10-04T00:16:33.866286600Z",
+          "publicationHash": "706651fe6531f27d17c6e751ef0527a0e1f410c9d4878ac6de88151b900c3a0f",
+          "requestStartedAt": "2026-10-04T00:16:32.789Z",
+          "receivedAt": "2026-10-04T00:16:34.212Z"
+        }
+      ],
+      "newlyQuoted": [
+        {
+          "family": "at_quote",
+          "marketId": "381",
+          "limit": "0.200000",
+          "createdAt": "2026-10-04T00:16:34.220Z",
+          "activationAt": "2026-10-04T00:16:37.220Z",
+          "sourcePublicationHash": "871ec6080e737d47dcf013cddccf58d6e6ea6b1f47d406e0025a19df98596ec7"
+        },
+        {
+          "family": "improve_one_tick",
+          "marketId": "381",
+          "limit": "0.200000",
+          "createdAt": "2026-10-04T00:16:34.220Z",
+          "activationAt": "2026-10-04T00:16:37.220Z",
+          "sourcePublicationHash": "871ec6080e737d47dcf013cddccf58d6e6ea6b1f47d406e0025a19df98596ec7"
+        }
+      ]
+    },
+    {
+      "sequence": 52,
+      "recordHash": "4feb9b7d467d3e50ff826f0ec671b02704505c16199cf37fb076026b50ca428c",
+      "availableAt": "2026-10-04T00:23:56.911Z",
+      "omittedMarketId": "381",
+      "incomingMarketId": "382",
+      "sourceVersions": [
+        {
+          "marketId": "381",
+          "versionKey": "29040451:2026-10-04T00:23:54.228689800Z",
+          "publicationHash": "713c7243a3424090787771ab5b319c870ba1cb08a7823c7e7c57242a37a75db4",
+          "requestStartedAt": "2026-10-04T00:23:53.493Z",
+          "receivedAt": "2026-10-04T00:23:53.694Z"
+        },
+        {
+          "marketId": "382",
+          "versionKey": "29040751:2026-10-04T00:23:57.434453700Z",
+          "publicationHash": "69d916483dae60ccb91e95cdc7846197dd17b377c2471a8253985c34eeb83b3e",
+          "requestStartedAt": "2026-10-04T00:23:56.706Z",
+          "receivedAt": "2026-10-04T00:23:56.894Z"
+        }
+      ],
+      "newlyQuoted": [
+        {
+          "family": "at_quote",
+          "marketId": "381",
+          "limit": "0.205000",
+          "createdAt": "2026-10-04T00:23:56.911Z",
+          "activationAt": "2026-10-04T00:23:59.911Z",
+          "sourcePublicationHash": "713c7243a3424090787771ab5b319c870ba1cb08a7823c7e7c57242a37a75db4"
+        },
+        {
+          "family": "improve_one_tick",
+          "marketId": "381",
+          "limit": "0.205000",
+          "createdAt": "2026-10-04T00:23:56.911Z",
+          "activationAt": "2026-10-04T00:23:59.911Z",
+          "sourcePublicationHash": "713c7243a3424090787771ab5b319c870ba1cb08a7823c7e7c57242a37a75db4"
+        }
+      ]
+    },
+    {
+      "sequence": 56,
+      "recordHash": "f2a123745b84bce5dc82e93df0dbd48825ff3c06216c266d88c78a131dfbb234",
+      "availableAt": "2026-10-04T00:26:19.514Z",
+      "omittedMarketId": "381",
+      "incomingMarketId": "382",
+      "sourceVersions": [
+        {
+          "marketId": "381",
+          "versionKey": "29060954:2026-10-04T00:26:16.797575300Z",
+          "publicationHash": "38ba27e04a1bed046ebd2ddbd9483be46492af4d463645e7a5d4e067afbf7f24",
+          "requestStartedAt": "2026-10-04T00:26:15.988Z",
+          "receivedAt": "2026-10-04T00:26:16.258Z"
+        },
+        {
+          "marketId": "382",
+          "versionKey": "29061414:2026-10-04T00:26:20.030469700Z",
+          "publicationHash": "37aa8a92d3d6eee708f453e97133363ec9b8610433e747dba2a45828016f30e6",
+          "requestStartedAt": "2026-10-04T00:26:19.267Z",
+          "receivedAt": "2026-10-04T00:26:19.490Z"
+        }
+      ],
+      "newlyQuoted": [
+        {
+          "family": "at_quote",
+          "marketId": "381",
+          "limit": "0.210000",
+          "createdAt": "2026-10-04T00:26:19.514Z",
+          "activationAt": "2026-10-04T00:26:22.514Z",
+          "sourcePublicationHash": "38ba27e04a1bed046ebd2ddbd9483be46492af4d463645e7a5d4e067afbf7f24"
+        },
+        {
+          "family": "improve_one_tick",
+          "marketId": "381",
+          "limit": "0.210000",
+          "createdAt": "2026-10-04T00:26:19.514Z",
+          "activationAt": "2026-10-04T00:26:22.514Z",
+          "sourcePublicationHash": "38ba27e04a1bed046ebd2ddbd9483be46492af4d463645e7a5d4e067afbf7f24"
+        }
+      ]
+    }
+  ],
+  "fills": null,
+  "realizedPnl": null,
+  "profitabilityEstablished": false,
+  "limitations": [
+    "These are overlapping counterfactual admission checks, not independent trades or earnings.",
+    "Original frozen source/accounting is unchanged; the correction gets a new prospective cutoff."
+  ]
+}

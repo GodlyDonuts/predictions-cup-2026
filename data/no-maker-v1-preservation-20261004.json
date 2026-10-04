@@ -1,0 +1,44 @@
+{
+  "at": "2026-10-04T00:37:09.829Z",
+  "cohort": "no-maker-tape-20261004-v1",
+  "bankHash": "17b460652639c3f74fb68b39d3c459fb6971d89654125ec34b0c1d41bf2105ee",
+  "bankFileHash": "f24f70ab38b6c4fbde150936872cfb3a2504009ed6aad322deb9526fbc1fc999",
+  "codeIdentity": {
+    "../execution/api-tick-price.mjs": "ba162da4a3d388b60e31280ebf02315c2de3407370d785d0c646b4c3f8ff463a",
+    "../execution/core.mjs": "8598dd7fd9574a9197b8791d9cd7801d27e2b71bc473515dba9e775924b458d4",
+    "../execution/ledger.mjs": "523ee3fd04f995983ee3ffc03b5ee8dbdf629a718ba91c17d08026fe2411b5c4",
+    "../feed/contract.mjs": "39b9b30a72093d99697bc03a3b20f88f1d835507219fc46f7a00bd28fe761465",
+    "../paper/fixed.mjs": "a0947ef49854d4a3bf4bce88034aaef5d8aabbdc7e29dff3a7b9b4bc01b072f7",
+    "./canonical-entry-exit-study.mjs": "caac39b144328fa5914f83df7a1fea2f149f84bf9993dbb401ed980a45a828d5",
+    "./canonical-no-capacity.mjs": "9a32dd896051ca039d40405cbc7fad38cb9241de0e8cd94896ef35e46c0d3ee7",
+    "./journal-lines.mjs": "f8adff2bddc36b4e3d305dec9395fae9f51dff957e35313994b6147502cc6823",
+    "./model.mjs": "3cb8bbd7d31b478fe917270393954382373695149310243eec8b78440d207a2e",
+    "./no-maker-host.mjs": "d04436b5921503de833f0ef93deade912dab1c1a48ecb5cf00b61996a1fd044e",
+    "./no-maker-paper.mjs": "c8666b47c6857d6c16a73c3d868fec6e1d4bcfd9092ecd52cf34a4e30befc700",
+    "./probability-receipt.mjs": "5a3fad02baca0eb519642b2f1cc53ec06ec4bdad7829b937d13891ac52d4e8a6",
+    "./transport-runtime.mjs": "b73d835506ab09cfea69bce1eb16914f4cd6647a543e2f11627758e280008ea8"
+  },
+  "journalPrefixBytes": 1477313,
+  "journalPrefixHash": "5683fb7effce47b48cb957572c216c0e2427c81136c01447700f081777259b67",
+  "journalSequence": 74,
+  "journalHash": "042c8ff7180308f3ce42a8f75c93b15357ff5816b3eae44c12b7f34e0a33e94d",
+  "reason": "Retired flat after confirmed source-order admission defect; original zero-fill accounting preserved",
+  "wallets": {
+    "at_quote": {
+      "cash": "100.000000",
+      "reserved": "0.000000",
+      "fills": 0,
+      "realizedPnl": "0.000000",
+      "positions": 0,
+      "unresolvedQuotes": 0
+    },
+    "improve_one_tick": {
+      "cash": "100.000000",
+      "reserved": "0.000000",
+      "fills": 0,
+      "realizedPnl": "0.000000",
+      "positions": 0,
+      "unresolvedQuotes": 0
+    }
+  }
+}

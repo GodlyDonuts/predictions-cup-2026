@@ -12,7 +12,7 @@ export function ageComparisonWallet(view,now=Date.now()){
   const valid=fresh&&Number.isFinite(limit)&&limit>0&&Number.isFinite(quoteAge)&&quoteAge>=0&&quoteAge<=limit
    &&Number.isFinite(baseAge)&&baseAge>=0&&baseAge+age<=limit&&!p.quoteInvalidated;
   p.quoteAgeMs=Number.isFinite(quoteAge)&&quoteAge>=0?quoteAge:null;
-  if(!valid){invalidMark=true;p.liquidationValue=null;p.estimatedProceeds=null;p.quoteInvalidated=true;}
+  if(!valid){invalidMark=true;p.liquidationValue=null;p.estimatedProceeds=null;p.quoteInvalidated=true;if(v.noMaker)p.unsoldShares=p.quantity;}
  }
  if(invalidMark)for(const k of ['referencePnl','referenceEquity','liquidationPnl','equity'])v.metrics[k]=null;
  if(!fresh)v.status=validClock?'stale':'invalid_clock';

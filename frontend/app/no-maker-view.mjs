@@ -23,7 +23,7 @@ export function noMakerWalletViews(report,manifest,bank,{collectorAlive=false,no
    trades:w.recentFills.map(x=>({...instrument(x),action:x.action,quantity:x.quantity,price:x.price,at:x.at,fee:'0.000000',hypothetical:true})),
    pending:w.unresolvedQuotes.map(x=>({...instrument(x),action:x.action,quantity:x.quantity,limit:x.limit,createdAt:x.createdAt,expiresAt:x.expiresAt,hypothetical:true})),
    performance:{closedRoundTrips:w.closedTrades},comparison:{cohort:bank.name,cutoff:bank.cutoff,maxMarkAgeMs:20000},
-   noMaker:{bankHash,family,reserved:w.reserved,fillModel:bank.policy.fillModel,counts:report.counts,profitabilityEstablished:false}};
+   noMaker:{bankHash,family,reserved:w.reserved,fillModel:bank.policy.fillModel,counts:report.counts,accountingPredecessor:bank.accountingContinuation?.cohort||null,profitabilityEstablished:false}};
   if(view.positions.some(p=>p.quoteInvalidated))view.metrics.liquidationPnl=null;
   return ageComparisonWallet(view,now);
  });

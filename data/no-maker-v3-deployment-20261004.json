@@ -1,0 +1,12 @@
+{
+  "readAllocation": 20,
+  "extraProcesses": 0,
+  "persistentProcesses": 3,
+  "retiredCollector": 4372,
+  "competitionWrites": false,
+  "collector": 2648,
+  "cohort": "no-maker-tape-20261004-v3",
+  "dashboard": 6744,
+  "at": "2026-10-04T00:58:38.9511015Z",
+  "paper": 3472
+}

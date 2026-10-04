@@ -1,0 +1,44 @@
+{
+  "at": "2026-10-04T00:58:38.895Z",
+  "cohort": "no-maker-tape-20261004-v2",
+  "bankHash": "8f0994221bb3c74947d7380fe0365512ed3b225a7f2e0ab8b1b27e1fcb11f356",
+  "bankFileHash": "afd89e4ed9da5082bb429c55f22ac65e943efa87f71a5c17d7498f808bb194af",
+  "codeIdentity": {
+    "../execution/api-tick-price.mjs": "ba162da4a3d388b60e31280ebf02315c2de3407370d785d0c646b4c3f8ff463a",
+    "../execution/core.mjs": "8598dd7fd9574a9197b8791d9cd7801d27e2b71bc473515dba9e775924b458d4",
+    "../execution/ledger.mjs": "523ee3fd04f995983ee3ffc03b5ee8dbdf629a718ba91c17d08026fe2411b5c4",
+    "../feed/contract.mjs": "39b9b30a72093d99697bc03a3b20f88f1d835507219fc46f7a00bd28fe761465",
+    "../paper/fixed.mjs": "a0947ef49854d4a3bf4bce88034aaef5d8aabbdc7e29dff3a7b9b4bc01b072f7",
+    "./canonical-entry-exit-study.mjs": "caac39b144328fa5914f83df7a1fea2f149f84bf9993dbb401ed980a45a828d5",
+    "./canonical-no-capacity.mjs": "9a32dd896051ca039d40405cbc7fad38cb9241de0e8cd94896ef35e46c0d3ee7",
+    "./journal-lines.mjs": "f8adff2bddc36b4e3d305dec9395fae9f51dff957e35313994b6147502cc6823",
+    "./model.mjs": "3cb8bbd7d31b478fe917270393954382373695149310243eec8b78440d207a2e",
+    "./no-maker-host-v2.mjs": "820e8d4d54fab81b51f49c65d227727ec9f162ac4de71a4373f6f2b7e9a00804",
+    "./no-maker-paper.mjs": "c8666b47c6857d6c16a73c3d868fec6e1d4bcfd9092ecd52cf34a4e30befc700",
+    "./probability-receipt.mjs": "5a3fad02baca0eb519642b2f1cc53ec06ec4bdad7829b937d13891ac52d4e8a6",
+    "./transport-runtime.mjs": "b73d835506ab09cfea69bce1eb16914f4cd6647a543e2f11627758e280008ea8"
+  },
+  "journalPrefixBytes": 527914,
+  "journalPrefixHash": "904713d5b65ba6f635c82772af257277d195c93655471afc15fd7cbad6d0853b",
+  "journalSequence": 52,
+  "journalHash": "beba11c1c8011a176dea786852b338b731c390020fd5fab9d7b6d13c36ae6a49",
+  "reason": "Retired after coverage and rejected-mark defects; exact cash, inventory, fills and unresolved quotes carried to V3 with source lineage",
+  "wallets": {
+    "at_quote": {
+      "cash": "100.000000",
+      "reserved": "0.000000",
+      "fills": 0,
+      "realizedPnl": "0.000000",
+      "positions": 0,
+      "unresolvedQuotes": 0
+    },
+    "improve_one_tick": {
+      "cash": "99.800000",
+      "reserved": "0.000000",
+      "fills": 1,
+      "realizedPnl": "0.000000",
+      "positions": 1,
+      "unresolvedQuotes": 0
+    }
+  }
+}

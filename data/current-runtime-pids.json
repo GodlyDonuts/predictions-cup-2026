@@ -1,7 +1,8 @@
 {
-  "metrics": 11792,
-  "collector": 11864,
-  "dashboard": 19284,
+  "metrics": null,
+  "collector": 2648,
+  "dashboard": 11936,
   "paper": 3472,
-  "contestActivation": false
+  "contestActivation": false,
+  "retiredMetricsPid": 11792
 }

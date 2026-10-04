@@ -1,0 +1,92 @@
+{
+  "displayName": "Baal",
+  "checksPassed": 56,
+  "accountingContinuation": {
+    "accountingCarried": true,
+    "bankFileHash": "afd89e4ed9da5082bb429c55f22ac65e943efa87f71a5c17d7498f808bb194af",
+    "bankHash": "8f0994221bb3c74947d7380fe0365512ed3b225a7f2e0ab8b1b27e1fcb11f356",
+    "cohort": "no-maker-tape-20261004-v2",
+    "journalPrefixBytes": 527914,
+    "journalPrefixHash": "904713d5b65ba6f635c82772af257277d195c93655471afc15fd7cbad6d0853b",
+    "openingStateFileHash": "34086c52381426aeda75ade510c04c5dd7fcb76a423ba587c2f4379380798f0e",
+    "openingWallets": {
+      "at_quote": {
+        "cash": "100.000000",
+        "fills": 0,
+        "positions": 0,
+        "realizedPnl": "0.000000",
+        "reserved": "0.000000",
+        "unresolvedQuotes": 0
+      },
+      "improve_one_tick": {
+        "cash": "99.800000",
+        "fills": 1,
+        "positions": 1,
+        "realizedPnl": "0.000000",
+        "reserved": "0.000000",
+        "unresolvedQuotes": 0
+      }
+    },
+    "reason": "coverage_and_rejected_mark_corrections"
+  },
+  "at": "2026-10-04T01:04:36.426Z",
+  "collectorPid": 2648,
+  "paperPid": 3472,
+  "dashboardPid": 11936,
+  "cohort": "no-maker-tape-20261004-v3",
+  "bankHash": "b022b75032284b88746e847f950d8904817bf71802c41e94026f9d06ecefe582",
+  "cutoff": "2026-10-04T00:58:38.895Z",
+  "journalSequence": 14,
+  "journalHash": "e638884b9e5df1056777dc3c0bcb48ebd2231ca61ea93829f1f229ee2efc9800",
+  "tapeSequence": 96,
+  "tapeIdentityVersion": 2,
+  "attemptedExchanges": [
+    "986",
+    "1052",
+    "1070",
+    "1071"
+  ],
+  "originalExperimentsPreserved": [
+    "source-probability-20261003-v1",
+    "nh-canonical-capacity-20261003-v1",
+    "no-maker-tape-20261004-v1",
+    "no-maker-tape-20261004-v2"
+  ],
+  "counts": {
+    "hypothetical_buy": 1,
+    "insufficient_spread_or_depth": 8,
+    "quote_buy": 4,
+    "quote_sell": 2,
+    "quote_unfilled_projection_resolved": 5,
+    "source_boundary": 2
+  },
+  "wallets": {
+    "at_quote": {
+      "cash": "100.000000",
+      "reserved": "0.000000",
+      "fees": "0.000000",
+      "fills": 0,
+      "closedTrades": 0,
+      "realizedPnl": "0.000000",
+      "positions": 0,
+      "unresolvedQuotes": 0
+    },
+    "improve_one_tick": {
+      "cash": "99.800000",
+      "reserved": "0.000000",
+      "fees": "0.000000",
+      "fills": 1,
+      "closedTrades": 0,
+      "realizedPnl": "0.000000",
+      "positions": 1,
+      "unresolvedQuotes": 0
+    }
+  },
+  "dashboardMakerWallets": [
+    "no-maker-at-quote",
+    "no-maker-improve-one-tick"
+  ],
+  "competitionOrders": 0,
+  "executionOwner": "Daenerys",
+  "profitabilityEstablished": false
+}

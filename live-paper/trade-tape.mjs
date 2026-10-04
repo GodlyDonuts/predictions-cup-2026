@@ -91,8 +91,12 @@ export function createTradeTape({runtimeDir,universe,now=Date.now,canOperate=()=
    }
    check(Object.keys(m.seen).length<=100000,'TRADE_TAPE_WINDOW_CAPACITY');
    m.pages++;m.lastReceiptAt=page.receivedAt;m.projectedThroughSequence=page.coverage.projectedThroughSequence;m.reportedCoverageComplete=page.coverage.complete;
-   m.window=page.pagination.hasMore?{...window,cursor:page.pagination.nextCursor,cursors:[...window.cursors,page.pagination.nextCursor]}:null;
-   if(!page.pagination.hasMore)m.completedTo=window.to;
+   // Retry an incomplete reported window from its original first page.
+   // A later page or time window cannot establish its missing coverage.
+   const allComplete=(window.coverageComplete??(window.cursor===null))&&page.coverage.complete===true;
+   m.window=page.pagination.hasMore?{...window,coverageComplete:allComplete,cursor:page.pagination.nextCursor,cursors:[...window.cursors,page.pagination.nextCursor]}:
+    allComplete?null:{from:window.from,to:window.to,cursor:null,cursors:[],coverageComplete:true};
+   if(!page.pagination.hasMore&&allComplete)m.completedTo=window.to;
    next.markets[chosen.exchangeId]=m;next.pages++;next.lastAt=page.receivedAt;
    // The immutable event holds only novel public trades; state holds resumable pagination/deduplication.
    try{journal.commit(next,{type:'anonymous_trade_page',...page,trades:novel,receivedCount:page.trades.length,duplicateCount:page.trades.length-novel.length});}

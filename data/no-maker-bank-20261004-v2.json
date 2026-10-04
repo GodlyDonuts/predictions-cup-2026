@@ -1,0 +1,233 @@
+{
+  "schemaVersion": 1,
+  "hostRevision": 2,
+  "mode": "no_maker_trade_tape_paper",
+  "name": "no-maker-tape-20261004-v2",
+  "cutoff": "2026-10-04T00:37:09.829Z",
+  "policy": {
+    "schemaVersion": 1,
+    "initialCash": "100.000000",
+    "maximumReservedAndOwned": "5.000000",
+    "maximumOwnedMarkets": 2,
+    "quantity": 1,
+    "latencyMs": 3000,
+    "lifetimeMs": 120000,
+    "cooldownMs": 60000,
+    "maximumHoldMs": 1800000,
+    "stopLoss": "0.030000",
+    "exitAdverseTicks": 1,
+    "depthFractionBps": 100,
+    "feePerShare": "0.000000",
+    "families": [
+      "at_quote",
+      "improve_one_tick"
+    ],
+    "fillModel": "hypothetical_strict_trade_through_not_proven_execution"
+  },
+  "tournamentId": "bda92870-621e-47b0-bc3c-3602c5c26f55",
+  "reviewExpiresAt": "2026-10-04T04:36:16.657Z",
+  "legs": [
+    {
+      "binding": {
+        "administrative": "sponsor may change rules or outcome; delays/void/refund not excluded",
+        "event": "2026 New Hampshire U.S. Senate general election",
+        "exchangeId": "1070",
+        "fusion": "all parties listed for the winner count",
+        "manualInfoAt": "2026-10-03T22:11:30Z through 2026-10-03T22:11:43Z",
+        "marketId": "381",
+        "outcome": "NO",
+        "provenance": "https://github.com/GodlyDonuts/predictions-cup-2026/issues/1#issuecomment-5973997375",
+        "resolution": "final certified winner party affiliation",
+        "winnerAffiliation": "Democratic Party"
+      },
+      "exchangeId": "1070",
+      "marketId": "381",
+      "outcome": "NO",
+      "rulesHash": "964b1fa83cbb7aa863235692ada35ccc298014538b8291c7473aefb4cbb68ed7"
+    },
+    {
+      "binding": {
+        "administrative": "sponsor may change rules or outcome; delays/void/refund not excluded",
+        "event": "2026 New Hampshire U.S. Senate general election",
+        "exchangeId": "1071",
+        "fusion": "all parties listed for the winner count",
+        "manualInfoAt": "2026-10-03T22:11:30Z through 2026-10-03T22:11:43Z",
+        "marketId": "382",
+        "outcome": "NO",
+        "provenance": "https://github.com/GodlyDonuts/predictions-cup-2026/issues/1#issuecomment-5973997375",
+        "resolution": "final certified winner party affiliation",
+        "winnerAffiliation": "Republican Party"
+      },
+      "exchangeId": "1071",
+      "marketId": "382",
+      "outcome": "NO",
+      "rulesHash": "a133bb59004074d21edd3408745e5b420dba0ae7319429ccdbeb80e976064711"
+    }
+  ],
+  "review": {
+    "assumptions": [
+      "Current Senate ballot maps Chris Pappas Democratic, John E. Sununu Republican, Edmond Laplante Constitution, plus write-in; ordinary single winner affiliations are exclusive.",
+      "Same ballot demonstrates dual-party nomination for other offices, so fusion is a real contrary possibility and zero-payout stress is required.",
+      "Exact rules are peer-supplied manual transcript evidence. Rules hashes bind that attestation, not live API authenticity or scenario completeness.",
+      "Uncovered SELL YES is documented BUY NO at complement; YES bid rungs provide the canonical same-exchange NO acquisition depth, not independent native-NO observations.",
+      "Fees are set to zero under the direct human instruction. Each acquired leg still includes one adverse 0.005 tick; displayed depth is discounted to one percent.",
+      "Normal settlement surplus is not a forecast of a profitable resale or guaranteed completion of two legs."
+    ],
+    "captures": [
+      {
+        "bytes": 48988,
+        "contentHash": "128da77c746e56f79bba467846fc185374836a8243811aeb37f4daac050962de",
+        "file": "platform-complement.html",
+        "observedAt": "2026-10-03T22:36:15.170Z",
+        "url": "https://sig.thesuper.market/docs/markets-and-trading"
+      },
+      {
+        "bytes": 270244,
+        "contentHash": "8f2c3c825cd698afd6918e966686f5eaf2aa824b86c66a9a1d2b4dbe40c60d73",
+        "file": "NH-sample-ballot.pdf",
+        "observedAt": "2026-10-03T22:36:16.657Z",
+        "url": "https://www.londonderrynh.gov/DocumentCenter/View/3063"
+      }
+    ],
+    "evidence": [
+      {
+        "commentId": 5973997375,
+        "contentHash": "f2957cd87fb208b4bf55f63dcff1c131830710ba570139a89998d0ea495c6355",
+        "provenance": "Daenerys manual signed-in browser transcript summary, not authenticated API metadata",
+        "url": "https://github.com/GodlyDonuts/predictions-cup-2026/issues/1#issuecomment-5973997375"
+      },
+      {
+        "commentId": 5974024230,
+        "contentHash": "63156c21a7b21cb9dcaa7345c59d2499339daacd8512962c7c9ef424fab697cc",
+        "provenance": "Daenerys manual signed-in browser transcript summary, not authenticated API metadata",
+        "url": "https://github.com/GodlyDonuts/predictions-cup-2026/issues/1#issuecomment-5974024230"
+      }
+    ],
+    "evidenceHash": "1964232730c4e938082a56c7d7f6328c205a22dd46ff9c3e2330bb1a870bf8f3",
+    "expiresAt": "2026-10-04T04:36:16.657Z",
+    "id": "nh-canonical-capacity-20261003-v1",
+    "kind": "conditional_no_pair_review",
+    "legs": [
+      {
+        "binding": {
+          "administrative": "sponsor may change rules or outcome; delays/void/refund not excluded",
+          "event": "2026 New Hampshire U.S. Senate general election",
+          "exchangeId": "1070",
+          "fusion": "all parties listed for the winner count",
+          "manualInfoAt": "2026-10-03T22:11:30Z through 2026-10-03T22:11:43Z",
+          "marketId": "381",
+          "outcome": "NO",
+          "provenance": "https://github.com/GodlyDonuts/predictions-cup-2026/issues/1#issuecomment-5973997375",
+          "resolution": "final certified winner party affiliation",
+          "winnerAffiliation": "Democratic Party"
+        },
+        "exchangeId": "1070",
+        "marketId": "381",
+        "outcome": "NO",
+        "rulesHash": "964b1fa83cbb7aa863235692ada35ccc298014538b8291c7473aefb4cbb68ed7"
+      },
+      {
+        "binding": {
+          "administrative": "sponsor may change rules or outcome; delays/void/refund not excluded",
+          "event": "2026 New Hampshire U.S. Senate general election",
+          "exchangeId": "1071",
+          "fusion": "all parties listed for the winner count",
+          "manualInfoAt": "2026-10-03T22:11:30Z through 2026-10-03T22:11:43Z",
+          "marketId": "382",
+          "outcome": "NO",
+          "provenance": "https://github.com/GodlyDonuts/predictions-cup-2026/issues/1#issuecomment-5973997375",
+          "resolution": "final certified winner party affiliation",
+          "winnerAffiliation": "Republican Party"
+        },
+        "exchangeId": "1071",
+        "marketId": "382",
+        "outcome": "NO",
+        "rulesHash": "a133bb59004074d21edd3408745e5b420dba0ae7319429ccdbeb80e976064711"
+      }
+    ],
+    "recordedAt": "2026-10-03T22:36:16.657Z",
+    "scenarios": [
+      {
+        "category": "ordinary",
+        "id": "Democratic_winner",
+        "payouts": [
+          0,
+          1
+        ]
+      },
+      {
+        "category": "ordinary",
+        "id": "Republican_winner",
+        "payouts": [
+          1,
+          0
+        ]
+      },
+      {
+        "category": "ordinary",
+        "id": "other_winner",
+        "payouts": [
+          1,
+          1
+        ]
+      },
+      {
+        "category": "exception",
+        "id": "dual_party_or_admin_zero_stress",
+        "payouts": [
+          0,
+          0
+        ]
+      }
+    ],
+    "schemaVersion": 1,
+    "tournamentId": "bda92870-621e-47b0-bc3c-3602c5c26f55"
+  },
+  "capacityPolicy": {
+    "adverseTicksPerLeg": 1,
+    "depthFractionBps": 100,
+    "feeEvidence": "direct_human_zero_fee_instruction",
+    "feePerShare": "0.000000",
+    "fixedFeePerLeg": "0.000000",
+    "maxAgeMs": 20000,
+    "maxCost": "25.000000",
+    "maxQuantity": 100000,
+    "maxSkewMs": 10000,
+    "maxUnmatchedCost": "5.000000",
+    "maximumAccountAgeMs": 20000,
+    "maximumReviewAgeMs": 21600000,
+    "minimumMarginalEdge": "0.010000",
+    "minimumTotalProfit": "0.005000",
+    "representation": "documented_same_exchange_yes_bid_complement",
+    "schemaVersion": 1
+  },
+  "baseCapacityBankHash": "2b85533f12e29476a485d8b729bb9feca692f080e60daf58297a04e0aa542b4e",
+  "codeIdentity": {
+    "./no-maker-host-v2.mjs": "820e8d4d54fab81b51f49c65d227727ec9f162ac4de71a4373f6f2b7e9a00804",
+    "./no-maker-paper.mjs": "c8666b47c6857d6c16a73c3d868fec6e1d4bcfd9092ecd52cf34a4e30befc700",
+    "./canonical-entry-exit-study.mjs": "caac39b144328fa5914f83df7a1fea2f149f84bf9993dbb401ed980a45a828d5",
+    "./canonical-no-capacity.mjs": "9a32dd896051ca039d40405cbc7fad38cb9241de0e8cd94896ef35e46c0d3ee7",
+    "./probability-receipt.mjs": "5a3fad02baca0eb519642b2f1cc53ec06ec4bdad7829b937d13891ac52d4e8a6",
+    "./model.mjs": "3cb8bbd7d31b478fe917270393954382373695149310243eec8b78440d207a2e",
+    "./transport-runtime.mjs": "b73d835506ab09cfea69bce1eb16914f4cd6647a543e2f11627758e280008ea8",
+    "./journal-lines.mjs": "f8adff2bddc36b4e3d305dec9395fae9f51dff957e35313994b6147502cc6823",
+    "../execution/api-tick-price.mjs": "ba162da4a3d388b60e31280ebf02315c2de3407370d785d0c646b4c3f8ff463a",
+    "../execution/core.mjs": "8598dd7fd9574a9197b8791d9cd7801d27e2b71bc473515dba9e775924b458d4",
+    "../execution/ledger.mjs": "523ee3fd04f995983ee3ffc03b5ee8dbdf629a718ba91c17d08026fe2411b5c4",
+    "../paper/fixed.mjs": "a0947ef49854d4a3bf4bce88034aaef5d8aabbdc7e29dff3a7b9b4bc01b072f7",
+    "../feed/contract.mjs": "39b9b30a72093d99697bc03a3b20f88f1d835507219fc46f7a00bd28fe761465"
+  },
+  "tapePrefixBytes": 776786,
+  "tapePrefixHash": "288d8331ab04174385bb0f08fa157221adee0d81d8c680ccea6c6fef6667f797",
+  "tapePrefixSequence": 73,
+  "tapePrefixTailHash": "b1d74a768bf6e4afa7735ddb5602c38366e8486afebe2d5ab051ba7a2a84f2bf",
+  "predecessor": {
+    "cohort": "no-maker-tape-20261004-v1",
+    "bankHash": "17b460652639c3f74fb68b39d3c459fb6971d89654125ec34b0c1d41bf2105ee",
+    "reason": "source_order_admission_correction",
+    "accountingCarried": false
+  },
+  "representation": "documented_same_exchange_yes_book_complement",
+  "nativeNoObserved": false,
+  "executionAuthority": false
+}
