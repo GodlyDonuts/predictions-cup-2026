@@ -83,7 +83,7 @@ pub struct Level {
     pub price: i128,
     pub quantity: i64,
 }
-#[derive(Clone, Serialize, Deserialize, Debug)]
+#[derive(Clone, Serialize, Deserialize, Debug, PartialEq, Eq)]
 pub struct Book {
     pub market_id: String,
     pub instrument: String,
@@ -100,12 +100,12 @@ impl Book {
         self.sequence == other.sequence && self.source_ns == other.source_ns
     }
 }
-#[derive(Clone, Debug)]
+#[derive(Clone, Serialize, Deserialize, Debug, PartialEq, Eq)]
 pub enum Observation {
     Book(Book),
     Invalid { market_id: String, at: i64 },
 }
-#[derive(Clone, Debug)]
+#[derive(Clone, Serialize, Deserialize, Debug, PartialEq, Eq)]
 pub struct Frame {
     pub sequence: usize,
     pub at: i64,
@@ -132,6 +132,7 @@ pub struct Capture {
     pub frames: Vec<Frame>,
     pub prefix_hashes: Vec<String>,
     pub prefix_bytes: Vec<u64>,
+    pub tail_hash: String,
 }
 pub fn instant(s: &str) -> Result<i64, String> {
     let t = chrono::DateTime::parse_from_rfc3339(s).map_err(|_| "INVALID_CLOCK")?;

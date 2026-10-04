@@ -11,6 +11,7 @@ fn main() {
         "src/money.rs",
         "src/types.rs",
         "src/capture.rs",
+        "src/cache.rs",
         "src/engine.rs",
         "src/replay.rs",
         "src/trace.rs",

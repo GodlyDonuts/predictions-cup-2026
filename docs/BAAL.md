@@ -126,3 +126,19 @@ This is an engineering milestone, not profitability evidence. Pending intents
 still lack per-instrument risk hints, and shared read capacity can still limit
 freshness. API ingestion and Next remain Node; capture verification and wallet
 comparisons run in Rust. See `data/native-dip-host-milestone-20261004.json`.
+
+The versioned V2 native host uses a pinned compact capture cache and verifies the
+canonical append. The original source bytes are still fully rehashed on every
+use, including the immutable previous result's digest/boundary. The same 5.086 GB
+prefix takes 4.25 seconds instead of 14.02 seconds in native evaluation (3.30x).
+The cache is 27.24 MB instead of 5.048 GB (185x smaller). All 100 scorecards match
+both full native evaluation and the original frozen engine; models, declaration,
+fees and prior wallet accounting are preserved. V2 removes the separate Node
+source-hash pass and refreshes after collection cycles. The first prepared live
+continuation took 4.58 seconds, and the first deployed update took 4.90 seconds.
+There are still three services and the same coordinated read allocation, with
+zero contest writes. 132 Node checks plus two Rust checks pass, with no skips.
+The dip trade remains a 0.010 loss per copied participating wallet; these speed
+measurements do not establish profitability. Useful full-book discovery and
+per-instrument pending-intent monitoring remain the next strategy bottlenecks.
+See `data/native-cache-milestone-20261004.json`.

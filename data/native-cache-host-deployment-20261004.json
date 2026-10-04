@@ -1,0 +1,12 @@
+{
+  "nativeHostRevision": 2,
+  "readAllocation": 20,
+  "dashboard": 6456,
+  "persistentProcesses": 3,
+  "paper": 5624,
+  "retiredCollector": 23904,
+  "competitionWrites": false,
+  "collector": 1532,
+  "extraProcesses": 0,
+  "at": "2026-10-04T15:11:05.6348233Z"
+}

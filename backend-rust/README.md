@@ -136,3 +136,31 @@ reusable line buffers and parsing only the final output removed the measured
 overhead. Full final-body and tail/sequence equality passed. This is recovery
 speed, separate from the 10.46x model replay measurement. See
 `data/journal-native-benchmark-20261004.json` and the live preservation receipts.
+
+`prepare-cache` writes an immutable compact observation cache from a fully verified
+original prefix. It takes `--declaration`, `--journal`, `--end-byte`,
+`--expected-sha` and a fresh `--out` path. Its receipt pins cache SHA, original
+source SHA/byte boundary, scope and native engine. Cache frames preserve exact
+nanosecond integers and contain normalized books/invalidation clocks, not raw
+account or wallet state. Node hashes bytes and reads receipts; it never decodes
+the numeric cache payload.
+
+`evaluate-cached` uses the same declaration, source and output arguments plus
+`--cache`, `--cache-sha`, `--cache-source-sha`, `--cache-end-byte`,
+`--prior-end-byte` and `--prior-sha`. The prior digest must come from the caller's
+last immutable verified result. The native reader rehashes the complete original
+cached prefix, verifies every appended canonical record and proves the exact
+prior source digest/boundary before evaluating. It computes the current SHA in
+that same pass; optional `--expected-sha` can independently check a known target.
+The frozen cache SHA must come from verified cache generation, not from an
+arbitrary file presented at evaluation time. New outputs include `cacheProof`.
+
+On the same 5.086 GB / 2.655-day source, full native evaluation took 14.02 seconds
+and cached evaluation took 4.25 seconds (3.30x). The 27.24 MB cache is 185x smaller
+than its original 5.048 GB prefix. All 100 full/cached scorecards and all 100
+original frozen-engine scorecards match exactly. Model engine/evaluation sources
+and declaration remain unchanged. The V2 live host also removes the redundant
+Node source-hash pass, refreshes after collection cycles, and preserves prior
+fills through an explicit execution continuation. No model profit follows from
+these measurements. See `data/native-cache-benchmark-20261004.json` and
+`data/native-cache-milestone-20261004.json`.

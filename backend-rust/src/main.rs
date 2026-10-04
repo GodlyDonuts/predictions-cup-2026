@@ -1,4 +1,5 @@
 mod capture;
+mod cache;
 mod engine;
 mod evaluation;
 mod money;
@@ -39,6 +40,8 @@ fn run() -> Result<(), String> {
             "--workers",
             "--out",
         ],
+        "prepare-cache" => vec!["--declaration","--journal","--end-byte","--expected-sha","--out"],
+        "evaluate-cached" => vec!["--declaration","--journal","--end-byte","--expected-sha","--workers","--out","--cache","--cache-sha","--cache-source-sha","--cache-end-byte","--prior-end-byte","--prior-sha"],
         "trace" => vec!["--fixture"],
         _ => return Err("UNKNOWN_COMMAND".into()),
     };
@@ -76,7 +79,7 @@ fn run() -> Result<(), String> {
         println!("{}",serde_json::json!({"sourceVerified":true,"sourceRecords":result["sourceRecords"],"sourceBytes":end,"verifyMs":result["verifyMs"],"competitionOrders":0}));
         return Ok(());
     }
-    if command == "evaluate" {
+    if matches!(command.as_str(), "evaluate" | "evaluate-cached" | "prepare-cache") {
         if Path::new(get("--out")?).exists() {
             return Err("OUTPUT_EXISTS_OR_UNAVAILABLE".into());
         }
@@ -87,13 +90,24 @@ fn run() -> Result<(), String> {
         let end = get("--end-byte")?
             .parse()
             .map_err(|_| "INVALID_SOURCE_PREFIX")?;
-        let source = capture::read_capture(
-            Path::new(get("--journal")?),
-            end,
-            &d.config,
-            Some(get("--expected-sha")?),
-            true,
-        )?;
+        let cached=command=="evaluate-cached";
+        let cache_end=if cached {get("--cache-end-byte")?.parse().map_err(|_|"CACHE_BINDING_INVALID")?}else{0};
+        let seed=if cached {Some(cache::read(Path::new(get("--cache")?),get("--cache-sha")?,get("--cache-source-sha")?,cache_end,&d.config,true)?)}else{None};
+        let expected=if cached {options.get("--expected-sha").copied()}else{Some(get("--expected-sha")?)};
+        let source=capture::read_capture_seeded(Path::new(get("--journal")?),end,&d.config,expected,true,seed)?;
+        let prior_end:u64=if cached {get("--prior-end-byte")?.parse().map_err(|_|"CACHE_PRIOR_BINDING_INVALID")?}else{0};
+        if cached {
+            // One native pass establishes current source SHA, unchanged prior
+            // source SHA, and canonical append continuity. The caller supplies
+            // the prior digest from its immutable verified result, not a new
+            // unchecked hash computed from potentially changed current bytes.
+            let i=source.prefix_bytes.iter().position(|n|*n==prior_end).ok_or("CACHE_PRIOR_BOUNDARY_MISSING")?;
+            if source.prefix_hashes[i]!=get("--prior-sha")?{return Err("CACHE_PRIOR_PREFIX_CHANGED".into());}
+        }
+        if command=="prepare-cache" {
+            println!("{}",cache::write(Path::new(get("--out")?),&source,&d.config,true)?);
+            return Ok(());
+        }
         let workers = options
             .get("--workers")
             .unwrap_or(&"8")
@@ -105,7 +119,9 @@ fn run() -> Result<(), String> {
             .create_new(true)
             .open(get("--out")?)
             .map_err(|_| "OUTPUT_EXISTS_OR_UNAVAILABLE")?;
-        std::io::Write::write_all(&mut file,&serde_json::to_vec(&serde_json::json!({"capture":source.meta,"evaluation":result,"declarationFileHash":declaration_hash})).map_err(|_|"OUTPUT_INVALID")?).map_err(|_|"OUTPUT_WRITE_FAILED")?;
+        let mut output=serde_json::json!({"capture":source.meta,"evaluation":result,"declarationFileHash":declaration_hash});
+        if cached {output["cacheProof"]=serde_json::json!({"schemaVersion":1,"mode":"pinned_original_prefix_cache_and_verified_append_v1","cacheHash":get("--cache-sha")?,"sourceHash":get("--cache-source-sha")?,"sourceBytes":cache_end,"priorSourceHash":get("--prior-sha")?,"priorSourceBytes":prior_end,"fullOriginalPrefixRehashed":true,"appendedBytes":end-cache_end});}
+        std::io::Write::write_all(&mut file,&serde_json::to_vec(&output).map_err(|_|"OUTPUT_INVALID")?).map_err(|_|"OUTPUT_WRITE_FAILED")?;
         file.sync_all().map_err(|_| "OUTPUT_SYNC_FAILED")?;
         println!(
             "{}",

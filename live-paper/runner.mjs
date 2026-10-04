@@ -32,6 +32,7 @@ import {openNativeJournal} from './native-journal-restore.mjs';
 import {createBasketFollowupSource} from './basket-followup-source.mjs';
 import {createComparisonRiskSource} from './comparison-risk-source.mjs';
 import {openNativeDipHost} from './native-dip-host-v1.mjs';
+import {openNativeDipCacheHost} from './native-dip-host-v2.mjs';
 import {planComparisonSampling,recordComparisonAttempt} from './comparison-sampling.mjs';
 import {atomicJson as durableAtomicJson} from '../execution/ledger.mjs';
 import {CompetitionController} from '../execution/controller.mjs';
@@ -210,7 +211,7 @@ try{
   const marketSweep=loadMarketSweep(path.join(runtimeDir,'market-sweep.json'),universe,networkBudget);
   const pricePublication=marketSweep?createMarketPricePublication({file:path.join(runtimeDir,'market-prices.jsonl'),universe,canOperate:()=>!stopping}):null;
   comparisonRiskSource=createComparisonRiskSource({runtimeDir,universe,now:Date.now});
-  nativeDip=openNativeDipHost({runtimeDir,universe,signal:control.signal,canOperate:()=>!stopping});
+  nativeDip=fs.existsSync(path.join(runtimeDir,'native-dip-cache-active.json'))?openNativeDipCacheHost({runtimeDir,universe,signal:control.signal,canOperate:()=>!stopping}):openNativeDipHost({runtimeDir,universe,signal:control.signal,canOperate:()=>!stopping});
   nativeDip?.kick();
   const publicationReplayStarted=performance.now();
   const nativePublication=collectorNativePublicationConfig(runtimeDir,universe),publicationOptions={file:path.join(runtimeDir,'public-books.jsonl'),universe,sessionId:randomUUID(),now:Date.now,canOperate:()=>!stopping};

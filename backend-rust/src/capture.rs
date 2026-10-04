@@ -159,13 +159,22 @@ pub fn read_capture(
     expected: Option<&str>,
     receipt_order: bool,
 ) -> Result<Capture, String> {
+    read_capture_seeded(path, end, c, expected, receipt_order, None)
+}
+// A pinned cache supplies only observations from an already verified prefix.
+// Rehash original prefix bytes before accepting it, then verify every append
+// with the exact same canonical chain, clocks and normalization as a full read.
+pub fn read_capture_seeded(
+    path: &Path, end: u64, c: &Config, expected: Option<&str>,
+    receipt_order: bool, seed: Option<Capture>,
+) -> Result<Capture, String> {
     c.validate()?;
     let start = Instant::now();
     let file = File::open(path).map_err(|_| "SOURCE_OPEN_FAILED")?;
     if end == 0 || file.metadata().map_err(|_| "SOURCE_METADATA_FAILED")?.len() < end {
         return Err("INVALID_SOURCE_PREFIX".into());
     }
-    let mut reader = BufReader::with_capacity(4 * 1024 * 1024, file.take(end));
+    let mut input = file.take(end);
     let mut prefix = Sha256::new();
     let mut bytes = 0;
     let mut previous = String::new();
@@ -179,6 +188,25 @@ pub fn read_capture(
     let mut prefix_bytes = Vec::new();
     let mut accepted = 0;
     let mut rejected = 0;
+    if let Some(seed) = seed {
+        if seed.meta.source_bytes > end { return Err("CACHE_SOURCE_REGRESSION".into()); }
+        let mut buffer = vec![0; 4 * 1024 * 1024];
+        while bytes < seed.meta.source_bytes {
+            let limit = ((seed.meta.source_bytes - bytes) as usize).min(buffer.len());
+            let n = input.read(&mut buffer[..limit]).map_err(|_| "SOURCE_READ_FAILED")?;
+            if n == 0 { return Err("CACHE_SOURCE_TRUNCATED".into()); }
+            prefix.update(&buffer[..n]); bytes += n as u64;
+        }
+        if format!("{:x}", prefix.clone().finalize()) != seed.meta.source_hash {
+            return Err("CACHE_ORIGINAL_PREFIX_CHANGED".into());
+        }
+        previous=seed.tail_hash; records=seed.meta.source_records;
+        last=seed.meta.through; first=seed.meta.first_at;
+        cycles=seed.meta.cycles; accepted=seed.meta.accepted_books;
+        rejected=seed.meta.invalid_books; frames=seed.frames;
+        prefix_hashes=seed.prefix_hashes; prefix_bytes=seed.prefix_bytes;
+    }
+    let mut reader = BufReader::with_capacity(4 * 1024 * 1024, input);
     loop {
         let mut line = Vec::new();
         let n = reader
@@ -342,5 +370,6 @@ pub fn read_capture(
         frames,
         prefix_hashes,
         prefix_bytes,
+        tail_hash: previous,
     })
 }
