@@ -1,0 +1,836 @@
+{
+  "schemaVersion": 1,
+  "at": "2026-10-04T18:49:23.706Z",
+  "status": "native_sides_preservation_and_current_live_recovery_verified",
+  "claimComment": 5982841708,
+  "through": "2026-10-04T18:42:17.153Z",
+  "activeEngineHash": "b9763d578a394a8027a584475966485cfe3fc2568b254fd003fd6e29dc58ca8a",
+  "newEngineHash": "334766ed650786d6d61b3966878c16b46a9a48ea0a1f4decbe7e3cad61f0d3db",
+  "activeHash": "1311b443fe76d1db73482596c0384b745c397544efd7d6e022abb90f4103b398",
+  "originalOutputHash": "db58abee13bcf1f7042ac4fd987d5927157c61db936b6ffa463cb5f9440cfe85",
+  "newOutputHash": "9a6728b11da7ce0dc6519b730b6efdee79f46cd0eb502b5b469f715d6398dd69",
+  "firstNewOutputHash": "18fde2eab7c6661eaf587685cce2154355015a33d61d5014ed7faf1e47961095",
+  "sourcePrefixHash": "1497091d0ea438995446643dc2ac39c08d82970e1383dd4d4573a6233b6ce312",
+  "exactOriginalCards": 72,
+  "allOriginalFillsExact": true,
+  "originalWalletsReset": false,
+  "activeCohortReplaced": false,
+  "originalWallMs": 4185.1325,
+  "newWallMs": 4279.9645,
+  "paperGroups": [
+    {
+      "wallets": 42,
+      "cash": "100.000000",
+      "realizedPnl": "0.000000",
+      "liquidationPnl": "0.000000",
+      "completedTrades": 0,
+      "fillCount": 0
+    },
+    {
+      "wallets": 9,
+      "cash": "99.975000",
+      "realizedPnl": "-0.025000",
+      "liquidationPnl": "-0.025000",
+      "completedTrades": 1,
+      "fillCount": 2
+    },
+    {
+      "wallets": 3,
+      "cash": "99.965000",
+      "realizedPnl": "-0.035000",
+      "liquidationPnl": "-0.035000",
+      "completedTrades": 1,
+      "fillCount": 2
+    },
+    {
+      "wallets": 8,
+      "cash": "99.120000",
+      "realizedPnl": "0.000000",
+      "liquidationPnl": "-0.040000",
+      "completedTrades": 0,
+      "fillCount": 1
+    },
+    {
+      "wallets": 4,
+      "cash": "99.120000",
+      "realizedPnl": "0.000000",
+      "liquidationPnl": "-0.045000",
+      "completedTrades": 0,
+      "fillCount": 1
+    },
+    {
+      "wallets": 2,
+      "cash": "99.930000",
+      "realizedPnl": "-0.070000",
+      "liquidationPnl": "-0.070000",
+      "completedTrades": 3,
+      "fillCount": 6
+    },
+    {
+      "wallets": 1,
+      "cash": "99.930000",
+      "realizedPnl": "-0.070000",
+      "liquidationPnl": "-0.070000",
+      "completedTrades": 2,
+      "fillCount": 4
+    },
+    {
+      "wallets": 2,
+      "cash": "99.135000",
+      "realizedPnl": "0.000000",
+      "liquidationPnl": "-0.025000",
+      "completedTrades": 0,
+      "fillCount": 1
+    },
+    {
+      "wallets": 1,
+      "cash": "99.140000",
+      "realizedPnl": "0.000000",
+      "liquidationPnl": "-0.025000",
+      "completedTrades": 0,
+      "fillCount": 1
+    }
+  ],
+  "uniqueCounterfactualFillVariants": 26,
+  "paperFillVariants": [
+    {
+      "intentId": 1,
+      "instrument": "1000:YES",
+      "action": "buy",
+      "quantity": 1,
+      "price": "0.880000",
+      "fee": "0.000000",
+      "at": 1791133324694,
+      "sourceClock": {
+        "policy": "independent_request_latency_v2",
+        "decisionAt": 1791133289076,
+        "minimumLatencyMs": 3000,
+        "requestStartedAt": 1791133324499,
+        "receivedAt": 1791133324694,
+        "decisionSequence": "38818345",
+        "decisionSourceNs": "1791133289241392800",
+        "fillSequence": "38824379",
+        "fillSourceNs": "1791133324856620800"
+      },
+      "economics": {
+        "reason": "ENTRY",
+        "decisionAt": 1791133289076,
+        "quotePrice": "0.875000",
+        "midPrice": "0.872500",
+        "slippage": "0.005000"
+      }
+    },
+    {
+      "intentId": 2,
+      "instrument": "1000:YES",
+      "action": "sell",
+      "quantity": 1,
+      "price": "0.855000",
+      "fee": "0.000000",
+      "at": 1791135174391,
+      "sourceClock": {
+        "policy": "independent_request_latency_v2",
+        "decisionAt": 1791135138821,
+        "minimumLatencyMs": 3000,
+        "requestStartedAt": 1791135174173,
+        "receivedAt": 1791135174391,
+        "decisionSequence": "39131368",
+        "decisionSourceNs": "1791135139002643600",
+        "fillSequence": "39138414",
+        "fillSourceNs": "1791135174573829600"
+      },
+      "economics": {
+        "reason": "HORIZON",
+        "decisionAt": 1791135138821,
+        "quotePrice": "0.860000",
+        "midPrice": "0.862500",
+        "slippage": "0.005000"
+      }
+    },
+    {
+      "intentId": 1,
+      "instrument": "1000:YES",
+      "action": "buy",
+      "quantity": 1,
+      "price": "0.880000",
+      "fee": "0.000000",
+      "at": 1791133324694,
+      "sourceClock": {
+        "policy": "independent_request_latency_v2",
+        "decisionAt": 1791133289076,
+        "minimumLatencyMs": 10000,
+        "requestStartedAt": 1791133324499,
+        "receivedAt": 1791133324694,
+        "decisionSequence": "38818345",
+        "decisionSourceNs": "1791133289241392800",
+        "fillSequence": "38824379",
+        "fillSourceNs": "1791133324856620800"
+      },
+      "economics": {
+        "reason": "ENTRY",
+        "decisionAt": 1791133289076,
+        "quotePrice": "0.875000",
+        "midPrice": "0.872500",
+        "slippage": "0.005000"
+      }
+    },
+    {
+      "intentId": 2,
+      "instrument": "1000:YES",
+      "action": "sell",
+      "quantity": 1,
+      "price": "0.855000",
+      "fee": "0.000000",
+      "at": 1791135174391,
+      "sourceClock": {
+        "policy": "independent_request_latency_v2",
+        "decisionAt": 1791135138821,
+        "minimumLatencyMs": 10000,
+        "requestStartedAt": 1791135174173,
+        "receivedAt": 1791135174391,
+        "decisionSequence": "39131368",
+        "decisionSourceNs": "1791135139002643600",
+        "fillSequence": "39138414",
+        "fillSourceNs": "1791135174573829600"
+      },
+      "economics": {
+        "reason": "HORIZON",
+        "decisionAt": 1791135138821,
+        "quotePrice": "0.860000",
+        "midPrice": "0.862500",
+        "slippage": "0.005000"
+      }
+    },
+    {
+      "intentId": 1,
+      "instrument": "1000:YES",
+      "action": "buy",
+      "quantity": 1,
+      "price": "0.880000",
+      "fee": "0.000000",
+      "at": 1791133609271,
+      "sourceClock": {
+        "policy": "independent_request_latency_v2",
+        "decisionAt": 1791133573877,
+        "minimumLatencyMs": 30000,
+        "requestStartedAt": 1791133609070,
+        "receivedAt": 1791133609271,
+        "decisionSequence": "38867293",
+        "decisionSourceNs": "1791133574043663800",
+        "fillSequence": "38874503",
+        "fillSourceNs": "1791133609442379500"
+      },
+      "economics": {
+        "reason": "ENTRY",
+        "decisionAt": 1791133573877,
+        "quotePrice": "0.870000",
+        "midPrice": "0.867500",
+        "slippage": "0.010000"
+      }
+    },
+    {
+      "intentId": 2,
+      "instrument": "1000:YES",
+      "action": "sell",
+      "quantity": 1,
+      "price": "0.845000",
+      "fee": "0.000000",
+      "at": 1791135458597,
+      "sourceClock": {
+        "policy": "independent_request_latency_v2",
+        "decisionAt": 1791135423174,
+        "minimumLatencyMs": 30000,
+        "requestStartedAt": 1791135458343,
+        "receivedAt": 1791135458597,
+        "decisionSequence": "39175100",
+        "decisionSourceNs": "1791135423364677800",
+        "fillSequence": "39179435",
+        "fillSourceNs": "1791135458790797200"
+      },
+      "economics": {
+        "reason": "HORIZON",
+        "decisionAt": 1791135423174,
+        "quotePrice": "0.855000",
+        "midPrice": "0.857500",
+        "slippage": "0.010000"
+      }
+    },
+    {
+      "intentId": 1,
+      "instrument": "1000:YES",
+      "action": "buy",
+      "quantity": 1,
+      "price": "0.880000",
+      "fee": "0.000000",
+      "at": 1791133502771,
+      "sourceClock": {
+        "policy": "independent_request_latency_v2",
+        "decisionAt": 1791133467255,
+        "minimumLatencyMs": 3000,
+        "requestStartedAt": 1791133502495,
+        "receivedAt": 1791133502771,
+        "decisionSequence": "38848713",
+        "decisionSourceNs": "1791133467417189900",
+        "fillSequence": "38853759",
+        "fillSourceNs": "1791133502922173700"
+      },
+      "economics": {
+        "reason": "ENTRY",
+        "decisionAt": 1791133467255,
+        "quotePrice": "0.875000",
+        "midPrice": "0.872500",
+        "slippage": "0.005000"
+      }
+    },
+    {
+      "intentId": 2,
+      "instrument": "1000:YES",
+      "action": "sell",
+      "quantity": 1,
+      "price": "0.855000",
+      "fee": "0.000000",
+      "at": 1791135352656,
+      "sourceClock": {
+        "policy": "independent_request_latency_v2",
+        "decisionAt": 1791135317380,
+        "minimumLatencyMs": 3000,
+        "requestStartedAt": 1791135352460,
+        "receivedAt": 1791135352656,
+        "decisionSequence": "39160485",
+        "decisionSourceNs": "1791135317559281100",
+        "fillSequence": "39164563",
+        "fillSourceNs": "1791135352848524600"
+      },
+      "economics": {
+        "reason": "HORIZON",
+        "decisionAt": 1791135317380,
+        "quotePrice": "0.860000",
+        "midPrice": "0.862500",
+        "slippage": "0.005000"
+      }
+    },
+    {
+      "intentId": 1,
+      "instrument": "1000:YES",
+      "action": "buy",
+      "quantity": 1,
+      "price": "0.880000",
+      "fee": "0.000000",
+      "at": 1791133502771,
+      "sourceClock": {
+        "policy": "independent_request_latency_v2",
+        "decisionAt": 1791133467255,
+        "minimumLatencyMs": 10000,
+        "requestStartedAt": 1791133502495,
+        "receivedAt": 1791133502771,
+        "decisionSequence": "38848713",
+        "decisionSourceNs": "1791133467417189900",
+        "fillSequence": "38853759",
+        "fillSourceNs": "1791133502922173700"
+      },
+      "economics": {
+        "reason": "ENTRY",
+        "decisionAt": 1791133467255,
+        "quotePrice": "0.875000",
+        "midPrice": "0.872500",
+        "slippage": "0.005000"
+      }
+    },
+    {
+      "intentId": 2,
+      "instrument": "1000:YES",
+      "action": "sell",
+      "quantity": 1,
+      "price": "0.855000",
+      "fee": "0.000000",
+      "at": 1791135352656,
+      "sourceClock": {
+        "policy": "independent_request_latency_v2",
+        "decisionAt": 1791135317380,
+        "minimumLatencyMs": 10000,
+        "requestStartedAt": 1791135352460,
+        "receivedAt": 1791135352656,
+        "decisionSequence": "39160485",
+        "decisionSourceNs": "1791135317559281100",
+        "fillSequence": "39164563",
+        "fillSourceNs": "1791135352848524600"
+      },
+      "economics": {
+        "reason": "HORIZON",
+        "decisionAt": 1791135317380,
+        "quotePrice": "0.860000",
+        "midPrice": "0.862500",
+        "slippage": "0.005000"
+      }
+    },
+    {
+      "intentId": 3,
+      "instrument": "1000:YES",
+      "action": "buy",
+      "quantity": 1,
+      "price": "0.870000",
+      "fee": "0.000000",
+      "at": 1791135209956,
+      "sourceClock": {
+        "policy": "independent_request_latency_v2",
+        "decisionAt": 1791135174395,
+        "minimumLatencyMs": 3000,
+        "requestStartedAt": 1791135209636,
+        "receivedAt": 1791135209956,
+        "decisionSequence": "39138414",
+        "decisionSourceNs": "1791135174573829600",
+        "fillSequence": "39143833",
+        "fillSourceNs": "1791135210148933800"
+      },
+      "economics": {
+        "reason": "ENTRY",
+        "decisionAt": 1791135174395,
+        "quotePrice": "0.865000",
+        "midPrice": "0.862500",
+        "slippage": "0.005000"
+      }
+    },
+    {
+      "intentId": 4,
+      "instrument": "1000:YES",
+      "action": "sell",
+      "quantity": 1,
+      "price": "0.840000",
+      "fee": "0.000000",
+      "at": 1791137068412,
+      "sourceClock": {
+        "policy": "independent_request_latency_v2",
+        "decisionAt": 1791137032968,
+        "minimumLatencyMs": 3000,
+        "requestStartedAt": 1791137068218,
+        "receivedAt": 1791137068412,
+        "decisionSequence": "39474002",
+        "decisionSourceNs": "1791137033170683000",
+        "fillSequence": "39480371",
+        "fillSourceNs": "1791137068618590800"
+      },
+      "economics": {
+        "reason": "HORIZON",
+        "decisionAt": 1791137032968,
+        "quotePrice": "0.845000",
+        "midPrice": "0.847500",
+        "slippage": "0.005000"
+      }
+    },
+    {
+      "intentId": 5,
+      "instrument": "1000:YES",
+      "action": "buy",
+      "quantity": 1,
+      "price": "0.855000",
+      "fee": "0.000000",
+      "at": 1791137103868,
+      "sourceClock": {
+        "policy": "independent_request_latency_v2",
+        "decisionAt": 1791137068417,
+        "minimumLatencyMs": 3000,
+        "requestStartedAt": 1791137103679,
+        "receivedAt": 1791137103868,
+        "decisionSequence": "39480371",
+        "decisionSourceNs": "1791137068618590800",
+        "fillSequence": "39486492",
+        "fillSourceNs": "1791137104078891700"
+      },
+      "economics": {
+        "reason": "ENTRY",
+        "decisionAt": 1791137068417,
+        "quotePrice": "0.850000",
+        "midPrice": "0.847500",
+        "slippage": "0.005000"
+      }
+    },
+    {
+      "intentId": 6,
+      "instrument": "1000:YES",
+      "action": "sell",
+      "quantity": 1,
+      "price": "0.840000",
+      "fee": "0.000000",
+      "at": 1791138968587,
+      "sourceClock": {
+        "policy": "independent_request_latency_v2",
+        "decisionAt": 1791138933184,
+        "minimumLatencyMs": 3000,
+        "requestStartedAt": 1791138968394,
+        "receivedAt": 1791138968587,
+        "decisionSequence": "39789499",
+        "decisionSourceNs": "1791138933393473000",
+        "fillSequence": "39796309",
+        "fillSourceNs": "1791138968820022000"
+      },
+      "economics": {
+        "reason": "HORIZON",
+        "decisionAt": 1791138933184,
+        "quotePrice": "0.845000",
+        "midPrice": "0.847500",
+        "slippage": "0.005000"
+      }
+    },
+    {
+      "intentId": 3,
+      "instrument": "1000:YES",
+      "action": "buy",
+      "quantity": 1,
+      "price": "0.870000",
+      "fee": "0.000000",
+      "at": 1791135209956,
+      "sourceClock": {
+        "policy": "independent_request_latency_v2",
+        "decisionAt": 1791135174395,
+        "minimumLatencyMs": 10000,
+        "requestStartedAt": 1791135209636,
+        "receivedAt": 1791135209956,
+        "decisionSequence": "39138414",
+        "decisionSourceNs": "1791135174573829600",
+        "fillSequence": "39143833",
+        "fillSourceNs": "1791135210148933800"
+      },
+      "economics": {
+        "reason": "ENTRY",
+        "decisionAt": 1791135174395,
+        "quotePrice": "0.865000",
+        "midPrice": "0.862500",
+        "slippage": "0.005000"
+      }
+    },
+    {
+      "intentId": 4,
+      "instrument": "1000:YES",
+      "action": "sell",
+      "quantity": 1,
+      "price": "0.840000",
+      "fee": "0.000000",
+      "at": 1791137068412,
+      "sourceClock": {
+        "policy": "independent_request_latency_v2",
+        "decisionAt": 1791137032968,
+        "minimumLatencyMs": 10000,
+        "requestStartedAt": 1791137068218,
+        "receivedAt": 1791137068412,
+        "decisionSequence": "39474002",
+        "decisionSourceNs": "1791137033170683000",
+        "fillSequence": "39480371",
+        "fillSourceNs": "1791137068618590800"
+      },
+      "economics": {
+        "reason": "HORIZON",
+        "decisionAt": 1791137032968,
+        "quotePrice": "0.845000",
+        "midPrice": "0.847500",
+        "slippage": "0.005000"
+      }
+    },
+    {
+      "intentId": 5,
+      "instrument": "1000:YES",
+      "action": "buy",
+      "quantity": 1,
+      "price": "0.855000",
+      "fee": "0.000000",
+      "at": 1791137103868,
+      "sourceClock": {
+        "policy": "independent_request_latency_v2",
+        "decisionAt": 1791137068417,
+        "minimumLatencyMs": 10000,
+        "requestStartedAt": 1791137103679,
+        "receivedAt": 1791137103868,
+        "decisionSequence": "39480371",
+        "decisionSourceNs": "1791137068618590800",
+        "fillSequence": "39486492",
+        "fillSourceNs": "1791137104078891700"
+      },
+      "economics": {
+        "reason": "ENTRY",
+        "decisionAt": 1791137068417,
+        "quotePrice": "0.850000",
+        "midPrice": "0.847500",
+        "slippage": "0.005000"
+      }
+    },
+    {
+      "intentId": 6,
+      "instrument": "1000:YES",
+      "action": "sell",
+      "quantity": 1,
+      "price": "0.840000",
+      "fee": "0.000000",
+      "at": 1791138968587,
+      "sourceClock": {
+        "policy": "independent_request_latency_v2",
+        "decisionAt": 1791138933184,
+        "minimumLatencyMs": 10000,
+        "requestStartedAt": 1791138968394,
+        "receivedAt": 1791138968587,
+        "decisionSequence": "39789499",
+        "decisionSourceNs": "1791138933393473000",
+        "fillSequence": "39796309",
+        "fillSourceNs": "1791138968820022000"
+      },
+      "economics": {
+        "reason": "HORIZON",
+        "decisionAt": 1791138933184,
+        "quotePrice": "0.845000",
+        "midPrice": "0.847500",
+        "slippage": "0.005000"
+      }
+    },
+    {
+      "intentId": 3,
+      "instrument": "1000:YES",
+      "action": "buy",
+      "quantity": 1,
+      "price": "0.870000",
+      "fee": "0.000000",
+      "at": 1791135494369,
+      "sourceClock": {
+        "policy": "independent_request_latency_v2",
+        "decisionAt": 1791135458602,
+        "minimumLatencyMs": 30000,
+        "requestStartedAt": 1791135494137,
+        "receivedAt": 1791135494369,
+        "decisionSequence": "39179435",
+        "decisionSourceNs": "1791135458790797200",
+        "fillSequence": "39186266",
+        "fillSourceNs": "1791135494563099900"
+      },
+      "economics": {
+        "reason": "ENTRY",
+        "decisionAt": 1791135458602,
+        "quotePrice": "0.860000",
+        "midPrice": "0.857500",
+        "slippage": "0.010000"
+      }
+    },
+    {
+      "intentId": 4,
+      "instrument": "1000:YES",
+      "action": "sell",
+      "quantity": 1,
+      "price": "0.835000",
+      "fee": "0.000000",
+      "at": 1791137353143,
+      "sourceClock": {
+        "policy": "independent_request_latency_v2",
+        "decisionAt": 1791137317477,
+        "minimumLatencyMs": 30000,
+        "requestStartedAt": 1791137352944,
+        "receivedAt": 1791137353143,
+        "decisionSequence": "39522064",
+        "decisionSourceNs": "1791137317685789100",
+        "fillSequence": "39526223",
+        "fillSourceNs": "1791137353355194700"
+      },
+      "economics": {
+        "reason": "HORIZON",
+        "decisionAt": 1791137317477,
+        "quotePrice": "0.845000",
+        "midPrice": "0.847500",
+        "slippage": "0.010000"
+      }
+    },
+    {
+      "intentId": 1,
+      "instrument": "1000:YES",
+      "action": "buy",
+      "quantity": 1,
+      "price": "0.865000",
+      "fee": "0.000000",
+      "at": 1791135494369,
+      "sourceClock": {
+        "policy": "independent_request_latency_v2",
+        "decisionAt": 1791135458602,
+        "minimumLatencyMs": 3000,
+        "requestStartedAt": 1791135494137,
+        "receivedAt": 1791135494369,
+        "decisionSequence": "39179435",
+        "decisionSourceNs": "1791135458790797200",
+        "fillSequence": "39186266",
+        "fillSourceNs": "1791135494563099900"
+      },
+      "economics": {
+        "reason": "ENTRY",
+        "decisionAt": 1791135458602,
+        "quotePrice": "0.860000",
+        "midPrice": "0.857500",
+        "slippage": "0.005000"
+      }
+    },
+    {
+      "intentId": 2,
+      "instrument": "1000:YES",
+      "action": "sell",
+      "quantity": 1,
+      "price": "0.840000",
+      "fee": "0.000000",
+      "at": 1791137353143,
+      "sourceClock": {
+        "policy": "independent_request_latency_v2",
+        "decisionAt": 1791137317477,
+        "minimumLatencyMs": 3000,
+        "requestStartedAt": 1791137352944,
+        "receivedAt": 1791137353143,
+        "decisionSequence": "39522064",
+        "decisionSourceNs": "1791137317685789100",
+        "fillSequence": "39526223",
+        "fillSourceNs": "1791137353355194700"
+      },
+      "economics": {
+        "reason": "HORIZON",
+        "decisionAt": 1791137317477,
+        "quotePrice": "0.845000",
+        "midPrice": "0.847500",
+        "slippage": "0.005000"
+      }
+    },
+    {
+      "intentId": 1,
+      "instrument": "1000:YES",
+      "action": "buy",
+      "quantity": 1,
+      "price": "0.865000",
+      "fee": "0.000000",
+      "at": 1791135494369,
+      "sourceClock": {
+        "policy": "independent_request_latency_v2",
+        "decisionAt": 1791135458602,
+        "minimumLatencyMs": 10000,
+        "requestStartedAt": 1791135494137,
+        "receivedAt": 1791135494369,
+        "decisionSequence": "39179435",
+        "decisionSourceNs": "1791135458790797200",
+        "fillSequence": "39186266",
+        "fillSourceNs": "1791135494563099900"
+      },
+      "economics": {
+        "reason": "ENTRY",
+        "decisionAt": 1791135458602,
+        "quotePrice": "0.860000",
+        "midPrice": "0.857500",
+        "slippage": "0.005000"
+      }
+    },
+    {
+      "intentId": 2,
+      "instrument": "1000:YES",
+      "action": "sell",
+      "quantity": 1,
+      "price": "0.840000",
+      "fee": "0.000000",
+      "at": 1791137353143,
+      "sourceClock": {
+        "policy": "independent_request_latency_v2",
+        "decisionAt": 1791137317477,
+        "minimumLatencyMs": 10000,
+        "requestStartedAt": 1791137352944,
+        "receivedAt": 1791137353143,
+        "decisionSequence": "39522064",
+        "decisionSourceNs": "1791137317685789100",
+        "fillSequence": "39526223",
+        "fillSourceNs": "1791137353355194700"
+      },
+      "economics": {
+        "reason": "HORIZON",
+        "decisionAt": 1791137317477,
+        "quotePrice": "0.845000",
+        "midPrice": "0.847500",
+        "slippage": "0.005000"
+      }
+    },
+    {
+      "intentId": 1,
+      "instrument": "1000:YES",
+      "action": "buy",
+      "quantity": 1,
+      "price": "0.860000",
+      "fee": "0.000000",
+      "at": 1791136604398,
+      "sourceClock": {
+        "policy": "independent_request_latency_v2",
+        "decisionAt": 1791136568914,
+        "minimumLatencyMs": 30000,
+        "requestStartedAt": 1791136604198,
+        "receivedAt": 1791136604398,
+        "decisionSequence": "39401150",
+        "decisionSourceNs": "1791136569115618100",
+        "fillSequence": "39408207",
+        "fillSourceNs": "1791136604604226800"
+      },
+      "economics": {
+        "reason": "ENTRY",
+        "decisionAt": 1791136568914,
+        "quotePrice": "0.850000",
+        "midPrice": "0.847500",
+        "slippage": "0.010000"
+      }
+    },
+    {
+      "intentId": 2,
+      "instrument": "1000:YES",
+      "action": "sell",
+      "quantity": 1,
+      "price": "0.835000",
+      "fee": "0.000000",
+      "at": 1791138452662,
+      "sourceClock": {
+        "policy": "independent_request_latency_v2",
+        "decisionAt": 1791138417211,
+        "minimumLatencyMs": 30000,
+        "requestStartedAt": 1791138452463,
+        "receivedAt": 1791138452662,
+        "decisionSequence": "39698433",
+        "decisionSourceNs": "1791138417433384300",
+        "fillSequence": "39704335",
+        "fillSourceNs": "1791138452886468300"
+      },
+      "economics": {
+        "reason": "HORIZON",
+        "decisionAt": 1791138417211,
+        "quotePrice": "0.845000",
+        "midPrice": "0.847500",
+        "slippage": "0.010000"
+      }
+    }
+  ],
+  "collector": {
+    "pid": 27488,
+    "status": "running",
+    "cycles": 183,
+    "lastCycleAt": "2026-10-04T18:48:48.232Z",
+    "errorCount": 1,
+    "errors": [
+      {
+        "at": "2026-10-04T18:29:05.897Z",
+        "reasonHash": "5935a1b92b8fa988c48465a2dd291e5a49bd03136dc045421cf093e5a55579d5",
+        "httpStatus": 503
+      }
+    ],
+    "currentRecoveryVerified": true
+  },
+  "native": {
+    "status": "running",
+    "verifiedAt": "2026-10-04T18:48:52.989Z",
+    "lastError": null,
+    "heldMarketIds": [
+      "311"
+    ]
+  },
+  "pids": {
+    "collector": 27488,
+    "dashboard": 6456,
+    "paper": 5624,
+    "metrics": null,
+    "contestActivation": false,
+    "retiredMetricsPid": 11792
+  },
+  "persistentProcesses": 3,
+  "additionalPersistentProcesses": 0,
+  "fees": 0,
+  "networkRequests": 0,
+  "competitionOrders": 0,
+  "profitabilityEstablished": false
+}

@@ -6,6 +6,8 @@ mod money;
 mod publication { include!("publication.rs"); include!("market_observations.rs"); include!("quote_diagnostics.rs"); }
 mod quote_replay { include!("quote_replay.rs"); include!("quote_recovery_v2.rs"); }
 mod quote_markouts;
+mod quote_sides;
+mod quote_endpoints;
 mod replay;
 mod sweep;
 mod trace;
@@ -18,6 +20,8 @@ fn run() -> Result<(), String> {
     let allowed = match command.as_str() {
         "quote-replay" => vec!["--declaration","--sources","--workers","--out"],
         "quote-markouts" => vec!["--declaration","--sources","--workers","--out"],
+        "quote-side-markouts" => vec!["--declaration","--sources","--workers","--out"],
+        "quote-side-endpoints" => vec!["--declaration","--sources","--workers","--out"],
         "capture" => vec!["--config", "--journal", "--end-byte", "--expected-sha"],
         "publication" => vec!["--scope", "--journal", "--end-byte", "--expected-sha", "--out"],
         "replay" => vec![
@@ -67,15 +71,15 @@ fn run() -> Result<(), String> {
             .copied()
             .ok_or_else(|| "MISSING_ARGUMENT".to_owned())
     };
-    if command=="quote-replay"||command=="quote-markouts" {
+    if command=="quote-replay"||command=="quote-markouts"||command=="quote-side-markouts"||command=="quote-side-endpoints" {
         if Path::new(get("--out")?).exists(){return Err("OUTPUT_EXISTS_OR_UNAVAILABLE".into());}
         let bytes=fs::read(get("--declaration")?).map_err(|_|"DECLARATION_OPEN_FAILED")?;
         let d:quote_replay::QuoteDeclaration=serde_json::from_slice(&bytes).map_err(|_|"DECLARATION_JSON_INVALID")?;
         let sources:publication::MarketSources=serde_json::from_slice(&fs::read(get("--sources")?).map_err(|_|"MARKET_SOURCES_OPEN")?).map_err(|_|"MARKET_SOURCES_JSON")?;
         let capture=publication::read_market_sources(&sources,&d.universe)?;
         let workers=options.get("--workers").unwrap_or(&"8").parse().map_err(|_|"INVALID_REPLAY_WORKERS")?;
-        let study=command=="quote-markouts";
-        let result=if study {d.validate(&capture,&sources)?;let ticks=publication::read_study_quotes(&sources.quotes,capture.meta["sources"]["quotes"]["hash"].as_str().unwrap(),&d.universe)?;quote_markouts::run(&capture,&d,&ticks,workers)?}else{quote_replay::run(&capture,&d,&sources,workers)?};
+        let study=command!="quote-replay";
+        let result=if study {d.validate(&capture,&sources)?;let ticks=publication::read_study_quotes(&sources.quotes,capture.meta["sources"]["quotes"]["hash"].as_str().unwrap(),&d.universe)?;if command=="quote-side-markouts"||command=="quote-side-endpoints"{let mut v=quote_sides::run(&capture,&d,&ticks,workers)?;if command=="quote-side-endpoints"{let started=std::time::Instant::now();v["yesEndpointSensitivity"]=quote_endpoints::run(&ticks,&v["yes"],capture.meta["through"].as_i64().unwrap())?;let no:Vec<_>=ticks.iter().map(quote_sides::no_quote).collect();v["noEndpointSensitivity"]=quote_endpoints::run(&no,&v["no"],capture.meta["through"].as_i64().unwrap())?;let ms=started.elapsed().as_secs_f64()*1000.0;v["endpointSensitivityMs"]=serde_json::json!(ms);v["replayMs"]=serde_json::json!(v["replayMs"].as_f64().unwrap()+ms);v["mode"]=serde_json::json!("canonical_two_side_quote_endpoints_exploratory_v1");}v}else{quote_markouts::run(&capture,&d,&ticks,workers)?}}else{quote_replay::run(&capture,&d,&sources,workers)?};
         let mut output=serde_json::json!({"capture":capture.meta,"declarationFileHash":format!("{:x}",Sha256::digest(&bytes))});output[if study{"markouts"}else{"evaluation"}]=result.clone();
         let mut file=std::fs::OpenOptions::new().write(true).create_new(true).open(get("--out")?).map_err(|_|"OUTPUT_EXISTS_OR_UNAVAILABLE")?;
         std::io::Write::write_all(&mut file,&serde_json::to_vec(&output).map_err(|_|"OUTPUT_INVALID")?).map_err(|_|"OUTPUT_WRITE_FAILED")?;file.sync_all().map_err(|_|"OUTPUT_SYNC_FAILED")?;

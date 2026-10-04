@@ -244,3 +244,26 @@ the archived engine on the identical subsequent prefix. 158 Node and seven Rust
 checks passed. The reused-data study establishes no profitable strategy.
 See `data/native-markouts-milestone-20261004.json` for aggregate evidence and
 `data/run-native-quote-markouts-20261004.mjs` for the original pinned experiment.
+
+`quote-side-markouts` projects the same original stream into canonical YES and
+NO contract prices, dividing the requested Rayon workers between sides. NO bid
+is one minus YES ask; NO ask is one minus YES bid. Public depth validation swaps
+the original ladders with complement prices and unchanged quantities, scope,
+request, receipt and sequence. This is distinct from REST fill-price conventions.
+Quotes remain indicative; transformed depth checks do not simulate fills.
+
+`quote-side-endpoints` adds a separate fixed-horizon price sensitivity. It retains
+each original confirmed entry and selects the first valid independent request
+at the original target within 120 seconds. An intermediate quote gap stays
+visible as an incomplete path. It never invents an entry, stop execution or
+price inside a gap. All original strict and book-boundary results remain exact.
+
+On the same 2.20166-day combined source span / 1.91785-day quote span, 758,685 rows
+and 237 markets, the two-sided run processed 216 cases and 432 strict/boundary
+paths in 13.34 seconds. Including the endpoint labels took 14.18 seconds:
+3.44 seconds verification, 9.06 replay and 1.68 rereading/output/process overhead.
+The endpoint pass itself took 0.235 seconds. Nine Rust and 163 Node checks passed.
+All 72 original live wallet cards/fills matched the archived engine on identical
+bytes. Fees remain zero; three live services are unchanged. These exploratory
+quote observations establish no executable profitable strategy. See
+`data/native-sides-milestone-20261004.json` for summaries and exact artifact hashes.

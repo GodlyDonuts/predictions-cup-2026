@@ -252,3 +252,27 @@ budget remain intact. Full immutable quote-path artifacts and their archived
 engine/binary are retained privately. Aggregate measurements are in
 `data/native-markouts-milestone-20261004.json` and original-wallet preservation
 in `data/native-markouts-preservation-20261004.json`.
+
+The next Rust extension covers canonical YES and NO contracts from the same
+verified source, preserving every original clock and all 432 strict/boundary
+paths. It also reports separate fixed-horizon endpoint labels when an original
+confirmed entry has an observed target price after an intermediate coverage gap.
+These labels never infer stops or execution within gaps and retain all missing
+denominators. The same source span, 758,685 quote rows and 237 markets take
+14.18 seconds with eight requested workers, including validation and output.
+
+The one-hour-history/two-cent-margin YES baseline has 11 observed two-hour
+endpoints averaging +0.005909 per share after modelled spread/slippage; eight
+have incomplete intermediate paths. Its 30-minute endpoints average zero.
+The six-hour-history NO baseline has 62 observed 30-minute endpoints averaging
+-0.015161 per share. Cases share data and are correlated; neither quotation
+labels nor tiny positive subsets establish executable profit. NO breadth alone
+did not fix the dip mechanism. Fees are zero throughout.
+
+All 163 Node and nine Rust checks pass. The archived live engine's 72 wallet
+histories remain exact, with no reset or redeployment. The collector retained
+one HTTP 503 at 18:29:05.897 UTC and subsequently recovered without a restart;
+it was running through 18:48:48.232. The three services and official ownership
+are unchanged. Evidence: `data/native-sides-milestone-20261004.json` and
+`data/native-sides-preservation-20261004.json`. The next economic comparison
+should test a distinct mechanism rather than multiplying weak dip wallets.
