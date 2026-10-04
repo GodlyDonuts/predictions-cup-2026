@@ -206,3 +206,41 @@ are retained. Before continuation, all original scorecard fields must match the
 active archived engine on the identical original prefix, and full/cached observed
 cards must agree. These fields request confirmation/risk reads only and grant no
 competition execution authority.
+
+`quote-markouts` adds a parallel, chronological price-outcome backend. It accepts
+the same `--declaration`, `--sources`, `--workers` and fresh `--out` arguments as
+`quote-replay`. Sources are pinned original quote, public book and sanitized
+eligibility byte prefixes, with complete chains and development checkpoints.
+Quotes are reread against the SHA established by the authoritative source reader.
+The executable has no HTTP client. Build with `./backend-rust/build.ps1 -Test`.
+
+Features are shared across cases and scenarios and markets run through Rayon.
+Every episode records the signal publication, first independent entry request
+within the original ask limit, first independent fixed-horizon outcome request,
+missing evidence and right censoring. Per-market case episodes do not overlap.
+Entry/outcome windows and maximum observation gaps are 120 seconds. Midpoint
+movement minus two-sided spread and slippage reconciles exactly to the quoted
+markout; twice-micros preserve half-micro midpoint arithmetic. Fees are zero.
+These are indicative prices, without depth, queue or historical account
+eligibility; they are separate from executable paper-wallet fills. Fixed-horizon
+diagnostics do not emulate the wallets' take-profit or stop-loss exits.
+
+The V2 diagnostic keeps the independently verified quote stream continuous across
+book-feed restarts. Separate sensitivity cards censor on book-feed boundaries,
+with boundaries before same-clock quotes. Missing quote observations and quote
+coverage gaps invalidate pending outcomes in both tracks. Corrected recovery
+features compare with the preceding distinct minute instead of the original
+current-minute self-comparison. This opt-in correction does not replace the
+archived active V1 engine or relabel its wallets.
+
+Measured a 2.20166-day combined source span / 146.37 MB / 758,685 quote rows /
+237 markets, 108 cases and 216 diagnostic paths in 9.22 seconds with eight
+workers. The quote stream itself spans 1.91785 days, with coverage gaps and
+different availability per market. Source validation
+took 3.46 seconds and features/markouts 4.09 seconds; the balance includes pinned
+quote rereading, output and process overhead. This is a different workload from
+older model replay measurements. All 72 active quote-wallet cards/fills matched
+the archived engine on the identical subsequent prefix. 158 Node and seven Rust
+checks passed. The reused-data study establishes no profitable strategy.
+See `data/native-markouts-milestone-20261004.json` for aggregate evidence and
+`data/run-native-quote-markouts-20261004.mjs` for the original pinned experiment.

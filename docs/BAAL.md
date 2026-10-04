@@ -217,3 +217,38 @@ See `data/native-quote-preparation-20261004.json`,
 `data/native-quote-milestone-20261004.json`. Continue subsequent confirmations and
 measured execution/cost diagnostics; signals, test fixtures and correlated
 wallet counts are not profit evidence.
+
+The Rust backend now measures 30-minute and two-hour price paths across the
+saved broad quote history without waiting for future wall-clock time. The
+October 4 V2 run processed a 2.20-day combined source span, 758,685 quote rows
+and 237 markets in 9.22 seconds (the quote stream itself spans 1.92 days):
+108 cases plus 108 book-boundary sensitivity paths. Features are shared and
+markets run in parallel; no additional API reads, client or persistent service.
+Original source prefixes are verified and all 72 active quote-wallet cards and
+fills match their archived engine exactly. 158 Node and seven Rust checks pass.
+
+An opt-in recovery correction rejects a bid falling from the preceding distinct
+minute. The original filter's last sample was the current minute, making its
+nonfalling comparison ineffective. The active V1 experiment is preserved. The
+correction rejected 6,360 feature evaluations across lookback policies, which
+are not 6,360 independent opportunities. Historical outcomes remain exploratory.
+Quote-stream coverage and book-feed boundaries are measured separately; a book
+restart does not erase independent quote history, and quotes never supply depth.
+
+The common one-hour-history/two-cent-margin/30-minute case had 22 episodes, ten
+observed outcomes and a mean quoted net markout of -0.0005 per share after spread
+and slippage. Seven entries were unconfirmed, four paths had observation gaps
+and one was right censored. The comparable six-hour-history case had 27 observed
+outcomes and mean -0.0100. Positive four-cent-margin cases had only one or two
+observed outcomes. These are selected observed price paths, not executable
+profit, independent successes or a validated winning strategy. The corrected
+rebound comparison did not establish an improvement.
+
+The subsequent paper check through 17:47:20.256 UTC also remained negative:
+participating copied wallets closed trades at -0.025 or -0.035; others retained
+one-share inventory. Those are local counterfactual results, not contest orders.
+Daenerys remains official writer; the three services and shared 20-read/four-book
+budget remain intact. Full immutable quote-path artifacts and their archived
+engine/binary are retained privately. Aggregate measurements are in
+`data/native-markouts-milestone-20261004.json` and original-wallet preservation
+in `data/native-markouts-preservation-20261004.json`.
