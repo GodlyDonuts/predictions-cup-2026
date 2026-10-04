@@ -1,0 +1,13 @@
+{
+  "retiredCollector": 21456,
+  "readAllocation": 20,
+  "collector": 4828,
+  "at": "2026-10-04T11:37:41.2189205Z",
+  "extraProcesses": 0,
+  "pair": "baal-no-pair-20261004-v3",
+  "dashboard": 6456,
+  "paper": 5624,
+  "persistentProcesses": 3,
+  "competitionWrites": false,
+  "maker": "no-maker-tape-20261004-v5"
+}

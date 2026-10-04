@@ -1,0 +1,182 @@
+{
+  "schemaVersion": 1,
+  "id": "nh-conditional-refund-20261004-v2",
+  "kind": "conditional_no_pair_review",
+  "tournamentId": "bda92870-621e-47b0-bc3c-3602c5c26f55",
+  "recordedAt": "2026-10-04T09:36:31.734Z",
+  "expiresAt": "2026-10-04T15:36:07.104Z",
+  "legs": [
+    {
+      "marketId": "381",
+      "exchangeId": "1070",
+      "outcome": "NO",
+      "rulesHash": "7c34678add3b02e6e7b928532458d6fbd85c2788f2df39322342bf14771261da",
+      "binding": {
+        "marketId": "381",
+        "exchangeId": "1070",
+        "outcome": "NO",
+        "event": "2026 New Hampshire U.S. Senate general election",
+        "resolution": "final certified winner party affiliation",
+        "winnerAffiliation": "Democratic Party",
+        "fusion": "all parties listed for the winner count",
+        "administrative": "sponsor may change rules or outcome; delays/void/refund not excluded",
+        "manualInfoAt": "2026-10-04T09:36:07.104Z",
+        "provenance": "https://github.com/GodlyDonuts/predictions-cup-2026/issues/1#issuecomment-5978588243",
+        "cachedMetadataObservedAt": "2026-10-01T19:10:08.609Z",
+        "cachedMetadataHash": "e686b33d2c54bcbabb59478a24a20afbda6e88e5808a9f4a51856cb6493cfa52",
+        "exchangeMappingHash": "b5b302fcbf8fad78f82efa00a7641c1076d837920abf5fb5484e9b84cadb16f8",
+        "mappingIndependentlyExposedByUi": false
+      }
+    },
+    {
+      "marketId": "382",
+      "exchangeId": "1071",
+      "outcome": "NO",
+      "rulesHash": "177abb2818a80eb01f22cf671ca572cd08e653c580a519107e1f6da6203d312f",
+      "binding": {
+        "marketId": "382",
+        "exchangeId": "1071",
+        "outcome": "NO",
+        "event": "2026 New Hampshire U.S. Senate general election",
+        "resolution": "final certified winner party affiliation",
+        "winnerAffiliation": "Republican Party",
+        "fusion": "all parties listed for the winner count",
+        "administrative": "sponsor may change rules or outcome; delays/void/refund not excluded",
+        "manualInfoAt": "2026-10-04T09:36:31.734Z",
+        "provenance": "https://github.com/GodlyDonuts/predictions-cup-2026/issues/1#issuecomment-5978588243",
+        "cachedMetadataObservedAt": "2026-10-01T19:10:04.462Z",
+        "cachedMetadataHash": "b9acbe826cda7abd587778e215de511492ba2dfa31aeeb560f42b5d11e2cb914",
+        "exchangeMappingHash": "b45790ed8650e10f264ebe570d8f76613c2dfe4c68e3af0db99b7b1ccf55cb7a",
+        "mappingIndependentlyExposedByUi": false
+      }
+    }
+  ],
+  "assumptions": [
+    "Current Senate ballot maps Chris Pappas Democratic, John E. Sununu Republican, Edmond Laplante Constitution, plus write-in; ordinary single winner affiliations are exclusive.",
+    "Same ballot demonstrates dual-party nomination for other offices, so fusion is a real contrary possibility and zero-payout stress is required.",
+    "Exact rules are peer-supplied manual transcript evidence. Rules hashes bind that attestation, not live API authenticity or scenario completeness.",
+    "Uncovered SELL YES is documented BUY NO at complement; YES bid rungs provide the canonical same-exchange NO acquisition depth, not independent native-NO observations.",
+    "Fees are set to zero under the direct human instruction. Each acquired leg still includes one adverse 0.005 tick; displayed depth is discounted to one percent.",
+    "Normal settlement surplus is not a forecast of a profitable resale or guaranteed completion of two legs.",
+    "Fresh market Info evidence remains a peer manual attestation; cached exchange mappings are checked against the frozen universe and metadata, not independently exposed by the UI.",
+    "The current official Senate sample ballot is peer visually reviewed, with D Pappas, R Sununu, Constitution Laplante and write-in. This task did not independently inspect PDF pixels.",
+    "Review expires at the earlier six-hour bound from the first market observation, or any material rule, candidate, affiliation, ballot, cancellation or resolution change.",
+    "Refunds return modeled held purchase principal, not face payout; exact platform allocation and fee refund treatment are unverified."
+  ],
+  "scenarios": [
+    {
+      "id": "Democratic_winner",
+      "category": "ordinary",
+      "payouts": [
+        0,
+        1
+      ]
+    },
+    {
+      "id": "Republican_winner",
+      "category": "ordinary",
+      "payouts": [
+        1,
+        0
+      ]
+    },
+    {
+      "id": "other_winner",
+      "category": "ordinary",
+      "payouts": [
+        1,
+        1
+      ]
+    },
+    {
+      "id": "dual_party_or_admin_zero_stress",
+      "category": "exception",
+      "payouts": [
+        0,
+        0
+      ]
+    }
+  ],
+  "refundPolicy": {
+    "schemaVersion": 1,
+    "representation": "held_purchase_principal_not_face_value",
+    "feeRefundAssumed": false,
+    "sourceHash": "3d1c294584162c2931580527ea72c4b15dbe164bf2ca9fb00a076100ad55c1ff",
+    "sourceUrl": "https://sig.thesuper.market/docs/settlement-and-payouts"
+  },
+  "refundScenarios": [
+    {
+      "id": "both_cost_refunded",
+      "outcomes": [
+        "refund",
+        "refund"
+      ]
+    },
+    {
+      "id": "D_leg_refunded_R_leg_loses",
+      "outcomes": [
+        "refund",
+        0
+      ]
+    },
+    {
+      "id": "R_leg_refunded_D_leg_loses",
+      "outcomes": [
+        0,
+        "refund"
+      ]
+    },
+    {
+      "id": "D_leg_refunded_R_leg_wins",
+      "outcomes": [
+        "refund",
+        1
+      ]
+    },
+    {
+      "id": "R_leg_refunded_D_leg_wins",
+      "outcomes": [
+        1,
+        "refund"
+      ]
+    }
+  ],
+  "evidence": [
+    {
+      "commentId": 5978588243,
+      "url": "https://github.com/GodlyDonuts/predictions-cup-2026/issues/1#issuecomment-5978588243",
+      "contentHash": "0e339066ad2eefcb8b0749f1296219690bfb5c9aee6cc5de8b8b1e9f887d9dd8",
+      "provenance": "Daenerys manual signed-in browser and ballot attestation; no token or execution authority."
+    }
+  ],
+  "captures": [
+    {
+      "file": "settlement.html",
+      "url": "https://sig.thesuper.market/docs/settlement-and-payouts",
+      "bytes": 45211,
+      "contentHash": "3d1c294584162c2931580527ea72c4b15dbe164bf2ca9fb00a076100ad55c1ff",
+      "observedAt": "2026-10-04T11:24:49.902Z",
+      "sourceKind": "independent_public_primary_html"
+    },
+    {
+      "file": "rules.html",
+      "url": "https://predictionscup.com/rules/",
+      "bytes": 126270,
+      "contentHash": "362a8870866db787959709c78728021bb1e38bfe0c4654a705e7031d5a423f4d",
+      "observedAt": "2026-10-04T11:24:50.193Z",
+      "sourceKind": "independent_public_primary_html"
+    },
+    {
+      "file": "replacement-statute.html",
+      "url": "https://gc.nh.gov/rsa/html/LXIII/655/655-mrg.htm",
+      "bytes": 80709,
+      "contentHash": "36d95fbd289f09f49d7a21a91cd190ac449874be7e5b8228ef357310446f26a3",
+      "observedAt": "2026-10-04T11:24:50.458Z",
+      "sourceKind": "independent_public_primary_html"
+    }
+  ],
+  "previousReviewHash": "bb964c93d5d190deae98d965bb8aab5bf66216cda73afb00b382c10cb99374be",
+  "executionAuthority": false,
+  "scenarioCompletenessVerified": false,
+  "evidenceHash": "58e176a3d39f5ae8f1d012ac28bd2fcf644d47893bfd37c1b69ef85dde7a4f54"
+}

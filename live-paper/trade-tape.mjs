@@ -5,6 +5,7 @@ import {digest} from './model.mjs';
 import {instantNs} from '../feed/contract.mjs';
 import {journalLines} from './journal-lines.mjs';
 import {atomicJson} from '../execution/ledger.mjs';
+import {validateQuoteRecoveryRequest} from './quote-projection-recovery.mjs';
 
 const check=(ok,code='TRADE_TAPE_INVALID')=>{if(!ok)throw Error(code);};
 const id=x=>typeof x==='string'&&/^[1-9]\d*$/.test(x)&&Number.isSafeInteger(Number(x));
@@ -67,17 +68,25 @@ export function createTradeTape({runtimeDir,universe,now=Date.now,canOperate=()=
  function stats(){return {status:'running',schemaVersion:1,pages:state.pages,tradesCaptured:state.tradesCaptured,duplicates:state.duplicates,lastAt:state.lastAt,
   journalSequence:journal.sequence,journalHash:journal.previous,markets:Object.values(state.markets).map(m=>({marketId:m.marketId,exchangeId:m.exchangeId,pages:m.pages,tradesCaptured:m.tradesCaptured,
    lastReceiptAt:m.lastReceiptAt,lastAttemptAt:attempts.markets[m.exchangeId]||null,latestTradeAt:m.latestTradeAt,windowFrom:m.window?.from||null,windowTo:m.window?.to||null,paginationPending:!!m.window?.cursor,
-   projectedThroughSequence:m.projectedThroughSequence,reportedCoverageComplete:m.reportedCoverageComplete})),executionAuthority:false,networkClientsAdded:0,completeTapeProven:false,counterfactualFillsProven:false};}
+   projectedThroughSequence:m.projectedThroughSequence,reportedCoverageComplete:m.reportedCoverageComplete,recoveryPending:!!m.recovery,recoveryCompleted:(m.recoveryCompleted||[]).length})),executionAuthority:false,networkClientsAdded:0,completeTapeProven:false,counterfactualFillsProven:false};}
  function authorizes(spec){return !!pending&&canOperate()&&spec.method==='GET'&&spec.endpoint===pending.endpoint&&spec.body===undefined&&spec.bodyJson===undefined;}
- async function collect(dispatch,marketIds,{priorityMarketIds=[]}={}){
+ async function collect(dispatch,marketIds,{priorityMarketIds=[],recoveryWindows=[]}={}){
   check(!pending,'TRADE_TAPE_CONCURRENT_REQUEST');if(!canOperate())return stats();
   const candidates=[...new Set(marketIds)].map(m=>scope.exchanges.find(x=>x.marketId===m)).filter(Boolean);check(candidates.length>0,'TRADE_TAPE_NO_SCOPE');
+  check(Array.isArray(recoveryWindows)&&recoveryWindows.length<=4,'TRADE_TAPE_RECOVERY_LIMIT');
+  for(const request of recoveryWindows){validateQuoteRecoveryRequest(request,scope,now());check(candidates.some(x=>x.exchangeId===request.exchangeId&&x.marketId===request.marketId),'TRADE_TAPE_RECOVERY_SCOPE');}
   const lastAttempt=x=>Date.parse(attempts.markets[x.exchangeId]||state.markets[x.exchangeId]?.lastReceiptAt||'1970-01-01T00:00:00.000Z');
   candidates.sort((a,b)=>lastAttempt(a)-lastAttempt(b)||Number(a.marketId)-Number(b.marketId));
   check(Array.isArray(priorityMarketIds)&&priorityMarketIds.every(id=>candidates.some(c=>c.marketId===id)),'TRADE_TAPE_PRIORITY_SCOPE');
   const priority=new Set(priorityMarketIds),ordinal=attempts.attemptsReserved||0,focused=candidates.filter(x=>priority.has(x.marketId)),discovery=candidates.filter(x=>!priority.has(x.marketId));
   const chosen=(focused.length?(ordinal%4===3&&discovery.length?discovery:focused):candidates)[0],prior=state.markets[chosen.exchangeId],to=new Date(Math.floor(now()/1000)*1000).toISOString();
-  const window=prior?.window||{from:new Date(prior?.completedTo?Math.max(0,Date.parse(prior.completedTo)-60000):Date.parse(to)-1800000).toISOString(),to,cursor:null,cursors:[]};
+  const recovery=prior?.recovery?.request||recoveryWindows.find(x=>x.exchangeId===chosen.exchangeId&&!(prior?.recoveryCompleted||[]).includes(x.key));
+  if(recovery)validateQuoteRecoveryRequest(recovery,scope,now());
+  // Alternate recovery and normal work for each market. Both retain independent
+  // fixed pagination windows and use the same existing single admission slot.
+  const useRecovery=!!recovery&&prior?.lastRequestWasRecovery!==true;
+  const window=useRecovery?(prior?.recovery?.window||{from:recovery.from,to:recovery.to,cursor:null,cursors:[],coverageCheckpoint:null}):
+   prior?.window||{from:new Date(prior?.completedTo?Math.max(0,Date.parse(prior.completedTo)-60000):Date.parse(to)-1800000).toISOString(),to,cursor:null,cursors:[]};
   const spec={...chosen,tournamentId:scope.tournamentId,from:window.from,to:window.to,cursor:window.cursor};pending={...spec,endpoint:tradeTapeEndpoint(spec)};
   try{
    const nextAttempts={...attempts,attemptsReserved:ordinal+1,markets:{...attempts.markets,[chosen.exchangeId]:new Date(now()).toISOString()}};
@@ -87,7 +96,8 @@ export function createTradeTape({runtimeDir,universe,now=Date.now,canOperate=()=
    const next=structuredClone(state),m=next.markets[chosen.exchangeId]||{...chosen,pages:0,tradesCaptured:0,seen:{},latestTradeAt:null};
    check(page.pagination.nextCursor===null||!window.cursors.includes(page.pagination.nextCursor),'TRADE_TAPE_CURSOR_CYCLE');
    // Retain all identities needed by an unfinished page window, and one-minute reporting overlap thereafter.
-   for(const [k,v] of Object.entries(m.seen))if(Date.parse(v.at)<Date.parse(window.from))delete m.seen[k];
+   const retainedFrom=Math.min(Date.parse(window.from),Date.parse(m.window?.from||window.from),Date.parse(m.recovery?.window?.from||window.from));
+   for(const [k,v] of Object.entries(m.seen))if(Date.parse(v.at)<retainedFrom)delete m.seen[k];
    const novel=[];for(const t of page.trades){const fingerprint=tradeFingerprint(t),known=m.seen[t.key];
     if(known){check(known.hash===fingerprint,'TRADE_TAPE_IDENTITY_CONFLICT');next.duplicates++;}
     else{m.seen[t.key]={at:t.createdAt,hash:fingerprint};novel.push(t);m.tradesCaptured++;next.tradesCaptured++;if(!m.latestTradeAt||instantNs(t.createdAt)>instantNs(m.latestTradeAt))m.latestTradeAt=t.createdAt;}
@@ -97,12 +107,22 @@ export function createTradeTape({runtimeDir,universe,now=Date.now,canOperate=()=
    // Retry an incomplete reported window from its original first page.
    // A later page or time window cannot establish its missing coverage.
    const allComplete=(window.coverageComplete??(window.cursor===null))&&page.coverage.complete===true;
-   m.window=page.pagination.hasMore?{...window,coverageComplete:allComplete,cursor:page.pagination.nextCursor,cursors:[...window.cursors,page.pagination.nextCursor]}:
-    allComplete?null:{from:window.from,to:window.to,cursor:null,cursors:[],coverageComplete:true};
-   if(!page.pagination.hasMore&&allComplete)m.completedTo=window.to;
+   if(useRecovery){
+    const checkpoint=page.coverage.projectedThroughSequence===null?null:String(page.coverage.projectedThroughSequence),previousCheckpoint=window.coverageCheckpoint;
+    const through=checkpoint===null||(window.cursor!==null&&previousCheckpoint===null)?null:previousCheckpoint===undefined||previousCheckpoint===null?checkpoint:String(BigInt(checkpoint)<BigInt(previousCheckpoint)?checkpoint:previousCheckpoint);
+    const complete=allComplete&&through!==null&&BigInt(through)>=BigInt(recovery.requiredCheckpoint);
+    if(page.pagination.hasMore)m.recovery={request:recovery,window:{...window,coverageComplete:allComplete,coverageCheckpoint:through,cursor:page.pagination.nextCursor,cursors:[...window.cursors,page.pagination.nextCursor]}};
+    else if(complete){m.recovery=null;m.recoveryCompleted=[...(m.recoveryCompleted||[]),recovery.key].slice(-256);}
+    else m.recovery={request:recovery,window:{from:window.from,to:window.to,cursor:null,cursors:[],coverageComplete:true,coverageCheckpoint:null}};
+   }else{
+    m.window=page.pagination.hasMore?{...window,coverageComplete:allComplete,cursor:page.pagination.nextCursor,cursors:[...window.cursors,page.pagination.nextCursor]}:
+     allComplete?null:{from:window.from,to:window.to,cursor:null,cursors:[],coverageComplete:true};
+    if(!page.pagination.hasMore&&allComplete)m.completedTo=window.to;
+   }
+   m.lastRequestWasRecovery=useRecovery;
    next.markets[chosen.exchangeId]=m;next.pages++;next.lastAt=page.receivedAt;
    // The immutable event holds only novel public trades; state holds resumable pagination/deduplication.
-   try{journal.commit(next,{type:'anonymous_trade_page',...page,trades:novel,receivedCount:page.trades.length,duplicateCount:page.trades.length-novel.length});}
+   try{journal.commit(next,{type:'anonymous_trade_page',...page,trades:novel,receivedCount:page.trades.length,duplicateCount:page.trades.length-novel.length,...(useRecovery?{queryPurpose:'expired_paper_quote_coverage_recovery',recoveryRequest:recovery}:{})});}
    catch{const e=Error('TRADE_TAPE_RECORDING_FAILED');e.durableRecordingFailed=true;throw e;}
    state=next;onPage(structuredClone({...journal.last,hash:journal.previous}));return stats();
   }finally{pending=null;}

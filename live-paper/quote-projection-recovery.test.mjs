@@ -1,0 +1,40 @@
+import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import path from 'node:path';import os from 'node:os';
+import {payloadHash} from '../execution/ledger.mjs';
+import {NO_MAKER_POLICY,createNoMakerState,advanceNoMaker,noMakerReport} from './no-maker-paper-v3.mjs';
+import {quoteProjectionRecoveryRequests,validateQuoteRecoveryRequest} from './quote-projection-recovery.mjs';
+import {createTradeTape} from './trade-tape.mjs';
+const zero=Date.parse('2026-10-04T11:00:00Z'),at=n=>new Date(zero+n).toISOString(),tid='bda92870-621e-47b0-bc3c-3602c5c26f55';
+const bank={mode:'no_maker_trade_tape_paper',name:'correctness-only',cutoff:at(0),policy:NO_MAKER_POLICY,tournamentId:tid,reviewExpiresAt:at(3600000),legs:[{marketId:'381',exchangeId:'1070'},{marketId:'382',exchangeId:'1071'}]},scope={tournamentId:tid,exchanges:bank.legs};
+const book=n=>({marketId:'381',exchangeId:'1070',instrument:'1070:YES',requestStartedAt:at(n-100),receivedAt:at(n),sourceAt:at(n-50),sequence:String(n),versionKey:n+':'+at(n-50),publicationHash:'a'.repeat(64),publicationSequence:n,bids:[{price:'0.800000',quantity:1000}],asks:[{price:'0.835000',quantity:1000}]});
+const bEvent=n=>({kind:'book',availableAt:at(n),book:book(n),accountEligibility:{schemaVersion:1,positionsAt:at(n-200),ordersAt:at(n-200),excludedExchangeIds:[]},entryAllowed:false});
+const page=(n,from,to,extra={})=>({kind:'trades',availableAt:at(n),page:{marketId:'381',exchangeId:'1070',tournamentId:tid,receivedAt:at(n),from:at(from),to:at(to),requestCursor:null,pagination:{hasMore:false,nextCursor:null},coverage:{complete:true,projectedThroughSequence:130000},trades:[],...extra}});
+function expired(){let s=advanceNoMaker(createNoMakerState(bank),{...bEvent(1000),entryAllowed:true},bank);return advanceNoMaker(s,bEvent(122100),bank);}
+test('post-expiry checkpoint remains pinned while later books advance; historical complete coverage releases reservations',()=>{
+ let s=expired(),first=s.wallets.at_quote.quotes[1].coverageBarrierSequence;for(const n of [130000,140000,150000])s=advanceNoMaker(s,bEvent(n),bank);assert.equal(s.wallets.at_quote.quotes[1].coverageBarrierSequence,first);
+ const requests=quoteProjectionRecoveryRequests(s,bank,at(150000));assert.equal(requests.length,1,'correlated families share one interval');assert.equal(requests[0].requiredCheckpoint,first);assert.equal(requests[0].from,at(4000));assert.equal(requests[0].to,at(121000));
+ s=advanceNoMaker(s,page(151000,4000,121000),bank);for(const w of Object.values(s.wallets)){assert.equal(w.fills.length,0);assert.equal(w.quotes[Object.keys(w.quotes)[0]].resolution,'projection_observed_without_qualifying_trade');}assert.equal(noMakerReport(s,bank,at(151000)).wallets.at_quote.reserved,'0.000000');assert.equal(quoteProjectionRecoveryRequests(s,bank,at(151000)).length,0);
+});
+test('a late strict-through print resolves the original quote before absence and is never counted twice',()=>{
+ let s=expired(),e=page(150000,4000,121000,{trades:[{key:'late-report',id:'late-report',createdAt:at(9000),yesPrice:'0.84',size:1,executedSpace:'YES'}]});s=advanceNoMaker(s,e,bank);s=advanceNoMaker(s,{...e,availableAt:at(151000)},bank);assert.equal(s.wallets.at_quote.fills.length,1);assert.equal(s.wallets.at_quote.positions['1070'].enteredAt,at(150000));assert.equal(s.wallets.at_quote.realized,'0.000000');assert.equal(s.wallets.at_quote.cash,'99.835000');
+});
+test('interleaved normal and recovery pagination retain independent coverage chains and cannot upgrade a gap',()=>{
+ let s=expired();s=advanceNoMaker(s,page(130000,4000,121000,{pagination:{hasMore:true,nextCursor:'recovery-two'}}),bank);s=advanceNoMaker(s,page(131000,122000,130000,{pagination:{hasMore:true,nextCursor:'normal-two'}}),bank);
+ s=advanceNoMaker(s,page(132000,4000,121000,{requestCursor:'recovery-two'}),bank);assert.equal(noMakerReport(s,bank,at(132000)).wallets.at_quote.reserved,'0.000000');assert.equal(Object.keys(s.coverage['1070'].pendingByWindow).length,1);
+ let gap=expired();gap=advanceNoMaker(gap,page(130000,4000,50000),bank);gap=advanceNoMaker(gap,page(131000,60000,121000),bank);assert.notEqual(noMakerReport(gap,bank,at(131000)).wallets.at_quote.reserved,'0.000000');
+});
+test('a quote closed before activation has no possible fill interval and releases only its reservation',()=>{
+ let s=advanceNoMaker(createNoMakerState(bank),{...bEvent(1000),entryAllowed:true},bank);s=advanceNoMaker(s,{kind:'boundary',availableAt:at(2000)},bank);assert.equal(noMakerReport(s,bank,at(2000)).wallets.at_quote.reserved,'0.000000');assert.equal(s.wallets.at_quote.fills.length,0);assert.equal(s.wallets.at_quote.cash,'100.000000');
+});
+function recovery(){const body={schemaVersion:1,kind:'expired_paper_quote_coverage',marketId:'381',exchangeId:'1070',from:at(-10000),to:at(-8000),requiredCheckpoint:'200'};return{...body,key:payloadHash(body)};}
+function response(endpoint,{more=false,next=null,checkpoint=250,complete=true}={}){const u=new URL('https://example.test'+endpoint);return{endpoint,status:200,requestStartedAt:at(0),receivedAt:at(100),data:{marketId:'381',exchangeId:'1070',from:u.searchParams.get('from'),to:u.searchParams.get('to'),data:[],pagination:{limit:200,hasMore:more,nextCursor:next},coverage:{complete,projectedThroughSequence:checkpoint}}};}
+function fixture(t){const dir=fs.mkdtempSync(path.join(os.tmpdir(),'sig-quote-recovery-'));t.after(()=>{assert.equal(path.dirname(dir),os.tmpdir());assert.ok(path.basename(dir).startsWith('sig-quote-recovery-'));fs.rmSync(dir,{recursive:true,force:true});});return{dir,host:()=>createTradeTape({runtimeDir:dir,universe:scope,now:()=>zero,canOperate:()=>true})};}
+test('bounded recovery shares one slot and survives restart/interleaved normal pagination without dropping either cursor',async t=>{
+ const f=fixture(t),r=recovery(),calls=[];let h=f.host();const collect=async options=>h.collect(async s=>{assert.equal(h.authorizes(s),true);assert.equal(h.authorizes({...s,method:'POST'}),false);calls.push(s.endpoint);return response(s.endpoint,options);},['381'],{priorityMarketIds:['381'],recoveryWindows:[r]});
+ await collect({more:true,next:'recovery-two'});h=f.host();await collect({more:true,next:'normal-two'});h=f.host();await collect({});h=f.host();await collect({});const queries=calls.map(s=>new URL('https://example.test'+s).searchParams);assert.equal(queries[0].get('from'),r.from);assert.equal(queries[2].get('from'),r.from);assert.equal(queries[2].get('cursor'),'recovery-two');assert.equal(queries[3].get('cursor'),'normal-two');assert.equal(h.status().pages,4);assert.equal(h.status().markets[0].recoveryCompleted,1);assert.equal(h.status().markets[0].recoveryPending,false);
+});
+test('missing/lagging checkpoints on any page require complete retry from the historical first page',async t=>{
+ for(const checkpoint of [null,100]){const f=fixture(t),r=recovery();let h=f.host(),count=0;const calls=[];const collect=async o=>h.collect(async s=>{calls.push(s.endpoint);count++;return response(s.endpoint,o);},['381'],{recoveryWindows:[r]});await collect({more:true,next:'two',checkpoint});h=f.host();await collect({});h=f.host();await collect({checkpoint:300});assert.equal(h.status().markets[0].recoveryCompleted,0);h=f.host();await collect({});h=f.host();await collect({});assert.equal(new URL('https://example.test'+calls[4]).searchParams.get('cursor'),null);assert.equal(new URL('https://example.test'+calls[4]).searchParams.get('from'),r.from);assert.equal(h.status().markets[0].recoveryCompleted,1);}
+});
+test('foreign or oversized recovery requests never reach the existing dispatch client',async t=>{
+ const f=fixture(t),r=recovery();for(const change of [{marketId:'1'},{to:at(1)},{from:at(-200000)},{requiredCheckpoint:'9007199254740992'},{private:'forbidden'}]){const {key,...body}={...r,...change},bad={...body,key:payloadHash(body)};await assert.rejects(f.host().collect(async()=>{throw Error('must not dispatch');},['381'],{recoveryWindows:[bad]}),/QUOTE_RECOVERY/);}assert.equal(validateQuoteRecoveryRequest(r,scope,zero),r);
+});

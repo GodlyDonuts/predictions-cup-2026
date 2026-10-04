@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "captures": [
+    {
+      "file": "settlement.html",
+      "url": "https://sig.thesuper.market/docs/settlement-and-payouts",
+      "bytes": 45211,
+      "contentHash": "3d1c294584162c2931580527ea72c4b15dbe164bf2ca9fb00a076100ad55c1ff",
+      "observedAt": "2026-10-04T11:24:49.902Z",
+      "sourceKind": "independent_public_primary_html"
+    },
+    {
+      "file": "rules.html",
+      "url": "https://predictionscup.com/rules/",
+      "bytes": 126270,
+      "contentHash": "362a8870866db787959709c78728021bb1e38bfe0c4654a705e7031d5a423f4d",
+      "observedAt": "2026-10-04T11:24:50.193Z",
+      "sourceKind": "independent_public_primary_html"
+    },
+    {
+      "file": "replacement-statute.html",
+      "url": "https://gc.nh.gov/rsa/html/LXIII/655/655-mrg.htm",
+      "bytes": 80709,
+      "contentHash": "36d95fbd289f09f49d7a21a91cd190ac449874be7e5b8228ef357310446f26a3",
+      "observedAt": "2026-10-04T11:24:50.458Z",
+      "sourceKind": "independent_public_primary_html"
+    }
+  ],
+  "ballotEvidence": "Daenerys manual visual review5978588243; this task did not independently inspect PDF pixels."
+}
