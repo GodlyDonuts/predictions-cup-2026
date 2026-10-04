@@ -1,0 +1,11 @@
+{
+  "addedProcesses": 0,
+  "dashboard": 6744,
+  "collector": 17956,
+  "at": "2026-10-04T00:15:25.0340066Z",
+  "competitionWrites": false,
+  "retiredCollector": 23832,
+  "readAllocation": 20,
+  "paper": 3472,
+  "metrics": 11792
+}

@@ -1,6 +1,7 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import os from 'node:os';import path from 'node:path';
 import {normalizeTradeTape,tradeTapeEndpoint,createTradeTape,selectAuxiliaryReads} from './trade-tape.mjs';
 import {ReadClient} from './transport-runtime.mjs';
+import {Journal} from './transport-runtime.mjs';import {digest} from './model.mjs';
 const tid='bda92870-621e-47b0-bc3c-3602c5c26f55',time=Date.parse('2026-10-03T23:00:00.000Z');
 const universe={tournamentId:tid,exchanges:[{marketId:'363',exchangeId:'1052',option:'YES'},{marketId:'297',exchangeId:'986',option:'YES'}]};
 const at=n=>new Date(time+n).toISOString();
@@ -43,4 +44,25 @@ test('trade pages use the existing read-only admission queue and preserve comple
  await h.collect(s=>client.dispatch(s),['363']);await h.collect(s=>client.dispatch(s),['363']);assert.ok(starts[1]-starts[0]>=3100);assert.equal(client.requests,2);
  assert.throws(()=>client.dispatch({method:'POST',endpoint:'/orders',body:{}}),/forbids/);assert.throws(()=>client.dispatch({method:'GET',endpoint:'/exchanges/1052/trades'}),/not authorized/);
  fail=true;await assert.rejects(h.collect(s=>client.dispatch(s),['363']),/HTTP 503/);assert.ok(client.cooldown>=now+20000);assert.equal(h.status().pages,2);
+});
+test('failed attempts rotate across all markets and survive restart without altering successful receipts',async t=>{
+ const f=fixture(t);let h=f.host(),attempts=[];
+ for(let n=0;n<4;n++){f.setTime(n*4000);await assert.rejects(h.collect(async s=>{attempts.push(new URL('https://example.test'+s.endpoint).pathname);throw Error('HTTP 503');},['297','363']),/503/);h=f.host();}
+ assert.deepEqual(attempts,['/exchanges/986/trades','/exchanges/1052/trades','/exchanges/986/trades','/exchanges/1052/trades']);assert.equal(h.status().pages,0);assert.equal(h.status().markets.length,0);
+});
+test('equivalent source UTC formatting deduplicates while preserving raw source clock and nanoseconds',async t=>{
+ const f=fixture(t),h=f.host(),times=['2026-10-03T22:59:59Z','2026-10-03T22:59:59.000Z','2026-10-03T22:59:59.000000000Z'];
+ for(const createdAt of times)await h.collect(async s=>response(s.endpoint,[{...trade(),createdAt}]),['363']);
+ assert.equal(h.status().tradesCaptured,1);assert.equal(h.status().duplicates,2);assert.equal(JSON.parse(fs.readFileSync(path.join(f.runtimeDir,'anonymous-trades.jsonl'),'utf8').split('\n')[0]).event.trades[0].createdAt,times[0]);
+ await h.collect(async s=>response(s.endpoint,[{...trade(),createdAt:'2026-10-03T22:59:59.000000001Z'}]),['363']);assert.equal(h.status().tradesCaptured,2,'nanosecond differences remain distinct');
+ await assert.rejects(h.collect(async s=>response(s.endpoint,[{...trade(),createdAt:times[2],size:3}]),['363']),/IDENTITY_CONFLICT/);
+});
+test('legacy journal dedup migration preserves original prefix and does not redeliver retained prints',async t=>{
+ const f=fixture(t),spec={...universe.exchanges[0],tournamentId:tid,from:at(-1800000),to:at(0),cursor:null},page=normalizeTradeTape(response(tradeTapeEndpoint(spec)),spec),tr=page.trades[0];
+ tr.key=digest([spec.exchangeId,tr.id,tr.createdAt,tr.executedSpace]);
+ const scope={tournamentId:tid,exchanges:universe.exchanges.map(({marketId,exchangeId})=>({marketId,exchangeId}))},state={schemaVersion:1,scopeHash:digest(scope),pages:1,tradesCaptured:1,duplicates:0,lastAt:page.receivedAt,
+ markets:{1052:{marketId:'363',exchangeId:'1052',pages:1,tradesCaptured:1,seen:{[tr.key]:{at:tr.createdAt,hash:digest(tr)}},latestTradeAt:tr.createdAt,lastReceiptAt:page.receivedAt,completedTo:spec.to,window:null}}};
+ const file=path.join(f.runtimeDir,'anonymous-trades.jsonl');new Journal(file).commit(state,{type:'anonymous_trade_page',...page,trades:[tr]});const prefix=fs.readFileSync(file);
+ const h=f.host();await h.collect(async s=>response(s.endpoint,[{...trade(),createdAt:'2026-10-03T22:59:59Z'}]),['363']);assert.equal(h.status().tradesCaptured,1);assert.equal(h.status().duplicates,1);
+ assert.deepEqual(fs.readFileSync(file).subarray(0,prefix.length),prefix);assert.equal(f.host().status().tradesCaptured,1);
 });

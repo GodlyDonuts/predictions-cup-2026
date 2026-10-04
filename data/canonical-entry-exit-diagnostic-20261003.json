@@ -1,0 +1,2515 @@
+{
+  "at": "2026-10-03T23:40:34.956Z",
+  "cohort": "nh-canonical-capacity-20261003-v1",
+  "bankHash": "2b85533f12e29476a485d8b729bb9feca692f080e60daf58297a04e0aa542b4e",
+  "sources": {
+    "publicBooks": {
+      "bytes": 26941646,
+      "sha256": "75117272305e7589b54810ea4feeb66a2f792ec31d74a7289ee2ce7101ceca21",
+      "sequence": 13248,
+      "tailHash": "01860719ff4f8d9c981286c35b717d82e16dbf238ffd66a11bc7c4b0377ff163"
+    },
+    "capacity": {
+      "bytes": 76695,
+      "sha256": "d6fe607894d7a375353bfb7cac05dceede5478a2ea2da75a1178e8ef6b0e03ee",
+      "rows": 25
+    },
+    "tradeTape": {
+      "bytes": 303133,
+      "sha256": "547b65c87b92bfa2803c92d051c30848b2ce8ac273f54568377370353fcd4138",
+      "pages": 26,
+      "trades": 229
+    }
+  },
+  "schemaVersion": 1,
+  "mode": "conditional_capacity_entry_exit_development_diagnostic",
+  "policy": {
+    "schemaVersion": 1,
+    "maximumFrameAgeMs": 20000,
+    "maximumWindowMs": 10000,
+    "depthFractionBps": 100,
+    "exitAdverseTicks": 1,
+    "latencyMs": 3000,
+    "restLifetimeMs": 120000,
+    "strictThroughTicks": 1,
+    "makerQuantity": 1,
+    "diagnosticLookaheadMs": 3600000,
+    "feePerShare": "0.000000"
+  },
+  "policyHash": "52e61ddfa75350161de3af10bdcae08ba58655e8ebca8c89c6426fdc064a2160",
+  "frames": 25,
+  "usableFrames": 24,
+  "positiveAnchors": 24,
+  "anchorsWithLaterCompleteDepth": 23,
+  "anchorsWithAnyPositiveLaterDepthMark": 0,
+  "makerBothLegsThrough": 0,
+  "makerOneLegThrough": 1,
+  "cases": [
+    {
+      "anchorAt": "2026-10-03T22:42:18.255Z",
+      "sourceSequence": 12863,
+      "sourceHash": "0bd794569d4ce5be830b6211c58f7b249310ce8a0dbc8b585a563080239d2591",
+      "versions": [
+        "27945681:2026-10-03T22:42:13.430051800Z",
+        "27946852:2026-10-03T22:42:17.843625200Z"
+      ],
+      "quantity": "6",
+      "acquisitionCost": "5.885000",
+      "ordinaryConditionalSettlementSurplus": "0.115000",
+      "zeroPayoutStress": "-5.885000",
+      "subsequentCompleteExitObservations": 23,
+      "partialExitObservations": 0,
+      "bestLaterDepthMark": {
+        "at": "2026-10-03T22:44:44.863Z",
+        "ageMs": 146608,
+        "complete": true,
+        "legs": [
+          {
+            "quantity": "6",
+            "proceeds": "1.140000",
+            "complete": true
+          },
+          {
+            "quantity": "6",
+            "proceeds": "4.590000",
+            "complete": true
+          }
+        ],
+        "netProceeds": "5.730000",
+        "hypotheticalPnl": "-0.155000",
+        "versions": [
+          "27977074:2026-10-03T22:44:42.008015000Z",
+          "27977849:2026-10-03T22:44:45.252852900Z"
+        ],
+        "sourceSequence": 12879,
+        "sourceHash": "d0e78ca9280f37aeae0fa41fcb337ffd574790258708d249677462f1ba6b9a44"
+      },
+      "lastLaterDepthMark": {
+        "at": "2026-10-03T23:39:07.572Z",
+        "ageMs": 3409317,
+        "complete": true,
+        "legs": [
+          {
+            "quantity": "6",
+            "proceeds": "1.110000",
+            "complete": true
+          },
+          {
+            "quantity": "6",
+            "proceeds": "4.535000",
+            "complete": true
+          }
+        ],
+        "netProceeds": "5.645000",
+        "hypotheticalPnl": "-0.240000",
+        "versions": [
+          "28585818:2026-10-03T23:39:04.846673200Z",
+          "28586304:2026-10-03T23:39:08.030221800Z"
+        ],
+        "sourceSequence": 13239,
+        "sourceHash": "e16b0238c023158dd34d88854c00cbf8bb2167a67640b0021fb4f36c2fbd2bce"
+      },
+      "rightCensored": false,
+      "maker": {
+        "quantity": 1,
+        "canonicalNoQuotedPackageCost": "0.960000",
+        "bothLegsHaveStrictThrough": false,
+        "exactlyOneLegHasStrictThrough": false,
+        "legs": [
+          {
+            "marketId": "381",
+            "exchangeId": "1070",
+            "yesSellLimit": "0.815000",
+            "canonicalNoAcquisitionPrice": "0.185000",
+            "activationAt": "2026-10-03T22:42:21.255Z",
+            "expiresAt": "2026-10-03T22:44:18.255Z",
+            "eligibleObservedTrades": 11,
+            "strictThroughEvents": 0,
+            "strictThroughShares": 0,
+            "firstThrough": null,
+            "aggressorSide": null,
+            "queuePositionProven": false,
+            "fillProven": false
+          },
+          {
+            "marketId": "382",
+            "exchangeId": "1071",
+            "yesSellLimit": "0.225000",
+            "canonicalNoAcquisitionPrice": "0.775000",
+            "activationAt": "2026-10-03T22:42:21.255Z",
+            "expiresAt": "2026-10-03T22:44:18.255Z",
+            "eligibleObservedTrades": 2,
+            "strictThroughEvents": 0,
+            "strictThroughShares": 0,
+            "firstThrough": null,
+            "aggressorSide": null,
+            "queuePositionProven": false,
+            "fillProven": false
+          }
+        ]
+      }
+    },
+    {
+      "anchorAt": "2026-10-03T22:44:44.863Z",
+      "sourceSequence": 12879,
+      "sourceHash": "d0e78ca9280f37aeae0fa41fcb337ffd574790258708d249677462f1ba6b9a44",
+      "versions": [
+        "27977074:2026-10-03T22:44:42.008015000Z",
+        "27977849:2026-10-03T22:44:45.252852900Z"
+      ],
+      "quantity": "6",
+      "acquisitionCost": "5.940000",
+      "ordinaryConditionalSettlementSurplus": "0.060000",
+      "zeroPayoutStress": "-5.940000",
+      "subsequentCompleteExitObservations": 22,
+      "partialExitObservations": 0,
+      "bestLaterDepthMark": {
+        "at": "2026-10-03T23:16:59.026Z",
+        "ageMs": 1934163,
+        "complete": true,
+        "legs": [
+          {
+            "quantity": "6",
+            "proceeds": "1.110000",
+            "complete": true
+          },
+          {
+            "quantity": "6",
+            "proceeds": "4.605000",
+            "complete": true
+          }
+        ],
+        "netProceeds": "5.715000",
+        "hypotheticalPnl": "-0.225000",
+        "versions": [
+          "28345235:2026-10-03T23:16:56.242984800Z",
+          "28346087:2026-10-03T23:16:59.461833800Z"
+        ],
+        "sourceSequence": 13095,
+        "sourceHash": "b9f2619808f72335cb534d925d9fcf2014524034fe97bf984c9ab5321d21cf2c"
+      },
+      "lastLaterDepthMark": {
+        "at": "2026-10-03T23:39:07.572Z",
+        "ageMs": 3262709,
+        "complete": true,
+        "legs": [
+          {
+            "quantity": "6",
+            "proceeds": "1.110000",
+            "complete": true
+          },
+          {
+            "quantity": "6",
+            "proceeds": "4.535000",
+            "complete": true
+          }
+        ],
+        "netProceeds": "5.645000",
+        "hypotheticalPnl": "-0.295000",
+        "versions": [
+          "28585818:2026-10-03T23:39:04.846673200Z",
+          "28586304:2026-10-03T23:39:08.030221800Z"
+        ],
+        "sourceSequence": 13239,
+        "sourceHash": "e16b0238c023158dd34d88854c00cbf8bb2167a67640b0021fb4f36c2fbd2bce"
+      },
+      "rightCensored": false,
+      "maker": {
+        "quantity": 1,
+        "canonicalNoQuotedPackageCost": "0.965000",
+        "bothLegsHaveStrictThrough": false,
+        "exactlyOneLegHasStrictThrough": true,
+        "legs": [
+          {
+            "marketId": "381",
+            "exchangeId": "1070",
+            "yesSellLimit": "0.805000",
+            "canonicalNoAcquisitionPrice": "0.195000",
+            "activationAt": "2026-10-03T22:44:47.863Z",
+            "expiresAt": "2026-10-03T22:46:44.863Z",
+            "eligibleObservedTrades": 1,
+            "strictThroughEvents": 1,
+            "strictThroughShares": 200,
+            "firstThrough": {
+              "id": "27989388",
+              "key": "c5f9329a767945705088c1d273ddaf5b4ee0b678cd2026dd1ac26889c121bba2",
+              "createdAt": "2026-10-03T22:45:42.318Z",
+              "firstAvailableAt": "2026-10-03T23:11:51.496Z",
+              "rawYesPrice": "0.81",
+              "normalizedPrice": "0.810000"
+            },
+            "aggressorSide": null,
+            "queuePositionProven": false,
+            "fillProven": false
+          },
+          {
+            "marketId": "382",
+            "exchangeId": "1071",
+            "yesSellLimit": "0.230000",
+            "canonicalNoAcquisitionPrice": "0.770000",
+            "activationAt": "2026-10-03T22:44:47.863Z",
+            "expiresAt": "2026-10-03T22:46:44.863Z",
+            "eligibleObservedTrades": 1,
+            "strictThroughEvents": 0,
+            "strictThroughShares": 0,
+            "firstThrough": null,
+            "aggressorSide": null,
+            "queuePositionProven": false,
+            "fillProven": false
+          }
+        ]
+      }
+    },
+    {
+      "anchorAt": "2026-10-03T22:47:07.693Z",
+      "sourceSequence": 12895,
+      "sourceHash": "76bc42f023d959bb2c79a1909089eed4c41d3b3c86300dadb703f0fd11f08f17",
+      "versions": [
+        "28005063:2026-10-03T22:47:04.844649800Z",
+        "28005618:2026-10-03T22:47:08.073551600Z"
+      ],
+      "quantity": "6",
+      "acquisitionCost": "5.935000",
+      "ordinaryConditionalSettlementSurplus": "0.065000",
+      "zeroPayoutStress": "-5.935000",
+      "subsequentCompleteExitObservations": 21,
+      "partialExitObservations": 0,
+      "bestLaterDepthMark": {
+        "at": "2026-10-03T23:16:59.026Z",
+        "ageMs": 1791333,
+        "complete": true,
+        "legs": [
+          {
+            "quantity": "6",
+            "proceeds": "1.110000",
+            "complete": true
+          },
+          {
+            "quantity": "6",
+            "proceeds": "4.605000",
+            "complete": true
+          }
+        ],
+        "netProceeds": "5.715000",
+        "hypotheticalPnl": "-0.220000",
+        "versions": [
+          "28345235:2026-10-03T23:16:56.242984800Z",
+          "28346087:2026-10-03T23:16:59.461833800Z"
+        ],
+        "sourceSequence": 13095,
+        "sourceHash": "b9f2619808f72335cb534d925d9fcf2014524034fe97bf984c9ab5321d21cf2c"
+      },
+      "lastLaterDepthMark": {
+        "at": "2026-10-03T23:39:07.572Z",
+        "ageMs": 3119879,
+        "complete": true,
+        "legs": [
+          {
+            "quantity": "6",
+            "proceeds": "1.110000",
+            "complete": true
+          },
+          {
+            "quantity": "6",
+            "proceeds": "4.535000",
+            "complete": true
+          }
+        ],
+        "netProceeds": "5.645000",
+        "hypotheticalPnl": "-0.290000",
+        "versions": [
+          "28585818:2026-10-03T23:39:04.846673200Z",
+          "28586304:2026-10-03T23:39:08.030221800Z"
+        ],
+        "sourceSequence": 13239,
+        "sourceHash": "e16b0238c023158dd34d88854c00cbf8bb2167a67640b0021fb4f36c2fbd2bce"
+      },
+      "rightCensored": false,
+      "maker": {
+        "quantity": 1,
+        "canonicalNoQuotedPackageCost": "0.960000",
+        "bothLegsHaveStrictThrough": false,
+        "exactlyOneLegHasStrictThrough": false,
+        "legs": [
+          {
+            "marketId": "381",
+            "exchangeId": "1070",
+            "yesSellLimit": "0.810000",
+            "canonicalNoAcquisitionPrice": "0.190000",
+            "activationAt": "2026-10-03T22:47:10.693Z",
+            "expiresAt": "2026-10-03T22:49:07.693Z",
+            "eligibleObservedTrades": 1,
+            "strictThroughEvents": 0,
+            "strictThroughShares": 0,
+            "firstThrough": null,
+            "aggressorSide": null,
+            "queuePositionProven": false,
+            "fillProven": false
+          },
+          {
+            "marketId": "382",
+            "exchangeId": "1071",
+            "yesSellLimit": "0.230000",
+            "canonicalNoAcquisitionPrice": "0.770000",
+            "activationAt": "2026-10-03T22:47:10.693Z",
+            "expiresAt": "2026-10-03T22:49:07.693Z",
+            "eligibleObservedTrades": 0,
+            "strictThroughEvents": 0,
+            "strictThroughShares": 0,
+            "firstThrough": null,
+            "aggressorSide": null,
+            "queuePositionProven": false,
+            "fillProven": false
+          }
+        ]
+      }
+    },
+    {
+      "anchorAt": "2026-10-03T22:49:32.145Z",
+      "sourceSequence": 12911,
+      "sourceHash": "4fdc400b72eab1e0f4312191ca973a727127bb9daddb3ef1a2014915c8137558",
+      "versions": [
+        "28028891:2026-10-03T22:49:28.449993600Z",
+        "28029920:2026-10-03T22:49:31.726738200Z"
+      ],
+      "quantity": "6",
+      "acquisitionCost": "5.910000",
+      "ordinaryConditionalSettlementSurplus": "0.090000",
+      "zeroPayoutStress": "-5.910000",
+      "subsequentCompleteExitObservations": 20,
+      "partialExitObservations": 0,
+      "bestLaterDepthMark": {
+        "at": "2026-10-03T23:16:59.026Z",
+        "ageMs": 1646881,
+        "complete": true,
+        "legs": [
+          {
+            "quantity": "6",
+            "proceeds": "1.110000",
+            "complete": true
+          },
+          {
+            "quantity": "6",
+            "proceeds": "4.605000",
+            "complete": true
+          }
+        ],
+        "netProceeds": "5.715000",
+        "hypotheticalPnl": "-0.195000",
+        "versions": [
+          "28345235:2026-10-03T23:16:56.242984800Z",
+          "28346087:2026-10-03T23:16:59.461833800Z"
+        ],
+        "sourceSequence": 13095,
+        "sourceHash": "b9f2619808f72335cb534d925d9fcf2014524034fe97bf984c9ab5321d21cf2c"
+      },
+      "lastLaterDepthMark": {
+        "at": "2026-10-03T23:39:07.572Z",
+        "ageMs": 2975427,
+        "complete": true,
+        "legs": [
+          {
+            "quantity": "6",
+            "proceeds": "1.110000",
+            "complete": true
+          },
+          {
+            "quantity": "6",
+            "proceeds": "4.535000",
+            "complete": true
+          }
+        ],
+        "netProceeds": "5.645000",
+        "hypotheticalPnl": "-0.265000",
+        "versions": [
+          "28585818:2026-10-03T23:39:04.846673200Z",
+          "28586304:2026-10-03T23:39:08.030221800Z"
+        ],
+        "sourceSequence": 13239,
+        "sourceHash": "e16b0238c023158dd34d88854c00cbf8bb2167a67640b0021fb4f36c2fbd2bce"
+      },
+      "rightCensored": false,
+      "maker": {
+        "quantity": 1,
+        "canonicalNoQuotedPackageCost": "0.960000",
+        "bothLegsHaveStrictThrough": false,
+        "exactlyOneLegHasStrictThrough": false,
+        "legs": [
+          {
+            "marketId": "381",
+            "exchangeId": "1070",
+            "yesSellLimit": "0.810000",
+            "canonicalNoAcquisitionPrice": "0.190000",
+            "activationAt": "2026-10-03T22:49:35.145Z",
+            "expiresAt": "2026-10-03T22:51:32.145Z",
+            "eligibleObservedTrades": 3,
+            "strictThroughEvents": 0,
+            "strictThroughShares": 0,
+            "firstThrough": null,
+            "aggressorSide": null,
+            "queuePositionProven": false,
+            "fillProven": false
+          },
+          {
+            "marketId": "382",
+            "exchangeId": "1071",
+            "yesSellLimit": "0.230000",
+            "canonicalNoAcquisitionPrice": "0.770000",
+            "activationAt": "2026-10-03T22:49:35.145Z",
+            "expiresAt": "2026-10-03T22:51:32.145Z",
+            "eligibleObservedTrades": 0,
+            "strictThroughEvents": 0,
+            "strictThroughShares": 0,
+            "firstThrough": null,
+            "aggressorSide": null,
+            "queuePositionProven": false,
+            "fillProven": false
+          }
+        ]
+      }
+    },
+    {
+      "anchorAt": "2026-10-03T22:51:54.835Z",
+      "sourceSequence": 12927,
+      "sourceHash": "961f7f6cd81ea4f065f01cc27f065582ee668f024b48e9bfcdcb9d0a6b6d6fcc",
+      "versions": [
+        "28056882:2026-10-03T22:51:52.014982200Z",
+        "28057322:2026-10-03T22:51:55.225226300Z"
+      ],
+      "quantity": "6",
+      "acquisitionCost": "5.910000",
+      "ordinaryConditionalSettlementSurplus": "0.090000",
+      "zeroPayoutStress": "-5.910000",
+      "subsequentCompleteExitObservations": 19,
+      "partialExitObservations": 0,
+      "bestLaterDepthMark": {
+        "at": "2026-10-03T23:16:59.026Z",
+        "ageMs": 1504191,
+        "complete": true,
+        "legs": [
+          {
+            "quantity": "6",
+            "proceeds": "1.110000",
+            "complete": true
+          },
+          {
+            "quantity": "6",
+            "proceeds": "4.605000",
+            "complete": true
+          }
+        ],
+        "netProceeds": "5.715000",
+        "hypotheticalPnl": "-0.195000",
+        "versions": [
+          "28345235:2026-10-03T23:16:56.242984800Z",
+          "28346087:2026-10-03T23:16:59.461833800Z"
+        ],
+        "sourceSequence": 13095,
+        "sourceHash": "b9f2619808f72335cb534d925d9fcf2014524034fe97bf984c9ab5321d21cf2c"
+      },
+      "lastLaterDepthMark": {
+        "at": "2026-10-03T23:39:07.572Z",
+        "ageMs": 2832737,
+        "complete": true,
+        "legs": [
+          {
+            "quantity": "6",
+            "proceeds": "1.110000",
+            "complete": true
+          },
+          {
+            "quantity": "6",
+            "proceeds": "4.535000",
+            "complete": true
+          }
+        ],
+        "netProceeds": "5.645000",
+        "hypotheticalPnl": "-0.265000",
+        "versions": [
+          "28585818:2026-10-03T23:39:04.846673200Z",
+          "28586304:2026-10-03T23:39:08.030221800Z"
+        ],
+        "sourceSequence": 13239,
+        "sourceHash": "e16b0238c023158dd34d88854c00cbf8bb2167a67640b0021fb4f36c2fbd2bce"
+      },
+      "rightCensored": false,
+      "maker": {
+        "quantity": 1,
+        "canonicalNoQuotedPackageCost": "0.960000",
+        "bothLegsHaveStrictThrough": false,
+        "exactlyOneLegHasStrictThrough": false,
+        "legs": [
+          {
+            "marketId": "381",
+            "exchangeId": "1070",
+            "yesSellLimit": "0.810000",
+            "canonicalNoAcquisitionPrice": "0.190000",
+            "activationAt": "2026-10-03T22:51:57.835Z",
+            "expiresAt": "2026-10-03T22:53:54.835Z",
+            "eligibleObservedTrades": 0,
+            "strictThroughEvents": 0,
+            "strictThroughShares": 0,
+            "firstThrough": null,
+            "aggressorSide": null,
+            "queuePositionProven": false,
+            "fillProven": false
+          },
+          {
+            "marketId": "382",
+            "exchangeId": "1071",
+            "yesSellLimit": "0.230000",
+            "canonicalNoAcquisitionPrice": "0.770000",
+            "activationAt": "2026-10-03T22:51:57.835Z",
+            "expiresAt": "2026-10-03T22:53:54.835Z",
+            "eligibleObservedTrades": 1,
+            "strictThroughEvents": 0,
+            "strictThroughShares": 0,
+            "firstThrough": null,
+            "aggressorSide": null,
+            "queuePositionProven": false,
+            "fillProven": false
+          }
+        ]
+      }
+    },
+    {
+      "anchorAt": "2026-10-03T22:54:17.266Z",
+      "sourceSequence": 12943,
+      "sourceHash": "c448e760a7375efc00559a6d0331010aa5437856778e2fdf7c730f64d93c97ed",
+      "versions": [
+        "28086252:2026-10-03T22:54:14.446639400Z",
+        "28087038:2026-10-03T22:54:17.670806900Z"
+      ],
+      "quantity": "6",
+      "acquisitionCost": "5.910000",
+      "ordinaryConditionalSettlementSurplus": "0.090000",
+      "zeroPayoutStress": "-5.910000",
+      "subsequentCompleteExitObservations": 18,
+      "partialExitObservations": 0,
+      "bestLaterDepthMark": {
+        "at": "2026-10-03T23:16:59.026Z",
+        "ageMs": 1361760,
+        "complete": true,
+        "legs": [
+          {
+            "quantity": "6",
+            "proceeds": "1.110000",
+            "complete": true
+          },
+          {
+            "quantity": "6",
+            "proceeds": "4.605000",
+            "complete": true
+          }
+        ],
+        "netProceeds": "5.715000",
+        "hypotheticalPnl": "-0.195000",
+        "versions": [
+          "28345235:2026-10-03T23:16:56.242984800Z",
+          "28346087:2026-10-03T23:16:59.461833800Z"
+        ],
+        "sourceSequence": 13095,
+        "sourceHash": "b9f2619808f72335cb534d925d9fcf2014524034fe97bf984c9ab5321d21cf2c"
+      },
+      "lastLaterDepthMark": {
+        "at": "2026-10-03T23:39:07.572Z",
+        "ageMs": 2690306,
+        "complete": true,
+        "legs": [
+          {
+            "quantity": "6",
+            "proceeds": "1.110000",
+            "complete": true
+          },
+          {
+            "quantity": "6",
+            "proceeds": "4.535000",
+            "complete": true
+          }
+        ],
+        "netProceeds": "5.645000",
+        "hypotheticalPnl": "-0.265000",
+        "versions": [
+          "28585818:2026-10-03T23:39:04.846673200Z",
+          "28586304:2026-10-03T23:39:08.030221800Z"
+        ],
+        "sourceSequence": 13239,
+        "sourceHash": "e16b0238c023158dd34d88854c00cbf8bb2167a67640b0021fb4f36c2fbd2bce"
+      },
+      "rightCensored": false,
+      "maker": {
+        "quantity": 1,
+        "canonicalNoQuotedPackageCost": "0.960000",
+        "bothLegsHaveStrictThrough": false,
+        "exactlyOneLegHasStrictThrough": false,
+        "legs": [
+          {
+            "marketId": "381",
+            "exchangeId": "1070",
+            "yesSellLimit": "0.810000",
+            "canonicalNoAcquisitionPrice": "0.190000",
+            "activationAt": "2026-10-03T22:54:20.266Z",
+            "expiresAt": "2026-10-03T22:56:17.266Z",
+            "eligibleObservedTrades": 1,
+            "strictThroughEvents": 0,
+            "strictThroughShares": 0,
+            "firstThrough": null,
+            "aggressorSide": null,
+            "queuePositionProven": false,
+            "fillProven": false
+          },
+          {
+            "marketId": "382",
+            "exchangeId": "1071",
+            "yesSellLimit": "0.230000",
+            "canonicalNoAcquisitionPrice": "0.770000",
+            "activationAt": "2026-10-03T22:54:20.266Z",
+            "expiresAt": "2026-10-03T22:56:17.266Z",
+            "eligibleObservedTrades": 0,
+            "strictThroughEvents": 0,
+            "strictThroughShares": 0,
+            "firstThrough": null,
+            "aggressorSide": null,
+            "queuePositionProven": false,
+            "fillProven": false
+          }
+        ]
+      }
+    },
+    {
+      "anchorAt": "2026-10-03T22:56:39.435Z",
+      "sourceSequence": 12959,
+      "sourceHash": "9efe4c0aeca955a093314fa1f703eb4ff137ab640e4fa3dd2803fe66372e3606",
+      "versions": [
+        "28110744:2026-10-03T22:56:36.616222500Z",
+        "28111242:2026-10-03T22:56:39.838072400Z"
+      ],
+      "quantity": "6",
+      "acquisitionCost": "5.890000",
+      "ordinaryConditionalSettlementSurplus": "0.110000",
+      "zeroPayoutStress": "-5.890000",
+      "subsequentCompleteExitObservations": 17,
+      "partialExitObservations": 0,
+      "bestLaterDepthMark": {
+        "at": "2026-10-03T23:16:59.026Z",
+        "ageMs": 1219591,
+        "complete": true,
+        "legs": [
+          {
+            "quantity": "6",
+            "proceeds": "1.110000",
+            "complete": true
+          },
+          {
+            "quantity": "6",
+            "proceeds": "4.605000",
+            "complete": true
+          }
+        ],
+        "netProceeds": "5.715000",
+        "hypotheticalPnl": "-0.175000",
+        "versions": [
+          "28345235:2026-10-03T23:16:56.242984800Z",
+          "28346087:2026-10-03T23:16:59.461833800Z"
+        ],
+        "sourceSequence": 13095,
+        "sourceHash": "b9f2619808f72335cb534d925d9fcf2014524034fe97bf984c9ab5321d21cf2c"
+      },
+      "lastLaterDepthMark": {
+        "at": "2026-10-03T23:39:07.572Z",
+        "ageMs": 2548137,
+        "complete": true,
+        "legs": [
+          {
+            "quantity": "6",
+            "proceeds": "1.110000",
+            "complete": true
+          },
+          {
+            "quantity": "6",
+            "proceeds": "4.535000",
+            "complete": true
+          }
+        ],
+        "netProceeds": "5.645000",
+        "hypotheticalPnl": "-0.245000",
+        "versions": [
+          "28585818:2026-10-03T23:39:04.846673200Z",
+          "28586304:2026-10-03T23:39:08.030221800Z"
+        ],
+        "sourceSequence": 13239,
+        "sourceHash": "e16b0238c023158dd34d88854c00cbf8bb2167a67640b0021fb4f36c2fbd2bce"
+      },
+      "rightCensored": false,
+      "maker": {
+        "quantity": 1,
+        "canonicalNoQuotedPackageCost": "0.960000",
+        "bothLegsHaveStrictThrough": false,
+        "exactlyOneLegHasStrictThrough": false,
+        "legs": [
+          {
+            "marketId": "381",
+            "exchangeId": "1070",
+            "yesSellLimit": "0.810000",
+            "canonicalNoAcquisitionPrice": "0.190000",
+            "activationAt": "2026-10-03T22:56:42.435Z",
+            "expiresAt": "2026-10-03T22:58:39.435Z",
+            "eligibleObservedTrades": 2,
+            "strictThroughEvents": 0,
+            "strictThroughShares": 0,
+            "firstThrough": null,
+            "aggressorSide": null,
+            "queuePositionProven": false,
+            "fillProven": false
+          },
+          {
+            "marketId": "382",
+            "exchangeId": "1071",
+            "yesSellLimit": "0.230000",
+            "canonicalNoAcquisitionPrice": "0.770000",
+            "activationAt": "2026-10-03T22:56:42.435Z",
+            "expiresAt": "2026-10-03T22:58:39.435Z",
+            "eligibleObservedTrades": 1,
+            "strictThroughEvents": 0,
+            "strictThroughShares": 0,
+            "firstThrough": null,
+            "aggressorSide": null,
+            "queuePositionProven": false,
+            "fillProven": false
+          }
+        ]
+      }
+    },
+    {
+      "anchorAt": "2026-10-03T22:59:02.417Z",
+      "sourceSequence": 12975,
+      "sourceHash": "8280ac44a847801774f832514b57d357136d90adcceb9b1854a95de68b9fe3f3",
+      "versions": [
+        "28142808:2026-10-03T22:58:59.634928500Z",
+        "28143321:2026-10-03T22:59:02.831495100Z"
+      ],
+      "quantity": "6",
+      "acquisitionCost": "5.880000",
+      "ordinaryConditionalSettlementSurplus": "0.120000",
+      "zeroPayoutStress": "-5.880000",
+      "subsequentCompleteExitObservations": 16,
+      "partialExitObservations": 0,
+      "bestLaterDepthMark": {
+        "at": "2026-10-03T23:16:59.026Z",
+        "ageMs": 1076609,
+        "complete": true,
+        "legs": [
+          {
+            "quantity": "6",
+            "proceeds": "1.110000",
+            "complete": true
+          },
+          {
+            "quantity": "6",
+            "proceeds": "4.605000",
+            "complete": true
+          }
+        ],
+        "netProceeds": "5.715000",
+        "hypotheticalPnl": "-0.165000",
+        "versions": [
+          "28345235:2026-10-03T23:16:56.242984800Z",
+          "28346087:2026-10-03T23:16:59.461833800Z"
+        ],
+        "sourceSequence": 13095,
+        "sourceHash": "b9f2619808f72335cb534d925d9fcf2014524034fe97bf984c9ab5321d21cf2c"
+      },
+      "lastLaterDepthMark": {
+        "at": "2026-10-03T23:39:07.572Z",
+        "ageMs": 2405155,
+        "complete": true,
+        "legs": [
+          {
+            "quantity": "6",
+            "proceeds": "1.110000",
+            "complete": true
+          },
+          {
+            "quantity": "6",
+            "proceeds": "4.535000",
+            "complete": true
+          }
+        ],
+        "netProceeds": "5.645000",
+        "hypotheticalPnl": "-0.235000",
+        "versions": [
+          "28585818:2026-10-03T23:39:04.846673200Z",
+          "28586304:2026-10-03T23:39:08.030221800Z"
+        ],
+        "sourceSequence": 13239,
+        "sourceHash": "e16b0238c023158dd34d88854c00cbf8bb2167a67640b0021fb4f36c2fbd2bce"
+      },
+      "rightCensored": false,
+      "maker": {
+        "quantity": 1,
+        "canonicalNoQuotedPackageCost": "0.960000",
+        "bothLegsHaveStrictThrough": false,
+        "exactlyOneLegHasStrictThrough": false,
+        "legs": [
+          {
+            "marketId": "381",
+            "exchangeId": "1070",
+            "yesSellLimit": "0.810000",
+            "canonicalNoAcquisitionPrice": "0.190000",
+            "activationAt": "2026-10-03T22:59:05.417Z",
+            "expiresAt": "2026-10-03T23:01:02.417Z",
+            "eligibleObservedTrades": 3,
+            "strictThroughEvents": 0,
+            "strictThroughShares": 0,
+            "firstThrough": null,
+            "aggressorSide": null,
+            "queuePositionProven": false,
+            "fillProven": false
+          },
+          {
+            "marketId": "382",
+            "exchangeId": "1071",
+            "yesSellLimit": "0.230000",
+            "canonicalNoAcquisitionPrice": "0.770000",
+            "activationAt": "2026-10-03T22:59:05.417Z",
+            "expiresAt": "2026-10-03T23:01:02.417Z",
+            "eligibleObservedTrades": 4,
+            "strictThroughEvents": 0,
+            "strictThroughShares": 0,
+            "firstThrough": null,
+            "aggressorSide": null,
+            "queuePositionProven": false,
+            "fillProven": false
+          }
+        ]
+      }
+    },
+    {
+      "anchorAt": "2026-10-03T23:01:24.999Z",
+      "sourceSequence": 12991,
+      "sourceHash": "1764554b6cece5a4f8e8c80686855e4c8ac5121d077490e854beb64f8b6255ec",
+      "versions": [
+        "28170662:2026-10-03T23:01:22.134720300Z",
+        "28171137:2026-10-03T23:01:25.390808300Z"
+      ],
+      "quantity": "6",
+      "acquisitionCost": "5.910000",
+      "ordinaryConditionalSettlementSurplus": "0.090000",
+      "zeroPayoutStress": "-5.910000",
+      "subsequentCompleteExitObservations": 15,
+      "partialExitObservations": 0,
+      "bestLaterDepthMark": {
+        "at": "2026-10-03T23:16:59.026Z",
+        "ageMs": 934027,
+        "complete": true,
+        "legs": [
+          {
+            "quantity": "6",
+            "proceeds": "1.110000",
+            "complete": true
+          },
+          {
+            "quantity": "6",
+            "proceeds": "4.605000",
+            "complete": true
+          }
+        ],
+        "netProceeds": "5.715000",
+        "hypotheticalPnl": "-0.195000",
+        "versions": [
+          "28345235:2026-10-03T23:16:56.242984800Z",
+          "28346087:2026-10-03T23:16:59.461833800Z"
+        ],
+        "sourceSequence": 13095,
+        "sourceHash": "b9f2619808f72335cb534d925d9fcf2014524034fe97bf984c9ab5321d21cf2c"
+      },
+      "lastLaterDepthMark": {
+        "at": "2026-10-03T23:39:07.572Z",
+        "ageMs": 2262573,
+        "complete": true,
+        "legs": [
+          {
+            "quantity": "6",
+            "proceeds": "1.110000",
+            "complete": true
+          },
+          {
+            "quantity": "6",
+            "proceeds": "4.535000",
+            "complete": true
+          }
+        ],
+        "netProceeds": "5.645000",
+        "hypotheticalPnl": "-0.265000",
+        "versions": [
+          "28585818:2026-10-03T23:39:04.846673200Z",
+          "28586304:2026-10-03T23:39:08.030221800Z"
+        ],
+        "sourceSequence": 13239,
+        "sourceHash": "e16b0238c023158dd34d88854c00cbf8bb2167a67640b0021fb4f36c2fbd2bce"
+      },
+      "rightCensored": false,
+      "maker": {
+        "quantity": 1,
+        "canonicalNoQuotedPackageCost": "0.960000",
+        "bothLegsHaveStrictThrough": false,
+        "exactlyOneLegHasStrictThrough": false,
+        "legs": [
+          {
+            "marketId": "381",
+            "exchangeId": "1070",
+            "yesSellLimit": "0.810000",
+            "canonicalNoAcquisitionPrice": "0.190000",
+            "activationAt": "2026-10-03T23:01:27.999Z",
+            "expiresAt": "2026-10-03T23:03:24.999Z",
+            "eligibleObservedTrades": 0,
+            "strictThroughEvents": 0,
+            "strictThroughShares": 0,
+            "firstThrough": null,
+            "aggressorSide": null,
+            "queuePositionProven": false,
+            "fillProven": false
+          },
+          {
+            "marketId": "382",
+            "exchangeId": "1071",
+            "yesSellLimit": "0.230000",
+            "canonicalNoAcquisitionPrice": "0.770000",
+            "activationAt": "2026-10-03T23:01:27.999Z",
+            "expiresAt": "2026-10-03T23:03:24.999Z",
+            "eligibleObservedTrades": 1,
+            "strictThroughEvents": 0,
+            "strictThroughShares": 0,
+            "firstThrough": null,
+            "aggressorSide": null,
+            "queuePositionProven": false,
+            "fillProven": false
+          }
+        ]
+      }
+    },
+    {
+      "anchorAt": "2026-10-03T23:03:47.235Z",
+      "sourceSequence": 13007,
+      "sourceHash": "28f5fd80693b80f40b4ce1a987a30254612f41cd566f4028c64de02be24b648a",
+      "versions": [
+        "28199238:2026-10-03T23:03:44.439197700Z",
+        "28199844:2026-10-03T23:03:47.654180600Z"
+      ],
+      "quantity": "6",
+      "acquisitionCost": "5.910000",
+      "ordinaryConditionalSettlementSurplus": "0.090000",
+      "zeroPayoutStress": "-5.910000",
+      "subsequentCompleteExitObservations": 14,
+      "partialExitObservations": 0,
+      "bestLaterDepthMark": {
+        "at": "2026-10-03T23:16:59.026Z",
+        "ageMs": 791791,
+        "complete": true,
+        "legs": [
+          {
+            "quantity": "6",
+            "proceeds": "1.110000",
+            "complete": true
+          },
+          {
+            "quantity": "6",
+            "proceeds": "4.605000",
+            "complete": true
+          }
+        ],
+        "netProceeds": "5.715000",
+        "hypotheticalPnl": "-0.195000",
+        "versions": [
+          "28345235:2026-10-03T23:16:56.242984800Z",
+          "28346087:2026-10-03T23:16:59.461833800Z"
+        ],
+        "sourceSequence": 13095,
+        "sourceHash": "b9f2619808f72335cb534d925d9fcf2014524034fe97bf984c9ab5321d21cf2c"
+      },
+      "lastLaterDepthMark": {
+        "at": "2026-10-03T23:39:07.572Z",
+        "ageMs": 2120337,
+        "complete": true,
+        "legs": [
+          {
+            "quantity": "6",
+            "proceeds": "1.110000",
+            "complete": true
+          },
+          {
+            "quantity": "6",
+            "proceeds": "4.535000",
+            "complete": true
+          }
+        ],
+        "netProceeds": "5.645000",
+        "hypotheticalPnl": "-0.265000",
+        "versions": [
+          "28585818:2026-10-03T23:39:04.846673200Z",
+          "28586304:2026-10-03T23:39:08.030221800Z"
+        ],
+        "sourceSequence": 13239,
+        "sourceHash": "e16b0238c023158dd34d88854c00cbf8bb2167a67640b0021fb4f36c2fbd2bce"
+      },
+      "rightCensored": false,
+      "maker": {
+        "quantity": 1,
+        "canonicalNoQuotedPackageCost": "0.965000",
+        "bothLegsHaveStrictThrough": false,
+        "exactlyOneLegHasStrictThrough": false,
+        "legs": [
+          {
+            "marketId": "381",
+            "exchangeId": "1070",
+            "yesSellLimit": "0.810000",
+            "canonicalNoAcquisitionPrice": "0.190000",
+            "activationAt": "2026-10-03T23:03:50.235Z",
+            "expiresAt": "2026-10-03T23:05:47.235Z",
+            "eligibleObservedTrades": 0,
+            "strictThroughEvents": 0,
+            "strictThroughShares": 0,
+            "firstThrough": null,
+            "aggressorSide": null,
+            "queuePositionProven": false,
+            "fillProven": false
+          },
+          {
+            "marketId": "382",
+            "exchangeId": "1071",
+            "yesSellLimit": "0.225000",
+            "canonicalNoAcquisitionPrice": "0.775000",
+            "activationAt": "2026-10-03T23:03:50.235Z",
+            "expiresAt": "2026-10-03T23:05:47.235Z",
+            "eligibleObservedTrades": 1,
+            "strictThroughEvents": 0,
+            "strictThroughShares": 0,
+            "firstThrough": null,
+            "aggressorSide": null,
+            "queuePositionProven": false,
+            "fillProven": false
+          }
+        ]
+      }
+    },
+    {
+      "anchorAt": "2026-10-03T23:06:04.800Z",
+      "sourceSequence": 13023,
+      "sourceHash": "798a71945012a5bb6b6fc20057d9300842972cc0ded8ab3be62a56a5bf2f703c",
+      "versions": [
+        "28223329:2026-10-03T23:06:02.017922200Z",
+        "28224132:2026-10-03T23:06:05.221712800Z"
+      ],
+      "quantity": "6",
+      "acquisitionCost": "5.910000",
+      "ordinaryConditionalSettlementSurplus": "0.090000",
+      "zeroPayoutStress": "-5.910000",
+      "subsequentCompleteExitObservations": 13,
+      "partialExitObservations": 0,
+      "bestLaterDepthMark": {
+        "at": "2026-10-03T23:16:59.026Z",
+        "ageMs": 654226,
+        "complete": true,
+        "legs": [
+          {
+            "quantity": "6",
+            "proceeds": "1.110000",
+            "complete": true
+          },
+          {
+            "quantity": "6",
+            "proceeds": "4.605000",
+            "complete": true
+          }
+        ],
+        "netProceeds": "5.715000",
+        "hypotheticalPnl": "-0.195000",
+        "versions": [
+          "28345235:2026-10-03T23:16:56.242984800Z",
+          "28346087:2026-10-03T23:16:59.461833800Z"
+        ],
+        "sourceSequence": 13095,
+        "sourceHash": "b9f2619808f72335cb534d925d9fcf2014524034fe97bf984c9ab5321d21cf2c"
+      },
+      "lastLaterDepthMark": {
+        "at": "2026-10-03T23:39:07.572Z",
+        "ageMs": 1982772,
+        "complete": true,
+        "legs": [
+          {
+            "quantity": "6",
+            "proceeds": "1.110000",
+            "complete": true
+          },
+          {
+            "quantity": "6",
+            "proceeds": "4.535000",
+            "complete": true
+          }
+        ],
+        "netProceeds": "5.645000",
+        "hypotheticalPnl": "-0.265000",
+        "versions": [
+          "28585818:2026-10-03T23:39:04.846673200Z",
+          "28586304:2026-10-03T23:39:08.030221800Z"
+        ],
+        "sourceSequence": 13239,
+        "sourceHash": "e16b0238c023158dd34d88854c00cbf8bb2167a67640b0021fb4f36c2fbd2bce"
+      },
+      "rightCensored": false,
+      "maker": {
+        "quantity": 1,
+        "canonicalNoQuotedPackageCost": "0.965000",
+        "bothLegsHaveStrictThrough": false,
+        "exactlyOneLegHasStrictThrough": false,
+        "legs": [
+          {
+            "marketId": "381",
+            "exchangeId": "1070",
+            "yesSellLimit": "0.810000",
+            "canonicalNoAcquisitionPrice": "0.190000",
+            "activationAt": "2026-10-03T23:06:07.800Z",
+            "expiresAt": "2026-10-03T23:08:04.800Z",
+            "eligibleObservedTrades": 2,
+            "strictThroughEvents": 0,
+            "strictThroughShares": 0,
+            "firstThrough": null,
+            "aggressorSide": null,
+            "queuePositionProven": false,
+            "fillProven": false
+          },
+          {
+            "marketId": "382",
+            "exchangeId": "1071",
+            "yesSellLimit": "0.225000",
+            "canonicalNoAcquisitionPrice": "0.775000",
+            "activationAt": "2026-10-03T23:06:07.800Z",
+            "expiresAt": "2026-10-03T23:08:04.800Z",
+            "eligibleObservedTrades": 0,
+            "strictThroughEvents": 0,
+            "strictThroughShares": 0,
+            "firstThrough": null,
+            "aggressorSide": null,
+            "queuePositionProven": false,
+            "fillProven": false
+          }
+        ]
+      }
+    },
+    {
+      "anchorAt": "2026-10-03T23:08:27.413Z",
+      "sourceSequence": 13039,
+      "sourceHash": "f21a4ae3a36e5f50a1e2910cc07b2811e69014c83baad58707692ad1599a8116",
+      "versions": [
+        "28247008:2026-10-03T23:08:24.623951500Z",
+        "28247277:2026-10-03T23:08:27.838112500Z"
+      ],
+      "quantity": "6",
+      "acquisitionCost": "5.910000",
+      "ordinaryConditionalSettlementSurplus": "0.090000",
+      "zeroPayoutStress": "-5.910000",
+      "subsequentCompleteExitObservations": 12,
+      "partialExitObservations": 0,
+      "bestLaterDepthMark": {
+        "at": "2026-10-03T23:16:59.026Z",
+        "ageMs": 511613,
+        "complete": true,
+        "legs": [
+          {
+            "quantity": "6",
+            "proceeds": "1.110000",
+            "complete": true
+          },
+          {
+            "quantity": "6",
+            "proceeds": "4.605000",
+            "complete": true
+          }
+        ],
+        "netProceeds": "5.715000",
+        "hypotheticalPnl": "-0.195000",
+        "versions": [
+          "28345235:2026-10-03T23:16:56.242984800Z",
+          "28346087:2026-10-03T23:16:59.461833800Z"
+        ],
+        "sourceSequence": 13095,
+        "sourceHash": "b9f2619808f72335cb534d925d9fcf2014524034fe97bf984c9ab5321d21cf2c"
+      },
+      "lastLaterDepthMark": {
+        "at": "2026-10-03T23:39:07.572Z",
+        "ageMs": 1840159,
+        "complete": true,
+        "legs": [
+          {
+            "quantity": "6",
+            "proceeds": "1.110000",
+            "complete": true
+          },
+          {
+            "quantity": "6",
+            "proceeds": "4.535000",
+            "complete": true
+          }
+        ],
+        "netProceeds": "5.645000",
+        "hypotheticalPnl": "-0.265000",
+        "versions": [
+          "28585818:2026-10-03T23:39:04.846673200Z",
+          "28586304:2026-10-03T23:39:08.030221800Z"
+        ],
+        "sourceSequence": 13239,
+        "sourceHash": "e16b0238c023158dd34d88854c00cbf8bb2167a67640b0021fb4f36c2fbd2bce"
+      },
+      "rightCensored": false,
+      "maker": {
+        "quantity": 1,
+        "canonicalNoQuotedPackageCost": "0.965000",
+        "bothLegsHaveStrictThrough": false,
+        "exactlyOneLegHasStrictThrough": false,
+        "legs": [
+          {
+            "marketId": "381",
+            "exchangeId": "1070",
+            "yesSellLimit": "0.810000",
+            "canonicalNoAcquisitionPrice": "0.190000",
+            "activationAt": "2026-10-03T23:08:30.413Z",
+            "expiresAt": "2026-10-03T23:10:27.413Z",
+            "eligibleObservedTrades": 1,
+            "strictThroughEvents": 0,
+            "strictThroughShares": 0,
+            "firstThrough": null,
+            "aggressorSide": null,
+            "queuePositionProven": false,
+            "fillProven": false
+          },
+          {
+            "marketId": "382",
+            "exchangeId": "1071",
+            "yesSellLimit": "0.225000",
+            "canonicalNoAcquisitionPrice": "0.775000",
+            "activationAt": "2026-10-03T23:08:30.413Z",
+            "expiresAt": "2026-10-03T23:10:27.413Z",
+            "eligibleObservedTrades": 0,
+            "strictThroughEvents": 0,
+            "strictThroughShares": 0,
+            "firstThrough": null,
+            "aggressorSide": null,
+            "queuePositionProven": false,
+            "fillProven": false
+          }
+        ]
+      }
+    },
+    {
+      "anchorAt": "2026-10-03T23:09:50.891Z",
+      "sourceSequence": 13047,
+      "sourceHash": "1f1d9d86e3c62174f4197de6e70c82436b9f9e9813fee2cf90b0d5136efb7de9",
+      "versions": [
+        "28261569:2026-10-03T23:09:47.007267900Z",
+        "28262147:2026-10-03T23:09:51.097902700Z"
+      ],
+      "quantity": "6",
+      "acquisitionCost": "5.910000",
+      "ordinaryConditionalSettlementSurplus": "0.090000",
+      "zeroPayoutStress": "-5.910000",
+      "subsequentCompleteExitObservations": 11,
+      "partialExitObservations": 0,
+      "bestLaterDepthMark": {
+        "at": "2026-10-03T23:16:59.026Z",
+        "ageMs": 428135,
+        "complete": true,
+        "legs": [
+          {
+            "quantity": "6",
+            "proceeds": "1.110000",
+            "complete": true
+          },
+          {
+            "quantity": "6",
+            "proceeds": "4.605000",
+            "complete": true
+          }
+        ],
+        "netProceeds": "5.715000",
+        "hypotheticalPnl": "-0.195000",
+        "versions": [
+          "28345235:2026-10-03T23:16:56.242984800Z",
+          "28346087:2026-10-03T23:16:59.461833800Z"
+        ],
+        "sourceSequence": 13095,
+        "sourceHash": "b9f2619808f72335cb534d925d9fcf2014524034fe97bf984c9ab5321d21cf2c"
+      },
+      "lastLaterDepthMark": {
+        "at": "2026-10-03T23:39:07.572Z",
+        "ageMs": 1756681,
+        "complete": true,
+        "legs": [
+          {
+            "quantity": "6",
+            "proceeds": "1.110000",
+            "complete": true
+          },
+          {
+            "quantity": "6",
+            "proceeds": "4.535000",
+            "complete": true
+          }
+        ],
+        "netProceeds": "5.645000",
+        "hypotheticalPnl": "-0.265000",
+        "versions": [
+          "28585818:2026-10-03T23:39:04.846673200Z",
+          "28586304:2026-10-03T23:39:08.030221800Z"
+        ],
+        "sourceSequence": 13239,
+        "sourceHash": "e16b0238c023158dd34d88854c00cbf8bb2167a67640b0021fb4f36c2fbd2bce"
+      },
+      "rightCensored": false,
+      "maker": {
+        "quantity": 1,
+        "canonicalNoQuotedPackageCost": "0.965000",
+        "bothLegsHaveStrictThrough": false,
+        "exactlyOneLegHasStrictThrough": false,
+        "legs": [
+          {
+            "marketId": "381",
+            "exchangeId": "1070",
+            "yesSellLimit": "0.810000",
+            "canonicalNoAcquisitionPrice": "0.190000",
+            "activationAt": "2026-10-03T23:09:53.891Z",
+            "expiresAt": "2026-10-03T23:11:50.891Z",
+            "eligibleObservedTrades": 0,
+            "strictThroughEvents": 0,
+            "strictThroughShares": 0,
+            "firstThrough": null,
+            "aggressorSide": null,
+            "queuePositionProven": false,
+            "fillProven": false
+          },
+          {
+            "marketId": "382",
+            "exchangeId": "1071",
+            "yesSellLimit": "0.225000",
+            "canonicalNoAcquisitionPrice": "0.775000",
+            "activationAt": "2026-10-03T23:09:53.891Z",
+            "expiresAt": "2026-10-03T23:11:50.891Z",
+            "eligibleObservedTrades": 0,
+            "strictThroughEvents": 0,
+            "strictThroughShares": 0,
+            "firstThrough": null,
+            "aggressorSide": null,
+            "queuePositionProven": false,
+            "fillProven": false
+          }
+        ]
+      }
+    },
+    {
+      "anchorAt": "2026-10-03T23:12:14.124Z",
+      "sourceSequence": 13063,
+      "sourceHash": "c5098439f7ff5ae166925579462cf225b176d63e081e6bce877693ec88facadc",
+      "versions": [
+        "28290780:2026-10-03T23:12:11.303234600Z",
+        "28291774:2026-10-03T23:12:14.537232400Z"
+      ],
+      "quantity": "6",
+      "acquisitionCost": "5.910000",
+      "ordinaryConditionalSettlementSurplus": "0.090000",
+      "zeroPayoutStress": "-5.910000",
+      "subsequentCompleteExitObservations": 10,
+      "partialExitObservations": 0,
+      "bestLaterDepthMark": {
+        "at": "2026-10-03T23:16:59.026Z",
+        "ageMs": 284902,
+        "complete": true,
+        "legs": [
+          {
+            "quantity": "6",
+            "proceeds": "1.110000",
+            "complete": true
+          },
+          {
+            "quantity": "6",
+            "proceeds": "4.605000",
+            "complete": true
+          }
+        ],
+        "netProceeds": "5.715000",
+        "hypotheticalPnl": "-0.195000",
+        "versions": [
+          "28345235:2026-10-03T23:16:56.242984800Z",
+          "28346087:2026-10-03T23:16:59.461833800Z"
+        ],
+        "sourceSequence": 13095,
+        "sourceHash": "b9f2619808f72335cb534d925d9fcf2014524034fe97bf984c9ab5321d21cf2c"
+      },
+      "lastLaterDepthMark": {
+        "at": "2026-10-03T23:39:07.572Z",
+        "ageMs": 1613448,
+        "complete": true,
+        "legs": [
+          {
+            "quantity": "6",
+            "proceeds": "1.110000",
+            "complete": true
+          },
+          {
+            "quantity": "6",
+            "proceeds": "4.535000",
+            "complete": true
+          }
+        ],
+        "netProceeds": "5.645000",
+        "hypotheticalPnl": "-0.265000",
+        "versions": [
+          "28585818:2026-10-03T23:39:04.846673200Z",
+          "28586304:2026-10-03T23:39:08.030221800Z"
+        ],
+        "sourceSequence": 13239,
+        "sourceHash": "e16b0238c023158dd34d88854c00cbf8bb2167a67640b0021fb4f36c2fbd2bce"
+      },
+      "rightCensored": false,
+      "maker": {
+        "quantity": 1,
+        "canonicalNoQuotedPackageCost": "0.965000",
+        "bothLegsHaveStrictThrough": false,
+        "exactlyOneLegHasStrictThrough": false,
+        "legs": [
+          {
+            "marketId": "381",
+            "exchangeId": "1070",
+            "yesSellLimit": "0.810000",
+            "canonicalNoAcquisitionPrice": "0.190000",
+            "activationAt": "2026-10-03T23:12:17.124Z",
+            "expiresAt": "2026-10-03T23:14:14.124Z",
+            "eligibleObservedTrades": 2,
+            "strictThroughEvents": 0,
+            "strictThroughShares": 0,
+            "firstThrough": null,
+            "aggressorSide": null,
+            "queuePositionProven": false,
+            "fillProven": false
+          },
+          {
+            "marketId": "382",
+            "exchangeId": "1071",
+            "yesSellLimit": "0.225000",
+            "canonicalNoAcquisitionPrice": "0.775000",
+            "activationAt": "2026-10-03T23:12:17.124Z",
+            "expiresAt": "2026-10-03T23:14:14.124Z",
+            "eligibleObservedTrades": 3,
+            "strictThroughEvents": 0,
+            "strictThroughShares": 0,
+            "firstThrough": null,
+            "aggressorSide": null,
+            "queuePositionProven": false,
+            "fillProven": false
+          }
+        ]
+      }
+    },
+    {
+      "anchorAt": "2026-10-03T23:14:36.391Z",
+      "sourceSequence": 13079,
+      "sourceHash": "fe1c88f0c36ec99c0cad33d1cc6138a9d51efc62894df36d84ee4346f0821edc",
+      "versions": [
+        "28316550:2026-10-03T23:14:33.561870100Z",
+        "28317209:2026-10-03T23:14:36.822002600Z"
+      ],
+      "quantity": "6",
+      "acquisitionCost": "5.910000",
+      "ordinaryConditionalSettlementSurplus": "0.090000",
+      "zeroPayoutStress": "-5.910000",
+      "subsequentCompleteExitObservations": 9,
+      "partialExitObservations": 0,
+      "bestLaterDepthMark": {
+        "at": "2026-10-03T23:16:59.026Z",
+        "ageMs": 142635,
+        "complete": true,
+        "legs": [
+          {
+            "quantity": "6",
+            "proceeds": "1.110000",
+            "complete": true
+          },
+          {
+            "quantity": "6",
+            "proceeds": "4.605000",
+            "complete": true
+          }
+        ],
+        "netProceeds": "5.715000",
+        "hypotheticalPnl": "-0.195000",
+        "versions": [
+          "28345235:2026-10-03T23:16:56.242984800Z",
+          "28346087:2026-10-03T23:16:59.461833800Z"
+        ],
+        "sourceSequence": 13095,
+        "sourceHash": "b9f2619808f72335cb534d925d9fcf2014524034fe97bf984c9ab5321d21cf2c"
+      },
+      "lastLaterDepthMark": {
+        "at": "2026-10-03T23:39:07.572Z",
+        "ageMs": 1471181,
+        "complete": true,
+        "legs": [
+          {
+            "quantity": "6",
+            "proceeds": "1.110000",
+            "complete": true
+          },
+          {
+            "quantity": "6",
+            "proceeds": "4.535000",
+            "complete": true
+          }
+        ],
+        "netProceeds": "5.645000",
+        "hypotheticalPnl": "-0.265000",
+        "versions": [
+          "28585818:2026-10-03T23:39:04.846673200Z",
+          "28586304:2026-10-03T23:39:08.030221800Z"
+        ],
+        "sourceSequence": 13239,
+        "sourceHash": "e16b0238c023158dd34d88854c00cbf8bb2167a67640b0021fb4f36c2fbd2bce"
+      },
+      "rightCensored": false,
+      "maker": {
+        "quantity": 1,
+        "canonicalNoQuotedPackageCost": "0.965000",
+        "bothLegsHaveStrictThrough": false,
+        "exactlyOneLegHasStrictThrough": false,
+        "legs": [
+          {
+            "marketId": "381",
+            "exchangeId": "1070",
+            "yesSellLimit": "0.810000",
+            "canonicalNoAcquisitionPrice": "0.190000",
+            "activationAt": "2026-10-03T23:14:39.391Z",
+            "expiresAt": "2026-10-03T23:16:36.391Z",
+            "eligibleObservedTrades": 1,
+            "strictThroughEvents": 0,
+            "strictThroughShares": 0,
+            "firstThrough": null,
+            "aggressorSide": null,
+            "queuePositionProven": false,
+            "fillProven": false
+          },
+          {
+            "marketId": "382",
+            "exchangeId": "1071",
+            "yesSellLimit": "0.225000",
+            "canonicalNoAcquisitionPrice": "0.775000",
+            "activationAt": "2026-10-03T23:14:39.391Z",
+            "expiresAt": "2026-10-03T23:16:36.391Z",
+            "eligibleObservedTrades": 1,
+            "strictThroughEvents": 0,
+            "strictThroughShares": 0,
+            "firstThrough": null,
+            "aggressorSide": null,
+            "queuePositionProven": false,
+            "fillProven": false
+          }
+        ]
+      }
+    },
+    {
+      "anchorAt": "2026-10-03T23:16:59.026Z",
+      "sourceSequence": 13095,
+      "sourceHash": "b9f2619808f72335cb534d925d9fcf2014524034fe97bf984c9ab5321d21cf2c",
+      "versions": [
+        "28345235:2026-10-03T23:16:56.242984800Z",
+        "28346087:2026-10-03T23:16:59.461833800Z"
+      ],
+      "quantity": "6",
+      "acquisitionCost": "5.910000",
+      "ordinaryConditionalSettlementSurplus": "0.090000",
+      "zeroPayoutStress": "-5.910000",
+      "subsequentCompleteExitObservations": 8,
+      "partialExitObservations": 0,
+      "bestLaterDepthMark": {
+        "at": "2026-10-03T23:27:12.206Z",
+        "ageMs": 613180,
+        "complete": true,
+        "legs": [
+          {
+            "quantity": "6",
+            "proceeds": "1.110000",
+            "complete": true
+          },
+          {
+            "quantity": "6",
+            "proceeds": "4.570000",
+            "complete": true
+          }
+        ],
+        "netProceeds": "5.680000",
+        "hypotheticalPnl": "-0.230000",
+        "versions": [
+          "28465121:2026-10-03T23:27:09.449023100Z",
+          "28465733:2026-10-03T23:27:12.657474600Z"
+        ],
+        "sourceSequence": 13159,
+        "sourceHash": "f6319725876933cd3924b97f7d0d04a92f048cb15a331c20892ce009513e5978"
+      },
+      "lastLaterDepthMark": {
+        "at": "2026-10-03T23:39:07.572Z",
+        "ageMs": 1328546,
+        "complete": true,
+        "legs": [
+          {
+            "quantity": "6",
+            "proceeds": "1.110000",
+            "complete": true
+          },
+          {
+            "quantity": "6",
+            "proceeds": "4.535000",
+            "complete": true
+          }
+        ],
+        "netProceeds": "5.645000",
+        "hypotheticalPnl": "-0.265000",
+        "versions": [
+          "28585818:2026-10-03T23:39:04.846673200Z",
+          "28586304:2026-10-03T23:39:08.030221800Z"
+        ],
+        "sourceSequence": 13239,
+        "sourceHash": "e16b0238c023158dd34d88854c00cbf8bb2167a67640b0021fb4f36c2fbd2bce"
+      },
+      "rightCensored": false,
+      "maker": {
+        "quantity": 1,
+        "canonicalNoQuotedPackageCost": "0.965000",
+        "bothLegsHaveStrictThrough": false,
+        "exactlyOneLegHasStrictThrough": false,
+        "legs": [
+          {
+            "marketId": "381",
+            "exchangeId": "1070",
+            "yesSellLimit": "0.810000",
+            "canonicalNoAcquisitionPrice": "0.190000",
+            "activationAt": "2026-10-03T23:17:02.026Z",
+            "expiresAt": "2026-10-03T23:18:59.026Z",
+            "eligibleObservedTrades": 2,
+            "strictThroughEvents": 0,
+            "strictThroughShares": 0,
+            "firstThrough": null,
+            "aggressorSide": null,
+            "queuePositionProven": false,
+            "fillProven": false
+          },
+          {
+            "marketId": "382",
+            "exchangeId": "1071",
+            "yesSellLimit": "0.225000",
+            "canonicalNoAcquisitionPrice": "0.775000",
+            "activationAt": "2026-10-03T23:17:02.026Z",
+            "expiresAt": "2026-10-03T23:18:59.026Z",
+            "eligibleObservedTrades": 2,
+            "strictThroughEvents": 0,
+            "strictThroughShares": 0,
+            "firstThrough": null,
+            "aggressorSide": null,
+            "queuePositionProven": false,
+            "fillProven": false
+          }
+        ]
+      }
+    },
+    {
+      "anchorAt": "2026-10-03T23:22:30.640Z",
+      "sourceSequence": 13128,
+      "sourceHash": "49955e918aad6bda033b1d195b8e4bcc90f984c46bb8d1c4142386520c578734",
+      "versions": [
+        "28408429:2026-10-03T23:22:27.864562800Z",
+        "28408961:2026-10-03T23:22:31.085493600Z"
+      ],
+      "quantity": "6",
+      "acquisitionCost": "5.875000",
+      "ordinaryConditionalSettlementSurplus": "0.125000",
+      "zeroPayoutStress": "-5.875000",
+      "subsequentCompleteExitObservations": 7,
+      "partialExitObservations": 0,
+      "bestLaterDepthMark": {
+        "at": "2026-10-03T23:27:12.206Z",
+        "ageMs": 281566,
+        "complete": true,
+        "legs": [
+          {
+            "quantity": "6",
+            "proceeds": "1.110000",
+            "complete": true
+          },
+          {
+            "quantity": "6",
+            "proceeds": "4.570000",
+            "complete": true
+          }
+        ],
+        "netProceeds": "5.680000",
+        "hypotheticalPnl": "-0.195000",
+        "versions": [
+          "28465121:2026-10-03T23:27:09.449023100Z",
+          "28465733:2026-10-03T23:27:12.657474600Z"
+        ],
+        "sourceSequence": 13159,
+        "sourceHash": "f6319725876933cd3924b97f7d0d04a92f048cb15a331c20892ce009513e5978"
+      },
+      "lastLaterDepthMark": {
+        "at": "2026-10-03T23:39:07.572Z",
+        "ageMs": 996932,
+        "complete": true,
+        "legs": [
+          {
+            "quantity": "6",
+            "proceeds": "1.110000",
+            "complete": true
+          },
+          {
+            "quantity": "6",
+            "proceeds": "4.535000",
+            "complete": true
+          }
+        ],
+        "netProceeds": "5.645000",
+        "hypotheticalPnl": "-0.230000",
+        "versions": [
+          "28585818:2026-10-03T23:39:04.846673200Z",
+          "28586304:2026-10-03T23:39:08.030221800Z"
+        ],
+        "sourceSequence": 13239,
+        "sourceHash": "e16b0238c023158dd34d88854c00cbf8bb2167a67640b0021fb4f36c2fbd2bce"
+      },
+      "rightCensored": false,
+      "maker": {
+        "quantity": 1,
+        "canonicalNoQuotedPackageCost": "0.955000",
+        "bothLegsHaveStrictThrough": false,
+        "exactlyOneLegHasStrictThrough": false,
+        "legs": [
+          {
+            "marketId": "381",
+            "exchangeId": "1070",
+            "yesSellLimit": "0.810000",
+            "canonicalNoAcquisitionPrice": "0.190000",
+            "activationAt": "2026-10-03T23:22:33.640Z",
+            "expiresAt": "2026-10-03T23:24:30.640Z",
+            "eligibleObservedTrades": 12,
+            "strictThroughEvents": 0,
+            "strictThroughShares": 0,
+            "firstThrough": null,
+            "aggressorSide": null,
+            "queuePositionProven": false,
+            "fillProven": false
+          },
+          {
+            "marketId": "382",
+            "exchangeId": "1071",
+            "yesSellLimit": "0.235000",
+            "canonicalNoAcquisitionPrice": "0.765000",
+            "activationAt": "2026-10-03T23:22:33.640Z",
+            "expiresAt": "2026-10-03T23:24:30.640Z",
+            "eligibleObservedTrades": 6,
+            "strictThroughEvents": 0,
+            "strictThroughShares": 0,
+            "firstThrough": null,
+            "aggressorSide": null,
+            "queuePositionProven": false,
+            "fillProven": false
+          }
+        ]
+      }
+    },
+    {
+      "anchorAt": "2026-10-03T23:24:49.631Z",
+      "sourceSequence": 13143,
+      "sourceHash": "f41f90afe6551098cd90f574c1c2bcbe6fe3f8d586381c42036964e2bcbf0c39",
+      "versions": [
+        "28433976:2026-10-03T23:24:46.842991700Z",
+        "28434619:2026-10-03T23:24:50.065084800Z"
+      ],
+      "quantity": "6",
+      "acquisitionCost": "5.880000",
+      "ordinaryConditionalSettlementSurplus": "0.120000",
+      "zeroPayoutStress": "-5.880000",
+      "subsequentCompleteExitObservations": 6,
+      "partialExitObservations": 0,
+      "bestLaterDepthMark": {
+        "at": "2026-10-03T23:27:12.206Z",
+        "ageMs": 142575,
+        "complete": true,
+        "legs": [
+          {
+            "quantity": "6",
+            "proceeds": "1.110000",
+            "complete": true
+          },
+          {
+            "quantity": "6",
+            "proceeds": "4.570000",
+            "complete": true
+          }
+        ],
+        "netProceeds": "5.680000",
+        "hypotheticalPnl": "-0.200000",
+        "versions": [
+          "28465121:2026-10-03T23:27:09.449023100Z",
+          "28465733:2026-10-03T23:27:12.657474600Z"
+        ],
+        "sourceSequence": 13159,
+        "sourceHash": "f6319725876933cd3924b97f7d0d04a92f048cb15a331c20892ce009513e5978"
+      },
+      "lastLaterDepthMark": {
+        "at": "2026-10-03T23:39:07.572Z",
+        "ageMs": 857941,
+        "complete": true,
+        "legs": [
+          {
+            "quantity": "6",
+            "proceeds": "1.110000",
+            "complete": true
+          },
+          {
+            "quantity": "6",
+            "proceeds": "4.535000",
+            "complete": true
+          }
+        ],
+        "netProceeds": "5.645000",
+        "hypotheticalPnl": "-0.235000",
+        "versions": [
+          "28585818:2026-10-03T23:39:04.846673200Z",
+          "28586304:2026-10-03T23:39:08.030221800Z"
+        ],
+        "sourceSequence": 13239,
+        "sourceHash": "e16b0238c023158dd34d88854c00cbf8bb2167a67640b0021fb4f36c2fbd2bce"
+      },
+      "rightCensored": false,
+      "maker": {
+        "quantity": 1,
+        "canonicalNoQuotedPackageCost": "0.955000",
+        "bothLegsHaveStrictThrough": false,
+        "exactlyOneLegHasStrictThrough": false,
+        "legs": [
+          {
+            "marketId": "381",
+            "exchangeId": "1070",
+            "yesSellLimit": "0.810000",
+            "canonicalNoAcquisitionPrice": "0.190000",
+            "activationAt": "2026-10-03T23:24:52.631Z",
+            "expiresAt": "2026-10-03T23:26:49.631Z",
+            "eligibleObservedTrades": 1,
+            "strictThroughEvents": 0,
+            "strictThroughShares": 0,
+            "firstThrough": null,
+            "aggressorSide": null,
+            "queuePositionProven": false,
+            "fillProven": false
+          },
+          {
+            "marketId": "382",
+            "exchangeId": "1071",
+            "yesSellLimit": "0.235000",
+            "canonicalNoAcquisitionPrice": "0.765000",
+            "activationAt": "2026-10-03T23:24:52.631Z",
+            "expiresAt": "2026-10-03T23:26:49.631Z",
+            "eligibleObservedTrades": 3,
+            "strictThroughEvents": 0,
+            "strictThroughShares": 0,
+            "firstThrough": null,
+            "aggressorSide": null,
+            "queuePositionProven": false,
+            "fillProven": false
+          }
+        ]
+      }
+    },
+    {
+      "anchorAt": "2026-10-03T23:27:12.206Z",
+      "sourceSequence": 13159,
+      "sourceHash": "f6319725876933cd3924b97f7d0d04a92f048cb15a331c20892ce009513e5978",
+      "versions": [
+        "28465121:2026-10-03T23:27:09.449023100Z",
+        "28465733:2026-10-03T23:27:12.657474600Z"
+      ],
+      "quantity": "6",
+      "acquisitionCost": "5.880000",
+      "ordinaryConditionalSettlementSurplus": "0.120000",
+      "zeroPayoutStress": "-5.880000",
+      "subsequentCompleteExitObservations": 5,
+      "partialExitObservations": 0,
+      "bestLaterDepthMark": {
+        "at": "2026-10-03T23:34:25.736Z",
+        "ageMs": 433530,
+        "complete": true,
+        "legs": [
+          {
+            "quantity": "6",
+            "proceeds": "1.110000",
+            "complete": true
+          },
+          {
+            "quantity": "6",
+            "proceeds": "4.555000",
+            "complete": true
+          }
+        ],
+        "netProceeds": "5.665000",
+        "hypotheticalPnl": "-0.215000",
+        "versions": [
+          "28540127:2026-10-03T23:34:22.947466000Z",
+          "28540502:2026-10-03T23:34:26.191540400Z"
+        ],
+        "sourceSequence": 13208,
+        "sourceHash": "b60dabbbbd24dad212fac86dbe3d098e63604a64f8093e3ad58b7a655f71c1ff"
+      },
+      "lastLaterDepthMark": {
+        "at": "2026-10-03T23:39:07.572Z",
+        "ageMs": 715366,
+        "complete": true,
+        "legs": [
+          {
+            "quantity": "6",
+            "proceeds": "1.110000",
+            "complete": true
+          },
+          {
+            "quantity": "6",
+            "proceeds": "4.535000",
+            "complete": true
+          }
+        ],
+        "netProceeds": "5.645000",
+        "hypotheticalPnl": "-0.235000",
+        "versions": [
+          "28585818:2026-10-03T23:39:04.846673200Z",
+          "28586304:2026-10-03T23:39:08.030221800Z"
+        ],
+        "sourceSequence": 13239,
+        "sourceHash": "e16b0238c023158dd34d88854c00cbf8bb2167a67640b0021fb4f36c2fbd2bce"
+      },
+      "rightCensored": false,
+      "maker": {
+        "quantity": 1,
+        "canonicalNoQuotedPackageCost": "0.960000",
+        "bothLegsHaveStrictThrough": false,
+        "exactlyOneLegHasStrictThrough": false,
+        "legs": [
+          {
+            "marketId": "381",
+            "exchangeId": "1070",
+            "yesSellLimit": "0.810000",
+            "canonicalNoAcquisitionPrice": "0.190000",
+            "activationAt": "2026-10-03T23:27:15.206Z",
+            "expiresAt": "2026-10-03T23:29:12.206Z",
+            "eligibleObservedTrades": 0,
+            "strictThroughEvents": 0,
+            "strictThroughShares": 0,
+            "firstThrough": null,
+            "aggressorSide": null,
+            "queuePositionProven": false,
+            "fillProven": false
+          },
+          {
+            "marketId": "382",
+            "exchangeId": "1071",
+            "yesSellLimit": "0.230000",
+            "canonicalNoAcquisitionPrice": "0.770000",
+            "activationAt": "2026-10-03T23:27:15.206Z",
+            "expiresAt": "2026-10-03T23:29:12.206Z",
+            "eligibleObservedTrades": 0,
+            "strictThroughEvents": 0,
+            "strictThroughShares": 0,
+            "firstThrough": null,
+            "aggressorSide": null,
+            "queuePositionProven": false,
+            "fillProven": false
+          }
+        ]
+      }
+    },
+    {
+      "anchorAt": "2026-10-03T23:29:34.811Z",
+      "sourceSequence": 13175,
+      "sourceHash": "182cc11c07338b203cff4fae1eafd90944ff7107cf28be006416586a572b15d8",
+      "versions": [
+        "28491061:2026-10-03T23:29:32.039207900Z",
+        "28491476:2026-10-03T23:29:35.248438500Z"
+      ],
+      "quantity": "6",
+      "acquisitionCost": "5.880000",
+      "ordinaryConditionalSettlementSurplus": "0.120000",
+      "zeroPayoutStress": "-5.880000",
+      "subsequentCompleteExitObservations": 4,
+      "partialExitObservations": 0,
+      "bestLaterDepthMark": {
+        "at": "2026-10-03T23:34:25.736Z",
+        "ageMs": 290925,
+        "complete": true,
+        "legs": [
+          {
+            "quantity": "6",
+            "proceeds": "1.110000",
+            "complete": true
+          },
+          {
+            "quantity": "6",
+            "proceeds": "4.555000",
+            "complete": true
+          }
+        ],
+        "netProceeds": "5.665000",
+        "hypotheticalPnl": "-0.215000",
+        "versions": [
+          "28540127:2026-10-03T23:34:22.947466000Z",
+          "28540502:2026-10-03T23:34:26.191540400Z"
+        ],
+        "sourceSequence": 13208,
+        "sourceHash": "b60dabbbbd24dad212fac86dbe3d098e63604a64f8093e3ad58b7a655f71c1ff"
+      },
+      "lastLaterDepthMark": {
+        "at": "2026-10-03T23:39:07.572Z",
+        "ageMs": 572761,
+        "complete": true,
+        "legs": [
+          {
+            "quantity": "6",
+            "proceeds": "1.110000",
+            "complete": true
+          },
+          {
+            "quantity": "6",
+            "proceeds": "4.535000",
+            "complete": true
+          }
+        ],
+        "netProceeds": "5.645000",
+        "hypotheticalPnl": "-0.235000",
+        "versions": [
+          "28585818:2026-10-03T23:39:04.846673200Z",
+          "28586304:2026-10-03T23:39:08.030221800Z"
+        ],
+        "sourceSequence": 13239,
+        "sourceHash": "e16b0238c023158dd34d88854c00cbf8bb2167a67640b0021fb4f36c2fbd2bce"
+      },
+      "rightCensored": false,
+      "maker": {
+        "quantity": 1,
+        "canonicalNoQuotedPackageCost": "0.960000",
+        "bothLegsHaveStrictThrough": false,
+        "exactlyOneLegHasStrictThrough": false,
+        "legs": [
+          {
+            "marketId": "381",
+            "exchangeId": "1070",
+            "yesSellLimit": "0.810000",
+            "canonicalNoAcquisitionPrice": "0.190000",
+            "activationAt": "2026-10-03T23:29:37.811Z",
+            "expiresAt": "2026-10-03T23:31:34.811Z",
+            "eligibleObservedTrades": 4,
+            "strictThroughEvents": 0,
+            "strictThroughShares": 0,
+            "firstThrough": null,
+            "aggressorSide": null,
+            "queuePositionProven": false,
+            "fillProven": false
+          },
+          {
+            "marketId": "382",
+            "exchangeId": "1071",
+            "yesSellLimit": "0.230000",
+            "canonicalNoAcquisitionPrice": "0.770000",
+            "activationAt": "2026-10-03T23:29:37.811Z",
+            "expiresAt": "2026-10-03T23:31:34.811Z",
+            "eligibleObservedTrades": 2,
+            "strictThroughEvents": 0,
+            "strictThroughShares": 0,
+            "firstThrough": null,
+            "aggressorSide": null,
+            "queuePositionProven": false,
+            "fillProven": false
+          }
+        ]
+      }
+    },
+    {
+      "anchorAt": "2026-10-03T23:31:58.328Z",
+      "sourceSequence": 13191,
+      "sourceHash": "1da82d68e09e86641107e931e4095bf28ae36de9a117e2831203ddf1e457ea52",
+      "versions": [
+        "28513644:2026-10-03T23:31:55.573801200Z",
+        "28513900:2026-10-03T23:31:58.779994100Z"
+      ],
+      "quantity": "6",
+      "acquisitionCost": "5.880000",
+      "ordinaryConditionalSettlementSurplus": "0.120000",
+      "zeroPayoutStress": "-5.880000",
+      "subsequentCompleteExitObservations": 3,
+      "partialExitObservations": 0,
+      "bestLaterDepthMark": {
+        "at": "2026-10-03T23:34:25.736Z",
+        "ageMs": 147408,
+        "complete": true,
+        "legs": [
+          {
+            "quantity": "6",
+            "proceeds": "1.110000",
+            "complete": true
+          },
+          {
+            "quantity": "6",
+            "proceeds": "4.555000",
+            "complete": true
+          }
+        ],
+        "netProceeds": "5.665000",
+        "hypotheticalPnl": "-0.215000",
+        "versions": [
+          "28540127:2026-10-03T23:34:22.947466000Z",
+          "28540502:2026-10-03T23:34:26.191540400Z"
+        ],
+        "sourceSequence": 13208,
+        "sourceHash": "b60dabbbbd24dad212fac86dbe3d098e63604a64f8093e3ad58b7a655f71c1ff"
+      },
+      "lastLaterDepthMark": {
+        "at": "2026-10-03T23:39:07.572Z",
+        "ageMs": 429244,
+        "complete": true,
+        "legs": [
+          {
+            "quantity": "6",
+            "proceeds": "1.110000",
+            "complete": true
+          },
+          {
+            "quantity": "6",
+            "proceeds": "4.535000",
+            "complete": true
+          }
+        ],
+        "netProceeds": "5.645000",
+        "hypotheticalPnl": "-0.235000",
+        "versions": [
+          "28585818:2026-10-03T23:39:04.846673200Z",
+          "28586304:2026-10-03T23:39:08.030221800Z"
+        ],
+        "sourceSequence": 13239,
+        "sourceHash": "e16b0238c023158dd34d88854c00cbf8bb2167a67640b0021fb4f36c2fbd2bce"
+      },
+      "rightCensored": false,
+      "maker": {
+        "quantity": 1,
+        "canonicalNoQuotedPackageCost": "0.960000",
+        "bothLegsHaveStrictThrough": false,
+        "exactlyOneLegHasStrictThrough": false,
+        "legs": [
+          {
+            "marketId": "381",
+            "exchangeId": "1070",
+            "yesSellLimit": "0.810000",
+            "canonicalNoAcquisitionPrice": "0.190000",
+            "activationAt": "2026-10-03T23:32:01.328Z",
+            "expiresAt": "2026-10-03T23:33:58.328Z",
+            "eligibleObservedTrades": 1,
+            "strictThroughEvents": 0,
+            "strictThroughShares": 0,
+            "firstThrough": null,
+            "aggressorSide": null,
+            "queuePositionProven": false,
+            "fillProven": false
+          },
+          {
+            "marketId": "382",
+            "exchangeId": "1071",
+            "yesSellLimit": "0.230000",
+            "canonicalNoAcquisitionPrice": "0.770000",
+            "activationAt": "2026-10-03T23:32:01.328Z",
+            "expiresAt": "2026-10-03T23:33:58.328Z",
+            "eligibleObservedTrades": 1,
+            "strictThroughEvents": 0,
+            "strictThroughShares": 0,
+            "firstThrough": null,
+            "aggressorSide": null,
+            "queuePositionProven": false,
+            "fillProven": false
+          }
+        ]
+      }
+    },
+    {
+      "anchorAt": "2026-10-03T23:34:25.736Z",
+      "sourceSequence": 13208,
+      "sourceHash": "b60dabbbbd24dad212fac86dbe3d098e63604a64f8093e3ad58b7a655f71c1ff",
+      "versions": [
+        "28540127:2026-10-03T23:34:22.947466000Z",
+        "28540502:2026-10-03T23:34:26.191540400Z"
+      ],
+      "quantity": "6",
+      "acquisitionCost": "5.880000",
+      "ordinaryConditionalSettlementSurplus": "0.120000",
+      "zeroPayoutStress": "-5.880000",
+      "subsequentCompleteExitObservations": 2,
+      "partialExitObservations": 0,
+      "bestLaterDepthMark": {
+        "at": "2026-10-03T23:36:44.823Z",
+        "ageMs": 139087,
+        "complete": true,
+        "legs": [
+          {
+            "quantity": "6",
+            "proceeds": "1.110000",
+            "complete": true
+          },
+          {
+            "quantity": "6",
+            "proceeds": "4.555000",
+            "complete": true
+          }
+        ],
+        "netProceeds": "5.665000",
+        "hypotheticalPnl": "-0.215000",
+        "versions": [
+          "28559811:2026-10-03T23:36:42.014288300Z",
+          "28560205:2026-10-03T23:36:45.282146900Z"
+        ],
+        "sourceSequence": 13223,
+        "sourceHash": "d2c6d4e47709a6722e8116dcfc7532f7b85e65570efd308726c4eef8fb183163"
+      },
+      "lastLaterDepthMark": {
+        "at": "2026-10-03T23:39:07.572Z",
+        "ageMs": 281836,
+        "complete": true,
+        "legs": [
+          {
+            "quantity": "6",
+            "proceeds": "1.110000",
+            "complete": true
+          },
+          {
+            "quantity": "6",
+            "proceeds": "4.535000",
+            "complete": true
+          }
+        ],
+        "netProceeds": "5.645000",
+        "hypotheticalPnl": "-0.235000",
+        "versions": [
+          "28585818:2026-10-03T23:39:04.846673200Z",
+          "28586304:2026-10-03T23:39:08.030221800Z"
+        ],
+        "sourceSequence": 13239,
+        "sourceHash": "e16b0238c023158dd34d88854c00cbf8bb2167a67640b0021fb4f36c2fbd2bce"
+      },
+      "rightCensored": false,
+      "maker": {
+        "quantity": 1,
+        "canonicalNoQuotedPackageCost": "0.960000",
+        "bothLegsHaveStrictThrough": false,
+        "exactlyOneLegHasStrictThrough": false,
+        "legs": [
+          {
+            "marketId": "381",
+            "exchangeId": "1070",
+            "yesSellLimit": "0.810000",
+            "canonicalNoAcquisitionPrice": "0.190000",
+            "activationAt": "2026-10-03T23:34:28.736Z",
+            "expiresAt": "2026-10-03T23:36:25.736Z",
+            "eligibleObservedTrades": 0,
+            "strictThroughEvents": 0,
+            "strictThroughShares": 0,
+            "firstThrough": null,
+            "aggressorSide": null,
+            "queuePositionProven": false,
+            "fillProven": false
+          },
+          {
+            "marketId": "382",
+            "exchangeId": "1071",
+            "yesSellLimit": "0.230000",
+            "canonicalNoAcquisitionPrice": "0.770000",
+            "activationAt": "2026-10-03T23:34:28.736Z",
+            "expiresAt": "2026-10-03T23:36:25.736Z",
+            "eligibleObservedTrades": 0,
+            "strictThroughEvents": 0,
+            "strictThroughShares": 0,
+            "firstThrough": null,
+            "aggressorSide": null,
+            "queuePositionProven": false,
+            "fillProven": false
+          }
+        ]
+      }
+    },
+    {
+      "anchorAt": "2026-10-03T23:36:44.823Z",
+      "sourceSequence": 13223,
+      "sourceHash": "d2c6d4e47709a6722e8116dcfc7532f7b85e65570efd308726c4eef8fb183163",
+      "versions": [
+        "28559811:2026-10-03T23:36:42.014288300Z",
+        "28560205:2026-10-03T23:36:45.282146900Z"
+      ],
+      "quantity": "6",
+      "acquisitionCost": "5.880000",
+      "ordinaryConditionalSettlementSurplus": "0.120000",
+      "zeroPayoutStress": "-5.880000",
+      "subsequentCompleteExitObservations": 1,
+      "partialExitObservations": 0,
+      "bestLaterDepthMark": {
+        "at": "2026-10-03T23:39:07.572Z",
+        "ageMs": 142749,
+        "complete": true,
+        "legs": [
+          {
+            "quantity": "6",
+            "proceeds": "1.110000",
+            "complete": true
+          },
+          {
+            "quantity": "6",
+            "proceeds": "4.535000",
+            "complete": true
+          }
+        ],
+        "netProceeds": "5.645000",
+        "hypotheticalPnl": "-0.235000",
+        "versions": [
+          "28585818:2026-10-03T23:39:04.846673200Z",
+          "28586304:2026-10-03T23:39:08.030221800Z"
+        ],
+        "sourceSequence": 13239,
+        "sourceHash": "e16b0238c023158dd34d88854c00cbf8bb2167a67640b0021fb4f36c2fbd2bce"
+      },
+      "lastLaterDepthMark": {
+        "at": "2026-10-03T23:39:07.572Z",
+        "ageMs": 142749,
+        "complete": true,
+        "legs": [
+          {
+            "quantity": "6",
+            "proceeds": "1.110000",
+            "complete": true
+          },
+          {
+            "quantity": "6",
+            "proceeds": "4.535000",
+            "complete": true
+          }
+        ],
+        "netProceeds": "5.645000",
+        "hypotheticalPnl": "-0.235000",
+        "versions": [
+          "28585818:2026-10-03T23:39:04.846673200Z",
+          "28586304:2026-10-03T23:39:08.030221800Z"
+        ],
+        "sourceSequence": 13239,
+        "sourceHash": "e16b0238c023158dd34d88854c00cbf8bb2167a67640b0021fb4f36c2fbd2bce"
+      },
+      "rightCensored": false,
+      "maker": {
+        "quantity": 1,
+        "canonicalNoQuotedPackageCost": "0.960000",
+        "bothLegsHaveStrictThrough": false,
+        "exactlyOneLegHasStrictThrough": false,
+        "legs": [
+          {
+            "marketId": "381",
+            "exchangeId": "1070",
+            "yesSellLimit": "0.810000",
+            "canonicalNoAcquisitionPrice": "0.190000",
+            "activationAt": "2026-10-03T23:36:47.823Z",
+            "expiresAt": "2026-10-03T23:38:44.823Z",
+            "eligibleObservedTrades": 0,
+            "strictThroughEvents": 0,
+            "strictThroughShares": 0,
+            "firstThrough": null,
+            "aggressorSide": null,
+            "queuePositionProven": false,
+            "fillProven": false
+          },
+          {
+            "marketId": "382",
+            "exchangeId": "1071",
+            "yesSellLimit": "0.230000",
+            "canonicalNoAcquisitionPrice": "0.770000",
+            "activationAt": "2026-10-03T23:36:47.823Z",
+            "expiresAt": "2026-10-03T23:38:44.823Z",
+            "eligibleObservedTrades": 0,
+            "strictThroughEvents": 0,
+            "strictThroughShares": 0,
+            "firstThrough": null,
+            "aggressorSide": null,
+            "queuePositionProven": false,
+            "fillProven": false
+          }
+        ]
+      }
+    },
+    {
+      "anchorAt": "2026-10-03T23:39:07.572Z",
+      "sourceSequence": 13239,
+      "sourceHash": "e16b0238c023158dd34d88854c00cbf8bb2167a67640b0021fb4f36c2fbd2bce",
+      "versions": [
+        "28585818:2026-10-03T23:39:04.846673200Z",
+        "28586304:2026-10-03T23:39:08.030221800Z"
+      ],
+      "quantity": "6",
+      "acquisitionCost": "5.880000",
+      "ordinaryConditionalSettlementSurplus": "0.120000",
+      "zeroPayoutStress": "-5.880000",
+      "subsequentCompleteExitObservations": 0,
+      "partialExitObservations": 0,
+      "bestLaterDepthMark": null,
+      "lastLaterDepthMark": null,
+      "rightCensored": true,
+      "maker": {
+        "quantity": 1,
+        "canonicalNoQuotedPackageCost": "0.960000",
+        "bothLegsHaveStrictThrough": false,
+        "exactlyOneLegHasStrictThrough": false,
+        "legs": [
+          {
+            "marketId": "381",
+            "exchangeId": "1070",
+            "yesSellLimit": "0.810000",
+            "canonicalNoAcquisitionPrice": "0.190000",
+            "activationAt": "2026-10-03T23:39:10.572Z",
+            "expiresAt": "2026-10-03T23:41:07.572Z",
+            "eligibleObservedTrades": 0,
+            "strictThroughEvents": 0,
+            "strictThroughShares": 0,
+            "firstThrough": null,
+            "aggressorSide": null,
+            "queuePositionProven": false,
+            "fillProven": false
+          },
+          {
+            "marketId": "382",
+            "exchangeId": "1071",
+            "yesSellLimit": "0.230000",
+            "canonicalNoAcquisitionPrice": "0.770000",
+            "activationAt": "2026-10-03T23:39:10.572Z",
+            "expiresAt": "2026-10-03T23:41:07.572Z",
+            "eligibleObservedTrades": 0,
+            "strictThroughEvents": 0,
+            "strictThroughShares": 0,
+            "firstThrough": null,
+            "aggressorSide": null,
+            "queuePositionProven": false,
+            "fillProven": false
+          }
+        ]
+      }
+    }
+  ],
+  "simulatedFills": null,
+  "realizedPnl": null,
+  "executionAuthority": false,
+  "profitabilityEstablished": false,
+  "limitations": [
+    "Overlapping historical anchors are dependent; best-later marks use hindsight and are not a strategy return.",
+    "Later co-observed depth is not proof of entry, exit, simultaneous matching or atomic execution.",
+    "Strict trade-through prints are potential counterparties, not queue priority, aggressor identification or maker fills.",
+    "Missing reporting windows, null/unrecognized legacy prices and unobserved paths cannot prove no trades or no future profit.",
+    "Ordinary settlement scenarios can fail; zero-payout stress and partial-leg risk remain."
+  ]
+}

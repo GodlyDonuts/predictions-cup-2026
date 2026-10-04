@@ -48,6 +48,8 @@ import {readProbabilityReadFocus} from './probability-read-focus.mjs';
 import {openCanonicalCapacityMonitor} from './canonical-capacity-monitor.mjs';
 import {createTradeTape,selectAuxiliaryReads} from './trade-tape.mjs';
 import {guardCanonicalCapacity} from './canonical-capacity-guard.mjs';
+import {openNoMakerHost} from './no-maker-host.mjs';
+import {probabilityAccountEligibility} from './probability-receipt.mjs';
 
 const root=path.dirname(fileURLToPath(import.meta.url)),workspace=path.dirname(root);
 if(process.argv.includes('--live'))throw Error('Competition order execution is disabled');
@@ -68,7 +70,7 @@ let journal,state,api,server,heartbeat,competition,realtime,realtimeCapture,bask
 const samplingSessionId=randomUUID();
 let universe,coverage,depthPlan,dipBank,scaleBank,responsiveBank,scheduler,schedulerScope;const recentReadTimings=[];
 let diagnosticSource,diagnosticLoading=false,diagnosticFailed=false;
-let canonicalCapacity,tradeTape;
+let canonicalCapacity,tradeTape,noMaker;
 function collectDiagnosticFocus(){
  if(!diagnosticSource&&!diagnosticLoading&&!diagnosticFailed){diagnosticLoading=true;try{const source=openDiagnosticFocus(runtimeDir,universe,{deferBootstrap:true});source.initialize({stopped:()=>stopping}).then(()=>{diagnosticSource=source;diagnosticLoading=false;}).catch(()=>{diagnosticFailed=true;diagnosticLoading=false;});}catch{diagnosticFailed=true;diagnosticLoading=false;}}
  if(!diagnosticSource){runtime.diagnosticReadFocus={status:diagnosticFailed?'failed':'loading',executionAuthority:false};return null;}
@@ -105,6 +107,7 @@ function schedulingInputs(){
    runtime.comparisonRisk=comparisonRisk;
    for(const key of ['heldMarketIds','pendingMarketIds'])inputs[key]=[...new Set([...inputs[key],...comparisonRisk[key]])];
   }
+  if(noMaker)try{const risk=noMaker.status().riskMarketIds;inputs.heldMarketIds=[...new Set([...inputs.heldMarketIds,...risk])];}catch{runtime.noMaker={status:'failed',executionAuthority:false};noMaker=null;}
   inputs.priorityManagedMarketIds=competition?.managedMarketIds()||[];
   inputs.heldMarketIds=[...new Set([...inputs.heldMarketIds,...inputs.priorityManagedMarketIds])];return inputs;
 }
@@ -160,7 +163,7 @@ async function collectAccountExtra(){
 let runtime={status:'starting',pid:process.pid,runtimeDir,readRequests:0,errors:[],cycles:0,lastCycleAt:null,dashboard:'http://127.0.0.1:'+c.port};
 function persistStatus(){const r=report(state,c);if(realtime)atomicJson(path.join(runtimeDir,'realtime-stats.json'),{...realtime.status(),pid:process.pid});atomicJson(path.join(runtimeDir,'stats.json'),{...r,runtime:{...runtime,readRequests:api?.requests||0}});return r;}
 function commit(event){try{journal.commit(state,event);}catch{const e=Error('Paper journal recording failed');e.durableRecordingFailed=true;throw e;}}
-function publishBookEvent(method,value){try{return bookPublication?.[method](value);}catch{const e=Error('Public book recording failed');e.durableRecordingFailed=true;e.fatal=true;throw e;}}
+function publishBookEvent(method,value){try{const result=bookPublication?.[method](value);if(noMaker&&(['invalidate','close'].includes(method)||method==='publishBook'&&result===false))try{noMaker.boundary(method);runtime.noMaker=noMaker.status();}catch{runtime.noMaker={status:'failed',executionAuthority:false};noMaker=null;}return result;}catch{const e=Error('Public book recording failed');e.durableRecordingFailed=true;e.fatal=true;throw e;}}
 async function collectHistory(limit=2){
  const inputs=schedulingInputs(),bookPlan=planBookReads(scheduler,schedulerScope,inputs);
  const plan=planHistoryReads(scheduler,schedulerScope,{...inputs,candidateMarketIds:bookPlan.entryMarketIds},{budget:limit});
@@ -200,7 +203,8 @@ try{
     const checkpoint=moneyReceiptWriter(receipt);runtime.exactMoneyReceipts={sequence:checkpoint.sequence,lastKind:receipt.kind,receivedAt:receipt.receivedAt,exact:Object.values(receipt.fields).every(x=>x.available),executionAuthority:false};
   }});
   api=new ReadClient(loadKey(),{fetchFn:moneyFetch,interval:c.readIntervalMs,networkBudget,signal:control.signal,authorizeDispatch:spec=>tradeTape?.authorizes(spec)===true||contractEvidence?.authorizes(spec)===true||basketRelationships?.authorizes(spec)===true||realtime?.authorizes(spec)===true||competition?.transport.authorizeRequest(spec)===true,onAdmission:next=>atomicJson(path.join(runtimeDir,'rate.json'),{next,manualReview:next===null}),onTiming:event=>{validateTiming(event);fs.appendFileSync(path.join(runtimeDir,'read-timings.jsonl'),JSON.stringify(event)+'\n',{mode:0o600});recentReadTimings.push(event);if(recentReadTimings.length>1000)recentReadTimings.shift();runtime.readTiming=timingSummary(recentReadTimings);}});
-  try{tradeTape=createTradeTape({runtimeDir,universe,canOperate:()=>!stopping&&!api.manualReview});runtime.tradeTape=tradeTape.status();}catch{runtime.tradeTape={status:'unavailable',executionAuthority:false};}
+  try{noMaker=openNoMakerHost({runtimeDir,canOperate:()=>!stopping&&!api.manualReview});runtime.noMaker=noMaker?.status()||{status:'not_initialized',executionAuthority:false};}catch{runtime.noMaker={status:'failed',executionAuthority:false};}
+  try{tradeTape=createTradeTape({runtimeDir,universe,canOperate:()=>!stopping&&!api.manualReview,onPage:row=>{if(noMaker)try{noMaker.onPage(row);runtime.noMaker=noMaker.status();}catch{runtime.noMaker={status:'failed',executionAuthority:false};noMaker=null;}}});runtime.tradeTape=tradeTape.status();}catch{runtime.tradeTape={status:'unavailable',executionAuthority:false};}
   basketRelationships=createBasketRelationshipReader({tournamentId:c.tournamentId,now:Date.now,dispatch:spec=>api.dispatch(spec),canOperate:()=>!stopping&&!api.manualReview&&!fs.existsSync(stopFile)&&!fs.existsSync(paperStop)&&!fs.existsSync(collectorStop)&&!fs.existsSync(path.join(runtimeDir,'BASKET_STOP'))});
   contractEvidence=createContractEvidenceReader({tournamentId:c.tournamentId,legs:[{marketId:'381',exchangeId:'1070',contractId:'382'},{marketId:'382',exchangeId:'1071',contractId:'383'}],now:Date.now,dispatch:spec=>api.dispatch(spec),canOperate:()=>!stopping&&!api.manualReview&&!fs.existsSync(stopFile)&&!fs.existsSync(paperStop)&&!fs.existsSync(collectorStop)&&!fs.existsSync(path.join(runtimeDir,'BASKET_STOP'))});
   runtime.networkBudget={mode:networkBudget?.schemaVersion===3?'coordinated_shared_read_only':networkBudget?'coordinated_sole_client':'default',schemaVersion:networkBudget?.schemaVersion??null,intervalMs:networkIntervalMs,writeIntervalMs:api.writeInterval,completionPacing:api.completionPacing,...(networkBudget?.schemaVersion===3?{maxReadsPerMinute:20,writesEnabled:false,executionOwner:'Daenerys'}:{})};
@@ -318,6 +322,7 @@ try{
           target.push(r);
           if(planned.comparisonSampling?.planId)samplingReceipts.push({marketId,requestStartedAt:r.requestStartedAt,receivedAt:r.receivedAt});
           receivedBook=true;publishBookEvent('publishBook',{marketId,response:r});
+          if(noMaker)try{noMaker.onBook(bookPublication.status(),marketId,probabilityAccountEligibility(accountCache));runtime.noMaker=noMaker.status();}catch{runtime.noMaker={status:'failed',executionAuthority:false};noMaker=null;}
           if(canonicalCapacity)try{canonicalCapacity.inspect(bookPublication.status());runtime.canonicalCapacity=canonicalCapacity.status();}catch{canonicalCapacity=null;runtime.canonicalCapacity={status:'failed',executionAuthority:false};}
           if(competition)try{await competition.onBook(r);}catch(e){competition.failure(e);}
           const b=normalizeBook(r.data,marketId,c.tournamentId,r.receivedAt,r.requestStartedAt,c.maxDataAgeMs,excluded,spec.path==='sourceSnapshots'?'event_age_v1':dipBank?'authoritative_receipt_v1':'event_age_v1');

@@ -1,0 +1,56 @@
+{
+  "at": "2026-10-04T00:18:38.925Z",
+  "collectorPid": 17956,
+  "paperPid": 3472,
+  "dashboardPid": 6744,
+  "cohort": "no-maker-tape-20261004-v1",
+  "bankHash": "17b460652639c3f74fb68b39d3c459fb6971d89654125ec34b0c1d41bf2105ee",
+  "cutoff": "2026-10-03T23:59:44.865Z",
+  "journalSequence": 39,
+  "journalHash": "8cafe763288b2bd3a8c8d9c972c470d368d17808df8ee162cf866c74df99c45d",
+  "tapeSequence": 57,
+  "tapeIdentityVersion": 2,
+  "attemptedExchanges": [
+    "986",
+    "1071"
+  ],
+  "originalExperimentsPreserved": [
+    "source-probability-20261003-v1",
+    "nh-canonical-capacity-20261003-v1"
+  ],
+  "counts": {
+    "insufficient_spread_or_depth": 10,
+    "quote_buy": 4,
+    "quote_unfilled_projection_resolved": 2,
+    "source_boundary": 1
+  },
+  "wallets": {
+    "at_quote": {
+      "cash": "100.000000",
+      "reserved": "0.755000",
+      "fees": "0.000000",
+      "fills": 0,
+      "closedTrades": 0,
+      "realizedPnl": "0.000000",
+      "positions": 0,
+      "unresolvedQuotes": 1
+    },
+    "improve_one_tick": {
+      "cash": "100.000000",
+      "reserved": "0.755000",
+      "fees": "0.000000",
+      "fills": 0,
+      "closedTrades": 0,
+      "realizedPnl": "0.000000",
+      "positions": 0,
+      "unresolvedQuotes": 1
+    }
+  },
+  "dashboardMakerWallets": [
+    "no-maker-at-quote",
+    "no-maker-improve-one-tick"
+  ],
+  "competitionOrders": 0,
+  "executionOwner": "Daenerys",
+  "profitabilityEstablished": false
+}
