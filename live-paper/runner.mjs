@@ -25,6 +25,8 @@ import {checkpointCoverage} from './coverage-checkpoint.mjs';
 import {readPairedPackageFocus,focusPairedPackageReads} from './paired-package-read-plan.mjs';
 import {exactMoneyFetch,createMoneyReceiptWriter} from '../execution/exact-money-receipts.mjs';
 import {createBookPublication} from './book-publication-v2.mjs';
+import {createNativeBookPublication} from './book-publication-v3.mjs';
+import {collectorNativePublicationConfig} from './collector-publication-native.mjs';
 import {createBasketFollowupSource} from './basket-followup-source.mjs';
 import {createComparisonRiskSource} from './comparison-risk-source.mjs';
 import {planComparisonSampling,recordComparisonAttempt} from './comparison-sampling.mjs';
@@ -201,8 +203,9 @@ try{
   const pricePublication=marketSweep?createMarketPricePublication({file:path.join(runtimeDir,'market-prices.jsonl'),universe,canOperate:()=>!stopping}):null;
   comparisonRiskSource=createComparisonRiskSource({runtimeDir,universe,now:Date.now});
   const publicationReplayStarted=performance.now();
-  bookPublication=createBookPublication({file:path.join(runtimeDir,'public-books.jsonl'),universe,sessionId:randomUUID(),now:Date.now,canOperate:()=>!stopping});
-  runtime.bookPublisher={revision:2,startupReplayMs:performance.now()-publicationReplayStarted,frozenPublisherFileChanged:false};
+  const nativePublication=collectorNativePublicationConfig(runtimeDir,universe),publicationOptions={file:path.join(runtimeDir,'public-books.jsonl'),universe,sessionId:randomUUID(),now:Date.now,canOperate:()=>!stopping};
+  bookPublication=nativePublication?await createNativeBookPublication({...publicationOptions,runtimeDir,nativeBackend:nativePublication.nativeBackend,receiptDir:path.join(runtimeDir,'collector-native-publication-receipts')}):createBookPublication(publicationOptions);
+  runtime.bookPublisher={revision:nativePublication?3:2,startupReplayMs:performance.now()-publicationReplayStarted,frozenPublisherFileChanged:false,...(nativePublication?{native:bookPublication.startup()}:{} )};
   try{canonicalCapacity=guardCanonicalCapacity(openCanonicalCapacityMonitor({runtimeDir,universe}));runtime.canonicalCapacity=canonicalCapacity?.status()||{status:'not_initialized',executionAuthority:false};}catch{runtime.canonicalCapacity={status:'unavailable',executionAuthority:false};}
   depthPlan=validateDepthPlan(JSON.parse(fs.readFileSync(path.join(root,'depth-plan.json'),'utf8')),c,universe);
   const dipFile=path.join(runtimeDir,'dip-bank.json');if(fs.existsSync(dipFile)){dipBank=JSON.parse(fs.readFileSync(dipFile));validateDipPolicy(dipBank.policy);if(dipBank.universe.hash!==universe.hash||dipBank.config.feeBps!==0||dipBank.policy.historyReadsPerCycle!==2||dipBank.policy.comparisonBooksPerCycle!==2||dipBank.policy.dynamicBooksPerCycle!==2)throw Error('Invalid dip collection plan');runtime.collectionPlan={mode:'diversified_dip',historyReads:officialSync?1:2,fullBookBudget:4,managedCapacity:3,bulkReads:marketSweep?Math.ceil(universe.exchanges.length/100):1,accountReads:'positions plus paginated orders',readIntervalMs:c.readIntervalMs};}

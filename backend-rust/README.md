@@ -96,7 +96,20 @@ live cold start was 1.82 seconds. V1/V2 banks, journals, FIFO basis, cash and fi
 are preserved; the strategy and expired research were not reset or retrained.
 See `data/baal-native-publication-benchmark-20261004.json` and
 `data/probability-native-live-20261004.json`. This is a partial backend migration;
-live order execution and the complete collector remain outside this native path.
+live order execution and incremental paper economics remain outside this native path.
+
+The collector's versioned V3 producer also uses this pinned native prefix on
+startup. Its subsequent publication records and complete immutable states match
+optimized JavaScript V2 byte for byte through books, invalidations and shutdown.
+On the same sealed 34.16 MB / 16,301-record prefix, optimized V2 took 5.16 seconds
+and the native adapter took 1.54 seconds (3.34x), with exact complete-state parity.
+The earlier 32.66x result compared the older original paper validator. Live V3
+publication startup measured 1.68 seconds; its separately measured prior V2
+startup was 5.44 seconds on a slightly smaller prefix. Eleven targeted integration
+checks passed with no skips. See `data/native-collector-benchmark-20261004.json`
+and `data/native-collector-live-20261004.json`. These timings describe the public
+publication stage, not overall collector startup or platform pacing. Restoring
+the separate approximately 4 GB collector journal remains JavaScript work.
 
 Measured no-refit comparison on the original 4.25 GB/9,491-record/2.31-day prefix:
 127.73 seconds JavaScript (four workers) versus 12.21 seconds Rust (eight), 10.46x

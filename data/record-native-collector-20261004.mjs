@@ -1,0 +1,12 @@
+import fs from 'node:fs';import {atomicJson} from '../execution/ledger.mjs';
+const read=f=>JSON.parse(fs.readFileSync(f)),live=read('data/native-collector-live-20261004.json'),benchmark=read('data/native-collector-benchmark-20261004.json'),at=new Date().toISOString();
+const milestone={at,status:'deployed_and_exact_state_verified',claim:5979624440,tests:11,skippedTests:0,evidence:['data/native-collector-benchmark-20261004.json','data/native-collector-live-20261004.json','data/native-collector-preservation-20261004.json'],
+ exactStateParity:benchmark.exactCompleteStateParity,source:benchmark.source,optimizedJavascriptMs:benchmark.javascriptMs,nativeAdapterMs:benchmark.nativeAdapterMs,samePrefixSpeedup:benchmark.speedup,livePublicationStartupMs:live.nativePublisherMs,
+ originalValidatorComparisonDistinct:true,totalCollectorStartupSpeedupClaimed:false,accountingReset:false,extraPersistentProcesses:0,extraReadSlots:0,competitionOrders:0,profitabilityEstablished:false,
+ unresolved:['Independent review of native producer prefix and byte-identical later publications','Original collector journal restore still parses/hashes approximately4GB in JS; benchmark and migrate exact chain/final-state restoration to Rust','Prospective maker/pair economics and sparse breadth remain insufficient for profit or takeover']};
+atomicJson('data/native-collector-milestone-20261004.json',milestone);
+for(const f of ['data/quant-development-state.json','data/daenerys-monitor.json']){const x=read(f);x.updatedAt=at;x.nativeCollectorMilestone=milestone;if(f.includes('quant-development')){
+ x.activeProcesses={collector:live.pids.collector,paper:live.pids.paper,dashboard:live.pids.dashboard,total:3};x.next='Profile and accelerate exact restoration of the original ~4GB collector journal with native raw-byte/hash/chain/final-state parity; retain frozen accounting and account-wide pacing. Measure subsequent passive/source-backed economics and honest spread/queue/latency limits. Current native replay/public validation do not establish profitability. No token/order/ownership action from agent proposals.';
+ x.baalBacklog.push({status:'completed',task:'Move the collector public quote prefix to the pinned native validator with exact producer/state parity',completedAt:at,evidence:milestone.evidence[0]});
+ }atomicJson(f,x);}
+console.log(JSON.stringify({at,status:milestone.status,samePrefixSpeedup:milestone.samePrefixSpeedup,pids:live.pids,profitabilityEstablished:false}));
