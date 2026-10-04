@@ -86,7 +86,7 @@ const networkBudget=loadNetworkBudget(path.join(runtimeDir,'coordinated-network-
 // Old enabled activations are historical evidence, never a restart permit.
 const productionActivationFile=path.join(runtimeDir,'competition-activation.json');
 const productionActivation=fs.existsSync(productionActivationFile)?JSON.parse(fs.readFileSync(productionActivationFile,'utf8')):null;
-if(productionActivation?.enabled===true){validateProductionActivation(productionActivation);if(!productionHandoffCurrent(runtimeDir,productionActivation)||networkBudget?.schemaVersion!==4||['handoffId','releaseCommentId','ackCommentId'].some(k=>networkBudget[k]!==productionActivation[k]))throw Error('PRODUCTION_HANDOFF_OR_BUDGET_REQUIRED');}
+if(productionActivation?.enabled===true){validateProductionActivation(productionActivation);const authorityKeys=productionActivation.authorityKind==='direct_human_assignment'?['authorityKind','assignmentCommentId']:['releaseCommentId'];if(!productionHandoffCurrent(runtimeDir,productionActivation)||networkBudget?.schemaVersion!==4||['handoffId','ackCommentId',...authorityKeys].some(k=>networkBudget[k]!==productionActivation[k]))throw Error('PRODUCTION_HANDOFF_OR_BUDGET_REQUIRED');}
 else if(networkBudget?.schemaVersion===4)throw Error('PRODUCTION_BUDGET_WITHOUT_ACTIVATION');
 const stopFile=path.join(workspace,'STOP'),paperStop=path.join(runtimeDir,'STOP'),collectorStop=path.join(runtimeDir,'COLLECTOR_STOP');
 if(fs.existsSync(stopFile)||fs.existsSync(paperStop)||fs.existsSync(collectorStop)){console.log(JSON.stringify({status:'stopped',reason:'STOP_present'}));process.exit(0);}

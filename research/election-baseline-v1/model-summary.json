@@ -1,0 +1,494 @@
+{
+  "schemaVersion": 1,
+  "id": "baal-election-margin-baseline-v1",
+  "at": "2026-10-04T21:27:31.426Z",
+  "definitionHash": "910ec1efbb596c91f4ecb0213b407dd4de1ced34f6b77a2ceea468cca5b848a3",
+  "sourceManifests": [
+    {
+      "doi": "doi:10.7910/DVN/PEJ5QU",
+      "metadataUrl": "https://dataverse.harvard.edu/api/datasets/:persistentId/?persistentId=doi%3A10.7910%2FDVN%2FPEJ5QU",
+      "version": 8,
+      "minorVersion": 0,
+      "publicationDate": "2026-05-11T16:13:52Z",
+      "license": "CC0 1.0",
+      "files": [
+        {
+          "id": 13887039,
+          "filename": "1976-2024-senate-state.csv",
+          "originalFilename": "1976-2024-senate-state.csv",
+          "url": "https://dataverse.harvard.edu/api/access/datafile/13887039?format=original",
+          "bytes": 530501,
+          "sha256": "6f745db1b4a0026ad837e74428f9ed6f3f77fa51eb6f858b58ebdbc186fdb3bd",
+          "publishedChecksum": {
+            "type": "MD5",
+            "value": "0f8b51cf0f77a2ef0bff992f7a64d1b4"
+          },
+          "downloadedAt": "2026-10-04T21:18:38.053Z"
+        },
+        {
+          "id": 6708560,
+          "filename": "codebook-us-senate-1976_2024.md",
+          "originalFilename": "codebook-us-senate-1976–2024.md",
+          "url": "https://dataverse.harvard.edu/api/access/datafile/6708560?format=original",
+          "bytes": 3700,
+          "sha256": "221ca02977af4f2d3803340eab798cd9d09830e3b2c5254e700e0b2b45637333",
+          "publishedChecksum": {
+            "type": "MD5",
+            "value": "1cab4bc42b0ca632223b9b9a90c65f30"
+          },
+          "downloadedAt": "2026-10-04T21:18:38.249Z"
+        }
+      ]
+    },
+    {
+      "doi": "doi:10.7910/DVN/42MVDX",
+      "metadataUrl": "https://dataverse.harvard.edu/api/datasets/:persistentId/?persistentId=doi%3A10.7910%2FDVN%2F42MVDX",
+      "version": 10,
+      "minorVersion": 1,
+      "publicationDate": "2026-09-04T16:15:49Z",
+      "license": "CC0 1.0",
+      "files": [
+        {
+          "id": 13887042,
+          "filename": "1976-2024-president.csv",
+          "originalFilename": "1976-2024-president.csv",
+          "url": "https://dataverse.harvard.edu/api/access/datafile/13887042?format=original",
+          "bytes": 514108,
+          "sha256": "9936410a6dd4ecc8be7fe202c6dff5b5f8fee59d88f35ab542ed12879941dcb7",
+          "publishedChecksum": {
+            "type": "MD5",
+            "value": "405af83db7625cb35d8c19a5ebe029ff"
+          },
+          "downloadedAt": "2026-10-04T21:18:38.691Z"
+        },
+        {
+          "id": 7241480,
+          "filename": "codebook-us-president-1976-2020.md",
+          "originalFilename": "codebook-us-president-1976-2020.md",
+          "url": "https://dataverse.harvard.edu/api/access/datafile/7241480?format=original",
+          "bytes": 3176,
+          "sha256": "efed2007526e11ee38d21269841ef30712f7683772877f0d36b556449a6daad4",
+          "publishedChecksum": {
+            "type": "MD5",
+            "value": "d40a38c2847781b54f002aa893921ef8"
+          },
+          "downloadedAt": "2026-10-04T21:18:38.921Z"
+        }
+      ]
+    }
+  ],
+  "sourceIntegrityVerified": true,
+  "rows": 523,
+  "includedCycles": [
+    1990,
+    1992,
+    1994,
+    1996,
+    1998,
+    2000,
+    2002,
+    2004,
+    2006,
+    2008,
+    2010,
+    2012,
+    2014,
+    2016,
+    2018,
+    2020,
+    2022,
+    2024
+  ],
+  "selectedLambda": 1,
+  "selectedUsingYearsThrough": 2018,
+  "residualRms": 0.17485920229399585,
+  "model": {
+    "lambda": 1,
+    "n": 523,
+    "trainedThroughYear": 2024,
+    "means": [
+      0,
+      0.04646514335318438,
+      -0.006376779980675536,
+      -0.021032504780114723
+    ],
+    "scales": [
+      1,
+      0.17255492080552756,
+      0.2867489308778872,
+      0.8024444518904883
+    ],
+    "coefficients": [
+      0.036803473581160845,
+      0.09049356115128541,
+      0.06390474846069441,
+      0.10283317125441646
+    ]
+  },
+  "modelHash": "af01f5ff8f8ea0812e17db5009afb348672aa5f4723e51d0de5eb1ba02ba7e55",
+  "check": {
+    "n": 79,
+    "rmse": 0.10038261005561853,
+    "mae": 0.07956840618047752,
+    "directionAccuracy": 0.9240506329113924,
+    "cycles": [
+      2020,
+      2022,
+      2024
+    ],
+    "brier": 0.06757723013299967,
+    "logLoss": 0.23372315364268365,
+    "noInformationBrier": 0.25,
+    "byCycle": [
+      {
+        "n": 27,
+        "rmse": 0.10785855370214001,
+        "mae": 0.07969955490437315,
+        "directionAccuracy": 0.9629629629629629,
+        "cycles": [
+          2020
+        ]
+      },
+      {
+        "n": 26,
+        "rmse": 0.09825596911167771,
+        "mae": 0.08218267710236592,
+        "directionAccuracy": 0.9230769230769231,
+        "cycles": [
+          2022
+        ]
+      },
+      {
+        "n": 26,
+        "rmse": 0.09424661924672616,
+        "mae": 0.07681794235300518,
+        "directionAccuracy": 0.8846153846153846,
+        "cycles": [
+          2024
+        ]
+      }
+    ]
+  },
+  "forecasts": [
+    {
+      "marketId": "297",
+      "exchangeId": "986",
+      "year": 2026,
+      "state": "WV",
+      "republican": "Shelley Moore Capito",
+      "democratic": "Rachel Anderson",
+      "candidateSource": "https://votes.decisiondeskhq.com/races/2026-11-03/west-virginia-us-senate-general-election/forecast",
+      "contractRootHash": "602ab50226bd130950b710740ae8a808370164b0db193738a0169662da4c52f1",
+      "currentOfficialBallotIndependentlyConfirmed": false,
+      "contractPredicatesCurrentReviewComplete": false,
+      "features": {
+        "x": [
+          1,
+          0.4118767682318306,
+          0.46718586361931125,
+          1
+        ],
+        "clocks": {
+          "presYear": 2024,
+          "priorSeatYear": 2020,
+          "priorSeatPresYear": 2016
+        },
+        "nationalBaseline": 0.015001077368645404,
+        "stateMargin": 0.42687784560047604,
+        "priorSeatMargin": 0.4449214332185657,
+        "incumbent": 1,
+        "incumbentNameMatch": true
+      },
+      "assessment": {
+        "meanMargin": 0.3812159338124719,
+        "nationalMargin": -0.08360477741585229,
+        "residualSd": 0.17485920229399585,
+        "variants": [
+          {
+            "nationalBiasPoints": -5,
+            "pollingRmsPoints": 0,
+            "margin": 0.3312159338124719,
+            "standardDeviation": 0.17485920229399585,
+            "winProbability": 0.9723507913038408
+          },
+          {
+            "nationalBiasPoints": 0,
+            "pollingRmsPoints": 0,
+            "margin": 0.3812159338124719,
+            "standardDeviation": 0.17485920229399585,
+            "winProbability": 0.9815910591643888
+          },
+          {
+            "nationalBiasPoints": 5,
+            "pollingRmsPoints": 0,
+            "margin": 0.43121593381247186,
+            "standardDeviation": 0.17485920229399585,
+            "winProbability": 0.987410700167378
+          },
+          {
+            "nationalBiasPoints": -5,
+            "pollingRmsPoints": 3,
+            "margin": 0.3312159338124719,
+            "standardDeviation": 0.17741403728818236,
+            "winProbability": 0.9712160926241189
+          },
+          {
+            "nationalBiasPoints": 0,
+            "pollingRmsPoints": 3,
+            "margin": 0.3812159338124719,
+            "standardDeviation": 0.17741403728818236,
+            "winProbability": 0.9807757650903008
+          },
+          {
+            "nationalBiasPoints": 5,
+            "pollingRmsPoints": 3,
+            "margin": 0.43121593381247186,
+            "standardDeviation": 0.17741403728818236,
+            "winProbability": 0.9868210197993501
+          },
+          {
+            "nationalBiasPoints": -5,
+            "pollingRmsPoints": 6,
+            "margin": 0.3312159338124719,
+            "standardDeviation": 0.18486681862057497,
+            "winProbability": 0.9677970589803718
+          },
+          {
+            "nationalBiasPoints": 0,
+            "pollingRmsPoints": 6,
+            "margin": 0.3812159338124719,
+            "standardDeviation": 0.18486681862057497,
+            "winProbability": 0.9782973977702552
+          },
+          {
+            "nationalBiasPoints": 5,
+            "pollingRmsPoints": 6,
+            "margin": 0.43121593381247186,
+            "standardDeviation": 0.18486681862057497,
+            "winProbability": 0.985015897135605
+          }
+        ],
+        "lower": 0.9677970589803718,
+        "upper": 0.987410700167378,
+        "recordedAt": "2026-10-04T21:27:31.426Z",
+        "sourceAt": "2026-10-04T15:43:00.000Z",
+        "expiresAt": "2026-10-04T21:43:00.000Z",
+        "limitations": [
+          "Scenario range is not a calibrated confidence interval.",
+          "Uniform national swing transport and residual distribution are assumptions.",
+          "Current polling has market dependence only if its stated sources do; this model does not import DDHQ win-probability outputs."
+        ]
+      },
+      "currentSourceGateSatisfied": false,
+      "eligibilityReason": "Current ballot and complete visible settlement review still required before a production bank."
+    },
+    {
+      "marketId": "363",
+      "exchangeId": "1052",
+      "year": 2026,
+      "state": "TN",
+      "republican": "Bill Hagerty",
+      "democratic": "Marquita Bradshaw",
+      "candidateSource": "https://votes.decisiondeskhq.com/races/2026-11-03/tennessee-us-senate-general-election/forecast",
+      "contractRootHash": "7d55eb130b989e31130d8aedec687767e32a02d429e35883e802562589e20c28",
+      "currentOfficialBallotIndependentlyConfirmed": false,
+      "contractPredicatesCurrentReviewComplete": false,
+      "features": {
+        "x": [
+          1,
+          0.2862099191812879,
+          0.29996788648113376,
+          1
+        ],
+        "clocks": {
+          "presYear": 2024,
+          "priorSeatYear": 2020,
+          "priorSeatPresYear": 2016
+        },
+        "nationalBaseline": 0.015001077368645404,
+        "stateMargin": 0.30121099654993333,
+        "priorSeatMargin": 0.2777034560803882,
+        "incumbent": 1,
+        "incumbentNameMatch": true
+      },
+      "assessment": {
+        "meanMargin": 0.2780459134171156,
+        "nationalMargin": -0.08360477741585229,
+        "residualSd": 0.17485920229399585,
+        "variants": [
+          {
+            "nationalBiasPoints": -5,
+            "pollingRmsPoints": 0,
+            "margin": 0.2280459134171156,
+            "standardDeviation": 0.17485920229399585,
+            "winProbability": 0.9305538275564069
+          },
+          {
+            "nationalBiasPoints": 0,
+            "pollingRmsPoints": 0,
+            "margin": 0.2780459134171156,
+            "standardDeviation": 0.17485920229399585,
+            "winProbability": 0.956117159455118
+          },
+          {
+            "nationalBiasPoints": 5,
+            "pollingRmsPoints": 0,
+            "margin": 0.3280459134171156,
+            "standardDeviation": 0.17485920229399585,
+            "winProbability": 0.9716025177940788
+          },
+          {
+            "nationalBiasPoints": -5,
+            "pollingRmsPoints": 3,
+            "margin": 0.2280459134171156,
+            "standardDeviation": 0.17741403728818236,
+            "winProbability": 0.9283797406751384
+          },
+          {
+            "nationalBiasPoints": 0,
+            "pollingRmsPoints": 3,
+            "margin": 0.2780459134171156,
+            "standardDeviation": 0.17741403728818236,
+            "winProbability": 0.9545109146576973
+          },
+          {
+            "nationalBiasPoints": 5,
+            "pollingRmsPoints": 3,
+            "margin": 0.3280459134171156,
+            "standardDeviation": 0.17741403728818236,
+            "winProbability": 0.9704437510459188
+          },
+          {
+            "nationalBiasPoints": -5,
+            "pollingRmsPoints": 6,
+            "margin": 0.2280459134171156,
+            "standardDeviation": 0.18486681862057497,
+            "winProbability": 0.9219949791485759
+          },
+          {
+            "nationalBiasPoints": 0,
+            "pollingRmsPoints": 6,
+            "margin": 0.2780459134171156,
+            "standardDeviation": 0.18486681862057497,
+            "winProbability": 0.9497280643698505
+          },
+          {
+            "nationalBiasPoints": 5,
+            "pollingRmsPoints": 6,
+            "margin": 0.3280459134171156,
+            "standardDeviation": 0.18486681862057497,
+            "winProbability": 0.9669543963930501
+          }
+        ],
+        "lower": 0.9219949791485759,
+        "upper": 0.9716025177940788,
+        "recordedAt": "2026-10-04T21:27:31.426Z",
+        "sourceAt": "2026-10-04T15:43:00.000Z",
+        "expiresAt": "2026-10-04T21:43:00.000Z",
+        "limitations": [
+          "Scenario range is not a calibrated confidence interval.",
+          "Uniform national swing transport and residual distribution are assumptions.",
+          "Current polling has market dependence only if its stated sources do; this model does not import DDHQ win-probability outputs."
+        ]
+      },
+      "currentSourceGateSatisfied": false,
+      "eligibilityReason": "Current ballot and complete visible settlement review still required before a production bank."
+    }
+  ],
+  "forecastVintagesAvailable": false,
+  "pollingTransportValidatedByHistoricalCheck": false,
+  "calibrationEstablishedFor2026": false,
+  "qualifiedProductionForecasts": 0,
+  "ordersSubmitted": 0,
+  "paperFills": 0,
+  "profitabilityEstablished": false,
+  "limitations": [
+    "Historical feature clocks use strictly earlier election cycles, but revised final-result datasets and final nominee identities are not an original October forecast vintage.",
+    "A new current assessment may use dated stable historical returns and current polling; its observation clock never replaces component publication clocks.",
+    "Incumbency inference can miss replacements, appointments or name changes. Exclude cases with ambiguous or multi-candidate major-party identity.",
+    "Current win estimates are model assumptions, not calibrated confidence floors or guaranteed settlement payouts.",
+    "No contest order authority, no historical market profit proof and no changes to prior frozen cohorts.",
+    "Replacing prior national presidential returns with current generic-ballot polling is a scenario adjustment; Senate/presidential/House turnout and ticket splitting differ. Historical checks cannot prove its 2026 probability calibration."
+  ],
+  "fullLocalReportSha256": "261effc8c87d7cf1285be237c06f8591cf701a43e66705a527bf35f1dd4e2a0e",
+  "excludedRaces": 53,
+  "development": [
+    {
+      "lambda": 1,
+      "metrics": {
+        "n": 351,
+        "rmse": 0.17485920229399585,
+        "mae": 0.1358350544582277,
+        "directionAccuracy": 0.7977207977207977,
+        "cycles": [
+          1996,
+          1998,
+          2000,
+          2002,
+          2004,
+          2006,
+          2008,
+          2010,
+          2012,
+          2014,
+          2016,
+          2018
+        ]
+      },
+      "cycleMse": 0.030412556965166964
+    },
+    {
+      "lambda": 5,
+      "metrics": {
+        "n": 351,
+        "rmse": 0.1750060371058871,
+        "mae": 0.1357759704386965,
+        "directionAccuracy": 0.7977207977207977,
+        "cycles": [
+          1996,
+          1998,
+          2000,
+          2002,
+          2004,
+          2006,
+          2008,
+          2010,
+          2012,
+          2014,
+          2016,
+          2018
+        ]
+      },
+      "cycleMse": 0.030453391096083426
+    },
+    {
+      "lambda": 20,
+      "metrics": {
+        "n": 351,
+        "rmse": 0.1757628112004111,
+        "mae": 0.13583789936185317,
+        "directionAccuracy": 0.7948717948717948,
+        "cycles": [
+          1996,
+          1998,
+          2000,
+          2002,
+          2004,
+          2006,
+          2008,
+          2010,
+          2012,
+          2014,
+          2016,
+          2018
+        ]
+      },
+      "cycleMse": 0.030680928327439558
+    }
+  ],
+  "additionalReviewLimitations": [
+    "Screened historical two-party probabilities are not unconditional party-win forecasts when a third-party candidate can win.",
+    "WV current official ballot has S.Marshall Wilson(CST); original draft candidate alias Rachel Anderson is Rachel Fetty Anderson on the official ballot.",
+    "No fresh source eligibility is created by publishing this summary."
+  ]
+}

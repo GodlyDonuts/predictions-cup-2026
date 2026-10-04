@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "observedAt": "2026-10-04T21:30:41.000Z",
+  "fec": {
+    "source": "https://www.fec.gov/documents/5644/2024presgeresults.pdf",
+    "nationalRepublicanVotes": 77302580,
+    "nationalDemocraticVotes": 75017613,
+    "westVirginiaRepublicanVotes": 533556,
+    "westVirginiaDemocraticVotes": 214309,
+    "tennesseeRepublicanVotes": 1966865,
+    "tennesseeDemocraticVotes": 1056265,
+    "mitNationalTotalsMatch": true,
+    "verification": "Official PDF extracted text and exact local dataset totals; screenshot availability was not claimed."
+  },
+  "westVirginia2026Ballot": {
+    "source": "https://apps.sos.wv.gov/elections/2026GeneralSampleBallots/SAMPLE%20-%20WV%20Nicholas%20261103%20General%20-%2014inch.pdf",
+    "authority": "West Virginia Secretary of State",
+    "electionDate": "2026-11-03",
+    "senateCandidates": [
+      {"name": "Shelley Moore Capito", "party": "REP"},
+      {"name": "Rachel Fetty Anderson", "party": "DEM"},
+      {"name": "S. Marshall Wilson", "party": "CST"}
+    ],
+    "modelConsequence": "Third-party outcome is not represented by the screened two-party model. Draft is not qualified as an unconditional Republican Party win forecast."
+  },
+  "westVirginiaOfficialContract": {
+    "source": "https://sig.thesuper.market/markets/297",
+    "marketId": "297",
+    "exchangeId": "986",
+    "rootHash": "602ab50226bd130950b710740ae8a808370164b0db193738a0169662da4c52f1",
+    "review": "Visible public Info: Republican Party winning candidate affiliation; fusion can count multiple parties; final certified official election results; recount/legal delays; sponsors may amend rules. Scheduled November4noonEST does not create a payout.",
+    "accountDataIncluded": false,
+    "settlementAlreadyOccurred": false
+  },
+  "productionForecastsQualified": 0,
+  "orders": 0,
+  "profitabilityEstablished": false
+}

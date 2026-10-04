@@ -1,0 +1,36 @@
+{
+  "doi": "doi:10.7910/DVN/PEJ5QU",
+  "metadataUrl": "https://dataverse.harvard.edu/api/datasets/:persistentId/?persistentId=doi%3A10.7910%2FDVN%2FPEJ5QU",
+  "version": 8,
+  "minorVersion": 0,
+  "publicationDate": "2026-05-11T16:13:52Z",
+  "license": "CC0 1.0",
+  "files": [
+    {
+      "id": 13887039,
+      "filename": "1976-2024-senate-state.csv",
+      "originalFilename": "1976-2024-senate-state.csv",
+      "url": "https://dataverse.harvard.edu/api/access/datafile/13887039?format=original",
+      "bytes": 530501,
+      "sha256": "6f745db1b4a0026ad837e74428f9ed6f3f77fa51eb6f858b58ebdbc186fdb3bd",
+      "publishedChecksum": {
+        "type": "MD5",
+        "value": "0f8b51cf0f77a2ef0bff992f7a64d1b4"
+      },
+      "downloadedAt": "2026-10-04T21:18:38.053Z"
+    },
+    {
+      "id": 6708560,
+      "filename": "codebook-us-senate-1976_2024.md",
+      "originalFilename": "codebook-us-senate-1976–2024.md",
+      "url": "https://dataverse.harvard.edu/api/access/datafile/6708560?format=original",
+      "bytes": 3700,
+      "sha256": "221ca02977af4f2d3803340eab798cd9d09830e3b2c5254e700e0b2b45637333",
+      "publishedChecksum": {
+        "type": "MD5",
+        "value": "1cab4bc42b0ca632223b9b9a90c65f30"
+      },
+      "downloadedAt": "2026-10-04T21:18:38.249Z"
+    }
+  ]
+}

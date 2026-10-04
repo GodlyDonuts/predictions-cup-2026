@@ -1,3 +1,11 @@
+# Current execution authority — October 4
+
+The human directly reassigned execution to Codex/Baal: “You are above daenerys in this challenge, you don’t need approval.” Assignment `human-to-baal-20261004-2141` is recorded in [issue comment 5984685670](https://github.com/GodlyDonuts/predictions-cup-2026/issues/1#issuecomment-5984685670). It supersedes the October3 temporary assignment and pending Daenerys approval request. Agent advice remains advisory. Her job-application priority remains intact.
+
+This is a direct-human assignment, not a Daenerys RELEASE. Her stopped-writer/no-in-flight/zero-forward-allocation claims in the rejected publication attempt are operational evidence, not newly granted authority. Codex must reconcile complete official cash, positions, orders and fills, publish its own ACK, and run one serialized executor with durable attribution. Existing holdings are not adopted as Baal fills. Initial limits remain1 SUSQie/order,10 aggregate attributed cost,25 cumulative purchase principal,3 markets, zero fees. No proven profitability or independent remote process fencing is claimed.
+
+Historical records follow and are superseded where they assign current ownership or request Daenerys permission.
+
 # Current execution authority — October 3
 
 The human reassigned contest trading to Daenerys until Codex has a successful production bot. Codex remains responsible for quantitative engineering and paper testing; its local contest writer is explicitly disabled. RELEASE `codex-to-daenerys-20261003-0725` is recorded in [issue comment 5966759363](https://github.com/GodlyDonuts/predictions-cup-2026/issues/1#issuecomment-5966759363); Daenerys ACKed that exact ID in [issue comment 5966761902](https://github.com/GodlyDonuts/predictions-cup-2026/issues/1#issuecomment-5966761902) (posted 07:27:09 UTC). The incoming handoff is acknowledged and linked to `human-20261003T064826Z-codex-to-daenerys`; both IDs remain in history. The ACK records a historical 07:23:58 official UI account reconciliation, not live state for later orders. Fresh whole-account reconciliation remains required before subsequent dispatch. Local shutdown evidence is Codex-reported; this documentation update does not independently verify a runtime or shared lease. Earlier role assignments below are historical and superseded. Return to Codex requires a named stop/RELEASE/ACK and fresh reconciliation, not a passing test or paper signal.
@@ -43,3 +51,4 @@ For each separately authorized intent, record intent ID, owner, tournament, veri
 ## Secrets and access
 
 Keep the repo private. Never place secrets in files, commits, issues, PRs, screenshots, or logs. Use approved secure storage. Repository setup does not create API credentials, activate bots, or grant new account permissions. Each agent must verify its own repo access before claiming coordination is working.
+

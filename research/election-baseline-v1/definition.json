@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "id": "baal-election-margin-baseline-v1",
+  "declaredAt": "2026-10-04T21:18:23.531Z",
+  "target": "Regular two-party U.S. Senate Republican margin minus strictly prior national presidential two-party margin",
+  "features": [
+    "intercept",
+    "strictly prior presidential state lean versus national presidential margin",
+    "Prior regular same-seat six-year Senate margin adjusted for the national presidential election strictly before that Senate election",
+    "same-seat prior winner running again, signed by Republican or Democratic party"
+  ],
+  "minimumTrainingYear": 1990,
+  "developmentLastYear": 2018,
+  "ridgeGrid": [
+    1,
+    5,
+    20
+  ],
+  "selection": "Expanding-cycle margin mean-square error through 2018 only; candidate set from that election, prior presidential and Senate outcomes only",
+  "futureNationalInput": "Dated national generic-ballot polling, converted to two-party margin; retain source clock",
+  "pollingErrorSensitivityPoints": [
+    0,
+    3,
+    6
+  ],
+  "additionalNationalBiasStressPoints": [
+    -5,
+    0,
+    5
+  ],
+  "residualModel": "Student-t with fixed4 degrees of freedom and RMS from expanding development residuals; at least10 margin-point standard deviation. Combine national polling RMS sensitivity in variance.",
+  "limitations": [
+    "Historical feature clocks use strictly earlier election cycles, but revised final-result datasets and final nominee identities are not an original October forecast vintage.",
+    "A new current assessment may use dated stable historical returns and current polling; its observation clock never replaces component publication clocks.",
+    "Incumbency inference can miss replacements, appointments or name changes. Exclude cases with ambiguous or multi-candidate major-party identity.",
+    "Current win estimates are model assumptions, not calibrated confidence floors or guaranteed settlement payouts.",
+    "No contest order authority, no historical market profit proof and no changes to prior frozen cohorts.",
+    "Replacing prior national presidential returns with current generic-ballot polling is a scenario adjustment; Senate/presidential/House turnout and ticket splitting differ. Historical checks cannot prove its 2026 probability calibration."
+  ],
+  "competitionOrders": 0,
+  "profitabilityEstablished": false,
+  "amendedAt": "2026-10-04T21:21:43.209Z",
+  "amendmentReason": "House dataset requires a Guestbook response. No personal response was submitted. Use only downloaded public Senate/presidential results, before fitting or selecting any model.",
+  "untouchedCheckYears": [
+    2020,
+    2022,
+    2024
+  ],
+  "currentPollingTreatment": "Forward scenario substitutes current national generic-ballot margin for the strictly prior national presidential margin. Transportability is an explicit model assumption, not a measured coefficient."
+}

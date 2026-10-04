@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "environment": {
+    "kind": "national_generic_ballot_poll_average",
+    "url": "https://votes.decisiondeskhq.com/races/2026-11-03/west-virginia-us-senate-general-election/forecast",
+    "sourceAt": "2026-10-04T15:43:00.000Z",
+    "displayedClock": "Oct 4, 11:43 AM EDT",
+    "republicanPercent": 42.2,
+    "democraticPercent": 49.9,
+    "maximumAgeMs": 21600000,
+    "interpretation": "Current national generic-ballot average only. DDHQ race win probabilities and old race-forecast clocks are not imported as new assessments.",
+    "observedAt": "2026-10-04T21:26:41.345Z"
+  },
+  "candidates": [
+    {
+      "marketId": "297",
+      "exchangeId": "986",
+      "year": 2026,
+      "state": "WV",
+      "republican": "Shelley Moore Capito",
+      "democratic": "Rachel Anderson",
+      "candidateSource": "https://votes.decisiondeskhq.com/races/2026-11-03/west-virginia-us-senate-general-election/forecast",
+      "contractRootHash": "602ab50226bd130950b710740ae8a808370164b0db193738a0169662da4c52f1",
+      "currentOfficialBallotIndependentlyConfirmed": false,
+      "contractPredicatesCurrentReviewComplete": false
+    },
+    {
+      "marketId": "363",
+      "exchangeId": "1052",
+      "year": 2026,
+      "state": "TN",
+      "republican": "Bill Hagerty",
+      "democratic": "Marquita Bradshaw",
+      "candidateSource": "https://votes.decisiondeskhq.com/races/2026-11-03/tennessee-us-senate-general-election/forecast",
+      "contractRootHash": "7d55eb130b989e31130d8aedec687767e32a02d429e35883e802562589e20c28",
+      "currentOfficialBallotIndependentlyConfirmed": false,
+      "contractPredicatesCurrentReviewComplete": false
+    }
+  ],
+  "activationAuthority": false,
+  "orders": 0
+}

@@ -5,8 +5,8 @@ import fs from 'node:fs';
 const baseKeys = ['schemaVersion', 'ownerId', 'enabled', 'intervalMs', 'soleAccountClient', 'formerWriterStopCommentId'];
 export function validateNetworkBudget(value) {
   if(value?.schemaVersion===4){
-    const keys=['schemaVersion','ownerId','enabled','intervalMs','writeIntervalMs','soleAccountClient','executionOwner','handoffId','releaseCommentId','ackCommentId','writesEnabled'];
-    if(Object.keys(value).length!==keys.length||Object.keys(value).some(k=>!keys.includes(k))||value.ownerId!=='Codex'||value.enabled!==true||value.intervalMs!==1000||value.writeIntervalMs!==2500||value.soleAccountClient!==true||value.executionOwner!=='Codex'||value.writesEnabled!==true||!/^daenerys-to-baal-[a-z0-9-]{1,70}$/.test(value.handoffId)||![value.releaseCommentId,value.ackCommentId].every(n=>Number.isSafeInteger(n)&&n>0))throw Error('Invalid production network budget');
+    const human=value.authorityKind==='direct_human_assignment',keys=['schemaVersion','ownerId','enabled','intervalMs','writeIntervalMs','soleAccountClient','executionOwner','handoffId','ackCommentId','writesEnabled',...(human?['authorityKind','assignmentCommentId']:['releaseCommentId'])];
+    if(Object.keys(value).length!==keys.length||Object.keys(value).some(k=>!keys.includes(k))||value.ownerId!=='Codex'||value.enabled!==true||value.intervalMs!==1000||value.writeIntervalMs!==2500||value.soleAccountClient!==true||value.executionOwner!=='Codex'||value.writesEnabled!==true||!(human?/^human-to-baal-[a-z0-9-]{1,70}$/:/^daenerys-to-baal-[a-z0-9-]{1,70}$/).test(value.handoffId)||![human?value.assignmentCommentId:value.releaseCommentId,value.ackCommentId].every(n=>Number.isSafeInteger(n)&&n>0))throw Error('Invalid production network budget');
     return Object.freeze({...value});
   }
   if(value?.schemaVersion===3){

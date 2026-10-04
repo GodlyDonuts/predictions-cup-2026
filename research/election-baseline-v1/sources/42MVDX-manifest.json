@@ -1,0 +1,36 @@
+{
+  "doi": "doi:10.7910/DVN/42MVDX",
+  "metadataUrl": "https://dataverse.harvard.edu/api/datasets/:persistentId/?persistentId=doi%3A10.7910%2FDVN%2F42MVDX",
+  "version": 10,
+  "minorVersion": 1,
+  "publicationDate": "2026-09-04T16:15:49Z",
+  "license": "CC0 1.0",
+  "files": [
+    {
+      "id": 13887042,
+      "filename": "1976-2024-president.csv",
+      "originalFilename": "1976-2024-president.csv",
+      "url": "https://dataverse.harvard.edu/api/access/datafile/13887042?format=original",
+      "bytes": 514108,
+      "sha256": "9936410a6dd4ecc8be7fe202c6dff5b5f8fee59d88f35ab542ed12879941dcb7",
+      "publishedChecksum": {
+        "type": "MD5",
+        "value": "405af83db7625cb35d8c19a5ebe029ff"
+      },
+      "downloadedAt": "2026-10-04T21:18:38.691Z"
+    },
+    {
+      "id": 7241480,
+      "filename": "codebook-us-president-1976-2020.md",
+      "originalFilename": "codebook-us-president-1976-2020.md",
+      "url": "https://dataverse.harvard.edu/api/access/datafile/7241480?format=original",
+      "bytes": 3176,
+      "sha256": "efed2007526e11ee38d21269841ef30712f7683772877f0d36b556449a6daad4",
+      "publishedChecksum": {
+        "type": "MD5",
+        "value": "d40a38c2847781b54f002aa893921ef8"
+      },
+      "downloadedAt": "2026-10-04T21:18:38.921Z"
+    }
+  ]
+}

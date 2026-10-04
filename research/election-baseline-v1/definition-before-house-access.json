@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "id": "baal-election-margin-baseline-v1",
+  "declaredAt": "2026-10-04T21:18:23.531Z",
+  "target": "Regular two-party U.S. Senate Republican margin minus the contemporaneous national House two-party margin",
+  "features": [
+    "intercept",
+    "strictly prior presidential state lean versus national presidential margin",
+    "prior regular same-seat six-year Senate margin adjusted for that prior national House environment",
+    "same-seat prior winner running again, signed by Republican or Democratic party"
+  ],
+  "minimumTrainingYear": 1990,
+  "developmentLastYear": 2018,
+  "untouchedConditionalCheckYears": [
+    2020,
+    2022,
+    2024
+  ],
+  "ridgeGrid": [
+    1,
+    5,
+    20
+  ],
+  "selection": "Expanding-cycle conditional margin mean-square error through 2018 only",
+  "futureNationalInput": "Dated national generic-ballot polling, converted to two-party margin; retain source clock",
+  "pollingErrorSensitivityPoints": [
+    0,
+    3,
+    6
+  ],
+  "additionalNationalBiasStressPoints": [
+    -5,
+    0,
+    5
+  ],
+  "residualModel": "Historical cross-cycle residual distribution with smooth heavy-tail probability sensitivity",
+  "limitations": [
+    "Historical contemporaneous national House returns are label context known after each election. Conditional checks are not pre-election forecast backtests.",
+    "A new current assessment may use dated stable historical returns and current polling; its observation clock never replaces component publication clocks.",
+    "Incumbency inference can miss replacements, appointments or name changes. Exclude cases with ambiguous or multi-candidate major-party identity.",
+    "Current win estimates are model assumptions, not calibrated confidence floors or guaranteed settlement payouts.",
+    "No contest order authority, no historical market profit proof and no changes to prior frozen cohorts."
+  ],
+  "competitionOrders": 0,
+  "profitabilityEstablished": false
+}

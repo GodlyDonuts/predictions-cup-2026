@@ -1,6 +1,8 @@
 # Official competition executor
 
-October4 integration: [Baal's native settlement executor](production-launch.md) is implemented and deployed with writes disabled pending the current named return handoff and qualified fresh research. New collector activations require schema2, actual RELEASE/ACK binding and a separate run journal; old enabled activations are rejected. The new pilot caps each order at1 SUSQie, aggregate cost10 and lifetime purchases25. The older25/100 pilot below remains historical. Current GET-only collection retains the20-read allowance.
+October4: [Baal's native settlement executor](production-launch.md) is implemented. The latest direct human instruction assigns Codex execution ownership and supersedes the pending request for Daenerys permission. New collector activations require schema2, a typed human-assignment/ACK or agent RELEASE/ACK record, fresh complete reconciliation and a separate run journal; old enabled activations are rejected. The new pilot caps each order at1 SUSQie, aggregate cost10 and lifetime purchases25, with zero fees. Current deployment evidence and `coordination/execution_state.json` record actual activation. Profitability remains unproven.
+
+## Historical October3 dormant dip executor
 
 Daenerys is the current sole contest execution owner under the human's October 3 reassignment and handoff `codex-to-daenerys-20261003-0725`: Codex RELEASE issue #1 comment 5966759363, Daenerys ACK 5966761902. Codex currently owns quantitative engineering and local paper experiments; competition activation is false. Returning execution requires Daenerys stopped with in-flight actions reconciled, a named RELEASE, Codex ACK and fresh account reconciliation. Existing account holdings are not adopted into this bot's inventory.
 
