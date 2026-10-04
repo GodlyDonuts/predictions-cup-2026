@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "id": "baal-causal-poll-pool-20261004-v1",
+  "interpretation": "Declared subjective sensitivity model, not calibrated probabilities or confidence bounds. Parameters are fixed before the current price comparison.",
+  "priorWeight": 0.25,
+  "nationalMarginScenarios": [-0.15, -0.10, -0.05],
+  "nationalTransportSd": 0.06,
+  "designEffects": [1.5, 2.0],
+  "systematicMarginSd": 0.06,
+  "dailyMarginInnovationSd": 0.006,
+  "pollMarginBiasScenarios": [-0.02, 0.0, 0.02],
+  "undecidedRepublicanFractions": [0.0, 0.5, 1.0],
+  "reportedShareRoundingHalfWidth": 0.005,
+  "administrativeProbabilityHaircut": 0.02,
+  "maximumPollFieldAgeDays": 60,
+  "maximumAssessmentAgeMs": 21600000,
+  "stress": {"systematicMarginSd": 0.10, "dailyMarginInnovationSd": 0.01},
+  "limitations": [
+    "A weighted online poll is not an IID probability sample. Design effects and error terms are judgment assumptions; microdata and effective sample size were not supplied.",
+    "The fundamentals and poll may be correlated. Pool standard deviations are added with positive correlation, rather than precision-fusing them as independent evidence.",
+    "Future opinion drift runs from the original field end to election day, including days that have not happened yet.",
+    "All independent support is assigned to a single opponent in the comparator. Unforeseen candidate shocks, turnout changes and sponsor treatment remain possible.",
+    "The broader stress family can contradict the ordinary scenario edge. A small official pilot can test execution, but cannot validate an election forecast before settlement.",
+    "No market price or DDHQ win probability enters the assessment. There is no claimed near-term price reversion."
+  ]
+}

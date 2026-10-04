@@ -44,6 +44,7 @@ import {CompetitionController} from '../execution/controller.mjs';
 import {SettlementCompetitionController} from '../execution/settlement-controller.mjs';
 import {validateProductionActivation,productionHandoffCurrent} from '../execution/production-activation.mjs';
 import {openProductionMetadata} from './production-metadata.mjs';
+import {prioritizeProductionReads} from './production-read-priority.mjs';
 import {loadNetworkBudget,networkInterval} from './transport-network-budget.mjs';
 import {collectionCycleWait} from './cycle-wait.mjs';
 import {loadMarketSweep,collectMarketSweep} from './market-sweep.mjs';
@@ -376,6 +377,7 @@ try{
       runtime.makerPairFocus=planned.makerPairFocus||runtime.makerPairFocus||null;
       runtime.canonicalCapacityFocus=planned.canonicalCapacityFocus||null;
       runtime.paperPackageFocus=planned.paperPackageFocus||null;
+      if(competition)planned=prioritizeProductionReads(planned,{candidateMarketIds:productionCandidates,ownedMarketIds:competition.managedMarketIds()});
       if(competition)try{await competition.beforeBooks({positions,orders,ordersAt:new Date().toISOString(),candidateMarketIds:planned.reads.map(x=>x.marketId).filter(id=>productionCandidates.includes(id))});}catch(e){competition.failure(e);}
       const supplementalDepth=[],samplingReservations=[],samplingReceipts=[];
       for(const spec of planned.reads){
@@ -385,14 +387,18 @@ try{
         recordAttempt('book',marketId,samplingMember?planned.comparisonSampling.planId:null,spec.nativeDiscovery===true);
         if(samplingMember)samplingReservations.push({marketId,at:new Date().toISOString()});
         try{
+          if(competition)try{await competition.beforeBook?.(marketId);}catch(e){competition.failure(e);}
           const r=await api.request('/markets/'+marketId+'/orderbook?tournamentId='+c.tournamentId+'&depth=20');
           target.push(r);
           if(planned.comparisonSampling?.planId)samplingReceipts.push({marketId,requestStartedAt:r.requestStartedAt,receivedAt:r.receivedAt});
-          receivedBook=true;publishBookEvent('publishBook',{marketId,response:r});
+          receivedBook=true;
+          // Official execution has its own immutable native receipt/intent
+          // barrier. Serve it before file-only paper reducers age the quote.
+          if(competition)try{await competition.onBook(r);}catch(e){competition.failure(e);}
+          publishBookEvent('publishBook',{marketId,response:r});
           if(noMaker)try{noMaker.onBook(bookPublication.status(),marketId,probabilityAccountEligibility(accountCache));runtime.noMaker=noMaker.status();}catch{runtime.noMaker={status:'failed',executionAuthority:false};noMaker=null;}
           if(baalPair)try{baalPair.onBook(bookPublication.status(),marketId,probabilityAccountEligibility(accountCache));runtime.baalPair=baalPair.status();}catch{runtime.baalPair={status:'failed',executionAuthority:false};baalPair=null;}
           if(canonicalCapacity)try{canonicalCapacity.inspect(bookPublication.status());runtime.canonicalCapacity=canonicalCapacity.status();}catch{canonicalCapacity=null;runtime.canonicalCapacity={status:'failed',executionAuthority:false};}
-          if(competition)try{await competition.onBook(r);}catch(e){competition.failure(e);}
           const b=normalizeBook(r.data,marketId,c.tournamentId,r.receivedAt,r.requestStartedAt,c.maxDataAgeMs,excluded,spec.path==='sourceSnapshots'?'event_age_v1':dipBank?'authoritative_receipt_v1':'event_age_v1');
           if(b.exchangeId!==universe.exchanges.find(x=>x.marketId===marketId).exchangeId)throw Error('Book exchange identity mismatch');
           if(spec.path==='sourceSnapshots'){try{state=observe(state,b,c);}catch(e){e.fatal=true;throw e;}}

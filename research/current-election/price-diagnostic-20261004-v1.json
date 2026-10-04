@@ -1,0 +1,187 @@
+{
+  "at": "2026-10-04T23:15:35.003Z",
+  "assessmentId": "tennessee-causal-assessment-20261004-v1",
+  "bankHash": "a948c395b14992a019e2180133604b8ee84dd78a9e94d08781efd18fbefc0128",
+  "book": {
+    "marketId": "363",
+    "exchangeId": "1052",
+    "instrument": "1052:YES",
+    "receivedAt": "2026-10-04T23:15:35.003Z",
+    "requestStartedAt": "2026-10-04T23:15:34.714Z",
+    "sourceAt": "2026-10-04T23:15:34.360036300Z",
+    "sequence": "42955526",
+    "versionKey": "42955526:2026-10-04T23:15:34.360036300Z",
+    "bids": [
+      {
+        "price": "0.910000",
+        "quantity": 7147
+      },
+      {
+        "price": "0.905000",
+        "quantity": 597
+      },
+      {
+        "price": "0.900000",
+        "quantity": 1045
+      },
+      {
+        "price": "0.895000",
+        "quantity": 1000
+      },
+      {
+        "price": "0.890000",
+        "quantity": 4946
+      },
+      {
+        "price": "0.885000",
+        "quantity": 48194
+      },
+      {
+        "price": "0.880000",
+        "quantity": 70096
+      },
+      {
+        "price": "0.875000",
+        "quantity": 54246
+      },
+      {
+        "price": "0.870000",
+        "quantity": 102276
+      },
+      {
+        "price": "0.865000",
+        "quantity": 69819
+      },
+      {
+        "price": "0.860000",
+        "quantity": 86642
+      },
+      {
+        "price": "0.855000",
+        "quantity": 43722
+      },
+      {
+        "price": "0.850000",
+        "quantity": 77681
+      },
+      {
+        "price": "0.845000",
+        "quantity": 45834
+      },
+      {
+        "price": "0.840000",
+        "quantity": 25529
+      },
+      {
+        "price": "0.835000",
+        "quantity": 106865
+      },
+      {
+        "price": "0.830000",
+        "quantity": 271187
+      },
+      {
+        "price": "0.825000",
+        "quantity": 94864
+      },
+      {
+        "price": "0.820000",
+        "quantity": 27311
+      },
+      {
+        "price": "0.815000",
+        "quantity": 99385
+      }
+    ],
+    "asks": [
+      {
+        "price": "0.920000",
+        "quantity": 2973
+      },
+      {
+        "price": "0.925000",
+        "quantity": 1055
+      },
+      {
+        "price": "0.930000",
+        "quantity": 54404
+      },
+      {
+        "price": "0.935000",
+        "quantity": 140
+      },
+      {
+        "price": "0.940000",
+        "quantity": 239889
+      },
+      {
+        "price": "0.945000",
+        "quantity": 207370
+      },
+      {
+        "price": "0.950000",
+        "quantity": 30000
+      },
+      {
+        "price": "0.955000",
+        "quantity": 236777
+      },
+      {
+        "price": "0.960000",
+        "quantity": 280974
+      },
+      {
+        "price": "0.965000",
+        "quantity": 111838
+      },
+      {
+        "price": "0.970000",
+        "quantity": 185608
+      },
+      {
+        "price": "0.975000",
+        "quantity": 397442
+      },
+      {
+        "price": "0.980000",
+        "quantity": 370579
+      },
+      {
+        "price": "0.985000",
+        "quantity": 799007
+      },
+      {
+        "price": "0.990000",
+        "quantity": 616292
+      },
+      {
+        "price": "0.995000",
+        "quantity": 1342502
+      }
+    ],
+    "freshnessPolicy": "authoritative_receipt_v1",
+    "sourceEventAgeMs": 643
+  },
+  "decision": {
+    "eligible": false,
+    "reason": "insufficient_edge",
+    "lower": "0.937202",
+    "stressLower": "0.902363",
+    "ask": "0.920000",
+    "bid": "0.910000",
+    "slippage": "0.005000",
+    "edge": "0.012202",
+    "stressedEdge": "-0.022637",
+    "maximumAsk": "0.912202",
+    "quantity": 1,
+    "maximumPrincipal": "0.925000",
+    "fees": "0.000000",
+    "executionAuthority": false,
+    "profitabilityEstablished": false
+  },
+  "maximumExecutableAsk": "0.910000",
+  "historicalReceipt": true,
+  "liveAtReport": false,
+  "ordersSubmittedByDiagnostic": 0,
+  "profitabilityEstablished": false
+}

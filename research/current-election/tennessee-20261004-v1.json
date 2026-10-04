@@ -1,0 +1,1219 @@
+{
+  "schemaVersion": 1,
+  "id": "tennessee-causal-assessment-20261004-v1",
+  "facts": {
+    "schemaVersion": 1,
+    "state": "TN",
+    "marketId": "363",
+    "exchangeId": "1052",
+    "entrants": [
+      "Bill Hagerty",
+      "Marquita Bradshaw",
+      "Tharon Chandler",
+      "Andrew Gerena",
+      "Jeremy Dean Hearn",
+      "Robert Jones",
+      "James William Macon III",
+      "Yoshi D. Matthews",
+      "David Sutman Jr",
+      "Catherine Barcel Whitson"
+    ],
+    "poll": {
+      "population": "likely_voters",
+      "sampleSize": 607,
+      "overallSurveySampleSize": 1200,
+      "senateRegisteredVoterResponses": 1157,
+      "republican": 0.58,
+      "democratic": 0.33,
+      "independent": 0.05,
+      "undecided": 0.04,
+      "observedAt": "2026-10-03T21:34:42.608Z",
+      "fieldStartDate": "2026-08-15",
+      "fieldEndDate": "2026-08-26",
+      "fieldEndLatestAt": "2026-08-27T12:00:00.000Z",
+      "fieldEndClockMeaning": "Conservative latest UTC bound for the unspecified local time on the final Tennessee field day; not a new poll date.",
+      "publicationDate": "2026-09-03",
+      "publicationTimeUtc": null,
+      "pdfGeneratedDate": "2026-08-28",
+      "pdfPage": 46,
+      "publisherOverallEstimatedMoe": 0.0277,
+      "publisherMoeUsedAsLvMarginSd": false,
+      "ballotVerified": true,
+      "largestNamedOpponent": "democratic",
+      "methodology": "Stratified, weighted online registered-voter panel;607 Senate likely-voter responses. Effective sample size and respondent-level weights not supplied."
+    },
+    "sources": [
+      {
+        "url": "https://tennsight.com/wp-content/uploads/2026/09/Beacon-Poll-of-TN-August-2026-Marginals.pdf",
+        "contentHash": "4e407da80a022b3c25688e0c5ff576dead23525537aa6da071a07e1e66d4961f",
+        "observedAt": "2026-10-03T21:34:42.608Z"
+      },
+      {
+        "url": "https://tennsight.com/polls/august-2026/",
+        "contentHash": "f8532c6debe7500d18f42bdf778a633bc214155fc570fd5f82441f4b99a804f5",
+        "observedAt": "2026-10-03T21:34:42.550Z"
+      },
+      {
+        "url": "https://www.wilsontnvotes.gov/uploads/files/11ecd6ab8b7a94e16cfcde1a441679a5be17f3df.pdf",
+        "contentHash": "f1a42e65b762a3ee7533ef8725c1c2099ff6432880bd4706f44a3fb78c8448c7",
+        "observedAt": "2026-10-03T21:34:42.889Z"
+      }
+    ],
+    "ballotCrossCheckUrl": "https://montgomerytn.gov/storage/departments/election/QualifiedCandidatesNOV26_State.pdf",
+    "ballotCrossCheckMeaning": "Official November3 state general-election candidates, U.S. Senate page1, independently read October4. Primary Wilson County PDF hash is preserved.",
+    "excludesMarketDerivedForecasts": true,
+    "ddhqUsedAsInput": false
+  },
+  "prior": {
+    "structuralMargin": 0.36934131691265837,
+    "residualRms": 0.1911924085790182,
+    "trainedThroughYear": 2024,
+    "modelHash": "54fc1978a6bbf4296ed06bc5519819e65a15aa2a65c13b4ef10082f233f2c475",
+    "features": {
+      "x": [
+        1,
+        0.2862099191812879,
+        0.29996788648113376,
+        1
+      ],
+      "nationalBaseline": 0.015001077368645404,
+      "incumbent": 1,
+      "clocks": {
+        "presYear": 2024,
+        "priorSeatYear": 2020,
+        "priorSeatPresYear": 2016
+      }
+    }
+  },
+  "definitionHash": "9641ffbfd0a7438633c3cee8c746349b5330f0d814a93fc70fc345e0f0d55595",
+  "assessment": {
+    "schemaVersion": 1,
+    "modelId": "baal-causal-poll-pool-20261004-v1",
+    "method": "subjective_range",
+    "assessedAt": "2026-10-04T23:06:57.318Z",
+    "expiresAt": "2026-10-05T05:06:57.318Z",
+    "componentClocks": {
+      "pollObservedAt": "2026-10-03T21:34:42.608Z",
+      "pollFieldEndLatestAt": "2026-08-27T12:00:00.000Z",
+      "pollFieldAgeDays": 38.46316340277778,
+      "daysFromFieldEndToElection": 68.75,
+      "electionAt": "2026-11-04T06:00:00.000Z",
+      "priorTrainedThroughYear": 2024
+    },
+    "sampleSize": 607,
+    "samplingVariance": 0.0016737440907853842,
+    "priorSd": 0.20038597031290947,
+    "ordinary": {
+      "lower": 0.9372026552832741,
+      "upper": 0.9699070034817356,
+      "variants": [
+        {
+          "nationalMargin": -0.15,
+          "designEffect": 1.5,
+          "undecidedR": 0,
+          "bias": -0.02,
+          "mean": 0.19773006607026983,
+          "standardDeviation": 0.11956578398289948,
+          "ordinaryProbability": 0.9602558033636407,
+          "contractProbability": 0.9402558033636407
+        },
+        {
+          "nationalMargin": -0.15,
+          "designEffect": 1.5,
+          "undecidedR": 0,
+          "bias": 0,
+          "mean": 0.2127300660702698,
+          "standardDeviation": 0.11956578398289948,
+          "ordinaryProbability": 0.967187341812443,
+          "contractProbability": 0.947187341812443
+        },
+        {
+          "nationalMargin": -0.15,
+          "designEffect": 1.5,
+          "undecidedR": 0,
+          "bias": 0.02,
+          "mean": 0.2277300660702698,
+          "standardDeviation": 0.11956578398289948,
+          "ordinaryProbability": 0.9727720175410168,
+          "contractProbability": 0.9527720175410168
+        },
+        {
+          "nationalMargin": -0.15,
+          "designEffect": 1.5,
+          "undecidedR": 0.5,
+          "bias": -0.02,
+          "mean": 0.22930901343869087,
+          "standardDeviation": 0.11956578398289948,
+          "ordinaryProbability": 0.9732934781893468,
+          "contractProbability": 0.9532934781893467
+        },
+        {
+          "nationalMargin": -0.15,
+          "designEffect": 1.5,
+          "undecidedR": 0.5,
+          "bias": 0,
+          "mean": 0.24430901343869088,
+          "standardDeviation": 0.11956578398289948,
+          "ordinaryProbability": 0.9777110572319881,
+          "contractProbability": 0.9577110572319881
+        },
+        {
+          "nationalMargin": -0.15,
+          "designEffect": 1.5,
+          "undecidedR": 0.5,
+          "bias": 0.02,
+          "mean": 0.2593090134386909,
+          "standardDeviation": 0.11956578398289948,
+          "ordinaryProbability": 0.9813004404608578,
+          "contractProbability": 0.9613004404608578
+        },
+        {
+          "nationalMargin": -0.15,
+          "designEffect": 1.5,
+          "undecidedR": 1,
+          "bias": -0.02,
+          "mean": 0.2608879608071119,
+          "standardDeviation": 0.11956578398289948,
+          "ordinaryProbability": 0.9816373403672125,
+          "contractProbability": 0.9616373403672125
+        },
+        {
+          "nationalMargin": -0.15,
+          "designEffect": 1.5,
+          "undecidedR": 1,
+          "bias": 0,
+          "mean": 0.2758879608071119,
+          "standardDeviation": 0.11956578398289948,
+          "ordinaryProbability": 0.9845061187225472,
+          "contractProbability": 0.9645061187225472
+        },
+        {
+          "nationalMargin": -0.15,
+          "designEffect": 1.5,
+          "undecidedR": 1,
+          "bias": 0.02,
+          "mean": 0.29088796080711193,
+          "standardDeviation": 0.11956578398289948,
+          "ordinaryProbability": 0.9868603088686424,
+          "contractProbability": 0.9668603088686424
+        },
+        {
+          "nationalMargin": -0.15,
+          "designEffect": 2,
+          "undecidedR": 0,
+          "bias": -0.02,
+          "mean": 0.19773006607026983,
+          "standardDeviation": 0.12310992818494644,
+          "ordinaryProbability": 0.9572026552832741,
+          "contractProbability": 0.9372026552832741
+        },
+        {
+          "nationalMargin": -0.15,
+          "designEffect": 2,
+          "undecidedR": 0,
+          "bias": 0,
+          "mean": 0.2127300660702698,
+          "standardDeviation": 0.12310992818494644,
+          "ordinaryProbability": 0.9645381402391243,
+          "contractProbability": 0.9445381402391243
+        },
+        {
+          "nationalMargin": -0.15,
+          "designEffect": 2,
+          "undecidedR": 0,
+          "bias": 0.02,
+          "mean": 0.2277300660702698,
+          "standardDeviation": 0.12310992818494644,
+          "ordinaryProbability": 0.9704774888592471,
+          "contractProbability": 0.9504774888592471
+        },
+        {
+          "nationalMargin": -0.15,
+          "designEffect": 2,
+          "undecidedR": 0.5,
+          "bias": -0.02,
+          "mean": 0.22930901343869087,
+          "standardDeviation": 0.12310992818494644,
+          "ordinaryProbability": 0.971033518204764,
+          "contractProbability": 0.951033518204764
+        },
+        {
+          "nationalMargin": -0.15,
+          "designEffect": 2,
+          "undecidedR": 0.5,
+          "bias": 0,
+          "mean": 0.24430901343869088,
+          "standardDeviation": 0.12310992818494644,
+          "ordinaryProbability": 0.9757547268683855,
+          "contractProbability": 0.9557547268683855
+        },
+        {
+          "nationalMargin": -0.15,
+          "designEffect": 2,
+          "undecidedR": 0.5,
+          "bias": 0.02,
+          "mean": 0.2593090134386909,
+          "standardDeviation": 0.12310992818494644,
+          "ordinaryProbability": 0.9796061099445552,
+          "contractProbability": 0.9596061099445552
+        },
+        {
+          "nationalMargin": -0.15,
+          "designEffect": 2,
+          "undecidedR": 1,
+          "bias": -0.02,
+          "mean": 0.2608879608071119,
+          "standardDeviation": 0.12310992818494644,
+          "ordinaryProbability": 0.9799683622680244,
+          "contractProbability": 0.9599683622680244
+        },
+        {
+          "nationalMargin": -0.15,
+          "designEffect": 2,
+          "undecidedR": 1,
+          "bias": 0,
+          "mean": 0.2758879608071119,
+          "standardDeviation": 0.12310992818494644,
+          "ordinaryProbability": 0.9830587116723606,
+          "contractProbability": 0.9630587116723606
+        },
+        {
+          "nationalMargin": -0.15,
+          "designEffect": 2,
+          "undecidedR": 1,
+          "bias": 0.02,
+          "mean": 0.29088796080711193,
+          "standardDeviation": 0.12310992818494644,
+          "ordinaryProbability": 0.9856028660223157,
+          "contractProbability": 0.9656028660223157
+        },
+        {
+          "nationalMargin": -0.1,
+          "designEffect": 1.5,
+          "undecidedR": 0,
+          "bias": -0.02,
+          "mean": 0.21023006607026984,
+          "standardDeviation": 0.11956578398289948,
+          "ordinaryProbability": 0.966134118113436,
+          "contractProbability": 0.946134118113436
+        },
+        {
+          "nationalMargin": -0.1,
+          "designEffect": 1.5,
+          "undecidedR": 0,
+          "bias": 0,
+          "mean": 0.22523006607026982,
+          "standardDeviation": 0.11956578398289948,
+          "ordinaryProbability": 0.9719221559462093,
+          "contractProbability": 0.9519221559462093
+        },
+        {
+          "nationalMargin": -0.1,
+          "designEffect": 1.5,
+          "undecidedR": 0,
+          "bias": 0.02,
+          "mean": 0.2402300660702698,
+          "standardDeviation": 0.11956578398289948,
+          "ordinaryProbability": 0.9765998540933706,
+          "contractProbability": 0.9565998540933706
+        },
+        {
+          "nationalMargin": -0.1,
+          "designEffect": 1.5,
+          "undecidedR": 0.5,
+          "bias": -0.02,
+          "mean": 0.24180901343869088,
+          "standardDeviation": 0.11956578398289948,
+          "ordinaryProbability": 0.9770374761573948,
+          "contractProbability": 0.9570374761573948
+        },
+        {
+          "nationalMargin": -0.1,
+          "designEffect": 1.5,
+          "undecidedR": 0.5,
+          "bias": 0,
+          "mean": 0.2568090134386909,
+          "standardDeviation": 0.11956578398289948,
+          "ordinaryProbability": 0.9807520691367222,
+          "contractProbability": 0.9607520691367222
+        },
+        {
+          "nationalMargin": -0.1,
+          "designEffect": 1.5,
+          "undecidedR": 0.5,
+          "bias": 0.02,
+          "mean": 0.2718090134386909,
+          "standardDeviation": 0.11956578398289948,
+          "ordinaryProbability": 0.9837818253500561,
+          "contractProbability": 0.9637818253500561
+        },
+        {
+          "nationalMargin": -0.1,
+          "designEffect": 1.5,
+          "undecidedR": 1,
+          "bias": -0.02,
+          "mean": 0.2733879608071119,
+          "standardDeviation": 0.11956578398289948,
+          "ordinaryProbability": 0.9840668399430335,
+          "contractProbability": 0.9640668399430334
+        },
+        {
+          "nationalMargin": -0.1,
+          "designEffect": 1.5,
+          "undecidedR": 1,
+          "bias": 0,
+          "mean": 0.28838796080711193,
+          "standardDeviation": 0.11956578398289948,
+          "ordinaryProbability": 0.98649906408142,
+          "contractProbability": 0.96649906408142
+        },
+        {
+          "nationalMargin": -0.1,
+          "designEffect": 1.5,
+          "undecidedR": 1,
+          "bias": 0.02,
+          "mean": 0.30338796080711194,
+          "standardDeviation": 0.11956578398289948,
+          "ordinaryProbability": 0.9885031661725008,
+          "contractProbability": 0.9685031661725008
+        },
+        {
+          "nationalMargin": -0.1,
+          "designEffect": 2,
+          "undecidedR": 0,
+          "bias": -0.02,
+          "mean": 0.21023006607026984,
+          "standardDeviation": 0.12310992818494644,
+          "ordinaryProbability": 0.9634210600538631,
+          "contractProbability": 0.9434210600538631
+        },
+        {
+          "nationalMargin": -0.1,
+          "designEffect": 2,
+          "undecidedR": 0,
+          "bias": 0,
+          "mean": 0.22523006607026982,
+          "standardDeviation": 0.12310992818494644,
+          "ordinaryProbability": 0.9695718379399396,
+          "contractProbability": 0.9495718379399396
+        },
+        {
+          "nationalMargin": -0.1,
+          "designEffect": 2,
+          "undecidedR": 0,
+          "bias": 0.02,
+          "mean": 0.2402300660702698,
+          "standardDeviation": 0.12310992818494644,
+          "ordinaryProbability": 0.9745652751347764,
+          "contractProbability": 0.9545652751347764
+        },
+        {
+          "nationalMargin": -0.1,
+          "designEffect": 2,
+          "undecidedR": 0.5,
+          "bias": -0.02,
+          "mean": 0.24180901343869088,
+          "standardDeviation": 0.12310992818494644,
+          "ordinaryProbability": 0.975033558469098,
+          "contractProbability": 0.955033558469098
+        },
+        {
+          "nationalMargin": -0.1,
+          "designEffect": 2,
+          "undecidedR": 0.5,
+          "bias": 0,
+          "mean": 0.2568090134386909,
+          "standardDeviation": 0.12310992818494644,
+          "ordinaryProbability": 0.9790167605646293,
+          "contractProbability": 0.9590167605646293
+        },
+        {
+          "nationalMargin": -0.1,
+          "designEffect": 2,
+          "undecidedR": 0.5,
+          "bias": 0.02,
+          "mean": 0.2718090134386909,
+          "standardDeviation": 0.12310992818494644,
+          "ordinaryProbability": 0.9822774885409512,
+          "contractProbability": 0.9622774885409512
+        },
+        {
+          "nationalMargin": -0.1,
+          "designEffect": 2,
+          "undecidedR": 1,
+          "bias": -0.02,
+          "mean": 0.2733879608071119,
+          "standardDeviation": 0.12310992818494644,
+          "ordinaryProbability": 0.9825848233716297,
+          "contractProbability": 0.9625848233716296
+        },
+        {
+          "nationalMargin": -0.1,
+          "designEffect": 2,
+          "undecidedR": 1,
+          "bias": 0,
+          "mean": 0.28838796080711193,
+          "standardDeviation": 0.12310992818494644,
+          "ordinaryProbability": 0.9852119644964259,
+          "contractProbability": 0.9652119644964259
+        },
+        {
+          "nationalMargin": -0.1,
+          "designEffect": 2,
+          "undecidedR": 1,
+          "bias": 0.02,
+          "mean": 0.30338796080711194,
+          "standardDeviation": 0.12310992818494644,
+          "ordinaryProbability": 0.9873830528446143,
+          "contractProbability": 0.9673830528446142
+        },
+        {
+          "nationalMargin": -0.05,
+          "designEffect": 1.5,
+          "undecidedR": 0,
+          "bias": -0.02,
+          "mean": 0.22273006607026985,
+          "standardDeviation": 0.11956578398289948,
+          "ordinaryProbability": 0.9710415878334563,
+          "contractProbability": 0.9510415878334563
+        },
+        {
+          "nationalMargin": -0.05,
+          "designEffect": 1.5,
+          "undecidedR": 0,
+          "bias": 0,
+          "mean": 0.2377300660702698,
+          "standardDeviation": 0.11956578398289948,
+          "ordinaryProbability": 0.9758869720808974,
+          "contractProbability": 0.9558869720808973
+        },
+        {
+          "nationalMargin": -0.05,
+          "designEffect": 1.5,
+          "undecidedR": 0,
+          "bias": 0.02,
+          "mean": 0.2527300660702698,
+          "standardDeviation": 0.11956578398289948,
+          "ordinaryProbability": 0.9798163699281042,
+          "contractProbability": 0.9598163699281042
+        },
+        {
+          "nationalMargin": -0.05,
+          "designEffect": 1.5,
+          "undecidedR": 0.5,
+          "bias": -0.02,
+          "mean": 0.2543090134386909,
+          "standardDeviation": 0.11956578398289948,
+          "ordinaryProbability": 0.9801847585037614,
+          "contractProbability": 0.9601847585037614
+        },
+        {
+          "nationalMargin": -0.05,
+          "designEffect": 1.5,
+          "undecidedR": 0.5,
+          "bias": 0,
+          "mean": 0.2693090134386909,
+          "standardDeviation": 0.11956578398289948,
+          "ordinaryProbability": 0.9833181601896853,
+          "contractProbability": 0.9633181601896853
+        },
+        {
+          "nationalMargin": -0.05,
+          "designEffect": 1.5,
+          "undecidedR": 0.5,
+          "bias": 0.02,
+          "mean": 0.2843090134386909,
+          "standardDeviation": 0.11956578398289948,
+          "ordinaryProbability": 0.9858840432228477,
+          "contractProbability": 0.9658840432228477
+        },
+        {
+          "nationalMargin": -0.05,
+          "designEffect": 1.5,
+          "undecidedR": 1,
+          "bias": -0.02,
+          "mean": 0.28588796080711193,
+          "standardDeviation": 0.11956578398289948,
+          "ordinaryProbability": 0.9861259771067348,
+          "contractProbability": 0.9661259771067348
+        },
+        {
+          "nationalMargin": -0.05,
+          "designEffect": 1.5,
+          "undecidedR": 1,
+          "bias": 0,
+          "mean": 0.30088796080711194,
+          "standardDeviation": 0.11956578398289948,
+          "ordinaryProbability": 0.9881950965678304,
+          "contractProbability": 0.9681950965678304
+        },
+        {
+          "nationalMargin": -0.05,
+          "designEffect": 1.5,
+          "undecidedR": 1,
+          "bias": 0.02,
+          "mean": 0.31588796080711196,
+          "standardDeviation": 0.11956578398289948,
+          "ordinaryProbability": 0.9899070034817357,
+          "contractProbability": 0.9699070034817356
+        },
+        {
+          "nationalMargin": -0.05,
+          "designEffect": 2,
+          "undecidedR": 0,
+          "bias": -0.02,
+          "mean": 0.22273006607026985,
+          "standardDeviation": 0.12310992818494644,
+          "ordinaryProbability": 0.9686341715106841,
+          "contractProbability": 0.9486341715106841
+        },
+        {
+          "nationalMargin": -0.05,
+          "designEffect": 2,
+          "undecidedR": 0,
+          "bias": 0,
+          "mean": 0.2377300660702698,
+          "standardDeviation": 0.12310992818494644,
+          "ordinaryProbability": 0.9738028710603437,
+          "contractProbability": 0.9538028710603437
+        },
+        {
+          "nationalMargin": -0.05,
+          "designEffect": 2,
+          "undecidedR": 0,
+          "bias": 0.02,
+          "mean": 0.2527300660702698,
+          "standardDeviation": 0.12310992818494644,
+          "ordinaryProbability": 0.9780119478970382,
+          "contractProbability": 0.9580119478970381
+        },
+        {
+          "nationalMargin": -0.05,
+          "designEffect": 2,
+          "undecidedR": 0.5,
+          "bias": -0.02,
+          "mean": 0.2543090134386909,
+          "standardDeviation": 0.12310992818494644,
+          "ordinaryProbability": 0.978407426449578,
+          "contractProbability": 0.958407426449578
+        },
+        {
+          "nationalMargin": -0.05,
+          "designEffect": 2,
+          "undecidedR": 0.5,
+          "bias": 0,
+          "mean": 0.2693090134386909,
+          "standardDeviation": 0.12310992818494644,
+          "ordinaryProbability": 0.981777736702724,
+          "contractProbability": 0.9617777367027239
+        },
+        {
+          "nationalMargin": -0.05,
+          "designEffect": 2,
+          "undecidedR": 0.5,
+          "bias": 0.02,
+          "mean": 0.2843090134386909,
+          "standardDeviation": 0.12310992818494644,
+          "ordinaryProbability": 0.9845468839584086,
+          "contractProbability": 0.9645468839584086
+        },
+        {
+          "nationalMargin": -0.05,
+          "designEffect": 2,
+          "undecidedR": 1,
+          "bias": -0.02,
+          "mean": 0.28588796080711193,
+          "standardDeviation": 0.12310992818494644,
+          "ordinaryProbability": 0.9848084459465202,
+          "contractProbability": 0.9648084459465202
+        },
+        {
+          "nationalMargin": -0.05,
+          "designEffect": 2,
+          "undecidedR": 1,
+          "bias": 0,
+          "mean": 0.30088796080711194,
+          "standardDeviation": 0.12310992818494644,
+          "ordinaryProbability": 0.9870489160661499,
+          "contractProbability": 0.9670489160661498
+        },
+        {
+          "nationalMargin": -0.05,
+          "designEffect": 2,
+          "undecidedR": 1,
+          "bias": 0.02,
+          "mean": 0.31588796080711196,
+          "standardDeviation": 0.12310992818494644,
+          "ordinaryProbability": 0.9889076115228685,
+          "contractProbability": 0.9689076115228685
+        }
+      ]
+    },
+    "stress": {
+      "lower": 0.902363683478113,
+      "upper": 0.9564524621795811,
+      "variants": [
+        {
+          "nationalMargin": -0.15,
+          "designEffect": 1.5,
+          "undecidedR": 0,
+          "bias": -0.02,
+          "mean": 0.19773006607026983,
+          "standardDeviation": 0.15756549188536403,
+          "ordinaryProbability": 0.9246946518085065,
+          "contractProbability": 0.9046946518085065
+        },
+        {
+          "nationalMargin": -0.15,
+          "designEffect": 1.5,
+          "undecidedR": 0,
+          "bias": 0,
+          "mean": 0.2127300660702698,
+          "standardDeviation": 0.15756549188536403,
+          "ordinaryProbability": 0.9355778960077229,
+          "contractProbability": 0.9155778960077229
+        },
+        {
+          "nationalMargin": -0.15,
+          "designEffect": 1.5,
+          "undecidedR": 0,
+          "bias": 0.02,
+          "mean": 0.2277300660702698,
+          "standardDeviation": 0.15756549188536403,
+          "ordinaryProbability": 0.9447778367084492,
+          "contractProbability": 0.9247778367084492
+        },
+        {
+          "nationalMargin": -0.15,
+          "designEffect": 1.5,
+          "undecidedR": 0.5,
+          "bias": -0.02,
+          "mean": 0.22930901343869087,
+          "standardDeviation": 0.15756549188536403,
+          "ordinaryProbability": 0.9456592316867009,
+          "contractProbability": 0.9256592316867008
+        },
+        {
+          "nationalMargin": -0.15,
+          "designEffect": 1.5,
+          "undecidedR": 0.5,
+          "bias": 0,
+          "mean": 0.24430901343869088,
+          "standardDeviation": 0.15756549188536403,
+          "ordinaryProbability": 0.9532986456854222,
+          "contractProbability": 0.9332986456854222
+        },
+        {
+          "nationalMargin": -0.15,
+          "designEffect": 1.5,
+          "undecidedR": 0.5,
+          "bias": 0.02,
+          "mean": 0.2593090134386909,
+          "standardDeviation": 0.15756549188536403,
+          "ordinaryProbability": 0.959759593676954,
+          "contractProbability": 0.9397595936769539
+        },
+        {
+          "nationalMargin": -0.15,
+          "designEffect": 1.5,
+          "undecidedR": 1,
+          "bias": -0.02,
+          "mean": 0.2608879608071119,
+          "standardDeviation": 0.15756549188536403,
+          "ordinaryProbability": 0.9603791031561627,
+          "contractProbability": 0.9403791031561627
+        },
+        {
+          "nationalMargin": -0.15,
+          "designEffect": 1.5,
+          "undecidedR": 1,
+          "bias": 0,
+          "mean": 0.2758879608071119,
+          "standardDeviation": 0.15756549188536403,
+          "ordinaryProbability": 0.9657553892004572,
+          "contractProbability": 0.9457553892004572
+        },
+        {
+          "nationalMargin": -0.15,
+          "designEffect": 1.5,
+          "undecidedR": 1,
+          "bias": 0.02,
+          "mean": 0.29088796080711193,
+          "standardDeviation": 0.15756549188536403,
+          "ordinaryProbability": 0.9703161002283877,
+          "contractProbability": 0.9503161002283876
+        },
+        {
+          "nationalMargin": -0.15,
+          "designEffect": 2,
+          "undecidedR": 0,
+          "bias": -0.02,
+          "mean": 0.19773006607026983,
+          "standardDeviation": 0.1599193305540789,
+          "ordinaryProbability": 0.922363683478113,
+          "contractProbability": 0.902363683478113
+        },
+        {
+          "nationalMargin": -0.15,
+          "designEffect": 2,
+          "undecidedR": 0,
+          "bias": 0,
+          "mean": 0.2127300660702698,
+          "standardDeviation": 0.1599193305540789,
+          "ordinaryProbability": 0.9334543808432563,
+          "contractProbability": 0.9134543808432563
+        },
+        {
+          "nationalMargin": -0.15,
+          "designEffect": 2,
+          "undecidedR": 0,
+          "bias": 0.02,
+          "mean": 0.2277300660702698,
+          "standardDeviation": 0.1599193305540789,
+          "ordinaryProbability": 0.9428541719909762,
+          "contractProbability": 0.9228541719909762
+        },
+        {
+          "nationalMargin": -0.15,
+          "designEffect": 2,
+          "undecidedR": 0.5,
+          "bias": -0.02,
+          "mean": 0.22930901343869087,
+          "standardDeviation": 0.1599193305540789,
+          "ordinaryProbability": 0.9437559851700463,
+          "contractProbability": 0.9237559851700463
+        },
+        {
+          "nationalMargin": -0.15,
+          "designEffect": 2,
+          "undecidedR": 0.5,
+          "bias": 0,
+          "mean": 0.24430901343869088,
+          "standardDeviation": 0.1599193305540789,
+          "ordinaryProbability": 0.9515823847385987,
+          "contractProbability": 0.9315823847385987
+        },
+        {
+          "nationalMargin": -0.15,
+          "designEffect": 2,
+          "undecidedR": 0.5,
+          "bias": 0.02,
+          "mean": 0.2593090134386909,
+          "standardDeviation": 0.1599193305540789,
+          "ordinaryProbability": 0.9582164669372283,
+          "contractProbability": 0.9382164669372283
+        },
+        {
+          "nationalMargin": -0.15,
+          "designEffect": 2,
+          "undecidedR": 1,
+          "bias": -0.02,
+          "mean": 0.2608879608071119,
+          "standardDeviation": 0.1599193305540789,
+          "ordinaryProbability": 0.9588533517835862,
+          "contractProbability": 0.9388533517835862
+        },
+        {
+          "nationalMargin": -0.15,
+          "designEffect": 2,
+          "undecidedR": 1,
+          "bias": 0,
+          "mean": 0.2758879608071119,
+          "standardDeviation": 0.1599193305540789,
+          "ordinaryProbability": 0.9643865048827989,
+          "contractProbability": 0.9443865048827988
+        },
+        {
+          "nationalMargin": -0.15,
+          "designEffect": 2,
+          "undecidedR": 1,
+          "bias": 0.02,
+          "mean": 0.29088796080711193,
+          "standardDeviation": 0.1599193305540789,
+          "ordinaryProbability": 0.9690893786708862,
+          "contractProbability": 0.9490893786708862
+        },
+        {
+          "nationalMargin": -0.1,
+          "designEffect": 1.5,
+          "undecidedR": 0,
+          "bias": -0.02,
+          "mean": 0.21023006607026984,
+          "standardDeviation": 0.15756549188536403,
+          "ordinaryProbability": 0.9338884379510075,
+          "contractProbability": 0.9138884379510075
+        },
+        {
+          "nationalMargin": -0.1,
+          "designEffect": 1.5,
+          "undecidedR": 0,
+          "bias": 0,
+          "mean": 0.22523006607026982,
+          "standardDeviation": 0.15756549188536403,
+          "ordinaryProbability": 0.9433499735016385,
+          "contractProbability": 0.9233499735016385
+        },
+        {
+          "nationalMargin": -0.1,
+          "designEffect": 1.5,
+          "undecidedR": 0,
+          "bias": 0.02,
+          "mean": 0.2402300660702698,
+          "standardDeviation": 0.15756549188536403,
+          "ordinaryProbability": 0.9513465668732768,
+          "contractProbability": 0.9313465668732768
+        },
+        {
+          "nationalMargin": -0.1,
+          "designEffect": 1.5,
+          "undecidedR": 0.5,
+          "bias": -0.02,
+          "mean": 0.24180901343869088,
+          "standardDeviation": 0.15756549188536403,
+          "ordinaryProbability": 0.9521127887245489,
+          "contractProbability": 0.9321127887245488
+        },
+        {
+          "nationalMargin": -0.1,
+          "designEffect": 1.5,
+          "undecidedR": 0.5,
+          "bias": 0,
+          "mean": 0.2568090134386909,
+          "standardDeviation": 0.15756549188536403,
+          "ordinaryProbability": 0.9587562388651414,
+          "contractProbability": 0.9387562388651414
+        },
+        {
+          "nationalMargin": -0.1,
+          "designEffect": 1.5,
+          "undecidedR": 0.5,
+          "bias": 0.02,
+          "mean": 0.2718090134386909,
+          "standardDeviation": 0.15756549188536403,
+          "ordinaryProbability": 0.96438023920096,
+          "contractProbability": 0.94438023920096
+        },
+        {
+          "nationalMargin": -0.1,
+          "designEffect": 1.5,
+          "undecidedR": 1,
+          "bias": -0.02,
+          "mean": 0.2733879608071119,
+          "standardDeviation": 0.15756549188536403,
+          "ordinaryProbability": 0.9649198775497603,
+          "contractProbability": 0.9449198775497603
+        },
+        {
+          "nationalMargin": -0.1,
+          "designEffect": 1.5,
+          "undecidedR": 1,
+          "bias": 0,
+          "mean": 0.28838796080711193,
+          "standardDeviation": 0.15756549188536403,
+          "ordinaryProbability": 0.9696067514702837,
+          "contractProbability": 0.9496067514702837
+        },
+        {
+          "nationalMargin": -0.1,
+          "designEffect": 1.5,
+          "undecidedR": 1,
+          "bias": 0.02,
+          "mean": 0.30338796080711194,
+          "standardDeviation": 0.15756549188536403,
+          "ordinaryProbability": 0.9735892772757535,
+          "contractProbability": 0.9535892772757535
+        },
+        {
+          "nationalMargin": -0.1,
+          "designEffect": 2,
+          "undecidedR": 0,
+          "bias": -0.02,
+          "mean": 0.21023006607026984,
+          "standardDeviation": 0.1599193305540789,
+          "ordinaryProbability": 0.9317307402575419,
+          "contractProbability": 0.9117307402575419
+        },
+        {
+          "nationalMargin": -0.1,
+          "designEffect": 2,
+          "undecidedR": 0,
+          "bias": 0,
+          "mean": 0.22523006607026982,
+          "standardDeviation": 0.1599193305540789,
+          "ordinaryProbability": 0.9413937175661354,
+          "contractProbability": 0.9213937175661354
+        },
+        {
+          "nationalMargin": -0.1,
+          "designEffect": 2,
+          "undecidedR": 0,
+          "bias": 0.02,
+          "mean": 0.2402300660702698,
+          "standardDeviation": 0.1599193305540789,
+          "ordinaryProbability": 0.949580769284447,
+          "contractProbability": 0.929580769284447
+        },
+        {
+          "nationalMargin": -0.1,
+          "designEffect": 2,
+          "undecidedR": 0.5,
+          "bias": -0.02,
+          "mean": 0.24180901343869088,
+          "standardDeviation": 0.1599193305540789,
+          "ordinaryProbability": 0.9503662871187262,
+          "contractProbability": 0.9303662871187262
+        },
+        {
+          "nationalMargin": -0.1,
+          "designEffect": 2,
+          "undecidedR": 0.5,
+          "bias": 0,
+          "mean": 0.2568090134386909,
+          "standardDeviation": 0.1599193305540789,
+          "ordinaryProbability": 0.9571852665448269,
+          "contractProbability": 0.9371852665448269
+        },
+        {
+          "nationalMargin": -0.1,
+          "designEffect": 2,
+          "undecidedR": 0.5,
+          "bias": 0.02,
+          "mean": 0.2718090134386909,
+          "standardDeviation": 0.1599193305540789,
+          "ordinaryProbability": 0.9629701665594547,
+          "contractProbability": 0.9429701665594546
+        },
+        {
+          "nationalMargin": -0.1,
+          "designEffect": 2,
+          "undecidedR": 1,
+          "bias": -0.02,
+          "mean": 0.2733879608071119,
+          "standardDeviation": 0.1599193305540789,
+          "ordinaryProbability": 0.9635258785281251,
+          "contractProbability": 0.9435258785281251
+        },
+        {
+          "nationalMargin": -0.1,
+          "designEffect": 2,
+          "undecidedR": 1,
+          "bias": 0,
+          "mean": 0.28838796080711193,
+          "standardDeviation": 0.1599193305540789,
+          "ordinaryProbability": 0.9683573385892713,
+          "contractProbability": 0.9483573385892713
+        },
+        {
+          "nationalMargin": -0.1,
+          "designEffect": 2,
+          "undecidedR": 1,
+          "bias": 0.02,
+          "mean": 0.30338796080711194,
+          "standardDeviation": 0.1599193305540789,
+          "ordinaryProbability": 0.972470180072713,
+          "contractProbability": 0.952470180072713
+        },
+        {
+          "nationalMargin": -0.05,
+          "designEffect": 1.5,
+          "undecidedR": 0,
+          "bias": -0.02,
+          "mean": 0.22273006607026985,
+          "standardDeviation": 0.15756549188536403,
+          "ordinaryProbability": 0.9418814972336658,
+          "contractProbability": 0.9218814972336657
+        },
+        {
+          "nationalMargin": -0.05,
+          "designEffect": 1.5,
+          "undecidedR": 0,
+          "bias": 0,
+          "mean": 0.2377300660702698,
+          "standardDeviation": 0.15756549188536403,
+          "ordinaryProbability": 0.950105356113855,
+          "contractProbability": 0.930105356113855
+        },
+        {
+          "nationalMargin": -0.05,
+          "designEffect": 1.5,
+          "undecidedR": 0,
+          "bias": 0.02,
+          "mean": 0.2527300660702698,
+          "standardDeviation": 0.15756549188536403,
+          "ordinaryProbability": 0.9570581592081489,
+          "contractProbability": 0.9370581592081488
+        },
+        {
+          "nationalMargin": -0.05,
+          "designEffect": 1.5,
+          "undecidedR": 0.5,
+          "bias": -0.02,
+          "mean": 0.2543090134386909,
+          "standardDeviation": 0.15756549188536403,
+          "ordinaryProbability": 0.9577246325340545,
+          "contractProbability": 0.9377246325340545
+        },
+        {
+          "nationalMargin": -0.05,
+          "designEffect": 1.5,
+          "undecidedR": 0.5,
+          "bias": 0,
+          "mean": 0.2693090134386909,
+          "standardDeviation": 0.15756549188536403,
+          "ordinaryProbability": 0.9635064034155392,
+          "contractProbability": 0.9435064034155392
+        },
+        {
+          "nationalMargin": -0.05,
+          "designEffect": 1.5,
+          "undecidedR": 0.5,
+          "bias": 0.02,
+          "mean": 0.2843090134386909,
+          "standardDeviation": 0.15756549188536403,
+          "ordinaryProbability": 0.9684072343555896,
+          "contractProbability": 0.9484072343555896
+        },
+        {
+          "nationalMargin": -0.05,
+          "designEffect": 1.5,
+          "undecidedR": 1,
+          "bias": -0.02,
+          "mean": 0.28588796080711193,
+          "standardDeviation": 0.15756549188536403,
+          "ordinaryProbability": 0.9688778869171483,
+          "contractProbability": 0.9488778869171482
+        },
+        {
+          "nationalMargin": -0.05,
+          "designEffect": 1.5,
+          "undecidedR": 1,
+          "bias": 0,
+          "mean": 0.30088796080711194,
+          "standardDeviation": 0.15756549188536403,
+          "ordinaryProbability": 0.9729693715943273,
+          "contractProbability": 0.9529693715943273
+        },
+        {
+          "nationalMargin": -0.05,
+          "designEffect": 1.5,
+          "undecidedR": 1,
+          "bias": 0.02,
+          "mean": 0.31588796080711196,
+          "standardDeviation": 0.15756549188536403,
+          "ordinaryProbability": 0.9764524621795811,
+          "contractProbability": 0.9564524621795811
+        },
+        {
+          "nationalMargin": -0.05,
+          "designEffect": 2,
+          "undecidedR": 0,
+          "bias": -0.02,
+          "mean": 0.22273006607026985,
+          "standardDeviation": 0.1599193305540789,
+          "ordinaryProbability": 0.9398923409870624,
+          "contractProbability": 0.9198923409870624
+        },
+        {
+          "nationalMargin": -0.05,
+          "designEffect": 2,
+          "undecidedR": 0,
+          "bias": 0,
+          "mean": 0.2377300660702698,
+          "standardDeviation": 0.1599193305540789,
+          "ordinaryProbability": 0.9483087005953988,
+          "contractProbability": 0.9283087005953988
+        },
+        {
+          "nationalMargin": -0.05,
+          "designEffect": 2,
+          "undecidedR": 0,
+          "bias": 0.02,
+          "mean": 0.2527300660702698,
+          "standardDeviation": 0.1599193305540789,
+          "ordinaryProbability": 0.9554408791890344,
+          "contractProbability": 0.9354408791890344
+        },
+        {
+          "nationalMargin": -0.05,
+          "designEffect": 2,
+          "undecidedR": 0.5,
+          "bias": -0.02,
+          "mean": 0.2543090134386909,
+          "standardDeviation": 0.1599193305540789,
+          "ordinaryProbability": 0.9561254063022692,
+          "contractProbability": 0.9361254063022691
+        },
+        {
+          "nationalMargin": -0.05,
+          "designEffect": 2,
+          "undecidedR": 0.5,
+          "bias": 0,
+          "mean": 0.2693090134386909,
+          "standardDeviation": 0.1599193305540789,
+          "ordinaryProbability": 0.9620705448939069,
+          "contractProbability": 0.9420705448939068
+        },
+        {
+          "nationalMargin": -0.05,
+          "designEffect": 2,
+          "undecidedR": 0.5,
+          "bias": 0.02,
+          "mean": 0.2843090134386909,
+          "standardDeviation": 0.1599193305540789,
+          "ordinaryProbability": 0.9671199447749974,
+          "contractProbability": 0.9471199447749974
+        },
+        {
+          "nationalMargin": -0.05,
+          "designEffect": 2,
+          "undecidedR": 1,
+          "bias": -0.02,
+          "mean": 0.28588796080711193,
+          "standardDeviation": 0.1599193305540789,
+          "ordinaryProbability": 0.9676053855645701,
+          "contractProbability": 0.9476053855645701
+        },
+        {
+          "nationalMargin": -0.05,
+          "designEffect": 2,
+          "undecidedR": 1,
+          "bias": 0,
+          "mean": 0.30088796080711194,
+          "standardDeviation": 0.1599193305540789,
+          "ordinaryProbability": 0.9718295142186807,
+          "contractProbability": 0.9518295142186807
+        },
+        {
+          "nationalMargin": -0.05,
+          "designEffect": 2,
+          "undecidedR": 1,
+          "bias": 0.02,
+          "mean": 0.31588796080711196,
+          "standardDeviation": 0.1599193305540789,
+          "ordinaryProbability": 0.9754316469557772,
+          "contractProbability": 0.9554316469557772
+        }
+      ]
+    },
+    "profitabilityEstablished": false,
+    "limitations": [
+      "A weighted online poll is not an IID probability sample. Design effects and error terms are judgment assumptions; microdata and effective sample size were not supplied.",
+      "The fundamentals and poll may be correlated. Pool standard deviations are added with positive correlation, rather than precision-fusing them as independent evidence.",
+      "Future opinion drift runs from the original field end to election day, including days that have not happened yet.",
+      "All independent support is assigned to a single opponent in the comparator. Unforeseen candidate shocks, turnout changes and sponsor treatment remain possible.",
+      "The broader stress family can contradict the ordinary scenario edge. A small official pilot can test execution, but cannot validate an election forecast before settlement.",
+      "No market price or DDHQ win probability enters the assessment. There is no claimed near-term price reversion."
+    ]
+  },
+  "originalResearchNotOverwritten": true,
+  "sourceAtMeaning": "Time this new V2/poll/ballot assessment became available. Original component clocks, source hashes and age remain explicit.",
+  "invalidation": [
+    "New independent poll",
+    "Candidate/affiliation/ballot change",
+    "Material campaign shock",
+    "Contract change",
+    "Six-hour assessment expiry"
+  ],
+  "liveOrdersSubmitted": 0,
+  "profitabilityEstablished": false
+}

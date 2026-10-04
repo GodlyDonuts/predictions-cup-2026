@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "id": "causal-election-production-20261004-v1",
+  "at": "2026-10-04T23:26:18.512Z",
+  "goalTurnClassification": "progress",
+  "requiredGoalWorkRemaining": true,
+  "authority": "existing_direct_human_assignment",
+  "runId": "sig-pilot-settlement-20261004-human",
+  "bankHash": "a948c395b14992a019e2180133604b8ee84dd78a9e94d08781efd18fbefc0128",
+  "entryExpiresAt": "2026-10-05T03:59:22.131Z",
+  "source": {
+    "modelHash": "54fc1978a6bbf4296ed06bc5519819e65a15aa2a65c13b4ef10082f233f2c475",
+    "pollSample": 607,
+    "pollFieldEndDate": "2026-08-26",
+    "assessmentAt": "2026-10-04T23:06:57.318Z",
+    "ordinaryRange": [
+      0.9372026552832741,
+      0.9699070034817356
+    ],
+    "broaderStress": [
+      0.902363683478113,
+      0.9564524621795811
+    ]
+  },
+  "changes": [
+    "Causal source-dated election assessment, original LV table and verified ballot; no market-derived forecast input.",
+    "Stopped-writer bank transition preserves the same window, inventory, FIFO and lifetime purchase budget.",
+    "Canonical activation equality tolerates JSON key ordering.",
+    "Production books/decisions precede paper observers; account freshness repaired before the decision book.",
+    "Detached current-user launcher reuses three services and active frozen paper cohort; no new watcher or credentials.",
+    "Read-only book preview replaces an existing auxiliary slot."
+  ],
+  "checks": {
+    "admissionAndModel": 89,
+    "runnerLifecycle": 52,
+    "serializedQueue": 2,
+    "runnerSyntax": true
+  },
+  "clockEvidence": {
+    "at": "2026-10-04T23:26:12.057Z",
+    "inputHash": "accb50b0a929d3d7d747d2cb82bff9dd35625450ad24b13e89e926b495ea962c",
+    "outputHash": "931dbe116cf1b0665acaf99804367ee18f6da8d18ff962dc027375fd93c85ad0",
+    "positionsAgeMs": 8210,
+    "ordersAgeMs": 6806,
+    "bookAgeMs": 11,
+    "accountBeforeBook": true,
+    "nativeWallMs": 70.73079999996116,
+    "decision": "insufficient_scenario_edge"
+  },
+  "runtime": {
+    "collectorPid": 4760,
+    "paperPid": 17228,
+    "dashboardPid": 22396,
+    "reportedAt": "2026-10-04T23:26:16.525Z",
+    "cycles": 7,
+    "status": "running",
+    "errors": 0,
+    "productionStatus": "monitoring",
+    "qualifiedCurrentForecasts": 1,
+    "ordersSubmitted": 0,
+    "unconfirmedIntents": 0,
+    "realizedPnl": "0.000000",
+    "addedFees": "0.000000"
+  },
+  "limitations": [
+    "Scenario endpoints and stress assumptions are uncalibrated; an ordinary edge is not a guaranteed payout.",
+    "Current price0.920 exceeded maximum admitted ask0.910 in the first preview; no forced order.",
+    "Runtime process disappearance was observed; its cause and robustness against every future host termination remain unproved.",
+    "Prior attributed official roundtrip−0.380 remains separate. No profitability or scaling readiness is established."
+  ],
+  "next": [
+    "Keep the current frozen bank and original clocks; expire normally rather than regenerate unchanged research.",
+    "Seek independent current polls and exact ballot/contract bindings for additional candidate markets.",
+    "Measure actual subsequent dispatch, fills, depth-aware liquidation and net P&L; scale only with evidence.",
+    "Investigate expensive restart/loop work while preserving original journals and risk."
+  ],
+  "profitabilityEstablished": false
+}

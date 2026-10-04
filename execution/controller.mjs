@@ -43,7 +43,7 @@ export function validateActivation(a){
 export class CompetitionController {
  constructor({runtimeDir,api,universe,config,isStopped,activation,now=Date.now}){
   this.dir=activation?.schemaVersion===2?path.join(runtimeDir,'competition-runs',validateProductionActivation(activation).runId):path.join(runtimeDir,'competition');this.runtimeDir=runtimeDir;this.api=api;this.universe=universe;this.config=config;this.now=now;this.isStopped=isStopped;
-  this.activation=validateActivation(activation);this.activationHash=digest(activation);this.status='reconciling';this.reason=null;this.selected=[];this.cash=null;this.account=null;this.markets={};this.currentPermit=null;this.bootstrapped=false;this.readiness={complete:false};
+  this.activation=validateActivation(activation);this.activationHash=payloadHash(activation);this.status='reconciling';this.reason=null;this.selected=[];this.cash=null;this.account=null;this.markets={};this.currentPermit=null;this.bootstrapped=false;this.readiness={complete:false};
   this.ledger=openLedger({dir:this.dir,ownerId:'Codex',runId:activation.runId,scope:TID,isStopped:()=>!this.canWrite(),now});
   try{
    this.journal=new Journal(path.join(this.dir,'core-journal.jsonl'));
@@ -60,7 +60,7 @@ export class CompetitionController {
  canOperate(){
   if(this.halted||this.isStopped()||fs.existsSync(path.join(this.runtimeDir,'EXECUTION_STOP')))return false;
   if(this.activation.schemaVersion===2&&!productionHandoffCurrent(this.runtimeDir,this.activation))return false;
-  try{return digest(JSON.parse(fs.readFileSync(path.join(this.runtimeDir,'competition-activation.json'))))===this.activationHash;}catch{return false;}
+  try{return payloadHash(JSON.parse(fs.readFileSync(path.join(this.runtimeDir,'competition-activation.json'))))===this.activationHash;}catch{return false;}
  }
  canWrite(){return this.bootstrapped===true&&this.canOperate();}
  entryWindowAdmitted(now){

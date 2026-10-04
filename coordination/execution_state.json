@@ -204,12 +204,23 @@
     "fees": 0,
     "orders_submitted": 0,
     "profitability_established": false,
-    "qualified_current_forecasts": 0,
+    "qualified_current_forecasts": 1,
     "run_id": "sig-pilot-settlement-20261004-human",
-    "source_bank_sha256": "88c694a845b5a9fe71d6d3a76a9a5df824dab197f89302e7d3faa6a1c82b2243",
-    "status": "waiting_for_signal",
-    "runtime_recovery_evidence": "data/election-v2-recovery-20261004.json",
-    "latest_model_evidence": "research/election-baseline-v2/model-summary-affiliation-invariant.json"
+    "source_bank_sha256": "a948c395b14992a019e2180133604b8ee84dd78a9e94d08781efd18fbefc0128",
+    "status": "monitoring",
+    "runtime_recovery_evidence": "data/current-election-milestone-20261004.json",
+    "latest_model_evidence": "research/current-election/tennessee-20261004-v1.json",
+    "last_native_decision": {
+      "at": "2026-10-04T23:26:12.057Z",
+      "inputHash": "accb50b0a929d3d7d747d2cb82bff9dd35625450ad24b13e89e926b495ea962c",
+      "outputHash": "931dbe116cf1b0665acaf99804367ee18f6da8d18ff962dc027375fd93c85ad0",
+      "positionsAgeMs": 8210,
+      "ordersAgeMs": 6806,
+      "bookAgeMs": 11,
+      "accountBeforeBook": true,
+      "nativeWallMs": 70.73079999996116,
+      "decision": "insufficient_scenario_edge"
+    }
   },
   "read_client_coordination": {
     "assignment_comment": 5984685670,
@@ -218,7 +229,7 @@
     "known_cup_clients": "One local serialized collector; former owner reports all Cup clients stopped with0 future allocation.",
     "target_budget": "Schema4 only with matching human assignment/ACK,1000ms reads/2500ms writes completion pacing, at most60reads or24writes/min without bursts."
   },
-  "recorded_at_utc": "2026-10-04T22:38:35.670Z",
+  "recorded_at_utc": "2026-10-04T23:26:18.512Z",
   "return_handoff_required": false,
   "schema_version": 4
 }

@@ -37,6 +37,16 @@ export class SettlementCompetitionController extends CompetitionController{
   return this.bank.candidates.filter(c=>{const r=c.research;return r&&r.settlementReviewed&&r.flags.length===0&&r.recordedAtMs<=now&&r.sourceAtMs<=now&&now<r.expiresAtMs&&now-r.sourceAtMs<=this.bank.policy.maximumResearchAgeMs;}).map(c=>c.marketId);
  }
  bootstrapMarketId(){return this.bank.candidates[0].marketId;}
+ async beforeBook(marketId){
+  if(!this.canWrite()||this.active()||!this.selected.includes(marketId))return;
+  const now=this.now(),clocks=[this.cash?.at,this.account?.positions.at,this.account?.orders.at].map(Date.parse);
+  // Keep ten seconds of headroom for the queued book and durable dispatch.
+  // Reconcile before requesting the decision book, never after it as if causal.
+  if(clocks.some(t=>!Number.isFinite(t)||t>now||now-t>10000)){
+   await this.cashRefresh();await this.refreshAccount();
+   this.lastFreshnessRepair={at:new Date(this.now()).toISOString(),marketId,addedReads:3,networkQueue:'existing_serialized_account_queue'};
+  }
+ }
  async beforeBooks(args){
   this.checkedContracts={};await super.beforeBooks(args);
   if(!this.canWrite()||this.active())return;
@@ -110,6 +120,6 @@ export class SettlementCompetitionController extends CompetitionController{
  }
  publish(){
   super.publish();
-  if(this.bank){const f=path.join(this.runtimeDir,'competition-stats.json'),s=JSON.parse(fs.readFileSync(f));s.strategyId=this.activation.strategyId;s.strategyBankHash=this.activation.strategyBankHash;s.latestNative=this.latestNative;s.eligibleResearchMarkets=this.eligibleMarketIds();fs.writeFileSync(f+'.native.tmp',JSON.stringify(s,null,2),{mode:0o600});fs.renameSync(f+'.native.tmp',f);}
+  if(this.bank){const f=path.join(this.runtimeDir,'competition-stats.json'),s=JSON.parse(fs.readFileSync(f));s.strategyId=this.activation.strategyId;s.strategyBankHash=this.activation.strategyBankHash;s.latestNative=this.latestNative;s.eligibleResearchMarkets=this.eligibleMarketIds();s.lastFreshnessRepair=this.lastFreshnessRepair||null;fs.writeFileSync(f+'.native.tmp',JSON.stringify(s,null,2),{mode:0o600});fs.renameSync(f+'.native.tmp',f);}
  }
 }

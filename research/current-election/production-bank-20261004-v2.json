@@ -1,0 +1,177 @@
+{
+  "schemaVersion": 1,
+  "mode": "baal_settlement_production_v1",
+  "cutoff": "2026-10-04T23:06:57.318Z",
+  "nativeBackend": {
+    "schemaVersion": 1,
+    "mode": "native_public_book_prefix_v1",
+    "binaryHash": "1b7e0c72c83097f99f12b85ba04dc9adbd28777449534d681fe2abe332d12880",
+    "engineHash": "9c2a38565f0baef68a2543ee67cff82bb92e4cd22fc74f250e89e025dbc7e45c",
+    "runtimeLibraryHash": "13bf4e99b0193634ebdeb0bbdeff9753b39f1d04799183f664111014aabf4c2c"
+  },
+  "policy": {
+    "minimumEdge": "0.020000",
+    "maximumSpread": "0.050000",
+    "maximumBookAgeMs": 20000,
+    "maximumResearchAgeMs": 21600000,
+    "fractionalKellyBps": 2500,
+    "slippageTicks": 1,
+    "depthFractionBps": 100,
+    "maxOrderCost": "1.000000",
+    "maxExposure": "10.000000",
+    "cashReserve": "90.000000",
+    "cumulativeBuyBudget": "25.000000",
+    "groupCaps": {
+      "national_election": "5.000000",
+      "race_62984": "2.000000",
+      "race_62981": "2.000000",
+      "race_62962": "2.000000"
+    }
+  },
+  "contracts": {
+    "297": {
+      "exchangeId": "986",
+      "predicateHash": "8bd7e936a61273a2239f69e0c3af5c7b5d5d962ea71168c8de3eae67dbb23a0e",
+      "rootHash": "602ab50226bd130950b710740ae8a808370164b0db193738a0169662da4c52f1",
+      "receivedAt": "2026-10-04T20:50:49.121Z",
+      "sourceHash": "c831977812155ff44edc6cf359f6714b1ef224bd723cb0e65f5069b610d81890"
+    },
+    "357": {
+      "exchangeId": "1046",
+      "predicateHash": "eb486382116ce00e9ec57c3219419cbde563c77c1ec13d7ddc05c4a3d5be64ea",
+      "rootHash": "bc581dc5b1b693b7fc2ea278b5e8703e5838566030c6420e2b700eb968105eaa",
+      "receivedAt": "2026-10-04T20:52:18.085Z",
+      "sourceHash": "41d6d8dadbae9afef08ca80dbbc7ba728abe37fe4ab40aed55e5005f0a85c20a"
+    },
+    "363": {
+      "exchangeId": "1052",
+      "predicateHash": "9ed8a29c345eb2f0dd7d7d03f099c6eb1dc7d64b20929775b873e32e34e611a1",
+      "rootHash": "7d55eb130b989e31130d8aedec687767e32a02d429e35883e802562589e20c28",
+      "receivedAt": "2026-10-04T23:07:05.158Z",
+      "sourceHash": "832a4d825f0b374e06be09e7a812fdb322eb0e4897ada4b272f379b1f27a09cc"
+    }
+  },
+  "candidates": [
+    {
+      "id": "297:YES",
+      "marketId": "297",
+      "exchangeId": "986",
+      "side": "YES",
+      "predicateHash": "8bd7e936a61273a2239f69e0c3af5c7b5d5d962ea71168c8de3eae67dbb23a0e",
+      "riskGroups": [
+        "national_election",
+        "race_62984"
+      ],
+      "settlesAtMs": 1793811600000,
+      "research": {
+        "id": "republican-west-virginia-20261003-v1",
+        "predicateHash": "8bd7e936a61273a2239f69e0c3af5c7b5d5d962ea71168c8de3eae67dbb23a0e",
+        "side": "YES",
+        "lower": "0.940000",
+        "upper": "0.995000",
+        "recordedAtMs": 1791063284018,
+        "sourceAtMs": 1791063284018,
+        "expiresAtMs": 1791084884018,
+        "method": "subjective_range",
+        "settlementReviewed": true,
+        "flags": [],
+        "sources": [
+          {
+            "contentHash": "d709659df38dab9b3978bd510daddb044fbc162823a36ccf6e4f735a67b6a4f3",
+            "url": "https://apps.sos.wv.gov/elections/2026GeneralSampleBallots/SAMPLE%20-%20WV%20Pocahontas%20261103%20General%20-%2014inch.pdf"
+          },
+          {
+            "contentHash": "7c291277c86f78e234bfee0ec5bf77c92b29bf74797928e70818833e50a7f107",
+            "url": "https://www.archives.gov/files/electoral-college/2024/ascertainment-west-virginia.pdf"
+          },
+          {
+            "contentHash": "2809fd694f6dbfc2d4d402f2f6f68034d537783f276a67a680e6cc01503a3f11",
+            "url": "https://votes.decisiondeskhq.com/races/2026-11-03/west-virginia-us-senate-general-election/forecast"
+          }
+        ]
+      }
+    },
+    {
+      "id": "363:YES",
+      "marketId": "363",
+      "exchangeId": "1052",
+      "side": "YES",
+      "predicateHash": "9ed8a29c345eb2f0dd7d7d03f099c6eb1dc7d64b20929775b873e32e34e611a1",
+      "riskGroups": [
+        "national_election",
+        "race_62981"
+      ],
+      "settlesAtMs": 1793811600000,
+      "research": {
+        "id": "tennessee-causal-assessment-20261004-v1",
+        "predicateHash": "9ed8a29c345eb2f0dd7d7d03f099c6eb1dc7d64b20929775b873e32e34e611a1",
+        "side": "YES",
+        "lower": "0.937202",
+        "upper": "0.969908",
+        "recordedAtMs": 1791155217318,
+        "sourceAtMs": 1791155217318,
+        "expiresAtMs": 1791176817318,
+        "method": "subjective_range",
+        "settlementReviewed": true,
+        "flags": [],
+        "sources": [
+          {
+            "url": "https://tennsight.com/wp-content/uploads/2026/09/Beacon-Poll-of-TN-August-2026-Marginals.pdf",
+            "contentHash": "4e407da80a022b3c25688e0c5ff576dead23525537aa6da071a07e1e66d4961f"
+          },
+          {
+            "url": "https://tennsight.com/polls/august-2026/",
+            "contentHash": "f8532c6debe7500d18f42bdf778a633bc214155fc570fd5f82441f4b99a804f5"
+          },
+          {
+            "url": "https://www.wilsontnvotes.gov/uploads/files/11ecd6ab8b7a94e16cfcde1a441679a5be17f3df.pdf",
+            "contentHash": "f1a42e65b762a3ee7533ef8725c1c2099ff6432880bd4706f44a3fb78c8448c7"
+          }
+        ]
+      }
+    },
+    {
+      "id": "357:YES",
+      "marketId": "357",
+      "exchangeId": "1046",
+      "side": "YES",
+      "predicateHash": "eb486382116ce00e9ec57c3219419cbde563c77c1ec13d7ddc05c4a3d5be64ea",
+      "riskGroups": [
+        "national_election",
+        "race_62962"
+      ],
+      "settlesAtMs": 1793811600000,
+      "research": null
+    }
+  ],
+  "limitations": [
+    "New TN assessment has its own six-hour clock, preserving the original August field dates and source hashes; WV stays expired and KS remains unresolved.",
+    "Subjective scenario probabilities are uncalibrated; broader error stresses contradict a small positive ordinary edge. No guaranteed win or near-term profitable exit.",
+    "The same run, window, engine, groups, limits, original journals, cumulative purchases and inventory are retained. Legacy account inventory is excluded."
+  ],
+  "parentBankHash": "88c694a845b5a9fe71d6d3a76a9a5df824dab197f89302e7d3faa6a1c82b2243",
+  "assessment": {
+    "id": "tennessee-causal-assessment-20261004-v1",
+    "manifestSha256": "9c9cab668df518cf9bd8774bf4d87adea94c4b3dc6d5fabbc1d574447213c5c0",
+    "definitionHash": "9641ffbfd0a7438633c3cee8c746349b5330f0d814a93fc70fc345e0f0d55595",
+    "modelHash": "54fc1978a6bbf4296ed06bc5519819e65a15aa2a65c13b4ef10082f233f2c475",
+    "componentClocks": {
+      "pollObservedAt": "2026-10-03T21:34:42.608Z",
+      "pollFieldEndLatestAt": "2026-08-27T12:00:00.000Z",
+      "pollFieldAgeDays": 38.46316340277778,
+      "daysFromFieldEndToElection": 68.75,
+      "electionAt": "2026-11-04T06:00:00.000Z",
+      "priorTrainedThroughYear": 2024
+    },
+    "ordinary": [
+      0.9372026552832741,
+      0.9699070034817356
+    ],
+    "broaderStress": [
+      0.902363683478113,
+      0.9564524621795811
+    ],
+    "sourceAtMeaning": "Time this new V2/poll/ballot assessment became available. Original component clocks, source hashes and age remain explicit.",
+    "assessmentCodeHash": "b158181a9594a81c5add70ad2699e353333832336a543b7e89ecc954ae21bf33"
+  }
+}

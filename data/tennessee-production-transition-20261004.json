@@ -1,0 +1,19 @@
+{
+  "at": "2026-10-04T23:14:30.693Z",
+  "recordHash": "a1b4b6deb15e6a6babd6fc7f129d8499119a22c6b4e8729c49c2bbdc52a276d3",
+  "runId": "sig-pilot-settlement-20261004-human",
+  "previousBankHash": "88c694a845b5a9fe71d6d3a76a9a5df824dab197f89302e7d3faa6a1c82b2243",
+  "nextBankHash": "a948c395b14992a019e2180133604b8ee84dd78a9e94d08781efd18fbefc0128",
+  "previousActivationHash": "60fbe755ff65d7409a21387f90f2d421c88ed7bcf7a3fb0e16407e7d73e56d20",
+  "nextActivationHash": "a44673f07a3e76c48534b92b6bd3f12e9a5294e57888986b04172c8aab027086",
+  "coreSequence": 0,
+  "coreHash": "",
+  "ledgerSequence": 0,
+  "ledgerHash": "",
+  "accountingReset": false,
+  "runChanged": false,
+  "windowChanged": false,
+  "policyChanged": false,
+  "ordersSubmittedByTransition": 0,
+  "profitabilityEstablished": false
+}

@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import os from 'node:os';
 import {SettlementCompetitionController} from './settlement-controller.mjs';
+import {validateSettlementTransition,applyStoppedSettlementTransition} from './settlement-bank-transition.mjs';
 import {validateProductionActivation,validateProductionHandoff} from './production-activation.mjs';
 import {digest} from '../live-paper/model.mjs';
 import {payloadHash} from './core.mjs';
@@ -55,7 +56,7 @@ function fixture(t,options={}){
  const before=()=>controller.beforeBooks({positions:positions(),orders:open(),ordersAt:iso(now),candidateMarketIds:['377']});
  const cycle=async b=>{await before();await controller.onBook(book(b));};
  t.after(()=>{controller?.close();assert.equal(path.dirname(path.resolve(dir)),path.resolve(os.tmpdir()));fs.rmSync(dir,{recursive:true,force:true});});start();
- return{get c(){return controller;},dir,server,bank,activation,handoff,before,cycle,book,advance:ms=>now+=ms,restart(){controller.close();start();}};
+ return{get c(){return controller;},dir,server,bank,activation,handoff,universe,before,cycle,book,advance:ms=>now+=ms,restart(){controller.close();start();},restartWith(nextActivation){controller.close();controller=new SettlementCompetitionController({runtimeDir:dir,api,universe,config:{},isStopped:()=>false,activation:nextActivation,now:()=>now});}};
 }
 test('current named handoff and configurable cash reserve permit a bounded native order below the old90000 balance',async t=>{
  const f=fixture(t);await f.cycle();assert.equal(f.server.posts.length,1,JSON.stringify(f.c.latestNative));assert.equal(f.server.posts[0].quantity,2);assert.equal(f.server.posts[0].price,.405);await f.before();assert.equal(f.c.state.owned['700'].cost,'0.810000');assert.equal(f.c.state.policy.cashReserve,'50000.000000');assert.ok(f.c.dir.includes('competition-runs'));assert.equal(f.c.latestNative.decision.orderEligible,false,'native proposal never grants authority');
@@ -83,4 +84,21 @@ test('activation and handoff validators reject old or fabricated coordination',t
  const f=fixture(t);assert.equal(validateProductionActivation(f.activation),f.activation);assert.equal(validateProductionHandoff(f.handoff,f.activation),f.handoff);
  for(const change of [{schemaVersion:1},{releaseCommentId:0},{ackCommentId:0},{maxOrderCost:'25.000000'},{feeBps:1},{cashReserve:'100000.000000'}])assert.throws(()=>validateProductionActivation({...f.activation,...change}));
  for(const change of [{writerStopped:false},{inFlightResolved:false},{executionOwner:'Daenerys'},{ackCommentId:999}])assert.throws(()=>validateProductionHandoff({...f.handoff,...change},f.activation));
+});
+test('new research bank retains the same run, owned fills, FIFO cost and cumulative attempt budget across restart',async t=>{
+ const f=fixture(t);await f.cycle();await f.before();const original=structuredClone(f.c.state),next=structuredClone(f.bank);next.cutoff=iso(f.c.now());next.candidates[0].research.id='new-reviewed-evidence';next.candidates[0].research.lower='0.700000';
+ const updated=validateSettlementTransition({activation:f.activation,previousBank:f.bank,nextBank:next,universe:f.universe,intents:f.c.state.intents,owned:f.c.state.owned,nowMs:f.c.now()});
+ assert.deepEqual({...updated,strategyBankHash:f.activation.strategyBankHash},f.activation);const run=f.c.dir;f.c.close();fs.writeFileSync(path.join(f.dir,'COLLECTOR_STOP'),JSON.stringify({source:'settlement_bank_transition',nextBankHash:digest(next)}));
+ const applied=applyStoppedSettlementTransition({runtimeDir:f.dir,collectorLockFile:path.join(f.dir,'bot.lock'),nextBank:next,universe:f.universe,now:()=>f.c.now()});assert.equal(applied.nextActivation.runId,f.activation.runId);assert.equal(JSON.parse(fs.readFileSync(applied.recordFile)).accountingReset,false);fs.unlinkSync(path.join(f.dir,'COLLECTOR_STOP'));f.restartWith(applied.nextActivation);assert.equal(f.c.dir,run);assert.deepEqual(f.c.state.owned,original.owned);assert.deepEqual(f.c.state.intents,original.intents);await f.before();await f.cycle();assert.equal(f.server.posts.length,1,'owned inventory is not bought again');assert.equal(f.c.latestNative.decision.action,'hold');
+});
+test('source transition rejects open intents, widening limits and removal or rebinding of existing candidates',t=>{
+ const f=fixture(t);const next=structuredClone(f.bank);next.cutoff='review2';const input={activation:f.activation,previousBank:f.bank,nextBank:next,universe:f.universe,nowMs:f.c.now()};assert.throws(()=>validateSettlementTransition({...input,intents:{x:{status:'uncertain'}}}),/UNRESOLVED_INTENT/);
+ const policy=structuredClone(next);policy.policy.minimumEdge='0.019000';assert.throws(()=>validateSettlementTransition({...input,nextBank:policy}));const binding=structuredClone(next);binding.contracts['377'].rootHash='b'.repeat(64);assert.throws(()=>validateSettlementTransition({...input,nextBank:binding}),/EXISTING_CONTRACT_CHANGED/);assert.throws(()=>validateSettlementTransition({...input,owned:{'999':{marketId:'999'}}}),/OWNED_SCOPE_MISSING/);
+ const lockFile=path.join(f.dir,'bot.lock');fs.writeFileSync(path.join(f.dir,'COLLECTOR_STOP'),JSON.stringify({source:'settlement_bank_transition',nextBankHash:digest(next)}));fs.writeFileSync(lockFile,'1');assert.throws(()=>applyStoppedSettlementTransition({runtimeDir:f.dir,collectorLockFile:lockFile,nextBank:next,universe:f.universe,now:()=>f.c.now()}),/WRITER_PRESENT/);assert.equal(JSON.parse(fs.readFileSync(path.join(f.dir,'competition-activation.json'))).strategyBankHash,f.activation.strategyBankHash);
+});
+test('stale account is refreshed before the next decision book without widening the20-second admission gate',async t=>{
+ const f=fixture(t);await f.before();f.advance(25000);await f.c.beforeBook('377');const accountAt=Date.parse(f.c.account.positions.at);await f.c.onBook(f.book());assert.equal(f.server.posts.length,1);assert(accountAt<=f.c.now());assert.equal(f.c.state.policy.maxAccountAgeMs,20000);assert.equal(f.c.lastFreshnessRepair.marketId,'377');
+});
+test('fresh account and unrelated paper books add no freshness repair reads',async t=>{
+ const f=fixture(t);await f.before();const at=f.c.account.positions.at;await f.c.beforeBook('377');assert.equal(f.c.account.positions.at,at);assert.equal(f.c.lastFreshnessRepair,undefined);f.advance(25000);await f.c.beforeBook('999');assert.equal(f.c.account.positions.at,at);
 });
