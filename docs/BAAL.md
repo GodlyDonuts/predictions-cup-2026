@@ -142,3 +142,28 @@ The dip trade remains a 0.010 loss per copied participating wallet; these speed
 measurements do not establish profitability. Useful full-book discovery and
 per-instrument pending-intent monitoring remain the next strategy bottlenecks.
 See `data/native-cache-milestone-20261004.json`.
+
+Native collection now uses a collector-local, verified minute-history screen
+instead of the retired history worker. It bootstraps the original public quote
+chain, anchors prior checkpoints, and consumes only durably published receipts.
+The six-hour minute window, 30-minute evidence floor, causal current/prior-minute
+exclusion, and two-cent prior-bid-minus-current-ask screen are unchanged. Prefix
+pruning produces the exact same state as the unchanged minute-model oracle.
+The same 103.71 MB / 9,258-receipt capture rebuilds in 2.48 seconds instead of
+34.49 seconds (13.89x), with identical counts and leads. This was a screen-speed
+comparison, not a backtest of profits.
+
+Native scheduling removes the old fixed-core comparison reservation and retains
+actual held/pending obligations first, including verified reduce-only paper
+monitoring of an owned exposure. The remaining slot requests fresh depth for a
+screened candidate; every fourth actual discovery attempt retains persisted fair
+coverage. Failed attempts advance the durable ordinal, while overwritten or
+unattempted plans do not. The same four-book and serialized 20-read budgets apply.
+Bulk quotes remain non-executable, account exclusions still prevent entries, and
+screen failure suppresses leads while retaining risk collection. Original
+buy-hold benchmark marks may be stale because that historical passive benchmark
+has no exit strategy. No frozen bank, declaration or wallet history was reset.
+The paired-market review expired at 15:36:07.104 UTC on October 4; its held
+positions remain monitored without renewed entry authority. 111 relevant checks
+pass. See `data/native-discovery-benchmark-20261004.json` and
+`data/native-discovery-milestone-20261004.json` for measured deployment evidence.

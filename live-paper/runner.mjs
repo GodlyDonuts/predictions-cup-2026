@@ -33,6 +33,8 @@ import {createBasketFollowupSource} from './basket-followup-source.mjs';
 import {createComparisonRiskSource} from './comparison-risk-source.mjs';
 import {openNativeDipHost} from './native-dip-host-v1.mjs';
 import {openNativeDipCacheHost} from './native-dip-host-v2.mjs';
+import {openCollectorMarketScreen} from './collector-market-screen-v1.mjs';
+import {planNativeDiscoveryBooks,recordNativeDiscoveryAttempt} from './native-discovery-plan-v1.mjs';
 import {planComparisonSampling,recordComparisonAttempt} from './comparison-sampling.mjs';
 import {atomicJson as durableAtomicJson} from '../execution/ledger.mjs';
 import {CompetitionController} from '../execution/controller.mjs';
@@ -88,7 +90,7 @@ let journal,state,api,server,heartbeat,competition,realtime,realtimeCapture,bask
 const samplingSessionId=randomUUID();
 let universe,coverage,depthPlan,dipBank,scaleBank,responsiveBank,scheduler,schedulerScope;const recentReadTimings=[];
 let diagnosticSource,diagnosticLoading=false,diagnosticFailed=false;
-let canonicalCapacity,tradeTape,noMaker,baalReadAttention,baalPair,nativeDip;
+let canonicalCapacity,tradeTape,noMaker,baalReadAttention,baalPair,nativeDip,collectorMarketScreen;
 function collectDiagnosticFocus(){
  if(!diagnosticSource&&!diagnosticLoading&&!diagnosticFailed){diagnosticLoading=true;try{const source=openDiagnosticFocus(runtimeDir,universe,{deferBootstrap:true});source.initialize({stopped:()=>stopping}).then(()=>{diagnosticSource=source;diagnosticLoading=false;}).catch(()=>{diagnosticFailed=true;diagnosticLoading=false;});}catch{diagnosticFailed=true;diagnosticLoading=false;}}
  if(!diagnosticSource){runtime.diagnosticReadFocus={status:diagnosticFailed?'failed':'loading',executionAuthority:false};return null;}
@@ -99,10 +101,11 @@ function saveScheduler(next){
  try{durableAtomicJson(schedulerFile,next);scheduler=next;}
  catch{const e=Error('Book scheduler recording failed');e.durableRecordingFailed=true;e.fatal=true;throw e;}
 }
-function recordAttempt(kind,marketId,samplingPlanId){
+function recordAttempt(kind,marketId,samplingPlanId,nativeDiscovery=false){
  const at=new Date().toISOString();let next=recordSchedulerAttempts(scheduler,schedulerScope,{[kind+'MarketIds']:[marketId],attemptedAt:at});
  if(kind==='book'&&samplingPlanId)next=recordComparisonAttempt(next,schedulerScope,{marketId,at,planId:samplingPlanId});
  if(kind==='book'&&['381','382'].includes(marketId))next.packageReadLastAttemptAt={...(next.packageReadLastAttemptAt||{}),[marketId]:at};
+ if(kind==='book'&&nativeDiscovery)next=recordNativeDiscoveryAttempt(next,marketId);
  saveScheduler(next);
 }
 function schedulingInputs(){
@@ -113,7 +116,7 @@ function schedulingInputs(){
   sources.push({state,bank,healthy});
  }
  const inputs=collectionInputs(sources,universe,coverage,Date.now());
- const historyScreen=readMarketHistoryInputs(runtimeDir,universe,Date.now());runtime.marketHistoryScreen=historyScreen;
+ const historyScreen=collectorMarketScreen?collectorMarketScreen.projection():readMarketHistoryInputs(runtimeDir,universe,Date.now());runtime.marketHistoryScreen=historyScreen;
  if(historyScreen.available)inputs.candidateMarketIds=[...new Set([...historyScreen.candidateMarketIds,...inputs.candidateMarketIds])];
   const shockBankFile=path.join(runtimeDir,'shock-bank.json');
   if(fs.existsSync(shockBankFile)&&!paperExperimentRetired(runtimeDir,'SHOCK_STOP')){
@@ -213,6 +216,7 @@ try{
   comparisonRiskSource=createComparisonRiskSource({runtimeDir,universe,now:Date.now});
   nativeDip=fs.existsSync(path.join(runtimeDir,'native-dip-cache-active.json'))?openNativeDipCacheHost({runtimeDir,universe,signal:control.signal,canOperate:()=>!stopping}):openNativeDipHost({runtimeDir,universe,signal:control.signal,canOperate:()=>!stopping});
   nativeDip?.kick();
+  if(nativeDip&&pricePublication)try{collectorMarketScreen=openCollectorMarketScreen({runtimeDir,universe,publisher:pricePublication,signal:control.signal,canOperate:()=>!stopping});collectorMarketScreen.initialize();}catch{const unavailable={available:false,status:'unavailable',reason:'COLLECTOR_MARKET_SCREEN_STARTUP_FAILED',candidateMarketIds:[],executionAuthority:false};collectorMarketScreen={projection:()=>unavailable,onPublished(){},close(){}};runtime.marketHistoryScreen=unavailable;}
   const publicationReplayStarted=performance.now();
   const nativePublication=collectorNativePublicationConfig(runtimeDir,universe),publicationOptions={file:path.join(runtimeDir,'public-books.jsonl'),universe,sessionId:randomUUID(),now:Date.now,canOperate:()=>!stopping};
   bookPublication=nativePublication?await createNativeBookPublication({...publicationOptions,runtimeDir,nativeBackend:nativePublication.nativeBackend,receiptDir:path.join(runtimeDir,'collector-native-publication-receipts')}):createBookPublication(publicationOptions);
@@ -329,14 +333,18 @@ try{
       if(officialSync){try{accountCache.orders=accountOrders(orders,new Date().toISOString());delete accountCache.errors.orders;publishAccount();}catch{accountCache.errors.orders={at:new Date().toISOString(),reason:'unavailable_or_invalid'};publishAccount();}}
       // Freeze one plan before metadata selection; do not resample shadow state
       // or reorder candidates between the controller and these book requests.
-      const basePlan=(dipBank||nativeDip)?planBookReads(scheduler,schedulerScope,schedulingInputs()):{reads:[...c.marketIds.map(marketId=>({marketId,path:'sourceSnapshots'})),...depthPlan.marketIds.map(marketId=>({marketId,path:'supplementalDepth'}))],entryMarketIds:[]};
+      const probabilityFocus=readProbabilityReadFocus(runtimeDir,universe,Date.now()),bulkFocus=readBulkReadFocus(runtimeDir,universe,Date.now()),anchorFocus=readAnchorReadFocus(runtimeDir,universe,Date.now()),diagnosticFocus=collectDiagnosticFocus(),paperFocus=mergePaperReadFocus(anchorFocus,bulkFocus,probabilityFocus,diagnosticFocus);
+      const inputs=schedulingInputs();
+      if(nativeDip){for(const x of paperFocus.markets||[])if(['held','exit_pending','entry_pending'].includes(x.phase)){const key=x.phase==='entry_pending'?'pendingMarketIds':'heldMarketIds';inputs[key]=[...new Set([...inputs[key],x.marketId])];}
+       const members=new Map(universe.exchanges.map(x=>[x.exchangeId+':YES',x.marketId])),legacy=state.strategies.mean_reversion;
+       for(const [rows,key] of [[legacy.positions,'heldMarketIds'],[legacy.pending,'pendingMarketIds']])for(const id of Object.keys(rows)){const marketId=members.get(id);if(!marketId)throw Error('Unmapped original active paper risk');inputs[key]=[...new Set([...inputs[key],marketId])];}}
+      const basePlan=nativeDip?planNativeDiscoveryBooks(scheduler,schedulerScope,inputs,{screenedMarketIds:runtime.marketHistoryScreen?.candidateMarketIds||[],excludedMarketIds:universe.exchanges.filter(x=>excluded.has(x.exchangeId)).map(x=>x.marketId),ownedRiskMarketIds:probabilityFocus?.ownedRiskReads===true?probabilityFocus.markets.filter(x=>x.phase==='held').map(x=>x.marketId):[]}):dipBank?planBookReads(scheduler,schedulerScope,inputs):{reads:[...c.marketIds.map(marketId=>({marketId,path:'sourceSnapshots'})),...depthPlan.marketIds.map(marketId=>({marketId,path:'supplementalDepth'}))],entryMarketIds:[]};
       const pairedPlan=focusPairedPackageReads(comparisonSamplingPlan(basketMeasurementPlan(basePlan,excluded)),readPairedPackageFocus(runtimeDir,universe,Date.now()),{now:Date.now(),lastAttempts:scheduler?.packageReadLastAttemptAt||{}});
       const observationFocus=readEdgeObservationFocus(runtimeDir,universe,Date.now()),observationExclusions=universe.exchanges.filter(x=>excluded.has(x.exchangeId)).map(x=>x.marketId);
       const observation=planEdgeObservation(pairedPlan,scheduler,universe,{focus:observationFocus,now:Date.now(),excludedMarketIds:observationExclusions,coverage});
       if(observation.state!==scheduler)saveScheduler(observation.state);
       const trialPlan=prioritizeEdgeTrials(observation.plan,observationFocus,universe,{now:Date.now(),excludedMarketIds:observationExclusions});
-      const diagnosticFocus=collectDiagnosticFocus();
-      const bulkFocus=readBulkReadFocus(runtimeDir,universe,Date.now()),probabilityFocus=readProbabilityReadFocus(runtimeDir,universe,Date.now()),paperFocus=mergePaperReadFocus(readAnchorReadFocus(runtimeDir,universe,Date.now()),bulkFocus,probabilityFocus,diagnosticFocus);runtime.probabilityReadFocus=probabilityFocus;
+      runtime.probabilityReadFocus=probabilityFocus;
       let planned=prioritizeAnchorReads(trialPlan,paperFocus,{excludedMarketIds:observationExclusions,ownedRiskMarketIds:probabilityFocus?.ownedRiskReads===true?probabilityFocus.markets.filter(x=>x.phase==='held').map(x=>x.marketId):[],lastAttempts:scheduler?.bookLastAttempt||{}});runtime.bulkDipReadFocus=bulkFocus;runtime.bidAnchorReadFocus=planned.bidAnchorReadFocus||null;runtime.edgeObservation=planned.edgeObservation||null;runtime.edgeTrialObservation=planned.edgeTrialObservation||null;
       if(canonicalCapacity)try{planned=canonicalCapacity.plan(planned,{cycle:runtime.cycles,now:Date.now(),excludedExchangeIds:[...excluded]});}catch{canonicalCapacity=null;runtime.canonicalCapacity={status:'failed',executionAuthority:false};}
       const pairReview=noMaker?.bank.review||baalPair?.bank.review;
@@ -350,7 +358,7 @@ try{
         if(stopping||api.cooldown>Date.now())break;
         const marketId=spec.marketId,target=spec.path==='sourceSnapshots'?events:supplementalDepth;let receivedBook=false;
         const samplingMember=planned.comparisonSampling?.reservationMarketIds?.includes(marketId);
-        recordAttempt('book',marketId,samplingMember?planned.comparisonSampling.planId:null);
+        recordAttempt('book',marketId,samplingMember?planned.comparisonSampling.planId:null,spec.nativeDiscovery===true);
         if(samplingMember)samplingReservations.push({marketId,at:new Date().toISOString()});
         try{
           const r=await api.request('/markets/'+marketId+'/orderbook?tournamentId='+c.tournamentId+'&depth=20');
@@ -367,18 +375,18 @@ try{
           successful++;
         }catch(e){if(e.durableRecordingFailed)throw e;if(stopping)break;if(!receivedBook)publishBookEvent('invalidate',{marketId,reason:'BOOK_READ_FAILED'});if(e.fatal||api.manualReview||e.status===401||e.status===403)throw e;const reason=e.status?'http_'+e.status:e.message,at=new Date().toISOString();if(spec.path==='sourceSnapshots'){state.skips[marketId]={at,reason};invalidate(state,marketId,at,reason);}target.push({marketId,skipped:reason,at});if(e.status===429||e.status===503)break;}
       }
-      runtime.scheduling={managedMarketIds:planned.managedMarketIds,entryMarketIds:planned.entryMarketIds,overCapacity:planned.overCapacity,reads:planned.reads};
+      runtime.scheduling={managedMarketIds:planned.managedMarketIds,entryMarketIds:planned.entryMarketIds,overCapacity:planned.overCapacity,reads:planned.reads,nativeDiscovery:planned.nativeDiscovery||null};
       runtime.supplementalDepth={marketIds:planned.reads.filter(x=>x.path==='supplementalDepth').map(x=>x.marketId),observations:supplementalDepth.filter(x=>x.endpoint).length,skips:supplementalDepth.filter(x=>x.skipped).map(x=>({marketId:x.marketId,reason:x.skipped}))};
       let bulkPrices=null,bulkPriceError=null;
       if(!stopping&&api.cooldown<=Date.now()){
         try{
-          const sweep=await collectMarketSweep({api,universe,coverage,enabled:!!marketSweep,managedMarketIds:competition?.managedMarketIds()||[],isStopped:()=>stopping,now:Date.now,onSnapshot:snapshot=>pricePublication?.publish(snapshot),onCoverage:next=>checkpointCoverage(coverageFile,next,{canCommit:()=>!stopping,onFault:fault=>{runtime.coveragePersistenceFault={at:new Date().toISOString(),...fault};}})});
+          const sweep=await collectMarketSweep({api,universe,coverage,enabled:!!marketSweep,managedMarketIds:competition?.managedMarketIds()||[],isStopped:()=>stopping,now:Date.now,onSnapshot:snapshot=>{pricePublication?.publish(snapshot);collectorMarketScreen?.onPublished(snapshot);},onCoverage:next=>checkpointCoverage(coverageFile,next,{canCommit:()=>!stopping,onFault:fault=>{runtime.coveragePersistenceFault={at:new Date().toISOString(),...fault};}})});
           coverage=sweep.coverage;bulkPrices=sweep.primarySnapshot;bulkPriceError=sweep.error;
           runtime.marketSweep={enabled:!!marketSweep,requestedBatches:sweep.requestedBatches,completedBatches:sweep.completedBatches,complete:sweep.complete,riskPriority:sweep.riskPriority,publication:pricePublication?.status()||null};
           runtime.breadth={universeSize:universe.exchanges.length,observedExchanges:Object.keys(coverage?.quotes||{}).length,lastCollectionAt:coverage?.updatedAt||null,error:bulkPriceError};
         }catch(e){if(e.durableRecordingFailed||!stopping&&(api.manualReview||e.status===401||e.status===403))throw e;bulkPriceError=stopping?'stopped':e.status?'http_'+e.status:e.message;runtime.breadth={...runtime.breadth,error:bulkPriceError};}
       }
-      const at=new Date().toISOString();sampleEquity(state,c,at);assertState(state,c);commit({type:'cycle',clockAt:at,sourceSnapshots:events,supplementalDepth,basketMeasurement:planned.basketMeasurement||null,edgeObservation:planned.edgeObservation||null,edgeTrialObservation:planned.edgeTrialObservation||null,comparisonSampling:planned.comparisonSampling?{...planned.comparisonSampling,reservations:samplingReservations,receipts:samplingReceipts}:null,entryMarketIds:[...new Set([...planned.entryMarketIds,...(planned.managedMarketIds||[])])],bulkPrices,bulkPriceError,accountExclusions:[...excluded],exclusionObservedAt:positions.receivedAt});cycleCommitted=true;
+      const at=new Date().toISOString();sampleEquity(state,c,at);assertState(state,c);commit({type:'cycle',clockAt:at,sourceSnapshots:events,supplementalDepth,nativeDiscovery:planned.nativeDiscovery?{...planned.nativeDiscovery,source:runtime.marketHistoryScreen?.source||null}:null,basketMeasurement:planned.basketMeasurement||null,edgeObservation:planned.edgeObservation||null,edgeTrialObservation:planned.edgeTrialObservation||null,comparisonSampling:planned.comparisonSampling?{...planned.comparisonSampling,reservations:samplingReservations,receipts:samplingReceipts}:null,entryMarketIds:[...new Set([...planned.entryMarketIds,...(planned.managedMarketIds||[])])],bulkPrices,bulkPriceError,accountExclusions:[...excluded],exclusionObservedAt:positions.receivedAt});cycleCommitted=true;
       if(realtime&&!stopping&&api.cooldown<=Date.now())await realtime.service();
       nativeDip?.kick();if(nativeDip)runtime.nativeDip=nativeDip.status();
       runtime.cycles++;runtime.lastCycleAt=at;runtime.status=stopping?'stopping':successful?'running':'degraded';persistStatus();
@@ -391,4 +399,4 @@ try{
   }
   runtime.status='stopped';commit({type:'stopped'});persistStatus();
 }catch(e){const stopped=stopping&&!e.durableRecordingFailed;if(state){runtime.status=stopped?'stopped':'failed';runtime.errors.push({at:new Date().toISOString(),reason:stopped?'stop_requested':e.message});try{persistStatus();}catch{}}console.error(stopped?'Paper runner stopped':'Paper runner failed; see local stats');process.exitCode=stopped?0:1;
-}finally{clearInterval(stopWatch);clearInterval(heartbeat);try{publishBookEvent('close',stopping||runtime.status==='stopped'?'STOP':'COLLECTOR_FAILURE');}finally{try{await nativeDip?.close();await realtime?.stop();}finally{comparisonRiskSource?.close();basketFollowupSource?.close();realtimeCapture?.close();competition?.close();api?.close();server?.close();cleanup();}}}
+}finally{clearInterval(stopWatch);clearInterval(heartbeat);try{publishBookEvent('close',stopping||runtime.status==='stopped'?'STOP':'COLLECTOR_FAILURE');}finally{try{collectorMarketScreen?.close();await nativeDip?.close();await realtime?.stop();}finally{comparisonRiskSource?.close();basketFollowupSource?.close();realtimeCapture?.close();competition?.close();api?.close();server?.close();cleanup();}}}
