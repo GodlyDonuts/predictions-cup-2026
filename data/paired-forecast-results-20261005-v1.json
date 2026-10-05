@@ -1,0 +1,266 @@
+{
+  "schemaVersion": 1,
+  "at": "2026-10-05T22:53:49.252Z",
+  "mode": "frozen_pooled_liquidation_change_diagnostics",
+  "source": {
+    "prefixBytes": 198811330,
+    "sha256": "66857d95198b612dbafe850fe4f467f5c01244a7c4eb3416c8b6390e61285de1",
+    "records": 17736,
+    "tailHash": "76fdbec59b3830141ede42fb8ffc93a8c4d607b7ae9d2ac286ebd3fe49d788b9",
+    "first": "2026-10-02T18:52:17.949Z",
+    "last": "2026-10-05T22:44:04.063Z"
+  },
+  "cutoff": "2026-10-04T16:23:21.617Z",
+  "definition": {
+    "horizonsMs": [
+      300000,
+      1800000,
+      7200000
+    ],
+    "maximumLabelDelayMs": 60000,
+    "ridgePenalty": 1000,
+    "minimumTrainingRows": 1000,
+    "minimumPredictedNet": 0.01,
+    "trainingFraction": 0.6,
+    "featureNames": [
+      "discount_to_one",
+      "quoted_roundtrip_cost",
+      "lag_five_minute_change",
+      "lag_unavailable"
+    ]
+  },
+  "pairs": 117,
+  "samples": 297598,
+  "wallMs": 4831.9856,
+  "results": [
+    {
+      "horizonMs": 300000,
+      "model": {
+        "schemaVersion": 1,
+        "cutoff": 1791131001617,
+        "definition": {
+          "horizonsMs": [
+            300000,
+            1800000,
+            7200000
+          ],
+          "maximumLabelDelayMs": 60000,
+          "ridgePenalty": 1000,
+          "minimumTrainingRows": 1000,
+          "minimumPredictedNet": 0.01,
+          "trainingFraction": 0.6,
+          "featureNames": [
+            "discount_to_one",
+            "quoted_roundtrip_cost",
+            "lag_five_minute_change",
+            "lag_unavailable"
+          ]
+        },
+        "trainingRows": 136833,
+        "maximumTrainingLabelAt": 1791130983316,
+        "mean": [
+          0.005930605190265601,
+          0.034243895843851145,
+          0.000007381260368478247,
+          0.021486045032996774
+        ],
+        "scale": [
+          0.02681913233490912,
+          0.00625901728409,
+          0.0051704219143371855,
+          0.14499791343942417
+        ],
+        "coefficients": [
+          0.000023579258960101822,
+          0.0003135491043736582,
+          0.0009128127894978708,
+          -0.001014390683472501,
+          -0.00005628881682181299
+        ],
+        "stateSpecificPredictors": false
+      },
+      "score": {
+        "laterRows": 90829,
+        "rmse": 0.0031793447708903834,
+        "persistenceRmse": 0.0032627524780225368,
+        "selectedQuoteSignals": 0,
+        "selectedQuoteNetSum": 0,
+        "selectedQuoteNetMean": null,
+        "byDay": {
+          "2026-10-04": {
+            "observations": 35911,
+            "selectedQuoteSignals": 0,
+            "selectedQuoteNetSum": 0
+          },
+          "2026-10-05": {
+            "observations": 54918,
+            "selectedQuoteSignals": 0,
+            "selectedQuoteNetSum": 0
+          }
+        },
+        "simulatedFills": 0,
+        "realizedPnl": null,
+        "executionEvidence": false,
+        "profitabilityEstablished": false
+      },
+      "censoredSamples": 69405
+    },
+    {
+      "horizonMs": 1800000,
+      "model": {
+        "schemaVersion": 1,
+        "cutoff": 1791131001617,
+        "definition": {
+          "horizonsMs": [
+            300000,
+            1800000,
+            7200000
+          ],
+          "maximumLabelDelayMs": 60000,
+          "ridgePenalty": 1000,
+          "minimumTrainingRows": 1000,
+          "minimumPredictedNet": 0.01,
+          "trainingFraction": 0.6,
+          "featureNames": [
+            "discount_to_one",
+            "quoted_roundtrip_cost",
+            "lag_five_minute_change",
+            "lag_unavailable"
+          ]
+        },
+        "trainingRows": 133894,
+        "maximumTrainingLabelAt": 1791130980128,
+        "mean": [
+          0.006002285389935444,
+          0.03413162651056798,
+          1.8671486399682344e-7,
+          0.02870180889360422
+        ],
+        "scale": [
+          0.026848205263960156,
+          0.0061717470151018295,
+          0.00511195189586062,
+          0.1669671077183148
+        ],
+        "coefficients": [
+          0.0001251352914260074,
+          0.0010646741587745736,
+          0.0016386757526267075,
+          -0.0014650070676575306,
+          0.000012545579000657228
+        ],
+        "stateSpecificPredictors": false
+      },
+      "score": {
+        "laterRows": 87328,
+        "rmse": 0.005776841732002567,
+        "persistenceRmse": 0.005885607768255785,
+        "selectedQuoteSignals": 0,
+        "selectedQuoteNetSum": 0,
+        "selectedQuoteNetMean": null,
+        "byDay": {
+          "2026-10-04": {
+            "observations": 35861,
+            "selectedQuoteSignals": 0,
+            "selectedQuoteNetSum": 0
+          },
+          "2026-10-05": {
+            "observations": 51467,
+            "selectedQuoteSignals": 0,
+            "selectedQuoteNetSum": 0
+          }
+        },
+        "simulatedFills": 0,
+        "realizedPnl": null,
+        "executionEvidence": false,
+        "profitabilityEstablished": false
+      },
+      "censoredSamples": 73776
+    },
+    {
+      "horizonMs": 7200000,
+      "model": {
+        "schemaVersion": 1,
+        "cutoff": 1791131001617,
+        "definition": {
+          "horizonsMs": [
+            300000,
+            1800000,
+            7200000
+          ],
+          "maximumLabelDelayMs": 60000,
+          "ridgePenalty": 1000,
+          "minimumTrainingRows": 1000,
+          "minimumPredictedNet": 0.01,
+          "trainingFraction": 0.6,
+          "featureNames": [
+            "discount_to_one",
+            "quoted_roundtrip_cost",
+            "lag_five_minute_change",
+            "lag_unavailable"
+          ]
+        },
+        "trainingRows": 112205,
+        "maximumTrainingLabelAt": 1791130946622,
+        "mean": [
+          0.005815716768415257,
+          0.034020988369490274,
+          0.00001769083374181169,
+          0.029927365090682393
+        ],
+        "scale": [
+          0.02655398558204447,
+          0.006021518364440948,
+          0.005251646023918549,
+          0.17038696519814725
+        ],
+        "coefficients": [
+          0.00011585177332633274,
+          0.0026968047245835357,
+          0.002526764489330406,
+          -0.0014496051974191924,
+          0.0000706896120860951
+        ],
+        "stateSpecificPredictors": false
+      },
+      "score": {
+        "laterRows": 71853,
+        "rmse": 0.009361925288657952,
+        "persistenceRmse": 0.009466037289603822,
+        "selectedQuoteSignals": 0,
+        "selectedQuoteNetSum": 0,
+        "selectedQuoteNetMean": null,
+        "byDay": {
+          "2026-10-04": {
+            "observations": 28610,
+            "selectedQuoteSignals": 0,
+            "selectedQuoteNetSum": 0
+          },
+          "2026-10-05": {
+            "observations": 43243,
+            "selectedQuoteSignals": 0,
+            "selectedQuoteNetSum": 0
+          }
+        },
+        "simulatedFills": 0,
+        "realizedPnl": null,
+        "executionEvidence": false,
+        "profitabilityEstablished": false
+      },
+      "censoredSamples": 103284
+    }
+  ],
+  "allAttemptsRetained": true,
+  "networkRequests": 0,
+  "competitionOrders": 0,
+  "simulatedFills": 0,
+  "profitabilityEstablished": false,
+  "limitations": [
+    "Quote labels lack executable depth and are not actual trades or funded returns.",
+    "Contemporary title discovery does not backfill historical exact predicate knowledge.",
+    "Labels crossing the training cutoff are excluded from fitting; later feature scaling is frozen.",
+    "Overlapping horizons and correlated election/pair observations are not independent samples; UTC-day results are exposed without iid confidence claims.",
+    "Three horizons and ridge strength were fixed before fitting; no best-of-history production winner is selected.",
+    "The same original source prefix is development data; only the chronological later segment is model-held-out, not untouched by all prior research."
+  ]
+}

@@ -1,0 +1,106 @@
+{
+  "schemaVersion": 1,
+  "at": "2026-10-05T22:57:49.323Z",
+  "marketId": "356",
+  "exchangeId": "1045",
+  "race": "Kansas Senate",
+  "polls": [
+    {
+      "source": "emerson",
+      "margin": 2,
+      "democratic": 45,
+      "republican": 43,
+      "fieldStart": "2026-09-15",
+      "fieldEnd": "2026-09-16",
+      "population": "likely_voters",
+      "methodologyVerified": true
+    },
+    {
+      "source": "coefficient",
+      "margin": -5,
+      "democratic": 44,
+      "republican": 49,
+      "fieldStart": "2026-09-08",
+      "fieldEnd": "2026-09-10",
+      "population": "likely_voters",
+      "methodologyVerified": true
+    },
+    {
+      "source": "siena",
+      "margin": 0,
+      "democratic": 45,
+      "republican": 45,
+      "publicationDate": "2026-10-03",
+      "fieldStart": null,
+      "fieldEnd": null,
+      "population": "likely_voters_from_primary_summary_title",
+      "methodologyVerified": false
+    }
+  ],
+  "primarySources": [
+    {
+      "name": "emerson",
+      "url": "https://emersoncollegepolling.com/kansas-2026/",
+      "finalUrl": "https://emersoncollegepolling.com/kansas-2026/",
+      "file": "emerson.html",
+      "observedAt": "2026-10-05T22:56:38.334Z",
+      "sha256": "4da5aa879c29f20ed9bbed7c5feb6e8b4f2bb34b044a27e9667652286f3c47af",
+      "bytes": 105993
+    },
+    {
+      "name": "coefficient",
+      "url": "https://battlegrounds.coefficient.org/ks/",
+      "finalUrl": "https://battlegrounds.coefficient.org/ks/",
+      "file": "coefficient.html",
+      "observedAt": "2026-10-05T22:56:38.550Z",
+      "sha256": "5ce50e5942a94846594d15b8876b90175ded345eb6565c28d9c5a74e9f07a3db",
+      "bytes": 35213
+    },
+    {
+      "name": "siena",
+      "url": "https://sri.siena.edu/2026/10/03/nytimes-siena-poll-of-likely-voters-senate-races/",
+      "finalUrl": "https://sri.siena.edu/2026/10/03/nytimes-siena-poll-of-likely-voters-senate-races/",
+      "file": "siena.html",
+      "observedAt": "2026-10-05T22:56:38.728Z",
+      "sha256": "935f383b5a6ff4a20937952455eb5c02a5bac3d980710b206a9eaa52c1bb737b",
+      "bytes": 81548
+    }
+  ],
+  "method": "Equal-source margin sensitivity transported through original single-poll race-weighted error; no independent-poll precision gain claimed",
+  "meanMarginPoints": -1,
+  "historicalErrorSdRetained": 7.920555277574166,
+  "ordinaryTransportRange": [
+    0.4046098433873465,
+    0.4464646788433046
+  ],
+  "priorSinglePollRange": [
+    0.6003186604589442,
+    0.6431565263185224
+  ],
+  "shifts": [
+    {
+      "shiftPoints": -3,
+      "value": 0.2464329199107139
+    },
+    {
+      "shiftPoints": 0,
+      "value": 0.4254803562545262
+    },
+    {
+      "shiftPoints": 3,
+      "value": 0.6216631667877015
+    }
+  ],
+  "sourceClockRenewal": false,
+  "oldBankChanged": false,
+  "executionAuthority": false,
+  "eligibleForNewEntries": false,
+  "blockers": [
+    "Siena primary topline is verified, but linked detailed methodology/fieldwork cannot currently be opened.",
+    "Equal-source pooled margin is a transport sensitivity, not an historically validated pooled forecast or confidence interval.",
+    "Forecast settlement value does not predict near-term sale; fixed prior wallet remains separately attributed.",
+    "Fresh exact contract/account/executable depth and a separately frozen future policy are required before new paper entries."
+  ],
+  "competitionOrders": 0,
+  "profitabilityEstablished": false
+}

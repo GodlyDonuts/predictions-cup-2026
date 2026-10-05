@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "captures": [
+    {
+      "name": "emerson",
+      "url": "https://emersoncollegepolling.com/kansas-2026/",
+      "finalUrl": "https://emersoncollegepolling.com/kansas-2026/",
+      "file": "emerson.html",
+      "observedAt": "2026-10-05T22:56:38.334Z",
+      "sha256": "4da5aa879c29f20ed9bbed7c5feb6e8b4f2bb34b044a27e9667652286f3c47af",
+      "bytes": 105993
+    },
+    {
+      "name": "coefficient",
+      "url": "https://battlegrounds.coefficient.org/ks/",
+      "finalUrl": "https://battlegrounds.coefficient.org/ks/",
+      "file": "coefficient.html",
+      "observedAt": "2026-10-05T22:56:38.550Z",
+      "sha256": "5ce50e5942a94846594d15b8876b90175ded345eb6565c28d9c5a74e9f07a3db",
+      "bytes": 35213
+    },
+    {
+      "name": "siena",
+      "url": "https://sri.siena.edu/2026/10/03/nytimes-siena-poll-of-likely-voters-senate-races/",
+      "finalUrl": "https://sri.siena.edu/2026/10/03/nytimes-siena-poll-of-likely-voters-senate-races/",
+      "file": "siena.html",
+      "observedAt": "2026-10-05T22:56:38.728Z",
+      "sha256": "935f383b5a6ff4a20937952455eb5c02a5bac3d980710b206a9eaa52c1bb737b",
+      "bytes": 81548
+    }
+  ],
+  "accountRequests": 0,
+  "clockRenewalOfExistingResearch": false
+}
