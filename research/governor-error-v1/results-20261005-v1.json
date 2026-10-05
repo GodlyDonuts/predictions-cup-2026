@@ -1,0 +1,4157 @@
+{
+  "schemaVersion": 1,
+  "id": "governor-error-20261005-v1",
+  "at": "2026-10-05T19:08:43.182Z",
+  "sourceHashes": {
+    "polls": "9f0b185506e59117c150fb988e73b612346effe8e3a8f0d90fdafcad07f54756",
+    "outcomes": "22ff0589b8ccc4c1c6f6f8c20ea5099d20fa044c696db9392823d59ead1364dc",
+    "modelCode": "80a35c9d3527a5a36dc8328724e36ee365a61c5228592029d7adad03e3dae95c"
+  },
+  "sourceUrls": {
+    "polls": "https://raw.githubusercontent.com/fivethirtyeight/data/master/pollster-ratings/raw_polls.csv",
+    "outcomes": "https://raw.githubusercontent.com/fivethirtyeight/election-results/d7a7cff101da28f4ff77114450a964874800ca54/election_results_gubernatorial.csv"
+  },
+  "verifiedOutcomeRaces": 348,
+  "acceptedPollQuestions": 2657,
+  "excluded": {
+    "partisan_or_internal": 288,
+    "regular_final_outcome_unavailable": 161,
+    "separate_outcome_archive_disagrees": 395,
+    "final_candidate_identity_unmatched": 34,
+    "invalid_vote_shares": 2
+  },
+  "model": {
+    "family": "single_poll_race_weighted",
+    "races": 231,
+    "pollsterRaceObservations": 800,
+    "cycles": [
+      1998,
+      2000,
+      2001,
+      2002,
+      2003,
+      2004,
+      2005,
+      2006,
+      2007,
+      2008,
+      2009,
+      2010,
+      2011,
+      2012,
+      2013,
+      2014,
+      2015,
+      2016,
+      2017,
+      2018,
+      2020,
+      2021,
+      2022
+    ],
+    "trainedThroughYear": 2022,
+    "biasPoints": -0.8645305385455321,
+    "standardDeviationPoints": 8.179237418654745,
+    "distribution": "fixed_t4",
+    "effectiveUnit": "equal_race_weight_with_individual_poll_dispersion",
+    "omittedCycle": null,
+    "historicalPopulationTransportMeasured": false
+  },
+  "models": [
+    {
+      "family": "single_poll_race_weighted",
+      "races": 231,
+      "pollsterRaceObservations": 800,
+      "cycles": [
+        1998,
+        2000,
+        2001,
+        2002,
+        2003,
+        2004,
+        2005,
+        2006,
+        2007,
+        2008,
+        2009,
+        2010,
+        2011,
+        2012,
+        2013,
+        2014,
+        2015,
+        2016,
+        2017,
+        2018,
+        2020,
+        2021,
+        2022
+      ],
+      "trainedThroughYear": 2022,
+      "biasPoints": -0.8645305385455321,
+      "standardDeviationPoints": 8.179237418654745,
+      "distribution": "fixed_t4",
+      "effectiveUnit": "equal_race_weight_with_individual_poll_dispersion",
+      "omittedCycle": null,
+      "historicalPopulationTransportMeasured": false
+    },
+    {
+      "family": "single_poll_race_weighted",
+      "races": 214,
+      "pollsterRaceObservations": 772,
+      "cycles": [
+        2000,
+        2001,
+        2002,
+        2003,
+        2004,
+        2005,
+        2006,
+        2007,
+        2008,
+        2009,
+        2010,
+        2011,
+        2012,
+        2013,
+        2014,
+        2015,
+        2016,
+        2017,
+        2018,
+        2020,
+        2021,
+        2022
+      ],
+      "trainedThroughYear": 2022,
+      "biasPoints": -1.4384683094940673,
+      "standardDeviationPoints": 7.801918475877291,
+      "distribution": "fixed_t4",
+      "effectiveUnit": "equal_race_weight_with_individual_poll_dispersion",
+      "omittedCycle": 1998,
+      "historicalPopulationTransportMeasured": false
+    },
+    {
+      "family": "single_poll_race_weighted",
+      "races": 222,
+      "pollsterRaceObservations": 786,
+      "cycles": [
+        1998,
+        2001,
+        2002,
+        2003,
+        2004,
+        2005,
+        2006,
+        2007,
+        2008,
+        2009,
+        2010,
+        2011,
+        2012,
+        2013,
+        2014,
+        2015,
+        2016,
+        2017,
+        2018,
+        2020,
+        2021,
+        2022
+      ],
+      "trainedThroughYear": 2022,
+      "biasPoints": -0.8099380828349576,
+      "standardDeviationPoints": 8.18258898715544,
+      "distribution": "fixed_t4",
+      "effectiveUnit": "equal_race_weight_with_individual_poll_dispersion",
+      "omittedCycle": 2000,
+      "historicalPopulationTransportMeasured": false
+    },
+    {
+      "family": "single_poll_race_weighted",
+      "races": 230,
+      "pollsterRaceObservations": 797,
+      "cycles": [
+        1998,
+        2000,
+        2002,
+        2003,
+        2004,
+        2005,
+        2006,
+        2007,
+        2008,
+        2009,
+        2010,
+        2011,
+        2012,
+        2013,
+        2014,
+        2015,
+        2016,
+        2017,
+        2018,
+        2020,
+        2021,
+        2022
+      ],
+      "trainedThroughYear": 2022,
+      "biasPoints": -0.8643374689397155,
+      "standardDeviationPoints": 8.19658600229497,
+      "distribution": "fixed_t4",
+      "effectiveUnit": "equal_race_weight_with_individual_poll_dispersion",
+      "omittedCycle": 2001,
+      "historicalPopulationTransportMeasured": false
+    },
+    {
+      "family": "single_poll_race_weighted",
+      "races": 205,
+      "pollsterRaceObservations": 734,
+      "cycles": [
+        1998,
+        2000,
+        2001,
+        2003,
+        2004,
+        2005,
+        2006,
+        2007,
+        2008,
+        2009,
+        2010,
+        2011,
+        2012,
+        2013,
+        2014,
+        2015,
+        2016,
+        2017,
+        2018,
+        2020,
+        2021,
+        2022
+      ],
+      "trainedThroughYear": 2022,
+      "biasPoints": -0.42316967164607144,
+      "standardDeviationPoints": 8.07007205619875,
+      "distribution": "fixed_t4",
+      "effectiveUnit": "equal_race_weight_with_individual_poll_dispersion",
+      "omittedCycle": 2002,
+      "historicalPopulationTransportMeasured": false
+    },
+    {
+      "family": "single_poll_race_weighted",
+      "races": 230,
+      "pollsterRaceObservations": 798,
+      "cycles": [
+        1998,
+        2000,
+        2001,
+        2002,
+        2004,
+        2005,
+        2006,
+        2007,
+        2008,
+        2009,
+        2010,
+        2011,
+        2012,
+        2013,
+        2014,
+        2015,
+        2016,
+        2017,
+        2018,
+        2020,
+        2021,
+        2022
+      ],
+      "trainedThroughYear": 2022,
+      "biasPoints": -0.8397152047089189,
+      "standardDeviationPoints": 8.186658053958551,
+      "distribution": "fixed_t4",
+      "effectiveUnit": "equal_race_weight_with_individual_poll_dispersion",
+      "omittedCycle": 2003,
+      "historicalPopulationTransportMeasured": false
+    },
+    {
+      "family": "single_poll_race_weighted",
+      "races": 223,
+      "pollsterRaceObservations": 783,
+      "cycles": [
+        1998,
+        2000,
+        2001,
+        2002,
+        2003,
+        2005,
+        2006,
+        2007,
+        2008,
+        2009,
+        2010,
+        2011,
+        2012,
+        2013,
+        2014,
+        2015,
+        2016,
+        2017,
+        2018,
+        2020,
+        2021,
+        2022
+      ],
+      "trainedThroughYear": 2022,
+      "biasPoints": -0.7493377383951388,
+      "standardDeviationPoints": 8.25268897504693,
+      "distribution": "fixed_t4",
+      "effectiveUnit": "equal_race_weight_with_individual_poll_dispersion",
+      "omittedCycle": 2004,
+      "historicalPopulationTransportMeasured": false
+    },
+    {
+      "family": "single_poll_race_weighted",
+      "races": 230,
+      "pollsterRaceObservations": 792,
+      "cycles": [
+        1998,
+        2000,
+        2001,
+        2002,
+        2003,
+        2004,
+        2006,
+        2007,
+        2008,
+        2009,
+        2010,
+        2011,
+        2012,
+        2013,
+        2014,
+        2015,
+        2016,
+        2017,
+        2018,
+        2020,
+        2021,
+        2022
+      ],
+      "trainedThroughYear": 2022,
+      "biasPoints": -0.8821956999961991,
+      "standardDeviationPoints": 8.190361641865566,
+      "distribution": "fixed_t4",
+      "effectiveUnit": "equal_race_weight_with_individual_poll_dispersion",
+      "omittedCycle": 2005,
+      "historicalPopulationTransportMeasured": false
+    },
+    {
+      "family": "single_poll_race_weighted",
+      "races": 203,
+      "pollsterRaceObservations": 702,
+      "cycles": [
+        1998,
+        2000,
+        2001,
+        2002,
+        2003,
+        2004,
+        2005,
+        2007,
+        2008,
+        2009,
+        2010,
+        2011,
+        2012,
+        2013,
+        2014,
+        2015,
+        2016,
+        2017,
+        2018,
+        2020,
+        2021,
+        2022
+      ],
+      "trainedThroughYear": 2022,
+      "biasPoints": -1.3549716267473668,
+      "standardDeviationPoints": 8.334270307156181,
+      "distribution": "fixed_t4",
+      "effectiveUnit": "equal_race_weight_with_individual_poll_dispersion",
+      "omittedCycle": 2006,
+      "historicalPopulationTransportMeasured": false
+    },
+    {
+      "family": "single_poll_race_weighted",
+      "races": 230,
+      "pollsterRaceObservations": 797,
+      "cycles": [
+        1998,
+        2000,
+        2001,
+        2002,
+        2003,
+        2004,
+        2005,
+        2006,
+        2008,
+        2009,
+        2010,
+        2011,
+        2012,
+        2013,
+        2014,
+        2015,
+        2016,
+        2017,
+        2018,
+        2020,
+        2021,
+        2022
+      ],
+      "trainedThroughYear": 2022,
+      "biasPoints": -0.8729898559022933,
+      "standardDeviationPoints": 8.190625184433216,
+      "distribution": "fixed_t4",
+      "effectiveUnit": "equal_race_weight_with_individual_poll_dispersion",
+      "omittedCycle": 2007,
+      "historicalPopulationTransportMeasured": false
+    },
+    {
+      "family": "single_poll_race_weighted",
+      "races": 222,
+      "pollsterRaceObservations": 777,
+      "cycles": [
+        1998,
+        2000,
+        2001,
+        2002,
+        2003,
+        2004,
+        2005,
+        2006,
+        2007,
+        2009,
+        2010,
+        2011,
+        2012,
+        2013,
+        2014,
+        2015,
+        2016,
+        2017,
+        2018,
+        2020,
+        2021,
+        2022
+      ],
+      "trainedThroughYear": 2022,
+      "biasPoints": -0.9718695431880204,
+      "standardDeviationPoints": 8.12805262599724,
+      "distribution": "fixed_t4",
+      "effectiveUnit": "equal_race_weight_with_individual_poll_dispersion",
+      "omittedCycle": 2008,
+      "historicalPopulationTransportMeasured": false
+    },
+    {
+      "family": "single_poll_race_weighted",
+      "races": 229,
+      "pollsterRaceObservations": 786,
+      "cycles": [
+        1998,
+        2000,
+        2001,
+        2002,
+        2003,
+        2004,
+        2005,
+        2006,
+        2007,
+        2008,
+        2010,
+        2011,
+        2012,
+        2013,
+        2014,
+        2015,
+        2016,
+        2017,
+        2018,
+        2020,
+        2021,
+        2022
+      ],
+      "trainedThroughYear": 2022,
+      "biasPoints": -0.8255359058849392,
+      "standardDeviationPoints": 8.182226780385156,
+      "distribution": "fixed_t4",
+      "effectiveUnit": "equal_race_weight_with_individual_poll_dispersion",
+      "omittedCycle": 2009,
+      "historicalPopulationTransportMeasured": false
+    },
+    {
+      "family": "single_poll_race_weighted",
+      "races": 206,
+      "pollsterRaceObservations": 703,
+      "cycles": [
+        1998,
+        2000,
+        2001,
+        2002,
+        2003,
+        2004,
+        2005,
+        2006,
+        2007,
+        2008,
+        2009,
+        2011,
+        2012,
+        2013,
+        2014,
+        2015,
+        2016,
+        2017,
+        2018,
+        2020,
+        2021,
+        2022
+      ],
+      "trainedThroughYear": 2022,
+      "biasPoints": -1.207321502618252,
+      "standardDeviationPoints": 8.31843893959627,
+      "distribution": "fixed_t4",
+      "effectiveUnit": "equal_race_weight_with_individual_poll_dispersion",
+      "omittedCycle": 2010,
+      "historicalPopulationTransportMeasured": false
+    },
+    {
+      "family": "single_poll_race_weighted",
+      "races": 230,
+      "pollsterRaceObservations": 799,
+      "cycles": [
+        1998,
+        2000,
+        2001,
+        2002,
+        2003,
+        2004,
+        2005,
+        2006,
+        2007,
+        2008,
+        2009,
+        2010,
+        2012,
+        2013,
+        2014,
+        2015,
+        2016,
+        2017,
+        2018,
+        2020,
+        2021,
+        2022
+      ],
+      "trainedThroughYear": 2022,
+      "biasPoints": -0.8223332117377201,
+      "standardDeviationPoints": 8.171870781206835,
+      "distribution": "fixed_t4",
+      "effectiveUnit": "equal_race_weight_with_individual_poll_dispersion",
+      "omittedCycle": 2011,
+      "historicalPopulationTransportMeasured": false
+    },
+    {
+      "family": "single_poll_race_weighted",
+      "races": 224,
+      "pollsterRaceObservations": 778,
+      "cycles": [
+        1998,
+        2000,
+        2001,
+        2002,
+        2003,
+        2004,
+        2005,
+        2006,
+        2007,
+        2008,
+        2009,
+        2010,
+        2011,
+        2013,
+        2014,
+        2015,
+        2016,
+        2017,
+        2018,
+        2020,
+        2021,
+        2022
+      ],
+      "trainedThroughYear": 2022,
+      "biasPoints": -1.034496096079678,
+      "standardDeviationPoints": 8.158814789566335,
+      "distribution": "fixed_t4",
+      "effectiveUnit": "equal_race_weight_with_individual_poll_dispersion",
+      "omittedCycle": 2012,
+      "historicalPopulationTransportMeasured": false
+    },
+    {
+      "family": "single_poll_race_weighted",
+      "races": 229,
+      "pollsterRaceObservations": 781,
+      "cycles": [
+        1998,
+        2000,
+        2001,
+        2002,
+        2003,
+        2004,
+        2005,
+        2006,
+        2007,
+        2008,
+        2009,
+        2010,
+        2011,
+        2012,
+        2014,
+        2015,
+        2016,
+        2017,
+        2018,
+        2020,
+        2021,
+        2022
+      ],
+      "trainedThroughYear": 2022,
+      "biasPoints": -0.8656275775401416,
+      "standardDeviationPoints": 8.200271941837379,
+      "distribution": "fixed_t4",
+      "effectiveUnit": "equal_race_weight_with_individual_poll_dispersion",
+      "omittedCycle": 2013,
+      "historicalPopulationTransportMeasured": false
+    },
+    {
+      "family": "single_poll_race_weighted",
+      "races": 204,
+      "pollsterRaceObservations": 688,
+      "cycles": [
+        1998,
+        2000,
+        2001,
+        2002,
+        2003,
+        2004,
+        2005,
+        2006,
+        2007,
+        2008,
+        2009,
+        2010,
+        2011,
+        2012,
+        2013,
+        2015,
+        2016,
+        2017,
+        2018,
+        2020,
+        2021,
+        2022
+      ],
+      "trainedThroughYear": 2022,
+      "biasPoints": -0.4131317243344956,
+      "standardDeviationPoints": 8.11142591358462,
+      "distribution": "fixed_t4",
+      "effectiveUnit": "equal_race_weight_with_individual_poll_dispersion",
+      "omittedCycle": 2014,
+      "historicalPopulationTransportMeasured": false
+    },
+    {
+      "family": "single_poll_race_weighted",
+      "races": 230,
+      "pollsterRaceObservations": 799,
+      "cycles": [
+        1998,
+        2000,
+        2001,
+        2002,
+        2003,
+        2004,
+        2005,
+        2006,
+        2007,
+        2008,
+        2009,
+        2010,
+        2011,
+        2012,
+        2013,
+        2014,
+        2016,
+        2017,
+        2018,
+        2020,
+        2021,
+        2022
+      ],
+      "trainedThroughYear": 2022,
+      "biasPoints": -0.8087050398883255,
+      "standardDeviationPoints": 8.152967904597276,
+      "distribution": "fixed_t4",
+      "effectiveUnit": "equal_race_weight_with_individual_poll_dispersion",
+      "omittedCycle": 2015,
+      "historicalPopulationTransportMeasured": false
+    },
+    {
+      "family": "single_poll_race_weighted",
+      "races": 224,
+      "pollsterRaceObservations": 779,
+      "cycles": [
+        1998,
+        2000,
+        2001,
+        2002,
+        2003,
+        2004,
+        2005,
+        2006,
+        2007,
+        2008,
+        2009,
+        2010,
+        2011,
+        2012,
+        2013,
+        2014,
+        2015,
+        2017,
+        2018,
+        2020,
+        2021,
+        2022
+      ],
+      "trainedThroughYear": 2022,
+      "biasPoints": -0.6984816546194444,
+      "standardDeviationPoints": 8.20159869587606,
+      "distribution": "fixed_t4",
+      "effectiveUnit": "equal_race_weight_with_individual_poll_dispersion",
+      "omittedCycle": 2016,
+      "historicalPopulationTransportMeasured": false
+    },
+    {
+      "family": "single_poll_race_weighted",
+      "races": 229,
+      "pollsterRaceObservations": 783,
+      "cycles": [
+        1998,
+        2000,
+        2001,
+        2002,
+        2003,
+        2004,
+        2005,
+        2006,
+        2007,
+        2008,
+        2009,
+        2010,
+        2011,
+        2012,
+        2013,
+        2014,
+        2015,
+        2016,
+        2018,
+        2020,
+        2021,
+        2022
+      ],
+      "trainedThroughYear": 2022,
+      "biasPoints": -0.8763535678618237,
+      "standardDeviationPoints": 8.199679030994854,
+      "distribution": "fixed_t4",
+      "effectiveUnit": "equal_race_weight_with_individual_poll_dispersion",
+      "omittedCycle": 2017,
+      "historicalPopulationTransportMeasured": false
+    },
+    {
+      "family": "single_poll_race_weighted",
+      "races": 208,
+      "pollsterRaceObservations": 707,
+      "cycles": [
+        1998,
+        2000,
+        2001,
+        2002,
+        2003,
+        2004,
+        2005,
+        2006,
+        2007,
+        2008,
+        2009,
+        2010,
+        2011,
+        2012,
+        2013,
+        2014,
+        2015,
+        2016,
+        2017,
+        2020,
+        2021,
+        2022
+      ],
+      "trainedThroughYear": 2022,
+      "biasPoints": -1.1068982074624931,
+      "standardDeviationPoints": 8.305956597028947,
+      "distribution": "fixed_t4",
+      "effectiveUnit": "equal_race_weight_with_individual_poll_dispersion",
+      "omittedCycle": 2018,
+      "historicalPopulationTransportMeasured": false
+    },
+    {
+      "family": "single_poll_race_weighted",
+      "races": 222,
+      "pollsterRaceObservations": 773,
+      "cycles": [
+        1998,
+        2000,
+        2001,
+        2002,
+        2003,
+        2004,
+        2005,
+        2006,
+        2007,
+        2008,
+        2009,
+        2010,
+        2011,
+        2012,
+        2013,
+        2014,
+        2015,
+        2016,
+        2017,
+        2018,
+        2021,
+        2022
+      ],
+      "trainedThroughYear": 2022,
+      "biasPoints": -0.5594490750522556,
+      "standardDeviationPoints": 8.11654717062066,
+      "distribution": "fixed_t4",
+      "effectiveUnit": "equal_race_weight_with_individual_poll_dispersion",
+      "omittedCycle": 2020,
+      "historicalPopulationTransportMeasured": false
+    },
+    {
+      "family": "single_poll_race_weighted",
+      "races": 229,
+      "pollsterRaceObservations": 789,
+      "cycles": [
+        1998,
+        2000,
+        2001,
+        2002,
+        2003,
+        2004,
+        2005,
+        2006,
+        2007,
+        2008,
+        2009,
+        2010,
+        2011,
+        2012,
+        2013,
+        2014,
+        2015,
+        2016,
+        2017,
+        2018,
+        2020,
+        2022
+      ],
+      "trainedThroughYear": 2022,
+      "biasPoints": -0.8151870265032735,
+      "standardDeviationPoints": 8.191959371851992,
+      "distribution": "fixed_t4",
+      "effectiveUnit": "equal_race_weight_with_individual_poll_dispersion",
+      "omittedCycle": 2021,
+      "historicalPopulationTransportMeasured": false
+    },
+    {
+      "family": "single_poll_race_weighted",
+      "races": 209,
+      "pollsterRaceObservations": 697,
+      "cycles": [
+        1998,
+        2000,
+        2001,
+        2002,
+        2003,
+        2004,
+        2005,
+        2006,
+        2007,
+        2008,
+        2009,
+        2010,
+        2011,
+        2012,
+        2013,
+        2014,
+        2015,
+        2016,
+        2017,
+        2018,
+        2020,
+        2021
+      ],
+      "trainedThroughYear": 2021,
+      "biasPoints": -0.6709563796292154,
+      "standardDeviationPoints": 8.185846180611113,
+      "distribution": "fixed_t4",
+      "effectiveUnit": "equal_race_weight_with_individual_poll_dispersion",
+      "omittedCycle": 2022,
+      "historicalPopulationTransportMeasured": false
+    }
+  ],
+  "chronological": {
+    "races": 178,
+    "cycles": [
+      2003,
+      2004,
+      2005,
+      2006,
+      2007,
+      2008,
+      2009,
+      2010,
+      2011,
+      2012,
+      2013,
+      2014,
+      2015,
+      2016,
+      2017,
+      2018,
+      2020,
+      2021,
+      2022
+    ],
+    "brier": 0.07274792217034326,
+    "logLoss": 0.24183798621406705,
+    "correctDirections": 158,
+    "bins": [
+      {
+        "low": 0,
+        "high": 0.2,
+        "n": 67,
+        "meanForecast": 0.0538283474212703,
+        "observedFrequency": 0
+      },
+      {
+        "low": 0.2,
+        "high": 0.4,
+        "n": 18,
+        "meanForecast": 0.29747077958888407,
+        "observedFrequency": 0.2222222222222222
+      },
+      {
+        "low": 0.4,
+        "high": 0.6,
+        "n": 15,
+        "meanForecast": 0.49710654059123266,
+        "observedFrequency": 0.6
+      },
+      {
+        "low": 0.6,
+        "high": 0.8,
+        "n": 20,
+        "meanForecast": 0.7065614437534082,
+        "observedFrequency": 0.65
+      },
+      {
+        "low": 0.8,
+        "high": 1.000001,
+        "n": 58,
+        "meanForecast": 0.9420579276622457,
+        "observedFrequency": 0.9827586206896551
+      }
+    ],
+    "independentElectionCycles": 19,
+    "untouchedOriginalForecastVintage": false,
+    "historicalMarketPnlAvailable": false,
+    "profitabilityEstablished": false
+  },
+  "predictionRows": [
+    {
+      "key": "2003:KY",
+      "year": 2003,
+      "pollMargin": -3.9088821487144885,
+      "actualMargin": -10.072057320966579,
+      "democraticWon": false,
+      "trainedThroughYear": 2002,
+      "democraticWinProbability": 0.2786839840610881
+    },
+    {
+      "key": "2004:DE",
+      "year": 2004,
+      "pollMargin": 16.2,
+      "actualMargin": 5.082808100691139,
+      "democraticWon": true,
+      "trainedThroughYear": 2003,
+      "democraticWinProbability": 0.9577343486116998
+    },
+    {
+      "key": "2004:IN",
+      "year": 2004,
+      "pollMargin": -5.869455662579094,
+      "actualMargin": -7.7195080412563115,
+      "democraticWon": false,
+      "trainedThroughYear": 2003,
+      "democraticWinProbability": 0.19886853792282616
+    },
+    {
+      "key": "2004:MO",
+      "year": 2004,
+      "pollMargin": -1,
+      "actualMargin": -2.9775345556458817,
+      "democraticWon": false,
+      "trainedThroughYear": 2003,
+      "democraticWinProbability": 0.41339407886218893
+    },
+    {
+      "key": "2004:MT",
+      "year": 2004,
+      "pollMargin": 4,
+      "actualMargin": 4.416267320563229,
+      "democraticWon": true,
+      "trainedThroughYear": 2003,
+      "democraticWinProbability": 0.6776631462373308
+    },
+    {
+      "key": "2004:NC",
+      "year": 2004,
+      "pollMargin": 17.549349325496376,
+      "actualMargin": 12.737962215145146,
+      "democraticWon": true,
+      "trainedThroughYear": 2003,
+      "democraticWinProbability": 0.9658995213877126
+    },
+    {
+      "key": "2004:NH",
+      "year": 2004,
+      "pollMargin": 4.487635618868239,
+      "actualMargin": 2.1465623219693555,
+      "democraticWon": true,
+      "trainedThroughYear": 2003,
+      "democraticWinProbability": 0.7001873034002011
+    },
+    {
+      "key": "2004:UT",
+      "year": 2004,
+      "pollMargin": -12.211842413311164,
+      "actualMargin": -16.395386755945907,
+      "democraticWon": false,
+      "trainedThroughYear": 2003,
+      "democraticWinProbability": 0.06711840473301704
+    },
+    {
+      "key": "2004:WA",
+      "year": 2004,
+      "pollMargin": 9.146968911630225,
+      "actualMargin": 0.004590652577277865,
+      "democraticWon": true,
+      "trainedThroughYear": 2003,
+      "democraticWinProbability": 0.8604281085414142
+    },
+    {
+      "key": "2005:NJ",
+      "year": 2005,
+      "pollMargin": 7.081682128966511,
+      "actualMargin": 10.4484565951079,
+      "democraticWon": true,
+      "trainedThroughYear": 2004,
+      "democraticWinProbability": 0.7957241190612062
+    },
+    {
+      "key": "2006:AK",
+      "year": 2006,
+      "pollMargin": -11.434366899347866,
+      "actualMargin": -7.356671526449297,
+      "democraticWon": false,
+      "trainedThroughYear": 2005,
+      "democraticWinProbability": 0.06458456874556437
+    },
+    {
+      "key": "2006:AL",
+      "year": 2006,
+      "pollMargin": -19.763314864458657,
+      "actualMargin": -15.874907329728629,
+      "democraticWon": false,
+      "trainedThroughYear": 2005,
+      "democraticWinProbability": 0.01665762763328471
+    },
+    {
+      "key": "2006:AZ",
+      "year": 2006,
+      "pollMargin": 27.362186128501573,
+      "actualMargin": 27.144612997140797,
+      "democraticWon": true,
+      "trainedThroughYear": 2005,
+      "democraticWinProbability": 0.99
+    },
+    {
+      "key": "2006:CA",
+      "year": 2006,
+      "pollMargin": -14.946374103844597,
+      "actualMargin": -16.97608456605836,
+      "democraticWon": false,
+      "trainedThroughYear": 2005,
+      "democraticWinProbability": 0.03534547980458147
+    },
+    {
+      "key": "2006:CO",
+      "year": 2006,
+      "pollMargin": 14.686509202201949,
+      "actualMargin": 16.81985937031734,
+      "democraticWon": true,
+      "trainedThroughYear": 2005,
+      "democraticWinProbability": 0.9485394730417823
+    },
+    {
+      "key": "2006:CT",
+      "year": 2006,
+      "pollMargin": -25.873937621308038,
+      "actualMargin": -27.755891144013255,
+      "democraticWon": false,
+      "trainedThroughYear": 2005,
+      "democraticWinProbability": 0.01
+    },
+    {
+      "key": "2006:FL",
+      "year": 2006,
+      "pollMargin": -14.47842226561786,
+      "actualMargin": -7.072621742002411,
+      "democraticWon": false,
+      "trainedThroughYear": 2005,
+      "democraticWinProbability": 0.038207433540751776
+    },
+    {
+      "key": "2006:GA",
+      "year": 2006,
+      "pollMargin": -19.45065067450362,
+      "actualMargin": -19.7284873844646,
+      "democraticWon": false,
+      "trainedThroughYear": 2005,
+      "democraticWinProbability": 0.017443297858863754
+    },
+    {
+      "key": "2006:IL",
+      "year": 2006,
+      "pollMargin": 13.706027610892432,
+      "actualMargin": 10.53374881629501,
+      "democraticWon": true,
+      "trainedThroughYear": 2005,
+      "democraticWinProbability": 0.9389175039695554
+    },
+    {
+      "key": "2006:KS",
+      "year": 2006,
+      "pollMargin": 13.251370305207402,
+      "actualMargin": 17.465811462869247,
+      "democraticWon": true,
+      "trainedThroughYear": 2005,
+      "democraticWinProbability": 0.9338025713624986
+    },
+    {
+      "key": "2006:MD",
+      "year": 2006,
+      "pollMargin": 7.4685832583897,
+      "actualMargin": 6.532122958134913,
+      "democraticWon": true,
+      "trainedThroughYear": 2005,
+      "democraticWinProbability": 0.8124602235011841
+    },
+    {
+      "key": "2006:ME",
+      "year": 2006,
+      "pollMargin": 5,
+      "actualMargin": 7.897034663665327,
+      "democraticWon": true,
+      "trainedThroughYear": 2005,
+      "democraticWinProbability": 0.7149766599520556
+    },
+    {
+      "key": "2006:MI",
+      "year": 2006,
+      "pollMargin": 5.966112517210956,
+      "actualMargin": 14.05922147837451,
+      "democraticWon": true,
+      "trainedThroughYear": 2005,
+      "democraticWinProbability": 0.756918112228424
+    },
+    {
+      "key": "2006:MN",
+      "year": 2006,
+      "pollMargin": 2.6505928366717306,
+      "actualMargin": -0.958175381320487,
+      "democraticWon": false,
+      "trainedThroughYear": 2005,
+      "democraticWinProbability": 0.595064711571027
+    },
+    {
+      "key": "2006:NE",
+      "year": 2006,
+      "pollMargin": -54,
+      "actualMargin": -48.94051978825564,
+      "democraticWon": false,
+      "trainedThroughYear": 2005,
+      "democraticWinProbability": 0.01
+    },
+    {
+      "key": "2006:NH",
+      "year": 2006,
+      "pollMargin": 46.3281029192045,
+      "actualMargin": 48.18811937620653,
+      "democraticWon": true,
+      "trainedThroughYear": 2005,
+      "democraticWinProbability": 0.99
+    },
+    {
+      "key": "2006:NM",
+      "year": 2006,
+      "pollMargin": 32,
+      "actualMargin": 37.634708585939876,
+      "democraticWon": true,
+      "trainedThroughYear": 2005,
+      "democraticWinProbability": 0.99
+    },
+    {
+      "key": "2006:NV",
+      "year": 2006,
+      "pollMargin": -9,
+      "actualMargin": -4.005613596308912,
+      "democraticWon": false,
+      "trainedThroughYear": 2005,
+      "democraticWinProbability": 0.10001071663996713
+    },
+    {
+      "key": "2006:OH",
+      "year": 2006,
+      "pollMargin": 16.204284066627906,
+      "actualMargin": 23.89239877024893,
+      "democraticWon": true,
+      "trainedThroughYear": 2005,
+      "democraticWinProbability": 0.9602885140519745
+    },
+    {
+      "key": "2006:OK",
+      "year": 2006,
+      "pollMargin": 28.345039995853345,
+      "actualMargin": 33.0081535993921,
+      "democraticWon": true,
+      "trainedThroughYear": 2005,
+      "democraticWinProbability": 0.99
+    },
+    {
+      "key": "2006:OR",
+      "year": 2006,
+      "pollMargin": 2.2147792148415,
+      "actualMargin": 7.976802769169431,
+      "democraticWon": true,
+      "trainedThroughYear": 2005,
+      "democraticWinProbability": 0.5707261873584832
+    },
+    {
+      "key": "2006:PA",
+      "year": 2006,
+      "pollMargin": 20.85725848202152,
+      "actualMargin": 20.729395023080386,
+      "democraticWon": true,
+      "trainedThroughYear": 2005,
+      "democraticWinProbability": 0.9810676564732967
+    },
+    {
+      "key": "2006:RI",
+      "year": 2006,
+      "pollMargin": -7.448960068447545,
+      "actualMargin": -2.0172746756150985,
+      "democraticWon": false,
+      "trainedThroughYear": 2005,
+      "democraticWinProbability": 0.13253611538000387
+    },
+    {
+      "key": "2006:SC",
+      "year": 2006,
+      "pollMargin": -4,
+      "actualMargin": -10.329353930011834,
+      "democraticWon": false,
+      "trainedThroughYear": 2005,
+      "democraticWinProbability": 0.24349038923726773
+    },
+    {
+      "key": "2006:TN",
+      "year": 2006,
+      "pollMargin": 36.462025386147026,
+      "actualMargin": 38.85724277982061,
+      "democraticWon": true,
+      "trainedThroughYear": 2005,
+      "democraticWinProbability": 0.99
+    },
+    {
+      "key": "2006:TX",
+      "year": 2006,
+      "pollMargin": -18.662222747888077,
+      "actualMargin": -9.24081852024134,
+      "democraticWon": false,
+      "trainedThroughYear": 2005,
+      "democraticWinProbability": 0.019625901363407278
+    },
+    {
+      "key": "2006:VT",
+      "year": 2006,
+      "pollMargin": -19.332793605514958,
+      "actualMargin": -15.207752434063174,
+      "democraticWon": false,
+      "trainedThroughYear": 2005,
+      "democraticWinProbability": 0.01775071228675873
+    },
+    {
+      "key": "2006:WI",
+      "year": 2006,
+      "pollMargin": 4.098698650992751,
+      "actualMargin": 7.387149003099417,
+      "democraticWon": true,
+      "trainedThroughYear": 2005,
+      "democraticWinProbability": 0.6716828308169808
+    },
+    {
+      "key": "2007:KY",
+      "year": 2007,
+      "pollMargin": 15.490121608777763,
+      "actualMargin": 17.41444578684292,
+      "democraticWon": true,
+      "trainedThroughYear": 2006,
+      "democraticWinProbability": 0.9702109223782898
+    },
+    {
+      "key": "2008:DE",
+      "year": 2008,
+      "pollMargin": 34.524735048817405,
+      "actualMargin": 35.475096405906825,
+      "democraticWon": true,
+      "trainedThroughYear": 2007,
+      "democraticWinProbability": 0.99
+    },
+    {
+      "key": "2008:IN",
+      "year": 2008,
+      "pollMargin": -12.670461096006335,
+      "actualMargin": -17.805701114599266,
+      "democraticWon": false,
+      "trainedThroughYear": 2007,
+      "democraticWinProbability": 0.05221040261794639
+    },
+    {
+      "key": "2008:MO",
+      "year": 2008,
+      "pollMargin": 16.195492922594635,
+      "actualMargin": 18.912056454667457,
+      "democraticWon": true,
+      "trainedThroughYear": 2007,
+      "democraticWinProbability": 0.9739746228980843
+    },
+    {
+      "key": "2008:MT",
+      "year": 2008,
+      "pollMargin": 15,
+      "actualMargin": 32.95475557491361,
+      "democraticWon": true,
+      "trainedThroughYear": 2007,
+      "democraticWinProbability": 0.9679148784222911
+    },
+    {
+      "key": "2008:NC",
+      "year": 2008,
+      "pollMargin": -0.943894674079008,
+      "actualMargin": 3.3971188639055896,
+      "democraticWon": true,
+      "trainedThroughYear": 2007,
+      "democraticWinProbability": 0.4510454591232553
+    },
+    {
+      "key": "2008:ND",
+      "year": 2008,
+      "pollMargin": -40,
+      "actualMargin": -50.91354864868289,
+      "democraticWon": false,
+      "trainedThroughYear": 2007,
+      "democraticWinProbability": 0.01
+    },
+    {
+      "key": "2008:NH",
+      "year": 2008,
+      "pollMargin": 47.723140212388806,
+      "actualMargin": 42.55696002250272,
+      "democraticWon": true,
+      "trainedThroughYear": 2007,
+      "democraticWinProbability": 0.99
+    },
+    {
+      "key": "2008:UT",
+      "year": 2008,
+      "pollMargin": -64,
+      "actualMargin": -57.90920388144153,
+      "democraticWon": false,
+      "trainedThroughYear": 2007,
+      "democraticWinProbability": 0.01
+    },
+    {
+      "key": "2008:WA",
+      "year": 2008,
+      "pollMargin": 1.473361625515487,
+      "actualMargin": 6.480950506550087,
+      "democraticWon": true,
+      "trainedThroughYear": 2007,
+      "democraticWinProbability": 0.601001763376802
+    },
+    {
+      "key": "2009:NJ",
+      "year": 2009,
+      "pollMargin": -3.6391983611746244,
+      "actualMargin": -3.5777766408492226,
+      "democraticWon": false,
+      "trainedThroughYear": 2008,
+      "democraticWinProbability": 0.30453436303450643
+    },
+    {
+      "key": "2009:VA",
+      "year": 2009,
+      "pollMargin": -6.78332373477798,
+      "actualMargin": -17.36438864885097,
+      "democraticWon": false,
+      "trainedThroughYear": 2008,
+      "democraticWinProbability": 0.17113517071196405
+    },
+    {
+      "key": "2010:AK",
+      "year": 2010,
+      "pollMargin": -19.042165333509715,
+      "actualMargin": -21.38981701224082,
+      "democraticWon": false,
+      "trainedThroughYear": 2009,
+      "democraticWinProbability": 0.017555922847374034
+    },
+    {
+      "key": "2010:AL",
+      "year": 2010,
+      "pollMargin": -20,
+      "actualMargin": -15.710783772443186,
+      "democraticWon": false,
+      "trainedThroughYear": 2009,
+      "democraticWinProbability": 0.015088543810987204
+    },
+    {
+      "key": "2010:AZ",
+      "year": 2010,
+      "pollMargin": -16,
+      "actualMargin": -11.862811986243699,
+      "democraticWon": false,
+      "trainedThroughYear": 2009,
+      "democraticWinProbability": 0.029198033036541338
+    },
+    {
+      "key": "2010:CA",
+      "year": 2010,
+      "pollMargin": 3.406409737330046,
+      "actualMargin": 12.884934748595498,
+      "democraticWon": true,
+      "trainedThroughYear": 2009,
+      "democraticWinProbability": 0.70919858222864
+    },
+    {
+      "key": "2010:CO",
+      "year": 2010,
+      "pollMargin": 29.2510121624178,
+      "actualMargin": 39.909923776509245,
+      "democraticWon": true,
+      "trainedThroughYear": 2009,
+      "democraticWinProbability": 0.99
+    },
+    {
+      "key": "2010:FL",
+      "year": 2010,
+      "pollMargin": -1.319571140043761,
+      "actualMargin": -1.148377671657272,
+      "democraticWon": false,
+      "trainedThroughYear": 2009,
+      "democraticWinProbability": 0.4304886287265388
+    },
+    {
+      "key": "2010:GA",
+      "year": 2010,
+      "pollMargin": -7.191180152043866,
+      "actualMargin": -10.046771145126407,
+      "democraticWon": false,
+      "trainedThroughYear": 2009,
+      "democraticWinProbability": 0.15482099772497943
+    },
+    {
+      "key": "2010:ID",
+      "year": 2010,
+      "pollMargin": -16,
+      "actualMargin": -26.252776028373496,
+      "democraticWon": false,
+      "trainedThroughYear": 2009,
+      "democraticWinProbability": 0.029198033036541338
+    },
+    {
+      "key": "2010:IL",
+      "year": 2010,
+      "pollMargin": -3.928755675670302,
+      "actualMargin": 0.8534609619492173,
+      "democraticWon": true,
+      "trainedThroughYear": 2009,
+      "democraticWinProbability": 0.2843121666429194
+    },
+    {
+      "key": "2010:KS",
+      "year": 2010,
+      "pollMargin": -27,
+      "actualMargin": -31.067847733044026,
+      "democraticWon": false,
+      "trainedThroughYear": 2009,
+      "democraticWinProbability": 0.01
+    },
+    {
+      "key": "2010:MD",
+      "year": 2010,
+      "pollMargin": 7.589795241449242,
+      "actualMargin": 14.459599112967474,
+      "democraticWon": true,
+      "trainedThroughYear": 2009,
+      "democraticWinProbability": 0.8673403888880714
+    },
+    {
+      "key": "2010:MI",
+      "year": 2010,
+      "pollMargin": -19.1302173969187,
+      "actualMargin": -18.211344513850825,
+      "democraticWon": false,
+      "trainedThroughYear": 2009,
+      "democraticWinProbability": 0.017310208902361013
+    },
+    {
+      "key": "2010:MN",
+      "year": 2010,
+      "pollMargin": 5.572112849747958,
+      "actualMargin": 0.4162274604761933,
+      "democraticWon": true,
+      "trainedThroughYear": 2009,
+      "democraticWinProbability": 0.8039945829877863
+    },
+    {
+      "key": "2010:NH",
+      "year": 2010,
+      "pollMargin": 8.50849860193072,
+      "actualMargin": 7.606419792022571,
+      "democraticWon": true,
+      "trainedThroughYear": 2009,
+      "democraticWinProbability": 0.8892369076563041
+    },
+    {
+      "key": "2010:NM",
+      "year": 2010,
+      "pollMargin": -8.347666894489409,
+      "actualMargin": -6.73576332845078,
+      "democraticWon": false,
+      "trainedThroughYear": 2009,
+      "democraticWinProbability": 0.12347885071778503
+    },
+    {
+      "key": "2010:NV",
+      "year": 2010,
+      "pollMargin": -19.12837882920993,
+      "actualMargin": -11.748163717030295,
+      "democraticWon": false,
+      "trainedThroughYear": 2009,
+      "democraticWinProbability": 0.017315298005290497
+    },
+    {
+      "key": "2010:OH",
+      "year": 2010,
+      "pollMargin": -4.4223705085836915,
+      "actualMargin": -2.00201481179991,
+      "democraticWon": false,
+      "trainedThroughYear": 2009,
+      "democraticWinProbability": 0.2605804378374577
+    },
+    {
+      "key": "2010:OK",
+      "year": 2010,
+      "pollMargin": -26,
+      "actualMargin": -20.897941275668828,
+      "democraticWon": false,
+      "trainedThroughYear": 2009,
+      "democraticWinProbability": 0.01
+    },
+    {
+      "key": "2010:OR",
+      "year": 2010,
+      "pollMargin": -3.665315242578264,
+      "actualMargin": 1.5299116369050125,
+      "democraticWon": true,
+      "trainedThroughYear": 2009,
+      "democraticWinProbability": 0.29756219427936126
+    },
+    {
+      "key": "2010:PA",
+      "year": 2010,
+      "pollMargin": -8.998296624196547,
+      "actualMargin": -8.977314647511719,
+      "democraticWon": false,
+      "trainedThroughYear": 2009,
+      "democraticWinProbability": 0.10866219171314753
+    },
+    {
+      "key": "2010:SC",
+      "year": 2010,
+      "pollMargin": -9.646769691522248,
+      "actualMargin": -4.462958581994613,
+      "democraticWon": false,
+      "trainedThroughYear": 2009,
+      "democraticWinProbability": 0.09567551199801277
+    },
+    {
+      "key": "2010:SD",
+      "year": 2010,
+      "pollMargin": -29,
+      "actualMargin": -23.025201603365687,
+      "democraticWon": false,
+      "trainedThroughYear": 2009,
+      "democraticWinProbability": 0.01
+    },
+    {
+      "key": "2010:TN",
+      "year": 2010,
+      "pollMargin": -31,
+      "actualMargin": -31.949943460986837,
+      "democraticWon": false,
+      "trainedThroughYear": 2009,
+      "democraticWinProbability": 0.01
+    },
+    {
+      "key": "2010:TX",
+      "year": 2010,
+      "pollMargin": -7.813082821212339,
+      "actualMargin": -12.67274045306403,
+      "democraticWon": false,
+      "trainedThroughYear": 2009,
+      "democraticWinProbability": 0.13712601149996717
+    },
+    {
+      "key": "2010:WI",
+      "year": 2010,
+      "pollMargin": -7.9510974658999585,
+      "actualMargin": -5.768056008056156,
+      "democraticWon": false,
+      "trainedThroughYear": 2009,
+      "democraticWinProbability": 0.13346888605039176
+    },
+    {
+      "key": "2011:KY",
+      "year": 2011,
+      "pollMargin": 31,
+      "actualMargin": 20.43008429565775,
+      "democraticWon": true,
+      "trainedThroughYear": 2010,
+      "democraticWinProbability": 0.99
+    },
+    {
+      "key": "2012:IN",
+      "year": 2012,
+      "pollMargin": -13.836447140514206,
+      "actualMargin": -2.925819714906403,
+      "democraticWon": false,
+      "trainedThroughYear": 2011,
+      "democraticWinProbability": 0.040778428363549155
+    },
+    {
+      "key": "2012:MO",
+      "year": 2012,
+      "pollMargin": 18.66666666666667,
+      "actualMargin": 12.236265265042526,
+      "democraticWon": true,
+      "trainedThroughYear": 2011,
+      "democraticWinProbability": 0.9851490652497057
+    },
+    {
+      "key": "2012:MT",
+      "year": 2012,
+      "pollMargin": -0.8873123432578539,
+      "actualMargin": 1.5659094622628444,
+      "democraticWon": true,
+      "trainedThroughYear": 2011,
+      "democraticWinProbability": 0.4719545988279725
+    },
+    {
+      "key": "2012:NC",
+      "year": 2012,
+      "pollMargin": -14.23589609865494,
+      "actualMargin": -11.394211886189247,
+      "democraticWon": false,
+      "trainedThroughYear": 2011,
+      "democraticWinProbability": 0.03781309679174234
+    },
+    {
+      "key": "2012:ND",
+      "year": 2012,
+      "pollMargin": -38,
+      "actualMargin": -28.783187650638425,
+      "democraticWon": false,
+      "trainedThroughYear": 2011,
+      "democraticWinProbability": 0.01
+    },
+    {
+      "key": "2012:NH",
+      "year": 2012,
+      "pollMargin": -2.084508659454417,
+      "actualMargin": 12.092633132385131,
+      "democraticWon": true,
+      "trainedThroughYear": 2011,
+      "democraticWinProbability": 0.3959625781004354
+    },
+    {
+      "key": "2012:WA",
+      "year": 2012,
+      "pollMargin": 3.9232962736247945,
+      "actualMargin": 3.0789825098736685,
+      "democraticWon": true,
+      "trainedThroughYear": 2011,
+      "democraticWinProbability": 0.754522363962688
+    },
+    {
+      "key": "2013:NJ",
+      "year": 2013,
+      "pollMargin": -25.533447705620667,
+      "actualMargin": -22.111439383723443,
+      "democraticWon": false,
+      "trainedThroughYear": 2012,
+      "democraticWinProbability": 0.01
+    },
+    {
+      "key": "2013:VA",
+      "year": 2013,
+      "pollMargin": 6.612701617888392,
+      "actualMargin": 2.518215621013347,
+      "democraticWon": true,
+      "trainedThroughYear": 2012,
+      "democraticWinProbability": 0.8621122631446574
+    },
+    {
+      "key": "2014:AL",
+      "year": 2014,
+      "pollMargin": -37,
+      "actualMargin": -27.316202041150007,
+      "democraticWon": false,
+      "trainedThroughYear": 2013,
+      "democraticWinProbability": 0.01
+    },
+    {
+      "key": "2014:AR",
+      "year": 2014,
+      "pollMargin": -5.631275185289336,
+      "actualMargin": -13.942389275411507,
+      "democraticWon": false,
+      "trainedThroughYear": 2013,
+      "democraticWinProbability": 0.2173719300478379
+    },
+    {
+      "key": "2014:AZ",
+      "year": 2014,
+      "pollMargin": -11,
+      "actualMargin": -11.825485124958846,
+      "democraticWon": false,
+      "trainedThroughYear": 2013,
+      "democraticWinProbability": 0.0730167302463647
+    },
+    {
+      "key": "2014:CA",
+      "year": 2014,
+      "pollMargin": 20.530507730876998,
+      "actualMargin": 19.940401069697756,
+      "democraticWon": true,
+      "trainedThroughYear": 2013,
+      "democraticWinProbability": 0.9894355053523186
+    },
+    {
+      "key": "2014:CO",
+      "year": 2014,
+      "pollMargin": 0.2234766055945725,
+      "actualMargin": 3.3423703409817307,
+      "democraticWon": true,
+      "trainedThroughYear": 2013,
+      "democraticWinProbability": 0.556468346430487
+    },
+    {
+      "key": "2014:FL",
+      "year": 2014,
+      "pollMargin": 0.9470254462908416,
+      "actualMargin": -1.0777844669658947,
+      "democraticWon": false,
+      "trainedThroughYear": 2013,
+      "democraticWinProbability": 0.602308988049803
+    },
+    {
+      "key": "2014:GA",
+      "year": 2014,
+      "pollMargin": -3.661768572208935,
+      "actualMargin": -7.859844028897946,
+      "democraticWon": false,
+      "trainedThroughYear": 2013,
+      "democraticWinProbability": 0.31379475725756784
+    },
+    {
+      "key": "2014:ID",
+      "year": 2014,
+      "pollMargin": -23.999999999999996,
+      "actualMargin": -14.971466248323217,
+      "democraticWon": false,
+      "trainedThroughYear": 2013,
+      "democraticWinProbability": 0.01
+    },
+    {
+      "key": "2014:IL",
+      "year": 2014,
+      "pollMargin": -0.3882932928283584,
+      "actualMargin": -3.922165344888896,
+      "democraticWon": false,
+      "trainedThroughYear": 2013,
+      "democraticWinProbability": 0.5168200465313064
+    },
+    {
+      "key": "2014:KS",
+      "year": 2014,
+      "pollMargin": 2.805631701340681,
+      "actualMargin": -3.691308358117631,
+      "democraticWon": false,
+      "trainedThroughYear": 2013,
+      "democraticWinProbability": 0.7097326721534258
+    },
+    {
+      "key": "2014:MD",
+      "year": 2014,
+      "pollMargin": 12.474935194782923,
+      "actualMargin": -3.7797639825591958,
+      "democraticWon": false,
+      "trainedThroughYear": 2013,
+      "democraticWinProbability": 0.9577298856447373
+    },
+    {
+      "key": "2014:MI",
+      "year": 2014,
+      "pollMargin": -3.0179250864355276,
+      "actualMargin": -4.065919200540087,
+      "democraticWon": false,
+      "trainedThroughYear": 2013,
+      "democraticWinProbability": 0.35052984545638355
+    },
+    {
+      "key": "2014:MN",
+      "year": 2014,
+      "pollMargin": 10.129734560842596,
+      "actualMargin": 5.561185903049804,
+      "democraticWon": true,
+      "trainedThroughYear": 2013,
+      "democraticWinProbability": 0.9329462113434637
+    },
+    {
+      "key": "2014:NE",
+      "year": 2014,
+      "pollMargin": -20,
+      "actualMargin": -17.92773814239859,
+      "democraticWon": false,
+      "trainedThroughYear": 2013,
+      "democraticWinProbability": 0.014062179784710443
+    },
+    {
+      "key": "2014:NH",
+      "year": 2014,
+      "pollMargin": 10.301371794772727,
+      "actualMargin": 4.947931128813636,
+      "democraticWon": true,
+      "trainedThroughYear": 2013,
+      "democraticWinProbability": 0.9352185209051571
+    },
+    {
+      "key": "2014:NM",
+      "year": 2014,
+      "pollMargin": -9.361968790033021,
+      "actualMargin": -14.446231998517959,
+      "democraticWon": false,
+      "trainedThroughYear": 2013,
+      "democraticWinProbability": 0.10202337769245853
+    },
+    {
+      "key": "2014:NV",
+      "year": 2014,
+      "pollMargin": -31,
+      "actualMargin": -46.701099298619354,
+      "democraticWon": false,
+      "trainedThroughYear": 2013,
+      "democraticWinProbability": 0.01
+    },
+    {
+      "key": "2014:OH",
+      "year": 2014,
+      "pollMargin": -21.082640689029276,
+      "actualMargin": -30.612422539516018,
+      "democraticWon": false,
+      "trainedThroughYear": 2013,
+      "democraticWinProbability": 0.011843430721601739
+    },
+    {
+      "key": "2014:OK",
+      "year": 2014,
+      "pollMargin": -19.318527350480288,
+      "actualMargin": -14.798061663540771,
+      "democraticWon": false,
+      "trainedThroughYear": 2013,
+      "democraticWinProbability": 0.015712399638792424
+    },
+    {
+      "key": "2014:OR",
+      "year": 2014,
+      "pollMargin": 9.376324755912988,
+      "actualMargin": 5.76219775643883,
+      "democraticWon": true,
+      "trainedThroughYear": 2013,
+      "democraticWinProbability": 0.921908838951546
+    },
+    {
+      "key": "2014:PA",
+      "year": 2014,
+      "pollMargin": 15.226783392095593,
+      "actualMargin": 9.864336905361938,
+      "democraticWon": true,
+      "trainedThroughYear": 2013,
+      "democraticWinProbability": 0.9746108080425879
+    },
+    {
+      "key": "2014:RI",
+      "year": 2014,
+      "pollMargin": 3.967004972814598,
+      "actualMargin": 4.465599975312834,
+      "democraticWon": true,
+      "trainedThroughYear": 2013,
+      "democraticWinProbability": 0.7663946527964458
+    },
+    {
+      "key": "2014:SC",
+      "year": 2014,
+      "pollMargin": -10.122236070869427,
+      "actualMargin": -14.481172686213043,
+      "democraticWon": false,
+      "trainedThroughYear": 2013,
+      "democraticWinProbability": 0.0872972479513441
+    },
+    {
+      "key": "2014:SD",
+      "year": 2014,
+      "pollMargin": -24.376486991302485,
+      "actualMargin": -45.0348410074873,
+      "democraticWon": false,
+      "trainedThroughYear": 2013,
+      "democraticWinProbability": 0.01
+    },
+    {
+      "key": "2014:TN",
+      "year": 2014,
+      "pollMargin": -32,
+      "actualMargin": -47.46588679557489,
+      "democraticWon": false,
+      "trainedThroughYear": 2013,
+      "democraticWinProbability": 0.01
+    },
+    {
+      "key": "2014:TX",
+      "year": 2014,
+      "pollMargin": -12.570264739835135,
+      "actualMargin": -20.366604864327336,
+      "democraticWon": false,
+      "trainedThroughYear": 2013,
+      "democraticWinProbability": 0.0533498891632667
+    },
+    {
+      "key": "2014:WI",
+      "year": 2014,
+      "pollMargin": -2.6569335172840445,
+      "actualMargin": -5.675318651428817,
+      "democraticWon": false,
+      "trainedThroughYear": 2013,
+      "democraticWinProbability": 0.37206687008039824
+    },
+    {
+      "key": "2015:KY",
+      "year": 2015,
+      "pollMargin": 5,
+      "actualMargin": -8.704395229703032,
+      "democraticWon": false,
+      "trainedThroughYear": 2014,
+      "democraticWinProbability": 0.772315555274411
+    },
+    {
+      "key": "2016:DE",
+      "year": 2016,
+      "pollMargin": 32,
+      "actualMargin": 19.153373541514007,
+      "democraticWon": true,
+      "trainedThroughYear": 2015,
+      "democraticWinProbability": 0.99
+    },
+    {
+      "key": "2016:IN",
+      "year": 2016,
+      "pollMargin": 2,
+      "actualMargin": -5.952018553159448,
+      "democraticWon": false,
+      "trainedThroughYear": 2015,
+      "democraticWinProbability": 0.6099436585624147
+    },
+    {
+      "key": "2016:MO",
+      "year": 2016,
+      "pollMargin": 4.630196154133792,
+      "actualMargin": -5.566694231917708,
+      "democraticWon": false,
+      "trainedThroughYear": 2015,
+      "democraticWinProbability": 0.7511724358109234
+    },
+    {
+      "key": "2016:MT",
+      "year": 2016,
+      "pollMargin": 12.000000000000002,
+      "actualMargin": 3.8907648814198197,
+      "democraticWon": true,
+      "trainedThroughYear": 2015,
+      "democraticWinProbability": 0.9416668478228075
+    },
+    {
+      "key": "2016:NC",
+      "year": 2016,
+      "pollMargin": 3.1911517136081464,
+      "actualMargin": 0.21814836466204923,
+      "democraticWon": true,
+      "trainedThroughYear": 2015,
+      "democraticWinProbability": 0.6785839435224824
+    },
+    {
+      "key": "2016:NH",
+      "year": 2016,
+      "pollMargin": -2.534693863599026,
+      "actualMargin": -2.269532311623024,
+      "democraticWon": false,
+      "trainedThroughYear": 2015,
+      "democraticWinProbability": 0.3310720627103579
+    },
+    {
+      "key": "2016:WA",
+      "year": 2016,
+      "pollMargin": 10,
+      "actualMargin": 8.779294539841928,
+      "democraticWon": true,
+      "trainedThroughYear": 2015,
+      "democraticWinProbability": 0.9135101792798133
+    },
+    {
+      "key": "2017:NJ",
+      "year": 2017,
+      "pollMargin": 16.193889159508828,
+      "actualMargin": 14.134529189746743,
+      "democraticWon": true,
+      "trainedThroughYear": 2016,
+      "democraticWinProbability": 0.9722228772794577
+    },
+    {
+      "key": "2017:VA",
+      "year": 2017,
+      "pollMargin": 5.735549146961769,
+      "actualMargin": 8.916610719320289,
+      "democraticWon": true,
+      "trainedThroughYear": 2016,
+      "democraticWinProbability": 0.7891544948183177
+    },
+    {
+      "key": "2018:AK",
+      "year": 2018,
+      "pollMargin": -23.9,
+      "actualMargin": -7.025648632802842,
+      "democraticWon": false,
+      "trainedThroughYear": 2017,
+      "democraticWinProbability": 0.01
+    },
+    {
+      "key": "2018:AL",
+      "year": 2018,
+      "pollMargin": -25,
+      "actualMargin": -19.072115488061392,
+      "democraticWon": false,
+      "trainedThroughYear": 2017,
+      "democraticWinProbability": 0.01
+    },
+    {
+      "key": "2018:AZ",
+      "year": 2018,
+      "pollMargin": -11.973796405059284,
+      "actualMargin": -14.160755516337247,
+      "democraticWon": false,
+      "trainedThroughYear": 2017,
+      "democraticWinProbability": 0.05037541409251947
+    },
+    {
+      "key": "2018:CA",
+      "year": 2018,
+      "pollMargin": 16.136721963580456,
+      "actualMargin": 23.897054251624752,
+      "democraticWon": true,
+      "trainedThroughYear": 2017,
+      "democraticWinProbability": 0.9722615702908667
+    },
+    {
+      "key": "2018:CO",
+      "year": 2018,
+      "pollMargin": 7,
+      "actualMargin": 10.617046234904329,
+      "democraticWon": true,
+      "trainedThroughYear": 2017,
+      "democraticWinProbability": 0.8363902542313004
+    },
+    {
+      "key": "2018:FL",
+      "year": 2018,
+      "pollMargin": 3.5207984133291172,
+      "actualMargin": -0.3949000560910676,
+      "democraticWon": false,
+      "trainedThroughYear": 2017,
+      "democraticWinProbability": 0.6850802280880718
+    },
+    {
+      "key": "2018:GA",
+      "year": 2018,
+      "pollMargin": -1.4265121043942317,
+      "actualMargin": -1.3891455598518334,
+      "democraticWon": false,
+      "trainedThroughYear": 2017,
+      "democraticWinProbability": 0.38113203403420715
+    },
+    {
+      "key": "2018:IL",
+      "year": 2018,
+      "pollMargin": 19.00787043846062,
+      "actualMargin": 15.70028258507623,
+      "democraticWon": true,
+      "trainedThroughYear": 2017,
+      "democraticWinProbability": 0.9830066785246168
+    },
+    {
+      "key": "2018:KS",
+      "year": 2018,
+      "pollMargin": 0.4800686880917271,
+      "actualMargin": 5.070916404171349,
+      "democraticWon": true,
+      "trainedThroughYear": 2017,
+      "democraticWinProbability": 0.5006556163095468
+    },
+    {
+      "key": "2018:MD",
+      "year": 2018,
+      "pollMargin": -18.825311481756657,
+      "actualMargin": -11.846542782159524,
+      "democraticWon": false,
+      "trainedThroughYear": 2017,
+      "democraticWinProbability": 0.015032237780311236
+    },
+    {
+      "key": "2018:MI",
+      "year": 2018,
+      "pollMargin": 10.473785900024096,
+      "actualMargin": 9.567130171494043,
+      "democraticWon": true,
+      "trainedThroughYear": 2017,
+      "democraticWinProbability": 0.9186401755143184
+    },
+    {
+      "key": "2018:MN",
+      "year": 2018,
+      "pollMargin": 11.643583756786093,
+      "actualMargin": 11.41701713029903,
+      "democraticWon": true,
+      "trainedThroughYear": 2017,
+      "democraticWinProbability": 0.9355023127553297
+    },
+    {
+      "key": "2018:NH",
+      "year": 2018,
+      "pollMargin": -5,
+      "actualMargin": -7.044082830952476,
+      "democraticWon": false,
+      "trainedThroughYear": 2017,
+      "democraticWinProbability": 0.20155047857154232
+    },
+    {
+      "key": "2018:NM",
+      "year": 2018,
+      "pollMargin": 7,
+      "actualMargin": 14.398119630875613,
+      "democraticWon": true,
+      "trainedThroughYear": 2017,
+      "democraticWinProbability": 0.8363902542313004
+    },
+    {
+      "key": "2018:NV",
+      "year": 2018,
+      "pollMargin": -0.010928211260717413,
+      "actualMargin": 4.083869195173072,
+      "democraticWon": true,
+      "trainedThroughYear": 2017,
+      "democraticWinProbability": 0.4692530117883808
+    },
+    {
+      "key": "2018:OH",
+      "year": 2018,
+      "pollMargin": -0.11155920795245966,
+      "actualMargin": -3.7039612315563843,
+      "democraticWon": false,
+      "trainedThroughYear": 2017,
+      "democraticWinProbability": 0.46284123993704657
+    },
+    {
+      "key": "2018:OK",
+      "year": 2018,
+      "pollMargin": -4.287453980981695,
+      "actualMargin": -12.104502332716613,
+      "democraticWon": false,
+      "trainedThroughYear": 2017,
+      "democraticWinProbability": 0.23105225992532089
+    },
+    {
+      "key": "2018:OR",
+      "year": 2018,
+      "pollMargin": 6.134132103105001,
+      "actualMargin": 6.401188646794829,
+      "democraticWon": true,
+      "trainedThroughYear": 2017,
+      "democraticWinProbability": 0.8059332412815448
+    },
+    {
+      "key": "2018:PA",
+      "year": 2018,
+      "pollMargin": 16.155332892156174,
+      "actualMargin": 17.07253087497294,
+      "democraticWon": true,
+      "trainedThroughYear": 2017,
+      "democraticWinProbability": 0.9723530832890803
+    },
+    {
+      "key": "2018:RI",
+      "year": 2018,
+      "pollMargin": 9.905764235586329,
+      "actualMargin": 15.459576356067068,
+      "democraticWon": true,
+      "trainedThroughYear": 2017,
+      "democraticWinProbability": 0.9088214250898338
+    },
+    {
+      "key": "2018:TN",
+      "year": 2018,
+      "pollMargin": -13.848140498423362,
+      "actualMargin": -21.006742763097478,
+      "democraticWon": false,
+      "trainedThroughYear": 2017,
+      "democraticWinProbability": 0.03540104643527807
+    },
+    {
+      "key": "2018:TX",
+      "year": 2018,
+      "pollMargin": -17.956663219266552,
+      "actualMargin": -13.298838381229423,
+      "democraticWon": false,
+      "trainedThroughYear": 2017,
+      "democraticWinProbability": 0.01730708045970661
+    },
+    {
+      "key": "2018:WI",
+      "year": 2018,
+      "pollMargin": 4.135123352262986,
+      "actualMargin": 1.0932896620965522,
+      "democraticWon": true,
+      "trainedThroughYear": 2017,
+      "democraticWinProbability": 0.7173631846303898
+    },
+    {
+      "key": "2020:DE",
+      "year": 2020,
+      "pollMargin": 29.000000000000004,
+      "actualMargin": 20.824951536127152,
+      "democraticWon": true,
+      "trainedThroughYear": 2018,
+      "democraticWinProbability": 0.99
+    },
+    {
+      "key": "2020:IN",
+      "year": 2020,
+      "pollMargin": -6,
+      "actualMargin": -24.45490446922713,
+      "democraticWon": false,
+      "trainedThroughYear": 2018,
+      "democraticWinProbability": 0.16833144666637156
+    },
+    {
+      "key": "2020:MO",
+      "year": 2020,
+      "pollMargin": -6.5,
+      "actualMargin": -16.413807847658603,
+      "democraticWon": false,
+      "trainedThroughYear": 2018,
+      "democraticWinProbability": 0.15206231385742341
+    },
+    {
+      "key": "2020:MT",
+      "year": 2020,
+      "pollMargin": -5.434366899347864,
+      "actualMargin": -12.871052557460644,
+      "democraticWon": false,
+      "trainedThroughYear": 2018,
+      "democraticWinProbability": 0.18861840780881656
+    },
+    {
+      "key": "2020:NC",
+      "year": 2020,
+      "pollMargin": 11.138716011806313,
+      "actualMargin": 4.510195488568769,
+      "democraticWon": true,
+      "trainedThroughYear": 2018,
+      "democraticWinProbability": 0.9345117087093565
+    },
+    {
+      "key": "2020:ND",
+      "year": 2020,
+      "pollMargin": -32,
+      "actualMargin": -40.45473481724212,
+      "democraticWon": false,
+      "trainedThroughYear": 2018,
+      "democraticWinProbability": 0.01
+    },
+    {
+      "key": "2020:NH",
+      "year": 2020,
+      "pollMargin": -17.828734022527975,
+      "actualMargin": -31.763860524922464,
+      "democraticWon": false,
+      "trainedThroughYear": 2018,
+      "democraticWinProbability": 0.0172303561863624
+    },
+    {
+      "key": "2020:UT",
+      "year": 2020,
+      "pollMargin": -30.99620662430003,
+      "actualMargin": -32.627813977591,
+      "democraticWon": false,
+      "trainedThroughYear": 2018,
+      "democraticWinProbability": 0.01
+    },
+    {
+      "key": "2020:WA",
+      "year": 2020,
+      "pollMargin": 16,
+      "actualMargin": 13.439743184564648,
+      "democraticWon": true,
+      "trainedThroughYear": 2018,
+      "democraticWinProbability": 0.9741016051725744
+    },
+    {
+      "key": "2021:NJ",
+      "year": 2021,
+      "pollMargin": 10.90105980473039,
+      "actualMargin": 3.2233145154320297,
+      "democraticWon": true,
+      "trainedThroughYear": 2020,
+      "democraticWinProbability": 0.9246649811402667
+    },
+    {
+      "key": "2021:VA",
+      "year": 2021,
+      "pollMargin": 3.3166457241334104,
+      "actualMargin": -1.9298176279781032,
+      "democraticWon": false,
+      "trainedThroughYear": 2020,
+      "democraticWinProbability": 0.6673041800971518
+    },
+    {
+      "key": "2022:AR",
+      "year": 2022,
+      "pollMargin": -18.23096519029781,
+      "actualMargin": -27.767665486633952,
+      "democraticWon": false,
+      "trainedThroughYear": 2021,
+      "democraticWinProbability": 0.015459160927331794
+    },
+    {
+      "key": "2022:AZ",
+      "year": 2022,
+      "pollMargin": -0.35672560351779736,
+      "actualMargin": 0.6687673496816728,
+      "democraticWon": true,
+      "trainedThroughYear": 2021,
+      "democraticWinProbability": 0.4338540150390835
+    },
+    {
+      "key": "2022:CA",
+      "year": 2022,
+      "pollMargin": 21.698215318576676,
+      "actualMargin": 18.358980588052205,
+      "democraticWon": true,
+      "trainedThroughYear": 2021,
+      "democraticWinProbability": 0.9889468856664543
+    },
+    {
+      "key": "2022:CO",
+      "year": 2022,
+      "pollMargin": 17.292687569640595,
+      "actualMargin": 19.34976103827772,
+      "democraticWon": true,
+      "trainedThroughYear": 2021,
+      "democraticWinProbability": 0.9773028783560287
+    },
+    {
+      "key": "2022:FL",
+      "year": 2022,
+      "pollMargin": -6.561989961052747,
+      "actualMargin": -19.403160228936898,
+      "democraticWon": false,
+      "trainedThroughYear": 2021,
+      "democraticWinProbability": 0.13978767379481782
+    },
+    {
+      "key": "2022:GA",
+      "year": 2022,
+      "pollMargin": -5.154778998613077,
+      "actualMargin": -7.535245540050511,
+      "democraticWon": false,
+      "trainedThroughYear": 2021,
+      "democraticWinProbability": 0.18556544450515036
+    },
+    {
+      "key": "2022:IL",
+      "year": 2022,
+      "pollMargin": 19.440394564443963,
+      "actualMargin": 12.538334702516863,
+      "democraticWon": true,
+      "trainedThroughYear": 2021,
+      "democraticWinProbability": 0.9842029886288703
+    },
+    {
+      "key": "2022:KS",
+      "year": 2022,
+      "pollMargin": 1.5,
+      "actualMargin": 2.205950854213789,
+      "democraticWon": true,
+      "trainedThroughYear": 2021,
+      "democraticWinProbability": 0.5534822877136497
+    },
+    {
+      "key": "2022:MD",
+      "year": 2022,
+      "pollMargin": 28.135117904356903,
+      "actualMargin": 32.412554613626504,
+      "democraticWon": true,
+      "trainedThroughYear": 2021,
+      "democraticWinProbability": 0.99
+    },
+    {
+      "key": "2022:MI",
+      "year": 2022,
+      "pollMargin": 11.000106756624067,
+      "actualMargin": 10.530545686974278,
+      "democraticWon": true,
+      "trainedThroughYear": 2021,
+      "democraticWinProbability": 0.9255490738544556
+    },
+    {
+      "key": "2022:MN",
+      "year": 2022,
+      "pollMargin": 8.955517395504597,
+      "actualMargin": 7.663639177093209,
+      "democraticWon": true,
+      "trainedThroughYear": 2021,
+      "democraticWinProbability": 0.8871977779620748
+    },
+    {
+      "key": "2022:NH",
+      "year": 2022,
+      "pollMargin": -15.302178046456826,
+      "actualMargin": -15.513094882376215,
+      "democraticWon": false,
+      "trainedThroughYear": 2021,
+      "democraticWinProbability": 0.025436004362683978
+    },
+    {
+      "key": "2022:NM",
+      "year": 2022,
+      "pollMargin": 10.546127407595096,
+      "actualMargin": 6.3835194087519085,
+      "democraticWon": true,
+      "trainedThroughYear": 2021,
+      "democraticWinProbability": 0.9184045948291526
+    },
+    {
+      "key": "2022:NV",
+      "year": 2022,
+      "pollMargin": -1.2152938525739394,
+      "actualMargin": -1.5098064806083187,
+      "democraticWon": false,
+      "trainedThroughYear": 2021,
+      "democraticWinProbability": 0.3804272825092869
+    },
+    {
+      "key": "2022:OH",
+      "year": 2022,
+      "pollMargin": -17.303189927884812,
+      "actualMargin": -25.02940232563145,
+      "democraticWon": false,
+      "trainedThroughYear": 2021,
+      "democraticWinProbability": 0.01801824865612625
+    },
+    {
+      "key": "2022:OK",
+      "year": 2022,
+      "pollMargin": 1.2248966487720612,
+      "actualMargin": -13.66359023449558,
+      "democraticWon": false,
+      "trainedThroughYear": 2021,
+      "democraticWinProbability": 0.5358193888748929
+    },
+    {
+      "key": "2022:OR",
+      "year": 2022,
+      "pollMargin": -3.0455752967707257,
+      "actualMargin": 3.416845760857157,
+      "democraticWon": true,
+      "trainedThroughYear": 2021,
+      "democraticWinProbability": 0.277884848006222
+    },
+    {
+      "key": "2022:PA",
+      "year": 2022,
+      "pollMargin": 10.895799749308281,
+      "actualMargin": 14.771404382895163,
+      "democraticWon": true,
+      "trainedThroughYear": 2021,
+      "democraticWinProbability": 0.9239684378249479
+    },
+    {
+      "key": "2022:RI",
+      "year": 2022,
+      "pollMargin": 11.51765213598895,
+      "actualMargin": 19.058070288254534,
+      "democraticWon": true,
+      "trainedThroughYear": 2021,
+      "democraticWinProbability": 0.9328886498696991
+    },
+    {
+      "key": "2022:SD",
+      "year": 2022,
+      "pollMargin": -4,
+      "actualMargin": -26.81214052763547,
+      "democraticWon": false,
+      "trainedThroughYear": 2021,
+      "democraticWinProbability": 0.2324655508077521
+    },
+    {
+      "key": "2022:TX",
+      "year": 2022,
+      "pollMargin": -6.499144720215384,
+      "actualMargin": -10.902789467682467,
+      "democraticWon": false,
+      "trainedThroughYear": 2021,
+      "democraticWinProbability": 0.14158480275606553
+    },
+    {
+      "key": "2022:WI",
+      "year": 2022,
+      "pollMargin": 0.5896161737257066,
+      "actualMargin": 3.3969260189197072,
+      "democraticWon": true,
+      "trainedThroughYear": 2021,
+      "democraticWinProbability": 0.4947304917746303
+    }
+  ],
+  "texasValuation": {
+    "marginPoints": 1.369694532200519,
+    "pollWeights": [
+      {
+        "pollster": "ReconMR",
+        "population": "likely_voters",
+        "fieldEndAt": "2026-09-11T23:59:59.999Z",
+        "weight": 0.28985593730094894
+      },
+      {
+        "pollster": "Marist",
+        "population": "registered_voters",
+        "fieldEndAt": "2026-09-20T23:59:59.999Z",
+        "weight": 0.3901171618489794
+      },
+      {
+        "pollster": "Emerson",
+        "population": "likely_voters",
+        "fieldEndAt": "2026-09-14T23:59:59.999Z",
+        "weight": 0.32002690085007174
+      }
+    ],
+    "rvWeight": 0.3901171618489794,
+    "unallocatedPoints": 5.289855937300949,
+    "ordinaryRange": [
+      0.3328042060986031,
+      0.6730198418091796
+    ],
+    "scenarios": [
+      {
+        "omittedCycle": null,
+        "rvShift": -3,
+        "roundingShift": -1,
+        "marginPoints": -0.8006569533464192,
+        "valuation": 0.37385652746835857
+      },
+      {
+        "omittedCycle": null,
+        "rvShift": -3,
+        "roundingShift": 0,
+        "marginPoints": 0.19934304665358082,
+        "valuation": 0.4369886388158437
+      },
+      {
+        "omittedCycle": null,
+        "rvShift": -3,
+        "roundingShift": 1,
+        "marginPoints": 1.1993430466535808,
+        "valuation": 0.5016936221168169
+      },
+      {
+        "omittedCycle": null,
+        "rvShift": 0,
+        "roundingShift": -1,
+        "marginPoints": 0.36969453220051895,
+        "valuation": 0.4479643760229166
+      },
+      {
+        "omittedCycle": null,
+        "rvShift": 0,
+        "roundingShift": 0,
+        "marginPoints": 1.369694532200519,
+        "valuation": 0.5127021579821022
+      },
+      {
+        "omittedCycle": null,
+        "rvShift": 0,
+        "roundingShift": 1,
+        "marginPoints": 2.369694532200519,
+        "valuation": 0.5762396872941855
+      },
+      {
+        "omittedCycle": null,
+        "rvShift": 3,
+        "roundingShift": -1,
+        "marginPoints": 1.540046017747457,
+        "valuation": 0.5236754233017861
+      },
+      {
+        "omittedCycle": null,
+        "rvShift": 3,
+        "roundingShift": 0,
+        "marginPoints": 2.540046017747457,
+        "valuation": 0.5867794496538201
+      },
+      {
+        "omittedCycle": null,
+        "rvShift": 3,
+        "roundingShift": 1,
+        "marginPoints": 3.540046017747457,
+        "valuation": 0.6461532638135905
+      },
+      {
+        "omittedCycle": 1998,
+        "rvShift": -3,
+        "roundingShift": -1,
+        "marginPoints": -0.8006569533464192,
+        "valuation": 0.3328042060986031
+      },
+      {
+        "omittedCycle": 1998,
+        "rvShift": -3,
+        "roundingShift": 0,
+        "marginPoints": 0.19934304665358082,
+        "valuation": 0.39664500964895727
+      },
+      {
+        "omittedCycle": 1998,
+        "rvShift": -3,
+        "roundingShift": 1,
+        "marginPoints": 1.1993430466535808,
+        "valuation": 0.4637519824527307
+      },
+      {
+        "omittedCycle": 1998,
+        "rvShift": 0,
+        "roundingShift": -1,
+        "marginPoints": 0.36969453220051895,
+        "valuation": 0.40791334291744713
+      },
+      {
+        "omittedCycle": 1998,
+        "rvShift": 0,
+        "roundingShift": 0,
+        "marginPoints": 1.369694532200519,
+        "valuation": 0.4753253007560395
+      },
+      {
+        "omittedCycle": 1998,
+        "rvShift": 0,
+        "roundingShift": 1,
+        "marginPoints": 2.369694532200519,
+        "valuation": 0.5429265085313255
+      },
+      {
+        "omittedCycle": 1998,
+        "rvShift": 3,
+        "roundingShift": -1,
+        "marginPoints": 1.540046017747457,
+        "valuation": 0.48690418779510825
+      },
+      {
+        "omittedCycle": 1998,
+        "rvShift": 3,
+        "roundingShift": 0,
+        "marginPoints": 2.540046017747457,
+        "valuation": 0.5542634544492134
+      },
+      {
+        "omittedCycle": 1998,
+        "rvShift": 3,
+        "roundingShift": 1,
+        "marginPoints": 3.540046017747457,
+        "valuation": 0.6186928329613
+      },
+      {
+        "omittedCycle": 2000,
+        "rvShift": -3,
+        "roundingShift": -1,
+        "marginPoints": -0.8006569533464192,
+        "valuation": 0.37726559682855665
+      },
+      {
+        "omittedCycle": 2000,
+        "rvShift": -3,
+        "roundingShift": 0,
+        "marginPoints": 0.19934304665358082,
+        "valuation": 0.44051765421176636
+      },
+      {
+        "omittedCycle": 2000,
+        "rvShift": -3,
+        "roundingShift": 1,
+        "marginPoints": 1.1993430466535808,
+        "valuation": 0.505214332996327
+      },
+      {
+        "omittedCycle": 2000,
+        "rvShift": 0,
+        "roundingShift": -1,
+        "marginPoints": 0.36969453220051895,
+        "valuation": 0.4515012903938258
+      },
+      {
+        "omittedCycle": 2000,
+        "rvShift": 0,
+        "roundingShift": 0,
+        "marginPoints": 1.369694532200519,
+        "valuation": 0.5162083779456753
+      },
+      {
+        "omittedCycle": 2000,
+        "rvShift": 0,
+        "roundingShift": 1,
+        "marginPoints": 2.369694532200519,
+        "valuation": 0.5795890986142646
+      },
+      {
+        "omittedCycle": 2000,
+        "rvShift": 3,
+        "roundingShift": -1,
+        "marginPoints": 1.540046017747457,
+        "valuation": 0.5271634476015312
+      },
+      {
+        "omittedCycle": 2000,
+        "rvShift": 3,
+        "roundingShift": 0,
+        "marginPoints": 2.540046017747457,
+        "valuation": 0.5900909292239218
+      },
+      {
+        "omittedCycle": 2000,
+        "rvShift": 3,
+        "roundingShift": 1,
+        "marginPoints": 3.540046017747457,
+        "valuation": 0.6491891302164827
+      },
+      {
+        "omittedCycle": 2001,
+        "rvShift": -3,
+        "roundingShift": -1,
+        "marginPoints": -0.8006569533464192,
+        "valuation": 0.3740855193825798
+      },
+      {
+        "omittedCycle": 2001,
+        "rvShift": -3,
+        "roundingShift": 0,
+        "marginPoints": 0.19934304665358082,
+        "valuation": 0.43709156658897014
+      },
+      {
+        "omittedCycle": 2001,
+        "rvShift": -3,
+        "roundingShift": 1,
+        "marginPoints": 1.1993430466535808,
+        "valuation": 0.5016602358924678
+      },
+      {
+        "omittedCycle": 2001,
+        "rvShift": 0,
+        "roundingShift": -1,
+        "marginPoints": 0.36969453220051895,
+        "valuation": 0.4480444108835577
+      },
+      {
+        "omittedCycle": 2001,
+        "rvShift": 0,
+        "roundingShift": 0,
+        "marginPoints": 1.369694532200519,
+        "valuation": 0.5126455933540875
+      },
+      {
+        "omittedCycle": 2001,
+        "rvShift": 0,
+        "roundingShift": 1,
+        "marginPoints": 2.369694532200519,
+        "valuation": 0.5760535804138748
+      },
+      {
+        "omittedCycle": 2001,
+        "rvShift": 3,
+        "roundingShift": -1,
+        "marginPoints": 1.540046017747457,
+        "valuation": 0.5235958894931654
+      },
+      {
+        "omittedCycle": 2001,
+        "rvShift": 3,
+        "roundingShift": 0,
+        "marginPoints": 2.540046017747457,
+        "valuation": 0.5865729812022992
+      },
+      {
+        "omittedCycle": 2001,
+        "rvShift": 3,
+        "roundingShift": 1,
+        "marginPoints": 3.540046017747457,
+        "valuation": 0.6458418305786647
+      },
+      {
+        "omittedCycle": 2002,
+        "rvShift": -3,
+        "roundingShift": -1,
+        "marginPoints": -0.8006569533464192,
+        "valuation": 0.4003368973321851
+      },
+      {
+        "omittedCycle": 2002,
+        "rvShift": -3,
+        "roundingShift": 0,
+        "marginPoints": 0.19934304665358082,
+        "valuation": 0.465295798943829
+      },
+      {
+        "omittedCycle": 2002,
+        "rvShift": -3,
+        "roundingShift": 1,
+        "marginPoints": 1.1993430466535808,
+        "valuation": 0.5308110952629707
+      },
+      {
+        "omittedCycle": 2002,
+        "rvShift": 0,
+        "roundingShift": -1,
+        "marginPoints": 0.36969453220051895,
+        "valuation": 0.4764859103776781
+      },
+      {
+        "omittedCycle": 2002,
+        "rvShift": 0,
+        "roundingShift": 0,
+        "marginPoints": 1.369694532200519,
+        "valuation": 0.5418475267426397
+      },
+      {
+        "omittedCycle": 2002,
+        "rvShift": 0,
+        "roundingShift": 1,
+        "marginPoints": 2.369694532200519,
+        "valuation": 0.6049081458410661
+      },
+      {
+        "omittedCycle": 2002,
+        "rvShift": 3,
+        "roundingShift": -1,
+        "marginPoints": 1.540046017747457,
+        "valuation": 0.5528163353178398
+      },
+      {
+        "omittedCycle": 2002,
+        "rvShift": 3,
+        "roundingShift": 0,
+        "marginPoints": 2.540046017747457,
+        "valuation": 0.6152625577879478
+      },
+      {
+        "omittedCycle": 2002,
+        "rvShift": 3,
+        "roundingShift": 1,
+        "marginPoints": 3.540046017747457,
+        "valuation": 0.6730198418091796
+      },
+      {
+        "omittedCycle": 2003,
+        "rvShift": -3,
+        "roundingShift": -1,
+        "marginPoints": -0.8006569533464192,
+        "valuation": 0.3754779702031287
+      },
+      {
+        "omittedCycle": 2003,
+        "rvShift": -3,
+        "roundingShift": 0,
+        "marginPoints": 0.19934304665358082,
+        "valuation": 0.43862223772775294
+      },
+      {
+        "omittedCycle": 2003,
+        "rvShift": -3,
+        "roundingShift": 1,
+        "marginPoints": 1.1993430466535808,
+        "valuation": 0.5032779076643239
+      },
+      {
+        "omittedCycle": 2003,
+        "rvShift": 0,
+        "roundingShift": -1,
+        "marginPoints": 0.36969453220051895,
+        "valuation": 0.44959390002621213
+      },
+      {
+        "omittedCycle": 2003,
+        "rvShift": 0,
+        "roundingShift": 0,
+        "marginPoints": 1.369694532200519,
+        "valuation": 0.5142721370156806
+      },
+      {
+        "omittedCycle": 2003,
+        "rvShift": 0,
+        "roundingShift": 1,
+        "marginPoints": 2.369694532200519,
+        "valuation": 0.5776953658657287
+      },
+      {
+        "omittedCycle": 2003,
+        "rvShift": 3,
+        "roundingShift": -1,
+        "marginPoints": 1.540046017747457,
+        "valuation": 0.5252294879592674
+      },
+      {
+        "omittedCycle": 2003,
+        "rvShift": 3,
+        "roundingShift": 0,
+        "marginPoints": 2.540046017747457,
+        "valuation": 0.5882111436118256
+      },
+      {
+        "omittedCycle": 2003,
+        "rvShift": 3,
+        "roundingShift": 1,
+        "marginPoints": 3.540046017747457,
+        "valuation": 0.6474250237968596
+      },
+      {
+        "omittedCycle": 2004,
+        "rvShift": -3,
+        "roundingShift": -1,
+        "marginPoints": -0.8006569533464192,
+        "valuation": 0.38183241661377115
+      },
+      {
+        "omittedCycle": 2004,
+        "rvShift": -3,
+        "roundingShift": 0,
+        "marginPoints": 0.19934304665358082,
+        "valuation": 0.4447217767195388
+      },
+      {
+        "omittedCycle": 2004,
+        "rvShift": -3,
+        "roundingShift": 1,
+        "marginPoints": 1.1993430466535808,
+        "valuation": 0.5088822409638402
+      },
+      {
+        "omittedCycle": 2004,
+        "rvShift": 0,
+        "roundingShift": -1,
+        "marginPoints": 0.36969453220051895,
+        "valuation": 0.455625049957233
+      },
+      {
+        "omittedCycle": 2004,
+        "rvShift": 0,
+        "roundingShift": 0,
+        "marginPoints": 1.369694532200519,
+        "valuation": 0.5197714707690239
+      },
+      {
+        "omittedCycle": 2004,
+        "rvShift": 0,
+        "roundingShift": 1,
+        "marginPoints": 2.369694532200519,
+        "valuation": 0.5824871514553979
+      },
+      {
+        "omittedCycle": 2004,
+        "rvShift": 3,
+        "roundingShift": -1,
+        "marginPoints": 1.540046017747457,
+        "valuation": 0.530618668125199
+      },
+      {
+        "omittedCycle": 2004,
+        "rvShift": 3,
+        "roundingShift": 0,
+        "marginPoints": 2.540046017747457,
+        "valuation": 0.5928705334353818
+      },
+      {
+        "omittedCycle": 2004,
+        "rvShift": 3,
+        "roundingShift": 1,
+        "marginPoints": 3.540046017747457,
+        "valuation": 0.6512738213222078
+      },
+      {
+        "omittedCycle": 2005,
+        "rvShift": -3,
+        "roundingShift": -1,
+        "marginPoints": -0.8006569533464192,
+        "valuation": 0.37290963491496204
+      },
+      {
+        "omittedCycle": 2005,
+        "rvShift": -3,
+        "roundingShift": 0,
+        "marginPoints": 0.19934304665358082,
+        "valuation": 0.43591253550417874
+      },
+      {
+        "omittedCycle": 2005,
+        "rvShift": -3,
+        "roundingShift": 1,
+        "marginPoints": 1.1993430466535808,
+        "valuation": 0.5005226327621577
+      },
+      {
+        "omittedCycle": 2005,
+        "rvShift": 0,
+        "roundingShift": -1,
+        "marginPoints": 0.36969453220051895,
+        "valuation": 0.4468693164400857
+      },
+      {
+        "omittedCycle": 2005,
+        "rvShift": 0,
+        "roundingShift": 0,
+        "marginPoints": 1.369694532200519,
+        "valuation": 0.5115192882905756
+      },
+      {
+        "omittedCycle": 2005,
+        "rvShift": 0,
+        "roundingShift": 1,
+        "marginPoints": 2.369694532200519,
+        "valuation": 0.5750151124744441
+      },
+      {
+        "omittedCycle": 2005,
+        "rvShift": 3,
+        "roundingShift": -1,
+        "marginPoints": 1.540046017747457,
+        "valuation": 0.5224820290318292
+      },
+      {
+        "omittedCycle": 2005,
+        "rvShift": 3,
+        "roundingShift": 0,
+        "marginPoints": 2.540046017747457,
+        "valuation": 0.5855526494652077
+      },
+      {
+        "omittedCycle": 2005,
+        "rvShift": 3,
+        "roundingShift": 1,
+        "marginPoints": 3.540046017747457,
+        "valuation": 0.6449411175520785
+      },
+      {
+        "omittedCycle": 2006,
+        "rvShift": -3,
+        "roundingShift": -1,
+        "marginPoints": -0.8006569533464192,
+        "valuation": 0.3465258598648696
+      },
+      {
+        "omittedCycle": 2006,
+        "rvShift": -3,
+        "roundingShift": 0,
+        "marginPoints": 0.19934304665358082,
+        "valuation": 0.4070477273041567
+      },
+      {
+        "omittedCycle": 2006,
+        "rvShift": -3,
+        "roundingShift": 1,
+        "marginPoints": 1.1993430466535808,
+        "valuation": 0.4700984098120471
+      },
+      {
+        "omittedCycle": 2006,
+        "rvShift": 0,
+        "roundingShift": -1,
+        "marginPoints": 0.36969453220051895,
+        "valuation": 0.41766683631872786
+      },
+      {
+        "omittedCycle": 2006,
+        "rvShift": 0,
+        "roundingShift": 0,
+        "marginPoints": 1.369694532200519,
+        "valuation": 0.4809368534104488
+      },
+      {
+        "omittedCycle": 2006,
+        "rvShift": 0,
+        "roundingShift": 1,
+        "marginPoints": 2.369694532200519,
+        "valuation": 0.5441735717225115
+      },
+      {
+        "omittedCycle": 2006,
+        "rvShift": 3,
+        "roundingShift": -1,
+        "marginPoints": 1.540046017747457,
+        "valuation": 0.49177431885360334
+      },
+      {
+        "omittedCycle": 2006,
+        "rvShift": 3,
+        "roundingShift": 0,
+        "marginPoints": 2.540046017747457,
+        "valuation": 0.5547805791243942
+      },
+      {
+        "omittedCycle": 2006,
+        "rvShift": 3,
+        "roundingShift": 1,
+        "marginPoints": 3.540046017747457,
+        "valuation": 0.6151979828254114
+      },
+      {
+        "omittedCycle": 2007,
+        "rvShift": -3,
+        "roundingShift": -1,
+        "marginPoints": -0.8006569533464192,
+        "valuation": 0.3734788593342824
+      },
+      {
+        "omittedCycle": 2007,
+        "rvShift": -3,
+        "roundingShift": 0,
+        "marginPoints": 0.19934304665358082,
+        "valuation": 0.43650493107938926
+      },
+      {
+        "omittedCycle": 2007,
+        "rvShift": -3,
+        "roundingShift": 1,
+        "marginPoints": 1.1993430466535808,
+        "valuation": 0.501116888874143
+      },
+      {
+        "omittedCycle": 2007,
+        "rvShift": 0,
+        "roundingShift": -1,
+        "marginPoints": 0.36969453220051895,
+        "valuation": 0.44746358745056536
+      },
+      {
+        "omittedCycle": 2007,
+        "rvShift": 0,
+        "roundingShift": 0,
+        "marginPoints": 1.369694532200519,
+        "valuation": 0.5121116598729577
+      },
+      {
+        "omittedCycle": 2007,
+        "rvShift": 0,
+        "roundingShift": 1,
+        "marginPoints": 2.369694532200519,
+        "valuation": 0.5755841752876968
+      },
+      {
+        "omittedCycle": 2007,
+        "rvShift": 3,
+        "roundingShift": -1,
+        "marginPoints": 1.540046017747457,
+        "valuation": 0.5230718871115639
+      },
+      {
+        "omittedCycle": 2007,
+        "rvShift": 3,
+        "roundingShift": 0,
+        "marginPoints": 2.540046017747457,
+        "valuation": 0.586115808282549
+      },
+      {
+        "omittedCycle": 2007,
+        "rvShift": 3,
+        "roundingShift": 1,
+        "marginPoints": 3.540046017747457,
+        "valuation": 0.6454603233761536
+      },
+      {
+        "omittedCycle": 2008,
+        "rvShift": -3,
+        "roundingShift": -1,
+        "marginPoints": -0.8006569533464192,
+        "valuation": 0.36658405697525104
+      },
+      {
+        "omittedCycle": 2008,
+        "rvShift": -3,
+        "roundingShift": 0,
+        "marginPoints": 0.19934304665358082,
+        "valuation": 0.4297838809628152
+      },
+      {
+        "omittedCycle": 2008,
+        "rvShift": -3,
+        "roundingShift": 1,
+        "marginPoints": 1.1993430466535808,
+        "valuation": 0.494837095101906
+      },
+      {
+        "omittedCycle": 2008,
+        "rvShift": 0,
+        "roundingShift": -1,
+        "marginPoints": 0.36969453220051895,
+        "valuation": 0.4407995555937913
+      },
+      {
+        "omittedCycle": 2008,
+        "rvShift": 0,
+        "roundingShift": 0,
+        "marginPoints": 1.369694532200519,
+        "valuation": 0.5059309633673551
+      },
+      {
+        "omittedCycle": 2008,
+        "rvShift": 0,
+        "roundingShift": 1,
+        "marginPoints": 2.369694532200519,
+        "valuation": 0.5700969842067442
+      },
+      {
+        "omittedCycle": 2008,
+        "rvShift": 3,
+        "roundingShift": -1,
+        "marginPoints": 1.540046017747457,
+        "valuation": 0.5169964573447536
+      },
+      {
+        "omittedCycle": 2008,
+        "rvShift": 3,
+        "roundingShift": 0,
+        "marginPoints": 2.540046017747457,
+        "valuation": 0.5807620913426219
+      },
+      {
+        "omittedCycle": 2008,
+        "rvShift": 3,
+        "roundingShift": 1,
+        "marginPoints": 3.540046017747457,
+        "valuation": 0.6409420103824403
+      },
+      {
+        "omittedCycle": 2009,
+        "rvShift": -3,
+        "roundingShift": -1,
+        "marginPoints": -0.8006569533464192,
+        "valuation": 0.3762980170069605
+      },
+      {
+        "omittedCycle": 2009,
+        "rvShift": -3,
+        "roundingShift": 0,
+        "marginPoints": 0.19934304665358082,
+        "valuation": 0.43951212617465324
+      },
+      {
+        "omittedCycle": 2009,
+        "rvShift": -3,
+        "roundingShift": 1,
+        "marginPoints": 1.1993430466535808,
+        "valuation": 0.5042072198763166
+      },
+      {
+        "omittedCycle": 2009,
+        "rvShift": 0,
+        "roundingShift": -1,
+        "marginPoints": 0.36969453220051895,
+        "valuation": 0.4504928403888609
+      },
+      {
+        "omittedCycle": 2009,
+        "rvShift": 0,
+        "roundingShift": 0,
+        "marginPoints": 1.369694532200519,
+        "valuation": 0.5152047316695353
+      },
+      {
+        "omittedCycle": 2009,
+        "rvShift": 0,
+        "roundingShift": 1,
+        "marginPoints": 2.369694532200519,
+        "valuation": 0.5786264761798304
+      },
+      {
+        "omittedCycle": 2009,
+        "rvShift": 3,
+        "roundingShift": -1,
+        "marginPoints": 1.540046017747457,
+        "valuation": 0.5261643322136672
+      },
+      {
+        "omittedCycle": 2009,
+        "rvShift": 3,
+        "roundingShift": 0,
+        "marginPoints": 2.540046017747457,
+        "valuation": 0.5891385467831183
+      },
+      {
+        "omittedCycle": 2009,
+        "rvShift": 3,
+        "roundingShift": 1,
+        "marginPoints": 3.540046017747457,
+        "valuation": 0.648312383791633
+      },
+      {
+        "omittedCycle": 2010,
+        "rvShift": -3,
+        "roundingShift": -1,
+        "marginPoints": -0.8006569533464192,
+        "valuation": 0.35500006811169743
+      },
+      {
+        "omittedCycle": 2010,
+        "rvShift": -3,
+        "roundingShift": 0,
+        "marginPoints": 0.19934304665358082,
+        "valuation": 0.4161279337443594
+      },
+      {
+        "omittedCycle": 2010,
+        "rvShift": -3,
+        "roundingShift": 1,
+        "marginPoints": 1.1993430466535808,
+        "valuation": 0.4794913452336551
+      },
+      {
+        "omittedCycle": 2010,
+        "rvShift": 0,
+        "roundingShift": -1,
+        "marginPoints": 0.36969453220051895,
+        "valuation": 0.42682271683676315
+      },
+      {
+        "omittedCycle": 2010,
+        "rvShift": 0,
+        "roundingShift": 0,
+        "marginPoints": 1.369694532200519,
+        "valuation": 0.4903502153843824
+      },
+      {
+        "omittedCycle": 2010,
+        "rvShift": 0,
+        "roundingShift": 1,
+        "marginPoints": 2.369694532200519,
+        "valuation": 0.5535086325010573
+      },
+      {
+        "omittedCycle": 2010,
+        "rvShift": 3,
+        "roundingShift": -1,
+        "marginPoints": 1.540046017747457,
+        "valuation": 0.5011982433269094
+      },
+      {
+        "omittedCycle": 2010,
+        "rvShift": 3,
+        "roundingShift": 0,
+        "marginPoints": 2.540046017747457,
+        "valuation": 0.5640692891494661
+      },
+      {
+        "omittedCycle": 2010,
+        "rvShift": 3,
+        "roundingShift": 1,
+        "marginPoints": 3.540046017747457,
+        "valuation": 0.6240395050150692
+      },
+      {
+        "omittedCycle": 2011,
+        "rvShift": -3,
+        "roundingShift": -1,
+        "marginPoints": -0.8006569533464192,
+        "valuation": 0.37636874799886333
+      },
+      {
+        "omittedCycle": 2011,
+        "rvShift": -3,
+        "roundingShift": 0,
+        "marginPoints": 0.19934304665358082,
+        "valuation": 0.4396674022126687
+      },
+      {
+        "omittedCycle": 2011,
+        "rvShift": -3,
+        "roundingShift": 1,
+        "marginPoints": 1.1993430466535808,
+        "valuation": 0.5044451416957871
+      },
+      {
+        "omittedCycle": 2011,
+        "rvShift": 0,
+        "roundingShift": -1,
+        "marginPoints": 0.36969453220051895,
+        "valuation": 0.45066258817518146
+      },
+      {
+        "omittedCycle": 2011,
+        "rvShift": 0,
+        "roundingShift": 0,
+        "marginPoints": 1.369694532200519,
+        "valuation": 0.515455872435987
+      },
+      {
+        "omittedCycle": 2011,
+        "rvShift": 0,
+        "roundingShift": 1,
+        "marginPoints": 2.369694532200519,
+        "valuation": 0.5789466614787641
+      },
+      {
+        "omittedCycle": 2011,
+        "rvShift": 3,
+        "roundingShift": -1,
+        "marginPoints": 1.540046017747457,
+        "valuation": 0.526428327916297
+      },
+      {
+        "omittedCycle": 2011,
+        "rvShift": 3,
+        "roundingShift": 0,
+        "marginPoints": 2.540046017747457,
+        "valuation": 0.5894687383306231
+      },
+      {
+        "omittedCycle": 2011,
+        "rvShift": 3,
+        "roundingShift": 1,
+        "marginPoints": 3.540046017747457,
+        "valuation": 0.6486890736864431
+      },
+      {
+        "omittedCycle": 2012,
+        "rvShift": -3,
+        "roundingShift": -1,
+        "marginPoints": -0.8006569533464192,
+        "valuation": 0.36316303065174815
+      },
+      {
+        "omittedCycle": 2012,
+        "rvShift": -3,
+        "roundingShift": 0,
+        "marginPoints": 0.19934304665358082,
+        "valuation": 0.42595002804598225
+      },
+      {
+        "omittedCycle": 2012,
+        "rvShift": -3,
+        "roundingShift": 1,
+        "marginPoints": 1.1993430466535808,
+        "valuation": 0.4907133735063123
+      },
+      {
+        "omittedCycle": 2012,
+        "rvShift": 0,
+        "roundingShift": -1,
+        "marginPoints": 0.36969453220051895,
+        "valuation": 0.4369064471824569
+      },
+      {
+        "omittedCycle": 2012,
+        "rvShift": 0,
+        "roundingShift": 0,
+        "marginPoints": 1.369694532200519,
+        "valuation": 0.5017728810590822
+      },
+      {
+        "omittedCycle": 2012,
+        "rvShift": 0,
+        "roundingShift": 1,
+        "marginPoints": 2.369694532200519,
+        "valuation": 0.565834007572492
+      },
+      {
+        "omittedCycle": 2012,
+        "rvShift": 3,
+        "roundingShift": -1,
+        "marginPoints": 1.540046017747457,
+        "valuation": 0.5128087211599652
+      },
+      {
+        "omittedCycle": 2012,
+        "rvShift": 3,
+        "roundingShift": 0,
+        "marginPoints": 2.540046017747457,
+        "valuation": 0.5764979579003043
+      },
+      {
+        "omittedCycle": 2012,
+        "rvShift": 3,
+        "roundingShift": 1,
+        "marginPoints": 3.540046017747457,
+        "valuation": 0.636764808161149
+      },
+      {
+        "omittedCycle": 2013,
+        "rvShift": -3,
+        "roundingShift": -1,
+        "marginPoints": -0.8006569533464192,
+        "valuation": 0.37405225068546266
+      },
+      {
+        "omittedCycle": 2013,
+        "rvShift": -3,
+        "roundingShift": 0,
+        "marginPoints": 0.19934304665358082,
+        "valuation": 0.4370279972282306
+      },
+      {
+        "omittedCycle": 2013,
+        "rvShift": -3,
+        "roundingShift": 1,
+        "marginPoints": 1.1993430466535808,
+        "valuation": 0.5015672522707342
+      },
+      {
+        "omittedCycle": 2013,
+        "rvShift": 0,
+        "roundingShift": -1,
+        "marginPoints": 0.36969453220051895,
+        "valuation": 0.4479756761558504
+      },
+      {
+        "omittedCycle": 2013,
+        "rvShift": 0,
+        "roundingShift": 0,
+        "marginPoints": 1.369694532200519,
+        "valuation": 0.5125479253699946
+      },
+      {
+        "omittedCycle": 2013,
+        "rvShift": 0,
+        "roundingShift": 1,
+        "marginPoints": 2.369694532200519,
+        "valuation": 0.5759315691105626
+      },
+      {
+        "omittedCycle": 2013,
+        "rvShift": 3,
+        "roundingShift": -1,
+        "marginPoints": 1.540046017747457,
+        "valuation": 0.5234936723897906
+      },
+      {
+        "omittedCycle": 2013,
+        "rvShift": 3,
+        "roundingShift": 0,
+        "marginPoints": 2.540046017747457,
+        "valuation": 0.5864474654172107
+      },
+      {
+        "omittedCycle": 2013,
+        "rvShift": 3,
+        "roundingShift": 1,
+        "marginPoints": 3.540046017747457,
+        "valuation": 0.6457001888532943
+      },
+      {
+        "omittedCycle": 2014,
+        "rvShift": -3,
+        "roundingShift": -1,
+        "marginPoints": -0.8006569533464192,
+        "valuation": 0.40137354885043863
+      },
+      {
+        "omittedCycle": 2014,
+        "rvShift": -3,
+        "roundingShift": 0,
+        "marginPoints": 0.19934304665358082,
+        "valuation": 0.4660264071591648
+      },
+      {
+        "omittedCycle": 2014,
+        "rvShift": -3,
+        "roundingShift": 1,
+        "marginPoints": 1.1993430466535808,
+        "valuation": 0.5312027587060059
+      },
+      {
+        "omittedCycle": 2014,
+        "rvShift": 0,
+        "roundingShift": -1,
+        "marginPoints": 0.36969453220051895,
+        "valuation": 0.47716008321647446
+      },
+      {
+        "omittedCycle": 2014,
+        "rvShift": 0,
+        "roundingShift": 0,
+        "marginPoints": 1.369694532200519,
+        "valuation": 0.5421809029963086
+      },
+      {
+        "omittedCycle": 2014,
+        "rvShift": 0,
+        "roundingShift": 1,
+        "marginPoints": 2.369694532200519,
+        "valuation": 0.6049119967063924
+      },
+      {
+        "omittedCycle": 2014,
+        "rvShift": 3,
+        "roundingShift": -1,
+        "marginPoints": 1.540046017747457,
+        "valuation": 0.553091764482189
+      },
+      {
+        "omittedCycle": 2014,
+        "rvShift": 3,
+        "roundingShift": 0,
+        "marginPoints": 2.540046017747457,
+        "valuation": 0.6152139123382566
+      },
+      {
+        "omittedCycle": 2014,
+        "rvShift": 3,
+        "roundingShift": 1,
+        "marginPoints": 3.540046017747457,
+        "valuation": 0.6726956233777548
+      },
+      {
+        "omittedCycle": 2015,
+        "rvShift": -3,
+        "roundingShift": -1,
+        "marginPoints": -0.8006569533464192,
+        "valuation": 0.37698059595296757
+      },
+      {
+        "omittedCycle": 2015,
+        "rvShift": -3,
+        "roundingShift": 0,
+        "marginPoints": 0.19934304665358082,
+        "valuation": 0.440454523090223
+      },
+      {
+        "omittedCycle": 2015,
+        "rvShift": -3,
+        "roundingShift": 1,
+        "marginPoints": 1.1993430466535808,
+        "valuation": 0.5053857446274889
+      },
+      {
+        "omittedCycle": 2015,
+        "rvShift": 0,
+        "roundingShift": -1,
+        "marginPoints": 0.36969453220051895,
+        "valuation": 0.45147791610392585
+      },
+      {
+        "omittedCycle": 2015,
+        "rvShift": 0,
+        "roundingShift": 0,
+        "marginPoints": 1.369694532200519,
+        "valuation": 0.5164191493639714
+      },
+      {
+        "omittedCycle": 2015,
+        "rvShift": 0,
+        "roundingShift": 1,
+        "marginPoints": 2.369694532200519,
+        "valuation": 0.58001680498374
+      },
+      {
+        "omittedCycle": 2015,
+        "rvShift": 3,
+        "roundingShift": -1,
+        "marginPoints": 1.540046017747457,
+        "valuation": 0.5274130695438792
+      },
+      {
+        "omittedCycle": 2015,
+        "rvShift": 3,
+        "roundingShift": 0,
+        "marginPoints": 2.540046017747457,
+        "valuation": 0.590552202089356
+      },
+      {
+        "omittedCycle": 2015,
+        "rvShift": 3,
+        "roundingShift": 1,
+        "marginPoints": 3.540046017747457,
+        "valuation": 0.6498202863516676
+      },
+      {
+        "omittedCycle": 2016,
+        "rvShift": -3,
+        "roundingShift": -1,
+        "marginPoints": -0.8006569533464192,
+        "valuation": 0.38438922861475233
+      },
+      {
+        "omittedCycle": 2016,
+        "rvShift": -3,
+        "roundingShift": 0,
+        "marginPoints": 0.19934304665358082,
+        "valuation": 0.44777451390425066
+      },
+      {
+        "omittedCycle": 2016,
+        "rvShift": -3,
+        "roundingShift": 1,
+        "marginPoints": 1.1993430466535808,
+        "valuation": 0.5123363685569038
+      },
+      {
+        "omittedCycle": 2016,
+        "rvShift": 0,
+        "roundingShift": -1,
+        "marginPoints": 0.36969453220051895,
+        "valuation": 0.4587542586632803
+      },
+      {
+        "omittedCycle": 2016,
+        "rvShift": 0,
+        "roundingShift": 0,
+        "marginPoints": 1.369694532200519,
+        "valuation": 0.5232811319953251
+      },
+      {
+        "omittedCycle": 2016,
+        "rvShift": 0,
+        "roundingShift": 1,
+        "marginPoints": 2.369694532200519,
+        "valuation": 0.5862339490790028
+      },
+      {
+        "omittedCycle": 2016,
+        "rvShift": 3,
+        "roundingShift": -1,
+        "marginPoints": 1.540046017747457,
+        "valuation": 0.5341796467585379
+      },
+      {
+        "omittedCycle": 2016,
+        "rvShift": 3,
+        "roundingShift": 0,
+        "marginPoints": 2.540046017747457,
+        "valuation": 0.5966418280312146
+      },
+      {
+        "omittedCycle": 2016,
+        "rvShift": 3,
+        "roundingShift": 1,
+        "marginPoints": 3.540046017747457,
+        "valuation": 0.6550948765392931
+      },
+      {
+        "omittedCycle": 2017,
+        "rvShift": -3,
+        "roundingShift": -1,
+        "marginPoints": -0.8006569533464192,
+        "valuation": 0.3733858922311348
+      },
+      {
+        "omittedCycle": 2017,
+        "rvShift": -3,
+        "roundingShift": 0,
+        "marginPoints": 0.19934304665358082,
+        "valuation": 0.4363369671365175
+      },
+      {
+        "omittedCycle": 2017,
+        "rvShift": -3,
+        "roundingShift": 1,
+        "marginPoints": 1.1993430466535808,
+        "valuation": 0.5008764741918276
+      },
+      {
+        "omittedCycle": 2017,
+        "rvShift": 0,
+        "roundingShift": -1,
+        "marginPoints": 0.36969453220051895,
+        "valuation": 0.44728287404564
+      },
+      {
+        "omittedCycle": 2017,
+        "rvShift": 0,
+        "roundingShift": 0,
+        "marginPoints": 1.369694532200519,
+        "valuation": 0.5118597447658546
+      },
+      {
+        "omittedCycle": 2017,
+        "rvShift": 0,
+        "roundingShift": 1,
+        "marginPoints": 2.369694532200519,
+        "valuation": 0.5752727343866972
+      },
+      {
+        "omittedCycle": 2017,
+        "rvShift": 3,
+        "roundingShift": -1,
+        "marginPoints": 1.540046017747457,
+        "valuation": 0.5228088155676087
+      },
+      {
+        "omittedCycle": 2017,
+        "rvShift": 3,
+        "roundingShift": 0,
+        "marginPoints": 2.540046017747457,
+        "valuation": 0.5857958436603146
+      },
+      {
+        "omittedCycle": 2017,
+        "rvShift": 3,
+        "roundingShift": 1,
+        "marginPoints": 3.540046017747457,
+        "valuation": 0.645101443720705
+      },
+      {
+        "omittedCycle": 2018,
+        "rvShift": -3,
+        "roundingShift": -1,
+        "marginPoints": -0.8006569533464192,
+        "valuation": 0.36080841019341253
+      },
+      {
+        "omittedCycle": 2018,
+        "rvShift": -3,
+        "roundingShift": 0,
+        "marginPoints": 0.19934304665358082,
+        "valuation": 0.4223396410269736
+      },
+      {
+        "omittedCycle": 2018,
+        "rvShift": -3,
+        "roundingShift": 1,
+        "marginPoints": 1.1993430466535808,
+        "valuation": 0.48590223999071225
+      },
+      {
+        "omittedCycle": 2018,
+        "rvShift": 0,
+        "roundingShift": -1,
+        "marginPoints": 0.36969453220051895,
+        "valuation": 0.4330838743934203
+      },
+      {
+        "omittedCycle": 2018,
+        "rvShift": 0,
+        "roundingShift": 0,
+        "marginPoints": 1.369694532200519,
+        "valuation": 0.49677238432494997
+      },
+      {
+        "omittedCycle": 2018,
+        "rvShift": 0,
+        "roundingShift": 1,
+        "marginPoints": 2.369694532200519,
+        "valuation": 0.5598615126422796
+      },
+      {
+        "omittedCycle": 2018,
+        "rvShift": 3,
+        "roundingShift": -1,
+        "marginPoints": 1.540046017747457,
+        "valuation": 0.5076249207291444
+      },
+      {
+        "omittedCycle": 2018,
+        "rvShift": 3,
+        "roundingShift": 0,
+        "marginPoints": 2.540046017747457,
+        "valuation": 0.5703879337071537
+      },
+      {
+        "omittedCycle": 2018,
+        "rvShift": 3,
+        "roundingShift": 1,
+        "marginPoints": 3.540046017747457,
+        "valuation": 0.6300393705384412
+      },
+      {
+        "omittedCycle": 2020,
+        "rvShift": -3,
+        "roundingShift": -1,
+        "marginPoints": -0.8006569533464192,
+        "valuation": 0.3921562013727867
+      },
+      {
+        "omittedCycle": 2020,
+        "rvShift": -3,
+        "roundingShift": 0,
+        "marginPoints": 0.19934304665358082,
+        "valuation": 0.45649017672805164
+      },
+      {
+        "omittedCycle": 2020,
+        "rvShift": -3,
+        "roundingShift": 1,
+        "marginPoints": 1.1993430466535808,
+        "valuation": 0.5217023424704017
+      },
+      {
+        "omittedCycle": 2020,
+        "rvShift": 0,
+        "roundingShift": -1,
+        "marginPoints": 0.36969453220051895,
+        "valuation": 0.4676043803013373
+      },
+      {
+        "omittedCycle": 2020,
+        "rvShift": 0,
+        "roundingShift": 0,
+        "marginPoints": 1.369694532200519,
+        "valuation": 0.532722250521924
+      },
+      {
+        "omittedCycle": 2020,
+        "rvShift": 0,
+        "roundingShift": 1,
+        "marginPoints": 2.369694532200519,
+        "valuation": 0.5958911499818383
+      },
+      {
+        "omittedCycle": 2020,
+        "rvShift": 3,
+        "roundingShift": -1,
+        "marginPoints": 1.540046017747457,
+        "valuation": 0.5436848840169549
+      },
+      {
+        "omittedCycle": 2020,
+        "rvShift": 3,
+        "roundingShift": 0,
+        "marginPoints": 2.540046017747457,
+        "valuation": 0.6062974570943175
+      },
+      {
+        "omittedCycle": 2020,
+        "rvShift": 3,
+        "roundingShift": 1,
+        "marginPoints": 3.540046017747457,
+        "valuation": 0.664530002245353
+      },
+      {
+        "omittedCycle": 2021,
+        "rvShift": -3,
+        "roundingShift": -1,
+        "marginPoints": -0.8006569533464192,
+        "valuation": 0.3770555366199824
+      },
+      {
+        "omittedCycle": 2021,
+        "rvShift": -3,
+        "roundingShift": 0,
+        "marginPoints": 0.19934304665358082,
+        "valuation": 0.4402251706946595
+      },
+      {
+        "omittedCycle": 2021,
+        "rvShift": -3,
+        "roundingShift": 1,
+        "marginPoints": 1.1993430466535808,
+        "valuation": 0.5048466853670193
+      },
+      {
+        "omittedCycle": 2021,
+        "rvShift": 0,
+        "roundingShift": -1,
+        "marginPoints": 0.36969453220051895,
+        "valuation": 0.4511952430915513
+      },
+      {
+        "omittedCycle": 2021,
+        "rvShift": 0,
+        "roundingShift": 0,
+        "marginPoints": 1.369694532200519,
+        "valuation": 0.5158292729366485
+      },
+      {
+        "omittedCycle": 2021,
+        "rvShift": 0,
+        "roundingShift": 1,
+        "marginPoints": 2.369694532200519,
+        "valuation": 0.5791536182861918
+      },
+      {
+        "omittedCycle": 2021,
+        "rvShift": 3,
+        "roundingShift": -1,
+        "marginPoints": 1.540046017747457,
+        "valuation": 0.5267733764272241
+      },
+      {
+        "omittedCycle": 2021,
+        "rvShift": 3,
+        "roundingShift": 0,
+        "marginPoints": 2.540046017747457,
+        "valuation": 0.589647927522088
+      },
+      {
+        "omittedCycle": 2021,
+        "rvShift": 3,
+        "roundingShift": 1,
+        "marginPoints": 3.540046017747457,
+        "valuation": 0.6487154052276523
+      },
+      {
+        "omittedCycle": 2022,
+        "rvShift": -3,
+        "roundingShift": -1,
+        "marginPoints": -0.8006569533464192,
+        "valuation": 0.38592219441448616
+      },
+      {
+        "omittedCycle": 2022,
+        "rvShift": -3,
+        "roundingShift": 0,
+        "marginPoints": 0.19934304665358082,
+        "valuation": 0.4494881355900473
+      },
+      {
+        "omittedCycle": 2022,
+        "rvShift": -3,
+        "roundingShift": 1,
+        "marginPoints": 1.1993430466535808,
+        "valuation": 0.5141728788776654
+      },
+      {
+        "omittedCycle": 2022,
+        "rvShift": 0,
+        "roundingShift": -1,
+        "marginPoints": 0.36969453220051895,
+        "valuation": 0.4604933886498876
+      },
+      {
+        "omittedCycle": 2022,
+        "rvShift": 0,
+        "roundingShift": 0,
+        "marginPoints": 1.369694532200519,
+        "valuation": 0.5251317000491844
+      },
+      {
+        "omittedCycle": 2022,
+        "rvShift": 0,
+        "roundingShift": 1,
+        "marginPoints": 2.369694532200519,
+        "valuation": 0.5881236745271436
+      },
+      {
+        "omittedCycle": 2022,
+        "rvShift": 3,
+        "roundingShift": -1,
+        "marginPoints": 1.540046017747457,
+        "valuation": 0.5360421472089952
+      },
+      {
+        "omittedCycle": 2022,
+        "rvShift": 3,
+        "roundingShift": 0,
+        "marginPoints": 2.540046017747457,
+        "valuation": 0.598530829635751
+      },
+      {
+        "omittedCycle": 2022,
+        "rvShift": 3,
+        "roundingShift": 1,
+        "marginPoints": 3.540046017747457,
+        "valuation": 0.6569389201200525
+      }
+    ],
+    "centralEstimate": 0.5127021579821022,
+    "severeOpponentAllocationStress": 0.12773352712976935,
+    "estimateMeaning": "Settlement-value research under historical error and declared sensitivity; not calibrated population transport or a short-term return forecast.",
+    "executionAuthority": false,
+    "profitabilityEstablished": false
+  },
+  "activeProxyBankUnchanged": true,
+  "forecastCandidateOnly": true,
+  "executionAuthority": false,
+  "profitabilityEstablished": false,
+  "limitations": [
+    "The polling and result archives are separately maintained by the same publisher; this is a cross-check, not independent official certification of every race.",
+    "Historical release clocks and LV/RV labels are unavailable. Chronological outcome calibration is not historical market profitability.",
+    "Race and cycle errors are correlated; current Governor and Senate forecasts share national risk.",
+    "The current three-poll selection and sensitivity are research assumptions; do not replace the active frozen bank or claim its fills use this later model."
+  ]
+}

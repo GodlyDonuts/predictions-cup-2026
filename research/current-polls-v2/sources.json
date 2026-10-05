@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "id": "current-primary-marist-20261005-v2",
+  "captures": [
+    {
+      "file": "michigan-marist.html",
+      "url": "https://maristpoll.marist.edu/polls/midterm-elections-in-michigan-september-2026/",
+      "observedAt": "2026-10-05T18:40:16.367Z",
+      "bytes": 46913,
+      "contentType": "text/html; charset=UTF-8",
+      "contentHash": "9ec7471039ae442ba00e2db6ea659a3d07968db0bd9d4aaf8976e6dc1c732dce"
+    },
+    {
+      "file": "michigan-marist.pdf",
+      "url": "https://maristpoll.marist.edu/wp-content/uploads/2026/09/Marist-Poll_MI-NOS-and-Tables_202609281401@9159_7e99y.pdf",
+      "observedAt": "2026-10-05T18:40:16.490Z",
+      "bytes": 824044,
+      "contentType": "application/pdf",
+      "contentHash": "e9878265b05cbb05205bd7cab983b3d5f7a74876e9a0422cf81a9cc615af1e70"
+    },
+    {
+      "file": "texas-marist.html",
+      "url": "https://maristpoll.marist.edu/polls/2026-midterm-elections-in-texas-september-2026/",
+      "observedAt": "2026-10-05T18:40:16.583Z",
+      "bytes": 46571,
+      "contentType": "text/html; charset=UTF-8",
+      "contentHash": "91900a4d3ae3a3f86bdd86a0142138f2185efd83c89f80f615259222815a8557"
+    },
+    {
+      "file": "texas-marist.pdf",
+      "url": "https://maristpoll.marist.edu/wp-content/uploads/2026/09/Marist-Poll_TX-NOS-and-Tables_202609221131.pdf",
+      "observedAt": "2026-10-05T18:40:16.619Z",
+      "bytes": 894781,
+      "contentType": "application/pdf",
+      "contentHash": "98f1ab1b50d3621399138e3236ea99f996ce0117e4a3a94394b485679f27956f"
+    },
+    {
+      "file": "ohio-marist.html",
+      "url": "https://maristpoll.marist.edu/polls/midterm-elections-in-ohio-september-2026/",
+      "observedAt": "2026-10-05T18:40:16.684Z",
+      "bytes": 46656,
+      "contentType": "text/html; charset=UTF-8",
+      "contentHash": "9f0c93d7b6296c6ecb77dc97ca25baa5dcf24f792f428283d3cf2a06961e212c"
+    },
+    {
+      "file": "ohio-marist.pdf",
+      "url": "https://maristpoll.marist.edu/wp-content/uploads/2026/09/Marist-Poll_OH-NOS-and-Tables_202609281347aC909p6465.pdf",
+      "observedAt": "2026-10-05T18:40:16.761Z",
+      "bytes": 833147,
+      "contentType": "application/pdf",
+      "contentHash": "3df7e51d27a693fa770ef490d4b2c0568c58bdfdac0db35e4fbe67951e0bae30"
+    }
+  ],
+  "rawSourcesRestrictedLocally": true,
+  "accountApiRequests": 0
+}

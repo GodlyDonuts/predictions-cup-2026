@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "primary-poll-breadth-20261005-v2",
+  "forecastHorizonDays": 30,
+  "maximumPollAgeDays": 30,
+  "recencyHalfLifeDays": 21,
+  "minimumTrainingRaces": 30,
+  "minimumCalibrationCycles": 3,
+  "minimumMarginSdPoints": 3,
+  "errorModel": "Equal-race weighted individual-poll errors; fixed Student-t4. Do not reduce dispersion merely because two pollsters are averaged.",
+  "currentPollWeight": "One newest independent poll per pollster; weight 2^(-field age/21), with no fitted RV/LV preference.",
+  "rvTurnoutMarginShiftPoints": [-3, 0, 3],
+  "roundingMarginShiftPoints": [-1, 0, 1],
+  "administrativeValuationHaircut": 0.02,
+  "minimumEdge": "0.020000",
+  "maximumSpread": "0.020000",
+  "assessmentLifetimeMs": 21600000,
+  "fees": "0.000000",
+  "executionAuthority": false,
+  "profitabilityEstablished": false,
+  "limitations": [
+    "The archived historical polls lack LV/RV and original publication clocks. Current population transport and selected shifts are judgment sensitivity, not measured effects or confidence bounds.",
+    "Registered-voter support is not likely-voter support. Independent pollsters may share systematic error and state forecasts share national shocks.",
+    "The error model already includes historical undecided resolution and future drift. Assigning all remaining current support to the opponent is a separate severe stress, not additional independent sampling noise.",
+    "A positive expected settlement estimate does not establish a profitable two-day price path or actual execution."
+  ]
+}

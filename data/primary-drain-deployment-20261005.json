@@ -1,0 +1,11 @@
+{
+  "at": "2026-10-05T19:18:42.7497601Z",
+  "bulkCohort": "baal-coupled-bulk-20261005-v2c-live",
+  "retainedDashboardPid": 20092,
+  "bulkBankFileHash": "D1A9EA064EF551FBF3C10F1810A5499839B460F0BB129A322466C7A69C0ABB9B",
+  "additionalPersistentServices": 0,
+  "activationUnchanged": true,
+  "stoppedCollectorPid": 19664,
+  "retainedPaperPid": 8732,
+  "additionalAccountClients": 0
+}

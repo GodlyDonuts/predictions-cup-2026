@@ -1,4 +1,5 @@
 import test from 'node:test';import assert from 'node:assert/strict';
+import {wrapCoupledDrain} from './coupled-drain.mjs';
 import {validateUniverse} from './breadth.mjs';import {payloadHash,canonicalJson} from '../execution/ledger.mjs';
 import {COUPLED_BULK_POLICY,createCoupledBulkState,advanceCoupledBulk,coupledBulkCandidates,coupledBulkReport,assertCoupledBulk} from './coupled-maker-paper-v2.mjs';
 const zero=Date.parse('2026-10-05T16:00:00Z'),at=n=>new Date(zero+n).toISOString();
@@ -10,6 +11,13 @@ const book=(n,bid='0.800000',ask='0.825000',quantity=1000)=>({kind:'book',availa
 const warmed=(bid=.8,ask=.825)=>[1000,61000,121000,181000,241000].reduce((s,n)=>advanceCoupledBulk(s,prices(n,bid,ask),bank),createCoupledBulkState(bank));
 const trade=(key,n,price)=>({key,id:key,createdAt:at(n),yesPrice:String(Number(price)),size:1,executedSpace:'YES'});
 const page=(n,trades,changes={})=>({kind:'trades',availableAt:at(n),page:{marketId:'381',exchangeId:'1070',tournamentId:bank.tournamentId,receivedAt:at(n),from:at(0),to:at(n-1),requestCursor:null,pagination:{hasMore:false,nextCursor:null},coverage:{complete:true,projectedThroughSequence:100000000},trades,...changes}});
+
+test('operator drain prevents new unowned entries without discarding original pair liabilities or their realized accounting',()=>{
+ let state=warmed(),clock=242000;const host={status:()=>coupledBulkReport(state,bank,at(clock)),focus:()=>({candidateMarketIds:coupledBulkCandidates(state,bank,at(clock)).map(c=>c.marketId)}),boundary(){state=advanceCoupledBulk(state,{kind:'boundary',availableAt:at(clock)},bank);},onBook(publication,_market,eligibility){state=advanceCoupledBulk(state,{kind:'book',availableAt:at(clock),book:publication.books['1070:YES'],accountEligibility:eligibility},bank);}};
+ const wrapped=wrapCoupledDrain(host,{isDraining:()=>true}),first=book(clock);wrapped.onBook({books:{'1070:YES':first.book}},'381',first.accountEligibility);assert.equal(Object.keys(state.wallets.COUPLED.quotes).length,0);assert.deepEqual(wrapped.focus().candidateMarketIds,[]);
+ state=advanceCoupledBulk(warmed(),book(242000),bank);const originalIds=Object.keys(state.wallets.COUPLED.quotes),bankHash=state.bankHash;clock=243000;const second=book(clock);wrapped.onBook({books:{'1070:YES':second.book}},'381',second.accountEligibility);assert.deepEqual(Object.keys(state.wallets.COUPLED.quotes),originalIds);assert.equal(state.bankHash,bankHash);
+ state=advanceCoupledBulk(state,page(248000,[trade('drain-yes',246000,.795),trade('drain-no',247000,.83)]),bank);assert.equal(state.wallets.COUPLED.redemptions.length,1);assert.equal(state.wallets.COUPLED.realized,'0.015000');assert.equal(state.wallets.COUPLED.cash,'100.015000');assert.deepEqual(state.wallets.COUPLED.positions,{});assertCoupledBulk(state,bank);
+});
 test('bulk history warms both markets without depth or fills; one fresh book enables only its own quotes',()=>{
  const s=warmed();assert.equal(coupledBulkCandidates(s,bank,at(241000)).length,2);assert.equal(s.wallets.COUPLED.fills.length,0);assert.deepEqual(s.wallets.COUPLED.quotes,{});assert.deepEqual(s.books,{});
  const before=payloadHash(s),next=advanceCoupledBulk(s,book(242000),bank);assert.equal(payloadHash(s),before);assert.equal(Object.keys(next.wallets.COUPLED.quotes).length,2);assert.equal(next.wallets.COUPLED.quotes[1].limit,'0.805000');assert.equal(next.wallets.COUPLED.quotes[2].limit,'0.180000');assert.equal(next.wallets.COUPLED.cash,'100.000000');

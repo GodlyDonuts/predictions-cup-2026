@@ -1,0 +1,129 @@
+{
+  "schemaVersion": 1,
+  "at": "2026-10-05T18:47:01.841Z",
+  "id": "primary-poll-executable-comparison-20261005-v2",
+  "assessmentFile": "research/current-polls-v2/assessments-20261005-v2.json",
+  "rows": [
+    {
+      "state": "MI",
+      "marketId": "358",
+      "exchangeId": "1047",
+      "rootHash": "c2270f3d0aabf06658e9a4b4ea9fd4669bf61df7f504ad6af0bda193b7ea8075",
+      "bookResponseHash": "82e46a858312d5b48c6628e5db213aac0426f29446062796ca4218e4d901c568",
+      "requestStartedAt": "2026-10-05T18:41:13.836Z",
+      "receivedAt": "2026-10-05T18:41:14.063Z",
+      "assessmentAt": "2026-10-05T18:44:14.878Z",
+      "quoteAgeAtComparisonMs": 347775,
+      "assessmentKnownBeforeRequest": false,
+      "bid": {
+        "price": "0.725000",
+        "quantity": 1263
+      },
+      "ask": {
+        "price": "0.730000",
+        "quantity": 664
+      },
+      "ordinaryRange": [
+        0.5778274405326497,
+        0.8597888423762652
+      ],
+      "centralEstimate": 0.7457306928218362,
+      "severeOpponentAllocationStress": 0.300970773917181,
+      "modeledEntryPrice": "0.735000",
+      "modeledOrdinaryLowerEdge": "-0.157173",
+      "centralExpectedSurplus": 0.010730692821836252,
+      "fees": "0.000000",
+      "slippageTicks": 1,
+      "depthOnePercentShares": 6,
+      "economicAdmission": false,
+      "eligible": false,
+      "decision": "historical_price_diagnostic_only"
+    },
+    {
+      "state": "TX",
+      "marketId": "293",
+      "exchangeId": "982",
+      "rootHash": "0af65637ee9341d4a057baa6b4387ee3fa96eb9f6c14e91b9b112702d859ea5a",
+      "bookResponseHash": "4a2cf09a87e8d33d2d91776f253aa1f02728d941a90e8ce241cd6851df529421",
+      "requestStartedAt": "2026-10-05T18:41:47.842Z",
+      "receivedAt": "2026-10-05T18:41:48.138Z",
+      "assessmentAt": "2026-10-05T18:44:14.878Z",
+      "quoteAgeAtComparisonMs": 313701,
+      "assessmentKnownBeforeRequest": false,
+      "bid": {
+        "price": "0.675000",
+        "quantity": 529
+      },
+      "ask": {
+        "price": "0.680000",
+        "quantity": 12758
+      },
+      "ordinaryRange": [
+        0.5085429885597971,
+        0.8178872662099289
+      ],
+      "centralEstimate": 0.6836666559244554,
+      "severeOpponentAllocationStress": 0.26003628222283615,
+      "modeledEntryPrice": "0.685000",
+      "modeledOrdinaryLowerEdge": "-0.176457",
+      "centralExpectedSurplus": -0.0013333440755446402,
+      "fees": "0.000000",
+      "slippageTicks": 1,
+      "depthOnePercentShares": 127,
+      "economicAdmission": false,
+      "eligible": false,
+      "decision": "historical_price_diagnostic_only"
+    },
+    {
+      "state": "IA",
+      "marketId": "260",
+      "exchangeId": "949",
+      "rootHash": "640582be18719ff760c07baf831de419b234fa0d2f1addd67907b19a969250ce",
+      "bookResponseHash": "7829e4680d33c6f87f43ee268e36687828db645c7e5a9ef4e277fd4df434ce6b",
+      "requestStartedAt": "2026-10-05T18:42:20.757Z",
+      "receivedAt": "2026-10-05T18:42:21.054Z",
+      "assessmentAt": "2026-10-05T18:44:14.878Z",
+      "quoteAgeAtComparisonMs": 280787,
+      "assessmentKnownBeforeRequest": false,
+      "bid": {
+        "price": "0.465000",
+        "quantity": 26400
+      },
+      "ask": {
+        "price": "0.470000",
+        "quantity": 300
+      },
+      "ordinaryRange": [
+        0.47171780892445436,
+        0.8190310240244754
+      ],
+      "centralEstimate": 0.6691366552360755,
+      "severeOpponentAllocationStress": 0.13474647213744947,
+      "modeledEntryPrice": "0.475000",
+      "modeledOrdinaryLowerEdge": "-0.003282",
+      "centralExpectedSurplus": 0.19413665523607548,
+      "fees": "0.000000",
+      "slippageTicks": 1,
+      "depthOnePercentShares": 3,
+      "economicAdmission": false,
+      "eligible": false,
+      "decision": "historical_price_diagnostic_only"
+    },
+    {
+      "state": "OH",
+      "marketId": null,
+      "decision": "not_in_captured_tournament_catalogue",
+      "eligible": false
+    }
+  ],
+  "qualifiedReceipts": 0,
+  "competitionOrders": 0,
+  "accountClientsAdded": 0,
+  "executionAuthority": false,
+  "profitabilityEstablished": false,
+  "limitations": [
+    "These exact auxiliary books preceded assessment and are now historical. No causal current entry is inferred.",
+    "Central expected surplus is a model estimate, not realized or prospective trading profit.",
+    "RV/LV disagreement, severe opponent allocation, third-party outcomes and correlated polling error remain material risks."
+  ]
+}

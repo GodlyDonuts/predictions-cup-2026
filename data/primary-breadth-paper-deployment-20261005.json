@@ -1,0 +1,14 @@
+{
+  "at": "2026-10-05T19:02:41.7080168Z",
+  "stoppedPaperPid": 3976,
+  "bankFileHashes": {
+    "calibrated-kansas-poll-20261005-v1": "BA94BBF1D65A25A8538DA6B05A90457C11A1B9FE200CD3ED60E8D9B6C18DF6EA",
+    "source-probability-native-20261004-v3": "CCF44BA66D259E518D81C2CC14FC3342214254918675860D31B96EECB81C26CD",
+    "primary-texas-governor-20261005-v3": "9E8E52563F2ECBDC1897214E02615506BCA33DD9D915583365081B88FBC31EBE"
+  },
+  "additionalPersistentServices": 0,
+  "stoppedCollectorPid": 8616,
+  "additionalAccountClients": 0,
+  "retainedDashboardPid": 20092,
+  "activationUnchanged": true
+}

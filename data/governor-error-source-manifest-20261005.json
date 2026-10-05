@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "records": [
+    {
+      "file": "election_results_gubernatorial.csv",
+      "url": "https://raw.githubusercontent.com/fivethirtyeight/election-results/d7a7cff101da28f4ff77114450a964874800ca54/election_results_gubernatorial.csv",
+      "commit": "d7a7cff101da28f4ff77114450a964874800ca54",
+      "observedAt": "2026-10-05T19:07:06.214Z",
+      "bytes": 476854,
+      "sha256": "22ff0589b8ccc4c1c6f6f8c20ea5099d20fa044c696db9392823d59ead1364dc"
+    },
+    {
+      "file": "README.md",
+      "url": "https://raw.githubusercontent.com/fivethirtyeight/election-results/d7a7cff101da28f4ff77114450a964874800ca54/README.md",
+      "commit": "d7a7cff101da28f4ff77114450a964874800ca54",
+      "observedAt": "2026-10-05T19:07:06.334Z",
+      "bytes": 4124,
+      "sha256": "a68c1e4ff9518a9d449de07b1146c288b53ffd49497e0b2ebcec42d09caa14f9"
+    }
+  ],
+  "accountApiRequests": 0
+}

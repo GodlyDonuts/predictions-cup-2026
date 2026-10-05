@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "id": "current-primary-comparators-20261005-v2",
+  "captures": [
+    {
+      "file": "michigan-emerson.html",
+      "url": "https://emersoncollegepolling.com/michigan-2026-poll-el-sayed-and-rogers-locked-in-close-election/",
+      "observedAt": "2026-10-05T18:42:20.551Z",
+      "bytes": 104100,
+      "contentType": "text/html; charset=UTF-8",
+      "contentHash": "28aa4e97413437d1f62320a593b2a1b73643d716606715580db13c0694357e61"
+    },
+    {
+      "file": "texas-emerson.html",
+      "url": "https://emersoncollegepolling.com/texas-2026-poll-talarico-and-paxton-in-dead-heat-abbott-maintains-edge/",
+      "observedAt": "2026-10-05T18:42:20.935Z",
+      "bytes": 105553,
+      "contentType": "text/html; charset=UTF-8",
+      "contentHash": "bf5cad627294b1a41e79e64ad8fe27dbaa6e87e24c4d28dcfa5bc9de7ed8c53b"
+    },
+    {
+      "file": "texas-official.pdf",
+      "url": "https://www.sos.state.tx.us/elections/forms/2026-ballot-cert.pdf",
+      "observedAt": "2026-10-05T18:42:34.556Z",
+      "bytes": 5919631,
+      "contentType": "application/pdf",
+      "contentHash": "c13ffb4ebeee389fa9818d47b31f77b4e260ea6e6f5389cb7bf0f36d9b44d87c"
+    },
+    {
+      "file": "michigan-official.html",
+      "url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?electionType=GEN&electionYear=2026&page=page.miboePublicReport",
+      "observedAt": "2026-10-05T18:42:34.988Z",
+      "bytes": 1063373,
+      "contentType": "text/html;charset=UTF-8",
+      "contentHash": "e3551674a96aebc1d295336d857a9b626ab38177823ed5357214a40b038b1938"
+    }
+  ],
+  "accountApiRequests": 0,
+  "rawSourcesRestrictedLocally": true
+}

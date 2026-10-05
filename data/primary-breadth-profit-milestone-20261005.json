@@ -1,0 +1,37 @@
+{
+  "at": "2026-10-05T19:28:06.083Z",
+  "claim": 6000767212,
+  "extensionClaim": 6001220592,
+  "implementation": "separate_primary_governor_paper_and_drain_capacity_repair",
+  "checksPassed": 88,
+  "checksFailed": 0,
+  "activePaperCohort": "primary-texas-governor-20261005-v3",
+  "paperFillCost": "0.295000",
+  "paperRealizedPnl": "0.000000",
+  "paperEstimatedLiquidationPnl": "-0.015000",
+  "runtimeEvidenceAt": "2026-10-05T19:26:40.942Z",
+  "pids": {
+    "collector": 15144,
+    "dashboard": 20092,
+    "paper": 8732
+  },
+  "priorBanksAndJournalPrefixesPreserved": true,
+  "candidateGovernorModel": {
+    "races": 231,
+    "pollsterRaceObservations": 800,
+    "bias": -0.8645305385455321,
+    "sd": 8.179237418654745,
+    "chronologicalRaces": 178,
+    "brier": 0.07274792217034326,
+    "texasOrdinaryRange": [
+      0.3328042060986031,
+      0.6730198418091796
+    ],
+    "severe": 0.12773352712976935,
+    "activeBankOverwritten": false
+  },
+  "officialEntryWindowClosed": true,
+  "contestOrders": 0,
+  "profitabilityEstablished": false,
+  "next": "Measure actual future fills/exits and settlement economics; address two-day trading horizon vs settlement forecast, improve calibrated valuations without restarting active frozen banks."
+}

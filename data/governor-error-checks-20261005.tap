@@ -1,0 +1,11 @@
+✔ separate final archive resolves opposite poll direction and inconsistent final labels are rejected (1.5329ms)
+✔ fusion votes are combined by exact candidate identity and special or ambiguous final stages are excluded (0.3123ms)
+✔ candidate mismatch, future outcome cycles and conflicting duplicate poll labels cannot train (3.3372ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 3
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 88.7258

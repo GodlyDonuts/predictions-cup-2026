@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "id": "siena-primary-breadth-20261005-v3",
+  "captures": [
+    {
+      "file": "siena-senate.html",
+      "url": "https://sri.siena.edu/2026/10/03/nytimes-siena-poll-of-likely-voters-senate-races/",
+      "observedAt": "2026-10-05T18:52:17.625Z",
+      "bytes": 81548,
+      "contentHash": "23834bc6b11a374708086298ef5cff84f97fbc83299489e277cf42d4f2b68157",
+      "contentType": "text/html; charset=UTF-8"
+    },
+    {
+      "file": "siena-governors.html",
+      "url": "https://sri.siena.edu/2026/10/04/nytimes-siena-poll-of-likely-voters-gubernatorial-races-2/",
+      "observedAt": "2026-10-05T18:52:17.696Z",
+      "bytes": 81599,
+      "contentHash": "dd44ef6b0f63ced8e2c1ab3eff76d5e44e7f9598f89766af432c2b015b41d0c8",
+      "contentType": "text/html; charset=UTF-8"
+    },
+    {
+      "file": "reconmr-texas.pdf",
+      "url": "https://reconmr.com/wp-content/uploads/2026/09/ReconMR-Texas-Poll-September-Release-Final.pdf",
+      "observedAt": "2026-10-05T18:52:18.263Z",
+      "bytes": 431936,
+      "contentHash": "f215385dbfd905a265355eee9cec540311442725345fd0cbe4d2ef6c706c38b1",
+      "contentType": "application/pdf"
+    }
+  ],
+  "accountApiRequests": 0,
+  "rawSourcesRestrictedLocally": true
+}

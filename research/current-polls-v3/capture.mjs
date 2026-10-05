@@ -1,0 +1,11 @@
+import fs from 'node:fs';import path from 'node:path';import {createHash} from 'node:crypto';
+const dir=path.join(process.env.LOCALAPPDATA,'SigTradingCup/paper-runtime/research-sources-siena-breadth-20261005-v3');fs.mkdirSync(dir,{recursive:true,mode:0o700});const captures=[];
+for(const[file,url,required]of[
+ ['siena-senate.html','https://sri.siena.edu/2026/10/03/nytimes-siena-poll-of-likely-voters-senate-races/',['Peltola','Hinson','Marshall','Talarico']],
+ ['siena-governors.html','https://sri.siena.edu/2026/10/04/nytimes-siena-poll-of-likely-voters-gubernatorial-races-2/',['Hinojosa','Abbott','Holscher']],
+ ['reconmr-texas.pdf','https://reconmr.com/wp-content/uploads/2026/09/ReconMR-Texas-Poll-September-Release-Final.pdf',null]
+]){const out=path.join(dir,file),receipt=out+'.receipt.json';if(fs.existsSync(out)){const r=JSON.parse(fs.readFileSync(receipt));if(r.contentHash!==createHash('sha256').update(fs.readFileSync(out)).digest('hex')||r.url!==url)throw Error('FROZEN_SOURCE_CHANGED');captures.push(r);continue;}
+ const r=await fetch(url,{signal:AbortSignal.timeout(30000)});if(!r.ok)throw Error('SOURCE_HTTP_'+r.status);const bytes=Buffer.from(await r.arrayBuffer());if(!bytes.length||bytes.length>4000000)throw Error('SOURCE_SIZE');if(required){for(const phrase of required)if(!bytes.toString().includes(phrase))throw Error('SOURCE_FACT_CHANGED');}else if(bytes.subarray(0,5).toString()!=='%PDF-')throw Error('SOURCE_NOT_PDF');
+ const record={file,url,observedAt:new Date().toISOString(),bytes:bytes.length,contentHash:createHash('sha256').update(bytes).digest('hex'),contentType:r.headers.get('content-type')};fs.writeFileSync(out,bytes,{flag:'wx',mode:0o600});fs.writeFileSync(receipt,JSON.stringify(record)+'\n',{flag:'wx',mode:0o600});captures.push(record);
+}
+const out='research/current-polls-v3/sources.json',manifest={schemaVersion:1,id:'siena-primary-breadth-20261005-v3',captures,accountApiRequests:0,rawSourcesRestrictedLocally:true};if(fs.existsSync(out)){if(JSON.stringify(JSON.parse(fs.readFileSync(out)))!==JSON.stringify(manifest))throw Error('MANIFEST_CHANGED');}else fs.writeFileSync(out,JSON.stringify(manifest,null,2)+'\n',{flag:'wx'});console.log(JSON.stringify({captured:captures.length,accountApiRequests:0}));

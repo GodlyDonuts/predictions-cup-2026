@@ -1,0 +1,4268 @@
+{
+  "schemaVersion": 1,
+  "id": "primary-poll-breadth-20261005-v2",
+  "at": "2026-10-05T18:44:14.878Z",
+  "definitionHash": "3ea0ba20bb78a59f3a5d43f2d0d1eb4276404fb2c4c1a2d82a1f2ad03c4cc8f1",
+  "assessmentCodeHash": "d4b89e76aecea9755cc7eb6cfd2b3e1ac2ea0ce8da8470dbae17c3ba3be27e9a",
+  "historicalSourceHash": "9f0b185506e59117c150fb988e73b612346effe8e3a8f0d90fdafcad07f54756",
+  "model": {
+    "family": "single_poll_race_weighted",
+    "races": 240,
+    "pollsterRaceObservations": 827,
+    "cycles": [
+      1998,
+      2000,
+      2002,
+      2004,
+      2006,
+      2008,
+      2010,
+      2012,
+      2014,
+      2016,
+      2018,
+      2020,
+      2022
+    ],
+    "trainedThroughYear": 2022,
+    "biasPoints": -0.3556767269485611,
+    "standardDeviationPoints": 8.260308097129426,
+    "distribution": "fixed_t4",
+    "effectiveUnit": "equal_race_weight_with_individual_poll_dispersion",
+    "omittedCycle": null,
+    "historicalPopulationTransportMeasured": false
+  },
+  "models": [
+    {
+      "family": "single_poll_race_weighted",
+      "races": 240,
+      "pollsterRaceObservations": 827,
+      "cycles": [
+        1998,
+        2000,
+        2002,
+        2004,
+        2006,
+        2008,
+        2010,
+        2012,
+        2014,
+        2016,
+        2018,
+        2020,
+        2022
+      ],
+      "trainedThroughYear": 2022,
+      "biasPoints": -0.3556767269485611,
+      "standardDeviationPoints": 8.260308097129426,
+      "distribution": "fixed_t4",
+      "effectiveUnit": "equal_race_weight_with_individual_poll_dispersion",
+      "omittedCycle": null,
+      "historicalPopulationTransportMeasured": false
+    },
+    {
+      "family": "single_poll_race_weighted",
+      "races": 223,
+      "pollsterRaceObservations": 796,
+      "cycles": [
+        2000,
+        2002,
+        2004,
+        2006,
+        2008,
+        2010,
+        2012,
+        2014,
+        2016,
+        2018,
+        2020,
+        2022
+      ],
+      "trainedThroughYear": 2022,
+      "biasPoints": -0.6299409706180754,
+      "standardDeviationPoints": 8.02292690864387,
+      "distribution": "fixed_t4",
+      "effectiveUnit": "equal_race_weight_with_individual_poll_dispersion",
+      "omittedCycle": 1998,
+      "historicalPopulationTransportMeasured": false
+    },
+    {
+      "family": "single_poll_race_weighted",
+      "races": 215,
+      "pollsterRaceObservations": 765,
+      "cycles": [
+        1998,
+        2002,
+        2004,
+        2006,
+        2008,
+        2010,
+        2012,
+        2014,
+        2016,
+        2018,
+        2020,
+        2022
+      ],
+      "trainedThroughYear": 2022,
+      "biasPoints": -0.37161744488617143,
+      "standardDeviationPoints": 8.118255492039749,
+      "distribution": "fixed_t4",
+      "effectiveUnit": "equal_race_weight_with_individual_poll_dispersion",
+      "omittedCycle": 2000,
+      "historicalPopulationTransportMeasured": false
+    },
+    {
+      "family": "single_poll_race_weighted",
+      "races": 220,
+      "pollsterRaceObservations": 787,
+      "cycles": [
+        1998,
+        2000,
+        2004,
+        2006,
+        2008,
+        2010,
+        2012,
+        2014,
+        2016,
+        2018,
+        2020,
+        2022
+      ],
+      "trainedThroughYear": 2022,
+      "biasPoints": -0.5132151893033905,
+      "standardDeviationPoints": 8.22302559569623,
+      "distribution": "fixed_t4",
+      "effectiveUnit": "equal_race_weight_with_individual_poll_dispersion",
+      "omittedCycle": 2002,
+      "historicalPopulationTransportMeasured": false
+    },
+    {
+      "family": "single_poll_race_weighted",
+      "races": 220,
+      "pollsterRaceObservations": 775,
+      "cycles": [
+        1998,
+        2000,
+        2002,
+        2006,
+        2008,
+        2010,
+        2012,
+        2014,
+        2016,
+        2018,
+        2020,
+        2022
+      ],
+      "trainedThroughYear": 2022,
+      "biasPoints": -0.41781955323521464,
+      "standardDeviationPoints": 8.277944264601613,
+      "distribution": "fixed_t4",
+      "effectiveUnit": "equal_race_weight_with_individual_poll_dispersion",
+      "omittedCycle": 2004,
+      "historicalPopulationTransportMeasured": false
+    },
+    {
+      "family": "single_poll_race_weighted",
+      "races": 225,
+      "pollsterRaceObservations": 764,
+      "cycles": [
+        1998,
+        2000,
+        2002,
+        2004,
+        2008,
+        2010,
+        2012,
+        2014,
+        2016,
+        2018,
+        2020,
+        2022
+      ],
+      "trainedThroughYear": 2022,
+      "biasPoints": -0.5740830054193415,
+      "standardDeviationPoints": 8.29462780699518,
+      "distribution": "fixed_t4",
+      "effectiveUnit": "equal_race_weight_with_individual_poll_dispersion",
+      "omittedCycle": 2006,
+      "historicalPopulationTransportMeasured": false
+    },
+    {
+      "family": "single_poll_race_weighted",
+      "races": 218,
+      "pollsterRaceObservations": 762,
+      "cycles": [
+        1998,
+        2000,
+        2002,
+        2004,
+        2006,
+        2010,
+        2012,
+        2014,
+        2016,
+        2018,
+        2020,
+        2022
+      ],
+      "trainedThroughYear": 2022,
+      "biasPoints": -0.4840408611639256,
+      "standardDeviationPoints": 8.371585277129698,
+      "distribution": "fixed_t4",
+      "effectiveUnit": "equal_race_weight_with_individual_poll_dispersion",
+      "omittedCycle": 2008,
+      "historicalPopulationTransportMeasured": false
+    },
+    {
+      "family": "single_poll_race_weighted",
+      "races": 221,
+      "pollsterRaceObservations": 766,
+      "cycles": [
+        1998,
+        2000,
+        2002,
+        2004,
+        2006,
+        2008,
+        2012,
+        2014,
+        2016,
+        2018,
+        2020,
+        2022
+      ],
+      "trainedThroughYear": 2022,
+      "biasPoints": -0.36073194314231416,
+      "standardDeviationPoints": 8.290819153971816,
+      "distribution": "fixed_t4",
+      "effectiveUnit": "equal_race_weight_with_individual_poll_dispersion",
+      "omittedCycle": 2010,
+      "historicalPopulationTransportMeasured": false
+    },
+    {
+      "family": "single_poll_race_weighted",
+      "races": 221,
+      "pollsterRaceObservations": 727,
+      "cycles": [
+        1998,
+        2000,
+        2002,
+        2004,
+        2006,
+        2008,
+        2010,
+        2014,
+        2016,
+        2018,
+        2020,
+        2022
+      ],
+      "trainedThroughYear": 2022,
+      "biasPoints": -0.6487937525526493,
+      "standardDeviationPoints": 8.349156060739862,
+      "distribution": "fixed_t4",
+      "effectiveUnit": "equal_race_weight_with_individual_poll_dispersion",
+      "omittedCycle": 2012,
+      "historicalPopulationTransportMeasured": false
+    },
+    {
+      "family": "single_poll_race_weighted",
+      "races": 220,
+      "pollsterRaceObservations": 741,
+      "cycles": [
+        1998,
+        2000,
+        2002,
+        2004,
+        2006,
+        2008,
+        2010,
+        2012,
+        2016,
+        2018,
+        2020,
+        2022
+      ],
+      "trainedThroughYear": 2022,
+      "biasPoints": -0.1407131416318093,
+      "standardDeviationPoints": 8.355359562383423,
+      "distribution": "fixed_t4",
+      "effectiveUnit": "equal_race_weight_with_individual_poll_dispersion",
+      "omittedCycle": 2014,
+      "historicalPopulationTransportMeasured": false
+    },
+    {
+      "family": "single_poll_race_weighted",
+      "races": 223,
+      "pollsterRaceObservations": 743,
+      "cycles": [
+        1998,
+        2000,
+        2002,
+        2004,
+        2006,
+        2008,
+        2010,
+        2012,
+        2014,
+        2018,
+        2020,
+        2022
+      ],
+      "trainedThroughYear": 2022,
+      "biasPoints": -0.24636392444340555,
+      "standardDeviationPoints": 8.350640270130194,
+      "distribution": "fixed_t4",
+      "effectiveUnit": "equal_race_weight_with_individual_poll_dispersion",
+      "omittedCycle": 2016,
+      "historicalPopulationTransportMeasured": false
+    },
+    {
+      "family": "single_poll_race_weighted",
+      "races": 221,
+      "pollsterRaceObservations": 742,
+      "cycles": [
+        1998,
+        2000,
+        2002,
+        2004,
+        2006,
+        2008,
+        2010,
+        2012,
+        2014,
+        2016,
+        2020,
+        2022
+      ],
+      "trainedThroughYear": 2022,
+      "biasPoints": -0.2448971727705799,
+      "standardDeviationPoints": 8.451947275831277,
+      "distribution": "fixed_t4",
+      "effectiveUnit": "equal_race_weight_with_individual_poll_dispersion",
+      "omittedCycle": 2018,
+      "historicalPopulationTransportMeasured": false
+    },
+    {
+      "family": "single_poll_race_weighted",
+      "races": 230,
+      "pollsterRaceObservations": 799,
+      "cycles": [
+        1998,
+        2000,
+        2002,
+        2004,
+        2006,
+        2008,
+        2010,
+        2012,
+        2014,
+        2016,
+        2018,
+        2022
+      ],
+      "trainedThroughYear": 2022,
+      "biasPoints": -0.016586440316916574,
+      "standardDeviationPoints": 8.168541438965795,
+      "distribution": "fixed_t4",
+      "effectiveUnit": "equal_race_weight_with_individual_poll_dispersion",
+      "omittedCycle": 2020,
+      "historicalPopulationTransportMeasured": false
+    },
+    {
+      "family": "single_poll_race_weighted",
+      "races": 223,
+      "pollsterRaceObservations": 757,
+      "cycles": [
+        1998,
+        2000,
+        2002,
+        2004,
+        2006,
+        2008,
+        2010,
+        2012,
+        2014,
+        2016,
+        2018,
+        2020
+      ],
+      "trainedThroughYear": 2020,
+      "biasPoints": 0.011126557451729403,
+      "standardDeviationPoints": 8.066014295293897,
+      "distribution": "fixed_t4",
+      "effectiveUnit": "equal_race_weight_with_individual_poll_dispersion",
+      "omittedCycle": 2022,
+      "historicalPopulationTransportMeasured": false
+    }
+  ],
+  "assessments": [
+    {
+      "state": "MI",
+      "marketId": "358",
+      "exchangeId": "1047",
+      "candidates": {
+        "democratic": "Abdul El-Sayed",
+        "republican": "Mike Rogers"
+      },
+      "ballotSource": "michigan-official.html",
+      "polls": [
+        {
+          "pollster": "Marist",
+          "population": "registered_voters",
+          "democratic": 51,
+          "republican": 44,
+          "unallocated": 4,
+          "fieldEndDate": "2026-09-27",
+          "fieldEndAt": "2026-09-27T23:59:59.999Z",
+          "file": "michigan-marist.pdf"
+        },
+        {
+          "pollster": "Emerson",
+          "population": "likely_voters",
+          "democratic": 48,
+          "republican": 46,
+          "unallocated": 6,
+          "fieldEndDate": "2026-09-14",
+          "fieldEndAt": "2026-09-14T23:59:59.999Z",
+          "file": "michigan-emerson.html"
+        }
+      ],
+      "id": "mi-democratic-primary-polls-20261005-v2",
+      "at": "2026-10-05T18:44:14.878Z",
+      "expiresAt": "2026-10-06T00:44:14.878Z",
+      "sources": [
+        {
+          "file": "michigan-marist.pdf",
+          "url": "https://maristpoll.marist.edu/wp-content/uploads/2026/09/Marist-Poll_MI-NOS-and-Tables_202609281401@9159_7e99y.pdf",
+          "observedAt": "2026-10-05T18:40:16.490Z",
+          "bytes": 824044,
+          "contentType": "application/pdf",
+          "contentHash": "e9878265b05cbb05205bd7cab983b3d5f7a74876e9a0422cf81a9cc615af1e70"
+        },
+        {
+          "file": "michigan-emerson.html",
+          "url": "https://emersoncollegepolling.com/michigan-2026-poll-el-sayed-and-rogers-locked-in-close-election/",
+          "observedAt": "2026-10-05T18:42:20.551Z",
+          "bytes": 104100,
+          "contentType": "text/html; charset=UTF-8",
+          "contentHash": "28aa4e97413437d1f62320a593b2a1b73643d716606715580db13c0694357e61"
+        },
+        {
+          "file": "michigan-official.html",
+          "url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?electionType=GEN&electionYear=2026&page=page.miboePublicReport",
+          "observedAt": "2026-10-05T18:42:34.988Z",
+          "bytes": 1063373,
+          "contentType": "text/html;charset=UTF-8",
+          "contentHash": "e3551674a96aebc1d295336d857a9b626ab38177823ed5357214a40b038b1938"
+        }
+      ],
+      "marginPoints": 5.028283067221854,
+      "pollWeights": [
+        {
+          "pollster": "Marist",
+          "population": "registered_voters",
+          "fieldEndAt": "2026-09-27T23:59:59.999Z",
+          "weight": 0.6056566134443707
+        },
+        {
+          "pollster": "Emerson",
+          "population": "likely_voters",
+          "fieldEndAt": "2026-09-14T23:59:59.999Z",
+          "weight": 0.3943433865556292
+        }
+      ],
+      "rvWeight": 0.6056566134443707,
+      "unallocatedPoints": 4.788686773111259,
+      "ordinaryRange": [
+        0.5778274405326497,
+        0.8597888423762652
+      ],
+      "scenarios": [
+        {
+          "omittedCycle": null,
+          "rvShift": -3,
+          "roundingShift": -1,
+          "marginPoints": 2.2113132268887417,
+          "valuation": 0.5966954997233193
+        },
+        {
+          "omittedCycle": null,
+          "rvShift": -3,
+          "roundingShift": 0,
+          "marginPoints": 3.2113132268887417,
+          "valuation": 0.6547468831581273
+        },
+        {
+          "omittedCycle": null,
+          "rvShift": -3,
+          "roundingShift": 1,
+          "marginPoints": 4.211313226888741,
+          "valuation": 0.7073704534255524
+        },
+        {
+          "omittedCycle": null,
+          "rvShift": 0,
+          "roundingShift": -1,
+          "marginPoints": 4.028283067221854,
+          "valuation": 0.6981910474844851
+        },
+        {
+          "omittedCycle": null,
+          "rvShift": 0,
+          "roundingShift": 0,
+          "marginPoints": 5.028283067221854,
+          "valuation": 0.7457306928218362
+        },
+        {
+          "omittedCycle": null,
+          "rvShift": 0,
+          "roundingShift": 1,
+          "marginPoints": 6.028283067221854,
+          "valuation": 0.7867742859852669
+        },
+        {
+          "omittedCycle": null,
+          "rvShift": 3,
+          "roundingShift": -1,
+          "marginPoints": 5.845252907554967,
+          "valuation": 0.7797458470766389
+        },
+        {
+          "omittedCycle": null,
+          "rvShift": 3,
+          "roundingShift": 0,
+          "marginPoints": 6.845252907554967,
+          "valuation": 0.8155866197714922
+        },
+        {
+          "omittedCycle": null,
+          "rvShift": 3,
+          "roundingShift": 1,
+          "marginPoints": 7.845252907554967,
+          "valuation": 0.8454896115690798
+        },
+        {
+          "omittedCycle": 1998,
+          "rvShift": -3,
+          "roundingShift": -1,
+          "marginPoints": 2.2113132268887417,
+          "valuation": 0.5828732479779591
+        },
+        {
+          "omittedCycle": 1998,
+          "rvShift": -3,
+          "roundingShift": 0,
+          "marginPoints": 3.2113132268887417,
+          "valuation": 0.6436522301246965
+        },
+        {
+          "omittedCycle": 1998,
+          "rvShift": -3,
+          "roundingShift": 1,
+          "marginPoints": 4.211313226888741,
+          "valuation": 0.698937593336237
+        },
+        {
+          "omittedCycle": 1998,
+          "rvShift": 0,
+          "roundingShift": -1,
+          "marginPoints": 4.028283067221854,
+          "valuation": 0.6892863598252961
+        },
+        {
+          "omittedCycle": 1998,
+          "rvShift": 0,
+          "roundingShift": 0,
+          "marginPoints": 5.028283067221854,
+          "valuation": 0.7392778614849845
+        },
+        {
+          "omittedCycle": 1998,
+          "rvShift": 0,
+          "roundingShift": 1,
+          "marginPoints": 6.028283067221854,
+          "valuation": 0.7824010280757933
+        },
+        {
+          "omittedCycle": 1998,
+          "rvShift": 3,
+          "roundingShift": -1,
+          "marginPoints": 5.845252907554967,
+          "valuation": 0.7750229585585799
+        },
+        {
+          "omittedCycle": 1998,
+          "rvShift": 3,
+          "roundingShift": 0,
+          "marginPoints": 6.845252907554967,
+          "valuation": 0.8126005957436685
+        },
+        {
+          "omittedCycle": 1998,
+          "rvShift": 3,
+          "roundingShift": 1,
+          "marginPoints": 7.845252907554967,
+          "valuation": 0.8438299740109778
+        },
+        {
+          "omittedCycle": 2000,
+          "rvShift": -3,
+          "roundingShift": -1,
+          "marginPoints": 2.2113132268887417,
+          "valuation": 0.5976752520194683
+        },
+        {
+          "omittedCycle": 2000,
+          "rvShift": -3,
+          "roundingShift": 0,
+          "marginPoints": 3.2113132268887417,
+          "valuation": 0.6566178151733288
+        },
+        {
+          "omittedCycle": 2000,
+          "rvShift": -3,
+          "roundingShift": 1,
+          "marginPoints": 4.211313226888741,
+          "valuation": 0.709902794536099
+        },
+        {
+          "omittedCycle": 2000,
+          "rvShift": 0,
+          "roundingShift": -1,
+          "marginPoints": 4.028283067221854,
+          "valuation": 0.7006208276755713
+        },
+        {
+          "omittedCycle": 2000,
+          "rvShift": 0,
+          "roundingShift": 0,
+          "marginPoints": 5.028283067221854,
+          "valuation": 0.7486201897679755
+        },
+        {
+          "omittedCycle": 2000,
+          "rvShift": 0,
+          "roundingShift": 1,
+          "marginPoints": 6.028283067221854,
+          "valuation": 0.7898926361959412
+        },
+        {
+          "omittedCycle": 2000,
+          "rvShift": 3,
+          "roundingShift": -1,
+          "marginPoints": 5.845252907554967,
+          "valuation": 0.782837944646336
+        },
+        {
+          "omittedCycle": 2000,
+          "rvShift": 3,
+          "roundingShift": 0,
+          "marginPoints": 6.845252907554967,
+          "valuation": 0.8187485054541583
+        },
+        {
+          "omittedCycle": 2000,
+          "rvShift": 3,
+          "roundingShift": 1,
+          "marginPoints": 7.845252907554967,
+          "valuation": 0.8485721592554905
+        },
+        {
+          "omittedCycle": 2002,
+          "rvShift": -3,
+          "roundingShift": -1,
+          "marginPoints": 2.2113132268887417,
+          "valuation": 0.5876126101239503
+        },
+        {
+          "omittedCycle": 2002,
+          "rvShift": -3,
+          "roundingShift": 0,
+          "marginPoints": 3.2113132268887417,
+          "valuation": 0.6466206593521885
+        },
+        {
+          "omittedCycle": 2002,
+          "rvShift": -3,
+          "roundingShift": 1,
+          "marginPoints": 4.211313226888741,
+          "valuation": 0.7003290256487629
+        },
+        {
+          "omittedCycle": 2002,
+          "rvShift": 0,
+          "roundingShift": -1,
+          "marginPoints": 4.028283067221854,
+          "valuation": 0.6909464584960356
+        },
+        {
+          "omittedCycle": 2002,
+          "rvShift": 0,
+          "roundingShift": 0,
+          "marginPoints": 5.028283067221854,
+          "valuation": 0.7395970758301941
+        },
+        {
+          "omittedCycle": 2002,
+          "rvShift": 0,
+          "roundingShift": 1,
+          "marginPoints": 6.028283067221854,
+          "valuation": 0.7817063443602997
+        },
+        {
+          "omittedCycle": 2002,
+          "rvShift": 3,
+          "roundingShift": -1,
+          "marginPoints": 5.845252907554967,
+          "valuation": 0.7744892451025134
+        },
+        {
+          "omittedCycle": 2002,
+          "rvShift": 3,
+          "roundingShift": 0,
+          "marginPoints": 6.845252907554967,
+          "valuation": 0.8113147825817261
+        },
+        {
+          "omittedCycle": 2002,
+          "rvShift": 3,
+          "roundingShift": 1,
+          "marginPoints": 7.845252907554967,
+          "valuation": 0.842074546391662
+        },
+        {
+          "omittedCycle": 2004,
+          "rvShift": -3,
+          "roundingShift": -1,
+          "marginPoints": 2.2113132268887417,
+          "valuation": 0.5927076430463712
+        },
+        {
+          "omittedCycle": 2004,
+          "rvShift": -3,
+          "roundingShift": 0,
+          "marginPoints": 3.2113132268887417,
+          "valuation": 0.6509528897128236
+        },
+        {
+          "omittedCycle": 2004,
+          "rvShift": -3,
+          "roundingShift": 1,
+          "marginPoints": 4.211313226888741,
+          "valuation": 0.7038733402136454
+        },
+        {
+          "omittedCycle": 2004,
+          "rvShift": 0,
+          "roundingShift": -1,
+          "marginPoints": 4.028283067221854,
+          "valuation": 0.6946336154522136
+        },
+        {
+          "omittedCycle": 2004,
+          "rvShift": 0,
+          "roundingShift": 0,
+          "marginPoints": 5.028283067221854,
+          "valuation": 0.742525626490533
+        },
+        {
+          "omittedCycle": 2004,
+          "rvShift": 0,
+          "roundingShift": 1,
+          "marginPoints": 6.028283067221854,
+          "valuation": 0.7839547618186321
+        },
+        {
+          "omittedCycle": 2004,
+          "rvShift": 3,
+          "roundingShift": -1,
+          "marginPoints": 5.845252907554967,
+          "valuation": 0.7768548475285171
+        },
+        {
+          "omittedCycle": 2004,
+          "rvShift": 3,
+          "roundingShift": 0,
+          "marginPoints": 6.845252907554967,
+          "valuation": 0.8130840172770263
+        },
+        {
+          "omittedCycle": 2004,
+          "rvShift": 3,
+          "roundingShift": 1,
+          "marginPoints": 7.845252907554967,
+          "valuation": 0.8433570650441918
+        },
+        {
+          "omittedCycle": 2006,
+          "rvShift": -3,
+          "roundingShift": -1,
+          "marginPoints": 2.2113132268887417,
+          "valuation": 0.5830136253604
+        },
+        {
+          "omittedCycle": 2006,
+          "rvShift": -3,
+          "roundingShift": 0,
+          "marginPoints": 3.2113132268887417,
+          "valuation": 0.6418708942232717
+        },
+        {
+          "omittedCycle": 2006,
+          "rvShift": -3,
+          "roundingShift": 1,
+          "marginPoints": 4.211313226888741,
+          "valuation": 0.6956253720269084
+        },
+        {
+          "omittedCycle": 2006,
+          "rvShift": 0,
+          "roundingShift": -1,
+          "marginPoints": 4.028283067221854,
+          "valuation": 0.6862208274749334
+        },
+        {
+          "omittedCycle": 2006,
+          "rvShift": 0,
+          "roundingShift": 0,
+          "marginPoints": 5.028283067221854,
+          "valuation": 0.7350554336138132
+        },
+        {
+          "omittedCycle": 2006,
+          "rvShift": 0,
+          "roundingShift": 1,
+          "marginPoints": 6.028283067221854,
+          "valuation": 0.777476051826121
+        },
+        {
+          "omittedCycle": 2006,
+          "rvShift": 3,
+          "roundingShift": -1,
+          "marginPoints": 5.845252907554967,
+          "valuation": 0.7701946922391205
+        },
+        {
+          "omittedCycle": 2006,
+          "rvShift": 3,
+          "roundingShift": 0,
+          "marginPoints": 6.845252907554967,
+          "valuation": 0.8073990621675988
+        },
+        {
+          "omittedCycle": 2006,
+          "rvShift": 3,
+          "roundingShift": 1,
+          "marginPoints": 7.845252907554967,
+          "valuation": 0.83857937206088
+        },
+        {
+          "omittedCycle": 2008,
+          "rvShift": -3,
+          "roundingShift": -1,
+          "marginPoints": 2.2113132268887417,
+          "valuation": 0.5875222228882558
+        },
+        {
+          "omittedCycle": 2008,
+          "rvShift": -3,
+          "roundingShift": 0,
+          "marginPoints": 3.2113132268887417,
+          "valuation": 0.6455322181342582
+        },
+        {
+          "omittedCycle": 2008,
+          "rvShift": -3,
+          "roundingShift": 1,
+          "marginPoints": 4.211313226888741,
+          "valuation": 0.6984507855614733
+        },
+        {
+          "omittedCycle": 2008,
+          "rvShift": 0,
+          "roundingShift": -1,
+          "marginPoints": 4.028283067221854,
+          "valuation": 0.6891951692577826
+        },
+        {
+          "omittedCycle": 2008,
+          "rvShift": 0,
+          "roundingShift": 0,
+          "marginPoints": 5.028283067221854,
+          "valuation": 0.7372517063048994
+        },
+        {
+          "omittedCycle": 2008,
+          "rvShift": 0,
+          "roundingShift": 1,
+          "marginPoints": 6.028283067221854,
+          "valuation": 0.7790027951084011
+        },
+        {
+          "omittedCycle": 2008,
+          "rvShift": 3,
+          "roundingShift": -1,
+          "marginPoints": 5.845252907554967,
+          "valuation": 0.7718347460651942
+        },
+        {
+          "omittedCycle": 2008,
+          "rvShift": 3,
+          "roundingShift": 0,
+          "marginPoints": 6.845252907554967,
+          "valuation": 0.8084725720903339
+        },
+        {
+          "omittedCycle": 2008,
+          "rvShift": 3,
+          "roundingShift": 1,
+          "marginPoints": 7.845252907554967,
+          "valuation": 0.8392125486565527
+        },
+        {
+          "omittedCycle": 2010,
+          "rvShift": -3,
+          "roundingShift": -1,
+          "marginPoints": 2.2113132268887417,
+          "valuation": 0.5959794353241806
+        },
+        {
+          "omittedCycle": 2010,
+          "rvShift": -3,
+          "roundingShift": 0,
+          "marginPoints": 3.2113132268887417,
+          "valuation": 0.6538829570911494
+        },
+        {
+          "omittedCycle": 2010,
+          "rvShift": -3,
+          "roundingShift": 1,
+          "marginPoints": 4.211313226888741,
+          "valuation": 0.7064161231880172
+        },
+        {
+          "omittedCycle": 2010,
+          "rvShift": 0,
+          "roundingShift": -1,
+          "marginPoints": 4.028283067221854,
+          "valuation": 0.697248934603446
+        },
+        {
+          "omittedCycle": 2010,
+          "rvShift": 0,
+          "roundingShift": 0,
+          "marginPoints": 5.028283067221854,
+          "valuation": 0.7447441652906053
+        },
+        {
+          "omittedCycle": 2010,
+          "rvShift": 0,
+          "roundingShift": 1,
+          "marginPoints": 6.028283067221854,
+          "valuation": 0.7857922371000166
+        },
+        {
+          "omittedCycle": 2010,
+          "rvShift": 3,
+          "roundingShift": -1,
+          "marginPoints": 5.845252907554967,
+          "valuation": 0.7787598296184365
+        },
+        {
+          "omittedCycle": 2010,
+          "rvShift": 3,
+          "roundingShift": 0,
+          "marginPoints": 6.845252907554967,
+          "valuation": 0.8146363500606156
+        },
+        {
+          "omittedCycle": 2010,
+          "rvShift": 3,
+          "roundingShift": 1,
+          "marginPoints": 7.845252907554967,
+          "valuation": 0.8446018896531102
+        },
+        {
+          "omittedCycle": 2012,
+          "rvShift": -3,
+          "roundingShift": -1,
+          "marginPoints": 2.2113132268887417,
+          "valuation": 0.5778274405326497
+        },
+        {
+          "omittedCycle": 2012,
+          "rvShift": -3,
+          "roundingShift": 0,
+          "marginPoints": 3.2113132268887417,
+          "valuation": 0.6366808115301282
+        },
+        {
+          "omittedCycle": 2012,
+          "rvShift": -3,
+          "roundingShift": 1,
+          "marginPoints": 4.211313226888741,
+          "valuation": 0.6906163097823598
+        },
+        {
+          "omittedCycle": 2012,
+          "rvShift": 0,
+          "roundingShift": -1,
+          "marginPoints": 4.028283067221854,
+          "valuation": 0.6811664167669335
+        },
+        {
+          "omittedCycle": 2012,
+          "rvShift": 0,
+          "roundingShift": 0,
+          "marginPoints": 5.028283067221854,
+          "valuation": 0.7303040015315195
+        },
+        {
+          "omittedCycle": 2012,
+          "rvShift": 0,
+          "roundingShift": 1,
+          "marginPoints": 6.028283067221854,
+          "valuation": 0.7731319780607769
+        },
+        {
+          "omittedCycle": 2012,
+          "rvShift": 3,
+          "roundingShift": -1,
+          "marginPoints": 5.845252907554967,
+          "valuation": 0.7657705558806557
+        },
+        {
+          "omittedCycle": 2012,
+          "rvShift": 3,
+          "roundingShift": 0,
+          "marginPoints": 6.845252907554967,
+          "valuation": 0.8034307065741957
+        },
+        {
+          "omittedCycle": 2012,
+          "rvShift": 3,
+          "roundingShift": 1,
+          "marginPoints": 7.845252907554967,
+          "valuation": 0.8350871342522332
+        },
+        {
+          "omittedCycle": 2014,
+          "rvShift": -3,
+          "roundingShift": -1,
+          "marginPoints": 2.2113132268887417,
+          "valuation": 0.6081667726486569
+        },
+        {
+          "omittedCycle": 2014,
+          "rvShift": -3,
+          "roundingShift": 0,
+          "marginPoints": 3.2113132268887417,
+          "valuation": 0.6646542864689144
+        },
+        {
+          "omittedCycle": 2014,
+          "rvShift": -3,
+          "roundingShift": 1,
+          "marginPoints": 4.211313226888741,
+          "valuation": 0.715641776114623
+        },
+        {
+          "omittedCycle": 2014,
+          "rvShift": 0,
+          "roundingShift": -1,
+          "marginPoints": 4.028283067221854,
+          "valuation": 0.7067605710450151
+        },
+        {
+          "omittedCycle": 2014,
+          "rvShift": 0,
+          "roundingShift": 0,
+          "marginPoints": 5.028283067221854,
+          "valuation": 0.7527075454355397
+        },
+        {
+          "omittedCycle": 2014,
+          "rvShift": 0,
+          "roundingShift": 1,
+          "marginPoints": 6.028283067221854,
+          "valuation": 0.7923011477050264
+        },
+        {
+          "omittedCycle": 2014,
+          "rvShift": 3,
+          "roundingShift": -1,
+          "marginPoints": 5.845252907554967,
+          "valuation": 0.7855243238351457
+        },
+        {
+          "omittedCycle": 2014,
+          "rvShift": 3,
+          "roundingShift": 0,
+          "marginPoints": 6.845252907554967,
+          "valuation": 0.820075053970748
+        },
+        {
+          "omittedCycle": 2014,
+          "rvShift": 3,
+          "roundingShift": 1,
+          "marginPoints": 7.845252907554967,
+          "valuation": 0.8489031180430798
+        },
+        {
+          "omittedCycle": 2016,
+          "rvShift": -3,
+          "roundingShift": -1,
+          "marginPoints": 2.2113132268887417,
+          "valuation": 0.601991795136788
+        },
+        {
+          "omittedCycle": 2016,
+          "rvShift": -3,
+          "roundingShift": 0,
+          "marginPoints": 3.2113132268887417,
+          "valuation": 0.659019638169766
+        },
+        {
+          "omittedCycle": 2016,
+          "rvShift": -3,
+          "roundingShift": 1,
+          "marginPoints": 4.211313226888741,
+          "valuation": 0.7106495493865473
+        },
+        {
+          "omittedCycle": 2016,
+          "rvShift": 0,
+          "roundingShift": -1,
+          "marginPoints": 4.028283067221854,
+          "valuation": 0.7016461353720704
+        },
+        {
+          "omittedCycle": 2016,
+          "rvShift": 0,
+          "roundingShift": 0,
+          "marginPoints": 5.028283067221854,
+          "valuation": 0.7482709183180837
+        },
+        {
+          "omittedCycle": 2016,
+          "rvShift": 0,
+          "roundingShift": 1,
+          "marginPoints": 6.028283067221854,
+          "valuation": 0.7885359149143846
+        },
+        {
+          "omittedCycle": 2016,
+          "rvShift": 3,
+          "roundingShift": -1,
+          "marginPoints": 5.845252907554967,
+          "valuation": 0.7816387085382732
+        },
+        {
+          "omittedCycle": 2016,
+          "rvShift": 3,
+          "roundingShift": 0,
+          "marginPoints": 6.845252907554967,
+          "valuation": 0.8168254452015061
+        },
+        {
+          "omittedCycle": 2016,
+          "rvShift": 3,
+          "roundingShift": 1,
+          "marginPoints": 7.845252907554967,
+          "valuation": 0.846223656096001
+        },
+        {
+          "omittedCycle": 2018,
+          "rvShift": -3,
+          "roundingShift": -1,
+          "marginPoints": 2.2113132268887417,
+          "valuation": 0.6006797172284244
+        },
+        {
+          "omittedCycle": 2018,
+          "rvShift": -3,
+          "roundingShift": 0,
+          "marginPoints": 3.2113132268887417,
+          "valuation": 0.6571583340703429
+        },
+        {
+          "omittedCycle": 2018,
+          "rvShift": -3,
+          "roundingShift": 1,
+          "marginPoints": 4.211313226888741,
+          "valuation": 0.7084025307708549
+        },
+        {
+          "omittedCycle": 2018,
+          "rvShift": 0,
+          "roundingShift": -1,
+          "marginPoints": 4.028283067221854,
+          "valuation": 0.6994569665898691
+        },
+        {
+          "omittedCycle": 2018,
+          "rvShift": 0,
+          "roundingShift": 0,
+          "marginPoints": 5.028283067221854,
+          "valuation": 0.7458335074161969
+        },
+        {
+          "omittedCycle": 2018,
+          "rvShift": 0,
+          "roundingShift": 1,
+          "marginPoints": 6.028283067221854,
+          "valuation": 0.7860033007277392
+        },
+        {
+          "omittedCycle": 2018,
+          "rvShift": 3,
+          "roundingShift": -1,
+          "marginPoints": 5.845252907554967,
+          "valuation": 0.7791133172779097
+        },
+        {
+          "omittedCycle": 2018,
+          "rvShift": 3,
+          "roundingShift": 0,
+          "marginPoints": 6.845252907554967,
+          "valuation": 0.8143079839413815
+        },
+        {
+          "omittedCycle": 2018,
+          "rvShift": 3,
+          "roundingShift": 1,
+          "marginPoints": 7.845252907554967,
+          "valuation": 0.8438087669908162
+        },
+        {
+          "omittedCycle": 2020,
+          "rvShift": -3,
+          "roundingShift": -1,
+          "marginPoints": 2.2113132268887417,
+          "valuation": 0.6183597634601702
+        },
+        {
+          "omittedCycle": 2020,
+          "rvShift": -3,
+          "roundingShift": 0,
+          "marginPoints": 3.2113132268887417,
+          "valuation": 0.6751747802836595
+        },
+        {
+          "omittedCycle": 2020,
+          "rvShift": -3,
+          "roundingShift": 1,
+          "marginPoints": 4.211313226888741,
+          "valuation": 0.7260426083549713
+        },
+        {
+          "omittedCycle": 2020,
+          "rvShift": 0,
+          "roundingShift": -1,
+          "marginPoints": 4.028283067221854,
+          "valuation": 0.7172134804070983
+        },
+        {
+          "omittedCycle": 2020,
+          "rvShift": 0,
+          "roundingShift": 0,
+          "marginPoints": 5.028283067221854,
+          "valuation": 0.7627358902583757
+        },
+        {
+          "omittedCycle": 2020,
+          "rvShift": 0,
+          "roundingShift": 1,
+          "marginPoints": 6.028283067221854,
+          "valuation": 0.8016302178994934
+        },
+        {
+          "omittedCycle": 2020,
+          "rvShift": 3,
+          "roundingShift": -1,
+          "marginPoints": 5.845252907554967,
+          "valuation": 0.7949967768759252
+        },
+        {
+          "omittedCycle": 2020,
+          "rvShift": 3,
+          "roundingShift": 0,
+          "marginPoints": 6.845252907554967,
+          "valuation": 0.8287066476372584
+        },
+        {
+          "omittedCycle": 2020,
+          "rvShift": 3,
+          "roundingShift": 1,
+          "marginPoints": 7.845252907554967,
+          "valuation": 0.8566099824613279
+        },
+        {
+          "omittedCycle": 2022,
+          "rvShift": -3,
+          "roundingShift": -1,
+          "marginPoints": 2.2113132268887417,
+          "valuation": 0.6216773952582854
+        },
+        {
+          "omittedCycle": 2022,
+          "rvShift": -3,
+          "roundingShift": 0,
+          "marginPoints": 3.2113132268887417,
+          "valuation": 0.6788688776089514
+        },
+        {
+          "omittedCycle": 2022,
+          "rvShift": -3,
+          "roundingShift": 1,
+          "marginPoints": 4.211313226888741,
+          "valuation": 0.7298974354006178
+        },
+        {
+          "omittedCycle": 2022,
+          "rvShift": 0,
+          "roundingShift": -1,
+          "marginPoints": 4.028283067221854,
+          "valuation": 0.7210541865170137
+        },
+        {
+          "omittedCycle": 2022,
+          "rvShift": 0,
+          "roundingShift": 0,
+          "marginPoints": 5.028283067221854,
+          "valuation": 0.7665791796311804
+        },
+        {
+          "omittedCycle": 2022,
+          "rvShift": 0,
+          "roundingShift": 1,
+          "marginPoints": 6.028283067221854,
+          "valuation": 0.8053216890432161
+        },
+        {
+          "omittedCycle": 2022,
+          "rvShift": 3,
+          "roundingShift": -1,
+          "marginPoints": 5.845252907554967,
+          "valuation": 0.7987253496676403
+        },
+        {
+          "omittedCycle": 2022,
+          "rvShift": 3,
+          "roundingShift": 0,
+          "marginPoints": 6.845252907554967,
+          "valuation": 0.8321938988388409
+        },
+        {
+          "omittedCycle": 2022,
+          "rvShift": 3,
+          "roundingShift": 1,
+          "marginPoints": 7.845252907554967,
+          "valuation": 0.8597888423762652
+        }
+      ],
+      "centralEstimate": 0.7457306928218362,
+      "severeOpponentAllocationStress": 0.300970773917181,
+      "estimateMeaning": "Settlement-value research under historical error and declared sensitivity; not calibrated population transport or a short-term return forecast.",
+      "executionAuthority": false,
+      "profitabilityEstablished": false
+    },
+    {
+      "state": "TX",
+      "marketId": "293",
+      "exchangeId": "982",
+      "candidates": {
+        "democratic": "James Talarico",
+        "republican": "Ken Paxton",
+        "libertarian": "Ted Brown"
+      },
+      "ballotSource": "texas-official.pdf",
+      "polls": [
+        {
+          "pollster": "Marist",
+          "population": "registered_voters",
+          "democratic": 50,
+          "republican": 44,
+          "unallocated": 4,
+          "fieldEndDate": "2026-09-20",
+          "fieldEndAt": "2026-09-20T23:59:59.999Z",
+          "file": "texas-marist.pdf"
+        },
+        {
+          "pollster": "Emerson",
+          "population": "likely_voters",
+          "democratic": 47,
+          "republican": 46,
+          "unallocated": 5,
+          "fieldEndDate": "2026-09-14",
+          "fieldEndAt": "2026-09-14T23:59:59.999Z",
+          "file": "texas-emerson.html"
+        }
+      ],
+      "id": "tx-democratic-primary-polls-20261005-v2",
+      "at": "2026-10-05T18:44:14.878Z",
+      "expiresAt": "2026-10-06T00:44:14.878Z",
+      "sources": [
+        {
+          "file": "texas-marist.pdf",
+          "url": "https://maristpoll.marist.edu/wp-content/uploads/2026/09/Marist-Poll_TX-NOS-and-Tables_202609221131.pdf",
+          "observedAt": "2026-10-05T18:40:16.619Z",
+          "bytes": 894781,
+          "contentType": "application/pdf",
+          "contentHash": "98f1ab1b50d3621399138e3236ea99f996ce0117e4a3a94394b485679f27956f"
+        },
+        {
+          "file": "texas-emerson.html",
+          "url": "https://emersoncollegepolling.com/texas-2026-poll-talarico-and-paxton-in-dead-heat-abbott-maintains-edge/",
+          "observedAt": "2026-10-05T18:42:20.935Z",
+          "bytes": 105553,
+          "contentType": "text/html; charset=UTF-8",
+          "contentHash": "bf5cad627294b1a41e79e64ad8fe27dbaa6e87e24c4d28dcfa5bc9de7ed8c53b"
+        },
+        {
+          "file": "texas-official.pdf",
+          "url": "https://www.sos.state.tx.us/elections/forms/2026-ballot-cert.pdf",
+          "observedAt": "2026-10-05T18:42:34.556Z",
+          "bytes": 5919631,
+          "contentType": "application/pdf",
+          "contentHash": "c13ffb4ebeee389fa9818d47b31f77b4e260ea6e6f5389cb7bf0f36d9b44d87c"
+        }
+      ],
+      "marginPoints": 3.7467466274818766,
+      "pollWeights": [
+        {
+          "pollster": "Marist",
+          "population": "registered_voters",
+          "fieldEndAt": "2026-09-20T23:59:59.999Z",
+          "weight": 0.5493493254963753
+        },
+        {
+          "pollster": "Emerson",
+          "population": "likely_voters",
+          "fieldEndAt": "2026-09-14T23:59:59.999Z",
+          "weight": 0.4506506745036248
+        }
+      ],
+      "rvWeight": 0.5493493254963753,
+      "unallocatedPoints": 4.450650674503625,
+      "ordinaryRange": [
+        0.5085429885597971,
+        0.8178872662099289
+      ],
+      "scenarios": [
+        {
+          "omittedCycle": null,
+          "rvShift": -3,
+          "roundingShift": -1,
+          "marginPoints": 1.098698650992751,
+          "valuation": 0.5275435102636415
+        },
+        {
+          "omittedCycle": null,
+          "rvShift": -3,
+          "roundingShift": 0,
+          "marginPoints": 2.098698650992751,
+          "valuation": 0.5898771401159302
+        },
+        {
+          "omittedCycle": null,
+          "rvShift": -3,
+          "roundingShift": 1,
+          "marginPoints": 3.098698650992751,
+          "valuation": 0.6484588058726712
+        },
+        {
+          "omittedCycle": null,
+          "rvShift": 0,
+          "roundingShift": -1,
+          "marginPoints": 2.7467466274818766,
+          "valuation": 0.6283781345421448
+        },
+        {
+          "omittedCycle": null,
+          "rvShift": 0,
+          "roundingShift": 0,
+          "marginPoints": 3.7467466274818766,
+          "valuation": 0.6836666559244554
+        },
+        {
+          "omittedCycle": null,
+          "rvShift": 0,
+          "roundingShift": 1,
+          "marginPoints": 4.746746627481876,
+          "valuation": 0.73299954505753
+        },
+        {
+          "omittedCycle": null,
+          "rvShift": 3,
+          "roundingShift": -1,
+          "marginPoints": 4.394794603971002,
+          "valuation": 0.7163601853333158
+        },
+        {
+          "omittedCycle": null,
+          "rvShift": 3,
+          "roundingShift": 0,
+          "marginPoints": 5.394794603971002,
+          "valuation": 0.7615283429015304
+        },
+        {
+          "omittedCycle": null,
+          "rvShift": 3,
+          "roundingShift": 1,
+          "marginPoints": 6.394794603971002,
+          "valuation": 0.8002105841268575
+        },
+        {
+          "omittedCycle": 1998,
+          "rvShift": -3,
+          "roundingShift": -1,
+          "marginPoints": 1.098698650992751,
+          "valuation": 0.5109417416404936
+        },
+        {
+          "omittedCycle": 1998,
+          "rvShift": -3,
+          "roundingShift": 0,
+          "marginPoints": 2.098698650992751,
+          "valuation": 0.5757552200090467
+        },
+        {
+          "omittedCycle": 1998,
+          "rvShift": -3,
+          "roundingShift": 1,
+          "marginPoints": 3.098698650992751,
+          "valuation": 0.6370556713963664
+        },
+        {
+          "omittedCycle": 1998,
+          "rvShift": 0,
+          "roundingShift": -1,
+          "marginPoints": 2.7467466274818766,
+          "valuation": 0.616009079293399
+        },
+        {
+          "omittedCycle": 1998,
+          "rvShift": 0,
+          "roundingShift": 0,
+          "marginPoints": 3.7467466274818766,
+          "valuation": 0.6740204385812362
+        },
+        {
+          "omittedCycle": 1998,
+          "rvShift": 0,
+          "roundingShift": 1,
+          "marginPoints": 4.746746627481876,
+          "valuation": 0.7258900504241532
+        },
+        {
+          "omittedCycle": 1998,
+          "rvShift": 3,
+          "roundingShift": -1,
+          "marginPoints": 4.394794603971002,
+          "valuation": 0.7083909557190396
+        },
+        {
+          "omittedCycle": 1998,
+          "rvShift": 3,
+          "roundingShift": 0,
+          "marginPoints": 5.394794603971002,
+          "valuation": 0.7558851016224932
+        },
+        {
+          "omittedCycle": 1998,
+          "rvShift": 3,
+          "roundingShift": 1,
+          "marginPoints": 6.394794603971002,
+          "valuation": 0.7964946229651283
+        },
+        {
+          "omittedCycle": 2000,
+          "rvShift": -3,
+          "roundingShift": -1,
+          "marginPoints": 1.098698650992751,
+          "valuation": 0.5273389539493957
+        },
+        {
+          "omittedCycle": 2000,
+          "rvShift": -3,
+          "roundingShift": 0,
+          "marginPoints": 2.098698650992751,
+          "valuation": 0.5907444329071824
+        },
+        {
+          "omittedCycle": 2000,
+          "rvShift": -3,
+          "roundingShift": 1,
+          "marginPoints": 3.098698650992751,
+          "valuation": 0.6502401165844511
+        },
+        {
+          "omittedCycle": 2000,
+          "rvShift": 0,
+          "roundingShift": -1,
+          "marginPoints": 2.7467466274818766,
+          "valuation": 0.6298609425958522
+        },
+        {
+          "omittedCycle": 2000,
+          "rvShift": 0,
+          "roundingShift": 0,
+          "marginPoints": 3.7467466274818766,
+          "valuation": 0.6859223659300314
+        },
+        {
+          "omittedCycle": 2000,
+          "rvShift": 0,
+          "roundingShift": 1,
+          "marginPoints": 4.746746627481876,
+          "valuation": 0.7357842367386483
+        },
+        {
+          "omittedCycle": 2000,
+          "rvShift": 3,
+          "roundingShift": -1,
+          "marginPoints": 4.394794603971002,
+          "valuation": 0.7189869625726082
+        },
+        {
+          "omittedCycle": 2000,
+          "rvShift": 3,
+          "roundingShift": 0,
+          "marginPoints": 5.394794603971002,
+          "valuation": 0.7645267460137932
+        },
+        {
+          "omittedCycle": 2000,
+          "rvShift": 3,
+          "roundingShift": 1,
+          "marginPoints": 6.394794603971002,
+          "valuation": 0.8033625808679346
+        },
+        {
+          "omittedCycle": 2002,
+          "rvShift": -3,
+          "roundingShift": -1,
+          "marginPoints": 1.098698650992751,
+          "valuation": 0.5176802145382887
+        },
+        {
+          "omittedCycle": 2002,
+          "rvShift": -3,
+          "roundingShift": 0,
+          "marginPoints": 2.098698650992751,
+          "valuation": 0.580699484938182
+        },
+        {
+          "omittedCycle": 2002,
+          "rvShift": -3,
+          "roundingShift": 1,
+          "marginPoints": 3.098698650992751,
+          "valuation": 0.6402163709262314
+        },
+        {
+          "omittedCycle": 2002,
+          "rvShift": 0,
+          "roundingShift": -1,
+          "marginPoints": 2.7467466274818766,
+          "valuation": 0.6197847237249547
+        },
+        {
+          "omittedCycle": 2002,
+          "rvShift": 0,
+          "roundingShift": 0,
+          "marginPoints": 3.7467466274818766,
+          "valuation": 0.6761123723599928
+        },
+        {
+          "omittedCycle": 2002,
+          "rvShift": 0,
+          "roundingShift": 1,
+          "marginPoints": 4.746746627481876,
+          "valuation": 0.7265544986299515
+        },
+        {
+          "omittedCycle": 2002,
+          "rvShift": 3,
+          "roundingShift": -1,
+          "marginPoints": 4.394794603971002,
+          "valuation": 0.7095231446837026
+        },
+        {
+          "omittedCycle": 2002,
+          "rvShift": 3,
+          "roundingShift": 0,
+          "marginPoints": 5.394794603971002,
+          "valuation": 0.7557942591561557
+        },
+        {
+          "omittedCycle": 2002,
+          "rvShift": 3,
+          "roundingShift": 1,
+          "marginPoints": 6.394794603971002,
+          "valuation": 0.795509614350328
+        },
+        {
+          "omittedCycle": 2004,
+          "rvShift": -3,
+          "roundingShift": -1,
+          "marginPoints": 1.098698650992751,
+          "valuation": 0.5234982856998337
+        },
+        {
+          "omittedCycle": 2004,
+          "rvShift": -3,
+          "roundingShift": 0,
+          "marginPoints": 2.098698650992751,
+          "valuation": 0.5858754063816597
+        },
+        {
+          "omittedCycle": 2004,
+          "rvShift": -3,
+          "roundingShift": 1,
+          "marginPoints": 3.098698650992751,
+          "valuation": 0.6446371558806273
+        },
+        {
+          "omittedCycle": 2004,
+          "rvShift": 0,
+          "roundingShift": -1,
+          "marginPoints": 2.7467466274818766,
+          "valuation": 0.6244790941413554
+        },
+        {
+          "omittedCycle": 2004,
+          "rvShift": 0,
+          "roundingShift": 0,
+          "marginPoints": 3.7467466274818766,
+          "valuation": 0.6800212068551806
+        },
+        {
+          "omittedCycle": 2004,
+          "rvShift": 0,
+          "roundingShift": 1,
+          "marginPoints": 4.746746627481876,
+          "valuation": 0.7296903352539308
+        },
+        {
+          "omittedCycle": 2004,
+          "rvShift": 3,
+          "roundingShift": -1,
+          "marginPoints": 4.394794603971002,
+          "valuation": 0.7129256977253432
+        },
+        {
+          "omittedCycle": 2004,
+          "rvShift": 3,
+          "roundingShift": 0,
+          "marginPoints": 5.394794603971002,
+          "valuation": 0.7584626114278423
+        },
+        {
+          "omittedCycle": 2004,
+          "rvShift": 3,
+          "roundingShift": 1,
+          "marginPoints": 6.394794603971002,
+          "valuation": 0.7975340484921722
+        },
+        {
+          "omittedCycle": 2006,
+          "rvShift": -3,
+          "roundingShift": -1,
+          "marginPoints": 1.098698650992751,
+          "valuation": 0.5134863370522598
+        },
+        {
+          "omittedCycle": 2006,
+          "rvShift": -3,
+          "roundingShift": 0,
+          "marginPoints": 2.098698650992751,
+          "valuation": 0.5761303827516006
+        },
+        {
+          "omittedCycle": 2006,
+          "rvShift": -3,
+          "roundingShift": 1,
+          "marginPoints": 3.098698650992751,
+          "valuation": 0.635473373295419
+        },
+        {
+          "omittedCycle": 2006,
+          "rvShift": 0,
+          "roundingShift": -1,
+          "marginPoints": 2.7467466274818766,
+          "valuation": 0.6150794417497286
+        },
+        {
+          "omittedCycle": 2006,
+          "rvShift": 0,
+          "roundingShift": 0,
+          "marginPoints": 3.7467466274818766,
+          "valuation": 0.6713643649947645
+        },
+        {
+          "omittedCycle": 2006,
+          "rvShift": 0,
+          "roundingShift": 1,
+          "marginPoints": 4.746746627481876,
+          "valuation": 0.7219460621378472
+        },
+        {
+          "omittedCycle": 2006,
+          "rvShift": 3,
+          "roundingShift": -1,
+          "marginPoints": 4.394794603971002,
+          "valuation": 0.7048471032691703
+        },
+        {
+          "omittedCycle": 2006,
+          "rvShift": 3,
+          "roundingShift": 0,
+          "marginPoints": 5.394794603971002,
+          "valuation": 0.7513545632404365
+        },
+        {
+          "omittedCycle": 2006,
+          "rvShift": 3,
+          "roundingShift": 1,
+          "marginPoints": 6.394794603971002,
+          "valuation": 0.7914155436146456
+        },
+        {
+          "omittedCycle": 2008,
+          "rvShift": -3,
+          "roundingShift": -1,
+          "marginPoints": 1.098698650992751,
+          "valuation": 0.5188506346999298
+        },
+        {
+          "omittedCycle": 2008,
+          "rvShift": -3,
+          "roundingShift": 0,
+          "marginPoints": 2.098698650992751,
+          "valuation": 0.5807315788423727
+        },
+        {
+          "omittedCycle": 2008,
+          "rvShift": -3,
+          "roundingShift": 1,
+          "marginPoints": 3.098698650992751,
+          "valuation": 0.6392309526446525
+        },
+        {
+          "omittedCycle": 2008,
+          "rvShift": 0,
+          "roundingShift": -1,
+          "marginPoints": 2.7467466274818766,
+          "valuation": 0.6191376763197507
+        },
+        {
+          "omittedCycle": 2008,
+          "rvShift": 0,
+          "roundingShift": 0,
+          "marginPoints": 3.7467466274818766,
+          "valuation": 0.6745720761051612
+        },
+        {
+          "omittedCycle": 2008,
+          "rvShift": 0,
+          "roundingShift": 1,
+          "marginPoints": 4.746746627481876,
+          "valuation": 0.7243517818016522
+        },
+        {
+          "omittedCycle": 2008,
+          "rvShift": 3,
+          "roundingShift": -1,
+          "marginPoints": 4.394794603971002,
+          "valuation": 0.7075258248088224
+        },
+        {
+          "omittedCycle": 2008,
+          "rvShift": 3,
+          "roundingShift": 0,
+          "marginPoints": 5.394794603971002,
+          "valuation": 0.7532913909113582
+        },
+        {
+          "omittedCycle": 2008,
+          "rvShift": 3,
+          "roundingShift": 1,
+          "marginPoints": 6.394794603971002,
+          "valuation": 0.7927283140602708
+        },
+        {
+          "omittedCycle": 2010,
+          "rvShift": -3,
+          "roundingShift": -1,
+          "marginPoints": 1.098698650992751,
+          "valuation": 0.5270495529305194
+        },
+        {
+          "omittedCycle": 2010,
+          "rvShift": -3,
+          "roundingShift": 0,
+          "marginPoints": 2.098698650992751,
+          "valuation": 0.589181081101455
+        },
+        {
+          "omittedCycle": 2010,
+          "rvShift": -3,
+          "roundingShift": 1,
+          "marginPoints": 3.098698650992751,
+          "valuation": 0.6476087156715666
+        },
+        {
+          "omittedCycle": 2010,
+          "rvShift": 0,
+          "roundingShift": -1,
+          "marginPoints": 2.7467466274818766,
+          "valuation": 0.6275759899224956
+        },
+        {
+          "omittedCycle": 2010,
+          "rvShift": 0,
+          "roundingShift": 0,
+          "marginPoints": 3.7467466274818766,
+          "valuation": 0.682747089185795
+        },
+        {
+          "omittedCycle": 2010,
+          "rvShift": 0,
+          "roundingShift": 1,
+          "marginPoints": 4.746746627481876,
+          "valuation": 0.7320201362154534
+        },
+        {
+          "omittedCycle": 2010,
+          "rvShift": 3,
+          "roundingShift": -1,
+          "marginPoints": 4.394794603971002,
+          "valuation": 0.7153954991967848
+        },
+        {
+          "omittedCycle": 2010,
+          "rvShift": 3,
+          "roundingShift": 0,
+          "marginPoints": 5.394794603971002,
+          "valuation": 0.7605383539232048
+        },
+        {
+          "omittedCycle": 2010,
+          "rvShift": 3,
+          "roundingShift": 1,
+          "marginPoints": 6.394794603971002,
+          "valuation": 0.7992401446759093
+        },
+        {
+          "omittedCycle": 2012,
+          "rvShift": -3,
+          "roundingShift": -1,
+          "marginPoints": 1.098698650992751,
+          "valuation": 0.5085429885597971
+        },
+        {
+          "omittedCycle": 2012,
+          "rvShift": -3,
+          "roundingShift": 0,
+          "marginPoints": 2.098698650992751,
+          "valuation": 0.5709573010964297
+        },
+        {
+          "omittedCycle": 2012,
+          "rvShift": -3,
+          "roundingShift": 1,
+          "marginPoints": 3.098698650992751,
+          "valuation": 0.6302739203612551
+        },
+        {
+          "omittedCycle": 2012,
+          "rvShift": 0,
+          "roundingShift": -1,
+          "marginPoints": 2.7467466274818766,
+          "valuation": 0.609866431882514
+        },
+        {
+          "omittedCycle": 2012,
+          "rvShift": 0,
+          "roundingShift": 0,
+          "marginPoints": 3.7467466274818766,
+          "valuation": 0.6662503847320196
+        },
+        {
+          "omittedCycle": 2012,
+          "rvShift": 0,
+          "roundingShift": 1,
+          "marginPoints": 4.746746627481876,
+          "valuation": 0.7170965646676619
+        },
+        {
+          "omittedCycle": 2012,
+          "rvShift": 3,
+          "roundingShift": -1,
+          "marginPoints": 4.394794603971002,
+          "valuation": 0.6998883981289568
+        },
+        {
+          "omittedCycle": 2012,
+          "rvShift": 3,
+          "roundingShift": 0,
+          "marginPoints": 5.394794603971002,
+          "valuation": 0.7467430162843003
+        },
+        {
+          "omittedCycle": 2012,
+          "rvShift": 3,
+          "roundingShift": 1,
+          "marginPoints": 6.394794603971002,
+          "valuation": 0.7872369899720135
+        },
+        {
+          "omittedCycle": 2014,
+          "rvShift": -3,
+          "roundingShift": -1,
+          "marginPoints": 1.098698650992751,
+          "valuation": 0.5404743348046863
+        },
+        {
+          "omittedCycle": 2014,
+          "rvShift": -3,
+          "roundingShift": 0,
+          "marginPoints": 2.098698650992751,
+          "valuation": 0.6015129942691634
+        },
+        {
+          "omittedCycle": 2014,
+          "rvShift": -3,
+          "roundingShift": 1,
+          "marginPoints": 3.098698650992751,
+          "valuation": 0.6585487844047726
+        },
+        {
+          "omittedCycle": 2014,
+          "rvShift": 0,
+          "roundingShift": -1,
+          "marginPoints": 2.7467466274818766,
+          "valuation": 0.6390305142176123
+        },
+        {
+          "omittedCycle": 2014,
+          "rvShift": 0,
+          "roundingShift": 0,
+          "marginPoints": 3.7467466274818766,
+          "valuation": 0.6926975299245839
+        },
+        {
+          "omittedCycle": 2014,
+          "rvShift": 0,
+          "roundingShift": 1,
+          "marginPoints": 4.746746627481876,
+          "valuation": 0.7404138802729904
+        },
+        {
+          "omittedCycle": 2014,
+          "rvShift": 3,
+          "roundingShift": -1,
+          "marginPoints": 4.394794603971002,
+          "valuation": 0.7243348226917964
+        },
+        {
+          "omittedCycle": 2014,
+          "rvShift": 3,
+          "roundingShift": 0,
+          "marginPoints": 5.394794603971002,
+          "valuation": 0.7679532891284582
+        },
+        {
+          "omittedCycle": 2014,
+          "rvShift": 3,
+          "roundingShift": 1,
+          "marginPoints": 6.394794603971002,
+          "valuation": 0.8052540990622609
+        },
+        {
+          "omittedCycle": 2016,
+          "rvShift": -3,
+          "roundingShift": -1,
+          "marginPoints": 1.098698650992751,
+          "valuation": 0.5338961425938193
+        },
+        {
+          "omittedCycle": 2016,
+          "rvShift": -3,
+          "roundingShift": 0,
+          "marginPoints": 2.098698650992751,
+          "valuation": 0.5952864871869412
+        },
+        {
+          "omittedCycle": 2016,
+          "rvShift": -3,
+          "roundingShift": 1,
+          "marginPoints": 3.098698650992751,
+          "valuation": 0.6528469443095478
+        },
+        {
+          "omittedCycle": 2016,
+          "rvShift": 0,
+          "roundingShift": -1,
+          "marginPoints": 2.7467466274818766,
+          "valuation": 0.6331280863972091
+        },
+        {
+          "omittedCycle": 2016,
+          "rvShift": 0,
+          "roundingShift": 0,
+          "marginPoints": 3.7467466274818766,
+          "valuation": 0.6873984039690957
+        },
+        {
+          "omittedCycle": 2016,
+          "rvShift": 0,
+          "roundingShift": 1,
+          "marginPoints": 4.746746627481876,
+          "valuation": 0.7357849426771129
+        },
+        {
+          "omittedCycle": 2016,
+          "rvShift": 3,
+          "roundingShift": -1,
+          "marginPoints": 4.394794603971002,
+          "valuation": 0.7194663487296105
+        },
+        {
+          "omittedCycle": 2016,
+          "rvShift": 3,
+          "roundingShift": 0,
+          "marginPoints": 5.394794603971002,
+          "valuation": 0.7637659457278626
+        },
+        {
+          "omittedCycle": 2016,
+          "rvShift": 3,
+          "roundingShift": 1,
+          "marginPoints": 6.394794603971002,
+          "valuation": 0.8017249778261065
+        },
+        {
+          "omittedCycle": 2018,
+          "rvShift": -3,
+          "roundingShift": -1,
+          "marginPoints": 1.098698650992751,
+          "valuation": 0.5333464754004349
+        },
+        {
+          "omittedCycle": 2018,
+          "rvShift": -3,
+          "roundingShift": 0,
+          "marginPoints": 2.098698650992751,
+          "valuation": 0.5940453559250819
+        },
+        {
+          "omittedCycle": 2018,
+          "rvShift": -3,
+          "roundingShift": 1,
+          "marginPoints": 3.098698650992751,
+          "valuation": 0.6510396615722
+        },
+        {
+          "omittedCycle": 2018,
+          "rvShift": 0,
+          "roundingShift": -1,
+          "marginPoints": 2.7467466274818766,
+          "valuation": 0.6315028765521111
+        },
+        {
+          "omittedCycle": 2018,
+          "rvShift": 0,
+          "roundingShift": 0,
+          "marginPoints": 3.7467466274818766,
+          "valuation": 0.6853093757603672
+        },
+        {
+          "omittedCycle": 2018,
+          "rvShift": 0,
+          "roundingShift": 1,
+          "marginPoints": 4.746746627481876,
+          "valuation": 0.7334009182834091
+        },
+        {
+          "omittedCycle": 2018,
+          "rvShift": 3,
+          "roundingShift": -1,
+          "marginPoints": 4.394794603971002,
+          "valuation": 0.7171670220315745
+        },
+        {
+          "omittedCycle": 2018,
+          "rvShift": 3,
+          "roundingShift": 0,
+          "marginPoints": 5.394794603971002,
+          "valuation": 0.7612772520995528
+        },
+        {
+          "omittedCycle": 2018,
+          "rvShift": 3,
+          "roundingShift": 1,
+          "marginPoints": 6.394794603971002,
+          "valuation": 0.799190117385165
+        },
+        {
+          "omittedCycle": 2020,
+          "rvShift": -3,
+          "roundingShift": -1,
+          "marginPoints": 1.098698650992751,
+          "valuation": 0.5497454622021002
+        },
+        {
+          "omittedCycle": 2020,
+          "rvShift": -3,
+          "roundingShift": 0,
+          "marginPoints": 2.098698650992751,
+          "valuation": 0.6116391476443761
+        },
+        {
+          "omittedCycle": 2020,
+          "rvShift": -3,
+          "roundingShift": 1,
+          "marginPoints": 3.098698650992751,
+          "valuation": 0.669055847333175
+        },
+        {
+          "omittedCycle": 2020,
+          "rvShift": 0,
+          "roundingShift": -1,
+          "marginPoints": 2.7467466274818766,
+          "valuation": 0.6494577858045774
+        },
+        {
+          "omittedCycle": 2020,
+          "rvShift": 0,
+          "roundingShift": 0,
+          "marginPoints": 3.7467466274818766,
+          "valuation": 0.7032052062388195
+        },
+        {
+          "omittedCycle": 2020,
+          "rvShift": 0,
+          "roundingShift": 1,
+          "marginPoints": 4.746746627481876,
+          "valuation": 0.7505944455151476
+        },
+        {
+          "omittedCycle": 2020,
+          "rvShift": 3,
+          "roundingShift": -1,
+          "marginPoints": 4.394794603971002,
+          "valuation": 0.7346711537189707
+        },
+        {
+          "omittedCycle": 2020,
+          "rvShift": 3,
+          "roundingShift": 0,
+          "marginPoints": 5.394794603971002,
+          "valuation": 0.7777512084407177
+        },
+        {
+          "omittedCycle": 2020,
+          "rvShift": 3,
+          "roundingShift": 1,
+          "marginPoints": 6.394794603971002,
+          "valuation": 0.8142803382976062
+        },
+        {
+          "omittedCycle": 2022,
+          "rvShift": -3,
+          "roundingShift": -1,
+          "marginPoints": 1.098698650992751,
+          "valuation": 0.5523996450125188
+        },
+        {
+          "omittedCycle": 2022,
+          "rvShift": -3,
+          "roundingShift": 0,
+          "marginPoints": 2.098698650992751,
+          "valuation": 0.6149007695785402
+        },
+        {
+          "omittedCycle": 2022,
+          "rvShift": -3,
+          "roundingShift": 1,
+          "marginPoints": 3.098698650992751,
+          "valuation": 0.6727185351299718
+        },
+        {
+          "omittedCycle": 2022,
+          "rvShift": 0,
+          "roundingShift": -1,
+          "marginPoints": 2.7467466274818766,
+          "valuation": 0.6530043145014782
+        },
+        {
+          "omittedCycle": 2022,
+          "rvShift": 0,
+          "roundingShift": 0,
+          "marginPoints": 3.7467466274818766,
+          "valuation": 0.7070111571374471
+        },
+        {
+          "omittedCycle": 2022,
+          "rvShift": 0,
+          "roundingShift": 1,
+          "marginPoints": 4.746746627481876,
+          "valuation": 0.7544546872286396
+        },
+        {
+          "omittedCycle": 2022,
+          "rvShift": 3,
+          "roundingShift": -1,
+          "marginPoints": 4.394794603971002,
+          "valuation": 0.7385336997402306
+        },
+        {
+          "omittedCycle": 2022,
+          "rvShift": 3,
+          "roundingShift": 0,
+          "marginPoints": 5.394794603971002,
+          "valuation": 0.78155419762373
+        },
+        {
+          "omittedCycle": 2022,
+          "rvShift": 3,
+          "roundingShift": 1,
+          "marginPoints": 6.394794603971002,
+          "valuation": 0.8178872662099289
+        }
+      ],
+      "centralEstimate": 0.6836666559244554,
+      "severeOpponentAllocationStress": 0.26003628222283615,
+      "estimateMeaning": "Settlement-value research under historical error and declared sensitivity; not calibrated population transport or a short-term return forecast.",
+      "executionAuthority": false,
+      "profitabilityEstablished": false
+    },
+    {
+      "state": "IA",
+      "marketId": "260",
+      "exchangeId": "949",
+      "candidates": {
+        "democratic": "Josh Turek",
+        "republican": "Ashley Hinson",
+        "libertarian": "Thomas Laehn"
+      },
+      "ballotSource": "iowa-official.html",
+      "polls": [
+        {
+          "pollster": "Marist",
+          "population": "registered_voters",
+          "democratic": 50,
+          "republican": 42,
+          "unallocated": 8,
+          "fieldEndDate": "2026-09-20",
+          "fieldEndAt": "2026-09-20T23:59:59.999Z",
+          "file": "iowa-marist.html"
+        },
+        {
+          "pollster": "Emerson",
+          "population": "likely_voters",
+          "democratic": 45,
+          "republican": 50,
+          "unallocated": 5,
+          "fieldEndDate": "2026-09-01",
+          "fieldEndAt": "2026-09-01T23:59:59.999Z",
+          "file": "iowa-emerson.html"
+        }
+      ],
+      "id": "ia-democratic-primary-polls-20261005-v2",
+      "at": "2026-10-05T18:44:14.878Z",
+      "expiresAt": "2026-10-06T00:44:14.878Z",
+      "sources": [
+        {
+          "file": "iowa-emerson.html",
+          "url": "https://emersoncollegepolling.com/iowa-2026-poll-hinson-leads-turek/",
+          "observedAt": "2026-10-05T11:27:01.058Z",
+          "bytes": 106076,
+          "contentHash": "89cf158976034ef10ce837d5117c7d1898c9fd0b81abf02e457a06f4e3025d8f",
+          "contentType": "text/html; charset=UTF-8"
+        },
+        {
+          "file": "iowa-marist.html",
+          "url": "https://maristpoll.marist.edu/polls/2026-midterm-elections-in-iowa-september-2026/",
+          "observedAt": "2026-10-05T11:27:01.205Z",
+          "bytes": 46252,
+          "contentHash": "874d1d64d7860d2a3ce689f24aac86677d129e24c2c43a944022bac85a2e9a13",
+          "contentType": "text/html; charset=UTF-8"
+        },
+        {
+          "file": "iowa-official.html",
+          "url": "https://elections.marshallcountyia.gov/elections/info/2026_general_election_2026_11_03/",
+          "observedAt": "2026-10-05T11:27:01.917Z",
+          "bytes": 57562,
+          "contentHash": "70d1a9837963cf911cb56bd05de74838b2fbb807440c83320f1c529394489dc5",
+          "contentType": "text/html; charset=UTF-8"
+        }
+      ],
+      "marginPoints": 3.473908713853252,
+      "pollWeights": [
+        {
+          "pollster": "Marist",
+          "population": "registered_voters",
+          "fieldEndAt": "2026-09-20T23:59:59.999Z",
+          "weight": 0.6518391318348655
+        },
+        {
+          "pollster": "Emerson",
+          "population": "likely_voters",
+          "fieldEndAt": "2026-09-01T23:59:59.999Z",
+          "weight": 0.3481608681651344
+        }
+      ],
+      "rvWeight": 0.6518391318348655,
+      "unallocatedPoints": 6.955517395504597,
+      "ordinaryRange": [
+        0.47171780892445436,
+        0.8190310240244754
+      ],
+      "scenarios": [
+        {
+          "omittedCycle": null,
+          "rvShift": -3,
+          "roundingShift": -1,
+          "marginPoints": 0.5183913183486553,
+          "valuation": 0.4904449487263103
+        },
+        {
+          "omittedCycle": null,
+          "rvShift": -3,
+          "roundingShift": 0,
+          "marginPoints": 1.5183913183486553,
+          "valuation": 0.5540389341173142
+        },
+        {
+          "omittedCycle": null,
+          "rvShift": -3,
+          "roundingShift": 1,
+          "marginPoints": 2.5183913183486553,
+          "valuation": 0.6150228219047212
+        },
+        {
+          "omittedCycle": null,
+          "rvShift": 0,
+          "roundingShift": -1,
+          "marginPoints": 2.473908713853252,
+          "valuation": 0.6123932455272839
+        },
+        {
+          "omittedCycle": null,
+          "rvShift": 0,
+          "roundingShift": 0,
+          "marginPoints": 3.473908713853252,
+          "valuation": 0.6691366552360755
+        },
+        {
+          "omittedCycle": null,
+          "rvShift": 0,
+          "roundingShift": 1,
+          "marginPoints": 4.473908713853252,
+          "valuation": 0.7201700930117986
+        },
+        {
+          "omittedCycle": null,
+          "rvShift": 3,
+          "roundingShift": -1,
+          "marginPoints": 4.429426109357848,
+          "valuation": 0.7180328792332847
+        },
+        {
+          "omittedCycle": null,
+          "rvShift": 3,
+          "roundingShift": 0,
+          "marginPoints": 5.429426109357848,
+          "valuation": 0.7629756798931672
+        },
+        {
+          "omittedCycle": null,
+          "rvShift": 3,
+          "roundingShift": 1,
+          "marginPoints": 6.429426109357848,
+          "valuation": 0.8014367471335703
+        },
+        {
+          "omittedCycle": 1998,
+          "rvShift": -3,
+          "roundingShift": -1,
+          "marginPoints": 0.5183913183486553,
+          "valuation": 0.4726269586269107
+        },
+        {
+          "omittedCycle": 1998,
+          "rvShift": -3,
+          "roundingShift": 0,
+          "marginPoints": 1.5183913183486553,
+          "valuation": 0.5384300267472727
+        },
+        {
+          "omittedCycle": 1998,
+          "rvShift": -3,
+          "roundingShift": 1,
+          "marginPoints": 2.5183913183486553,
+          "valuation": 0.6020296846780178
+        },
+        {
+          "omittedCycle": 1998,
+          "rvShift": 0,
+          "roundingShift": -1,
+          "marginPoints": 2.473908713853252,
+          "valuation": 0.5992791332462368
+        },
+        {
+          "omittedCycle": 1998,
+          "rvShift": 0,
+          "roundingShift": 0,
+          "marginPoints": 3.473908713853252,
+          "valuation": 0.6587571898937116
+        },
+        {
+          "omittedCycle": 1998,
+          "rvShift": 0,
+          "roundingShift": 1,
+          "marginPoints": 4.473908713853252,
+          "valuation": 0.7123976413573215
+        },
+        {
+          "omittedCycle": 1998,
+          "rvShift": 3,
+          "roundingShift": -1,
+          "marginPoints": 4.429426109357848,
+          "valuation": 0.7101500278486574
+        },
+        {
+          "omittedCycle": 1998,
+          "rvShift": 3,
+          "roundingShift": 0,
+          "marginPoints": 5.429426109357848,
+          "valuation": 0.757406168767702
+        },
+        {
+          "omittedCycle": 1998,
+          "rvShift": 3,
+          "roundingShift": 1,
+          "marginPoints": 6.429426109357848,
+          "valuation": 0.7977799393853602
+        },
+        {
+          "omittedCycle": 2000,
+          "rvShift": -3,
+          "roundingShift": -1,
+          "marginPoints": 0.5183913183486553,
+          "valuation": 0.48958678888520346
+        },
+        {
+          "omittedCycle": 2000,
+          "rvShift": -3,
+          "roundingShift": 0,
+          "marginPoints": 1.5183913183486553,
+          "valuation": 0.5542973265006939
+        },
+        {
+          "omittedCycle": 2000,
+          "rvShift": -3,
+          "roundingShift": 1,
+          "marginPoints": 2.5183913183486553,
+          "valuation": 0.6162978581939237
+        },
+        {
+          "omittedCycle": 2000,
+          "rvShift": 0,
+          "roundingShift": -1,
+          "marginPoints": 2.473908713853252,
+          "valuation": 0.6136265972732836
+        },
+        {
+          "omittedCycle": 2000,
+          "rvShift": 0,
+          "roundingShift": 0,
+          "marginPoints": 3.473908713853252,
+          "valuation": 0.6712049663727337
+        },
+        {
+          "omittedCycle": 2000,
+          "rvShift": 0,
+          "roundingShift": 1,
+          "marginPoints": 4.473908713853252,
+          "valuation": 0.7228350143241825
+        },
+        {
+          "omittedCycle": 2000,
+          "rvShift": 3,
+          "roundingShift": -1,
+          "marginPoints": 4.429426109357848,
+          "valuation": 0.7206765439836514
+        },
+        {
+          "omittedCycle": 2000,
+          "rvShift": 3,
+          "roundingShift": 0,
+          "marginPoints": 5.429426109357848,
+          "valuation": 0.7659828184534505
+        },
+        {
+          "omittedCycle": 2000,
+          "rvShift": 3,
+          "roundingShift": 1,
+          "marginPoints": 6.429426109357848,
+          "valuation": 0.8045906857844239
+        },
+        {
+          "omittedCycle": 2002,
+          "rvShift": -3,
+          "roundingShift": -1,
+          "marginPoints": 0.5183913183486553,
+          "valuation": 0.48033382560664684
+        },
+        {
+          "omittedCycle": 2002,
+          "rvShift": -3,
+          "roundingShift": 0,
+          "marginPoints": 1.5183913183486553,
+          "valuation": 0.5444266559873255
+        },
+        {
+          "omittedCycle": 2002,
+          "rvShift": -3,
+          "roundingShift": 1,
+          "marginPoints": 2.5183913183486553,
+          "valuation": 0.6062133293848784
+        },
+        {
+          "omittedCycle": 2002,
+          "rvShift": 0,
+          "roundingShift": -1,
+          "marginPoints": 2.473908713853252,
+          "valuation": 0.603542870130635
+        },
+        {
+          "omittedCycle": 2002,
+          "rvShift": 0,
+          "roundingShift": 0,
+          "marginPoints": 3.473908713853252,
+          "valuation": 0.6612874228393147
+        },
+        {
+          "omittedCycle": 2002,
+          "rvShift": 0,
+          "roundingShift": 1,
+          "marginPoints": 4.473908713853252,
+          "valuation": 0.7134212589046706
+        },
+        {
+          "omittedCycle": 2002,
+          "rvShift": 3,
+          "roundingShift": -1,
+          "marginPoints": 4.429426109357848,
+          "valuation": 0.711234449565669
+        },
+        {
+          "omittedCycle": 2002,
+          "rvShift": 3,
+          "roundingShift": 0,
+          "marginPoints": 5.429426109357848,
+          "valuation": 0.7572788940711555
+        },
+        {
+          "omittedCycle": 2002,
+          "rvShift": 3,
+          "roundingShift": 1,
+          "marginPoints": 6.429426109357848,
+          "valuation": 0.7967696555322392
+        },
+        {
+          "omittedCycle": 2004,
+          "rvShift": -3,
+          "roundingShift": -1,
+          "marginPoints": 0.5183913183486553,
+          "valuation": 0.4864427774631924
+        },
+        {
+          "omittedCycle": 2004,
+          "rvShift": -3,
+          "roundingShift": 0,
+          "marginPoints": 1.5183913183486553,
+          "valuation": 0.5499940758025973
+        },
+        {
+          "omittedCycle": 2004,
+          "rvShift": -3,
+          "roundingShift": 1,
+          "marginPoints": 2.5183913183486553,
+          "valuation": 0.6110814228179874
+        },
+        {
+          "omittedCycle": 2004,
+          "rvShift": 0,
+          "roundingShift": -1,
+          "marginPoints": 2.473908713853252,
+          "valuation": 0.6084443550440697
+        },
+        {
+          "omittedCycle": 2004,
+          "rvShift": 0,
+          "roundingShift": 0,
+          "marginPoints": 3.473908713853252,
+          "valuation": 0.6654121647656942
+        },
+        {
+          "omittedCycle": 2004,
+          "rvShift": 0,
+          "roundingShift": 1,
+          "marginPoints": 4.473908713853252,
+          "valuation": 0.7167632135515114
+        },
+        {
+          "omittedCycle": 2004,
+          "rvShift": 3,
+          "roundingShift": -1,
+          "marginPoints": 4.429426109357848,
+          "valuation": 0.7146104342097612
+        },
+        {
+          "omittedCycle": 2004,
+          "rvShift": 3,
+          "roundingShift": 0,
+          "marginPoints": 5.429426109357848,
+          "valuation": 0.7599232777240746
+        },
+        {
+          "omittedCycle": 2004,
+          "rvShift": 3,
+          "roundingShift": 1,
+          "marginPoints": 6.429426109357848,
+          "valuation": 0.798773677223775
+        },
+        {
+          "omittedCycle": 2006,
+          "rvShift": -3,
+          "roundingShift": -1,
+          "marginPoints": 0.5183913183486553,
+          "valuation": 0.47643933120102444
+        },
+        {
+          "omittedCycle": 2006,
+          "rvShift": -3,
+          "roundingShift": 0,
+          "marginPoints": 1.5183913183486553,
+          "valuation": 0.5400519906157869
+        },
+        {
+          "omittedCycle": 2006,
+          "rvShift": -3,
+          "roundingShift": 1,
+          "marginPoints": 2.5183913183486553,
+          "valuation": 0.6015461319980037
+        },
+        {
+          "omittedCycle": 2006,
+          "rvShift": 0,
+          "roundingShift": -1,
+          "marginPoints": 2.473908713853252,
+          "valuation": 0.5988843465569216
+        },
+        {
+          "omittedCycle": 2006,
+          "rvShift": 0,
+          "roundingShift": 0,
+          "marginPoints": 3.473908713853252,
+          "valuation": 0.656531629304475
+        },
+        {
+          "omittedCycle": 2006,
+          "rvShift": 0,
+          "roundingShift": 1,
+          "marginPoints": 4.473908713853252,
+          "valuation": 0.708758780420218
+        },
+        {
+          "omittedCycle": 2006,
+          "rvShift": 3,
+          "roundingShift": -1,
+          "marginPoints": 4.429426109357848,
+          "valuation": 0.7065642248405056
+        },
+        {
+          "omittedCycle": 2006,
+          "rvShift": 3,
+          "roundingShift": 0,
+          "marginPoints": 5.429426109357848,
+          "valuation": 0.7528496286669819
+        },
+        {
+          "omittedCycle": 2006,
+          "rvShift": 3,
+          "roundingShift": 1,
+          "marginPoints": 6.429426109357848,
+          "valuation": 0.7926889125630386
+        },
+        {
+          "omittedCycle": 2008,
+          "rvShift": -3,
+          "roundingShift": -1,
+          "marginPoints": 0.5183913183486553,
+          "valuation": 0.48217604581584517
+        },
+        {
+          "omittedCycle": 2008,
+          "rvShift": -3,
+          "roundingShift": 0,
+          "marginPoints": 1.5183913183486553,
+          "valuation": 0.5451114109391652
+        },
+        {
+          "omittedCycle": 2008,
+          "rvShift": -3,
+          "roundingShift": 1,
+          "marginPoints": 2.5183913183486553,
+          "valuation": 0.6057980535099958
+        },
+        {
+          "omittedCycle": 2008,
+          "rvShift": 0,
+          "roundingShift": -1,
+          "marginPoints": 2.473908713853252,
+          "valuation": 0.603173764190665
+        },
+        {
+          "omittedCycle": 2008,
+          "rvShift": 0,
+          "roundingShift": 0,
+          "marginPoints": 3.473908713853252,
+          "valuation": 0.6599693268302589
+        },
+        {
+          "omittedCycle": 2008,
+          "rvShift": 0,
+          "roundingShift": 1,
+          "marginPoints": 4.473908713853252,
+          "valuation": 0.711375132199428
+        },
+        {
+          "omittedCycle": 2008,
+          "rvShift": 3,
+          "roundingShift": -1,
+          "marginPoints": 4.429426109357848,
+          "valuation": 0.7092155765648223
+        },
+        {
+          "omittedCycle": 2008,
+          "rvShift": 3,
+          "roundingShift": 0,
+          "marginPoints": 5.429426109357848,
+          "valuation": 0.7547627566022559
+        },
+        {
+          "omittedCycle": 2008,
+          "rvShift": 3,
+          "roundingShift": 1,
+          "marginPoints": 6.429426109357848,
+          "valuation": 0.7939823611910236
+        },
+        {
+          "omittedCycle": 2010,
+          "rvShift": -3,
+          "roundingShift": -1,
+          "marginPoints": 0.5183913183486553,
+          "valuation": 0.490083311780535
+        },
+        {
+          "omittedCycle": 2010,
+          "rvShift": -3,
+          "roundingShift": 0,
+          "marginPoints": 1.5183913183486553,
+          "valuation": 0.5534553019221814
+        },
+        {
+          "omittedCycle": 2010,
+          "rvShift": -3,
+          "roundingShift": 1,
+          "marginPoints": 2.5183913183486553,
+          "valuation": 0.6142555081868835
+        },
+        {
+          "omittedCycle": 2010,
+          "rvShift": 0,
+          "roundingShift": -1,
+          "marginPoints": 2.473908713853252,
+          "valuation": 0.6116330477252195
+        },
+        {
+          "omittedCycle": 2010,
+          "rvShift": 0,
+          "roundingShift": 0,
+          "marginPoints": 3.473908713853252,
+          "valuation": 0.6682433425304074
+        },
+        {
+          "omittedCycle": 2010,
+          "rvShift": 0,
+          "roundingShift": 1,
+          "marginPoints": 4.473908713853252,
+          "valuation": 0.7192015157773272
+        },
+        {
+          "omittedCycle": 2010,
+          "rvShift": 3,
+          "roundingShift": -1,
+          "marginPoints": 4.429426109357848,
+          "valuation": 0.7170664476328091
+        },
+        {
+          "omittedCycle": 2010,
+          "rvShift": 3,
+          "roundingShift": 0,
+          "marginPoints": 5.429426109357848,
+          "valuation": 0.7619856858578911
+        },
+        {
+          "omittedCycle": 2010,
+          "rvShift": 3,
+          "roundingShift": 1,
+          "marginPoints": 6.429426109357848,
+          "valuation": 0.80046763980673
+        },
+        {
+          "omittedCycle": 2012,
+          "rvShift": -3,
+          "roundingShift": -1,
+          "marginPoints": 0.5183913183486553,
+          "valuation": 0.47171780892445436
+        },
+        {
+          "omittedCycle": 2012,
+          "rvShift": -3,
+          "roundingShift": 0,
+          "marginPoints": 1.5183913183486553,
+          "valuation": 0.5349877182335969
+        },
+        {
+          "omittedCycle": 2012,
+          "rvShift": -3,
+          "roundingShift": 1,
+          "marginPoints": 2.5183913183486553,
+          "valuation": 0.59633744245837
+        },
+        {
+          "omittedCycle": 2012,
+          "rvShift": 0,
+          "roundingShift": -1,
+          "marginPoints": 2.473908713853252,
+          "valuation": 0.5936777241194703
+        },
+        {
+          "omittedCycle": 2012,
+          "rvShift": 0,
+          "roundingShift": 0,
+          "marginPoints": 3.473908713853252,
+          "valuation": 0.6513725146178463
+        },
+        {
+          "omittedCycle": 2012,
+          "rvShift": 0,
+          "roundingShift": 1,
+          "marginPoints": 4.473908713853252,
+          "valuation": 0.7038232261601428
+        },
+        {
+          "omittedCycle": 2012,
+          "rvShift": 3,
+          "roundingShift": -1,
+          "marginPoints": 4.429426109357848,
+          "valuation": 0.7016155499541823
+        },
+        {
+          "omittedCycle": 2012,
+          "rvShift": 3,
+          "roundingShift": 0,
+          "marginPoints": 5.429426109357848,
+          "valuation": 0.7482519327928274
+        },
+        {
+          "omittedCycle": 2012,
+          "rvShift": 3,
+          "roundingShift": 1,
+          "marginPoints": 6.429426109357848,
+          "valuation": 0.788526295746363
+        },
+        {
+          "omittedCycle": 2014,
+          "rvShift": -3,
+          "roundingShift": -1,
+          "marginPoints": 0.5183913183486553,
+          "valuation": 0.5039515442806808
+        },
+        {
+          "omittedCycle": 2014,
+          "rvShift": -3,
+          "roundingShift": 0,
+          "marginPoints": 1.5183913183486553,
+          "valuation": 0.56646714627599
+        },
+        {
+          "omittedCycle": 2014,
+          "rvShift": -3,
+          "roundingShift": 1,
+          "marginPoints": 2.5183913183486553,
+          "valuation": 0.6260309845522639
+        },
+        {
+          "omittedCycle": 2014,
+          "rvShift": 0,
+          "roundingShift": -1,
+          "marginPoints": 2.473908713853252,
+          "valuation": 0.6234696703058412
+        },
+        {
+          "omittedCycle": 2014,
+          "rvShift": 0,
+          "roundingShift": 0,
+          "marginPoints": 3.473908713853252,
+          "valuation": 0.6786152563139684
+        },
+        {
+          "omittedCycle": 2014,
+          "rvShift": 0,
+          "roundingShift": 1,
+          "marginPoints": 4.473908713853252,
+          "valuation": 0.7280176750303009
+        },
+        {
+          "omittedCycle": 2014,
+          "rvShift": 3,
+          "roundingShift": -1,
+          "marginPoints": 4.429426109357848,
+          "valuation": 0.7259518285945159
+        },
+        {
+          "omittedCycle": 2014,
+          "rvShift": 3,
+          "roundingShift": 0,
+          "marginPoints": 5.429426109357848,
+          "valuation": 0.7693496215400878
+        },
+        {
+          "omittedCycle": 2014,
+          "rvShift": 3,
+          "roundingShift": 1,
+          "marginPoints": 6.429426109357848,
+          "valuation": 0.8064360434139224
+        },
+        {
+          "omittedCycle": 2016,
+          "rvShift": -3,
+          "roundingShift": -1,
+          "marginPoints": 0.5183913183486553,
+          "valuation": 0.4972682039756451
+        },
+        {
+          "omittedCycle": 2016,
+          "rvShift": -3,
+          "roundingShift": 0,
+          "marginPoints": 1.5183913183486553,
+          "valuation": 0.5600119259694726
+        },
+        {
+          "omittedCycle": 2016,
+          "rvShift": -3,
+          "roundingShift": 1,
+          "marginPoints": 2.5183913183486553,
+          "valuation": 0.6200070603401805
+        },
+        {
+          "omittedCycle": 2016,
+          "rvShift": 0,
+          "roundingShift": -1,
+          "marginPoints": 2.473908713853252,
+          "valuation": 0.6174229549421378
+        },
+        {
+          "omittedCycle": 2016,
+          "rvShift": 0,
+          "roundingShift": 0,
+          "marginPoints": 3.473908713853252,
+          "valuation": 0.6731421464797391
+        },
+        {
+          "omittedCycle": 2016,
+          "rvShift": 0,
+          "roundingShift": 1,
+          "marginPoints": 4.473908713853252,
+          "valuation": 0.7232028529040933
+        },
+        {
+          "omittedCycle": 2016,
+          "rvShift": 3,
+          "roundingShift": -1,
+          "marginPoints": 4.429426109357848,
+          "valuation": 0.721106821891749
+        },
+        {
+          "omittedCycle": 2016,
+          "rvShift": 3,
+          "roundingShift": 0,
+          "marginPoints": 5.429426109357848,
+          "valuation": 0.7651856971255633
+        },
+        {
+          "omittedCycle": 2016,
+          "rvShift": 3,
+          "roundingShift": 1,
+          "marginPoints": 6.429426109357848,
+          "valuation": 0.8029288524550312
+        },
+        {
+          "omittedCycle": 2018,
+          "rvShift": -3,
+          "roundingShift": -1,
+          "marginPoints": 0.5183913183486553,
+          "valuation": 0.4971533167306409
+        },
+        {
+          "omittedCycle": 2018,
+          "rvShift": -3,
+          "roundingShift": 0,
+          "marginPoints": 1.5183913183486553,
+          "valuation": 0.559160313255255
+        },
+        {
+          "omittedCycle": 2018,
+          "rvShift": -3,
+          "roundingShift": 1,
+          "marginPoints": 2.5183913183486553,
+          "valuation": 0.6185103001118568
+        },
+        {
+          "omittedCycle": 2018,
+          "rvShift": 0,
+          "roundingShift": -1,
+          "marginPoints": 2.473908713853252,
+          "valuation": 0.6159521193994735
+        },
+        {
+          "omittedCycle": 2018,
+          "rvShift": 0,
+          "roundingShift": 0,
+          "marginPoints": 3.473908713853252,
+          "valuation": 0.671163090059899
+        },
+        {
+          "omittedCycle": 2018,
+          "rvShift": 0,
+          "roundingShift": 1,
+          "marginPoints": 4.473908713853252,
+          "valuation": 0.7208827103449748
+        },
+        {
+          "omittedCycle": 2018,
+          "rvShift": 3,
+          "roundingShift": -1,
+          "marginPoints": 4.429426109357848,
+          "valuation": 0.7187982550823097
+        },
+        {
+          "omittedCycle": 2018,
+          "rvShift": 3,
+          "roundingShift": 0,
+          "marginPoints": 5.429426109357848,
+          "valuation": 0.7626931807890234
+        },
+        {
+          "omittedCycle": 2018,
+          "rvShift": 3,
+          "roundingShift": 1,
+          "marginPoints": 6.429426109357848,
+          "valuation": 0.8003945750350796
+        },
+        {
+          "omittedCycle": 2020,
+          "rvShift": -3,
+          "roundingShift": -1,
+          "marginPoints": 0.5183913183486553,
+          "valuation": 0.5125277892816701
+        },
+        {
+          "omittedCycle": 2020,
+          "rvShift": -3,
+          "roundingShift": 0,
+          "marginPoints": 1.5183913183486553,
+          "valuation": 0.5761530992978778
+        },
+        {
+          "omittedCycle": 2020,
+          "rvShift": -3,
+          "roundingShift": 1,
+          "marginPoints": 2.5183913183486553,
+          "valuation": 0.6363751760073986
+        },
+        {
+          "omittedCycle": 2020,
+          "rvShift": 0,
+          "roundingShift": -1,
+          "marginPoints": 2.473908713853252,
+          "valuation": 0.6337947717960416
+        },
+        {
+          "omittedCycle": 2020,
+          "rvShift": 0,
+          "roundingShift": 0,
+          "marginPoints": 3.473908713853252,
+          "valuation": 0.689144973727274
+        },
+        {
+          "omittedCycle": 2020,
+          "rvShift": 0,
+          "roundingShift": 1,
+          "marginPoints": 4.473908713853252,
+          "valuation": 0.7383225586919291
+        },
+        {
+          "omittedCycle": 2020,
+          "rvShift": 3,
+          "roundingShift": -1,
+          "marginPoints": 4.429426109357848,
+          "valuation": 0.7362746573510045
+        },
+        {
+          "omittedCycle": 2020,
+          "rvShift": 3,
+          "roundingShift": 0,
+          "marginPoints": 5.429426109357848,
+          "valuation": 0.7791240629024598
+        },
+        {
+          "omittedCycle": 2020,
+          "rvShift": 3,
+          "roundingShift": 1,
+          "marginPoints": 6.429426109357848,
+          "valuation": 0.8154327253565054
+        },
+        {
+          "omittedCycle": 2022,
+          "rvShift": -3,
+          "roundingShift": -1,
+          "marginPoints": 0.5183913183486553,
+          "valuation": 0.5147527444760671
+        },
+        {
+          "omittedCycle": 2022,
+          "rvShift": -3,
+          "roundingShift": 0,
+          "marginPoints": 1.5183913183486553,
+          "valuation": 0.5790850597220796
+        },
+        {
+          "omittedCycle": 2022,
+          "rvShift": -3,
+          "roundingShift": 1,
+          "marginPoints": 2.5183913183486553,
+          "valuation": 0.6398317301577485
+        },
+        {
+          "omittedCycle": 2022,
+          "rvShift": 0,
+          "roundingShift": -1,
+          "marginPoints": 2.473908713853252,
+          "valuation": 0.6372324683164751
+        },
+        {
+          "omittedCycle": 2022,
+          "rvShift": 0,
+          "roundingShift": 0,
+          "marginPoints": 3.473908713853252,
+          "valuation": 0.6929015868211561
+        },
+        {
+          "omittedCycle": 2022,
+          "rvShift": 0,
+          "roundingShift": 1,
+          "marginPoints": 4.473908713853252,
+          "valuation": 0.7421865061650689
+        },
+        {
+          "omittedCycle": 2022,
+          "rvShift": 3,
+          "roundingShift": -1,
+          "marginPoints": 4.429426109357848,
+          "valuation": 0.7401379573894533
+        },
+        {
+          "omittedCycle": 2022,
+          "rvShift": 3,
+          "roundingShift": 0,
+          "marginPoints": 5.429426109357848,
+          "valuation": 0.7829222561431298
+        },
+        {
+          "omittedCycle": 2022,
+          "rvShift": 3,
+          "roundingShift": 1,
+          "marginPoints": 6.429426109357848,
+          "valuation": 0.8190310240244754
+        }
+      ],
+      "centralEstimate": 0.6691366552360755,
+      "severeOpponentAllocationStress": 0.13474647213744947,
+      "estimateMeaning": "Settlement-value research under historical error and declared sensitivity; not calibrated population transport or a short-term return forecast.",
+      "executionAuthority": false,
+      "profitabilityEstablished": false
+    },
+    {
+      "state": "OH",
+      "marketId": null,
+      "exchangeId": null,
+      "candidates": {
+        "democratic": "Sherrod Brown",
+        "republican": "Jon Husted"
+      },
+      "ballotSource": null,
+      "polls": [
+        {
+          "pollster": "Marist",
+          "population": "registered_voters",
+          "democratic": 51,
+          "republican": 43,
+          "unallocated": 5,
+          "fieldEndDate": "2026-09-27",
+          "fieldEndAt": "2026-09-27T23:59:59.999Z",
+          "file": "ohio-marist.pdf"
+        }
+      ],
+      "id": "oh-democratic-primary-polls-20261005-v2",
+      "at": "2026-10-05T18:44:14.878Z",
+      "expiresAt": "2026-10-06T00:44:14.878Z",
+      "sources": [
+        {
+          "file": "ohio-marist.pdf",
+          "url": "https://maristpoll.marist.edu/wp-content/uploads/2026/09/Marist-Poll_OH-NOS-and-Tables_202609281347aC909p6465.pdf",
+          "observedAt": "2026-10-05T18:40:16.761Z",
+          "bytes": 833147,
+          "contentType": "application/pdf",
+          "contentHash": "3df7e51d27a693fa770ef490d4b2c0568c58bdfdac0db35e4fbe67951e0bae30"
+        }
+      ],
+      "marginPoints": 8,
+      "pollWeights": [
+        {
+          "pollster": "Marist",
+          "population": "registered_voters",
+          "fieldEndAt": "2026-09-27T23:59:59.999Z",
+          "weight": 1
+        }
+      ],
+      "rvWeight": 1,
+      "unallocatedPoints": 5,
+      "ordinaryRange": [
+        0.6796885699109625,
+        0.9285178325315062
+      ],
+      "scenarios": [
+        {
+          "omittedCycle": null,
+          "rvShift": -3,
+          "roundingShift": -1,
+          "marginPoints": 4,
+          "valuation": 0.6967539290927233
+        },
+        {
+          "omittedCycle": null,
+          "rvShift": -3,
+          "roundingShift": 0,
+          "marginPoints": 5,
+          "valuation": 0.744475110272568
+        },
+        {
+          "omittedCycle": null,
+          "rvShift": -3,
+          "roundingShift": 1,
+          "marginPoints": 6,
+          "valuation": 0.7857021773862687
+        },
+        {
+          "omittedCycle": null,
+          "rvShift": 0,
+          "roundingShift": -1,
+          "marginPoints": 7,
+          "valuation": 0.8205873141706236
+        },
+        {
+          "omittedCycle": null,
+          "rvShift": 0,
+          "roundingShift": 0,
+          "marginPoints": 8,
+          "valuation": 0.8496275261194284
+        },
+        {
+          "omittedCycle": null,
+          "rvShift": 0,
+          "roundingShift": 1,
+          "marginPoints": 9,
+          "valuation": 0.8735075779076262
+        },
+        {
+          "omittedCycle": null,
+          "rvShift": 3,
+          "roundingShift": -1,
+          "marginPoints": 10,
+          "valuation": 0.8929753442994388
+        },
+        {
+          "omittedCycle": null,
+          "rvShift": 3,
+          "roundingShift": 0,
+          "marginPoints": 11,
+          "valuation": 0.9087579376306176
+        },
+        {
+          "omittedCycle": null,
+          "rvShift": 3,
+          "roundingShift": 1,
+          "marginPoints": 12,
+          "valuation": 0.9215142328819699
+        },
+        {
+          "omittedCycle": 1998,
+          "rvShift": -3,
+          "roundingShift": -1,
+          "marginPoints": 4,
+          "valuation": 0.6877755651175762
+        },
+        {
+          "omittedCycle": 1998,
+          "rvShift": -3,
+          "roundingShift": 0,
+          "marginPoints": 5,
+          "valuation": 0.7379576359119809
+        },
+        {
+          "omittedCycle": 1998,
+          "rvShift": -3,
+          "roundingShift": 1,
+          "marginPoints": 6,
+          "valuation": 0.7812758208307775
+        },
+        {
+          "omittedCycle": 1998,
+          "rvShift": 0,
+          "roundingShift": -1,
+          "marginPoints": 7,
+          "valuation": 0.8178325365285964
+        },
+        {
+          "omittedCycle": 1998,
+          "rvShift": 0,
+          "roundingShift": 0,
+          "marginPoints": 8,
+          "valuation": 0.848139192665034
+        },
+        {
+          "omittedCycle": 1998,
+          "rvShift": 0,
+          "roundingShift": 1,
+          "marginPoints": 9,
+          "valuation": 0.8729325520573927
+        },
+        {
+          "omittedCycle": 1998,
+          "rvShift": 3,
+          "roundingShift": -1,
+          "marginPoints": 10,
+          "valuation": 0.8930274282949521
+        },
+        {
+          "omittedCycle": 1998,
+          "rvShift": 3,
+          "roundingShift": 0,
+          "marginPoints": 11,
+          "valuation": 0.9092176585816414
+        },
+        {
+          "omittedCycle": 1998,
+          "rvShift": 3,
+          "roundingShift": 1,
+          "marginPoints": 12,
+          "valuation": 0.9222205956026801
+        },
+        {
+          "omittedCycle": 2000,
+          "rvShift": -3,
+          "roundingShift": -1,
+          "marginPoints": 4,
+          "valuation": 0.6991671148260665
+        },
+        {
+          "omittedCycle": 2000,
+          "rvShift": -3,
+          "roundingShift": 0,
+          "marginPoints": 5,
+          "valuation": 0.7473549240797437
+        },
+        {
+          "omittedCycle": 2000,
+          "rvShift": -3,
+          "roundingShift": 1,
+          "marginPoints": 6,
+          "valuation": 0.7888168962894981
+        },
+        {
+          "omittedCycle": 2000,
+          "rvShift": 0,
+          "roundingShift": -1,
+          "marginPoints": 7,
+          "valuation": 0.8237453761897144
+        },
+        {
+          "omittedCycle": 2000,
+          "rvShift": 0,
+          "roundingShift": 0,
+          "marginPoints": 8,
+          "valuation": 0.8526877349005759
+        },
+        {
+          "omittedCycle": 2000,
+          "rvShift": 0,
+          "roundingShift": 1,
+          "marginPoints": 9,
+          "valuation": 0.8763775932497133
+        },
+        {
+          "omittedCycle": 2000,
+          "rvShift": 3,
+          "roundingShift": -1,
+          "marginPoints": 10,
+          "valuation": 0.8956036495047237
+        },
+        {
+          "omittedCycle": 2000,
+          "rvShift": 3,
+          "roundingShift": 0,
+          "marginPoints": 11,
+          "valuation": 0.9111236208122621
+        },
+        {
+          "omittedCycle": 2000,
+          "rvShift": 3,
+          "roundingShift": 1,
+          "marginPoints": 12,
+          "valuation": 0.9236172909624879
+        },
+        {
+          "omittedCycle": 2002,
+          "rvShift": -3,
+          "roundingShift": -1,
+          "marginPoints": 4,
+          "valuation": 0.6894780490083748
+        },
+        {
+          "omittedCycle": 2002,
+          "rvShift": -3,
+          "roundingShift": 0,
+          "marginPoints": 5,
+          "valuation": 0.7383103508130993
+        },
+        {
+          "omittedCycle": 2002,
+          "rvShift": -3,
+          "roundingShift": 1,
+          "marginPoints": 6,
+          "valuation": 0.7806053059256881
+        },
+        {
+          "omittedCycle": 2002,
+          "rvShift": 0,
+          "roundingShift": -1,
+          "marginPoints": 7,
+          "valuation": 0.8164569180204605
+        },
+        {
+          "omittedCycle": 2002,
+          "rvShift": 0,
+          "roundingShift": 0,
+          "marginPoints": 8,
+          "valuation": 0.8463327157306418
+        },
+        {
+          "omittedCycle": 2002,
+          "rvShift": 0,
+          "roundingShift": 1,
+          "marginPoints": 9,
+          "valuation": 0.870910498309005
+        },
+        {
+          "omittedCycle": 2002,
+          "rvShift": 3,
+          "roundingShift": -1,
+          "marginPoints": 10,
+          "valuation": 0.8909458442137914
+        },
+        {
+          "omittedCycle": 2002,
+          "rvShift": 3,
+          "roundingShift": 0,
+          "marginPoints": 11,
+          "valuation": 0.9071813124654291
+        },
+        {
+          "omittedCycle": 2002,
+          "rvShift": 3,
+          "roundingShift": 1,
+          "marginPoints": 12,
+          "valuation": 0.9202939718291948
+        },
+        {
+          "omittedCycle": 2004,
+          "rvShift": -3,
+          "roundingShift": -1,
+          "marginPoints": 4,
+          "valuation": 0.693187383778207
+        },
+        {
+          "omittedCycle": 2004,
+          "rvShift": -3,
+          "roundingShift": 0,
+          "marginPoints": 5,
+          "valuation": 0.7412594512605888
+        },
+        {
+          "omittedCycle": 2004,
+          "rvShift": -3,
+          "roundingShift": 1,
+          "marginPoints": 6,
+          "valuation": 0.7828716034693904
+        },
+        {
+          "omittedCycle": 2004,
+          "rvShift": 0,
+          "roundingShift": -1,
+          "marginPoints": 7,
+          "valuation": 0.8181436634354928
+        },
+        {
+          "omittedCycle": 2004,
+          "rvShift": 0,
+          "roundingShift": 0,
+          "marginPoints": 8,
+          "valuation": 0.8475495148624512
+        },
+        {
+          "omittedCycle": 2004,
+          "rvShift": 0,
+          "roundingShift": 1,
+          "marginPoints": 9,
+          "valuation": 0.8717601348248157
+        },
+        {
+          "omittedCycle": 2004,
+          "rvShift": 3,
+          "roundingShift": -1,
+          "marginPoints": 10,
+          "valuation": 0.8915172692384726
+        },
+        {
+          "omittedCycle": 2004,
+          "rvShift": 3,
+          "roundingShift": 0,
+          "marginPoints": 11,
+          "valuation": 0.9075472980917816
+        },
+        {
+          "omittedCycle": 2004,
+          "rvShift": 3,
+          "roundingShift": 1,
+          "marginPoints": 12,
+          "valuation": 0.920511660444896
+        },
+        {
+          "omittedCycle": 2006,
+          "rvShift": -3,
+          "roundingShift": -1,
+          "marginPoints": 4,
+          "valuation": 0.684749534280527
+        },
+        {
+          "omittedCycle": 2006,
+          "rvShift": -3,
+          "roundingShift": 0,
+          "marginPoints": 5,
+          "valuation": 0.7337615228762655
+        },
+        {
+          "omittedCycle": 2006,
+          "rvShift": -3,
+          "roundingShift": 1,
+          "marginPoints": 6,
+          "valuation": 0.7763649057067431
+        },
+        {
+          "omittedCycle": 2006,
+          "rvShift": 0,
+          "roundingShift": -1,
+          "marginPoints": 7,
+          "valuation": 0.8126045784960457
+        },
+        {
+          "omittedCycle": 2006,
+          "rvShift": 0,
+          "roundingShift": 0,
+          "marginPoints": 8,
+          "valuation": 0.842903890814282
+        },
+        {
+          "omittedCycle": 2006,
+          "rvShift": 0,
+          "roundingShift": 1,
+          "marginPoints": 9,
+          "valuation": 0.867906425130142
+        },
+        {
+          "omittedCycle": 2006,
+          "rvShift": 3,
+          "roundingShift": -1,
+          "marginPoints": 10,
+          "valuation": 0.8883446127740635
+        },
+        {
+          "omittedCycle": 2006,
+          "rvShift": 3,
+          "roundingShift": 0,
+          "marginPoints": 11,
+          "valuation": 0.9049476121714929
+        },
+        {
+          "omittedCycle": 2006,
+          "rvShift": 3,
+          "roundingShift": 1,
+          "marginPoints": 12,
+          "valuation": 0.9183865114977648
+        },
+        {
+          "omittedCycle": 2008,
+          "rvShift": -3,
+          "roundingShift": -1,
+          "marginPoints": 4,
+          "valuation": 0.6877470999315188
+        },
+        {
+          "omittedCycle": 2008,
+          "rvShift": -3,
+          "roundingShift": 0,
+          "marginPoints": 5,
+          "valuation": 0.7359784517327155
+        },
+        {
+          "omittedCycle": 2008,
+          "rvShift": -3,
+          "roundingShift": 1,
+          "marginPoints": 6,
+          "valuation": 0.7779088791833203
+        },
+        {
+          "omittedCycle": 2008,
+          "rvShift": 0,
+          "roundingShift": -1,
+          "marginPoints": 7,
+          "valuation": 0.813601882583158
+        },
+        {
+          "omittedCycle": 2008,
+          "rvShift": 0,
+          "roundingShift": 0,
+          "marginPoints": 8,
+          "valuation": 0.8434795391763429
+        },
+        {
+          "omittedCycle": 2008,
+          "rvShift": 0,
+          "roundingShift": 1,
+          "marginPoints": 9,
+          "valuation": 0.8681717840085985
+        },
+        {
+          "omittedCycle": 2008,
+          "rvShift": 3,
+          "roundingShift": -1,
+          "marginPoints": 10,
+          "valuation": 0.8883917990399393
+        },
+        {
+          "omittedCycle": 2008,
+          "rvShift": 3,
+          "roundingShift": 0,
+          "marginPoints": 11,
+          "valuation": 0.9048486833642077
+        },
+        {
+          "omittedCycle": 2008,
+          "rvShift": 3,
+          "roundingShift": 1,
+          "marginPoints": 12,
+          "valuation": 0.9181953913673803
+        },
+        {
+          "omittedCycle": 2010,
+          "rvShift": -3,
+          "roundingShift": -1,
+          "marginPoints": 4,
+          "valuation": 0.6958138744950038
+        },
+        {
+          "omittedCycle": 2010,
+          "rvShift": -3,
+          "roundingShift": 0,
+          "marginPoints": 5,
+          "valuation": 0.7434891177423342
+        },
+        {
+          "omittedCycle": 2010,
+          "rvShift": -3,
+          "roundingShift": 1,
+          "marginPoints": 6,
+          "valuation": 0.7847194319535737
+        },
+        {
+          "omittedCycle": 2010,
+          "rvShift": 0,
+          "roundingShift": -1,
+          "marginPoints": 7,
+          "valuation": 0.8196452816689818
+        },
+        {
+          "omittedCycle": 2010,
+          "rvShift": 0,
+          "roundingShift": 0,
+          "marginPoints": 8,
+          "valuation": 0.8487511128111044
+        },
+        {
+          "omittedCycle": 2010,
+          "rvShift": 0,
+          "roundingShift": 1,
+          "marginPoints": 9,
+          "valuation": 0.8727105320511186
+        },
+        {
+          "omittedCycle": 2010,
+          "rvShift": 3,
+          "roundingShift": -1,
+          "marginPoints": 10,
+          "valuation": 0.8922627131661611
+        },
+        {
+          "omittedCycle": 2010,
+          "rvShift": 3,
+          "roundingShift": 0,
+          "marginPoints": 11,
+          "valuation": 0.9081286860930627
+        },
+        {
+          "omittedCycle": 2010,
+          "rvShift": 3,
+          "roundingShift": 1,
+          "marginPoints": 12,
+          "valuation": 0.9209635214095291
+        },
+        {
+          "omittedCycle": 2012,
+          "rvShift": -3,
+          "roundingShift": -1,
+          "marginPoints": 4,
+          "valuation": 0.6796885699109625
+        },
+        {
+          "omittedCycle": 2012,
+          "rvShift": -3,
+          "roundingShift": 0,
+          "marginPoints": 5,
+          "valuation": 0.7289998462923258
+        },
+        {
+          "omittedCycle": 2012,
+          "rvShift": -3,
+          "roundingShift": 1,
+          "marginPoints": 6,
+          "valuation": 0.7720083337867556
+        },
+        {
+          "omittedCycle": 2012,
+          "rvShift": 0,
+          "roundingShift": -1,
+          "marginPoints": 7,
+          "valuation": 0.8087095248462756
+        },
+        {
+          "omittedCycle": 2012,
+          "rvShift": 0,
+          "roundingShift": 0,
+          "marginPoints": 8,
+          "valuation": 0.8394849048223046
+        },
+        {
+          "omittedCycle": 2012,
+          "rvShift": 0,
+          "roundingShift": 1,
+          "marginPoints": 9,
+          "valuation": 0.8649474270957006
+        },
+        {
+          "omittedCycle": 2012,
+          "rvShift": 3,
+          "roundingShift": -1,
+          "marginPoints": 10,
+          "valuation": 0.8858102370189641
+        },
+        {
+          "omittedCycle": 2012,
+          "rvShift": 3,
+          "roundingShift": 0,
+          "marginPoints": 11,
+          "valuation": 0.9027926301664915
+        },
+        {
+          "omittedCycle": 2012,
+          "rvShift": 3,
+          "roundingShift": 1,
+          "marginPoints": 12,
+          "valuation": 0.9165626590635542
+        },
+        {
+          "omittedCycle": 2014,
+          "rvShift": -3,
+          "roundingShift": -1,
+          "marginPoints": 4,
+          "valuation": 0.705369685961425
+        },
+        {
+          "omittedCycle": 2014,
+          "rvShift": -3,
+          "roundingShift": 0,
+          "marginPoints": 5,
+          "valuation": 0.7514954173283944
+        },
+        {
+          "omittedCycle": 2014,
+          "rvShift": -3,
+          "roundingShift": 1,
+          "marginPoints": 6,
+          "valuation": 0.7912674841738121
+        },
+        {
+          "omittedCycle": 2014,
+          "rvShift": 0,
+          "roundingShift": -1,
+          "marginPoints": 7,
+          "valuation": 0.8248952006219428
+        },
+        {
+          "omittedCycle": 2014,
+          "rvShift": 0,
+          "roundingShift": 0,
+          "marginPoints": 8,
+          "valuation": 0.8528938499518611
+        },
+        {
+          "omittedCycle": 2014,
+          "rvShift": 0,
+          "roundingShift": 1,
+          "marginPoints": 9,
+          "valuation": 0.8759394533993178
+        },
+        {
+          "omittedCycle": 2014,
+          "rvShift": 3,
+          "roundingShift": -1,
+          "marginPoints": 10,
+          "valuation": 0.8947559727852754
+        },
+        {
+          "omittedCycle": 2014,
+          "rvShift": 3,
+          "roundingShift": 0,
+          "marginPoints": 11,
+          "valuation": 0.9100406204351131
+        },
+        {
+          "omittedCycle": 2014,
+          "rvShift": 3,
+          "roundingShift": 1,
+          "marginPoints": 12,
+          "valuation": 0.9224222923123093
+        },
+        {
+          "omittedCycle": 2016,
+          "rvShift": -3,
+          "roundingShift": -1,
+          "marginPoints": 4,
+          "valuation": 0.7002365002253531
+        },
+        {
+          "omittedCycle": 2016,
+          "rvShift": -3,
+          "roundingShift": 0,
+          "marginPoints": 5,
+          "valuation": 0.7470394804057877
+        },
+        {
+          "omittedCycle": 2016,
+          "rvShift": -3,
+          "roundingShift": 1,
+          "marginPoints": 6,
+          "valuation": 0.7874837479342985
+        },
+        {
+          "omittedCycle": 2016,
+          "rvShift": 0,
+          "roundingShift": -1,
+          "marginPoints": 7,
+          "valuation": 0.8217385628215972
+        },
+        {
+          "omittedCycle": 2016,
+          "rvShift": 0,
+          "roundingShift": 0,
+          "marginPoints": 8,
+          "valuation": 0.8502958418074799
+        },
+        {
+          "omittedCycle": 2016,
+          "rvShift": 0,
+          "roundingShift": 1,
+          "marginPoints": 9,
+          "valuation": 0.8738221785444165
+        },
+        {
+          "omittedCycle": 2016,
+          "rvShift": 3,
+          "roundingShift": -1,
+          "marginPoints": 10,
+          "valuation": 0.8930419182039955
+        },
+        {
+          "omittedCycle": 2016,
+          "rvShift": 3,
+          "roundingShift": 0,
+          "marginPoints": 11,
+          "valuation": 0.9086585048678973
+        },
+        {
+          "omittedCycle": 2016,
+          "rvShift": 3,
+          "roundingShift": 1,
+          "marginPoints": 12,
+          "valuation": 0.9213098405895332
+        },
+        {
+          "omittedCycle": 2018,
+          "rvShift": -3,
+          "roundingShift": -1,
+          "marginPoints": 4,
+          "valuation": 0.6980567793889875
+        },
+        {
+          "omittedCycle": 2018,
+          "rvShift": -3,
+          "roundingShift": 0,
+          "marginPoints": 5,
+          "valuation": 0.7446068713181477
+        },
+        {
+          "omittedCycle": 2018,
+          "rvShift": -3,
+          "roundingShift": 1,
+          "marginPoints": 6,
+          "valuation": 0.7849519744104665
+        },
+        {
+          "omittedCycle": 2018,
+          "rvShift": 0,
+          "roundingShift": -1,
+          "marginPoints": 7,
+          "valuation": 0.8192316689747088
+        },
+        {
+          "omittedCycle": 2018,
+          "rvShift": 0,
+          "roundingShift": 0,
+          "marginPoints": 8,
+          "valuation": 0.8479030743487681
+        },
+        {
+          "omittedCycle": 2018,
+          "rvShift": 0,
+          "roundingShift": 1,
+          "marginPoints": 9,
+          "valuation": 0.8715999659641813
+        },
+        {
+          "omittedCycle": 2018,
+          "rvShift": 3,
+          "roundingShift": -1,
+          "marginPoints": 10,
+          "valuation": 0.8910196822939888
+        },
+        {
+          "omittedCycle": 2018,
+          "rvShift": 3,
+          "roundingShift": 0,
+          "marginPoints": 11,
+          "valuation": 0.9068456400017404
+        },
+        {
+          "omittedCycle": 2018,
+          "rvShift": 3,
+          "roundingShift": 1,
+          "marginPoints": 12,
+          "valuation": 0.9197022144879272
+        },
+        {
+          "omittedCycle": 2020,
+          "rvShift": -3,
+          "roundingShift": -1,
+          "marginPoints": 4,
+          "valuation": 0.7158295094966952
+        },
+        {
+          "omittedCycle": 2020,
+          "rvShift": -3,
+          "roundingShift": 0,
+          "marginPoints": 5,
+          "valuation": 0.7615400812554283
+        },
+        {
+          "omittedCycle": 2020,
+          "rvShift": -3,
+          "roundingShift": 1,
+          "marginPoints": 6,
+          "valuation": 0.8006190828185532
+        },
+        {
+          "omittedCycle": 2020,
+          "rvShift": 0,
+          "roundingShift": -1,
+          "marginPoints": 7,
+          "valuation": 0.8333869601408157
+        },
+        {
+          "omittedCycle": 2020,
+          "rvShift": 0,
+          "roundingShift": 0,
+          "marginPoints": 8,
+          "valuation": 0.8604553797130603
+        },
+        {
+          "omittedCycle": 2020,
+          "rvShift": 0,
+          "roundingShift": 1,
+          "marginPoints": 9,
+          "valuation": 0.8825730457686524
+        },
+        {
+          "omittedCycle": 2020,
+          "rvShift": 3,
+          "roundingShift": -1,
+          "marginPoints": 10,
+          "valuation": 0.9005120512874889
+        },
+        {
+          "omittedCycle": 2020,
+          "rvShift": 3,
+          "roundingShift": 0,
+          "marginPoints": 11,
+          "valuation": 0.914996909738514
+        },
+        {
+          "omittedCycle": 2020,
+          "rvShift": 3,
+          "roundingShift": 1,
+          "marginPoints": 12,
+          "valuation": 0.9266683222671963
+        },
+        {
+          "omittedCycle": 2022,
+          "rvShift": -3,
+          "roundingShift": -1,
+          "marginPoints": 4,
+          "valuation": 0.7196674466214543
+        },
+        {
+          "omittedCycle": 2022,
+          "rvShift": -3,
+          "roundingShift": 0,
+          "marginPoints": 5,
+          "valuation": 0.7653856465372039
+        },
+        {
+          "omittedCycle": 2022,
+          "rvShift": -3,
+          "roundingShift": 1,
+          "marginPoints": 6,
+          "valuation": 0.8043165240913248
+        },
+        {
+          "omittedCycle": 2022,
+          "rvShift": 0,
+          "roundingShift": -1,
+          "marginPoints": 7,
+          "valuation": 0.836829785475316
+        },
+        {
+          "omittedCycle": 2022,
+          "rvShift": 0,
+          "roundingShift": 0,
+          "marginPoints": 8,
+          "valuation": 0.8635831434269542
+        },
+        {
+          "omittedCycle": 2022,
+          "rvShift": 0,
+          "roundingShift": 1,
+          "marginPoints": 9,
+          "valuation": 0.885362289622942
+        },
+        {
+          "omittedCycle": 2022,
+          "rvShift": 3,
+          "roundingShift": -1,
+          "marginPoints": 10,
+          "valuation": 0.9029656191190893
+        },
+        {
+          "omittedCycle": 2022,
+          "rvShift": 3,
+          "roundingShift": 0,
+          "marginPoints": 11,
+          "valuation": 0.9171342391463253
+        },
+        {
+          "omittedCycle": 2022,
+          "rvShift": 3,
+          "roundingShift": 1,
+          "marginPoints": 12,
+          "valuation": 0.9285178325315062
+        }
+      ],
+      "centralEstimate": 0.8496275261194284,
+      "severeOpponentAllocationStress": 0.3939257534240617,
+      "estimateMeaning": "Settlement-value research under historical error and declared sensitivity; not calibrated population transport or a short-term return forecast.",
+      "executionAuthority": false,
+      "profitabilityEstablished": false
+    }
+  ],
+  "accountApiRequests": 0,
+  "competitionOrders": 0,
+  "executionAuthority": false,
+  "profitabilityEstablished": false,
+  "limitations": [
+    "The archived historical polls lack LV/RV and original publication clocks. Current population transport and selected shifts are judgment sensitivity, not measured effects or confidence bounds.",
+    "Registered-voter support is not likely-voter support. Independent pollsters may share systematic error and state forecasts share national shocks.",
+    "The error model already includes historical undecided resolution and future drift. Assigning all remaining current support to the opponent is a separate severe stress, not additional independent sampling noise.",
+    "A positive expected settlement estimate does not establish a profitable two-day price path or actual execution."
+  ]
+}
