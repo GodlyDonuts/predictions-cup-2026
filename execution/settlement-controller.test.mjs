@@ -102,3 +102,7 @@ test('stale account is refreshed before the next decision book without widening 
 test('fresh account and unrelated paper books add no freshness repair reads',async t=>{
  const f=fixture(t);await f.before();const at=f.c.account.positions.at;await f.c.beforeBook('377');assert.equal(f.c.account.positions.at,at);assert.equal(f.c.lastFreshnessRepair,undefined);f.advance(25000);await f.c.beforeBook('999');assert.equal(f.c.account.positions.at,at);
 });
+test('expired production pilot reports its actual window after bootstrap and cannot create a new purchase',async t=>{
+ const f=fixture(t);f.advance(21600001);await f.before();await f.c.onBook(f.book());const s=JSON.parse(fs.readFileSync(path.join(f.dir,'competition-stats.json')));
+ assert.equal(s.entryWindow.phase,'closed');assert.equal(s.status,'entry_window_closed');assert.equal(s.reason,'ENTRY_WINDOW_CLOSED');assert.equal(f.server.posts.length,0);assert.deepEqual(f.c.state.owned,{});assert.equal(s.entryAuthorityExtended,false);
+});

@@ -1,0 +1,89 @@
+{
+  "schemaVersion": 1,
+  "id": "production-recovery-current-polls-20261005-v1",
+  "at": "2026-10-05T11:44:09.915Z",
+  "goalTurnClassification": "progress",
+  "requiredGoalWorkRemaining": true,
+  "authority": "existing_direct_human_assignment",
+  "runId": "sig-pilot-settlement-20261004-human",
+  "bankHash": "a948c395b14992a019e2180133604b8ee84dd78a9e94d08781efd18fbefc0128",
+  "entryExpiresAt": "2026-10-05T03:59:22.131Z",
+  "activationChanged": false,
+  "productionBankChanged": false,
+  "incident": {
+    "observedAt": "2026-10-05T11:19:00Z",
+    "observationPrecision": "minute",
+    "previousPids": {
+      "collector": 4760,
+      "paper": 17228,
+      "dashboard": 22396
+    },
+    "previousPidsAbsent": true,
+    "lastSavedCollectorReportAt": "2026-10-04T23:43:43.768Z",
+    "causeEstablished": false,
+    "humanStopRemoved": false
+  },
+  "changes": [
+    "Derived production entry-window status preserves blocked, uncertain and owned-risk states.",
+    "Recovered the same three approved services; controlled collector reload deployed the status fix without changing activation.",
+    "Captured six hashed primary polling/ballot sources and retained original clocks and population distinctions.",
+    "Built separate Republican/Democratic source assessments with verified opposition, multinomial margin variance and frozen sensitivity assumptions.",
+    "Compared three actual subsequent official contract/book receipts using existing auxiliary slots and exact price policy."
+  ],
+  "checks": {
+    "targetedPassed": 23,
+    "failed": 0,
+    "classes": [
+      "entry-state projection",
+      "settlement controller and expired-window integration",
+      "primary polling assessment"
+    ]
+  },
+  "runtime": {
+    "collectorPid": 20088,
+    "paperPid": 13904,
+    "dashboardPid": 20092,
+    "persistentServices": 3,
+    "reportedAt": "2026-10-05T11:44:06.897Z",
+    "cycles": 30,
+    "errors": 0,
+    "productionReportedAt": "2026-10-05T11:44:05.550Z",
+    "status": "entry_window_closed",
+    "reason": "ENTRY_WINDOW_CLOSED",
+    "entryWindow": {
+      "phase": "closed",
+      "startedAt": "2026-10-04T21:59:22.131Z",
+      "expiresAt": "2026-10-05T03:59:22.131Z",
+      "open": false
+    },
+    "ordersSubmitted": 0,
+    "dispatchAttempts": 0,
+    "unconfirmedIntents": 0,
+    "realizedPnl": "0.000000",
+    "addedFees": "0.000000",
+    "readinessComplete": true
+  },
+  "research": {
+    "recordId": "current-poll-breadth-20261005-v1",
+    "assessedAt": "2026-10-05T11:31:48.870Z",
+    "assessments": 4,
+    "comparisonId": "subsequent-primary-poll-price-comparison-20261005-v1",
+    "subsequentPriceReceipts": 3,
+    "qualifiedReceipts": 0,
+    "additionalAccountClients": 0,
+    "installedInProduction": false
+  },
+  "limitations": [
+    "No order or positive official net performance from this pilot. Earlier official net−0.380 remains separate.",
+    "Sensitivity endpoints are subjective valuations, not calibrated probability bounds or profit evidence.",
+    "Three subsequent price receipts establish causal comparisons only, not a strategy-performance sample.",
+    "The cause of the overnight service disappearance and reliable unattended recovery remain unresolved.",
+    "The expired original entry window was not extended."
+  ],
+  "next": [
+    "Calibrate current party outcome forecasts and compare subsequent executable economics without tuning to force entries.",
+    "Resolve the observed service-lifetime failure using concrete process evidence.",
+    "Prepare a useful bounded continuation only after qualifying source/price evidence; preserve inventory and lifetime limits."
+  ],
+  "profitabilityEstablished": false
+}

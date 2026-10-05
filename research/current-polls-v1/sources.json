@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "id": "current-primary-polls-20261005-v1",
+  "captures": [
+    {
+      "file": "kansas-emerson.html",
+      "url": "https://emersoncollegepolling.com/kansas-2026/",
+      "observedAt": "2026-10-05T11:27:00.683Z",
+      "bytes": 105993,
+      "contentHash": "4da5aa879c29f20ed9bbed7c5feb6e8b4f2bb34b044a27e9667652286f3c47af",
+      "contentType": "text/html; charset=UTF-8"
+    },
+    {
+      "file": "iowa-emerson.html",
+      "url": "https://emersoncollegepolling.com/iowa-2026-poll-hinson-leads-turek/",
+      "observedAt": "2026-10-05T11:27:01.058Z",
+      "bytes": 106076,
+      "contentHash": "89cf158976034ef10ce837d5117c7d1898c9fd0b81abf02e457a06f4e3025d8f",
+      "contentType": "text/html; charset=UTF-8"
+    },
+    {
+      "file": "iowa-marist.html",
+      "url": "https://maristpoll.marist.edu/polls/2026-midterm-elections-in-iowa-september-2026/",
+      "observedAt": "2026-10-05T11:27:01.205Z",
+      "bytes": 46252,
+      "contentHash": "874d1d64d7860d2a3ce689f24aac86677d129e24c2c43a944022bac85a2e9a13",
+      "contentType": "text/html; charset=UTF-8"
+    },
+    {
+      "file": "national-emerson.html",
+      "url": "https://emersoncollegepolling.com/september-2026-national-poll-democrats/",
+      "observedAt": "2026-10-05T11:27:01.578Z",
+      "bytes": 108436,
+      "contentHash": "94394123b915863d38d40a47b924f94c9e83d438b528c6f034c92d17ab368137",
+      "contentType": "text/html; charset=UTF-8"
+    },
+    {
+      "file": "iowa-official.html",
+      "url": "https://elections.marshallcountyia.gov/elections/info/2026_general_election_2026_11_03/",
+      "observedAt": "2026-10-05T11:27:01.917Z",
+      "bytes": 57562,
+      "contentHash": "70d1a9837963cf911cb56bd05de74838b2fbb807440c83320f1c529394489dc5",
+      "contentType": "text/html; charset=UTF-8"
+    }
+  ],
+  "rawSourcesRestrictedLocally": true,
+  "accountApiRequests": 0
+}

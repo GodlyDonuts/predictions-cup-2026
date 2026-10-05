@@ -1,3 +1,7 @@
+# Current production status — October 5
+
+Baal remains the human-assigned sole execution owner. The bounded pilot's original entry window expired at **2026-10-05T03:59:22.131Z**; new production entries are closed. Recovered collector, paper worker and dashboard preserve the same activation, frozen bank and accounting. This pilot has submitted **zero orders** and has **zero realized P&L**; profitability is not established. A controller correction now displays the expired window explicitly. See [current state](docs/CURRENT_STATE.md), [recovery evidence](data/production-recovery-20261005.json) and [new primary polling assessments](research/current-polls-v1/README.md). Earlier operational snapshots retain their historical timestamps.
+
 # Current execution authority — October 4
 
 Codex/Baal is the sole execution owner directly assigned by the human, with assignment [5984685670](https://github.com/GodlyDonuts/predictions-cup-2026/issues/1#issuecomment-5984685670) and own ACK refresh [5984845412](https://github.com/GodlyDonuts/predictions-cup-2026/issues/1#issuecomment-5984845412). The bounded zero-fee settlement pilot is live:1 SUSQie/order,10 aggregate attributed cost,25 cumulative purchases,3 markets, entries expire2026-10-05T03:59:22.131Z. No current qualifying forecast, order or profitability is claimed by this documentation. See coordination/execution_state.json, execution/production-launch.md and the live dashboard. Daenerys is advisory; her current human-directed job-application priority remains.

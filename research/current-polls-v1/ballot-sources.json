@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "id": "current-primary-ballots-20261005-v1",
+  "captures": [
+    {
+      "file": "kansas-official.html",
+      "url": "https://meadeco.org/367/2026-General-Election-Information",
+      "observedAt": "2026-10-05T11:29:45.251Z",
+      "bytes": 104020,
+      "contentHash": "9ee9ba9fb36a4c429082eee6a5d2085988efb334d5eea5748b584961f940c22c",
+      "contentType": "text/html; charset=utf-8"
+    }
+  ],
+  "rawSourcesRestrictedLocally": true,
+  "accountApiRequests": 0
+}

@@ -1,3 +1,15 @@
+# October5: entry window closed; recovery and new polling assessments
+
+At 11:19 UTC the three previously recorded service PIDs were absent. The last saved collector report was October4 23:43:43 UTC; its `running` field was not current process evidence. The cause of the disappearance remains unresolved. The original pilot entry window expired October5 03:59:22.131 UTC. Services were recovered without extending that window or changing the frozen production bank, attributed inventory or journals.
+
+The controller now derives explicit `entry_window_closed` status from the original activation timestamps, while preserving blocked/uncertain states and owned-inventory management. This repairs a misleading status display; it does not grant dispatch authority. Targeted controller, projection and assessment checks passed 23/23. The recovered collector, file-only paper worker and local dashboard were observed alive; production reported zero submitted orders, zero unconfirmed intents and zero realized P&L for this pilot. Previous official net−0.380 remains separate. No profitability or scaling readiness is established.
+
+The new [primary polling pipeline](../research/current-polls-v1/README.md) retains six hashed sources, actual field/publication/observation clocks, verified general-election ballots and separate Republican/Democratic assessments. Iowa's newer Marist registered-voter result is preserved as conflicting evidence, not silently pooled with likely voters. Three exact subsequent contract/book comparisons qualified zero entries under the existing model assumptions and pricing policy. These comparisons are not fills, profit or a calibrated performance evaluation. Sources and immutable results are in `research/current-polls-v1`; recovery evidence is `data/production-recovery-20261005.json`.
+
+Next work must establish a useful calibrated forecast and subsequent executable economics, resolve the service-lifetime failure, and prepare a concrete bounded continuation. Regenerating unchanged research clocks, loosening gates to force purchases, or extending the expired activation does not establish success.
+
+The following October4 records are historical.
+
 # October4 live Baal pilot
 
 The newest direct human instruction assigns Codex/Baal execution ownership without requiring Daenerys approval. Assignment `human-to-baal-20261004-2141` is recorded in issue5984685670; fresh Codex ACK5984845412 follows complete scoped official cash/positions/orders/fill reconciliation. The rejected Daenerys RELEASE publication is not fabricated or treated as authority. Existing holdings retain their original attribution.

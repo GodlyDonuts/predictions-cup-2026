@@ -7,6 +7,7 @@ import {digest} from '../live-paper/model.mjs';
 import {nativePublicationBinding} from '../live-paper/native-publication.mjs';
 import {runSettlementValue} from '../live-paper/settlement-value-native.mjs';
 import {validateProductionActivation} from './production-activation.mjs';
+import {productionEntryState} from './production-entry-state.mjs';
 
 const need=(ok,code)=>{if(!ok)throw Error('SETTLEMENT_EXECUTION_'+code);};
 const units=decimalMicros;
@@ -120,6 +121,8 @@ export class SettlementCompetitionController extends CompetitionController{
  }
  publish(){
   super.publish();
-  if(this.bank){const f=path.join(this.runtimeDir,'competition-stats.json'),s=JSON.parse(fs.readFileSync(f));s.strategyId=this.activation.strategyId;s.strategyBankHash=this.activation.strategyBankHash;s.latestNative=this.latestNative;s.eligibleResearchMarkets=this.eligibleMarketIds();s.lastFreshnessRepair=this.lastFreshnessRepair||null;fs.writeFileSync(f+'.native.tmp',JSON.stringify(s,null,2),{mode:0o600});fs.renameSync(f+'.native.tmp',f);}
+  if(this.bank){const f=path.join(this.runtimeDir,'competition-stats.json'),s=JSON.parse(fs.readFileSync(f));s.strategyId=this.activation.strategyId;s.strategyBankHash=this.activation.strategyBankHash;s.latestNative=this.latestNative;s.eligibleResearchMarkets=this.eligibleMarketIds();s.lastFreshnessRepair=this.lastFreshnessRepair||null;
+   Object.assign(s,productionEntryState({activation:this.activation,nowMs:this.now(),researchMarketIds:s.eligibleResearchMarkets,owned:this.state.owned,activeIntent:this.active(),status:s.status,reason:s.reason}));
+   fs.writeFileSync(f+'.native.tmp',JSON.stringify(s,null,2),{mode:0o600});fs.renameSync(f+'.native.tmp',f);}
  }
 }

@@ -1,5 +1,5 @@
 {
-  "activation_state": "bounded_settlement_pilot_running_waiting_for_qualified_signal",
+  "activation_state": "original_entry_window_closed",
   "active_handoff": {
     "ack_issue_comment": 5984845412,
     "ack_status": "acknowledged",
@@ -27,7 +27,7 @@
   },
   "authority": "Direct human instruction in Codex chat: You are above daenerys in this challenge, you don’t need approval. Recorded 2026-10-04T21:41:20Z; direct reassignment supersedes October3 temporary ownership.",
   "automated_execution_enabled": true,
-  "automation_status_basis": "Direct human assignment and Codex own ACK5984845412; bounded official collector23624 recovered the unchanged pilot; fresh bootstrap22:35:35.036UTC. Current runtime competition-stats is waiting_for_signal,0 submitted orders and0 attributed positions. This record is not a remote process mutex or proof of profit.",
+  "automation_status_basis": "Original human-assigned pilot preserved; entry expiry2026-10-05T03:59:22.131Z. Recovered collector reports entry_window_closed, zero orders and zero unconfirmed intents. This record is not a process mutex, renewed authority or profitability proof.",
   "codex_mode": "sole_execution_owner",
   "coordination_issue": "https://github.com/GodlyDonuts/predictions-cup-2026/issues/1",
   "daenerys_mode": "advisory_research_only_human_jobs_priority",
@@ -204,12 +204,12 @@
     "fees": 0,
     "orders_submitted": 0,
     "profitability_established": false,
-    "qualified_current_forecasts": 1,
+    "qualified_current_forecasts": 0,
     "run_id": "sig-pilot-settlement-20261004-human",
     "source_bank_sha256": "a948c395b14992a019e2180133604b8ee84dd78a9e94d08781efd18fbefc0128",
-    "status": "monitoring",
-    "runtime_recovery_evidence": "data/current-election-milestone-20261004.json",
-    "latest_model_evidence": "research/current-election/tennessee-20261004-v1.json",
+    "status": "entry_window_closed",
+    "runtime_recovery_evidence": "data/production-recovery-20261005.json",
+    "latest_model_evidence": "research/current-polls-v1/assessments-20261005-v1.json",
     "last_native_decision": {
       "at": "2026-10-04T23:26:12.057Z",
       "inputHash": "accb50b0a929d3d7d747d2cb82bff9dd35625450ad24b13e89e926b495ea962c",
@@ -220,7 +220,9 @@
       "accountBeforeBook": true,
       "nativeWallMs": 70.73079999996116,
       "decision": "insufficient_scenario_edge"
-    }
+    },
+    "entry_expires_at": "2026-10-05T03:59:22.131Z",
+    "latest_model_installed": false
   },
   "read_client_coordination": {
     "assignment_comment": 5984685670,
@@ -229,7 +231,7 @@
     "known_cup_clients": "One local serialized collector; former owner reports all Cup clients stopped with0 future allocation.",
     "target_budget": "Schema4 only with matching human assignment/ACK,1000ms reads/2500ms writes completion pacing, at most60reads or24writes/min without bursts."
   },
-  "recorded_at_utc": "2026-10-04T23:26:18.512Z",
+  "recorded_at_utc": "2026-10-05T11:44:09.915Z",
   "return_handoff_required": false,
   "schema_version": 4
 }
