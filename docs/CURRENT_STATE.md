@@ -1,3 +1,7 @@
+# October 5: stable spread paper implementation
+
+The losing price-entry engines are retired. A new frozen passive paper cohort joins stable prices, seeks a one-tick covered exit and reconciles strict anonymous-trade projection windows. It runs inside the existing collector, with zero fees and no extra services. Spare reads now build continuous history; existing official and source-probability risk retains priority. **No profitability is established and no new official orders were sent.** See [implementation and measured evidence](STABLE_SPREAD.md). Older timestamps and results below remain historical.
+
 # October5: native receipt exits implemented; current economics still negative
 
 The separately frozen `probability-receipt-native-v1` policy matches the empirical polling paper strategy:1 share, zero fees,1% depth, adverse tick, profit0.020, stop0.050, two-day horizon and15-minute cooldown. Loss exits remain latched after insufficient depth, research expiry, restart and price recovery. Actual fill time supplies holding age. The new controller retains the same attribution, fresh reconciliation and uncertain-acceptance fences. Ninety targeted correctness cases passed; the original native binary/banks/accounting remain intact. [Implementation](../execution/receipt-production.md).

@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "mode": "stable_two_side_trade_tape_paper_v1",
+  "name": "baal-stable-spread-20261005-v1",
+  "cutoff": "2026-10-05T13:17:35.948Z",
+  "entryExpiresAt": "2026-10-05T19:17:35.948Z",
+  "tournamentId": "bda92870-621e-47b0-bc3c-3602c5c26f55",
+  "legs": [
+    {
+      "marketId": "363",
+      "exchangeId": "1052"
+    },
+    {
+      "marketId": "297",
+      "exchangeId": "986"
+    },
+    {
+      "marketId": "381",
+      "exchangeId": "1070"
+    },
+    {
+      "marketId": "382",
+      "exchangeId": "1071"
+    }
+  ],
+  "policy": {
+    "schemaVersion": 1,
+    "initialCash": "100.000000",
+    "maximumReservedAndOwned": "5.000000",
+    "maximumOwnedMarkets": 3,
+    "cumulativeBuyBudget": "25.000000",
+    "quantity": 1,
+    "latencyMs": 3000,
+    "lifetimeMs": 120000,
+    "cooldownMs": 60000,
+    "maximumHoldMs": 7200000,
+    "stopLoss": "0.030000",
+    "profitTarget": "0.010000",
+    "exitAdverseTicks": 1,
+    "depthFractionBps": 100,
+    "feePerShare": "0.000000",
+    "historyMs": 300000,
+    "minimumHistorySpanMs": 240000,
+    "minimumDistinctMinutes": 4,
+    "maximumHistoryGapMs": 120000,
+    "maximumMidpointRange": "0.005000",
+    "minimumSpread": "0.020000",
+    "maximumSpread": "0.050000",
+    "improvementTicks": 1,
+    "families": [
+      "YES",
+      "NO"
+    ],
+    "fillModel": "hypothetical_strict_trade_through_not_proven_execution"
+  },
+  "codeIdentity": {
+    "live-paper/stable-maker-paper-v1.mjs": "593ce4665000295bad6f87a58ccbc806f5ad9439ea618480eac8a2e833ab2ff3",
+    "live-paper/stable-maker-replay-v1.mjs": "f63f3edd66bf9b1ffa97ac5ef47b5d67294c55afe7274478ffd11a27d1448f3b",
+    "live-paper/canonical-entry-exit-study.mjs": "caac39b144328fa5914f83df7a1fea2f149f84bf9993dbb401ed980a45a828d5",
+    "live-paper/probability-receipt.mjs": "5a3fad02baca0eb519642b2f1cc53ec06ec4bdad7829b937d13891ac52d4e8a6",
+    "paper/fixed.mjs": "a0947ef49854d4a3bf4bce88034aaef5d8aabbdc7e29dff3a7b9b4bc01b072f7",
+    "execution/ledger.mjs": "523ee3fd04f995983ee3ffc03b5ee8dbdf629a718ba91c17d08026fe2411b5c4",
+    "feed/contract.mjs": "39b9b30a72093d99697bc03a3b20f88f1d835507219fc46f7a00bd28fe761465"
+  },
+  "dataUse": "Fixed new mechanism; earlier replay is development evidence. Only later post-declaration entries can supply prospective evidence.",
+  "executionAuthority": false,
+  "competitionOrders": 0,
+  "fees": 0
+}

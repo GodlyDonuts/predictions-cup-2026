@@ -5,7 +5,7 @@ import path from 'node:path';
 // retain inventory monitoring; only the explicit operator retirement removes
 // counterfactual wallets from collection priorities. Official risk is separate.
 export function paperExperimentRetired(runtimeDir, marker, fileSystem=fs) {
- if(!['DIP_STOP','SHOCK_STOP','ENTRY_COMPARISON_STOP'].includes(marker))throw Error('INVALID_RETIREMENT_SCOPE');
+ if(!['DIP_STOP','SHOCK_STOP','ENTRY_COMPARISON_STOP','NATIVE_PRICE_PAPER_STOP'].includes(marker))throw Error('INVALID_RETIREMENT_SCOPE');
  try {
   const file=path.join(runtimeDir,marker),stat=fileSystem.statSync(file);
   if(!stat.isFile()||stat.size>4096)return false;

@@ -1,0 +1,167 @@
+{
+  "schemaVersion": 1,
+  "at": "2026-10-05T13:17:41.815Z",
+  "mode": "stable_maker_actual_capture_replay_v1",
+  "bank": {
+    "schemaVersion": 1,
+    "mode": "stable_two_side_trade_tape_paper_v1",
+    "name": "baal-stable-spread-20261005-v1-development",
+    "cutoff": "2026-10-04T16:59:49.117Z",
+    "entryExpiresAt": "2026-10-05T13:17:35.948Z",
+    "tournamentId": "bda92870-621e-47b0-bc3c-3602c5c26f55",
+    "legs": [
+      {
+        "marketId": "363",
+        "exchangeId": "1052"
+      },
+      {
+        "marketId": "297",
+        "exchangeId": "986"
+      },
+      {
+        "marketId": "381",
+        "exchangeId": "1070"
+      },
+      {
+        "marketId": "382",
+        "exchangeId": "1071"
+      }
+    ],
+    "policy": {
+      "schemaVersion": 1,
+      "initialCash": "100.000000",
+      "maximumReservedAndOwned": "5.000000",
+      "maximumOwnedMarkets": 3,
+      "cumulativeBuyBudget": "25.000000",
+      "quantity": 1,
+      "latencyMs": 3000,
+      "lifetimeMs": 120000,
+      "cooldownMs": 60000,
+      "maximumHoldMs": 7200000,
+      "stopLoss": "0.030000",
+      "profitTarget": "0.010000",
+      "exitAdverseTicks": 1,
+      "depthFractionBps": 100,
+      "feePerShare": "0.000000",
+      "historyMs": 300000,
+      "minimumHistorySpanMs": 240000,
+      "minimumDistinctMinutes": 4,
+      "maximumHistoryGapMs": 120000,
+      "maximumMidpointRange": "0.005000",
+      "minimumSpread": "0.020000",
+      "maximumSpread": "0.050000",
+      "improvementTicks": 1,
+      "families": [
+        "YES",
+        "NO"
+      ],
+      "fillModel": "hypothetical_strict_trade_through_not_proven_execution"
+    },
+    "codeIdentity": {
+      "live-paper/stable-maker-paper-v1.mjs": "593ce4665000295bad6f87a58ccbc806f5ad9439ea618480eac8a2e833ab2ff3",
+      "live-paper/stable-maker-replay-v1.mjs": "f63f3edd66bf9b1ffa97ac5ef47b5d67294c55afe7274478ffd11a27d1448f3b",
+      "live-paper/canonical-entry-exit-study.mjs": "caac39b144328fa5914f83df7a1fea2f149f84bf9993dbb401ed980a45a828d5",
+      "live-paper/probability-receipt.mjs": "5a3fad02baca0eb519642b2f1cc53ec06ec4bdad7829b937d13891ac52d4e8a6",
+      "paper/fixed.mjs": "a0947ef49854d4a3bf4bce88034aaef5d8aabbdc7e29dff3a7b9b4bc01b072f7",
+      "execution/ledger.mjs": "523ee3fd04f995983ee3ffc03b5ee8dbdf629a718ba91c17d08026fe2411b5c4",
+      "feed/contract.mjs": "39b9b30a72093d99697bc03a3b20f88f1d835507219fc46f7a00bd28fe761465"
+    },
+    "dataUse": "Fixed new mechanism; earlier replay is development evidence. Only later post-declaration entries can supply prospective evidence.",
+    "executionAuthority": false,
+    "competitionOrders": 0,
+    "fees": 0
+  },
+  "bindings": {
+    "books": {
+      "bytes": 49088054,
+      "hash": "1fab2f308b15fab03fc614457e2b31cd093637cfd7dcabc925188636fb8903a4",
+      "dev": 1689591578,
+      "ino": 14636698789286624
+    },
+    "eligibility": {
+      "bytes": 653805,
+      "hash": "128a7330a455b178659d51a6a668e20420ea60ddf4a8f95301d91d2a7f33b674",
+      "dev": 1689591578,
+      "ino": 3377699721294254
+    },
+    "trades": {
+      "bytes": 11050071,
+      "hash": "a8874c3ed5c74483073abed070d71ceb6faf4e40519dc78346d9177c82689be2",
+      "dev": 1689591578,
+      "ino": 11258999068802980
+    }
+  },
+  "nativeVerification": {
+    "engineHash": "374cffa73e62192363da35e7cc188005e9d2a7d1d27758780d7a7b3f81d1b823",
+    "binaryHash": "cc775b6e91a9f27193a91adea6a5eda40b0a7735fd77b857ed52221835a81fd5",
+    "bookRecords": 22614
+  },
+  "firstAt": "2026-10-02T12:03:36.744Z",
+  "through": "2026-10-05T13:17:29.468Z",
+  "processed": 2235,
+  "timing": {
+    "sourceMs": 2834.5227,
+    "replayMs": 3030.594,
+    "totalMs": 5865.1167
+  },
+  "report": {
+    "schemaVersion": 1,
+    "mode": "stable_two_side_trade_tape_paper_v1",
+    "cohort": "baal-stable-spread-20261005-v1-development",
+    "bankHash": "8a79cd95519b544e4e9bdffeef84a95e232e89d89277f03de397314a646abf75",
+    "updatedAt": "2026-10-05T13:17:29.468Z",
+    "cutoff": "2026-10-04T16:59:49.117Z",
+    "counts": {
+      "unstable_or_warmup": 216,
+      "book_ineligible": 1080,
+      "spread_or_depth": 976,
+      "source_boundary": 22,
+      "history_gap": 3
+    },
+    "wallets": {
+      "YES": {
+        "cash": "100.000000",
+        "realizedPnl": "0.000000",
+        "fees": "0.000000",
+        "cumulativeBuys": "0.000000",
+        "fills": 0,
+        "closedTrades": 0,
+        "positions": [],
+        "unresolvedQuotes": [],
+        "reserved": "0.000000",
+        "recentFills": [],
+        "estimatedLiquidationPnl": "0.000000"
+      },
+      "NO": {
+        "cash": "100.000000",
+        "realizedPnl": "0.000000",
+        "fees": "0.000000",
+        "cumulativeBuys": "0.000000",
+        "fills": 0,
+        "closedTrades": 0,
+        "positions": [],
+        "unresolvedQuotes": [],
+        "reserved": "0.000000",
+        "recentFills": [],
+        "estimatedLiquidationPnl": "0.000000"
+      }
+    },
+    "executionAuthority": false,
+    "competitionOrders": 0,
+    "networkRequests": 0,
+    "profitabilityEstablished": false,
+    "limitations": [
+      "Strict trade-through is a counterfactual fill assumption; anonymous trades do not prove our queue position or actual execution.",
+      "YES and NO wallets share opportunities, are correlated, and must not be added as independent returns.",
+      "Incomplete tape coverage retains cash and inventory reservations; source gaps do not create trades."
+    ]
+  },
+  "fills": {
+    "YES": [],
+    "NO": []
+  },
+  "networkRequests": 0,
+  "competitionOrders": 0,
+  "fees": 0,
+  "profitabilityEstablished": false
+}

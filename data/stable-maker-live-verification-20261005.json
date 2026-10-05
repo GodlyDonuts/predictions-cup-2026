@@ -1,0 +1,217 @@
+{
+  "schemaVersion": 1,
+  "at": "2026-10-05T13:48:22.586Z",
+  "claimComment": 5995596050,
+  "currentPids": {
+    "collector": 24252,
+    "dashboard": 20092,
+    "paper": 8236,
+    "metrics": null,
+    "contestActivation": true,
+    "retiredMetricsPid": 11792
+  },
+  "collector": {
+    "at": "2026-10-05T13:48:21.727Z",
+    "pid": 24252,
+    "status": "running",
+    "cycles": 1,
+    "errors": [],
+    "retiredPaperStrategies": {
+      "nativeDip": true,
+      "nativeQuote": true,
+      "legacyEntryModel": true,
+      "accountingPreserved": true,
+      "executionAuthority": false
+    },
+    "nativeDip": {
+      "status": "retired",
+      "executionAuthority": false
+    },
+    "nativeQuote": {
+      "status": "retired",
+      "executionAuthority": false
+    },
+    "scheduling": {
+      "managedMarketIds": [
+        "363",
+        "382",
+        "297",
+        "356"
+      ],
+      "entryMarketIds": [],
+      "overCapacity": true,
+      "reads": [
+        {
+          "marketId": "297",
+          "exchangeId": "986",
+          "option": "YES",
+          "path": "supplementalDepth",
+          "reason": "held_or_pending"
+        },
+        {
+          "marketId": "363",
+          "exchangeId": "1052",
+          "option": "YES",
+          "path": "supplementalDepth",
+          "reason": "held_or_pending"
+        },
+        {
+          "marketId": "382",
+          "exchangeId": "1071",
+          "option": "YES",
+          "path": "supplementalDepth",
+          "reason": "held_or_pending"
+        },
+        {
+          "marketId": "356",
+          "exchangeId": "1045",
+          "option": "YES",
+          "path": "supplementalDepth",
+          "reason": "held_or_pending"
+        }
+      ],
+      "nativeDiscovery": null
+    },
+    "auxiliary": {
+      "historyReads": 0,
+      "tapeReads": 1,
+      "totalReads": 1,
+      "reservedOrdinal": 2286,
+      "policy": "maker_tape_three_cycles_history_one_v1",
+      "executionAuthority": false
+    }
+  },
+  "stable": {
+    "bankHash": "64fa0771e801894f1d3b6b9f8b7cb561ddacd385dd1f139ef021cc303b8f0a98",
+    "cohort": "baal-stable-spread-20261005-v2-live",
+    "competitionOrders": 0,
+    "counts": {
+      "book_ineligible": 14,
+      "quote_buy": 4,
+      "quote_unfilled_resolved": 2,
+      "source_boundary": 1,
+      "unstable_or_warmup": 52
+    },
+    "cutoff": "2026-10-05T13:39:45.942Z",
+    "executionAuthority": false,
+    "failed": false,
+    "journalHash": "85c18a4e93167ce60e817ca6be755784583cad82072b7ba349dc1f485912d9ba",
+    "journalSequence": 62,
+    "lastEventAt": "2026-10-05T13:48:14.140Z",
+    "limitations": [
+      "Strict trade-through is a counterfactual fill assumption; anonymous trades do not prove our queue position or actual execution.",
+      "YES and NO wallets share opportunities, are correlated, and must not be added as independent returns.",
+      "Incomplete tape coverage retains cash and inventory reservations; source gaps do not create trades."
+    ],
+    "mode": "stable_two_side_trade_tape_paper_v2",
+    "networkRequests": 0,
+    "profitabilityEstablished": false,
+    "projectionRecoveryRequests": [
+      {
+        "exchangeId": "1071",
+        "from": "2026-10-05T13:45:19.180Z",
+        "key": "e8aaecf56ec351ed953952bd3f8f6d030d5ee01c13d967ff770b081617ac49ce",
+        "kind": "expired_paper_quote_coverage",
+        "marketId": "382",
+        "requiredCheckpoint": "52892428",
+        "schemaVersion": 1,
+        "to": "2026-10-05T13:47:16.180Z"
+      }
+    ],
+    "riskMarketIds": [
+      "382"
+    ],
+    "schemaVersion": 1,
+    "tapeSequence": 1484,
+    "updatedAt": "2026-10-05T13:48:14.145Z",
+    "wallets": {
+      "NO": {
+        "cash": "100.000000",
+        "closedTrades": 0,
+        "cumulativeBuys": "0.000000",
+        "estimatedLiquidationPnl": "0.000000",
+        "fees": "0.000000",
+        "fills": 0,
+        "positions": [],
+        "realizedPnl": "0.000000",
+        "recentFills": [],
+        "reserved": "0.800000",
+        "unresolvedQuotes": [
+          {
+            "action": "buy",
+            "activationAt": "2026-10-05T13:45:19.180Z",
+            "bookSequence": "52866379",
+            "bookVersion": "52866379:2026-10-05T13:45:16.695252600Z",
+            "coverageBarrierSequence": "52892428",
+            "createdAt": "2026-10-05T13:45:16.180Z",
+            "exchangeId": "1071",
+            "expiresAt": "2026-10-05T13:47:16.180Z",
+            "id": 4,
+            "limit": "0.800000",
+            "marketId": "382",
+            "publicationHash": "57557dd1eb1dc3625420bea3b90c997113443787134a2e965d6a020998e12773",
+            "publicationSequence": 22986,
+            "quantity": 1,
+            "resolution": null,
+            "resolvedAt": null,
+            "side": "NO",
+            "yesEquivalentLimit": "0.200000"
+          }
+        ]
+      },
+      "YES": {
+        "cash": "100.000000",
+        "closedTrades": 0,
+        "cumulativeBuys": "0.000000",
+        "estimatedLiquidationPnl": "0.000000",
+        "fees": "0.000000",
+        "fills": 0,
+        "positions": [],
+        "realizedPnl": "0.000000",
+        "recentFills": [],
+        "reserved": "0.195000",
+        "unresolvedQuotes": [
+          {
+            "action": "buy",
+            "activationAt": "2026-10-05T13:45:19.180Z",
+            "bookSequence": "52866379",
+            "bookVersion": "52866379:2026-10-05T13:45:16.695252600Z",
+            "coverageBarrierSequence": "52892428",
+            "createdAt": "2026-10-05T13:45:16.180Z",
+            "exchangeId": "1071",
+            "expiresAt": "2026-10-05T13:47:16.180Z",
+            "id": 3,
+            "limit": "0.195000",
+            "marketId": "382",
+            "publicationHash": "57557dd1eb1dc3625420bea3b90c997113443787134a2e965d6a020998e12773",
+            "publicationSequence": 22986,
+            "quantity": 1,
+            "resolution": null,
+            "resolvedAt": null,
+            "side": "YES",
+            "yesEquivalentLimit": "0.195000"
+          }
+        ]
+      }
+    }
+  },
+  "official": {
+    "status": "entry_window_closed",
+    "orders": 0,
+    "dispatchAttempts": 0,
+    "realizedPnl": "0.000000",
+    "profitabilityEstablished": false
+  },
+  "preservedActiveHashes": {
+    "native-quote-active.json": "1311b443fe76d1db73482596c0384b745c397544efd7d6e022abb90f4103b398",
+    "native-dip-intent-active.json": "61a2b4c639866b25e2b3accc9fd8180d7f0a877991a20d758d28d28facf15523",
+    "coordinated-network-budget.json": "7d507950881b42a18cd1ec71a78e07dc11beb9ab2884f9a6705ce38e37230375",
+    "competition-activation.json": "7803b21d01a36b51300dfb783c213456f24c801936f21a4618d3a59de2e5b228"
+  },
+  "originalPaperManifestsUnchanged": true,
+  "originalOfficialActivationUnchanged": true,
+  "additionalPersistentServices": 0,
+  "competitionOrdersFromWork": 0,
+  "networkClientsAdded": 0,
+  "profitabilityEstablished": false
+}

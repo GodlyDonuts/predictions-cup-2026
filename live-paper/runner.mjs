@@ -45,6 +45,7 @@ import {SettlementCompetitionController} from '../execution/settlement-controlle
 import {validateProductionActivation,productionHandoffCurrent} from '../execution/production-activation.mjs';
 import {openProductionMetadata} from './production-metadata.mjs';
 import {prioritizeProductionReads} from './production-read-priority.mjs';
+import {focusStableMakerReads} from './stable-maker-read-focus.mjs';
 import {loadNetworkBudget,networkInterval} from './transport-network-budget.mjs';
 import {collectionCycleWait} from './cycle-wait.mjs';
 import {loadMarketSweep,collectMarketSweep} from './market-sweep.mjs';
@@ -66,6 +67,7 @@ import {createTradeTape,selectAuxiliaryReads} from './trade-tape.mjs';
 import {guardCanonicalCapacity} from './canonical-capacity-guard.mjs';
 import {planMakerPairReads} from './maker-read-plan.mjs';
 import {createBaalReadAttention} from './baal-read-attention.mjs';
+import {openStableMakerHost,mergeMakerTapeFocus} from './stable-maker-host-v1.mjs';
 import {openNoMakerHost} from './no-maker-host.mjs';
 import {openNoMakerHostV2} from './no-maker-host-v2.mjs';
 import {openNoMakerHostV3} from './no-maker-host-v3.mjs';
@@ -111,7 +113,7 @@ let productionMetadata;
 const samplingSessionId=randomUUID();
 let universe,coverage,depthPlan,dipBank,scaleBank,responsiveBank,scheduler,schedulerScope;const recentReadTimings=[];
 let diagnosticSource,diagnosticLoading=false,diagnosticFailed=false;
-let canonicalCapacity,tradeTape,noMaker,baalReadAttention,baalPair,nativeDip,nativeQuote,eligibilityPublication,collectorMarketScreen;
+let canonicalCapacity,tradeTape,noMaker,stableMaker,retireNativePrices=false,baalReadAttention,baalPair,nativeDip,nativeQuote,eligibilityPublication,collectorMarketScreen;
 function collectDiagnosticFocus(){
  if(!diagnosticSource&&!diagnosticLoading&&!diagnosticFailed){diagnosticLoading=true;try{const source=openDiagnosticFocus(runtimeDir,universe,{deferBootstrap:true});source.initialize({stopped:()=>stopping}).then(()=>{diagnosticSource=source;diagnosticLoading=false;}).catch(()=>{diagnosticFailed=true;diagnosticLoading=false;});}catch{diagnosticFailed=true;diagnosticLoading=false;}}
  if(!diagnosticSource){runtime.diagnosticReadFocus={status:diagnosticFailed?'failed':'loading',executionAuthority:false};return null;}
@@ -153,6 +155,7 @@ function schedulingInputs(){
   if(baalPair)try{const risk=baalPair.status().riskMarketIds;inputs.heldMarketIds=[...new Set([...inputs.heldMarketIds,...risk])];}catch{runtime.baalPair={status:'failed',executionAuthority:false};baalPair=null;}
   if(nativeDip){const risk=nativeDip.status();runtime.nativeDip=risk;inputs.heldMarketIds=[...new Set([...inputs.heldMarketIds,...risk.heldMarketIds])];inputs.pendingMarketIds=[...new Set([...inputs.pendingMarketIds,...(risk.pendingMarketIds||[])])];}
   if(nativeQuote){const risk=nativeQuote.status();runtime.nativeQuote=risk;inputs.heldMarketIds=[...new Set([...inputs.heldMarketIds,...risk.heldMarketIds])];inputs.pendingMarketIds=[...new Set([...inputs.pendingMarketIds,...risk.pendingMarketIds])];}
+  if(stableMaker)try{const focus=stableMaker.focus();inputs.heldMarketIds=[...new Set([...inputs.heldMarketIds,...focus.riskMarketIds])];inputs.candidateMarketIds=[...new Set([...inputs.candidateMarketIds,...focus.candidateMarketIds])];runtime.stableMaker=focus;}catch{runtime.stableMaker={status:'failed',executionAuthority:false};stableMaker=null;}
   inputs.priorityManagedMarketIds=competition?.managedMarketIds()||[];
   inputs.heldMarketIds=[...new Set([...inputs.heldMarketIds,...inputs.priorityManagedMarketIds])];return inputs;
 }
@@ -210,6 +213,7 @@ function persistStatus(){const r=report(state,c);if(realtime)atomicJson(path.joi
 function commit(event){try{journal.commit(state,event);}catch{const e=Error('Paper journal recording failed');e.durableRecordingFailed=true;throw e;}}
 function publishBookEvent(method,value){try{const result=bookPublication?.[method](value);if(['invalidate','close'].includes(method)||method==='publishBook'&&result===false){
  if(noMaker)try{noMaker.boundary(method);runtime.noMaker=noMaker.status();}catch{runtime.noMaker={status:'failed',executionAuthority:false};noMaker=null;}
+ if(stableMaker)try{stableMaker.boundary(method);runtime.stableMaker=stableMaker.status();}catch{runtime.stableMaker={status:'failed',executionAuthority:false};stableMaker=null;}
  if(baalPair)try{baalPair.boundary(method);runtime.baalPair=baalPair.status();}catch{runtime.baalPair={status:'failed',executionAuthority:false};baalPair=null;}
  }return result;}catch{const e=Error('Public book recording failed');e.durableRecordingFailed=true;e.fatal=true;throw e;}}
 async function collectHistory(limit=2){
@@ -236,10 +240,13 @@ try{
   const marketSweep=loadMarketSweep(path.join(runtimeDir,'market-sweep.json'),universe,networkBudget);
   const pricePublication=marketSweep?createMarketPricePublication({file:path.join(runtimeDir,'market-prices.jsonl'),universe,canOperate:()=>!stopping}):null;
   comparisonRiskSource=createComparisonRiskSource({runtimeDir,universe,now:Date.now});
-  const nativeOptions={runtimeDir,universe,signal:control.signal,canOperate:()=>!stopping};nativeDip=fs.existsSync(path.join(runtimeDir,'native-dip-intent-active.json'))?openNativeDipIntentHost(nativeOptions):fs.existsSync(path.join(runtimeDir,'native-dip-cache-active.json'))?openNativeDipCacheHost(nativeOptions):openNativeDipHost(nativeOptions);
+  retireNativePrices=paperExperimentRetired(runtimeDir,'NATIVE_PRICE_PAPER_STOP');
+  if(retireNativePrices)runtime.retiredPaperStrategies={nativeDip:true,nativeQuote:true,legacyEntryModel:true,accountingPreserved:true,executionAuthority:false};
+  const nativeOptions={runtimeDir,universe,signal:control.signal,canOperate:()=>!stopping};nativeDip=retireNativePrices?null:fs.existsSync(path.join(runtimeDir,'native-dip-intent-active.json'))?openNativeDipIntentHost(nativeOptions):fs.existsSync(path.join(runtimeDir,'native-dip-cache-active.json'))?openNativeDipCacheHost(nativeOptions):openNativeDipHost(nativeOptions);
   nativeDip?.kick();
   eligibilityPublication=createAccountEligibilityPublication({file:path.join(runtimeDir,'account-eligibility.jsonl'),universe,canOperate:()=>!stopping});
-  nativeQuote=openNativeQuoteHost(nativeOptions);nativeQuote?.kick();
+  nativeQuote=retireNativePrices?null:openNativeQuoteHost(nativeOptions);nativeQuote?.kick();
+  if(retireNativePrices){runtime.nativeDip={status:'retired',executionAuthority:false};runtime.nativeQuote={status:'retired',executionAuthority:false};}
   if(nativeDip&&pricePublication)try{collectorMarketScreen=openCollectorMarketScreen({runtimeDir,universe,publisher:pricePublication,signal:control.signal,canOperate:()=>!stopping});collectorMarketScreen.initialize();}catch{const unavailable={available:false,status:'unavailable',reason:'COLLECTOR_MARKET_SCREEN_STARTUP_FAILED',candidateMarketIds:[],executionAuthority:false};collectorMarketScreen={projection:()=>unavailable,onPublished(){},close(){}};runtime.marketHistoryScreen=unavailable;}
   const publicationReplayStarted=performance.now();
   const nativePublication=collectorNativePublicationConfig(runtimeDir,universe),publicationOptions={file:path.join(runtimeDir,'public-books.jsonl'),universe,sessionId:randomUUID(),now:Date.now,canOperate:()=>!stopping};
@@ -263,7 +270,8 @@ try{
   productionMetadata=openProductionMetadata({runtimeDir,universe,dispatch:spec=>api.dispatch(spec),canOperate:()=>!stopping,now:Date.now});
   try{const activeFile=path.join(runtimeDir,'no-maker-active.json'),revision=fs.existsSync(activeFile)?JSON.parse(fs.readFileSync(activeFile)).hostRevision||1:1;if(![1,2,3,4,5].includes(revision))throw Error('Unknown maker host revision');const selected=revision===5?{open:openNoMakerHostV5,path:'live-paper/no-maker-host-v5.mjs',name:'openNoMakerHostV5'}:revision===4?{open:openNoMakerHostV4,path:'live-paper/no-maker-host-v4.mjs',name:'openNoMakerHostV4'}:revision===3?{open:openNoMakerHostV3,path:'live-paper/no-maker-host-v3.mjs',name:'openNoMakerHostV3'}:revision===2?{open:openNoMakerHostV2,path:'live-paper/no-maker-host-v2.mjs',name:'openNoMakerHostV2'}:{open:openNoMakerHost,path:'live-paper/no-maker-host.mjs',name:'openNoMakerHost'};let factory=selected.open;if(fs.existsSync(activeFile)){const manifest=JSON.parse(fs.readFileSync(activeFile)),bank=JSON.parse(fs.readFileSync(path.join(runtimeDir,'no-maker-cohorts',manifest.cohort,'bank.json')));const module=await frozenPaperModule({runtimeDir,bank,modulePath:selected.path,fallback:{[selected.name]:factory}});factory=module[selected.name];}noMaker=factory({runtimeDir,canOperate:()=>!stopping&&!api.manualReview});runtime.noMaker=noMaker?.status()||{status:'not_initialized',executionAuthority:false};}catch{runtime.noMaker={status:'failed',executionAuthority:false};}
   try{const pairFile=path.join(runtimeDir,'baal-pair-active.json'),revision=fs.existsSync(pairFile)?JSON.parse(fs.readFileSync(pairFile)).hostRevision||1:1;if(![1,2,3,4].includes(revision))throw Error('Unknown pair host revision');let factory=revision===4?openBaalPairHostV4:revision===3?openBaalPairHostV3:revision===2?openBaalPairHostV2:openBaalPairHost;if(fs.existsSync(pairFile)){const manifest=JSON.parse(fs.readFileSync(pairFile)),bank=JSON.parse(fs.readFileSync(path.join(runtimeDir,'baal-pair-cohorts',manifest.cohort,'bank.json')));const module=await frozenPaperModule({runtimeDir,bank,modulePath:revision===4?'live-paper/baal-pair-host-v4.mjs':revision===3?'live-paper/baal-pair-host-v3.mjs':revision===2?'live-paper/baal-pair-host-v2.mjs':'live-paper/baal-pair-host.mjs',fallback:{openBaalPairHost:factory}});factory=module.openBaalPairHost;}baalPair=factory({runtimeDir,canOperate:()=>!stopping&&!api.manualReview});runtime.baalPair=baalPair?.status()||{status:'not_initialized',executionAuthority:false};}catch{runtime.baalPair={status:'failed',executionAuthority:false};}
-  try{tradeTape=createTradeTape({runtimeDir,universe,canOperate:()=>!stopping&&!api.manualReview,onPage:row=>{if(noMaker)try{noMaker.onPage(row);runtime.noMaker=noMaker.status();}catch{runtime.noMaker={status:'failed',executionAuthority:false};noMaker=null;}}});runtime.tradeTape=tradeTape.status();}catch{runtime.tradeTape={status:'unavailable',executionAuthority:false};}
+  try{const activeFile=path.join(runtimeDir,'stable-maker-active.json');if(fs.existsSync(activeFile)){const active=JSON.parse(fs.readFileSync(activeFile)),bank=JSON.parse(fs.readFileSync(path.join(runtimeDir,'stable-maker-cohorts',active.cohort,'bank.json'))),module=await frozenPaperModule({runtimeDir,bank,modulePath:'live-paper/stable-maker-host-v1.mjs',fallback:{openStableMakerHost}});stableMaker=module.openStableMakerHost({runtimeDir,canOperate:()=>!stopping&&!api.manualReview});runtime.stableMaker=stableMaker.status();}}catch{runtime.stableMaker={status:'failed',executionAuthority:false};}
+  try{tradeTape=createTradeTape({runtimeDir,universe,canOperate:()=>!stopping&&!api.manualReview,onPage:row=>{if(noMaker)try{noMaker.onPage(row);runtime.noMaker=noMaker.status();}catch{runtime.noMaker={status:'failed',executionAuthority:false};noMaker=null;}if(stableMaker)try{stableMaker.onPage(row);runtime.stableMaker=stableMaker.status();}catch{runtime.stableMaker={status:'failed',executionAuthority:false};stableMaker=null;}}});runtime.tradeTape=tradeTape.status();}catch{runtime.tradeTape={status:'unavailable',executionAuthority:false};}
   baalReadAttention=createBaalReadAttention({runtimeDir,tournamentId:universe.tournamentId,canOperate:()=>!stopping&&!api.manualReview});
   basketRelationships=createBasketRelationshipReader({tournamentId:c.tournamentId,now:Date.now,dispatch:spec=>api.dispatch(spec),canOperate:()=>!stopping&&!api.manualReview&&!fs.existsSync(stopFile)&&!fs.existsSync(paperStop)&&!fs.existsSync(collectorStop)&&!fs.existsSync(path.join(runtimeDir,'BASKET_STOP'))});
   contractEvidence=createContractEvidenceReader({tournamentId:c.tournamentId,legs:[{marketId:'381',exchangeId:'1070',contractId:'382'},{marketId:'382',exchangeId:'1071',contractId:'383'}],now:Date.now,dispatch:spec=>api.dispatch(spec),canOperate:()=>!stopping&&!api.manualReview&&!fs.existsSync(stopFile)&&!fs.existsSync(paperStop)&&!fs.existsSync(collectorStop)&&!fs.existsSync(path.join(runtimeDir,'BASKET_STOP'))});
@@ -341,7 +349,7 @@ try{
     const cycleStart=Date.now(),checkpoint=structuredClone(state);const events=[];let successful=0,cycleCommitted=false;
     try{
       if(dipBank){
-        const makerStatus=noMaker?.status(),makerRisk=makerStatus?.riskMarketIds||[],makerActive=!!noMaker&&!makerStatus.failed&&(makerRisk.length>0||Date.now()<Date.parse(noMaker.bank.reviewExpiresAt));
+        const makerStatus=noMaker?.status(),stableStatus=stableMaker?.status(),makerFocus=mergeMakerTapeFocus(makerStatus,stableStatus),oldMakerActive=!!noMaker&&!makerStatus.failed&&(makerStatus.riskMarketIds.length>0||Date.now()<Date.parse(noMaker.bank.reviewExpiresAt)),stableActive=!!stableMaker&&!stableStatus.failed&&(stableStatus.riskMarketIds.length>0||Date.now()<Date.parse(stableMaker.bank.entryExpiresAt)),makerActive=oldMakerActive||stableActive;
         const auxiliary=baalReadAttention.reserve(officialSync?1:2,{makerActive});runtime.auxiliaryReadAllocation=auxiliary;
         if(productionMetadata?.pending()&&(auxiliary.historyReads||auxiliary.tapeReads)&&!stopping&&api.cooldown<=Date.now()){
           await productionMetadata.consumeOne();
@@ -349,7 +357,7 @@ try{
           runtime.productionMetadata={status:'requested_contract_read_completed',executionAuthority:false,additionalReadSlots:0};
         }
         if(auxiliary.tapeReads&&tradeTape&&!stopping&&api.cooldown<=Date.now()){
-          try{runtime.tradeTape=await tradeTape.collect(spec=>api.dispatch(spec),['363','297','381','382'],{priorityMarketIds:makerActive?(makerRisk.length?makerRisk:noMaker.bank.legs.map(l=>l.marketId)):[],recoveryWindows:makerStatus?.projectionRecoveryRequests||[]});}
+          try{runtime.tradeTape=await tradeTape.collect(spec=>api.dispatch(spec),['363','297','381','382'],{priorityMarketIds:makerFocus.riskMarketIds.length?makerFocus.riskMarketIds:[...new Set([...(oldMakerActive?noMaker.bank.legs.map(l=>l.marketId):[]),...(stableActive?stableMaker.bank.legs.map(l=>l.marketId):[])])],recoveryWindows:makerFocus.projectionRecoveryRequests});}
           catch(e){if(e.durableRecordingFailed||api.manualReview||e.status===401||e.status===403)throw e;if(!stopping)runtime.tradeTape={...tradeTape.status(),status:'degraded',lastErrorAt:new Date().toISOString(),reason:e.status?'http_'+e.status:/^TRADE_TAPE_[A-Z_]+$/.test(e.message)?e.message:'trade_tape_unavailable'};}
         }
         if(auxiliary.historyReads)await collectHistory(auxiliary.historyReads);
@@ -367,11 +375,14 @@ try{
       // or reorder candidates between the controller and these book requests.
       const probabilityFocus=mergeProbabilityReadFocus([readProbabilityReadFocus(runtimeDir,universe,Date.now()),readProbabilityReadFocus(runtimeDir,universe,Date.now(),'calibrated-poll-paper-active.json')]),bulkFocus=readBulkReadFocus(runtimeDir,universe,Date.now()),anchorFocus=readAnchorReadFocus(runtimeDir,universe,Date.now()),diagnosticFocus=collectDiagnosticFocus(),paperFocus=mergePaperReadFocus(anchorFocus,bulkFocus,probabilityFocus,diagnosticFocus);
       const inputs=schedulingInputs();
-      if(nativeDip){for(const x of paperFocus.markets||[])if(['held','exit_pending','entry_pending'].includes(x.phase)){const key=x.phase==='entry_pending'?'pendingMarketIds':'heldMarketIds';inputs[key]=[...new Set([...inputs[key],x.marketId])];}
-       const members=new Map(universe.exchanges.map(x=>[x.exchangeId+':YES',x.marketId])),legacy=state.strategies.mean_reversion;
+      const retainedPaperFocus=nativeDip?paperFocus:probabilityFocus;
+      for(const x of retainedPaperFocus?.markets||[])if(['held','exit_pending','entry_pending'].includes(x.phase)){const key=x.phase==='entry_pending'?'pendingMarketIds':'heldMarketIds';inputs[key]=[...new Set([...inputs[key],x.marketId])];}
+      if(nativeDip){const members=new Map(universe.exchanges.map(x=>[x.exchangeId+':YES',x.marketId])),legacy=state.strategies.mean_reversion;
        for(const [rows,key] of [[legacy.positions,'heldMarketIds'],[legacy.pending,'pendingMarketIds']])for(const id of Object.keys(rows)){const marketId=members.get(id);if(!marketId)throw Error('Unmapped original active paper risk');inputs[key]=[...new Set([...inputs[key],marketId])];}}
       const productionCandidates=competition?.eligibleMarketIds()||[];
-      const basePlan=nativeDip?planNativeDiscoveryBooks(scheduler,schedulerScope,inputs,{screenedMarketIds:[...new Set([...productionCandidates,...(runtime.marketHistoryScreen?.candidateMarketIds||[])])],excludedMarketIds:universe.exchanges.filter(x=>excluded.has(x.exchangeId)).map(x=>x.marketId),ownedRiskMarketIds:[...new Set([...(competition?.managedMarketIds()||[]),...(probabilityFocus?.ownedRiskReads===true?probabilityFocus.markets.filter(x=>x.phase==='held').map(x=>x.marketId):[])])]}):dipBank?planBookReads(scheduler,schedulerScope,inputs):{reads:[...c.marketIds.map(marketId=>({marketId,path:'sourceSnapshots'})),...depthPlan.marketIds.map(marketId=>({marketId,path:'supplementalDepth'}))],entryMarketIds:[]};
+      const ownedRiskIds=new Set([...(competition?.managedMarketIds()||[]),...(probabilityFocus?.ownedRiskReads===true?probabilityFocus.markets.filter(x=>x.phase==='held').map(x=>x.marketId):[])]);
+      inputs.excludedMarketIds=(inputs.excludedMarketIds||[]).filter(id=>!ownedRiskIds.has(id));
+      const basePlan=nativeDip?planNativeDiscoveryBooks(scheduler,schedulerScope,inputs,{screenedMarketIds:[...new Set([...productionCandidates,...(runtime.marketHistoryScreen?.candidateMarketIds||[])])],excludedMarketIds:universe.exchanges.filter(x=>excluded.has(x.exchangeId)).map(x=>x.marketId),ownedRiskMarketIds:[...new Set([...(competition?.managedMarketIds()||[]),...(probabilityFocus?.ownedRiskReads===true?probabilityFocus.markets.filter(x=>x.phase==='held').map(x=>x.marketId):[])])]}):dipBank?planBookReads(scheduler,schedulerScope,inputs,{comparisonSlots:stableMaker?0:2}):{reads:[...c.marketIds.map(marketId=>({marketId,path:'sourceSnapshots'})),...depthPlan.marketIds.map(marketId=>({marketId,path:'supplementalDepth'}))],entryMarketIds:[]};
       const pairedPlan=focusPairedPackageReads(comparisonSamplingPlan(basketMeasurementPlan(basePlan,excluded)),readPairedPackageFocus(runtimeDir,universe,Date.now()),{now:Date.now(),lastAttempts:scheduler?.packageReadLastAttemptAt||{}});
       const observationFocus=readEdgeObservationFocus(runtimeDir,universe,Date.now()),observationExclusions=universe.exchanges.filter(x=>excluded.has(x.exchangeId)).map(x=>x.marketId);
       const observation=planEdgeObservation(pairedPlan,scheduler,universe,{focus:observationFocus,now:Date.now(),excludedMarketIds:observationExclusions,coverage});
@@ -385,6 +396,7 @@ try{
       runtime.makerPairFocus=planned.makerPairFocus||runtime.makerPairFocus||null;
       runtime.canonicalCapacityFocus=planned.canonicalCapacityFocus||null;
       runtime.paperPackageFocus=planned.paperPackageFocus||null;
+      if(stableMaker)planned=focusStableMakerReads(planned,stableMaker.focus(),universe,{now:Date.now(),protectedMarketIds:[...new Set([...(inputs.heldMarketIds||[]),...(inputs.pendingMarketIds||[]),...productionCandidates])],excludedMarketIds:observationExclusions});
       if(competition)planned=prioritizeProductionReads(planned,{candidateMarketIds:productionCandidates,ownedMarketIds:competition.managedMarketIds()});
       if(competition)try{await competition.beforeBooks({positions,orders,ordersAt:new Date().toISOString(),candidateMarketIds:planned.reads.map(x=>x.marketId).filter(id=>productionCandidates.includes(id))});}catch(e){competition.failure(e);}
       const supplementalDepth=[],samplingReservations=[],samplingReceipts=[];
@@ -405,11 +417,12 @@ try{
           if(competition)try{await competition.onBook(r);}catch(e){competition.failure(e);}
           publishBookEvent('publishBook',{marketId,response:r});
           if(noMaker)try{noMaker.onBook(bookPublication.status(),marketId,probabilityAccountEligibility(accountCache));runtime.noMaker=noMaker.status();}catch{runtime.noMaker={status:'failed',executionAuthority:false};noMaker=null;}
+          if(stableMaker)try{stableMaker.onBook(bookPublication.status(),marketId,probabilityAccountEligibility(accountCache));runtime.stableMaker=stableMaker.status();}catch{runtime.stableMaker={status:'failed',executionAuthority:false};stableMaker=null;}
           if(baalPair)try{baalPair.onBook(bookPublication.status(),marketId,probabilityAccountEligibility(accountCache));runtime.baalPair=baalPair.status();}catch{runtime.baalPair={status:'failed',executionAuthority:false};baalPair=null;}
           if(canonicalCapacity)try{canonicalCapacity.inspect(bookPublication.status());runtime.canonicalCapacity=canonicalCapacity.status();}catch{canonicalCapacity=null;runtime.canonicalCapacity={status:'failed',executionAuthority:false};}
           const b=normalizeBook(r.data,marketId,c.tournamentId,r.receivedAt,r.requestStartedAt,c.maxDataAgeMs,excluded,spec.path==='sourceSnapshots'?'event_age_v1':dipBank?'authoritative_receipt_v1':'event_age_v1');
           if(b.exchangeId!==universe.exchanges.find(x=>x.marketId===marketId).exchangeId)throw Error('Book exchange identity mismatch');
-          if(spec.path==='sourceSnapshots'){try{state=observe(state,b,c);}catch(e){e.fatal=true;throw e;}}
+          if(spec.path==='sourceSnapshots'&&!retireNativePrices){try{state=observe(state,b,c);}catch(e){e.fatal=true;throw e;}}
           successful++;
         }catch(e){if(e.durableRecordingFailed)throw e;if(stopping)break;if(!receivedBook)publishBookEvent('invalidate',{marketId,reason:'BOOK_READ_FAILED'});if(e.fatal||api.manualReview||e.status===401||e.status===403)throw e;const reason=e.status?'http_'+e.status:e.message,at=new Date().toISOString();if(spec.path==='sourceSnapshots'){state.skips[marketId]={at,reason};invalidate(state,marketId,at,reason);}target.push({marketId,skipped:reason,at});if(e.status===429||e.status===503)break;}
       }

@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "at": "2026-10-05T14:00:01.890Z",
+  "claimComment": 5995596050,
+  "profitabilityEstablished": false,
+  "mechanisms": {
+    "result": "native-mechanisms-future-1791205489070.json",
+    "fixedCases": 36,
+    "negativeCases": 36,
+    "meanRange": [
+      -0.032916666666666664,
+      -0.008
+    ],
+    "observedPerCase": [
+      5,
+      30
+    ],
+    "quoteSpanDays": 2.7583838657407407,
+    "continuousData": false
+  },
+  "implementation": {
+    "mode": "stable_two_side_trade_tape_paper_v2",
+    "bankHash": "64fa0771e801894f1d3b6b9f8b7cb561ddacd385dd1f139ef021cc303b8f0a98",
+    "cutoff": "2026-10-05T13:39:45.942Z",
+    "liveEvidence": "stable-maker-live-verification-final-20261005.json",
+    "fills": {
+      "NO": {
+        "fills": 0,
+        "closedTrades": 0,
+        "realizedPnl": "0.000000"
+      },
+      "YES": {
+        "fills": 0,
+        "closedTrades": 0,
+        "realizedPnl": "0.000000"
+      }
+    },
+    "preservedOldBanks": true,
+    "fees": 0,
+    "checksPassed": 94,
+    "servicesAdded": 0,
+    "networkClientsAdded": 0,
+    "competitionOrders": 0
+  },
+  "next": "Observe subsequent paper fills, completed round trips and adverse selection using exact recovered tape windows; preserve frozen policy and ownership."
+}

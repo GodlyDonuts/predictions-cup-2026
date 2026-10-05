@@ -1,0 +1,137 @@
+{
+  "schemaVersion": 1,
+  "at": "2026-10-05T13:39:45.942Z",
+  "bankHash": "64fa0771e801894f1d3b6b9f8b7cb561ddacd385dd1f139ef021cc303b8f0a98",
+  "snapshot": "a4b573c8b0db7e5987f4e625a238d8ff48cff25ae948576c264f1c7122531c26",
+  "bank": {
+    "schemaVersion": 1,
+    "mode": "stable_two_side_trade_tape_paper_v2",
+    "name": "baal-stable-spread-20261005-v2-live",
+    "cutoff": "2026-10-05T13:39:45.942Z",
+    "entryExpiresAt": "2026-10-05T19:39:45.942Z",
+    "tournamentId": "bda92870-621e-47b0-bc3c-3602c5c26f55",
+    "legs": [
+      {
+        "marketId": "363",
+        "exchangeId": "1052"
+      },
+      {
+        "marketId": "297",
+        "exchangeId": "986"
+      },
+      {
+        "marketId": "381",
+        "exchangeId": "1070"
+      },
+      {
+        "marketId": "382",
+        "exchangeId": "1071"
+      }
+    ],
+    "policy": {
+      "schemaVersion": 2,
+      "initialCash": "100.000000",
+      "maximumReservedAndOwned": "5.000000",
+      "maximumOwnedMarkets": 3,
+      "cumulativeBuyBudget": "25.000000",
+      "quantity": 1,
+      "latencyMs": 3000,
+      "lifetimeMs": 120000,
+      "cooldownMs": 60000,
+      "maximumHoldMs": 7200000,
+      "stopLoss": "0.030000",
+      "profitTarget": "0.005000",
+      "exitAdverseTicks": 1,
+      "depthFractionBps": 100,
+      "feePerShare": "0.000000",
+      "historyMs": 300000,
+      "minimumHistorySpanMs": 240000,
+      "minimumDistinctMinutes": 4,
+      "maximumHistoryGapMs": 120000,
+      "maximumMidpointRange": "0.005000",
+      "minimumSpread": "0.005000",
+      "maximumSpread": "0.050000",
+      "improvementTicks": 0,
+      "families": [
+        "YES",
+        "NO"
+      ],
+      "fillModel": "hypothetical_strict_trade_through_not_proven_execution"
+    },
+    "codeIdentity": {
+      "../execution/api-tick-price.mjs": "ba162da4a3d388b60e31280ebf02315c2de3407370d785d0c646b4c3f8ff463a",
+      "../execution/core.mjs": "8598dd7fd9574a9197b8791d9cd7801d27e2b71bc473515dba9e775924b458d4",
+      "../execution/ledger.mjs": "523ee3fd04f995983ee3ffc03b5ee8dbdf629a718ba91c17d08026fe2411b5c4",
+      "../feed/contract.mjs": "39b9b30a72093d99697bc03a3b20f88f1d835507219fc46f7a00bd28fe761465",
+      "../feed/runtime.mjs": "51327d008ad4c9c479b25c14186edeff02f7671bf5efcd367b4b42f06abc884d",
+      "breadth-context.mjs": "76b0c70bfac6db5a9d127fc4476e9b4c7b0a2af84d07e3c8a509446c510abbc4",
+      "candidate-plan.mjs": "a77ef19ae469a52ead8be9ab383c4e71c6c173d1278703aac0a4510e03edd0c4",
+      "canonical-entry-exit-study.mjs": "caac39b144328fa5914f83df7a1fea2f149f84bf9993dbb401ed980a45a828d5",
+      "depth-scope.mjs": "6b8f329dcaf84e220bd708edd19c69703cc35362aca3acd0929b86e81749a92c",
+      "execution-metrics.mjs": "f5585994a1f1bb1c079719624e6dafca6e89e1e60b9ff32e609dca8d4caef7c6",
+      "frozen-paper-graph.mjs": "4d5e607cd11d0f5f60aadf9268e6e80fda757910da032b6eaeabea9b5b1f17bf",
+      "gpu-inference.mjs": "0d59a963ec3cc310af6a8e1b56616a4352f8319ec883184f64d367432c28fff8",
+      "history-policy.mjs": "1cf281e6e0410f5731e7d08106a479c77851575fb61d93cce51217058dcf291b",
+      "history.mjs": "d820b9d74752df3c2ecc28df3b1662bbc93080f4605db21a838d8957bf82c890",
+      "journal-lines.mjs": "f8adff2bddc36b4e3d305dec9395fae9f51dff957e35313994b6147502cc6823",
+      "label-paths.mjs": "a431d88b107ace940b18742a7e7f19fb676eca0d4d458febad35d0311270a85b",
+      "latency-clock.mjs": "e0b79a03fbf1df2a3e82594be10e87917bd77f4fc436a0bb5133c9c1032e1984",
+      "ml-bank.mjs": "9060b1e63228139309ed8a53a5c733656c282f1eb83476e64c06520cbda27f25",
+      "ml-shadow.mjs": "a95b25354fa79f0a71358d2bad327eb7dbc04a5629a11b56fa298190bc4d8870",
+      "model.mjs": "3cb8bbd7d31b478fe917270393954382373695149310243eec8b78440d207a2e",
+      "network-budget.mjs": "a5a51f29a2ccd0cdf7a09a2a454907ddd98a74729f3edad0b7989855ff2dd435",
+      "probability-paper.mjs": "53569a7e2262355faf9601aae3a181eddbf91c26bc8eb0b2c990377a3ce72b3e",
+      "probability-receipt.mjs": "5a3fad02baca0eb519642b2f1cc53ec06ec4bdad7829b937d13891ac52d4e8a6",
+      "quote-projection-recovery.mjs": "574666c18aa18f99c1e3212fcdffb4faa643f1ee7eb2a2232c488fd24e015f96",
+      "replay.mjs": "c4e26e34c01f7d5cf909bc9096bfa83821111f5fe62b201d4cf0be3bc8f9063d",
+      "roundtrip-target.mjs": "be543efab3267aae8f28aba04a44d5050fdd3ab50e1f2b75210347d23e4853e9",
+      "runtime.mjs": "2efad72e778ed5bd37387ae357b0cbd49dc1e2227db401a71684f68ce539471a",
+      "snapshot-order.mjs": "e007c15a6e45d4003eed839d2c1525de1791f65c4c695123826fdedcaa2039c0",
+      "stable-maker-host-v1.mjs": "c544a56dfbe887aa6a60654798d939387d5394036ee84417baff81eb04f3d0e8",
+      "stable-maker-paper-v2.mjs": "5a66bad5cbf55d4cc2e55882a853e12747753caf0f754f172c0f209a2e17fda6",
+      "training-horizons.mjs": "6d590797649db420fc67aa2380950e1d211ab9d0ba98c4cafc198a7b197a9176",
+      "training-options.mjs": "0fed926595027fc9a3df761f754b29c7132fc04fee03f28fd442476c10e277de",
+      "training-source.mjs": "ee52157f082b90859ab3b6d91290c2b9977f8726dedf4b1909f15138f0badedd",
+      "transport-network-budget.mjs": "7e85b338fca9e834d6fcac9e650a3eacf46601c8be04bfa1717de63df2bc5d30",
+      "transport-runtime.mjs": "fae4f871bcd07ecbd57c66df8425e07de4356bb1cd7f4de2ae8e80a51818b0fd",
+      "../paper/fixed.mjs": "a0947ef49854d4a3bf4bce88034aaef5d8aabbdc7e29dff3a7b9b4bc01b072f7"
+    },
+    "tapePrefixBytes": 11243773,
+    "tapePrefixHash": "9d5537b11d55581566e0fe6a38efe534578300fa2afe75690273a94576f63d00",
+    "tapePrefixSequence": 1472,
+    "tapePrefixTailHash": "8544dbc8d564401caf33e74200f3c9d429254d26db1b18a0f11b08725f24eda7",
+    "protocolFileHash": "db37edf31b1430e36fcc2732c5f2af7c7f054cdcdce3dc3507552f6459239ed7",
+    "developmentResultHash": "ab3d0192cc917dbfce1c1c396d5e1835bfb64c3a926eefa7b4c0487d218730b6",
+    "counterfactualOnly": true,
+    "executionAuthority": false,
+    "competitionOrders": 0,
+    "fees": 0,
+    "profitabilityEstablished": false
+  },
+  "retirement": {
+    "owner": "Codex",
+    "at": "2026-10-05T13:39:45.942Z",
+    "reason": "Retired obsolete experiment at human request",
+    "restartRequires": "Explicitly selected future experiment",
+    "scope": [
+      "native_dip_paper",
+      "native_quote_paper",
+      "legacy_price_entry_model"
+    ],
+    "humanInstruction": "Stop everything and focus on profitability",
+    "competitionExecutionChanged": false
+  },
+  "initialPaperState": {
+    "YES": {
+      "cash": "100.000000",
+      "fills": 0
+    },
+    "NO": {
+      "cash": "100.000000",
+      "fills": 0
+    }
+  },
+  "originalWalletsReset": false,
+  "newServices": 0,
+  "officialActivationChanged": false
+}

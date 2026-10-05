@@ -1,3 +1,7 @@
+# October 5: stable spread paper implementation
+
+The losing price-entry engines are retired. A new frozen passive paper cohort joins stable prices, seeks a one-tick covered exit and reconciles strict anonymous-trade projection windows. It runs inside the existing collector, with zero fees and no extra services. Spare reads now build continuous history; existing official and source-probability risk retains priority. **No profitability is established and no new official orders were sent.** See [implementation and measured evidence](docs/STABLE_SPREAD.md). Older timestamps and results below remain historical.
+
 # October5: paper exits now have a matching native production policy
 
 The new separately built receipt policy matches one-share paper take-profit, stop, horizon, conservative prices and cooldown, with durable risk exits and idempotency. It is a checked production candidate, not an activated strategy. The actual12:48UTC native diagnostic still showed Kansas paper liquidation P&L−0.015 and no realized profit. See [implementation and evidence](execution/receipt-production.md). The original official entry window remains closed.
