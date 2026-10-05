@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "recordedAt": "2026-10-05T22:23:16.175Z",
+  "recordedAt": "2026-10-05T22:32:59.359Z",
   "mode": "offline_actual_Node_ReadClient_Rust_core_parity",
-  "binarySha256": "ad5741473c56e57ac1065846a79ca25a48afdd77ab1642bfa0ae778c74bf72d7",
+  "binarySha256": "8807e152357ddbde16d1b738f08854d972eaa324f50f56c2ba742bba1d9ef3e9",
   "scenarios": [
     {
       "scenario": "mixed_completion_pacing",

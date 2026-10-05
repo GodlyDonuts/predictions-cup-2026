@@ -45,6 +45,7 @@ import {CompetitionController} from '../execution/controller.mjs';
 import {SettlementCompetitionController} from '../execution/settlement-controller.mjs';
 import {validateProductionActivation,productionHandoffCurrent} from '../execution/production-activation.mjs';
 import {openProductionMetadata} from './production-metadata.mjs';
+import {openPairedCandidateCollector} from './paired-candidate-collector.mjs';
 import {prioritizeProductionReads} from './production-read-priority.mjs';
 import {focusStableMakerReads} from './stable-maker-read-focus.mjs';
 import {focusCoupledBulkReads} from './coupled-bulk-read-focus.mjs';
@@ -122,7 +123,7 @@ const stop=(cause='unspecified',errorCode=null)=>{
 };process.on('SIGINT',()=>stop('SIGINT'));process.on('SIGTERM',()=>stop('SIGTERM'));
 const stopWatch=setInterval(()=>{for(const [file,cause]of [[stopFile,'workspace_STOP'],[paperStop,'runtime_STOP'],[collectorStop,'COLLECTOR_STOP']])if(fs.existsSync(file)){stop(cause);break;}},200);
 let journal,state,api,server,heartbeat,competition,realtime,realtimeCapture,basketRelationships,contractEvidence,bookPublication,basketFollowupSource,basketFollowupBankHash,comparisonRiskSource,settlementPaper,dualNoPaper,dualNoPaperV2;
-let productionMetadata;
+let productionMetadata,pairedCandidate,candidateAccount=null;
 const samplingSessionId=randomUUID();
 let universe,coverage,depthPlan,dipBank,scaleBank,responsiveBank,scheduler,schedulerScope;const recentReadTimings=[];
 let diagnosticSource,diagnosticLoading=false,diagnosticFailed=false;
@@ -288,8 +289,9 @@ try{
     moneyReceiptWriter??=createMoneyReceiptWriter(path.join(runtimeDir,'exact-money-receipts.jsonl'),{canCommit:()=>!stopping&&!control.signal.aborted&&!fs.existsSync(stopFile)&&!fs.existsSync(paperStop)&&!fs.existsSync(collectorStop)});
     const checkpoint=moneyReceiptWriter(receipt);runtime.exactMoneyReceipts={sequence:checkpoint.sequence,lastKind:receipt.kind,receivedAt:receipt.receivedAt,exact:Object.values(receipt.fields).every(x=>x.available),executionAuthority:false};
   }});
-  api=new ReadClient(loadKey(),{fetchFn:moneyFetch,interval:c.readIntervalMs,networkBudget,signal:control.signal,authorizeDispatch:spec=>productionMetadata?.authorizes(spec)===true||tradeTape?.authorizes(spec)===true||contractEvidence?.authorizes(spec)===true||basketRelationships?.authorizes(spec)===true||realtime?.authorizes(spec)===true||competition?.transport.authorizeRequest(spec)===true,onAdmission:next=>atomicJson(path.join(runtimeDir,'rate.json'),{next,manualReview:next===null}),onTiming:event=>{validateTiming(event);fs.appendFileSync(path.join(runtimeDir,'read-timings.jsonl'),JSON.stringify(event)+'\n',{mode:0o600});recentReadTimings.push(event);if(recentReadTimings.length>1000)recentReadTimings.shift();runtime.readTiming=timingSummary(recentReadTimings);}});
+  api=new ReadClient(loadKey(),{fetchFn:moneyFetch,interval:c.readIntervalMs,networkBudget,signal:control.signal,authorizeDispatch:spec=>pairedCandidate?.authorizes(spec)===true||productionMetadata?.authorizes(spec)===true||tradeTape?.authorizes(spec)===true||contractEvidence?.authorizes(spec)===true||basketRelationships?.authorizes(spec)===true||realtime?.authorizes(spec)===true||competition?.transport.authorizeRequest(spec)===true,onAdmission:next=>atomicJson(path.join(runtimeDir,'rate.json'),{next,manualReview:next===null}),onTiming:event=>{validateTiming(event);fs.appendFileSync(path.join(runtimeDir,'read-timings.jsonl'),JSON.stringify(event)+'\n',{mode:0o600});recentReadTimings.push(event);if(recentReadTimings.length>1000)recentReadTimings.shift();runtime.readTiming=timingSummary(recentReadTimings);}});
   productionMetadata=openProductionMetadata({runtimeDir,universe,dispatch:spec=>api.dispatch(spec),canOperate:()=>!stopping,now:Date.now});
+  pairedCandidate=openPairedCandidateCollector({runtimeDir,universe,dispatch:spec=>api.dispatch(spec),reserve:n=>baalReadAttention.reserve(n),getAccountEligibility:()=>candidateAccount,signal:control.signal,canOperate:()=>!stopping&&!api.manualReview&&!fs.existsSync(stopFile)&&!fs.existsSync(paperStop)&&!fs.existsSync(collectorStop),headroom:({reads})=>!stopping&&!api.manualReview&&api.cooldown<=Date.now()&&recentReadTimings.filter(x=>x.admittedAt&&Date.now()-Date.parse(x.admittedAt)<=60000).length+reads+2<=60,now:Date.now});
   const retiredNoMaker=readExpiredFlatPaperRetirement(runtimeDir,'no-maker-active.json','no-maker-cohorts');if(retiredNoMaker)runtime.noMaker=retiredNoMaker;else
   try{const activeFile=path.join(runtimeDir,'no-maker-active.json'),revision=fs.existsSync(activeFile)?JSON.parse(fs.readFileSync(activeFile)).hostRevision||1:1;if(![1,2,3,4,5].includes(revision))throw Error('Unknown maker host revision');const selected=revision===5?{open:openNoMakerHostV5,path:'live-paper/no-maker-host-v5.mjs',name:'openNoMakerHostV5'}:revision===4?{open:openNoMakerHostV4,path:'live-paper/no-maker-host-v4.mjs',name:'openNoMakerHostV4'}:revision===3?{open:openNoMakerHostV3,path:'live-paper/no-maker-host-v3.mjs',name:'openNoMakerHostV3'}:revision===2?{open:openNoMakerHostV2,path:'live-paper/no-maker-host-v2.mjs',name:'openNoMakerHostV2'}:{open:openNoMakerHost,path:'live-paper/no-maker-host.mjs',name:'openNoMakerHost'};let factory=selected.open;if(fs.existsSync(activeFile)){const manifest=JSON.parse(fs.readFileSync(activeFile)),bank=JSON.parse(fs.readFileSync(path.join(runtimeDir,'no-maker-cohorts',manifest.cohort,'bank.json')));const module=await frozenPaperModule({runtimeDir,bank,modulePath:selected.path,fallback:{[selected.name]:factory}});factory=module[selected.name];}noMaker=factory({runtimeDir,canOperate:()=>!stopping&&!api.manualReview});runtime.noMaker=noMaker?.status()||{status:'not_initialized',executionAuthority:false};}catch{runtime.noMaker={status:'failed',executionAuthority:false};}
   const retiredBaalPair=readExpiredFlatPaperRetirement(runtimeDir,'baal-pair-active.json','baal-pair-cohorts');if(retiredBaalPair)runtime.baalPair=retiredBaalPair;else
@@ -383,7 +385,7 @@ try{
         // During a bounded sprint, flat drained makers need no anonymous tape
         // and retired dip engines need no candle reads. Explicit metadata work
         // keeps its existing auxiliary slot. Account reconciliation is unchanged.
-        const auxiliary=baalReadAttention.reserve(profitSprintApplied?(productionMetadata?.pending()?1:0):(officialSync?1:2),{makerActive:profitSprintApplied?false:makerActive});runtime.auxiliaryReadAllocation=auxiliary;
+        const auxiliary=baalReadAttention.reserve(pairedCandidate?.pending()?0:profitSprintApplied?(productionMetadata?.pending()?1:0):(officialSync?1:2),{makerActive:profitSprintApplied?false:makerActive});runtime.auxiliaryReadAllocation=auxiliary;
         runtime.profitSprint={enabled:profitSprintApplied,reason:profitSprintApplied?'bounded_source_bound_risk_priority':'normal_or_liabilities_retained',executionAuthority:false};
         if(productionMetadata?.pending()&&(auxiliary.historyReads||auxiliary.tapeReads)&&!stopping&&api.cooldown<=Date.now()){
           await productionMetadata.consumeOne();
@@ -405,6 +407,8 @@ try{
       const eligibilityOrdersAt=new Date().toISOString();
       try{runtime.accountEligibility=eligibilityPublication?.publish({positions,orders,ordersAt:eligibilityOrdersAt});}catch{const e=Error('Account eligibility recording failed');e.durableRecordingFailed=true;e.fatal=true;throw e;}
       if(officialSync){try{accountCache.orders=accountOrders(orders,new Date().toISOString());delete accountCache.errors.orders;publishAccount();}catch{accountCache.errors.orders={at:new Date().toISOString(),reason:'unavailable_or_invalid'};publishAccount();}}
+      candidateAccount={complete:true,availableAt:eligibilityOrdersAt,snapshot:{schemaVersion:1,positionsAt:positions.receivedAt,ordersAt:eligibilityOrdersAt,excludedExchangeIds:[...excluded]}};
+      if(pairedCandidate?.pending()){await pairedCandidate.afterAccountRefresh();runtime.pairedCandidate=pairedCandidate.status();}
       // Freeze one plan before metadata selection; do not resample shadow state
       // or reorder candidates between the controller and these book requests.
       const probabilityFocus=mergeProbabilityReadFocus([readProbabilityReadFocus(runtimeDir,universe,Date.now()),readProbabilityReadFocus(runtimeDir,universe,Date.now(),'calibrated-poll-paper-active.json'),readProbabilityReadFocus(runtimeDir,universe,Date.now(),'primary-breadth-paper-active.json'),settlementPaper?.focus(),dualNoPaper?.focus(),dualNoPaperV2?.focus()]),bulkFocus=readBulkReadFocus(runtimeDir,universe,Date.now()),anchorFocus=readAnchorReadFocus(runtimeDir,universe,Date.now()),diagnosticFocus=collectDiagnosticFocus(),paperFocus=mergePaperReadFocus(anchorFocus,bulkFocus,probabilityFocus,diagnosticFocus);

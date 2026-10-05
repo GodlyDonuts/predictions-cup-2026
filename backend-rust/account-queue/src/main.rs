@@ -5,6 +5,8 @@ use std::{collections::BTreeMap, fs::{self, File, OpenOptions}, io::{BufRead, Bu
 
 const MAX_TIME: u64 = 8_640_000_000_000_000;
 const MAX_SAFE: u64 = 9_007_199_254_740_991;
+const MAX_ACTIVE_JOURNAL_BYTES: u64 = 64 * 1024 * 1024;
+const MAX_CHECKPOINT_BYTES: u64 = 256 * 1024 * 1024;
 type Result<T> = std::result::Result<T, String>;
 fn need(ok: bool, error: &str) -> Result<()> { if ok { Ok(()) } else { Err(error.into()) } }
 fn hash<T: Serialize>(v: &T) -> String { format!("{:x}", Sha256::digest(serde_json::to_vec(v).expect("serializable state"))) }
@@ -133,17 +135,52 @@ fn retry_after(header: &str, now:u64)->u64 {
 #[serde(deny_unknown_fields)]
 struct Record {sequence:u64, previous:String, state:State, hash:String}
 fn record_hash(sequence:u64,previous:&str,state:&State)->String {hash(&(sequence,previous,state))}
-struct Store {file:File, state:State, sequence:u64, previous:String, lock_path:PathBuf, identity:Vec<u8>, poisoned:bool}
+#[derive(Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+struct Anchor {sequence:u64, previous:String, source_journal:String, source_bytes:u64, source_sha256:String, prior_checkpoint_hash:Option<String>}
+#[derive(Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+struct Checkpoint {schema_version:u32, anchor:Anchor, state:State, hash:String}
+#[derive(Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+struct Manifest {schema_version:u32, scope:String, journal:String, checkpoint:String, checkpoint_hash:String}
+fn checkpoint_hash(anchor:&Anchor,state:&State)->String {hash(&(1u32,anchor,state))}
+fn local_name(name:&str)->bool {!name.is_empty() && name.len()<160 && name.bytes().all(|x|x.is_ascii_alphanumeric() || x==b'-' || x==b'.') && !name.contains("..")}
+fn source_digest(path:&Path)->Result<(u64,String)> {let mut file=File::open(path).map_err(|_|"SOURCE_JOURNAL_UNAVAILABLE")?;let mut digest=Sha256::new();let mut size=0u64;let mut buffer=[0u8;65536];loop{let n=file.read(&mut buffer).map_err(|_|"SOURCE_JOURNAL_UNAVAILABLE")?;if n==0{break;}size+=n as u64;digest.update(&buffer[..n]);}Ok((size,format!("{:x}",digest.finalize())))}
+fn write_new_synced(path:&Path,bytes:&[u8])->Result<()> {let mut file=OpenOptions::new().write(true).create_new(true).open(path).map_err(|_|"COMPACTION_FILE_CREATE_FAILED")?;file.write_all(bytes).and_then(|_|file.sync_all()).map_err(|_|"COMPACTION_DURABILITY_FAILURE".into())}
+struct Store {file:File, state:State, sequence:u64, previous:String, lock_path:PathBuf, identity:Vec<u8>, poisoned:bool, dir:PathBuf, journal_name:String, checkpoint_hash:Option<String>, active_bytes:u64, maximum_bytes:u64, recovery_compaction_required:bool}
 impl Store {
     fn open(dir:&Path,scope:&str,token:&str)->Result<Self>{
+        Self::open_with_limit(dir,scope,token,MAX_ACTIVE_JOURNAL_BYTES)
+    }
+    fn open_with_limit(dir:&Path,scope:&str,token:&str,maximum_bytes:u64)->Result<Self>{
         need(!scope.is_empty() && !token.is_empty(),"SCOPE_TOKEN_REQUIRED")?;
         fs::create_dir_all(dir).map_err(|_|"STORE_CREATE_FAILED")?;
         let lock_path=dir.join("offline-account-queue.lock");
         let identity=serde_json::to_vec(&json!({"scope":scope,"token":token,"pid":std::process::id()})).unwrap();
         let mut lock=OpenOptions::new().write(true).create_new(true).open(&lock_path).map_err(|_|"EXCLUSIVE_QUEUE_LOCK_REQUIRED")?;
         lock.write_all(&identity).and_then(|_|lock.sync_all()).map_err(|_|"LOCK_DURABILITY_FAILURE")?;
-        let load=||->Result<(State,u64,String,File)>{
-            let path=dir.join("account-queue.jsonl");let mut state=State::new(scope.into());let mut sequence=0;let mut previous=String::new();
+        let load=||->Result<(State,u64,String,File,String,Option<String>,u64)>{
+            let mut state=State::new(scope.into());let mut sequence=0;let mut previous=String::new();let mut journal_name="account-queue.jsonl".to_string();let mut checkpoint_hash=None;
+            let manifest_path=dir.join("account-queue-manifest.json");
+            let guard_path=dir.join("account-queue-generation.guard");
+            if guard_path.exists(){need(fs::read(&guard_path).ok().as_deref()==Some(scope.as_bytes()),"GENERATION_GUARD_SCOPE_FAILURE")?;need(manifest_path.exists(),"GENERATION_MANIFEST_REQUIRED")?;}
+            if manifest_path.exists(){
+                need(guard_path.exists(),"GENERATION_GUARD_REQUIRED")?;
+                need(fs::metadata(&manifest_path).map_err(|_|"MANIFEST_UNAVAILABLE")?.len()<=4096,"MANIFEST_TOO_LARGE")?;
+                let manifest:Manifest=serde_json::from_slice(&fs::read(&manifest_path).map_err(|_|"MANIFEST_UNAVAILABLE")?).map_err(|_|"MANIFEST_INVALID")?;
+                need(manifest.schema_version==1 && manifest.scope==scope && local_name(&manifest.journal) && local_name(&manifest.checkpoint),"MANIFEST_SCOPE_OR_PATH_FAILURE")?;
+                let checkpoint_path=dir.join(&manifest.checkpoint);
+                need(fs::metadata(&checkpoint_path).map_err(|_|"CHECKPOINT_UNAVAILABLE")?.len()<=MAX_CHECKPOINT_BYTES,"CHECKPOINT_TOO_LARGE")?;
+                let checkpoint:Checkpoint=serde_json::from_slice(&fs::read(&checkpoint_path).map_err(|_|"CHECKPOINT_UNAVAILABLE")?).map_err(|_|"CHECKPOINT_INVALID")?;
+                need(checkpoint.schema_version==1 && checkpoint.state.schema_version==1 && checkpoint.state.scope==scope && checkpoint.hash==manifest.checkpoint_hash && checkpoint.hash==self::checkpoint_hash(&checkpoint.anchor,&checkpoint.state) && local_name(&checkpoint.anchor.source_journal),"CHECKPOINT_INTEGRITY_OR_SCOPE_FAILURE")?;
+                state=checkpoint.state;sequence=checkpoint.anchor.sequence;previous=checkpoint.anchor.previous;checkpoint_hash=Some(checkpoint.hash);journal_name=manifest.journal;
+                // A manifest-referenced journal is never recreated if missing.
+                need(dir.join(&journal_name).exists(),"ACTIVE_JOURNAL_UNAVAILABLE")?;
+            }
+            let path=dir.join(&journal_name);
+            let active_bytes=fs::metadata(&path).map(|m|m.len()).unwrap_or(0);
+            need(active_bytes<=maximum_bytes,"ACTIVE_JOURNAL_TOO_LARGE")?;
             if path.exists(){
                 let mut journal=File::open(&path).map_err(|_|"JOURNAL_READ_FAILED")?;
                 let size=journal.metadata().map_err(|_|"JOURNAL_READ_FAILED")?.len();
@@ -155,19 +192,52 @@ impl Store {
                 state=r.state;sequence=r.sequence;previous=r.hash;
             }}
             let file=OpenOptions::new().append(true).create(true).open(path).map_err(|_|"JOURNAL_OPEN_FAILED")?;
-            Ok((state,sequence,previous,file))
+            Ok((state,sequence,previous,file,journal_name,checkpoint_hash,active_bytes))
         };
-        match load(){Ok((state,sequence,previous,file))=>{let mut s=Self{file,state,sequence,previous,lock_path,identity,poisoned:false};let mut recovered=s.state.clone();recovered.recover();if recovered!=s.state{s.persist(recovered)?;}Ok(s)},Err(e)=>{let _=fs::remove_file(&lock_path);Err(e)}}
+        match load(){Ok((state,sequence,previous,file,journal_name,checkpoint_hash,active_bytes))=>{let mut s=Self{file,state,sequence,previous,lock_path,identity,poisoned:false,dir:dir.into(),journal_name,checkpoint_hash,active_bytes,maximum_bytes,recovery_compaction_required:false};let mut recovered=s.state.clone();recovered.recover();if recovered!=s.state{match s.persist(recovered.clone()){Ok(())=>{},Err(e) if e=="EXPLICIT_COMPACTION_REQUIRED"=>{s.state=recovered;s.recovery_compaction_required=true;},Err(e)=>return Err(e)}}Ok(s)},Err(e)=>{let _=fs::remove_file(&lock_path);Err(e)}}
     }
     fn owned(&self)->Result<()> {need(!self.poisoned,"DURABILITY_FAILURE")?;need(fs::read(&self.lock_path).ok().as_deref()==Some(&self.identity),"SCOPED_LEASE_LOST")}
     fn persist(&mut self,state:State)->Result<()> {
         self.owned()?;let sequence=self.sequence+1;let hash=record_hash(sequence,&self.previous,&state);
         let record=Record{sequence,previous:self.previous.clone(),state:state.clone(),hash:hash.clone()};
         let mut bytes=serde_json::to_vec(&record).unwrap();bytes.push(b'\n');
+        need(self.active_bytes.saturating_add(bytes.len() as u64)<=self.maximum_bytes,"EXPLICIT_COMPACTION_REQUIRED")?;
         if self.file.write_all(&bytes).and_then(|_|self.file.sync_all()).is_err(){self.poisoned=true;return Err("DURABILITY_FAILURE".into());}
-        self.state=state;self.sequence=sequence;self.previous=hash;Ok(())
+        self.active_bytes+=bytes.len() as u64;self.state=state;self.sequence=sequence;self.previous=hash;Ok(())
     }
-    fn command(&mut self,c:Command)->Result<Value>{self.owned()?;let mut candidate=self.state.clone();let result=candidate.apply(&c);if result.is_ok() || candidate.manual_review {self.persist(candidate)?;}self.owned()?;result}
+    fn compact_with_hook(&mut self,mut hook:impl FnMut(&str)->Result<()>)->Result<Value>{
+        self.owned()?;
+        self.file.sync_all().map_err(|_|"COMPACTION_DURABILITY_FAILURE")?;
+        let (source_bytes,source_sha256)=source_digest(&self.dir.join(&self.journal_name))?;
+        need(source_bytes==self.active_bytes,"SOURCE_JOURNAL_CHANGED")?;
+        let anchor=Anchor{sequence:self.sequence,previous:self.previous.clone(),source_journal:self.journal_name.clone(),source_bytes,source_sha256,prior_checkpoint_hash:self.checkpoint_hash.clone()};
+        let checkpoint_digest=checkpoint_hash(&anchor,&self.state);
+        let checkpoint=Checkpoint{schema_version:1,anchor,state:self.state.clone(),hash:checkpoint_digest.clone()};
+        let bytes=serde_json::to_vec(&checkpoint).unwrap();need(bytes.len() as u64<=MAX_CHECKPOINT_BYTES,"CHECKPOINT_TOO_LARGE")?;
+        let nonce=std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).map_err(|_|"COMPACTION_NONCE_FAILED")?.as_nanos();
+        let checkpoint_name=format!("checkpoint-{}-{nonce}.json",self.sequence);
+        let journal_name=format!("queue-{}-{nonce}.jsonl",self.sequence);
+        write_new_synced(&self.dir.join(&checkpoint_name),&bytes)?;hook("checkpoint_synced")?;self.owned()?;
+        write_new_synced(&self.dir.join(&journal_name),&[])?;hook("journal_synced")?;self.owned()?;
+        let manifest=Manifest{schema_version:1,scope:self.state.scope.clone(),journal:journal_name.clone(),checkpoint:checkpoint_name,checkpoint_hash:checkpoint_digest.clone()};
+        let temp_name=format!("manifest-{nonce}.tmp");
+        write_new_synced(&self.dir.join(&temp_name),&serde_json::to_vec(&manifest).unwrap())?;hook("manifest_synced")?;self.owned()?;
+        let guard_path=self.dir.join("account-queue-generation.guard");
+        // A first-generation guard without a manifest requires manual recovery.
+        // Never permit this process to keep appending after such an interrupted switch.
+        self.poisoned=true;
+        if !guard_path.exists(){write_new_synced(&guard_path,self.state.scope.as_bytes())?;}else{need(fs::read(&guard_path).ok().as_deref()==Some(self.state.scope.as_bytes()),"GENERATION_GUARD_SCOPE_FAILURE")?;}
+        hook("generation_guard_synced")?;need(fs::read(&self.lock_path).ok().as_deref()==Some(&self.identity),"SCOPED_LEASE_LOST")?;
+        fs::rename(self.dir.join(&temp_name),self.dir.join("account-queue-manifest.json")).map_err(|_|"MANIFEST_ATOMIC_SWITCH_FAILED")?;
+        hook("manifest_switched")?;
+        let file=OpenOptions::new().append(true).open(self.dir.join(&journal_name)).map_err(|_|"ACTIVE_JOURNAL_OPEN_FAILED")?;
+        self.file=file;self.journal_name=journal_name.clone();self.checkpoint_hash=Some(checkpoint_digest.clone());self.active_bytes=0;self.poisoned=false;self.recovery_compaction_required=false;self.owned()?;
+        Ok(json!({"compacted":true,"sequence":self.sequence,"previous":self.previous,"checkpoint_hash":checkpoint_digest,"source_bytes":source_bytes,"active_journal_bytes":0,"immutable_bindings":self.state.intents.len(),"unknown_acceptances":self.state.unknown.len()}))
+    }
+    fn command(&mut self,c:Command)->Result<Value>{self.owned()?;
+        if c.op=="compact"{need(c.scope==self.state.scope,"SCOPE_MISMATCH")?;need(c.now>=self.state.last_clock && c.now<=MAX_TIME,"COMPACTION_CLOCK_INVALID")?;return self.compact_with_hook(|_|Ok(()));}
+        need(!self.recovery_compaction_required,"RECOVERY_COMPACTION_REQUIRED")?;
+        let mut candidate=self.state.clone();let result=candidate.apply(&c);if result.is_ok() || candidate.manual_review {self.persist(candidate)?;}self.owned()?;result}
 }
 impl Drop for Store {fn drop(&mut self){if fs::read(&self.lock_path).ok().as_deref()==Some(&self.identity){let _=fs::remove_file(&self.lock_path);}}}
 fn run()->Result<()> {
@@ -205,4 +275,26 @@ mod tests {
     #[test] fn missing_final_newline_is_not_implicitly_repaired(){let dir=fixture();{let mut st=Store::open(&dir,"fixture-scope","token").unwrap();st.command(cmd("status",100,false)).unwrap();}let path=dir.join("account-queue.jsonl");let mut bytes=fs::read(&path).unwrap();bytes.pop();fs::write(&path,bytes).unwrap();assert!(Store::open(&dir,"fixture-scope","new").is_err());fs::remove_dir_all(dir).unwrap();}
     #[test] fn crashed_network_read_keeps_remote_timeout_headroom(){let mut s=State::new("fixture-scope".into());let c=cmd("admit",1000,false);s.apply(&c).unwrap();let mut n=cmd("network",1100,false);n.request=c.request;s.apply(&n).unwrap();s.recover();assert_eq!(s.next,22100);assert!(s.active.is_none());}
     #[test] fn request_in_flight_extends_shared_cooldown(){let mut s=State::new("fixture-scope".into());let c=cmd("admit",1000,false);s.apply(&c).unwrap();let mut n=cmd("network",1000,false);n.request=c.request.clone();s.apply(&n).unwrap();let mut d=cmd("complete",1100,false);d.request=c.request;d.status=409;d.outcome="rejected".into();d.api_code="REQUEST_IN_FLIGHT".into();s.apply(&d).unwrap();assert_eq!(s.next,91100);}
+    #[test] fn compaction_retains_every_binding_unknown_and_source_anchor(){let dir=fixture();let source;let state;let anchor_sequence;let anchor_hash;{
+        let mut st=Store::open(&dir,"fixture-scope","token").unwrap();let c=cmd("admit",1000,true);st.command(c).unwrap();
+        // Recover the crash-conservative write state before compaction.
+        let mut recovered=st.state.clone();recovered.recover();st.persist(recovered).unwrap();
+        state=st.state.clone();source=source_digest(&dir.join("account-queue.jsonl")).unwrap();anchor_sequence=st.sequence;anchor_hash=st.previous.clone();
+        let r=st.command(cmd("compact",1000,false)).unwrap();assert_eq!(r["immutable_bindings"],1);assert_eq!(r["unknown_acceptances"],1);assert_eq!(st.active_bytes,0);
+        let manifest:Manifest=serde_json::from_slice(&fs::read(dir.join("account-queue-manifest.json")).unwrap()).unwrap();let ck:Checkpoint=serde_json::from_slice(&fs::read(dir.join(manifest.checkpoint)).unwrap()).unwrap();assert_eq!((ck.anchor.source_bytes,ck.anchor.source_sha256),source);assert_eq!(ck.anchor.sequence,anchor_sequence);assert_eq!(ck.anchor.previous,anchor_hash);
+    }let mut st=Store::open(&dir,"fixture-scope","new").unwrap();assert_eq!(st.state,state);assert_eq!(st.sequence,anchor_sequence);assert_eq!(st.previous,anchor_hash);assert_eq!(st.command(cmd("admit",5000,true)).unwrap_err(),"UNKNOWN_ACCEPTANCE_RECONCILE_FIRST");assert_eq!(source_digest(&dir.join("account-queue.jsonl")).unwrap(),source);drop(st);fs::remove_dir_all(dir).unwrap();}
+    #[test] fn compaction_faults_select_only_old_or_fully_written_new_generation(){for stage in ["checkpoint_synced","journal_synced","manifest_synced","manifest_switched"]{let dir=fixture();let expected;let switched;{
+        let mut st=Store::open(&dir,"fixture-scope","token").unwrap();st.command(cmd("status",100,false)).unwrap();expected=st.state.clone();
+        let err=st.compact_with_hook(|point|if point==stage{Err("INJECTED_PROCESS_CRASH".into())}else{Ok(())}).unwrap_err();assert_eq!(err,"INJECTED_PROCESS_CRASH");switched=stage=="manifest_switched";assert_eq!(st.poisoned,switched);
+    }let st=Store::open(&dir,"fixture-scope","new").unwrap();assert_eq!(st.state,expected);assert_eq!(st.journal_name!="account-queue.jsonl",switched);drop(st);fs::remove_dir_all(dir).unwrap();}}
+    #[test] fn repeated_compaction_keeps_logical_chain_continuity(){let dir=fixture();let sequence;let previous;{let mut st=Store::open(&dir,"fixture-scope","token").unwrap();st.command(cmd("status",1,false)).unwrap();st.command(cmd("compact",1,false)).unwrap();st.command(cmd("status",2,false)).unwrap();sequence=st.sequence;previous=st.previous.clone();let prior=st.checkpoint_hash.clone();st.command(cmd("compact",2,false)).unwrap();let manifest:Manifest=serde_json::from_slice(&fs::read(dir.join("account-queue-manifest.json")).unwrap()).unwrap();let ck:Checkpoint=serde_json::from_slice(&fs::read(dir.join(manifest.checkpoint)).unwrap()).unwrap();assert_eq!(ck.anchor.prior_checkpoint_hash,prior);assert_eq!(st.sequence,sequence);assert_eq!(st.previous,previous);}let st=Store::open(&dir,"fixture-scope","new").unwrap();assert_eq!(st.sequence,sequence);assert_eq!(st.previous,previous);drop(st);fs::remove_dir_all(dir).unwrap();}
+    #[test] fn tampered_checkpoint_and_missing_active_journal_fail_closed(){for missing in [false,true]{let dir=fixture();{let mut st=Store::open(&dir,"fixture-scope","token").unwrap();st.command(cmd("status",100,false)).unwrap();st.command(cmd("compact",100,false)).unwrap();}let manifest:Manifest=serde_json::from_slice(&fs::read(dir.join("account-queue-manifest.json")).unwrap()).unwrap();if missing{fs::remove_file(dir.join(manifest.journal)).unwrap();}else{let p=dir.join(manifest.checkpoint);let raw=fs::read_to_string(&p).unwrap().replace("\"last_clock\":100","\"last_clock\":99");fs::write(p,raw).unwrap();}assert!(Store::open(&dir,"fixture-scope","new").is_err());fs::remove_dir_all(dir).unwrap();}}
+    #[test] fn active_tail_cap_requires_explicit_compaction_without_losing_admission(){let dir=fixture();let mut st=Store::open(&dir,"fixture-scope","token").unwrap();st.command(cmd("status",1,false)).unwrap();st.maximum_bytes=st.active_bytes+10;let previous=st.state.clone();assert_eq!(st.command(cmd("admit",2000,true)).unwrap_err(),"EXPLICIT_COMPACTION_REQUIRED");assert_eq!(st.state,previous);st.command(cmd("compact",2000,false)).unwrap();st.maximum_bytes=MAX_ACTIVE_JOURNAL_BYTES;assert_eq!(st.command(cmd("admit",2000,true)).unwrap()["admitted"],true);drop(st);fs::remove_dir_all(dir).unwrap();}
+    #[test] fn lease_loss_during_compaction_does_not_switch_manifest(){let dir=fixture();let mut st=Store::open(&dir,"fixture-scope","token").unwrap();st.command(cmd("status",1,false)).unwrap();let lock=st.lock_path.clone();assert_eq!(st.compact_with_hook(|point|{if point=="checkpoint_synced"{fs::write(&lock,b"replacement").unwrap();}Ok(())}).unwrap_err(),"SCOPED_LEASE_LOST");assert!(!dir.join("account-queue-manifest.json").exists());drop(st);assert_eq!(fs::read(&lock).unwrap(),b"replacement");fs::remove_dir_all(dir).unwrap();}
+    #[test] fn manifest_cannot_escape_directory(){let dir=fixture();{let mut st=Store::open(&dir,"fixture-scope","token").unwrap();st.command(cmd("compact",0,false)).unwrap();}let p=dir.join("account-queue-manifest.json");let mut m:Manifest=serde_json::from_slice(&fs::read(&p).unwrap()).unwrap();m.journal="../outside.jsonl".into();fs::write(p,serde_json::to_vec(&m).unwrap()).unwrap();assert!(Store::open(&dir,"fixture-scope","new").is_err());fs::remove_dir_all(dir).unwrap();}
+    #[test] fn compaction_with_active_write_keeps_crash_uncertainty(){let dir=fixture();{let mut st=Store::open(&dir,"fixture-scope","token").unwrap();st.command(cmd("admit",1000,true)).unwrap();st.command(cmd("compact",1000,false)).unwrap();assert!(st.state.active.is_some());}let st=Store::open(&dir,"fixture-scope","new").unwrap();assert_eq!(st.state.unknown.len(),1);assert_eq!(st.state.intents.len(),1);assert_eq!(st.state.keys.len(),1);assert_eq!(st.state.writes,vec![1000]);assert_eq!(st.state.next,3500);drop(st);fs::remove_dir_all(dir).unwrap();}
+    #[test] fn missing_manifest_never_falls_back_to_older_intent_history(){let dir=fixture();{let mut st=Store::open(&dir,"fixture-scope","token").unwrap();st.command(cmd("status",100,false)).unwrap();st.command(cmd("compact",100,false)).unwrap();st.command(cmd("admit",1000,true)).unwrap();}fs::remove_file(dir.join("account-queue-manifest.json")).unwrap();assert!(Store::open(&dir,"fixture-scope","new").is_err());fs::remove_dir_all(dir).unwrap();}
+    #[test] fn crash_after_first_generation_guard_fails_closed_without_erasing_sources(){let dir=fixture();{let mut st=Store::open(&dir,"fixture-scope","token").unwrap();st.command(cmd("admit",1000,true)).unwrap();assert_eq!(st.compact_with_hook(|stage|if stage=="generation_guard_synced"{Err("INJECTED_PROCESS_CRASH".into())}else{Ok(())}).unwrap_err(),"INJECTED_PROCESS_CRASH");}assert!(dir.join("account-queue.jsonl").exists());assert!(Store::open(&dir,"fixture-scope","new").is_err());fs::remove_dir_all(dir).unwrap();}
+    #[test] fn restoration_after_compaction_ignores_archived_record_count(){let dir=fixture();let archive_bytes;{let mut st=Store::open(&dir,"fixture-scope","token").unwrap();for now in 1..=300{st.command(cmd("status",now,false)).unwrap();}archive_bytes=st.active_bytes;st.command(cmd("compact",300,false)).unwrap();}let st=Store::open(&dir,"fixture-scope","new").unwrap();assert_eq!(st.sequence,300);assert_eq!(st.active_bytes,0);assert_eq!(fs::metadata(dir.join("account-queue.jsonl")).unwrap().len(),archive_bytes);assert_eq!(st.state.last_clock,300);drop(st);fs::remove_dir_all(dir).unwrap();}
+    #[test] fn restart_at_capacity_requires_explicit_preserving_recovery_compaction(){let dir=fixture();let cap;{let mut st=Store::open(&dir,"fixture-scope","token").unwrap();st.command(cmd("admit",1000,true)).unwrap();cap=st.active_bytes;}let mut st=Store::open_with_limit(&dir,"fixture-scope","new",cap).unwrap();assert!(st.recovery_compaction_required);assert_eq!(st.state.unknown.len(),1);assert_eq!(st.command(cmd("admit",5000,true)).unwrap_err(),"RECOVERY_COMPACTION_REQUIRED");st.command(cmd("compact",1000,false)).unwrap();assert!(!st.recovery_compaction_required);assert_eq!(st.state.unknown.len(),1);drop(st);let st=Store::open(&dir,"fixture-scope","third").unwrap();assert_eq!(st.state.unknown.len(),1);assert_eq!(st.state.intents.len(),1);assert_eq!(st.state.writes,vec![1000]);drop(st);fs::remove_dir_all(dir).unwrap();}
 }

@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "at": "2026-10-05T22:34:27.653Z",
+  "testsPassed": true,
+  "focusedChecksPassed": 104,
+  "optionalLargeCheckSkipped": 1,
+  "nativeQueueChecks": 30,
+  "actualNodeQueueComparisons": 4,
+  "sourceFiles": [
+    {
+      "path": "live-paper/runner.mjs",
+      "hash": "756365deca8631f7d11f98f07ed11b83dcfa6e522a086908a6570b752bdcc288"
+    },
+    {
+      "path": "live-paper/paired-candidate-collector.mjs",
+      "hash": "ec78bc7967310b59c3a8e51bfdc7ab48b7e568de3522bdd20da0923e39dd805e"
+    },
+    {
+      "path": "live-paper/paired-candidate-capture.mjs",
+      "hash": "24b88058ef08df651e7335ef4b3c3bceca9f5e70c70014d749bb77b47fa8896e"
+    }
+  ],
+  "runtimeFiles": [],
+  "scope": "read_only_paired_candidate_auxiliary_integration",
+  "ordinaryBookSlots": 4,
+  "additionalAccountClients": 0,
+  "competitionOrders": 0,
+  "profitabilityEstablished": false,
+  "sourceBanksUnchanged": true
+}
