@@ -1,0 +1,429 @@
+{
+  "schemaVersion": 1,
+  "id": "baal-empirical-senate-poll-error-20261005-v1",
+  "at": "2026-10-05T11:58:25.666Z",
+  "definitionHash": "4459fa751a448b30574fddd748f39aa73c37c7e6496ca262773c2952dcf4641e",
+  "modelCodeHash": "f1352c8a15cfa26262937956e759ac5dbe76355453d8e3f48fc0e5abdd8ed348",
+  "sourceHashes": [
+    {
+      "file": "raw_polls.csv",
+      "sha256": "9f0b185506e59117c150fb988e73b612346effe8e3a8f0d90fdafcad07f54756"
+    },
+    {
+      "file": "codebook.md",
+      "sha256": "10e7554d27e241a96f6c9f00de21c5ac00d0229e58808a79f30649824f56ac5b"
+    },
+    {
+      "file": "marist-iowa-tables.pdf",
+      "sha256": "371f20852a7df228dbbeeead8aaba2da2d1e209b270db034dd467611b08d1681"
+    }
+  ],
+  "independentFinalSourceHash": "6f745db1b4a0026ad837e74428f9ed6f3f77fa51eb6f858b58ebdbc186fdb3bd",
+  "finalOverridesHash": "6141a20ef0298e33f9ce0815c2e8098e43a24ef660799ec46c718a2c1c2f7499",
+  "rowsInSource": 20466,
+  "includedPollObservations": 2846,
+  "exclusions": {
+    "partisan_or_internal": 412,
+    "final_candidate_identity_unmatched": 869,
+    "independent_final_outcome_disagrees": 275,
+    "not_regular_comparable_major_party_final": 597,
+    "invalid_vote_shares": 2,
+    "election_or_field_clock_invalid": 5
+  },
+  "races": 185,
+  "cycles": [
+    1998,
+    2000,
+    2002,
+    2004,
+    2006,
+    2008,
+    2010,
+    2012,
+    2014,
+    2016,
+    2018,
+    2020,
+    2022
+  ],
+  "models": {
+    "poll_centered": {
+      "family": "poll_centered",
+      "races": 185,
+      "cycles": [
+        1998,
+        2000,
+        2002,
+        2004,
+        2006,
+        2008,
+        2010,
+        2012,
+        2014,
+        2016,
+        2018,
+        2020,
+        2022
+      ],
+      "trainedThroughYear": 2022,
+      "biasPoints": 0,
+      "standardDeviationPoints": 7.303844974975776,
+      "distribution": "fixed_t4",
+      "effectiveUnit": "one_state_race",
+      "historicalPopulationTransportMeasured": false
+    },
+    "historical_bias_corrected": {
+      "family": "historical_bias_corrected",
+      "races": 185,
+      "cycles": [
+        1998,
+        2000,
+        2002,
+        2004,
+        2006,
+        2008,
+        2010,
+        2012,
+        2014,
+        2016,
+        2018,
+        2020,
+        2022
+      ],
+      "trainedThroughYear": 2022,
+      "biasPoints": 0.19664811424948714,
+      "standardDeviationPoints": 7.301197226321246,
+      "distribution": "fixed_t4",
+      "effectiveUnit": "one_state_race",
+      "historicalPopulationTransportMeasured": false
+    }
+  },
+  "diagnostics": {
+    "poll_centered": {
+      "races": 18,
+      "cycles": [
+        2020,
+        2022
+      ],
+      "brier": 0.06815246552517297,
+      "logLoss": 0.2365348709231485,
+      "correctDirections": 17,
+      "bins": [
+        {
+          "low": 0,
+          "high": 0.2,
+          "n": 4,
+          "meanForecast": 0.026959653627489477,
+          "observedFrequency": 0
+        },
+        {
+          "low": 0.2,
+          "high": 0.4,
+          "n": 3,
+          "meanForecast": 0.3101621867445133,
+          "observedFrequency": 0.3333333333333333
+        },
+        {
+          "low": 0.4,
+          "high": 0.6,
+          "n": 3,
+          "meanForecast": 0.4395594902109881,
+          "observedFrequency": 0
+        },
+        {
+          "low": 0.6,
+          "high": 0.8,
+          "n": 1,
+          "meanForecast": 0.790327579251244,
+          "observedFrequency": 1
+        },
+        {
+          "low": 0.8,
+          "high": 1.000001,
+          "n": 7,
+          "meanForecast": 0.9267717840953092,
+          "observedFrequency": 1
+        }
+      ],
+      "independentElectionCycles": 2,
+      "untouchedOriginalForecastVintage": false,
+      "historicalMarketPnlAvailable": false,
+      "profitabilityEstablished": false
+    },
+    "historical_bias_corrected": {
+      "races": 18,
+      "cycles": [
+        2020,
+        2022
+      ],
+      "brier": 0.0741643121264011,
+      "logLoss": 0.24639016802618485,
+      "correctDirections": 16,
+      "bins": [
+        {
+          "low": 0,
+          "high": 0.2,
+          "n": 4,
+          "meanForecast": 0.03013283148154504,
+          "observedFrequency": 0
+        },
+        {
+          "low": 0.2,
+          "high": 0.4,
+          "n": 2,
+          "meanForecast": 0.3078291541441329,
+          "observedFrequency": 0
+        },
+        {
+          "low": 0.4,
+          "high": 0.6,
+          "n": 4,
+          "meanForecast": 0.4694666876892682,
+          "observedFrequency": 0.25
+        },
+        {
+          "low": 0.6,
+          "high": 0.8,
+          "n": 0,
+          "meanForecast": null,
+          "observedFrequency": null
+        },
+        {
+          "low": 0.8,
+          "high": 1.000001,
+          "n": 8,
+          "meanForecast": 0.9214858540192418,
+          "observedFrequency": 1
+        }
+      ],
+      "independentElectionCycles": 2,
+      "untouchedOriginalForecastVintage": false,
+      "historicalMarketPnlAvailable": false,
+      "profitabilityEstablished": false
+    }
+  },
+  "byCycle": [
+    {
+      "year": 2020,
+      "families": {
+        "poll_centered": {
+          "races": 6,
+          "cycles": [
+            2020
+          ],
+          "brier": 0.06990805843148436,
+          "logLoss": 0.2407552660728014,
+          "correctDirections": 6,
+          "bins": [
+            {
+              "low": 0,
+              "high": 0.2,
+              "n": 1,
+              "meanForecast": 0.027890316658663455,
+              "observedFrequency": 0
+            },
+            {
+              "low": 0.2,
+              "high": 0.4,
+              "n": 0,
+              "meanForecast": null,
+              "observedFrequency": null
+            },
+            {
+              "low": 0.4,
+              "high": 0.6,
+              "n": 2,
+              "meanForecast": 0.4440949189213266,
+              "observedFrequency": 0
+            },
+            {
+              "low": 0.6,
+              "high": 0.8,
+              "n": 0,
+              "meanForecast": null,
+              "observedFrequency": null
+            },
+            {
+              "low": 0.8,
+              "high": 1.000001,
+              "n": 3,
+              "meanForecast": 0.9239770574051368,
+              "observedFrequency": 1
+            }
+          ],
+          "independentElectionCycles": 1,
+          "untouchedOriginalForecastVintage": false,
+          "historicalMarketPnlAvailable": false,
+          "profitabilityEstablished": false
+        },
+        "historical_bias_corrected": {
+          "races": 6,
+          "cycles": [
+            2020
+          ],
+          "brier": 0.08601111458961762,
+          "logLoss": 0.2692332121491651,
+          "correctDirections": 5,
+          "bins": [
+            {
+              "low": 0,
+              "high": 0.2,
+              "n": 1,
+              "meanForecast": 0.03209507099462516,
+              "observedFrequency": 0
+            },
+            {
+              "low": 0.2,
+              "high": 0.4,
+              "n": 0,
+              "meanForecast": null,
+              "observedFrequency": null
+            },
+            {
+              "low": 0.4,
+              "high": 0.6,
+              "n": 2,
+              "meanForecast": 0.49899487836018286,
+              "observedFrequency": 0
+            },
+            {
+              "low": 0.6,
+              "high": 0.8,
+              "n": 0,
+              "meanForecast": null,
+              "observedFrequency": null
+            },
+            {
+              "low": 0.8,
+              "high": 1.000001,
+              "n": 3,
+              "meanForecast": 0.936520365841786,
+              "observedFrequency": 1
+            }
+          ],
+          "independentElectionCycles": 1,
+          "untouchedOriginalForecastVintage": false,
+          "historicalMarketPnlAvailable": false,
+          "profitabilityEstablished": false
+        }
+      }
+    },
+    {
+      "year": 2022,
+      "families": {
+        "poll_centered": {
+          "races": 12,
+          "cycles": [
+            2022
+          ],
+          "brier": 0.06727466907201728,
+          "logLoss": 0.2344246733483221,
+          "correctDirections": 11,
+          "bins": [
+            {
+              "low": 0,
+              "high": 0.2,
+              "n": 3,
+              "meanForecast": 0.02664943261709815,
+              "observedFrequency": 0
+            },
+            {
+              "low": 0.2,
+              "high": 0.4,
+              "n": 3,
+              "meanForecast": 0.3101621867445133,
+              "observedFrequency": 0.3333333333333333
+            },
+            {
+              "low": 0.4,
+              "high": 0.6,
+              "n": 1,
+              "meanForecast": 0.43048863279031124,
+              "observedFrequency": 0
+            },
+            {
+              "low": 0.6,
+              "high": 0.8,
+              "n": 1,
+              "meanForecast": 0.790327579251244,
+              "observedFrequency": 1
+            },
+            {
+              "low": 0.8,
+              "high": 1.000001,
+              "n": 4,
+              "meanForecast": 0.9288678291129386,
+              "observedFrequency": 1
+            }
+          ],
+          "independentElectionCycles": 1,
+          "untouchedOriginalForecastVintage": false,
+          "historicalMarketPnlAvailable": false,
+          "profitabilityEstablished": false
+        },
+        "historical_bias_corrected": {
+          "races": 12,
+          "cycles": [
+            2022
+          ],
+          "brier": 0.06824091089479283,
+          "logLoss": 0.2349686459646947,
+          "correctDirections": 11,
+          "bins": [
+            {
+              "low": 0,
+              "high": 0.2,
+              "n": 3,
+              "meanForecast": 0.029478751643851664,
+              "observedFrequency": 0
+            },
+            {
+              "low": 0.2,
+              "high": 0.4,
+              "n": 2,
+              "meanForecast": 0.3078291541441329,
+              "observedFrequency": 0
+            },
+            {
+              "low": 0.4,
+              "high": 0.6,
+              "n": 2,
+              "meanForecast": 0.4399384970183536,
+              "observedFrequency": 0.5
+            },
+            {
+              "low": 0.6,
+              "high": 0.8,
+              "n": 0,
+              "meanForecast": null,
+              "observedFrequency": null
+            },
+            {
+              "low": 0.8,
+              "high": 1.000001,
+              "n": 5,
+              "meanForecast": 0.912465146925715,
+              "observedFrequency": 1
+            }
+          ],
+          "independentElectionCycles": 1,
+          "untouchedOriginalForecastVintage": false,
+          "historicalMarketPnlAvailable": false,
+          "profitabilityEstablished": false
+        }
+      }
+    }
+  ],
+  "qualifiedProductionForecasts": 0,
+  "competitionOrders": 0,
+  "profitabilityEstablished": false,
+  "limitations": [
+    "This retrospective collector selects the eventual top two finishers; final identities are independently matched, but coverage cannot represent all originally available races.",
+    "Publication dates and LV/RV populations are absent from the archive. Median field dates and observation times are distinct.",
+    "One race is one calibration observation; state errors remain correlated within election cycles. Two diagnostic cycles are weak evidence of 2026 transport.",
+    "No historical executable market prices, depth, fill queues or net trading returns are supplied by this diagnostic.",
+    "No current bank, window, inventory or paper accounting is changed."
+  ],
+  "reportHash": "85c7f916071c022a5bd49e23301c95eaaff8cd543f688acbf0f46dfca87e52f0",
+  "reportFile": "report-20261005-v1.json"
+}

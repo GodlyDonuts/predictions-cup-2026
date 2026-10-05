@@ -60,7 +60,7 @@ import {prioritizeEdgeTrials} from './edge-trial-projection.mjs';
 import {readAnchorReadFocus,prioritizeAnchorReads} from './bid-anchor-read-focus.mjs';
 import {readBulkReadFocus,mergePaperReadFocus} from './bulk-dip-read-focus.mjs';
 import {openDiagnosticFocus,diagnosticDepthFocus} from './diagnostic-read-focus.mjs';
-import {readProbabilityReadFocus} from './probability-read-focus.mjs';
+import {readProbabilityReadFocus,mergeProbabilityReadFocus} from './probability-read-focus.mjs';
 import {openCanonicalCapacityMonitor} from './canonical-capacity-monitor.mjs';
 import {createTradeTape,selectAuxiliaryReads} from './trade-tape.mjs';
 import {guardCanonicalCapacity} from './canonical-capacity-guard.mjs';
@@ -357,7 +357,7 @@ try{
       if(officialSync){try{accountCache.orders=accountOrders(orders,new Date().toISOString());delete accountCache.errors.orders;publishAccount();}catch{accountCache.errors.orders={at:new Date().toISOString(),reason:'unavailable_or_invalid'};publishAccount();}}
       // Freeze one plan before metadata selection; do not resample shadow state
       // or reorder candidates between the controller and these book requests.
-      const probabilityFocus=readProbabilityReadFocus(runtimeDir,universe,Date.now()),bulkFocus=readBulkReadFocus(runtimeDir,universe,Date.now()),anchorFocus=readAnchorReadFocus(runtimeDir,universe,Date.now()),diagnosticFocus=collectDiagnosticFocus(),paperFocus=mergePaperReadFocus(anchorFocus,bulkFocus,probabilityFocus,diagnosticFocus);
+      const probabilityFocus=mergeProbabilityReadFocus([readProbabilityReadFocus(runtimeDir,universe,Date.now()),readProbabilityReadFocus(runtimeDir,universe,Date.now(),'calibrated-poll-paper-active.json')]),bulkFocus=readBulkReadFocus(runtimeDir,universe,Date.now()),anchorFocus=readAnchorReadFocus(runtimeDir,universe,Date.now()),diagnosticFocus=collectDiagnosticFocus(),paperFocus=mergePaperReadFocus(anchorFocus,bulkFocus,probabilityFocus,diagnosticFocus);
       const inputs=schedulingInputs();
       if(nativeDip){for(const x of paperFocus.markets||[])if(['held','exit_pending','entry_pending'].includes(x.phase)){const key=x.phase==='entry_pending'?'pendingMarketIds':'heldMarketIds';inputs[key]=[...new Set([...inputs[key],x.marketId])];}
        const members=new Map(universe.exchanges.map(x=>[x.exchangeId+':YES',x.marketId])),legacy=state.strategies.mean_reversion;

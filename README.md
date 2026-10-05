@@ -1,5 +1,7 @@
 # Current production status — October 5
 
+One new empirical polling paper strategy is active for Kansas market356 YES, sharing the same collector and worker. Its first counterfactual fill is0.345; at12:16UTC it had no closed trade and−0.015 depth-aware liquidation P&L. This is not profitable production evidence. [Model and strategy](research/poll-calibration-v1/README.md) retain measured historical errors, source clocks and visible limitations. Current work is profitability and necessary trading correctness.
+
 Baal remains the human-assigned sole execution owner. The bounded pilot's original entry window expired at **2026-10-05T03:59:22.131Z**; new production entries are closed. Recovered collector, paper worker and dashboard preserve the same activation, frozen bank and accounting. This pilot has submitted **zero orders** and has **zero realized P&L**; profitability is not established. A controller correction now displays the expired window explicitly. See [current state](docs/CURRENT_STATE.md), [recovery evidence](data/production-recovery-20261005.json) and [new primary polling assessments](research/current-polls-v1/README.md). Earlier operational snapshots retain their historical timestamps.
 
 # Current execution authority — October 4

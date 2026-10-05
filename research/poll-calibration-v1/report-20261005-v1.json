@@ -1,0 +1,5757 @@
+{
+  "schemaVersion": 1,
+  "id": "baal-empirical-senate-poll-error-20261005-v1",
+  "at": "2026-10-05T11:58:25.666Z",
+  "definitionHash": "4459fa751a448b30574fddd748f39aa73c37c7e6496ca262773c2952dcf4641e",
+  "modelCodeHash": "f1352c8a15cfa26262937956e759ac5dbe76355453d8e3f48fc0e5abdd8ed348",
+  "sourceHashes": [
+    {
+      "file": "raw_polls.csv",
+      "sha256": "9f0b185506e59117c150fb988e73b612346effe8e3a8f0d90fdafcad07f54756"
+    },
+    {
+      "file": "codebook.md",
+      "sha256": "10e7554d27e241a96f6c9f00de21c5ac00d0229e58808a79f30649824f56ac5b"
+    },
+    {
+      "file": "marist-iowa-tables.pdf",
+      "sha256": "371f20852a7df228dbbeeead8aaba2da2d1e209b270db034dd467611b08d1681"
+    }
+  ],
+  "independentFinalSourceHash": "6f745db1b4a0026ad837e74428f9ed6f3f77fa51eb6f858b58ebdbc186fdb3bd",
+  "finalOverridesHash": "6141a20ef0298e33f9ce0815c2e8098e43a24ef660799ec46c718a2c1c2f7499",
+  "rowsInSource": 20466,
+  "includedPollObservations": 2846,
+  "exclusions": {
+    "partisan_or_internal": 412,
+    "final_candidate_identity_unmatched": 869,
+    "independent_final_outcome_disagrees": 275,
+    "not_regular_comparable_major_party_final": 597,
+    "invalid_vote_shares": 2,
+    "election_or_field_clock_invalid": 5
+  },
+  "races": 185,
+  "cycles": [
+    1998,
+    2000,
+    2002,
+    2004,
+    2006,
+    2008,
+    2010,
+    2012,
+    2014,
+    2016,
+    2018,
+    2020,
+    2022
+  ],
+  "models": {
+    "poll_centered": {
+      "family": "poll_centered",
+      "races": 185,
+      "cycles": [
+        1998,
+        2000,
+        2002,
+        2004,
+        2006,
+        2008,
+        2010,
+        2012,
+        2014,
+        2016,
+        2018,
+        2020,
+        2022
+      ],
+      "trainedThroughYear": 2022,
+      "biasPoints": 0,
+      "standardDeviationPoints": 7.303844974975776,
+      "distribution": "fixed_t4",
+      "effectiveUnit": "one_state_race",
+      "historicalPopulationTransportMeasured": false
+    },
+    "historical_bias_corrected": {
+      "family": "historical_bias_corrected",
+      "races": 185,
+      "cycles": [
+        1998,
+        2000,
+        2002,
+        2004,
+        2006,
+        2008,
+        2010,
+        2012,
+        2014,
+        2016,
+        2018,
+        2020,
+        2022
+      ],
+      "trainedThroughYear": 2022,
+      "biasPoints": 0.19664811424948714,
+      "standardDeviationPoints": 7.301197226321246,
+      "distribution": "fixed_t4",
+      "effectiveUnit": "one_state_race",
+      "historicalPopulationTransportMeasured": false
+    }
+  },
+  "diagnostics": {
+    "poll_centered": {
+      "races": 18,
+      "cycles": [
+        2020,
+        2022
+      ],
+      "brier": 0.06815246552517297,
+      "logLoss": 0.2365348709231485,
+      "correctDirections": 17,
+      "bins": [
+        {
+          "low": 0,
+          "high": 0.2,
+          "n": 4,
+          "meanForecast": 0.026959653627489477,
+          "observedFrequency": 0
+        },
+        {
+          "low": 0.2,
+          "high": 0.4,
+          "n": 3,
+          "meanForecast": 0.3101621867445133,
+          "observedFrequency": 0.3333333333333333
+        },
+        {
+          "low": 0.4,
+          "high": 0.6,
+          "n": 3,
+          "meanForecast": 0.4395594902109881,
+          "observedFrequency": 0
+        },
+        {
+          "low": 0.6,
+          "high": 0.8,
+          "n": 1,
+          "meanForecast": 0.790327579251244,
+          "observedFrequency": 1
+        },
+        {
+          "low": 0.8,
+          "high": 1.000001,
+          "n": 7,
+          "meanForecast": 0.9267717840953092,
+          "observedFrequency": 1
+        }
+      ],
+      "independentElectionCycles": 2,
+      "untouchedOriginalForecastVintage": false,
+      "historicalMarketPnlAvailable": false,
+      "profitabilityEstablished": false
+    },
+    "historical_bias_corrected": {
+      "races": 18,
+      "cycles": [
+        2020,
+        2022
+      ],
+      "brier": 0.0741643121264011,
+      "logLoss": 0.24639016802618485,
+      "correctDirections": 16,
+      "bins": [
+        {
+          "low": 0,
+          "high": 0.2,
+          "n": 4,
+          "meanForecast": 0.03013283148154504,
+          "observedFrequency": 0
+        },
+        {
+          "low": 0.2,
+          "high": 0.4,
+          "n": 2,
+          "meanForecast": 0.3078291541441329,
+          "observedFrequency": 0
+        },
+        {
+          "low": 0.4,
+          "high": 0.6,
+          "n": 4,
+          "meanForecast": 0.4694666876892682,
+          "observedFrequency": 0.25
+        },
+        {
+          "low": 0.6,
+          "high": 0.8,
+          "n": 0,
+          "meanForecast": null,
+          "observedFrequency": null
+        },
+        {
+          "low": 0.8,
+          "high": 1.000001,
+          "n": 8,
+          "meanForecast": 0.9214858540192418,
+          "observedFrequency": 1
+        }
+      ],
+      "independentElectionCycles": 2,
+      "untouchedOriginalForecastVintage": false,
+      "historicalMarketPnlAvailable": false,
+      "profitabilityEstablished": false
+    }
+  },
+  "byCycle": [
+    {
+      "year": 2020,
+      "families": {
+        "poll_centered": {
+          "races": 6,
+          "cycles": [
+            2020
+          ],
+          "brier": 0.06990805843148436,
+          "logLoss": 0.2407552660728014,
+          "correctDirections": 6,
+          "bins": [
+            {
+              "low": 0,
+              "high": 0.2,
+              "n": 1,
+              "meanForecast": 0.027890316658663455,
+              "observedFrequency": 0
+            },
+            {
+              "low": 0.2,
+              "high": 0.4,
+              "n": 0,
+              "meanForecast": null,
+              "observedFrequency": null
+            },
+            {
+              "low": 0.4,
+              "high": 0.6,
+              "n": 2,
+              "meanForecast": 0.4440949189213266,
+              "observedFrequency": 0
+            },
+            {
+              "low": 0.6,
+              "high": 0.8,
+              "n": 0,
+              "meanForecast": null,
+              "observedFrequency": null
+            },
+            {
+              "low": 0.8,
+              "high": 1.000001,
+              "n": 3,
+              "meanForecast": 0.9239770574051368,
+              "observedFrequency": 1
+            }
+          ],
+          "independentElectionCycles": 1,
+          "untouchedOriginalForecastVintage": false,
+          "historicalMarketPnlAvailable": false,
+          "profitabilityEstablished": false
+        },
+        "historical_bias_corrected": {
+          "races": 6,
+          "cycles": [
+            2020
+          ],
+          "brier": 0.08601111458961762,
+          "logLoss": 0.2692332121491651,
+          "correctDirections": 5,
+          "bins": [
+            {
+              "low": 0,
+              "high": 0.2,
+              "n": 1,
+              "meanForecast": 0.03209507099462516,
+              "observedFrequency": 0
+            },
+            {
+              "low": 0.2,
+              "high": 0.4,
+              "n": 0,
+              "meanForecast": null,
+              "observedFrequency": null
+            },
+            {
+              "low": 0.4,
+              "high": 0.6,
+              "n": 2,
+              "meanForecast": 0.49899487836018286,
+              "observedFrequency": 0
+            },
+            {
+              "low": 0.6,
+              "high": 0.8,
+              "n": 0,
+              "meanForecast": null,
+              "observedFrequency": null
+            },
+            {
+              "low": 0.8,
+              "high": 1.000001,
+              "n": 3,
+              "meanForecast": 0.936520365841786,
+              "observedFrequency": 1
+            }
+          ],
+          "independentElectionCycles": 1,
+          "untouchedOriginalForecastVintage": false,
+          "historicalMarketPnlAvailable": false,
+          "profitabilityEstablished": false
+        }
+      }
+    },
+    {
+      "year": 2022,
+      "families": {
+        "poll_centered": {
+          "races": 12,
+          "cycles": [
+            2022
+          ],
+          "brier": 0.06727466907201728,
+          "logLoss": 0.2344246733483221,
+          "correctDirections": 11,
+          "bins": [
+            {
+              "low": 0,
+              "high": 0.2,
+              "n": 3,
+              "meanForecast": 0.02664943261709815,
+              "observedFrequency": 0
+            },
+            {
+              "low": 0.2,
+              "high": 0.4,
+              "n": 3,
+              "meanForecast": 0.3101621867445133,
+              "observedFrequency": 0.3333333333333333
+            },
+            {
+              "low": 0.4,
+              "high": 0.6,
+              "n": 1,
+              "meanForecast": 0.43048863279031124,
+              "observedFrequency": 0
+            },
+            {
+              "low": 0.6,
+              "high": 0.8,
+              "n": 1,
+              "meanForecast": 0.790327579251244,
+              "observedFrequency": 1
+            },
+            {
+              "low": 0.8,
+              "high": 1.000001,
+              "n": 4,
+              "meanForecast": 0.9288678291129386,
+              "observedFrequency": 1
+            }
+          ],
+          "independentElectionCycles": 1,
+          "untouchedOriginalForecastVintage": false,
+          "historicalMarketPnlAvailable": false,
+          "profitabilityEstablished": false
+        },
+        "historical_bias_corrected": {
+          "races": 12,
+          "cycles": [
+            2022
+          ],
+          "brier": 0.06824091089479283,
+          "logLoss": 0.2349686459646947,
+          "correctDirections": 11,
+          "bins": [
+            {
+              "low": 0,
+              "high": 0.2,
+              "n": 3,
+              "meanForecast": 0.029478751643851664,
+              "observedFrequency": 0
+            },
+            {
+              "low": 0.2,
+              "high": 0.4,
+              "n": 2,
+              "meanForecast": 0.3078291541441329,
+              "observedFrequency": 0
+            },
+            {
+              "low": 0.4,
+              "high": 0.6,
+              "n": 2,
+              "meanForecast": 0.4399384970183536,
+              "observedFrequency": 0.5
+            },
+            {
+              "low": 0.6,
+              "high": 0.8,
+              "n": 0,
+              "meanForecast": null,
+              "observedFrequency": null
+            },
+            {
+              "low": 0.8,
+              "high": 1.000001,
+              "n": 5,
+              "meanForecast": 0.912465146925715,
+              "observedFrequency": 1
+            }
+          ],
+          "independentElectionCycles": 1,
+          "untouchedOriginalForecastVintage": false,
+          "historicalMarketPnlAvailable": false,
+          "profitabilityEstablished": false
+        }
+      }
+    }
+  ],
+  "raceRows": [
+    {
+      "key": "1998:CA",
+      "year": 1998,
+      "state": "CA",
+      "forecastHorizonDays": 45,
+      "pollMargin": -1.2942206842125712,
+      "actualMargin": 10.0455671714246,
+      "democraticWon": true,
+      "error": 11.339787855637173,
+      "pollCount": 3,
+      "pollIds": [
+        "1721:31309",
+        "1721:31345",
+        "1721:31443"
+      ],
+      "latestFieldDate": "1998-09-15T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 11.661068928035355
+    },
+    {
+      "key": "1998:GA",
+      "year": 1998,
+      "state": "GA",
+      "forecastHorizonDays": 45,
+      "pollMargin": -12.999999999999998,
+      "actualMargin": -7.220033832149433,
+      "democraticWon": false,
+      "error": 5.779966167850565,
+      "pollCount": 1,
+      "pollIds": [
+        "1725:31360"
+      ],
+      "latestFieldDate": "1998-09-07T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 12.999999999999998
+    },
+    {
+      "key": "1998:IL",
+      "year": 1998,
+      "state": "IL",
+      "forecastHorizonDays": 45,
+      "pollMargin": -11.80224512704484,
+      "actualMargin": -2.9030605496327766,
+      "democraticWon": false,
+      "error": 8.899184577412063,
+      "pollCount": 2,
+      "pollIds": [
+        "1728:31306",
+        "1728:31368"
+      ],
+      "latestFieldDate": "1998-09-13T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 16.065918290985053
+    },
+    {
+      "key": "1998:IN",
+      "year": 1998,
+      "state": "IN",
+      "forecastHorizonDays": 45,
+      "pollMargin": 23,
+      "actualMargin": 28.925285326796825,
+      "democraticWon": true,
+      "error": 5.925285326796825,
+      "pollCount": 1,
+      "pollIds": [
+        "1729:31375"
+      ],
+      "latestFieldDate": "1998-09-13T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 12.999999999999998
+    },
+    {
+      "key": "1998:MD",
+      "year": 1998,
+      "state": "MD",
+      "forecastHorizonDays": 45,
+      "pollMargin": 50,
+      "actualMargin": 41.00794256779841,
+      "democraticWon": true,
+      "error": -8.992057432201591,
+      "pollCount": 1,
+      "pollIds": [
+        "1734:31388"
+      ],
+      "latestFieldDate": "1998-09-19T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 12
+    },
+    {
+      "key": "1998:NH",
+      "year": 1998,
+      "state": "NH",
+      "forecastHorizonDays": 45,
+      "pollMargin": -41,
+      "actualMargin": -39.59186008083992,
+      "democraticWon": false,
+      "error": 1.408139919160078,
+      "pollCount": 2,
+      "pollIds": [
+        "1737:31246",
+        "1737:31467"
+      ],
+      "latestFieldDate": "1998-09-09T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 17
+    },
+    {
+      "key": "1998:OH",
+      "year": 1998,
+      "state": "OH",
+      "forecastHorizonDays": 45,
+      "pollMargin": -25.486854004152313,
+      "actualMargin": -12.925606084683984,
+      "democraticWon": false,
+      "error": 12.561247919468329,
+      "pollCount": 3,
+      "pollIds": [
+        "1741:31291",
+        "1741:31409",
+        "1741:31497"
+      ],
+      "latestFieldDate": "1998-09-14T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 11.933271855969174
+    },
+    {
+      "key": "1998:PA",
+      "year": 1998,
+      "state": "PA",
+      "forecastHorizonDays": 45,
+      "pollMargin": -31,
+      "actualMargin": -26.55422706820864,
+      "democraticWon": false,
+      "error": 4.44577293179136,
+      "pollCount": 1,
+      "pollIds": [
+        "1744:31412"
+      ],
+      "latestFieldDate": "1998-09-15T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 15
+    },
+    {
+      "key": "1998:WA",
+      "year": 1998,
+      "state": "WA",
+      "forecastHorizonDays": 45,
+      "pollMargin": 16,
+      "actualMargin": 16.827997612997407,
+      "democraticWon": true,
+      "error": 0.8279976129974074,
+      "pollCount": 1,
+      "pollIds": [
+        "1749:31424"
+      ],
+      "latestFieldDate": "1998-09-08T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 14
+    },
+    {
+      "key": "2000:CA",
+      "year": 2000,
+      "state": "CA",
+      "forecastHorizonDays": 45,
+      "pollMargin": 13.211842413311166,
+      "actualMargin": 19.25587804068072,
+      "democraticWon": true,
+      "error": 6.044035627369555,
+      "pollCount": 2,
+      "pollIds": [
+        "1684:188197",
+        "1684:31075"
+      ],
+      "latestFieldDate": "2000-09-13T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 17.211842413311167
+    },
+    {
+      "key": "2000:CT",
+      "year": 2000,
+      "state": "CT",
+      "forecastHorizonDays": 45,
+      "pollMargin": 43.32995027185402,
+      "actualMargin": 29.042654360954835,
+      "democraticWon": true,
+      "error": -14.287295910899182,
+      "pollCount": 2,
+      "pollIds": [
+        "1685:188198",
+        "1685:27387"
+      ],
+      "latestFieldDate": "2000-09-15T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 10.934009945629196
+    },
+    {
+      "key": "2000:DE",
+      "year": 2000,
+      "state": "DE",
+      "forecastHorizonDays": 45,
+      "pollMargin": 3,
+      "actualMargin": 11.827470312820154,
+      "democraticWon": true,
+      "error": 8.827470312820154,
+      "pollCount": 1,
+      "pollIds": [
+        "1686:27469"
+      ],
+      "latestFieldDate": "2000-09-23T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 11
+    },
+    {
+      "key": "2000:FL",
+      "year": 2000,
+      "state": "FL",
+      "forecastHorizonDays": 45,
+      "pollMargin": 3.807279931639888,
+      "actualMargin": 4.85149480145153,
+      "democraticWon": true,
+      "error": 1.0442148698116416,
+      "pollCount": 4,
+      "pollIds": [
+        "1687:137364",
+        "1687:137540",
+        "1687:27467",
+        "1687:31013"
+      ],
+      "latestFieldDate": "2000-09-23T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 17.446935303833612
+    },
+    {
+      "key": "2000:IN",
+      "year": 2000,
+      "state": "IN",
+      "forecastHorizonDays": 45,
+      "pollMargin": -43,
+      "actualMargin": -34.71321442339651,
+      "democraticWon": false,
+      "error": 8.286785576603492,
+      "pollCount": 1,
+      "pollIds": [
+        "1690:188199"
+      ],
+      "latestFieldDate": "2000-09-13T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 11
+    },
+    {
+      "key": "2000:MA",
+      "year": 2000,
+      "state": "MA",
+      "forecastHorizonDays": 45,
+      "pollMargin": 49,
+      "actualMargin": 56.880969170987484,
+      "democraticWon": true,
+      "error": 7.880969170987484,
+      "pollCount": 1,
+      "pollIds": [
+        "1693:188213"
+      ],
+      "latestFieldDate": "2000-09-13T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 17
+    },
+    {
+      "key": "2000:MD",
+      "year": 2000,
+      "state": "MD",
+      "forecastHorizonDays": 45,
+      "pollMargin": 23,
+      "actualMargin": 26.443860952140277,
+      "democraticWon": true,
+      "error": 3.4438609521402768,
+      "pollCount": 1,
+      "pollIds": [
+        "1692:188212"
+      ],
+      "latestFieldDate": "2000-09-13T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 7
+    },
+    {
+      "key": "2000:ME",
+      "year": 2000,
+      "state": "ME",
+      "forecastHorizonDays": 45,
+      "pollMargin": -52.11501333195111,
+      "actualMargin": -37.882596806915416,
+      "democraticWon": false,
+      "error": 14.232416525035696,
+      "pollCount": 2,
+      "pollIds": [
+        "1691:27437",
+        "1691:31125"
+      ],
+      "latestFieldDate": "2000-09-17T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 12.115013331951115
+    },
+    {
+      "key": "2000:MI",
+      "year": 2000,
+      "state": "MI",
+      "forecastHorizonDays": 45,
+      "pollMargin": -7.964983257283432,
+      "actualMargin": 1.6138215820053574,
+      "democraticWon": true,
+      "error": 9.57880483928879,
+      "pollCount": 3,
+      "pollIds": [
+        "1694:188214",
+        "1694:30962",
+        "1694:31063"
+      ],
+      "latestFieldDate": "2000-09-15T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 17.901582158427246
+    },
+    {
+      "key": "2000:MO",
+      "year": 2000,
+      "state": "MO",
+      "forecastHorizonDays": 45,
+      "pollMargin": -2.2973197258253966,
+      "actualMargin": 2.073183021918318,
+      "democraticWon": true,
+      "error": 4.370502747743714,
+      "pollCount": 3,
+      "pollIds": [
+        "1697:188215",
+        "1697:27190",
+        "1697:31176"
+      ],
+      "latestFieldDate": "2000-09-15T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 12.913349588720006
+    },
+    {
+      "key": "2000:MT",
+      "year": 2000,
+      "state": "MT",
+      "forecastHorizonDays": 45,
+      "pollMargin": -9,
+      "actualMargin": -3.3168043809417327,
+      "democraticWon": false,
+      "error": 5.683195619058267,
+      "pollCount": 1,
+      "pollIds": [
+        "1698:27309"
+      ],
+      "latestFieldDate": "2000-09-22T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 13
+    },
+    {
+      "key": "2000:NE",
+      "year": 2000,
+      "state": "NE",
+      "forecastHorizonDays": 45,
+      "pollMargin": 20,
+      "actualMargin": 2.183288799017838,
+      "democraticWon": true,
+      "error": -17.816711200982162,
+      "pollCount": 1,
+      "pollIds": [
+        "1699:31115"
+      ],
+      "latestFieldDate": "2000-09-13T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 14
+    },
+    {
+      "key": "2000:NM",
+      "year": 2000,
+      "state": "NM",
+      "forecastHorizonDays": 45,
+      "pollMargin": 26.623293869666384,
+      "actualMargin": 23.44714228040833,
+      "democraticWon": true,
+      "error": -3.1761515892580547,
+      "pollCount": 3,
+      "pollIds": [
+        "1702:120565",
+        "1702:188217",
+        "1702:27407"
+      ],
+      "latestFieldDate": "2000-09-15T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 11.859005624217824
+    },
+    {
+      "key": "2000:NV",
+      "year": 2000,
+      "state": "NV",
+      "forecastHorizonDays": 45,
+      "pollMargin": -11.000000000000002,
+      "actualMargin": -15.384602580662346,
+      "democraticWon": false,
+      "error": -4.384602580662344,
+      "pollCount": 1,
+      "pollIds": [
+        "1700:31032"
+      ],
+      "latestFieldDate": "2000-09-15T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 11.000000000000002
+    },
+    {
+      "key": "2000:OH",
+      "year": 2000,
+      "state": "OH",
+      "forecastHorizonDays": 45,
+      "pollMargin": -22.4245891433262,
+      "actualMargin": -24.06144936579541,
+      "democraticWon": false,
+      "error": -1.6368602224692097,
+      "pollCount": 4,
+      "pollIds": [
+        "1705:188218",
+        "1705:27239",
+        "1705:27477",
+        "1705:30947"
+      ],
+      "latestFieldDate": "2000-09-15T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 12.79012629983359
+    },
+    {
+      "key": "2000:PA",
+      "year": 2000,
+      "state": "PA",
+      "forecastHorizonDays": 45,
+      "pollMargin": -11.046276997012914,
+      "actualMargin": -6.906990240577002,
+      "democraticWon": false,
+      "error": 4.1392867564359115,
+      "pollCount": 3,
+      "pollIds": [
+        "1706:136956",
+        "1706:27240",
+        "1706:31035"
+      ],
+      "latestFieldDate": "2000-09-15T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 14.373005667530125
+    },
+    {
+      "key": "2000:TN",
+      "year": 2000,
+      "state": "TN",
+      "forecastHorizonDays": 45,
+      "pollMargin": -33.681472649519705,
+      "actualMargin": -32.88850588479908,
+      "democraticWon": false,
+      "error": 0.7929667647206244,
+      "pollCount": 2,
+      "pollIds": [
+        "1708:188219",
+        "1708:31037"
+      ],
+      "latestFieldDate": "2000-09-15T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 14.5164975135927
+    },
+    {
+      "key": "2000:TX",
+      "year": 2000,
+      "state": "TX",
+      "forecastHorizonDays": 45,
+      "pollMargin": -26,
+      "actualMargin": -32.76869490635237,
+      "democraticWon": false,
+      "error": -6.768694906352373,
+      "pollCount": 1,
+      "pollIds": [
+        "1709:188220"
+      ],
+      "latestFieldDate": "2000-09-13T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 10
+    },
+    {
+      "key": "2000:UT",
+      "year": 2000,
+      "state": "UT",
+      "forecastHorizonDays": 45,
+      "pollMargin": -33,
+      "actualMargin": -34.06946046792013,
+      "democraticWon": false,
+      "error": -1.0694604679201305,
+      "pollCount": 1,
+      "pollIds": [
+        "1710:30951"
+      ],
+      "latestFieldDate": "2000-09-15T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 15
+    },
+    {
+      "key": "2000:VA",
+      "year": 2000,
+      "state": "VA",
+      "forecastHorizonDays": 45,
+      "pollMargin": -6.3481608681651345,
+      "actualMargin": -4.575173978157679,
+      "democraticWon": false,
+      "error": 1.7729868900074557,
+      "pollCount": 3,
+      "pollIds": [
+        "1712:188221",
+        "1712:31039",
+        "1712:31117"
+      ],
+      "latestFieldDate": "2000-09-15T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 9.696321736330269
+    },
+    {
+      "key": "2000:WA",
+      "year": 2000,
+      "state": "WA",
+      "forecastHorizonDays": 45,
+      "pollMargin": -0.4588346304730236,
+      "actualMargin": 0.09055899152467362,
+      "democraticWon": true,
+      "error": 0.5493936219976971,
+      "pollCount": 2,
+      "pollIds": [
+        "1713:137560",
+        "1713:30954"
+      ],
+      "latestFieldDate": "2000-09-20T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 8.129511674257213
+    },
+    {
+      "key": "2000:WI",
+      "year": 2000,
+      "state": "WI",
+      "forecastHorizonDays": 45,
+      "pollMargin": 41,
+      "actualMargin": 24.506836981311245,
+      "democraticWon": true,
+      "error": -16.493163018688755,
+      "pollCount": 1,
+      "pollIds": [
+        "1715:31006"
+      ],
+      "latestFieldDate": "2000-09-15T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 13
+    },
+    {
+      "key": "2000:WY",
+      "year": 2000,
+      "state": "WY",
+      "forecastHorizonDays": 45,
+      "pollMargin": -53.99999999999999,
+      "actualMargin": -51.73430559910886,
+      "democraticWon": false,
+      "error": 2.2656944008911353,
+      "pollCount": 1,
+      "pollIds": [
+        "1716:27340"
+      ],
+      "latestFieldDate": "2000-09-16T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 18
+    },
+    {
+      "key": "2002:AL",
+      "year": 2002,
+      "state": "AL",
+      "forecastHorizonDays": 45,
+      "pollMargin": -28,
+      "actualMargin": -18.749348680695007,
+      "democraticWon": false,
+      "error": 9.250651319304993,
+      "pollCount": 1,
+      "pollIds": [
+        "1648:30884"
+      ],
+      "latestFieldDate": "2002-09-11T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 18
+    },
+    {
+      "key": "2002:AR",
+      "year": 2002,
+      "state": "AR",
+      "forecastHorizonDays": 45,
+      "pollMargin": 5.933991975467929,
+      "actualMargin": 7.791240373028444,
+      "democraticWon": true,
+      "error": 1.8572483975605145,
+      "pollCount": 2,
+      "pollIds": [
+        "1650:30801",
+        "1650:30903"
+      ],
+      "latestFieldDate": "2002-09-19T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 11.016502006133017
+    },
+    {
+      "key": "2002:CO",
+      "year": 2002,
+      "state": "CO",
+      "forecastHorizonDays": 45,
+      "pollMargin": 0,
+      "actualMargin": -4.926480246200434,
+      "democraticWon": false,
+      "error": -4.926480246200434,
+      "pollCount": 1,
+      "pollIds": [
+        "1651:30908"
+      ],
+      "latestFieldDate": "2002-09-17T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 16
+    },
+    {
+      "key": "2002:IL",
+      "year": 2002,
+      "state": "IL",
+      "forecastHorizonDays": 45,
+      "pollMargin": 26.9340099456292,
+      "actualMargin": 22.314202700373485,
+      "democraticWon": true,
+      "error": -4.619807245255714,
+      "pollCount": 2,
+      "pollIds": [
+        "1655:30762",
+        "1655:30913"
+      ],
+      "latestFieldDate": "2002-09-18T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 16.0329950271854
+    },
+    {
+      "key": "2002:ME",
+      "year": 2002,
+      "state": "ME",
+      "forecastHorizonDays": 45,
+      "pollMargin": -28.322005949744366,
+      "actualMargin": -16.87129505108942,
+      "democraticWon": false,
+      "error": 11.450710898654947,
+      "pollCount": 3,
+      "pollIds": [
+        "1661:30687",
+        "1661:30842",
+        "1661:30860"
+      ],
+      "latestFieldDate": "2002-09-19T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 12.000000000000002
+    },
+    {
+      "key": "2002:NC",
+      "year": 2002,
+      "state": "NC",
+      "forecastHorizonDays": 45,
+      "pollMargin": -18.796632309432745,
+      "actualMargin": -8.608555062862983,
+      "democraticWon": false,
+      "error": 10.188077246569762,
+      "pollCount": 2,
+      "pollIds": [
+        "1672:27016",
+        "1672:30924"
+      ],
+      "latestFieldDate": "2002-09-17T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 14.40112256352242
+    },
+    {
+      "key": "2002:NH",
+      "year": 2002,
+      "state": "NH",
+      "forecastHorizonDays": 45,
+      "pollMargin": -9,
+      "actualMargin": -4.417234168651525,
+      "democraticWon": false,
+      "error": 4.582765831348475,
+      "pollCount": 1,
+      "pollIds": [
+        "1669:30634"
+      ],
+      "latestFieldDate": "2002-09-16T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 15
+    },
+    {
+      "key": "2002:NJ",
+      "year": 2002,
+      "state": "NJ",
+      "forecastHorizonDays": 45,
+      "pollMargin": -5,
+      "actualMargin": 9.928694634678337,
+      "democraticWon": true,
+      "error": 14.928694634678337,
+      "pollCount": 1,
+      "pollIds": [
+        "1670:30848"
+      ],
+      "latestFieldDate": "2002-09-05T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 17
+    },
+    {
+      "key": "2002:NM",
+      "year": 2002,
+      "state": "NM",
+      "forecastHorizonDays": 45,
+      "pollMargin": -43,
+      "actualMargin": -30.085538736709616,
+      "democraticWon": false,
+      "error": 12.914461263290384,
+      "pollCount": 1,
+      "pollIds": [
+        "1671:30814"
+      ],
+      "latestFieldDate": "2002-09-10T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 11
+    },
+    {
+      "key": "2002:RI",
+      "year": 2002,
+      "state": "RI",
+      "forecastHorizonDays": 45,
+      "pollMargin": 59,
+      "actualMargin": 56.85297698883127,
+      "democraticWon": true,
+      "error": -2.147023011168727,
+      "pollCount": 1,
+      "pollIds": [
+        "1675:30703"
+      ],
+      "latestFieldDate": "2002-09-14T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 13.000000000000002
+    },
+    {
+      "key": "2002:SC",
+      "year": 2002,
+      "state": "SC",
+      "forecastHorizonDays": 45,
+      "pollMargin": -2,
+      "actualMargin": -10.213960859977945,
+      "democraticWon": false,
+      "error": -8.213960859977945,
+      "pollCount": 1,
+      "pollIds": [
+        "1676:137573"
+      ],
+      "latestFieldDate": "2002-09-14T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 4
+    },
+    {
+      "key": "2002:SD",
+      "year": 2002,
+      "state": "SD",
+      "forecastHorizonDays": 45,
+      "pollMargin": 1.9670049728145984,
+      "actualMargin": 0.15762916258025683,
+      "democraticWon": true,
+      "error": -1.8093758102343416,
+      "pollCount": 2,
+      "pollIds": [
+        "1677:30777",
+        "1677:30932"
+      ],
+      "latestFieldDate": "2002-09-18T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 12.032995027185402
+    },
+    {
+      "key": "2002:TN",
+      "year": 2002,
+      "state": "TN",
+      "forecastHorizonDays": 45,
+      "pollMargin": -14.822839028556201,
+      "actualMargin": -9.940502864045513,
+      "democraticWon": false,
+      "error": 4.882336164510688,
+      "pollCount": 3,
+      "pollIds": [
+        "1678:30779",
+        "1678:30889",
+        "1678:30934"
+      ],
+      "latestFieldDate": "2002-09-18T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 17.98302513844948
+    },
+    {
+      "key": "2002:TX",
+      "year": 2002,
+      "state": "TX",
+      "forecastHorizonDays": 45,
+      "pollMargin": -9.393798603912806,
+      "actualMargin": -11.97349497520166,
+      "democraticWon": false,
+      "error": -2.579696371288854,
+      "pollCount": 2,
+      "pollIds": [
+        "1679:137733",
+        "1679:30938"
+      ],
+      "latestFieldDate": "2002-09-17T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 25.393798603912806
+    },
+    {
+      "key": "2004:CA",
+      "year": 2004,
+      "state": "CA",
+      "forecastHorizonDays": 45,
+      "pollMargin": 18,
+      "actualMargin": 19.9099582313384,
+      "democraticWon": true,
+      "error": 1.9099582313384005,
+      "pollCount": 2,
+      "pollIds": [
+        "1618:30449",
+        "1618:30521"
+      ],
+      "latestFieldDate": "2004-09-16T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 10.85255118963769
+    },
+    {
+      "key": "2004:CO",
+      "year": 2004,
+      "state": "CO",
+      "forecastHorizonDays": 45,
+      "pollMargin": 3.351328321232975,
+      "actualMargin": 4.769695635339403,
+      "democraticWon": true,
+      "error": 1.418367314106428,
+      "pollCount": 3,
+      "pollIds": [
+        "1619:26555",
+        "1619:26606",
+        "1619:30317"
+      ],
+      "latestFieldDate": "2004-09-16T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 5.69533378897882
+    },
+    {
+      "key": "2004:FL",
+      "year": 2004,
+      "state": "FL",
+      "forecastHorizonDays": 45,
+      "pollMargin": 4,
+      "actualMargin": -1.1125730730478764,
+      "democraticWon": false,
+      "error": -5.1125730730478764,
+      "pollCount": 1,
+      "pollIds": [
+        "1621:30530"
+      ],
+      "latestFieldDate": "2004-09-13T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 6
+    },
+    {
+      "key": "2004:GA",
+      "year": 2004,
+      "state": "GA",
+      "forecastHorizonDays": 45,
+      "pollMargin": -25,
+      "actualMargin": -17.89864640617253,
+      "democraticWon": false,
+      "error": 7.101353593827469,
+      "pollCount": 1,
+      "pollIds": [
+        "1622:30534"
+      ],
+      "latestFieldDate": "2004-09-14T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 9
+    },
+    {
+      "key": "2004:IL",
+      "year": 2004,
+      "state": "IL",
+      "forecastHorizonDays": 45,
+      "pollMargin": 41,
+      "actualMargin": 42.92049821842568,
+      "democraticWon": true,
+      "error": 1.9204982184256778,
+      "pollCount": 1,
+      "pollIds": [
+        "1625:137580"
+      ],
+      "latestFieldDate": "2004-09-13T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 11
+    },
+    {
+      "key": "2004:KY",
+      "year": 2004,
+      "state": "KY",
+      "forecastHorizonDays": 45,
+      "pollMargin": -17.934081709014947,
+      "actualMargin": -1.3136452786595925,
+      "democraticWon": false,
+      "error": 16.620436430355355,
+      "pollCount": 2,
+      "pollIds": [
+        "1629:30406",
+        "1629:30544"
+      ],
+      "latestFieldDate": "2004-09-12T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 13.131836581970108
+    },
+    {
+      "key": "2004:MO",
+      "year": 2004,
+      "state": "MO",
+      "forecastHorizonDays": 45,
+      "pollMargin": -20,
+      "actualMargin": -13.295438002188888,
+      "democraticWon": false,
+      "error": 6.704561997811112,
+      "pollCount": 1,
+      "pollIds": [
+        "1632:137585"
+      ],
+      "latestFieldDate": "2004-09-08T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 6
+    },
+    {
+      "key": "2004:NC",
+      "year": 2004,
+      "state": "NC",
+      "forecastHorizonDays": 45,
+      "pollMargin": 10,
+      "actualMargin": -4.577167244321998,
+      "democraticWon": false,
+      "error": -14.577167244321998,
+      "pollCount": 1,
+      "pollIds": [
+        "1636:30549"
+      ],
+      "latestFieldDate": "2004-09-07T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 10
+    },
+    {
+      "key": "2004:NH",
+      "year": 2004,
+      "state": "NH",
+      "forecastHorizonDays": 45,
+      "pollMargin": -32.67327106439669,
+      "actualMargin": -32.46119990381776,
+      "democraticWon": false,
+      "error": 0.2120711605789296,
+      "pollCount": 2,
+      "pollIds": [
+        "1634:136753",
+        "1634:137381"
+      ],
+      "latestFieldDate": "2004-09-16T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 12.574259027598579
+    },
+    {
+      "key": "2004:NV",
+      "year": 2004,
+      "state": "NV",
+      "forecastHorizonDays": 45,
+      "pollMargin": 15.933991975467928,
+      "actualMargin": 25.94411827155251,
+      "democraticWon": true,
+      "error": 10.010126296084584,
+      "pollCount": 2,
+      "pollIds": [
+        "1633:137380",
+        "1633:26502"
+      ],
+      "latestFieldDate": "2004-09-14T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 9.966995987733963
+    },
+    {
+      "key": "2004:OH",
+      "year": 2004,
+      "state": "OH",
+      "forecastHorizonDays": 45,
+      "pollMargin": -25.198309229506982,
+      "actualMargin": -27.70427638350901,
+      "democraticWon": false,
+      "error": -2.505967154002029,
+      "pollCount": 3,
+      "pollIds": [
+        "1638:30427",
+        "1638:30554",
+        "1638:30585"
+      ],
+      "latestFieldDate": "2004-09-15T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 7.582283016242012
+    },
+    {
+      "key": "2004:OK",
+      "year": 2004,
+      "state": "OK",
+      "forecastHorizonDays": 45,
+      "pollMargin": 3.9010149184437957,
+      "actualMargin": -11.520438249820643,
+      "democraticWon": false,
+      "error": -15.421453168264438,
+      "pollCount": 2,
+      "pollIds": [
+        "1639:26805",
+        "1639:30510"
+      ],
+      "latestFieldDate": "2004-09-18T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 20.934009945629196
+    },
+    {
+      "key": "2004:SD",
+      "year": 2004,
+      "state": "SD",
+      "forecastHorizonDays": 45,
+      "pollMargin": -3,
+      "actualMargin": -1.1523870875384716,
+      "democraticWon": false,
+      "error": 1.8476129124615284,
+      "pollCount": 1,
+      "pollIds": [
+        "1643:137383"
+      ],
+      "latestFieldDate": "2004-09-08T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 3
+    },
+    {
+      "key": "2004:UT",
+      "year": 2004,
+      "state": "UT",
+      "forecastHorizonDays": 45,
+      "pollMargin": -37,
+      "actualMargin": -40.328453943399666,
+      "democraticWon": false,
+      "error": -3.3284539433996656,
+      "pollCount": 1,
+      "pollIds": [
+        "1644:30327"
+      ],
+      "latestFieldDate": "2004-09-08T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 17
+    },
+    {
+      "key": "2004:WA",
+      "year": 2004,
+      "state": "WA",
+      "forecastHorizonDays": 45,
+      "pollMargin": 18.262532402608535,
+      "actualMargin": 12.244297005908145,
+      "democraticWon": true,
+      "error": -6.0182353967003905,
+      "pollCount": 2,
+      "pollIds": [
+        "1646:30332",
+        "1646:30443"
+      ],
+      "latestFieldDate": "2004-09-18T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 7.737467597391461
+    },
+    {
+      "key": "2006:AZ",
+      "year": 2006,
+      "state": "AZ",
+      "forecastHorizonDays": 45,
+      "pollMargin": -8.448682309859102,
+      "actualMargin": -9.841418093742263,
+      "democraticWon": false,
+      "error": -1.392735783883161,
+      "pollCount": 4,
+      "pollIds": [
+        "1581:29442",
+        "1581:29700",
+        "1581:30042",
+        "1581:30227"
+      ],
+      "latestFieldDate": "2006-09-23T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 9.635186343166788
+    },
+    {
+      "key": "2006:CA",
+      "year": 2006,
+      "state": "CA",
+      "forecastHorizonDays": 45,
+      "pollMargin": 20.153927818911296,
+      "actualMargin": 24.415768422225852,
+      "democraticWon": true,
+      "error": 4.261840603314557,
+      "pollCount": 2,
+      "pollIds": [
+        "1582:136872",
+        "1582:29472"
+      ],
+      "latestFieldDate": "2006-09-19T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 13.495281906479672
+    },
+    {
+      "key": "2006:DE",
+      "year": 2006,
+      "state": "DE",
+      "forecastHorizonDays": 45,
+      "pollMargin": 40,
+      "actualMargin": 41.49984360337817,
+      "democraticWon": true,
+      "error": 1.4998436033781672,
+      "pollCount": 1,
+      "pollIds": [
+        "1584:29488"
+      ],
+      "latestFieldDate": "2006-09-16T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 14
+    },
+    {
+      "key": "2006:FL",
+      "year": 2006,
+      "state": "FL",
+      "forecastHorizonDays": 45,
+      "pollMargin": 18.6085549136343,
+      "actualMargin": 22.205349956837694,
+      "democraticWon": true,
+      "error": 3.596795043203393,
+      "pollCount": 4,
+      "pollIds": [
+        "1585:29567",
+        "1585:29718",
+        "1585:30055",
+        "1585:30236"
+      ],
+      "latestFieldDate": "2006-09-22T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 11.523486978361586
+    },
+    {
+      "key": "2006:MD",
+      "year": 2006,
+      "state": "MD",
+      "forecastHorizonDays": 45,
+      "pollMargin": 7.686703954886743,
+      "actualMargin": 10.010167651149068,
+      "democraticWon": true,
+      "error": 2.3234636962623254,
+      "pollCount": 4,
+      "pollIds": [
+        "1589:29641",
+        "1589:29730",
+        "1589:30059",
+        "1589:30241"
+      ],
+      "latestFieldDate": "2006-09-22T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 7.61810942434024
+    },
+    {
+      "key": "2006:MN",
+      "year": 2006,
+      "state": "MN",
+      "forecastHorizonDays": 45,
+      "pollMargin": 15.491750922844306,
+      "actualMargin": 20.119921626023938,
+      "democraticWon": true,
+      "error": 4.628170703179633,
+      "pollCount": 4,
+      "pollIds": [
+        "1592:136980",
+        "1592:29574",
+        "1592:29959",
+        "1592:30248"
+      ],
+      "latestFieldDate": "2006-09-22T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 11.450381098945448
+    },
+    {
+      "key": "2006:MT",
+      "year": 2006,
+      "state": "MT",
+      "forecastHorizonDays": 45,
+      "pollMargin": 7,
+      "actualMargin": 0.8762499846250407,
+      "democraticWon": true,
+      "error": -6.123750015374959,
+      "pollCount": 1,
+      "pollIds": [
+        "1595:29781"
+      ],
+      "latestFieldDate": "2006-09-20T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 7
+    },
+    {
+      "key": "2006:NV",
+      "year": 2006,
+      "state": "NV",
+      "forecastHorizonDays": 45,
+      "pollMargin": -14.736039782516787,
+      "actualMargin": -14.368181100361845,
+      "democraticWon": false,
+      "error": 0.36785868215494233,
+      "pollCount": 2,
+      "pollIds": [
+        "1597:29588",
+        "1597:30267"
+      ],
+      "latestFieldDate": "2006-09-22T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 8.0329950271854
+    },
+    {
+      "key": "2006:OH",
+      "year": 2006,
+      "state": "OH",
+      "forecastHorizonDays": 45,
+      "pollMargin": 4.497394406050896,
+      "actualMargin": 12.348914072226663,
+      "democraticWon": true,
+      "error": 7.851519666175767,
+      "pollCount": 7,
+      "pollIds": [
+        "1602:29467",
+        "1602:29686",
+        "1602:29823",
+        "1602:30079",
+        "1602:30103",
+        "1602:30106",
+        "1602:30276"
+      ],
+      "latestFieldDate": "2006-09-22T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 10.537823073127253
+    },
+    {
+      "key": "2006:RI",
+      "year": 2006,
+      "state": "RI",
+      "forecastHorizonDays": 45,
+      "pollMargin": 4.523331055105898,
+      "actualMargin": 7.037270807521182,
+      "democraticWon": true,
+      "error": 2.5139397524152836,
+      "pollCount": 3,
+      "pollIds": [
+        "1604:29438",
+        "1604:29458",
+        "1604:29850"
+      ],
+      "latestFieldDate": "2006-09-17T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 14.344005467745845
+    },
+    {
+      "key": "2006:TN",
+      "year": 2006,
+      "state": "TN",
+      "forecastHorizonDays": 45,
+      "pollMargin": -1.9015209826379957,
+      "actualMargin": -2.723190061596938,
+      "democraticWon": false,
+      "error": -0.8216690789589423,
+      "pollCount": 2,
+      "pollIds": [
+        "1605:30085",
+        "1605:30288"
+      ],
+      "latestFieldDate": "2006-09-22T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 8.79323938389195
+    },
+    {
+      "key": "2006:TX",
+      "year": 2006,
+      "state": "TX",
+      "forecastHorizonDays": 45,
+      "pollMargin": -23.5,
+      "actualMargin": -25.647124700121424,
+      "democraticWon": false,
+      "error": -2.1471247001214238,
+      "pollCount": 1,
+      "pollIds": [
+        "1606:30294"
+      ],
+      "latestFieldDate": "2006-09-22T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 16.5
+    },
+    {
+      "key": "2006:WA",
+      "year": 2006,
+      "state": "WA",
+      "forecastHorizonDays": 45,
+      "pollMargin": 10.872071795783535,
+      "actualMargin": 16.919290082131404,
+      "democraticWon": true,
+      "error": 6.047218286347869,
+      "pollCount": 4,
+      "pollIds": [
+        "1610:29475",
+        "1610:29895",
+        "1610:30095",
+        "1610:30302"
+      ],
+      "latestFieldDate": "2006-09-23T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 8.142943326260003
+    },
+    {
+      "key": "2006:WI",
+      "year": 2006,
+      "state": "WI",
+      "forecastHorizonDays": 45,
+      "pollMargin": 19.250826521065754,
+      "actualMargin": 37.8298711544748,
+      "democraticWon": true,
+      "error": 18.579044633409048,
+      "pollCount": 2,
+      "pollIds": [
+        "1612:29907",
+        "1612:30305"
+      ],
+      "latestFieldDate": "2006-09-22T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 13.504780657499548
+    },
+    {
+      "key": "2008:AK",
+      "year": 2008,
+      "state": "AK",
+      "forecastHorizonDays": 45,
+      "pollMargin": 3.1635528594857956,
+      "actualMargin": 1.2441655152444113,
+      "democraticWon": true,
+      "error": -1.9193873442413842,
+      "pollCount": 2,
+      "pollIds": [
+        "1546:24835",
+        "1546:25011"
+      ],
+      "latestFieldDate": "2008-09-19T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 8.327105718971591
+    },
+    {
+      "key": "2008:AL",
+      "year": 2008,
+      "state": "AL",
+      "forecastHorizonDays": 45,
+      "pollMargin": -35,
+      "actualMargin": -26.841783116225628,
+      "democraticWon": false,
+      "error": 8.158216883774372,
+      "pollCount": 1,
+      "pollIds": [
+        "1545:25293"
+      ],
+      "latestFieldDate": "2008-09-16T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 2.9999999999999996
+    },
+    {
+      "key": "2008:CO",
+      "year": 2008,
+      "state": "CO",
+      "forecastHorizonDays": 45,
+      "pollMargin": 7.427039359726448,
+      "actualMargin": 10.303518453470787,
+      "democraticWon": true,
+      "error": 2.8764790937443383,
+      "pollCount": 4,
+      "pollIds": [
+        "1548:24927",
+        "1548:24941",
+        "1548:24997",
+        "1548:29330"
+      ],
+      "latestFieldDate": "2008-09-20T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 15.879151968564049
+    },
+    {
+      "key": "2008:IA",
+      "year": 2008,
+      "state": "IA",
+      "forecastHorizonDays": 45,
+      "pollMargin": 21.262532402608535,
+      "actualMargin": 25.394532502771277,
+      "democraticWon": true,
+      "error": 4.132000100162742,
+      "pollCount": 2,
+      "pollIds": [
+        "1554:25260",
+        "1554:25304"
+      ],
+      "latestFieldDate": "2008-09-17T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 7.343668993478653
+    },
+    {
+      "key": "2008:IL",
+      "year": 2008,
+      "state": "IL",
+      "forecastHorizonDays": 45,
+      "pollMargin": 24,
+      "actualMargin": 39.31085554582426,
+      "democraticWon": true,
+      "error": 15.31085554582426,
+      "pollCount": 1,
+      "pollIds": [
+        "1553:25049"
+      ],
+      "latestFieldDate": "2008-09-17T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 6
+    },
+    {
+      "key": "2008:KS",
+      "year": 2008,
+      "state": "KS",
+      "forecastHorizonDays": 45,
+      "pollMargin": -20,
+      "actualMargin": -23.599930618077295,
+      "democraticWon": false,
+      "error": -3.5999306180772948,
+      "pollCount": 1,
+      "pollIds": [
+        "1555:25053"
+      ],
+      "latestFieldDate": "2008-09-18T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 4
+    },
+    {
+      "key": "2008:KY",
+      "year": 2008,
+      "state": "KY",
+      "forecastHorizonDays": 45,
+      "pollMargin": -17,
+      "actualMargin": -5.931239140369868,
+      "democraticWon": false,
+      "error": 11.068760859630132,
+      "pollCount": 1,
+      "pollIds": [
+        "1556:29427"
+      ],
+      "latestFieldDate": "2008-09-08T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 12.999999999999998
+    },
+    {
+      "key": "2008:ME",
+      "year": 2008,
+      "state": "ME",
+      "forecastHorizonDays": 45,
+      "pollMargin": -13,
+      "actualMargin": -22.74753944480488,
+      "democraticWon": false,
+      "error": -9.747539444804879,
+      "pollCount": 1,
+      "pollIds": [
+        "1558:25077"
+      ],
+      "latestFieldDate": "2008-09-17T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 3
+    },
+    {
+      "key": "2008:MN",
+      "year": 2008,
+      "state": "MN",
+      "forecastHorizonDays": 45,
+      "pollMargin": -3.35316391852277,
+      "actualMargin": 0.010804648492232616,
+      "democraticWon": true,
+      "error": 3.363968567015003,
+      "pollCount": 4,
+      "pollIds": [
+        "1561:25002",
+        "1561:25272",
+        "1561:25325",
+        "1561:29372"
+      ],
+      "latestFieldDate": "2008-09-18T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 12.930056657611718
+    },
+    {
+      "key": "2008:MT",
+      "year": 2008,
+      "state": "MT",
+      "forecastHorizonDays": 45,
+      "pollMargin": 33,
+      "actualMargin": 45.8319550808319,
+      "democraticWon": true,
+      "error": 12.831955080831897,
+      "pollCount": 1,
+      "pollIds": [
+        "1564:25111"
+      ],
+      "latestFieldDate": "2008-09-08T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 5
+    },
+    {
+      "key": "2008:NC",
+      "year": 2008,
+      "state": "NC",
+      "forecastHorizonDays": 45,
+      "pollMargin": 0.726808404887449,
+      "actualMargin": 8.469184006441992,
+      "democraticWon": true,
+      "error": 7.742375601554543,
+      "pollCount": 5,
+      "pollIds": [
+        "1569:24828",
+        "1569:24958",
+        "1569:25115",
+        "1569:25339",
+        "1569:25387"
+      ],
+      "latestFieldDate": "2008-09-19T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 14.899200775692744
+    },
+    {
+      "key": "2008:NH",
+      "year": 2008,
+      "state": "NH",
+      "forecastHorizonDays": 45,
+      "pollMargin": 8.194768579416726,
+      "actualMargin": 6.337913633962643,
+      "democraticWon": true,
+      "error": -1.8568549454540832,
+      "pollCount": 3,
+      "pollIds": [
+        "1566:24784",
+        "1566:24931",
+        "1566:25408"
+      ],
+      "latestFieldDate": "2008-09-20T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 9.813925295079821
+    },
+    {
+      "key": "2008:NJ",
+      "year": 2008,
+      "state": "NJ",
+      "forecastHorizonDays": 45,
+      "pollMargin": 9.4310799235937,
+      "actualMargin": 14.07611606213451,
+      "democraticWon": true,
+      "error": 4.64503613854081,
+      "pollCount": 5,
+      "pollIds": [
+        "1567:24839",
+        "1567:24888",
+        "1567:24919",
+        "1567:25006",
+        "1567:25138"
+      ],
+      "latestFieldDate": "2008-09-16T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 13.44060066719156
+    },
+    {
+      "key": "2008:OK",
+      "year": 2008,
+      "state": "OK",
+      "forecastHorizonDays": 45,
+      "pollMargin": -21.837547430632256,
+      "actualMargin": -17.495966421620132,
+      "democraticWon": false,
+      "error": 4.341581009012124,
+      "pollCount": 3,
+      "pollIds": [
+        "1570:25152",
+        "1570:25360",
+        "1570:25399"
+      ],
+      "latestFieldDate": "2008-09-14T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 9.767024969165252
+    },
+    {
+      "key": "2008:OR",
+      "year": 2008,
+      "state": "OR",
+      "forecastHorizonDays": 45,
+      "pollMargin": -1.9670049728145984,
+      "actualMargin": 3.3512229675293526,
+      "democraticWon": true,
+      "error": 5.3182279403439505,
+      "pollCount": 2,
+      "pollIds": [
+        "1571:136836",
+        "1571:25155"
+      ],
+      "latestFieldDate": "2008-09-15T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 13.835024864072992
+    },
+    {
+      "key": "2008:SC",
+      "year": 2008,
+      "state": "SC",
+      "forecastHorizonDays": 45,
+      "pollMargin": -9,
+      "actualMargin": -15.277774067010753,
+      "democraticWon": false,
+      "error": -6.277774067010753,
+      "pollCount": 1,
+      "pollIds": [
+        "1573:25163"
+      ],
+      "latestFieldDate": "2008-09-18T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 9
+    },
+    {
+      "key": "2010:AR",
+      "year": 2010,
+      "state": "AR",
+      "forecastHorizonDays": 45,
+      "pollMargin": -19.284920675337816,
+      "actualMargin": -20.95782203377879,
+      "democraticWon": false,
+      "error": -1.6729013584409742,
+      "pollCount": 3,
+      "pollIds": [
+        "1509:38916",
+        "1509:38925",
+        "1509:38948"
+      ],
+      "latestFieldDate": "2010-09-18T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 12.485615687172682
+    },
+    {
+      "key": "2010:CA",
+      "year": 2010,
+      "state": "CA",
+      "forecastHorizonDays": 45,
+      "pollMargin": 3.044850964560368,
+      "actualMargin": 10.010589830562708,
+      "democraticWon": true,
+      "error": 6.96573886600234,
+      "pollCount": 4,
+      "pollIds": [
+        "1510:38937",
+        "1510:38874",
+        "1510:38930",
+        "1510:38975"
+      ],
+      "latestFieldDate": "2010-09-18T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 10.545476212910154
+    },
+    {
+      "key": "2010:CO",
+      "year": 2010,
+      "state": "CO",
+      "forecastHorizonDays": 45,
+      "pollMargin": -0.9019813193190032,
+      "actualMargin": 1.628348923367895,
+      "democraticWon": true,
+      "error": 2.5303302426868983,
+      "pollCount": 2,
+      "pollIds": [
+        "1511:136791",
+        "1511:38911"
+      ],
+      "latestFieldDate": "2010-09-14T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 12.343562060442034
+    },
+    {
+      "key": "2010:ID",
+      "year": 2010,
+      "state": "ID",
+      "forecastHorizonDays": 45,
+      "pollMargin": -44,
+      "actualMargin": -46.24741396569752,
+      "democraticWon": false,
+      "error": -2.2474139656975183,
+      "pollCount": 1,
+      "pollIds": [
+        "1517:38945"
+      ],
+      "latestFieldDate": "2010-09-14T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 22
+    },
+    {
+      "key": "2010:KS",
+      "year": 2010,
+      "state": "KS",
+      "forecastHorizonDays": 45,
+      "pollMargin": -42,
+      "actualMargin": -43.71582872941367,
+      "democraticWon": false,
+      "error": -1.7158287294136727,
+      "pollCount": 1,
+      "pollIds": [
+        "1522:38927"
+      ],
+      "latestFieldDate": "2010-09-15T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 10
+    },
+    {
+      "key": "2010:KY",
+      "year": 2010,
+      "state": "KY",
+      "forecastHorizonDays": 45,
+      "pollMargin": -7.544800937677876,
+      "actualMargin": -11.478095946009724,
+      "democraticWon": false,
+      "error": -3.9332950083318474,
+      "pollCount": 3,
+      "pollIds": [
+        "1523:38876",
+        "1523:38882",
+        "1523:38898"
+      ],
+      "latestFieldDate": "2010-09-11T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 8.046323141166285
+    },
+    {
+      "key": "2010:MD",
+      "year": 2010,
+      "state": "MD",
+      "forecastHorizonDays": 45,
+      "pollMargin": 16,
+      "actualMargin": 26.43961528100867,
+      "democraticWon": true,
+      "error": 10.43961528100867,
+      "pollCount": 1,
+      "pollIds": [
+        "1525:38924"
+      ],
+      "latestFieldDate": "2010-09-15T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 8
+    },
+    {
+      "key": "2010:MO",
+      "year": 2010,
+      "state": "MO",
+      "forecastHorizonDays": 45,
+      "pollMargin": -10,
+      "actualMargin": -13.60276434115147,
+      "democraticWon": false,
+      "error": -3.6027643411514703,
+      "pollCount": 1,
+      "pollIds": [
+        "1527:38880"
+      ],
+      "latestFieldDate": "2010-09-07T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 4
+    },
+    {
+      "key": "2010:NC",
+      "year": 2010,
+      "state": "NC",
+      "forecastHorizonDays": 45,
+      "pollMargin": -20.16395737604721,
+      "actualMargin": -11.765515234697915,
+      "democraticWon": false,
+      "error": 8.398442141349296,
+      "pollCount": 3,
+      "pollIds": [
+        "1532:38879",
+        "1532:38897",
+        "1532:39456"
+      ],
+      "latestFieldDate": "2010-09-16T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 11.781795098253212
+    },
+    {
+      "key": "2010:NH",
+      "year": 2010,
+      "state": "NH",
+      "forecastHorizonDays": 45,
+      "pollMargin": -5.59887743647758,
+      "actualMargin": -23.239647247696332,
+      "democraticWon": false,
+      "error": -17.640769811218753,
+      "pollCount": 2,
+      "pollIds": [
+        "1529:38906",
+        "1529:38913"
+      ],
+      "latestFieldDate": "2010-09-15T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 7.335204272537366
+    },
+    {
+      "key": "2010:NV",
+      "year": 2010,
+      "state": "NV",
+      "forecastHorizonDays": 45,
+      "pollMargin": 0.3614897106415906,
+      "actualMargin": 5.742136167806116,
+      "democraticWon": true,
+      "error": 5.380646457164525,
+      "pollCount": 4,
+      "pollIds": [
+        "1528:38878",
+        "1528:38938",
+        "1528:38892",
+        "1528:38902"
+      ],
+      "latestFieldDate": "2010-09-18T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 11.42288528242852
+    },
+    {
+      "key": "2010:OH",
+      "year": 2010,
+      "state": "OH",
+      "forecastHorizonDays": 45,
+      "pollMargin": -13.593971817982291,
+      "actualMargin": -17.442409080972496,
+      "democraticWon": false,
+      "error": -3.8484372629902044,
+      "pollCount": 5,
+      "pollIds": [
+        "1534:38942",
+        "1534:38894",
+        "1534:38904",
+        "1534:38920",
+        "1534:38981"
+      ],
+      "latestFieldDate": "2010-09-18T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 9.63001051920148
+    },
+    {
+      "key": "2010:OR",
+      "year": 2010,
+      "state": "OR",
+      "forecastHorizonDays": 45,
+      "pollMargin": 16,
+      "actualMargin": 17.975194580850527,
+      "democraticWon": true,
+      "error": 1.975194580850527,
+      "pollCount": 1,
+      "pollIds": [
+        "1536:38917"
+      ],
+      "latestFieldDate": "2010-09-13T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 8
+    },
+    {
+      "key": "2010:WA",
+      "year": 2010,
+      "state": "WA",
+      "forecastHorizonDays": 45,
+      "pollMargin": 7.592461919041349,
+      "actualMargin": 4.729651697626608,
+      "democraticWon": true,
+      "error": -2.8628102214147413,
+      "pollCount": 3,
+      "pollIds": [
+        "1542:38890",
+        "1542:38907",
+        "1542:38918"
+      ],
+      "latestFieldDate": "2010-09-14T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 4.912260822415285
+    },
+    {
+      "key": "2012:AZ",
+      "year": 2012,
+      "state": "AZ",
+      "forecastHorizonDays": 45,
+      "pollMargin": -4.148410292904415,
+      "actualMargin": -3.0272949092948167,
+      "democraticWon": false,
+      "error": 1.121115383609598,
+      "pollCount": 2,
+      "pollIds": [
+        "1473:24344",
+        "1473:35108"
+      ],
+      "latestFieldDate": "2012-09-11T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 16.148410292904416
+    },
+    {
+      "key": "2012:CA",
+      "year": 2012,
+      "state": "CA",
+      "forecastHorizonDays": 45,
+      "pollMargin": 21.066280340738487,
+      "actualMargin": 25.048568944289187,
+      "democraticWon": true,
+      "error": 3.9822886035506997,
+      "pollCount": 4,
+      "pollIds": [
+        "1474:24384",
+        "1474:28914",
+        "1474:35066",
+        "1474:35128"
+      ],
+      "latestFieldDate": "2012-09-12T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 12.332377684991284
+    },
+    {
+      "key": "2012:FL",
+      "year": 2012,
+      "state": "FL",
+      "forecastHorizonDays": 45,
+      "pollMargin": 9.222997821570132,
+      "actualMargin": 13.005995399725471,
+      "democraticWon": true,
+      "error": 3.7829975781553387,
+      "pollCount": 11,
+      "pollIds": [
+        "1477:137324",
+        "1477:24351",
+        "1477:24421",
+        "1477:28933",
+        "1477:32429",
+        "1477:34938",
+        "1477:34958",
+        "1477:34993",
+        "1477:35138",
+        "1477:35233",
+        "1477:35248"
+      ],
+      "latestFieldDate": "2012-09-22T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 12.830392612390343
+    },
+    {
+      "key": "2012:IN",
+      "year": 2012,
+      "state": "IN",
+      "forecastHorizonDays": 45,
+      "pollMargin": -0.09111785128551153,
+      "actualMargin": 5.763832847284995,
+      "democraticWon": true,
+      "error": 5.854950698570507,
+      "pollCount": 2,
+      "pollIds": [
+        "1479:137810",
+        "1479:35283"
+      ],
+      "latestFieldDate": "2012-09-21T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 20.745329289228692
+    },
+    {
+      "key": "2012:MA",
+      "year": 2012,
+      "state": "MA",
+      "forecastHorizonDays": 45,
+      "pollMargin": 1.5965493398782349,
+      "actualMargin": 7.483772983823862,
+      "democraticWon": true,
+      "error": 5.887223643945626,
+      "pollCount": 7,
+      "pollIds": [
+        "1482:35072",
+        "1482:137813",
+        "1482:28934",
+        "1482:32422",
+        "1482:32443",
+        "1482:34900",
+        "1482:34970"
+      ],
+      "latestFieldDate": "2012-09-20T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 7.621158013141691
+    },
+    {
+      "key": "2012:MI",
+      "year": 2012,
+      "state": "MI",
+      "forecastHorizonDays": 45,
+      "pollMargin": 10.995846193766358,
+      "actualMargin": 20.81360556966618,
+      "democraticWon": true,
+      "error": 9.817759375899822,
+      "pollCount": 7,
+      "pollIds": [
+        "1483:24381",
+        "1483:28931",
+        "1483:32433",
+        "1483:34964",
+        "1483:34987",
+        "1483:35238",
+        "1483:35315"
+      ],
+      "latestFieldDate": "2012-09-21T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 11.93992106630953
+    },
+    {
+      "key": "2012:MO",
+      "year": 2012,
+      "state": "MO",
+      "forecastHorizonDays": 45,
+      "pollMargin": 0.9677267788356065,
+      "actualMargin": 15.70060529174446,
+      "democraticWon": true,
+      "error": 14.732878512908853,
+      "pollCount": 4,
+      "pollIds": [
+        "1486:137782",
+        "1486:24361",
+        "1486:34951",
+        "1486:35091"
+      ],
+      "latestFieldDate": "2012-09-16T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 12.038026555221379
+    },
+    {
+      "key": "2012:MT",
+      "year": 2012,
+      "state": "MT",
+      "forecastHorizonDays": 45,
+      "pollMargin": -2.9999999999999996,
+      "actualMargin": 3.718013603090938,
+      "democraticWon": true,
+      "error": 6.718013603090938,
+      "pollCount": 1,
+      "pollIds": [
+        "1487:35143"
+      ],
+      "latestFieldDate": "2012-09-18T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 7
+    },
+    {
+      "key": "2012:NE",
+      "year": 2012,
+      "state": "NE",
+      "forecastHorizonDays": 45,
+      "pollMargin": -16,
+      "actualMargin": -15.548865544300327,
+      "democraticWon": false,
+      "error": 0.45113445569967325,
+      "pollCount": 1,
+      "pollIds": [
+        "1488:35154"
+      ],
+      "latestFieldDate": "2012-09-19T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 4
+    },
+    {
+      "key": "2012:NJ",
+      "year": 2012,
+      "state": "NJ",
+      "forecastHorizonDays": 45,
+      "pollMargin": 13.628179754295807,
+      "actualMargin": 19.4910990156217,
+      "democraticWon": true,
+      "error": 5.862919261325892,
+      "pollCount": 4,
+      "pollIds": [
+        "1490:33898",
+        "1490:35001",
+        "1490:35077",
+        "1490:35208"
+      ],
+      "latestFieldDate": "2012-09-21T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 20.741844386802264
+    },
+    {
+      "key": "2012:NM",
+      "year": 2012,
+      "state": "NM",
+      "forecastHorizonDays": 45,
+      "pollMargin": 11.623675244087012,
+      "actualMargin": 5.730523477267781,
+      "democraticWon": true,
+      "error": -5.893151766819232,
+      "pollCount": 2,
+      "pollIds": [
+        "1491:24360",
+        "1491:35079"
+      ],
+      "latestFieldDate": "2012-09-11T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 11.623675244087012
+    },
+    {
+      "key": "2012:NV",
+      "year": 2012,
+      "state": "NV",
+      "forecastHorizonDays": 45,
+      "pollMargin": -3.2124666701222107,
+      "actualMargin": -1.1601465216149478,
+      "democraticWon": false,
+      "error": 2.052320148507263,
+      "pollCount": 2,
+      "pollIds": [
+        "1489:34974",
+        "1489:34996"
+      ],
+      "latestFieldDate": "2012-09-18T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 18.327480002073326
+    },
+    {
+      "key": "2012:OH",
+      "year": 2012,
+      "state": "OH",
+      "forecastHorizonDays": 45,
+      "pollMargin": 7.151559507743743,
+      "actualMargin": 6.000677553276574,
+      "democraticWon": true,
+      "error": -1.1508819544671685,
+      "pollCount": 9,
+      "pollIds": [
+        "1494:137325",
+        "1494:137435",
+        "1494:137737",
+        "1494:35198",
+        "1494:24347",
+        "1494:24423",
+        "1494:34947",
+        "1494:34984",
+        "1494:35250"
+      ],
+      "latestFieldDate": "2012-09-21T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 9.737649264691647
+    },
+    {
+      "key": "2012:PA",
+      "year": 2012,
+      "state": "PA",
+      "forecastHorizonDays": 45,
+      "pollMargin": 8.155162777452016,
+      "actualMargin": 9.102427363720011,
+      "democraticWon": true,
+      "error": 0.9472645862679947,
+      "pollCount": 7,
+      "pollIds": [
+        "1495:32446",
+        "1495:34982",
+        "1495:35142",
+        "1495:35170",
+        "1495:35213",
+        "1495:35246",
+        "1495:35252"
+      ],
+      "latestFieldDate": "2012-09-21T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 18.015243415019167
+    },
+    {
+      "key": "2012:TN",
+      "year": 2012,
+      "state": "TN",
+      "forecastHorizonDays": 45,
+      "pollMargin": -24.000000000000004,
+      "actualMargin": -34.48498520553941,
+      "democraticWon": false,
+      "error": -10.484985205539406,
+      "pollCount": 1,
+      "pollIds": [
+        "1497:35095"
+      ],
+      "latestFieldDate": "2012-09-11T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 22
+    },
+    {
+      "key": "2012:TX",
+      "year": 2012,
+      "state": "TX",
+      "forecastHorizonDays": 45,
+      "pollMargin": -21.05021259459577,
+      "actualMargin": -15.832653300990152,
+      "democraticWon": false,
+      "error": 5.217559293605618,
+      "pollCount": 3,
+      "pollIds": [
+        "1498:136880",
+        "1498:35112",
+        "1498:35421"
+      ],
+      "latestFieldDate": "2012-09-18T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 21.070590914730566
+    },
+    {
+      "key": "2012:WA",
+      "year": 2012,
+      "state": "WA",
+      "forecastHorizonDays": 45,
+      "pollMargin": 14.950529902365197,
+      "actualMargin": 20.901982363426015,
+      "democraticWon": true,
+      "error": 5.951452461060818,
+      "pollCount": 2,
+      "pollIds": [
+        "1502:137604",
+        "1502:35070"
+      ],
+      "latestFieldDate": "2012-09-11T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 10.098940195269611
+    },
+    {
+      "key": "2012:WI",
+      "year": 2012,
+      "state": "WI",
+      "forecastHorizonDays": 45,
+      "pollMargin": 4.032410276629687,
+      "actualMargin": 5.548527602245095,
+      "democraticWon": true,
+      "error": 1.516117325615408,
+      "pollCount": 7,
+      "pollIds": [
+        "1504:35117",
+        "1504:34888",
+        "1504:34903",
+        "1504:34989",
+        "1504:35019",
+        "1504:35055",
+        "1504:35165"
+      ],
+      "latestFieldDate": "2012-09-22T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 7.04909081726438
+    },
+    {
+      "key": "2014:AK",
+      "year": 2014,
+      "state": "AK",
+      "forecastHorizonDays": 45,
+      "pollMargin": -3.2087562160182483,
+      "actualMargin": -2.129603399433428,
+      "democraticWon": false,
+      "error": 1.0791528165848203,
+      "pollCount": 2,
+      "pollIds": [
+        "12:126627",
+        "12:42215"
+      ],
+      "latestFieldDate": "2014-09-20T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 14.211040800292992
+    },
+    {
+      "key": "2014:AR",
+      "year": 2014,
+      "state": "AR",
+      "forecastHorizonDays": 45,
+      "pollMargin": -4.581776429742898,
+      "actualMargin": -17.06715594598262,
+      "democraticWon": false,
+      "error": -12.485379516239721,
+      "pollCount": 2,
+      "pollIds": [
+        "32:126626",
+        "32:39654"
+      ],
+      "latestFieldDate": "2014-09-20T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 15.235987867686077
+    },
+    {
+      "key": "2014:CO",
+      "year": 2014,
+      "state": "CO",
+      "forecastHorizonDays": 45,
+      "pollMargin": -3.535977530929531,
+      "actualMargin": -1.9444817344730012,
+      "democraticWon": false,
+      "error": 1.5914957964565297,
+      "pollCount": 6,
+      "pollIds": [
+        "23:125160",
+        "23:39604",
+        "23:39617",
+        "23:39631",
+        "23:39661",
+        "23:42234"
+      ],
+      "latestFieldDate": "2014-09-20T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 15.695809181938184
+    },
+    {
+      "key": "2014:DE",
+      "year": 2014,
+      "state": "DE",
+      "forecastHorizonDays": 45,
+      "pollMargin": 20.411653695269763,
+      "actualMargin": 13.601210059904801,
+      "democraticWon": true,
+      "error": -6.810443635364962,
+      "pollCount": 2,
+      "pollIds": [
+        "24:137746",
+        "24:39643"
+      ],
+      "latestFieldDate": "2014-09-16T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 21.32932295621581
+    },
+    {
+      "key": "2014:IA",
+      "year": 2014,
+      "state": "IA",
+      "forecastHorizonDays": 45,
+      "pollMargin": -1.2124215861703105,
+      "actualMargin": -8.338939541471184,
+      "democraticWon": false,
+      "error": -7.126517955300874,
+      "pollCount": 5,
+      "pollIds": [
+        "26:100392",
+        "26:39614",
+        "26:39627",
+        "26:39635",
+        "26:39662"
+      ],
+      "latestFieldDate": "2014-09-18T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 11.134564457293362
+    },
+    {
+      "key": "2014:MI",
+      "year": 2014,
+      "state": "MI",
+      "forecastHorizonDays": 45,
+      "pollMargin": 4.694343201472016,
+      "actualMargin": 13.285311446611551,
+      "democraticWon": true,
+      "error": 8.590968245139535,
+      "pollCount": 7,
+      "pollIds": [
+        "2:126637",
+        "2:39611",
+        "2:39613",
+        "2:39632",
+        "2:39636",
+        "2:39642",
+        "2:39666"
+      ],
+      "latestFieldDate": "2014-09-18T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 17.99269227730878
+    },
+    {
+      "key": "2014:MN",
+      "year": 2014,
+      "state": "MN",
+      "forecastHorizonDays": 45,
+      "pollMargin": 13.000000000000002,
+      "actualMargin": 10.243509049581938,
+      "democraticWon": true,
+      "error": -2.7564909504180637,
+      "pollCount": 1,
+      "pollIds": [
+        "6:39660"
+      ],
+      "latestFieldDate": "2014-09-09T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 15
+    },
+    {
+      "key": "2014:NH",
+      "year": 2014,
+      "state": "NH",
+      "forecastHorizonDays": 45,
+      "pollMargin": 2.4376769117954793,
+      "actualMargin": 3.244229851339419,
+      "democraticWon": true,
+      "error": 0.8065529395439399,
+      "pollCount": 5,
+      "pollIds": [
+        "8:39608",
+        "8:39621",
+        "8:39633",
+        "8:39648",
+        "8:39655"
+      ],
+      "latestFieldDate": "2014-09-19T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 6.715980875623578
+    },
+    {
+      "key": "2014:NJ",
+      "year": 2014,
+      "state": "NJ",
+      "forecastHorizonDays": 45,
+      "pollMargin": 13,
+      "actualMargin": 13.509723005988121,
+      "democraticWon": true,
+      "error": 0.5097230059881213,
+      "pollCount": 1,
+      "pollIds": [
+        "10:39670"
+      ],
+      "latestFieldDate": "2014-09-07T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 14.999999999999998
+    },
+    {
+      "key": "2014:NM",
+      "year": 2014,
+      "state": "NM",
+      "forecastHorizonDays": 45,
+      "pollMargin": 13,
+      "actualMargin": 11.11762035747401,
+      "democraticWon": true,
+      "error": -1.88237964252599,
+      "pollCount": 1,
+      "pollIds": [
+        "3:39651"
+      ],
+      "latestFieldDate": "2014-09-10T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 11
+    },
+    {
+      "key": "2014:TX",
+      "year": 2014,
+      "state": "TX",
+      "forecastHorizonDays": 45,
+      "pollMargin": -18,
+      "actualMargin": -27.195495699771833,
+      "democraticWon": false,
+      "error": -9.195495699771833,
+      "pollCount": 1,
+      "pollIds": [
+        "19:42269"
+      ],
+      "latestFieldDate": "2014-09-18T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 22
+    },
+    {
+      "key": "2014:VA",
+      "year": 2014,
+      "state": "VA",
+      "forecastHorizonDays": 45,
+      "pollMargin": 15.751200517510046,
+      "actualMargin": 0.8115000734730984,
+      "democraticWon": true,
+      "error": -14.939700444036948,
+      "pollCount": 3,
+      "pollIds": [
+        "16:39602",
+        "16:39612",
+        "16:39677"
+      ],
+      "latestFieldDate": "2014-09-19T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 18.768318979435183
+    },
+    {
+      "key": "2016:AR",
+      "year": 2016,
+      "state": "AR",
+      "forecastHorizonDays": 45,
+      "pollMargin": -20.493984434323718,
+      "actualMargin": -23.6006147056221,
+      "democraticWon": false,
+      "error": -3.106630271298382,
+      "pollCount": 2,
+      "pollIds": [
+        "83:71544",
+        "83:72175"
+      ],
+      "latestFieldDate": "2016-09-16T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 20.588346304730234
+    },
+    {
+      "key": "2016:AZ",
+      "year": 2016,
+      "state": "AZ",
+      "forecastHorizonDays": 45,
+      "pollMargin": -18,
+      "actualMargin": -12.961556546925195,
+      "democraticWon": false,
+      "error": 5.038443453074805,
+      "pollCount": 1,
+      "pollIds": [
+        "87:71775"
+      ],
+      "latestFieldDate": "2016-09-13T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 12.000000000000002
+    },
+    {
+      "key": "2016:CO",
+      "year": 2016,
+      "state": "CO",
+      "forecastHorizonDays": 45,
+      "pollMargin": 6.765583552039427,
+      "actualMargin": 5.664990778422201,
+      "democraticWon": true,
+      "error": -1.100592773617226,
+      "pollCount": 5,
+      "pollIds": [
+        "74:71541",
+        "74:71889",
+        "74:71913",
+        "74:71989",
+        "74:72011"
+      ],
+      "latestFieldDate": "2016-09-22T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 12.104630808986522
+    },
+    {
+      "key": "2016:FL",
+      "year": 2016,
+      "state": "FL",
+      "forecastHorizonDays": 45,
+      "pollMargin": -7.314279721248841,
+      "actualMargin": -7.666273911987112,
+      "democraticWon": false,
+      "error": -0.3519941907382709,
+      "pollCount": 5,
+      "pollIds": [
+        "93:71500",
+        "93:71658",
+        "93:71694",
+        "93:71737",
+        "93:71832"
+      ],
+      "latestFieldDate": "2016-09-20T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 13.593631973441898
+    },
+    {
+      "key": "2016:GA",
+      "year": 2016,
+      "state": "GA",
+      "forecastHorizonDays": 45,
+      "pollMargin": -15.747048722343374,
+      "actualMargin": -13.750559494998853,
+      "democraticWon": false,
+      "error": 1.9964892273445205,
+      "pollCount": 5,
+      "pollIds": [
+        "88:71528",
+        "88:71542",
+        "88:71665",
+        "88:71914",
+        "88:71960"
+      ],
+      "latestFieldDate": "2016-09-21T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 19.70337096905432
+    },
+    {
+      "key": "2016:IA",
+      "year": 2016,
+      "state": "IA",
+      "forecastHorizonDays": 45,
+      "pollMargin": -15.380793365516325,
+      "actualMargin": -24.434666029865618,
+      "democraticWon": false,
+      "error": -9.053872664349292,
+      "pollCount": 3,
+      "pollIds": [
+        "92:71524",
+        "92:71915",
+        "92:72024"
+      ],
+      "latestFieldDate": "2016-09-21T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 5.7075930429342225
+    },
+    {
+      "key": "2016:IL",
+      "year": 2016,
+      "state": "IL",
+      "forecastHorizonDays": 45,
+      "pollMargin": 3.07650389141907,
+      "actualMargin": 15.08132555020341,
+      "democraticWon": true,
+      "error": 12.00482165878434,
+      "pollCount": 2,
+      "pollIds": [
+        "84:71691",
+        "84:71815"
+      ],
+      "latestFieldDate": "2016-09-20T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 21.460037743608275
+    },
+    {
+      "key": "2016:KS",
+      "year": 2016,
+      "state": "KS",
+      "forecastHorizonDays": 45,
+      "pollMargin": -16,
+      "actualMargin": -29.937126566954348,
+      "democraticWon": false,
+      "error": -13.937126566954348,
+      "pollCount": 1,
+      "pollIds": [
+        "60:71421"
+      ],
+      "latestFieldDate": "2016-09-08T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 16
+    },
+    {
+      "key": "2016:MD",
+      "year": 2016,
+      "state": "MD",
+      "forecastHorizonDays": 45,
+      "pollMargin": 30,
+      "actualMargin": 25.213027800907504,
+      "democraticWon": true,
+      "error": -4.786972199092496,
+      "pollCount": 1,
+      "pollIds": [
+        "82:71887"
+      ],
+      "latestFieldDate": "2016-09-19T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 22
+    },
+    {
+      "key": "2016:MO",
+      "year": 2016,
+      "state": "MO",
+      "forecastHorizonDays": 45,
+      "pollMargin": 2,
+      "actualMargin": -2.7922988242858438,
+      "democraticWon": false,
+      "error": -4.792298824285844,
+      "pollCount": 1,
+      "pollIds": [
+        "70:71543"
+      ],
+      "latestFieldDate": "2016-09-11T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 18
+    },
+    {
+      "key": "2016:NC",
+      "year": 2016,
+      "state": "NC",
+      "forecastHorizonDays": 45,
+      "pollMargin": 0.9247191957855527,
+      "actualMargin": -5.69608663834515,
+      "democraticWon": false,
+      "error": -6.620805834130703,
+      "pollCount": 7,
+      "pollIds": [
+        "62:136817",
+        "62:71661",
+        "62:71799",
+        "62:71814",
+        "62:72021",
+        "62:72157",
+        "62:72181"
+      ],
+      "latestFieldDate": "2016-09-23T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 16.239956945790528
+    },
+    {
+      "key": "2016:NH",
+      "year": 2016,
+      "state": "NH",
+      "forecastHorizonDays": 45,
+      "pollMargin": -0.9505299023651952,
+      "actualMargin": 0.13759233704034557,
+      "democraticWon": true,
+      "error": 1.0881222394055408,
+      "pollCount": 2,
+      "pollIds": [
+        "85:71754",
+        "85:72155"
+      ],
+      "latestFieldDate": "2016-09-22T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 6.950529902365195
+    },
+    {
+      "key": "2016:NV",
+      "year": 2016,
+      "state": "NV",
+      "forecastHorizonDays": 45,
+      "pollMargin": -4.621465915960355,
+      "actualMargin": 2.4285072372493204,
+      "democraticWon": true,
+      "error": 7.049973153209676,
+      "pollCount": 4,
+      "pollIds": [
+        "63:71479",
+        "63:71744",
+        "63:71777",
+        "63:71797"
+      ],
+      "latestFieldDate": "2016-09-19T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 16.752690831093897
+    },
+    {
+      "key": "2016:OH",
+      "year": 2016,
+      "state": "OH",
+      "forecastHorizonDays": 45,
+      "pollMargin": -13.406669998532202,
+      "actualMargin": -20.871320637033037,
+      "democraticWon": false,
+      "error": -7.464650638500835,
+      "pollCount": 6,
+      "pollIds": [
+        "67:71417",
+        "67:71498",
+        "67:71521",
+        "67:71801",
+        "67:71990",
+        "67:72097"
+      ],
+      "latestFieldDate": "2016-09-22T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 16.952425794777916
+    },
+    {
+      "key": "2016:WA",
+      "year": 2016,
+      "state": "WA",
+      "forecastHorizonDays": 45,
+      "pollMargin": 21,
+      "actualMargin": 18.026020891574888,
+      "democraticWon": true,
+      "error": -2.9739791084251124,
+      "pollCount": 1,
+      "pollIds": [
+        "72:71778"
+      ],
+      "latestFieldDate": "2016-09-13T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 29
+    },
+    {
+      "key": "2016:WI",
+      "year": 2016,
+      "state": "WI",
+      "forecastHorizonDays": 45,
+      "pollMargin": 7.530837816604233,
+      "actualMargin": -3.3619771963695726,
+      "democraticWon": false,
+      "error": -10.892815012973806,
+      "pollCount": 2,
+      "pollIds": [
+        "71:137055",
+        "71:71816"
+      ],
+      "latestFieldDate": "2016-09-19T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 11.783375112713722
+    },
+    {
+      "key": "2018:AZ",
+      "year": 2018,
+      "state": "AZ",
+      "forecastHorizonDays": 45,
+      "pollMargin": 4.4307745862099095,
+      "actualMargin": 2.3444957614536435,
+      "democraticWon": true,
+      "error": -2.086278824756266,
+      "pollCount": 6,
+      "pollIds": [
+        "96:86866",
+        "96:87203",
+        "96:87432",
+        "96:89398",
+        "96:89418",
+        "96:90216"
+      ],
+      "latestFieldDate": "2018-09-20T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 11.242014112710855
+    },
+    {
+      "key": "2018:FL",
+      "year": 2018,
+      "state": "FL",
+      "forecastHorizonDays": 45,
+      "pollMargin": 1.3338685998549304,
+      "actualMargin": -0.12250297771490892,
+      "democraticWon": false,
+      "error": -1.4563715775698394,
+      "pollCount": 7,
+      "pollIds": [
+        "100:86850",
+        "100:86899",
+        "100:87433",
+        "100:87455",
+        "100:89396",
+        "100:89421",
+        "100:89506"
+      ],
+      "latestFieldDate": "2018-09-22T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 8.94720126071114
+    },
+    {
+      "key": "2018:IN",
+      "year": 2018,
+      "state": "IN",
+      "forecastHorizonDays": 45,
+      "pollMargin": 0.30726716708477764,
+      "actualMargin": -5.890171802336404,
+      "democraticWon": false,
+      "error": -6.1974389694211816,
+      "pollCount": 2,
+      "pollIds": [
+        "102:86872",
+        "102:89531"
+      ],
+      "latestFieldDate": "2018-09-16T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 11.450650674503624
+    },
+    {
+      "key": "2018:MA",
+      "year": 2018,
+      "state": "MA",
+      "forecastHorizonDays": 45,
+      "pollMargin": 27.58793890532541,
+      "actualMargin": 24.164730393152794,
+      "democraticWon": true,
+      "error": -3.4232085121726143,
+      "pollCount": 2,
+      "pollIds": [
+        "105:87438",
+        "105:89425"
+      ],
+      "latestFieldDate": "2018-09-19T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 17.64291866515829
+    },
+    {
+      "key": "2018:MI",
+      "year": 2018,
+      "state": "MI",
+      "forecastHorizonDays": 45,
+      "pollMargin": 16.43351277646129,
+      "actualMargin": 6.505602308655739,
+      "democraticWon": true,
+      "error": -9.92791046780555,
+      "pollCount": 4,
+      "pollIds": [
+        "106:86748",
+        "106:87280",
+        "106:87640",
+        "106:89527"
+      ],
+      "latestFieldDate": "2018-09-18T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 7.9563873137226775
+    },
+    {
+      "key": "2018:MN",
+      "year": 2018,
+      "state": "MN",
+      "forecastHorizonDays": 45,
+      "pollMargin": 22.994387182387904,
+      "actualMargin": 24.09573183810258,
+      "democraticWon": true,
+      "error": 1.1013446557146764,
+      "pollCount": 2,
+      "pollIds": [
+        "107:86887",
+        "107:87184"
+      ],
+      "latestFieldDate": "2018-09-11T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 9.532959145492526
+    },
+    {
+      "key": "2018:MO",
+      "year": 2018,
+      "state": "MO",
+      "forecastHorizonDays": 45,
+      "pollMargin": 1.4505074592218976,
+      "actualMargin": -5.813890166151509,
+      "democraticWon": false,
+      "error": -7.264397625373407,
+      "pollCount": 2,
+      "pollIds": [
+        "109:86877",
+        "109:87182"
+      ],
+      "latestFieldDate": "2018-09-12T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 12.417512432036496
+    },
+    {
+      "key": "2018:MS",
+      "year": 2018,
+      "state": "MS",
+      "forecastHorizonDays": 45,
+      "pollMargin": -14,
+      "actualMargin": -19.018281057235782,
+      "democraticWon": false,
+      "error": -5.018281057235782,
+      "pollCount": 1,
+      "pollIds": [
+        "108:89700"
+      ],
+      "latestFieldDate": "2018-09-17T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 28
+    },
+    {
+      "key": "2018:MT",
+      "year": 2018,
+      "state": "MT",
+      "forecastHorizonDays": 45,
+      "pollMargin": 4.272404969659512,
+      "actualMargin": 3.551460791777693,
+      "democraticWon": true,
+      "error": -0.7209441778818189,
+      "pollCount": 3,
+      "pollIds": [
+        "110:87183",
+        "110:89414",
+        "110:89615"
+      ],
+      "latestFieldDate": "2018-09-21T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 6.895606671377758
+    },
+    {
+      "key": "2018:ND",
+      "year": 2018,
+      "state": "ND",
+      "forecastHorizonDays": 45,
+      "pollMargin": -7.586478767783898,
+      "actualMargin": -10.837130294537893,
+      "democraticWon": false,
+      "error": -3.2506515267539946,
+      "pollCount": 2,
+      "pollIds": [
+        "116:86870",
+        "116:89686"
+      ],
+      "latestFieldDate": "2018-09-22T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 8
+    },
+    {
+      "key": "2018:NM",
+      "year": 2018,
+      "state": "NM",
+      "forecastHorizonDays": 45,
+      "pollMargin": 21,
+      "actualMargin": 23.55554854148853,
+      "democraticWon": true,
+      "error": 2.5555485414885304,
+      "pollCount": 1,
+      "pollIds": [
+        "114:87181"
+      ],
+      "latestFieldDate": "2018-09-10T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 27
+    },
+    {
+      "key": "2018:NV",
+      "year": 2018,
+      "state": "NV",
+      "forecastHorizonDays": 45,
+      "pollMargin": -0.25779354143794797,
+      "actualMargin": 5.0269922191636525,
+      "democraticWon": true,
+      "error": 5.284785760601601,
+      "pollCount": 3,
+      "pollIds": [
+        "112:86765",
+        "112:87187",
+        "112:87436"
+      ],
+      "latestFieldDate": "2018-09-12T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 11.836174238385452
+    },
+    {
+      "key": "2018:OH",
+      "year": 2018,
+      "state": "OH",
+      "forecastHorizonDays": 45,
+      "pollMargin": 12.937947372207125,
+      "actualMargin": 6.845771541305197,
+      "democraticWon": true,
+      "error": -6.092175830901928,
+      "pollCount": 6,
+      "pollIds": [
+        "117:86830",
+        "117:87223",
+        "117:87629",
+        "117:89525",
+        "117:89528",
+        "117:90433"
+      ],
+      "latestFieldDate": "2018-09-22T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 16.348608279678817
+    },
+    {
+      "key": "2018:TN",
+      "year": 2018,
+      "state": "TN",
+      "forecastHorizonDays": 45,
+      "pollMargin": 0.2880339440410108,
+      "actualMargin": -10.787034148341611,
+      "democraticWon": false,
+      "error": -11.075068092382622,
+      "pollCount": 5,
+      "pollIds": [
+        "120:86868",
+        "120:87204",
+        "120:87437",
+        "120:87474",
+        "120:89702"
+      ],
+      "latestFieldDate": "2018-09-17T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 7.353795755903443
+    },
+    {
+      "key": "2018:TX",
+      "year": 2018,
+      "state": "TX",
+      "forecastHorizonDays": 45,
+      "pollMargin": -2.819183938887139,
+      "actualMargin": -2.5672462613425893,
+      "democraticWon": false,
+      "error": 0.25193767754454965,
+      "pollCount": 5,
+      "pollIds": [
+        "121:86823",
+        "121:86858",
+        "121:87278",
+        "121:87435",
+        "121:87471"
+      ],
+      "latestFieldDate": "2018-09-17T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 5.4519583584069125
+    },
+    {
+      "key": "2018:WI",
+      "year": 2018,
+      "state": "WI",
+      "forecastHorizonDays": 45,
+      "pollMargin": 12.065918290985053,
+      "actualMargin": 10.83695375306499,
+      "democraticWon": true,
+      "error": -1.2289645379200635,
+      "pollCount": 2,
+      "pollIds": [
+        "127:87234",
+        "127:89530"
+      ],
+      "latestFieldDate": "2018-09-18T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 7.1318365819701075
+    },
+    {
+      "key": "2020:KY",
+      "year": 2020,
+      "state": "KY",
+      "forecastHorizonDays": 45,
+      "pollMargin": -13.574205146452206,
+      "actualMargin": -19.533811041110376,
+      "democraticWon": false,
+      "error": -5.95960589465817,
+      "pollCount": 2,
+      "pollIds": [
+        "6276:129448",
+        "6276:129833"
+      ],
+      "latestFieldDate": "2020-09-15T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 8.623675244087012
+    },
+    {
+      "key": "2020:MI",
+      "year": 2020,
+      "state": "MI",
+      "forecastHorizonDays": 45,
+      "pollMargin": 6.376186955990798,
+      "actualMargin": 1.6850313519668845,
+      "democraticWon": true,
+      "error": -4.691155604023914,
+      "pollCount": 7,
+      "pollIds": [
+        "6280:129910",
+        "6280:129531",
+        "6280:129568",
+        "6280:129834",
+        "6280:129848",
+        "6280:129868",
+        "6280:129964"
+      ],
+      "latestFieldDate": "2020-09-19T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 12.186075141724448
+    },
+    {
+      "key": "2020:MN",
+      "year": 2020,
+      "state": "MN",
+      "forecastHorizonDays": 45,
+      "pollMargin": 10.196592307249333,
+      "actualMargin": 5.23844398205992,
+      "democraticWon": true,
+      "error": -4.958148325189413,
+      "pollCount": 5,
+      "pollIds": [
+        "6281:128201",
+        "6281:128383",
+        "6281:129279",
+        "6281:129306",
+        "6281:129613"
+      ],
+      "latestFieldDate": "2020-09-14T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 12.958675292974002
+    },
+    {
+      "key": "2020:MT",
+      "year": 2020,
+      "state": "MT",
+      "forecastHorizonDays": 45,
+      "pollMargin": -1,
+      "actualMargin": -10.024321499512084,
+      "democraticWon": false,
+      "error": -9.024321499512084,
+      "pollCount": 1,
+      "pollIds": [
+        "6283:129596"
+      ],
+      "latestFieldDate": "2020-09-15T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 11
+    },
+    {
+      "key": "2020:SC",
+      "year": 2020,
+      "state": "SC",
+      "forecastHorizonDays": 45,
+      "pollMargin": -0.5247350488174023,
+      "actualMargin": -10.27031088972862,
+      "democraticWon": false,
+      "error": -9.745575840911219,
+      "pollCount": 2,
+      "pollIds": [
+        "6292:129450",
+        "6292:129832"
+      ],
+      "latestFieldDate": "2020-09-15T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 6.623675244087011
+    },
+    {
+      "key": "2020:VA",
+      "year": 2020,
+      "state": "VA",
+      "forecastHorizonDays": 45,
+      "pollMargin": 13,
+      "actualMargin": 12.083779503106292,
+      "democraticWon": true,
+      "error": -0.9162204968937075,
+      "pollCount": 1,
+      "pollIds": [
+        "6296:130001"
+      ],
+      "latestFieldDate": "2020-09-15T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 9
+    },
+    {
+      "key": "2022:AR",
+      "year": 2022,
+      "state": "AR",
+      "forecastHorizonDays": 45,
+      "pollMargin": -12.999999999999998,
+      "actualMargin": -34.644171901662695,
+      "democraticWon": false,
+      "error": -21.644171901662695,
+      "pollCount": 1,
+      "pollIds": [
+        "8920:161487"
+      ],
+      "latestFieldDate": "2022-09-12T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 25.999999999999996
+    },
+    {
+      "key": "2022:AZ",
+      "year": 2022,
+      "state": "AZ",
+      "forecastHorizonDays": 45,
+      "pollMargin": 6.408837798785532,
+      "actualMargin": 4.887427331401462,
+      "democraticWon": true,
+      "error": -1.5214104673840705,
+      "pollCount": 5,
+      "pollIds": [
+        "8919:161939",
+        "8919:161956",
+        "8919:162484",
+        "8919:162503",
+        "8919:162668"
+      ],
+      "latestFieldDate": "2022-09-24T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 9.012216342700416
+    },
+    {
+      "key": "2022:CO",
+      "year": 2022,
+      "state": "CO",
+      "forecastHorizonDays": 45,
+      "pollMargin": 9.813183658197012,
+      "actualMargin": 14.61790472046048,
+      "democraticWon": true,
+      "error": 4.804721062263468,
+      "pollCount": 2,
+      "pollIds": [
+        "8922:161870",
+        "8922:162713"
+      ],
+      "latestFieldDate": "2022-09-22T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 18.280224512704486
+    },
+    {
+      "key": "2022:FL",
+      "year": 2022,
+      "state": "FL",
+      "forecastHorizonDays": 45,
+      "pollMargin": -4.150473338513841,
+      "actualMargin": -16.413027870277112,
+      "democraticWon": false,
+      "error": -12.262554531763271,
+      "pollCount": 4,
+      "pollIds": [
+        "8924:161476",
+        "8924:161748",
+        "8924:161840",
+        "8924:162715"
+      ],
+      "latestFieldDate": "2022-09-22T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 8.614700190301226
+    },
+    {
+      "key": "2022:KS",
+      "year": 2022,
+      "state": "KS",
+      "forecastHorizonDays": 45,
+      "pollMargin": -12.199999999999996,
+      "actualMargin": -22.962398353758772,
+      "democraticWon": false,
+      "error": -10.762398353758776,
+      "pollCount": 1,
+      "pollIds": [
+        "8931:161750"
+      ],
+      "latestFieldDate": "2022-09-17T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 21.60000000000001
+    },
+    {
+      "key": "2022:NC",
+      "year": 2022,
+      "state": "NC",
+      "forecastHorizonDays": 45,
+      "pollMargin": -0.9463646194493311,
+      "actualMargin": -3.22574063494654,
+      "democraticWon": false,
+      "error": -2.279376015497209,
+      "pollCount": 5,
+      "pollIds": [
+        "8940:161255",
+        "8940:161733",
+        "8940:161837",
+        "8940:162639",
+        "8940:164861"
+      ],
+      "latestFieldDate": "2022-09-22T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 8.775610454217349
+    },
+    {
+      "key": "2022:NH",
+      "year": 2022,
+      "state": "NH",
+      "forecastHorizonDays": 45,
+      "pollMargin": 10.500000000000002,
+      "actualMargin": 9.156407262772248,
+      "democraticWon": true,
+      "error": -1.3435927372277536,
+      "pollCount": 3,
+      "pollIds": [
+        "8938:161463",
+        "8938:161818",
+        "8938:161944"
+      ],
+      "latestFieldDate": "2022-09-17T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 8.749362642539747
+    },
+    {
+      "key": "2022:NV",
+      "year": 2022,
+      "state": "NV",
+      "forecastHorizonDays": 45,
+      "pollMargin": -1.7253922670217063,
+      "actualMargin": 0.7766077288534063,
+      "democraticWon": true,
+      "error": 2.5019999958751127,
+      "pollCount": 4,
+      "pollIds": [
+        "8937:161259",
+        "8937:161958",
+        "8937:161970",
+        "8937:162716"
+      ],
+      "latestFieldDate": "2022-09-24T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 11.495427781943178
+    },
+    {
+      "key": "2022:OK",
+      "year": 2022,
+      "state": "OK",
+      "forecastHorizonDays": 45,
+      "pollMargin": -18,
+      "actualMargin": -32.20471838794785,
+      "democraticWon": false,
+      "error": -14.20471838794785,
+      "pollCount": 1,
+      "pollIds": [
+        "8943:162999"
+      ],
+      "latestFieldDate": "2022-09-20T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 14
+    },
+    {
+      "key": "2022:PA",
+      "year": 2022,
+      "state": "PA",
+      "forecastHorizonDays": 45,
+      "pollMargin": 4.558201316804098,
+      "actualMargin": 4.913393595144278,
+      "democraticWon": true,
+      "error": 0.35519227834017997,
+      "pollCount": 7,
+      "pollIds": [
+        "8945:161262",
+        "8945:161968",
+        "8945:162439",
+        "8945:162458",
+        "8945:162469",
+        "8945:162610",
+        "8945:162618"
+      ],
+      "latestFieldDate": "2022-09-24T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 9.974654676737222
+    },
+    {
+      "key": "2022:WA",
+      "year": 2022,
+      "state": "WA",
+      "forecastHorizonDays": 45,
+      "pollMargin": 13,
+      "actualMargin": 14.51835690147314,
+      "democraticWon": true,
+      "error": 1.5183569014731404,
+      "pollCount": 1,
+      "pollIds": [
+        "8950:161938"
+      ],
+      "latestFieldDate": "2022-09-14T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 13
+    },
+    {
+      "key": "2022:WI",
+      "year": 2022,
+      "state": "WI",
+      "forecastHorizonDays": 45,
+      "pollMargin": -2.470827389379268,
+      "actualMargin": -1.0072848888039303,
+      "democraticWon": false,
+      "error": 1.4635425005753375,
+      "pollCount": 7,
+      "pollIds": [
+        "8951:161347",
+        "8951:161431",
+        "8951:161651",
+        "8951:161675",
+        "8951:162619",
+        "8951:162669",
+        "8951:162681"
+      ],
+      "latestFieldDate": "2022-09-24T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 4.704986533820107
+    }
+  ],
+  "diagnosticRows": [
+    {
+      "key": "2020:KY",
+      "year": 2020,
+      "state": "KY",
+      "forecastHorizonDays": 45,
+      "pollMargin": -13.574205146452206,
+      "actualMargin": -19.533811041110376,
+      "democraticWon": false,
+      "error": -5.95960589465817,
+      "pollCount": 2,
+      "pollIds": [
+        "6276:129448",
+        "6276:129833"
+      ],
+      "latestFieldDate": "2020-09-15T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 8.623675244087012,
+      "family": "poll_centered",
+      "trainedThroughYear": 2018,
+      "model": {
+        "family": "poll_centered",
+        "races": 167,
+        "cycles": [
+          1998,
+          2000,
+          2002,
+          2004,
+          2006,
+          2008,
+          2010,
+          2012,
+          2014,
+          2016,
+          2018
+        ],
+        "trainedThroughYear": 2018,
+        "biasPoints": 0,
+        "standardDeviationPoints": 7.18864658041407,
+        "distribution": "fixed_t4",
+        "effectiveUnit": "one_state_race",
+        "historicalPopulationTransportMeasured": false
+      },
+      "democraticWinProbability": 0.027890316658663455
+    },
+    {
+      "key": "2020:MI",
+      "year": 2020,
+      "state": "MI",
+      "forecastHorizonDays": 45,
+      "pollMargin": 6.376186955990798,
+      "actualMargin": 1.6850313519668845,
+      "democraticWon": true,
+      "error": -4.691155604023914,
+      "pollCount": 7,
+      "pollIds": [
+        "6280:129910",
+        "6280:129531",
+        "6280:129568",
+        "6280:129834",
+        "6280:129848",
+        "6280:129868",
+        "6280:129964"
+      ],
+      "latestFieldDate": "2020-09-19T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 12.186075141724448,
+      "family": "poll_centered",
+      "trainedThroughYear": 2018,
+      "model": {
+        "family": "poll_centered",
+        "races": 167,
+        "cycles": [
+          1998,
+          2000,
+          2002,
+          2004,
+          2006,
+          2008,
+          2010,
+          2012,
+          2014,
+          2016,
+          2018
+        ],
+        "trainedThroughYear": 2018,
+        "biasPoints": 0,
+        "standardDeviationPoints": 7.18864658041407,
+        "distribution": "fixed_t4",
+        "effectiveUnit": "one_state_race",
+        "historicalPopulationTransportMeasured": false
+      },
+      "democraticWinProbability": 0.8609985523082371
+    },
+    {
+      "key": "2020:MN",
+      "year": 2020,
+      "state": "MN",
+      "forecastHorizonDays": 45,
+      "pollMargin": 10.196592307249333,
+      "actualMargin": 5.23844398205992,
+      "democraticWon": true,
+      "error": -4.958148325189413,
+      "pollCount": 5,
+      "pollIds": [
+        "6281:128201",
+        "6281:128383",
+        "6281:129279",
+        "6281:129306",
+        "6281:129613"
+      ],
+      "latestFieldDate": "2020-09-14T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 12.958675292974002,
+      "family": "poll_centered",
+      "trainedThroughYear": 2018,
+      "model": {
+        "family": "poll_centered",
+        "races": 167,
+        "cycles": [
+          1998,
+          2000,
+          2002,
+          2004,
+          2006,
+          2008,
+          2010,
+          2012,
+          2014,
+          2016,
+          2018
+        ],
+        "trainedThroughYear": 2018,
+        "biasPoints": 0,
+        "standardDeviationPoints": 7.18864658041407,
+        "distribution": "fixed_t4",
+        "effectiveUnit": "one_state_race",
+        "historicalPopulationTransportMeasured": false
+      },
+      "democraticWinProbability": 0.9423355641151238
+    },
+    {
+      "key": "2020:MT",
+      "year": 2020,
+      "state": "MT",
+      "forecastHorizonDays": 45,
+      "pollMargin": -1,
+      "actualMargin": -10.024321499512084,
+      "democraticWon": false,
+      "error": -9.024321499512084,
+      "pollCount": 1,
+      "pollIds": [
+        "6283:129596"
+      ],
+      "latestFieldDate": "2020-09-15T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 11,
+      "family": "poll_centered",
+      "trainedThroughYear": 2018,
+      "model": {
+        "family": "poll_centered",
+        "races": 167,
+        "cycles": [
+          1998,
+          2000,
+          2002,
+          2004,
+          2006,
+          2008,
+          2010,
+          2012,
+          2014,
+          2016,
+          2018
+        ],
+        "trainedThroughYear": 2018,
+        "biasPoints": 0,
+        "standardDeviationPoints": 7.18864658041407,
+        "distribution": "fixed_t4",
+        "effectiveUnit": "one_state_race",
+        "historicalPopulationTransportMeasured": false
+      },
+      "democraticWinProbability": 0.4268155631629098
+    },
+    {
+      "key": "2020:SC",
+      "year": 2020,
+      "state": "SC",
+      "forecastHorizonDays": 45,
+      "pollMargin": -0.5247350488174023,
+      "actualMargin": -10.27031088972862,
+      "democraticWon": false,
+      "error": -9.745575840911219,
+      "pollCount": 2,
+      "pollIds": [
+        "6292:129450",
+        "6292:129832"
+      ],
+      "latestFieldDate": "2020-09-15T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 6.623675244087011,
+      "family": "poll_centered",
+      "trainedThroughYear": 2018,
+      "model": {
+        "family": "poll_centered",
+        "races": 167,
+        "cycles": [
+          1998,
+          2000,
+          2002,
+          2004,
+          2006,
+          2008,
+          2010,
+          2012,
+          2014,
+          2016,
+          2018
+        ],
+        "trainedThroughYear": 2018,
+        "biasPoints": 0,
+        "standardDeviationPoints": 7.18864658041407,
+        "distribution": "fixed_t4",
+        "effectiveUnit": "one_state_race",
+        "historicalPopulationTransportMeasured": false
+      },
+      "democraticWinProbability": 0.4613742746797433
+    },
+    {
+      "key": "2020:VA",
+      "year": 2020,
+      "state": "VA",
+      "forecastHorizonDays": 45,
+      "pollMargin": 13,
+      "actualMargin": 12.083779503106292,
+      "democraticWon": true,
+      "error": -0.9162204968937075,
+      "pollCount": 1,
+      "pollIds": [
+        "6296:130001"
+      ],
+      "latestFieldDate": "2020-09-15T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 9,
+      "family": "poll_centered",
+      "trainedThroughYear": 2018,
+      "model": {
+        "family": "poll_centered",
+        "races": 167,
+        "cycles": [
+          1998,
+          2000,
+          2002,
+          2004,
+          2006,
+          2008,
+          2010,
+          2012,
+          2014,
+          2016,
+          2018
+        ],
+        "trainedThroughYear": 2018,
+        "biasPoints": 0,
+        "standardDeviationPoints": 7.18864658041407,
+        "distribution": "fixed_t4",
+        "effectiveUnit": "one_state_race",
+        "historicalPopulationTransportMeasured": false
+      },
+      "democraticWinProbability": 0.9685970557920498
+    },
+    {
+      "key": "2020:KY",
+      "year": 2020,
+      "state": "KY",
+      "forecastHorizonDays": 45,
+      "pollMargin": -13.574205146452206,
+      "actualMargin": -19.533811041110376,
+      "democraticWon": false,
+      "error": -5.95960589465817,
+      "pollCount": 2,
+      "pollIds": [
+        "6276:129448",
+        "6276:129833"
+      ],
+      "latestFieldDate": "2020-09-15T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 8.623675244087012,
+      "family": "historical_bias_corrected",
+      "trainedThroughYear": 2018,
+      "model": {
+        "family": "historical_bias_corrected",
+        "races": 167,
+        "cycles": [
+          1998,
+          2000,
+          2002,
+          2004,
+          2006,
+          2008,
+          2010,
+          2012,
+          2014,
+          2016,
+          2018
+        ],
+        "trainedThroughYear": 2018,
+        "biasPoints": 0.7487984338566349,
+        "standardDeviationPoints": 7.149541283435796,
+        "distribution": "fixed_t4",
+        "effectiveUnit": "one_state_race",
+        "historicalPopulationTransportMeasured": false
+      },
+      "democraticWinProbability": 0.03209507099462516
+    },
+    {
+      "key": "2020:MI",
+      "year": 2020,
+      "state": "MI",
+      "forecastHorizonDays": 45,
+      "pollMargin": 6.376186955990798,
+      "actualMargin": 1.6850313519668845,
+      "democraticWon": true,
+      "error": -4.691155604023914,
+      "pollCount": 7,
+      "pollIds": [
+        "6280:129910",
+        "6280:129531",
+        "6280:129568",
+        "6280:129834",
+        "6280:129848",
+        "6280:129868",
+        "6280:129964"
+      ],
+      "latestFieldDate": "2020-09-19T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 12.186075141724448,
+      "family": "historical_bias_corrected",
+      "trainedThroughYear": 2018,
+      "model": {
+        "family": "historical_bias_corrected",
+        "races": 167,
+        "cycles": [
+          1998,
+          2000,
+          2002,
+          2004,
+          2006,
+          2008,
+          2010,
+          2012,
+          2014,
+          2016,
+          2018
+        ],
+        "trainedThroughYear": 2018,
+        "biasPoints": 0.7487984338566349,
+        "standardDeviationPoints": 7.149541283435796,
+        "distribution": "fixed_t4",
+        "effectiveUnit": "one_state_race",
+        "historicalPopulationTransportMeasured": false
+      },
+      "democraticWinProbability": 0.8842372934914497
+    },
+    {
+      "key": "2020:MN",
+      "year": 2020,
+      "state": "MN",
+      "forecastHorizonDays": 45,
+      "pollMargin": 10.196592307249333,
+      "actualMargin": 5.23844398205992,
+      "democraticWon": true,
+      "error": -4.958148325189413,
+      "pollCount": 5,
+      "pollIds": [
+        "6281:128201",
+        "6281:128383",
+        "6281:129279",
+        "6281:129306",
+        "6281:129613"
+      ],
+      "latestFieldDate": "2020-09-14T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 12.958675292974002,
+      "family": "historical_bias_corrected",
+      "trainedThroughYear": 2018,
+      "model": {
+        "family": "historical_bias_corrected",
+        "races": 167,
+        "cycles": [
+          1998,
+          2000,
+          2002,
+          2004,
+          2006,
+          2008,
+          2010,
+          2012,
+          2014,
+          2016,
+          2018
+        ],
+        "trainedThroughYear": 2018,
+        "biasPoints": 0.7487984338566349,
+        "standardDeviationPoints": 7.149541283435796,
+        "distribution": "fixed_t4",
+        "effectiveUnit": "one_state_race",
+        "historicalPopulationTransportMeasured": false
+      },
+      "democraticWinProbability": 0.9518287759816029
+    },
+    {
+      "key": "2020:MT",
+      "year": 2020,
+      "state": "MT",
+      "forecastHorizonDays": 45,
+      "pollMargin": -1,
+      "actualMargin": -10.024321499512084,
+      "democraticWon": false,
+      "error": -9.024321499512084,
+      "pollCount": 1,
+      "pollIds": [
+        "6283:129596"
+      ],
+      "latestFieldDate": "2020-09-15T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 11,
+      "family": "historical_bias_corrected",
+      "trainedThroughYear": 2018,
+      "model": {
+        "family": "historical_bias_corrected",
+        "races": 167,
+        "cycles": [
+          1998,
+          2000,
+          2002,
+          2004,
+          2006,
+          2008,
+          2010,
+          2012,
+          2014,
+          2016,
+          2018
+        ],
+        "trainedThroughYear": 2018,
+        "biasPoints": 0.7487984338566349,
+        "standardDeviationPoints": 7.149541283435796,
+        "distribution": "fixed_t4",
+        "effectiveUnit": "one_state_race",
+        "historicalPopulationTransportMeasured": false
+      },
+      "democraticWinProbability": 0.4813762501984183
+    },
+    {
+      "key": "2020:SC",
+      "year": 2020,
+      "state": "SC",
+      "forecastHorizonDays": 45,
+      "pollMargin": -0.5247350488174023,
+      "actualMargin": -10.27031088972862,
+      "democraticWon": false,
+      "error": -9.745575840911219,
+      "pollCount": 2,
+      "pollIds": [
+        "6292:129450",
+        "6292:129832"
+      ],
+      "latestFieldDate": "2020-09-15T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 6.623675244087011,
+      "family": "historical_bias_corrected",
+      "trainedThroughYear": 2018,
+      "model": {
+        "family": "historical_bias_corrected",
+        "races": 167,
+        "cycles": [
+          1998,
+          2000,
+          2002,
+          2004,
+          2006,
+          2008,
+          2010,
+          2012,
+          2014,
+          2016,
+          2018
+        ],
+        "trainedThroughYear": 2018,
+        "biasPoints": 0.7487984338566349,
+        "standardDeviationPoints": 7.149541283435796,
+        "distribution": "fixed_t4",
+        "effectiveUnit": "one_state_race",
+        "historicalPopulationTransportMeasured": false
+      },
+      "democraticWinProbability": 0.5166135065219474
+    },
+    {
+      "key": "2020:VA",
+      "year": 2020,
+      "state": "VA",
+      "forecastHorizonDays": 45,
+      "pollMargin": 13,
+      "actualMargin": 12.083779503106292,
+      "democraticWon": true,
+      "error": -0.9162204968937075,
+      "pollCount": 1,
+      "pollIds": [
+        "6296:130001"
+      ],
+      "latestFieldDate": "2020-09-15T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 9,
+      "family": "historical_bias_corrected",
+      "trainedThroughYear": 2018,
+      "model": {
+        "family": "historical_bias_corrected",
+        "races": 167,
+        "cycles": [
+          1998,
+          2000,
+          2002,
+          2004,
+          2006,
+          2008,
+          2010,
+          2012,
+          2014,
+          2016,
+          2018
+        ],
+        "trainedThroughYear": 2018,
+        "biasPoints": 0.7487984338566349,
+        "standardDeviationPoints": 7.149541283435796,
+        "distribution": "fixed_t4",
+        "effectiveUnit": "one_state_race",
+        "historicalPopulationTransportMeasured": false
+      },
+      "democraticWinProbability": 0.9734950280523053
+    },
+    {
+      "key": "2022:AR",
+      "year": 2022,
+      "state": "AR",
+      "forecastHorizonDays": 45,
+      "pollMargin": -12.999999999999998,
+      "actualMargin": -34.644171901662695,
+      "democraticWon": false,
+      "error": -21.644171901662695,
+      "pollCount": 1,
+      "pollIds": [
+        "8920:161487"
+      ],
+      "latestFieldDate": "2022-09-12T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 25.999999999999996,
+      "family": "poll_centered",
+      "trainedThroughYear": 2020,
+      "model": {
+        "family": "poll_centered",
+        "races": 173,
+        "cycles": [
+          1998,
+          2000,
+          2002,
+          2004,
+          2006,
+          2008,
+          2010,
+          2012,
+          2014,
+          2016,
+          2018,
+          2020
+        ],
+        "trainedThroughYear": 2020,
+        "biasPoints": 0,
+        "standardDeviationPoints": 7.168234353441804,
+        "distribution": "fixed_t4",
+        "effectiveUnit": "one_state_race",
+        "historicalPopulationTransportMeasured": false
+      },
+      "democraticWinProbability": 0.031161740942439217
+    },
+    {
+      "key": "2022:AZ",
+      "year": 2022,
+      "state": "AZ",
+      "forecastHorizonDays": 45,
+      "pollMargin": 6.408837798785532,
+      "actualMargin": 4.887427331401462,
+      "democraticWon": true,
+      "error": -1.5214104673840705,
+      "pollCount": 5,
+      "pollIds": [
+        "8919:161939",
+        "8919:161956",
+        "8919:162484",
+        "8919:162503",
+        "8919:162668"
+      ],
+      "latestFieldDate": "2022-09-24T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 9.012216342700416,
+      "family": "poll_centered",
+      "trainedThroughYear": 2020,
+      "model": {
+        "family": "poll_centered",
+        "races": 173,
+        "cycles": [
+          1998,
+          2000,
+          2002,
+          2004,
+          2006,
+          2008,
+          2010,
+          2012,
+          2014,
+          2016,
+          2018,
+          2020
+        ],
+        "trainedThroughYear": 2020,
+        "biasPoints": 0,
+        "standardDeviationPoints": 7.168234353441804,
+        "distribution": "fixed_t4",
+        "effectiveUnit": "one_state_race",
+        "historicalPopulationTransportMeasured": false
+      },
+      "democraticWinProbability": 0.8626278896516282
+    },
+    {
+      "key": "2022:CO",
+      "year": 2022,
+      "state": "CO",
+      "forecastHorizonDays": 45,
+      "pollMargin": 9.813183658197012,
+      "actualMargin": 14.61790472046048,
+      "democraticWon": true,
+      "error": 4.804721062263468,
+      "pollCount": 2,
+      "pollIds": [
+        "8922:161870",
+        "8922:162713"
+      ],
+      "latestFieldDate": "2022-09-22T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 18.280224512704486,
+      "family": "poll_centered",
+      "trainedThroughYear": 2020,
+      "model": {
+        "family": "poll_centered",
+        "races": 173,
+        "cycles": [
+          1998,
+          2000,
+          2002,
+          2004,
+          2006,
+          2008,
+          2010,
+          2012,
+          2014,
+          2016,
+          2018,
+          2020
+        ],
+        "trainedThroughYear": 2020,
+        "biasPoints": 0,
+        "standardDeviationPoints": 7.168234353441804,
+        "distribution": "fixed_t4",
+        "effectiveUnit": "one_state_race",
+        "historicalPopulationTransportMeasured": false
+      },
+      "democraticWinProbability": 0.9375271515159649
+    },
+    {
+      "key": "2022:FL",
+      "year": 2022,
+      "state": "FL",
+      "forecastHorizonDays": 45,
+      "pollMargin": -4.150473338513841,
+      "actualMargin": -16.413027870277112,
+      "democraticWon": false,
+      "error": -12.262554531763271,
+      "pollCount": 4,
+      "pollIds": [
+        "8924:161476",
+        "8924:161748",
+        "8924:161840",
+        "8924:162715"
+      ],
+      "latestFieldDate": "2022-09-22T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 8.614700190301226,
+      "family": "poll_centered",
+      "trainedThroughYear": 2020,
+      "model": {
+        "family": "poll_centered",
+        "races": 173,
+        "cycles": [
+          1998,
+          2000,
+          2002,
+          2004,
+          2006,
+          2008,
+          2010,
+          2012,
+          2014,
+          2016,
+          2018,
+          2020
+        ],
+        "trainedThroughYear": 2020,
+        "biasPoints": 0,
+        "standardDeviationPoints": 7.168234353441804,
+        "distribution": "fixed_t4",
+        "effectiveUnit": "one_state_race",
+        "historicalPopulationTransportMeasured": false
+      },
+      "democraticWinProbability": 0.22942758356210247
+    },
+    {
+      "key": "2022:KS",
+      "year": 2022,
+      "state": "KS",
+      "forecastHorizonDays": 45,
+      "pollMargin": -12.199999999999996,
+      "actualMargin": -22.962398353758772,
+      "democraticWon": false,
+      "error": -10.762398353758776,
+      "pollCount": 1,
+      "pollIds": [
+        "8931:161750"
+      ],
+      "latestFieldDate": "2022-09-17T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 21.60000000000001,
+      "family": "poll_centered",
+      "trainedThroughYear": 2020,
+      "model": {
+        "family": "poll_centered",
+        "races": 173,
+        "cycles": [
+          1998,
+          2000,
+          2002,
+          2004,
+          2006,
+          2008,
+          2010,
+          2012,
+          2014,
+          2016,
+          2018,
+          2020
+        ],
+        "trainedThroughYear": 2020,
+        "biasPoints": 0,
+        "standardDeviationPoints": 7.168234353441804,
+        "distribution": "fixed_t4",
+        "effectiveUnit": "one_state_race",
+        "historicalPopulationTransportMeasured": false
+      },
+      "democraticWinProbability": 0.036900092782024344
+    },
+    {
+      "key": "2022:NC",
+      "year": 2022,
+      "state": "NC",
+      "forecastHorizonDays": 45,
+      "pollMargin": -0.9463646194493311,
+      "actualMargin": -3.22574063494654,
+      "democraticWon": false,
+      "error": -2.279376015497209,
+      "pollCount": 5,
+      "pollIds": [
+        "8940:161255",
+        "8940:161733",
+        "8940:161837",
+        "8940:162639",
+        "8940:164861"
+      ],
+      "latestFieldDate": "2022-09-22T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 8.775610454217349,
+      "family": "poll_centered",
+      "trainedThroughYear": 2020,
+      "model": {
+        "family": "poll_centered",
+        "races": 173,
+        "cycles": [
+          1998,
+          2000,
+          2002,
+          2004,
+          2006,
+          2008,
+          2010,
+          2012,
+          2014,
+          2016,
+          2018,
+          2020
+        ],
+        "trainedThroughYear": 2020,
+        "biasPoints": 0,
+        "standardDeviationPoints": 7.168234353441804,
+        "distribution": "fixed_t4",
+        "effectiveUnit": "one_state_race",
+        "historicalPopulationTransportMeasured": false
+      },
+      "democraticWinProbability": 0.43048863279031124
+    },
+    {
+      "key": "2022:NH",
+      "year": 2022,
+      "state": "NH",
+      "forecastHorizonDays": 45,
+      "pollMargin": 10.500000000000002,
+      "actualMargin": 9.156407262772248,
+      "democraticWon": true,
+      "error": -1.3435927372277536,
+      "pollCount": 3,
+      "pollIds": [
+        "8938:161463",
+        "8938:161818",
+        "8938:161944"
+      ],
+      "latestFieldDate": "2022-09-17T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 8.749362642539747,
+      "family": "poll_centered",
+      "trainedThroughYear": 2020,
+      "model": {
+        "family": "poll_centered",
+        "races": 173,
+        "cycles": [
+          1998,
+          2000,
+          2002,
+          2004,
+          2006,
+          2008,
+          2010,
+          2012,
+          2014,
+          2016,
+          2018,
+          2020
+        ],
+        "trainedThroughYear": 2020,
+        "biasPoints": 0,
+        "standardDeviationPoints": 7.168234353441804,
+        "distribution": "fixed_t4",
+        "effectiveUnit": "one_state_race",
+        "historicalPopulationTransportMeasured": false
+      },
+      "democraticWinProbability": 0.9464780162266008
+    },
+    {
+      "key": "2022:NV",
+      "year": 2022,
+      "state": "NV",
+      "forecastHorizonDays": 45,
+      "pollMargin": -1.7253922670217063,
+      "actualMargin": 0.7766077288534063,
+      "democraticWon": true,
+      "error": 2.5019999958751127,
+      "pollCount": 4,
+      "pollIds": [
+        "8937:161259",
+        "8937:161958",
+        "8937:161970",
+        "8937:162716"
+      ],
+      "latestFieldDate": "2022-09-24T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 11.495427781943178,
+      "family": "poll_centered",
+      "trainedThroughYear": 2020,
+      "model": {
+        "family": "poll_centered",
+        "races": 173,
+        "cycles": [
+          1998,
+          2000,
+          2002,
+          2004,
+          2006,
+          2008,
+          2010,
+          2012,
+          2014,
+          2016,
+          2018,
+          2020
+        ],
+        "trainedThroughYear": 2020,
+        "biasPoints": 0,
+        "standardDeviationPoints": 7.168234353441804,
+        "distribution": "fixed_t4",
+        "effectiveUnit": "one_state_race",
+        "historicalPopulationTransportMeasured": false
+      },
+      "democraticWinProbability": 0.37534026878934657
+    },
+    {
+      "key": "2022:OK",
+      "year": 2022,
+      "state": "OK",
+      "forecastHorizonDays": 45,
+      "pollMargin": -18,
+      "actualMargin": -32.20471838794785,
+      "democraticWon": false,
+      "error": -14.20471838794785,
+      "pollCount": 1,
+      "pollIds": [
+        "8943:162999"
+      ],
+      "latestFieldDate": "2022-09-20T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 14,
+      "family": "poll_centered",
+      "trainedThroughYear": 2020,
+      "model": {
+        "family": "poll_centered",
+        "races": 173,
+        "cycles": [
+          1998,
+          2000,
+          2002,
+          2004,
+          2006,
+          2008,
+          2010,
+          2012,
+          2014,
+          2016,
+          2018,
+          2020
+        ],
+        "trainedThroughYear": 2020,
+        "biasPoints": 0,
+        "standardDeviationPoints": 7.168234353441804,
+        "distribution": "fixed_t4",
+        "effectiveUnit": "one_state_race",
+        "historicalPopulationTransportMeasured": false
+      },
+      "democraticWinProbability": 0.011886464126830892
+    },
+    {
+      "key": "2022:PA",
+      "year": 2022,
+      "state": "PA",
+      "forecastHorizonDays": 45,
+      "pollMargin": 4.558201316804098,
+      "actualMargin": 4.913393595144278,
+      "democraticWon": true,
+      "error": 0.35519227834017997,
+      "pollCount": 7,
+      "pollIds": [
+        "8945:161262",
+        "8945:161968",
+        "8945:162439",
+        "8945:162458",
+        "8945:162469",
+        "8945:162610",
+        "8945:162618"
+      ],
+      "latestFieldDate": "2022-09-24T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 9.974654676737222,
+      "family": "poll_centered",
+      "trainedThroughYear": 2020,
+      "model": {
+        "family": "poll_centered",
+        "races": 173,
+        "cycles": [
+          1998,
+          2000,
+          2002,
+          2004,
+          2006,
+          2008,
+          2010,
+          2012,
+          2014,
+          2016,
+          2018,
+          2020
+        ],
+        "trainedThroughYear": 2020,
+        "biasPoints": 0,
+        "standardDeviationPoints": 7.168234353441804,
+        "distribution": "fixed_t4",
+        "effectiveUnit": "one_state_race",
+        "historicalPopulationTransportMeasured": false
+      },
+      "democraticWinProbability": 0.790327579251244
+    },
+    {
+      "key": "2022:WA",
+      "year": 2022,
+      "state": "WA",
+      "forecastHorizonDays": 45,
+      "pollMargin": 13,
+      "actualMargin": 14.51835690147314,
+      "democraticWon": true,
+      "error": 1.5183569014731404,
+      "pollCount": 1,
+      "pollIds": [
+        "8950:161938"
+      ],
+      "latestFieldDate": "2022-09-14T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 13,
+      "family": "poll_centered",
+      "trainedThroughYear": 2020,
+      "model": {
+        "family": "poll_centered",
+        "races": 173,
+        "cycles": [
+          1998,
+          2000,
+          2002,
+          2004,
+          2006,
+          2008,
+          2010,
+          2012,
+          2014,
+          2016,
+          2018,
+          2020
+        ],
+        "trainedThroughYear": 2020,
+        "biasPoints": 0,
+        "standardDeviationPoints": 7.168234353441804,
+        "distribution": "fixed_t4",
+        "effectiveUnit": "one_state_race",
+        "historicalPopulationTransportMeasured": false
+      },
+      "democraticWinProbability": 0.9688382590575608
+    },
+    {
+      "key": "2022:WI",
+      "year": 2022,
+      "state": "WI",
+      "forecastHorizonDays": 45,
+      "pollMargin": -2.470827389379268,
+      "actualMargin": -1.0072848888039303,
+      "democraticWon": false,
+      "error": 1.4635425005753375,
+      "pollCount": 7,
+      "pollIds": [
+        "8951:161347",
+        "8951:161431",
+        "8951:161651",
+        "8951:161675",
+        "8951:162619",
+        "8951:162669",
+        "8951:162681"
+      ],
+      "latestFieldDate": "2022-09-24T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 4.704986533820107,
+      "family": "poll_centered",
+      "trainedThroughYear": 2020,
+      "model": {
+        "family": "poll_centered",
+        "races": 173,
+        "cycles": [
+          1998,
+          2000,
+          2002,
+          2004,
+          2006,
+          2008,
+          2010,
+          2012,
+          2014,
+          2016,
+          2018,
+          2020
+        ],
+        "trainedThroughYear": 2020,
+        "biasPoints": 0,
+        "standardDeviationPoints": 7.168234353441804,
+        "distribution": "fixed_t4",
+        "effectiveUnit": "one_state_race",
+        "historicalPopulationTransportMeasured": false
+      },
+      "democraticWinProbability": 0.3257187078820908
+    },
+    {
+      "key": "2022:AR",
+      "year": 2022,
+      "state": "AR",
+      "forecastHorizonDays": 45,
+      "pollMargin": -12.999999999999998,
+      "actualMargin": -34.644171901662695,
+      "democraticWon": false,
+      "error": -21.644171901662695,
+      "pollCount": 1,
+      "pollIds": [
+        "8920:161487"
+      ],
+      "latestFieldDate": "2022-09-12T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 25.999999999999996,
+      "family": "historical_bias_corrected",
+      "trainedThroughYear": 2020,
+      "model": {
+        "family": "historical_bias_corrected",
+        "races": 173,
+        "cycles": [
+          1998,
+          2000,
+          2002,
+          2004,
+          2006,
+          2008,
+          2010,
+          2012,
+          2014,
+          2016,
+          2018,
+          2020
+        ],
+        "trainedThroughYear": 2020,
+        "biasPoints": 0.5188110450454886,
+        "standardDeviationPoints": 7.149434861959514,
+        "distribution": "fixed_t4",
+        "effectiveUnit": "one_state_race",
+        "historicalPopulationTransportMeasured": false
+      },
+      "democraticWinProbability": 0.034515009390848006
+    },
+    {
+      "key": "2022:AZ",
+      "year": 2022,
+      "state": "AZ",
+      "forecastHorizonDays": 45,
+      "pollMargin": 6.408837798785532,
+      "actualMargin": 4.887427331401462,
+      "democraticWon": true,
+      "error": -1.5214104673840705,
+      "pollCount": 5,
+      "pollIds": [
+        "8919:161939",
+        "8919:161956",
+        "8919:162484",
+        "8919:162503",
+        "8919:162668"
+      ],
+      "latestFieldDate": "2022-09-24T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 9.012216342700416,
+      "family": "historical_bias_corrected",
+      "trainedThroughYear": 2020,
+      "model": {
+        "family": "historical_bias_corrected",
+        "races": 173,
+        "cycles": [
+          1998,
+          2000,
+          2002,
+          2004,
+          2006,
+          2008,
+          2010,
+          2012,
+          2014,
+          2016,
+          2018,
+          2020
+        ],
+        "trainedThroughYear": 2020,
+        "biasPoints": 0.5188110450454886,
+        "standardDeviationPoints": 7.149434861959514,
+        "distribution": "fixed_t4",
+        "effectiveUnit": "one_state_race",
+        "historicalPopulationTransportMeasured": false
+      },
+      "democraticWinProbability": 0.8787736325464353
+    },
+    {
+      "key": "2022:CO",
+      "year": 2022,
+      "state": "CO",
+      "forecastHorizonDays": 45,
+      "pollMargin": 9.813183658197012,
+      "actualMargin": 14.61790472046048,
+      "democraticWon": true,
+      "error": 4.804721062263468,
+      "pollCount": 2,
+      "pollIds": [
+        "8922:161870",
+        "8922:162713"
+      ],
+      "latestFieldDate": "2022-09-22T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 18.280224512704486,
+      "family": "historical_bias_corrected",
+      "trainedThroughYear": 2020,
+      "model": {
+        "family": "historical_bias_corrected",
+        "races": 173,
+        "cycles": [
+          1998,
+          2000,
+          2002,
+          2004,
+          2006,
+          2008,
+          2010,
+          2012,
+          2014,
+          2016,
+          2018,
+          2020
+        ],
+        "trainedThroughYear": 2020,
+        "biasPoints": 0.5188110450454886,
+        "standardDeviationPoints": 7.149434861959514,
+        "distribution": "fixed_t4",
+        "effectiveUnit": "one_state_race",
+        "historicalPopulationTransportMeasured": false
+      },
+      "democraticWinProbability": 0.9447640146062442
+    },
+    {
+      "key": "2022:FL",
+      "year": 2022,
+      "state": "FL",
+      "forecastHorizonDays": 45,
+      "pollMargin": -4.150473338513841,
+      "actualMargin": -16.413027870277112,
+      "democraticWon": false,
+      "error": -12.262554531763271,
+      "pollCount": 4,
+      "pollIds": [
+        "8924:161476",
+        "8924:161748",
+        "8924:161840",
+        "8924:162715"
+      ],
+      "latestFieldDate": "2022-09-22T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 8.614700190301226,
+      "family": "historical_bias_corrected",
+      "trainedThroughYear": 2020,
+      "model": {
+        "family": "historical_bias_corrected",
+        "races": 173,
+        "cycles": [
+          1998,
+          2000,
+          2002,
+          2004,
+          2006,
+          2008,
+          2010,
+          2012,
+          2014,
+          2016,
+          2018,
+          2020
+        ],
+        "trainedThroughYear": 2020,
+        "biasPoints": 0.5188110450454886,
+        "standardDeviationPoints": 7.149434861959514,
+        "distribution": "fixed_t4",
+        "effectiveUnit": "one_state_race",
+        "historicalPopulationTransportMeasured": false
+      },
+      "democraticWinProbability": 0.2561265537168258
+    },
+    {
+      "key": "2022:KS",
+      "year": 2022,
+      "state": "KS",
+      "forecastHorizonDays": 45,
+      "pollMargin": -12.199999999999996,
+      "actualMargin": -22.962398353758772,
+      "democraticWon": false,
+      "error": -10.762398353758776,
+      "pollCount": 1,
+      "pollIds": [
+        "8931:161750"
+      ],
+      "latestFieldDate": "2022-09-17T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 21.60000000000001,
+      "family": "historical_bias_corrected",
+      "trainedThroughYear": 2020,
+      "model": {
+        "family": "historical_bias_corrected",
+        "races": 173,
+        "cycles": [
+          1998,
+          2000,
+          2002,
+          2004,
+          2006,
+          2008,
+          2010,
+          2012,
+          2014,
+          2016,
+          2018,
+          2020
+        ],
+        "trainedThroughYear": 2020,
+        "biasPoints": 0.5188110450454886,
+        "standardDeviationPoints": 7.149434861959514,
+        "distribution": "fixed_t4",
+        "effectiveUnit": "one_state_race",
+        "historicalPopulationTransportMeasured": false
+      },
+      "democraticWinProbability": 0.04098778653767354
+    },
+    {
+      "key": "2022:NC",
+      "year": 2022,
+      "state": "NC",
+      "forecastHorizonDays": 45,
+      "pollMargin": -0.9463646194493311,
+      "actualMargin": -3.22574063494654,
+      "democraticWon": false,
+      "error": -2.279376015497209,
+      "pollCount": 5,
+      "pollIds": [
+        "8940:161255",
+        "8940:161733",
+        "8940:161837",
+        "8940:162639",
+        "8940:164861"
+      ],
+      "latestFieldDate": "2022-09-22T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 8.775610454217349,
+      "family": "historical_bias_corrected",
+      "trainedThroughYear": 2020,
+      "model": {
+        "family": "historical_bias_corrected",
+        "races": 173,
+        "cycles": [
+          1998,
+          2000,
+          2002,
+          2004,
+          2006,
+          2008,
+          2010,
+          2012,
+          2014,
+          2016,
+          2018,
+          2020
+        ],
+        "trainedThroughYear": 2020,
+        "biasPoints": 0.5188110450454886,
+        "standardDeviationPoints": 7.149434861959514,
+        "distribution": "fixed_t4",
+        "effectiveUnit": "one_state_race",
+        "historicalPopulationTransportMeasured": false
+      },
+      "democraticWinProbability": 0.4683321436144546
+    },
+    {
+      "key": "2022:NH",
+      "year": 2022,
+      "state": "NH",
+      "forecastHorizonDays": 45,
+      "pollMargin": 10.500000000000002,
+      "actualMargin": 9.156407262772248,
+      "democraticWon": true,
+      "error": -1.3435927372277536,
+      "pollCount": 3,
+      "pollIds": [
+        "8938:161463",
+        "8938:161818",
+        "8938:161944"
+      ],
+      "latestFieldDate": "2022-09-17T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 8.749362642539747,
+      "family": "historical_bias_corrected",
+      "trainedThroughYear": 2020,
+      "model": {
+        "family": "historical_bias_corrected",
+        "races": 173,
+        "cycles": [
+          1998,
+          2000,
+          2002,
+          2004,
+          2006,
+          2008,
+          2010,
+          2012,
+          2014,
+          2016,
+          2018,
+          2020
+        ],
+        "trainedThroughYear": 2020,
+        "biasPoints": 0.5188110450454886,
+        "standardDeviationPoints": 7.149434861959514,
+        "distribution": "fixed_t4",
+        "effectiveUnit": "one_state_race",
+        "historicalPopulationTransportMeasured": false
+      },
+      "democraticWinProbability": 0.9526068867654524
+    },
+    {
+      "key": "2022:NV",
+      "year": 2022,
+      "state": "NV",
+      "forecastHorizonDays": 45,
+      "pollMargin": -1.7253922670217063,
+      "actualMargin": 0.7766077288534063,
+      "democraticWon": true,
+      "error": 2.5019999958751127,
+      "pollCount": 4,
+      "pollIds": [
+        "8937:161259",
+        "8937:161958",
+        "8937:161970",
+        "8937:162716"
+      ],
+      "latestFieldDate": "2022-09-24T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 11.495427781943178,
+      "family": "historical_bias_corrected",
+      "trainedThroughYear": 2020,
+      "model": {
+        "family": "historical_bias_corrected",
+        "races": 173,
+        "cycles": [
+          1998,
+          2000,
+          2002,
+          2004,
+          2006,
+          2008,
+          2010,
+          2012,
+          2014,
+          2016,
+          2018,
+          2020
+        ],
+        "trainedThroughYear": 2020,
+        "biasPoints": 0.5188110450454886,
+        "standardDeviationPoints": 7.149434861959514,
+        "distribution": "fixed_t4",
+        "effectiveUnit": "one_state_race",
+        "historicalPopulationTransportMeasured": false
+      },
+      "democraticWinProbability": 0.4115448504222526
+    },
+    {
+      "key": "2022:OK",
+      "year": 2022,
+      "state": "OK",
+      "forecastHorizonDays": 45,
+      "pollMargin": -18,
+      "actualMargin": -32.20471838794785,
+      "democraticWon": false,
+      "error": -14.20471838794785,
+      "pollCount": 1,
+      "pollIds": [
+        "8943:162999"
+      ],
+      "latestFieldDate": "2022-09-20T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 14,
+      "family": "historical_bias_corrected",
+      "trainedThroughYear": 2020,
+      "model": {
+        "family": "historical_bias_corrected",
+        "races": 173,
+        "cycles": [
+          1998,
+          2000,
+          2002,
+          2004,
+          2006,
+          2008,
+          2010,
+          2012,
+          2014,
+          2016,
+          2018,
+          2020
+        ],
+        "trainedThroughYear": 2020,
+        "biasPoints": 0.5188110450454886,
+        "standardDeviationPoints": 7.149434861959514,
+        "distribution": "fixed_t4",
+        "effectiveUnit": "one_state_race",
+        "historicalPopulationTransportMeasured": false
+      },
+      "democraticWinProbability": 0.012933459003033443
+    },
+    {
+      "key": "2022:PA",
+      "year": 2022,
+      "state": "PA",
+      "forecastHorizonDays": 45,
+      "pollMargin": 4.558201316804098,
+      "actualMargin": 4.913393595144278,
+      "democraticWon": true,
+      "error": 0.35519227834017997,
+      "pollCount": 7,
+      "pollIds": [
+        "8945:161262",
+        "8945:161968",
+        "8945:162439",
+        "8945:162458",
+        "8945:162469",
+        "8945:162610",
+        "8945:162618"
+      ],
+      "latestFieldDate": "2022-09-24T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 9.974654676737222,
+      "family": "historical_bias_corrected",
+      "trainedThroughYear": 2020,
+      "model": {
+        "family": "historical_bias_corrected",
+        "races": 173,
+        "cycles": [
+          1998,
+          2000,
+          2002,
+          2004,
+          2006,
+          2008,
+          2010,
+          2012,
+          2014,
+          2016,
+          2018,
+          2020
+        ],
+        "trainedThroughYear": 2020,
+        "biasPoints": 0.5188110450454886,
+        "standardDeviationPoints": 7.149434861959514,
+        "distribution": "fixed_t4",
+        "effectiveUnit": "one_state_race",
+        "historicalPopulationTransportMeasured": false
+      },
+      "democraticWinProbability": 0.8139646719537657
+    },
+    {
+      "key": "2022:WA",
+      "year": 2022,
+      "state": "WA",
+      "forecastHorizonDays": 45,
+      "pollMargin": 13,
+      "actualMargin": 14.51835690147314,
+      "democraticWon": true,
+      "error": 1.5183569014731404,
+      "pollCount": 1,
+      "pollIds": [
+        "8950:161938"
+      ],
+      "latestFieldDate": "2022-09-14T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 13,
+      "family": "historical_bias_corrected",
+      "trainedThroughYear": 2020,
+      "model": {
+        "family": "historical_bias_corrected",
+        "races": 173,
+        "cycles": [
+          1998,
+          2000,
+          2002,
+          2004,
+          2006,
+          2008,
+          2010,
+          2012,
+          2014,
+          2016,
+          2018,
+          2020
+        ],
+        "trainedThroughYear": 2020,
+        "biasPoints": 0.5188110450454886,
+        "standardDeviationPoints": 7.149434861959514,
+        "distribution": "fixed_t4",
+        "effectiveUnit": "one_state_race",
+        "historicalPopulationTransportMeasured": false
+      },
+      "democraticWinProbability": 0.9722165287566776
+    },
+    {
+      "key": "2022:WI",
+      "year": 2022,
+      "state": "WI",
+      "forecastHorizonDays": 45,
+      "pollMargin": -2.470827389379268,
+      "actualMargin": -1.0072848888039303,
+      "democraticWon": false,
+      "error": 1.4635425005753375,
+      "pollCount": 7,
+      "pollIds": [
+        "8951:161347",
+        "8951:161431",
+        "8951:161651",
+        "8951:161675",
+        "8951:162619",
+        "8951:162669",
+        "8951:162681"
+      ],
+      "latestFieldDate": "2022-09-24T12:00:00.000Z",
+      "actualHistoricalReleaseTimesAvailable": false,
+      "populationsAvailable": false,
+      "remaining": 4.704986533820107,
+      "family": "historical_bias_corrected",
+      "trainedThroughYear": 2020,
+      "model": {
+        "family": "historical_bias_corrected",
+        "races": 173,
+        "cycles": [
+          1998,
+          2000,
+          2002,
+          2004,
+          2006,
+          2008,
+          2010,
+          2012,
+          2014,
+          2016,
+          2018,
+          2020
+        ],
+        "trainedThroughYear": 2020,
+        "biasPoints": 0.5188110450454886,
+        "standardDeviationPoints": 7.149434861959514,
+        "distribution": "fixed_t4",
+        "effectiveUnit": "one_state_race",
+        "historicalPopulationTransportMeasured": false
+      },
+      "democraticWinProbability": 0.35953175457144
+    }
+  ],
+  "qualifiedProductionForecasts": 0,
+  "competitionOrders": 0,
+  "profitabilityEstablished": false,
+  "limitations": [
+    "This retrospective collector selects the eventual top two finishers; final identities are independently matched, but coverage cannot represent all originally available races.",
+    "Publication dates and LV/RV populations are absent from the archive. Median field dates and observation times are distinct.",
+    "One race is one calibration observation; state errors remain correlated within election cycles. Two diagnostic cycles are weak evidence of 2026 transport.",
+    "No historical executable market prices, depth, fill queues or net trading returns are supplied by this diagnostic.",
+    "No current bank, window, inventory or paper accounting is changed."
+  ]
+}

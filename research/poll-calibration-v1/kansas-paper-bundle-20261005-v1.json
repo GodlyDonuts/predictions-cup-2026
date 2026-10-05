@@ -1,0 +1,572 @@
+{
+  "identities": {
+    "356": {
+      "exchangeId": "1045",
+      "predicateHash": "39acdb6801c5f8f10f675de9fa3f3aa997c5c20788e6790e1d3d21eba8e76156"
+    }
+  },
+  "research": [
+    {
+      "schemaVersion": 1,
+      "id": "kansas-democratic-empirical-poll-20261005-v1",
+      "marketId": "356",
+      "exchangeId": "1045",
+      "side": "YES",
+      "predicateHash": "39acdb6801c5f8f10f675de9fa3f3aa997c5c20788e6790e1d3d21eba8e76156",
+      "recordedAt": "2026-10-05T12:04:36.794Z",
+      "sourceAt": "2026-10-05T12:04:36.794Z",
+      "expiresAt": "2026-10-05T18:04:36.794Z",
+      "lower": "0.600319",
+      "upper": "0.643157",
+      "method": "subjective_range",
+      "settlementReviewed": true,
+      "flags": [],
+      "sources": [
+        {
+          "url": "https://emersoncollegepolling.com/kansas-2026/",
+          "contentHash": "4da5aa879c29f20ed9bbed7c5feb6e8b4f2bb34b044a27e9667652286f3c47af"
+        },
+        {
+          "url": "https://meadeco.org/367/2026-General-Election-Information",
+          "contentHash": "9ee9ba9fb36a4c429082eee6a5d2085988efb334d5eea5748b584961f940c22c"
+        },
+        {
+          "url": "https://raw.githubusercontent.com/fivethirtyeight/data/master/pollster-ratings/raw_polls.csv",
+          "contentHash": "9f0b185506e59117c150fb988e73b612346effe8e3a8f0d90fdafcad07f54756"
+        }
+      ]
+    }
+  ],
+  "researchEvidence": [
+    {
+      "schemaVersion": 1,
+      "id": "kansas-single-poll-error-assessment-20261005-v1",
+      "at": "2026-10-05T12:04:36.794Z",
+      "modelCodeHash": "502651cc1bf44916fc11ee232a6c75d681d649d9160ec336c6d6f4254a91a4db",
+      "definitionHash": "4459fa751a448b30574fddd748f39aa73c37c7e6496ca262773c2952dcf4641e",
+      "model": {
+        "family": "single_poll_race_weighted",
+        "races": 185,
+        "pollsterRaceObservations": 491,
+        "cycles": [
+          1998,
+          2000,
+          2002,
+          2004,
+          2006,
+          2008,
+          2010,
+          2012,
+          2014,
+          2016,
+          2018,
+          2020,
+          2022
+        ],
+        "trainedThroughYear": 2022,
+        "biasPoints": 0.18212801957426952,
+        "standardDeviationPoints": 7.920555277574166,
+        "distribution": "fixed_t4",
+        "effectiveUnit": "equal_race_weight_with_individual_poll_dispersion",
+        "omittedCycle": null,
+        "historicalPopulationTransportMeasured": false
+      },
+      "estimates": [
+        {
+          "model": {
+            "family": "single_poll_race_weighted",
+            "races": 185,
+            "pollsterRaceObservations": 491,
+            "cycles": [
+              1998,
+              2000,
+              2002,
+              2004,
+              2006,
+              2008,
+              2010,
+              2012,
+              2014,
+              2016,
+              2018,
+              2020,
+              2022
+            ],
+            "trainedThroughYear": 2022,
+            "biasPoints": 0.18212801957426952,
+            "standardDeviationPoints": 7.920555277574166,
+            "distribution": "fixed_t4",
+            "effectiveUnit": "equal_race_weight_with_individual_poll_dispersion",
+            "omittedCycle": null,
+            "historicalPopulationTransportMeasured": false
+          },
+          "probability": 0.6416631667877017
+        },
+        {
+          "model": {
+            "family": "single_poll_race_weighted",
+            "races": 176,
+            "pollsterRaceObservations": 476,
+            "cycles": [
+              2000,
+              2002,
+              2004,
+              2006,
+              2008,
+              2010,
+              2012,
+              2014,
+              2016,
+              2018,
+              2020,
+              2022
+            ],
+            "trainedThroughYear": 2022,
+            "biasPoints": -0.046884402134067395,
+            "standardDeviationPoints": 7.9097731692051445,
+            "distribution": "fixed_t4",
+            "effectiveUnit": "equal_race_weight_with_individual_poll_dispersion",
+            "omittedCycle": 1998,
+            "historicalPopulationTransportMeasured": false
+          },
+          "probability": 0.6277277337562978
+        },
+        {
+          "model": {
+            "family": "single_poll_race_weighted",
+            "races": 162,
+            "pollsterRaceObservations": 447,
+            "cycles": [
+              1998,
+              2002,
+              2004,
+              2006,
+              2008,
+              2010,
+              2012,
+              2014,
+              2016,
+              2018,
+              2020,
+              2022
+            ],
+            "trainedThroughYear": 2022,
+            "biasPoints": 0.12877565613567316,
+            "standardDeviationPoints": 7.7941747413019735,
+            "distribution": "fixed_t4",
+            "effectiveUnit": "equal_race_weight_with_individual_poll_dispersion",
+            "omittedCycle": 2000,
+            "historicalPopulationTransportMeasured": false
+          },
+          "probability": 0.6405132881707075
+        },
+        {
+          "model": {
+            "family": "single_poll_race_weighted",
+            "races": 171,
+            "pollsterRaceObservations": 468,
+            "cycles": [
+              1998,
+              2000,
+              2004,
+              2006,
+              2008,
+              2010,
+              2012,
+              2014,
+              2016,
+              2018,
+              2020,
+              2022
+            ],
+            "trainedThroughYear": 2022,
+            "biasPoints": -0.0686041886519554,
+            "standardDeviationPoints": 7.88649681677212,
+            "distribution": "fixed_t4",
+            "effectiveUnit": "equal_race_weight_with_individual_poll_dispersion",
+            "omittedCycle": 2002,
+            "historicalPopulationTransportMeasured": false
+          },
+          "probability": 0.6267307524244422
+        },
+        {
+          "model": {
+            "family": "single_poll_race_weighted",
+            "races": 170,
+            "pollsterRaceObservations": 466,
+            "cycles": [
+              1998,
+              2000,
+              2002,
+              2006,
+              2008,
+              2010,
+              2012,
+              2014,
+              2016,
+              2018,
+              2020,
+              2022
+            ],
+            "trainedThroughYear": 2022,
+            "biasPoints": 0.19864318724207167,
+            "standardDeviationPoints": 7.819706216386959,
+            "distribution": "fixed_t4",
+            "effectiveUnit": "equal_race_weight_with_individual_poll_dispersion",
+            "omittedCycle": 2004,
+            "historicalPopulationTransportMeasured": false
+          },
+          "probability": 0.6443952220171959
+        },
+        {
+          "model": {
+            "family": "single_poll_race_weighted",
+            "races": 171,
+            "pollsterRaceObservations": 450,
+            "cycles": [
+              1998,
+              2000,
+              2002,
+              2004,
+              2008,
+              2010,
+              2012,
+              2014,
+              2016,
+              2018,
+              2020,
+              2022
+            ],
+            "trainedThroughYear": 2022,
+            "biasPoints": -0.040064061669217575,
+            "standardDeviationPoints": 7.9336816403240835,
+            "distribution": "fixed_t4",
+            "effectiveUnit": "equal_race_weight_with_individual_poll_dispersion",
+            "omittedCycle": 2006,
+            "historicalPopulationTransportMeasured": false
+          },
+          "probability": 0.6277845804936953
+        },
+        {
+          "model": {
+            "family": "single_poll_race_weighted",
+            "races": 169,
+            "pollsterRaceObservations": 454,
+            "cycles": [
+              1998,
+              2000,
+              2002,
+              2004,
+              2006,
+              2010,
+              2012,
+              2014,
+              2016,
+              2018,
+              2020,
+              2022
+            ],
+            "trainedThroughYear": 2022,
+            "biasPoints": -0.13624665870229707,
+            "standardDeviationPoints": 7.925170646116015,
+            "distribution": "fixed_t4",
+            "effectiveUnit": "equal_race_weight_with_individual_poll_dispersion",
+            "omittedCycle": 2008,
+            "historicalPopulationTransportMeasured": false
+          },
+          "probability": 0.6219242452784571
+        },
+        {
+          "model": {
+            "family": "single_poll_race_weighted",
+            "races": 171,
+            "pollsterRaceObservations": 457,
+            "cycles": [
+              1998,
+              2000,
+              2002,
+              2004,
+              2006,
+              2008,
+              2012,
+              2014,
+              2016,
+              2018,
+              2020,
+              2022
+            ],
+            "trainedThroughYear": 2022,
+            "biasPoints": 0.2129686767218433,
+            "standardDeviationPoints": 7.963541089853738,
+            "distribution": "fixed_t4",
+            "effectiveUnit": "equal_race_weight_with_individual_poll_dispersion",
+            "omittedCycle": 2010,
+            "historicalPopulationTransportMeasured": false
+          },
+          "probability": 0.6428149246301693
+        },
+        {
+          "model": {
+            "family": "single_poll_race_weighted",
+            "races": 167,
+            "pollsterRaceObservations": 415,
+            "cycles": [
+              1998,
+              2000,
+              2002,
+              2004,
+              2006,
+              2008,
+              2010,
+              2014,
+              2016,
+              2018,
+              2020,
+              2022
+            ],
+            "trainedThroughYear": 2022,
+            "biasPoints": -0.14233475056948014,
+            "standardDeviationPoints": 8.009571229441192,
+            "distribution": "fixed_t4",
+            "effectiveUnit": "equal_race_weight_with_individual_poll_dispersion",
+            "omittedCycle": 2012,
+            "historicalPopulationTransportMeasured": false
+          },
+          "probability": 0.6203186604589442
+        },
+        {
+          "model": {
+            "family": "single_poll_race_weighted",
+            "races": 173,
+            "pollsterRaceObservations": 455,
+            "cycles": [
+              1998,
+              2000,
+              2002,
+              2004,
+              2006,
+              2008,
+              2010,
+              2012,
+              2016,
+              2018,
+              2020,
+              2022
+            ],
+            "trainedThroughYear": 2022,
+            "biasPoints": 0.44584403469804,
+            "standardDeviationPoints": 7.90291376568596,
+            "distribution": "fixed_t4",
+            "effectiveUnit": "equal_race_weight_with_individual_poll_dispersion",
+            "omittedCycle": 2014,
+            "historicalPopulationTransportMeasured": false
+          },
+          "probability": 0.6578929595959032
+        },
+        {
+          "model": {
+            "family": "single_poll_race_weighted",
+            "races": 169,
+            "pollsterRaceObservations": 443,
+            "cycles": [
+              1998,
+              2000,
+              2002,
+              2004,
+              2006,
+              2008,
+              2010,
+              2012,
+              2014,
+              2018,
+              2020,
+              2022
+            ],
+            "trainedThroughYear": 2022,
+            "biasPoints": 0.422817326329335,
+            "standardDeviationPoints": 7.945891212430978,
+            "distribution": "fixed_t4",
+            "effectiveUnit": "equal_race_weight_with_individual_poll_dispersion",
+            "omittedCycle": 2016,
+            "historicalPopulationTransportMeasured": false
+          },
+          "probability": 0.6557323285037451
+        },
+        {
+          "model": {
+            "family": "single_poll_race_weighted",
+            "races": 169,
+            "pollsterRaceObservations": 438,
+            "cycles": [
+              1998,
+              2000,
+              2002,
+              2004,
+              2006,
+              2008,
+              2010,
+              2012,
+              2014,
+              2016,
+              2020,
+              2022
+            ],
+            "trainedThroughYear": 2022,
+            "biasPoints": 0.4850168263723445,
+            "standardDeviationPoints": 8.06606671245609,
+            "distribution": "fixed_t4",
+            "effectiveUnit": "equal_race_weight_with_individual_poll_dispersion",
+            "omittedCycle": 2018,
+            "historicalPopulationTransportMeasured": false
+          },
+          "probability": 0.6572304427647878
+        },
+        {
+          "model": {
+            "family": "single_poll_race_weighted",
+            "races": 179,
+            "pollsterRaceObservations": 473,
+            "cycles": [
+              1998,
+              2000,
+              2002,
+              2004,
+              2006,
+              2008,
+              2010,
+              2012,
+              2014,
+              2016,
+              2018,
+              2022
+            ],
+            "trainedThroughYear": 2022,
+            "biasPoints": 0.38520678810950126,
+            "standardDeviationPoints": 7.944706518988823,
+            "distribution": "fixed_t4",
+            "effectiveUnit": "equal_race_weight_with_individual_poll_dispersion",
+            "omittedCycle": 2020,
+            "historicalPopulationTransportMeasured": false
+          },
+          "probability": 0.6535090647937438
+        },
+        {
+          "model": {
+            "family": "single_poll_race_weighted",
+            "races": 173,
+            "pollsterRaceObservations": 450,
+            "cycles": [
+              1998,
+              2000,
+              2002,
+              2004,
+              2006,
+              2008,
+              2010,
+              2012,
+              2014,
+              2016,
+              2018,
+              2020
+            ],
+            "trainedThroughYear": 2020,
+            "biasPoints": 0.5051911617091018,
+            "standardDeviationPoints": 7.811890853839567,
+            "distribution": "fixed_t4",
+            "effectiveUnit": "equal_race_weight_with_individual_poll_dispersion",
+            "omittedCycle": 2022,
+            "historicalPopulationTransportMeasured": false
+          },
+          "probability": 0.6631565263185224
+        }
+      ],
+      "poll": {
+        "republican": 0.43,
+        "democratic": 0.45,
+        "other": 0.04,
+        "unallocated": 0.08,
+        "unallocatedMeaning": "Publisher reports4% Libertarian and8% undecided.",
+        "fieldStartDate": "2026-09-15",
+        "fieldEndDate": "2026-09-16",
+        "fieldEndLatestAt": "2026-09-17T12:00:00.000Z",
+        "publicationDate": "2026-09-18",
+        "population": "likely_voters",
+        "sampleSize": 750,
+        "publisherCredibilityInterval": 0.036,
+        "publisherIntervalUsedAsMarginSd": false,
+        "observedAt": "2026-10-05T11:27:00.683Z",
+        "ballotVerified": true,
+        "publicationTimeUtc": null,
+        "methodology": "Weighted mixed text-to-web/voter-file and panel sample; respondent weights/effective sample size unavailable."
+      },
+      "marginPoints": 2.0000000000000018,
+      "componentClocks": {
+        "fieldEndDate": "2026-09-16",
+        "originalPollObservedAt": "2026-10-05T11:27:00.683Z",
+        "modelTrainedThroughYear": 2022,
+        "rawArchiveObservedAt": "2026-10-05T11:55:18.361Z",
+        "assessmentAt": "2026-10-05T12:04:36.794Z"
+      },
+      "research": {
+        "schemaVersion": 1,
+        "id": "kansas-democratic-empirical-poll-20261005-v1",
+        "marketId": "356",
+        "exchangeId": "1045",
+        "side": "YES",
+        "predicateHash": "39acdb6801c5f8f10f675de9fa3f3aa997c5c20788e6790e1d3d21eba8e76156",
+        "recordedAt": "2026-10-05T12:04:36.794Z",
+        "sourceAt": "2026-10-05T12:04:36.794Z",
+        "expiresAt": "2026-10-05T18:04:36.794Z",
+        "lower": "0.600319",
+        "upper": "0.643157",
+        "method": "subjective_range",
+        "settlementReviewed": true,
+        "flags": [],
+        "sources": [
+          {
+            "url": "https://emersoncollegepolling.com/kansas-2026/",
+            "contentHash": "4da5aa879c29f20ed9bbed7c5feb6e8b4f2bb34b044a27e9667652286f3c47af"
+          },
+          {
+            "url": "https://meadeco.org/367/2026-General-Election-Information",
+            "contentHash": "9ee9ba9fb36a4c429082eee6a5d2085988efb334d5eea5748b584961f940c22c"
+          },
+          {
+            "url": "https://raw.githubusercontent.com/fivethirtyeight/data/master/pollster-ratings/raw_polls.csv",
+            "contentHash": "9f0b185506e59117c150fb988e73b612346effe8e3a8f0d90fdafcad07f54756"
+          }
+        ]
+      },
+      "rootHash": "39acdb6801c5f8f10f675de9fa3f3aa997c5c20788e6790e1d3d21eba8e76156",
+      "ordinaryRange": [
+        0.6003186604589442,
+        0.6431565263185224
+      ],
+      "turnoutOrPollingShiftStress": [
+        {
+          "shiftPoints": -3,
+          "valuation": 0.4254803562545263
+        },
+        {
+          "shiftPoints": 0,
+          "valuation": 0.6216631667877017
+        },
+        {
+          "shiftPoints": 3,
+          "valuation": 0.7764024260939418
+        }
+      ],
+      "limitations": [
+        "Cycle-deletion parameter sensitivity is not a confidence bound. A fixed2-point haircut is a judgment reserve.",
+        "Historical individual-poll errors give one race equal weight and include within-race poll dispersion.",
+        "The archive lacks population labels and original release times; specific likely-voter transport is not empirically established.",
+        "Current Kansas evidence is one September15–16 poll, not a fresh polling consensus.",
+        "Expected settlement value does not predict a profitable short-term exit or guarantee a positive paper return.",
+        "Third-party/undecided dynamics and turnout shocks remain possible; the stress family may contradict the ordinary estimate."
+      ],
+      "executionAuthority": false,
+      "competitionOrders": 0,
+      "profitabilityEstablished": false
+    }
+  ]
+}

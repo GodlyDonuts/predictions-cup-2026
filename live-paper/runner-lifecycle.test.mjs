@@ -1,5 +1,6 @@
 import {mergePaperReadFocus} from "./bulk-dip-read-focus.mjs";
 import {prioritizeProductionReads} from './production-read-priority.mjs';
+import {mergeProbabilityReadFocus} from './probability-read-focus.mjs';
 import {prioritizeAnchorReads} from "./bid-anchor-read-focus.mjs";
 import test from 'node:test';
 import {validateProductionActivation} from '../execution/production-activation.mjs';
@@ -44,7 +45,7 @@ const source=fs.readFileSync(path.join(root,'runner.mjs'),'utf8');
 
 // Only module wiring is replaced. The real runner body executes with an in-memory
 // journal/filesystem, synthetic API/key, fake clock/server/process and no network.
-async function run(stopAt,{dipEnabled=false,officialSync=false,invalidBasket=false,basketEnabled=false,contractEvidenceEnabled=false,samplingEnabled=false,riskUnavailable=false,comparisonHeld=[],comparisonPending=[],maxCycles=2,requestMs=6000,officialRiskSchedule=null,marketSweepEnabled=false,historyCandidates=[],paperPackageFocus=false,retiredComparison=false,edgeObservation=false,nativeHeld=[],nativeCache=false,probabilityHeld=[],screenStartupFailure=false,nativeIntent=false,nativePending=[],quoteHeld=[],quotePending=[]}={}){
+async function run(stopAt,{dipEnabled=false,officialSync=false,invalidBasket=false,basketEnabled=false,contractEvidenceEnabled=false,samplingEnabled=false,riskUnavailable=false,comparisonHeld=[],comparisonPending=[],maxCycles=2,requestMs=6000,officialRiskSchedule=null,marketSweepEnabled=false,historyCandidates=[],paperPackageFocus=false,retiredComparison=false,edgeObservation=false,nativeHeld=[],nativeCache=false,probabilityHeld=[],probabilityCompanion=[],screenStartupFailure=false,nativeIntent=false,nativePending=[],quoteHeld=[],quotePending=[]}={}){
   let startupFailures=0;
   let now=Date.parse('2026-10-02T02:00:00Z'),cycle=0,stopped=false,triggered=false;
   const commits=[],memory=new Map(),listeners={},requests=[],publications=[],claimWrites=[],pairReadClaims=[];
@@ -151,7 +152,7 @@ async function run(stopAt,{dipEnabled=false,officialSync=false,invalidBasket=fal
   const bindings={prioritizeProductionReads,mergePaperReadFocus,readBulkReadFocus:()=>null,prioritizeAnchorReads,readAnchorReadFocus:()=>null,prioritizeEdgeTrials,planEdgeObservation,readEdgeObservationFocus:()=>edgeObservation?{bankHash:'a'.repeat(64)}:null,paperExperimentRetired:(dir,marker)=>paperExperimentRetired(dir,marker,{statSync(file){if(!memory.has(file))throw Error();return {isFile:()=>true,size:Buffer.byteLength(memory.get(file))};},readFileSync:file=>memory.get(file)}),readMarketHistoryInputs:()=>({available:historyCandidates.length>0,candidateMarketIds:historyCandidates}),collectMarketSweep,loadMarketSweep:()=>marketSweepEnabled?{cycleIntervalMs:10000}:null,createMarketPricePublication:()=>({publish(snapshot){if(stopAt==='price-recording-failure')throw Error('Synthetic price durability failure');pricePublications.push(snapshot);},status:()=>({sequence:pricePublications.length})}),collectionCycleWait,validateProductionActivation,productionHandoffCurrent:()=>true,SettlementCompetitionController:class{constructor(){this.state={intents:{}};this.transport={authorizeRequest:()=>false};}eligibleMarketIds(){return [];}managedMarketIds(){return officialRiskSchedule?.[Math.max(0,cycle-1)]||[];}async beforeBooks(){officialCalls.push({kind:"reconcile",cycle});}async onBook(){officialCalls.push({kind:"book",cycle});}failure(e){throw e;}close(){}},...model,...breadth,...depth,...scheduler,planComparisonSampling,recordComparisonAttempt,createComparisonRiskSource:()=>({poll:()=>({configured:samplingEnabled,available:!riskUnavailable,cohort:'fixture',bankHash:'a'.repeat(64),heldMarketIds:comparisonHeld,pendingMarketIds:comparisonPending}),close(){}}),collectionInputs,shockCollectionRisk,networkInterval,loadNetworkBudget:file=>mockfs.existsSync(file)?validateNetworkBudget(JSON.parse(mockfs.readFileSync(file))):null,connectTournament,validateTiming,timingSummary,historyEndpoint,normalizeHistory,validateDipPolicy,workerHealth:(report,at=now)=>workerHealth(report,at),baselineView,accountPositions,accountOrders,accountFills,accountPnl,accountView,fs:mockfs,path,http:{createServer:()=>({once(){},listen(p,h,f){f();},close(){}})},randomUUID,fileURLToPath,
     performance:{now:()=>now},collectorNativeJournalConfig:()=>null,collectorNativePublicationConfig:()=>null,
     openProductionMetadata:()=>({pending:()=>null,authorizes:()=>false}),createBaalReadAttention:()=>({reserve:n=>({historyReads:n,tapeReads:0}),status:()=>({executionAuthority:false})}),openNoMakerHost:()=>null,openBaalPairHost:()=>null,
-    readProbabilityReadFocus:()=>probabilityHeld.length?{markets:probabilityHeld.map(marketId=>({marketId,phase:'held'})),ownedRiskReads:true}:null,probabilityAccountEligibility:()=>null,
+    mergeProbabilityReadFocus,readProbabilityReadFocus:(_dir,_universe,_now,activeFile)=>activeFile?(probabilityCompanion.length?{bankHash:'b'.repeat(64),markets:probabilityCompanion.map(marketId=>({marketId,phase:'depth_required'})),executionAuthority:false}:null):(probabilityHeld.length?{bankHash:'a'.repeat(64),markets:probabilityHeld.map(marketId=>({marketId,phase:'held'})),ownedRiskReads:true,executionAuthority:false}:null),probabilityAccountEligibility:()=>null,
     planNativeDiscoveryBooks,recordNativeDiscoveryAttempt,
     openCollectorMarketScreen:()=>{if(screenStartupFailure)throw Error('Injected screen source failure');return{async initialize(){},onPublished(){},projection:()=>({available:true,candidateMarketIds:historyCandidates,executionAuthority:false,source:{bytes:1,sequence:1,hash:'a'.repeat(64)}}),close(){}};},
     openNativeDipHost:()=>nativeHeld.length?{status:()=>({heldMarketIds:nativeHeld,status:'running',executionAuthority:false}),kick(){},async close(){}}:null,
@@ -180,6 +181,14 @@ test('real runner captures four scoped metadata reads once before cycles and gra
   assert.equal(evidence[0].event.evidence.orderEligible,false);
   assert.equal(r.requests.filter(p=>/^\/markets\/(381|382)(\/nodes)?\?tournamentId=/.test(p)).length,4);
   assert.equal(r.commits.filter(x=>x.event.type==='cycle').length,2);
+});
+test('real collector shares its existing slots between prior held paper risk and new empirical research',async()=>{
+ const r=await run(null,{dipEnabled:true,nativeCache:true,probabilityHeld:['297'],probabilityCompanion:['356'],maxCycles:2});
+ assert.equal(r.process.exitCode,0);const cycles=r.commits.filter(c=>c.event.type==='cycle');assert.equal(cycles.length,2);
+ for(const c of cycles){const books=[...(c.event.sourceSnapshots||[]),...(c.event.supplementalDepth||[])].filter(s=>s.endpoint?.includes('/orderbook?'));
+  assert.equal(books.length,4);assert(books.some(s=>s.endpoint.startsWith('/markets/297/orderbook?')));assert(books.some(s=>s.endpoint.startsWith('/markets/356/orderbook?')));
+ }
+ assert(r.requests.every(endpoint=>!endpoint.includes('/orders')||endpoint.startsWith('/me/')));
 });
 test('metadata outage stays non-authoritative and STOP prevents further startup reads',async()=>{
   for(const stopAt of ['contract-outage','contract-stop']){

@@ -1,0 +1,157 @@
+{
+  "schemaVersion": 1,
+  "id": "empirical-poll-profit-strategy-20261005-v1",
+  "at": "2026-10-05T12:19:39.973Z",
+  "previousGoalTurnClassification": "progress",
+  "requiredGoalWorkRemaining": true,
+  "humanPriority": "Profitability first; production follows actual strategy economics, then continuous improvement.",
+  "currentStrategy": {
+    "cohort": "calibrated-kansas-poll-20261005-v1",
+    "bankHash": "3e57289fda56eb58a833fbcf62c8c488064b3e84c0ab0642ece81f6b8549fcce",
+    "cutoff": "2026-10-05T12:06:47.241Z",
+    "marketId": "356",
+    "exchangeId": "1045",
+    "modelRaces": 185,
+    "individualPollObservations": 491,
+    "errorStandardDeviationPoints": 7.920555277574166,
+    "ordinaryValuationRange": [
+      0.6003186604589442,
+      0.6431565263185224
+    ],
+    "rangeIsConfidenceBound": false
+  },
+  "paper": {
+    "observedAt": "2026-10-05T12:19:39.499Z",
+    "sourceSequence": 21923,
+    "counts": {
+      "lower_bound_edge": 16,
+      "source_boundary": 2
+    },
+    "wallets": {
+      "1000": {
+        "fills": 1,
+        "closedTrades": 0,
+        "realizedPnl": "0.000000",
+        "liquidationPnl": "-0.015000",
+        "fees": "0.000000",
+        "positions": [
+          {
+            "instrument": "1045:YES",
+            "quantity": 1,
+            "cost": "0.345000"
+          }
+        ],
+        "pending": []
+      },
+      "3000": {
+        "fills": 1,
+        "closedTrades": 0,
+        "realizedPnl": "0.000000",
+        "liquidationPnl": "-0.015000",
+        "fees": "0.000000",
+        "positions": [
+          {
+            "instrument": "1045:YES",
+            "quantity": 1,
+            "cost": "0.345000"
+          }
+        ],
+        "pending": []
+      }
+    },
+    "networkRequests": 0,
+    "competitionOrders": 0
+  },
+  "previousPaper": {
+    "cohort": "source-probability-native-20261004-v3",
+    "bankHash": "3e445d6b7f436cab79245ed588efa627734d8d2a4a6a6b788ac2873582ed4ef2",
+    "observedAt": "2026-10-05T12:19:39.396Z",
+    "wallets": {
+      "1000": {
+        "fills": 3,
+        "closedTrades": 1,
+        "realizedPnl": "0.020000",
+        "liquidationPnl": "0.025000",
+        "fees": "0.000000",
+        "positions": [
+          {
+            "instrument": "986:YES",
+            "quantity": 1,
+            "cost": "0.895000"
+          }
+        ],
+        "pending": []
+      },
+      "3000": {
+        "fills": 3,
+        "closedTrades": 1,
+        "realizedPnl": "0.020000",
+        "liquidationPnl": "0.025000",
+        "fees": "0.000000",
+        "positions": [
+          {
+            "instrument": "986:YES",
+            "quantity": 1,
+            "cost": "0.895000"
+          }
+        ],
+        "pending": []
+      }
+    },
+    "preserved": true
+  },
+  "services": {
+    "collector": 6904,
+    "paper": 8236,
+    "dashboard": 20092,
+    "persistent": 3,
+    "additional": 0,
+    "collectorReportedAt": "2026-10-05T12:19:38.407Z",
+    "cycles": 19,
+    "errors": 0,
+    "sharedPaperWorkerVerified": true,
+    "focus": {
+      "bankHash": "6aa2a79bf0dc70948f0cfd32715dca3f25b1b91438134acf5c43e221f8841e57",
+      "markets": [
+        {
+          "marketId": "297",
+          "phase": "held"
+        },
+        {
+          "marketId": "356",
+          "phase": "held"
+        }
+      ],
+      "ownedRiskReads": true,
+      "executionAuthority": false
+    }
+  },
+  "official": {
+    "runId": "sig-pilot-settlement-20261004-human",
+    "bankHash": "a948c395b14992a019e2180133604b8ee84dd78a9e94d08781efd18fbefc0128",
+    "entryExpiresAt": "2026-10-05T03:59:22.131Z",
+    "status": "entry_window_closed",
+    "ordersSubmitted": 0,
+    "realizedPnl": "0.000000",
+    "activationChanged": false
+  },
+  "checks": {
+    "runnerLifecyclePassed": 53,
+    "focusAndCalibrationPassed": 10,
+    "baselineReproduced": true,
+    "sourceGitBlobsVerified": true
+  },
+  "limits": [
+    "Historical outcome scores do not include executable market returns.",
+    "The first new paper trade is still open; liquidation P&L includes spread/adverse-tick costs and is not realized profit.",
+    "Two latency wallets share correlated data and opportunities.",
+    "The polling archive lacks population labels and original publication times; historical coverage is conditional on eventual top-two identity.",
+    "The original official pilot is expired and its source bank has not changed."
+  ],
+  "next": [
+    "Observe actual subsequent exit receipts and net P&L for this frozen strategy; preserve negative results and open risk.",
+    "Improve the next named strategy only when measured forecast, execution or economic evidence identifies a defect.",
+    "Deploy the same trading policy under the human-authorized bounded workflow when actual net economics support it, retaining fresh reconciliation and lifetime attribution."
+  ],
+  "profitabilityEstablished": false
+}

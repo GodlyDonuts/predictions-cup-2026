@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "id": "primary-poll-calibration-sources-20261005-v1",
+  "captures": [
+    {
+      "file": "raw_polls.csv",
+      "url": "https://raw.githubusercontent.com/fivethirtyeight/data/master/pollster-ratings/raw_polls.csv",
+      "observedAt": "2026-10-05T11:55:18.361Z",
+      "bytes": 4961378,
+      "sha256": "9f0b185506e59117c150fb988e73b612346effe8e3a8f0d90fdafcad07f54756",
+      "gitBlob": "08735ea503ad64c67cfa285fd75c0a270fdca245",
+      "contentType": "text/plain; charset=utf-8"
+    },
+    {
+      "file": "codebook.md",
+      "url": "https://raw.githubusercontent.com/fivethirtyeight/data/master/pollster-ratings/README.md",
+      "observedAt": "2026-10-05T11:55:18.478Z",
+      "bytes": 8311,
+      "sha256": "10e7554d27e241a96f6c9f00de21c5ac00d0229e58808a79f30649824f56ac5b",
+      "gitBlob": "78b95c4a883383322bf4c4b3f88d69ee4c1e2e48",
+      "contentType": "text/plain; charset=utf-8"
+    },
+    {
+      "file": "marist-iowa-tables.pdf",
+      "url": "https://maristpoll.marist.edu/wp-content/uploads/2026/09/Marist-Poll-IA-NOS-and-Tables_202609211631-1.pdf",
+      "observedAt": "2026-10-05T11:55:18.651Z",
+      "bytes": 856820,
+      "sha256": "371f20852a7df228dbbeeead8aaba2da2d1e209b270db034dd467611b08d1681",
+      "gitBlob": null,
+      "contentType": "application/pdf"
+    }
+  ],
+  "rawSourcesRestrictedLocally": true,
+  "accountApiRequests": 0
+}

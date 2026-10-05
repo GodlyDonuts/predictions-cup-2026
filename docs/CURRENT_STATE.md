@@ -1,3 +1,11 @@
+# October5: one empirical polling strategy now trading in paper
+
+Following the human's instruction to focus exclusively on profitability, one separately frozen Kansas paper cohort is active: `calibrated-kansas-poll-20261005-v1`, market356 YES/exchange1045. It uses independently matched historical polling/final outcomes, individual-poll dispersion with equal total weight per race, and the original September15–16 Emerson poll and verified ballot. Model construction and chronology are documented in [poll calibration](../research/poll-calibration-v1/README.md). Estimated settlement value is not realized trading profit.
+
+At12:16UTC both latency wallets had one local counterfactual fill at0.345, no closed trades, zero realized P&L, and−0.015 depth-aware liquidation P&L after adverse ticks and spread. All fees are zero. These wallets share one opportunity and are not independent samples. The earlier frozen wallet remains separately accounted, with its1-share West Virginia position and historical+0.020 realized result intact. No contest order or entry-window extension occurred. The existing single paper worker hosts both cohorts; read hints reuse the same collector slots and retain held inventory first. Exactly three persistent services remain.
+
+Current work is strategy P&L, subsequent executable receipts and necessary fill/exit correctness. Broad engineering, repeated parameter banks and cosmetic dashboard work are not the current task. The original official pilot remains expired. Deployment must follow evidence from the same trading policy rather than substituting retrospective directional accuracy or an estimated settlement edge for actual net performance.
+
 # October5: entry window closed; recovery and new polling assessments
 
 At 11:19 UTC the three previously recorded service PIDs were absent. The last saved collector report was October4 23:43:43 UTC; its `running` field was not current process evidence. The cause of the disappearance remains unresolved. The original pilot entry window expired October5 03:59:22.131 UTC. Services were recovered without extending that window or changing the frozen production bank, attributed inventory or journals.
