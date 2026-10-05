@@ -1,0 +1,107 @@
+{
+  "schemaVersion": 1,
+  "at": "2026-10-05T18:36:31.204Z",
+  "persistentPids": [
+    8616,
+    3976,
+    20092
+  ],
+  "liveWallets": [
+    {
+      "type": "bulk",
+      "updatedAt": "2026-10-05T18:36:29.556Z",
+      "failed": false,
+      "bankHash": "d9e27c27bed40738f7526fdeb256633398dea60eeea42457c5dc40315ca3b2cf",
+      "wallets": [
+        {
+          "lat": "COUPLED",
+          "realizedPnl": "0.000000",
+          "estimatedLiquidationPnl": "0.000000",
+          "closedTrades": 0,
+          "fills": 0,
+          "reserved": "0.000000",
+          "positions": 0
+        }
+      ]
+    },
+    {
+      "type": "spread",
+      "updatedAt": "2026-10-05T17:53:49.516Z",
+      "failed": false,
+      "bankHash": "3ab468b58df77b1b4996073c416210da38926f5be5ca7b707d3f2607def2f518",
+      "wallets": [
+        {
+          "lat": "COUPLED",
+          "realizedPnl": "-0.020000",
+          "estimatedLiquidationPnl": "-0.020000",
+          "closedTrades": 1,
+          "fills": 2,
+          "reserved": "0.000000",
+          "positions": 0
+        }
+      ]
+    },
+    {
+      "type": "kansas",
+      "updatedAt": "2026-10-05T18:36:30.979Z",
+      "failed": false,
+      "bankHash": "3e57289fda56eb58a833fbcf62c8c488064b3e84c0ab0642ece81f6b8549fcce",
+      "wallets": [
+        {
+          "lat": "1000",
+          "realizedPnl": "0.000000",
+          "estimatedLiquidationPnl": "0.000000",
+          "closedTrades": 0,
+          "fills": 1,
+          "positions": 1
+        },
+        {
+          "lat": "3000",
+          "realizedPnl": "0.000000",
+          "estimatedLiquidationPnl": "0.000000",
+          "closedTrades": 0,
+          "fills": 1,
+          "positions": 1
+        }
+      ]
+    },
+    {
+      "type": "research",
+      "updatedAt": "2026-10-05T18:36:30.804Z",
+      "failed": false,
+      "bankHash": "3e445d6b7f436cab79245ed588efa627734d8d2a4a6a6b788ac2873582ed4ef2",
+      "wallets": [
+        {
+          "lat": "1000",
+          "realizedPnl": "0.020000",
+          "estimatedLiquidationPnl": "0.030000",
+          "closedTrades": 1,
+          "fills": 3,
+          "positions": 1
+        },
+        {
+          "lat": "3000",
+          "realizedPnl": "0.020000",
+          "estimatedLiquidationPnl": "0.030000",
+          "closedTrades": 1,
+          "fills": 3,
+          "positions": 1
+        }
+      ]
+    }
+  ],
+  "official": {
+    "status": "entry_window_closed",
+    "ordersSubmitted": 0,
+    "dispatchAttempts": 0,
+    "unconfirmedIntents": 0,
+    "realizedPnl": "0.000000"
+  },
+  "realtime": {
+    "at": "2026-10-05T18:36:30.278Z",
+    "lastCode": null,
+    "recoveryAttempts": 148,
+    "recoverySuccesses": 147
+  },
+  "profitabilityEstablished": false
+}

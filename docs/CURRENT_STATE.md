@@ -1,3 +1,7 @@
+# October5: fill-conditional models and funded quote replay
+
+Quote-placement features, separate arrival/filled-value models, and an exact shared-capital replay now expose adverse-selection losses and unresolved quote liabilities. Both join-price and inside-price selectors choose zero later trades; exact-exit sensitivity reduces losses but leaves them negative. The funded inside-price development control realized−0.040 while still holding0.925 cost and2.060 unresolved reservations. No profitable strategy or official activation is claimed. See [measured results](QUOTE_OUTCOME_RESULTS.md).
+
 # October5: fresh execution receipts restored; longer horizons show no qualified edge
 
 A depth200 substitution in the last collector change invalidated the frozen depth20 publisher. That regression is corrected and checked against the actual native publisher. At17:54UTC collector8616, paper3976 and dashboard20092 retained the original banks/accounting and one account queue; the overdue spread position closed at−0.020paper SUSQies. Kansas showed+0.005estimated liquidation P&L and the older research wallet+0.025including its prior+0.020realized gain; correlated latency copies must not be summed. Neither the bulk wallet nor the supported5/30-minute forecasts established new profitable execution. The fixed two-hour purged comparison has insufficient chronology. No contest activation was extended or order submitted. See [the measured results and regression recovery](LONGER_HORIZON_RESULTS.md).

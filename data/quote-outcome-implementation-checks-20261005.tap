@@ -1,0 +1,36 @@
+✔ paired fills net immediately into one exact funded cash balance without double counting (4.058ms)
+✔ one-sided adverse liquidation closes the correct basis and releases only its unused hedge reservation (0.4438ms)
+✔ censored zero-known-fill paths retain cash reservations and cannot appear as zero-profit completed trades (0.2774ms)
+✔ censoring after a known purchase preserves its basis and unresolved opposite-side liability (0.5271ms)
+✔ capital is shared across markets; neither repeated intents nor a fourth market receive a fresh wallet (0.2627ms)
+✔ a model rejection or a decision before the cutoff commits no capital (0.1638ms)
+✔ actual Python predictions match the JS replay selector across both frozen cost cases (37.4449ms)
+✔ malformed selector thresholds, normalization and causal feature bindings fail closed (4.8293ms)
+✔ latency label uses independent later entry depth, never the decision ask (4.9531ms)
+✔ future feature changes cannot alter previously frozen prediction features (0.623ms)
+✔ a delivery gap removes outstanding labels instead of joining discontinuous endpoints (0.6117ms)
+✔ an entry or exit book outside the capture tolerance never creates a supported label (0.2886ms)
+✔ endpoint research preserves an observed entry across a gap and flags the missing path (0.4363ms)
+✔ gap research still censors decisions without a separately observed entry (0.2388ms)
+✔ endpoint research cannot carry an unresolved position through settlement (0.2583ms)
+✔ a new capture can provide the independent endpoint but clears its feature history (0.2133ms)
+✔ receipt time after the target cannot relabel a server book from before the target (1.0798ms)
+✔ expired pending endpoints are censored at the next boundary (0.282ms)
+✔ strict through prints complete a coupled diagnostic without counting touch or pre-activation prints (5.6774ms)
+✔ trade in a book-creating packet cannot fill the quote that packet creates (1.0753ms)
+✔ one-sided markout uses a later book after horizon and latency with adverse exit tick (0.719ms)
+✔ known delivery gaps censor opportunities rather than score an apparent gain (0.5213ms)
+✔ source indices, receipt rollback and reused book version conflict are rejected (0.651ms)
+✔ quote features and provenance stay frozen when a later price change creates its loss (1.447ms)
+✔ a rejected quote cannot claim later trades and receives no funding or outcome callback (0.6054ms)
+✔ trade-flow features include only prints learned before placement (0.5853ms)
+✔ actual feed callbacks fund a paired payout and retain cash conservation (1.6228ms)
+✔ actual feed gap retains the previously funded side and unknown hedge reservation (0.897ms)
+ℹ tests 28
+ℹ suites 0
+ℹ pass 28
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 143.4906

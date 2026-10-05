@@ -1,0 +1,51 @@
+{
+  "cases": 64,
+  "splits": [
+    {
+      "modelFile": "data/realtime-quote-selectors-20261005.json",
+      "policyId": "improve0-latency3000",
+      "counts": [
+        8323,
+        6739,
+        5722
+      ],
+      "purgedBoundariesVerified": true,
+      "separateTrainingNormalizationVerified": true
+    },
+    {
+      "modelFile": "data/realtime-quote-selectors-20261005.json",
+      "policyId": "improve1-latency3000",
+      "counts": [
+        315,
+        137,
+        102
+      ],
+      "purgedBoundariesVerified": true,
+      "separateTrainingNormalizationVerified": true
+    },
+    {
+      "modelFile": "data/realtime-quote-exact-exit-selectors-20261005.json",
+      "policyId": "improve0-latency3000-exact-exit",
+      "counts": [
+        8323,
+        6739,
+        5722
+      ],
+      "purgedBoundariesVerified": true,
+      "separateTrainingNormalizationVerified": true
+    },
+    {
+      "modelFile": "data/realtime-quote-exact-exit-selectors-20261005.json",
+      "policyId": "improve1-latency3000-exact-exit",
+      "counts": [
+        315,
+        137,
+        102
+      ],
+      "purgedBoundariesVerified": true,
+      "separateTrainingNormalizationVerified": true
+    }
+  ],
+  "networkRequests": 0,
+  "competitionOrders": 0
+}

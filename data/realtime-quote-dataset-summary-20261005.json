@@ -1,0 +1,277 @@
+{
+  "schemaVersion": 1,
+  "frozenAt": "2026-10-05T18:12:10.495Z",
+  "mode": "causal_quote_outcome_training_dataset",
+  "features": [
+    "midProbability",
+    "spreadTicks",
+    "imbalance1",
+    "imbalance3",
+    "imbalance10",
+    "imbalance20",
+    "logBidDepth",
+    "logAskDepth",
+    "micropriceDeviationTicks",
+    "return60sTicks",
+    "return300sTicks",
+    "range60sTicks",
+    "range300sTicks",
+    "signedFlow30s",
+    "signedFlow120s",
+    "logVolume30s",
+    "logVolume120s",
+    "tradeCount30s",
+    "lastTradeAgeSeconds",
+    "imbalanceProbabilityInteraction"
+  ],
+  "policies": [
+    {
+      "id": "improve0-latency3000",
+      "improvementTicks": 0,
+      "latencyMs": 3000,
+      "quoteMs": 120000,
+      "markoutMs": 300000,
+      "sampleEveryMs": 30000,
+      "historyMs": 300000,
+      "minimumSpanMs": 240000,
+      "maximumMidpointRangeTicks": 1,
+      "maximumBookAgeMs": 20000,
+      "depthFractionBps": 100,
+      "quantity": 1,
+      "feeTicks": 0,
+      "exitSlippageTicks": 1
+    },
+    {
+      "id": "improve1-latency3000",
+      "improvementTicks": 1,
+      "latencyMs": 3000,
+      "quoteMs": 120000,
+      "markoutMs": 300000,
+      "sampleEveryMs": 30000,
+      "historyMs": 300000,
+      "minimumSpanMs": 240000,
+      "maximumMidpointRangeTicks": 1,
+      "maximumBookAgeMs": 20000,
+      "depthFractionBps": 100,
+      "quantity": 1,
+      "feeTicks": 0,
+      "exitSlippageTicks": 1
+    }
+  ],
+  "sources": [
+    {
+      "file": "realtime-2026-10-04T21-59-57-976Z-090ddd9e-fba9-4ccd-a4c6-4b2e965da655.jsonl",
+      "bytes": 260059529,
+      "sha256": "7e6ef50a472ceee5a86d34c025de0e9446ad28a2ad7f09a3096c8417b12b2c1f",
+      "rows": 66321
+    },
+    {
+      "file": "realtime-2026-10-04T22-35-18-009Z-ca0336fb-d76d-43be-8eee-bbab4c535b09.jsonl",
+      "bytes": 103320421,
+      "sha256": "29f1166f0b5447fb0171100a9ad7588471bf3a3e24f9c370908c7ecf224fcdab",
+      "rows": 26927
+    },
+    {
+      "file": "realtime-2026-10-04T23-05-25-125Z-8f455298-906f-45d1-8ca0-e52e7e7ea681.jsonl",
+      "bytes": 68165312,
+      "sha256": "41984d4bd3bb4ab10329069d90a323633f51da8848a7c2e7b6c156a1372dc992",
+      "rows": 18461
+    },
+    {
+      "file": "realtime-2026-10-04T23-15-32-424Z-0eb22dcc-89f4-40ab-b4bc-df59c2d4b485.jsonl",
+      "bytes": 35291053,
+      "sha256": "b1ca846f7dcc78e37751235ab5a9b3f9b2f2f50a4ea6f66f9dfa75189f3f5062",
+      "rows": 10432
+    },
+    {
+      "file": "realtime-2026-10-04T23-22-00-653Z-3cae69f1-a877-4011-b88b-56d8b9c14d7a.jsonl",
+      "bytes": 201349460,
+      "sha256": "a800477ef1a13870a463068791c386de0dd196f3af029f60deb1a6fde7a11d45",
+      "rows": 50829
+    },
+    {
+      "file": "realtime-2026-10-05T11-22-10-169Z-e862d11d-2572-4760-8ecb-84591c79a89d.jsonl",
+      "bytes": 72571322,
+      "sha256": "49e996e1728b7ef6a4a076e42a78d7d3f8bfe5ac8aa37f9efe96f91aabae07dc",
+      "rows": 18887
+    },
+    {
+      "file": "realtime-2026-10-05T11-34-17-650Z-8fbde501-0a2a-423e-9cec-dcf5bf84f22b.jsonl",
+      "bytes": 364315130,
+      "sha256": "8ca7cd730aa17711b5da355dcc022cdd8545ba24b7b7be21efe57ac7f6637a6c",
+      "rows": 88670
+    },
+    {
+      "file": "realtime-2026-10-05T12-12-59-357Z-96bd158c-2ab8-45d3-be3f-9e5280b7157f.jsonl",
+      "bytes": 152980737,
+      "sha256": "ce0f78cd53c716d2da649201d2a112ae63f05ef6046f0f594e5ca5ba04c40f46",
+      "rows": 38590
+    },
+    {
+      "file": "realtime-2026-10-05T12-36-01-632Z-3429cdf4-9cdc-4c2d-af08-790506b940a3.jsonl",
+      "bytes": 137115255,
+      "sha256": "53bb69af4af63fe9b9752a37571d6ff4b38c8af300820d6a388a8ef7bfbf26d9",
+      "rows": 33793
+    },
+    {
+      "file": "realtime-2026-10-05T12-51-41-673Z-563413b4-b439-45e1-bd0a-88e35e55664e.jsonl",
+      "bytes": 493718703,
+      "sha256": "e8840e72894efc84c07564e08e81d31c04310f3871821d1b539a56025a18d07b",
+      "rows": 118926
+    },
+    {
+      "file": "realtime-2026-10-05T13-40-40-612Z-22757408-0f18-479a-be50-a445120eecdd.jsonl",
+      "bytes": 47001145,
+      "sha256": "3fb70e38ddf87cc0b0c7d7d10b7412d0e45b32f9ef8ed652624c088a0a38112c",
+      "rows": 12873
+    },
+    {
+      "file": "realtime-2026-10-05T13-47-19-136Z-748cd973-8d03-46ee-90b0-c093abb57480.jsonl",
+      "bytes": 90237421,
+      "sha256": "e0bd1c1b43ddeb2e755bb77d89c897ce93cb73683e1bb4b64cdf132f92be78c1",
+      "rows": 23620
+    },
+    {
+      "file": "realtime-2026-10-05T13-57-57-286Z-7bb091b9-6ca9-4baf-a719-400fcb926462.jsonl",
+      "bytes": 407416554,
+      "sha256": "1dbbd38fe43d416466cdfe3fd80c369e0c49dab3fae3702d9cfc37f13fc5f3b8",
+      "rows": 100435
+    },
+    {
+      "file": "realtime-2026-10-05T14-37-21-682Z-457b2310-b73c-41d6-a088-ff49e5493489.jsonl",
+      "bytes": 234281123,
+      "sha256": "ffc0514a80c0bf06ebabc0ebaf17e3371d793be9487b9474c5b8dc1cec66973f",
+      "rows": 57388
+    },
+    {
+      "file": "realtime-2026-10-05T15-02-21-149Z-f054a24c-fdec-461c-b623-997271d7294d.jsonl",
+      "bytes": 75484796,
+      "sha256": "a74608f480980d6685b7a76d604c91f42735679ed895e5e9b2568f24be0fb7a2",
+      "rows": 19642
+    },
+    {
+      "file": "realtime-2026-10-05T15-27-06-850Z-abc43e8e-90b7-4f80-8a09-148c69a70272.jsonl",
+      "bytes": 377735755,
+      "sha256": "ae7c5460aa0e3884ade0eab45e1eb7f481c0c3deaafeff3555d00e2cb5817a34",
+      "rows": 93157
+    },
+    {
+      "file": "realtime-2026-10-05T16-09-13-094Z-0b534cd3-db8c-4a62-ad4c-80b682df392c.jsonl",
+      "bytes": 25911961,
+      "sha256": "d64f7889ca7bed203bb32312fbb2e70d79287a44dab211c1f6bda35aaba6dc6f",
+      "rows": 7744
+    },
+    {
+      "file": "realtime-2026-10-05T16-15-15-423Z-b8f131a2-b29a-4232-8352-e0a2d1fb770f.jsonl",
+      "bytes": 219515585,
+      "sha256": "46f11dbf36b8e296f94ca904f7767b8f3f685ad54fa82d9f7803d6eadd6ac982",
+      "rows": 56084
+    }
+  ],
+  "report": {
+    "schemaVersion": 1,
+    "at": "2026-10-05T16:38:17.374Z",
+    "mode": "offline_overlapping_quote_opportunity_diagnostic",
+    "networkRequests": 0,
+    "competitionOrders": 0,
+    "profitabilityEstablished": false,
+    "fees": 0,
+    "metrics": {
+      "events": 779560,
+      "books": 780724,
+      "trades": 25798,
+      "duplicateTrades": 0,
+      "gaps": 1204,
+      "invalidations": 30901,
+      "sessions": 18,
+      "rejectedQuotes": 0
+    },
+    "policies": [
+      {
+        "policy": {
+          "id": "improve0-latency3000",
+          "improvementTicks": 0,
+          "latencyMs": 3000,
+          "quoteMs": 120000,
+          "markoutMs": 300000,
+          "sampleEveryMs": 30000,
+          "historyMs": 300000,
+          "minimumSpanMs": 240000,
+          "maximumMidpointRangeTicks": 1,
+          "maximumBookAgeMs": 20000,
+          "depthFractionBps": 100,
+          "quantity": 1,
+          "feeTicks": 0,
+          "exitSlippageTicks": 1
+        },
+        "counts": {
+          "quotes": 25403,
+          "paired": 5,
+          "unfilled": 20642,
+          "oneSided": 256,
+          "marked": 137,
+          "censored": 4503,
+          "gapExposed": 4497,
+          "expiryInvalidations": 11841
+        },
+        "unresolved": 116,
+        "pairedGainTicks": 5,
+        "oneSidedMarkoutTicks": -278,
+        "conditionalDiagnosticTicks": -273
+      },
+      {
+        "policy": {
+          "id": "improve1-latency3000",
+          "improvementTicks": 1,
+          "latencyMs": 3000,
+          "quoteMs": 120000,
+          "markoutMs": 300000,
+          "sampleEveryMs": 30000,
+          "historyMs": 300000,
+          "minimumSpanMs": 240000,
+          "maximumMidpointRangeTicks": 1,
+          "maximumBookAgeMs": 20000,
+          "depthFractionBps": 100,
+          "quantity": 1,
+          "feeTicks": 0,
+          "exitSlippageTicks": 1
+        },
+        "counts": {
+          "quotes": 740,
+          "paired": 13,
+          "unfilled": 477,
+          "oneSided": 122,
+          "marked": 64,
+          "censored": 183,
+          "gapExposed": 180,
+          "expiryInvalidations": 11841
+        },
+        "unresolved": 3,
+        "pairedGainTicks": 16,
+        "oneSidedMarkoutTicks": -129,
+        "conditionalDiagnosticTicks": -113
+      }
+    ],
+    "limitations": [
+      "Overlapping opportunities are not a funded portfolio and cannot be added as returns.",
+      "Strict-through anonymous prints do not establish actual queue position or execution.",
+      "Research uses full pushed snapshots; production additionally requires fresh REST/account eligibility and validated continuity.",
+      "Any quote exposed to a known capture gap is censored; unknown transport losses may remain.",
+      "One-sided markouts require a later fresh book and depth, with one-tick exit slippage."
+    ]
+  },
+  "elapsedMs": 45082.8018,
+  "networkRequests": 0,
+  "competitionOrders": 0,
+  "profitabilityEstablished": false,
+  "limitations": [
+    "Strict-through anonymous prints are hypothetical fills; queue position and actual execution are not proven.",
+    "Censored outcomes have unknown economic value, never a zero-profit training target.",
+    "Frozen decision features contain no later fills or prices. Overlapping outcomes are not funded P&L.",
+    "Development captures were previously examined; independent subsequent replay and prospective wallet accounting remain necessary."
+  ],
+  "quotes": 26143,
+  "rows": 26024,
+  "file": "data/realtime-quote-dataset-20261005.json",
+  "sha256": "0861555d21ef76c437da611c51390ed04dc9025364dbbe509a9460bc23b5d998"
+}
