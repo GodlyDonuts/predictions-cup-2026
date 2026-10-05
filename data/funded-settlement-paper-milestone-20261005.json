@@ -1,0 +1,39 @@
+{
+  "at": "2026-10-05T20:09:26.700Z",
+  "claimCommentId": 6001743979,
+  "implementation": "Stateful, funded prospective paper execution of the existing native settlement-value policy in the sole collector; preserves prior experiments.",
+  "checks": {
+    "passed": 115,
+    "failed": 0,
+    "log": "data/funded-settlement-checks-20261005.tap",
+    "logHash": "da946cd41fb6f517b099c0ade5f08917baf2231896c22e742a968dfb6564c6b2",
+    "nativePrefixParity": true,
+    "restartConservation": true,
+    "collectorSharedBudgetRegression": true
+  },
+  "cohort": "texas-governor-fundamental-20261005-v1",
+  "bankHash": "fdfb0c25e1bba643c1ec203fa82a34b4fc88e864a5e9174571a3115302deb3a9",
+  "cutoff": "2026-10-05T19:58:40.836Z",
+  "modelSource": "research/governor-error-v1/results-20261005-v1.json",
+  "sourceClockPreserved": true,
+  "liveEvidence": "data/funded-settlement-paper-live-20261005.json",
+  "liveEvidenceHash": "ab9522b100195095486a192fc9267accd38e26e2197dc49a72eb571f168bcaf8",
+  "observedAt": "2026-10-05T20:08:40.057Z",
+  "wallet3000": {
+    "fills": 1,
+    "closedTrades": 0,
+    "realizedPnl": "0.000000",
+    "liquidationPnl": "-0.015000"
+  },
+  "originalAccountingPreserved": true,
+  "activationUnchanged": true,
+  "productionPilotExpired": true,
+  "competitionOrders": 0,
+  "additionalPersistentServices": 0,
+  "profitabilityEstablished": false,
+  "remaining": [
+    "Measure subsequent value-driven exits; current single entry and correlated latency copies provide no profitability evidence.",
+    "Incorporate genuinely new primary-source valuation revisions without changing frozen evidence clocks or losing attributed inventory.",
+    "Only authenticated actual resolution evidence may eventually realize a settlement; a calendar deadline must not create a payout."
+  ]
+}

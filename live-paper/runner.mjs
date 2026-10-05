@@ -84,6 +84,7 @@ import {openBaalPairHost as openBaalPairHostV2} from './baal-pair-host-v2.mjs';
 import {openBaalPairHost as openBaalPairHostV3} from './baal-pair-host-v3.mjs';
 import {openBaalPairHost as openBaalPairHostV4} from './baal-pair-host-v4.mjs';
 import {probabilityAccountEligibility} from './probability-receipt.mjs';
+import {openCollectorSettlementPaper} from './settlement-paper-collector.mjs';
 import {frozenPaperModule} from './frozen-paper-runtime.mjs';
 
 const root=path.dirname(fileURLToPath(import.meta.url)),workspace=path.dirname(root);
@@ -114,7 +115,7 @@ const stop=(cause='unspecified',errorCode=null)=>{
  stopping=true;control.abort();
 };process.on('SIGINT',()=>stop('SIGINT'));process.on('SIGTERM',()=>stop('SIGTERM'));
 const stopWatch=setInterval(()=>{for(const [file,cause]of [[stopFile,'workspace_STOP'],[paperStop,'runtime_STOP'],[collectorStop,'COLLECTOR_STOP']])if(fs.existsSync(file)){stop(cause);break;}},200);
-let journal,state,api,server,heartbeat,competition,realtime,realtimeCapture,basketRelationships,contractEvidence,bookPublication,basketFollowupSource,basketFollowupBankHash,comparisonRiskSource;
+let journal,state,api,server,heartbeat,competition,realtime,realtimeCapture,basketRelationships,contractEvidence,bookPublication,basketFollowupSource,basketFollowupBankHash,comparisonRiskSource,settlementPaper;
 let productionMetadata;
 const samplingSessionId=randomUUID();
 let universe,coverage,depthPlan,dipBank,scaleBank,responsiveBank,scheduler,schedulerScope;const recentReadTimings=[];
@@ -221,7 +222,7 @@ async function collectAccountExtra(){
 let runtime={status:'starting',pid:process.pid,runtimeDir,readRequests:0,errors:[],cycles:0,lastCycleAt:null,dashboard:'http://127.0.0.1:'+c.port};
 function persistStatus(){const r=report(state,c);if(realtime)writeCollectorStatus(path.join(runtimeDir,'realtime-stats.json'),{...realtime.status(),pid:process.pid});writeCollectorStatus(path.join(runtimeDir,'stats.json'),{...r,runtime:{...runtime,readRequests:api?.requests||0}});return r;}
 function commit(event){try{journal.commit(state,event);}catch{const e=Error('Paper journal recording failed');e.durableRecordingFailed=true;throw e;}}
-function publishBookEvent(method,value){try{const result=bookPublication?.[method](value);if(['invalidate','close'].includes(method)||method==='publishBook'&&result===false){
+function publishBookEvent(method,value){try{const result=bookPublication?.[method](value);if(settlementPaper)try{settlementPaper.consume();settlementPaper.publish();runtime.settlementPaper=settlementPaper.status();}catch{settlementPaper.close();settlementPaper=null;runtime.settlementPaper={status:'failed',reason:'SETTLEMENT_PAPER_CONSUMER_FAILED',executionAuthority:false};}if(['invalidate','close'].includes(method)||method==='publishBook'&&result===false){
  if(noMaker)try{noMaker.boundary(method);runtime.noMaker=noMaker.status();}catch{runtime.noMaker={status:'failed',executionAuthority:false};noMaker=null;}
  for(const[key,host]of stableHosts())try{host.boundary(method);runtime[key]=host.status();}catch{stableHostFailed(key);}
  if(baalPair)try{baalPair.boundary(method);runtime.baalPair=baalPair.status();}catch{runtime.baalPair={status:'failed',executionAuthority:false};baalPair=null;}
@@ -262,6 +263,7 @@ try{
   const nativePublication=collectorNativePublicationConfig(runtimeDir,universe),publicationOptions={file:path.join(runtimeDir,'public-books.jsonl'),universe,sessionId:randomUUID(),now:Date.now,canOperate:()=>!stopping};
   bookPublication=nativePublication?await createNativeBookPublication({...publicationOptions,runtimeDir,nativeBackend:nativePublication.nativeBackend,receiptDir:path.join(runtimeDir,'collector-native-publication-receipts')}):createBookPublication(publicationOptions);
   runtime.bookPublisher={revision:nativePublication?3:2,startupReplayMs:performance.now()-publicationReplayStarted,frozenPublisherFileChanged:false,...(nativePublication?{native:bookPublication.startup()}:{} )};
+  settlementPaper=await openCollectorSettlementPaper({runtimeDir,universe});if(settlementPaper){settlementPaper.consume();settlementPaper.publish();runtime.settlementPaper=settlementPaper.status();}
   try{canonicalCapacity=guardCanonicalCapacity(openCanonicalCapacityMonitor({runtimeDir,universe}));runtime.canonicalCapacity=canonicalCapacity?.status()||{status:'not_initialized',executionAuthority:false};}catch{runtime.canonicalCapacity={status:'unavailable',executionAuthority:false};}
   depthPlan=validateDepthPlan(JSON.parse(fs.readFileSync(path.join(root,'depth-plan.json'),'utf8')),c,universe);
   const dipFile=path.join(runtimeDir,'dip-bank.json');if(fs.existsSync(dipFile)){dipBank=JSON.parse(fs.readFileSync(dipFile));validateDipPolicy(dipBank.policy);if(dipBank.universe.hash!==universe.hash||dipBank.config.feeBps!==0||dipBank.policy.historyReadsPerCycle!==2||dipBank.policy.comparisonBooksPerCycle!==2||dipBank.policy.dynamicBooksPerCycle!==2)throw Error('Invalid dip collection plan');runtime.collectionPlan={mode:'diversified_dip',historyReads:officialSync?1:2,fullBookBudget:4,managedCapacity:3,bulkReads:marketSweep?Math.ceil(universe.exchanges.length/100):1,accountReads:'positions plus paginated orders',readIntervalMs:c.readIntervalMs};}
@@ -386,7 +388,7 @@ try{
       if(officialSync){try{accountCache.orders=accountOrders(orders,new Date().toISOString());delete accountCache.errors.orders;publishAccount();}catch{accountCache.errors.orders={at:new Date().toISOString(),reason:'unavailable_or_invalid'};publishAccount();}}
       // Freeze one plan before metadata selection; do not resample shadow state
       // or reorder candidates between the controller and these book requests.
-      const probabilityFocus=mergeProbabilityReadFocus([readProbabilityReadFocus(runtimeDir,universe,Date.now()),readProbabilityReadFocus(runtimeDir,universe,Date.now(),'calibrated-poll-paper-active.json'),readProbabilityReadFocus(runtimeDir,universe,Date.now(),'primary-breadth-paper-active.json')]),bulkFocus=readBulkReadFocus(runtimeDir,universe,Date.now()),anchorFocus=readAnchorReadFocus(runtimeDir,universe,Date.now()),diagnosticFocus=collectDiagnosticFocus(),paperFocus=mergePaperReadFocus(anchorFocus,bulkFocus,probabilityFocus,diagnosticFocus);
+      const probabilityFocus=mergeProbabilityReadFocus([readProbabilityReadFocus(runtimeDir,universe,Date.now()),readProbabilityReadFocus(runtimeDir,universe,Date.now(),'calibrated-poll-paper-active.json'),readProbabilityReadFocus(runtimeDir,universe,Date.now(),'primary-breadth-paper-active.json'),settlementPaper?.focus()]),bulkFocus=readBulkReadFocus(runtimeDir,universe,Date.now()),anchorFocus=readAnchorReadFocus(runtimeDir,universe,Date.now()),diagnosticFocus=collectDiagnosticFocus(),paperFocus=mergePaperReadFocus(anchorFocus,bulkFocus,probabilityFocus,diagnosticFocus);
       const inputs=schedulingInputs();
       const retainedPaperFocus=nativeDip?paperFocus:probabilityFocus;
       for(const x of retainedPaperFocus?.markets||[])if(['held','exit_pending','entry_pending'].includes(x.phase)){const key=x.phase==='entry_pending'?'pendingMarketIds':'heldMarketIds';inputs[key]=[...new Set([...inputs[key],x.marketId])];}
@@ -469,4 +471,4 @@ try{
   if(runtime.status==='failed')process.exitCode=1;
   commit({type:'stopped',stopProvenance:runtime.stopProvenance||null});persistStatus();
 }catch(e){const stopped=stopping&&!e.durableRecordingFailed&&runtime.stopProvenance?.cause!=='status_publication_failed';if(state){runtime.status=stopped?'stopped':'failed';runtime.errors.push({at:new Date().toISOString(),reason:stopped?'stop_requested':e.message});try{persistStatus();}catch{}}console.error(stopped?'Paper runner stopped':'Paper runner failed; see local stats');process.exitCode=stopped?0:1;
-}finally{clearInterval(stopWatch);clearInterval(heartbeat);try{publishBookEvent('close',runtime.status==='failed'?'COLLECTOR_FAILURE':'STOP');}finally{try{collectorMarketScreen?.close();await nativeDip?.close();await nativeQuote?.close();await realtime?.stop();}finally{comparisonRiskSource?.close();basketFollowupSource?.close();realtimeCapture?.close();competition?.close();api?.close();server?.close();cleanup();}}}
+}finally{clearInterval(stopWatch);clearInterval(heartbeat);try{publishBookEvent('close',runtime.status==='failed'?'COLLECTOR_FAILURE':'STOP');}finally{try{collectorMarketScreen?.close();await nativeDip?.close();await nativeQuote?.close();await realtime?.stop();}finally{settlementPaper?.close();comparisonRiskSource?.close();basketFollowupSource?.close();realtimeCapture?.close();competition?.close();api?.close();server?.close();cleanup();}}}
