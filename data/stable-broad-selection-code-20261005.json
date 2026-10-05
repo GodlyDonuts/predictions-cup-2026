@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "at": "2026-10-05T14:42:48.740Z",
+  "selectionHash": "c89cd60a2a9dccc25fd968de19e49c6dd31983913ef2f7155ec716d5064eb732",
+  "codeIdentity": {
+    "live-paper/stable-market-screen.mjs": "56ca8f0e7551f6b24b484e9ae97c826e97691425908efbdb256225c476e57971",
+    "data/select-stable-broad-markets-20261005.mjs": "3bed58f3b7a652ca6af95c3fac27d1063b41e1b6511a37697e7a50f36be2bfc3"
+  },
+  "changesAfterSelection": false
+}

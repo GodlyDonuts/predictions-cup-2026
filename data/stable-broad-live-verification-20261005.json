@@ -1,0 +1,271 @@
+{
+  "schemaVersion": 1,
+  "at": "2026-10-05T14:44:41.924Z",
+  "currentPids": {
+    "collector": 21464,
+    "dashboard": 20092,
+    "paper": 8236,
+    "metrics": null,
+    "contestActivation": true,
+    "retiredMetricsPid": 11792
+  },
+  "collector": {
+    "at": "2026-10-05T14:44:39.974Z",
+    "pid": 21464,
+    "status": "running",
+    "cycles": 21,
+    "errors": [],
+    "scheduling": {
+      "managedMarketIds": [
+        "376",
+        "364",
+        "297",
+        "356"
+      ],
+      "entryMarketIds": [],
+      "overCapacity": true,
+      "reads": [
+        {
+          "marketId": "356",
+          "exchangeId": "1045",
+          "option": "YES",
+          "path": "supplementalDepth",
+          "reason": "held_or_pending"
+        },
+        {
+          "marketId": "297",
+          "exchangeId": "986",
+          "option": "YES",
+          "path": "supplementalDepth",
+          "reason": "held_or_pending"
+        },
+        {
+          "marketId": "376",
+          "exchangeId": "1065",
+          "option": "YES",
+          "path": "supplementalDepth",
+          "reason": "held_or_pending"
+        },
+        {
+          "marketId": "364",
+          "exchangeId": "1053",
+          "option": "YES",
+          "path": "supplementalDepth",
+          "reason": "held_or_pending"
+        }
+      ],
+      "nativeDiscovery": null
+    },
+    "auxiliary": {
+      "historyReads": 1,
+      "tapeReads": 0,
+      "totalReads": 1,
+      "reservedOrdinal": 2471,
+      "policy": "maker_tape_three_cycles_history_one_v1",
+      "executionAuthority": false
+    },
+    "retiredPaperStrategies": {
+      "nativeDip": true,
+      "nativeQuote": true,
+      "legacyEntryModel": true,
+      "accountingPreserved": true,
+      "executionAuthority": false
+    }
+  },
+  "broad": {
+    "bankHash": "7b04de4928aa6b98a0cf949ec715f6d55953646ebfe300347e821a2d3270d01a",
+    "cohort": "baal-stable-broad-20261005-v2-live",
+    "competitionOrders": 0,
+    "counts": {
+      "book_ineligible": 1,
+      "quote_buy": 4,
+      "unstable_or_warmup": 52
+    },
+    "cutoff": "2026-10-05T14:36:22.040Z",
+    "executionAuthority": false,
+    "failed": false,
+    "journalHash": "7377a43aae19e69643662072e5d935d32334ed167236530cc6247a550fb1bd6d",
+    "journalSequence": 44,
+    "lastEventAt": "2026-10-05T14:44:41.164Z",
+    "limitations": [
+      "Strict trade-through is a counterfactual fill assumption; anonymous trades do not prove our queue position or actual execution.",
+      "YES and NO wallets share opportunities, are correlated, and must not be added as independent returns.",
+      "Incomplete tape coverage retains cash and inventory reservations; source gaps do not create trades."
+    ],
+    "mode": "stable_two_side_trade_tape_paper_v2",
+    "networkRequests": 0,
+    "profitabilityEstablished": false,
+    "projectionRecoveryRequests": [],
+    "riskMarketIds": [
+      "376",
+      "364"
+    ],
+    "schemaVersion": 1,
+    "tapeSequence": 1608,
+    "updatedAt": "2026-10-05T14:44:41.173Z",
+    "wallets": {
+      "NO": {
+        "cash": "100.000000",
+        "closedTrades": 0,
+        "cumulativeBuys": "0.000000",
+        "estimatedLiquidationPnl": "0.000000",
+        "fees": "0.000000",
+        "fills": 0,
+        "positions": [],
+        "realizedPnl": "0.000000",
+        "recentFills": [],
+        "reserved": "1.810000",
+        "unresolvedQuotes": [
+          {
+            "action": "buy",
+            "activationAt": "2026-10-05T14:42:45.824Z",
+            "bookSequence": "53535078",
+            "bookVersion": "53535078:2026-10-05T14:42:43.398017200Z",
+            "coverageBarrierSequence": null,
+            "createdAt": "2026-10-05T14:42:42.824Z",
+            "exchangeId": "1065",
+            "expiresAt": "2026-10-05T14:44:42.824Z",
+            "id": 2,
+            "limit": "0.900000",
+            "marketId": "376",
+            "publicationHash": "37cec33afc963c39882e117901f40915fe13eeaaa197e6afa84e37b26a027999",
+            "publicationSequence": 23717,
+            "quantity": 1,
+            "resolution": null,
+            "resolvedAt": null,
+            "side": "NO",
+            "yesEquivalentLimit": "0.100000"
+          },
+          {
+            "action": "buy",
+            "activationAt": "2026-10-05T14:43:29.706Z",
+            "bookSequence": "53541588",
+            "bookVersion": "53541588:2026-10-05T14:43:27.298141400Z",
+            "coverageBarrierSequence": null,
+            "createdAt": "2026-10-05T14:43:26.706Z",
+            "exchangeId": "1053",
+            "expiresAt": "2026-10-05T14:45:26.706Z",
+            "id": 4,
+            "limit": "0.910000",
+            "marketId": "364",
+            "publicationHash": "07a80d0823adcc7d0f7ac1d06801cd99d6d463a6361d48779d4580d7698049d1",
+            "publicationSequence": 23730,
+            "quantity": 1,
+            "resolution": null,
+            "resolvedAt": null,
+            "side": "NO",
+            "yesEquivalentLimit": "0.090000"
+          }
+        ]
+      },
+      "YES": {
+        "cash": "100.000000",
+        "closedTrades": 0,
+        "cumulativeBuys": "0.000000",
+        "estimatedLiquidationPnl": "0.000000",
+        "fees": "0.000000",
+        "fills": 0,
+        "positions": [],
+        "realizedPnl": "0.000000",
+        "recentFills": [],
+        "reserved": "0.170000",
+        "unresolvedQuotes": [
+          {
+            "action": "buy",
+            "activationAt": "2026-10-05T14:42:45.824Z",
+            "bookSequence": "53535078",
+            "bookVersion": "53535078:2026-10-05T14:42:43.398017200Z",
+            "coverageBarrierSequence": null,
+            "createdAt": "2026-10-05T14:42:42.824Z",
+            "exchangeId": "1065",
+            "expiresAt": "2026-10-05T14:44:42.824Z",
+            "id": 1,
+            "limit": "0.090000",
+            "marketId": "376",
+            "publicationHash": "37cec33afc963c39882e117901f40915fe13eeaaa197e6afa84e37b26a027999",
+            "publicationSequence": 23717,
+            "quantity": 1,
+            "resolution": null,
+            "resolvedAt": null,
+            "side": "YES",
+            "yesEquivalentLimit": "0.090000"
+          },
+          {
+            "action": "buy",
+            "activationAt": "2026-10-05T14:43:29.706Z",
+            "bookSequence": "53541588",
+            "bookVersion": "53541588:2026-10-05T14:43:27.298141400Z",
+            "coverageBarrierSequence": null,
+            "createdAt": "2026-10-05T14:43:26.706Z",
+            "exchangeId": "1053",
+            "expiresAt": "2026-10-05T14:45:26.706Z",
+            "id": 3,
+            "limit": "0.080000",
+            "marketId": "364",
+            "publicationHash": "07a80d0823adcc7d0f7ac1d06801cd99d6d463a6361d48779d4580d7698049d1",
+            "publicationSequence": 23730,
+            "quantity": 1,
+            "resolution": null,
+            "resolvedAt": null,
+            "side": "YES",
+            "yesEquivalentLimit": "0.080000"
+          }
+        ]
+      }
+    }
+  },
+  "narrow": {
+    "at": "2026-10-05T14:39:00.274Z",
+    "bankHash": "64fa0771e801894f1d3b6b9f8b7cb561ddacd385dd1f139ef021cc303b8f0a98",
+    "journalSequence": 655,
+    "journalHash": "9a23eb2c3e9db0debeb46de7ae048f58ed9a9f353c54317fd1a336cff7a655da",
+    "riskMarketIds": [],
+    "counts": {
+      "book_ineligible": 178,
+      "history_gap": 8,
+      "quote_buy": 48,
+      "quote_unfilled_resolved": 48,
+      "source_boundary": 4,
+      "unstable_or_warmup": 214
+    },
+    "stopPresent": true,
+    "wallets": {
+      "NO": {
+        "cash": "100.000000",
+        "fills": 0,
+        "closedTrades": 0,
+        "realizedPnl": "0.000000",
+        "reserved": "0.000000",
+        "positions": [],
+        "unresolvedQuotes": []
+      },
+      "YES": {
+        "cash": "100.000000",
+        "fills": 0,
+        "closedTrades": 0,
+        "realizedPnl": "0.000000",
+        "reserved": "0.000000",
+        "positions": [],
+        "unresolvedQuotes": []
+      }
+    }
+  },
+  "official": {
+    "status": "entry_window_closed",
+    "orders": 0,
+    "dispatchAttempts": 0,
+    "realizedPnl": "0.000000"
+  },
+  "preservedActiveHashes": {
+    "native-quote-active.json": "1311b443fe76d1db73482596c0384b745c397544efd7d6e022abb90f4103b398",
+    "native-dip-intent-active.json": "61a2b4c639866b25e2b3accc9fd8180d7f0a877991a20d758d28d28facf15523",
+    "coordinated-network-budget.json": "7d507950881b42a18cd1ec71a78e07dc11beb9ab2884f9a6705ce38e37230375",
+    "competition-activation.json": "7803b21d01a36b51300dfb783c213456f24c801936f21a4618d3a59de2e5b228"
+  },
+  "originalPaperAccountingReset": false,
+  "newServices": 0,
+  "newNetworkClients": 0,
+  "officialActivationChanged": false,
+  "competitionOrdersFromWork": 0,
+  "profitabilityEstablished": false
+}

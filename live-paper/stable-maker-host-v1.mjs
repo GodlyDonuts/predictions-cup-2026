@@ -8,8 +8,9 @@ export function mergeMakerTapeFocus(...focus){const riskMarketIds=[...new Set(fo
  for(const x of focus.filter(Boolean))for(const r of x.projectionRecoveryRequests||[])requests.set(r.key,r);
  return{riskMarketIds,projectionRecoveryRequests:[...requests.values()].sort((a,b)=>Date.parse(a.from)-Date.parse(b.from)||Number(a.marketId)-Number(b.marketId)).slice(0,4)};
 }
-export function openStableMakerHost({runtimeDir,now=Date.now,canOperate=()=>true}){
- const activeFile=path.join(runtimeDir,'stable-maker-active.json');if(!fs.existsSync(activeFile))return null;
+export function openStableMakerHost({runtimeDir,now=Date.now,canOperate=()=>true,activeFileName='stable-maker-active.json'}){
+ need(['stable-maker-active.json','stable-maker-broad-active.json'].includes(activeFileName),'ACTIVE_NAME');
+ const activeFile=path.join(runtimeDir,activeFileName);if(!fs.existsSync(activeFile))return null;
  const activeBytes=fs.readFileSync(activeFile),active=JSON.parse(activeBytes);need(active.schemaVersion===1&&/^[a-z][a-z0-9-]{1,70}$/.test(active.cohort),'ACTIVE');
  const dir=path.join(runtimeDir,'stable-maker-cohorts',active.cohort),bankBytes=fs.readFileSync(path.join(dir,'bank.json')),bank=JSON.parse(bankBytes),stopFile=path.join(dir,'STOP');
  need(payloadHash(bank)===active.bankHash&&payloadHash(bank.codeIdentity)===payloadHash(stableMakerCodeIdentity()),'FROZEN');

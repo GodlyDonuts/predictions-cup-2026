@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "at": "2026-10-05T14:43:49.515Z",
+  "reportHash": "535de678a1ba0c58ac18f7f384e36e8a2623b213b9a5fde6f6a926911d91804a",
+  "sourcePrefixProofsExact": true,
+  "economicResultsExact": true,
+  "officialIntentLedger": {
+    "bytes": 29430,
+    "sha256": "8e24bfe5d567851ac8f13c4e9d16ed347b7b92b8aeda54b18040c1090fdd2415",
+    "sequence": 48,
+    "tailHash": "60d41f3ab47551c3f5d4b7869c75f4b09f7c8ddb7fc928cf979c974df649236c"
+  },
+  "networkRequests": 0,
+  "competitionOrders": 0,
+  "profitabilityEstablished": false
+}

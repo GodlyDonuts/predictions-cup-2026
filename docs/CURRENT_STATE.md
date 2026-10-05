@@ -1,3 +1,7 @@
+# October 5: broader passive cohort and actual loss attribution
+
+A new independently frozen16-market passive paper cohort now shares the same collector, after original-source screening of237 exchanges. The narrow cohort's pending quotes were fully reconciled before retirement, with its bank/journal preserved. Actual prior bot loss is−0.380: two losing markets cost0.500 and winning markets earned0.120. No new official orders or demonstrated profitability are claimed. [Execution economics and implementation](EXECUTION_ECONOMICS.md). Older cohorts and timestamps below remain historical.
+
 # October 5: stable spread paper implementation
 
 The losing price-entry engines are retired. A new frozen passive paper cohort joins stable prices, seeks a one-tick covered exit and reconciles strict anonymous-trade projection windows. It runs inside the existing collector, with zero fees and no extra services. Spare reads now build continuous history; existing official and source-probability risk retains priority. **No profitability is established and no new official orders were sent.** See [implementation and measured evidence](STABLE_SPREAD.md). Older timestamps and results below remain historical.

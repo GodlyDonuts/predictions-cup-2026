@@ -1,0 +1,179 @@
+{
+  "schemaVersion": 1,
+  "at": "2026-10-05T14:36:22.040Z",
+  "bankHash": "7b04de4928aa6b98a0cf949ec715f6d55953646ebfe300347e821a2d3270d01a",
+  "snapshot": "a67cc18ba0092c0cb1d6cc342ca52674c299a214e0abfdc86725c9344082accf",
+  "bank": {
+    "schemaVersion": 1,
+    "mode": "stable_two_side_trade_tape_paper_v2",
+    "name": "baal-stable-broad-20261005-v2-live",
+    "cutoff": "2026-10-05T14:36:22.040Z",
+    "entryExpiresAt": "2026-10-05T20:36:22.040Z",
+    "tournamentId": "bda92870-621e-47b0-bc3c-3602c5c26f55",
+    "legs": [
+      {
+        "marketId": "376",
+        "exchangeId": "1065"
+      },
+      {
+        "marketId": "369",
+        "exchangeId": "1058"
+      },
+      {
+        "marketId": "364",
+        "exchangeId": "1053"
+      },
+      {
+        "marketId": "308",
+        "exchangeId": "997"
+      },
+      {
+        "marketId": "169",
+        "exchangeId": "858"
+      },
+      {
+        "marketId": "219",
+        "exchangeId": "908"
+      },
+      {
+        "marketId": "236",
+        "exchangeId": "925"
+      },
+      {
+        "marketId": "302",
+        "exchangeId": "991"
+      },
+      {
+        "marketId": "350",
+        "exchangeId": "1039"
+      },
+      {
+        "marketId": "351",
+        "exchangeId": "1040"
+      },
+      {
+        "marketId": "327",
+        "exchangeId": "1016"
+      },
+      {
+        "marketId": "277",
+        "exchangeId": "966"
+      },
+      {
+        "marketId": "257",
+        "exchangeId": "946"
+      },
+      {
+        "marketId": "171",
+        "exchangeId": "860"
+      },
+      {
+        "marketId": "298",
+        "exchangeId": "987"
+      },
+      {
+        "marketId": "355",
+        "exchangeId": "1044"
+      }
+    ],
+    "policy": {
+      "schemaVersion": 2,
+      "initialCash": "100.000000",
+      "maximumReservedAndOwned": "5.000000",
+      "maximumOwnedMarkets": 3,
+      "cumulativeBuyBudget": "25.000000",
+      "quantity": 1,
+      "latencyMs": 3000,
+      "lifetimeMs": 120000,
+      "cooldownMs": 60000,
+      "maximumHoldMs": 7200000,
+      "stopLoss": "0.030000",
+      "profitTarget": "0.005000",
+      "exitAdverseTicks": 1,
+      "depthFractionBps": 100,
+      "feePerShare": "0.000000",
+      "historyMs": 300000,
+      "minimumHistorySpanMs": 240000,
+      "minimumDistinctMinutes": 4,
+      "maximumHistoryGapMs": 120000,
+      "maximumMidpointRange": "0.005000",
+      "minimumSpread": "0.005000",
+      "maximumSpread": "0.050000",
+      "improvementTicks": 0,
+      "families": [
+        "YES",
+        "NO"
+      ],
+      "fillModel": "hypothetical_strict_trade_through_not_proven_execution"
+    },
+    "codeIdentity": {
+      "../execution/api-tick-price.mjs": "ba162da4a3d388b60e31280ebf02315c2de3407370d785d0c646b4c3f8ff463a",
+      "../execution/core.mjs": "8598dd7fd9574a9197b8791d9cd7801d27e2b71bc473515dba9e775924b458d4",
+      "../execution/ledger.mjs": "523ee3fd04f995983ee3ffc03b5ee8dbdf629a718ba91c17d08026fe2411b5c4",
+      "../feed/contract.mjs": "39b9b30a72093d99697bc03a3b20f88f1d835507219fc46f7a00bd28fe761465",
+      "../feed/runtime.mjs": "51327d008ad4c9c479b25c14186edeff02f7671bf5efcd367b4b42f06abc884d",
+      "breadth-context.mjs": "76b0c70bfac6db5a9d127fc4476e9b4c7b0a2af84d07e3c8a509446c510abbc4",
+      "candidate-plan.mjs": "a77ef19ae469a52ead8be9ab383c4e71c6c173d1278703aac0a4510e03edd0c4",
+      "canonical-entry-exit-study.mjs": "caac39b144328fa5914f83df7a1fea2f149f84bf9993dbb401ed980a45a828d5",
+      "depth-scope.mjs": "6b8f329dcaf84e220bd708edd19c69703cc35362aca3acd0929b86e81749a92c",
+      "execution-metrics.mjs": "f5585994a1f1bb1c079719624e6dafca6e89e1e60b9ff32e609dca8d4caef7c6",
+      "frozen-paper-graph.mjs": "4d5e607cd11d0f5f60aadf9268e6e80fda757910da032b6eaeabea9b5b1f17bf",
+      "gpu-inference.mjs": "0d59a963ec3cc310af6a8e1b56616a4352f8319ec883184f64d367432c28fff8",
+      "history-policy.mjs": "1cf281e6e0410f5731e7d08106a479c77851575fb61d93cce51217058dcf291b",
+      "history.mjs": "d820b9d74752df3c2ecc28df3b1662bbc93080f4605db21a838d8957bf82c890",
+      "journal-lines.mjs": "f8adff2bddc36b4e3d305dec9395fae9f51dff957e35313994b6147502cc6823",
+      "label-paths.mjs": "a431d88b107ace940b18742a7e7f19fb676eca0d4d458febad35d0311270a85b",
+      "latency-clock.mjs": "e0b79a03fbf1df2a3e82594be10e87917bd77f4fc436a0bb5133c9c1032e1984",
+      "ml-bank.mjs": "9060b1e63228139309ed8a53a5c733656c282f1eb83476e64c06520cbda27f25",
+      "ml-shadow.mjs": "a95b25354fa79f0a71358d2bad327eb7dbc04a5629a11b56fa298190bc4d8870",
+      "model.mjs": "3cb8bbd7d31b478fe917270393954382373695149310243eec8b78440d207a2e",
+      "network-budget.mjs": "a5a51f29a2ccd0cdf7a09a2a454907ddd98a74729f3edad0b7989855ff2dd435",
+      "probability-paper.mjs": "53569a7e2262355faf9601aae3a181eddbf91c26bc8eb0b2c990377a3ce72b3e",
+      "probability-receipt.mjs": "5a3fad02baca0eb519642b2f1cc53ec06ec4bdad7829b937d13891ac52d4e8a6",
+      "quote-projection-recovery.mjs": "574666c18aa18f99c1e3212fcdffb4faa643f1ee7eb2a2232c488fd24e015f96",
+      "replay.mjs": "c4e26e34c01f7d5cf909bc9096bfa83821111f5fe62b201d4cf0be3bc8f9063d",
+      "roundtrip-target.mjs": "be543efab3267aae8f28aba04a44d5050fdd3ab50e1f2b75210347d23e4853e9",
+      "runtime.mjs": "2efad72e778ed5bd37387ae357b0cbd49dc1e2227db401a71684f68ce539471a",
+      "snapshot-order.mjs": "e007c15a6e45d4003eed839d2c1525de1791f65c4c695123826fdedcaa2039c0",
+      "stable-maker-host-v1.mjs": "d992d650519a6b42c8215f49b43d38efe03af1ffc408e8f9de36eae45c68c366",
+      "stable-maker-paper-v2.mjs": "5a66bad5cbf55d4cc2e55882a853e12747753caf0f754f172c0f209a2e17fda6",
+      "training-horizons.mjs": "6d590797649db420fc67aa2380950e1d211ab9d0ba98c4cafc198a7b197a9176",
+      "training-options.mjs": "0fed926595027fc9a3df761f754b29c7132fc04fee03f28fd442476c10e277de",
+      "training-source.mjs": "ee52157f082b90859ab3b6d91290c2b9977f8726dedf4b1909f15138f0badedd",
+      "transport-network-budget.mjs": "7e85b338fca9e834d6fcac9e650a3eacf46601c8be04bfa1717de63df2bc5d30",
+      "transport-runtime.mjs": "fae4f871bcd07ecbd57c66df8425e07de4356bb1cd7f4de2ae8e80a51818b0fd",
+      "../paper/fixed.mjs": "a0947ef49854d4a3bf4bce88034aaef5d8aabbdc7e29dff3a7b9b4bc01b072f7"
+    },
+    "tapePrefixBytes": 11940785,
+    "tapePrefixHash": "a4a1f0e8a39af91c1171ce1e101137d987d0b6a4c0c3b7cda98e1fa123083e68",
+    "tapePrefixSequence": 1606,
+    "tapePrefixTailHash": "50acdaedfc3fef765f46ffd6d312f2ffc9e34c1886db5169f0777bc291e82023",
+    "protocolFileHash": "c89cd60a2a9dccc25fd968de19e49c6dd31983913ef2f7155ec716d5064eb732",
+    "selectionPricePrefix": {
+      "bytes": 152506339,
+      "sha256": "c181a0aeb61e1e7a87b5ff68b26505e4fdb87ae60f130cbeac4a1badf2f57892",
+      "sequence": 13609,
+      "tailHash": "774a76235126f7961d4aa5b22db118320fc5d3d7f458c1dda57ab356ccec898f"
+    },
+    "selectionMode": "fixed_stable_window_rank_price_changes_not_fitted_returns",
+    "independentFromPriorWallet": true,
+    "counterfactualOnly": true,
+    "executionAuthority": false,
+    "competitionOrders": 0,
+    "fees": 0,
+    "profitabilityEstablished": false
+  },
+  "initialPaperState": {
+    "YES": {
+      "cash": "100.000000",
+      "fills": 0
+    },
+    "NO": {
+      "cash": "100.000000",
+      "fills": 0
+    }
+  },
+  "originalWalletsReset": false,
+  "newServices": 0,
+  "officialActivationChanged": false
+}

@@ -1,0 +1,214 @@
+{
+  "schemaVersion": 1,
+  "at": "2026-10-05T14:33:33.637Z",
+  "claimComment": 5996357048,
+  "selection": "fixed_stable_window_rank_price_changes_not_fitted_returns",
+  "policy": {
+    "historyMs": 300000,
+    "activityMs": 3600000,
+    "minimumSpanMs": 240000,
+    "maximumGapMs": 120000,
+    "maximumAgeMs": 90000,
+    "maximumMidpointRangeTicks": 2,
+    "minimumSpreadTicks": 1,
+    "maximumSpreadTicks": 10,
+    "maximumCandidates": 16
+  },
+  "tournamentId": "bda92870-621e-47b0-bc3c-3602c5c26f55",
+  "universeExchanges": 237,
+  "source": {
+    "bytes": 152506339,
+    "sha256": "c181a0aeb61e1e7a87b5ff68b26505e4fdb87ae60f130cbeac4a1badf2f57892",
+    "sequence": 13609,
+    "tailHash": "774a76235126f7961d4aa5b22db118320fc5d3d7f458c1dda57ab356ccec898f"
+  },
+  "screenedMarkets": 230,
+  "candidates": [
+    {
+      "marketId": "376",
+      "exchangeId": "1065",
+      "priceChangesLastHour": 55,
+      "latestReceivedAt": "2026-10-05T14:33:21.747Z",
+      "historySpanMs": 274199,
+      "spreadTicks": 2,
+      "indicativeBidTicks": 18,
+      "indicativeAskTicks": 20,
+      "executionEligible": false
+    },
+    {
+      "marketId": "369",
+      "exchangeId": "1058",
+      "priceChangesLastHour": 50,
+      "latestReceivedAt": "2026-10-05T14:33:21.747Z",
+      "historySpanMs": 274199,
+      "spreadTicks": 1,
+      "indicativeBidTicks": 56,
+      "indicativeAskTicks": 57,
+      "executionEligible": false
+    },
+    {
+      "marketId": "364",
+      "exchangeId": "1053",
+      "priceChangesLastHour": 47,
+      "latestReceivedAt": "2026-10-05T14:33:21.747Z",
+      "historySpanMs": 274199,
+      "spreadTicks": 2,
+      "indicativeBidTicks": 16,
+      "indicativeAskTicks": 18,
+      "executionEligible": false
+    },
+    {
+      "marketId": "308",
+      "exchangeId": "997",
+      "priceChangesLastHour": 38,
+      "latestReceivedAt": "2026-10-05T14:33:21.747Z",
+      "historySpanMs": 274199,
+      "spreadTicks": 1,
+      "indicativeBidTicks": 17,
+      "indicativeAskTicks": 18,
+      "executionEligible": false
+    },
+    {
+      "marketId": "169",
+      "exchangeId": "858",
+      "priceChangesLastHour": 36,
+      "latestReceivedAt": "2026-10-05T14:33:24.242Z",
+      "historySpanMs": 277993,
+      "spreadTicks": 3,
+      "indicativeBidTicks": 33,
+      "indicativeAskTicks": 36,
+      "executionEligible": false
+    },
+    {
+      "marketId": "219",
+      "exchangeId": "908",
+      "priceChangesLastHour": 35,
+      "latestReceivedAt": "2026-10-05T14:33:23.069Z",
+      "historySpanMs": 278043,
+      "spreadTicks": 1,
+      "indicativeBidTicks": 13,
+      "indicativeAskTicks": 14,
+      "executionEligible": false
+    },
+    {
+      "marketId": "236",
+      "exchangeId": "925",
+      "priceChangesLastHour": 34,
+      "latestReceivedAt": "2026-10-05T14:33:23.069Z",
+      "historySpanMs": 278043,
+      "spreadTicks": 3,
+      "indicativeBidTicks": 35,
+      "indicativeAskTicks": 38,
+      "executionEligible": false
+    },
+    {
+      "marketId": "302",
+      "exchangeId": "991",
+      "priceChangesLastHour": 34,
+      "latestReceivedAt": "2026-10-05T14:33:21.747Z",
+      "historySpanMs": 274199,
+      "spreadTicks": 1,
+      "indicativeBidTicks": 10,
+      "indicativeAskTicks": 11,
+      "executionEligible": false
+    },
+    {
+      "marketId": "350",
+      "exchangeId": "1039",
+      "priceChangesLastHour": 34,
+      "latestReceivedAt": "2026-10-05T14:33:21.747Z",
+      "historySpanMs": 274199,
+      "spreadTicks": 1,
+      "indicativeBidTicks": 129,
+      "indicativeAskTicks": 130,
+      "executionEligible": false
+    },
+    {
+      "marketId": "351",
+      "exchangeId": "1040",
+      "priceChangesLastHour": 33,
+      "latestReceivedAt": "2026-10-05T14:33:21.747Z",
+      "historySpanMs": 274199,
+      "spreadTicks": 2,
+      "indicativeBidTicks": 145,
+      "indicativeAskTicks": 147,
+      "executionEligible": false
+    },
+    {
+      "marketId": "327",
+      "exchangeId": "1016",
+      "priceChangesLastHour": 32,
+      "latestReceivedAt": "2026-10-05T14:33:21.747Z",
+      "historySpanMs": 274199,
+      "spreadTicks": 1,
+      "indicativeBidTicks": 13,
+      "indicativeAskTicks": 14,
+      "executionEligible": false
+    },
+    {
+      "marketId": "277",
+      "exchangeId": "966",
+      "priceChangesLastHour": 31,
+      "latestReceivedAt": "2026-10-05T14:33:23.069Z",
+      "historySpanMs": 278043,
+      "spreadTicks": 1,
+      "indicativeBidTicks": 185,
+      "indicativeAskTicks": 186,
+      "executionEligible": false
+    },
+    {
+      "marketId": "257",
+      "exchangeId": "946",
+      "priceChangesLastHour": 30,
+      "latestReceivedAt": "2026-10-05T14:33:23.069Z",
+      "historySpanMs": 278043,
+      "spreadTicks": 1,
+      "indicativeBidTicks": 14,
+      "indicativeAskTicks": 15,
+      "executionEligible": false
+    },
+    {
+      "marketId": "171",
+      "exchangeId": "860",
+      "priceChangesLastHour": 28,
+      "latestReceivedAt": "2026-10-05T14:33:24.242Z",
+      "historySpanMs": 277993,
+      "spreadTicks": 1,
+      "indicativeBidTicks": 189,
+      "indicativeAskTicks": 190,
+      "executionEligible": false
+    },
+    {
+      "marketId": "298",
+      "exchangeId": "987",
+      "priceChangesLastHour": 28,
+      "latestReceivedAt": "2026-10-05T14:33:21.747Z",
+      "historySpanMs": 274199,
+      "spreadTicks": 1,
+      "indicativeBidTicks": 175,
+      "indicativeAskTicks": 176,
+      "executionEligible": false
+    },
+    {
+      "marketId": "355",
+      "exchangeId": "1044",
+      "priceChangesLastHour": 28,
+      "latestReceivedAt": "2026-10-05T14:33:21.747Z",
+      "historySpanMs": 274199,
+      "spreadTicks": 1,
+      "indicativeBidTicks": 172,
+      "indicativeAskTicks": 173,
+      "executionEligible": false
+    }
+  ],
+  "invalidQuotes": 0,
+  "oldScopeExcluded": true,
+  "networkRequests": 0,
+  "executionAuthority": false,
+  "profitabilityEstablished": false,
+  "limitations": [
+    "Indicative quotes lack depth and source timestamps; fresh canonical books still gate every future paper entry.",
+    "Price changes are an activity proxy, not trade volume or forecast profitability.",
+    "Candidate selection uses past observed prices; a separately named future cohort is needed to measure subsequent outcomes."
+  ]
+}

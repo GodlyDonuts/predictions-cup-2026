@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "at": "2026-10-05T14:44:41.924Z",
+  "claimComment": 5996357048,
+  "previousGoalTurn": "progress",
+  "officialRecordedPriceRealized": "-0.380000",
+  "idealQuoteCasesPositive": 6,
+  "idealQuoteProfitEstablished": false,
+  "initialPassiveQuotes": 32,
+  "initialPassiveTouchQuotes": 2,
+  "initialPassiveStrictThroughQuotes": 0,
+  "marketScreen": {
+    "exchanges": 237,
+    "screened": 230,
+    "selected": 16,
+    "selectionHash": "c89cd60a2a9dccc25fd968de19e49c6dd31983913ef2f7155ec716d5064eb732"
+  },
+  "newCohort": {
+    "cohort": "baal-stable-broad-20261005-v2-live",
+    "bankHash": "7b04de4928aa6b98a0cf949ec715f6d55953646ebfe300347e821a2d3270d01a",
+    "cutoff": "2026-10-05T14:36:22.040Z",
+    "fills": {
+      "NO": {
+        "fills": 0,
+        "realizedPnl": "0.000000"
+      },
+      "YES": {
+        "fills": 0,
+        "realizedPnl": "0.000000"
+      }
+    },
+    "fees": 0
+  },
+  "narrowRetiredAfterCompleteProjection": true,
+  "accountingReset": false,
+  "newServices": 0,
+  "newAPIClients": 0,
+  "checksPassed": 90,
+  "actualAuditReproductionExact": true,
+  "competitionOrdersFromWork": 0,
+  "profitabilityEstablished": false,
+  "next": "Coupled same-market two-sided maker accounting with explicit opposite-share netting, preserved one-sided risk and honest subsequent fill economics."
+}
