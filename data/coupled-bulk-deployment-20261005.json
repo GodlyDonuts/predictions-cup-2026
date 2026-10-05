@@ -1,0 +1,42 @@
+{
+  "accountingReset": false,
+  "dashboardPid": 20092,
+  "activationUnchanged": true,
+  "additionalServices": 0,
+  "paperPid": 3976,
+  "previousCollectorPid": 2420,
+  "failedBuildPreserved": true,
+  "newPolicyActivated": false,
+  "priorWalletPrefixes": [
+    {
+      "relative": "coupled-maker-cohorts/baal-coupled-spread-20261005-v1-live/bank.json",
+      "hash": "fd5d2cffa9552ea1a38ffeb1aaae63e64b2b5d0fc06b1cc1baf9a464176b1f71",
+      "bytes": 5621
+    },
+    {
+      "relative": "coupled-maker-cohorts/baal-coupled-spread-20261005-v1-live/journal.jsonl",
+      "hash": "bc234f4a9f4db23d6ee228227a10ae6d68d86b5e7053712179e2037ad321f4d1",
+      "bytes": 14587924
+    },
+    {
+      "relative": "stable-maker-cohorts/baal-stable-broad-20261005-v2-live/bank.json",
+      "hash": "e6f393d0e8a4cfed5c522f6ad34c88339b07818e0578cfe07a7d9e0995b61cfe",
+      "bytes": 5517
+    },
+    {
+      "relative": "stable-maker-cohorts/baal-stable-broad-20261005-v2-live/journal.jsonl",
+      "hash": "ecb23a91b77aaeb15ce8fb83dc18a651aeae5945d531c5c5eada1ac00a9a6968",
+      "bytes": 21103781
+    }
+  ],
+  "at": "2026-10-05T16:08:04.9436178Z",
+  "fixedArtifactHashes": {
+    "competition-activation.json": "7803B21D01A36B51300DFB783C213456F24C801936F21A4618D3A59DE2E5B228",
+    "probability-receipt-active.json": "78190CA707166FA77628E1D4763B060AF2074B75692AADA2F0BCFA89BBE271AA",
+    "native-dip-intent-active.json": "61A2B4C639866B25E2B3ACCC9FD8180D7F0A877991A20D758D28D28FACF15523",
+    "native-quote-active.json": "1311B443FE76D1DB73482596C0384B745C397544EFD7D6E022ABB90F4103B398",
+    "stable-maker-broad-active.json": "110539C7806764D304D779C7BB905D42F692327A545F9063AEF6DC6741C9AB0B",
+    "coordinated-network-budget.json": "7D507950881B42A18CD1EC71A78E07DC11BEB9AB2884F9A6705CE38E37230375",
+    "coupled-maker-active.json": "56230D31300DF2E9901C8F7641E289C1A9C3633DC768948419E6D9C1E7918223"
+  }
+}

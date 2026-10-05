@@ -12177,7 +12177,7 @@
     "sourceComment": 5974554942,
     "status": "reproduced_fixed_tested_and_deployed"
   },
-  "updatedAt": "2026-10-05T15:29:02.789Z",
+  "updatedAt": "2026-10-05T16:20:16.043Z",
   "workflow": "tested direct main; no PRs; unknown GitHub write outcomes checked before retry",
   "humanPilotPublication": {
     "at": "2026-10-04T22:08:22.844Z",
@@ -12277,12 +12277,9 @@
     "sourceAndFitChecks": true
   },
   "currentRuntimePids": {
-    "collector": 21464,
-    "dashboard": 20092,
-    "paper": 8236,
-    "metrics": null,
-    "contestActivation": true,
-    "retiredMetricsPid": 11792
+    "collector": 2420,
+    "paper": 3976,
+    "dashboard": 20092
   },
   "collectorRecovery": {
     "at": "2026-10-04T22:37:56.626Z",
@@ -12830,14 +12827,12 @@
     "completionCommentId": 5994877009
   },
   "lastGoalTurn": {
-    "outcome": "progress",
-    "completed": [
-      "Fixed historical tape candidate selection; exact recovery receipts resolved4 quotes without fills",
-      "Implemented/froze independent shared-cash two-sided paper bank3ab468b58df77b1b4996073c416210da38926f5be5ca7b707d3f2607def2f518",
-      "Added bounded Windows atomic-replacement retries; preserved original forecast code; rebound verified native transport graphs",
-      "Historical coupled replay:7567 original events/23.64s,1 hypothetical purchase,0 closed pairs,0 realized profit"
-    ],
-    "remaining": "No demonstrated profitable bot; obtain subsequent executable results and investigate slow causal feature warmup/activity without forcing fills."
+    "at": "2026-10-05T16:20:16.043Z",
+    "classification": "progress",
+    "milestone": "Causal bulk-history coupled paper engine implemented, frozen and live over237 exchanges; actual source/persistence compatibility fixed",
+    "profitabilityEstablished": false,
+    "paperFills": 0,
+    "paperRealized": "0.000000"
   },
   "stableSpreadMilestone": {
     "schemaVersion": 1,
@@ -12943,7 +12938,7 @@
     "verifiedAt": "2026-10-05T14:47:40.041Z",
     "comment": 5996915263
   },
-  "currentPaperBank": "3ab468b58df77b1b4996073c416210da38926f5be5ca7b707d3f2607def2f518",
+  "currentPaperBank": "d9e27c27bed40738f7526fdeb256633398dea60eeea42457c5dc40315ca3b2cf",
   "coupledSpreadMilestone": {
     "at": "2026-10-05T15:29:02.789Z",
     "bankHash": "3ab468b58df77b1b4996073c416210da38926f5be5ca7b707d3f2607def2f518",
@@ -12957,5 +12952,54 @@
     "bindingChecks": 7,
     "profitabilityEstablished": false
   },
-  "nextAction": "Keep one collector and existing frozen wallets healthy. Measure subsequent shared-wallet fills. Investigate using causal bulk-price history to warm all screened markets while retaining full-book execution depth and existing read budget; use a named successor if policy changes."
+  "nextAction": "Measure untouched d9e27c coupled bulk cohort after causal warmup. Investigate quote-window tape, fill incidence, paired netting and unmatched loss; keep existing risk/coverage healthy. No synthetic/control purchase or tiny sample as profit proof. If genuinely profitable same-policy evidence supports competition use, deploy bounded execution after fresh reconciliation rather than renewing expired activation based on engineering alone.",
+  "coupledSpreadPublication": {
+    "at": "2026-10-05T15:35:31.000Z",
+    "main": "45382f440dce92717eff12478c88163234fdf041",
+    "tree": "6403eb59b0df1ee21fa781db594cfebe2cee2d21",
+    "files": 34,
+    "verifiedGitBlobs": 34,
+    "tests": 104,
+    "bindingTests": 7,
+    "issueComment": 5997735453,
+    "issueCommentUpdatedAt": "2026-10-05T15:35:31Z",
+    "url": "https://github.com/GodlyDonuts/predictions-cup-2026/issues/1#issuecomment-5997735453",
+    "profitabilityEstablished": false,
+    "goalOutcome": "progress",
+    "coupledBank": "3ab468b58df77b1b4996073c416210da38926f5be5ca7b707d3f2607def2f518"
+  },
+  "currentMain": "45382f440dce92717eff12478c88163234fdf041",
+  "coupledBulkMilestone": {
+    "baseMain": "45382f440dce92717eff12478c88163234fdf041",
+    "bankHash": "d9e27c27bed40738f7526fdeb256633398dea60eeea42457c5dc40315ca3b2cf",
+    "cohort": "baal-coupled-bulk-20261005-v2c-live",
+    "cutoff": "2026-10-05T16:14:05.242Z",
+    "entryExpiresAt": "2026-10-05T22:14:05.242Z",
+    "scope": 237,
+    "collectorPid": 22884,
+    "paperPid": 3976,
+    "dashboardPid": 20092,
+    "feature": "Existing indicative bulk feed supplies causal five-minute stability; fresh book and account eligibility enable paired inside quotes",
+    "sharedCash": true,
+    "fees": 0,
+    "newServices": 0,
+    "additionalReadSlots": 0,
+    "checks": {
+      "combined": 87,
+      "additionalCausalReplay": 1,
+      "passed": true
+    },
+    "developmentReplay": {
+      "processed": 21813,
+      "totalMs": 39521.0308,
+      "fills": 0,
+      "pairs": 0,
+      "realized": "0.000000",
+      "limitation": "No original tape windows for three quoted markets; unresolved reservations are unknown, not no-fill evidence"
+    },
+    "actualSourceProof": "data/coupled-bulk-live-verification-20261005.json",
+    "failedBuildsPreserved": true,
+    "publication": "Checked direct main pending",
+    "officialEntriesClosed": true
+  }
 }

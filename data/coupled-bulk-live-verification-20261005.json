@@ -1,0 +1,136 @@
+{
+  "at": "2026-10-05T16:19:08.020Z",
+  "pids": {
+    "collector": 22884,
+    "dashboard": 20092,
+    "paper": 3976,
+    "metrics": null,
+    "contestActivation": true,
+    "retiredMetricsPid": 11792
+  },
+  "collector": {
+    "status": "running",
+    "cycles": 7,
+    "errors": []
+  },
+  "bulk": {
+    "bankHash": "d9e27c27bed40738f7526fdeb256633398dea60eeea42457c5dc40315ca3b2cf",
+    "lastEventAt": "2026-10-05T16:19:02.723Z",
+    "failed": false,
+    "featureScope": 237,
+    "candidates": 0,
+    "counts": {
+      "book_ineligible": 10,
+      "bulk_feature_observation": 1422,
+      "unstable_or_warmup": 18
+    },
+    "sourceFrontiers": {
+      "tape": {
+        "sequence": 1736,
+        "hash": "23d1e00ea0b03d7238527af52d99dbb0b00c74d0ef7fa549df0c37c855c38324"
+      },
+      "prices": {
+        "sequence": 14409,
+        "hash": "68706cf898105c632c9757aecbb382f62c62c97fbb7e2b1e06bc9e9224a7ff52"
+      }
+    },
+    "wallet": {
+      "cash": "100.000000",
+      "realizedPnl": "0.000000",
+      "fees": "0.000000",
+      "cumulativeBuys": "0.000000",
+      "fills": 0,
+      "closedTrades": 0,
+      "pairedRedemptions": 0,
+      "positions": [],
+      "unresolvedQuotes": [],
+      "reserved": "0.000000",
+      "recentFills": [],
+      "recentRedemptions": [],
+      "estimatedLiquidationPnl": "0.000000"
+    }
+  },
+  "fixed": [
+    {
+      "file": "competition-activation.json",
+      "unchanged": true
+    },
+    {
+      "file": "probability-receipt-active.json",
+      "unchanged": true
+    },
+    {
+      "file": "native-dip-intent-active.json",
+      "unchanged": true
+    },
+    {
+      "file": "native-quote-active.json",
+      "unchanged": true
+    },
+    {
+      "file": "stable-maker-broad-active.json",
+      "unchanged": true
+    },
+    {
+      "file": "coordinated-network-budget.json",
+      "unchanged": true
+    },
+    {
+      "file": "coupled-maker-active.json",
+      "unchanged": true
+    }
+  ],
+  "priorWalletPrefixes": [
+    {
+      "relative": "coupled-maker-cohorts/baal-coupled-spread-20261005-v1-live/bank.json",
+      "hash": "fd5d2cffa9552ea1a38ffeb1aaae63e64b2b5d0fc06b1cc1baf9a464176b1f71",
+      "bytes": 5621,
+      "preserved": true
+    },
+    {
+      "relative": "coupled-maker-cohorts/baal-coupled-spread-20261005-v1-live/journal.jsonl",
+      "hash": "bc234f4a9f4db23d6ee228227a10ae6d68d86b5e7053712179e2037ad321f4d1",
+      "bytes": 14587924,
+      "preserved": true
+    },
+    {
+      "relative": "stable-maker-cohorts/baal-stable-broad-20261005-v2-live/bank.json",
+      "hash": "e6f393d0e8a4cfed5c522f6ad34c88339b07818e0578cfe07a7d9e0995b61cfe",
+      "bytes": 5517,
+      "preserved": true
+    },
+    {
+      "relative": "stable-maker-cohorts/baal-stable-broad-20261005-v2-live/journal.jsonl",
+      "hash": "ecb23a91b77aaeb15ce8fb83dc18a651aeae5945d531c5c5eada1ac00a9a6968",
+      "bytes": 21103781,
+      "preserved": true
+    }
+  ],
+  "sourcePrefixes": [
+    {
+      "file": "anonymous-trades.jsonl",
+      "bytes": 15303964,
+      "hash": "bc3da5bd8a1d74ae1ad2e74b63128ca7d53260a96fd1921ba88c0a953ae75ac7",
+      "preserved": true
+    },
+    {
+      "file": "market-prices.jsonl",
+      "bytes": 161273086,
+      "hash": "5f34743ef0da8a9e003f110463538e95f43ed79ca06c3005eafc77fa6a29cd9b",
+      "preserved": true
+    }
+  ],
+  "official": {
+    "status": "entry_window_closed",
+    "ordersSubmitted": 0,
+    "dispatchAttempts": 0,
+    "unconfirmedIntents": 0,
+    "entryExpiresAt": "2026-10-05T03:59:22.131Z",
+    "entryAuthorityExtended": false
+  },
+  "priorFailedBanksPreserved": true,
+  "networkRequests": 0,
+  "accountingReset": false,
+  "additionalServices": 0,
+  "profitabilityEstablished": false
+}

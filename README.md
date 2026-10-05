@@ -1,3 +1,7 @@
+# October5: market-wide bulk history and inside spread quotes
+
+October5: a separately frozen coupled paper cohort now uses causal bulk-price history across all237 exchanges and one-tick-inside paired quotes. Fresh full-book depth and account eligibility still control quotes and exits. Existing read slots and wallet histories are preserved. The original-source replay processed21,813 events in39.52s but had no fills and missing quote-window tape coverage; no profit is claimed. The 87 integration checks pass. The original official activation remains expired. See [implementation and measured limits](docs/COUPLED_BULK.md).
+
 # October5: shared-wallet spread bot and repaired collection
 
 October5: repaired tape selection and started a shared-wallet spread cohort. The full237-exchange tape scope was already correct; the runner incorrectly selected only its old four markets. Exact recovery receipts for364/376 resolved all four blocked quotes without fills. A new separately frozen coupled YES/NO paper wallet models the documented immediate one-SUSQie pair payout, retains unmatched inventory risk, and uses zero fees. Historical original-source replay processed7,567 events in23.64s: one hypothetical purchase, zero completed pairs and zero realized profit. No production activation or profit is claimed. Windows sharing-denial retries and preserved polling-code archives address actual collector/restart failures. See [current implementation and measured results](docs/COUPLED_SPREAD.md).

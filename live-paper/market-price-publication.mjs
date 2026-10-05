@@ -22,5 +22,6 @@ export function createMarketPricePublication({file,universe,canOperate=()=>true}
   if(!canOperate())throw Error('MARKET_PRICE_PUBLICATION_STOPPED');validatePriceObservation(snapshot,universe);
   const last=journal.last?.event?.snapshot;if(last&&Date.parse(snapshot.receivedAt)<Date.parse(last.receivedAt))throw Error('MARKET_PRICE_PUBLICATION_CLOCK_REVERSED');
   journal.commit(null,{type:'market_price_observation',snapshot});
+  return {...journal.last,hash:journal.previous};
  },status:()=>({sequence:journal.sequence,hash:journal.previous,universeHash:universe.hash,networkRequests:0})};
 }
