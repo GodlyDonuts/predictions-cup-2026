@@ -1,0 +1,13 @@
+[package]
+name = "baal-dual-no-engine"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+serde_json = "1"
+sha2 = "0.10"
+ryu-js = "=1.0.3"
+
+[profile.release]
+lto = "thin"
+codegen-units = 1

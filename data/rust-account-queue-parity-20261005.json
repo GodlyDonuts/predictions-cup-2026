@@ -1,0 +1,121 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-05T22:23:16.175Z",
+  "mode": "offline_actual_Node_ReadClient_Rust_core_parity",
+  "binarySha256": "ad5741473c56e57ac1065846a79ca25a48afdd77ab1642bfa0ae778c74bf72d7",
+  "scenarios": [
+    {
+      "scenario": "mixed_completion_pacing",
+      "requests": 6,
+      "nodeRustFinalReservationParity": true,
+      "next": 16495,
+      "cooldown": 0,
+      "networkSequence": [
+        {
+          "networkAt": 0,
+          "finishedAt": 359,
+          "status": 200,
+          "write": false
+        },
+        {
+          "networkAt": 1359,
+          "finishedAt": 8359,
+          "status": 200,
+          "write": true
+        },
+        {
+          "networkAt": 10859,
+          "finishedAt": 10859,
+          "status": 200,
+          "write": false
+        },
+        {
+          "networkAt": 11859,
+          "finishedAt": 11870,
+          "status": 200,
+          "write": true
+        },
+        {
+          "networkAt": 14370,
+          "finishedAt": 14395,
+          "status": 200,
+          "write": false
+        },
+        {
+          "networkAt": 15395,
+          "finishedAt": 15495,
+          "status": 200,
+          "write": false
+        }
+      ]
+    },
+    {
+      "scenario": "slow_durable_network_fence",
+      "requests": 2,
+      "nodeRustFinalReservationParity": true,
+      "next": 8900,
+      "cooldown": 0,
+      "networkSequence": [
+        {
+          "networkAt": 5000,
+          "finishedAt": 5400,
+          "status": 200,
+          "write": true
+        },
+        {
+          "networkAt": 7900,
+          "finishedAt": 7900,
+          "status": 200,
+          "write": false
+        }
+      ]
+    },
+    {
+      "scenario": "429_retry_after_90s",
+      "requests": 2,
+      "nodeRustFinalReservationParity": true,
+      "next": 91350,
+      "cooldown": 90300,
+      "networkSequence": [
+        {
+          "networkAt": 0,
+          "finishedAt": 300,
+          "status": 429,
+          "write": false
+        },
+        {
+          "networkAt": 90300,
+          "finishedAt": 90350,
+          "status": 200,
+          "write": false
+        }
+      ]
+    },
+    {
+      "scenario": "503_retry_after_15s",
+      "requests": 2,
+      "nodeRustFinalReservationParity": true,
+      "next": 16050,
+      "cooldown": 15000,
+      "networkSequence": [
+        {
+          "networkAt": 0,
+          "finishedAt": 0,
+          "status": 503,
+          "write": false
+        },
+        {
+          "networkAt": 15000,
+          "finishedAt": 15050,
+          "status": 200,
+          "write": false
+        }
+      ]
+    }
+  ],
+  "limitations": [
+    "No API, credentials, runtime bank or production client was accessed.",
+    "Rust explicitly enforces 60 reads/24 writes in an inclusive rolling minute; Node pacing alone permits boundary counts of 61/25 in existing tests. That conservative extra boundary differs intentionally.",
+    "This measures correctness, not profitability or faster account dispatch. Existing production HTTP/authority validators remain Node."
+  ]
+}
