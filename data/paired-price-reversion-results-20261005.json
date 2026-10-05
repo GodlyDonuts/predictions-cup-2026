@@ -1,0 +1,5805 @@
+{
+  "schemaVersion": 1,
+  "at": "2026-10-05T22:44:19.008Z",
+  "policy": {
+    "maximumQuoteAgeMs": 20000,
+    "maximumSkewMs": 10000,
+    "latencyMs": 2000,
+    "maximumHoldMs": 1800000,
+    "entryCost": "0.980000",
+    "targetQuoteMargin": "0.010000",
+    "perLegAdverseTicks": 1,
+    "feePerShare": "0.000000"
+  },
+  "source": {
+    "prefixBytes": 198811330,
+    "sha256": "66857d95198b612dbafe850fe4f467f5c01244a7c4eb3416c8b6390e61285de1",
+    "records": 17736,
+    "tailHash": "76fdbec59b3830141ede42fb8ffc93a8c4d607b7ae9d2ac286ebd3fe49d788b9",
+    "first": "2026-10-02T18:52:17.949Z",
+    "last": "2026-10-05T22:44:04.063Z"
+  },
+  "wallMs": 6238.5830000000005,
+  "pairsScreened": 117,
+  "summary": {
+    "hours": 75.86280944444445,
+    "quotedEntrySignals": 815,
+    "quotedClosedSignals": 810,
+    "quotedProfitableExits": 12,
+    "quotedTimeouts": 798,
+    "totalClosedQuoteMargin": "-21.405000",
+    "positiveNetQuotePairs": 0
+  },
+  "results": [
+    {
+      "title": "Montana Senate",
+      "legs": [
+        {
+          "marketId": "274",
+          "exchangeId": "963",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "275",
+          "exchangeId": "964",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5913,
+      "minimumQuotedAcquisition": "0.975000",
+      "quotedEntrySignals": 1,
+      "quotedProfitableExitSignals": 0,
+      "quotedTimeoutExitSignals": 1,
+      "quotedRoundtripMargins": [
+        "0.000000"
+      ],
+      "totalClosedQuoteMargin": "0.000000",
+      "quoteHoldingMs": [
+        1813128
+      ],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:44:04.063Z",
+        "buy": "1.025000",
+        "sell": "0.995000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "KY-04 House race",
+      "legs": [
+        {
+          "marketId": "219",
+          "exchangeId": "908",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "220",
+          "exchangeId": "909",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5913,
+      "minimumQuotedAcquisition": "0.970000",
+      "quotedEntrySignals": 1,
+      "quotedProfitableExitSignals": 0,
+      "quotedTimeoutExitSignals": 1,
+      "quotedRoundtripMargins": [
+        "0.000000"
+      ],
+      "totalClosedQuoteMargin": "0.000000",
+      "quoteHoldingMs": [
+        1803422
+      ],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:44:04.063Z",
+        "buy": "1.040000",
+        "sell": "1.010000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "Massachusetts Governor",
+      "legs": [
+        {
+          "marketId": "370",
+          "exchangeId": "1059",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "371",
+          "exchangeId": "1060",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5910,
+      "minimumQuotedAcquisition": "0.995000",
+      "quotedEntrySignals": 0,
+      "quotedProfitableExitSignals": 0,
+      "quotedTimeoutExitSignals": 0,
+      "quotedRoundtripMargins": [],
+      "totalClosedQuoteMargin": "0.000000",
+      "quoteHoldingMs": [],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:43:52.406Z",
+        "buy": "1.015000",
+        "sell": "0.985000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "VA-02 House race",
+      "legs": [
+        {
+          "marketId": "343",
+          "exchangeId": "1032",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "250",
+          "exchangeId": "939",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5733,
+      "minimumQuotedAcquisition": "0.995000",
+      "quotedEntrySignals": 0,
+      "quotedProfitableExitSignals": 0,
+      "quotedTimeoutExitSignals": 0,
+      "quotedRoundtripMargins": [],
+      "totalClosedQuoteMargin": "0.000000",
+      "quoteHoldingMs": [],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:01:18.451Z",
+        "buy": "1.015000",
+        "sell": "0.985000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "MI-10 House race",
+      "legs": [
+        {
+          "marketId": "332",
+          "exchangeId": "1021",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "333",
+          "exchangeId": "1022",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5910,
+      "minimumQuotedAcquisition": "0.990000",
+      "quotedEntrySignals": 0,
+      "quotedProfitableExitSignals": 0,
+      "quotedTimeoutExitSignals": 0,
+      "quotedRoundtripMargins": [],
+      "totalClosedQuoteMargin": "0.000000",
+      "quoteHoldingMs": [],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:43:52.406Z",
+        "buy": "1.015000",
+        "sell": "0.985000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "FL-20 House race",
+      "legs": [
+        {
+          "marketId": "326",
+          "exchangeId": "1015",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "327",
+          "exchangeId": "1016",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5910,
+      "minimumQuotedAcquisition": "0.995000",
+      "quotedEntrySignals": 0,
+      "quotedProfitableExitSignals": 0,
+      "quotedTimeoutExitSignals": 0,
+      "quotedRoundtripMargins": [],
+      "totalClosedQuoteMargin": "0.000000",
+      "quoteHoldingMs": [],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:43:52.406Z",
+        "buy": "1.065000",
+        "sell": "1.030000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "FL-09 House race",
+      "legs": [
+        {
+          "marketId": "211",
+          "exchangeId": "900",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "322",
+          "exchangeId": "1011",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5733,
+      "minimumQuotedAcquisition": "0.995000",
+      "quotedEntrySignals": 0,
+      "quotedProfitableExitSignals": 0,
+      "quotedTimeoutExitSignals": 0,
+      "quotedRoundtripMargins": [],
+      "totalClosedQuoteMargin": "0.000000",
+      "quoteHoldingMs": [],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:01:18.451Z",
+        "buy": "1.015000",
+        "sell": "0.985000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "FL-07 House race",
+      "legs": [
+        {
+          "marketId": "320",
+          "exchangeId": "1009",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "321",
+          "exchangeId": "1010",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5910,
+      "minimumQuotedAcquisition": "1.010000",
+      "quotedEntrySignals": 0,
+      "quotedProfitableExitSignals": 0,
+      "quotedTimeoutExitSignals": 0,
+      "quotedRoundtripMargins": [],
+      "totalClosedQuoteMargin": "0.000000",
+      "quoteHoldingMs": [],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:43:52.406Z",
+        "buy": "1.025000",
+        "sell": "0.995000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "AL-02 House race",
+      "legs": [
+        {
+          "marketId": "318",
+          "exchangeId": "1007",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "319",
+          "exchangeId": "1008",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5910,
+      "minimumQuotedAcquisition": "0.990000",
+      "quotedEntrySignals": 0,
+      "quotedProfitableExitSignals": 0,
+      "quotedTimeoutExitSignals": 0,
+      "quotedRoundtripMargins": [],
+      "totalClosedQuoteMargin": "0.000000",
+      "quoteHoldingMs": [],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:43:52.406Z",
+        "buy": "1.015000",
+        "sell": "0.985000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "Wyoming Governor",
+      "legs": [
+        {
+          "marketId": "316",
+          "exchangeId": "1005",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "317",
+          "exchangeId": "1006",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5910,
+      "minimumQuotedAcquisition": "0.990000",
+      "quotedEntrySignals": 0,
+      "quotedProfitableExitSignals": 0,
+      "quotedTimeoutExitSignals": 0,
+      "quotedRoundtripMargins": [],
+      "totalClosedQuoteMargin": "0.000000",
+      "quoteHoldingMs": [],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:43:52.406Z",
+        "buy": "1.020000",
+        "sell": "0.990000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "Wisconsin Governor",
+      "legs": [
+        {
+          "marketId": "314",
+          "exchangeId": "1003",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "315",
+          "exchangeId": "1004",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5910,
+      "minimumQuotedAcquisition": "0.995000",
+      "quotedEntrySignals": 0,
+      "quotedProfitableExitSignals": 0,
+      "quotedTimeoutExitSignals": 0,
+      "quotedRoundtripMargins": [],
+      "totalClosedQuoteMargin": "0.000000",
+      "quoteHoldingMs": [],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:43:52.406Z",
+        "buy": "1.025000",
+        "sell": "0.995000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "Vermont Governor",
+      "legs": [
+        {
+          "marketId": "312",
+          "exchangeId": "1001",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "313",
+          "exchangeId": "1002",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5910,
+      "minimumQuotedAcquisition": "0.985000",
+      "quotedEntrySignals": 0,
+      "quotedProfitableExitSignals": 0,
+      "quotedTimeoutExitSignals": 0,
+      "quotedRoundtripMargins": [],
+      "totalClosedQuoteMargin": "0.000000",
+      "quoteHoldingMs": [],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:43:52.406Z",
+        "buy": "1.010000",
+        "sell": "0.975000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "Kansas Governor",
+      "legs": [
+        {
+          "marketId": "303",
+          "exchangeId": "992",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "304",
+          "exchangeId": "993",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5910,
+      "minimumQuotedAcquisition": "1.005000",
+      "quotedEntrySignals": 0,
+      "quotedProfitableExitSignals": 0,
+      "quotedTimeoutExitSignals": 0,
+      "quotedRoundtripMargins": [],
+      "totalClosedQuoteMargin": "0.000000",
+      "quoteHoldingMs": [],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:43:52.406Z",
+        "buy": "1.020000",
+        "sell": "0.990000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "Florida Governor",
+      "legs": [
+        {
+          "marketId": "299",
+          "exchangeId": "988",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "300",
+          "exchangeId": "989",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5910,
+      "minimumQuotedAcquisition": "0.985000",
+      "quotedEntrySignals": 0,
+      "quotedProfitableExitSignals": 0,
+      "quotedTimeoutExitSignals": 0,
+      "quotedRoundtripMargins": [],
+      "totalClosedQuoteMargin": "0.000000",
+      "quoteHoldingMs": [],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:43:52.406Z",
+        "buy": "1.015000",
+        "sell": "0.985000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "Connecticut Governor",
+      "legs": [
+        {
+          "marketId": "298",
+          "exchangeId": "987",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "165",
+          "exchangeId": "854",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5728,
+      "minimumQuotedAcquisition": "0.990000",
+      "quotedEntrySignals": 0,
+      "quotedProfitableExitSignals": 0,
+      "quotedTimeoutExitSignals": 0,
+      "quotedRoundtripMargins": [],
+      "totalClosedQuoteMargin": "0.000000",
+      "quoteHoldingMs": [],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:01:20.658Z",
+        "buy": "1.045000",
+        "sell": "1.010000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "West Virginia Senate",
+      "legs": [
+        {
+          "marketId": "296",
+          "exchangeId": "985",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "297",
+          "exchangeId": "986",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5910,
+      "minimumQuotedAcquisition": "1.010000",
+      "quotedEntrySignals": 0,
+      "quotedProfitableExitSignals": 0,
+      "quotedTimeoutExitSignals": 0,
+      "quotedRoundtripMargins": [],
+      "totalClosedQuoteMargin": "0.000000",
+      "quoteHoldingMs": [],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:43:52.406Z",
+        "buy": "1.020000",
+        "sell": "0.990000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "Oregon Senate",
+      "legs": [
+        {
+          "marketId": "287",
+          "exchangeId": "976",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "288",
+          "exchangeId": "977",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5733,
+      "minimumQuotedAcquisition": "0.985000",
+      "quotedEntrySignals": 0,
+      "quotedProfitableExitSignals": 0,
+      "quotedTimeoutExitSignals": 0,
+      "quotedRoundtripMargins": [],
+      "totalClosedQuoteMargin": "0.000000",
+      "quoteHoldingMs": [],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:01:18.451Z",
+        "buy": "1.005000",
+        "sell": "0.975000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "New Jersey Senate",
+      "legs": [
+        {
+          "marketId": "282",
+          "exchangeId": "971",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "283",
+          "exchangeId": "972",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5880,
+      "minimumQuotedAcquisition": "0.985000",
+      "quotedEntrySignals": 0,
+      "quotedProfitableExitSignals": 0,
+      "quotedTimeoutExitSignals": 0,
+      "quotedRoundtripMargins": [],
+      "totalClosedQuoteMargin": "0.000000",
+      "quoteHoldingMs": [],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:44:04.063Z",
+        "buy": "1.025000",
+        "sell": "0.995000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "Nebraska Senate",
+      "legs": [
+        {
+          "marketId": "279",
+          "exchangeId": "968",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "281",
+          "exchangeId": "970",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5913,
+      "minimumQuotedAcquisition": "1.200000",
+      "quotedEntrySignals": 0,
+      "quotedProfitableExitSignals": 0,
+      "quotedTimeoutExitSignals": 0,
+      "quotedRoundtripMargins": [],
+      "totalClosedQuoteMargin": "0.000000",
+      "quoteHoldingMs": [],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:44:04.063Z",
+        "buy": "1.240000",
+        "sell": "1.210000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "Illinois Senate",
+      "legs": [
+        {
+          "marketId": "264",
+          "exchangeId": "953",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "265",
+          "exchangeId": "954",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5913,
+      "minimumQuotedAcquisition": "0.990000",
+      "quotedEntrySignals": 0,
+      "quotedProfitableExitSignals": 0,
+      "quotedTimeoutExitSignals": 0,
+      "quotedRoundtripMargins": [],
+      "totalClosedQuoteMargin": "0.000000",
+      "quoteHoldingMs": [],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:44:04.063Z",
+        "buy": "1.025000",
+        "sell": "0.995000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "Idaho Senate",
+      "legs": [
+        {
+          "marketId": "262",
+          "exchangeId": "951",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "263",
+          "exchangeId": "952",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5913,
+      "minimumQuotedAcquisition": "0.990000",
+      "quotedEntrySignals": 0,
+      "quotedProfitableExitSignals": 0,
+      "quotedTimeoutExitSignals": 0,
+      "quotedRoundtripMargins": [],
+      "totalClosedQuoteMargin": "0.000000",
+      "quoteHoldingMs": [],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:44:04.063Z",
+        "buy": "1.025000",
+        "sell": "0.995000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "Colorado Senate",
+      "legs": [
+        {
+          "marketId": "256",
+          "exchangeId": "945",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "257",
+          "exchangeId": "946",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5913,
+      "minimumQuotedAcquisition": "0.990000",
+      "quotedEntrySignals": 0,
+      "quotedProfitableExitSignals": 0,
+      "quotedTimeoutExitSignals": 0,
+      "quotedRoundtripMargins": [],
+      "totalClosedQuoteMargin": "0.000000",
+      "quoteHoldingMs": [],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:44:04.063Z",
+        "buy": "1.030000",
+        "sell": "1.000000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "TX-28 House race",
+      "legs": [
+        {
+          "marketId": "247",
+          "exchangeId": "936",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "248",
+          "exchangeId": "937",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5913,
+      "minimumQuotedAcquisition": "1.000000",
+      "quotedEntrySignals": 0,
+      "quotedProfitableExitSignals": 0,
+      "quotedTimeoutExitSignals": 0,
+      "quotedRoundtripMargins": [],
+      "totalClosedQuoteMargin": "0.000000",
+      "quoteHoldingMs": [],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:44:04.063Z",
+        "buy": "1.030000",
+        "sell": "0.995000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "TX-23 House race",
+      "legs": [
+        {
+          "marketId": "245",
+          "exchangeId": "934",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "246",
+          "exchangeId": "935",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5913,
+      "minimumQuotedAcquisition": "0.990000",
+      "quotedEntrySignals": 0,
+      "quotedProfitableExitSignals": 0,
+      "quotedTimeoutExitSignals": 0,
+      "quotedRoundtripMargins": [],
+      "totalClosedQuoteMargin": "0.000000",
+      "quoteHoldingMs": [],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:44:04.063Z",
+        "buy": "1.000000",
+        "sell": "0.965000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "TX-15 House race",
+      "legs": [
+        {
+          "marketId": "243",
+          "exchangeId": "932",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "244",
+          "exchangeId": "933",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5913,
+      "minimumQuotedAcquisition": "0.990000",
+      "quotedEntrySignals": 0,
+      "quotedProfitableExitSignals": 0,
+      "quotedTimeoutExitSignals": 0,
+      "quotedRoundtripMargins": [],
+      "totalClosedQuoteMargin": "0.000000",
+      "quoteHoldingMs": [],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:44:04.063Z",
+        "buy": "1.010000",
+        "sell": "0.980000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "SC-01 House race",
+      "legs": [
+        {
+          "marketId": "241",
+          "exchangeId": "930",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "242",
+          "exchangeId": "931",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5913,
+      "minimumQuotedAcquisition": "1.000000",
+      "quotedEntrySignals": 0,
+      "quotedProfitableExitSignals": 0,
+      "quotedTimeoutExitSignals": 0,
+      "quotedRoundtripMargins": [],
+      "totalClosedQuoteMargin": "0.000000",
+      "quoteHoldingMs": [],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:44:04.063Z",
+        "buy": "1.005000",
+        "sell": "0.970000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "PA-10 House race",
+      "legs": [
+        {
+          "marketId": "239",
+          "exchangeId": "928",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "240",
+          "exchangeId": "929",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5913,
+      "minimumQuotedAcquisition": "0.990000",
+      "quotedEntrySignals": 0,
+      "quotedProfitableExitSignals": 0,
+      "quotedTimeoutExitSignals": 0,
+      "quotedRoundtripMargins": [],
+      "totalClosedQuoteMargin": "0.000000",
+      "quoteHoldingMs": [],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:44:04.063Z",
+        "buy": "1.015000",
+        "sell": "0.980000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "PA-08 House race",
+      "legs": [
+        {
+          "marketId": "237",
+          "exchangeId": "926",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "238",
+          "exchangeId": "927",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5913,
+      "minimumQuotedAcquisition": "0.990000",
+      "quotedEntrySignals": 0,
+      "quotedProfitableExitSignals": 0,
+      "quotedTimeoutExitSignals": 0,
+      "quotedRoundtripMargins": [],
+      "totalClosedQuoteMargin": "0.000000",
+      "quoteHoldingMs": [],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:44:04.063Z",
+        "buy": "1.005000",
+        "sell": "0.975000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "PA-07 House race",
+      "legs": [
+        {
+          "marketId": "235",
+          "exchangeId": "924",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "236",
+          "exchangeId": "925",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5913,
+      "minimumQuotedAcquisition": "1.000000",
+      "quotedEntrySignals": 0,
+      "quotedProfitableExitSignals": 0,
+      "quotedTimeoutExitSignals": 0,
+      "quotedRoundtripMargins": [],
+      "totalClosedQuoteMargin": "0.000000",
+      "quoteHoldingMs": [],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:44:04.063Z",
+        "buy": "1.010000",
+        "sell": "0.975000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "PA-01 House race",
+      "legs": [
+        {
+          "marketId": "233",
+          "exchangeId": "922",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "234",
+          "exchangeId": "923",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5913,
+      "minimumQuotedAcquisition": "0.980000",
+      "quotedEntrySignals": 1,
+      "quotedProfitableExitSignals": 0,
+      "quotedTimeoutExitSignals": 0,
+      "quotedRoundtripMargins": [],
+      "totalClosedQuoteMargin": "0.000000",
+      "quoteHoldingMs": [],
+      "openQuotedSignal": {
+        "at": "2026-10-05T22:19:11.304Z",
+        "cost": "0.980000"
+      },
+      "last": {
+        "at": "2026-10-05T22:44:04.063Z",
+        "buy": "0.995000",
+        "sell": "0.950000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "NY-13 House race",
+      "legs": [
+        {
+          "marketId": "229",
+          "exchangeId": "918",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "230",
+          "exchangeId": "919",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5913,
+      "minimumQuotedAcquisition": "0.985000",
+      "quotedEntrySignals": 0,
+      "quotedProfitableExitSignals": 0,
+      "quotedTimeoutExitSignals": 0,
+      "quotedRoundtripMargins": [],
+      "totalClosedQuoteMargin": "0.000000",
+      "quoteHoldingMs": [],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:44:04.063Z",
+        "buy": "1.020000",
+        "sell": "0.990000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "NJ-07 House race",
+      "legs": [
+        {
+          "marketId": "227",
+          "exchangeId": "916",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "228",
+          "exchangeId": "917",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5913,
+      "minimumQuotedAcquisition": "0.990000",
+      "quotedEntrySignals": 0,
+      "quotedProfitableExitSignals": 0,
+      "quotedTimeoutExitSignals": 0,
+      "quotedRoundtripMargins": [],
+      "totalClosedQuoteMargin": "0.000000",
+      "quoteHoldingMs": [],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:44:04.063Z",
+        "buy": "1.005000",
+        "sell": "0.975000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "NE-02 House race",
+      "legs": [
+        {
+          "marketId": "225",
+          "exchangeId": "914",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "226",
+          "exchangeId": "915",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5913,
+      "minimumQuotedAcquisition": "0.990000",
+      "quotedEntrySignals": 0,
+      "quotedProfitableExitSignals": 0,
+      "quotedTimeoutExitSignals": 0,
+      "quotedRoundtripMargins": [],
+      "totalClosedQuoteMargin": "0.000000",
+      "quoteHoldingMs": [],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:44:04.063Z",
+        "buy": "1.015000",
+        "sell": "0.985000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "MT-01 House race",
+      "legs": [
+        {
+          "marketId": "223",
+          "exchangeId": "912",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "224",
+          "exchangeId": "913",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5913,
+      "minimumQuotedAcquisition": "0.990000",
+      "quotedEntrySignals": 0,
+      "quotedProfitableExitSignals": 0,
+      "quotedTimeoutExitSignals": 0,
+      "quotedRoundtripMargins": [],
+      "totalClosedQuoteMargin": "0.000000",
+      "quoteHoldingMs": [],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:44:04.063Z",
+        "buy": "1.005000",
+        "sell": "0.975000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "IA-03 House race",
+      "legs": [
+        {
+          "marketId": "217",
+          "exchangeId": "906",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "218",
+          "exchangeId": "907",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5913,
+      "minimumQuotedAcquisition": "1.000000",
+      "quotedEntrySignals": 0,
+      "quotedProfitableExitSignals": 0,
+      "quotedTimeoutExitSignals": 0,
+      "quotedRoundtripMargins": [],
+      "totalClosedQuoteMargin": "0.000000",
+      "quoteHoldingMs": [],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:44:04.063Z",
+        "buy": "1.010000",
+        "sell": "0.975000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "IA-02 House race",
+      "legs": [
+        {
+          "marketId": "215",
+          "exchangeId": "904",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "216",
+          "exchangeId": "905",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5913,
+      "minimumQuotedAcquisition": "1.010000",
+      "quotedEntrySignals": 0,
+      "quotedProfitableExitSignals": 0,
+      "quotedTimeoutExitSignals": 0,
+      "quotedRoundtripMargins": [],
+      "totalClosedQuoteMargin": "0.000000",
+      "quoteHoldingMs": [],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:44:04.063Z",
+        "buy": "1.040000",
+        "sell": "1.010000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "CO-04 House race",
+      "legs": [
+        {
+          "marketId": "207",
+          "exchangeId": "896",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "208",
+          "exchangeId": "897",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5913,
+      "minimumQuotedAcquisition": "1.000000",
+      "quotedEntrySignals": 0,
+      "quotedProfitableExitSignals": 0,
+      "quotedTimeoutExitSignals": 0,
+      "quotedRoundtripMargins": [],
+      "totalClosedQuoteMargin": "0.000000",
+      "quoteHoldingMs": [],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:44:04.063Z",
+        "buy": "1.010000",
+        "sell": "0.975000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "CO-03 House race",
+      "legs": [
+        {
+          "marketId": "205",
+          "exchangeId": "894",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "206",
+          "exchangeId": "895",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5913,
+      "minimumQuotedAcquisition": "0.995000",
+      "quotedEntrySignals": 0,
+      "quotedProfitableExitSignals": 0,
+      "quotedTimeoutExitSignals": 0,
+      "quotedRoundtripMargins": [],
+      "totalClosedQuoteMargin": "0.000000",
+      "quoteHoldingMs": [],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:44:04.063Z",
+        "buy": "1.005000",
+        "sell": "0.970000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "CA-48 House race",
+      "legs": [
+        {
+          "marketId": "203",
+          "exchangeId": "892",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "204",
+          "exchangeId": "893",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5913,
+      "minimumQuotedAcquisition": "0.995000",
+      "quotedEntrySignals": 0,
+      "quotedProfitableExitSignals": 0,
+      "quotedTimeoutExitSignals": 0,
+      "quotedRoundtripMargins": [],
+      "totalClosedQuoteMargin": "0.000000",
+      "quoteHoldingMs": [],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:44:04.063Z",
+        "buy": "1.015000",
+        "sell": "0.975000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "AZ-06 House race",
+      "legs": [
+        {
+          "marketId": "199",
+          "exchangeId": "888",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "200",
+          "exchangeId": "889",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5913,
+      "minimumQuotedAcquisition": "0.995000",
+      "quotedEntrySignals": 0,
+      "quotedProfitableExitSignals": 0,
+      "quotedTimeoutExitSignals": 0,
+      "quotedRoundtripMargins": [],
+      "totalClosedQuoteMargin": "0.000000",
+      "quoteHoldingMs": [],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:44:04.063Z",
+        "buy": "1.015000",
+        "sell": "0.985000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "AZ-01 House race",
+      "legs": [
+        {
+          "marketId": "197",
+          "exchangeId": "886",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "198",
+          "exchangeId": "887",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5913,
+      "minimumQuotedAcquisition": "1.000000",
+      "quotedEntrySignals": 0,
+      "quotedProfitableExitSignals": 0,
+      "quotedTimeoutExitSignals": 0,
+      "quotedRoundtripMargins": [],
+      "totalClosedQuoteMargin": "0.000000",
+      "quoteHoldingMs": [],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:44:04.063Z",
+        "buy": "1.015000",
+        "sell": "0.985000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "Texas Governor",
+      "legs": [
+        {
+          "marketId": "195",
+          "exchangeId": "884",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "196",
+          "exchangeId": "885",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5913,
+      "minimumQuotedAcquisition": "1.005000",
+      "quotedEntrySignals": 0,
+      "quotedProfitableExitSignals": 0,
+      "quotedTimeoutExitSignals": 0,
+      "quotedRoundtripMargins": [],
+      "totalClosedQuoteMargin": "0.000000",
+      "quoteHoldingMs": [],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:44:04.063Z",
+        "buy": "1.005000",
+        "sell": "0.975000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "South Carolina Governor",
+      "legs": [
+        {
+          "marketId": "192",
+          "exchangeId": "881",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "193",
+          "exchangeId": "882",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5913,
+      "minimumQuotedAcquisition": "1.000000",
+      "quotedEntrySignals": 0,
+      "quotedProfitableExitSignals": 0,
+      "quotedTimeoutExitSignals": 0,
+      "quotedRoundtripMargins": [],
+      "totalClosedQuoteMargin": "0.000000",
+      "quoteHoldingMs": [],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:44:04.063Z",
+        "buy": "1.020000",
+        "sell": "0.990000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "New York Governor",
+      "legs": [
+        {
+          "marketId": "184",
+          "exchangeId": "873",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "185",
+          "exchangeId": "874",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5913,
+      "minimumQuotedAcquisition": "0.985000",
+      "quotedEntrySignals": 0,
+      "quotedProfitableExitSignals": 0,
+      "quotedTimeoutExitSignals": 0,
+      "quotedRoundtripMargins": [],
+      "totalClosedQuoteMargin": "0.000000",
+      "quoteHoldingMs": [],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:43:40.684Z",
+        "buy": "1.035000",
+        "sell": "1.000000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "Nebraska Governor",
+      "legs": [
+        {
+          "marketId": "178",
+          "exchangeId": "867",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "179",
+          "exchangeId": "868",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5913,
+      "minimumQuotedAcquisition": "1.000000",
+      "quotedEntrySignals": 0,
+      "quotedProfitableExitSignals": 0,
+      "quotedTimeoutExitSignals": 0,
+      "quotedRoundtripMargins": [],
+      "totalClosedQuoteMargin": "0.000000",
+      "quoteHoldingMs": [],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:43:40.684Z",
+        "buy": "1.020000",
+        "sell": "0.990000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "Maine Governor",
+      "legs": [
+        {
+          "marketId": "176",
+          "exchangeId": "865",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "177",
+          "exchangeId": "866",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5913,
+      "minimumQuotedAcquisition": "0.990000",
+      "quotedEntrySignals": 0,
+      "quotedProfitableExitSignals": 0,
+      "quotedTimeoutExitSignals": 0,
+      "quotedRoundtripMargins": [],
+      "totalClosedQuoteMargin": "0.000000",
+      "quoteHoldingMs": [],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:43:40.684Z",
+        "buy": "1.020000",
+        "sell": "0.990000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "Alabama Governor",
+      "legs": [
+        {
+          "marketId": "155",
+          "exchangeId": "844",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "156",
+          "exchangeId": "845",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5913,
+      "minimumQuotedAcquisition": "0.995000",
+      "quotedEntrySignals": 0,
+      "quotedProfitableExitSignals": 0,
+      "quotedTimeoutExitSignals": 0,
+      "quotedRoundtripMargins": [],
+      "totalClosedQuoteMargin": "0.000000",
+      "quoteHoldingMs": [],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:43:40.684Z",
+        "buy": "1.010000",
+        "sell": "0.975000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "Virginia Senate",
+      "legs": [
+        {
+          "marketId": "295",
+          "exchangeId": "984",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "364",
+          "exchangeId": "1053",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5910,
+      "minimumQuotedAcquisition": "0.950000",
+      "quotedEntrySignals": 2,
+      "quotedProfitableExitSignals": 1,
+      "quotedTimeoutExitSignals": 1,
+      "quotedRoundtripMargins": [
+        "-0.025000",
+        "0.010000"
+      ],
+      "totalClosedQuoteMargin": "-0.015000",
+      "quoteHoldingMs": [
+        1822445,
+        1179372
+      ],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:43:52.406Z",
+        "buy": "1.020000",
+        "sell": "0.990000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "WI-01 House race",
+      "legs": [
+        {
+          "marketId": "349",
+          "exchangeId": "1038",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "350",
+          "exchangeId": "1039",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5910,
+      "minimumQuotedAcquisition": "0.965000",
+      "quotedEntrySignals": 1,
+      "quotedProfitableExitSignals": 0,
+      "quotedTimeoutExitSignals": 1,
+      "quotedRoundtripMargins": [
+        "-0.015000"
+      ],
+      "totalClosedQuoteMargin": "-0.015000",
+      "quoteHoldingMs": [
+        1819332
+      ],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:43:52.406Z",
+        "buy": "1.000000",
+        "sell": "0.970000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "MI-07 House race",
+      "legs": [
+        {
+          "marketId": "330",
+          "exchangeId": "1019",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "331",
+          "exchangeId": "1020",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5910,
+      "minimumQuotedAcquisition": "0.980000",
+      "quotedEntrySignals": 1,
+      "quotedProfitableExitSignals": 0,
+      "quotedTimeoutExitSignals": 1,
+      "quotedRoundtripMargins": [
+        "-0.015000"
+      ],
+      "totalClosedQuoteMargin": "-0.015000",
+      "quoteHoldingMs": [
+        1835005
+      ],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:43:52.406Z",
+        "buy": "0.995000",
+        "sell": "0.965000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "Alabama Senate",
+      "legs": [
+        {
+          "marketId": "252",
+          "exchangeId": "941",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "253",
+          "exchangeId": "942",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5913,
+      "minimumQuotedAcquisition": "0.970000",
+      "quotedEntrySignals": 1,
+      "quotedProfitableExitSignals": 0,
+      "quotedTimeoutExitSignals": 1,
+      "quotedRoundtripMargins": [
+        "-0.015000"
+      ],
+      "totalClosedQuoteMargin": "-0.015000",
+      "quoteHoldingMs": [
+        1810707
+      ],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:44:04.063Z",
+        "buy": "1.015000",
+        "sell": "0.985000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "MN-05 House race",
+      "legs": [
+        {
+          "marketId": "338",
+          "exchangeId": "1027",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "339",
+          "exchangeId": "1028",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5910,
+      "minimumQuotedAcquisition": "0.970000",
+      "quotedEntrySignals": 3,
+      "quotedProfitableExitSignals": 1,
+      "quotedTimeoutExitSignals": 2,
+      "quotedRoundtripMargins": [
+        "-0.010000",
+        "-0.020000",
+        "0.010000"
+      ],
+      "totalClosedQuoteMargin": "-0.020000",
+      "quoteHoldingMs": [
+        1817978,
+        1822369,
+        650648
+      ],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:43:52.406Z",
+        "buy": "1.005000",
+        "sell": "0.975000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "VA-07 House race",
+      "legs": [
+        {
+          "marketId": "251",
+          "exchangeId": "940",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "346",
+          "exchangeId": "1035",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5733,
+      "minimumQuotedAcquisition": "0.965000",
+      "quotedEntrySignals": 3,
+      "quotedProfitableExitSignals": 1,
+      "quotedTimeoutExitSignals": 2,
+      "quotedRoundtripMargins": [
+        "-0.025000",
+        "-0.025000",
+        "0.025000"
+      ],
+      "totalClosedQuoteMargin": "-0.025000",
+      "quoteHoldingMs": [
+        1810707,
+        1811798,
+        67420
+      ],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:01:18.451Z",
+        "buy": "1.005000",
+        "sell": "0.975000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "ME-02 House race",
+      "legs": [
+        {
+          "marketId": "221",
+          "exchangeId": "910",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "222",
+          "exchangeId": "911",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5913,
+      "minimumQuotedAcquisition": "0.980000",
+      "quotedEntrySignals": 1,
+      "quotedProfitableExitSignals": 0,
+      "quotedTimeoutExitSignals": 1,
+      "quotedRoundtripMargins": [
+        "-0.025000"
+      ],
+      "totalClosedQuoteMargin": "-0.025000",
+      "quoteHoldingMs": [
+        1816684
+      ],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:44:04.063Z",
+        "buy": "1.010000",
+        "sell": "0.975000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "Oregon Governor",
+      "legs": [
+        {
+          "marketId": "187",
+          "exchangeId": "876",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "188",
+          "exchangeId": "877",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5729,
+      "minimumQuotedAcquisition": "0.980000",
+      "quotedEntrySignals": 1,
+      "quotedProfitableExitSignals": 0,
+      "quotedTimeoutExitSignals": 1,
+      "quotedRoundtripMargins": [
+        "-0.025000"
+      ],
+      "totalClosedQuoteMargin": "-0.025000",
+      "quoteHoldingMs": [
+        1818004
+      ],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:01:20.658Z",
+        "buy": "1.000000",
+        "sell": "0.970000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "Nevada Governor",
+      "legs": [
+        {
+          "marketId": "182",
+          "exchangeId": "871",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "183",
+          "exchangeId": "872",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5913,
+      "minimumQuotedAcquisition": "0.980000",
+      "quotedEntrySignals": 1,
+      "quotedProfitableExitSignals": 0,
+      "quotedTimeoutExitSignals": 1,
+      "quotedRoundtripMargins": [
+        "-0.025000"
+      ],
+      "totalClosedQuoteMargin": "-0.025000",
+      "quoteHoldingMs": [
+        1833669
+      ],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:43:40.684Z",
+        "buy": "1.000000",
+        "sell": "0.965000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "Maryland Governor",
+      "legs": [
+        {
+          "marketId": "174",
+          "exchangeId": "863",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "175",
+          "exchangeId": "864",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5913,
+      "minimumQuotedAcquisition": "0.940000",
+      "quotedEntrySignals": 3,
+      "quotedProfitableExitSignals": 1,
+      "quotedTimeoutExitSignals": 2,
+      "quotedRoundtripMargins": [
+        "-0.030000",
+        "0.015000",
+        "-0.015000"
+      ],
+      "totalClosedQuoteMargin": "-0.030000",
+      "quoteHoldingMs": [
+        1802996,
+        749463,
+        1805460
+      ],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:43:40.684Z",
+        "buy": "1.015000",
+        "sell": "0.985000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "MN-01 House race",
+      "legs": [
+        {
+          "marketId": "334",
+          "exchangeId": "1023",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "335",
+          "exchangeId": "1024",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5910,
+      "minimumQuotedAcquisition": "0.980000",
+      "quotedEntrySignals": 2,
+      "quotedProfitableExitSignals": 0,
+      "quotedTimeoutExitSignals": 2,
+      "quotedRoundtripMargins": [
+        "-0.020000",
+        "-0.015000"
+      ],
+      "totalClosedQuoteMargin": "-0.035000",
+      "quoteHoldingMs": [
+        1826084,
+        1820228
+      ],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:43:52.406Z",
+        "buy": "1.015000",
+        "sell": "0.985000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "New Mexico Governor",
+      "legs": [
+        {
+          "marketId": "180",
+          "exchangeId": "869",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "181",
+          "exchangeId": "870",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5913,
+      "minimumQuotedAcquisition": "0.960000",
+      "quotedEntrySignals": 3,
+      "quotedProfitableExitSignals": 1,
+      "quotedTimeoutExitSignals": 2,
+      "quotedRoundtripMargins": [
+        "0.015000",
+        "-0.020000",
+        "-0.035000"
+      ],
+      "totalClosedQuoteMargin": "-0.040000",
+      "quoteHoldingMs": [
+        726643,
+        1810724,
+        1847288
+      ],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:43:40.684Z",
+        "buy": "1.015000",
+        "sell": "0.985000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "Arkansas Governor",
+      "legs": [
+        {
+          "marketId": "157",
+          "exchangeId": "846",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "158",
+          "exchangeId": "847",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5913,
+      "minimumQuotedAcquisition": "0.960000",
+      "quotedEntrySignals": 3,
+      "quotedProfitableExitSignals": 0,
+      "quotedTimeoutExitSignals": 3,
+      "quotedRoundtripMargins": [
+        "-0.010000",
+        "0.000000",
+        "-0.030000"
+      ],
+      "totalClosedQuoteMargin": "-0.040000",
+      "quoteHoldingMs": [
+        1818220,
+        1813512,
+        1820489
+      ],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:43:40.684Z",
+        "buy": "1.035000",
+        "sell": "1.005000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "Georgia Governor",
+      "legs": [
+        {
+          "marketId": "166",
+          "exchangeId": "855",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "167",
+          "exchangeId": "856",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5913,
+      "minimumQuotedAcquisition": "0.980000",
+      "quotedEntrySignals": 2,
+      "quotedProfitableExitSignals": 0,
+      "quotedTimeoutExitSignals": 2,
+      "quotedRoundtripMargins": [
+        "-0.030000",
+        "-0.010000"
+      ],
+      "totalClosedQuoteMargin": "-0.040000",
+      "quoteHoldingMs": [
+        1835973,
+        31202590
+      ],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:43:40.684Z",
+        "buy": "1.010000",
+        "sell": "0.980000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "Tennessee Governor",
+      "legs": [
+        {
+          "marketId": "310",
+          "exchangeId": "999",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "311",
+          "exchangeId": "1000",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5910,
+      "minimumQuotedAcquisition": "0.975000",
+      "quotedEntrySignals": 2,
+      "quotedProfitableExitSignals": 0,
+      "quotedTimeoutExitSignals": 2,
+      "quotedRoundtripMargins": [
+        "-0.025000",
+        "-0.020000"
+      ],
+      "totalClosedQuoteMargin": "-0.045000",
+      "quoteHoldingMs": [
+        1828149,
+        1823608
+      ],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:43:52.406Z",
+        "buy": "1.025000",
+        "sell": "0.995000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "U.S. House",
+      "legs": [
+        {
+          "marketId": "151",
+          "exchangeId": "840",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "152",
+          "exchangeId": "841",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5913,
+      "minimumQuotedAcquisition": "0.975000",
+      "quotedEntrySignals": 4,
+      "quotedProfitableExitSignals": 1,
+      "quotedTimeoutExitSignals": 3,
+      "quotedRoundtripMargins": [
+        "0.010000",
+        "-0.010000",
+        "-0.025000",
+        "-0.025000"
+      ],
+      "totalClosedQuoteMargin": "-0.050000",
+      "quoteHoldingMs": [
+        181367,
+        1821911,
+        1811927,
+        1812925
+      ],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:43:40.684Z",
+        "buy": "1.025000",
+        "sell": "0.995000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "Rhode Island Governor",
+      "legs": [
+        {
+          "marketId": "384",
+          "exchangeId": "1073",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "385",
+          "exchangeId": "1074",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5910,
+      "minimumQuotedAcquisition": "0.965000",
+      "quotedEntrySignals": 4,
+      "quotedProfitableExitSignals": 0,
+      "quotedTimeoutExitSignals": 4,
+      "quotedRoundtripMargins": [
+        "-0.035000",
+        "-0.015000",
+        "0.005000",
+        "-0.010000"
+      ],
+      "totalClosedQuoteMargin": "-0.055000",
+      "quoteHoldingMs": [
+        1824839,
+        1812910,
+        30563317,
+        1818242
+      ],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:43:52.406Z",
+        "buy": "1.015000",
+        "sell": "0.985000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "South Dakota Governor",
+      "legs": [
+        {
+          "marketId": "194",
+          "exchangeId": "883",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "309",
+          "exchangeId": "998",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5733,
+      "minimumQuotedAcquisition": "0.970000",
+      "quotedEntrySignals": 3,
+      "quotedProfitableExitSignals": 0,
+      "quotedTimeoutExitSignals": 3,
+      "quotedRoundtripMargins": [
+        "-0.015000",
+        "-0.025000",
+        "-0.015000"
+      ],
+      "totalClosedQuoteMargin": "-0.055000",
+      "quoteHoldingMs": [
+        1814813,
+        1810707,
+        1816684
+      ],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:01:18.451Z",
+        "buy": "1.020000",
+        "sell": "0.990000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "South Carolina Senate",
+      "legs": [
+        {
+          "marketId": "289",
+          "exchangeId": "978",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "290",
+          "exchangeId": "979",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5910,
+      "minimumQuotedAcquisition": "0.965000",
+      "quotedEntrySignals": 3,
+      "quotedProfitableExitSignals": 0,
+      "quotedTimeoutExitSignals": 3,
+      "quotedRoundtripMargins": [
+        "-0.030000",
+        "-0.020000",
+        "-0.005000"
+      ],
+      "totalClosedQuoteMargin": "-0.055000",
+      "quoteHoldingMs": [
+        1839792,
+        1813196,
+        1821835
+      ],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:43:52.406Z",
+        "buy": "1.010000",
+        "sell": "0.980000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "Arkansas Senate",
+      "legs": [
+        {
+          "marketId": "254",
+          "exchangeId": "943",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "255",
+          "exchangeId": "944",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5913,
+      "minimumQuotedAcquisition": "0.965000",
+      "quotedEntrySignals": 3,
+      "quotedProfitableExitSignals": 0,
+      "quotedTimeoutExitSignals": 3,
+      "quotedRoundtripMargins": [
+        "-0.025000",
+        "-0.020000",
+        "-0.010000"
+      ],
+      "totalClosedQuoteMargin": "-0.055000",
+      "quoteHoldingMs": [
+        1807102,
+        1817371,
+        1807943
+      ],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:44:04.063Z",
+        "buy": "1.040000",
+        "sell": "1.010000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "Arizona Governor",
+      "legs": [
+        {
+          "marketId": "159",
+          "exchangeId": "848",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "160",
+          "exchangeId": "849",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5913,
+      "minimumQuotedAcquisition": "0.975000",
+      "quotedEntrySignals": 5,
+      "quotedProfitableExitSignals": 1,
+      "quotedTimeoutExitSignals": 4,
+      "quotedRoundtripMargins": [
+        "-0.035000",
+        "0.010000",
+        "-0.010000",
+        "-0.015000",
+        "-0.010000"
+      ],
+      "totalClosedQuoteMargin": "-0.060000",
+      "quoteHoldingMs": [
+        1804934,
+        31521017,
+        1813399,
+        1812005,
+        1822302
+      ],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:43:40.684Z",
+        "buy": "0.995000",
+        "sell": "0.965000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "TN-05 House race",
+      "legs": [
+        {
+          "marketId": "340",
+          "exchangeId": "1029",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "341",
+          "exchangeId": "1030",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5910,
+      "minimumQuotedAcquisition": "0.965000",
+      "quotedEntrySignals": 5,
+      "quotedProfitableExitSignals": 0,
+      "quotedTimeoutExitSignals": 5,
+      "quotedRoundtripMargins": [
+        "0.000000",
+        "0.000000",
+        "-0.045000",
+        "-0.020000",
+        "-0.005000"
+      ],
+      "totalClosedQuoteMargin": "-0.070000",
+      "quoteHoldingMs": [
+        1816616,
+        1824905,
+        1803091,
+        1819278,
+        16281536
+      ],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:43:52.406Z",
+        "buy": "1.010000",
+        "sell": "0.975000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "CA-22 House race",
+      "legs": [
+        {
+          "marketId": "201",
+          "exchangeId": "890",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "202",
+          "exchangeId": "891",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5913,
+      "minimumQuotedAcquisition": "0.980000",
+      "quotedEntrySignals": 3,
+      "quotedProfitableExitSignals": 0,
+      "quotedTimeoutExitSignals": 3,
+      "quotedRoundtripMargins": [
+        "-0.015000",
+        "-0.030000",
+        "-0.025000"
+      ],
+      "totalClosedQuoteMargin": "-0.070000",
+      "quoteHoldingMs": [
+        1818121,
+        1805222,
+        1809598
+      ],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:44:04.063Z",
+        "buy": "1.000000",
+        "sell": "0.960000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "CO-08 House race",
+      "legs": [
+        {
+          "marketId": "209",
+          "exchangeId": "898",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "210",
+          "exchangeId": "899",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5913,
+      "minimumQuotedAcquisition": "0.980000",
+      "quotedEntrySignals": 3,
+      "quotedProfitableExitSignals": 0,
+      "quotedTimeoutExitSignals": 3,
+      "quotedRoundtripMargins": [
+        "-0.030000",
+        "-0.030000",
+        "-0.020000"
+      ],
+      "totalClosedQuoteMargin": "-0.080000",
+      "quoteHoldingMs": [
+        1817386,
+        1811274,
+        1818454
+      ],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:44:04.063Z",
+        "buy": "1.015000",
+        "sell": "0.985000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "MN-02 House race",
+      "legs": [
+        {
+          "marketId": "336",
+          "exchangeId": "1025",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "337",
+          "exchangeId": "1026",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5910,
+      "minimumQuotedAcquisition": "0.960000",
+      "quotedEntrySignals": 4,
+      "quotedProfitableExitSignals": 0,
+      "quotedTimeoutExitSignals": 4,
+      "quotedRoundtripMargins": [
+        "-0.025000",
+        "-0.025000",
+        "-0.030000",
+        "-0.010000"
+      ],
+      "totalClosedQuoteMargin": "-0.090000",
+      "quoteHoldingMs": [
+        1811460,
+        1813162,
+        1816704,
+        1802698
+      ],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:43:52.406Z",
+        "buy": "1.010000",
+        "sell": "0.980000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "South Dakota Senate",
+      "legs": [
+        {
+          "marketId": "291",
+          "exchangeId": "980",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "292",
+          "exchangeId": "981",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5910,
+      "minimumQuotedAcquisition": "0.975000",
+      "quotedEntrySignals": 3,
+      "quotedProfitableExitSignals": 0,
+      "quotedTimeoutExitSignals": 3,
+      "quotedRoundtripMargins": [
+        "-0.035000",
+        "-0.035000",
+        "-0.020000"
+      ],
+      "totalClosedQuoteMargin": "-0.090000",
+      "quoteHoldingMs": [
+        1800706,
+        1801483,
+        1926308
+      ],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:43:52.406Z",
+        "buy": "1.030000",
+        "sell": "1.000000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "U.S. Senate",
+      "legs": [
+        {
+          "marketId": "153",
+          "exchangeId": "842",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "154",
+          "exchangeId": "843",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5913,
+      "minimumQuotedAcquisition": "0.980000",
+      "quotedEntrySignals": 6,
+      "quotedProfitableExitSignals": 0,
+      "quotedTimeoutExitSignals": 6,
+      "quotedRoundtripMargins": [
+        "-0.030000",
+        "-0.015000",
+        "-0.010000",
+        "-0.015000",
+        "-0.030000",
+        "-0.005000"
+      ],
+      "totalClosedQuoteMargin": "-0.105000",
+      "quoteHoldingMs": [
+        1806826,
+        1806451,
+        1989581,
+        1803506,
+        1815092,
+        1812042
+      ],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:43:40.684Z",
+        "buy": "1.030000",
+        "sell": "1.000000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "FL-13 House race",
+      "legs": [
+        {
+          "marketId": "323",
+          "exchangeId": "1012",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "212",
+          "exchangeId": "901",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5733,
+      "minimumQuotedAcquisition": "0.955000",
+      "quotedEntrySignals": 5,
+      "quotedProfitableExitSignals": 0,
+      "quotedTimeoutExitSignals": 5,
+      "quotedRoundtripMargins": [
+        "-0.030000",
+        "-0.015000",
+        "-0.015000",
+        "-0.025000",
+        "-0.025000"
+      ],
+      "totalClosedQuoteMargin": "-0.110000",
+      "quoteHoldingMs": [
+        1812696,
+        4569589,
+        1820555,
+        1817256,
+        1817572
+      ],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:01:18.451Z",
+        "buy": "0.990000",
+        "sell": "0.955000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "Kentucky Senate",
+      "legs": [
+        {
+          "marketId": "266",
+          "exchangeId": "955",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "267",
+          "exchangeId": "956",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5913,
+      "minimumQuotedAcquisition": "0.975000",
+      "quotedEntrySignals": 4,
+      "quotedProfitableExitSignals": 0,
+      "quotedTimeoutExitSignals": 4,
+      "quotedRoundtripMargins": [
+        "-0.035000",
+        "-0.035000",
+        "-0.030000",
+        "-0.020000"
+      ],
+      "totalClosedQuoteMargin": "-0.120000",
+      "quoteHoldingMs": [
+        1813046,
+        1810616,
+        1816946,
+        1812238
+      ],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:44:04.063Z",
+        "buy": "1.025000",
+        "sell": "0.995000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "NY-17 House race",
+      "legs": [
+        {
+          "marketId": "231",
+          "exchangeId": "920",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "232",
+          "exchangeId": "921",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5913,
+      "minimumQuotedAcquisition": "0.965000",
+      "quotedEntrySignals": 6,
+      "quotedProfitableExitSignals": 0,
+      "quotedTimeoutExitSignals": 6,
+      "quotedRoundtripMargins": [
+        "-0.025000",
+        "-0.030000",
+        "-0.030000",
+        "-0.015000",
+        "-0.030000",
+        "0.005000"
+      ],
+      "totalClosedQuoteMargin": "-0.125000",
+      "quoteHoldingMs": [
+        1815769,
+        1816904,
+        1817281,
+        1825736,
+        1810565,
+        1810617
+      ],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:44:04.063Z",
+        "buy": "1.010000",
+        "sell": "0.980000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "Iowa Senate",
+      "legs": [
+        {
+          "marketId": "260",
+          "exchangeId": "949",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "261",
+          "exchangeId": "950",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5913,
+      "minimumQuotedAcquisition": "0.965000",
+      "quotedEntrySignals": 5,
+      "quotedProfitableExitSignals": 0,
+      "quotedTimeoutExitSignals": 5,
+      "quotedRoundtripMargins": [
+        "-0.030000",
+        "-0.035000",
+        "-0.020000",
+        "-0.020000",
+        "-0.020000"
+      ],
+      "totalClosedQuoteMargin": "-0.125000",
+      "quoteHoldingMs": [
+        1841230,
+        1813068,
+        30679558,
+        2121725,
+        1845290
+      ],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:44:04.063Z",
+        "buy": "0.990000",
+        "sell": "0.960000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "Tennessee Senate",
+      "legs": [
+        {
+          "marketId": "362",
+          "exchangeId": "1051",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "363",
+          "exchangeId": "1052",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5910,
+      "minimumQuotedAcquisition": "0.970000",
+      "quotedEntrySignals": 5,
+      "quotedProfitableExitSignals": 0,
+      "quotedTimeoutExitSignals": 5,
+      "quotedRoundtripMargins": [
+        "-0.040000",
+        "-0.035000",
+        "-0.020000",
+        "-0.020000",
+        "-0.020000"
+      ],
+      "totalClosedQuoteMargin": "-0.135000",
+      "quoteHoldingMs": [
+        20695460,
+        1819417,
+        1814677,
+        1829386,
+        17128274
+      ],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:43:52.406Z",
+        "buy": "1.020000",
+        "sell": "0.990000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "Iowa Governor",
+      "legs": [
+        {
+          "marketId": "168",
+          "exchangeId": "857",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "169",
+          "exchangeId": "858",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5913,
+      "minimumQuotedAcquisition": "0.980000",
+      "quotedEntrySignals": 5,
+      "quotedProfitableExitSignals": 0,
+      "quotedTimeoutExitSignals": 5,
+      "quotedRoundtripMargins": [
+        "-0.030000",
+        "-0.035000",
+        "-0.025000",
+        "-0.020000",
+        "-0.025000"
+      ],
+      "totalClosedQuoteMargin": "-0.135000",
+      "quoteHoldingMs": [
+        1811606,
+        1817486,
+        2161075,
+        1814596,
+        1805371
+      ],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:43:40.684Z",
+        "buy": "0.985000",
+        "sell": "0.955000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "New Hampshire Governor",
+      "legs": [
+        {
+          "marketId": "372",
+          "exchangeId": "1061",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "373",
+          "exchangeId": "1062",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5910,
+      "minimumQuotedAcquisition": "0.965000",
+      "quotedEntrySignals": 7,
+      "quotedProfitableExitSignals": 0,
+      "quotedTimeoutExitSignals": 7,
+      "quotedRoundtripMargins": [
+        "0.000000",
+        "-0.015000",
+        "-0.030000",
+        "-0.030000",
+        "-0.010000",
+        "-0.030000",
+        "-0.030000"
+      ],
+      "totalClosedQuoteMargin": "-0.145000",
+      "quoteHoldingMs": [
+        30744309,
+        1810796,
+        1826150,
+        1819962,
+        1815282,
+        1814897,
+        1820505
+      ],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:43:52.406Z",
+        "buy": "1.000000",
+        "sell": "0.970000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "NH-01 House race",
+      "legs": [
+        {
+          "marketId": "375",
+          "exchangeId": "1064",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "376",
+          "exchangeId": "1065",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5910,
+      "minimumQuotedAcquisition": "0.975000",
+      "quotedEntrySignals": 7,
+      "quotedProfitableExitSignals": 0,
+      "quotedTimeoutExitSignals": 7,
+      "quotedRoundtripMargins": [
+        "-0.030000",
+        "-0.020000",
+        "-0.035000",
+        "-0.030000",
+        "-0.025000",
+        "-0.015000",
+        "-0.010000"
+      ],
+      "totalClosedQuoteMargin": "-0.165000",
+      "quoteHoldingMs": [
+        1806651,
+        1818500,
+        1825556,
+        17276742,
+        1810178,
+        1811260,
+        1810737
+      ],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:43:52.406Z",
+        "buy": "1.000000",
+        "sell": "0.960000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "Rhode Island Senate",
+      "legs": [
+        {
+          "marketId": "387",
+          "exchangeId": "1076",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "388",
+          "exchangeId": "1077",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5910,
+      "minimumQuotedAcquisition": "0.965000",
+      "quotedEntrySignals": 11,
+      "quotedProfitableExitSignals": 1,
+      "quotedTimeoutExitSignals": 9,
+      "quotedRoundtripMargins": [
+        "0.010000",
+        "-0.010000",
+        "-0.015000",
+        "-0.030000",
+        "-0.025000",
+        "-0.035000",
+        "-0.005000",
+        "-0.035000",
+        "-0.010000",
+        "-0.030000"
+      ],
+      "totalClosedQuoteMargin": "-0.185000",
+      "quoteHoldingMs": [
+        281582,
+        1809893,
+        1821165,
+        1820107,
+        1808800,
+        1813967,
+        1831300,
+        1806842,
+        1810270,
+        1801353
+      ],
+      "openQuotedSignal": {
+        "at": "2026-10-05T22:35:18.237Z",
+        "cost": "0.980000"
+      },
+      "last": {
+        "at": "2026-10-05T22:43:52.406Z",
+        "buy": "0.985000",
+        "sell": "0.950000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "WA-03 House race",
+      "legs": [
+        {
+          "marketId": "347",
+          "exchangeId": "1036",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "348",
+          "exchangeId": "1037",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5910,
+      "minimumQuotedAcquisition": "0.975000",
+      "quotedEntrySignals": 7,
+      "quotedProfitableExitSignals": 0,
+      "quotedTimeoutExitSignals": 7,
+      "quotedRoundtripMargins": [
+        "-0.030000",
+        "-0.025000",
+        "-0.020000",
+        "-0.030000",
+        "-0.035000",
+        "-0.020000",
+        "-0.025000"
+      ],
+      "totalClosedQuoteMargin": "-0.185000",
+      "quoteHoldingMs": [
+        1803309,
+        1809598,
+        1815242,
+        1815495,
+        1818304,
+        1816255,
+        1819614
+      ],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:43:52.406Z",
+        "buy": "1.025000",
+        "sell": "0.995000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "FL-16 House race",
+      "legs": [
+        {
+          "marketId": "324",
+          "exchangeId": "1013",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "325",
+          "exchangeId": "1014",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5910,
+      "minimumQuotedAcquisition": "0.965000",
+      "quotedEntrySignals": 7,
+      "quotedProfitableExitSignals": 0,
+      "quotedTimeoutExitSignals": 7,
+      "quotedRoundtripMargins": [
+        "-0.030000",
+        "-0.030000",
+        "-0.030000",
+        "-0.030000",
+        "-0.035000",
+        "-0.030000",
+        "-0.015000"
+      ],
+      "totalClosedQuoteMargin": "-0.200000",
+      "quoteHoldingMs": [
+        1802015,
+        17022044,
+        1810178,
+        1812826,
+        1811771,
+        1815838,
+        1812618
+      ],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:43:52.406Z",
+        "buy": "1.005000",
+        "sell": "0.975000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "Colorado Governor",
+      "legs": [
+        {
+          "marketId": "163",
+          "exchangeId": "852",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "164",
+          "exchangeId": "853",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5913,
+      "minimumQuotedAcquisition": "0.965000",
+      "quotedEntrySignals": 6,
+      "quotedProfitableExitSignals": 0,
+      "quotedTimeoutExitSignals": 6,
+      "quotedRoundtripMargins": [
+        "-0.070000",
+        "-0.030000",
+        "-0.030000",
+        "-0.035000",
+        "-0.020000",
+        "-0.015000"
+      ],
+      "totalClosedQuoteMargin": "-0.200000",
+      "quoteHoldingMs": [
+        1810093,
+        1812967,
+        1811345,
+        1813281,
+        1821737,
+        1805747
+      ],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:43:40.684Z",
+        "buy": "1.015000",
+        "sell": "0.985000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "Wyoming Senate",
+      "legs": [
+        {
+          "marketId": "365",
+          "exchangeId": "1054",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "366",
+          "exchangeId": "1055",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5910,
+      "minimumQuotedAcquisition": "0.965000",
+      "quotedEntrySignals": 10,
+      "quotedProfitableExitSignals": 0,
+      "quotedTimeoutExitSignals": 10,
+      "quotedRoundtripMargins": [
+        "-0.030000",
+        "-0.015000",
+        "-0.010000",
+        "-0.015000",
+        "-0.035000",
+        "-0.035000",
+        "-0.030000",
+        "-0.015000",
+        "-0.030000",
+        "-0.025000"
+      ],
+      "totalClosedQuoteMargin": "-0.240000",
+      "quoteHoldingMs": [
+        1831514,
+        1810314,
+        1807145,
+        1828860,
+        1815878,
+        1828682,
+        1835258,
+        16502249,
+        1817028,
+        1813155
+      ],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:43:52.406Z",
+        "buy": "1.015000",
+        "sell": "0.985000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "Hawaii Governor",
+      "legs": [
+        {
+          "marketId": "301",
+          "exchangeId": "990",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "302",
+          "exchangeId": "991",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5910,
+      "minimumQuotedAcquisition": "0.965000",
+      "quotedEntrySignals": 13,
+      "quotedProfitableExitSignals": 1,
+      "quotedTimeoutExitSignals": 12,
+      "quotedRoundtripMargins": [
+        "-0.025000",
+        "-0.015000",
+        "-0.015000",
+        "-0.005000",
+        "-0.030000",
+        "-0.030000",
+        "-0.030000",
+        "-0.020000",
+        "-0.030000",
+        "-0.025000",
+        "-0.015000",
+        "-0.030000",
+        "0.010000"
+      ],
+      "totalClosedQuoteMargin": "-0.260000",
+      "quoteHoldingMs": [
+        1926362,
+        1819372,
+        1814055,
+        1820046,
+        1811460,
+        1813162,
+        1812070,
+        1812668,
+        1815954,
+        1803411,
+        1804453,
+        1813891,
+        528443
+      ],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:43:52.406Z",
+        "buy": "1.000000",
+        "sell": "0.965000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "IA-01 House race",
+      "legs": [
+        {
+          "marketId": "213",
+          "exchangeId": "902",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "214",
+          "exchangeId": "903",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5913,
+      "minimumQuotedAcquisition": "0.970000",
+      "quotedEntrySignals": 9,
+      "quotedProfitableExitSignals": 0,
+      "quotedTimeoutExitSignals": 9,
+      "quotedRoundtripMargins": [
+        "-0.020000",
+        "-0.030000",
+        "-0.030000",
+        "-0.040000",
+        "-0.025000",
+        "-0.020000",
+        "-0.025000",
+        "-0.045000",
+        "-0.030000"
+      ],
+      "totalClosedQuoteMargin": "-0.265000",
+      "quoteHoldingMs": [
+        1834372,
+        1810707,
+        1813314,
+        1811990,
+        1814277,
+        2052726,
+        1813772,
+        2646150,
+        1802044
+      ],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:44:04.063Z",
+        "buy": "1.005000",
+        "sell": "0.970000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "Massachusetts Senate",
+      "legs": [
+        {
+          "marketId": "379",
+          "exchangeId": "1068",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "380",
+          "exchangeId": "1069",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5910,
+      "minimumQuotedAcquisition": "0.970000",
+      "quotedEntrySignals": 11,
+      "quotedProfitableExitSignals": 0,
+      "quotedTimeoutExitSignals": 11,
+      "quotedRoundtripMargins": [
+        "-0.025000",
+        "-0.025000",
+        "-0.040000",
+        "-0.030000",
+        "-0.030000",
+        "-0.030000",
+        "-0.025000",
+        "-0.025000",
+        "-0.015000",
+        "-0.025000",
+        "0.000000"
+      ],
+      "totalClosedQuoteMargin": "-0.270000",
+      "quoteHoldingMs": [
+        1808714,
+        1818720,
+        1819702,
+        1819763,
+        1801053,
+        1803953,
+        1825858,
+        1811225,
+        2149115,
+        1814692,
+        1813455
+      ],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:43:52.406Z",
+        "buy": "1.020000",
+        "sell": "0.990000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "Michigan Governor",
+      "legs": [
+        {
+          "marketId": "305",
+          "exchangeId": "994",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "306",
+          "exchangeId": "995",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5910,
+      "minimumQuotedAcquisition": "0.965000",
+      "quotedEntrySignals": 13,
+      "quotedProfitableExitSignals": 0,
+      "quotedTimeoutExitSignals": 13,
+      "quotedRoundtripMargins": [
+        "-0.035000",
+        "-0.035000",
+        "-0.025000",
+        "-0.035000",
+        "-0.030000",
+        "-0.025000",
+        "-0.010000",
+        "-0.020000",
+        "-0.020000",
+        "-0.025000",
+        "-0.010000",
+        "-0.030000",
+        "-0.020000"
+      ],
+      "totalClosedQuoteMargin": "-0.320000",
+      "quoteHoldingMs": [
+        1800784,
+        1801200,
+        1822198,
+        1849514,
+        1801136,
+        1817664,
+        1815958,
+        1829322,
+        1804885,
+        1814172,
+        1810425,
+        1802339,
+        1815941
+      ],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:43:52.406Z",
+        "buy": "1.005000",
+        "sell": "0.975000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "Minnesota Senate",
+      "legs": [
+        {
+          "marketId": "360",
+          "exchangeId": "1049",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "361",
+          "exchangeId": "1050",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5910,
+      "minimumQuotedAcquisition": "0.960000",
+      "quotedEntrySignals": 11,
+      "quotedProfitableExitSignals": 0,
+      "quotedTimeoutExitSignals": 11,
+      "quotedRoundtripMargins": [
+        "-0.030000",
+        "-0.025000",
+        "-0.015000",
+        "-0.035000",
+        "-0.030000",
+        "-0.035000",
+        "-0.035000",
+        "-0.030000",
+        "-0.030000",
+        "-0.035000",
+        "-0.020000"
+      ],
+      "totalClosedQuoteMargin": "-0.320000",
+      "quoteHoldingMs": [
+        1802188,
+        1819502,
+        1811931,
+        1817111,
+        1820298,
+        1810429,
+        1825202,
+        1821357,
+        2118940,
+        1830226,
+        43471228
+      ],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:43:52.406Z",
+        "buy": "0.990000",
+        "sell": "0.960000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "VA-05 House race",
+      "legs": [
+        {
+          "marketId": "344",
+          "exchangeId": "1033",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "345",
+          "exchangeId": "1034",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5910,
+      "minimumQuotedAcquisition": "0.970000",
+      "quotedEntrySignals": 13,
+      "quotedProfitableExitSignals": 0,
+      "quotedTimeoutExitSignals": 13,
+      "quotedRoundtripMargins": [
+        "-0.040000",
+        "-0.020000",
+        "-0.015000",
+        "-0.025000",
+        "-0.020000",
+        "-0.025000",
+        "-0.035000",
+        "-0.020000",
+        "-0.025000",
+        "-0.035000",
+        "-0.030000",
+        "-0.005000",
+        "-0.030000"
+      ],
+      "totalClosedQuoteMargin": "-0.325000",
+      "quoteHoldingMs": [
+        1804960,
+        1837143,
+        16420668,
+        1820326,
+        1808704,
+        1819878,
+        1820651,
+        1904771,
+        1807595,
+        1808096,
+        1932324,
+        43515539,
+        1804437
+      ],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:43:52.406Z",
+        "buy": "0.990000",
+        "sell": "0.950000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "Texas Senate",
+      "legs": [
+        {
+          "marketId": "293",
+          "exchangeId": "982",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "294",
+          "exchangeId": "983",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5910,
+      "minimumQuotedAcquisition": "0.950000",
+      "quotedEntrySignals": 14,
+      "quotedProfitableExitSignals": 0,
+      "quotedTimeoutExitSignals": 14,
+      "quotedRoundtripMargins": [
+        "-0.060000",
+        "-0.025000",
+        "-0.015000",
+        "-0.040000",
+        "-0.030000",
+        "-0.030000",
+        "-0.030000",
+        "-0.035000",
+        "-0.025000",
+        "-0.015000",
+        "-0.015000",
+        "-0.025000",
+        "-0.020000",
+        "-0.010000"
+      ],
+      "totalClosedQuoteMargin": "-0.375000",
+      "quoteHoldingMs": [
+        1812349,
+        2068987,
+        1807156,
+        1812086,
+        20025049,
+        1819417,
+        1813196,
+        30669838,
+        1814335,
+        1831849,
+        1832051,
+        1817830,
+        1811467,
+        1820145
+      ],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:43:52.406Z",
+        "buy": "1.000000",
+        "sell": "0.970000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "Louisiana Senate",
+      "legs": [
+        {
+          "marketId": "268",
+          "exchangeId": "957",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "269",
+          "exchangeId": "958",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5913,
+      "minimumQuotedAcquisition": "0.960000",
+      "quotedEntrySignals": 13,
+      "quotedProfitableExitSignals": 0,
+      "quotedTimeoutExitSignals": 13,
+      "quotedRoundtripMargins": [
+        "-0.035000",
+        "-0.040000",
+        "-0.025000",
+        "-0.030000",
+        "-0.035000",
+        "-0.025000",
+        "-0.015000",
+        "-0.045000",
+        "-0.030000",
+        "-0.030000",
+        "-0.025000",
+        "-0.035000",
+        "-0.030000"
+      ],
+      "totalClosedQuoteMargin": "-0.400000",
+      "quoteHoldingMs": [
+        1810707,
+        1813314,
+        1811990,
+        1817048,
+        1816289,
+        1812786,
+        1814622,
+        1800884,
+        1817639,
+        1819492,
+        1818364,
+        1814305,
+        1819955
+      ],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:44:04.063Z",
+        "buy": "1.015000",
+        "sell": "0.985000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "Alaska Senate",
+      "legs": [
+        {
+          "marketId": "377",
+          "exchangeId": "1066",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "378",
+          "exchangeId": "1067",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5910,
+      "minimumQuotedAcquisition": "0.960000",
+      "quotedEntrySignals": 19,
+      "quotedProfitableExitSignals": 0,
+      "quotedTimeoutExitSignals": 18,
+      "quotedRoundtripMargins": [
+        "-0.015000",
+        "-0.020000",
+        "-0.010000",
+        "-0.045000",
+        "-0.030000",
+        "-0.030000",
+        "-0.025000",
+        "-0.040000",
+        "-0.025000",
+        "-0.015000",
+        "-0.030000",
+        "-0.030000",
+        "-0.020000",
+        "-0.020000",
+        "-0.025000",
+        "-0.020000",
+        "-0.020000",
+        "-0.030000"
+      ],
+      "totalClosedQuoteMargin": "-0.450000",
+      "quoteHoldingMs": [
+        1809280,
+        1811460,
+        1814178,
+        1819671,
+        1820936,
+        1814389,
+        1821164,
+        1806255,
+        2821615,
+        1808222,
+        42220646,
+        1805578,
+        1837025,
+        1818379,
+        1803132,
+        1813460,
+        1835460,
+        1832250
+      ],
+      "openQuotedSignal": {
+        "at": "2026-10-05T22:32:24.766Z",
+        "cost": "0.980000"
+      },
+      "last": {
+        "at": "2026-10-05T22:43:52.406Z",
+        "buy": "0.980000",
+        "sell": "0.950000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "Mississippi Senate",
+      "legs": [
+        {
+          "marketId": "272",
+          "exchangeId": "961",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "273",
+          "exchangeId": "962",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5913,
+      "minimumQuotedAcquisition": "0.965000",
+      "quotedEntrySignals": 18,
+      "quotedProfitableExitSignals": 0,
+      "quotedTimeoutExitSignals": 18,
+      "quotedRoundtripMargins": [
+        "-0.025000",
+        "-0.030000",
+        "-0.025000",
+        "-0.030000",
+        "-0.035000",
+        "-0.045000",
+        "-0.025000",
+        "-0.020000",
+        "-0.030000",
+        "-0.030000",
+        "-0.025000",
+        "-0.030000",
+        "-0.025000",
+        "-0.025000",
+        "-0.025000",
+        "-0.015000",
+        "-0.020000",
+        "-0.010000"
+      ],
+      "totalClosedQuoteMargin": "-0.470000",
+      "quoteHoldingMs": [
+        1841230,
+        1820654,
+        1828953,
+        1822913,
+        1882319,
+        1830839,
+        1834372,
+        16958477,
+        1811656,
+        1816822,
+        1816058,
+        1812740,
+        1804652,
+        1824079,
+        1817356,
+        1825085,
+        1822360,
+        1809887
+      ],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:44:04.063Z",
+        "buy": "1.000000",
+        "sell": "0.970000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "WI-03 House race",
+      "legs": [
+        {
+          "marketId": "351",
+          "exchangeId": "1040",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "352",
+          "exchangeId": "1041",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5910,
+      "minimumQuotedAcquisition": "0.960000",
+      "quotedEntrySignals": 18,
+      "quotedProfitableExitSignals": 0,
+      "quotedTimeoutExitSignals": 18,
+      "quotedRoundtripMargins": [
+        "-0.045000",
+        "-0.030000",
+        "-0.025000",
+        "-0.020000",
+        "-0.035000",
+        "-0.030000",
+        "-0.030000",
+        "-0.030000",
+        "-0.020000",
+        "-0.020000",
+        "-0.040000",
+        "-0.020000",
+        "-0.025000",
+        "-0.020000",
+        "-0.025000",
+        "-0.025000",
+        "-0.030000",
+        "-0.020000"
+      ],
+      "totalClosedQuoteMargin": "-0.490000",
+      "quoteHoldingMs": [
+        1808191,
+        1812867,
+        1835487,
+        17416687,
+        1811073,
+        1811607,
+        1817490,
+        1813145,
+        1810981,
+        1810326,
+        1801265,
+        1817149,
+        1819357,
+        1820326,
+        1820936,
+        1805548,
+        1802540,
+        1806500
+      ],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:43:52.406Z",
+        "buy": "0.995000",
+        "sell": "0.960000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "California Governor",
+      "legs": [
+        {
+          "marketId": "161",
+          "exchangeId": "850",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "162",
+          "exchangeId": "851",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5913,
+      "minimumQuotedAcquisition": "0.950000",
+      "quotedEntrySignals": 16,
+      "quotedProfitableExitSignals": 0,
+      "quotedTimeoutExitSignals": 16,
+      "quotedRoundtripMargins": [
+        "-0.020000",
+        "-0.050000",
+        "-0.030000",
+        "-0.040000",
+        "-0.030000",
+        "-0.040000",
+        "-0.030000",
+        "-0.040000",
+        "-0.035000",
+        "-0.025000",
+        "-0.030000",
+        "-0.040000",
+        "-0.020000",
+        "-0.015000",
+        "-0.025000",
+        "-0.020000"
+      ],
+      "totalClosedQuoteMargin": "-0.490000",
+      "quoteHoldingMs": [
+        1830787,
+        1819898,
+        1819636,
+        1821113,
+        1829390,
+        1824611,
+        1800749,
+        1801480,
+        17963080,
+        1810093,
+        1812967,
+        1813048,
+        1815981,
+        1819007,
+        1816524,
+        1809512
+      ],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:43:40.684Z",
+        "buy": "0.985000",
+        "sell": "0.955000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "Alaska Governor",
+      "legs": [
+        {
+          "marketId": "368",
+          "exchangeId": "1057",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "369",
+          "exchangeId": "1058",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5910,
+      "minimumQuotedAcquisition": "0.960000",
+      "quotedEntrySignals": 22,
+      "quotedProfitableExitSignals": 0,
+      "quotedTimeoutExitSignals": 22,
+      "quotedRoundtripMargins": [
+        "0.000000",
+        "-0.030000",
+        "-0.025000",
+        "-0.025000",
+        "-0.025000",
+        "-0.025000",
+        "-0.035000",
+        "-0.030000",
+        "-0.025000",
+        "-0.030000",
+        "-0.025000",
+        "-0.025000",
+        "-0.025000",
+        "-0.020000",
+        "-0.035000",
+        "-0.020000",
+        "-0.030000",
+        "-0.020000",
+        "-0.025000",
+        "-0.020000",
+        "-0.025000",
+        "-0.025000"
+      ],
+      "totalClosedQuoteMargin": "-0.545000",
+      "quoteHoldingMs": [
+        1953696,
+        1859977,
+        1802651,
+        30711565,
+        1800706,
+        1820369,
+        1811460,
+        1813162,
+        1812070,
+        1816835,
+        1820864,
+        1823915,
+        1826287,
+        1821570,
+        1818260,
+        1820810,
+        2618710,
+        1813994,
+        1806639,
+        1816259,
+        1806959,
+        1852018
+      ],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:43:52.406Z",
+        "buy": "0.990000",
+        "sell": "0.960000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "Illinois Governor",
+      "legs": [
+        {
+          "marketId": "172",
+          "exchangeId": "861",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "173",
+          "exchangeId": "862",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5913,
+      "minimumQuotedAcquisition": "0.955000",
+      "quotedEntrySignals": 16,
+      "quotedProfitableExitSignals": 0,
+      "quotedTimeoutExitSignals": 16,
+      "quotedRoundtripMargins": [
+        "-0.040000",
+        "-0.055000",
+        "0.000000",
+        "-0.040000",
+        "-0.030000",
+        "-0.030000",
+        "-0.045000",
+        "-0.035000",
+        "-0.050000",
+        "-0.050000",
+        "-0.040000",
+        "-0.040000",
+        "-0.045000",
+        "-0.025000",
+        "-0.030000",
+        "-0.020000"
+      ],
+      "totalClosedQuoteMargin": "-0.575000",
+      "quoteHoldingMs": [
+        1822587,
+        1819975,
+        1819699,
+        1827024,
+        1827484,
+        1806014,
+        1803627,
+        1809080,
+        16356960,
+        1810093,
+        1812967,
+        1811345,
+        1845027,
+        1811906,
+        1817842,
+        1979536
+      ],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:43:40.684Z",
+        "buy": "1.025000",
+        "sell": "0.995000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "Idaho Governor",
+      "legs": [
+        {
+          "marketId": "170",
+          "exchangeId": "859",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "171",
+          "exchangeId": "860",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5913,
+      "minimumQuotedAcquisition": "0.965000",
+      "quotedEntrySignals": 16,
+      "quotedProfitableExitSignals": 0,
+      "quotedTimeoutExitSignals": 16,
+      "quotedRoundtripMargins": [
+        "-0.065000",
+        "-0.055000",
+        "-0.030000",
+        "-0.040000",
+        "-0.050000",
+        "-0.020000",
+        "-0.025000",
+        "-0.030000",
+        "-0.035000",
+        "-0.030000",
+        "-0.040000",
+        "-0.045000",
+        "-0.035000",
+        "-0.035000",
+        "-0.025000",
+        "-0.025000"
+      ],
+      "totalClosedQuoteMargin": "-0.585000",
+      "quoteHoldingMs": [
+        1810074,
+        1813349,
+        1812043,
+        1817199,
+        1811728,
+        1802929,
+        1805274,
+        1818943,
+        1815235,
+        1825829,
+        1800377,
+        1818366,
+        1819566,
+        1809193,
+        1820776,
+        1801083
+      ],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:43:40.684Z",
+        "buy": "1.045000",
+        "sell": "1.015000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "Minnesota Governor",
+      "legs": [
+        {
+          "marketId": "307",
+          "exchangeId": "996",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "308",
+          "exchangeId": "997",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5910,
+      "minimumQuotedAcquisition": "0.960000",
+      "quotedEntrySignals": 18,
+      "quotedProfitableExitSignals": 0,
+      "quotedTimeoutExitSignals": 18,
+      "quotedRoundtripMargins": [
+        "-0.035000",
+        "-0.035000",
+        "-0.040000",
+        "-0.040000",
+        "-0.040000",
+        "-0.035000",
+        "-0.035000",
+        "-0.040000",
+        "-0.035000",
+        "-0.040000",
+        "-0.035000",
+        "-0.030000",
+        "-0.015000",
+        "-0.035000",
+        "-0.020000",
+        "-0.025000",
+        "-0.030000",
+        "-0.025000"
+      ],
+      "totalClosedQuoteMargin": "-0.590000",
+      "quoteHoldingMs": [
+        1823304,
+        1822719,
+        1819310,
+        1821121,
+        1829753,
+        1817917,
+        1800983,
+        1812992,
+        1825284,
+        16701728,
+        1810178,
+        1812826,
+        1811281,
+        1816576,
+        1821999,
+        1816988,
+        1802744,
+        1814538
+      ],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:43:52.406Z",
+        "buy": "1.015000",
+        "sell": "0.980000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "Pennsylvania Governor",
+      "legs": [
+        {
+          "marketId": "189",
+          "exchangeId": "878",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "190",
+          "exchangeId": "879",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5913,
+      "minimumQuotedAcquisition": "0.965000",
+      "quotedEntrySignals": 25,
+      "quotedProfitableExitSignals": 0,
+      "quotedTimeoutExitSignals": 25,
+      "quotedRoundtripMargins": [
+        "-0.035000",
+        "-0.025000",
+        "-0.035000",
+        "-0.025000",
+        "-0.020000",
+        "-0.045000",
+        "-0.030000",
+        "-0.045000",
+        "-0.015000",
+        "-0.010000",
+        "-0.030000",
+        "-0.045000",
+        "-0.015000",
+        "-0.020000",
+        "-0.025000",
+        "-0.020000",
+        "-0.015000",
+        "-0.025000",
+        "-0.020000",
+        "-0.020000",
+        "-0.010000",
+        "-0.020000",
+        "-0.020000",
+        "-0.025000",
+        "-0.020000"
+      ],
+      "totalClosedQuoteMargin": "-0.615000",
+      "quoteHoldingMs": [
+        1802467,
+        1822008,
+        1808334,
+        1813978,
+        1841230,
+        1813068,
+        1814628,
+        1818093,
+        1816041,
+        1830639,
+        1815675,
+        1810096,
+        1817682,
+        1812189,
+        1819337,
+        1804365,
+        1816876,
+        1803005,
+        2646150,
+        1814228,
+        41980219,
+        1831978,
+        1800946,
+        1803014,
+        1821414
+      ],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:44:04.063Z",
+        "buy": "0.995000",
+        "sell": "0.955000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "Kansas Senate",
+      "legs": [
+        {
+          "marketId": "356",
+          "exchangeId": "1045",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "357",
+          "exchangeId": "1046",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5910,
+      "minimumQuotedAcquisition": "0.950000",
+      "quotedEntrySignals": 26,
+      "quotedProfitableExitSignals": 1,
+      "quotedTimeoutExitSignals": 25,
+      "quotedRoundtripMargins": [
+        "-0.030000",
+        "-0.015000",
+        "-0.005000",
+        "-0.035000",
+        "-0.035000",
+        "-0.030000",
+        "-0.020000",
+        "-0.020000",
+        "-0.035000",
+        "-0.030000",
+        "-0.030000",
+        "-0.025000",
+        "-0.030000",
+        "-0.025000",
+        "-0.030000",
+        "-0.020000",
+        "0.010000",
+        "0.000000",
+        "-0.030000",
+        "-0.040000",
+        "-0.015000",
+        "-0.030000",
+        "-0.025000",
+        "-0.030000",
+        "-0.030000",
+        "-0.020000"
+      ],
+      "totalClosedQuoteMargin": "-0.625000",
+      "quoteHoldingMs": [
+        1812495,
+        1819604,
+        19435211,
+        1806630,
+        1812910,
+        30637600,
+        1814335,
+        1829769,
+        1840098,
+        1834937,
+        16990008,
+        1810178,
+        1812826,
+        1811281,
+        1816835,
+        1811737,
+        251144,
+        1815567,
+        1811386,
+        1824990,
+        2096265,
+        2085439,
+        1830226,
+        1803837,
+        1816947,
+        1803383
+      ],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:43:52.406Z",
+        "buy": "0.995000",
+        "sell": "0.965000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "New Mexico Senate",
+      "legs": [
+        {
+          "marketId": "284",
+          "exchangeId": "973",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "285",
+          "exchangeId": "974",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5913,
+      "minimumQuotedAcquisition": "0.955000",
+      "quotedEntrySignals": 21,
+      "quotedProfitableExitSignals": 0,
+      "quotedTimeoutExitSignals": 21,
+      "quotedRoundtripMargins": [
+        "-0.035000",
+        "-0.030000",
+        "-0.030000",
+        "-0.020000",
+        "-0.025000",
+        "-0.025000",
+        "-0.060000",
+        "-0.040000",
+        "-0.020000",
+        "-0.030000",
+        "-0.035000",
+        "-0.025000",
+        "-0.030000",
+        "-0.030000",
+        "-0.035000",
+        "-0.025000",
+        "-0.025000",
+        "-0.030000",
+        "-0.025000",
+        "-0.025000",
+        "-0.035000"
+      ],
+      "totalClosedQuoteMargin": "-0.635000",
+      "quoteHoldingMs": [
+        1810707,
+        1813314,
+        1811990,
+        1817034,
+        1811602,
+        1802983,
+        1823906,
+        1825767,
+        1822883,
+        1819554,
+        1808083,
+        1813924,
+        1812609,
+        1816377,
+        1820386,
+        1819534,
+        1815598,
+        1876509,
+        2085699,
+        1811170,
+        1807944
+      ],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:44:04.063Z",
+        "buy": "0.995000",
+        "sell": "0.965000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "Maine Senate",
+      "legs": [
+        {
+          "marketId": "270",
+          "exchangeId": "959",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "271",
+          "exchangeId": "960",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5913,
+      "minimumQuotedAcquisition": "0.945000",
+      "quotedEntrySignals": 25,
+      "quotedProfitableExitSignals": 1,
+      "quotedTimeoutExitSignals": 23,
+      "quotedRoundtripMargins": [
+        "-0.030000",
+        "-0.030000",
+        "-0.020000",
+        "-0.035000",
+        "-0.030000",
+        "-0.035000",
+        "-0.030000",
+        "-0.030000",
+        "-0.030000",
+        "-0.030000",
+        "-0.030000",
+        "-0.030000",
+        "-0.020000",
+        "-0.010000",
+        "-0.030000",
+        "-0.030000",
+        "-0.030000",
+        "-0.030000",
+        "-0.035000",
+        "-0.035000",
+        "0.010000",
+        "-0.040000",
+        "-0.030000",
+        "-0.030000"
+      ],
+      "totalClosedQuoteMargin": "-0.670000",
+      "quoteHoldingMs": [
+        1819662,
+        1820095,
+        1821279,
+        1817579,
+        1871293,
+        1847367,
+        1836321,
+        17491477,
+        1810131,
+        1812808,
+        1811409,
+        1817034,
+        1812154,
+        1810268,
+        1818905,
+        1814484,
+        1827284,
+        1807782,
+        1801394,
+        1818305,
+        852577,
+        1800385,
+        1815566,
+        1849728
+      ],
+      "openQuotedSignal": {
+        "at": "2026-10-05T22:26:44.483Z",
+        "cost": "0.980000"
+      },
+      "last": {
+        "at": "2026-10-05T22:44:04.063Z",
+        "buy": "0.995000",
+        "sell": "0.960000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "Delaware Senate",
+      "legs": [
+        {
+          "marketId": "353",
+          "exchangeId": "1042",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "386",
+          "exchangeId": "1075",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5910,
+      "minimumQuotedAcquisition": "0.945000",
+      "quotedEntrySignals": 23,
+      "quotedProfitableExitSignals": 0,
+      "quotedTimeoutExitSignals": 23,
+      "quotedRoundtripMargins": [
+        "-0.025000",
+        "-0.020000",
+        "-0.035000",
+        "-0.040000",
+        "-0.030000",
+        "-0.045000",
+        "-0.035000",
+        "-0.025000",
+        "-0.050000",
+        "-0.025000",
+        "-0.030000",
+        "-0.030000",
+        "-0.030000",
+        "-0.020000",
+        "-0.025000",
+        "-0.025000",
+        "-0.035000",
+        "-0.035000",
+        "-0.025000",
+        "-0.010000",
+        "-0.035000",
+        "-0.025000",
+        "-0.025000"
+      ],
+      "totalClosedQuoteMargin": "-0.680000",
+      "quoteHoldingMs": [
+        1819310,
+        1819764,
+        1817581,
+        1840645,
+        1806713,
+        1802015,
+        17597755,
+        1810178,
+        1812826,
+        1811281,
+        1816835,
+        1811737,
+        1814987,
+        1814430,
+        1819112,
+        1816959,
+        1823995,
+        1825680,
+        1822054,
+        1820107,
+        1980594,
+        1832702,
+        1817881
+      ],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:43:52.406Z",
+        "buy": "0.990000",
+        "sell": "0.960000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "FL-22 House race",
+      "legs": [
+        {
+          "marketId": "328",
+          "exchangeId": "1017",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "329",
+          "exchangeId": "1018",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5910,
+      "minimumQuotedAcquisition": "0.960000",
+      "quotedEntrySignals": 25,
+      "quotedProfitableExitSignals": 0,
+      "quotedTimeoutExitSignals": 25,
+      "quotedRoundtripMargins": [
+        "-0.010000",
+        "-0.030000",
+        "-0.035000",
+        "-0.040000",
+        "-0.045000",
+        "-0.025000",
+        "-0.030000",
+        "-0.025000",
+        "-0.005000",
+        "-0.020000",
+        "-0.030000",
+        "-0.025000",
+        "-0.030000",
+        "-0.020000",
+        "-0.025000",
+        "-0.025000",
+        "-0.035000",
+        "-0.035000",
+        "-0.030000",
+        "-0.030000",
+        "-0.030000",
+        "-0.025000",
+        "-0.020000",
+        "-0.035000",
+        "-0.025000"
+      ],
+      "totalClosedQuoteMargin": "-0.685000",
+      "quoteHoldingMs": [
+        1811391,
+        1819255,
+        1814549,
+        1827009,
+        1805803,
+        1801257,
+        1822225,
+        1819952,
+        1807066,
+        1833513,
+        1819273,
+        1820970,
+        1822662,
+        1804622,
+        1811303,
+        1815361,
+        2516041,
+        1810446,
+        1812020,
+        1810184,
+        1812245,
+        1810307,
+        1802889,
+        1880183,
+        1832250
+      ],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:43:52.406Z",
+        "buy": "0.985000",
+        "sell": "0.955000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "Georgia Senate",
+      "legs": [
+        {
+          "marketId": "258",
+          "exchangeId": "947",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "259",
+          "exchangeId": "948",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5913,
+      "minimumQuotedAcquisition": "0.960000",
+      "quotedEntrySignals": 26,
+      "quotedProfitableExitSignals": 0,
+      "quotedTimeoutExitSignals": 26,
+      "quotedRoundtripMargins": [
+        "-0.010000",
+        "-0.015000",
+        "-0.035000",
+        "-0.045000",
+        "-0.035000",
+        "-0.030000",
+        "-0.030000",
+        "-0.035000",
+        "-0.025000",
+        "-0.040000",
+        "-0.020000",
+        "-0.025000",
+        "-0.025000",
+        "-0.035000",
+        "-0.015000",
+        "-0.030000",
+        "-0.030000",
+        "-0.035000",
+        "-0.030000",
+        "-0.035000",
+        "-0.035000",
+        "-0.025000",
+        "-0.025000",
+        "-0.030000",
+        "-0.025000",
+        "-0.030000"
+      ],
+      "totalClosedQuoteMargin": "-0.750000",
+      "quoteHoldingMs": [
+        1811911,
+        1819492,
+        1836292,
+        1827962,
+        1805172,
+        1803053,
+        1809768,
+        16282371,
+        1810131,
+        1812808,
+        1811409,
+        1801980,
+        1817815,
+        1812962,
+        1834978,
+        1824079,
+        1828269,
+        1824547,
+        1824734,
+        1824052,
+        1819048,
+        1808655,
+        1815539,
+        1819312,
+        1819556,
+        1821413
+      ],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:44:04.063Z",
+        "buy": "1.010000",
+        "sell": "0.980000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "Florida Senate",
+      "legs": [
+        {
+          "marketId": "354",
+          "exchangeId": "1043",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "355",
+          "exchangeId": "1044",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5910,
+      "minimumQuotedAcquisition": "0.970000",
+      "quotedEntrySignals": 29,
+      "quotedProfitableExitSignals": 0,
+      "quotedTimeoutExitSignals": 28,
+      "quotedRoundtripMargins": [
+        "-0.020000",
+        "-0.030000",
+        "-0.030000",
+        "-0.035000",
+        "-0.030000",
+        "-0.030000",
+        "-0.025000",
+        "-0.015000",
+        "-0.025000",
+        "-0.020000",
+        "-0.035000",
+        "-0.025000",
+        "-0.030000",
+        "-0.025000",
+        "-0.030000",
+        "-0.035000",
+        "-0.025000",
+        "-0.035000",
+        "-0.030000",
+        "-0.025000",
+        "-0.025000",
+        "-0.025000",
+        "-0.030000",
+        "-0.025000",
+        "-0.040000",
+        "-0.035000",
+        "-0.040000",
+        "-0.025000"
+      ],
+      "totalClosedQuoteMargin": "-0.800000",
+      "quoteHoldingMs": [
+        1820853,
+        1841318,
+        1833489,
+        17845453,
+        1810178,
+        1812826,
+        1811281,
+        1815325,
+        1812376,
+        1843279,
+        1812488,
+        2880958,
+        42768965,
+        1804896,
+        2208047,
+        1807107,
+        1808886,
+        1802354,
+        1801350,
+        2008747,
+        1820185,
+        1813306,
+        1816947,
+        1803383,
+        1802910,
+        1961495,
+        1845239,
+        1844244
+      ],
+      "openQuotedSignal": {
+        "at": "2026-10-05T22:43:52.406Z",
+        "cost": "0.980000"
+      },
+      "last": {
+        "at": "2026-10-05T22:43:52.406Z",
+        "buy": "0.980000",
+        "sell": "0.950000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "Michigan Senate",
+      "legs": [
+        {
+          "marketId": "358",
+          "exchangeId": "1047",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "359",
+          "exchangeId": "1048",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5910,
+      "minimumQuotedAcquisition": "0.930000",
+      "quotedEntrySignals": 30,
+      "quotedProfitableExitSignals": 0,
+      "quotedTimeoutExitSignals": 30,
+      "quotedRoundtripMargins": [
+        "-0.060000",
+        "-0.005000",
+        "-0.030000",
+        "-0.025000",
+        "-0.030000",
+        "-0.040000",
+        "-0.040000",
+        "-0.025000",
+        "-0.015000",
+        "-0.010000",
+        "-0.020000",
+        "-0.025000",
+        "-0.035000",
+        "-0.030000",
+        "-0.035000",
+        "-0.035000",
+        "-0.040000",
+        "-0.030000",
+        "-0.020000",
+        "-0.025000",
+        "-0.010000",
+        "-0.030000",
+        "-0.025000",
+        "-0.025000",
+        "-0.030000",
+        "-0.015000",
+        "-0.030000",
+        "-0.030000",
+        "-0.030000",
+        "-0.030000"
+      ],
+      "totalClosedQuoteMargin": "-0.830000",
+      "quoteHoldingMs": [
+        1809387,
+        1810080,
+        1800284,
+        1803264,
+        1802303,
+        1806655,
+        1811181,
+        20053128,
+        1818367,
+        1816487,
+        1824716,
+        1801966,
+        1821027,
+        1829132,
+        1817581,
+        1840645,
+        1806713,
+        1802015,
+        17597755,
+        1810178,
+        1810326,
+        1808800,
+        1814520,
+        1820045,
+        1801550,
+        1816284,
+        1818740,
+        1819859,
+        1815170,
+        1821730
+      ],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:43:52.406Z",
+        "buy": "1.005000",
+        "sell": "0.975000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "Oklahoma Senate",
+      "legs": [
+        {
+          "marketId": "383",
+          "exchangeId": "1072",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "286",
+          "exchangeId": "975",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5733,
+      "minimumQuotedAcquisition": "0.955000",
+      "quotedEntrySignals": 34,
+      "quotedProfitableExitSignals": 0,
+      "quotedTimeoutExitSignals": 34,
+      "quotedRoundtripMargins": [
+        "-0.030000",
+        "-0.030000",
+        "-0.030000",
+        "-0.035000",
+        "-0.030000",
+        "-0.045000",
+        "-0.055000",
+        "-0.020000",
+        "-0.025000",
+        "-0.020000",
+        "-0.035000",
+        "-0.035000",
+        "-0.015000",
+        "-0.030000",
+        "-0.035000",
+        "-0.035000",
+        "-0.040000",
+        "-0.005000",
+        "-0.025000",
+        "-0.025000",
+        "-0.020000",
+        "-0.035000",
+        "-0.040000",
+        "-0.035000",
+        "-0.025000",
+        "-0.030000",
+        "-0.020000",
+        "-0.015000",
+        "-0.030000",
+        "-0.015000",
+        "-0.015000",
+        "-0.015000",
+        "-0.030000",
+        "-0.015000"
+      ],
+      "totalClosedQuoteMargin": "-0.940000",
+      "quoteHoldingMs": [
+        2120848,
+        1804963,
+        1804966,
+        31489199,
+        1814004,
+        1832332,
+        1818014,
+        1815226,
+        1813721,
+        1817977,
+        1807506,
+        1819547,
+        1820654,
+        1820093,
+        1801828,
+        1805559,
+        1834591,
+        17171137,
+        1816326,
+        1802745,
+        1814021,
+        1816880,
+        1827803,
+        1832852,
+        1814575,
+        1822105,
+        1820407,
+        1810324,
+        1834039,
+        1816295,
+        1819339,
+        43379745,
+        1879487,
+        1813578
+      ],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:01:18.451Z",
+        "buy": "0.990000",
+        "sell": "0.960000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "Oklahoma Governor",
+      "legs": [
+        {
+          "marketId": "186",
+          "exchangeId": "875",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "374",
+          "exchangeId": "1063",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5728,
+      "minimumQuotedAcquisition": "0.960000",
+      "quotedEntrySignals": 32,
+      "quotedProfitableExitSignals": 0,
+      "quotedTimeoutExitSignals": 32,
+      "quotedRoundtripMargins": [
+        "-0.010000",
+        "-0.005000",
+        "-0.020000",
+        "-0.040000",
+        "-0.040000",
+        "-0.035000",
+        "-0.030000",
+        "-0.040000",
+        "-0.035000",
+        "-0.040000",
+        "-0.035000",
+        "-0.035000",
+        "-0.025000",
+        "-0.030000",
+        "-0.025000",
+        "-0.030000",
+        "-0.035000",
+        "-0.035000",
+        "-0.020000",
+        "-0.045000",
+        "-0.030000",
+        "-0.040000",
+        "-0.030000",
+        "-0.030000",
+        "-0.030000",
+        "-0.030000",
+        "-0.020000",
+        "-0.025000",
+        "-0.030000",
+        "-0.025000",
+        "-0.030000",
+        "-0.010000"
+      ],
+      "totalClosedQuoteMargin": "-0.940000",
+      "quoteHoldingMs": [
+        1815035,
+        1806423,
+        1836126,
+        1817681,
+        1836751,
+        1804918,
+        1801534,
+        17745306,
+        1810178,
+        1811890,
+        1816834,
+        1808336,
+        1811284,
+        1818511,
+        2050410,
+        1823118,
+        1819471,
+        1824989,
+        1815520,
+        1824550,
+        1818757,
+        1817357,
+        1826764,
+        1807390,
+        1816532,
+        1820850,
+        1820586,
+        1815343,
+        1821608,
+        1809090,
+        2666997,
+        43190758
+      ],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:01:20.658Z",
+        "buy": "1.000000",
+        "sell": "0.970000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "North Carolina Senate",
+      "legs": [
+        {
+          "marketId": "277",
+          "exchangeId": "966",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "278",
+          "exchangeId": "967",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5913,
+      "minimumQuotedAcquisition": "0.955000",
+      "quotedEntrySignals": 36,
+      "quotedProfitableExitSignals": 0,
+      "quotedTimeoutExitSignals": 36,
+      "quotedRoundtripMargins": [
+        "-0.040000",
+        "-0.010000",
+        "-0.025000",
+        "-0.055000",
+        "-0.025000",
+        "-0.030000",
+        "-0.040000",
+        "-0.035000",
+        "-0.025000",
+        "-0.025000",
+        "-0.030000",
+        "-0.025000",
+        "-0.010000",
+        "-0.015000",
+        "-0.015000",
+        "-0.020000",
+        "-0.035000",
+        "-0.025000",
+        "-0.035000",
+        "-0.020000",
+        "-0.030000",
+        "-0.025000",
+        "-0.030000",
+        "-0.030000",
+        "-0.040000",
+        "-0.040000",
+        "-0.015000",
+        "-0.020000",
+        "-0.030000",
+        "-0.025000",
+        "-0.020000",
+        "-0.020000",
+        "-0.025000",
+        "-0.025000",
+        "-0.025000",
+        "-0.025000"
+      ],
+      "totalClosedQuoteMargin": "-0.965000",
+      "quoteHoldingMs": [
+        1829501,
+        1816480,
+        1838942,
+        1870025,
+        1826248,
+        17523568,
+        1810131,
+        1812808,
+        1811409,
+        1815741,
+        1812662,
+        1816520,
+        1803290,
+        1869368,
+        1816525,
+        1816813,
+        1825417,
+        1821067,
+        1812301,
+        1822360,
+        1823167,
+        1831178,
+        1819938,
+        1820702,
+        1812412,
+        1821848,
+        1804793,
+        1878886,
+        1811972,
+        1814631,
+        1800428,
+        1808608,
+        1816484,
+        1800828,
+        1819743,
+        1803384
+      ],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:44:04.063Z",
+        "buy": "0.985000",
+        "sell": "0.955000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "VA-01 House race",
+      "legs": [
+        {
+          "marketId": "342",
+          "exchangeId": "1031",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "249",
+          "exchangeId": "938",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5733,
+      "minimumQuotedAcquisition": "0.965000",
+      "quotedEntrySignals": 36,
+      "quotedProfitableExitSignals": 0,
+      "quotedTimeoutExitSignals": 36,
+      "quotedRoundtripMargins": [
+        "-0.025000",
+        "-0.040000",
+        "-0.030000",
+        "-0.035000",
+        "-0.025000",
+        "-0.025000",
+        "-0.015000",
+        "-0.025000",
+        "-0.025000",
+        "-0.035000",
+        "-0.035000",
+        "-0.025000",
+        "-0.025000",
+        "-0.035000",
+        "-0.030000",
+        "-0.040000",
+        "-0.030000",
+        "-0.025000",
+        "-0.010000",
+        "-0.010000",
+        "-0.025000",
+        "-0.035000",
+        "-0.040000",
+        "-0.040000",
+        "-0.020000",
+        "-0.030000",
+        "-0.025000",
+        "-0.030000",
+        "-0.025000",
+        "-0.030000",
+        "-0.035000",
+        "-0.030000",
+        "-0.030000",
+        "-0.025000",
+        "-0.025000",
+        "-0.025000"
+      ],
+      "totalClosedQuoteMargin": "-1.015000",
+      "quoteHoldingMs": [
+        1841230,
+        1814051,
+        1832332,
+        1818720,
+        1817072,
+        1822028,
+        1819756,
+        1818900,
+        1819764,
+        1817917,
+        1834458,
+        1880435,
+        1801100,
+        1810707,
+        1813162,
+        1811990,
+        1817048,
+        1811708,
+        1813357,
+        1810268,
+        1829199,
+        1811427,
+        1807243,
+        1807532,
+        1822450,
+        1821495,
+        1811831,
+        1822060,
+        1832341,
+        1820227,
+        1820575,
+        1814770,
+        1820818,
+        1812488,
+        1947551,
+        1803702
+      ],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:01:18.451Z",
+        "buy": "0.990000",
+        "sell": "0.960000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    },
+    {
+      "title": "New Hampshire Senate",
+      "legs": [
+        {
+          "marketId": "381",
+          "exchangeId": "1070",
+          "party": "Democratic"
+        },
+        {
+          "marketId": "382",
+          "exchangeId": "1071",
+          "party": "Republican"
+        }
+      ],
+      "contractPredicatesVerified": false,
+      "usablePackets": 5910,
+      "minimumQuotedAcquisition": "0.920000",
+      "quotedEntrySignals": 44,
+      "quotedProfitableExitSignals": 1,
+      "quotedTimeoutExitSignals": 43,
+      "quotedRoundtripMargins": [
+        "-0.020000",
+        "-0.020000",
+        "-0.015000",
+        "-0.010000",
+        "-0.045000",
+        "-0.030000",
+        "-0.045000",
+        "-0.025000",
+        "-0.045000",
+        "-0.060000",
+        "0.010000",
+        "-0.035000",
+        "-0.030000",
+        "-0.015000",
+        "-0.040000",
+        "-0.020000",
+        "-0.020000",
+        "-0.030000",
+        "-0.030000",
+        "-0.035000",
+        "-0.025000",
+        "-0.030000",
+        "-0.035000",
+        "-0.030000",
+        "-0.035000",
+        "-0.030000",
+        "-0.035000",
+        "-0.020000",
+        "-0.035000",
+        "-0.035000",
+        "-0.025000",
+        "-0.030000",
+        "-0.030000",
+        "-0.030000",
+        "-0.020000",
+        "-0.025000",
+        "-0.025000",
+        "-0.020000",
+        "-0.035000",
+        "-0.025000",
+        "-0.025000",
+        "-0.020000",
+        "-0.020000",
+        "-0.010000"
+      ],
+      "totalClosedQuoteMargin": "-1.210000",
+      "quoteHoldingMs": [
+        1811165,
+        2688277,
+        1810341,
+        1801319,
+        1812921,
+        1813085,
+        2050774,
+        1807156,
+        1812086,
+        20266138,
+        655243,
+        1833691,
+        31812307,
+        1814335,
+        1831849,
+        1819548,
+        1831365,
+        1822140,
+        1811547,
+        1801966,
+        1820538,
+        1819764,
+        1821905,
+        1839743,
+        1805296,
+        1802416,
+        1818873,
+        16175209,
+        1810178,
+        1811397,
+        1817465,
+        1814178,
+        1810861,
+        1817715,
+        1812492,
+        1823118,
+        1810351,
+        1819963,
+        1813376,
+        1838135,
+        1821484,
+        1818545,
+        1816165,
+        1821684
+      ],
+      "openQuotedSignal": null,
+      "last": {
+        "at": "2026-10-05T22:43:52.406Z",
+        "buy": "1.000000",
+        "sell": "0.970000"
+      },
+      "depthAvailable": false,
+      "executionEvidence": false,
+      "simulatedFills": 0,
+      "realizedPnl": null
+    }
+  ],
+  "competitionOrders": 0,
+  "networkRequests": 0,
+  "simulatedFills": 0,
+  "profitabilityEstablished": false,
+  "selectionIsExploratory": true,
+  "limitations": [
+    "Historical bulk bid/ask quotes contain no executable depth and do not establish fills, order acceptance, queue priority or capital returns.",
+    "Title-paired catalogue groups require exact contract-root review; administrative resolution or differing predicates can invalidate payout assumptions.",
+    "Quote exit signals omit sequential partial-fill and failed-hedge risk. They rank future exact depth capture only.",
+    "Summed quote margins across overlapping opportunities are not a capital-constrained wallet, account return or realized P&L.",
+    "No current account eligibility or later contract review was backfilled into historical sources.",
+    "Fixed policy is declared before this scan; results are exploratory and require untouched later depth and prospective policy validation."
+  ]
+}

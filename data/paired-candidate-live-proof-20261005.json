@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "at": "2026-10-05T22:45:42.551Z",
+  "collectorPid": 24624,
+  "collectorReportedAt": "2026-10-05T22:45:42.062Z",
+  "collectorStatus": "running",
+  "collectorErrors": [],
+  "cohort": "delaware-causal-pair-20261005-v1",
+  "capturedAt": "2026-10-05T22:40:33.045Z",
+  "phase": "complete",
+  "screen": {
+    "accountReceiptKnownBeforeBothRequests": true,
+    "accountSnapshotHash": "90ab35efe7d794fdc5e18a38a56d798cb926d545e7566023a2aa356aaf663689",
+    "conditionalOrdinarySurplus": "0.010000",
+    "cushionedCost": "0.990000",
+    "eligibleDepth": [
+      88,
+      176
+    ],
+    "executionAuthority": false,
+    "fills": 0,
+    "maximumBookAgeMs": 4295,
+    "orderEligible": false,
+    "orders": 0,
+    "ordinaryResolutionOnly": true,
+    "positiveConditionalScreen": true,
+    "profitabilityEstablished": false,
+    "publicationCreated": false,
+    "quantity": 1,
+    "representation": "documented_same_exchange_yes_bid_complement",
+    "wholeWindowSkewMs": 4286,
+    "zeroPayoutExceptionLoss": "-0.990000"
+  },
+  "roots": [
+    {
+      "marketId": "353",
+      "requestStartedAt": "2026-10-05T22:40:01.513Z",
+      "receivedAt": "2026-10-05T22:40:02.789Z",
+      "rootHash": "b4d6f5b6df47f22d271d880f6385c6434cb9990222e6b67811ca8a20c374d472"
+    },
+    {
+      "marketId": "386",
+      "requestStartedAt": "2026-10-05T22:40:03.801Z",
+      "receivedAt": "2026-10-05T22:40:04.517Z",
+      "rootHash": "a475d827bbc2d20bd3c0c439dbd0f14835c2a23b38a4bdf479c75f2534cc0f93"
+    }
+  ],
+  "bookReceipts": [
+    {
+      "marketId": "353",
+      "requestStartedAt": "2026-10-05T22:40:28.749Z",
+      "receivedAt": "2026-10-05T22:40:30.104Z",
+      "responseHash": "ae1754997d46bf0b3a15e6223d4c4a1d471faf975b29b2978fcee0f41018f61a"
+    },
+    {
+      "marketId": "386",
+      "requestStartedAt": "2026-10-05T22:40:31.328Z",
+      "receivedAt": "2026-10-05T22:40:33.035Z",
+      "responseHash": "56723874f7586245456583bcb7bdbc3a83f42f53c9b0cf3383c4af85cb00b5b2"
+    }
+  ],
+  "competition": {
+    "status": "entry_window_closed",
+    "ordersSubmitted": 0,
+    "dispatchAttempts": 0
+  },
+  "activationRenewed": false,
+  "simulatedFills": 0,
+  "profitabilityEstablished": false,
+  "meaning": "Causal cofresh screen only; ordinary conditional payout is not realized cash or guaranteed settlement."
+}
