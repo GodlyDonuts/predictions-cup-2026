@@ -364,3 +364,7 @@ The following prior work queue is preserved for a future coordinated return; it 
 3. Test price-protected entry execution prospectively under unchanged discount gates. Two observed official entries caught short-lived ask concessions; this motivates a test, not a profitability claim. A quote touch or depth disappearance is insufficient proof of a resting fill.
 4. Monitor actual completed-trade economics and fresh account reconciliation before any scaling or further pilot-window renewal.
 
+# October5: actual collector status writer repaired
+
+At16:38UTC the collector stopped on EPERM while publishing its root status. The earlier bounded Windows retry fix covered ledger projections, but this runner call still used the immediate-rename transport helper. Both derived collector status views now use the durable writer through a JSON-shape-preserving adapter. Sixty-six targeted checks include the actual runner call, transient sharing denial and persistent failure. Recovery verified one collector PID2288, all nine fixed activation/configuration files unchanged, and all eight frozen bank/journal prefixes preserved. This repairs collection; it establishes no strategy profit. Realtime market capture remains separate from official execution.
+

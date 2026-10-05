@@ -1,0 +1,120 @@
+{
+  "at": "2026-10-05T16:51:27.784Z",
+  "pid": 2288,
+  "status": "running",
+  "reportedAt": "2026-10-05T16:51:26.575Z",
+  "fixed": [
+    {
+      "file": "competition-activation.json",
+      "hash": "7803b21d01a36b51300dfb783c213456f24c801936f21a4618d3a59de2e5b228",
+      "unchanged": true
+    },
+    {
+      "file": "coordinated-network-budget.json",
+      "hash": "7d507950881b42a18cd1ec71a78e07dc11beb9ab2884f9a6705ce38e37230375",
+      "unchanged": true
+    },
+    {
+      "file": "coupled-maker-active.json",
+      "hash": "56230d31300df2e9901c8f7641e289c1a9c3633dc768948419e6d9c1e7918223",
+      "unchanged": true
+    },
+    {
+      "file": "coupled-bulk-active.json",
+      "hash": "02655323ff56c306f1983cf79359e50bec689c930ed8144e4dd39fe292cc1691",
+      "unchanged": true
+    },
+    {
+      "file": "probability-receipt-active.json",
+      "hash": "78190ca707166fa77628e1d4763b060af2074b75692aada2f0bcfa89bbe271aa",
+      "unchanged": true
+    },
+    {
+      "file": "calibrated-poll-paper-active.json",
+      "hash": "22bbbf7cb2630ae7ffc73d9f0d37e6116edd6d47a465d08ef43ab70afd5146a8",
+      "unchanged": true
+    },
+    {
+      "file": "collector-native-journal.json",
+      "hash": "d410441530ed306e5e152c4027b72416f436bf403be589b5cf97b7890c6a907e",
+      "unchanged": true
+    },
+    {
+      "file": "collector-native-publication.json",
+      "hash": "88ede70791e4b553503844d8ef640fa5ff1c5454d409fff5e2518e7e5ef37ca3",
+      "unchanged": true
+    },
+    {
+      "file": "realtime-capture.json",
+      "hash": "739cf3e560148c15467108b881b887bf4c9d216f008defdb432bc6ad285067e1",
+      "unchanged": true
+    }
+  ],
+  "prefixes": [
+    {
+      "relative": "coupled-maker-cohorts/baal-coupled-spread-20261005-v1-live/bank.json",
+      "bytes": 5621,
+      "hash": "fd5d2cffa9552ea1a38ffeb1aaae63e64b2b5d0fc06b1cc1baf9a464176b1f71",
+      "prefixPreserved": true,
+      "currentBytes": 5621
+    },
+    {
+      "relative": "coupled-maker-cohorts/baal-coupled-spread-20261005-v1-live/journal.jsonl",
+      "bytes": 21919145,
+      "hash": "9b3aa5c38ded869e199e29535466ee8ddba13e79afb06b4c0ed8db883dce8304",
+      "prefixPreserved": true,
+      "currentBytes": 22771384
+    },
+    {
+      "relative": "coupled-bulk-cohorts/baal-coupled-bulk-20261005-v2c-live/bank.json",
+      "bytes": 42668,
+      "hash": "d1a9ea064ef551fbf3c10f1810a5499839b460f0bb129a322466c7a69c0abb9b",
+      "prefixPreserved": true,
+      "currentBytes": 42668
+    },
+    {
+      "relative": "coupled-bulk-cohorts/baal-coupled-bulk-20261005-v2c-live/journal.jsonl",
+      "bytes": 307274300,
+      "hash": "be9fbc15af9022643854cb1d3923a115ba8289675728cc9053fe5db29f867466",
+      "prefixPreserved": true,
+      "currentBytes": 320053382
+    },
+    {
+      "relative": "probability-receipt-cohorts/source-probability-native-20261004-v3/bank.json",
+      "bytes": 35238,
+      "hash": "ccf44ba66d259e518d81c2cc14fc3342214254918675860d31b96eecb81c26cd",
+      "prefixPreserved": true,
+      "currentBytes": 35238
+    },
+    {
+      "relative": "probability-receipt-cohorts/source-probability-native-20261004-v3/journal.jsonl",
+      "bytes": 6404808,
+      "hash": "b5b2f1528d3260cad3506a87b503fc29677ffa6fbb35d8d13344046a03f4e440",
+      "prefixPreserved": true,
+      "currentBytes": 6433568
+    },
+    {
+      "relative": "probability-receipt-cohorts/calibrated-kansas-poll-20261005-v1/bank.json",
+      "bytes": 43745,
+      "hash": "ba94bbf1d65a25a8538da6b05a90457c11a1b9fe200cd3ed60e8d9b6c18df6ea",
+      "prefixPreserved": true,
+      "currentBytes": 43745
+    },
+    {
+      "relative": "probability-receipt-cohorts/calibrated-kansas-poll-20261005-v1/journal.jsonl",
+      "bytes": 2039429,
+      "hash": "96d637d457aa91168f3bf8d3fb6c48c436cea769106a6bda7aced972d9ad74c9",
+      "prefixPreserved": true,
+      "currentBytes": 2066456
+    }
+  ],
+  "activationUnchanged": true,
+  "modelBanksPreserved": true,
+  "walletPrefixesPreserved": true,
+  "contest": {
+    "status": "entry_window_closed",
+    "ordersSubmitted": 0,
+    "dispatchAttempts": 0,
+    "unconfirmedIntents": 0
+  }
+}

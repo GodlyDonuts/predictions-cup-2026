@@ -6,6 +6,7 @@ import {fileURLToPath} from 'node:url';
 import {loadKey} from '../bot/api.mjs';
 import {initialState,normalizeBook,observe,report,assertState,sampleEquity,validateConfig,restoreState,invalidate,digest} from './model.mjs';
 import {Journal,lock,ReadClient,atomicJson,exclusionSet} from './transport-runtime.mjs';
+import {writeCollectorStatus} from './collector-status-writer.mjs';
 import {validateUniverse,priceBatch,priceEndpoint,normalizePrices,updateCoverage} from './breadth.mjs';
 import {validateDepthPlan} from './depth-scope.mjs';
 import {connectTournament} from './connection.mjs';
@@ -217,7 +218,7 @@ async function collectAccountExtra(){
  catch(e){if(stopping)return;if(api.manualReview||e.status===401||e.status===403)throw e;accountCache.errors[kind]={at:new Date().toISOString(),reason:e.status?'http_'+e.status:e.projectionInvalid?'invalid_projection':'connection_unavailable'};publishAccount();}
 }
 let runtime={status:'starting',pid:process.pid,runtimeDir,readRequests:0,errors:[],cycles:0,lastCycleAt:null,dashboard:'http://127.0.0.1:'+c.port};
-function persistStatus(){const r=report(state,c);if(realtime)atomicJson(path.join(runtimeDir,'realtime-stats.json'),{...realtime.status(),pid:process.pid});atomicJson(path.join(runtimeDir,'stats.json'),{...r,runtime:{...runtime,readRequests:api?.requests||0}});return r;}
+function persistStatus(){const r=report(state,c);if(realtime)writeCollectorStatus(path.join(runtimeDir,'realtime-stats.json'),{...realtime.status(),pid:process.pid});writeCollectorStatus(path.join(runtimeDir,'stats.json'),{...r,runtime:{...runtime,readRequests:api?.requests||0}});return r;}
 function commit(event){try{journal.commit(state,event);}catch{const e=Error('Paper journal recording failed');e.durableRecordingFailed=true;throw e;}}
 function publishBookEvent(method,value){try{const result=bookPublication?.[method](value);if(['invalidate','close'].includes(method)||method==='publishBook'&&result===false){
  if(noMaker)try{noMaker.boundary(method);runtime.noMaker=noMaker.status();}catch{runtime.noMaker={status:'failed',executionAuthority:false};noMaker=null;}
