@@ -1,0 +1,413 @@
+{
+  "schemaVersion": 1,
+  "at": "2026-10-05T23:07:07.081Z",
+  "definition": {
+    "forecastHorizonDays": 29,
+    "maximumPollAgeDays": 30,
+    "recencyHalfLifeDays": 21,
+    "minimumRaces": 30,
+    "minimumCycles": 3,
+    "minimumSd": 3
+  },
+  "sourceHashes": [
+    {
+      "file": "raw_polls.csv",
+      "sha256": "9f0b185506e59117c150fb988e73b612346effe8e3a8f0d90fdafcad07f54756"
+    },
+    {
+      "file": "codebook.md",
+      "sha256": "10e7554d27e241a96f6c9f00de21c5ac00d0229e58808a79f30649824f56ac5b"
+    },
+    {
+      "file": "marist-iowa-tables.pdf",
+      "sha256": "371f20852a7df228dbbeeead8aaba2da2d1e209b270db034dd467611b08d1681"
+    }
+  ],
+  "finalSourceHash": "6f745db1b4a0026ad837e74428f9ed6f3f77fa51eb6f858b58ebdbc186fdb3bd",
+  "overridesHash": "6141a20ef0298e33f9ce0815c2e8098e43a24ef660799ec46c718a2c1c2f7499",
+  "model": {
+    "schemaVersion": 1,
+    "definition": {
+      "forecastHorizonDays": 29,
+      "maximumPollAgeDays": 30,
+      "recencyHalfLifeDays": 21,
+      "minimumRaces": 30,
+      "minimumCycles": 3,
+      "minimumSd": 3
+    },
+    "trainedThroughYear": 2022,
+    "maximumTrainingElectionYear": 2022,
+    "races": 240,
+    "cycles": [
+      {
+        "year": 1998,
+        "races": 17,
+        "mean": 3.3835787892834865
+      },
+      {
+        "year": 2000,
+        "races": 25,
+        "mean": -0.2727516054050316
+      },
+      {
+        "year": 2002,
+        "races": 20,
+        "mean": 1.7851153964744626
+      },
+      {
+        "year": 2004,
+        "races": 20,
+        "mean": 0.43127983919302404
+      },
+      {
+        "year": 2006,
+        "races": 15,
+        "mean": 2.813673894174763
+      },
+      {
+        "year": 2008,
+        "races": 22,
+        "mean": 0.8678608478649732
+      },
+      {
+        "year": 2010,
+        "races": 19,
+        "mean": -0.3683420948954964
+      },
+      {
+        "year": 2012,
+        "races": 19,
+        "mean": 2.5695520075588374
+      },
+      {
+        "year": 2014,
+        "races": 20,
+        "mean": -2.6441258122456603
+      },
+      {
+        "year": 2016,
+        "races": 17,
+        "mean": -1.7704755768335692
+      },
+      {
+        "year": 2018,
+        "races": 19,
+        "mean": -1.7483145397127717
+      },
+      {
+        "year": 2020,
+        "races": 10,
+        "mean": -8.146824325024232
+      },
+      {
+        "year": 2022,
+        "races": 17,
+        "mean": -4.997879723431805
+      }
+    ],
+    "meanBiasPoints": -0.3519991102163,
+    "withinCycleVariance": 50.03771531661228,
+    "estimatedCommonCycleVariance": 7.14922227495628,
+    "rawRaceVariance": 57.692253821019534,
+    "totalVariance": 57.692253821019534,
+    "standardDeviationPoints": 7.595541706884344,
+    "commonCorrelationProxy": 0.12391996847853325,
+    "historicalReleaseClocksAvailable": false,
+    "historicalPopulationLabelsAvailable": false,
+    "distribution": "fixed_t4",
+    "profitabilityEstablished": false
+  },
+  "diagnostic": {
+    "races": 27,
+    "years": [
+      2020,
+      2022
+    ],
+    "brier": 0.06185609795725665,
+    "byYear": [
+      {
+        "year": 2020,
+        "races": 10,
+        "brier": 0.07714632955975573
+      },
+      {
+        "year": 2022,
+        "races": 17,
+        "brier": 0.05286184407343365
+      }
+    ],
+    "rows": [
+      {
+        "key": "2020:AK",
+        "year": 2020,
+        "pollMargin": -1.376324755912988,
+        "democraticWon": false,
+        "probability": 0.42719312547163385,
+        "trainingThroughYear": 2018
+      },
+      {
+        "key": "2020:DE",
+        "year": 2020,
+        "pollMargin": 30,
+        "democraticWon": true,
+        "probability": 0.99,
+        "trainingThroughYear": 2018
+      },
+      {
+        "key": "2020:KY",
+        "year": 2020,
+        "pollMargin": -13.574205146452208,
+        "democraticWon": false,
+        "probability": 0.02992683605650441,
+        "trainingThroughYear": 2018
+      },
+      {
+        "key": "2020:MI",
+        "year": 2020,
+        "pollMargin": 6.598923895478001,
+        "democraticWon": true,
+        "probability": 0.879909106629468,
+        "trainingThroughYear": 2018
+      },
+      {
+        "key": "2020:MN",
+        "year": 2020,
+        "pollMargin": 9.069838753382543,
+        "democraticWon": true,
+        "probability": 0.9322691881030138,
+        "trainingThroughYear": 2018
+      },
+      {
+        "key": "2020:MT",
+        "year": 2020,
+        "pollMargin": 0.696899301956404,
+        "democraticWon": false,
+        "probability": 0.5793024250149776,
+        "trainingThroughYear": 2018
+      },
+      {
+        "key": "2020:OR",
+        "year": 2020,
+        "pollMargin": 20,
+        "democraticWon": true,
+        "probability": 0.99,
+        "trainingThroughYear": 2018
+      },
+      {
+        "key": "2020:SC",
+        "year": 2020,
+        "pollMargin": -0.6277553263066421,
+        "democraticWon": false,
+        "probability": 0.4820239313325152,
+        "trainingThroughYear": 2018
+      },
+      {
+        "key": "2020:VA",
+        "year": 2020,
+        "pollMargin": 13,
+        "democraticWon": true,
+        "probability": 0.9712587739520925,
+        "trainingThroughYear": 2018
+      },
+      {
+        "key": "2020:WV",
+        "year": 2020,
+        "pollMargin": -20,
+        "democraticWon": false,
+        "probability": 0.01,
+        "trainingThroughYear": 2018
+      },
+      {
+        "key": "2022:AR",
+        "year": 2022,
+        "pollMargin": -13.000000000000002,
+        "democraticWon": false,
+        "probability": 0.033173784374412735,
+        "trainingThroughYear": 2020
+      },
+      {
+        "key": "2022:AZ",
+        "year": 2022,
+        "pollMargin": 5.889230500004788,
+        "democraticWon": true,
+        "probability": 0.8402659823474952,
+        "trainingThroughYear": 2020
+      },
+      {
+        "key": "2022:CA",
+        "year": 2022,
+        "pollMargin": 22,
+        "democraticWon": true,
+        "probability": 0.99,
+        "trainingThroughYear": 2020
+      },
+      {
+        "key": "2022:CO",
+        "year": 2022,
+        "pollMargin": 8.68756667614595,
+        "democraticWon": true,
+        "probability": 0.9154095283784045,
+        "trainingThroughYear": 2020
+      },
+      {
+        "key": "2022:FL",
+        "year": 2022,
+        "pollMargin": -4.624074863522868,
+        "democraticWon": false,
+        "probability": 0.2116230766748509,
+        "trainingThroughYear": 2020
+      },
+      {
+        "key": "2022:IN",
+        "year": 2022,
+        "pollMargin": -2,
+        "democraticWon": false,
+        "probability": 0.3598590220483548,
+        "trainingThroughYear": 2020
+      },
+      {
+        "key": "2022:KS",
+        "year": 2022,
+        "pollMargin": -12.199999999999996,
+        "democraticWon": false,
+        "probability": 0.03918661798030085,
+        "trainingThroughYear": 2020
+      },
+      {
+        "key": "2022:NC",
+        "year": 2022,
+        "pollMargin": -1.447978243964413,
+        "democraticWon": false,
+        "probability": 0.39713000820688543,
+        "trainingThroughYear": 2020
+      },
+      {
+        "key": "2022:NH",
+        "year": 2022,
+        "pollMargin": 8.212675978484647,
+        "democraticWon": true,
+        "probability": 0.9057904620186734,
+        "trainingThroughYear": 2020
+      },
+      {
+        "key": "2022:NV",
+        "year": 2022,
+        "pollMargin": -0.8844473285054175,
+        "democraticWon": true,
+        "probability": 0.43659526647673663,
+        "trainingThroughYear": 2020
+      },
+      {
+        "key": "2022:OK",
+        "year": 2022,
+        "pollMargin": -13.837234184298117,
+        "democraticWon": false,
+        "probability": 0.027981358091073577,
+        "trainingThroughYear": 2020
+      },
+      {
+        "key": "2022:OR",
+        "year": 2022,
+        "pollMargin": 19.5,
+        "democraticWon": true,
+        "probability": 0.99,
+        "trainingThroughYear": 2020
+      },
+      {
+        "key": "2022:PA",
+        "year": 2022,
+        "pollMargin": 2.7031543661631776,
+        "democraticWon": true,
+        "probability": 0.6852412301876815,
+        "trainingThroughYear": 2020
+      },
+      {
+        "key": "2022:SD",
+        "year": 2022,
+        "pollMargin": -25,
+        "democraticWon": false,
+        "probability": 0.01,
+        "trainingThroughYear": 2020
+      },
+      {
+        "key": "2022:VT",
+        "year": 2022,
+        "pollMargin": 34,
+        "democraticWon": true,
+        "probability": 0.99,
+        "trainingThroughYear": 2020
+      },
+      {
+        "key": "2022:WA",
+        "year": 2022,
+        "pollMargin": 11.219250750745,
+        "democraticWon": true,
+        "probability": 0.9517403863390594,
+        "trainingThroughYear": 2020
+      },
+      {
+        "key": "2022:WI",
+        "year": 2022,
+        "pollMargin": -2.6208410053182916,
+        "democraticWon": false,
+        "probability": 0.32010046474169884,
+        "trainingThroughYear": 2020
+      }
+    ],
+    "untouchedOriginalForecastVintage": false,
+    "marketPnlAvailable": false,
+    "profitabilityEstablished": false
+  },
+  "current": {
+    "asOf": "2026-10-05T22:57:49.323Z",
+    "marketId": "356",
+    "exchangeId": "1045",
+    "knownFieldMargin": {
+      "margin": -1.125978854176686,
+      "sources": [
+        {
+          "source": "emerson",
+          "horizonDays": 48.5,
+          "weight": 0.5534315922604734
+        },
+        {
+          "source": "coefficient",
+          "horizonDays": 55,
+          "weight": 0.4465684077395266
+        }
+      ],
+      "excluded": [
+        {
+          "source": "siena",
+          "reason": "fieldwork_or_methodology_unverified"
+        }
+      ],
+      "precisionGainAssumed": false
+    },
+    "centralSettlementValue": 0.3984020683807826,
+    "marginShiftScenarios": [
+      {
+        "shiftPoints": -3,
+        "value": 0.22565657397648745
+      },
+      {
+        "shiftPoints": 0,
+        "value": 0.3984020683807826
+      },
+      {
+        "shiftPoints": 3,
+        "value": 0.6045281877414544
+      }
+    ],
+    "unknownFieldSienaEqualMarginSensitivity": 0.40682757281409726,
+    "newEntryEligible": false
+  },
+  "competitionOrders": 0,
+  "profitabilityEstablished": false,
+  "limitations": [
+    "Revised outcome/field-date archive lacks original release clocks and population; diagnostics are retrospective, not trading P&L.",
+    "Common-cycle correlation is an estimate from few cycles, not an empirically verified2026 joint distribution.",
+    "Siena fieldwork is excluded from automatic recency weighting; equal-margin sensitivity remains separately unvalidated.",
+    "No source-clock renewal, active bank change, new paper wallet or contest activation follows from these estimates."
+  ]
+}
