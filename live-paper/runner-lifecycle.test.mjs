@@ -13,6 +13,9 @@ import {planEdgeObservation} from './edge-observation-plan.mjs';
 import {prioritizeEdgeTrials} from './edge-trial-projection.mjs';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import os from 'node:os';
+import {createNativeBookPublication} from './book-publication-v3.mjs';
+import {createBookPublication as createReceiptSeed} from './book-publication-v2.mjs';
 import path from 'node:path';
 import {randomUUID} from 'node:crypto';
 import {fileURLToPath} from 'node:url';
@@ -177,7 +180,7 @@ async function run(stopAt,{dipEnabled=false,officialSync=false,invalidBasket=fal
     createAccountEligibilityPublication:()=>({publish({positions,orders,ordersAt}){if(stopAt==='eligibility-recording-failure')throw Error('Injected eligibility recording failure');publications.push({kind:'account_eligibility',positionsAt:positions.receivedAt,ordersAt,at:iso(),requestCount:requests.length});return{sequence:1,expiresAt:iso()};}}),
     loadKey:()=> 'SYNTHETIC',Journal,ReadClient,exactMoneyFetch,createMoneyReceiptWriter,lock:()=>()=>{},atomicJson,readPairedPackageFocus:()=>paperPackageFocus?{available:true,needed:paperPackageFocus!=='idle',marketIds:['381','382'],reason:'paper_pending'}:null,focusPairedPackageReads,checkpointCoverage:async(file,value,{canCommit})=>{if(!canCommit())throw Error('COMMIT_BLOCKED');atomicJson(file,value);},durableAtomicJson:atomicJson,exclusionSet,basketCandidates,planBasketBooks,basketCodeIdentity,createBasketRelationshipReader,createContractEvidenceReader,
     writeCollectorStatus:atomicJson,
-    createBookPublication({canOperate}){return {status:()=>({books:{},sequence:1,hash:'c'.repeat(64)}),publishBook({marketId,response}){if(stopAt==='public-book-recording-failure'&&cycle===2)throw Error('Synthetic public journal failure');if(canOperate())publications.push({kind:'book',marketId,receivedAt:response.receivedAt,at:iso(),requestCount:requests.length});},invalidate({marketId,reason}){publications.push({kind:'invalidation',marketId,reason,at:iso()});},close(reason){publications.push({kind:'closed',reason,at:iso()});}};},
+    createBookPublication({canOperate}){return {status:()=>({books:{},sequence:1,hash:'c'.repeat(64)}),publishBook({marketId,response}){if(stopAt==='public-book-recording-failure'&&cycle===2)throw Error('Synthetic public journal failure');if(canOperate())publications.push({kind:'book',marketId,response:structuredClone(response),receivedAt:response.receivedAt,at:iso(),requestCount:requests.length});},invalidate({marketId,reason}){publications.push({kind:'invalidation',marketId,reason,at:iso()});},close(reason){publications.push({kind:'closed',reason,at:iso()});}};},
     createBasketFollowupSource({bank}){return {poll(){
       if(stopAt==='followup-source-failure')throw Error('Injected damaged source');
       return [{tournamentId:config.tournamentId,observerBankHash:model.digest(bank),pairId:'b'.repeat(64),sourceSequence:123,sourceHash:'c'.repeat(64),cutoff:stamp(-3600000),marketIds:['381','382'],exchangeIds:['1070','1071'],
@@ -395,4 +398,27 @@ test('coupled maker shares the single tape and four books with existing broad an
 
 test('bulk successor consumes each committed price receipt without adding clients or overwriting prior pending wallets',async()=>{const r=await run(null,{dipEnabled:true,retiredNativePrices:true,stablePaper:true,stableBroadPaper:true,stableBroadRecovery:true,coupledBulkPaper:true,probabilityHeld:['297','356'],marketSweepEnabled:true,maxCycles:3,requestMs:100});assert.equal(r.process.exitCode,0);assert(r.publications.some(x=>x.kind==='coupled_bulk_price'));assert(r.publications.some(x=>x.kind==='coupled_bulk_book'));assert(!r.publications.some(x=>x.kind==='stable_broad_book'&&x.marketId==='280'));for(const c of r.commits.filter(x=>x.event.type==='cycle')){const books=[...c.event.sourceSnapshots,...c.event.supplementalDepth];assert.equal(books.length,4);for(const id of ['297','356'])assert(books.some(x=>x.endpoint.includes('/markets/'+id+'/')));}assert(r.tapeRequests.every(p=>p.marketIds.length===universe.exchanges.length));});
 
-test('real runner reuses existing four depth slots for full realtime baselines without extra requests',async()=>{const r=await run(null,{dipEnabled:true,realtimeShared:true,maxCycles:2,requestMs:100});assert.equal(r.process.exitCode,0);const books=r.requests.filter(x=>x.includes('/orderbook'));assert.equal(books.length,8);assert(books.slice(0,4).every(x=>x.endsWith('depth=20')));assert(books.slice(4).every(x=>x.endsWith('depth=200')));const snapshots=r.publications.filter(x=>x.kind==='shared_realtime_snapshot');assert.equal(snapshots.length,4);assert(snapshots.every(x=>x.requestStartedAt<=x.receivedAt));});
+test('joined realtime capture cannot replace the four frozen consumer depth20 receipts',async()=>{const r=await run(null,{dipEnabled:true,realtimeShared:true,maxCycles:2,requestMs:100});assert.equal(r.process.exitCode,0);const books=r.requests.filter(x=>x.includes('/orderbook'));assert.equal(books.length,8);assert(books.every(x=>x.endsWith('depth=20')));assert.equal(r.publications.filter(x=>x.kind==='shared_realtime_snapshot').length,0);});
+
+test('real runner receipts remain accepted by the actual frozen native publisher after realtime joins',async t=>{
+ const r=await run(null,{dipEnabled:true,realtimeShared:true,maxCycles:2,requestMs:100});
+ const books=r.publications.filter(x=>x.kind==='book');assert.equal(books.length,8);
+ const sourceRoot=path.join(process.env.LOCALAPPDATA,'SigTradingCup/paper-runtime');
+ const nativeBackend=JSON.parse(fs.readFileSync(new URL('../data/probability-native-deployment-20261004.json',import.meta.url))).nativeBackend;
+ const runtimeDir=fs.mkdtempSync(path.join(os.tmpdir(),'baal-receipt-integration-'));
+ t.after(()=>{assert(path.resolve(runtimeDir).startsWith(path.resolve(os.tmpdir())+path.sep));fs.rmSync(runtimeDir,{recursive:true,force:true});});
+ const binaryDir=path.join(runtimeDir,'native-builds',nativeBackend.binaryHash);fs.mkdirSync(binaryDir,{recursive:true});
+ for(const name of ['baal-backend.exe','libunwind.dll'])fs.copyFileSync(path.join(sourceRoot,'native-builds',nativeBackend.binaryHash,name),path.join(binaryDir,name));
+ let clock=Date.parse(books[0].receivedAt)-2;
+ const file=path.join(runtimeDir,'books.jsonl'),scope=breadth.validateUniverse(universe,config.tournamentId);
+ const seed=createReceiptSeed({file,universe:scope,sessionId:'runner-receipt-seed',now:()=>clock});clock++;seed.close('STOP');clock++;
+ const writer=await createNativeBookPublication({file,runtimeDir,nativeBackend,universe:scope,sessionId:'runner-depth20-integration',receiptDir:path.join(runtimeDir,'receipts'),now:()=>clock});
+ t.after(()=>writer.close('STOP'));
+ for(const row of books){clock=Date.parse(row.receivedAt);assert.equal(writer.publishBook({marketId:row.marketId,response:row.response}),true,row.response.endpoint);}
+ assert.equal(writer.status().sequence,11);assert(Object.keys(writer.status().books).length>0);
+ const bad=structuredClone(books.at(-1));bad.response.endpoint=bad.response.endpoint.replace('depth=20','depth=200');clock++;
+ assert.equal(writer.publishBook({marketId:bad.marketId,response:bad.response}),false);
+ clock++;const recovery=structuredClone(books.at(-1).response);recovery.requestStartedAt=new Date(clock).toISOString();recovery.receivedAt=new Date(clock).toISOString();
+ assert.equal(writer.publishBook({marketId:books.at(-1).marketId,response:recovery}),true);
+ assert(Object.keys(writer.status().books).length>0);
+});

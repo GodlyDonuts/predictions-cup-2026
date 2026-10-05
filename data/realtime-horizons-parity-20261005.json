@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "mode": "actual_label_forecast_parity_and_purge_verification",
+  "results": [
+    {
+      "horizonMs": 300000,
+      "cases": 32,
+      "maximumDifferenceTicks": 1.1102230246251565e-16
+    },
+    {
+      "horizonMs": 1800000,
+      "cases": 32,
+      "maximumDifferenceTicks": 1.1102230246251565e-16
+    }
+  ],
+  "chronologicalPurgesVerified": true,
+  "networkRequests": 0,
+  "competitionOrders": 0,
+  "profitabilityEstablished": false
+}

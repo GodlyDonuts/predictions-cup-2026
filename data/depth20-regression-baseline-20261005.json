@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "at": "2026-10-05T17:48:58.245Z",
+  "owner": "Codex",
+  "source": "engineering_regression_depth20_recovery",
+  "collectorPid": 23680,
+  "reportedAt": "2026-10-05T17:48:55.236Z",
+  "runtimeStatus": "running",
+  "scopeSize": 4,
+  "reason": "Depth200 substitutions invalidated frozen depth20 consumers",
+  "activeBanks": [
+    {
+      "file": "coupled-maker-active.json",
+      "bankHash": "3ab468b58df77b1b4996073c416210da38926f5be5ca7b707d3f2607def2f518",
+      "cohort": "baal-coupled-spread-20261005-v1-live",
+      "schemaVersion": 1
+    },
+    {
+      "file": "coupled-bulk-active.json",
+      "bankHash": "d9e27c27bed40738f7526fdeb256633398dea60eeea42457c5dc40315ca3b2cf",
+      "cohort": "baal-coupled-bulk-20261005-v2c-live",
+      "schemaVersion": 1
+    },
+    {
+      "file": "probability-receipt-active.json",
+      "bankHash": "3e445d6b7f436cab79245ed588efa627734d8d2a4a6a6b788ac2873582ed4ef2",
+      "cohort": "source-probability-native-20261004-v3"
+    },
+    {
+      "file": "calibrated-poll-paper-active.json",
+      "bankHash": "3e57289fda56eb58a833fbcf62c8c488064b3e84c0ab0642ece81f6b8549fcce",
+      "cohort": "calibrated-kansas-poll-20261005-v1"
+    }
+  ],
+  "accountRawStored": false
+}

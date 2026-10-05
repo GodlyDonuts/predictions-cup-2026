@@ -10,9 +10,21 @@ export function micropriceFeatures(m,b,at){
  const x=[prob,b.ask-b.bid,imb(1),imb(3),imb(10),imb(20),Math.log1p(dBid),Math.log1p(dAsk),micro,b.mid-old(60000),b.mid-old(300000),range(60000),range(300000),f30.imbalance,f120.imbalance,Math.log1p(f30.volume),Math.log1p(f120.volume),f30.count,Math.min(120,(at-(m.trades.at(-1)?.at??at-120000))/1000),imb(1)*prob*(1-prob)];need(x.every(Number.isFinite),'FEATURES');return x;
 }
 export function createMicropriceDataset({onSample=()=>{},policy=MICROPRICE_DATA_POLICY}={}){
- const markets=new Map(),seen=new Set();let clock=0,index=-1,source=null;const counts={books:0,trades:0,labels:0,samples:0,censored:0,gaps:0};
+ need(Number.isSafeInteger(policy.horizonMs)&&policy.horizonMs>policy.latencyMs,'HORIZON');
+ need(policy.endpointResearchAcrossGaps===undefined||typeof policy.endpointResearchAcrossGaps==='boolean','GAP_POLICY');
+ const markets=new Map(),seen=new Set();let clock=0,index=-1,source=null;const counts={books:0,trades:0,labels:0,samples:0,censored:0,gaps:0,retainedEndpointGapEvents:0,labelsAcrossGaps:0};
  const market=id=>{let m=markets.get(id);if(!m){m={book:null,history:[],trades:[],pending:[],revision:null,lastSample:-Infinity};markets.set(id,m);}return m;};
- function clear(m){counts.censored+=m.pending.length;m.book=null;m.history=[];m.trades=[];m.pending=[];m.revision=null;}
+ function clear(m,{reason='capture_boundary',settled=false}={}){
+  const retained=[];
+  for(const sample of m.pending){
+   // Independent entry and liquidation endpoints can support a price forecast
+   // across an outage. They cannot establish what happened to a resting quote,
+   // a stop or an inventory position during that outage.
+   if(policy.endpointResearchAcrossGaps===true&&!settled&&sample.entryAt&&clock<=sample.targetAt+policy.labelToleranceMs){sample.pathGapCount++;sample.firstPathGapReason??=reason;retained.push(sample);counts.retainedEndpointGapEvents++;}
+   else counts.censored++;
+  }
+  m.book=null;m.history=[];m.trades=[];m.pending=retained;m.revision=null;
+ }
  function applyBook(id,raw,at,provenance){const m=market(id),b=parsedBook(raw,at);if(!b||b.expiry&&b.expiry<=at)return;if(m.book&&b.sequence<m.book.sequence)return;
   if(m.book&&b.sequence===m.book.sequence)return;counts.books++;m.book=b;
   for(const sample of m.pending){
@@ -22,19 +34,21 @@ export function createMicropriceDataset({onSample=()=>{},policy=MICROPRICE_DATA_
     sample.entryAt=new Date(at).toISOString();sample.entryBidTicks=b.bid;sample.entryAskTicks=b.ask;sample.entrySource=provenance;
    }
    if(at<sample.targetAt)continue;if(!sample.entryAt||at>sample.targetAt+policy.labelToleranceMs){counts.censored++;sample.done=true;continue;}
+   if(instantNs(raw.asOf.at)<BigInt(sample.targetAt)*1000000n)continue;
    const depth=Math.min(b.bids[0].quantity,b.asks[0].quantity);if(Math.floor(depth*policy.depthFractionBps/10000)<policy.quantity){counts.censored++;sample.done=true;continue;}
-   onSample({...sample,labelAt:new Date(at).toISOString(),labelSource:provenance,y:b.mid-sample.mid,futureBidTicks:b.bid,futureAskTicks:b.ask,yesTakerNetTicks:b.bid-policy.exitSlippageTicks-sample.entryAskTicks-policy.entrySlippageTicks,noTakerNetTicks:sample.entryBidTicks-b.ask-policy.exitSlippageTicks-policy.entrySlippageTicks});sample.done=true;counts.labels++;
+   onSample({...sample,labelAt:new Date(at).toISOString(),labelSource:provenance,endpointOnlyResearch:policy.endpointResearchAcrossGaps===true,pathContinuity:sample.pathGapCount?'unknown_between_endpoints':'observed_capture',y:b.mid-sample.mid,futureBidTicks:b.bid,futureAskTicks:b.ask,yesTakerNetTicks:b.bid-policy.exitSlippageTicks-sample.entryAskTicks-policy.entrySlippageTicks,noTakerNetTicks:sample.entryBidTicks-b.ask-policy.exitSlippageTicks-policy.entrySlippageTicks});sample.done=true;counts.labels++;if(sample.pathGapCount)counts.labelsAcrossGaps++;
   }m.pending=m.pending.filter(s=>!s.done);
   const prior=m.history.at(-1);if(!prior||at-prior.at>=1000)m.history.push({at,mid:b.mid});m.history=m.history.filter(h=>at-h.at<=policy.historyMs+1000);m.trades=m.trades.filter(t=>at-t.at<=120000);
   if(!m.history.length||at-m.history[0].at<policy.minimumWarmupMs||at-m.lastSample<policy.sampleMs||Math.floor(Math.min(b.bids[0].quantity,b.asks[0].quantity)*policy.depthFractionBps/10000)<policy.quantity)return;
-  const x=micropriceFeatures(m,b,at);m.pending.push({marketId:id,at:new Date(at).toISOString(),targetAt:at+policy.horizonMs,mid:b.mid,bid:b.bid,ask:b.ask,x,source:provenance});m.lastSample=at;counts.samples++;
+  const x=micropriceFeatures(m,b,at);m.pending.push({marketId:id,at:new Date(at).toISOString(),targetAt:at+policy.horizonMs,mid:b.mid,bid:b.bid,ask:b.ask,x,source:provenance,pathGapCount:0});m.lastSample=at;counts.samples++;
  }
  function consume(row,{sourceId='capture'}={}){need(row?.format==='sig-feed-capture'&&row.schemaVersion===1,'ENVELOPE');const at=Date.parse(row.observedAt);need(Number.isSafeInteger(at)&&at>=clock,'CLOCK');clock=at;if(sourceId!==source){source=sourceId;index=-1;for(const m of markets.values())clear(m);}need(row.captureIndex===index+1,'INDEX');index=row.captureIndex;const id=/:market:(\d+)$/.exec(row.topic)?.[1];need(id,'SCOPE');const m=market(id),provenance={file:sourceId,captureIndex:index};
-  if(['invalidation','subscribed','disconnected','rejected','stopped'].includes(row.kind)){clear(m);return;}
+  if(['invalidation','subscribed','disconnected','rejected','stopped'].includes(row.kind)){clear(m,{reason:row.kind});return;}
   if(row.kind==='snapshot'){for(const b of row.books||[])applyBook(id,b,at,provenance);return;}
   if(row.kind!=='event')return;if(row.event!=='market_batch'){clear(m);return;}const p=row.payload;
-  if(p.resyncRequired||m.revision!==null&&p.delivery.previousRevision>m.revision){counts.gaps++;clear(m);}m.revision=Math.max(m.revision??0,p.delivery.revision);
-  if(p.marketSettled?.length||p.trades?.some(t=>t.sequence===null)||(p.bookDirty||[]).some(d=>!(p.books||[]).some(b=>b.exchangeId===d.exchangeId))){clear(m);return;}
+  if(p.resyncRequired||m.revision!==null&&p.delivery.previousRevision>m.revision){counts.gaps++;clear(m,{reason:'delivery_gap'});}m.revision=Math.max(m.revision??0,p.delivery.revision);
+  if(p.marketSettled?.length){clear(m,{reason:'market_settled',settled:true});return;}
+  if(p.trades?.some(t=>t.sequence===null)||(p.bookDirty||[]).some(d=>!(p.books||[]).some(b=>b.exchangeId===d.exchangeId))){clear(m,{reason:'incomplete_event'});return;}
   for(const t of p.trades||[]){const key=id+':'+t.id;if(seen.has(key))continue;seen.add(key);counts.trades++;const price=ticks(t.price);m.trades.push({at,quantity:t.quantity,sign:m.book?price>=m.book.ask?1:price<=m.book.bid?-1:0:0});}
   for(const b of p.books||[])applyBook(id,b,at,provenance);
  }

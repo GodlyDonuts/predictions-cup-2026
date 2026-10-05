@@ -1,0 +1,123 @@
+{
+  "schemaVersion": 1,
+  "at": "2026-10-05T17:58:36.909Z",
+  "mode": "scoped_structural_settlement_price_diagnostic",
+  "legs": [
+    {
+      "marketId": "381",
+      "exchangeId": "1070",
+      "contract": {
+        "node_id": "382",
+        "node_type": "contract",
+        "contract_id": "382",
+        "contract_type": "Election Outcome",
+        "title": "Will the Democratic Party win the New Hampshire Senate?",
+        "settlement_date": "2026-11-04T17:00:00.000Z",
+        "settled_with": null,
+        "contract_details": {
+          "raceId": "62972",
+          "stageId": "98102",
+          "usState": "NH",
+          "raceName": "U.S. Senate New Hampshire",
+          "raceStage": "General",
+          "winnerName": "Democratic Party",
+          "officeLevel": "Federal",
+          "contractType": "Election Outcome",
+          "electionDate": "2026-11-03",
+          "resolutionType": "Party Winner"
+        }
+      },
+      "contractReceivedAt": "2026-10-05T17:54:30.902Z",
+      "requestStartedAt": "2026-10-05T17:54:46.930Z",
+      "receivedAt": "2026-10-05T17:54:47.138Z",
+      "topBid": {
+        "price": "0.840000",
+        "quantity": 3325
+      },
+      "topAsk": {
+        "price": "0.845000",
+        "quantity": 276
+      },
+      "sources": [
+        {
+          "file": "381.json",
+          "sha256": "7c8c3b8c5f966ab9002a49d2a87509d75a8ea8ea9ea0f2ab4ad1b2db62f59ded"
+        },
+        {
+          "file": "381.book.json",
+          "sha256": "0ea42971c2d3fe126615f35ed79cfe6b4969447c70fcb71979ea21de3220a92c"
+        }
+      ]
+    },
+    {
+      "marketId": "382",
+      "exchangeId": "1071",
+      "contract": {
+        "node_id": "383",
+        "node_type": "contract",
+        "contract_id": "383",
+        "contract_type": "Election Outcome",
+        "title": "Will the Republican Party win the New Hampshire Senate?",
+        "settlement_date": "2026-11-04T17:00:00.000Z",
+        "settled_with": null,
+        "contract_details": {
+          "raceId": "62972",
+          "stageId": "98102",
+          "usState": "NH",
+          "raceName": "U.S. Senate New Hampshire",
+          "raceStage": "General",
+          "winnerName": "Republican Party",
+          "officeLevel": "Federal",
+          "contractType": "Election Outcome",
+          "electionDate": "2026-11-03",
+          "resolutionType": "Party Winner"
+        }
+      },
+      "contractReceivedAt": "2026-10-05T17:55:02.983Z",
+      "requestStartedAt": "2026-10-05T17:55:18.610Z",
+      "receivedAt": "2026-10-05T17:55:18.804Z",
+      "topBid": {
+        "price": "0.155000",
+        "quantity": 84287
+      },
+      "topAsk": {
+        "price": "0.160000",
+        "quantity": 4731
+      },
+      "sources": [
+        {
+          "file": "382.json",
+          "sha256": "790e6f95c6dbcf779456e5f7291585e6a6c8800b82580c91dc485e0b2b4d76fd"
+        },
+        {
+          "file": "382.book.json",
+          "sha256": "af06d6ae2631e8dd7fbf32dcbbceeba7f5603fc19f9523b53b184a7ee10ba8fb"
+        }
+      ]
+    }
+  ],
+  "commonPredicate": true,
+  "distinctPartyPredicates": true,
+  "fees": "0.000000",
+  "entrySlippagePerLeg": "0.005000",
+  "indicativeTwoNoCost": "1.015000",
+  "conditionalOrdinaryTwoNoMinimumPayout": "1.000000",
+  "indicativeConditionalNoSurplus": "-0.015000",
+  "indicativeTwoYesCost": "1.015000",
+  "requestWindowMs": 31874,
+  "cofreshExecutableBooks": false,
+  "reviewedRelationshipStillCurrent": false,
+  "executionAuthority": false,
+  "competitionOrders": 0,
+  "profitabilityEstablished": false,
+  "limitations": [
+    "The exact contract predicates match, but ordinary mutually exclusive settlement is conditional; administrative overrides and other reviewed exceptions are not excluded.",
+    "These auxiliary observations are not cofresh execution evidence. No dispatch or package fill is inferred.",
+    "Refund returns the held refundable cost rather than a fixed face-value payout. Asymmetric cancellation and unmatched legs can lose principal.",
+    "The older ballot/review attestation is expired; fresh API nodes alone do not renew it."
+  ],
+  "primaryRules": [
+    "https://sig.thesuper.market/docs/settlement-and-payouts",
+    "https://sig.thesuper.market/docs/markets-and-trading"
+  ]
+}

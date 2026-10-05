@@ -1,0 +1,93 @@
+{
+  "schemaVersion": 1,
+  "at": "2026-10-05T17:54:24.475Z",
+  "mode": "depth20_live_recovery_verified",
+  "collectorPid": 8616,
+  "status": "running",
+  "cycles": 5,
+  "collectorErrors": [],
+  "bookSlotsPerCycle": 4,
+  "marketUniverseSize": 237,
+  "originalBankPointersPreserved": true,
+  "wallets": [
+    {
+      "cohort": "baal-coupled-spread-20261005-v1-live",
+      "at": "2026-10-05T17:53:49.516Z",
+      "bankHash": "3ab468b58df77b1b4996073c416210da38926f5be5ca7b707d3f2607def2f518",
+      "journalSequence": 1202,
+      "journalHash": "7e41d4b300f058f09565b56b1ec53ecc5986011b09da5b8bc8cef4d5f3cd87fd",
+      "failed": false,
+      "sourceSequence": null,
+      "fillCount": 2,
+      "closedTrades": 1,
+      "realizedPnl": "-0.020000",
+      "estimatedLiquidationPnl": "-0.020000",
+      "positionCount": 0,
+      "quoteInvalidated": [],
+      "quoteReceivedAt": [],
+      "pendingCount": 0
+    },
+    {
+      "cohort": "baal-coupled-bulk-20261005-v2c-live",
+      "at": "2026-10-05T17:54:23.178Z",
+      "bankHash": "d9e27c27bed40738f7526fdeb256633398dea60eeea42457c5dc40315ca3b2cf",
+      "journalSequence": 2210,
+      "journalHash": "991e3c9299271db3b1e427b89fc6e1c4f4780393e0929429c9dbe120e5456c92",
+      "failed": false,
+      "sourceSequence": null,
+      "fillCount": 0,
+      "closedTrades": 0,
+      "realizedPnl": "0.000000",
+      "estimatedLiquidationPnl": "0.000000",
+      "positionCount": 0,
+      "quoteInvalidated": [],
+      "quoteReceivedAt": [],
+      "pendingCount": 0
+    },
+    {
+      "cohort": "calibrated-kansas-poll-20261005-v1",
+      "at": "2026-10-05T17:54:24.353Z",
+      "bankHash": "3e57289fda56eb58a833fbcf62c8c488064b3e84c0ab0642ece81f6b8549fcce",
+      "journalSequence": 3696,
+      "journalHash": "d33b4f6805be4414b9acb19fd9a929650c95f413aaeb794743b7fa9da825ec50",
+      "failed": false,
+      "sourceSequence": 25830,
+      "fillCount": 1,
+      "closedTrades": 0,
+      "realizedPnl": "0.000000",
+      "estimatedLiquidationPnl": "0.005000",
+      "positionCount": 1,
+      "quoteInvalidated": [
+        false
+      ],
+      "quoteReceivedAt": [
+        "2026-10-05T17:54:21.946Z"
+      ],
+      "pendingCount": 0
+    },
+    {
+      "cohort": "source-probability-native-20261004-v3",
+      "at": "2026-10-05T17:54:24.168Z",
+      "bankHash": "3e445d6b7f436cab79245ed588efa627734d8d2a4a6a6b788ac2873582ed4ef2",
+      "journalSequence": 9687,
+      "journalHash": "c4e919ef3bb466f11868939eceb6d2c536b1e6246fa60f754245ed9d6862f291",
+      "failed": false,
+      "sourceSequence": 25830,
+      "fillCount": 3,
+      "closedTrades": 1,
+      "realizedPnl": "0.020000",
+      "estimatedLiquidationPnl": "0.025000",
+      "positionCount": 1,
+      "quoteInvalidated": [
+        false
+      ],
+      "quoteReceivedAt": [
+        "2026-10-05T17:54:20.740Z"
+      ],
+      "pendingCount": 0
+    }
+  ],
+  "profitabilityEstablished": false,
+  "ordersSubmittedByChange": 0,
+  "rawAccountStored": false
+}

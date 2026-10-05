@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "at": "2026-10-05T18:01:03.782Z",
+  "classification": "progress",
+  "soleExecutionOwner": "Codex",
+  "officialPilotEntryWindowClosed": true,
+  "profitabilityEstablished": false,
+  "networkClients": 1,
+  "persistentProcesses": 3,
+  "collectorPid": 8616,
+  "checksPassed": 77,
+  "parityCases": 64,
+  "source": "data/depth20-regression-recovery-20261005.json",
+  "nextAction": "Use subsequent immutable data to model fill-conditional adverse selection and funded inventory economics. Do not deploy the zero-signal forecast, rebase expired research, or conflate settlement estimates/latency copies with realized profit. Keep depth20 trading receipts independent of depth200 capture baselines."
+}

@@ -1,0 +1,23 @@
+{
+  "at": "2026-10-05T17:31:45.735Z",
+  "positionsAt": "2026-10-05T17:31:36.648Z",
+  "ordersAt": "2026-10-05T17:31:37.982Z",
+  "errors": [],
+  "heldExchanges": 6,
+  "openOrderExchanges": 0,
+  "holdingOnlyExchanges": 6,
+  "unionExcluded": 6,
+  "universeExchanges": 237,
+  "knownClosedForecastMarketsHeld": {
+    "WV": true,
+    "Kansas": false
+  },
+  "reviewedNHpairHasOrders": false,
+  "reviewedNHpairHeld": false,
+  "collector": {
+    "pid": 23680,
+    "status": "running",
+    "paperFills": 0,
+    "paperRealized": "0.000000"
+  }
+}
