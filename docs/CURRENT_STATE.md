@@ -368,3 +368,7 @@ The following prior work queue is preserved for a future coordinated return; it 
 
 At16:38UTC the collector stopped on EPERM while publishing its root status. The earlier bounded Windows retry fix covered ledger projections, but this runner call still used the immediate-rename transport helper. Both derived collector status views now use the durable writer through a JSON-shape-preserving adapter. Sixty-six targeted checks include the actual runner call, transient sharing denial and persistent failure. Recovery verified one collector PID2288, all nine fixed activation/configuration files unchanged, and all eight frozen bank/journal prefixes preserved. This repairs collection; it establishes no strategy profit. Realtime market capture remains separate from official execution.
 
+# October5: actual realtime economics and causal forecast training
+
+Streaming replay processed842,779 original records and25,798 trades in46.7 seconds. Small paired gains were outweighed by one-sided five-minute markouts; the overlapping diagnostic is not a funded profit result. Six causal queue/flow forecasts trained from58,942 supported labels; the selected model improved later prediction error modestly but produced zero opportunities after its predefined margin. It is not active. The collector now reuses its four existing book slots through the guarded depth200 dispatcher to establish realtime baselines without additional reads. Frozen wallets, official activation and account-wide pacing are preserved. See [measured results and implementation](REALTIME_ECONOMICS.md).
+

@@ -1,0 +1,141 @@
+{
+  "at": "2026-10-05T17:25:10.329Z",
+  "pids": {
+    "collector": 23680,
+    "dashboard": 20092,
+    "paper": 3976,
+    "metrics": null,
+    "contestActivation": true,
+    "retiredMetricsPid": 11792
+  },
+  "collectorReportedAt": "2026-10-05T17:25:09.766Z",
+  "collectorStatus": "running",
+  "nativeBindingsVerified": true,
+  "fixed": [
+    {
+      "file": "competition-activation.json",
+      "hash": "7803b21d01a36b51300dfb783c213456f24c801936f21a4618d3a59de2e5b228",
+      "unchanged": true
+    },
+    {
+      "file": "coordinated-network-budget.json",
+      "hash": "7d507950881b42a18cd1ec71a78e07dc11beb9ab2884f9a6705ce38e37230375",
+      "unchanged": true
+    },
+    {
+      "file": "coupled-maker-active.json",
+      "hash": "56230d31300df2e9901c8f7641e289c1a9c3633dc768948419e6d9c1e7918223",
+      "unchanged": true
+    },
+    {
+      "file": "coupled-bulk-active.json",
+      "hash": "02655323ff56c306f1983cf79359e50bec689c930ed8144e4dd39fe292cc1691",
+      "unchanged": true
+    },
+    {
+      "file": "probability-receipt-active.json",
+      "hash": "78190ca707166fa77628e1d4763b060af2074b75692aada2f0bcfa89bbe271aa",
+      "unchanged": true
+    },
+    {
+      "file": "calibrated-poll-paper-active.json",
+      "hash": "22bbbf7cb2630ae7ffc73d9f0d37e6116edd6d47a465d08ef43ab70afd5146a8",
+      "unchanged": true
+    },
+    {
+      "file": "collector-native-journal.json",
+      "hash": "d410441530ed306e5e152c4027b72416f436bf403be589b5cf97b7890c6a907e",
+      "unchanged": true
+    },
+    {
+      "file": "collector-native-publication.json",
+      "hash": "88ede70791e4b553503844d8ef640fa5ff1c5454d409fff5e2518e7e5ef37ca3",
+      "unchanged": true
+    },
+    {
+      "file": "realtime-capture.json",
+      "hash": "739cf3e560148c15467108b881b887bf4c9d216f008defdb432bc6ad285067e1",
+      "unchanged": true
+    }
+  ],
+  "prefixes": [
+    {
+      "relative": "coupled-maker-cohorts/baal-coupled-spread-20261005-v1-live/bank.json",
+      "bytes": 5621,
+      "hash": "fd5d2cffa9552ea1a38ffeb1aaae63e64b2b5d0fc06b1cc1baf9a464176b1f71",
+      "prefixPreserved": true,
+      "currentBytes": 5621
+    },
+    {
+      "relative": "coupled-maker-cohorts/baal-coupled-spread-20261005-v1-live/journal.jsonl",
+      "bytes": 31389260,
+      "hash": "cd4bc5842935a83f7cc43cb0eb35f5a3cbca2c1c1febb6770f18834355fe1781",
+      "prefixPreserved": true,
+      "currentBytes": 34900901
+    },
+    {
+      "relative": "coupled-bulk-cohorts/baal-coupled-bulk-20261005-v2c-live/bank.json",
+      "bytes": 42668,
+      "hash": "d1a9ea064ef551fbf3c10f1810a5499839b460f0bb129a322466c7a69c0abb9b",
+      "prefixPreserved": true,
+      "currentBytes": 42668
+    },
+    {
+      "relative": "coupled-bulk-cohorts/baal-coupled-bulk-20261005-v2c-live/journal.jsonl",
+      "bytes": 736149798,
+      "hash": "cacaa026b3f3a5b842e79fda50be02e0160e2761c5fbf3cb184e751b736f2617",
+      "prefixPreserved": true,
+      "currentBytes": 741383340
+    },
+    {
+      "relative": "probability-receipt-cohorts/source-probability-native-20261004-v3/bank.json",
+      "bytes": 35238,
+      "hash": "ccf44ba66d259e518d81c2cc14fc3342214254918675860d31b96eecb81c26cd",
+      "prefixPreserved": true,
+      "currentBytes": 35238
+    },
+    {
+      "relative": "probability-receipt-cohorts/source-probability-native-20261004-v3/journal.jsonl",
+      "bytes": 6679466,
+      "hash": "d4e6d022cdbf6cb68cdd2c3dd136a459a11ac5ba98db22cdb41985b7d451ce0a",
+      "prefixPreserved": true,
+      "currentBytes": 6705350
+    },
+    {
+      "relative": "probability-receipt-cohorts/calibrated-kansas-poll-20261005-v1/bank.json",
+      "bytes": 43745,
+      "hash": "ba94bbf1d65a25a8538da6b05a90457c11a1b9fe200cd3ed60e8d9b6c18df6ea",
+      "prefixPreserved": true,
+      "currentBytes": 43745
+    },
+    {
+      "relative": "probability-receipt-cohorts/calibrated-kansas-poll-20261005-v1/journal.jsonl",
+      "bytes": 2298611,
+      "hash": "e0f91fb325f08a7be187a89475621fd468b1b6f05940c89fd021421cec4d4537",
+      "prefixPreserved": true,
+      "currentBytes": 2322173
+    }
+  ],
+  "realtime": {
+    "state": "subscribed",
+    "sharedSnapshotAttempts": 10,
+    "sharedSnapshotSuccesses": 9,
+    "readyMarkets": [
+      "297"
+    ],
+    "events": 4143
+  },
+  "contest": {
+    "runId": "sig-pilot-settlement-20261004-human",
+    "status": "entry_window_closed",
+    "ordersSubmitted": 0,
+    "dispatchAttempts": 0,
+    "unconfirmedIntents": 0
+  },
+  "frozenModelPreserved": true,
+  "allWalletPrefixesPreserved": true,
+  "activationChanged": false,
+  "additionalServices": 0,
+  "additionalReadSlots": 0,
+  "profitabilityEstablished": false
+}

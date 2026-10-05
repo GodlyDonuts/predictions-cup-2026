@@ -9,8 +9,9 @@ export function createRealtimeHost({dispatch, createClient, scope, canOperate, c
   if (!Number.isSafeInteger(silentRecoveryIntervalMs) || silentRecoveryIntervalMs < 60000 || silentRecoveryIntervalMs > 120000) throw Error('REALTIME_SILENT_RECOVERY_POLICY');
   const books = new RealtimeBooks(scope, {now, capture});
   const fences = new WeakMap();
+  const sharedTickets = new WeakSet();
   let closed = false, servicing = false, cursor = 0, retryAt = 0;
-  let recoveryAttempts = 0, recoverySuccesses = 0, lastRecoveryAt = null, lastCode = null;
+  let recoveryAttempts = 0, recoverySuccesses = 0, sharedSnapshotAttempts = 0, sharedSnapshotSuccesses = 0, lastRecoveryAt = null, lastCode = null;
   let quietRecoveryDeferrals = 0;
   const recovered = new Map();
   const allowed = () => !closed && !signal?.aborted && canOperate() === true;
@@ -40,7 +41,7 @@ export function createRealtimeHost({dispatch, createClient, scope, canOperate, c
     return {schemaVersion: 1, mode: 'read_only_market_capture', executionAuthorized: false,
       at: new Date(now()).toISOString(), transport, marketStreamObserved:transport.eventsReceived>0,
       dataEvidence:blocked?'blocked_shared_read_only_budget':transport.eventsReceived>0?'market_frames_observed':'awaiting_first_market_frame',recoveryAttempts,recoverySuccesses,
-      silentRecoveryIntervalMs,quietRecoveryDeferrals,
+      silentRecoveryIntervalMs,quietRecoveryDeferrals,sharedSnapshotAttempts,sharedSnapshotSuccesses,
       lastRecoveryAt, lastCode:blocked?'REALTIME_TOKEN_BUDGET_BLOCKED':lastCode, retryAt: blocked ? null : retryAt ? new Date(retryAt).toISOString() : null,
       markets: marketStatus().map(({books: rows, ...market}) => ({...market, availableBooks: rows.length}))};
   }
@@ -105,9 +106,37 @@ export function createRealtimeHost({dispatch, createClient, scope, canOperate, c
       return false;
     } finally { servicing = false; }
   }
+  // Reuse a book read which the sole collector already intends to make. The
+  // caller must request the ticket's exact depth=200 endpoint; no fabricated
+  // request time or truncated depth=20 baseline may establish readiness.
+  function beginSharedSnapshot(marketId) {
+    if(!allowed()||!tokenAllowed()||client.status().state!=='subscribed')return null;
+    const connection=client.status().markets.find(m=>m.marketId===marketId);
+    if(!connection?.subscribed||!connection.connectionId)return null;
+    const view=books.view(marketId);
+    if(view.reasons.includes('SETTLEMENT'))return null;
+    const ticket=books.beginSnapshot({marketId,connectionId:connection.connectionId});
+    sharedSnapshotAttempts++;sharedTickets.add(ticket);return ticket;
+  }
+  async function readSharedSnapshot(ticket){
+    if(!sharedTickets.has(ticket))throw Error('REALTIME_SHARED_TICKET');
+    sharedTickets.delete(ticket);
+    const fence=()=>{if(!allowed()||books.view(ticket.marketId).connectionId!==ticket.connectionId||!client.status().markets.find(m=>m.marketId===ticket.marketId)?.subscribed)throw Error('REALTIME_RECOVERY_STOPPED');};
+    fences.set(fence,ticket.endpoint);
+    try{fence();return await dispatch({method:'GET',endpoint:ticket.endpoint,beforeDispatch:fence,beforeNetwork:fence});}
+    finally{fences.delete(fence);}
+  }
+  function completeSharedSnapshot(ticket,response) {
+    if(!ticket||!allowed())return false;
+    const accepted=books.completeSnapshot(ticket,response);
+    if(accepted){sharedSnapshotSuccesses++;lastRecoveryAt=response.receivedAt;recovered.set(ticket.marketId,{connectionId:ticket.connectionId,at:now()});}
+    return accepted;
+  }
+  function failSharedSnapshot(ticket){if(ticket)books.snapshotFailed(ticket);}
+  function view(marketId){if(!allowed())return null;return books.view(marketId);}
   async function stop() {
     if (closed) return;
     closed = true; await client.stop(); books.stop();
   }
-  return Object.freeze({service, status, authorizes, stop});
+  return Object.freeze({service, status, authorizes, beginSharedSnapshot,readSharedSnapshot,completeSharedSnapshot,failSharedSnapshot,view,stop});
 }

@@ -1,0 +1,682 @@
+TAP version 13
+# Subtest: market-only bridge requires actual subscription before its exact full-depth REST recovery
+ok 1 - market-only bridge requires actual subscription before its exact full-depth REST recovery
+  ---
+  duration_ms: 10.8507
+  type: 'test'
+  ...
+# Subtest: topic revisions deduplicate arrays but newer books in duplicate revisions still apply
+ok 2 - topic revisions deduplicate arrays but newer books in duplicate revisions still apply
+  ---
+  duration_ms: 2.2466
+  type: 'test'
+  ...
+# Subtest: merged revisions and engine jumps remain valid; actual topic gaps hide books until new REST
+ok 3 - merged revisions and engine jumps remain valid; actual topic gaps hide books until new REST
+  ---
+  duration_ms: 1.1858
+  type: 'test'
+  ...
+# Subtest: compact resync and null-sequence trades invalidate even when retaining newer books
+ok 4 - compact resync and null-sequence trades invalidate even when retaining newer books
+  ---
+  duration_ms: 1.2572
+  type: 'test'
+  ...
+# Subtest: connection epoch, refresh, old callbacks and in-flight REST cannot bypass mandatory resync
+ok 5 - connection epoch, refresh, old callbacks and in-flight REST cannot bypass mandatory resync
+  ---
+  duration_ms: 1.0082
+  type: 'test'
+  ...
+# Subtest: a recovery invalidated by a new gap is discarded; a genuine newer concurrent push is retained
+ok 6 - a recovery invalidated by a new gap is discarded; a genuine newer concurrent push is retained
+  ---
+  duration_ms: 0.6071
+  type: 'test'
+  ...
+# Subtest: authoritative recovery cannot regress a pre-recovery version or accept null versions
+ok 7 - authoritative recovery cannot regress a pre-recovery version or accept null versions
+  ---
+  duration_ms: 0.8805
+  type: 'test'
+  ...
+# Subtest: book depth conflicts at the same nanosecond version require recovery, while a newer timestamp applies
+ok 8 - book depth conflicts at the same nanosecond version require recovery, while a newer timestamp applies
+  ---
+  duration_ms: 0.6065
+  type: 'test'
+  ...
+# Subtest: bounded engine/receipt clock skew, monotonic receipts, and safe integer depth fail closed
+ok 9 - bounded engine/receipt clock skew, monotonic receipts, and safe integer depth fail closed
+  ---
+  duration_ms: 2.4432
+  type: 'test'
+  ...
+# Subtest: full REST recovery rejects scope, options, pre-subscription requests and slow or stale receipts
+ok 10 - full REST recovery rejects scope, options, pre-subscription requests and slow or stale receipts
+  ---
+  duration_ms: 1.8797
+  type: 'test'
+  ...
+# Subtest: quiet duplicate broadcasts cannot renew freshness, while identical authoritative REST can
+ok 11 - quiet duplicate broadcasts cannot renew freshness, while identical authoritative REST can
+  ---
+  duration_ms: 1.5254
+  type: 'test'
+  ...
+# Subtest: expiry and settlement remain unavailable until the required authoritative reconciliation
+ok 12 - expiry and settlement remain unavailable until the required authoritative reconciliation
+  ---
+  duration_ms: 1.1466
+  type: 'test'
+  ...
+# Subtest: account payloads, foreign channels and unknown markets never become capture output
+ok 13 - account payloads, foreign channels and unknown markets never become capture output
+  ---
+  duration_ms: 0.775
+  type: 'test'
+  ...
+# Subtest: returned book copies cannot mutate held state; empty depth remains capture-only valid
+ok 14 - returned book copies cannot mutate held state; empty depth remains capture-only valid
+  ---
+  duration_ms: 0.5118
+  type: 'test'
+  ...
+# Subtest: normalized capture records source chronology and full books without arbitrary payload fields
+ok 15 - normalized capture records source chronology and full books without arbitrary payload fields
+  ---
+  duration_ms: 0.7815
+  type: 'test'
+  ...
+# Subtest: HTTP snapshot failure and explicit known invalidations retain the socket and require fresh recovery
+ok 16 - HTTP snapshot failure and explicit known invalidations retain the socket and require fresh recovery
+  ---
+  duration_ms: 1.2335
+  type: 'test'
+  ...
+# Subtest: clock rollback with an attached capture fails closed without recursive logging
+ok 17 - clock rollback with an attached capture fails closed without recursive logging
+  ---
+  duration_ms: 0.8023
+  type: 'test'
+  ...
+# Subtest: equal-version REST cannot erase a known pushed expiry deadline
+ok 18 - equal-version REST cannot erase a known pushed expiry deadline
+  ---
+  duration_ms: 0.7398
+  type: 'test'
+  ...
+# Subtest: snapshot capture retains actual REST dispatch time separately from queue ticket and receipt
+ok 19 - snapshot capture retains actual REST dispatch time separately from queue ticket and receipt
+  ---
+  duration_ms: 0.6354
+  type: 'test'
+  ...
+# Subtest: failed or invalidated snapshot attempts never acquire another request receipt or recovery success
+ok 20 - failed or invalidated snapshot attempts never acquire another request receipt or recovery success
+  ---
+  duration_ms: 0.7559
+  type: 'test'
+  ...
+# Subtest: host shares serialized dispatcher and recovers only one scoped market per cycle
+ok 21 - host shares serialized dispatcher and recovers only one scoped market per cycle
+  ---
+  duration_ms: 10.5474
+  type: 'test'
+  ...
+# Subtest: already planned full-book receipt primes a second market with no extra network dispatch
+ok 22 - already planned full-book receipt primes a second market with no extra network dispatch
+  ---
+  duration_ms: 2.5205
+  type: 'test'
+  ...
+# Subtest: truncated or wrong-scope receipt cannot establish shared readiness
+ok 23 - truncated or wrong-scope receipt cannot establish shared readiness
+  ---
+  duration_ms: 1.1876
+  type: 'test'
+  ...
+# Subtest: gap after shared read admission discards that in-flight baseline
+ok 24 - gap after shared read admission discards that in-flight baseline
+  ---
+  duration_ms: 1.0211
+  type: 'test'
+  ...
+# Subtest: stop hides readiness and rejects outstanding shared snapshots
+ok 25 - stop hides readiness and rejects outstanding shared snapshots
+  ---
+  duration_ms: 1.2239
+  type: 'test'
+  ...
+# Subtest: shared baseline uses the actual fenced dispatcher, not the depth20 GET allowlist, and consumes its ticket once
+ok 26 - shared baseline uses the actual fenced dispatcher, not the depth20 GET allowlist, and consumes its ticket once
+  ---
+  duration_ms: 2.462
+  type: 'test'
+  ...
+# Subtest: capture connection failure retries at most once per minute and suppresses provider content
+ok 27 - capture connection failure retries at most once per minute and suppresses provider content
+  ---
+  duration_ms: 0.6363
+  type: 'test'
+  ...
+# Subtest: STOP after persistent admission blocks recovery network and records no snapshot
+ok 28 - STOP after persistent admission blocks recovery network and records no snapshot
+  ---
+  duration_ms: 0.8418
+  type: 'test'
+  ...
+# Subtest: stale ready books rotate through bounded recovery instead of stale capture readiness
+ok 29 - stale ready books rotate through bounded recovery instead of stale capture readiness
+  ---
+  duration_ms: 3.9476
+  type: 'test'
+  ...
+# Subtest: first frame and explicit gaps bypass only the quiet stale deferral, retaining one recovery per call
+ok 30 - first frame and explicit gaps bypass only the quiet stale deferral, retaining one recovery per call
+  ---
+  duration_ms: 2.6916
+  type: 'test'
+  ...
+# Subtest: reconnect is immediately bootstrapped despite prior successful quiet recovery
+ok 31 - reconnect is immediately bootstrapped despite prior successful quiet recovery
+  ---
+  duration_ms: 1.9344
+  type: 'test'
+  ...
+# Subtest: known shared read-only budget blocks authentication without retries, queue admission or provider failures
+ok 32 - known shared read-only budget blocks authentication without retries, queue admission or provider failures
+  ---
+  duration_ms: 1.9679
+  type: 'test'
+  ...
+# Subtest: real host + client + ReadClient serialize token/recovery behind collector traffic with actual OrderTransport authorization
+ok 33 - real host + client + ReadClient serialize token/recovery behind collector traffic with actual OrderTransport authorization
+  ---
+  duration_ms: 20.7869
+  type: 'test'
+  ...
+# Subtest: actual SDK callbacks survive client sanitization, trigger gap recovery and require REST again on rejoin
+ok 34 - actual SDK callbacks survive client sanitization, trigger gap recovery and require REST again on rejoin
+  ---
+  duration_ms: 5.1993
+  type: 'test'
+  ...
+# Subtest: STOP inside durable token admission prevents HTTP and SDK creation through the complete stack
+ok 35 - STOP inside durable token admission prevents HTTP and SDK creation through the complete stack
+  ---
+  duration_ms: 1.1747
+  type: 'test'
+  ...
+# Subtest: STOP inside recovery admission permits only the already completed token write
+ok 36 - STOP inside recovery admission permits only the already completed token write
+  ---
+  duration_ms: 1.0871
+  type: 'test'
+  ...
+# Subtest: token429 enforces the same persistent90second cooldown on subsequent ordinary collector reads
+ok 37 - token429 enforces the same persistent90second cooldown on subsequent ordinary collector reads
+  ---
+  duration_ms: 16.966
+  type: 'test'
+  ...
+# Subtest: tournament envelope runs through client, host, validated books and one shared REST recovery per service
+ok 38 - tournament envelope runs through client, host, validated books and one shared REST recovery per service
+  ---
+  duration_ms: 3.914
+  type: 'test'
+  ...
+# Subtest: fresh continuous broadcasts cannot postpone mandatory periodic REST reconciliation
+ok 39 - fresh continuous broadcasts cannot postpone mandatory periodic REST reconciliation
+  ---
+  duration_ms: 3.5263
+  type: 'test'
+  ...
+# Subtest: latency label uses independent later entry depth, never the decision ask
+ok 40 - latency label uses independent later entry depth, never the decision ask
+  ---
+  duration_ms: 6.4115
+  type: 'test'
+  ...
+# Subtest: future feature changes cannot alter previously frozen prediction features
+ok 41 - future feature changes cannot alter previously frozen prediction features
+  ---
+  duration_ms: 0.6364
+  type: 'test'
+  ...
+# Subtest: a delivery gap removes outstanding labels instead of joining discontinuous endpoints
+ok 42 - a delivery gap removes outstanding labels instead of joining discontinuous endpoints
+  ---
+  duration_ms: 0.743
+  type: 'test'
+  ...
+# Subtest: an entry or exit book outside the capture tolerance never creates a supported label
+ok 43 - an entry or exit book outside the capture tolerance never creates a supported label
+  ---
+  duration_ms: 0.2819
+  type: 'test'
+  ...
+# Subtest: strict through prints complete a coupled diagnostic without counting touch or pre-activation prints
+ok 44 - strict through prints complete a coupled diagnostic without counting touch or pre-activation prints
+  ---
+  duration_ms: 3.5619
+  type: 'test'
+  ...
+# Subtest: trade in a book-creating packet cannot fill the quote that packet creates
+ok 45 - trade in a book-creating packet cannot fill the quote that packet creates
+  ---
+  duration_ms: 0.6736
+  type: 'test'
+  ...
+# Subtest: one-sided markout uses a later book after horizon and latency with adverse exit tick
+ok 46 - one-sided markout uses a later book after horizon and latency with adverse exit tick
+  ---
+  duration_ms: 0.5793
+  type: 'test'
+  ...
+# Subtest: known delivery gaps censor opportunities rather than score an apparent gain
+ok 47 - known delivery gaps censor opportunities rather than score an apparent gain
+  ---
+  duration_ms: 0.3465
+  type: 'test'
+  ...
+# Subtest: source indices, receipt rollback and reused book version conflict are rejected
+ok 48 - source indices, receipt rollback and reused book version conflict are rejected
+  ---
+  duration_ms: 0.5786
+  type: 'test'
+  ...
+# Subtest: real runner captures four scoped metadata reads once before cycles and grants no order eligibility
+ok 49 - real runner captures four scoped metadata reads once before cycles and grants no order eligibility
+  ---
+  duration_ms: 31.8219
+  type: 'test'
+  ...
+# Subtest: status-heartbeat failure retains sanitized provenance and fails instead of looking like a human STOP
+ok 50 - status-heartbeat failure retains sanitized provenance and fails instead of looking like a human STOP
+  ---
+  duration_ms: 10.3189
+  type: 'test'
+  ...
+# Subtest: real collector shares its existing slots between prior held paper risk and new empirical research
+ok 51 - real collector shares its existing slots between prior held paper risk and new empirical research
+  ---
+  duration_ms: 18.8888
+  type: 'test'
+  ...
+# Subtest: metadata outage stays non-authoritative and STOP prevents further startup reads
+ok 52 - metadata outage stays non-authoritative and STOP prevents further startup reads
+  ---
+  duration_ms: 17.9177
+  type: 'test'
+  ...
+# Subtest: paired sampling persists before requests and preserves four books per cycle
+ok 53 - paired sampling persists before requests and preserves four books per cycle
+  ---
+  duration_ms: 35.6342
+  type: 'test'
+  ...
+# Subtest: sampling persistence failure and STOP occur before any scheduled book
+ok 54 - sampling persistence failure and STOP occur before any scheduled book
+  ---
+  duration_ms: 18.5293
+  type: 'test'
+  ...
+# Subtest: unavailable comparison evidence retains held books but disables optional overlays
+ok 55 - unavailable comparison evidence retains held books but disables optional overlays
+  ---
+  duration_ms: 19.0548
+  type: 'test'
+  ...
+# Subtest: followup claim is durably installed before pair reads and remains through scheduler attempts
+ok 56 - followup claim is durably installed before pair reads and remains through scheduler attempts
+  ---
+  duration_ms: 23.1916
+  type: 'test'
+  ...
+# Subtest: failed followup claim publication cannot dispatch either leg or silently fall back after an uncertain save
+ok 57 - failed followup claim publication cannot dispatch either leg or silently fall back after an uncertain save
+  ---
+  duration_ms: 12.0536
+  type: 'test'
+  ...
+# Subtest: STOP after durable followup claim leaves it consumed without reading the pair
+ok 58 - STOP after durable followup claim leaves it consumed without reading the pair
+  ---
+  duration_ms: 10.981
+  type: 'test'
+  ...
+# Subtest: later scheduler replacement failure preserves the claim and fails before a read even with STOP
+ok 59 - later scheduler replacement failure preserves the claim and fails before a read even with STOP
+  ---
+  duration_ms: 8.94
+  type: 'test'
+  ...
+# Subtest: damaged optional followup source preserves original collector book budget and candidates
+ok 60 - damaged optional followup source preserves original collector book budget and candidates
+  ---
+  duration_ms: 37.7985
+  type: 'test'
+  ...
+# Subtest: public depth is published at receipt before the later cycle journal, without extra reads
+ok 61 - public depth is published at receipt before the later cycle journal, without extra reads
+  ---
+  duration_ms: 10.0349
+  type: 'test'
+  ...
+# Subtest: public depth source records outage and STOP without retaining a live session
+ok 62 - public depth source records outage and STOP without retaining a live session
+  ---
+  duration_ms: 6.7687
+  type: 'test'
+  ...
+# Subtest: public depth durability failure remains fatal and always closes publication
+ok 63 - public depth durability failure remains fatal and always closes publication
+  ---
+  duration_ms: 7.272
+  type: 'test'
+  ...
+# Subtest: STOP at positions preserves replayable committed accounting
+ok 64 - STOP at positions preserves replayable committed accounting
+  ---
+  duration_ms: 7.7793
+  type: 'test'
+  ...
+# Subtest: STOP at orders preserves replayable committed accounting
+ok 65 - STOP at orders preserves replayable committed accounting
+  ---
+  duration_ms: 6.6695
+  type: 'test'
+  ...
+# Subtest: STOP at book-377 preserves replayable committed accounting
+ok 66 - STOP at book-377 preserves replayable committed accounting
+  ---
+  duration_ms: 7.1776
+  type: 'test'
+  ...
+# Subtest: STOP at book-354 preserves replayable committed accounting
+ok 67 - STOP at book-354 preserves replayable committed accounting
+  ---
+  duration_ms: 9.3891
+  type: 'test'
+  ...
+# Subtest: STOP at book-277 preserves replayable committed accounting
+ok 68 - STOP at book-277 preserves replayable committed accounting
+  ---
+  duration_ms: 9.5472
+  type: 'test'
+  ...
+# Subtest: STOP at book-305 preserves replayable committed accounting
+ok 69 - STOP at book-305 preserves replayable committed accounting
+  ---
+  duration_ms: 10.8837
+  type: 'test'
+  ...
+# Subtest: STOP at book-342 preserves replayable committed accounting
+ok 70 - STOP at book-342 preserves replayable committed accounting
+  ---
+  duration_ms: 9.462
+  type: 'test'
+  ...
+# Subtest: STOP at book-376 preserves replayable committed accounting
+ok 71 - STOP at book-376 preserves replayable committed accounting
+  ---
+  duration_ms: 12.5091
+  type: 'test'
+  ...
+# Subtest: STOP at bulk-admission preserves replayable committed accounting
+ok 72 - STOP at bulk-admission preserves replayable committed accounting
+  ---
+  duration_ms: 11.7001
+  type: 'test'
+  ...
+# Subtest: STOP at bulk-response preserves replayable committed accounting
+ok 73 - STOP at bulk-response preserves replayable committed accounting
+  ---
+  duration_ms: 13.1348
+  type: 'test'
+  ...
+# Subtest: STOP at cycle-wait preserves replayable committed accounting
+ok 74 - STOP at cycle-wait preserves replayable committed accounting
+  ---
+  duration_ms: 7.9879
+  type: 'test'
+  ...
+# Subtest: STOP at outage-wait preserves replayable committed accounting
+ok 75 - STOP at outage-wait preserves replayable committed accounting
+  ---
+  duration_ms: 6.7896
+  type: 'test'
+  ...
+# Subtest: STOP at cycle-commit preserves replayable committed accounting
+ok 76 - STOP at cycle-commit preserves replayable committed accounting
+  ---
+  duration_ms: 11.4496
+  type: 'test'
+  ...
+# Subtest: STOP at sampling-failure preserves replayable committed accounting
+ok 77 - STOP at sampling-failure preserves replayable committed accounting
+  ---
+  duration_ms: 11.3852
+  type: 'test'
+  ...
+# Subtest: STOP at status-publication preserves replayable committed accounting
+ok 78 - STOP at status-publication preserves replayable committed accounting
+  ---
+  duration_ms: 12.0725
+  type: 'test'
+  ...
+# Subtest: a journal failure concurrent with STOP fails closed without a later state-only append
+ok 79 - a journal failure concurrent with STOP fails closed without a later state-only append
+  ---
+  duration_ms: 8.223
+  type: 'test'
+  ...
+# Subtest: ordinary bounded completion remains source/accounting equivalent
+ok 80 - ordinary bounded completion remains source/accounting equivalent
+  ---
+  duration_ms: 10.2749
+  type: 'test'
+  ...
+# Subtest: invalid optional basket observer preserves original book reads and official candidate metadata
+ok 81 - invalid optional basket observer preserves original book reads and official candidate metadata
+  ---
+  duration_ms: 28.2403
+  type: 'test'
+  ...
+# Subtest: runner persists startup backoff, recovers into ordinary collection and stops during retry
+ok 82 - runner persists startup backoff, recovers into ordinary collection and stops during retry
+  ---
+  duration_ms: 15.2158
+  type: 'test'
+  ...
+# Subtest: dip collection rotates comparisons, records sparse historical reads, preserves replay and original slot count
+ok 83 - dip collection rotates comparisons, records sparse historical reads, preserves replay and original slot count
+  ---
+  duration_ms: 18.0055
+  type: 'test'
+  ...
+# Subtest: STOP or durable recording failure during historical backfill cannot continue to an account/book read
+ok 84 - STOP or durable recording failure during historical backfill cannot continue to an account/book read
+  ---
+  duration_ms: 20.586
+  type: 'test'
+  ...
+# Subtest: official sync replaces historical slots and stores only curated account projections outside the paper journal
+ok 85 - official sync replaces historical slots and stores only curated account projections outside the paper journal
+  ---
+  duration_ms: 13.6575
+  type: 'test'
+  ...
+# Subtest: real runner skips its cycle-floor idle for owned or pending official risk and retains reconciliation before books
+ok 86 - real runner skips its cycle-floor idle for owned or pending official risk and retains reconciliation before books
+  ---
+  duration_ms: 18.7111
+  type: 'test'
+  ...
+# Subtest: flat transition restores the original cycle wait and STOP/outage still stop or back off
+ok 87 - flat transition restores the original cycle wait and STOP/outage still stop or back off
+  ---
+  duration_ms: 26.2646
+  type: 'test'
+  ...
+# Subtest: enabled real runner publishes all universe batches with frozen primary replay and ten second cycle budget
+ok 88 - enabled real runner publishes all universe batches with frozen primary replay and ten second cycle budget
+  ---
+  duration_ms: 8.9384
+  type: 'test'
+  ...
+# Subtest: enabled sweep publication failure halts real runner before subsequent bulk requests
+ok 89 - enabled sweep publication failure halts real runner before subsequent bulk requests
+  ---
+  duration_ms: 6.1964
+  type: 'test'
+  ...
+# Subtest: verified market-wide history proposals enter the existing bounded scheduler without extra book slots
+ok 90 - verified market-wide history proposals enter the existing bounded scheduler without extra book slots
+  ---
+  duration_ms: 10.6233
+  type: 'test'
+  ...
+# Subtest: real runner services both pending package legs using exactly the original four book slots
+ok 91 - real runner services both pending package legs using exactly the original four book slots
+  ---
+  duration_ms: 9.2296
+  type: 'test'
+  ...
+# Subtest: actual runner observes idle paired strategy within same four slots before any signal exists
+ok 92 - actual runner observes idle paired strategy within same four slots before any signal exists
+  ---
+  duration_ms: 11.152
+  type: 'test'
+  ...
+# Subtest: real durable package timestamp ledger survives ordinal book attempts and suppresses immediate repeat
+ok 93 - real durable package timestamp ledger survives ordinal book attempts and suppresses immediate repeat
+  ---
+  duration_ms: 15.6128
+  type: 'test'
+  ...
+# Subtest: operator-retired comparison skips obsolete risk without suppressing official books
+ok 94 - operator-retired comparison skips obsolete risk without suppressing official books
+  ---
+  duration_ms: 18.9282
+  type: 'test'
+  ...
+# Subtest: real collector repeats discovery block with same four-book budget and retains risk
+ok 95 - real collector repeats discovery block with same four-book budget and retains risk
+  ---
+  duration_ms: 21.4342
+  type: 'test'
+  ...
+# Subtest: real collector protects native paper holdings inside the existing four reads
+ok 96 - real collector protects native paper holdings inside the existing four reads
+  ---
+  duration_ms: 9.3501
+  type: 'test'
+  ...
+# Subtest: real collector selects cached native continuation and retains the same held read budget
+ok 97 - real collector selects cached native continuation and retains the same held read budget
+  ---
+  duration_ms: 8.357
+  type: 'test'
+  ...
+# Subtest: real collector retains verified paper risk first, spends the free slot on screened and fair discovery, and persists attempts
+ok 98 - real collector retains verified paper risk first, spends the free slot on screened and fair discovery, and persists attempts
+  ---
+  duration_ms: 14.9708
+  type: 'test'
+  ...
+# Subtest: optional screen startup failure retains risk collection without falling back to unverified leads
+ok 99 - optional screen startup failure retains risk collection without falling back to unverified leads
+  ---
+  duration_ms: 8.8467
+  type: 'test'
+  ...
+# Subtest: real collector prioritizes verified native pending instruments within the same four-book budget
+ok 100 - real collector prioritizes verified native pending instruments within the same four-book budget
+  ---
+  duration_ms: 10.3264
+  type: 'test'
+  ...
+# Subtest: new native quote wallets share four existing book slots and fresh eligibility is recorded before books
+ok 101 - new native quote wallets share four existing book slots and fresh eligibility is recorded before books
+  ---
+  duration_ms: 10.3429
+  type: 'test'
+  ...
+# Subtest: eligibility durability failure closes the public session before any book or later read
+ok 102 - eligibility durability failure closes the public session before any book or later read
+  ---
+  duration_ms: 4.2435
+  type: 'test'
+  ...
+# Subtest: human-retired price experiments release paper capacity while preserving official reconciliation and four reads
+ok 103 - human-retired price experiments release paper capacity while preserving official reconciliation and four reads
+  ---
+  duration_ms: 13.4206
+  type: 'test'
+  ...
+# Subtest: the new passive host receives existing scoped books after eligibility with no extra read slots
+ok 104 - the new passive host receives existing scoped books after eligibility with no extra read slots
+  ---
+  duration_ms: 19.4013
+  type: 'test'
+  ...
+# Subtest: a broad frozen host takes spare slots while narrow pending and existing forecast inventory keep their reads
+ok 105 - a broad frozen host takes spare slots while narrow pending and existing forecast inventory keep their reads
+  ---
+  duration_ms: 21.0131
+  type: 'test'
+  ...
+# Subtest: real runner tape dispatch follows broad bank with no narrow host and exact pending recovery
+ok 106 - real runner tape dispatch follows broad bank with no narrow host and exact pending recovery
+  ---
+  duration_ms: 39.7481
+  type: 'test'
+  ...
+# Subtest: coupled maker shares the single tape and four books with existing broad and forecast wallets
+ok 107 - coupled maker shares the single tape and four books with existing broad and forecast wallets
+  ---
+  duration_ms: 17.3521
+  type: 'test'
+  ...
+# Subtest: bulk successor consumes each committed price receipt without adding clients or overwriting prior pending wallets
+ok 108 - bulk successor consumes each committed price receipt without adding clients or overwriting prior pending wallets
+  ---
+  duration_ms: 22.5823
+  type: 'test'
+  ...
+# Subtest: real runner reuses existing four depth slots for full realtime baselines without extra requests
+ok 109 - real runner reuses existing four depth slots for full realtime baselines without extra requests
+  ---
+  duration_ms: 14.1861
+  type: 'test'
+  ...
+# Subtest: actual runner status calls the durable writer for both derived views
+ok 110 - actual runner status calls the durable writer for both derived views
+  ---
+  duration_ms: 19.0048
+  type: 'test'
+  ...
+# Subtest: actual runner status retries Windows sharing failures on the already synced temporary file
+ok 111 - actual runner status retries Windows sharing failures on the already synced temporary file
+  ---
+  duration_ms: 68.8291
+  type: 'test'
+  ...
+# Subtest: persistent status failure retains the last valid status and escapes for lifecycle failure
+ok 112 - persistent status failure retains the last valid status and escapes for lifecycle failure
+  ---
+  duration_ms: 391.572
+  type: 'test'
+  ...
+1..112
+# tests 112
+# suites 0
+# pass 112
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1188.0535

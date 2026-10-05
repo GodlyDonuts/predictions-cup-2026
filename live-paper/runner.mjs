@@ -418,9 +418,11 @@ try{
         const samplingMember=planned.comparisonSampling?.reservationMarketIds?.includes(marketId);
         recordAttempt('book',marketId,samplingMember?planned.comparisonSampling.planId:null,spec.nativeDiscovery===true);
         if(samplingMember)samplingReservations.push({marketId,at:new Date().toISOString()});
+        const realtimeTicket=realtime?.beginSharedSnapshot(marketId)??null;
         try{
           if(competition)try{await competition.beforeBook?.(marketId);}catch(e){competition.failure(e);}
-          const r=await api.request('/markets/'+marketId+'/orderbook?tournamentId='+c.tournamentId+'&depth=20');
+          const r=realtimeTicket?await realtime.readSharedSnapshot(realtimeTicket):await api.request('/markets/'+marketId+'/orderbook?tournamentId='+c.tournamentId+'&depth=20');
+          if(realtimeTicket)realtime.completeSharedSnapshot(realtimeTicket,r);
           target.push(r);
           if(planned.comparisonSampling?.planId)samplingReceipts.push({marketId,requestStartedAt:r.requestStartedAt,receivedAt:r.receivedAt});
           receivedBook=true;
@@ -436,7 +438,7 @@ try{
           if(b.exchangeId!==universe.exchanges.find(x=>x.marketId===marketId).exchangeId)throw Error('Book exchange identity mismatch');
           if(spec.path==='sourceSnapshots'&&!retireNativePrices){try{state=observe(state,b,c);}catch(e){e.fatal=true;throw e;}}
           successful++;
-        }catch(e){if(e.durableRecordingFailed)throw e;if(stopping)break;if(!receivedBook)publishBookEvent('invalidate',{marketId,reason:'BOOK_READ_FAILED'});if(e.fatal||api.manualReview||e.status===401||e.status===403)throw e;const reason=e.status?'http_'+e.status:e.message,at=new Date().toISOString();if(spec.path==='sourceSnapshots'){state.skips[marketId]={at,reason};invalidate(state,marketId,at,reason);}target.push({marketId,skipped:reason,at});if(e.status===429||e.status===503)break;}
+        }catch(e){if(realtimeTicket)realtime.failSharedSnapshot(realtimeTicket);if(e.durableRecordingFailed)throw e;if(stopping)break;if(!receivedBook)publishBookEvent('invalidate',{marketId,reason:'BOOK_READ_FAILED'});if(e.fatal||api.manualReview||e.status===401||e.status===403)throw e;const reason=e.status?'http_'+e.status:e.message,at=new Date().toISOString();if(spec.path==='sourceSnapshots'){state.skips[marketId]={at,reason};invalidate(state,marketId,at,reason);}target.push({marketId,skipped:reason,at});if(e.status===429||e.status===503)break;}
       }
       runtime.scheduling={managedMarketIds:planned.managedMarketIds,entryMarketIds:planned.entryMarketIds,overCapacity:planned.overCapacity,reads:planned.reads,nativeDiscovery:planned.nativeDiscovery||null};
       runtime.supplementalDepth={marketIds:planned.reads.filter(x=>x.path==='supplementalDepth').map(x=>x.marketId),observations:supplementalDepth.filter(x=>x.endpoint).length,skips:supplementalDepth.filter(x=>x.skipped).map(x=>({marketId:x.marketId,reason:x.skipped}))};
