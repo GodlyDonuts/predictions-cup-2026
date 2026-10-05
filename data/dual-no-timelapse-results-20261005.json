@@ -1,0 +1,296 @@
+{
+  "schemaVersion": 1,
+  "createdAt": "2026-10-05T21:36:52.535Z",
+  "cohort": "michigan-governor-dual-no-20261005-v1",
+  "scenario": "one_adverse_tick_stress_v1",
+  "modulePath": "live-paper/dual-no-pair-paper-v1.mjs",
+  "frozenCapacityModule": true,
+  "originalBankHash": "0d53558dda330cd5a41f267dfc0310bd3902418572c6679335dcbf7d49ff5217",
+  "originalBankBytesSha256": "5fa1b088ba8a1e9926a5398b9212f7998a77102077ba0c4ca4529725df07e83f",
+  "frozenCodeIdentity": {
+    "./dual-no-pair-host-v1.mjs": "37faaa70330b5bcefdccbcdbc3e6d96c125fc37c0fd6283376827a3fe755eff1",
+    "./dual-no-pair-paper-v1.mjs": "2fcc01e55c82652f8220d948645211d9f1988b18194b63b273519c3c84322532",
+    "./dual-no-review-v1.mjs": "3e0ec0536b02add00e6b635cdd78b4b863a64b8c2ed78cb2f942263684b65174",
+    "./canonical-no-capacity.mjs": "9a32dd896051ca039d40405cbc7fad38cb9241de0e8cd94896ef35e46c0d3ee7",
+    "./probability-receipt.mjs": "5a3fad02baca0eb519642b2f1cc53ec06ec4bdad7829b937d13891ac52d4e8a6",
+    "./transport-runtime.mjs": "fae4f871bcd07ecbd57c66df8425e07de4356bb1cd7f4de2ae8e80a51818b0fd",
+    "./journal-lines.mjs": "f8adff2bddc36b4e3d305dec9395fae9f51dff957e35313994b6147502cc6823",
+    "../execution/ledger.mjs": "dd57fe01ce6a4d7219228c01ebfc091ea006f78ba3c96644099abf5e5ff3c014",
+    "../paper/fixed.mjs": "a0947ef49854d4a3bf4bce88034aaef5d8aabbdc7e29dff3a7b9b4bc01b072f7",
+    "../feed/contract.mjs": "39b9b30a72093d99697bc03a3b20f88f1d835507219fc46f7a00bd28fe761465"
+  },
+  "parserHash": "08090f8eac68dd883017ad7be77140ab18eefd206b76bdbb103c5e1e36fc3c53",
+  "eligibility": {
+    "records": 2627,
+    "journalHash": "0b3b4af0a6d952576f0a1733a29a2117010a9bfa78d2113ee7f9f46d01a68aef",
+    "firstKnownAt": "2026-10-04T16:59:49.117Z",
+    "lastKnownAt": "2026-10-05T21:35:59.360Z",
+    "currentAccountBackfilled": false
+  },
+  "identity": {
+    "records": 133,
+    "journalHash": "038efbb18fbff33f106979ed5b1f95c690d0fc8130081ff125f3d65f7b66e957",
+    "stateHash": "7efb22cf71a312055d45e46d13e524c1182b80da5d504d10182237913d454eba",
+    "paperStateHash": "d1a8c090c516a588ac9608b2c4c58c52a090895667a800944ec70aecb98bbb26",
+    "fills": 2,
+    "realizedPnl": "0.000000",
+    "sourceSequence": 28797,
+    "sourceHash": "417c3d4def9143f815bb9329dfb3f3ad743101d45c0e17c0b10a33e25b1c93c5",
+    "exactAsRecordedIdentityParity": true
+  },
+  "source": {
+    "records": 28798,
+    "bytes": 62723018,
+    "sha256": "189f49f60cd6e09d9178f5646f2876100ca9d7abd1ee3aa4c328f334e3147feb",
+    "firstAt": "2026-10-02T12:03:36.744Z",
+    "lastAt": "2026-10-05T21:36:16.184Z",
+    "hours": 81.54428888888889,
+    "sealedCompleteRecordsOnly": true,
+    "frozenPrefixVerified": true
+  },
+  "coverage": {
+    "firstAt": "2026-10-02T12:04:26.846Z",
+    "lastAt": "2026-10-05T21:36:04.491Z",
+    "rows": 1932,
+    "marketIds": [
+      "305",
+      "306"
+    ],
+    "days": {
+      "2026-10-02": {
+        "305": 995,
+        "306": 7
+      },
+      "2026-10-03": {
+        "305": 456,
+        "306": 4
+      },
+      "2026-10-04": {
+        "305": 330,
+        "306": 4
+      },
+      "2026-10-05": {
+        "305": 65,
+        "306": 71
+      }
+    },
+    "nanosecondSourceValidation": true,
+    "missingDataInterpolated": false,
+    "spanHours": 81.52712361111111,
+    "daysWithBothMarkets": 4,
+    "legReceiptGapsMs": {
+      "305": {
+        "count": 1845,
+        "median": 42414,
+        "p95": 142273,
+        "p99": 248850,
+        "max": 106334574
+      },
+      "306": {
+        "count": 85,
+        "median": 15543,
+        "p95": 12324982,
+        "p99": 70110684,
+        "max": 70110684
+      }
+    },
+    "threeDaysOfContinuousEligibleCoverageEstablished": false
+  },
+  "strict": {
+    "label": "subsequent_original_frozen_bank",
+    "bankHash": "0d53558dda330cd5a41f267dfc0310bd3902418572c6679335dcbf7d49ff5217",
+    "scopeBooks": 130,
+    "eligibleAccountBooks": 128,
+    "noEligibleAccountBooks": 2,
+    "accountMissingBooks": 0,
+    "causalAccountAgeMs": {
+      "count": 130,
+      "median": 6118,
+      "p95": 13573,
+      "p99": 24663,
+      "max": 27984
+    },
+    "eligiblePairBookEvents": 64,
+    "longestContinuousEligiblePairMs": 0,
+    "conditionalCapacityBooks": 64,
+    "firstBookAt": "2026-10-05T21:17:40.727Z",
+    "lastBookAt": "2026-10-05T21:36:04.491Z",
+    "days": {
+      "2026-10-05": {
+        "marketCounts": {
+          "305": 65,
+          "306": 65
+        },
+        "accountEligibleBooks": 128,
+        "accountMissingOrStaleBooks": 2,
+        "eligiblePairBookEvents": 64
+      }
+    },
+    "boundaries": 3,
+    "stateHash": "609694e2f9ee402698ea80f9f8004b1b60a7395e379299a92a347fce0f55a82f",
+    "report": {
+      "schemaVersion": 1,
+      "mode": "dual_no_sequential_paper_v1",
+      "cohort": "michigan-governor-dual-no-20261005-v1",
+      "bankHash": "0d53558dda330cd5a41f267dfc0310bd3902418572c6679335dcbf7d49ff5217",
+      "cutoff": "2026-10-05T21:13:58.872Z",
+      "updatedAt": "2026-10-05T21:36:16.184Z",
+      "reviewExpiresAt": "2026-10-05T22:00:00.000Z",
+      "cash": "99.025000",
+      "realizedPnl": "0.000000",
+      "estimatedLiquidationPnl": null,
+      "positions": [
+        {
+          "marketId": "305",
+          "exchangeId": "994",
+          "quantity": 1,
+          "cost": "0.120000",
+          "enteredAt": "2026-10-05T21:19:50.663Z",
+          "estimatedLiquidationProceeds": null,
+          "unsoldShares": 1,
+          "quoteReceivedAt": null,
+          "quoteRequestStartedAt": null,
+          "quoteAgeMs": null
+        },
+        {
+          "marketId": "306",
+          "exchangeId": "995",
+          "quantity": 1,
+          "cost": "0.855000",
+          "enteredAt": "2026-10-05T21:20:31.269Z",
+          "estimatedLiquidationProceeds": null,
+          "unsoldShares": 1,
+          "quoteReceivedAt": null,
+          "quoteRequestStartedAt": null,
+          "quoteAgeMs": null
+        }
+      ],
+      "pending": null,
+      "package": {
+        "id": 1,
+        "first": "994",
+        "second": "995",
+        "stage": "holding",
+        "createdAt": "2026-10-05T21:19:14.983Z",
+        "completedPair": true,
+        "buyCost": "0.975000",
+        "saleProceeds": "0.000000",
+        "entryLimits": {
+          "994": "0.125000",
+          "995": "0.855000"
+        },
+        "entryVersions": [
+          "57966363:2026-10-05T21:19:10.162050000Z",
+          "57967001:2026-10-05T21:19:13.576438900Z"
+        ],
+        "completedAt": "2026-10-05T21:20:31.269Z"
+      },
+      "reserved": "0.000000",
+      "cumulativeBuys": "0.975000",
+      "counts": {
+        "source_boundary": 3,
+        "unavailable_or_excluded_book": 2,
+        "intent_entry_first": 1,
+        "paired_entry_obligation": 1,
+        "hypothetical_buy": 2,
+        "intent_entry_second": 1,
+        "completed_pairs": 1
+      },
+      "fills": 2,
+      "recentFills": [
+        {
+          "id": 1,
+          "packageId": 1,
+          "marketId": "305",
+          "exchangeId": "994",
+          "action": "buy",
+          "stage": "entry_first",
+          "quantity": 1,
+          "limit": "0.125000",
+          "createdAt": "2026-10-05T21:19:14.983Z",
+          "expiresAt": "2026-10-05T21:21:14.983Z",
+          "decisionVersion": "57966363:2026-10-05T21:19:10.162050000Z",
+          "price": "0.120000",
+          "at": "2026-10-05T21:19:50.663Z",
+          "fees": "0.000000",
+          "model": "counterfactual_later_independent_book_not_proven_execution",
+          "source": {
+            "requestStartedAt": "2026-10-05T21:19:48.683Z",
+            "receivedAt": "2026-10-05T21:19:50.657Z",
+            "version": "57973750:2026-10-05T21:19:49.529069500Z",
+            "publicationSequence": 28552,
+            "publicationHash": "ba6180f2d40683d7f3a7e0c0ab5a605bffb5e29e7f2350332d4147c6e16b3b52",
+            "eligibleDepth": 3,
+            "levelIndex": 0,
+            "rawYesPrice": "0.885000"
+          }
+        },
+        {
+          "id": 2,
+          "packageId": 1,
+          "marketId": "306",
+          "exchangeId": "995",
+          "action": "buy",
+          "stage": "entry_second",
+          "quantity": 1,
+          "limit": "0.855000",
+          "createdAt": "2026-10-05T21:19:50.663Z",
+          "expiresAt": "2026-10-05T21:21:50.663Z",
+          "decisionVersion": null,
+          "price": "0.855000",
+          "at": "2026-10-05T21:20:31.269Z",
+          "fees": "0.000000",
+          "model": "counterfactual_later_independent_book_not_proven_execution",
+          "source": {
+            "requestStartedAt": "2026-10-05T21:20:28.496Z",
+            "receivedAt": "2026-10-05T21:20:31.261Z",
+            "version": "57982800:2026-10-05T21:20:29.520691900Z",
+            "publicationSequence": 28557,
+            "publicationHash": "dc82d3a485391f246040c3d79f9b48f2eb423c6681e8457811fe645def89a08d",
+            "eligibleDepth": 6,
+            "levelIndex": 0,
+            "rawYesPrice": "0.150000"
+          }
+        }
+      ],
+      "closedPackages": 0,
+      "recentRoundtrips": [],
+      "fees": "0.000000",
+      "ordinaryConditionalSettlementSurplus": "0.025000",
+      "zeroPayoutExceptionLoss": "-0.975000",
+      "reviewCurrent": true,
+      "executionAuthority": false,
+      "competitionOrders": 0,
+      "networkRequests": 0,
+      "profitabilityEstablished": false,
+      "limitations": [
+        "Two sequential hypothetical fills are not atomic execution or evidence of queue priority.",
+        "Ordinary settlement surplus is conditional on reviewed rules and is never booked as realized or liquidation P&L.",
+        "A failed hedge or second exit creates an orphan obligation that may realize a loss.",
+        "Matched inventory may be held through the reviewed election horizon; no settlement payout is booked without explicit settlement evidence. Entry expiry does not settle inventory. All costs and losses remain attributed."
+      ]
+    },
+    "openOrPendingCensored": true,
+    "nearTermProfitabilityEstablished": false,
+    "ruleTransport": null
+  },
+  "development": null,
+  "performance": {
+    "wallMs": 9698.1181,
+    "simulatedSourceHours": 81.54428888888889,
+    "speedupAgainstWallClock": 30269.73243396572,
+    "recordsPerSecond": 2969.4420817581095,
+    "intentSleeps": 0
+  },
+  "fees": "0.000000",
+  "networkRequests": 0,
+  "contestOrders": 0,
+  "profitabilityEstablished": false,
+  "limitations": [
+    "Accelerated replay changes wall time, never the chronological availability or latency gates.",
+    "As-recorded journal parity is exact; row-at replay is a separate virtual-consumption experiment, not necessarily bit-identical to live processing delays.",
+    "Coverage gaps and pre-eligibility hours are censored; three days of executable paired observations are not manufactured.",
+    "Historical static-rule transport is a development assumption, never held-out profitability evidence.",
+    "Conditional settlement surplus is never realized P&L; unsold and unmatched inventory remains in results."
+  ]
+}

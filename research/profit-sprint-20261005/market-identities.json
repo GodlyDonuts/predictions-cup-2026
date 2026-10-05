@@ -1,0 +1,306 @@
+{
+  "schemaVersion": 1,
+  "at": "2026-10-05T21:01:09.154Z",
+  "cachedCatalogueHash": "41dcb6472ab60302aee6656d3cb75e7baba4b4976671b4419e8334c02189e37c",
+  "catalogueObservedAt": "2026-10-01",
+  "marketCount": 237,
+  "settlementDates": [
+    "2026-11-04T17:00:00.000Z"
+  ],
+  "selected": [
+    {
+      "marketId": "378",
+      "title": "Will the Republican Party win the Alaska Senate?",
+      "exchangeId": "1067",
+      "settlementDate": "2026-11-04T17:00:00.000Z",
+      "catalogueStatus": "open"
+    },
+    {
+      "marketId": "377",
+      "title": "Will the Democratic Party win the Alaska Senate?",
+      "exchangeId": "1066",
+      "settlementDate": "2026-11-04T17:00:00.000Z",
+      "catalogueStatus": "open"
+    },
+    {
+      "marketId": "369",
+      "title": "Will the Republican Party win the Alaska Governor?",
+      "exchangeId": "1058",
+      "settlementDate": "2026-11-04T17:00:00.000Z",
+      "catalogueStatus": "open"
+    },
+    {
+      "marketId": "368",
+      "title": "Will the Democratic Party win the Alaska Governor?",
+      "exchangeId": "1057",
+      "settlementDate": "2026-11-04T17:00:00.000Z",
+      "catalogueStatus": "open"
+    },
+    {
+      "marketId": "359",
+      "title": "Will the Republican Party win the Michigan Senate?",
+      "exchangeId": "1048",
+      "settlementDate": "2026-11-04T17:00:00.000Z",
+      "catalogueStatus": "open"
+    },
+    {
+      "marketId": "358",
+      "title": "Will the Democratic Party win the Michigan Senate?",
+      "exchangeId": "1047",
+      "settlementDate": "2026-11-04T17:00:00.000Z",
+      "catalogueStatus": "open"
+    },
+    {
+      "marketId": "306",
+      "title": "Will the Republican Party win the Michigan Governor?",
+      "exchangeId": "995",
+      "settlementDate": "2026-11-04T17:00:00.000Z",
+      "catalogueStatus": "open"
+    },
+    {
+      "marketId": "305",
+      "title": "Will the Democratic Party win the Michigan Governor?",
+      "exchangeId": "994",
+      "settlementDate": "2026-11-04T17:00:00.000Z",
+      "catalogueStatus": "open"
+    },
+    {
+      "marketId": "294",
+      "title": "Will the Republican Party win the Texas Senate?",
+      "exchangeId": "983",
+      "settlementDate": "2026-11-04T17:00:00.000Z",
+      "catalogueStatus": "open"
+    },
+    {
+      "marketId": "293",
+      "title": "Will the Democratic Party win the Texas Senate?",
+      "exchangeId": "982",
+      "settlementDate": "2026-11-04T17:00:00.000Z",
+      "catalogueStatus": "open"
+    },
+    {
+      "marketId": "261",
+      "title": "Will the Republican Party win the Iowa Senate?",
+      "exchangeId": "950",
+      "settlementDate": "2026-11-04T17:00:00.000Z",
+      "catalogueStatus": "open"
+    },
+    {
+      "marketId": "260",
+      "title": "Will the Democratic Party win the Iowa Senate?",
+      "exchangeId": "949",
+      "settlementDate": "2026-11-04T17:00:00.000Z",
+      "catalogueStatus": "open"
+    },
+    {
+      "marketId": "196",
+      "title": "Will the Republican Party win the Texas Governor?",
+      "exchangeId": "885",
+      "settlementDate": "2026-11-04T17:00:00.000Z",
+      "catalogueStatus": "open"
+    },
+    {
+      "marketId": "195",
+      "title": "Will the Democratic Party win the Texas Governor?",
+      "exchangeId": "884",
+      "settlementDate": "2026-11-04T17:00:00.000Z",
+      "catalogueStatus": "open"
+    },
+    {
+      "marketId": "169",
+      "title": "Will the Republican Party win the Iowa Governor?",
+      "exchangeId": "858",
+      "settlementDate": "2026-11-04T17:00:00.000Z",
+      "catalogueStatus": "open"
+    },
+    {
+      "marketId": "168",
+      "title": "Will the Democratic Party win the Iowa Governor?",
+      "exchangeId": "857",
+      "settlementDate": "2026-11-04T17:00:00.000Z",
+      "catalogueStatus": "open"
+    }
+  ],
+  "predicates": [
+    {
+      "marketId": "260",
+      "predicate": {
+        "raceId": "62961",
+        "stageId": "98091",
+        "usState": "IA",
+        "raceName": "U.S. Senate Iowa",
+        "raceStage": "General",
+        "winnerName": "Democratic Party",
+        "officeLevel": "Federal",
+        "contractType": "Election Outcome",
+        "electionDate": "2026-11-03",
+        "resolutionType": "Party Winner"
+      },
+      "rootHash": "640582be18719ff760c07baf831de419b234fa0d2f1addd67907b19a969250ce",
+      "receivedAt": "2026-10-05T18:42:04.466Z",
+      "sourceFile": "production-metadata/current-marist-20261005-v2/260.json",
+      "sourceHash": "4ce72a5d4f37c724ce80eb434839655cc1b50f9cfba7afda5e9baeaebe29133f"
+    },
+    {
+      "marketId": "293",
+      "predicate": {
+        "raceId": "62982",
+        "stageId": "98112",
+        "usState": "TX",
+        "raceName": "U.S. Senate Texas",
+        "raceStage": "General",
+        "winnerName": "Democratic Party",
+        "officeLevel": "Federal",
+        "contractType": "Election Outcome",
+        "electionDate": "2026-11-03",
+        "resolutionType": "Party Winner"
+      },
+      "rootHash": "0af65637ee9341d4a057baa6b4387ee3fa96eb9f6c14e91b9b112702d859ea5a",
+      "receivedAt": "2026-10-05T18:41:30.926Z",
+      "sourceFile": "production-metadata/current-marist-20261005-v2/293.json",
+      "sourceHash": "46535fdbfb7a14f5bedd83ae9a3042b69d5064e916b0d20fc23a90e6d2387ee5"
+    },
+    {
+      "marketId": "358",
+      "predicate": {
+        "raceId": "62967",
+        "stageId": "98097",
+        "usState": "MI",
+        "raceName": "U.S. Senate Michigan",
+        "raceStage": "General",
+        "winnerName": "Democratic Party",
+        "officeLevel": "Federal",
+        "contractType": "Election Outcome",
+        "electionDate": "2026-11-03",
+        "resolutionType": "Party Winner"
+      },
+      "rootHash": "c2270f3d0aabf06658e9a4b4ea9fd4669bf61df7f504ad6af0bda193b7ea8075",
+      "receivedAt": "2026-10-05T18:40:56.961Z",
+      "sourceFile": "production-metadata/current-marist-20261005-v2/358.json",
+      "sourceHash": "9826907da723b38f976b0375440367bfb66c36a35d9e5e90aac4b014f88388ca"
+    },
+    {
+      "marketId": "260",
+      "predicate": {
+        "raceId": "62961",
+        "stageId": "98091",
+        "usState": "IA",
+        "raceName": "U.S. Senate Iowa",
+        "raceStage": "General",
+        "winnerName": "Democratic Party",
+        "officeLevel": "Federal",
+        "contractType": "Election Outcome",
+        "electionDate": "2026-11-03",
+        "resolutionType": "Party Winner"
+      },
+      "rootHash": "640582be18719ff760c07baf831de419b234fa0d2f1addd67907b19a969250ce",
+      "receivedAt": "2026-10-05T11:24:28.216Z",
+      "sourceFile": "production-metadata/current-poll-breadth-20261005-v1/260.json",
+      "sourceHash": "e5829917f60c3c424a6af8d773c132b8de1bed6a920f2166a5a36157a36bbc5e"
+    },
+    {
+      "marketId": "261",
+      "predicate": {
+        "raceId": "62961",
+        "stageId": "98091",
+        "usState": "IA",
+        "raceName": "U.S. Senate Iowa",
+        "raceStage": "General",
+        "winnerName": "Republican Party",
+        "officeLevel": "Federal",
+        "contractType": "Election Outcome",
+        "electionDate": "2026-11-03",
+        "resolutionType": "Party Winner"
+      },
+      "rootHash": "d77552ed69fac7a5a63a8edf51c3e160f2afdecb75a61c7cb73e90a3dc79ac5e",
+      "receivedAt": "2026-10-05T11:23:02.449Z",
+      "sourceFile": "production-metadata/current-poll-breadth-20261005-v1/261.json",
+      "sourceHash": "7e4a6a91ad805ea37fd83ba5580e1ebee407f23c1e406af2d37b1f5acd4942e9"
+    },
+    {
+      "marketId": "260",
+      "predicate": {
+        "raceId": "62961",
+        "stageId": "98091",
+        "usState": "IA",
+        "raceName": "U.S. Senate Iowa",
+        "raceStage": "General",
+        "winnerName": "Democratic Party",
+        "officeLevel": "Federal",
+        "contractType": "Election Outcome",
+        "electionDate": "2026-11-03",
+        "resolutionType": "Party Winner"
+      },
+      "rootHash": "640582be18719ff760c07baf831de419b234fa0d2f1addd67907b19a969250ce",
+      "receivedAt": "2026-10-05T11:35:53.194Z",
+      "sourceFile": "production-metadata/current-poll-post-assessment-20261005-v1/260.json",
+      "sourceHash": "61da78fa240a97ed911a217187d6745d61e1ea68746d4a6c356ec39eb400c981"
+    },
+    {
+      "marketId": "261",
+      "predicate": {
+        "raceId": "62961",
+        "stageId": "98091",
+        "usState": "IA",
+        "raceName": "U.S. Senate Iowa",
+        "raceStage": "General",
+        "winnerName": "Republican Party",
+        "officeLevel": "Federal",
+        "contractType": "Election Outcome",
+        "electionDate": "2026-11-03",
+        "resolutionType": "Party Winner"
+      },
+      "rootHash": "d77552ed69fac7a5a63a8edf51c3e160f2afdecb75a61c7cb73e90a3dc79ac5e",
+      "receivedAt": "2026-10-05T11:34:20.269Z",
+      "sourceFile": "production-metadata/current-poll-post-assessment-20261005-v1/261.json",
+      "sourceHash": "890d99dded052bff9f71565c7e3ba014db352bea9f4305258cd81509d5f63dbd"
+    },
+    {
+      "marketId": "195",
+      "predicate": {
+        "raceId": "76845",
+        "stageId": "119048",
+        "usState": "TX",
+        "raceName": "Governor of Texas",
+        "raceStage": "General",
+        "winnerName": "Democratic Party",
+        "officeLevel": "State",
+        "contractType": "Election Outcome",
+        "electionDate": "2026-11-03",
+        "resolutionType": "Party Winner"
+      },
+      "rootHash": "f111fc44afa587bf162e80e5d6f16aee7d1aef875a5d7cffbb67eb59551bc504",
+      "receivedAt": "2026-10-05T18:49:13.566Z",
+      "sourceFile": "production-metadata/current-siena-breadth-20261005-v3/195.json",
+      "sourceHash": "2b2957510aff1bb956089f98d38a9c9024f5790ad2fb0bb8a6a841ae19d82e69"
+    },
+    {
+      "marketId": "377",
+      "predicate": {
+        "raceId": "62954",
+        "stageId": "98084",
+        "usState": "AK",
+        "raceName": "U.S. Senate Alaska",
+        "raceStage": "General",
+        "winnerName": "Democratic Party",
+        "officeLevel": "Federal",
+        "contractType": "Election Outcome",
+        "electionDate": "2026-11-03",
+        "resolutionType": "Party Winner"
+      },
+      "rootHash": "95926f3f34cf6a3e28e3813321f2533f4353e56c449721c30aca2035c526f9ee",
+      "receivedAt": "2026-10-05T18:49:46.551Z",
+      "sourceFile": "production-metadata/current-siena-breadth-20261005-v3/377.json",
+      "sourceHash": "954f4a51079d736a466bc76f6b965bc15303e1754e4616bfa70f4e6ef89c2c92"
+    }
+  ],
+  "executionAuthority": false,
+  "liveBookEvidence": false,
+  "notes": [
+    "Texas Senate is293/ex982 Democratic and294/ex983 Republican.181/ex870 is not that Senate market.",
+    "Texas Governor195/ex884 Democratic and196/ex885 Republican. Only195 cachedroot is available here;196 fullpredicate was not reverified.",
+    "Texas ballot includesPatDixonLIBGovernor andTedBrownLIBSenate; Democratic and Republican party-winner markets cannot be treated as exhaustive binary complements.",
+    "Separate same-exchangeYES/NO pairing mechanism is distinct from opposite-party markets. This research report does not verify a dispatch or execution quote.",
+    "All237 cachedmarkets shareNovember4 17:00UTC settlement; none is an election-outcome payout beforeOctober5 6pmEastern."
+  ]
+}

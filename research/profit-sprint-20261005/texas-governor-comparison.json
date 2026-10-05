@@ -1,0 +1,697 @@
+{
+  "schemaVersion": 1,
+  "id": "texas-governor-broader-primary-comparison-20261005",
+  "at": "2026-10-05T21:02:22.531Z",
+  "marketId": "195",
+  "exchangeId": "884",
+  "predicateHash": "f111fc44afa587bf162e80e5d6f16aee7d1aef875a5d7cffbb67eb59551bc504",
+  "modelSource": "research/governor-error-v1/results-20261005-v1.json",
+  "definitionSource": "research/current-polls-v2/definition.json",
+  "primaryPolls": [
+    {
+      "pollster": "ReconMR",
+      "population": "likely_voters",
+      "democratic": 49,
+      "republican": 45,
+      "unallocated": 6,
+      "fieldEndDate": "2026-09-11",
+      "fieldEndAt": "2026-09-11T23:59:59.999Z",
+      "file": "reconmr-texas.pdf"
+    },
+    {
+      "pollster": "Marist",
+      "population": "registered_voters",
+      "democratic": 49,
+      "republican": 46,
+      "unallocated": 5,
+      "fieldEndDate": "2026-09-20",
+      "fieldEndAt": "2026-09-20T23:59:59.999Z",
+      "file": "texas-marist.pdf"
+    },
+    {
+      "pollster": "Emerson",
+      "population": "likely_voters",
+      "democratic": 46,
+      "republican": 49,
+      "unallocated": 5,
+      "fieldEndDate": "2026-09-14",
+      "fieldEndAt": "2026-09-14T23:59:59.999Z",
+      "file": "texas-emerson.html"
+    },
+    {
+      "pollster": "Beacon-Shaw-Fox",
+      "population": "likely_voters",
+      "democratic": 47,
+      "republican": 52,
+      "unallocated": 1,
+      "fieldEndDate": "2026-09-28",
+      "fieldEndAt": "2026-09-28T23:59:59.999Z",
+      "file": "fox-texas-topline.pdf",
+      "sample": 881,
+      "fieldStartDate": "2026-09-24",
+      "includesLeaners": true,
+      "primaryClockVerified": true
+    },
+    {
+      "pollster": "TSU",
+      "population": "likely_voters",
+      "democratic": 45,
+      "republican": 49,
+      "unallocated": 6,
+      "fieldEndDate": "2026-09-19",
+      "fieldEndAt": "2026-09-19T23:59:59.999Z",
+      "file": "tsu-september.pdf",
+      "sample": 1800,
+      "fieldStartDate": "2026-09-15",
+      "primaryClockVerified": true
+    },
+    {
+      "pollster": "BigData",
+      "population": "likely_voters",
+      "democratic": 44.4,
+      "republican": 48.9,
+      "unallocated": 6.700000000000003,
+      "fieldEndDate": "2026-09-26",
+      "fieldEndAt": "2026-09-26T23:59:59.999Z",
+      "file": "bigdata-texas.html",
+      "sample": 698,
+      "fieldStartDate": "2026-09-24",
+      "includesLeaners": true,
+      "primaryClockVerified": true
+    }
+  ],
+  "unverifiedClockSensitivityPoll": {
+    "pollster": "Siena-NYT",
+    "population": "likely_voters",
+    "democratic": 49,
+    "republican": 46,
+    "unallocated": 5,
+    "fieldEndDate": "2026-09-30",
+    "fieldEndAt": "2026-09-30T23:59:59.999Z",
+    "file": "siena-governors.html",
+    "sample": 615,
+    "fieldStartDate": "2026-09-21",
+    "primaryClockVerified": false,
+    "fieldClockSource": "UT Texas Politics Project tracker; NYT original unavailable403",
+    "publisherAffiliation": "Siena Research Institute is part of ReconMR; correlated with earlier ReconMR source"
+  },
+  "partisanClassificationSensitivityPoll": {
+    "pollster": "TPOR",
+    "population": "likely_voters",
+    "democratic": 46,
+    "republican": 50,
+    "unallocated": 4,
+    "fieldEndDate": "2026-09-22",
+    "fieldEndAt": "2026-09-22T23:59:59.999Z",
+    "file": "tpor-september.html",
+    "sample": 1007,
+    "fieldStartDate": "2026-09-19",
+    "primaryClockVerified": true,
+    "includesLeaners": true,
+    "partisanStatus": "publisher claims nonpartisan; external partisan labels are disputed or unverified"
+  },
+  "previousSelectionAtCurrentClock": {
+    "marginPoints": 1.369694532200519,
+    "pollWeights": [
+      {
+        "pollster": "ReconMR",
+        "population": "likely_voters",
+        "fieldEndAt": "2026-09-11T23:59:59.999Z",
+        "weight": 0.28985593730094894
+      },
+      {
+        "pollster": "Marist",
+        "population": "registered_voters",
+        "fieldEndAt": "2026-09-20T23:59:59.999Z",
+        "weight": 0.3901171618489794
+      },
+      {
+        "pollster": "Emerson",
+        "population": "likely_voters",
+        "fieldEndAt": "2026-09-14T23:59:59.999Z",
+        "weight": 0.32002690085007174
+      }
+    ],
+    "rvWeight": 0.3901171618489794,
+    "unallocatedPoints": 5.289855937300949,
+    "ordinaryRange": [
+      0.3328042060986031,
+      0.6730198418091796
+    ],
+    "centralEstimate": 0.5127021579821022,
+    "severeOpponentAllocationStress": 0.12773352712976935,
+    "estimateMeaning": "Settlement-value research under historical error and declared sensitivity; not calibrated population transport or a short-term return forecast.",
+    "executionAuthority": false,
+    "profitabilityEstablished": false,
+    "scenarioCount": 216
+  },
+  "allVerifiedPrimaryPolls": {
+    "marginPoints": -2.041564856737635,
+    "pollWeights": [
+      {
+        "pollster": "ReconMR",
+        "population": "likely_voters",
+        "fieldEndAt": "2026-09-11T23:59:59.999Z",
+        "weight": 0.12276725524108864
+      },
+      {
+        "pollster": "Marist",
+        "population": "registered_voters",
+        "fieldEndAt": "2026-09-20T23:59:59.999Z",
+        "weight": 0.16523247247792686
+      },
+      {
+        "pollster": "Emerson",
+        "population": "likely_voters",
+        "fieldEndAt": "2026-09-14T23:59:59.999Z",
+        "weight": 0.13554603913420232
+      },
+      {
+        "pollster": "Beacon-Shaw-Fox",
+        "population": "likely_voters",
+        "fieldEndAt": "2026-09-28T23:59:59.999Z",
+        "weight": 0.21516592511175556
+      },
+      {
+        "pollster": "TSU",
+        "population": "likely_voters",
+        "fieldEndAt": "2026-09-19T23:59:59.999Z",
+        "weight": 0.15986766796646854
+      },
+      {
+        "pollster": "BigData",
+        "population": "likely_voters",
+        "fieldEndAt": "2026-09-26T23:59:59.999Z",
+        "weight": 0.20142064006855803
+      }
+    ],
+    "rvWeight": 0.16523247247792686,
+    "unallocatedPoints": 4.764386310877084,
+    "ordinaryRange": [
+      0.18904790951222442,
+      0.4176625491453456
+    ],
+    "centralEstimate": 0.3008688616587511,
+    "severeOpponentAllocationStress": 0.07408837002309561,
+    "estimateMeaning": "Settlement-value research under historical error and declared sensitivity; not calibrated population transport or a short-term return forecast.",
+    "executionAuthority": false,
+    "profitabilityEstablished": false,
+    "scenarioCount": 216
+  },
+  "withUnverifiedSienaClockSensitivity": {
+    "marginPoints": -1.0993357632728966,
+    "pollWeights": [
+      {
+        "pollster": "ReconMR",
+        "population": "likely_voters",
+        "fieldEndAt": "2026-09-11T23:59:59.999Z",
+        "weight": 0.0998230141373815
+      },
+      {
+        "pollster": "Marist",
+        "population": "registered_voters",
+        "fieldEndAt": "2026-09-20T23:59:59.999Z",
+        "weight": 0.13435181395664417
+      },
+      {
+        "pollster": "Emerson",
+        "population": "likely_voters",
+        "fieldEndAt": "2026-09-14T23:59:59.999Z",
+        "weight": 0.1102135431323956
+      },
+      {
+        "pollster": "Beacon-Shaw-Fox",
+        "population": "likely_voters",
+        "fieldEndAt": "2026-09-28T23:59:59.999Z",
+        "weight": 0.17495309430950734
+      },
+      {
+        "pollster": "TSU",
+        "population": "likely_voters",
+        "fieldEndAt": "2026-09-19T23:59:59.999Z",
+        "weight": 0.12998964950538291
+      },
+      {
+        "pollster": "BigData",
+        "population": "likely_voters",
+        "fieldEndAt": "2026-09-26T23:59:59.999Z",
+        "weight": 0.16377669568028866
+      },
+      {
+        "pollster": "Siena-NYT",
+        "population": "likely_voters",
+        "fieldEndAt": "2026-09-30T23:59:59.999Z",
+        "weight": 0.18689218927839968
+      }
+    ],
+    "rvWeight": 0.13435181395664417,
+    "unallocatedPoints": 4.808420669061225,
+    "ordinaryRange": [
+      0.2372445941563082,
+      0.472847114449019
+    ],
+    "centralEstimate": 0.355634577925666,
+    "severeOpponentAllocationStress": 0.09519150289748553,
+    "estimateMeaning": "Settlement-value research under historical error and declared sensitivity; not calibrated population transport or a short-term return forecast.",
+    "executionAuthority": false,
+    "profitabilityEstablished": false,
+    "scenarioCount": 216
+  },
+  "withTPORClassificationSensitivity": {
+    "marginPoints": -2.3353833683443366,
+    "pollWeights": [
+      {
+        "pollster": "ReconMR",
+        "population": "likely_voters",
+        "fieldEndAt": "2026-09-11T23:59:59.999Z",
+        "weight": 0.10434882952345725
+      },
+      {
+        "pollster": "Marist",
+        "population": "registered_voters",
+        "fieldEndAt": "2026-09-20T23:59:59.999Z",
+        "weight": 0.140443109756582
+      },
+      {
+        "pollster": "Emerson",
+        "population": "likely_voters",
+        "fieldEndAt": "2026-09-14T23:59:59.999Z",
+        "weight": 0.11521044844098545
+      },
+      {
+        "pollster": "Beacon-Shaw-Fox",
+        "population": "likely_voters",
+        "fieldEndAt": "2026-09-28T23:59:59.999Z",
+        "weight": 0.18288518705294834
+      },
+      {
+        "pollster": "TSU",
+        "population": "likely_voters",
+        "fieldEndAt": "2026-09-19T23:59:59.999Z",
+        "weight": 0.1358831717642119
+      },
+      {
+        "pollster": "BigData",
+        "population": "likely_voters",
+        "fieldEndAt": "2026-09-26T23:59:59.999Z",
+        "weight": 0.17120206843221125
+      },
+      {
+        "pollster": "TPOR",
+        "population": "likely_voters",
+        "fieldEndAt": "2026-09-22T23:59:59.999Z",
+        "weight": 0.15002718502960383
+      }
+    ],
+    "rvWeight": 0.140443109756582,
+    "unallocatedPoints": 4.649707584381032,
+    "ordinaryRange": [
+      0.17983193182839577,
+      0.3941822732365661
+    ],
+    "centralEstimate": 0.2847710834008038,
+    "severeOpponentAllocationStress": 0.07210137687942655,
+    "estimateMeaning": "Settlement-value research under historical error and declared sensitivity; not calibrated population transport or a short-term return forecast.",
+    "executionAuthority": false,
+    "profitabilityEstablished": false,
+    "scenarioCount": 216
+  },
+  "withBothSensitivities": {
+    "marginPoints": -1.4633904900512245,
+    "pollWeights": [
+      {
+        "pollster": "ReconMR",
+        "population": "likely_voters",
+        "fieldEndAt": "2026-09-11T23:59:59.999Z",
+        "weight": 0.08729449060892991
+      },
+      {
+        "pollster": "Marist",
+        "population": "registered_voters",
+        "fieldEndAt": "2026-09-20T23:59:59.999Z",
+        "weight": 0.11748967172630218
+      },
+      {
+        "pollster": "Emerson",
+        "population": "likely_voters",
+        "fieldEndAt": "2026-09-14T23:59:59.999Z",
+        "weight": 0.09638093168281658
+      },
+      {
+        "pollster": "Beacon-Shaw-Fox",
+        "population": "likely_voters",
+        "fieldEndAt": "2026-09-28T23:59:59.999Z",
+        "weight": 0.15299519234297823
+      },
+      {
+        "pollster": "TSU",
+        "population": "likely_voters",
+        "fieldEndAt": "2026-09-19T23:59:59.999Z",
+        "weight": 0.11367499104353732
+      },
+      {
+        "pollster": "BigData",
+        "population": "likely_voters",
+        "fieldEndAt": "2026-09-26T23:59:59.999Z",
+        "weight": 0.14322151406236386
+      },
+      {
+        "pollster": "Siena-NYT",
+        "population": "likely_voters",
+        "fieldEndAt": "2026-09-30T23:59:59.999Z",
+        "weight": 0.16343584295493774
+      },
+      {
+        "pollster": "TPOR",
+        "population": "likely_voters",
+        "fieldEndAt": "2026-09-22T23:59:59.999Z",
+        "weight": 0.12550736557813408
+      }
+    ],
+    "rvWeight": 0.11748967172630218,
+    "unallocatedPoints": 4.706957920608438,
+    "ordinaryRange": [
+      0.22181870826545622,
+      0.4457965341280775
+    ],
+    "centralEstimate": 0.33394777356654726,
+    "severeOpponentAllocationStress": 0.09030581741373599,
+    "estimateMeaning": "Settlement-value research under historical error and declared sensitivity; not calibrated population transport or a short-term return forecast.",
+    "executionAuthority": false,
+    "profitabilityEstablished": false,
+    "scenarioCount": 216
+  },
+  "leaveOnePollsterOut": [
+    {
+      "omittedPollster": "ReconMR",
+      "assessment": {
+        "marginPoints": -2.887071752432166,
+        "pollWeights": [
+          {
+            "pollster": "Marist",
+            "population": "registered_voters",
+            "fieldEndAt": "2026-09-20T23:59:59.999Z",
+            "weight": 0.18835648060918822
+          },
+          {
+            "pollster": "Emerson",
+            "population": "likely_voters",
+            "fieldEndAt": "2026-09-14T23:59:59.999Z",
+            "weight": 0.15451548057688413
+          },
+          {
+            "pollster": "Beacon-Shaw-Fox",
+            "population": "likely_voters",
+            "fieldEndAt": "2026-09-28T23:59:59.999Z",
+            "weight": 0.24527803641311782
+          },
+          {
+            "pollster": "TSU",
+            "population": "likely_voters",
+            "fieldEndAt": "2026-09-19T23:59:59.999Z",
+            "weight": 0.18224088068030878
+          },
+          {
+            "pollster": "BigData",
+            "population": "likely_voters",
+            "fieldEndAt": "2026-09-26T23:59:59.999Z",
+            "weight": 0.22960912172050094
+          }
+        ],
+        "rvWeight": 0.18835648060918822,
+        "unallocatedPoints": 4.591464241952689,
+        "ordinaryRange": [
+          0.1528929108373717,
+          0.3686680674034017
+        ],
+        "centralEstimate": 0.25595784618984835,
+        "severeOpponentAllocationStress": 0.060921793296563956,
+        "estimateMeaning": "Settlement-value research under historical error and declared sensitivity; not calibrated population transport or a short-term return forecast.",
+        "executionAuthority": false,
+        "profitabilityEstablished": false,
+        "scenarioCount": 216
+      }
+    },
+    {
+      "omittedPollster": "Marist",
+      "assessment": {
+        "marginPoints": -3.0394836772137435,
+        "pollWeights": [
+          {
+            "pollster": "ReconMR",
+            "population": "likely_voters",
+            "fieldEndAt": "2026-09-11T23:59:59.999Z",
+            "weight": 0.14706759809585718
+          },
+          {
+            "pollster": "Emerson",
+            "population": "likely_voters",
+            "fieldEndAt": "2026-09-14T23:59:59.999Z",
+            "weight": 0.16237579285883064
+          },
+          {
+            "pollster": "Beacon-Shaw-Fox",
+            "population": "likely_voters",
+            "fieldEndAt": "2026-09-28T23:59:59.999Z",
+            "weight": 0.2577555043982782
+          },
+          {
+            "pollster": "TSU",
+            "population": "likely_voters",
+            "fieldEndAt": "2026-09-19T23:59:59.999Z",
+            "weight": 0.1915116037647275
+          },
+          {
+            "pollster": "BigData",
+            "population": "likely_voters",
+            "fieldEndAt": "2026-09-26T23:59:59.999Z",
+            "weight": 0.24128950088230644
+          }
+        ],
+        "rvWeight": 0,
+        "unallocatedPoints": 4.717749335767394,
+        "ordinaryRange": [
+          0.1684670034290878,
+          0.32547543172137144
+        ],
+        "centralEstimate": 0.2483366664501058,
+        "severeOpponentAllocationStress": 0.06575957857789737,
+        "estimateMeaning": "Settlement-value research under historical error and declared sensitivity; not calibrated population transport or a short-term return forecast.",
+        "executionAuthority": false,
+        "profitabilityEstablished": false,
+        "scenarioCount": 216
+      }
+    },
+    {
+      "omittedPollster": "Emerson",
+      "assessment": {
+        "marginPoints": -1.891282605377341,
+        "pollWeights": [
+          {
+            "pollster": "ReconMR",
+            "population": "likely_voters",
+            "fieldEndAt": "2026-09-11T23:59:59.999Z",
+            "weight": 0.14201711230304337
+          },
+          {
+            "pollster": "Marist",
+            "population": "registered_voters",
+            "fieldEndAt": "2026-09-20T23:59:59.999Z",
+            "weight": 0.19114085880575704
+          },
+          {
+            "pollster": "Beacon-Shaw-Fox",
+            "population": "likely_voters",
+            "fieldEndAt": "2026-09-28T23:59:59.999Z",
+            "weight": 0.2489038570616938
+          },
+          {
+            "pollster": "TSU",
+            "population": "likely_voters",
+            "fieldEndAt": "2026-09-19T23:59:59.999Z",
+            "weight": 0.18493485506891816
+          },
+          {
+            "pollster": "BigData",
+            "population": "likely_voters",
+            "fieldEndAt": "2026-09-26T23:59:59.999Z",
+            "weight": 0.23300331676058755
+          }
+        ],
+        "rvWeight": 0.19114085880575704,
+        "unallocatedPoints": 4.727442177618186,
+        "ordinaryRange": [
+          0.19217182326528937,
+          0.43236834299853383
+        ],
+        "centralEstimate": 0.3092939132507141,
+        "severeOpponentAllocationStress": 0.07621240503255135,
+        "estimateMeaning": "Settlement-value research under historical error and declared sensitivity; not calibrated population transport or a short-term return forecast.",
+        "executionAuthority": false,
+        "profitabilityEstablished": false,
+        "scenarioCount": 216
+      }
+    },
+    {
+      "omittedPollster": "Beacon-Shaw-Fox",
+      "assessment": {
+        "marginPoints": -1.230496052705627,
+        "pollWeights": [
+          {
+            "pollster": "ReconMR",
+            "population": "likely_voters",
+            "fieldEndAt": "2026-09-11T23:59:59.999Z",
+            "weight": 0.15642447132353418
+          },
+          {
+            "pollster": "Marist",
+            "population": "registered_voters",
+            "fieldEndAt": "2026-09-20T23:59:59.999Z",
+            "weight": 0.21053172608675913
+          },
+          {
+            "pollster": "Emerson",
+            "population": "likely_voters",
+            "fieldEndAt": "2026-09-14T23:59:59.999Z",
+            "weight": 0.172706618470284
+          },
+          {
+            "pollster": "TSU",
+            "population": "likely_voters",
+            "fieldEndAt": "2026-09-19T23:59:59.999Z",
+            "weight": 0.20369613537642683
+          },
+          {
+            "pollster": "BigData",
+            "population": "likely_voters",
+            "fieldEndAt": "2026-09-26T23:59:59.999Z",
+            "weight": 0.2566410487429959
+          }
+        ],
+        "rvWeight": 0.21053172608675913,
+        "unallocatedPoints": 5.796410389563055,
+        "ordinaryRange": [
+          0.21960426467882505,
+          0.4792133019075149
+        ],
+        "centralEstimate": 0.3477512494690164,
+        "severeOpponentAllocationStress": 0.06749698965303892,
+        "estimateMeaning": "Settlement-value research under historical error and declared sensitivity; not calibrated population transport or a short-term return forecast.",
+        "executionAuthority": false,
+        "profitabilityEstablished": false,
+        "scenarioCount": 216
+      }
+    },
+    {
+      "omittedPollster": "TSU",
+      "assessment": {
+        "marginPoints": -1.668896829000744,
+        "pollWeights": [
+          {
+            "pollster": "ReconMR",
+            "population": "likely_voters",
+            "fieldEndAt": "2026-09-11T23:59:59.999Z",
+            "weight": 0.14612847352741656
+          },
+          {
+            "pollster": "Marist",
+            "population": "registered_voters",
+            "fieldEndAt": "2026-09-20T23:59:59.999Z",
+            "weight": 0.1966743406696221
+          },
+          {
+            "pollster": "Emerson",
+            "population": "likely_voters",
+            "fieldEndAt": "2026-09-14T23:59:59.999Z",
+            "weight": 0.1613389152707819
+          },
+          {
+            "pollster": "Beacon-Shaw-Fox",
+            "population": "likely_voters",
+            "fieldEndAt": "2026-09-28T23:59:59.999Z",
+            "weight": 0.25610956382424743
+          },
+          {
+            "pollster": "BigData",
+            "population": "likely_voters",
+            "fieldEndAt": "2026-09-26T23:59:59.999Z",
+            "weight": 0.23974870670793194
+          }
+        ],
+        "rvWeight": 0.1966743406696221,
+        "unallocatedPoints": 4.529263019633912,
+        "ordinaryRange": [
+          0.20124070397765917,
+          0.4478815884873087
+        ],
+        "centralEstimate": 0.321987941367115,
+        "severeOpponentAllocationStress": 0.08448295781000022,
+        "estimateMeaning": "Settlement-value research under historical error and declared sensitivity; not calibrated population transport or a short-term return forecast.",
+        "executionAuthority": false,
+        "profitabilityEstablished": false,
+        "scenarioCount": 216
+      }
+    },
+    {
+      "omittedPollster": "BigData",
+      "assessment": {
+        "marginPoints": -1.421489251270629,
+        "pollWeights": [
+          {
+            "pollster": "ReconMR",
+            "population": "likely_voters",
+            "fieldEndAt": "2026-09-11T23:59:59.999Z",
+            "weight": 0.15373206646816945
+          },
+          {
+            "pollster": "Marist",
+            "population": "registered_voters",
+            "fieldEndAt": "2026-09-20T23:59:59.999Z",
+            "weight": 0.20690801787327945
+          },
+          {
+            "pollster": "Emerson",
+            "population": "likely_voters",
+            "fieldEndAt": "2026-09-14T23:59:59.999Z",
+            "weight": 0.16973396250291137
+          },
+          {
+            "pollster": "Beacon-Shaw-Fox",
+            "population": "likely_voters",
+            "fieldEndAt": "2026-09-28T23:59:59.999Z",
+            "weight": 0.2694358706318525
+          },
+          {
+            "pollster": "TSU",
+            "population": "likely_voters",
+            "fieldEndAt": "2026-09-19T23:59:59.999Z",
+            "weight": 0.2001900825237872
+          }
+        ],
+        "rvWeight": 0.20690801787327945,
+        "unallocatedPoints": 4.2761786664645465,
+        "ordinaryRange": [
+          0.2111259199558383,
+          0.46601933622364416
+        ],
+        "centralEstimate": 0.33641216281700187,
+        "severeOpponentAllocationStress": 0.09501314620999303,
+        "estimateMeaning": "Settlement-value research under historical error and declared sensitivity; not calibrated population transport or a short-term return forecast.",
+        "executionAuthority": false,
+        "profitabilityEstablished": false,
+        "scenarioCount": 216
+      }
+    }
+  ],
+  "executionAuthority": false,
+  "activeBanksUnchanged": true,
+  "profitabilityEstablished": false,
+  "limitations": [
+    "New sources contradict the prior three-poll selection. Existing banks and their counterfactual fills retain original research identities.",
+    "Siena vote shares are publisher-verified but its field clock/sample is only a primary-hosted third-party tracker report, not original NYT methodology. Do not silently model as primary-clock-confirmed.",
+    "ReconMR and NYT/Siena are affiliated: their observations are not independent experiments.",
+    "This is a broader verified selection, not an exhaustive poll universe. Original Mason-Dixon toplines and additional smaller-pollster publications remain unresolved; pollster inclusion and partisan definitions must not be selected for preferred valuations.",
+    "Poll-derived scenario ranges remain judgment values, not calibrated local confidence bounds or short-horizon returns.",
+    "All cached catalogue markets settle November4; an October5 same-day realized profit needs executable resale or documented same-exchange pairs, not election settlement."
+  ]
+}

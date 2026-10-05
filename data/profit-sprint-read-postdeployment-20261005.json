@@ -1,0 +1,283 @@
+{
+  "schemaVersion": 1,
+  "observedFrom": "2026-10-05T21:38:33.000Z",
+  "observedThrough": "2026-10-05T21:41:33.000Z",
+  "createdAt": "2026-10-05T21:41:46.861Z",
+  "windowSeconds": 180,
+  "readTimingsWindowSha256": "073351b083801357b521b1d7b045f90593e41686c4de9f56ba39e257ae1d0432",
+  "requests": 107,
+  "groups": {
+    "book": {
+      "requests": 60,
+      "totalClientMs": 88990.84610000008,
+      "serviceMs": 37162.1173000001,
+      "admissionMs": 51828.30729999993
+    },
+    "pnl": {
+      "requests": 4,
+      "totalClientMs": 6978.877099999983,
+      "serviceMs": 2999.980899999995,
+      "admissionMs": 3978.842100000038
+    },
+    "positions": {
+      "requests": 12,
+      "totalClientMs": 19652.702800000057,
+      "serviceMs": 7192.6975000000675,
+      "admissionMs": 12459.891199999984
+    },
+    "orders": {
+      "requests": 16,
+      "totalClientMs": 24888.04449999996,
+      "serviceMs": 8672.09799999994,
+      "admissionMs": 16215.785100000096
+    },
+    "prices": {
+      "requests": 11,
+      "totalClientMs": 15669.451599999942,
+      "serviceMs": 6579.804599999974,
+      "admissionMs": 9089.549900000042
+    },
+    "fills": {
+      "requests": 4,
+      "totalClientMs": 5693.061800000054,
+      "serviceMs": 1920.7302000000782,
+      "admissionMs": 3772.2859999999637
+    }
+  },
+  "outsideClientGapMs": {
+    "count": 106,
+    "median": 74,
+    "p95": 303,
+    "p99": 329,
+    "max": 352
+  },
+  "bookServiceMs": {
+    "count": 60,
+    "median": 256.2905000000028,
+    "p95": 1557.3556000000099,
+    "p99": 1807.7588999999862,
+    "max": 1807.7588999999862
+  },
+  "bookAdmissionMs": {
+    "count": 60,
+    "median": 869.1117999999842,
+    "p95": 1045.7374999999884,
+    "p99": 1097.1755999999878,
+    "max": 1097.1755999999878
+  },
+  "eventLoopMaxMs": {
+    "count": 107,
+    "median": 178.257919,
+    "p95": 538.443775,
+    "p99": 761.790463,
+    "max": 1997.537279
+  },
+  "bookRecurrence": {
+    "195": {
+      "count": 11,
+      "median": 11578,
+      "p95": 22056,
+      "p99": 22056,
+      "max": 22056
+    },
+    "305": {
+      "count": 11,
+      "median": 11615,
+      "p95": 21996,
+      "p99": 21996,
+      "max": 21996
+    },
+    "306": {
+      "count": 11,
+      "median": 11440,
+      "p95": 22452,
+      "p99": 22452,
+      "max": 22452
+    },
+    "356": {
+      "count": 11,
+      "median": 11591,
+      "p95": 22034,
+      "p99": 22034,
+      "max": 22034
+    }
+  },
+  "baselineComparisons": {
+    "195": {
+      "baselineMedianMs": 16246,
+      "postMedianMs": 11578,
+      "postIntervals": 11,
+      "medianReductionFraction": 0.28733226640403786
+    },
+    "356": {
+      "baselineMedianMs": 16292,
+      "postMedianMs": 11591,
+      "postIntervals": 11,
+      "medianReductionFraction": 0.28854652590228336
+    }
+  },
+  "collector": {
+    "pid": 12704,
+    "processAlive": true,
+    "collectorLockMatches": true,
+    "status": "running",
+    "statsFileAgeMs": 666.561767578125,
+    "lastCycleAt": "2026-10-05T21:41:44.896Z",
+    "profitSprint": {
+      "enabled": true,
+      "executionAuthority": false,
+      "reason": "bounded_source_bound_risk_priority"
+    },
+    "auxiliaryReadAllocation": {
+      "historyReads": 0,
+      "reservedOrdinal": null,
+      "tapeReads": 0,
+      "totalReads": 0
+    },
+    "marketSweepRequestedBatches": 1,
+    "scheduledMarketIds": [
+      "356",
+      "195",
+      "305",
+      "306"
+    ],
+    "networkBudget": {
+      "completionPacing": true,
+      "intervalMs": 1000,
+      "mode": "coordinated_sole_client",
+      "schemaVersion": 4,
+      "writeIntervalMs": 2500
+    }
+  },
+  "ordinaryPublication": {
+    "source": "public-books.jsonl plus existing causal account-eligibility boundaries",
+    "completedCycleWindows": 11,
+    "cycles": [
+      {
+        "accountEligibilityAt": "2026-10-05T21:38:46.282Z",
+        "until": "2026-10-05T21:39:07.528Z",
+        "ordinaryPublishedBooks": [
+          "356",
+          "195",
+          "305",
+          "306"
+        ]
+      },
+      {
+        "accountEligibilityAt": "2026-10-05T21:39:07.528Z",
+        "until": "2026-10-05T21:39:29.495Z",
+        "ordinaryPublishedBooks": [
+          "356",
+          "195",
+          "305",
+          "306"
+        ]
+      },
+      {
+        "accountEligibilityAt": "2026-10-05T21:39:29.495Z",
+        "until": "2026-10-05T21:39:50.046Z",
+        "ordinaryPublishedBooks": [
+          "356",
+          "195",
+          "305",
+          "306"
+        ]
+      },
+      {
+        "accountEligibilityAt": "2026-10-05T21:39:50.046Z",
+        "until": "2026-10-05T21:40:07.674Z",
+        "ordinaryPublishedBooks": [
+          "356",
+          "195",
+          "305",
+          "306"
+        ]
+      },
+      {
+        "accountEligibilityAt": "2026-10-05T21:40:07.674Z",
+        "until": "2026-10-05T21:40:19.093Z",
+        "ordinaryPublishedBooks": [
+          "356",
+          "195",
+          "305",
+          "306"
+        ]
+      },
+      {
+        "accountEligibilityAt": "2026-10-05T21:40:19.093Z",
+        "until": "2026-10-05T21:40:30.719Z",
+        "ordinaryPublishedBooks": [
+          "356",
+          "195",
+          "305",
+          "306"
+        ]
+      },
+      {
+        "accountEligibilityAt": "2026-10-05T21:40:30.719Z",
+        "until": "2026-10-05T21:40:41.929Z",
+        "ordinaryPublishedBooks": [
+          "356",
+          "195",
+          "305",
+          "306"
+        ]
+      },
+      {
+        "accountEligibilityAt": "2026-10-05T21:40:41.929Z",
+        "until": "2026-10-05T21:40:53.988Z",
+        "ordinaryPublishedBooks": [
+          "356",
+          "195",
+          "305",
+          "306"
+        ]
+      },
+      {
+        "accountEligibilityAt": "2026-10-05T21:40:53.988Z",
+        "until": "2026-10-05T21:41:05.064Z",
+        "ordinaryPublishedBooks": [
+          "356",
+          "195",
+          "305",
+          "306"
+        ]
+      },
+      {
+        "accountEligibilityAt": "2026-10-05T21:41:05.064Z",
+        "until": "2026-10-05T21:41:16.190Z",
+        "ordinaryPublishedBooks": [
+          "356",
+          "195",
+          "305",
+          "306"
+        ]
+      },
+      {
+        "accountEligibilityAt": "2026-10-05T21:41:16.190Z",
+        "until": "2026-10-05T21:41:27.300Z",
+        "ordinaryPublishedBooks": [
+          "356",
+          "195",
+          "305",
+          "306"
+        ]
+      }
+    ],
+    "books": 48,
+    "maximumLevelsObserved": 20,
+    "fourBookCapObserved": true,
+    "depth20EndpointSourceVerified": true,
+    "runnerSourceSha256": "83796d267be8438b864674c641869ef6884871e7bd03bd0929c48fa83f9c4343"
+  },
+  "platformBudgetChanged": false,
+  "extraAccountClients": 0,
+  "contestOrdersSubmittedByProfiler": 0,
+  "profitabilityEstablished": false,
+  "limitations": [
+    "A short subsequent window measures current cadence, not long-run tail reliability or profit.",
+    "Baseline and subsequent windows have different market/load conditions and are not a controlled causal benchmark.",
+    "Timing kind book may include separate realtime recovery reads; ordinary published receipts and cycle cap are checked separately.",
+    "Stats health is verified by PID/mtime/status; the parent independently verifies CIM command/lock identity."
+  ]
+}

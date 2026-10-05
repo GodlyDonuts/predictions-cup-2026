@@ -1,0 +1,88 @@
+{
+  "schemaVersion": 1,
+  "observedFrom": "2026-10-05T20:35:00.000Z",
+  "observedThrough": "2026-10-05T20:57:15.000Z",
+  "source": "existing serialized collector read-timings.jsonl; complete successful and unsuccessful receipts",
+  "windowSha256": "4d37f580d2ce9b9ee2469eda059519cc76d8c0ac141668565f08616f7d980d3f",
+  "requests": 966,
+  "groups": {
+    "book": {
+      "requests": 404,
+      "totalClientMs": 457618.91780000785,
+      "serviceMs": 119401.83930000593,
+      "admissionMs": 338212.81129999645
+    },
+    "prices": {
+      "requests": 242,
+      "totalClientMs": 315098.71890000254,
+      "serviceMs": 83616.65999999596,
+      "admissionMs": 231479.55950000673
+    },
+    "tournament": {
+      "requests": 61,
+      "totalClientMs": 15074.800599999959,
+      "serviceMs": 14858.628200001316,
+      "admissionMs": 214.96939999959432
+    },
+    "fills": {
+      "requests": 27,
+      "totalClientMs": 32887.96289999946,
+      "serviceMs": 5747.427100000903,
+      "admissionMs": 27139.490099999588
+    },
+    "positions": {
+      "requests": 80,
+      "totalClientMs": 114643.98899999936,
+      "serviceMs": 26671.725499998312,
+      "admissionMs": 87970.5588000014
+    },
+    "orders": {
+      "requests": 107,
+      "totalClientMs": 137985.57209999743,
+      "serviceMs": 28157.89059999888,
+      "admissionMs": 109825.25499999896
+    },
+    "pnl": {
+      "requests": 26,
+      "totalClientMs": 34792.87980000093,
+      "serviceMs": 9390.369800000452,
+      "admissionMs": 25402.139800000703
+    },
+    "history": {
+      "requests": 19,
+      "totalClientMs": 4580.0196000002325,
+      "serviceMs": 4503.3292999987025,
+      "admissionMs": 76.34100000117905
+    }
+  },
+  "bookRecurrence": {
+    "195": {
+      "count": 80,
+      "median": 16246,
+      "p95": 18223,
+      "p99": 21966,
+      "max": 21966
+    },
+    "356": {
+      "count": 79,
+      "median": 16292,
+      "p95": 18485,
+      "p99": 33908,
+      "max": 33908
+    }
+  },
+  "implementation": {
+    "rateBudgetChanged": false,
+    "extraClients": 0,
+    "bookDepth": 20,
+    "ordinaryBookCap": 4,
+    "officialWrites": 0,
+    "sprintLifetimeMaxMs": 3600000,
+    "expectedRemovedRequestsPerOwnedSourceCycle": 5
+  },
+  "limits": [
+    "Baseline observation; postdeployment speed is not established",
+    "Five removed calls assumes two unrelated discovery books, two optional breadth batches and one auxiliary read; metadata/liabilities reduce savings",
+    "No observed strategy profitability is implied"
+  ]
+}

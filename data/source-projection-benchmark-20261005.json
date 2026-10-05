@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "observedAt": "2026-10-05T21:04:49.272Z",
+  "mode": "actual_coupled_source_frontier_same_work_v1",
+  "results": [
+    {
+      "source": "anonymous-trades.jsonl",
+      "sourceBytes": 139112645,
+      "sourceHash": "fc1baaef96d59658725b631ec36f6c3ee5e18ba49447e906381eac7e16bba245",
+      "records": 2411,
+      "tailHash": "f80e6b83a9c5cc165feddcf0e465caba629b6d3e54e03b4c5f9ce375b3b6dce8",
+      "jsMs": 1062.5559,
+      "rustMs": 643.5513000000001,
+      "rustInternalVerifyMs": 417.5827,
+      "speedup": 1.651081895103001,
+      "suffixBytes": 0,
+      "sourceParity": true
+    },
+    {
+      "source": "market-prices.jsonl",
+      "sourceBytes": 192131071,
+      "sourceHash": "5b0d2644219a6962fd662ba62494791a64a02ca9916f81d3842823c9c17ba774",
+      "records": 17141,
+      "tailHash": "dee4f33c13400cdc66882674125b25f6f2e6fe1dce1261fa5d47b5215d0a80f3",
+      "jsMs": 2022.0855000000001,
+      "rustMs": 1314.9805000000001,
+      "rustInternalVerifyMs": 880.1470999999999,
+      "speedup": 1.5377304074090832,
+      "suffixBytes": 0,
+      "sourceParity": true
+    }
+  ],
+  "binding": {
+    "schemaVersion": 1,
+    "mode": "canonical_js_journal_restore_v1",
+    "binaryHash": "881e93c405a116aebd0de9d1174ca4209c225715b66c20f45ad99c0131effeea",
+    "engineHash": "1da2d7f37f572da85e2b1e16e75930705b470c7c8068622efca61d3cf9d78c8e",
+    "runtimeLibraryHash": "13bf4e99b0193634ebdeb0bbdeff9753b39f1d04799183f664111014aabf4c2c"
+  },
+  "networkRequests": 0,
+  "competitionOrders": 0,
+  "profitabilityEstablished": false
+}

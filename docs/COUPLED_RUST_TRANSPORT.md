@@ -1,0 +1,13 @@
+# Rust continuation of the funded coupled wallet
+
+The remaining coupled bulk cold start parsed and reserialized every historical full state in JavaScript. The measured original prefix contains2,900,453,859 bytes and8,047 records. JavaScript verification/restoration took44.341 seconds; the final Rust build took14.705 seconds including adapter validation, a3.015x speedup. Original prefix hash, record count, tail hash and complete funded last-state hash match. These are restart timings, not trading profitability or order-latency results.
+
+`live-paper/coupled-maker-host-rust.mjs` is an explicit transport continuation. It loads the original archived bank/reducers, preserves the existing journal and source frontiers, restores the wallet through the Rust-backed original `Journal` append interface, and forwards only verified unconsumed source records to the original reducer. Its source projection verifies every old record and exact sequence/hash frontier before returning the original suffix bytes. It does not trust a cached checkpoint or discard anonymous-trade coverage, quotes, reservations, inventory or accounting.
+
+The new binary adds optional `--after-sequence`, `--after-hash` and `--suffix-out` arguments. Ordinary journal restoration retains its old semantics. Projection retains the original coupled source loader's rejection of blank records. New output and suffix files are exclusive, durable and byte hashed; incomplete/invalid outputs are never admitted. The binary has no network client or contest-execution capability.
+
+Collector integration must be opt-in with a separately pinned new transport code identity and immutable native build. Do not overwrite the original collector native binding, frozen bank, archive, active accounting or old native binaries. Reuse the existing serialized collector and its drain wrapper; the four depth20 reads, account limits and original activation remain unchanged.
+
+Validation: two Rust canonical-admission tests and12 native/host checks cover exact restored funded state, continued paired-fill accounting, unconsumed suffix exactly once, source tampering/truncation, blank-record parity, original journal append parity, binary/library identity, STOP/abort and original canonical-number/key/string validation. Tests are correctness evidence, not profitable fills.
+
+Actual original-source evidence is in `data/coupled-rust-benchmark-20261005.json` and `data/source-projection-benchmark-20261005.json`. Benchmark scripts are read-only with respect to original journals, banks and wallets; generated native outputs/builds are kept separately in restricted runtime directories.

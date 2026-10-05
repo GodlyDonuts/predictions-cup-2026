@@ -1,0 +1,58 @@
+{
+  "observedAt": "2026-10-05T21:40:42.598Z",
+  "reportedAt": "2026-10-05T21:40:41.569Z",
+  "pid": 12704,
+  "status": "running",
+  "profitSprint": {
+    "enabled": true,
+    "executionAuthority": false,
+    "reason": "bounded_source_bound_risk_priority"
+  },
+  "v1": {
+    "cohort": "michigan-governor-dual-no-20261005-v1",
+    "bankHash": "0d53558dda330cd5a41f267dfc0310bd3902418572c6679335dcbf7d49ff5217",
+    "cash": "99.025000",
+    "realizedPnl": "0.000000",
+    "fills": 2,
+    "closedPackages": 0,
+    "cumulativeBuys": "0.975000",
+    "reserved": "0.000000",
+    "positionCount": 2,
+    "estimatedLiquidationPnl": "-0.025000",
+    "ordinaryConditionalSettlementSurplus": "0.025000",
+    "reviewCurrent": true,
+    "failed": false
+  },
+  "v2": {
+    "cohort": "michigan-governor-dual-no-20261005-v2",
+    "bankHash": "13181f258f693ed6510fefcb4cd140e5601fc937659def372e8ce7d1d4300e41",
+    "cash": "99.020000",
+    "realizedPnl": "0.000000",
+    "fills": 2,
+    "closedPackages": 0,
+    "cumulativeBuys": "0.980000",
+    "reserved": "0.000000",
+    "positionCount": 2,
+    "estimatedLiquidationPnl": "-0.020000",
+    "ordinaryConditionalSettlementSurplus": "0.020000",
+    "reviewCurrent": true,
+    "failed": false
+  },
+  "retiredAccounting": [
+    {
+      "status": "retired",
+      "cohort": "no-maker-tape-20261004-v5",
+      "accountingPreserved": true
+    },
+    {
+      "status": "retired",
+      "cohort": "baal-no-pair-anchor-20261004-v4",
+      "accountingPreserved": true
+    }
+  ],
+  "officialOrdersSubmitted": null,
+  "officialActivationRenewed": false,
+  "competitionOrdersBySprint": 0,
+  "profitabilityEstablished": false,
+  "source": "derived latest paper status; counterfactual fills, not contest trades"
+}

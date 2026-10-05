@@ -1,0 +1,18 @@
+{
+  "at": "2026-10-05T21:36:06.530Z",
+  "reportedAt": "2026-10-05T21:36:05.140Z",
+  "proof": [
+    {
+      "cohort": "no-maker-tape-20261004-v5",
+      "bankHash": "cc484dc03298f0f8b3c7f455805fb52783dab9b1b86b5b2fa1ae14eafa2a8064",
+      "statusHash": "5a7bfa088dbe507d92fa89f50b3454b2237072bf913d43f20223c8d082b5e1a8",
+      "accountingPreserved": true
+    },
+    {
+      "cohort": "baal-no-pair-anchor-20261004-v4",
+      "bankHash": "08ae516f21230247569d0683453ddaa4b06aaff48b006dfa63cf321e98f7a8d1",
+      "statusHash": "4eda5a4b256bbd520c2ffd9b8c6969f4487ce56c8dcd08fec17607e270ee312e",
+      "accountingPreserved": true
+    }
+  ]
+}

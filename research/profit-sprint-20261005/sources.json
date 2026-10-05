@@ -1,0 +1,107 @@
+{
+  "schemaVersion": 1,
+  "id": "profit-sprint-primary-sources-20261005",
+  "at": "2026-10-05T21:02:22.531Z",
+  "captures": [
+    {
+      "file": "fox-texas-topline.pdf",
+      "url": "https://static.foxnews.com/foxnews.com/content/uploads/2026/10/fox_september-24-28-2026_texas_topline_october-1-release.pdf",
+      "status": "captured",
+      "observedAt": "2026-10-05T20:59:01.704Z",
+      "bytes": 569068,
+      "contentHash": "a3c694afa13184eee77df7c5345a99ebe60db1bec9e80edfadef033627faaaa6",
+      "contentType": "application/pdf"
+    },
+    {
+      "file": "fox-texas-crosstabs.pdf",
+      "url": "https://static.foxnews.com/foxnews.com/content/uploads/2026/10/fox_september-24-28-2026_texas_cross-tabs_october-1-release.pdf",
+      "status": "captured",
+      "observedAt": "2026-10-05T20:59:01.686Z",
+      "bytes": 286880,
+      "contentHash": "830d60203a75d32473a9598f32aa520a745241713ef1ed265ee9c2a0be67c078",
+      "contentType": "application/pdf"
+    },
+    {
+      "file": "fox-iowa-topline.pdf",
+      "url": "https://static.foxnews.com/foxnews.com/content/uploads/2026/10/fox_september-24-28-2026_iowa_topline_october-1-release.pdf",
+      "status": "captured",
+      "observedAt": "2026-10-05T20:59:01.697Z",
+      "bytes": 556586,
+      "contentHash": "1946d327b4ca59188e2bb874cbcef933c75580f1bbde4f4c8ac6b65c7ef7a458",
+      "contentType": "application/pdf"
+    },
+    {
+      "file": "fox-michigan-topline.pdf",
+      "url": "https://static.foxnews.com/foxnews.com/content/uploads/2026/09/fox_september-24-28-2026_michigan_topline_september-30-release.pdf",
+      "status": "captured",
+      "observedAt": "2026-10-05T20:59:01.700Z",
+      "bytes": 577846,
+      "contentHash": "9d8e1b85183d5040ba1ac3c4ff746005590326a1a8a5c1c5c0fd9b7d8d25a783",
+      "contentType": "application/pdf"
+    },
+    {
+      "file": "bigdata-texas.html",
+      "url": "https://www.bigdatapoll.com/blog/lone-star-state-poll-talarico-paxton-in-close-race-us-senate-in-texas/",
+      "status": "captured",
+      "observedAt": "2026-10-05T20:59:01.852Z",
+      "bytes": 202943,
+      "contentHash": "364341de767624251f00c40d8d9ff7fba5b4897b7a122f7ed5e1d4945721f701",
+      "contentType": "text/html; charset=UTF-8"
+    },
+    {
+      "file": "ut-governor-tracker.html",
+      "url": "https://texaspolitics.utexas.edu/blog/texas-2026-gubernatorial-poll-tracker",
+      "status": "captured",
+      "observedAt": "2026-10-05T20:59:01.935Z",
+      "bytes": 41165,
+      "contentHash": "a89d1f82fe4126c7e904afaf005433106236cce3bb126db23bf74e4bee3335fc",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "file": "tsu-september.pdf",
+      "url": "https://static1.squarespace.com/static/67aa7aa3e284b002cd6a420e/t/6ab15cb39e4cc420b9ef07f5/1790008500236/TSUSept2026_TXStatewideRaces.pdf",
+      "status": "captured",
+      "observedAt": "2026-10-05T20:59:01.804Z",
+      "bytes": 1286841,
+      "contentHash": "4f5cebc5aa3bddbe654b7e03d92937473dcac68d836425c5e181d6594a9904cf",
+      "contentType": "application/pdf"
+    },
+    {
+      "file": "siena-governors.html",
+      "url": "https://sri.siena.edu/2026/10/04/nytimes-siena-poll-of-likely-voters-gubernatorial-races-2/",
+      "status": "captured",
+      "observedAt": "2026-10-05T20:59:01.955Z",
+      "bytes": 81599,
+      "contentHash": "5e53ffd314f57da2af8d4b8145b3a43a4dd17c0636cd4940488fa41aaa8adaeb",
+      "contentType": "text/html; charset=UTF-8"
+    },
+    {
+      "file": "siena-senate.html",
+      "url": "https://sri.siena.edu/2026/10/03/nytimes-siena-poll-of-likely-voters-senate-races/",
+      "status": "captured",
+      "observedAt": "2026-10-05T20:59:01.915Z",
+      "bytes": 81548,
+      "contentHash": "aaf3762aeae69ac6649bca2da00980ecaa0f49eeb29a9ab4af03f2655348b08c",
+      "contentType": "text/html; charset=UTF-8"
+    },
+    {
+      "file": "nyt-texas-toplines.html",
+      "url": "https://www.nytimes.com/interactive/2026/10/03/polls/times-siena-texas-poll-toplines.html",
+      "status": "unavailable",
+      "observedAt": "2026-10-05T20:59:01.940Z",
+      "reason": "SOURCE_HTTP_403"
+    },
+    {
+      "file": "tpor-september.html",
+      "url": "https://texaspublicopinionresearch.substack.com/p/new-poll-in-texas-general-election-662",
+      "status": "captured",
+      "observedAt": "2026-10-05T21:02:22.530Z",
+      "bytes": 462034,
+      "contentHash": "cbb0cb41b740ac3a5710fde093f2473632bba10170dd16f249587045938c2e31",
+      "contentType": "text/html; charset=utf-8"
+    }
+  ],
+  "accountApiRequests": 0,
+  "rawSourcesRestrictedLocally": true,
+  "executionAuthority": false
+}

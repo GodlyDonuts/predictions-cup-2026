@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "observedAt": "2026-10-05T21:03:51.423Z",
+  "mode": "actual_original_coupled_journal_same_work_v1",
+  "cohort": "baal-coupled-bulk-20261005-v2c-live",
+  "bankHash": "d9e27c27bed40738f7526fdeb256633398dea60eeea42457c5dc40315ca3b2cf",
+  "sourceBytes": 2900453859,
+  "sourceHash": "cb8e9ae1e55103e8eb9b7a6af06eb006569b587dbb0bda08fe15d5efd7f08739",
+  "records": 8047,
+  "tailHash": "67bf9d4104e8509d097702e7eff5af152033791d05bb156f8448ee398d12e8ad",
+  "lastBodyHash": "660e92cdb7f3e29feb83e8adef95d45f7bbbeb166971a3ecb449a6c24db97005",
+  "jsMs": 44341.1805,
+  "rustMs": 14705.497299999999,
+  "rustInternalVerifyMs": 14485.913,
+  "speedup": 3.0152792248651124,
+  "binding": {
+    "schemaVersion": 1,
+    "mode": "canonical_js_journal_restore_v1",
+    "binaryHash": "881e93c405a116aebd0de9d1174ca4209c225715b66c20f45ad99c0131effeea",
+    "engineHash": "1da2d7f37f572da85e2b1e16e75930705b470c7c8068622efca61d3cf9d78c8e",
+    "runtimeLibraryHash": "13bf4e99b0193634ebdeb0bbdeff9753b39f1d04799183f664111014aabf4c2c"
+  },
+  "sourceParity": true,
+  "walletParity": true,
+  "readOnly": true,
+  "networkRequests": 0,
+  "competitionOrders": 0,
+  "profitabilityEstablished": false,
+  "baselineObservedAt": "2026-10-05T21:01:38.602Z"
+}
