@@ -1,0 +1,15 @@
+✔ explicit collector journal binding pins native engine, compiled sources, and JS append graph (64.6926ms)
+✔ snapshot closure includes transitive imports, dynamic literals and worker URLs without looping over cycles (24.9334ms)
+✔ exact archived graph survives current transport changes and refuses corrupted dependencies (24.7951ms)
+✔ unbound new banks retain normal host validation (0.3846ms)
+✔ partial cache publication retries the same derived snapshots after bounded file-lock waits (1.589ms)
+✔ persistent cache failures are bounded and integrity failures are never retried (0.6165ms)
+✔ failure reports preserve actionable enums without copying paths, credentials or raw exception text (0.3653ms)
+ℹ tests 7
+ℹ suites 0
+ℹ pass 7
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 178.6098

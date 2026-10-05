@@ -1,0 +1,7 @@
+import fs from 'node:fs';import path from 'node:path';
+import {COUPLED_MAKER_POLICY} from '../live-paper/coupled-maker-paper-v1.mjs';import {runCoupledMakerReplay} from '../live-paper/coupled-maker-replay-v1.mjs';
+const runtimeDir=path.join(process.env.LOCALAPPDATA,'SigTradingCup','paper-runtime'),tournamentId=JSON.parse(fs.readFileSync('live-paper/price-universe.json')).tournamentId;
+const bank={schemaVersion:1,mode:'coupled_two_side_trade_tape_paper_v1',name:'baal-coupled-original-four-development',cutoff:'2026-10-03T23:09:25.374Z',entryExpiresAt:'2026-10-05T23:09:25.374Z',tournamentId,
+ policy:COUPLED_MAKER_POLICY,legs:[['363','1052'],['297','986'],['381','1070'],['382','1071']].map(([marketId,exchangeId])=>({marketId,exchangeId}))};
+const r=await runCoupledMakerReplay({runtimeDir,bank,executable:path.resolve('backend-rust/target/receipt-strategy-20261005/release/baal-backend.exe'),binaryHash:'cc775b6e91a9f27193a91adea6a5eda40b0a7735fd77b857ed52221835a81fd5',out:'data/coupled-original-four-development-20261005.json'});
+const w=r.report.wallets.COUPLED;console.log(JSON.stringify({at:r.at,processed:r.processed,firstAt:r.firstAt,through:r.through,timing:r.timing,counts:r.report.counts,cash:w.cash,fills:w.fills,closed:w.closedTrades,pairs:w.pairedRedemptions,realized:w.realizedPnl,liquidation:w.estimatedLiquidationPnl,held:w.positions.length,unresolved:w.unresolvedQuotes.length,profitabilityEstablished:false}));

@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import {createHash,randomUUID} from 'node:crypto';
+import {replaceFileSync} from './atomic-rename.mjs';
 
 const VERSION=1;
 const identity=/^[A-Za-z0-9_.:-]{1,160}$/;
@@ -35,7 +36,7 @@ function syncDirectory(dir){
 // Projections are replaceable caches. The append-only journal is authoritative.
 export function atomicJson(file,value){
  const temporary=file+'.'+process.pid+'.'+randomUUID()+'.tmp';let fd;
- try{fd=fs.openSync(temporary,'wx',0o600);writeAll(fd,canonicalJson(value)+'\n');fs.fsyncSync(fd);fs.closeSync(fd);fd=undefined;fs.renameSync(temporary,file);syncDirectory(path.dirname(file));}
+ try{fd=fs.openSync(temporary,'wx',0o600);writeAll(fd,canonicalJson(value)+'\n');fs.fsyncSync(fd);fs.closeSync(fd);fd=undefined;replaceFileSync(temporary,file);syncDirectory(path.dirname(file));}
  catch(error){if(fd!==undefined)fs.closeSync(fd);try{fs.unlinkSync(temporary);}catch(cleanup){if(cleanup.code!=='ENOENT')error.cleanupFailed=true;}throw error;}
 }
 

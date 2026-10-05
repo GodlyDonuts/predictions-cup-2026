@@ -1,0 +1,117 @@
+{
+  "at": "2026-10-05T15:15:17.588Z",
+  "sourceStatusObservation": "2026-10-05T15:10:02.565Z",
+  "previousError": "TRADE_TAPE_RECOVERY_SCOPE",
+  "cause": "Runner candidate set remained historical four markets; immutable tape membership already included all237 exchanges.",
+  "fixed": [
+    {
+      "file": "competition-activation.json",
+      "unchanged": true
+    },
+    {
+      "file": "coordinated-network-budget.json",
+      "unchanged": true
+    },
+    {
+      "file": "native-quote-active.json",
+      "unchanged": true
+    },
+    {
+      "file": "native-dip-intent-active.json",
+      "unchanged": true
+    },
+    {
+      "file": "stable-maker-active.json",
+      "unchanged": true
+    },
+    {
+      "file": "stable-maker-broad-active.json",
+      "unchanged": true
+    }
+  ],
+  "prefixes": [
+    {
+      "file": "anonymous-trades.jsonl",
+      "bytes": 11953929,
+      "hash": "b77cf27f35bbdc6999ee0ac7a4cd2d67047878b3008fd10ba2137846e81042a6",
+      "preserved": true
+    },
+    {
+      "file": "stable-maker-cohorts/baal-stable-broad-20261005-v2-live/journal.jsonl",
+      "bytes": 2110552,
+      "hash": "889a4910818dce547f3f07f6ea64e168cd044d54eeaa587675d0aa0637ab58bf",
+      "preserved": true
+    },
+    {
+      "file": "stable-maker-cohorts/baal-stable-spread-20261005-v2-live/journal.jsonl",
+      "bytes": 18214062,
+      "hash": "90a9bcf1d4abc921fb8bc077c7ce80e881fff84c0616414988d22dce7f728462",
+      "preserved": true
+    }
+  ],
+  "tape": {
+    "pages": 1625,
+    "lastAt": "2026-10-05T15:10:02.565Z",
+    "recoveredMarkets": [
+      {
+        "marketId": "364",
+        "exchangeId": "1053",
+        "pages": 2,
+        "tradesCaptured": 4,
+        "lastReceiptAt": "2026-10-05T15:10:02.565Z",
+        "lastAttemptAt": "2026-10-05T15:10:02.378Z",
+        "latestTradeAt": "2026-10-05T15:09:11.592Z",
+        "windowFrom": null,
+        "windowTo": null,
+        "paginationPending": false,
+        "projectedThroughSequence": 53814459,
+        "reportedCoverageComplete": true,
+        "recoveryPending": false,
+        "recoveryCompleted": 1
+      },
+      {
+        "marketId": "376",
+        "exchangeId": "1065",
+        "pages": 1,
+        "tradesCaptured": 0,
+        "lastReceiptAt": "2026-10-05T15:04:38.584Z",
+        "lastAttemptAt": "2026-10-05T15:04:35.487Z",
+        "latestTradeAt": null,
+        "windowFrom": null,
+        "windowTo": null,
+        "paginationPending": false,
+        "projectedThroughSequence": 53763502,
+        "reportedCoverageComplete": true,
+        "recoveryPending": false,
+        "recoveryCompleted": 1
+      }
+    ]
+  },
+  "broad": {
+    "bankHash": "7b04de4928aa6b98a0cf949ec715f6d55953646ebfe300347e821a2d3270d01a",
+    "quotesResolvedWithoutFill": 4,
+    "wallets": {
+      "YES": {
+        "cash": "100.000000",
+        "reserved": "0.000000",
+        "fills": 0,
+        "realizedPnl": "0.000000"
+      },
+      "NO": {
+        "cash": "100.000000",
+        "reserved": "0.000000",
+        "fills": 0,
+        "realizedPnl": "0.000000"
+      }
+    }
+  },
+  "collectorFailure": {
+    "at": "2026-10-05T15:10:35.112Z",
+    "cause": "status_publication_failed",
+    "errorCode": "EPERM",
+    "pid": 12236,
+    "resolution": "Bounded same-file replacement retries implemented; persistent failure still stops collector."
+  },
+  "profitabilityEstablished": false,
+  "competitionOrders": 0
+}

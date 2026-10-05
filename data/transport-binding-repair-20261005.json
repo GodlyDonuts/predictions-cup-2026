@@ -1,0 +1,47 @@
+{
+  "at": "2026-10-05T15:26:05.789Z",
+  "archives": [
+    {
+      "cohort": "source-probability-native-20261004-v3",
+      "bankHash": "3e445d6b7f436cab79245ed588efa627734d8d2a4a6a6b788ac2873582ed4ef2",
+      "canonicalIndexKey": "1c7332d0863634d5871403a09016e1b71526620410271fe5b5d3d36e44b0bd88",
+      "snapshot": "d04e66ebed48039219b94046a42c73842979f55dadb9b0be3e0bca3970d79682",
+      "existingArchiveVerified": true,
+      "originalCodePreserved": true,
+      "bankChanged": false,
+      "accountingReset": false
+    },
+    {
+      "cohort": "calibrated-kansas-poll-20261005-v1",
+      "bankHash": "3e57289fda56eb58a833fbcf62c8c488064b3e84c0ab0642ece81f6b8549fcce",
+      "canonicalIndexKey": "7c319e0ef4c92a410fd918472a1263f6fbf189187b9659d62e9ee37e0a0d991d",
+      "snapshot": "aa67fd90b9c13c09ada5439a5c99a922591ddaca425f258dfe5a0180db1b721e",
+      "files": 28,
+      "originalCodePreserved": true,
+      "bankChanged": false,
+      "accountingReset": false
+    }
+  ],
+  "transport": [
+    {
+      "file": "collector-native-journal.json",
+      "previousHash": "87a06c32dd3ab3bbf53e76e0b7eb58fc62723d7675427616ccbeba746c706178",
+      "updatedHash": "d410441530ed306e5e152c4027b72416f436bf403be589b5cf97b7890c6a907e",
+      "compiledBindingUnchanged": true,
+      "identityFiles": 14
+    },
+    {
+      "file": "collector-native-publication.json",
+      "previousHash": "73e068a64197f484e3932c98f7d4bc91aeb431bcece26bbd4ab36f5348d758e0",
+      "updatedHash": "88ede70791e4b553503844d8ef640fa5ff1c5454d409fff5e2518e7e5ef37ca3",
+      "compiledBindingUnchanged": true,
+      "identityFiles": 11
+    }
+  ],
+  "activationChanged": false,
+  "originalJournalRewritten": false,
+  "modelBanksChanged": false,
+  "accountingReset": false,
+  "networkRequests": 0,
+  "competitionOrders": 0
+}

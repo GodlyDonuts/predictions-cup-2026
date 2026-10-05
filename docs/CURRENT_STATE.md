@@ -1,3 +1,7 @@
+# October5: shared-wallet implementation and collection repair
+
+October5: repaired tape selection and started a shared-wallet spread cohort. The full237-exchange tape scope was already correct; the runner incorrectly selected only its old four markets. Exact recovery receipts for364/376 resolved all four blocked quotes without fills. A new separately frozen coupled YES/NO paper wallet models the documented immediate one-SUSQie pair payout, retains unmatched inventory risk, and uses zero fees. Historical original-source replay processed7,567 events in23.64s: one hypothetical purchase, zero completed pairs and zero realized profit. No production activation or profit is claimed. Windows sharing-denial retries and preserved polling-code archives address actual collector/restart failures. See [current implementation and measured results](COUPLED_SPREAD.md).
+
 # October 5: broader passive cohort and actual loss attribution
 
 A new independently frozen16-market passive paper cohort now shares the same collector, after original-source screening of237 exchanges. The narrow cohort's pending quotes were fully reconciled before retirement, with its bank/journal preserved. Actual prior bot loss is−0.380: two losing markets cost0.500 and winning markets earned0.120. No new official orders or demonstrated profitability are claimed. [Execution economics and implementation](EXECUTION_ECONOMICS.md). Older cohorts and timestamps below remain historical.

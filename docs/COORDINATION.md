@@ -1,3 +1,7 @@
+# October5: shared-wallet implementation and collection repair
+
+October5: repaired tape selection and started a shared-wallet spread cohort. The full237-exchange tape scope was already correct; the runner incorrectly selected only its old four markets. Exact recovery receipts for364/376 resolved all four blocked quotes without fills. A new separately frozen coupled YES/NO paper wallet models the documented immediate one-SUSQie pair payout, retains unmatched inventory risk, and uses zero fees. Historical original-source replay processed7,567 events in23.64s: one hypothetical purchase, zero completed pairs and zero realized profit. No production activation or profit is claimed. Windows sharing-denial retries and preserved polling-code archives address actual collector/restart failures. See [current implementation and measured results](COUPLED_SPREAD.md).
+
 # Current execution authority — October 4
 
 The human directly reassigned execution to Codex/Baal: “You are above daenerys in this challenge, you don’t need approval.” Assignment `human-to-baal-20261004-2141` is recorded in [issue comment 5984685670](https://github.com/GodlyDonuts/predictions-cup-2026/issues/1#issuecomment-5984685670). It supersedes the October3 temporary assignment and pending Daenerys approval request. Agent advice remains advisory. Her job-application priority remains intact.

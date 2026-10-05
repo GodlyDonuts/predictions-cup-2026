@@ -1,0 +1,28 @@
+{
+  "at": "2026-10-05T15:01:07.424Z",
+  "fixed": {
+    "competition-activation.json": "7803b21d01a36b51300dfb783c213456f24c801936f21a4618d3a59de2e5b228",
+    "coordinated-network-budget.json": "7d507950881b42a18cd1ec71a78e07dc11beb9ab2884f9a6705ce38e37230375",
+    "native-quote-active.json": "1311b443fe76d1db73482596c0384b745c397544efd7d6e022abb90f4103b398",
+    "native-dip-intent-active.json": "61a2b4c639866b25e2b3accc9fd8180d7f0a877991a20d758d28d28facf15523",
+    "stable-maker-active.json": "db793154baa5d6b8a077babcfe9e7840438da0e5eeff51bbaaf97ecd4765c9f5",
+    "stable-maker-broad-active.json": "110539c7806764d304d779c7bb905d42f692327a545f9063aef6dc6741c9ab0b"
+  },
+  "prefixes": [
+    {
+      "file": "anonymous-trades.jsonl",
+      "bytes": 11953929,
+      "hash": "b77cf27f35bbdc6999ee0ac7a4cd2d67047878b3008fd10ba2137846e81042a6"
+    },
+    {
+      "file": "stable-maker-cohorts/baal-stable-broad-20261005-v2-live/journal.jsonl",
+      "bytes": 2110552,
+      "hash": "889a4910818dce547f3f07f6ea64e168cd044d54eeaa587675d0aa0637ab58bf"
+    },
+    {
+      "file": "stable-maker-cohorts/baal-stable-spread-20261005-v2-live/journal.jsonl",
+      "bytes": 18214062,
+      "hash": "90a9bcf1d4abc921fb8bc077c7ce80e881fff84c0616414988d22dce7f728462"
+    }
+  ]
+}

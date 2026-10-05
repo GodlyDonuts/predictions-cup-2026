@@ -1,0 +1,302 @@
+{
+  "schemaVersion": 1,
+  "at": "2026-10-05T15:18:31.860Z",
+  "mode": "coupled_maker_actual_capture_development_replay_v1",
+  "bank": {
+    "schemaVersion": 1,
+    "mode": "coupled_two_side_trade_tape_paper_v1",
+    "name": "baal-coupled-original-four-development",
+    "cutoff": "2026-10-03T23:09:25.374Z",
+    "entryExpiresAt": "2026-10-05T23:09:25.374Z",
+    "tournamentId": "bda92870-621e-47b0-bc3c-3602c5c26f55",
+    "policy": {
+      "schemaVersion": 1,
+      "initialCash": "100.000000",
+      "maximumReservedAndOwned": "5.000000",
+      "maximumOwnedMarkets": 3,
+      "cumulativeBuyBudget": "25.000000",
+      "quantity": 1,
+      "latencyMs": 3000,
+      "lifetimeMs": 120000,
+      "cooldownMs": 60000,
+      "maximumHoldMs": 7200000,
+      "stopLoss": "0.030000",
+      "profitTarget": "0.005000",
+      "exitAdverseTicks": 1,
+      "depthFractionBps": 100,
+      "feePerShare": "0.000000",
+      "historyMs": 300000,
+      "minimumHistorySpanMs": 240000,
+      "minimumDistinctMinutes": 4,
+      "maximumHistoryGapMs": 120000,
+      "maximumMidpointRange": "0.005000",
+      "minimumSpread": "0.005000",
+      "maximumSpread": "0.050000",
+      "improvementTicks": 0,
+      "families": [
+        "COUPLED"
+      ],
+      "fillModel": "hypothetical_strict_trade_through_not_proven_execution"
+    },
+    "legs": [
+      {
+        "marketId": "363",
+        "exchangeId": "1052"
+      },
+      {
+        "marketId": "297",
+        "exchangeId": "986"
+      },
+      {
+        "marketId": "381",
+        "exchangeId": "1070"
+      },
+      {
+        "marketId": "382",
+        "exchangeId": "1071"
+      }
+    ]
+  },
+  "bindings": {
+    "books": {
+      "bytes": 52585413,
+      "hash": "bacb768844a8d79bcb70ab030c04add391ddde9042e51cbe6502fcc6a8877a15",
+      "dev": 1689591578,
+      "ino": 14636698789286624
+    },
+    "eligibility": {
+      "bytes": 877749,
+      "hash": "fbe2adfdcb9eb67c84e6a00a5ec1a1713a60cb605bfaf38ea4362d95668f23bd",
+      "dev": 1689591578,
+      "ino": 3377699721294254
+    },
+    "trades": {
+      "bytes": 12279452,
+      "hash": "acff9d3d430a225a9f1b6717b8c1ca7af1bedf8a0b135524860624fd28801895",
+      "dev": 1689591578,
+      "ino": 11258999068802980
+    }
+  },
+  "nativeVerification": {
+    "engineHash": "374cffa73e62192363da35e7cc188005e9d2a7d1d27758780d7a7b3f81d1b823",
+    "binaryHash": "cc775b6e91a9f27193a91adea6a5eda40b0a7735fd77b857ed52221835a81fd5",
+    "bookRecords": 24110
+  },
+  "firstAt": "2026-10-02T12:03:36.744Z",
+  "through": "2026-10-05T15:10:36.691Z",
+  "processed": 7567,
+  "timing": {
+    "sourceMs": 2840.3725,
+    "replayMs": 20800.188199999997,
+    "totalMs": 23640.560699999998
+  },
+  "report": {
+    "schemaVersion": 1,
+    "mode": "coupled_two_side_trade_tape_paper_v1",
+    "cohort": "baal-coupled-original-four-development",
+    "bankHash": "9c98f21d891e6cfd9bf34c5b5a4ce246c136166c552406f9c3d3151449df4d38",
+    "updatedAt": "2026-10-05T15:10:36.691Z",
+    "cutoff": "2026-10-03T23:09:25.374Z",
+    "counts": {
+      "book_ineligible": 4951,
+      "source_boundary": 75,
+      "unstable_or_warmup": 48,
+      "quote_buy": 58,
+      "quote_unfilled_resolved": 52,
+      "spread_or_depth": 2,
+      "hypothetical_buy": 1,
+      "history_gap": 11
+    },
+    "wallets": {
+      "COUPLED": {
+        "cash": "99.185000",
+        "realizedPnl": "0.000000",
+        "fees": "0.000000",
+        "cumulativeBuys": "0.815000",
+        "fills": 1,
+        "closedTrades": 0,
+        "pairedRedemptions": 0,
+        "positions": [
+          {
+            "marketId": "381",
+            "exchangeId": "1070",
+            "side": "YES",
+            "quantity": 1,
+            "cost": "0.815000",
+            "enteredAt": "2026-10-04T19:06:05.303Z",
+            "sourceEntryAt": "2026-10-04T19:02:55.795Z",
+            "estimatedLiquidationProceeds": null
+          }
+        ],
+        "unresolvedQuotes": [
+          {
+            "id": 1,
+            "action": "buy",
+            "side": "YES",
+            "marketId": "382",
+            "exchangeId": "1071",
+            "quantity": 1,
+            "limit": "0.220000",
+            "yesEquivalentLimit": "0.220000",
+            "createdAt": "2026-10-04T17:04:17.438Z",
+            "activationAt": "2026-10-04T17:04:20.438Z",
+            "expiresAt": "2026-10-04T17:06:17.438Z",
+            "bookVersion": "38846492:2026-10-04T17:04:17.604454800Z",
+            "bookSequence": "38846492",
+            "publicationHash": "3d9f46f6c60fd873318e0dd89388016a1920c1e49e5a32018c7425a32e4f6172",
+            "publicationSequence": 18293,
+            "coverageBarrierSequence": "38872195",
+            "resolvedAt": null,
+            "resolution": null
+          },
+          {
+            "id": 2,
+            "action": "buy",
+            "side": "NO",
+            "marketId": "382",
+            "exchangeId": "1071",
+            "quantity": 1,
+            "limit": "0.775000",
+            "yesEquivalentLimit": "0.225000",
+            "createdAt": "2026-10-04T17:04:17.438Z",
+            "activationAt": "2026-10-04T17:04:20.438Z",
+            "expiresAt": "2026-10-04T17:06:17.438Z",
+            "bookVersion": "38846492:2026-10-04T17:04:17.604454800Z",
+            "bookSequence": "38846492",
+            "publicationHash": "3d9f46f6c60fd873318e0dd89388016a1920c1e49e5a32018c7425a32e4f6172",
+            "publicationSequence": 18293,
+            "coverageBarrierSequence": "38872195",
+            "resolvedAt": null,
+            "resolution": null
+          },
+          {
+            "id": 54,
+            "action": "buy",
+            "side": "NO",
+            "marketId": "381",
+            "exchangeId": "1070",
+            "quantity": 1,
+            "limit": "0.180000",
+            "yesEquivalentLimit": "0.820000",
+            "createdAt": "2026-10-04T19:20:38.438Z",
+            "activationAt": "2026-10-04T19:20:41.438Z",
+            "expiresAt": "2026-10-04T19:22:38.438Z",
+            "bookVersion": "40256118:2026-10-04T19:20:38.694798200Z",
+            "bookSequence": "40256118",
+            "publicationHash": "fc408512255d9101df68f2e8d17f5ed2c269a07fff7d902871fa6c6391628705",
+            "publicationSequence": 19212,
+            "coverageBarrierSequence": "41132679",
+            "resolvedAt": null,
+            "resolution": null
+          },
+          {
+            "id": 57,
+            "action": "buy",
+            "side": "YES",
+            "marketId": "363",
+            "exchangeId": "1052",
+            "quantity": 1,
+            "limit": "0.910000",
+            "yesEquivalentLimit": "0.910000",
+            "createdAt": "2026-10-04T23:32:22.508Z",
+            "activationAt": "2026-10-04T23:32:25.508Z",
+            "expiresAt": "2026-10-04T23:34:22.508Z",
+            "bookVersion": "43157566:2026-10-04T23:32:21.820179600Z",
+            "bookSequence": "43157566",
+            "publicationHash": "061762ff19be8365c0144a9246a89a51ce069bc87d43c7fc0158646ef76e0c5b",
+            "publicationSequence": 21065,
+            "coverageBarrierSequence": "43187025",
+            "resolvedAt": null,
+            "resolution": null
+          },
+          {
+            "id": 58,
+            "action": "buy",
+            "side": "NO",
+            "marketId": "363",
+            "exchangeId": "1052",
+            "quantity": 1,
+            "limit": "0.080000",
+            "yesEquivalentLimit": "0.920000",
+            "createdAt": "2026-10-04T23:32:22.508Z",
+            "activationAt": "2026-10-04T23:32:25.508Z",
+            "expiresAt": "2026-10-04T23:34:22.508Z",
+            "bookVersion": "43157566:2026-10-04T23:32:21.820179600Z",
+            "bookSequence": "43157566",
+            "publicationHash": "061762ff19be8365c0144a9246a89a51ce069bc87d43c7fc0158646ef76e0c5b",
+            "publicationSequence": 21065,
+            "coverageBarrierSequence": "43187025",
+            "resolvedAt": null,
+            "resolution": null
+          }
+        ],
+        "reserved": "2.165000",
+        "recentFills": [
+          {
+            "action": "buy",
+            "marketId": "381",
+            "exchangeId": "1070",
+            "side": "YES",
+            "quantity": 1,
+            "price": "0.815000",
+            "at": "2026-10-04T19:06:05.303Z",
+            "quoteId": 49,
+            "source": {
+              "kind": "trade",
+              "key": "4d549087a4821f6316da8ff696a1f31383298daa63a2b9aaa19ab21dd98f70b0",
+              "id": "40066714",
+              "createdAt": "2026-10-04T19:02:55.795Z",
+              "firstAvailableAt": "2026-10-04T19:06:05.295Z",
+              "normalizedYesPrice": "0.810000",
+              "aggressorSide": null,
+              "queuePositionProven": false,
+              "executionProven": false
+            },
+            "model": "hypothetical_strict_trade_through_not_proven_execution"
+          }
+        ],
+        "recentRedemptions": [],
+        "estimatedLiquidationPnl": null
+      }
+    },
+    "executionAuthority": false,
+    "competitionOrders": 0,
+    "networkRequests": 0,
+    "profitabilityEstablished": false,
+    "limitations": [
+      "One shared cash wallet nets opposite one-share fills at the documented binary payout; unmatched inventory still bears loss.",
+      "Strict trade-through is a counterfactual fill assumption; anonymous trades do not prove queue position or actual execution.",
+      "Expired unresolved quotes keep reservations until original-window projection is complete; learned fill times never enable retrospective exits."
+    ]
+  },
+  "fills": [
+    {
+      "action": "buy",
+      "marketId": "381",
+      "exchangeId": "1070",
+      "side": "YES",
+      "quantity": 1,
+      "price": "0.815000",
+      "at": "2026-10-04T19:06:05.303Z",
+      "quoteId": 49,
+      "source": {
+        "kind": "trade",
+        "key": "4d549087a4821f6316da8ff696a1f31383298daa63a2b9aaa19ab21dd98f70b0",
+        "id": "40066714",
+        "createdAt": "2026-10-04T19:02:55.795Z",
+        "firstAvailableAt": "2026-10-04T19:06:05.295Z",
+        "normalizedYesPrice": "0.810000",
+        "aggressorSide": null,
+        "queuePositionProven": false,
+        "executionProven": false
+      },
+      "model": "hypothetical_strict_trade_through_not_proven_execution"
+    }
+  ],
+  "redemptions": [],
+  "networkRequests": 0,
+  "competitionOrders": 0,
+  "fees": 0,
+  "profitabilityEstablished": false,
+  "limitation": "Historical development diagnostic. The model was implemented after this capture; hypothetical fills are not actual orders or prospective proof."
+}

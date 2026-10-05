@@ -1,0 +1,155 @@
+{
+  "at": "2026-10-05T15:30:43.994Z",
+  "pids": {
+    "collector": 2420,
+    "dashboard": 20092,
+    "paper": 3976,
+    "metrics": null,
+    "contestActivation": true,
+    "retiredMetricsPid": 11792
+  },
+  "collector": {
+    "pid": 2420,
+    "status": "running",
+    "cycles": 8,
+    "errors": []
+  },
+  "tape": {
+    "status": "running",
+    "pages": 1631,
+    "lastAt": "2026-10-05T15:30:12.653Z"
+  },
+  "coupled": {
+    "bankHash": "3ab468b58df77b1b4996073c416210da38926f5be5ca7b707d3f2607def2f518",
+    "updatedAt": "2026-10-05T15:30:38.207Z",
+    "failed": false,
+    "counts": {
+      "unstable_or_warmup": 22,
+      "book_ineligible": 2
+    },
+    "tapeSequence": 1631,
+    "wallet": {
+      "cash": "100.000000",
+      "realizedPnl": "0.000000",
+      "fees": "0.000000",
+      "cumulativeBuys": "0.000000",
+      "fills": 0,
+      "closedTrades": 0,
+      "pairedRedemptions": 0,
+      "positions": [],
+      "unresolvedQuotes": [],
+      "reserved": "0.000000",
+      "recentFills": [],
+      "recentRedemptions": [],
+      "estimatedLiquidationPnl": "0.000000"
+    }
+  },
+  "fixed": [
+    {
+      "file": "competition-activation.json",
+      "unchanged": true
+    },
+    {
+      "file": "coordinated-network-budget.json",
+      "unchanged": true
+    },
+    {
+      "file": "native-quote-active.json",
+      "unchanged": true
+    },
+    {
+      "file": "native-dip-intent-active.json",
+      "unchanged": true
+    },
+    {
+      "file": "stable-maker-active.json",
+      "unchanged": true
+    },
+    {
+      "file": "stable-maker-broad-active.json",
+      "unchanged": true
+    }
+  ],
+  "prefixes": [
+    {
+      "file": "anonymous-trades.jsonl",
+      "bytes": 11953929,
+      "hash": "b77cf27f35bbdc6999ee0ac7a4cd2d67047878b3008fd10ba2137846e81042a6",
+      "preserved": true
+    },
+    {
+      "file": "stable-maker-cohorts/baal-stable-broad-20261005-v2-live/journal.jsonl",
+      "bytes": 2110552,
+      "hash": "889a4910818dce547f3f07f6ea64e168cd044d54eeaa587675d0aa0637ab58bf",
+      "preserved": true
+    },
+    {
+      "file": "stable-maker-cohorts/baal-stable-spread-20261005-v2-live/journal.jsonl",
+      "bytes": 18214062,
+      "hash": "90a9bcf1d4abc921fb8bc077c7ce80e881fff84c0616414988d22dce7f728462",
+      "preserved": true
+    }
+  ],
+  "existingForecasts": [
+    {
+      "cohort": "source-probability-native-20261004-v3",
+      "bankHash": "3e445d6b7f436cab79245ed588efa627734d8d2a4a6a6b788ac2873582ed4ef2",
+      "updatedAt": "2026-10-05T15:30:43.764Z",
+      "sourceClosed": false,
+      "wallets": {
+        "1000": {
+          "cash": "99.125000",
+          "realizedPnl": "0.020000",
+          "fills": 3,
+          "positionCount": 1
+        },
+        "3000": {
+          "cash": "99.125000",
+          "realizedPnl": "0.020000",
+          "fills": 3,
+          "positionCount": 1
+        }
+      }
+    },
+    {
+      "cohort": "calibrated-kansas-poll-20261005-v1",
+      "bankHash": "3e57289fda56eb58a833fbcf62c8c488064b3e84c0ab0642ece81f6b8549fcce",
+      "updatedAt": "2026-10-05T15:30:43.880Z",
+      "sourceClosed": false,
+      "wallets": {
+        "1000": {
+          "cash": "99.655000",
+          "realizedPnl": "0.000000",
+          "fills": 1,
+          "positionCount": 1
+        },
+        "3000": {
+          "cash": "99.655000",
+          "realizedPnl": "0.000000",
+          "fills": 1,
+          "positionCount": 1
+        }
+      }
+    }
+  ],
+  "officialSummary": {
+    "status": "entry_window_closed",
+    "runId": "sig-pilot-settlement-20261004-human",
+    "dispatchAttempts": 0,
+    "realizedPnl": "0.000000",
+    "unconfirmedIntents": 0,
+    "ordersSubmitted": 0,
+    "addedFees": "0.000000",
+    "entryAuthorityExtended": false,
+    "entryWindow": {
+      "phase": "closed",
+      "startedAt": "2026-10-04T21:59:22.131Z",
+      "expiresAt": "2026-10-05T03:59:22.131Z",
+      "open": false
+    },
+    "attributedPositionsCount": 0
+  },
+  "networkClients": 1,
+  "persistentServices": 3,
+  "profitabilityEstablished": false
+}
