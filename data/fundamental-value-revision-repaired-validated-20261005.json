@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "testsPassed": true,
+  "tests": 89,
+  "at": "2026-10-05T22:06:33.497Z",
+  "sourceFiles": [
+    {
+      "path": "live-paper/fundamental-value-revision-v1.mjs",
+      "hash": "f877a1e7f35849a9c5124612e72e4b26540db180a60b98a1b3b8da0addf2d094"
+    },
+    {
+      "path": "live-paper/fundamental-value-revision-v1.test.mjs",
+      "hash": "b204a8771dd0d01d712df010f136d2eed91b968449521524e0f3ddad317e486c"
+    },
+    {
+      "path": "live-paper/settlement-paper-collector.mjs",
+      "hash": "02af81eef13ba4790ba4ce64c75a60809c79a3559da3b7545b67bff5b705687d"
+    },
+    {
+      "path": "live-paper/runner.mjs",
+      "hash": "af87ad4c38721322e9d54762cad8f7031131bab84c1e5abc4512123441c7a9f6"
+    },
+    {
+      "path": "live-paper/runner-lifecycle.test.mjs",
+      "hash": "87e849e5eb4bd04fc5e0fa3776930b59992ec929d5e3c68fbd4c9fecad2a28cb"
+    },
+    {
+      "path": "data/fundamental-value-revision-checks-20261005.tap",
+      "hash": "26036a64759ce3aa04bdf28d71ed272bcc9b43717dc2f242830fe01457ae05de"
+    }
+  ],
+  "runtimeFiles": [
+    {
+      "path": "FUNDAMENTAL_VALUE_REVISION",
+      "hash": "ce6cfff9a3c92e25d407bd05fa9cf08271e2d002e8603fabc95b45aefbe65d7e"
+    }
+  ],
+  "newEntries": false,
+  "officialOrders": 0,
+  "sourceHashRepairEvidence": "data/fundamental-sourcehash-repair-20261005.json"
+}

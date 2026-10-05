@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "at": "2026-10-05T22:05:34.840Z",
+  "reason": "Canonical publisher source-hash verification repair; old overlay had genesis only and no operator action",
+  "cohort": "texas-governor-fundamental-20261005-v1",
+  "originalBankHash": "fdfb0c25e1bba643c1ec203fa82a34b4fc88e864a5e9174571a3115302deb3a9",
+  "originalJournalHash": "f7750a25694a4587f0989468ef1cf69b7d4f22723395d081d2cc242b2fc1846b",
+  "failedOperatorOpeningHash": "d450ba588f7b5f27bd540f647d33a5a2f0117c2f851ad7ec6171f3b8dcba72c4",
+  "failedOperatorJournalHash": "4341acc2711c6e1966b4da30517e884ea2df0458b05ed1478db8e8e3a7252659",
+  "failedOperatorCodeHash": "2f24c9588f39290b135e015eb609fb39734b360d89cc8a629ab409601156ac8f",
+  "repairedCodeHash": "f877a1e7f35849a9c5124612e72e4b26540db180a60b98a1b3b8da0addf2d094",
+  "archive": "settlement-paper-cohorts\\texas-governor-fundamental-20261005-v1\\operator-value-revision-sourcehash-failed-20261005",
+  "operatorActions": 0,
+  "originalBasisRetained": true,
+  "sourceClocksChanged": false,
+  "activationChanged": false
+}

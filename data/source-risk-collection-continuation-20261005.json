@@ -1,0 +1,21 @@
+{
+  "at": "2026-10-05T22:01:18.190Z",
+  "reason": "Continuing human active engineering goal after sprint deadline; measured scheduling improvement while preserving account limits/owned risks",
+  "previous": {
+    "schemaVersion": 1,
+    "owner": "Codex",
+    "mode": "source_bound_and_owned_risk",
+    "createdAt": "2026-10-05T21:14:24.194Z",
+    "expiresAt": "2026-10-05T22:00:00.000Z"
+  },
+  "next": {
+    "schemaVersion": 1,
+    "owner": "Codex",
+    "mode": "source_bound_and_owned_risk",
+    "createdAt": "2026-10-05T22:01:18.190Z",
+    "expiresAt": "2026-10-05T23:01:18.190Z"
+  },
+  "sourceClocksChanged": false,
+  "officialActivationChanged": false,
+  "additionalClients": 0
+}

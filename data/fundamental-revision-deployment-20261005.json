@@ -1,0 +1,16 @@
+{
+  "stoppedCollectorPid": 13508,
+  "schemaVersion": 1,
+  "preflightManifest": "data\\fundamental-revision-preflight-20261005T220634316-e36a8014.json",
+  "retainedDashboardPid": 20092,
+  "additionalAccountClients": 0,
+  "startupOnly": true,
+  "activationUnchanged": true,
+  "retainedPaperPid": 8732,
+  "at": "2026-10-05T22:06:51.2859612Z",
+  "banksAndOriginalPrefixesVerified": true,
+  "additionalPersistentServices": 0,
+  "newCollectorPid": 9288,
+  "strategyProfitabilityEstablished": false,
+  "runTag": "20261005T220634316-e36a8014"
+}

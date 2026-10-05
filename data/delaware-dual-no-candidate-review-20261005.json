@@ -1,0 +1,218 @@
+{
+  "schemaVersion": 1,
+  "observedAt": "2026-10-05T21:50:26.719Z",
+  "captureName": "delaware-dual-no-profit-sprint-20261005",
+  "reviewValidated": true,
+  "review": {
+    "schemaVersion": 1,
+    "kind": "conditional_no_pair_review",
+    "id": "delaware-dual-no-candidate-20261005",
+    "tournamentId": "bda92870-621e-47b0-bc3c-3602c5c26f55",
+    "evidenceHash": "5a33a3380f6b2db5a7291840af9969aa074feac9d177444550bd2cc911adcdff",
+    "recordedAt": "2026-10-05T21:47:01.971Z",
+    "expiresAt": "2026-10-05T22:00:00.000Z",
+    "normalResolutionOnly": true,
+    "administrativeRefundGapAcknowledged": true,
+    "legs": [
+      {
+        "marketId": "353",
+        "exchangeId": "1042",
+        "captureMarketId": "353",
+        "outcome": "NO",
+        "rulesHash": "b4d6f5b6df47f22d271d880f6385c6434cb9990222e6b67811ca8a20c374d472",
+        "root": {
+          "node_id": "354",
+          "node_type": "contract",
+          "contract_id": "354",
+          "contract_type": "Election Outcome",
+          "title": "Will the Democratic Party win the Delaware Senate?",
+          "settlement_date": "2026-11-04T17:00:00.000Z",
+          "settled_with": null,
+          "contract_details": {
+            "raceId": "62957",
+            "stageId": "98087",
+            "usState": "DE",
+            "raceName": "U.S. Senate Delaware",
+            "raceStage": "General",
+            "winnerName": "Democratic Party",
+            "officeLevel": "Federal",
+            "contractType": "Election Outcome",
+            "electionDate": "2026-11-03",
+            "resolutionType": "Party Winner"
+          }
+        }
+      },
+      {
+        "marketId": "386",
+        "exchangeId": "1075",
+        "captureMarketId": "386",
+        "outcome": "NO",
+        "rulesHash": "a475d827bbc2d20bd3c0c439dbd0f14835c2a23b38a4bdf479c75f2534cc0f93",
+        "root": {
+          "node_id": "387",
+          "node_type": "contract",
+          "contract_id": "387",
+          "contract_type": "Election Outcome",
+          "title": "Will the Republican Party win the Delaware Senate?",
+          "settlement_date": "2026-11-04T17:00:00.000Z",
+          "settled_with": null,
+          "contract_details": {
+            "raceId": "62957",
+            "stageId": "98087",
+            "usState": "DE",
+            "raceName": "U.S. Senate Delaware",
+            "raceStage": "General",
+            "winnerName": "Republican Party",
+            "officeLevel": "Federal",
+            "contractType": "Election Outcome",
+            "electionDate": "2026-11-03",
+            "resolutionType": "Party Winner"
+          }
+        }
+      }
+    ],
+    "assumptions": [
+      "Same General party-winner race/stage/office/state/date; different Democratic/Republican winners.",
+      "Normal mutual exclusion is conditional; overrides, voids, refunds, affiliation disputes or inconsistent resolution can lose the full package cost.",
+      "Sequential purchases can leave an unmatched share; no atomic execution assumed."
+    ],
+    "scenarios": [
+      {
+        "id": "democratic",
+        "category": "ordinary",
+        "payouts": [
+          0,
+          1
+        ]
+      },
+      {
+        "id": "republican",
+        "category": "ordinary",
+        "payouts": [
+          1,
+          0
+        ]
+      },
+      {
+        "id": "other",
+        "category": "ordinary",
+        "payouts": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "exception",
+        "category": "exception",
+        "payouts": [
+          0,
+          0
+        ]
+      }
+    ]
+  },
+  "rootCaptureFileHashes": [
+    {
+      "marketId": "353",
+      "sha256": "37a2da42f7a4895062b16640ad1a4b75c9e40e5e453da870e330e8ee2116ead9"
+    },
+    {
+      "marketId": "386",
+      "sha256": "7945958e9c027edf0035113bcb05fac823fa4e5298d34bbd6c1bf6c8aa9dcb92"
+    }
+  ],
+  "legs": [
+    {
+      "marketId": "353",
+      "exchangeId": "1042",
+      "side": "NO",
+      "requestStartedAt": "2026-10-05T21:46:49.177Z",
+      "receivedAt": "2026-10-05T21:46:49.372Z",
+      "sourceAt": "2026-10-05T21:46:49.609921900Z",
+      "versionKey": "58314512:2026-10-05T21:46:49.609921900Z",
+      "rootHash": "b4d6f5b6df47f22d271d880f6385c6434cb9990222e6b67811ca8a20c374d472",
+      "rootReceivedAt": "2026-10-05T21:46:36.866Z",
+      "bookResponseHash": "2a7f9f7b715576d287a018601b06ab084b38383388dc3a5e2a20546d1473ec9d",
+      "captureFileSha256": "a2ef13a2d99e911642e85a5b1ad3909532cdb3ed3cfaf0e6980c2597cd3ea52f",
+      "yesBid": "0.910000",
+      "yesAsk": "0.915000",
+      "eligibleBuyDepthOnePercent": 241,
+      "eligibleSellDepthOnePercent": 5,
+      "exactNoAcquisition": "0.090000",
+      "cushionedNoLimit": "0.095000",
+      "cushionedNoLiquidation": "0.080000",
+      "maximumRequestedQuantity": 1
+    },
+    {
+      "marketId": "386",
+      "exchangeId": "1075",
+      "side": "NO",
+      "requestStartedAt": "2026-10-05T21:47:14.165Z",
+      "receivedAt": "2026-10-05T21:47:14.372Z",
+      "sourceAt": "2026-10-05T21:47:14.602046000Z",
+      "versionKey": "58319446:2026-10-05T21:47:14.602046000Z",
+      "rootHash": "a475d827bbc2d20bd3c0c439dbd0f14835c2a23b38a4bdf479c75f2534cc0f93",
+      "rootReceivedAt": "2026-10-05T21:47:01.971Z",
+      "bookResponseHash": "19bb9e662dc3041405e5cc91b18aec5a4fd6eeea3989eee5403ec69fd3e03a78",
+      "captureFileSha256": "d13d4ea918cc97420f3d08d98fdf82ab44763ff90b673426b0d98505ddbfd974",
+      "yesBid": "0.120000",
+      "yesAsk": "0.125000",
+      "eligibleBuyDepthOnePercent": 1030,
+      "eligibleSellDepthOnePercent": 6,
+      "exactNoAcquisition": "0.880000",
+      "cushionedNoLimit": "0.885000",
+      "cushionedNoLiquidation": "0.870000",
+      "maximumRequestedQuantity": 1
+    }
+  ],
+  "quotedCapacityOnly": {
+    "quantity": 1,
+    "exactPackageCost": "0.970000",
+    "cushionedPackageCost": "0.980000",
+    "fullReservationWouldBe": "0.980000",
+    "budget": "1.000000",
+    "minimumOrdinaryScenarioPayout": "1.000000",
+    "conditionalOrdinarySurplus": "0.020000",
+    "zeroPayoutExceptionLoss": "-0.980000",
+    "cushionedLiquidationProceeds": "0.950000",
+    "cushionedImmediateLiquidationPnl": "-0.030000",
+    "bothLegsHaveOnePercentDepth": true,
+    "fundedWithinOneSusqie": true
+  },
+  "timing": {
+    "ruleReviewKnownAt": "2026-10-05T21:47:01.971Z",
+    "earliestBookRequestAt": "2026-10-05T21:46:49.177Z",
+    "lastBookReceiptAt": "2026-10-05T21:47:14.372Z",
+    "wholeWindowSkewMs": 25195,
+    "requiredSkewMs": 10000,
+    "firstBookAgeAtLastReceiptMs": 25000,
+    "researchKnownBeforeBothRequests": false,
+    "cofresh": false,
+    "currentMaximumBookAgeMs": 217542
+  },
+  "accountGate": {
+    "sanitizedEligibilityExists": true,
+    "causalClocksBeforeEarliestRequest": true,
+    "freshThroughBothReceipts": false,
+    "scopedAccountExposureExcluded": false,
+    "rawAccountDataIncluded": false
+  },
+  "strictCapacity": {
+    "positiveConditionalCapacity": false,
+    "orderEligible": false,
+    "canonicalHelperNotCalledReason": "Standalone metadata books have no authenticated publisher sequence/hash; no identity was manufactured to pass the canonical scope gate.",
+    "rejections": [
+      "353 book request precedes completion of386 predicate review",
+      "25.195-second whole capture exceeds10-second cofresh limit",
+      "First book exceeds20-second freshness by receipt of second book",
+      "Full fresh scoped account and later adjacent causal book receipts remain required"
+    ]
+  },
+  "fees": "0.000000",
+  "simulatedFills": 0,
+  "realizedPnl": "0.000000",
+  "competitionOrders": 0,
+  "newAccountClients": 0,
+  "profitabilityEstablished": false,
+  "nextAction": "If pursued, obtain later adjacent source-bound books through the existing serialized collector while preserving prior inventory and the four-book budget. This review grants no activation or fill."
+}
