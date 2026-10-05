@@ -1,0 +1,95 @@
+{
+  "schemaVersion": 1,
+  "at": "2026-10-05T12:52:56.754Z",
+  "implementation": "native_receipt_exit_policy_v1",
+  "candidateBankHash": "7d644c6fab1a3a6ec01c960cefed331d96049ebf95718142d8d6478dcb435d3d",
+  "nativeBackend": {
+    "schemaVersion": 1,
+    "mode": "native_public_book_prefix_v1",
+    "engineHash": "374cffa73e62192363da35e7cc188005e9d2a7d1d27758780d7a7b3f81d1b823",
+    "binaryHash": "cc775b6e91a9f27193a91adea6a5eda40b0a7735fd77b857ed52221835a81fd5",
+    "runtimeLibraryHash": "13bf4e99b0193634ebdeb0bbdeff9753b39f1d04799183f664111014aabf4c2c"
+  },
+  "activationUnchanged": true,
+  "productionEntryExpiresAt": "2026-10-05T03:59:22.131Z",
+  "productionBankHash": "a948c395b14992a019e2180133604b8ee84dd78a9e94d08781efd18fbefc0128",
+  "productionStatus": "entry_window_closed",
+  "productionOrders": 0,
+  "productionRealizedPnl": "0.000000",
+  "collector": {
+    "pid": 5476,
+    "status": "running",
+    "reportedAt": "2026-10-05T12:52:54.624Z",
+    "cycles": 1,
+    "errors": 0
+  },
+  "pids": {
+    "collector": 5476,
+    "dashboard": 20092,
+    "paper": 8236,
+    "metrics": null,
+    "contestActivation": true,
+    "retiredMetricsPid": 11792
+  },
+  "persistentServices": 3,
+  "additionalAccountClients": 0,
+  "checks": {
+    "runnerLifecycle": 54,
+    "productionAuthorityController": 25,
+    "paperNativeParityAndAccounting": 11,
+    "total": 90
+  },
+  "paper": {
+    "calibrated-kansas-poll-20261005-v1": {
+      "at": "2026-10-05T12:52:56.117Z",
+      "bankHash": "3e57289fda56eb58a833fbcf62c8c488064b3e84c0ab0642ece81f6b8549fcce",
+      "sourceSequence": 22260,
+      "failed": false,
+      "wallets": {
+        "1000": {
+          "fills": 1,
+          "closedTrades": 0,
+          "realizedPnl": "0.000000",
+          "liquidationPnl": "-0.015000",
+          "fees": "0.000000"
+        },
+        "3000": {
+          "fills": 1,
+          "closedTrades": 0,
+          "realizedPnl": "0.000000",
+          "liquidationPnl": "-0.015000",
+          "fees": "0.000000"
+        }
+      }
+    },
+    "source-probability-native-20261004-v3": {
+      "at": "2026-10-05T12:52:56.022Z",
+      "bankHash": "3e445d6b7f436cab79245ed588efa627734d8d2a4a6a6b788ac2873582ed4ef2",
+      "sourceSequence": 22260,
+      "failed": false,
+      "wallets": {
+        "1000": {
+          "fills": 3,
+          "closedTrades": 1,
+          "realizedPnl": "0.020000",
+          "liquidationPnl": "0.025000",
+          "fees": "0.000000"
+        },
+        "3000": {
+          "fills": 3,
+          "closedTrades": 1,
+          "realizedPnl": "0.020000",
+          "liquidationPnl": "0.025000",
+          "fees": "0.000000"
+        }
+      }
+    }
+  },
+  "newPolicyActivated": false,
+  "profitabilityEstablished": false,
+  "remaining": [
+    "Kansas short-term paper liquidation P&L remains negative; no closed trade.",
+    "Original collector stop cause remains unresolved; new diagnostic provenance is implemented.",
+    "The checked new policy has no official fills yet; original official entry window is not renewed."
+  ]
+}

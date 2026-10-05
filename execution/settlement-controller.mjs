@@ -8,12 +8,19 @@ import {nativePublicationBinding} from '../live-paper/native-publication.mjs';
 import {runSettlementValue} from '../live-paper/settlement-value-native.mjs';
 import {validateProductionActivation} from './production-activation.mjs';
 import {productionEntryState} from './production-entry-state.mjs';
+import {PROBABILITY_RECEIPT_POLICY} from '../live-paper/probability-receipt.mjs';
+import {RECEIPT_PRODUCTION_POLICY} from './receipt-production-bank.mjs';
 
 const need=(ok,code)=>{if(!ok)throw Error('SETTLEMENT_EXECUTION_'+code);};
 const units=decimalMicros;
 export function validateSettlementBank(bank,activation,universe){
  validateProductionActivation(activation);
- need(bank?.schemaVersion===1&&bank.mode==='baal_settlement_production_v1'&&digest(bank)===activation.strategyBankHash,'BANK');
+ const receipt=activation.strategyId==='probability-receipt-native-v1';
+ need(bank?.schemaVersion===(receipt?2:1)&&bank.mode===(receipt?'baal_probability_receipt_production_v1':'baal_settlement_production_v1')&&digest(bank)===activation.strategyBankHash,'BANK');
+ if(receipt){
+  need(bank.candidates?.length<=3&&bank.paperBinding?.bankHash?.match(/^[a-f0-9]{64}$/)&&bank.paperBinding.policyHash===digest(PROBABILITY_RECEIPT_POLICY),'PAPER_BINDING');
+  need(digest(bank.receiptPolicy)===digest(RECEIPT_PRODUCTION_POLICY)&&bank.policy.minimumEdge==='0.020000'&&bank.policy.maximumSpread==='0.020000','RECEIPT_POLICY');
+ }
  need(bank.candidates?.length>0&&bank.candidates.length<=600&&new Set(bank.candidates.map(c=>c.id)).size===bank.candidates.length,'CANDIDATES');
  for(const c of bank.candidates){need(c.side==='YES'&&c.id===c.marketId+':YES'&&universe.exchanges.some(x=>x.marketId===c.marketId&&x.exchangeId===c.exchangeId)&&/^[a-f0-9]{64}$/.test(c.predicateHash)&&Number.isSafeInteger(c.settlesAtMs)&&c.riskGroups?.length>0,'SCOPE');}
  need(bank.contracts&&bank.candidates.every(c=>/^[a-f0-9]{64}$/.test(bank.contracts[c.marketId]?.rootHash)&&bank.contracts[c.marketId].predicateHash===c.predicateHash&&bank.contracts[c.marketId].exchangeId===c.exchangeId),'CONTRACT_BINDINGS');
@@ -57,8 +64,8 @@ export class SettlementCompetitionController extends CompetitionController{
  nativeInput(book,skipIntent){
   need(this.bankCurrent(),'BANK_CHANGED');
   const now=this.now(),intents=Object.values(this.state.intents),positions=Object.entries(this.state.owned).map(([exchangeId,p])=>{
-   const entry=intents.find(i=>i.exchangeId===exchangeId&&i.action==='buy'&&i.filledQuantity>0);
-   need(entry,'OWNED_SOURCE');return{candidateId:p.marketId+':YES',quantity:p.quantity,cost:p.cost,enteredAtMs:Date.parse(entry.preparedAt)};
+   const entry=intents.filter(i=>i.exchangeId===exchangeId&&i.action==='buy'&&i.filledQuantity>0).at(-1);
+   need(entry,'OWNED_SOURCE');return{candidateId:p.marketId+':YES',quantity:p.quantity,cost:p.cost,enteredAtMs:Date.parse(entry.reconciledFills?.[0]?.filledAt||entry.preparedAt)};
   });
   const contract=this.checkedContracts[book.marketId];
   need(contract&&contract.rootHash===this.bank.contracts[book.marketId].rootHash&&Date.parse(contract.at)<=Date.parse(book.requestStartedAt)&&now-Date.parse(contract.at)<=180000,'CONTRACT_NOT_CURRENT');
@@ -68,7 +75,13 @@ export class SettlementCompetitionController extends CompetitionController{
   const reservations=intents.filter(i=>i.intentId!==skipIntent&&i.action==='buy'&&i.status==='prepared').map(i=>({candidateId:i.marketId+':YES',maximumCost:formatMicros(units(i.price)*BigInt(i.quantity))}));
   const knownAtMs=Math.max(Date.parse(this.account.positions.at),Date.parse(this.account.orders.at));
   const candidates=this.bank.candidates.map(c=>({...structuredClone(c),book:c.exchangeId===book.exchangeId?{requestStartedAtMs:Date.parse(book.requestStartedAt),receivedAtMs:Date.parse(book.receivedAt),availableAtMs:book.productionAvailableAtMs,sequence:book.productionSequence,sourceHash:digest(book),representation:'direct_yes',bids:book.bids,asks:book.asks}:null,account:{positionsAtMs:Date.parse(this.account.positions.at),ordersAtMs:Date.parse(this.account.orders.at),knownAtMs,complete:this.account.positions.complete&&this.account.orders.complete,positionExcluded:this.account.positions.rows.some(p=>p.exchangeId===c.exchangeId&&p.quantity!==0),openOrderExcluded:this.account.orders.rows.some(o=>o.exchangeId===c.exchangeId)}}));
-  return{schemaVersion:1,mode:'settlement_value_policy_v1',asOfMs:now,policy:this.bank.policy,wallet:{capital:this.activation.sizingCapital,cash:formatMicros(conservativeCashFloor(this.cash.amount)),cumulativeBuys:formatMicros(cumulative),positions,reservations},candidates};
+  const input={schemaVersion:1,mode:'settlement_value_policy_v1',asOfMs:now,policy:this.bank.policy,wallet:{capital:this.activation.sizingCapital,cash:formatMicros(conservativeCashFloor(this.cash.amount)),cumulativeBuys:formatMicros(cumulative),positions,reservations},candidates};
+  if(this.bank.mode==='baal_probability_receipt_production_v1'){
+   input.schemaVersion=2;input.mode='probability_receipt_policy_v1';input.receiptPolicy=this.bank.receiptPolicy;
+   const lastExitedAtMs={};for(const i of intents)if(i.action==='sell'&&i.status==='closed'&&i.filledQuantity>0&&!this.state.owned[i.exchangeId]){const id=i.marketId+':YES',at=Date.parse(i.closedAt);lastExitedAtMs[id]=Math.max(lastExitedAtMs[id]||0,at);}
+   input.receiptState={riskExits:Object.fromEntries(Object.entries(this.state.control.exits).map(([exchangeId,x])=>[x.marketId+':YES',x.reason])),lastExitedAtMs};
+  }
+  return input;
  }
  evaluate(book,skipIntent){
   const input=this.nativeInput(book,skipIntent),checked=runSettlementValue({input,dir:path.join(this.dir,'native-decisions',randomUUID()),executable:this.executable});
@@ -86,7 +99,7 @@ export class SettlementCompetitionController extends CompetitionController{
    if(!book||proof?.bankHash!==this.activation.strategyBankHash||proof.bookHash!==digest(book))return false;
    const{decision:d}=this.evaluate(book,intent.intentId);
    const action=intent.action==='buy'?'candidate_buy':'reduce';
-   if(d.action!==action||d.quantity<intent.quantity||intent.action==='buy'&&units(intent.price)>units(d.hardLimitWithCushion))return false;
+   if(d.action!==action||d.quantity<intent.quantity||intent.action==='buy'&&units(intent.price)>units(d.hardLimitWithCushion)||intent.action==='sell'&&this.bank.receiptPolicy&&units(intent.price)<units(d.hardLimitWithCushion))return false;
    return true;
   }catch{return false;}
  }
@@ -107,8 +120,9 @@ export class SettlementCompetitionController extends CompetitionController{
   if(!owned&&!this.entryWindowAdmitted(this.now())){this.entryDecision(book,'WINDOW_BLOCKED',{detailCode:this.reason});return;}
   const {decision:d,proof}=this.evaluate(book);
   this.status='monitoring';this.reason=d.reason;
+  if(d.riskExit&&!this.state.control.exits[book.exchangeId])this.updateControl(c=>{c.exits[book.exchangeId]={marketId,reason:d.riskExit,triggeredAt:new Date(this.now()).toISOString(),triggerBid:book.bids[0].price,sourceVersion:book.versionKey};},{type:'exit_obligation_latched',exchangeId:book.exchangeId,marketId});
   if(!['candidate_buy','reduce'].includes(d.action)||d.quantity<1){this.publish();return;}
-  const action=d.action==='candidate_buy'?'buy':'sell',price=action==='buy'?d.hardLimitWithCushion:book.bids[0].price;
+  const action=d.action==='candidate_buy'?'buy':'sell',price=action==='buy'||this.bank.receiptPolicy?d.hardLimitWithCushion:book.bids[0].price;
   const quantity=Math.min(d.quantity,Number(units(this.activation.maxOrderCost)/units(price)));
   if(quantity<1)return;
   const spec={intentId:'intent-'+randomUUID(),idempotencyKey:randomUUID(),marketId,exchangeId:book.exchangeId,side:'yes',action,quantity,price,expirationDate:new Date(this.now()+30000).toISOString(),attribution:{runId:this.activation.runId,strategyId:this.activation.strategyId,modelHash:this.activation.strategyBankHash,signalId:proof.outputHash,reason:d.reason}};

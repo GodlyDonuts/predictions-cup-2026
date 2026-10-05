@@ -1,3 +1,11 @@
+# October5: native receipt exits implemented; current economics still negative
+
+The separately frozen `probability-receipt-native-v1` policy matches the empirical polling paper strategy:1 share, zero fees,1% depth, adverse tick, profit0.020, stop0.050, two-day horizon and15-minute cooldown. Loss exits remain latched after insufficient depth, research expiry, restart and price recovery. Actual fill time supplies holding age. The new controller retains the same attribution, fresh reconciliation and uncertain-acceptance fences. Ninety targeted correctness cases passed; the original native binary/banks/accounting remain intact. [Implementation](../execution/receipt-production.md).
+
+At12:48:34UTC the new native binary processed actual later public depth and the existing Kansas paper holding: HOLD, cost0.345, full liquidation0.330, net−0.015. No API call, contest order, realized profit or activation occurred from that diagnostic. The candidate is ready to use the measured exits; short-term profitability still lacks evidence.
+
+Collector6904 was absent by12:31UTC; its last saved status was a graceful stop at12:28:31UTC with no error or retained STOP cause. Root cause is unresolved. It was recovered as16352, then the checked lifecycle fix was deployed with its own explicit STOP and preserved activation. Current PIDs are recorded in data/current-runtime-pids.json and must be rechecked. The new independent lifecycle record distinguishes signals/markers from status-publication failure; the latter now closes the source as a failure. Paper8236/dashboard20092 stayed alive, and no extra service or account client was started.
+
 # October5: one empirical polling strategy now trading in paper
 
 Following the human's instruction to focus exclusively on profitability, one separately frozen Kansas paper cohort is active: `calibrated-kansas-poll-20261005-v1`, market356 YES/exchange1045. It uses independently matched historical polling/final outcomes, individual-poll dispersion with equal total weight per race, and the original September15–16 Emerson poll and verified ballot. Model construction and chronology are documented in [poll calibration](../research/poll-calibration-v1/README.md). Estimated settlement value is not realized trading profit.

@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "at": "2026-10-05T12:48:34.622Z",
+  "kind": "file_only_native_proposal_against_live_paper_evidence",
+  "paperBankHash": "3e57289fda56eb58a833fbcf62c8c488064b3e84c0ab0642ece81f6b8549fcce",
+  "candidateBankHash": "7d644c6fab1a3a6ec01c960cefed331d96049ebf95718142d8d6478dcb435d3d",
+  "sourceHash": "53ed818af123d29b4c401f588db8c186a3ac26e2661de18e1cd870cb57696f42",
+  "sourceBytes": 48171506,
+  "sourceSequence": 22220,
+  "nativeBackend": {
+    "schemaVersion": 1,
+    "mode": "native_public_book_prefix_v1",
+    "engineHash": "374cffa73e62192363da35e7cc188005e9d2a7d1d27758780d7a7b3f81d1b823",
+    "binaryHash": "cc775b6e91a9f27193a91adea6a5eda40b0a7735fd77b857ed52221835a81fd5",
+    "runtimeLibraryHash": "13bf4e99b0193634ebdeb0bbdeff9753b39f1d04799183f664111014aabf4c2c"
+  },
+  "inputHash": "cc821d5c1c321c1781b843ec19b3d7567ca1472956dcd52e73f9a04d1f382b6a",
+  "outputHash": "99a88a8f13548e9f96382de793330b01d12e6114ec896d85a0031f48568e1801",
+  "wallMs": 48.23239999999987,
+  "decisions": [
+    {
+      "candidateId": "356:YES",
+      "marketId": "356",
+      "exchangeId": "1045",
+      "side": "YES",
+      "quantity": 0,
+      "action": "hold",
+      "reason": "receipt_exit_threshold_not_reached",
+      "executionAuthority": false,
+      "orderEligible": false,
+      "worstCaseHeldLoss": "0.345000",
+      "holdingAgeMs": 1974714,
+      "liquidation": {
+        "complete": true,
+        "observedCapacityShares": 1,
+        "estimatedProceeds": "0.330000",
+        "estimatedPnl": "-0.015000"
+      },
+      "effectiveBid": "0.330000"
+    }
+  ],
+  "officialAccountPositionsUsed": false,
+  "networkRequests": 0,
+  "competitionOrders": 0,
+  "executionAuthority": false,
+  "profitabilityEstablished": false
+}

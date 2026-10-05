@@ -96,6 +96,7 @@ async function run(stopAt,{dipEnabled=false,officialSync=false,invalidBasket=fal
     }
     async pause(delay){
       pauses.push({cycle,delay});
+      if(cycle===1&&stopAt==='heartbeat-status-failure'){inHeartbeat=true;try{statusHeartbeat();}finally{inHeartbeat=false;}}
       if(cycle===0&&stopAt==='startup-stop'){stop();throw Error('Stopped');}
       if(cycle===0)now+=delay;
       if((cycle===1&&stopAt==='cycle-wait')||(cycle===2&&stopAt==='outage-wait')){stop();throw Error('Stopped');}
@@ -133,8 +134,10 @@ async function run(stopAt,{dipEnabled=false,officialSync=false,invalidBasket=fal
     if(['config.json','price-universe.json','depth-plan.json','dashboard.html'].some(n=>p===path.join(root,n)))return fs.readFileSync(p,'utf8');
     throw Error('Unexpected file access '+p);
   }};
+  let statusHeartbeat,inHeartbeat=false;
   const process={argv:['node',path.join(root,'runner.mjs'),'--cycles',String(maxCycles)],env:{LOCALAPPDATA:'/synthetic'},pid:12345,on:(name,f)=>listeners[name]=f,exit(){throw Error('Unexpected exit');},exitCode:0};
   const atomicJson=(p,v)=>{
+    if(stopAt==='heartbeat-status-failure'&&inHeartbeat&&!triggered&&p.endsWith('stats.json')&&v.runtime?.cycles===1){triggered=true;const e=Error('PRIVATE_EXCEPTION_SENTINEL');e.code='EACCES';throw e;}
     if(p.endsWith('book-scheduler.json')&&v.comparisonSampling){
       if(stopAt==='sampling-plan-persistence')throw Error('Synthetic sampling persistence failure');
       samplingWrites.push({at:iso(),requestCount:requests.length,state:structuredClone(v.comparisonSampling)});
@@ -169,7 +172,7 @@ async function run(stopAt,{dipEnabled=false,officialSync=false,invalidBasket=fal
         observation:{pairId:'b'.repeat(64),at:stamp(1000),status:'apparent_positive_basket',apparentPositive:true,newPairEvidence:true,independentPair:false,positivePersistenceCount:1,eligibleForExecution:false,fills:null,pnl:null,pairReceipts:[stamp(0),stamp(1000)],pairVersions:['10:'+timestamp(stamp(0)),'11:'+timestamp(stamp(1000))],basket:{quantity:5,totalCost:'4.975000',conditionalMargin:'0.025000',marginalUnitCost:'0.995000',depthFractionBps:100}}}];
     },status(){return {status:'running',sourceSequence:123,observerSequence:1};},close(){}};},
     sampleEquity(s,c,at){if(stopAt==='sampling-failure'&&cycle===2){stop();throw Error('Synthetic sample failure');}return model.sampleEquity(s,c,at);},
-    process,console:{log(){},error(){}},AbortController,structuredClone,Date:Clock,setInterval:()=>1,clearInterval(){},moduleUrl:new URL('./runner.mjs',import.meta.url).href};
+    process,console:{log(){},error(){}},AbortController,structuredClone,Date:Clock,setInterval:(fn,ms)=>{if(ms===3000)statusHeartbeat=fn;return 1;},clearInterval(){},moduleUrl:new URL('./runner.mjs',import.meta.url).href};
   const body=source.replace(/^import .*;\r?\n/gm,'').replaceAll('import.meta.url','moduleUrl');
   await vm.runInNewContext('(async()=>{'+body+'\n})()',bindings);
   return {pricePublications,commits,process,memory,requests,publications,triggered,claimWrites,pairReadClaims,samplingWrites,samplingRequests,pauses,officialCalls};
@@ -181,6 +184,12 @@ test('real runner captures four scoped metadata reads once before cycles and gra
   assert.equal(evidence[0].event.evidence.orderEligible,false);
   assert.equal(r.requests.filter(p=>/^\/markets\/(381|382)(\/nodes)?\?tournamentId=/.test(p)).length,4);
   assert.equal(r.commits.filter(x=>x.event.type==='cycle').length,2);
+});
+
+test('status-heartbeat failure retains sanitized provenance and fails instead of looking like a human STOP',async()=>{
+ const r=await run('heartbeat-status-failure');assert.equal(r.process.exitCode,1);assert.equal(r.triggered,true);
+ const last=r.commits.at(-1);assert.equal(last.event.type,'stopped');assert.equal(last.event.stopProvenance.cause,'status_publication_failed');assert.equal(last.event.stopProvenance.errorCode,'EACCES');
+ const stats=JSON.parse([...r.memory.entries()].find(([p])=>p.endsWith('paper-runtime'+path.sep+'stats.json'))[1]);assert.equal(stats.runtime.status,'failed');assert.equal(r.publications.at(-1).reason,'COLLECTOR_FAILURE');assert.equal(JSON.stringify(stats).includes('PRIVATE_EXCEPTION_SENTINEL'),false);
 });
 test('real collector shares its existing slots between prior held paper risk and new empirical research',async()=>{
  const r=await run(null,{dipEnabled:true,nativeCache:true,probabilityHeld:['297'],probabilityCompanion:['356'],maxCycles:2});

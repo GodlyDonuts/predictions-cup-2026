@@ -96,8 +96,16 @@ const release=lock(path.join(process.env.LOCALAPPDATA||workspace,'SigTradingCup'
 let cleaned=false;function cleanup(){if(!cleaned){cleaned=true;release();}}
 process.on('exit',cleanup);
 const control=new AbortController();let stopping=false;
-const stop=()=>{stopping=true;control.abort();};process.on('SIGINT',stop);process.on('SIGTERM',stop);
-const stopWatch=setInterval(()=>{if(fs.existsSync(stopFile)||fs.existsSync(paperStop)||fs.existsSync(collectorStop))stop();},200);
+const stop=(cause='unspecified',errorCode=null)=>{
+ if(stopping)return;
+ runtime.stopProvenance={at:new Date().toISOString(),cause,errorCode:/^[A-Z0-9_]{1,80}$/.test(errorCode||'')?errorCode:null,pid:process.pid};
+ // Preserve the cause independently when a status-file failure caused shutdown.
+ // Exception messages, paths, account data and headers never enter this record.
+ try{const fd=fs.openSync(path.join(runtimeDir,'collector-lifecycle.jsonl'),'a',0o600);try{fs.writeSync(fd,JSON.stringify(runtime.stopProvenance)+'\n');fs.fsyncSync(fd);}finally{fs.closeSync(fd);}}catch{}
+ console.log(JSON.stringify({event:'collector_stopping',...runtime.stopProvenance}));
+ stopping=true;control.abort();
+};process.on('SIGINT',()=>stop('SIGINT'));process.on('SIGTERM',()=>stop('SIGTERM'));
+const stopWatch=setInterval(()=>{for(const [file,cause]of [[stopFile,'workspace_STOP'],[paperStop,'runtime_STOP'],[collectorStop,'COLLECTOR_STOP']])if(fs.existsSync(file)){stop(cause);break;}},200);
 let journal,state,api,server,heartbeat,competition,realtime,realtimeCapture,basketRelationships,contractEvidence,bookPublication,basketFollowupSource,basketFollowupBankHash,comparisonRiskSource;
 let productionMetadata;
 const samplingSessionId=randomUUID();
@@ -297,7 +305,7 @@ try{
     if(req.url==='/'){res.setHeader('Content-Type','text/html; charset=utf-8');return res.end(html);}res.writeHead(404);res.end();
   });
   await new Promise((resolve,reject)=>{server.once('error',reject);server.listen(c.port,'127.0.0.1',resolve);});
-  heartbeat=setInterval(()=>{try{persistStatus();}catch{runtime.status='failed';stop();}},3000);
+  heartbeat=setInterval(()=>{try{persistStatus();}catch(e){runtime.status='failed';stop('status_publication_failed',e.code);}},3000);
   await connectTournament(api,c,{stopped:()=>stopping,now:Date.now,pause:pauseUntilNextRead,onRetry:async({attempts,delay,reason})=>{
     const at=new Date().toISOString();invalidate(state,null,at,'startup_connection_unavailable');
     publishBookEvent('invalidate',{marketId:null,reason:'ACCOUNT_OUTAGE'});
@@ -428,6 +436,8 @@ try{
       if(runtime.cycleWait.delayMs>0)await pauseUntilNextRead(runtime.cycleWait.delayMs);
     }
   }
-  runtime.status='stopped';commit({type:'stopped'});persistStatus();
-}catch(e){const stopped=stopping&&!e.durableRecordingFailed;if(state){runtime.status=stopped?'stopped':'failed';runtime.errors.push({at:new Date().toISOString(),reason:stopped?'stop_requested':e.message});try{persistStatus();}catch{}}console.error(stopped?'Paper runner stopped':'Paper runner failed; see local stats');process.exitCode=stopped?0:1;
-}finally{clearInterval(stopWatch);clearInterval(heartbeat);try{publishBookEvent('close',stopping||runtime.status==='stopped'?'STOP':'COLLECTOR_FAILURE');}finally{try{collectorMarketScreen?.close();await nativeDip?.close();await nativeQuote?.close();await realtime?.stop();}finally{comparisonRiskSource?.close();basketFollowupSource?.close();realtimeCapture?.close();competition?.close();api?.close();server?.close();cleanup();}}}
+  runtime.status=runtime.stopProvenance?.cause==='status_publication_failed'?'failed':'stopped';
+  if(runtime.status==='failed')process.exitCode=1;
+  commit({type:'stopped',stopProvenance:runtime.stopProvenance||null});persistStatus();
+}catch(e){const stopped=stopping&&!e.durableRecordingFailed&&runtime.stopProvenance?.cause!=='status_publication_failed';if(state){runtime.status=stopped?'stopped':'failed';runtime.errors.push({at:new Date().toISOString(),reason:stopped?'stop_requested':e.message});try{persistStatus();}catch{}}console.error(stopped?'Paper runner stopped':'Paper runner failed; see local stats');process.exitCode=stopped?0:1;
+}finally{clearInterval(stopWatch);clearInterval(heartbeat);try{publishBookEvent('close',runtime.status==='failed'?'COLLECTOR_FAILURE':'STOP');}finally{try{collectorMarketScreen?.close();await nativeDip?.close();await nativeQuote?.close();await realtime?.stop();}finally{comparisonRiskSource?.close();basketFollowupSource?.close();realtimeCapture?.close();competition?.close();api?.close();server?.close();cleanup();}}}

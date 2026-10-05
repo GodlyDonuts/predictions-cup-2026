@@ -1,0 +1,118 @@
+{
+  "schemaVersion": 1,
+  "at": "2026-10-05T12:46:55.409Z",
+  "bankHash": "7d644c6fab1a3a6ec01c960cefed331d96049ebf95718142d8d6478dcb435d3d",
+  "paperBankHash": "3e57289fda56eb58a833fbcf62c8c488064b3e84c0ab0642ece81f6b8549fcce",
+  "nativeBackend": {
+    "schemaVersion": 1,
+    "mode": "native_public_book_prefix_v1",
+    "engineHash": "374cffa73e62192363da35e7cc188005e9d2a7d1d27758780d7a7b3f81d1b823",
+    "binaryHash": "cc775b6e91a9f27193a91adea6a5eda40b0a7735fd77b857ed52221835a81fd5",
+    "runtimeLibraryHash": "13bf4e99b0193634ebdeb0bbdeff9753b39f1d04799183f664111014aabf4c2c"
+  },
+  "bank": {
+    "schemaVersion": 2,
+    "mode": "baal_probability_receipt_production_v1",
+    "cutoff": "2026-10-05T12:06:47.241Z",
+    "nativeBackend": {
+      "schemaVersion": 1,
+      "mode": "native_public_book_prefix_v1",
+      "engineHash": "374cffa73e62192363da35e7cc188005e9d2a7d1d27758780d7a7b3f81d1b823",
+      "binaryHash": "cc775b6e91a9f27193a91adea6a5eda40b0a7735fd77b857ed52221835a81fd5",
+      "runtimeLibraryHash": "13bf4e99b0193634ebdeb0bbdeff9753b39f1d04799183f664111014aabf4c2c"
+    },
+    "paperBinding": {
+      "bankHash": "3e57289fda56eb58a833fbcf62c8c488064b3e84c0ab0642ece81f6b8549fcce",
+      "policyHash": "b2e671e4315459812150d86e0a005cce1d52ea9e6f50364b63344ac96f5db2eb",
+      "configHash": "a12940500ae95f0a66761a716ab456a38a7b4eb50f06c374252328845e25e2e8",
+      "cutoff": "2026-10-05T12:06:47.241Z",
+      "researchHashes": [
+        {
+          "id": "kansas-democratic-empirical-poll-20261005-v1",
+          "hash": "e5797755dbf9e74710240ddc11ae380e82dbf94d45a7a57f406815afd8175e5e"
+        }
+      ]
+    },
+    "receiptPolicy": {
+      "takeProfit": "0.020000",
+      "stopLoss": "0.050000",
+      "maximumHoldMs": 172800000,
+      "cooldownMs": 900000,
+      "orderShares": 1
+    },
+    "policy": {
+      "minimumEdge": "0.020000",
+      "maximumSpread": "0.020000",
+      "maximumBookAgeMs": 20000,
+      "maximumResearchAgeMs": 21600000,
+      "fractionalKellyBps": 2500,
+      "slippageTicks": 1,
+      "depthFractionBps": 100,
+      "maxOrderCost": "1.000000",
+      "maxExposure": "10.000000",
+      "cashReserve": "90.000000",
+      "cumulativeBuyBudget": "25.000000",
+      "groupCaps": {
+        "all": "10.000000",
+        "market_356": "1.000000"
+      }
+    },
+    "contracts": {
+      "356": {
+        "rootHash": "39acdb6801c5f8f10f675de9fa3f3aa997c5c20788e6790e1d3d21eba8e76156",
+        "exchangeId": "1045",
+        "predicateHash": "39acdb6801c5f8f10f675de9fa3f3aa997c5c20788e6790e1d3d21eba8e76156"
+      }
+    },
+    "candidates": [
+      {
+        "id": "356:YES",
+        "marketId": "356",
+        "exchangeId": "1045",
+        "side": "YES",
+        "predicateHash": "39acdb6801c5f8f10f675de9fa3f3aa997c5c20788e6790e1d3d21eba8e76156",
+        "riskGroups": [
+          "all",
+          "market_356"
+        ],
+        "settlesAtMs": 1793811600000,
+        "research": {
+          "id": "kansas-democratic-empirical-poll-20261005-v1",
+          "predicateHash": "39acdb6801c5f8f10f675de9fa3f3aa997c5c20788e6790e1d3d21eba8e76156",
+          "side": "YES",
+          "lower": "0.600319",
+          "upper": "0.643157",
+          "recordedAtMs": 1791201876794,
+          "sourceAtMs": 1791201876794,
+          "expiresAtMs": 1791223476794,
+          "method": "subjective_range",
+          "settlementReviewed": true,
+          "flags": [],
+          "sources": [
+            {
+              "url": "https://emersoncollegepolling.com/kansas-2026/",
+              "contentHash": "4da5aa879c29f20ed9bbed7c5feb6e8b4f2bb34b044a27e9667652286f3c47af"
+            },
+            {
+              "url": "https://meadeco.org/367/2026-General-Election-Information",
+              "contentHash": "9ee9ba9fb36a4c429082eee6a5d2085988efb334d5eea5748b584961f940c22c"
+            },
+            {
+              "url": "https://raw.githubusercontent.com/fivethirtyeight/data/master/pollster-ratings/raw_polls.csv",
+              "contentHash": "9f0b185506e59117c150fb988e73b612346effe8e3a8f0d90fdafcad07f54756"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "activationWritten": false,
+  "accountingReset": false,
+  "ordersSubmitted": 0,
+  "profitabilityEstablished": false,
+  "limitations": [
+    "Production lifetime purchase cap25 is tighter than paper100. No existing run/window is changed.",
+    "Paper fill latencies are counterfactual. Official order receipts and reconciled fills remain authoritative.",
+    "This candidate follows paper short-term exits; estimated settlement edge is not evidence of short-term profit."
+  ]
+}

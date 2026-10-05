@@ -13,7 +13,15 @@ pub struct Input {
     policy: Policy,
     wallet: Wallet,
     candidates: Vec<Candidate>,
+    receipt_policy: Option<ReceiptPolicy>,
+    receipt_state: Option<ReceiptState>,
 }
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+struct ReceiptPolicy { take_profit: String, stop_loss: String, maximum_hold_ms: i64, cooldown_ms: i64, order_shares: i64 }
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+struct ReceiptState { risk_exits: BTreeMap<String,String>, last_exited_at_ms: BTreeMap<String,i64> }
 #[derive(Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 struct Policy {
@@ -90,7 +98,14 @@ fn nonnegative(s: &str) -> Result<i128, String> { let n = amount(s)?; need(n >= 
 
 impl Input {
     fn validate(&self) -> Result<(), String> {
-        need(self.schema_version == 1 && self.mode == "settlement_value_policy_v1" && clock(self.as_of_ms), "INPUT")?;
+        let receipt = self.schema_version == 2 && self.mode == "probability_receipt_policy_v1";
+        need((receipt || self.schema_version == 1 && self.mode == "settlement_value_policy_v1") && clock(self.as_of_ms), "INPUT")?;
+        need(receipt == self.receipt_policy.is_some() && receipt == self.receipt_state.is_some(), "RECEIPT_BINDING")?;
+        if let Some(r) = &self.receipt_policy {
+            need(amount(&r.take_profit)? == 20000 && amount(&r.stop_loss)? == 50000 && r.maximum_hold_ms == 172800000 && r.cooldown_ms == 900000 && r.order_shares == 1
+                && amount(&self.policy.minimum_edge)? == 20000 && amount(&self.policy.maximum_spread)? == 20000 && self.policy.slippage_ticks == 1 && self.policy.depth_fraction_bps == 100
+                && self.candidates.len() <= 3 && self.wallet.positions.iter().all(|p| p.quantity == 1), "RECEIPT_POLICY")?;
+        }
         let p = &self.policy;
         need((1..=2500).contains(&p.fractional_kelly_bps) && (0..=5).contains(&p.slippage_ticks) && (1..=1000).contains(&p.depth_fraction_bps)
             && (1000..=20000).contains(&p.maximum_book_age_ms) && (1000..=604800000).contains(&p.maximum_research_age_ms), "POLICY")?;
@@ -132,6 +147,10 @@ impl Input {
         need(nonnegative(&self.wallet.cumulative_buys)? >= held_basis, "PURCHASE_ACCOUNTING")?;
         let mut reserved = BTreeSet::new();
         for r in &self.wallet.reservations { need(ids.contains(&r.candidate_id) && reserved.insert(&r.candidate_id), "RESERVATION")?; positive(&r.maximum_cost)?; }
+        if let Some(s) = &self.receipt_state {
+            for (id, reason) in &s.risk_exits { need(held.contains(id) && ["stop_loss","holding_timeout"].contains(&reason.as_str()), "RISK_EXIT_BINDING")?; }
+            for (id, at) in &s.last_exited_at_ms { need(ids.contains(id) && !held.contains(id) && clock(*at) && *at <= self.as_of_ms, "COOLDOWN_BINDING")?; }
+        }
         Ok(())
     }
 }
@@ -201,6 +220,34 @@ pub fn run(i: &Input) -> Result<Value, String> {
                 Err(reason) => { d["liquidation"] = Value::Null; d["liquidationUnavailableReason"] = json!(reason); }
             }
         }
+        if let (Some(rp), Some(rs), Some(pos)) = (&i.receipt_policy, &i.receipt_state, pos) {
+            // Owned exits use fresh executable depth even after research expires.
+            // A previously triggered risk exit stays latched through price recovery.
+            match book_gate(i, c, true) {
+                Err(reason) => { d["action"] = json!("review_required"); d["reason"] = json!(reason); }
+                Ok(b) => {
+                    let bid = (price(&b.bids[0].price)? - p.slippage_ticks*TICK).max(0);
+                    let basis = amount(&pos.cost)? / pos.quantity as i128;
+                    let risk = rs.risk_exits.get(&c.id).map(String::as_str).or_else(|| {
+                        if basis-bid >= amount(&rp.stop_loss).unwrap() { Some("stop_loss") }
+                        else if i.as_of_ms-pos.entered_at_ms >= rp.maximum_hold_ms { Some("holding_timeout") } else { None }
+                    });
+                    d["effectiveBid"] = json!(money(bid));
+                    if risk.is_some() || bid-basis >= amount(&rp.take_profit)? {
+                        d["action"] = json!("reduce"); d["reason"] = json!(risk.unwrap_or("take_profit"));
+                        d["riskExit"] = json!(risk);
+                        d["quantity"] = json!((pos.quantity as i128).min(b.bids[0].quantity as i128*p.depth_fraction_bps/10000));
+                        d["hardLimitWithCushion"] = json!(money(bid.max(TICK)));
+                    } else { d["action"] = json!("hold"); d["reason"] = json!("receipt_exit_threshold_not_reached"); }
+                }
+            }
+            decisions.insert(c.id.clone(), d); continue;
+        }
+        if let (Some(rp), Some(rs)) = (&i.receipt_policy, &i.receipt_state) {
+            if rs.last_exited_at_ms.get(&c.id).is_some_and(|at| i.as_of_ms-at < rp.cooldown_ms) {
+                d["reason"] = json!("cooldown"); decisions.insert(c.id.clone(), d); continue;
+            }
+        }
         match gate(i, c, pos.is_some()) {
             Err(reason) => { d["reason"] = json!(reason); if pos.is_some() { d["action"] = json!("review_required"); } }
             Ok((r, b)) => {
@@ -240,7 +287,7 @@ pub fn run(i: &Input) -> Result<Value, String> {
             if v >= SCALE || amount(&r.lower)?-v < amount(&p.minimum_edge)? { break; }
             let capacity = l.quantity as i128*p.depth_fraction_bps/10000;
             let kelly_cost = capital*(amount(&r.lower)?-v)*p.fractional_kelly_bps/(SCALE-v)/10000;
-            let q = (available+capacity).min(cap.min(kelly_cost)/v);
+            let q = if i.receipt_policy.is_some() {(available+capacity).min(cap/v).min(1)} else {(available+capacity).min(cap.min(kelly_cost)/v)};
             if q > chosen_q && q >= available { chosen_q = q; chosen_cost = actual_cost+(q-available)*v; chosen_limit = v; }
             available += capacity; actual_cost += capacity*v;
             if q < available { break; }
@@ -257,7 +304,7 @@ pub fn run(i: &Input) -> Result<Value, String> {
         d["scenarioSettlementSurplusRange"] = json!([money(chosen_q*amount(&r.lower)?-maximum_cost),money(chosen_q*amount(&r.upper)?-maximum_cost)]);
         d["conditionalOrdinaryOutcomePnl"] = json!({"win":money(chosen_q*SCALE-maximum_cost),"lose":money(-maximum_cost)});
     }
-    Ok(json!({"schemaVersion":1,"mode":"settlement_value_policy_diagnostic_v1","asOfMs":i.as_of_ms,"engineHash":env!("BAAL_ENGINE_HASH"),
+    Ok(json!({"schemaVersion":if i.receipt_policy.is_some(){2}else{1},"mode":if i.receipt_policy.is_some(){"probability_receipt_policy_diagnostic_v1"}else{"settlement_value_policy_diagnostic_v1"},"asOfMs":i.as_of_ms,"engineHash":env!("BAAL_ENGINE_HASH"),
         "decisions":decisions.into_values().collect::<Vec<_>>(),"heldAcquisitionRisk":money(held),"existingReservedCost":money(reserved),"riskBreaches":risk_breaches,
         "initialAdmissionBudget":money(initial_budget),"proposedMaximumCost":money(added),"remainingAdmissionBudget":money(budget),"groupExposureAfterReservations":group_used.into_iter().map(|(g,n)|(g,money(n))).collect::<BTreeMap<_,_>>(),
         "fees":0,"fills":0,"realizedPnl":null,"competitionOrders":0,"networkRequests":0,"executionAuthority":false,"profitabilityEstablished":false,
@@ -265,7 +312,7 @@ pub fn run(i: &Input) -> Result<Value, String> {
         "Greedy fractional Kelly based on the lower supplied scenario is a bounded sizing heuristic, not a joint optimal portfolio or calibrated loss probability.",
         "All correlated exposures must be declared in risk groups; missing economic correlations cannot be inferred from identifiers.",
         "Checked depth and slippage bound a proposed acquisition reservation; there is no later-request confirmation, queue model, order or fill.",
-        "Holding policy has no arbitrary two-day timeout or price-only stop. Invalid or expired research requires review and preserves held risk without estimating a payout.",
+        if i.receipt_policy.is_some(){"Receipt strategy exits use the same adverse tick, fixed profit/loss thresholds and two-day horizon as the frozen paper strategy. A proposal is not a subsequent fill or profit."}else{"Holding policy has no arbitrary two-day timeout or price-only stop. Invalid or expired research requires review and preserves held risk without estimating a payout."},
         "Canonical NO complements describe payoff and book diagnostics, not an authenticated REST NO submission price basis.",
         "Liquidation estimates require the entire held quantity at fractional sampled depth. Settlement scenario value is separate from realized and liquidation profit."]}))
 }

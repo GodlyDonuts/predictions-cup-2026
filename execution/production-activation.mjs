@@ -16,7 +16,7 @@ export function productionAuthorityFields(a){
  return ['handoffId','releaseCommentId','ackCommentId'];
 }
 export function validateProductionActivation(a){
- need(a?.schemaVersion===2&&a.enabled===true&&a.ownerId==='Codex'&&a.tournamentId===TID&&/^sig-pilot-[a-z0-9-]{1,64}$/.test(a.runId)&&a.strategyId==='settlement-value-native-v1','ACTIVATION');
+ need(a?.schemaVersion===2&&a.enabled===true&&a.ownerId==='Codex'&&a.tournamentId===TID&&/^sig-pilot-[a-z0-9-]{1,64}$/.test(a.runId)&&['settlement-value-native-v1','probability-receipt-native-v1'].includes(a.strategyId),'ACTIVATION');
  need(hash(a.handoffHash)&&hash(a.strategyBankHash)&&typeof a.handoffId==='string'&&comment(a.ackCommentId),'HANDOFF');
  productionAuthorityFields(a);
  need(a.feeBps===0&&a.depthFractionBps===100&&a.maxManagedMarkets===3,'POLICY');

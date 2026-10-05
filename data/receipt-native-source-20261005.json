@@ -1,0 +1,31 @@
+{
+  "sourceFiles": [
+    "Cargo.toml",
+    "Cargo.lock",
+    "build.rs",
+    ".cargo/config.toml",
+    "src/main.rs",
+    "src/money.rs",
+    "src/types.rs",
+    "src/capture.rs",
+    "src/cache.rs",
+    "src/engine.rs",
+    "src/intent_observation.rs",
+    "src/replay.rs",
+    "src/trace.rs",
+    "src/sweep.rs",
+    "src/evaluation.rs",
+    "src/publication.rs",
+    "src/market_observations.rs",
+    "src/quote_wallet.rs",
+    "src/quote_replay.rs",
+    "src/quote_recovery_v2.rs",
+    "src/quote_diagnostics.rs",
+    "src/quote_markouts.rs",
+    "src/quote_sides.rs",
+    "src/quote_endpoints.rs",
+    "src/quote_mechanisms.rs",
+    "src/settlement_value.rs"
+  ],
+  "engineHash": "374cffa73e62192363da35e7cc188005e9d2a7d1d27758780d7a7b3f81d1b823"
+}

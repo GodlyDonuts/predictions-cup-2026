@@ -10,15 +10,17 @@ import {digest} from '../live-paper/model.mjs';
 import {payloadHash} from './core.mjs';
 import {sha} from '../live-paper/native-dip-proof-v1.mjs';
 import {nativeExecutable} from '../live-paper/rust-backend.mjs';
+import {PROBABILITY_RECEIPT_POLICY} from '../live-paper/probability-receipt.mjs';
 
 const TID='bda92870-621e-47b0-bc3c-3602c5c26f55',iso=n=>new Date(n).toISOString();
 function fixture(t,options={}){
  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'baal-production-'));let now=Date.parse('2026-10-04T21:00:00.000Z'),controller;
  const snapshot=JSON.parse(fs.readFileSync(new URL('../data/settlement-value-snapshot-1791144422978.json',import.meta.url))),nativeBackend=snapshot.nativeBackend??snapshot.native?.nativeBackend;
  // Use the independently verified executable graph, never a mock decision.
- const binding=nativeBackend??JSON.parse(fs.readFileSync(new URL('../data/settlement-value-milestone-20261004.json',import.meta.url))).nativeBackend;
- assert.equal(sha(fs.readFileSync(nativeExecutable)),binding.binaryHash);
- const build=path.join(dir,'native-builds',binding.binaryHash);fs.mkdirSync(build,{recursive:true});fs.copyFileSync(nativeExecutable,path.join(build,'baal-backend.exe'));fs.copyFileSync(path.join(path.dirname(nativeExecutable),'libunwind.dll'),path.join(build,'libunwind.dll'));
+ const executable=options.receipt?path.resolve('backend-rust/target/receipt-strategy-20261005/release/baal-backend.exe'):nativeExecutable;
+ const binding=options.receipt?{schemaVersion:1,mode:'native_public_book_prefix_v1',binaryHash:sha(fs.readFileSync(executable)),runtimeLibraryHash:sha(fs.readFileSync(path.join(path.dirname(executable),'libunwind.dll'))),engineHash:JSON.parse(fs.readFileSync('data/receipt-native-source-20261005.json')).engineHash}:(nativeBackend??JSON.parse(fs.readFileSync(new URL('../data/settlement-value-milestone-20261004.json',import.meta.url))).nativeBackend);
+ assert.equal(sha(fs.readFileSync(executable)),binding.binaryHash);
+ const build=path.join(dir,'native-builds',binding.binaryHash);fs.mkdirSync(build,{recursive:true});fs.copyFileSync(executable,path.join(build,'baal-backend.exe'));fs.copyFileSync(path.join(path.dirname(executable),'libunwind.dll'),path.join(build,'libunwind.dll'));
  const universe={exchanges:[{marketId:'377',exchangeId:'700',option:'YES'}]},handoff={schemaVersion:1,handoffId:'daenerys-to-baal-fixture',releaseCommentId:123,ackCommentId:124,formerWriter:'Daenerys',executionOwner:'Codex',writerStopped:true,inFlightResolved:true,formerReadsPerMinute:0,formerWritesPerMinute:0,releasedAt:iso(now-10000),reconciledAt:iso(now-9000),acknowledgedAt:iso(now-8000)};
  const policy={minimumEdge:'0.020000',maximumSpread:'0.050000',maximumBookAgeMs:20000,maximumResearchAgeMs:21600000,fractionalKellyBps:2500,slippageTicks:1,depthFractionBps:100,maxOrderCost:'1.000000',maxExposure:'10.000000',cashReserve:'50000.000000',cumulativeBuyBudget:'25.000000',groupCaps:{national:'5.000000',race1:'2.000000'}};
  const research={id:'fixture_forecast',predicateHash:'a'.repeat(64),side:'YES',lower:'0.800000',upper:'0.900000',recordedAtMs:now-7000,sourceAtMs:now-7500,expiresAtMs:now+3600000,method:'subjective_range',settlementReviewed:true,flags:[],sources:[{url:'https://example.org/fixture',contentHash:'b'.repeat(64)}]};
@@ -26,6 +28,7 @@ function fixture(t,options={}){
  const root={node_type:'contract',contract_type:'Election Outcome',contract_details:{resolutionType:'Party Winner',winnerName:'Republican Party'},settled_with:null};
  const bank={schemaVersion:1,mode:'baal_settlement_production_v1',cutoff:iso(now-6000),nativeBackend:binding,policy,contracts:{'377':{rootHash:payloadHash(root),exchangeId:'700',predicateHash:research.predicateHash}},candidates:[{id:'377:YES',marketId:'377',exchangeId:'700',side:'YES',predicateHash:'a'.repeat(64),riskGroups:['national','race1'],settlesAtMs:now+30*86400000,research}]};
  const activation={schemaVersion:2,enabled:true,ownerId:'Codex',tournamentId:TID,runId:'sig-pilot-native-fixture',strategyId:'settlement-value-native-v1',handoffId:handoff.handoffId,handoffHash:payloadHash(handoff),releaseCommentId:123,ackCommentId:124,strategyBankHash:digest(bank),feeBps:0,depthFractionBps:100,maxManagedMarkets:3,maxOrderCost:policy.maxOrderCost,maxAggregateCost:policy.maxExposure,maxCumulativeBuyCost:policy.cumulativeBuyBudget,cashReserve:policy.cashReserve,sizingCapital:'100000.000000',startedAt:iso(now-5000),entryExpiresAt:iso(now+3600000)};
+ if(options.receipt){bank.schemaVersion=2;bank.mode='baal_probability_receipt_production_v1';bank.policy.maximumSpread='0.020000';bank.receiptPolicy={takeProfit:'0.020000',stopLoss:'0.050000',maximumHoldMs:172800000,cooldownMs:900000,orderShares:1};bank.paperBinding={bankHash:'d'.repeat(64),policyHash:digest(PROBABILITY_RECEIPT_POLICY)};activation.strategyId='probability-receipt-native-v1';activation.strategyBankHash=digest(bank);}
  fs.mkdirSync(path.join(dir,'production-banks'));fs.writeFileSync(path.join(dir,'production-banks',digest(bank)+'.json'),JSON.stringify(bank));fs.writeFileSync(path.join(dir,'production-handoff.json'),JSON.stringify(handoff));fs.writeFileSync(path.join(dir,'competition-activation.json'),JSON.stringify(activation));
  const server={cash:56266.08,quantity:options.external?10:0,orders:new Map(),operations:new Map(),posts:[],fraction:options.partial?.5:1,ambiguous:!!options.ambiguous,beforeFence:null,afterFence:null,root};
  const response=(endpoint,data)=>({status:200,endpoint,requestStartedAt:iso(now-1),receivedAt:iso(now),data});
@@ -105,4 +108,31 @@ test('fresh account and unrelated paper books add no freshness repair reads',asy
 test('expired production pilot reports its actual window after bootstrap and cannot create a new purchase',async t=>{
  const f=fixture(t);f.advance(21600001);await f.before();await f.c.onBook(f.book());const s=JSON.parse(fs.readFileSync(path.join(f.dir,'competition-stats.json')));
  assert.equal(s.entryWindow.phase,'closed');assert.equal(s.status,'entry_window_closed');assert.equal(s.reason,'ENTRY_WINDOW_CLOSED');assert.equal(f.server.posts.length,0);assert.deepEqual(f.c.state.owned,{});assert.equal(s.entryAuthorityExtended,false);
+});
+
+test('receipt production uses one share and the paper adverse-tick take-profit limit, then persists cooldown',async t=>{
+ const f=fixture(t,{receipt:true});await f.cycle();await f.before();assert.equal(f.server.posts[0].quantity,1);assert.equal(f.c.state.owned['700'].cost,'0.405000');
+ await f.cycle({bid:.425,ask:.430});assert.equal(f.server.posts.length,1,'raw bid gain is not net adverse-tick gain');
+ await f.cycle({bid:.430,ask:.435});assert.equal(f.server.posts[1].price,.425);await f.before();assert.deepEqual(f.c.state.owned,{});
+ f.restart();await f.cycle();assert.equal(f.server.posts.length,2);assert.equal(f.c.latestNative.decision.reason,'cooldown');
+ f.advance(900001);await f.cycle();assert.equal(f.server.posts.length,3);assert.equal(f.server.posts[2].quantity,1);
+});
+
+test('receipt stop latches without sufficient depth, survives restart and exits after research expiry and recovery',async t=>{
+ const f=fixture(t,{receipt:true});await f.cycle();await f.before();await f.cycle({bid:.355,ask:.360,depth:99});
+ assert.equal(f.server.posts.length,1);assert.equal(f.c.state.control.exits['700'].reason,'stop_loss');
+ f.restart();f.advance(3600001);await f.cycle({bid:.400,ask:.405});assert.equal(f.server.posts.length,2);assert.equal(f.server.posts[1].action,'sell');assert.equal(f.server.posts[1].price,.395);
+ await f.before();assert.deepEqual(f.c.state.owned,{});assert.deepEqual(f.c.state.control.exits,{});
+});
+
+test('receipt holding horizon uses authoritative fill time and manages owned risk after entry expiry',async t=>{
+ const f=fixture(t,{receipt:true});await f.cycle();await f.before();f.advance(172800001);await f.cycle();
+ assert.equal(f.server.posts.length,2);assert.equal(f.server.posts[1].action,'sell');assert.equal(f.c.latestNative.decision.reason,'holding_timeout');
+ assert.equal(f.c.latestNative.decision.holdingAgeMs>=172800000,true);await f.before();assert.deepEqual(f.c.state.owned,{});
+});
+
+test('receipt unknown acceptance cannot produce a new logical order or adopt external inventory',async t=>{
+ const f=fixture(t,{receipt:true,ambiguous:true});await f.cycle();assert.equal(f.c.active().status,'uncertain');assert.equal(f.server.posts.length,1);
+ f.advance(31000);f.restart();await f.before();await f.before();await f.before();assert.equal(f.server.posts.length,2);assert.deepEqual(f.server.posts[0],f.server.posts[1]);assert.equal(f.c.state.owned['700'].quantity,1);
+ const other=fixture(t,{receipt:true,external:true});await other.cycle();assert.equal(other.server.posts.length,0);assert.deepEqual(other.c.state.owned,{});
 });

@@ -1,3 +1,7 @@
+# October5: paper exits now have a matching native production policy
+
+The new separately built receipt policy matches one-share paper take-profit, stop, horizon, conservative prices and cooldown, with durable risk exits and idempotency. It is a checked production candidate, not an activated strategy. The actual12:48UTC native diagnostic still showed Kansas paper liquidation P&L−0.015 and no realized profit. See [implementation and evidence](execution/receipt-production.md). The original official entry window remains closed.
+
 # Current production status — October 5
 
 One new empirical polling paper strategy is active for Kansas market356 YES, sharing the same collector and worker. Its first counterfactual fill is0.345; at12:16UTC it had no closed trade and−0.015 depth-aware liquidation P&L. This is not profitable production evidence. [Model and strategy](research/poll-calibration-v1/README.md) retain measured historical errors, source clocks and visible limitations. Current work is profitability and necessary trading correctness.
