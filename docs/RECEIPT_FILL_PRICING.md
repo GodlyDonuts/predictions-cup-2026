@@ -1,0 +1,9 @@
+# Protective limits and counterfactual fill prices
+
+`receiptFillPrice` separates an order's fixed protective limit from the independently observed later executable levels. The caller supplies validated source identity, exact market/exchange, decision/expiry clocks, latency, one-percent depth and residual adverse ticks. The result is pure quote-based pricing: no wallet mutation, order submission, sale, authority or automatic queue-fill assumption. The owning policy must still validate account exclusions, covered inventory, cash/reservations, original source chain and native intent ownership.
+
+At zero residual ticks, modeled price is the later receipt level within the original limit. One/two tick residual stress is separate. A later observed price move already appears in the receipt; applying extra ticks is explicitly a sensitivity assumption rather than a fee or guaranteed exchange price. Quantity consumes integer eligible depth across compliant levels; insufficient depth returns no complete modeled fill. No fractional shares or partial accounting is created by this helper.
+
+Actual Kansas V2 history independently verifies the original pending intent and filled source: protective limit0.355, raw later ask0.350, recorded stressed purchase0.355. The helper reproduces the original one-tick price exactly while exposing the0.350 baseline. All original fills/banks/journals remain unchanged. This does not imply the raw baseline order would have been accepted or that the strategy is profitable; the measured early raw quote roundtrip still lost0.005.
+
+Five identity/latency/expiry/depth/limit/stress checks pass. Actual original-journal evidence is in data/receipt-fill-pricing-actual-proof-20261006.json. Future prospective use requires a separately declared, frozen policy and independent wallet; never silently replace V2 accounting or rewrite earlier losses.
