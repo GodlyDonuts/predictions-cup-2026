@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "observedAt": "2026-10-06T00:31:45.335Z",
+  "collector": {
+    "pid": 29256,
+    "status": "running",
+    "reportedAt": "2026-10-06T00:31:45.118Z",
+    "cycles": 37
+  },
+  "cohort": "kansas-horizon-portfolio-20261005-v2",
+  "bankHash": "77f83ee28a211ee1540f23b74b6698a327c7350562afd45ca98aca29f59652c6",
+  "updatedAt": "2026-10-06T00:31:43.546Z",
+  "failed": false,
+  "sourceSequence": 31828,
+  "journalSequence": 38,
+  "nativeAppend": true,
+  "pointForecastNotConfidenceBound": true,
+  "modelPoint": "0.398402",
+  "wallets": {
+    "1000": {
+      "cash": "99.645000",
+      "fills": 1,
+      "positions": [
+        {
+          "cost": "0.355000",
+          "enteredAt": "2026-10-06T00:24:53.968Z",
+          "instrument": "1045:YES",
+          "liquidation": "0.340000",
+          "liquidationPnl": "-0.015000",
+          "marketId": "356",
+          "quantity": 1,
+          "researchExpired": false
+        }
+      ],
+      "pending": [],
+      "realizedPnl": "0.000000",
+      "liquidationPnl": "-0.015000"
+    },
+    "3000": {
+      "cash": "99.645000",
+      "fills": 1,
+      "positions": [
+        {
+          "cost": "0.355000",
+          "enteredAt": "2026-10-06T00:24:53.968Z",
+          "instrument": "1045:YES",
+          "liquidation": "0.340000",
+          "liquidationPnl": "-0.015000",
+          "marketId": "356",
+          "quantity": 1,
+          "researchExpired": false
+        }
+      ],
+      "pending": [],
+      "realizedPnl": "0.000000",
+      "liquidationPnl": "-0.015000"
+    }
+  },
+  "latencyCasesAreCorrelated": true,
+  "contest": {
+    "status": "entry_window_closed",
+    "ordersSubmitted": 0,
+    "dispatchAttempts": 0
+  },
+  "originalBanksAndBasisPreserved": true,
+  "sourceClockRenewal": false,
+  "profitabilityEstablished": false
+}

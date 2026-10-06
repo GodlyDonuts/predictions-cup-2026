@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "at": "2026-10-06T00:17:48.763Z",
+  "cohort": "kansas-horizon-portfolio-20261005-v2",
+  "oldSnapshot": "4bc0ae4ea80fda339c18f914c01defa8619e06ee6c1c12ea16976d8990f238c1",
+  "newSnapshot": "5b95526827d10af49661ed3ae24ccf12195d04bebe6f391085f3432ac9dd012d",
+  "originalBankHash": "77f83ee28a211ee1540f23b74b6698a327c7350562afd45ca98aca29f59652c6",
+  "originalBankUnchanged": true,
+  "originalGenesisUnchanged": true,
+  "sourceFiles": 40,
+  "missingDependencyIncluded": true,
+  "frozenImportPassed": true,
+  "activationChanged": false,
+  "sourceClockRenewed": false
+}
