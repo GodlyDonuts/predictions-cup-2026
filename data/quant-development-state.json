@@ -8,15 +8,16 @@
   },
   "accountingPreserved": "All original runtime banks, journals, positions and intent identities remain authoritative; this file is a development backlog only.",
   "activeProcesses": {
-    "collector": 24792,
-    "collectorStage": "protected_owned_profit_host_started_restoring",
+    "collector": 27692,
+    "collectorStage": "GET_only_neutral_SELL_recovery_started_restore",
     "dashboard": 29228,
-    "observedAt": "2026-10-06T14:56:51.563Z",
+    "observedAt": "2026-10-06T15:51:52.480Z",
     "persistent": 3,
     "probabilityWorker": 28488
   },
   "backlog": [
-    "Verify24792fresh live bootstrap/protectedexitread hints/scopeddepth; no saleuntilnet>=.005,actualone-share proof and currentowner.",
+    "Human requested morecapital: integrate1000SUSQ allocation25/order100/market withquantity/depth/exactaccounting afterexistingSALEproof; oldpilot notreset.",
+    "Keep24792healthy; evaluatefuturesfreshownedhedge/marketwidecarryedgeswhileNOexitrequiresverifiednet>=.005; noforcedtradeorunknownreplacement.",
     "Retain exact original BUY basis and verify actual SELL economics before any realized P&L or reserve retirement.",
     "Investigate newly source-bound pair hedge using actual .070 first cost and fresh opposing-party rules/depth.",
     "Retire only verified flat paper work and optionally explicitly freeze comparisons without resetting owned paper banks/journals.",
@@ -58,6 +59,20 @@
     "stage": "checked_offline_no_promotion",
     "subsequentTrades": 0
   },
+  "nextCapital": {
+    "activeStrategyStillOneShare": true,
+    "amount": "1000.000000",
+    "event": "200.000000",
+    "evidence": "data/baal-capital-allocation-20261006.json",
+    "humanAuthorizedIncrease": true,
+    "market": "100.000000",
+    "next": "Finish actual SELL reconciliation and integrate measured multi-share policy under fresh account/liquidity bounds",
+    "order": "25.000000",
+    "sharesPerOrder": 100,
+    "sizingModule": "execution/baal-capital-sizing-v1.mjs",
+    "sizingChecks": 7,
+    "multiShareVerifierStage": "implementation_in_progress"
+  },
   "objective": "Build and improve Baal for the official 2026 Susquehanna Predictions Cup",
   "originalPilot": {
     "entryExpiresAt": "2026-10-06T13:01:24.019Z",
@@ -68,27 +83,38 @@
     "runId": "sig-pilot-median-20261006-human"
   },
   "ownedNoExit": {
+    "ackImpliedProfit": "0.010000",
+    "ackReportedProceeds": "0.080000",
+    "actualExitOrders": 0,
+    "actualRealized": "0.000000",
+    "actualSaleOrderId": "16539746",
+    "actualSaleVerified": false,
+    "bridge": "execution/owned-no-exit-evidence-bridge-v1.mjs",
     "checksPassed": 21,
+    "commit": "a56b0e508dc4376c38cdc1bc7897f02cee50abe2",
+    "configuration": "data/owned-no-profit-configuration-20261006.json",
+    "controller": "execution/owned-no-exit-controller-v1.mjs",
+    "currentPhase": "awaiting_protected_profit",
+    "entryExpiresAt": "2026-10-06T15:54:12.821Z",
     "fees": "0.000000",
+    "host": "execution/owned-no-profit-host-v1.mjs",
+    "hostChecksPassed": 12,
+    "independentControllerChecks": 16,
+    "independentTargetedChecks": 4,
+    "lastFailure": null,
+    "liveObservedAt": "2026-10-06T15:00:06.899Z",
+    "maximumExitOrders": 1,
     "minimumProtectedNetProfit": "0.005000",
     "noLiveSellOrders": true,
     "nonNullSellALL": "unsupported_pending_actual_or_primary_evidence",
-    "signal": "execution/single-owned-no-exit-signal-v1.mjs",
-    "stage": "one_share_protected_profit_host_installed_restoring",
-    "verifier": "execution/no-rest-sell-reconciliation-v1.mjs",
-    "controller": "execution/owned-no-exit-controller-v1.mjs",
-    "bridge": "execution/owned-no-exit-evidence-bridge-v1.mjs",
     "parentChecksPassed": 46,
-    "independentControllerChecks": 16,
-    "retirementOverlay": "execution/paired-owned-exit-retirement-v1.mjs",
     "retirementChecks": 7,
-    "host": "execution/owned-no-profit-host-v1.mjs",
-    "hostChecksPassed": 12,
-    "independentTargetedChecks": 4,
-    "configuration": "data/owned-no-profit-configuration-20261006.json",
-    "entryExpiresAt": "2026-10-06T15:54:12.821Z",
-    "actualSaleVerified": false,
-    "maximumExitOrders": 1
+    "retirementOverlay": "execution/paired-owned-exit-retirement-v1.mjs",
+    "signal": "execution/single-owned-no-exit-signal-v1.mjs",
+    "stage": "reported080sale_070basis_GETterminalproof_pending",
+    "verifier": "execution/no-rest-sell-reconciliation-v1.mjs",
+    "recoveryConfiguration": "data/neutral-sell-recovery-configuration-20261006.json",
+    "newSaleSubmittedByRepair": false
   },
   "pairedLiquidation": {
     "checksPassed": 14,
@@ -111,6 +137,10 @@
     "expiryExtended": false,
     "finding": "data/paired-neutral-ack-finding-20261006.json",
     "firstOrderId": "16297733",
+    "freshHedgeActivated": false,
+    "freshHedgeChecks": 6,
+    "freshHedgeMaxCost": "0.920000",
+    "freshHedgePlan": "execution/owned-no-hedge-plan-v1.mjs",
     "latestCapture": {
       "at": "2026-10-06T13:00:08.017Z",
       "cushionedCost": "1.010000",
@@ -141,11 +171,17 @@
     "stage": "first_owned_NO_verified_hedge_or_exit_next",
     "terminalRestReconciliationVerified": true,
     "unknownReserveRetained": true,
-    "writeCapability": false,
-    "freshHedgePlan": "execution/owned-no-hedge-plan-v1.mjs",
-    "freshHedgeChecks": 6,
-    "freshHedgeMaxCost": "0.920000",
-    "freshHedgeActivated": false
+    "writeCapability": false
+  },
+  "paperComparisonPause": {
+    "cohort": "kansas-horizon-portfolio-20261005-v2",
+    "evidence": "data/frozen-comparison-pause-20261006.json",
+    "heldCorrelatedCases": 2,
+    "originalBankPreserved": true,
+    "originalHistoryPreserved": true,
+    "priorEconomicReplayMs": 399892,
+    "valuationFrozen": true,
+    "verificationMs": 3678.68
   },
   "profitNext": {
     "accountingChecksPassed": 65,
@@ -161,15 +197,5 @@
     "runtimeProofAt": "2026-10-06T10:40:42.492Z"
   },
   "schemaVersion": 2,
-  "updatedAt": "2026-10-06T14:56:51.563Z",
-  "paperComparisonPause": {
-    "cohort": "kansas-horizon-portfolio-20261005-v2",
-    "valuationFrozen": true,
-    "heldCorrelatedCases": 2,
-    "originalBankPreserved": true,
-    "originalHistoryPreserved": true,
-    "verificationMs": 3678.68,
-    "priorEconomicReplayMs": 399892,
-    "evidence": "data/frozen-comparison-pause-20261006.json"
-  }
+  "updatedAt": "2026-10-06T15:51:52.480Z"
 }
