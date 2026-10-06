@@ -3,15 +3,13 @@
 // the realtime YES-denominated fill convention. REST NO prices are SIDE
 // RELATIVE in the official specification observed 2026-10-06:
 // https://sig.thesuper.market/api/v1/docs (Order/Fill/order fills).
-// Unlike v1, the canonical ACK check admits the neutral `all` payload proven by
-// inspect_no_ack_all_economics instead of requiring `all===null`, and a stored
-// ACK received after the order's expiry window is accepted only with the
-// original durable network-dispatch journal row.
+// Compared to no-rest-reconciliation.mjs (v1): the ACK validator additionally
+// requires inspectNoAckAllEconomics(ack) and no longer requires ack.data.all
+// ===null; the proof carries ackEconomics. inspectScopedRestNoAccount here is
+// byte-identical to the v1 module's export, so v1-only importers may use it.
 use crate::core::{canonical_payload, payload_hash};
 use crate::gates::normalize_official_fill_tick;
-use crate::no_neutral_all::inspect_no_ack_all_economics;
 use crate::receipts::parse_number_lexemes;
-use baal_service_runtime::contract::ms_to_iso;
 use baal_service_runtime::fixed::{amount, instant, money, price};
 use baal_service_runtime::json_text::{js_int, js_stringify, js_truthy, sha256};
 use serde_json::{json, Map, Value as V};
@@ -34,14 +32,14 @@ fn hex(x: &V) -> bool {
         s.len() == 64 && s.bytes().all(|b| b.is_ascii_hexdigit() && !b.is_ascii_uppercase())
     })
 }
-pub(crate) fn integer(v: &V, min: i64) -> bool {
+fn integer(v: &V, min: i64) -> bool {
     js_int(v).is_some_and(|n| n >= min)
 }
-pub(crate) fn tick(v: &V) -> Result<i128, String> {
+fn tick(v: &V) -> Result<i128, String> {
     let t = normalize_official_fill_tick(v)?;
     amount(get(&t, "price").as_str().unwrap_or(""))
 }
-pub(crate) fn instant_v(v: &V) -> Result<i64, String> {
+fn instant_v(v: &V) -> Result<i64, String> {
     instant(v.as_str().unwrap_or(""))
 }
 fn amount_v(v: &V) -> Result<i128, String> {
@@ -62,11 +60,11 @@ fn encode_uri_component(s: &str) -> String {
     out
 }
 // canonicalPayload(x ?? null)
-pub(crate) fn canon_or_null(v: Option<&V>) -> Result<String, String> {
+fn canon_or_null(v: Option<&V>) -> Result<String, String> {
     canonical_payload(&v.cloned().unwrap_or(V::Null))
 }
 // canonicalPayload(x) — absent keys throw INVALID_JSON_VALUE as in JS.
-pub(crate) fn canon_or_missing(v: Option<&V>) -> Result<String, String> {
+fn canon_or_missing(v: Option<&V>) -> Result<String, String> {
     match v {
         Some(x) => canonical_payload(x),
         None => Err("INVALID_JSON_VALUE".into()),
@@ -93,22 +91,22 @@ pub fn rest_no_reconciliation_contract_v2() -> V {
 }
 
 #[derive(Clone)]
-pub(crate) struct Read {
-    pub(crate) data: V,
-    pub(crate) numbers: BTreeMap<String, String>,
-    pub(crate) start: i64,
-    pub(crate) end: i64,
-    pub(crate) source_body_hash: String,
-    pub(crate) endpoint: String,
-    pub(crate) request_started_at: V,
-    pub(crate) received_at: V,
+struct Read {
+    data: V,
+    numbers: BTreeMap<String, String>,
+    start: i64,
+    end: i64,
+    source_body_hash: String,
+    endpoint: String,
+    request_started_at: V,
+    received_at: V,
 }
 
-pub(crate) fn read(r: &V, method: &str, endpoint: &str, now: i64, fresh: bool) -> Result<Read, String> {
+fn read(r: &V, method: &str, endpoint: &str, now: i64, fresh: bool) -> Result<Read, String> {
     need(
         get(r, "method").as_str() == Some(method)
             && get(r, "endpoint").as_str() == Some(endpoint)
-            && js_int(get(r, "status")) == Some(200)
+            && get(r, "status") == &json!(200)
             && get(r, "bodyText").is_string(),
         "RECEIPT_SCOPE",
     )?;
@@ -138,7 +136,7 @@ pub(crate) fn read(r: &V, method: &str, endpoint: &str, now: i64, fresh: bool) -
     })
 }
 
-pub(crate) fn scope_check(scope: &V) -> Result<(), String> {
+fn scope_check(scope: &V) -> Result<(), String> {
     need(
         get(scope, "tournamentId").as_str().is_some_and(|s| !s.is_empty())
             && get(scope, "tournamentSlug").as_str().is_some_and(slug),
@@ -147,14 +145,14 @@ pub(crate) fn scope_check(scope: &V) -> Result<(), String> {
 }
 
 #[derive(Clone)]
-pub(crate) struct CashRead {
-    pub(crate) read: Read,
-    pub(crate) displayed: i128,
-    pub(crate) lower: i128,
-    pub(crate) upper: i128,
+struct CashRead {
+    read: Read,
+    displayed: i128,
+    lower: i128,
+    upper: i128,
 }
 
-pub(crate) fn cash(r: &V, scope: &V, now: i64) -> Result<CashRead, String> {
+fn cash(r: &V, scope: &V, now: i64) -> Result<CashRead, String> {
     let v = read(
         r,
         "GET",
@@ -210,13 +208,13 @@ pub fn rounded_tournament_cash_interval(receipt: &V, options: &V) -> Result<V, S
     }))
 }
 
-pub(crate) struct Pages {
-    pub(crate) rows: Vec<V>,
-    pub(crate) sources: Vec<Read>,
-    pub(crate) checkpoint: Option<i64>,
+struct Pages {
+    rows: Vec<V>,
+    sources: Vec<Read>,
+    checkpoint: Option<i64>,
 }
 
-pub(crate) fn pages(
+fn pages(
     receipts: &V,
     endpoint: &str,
     now: i64,
@@ -248,7 +246,7 @@ pub(crate) fn pages(
         let p = get(&d, "pagination");
         need(
             js_truthy(Some(p))
-                && js_int(get(p, "limit")) == Some(200)
+                && get(p, "limit") == &json!(200)
                 && get(p, "hasMore").is_boolean()
                 && (p.get("nextCursor") == Some(&V::Null)
                     || get(p, "nextCursor").as_str().is_some_and(|s| !s.is_empty() && s.len() <= 1000)),
@@ -292,16 +290,23 @@ pub(crate) fn pages(
     Ok(Pages { rows, sources, checkpoint })
 }
 
-pub(crate) struct Snapshot {
-    pub(crate) cash: CashRead,
-    pub(crate) positions: Map<String, V>,
-    pub(crate) history: Map<String, V>,
-    pub(crate) start: i64,
-    pub(crate) end: i64,
-    pub(crate) sources: Vec<V>,
+// JS `new Map()` preserves insertion order; Vec<(K,V)> keeps it exactly.
+struct Snapshot {
+    cash: CashRead,
+    positions: Vec<(String, V)>,
+    history: Vec<(i64, V)>,
+    start: i64,
+    end: i64,
+    sources: Vec<V>,
+}
+fn map_get<'a>(m: &'a [(String, V)], k: &str) -> Option<&'a V> {
+    m.iter().find(|(kk, _)| kk == k).map(|(_, v)| v)
+}
+fn hist_get<'a>(h: &'a [(i64, V)], k: i64) -> Option<&'a V> {
+    h.iter().find(|(kk, _)| *kk == k).map(|(_, v)| v)
 }
 
-pub(crate) fn snapshot(s: &V, scope: &V, now: i64) -> Result<Snapshot, String> {
+fn snapshot(s: &V, scope: &V, now: i64) -> Result<Snapshot, String> {
     need(
         !s.is_null()
             && get(s, "openOrdersPages").is_array()
@@ -324,24 +329,23 @@ pub(crate) fn snapshot(s: &V, scope: &V, now: i64) -> Result<Snapshot, String> {
                 .all(|k| get(get(&p.data, "summary"), k).as_f64().is_some_and(|n| n.is_finite())),
         "POSITIONS_INCOMPLETE",
     )?;
-    // JS `new Map()`: serde_json's preserve_order Map keeps insertion order.
-    let mut positions: Map<String, V> = Map::new();
+    let mut positions: Vec<(String, V)> = Vec::new();
     for row in get(&p.data, "positions").as_array().unwrap() {
         need(
             id(get(row, "marketId")) && id(get(row, "exchangeId"))
                 && js_int(get(row, "quantity")).is_some()
                 && get(row, "settled").is_boolean()
-                && !positions.contains_key(get(row, "exchangeId").as_str().unwrap_or("")),
+                && map_get(&positions, get(row, "exchangeId").as_str().unwrap_or("")).is_none(),
             "POSITION_SCHEMA",
         )?;
-        positions.insert(
+        positions.push((
             get(row, "exchangeId").as_str().unwrap().to_string(),
             json!({
                 "marketId": get(row, "marketId"),
                 "quantity": get(row, "quantity"),
                 "settled": get(row, "settled"),
             }),
-        );
+        ));
     }
     let o = pages(
         get(s, "openOrdersPages"),
@@ -360,11 +364,11 @@ pub(crate) fn snapshot(s: &V, scope: &V, now: i64) -> Result<Snapshot, String> {
         now,
         None,
     )?;
-    let mut history: Map<String, V> = Map::new();
+    let mut history: Vec<(i64, V)> = Vec::new();
     for row in &h.rows {
         need(
             integer(get(row, "id"), 1)
-                && !history.contains_key(&js_int(get(row, "id")).unwrap().to_string())
+                && hist_get(&history, js_int(get(row, "id")).unwrap()).is_none()
                 && get(row, "exchangeId") == get(scope, "exchangeId")
                 && get(row, "tournamentId") == get(scope, "tournamentId")
                 && matches!(get(row, "side").as_str(), Some("yes" | "no"))
@@ -384,7 +388,7 @@ pub(crate) fn snapshot(s: &V, scope: &V, now: i64) -> Result<Snapshot, String> {
                     && instant_v(get(row, "expirationDate"))? <= h.sources[0].start),
             "SCOPED_ORDER_OPEN_CONTRADICTION",
         )?;
-        history.insert(js_int(get(row, "id")).unwrap().to_string(), row.clone());
+        history.push((js_int(get(row, "id")).unwrap(), row.clone()));
     }
     let mut all: Vec<Read> = vec![c.read.clone(), p.clone()];
     all.extend(o.sources.iter().cloned());
@@ -406,8 +410,9 @@ pub(crate) fn snapshot(s: &V, scope: &V, now: i64) -> Result<Snapshot, String> {
     Ok(Snapshot { cash: c, positions, history, start, end, sources })
 }
 
-pub(crate) fn same_external(before: &Map<String, V>, after: &Map<String, V>, exchange_id: &str) -> Result<(), String> {
-    for k in before.keys().chain(after.keys()).cloned().collect::<BTreeSet<_>>() {
+fn same_external(before: &[(String, V)], after: &[(String, V)], exchange_id: &str) -> Result<(), String> {
+    let keys: BTreeSet<String> = before.iter().chain(after.iter()).map(|(k, _)| k.clone()).collect();
+    for k in keys {
         if k != exchange_id {
             let zero = |v: Option<&V>| -> V {
                 match v {
@@ -416,7 +421,7 @@ pub(crate) fn same_external(before: &Map<String, V>, after: &Map<String, V>, exc
                 }
             };
             need(
-                canonical_payload(&zero(before.get(&k)))? == canonical_payload(&zero(after.get(&k)))?,
+                canonical_payload(&zero(map_get(before, &k)))? == canonical_payload(&zero(map_get(after, &k)))?,
                 "EXTERNAL_POSITION_CHANGED",
             )?;
         }
@@ -424,43 +429,40 @@ pub(crate) fn same_external(before: &Map<String, V>, after: &Map<String, V>, exc
     Ok(())
 }
 
-// inspectScopedRestNoAccount({account,binding,readAt,requiredFunding,
-// reservedElsewhere}) — shared preflight parser for the bounded paired
-// lifecycle. It exposes curated account facts, not a write permit.
+// inspectScopedRestNoAccount({account,binding,readAt,requiredFunding,reservedElsewhere})
+// Shared preflight parser for the bounded paired lifecycle. It exposes curated
+// account facts, not a write permit, and uses the same complete receipt checks.
+// Byte-identical to the v1 module's export; v1-only importers may use this.
 pub fn inspect_scoped_rest_no_account(input: &V) -> Result<V, String> {
+    let account = get(input, "account");
     let binding = get(input, "binding");
-    scope_check(binding)?;
-    need(id(get(binding, "exchangeId")), "SCOPE")?;
-    let a = snapshot(get(input, "account"), binding, instant_v(get(input, "readAt"))?)?;
+    let read_at = get(input, "readAt");
     let default_zero = json!("0.000000");
     let required_funding = input.get("requiredFunding").unwrap_or(&default_zero);
     let reserved_elsewhere = input.get("reservedElsewhere").unwrap_or(&default_zero);
+    scope_check(binding)?;
+    need(id(get(binding, "exchangeId")), "SCOPE")?;
+    let a = snapshot(account, binding, instant_v(read_at)?)?;
     let required = amount_v(required_funding)? + amount_v(reserved_elsewhere)?;
     need(
         amount_v(required_funding)? >= 0 && amount_v(reserved_elsewhere)? >= 0,
         "FUNDING_NONNEGATIVE",
     )?;
-    // [...a.positions].map(([exchangeId,v]) => ({exchangeId, ...v}))
-    let positions: Vec<V> = a
-        .positions
-        .iter()
-        .map(|(k, v)| {
+    Ok(json!({
+        "tournamentId": get(binding, "tournamentId"),
+        "positions": a.positions.iter().map(|(exchange_id, v)| {
             let mut o = Map::new();
-            o.insert("exchangeId".into(), json!(k));
-            if let V::Object(m) = v {
-                for (kk, vv) in m {
-                    o.insert(kk.clone(), vv.clone());
+            o.insert("exchangeId".into(), json!(exchange_id));
+            if let Some(m) = v.as_object() {
+                for (k, x) in m {
+                    o.insert(k.clone(), x.clone());
                 }
             }
             V::Object(o)
-        })
-        .collect();
-    Ok(json!({
-        "tournamentId": get(binding, "tournamentId"),
-        "positions": positions,
-        "scopedOrders": a.history.values().cloned().collect::<Vec<V>>(),
-        "startedAt": ms_to_iso(a.start as f64),
-        "completedAt": ms_to_iso(a.end as f64),
+        }).collect::<Vec<V>>(),
+        "scopedOrders": a.history.iter().map(|(_, v)| v.clone()).collect::<Vec<V>>(),
+        "startedAt": baal_service_runtime::contract::ms_to_iso(a.start as f64),
+        "completedAt": baal_service_runtime::contract::ms_to_iso(a.end as f64),
         "cashLower": money(a.cash.lower),
         "cashUpper": money(a.cash.upper),
         "funded": a.cash.lower >= required,
@@ -469,9 +471,8 @@ pub fn inspect_scoped_rest_no_account(input: &V) -> Result<V, String> {
     }))
 }
 
-// verifyScopedRestNoBuyV2({binding,before,ack,order,fillPages,after,
-// globalRisk,accountActivity,recoveryProof,readAt,fullPairReservation,
-// reservedElsewhere})
+// verifyScopedRestNoBuyV2({binding,before,ack,order,fillPages,after,globalRisk,
+// accountActivity,recoveryProof,readAt,fullPairReservation,reservedElsewhere})
 //
 // All inputs are supplied by the existing serialized collector. Raw receipt
 // bodies are parsed locally but never returned, stored, logged or transmitted.
@@ -484,6 +485,7 @@ pub fn verify_scoped_rest_no_buy_v2(input: &V) -> Result<V, String> {
     let fill_pages = get(input, "fillPages");
     let global_risk = get(input, "globalRisk");
     let account_activity = get(input, "accountActivity");
+    let recovery_proof = get(input, "recoveryProof");
     let read_at = get(input, "readAt");
     let full_pair_reservation = get(input, "fullPairReservation");
     let default_zero = json!("0.000000");
@@ -496,7 +498,7 @@ pub fn verify_scoped_rest_no_buy_v2(input: &V) -> Result<V, String> {
             && get(b, "intentId").is_string() && get(b, "idempotencyKey").is_string()
             && get(b, "side").as_str() == Some("no")
             && get(b, "action").as_str() == Some("buy")
-            && js_int(get(b, "quantity")) == Some(1),
+            && get(b, "quantity") == &json!(1),
         "BINDING",
     )?;
     let limit = price(get(b, "limit").as_str().unwrap_or(""))?;
@@ -527,10 +529,10 @@ pub fn verify_scoped_rest_no_buy_v2(input: &V) -> Result<V, String> {
     need(pre.cash.lower >= reserved + other, "CONSERVATIVE_FUNDING")?;
     let binding_ex = get(b, "exchangeId").as_str().unwrap_or("").to_string();
     need(
-        !pre.positions.get(&binding_ex).is_some_and(|v| js_truthy(v.get("quantity"))),
+        !map_get(&pre.positions, &binding_ex).is_some_and(|v| js_truthy(v.get("quantity"))),
         "PRIOR_TARGET_NOT_FLAT",
     )?;
-    if let Some(v) = pre.positions.get(&binding_ex) {
+    if let Some(v) = map_get(&pre.positions, &binding_ex) {
         need(get(v, "marketId") == get(b, "marketId"), "PRIOR_TARGET_SCOPE")?;
     }
     let price_number: f64 = get(b, "limit").as_str().unwrap_or("").parse().unwrap_or(f64::NAN);
@@ -555,18 +557,16 @@ pub fn verify_scoped_rest_no_buy_v2(input: &V) -> Result<V, String> {
         // The lifecycle must additionally source this FULL row from its own
         // replayed journal. A supplied hash/flag cannot replace the actual
         // original wire data.
-        let row = get(get(input, "recoveryProof"), "journalRecord").clone();
-        let row_hash = get(&row, "hash").as_str().unwrap_or("").to_string();
+        let row = recovery_proof.get("journalRecord").cloned().unwrap_or(V::Null);
         let mut body = row.clone();
-        if let V::Object(m) = &mut body {
-            m.shift_remove("hash");
-        }
-        let wire = get(get(get(&body, "event"), "input"), "start").clone();
+        let row_hash = body.as_object_mut().map(|m| m.remove("hash")).flatten();
+        let row_body_hash = sha256(js_stringify(&body).as_bytes());
+        let wire = get(get(&body, "event"), "input").get("start").cloned().unwrap_or(V::Null);
         need(
-            hex(&json!(row_hash))
-                && sha256(js_stringify(&body).as_bytes()) == row_hash
+            row_hash.as_ref().is_some_and(|h| hex(h))
+                && row_hash.as_ref().and_then(|h| h.as_str()) == Some(row_body_hash.as_str())
                 && integer(get(&body, "sequence"), 1)
-                && get(get(get(&body, "event"), "input"), "kind").as_str() == Some("fetch_start")
+                && get(get(&body, "event"), "input").get("kind").and_then(V::as_str) == Some("fetch_start")
                 && get(&wire, "kind").as_str() == Some("place")
                 && get(&wire, "method").as_str() == Some("POST")
                 && get(&wire, "endpoint").as_str() == Some("/orders")
@@ -595,7 +595,7 @@ pub fn verify_scoped_rest_no_buy_v2(input: &V) -> Result<V, String> {
             "leaseHash": get(&wire, "leaseHash"),
         }));
     }
-    let all_economics = inspect_no_ack_all_economics(ack)
+    let all_economics = crate::no_neutral_all::inspect_no_ack_all_economics(ack)
         .map_err(|_| "REST_NO_ACK_CANONICAL".to_string())?;
     let d = &a.data;
     need(
@@ -604,7 +604,7 @@ pub fn verify_scoped_rest_no_buy_v2(input: &V) -> Result<V, String> {
             && get(d, "exchangeId") == get(b, "exchangeId")
             && get(d, "side").as_str() == Some("no")
             && get(d, "action").as_str() == Some("buy")
-            && js_int(get(d, "quantity")) == Some(1)
+            && get(d, "quantity") == &json!(1)
             && tick(get(d, "price"))? == limit
             && get(d, "open").is_boolean()
             && integer(get(d, "quantityTraded"), 0)
@@ -614,7 +614,7 @@ pub fn verify_scoped_rest_no_buy_v2(input: &V) -> Result<V, String> {
     )?;
     let ack_cost = tick(get(d, "totalCost"))?;
     need(
-        if js_int(get(d, "quantityTraded")) == Some(0) {
+        if get(d, "quantityTraded") == &json!(0) {
             ack_cost == 0
         } else {
             ack_cost > 0 && ack_cost <= limit
@@ -630,7 +630,7 @@ pub fn verify_scoped_rest_no_buy_v2(input: &V) -> Result<V, String> {
             && get(od, "tournamentId") == get(b, "tournamentId")
             && get(od, "side").as_str() == Some("no")
             && get(od, "action").as_str() == Some("buy")
-            && js_int(get(od, "quantity")) == Some(1)
+            && get(od, "quantity") == &json!(1)
             && integer(get(od, "quantityFilled"), 0)
             && js_int(get(od, "quantityFilled")).unwrap_or(0) <= 1
             && tick(get(od, "priceLimit"))? == limit
@@ -685,7 +685,7 @@ pub fn verify_scoped_rest_no_buy_v2(input: &V) -> Result<V, String> {
             integer(get(row, "id"), 1)
                 && !seen.contains(&js_int(get(row, "id")).unwrap_or(0))
                 && get(row, "side").as_str() == Some("no")
-                && js_int(get(row, "quantity")) == Some(-1),
+                && get(row, "quantity") == &json!(-1),
             "FILL_IDENTITY_OR_QUANTITY",
         )?;
         seen.insert(js_int(get(row, "id")).unwrap());
@@ -724,12 +724,12 @@ pub fn verify_scoped_rest_no_buy_v2(input: &V) -> Result<V, String> {
         "COMPLETE_FILL_TOTAL",
     )?;
     need(js_int(get(od, "quantityFilled")) == Some(quantity), "ORDER_FILL_TOTAL")?;
-    if js_int(get(d, "quantityTraded")) == Some(1) {
+    if get(d, "quantityTraded") == &json!(1) {
         need(principal == ack_cost, "ACK_FINAL_NOTIONAL_MISMATCH")?;
     } else {
         need(d.get("fillPrice") == Some(&V::Null), "ACK_UNFILLED_PRICE")?;
     }
-    if js_int(get(d, "quantityTraded")) == Some(1) {
+    if get(d, "quantityTraded") == &json!(1) {
         need(tick(get(d, "fillPrice"))? == principal, "ACK_FILL_PRICE")?;
     }
     let mut post_floor = std::cmp::max(terminal.end, f.sources.last().unwrap().end);
@@ -738,20 +738,21 @@ pub fn verify_scoped_rest_no_buy_v2(input: &V) -> Result<V, String> {
     }
     need(post.start >= post_floor, "POST_ACCOUNT_BEFORE_ORDER_EVIDENCE")?;
     need(instant_v(get(global_risk, "at"))? >= post.end, "GLOBAL_RISK_BEFORE_ACCOUNT")?;
-    let oid = get(b, "orderId").as_str().unwrap_or("").parse::<i64>().unwrap_or(0).to_string();
+    let oid = js_int(get(b, "orderId")).unwrap_or(0);
     need(
-        !pre.history.contains_key(&oid) && post.history.contains_key(&oid),
+        hist_get(&pre.history, oid).is_none() && hist_get(&post.history, oid).is_some(),
         "SCOPED_ORDER_MISSING_OR_PREEXISTING",
     )?;
-    for key in pre.history.keys().chain(post.history.keys()).cloned().collect::<BTreeSet<_>>() {
+    let history_keys: BTreeSet<i64> = pre.history.iter().chain(post.history.iter()).map(|(k, _)| *k).collect();
+    for key in history_keys {
         if key != oid {
             need(
-                canon_or_null(pre.history.get(&key))? == canon_or_null(post.history.get(&key))?,
+                canon_or_null(hist_get(&pre.history, key))? == canon_or_null(hist_get(&post.history, key))?,
                 "EXTERNAL_SCOPED_ORDER_ACTIVITY",
             )?;
         }
     }
-    let final_order = post.history.get(&oid).cloned().unwrap_or(V::Null);
+    let final_order = hist_get(&post.history, oid).cloned().unwrap_or(V::Null);
     for key in ["id", "exchangeId", "tournamentId", "side", "action", "quantity", "priceLimit", "open", "createdAt", "expirationDate"] {
         need(
             canon_or_missing(final_order.get(key))?
@@ -764,14 +765,14 @@ pub fn verify_scoped_rest_no_buy_v2(input: &V) -> Result<V, String> {
             && js_int(get(&final_order, "quantityFilled")) == Some(quantity),
         "SCOPED_ORDER_FILL_TOTAL",
     )?;
-    let target = post.positions.get(&binding_ex);
+    let target = map_get(&post.positions, &binding_ex);
     need(
         if quantity == 0 {
             !target.is_some_and(|v| js_truthy(v.get("quantity")))
         } else {
             target.is_some()
                 && get(target.unwrap(), "marketId") == get(b, "marketId")
-                && js_int(get(target.unwrap(), "quantity")) == Some(-1)
+                && get(target.unwrap(), "quantity") == &json!(-1)
                 && get(target.unwrap(), "settled") == &json!(false)
         },
         "SCOPED_POSITION_DELTA",
@@ -888,17 +889,13 @@ pub fn verify_scoped_rest_no_buy_v2(input: &V) -> Result<V, String> {
         ("signedPositionDelta".into(), json!(signed_position_delta)),
         ("scopedPrincipalCost".into(), json!(money(principal))),
         ("expectedCanonicalTradeCashDelta".into(), json!(money(expected))),
-        ("fills".into(), V::Array(fills)),
+        ("fills".into(), V::Array(fills.clone())),
         ("lot".into(), lot),
         ("ackEconomics".into(), all_economics),
         ("canonicalAckFilledQuantity".into(), get(d, "quantityTraded").clone()),
-        ("ackCoversFinalFill".into(), json!(js_int(get(d, "quantityTraded")) == Some(quantity))),
+        ("ackCoversFinalFill".into(), json!(get(d, "quantityTraded") == &json!(quantity))),
         ("ackNotional".into(), json!(money(ack_cost))),
         ("requestedLimit".into(), json!(money(limit))),
-        // ...(recovered ? {ackProvenance: recovered} : {}) — the key sits
-        // between ackNotional and requestedLimit in JS key order; reinserted
-        // below after the map is built.
-        ("__ackProvenanceSlot".into(), V::Null),
         ("requestedExpirationDate".into(), get(b, "expirationDate").clone()),
         ("postExpiryFillObserved".into(), json!(post_expiry_fill)),
         (
@@ -962,21 +959,19 @@ pub fn verify_scoped_rest_no_buy_v2(input: &V) -> Result<V, String> {
         ("executionAuthority".into(), json!(false)),
         ("newSubmissionAuthorized".into(), json!(false)),
     ]);
-    // `...(recovered?{ackProvenance:recovered}:{})` lands between ackNotional
-    // and requestedLimit in the JS object literal.
-    if let Some(rec) = recovered {
-        let mut rebuilt = Map::new();
+    // ...(recovered?{ackProvenance:recovered}:{}) — inserted in key order right
+    // after ackNotional, matching the JS spread position.
+    if let Some(r) = recovered {
+        // JS emits the spread immediately after ackNotional; rebuild the map in
+        // the same key order so payloadHash matches.
+        let mut ordered = Map::new();
         for (k, v) in result.iter() {
-            if k == "requestedLimit" {
-                rebuilt.insert("ackProvenance".into(), rec.clone());
-            }
-            if k != "__ackProvenanceSlot" {
-                rebuilt.insert(k.clone(), v.clone());
+            ordered.insert(k.clone(), v.clone());
+            if k == "ackNotional" {
+                ordered.insert("ackProvenance".into(), r.clone());
             }
         }
-        result = rebuilt;
-    } else {
-        result.shift_remove("__ackProvenanceSlot");
+        result = ordered;
     }
     let vh = payload_hash(&V::Object(result.clone()))?;
     result.insert("verificationHash".into(), json!(vh));
