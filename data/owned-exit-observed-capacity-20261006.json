@@ -1,0 +1,170 @@
+{
+  "schemaVersion": 1,
+  "mode": "observed_confirmed_owned_depth_exit_capacity_v1",
+  "actorAnchor": {
+    "bytes": 89409954,
+    "sha256": "9dd437badf2b7a6e4b6f239dd0af199df011fe3b560f2c086a1b89519978407e",
+    "sequence": 273,
+    "hash": "5c3fe245533ea22efa83237e8425e75ea9574d46cf4651eaa85bf6d634d46370"
+  },
+  "publicBookPrefix": {
+    "bytes": 104231581,
+    "sha256": "1700f0bb484b5cef77a97f35cd9cc04860fd9a4b0556ba502146cbbb312ce67d",
+    "sequence": 46189,
+    "hash": "0bce03b564426a42536db64f5b0d983a6a0d2385b2afc47596a2c10659d7bbbc",
+    "totalBookReceipts": 43647,
+    "totalRecords": 46189
+  },
+  "metrics": {
+    "994": {
+      "marketId": "305",
+      "currentOwnedQuantity": 2,
+      "currentOwnedPrincipal": "0.250000",
+      "observedReceipts": 5859,
+      "eligibleConfirmedOwnedReceipts": 635,
+      "excludedBeforeOwnershipOrFlat": 5215,
+      "excludedAnyActiveOrUnknownIntent": 9,
+      "excludedDuringOwnershipTransition": 0,
+      "duplicateReceipts": 0,
+      "clockOrDepthInvalid": 0,
+      "earliestReceipt": "2026-10-02T12:04:26.845Z",
+      "latestReceipt": "2026-10-06T21:20:06.391Z",
+      "controls": {
+        "original_one_percent_one_tick": {
+          "positivePackets": 0,
+          "maximumObservedQuantity": 0,
+          "maximumProtectedMargin": "0.000000",
+          "firstPositiveAt": null,
+          "lastPositiveAt": null
+        },
+        "full_rung_one_tick": {
+          "positivePackets": 0,
+          "maximumObservedQuantity": 0,
+          "maximumProtectedMargin": "0.000000",
+          "firstPositiveAt": null,
+          "lastPositiveAt": null
+        },
+        "one_percent_zero_tick": {
+          "positivePackets": 0,
+          "maximumObservedQuantity": 0,
+          "maximumProtectedMargin": "0.000000",
+          "firstPositiveAt": null,
+          "lastPositiveAt": null
+        },
+        "full_rung_zero_tick": {
+          "positivePackets": 0,
+          "maximumObservedQuantity": 0,
+          "maximumProtectedMargin": "0.000000",
+          "firstPositiveAt": null,
+          "lastPositiveAt": null
+        }
+      },
+      "bestFullRung": null
+    },
+    "1066": {
+      "marketId": "377",
+      "currentOwnedQuantity": 37,
+      "currentOwnedPrincipal": "11.470000",
+      "observedReceipts": 1492,
+      "eligibleConfirmedOwnedReceipts": 1,
+      "excludedBeforeOwnershipOrFlat": 1491,
+      "excludedAnyActiveOrUnknownIntent": 0,
+      "excludedDuringOwnershipTransition": 0,
+      "duplicateReceipts": 0,
+      "clockOrDepthInvalid": 0,
+      "earliestReceipt": "2026-10-02T12:05:09.273Z",
+      "latestReceipt": "2026-10-06T19:14:48.243Z",
+      "controls": {
+        "original_one_percent_one_tick": {
+          "positivePackets": 0,
+          "maximumObservedQuantity": 0,
+          "maximumProtectedMargin": "0.000000",
+          "firstPositiveAt": null,
+          "lastPositiveAt": null
+        },
+        "full_rung_one_tick": {
+          "positivePackets": 0,
+          "maximumObservedQuantity": 0,
+          "maximumProtectedMargin": "0.000000",
+          "firstPositiveAt": null,
+          "lastPositiveAt": null
+        },
+        "one_percent_zero_tick": {
+          "positivePackets": 0,
+          "maximumObservedQuantity": 0,
+          "maximumProtectedMargin": "0.000000",
+          "firstPositiveAt": null,
+          "lastPositiveAt": null
+        },
+        "full_rung_zero_tick": {
+          "positivePackets": 0,
+          "maximumObservedQuantity": 0,
+          "maximumProtectedMargin": "0.000000",
+          "firstPositiveAt": null,
+          "lastPositiveAt": null
+        }
+      },
+      "bestFullRung": null
+    },
+    "1070": {
+      "marketId": "381",
+      "currentOwnedQuantity": 29,
+      "currentOwnedPrincipal": "4.060000",
+      "observedReceipts": 1775,
+      "eligibleConfirmedOwnedReceipts": 0,
+      "excludedBeforeOwnershipOrFlat": 1775,
+      "excludedAnyActiveOrUnknownIntent": 0,
+      "excludedDuringOwnershipTransition": 0,
+      "duplicateReceipts": 0,
+      "clockOrDepthInvalid": 0,
+      "earliestReceipt": "2026-10-02T13:26:36.388Z",
+      "latestReceipt": "2026-10-05T20:51:41.587Z",
+      "controls": {
+        "original_one_percent_one_tick": {
+          "positivePackets": 0,
+          "maximumObservedQuantity": 0,
+          "maximumProtectedMargin": "0.000000",
+          "firstPositiveAt": null,
+          "lastPositiveAt": null
+        },
+        "full_rung_one_tick": {
+          "positivePackets": 0,
+          "maximumObservedQuantity": 0,
+          "maximumProtectedMargin": "0.000000",
+          "firstPositiveAt": null,
+          "lastPositiveAt": null
+        },
+        "one_percent_zero_tick": {
+          "positivePackets": 0,
+          "maximumObservedQuantity": 0,
+          "maximumProtectedMargin": "0.000000",
+          "firstPositiveAt": null,
+          "lastPositiveAt": null
+        },
+        "full_rung_zero_tick": {
+          "positivePackets": 0,
+          "maximumObservedQuantity": 0,
+          "maximumProtectedMargin": "0.000000",
+          "firstPositiveAt": null,
+          "lastPositiveAt": null
+        }
+      },
+      "bestFullRung": null
+    }
+  },
+  "elapsedMs": 20407.4139,
+  "interpretation": {
+    "allQuantitiesAreIndependentObservedOpportunities": true,
+    "neverSumHypotheticalRepeatedSales": true,
+    "noFillLatencyOrSlippageProof": true,
+    "staleOriginalAccountCannotAuthorizeExecution": true,
+    "activeAndUnknownIntervalsExcluded": true,
+    "receiptKnownBeforeOriginalRequest": true,
+    "sourceScopeAndChainVerified": true,
+    "fees": "0.000000",
+    "actualAdditionalFills": 0,
+    "networkRequests": 0,
+    "profitabilityClaim": false
+  },
+  "recordedAt": "2026-10-06T21:20:26.813Z"
+}

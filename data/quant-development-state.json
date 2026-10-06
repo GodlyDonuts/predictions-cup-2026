@@ -16,12 +16,10 @@
     "probabilityWorker": 28488
   },
   "backlog": [
-    "Integrate reviewed scaled controller, shared budget and9/5read evidence bridge intoexistingcollector; activate1000capitalfreshpolicywithqty1..100 and25ordercapafterfullstreamedBUY/SELLtest.",
-    "Keep24792healthy; evaluatefuturesfreshownedhedge/marketwidecarryedgeswhileNOexitrequiresverifiednet>=.005; noforcedtradeorunknownreplacement.",
-    "Retain exact original BUY basis and verify actual SELL economics before any realized P&L or reserve retirement.",
-    "Investigate newly source-bound pair hedge using actual .070 first cost and fresh opposing-party rules/depth.",
-    "Retire only verified flat paper work and optionally explicitly freeze comparisons without resetting owned paper banks/journals.",
-    "Scale only from actual net execution evidence while preserving shared account pacing and portfolio attribution."
+    "Deploy separately versioned full-depth FIFO exit and combined-custody V6 only after genuine elapsed CPU/queue timing passes existing 20-second account/book and 5-second NONE gates. Preserve live V5 until controlled stop and current full-source migration.",
+    "Execute one fully funded current-owned counterpart under a new bounded root activation; retain BOTH legs, unpaired reserves and existing profitable SELLs. No old entry-window renewal.",
+    "Extend market-wide price-bounded paired acquisition from observed depth once current custody and actual terminal fills are verified; prioritize protected dollar margin within 1000 capital and25/order.",
+    "Measure subsequent actual realized outcomes and whole attributed liquidation separately; do not treat settlement floors, unused reservations or open marks as realized gains."
   ],
   "collectorAdmissionRepair": {
     "cycleAuxiliaryBudgetPreserved": true,
@@ -223,7 +221,7 @@
     "runtimeProofAt": "2026-10-06T10:40:42.492Z"
   },
   "schemaVersion": 2,
-  "updatedAt": "2026-10-06T20:45:03.005Z",
+  "updatedAt": "2026-10-06T21:36:28.5177224Z",
   "activeScaledProduction": {
     "runId": "baal-scaled-no-20261006-human",
     "collectorPid": 7780,
@@ -240,7 +238,7 @@
   },
   "currentMilestone": {
     "name": "Complete full-funded counterpart trades and maximize protected dollar margin across displayed depth",
-    "stage": "liquidity_math_verified_actual_graph_none_observed_live_hedge_adapter_staging",
+    "stage": "actual_source_hotpath_optimization_pending_complete_timing",
     "liquidityAlgorithm": "execution/baal-paired-liquidity-sweep-v1.mjs",
     "liquidityChecks": 9,
     "measuredReplay": "data/paired-liquidity-sealed-replay-v2-20261006.json",
@@ -250,12 +248,45 @@
       "notAnExecutedTrade": true
     },
     "officialOwnedAllEvidence": "data/baal-owned-all-read-live-20261006.json",
-    "next": "Maintain verified profitable SELLs; choose current positive-owned source for fully funded counterpart pilot after controlled custody migration. Do not revive flat RI or DE or count quoted floor as cash profit.",
+    "next": "Finish mechanical-only permit lookup optimization with ALLfreshfinancialsource checks at both true POST fences; verify full89.4MB HEDGE and prioritizedEXIT before controlled migration.",
     "actualRealizedEvidence": "data/baal-scaled-official-profit-20261006.json",
     "productionRecovery": "data/baal-scaled-journal-recovery-20261006.json"
   },
   "nextProfitablePolicyWork": [
     "For mixed FIFO costs, choose a profitable affordable prefix rather than only full depth-sized exit quantity; uniform current positions unaffected.",
     "Complete two-leg acquisition machinery only with actual funded/scoped receipts; reserved counterpart cash is not a purchased hedge."
-  ]
+  ],
+  "actualSourceTiming": {
+    "sourceSequence": 273,
+    "fullSourceBaselinePacketMs": 24547,
+    "exactFullBytePacketMs": 21822,
+    "existingLiveCollector": 7780,
+    "sourceBytes": 89409954,
+    "smallFixturePassed": true,
+    "actualSourceDispatchVerified": false,
+    "ordersFromBenchmark": 0,
+    "windowRelaxed": false,
+    "guardedGetPacketMs": 16731,
+    "ensuredFundingPacketMs": 16778,
+    "postGuardStillExpired": true
+  },
+  "ownedExitPriority": {
+    "tests": 3,
+    "orderAuthority": false,
+    "coverageAbsenceIsNotLiquidityAbsence": true,
+    "michiganEligibleReceipts": 635,
+    "kansasEligibleReceipts": 1,
+    "module": "execution/baal-owned-exit-priority-v1.mjs",
+    "historicalEvidence": "data/owned-exit-observed-capacity-20261006.json",
+    "michiganObservedProfitableReceipts": 0,
+    "priority": "largest quoted FIFO dollar gain first; fresh verified SELL before carry hedge",
+    "nevadaEligibleReceipts": 0
+  },
+  "delegation": {
+    "observedAt": "2026-10-06T21:49:18.8909053Z",
+    "newSubagentsAllowed": false,
+    "userInstruction": "Stop using sub agents.",
+    "subagentsInterrupted": 3,
+    "mode": "solo"
+  }
 }
