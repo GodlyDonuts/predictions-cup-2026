@@ -1,3 +1,9 @@
+# October6 12:42 UTC: official book shape corrected; zero-spend trial preserved
+
+The live bridge wrongly required top-level marketId, which the official CombinedMarketOrderbook response omits. The genuine documented/observed shape contains exchanges, overround, hasArbitrageOpportunity and tournament contexts. Five primary-schema regressions now pass; exact endpoint, tournament, expected exchange, depth and contradictory-ID checks remain enforced. This was an integration defect, not a missing price signal.
+
+The first trial initialized at12:29 after a fresh0.990 protected pair screen with5/1232 eligible shares, but the schema guard blocked preparation. It recorded **zero orders, zero fills and zero cost**. All journals remain in the original run; none were reset or called unfilled orders. The corrected run is sig-pilot-paired-book-schema-20261006-human under the same authority,2capital/1share constraints and **unchanged13:11:07.326UTC outer expiry**. Collector14316 has started its existing cold restore. No paired dispatch is claimed yet. [Repair proof](../data/paired-book-schema-repair-20261006.json).
+
 # October6 12:11 UTC: small official gain; bounded paired trial installed
 
 The third official close sold Rhode Island388 one share at0.160 (order15942338/fill67047007,11:25:01.282UTC) against0.155 cost. Three round trips now net **+0.005 SUSQies realized**, zero fees, with no original pilot holdings or uncertain intents at controlled shutdown. This is a tiny sample, not a proven profitable strategy. [Official evidence](../data/median-official-third-roundtrip-20261006.json).

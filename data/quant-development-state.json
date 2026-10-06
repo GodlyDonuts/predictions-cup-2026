@@ -1,12 +1,12 @@
 {
   "schemaVersion": 2,
-  "updatedAt": "2026-10-06T12:30:10.052Z",
+  "updatedAt": "2026-10-06T12:44:34.652Z",
   "objective": "Build and improve Baal for the official 2026 Susquehanna Predictions Cup",
   "executionOwner": "Codex",
   "historicalTrackerArchive": "data/quant-development-state.before-paired-live-20261006.local.json",
   "accountingPreserved": "All original runtime banks, journals, positions and intent identities remain authoritative; this file is a development backlog only.",
   "activeProcesses": {
-    "collector": 18440,
+    "collector": 14316,
     "probabilityWorker": 28488,
     "dashboard": 29228,
     "persistent": 3,
@@ -48,8 +48,8 @@
     "latestEvidence": "data/median-official-third-roundtrip-20261006.json"
   },
   "pairedLive": {
-    "stage": "launched_waiting_cold_restore_and_fresh_candidate",
-    "request": "sig-pilot-paired-20261006-human",
+    "stage": "corrected_book_schema_launched_pending_fresh_capture",
+    "request": "sig-pilot-paired-book-schema-20261006-human",
     "markets": [
       "354",
       "355"
@@ -60,7 +60,11 @@
     "orders": 0,
     "entryExpiresAt": "2026-10-06T13:11:07.326Z",
     "configuration": "data/paired-live-configuration-20261006.json",
-    "next": "Verify actual fresh bootstrap/paired initialization, bounded scoped fills and cash consistency; no silent renewal."
+    "next": "Verify actual fresh bootstrap/paired initialization, bounded scoped fills and cash consistency; no silent renewal.",
+    "retiredUnexecutedRun": "sig-pilot-paired-20261006-human",
+    "repairEvidence": "data/paired-book-schema-repair-20261006.json",
+    "ordersInRetiredRun": 0,
+    "outerExpiryUnchanged": true
   },
   "originalPilot": {
     "runId": "sig-pilot-median-20261006-human",
