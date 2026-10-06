@@ -464,6 +464,20 @@ impl MarketCollector {
         }
     }
 
+    /// realtime-books.mjs helpers: schema clock failure + held book access.
+    pub fn schema_clock_failure(&mut self) {
+        if !["disabled", "stopped"].contains(&self.state.as_str()) {
+            self.generation += 1;
+            self.reasons.insert("SCHEMA".to_string());
+            if self.state != "disconnected" { self.state = "needs_resync".to_string(); }
+        }
+    }
+    pub fn held_book(&self, exchange_id: &str) -> Option<&V> {
+        self.books.get(exchange_id).map(|h| &h.book)
+    }
+    pub fn held_books_view(&self) -> Vec<(V, f64, String)> {
+        self.books.values().map(|h| (h.book.clone(), h.observed_ms, h.source.clone())).collect()
+    }
     pub fn status(&mut self) -> V {
         self.tick();
         let mut metrics = serde_json::to_value(&MetricsJson::from(&self.metrics)).unwrap_or(V::Null);
