@@ -1,0 +1,51 @@
+{
+  "limits": {
+    "noneMs": 5000,
+    "accountMs": 20000
+  },
+  "sourceSequence": 273,
+  "sourceBytes": 89409954,
+  "actualNetworkCalls": 0,
+  "schemaVersion": 1,
+  "sourceUnchanged": true,
+  "runs": [
+    {
+      "action": "one_share_owned_counterpart_dispatched",
+      "dispatch": {
+        "actualFetchStartAt": "2026-10-06T22:07:04.404Z",
+        "graphRequestStartedAt": "2026-10-06T22:06:59.84Z",
+        "graphAgeMsAtFetch": 4564,
+        "cashRequestStartedAt": "2026-10-06T22:06:44.956Z",
+        "cashAgeMsAtFetch": 19448,
+        "bookRequestStartedAt": "2026-10-06T22:06:53.562Z",
+        "bookAgeMsAtFetch": 10842,
+        "localElapsedMsSincePacketReady": 2537.931
+      },
+      "scenario": "one_share_hedge",
+      "simulatedPostCalls": 1,
+      "sourceCodeHash": "c838bf94348977fe9b5f4753d5f5e5d8063ac2da8ce2fa5267a1271c2bfe15ec",
+      "observedAt": "2026-10-06T22:06:55.243Z",
+      "failure": null
+    },
+    {
+      "action": "covered_profitable_fifo_sell_dispatched",
+      "dispatch": {
+        "actualFetchStartAt": "2026-10-06T22:06:11.292Z",
+        "graphRequestStartedAt": "2026-10-06T22:06:06.844Z",
+        "graphAgeMsAtFetch": 4448,
+        "cashRequestStartedAt": "2026-10-06T22:05:53.198Z",
+        "cashAgeMsAtFetch": 18094,
+        "bookRequestStartedAt": "2026-10-06T22:06:00.084Z",
+        "bookAgeMsAtFetch": 11208,
+        "localElapsedMsSincePacketReady": 2342.235
+      },
+      "scenario": "priority_owned_sell",
+      "simulatedPostCalls": 1,
+      "sourceCodeHash": "c838bf94348977fe9b5f4753d5f5e5d8063ac2da8ce2fa5267a1271c2bfe15ec",
+      "observedAt": "2026-10-06T22:06:05.02Z",
+      "failure": null
+    }
+  ],
+  "actualProfitClaim": false,
+  "mode": "production_size_offline_physical_fetch_timing"
+}
