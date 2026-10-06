@@ -21,3 +21,4 @@ indexmap = "2"
 lto = "thin"
 codegen-units = 1
 
+tungstenite = "0.24"
