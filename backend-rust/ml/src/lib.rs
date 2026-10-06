@@ -4,7 +4,7 @@ pub mod cli;
 pub mod core;
 pub mod experiment;
 pub mod generate_fixture;
-pub mod helpers;
+pub mod test__helpers;
 pub mod model;
 
 pub const ML_HASH: &str = env!("BAAL_ML_HASH");
