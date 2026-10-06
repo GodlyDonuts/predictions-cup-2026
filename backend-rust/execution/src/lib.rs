@@ -31,29 +31,40 @@ pub fn json_number(v: &V) -> String {
     }
 }
 
+pub mod atomic_rename;
 pub mod basket_risk;
 pub mod candidate_markouts;
 pub mod candidate_markouts_audit;
+pub mod canonical_fifo;
+pub mod canonical_no_capacity;
+pub mod canonical_order_journal;
 pub mod controller;
 pub mod core;
 pub mod decision;
 pub mod decision_audit;
+pub mod dual_no_review_v1;
 pub mod entry_gates;
 pub mod entry_markouts;
 pub mod entry_path_quality;
 pub mod entry_path_quality_audit;
+pub mod exact_money_receipts;
 pub mod frozen;
 pub mod gates;
 pub mod median;
 pub mod median_controller;
+pub mod median_controller_v2;
+pub mod median_controller_v2_clock;
+pub mod median_preflight;
+pub mod median_protected_candidate_plan;
+pub mod median_reference;
+pub mod no_order_economics;
+pub mod no_rest_reconciliation;
 pub mod owned_risk_timing_audit;
+pub mod paired_dry_run;
+pub mod paired_portfolio;
 pub mod production;
 pub mod receipts;
 pub mod reference_quality_audit;
 pub mod settlement;
-pub mod median_controller_v2;
-pub mod median_controller_v2_clock;
-pub mod median_reference;
-pub mod median_preflight;
-pub mod median_protected_candidate_plan;
+pub mod side_accounting;
 pub mod transport;
