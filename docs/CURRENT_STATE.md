@@ -1,3 +1,16 @@
+# October6 20:45 UTC: three closed markets, 0.975 official realized gain
+
+Full cryptographic and economic replay of 273 actor rows verifies 14 actual official orders: six BUYs and eight SELLs. The latest Ohio sale, order17352375, sold37NOshares at0.335 against0.325 original FIFO cost, adding0.370; the scaled run now has0.975 realized SUSQies, zero fees.68shares remain across three markets with15.780 cost. Open holdings and historical account losses are excluded from this realized figure; scalable profitability remains unproven. [Sanitized fill proofs](../data/baal-scaled-official-profit-20261006.json).
+
+A reusable local evidence refresh now replays the complete original economic journal before publishing exact attributed gains; it performs no API calls and exports no raw account receipts or order keys. The original18:01 BUY cutoff remains unchanged. The full-depth exit and paired-custody upgrade is being checked separately while collector7780 continues managing existing positions.
+# October6 19:56 UTC: official realized gain0.605; profitable exit recovery verified
+
+Baal has13attributed official orders:6purchases and7SELLs. Exact terminal fills/FIFO proofs verify0.605SUSQies realized, fees0;105shares remain in four markets at27.805nominal cost. This is closed-portion profit, not a claim about liquidation of the remaining portfolio or scalable profitability. [Official proofs](../data/baal-scaled-official-profit-20261006.json).
+
+Collector7780 runs hostV5 without errors after a resource-limit failure. A complete67.31MB financial journal exceeded its64MiB reader while the original controller allowed128MiB. The new reader matches128MiB and preserves all bytes/crypto/accounting. Funding synchronization repairs terminal proof committed before the old reservation install failed. KnownSELL17172790 was not replaced;20combined recovery checks, an independent production-failure check and92runner checks pass. Original unowned BUY window18:01:56.310 remains closed; owned exits continue. [Recovery](../data/baal-scaled-journal-recovery-20261006.json).
+
+The price-bounded liquidity planner found29paired displayed shares versus2 under the1%rule in one capturedMichigan packet; no fills or profits are inferred from it. A fully funded counterpart pilot passes33coupled checks but remains dormant: it needs current positive ownership and a custody-preserving exit path, including any newly acquired counterpart. OldRIandDEpositions are now flat and cannot be revived from historical seeds.
+
 # October6 18:13 UTC: six official positions preserved; faster risk verification live
 
 Baal owns162NOshares across six markets with verified cost32.930 and zero scaled realized profit. Collector28156 is running hostV3 without errors. Exact-full-bytes projection reuse measured about218ms→39ms on the actual22.62MB sealed actor source; runtime reports80cache hits/7misses, with complete bytes/SHA, owner/STOP and fresh cash/risk checks retained. Original controller/budget prefixes verified unchanged. [Live evidence](../data/baal-scaled-projection-live-20261006.json), [six terminal fills](../data/baal-scaled-official-six-fills-20261006.json).

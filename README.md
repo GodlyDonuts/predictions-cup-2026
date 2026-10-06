@@ -1,6 +1,6 @@
 # Baal current status — October6
 
-Current deployment, attributed official fills and remaining work are recorded in [CURRENT_STATE](docs/CURRENT_STATE.md). Baal is the sole execution owner. The generic live strategy has four closed current-pilot trades netting+0.015SUSQies, with no current pilot holdings; the new1,000SUSQie allocation is live and its six purchases totaling162shares/cost32.930 are verified (openpositions, zero scaled realizedprofit); the original buy window has closed and owned exits remain managed, zero fees, a tiny sample. Historical dated reports below do not describe the current runtime.
+Current deployment, attributed official fills and remaining work are recorded in [CURRENT_STATE](docs/CURRENT_STATE.md). Baal is the sole execution owner. The generic live strategy has four closed current-pilot trades netting+0.015SUSQies, with no current pilot holdings; the new1,000SUSQie allocation is live and its six purchases and eight verified profitable exits have realized0.975SUSQies;68shares remain across three markets; the original buy window has closed and owned exits remain managed, zero fees, a tiny sample. Historical dated reports below do not describe the current runtime.
 
 # October5: accelerated paired-contract paper and Rust transport
 
