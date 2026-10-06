@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "counts": {
+    "candidates": 1477,
+    "target": 516,
+    "stop": 208,
+    "horizon": 103,
+    "data_gap": 646,
+    "missing_quote": 0,
+    "unfinished": 4
+  },
+  "groups": {
+    "down": {
+      "target": 188,
+      "stop": 84,
+      "horizon": 46,
+      "dataGap": 271,
+      "pricedPaths": 318,
+      "observedQuoteDifferenceTicks": -174
+    },
+    "flat": {
+      "target": 228,
+      "stop": 94,
+      "horizon": 45,
+      "dataGap": 305,
+      "pricedPaths": 367,
+      "observedQuoteDifferenceTicks": -181
+    },
+    "up": {
+      "target": 96,
+      "stop": 26,
+      "horizon": 8,
+      "dataGap": 67,
+      "pricedPaths": 130,
+      "observedQuoteDifferenceTicks": -25
+    },
+    "unknown": {
+      "target": 4,
+      "stop": 4,
+      "horizon": 4,
+      "dataGap": 3,
+      "pricedPaths": 12,
+      "observedQuoteDifferenceTicks": -17
+    }
+  },
+  "source": {
+    "sequence": 21734,
+    "hash": "72b09bc1bdf6ba5f2ce5989ad85783c7b178ed2ff0fb7d6ec9ebaeb14eef5ff6",
+    "lastKnownAt": "2026-10-06T08:05:42.901Z"
+  },
+  "elapsedMs": 14117.1042,
+  "thresholds": {
+    "historyMs": 3600000,
+    "minimumHistoryPoints": 20,
+    "minimumHistorySpanMs": 1800000,
+    "dropNewest": true,
+    "targetTicks": 1,
+    "stopTicks": 4,
+    "maximumHoldMs": 7200000,
+    "cooldownMs": 900000,
+    "maximumQuoteGapMs": 120000
+  },
+  "fills": 0,
+  "profitabilityEstablished": false,
+  "limitations": [
+    "Quoted bid paths are not executable fills or wallet returns.",
+    "Entry is the observed bulk ask, not a simulated delayed purchase.",
+    "Gaps and unfinished paths remain explicit; markets/episodes are correlated."
+  ]
+}

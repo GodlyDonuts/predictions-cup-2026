@@ -1,0 +1,11 @@
+# Live entry-cap revision
+
+The same-run V2 controller caps every new BUY at `min(original ask + 0.005, original causal median bid - 0.005)`. The cap is frozen with the original proposal and checked again at both dispatch fences. Old fills, costs, timestamps, order IDs and proposal history remain unchanged. Covered exits use each position's original entry bank and actual FIFO cost.
+
+The source/policy revision preserves the exact original activation, handoff, owner, run, cash limits and **2026-10-06T13:01:24.019Z** entry expiry. An explicit sidecar binds original core/proposal checkpoints and a complete archived prior source graph. First migration rejects unresolved orders/cancellations and unexpired old proposals. New proposal history records lineage and the new policy bank separately. No holding was adopted or reset.
+
+The protected-market selection fix includes all already-planned book IDs, ranks supported causal bulk hints for metadata only, and rotates unserved candidates fairly. Actual owned risk and pending proposals stay first; at most one new metadata candidate is admitted per cycle. Fresh full books independently recheck the entry signal. The four protected books, two auxiliary slots, account budget and depth requirements remain unchanged.
+
+104 execution checks and independent review passed; parent checks passed 39/39 for V2/planner/integration and 84/84 for existing collector/integration. The live revision was verified after fresh bootstrap. It then sold the legacy Rhode Island position at0.180 against its original0.170 cost: **+0.010 realized SUSQie**, zero fees. This demonstrates a reconciled official exit and preserved legacy accounting. The entry occurred under the original bank; the gain is not attributed to the new cap. One Michigan share remains at0.160 cost.
+
+At09:20:18UTC, fresh observed bid depth valued the remaining share at0.155, giving **+0.005 total observed pilot P&L** including the +0.010 realized result. The quote value is not an actual sale or guaranteed fill. One completed roundtrip does not establish repeatable profitability or justify claiming competition-wide success. See [roundtrip evidence](../data/median-first-official-roundtrip-20261006.json) and [revision evidence](../data/median-cap-v2-live-20261006.json).

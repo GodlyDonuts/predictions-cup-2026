@@ -1,4 +1,12 @@
-# October6 08:08 UTC: two official purchases; no completed exit
+# October6 09:20 UTC: first profitable official roundtrip; V2 live
+
+Collector9412 is freshly running with same-run V2 policy bank `da6162418dc06cb28e1873b8f1b0613f8b43f7b1c49b3e61e32cc8bd4ead8854`. Original activation/budgets/13:01:24.019UTC entry expiry are unchanged. New buys retain at least one tick below the original reference; protected-market candidate selection now includes all planned IDs. Prior owned costs and journals survived migration. See [V2 behavior and checks](MEDIAN_CAP_V2.md).
+
+Official Rhode Island388 roundtrip: BUY0.170 at07:37:48.170UTC, SELL0.180 at09:16:43.230UTC (order15622673/fill65703409), **+0.010 realized SUSQie, zero fees**. Three orders/fills reconciled, zero unconfirmed intents. Michigan306 remains one share at0.160 cost. At09:20:18UTC its fresh bid value0.155 produced **+0.005 observed total pilot P&L**; this mark is not a sale. Original Rhode Island entry was uncapped; do not attribute the win to the new cap. One roundtrip is not repeatability or competition-wide profitability evidence. [Official record](../data/median-first-official-roundtrip-20261006.json).
+
+Broad causal bulk diagnostics found1,477 candidate price paths:516 target touches,208 stop touches,103 horizons,646 data gaps,4 unfinished. Even optimistic quote differences were negative overall; these are not fills or funded returns. A separate fixed strict-uptrend-plus-cap comparison is staged with future cutoff08:59:42.428UTC. It remains paper-only until measured results warrant a decision.
+
+# Historical: two official purchases; no completed exit
 
 The existing pilot has two reconciled one-share BUY fills: Rhode Island Republican Senate388/ex1077 at0.170, and Michigan Republican Governor306/ex995 at0.160 (order15443862, fill64960172, 08:04:28.289UTC). Total attributed cost0.330; zero unconfirmed intents and zero realized official profit. No exit or scale-up is claimed. Collector20964 remains running under the unchanged bank and13:01:24.019UTC entry expiry. See [two-buy evidence](../data/median-official-two-buys-20261006.json).
 

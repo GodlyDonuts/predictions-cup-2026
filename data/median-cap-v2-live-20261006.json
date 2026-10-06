@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "observedAt": "2026-10-06T09:22:53.108Z",
+  "runId": "sig-pilot-median-20261006-human",
+  "revisionId": "median-entry-cap-20261006-v2",
+  "activationHash": "ec05e97a8c3ca4640d5255063b4d4a665e7a6d2959dd8c2b3922bb9a7b39617a",
+  "priorBankHash": "af566e22332573e759e6dbd45fd4c6dcf3ab4d111362a245e51bc19c66e2fd70",
+  "policyBankHash": "da6162418dc06cb28e1873b8f1b0613f8b43f7b1c49b3e61e32cc8bd4ead8854",
+  "coreCheckpoint": {
+    "hash": "97cc748bc2440d193814c74927a1cad1a7894626277f2b8bdc65f9349e4b259f",
+    "sequence": 8,
+    "stateHash": "0cf426d1ccee6ad9078d4093b82f0a44d2d711453858b8714fb7f2927b778de6"
+  },
+  "proposalCheckpoint": {
+    "bytes": 15821503,
+    "hash": "eb4adc630f51b151ff6e91ceeba32a315586269c542da241426cd5cd6d2426ce",
+    "sequence": 776,
+    "sha256": "40b8907b5e12fe6905114afe6e14221a79ca13fbc1249783cb8b0cd7d754e8e3",
+    "stateHash": "d3cbadd2503a9a8cb42f3885deb920a7296017061763ff7b8b7a6b7cf40ad877"
+  },
+  "originalActivationUnchanged": true,
+  "originalEntryExpiresAt": "2026-10-06T13:01:24.019Z",
+  "legacyLotCostsPreserved": [
+    "0.170000",
+    "0.160000"
+  ],
+  "executionStatus": "waiting_for_signal",
+  "ordersSubmitted": 3,
+  "unconfirmedIntents": 0,
+  "realizedPnl": "0.010000",
+  "remainingOwnedCost": "0.160000",
+  "liveRevisionVerified": true,
+  "correctnessChecks": {
+    "fullExecution": 104,
+    "parentV2PlannerIntegration": 39,
+    "existingCollectorAndIntegration": 84
+  },
+  "profitabilityEstablished": false
+}
