@@ -1,0 +1,115 @@
+{
+  "schemaVersion": 1,
+  "observedAt": "2026-10-06T22:45:39.533Z",
+  "collectorPid": 26388,
+  "hostVersion": 7,
+  "codeCommit": "4d857f55c9329cd62db66bdaf0b4f57b2c074bdc",
+  "ownerBound": true,
+  "currentCashBootstrapped": true,
+  "originalPrefixes": [
+    {
+      "source": "baal-combined-custody-runs\\baal-scaled-no-20261006-human\\combined-v6-20261006-root\\coordinator\\neutral-owned-counterpart-pilot-v2.jsonl",
+      "originalBytes": 11005518,
+      "currentBytes": 11932347,
+      "originalSHA256": "55673e47e03e17070acaed951843c67bc4b25619b8793b55ab0520aa6ed10b28",
+      "originalPrefixPreserved": true
+    },
+    {
+      "source": "baal-combined-custody-runs\\baal-scaled-no-20261006-human\\combined-v6-20261006-root\\budget\\owned-hedge-shared-budget-v2.jsonl",
+      "originalBytes": 199347,
+      "currentBytes": 224390,
+      "originalSHA256": "2468e8929607abcb701b730f805fea64653fbfcb315357381561c7de80babac9",
+      "originalPrefixPreserved": true
+    },
+    {
+      "source": "baal-combined-custody-request-v6.json",
+      "originalBytes": 7912,
+      "currentBytes": 7912,
+      "originalSHA256": "b207543026ecf615d71bf03424c319a5ecc801695ca9e446794ba59fca9e72e6",
+      "originalPrefixPreserved": true
+    }
+  ],
+  "originalDescriptorHash": "86ad92be853fcb827539d75645ec28761158e2369a581e7fdc2be4b46521b0b6",
+  "hedgeExpiresAt": "2026-10-06T23:16:18.437Z",
+  "exitExpiresAt": "2026-10-07T22:16:18.437Z",
+  "ownedQuantity": 68,
+  "realizedPnl": "0.975000",
+  "newOrders": 0,
+  "unknownAcceptance": false,
+  "abandonedIntentPreserved": true,
+  "livePacket": {
+    "elapsedClockMs": 14596,
+    "elapsedLocalMs": 14596.658,
+    "errorCode": "COMBINED_NONE_EVIDENCE_CURRENT_FIFO_OR_PROFIT_NO_DEPTH_QUALIFIED_PROFITABLE_FIFO_PREFIX",
+    "finishedAt": "2026-10-06T22:45:10.273Z",
+    "name": "sell_packet",
+    "startedAt": "2026-10-06T22:44:55.677Z"
+  },
+  "lastAction": "owned_custody_retained_no_profitable_hint",
+  "lastFailure": null,
+  "readTimings": [
+    {
+      "admitted": true,
+      "elapsedMs": 1152,
+      "endpoint": "/tournaments/midterm-elections",
+      "finishedAt": "2026-10-06T22:44:56.851Z",
+      "network": true,
+      "startedAt": "2026-10-06T22:44:55.699Z"
+    },
+    {
+      "admitted": true,
+      "elapsedMs": 2147,
+      "endpoint": "/tournaments/midterm-elections/portfolio/positions",
+      "finishedAt": "2026-10-06T22:44:59.013Z",
+      "network": true,
+      "startedAt": "2026-10-06T22:44:56.866Z"
+    },
+    {
+      "admitted": true,
+      "elapsedMs": 2038,
+      "endpoint": "/orders?status=open&limit=200&tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55",
+      "finishedAt": "2026-10-06T22:45:01.062Z",
+      "network": true,
+      "startedAt": "2026-10-06T22:44:59.024Z"
+    },
+    {
+      "admitted": true,
+      "elapsedMs": 1951,
+      "endpoint": "/orders?status=all&exchangeId=994&limit=200&tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55",
+      "finishedAt": "2026-10-06T22:45:03.021Z",
+      "network": true,
+      "startedAt": "2026-10-06T22:45:01.070Z"
+    },
+    {
+      "admitted": true,
+      "elapsedMs": 1119,
+      "endpoint": "/markets/305/orderbook?tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55&depth=20",
+      "finishedAt": "2026-10-06T22:45:05.895Z",
+      "network": true,
+      "startedAt": "2026-10-06T22:45:04.776Z"
+    },
+    {
+      "admitted": true,
+      "elapsedMs": 2016,
+      "endpoint": "/relationships/graph?marketId=305&depth=4&tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55",
+      "finishedAt": "2026-10-06T22:45:07.926Z",
+      "network": true,
+      "startedAt": "2026-10-06T22:45:05.910Z"
+    },
+    {
+      "admitted": true,
+      "elapsedMs": 1956,
+      "endpoint": "/portfolio/collateral?tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55",
+      "finishedAt": "2026-10-06T22:45:09.889Z",
+      "network": true,
+      "startedAt": "2026-10-06T22:45:07.933Z"
+    }
+  ],
+  "checks": {
+    "targetedHost": 13,
+    "runner": 85,
+    "bridge": 13,
+    "pureDepthSweep": 5
+  },
+  "interpretation": "Fresh live packet validated; observed book rejected for insufficient profitable FIFO depth. No new fill or profitability inferred from timing."
+}
