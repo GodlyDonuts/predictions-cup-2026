@@ -65,11 +65,18 @@ function snapshot(s,scope,now){
 function sameExternal(before,after,exchangeId){
  for(const id of new Set([...before.keys(),...after.keys()]))if(id!==exchangeId){const zero=v=>v?.quantity?v:null;need(canonicalPayload(zero(before.get(id)))===canonicalPayload(zero(after.get(id))),'EXTERNAL_POSITION_CHANGED');}
 }
+// Shared preflight parser for the bounded paired lifecycle. It exposes curated
+// account facts, not a write permit, and uses the same complete receipt checks.
+export function inspectScopedRestNoAccount({account,binding,readAt,requiredFunding='0.000000',reservedElsewhere='0.000000'}){
+ scopeCheck(binding);need(id(binding.exchangeId),'SCOPE');const a=snapshot(account,binding,instant(readAt));
+ const required=amount(requiredFunding)+amount(reservedElsewhere);need(amount(requiredFunding)>=0n&&amount(reservedElsewhere)>=0n,'FUNDING_NONNEGATIVE');
+ return{tournamentId:binding.tournamentId,positions:[...a.positions].map(([exchangeId,v])=>({exchangeId,...v})),scopedOrders:[...a.history.values()],startedAt:new Date(a.start).toISOString(),completedAt:new Date(a.end).toISOString(),cashLower:money(a.cash.lower),cashUpper:money(a.cash.upper),funded:a.cash.lower>=required,sourceReceipts:a.sources,executionAuthority:false};
+}
 // All inputs are supplied by the existing serialized collector. Raw receipt
 // bodies are parsed locally but never returned, stored, logged or transmitted.
 // Unknown GLOBAL economic activity is retained as unknown. A terminal, scoped
 // one-share lot can still have an exact basis; these are different assertions.
-export function verifyScopedRestNoBuy({binding,before,ack,order,fillPages,after,globalRisk,accountActivity=null,readAt,fullPairReservation,reservedElsewhere='0.000000'}){
+export function verifyScopedRestNoBuy({binding,before,ack,order,fillPages,after,globalRisk,accountActivity=null,recoveryProof=null,readAt,fullPairReservation,reservedElsewhere='0.000000'}){
  const now=instant(readAt),b=binding;scopeCheck(b);
  need(id(b.orderId)&&id(b.marketId)&&id(b.exchangeId)&&typeof b.ownerId==='string'&&typeof b.runId==='string'&&typeof b.intentId==='string'&&typeof b.idempotencyKey==='string'&&b.side==='no'&&b.action==='buy'&&b.quantity===1,'BINDING');
  const limit=price(b.limit),created=instant(b.createdAt),expires=instant(b.expirationDate);need(expires>created&&expires-created<=30000&&created<=now,'BINDING_LIFETIME');
@@ -79,10 +86,15 @@ export function verifyScopedRestNoBuy({binding,before,ack,order,fillPages,after,
  need(pre.cash.lower>=reserved+other,'CONSERVATIVE_FUNDING');
  need(!pre.positions.get(b.exchangeId)?.quantity,'PRIOR_TARGET_NOT_FLAT');if(pre.positions.has(b.exchangeId))need(pre.positions.get(b.exchangeId).marketId===b.marketId,'PRIOR_TARGET_SCOPE');
  const originalBody={idempotencyKey:b.idempotencyKey,exchangeId:b.exchangeId,side:'no',action:'buy',quantity:1,price:Number(b.limit),expirationDate:b.expirationDate,tournamentId:b.tournamentId};
- // A late stored ACK needs the actual original durable network-dispatch proof.
- // This producer does not accept an opaque hash/boolean as that proof; retain
- // the original receipt, or keep the recovered order unresolved here.
- const a=read(ack,'POST','/orders',now,{fresh:false});need(ack.requestBodyHash===payloadHash(originalBody)&&a.start>=created,'ACK_REQUEST_BINDING');need(a.start<expires,'ORIGINAL_DISPATCH_RECEIPT_REQUIRED');
+ const a=read(ack,'POST','/orders',now,{fresh:false});need(ack.requestBodyHash===payloadHash(originalBody)&&a.start>=created,'ACK_REQUEST_BINDING');
+ let recovered=null;
+ if(a.start>=expires){
+  // The lifecycle must additionally source this FULL row from its own replayed
+  // journal. A supplied hash/flag cannot replace the actual original wire data.
+  const row=recoveryProof?.journalRecord,{hash:rowHash,...body}=row??{},wire=body.event?.input?.start;
+  need(hex(rowHash)&&hash(JSON.stringify(body))===rowHash&&integer(body.sequence,1)&&body.event?.input?.kind==='fetch_start'&&wire?.kind==='place'&&wire.method==='POST'&&wire.endpoint==='/orders'&&typeof wire.fetchInvocationId==='string'&&wire.fetchInvocationId.length>0&&wire.ownerId===b.ownerId&&wire.runId===b.runId&&wire.intentId===b.intentId&&wire.idempotencyKey===b.idempotencyKey&&wire.requestBodyJson===canonicalPayload(originalBody)&&wire.requestBodyHash===ack.requestBodyHash&&hex(wire.leaseHash)&&wire.leaseIdentity?.ownerId===b.ownerId&&wire.leaseIdentity.tournamentId===b.tournamentId&&payloadHash(wire.leaseIdentity)===wire.leaseHash&&instant(wire.requestStartedAt)>=created&&instant(wire.requestStartedAt)<expires&&instant(wire.requestStartedAt)<=a.start,'ORIGINAL_DISPATCH_RECEIPT_REQUIRED');
+  recovered={kind:'idempotent_recovery_receipt',originalRequestStartedAt:wire.requestStartedAt,fetchInvocationId:wire.fetchInvocationId,dispatchJournalHash:rowHash,dispatchSequence:body.sequence,leaseHash:wire.leaseHash};
+ }
  const d=a.data;need(integer(d?.orderId,1)&&String(d.orderId)===b.orderId&&d.exchangeId===b.exchangeId&&d.side==='no'&&d.action==='buy'&&d.quantity===1&&tick(d.price)===limit&&d.all===null&&typeof d.open==='boolean'&&integer(d.quantityTraded)&&integer(d.remainingQuantity)&&d.quantityTraded+d.remainingQuantity===1,'ACK_CANONICAL');
  const ackCost=tick(d.totalCost);need(d.quantityTraded===0?ackCost===0n:ackCost>0n&&ackCost<=limit,'ACK_NOTIONAL');
  const terminal=read(order,'GET','/orders/'+b.orderId,now),od=terminal.data;
@@ -122,7 +134,7 @@ export function verifyScopedRestNoBuy({binding,before,ack,order,fillPages,after,
   scopedLotVerified:true,filledQuantity:quantity,signedPositionDelta:-quantity||0,scopedPrincipalCost:money(principal),expectedCanonicalTradeCashDelta:money(expected),fills,
   lot:quantity?{lotId:'order:'+b.orderId+':fill:'+fills[0].id,side:'no',quantity:1,entryPrice:money(principal),openedAt:fills[0].filledAt,ownerId:b.ownerId,runId:b.runId,intentId:b.intentId,orderId:b.orderId}:null,
   canonicalAckFilledQuantity:d.quantityTraded,ackCoversFinalFill:d.quantityTraded===quantity,ackNotional:money(ackCost),
-  ackProvenance:{kind:'original_placement_receipt'},
+  ...(recovered?{ackProvenance:recovered}:{}),
   requestedLimit:money(limit),requestedExpirationDate:b.expirationDate,postExpiryFillObserved:fills.some(v=>instant(v.filledAt)>expires),
   globalIntentCensus:{sourceHash:globalRisk.sourceHash,at:globalRisk.at,unresolvedIntentIds:[...globalRisk.unresolvedIntentIds]},
   funding:{fullPairReservation,reservedElsewhere,conservativeBeforeCash:money(pre.cash.lower),funded:true},

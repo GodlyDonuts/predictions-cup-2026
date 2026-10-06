@@ -3,7 +3,14 @@ import test from 'node:test';import assert from 'node:assert/strict';
 import {MedianCompetitionControllerV2} from './median-controller-v2.mjs';
 import {MedianCompetitionControllerV2Clock} from './median-controller-v2-clock.mjs';
 import fs from 'node:fs';import {createHash} from 'node:crypto';
+import os from 'node:os';import path from 'node:path';
 const base=Date.parse('2026-10-06T10:04:41.154Z'),iso=n=>new Date(n).toISOString();
+test('operator entry drain blocks new buys without changing the original activation window',t=>{
+ const dir=fs.mkdtempSync(path.join(os.tmpdir(),'baal-entry-drain-')),file=path.join(dir,'MEDIAN_ENTRY_DRAIN');t.after(()=>{if(fs.existsSync(file))fs.unlinkSync(file);fs.rmdirSync(dir);});
+ const c=Object.create(MedianCompetitionControllerV2Clock.prototype);c.runtimeDir=dir;c.activation={startedAt:iso(base-1000),entryExpiresAt:iso(base+1000)};const original=JSON.stringify(c.activation);
+ assert.equal(c.entryWindowAdmitted(base),true);fs.writeFileSync(file,'controlled strategy entry drain');assert.equal(c.entryWindowAdmitted(base),false);assert.equal(c.reason,'MEDIAN_ENTRY_DRAIN');assert.equal(JSON.stringify(c.activation),original);
+ fs.unlinkSync(file);assert.equal(c.entryWindowAdmitted(base),true);assert.equal(c.entryWindowAdmitted(base+1000),false);
+});
 function fixture({step=0,singleClock=false}={}){
  let calls=0,committed=0,lastCandidate=null;const proposalAt=base,original='a'.repeat(64),next='b'.repeat(64),revisionHash='c'.repeat(64),book={marketId:'306',exchangeId:'995',requestStartedAt:iso(base-200),receivedAt:iso(base-100),sequence:'123',sourceAt:iso(base-100),versionKey:'123:'+iso(base-100),bids:[{price:'0.145000',quantity:1000}],asks:[{price:'0.150000',quantity:1000}]};
  const state={schemaVersion:1,bankHash:original,runId:'sig-pilot-median-fixture',proposals:{},books:{},revisionHash,activeBankHash:next};

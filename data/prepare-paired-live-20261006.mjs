@@ -1,0 +1,28 @@
+import fs from 'node:fs';import path from 'node:path';import assert from 'node:assert/strict';
+import {atomicJson} from '../execution/ledger.mjs';import {payloadHash} from '../execution/core.mjs';
+import {Journal} from '../live-paper/runtime.mjs';import {validateUniverse} from '../live-paper/breadth.mjs';
+import {medianDiscoveryIdentity} from '../live-paper/collector-median-discovery-v3.mjs';
+import {pairedLiveIdentity} from '../execution/paired-live-host.mjs';
+import {validateMedianRevision} from '../execution/median-controller-v2.mjs';
+const runtime=path.join(process.env.LOCALAPPDATA,'SigTradingCup/paper-runtime'),workspace=process.cwd(),read=p=>JSON.parse(fs.readFileSync(p,'utf8'));
+const marker=read(path.join(runtime,'COLLECTOR_STOP'));assert.equal(marker.source,'paired-rest-host-install-20261006');
+try{process.kill(marker.oldPid,0);throw Error('COLLECTOR_STILL_PRESENT');}catch(e){assert.equal(e.code,'ESRCH');}
+assert(!fs.existsSync(path.join(workspace,'STOP'))&&!fs.existsSync(path.join(runtime,'STOP'))&&!fs.existsSync(path.join(runtime,'EXECUTION_STOP')));
+assert(!fs.existsSync(path.join(runtime,'../bot.lock')));
+const activationFile=path.join(runtime,'competition-activation.json'),activationBytes=fs.readFileSync(activationFile),activation=JSON.parse(activationBytes),universe=validateUniverse(read('live-paper/price-universe.json'),activation.tournamentId);
+const dir=path.join(runtime,'competition-runs',activation.runId);assert(!fs.existsSync(path.join(dir,'execution-owner.lock')));
+const core=new Journal(path.join(dir,'core-journal.jsonl'));assert(Object.values(core.last.state.intents).every(i=>i.status==='closed'));assert.equal(Object.keys(core.last.state.owned).length,0);
+const revision=read(path.join(dir,'median-entry-cap-revision.json'));
+validateMedianRevision({revision,bank:read(path.join(runtime,'production-banks',revision.nextBankHash+'.json')),priorBank:read(path.join(runtime,'production-banks',activation.strategyBankHash+'.json')),activation,universe,workspace,archiveDir:path.join(runtime,'production-code',activation.strategyBankHash)});
+const requestFile=path.join(runtime,'paired-live-request.json');assert(!fs.existsSync(requestFile),'Existing paired activation must not be replaced');
+const startedAt=new Date().toISOString(),authority={schemaVersion:1,kind:'direct_human_authorized_bot_update',ownerId:'Codex',threadId:'01a0f8cc-b9bb-77d2-9f4c-2844396f1b79',humanProductionInstruction:'If it is useful evidence, why dont we let it run now in production. And we continue to find improvements in paper and everytime we do we push it to prod',humanStrategyInstruction:'If you think of a better strategy than what i told you, go for it. Your only job is to make the best bot.',existingHumanAuditHash:payloadHash(read(path.join(runtime,'median-human-activation-authority-20261006.json'))),recordedByCodexAt:startedAt,exploratory:true,profitabilityEstablished:false,purpose:'One small prospective opposing-party NO pair under existing human production/update authority',allocatedCapital:'2.000000',quantity:1,maxPairs:1,ordinaryResolutionOnly:true,exceptionalLossAcknowledged:true};
+atomicJson(path.join(runtime,'paired-live-authority.json'),authority);
+const markets=['354','355'].map(marketId=>{const e=universe.exchanges.find(e=>e.marketId===marketId);assert(e&&e.option==='YES');return{marketId,exchangeId:e.exchangeId};});
+const request={schemaVersion:1,enabled:true,ownerId:'Codex',runId:'sig-pilot-paired-20261006-human',tournamentId:activation.tournamentId,tournamentSlug:'midterm-elections',markets,startedAt,entryExpiresAt:new Date(Date.parse(startedAt)+3600000).toISOString(),authorityHash:payloadHash(authority),codeIdentity:pairedLiveIdentity(workspace)};
+atomicJson(requestFile,request);
+atomicJson(path.join(runtime,'paired-candidate-request.json'),{schemaVersion:1,owner:'Codex',name:'florida-senate-minpay-20261006-v2',marketIds:markets.map(m=>m.marketId),createdAt:startedAt,expiresAt:new Date(Date.parse(startedAt)+1800000).toISOString()});
+atomicJson(path.join(runtime,'MEDIAN_ENTRY_DRAIN'),{source:'profitability-source-bound-pair-pivot-20261006',recordedAt:startedAt,humanStop:false,reason:'Preserve all original accounting and exits; park new unproven dip buys during the separately bounded pair trial.'});
+const configFile=path.join(runtime,'median-discovery.json'),config=read(configFile);fs.copyFileSync(configFile,configFile+'.before-paired-live-20261006');config.codeIdentity=medianDiscoveryIdentity(workspace);atomicJson(configFile,config);
+assert.deepEqual(fs.readFileSync(activationFile),activationBytes);
+const evidence={schemaVersion:1,configuredAt:startedAt,runId:request.runId,requestHash:payloadHash(request),authorityHash:request.authorityHash,entryExpiresAt:request.entryExpiresAt,markets,allocatedCapital:'2.000000',maxOrderCost:'1.000000',quantity:1,maxPairs:1,minimumOrdinarySurplus:'0.010000',pairCostCeiling:'0.990000',ordinaryResolutionOnly:true,originalActivationUnchanged:true,originalEntryExpiresAt:activation.entryExpiresAt,originalNewEntriesDraining:true,codeFiles:Object.keys(request.codeIdentity).length,collectorCodeFiles:Object.keys(config.codeIdentity).length,ordersSubmitted:0,newCredentials:0,extraAccountClients:0};
+atomicJson(path.join(workspace,'data/paired-live-configuration-20261006.json'),evidence);console.log(JSON.stringify(evidence));

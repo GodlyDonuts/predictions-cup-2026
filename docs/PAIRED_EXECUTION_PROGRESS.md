@@ -10,4 +10,8 @@ The official read-only Alaska Senate capture at09:58:30UTC priced a one-share pa
 
 Sixty-five new-module checks passed; independent review reproduced and then verified fixes for truncated positions, missing terminal filled quantities and fill timestamps preceding server order creation. The existing stricter helper is unchanged. [Primary API contract evidence](../research/paired-rest-contract-20261006.json) records the actual public specification observation and exact schema pointers.
 
-The next implementation joins this evidence reducer to the durable REST two-leg lifecycle and the sole collector's existing guarded transport/funding ledger. Passing correctness tests or a positive conditional settlement spread does not establish realized profit or activate a writer.
+The REST lifecycle, scoped evidence bridge, streamed receipt decoder, shared funding registry and sequential collector host are now implemented. The versioned REST plan preserves the original protected source cost and its hash, while reserving at most0.990 from the1−0.010 ordinary margin constraint. The actual first fill determines the remaining hedge ceiling. All source-review deadlines also cap server order expiry.
+
+The shared registry combines prior YES exposure and new NO holdings, claims the complete reserve before preparation reads, blocks other writes during unresolved phases and forbids a second actor for the same activation. The bridge reads through the existing serialized client; admission uses synchronous local proofs, preventing queued-read deadlocks. Response-based Retry-After waits persist through the same central rate file.
+
+A separately bounded small trial request is installed under the human's existing production/update authority. Collector18440 is restoring before fresh initialization. No paired fill or realized return is claimed yet. Passing correctness tests or a positive conditional spread is not empirical profitability evidence.

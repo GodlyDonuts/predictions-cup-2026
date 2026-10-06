@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "observedAt": "2026-10-06T11:45:18.760Z",
+  "runId": "sig-pilot-median-20261006-human",
+  "officialOrderCount": 6,
+  "closedRoundTrips": 3,
+  "netRealized": "0.005000",
+  "fees": "0.000000",
+  "thirdRoundTrip": {
+    "marketId": "388",
+    "exchangeId": "1077",
+    "buyOrderId": 15805641,
+    "buyFillId": 66471755,
+    "buyPrice": "0.155000",
+    "sellOrderId": 15942338,
+    "sellFillId": 67047007,
+    "sellPrice": "0.160000",
+    "soldAt": "2026-10-06T11:25:01.282Z",
+    "realizedPnl": "0.005000"
+  },
+  "unconfirmedIntents": 0,
+  "positions": {},
+  "statisticalProfitabilityEstablished": false,
+  "evidenceHash": "6f2e60d92eca0d5b2e9f9f2260c5c874bee80542c494db7539793f8597c39062"
+}
