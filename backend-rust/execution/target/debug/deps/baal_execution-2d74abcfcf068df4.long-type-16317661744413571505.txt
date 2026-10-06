@@ -1,0 +1,1 @@
+std::ptr::Unique<(dyn for<'a> Fn(&'a Value) -> Result<bool, OrderTransportError> + Send + 'static)>

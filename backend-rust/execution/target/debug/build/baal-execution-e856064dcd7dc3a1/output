@@ -1,0 +1,14 @@
+cargo:rustc-env=BAAL_EXECUTION_HASH=1cecdc95886bfb40506ebd32224ff55d48fe8583f8b2ce0a7b7d166faca5e140
+cargo:rerun-if-changed=src/controller.rs
+cargo:rerun-if-changed=src/core.rs
+cargo:rerun-if-changed=src/decision.rs
+cargo:rerun-if-changed=src/frozen.rs
+cargo:rerun-if-changed=src/gates.rs
+cargo:rerun-if-changed=src/lib.rs
+cargo:rerun-if-changed=src/median.rs
+cargo:rerun-if-changed=src/median_controller.rs
+cargo:rerun-if-changed=src/production.rs
+cargo:rerun-if-changed=src/receipts.rs
+cargo:rerun-if-changed=src/settlement.rs
+cargo:rerun-if-changed=src/transport.rs
+cargo:rerun-if-changed=tests/parity.rs

@@ -71,6 +71,7 @@ dependencies = [
  "indexmap",
  "libc",
  "num-bigint",
+ "regex",
  "reqwest",
  "ryu-js",
  "serde",

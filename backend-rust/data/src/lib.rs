@@ -1,32 +1,5 @@
-[package]
-name = "baal-data"
-version = "0.1.0"
-edition = "2021"
-build = "build.rs"
-
-[dependencies]
-baal-service-runtime = { path = "../service-runtime" }
-baal-execution = { path = "../execution" }
-baal-collector = { path = "../collector" }
-baal-feed = { path = "../feed" }
-baal-paper = { path = "../paper" }
-serde_json = { version = "1", features = ["preserve_order", "float_roundtrip"] }
-serde = { version = "1", features = ["derive"] }
-ryu-js = "=1.0.3"
-sha2 = "0.10"
-sha1 = "0.10"
-chrono = "0.4"
-num-bigint = "0.4"
-indexmap = "2"
-reqwest = { version = "0.12", features = ["rustls-tls", "blocking", "json"] }
-tungstenite = "0.24"
-uuid = { version = "1", features = ["v4"] }
-flate2 = "1"
-libc = "0.2"
-
-[profile.release]
-lto = "thin"
-codegen-units = 1
+#![allow(clippy::too_many_arguments)]
+#![recursion_limit = "512"]
 pub mod activate_human_pilot_20261004;
 pub mod archive_checked_native_graph;
 pub mod archive_journal_native_20261004;
