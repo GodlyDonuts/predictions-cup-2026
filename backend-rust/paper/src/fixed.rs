@@ -74,3 +74,23 @@ pub fn big_fee(notional: &BigInt, quantity: &BigInt, costs: &V) -> Result<BigInt
     let per_share = big_amount(costs["feePerShare"].as_str().unwrap_or(""))?;
     Ok((notional * fee_bps + BigInt::from(9_999)) / BigInt::from(10_000) + quantity * per_share)
 }
+
+pub fn instant(value: &str) -> Result<i64, String> {
+    // canonical UTC ISO milliseconds, exactly as paper/fixed.mjs.
+    let re_ok = value.len() == 24
+        && value.as_bytes()[4] == b'-' && value.as_bytes()[7] == b'-'
+        && value.as_bytes()[10] == b'T' && value.as_bytes()[13] == b':'
+        && value.as_bytes()[16] == b':' && value.as_bytes()[19] == b'.'
+        && value.as_bytes()[23] == b'Z';
+    if !re_ok { return Err("Timestamp must be canonical UTC ISO milliseconds".into()); }
+    let ms = baal_parse_iso(value).ok_or("Invalid timestamp".to_string())?;
+    if baal_iso_from_ms(ms) != value { return Err("Invalid timestamp".into()); }
+    Ok(ms)
+}
+fn baal_parse_iso(v: &str) -> Option<i64> {
+    let ms = baal_service_runtime::contract::parse_iso_ms(v)?;
+    Some(ms as i64)
+}
+fn baal_iso_from_ms(ms: i64) -> String {
+    baal_service_runtime::contract::ms_to_iso(ms as f64)
+}

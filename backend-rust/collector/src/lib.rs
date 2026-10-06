@@ -3,6 +3,13 @@
 
 pub mod account;
 pub mod account_eligibility_publication_v1;
+pub mod baal_pair_host;
+pub mod baal_pair_host_v2;
+pub mod baal_pair_host_v3;
+pub mod baal_pair_host_v4;
+pub mod baal_pair_paper;
+pub mod baal_pair_paper_v2;
+pub mod baal_pair_paper_v3;
 pub mod basket_book_plan;
 pub mod basket_observer;
 pub mod basket_relations;

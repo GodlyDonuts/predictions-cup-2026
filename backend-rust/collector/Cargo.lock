@@ -83,6 +83,7 @@ name = "baal-paper"
 version = "0.1.0"
 dependencies = [
  "baal-service-runtime",
+ "chrono",
  "indexmap",
  "num-bigint",
  "serde",
