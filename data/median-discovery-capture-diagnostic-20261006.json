@@ -1,0 +1,77 @@
+{
+  "schemaVersion": 1,
+  "observedAt": "2026-10-06T04:13:05.877Z",
+  "sourceBytes": 225264767,
+  "source": {
+    "sequence": 20095,
+    "hash": "1c3a546a025e77163e5e76db078e58cadeb9de620b6380e5b96dbd7f05535cfc"
+  },
+  "sourceAt": "2026-10-06T04:12:38.634Z",
+  "sourceAgeAtScanCompletionMs": 27243,
+  "atFrozenSourceFrontier": {
+    "universeSize": 237,
+    "observedExchanges": 237,
+    "lagReadyExchanges": 237,
+    "freshLagReadyExchanges": 237,
+    "qualifyingByDipTicks": {
+      "1": 3,
+      "2": 0,
+      "4": 0
+    },
+    "qualifyingProtectedByDipTicks": {
+      "1": 1,
+      "2": 0,
+      "4": 0
+    },
+    "minimumHistoryReceipts": 20,
+    "minimumSpanMs": 1800000,
+    "laggedWindowMs": 3600000,
+    "maximumCurrentAgeMs": 20000,
+    "bulkIsExecutable": false,
+    "profitabilityEstablished": false
+  },
+  "currentAtScanCompletion": {
+    "universeSize": 237,
+    "observedExchanges": 237,
+    "lagReadyExchanges": 237,
+    "freshLagReadyExchanges": 0,
+    "qualifyingByDipTicks": {
+      "1": 0,
+      "2": 0,
+      "4": 0
+    },
+    "qualifyingProtectedByDipTicks": {
+      "1": 0,
+      "2": 0,
+      "4": 0
+    },
+    "minimumHistoryReceipts": 20,
+    "minimumSpanMs": 1800000,
+    "laggedWindowMs": 3600000,
+    "maximumCurrentAgeMs": 20000,
+    "bulkIsExecutable": false,
+    "profitabilityEstablished": false
+  },
+  "sourceFrontierCandidates": [
+    {
+      "marketId": "305",
+      "exchangeId": "994",
+      "discountTicks": 1,
+      "historyReceipts": 198
+    },
+    {
+      "marketId": "361",
+      "exchangeId": "1050",
+      "discountTicks": 1,
+      "historyReceipts": 198
+    },
+    {
+      "marketId": "371",
+      "exchangeId": "1060",
+      "discountTicks": 1,
+      "historyReceipts": 198
+    }
+  ],
+  "authenticatedApiRequests": 0,
+  "profitabilityEstablished": false
+}
