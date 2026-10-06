@@ -1,3 +1,11 @@
+# October6 14:54 UTC: protected owned-NO exit trial installed
+
+Collector24792 started14:54:37UTC with the original verified one-share Rhode Island Governor NO lot and a separately bounded one-SELL request ending15:54:12.821UTC. It is restoring source history before fresh execution verification. The old paired review/entry clocks are unchanged; this exit request does not buy or replace shares. It requires fresh complete account/depth evidence and at least0.005 protected net gain after actual0.070 original cost. Fresh negative bulk hints only avoid unnecessary reads; they cannot authorize a sale. Twelve host checks,32 supporting checks and four independent review checks pass. [Configuration](../data/owned-no-profit-configuration-20261006.json).
+
+An explicit counterfactual comparison pause preserves both Kansas paper holdings and all banks/journals. Exact200.75MB ledger/93.61MB consumed public-prefix accounting verified in3.68seconds; the prior economic cold replay took399.9seconds. Paused valuations are dated frozen snapshots, not current marks or official holdings. Official account collection and original broker receipts remain separate. Seven adapterchecks and85 runner/integrationchecks pass. [Preservation evidence](../data/frozen-comparison-pause-20261006.json).
+
+No new actual SALE or realized gain is claimed. The original three closed official pilot trades remain+0.005; the new NO holding has zero realized profit.
+
 # October6 14:17 UTC: first generic NO fill verified in the official account
 
 The corrected collector15272 completed full scoped reconciliation of original order16297733 and fill68545127: one Democratic Rhode Island Governor NO share (market384/ex1073), actual0.070 cost, filled13:43:44.169UTC. The original raw acknowledgment, terminal order, complete signed REST fills, scoped history and current NO position agree. Original prefix, key and clocks remain intact; no replacement or hedge order was sent. The actor retains its0.920 remaining reservation, and global cash/activity is still not claimed exactly verified. [Official fill evidence](../data/paired-first-no-official-fill-20261006.json).

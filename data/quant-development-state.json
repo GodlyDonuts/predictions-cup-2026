@@ -8,15 +8,15 @@
   },
   "accountingPreserved": "All original runtime banks, journals, positions and intent identities remain authoritative; this file is a development backlog only.",
   "activeProcesses": {
-    "collector": 15272,
-    "collectorStage": "running_scoped_reconciliation_verified",
+    "collector": 24792,
+    "collectorStage": "protected_owned_profit_host_started_restoring",
     "dashboard": 29228,
-    "observedAt": "2026-10-06T14:18:13.145Z",
+    "observedAt": "2026-10-06T14:56:51.563Z",
     "persistent": 3,
     "probabilityWorker": 28488
   },
   "backlog": [
-    "Activate separately bounded protected owned-NO exit/hedge host on the same API/lease after fresh source/account checks; original windows are not renewed.",
+    "Verify24792fresh live bootstrap/protectedexitread hints/scopeddepth; no saleuntilnet>=.005,actualone-share proof and currentowner.",
     "Retain exact original BUY basis and verify actual SELL economics before any realized P&L or reserve retirement.",
     "Investigate newly source-bound pair hedge using actual .070 first cost and fresh opposing-party rules/depth.",
     "Retire only verified flat paper work and optionally explicitly freeze comparisons without resetting owned paper banks/journals.",
@@ -74,14 +74,21 @@
     "noLiveSellOrders": true,
     "nonNullSellALL": "unsupported_pending_actual_or_primary_evidence",
     "signal": "execution/single-owned-no-exit-signal-v1.mjs",
-    "stage": "controller_bridge_accounting_checked_not_activated",
+    "stage": "one_share_protected_profit_host_installed_restoring",
     "verifier": "execution/no-rest-sell-reconciliation-v1.mjs",
     "controller": "execution/owned-no-exit-controller-v1.mjs",
     "bridge": "execution/owned-no-exit-evidence-bridge-v1.mjs",
     "parentChecksPassed": 46,
     "independentControllerChecks": 16,
     "retirementOverlay": "execution/paired-owned-exit-retirement-v1.mjs",
-    "retirementChecks": 7
+    "retirementChecks": 7,
+    "host": "execution/owned-no-profit-host-v1.mjs",
+    "hostChecksPassed": 12,
+    "independentTargetedChecks": 4,
+    "configuration": "data/owned-no-profit-configuration-20261006.json",
+    "entryExpiresAt": "2026-10-06T15:54:12.821Z",
+    "actualSaleVerified": false,
+    "maximumExitOrders": 1
   },
   "pairedLiquidation": {
     "checksPassed": 14,
@@ -154,5 +161,15 @@
     "runtimeProofAt": "2026-10-06T10:40:42.492Z"
   },
   "schemaVersion": 2,
-  "updatedAt": "2026-10-06T14:31:21.105Z"
+  "updatedAt": "2026-10-06T14:56:51.563Z",
+  "paperComparisonPause": {
+    "cohort": "kansas-horizon-portfolio-20261005-v2",
+    "valuationFrozen": true,
+    "heldCorrelatedCases": 2,
+    "originalBankPreserved": true,
+    "originalHistoryPreserved": true,
+    "verificationMs": 3678.68,
+    "priorEconomicReplayMs": 399892,
+    "evidence": "data/frozen-comparison-pause-20261006.json"
+  }
 }

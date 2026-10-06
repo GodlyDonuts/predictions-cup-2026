@@ -1,6 +1,6 @@
 # Baal current status — October6
 
-Current deployment, attributed official fills and remaining work are recorded in [CURRENT_STATE](docs/CURRENT_STATE.md). Baal is the sole execution owner. The generic live strategy has one NO purchase acknowledgment awaiting scoped terminal verification; original closed official trades net+0.005SUSQies, zero fees, a tiny sample. Historical dated reports below do not describe the current runtime.
+Current deployment, attributed official fills and remaining work are recorded in [CURRENT_STATE](docs/CURRENT_STATE.md). Baal is the sole execution owner. The generic live strategy has one officially reconciled NO purchase at0.070 and a protected exit trial awaiting fresh live verification; original closed official trades net+0.005SUSQies, zero fees, a tiny sample. Historical dated reports below do not describe the current runtime.
 
 # October5: accelerated paired-contract paper and Rust transport
 
