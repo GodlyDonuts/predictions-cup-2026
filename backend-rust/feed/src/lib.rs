@@ -5,6 +5,7 @@ pub mod collector;
 pub mod contract;
 pub mod replay;
 pub mod runtime;
+pub mod test__helpers;
 
 use serde_json::Value as V;
 
