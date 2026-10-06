@@ -1,3 +1,9 @@
+# October6 17:09 UTC:1,000SUSQ scaled production verified;29-share fill
+
+The newproduction run bought29NOshares on384/ex1073 in officialorder16817788/fill70692281 at0.085, actualnominalcost2.465, filled17:08:28.005UTC. Full terminal fills/signedposition/history andbudget proofverified; collector25896 is actuallyrunning withno recordederrors. Sourceproofddb49405... records the29-share inventory andfull28.710 packagebudget (2.465owned+26.245unusedhedge-riskreserve). No automaticcounterparthedge orscaledrealizedprofit is claimed. [Official fill](../data/baal-scaled-first-official-fill-20261006.json).
+
+Human1,000SUSQ allocation is now operational under25/order/100market/200event/max100shares/max20markets. BUYentry closes18:01:56.310UTC; owned cleanup/exits remain scoped. Existing4closedpilottrades+.015 andallsource/bank historiesremainpreserved. Oneactualaccountqueue, no newcredentials/services.
+
 # October6 17:04 UTC: separately bounded1,000SUSQ scaled run started
 
 Collector25896 started17:04:12UTC for newrun baal-scaled-no-20261006-human, with1,000nominalcapital/25order/100market/200event/max100shares/max20markets. NewBUYentry ends18:01:56.310UTC; owned reconciliation/exits remain scoped after entry closes. It is restoring before fresh account and execution verification. No new scaled order is claimed yet. [Configuration](../data/baal-scaled-live-configuration-20261006.json).
