@@ -52,6 +52,19 @@ test('terminal partial BUY retains only actual filled inventory and releases unf
  const p=verify(fixture({quantity:10,fills:[{quantity:3,price:'0.100000'},{quantity:2,price:'0.105000'}]}));
  assert.equal(p.terminalUnfilledQuantity,5);assert.equal(p.remainingOwnedQuantity,5);assert.equal(p.fillNotional,'0.510000');assert.equal(p.signedPositionDelta,-5);
 });
+test('documented admission resize and discarded terminal remainder preserve original request funding and actual filled basis',()=>{
+ const a=fixture({quantity:10,fills:[{quantity:2,price:'0.100000'},{quantity:1,price:'0.105000'}]});
+ edit(a.ack,d=>{d.quantity=5;d.remainingQuantity=2;});edit(a.order,d=>d.quantity=3);edit(a.after.scopedOrdersPages[0],d=>d.data[0].quantity=3);
+ const p=verify(a);assert.equal(p.requestedQuantity,10);assert.equal(p.canonicalAcceptedQuantity,5);assert.equal(p.admissionDiscardedQuantity,5);assert.equal(p.terminalReportedQuantity,3);assert.equal(p.terminalReportedUnfilledQuantity,0);assert.equal(p.filledQuantity,3);assert.equal(p.terminalUnfilledQuantity,7);assert.equal(p.remainingOwnedCost,'0.305000');assert.equal(p.funding.reservedFunding,'2.000000');assert.equal(JSON.parse(p.sourceReceipts.dispatch.requestBodyJson).quantity,10);
+ a.reservedFunding='1.000000';assert.throws(()=>verify(a),/FUNDING_RESERVATION/);
+});
+test('canonical quantities cannot grow, vanish, hide fills, or disagree with scoped history',()=>{
+ for(const kind of ['ack_growth','ack_zero','terminal_growth','terminal_zero','less_than_filled','history']){
+  const a=fixture({quantity:10,fills:[{quantity:3,price:'0.100000'}]});edit(a.ack,d=>{d.quantity=5;d.remainingQuantity=2;});edit(a.order,d=>d.quantity=3);edit(a.after.scopedOrdersPages[0],d=>d.data[0].quantity=3);
+  if(kind==='ack_growth')edit(a.ack,d=>{d.quantity=11;d.remainingQuantity=8;});if(kind==='ack_zero')edit(a.ack,d=>d.quantity=0);if(kind==='terminal_growth')edit(a.order,d=>d.quantity=6);if(kind==='terminal_zero')edit(a.order,d=>d.quantity=0);if(kind==='less_than_filled')edit(a.order,d=>d.quantity=2);if(kind==='history')edit(a.after.scopedOrdersPages[0],d=>d.data[0].quantity=4);
+  assert.throws(()=>verify(a),kind);
+ }
+});
 test('initial partial open ACK is matched to exact chronological fill prefix, final fills to terminal',()=>{
  const a=fixture({ackFilled:3,ackOpen:true});const p=verify(a);assert.equal(p.ackNotional,'0.305000');assert.equal(p.fillNotional,'0.515000');assert.equal(p.ackCoversFinalFill,false);
  edit(a.ack,d=>{d.totalCost=.300;d.all.fullNotionalCost=.300;d.all.effectiveEntryCost=.300;d.all.netBuyingPowerImpact=.300;});assert.throws(()=>verify(a),/ACK_FILL_NOTIONAL/);

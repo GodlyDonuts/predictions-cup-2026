@@ -1,3 +1,9 @@
+# October6 17:04 UTC: separately bounded1,000SUSQ scaled run started
+
+Collector25896 started17:04:12UTC for newrun baal-scaled-no-20261006-human, with1,000nominalcapital/25order/100market/200event/max100shares/max20markets. NewBUYentry ends18:01:56.310UTC; owned reconciliation/exits remain scoped after entry closes. It is restoring before fresh account and execution verification. No new scaled order is claimed yet. [Configuration](../data/baal-scaled-live-configuration-20261006.json).
+
+Exact larger-share FIFO/partial/resized order accounting, sharedfunding and streamedactualclient components passed77integrated checks plus49independentcontroller/verifier checks;85runner checks pass. The original4closedcurrentpilottrades net+0.015 and allpriorbank/source records remain unchanged. Legacy retirement pins verifiedcurrentowned/reserve0 before the new actor; oldmanualholdings cannot be adopted. No newclients/keys/services, zero fees, same60read/24write completion-paced accountqueue.
+
 # October6 15:53 UTC: official NO round trip verified profitable and retired
 
 Collector27692 completed terminal reconciliation of SELL16539746/fill69538369: one NO share sold0.080 at15:22:50.482UTC against BUY16297733 cost0.070. Exact own fills/currentflat/scopedhistory/roundedcash-consistency verified net+0.010, fees0. The actual repair overlay releases only currentinventory/unused0.920 and preserves original0.070 historicalcost, cumulativepurchases, orderkey, body, and all source/journalprefixes. No replacementSELL orhedge was sent. Original3mediantrades net+0.005 plus this roundtrip gives+0.015 across4closedcurrentpilottrades; this tiny sample does not prove scalable edge or overallaccountprofit. [Official roundtrip](../data/owned-no-official-roundtrip-20261006.json).

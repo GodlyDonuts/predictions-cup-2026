@@ -8,15 +8,15 @@
   },
   "accountingPreserved": "All original runtime banks, journals, positions and intent identities remain authoritative; this file is a development backlog only.",
   "activeProcesses": {
-    "collector": 27692,
-    "collectorStage": "live_sale_reconciled_retired_no_new_writer",
+    "collector": 25896,
+    "collectorStage": "new1000scaled_policy_started_restore",
     "dashboard": 29228,
-    "observedAt": "2026-10-06T15:51:52.480Z",
+    "observedAt": "2026-10-06T17:05:53.142Z",
     "persistent": 3,
     "probabilityWorker": 28488
   },
   "backlog": [
-    "Human requested morecapital: integrate1000SUSQ allocation25/order100/market withquantity/depth/exactaccounting afterexistingSALEproof; oldpilot notreset.",
+    "Integrate reviewed scaled controller, shared budget and9/5read evidence bridge intoexistingcollector; activate1000capitalfreshpolicywithqty1..100 and25ordercapafterfullstreamedBUY/SELLtest.",
     "Keep24792healthy; evaluatefuturesfreshownedhedge/marketwidecarryedgeswhileNOexitrequiresverifiednet>=.005; noforcedtradeorunknownreplacement.",
     "Retain exact original BUY basis and verify actual SELL economics before any realized P&L or reserve retirement.",
     "Investigate newly source-bound pair hedge using actual .070 first cost and fresh opposing-party rules/depth.",
@@ -60,7 +60,7 @@
     "subsequentTrades": 0
   },
   "nextCapital": {
-    "activeNewWriter": false,
+    "activeNewWriter": "awaiting_live_bootstrap_verification",
     "activeStrategyStillOneShare": false,
     "amount": "1000.000000",
     "currentSaleResolved": true,
@@ -74,11 +74,23 @@
     "sharesPerOrder": 100,
     "sizingChecks": 7,
     "sizingModule": "execution/baal-capital-sizing-v1.mjs",
-    "stage": "1000_allocation_ready_multi_share_policy_implementation",
+    "stage": "scaled_policy_ACT_installed",
     "entrySignal": "execution/baal-scaled-entry-signal-v1.mjs",
     "entryChecks": 8,
     "controller": "execution/baal-scaled-no-controller-v1.mjs",
-    "scaledExecutionStage": "controller_bridge_shared_budget_integration"
+    "scaledExecutionStage": "controller_bridge_shared_budget_integration",
+    "publishedCodeCommit": "05e4401f531cdefdf2611b6ff645172168bfe289",
+    "multishareChecks": 28,
+    "sourceEntryChecks": 8,
+    "implementationComponents": [
+      "execution/baal-scaled-no-controller-v1.mjs",
+      "execution/baal-scaled-no-evidence-bridge-v1.mjs",
+      "execution/baal-scaled-shared-budget-v1.mjs"
+    ],
+    "configuration": "data/baal-scaled-live-configuration-20261006.json",
+    "entryExpiresAt": "2026-10-06T18:01:56.310Z",
+    "runId": "baal-scaled-no-20261006-human",
+    "maximumSharesPerOrder": 100
   },
   "objective": "Build and improve Baal for the official 2026 Susquehanna Predictions Cup",
   "originalPilot": {
@@ -206,5 +218,5 @@
     "runtimeProofAt": "2026-10-06T10:40:42.492Z"
   },
   "schemaVersion": 2,
-  "updatedAt": "2026-10-06T16:25:06.912Z"
+  "updatedAt": "2026-10-06T17:05:53.142Z"
 }

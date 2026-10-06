@@ -156,13 +156,15 @@ export function verifyScopedRestNoMultishare({binding:b,before,ack,order,fillPag
  const a=read(ack,'POST','/orders',now,false),d=a.data;
  need(ack.requestBodyHash===bodyHash&&ack.fetchInvocationId===wire.fetchInvocationId&&a.requestStartedAt===wire.requestStartedAt&&a.start>=created&&a.start<expires,'ORIGINAL_FETCH_PROVENANCE');
  need(String(d?.orderId)===b.orderId&&d.exchangeId===b.exchangeId&&d.action===b.action&&d.side==='no'&&typeof d.open==='boolean'&&tickAt(a,['price'],d.price)===limit,'ACK_CANONICAL');
- integerAt(a,['orderId'],d.orderId,1,Number.MAX_SAFE_INTEGER);integerAt(a,['quantity'],d.quantity,b.quantity,b.quantity);
- integerAt(a,['quantityTraded'],d.quantityTraded,0,b.quantity);integerAt(a,['remainingQuantity'],d.remainingQuantity,0,b.quantity);
- need(d.quantityTraded+d.remainingQuantity===b.quantity&&(!d.open||d.remainingQuantity>0),'ACK_QUANTITY');
+ integerAt(a,['orderId'],d.orderId,1,Number.MAX_SAFE_INTEGER);integerAt(a,['quantity'],d.quantity,1,b.quantity);
+ integerAt(a,['quantityTraded'],d.quantityTraded,0,d.quantity);integerAt(a,['remainingQuantity'],d.remainingQuantity,0,d.quantity);
+ need(d.quantityTraded+d.remainingQuantity===d.quantity&&(!d.open||d.remainingQuantity>0),'ACK_QUANTITY');
  const ackCost=amountAt(a,['totalCost']);need(ackCost>=0n&&ackCost<=995000n*BigInt(d.quantityTraded)&&(d.quantityTraded?ackCost>=5000n*BigInt(d.quantityTraded):ackCost===0n),'ACK_NOTIONAL');
  const ackEconomics=neutralAll(a,ackCost,b),terminal=read(order,'GET','/orders/'+b.orderId,now),od=terminal.data;
  need(terminal.start>=a.end&&String(od?.id)===b.orderId&&od.exchangeId===b.exchangeId&&od.tournamentId===b.tournamentId&&od.side==='no'&&od.action===b.action&&od.open===false&&tickAt(terminal,['priceLimit'],od.priceLimit)===limit&&od.expirationDate===b.expirationDate,'TERMINAL_SCOPE');
- integerAt(terminal,['id'],od.id,1,Number.MAX_SAFE_INTEGER);integerAt(terminal,['quantity'],od.quantity,b.quantity,b.quantity);integerAt(terminal,['quantityFilled'],od.quantityFilled,0,b.quantity);
+ // The documented terminal quantity may shrink when unfilled remainder is
+ // discarded. It never changes the original request, key or funding bound.
+ integerAt(terminal,['id'],od.id,1,Number.MAX_SAFE_INTEGER);integerAt(terminal,['quantity'],od.quantity,1,d.quantity);integerAt(terminal,['quantityFilled'],od.quantityFilled,0,od.quantity);
  const serverCreated=instant(od.createdAt);need(serverCreated>=created-2000&&serverCreated<=Math.min(a.end,expires)+2000,'SERVER_ORDER_CLOCK');
  need(Array.isArray(fillPages)&&fillPages.length>0&&fillPages.length<=10,'FILL_PAGES');
  let cursor=null,lastEnd=terminal.end,checkpoint=null,total=null,reportedAverage;const cursors=new Set(),ids=new Set(),fills=[],fillSources=[];
@@ -186,7 +188,7 @@ export function verifyScopedRestNoMultishare({binding:b,before,ack,order,fillPag
  fills.sort((x,y)=>instant(x.filledAt)-instant(y.filledAt)||x.id-y.id);
  if(priorProof?.lastObservedFill&&fills.length){const last=priorProof.lastObservedFill,first=fills[0];need(instant(first.filledAt)>instant(last.filledAt)||first.filledAt===last.filledAt&&first.id>last.fillId,'CONTINUATION_FILL_CLOCK');}
  const quantity=fills.reduce((n,f)=>n+f.quantity,0),principal=fills.reduce((n,f)=>n+amount(f.principal),0n);
- need(quantity<=b.quantity&&total===-quantity&&od.quantityFilled===quantity&&d.quantityTraded<=quantity&&(d.open||d.quantityTraded===quantity),'COMPLETE_FILL_TOTAL');
+ need(quantity<=od.quantity&&total===-quantity&&od.quantityFilled===quantity&&d.quantityTraded<=quantity&&(d.open||d.quantityTraded===quantity),'COMPLETE_FILL_TOTAL');
  const average=averageCheck(reportedAverage,principal,quantity);
  let ackQuantity=d.quantityTraded,ackPrincipal=0n,lastAckPrice=null;
  for(const f of fills){const q=Math.min(ackQuantity,f.quantity);if(q){need(instant(f.filledAt)<=a.end,'ACK_FILL_CLOCK');ackPrincipal+=amount(f.price)*BigInt(q);lastAckPrice=amount(f.price);ackQuantity-=q;}}
@@ -217,7 +219,7 @@ export function verifyScopedRestNoMultishare({binding:b,before,ack,order,fillPag
  need(origins.length<=10000,'ATTRIBUTION_SIZE');
  const realized=b.action==='sell'?principal-removedCost:0n,remainingCost=lots.reduce((n,l)=>n+amount(l.principalCost),0n);
  const result={schemaVersion:1,mode:REST_NO_MULTISHARE_CONTRACT_V1.mode,readAt,ownerId:b.ownerId,runId:b.runId,tournamentId:b.tournamentId,marketId:b.marketId,exchangeId:b.exchangeId,orderId:b.orderId,intentId:b.intentId,action:b.action,side:'no',bindingHash:payloadHash(b),priorProofHash:priorProof?.verificationHash??null,
-  scopedTradeVerified:true,requestedQuantity:b.quantity,filledQuantity:quantity,terminalUnfilledQuantity:b.quantity-quantity,signedPositionDelta:signedDelta,scopedPrincipalCost:b.action==='buy'?money(principal):'0.000000',scopedProceeds:b.action==='sell'?money(principal):'0.000000',fillNotional:money(principal),averageFillPrice:average,
+  scopedTradeVerified:true,requestedQuantity:b.quantity,canonicalAcceptedQuantity:d.quantity,admissionDiscardedQuantity:b.quantity-d.quantity,terminalReportedQuantity:od.quantity,terminalReportedUnfilledQuantity:od.quantity-quantity,filledQuantity:quantity,terminalUnfilledQuantity:b.quantity-quantity,signedPositionDelta:signedDelta,scopedPrincipalCost:b.action==='buy'?money(principal):'0.000000',scopedProceeds:b.action==='sell'?money(principal):'0.000000',fillNotional:money(principal),averageFillPrice:average,
   removedPrincipalCost:money(removedCost),realizedPnl:money(realized),cumulativeRealizedPnl:money(prior.cumulativeRealized+realized),remainingOwnedQuantity:remainingQuantity,remainingOwnedCost:money(remainingCost),remainingLots:lots,removedLots,attributedBuyFills:origins,fills,lastObservedFill:fills.length?{filledAt:fills.at(-1).filledAt,fillId:fills.at(-1).id}:priorProof?.lastObservedFill??null,
   requestedLimit:money(limit),requestedExpirationDate:b.expirationDate,postExpiryFillObserved:fills.some(f=>instant(f.filledAt)>expires),canonicalAckFilledQuantity:d.quantityTraded,ackNotional:money(ackCost),ackCoversFinalFill:d.quantityTraded===quantity,ackFillPriceSummary,ackEconomics,
   fee:'0.000000',expectedCanonicalTradeCashDelta:money(cashDelta),accountCash:{basis:'rounded_cent_plus_minus_one_cent',before:{lower:pre.cashLower,upper:pre.cashUpper},after:{lower:post.cashLower,upper:post.cashUpper},observedDeltaInterval:{lower:money(deltaLow),upper:money(deltaHigh)},consistent:true,exactDelta:null},
