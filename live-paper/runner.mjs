@@ -45,7 +45,7 @@ import {atomicJson as durableAtomicJson} from '../execution/ledger.mjs';
 import {CompetitionController} from '../execution/controller.mjs';
 import {SettlementCompetitionController} from '../execution/settlement-controller.mjs';
 import {MedianCompetitionController} from '../execution/median-controller.mjs';
-import {MedianCompetitionControllerV2} from '../execution/median-controller-v2.mjs';
+import {MedianCompetitionControllerV2Clock as MedianCompetitionControllerV2} from '../execution/median-controller-v2-clock.mjs';
 import {payloadHash} from '../execution/core.mjs';
 import {createMedianPreflight} from '../execution/median-preflight.mjs';
 import {validateProductionActivation,productionHandoffCurrent} from '../execution/production-activation.mjs';

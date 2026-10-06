@@ -1,0 +1,33 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import assert from 'node:assert/strict';
+import {createHash} from 'node:crypto';
+import {atomicJson} from '../execution/ledger.mjs';
+import {medianDiscoveryIdentity} from '../live-paper/collector-median-discovery-v3.mjs';
+import {validateMedianRevision} from '../execution/median-controller-v2.mjs';
+import {validateUniverse} from '../live-paper/breadth.mjs';
+
+const runtime=path.join(process.env.LOCALAPPDATA,'SigTradingCup/paper-runtime'),workspace=process.cwd();
+const read=p=>JSON.parse(fs.readFileSync(p,'utf8'));
+const sha=p=>createHash('sha256').update(fs.readFileSync(p)).digest('hex');
+const marker=read(path.join(runtime,'COLLECTOR_STOP'));
+assert.equal(marker.source,'median-proposal-clock-fix-20261006');
+try{process.kill(marker.oldPid,0);throw Error('PRIOR_COLLECTOR_PRESENT');}catch(e){assert.equal(e.code,'ESRCH');}
+assert(!fs.existsSync(path.join(workspace,'STOP'))&&!fs.existsSync(path.join(runtime,'STOP')));
+assert(!fs.existsSync(path.join(runtime,'../bot.lock')));
+const activationFile=path.join(runtime,'competition-activation.json'),activation=read(activationFile),dir=path.join(runtime,'competition-runs',activation.runId);
+assert(!fs.existsSync(path.join(dir,'execution-owner.lock')));
+const revision=read(path.join(dir,'median-entry-cap-revision.json'));
+validateMedianRevision({revision,bank:read(path.join(runtime,'production-banks',revision.nextBankHash+'.json')),priorBank:read(path.join(runtime,'production-banks',activation.strategyBankHash+'.json')),activation,universe:validateUniverse(read('live-paper/price-universe.json'),activation.tournamentId),workspace,archiveDir:path.join(runtime,'production-code',activation.strategyBankHash)});
+const core=JSON.parse(fs.readFileSync(path.join(dir,'core-journal.jsonl'),'utf8').trim().split('\n').at(-1));
+assert(Object.values(core.state.intents).every(i=>i.status==='closed'));
+assert(Object.values(core.state.control.cancellations).every(c=>c.phase==='reconciled'));
+assert.equal(sha('execution/median-controller-v2.mjs'),'43fbd313a35037b1449a5430aa9cdf8f45eefe32c8c2da2dc7c9b32024ce0b90');
+assert.equal(sha('execution/median-controller-v2-clock.mjs'),'e2b63b359b427f0b13e345c2f3313dc386f704d8d11adafeee133efadd8fbf20');
+const configFile=path.join(runtime,'median-discovery.json'),archive=configFile+'.before-clock-fix-20261006';
+assert(!fs.existsSync(archive));fs.copyFileSync(configFile,archive);
+const config=read(configFile);assert.equal(config.officialRiskSource.bankHash,revision.nextBankHash);
+config.codeIdentity=medianDiscoveryIdentity(workspace);atomicJson(configFile,config);
+const evidence={schemaVersion:1,at:new Date().toISOString(),fix:'single synchronous proposal timestamp',originalControllerSha256:sha('execution/median-controller-v2.mjs'),adapterSha256:sha('execution/median-controller-v2-clock.mjs'),activationSha256:sha(activationFile),entryExpiresAt:activation.entryExpiresAt,runId:activation.runId,policyBankHash:revision.nextBankHash,coreJournalSequence:core.sequence,coreJournalHash:core.hash,owned:core.state.owned,exitObligations:core.state.control.exits,collectorCodeFiles:Object.keys(config.codeIdentity).length,networkRequests:0,ordersSubmitted:0,testsPassed:38};
+atomicJson(path.join(workspace,'data/median-proposal-clock-deployment-20261006.json'),evidence);
+console.log(JSON.stringify(evidence));

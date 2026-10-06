@@ -1,3 +1,11 @@
+# October6 10:18 UTC: proposal clock defect repaired
+
+The original V2 proposal constructor sampled time twice. A one-millisecond advance produced a 120001 ms lifetime and failed its exact 120000 ms proof check before committing a SELL. Offline reproduction and five focused regressions establish this defect; the live halt followed Michigan's holding-timeout latch, but the old generic failure log did not retain the original exception. A separate synchronous clock adapter captures one timestamp and restores real time immediately after proposal creation. It leaves the original controller, strategy bank, ownership, accounting and activation expiry unchanged. Thirty-eight controller, clock and runner checks passed; independent review found no blocker.
+
+Collector9412 was stopped through an attributed engineering marker with no open or uncertain intents. Collector20172 was launched with the checked adapter pinned in its193-file graph; cold restore and fresh account bootstrap are still pending. Michigan remains one owned share at0.160 with its timeout obligation retained. Do not claim the repair has executed an exit before observing an official fill. See [deployment evidence](../data/median-proposal-clock-deployment-20261006.json).
+
+Opposing Alaska Senate NO contracts have a conditional ordinary settlement floor of1 per pair. A fresh paired depth capture at09:58:30UTC screened a0.985 cushioned pair cost, or0.015 conditional surplus, with43/26 eligible shares at the1% depth fraction. This was read-only evidence and has expired; no paired orders or profit are claimed. Refund, administrative resolution and failed-hedge exceptions remain explicit.
+
 # October6 09:20 UTC: first profitable official roundtrip; V2 live
 
 Collector9412 is freshly running with same-run V2 policy bank `da6162418dc06cb28e1873b8f1b0613f8b43f7b1c49b3e61e32cc8bd4ead8854`. Original activation/budgets/13:01:24.019UTC entry expiry are unchanged. New buys retain at least one tick below the original reference; protected-market candidate selection now includes all planned IDs. Prior owned costs and journals survived migration. See [V2 behavior and checks](MEDIAN_CAP_V2.md).

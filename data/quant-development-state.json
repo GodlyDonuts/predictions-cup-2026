@@ -1,10 +1,11 @@
 {
   "activeProcesses": {
-    "collector": 5476,
-    "probabilityWorker": 8236,
+    "collector": 8616,
     "dashboard": 20092,
+    "extra": 0,
+    "observedAt": "2026-10-05T18:01:03.782Z",
     "persistent": 3,
-    "extra": 0
+    "probabilityWorker": 3976
   },
   "archivedBulkDipV1": {
     "at": "2026-10-03T17:26:35.166Z",
@@ -3857,6 +3858,13 @@
     "updatedAt": "2026-10-04T22:04:48.451Z"
   },
   "automationId": "improve-sig-quantitative-bot",
+  "automationPromptCurrent": {
+    "at": "2026-10-05T18:03:56.346Z",
+    "collectorPid": 8616,
+    "main": "6295b028a2f4b296b419fc4b2d2d6a093dc6db02",
+    "next": "Fill-conditional economics on subsequent data; exact depth20 consumers and frozen accounting preserved",
+    "status": "ACTIVE"
+  },
   "baalBacklog": [
     {
       "completedAt": "2026-10-04T11:45:56.182Z",
@@ -7086,110 +7094,28 @@
   },
   "backlog": [
     {
-      "at": "2026-10-02T19:04:01.225Z",
-      "status": "completed",
-      "task": "Add journal-attributed per-candidate rejection diagnostics and subsequent executable bid recovery labels. Market-wide history screen is live; historical discount is not a proven forecast."
+      "id": "subsequent-governor-pnl",
+      "next": "Observe actual subsequent Governor, Kansas, WV and327 depth/exit receipts. Keep every original frozen bank and journal; correlated latency wallets are one opportunity. Do not equate an open mark or tiny counterfactual gain with system profitability.",
+      "priority": 1,
+      "status": "active"
     },
     {
-      "at": "2026-10-02T19:32:23.72Z",
-      "status": "completed",
-      "task": "Current288 checks and actual537MB/full-chain recovery verified. Upgrade chunked hosts to incremental tail verification with full restart proof and boundary guards; repeat-copy hashing currently costs unnecessary CPU. Candidate336 case stayed below ask at1/5min,15min unavailable; do not infer price recovery or profitability."
+      "id": "forecast-horizon-economics",
+      "next": "Match settlement-value forecasts to an executable holding policy and evaluate event-linked exits; two-day reversion is not established by polling probability.",
+      "priority": 1,
+      "status": "active"
     },
     {
-      "at": "2026-10-02T19:48:22.269Z",
-      "completedAt": "2026-10-02T21:28:20.337Z",
-      "evidence": "Collector1948 now loads exact entry gate comparisons.",
-      "status": "completed",
-      "task": "Actual market369 effective spread .26-.24 exceeded .02 by binary floating noise. Review exact monetary comparisons and entry limit assumptions. Keep material minimum-discount rejection and all risk fences. Continue pending causal candidate markouts without treating repeated polls as independent trades."
+      "id": "governor-and-other-source-calibration",
+      "next": "Governor model231races/800observations/178earlier-year-only diagnostics is published; ordinary Texas range.3328-.6730, severe.1277. Preserve active proxy bank. Any new model needs original clocks and a separate future cutoff/wallet; no duplicate retraining on examined data.",
+      "priority": 2,
+      "status": "candidate_ready"
     },
     {
-      "at": "2026-10-02T20:12:04.561Z",
-      "status": "active",
-      "task": "Prospective relative-dip definition frozen and first subsequent episode pending. Historical simple/reidual dip cohorts negative even gross; do not promote or scale. Investigate a different economic hypothesis with settlement and executable-depth evidence."
-    },
-    {
-      "at": "2026-10-02T20:27:12.441Z",
-      "status": "active",
-      "task": "Complete basket successor live and replay verified. Historical NH19 independent positive observations recovered; next verify authoritative settlement compatibility and prospective economic persistence with unmatched-leg risk, zero new trade authority inferred."
-    },
-    {
-      "at": "2026-10-02T20:37:23.195Z",
-      "status": "active",
-      "task": "Risk preview now exposes 24.875 worst hard-limit package reservation vs24.685 quoted-weighted basis;5-unmatched cap selects6shares. Implement actual NO-side/package reconciliation and fresh metadata collection;no execution from old quote/unverified predicates."
-    },
-    {
-      "at": "2026-10-02T21:28:20.337Z",
-      "status": "active",
-      "task": "Prioritize a complete bounded paired-contract workflow with fresh metadata/quotes, hard-limit reservation and NO-side acknowledgment/reconciliation. Conditional settlement floor is not guaranteed under refund/override. Do not scale negative dip strategy."
-    },
-    {
-      "at": "2026-10-02T21:28:20.337Z",
-      "status": "active",
-      "task": "Inspect market313 first adverse quote-to-exit delay against already deployed same-cycle terminal-reconciliation regression fix; do not imply a three-cent stop guarantees a three-cent fill."
-    },
-    {
-      "at": "2026-10-02T22:05:50.712Z",
-      "status": "completed",
-      "task": "Full prospective sequential package simulator, immutable sparse confirmation fix, live source recovery and bounded same-budget pending-leg read allocation implemented and deployed;0profit claim."
-    },
-    {
-      "at": "2026-10-03T21:00:44.431Z",
-      "evidence": [
-        "data/quant-fast-improvement-20261003.json",
-        "data/diagnostic-collector-live-verification-20261003.json",
-        "data/rebound-censor-correction-audit-20261003.json",
-        "data/passive-entry-subsequent-20261003-v1.json",
-        "data/bulk-dip-first-roundtrip-20261003-v2.json"
-      ],
-      "status": "completed",
-      "task": "Implement/deploy targeted diagnostic depth collection and latched terminal correction with conservative passive comparison"
-    },
-    {
-      "at": "2026-10-03T21:00:44.431Z",
-      "completedAt": "2026-10-03T22:07:57.606Z",
-      "evidence": "data/probability-live-verification-20261003.json",
-      "status": "completed",
-      "task": "Use newly targeted depth to obtain later independent exits for frozen passive/rebound cases; implement source-backed probability discrepancy intake and price-aware sizing when exact-contract forecasts arrive. Do not scale the negative dip strategy."
-    },
-    {
-      "at": "2026-10-03T22:07:57.606Z",
-      "status": "active",
-      "task": "Keep the single probability paper engine healthy, diagnose actual exits and entry cost, and implement one repeatable inventory-aware passive or verified conditional-payout mechanism with current depth. Check leaderboard tournament scope. Do not restart retired paper engines or expand reads without coordinated evidence."
-    },
-    {
-      "at": "2026-10-03T22:49:44.1Z",
-      "evidence": "data/canonical-capacity-live-verification-20261003.json",
-      "status": "completed",
-      "task": "Implement canonical YES-bid-to-NO capacity, same-budget contiguous paired sampling, durable evidence/resume and original account/source replay."
-    },
-    {
-      "at": "2026-10-03T22:49:44.1Z",
-      "status": "active",
-      "task": "Use subsequent capacity and partial-leg/exit evidence to distinguish a repeatable profitable mechanism from conditional settlement surplus. Research more exact-rule candidates through Daenerys. Optimize the measured collector restart bottleneck with a compatible separately versioned publisher, preserving frozen bank code and journals. Keep one collector,20-read share,and four background processes."
-    },
-    {
-      "at": "2026-10-04T20:12:55.564Z",
-      "evidence": "data/settlement-value-milestone-20261004.json",
-      "status": "completed",
-      "task": "Implement native settlement holding/sizing policy, exact current-snapshot proposal and full real-state JS/native publisher parity; preserve expired research clocks, held basis and all active wallets."
-    },
-    {
-      "at": "2026-10-04T21:08:22.481Z",
-      "commit": "b0ac7de0b15efb80c0ac3e8770f13726768860af",
-      "evidence": "data/production-integration-publication-record-20261004.json",
-      "status": "completed",
-      "task": "Wire checked Rust settlement proposals into bounded competition dispatch, idempotency/FIFO recovery, current ownership/contract fences and lean collector integration"
-    },
-    {
-      "at": "2026-10-04T22:30:25.738Z",
-      "status": "completed",
-      "task": "Final-stage/party model with primary GA/LA corrections, incumbent causal entrant feature and invariant minor-party ambiguity handling",
-      "evidence": "data/election-v2-milestone-20261004.json"
-    },
-    {
-      "at": "2026-10-04T22:30:25.738Z",
-      "status": "active",
-      "task": "Produce current exact-contract forecasts from verified nominees and independently dated sources, with executable price/cost assessment. Introduce any qualified bank transition without resetting run accounting or cumulative risk. Measure actual subsequent attributed fills and net official performance."
+      "id": "optional-read-and-cold-replay-cost",
+      "next": "Two JS companion startup replays caused several minutes of cold loading; optional read traffic also lengthens receipts. Change only if it materially improves fresh execution, preserve source/replay identity and four ordinary depth20 slots.",
+      "priority": 2,
+      "status": "observed"
     }
   ],
   "basketFollowupPlanner": {
@@ -7558,6 +7484,43 @@
     "sourceBlobsVerified": 4,
     "tests": 13
   },
+  "collectorRecovery": {
+    "activationChanged": false,
+    "activationHash": "2eb4f276fd4ac09d4b47e909fa837929334d81b229ad589235a64f3f7ed9e7c5",
+    "at": "2026-10-04T22:37:56.626Z",
+    "bankChanged": false,
+    "bankHash": "88c694a845b5a9fe71d6d3a76a9a5df824dab197f89302e7d3faa6a1c82b2243",
+    "bootstrap": {
+      "at": "2026-10-04T22:35:35.036Z",
+      "bookReceivedAt": "2026-10-04T22:35:35.033Z",
+      "complete": true,
+      "exchangeId": "986",
+      "marketId": "297"
+    },
+    "cumulativeRiskReset": false,
+    "currentCollectorPid": 23624,
+    "currentDashboardPid": 6456,
+    "currentPaperPid": 5624,
+    "currentStatus": "running",
+    "cycles": 6,
+    "duplicatesAndLocksChecked": true,
+    "errors": [],
+    "executorObservedAt": "2026-10-04T22:37:50.684Z",
+    "executorStatus": "waiting_for_signal",
+    "fees": "0.000000",
+    "oldCollectorPid": 19576,
+    "oldCompletedCycles": 103,
+    "oldReportedErrors": [],
+    "oldStatus": "stopped",
+    "ordersSubmitted": 0,
+    "profitabilityEstablished": false,
+    "realizedPnl": "0.000000",
+    "rootCauseEstablished": false,
+    "runId": "sig-pilot-settlement-20261004-human",
+    "services": 3,
+    "stopProvenanceChecked": true,
+    "unconfirmedIntents": 0
+  },
   "collectorRestartBottleneck": {
     "cpuSecondsAt22_42_32": 96.46875,
     "explanation": "Original publisher deep-copies hundreds of unrelated depth ladders while verifying the startup prefix. Frozen publisher must remain unchanged; a compatible new collector-only publisher needs exact-output equivalence evidence.",
@@ -7571,6 +7534,92 @@
     "market": "379",
     "note": "No authority transferred; no paper scope or competition-order changes",
     "paperScopeAffected": false
+  },
+  "coupledBulkMilestone": {
+    "actualSourceProof": "data/coupled-bulk-live-verification-20261005.json",
+    "additionalReadSlots": 0,
+    "bankHash": "d9e27c27bed40738f7526fdeb256633398dea60eeea42457c5dc40315ca3b2cf",
+    "baseMain": "45382f440dce92717eff12478c88163234fdf041",
+    "checks": {
+      "additionalCausalReplay": 1,
+      "combined": 87,
+      "passed": true
+    },
+    "cohort": "baal-coupled-bulk-20261005-v2c-live",
+    "collectorPid": 22884,
+    "cutoff": "2026-10-05T16:14:05.242Z",
+    "dashboardPid": 20092,
+    "developmentReplay": {
+      "fills": 0,
+      "limitation": "No original tape windows for three quoted markets; unresolved reservations are unknown, not no-fill evidence",
+      "pairs": 0,
+      "processed": 21813,
+      "realized": "0.000000",
+      "totalMs": 39521.0308
+    },
+    "entryExpiresAt": "2026-10-05T22:14:05.242Z",
+    "failedBuildsPreserved": true,
+    "feature": "Existing indicative bulk feed supplies causal five-minute stability; fresh book and account eligibility enable paired inside quotes",
+    "fees": 0,
+    "latestLive": {
+      "at": "2026-10-05T16:24:45.055Z",
+      "bank": "d9e27c27bed40738f7526fdeb256633398dea60eeea42457c5dc40315ca3b2cf",
+      "candidates": 1,
+      "fills": 0,
+      "profitable": false,
+      "realized": "0.000000",
+      "sourceFrontiers": {
+        "prices": {
+          "hash": "0cd161e5900e00f6fae161fe4fbeb1bad39f006525173b008b6244db2915a681",
+          "sequence": 14469
+        },
+        "tape": {
+          "hash": "981b8d34f5093d528b9459cdee6559bd4094d67733bd260e01bd1b3e45488a27",
+          "sequence": 1751
+        }
+      }
+    },
+    "newServices": 0,
+    "officialEntriesClosed": true,
+    "paperPid": 3976,
+    "publication": {
+      "commentId": 5998579299,
+      "files": 28,
+      "immutableBlobSHAAndSizeChecked": true,
+      "main": "34abca252d5121c387f4a6af87775ee8a4cc6704",
+      "nonforceRefReadback": true,
+      "tree": "f73a2704b28aa688ca2bad83768c6c45b2016b8f"
+    },
+    "scope": 237,
+    "sharedCash": true
+  },
+  "coupledSpreadMilestone": {
+    "at": "2026-10-05T15:29:02.789Z",
+    "bankHash": "3ab468b58df77b1b4996073c416210da38926f5be5ca7b707d3f2607def2f518",
+    "bindingChecks": 7,
+    "cohort": "baal-coupled-spread-20261005-v1-live",
+    "collectorPid": 2420,
+    "dashboardPid": 20092,
+    "developmentReplay": "data/coupled-original-four-development-20261005.json",
+    "modelChecks": 104,
+    "paperPid": 3976,
+    "profitabilityEstablished": false,
+    "sourceRepair": "data/tape-scope-repair-verification-20261005.json"
+  },
+  "coupledSpreadPublication": {
+    "at": "2026-10-05T15:35:31.000Z",
+    "bindingTests": 7,
+    "coupledBank": "3ab468b58df77b1b4996073c416210da38926f5be5ca7b707d3f2607def2f518",
+    "files": 34,
+    "goalOutcome": "progress",
+    "issueComment": 5997735453,
+    "issueCommentUpdatedAt": "2026-10-05T15:35:31Z",
+    "main": "45382f440dce92717eff12478c88163234fdf041",
+    "profitabilityEstablished": false,
+    "tests": 104,
+    "tree": "6403eb59b0df1ee21fa781db594cfebe2cee2d21",
+    "url": "https://github.com/GodlyDonuts/predictions-cup-2026/issues/1#issuecomment-5997735453",
+    "verifiedGitBlobs": 34
   },
   "current": {
     "botDisplayName": "Baal",
@@ -7589,6 +7638,132 @@
     "paper": 5624,
     "paperMode": "source_probability_and_inline_no_maker_paper"
   },
+  "currentElectionMilestone": {
+    "at": "2026-10-04T23:26:18.512Z",
+    "authority": "existing_direct_human_assignment",
+    "bankHash": "a948c395b14992a019e2180133604b8ee84dd78a9e94d08781efd18fbefc0128",
+    "changes": [
+      "Causal source-dated election assessment, original LV table and verified ballot; no market-derived forecast input.",
+      "Stopped-writer bank transition preserves the same window, inventory, FIFO and lifetime purchase budget.",
+      "Canonical activation equality tolerates JSON key ordering.",
+      "Production books/decisions precede paper observers; account freshness repaired before the decision book.",
+      "Detached current-user launcher reuses three services and active frozen paper cohort; no new watcher or credentials.",
+      "Read-only book preview replaces an existing auxiliary slot."
+    ],
+    "checks": {
+      "admissionAndModel": 89,
+      "runnerLifecycle": 52,
+      "runnerSyntax": true,
+      "serializedQueue": 2
+    },
+    "clockEvidence": {
+      "accountBeforeBook": true,
+      "at": "2026-10-04T23:26:12.057Z",
+      "bookAgeMs": 11,
+      "decision": "insufficient_scenario_edge",
+      "inputHash": "accb50b0a929d3d7d747d2cb82bff9dd35625450ad24b13e89e926b495ea962c",
+      "nativeWallMs": 70.73079999996116,
+      "ordersAgeMs": 6806,
+      "outputHash": "931dbe116cf1b0665acaf99804367ee18f6da8d18ff962dc027375fd93c85ad0",
+      "positionsAgeMs": 8210
+    },
+    "entryExpiresAt": "2026-10-05T03:59:22.131Z",
+    "goalTurnClassification": "progress",
+    "id": "causal-election-production-20261004-v1",
+    "limitations": [
+      "Scenario endpoints and stress assumptions are uncalibrated; an ordinary edge is not a guaranteed payout.",
+      "Current price0.920 exceeded maximum admitted ask0.910 in the first preview; no forced order.",
+      "Runtime process disappearance was observed; its cause and robustness against every future host termination remain unproved.",
+      "Prior attributed official roundtrip−0.380 remains separate. No profitability or scaling readiness is established."
+    ],
+    "next": [
+      "Keep the current frozen bank and original clocks; expire normally rather than regenerate unchanged research.",
+      "Seek independent current polls and exact ballot/contract bindings for additional candidate markets.",
+      "Measure actual subsequent dispatch, fills, depth-aware liquidation and net P&L; scale only with evidence.",
+      "Investigate expensive restart/loop work while preserving original journals and risk."
+    ],
+    "profitabilityEstablished": false,
+    "requiredGoalWorkRemaining": true,
+    "runId": "sig-pilot-settlement-20261004-human",
+    "runtime": {
+      "addedFees": "0.000000",
+      "collectorPid": 4760,
+      "cycles": 7,
+      "dashboardPid": 22396,
+      "errors": 0,
+      "ordersSubmitted": 0,
+      "paperPid": 17228,
+      "productionStatus": "monitoring",
+      "qualifiedCurrentForecasts": 1,
+      "realizedPnl": "0.000000",
+      "reportedAt": "2026-10-04T23:26:16.525Z",
+      "status": "running",
+      "unconfirmedIntents": 0
+    },
+    "schemaVersion": 1,
+    "source": {
+      "assessmentAt": "2026-10-04T23:06:57.318Z",
+      "broaderStress": [
+        0.902363683478113,
+        0.9564524621795811
+      ],
+      "modelHash": "54fc1978a6bbf4296ed06bc5519819e65a15aa2a65c13b4ef10082f233f2c475",
+      "ordinaryRange": [
+        0.9372026552832741,
+        0.9699070034817356
+      ],
+      "pollFieldEndDate": "2026-08-26",
+      "pollSample": 607
+    }
+  },
+  "currentElectionPublication": {
+    "allPublishedBlobsExact": true,
+    "at": "2026-10-04T23:36:22.460Z",
+    "automationPromptSha256": "89fc429d1b157c1b89515d0bb76cf17a1794f4ead90eb726b807db13b50f4cbc",
+    "commit": "0ea3c94f9529a4d428ed90426d308e5ffbcf1edd",
+    "completionComment": {
+      "id": 5985640808,
+      "updated_at": "2026-10-04T23:35:20Z",
+      "url": "https://github.com/GodlyDonuts/predictions-cup-2026/issues/1#issuecomment-5985640808"
+    },
+    "files": 24,
+    "goalWorkRemaining": true,
+    "live": {
+      "addedFees": "0.000000",
+      "collectorCycles": 40,
+      "collectorErrors": [],
+      "collectorReportedAt": "2026-10-04T23:36:21.050Z",
+      "collectorStatus": "running",
+      "dispatchAttempts": 0,
+      "eligibleResearchMarkets": [
+        "363"
+      ],
+      "latestDecision": "insufficient_scenario_edge",
+      "latestDecisionAt": "2026-10-04T23:36:17.892Z",
+      "nativeWallMs": 125.68760000006296,
+      "observedAt": "2026-10-04T23:36:22.460Z",
+      "ordersSubmitted": 0,
+      "pids": {
+        "collector": 4760,
+        "contestActivation": true,
+        "dashboard": 22396,
+        "metrics": null,
+        "paper": 17228,
+        "retiredMetricsPid": 11792
+      },
+      "realizedPnl": "0.000000",
+      "reason": "insufficient_scenario_edge",
+      "runId": "sig-pilot-settlement-20261004-human",
+      "status": "monitoring",
+      "unconfirmedIntents": 0,
+      "updatedAt": "2026-10-04T23:36:17.892Z"
+    },
+    "profitabilityEstablished": false,
+    "schemaVersion": 1,
+    "tree": "199fa68fd655f61457b9e7989ce25158e4a9b9eb"
+  },
+  "currentMain": "e6e1dd242527d8d2ef10dd20209d5d30827ae85f",
+  "currentMainCommit": "04b49084b03d928063c4e5e600ea1dd18d1933be",
   "currentPaper": {
     "at": "2026-10-04T21:08:22.481Z",
     "bankHash": "3e445d6b7f436cab79245ed588efa627734d8d2a4a6a6b788ac2873582ed4ef2",
@@ -7618,6 +7793,7 @@
       }
     }
   },
+  "currentPaperBank": "d9e27c27bed40738f7526fdeb256633398dea60eeea42457c5dc40315ca3b2cf",
   "currentPaperBeforeProductionIntegration": {
     "at": "2026-10-03T23:11:16.996Z",
     "bankHash": "55621b9b28d4b471f94c461cdbc0af4e35260dfac5c0d27f8d46cc93fd3b9ba4",
@@ -7670,13 +7846,33 @@
       }
     }
   },
+  "currentPollPublication": {
+    "allExact": true,
+    "automationPromptSha256": "c8955656c08d652a8e8290c56288a6d363e19e48a8689b789e9536a8f099c16e",
+    "commit": "6d1b89acd27ca7eeb9f7701eedffdac9d7c9168b",
+    "completion": {
+      "bodySha256": "c88395a046f82d4050b2d5fcc5dafbf7143a6d27d6e0f59cc10545ccb5b1ffec",
+      "created_at": "2026-10-05T11:46:20Z",
+      "handled": true,
+      "id": 5993784738,
+      "updated_at": "2026-10-05T11:46:20Z"
+    },
+    "files": 19,
+    "goalWorkRemaining": true,
+    "tree": "77626915d693cd45af016f8e98135b3359ce43bf"
+  },
   "currentProcesses": {
-    "collector": 4760,
-    "dashboard": 22396,
-    "paper": 17228,
-    "metrics": null,
-    "contestActivation": true,
-    "retiredMetricsPid": 11792
+    "collector": 8616,
+    "dashboard": 20092,
+    "extra": 0,
+    "observedAt": "2026-10-05T18:01:03.782Z",
+    "paper": 3976,
+    "persistent": 3
+  },
+  "currentRuntimePids": {
+    "collector": 16092,
+    "paper": 8732,
+    "dashboard": 29228
   },
   "currentTurnMilestones": {
     "at": "2026-10-03T22:07:57.606Z",
@@ -7852,6 +8048,66 @@
     "record": "data/edge-trial-deployment.json",
     "tests": 53,
     "workerPid": 4056
+  },
+  "electionFinalLabelMilestone": {
+    "at": "2026-10-04T22:30:25.738Z",
+    "checks": {
+      "fecWorkbooksVerified": [
+        "2020:GA",
+        "2016:LA"
+      ],
+      "nodeTestsPassed": 17,
+      "primaryFinalColumnNamesVerified": true
+    },
+    "codeHashes": {
+      "research/election-baseline-v2/model.mjs": "629b0cabbbbf957fd9cc8339ce021f459dac3d8849adb7ea42bcf56e2e9fbdca",
+      "research/election-baseline-v2/screen.mjs": "092c849ad197670f7eb586083f880238dc6a3598bfd29f6b1f698e9c769b2b24",
+      "research/election-baseline-v2/train.mjs": "a36de081edc648919ee2a366f61d8fc89f328ad938bf21686d3d829de8295178",
+      "research/election-baseline-v2/verify-fec-workbooks.py": "1e1361466bed631ad1021620f39d3bf004c43e6b5432afb6a587382e3d469b01"
+    },
+    "facts": {
+      "diagnosticRaces": 89,
+      "diagnosticsUntouched": false,
+      "directionCorrect": 82,
+      "fees": 0,
+      "missingPriorSeatMarkets": 3,
+      "profitabilityEstablished": false,
+      "qualifiedProductionForecasts": 0,
+      "regularTrainingRows": 561,
+      "rmse": 0.11071513361331801,
+      "screenNetworkRequests": 0,
+      "screenedSenateMarkets": 31
+    },
+    "id": "election-final-label-v2-20261004",
+    "immutableReportFitReproduced": {
+      "affiliationInvariant": true,
+      "initial": true
+    },
+    "kind": "checked_model_and_source_correction",
+    "limitations": [
+      "No original October forecast vintages.",
+      "Broader historical diagnostics are not comparable profit results or untouched selection data.",
+      "Current scenario sensitivities are assumptions, not calibrated confidence floors.",
+      "No live bank, cumulative purchase budget, attribution journal or frozen wallet changed."
+    ],
+    "remaining": [
+      "Produce current exact-contract forecasts from verified nominees and independently dated sources, with executable price/cost assessment.",
+      "Introduce any qualified bank transition without resetting run accounting or cumulative risk.",
+      "Measure actual subsequent attributed fills and net official performance."
+    ],
+    "sourceModel": "54fc1978a6bbf4296ed06bc5519819e65a15aa2a65c13b4ef10082f233f2c475"
+  },
+  "electionFinalLabelPublication": {
+    "at": "2026-10-04T22:37:56.626Z",
+    "commit": "cba7410eebfcd4b59d9a709db267b84e05dd44b1",
+    "exactBlobs": 21,
+    "issueComment": 5985212103,
+    "readback": "data/election-v2-readback-20261004.json",
+    "sourceAndFitChecks": true
+  },
+  "electionV2RecoveryPublication": {
+    "commit": "9b95e84ce179a421591e2e552e83d42bb4cb7434",
+    "verifiedExactBlobs": 3
   },
   "entryComparisonMilestone": {
     "actualBrowserVerified": true,
@@ -8318,6 +8574,38 @@
     "result": "No default30min window defect; no from requests newest500 sparse1m candles",
     "stale": 5
   },
+  "humanPilotHandled": [
+    {
+      "contentHash": "2fcc601d25cdbea5bd0939797a50ce5b9c83e42cf4baa7105dcb92e6ef4a2aa9",
+      "created_at": null,
+      "id": 5984448777,
+      "updated_at": null
+    },
+    {
+      "contentHash": "5488e7ad02e5fd0d8455c500219cb76cac471b8ad0012aba118ed6caefff0ca7",
+      "created_at": null,
+      "id": 5984685670,
+      "updated_at": null
+    },
+    {
+      "contentHash": "d384271be119908d677b9d8390a9dc922dac6608d26a52ab5a5c67f112ded836",
+      "created_at": null,
+      "id": 5984830913,
+      "updated_at": null
+    },
+    {
+      "contentHash": "2276ef7c6fbd426326453482d6d4e5e8157d17bc92f1a7960ff486d601c475ac",
+      "created_at": null,
+      "id": 5984845412,
+      "updated_at": null
+    },
+    {
+      "contentHash": "f97c9ebb97a3a24fdb7b4da4f64fe37d5b8705cd568e14d7ee29f667df56653b",
+      "created_at": null,
+      "id": 5984944772,
+      "updated_at": null
+    }
+  ],
   "humanPilotMilestone": {
     "ackComment": 5984845412,
     "assignmentComment": 5984685670,
@@ -8388,9 +8676,33 @@
     "sourceBank": "88c694a845b5a9fe71d6d3a76a9a5df824dab197f89302e7d3faa6a1c82b2243",
     "status": "waiting_for_signal"
   },
+  "humanPilotPublication": {
+    "at": "2026-10-04T22:08:22.844Z",
+    "commit": "12f4a4046cdeedc8ad9c909f1a1cfab007d7ccf0",
+    "completionBodyMatches": true,
+    "completionComment": 5984944772,
+    "directMain": true,
+    "goalComplete": false,
+    "verifiedFiles": 6
+  },
+  "humanPriority": "Profitability and matched execution only; unprofitable new passive entries drain, attributed liabilities/holdings continue management. No cosmetic or repeated model-count milestones.",
+  "lastGoalTurn": {
+    "at": "2026-10-05T19:31:59.313Z",
+    "checkedBlobs": 47,
+    "checksPassed": 88,
+    "claimComments": [
+      6000767212,
+      6001220592
+    ],
+    "classification": "progress",
+    "commit": "e2709c3490077d5b1309b2ba5f2764645bbb87b4",
+    "completionCommentId": 6001566876,
+    "milestone": "primary_governor_forward_paper_fill_and_passive_drain_capacity",
+    "profitabilityEstablished": false
+  },
   "lastMilestone": "production-recovery-current-polls-20261005-v1",
   "latestMain": "b0ac7de0b15efb80c0ac3e8770f13726768860af",
-  "latestMainCommit": "2fa1e5e2f679fe91fcbb67ba62a670b48d61b192",
+  "latestMainCommit": "c280561fb4536633674a294ad5937b3249dad3ff",
   "latestOpportunityDiagnostic": {
     "asOf": "2026-10-02T09:04:24.208Z",
     "classification": "retrospective_development_not_profitability",
@@ -8527,6 +8839,22 @@
     },
     "timingEvidence": "data/limit-order-coverage.json",
     "updatedAt": "2026-10-02T15:03:29.274Z"
+  },
+  "longerHorizonMilestone": {
+    "artifacts": [
+      "data/realtime-horizons-models-20261005.json",
+      "data/depth20-regression-recovery-20261005.json",
+      "data/nh-settlement-spread-diagnostic-20261005.json"
+    ],
+    "at": "2026-10-05T18:01:03.782Z",
+    "checkedBlobs": 23,
+    "checksPassed": 77,
+    "commit": "6295b028a2f4b296b419fc4b2d2d6a093dc6db02",
+    "completionCommentId": 6000177871,
+    "mode": "implemented_and_live_verified",
+    "parityCases": 64,
+    "profitabilityEstablished": false,
+    "publication": "checked_main_verified"
   },
   "nativeCacheMilestone": {
     "activeHash": "ad2a59fda37c2d6729dcea51ad676181773db53f5df9a31ef9bec5aa2ab1fe0f",
@@ -10126,13 +10454,15 @@
     "Keep the existing collector and paper exits healthy with three services and the serialized20-read cap. There are now two protected markets rather than the earlier four-slot saturation; verify the actual planner each wake.",
     "Keep the frozen trend probe distinct from the source-probability method. No profitability or takeover inferred from test counts, source-model points, conditional quote surplus, or tiny paper gains."
   ],
+  "nextAction": "Observe actual subsequent Governor, Kansas, WV and327 depth/exit receipts. Keep every original frozen bank and journal; correlated latency wallets are one opportunity. Do not equate an open mark or tiny counterfactual gain with system profitability.",
   "nextActions": [
     "Use subsequent tape/book evidence to manage the inherited 381 NO paper position and diagnose actual exit economics. Do not force trades or claim proof from one modeled entry.",
     "Review V3 continuous coverage and accounting continuation independently; preserve late pre-cancel prints and exact FIFO.",
     "Improve useful paired/risk tape freshness within the existing 20-read allocation, without extra API clients or collector processes.",
     "Obtain fresh source-backed review before the existing capacity review expires at 04:36:16.657 UTC; expiry must block new maker entries."
   ],
-  "nextConcreteMilestone": "Use existing immutable receipt native candidate and live subsequent fills/exits to establish actual economics and the bounded attributed official continuation. Preserve original expired window/lifetime accounting; do not repeat native-policy work or force entries.",
+  "nextConcreteMilestone": "Verify actual new worker/risk bootstrap and funded receipt outcomes; preserve originalmodelpositions and measure net profit, not marks or point estimates",
+  "nextEconomicMilestone": "Keep new native raw receipt wallet attributed across source ingestion; complete actual nine-family Rust service imports/continuation and preserve foreground dashboard. New order-book imbalance taker model rejected on fixed chronological replay; pursue measured passive fill economics/verified source valuations rather than force volume.",
   "nextImplementationMilestones": [
     {
       "priority": 1,
@@ -10848,6 +11178,51 @@
     ]
   },
   "previousStatusTurnClassification": "verified_wait",
+  "primaryGovernorMilestone": {
+    "activePaperCohort": "primary-texas-governor-20261005-v3",
+    "at": "2026-10-05T19:28:06.083Z",
+    "candidateGovernorModel": {
+      "activeBankOverwritten": false,
+      "bias": -0.8645305385455321,
+      "brier": 0.07274792217034326,
+      "chronologicalRaces": 178,
+      "pollsterRaceObservations": 800,
+      "races": 231,
+      "sd": 8.179237418654745,
+      "severe": 0.12773352712976935,
+      "texasOrdinaryRange": [
+        0.3328042060986031,
+        0.6730198418091796
+      ]
+    },
+    "checksFailed": 0,
+    "checksPassed": 88,
+    "claim": 6000767212,
+    "contestOrders": 0,
+    "extensionClaim": 6001220592,
+    "implementation": "separate_primary_governor_paper_and_drain_capacity_repair",
+    "next": "Measure actual future fills/exits and settlement economics; address two-day trading horizon vs settlement forecast, improve calibrated valuations without restarting active frozen banks.",
+    "officialEntryWindowClosed": true,
+    "paperEstimatedLiquidationPnl": "-0.015000",
+    "paperFillCost": "0.295000",
+    "paperRealizedPnl": "0.000000",
+    "pids": {
+      "collector": 15144,
+      "dashboard": 20092,
+      "paper": 8732
+    },
+    "priorBanksAndJournalPrefixesPreserved": true,
+    "profitabilityEstablished": false,
+    "publication": {
+      "at": "2026-10-05T19:31:59.313Z",
+      "checkedBlobs": 47,
+      "completionComment": 6001566876,
+      "mainRefReadBack": true,
+      "sha": "e2709c3490077d5b1309b2ba5f2764645bbb87b4",
+      "tree": "1d7277ac4ea8977d198c0ff3882eea330f894763"
+    },
+    "runtimeEvidenceAt": "2026-10-05T19:26:40.942Z"
+  },
   "probabilityOwnedRiskMilestone": {
     "at": "2026-10-04T10:24:28.893Z",
     "bankHash": "00e49283c6fb615001fbcb93a94125eba1917abd11b551d7b6e29530b4cddeaa",
@@ -11155,6 +11530,95 @@
     "Improve the next named strategy only when measured forecast, execution or economic evidence identifies a defect.",
     "Deploy the same trading policy under the human-authorized bounded workflow when actual net economics support it, retaining fresh reconciliation and lifetime attribution."
   ],
+  "productionRecoveryCurrentPolls": {
+    "activationChanged": false,
+    "at": "2026-10-05T11:44:09.915Z",
+    "authority": "existing_direct_human_assignment",
+    "bankHash": "a948c395b14992a019e2180133604b8ee84dd78a9e94d08781efd18fbefc0128",
+    "changes": [
+      "Derived production entry-window status preserves blocked, uncertain and owned-risk states.",
+      "Recovered the same three approved services; controlled collector reload deployed the status fix without changing activation.",
+      "Captured six hashed primary polling/ballot sources and retained original clocks and population distinctions.",
+      "Built separate Republican/Democratic source assessments with verified opposition, multinomial margin variance and frozen sensitivity assumptions.",
+      "Compared three actual subsequent official contract/book receipts using existing auxiliary slots and exact price policy."
+    ],
+    "checks": {
+      "classes": [
+        "entry-state projection",
+        "settlement controller and expired-window integration",
+        "primary polling assessment"
+      ],
+      "failed": 0,
+      "targetedPassed": 23
+    },
+    "entryExpiresAt": "2026-10-05T03:59:22.131Z",
+    "goalTurnClassification": "progress",
+    "id": "production-recovery-current-polls-20261005-v1",
+    "incident": {
+      "causeEstablished": false,
+      "humanStopRemoved": false,
+      "lastSavedCollectorReportAt": "2026-10-04T23:43:43.768Z",
+      "observationPrecision": "minute",
+      "observedAt": "2026-10-05T11:19:00Z",
+      "previousPids": {
+        "collector": 4760,
+        "dashboard": 22396,
+        "paper": 17228
+      },
+      "previousPidsAbsent": true
+    },
+    "limitations": [
+      "No order or positive official net performance from this pilot. Earlier official net−0.380 remains separate.",
+      "Sensitivity endpoints are subjective valuations, not calibrated probability bounds or profit evidence.",
+      "Three subsequent price receipts establish causal comparisons only, not a strategy-performance sample.",
+      "The cause of the overnight service disappearance and reliable unattended recovery remain unresolved.",
+      "The expired original entry window was not extended."
+    ],
+    "next": [
+      "Calibrate current party outcome forecasts and compare subsequent executable economics without tuning to force entries.",
+      "Resolve the observed service-lifetime failure using concrete process evidence.",
+      "Prepare a useful bounded continuation only after qualifying source/price evidence; preserve inventory and lifetime limits."
+    ],
+    "productionBankChanged": false,
+    "profitabilityEstablished": false,
+    "requiredGoalWorkRemaining": true,
+    "research": {
+      "additionalAccountClients": 0,
+      "assessedAt": "2026-10-05T11:31:48.870Z",
+      "assessments": 4,
+      "comparisonId": "subsequent-primary-poll-price-comparison-20261005-v1",
+      "installedInProduction": false,
+      "qualifiedReceipts": 0,
+      "recordId": "current-poll-breadth-20261005-v1",
+      "subsequentPriceReceipts": 3
+    },
+    "runId": "sig-pilot-settlement-20261004-human",
+    "runtime": {
+      "addedFees": "0.000000",
+      "collectorPid": 20088,
+      "cycles": 30,
+      "dashboardPid": 20092,
+      "dispatchAttempts": 0,
+      "entryWindow": {
+        "expiresAt": "2026-10-05T03:59:22.131Z",
+        "open": false,
+        "phase": "closed",
+        "startedAt": "2026-10-04T21:59:22.131Z"
+      },
+      "errors": 0,
+      "ordersSubmitted": 0,
+      "paperPid": 13904,
+      "persistentServices": 3,
+      "productionReportedAt": "2026-10-05T11:44:05.550Z",
+      "readinessComplete": true,
+      "realizedPnl": "0.000000",
+      "reason": "ENTRY_WINDOW_CLOSED",
+      "reportedAt": "2026-10-05T11:44:06.897Z",
+      "status": "entry_window_closed",
+      "unconfirmedIntents": 0
+    },
+    "schemaVersion": 1
+  },
   "productionResearchCheckpoint": {
     "at": "2026-10-04T21:10:42.739Z",
     "bankChanged": false,
@@ -11162,6 +11626,179 @@
     "qualifiedCurrentResearchAdded": 0,
     "underlyingForecastClocksPreserved": true
   },
+  "profitStrategyMilestone": {
+    "at": "2026-10-05T12:19:39.973Z",
+    "checks": {
+      "baselineReproduced": true,
+      "focusAndCalibrationPassed": 10,
+      "runnerLifecyclePassed": 53,
+      "sourceGitBlobsVerified": true
+    },
+    "currentStrategy": {
+      "bankHash": "3e57289fda56eb58a833fbcf62c8c488064b3e84c0ab0642ece81f6b8549fcce",
+      "cohort": "calibrated-kansas-poll-20261005-v1",
+      "cutoff": "2026-10-05T12:06:47.241Z",
+      "errorStandardDeviationPoints": 7.920555277574166,
+      "exchangeId": "1045",
+      "individualPollObservations": 491,
+      "marketId": "356",
+      "modelRaces": 185,
+      "ordinaryValuationRange": [
+        0.6003186604589442,
+        0.6431565263185224
+      ],
+      "rangeIsConfidenceBound": false
+    },
+    "humanPriority": "Profitability first; production follows actual strategy economics, then continuous improvement.",
+    "id": "empirical-poll-profit-strategy-20261005-v1",
+    "limits": [
+      "Historical outcome scores do not include executable market returns.",
+      "The first new paper trade is still open; liquidation P&L includes spread/adverse-tick costs and is not realized profit.",
+      "Two latency wallets share correlated data and opportunities.",
+      "The polling archive lacks population labels and original publication times; historical coverage is conditional on eventual top-two identity.",
+      "The original official pilot is expired and its source bank has not changed."
+    ],
+    "next": [
+      "Observe actual subsequent exit receipts and net P&L for this frozen strategy; preserve negative results and open risk.",
+      "Improve the next named strategy only when measured forecast, execution or economic evidence identifies a defect.",
+      "Deploy the same trading policy under the human-authorized bounded workflow when actual net economics support it, retaining fresh reconciliation and lifetime attribution."
+    ],
+    "official": {
+      "activationChanged": false,
+      "bankHash": "a948c395b14992a019e2180133604b8ee84dd78a9e94d08781efd18fbefc0128",
+      "entryExpiresAt": "2026-10-05T03:59:22.131Z",
+      "ordersSubmitted": 0,
+      "realizedPnl": "0.000000",
+      "runId": "sig-pilot-settlement-20261004-human",
+      "status": "entry_window_closed"
+    },
+    "paper": {
+      "competitionOrders": 0,
+      "counts": {
+        "lower_bound_edge": 16,
+        "source_boundary": 2
+      },
+      "networkRequests": 0,
+      "observedAt": "2026-10-05T12:19:39.499Z",
+      "sourceSequence": 21923,
+      "wallets": {
+        "1000": {
+          "closedTrades": 0,
+          "fees": "0.000000",
+          "fills": 1,
+          "liquidationPnl": "-0.015000",
+          "pending": [],
+          "positions": [
+            {
+              "cost": "0.345000",
+              "instrument": "1045:YES",
+              "quantity": 1
+            }
+          ],
+          "realizedPnl": "0.000000"
+        },
+        "3000": {
+          "closedTrades": 0,
+          "fees": "0.000000",
+          "fills": 1,
+          "liquidationPnl": "-0.015000",
+          "pending": [],
+          "positions": [
+            {
+              "cost": "0.345000",
+              "instrument": "1045:YES",
+              "quantity": 1
+            }
+          ],
+          "realizedPnl": "0.000000"
+        }
+      }
+    },
+    "previousGoalTurnClassification": "progress",
+    "previousPaper": {
+      "bankHash": "3e445d6b7f436cab79245ed588efa627734d8d2a4a6a6b788ac2873582ed4ef2",
+      "cohort": "source-probability-native-20261004-v3",
+      "observedAt": "2026-10-05T12:19:39.396Z",
+      "preserved": true,
+      "wallets": {
+        "1000": {
+          "closedTrades": 1,
+          "fees": "0.000000",
+          "fills": 3,
+          "liquidationPnl": "0.025000",
+          "pending": [],
+          "positions": [
+            {
+              "cost": "0.895000",
+              "instrument": "986:YES",
+              "quantity": 1
+            }
+          ],
+          "realizedPnl": "0.020000"
+        },
+        "3000": {
+          "closedTrades": 1,
+          "fees": "0.000000",
+          "fills": 3,
+          "liquidationPnl": "0.025000",
+          "pending": [],
+          "positions": [
+            {
+              "cost": "0.895000",
+              "instrument": "986:YES",
+              "quantity": 1
+            }
+          ],
+          "realizedPnl": "0.020000"
+        }
+      }
+    },
+    "profitabilityEstablished": false,
+    "requiredGoalWorkRemaining": true,
+    "schemaVersion": 1,
+    "services": {
+      "additional": 0,
+      "collector": 6904,
+      "collectorReportedAt": "2026-10-05T12:19:38.407Z",
+      "cycles": 19,
+      "dashboard": 20092,
+      "errors": 0,
+      "focus": {
+        "bankHash": "6aa2a79bf0dc70948f0cfd32715dca3f25b1b91438134acf5c43e221f8841e57",
+        "executionAuthority": false,
+        "markets": [
+          {
+            "marketId": "297",
+            "phase": "held"
+          },
+          {
+            "marketId": "356",
+            "phase": "held"
+          }
+        ],
+        "ownedRiskReads": true
+      },
+      "paper": 8236,
+      "persistent": 3,
+      "sharedPaperWorkerVerified": true
+    }
+  },
+  "profitStrategyPublication": {
+    "allExact": true,
+    "automationPromptSha256": "f24b448b48047f55e13d25729e2aa0a4f57e182f40724fa5708cbdc051190cc7",
+    "commit": "bc5278133c3cb39f94a6f251d608c8dc8aa5b026",
+    "completion": {
+      "bodySha256": "34ceeb5210a6e4d959fd24bdbc18c8b01d5adb3c00f13448e6f1c7ec26606f22",
+      "created_at": "2026-10-05T12:23:32Z",
+      "handled": true,
+      "id": 5994369162,
+      "updated_at": "2026-10-05T12:23:32Z"
+    },
+    "files": 24,
+    "requiredGoalWorkRemaining": true,
+    "tree": "56be4b683634952c850db8a73e4b3f059c27e542"
+  },
+  "profitabilityNextAction": "Coupled same-market two-sided maker accounting with explicit opposite-share netting, preserved one-sided risk and honest subsequent fill economics.",
   "proposedResearchUpdates": [
     {
       "commentId": 5945600871,
@@ -11245,6 +11882,21 @@
       "universeHash": "3dad67c230d98e690dbea72c8bbffb4cd1baff2ee5a2276b79314ad6f41e1560"
     }
   },
+  "quoteOutcomeMilestone": {
+    "at": "2026-10-05T18:41:24.888Z",
+    "checkedBlobs": 25,
+    "checksPassed": 28,
+    "claimCommentId": 6000245148,
+    "classification": "progress",
+    "commit": "f76fdba5a771ac17c0965b0e6927c204d7f4564f",
+    "completionCommentId": 6000757469,
+    "datasetSummary": "data/realtime-quote-dataset-summary-20261005.json",
+    "exactExitSelector": "data/realtime-quote-exact-exit-selectors-20261005.json",
+    "fundedReplay": "data/funded-quote-replay-summary-20261005.json",
+    "milestone": "Causal quote-outcome selectors and funded unresolved inventory",
+    "parityCases": 64,
+    "profitabilityEstablished": false
+  },
   "realtimeDeliveryIncident": {
     "doNotRepeatUnchangedAlert": true,
     "evidence": {
@@ -11262,6 +11914,35 @@
     "status": "unresolved",
     "subscribedMarkets": 4,
     "successfulHeartbeats": 11
+  },
+  "realtimeEconomicsMilestone": {
+    "additionalReadRequests": 0,
+    "at": "2026-10-05T17:16:41.432Z",
+    "books": 780724,
+    "caughtLiveIntegrationFailure": "Depth200 ordinary GET was locally disallowed; corrected through existing fenced dispatcher and tested actual ReadClient; pilot unchanged.",
+    "checks": 112,
+    "collectorPid": 23680,
+    "commit": "e6c211ee4f55b2f8969a2c322b332793accbc7cd",
+    "competitionActivationChanged": false,
+    "completionCommentId": 5999618716,
+    "forecastIsActive": false,
+    "inside3s": {
+      "oneSidedMarked": 64,
+      "oneSidedTicks": -129,
+      "pairedTicks": 16,
+      "pairs": 13
+    },
+    "limitations": "Overlapping counterfactual samples, not portfolio profit; gap-censored; five-minute markouts.",
+    "liveVerification": "data/realtime-shared-verification-20261005.json",
+    "micropriceTestSamples": 16517,
+    "micropriceTestSignals": 0,
+    "micropriceTrainingSamples": 22273,
+    "parityMaxErrorTicks": 1.1102230246251565e-16,
+    "profitabilityEstablished": false,
+    "realtimeSharedSlots": 4,
+    "replaySeconds": 46.735085100000006,
+    "sourceRecords": 842779,
+    "trades": 25798
   },
   "realtimeTokenCoordination": {
     "activated": false,
@@ -11855,6 +12536,108 @@
     "reason": "Negative development averages and insufficient subsequent executable-depth evidence",
     "through": "2026-10-03T19:50:43.57Z"
   },
+  "receiptExitMilestone": {
+    "activationUnchanged": true,
+    "additionalAccountClients": 0,
+    "at": "2026-10-05T12:52:56.754Z",
+    "candidateBankHash": "7d644c6fab1a3a6ec01c960cefed331d96049ebf95718142d8d6478dcb435d3d",
+    "checks": {
+      "paperNativeParityAndAccounting": 11,
+      "productionAuthorityController": 25,
+      "runnerLifecycle": 54,
+      "total": 90
+    },
+    "collector": {
+      "cycles": 1,
+      "errors": 0,
+      "pid": 5476,
+      "reportedAt": "2026-10-05T12:52:54.624Z",
+      "status": "running"
+    },
+    "implementation": "native_receipt_exit_policy_v1",
+    "nativeBackend": {
+      "binaryHash": "cc775b6e91a9f27193a91adea6a5eda40b0a7735fd77b857ed52221835a81fd5",
+      "engineHash": "374cffa73e62192363da35e7cc188005e9d2a7d1d27758780d7a7b3f81d1b823",
+      "mode": "native_public_book_prefix_v1",
+      "runtimeLibraryHash": "13bf4e99b0193634ebdeb0bbdeff9753b39f1d04799183f664111014aabf4c2c",
+      "schemaVersion": 1
+    },
+    "newPolicyActivated": false,
+    "paper": {
+      "calibrated-kansas-poll-20261005-v1": {
+        "at": "2026-10-05T12:52:56.117Z",
+        "bankHash": "3e57289fda56eb58a833fbcf62c8c488064b3e84c0ab0642ece81f6b8549fcce",
+        "failed": false,
+        "sourceSequence": 22260,
+        "wallets": {
+          "1000": {
+            "closedTrades": 0,
+            "fees": "0.000000",
+            "fills": 1,
+            "liquidationPnl": "-0.015000",
+            "realizedPnl": "0.000000"
+          },
+          "3000": {
+            "closedTrades": 0,
+            "fees": "0.000000",
+            "fills": 1,
+            "liquidationPnl": "-0.015000",
+            "realizedPnl": "0.000000"
+          }
+        }
+      },
+      "source-probability-native-20261004-v3": {
+        "at": "2026-10-05T12:52:56.022Z",
+        "bankHash": "3e445d6b7f436cab79245ed588efa627734d8d2a4a6a6b788ac2873582ed4ef2",
+        "failed": false,
+        "sourceSequence": 22260,
+        "wallets": {
+          "1000": {
+            "closedTrades": 1,
+            "fees": "0.000000",
+            "fills": 3,
+            "liquidationPnl": "0.025000",
+            "realizedPnl": "0.020000"
+          },
+          "3000": {
+            "closedTrades": 1,
+            "fees": "0.000000",
+            "fills": 3,
+            "liquidationPnl": "0.025000",
+            "realizedPnl": "0.020000"
+          }
+        }
+      }
+    },
+    "persistentServices": 3,
+    "pids": {
+      "collector": 5476,
+      "contestActivation": true,
+      "dashboard": 20092,
+      "metrics": null,
+      "paper": 8236,
+      "retiredMetricsPid": 11792
+    },
+    "productionBankHash": "a948c395b14992a019e2180133604b8ee84dd78a9e94d08781efd18fbefc0128",
+    "productionEntryExpiresAt": "2026-10-05T03:59:22.131Z",
+    "productionOrders": 0,
+    "productionRealizedPnl": "0.000000",
+    "productionStatus": "entry_window_closed",
+    "profitabilityEstablished": false,
+    "remaining": [
+      "Kansas short-term paper liquidation P&L remains negative; no closed trade.",
+      "Original collector stop cause remains unresolved; new diagnostic provenance is implemented.",
+      "The checked new policy has no official fills yet; original official entry window is not renewed."
+    ],
+    "schemaVersion": 1
+  },
+  "receiptExitPublication": {
+    "commit": "2fa1e5e2f679fe91fcbb67ba62a670b48d61b192",
+    "completionCommentId": 5994877009,
+    "exactReadback": true,
+    "files": 20,
+    "tree": "f9f90ab4cede462944ab1989deb16d71ee0e5697"
+  },
   "researchPriority": {
     "at": "2026-10-03T23:20:39.533Z",
     "comments": [
@@ -11945,6 +12728,22 @@
     "publishedBlobsVerified": 4,
     "tests": 246
   },
+  "runnerStatusRouteRepair": {
+    "activationUnchanged": true,
+    "at": "2026-10-05T16:51:27.784Z",
+    "commit": "3383b23c34320d4e0975f3b8c7611201d594336e",
+    "failure": "root status writer still used unsynced immediate rename",
+    "modelBanksPreserved": true,
+    "pid": 2288,
+    "profitabilityEstablished": false,
+    "sourceFiles": [
+      "live-paper/collector-status-writer.mjs",
+      "live-paper/runner-status-publication.test.mjs"
+    ],
+    "status": "running",
+    "testPassed": 66,
+    "walletPrefixesPreserved": true
+  },
   "schemaVersion": 1,
   "serviceIncident": {
     "automaticRecovery": true,
@@ -12024,6 +12823,109 @@
     },
     "tradesCaptured": 126,
     "verifiedFiles": 21
+  },
+  "stableBroadMilestone": {
+    "accountingReset": false,
+    "actualAuditReproductionExact": true,
+    "at": "2026-10-05T14:44:41.924Z",
+    "checksPassed": 90,
+    "claimComment": 5996357048,
+    "competitionOrdersFromWork": 0,
+    "idealQuoteCasesPositive": 6,
+    "idealQuoteProfitEstablished": false,
+    "initialPassiveQuotes": 32,
+    "initialPassiveStrictThroughQuotes": 0,
+    "initialPassiveTouchQuotes": 2,
+    "marketScreen": {
+      "exchanges": 237,
+      "screened": 230,
+      "selected": 16,
+      "selectionHash": "c89cd60a2a9dccc25fd968de19e49c6dd31983913ef2f7155ec716d5064eb732"
+    },
+    "narrowRetiredAfterCompleteProjection": true,
+    "newAPIClients": 0,
+    "newCohort": {
+      "bankHash": "7b04de4928aa6b98a0cf949ec715f6d55953646ebfe300347e821a2d3270d01a",
+      "cohort": "baal-stable-broad-20261005-v2-live",
+      "cutoff": "2026-10-05T14:36:22.040Z",
+      "fees": 0,
+      "fills": {
+        "NO": {
+          "fills": 0,
+          "realizedPnl": "0.000000"
+        },
+        "YES": {
+          "fills": 0,
+          "realizedPnl": "0.000000"
+        }
+      }
+    },
+    "newServices": 0,
+    "next": "Coupled same-market two-sided maker accounting with explicit opposite-share netting, preserved one-sided risk and honest subsequent fill economics.",
+    "officialRecordedPriceRealized": "-0.380000",
+    "previousGoalTurn": "progress",
+    "profitabilityEstablished": false,
+    "schemaVersion": 1
+  },
+  "stableBroadPublication": {
+    "comment": 5996915263,
+    "commit": "6e9b9c21df913f03533bede16d090ad522497598",
+    "files": 24,
+    "tree": "2e3057ae9614e57242708d55c5153a4ce4056d2c",
+    "verifiedAt": "2026-10-05T14:47:40.041Z"
+  },
+  "stableSpreadMilestone": {
+    "at": "2026-10-05T14:00:01.890Z",
+    "claimComment": 5995596050,
+    "implementation": {
+      "bankHash": "64fa0771e801894f1d3b6b9f8b7cb561ddacd385dd1f139ef021cc303b8f0a98",
+      "checksPassed": 94,
+      "competitionOrders": 0,
+      "cutoff": "2026-10-05T13:39:45.942Z",
+      "fees": 0,
+      "fills": {
+        "NO": {
+          "closedTrades": 0,
+          "fills": 0,
+          "realizedPnl": "0.000000"
+        },
+        "YES": {
+          "closedTrades": 0,
+          "fills": 0,
+          "realizedPnl": "0.000000"
+        }
+      },
+      "liveEvidence": "stable-maker-live-verification-final-20261005.json",
+      "mode": "stable_two_side_trade_tape_paper_v2",
+      "networkClientsAdded": 0,
+      "preservedOldBanks": true,
+      "servicesAdded": 0
+    },
+    "mechanisms": {
+      "continuousData": false,
+      "fixedCases": 36,
+      "meanRange": [
+        -0.032916666666666664,
+        -0.008
+      ],
+      "negativeCases": 36,
+      "observedPerCase": [
+        5,
+        30
+      ],
+      "quoteSpanDays": 2.7583838657407407,
+      "result": "native-mechanisms-future-1791205489070.json"
+    },
+    "next": "Observe subsequent paper fills, completed round trips and adverse selection using exact recovered tape windows; preserve frozen policy and ownership.",
+    "profitabilityEstablished": false,
+    "schemaVersion": 1
+  },
+  "stableSpreadPublication": {
+    "comment": 5996050493,
+    "commit": "b3f8f29a424976654a2f7cade8850f51b367f55d",
+    "files": 36,
+    "tree": "fcc77e08ee45bfad5eae007c21ec765d4fc21000",
+    "verifiedAt": "2026-10-05T14:02:30.026Z"
   },
   "strategyDirection": {
     "additionalFeeBps": 0,
@@ -12177,829 +13079,629 @@
     "sourceComment": 5974554942,
     "status": "reproduced_fixed_tested_and_deployed"
   },
-  "updatedAt": "2026-10-05T16:20:16.043Z",
+  "updatedAt": "2026-10-06T06:22:36.051Z",
   "workflow": "tested direct main; no PRs; unknown GitHub write outcomes checked before retry",
-  "humanPilotPublication": {
-    "at": "2026-10-04T22:08:22.844Z",
-    "commit": "12f4a4046cdeedc8ad9c909f1a1cfab007d7ccf0",
-    "completionComment": 5984944772,
-    "verifiedFiles": 6,
-    "completionBodyMatches": true,
-    "directMain": true,
-    "goalComplete": false
-  },
-  "humanPilotHandled": [
-    {
-      "id": 5984448777,
-      "contentHash": "2fcc601d25cdbea5bd0939797a50ce5b9c83e42cf4baa7105dcb92e6ef4a2aa9",
-      "created_at": null,
-      "updated_at": null
-    },
-    {
-      "id": 5984685670,
-      "contentHash": "5488e7ad02e5fd0d8455c500219cb76cac471b8ad0012aba118ed6caefff0ca7",
-      "created_at": null,
-      "updated_at": null
-    },
-    {
-      "id": 5984830913,
-      "contentHash": "d384271be119908d677b9d8390a9dc922dac6608d26a52ab5a5c67f112ded836",
-      "created_at": null,
-      "updated_at": null
-    },
-    {
-      "id": 5984845412,
-      "contentHash": "2276ef7c6fbd426326453482d6d4e5e8157d17bc92f1a7960ff486d601c475ac",
-      "created_at": null,
-      "updated_at": null
-    },
-    {
-      "id": 5984944772,
-      "contentHash": "f97c9ebb97a3a24fdb7b4da4f64fe37d5b8705cd568e14d7ee29f667df56653b",
-      "created_at": null,
-      "updated_at": null
-    }
-  ],
-  "electionFinalLabelMilestone": {
-    "at": "2026-10-04T22:30:25.738Z",
-    "id": "election-final-label-v2-20261004",
-    "kind": "checked_model_and_source_correction",
-    "sourceModel": "54fc1978a6bbf4296ed06bc5519819e65a15aa2a65c13b4ef10082f233f2c475",
-    "facts": {
-      "regularTrainingRows": 561,
-      "diagnosticRaces": 89,
-      "directionCorrect": 82,
-      "rmse": 0.11071513361331801,
-      "diagnosticsUntouched": false,
-      "qualifiedProductionForecasts": 0,
-      "screenedSenateMarkets": 31,
-      "missingPriorSeatMarkets": 3,
-      "screenNetworkRequests": 0,
-      "fees": 0,
-      "profitabilityEstablished": false
-    },
-    "checks": {
-      "nodeTestsPassed": 17,
-      "fecWorkbooksVerified": [
-        "2020:GA",
-        "2016:LA"
-      ],
-      "primaryFinalColumnNamesVerified": true
-    },
-    "limitations": [
-      "No original October forecast vintages.",
-      "Broader historical diagnostics are not comparable profit results or untouched selection data.",
-      "Current scenario sensitivities are assumptions, not calibrated confidence floors.",
-      "No live bank, cumulative purchase budget, attribution journal or frozen wallet changed."
+  "deadlineSprint": {
+    "startedAt": "2026-10-05T20:54:29Z",
+    "deadline": "2026-10-05T22:00:00Z",
+    "humanDirective": "Delegate Rust and infrastructure; parent focuses measurable profit",
+    "status": "working",
+    "goalAppStatus": "active",
+    "agents": [
+      "rust_backend_sprint",
+      "collection_speed_sprint",
+      "primary_research_sprint"
     ],
-    "remaining": [
-      "Produce current exact-contract forecasts from verified nominees and independently dated sources, with executable price/cost assessment.",
-      "Introduce any qualified bank transition without resetting run accounting or cumulative risk.",
-      "Measure actual subsequent attributed fills and net official performance."
-    ],
-    "codeHashes": {
-      "research/election-baseline-v2/model.mjs": "629b0cabbbbf957fd9cc8339ce021f459dac3d8849adb7ea42bcf56e2e9fbdca",
-      "research/election-baseline-v2/train.mjs": "a36de081edc648919ee2a366f61d8fc89f328ad938bf21686d3d829de8295178",
-      "research/election-baseline-v2/screen.mjs": "092c849ad197670f7eb586083f880238dc6a3598bfd29f6b1f698e9c769b2b24",
-      "research/election-baseline-v2/verify-fec-workbooks.py": "1e1361466bed631ad1021620f39d3bf004c43e6b5432afb6a587382e3d469b01"
+    "completedResearch": "Missing contrary Texas Governor primary polls remove robust lower-bound buying edge",
+    "economicPriority": "Protect existing liabilities; seek fresh exact-predicate structural or source-backed opportunities without forced fills",
+    "actualRealizedPaper": {
+      "oldProbability": "0.040000",
+      "bulk": "-0.010000",
+      "fundamental": "0.000000"
     },
-    "immutableReportFitReproduced": {
-      "initial": true,
-      "affiliationInvariant": true
-    }
-  },
-  "electionFinalLabelPublication": {
-    "at": "2026-10-04T22:37:56.626Z",
-    "commit": "cba7410eebfcd4b59d9a709db267b84e05dd44b1",
-    "exactBlobs": 21,
-    "issueComment": 5985212103,
-    "readback": "data/election-v2-readback-20261004.json",
-    "sourceAndFitChecks": true
-  },
-  "currentRuntimePids": {
-    "collector": 2420,
-    "paper": 3976,
-    "dashboard": 20092
-  },
-  "collectorRecovery": {
-    "at": "2026-10-04T22:37:56.626Z",
-    "oldCollectorPid": 19576,
-    "currentCollectorPid": 23624,
-    "currentPaperPid": 5624,
-    "currentDashboardPid": 6456,
-    "oldStatus": "stopped",
-    "oldCompletedCycles": 103,
-    "oldReportedErrors": [],
-    "rootCauseEstablished": false,
-    "stopProvenanceChecked": true,
-    "duplicatesAndLocksChecked": true,
-    "activationChanged": false,
-    "bankChanged": false,
-    "cumulativeRiskReset": false,
-    "runId": "sig-pilot-settlement-20261004-human",
-    "activationHash": "2eb4f276fd4ac09d4b47e909fa837929334d81b229ad589235a64f3f7ed9e7c5",
-    "bankHash": "88c694a845b5a9fe71d6d3a76a9a5df824dab197f89302e7d3faa6a1c82b2243",
-    "currentStatus": "running",
-    "cycles": 6,
-    "errors": [],
-    "executorStatus": "waiting_for_signal",
-    "executorObservedAt": "2026-10-04T22:37:50.684Z",
-    "bootstrap": {
-      "at": "2026-10-04T22:35:35.036Z",
-      "bookReceivedAt": "2026-10-04T22:35:35.033Z",
-      "complete": true,
-      "exchangeId": "986",
-      "marketId": "297"
-    },
-    "ordersSubmitted": 0,
-    "unconfirmedIntents": 0,
-    "realizedPnl": "0.000000",
-    "fees": "0.000000",
-    "services": 3,
-    "profitabilityEstablished": false
-  },
-  "automationPromptCurrent": "broader passive paper profitability, narrow cohort deliberately retired, current main6e9b9c21, collector21464",
-  "electionV2RecoveryPublication": {
-    "commit": "9b95e84ce179a421591e2e552e83d42bb4cb7434",
-    "verifiedExactBlobs": 3
-  },
-  "currentElectionMilestone": {
-    "schemaVersion": 1,
-    "id": "causal-election-production-20261004-v1",
-    "at": "2026-10-04T23:26:18.512Z",
-    "goalTurnClassification": "progress",
-    "requiredGoalWorkRemaining": true,
-    "authority": "existing_direct_human_assignment",
-    "runId": "sig-pilot-settlement-20261004-human",
-    "bankHash": "a948c395b14992a019e2180133604b8ee84dd78a9e94d08781efd18fbefc0128",
-    "entryExpiresAt": "2026-10-05T03:59:22.131Z",
-    "source": {
-      "modelHash": "54fc1978a6bbf4296ed06bc5519819e65a15aa2a65c13b4ef10082f233f2c475",
-      "pollSample": 607,
-      "pollFieldEndDate": "2026-08-26",
-      "assessmentAt": "2026-10-04T23:06:57.318Z",
-      "ordinaryRange": [
-        0.9372026552832741,
-        0.9699070034817356
-      ],
-      "broaderStress": [
-        0.902363683478113,
-        0.9564524621795811
-      ]
-    },
-    "changes": [
-      "Causal source-dated election assessment, original LV table and verified ballot; no market-derived forecast input.",
-      "Stopped-writer bank transition preserves the same window, inventory, FIFO and lifetime purchase budget.",
-      "Canonical activation equality tolerates JSON key ordering.",
-      "Production books/decisions precede paper observers; account freshness repaired before the decision book.",
-      "Detached current-user launcher reuses three services and active frozen paper cohort; no new watcher or credentials.",
-      "Read-only book preview replaces an existing auxiliary slot."
-    ],
-    "checks": {
-      "admissionAndModel": 89,
-      "runnerLifecycle": 52,
-      "serializedQueue": 2,
-      "runnerSyntax": true
-    },
-    "clockEvidence": {
-      "at": "2026-10-04T23:26:12.057Z",
-      "inputHash": "accb50b0a929d3d7d747d2cb82bff9dd35625450ad24b13e89e926b495ea962c",
-      "outputHash": "931dbe116cf1b0665acaf99804367ee18f6da8d18ff962dc027375fd93c85ad0",
-      "positionsAgeMs": 8210,
-      "ordersAgeMs": 6806,
-      "bookAgeMs": 11,
-      "accountBeforeBook": true,
-      "nativeWallMs": 70.73079999996116,
-      "decision": "insufficient_scenario_edge"
-    },
-    "runtime": {
-      "collectorPid": 4760,
-      "paperPid": 17228,
-      "dashboardPid": 22396,
-      "reportedAt": "2026-10-04T23:26:16.525Z",
-      "cycles": 7,
-      "status": "running",
-      "errors": 0,
-      "productionStatus": "monitoring",
-      "qualifiedCurrentForecasts": 1,
-      "ordersSubmitted": 0,
-      "unconfirmedIntents": 0,
-      "realizedPnl": "0.000000",
-      "addedFees": "0.000000"
-    },
-    "limitations": [
-      "Scenario endpoints and stress assumptions are uncalibrated; an ordinary edge is not a guaranteed payout.",
-      "Current price0.920 exceeded maximum admitted ask0.910 in the first preview; no forced order.",
-      "Runtime process disappearance was observed; its cause and robustness against every future host termination remain unproved.",
-      "Prior attributed official roundtrip−0.380 remains separate. No profitability or scaling readiness is established."
-    ],
-    "next": [
-      "Keep the current frozen bank and original clocks; expire normally rather than regenerate unchanged research.",
-      "Seek independent current polls and exact ballot/contract bindings for additional candidate markets.",
-      "Measure actual subsequent dispatch, fills, depth-aware liquidation and net P&L; scale only with evidence.",
-      "Investigate expensive restart/loop work while preserving original journals and risk."
-    ],
-    "profitabilityEstablished": false
-  },
-  "currentElectionPublication": {
-    "schemaVersion": 1,
-    "at": "2026-10-04T23:36:22.460Z",
-    "commit": "0ea3c94f9529a4d428ed90426d308e5ffbcf1edd",
-    "tree": "199fa68fd655f61457b9e7989ce25158e4a9b9eb",
-    "files": 24,
-    "allPublishedBlobsExact": true,
-    "completionComment": {
-      "id": 5985640808,
-      "updated_at": "2026-10-04T23:35:20Z",
-      "url": "https://github.com/GodlyDonuts/predictions-cup-2026/issues/1#issuecomment-5985640808"
-    },
-    "automationPromptSha256": "89fc429d1b157c1b89515d0bb76cf17a1794f4ead90eb726b807db13b50f4cbc",
-    "live": {
-      "observedAt": "2026-10-04T23:36:22.460Z",
-      "updatedAt": "2026-10-04T23:36:17.892Z",
-      "runId": "sig-pilot-settlement-20261004-human",
-      "status": "monitoring",
-      "reason": "insufficient_scenario_edge",
-      "ordersSubmitted": 0,
-      "dispatchAttempts": 0,
-      "unconfirmedIntents": 0,
-      "realizedPnl": "0.000000",
-      "addedFees": "0.000000",
-      "eligibleResearchMarkets": [
-        "363"
-      ],
-      "latestDecisionAt": "2026-10-04T23:36:17.892Z",
-      "latestDecision": "insufficient_scenario_edge",
-      "nativeWallMs": 125.68760000006296,
-      "collectorReportedAt": "2026-10-04T23:36:21.050Z",
-      "collectorStatus": "running",
-      "collectorCycles": 40,
-      "collectorErrors": [],
-      "pids": {
-        "collector": 4760,
-        "dashboard": 22396,
-        "paper": 17228,
-        "metrics": null,
-        "contestActivation": true,
-        "retiredMetricsPid": 11792
-      }
-    },
+    "officialActivation": "expired; unchanged",
     "profitabilityEstablished": false,
-    "goalWorkRemaining": true
-  },
-  "productionRecoveryCurrentPolls": {
-    "schemaVersion": 1,
-    "id": "production-recovery-current-polls-20261005-v1",
-    "at": "2026-10-05T11:44:09.915Z",
-    "goalTurnClassification": "progress",
-    "requiredGoalWorkRemaining": true,
-    "authority": "existing_direct_human_assignment",
-    "runId": "sig-pilot-settlement-20261004-human",
-    "bankHash": "a948c395b14992a019e2180133604b8ee84dd78a9e94d08781efd18fbefc0128",
-    "entryExpiresAt": "2026-10-05T03:59:22.131Z",
-    "activationChanged": false,
-    "productionBankChanged": false,
-    "incident": {
-      "observedAt": "2026-10-05T11:19:00Z",
-      "observationPrecision": "minute",
-      "previousPids": {
-        "collector": 4760,
-        "paper": 17228,
-        "dashboard": 22396
-      },
-      "previousPidsAbsent": true,
-      "lastSavedCollectorReportAt": "2026-10-04T23:43:43.768Z",
-      "causeEstablished": false,
-      "humanStopRemoved": false
+    "goalObjective": "Build and improve the quantitative bot for the official 2026 Susquehanna Predictions Cup.",
+    "implementation": "v1/v2 dual-NO paper, accelerated causal replay, checked Rust transport and expired flat retirement deployed",
+    "correctnessChecks": 125,
+    "realizedProfitEstablished": false,
+    "officialActivationRenewed": false,
+    "publishedMain": "e6e1dd242527d8d2ef10dd20209d5d30827ae85f",
+    "verifiedPublishedBlobs": 64,
+    "completionCommentId": 6003609234,
+    "liveCollectorPid": 12704,
+    "retainedWorkerPid": 8732,
+    "retainedDashboardPid": 20092,
+    "actualMedianBookRecurrenceMs": {
+      "texas": 11578,
+      "kansas": 11591
     },
-    "changes": [
-      "Derived production entry-window status preserves blocked, uncertain and owned-risk states.",
-      "Recovered the same three approved services; controlled collector reload deployed the status fix without changing activation.",
-      "Captured six hashed primary polling/ballot sources and retained original clocks and population distinctions.",
-      "Built separate Republican/Democratic source assessments with verified opposition, multinomial margin variance and frozen sensitivity assumptions.",
-      "Compared three actual subsequent official contract/book receipts using existing auxiliary slots and exact price policy."
-    ],
-    "checks": {
-      "targetedPassed": 23,
-      "failed": 0,
-      "classes": [
-        "entry-state projection",
-        "settlement controller and expired-window integration",
-        "primary polling assessment"
-      ]
-    },
-    "runtime": {
-      "collectorPid": 20088,
-      "paperPid": 13904,
-      "dashboardPid": 20092,
-      "persistentServices": 3,
-      "reportedAt": "2026-10-05T11:44:06.897Z",
-      "cycles": 30,
-      "errors": 0,
-      "productionReportedAt": "2026-10-05T11:44:05.550Z",
-      "status": "entry_window_closed",
-      "reason": "ENTRY_WINDOW_CLOSED",
-      "entryWindow": {
-        "phase": "closed",
-        "startedAt": "2026-10-04T21:59:22.131Z",
-        "expiresAt": "2026-10-05T03:59:22.131Z",
-        "open": false
-      },
-      "ordersSubmitted": 0,
-      "dispatchAttempts": 0,
-      "unconfirmedIntents": 0,
-      "realizedPnl": "0.000000",
-      "addedFees": "0.000000",
-      "readinessComplete": true
-    },
-    "research": {
-      "recordId": "current-poll-breadth-20261005-v1",
-      "assessedAt": "2026-10-05T11:31:48.870Z",
-      "assessments": 4,
-      "comparisonId": "subsequent-primary-poll-price-comparison-20261005-v1",
-      "subsequentPriceReceipts": 3,
-      "qualifiedReceipts": 0,
-      "additionalAccountClients": 0,
-      "installedInProduction": false
-    },
-    "limitations": [
-      "No order or positive official net performance from this pilot. Earlier official net−0.380 remains separate.",
-      "Sensitivity endpoints are subjective valuations, not calibrated probability bounds or profit evidence.",
-      "Three subsequent price receipts establish causal comparisons only, not a strategy-performance sample.",
-      "The cause of the overnight service disappearance and reliable unattended recovery remain unresolved.",
-      "The expired original entry window was not extended."
-    ],
-    "next": [
-      "Calibrate current party outcome forecasts and compare subsequent executable economics without tuning to force entries.",
-      "Resolve the observed service-lifetime failure using concrete process evidence.",
-      "Prepare a useful bounded continuation only after qualifying source/price evidence; preserve inventory and lifetime limits."
-    ],
-    "profitabilityEstablished": false
-  },
-  "currentPollPublication": {
-    "commit": "6d1b89acd27ca7eeb9f7701eedffdac9d7c9168b",
-    "tree": "77626915d693cd45af016f8e98135b3359ce43bf",
-    "files": 19,
-    "allExact": true,
-    "completion": {
-      "id": 5993784738,
-      "created_at": "2026-10-05T11:46:20Z",
-      "updated_at": "2026-10-05T11:46:20Z",
-      "bodySha256": "c88395a046f82d4050b2d5fcc5dafbf7143a6d27d6e0f59cc10545ccb5b1ffec",
-      "handled": true
-    },
-    "automationPromptSha256": "c8955656c08d652a8e8290c56288a6d363e19e48a8689b789e9536a8f099c16e",
-    "goalWorkRemaining": true
-  },
-  "profitStrategyMilestone": {
-    "schemaVersion": 1,
-    "id": "empirical-poll-profit-strategy-20261005-v1",
-    "at": "2026-10-05T12:19:39.973Z",
-    "previousGoalTurnClassification": "progress",
-    "requiredGoalWorkRemaining": true,
-    "humanPriority": "Profitability first; production follows actual strategy economics, then continuous improvement.",
-    "currentStrategy": {
-      "cohort": "calibrated-kansas-poll-20261005-v1",
-      "bankHash": "3e57289fda56eb58a833fbcf62c8c488064b3e84c0ab0642ece81f6b8549fcce",
-      "cutoff": "2026-10-05T12:06:47.241Z",
-      "marketId": "356",
-      "exchangeId": "1045",
-      "modelRaces": 185,
-      "individualPollObservations": 491,
-      "errorStandardDeviationPoints": 7.920555277574166,
-      "ordinaryValuationRange": [
-        0.6003186604589442,
-        0.6431565263185224
-      ],
-      "rangeIsConfidenceBound": false
-    },
-    "paper": {
-      "observedAt": "2026-10-05T12:19:39.499Z",
-      "sourceSequence": 21923,
-      "counts": {
-        "lower_bound_edge": 16,
-        "source_boundary": 2
-      },
-      "wallets": {
-        "1000": {
-          "fills": 1,
-          "closedTrades": 0,
-          "realizedPnl": "0.000000",
-          "liquidationPnl": "-0.015000",
-          "fees": "0.000000",
-          "positions": [
-            {
-              "instrument": "1045:YES",
-              "quantity": 1,
-              "cost": "0.345000"
-            }
-          ],
-          "pending": []
-        },
-        "3000": {
-          "fills": 1,
-          "closedTrades": 0,
-          "realizedPnl": "0.000000",
-          "liquidationPnl": "-0.015000",
-          "fees": "0.000000",
-          "positions": [
-            {
-              "instrument": "1045:YES",
-              "quantity": 1,
-              "cost": "0.345000"
-            }
-          ],
-          "pending": []
-        }
-      },
-      "networkRequests": 0,
-      "competitionOrders": 0
-    },
-    "previousPaper": {
-      "cohort": "source-probability-native-20261004-v3",
-      "bankHash": "3e445d6b7f436cab79245ed588efa627734d8d2a4a6a6b788ac2873582ed4ef2",
-      "observedAt": "2026-10-05T12:19:39.396Z",
-      "wallets": {
-        "1000": {
-          "fills": 3,
-          "closedTrades": 1,
-          "realizedPnl": "0.020000",
-          "liquidationPnl": "0.025000",
-          "fees": "0.000000",
-          "positions": [
-            {
-              "instrument": "986:YES",
-              "quantity": 1,
-              "cost": "0.895000"
-            }
-          ],
-          "pending": []
-        },
-        "3000": {
-          "fills": 3,
-          "closedTrades": 1,
-          "realizedPnl": "0.020000",
-          "liquidationPnl": "0.025000",
-          "fees": "0.000000",
-          "positions": [
-            {
-              "instrument": "986:YES",
-              "quantity": 1,
-              "cost": "0.895000"
-            }
-          ],
-          "pending": []
-        }
-      },
-      "preserved": true
-    },
-    "services": {
-      "collector": 6904,
-      "paper": 8236,
-      "dashboard": 20092,
-      "persistent": 3,
-      "additional": 0,
-      "collectorReportedAt": "2026-10-05T12:19:38.407Z",
-      "cycles": 19,
-      "errors": 0,
-      "sharedPaperWorkerVerified": true,
-      "focus": {
-        "bankHash": "6aa2a79bf0dc70948f0cfd32715dca3f25b1b91438134acf5c43e221f8841e57",
-        "markets": [
-          {
-            "marketId": "297",
-            "phase": "held"
-          },
-          {
-            "marketId": "356",
-            "phase": "held"
-          }
-        ],
-        "ownedRiskReads": true,
-        "executionAuthority": false
-      }
-    },
-    "official": {
-      "runId": "sig-pilot-settlement-20261004-human",
-      "bankHash": "a948c395b14992a019e2180133604b8ee84dd78a9e94d08781efd18fbefc0128",
-      "entryExpiresAt": "2026-10-05T03:59:22.131Z",
-      "status": "entry_window_closed",
-      "ordersSubmitted": 0,
-      "realizedPnl": "0.000000",
-      "activationChanged": false
-    },
-    "checks": {
-      "runnerLifecyclePassed": 53,
-      "focusAndCalibrationPassed": 10,
-      "baselineReproduced": true,
-      "sourceGitBlobsVerified": true
-    },
-    "limits": [
-      "Historical outcome scores do not include executable market returns.",
-      "The first new paper trade is still open; liquidation P&L includes spread/adverse-tick costs and is not realized profit.",
-      "Two latency wallets share correlated data and opportunities.",
-      "The polling archive lacks population labels and original publication times; historical coverage is conditional on eventual top-two identity.",
-      "The original official pilot is expired and its source bank has not changed."
-    ],
-    "next": [
-      "Observe actual subsequent exit receipts and net P&L for this frozen strategy; preserve negative results and open risk.",
-      "Improve the next named strategy only when measured forecast, execution or economic evidence identifies a defect.",
-      "Deploy the same trading policy under the human-authorized bounded workflow when actual net economics support it, retaining fresh reconciliation and lifetime attribution."
-    ],
-    "profitabilityEstablished": false
-  },
-  "humanPriority": "Profitability first; production follows actual strategy economics, then continuous improvement.",
-  "profitStrategyPublication": {
-    "commit": "bc5278133c3cb39f94a6f251d608c8dc8aa5b026",
-    "tree": "56be4b683634952c850db8a73e4b3f059c27e542",
-    "files": 24,
-    "allExact": true,
-    "completion": {
-      "id": 5994369162,
-      "created_at": "2026-10-05T12:23:32Z",
-      "updated_at": "2026-10-05T12:23:32Z",
-      "bodySha256": "34ceeb5210a6e4d959fd24bdbc18c8b01d5adb3c00f13448e6f1c7ec26606f22",
-      "handled": true
-    },
-    "automationPromptSha256": "f24b448b48047f55e13d25729e2aa0a4f57e182f40724fa5708cbdc051190cc7",
-    "requiredGoalWorkRemaining": true
-  },
-  "receiptExitMilestone": {
-    "schemaVersion": 1,
-    "at": "2026-10-05T12:52:56.754Z",
-    "implementation": "native_receipt_exit_policy_v1",
-    "candidateBankHash": "7d644c6fab1a3a6ec01c960cefed331d96049ebf95718142d8d6478dcb435d3d",
-    "nativeBackend": {
-      "schemaVersion": 1,
-      "mode": "native_public_book_prefix_v1",
-      "engineHash": "374cffa73e62192363da35e7cc188005e9d2a7d1d27758780d7a7b3f81d1b823",
-      "binaryHash": "cc775b6e91a9f27193a91adea6a5eda40b0a7735fd77b857ed52221835a81fd5",
-      "runtimeLibraryHash": "13bf4e99b0193634ebdeb0bbdeff9753b39f1d04799183f664111014aabf4c2c"
-    },
-    "activationUnchanged": true,
-    "productionEntryExpiresAt": "2026-10-05T03:59:22.131Z",
-    "productionBankHash": "a948c395b14992a019e2180133604b8ee84dd78a9e94d08781efd18fbefc0128",
-    "productionStatus": "entry_window_closed",
-    "productionOrders": 0,
-    "productionRealizedPnl": "0.000000",
-    "collector": {
-      "pid": 5476,
-      "status": "running",
-      "reportedAt": "2026-10-05T12:52:54.624Z",
-      "cycles": 1,
-      "errors": 0
-    },
-    "pids": {
-      "collector": 5476,
-      "dashboard": 20092,
-      "paper": 8236,
-      "metrics": null,
-      "contestActivation": true,
-      "retiredMetricsPid": 11792
-    },
-    "persistentServices": 3,
-    "additionalAccountClients": 0,
-    "checks": {
-      "runnerLifecycle": 54,
-      "productionAuthorityController": 25,
-      "paperNativeParityAndAccounting": 11,
-      "total": 90
-    },
-    "paper": {
-      "calibrated-kansas-poll-20261005-v1": {
-        "at": "2026-10-05T12:52:56.117Z",
-        "bankHash": "3e57289fda56eb58a833fbcf62c8c488064b3e84c0ab0642ece81f6b8549fcce",
-        "sourceSequence": 22260,
-        "failed": false,
-        "wallets": {
-          "1000": {
-            "fills": 1,
-            "closedTrades": 0,
-            "realizedPnl": "0.000000",
-            "liquidationPnl": "-0.015000",
-            "fees": "0.000000"
-          },
-          "3000": {
-            "fills": 1,
-            "closedTrades": 0,
-            "realizedPnl": "0.000000",
-            "liquidationPnl": "-0.015000",
-            "fees": "0.000000"
-          }
-        }
-      },
-      "source-probability-native-20261004-v3": {
-        "at": "2026-10-05T12:52:56.022Z",
-        "bankHash": "3e445d6b7f436cab79245ed588efa627734d8d2a4a6a6b788ac2873582ed4ef2",
-        "sourceSequence": 22260,
-        "failed": false,
-        "wallets": {
-          "1000": {
-            "fills": 3,
-            "closedTrades": 1,
-            "realizedPnl": "0.020000",
-            "liquidationPnl": "0.025000",
-            "fees": "0.000000"
-          },
-          "3000": {
-            "fills": 3,
-            "closedTrades": 1,
-            "realizedPnl": "0.020000",
-            "liquidationPnl": "0.025000",
-            "fees": "0.000000"
-          }
-        }
-      }
-    },
-    "newPolicyActivated": false,
-    "profitabilityEstablished": false,
-    "remaining": [
-      "Kansas short-term paper liquidation P&L remains negative; no closed trade.",
-      "Original collector stop cause remains unresolved; new diagnostic provenance is implemented.",
-      "The checked new policy has no official fills yet; original official entry window is not renewed."
+    "postWindowCycles": 11,
+    "nextWork": [
+      "Inventory-preserving source-hashed fundamental valuation revision; invalidated TX risk must not use old optimistic exits",
+      "Check Delaware opposing-party predicate and funded book candidate through same queue",
+      "Compare subsequent execution economics with accelerated replay; do not overwrite independent banks"
     ]
   },
-  "receiptExitPublication": {
-    "commit": "2fa1e5e2f679fe91fcbb67ba62a670b48d61b192",
-    "tree": "f9f90ab4cede462944ab1989deb16d71ee0e5697",
-    "files": 20,
-    "exactReadback": true,
-    "completionCommentId": 5994877009
+  "rustBackendPorts": {
+    "publishedCommit": "f84bf94ddf0ce16b2e9e3d9372f9db396d664674",
+    "sourceFiles": 25,
+    "liveDeployment": false,
+    "dualNo": {
+      "records": 405,
+      "fullComparisons": 809,
+      "speedup": 1.5297579420464253,
+      "realized": "0.000000"
+    },
+    "accountQueue": {
+      "rustTests": 18,
+      "actualNodeComparisonScenarios": 4
+    },
+    "journal": {
+      "bytes": 8805910899,
+      "speedup": 1.0907888884212995,
+      "tests": 12
+    },
+    "next": [
+      "Pinned long-lived native adapters with original source/bank/frontier conservation",
+      "Fix worker RawValue object-order preservation uncovered during adapter integration",
+      "Durable journal compaction preserving all immutable intent bindings and unknown acceptance"
+    ]
   },
-  "lastGoalTurn": {
-    "at": "2026-10-05T16:20:16.043Z",
-    "classification": "progress",
-    "milestone": "Causal bulk-history coupled paper engine implemented, frozen and live over237 exchanges; actual source/persistence compatibility fixed",
+  "currentProfitFocus": {
+    "at": "2026-10-05T22:26:50.974Z",
+    "contest": {
+      "status": "entry_window_closed",
+      "ordersSubmitted": 0,
+      "dispatchAttempts": 0
+    },
+    "actualRuntimeReportedAt": "2026-10-05T22:26:49.527Z",
+    "runtimeErrors": [],
     "profitabilityEstablished": false,
-    "paperFills": 0,
-    "paperRealized": "0.000000"
+    "remaining": [
+      "Paired paper holdings require genuine resale or settlement evidence, not calendar payout",
+      "Adjacent fresh paired capture integration through single existing client",
+      "Broaden exact reviewed contract pairs with actual depth and fixed funded inventory limits"
+    ],
+    "lastTexasRevision": {
+      "realized": "-0.015000",
+      "flat": true,
+      "correlatedLatencyCopies": true,
+      "originalBankPreserved": true
+    },
+    "sourceClockRenewed": false
   },
-  "stableSpreadMilestone": {
-    "schemaVersion": 1,
-    "at": "2026-10-05T14:00:01.890Z",
-    "claimComment": 5995596050,
-    "profitabilityEstablished": false,
-    "mechanisms": {
-      "result": "native-mechanisms-future-1791205489070.json",
-      "fixedCases": 36,
-      "negativeCases": 36,
-      "meanRange": [
-        -0.032916666666666664,
-        -0.008
+  "pairedEconomicMilestone": {
+    "at": "2026-10-05T22:49:47.719Z",
+    "implementationCommit": "136f15a91ad5c97f7b543aab3060263ae998779e",
+    "checkedResultsCommit": "e16500ac4b470bae49098d2e9f823ae7a04f1440",
+    "sourceHours": 75.86280944444445,
+    "sourceRecords": 17736,
+    "pairs": 117,
+    "wallMs": 6238.5830000000005,
+    "quotedClosedSignals": 810,
+    "positiveTargetExits": 12,
+    "timeouts": 798,
+    "positiveNetPairs": 0,
+    "actualFills": 0,
+    "realizedPnl": null,
+    "decision": "Reject fixed fast 30-minute quote reversion for scale; quoted aggregate margins are not wallet PnL.",
+    "liveScreen": {
+      "marketIds": [
+        "353",
+        "386"
       ],
-      "observedPerCase": [
-        5,
-        30
+      "at": "2026-10-05T22:40:33.045Z",
+      "cost": "0.990000",
+      "skewMs": 4286,
+      "depth": [
+        88,
+        176
       ],
-      "quoteSpanDays": 2.7583838657407407,
-      "continuousData": false
+      "fills": 0,
+      "orders": 0
     },
-    "implementation": {
-      "mode": "stable_two_side_trade_tape_paper_v2",
-      "bankHash": "64fa0771e801894f1d3b6b9f8b7cb561ddacd385dd1f139ef021cc303b8f0a98",
-      "cutoff": "2026-10-05T13:39:45.942Z",
-      "liveEvidence": "stable-maker-live-verification-final-20261005.json",
-      "fills": {
-        "NO": {
-          "fills": 0,
-          "closedTrades": 0,
-          "realizedPnl": "0.000000"
-        },
-        "YES": {
-          "fills": 0,
-          "closedTrades": 0,
-          "realizedPnl": "0.000000"
-        }
-      },
-      "preservedOldBanks": true,
-      "fees": 0,
-      "checksPassed": 94,
-      "servicesAdded": 0,
-      "networkClientsAdded": 0,
-      "competitionOrders": 0
-    },
-    "next": "Observe subsequent paper fills, completed round trips and adverse selection using exact recovered tape windows; preserve frozen policy and ownership."
+    "correctiveHelperDeployed": false,
+    "noSecondRequestBeforeControlledRestart": true,
+    "entryAuthorityRenewed": false
   },
-  "stableSpreadPublication": {
-    "commit": "b3f8f29a424976654a2f7cade8850f51b367f55d",
-    "tree": "fcc77e08ee45bfad5eae007c21ec765d4fc21000",
-    "files": 36,
-    "verifiedAt": "2026-10-05T14:02:30.026Z",
-    "comment": 5996050493
-  },
-  "profitabilityNextAction": "Coupled same-market two-sided maker accounting with explicit opposite-share netting, preserved one-sided risk and honest subsequent fill economics.",
-  "stableBroadMilestone": {
-    "schemaVersion": 1,
-    "at": "2026-10-05T14:44:41.924Z",
-    "claimComment": 5996357048,
-    "previousGoalTurn": "progress",
-    "officialRecordedPriceRealized": "-0.380000",
-    "idealQuoteCasesPositive": 6,
-    "idealQuoteProfitEstablished": false,
-    "initialPassiveQuotes": 32,
-    "initialPassiveTouchQuotes": 2,
-    "initialPassiveStrictThroughQuotes": 0,
-    "marketScreen": {
-      "exchanges": 237,
-      "screened": 230,
-      "selected": 16,
-      "selectionHash": "c89cd60a2a9dccc25fd968de19e49c6dd31983913ef2f7155ec716d5064eb732"
-    },
-    "newCohort": {
-      "cohort": "baal-stable-broad-20261005-v2-live",
-      "bankHash": "7b04de4928aa6b98a0cf949ec715f6d55953646ebfe300347e821a2d3270d01a",
-      "cutoff": "2026-10-05T14:36:22.040Z",
-      "fills": {
-        "NO": {
-          "fills": 0,
-          "realizedPnl": "0.000000"
-        },
-        "YES": {
-          "fills": 0,
-          "realizedPnl": "0.000000"
-        }
-      },
-      "fees": 0
-    },
-    "narrowRetiredAfterCompleteProjection": true,
-    "accountingReset": false,
-    "newServices": 0,
-    "newAPIClients": 0,
-    "checksPassed": 90,
-    "actualAuditReproductionExact": true,
-    "competitionOrdersFromWork": 0,
-    "profitabilityEstablished": false,
-    "next": "Coupled same-market two-sided maker accounting with explicit opposite-share netting, preserved one-sided risk and honest subsequent fill economics."
-  },
-  "stableBroadPublication": {
-    "commit": "6e9b9c21df913f03533bede16d090ad522497598",
-    "tree": "2e3057ae9614e57242708d55c5153a4ce4056d2c",
-    "files": 24,
-    "verifiedAt": "2026-10-05T14:47:40.041Z",
-    "comment": 5996915263
-  },
-  "currentPaperBank": "d9e27c27bed40738f7526fdeb256633398dea60eeea42457c5dc40315ca3b2cf",
-  "coupledSpreadMilestone": {
-    "at": "2026-10-05T15:29:02.789Z",
-    "bankHash": "3ab468b58df77b1b4996073c416210da38926f5be5ca7b707d3f2607def2f518",
-    "cohort": "baal-coupled-spread-20261005-v1-live",
-    "collectorPid": 2420,
-    "paperPid": 3976,
-    "dashboardPid": 20092,
-    "sourceRepair": "data/tape-scope-repair-verification-20261005.json",
-    "developmentReplay": "data/coupled-original-four-development-20261005.json",
-    "modelChecks": 104,
-    "bindingChecks": 7,
+  "pooledForecastMilestone": {
+    "at": "2026-10-05T23:02:35.078Z",
+    "commit": "fb8ca3dc1112d341ef1737666ee817afebd8f0d1",
+    "sourceHours": 75.86280944444445,
+    "samples": 297598,
+    "wallMs": 4831.9856,
+    "cutoff": "2026-10-04T16:23:21.617Z",
+    "horizonsMs": [
+      300000,
+      1800000,
+      7200000
+    ],
+    "selectedQuoteSignals": [
+      0,
+      0,
+      0
+    ],
+    "causalTests": 4,
+    "allAttemptsRetained": true,
     "profitabilityEstablished": false
   },
-  "nextAction": "Measure untouched d9e27c coupled bulk cohort after causal warmup. Investigate quote-window tape, fill incidence, paired netting and unmatched loss; keep existing risk/coverage healthy. No synthetic/control purchase or tiny sample as profit proof. If genuinely profitable same-policy evidence supports competition use, deploy bounded execution after fresh reconciliation rather than renewing expired activation based on engineering alone.",
-  "coupledSpreadPublication": {
-    "at": "2026-10-05T15:35:31.000Z",
-    "main": "45382f440dce92717eff12478c88163234fdf041",
-    "tree": "6403eb59b0df1ee21fa781db594cfebe2cee2d21",
-    "files": 34,
-    "verifiedGitBlobs": 34,
-    "tests": 104,
-    "bindingTests": 7,
-    "issueComment": 5997735453,
-    "issueCommentUpdatedAt": "2026-10-05T15:35:31Z",
-    "url": "https://github.com/GodlyDonuts/predictions-cup-2026/issues/1#issuecomment-5997735453",
-    "profitabilityEstablished": false,
-    "goalOutcome": "progress",
-    "coupledBank": "3ab468b58df77b1b4996073c416210da38926f5be5ca7b707d3f2607def2f518"
+  "currentPrimaryAudit": {
+    "name": "kansas-primary-audit-v2",
+    "meanMargin": -1,
+    "ordinaryTransportValue": [
+      0.4046098433873465,
+      0.4464646788433046
+    ],
+    "adverseShiftValue": 0.2464329199107139,
+    "oldResearchClockRenewed": false,
+    "newEntries": false,
+    "methodologyBlocker": "Siena detailed fieldwork unavailable; pooled transport unvalidated"
   },
-  "currentMain": "45382f440dce92717eff12478c88163234fdf041",
-  "coupledBulkMilestone": {
-    "baseMain": "45382f440dce92717eff12478c88163234fdf041",
-    "bankHash": "d9e27c27bed40738f7526fdeb256633398dea60eeea42457c5dc40315ca3b2cf",
-    "cohort": "baal-coupled-bulk-20261005-v2c-live",
-    "cutoff": "2026-10-05T16:14:05.242Z",
-    "entryExpiresAt": "2026-10-05T22:14:05.242Z",
-    "scope": 237,
-    "collectorPid": 22884,
-    "paperPid": 3976,
-    "dashboardPid": 20092,
-    "feature": "Existing indicative bulk feed supplies causal five-minute stability; fresh book and account eligibility enable paired inside quotes",
-    "sharedCash": true,
-    "fees": 0,
-    "newServices": 0,
-    "additionalReadSlots": 0,
+  "horizonPollingMilestone": {
+    "at": "2026-10-05T23:10:24.153Z",
+    "commit": "ce61c51835ddf7592a068027a234294bb0f69814",
+    "races": 240,
+    "cycles": 13,
+    "errorSdPoints": 7.595541706884344,
+    "correlationProxy": 0.12391996847853325,
+    "diagnosticRaces": 27,
+    "brier": 0.06185609795725665,
+    "testsPassed": 3,
+    "currentKansasSettlementValue": 0.3984020683807826,
+    "sourceClockRenewed": false,
+    "activeBankChanged": false,
+    "productionActivated": false
+  },
+  "genericPortfolioMilestone": {
+    "at": "2026-10-06T00:09:14.819Z",
+    "commit": "7b41ec578de5875f9da72a4c019251c28b24e08a",
+    "checks": 91,
+    "maximumMarkets": 3,
+    "sharedCashPerLatency": true,
+    "currentPendingExcludedButOtherReservationsRetained": true,
+    "exactRootGroups": true,
+    "coherentProbabilityMass": true,
+    "nativeExclusiveWallet": true,
+    "publicPrefixRehashed": true,
+    "preparedCohort": "kansas-horizon-portfolio-20261005-v2",
+    "preparedBankHash": "77f83ee28a211ee1540f23b74b6698a327c7350562afd45ca98aca29f59652c6",
+    "sourcePrefixBytes": 67988043,
+    "sourcePrefixRecords": 30997,
+    "genesisOnly": true,
+    "activated": true,
+    "pointForecastNotConfidenceBound": true,
+    "profitabilityEstablished": false,
+    "activationMode": "local_paper_only",
+    "firstFillCost": "0.355000",
+    "realized": "0.000000",
+    "currentEstimatedLiquidation": "-0.015000",
+    "actualCounterfactualOnly": true,
+    "correlatedCases": true,
+    "frozenSnapshotImportRepair": "5b95526827d10af49661ed3ae24ccf12195d04bebe6f391085f3432ac9dd012d"
+  },
+  "rustRewrite": {
+    "requestedByHuman": true,
+    "scope": "Complete Rust backend with Node only for existing Next frontend",
+    "agents": [
+      "rust_account_queue",
+      "rust_strategy_engine",
+      "rust_replay_journal"
+    ],
+    "runtimeMigrated": false
+  },
+  "fillMarkoutMilestone": {
+    "at": "2026-10-06T00:46:24.534Z",
+    "commit": "d24da80295e3894c6d4aed5be47fbf150029ca1b",
+    "distinctOpportunities": 1,
+    "horizonsMs": [
+      5000,
+      60000,
+      300000
+    ],
+    "observedSpread": "-0.005000",
+    "modeledEntryTick": "-0.005000",
+    "modeledExitTick": "-0.005000",
+    "subsequentBidChange": "0.000000",
+    "rawQuoteRoundtrip": "-0.005000",
+    "stressQuoteNet": "-0.015000",
+    "fees": "0.000000",
+    "actualSales": 0,
+    "realizedProfit": null,
+    "activeBankUnchanged": true
+  },
+  "receiptPricingMilestone": {
+    "at": "2026-10-06T00:57:54.271Z",
+    "commit": "f5926a37cff263fa21829a00eeb0e2c94da94526",
+    "tests": 5,
+    "actualWalletRecords": 139,
+    "protectiveLimit": "0.355000",
+    "rawReceipt": "0.350000",
+    "originalStressPrice": "0.355000",
+    "fees": "0.000000",
+    "existingBankAndFillsChanged": false,
+    "newBankCreated": false,
+    "profitabilityEstablished": false
+  },
+  "paperMigrationAccountingMilestone": {
+    "at": "2026-10-06T01:16:25.500Z",
+    "commit": "d8bb9606d5a7ad03c0c9327720ac9da9b3445dd9",
+    "currentReducers": 8,
+    "inventoryObservedAt": "2026-10-06T01:12:05.728Z",
+    "correctnessChecks": 11,
+    "independentNativeReplayProven": false,
+    "cutoverReady": false,
+    "authoritativeTexasOverlay": {
+      "cash": "99.985000",
+      "realizedPnl": "-0.015000",
+      "positions": 0
+    },
+    "next": [
+      "Complete native overlay import and full runtime ownership transition preserving every bank/journal/liability",
+      "Freeze separately named future raw-receipt baseline and original-clock research before comparing stress",
+      "Measure subsequent raw executable proceeds, never inferred settlement value as realised profit"
+    ]
+  },
+  "nativeCoreMilestone": {
+    "at": "2026-10-06T01:31:58.219Z",
+    "commit": "7aea0b97776f17b95a377c59ef87f47d5e084c97",
+    "sourceFiles": 54,
     "checks": {
-      "combined": 87,
-      "additionalCausalReplay": 1,
-      "passed": true
+      "transport": 49,
+      "legacyProbability": 8,
+      "portfolioRust": 5,
+      "portfolioCrossLanguage": 15,
+      "bookAlpha": 7
     },
-    "developmentReplay": {
-      "processed": 21813,
-      "totalMs": 39521.0308,
-      "fills": 0,
-      "pairs": 0,
-      "realized": "0.000000",
-      "limitation": "No original tape windows for three quoted markets; unresolved reservations are unknown, not no-fill evidence"
+    "actualOriginalProbabilityCheckpoints": 30030,
+    "completeRuntimeCutover": false,
+    "receiptBaseline": {
+      "schemaVersion": 1,
+      "at": "2026-10-06T01:24:54.794Z",
+      "cohort": "kansas-receipt-baseline-20261006-v3",
+      "bankHash": "07d19cae5524dcd50b7d1651067005670956dd5773d2d7324609fd65e08e58b2",
+      "bankFileHash": "a888a89d446e58c7f21bb37ad599f1e4a054d05ad4830fc48ba13b62008829ef",
+      "bankMode": "funded_settlement_portfolio_receipt_baseline_v3",
+      "cutoff": "2026-10-06T01:24:54.643Z",
+      "sourcePrefixBytes": 72379328,
+      "sourcePrefixHash": "4733ed83599eb6e4e74a1ee6e1bf1b1bce4422d79180a2cdcc3ef4e465eaa5f4",
+      "sourcePrefixSequence": 32834,
+      "sourcePrefixJournalHash": "41c03bb2df44fdd1c84fbdf20326f93f7a20b305ad6eddbb618fdfd0976c22c5",
+      "compiledEngineHash": "207180c11f4cbaad8ca3d99c9df260fb52fe72fbb34c9dd7fb34b0c979a3be5a",
+      "binaryHash": "612f1c50748c8e5a7616c8aea455b9cb8fd10fbe70cf0eed68088ab355ce7990",
+      "binaryRelative": "portfolio-native-builds/612f1c50748c8e5a7616c8aea455b9cb8fd10fbe70cf0eed68088ab355ce7990/baal-portfolio-engine.exe",
+      "researchSourceAt": "2026-10-05T22:56:38.550Z",
+      "researchExpiry": "2026-10-06T04:56:38.550Z",
+      "pointForecast": "0.398402",
+      "pointIsNotConfidenceBound": true,
+      "protectiveLimitCushionTicks": 1,
+      "residualFillTicks": 0,
+      "residualLiquidationTicks": 0,
+      "fees": 0,
+      "nativeInitialStateHash": "1fbb9e4ae9200bafb3c69fd6c7c217422259423120efbcf27cf844fa8fac2bf2",
+      "prepared": true,
+      "activated": false,
+      "accountRequests": 0,
+      "contestOrders": 0,
+      "originalBanksChanged": false,
+      "profitabilityEstablished": false
     },
-    "actualSourceProof": "data/coupled-bulk-live-verification-20261005.json",
-    "failedBuildsPreserved": true,
-    "publication": "Checked direct main pending",
-    "officialEntriesClosed": true
+    "bookAlpha": {
+      "sourceHours": 85.30018222222222,
+      "bookRows": 30294,
+      "wallMs": 11707.353,
+      "selectedQuotes": 0,
+      "deployed": false,
+      "globalBoundaryCorrection": true
+    },
+    "nextReceiptObserver": {
+      "checksPassed": 8,
+      "status": "final_build_then_parent_pin",
+      "networkClients": 0,
+      "persistentServicesAdded": 0,
+      "sourceSnapshotMustMatchCompiledBinary": true
+    },
+    "currentTexasOverlayNativeEvidence": {
+      "records": 3649,
+      "bytes": 23380741,
+      "publicSourceBytes": 72664926,
+      "exactCurrentActorReplay": true,
+      "cashPerCase": "99.985000",
+      "realizedPerCase": "-0.015000",
+      "positions": 0,
+      "pending": 0,
+      "integratedRuntime": false
+    }
+  },
+  "nativeReceiptObserverMilestone": {
+    "at": "2026-10-06T02:01:17.299Z",
+    "bankHash": "07d19cae5524dcd50b7d1651067005670956dd5773d2d7324609fd65e08e58b2",
+    "actualFirstPurchaseAt": "2026-10-06T01:51:00.898Z",
+    "actualPrice": "0.350000",
+    "cashPerCase": "99.650000",
+    "realizedPnlPerCase": "0.000000",
+    "estimatedRawLiquidationPnlPerCase": "-0.005000",
+    "independentSamples": false,
+    "oneShot": true,
+    "persistentServicesAdded": 0,
+    "accountClientsAdded": 0,
+    "dashboardPid": 29228,
+    "currentNativePaperHeld": true,
+    "nineOwnerInventoryAt": "2026-10-06T01:59:22.171Z",
+    "fullServiceMigration": false,
+    "profitabilityEstablished": false,
+    "commit": "74768a7fcc236ec9aadd19f37f808e83b3386f50",
+    "publicationVerified": true,
+    "dashboardBrowserVerified": true,
+    "inventoryChecks": 12,
+    "uiChecks": 8,
+    "nativeServiceChecks": 16
+  },
+  "profitabilityOnlyHumanSteering": {
+    "at": "2026-10-06T03:37:01.341Z",
+    "generalMigrationFrozen": true,
+    "next": "Deploy prospective funded native median cases1/2/4 using sharedcaptureddata; expand causal candidatecollection onlyasneeded forprofit",
+    "productionProfitabilityEstablished": false
+  },
+  "fundedMedianMilestone": {
+    "sourceHours": 86.27694361111111,
+    "books": 31447,
+    "wallMs": 3982.1841,
+    "thresholds": [
+      1,
+      2,
+      4
+    ],
+    "realizedCounterfactualResults": [
+      "-0.005000",
+      "-0.005000",
+      "0.010000"
+    ],
+    "deepClosedTrades": 2,
+    "deepDistinctMarkets": 1,
+    "prospectiveDeployed": false,
+    "profitabilityEstablished": false,
+    "commit": "04b49084b03d928063c4e5e600ea1dd18d1933be"
+  },
+  "profitResourceRepair": {
+    "coupledFlatQuiesced": true,
+    "originalFinancialStateHash": "d754642bc8ecdc6512600a312de41d1430bedf80908d8f713d011d1a3710af30",
+    "originalCash": "99.990000",
+    "originalRealizedLoss": "-0.010000",
+    "journalPreserved": true,
+    "fullSuffixRetirementProofPending": true,
+    "collectorFreshAt": "2026-10-06T03:35:43.821Z"
+  },
+  "profitOnlySteering": {
+    "active": true,
+    "unrelatedMigrationFrozen": true
+  },
+  "medianProspective": {
+    "cohort": "baal-median-prospective-20261006-v1",
+    "bankHash": "fe61bfcee3e0fbc2bda5170de3fff0f3841c82d451529df2a20403a027098331",
+    "firstSessionComplete": true,
+    "restartSessionStarted": true,
+    "sessionMaximumSeconds": 3600,
+    "thresholds": [
+      1,
+      2,
+      4
+    ],
+    "fees": 0,
+    "realizedPerCase": [
+      "0.000000",
+      "0.000000",
+      "0.000000"
+    ],
+    "closedTrades": 0,
+    "profitabilityEstablished": false,
+    "next": "same-policy optimized cold verification with exact accounting parity; preserve active exits and measure subsequent closures",
+    "issueCommentId": 6009132871,
+    "source": 35646,
+    "journal": 248,
+    "positions": [
+      {
+        "marketId": "274",
+        "exchangeId": "963",
+        "quantity": 1,
+        "cost": "0.105000",
+        "enteredAtMs": 1791260761478,
+        "estimatedLiquidation": "0.100000"
+      },
+      {
+        "marketId": "305",
+        "exchangeId": "994",
+        "quantity": 1,
+        "cost": "0.860000",
+        "enteredAtMs": 1791259877929,
+        "estimatedLiquidation": "0.855000"
+      },
+      {
+        "marketId": "361",
+        "exchangeId": "1050",
+        "quantity": 1,
+        "cost": "0.165000",
+        "enteredAtMs": 1791260763226,
+        "estimatedLiquidation": "0.160000"
+      }
+    ],
+    "cash": "98.870000",
+    "discovery": {
+      "status": "ready",
+      "lastCycle": 18,
+      "pid": 27944,
+      "protectedBookSlots": 4,
+      "candidateSlots": 2,
+      "everyCycles": 3
+    },
+    "currentAt": "2026-10-06T04:58:03.883Z",
+    "currentSource": 36180,
+    "currentJournal": 618,
+    "realized": "0.000000",
+    "closed": 0,
+    "codeRevision": {
+      "journal": "median-code-revisions.jsonl",
+      "sequence": 1,
+      "hash": "61f761b1e6573f18a40ac7f7ae95ac2a8303d74c49b1f23798189e954c36b10d",
+      "newBinaryHash": "f3d5d78e7d9cffcf61191817c1c52206a801626cf18c40e0d97bb14026f455c7",
+      "newEngineHash": "d3cd3d840a7ae28279e78c459218dae9da77f6e1bbf848ae56481cee012d7aaf",
+      "originalBankHash": "fe61bfcee3e0fbc2bda5170de3fff0f3841c82d451529df2a20403a027098331",
+      "originalBinaryHash": "b7cb0596fc290714f923a04736774e63ee951a89adaf93db84ca1ee86f342887",
+      "accountingReset": false
+    }
+  },
+  "referenceTargetComparison": {
+    "completed": true,
+    "rejected": true,
+    "wallMs": 4231.3878,
+    "sourceHours": 86.27694361111111,
+    "reason": "Worse shallow losses/unpriced inventory; deep return unchanged",
+    "activeBankChanged": false
+  },
+  "previousGoalTurn": "progress: checkedalgorithm/source-paper implementation, exact live mediansales, no fullprofitcompletion",
+  "ouBidExperiment": {
+    "completed": true,
+    "qualifiedTrades": 0,
+    "wallMs": 4547.7563,
+    "activeChanged": false
+  },
+  "sourceValuePaper": {
+    "cohort": "mn-republican-source-value-20261006-v1",
+    "bankHash": "94e4dd8ecb8f29bfa647f5050c0de104ed54c84e438e76d55ef59451efd2d84e",
+    "cutoff": "2026-10-06T05:47:17.254Z",
+    "expiresAt": "2026-10-06T11:21:12.807Z",
+    "point": 0.41440892691384146,
+    "entryJudgmentValuation": 0.314409,
+    "knownSensitivityMin": 0.11538217239645022,
+    "severe": 0,
+    "confidenceBound": false,
+    "collectorPid": 16868,
+    "paperPid": 28488,
+    "started": true,
+    "healthyVerified": false,
+    "newFillsVerified": false,
+    "profitabilityEstablished": false
+  },
+  "medianFirstProspectiveClosures": {
+    "closed": 2,
+    "realized": "0.010000",
+    "lastCompleteLiquidation": "0.000000",
+    "netProfitabilityEstablished": false
+  },
+  "medianProductionTrial": {
+    "stage": "v2_live_first_positive_roundtrip",
+    "commit": "8ddcf973c7385a597112716652a29ebea427f50a",
+    "runId": "sig-pilot-median-20261006-human",
+    "bankHash": "af566e22332573e759e6dbd45fd4c6dcf3ab4d111362a245e51bc19c66e2fd70",
+    "explicitHumanActivation": true,
+    "productionVerified": true,
+    "prospectiveRealizedPnl": "0.000000",
+    "tests": {
+      "execution": 42,
+      "runnerDiscovery": 101
+    },
+    "collectorPid": 9412,
+    "paperPid": 28488,
+    "dashboardPid": 29228,
+    "at": "2026-10-06T07:05:04.199Z",
+    "entryExpiresAt": "2026-10-06T13:01:24.019Z",
+    "armedAt": "2026-10-06T07:03:39.665Z",
+    "activationRepairCommit": "bd93bb2e3298a10cf72afa6ad65bf1dad837a5e9",
+    "ordersSubmitted": 3,
+    "unconfirmedIntents": 0,
+    "firstProposal": {
+      "marketId": "261",
+      "exchangeId": "950",
+      "at": "2026-10-06T07:09:19.043Z",
+      "limit": "0.555000",
+      "status": "expired_without_submission",
+      "cause": "pending official confirmation was not explicitly prioritized over paper watches",
+      "fix": "staged collector discovery v3"
+    },
+    "discoveryRevision": 3,
+    "discoveryTests": 107,
+    "priorityFixCommit": "5e57aa3ff5a7808ab6e6946c09793c9e7bc8a02e",
+    "activationRenewed": false,
+    "lastCapturedPaperRealizedPnl": "0.010000",
+    "lastCapturedPaperAt": "2026-10-06T07:19:43.601Z",
+    "verifiedAt": "2026-10-06T07:37:10.228Z",
+    "firstOfficialFill": "data/median-first-official-fill-20261006.json",
+    "realizedPnl": "0.010000",
+    "evidence": "data/median-first-official-roundtrip-20261006.json",
+    "policyBankHash": "da6162418dc06cb28e1873b8f1b0613f8b43f7b1c49b3e61e32cc8bd4ead8854",
+    "revisionEvidence": "data/median-cap-v2-live-20261006.json",
+    "codeCommit": "81dda3896be4a001083f107a0c6ff342b76e74b2",
+    "activeGoalStillIncomplete": true
+  },
+  "medianTrendExperiment": {
+    "plan": "data/median-trend-experiment-plan-20261006.json",
+    "cutoff": "2026-10-06T07:08:27.849Z",
+    "stage": "causal_comparison_complete_no_promotion",
+    "productionPolicyChanged": false,
+    "invalidatedOriginalRun": true,
+    "result": "data/median-trend-results-20261006-v2.json",
+    "codeCommit": "5e57aa3ff5a7808ab6e6946c09793c9e7bc8a02e",
+    "tests": 13,
+    "developmentHours": 91.08051,
+    "developmentMs": 29481.5459,
+    "subsequentClosedTrades": 0
+  },
+  "medianEntryCapExperiment": {
+    "plan": "data/median-entry-cap-experiment-plan-20261006.json",
+    "cutoff": "2026-10-06T07:37:20.792Z",
+    "stage": "checked_published_fixed_future_comparison",
+    "productionPolicyChanged": false,
+    "result": "data/median-entry-cap-results-20261006-v2.json",
+    "tests": 25,
+    "sourceValidationFixed": true,
+    "codeCommit": "55cd2aecb614fd5e1a28749c7701c9ac6faa6074",
+    "sourceHardeningSameResults": true,
+    "latestSubsequent": "data/median-entry-cap-subsequent-20261006-0805.json",
+    "cutoffUnchanged": true,
+    "subsequentClosedTrades": 0,
+    "subsequentBaselineObservedPnl": "-0.015000",
+    "subsequentCapObservedPnl": "-0.010000"
+  },
+  "offlineRestoreAcceleration": {
+    "stage": "exact_parity_verified_not_deployed",
+    "proof": "data/settlement-restore-replay-proof-20261006.json",
+    "unitTests": 3,
+    "ksCheckpoints": 1490,
+    "txCheckpoints": 10317,
+    "ksElapsedMs": 37795.3199,
+    "livePolicyChanged": false
+  },
+  "currentMarketResearch": {
+    "marketId": "388",
+    "source": "research/ri-senate-primary-20261006/sources.json",
+    "settlementProbability": null,
+    "meaning": "Do not interpret historical median as election forecast"
+  },
+  "medianBarrierDiagnosis": {
+    "source": "research/median-barrier-diagnostic.mjs",
+    "episodes": 1477,
+    "targets": 516,
+    "stops": 208,
+    "horizons": 103,
+    "dataGaps": 646,
+    "tradeProfitClaims": false
+  },
+  "medianUptrendCap": {
+    "stage": "checked_offline_no_promotion",
+    "cutoff": "2026-10-06T08:59:42.428Z",
+    "codeCommit": "a2cf56647d80982050d00916b24fdf21b6034a52",
+    "developmentRealized": "0.030000",
+    "developmentClosedTrades": 1,
+    "subsequentTrades": 0
+  },
+  "medianProposalClockRepair": {
+    "at": "2026-10-06T10:19:22.299Z",
+    "status": "launched_pending_cold_restore",
+    "collector": 20172,
+    "policyBankHash": "da6162418dc06cb28e1873b8f1b0613f8b43f7b1c49b3e61e32cc8bd4ead8854",
+    "entryExpiresAt": "2026-10-06T13:01:24.019Z",
+    "testsPassed": 38,
+    "evidence": "data/median-proposal-clock-deployment-20261006.json",
+    "next": "Verify fresh bootstrap and actual attributed Michigan exit; develop bounded opposing-NO execution evidence."
   }
 }
