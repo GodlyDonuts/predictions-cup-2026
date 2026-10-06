@@ -1,0 +1,113 @@
+{
+  "schemaVersion": 1,
+  "at": "2026-10-06T00:38:56.300Z",
+  "cohort": "kansas-horizon-portfolio-20261005-v2",
+  "bankHash": "77f83ee28a211ee1540f23b74b6698a327c7350562afd45ca98aca29f59652c6",
+  "wallet": {
+    "prefixBytes": 3951559,
+    "sha256": "05d50398dc88c96443cdc5ad8f3ccce06e946271aa752c6724a48dd4420c27b5",
+    "sequence": 68,
+    "tailHash": "2e4eae91219663713e9356bc44f2cd782d473346f4be4442070cbf34b54023b7"
+  },
+  "source": {
+    "prefixBytes": 70275010,
+    "sha256": "e15f284cfc83ceaa84e590c3b4a9737bbcc258c9b5e41950a2d3965c361e8c1b",
+    "sequence": 31950,
+    "tailHash": "2bc47430c66204858dc7388c210505dd4fd45a37015caaee3f8d403ccb54f19a",
+    "throughAt": "2026-10-06T00:38:18.831Z"
+  },
+  "wallMs": 37175.097799999996,
+  "distinctPurchaseOpportunities": 1,
+  "results": [
+    {
+      "marketId": "356",
+      "exchangeId": "1045",
+      "filledAt": "2026-10-06T00:24:53.968Z",
+      "quantity": 1,
+      "paidPrice": "0.355000",
+      "rawEntryAsk": "0.350000",
+      "rawEntryBid": "0.345000",
+      "entryCostComponents": {
+        "observedSpread": "-0.005000",
+        "modeledEntryTick": "-0.005000",
+        "modeledExitTick": "-0.005000"
+      },
+      "horizons": [
+        {
+          "horizonMs": 5000,
+          "status": "observed",
+          "requestStartedAt": "2026-10-06T00:25:02.194Z",
+          "receivedAt": "2026-10-06T00:25:02.455Z",
+          "publicationSequence": 31714,
+          "publicationHash": "2b790abfa0bd5af69f83d232a1f193045dfeaf8db16070e498e0f5932eb7819a",
+          "rawBid": "0.345000",
+          "subsequentBidChange": "0.000000",
+          "rawQuoteRoundtrip": "-0.005000",
+          "modeledLiquidationNet": "-0.015000",
+          "entryCostComponents": {
+            "observedSpread": "-0.005000",
+            "modeledEntryTick": "-0.005000",
+            "modeledExitTick": "-0.005000"
+          },
+          "realizedPnl": null
+        },
+        {
+          "horizonMs": 60000,
+          "status": "observed",
+          "requestStartedAt": "2026-10-06T00:26:03.662Z",
+          "receivedAt": "2026-10-06T00:26:03.958Z",
+          "publicationSequence": 31730,
+          "publicationHash": "a518f7da0791ea44cbc6f0c35df6b9f293424d9a7dc5cafc1ba1af7a158d6a1b",
+          "rawBid": "0.345000",
+          "subsequentBidChange": "0.000000",
+          "rawQuoteRoundtrip": "-0.005000",
+          "modeledLiquidationNet": "-0.015000",
+          "entryCostComponents": {
+            "observedSpread": "-0.005000",
+            "modeledEntryTick": "-0.005000",
+            "modeledExitTick": "-0.005000"
+          },
+          "realizedPnl": null
+        },
+        {
+          "horizonMs": 300000,
+          "status": "observed",
+          "requestStartedAt": "2026-10-06T00:29:56.998Z",
+          "receivedAt": "2026-10-06T00:29:57.196Z",
+          "publicationSequence": 31794,
+          "publicationHash": "41103778cbfdf7903f91101ae1af3571d5e6a0cfa0a4c0a4d42e4eec3a8ccf5d",
+          "rawBid": "0.345000",
+          "subsequentBidChange": "0.000000",
+          "rawQuoteRoundtrip": "-0.005000",
+          "modeledLiquidationNet": "-0.015000",
+          "entryCostComponents": {
+            "observedSpread": "-0.005000",
+            "modeledEntryTick": "-0.005000",
+            "modeledExitTick": "-0.005000"
+          },
+          "realizedPnl": null
+        }
+      ],
+      "fees": "0.000000",
+      "simulatedSales": 0,
+      "profitabilityEstablished": false,
+      "correlatedLatencyCases": [
+        "1000",
+        "3000"
+      ]
+    }
+  ],
+  "fees": "0.000000",
+  "sourceQuotesVerified": true,
+  "originalJournalUnchanged": true,
+  "accountRequests": 0,
+  "simulatedSales": 0,
+  "realizedProfitFromDiagnostic": null,
+  "profitabilityEstablished": false,
+  "limitations": [
+    "Markouts are later observed depth-aware quote proceeds, not accepted sale orders.",
+    "Source gaps and unknown later liquidity are censored, never forward-filled.",
+    "One-tick assumptions are explicit modeling stress, not platform fees.",
+    "Latency variants of the same opportunity are deduplicated; a tiny sample does not establish an edge."
+  ]
+}
