@@ -13,11 +13,11 @@
 //   nothing to persist; durable failures propagate via the ":fatal:" marker.
 use crate::baal_scaled_no_controller_v1::{
     open_baal_scaled_no_controller, BaalScaledNoController, BaalScaledNoControllerDeps,
-    WireDispatch, WireDispatchError,
 };
+use crate::paired_rest_controller::{WireDispatch, WireDispatchError};
 use crate::baal_scaled_no_evidence_bridge_v1::{
     create_baal_scaled_no_evidence_bridge, BaalScaledNoEvidenceBridge,
-    BaalScaledNoEvidenceBridgeDeps,
+    BaalScaledEvidenceBridgeDeps,
 };
 use crate::baal_scaled_live_host_v1::baal_scaled_live_identity;
 use crate::baal_scaled_live_host_v2::baal_scaled_live_v2_identity;
@@ -882,7 +882,7 @@ pub fn open_baal_scaled_live_host_v3(
                 .get_evidence(context)
         });
         let now = inner.borrow().deps.now.clone();
-        let controller = open_baal_scaled_no_controller(
+        let controller = Rc::new(open_baal_scaled_no_controller(
             &controller_dir,
             &scope,
             &allocation,
@@ -897,7 +897,7 @@ pub fn open_baal_scaled_live_host_v3(
                 get_evidence,
                 now: now.clone(),
             },
-        )?;
+        )?);
         let inner_o = inner.clone();
         let observe = Rc::new(move || -> Result<V, String> { observation(&inner_o) });
         let inner_c2 = inner.clone();
@@ -922,7 +922,7 @@ pub fn open_baal_scaled_live_host_v3(
         *controller_cell.borrow_mut() = Some(controller.clone());
         *budget_cell.borrow_mut() = Some(budget.clone());
         let mut g = inner.borrow_mut();
-        g.controller = Some(controller);
+        g.controller = Some(controller.clone());
         g.budget = Some(budget);
         Ok(())
     })();
@@ -965,9 +965,37 @@ fn create_bridge(inner: &Rc<RefCell<HostInner>>) -> Result<(), String> {
     }
     let api_dispatch = {
         let api = inner.borrow().api.clone();
-        Rc::new(move |spec: &V, bd: Option<&Guard>, bn: Option<&Guard>| -> Result<V, String> {
-            (api.borrow().dispatch)(spec, bd, bn).map_err(|e| e.message)
-        })
+        Rc::new(
+            move |spec: &V,
+                  bd: Option<&crate::baal_scaled_no_evidence_bridge_v1::Guard>,
+                  bn: Option<&crate::baal_scaled_no_evidence_bridge_v1::Guard>|
+             -> Result<V, String> {
+                let guard_err = |c: &str| crate::transport::OrderTransportError {
+                    code: c.to_string(),
+                    outcome: "unknown".into(),
+                    may_have_executed: false,
+                    retry_same_request_only: false,
+                    retry_after_ms: 0.0,
+                    status: None,
+                    api_code: None,
+                    semantic_mismatch: false,
+                };
+                let bd_t = |p: &V, s: &V| -> Result<bool, crate::transport::OrderTransportError> {
+                    bd.map(|g| g(p, s).map_err(|c| guard_err(&c)))
+                        .unwrap_or(Ok(false))
+                };
+                let bn_t = |p: &V, s: &V| -> Result<bool, crate::transport::OrderTransportError> {
+                    bn.map(|g| g(p, s).map_err(|c| guard_err(&c)))
+                        .unwrap_or(Ok(false))
+                };
+                (api.borrow().dispatch)(
+                    spec,
+                    bd.map(|_| &bd_t as &Guard),
+                    bn.map(|_| &bn_t as &Guard),
+                )
+                .map_err(|e| e.message)
+            },
+        )
     };
     let inner_r = inner.clone();
     let receipt_of = Rc::new(move |response: &V, meta: &V| raw_of(&inner_r, response, meta));
@@ -989,20 +1017,22 @@ fn create_bridge(inner: &Rc<RefCell<HostInner>>) -> Result<(), String> {
             .global_risk()
     });
     let controller_for_census = inner.borrow().controller_cell.clone();
-    let get_owned_census = Rc::new(move |ex: &str| -> Option<V> {
-        controller_for_census
+    let get_owned_census = Rc::new(move |ex: &str| -> Result<V, String> {
+        Ok(controller_for_census
             .borrow()
             .as_ref()
             .map(|c| c.inventory(ex))
             .filter(|v| !v.is_null())
+            .unwrap_or(V::Null))
     });
     let controller_for_budget = inner.borrow().controller_cell.clone();
-    let get_installed_budget = Rc::new(move || -> Option<V> {
-        controller_for_budget
+    let get_installed_budget = Rc::new(move || -> Result<V, String> {
+        Ok(controller_for_budget
             .borrow()
             .as_ref()
-            .and_then(|c| c.funding_reservation_status().ok())
+            .map(|c| c.funding_reservation_status())
             .filter(|v| !v.is_null())
+            .unwrap_or(V::Null))
     });
     let controller_for_owns = inner.borrow().controller_cell.clone();
     let owns_order = Rc::new(move |order_id: &str, leg: &V| -> Result<bool, String> {
@@ -1025,18 +1055,25 @@ fn create_bridge(inner: &Rc<RefCell<HostInner>>) -> Result<(), String> {
     });
     let inner_c = inner.clone();
     let can_read = Rc::new(move || allowed(&inner_c));
-    let has_read_headroom = inner.borrow().deps.has_read_headroom.clone();
+    let has_read_headroom_fn = inner.borrow().deps.has_read_headroom.clone();
+    let has_read_headroom = Rc::new(move |n: i64| -> Result<bool, String> {
+        Ok((has_read_headroom_fn)(n))
+    });
+    let account_lease_fn = inner.borrow().deps.get_account_lease.clone();
+    let get_account_lease = Rc::new(move || -> Result<V, String> {
+        Ok((account_lease_fn)())
+    });
     let now = inner.borrow().deps.now.clone();
     let bridge = Rc::new(create_baal_scaled_no_evidence_bridge(
         &scope,
         &allocation,
         &uni,
-        BaalScaledNoEvidenceBridgeDeps {
-            api_dispatch,
+        BaalScaledEvidenceBridgeDeps {
+            dispatch: api_dispatch,
             receipt_of,
             get_account_lease,
             get_global_risk,
-            get_account_risk,
+            get_account_risk: Some(get_account_risk),
             get_owned_census,
             get_installed_budget,
             owns_order,
@@ -1282,11 +1319,7 @@ impl BaalScaledLiveHostV3 {
                     }
                     if phase == "prepared" && fetched == 0 && (now() as i64) < expiry {
                         if get(&intent, "action").as_str() == Some("buy") {
-                            let legs = get(&intent, "packageLegs")
-                                .as_array()
-                                .cloned()
-                                .unwrap_or_default();
-                            bridge.refresh_buy(&legs)?;
+                            bridge.refresh_buy(get(&intent, "packageLegs"))?;
                         } else {
                             let leg = get(&scope, "exchanges")
                                 .as_array()
@@ -1396,7 +1429,7 @@ impl BaalScaledLiveHostV3 {
             }
             for pair in candidates(&inner)? {
                 let attempt = (|| -> Result<V, String> {
-                    bridge.refresh_buy(&pair)?;
+                    bridge.refresh_buy(&V::Array(pair.clone()))?;
                     let proposal = bridge.get_buy_proposal()?;
                     if get(&proposal, "proposalReady") != &json!(true) {
                         for l in &pair {
@@ -1490,7 +1523,17 @@ impl BaalScaledLiveHostV3 {
                 return Ok(true);
             }
             if let Some(b) = &g.bridge {
-                if b.authorizes(spec, before_dispatch, before_network) {
+                let sbd = |p: &V, s: &V| -> Result<bool, String> {
+                    before_dispatch
+                        .map(|f| f(p, s).map_err(|e| e.code))
+                        .unwrap_or(Ok(false))
+                };
+                let sbn = |p: &V, s: &V| -> Result<bool, String> {
+                    before_network
+                        .map(|f| f(p, s).map_err(|e| e.code))
+                        .unwrap_or(Ok(false))
+                };
+                if b.authorizes(spec, &sbd, &sbn) {
                     return Ok(true);
                 }
             }
