@@ -1,1 +1,21 @@
-{"activatesNewOrders":false,"allocatedNominalCapital":"1000.000000","allocationHash":"745d3a933da910df1ab311877e4709f5ff3dcbe70cacfe6f03410a31f94cec0e","authoritySource":"Direct human instruction: Give it more capital to work with","createdAt":"2026-10-06T15:40:22.803Z","currency":"SUSQies","currentOneShareRecoveryUnchanged":true,"existingPilotRecordsPreserved":true,"fee":"0.000000","kind":"human_directed_baal_capital_allocation_v1","maximumActiveMarkets":20,"maximumEventNominalExposure":"200.000000","maximumMarketNominalExposure":"100.000000","maximumOrderNominalCost":"25.000000","maximumSharesPerOrder":100,"ownerId":"Codex","requiresFreshAccountAndExecutionPolicy":true,"schemaVersion":1,"status":"allocated_for_next_policy_pending_current_sale_reconciliation"}
+{
+  "activatesNewOrders": false,
+  "allocatedNominalCapital": "1000.000000",
+  "allocationHash": "745d3a933da910df1ab311877e4709f5ff3dcbe70cacfe6f03410a31f94cec0e",
+  "authoritySource": "Direct human instruction: Give it more capital to work with",
+  "createdAt": "2026-10-06T15:40:22.803Z",
+  "currency": "SUSQies",
+  "currentOneShareRecoveryUnchanged": true,
+  "existingPilotRecordsPreserved": true,
+  "fee": "0.000000",
+  "kind": "human_directed_baal_capital_allocation_v1",
+  "maximumActiveMarkets": 20,
+  "maximumEventNominalExposure": "200.000000",
+  "maximumMarketNominalExposure": "100.000000",
+  "maximumOrderNominalCost": "25.000000",
+  "maximumSharesPerOrder": 100,
+  "ownerId": "Codex",
+  "requiresFreshAccountAndExecutionPolicy": true,
+  "schemaVersion": 1,
+  "status": "current_sale_reconciled_scaled_execution_implementation"
+}
