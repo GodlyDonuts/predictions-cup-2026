@@ -1,0 +1,188 @@
+{
+  "schemaVersion": 1,
+  "runId": "baal-scaled-no-20261006-human",
+  "observedAt": "2026-10-06T19:26:45.365Z",
+  "collectorPid": 5916,
+  "actualOrders": 12,
+  "scaledRealizedPnl": "0.500000",
+  "oldFourClosedPilotNetRealized": "0.015000",
+  "fees": "0.000000",
+  "sells": [
+    {
+      "orderId": "17115785",
+      "marketId": "384",
+      "exchangeId": "1073",
+      "quantity": 29,
+      "removedPrincipal": "2.465000",
+      "proceeds": "2.755000",
+      "realizedPnl": "0.290000",
+      "proofHash": "1d8c1a56cc3c4dad9867cab9929522b23548d8b65782ab593fd79cffa9502f9a",
+      "readAt": "2026-10-06T19:05:05.846Z",
+      "fills": [
+        {
+          "id": 71929895,
+          "price": "0.095000",
+          "quantity": 29,
+          "filledAt": "2026-10-06T19:04:33.814Z"
+        }
+      ]
+    },
+    {
+      "orderId": "17161319",
+      "marketId": "353",
+      "exchangeId": "1042",
+      "quantity": 1,
+      "removedPrincipal": "0.095000",
+      "proceeds": "0.105000",
+      "realizedPnl": "0.010000",
+      "proofHash": "d61fbcf18f55d033e39f2f449515d6b4b94345f5f5b2dbd4ecc2200bc7efb4b8",
+      "readAt": "2026-10-06T19:22:51.158Z",
+      "fills": [
+        {
+          "id": 72121424,
+          "price": "0.105000",
+          "quantity": 1,
+          "filledAt": "2026-10-06T19:22:22.150Z"
+        }
+      ]
+    },
+    {
+      "orderId": "17163860",
+      "marketId": "353",
+      "exchangeId": "1042",
+      "quantity": 5,
+      "removedPrincipal": "0.475000",
+      "proceeds": "0.525000",
+      "realizedPnl": "0.050000",
+      "proofHash": "51bead18bcf6fa1c897cb6c8f6c0585babc29317345d1c166a09d3e3be364365",
+      "readAt": "2026-10-06T19:23:55.666Z",
+      "fills": [
+        {
+          "id": 72132256,
+          "price": "0.105000",
+          "quantity": 5,
+          "filledAt": "2026-10-06T19:23:26.580Z"
+        }
+      ]
+    },
+    {
+      "orderId": "17166556",
+      "marketId": "353",
+      "exchangeId": "1042",
+      "quantity": 5,
+      "removedPrincipal": "0.475000",
+      "proceeds": "0.525000",
+      "realizedPnl": "0.050000",
+      "proofHash": "5fa15f7a82bb6eb081cf56453c6317fde3c9faa65aaf33434876742dfd86fbf4",
+      "readAt": "2026-10-06T19:25:00.833Z",
+      "fills": [
+        {
+          "id": 72143834,
+          "price": "0.105000",
+          "quantity": 5,
+          "filledAt": "2026-10-06T19:24:31.134Z"
+        }
+      ]
+    },
+    {
+      "orderId": "17169624",
+      "marketId": "353",
+      "exchangeId": "1042",
+      "quantity": 5,
+      "removedPrincipal": "0.475000",
+      "proceeds": "0.525000",
+      "realizedPnl": "0.050000",
+      "proofHash": "b376268180ac01cef6e385e46b22916e6a91d79c9b453d6608f96207b785359a",
+      "readAt": "2026-10-06T19:26:07.584Z",
+      "fills": [
+        {
+          "id": 72156442,
+          "price": "0.105000",
+          "quantity": 5,
+          "filledAt": "2026-10-06T19:25:37.039Z"
+        }
+      ]
+    },
+    {
+      "orderId": "17172790",
+      "marketId": "353",
+      "exchangeId": "1042",
+      "quantity": 5,
+      "removedPrincipal": "0.475000",
+      "proceeds": "0.525000",
+      "realizedPnl": "0.050000",
+      "proofHash": "f5676ff1797a35eff61bbdffacff139608679c502442cfc0685077d9a5abc29a",
+      "readAt": "2026-10-06T19:27:14.787Z",
+      "fills": [
+        {
+          "id": 72170716,
+          "price": "0.105000",
+          "quantity": 5,
+          "filledAt": "2026-10-06T19:26:44.887Z"
+        }
+      ]
+    }
+  ],
+  "remainingInventory": {
+    "994": {
+      "cost": "0.250000",
+      "cumulativeRealizedPnl": "0.000000",
+      "eventId": "e23df991ae80c8f76231ab98361fbe7142a77b5b3d15c6d90c04fab8dde7e568",
+      "marketId": "305",
+      "proofHash": "778a08b5e73d122464419b4d537f4f853fea01d3c6fb431e61a5fc2ba04f7b8c",
+      "quantity": 2
+    },
+    "1042": {
+      "cost": "1.140000",
+      "cumulativeRealizedPnl": "0.160000",
+      "eventId": "2a9c83ff96398f1c2644e8309df6442685a057ca9597f2fab468123f1c50705b",
+      "marketId": "353",
+      "proofHash": "b376268180ac01cef6e385e46b22916e6a91d79c9b453d6608f96207b785359a",
+      "quantity": 12
+    },
+    "1046": {
+      "cost": "12.025000",
+      "cumulativeRealizedPnl": "0.000000",
+      "eventId": "1ff13cd24a109bb0be72deac8e1c18f5f8c410ef05c6ef07c4961370f6794e35",
+      "marketId": "357",
+      "proofHash": "f27365e6072ad852a788d7ab9b85e76418ea90261c0f6d8582a684f1f526a790",
+      "quantity": 37
+    },
+    "1066": {
+      "cost": "11.470000",
+      "cumulativeRealizedPnl": "0.000000",
+      "eventId": "d33e0afc47bb6cbf9fd349c952f626ce6590933c5e2afe5246ee8915ef2fbda4",
+      "marketId": "377",
+      "proofHash": "08fc109741d6a1268b92a5b9e44ffa2dd0e9e3befe6500807d37bbc0d4149dfc",
+      "quantity": 37
+    },
+    "1070": {
+      "cost": "4.060000",
+      "cumulativeRealizedPnl": "0.000000",
+      "eventId": "298ff619a93d7ae7f33bbc07da73786f7cde698e4b9ffff72bb3ac6d47158636",
+      "marketId": "381",
+      "proofHash": "8b38a54d0f93dabae7cc5c1ecf2adfd1783d33beb63c5bb3538d4d5813c31108",
+      "quantity": 29
+    },
+    "1073": {
+      "cost": "0.000000",
+      "cumulativeRealizedPnl": "0.290000",
+      "eventId": "daa9af0d453ce53f44d53dad7460f92d511e1774b471f87c165a615917c0c428",
+      "marketId": "384",
+      "proofHash": "1d8c1a56cc3c4dad9867cab9929522b23548d8b65782ab593fd79cffa9502f9a",
+      "quantity": 0
+    }
+  },
+  "proofsHashVerified": true,
+  "profitabilityAtScaleEstablished": false,
+  "includesUnrealizedPnl": false,
+  "profitSource": "complete_verified_actor_proofs",
+  "sourceActorSequence": 243,
+  "sourceActorHash": "b94e539b06cc7856d4fc99c328e78eeef47db08e3cba4827aa175d2b16a9e1ee",
+  "sourceActorBytes": 67313863,
+  "stalePublicStatsRealizedPnl": "0.450000",
+  "collectorStopped": true,
+  "stopReason": "budget_actor_read_bound_64MiB_conflicts_with_controller_128MiB",
+  "terminalSell17172790AlreadyReconciled": true,
+  "newAccountObservationPendingRecovery": true
+}
