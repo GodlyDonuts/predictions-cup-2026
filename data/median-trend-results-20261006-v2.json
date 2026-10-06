@@ -1,0 +1,166 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-06T07:26:27.858Z",
+  "plan": "data/median-trend-experiment-plan-20261006.json",
+  "binarySha256": "a95a944c482f9bdaa6d290ace7e6922d91b1a211107e06832723c83b8bc0b3ca",
+  "correctnessTests": 13,
+  "independentReviewPassed": true,
+  "invalidatedV1": {
+    "reason": "cross-market earlier book request could retain later account eligibility",
+    "preserved": true,
+    "usedForEconomicClaims": false
+  },
+  "development": {
+    "mode": "offline_fixed_median_trend_development_v2",
+    "elapsedMs": 29481.5459,
+    "eventsProcessed": 37753,
+    "source": {
+      "publicRecords": 37753,
+      "accountRecords": 4899,
+      "priceRecords": 21538,
+      "priceRecordsCausallyConsumed": 21538,
+      "publicBytes": 84048391,
+      "publicSha256": "625fe4c5c8abbb2f6df1e1f7143dc417ab6737a07c6c6b0605cf04c1821d346d",
+      "accountBytes": 2948027,
+      "accountSha256": "9909ab30b87aad136f7c15e0316a31d50cfd573057ba9f5316e1afd04cd377ba",
+      "priceBytes": 241448264,
+      "priceSha256": "94592c9b3ad8e3cf68d9293bda69463fa18657d2a4faa29605c03504e2149286",
+      "publicSequence": 37753,
+      "publicTailHash": "3ee3c2003d8cc94fca848ec0476ea63c70e5011306e21ae011e40bebcc40c6a6",
+      "hours": 91.08051,
+      "books": 35245
+    },
+    "experimentCutoff": null,
+    "originalKernelSha256": "34b544e4619b5a18b0da9692c8340d4b8c1ee11e1264e9353b7290f99be52ada",
+    "results": [
+      {
+        "case": "one_tick_native_control",
+        "trendCounts": {
+          "funded_one_tick_candidates": 14
+        },
+        "realizedPnl": "-0.065000",
+        "closedTrades": 8,
+        "closedLosingTrades": 6,
+        "openCost": "0.945000",
+        "openPositions": 3,
+        "reservedCost": "0.000000",
+        "estimatedLiquidationPnl": null
+      },
+      {
+        "case": "one_tick_trend_30m_vs_prior30m",
+        "trendCounts": {
+          "declining_segment_median": 120,
+          "funded_one_tick_candidates": 129
+        },
+        "realizedPnl": "-0.030000",
+        "closedTrades": 4,
+        "closedLosingTrades": 3,
+        "openCost": "1.270000",
+        "openPositions": 3,
+        "reservedCost": "0.000000",
+        "estimatedLiquidationPnl": null
+      },
+      {
+        "case": "one_tick_trend_15m_vs_prior45m",
+        "trendCounts": {
+          "declining_segment_median": 171,
+          "funded_one_tick_candidates": 182
+        },
+        "realizedPnl": "-0.005000",
+        "closedTrades": 5,
+        "closedLosingTrades": 3,
+        "openCost": "2.130000",
+        "openPositions": 3,
+        "reservedCost": "0.000000",
+        "estimatedLiquidationPnl": null
+      }
+    ],
+    "limitations": [
+      "Development data; no selected-profitability claim and no active deployment.",
+      "Unfiltered control uses exact frozen prospective bulk reference and risk priority, distinct from original historical receipt-only baseline.",
+      "Trend filters change only permission for NEW proposals; existing pending buys, held inventory and exits retain original rules.",
+      "Unknown segment coverage blocks new entry and is reported separately. Segment medians are observation-weighted upper medians, not time-weighted medians.",
+      "Later sparse receipt prices are counterfactual fills, not actual accepted competition orders. All alternatives remain reported."
+    ]
+  },
+  "subsequent": {
+    "mode": "offline_fixed_median_trend_development_v2",
+    "elapsedMs": 30210.1777,
+    "eventsProcessed": 37911,
+    "source": {
+      "publicRecords": 37911,
+      "accountRecords": 4952,
+      "priceRecords": 21640,
+      "priceRecordsCausallyConsumed": 21640,
+      "publicBytes": 84421121,
+      "publicSha256": "20c52c844bea3f01da356722e4fde83d2149e41e930a16e0016af2e24af626eb",
+      "accountBytes": 2979933,
+      "accountSha256": "65045e6ff6ea528f01d90a953fd424f6caffecb8a4c8043e1473667582e60114",
+      "priceBytes": 242592183,
+      "priceSha256": "f0d9ef189c31b99f3b49c3eec25a3ffe6b211628a77695d8a718115234c5c76d",
+      "publicSequence": 37911,
+      "publicTailHash": "441bc23771ee9546a62105db800cc0a8d7d9a0580f3efbf26c78b554af2d7683",
+      "hours": 91.26921666666667,
+      "books": 35402
+    },
+    "experimentCutoff": "2026-10-06T07:08:27.849Z",
+    "originalKernelSha256": "34b544e4619b5a18b0da9692c8340d4b8c1ee11e1264e9353b7290f99be52ada",
+    "results": [
+      {
+        "case": "one_tick_native_control",
+        "trendCounts": {
+          "funded_one_tick_candidates": 2
+        },
+        "realizedPnl": "0.000000",
+        "closedTrades": 0,
+        "closedLosingTrades": 0,
+        "openCost": "0.290000",
+        "openPositions": 1,
+        "reservedCost": "0.000000",
+        "estimatedLiquidationPnl": null
+      },
+      {
+        "case": "one_tick_trend_30m_vs_prior30m",
+        "trendCounts": {
+          "declining_segment_median": 1,
+          "funded_one_tick_candidates": 2
+        },
+        "realizedPnl": "0.000000",
+        "closedTrades": 0,
+        "closedLosingTrades": 0,
+        "openCost": "0.290000",
+        "openPositions": 1,
+        "reservedCost": "0.000000",
+        "estimatedLiquidationPnl": null
+      },
+      {
+        "case": "one_tick_trend_15m_vs_prior45m",
+        "trendCounts": {
+          "declining_segment_median": 1,
+          "funded_one_tick_candidates": 2
+        },
+        "realizedPnl": "0.000000",
+        "closedTrades": 0,
+        "closedLosingTrades": 0,
+        "openCost": "0.290000",
+        "openPositions": 1,
+        "reservedCost": "0.000000",
+        "estimatedLiquidationPnl": null
+      }
+    ],
+    "limitations": [
+      "Development data; no selected-profitability claim and no active deployment.",
+      "Unfiltered control uses exact frozen prospective bulk reference and risk priority, distinct from original historical receipt-only baseline.",
+      "Trend filters change only permission for NEW proposals; existing pending buys, held inventory and exits retain original rules.",
+      "Unknown segment coverage blocks new entry and is reported separately. Segment medians are observation-weighted upper medians, not time-weighted medians.",
+      "Later sparse receipt prices are counterfactual fills, not actual accepted competition orders. All alternatives remain reported."
+    ]
+  },
+  "fees": 0,
+  "networkRequests": 0,
+  "competitionOrders": 0,
+  "selectedForProduction": false,
+  "profitabilityEstablished": false,
+  "casesAreIndependentNotSummed": true,
+  "candidateCountsAreNotIndependentTrades": true
+}
