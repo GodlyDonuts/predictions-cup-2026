@@ -10,7 +10,7 @@ use std::os::unix::fs::{MetadataExt, OpenOptionsExt, PermissionsExt};
 use std::path::{Path, PathBuf};
 use std::sync::{Arc, Mutex};
 
-use crate::native_journal_append::ExclusiveNativeJournal;
+use crate::native_journal_append::{open_exclusive_native_journal, ExclusiveNativeJournal};
 use crate::settlement_paper_host::PaperHost;
 
 fn need(ok: bool, code: &str) -> Result<(), String> {
@@ -425,12 +425,19 @@ impl SettlementPortfolioHostV2 {
         };
         // Shared head (publication/prefix/offset) consulted by validateTransition.
         let shared_head = Arc::new(Mutex::new((publication.clone(), prefix.clone(), offset)));
-        let mut journal = ExclusiveNativeJournal::open(&journal_file,
+        let validate_cell = std::sync::Mutex::new(validate_original);
+        let stop_path_strs: Vec<String> =
+            stop_paths.iter().map(|p| p.to_string_lossy().into_owned()).collect();
+        let stop_path_refs: Vec<&str> = stop_path_strs.iter().map(String::as_str).collect();
+        let can_operate_j = can_operate.clone();
+        let mut journal = open_exclusive_native_journal(&journal_file,
             Path::new(append["binaryPath"].as_str().unwrap_or("")),
             Path::new(append["sourceRoot"].as_str().unwrap_or("")),
-            &append["binding"], &reconciled.head, &owner_token, 1, &stop_paths,
-            can_operate.clone(),
-            &mut validate_original,
+            &append["binding"], &reconciled.head, &owner_token, 1, &stop_path_refs,
+            Box::new(move || can_operate_j()),
+            &|r: &V, c: &V| -> Result<bool, String> {
+                (validate_cell.lock().map_err(|_| "SETTLEMENT_PORTFOLIO_HOST_VALIDATE".to_string())?)(r, c)
+            },
             {
                 let bank_c = bank.clone();
                 let bank_hash = bank_hash.clone();
@@ -439,7 +446,7 @@ impl SettlementPortfolioHostV2 {
                 let runtime_dir_c = runtime_dir.to_path_buf();
                 let dir_c = dir.clone();
                 let serial_c = evaluation_serial.clone();
-                Arc::new(move |candidate: &V, event: &V, ctx: &V| -> Result<bool, String> {
+                Box::new(move |candidate: &V, event: &V, ctx: &V| -> Result<bool, String> {
                     if ctx["lastBody"].is_null() {
                         return Ok(event["kind"].as_str() == Some("genesis")
                             && event["bankHash"] == json!(bank_hash)
@@ -464,7 +471,7 @@ impl SettlementPortfolioHostV2 {
                         "sourceSequence": next_source.publication["sequence"],
                         "sourceHash": next_source.publication["hash"],
                         "sourcePrefixHash": format!("{:x}", next_source.prefix.clone().finalize())}))?)
-                }) as Arc<dyn Fn(&V, &V, &V) -> Result<bool, String> + Send + Sync>
+                })
             },
             30000, 40 * 1024 * 1024)?;
         {
@@ -482,7 +489,7 @@ impl SettlementPortfolioHostV2 {
             &bank_bytes, live_paper_dir, &engine_file, &code_identity, &source, &source_id)?;
         if reconciled.head["sequence"].as_i64() == Some(0) {
             journal.commit(&initial_state, &json!({"kind": "genesis", "bankHash": bank_hash,
-                "cutoff": bank["cutoff"]}), bank["cutoff"].as_str().unwrap_or(""))?;
+                "cutoff": bank["cutoff"]}), Some(bank["cutoff"].as_str().unwrap_or("")))?;
         }
         let startup = json!({"coldBootMs": started.elapsed().as_secs_f64() * 1000.0,
             "sourcePrefixBytes": bank["sourcePrefixBytes"], "exclusiveWalletJournal": true});
@@ -614,7 +621,7 @@ impl SettlementPortfolioHostV2 {
                 "sourceHash": next_source.publication["hash"],
                 "sourcePrefixHash": format!("{:x}", next_source.prefix.clone().finalize())});
             if let Some(j) = &mut self.journal {
-                j.commit(&candidate, &event, &at)?;
+                j.commit(&candidate, &event, Some(at.as_str()))?;
             }
             self.state = next_state;
             self.publication = next_source.publication;
