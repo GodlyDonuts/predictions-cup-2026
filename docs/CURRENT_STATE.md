@@ -1,4 +1,12 @@
-# October6: market-wide median paper operation; profitability still unproven
+# October6 07:08 UTC: small official median pilot armed
+
+Under the latest explicit human instruction to run the small trial now, `sig-pilot-median-20261006-human` is armed in the sole collector. Fresh complete account preflight and bootstrap passed; bank `af566e22332573e759e6dbd45fd4c6dcf3ab4d111362a245e51bc19c66e2fd70` binds the original one-tick paper policy. New entries expire **2026-10-06T13:01:24.019Z**; this is a separate bounded activation, not renewal of the expired settlement pilot. One-share orders, 1 SUSQie/order, 10 aggregate cost, 25 cumulative buy cost, three markets and zero fees remain enforced. Current official status is waiting for a qualifying signal, with zero orders and zero attributed positions/profit. See issue comment [6011196287](https://github.com/GodlyDonuts/predictions-cup-2026/issues/1#issuecomment-6011196287) and [trial behavior](MEDIAN_PRODUCTION_TRIAL.md).
+
+Checked main `bd93bb2e3298a10cf72afa6ad65bf1dad837a5e9` includes saved-bank read-back verification. Execution/reference/preflight/activation checks pass 42/42; collector lifecycle/discovery checks pass 101/101. Observed persistent processes: collector25516, paper28488, dashboard29228; reverify current commands and reports. A bounded file-only median observer also preserves the original paper cohort. Its two +0.005 closes were offset by a -0.010 timed exit, leaving realized P&L zero and one open position. No sustained profitability is established.
+
+Next experiment preregisters two causal trend filters at **2026-10-06T07:08:27.849Z** in `data/median-trend-experiment-plan-20261006.json`. Historical comparisons are development diagnostics; independent future wallets must evaluate subsequent captures. The running official policy and paper accounting remain intact.
+
+# Historical: market-wide median paper operation
 
 Checked mainb889c641889c43af2bcd161983ed4b232b7683bc adds candidate reads through the existing single collector. Four protected depth20 slots remain first; at most two auxiliary candidate books run every third cycle under the existing account queue, freshness and headroom. Real receipts for274/361 passed causal publication. Collector27944 was freshly running with zero errors; paper8732/dashboard29228 remain. Reverify processes and timestamps.
 

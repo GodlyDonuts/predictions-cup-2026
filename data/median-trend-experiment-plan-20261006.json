@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "name": "median-trend-fixed-20261006-v1",
+  "recordedAt": "2026-10-06T07:08:27.849Z",
+  "prospectiveCutoff": "2026-10-06T07:08:27.849Z",
+  "baselinePaperBankHash": "fe61bfcee3e0fbc2bda5170de3fff0f3841c82d451529df2a20403a027098331",
+  "prefixes": {
+    "public": {
+      "bytes": 84048391,
+      "sha256": "625fe4c5c8abbb2f6df1e1f7143dc417ab6737a07c6c6b0605cf04c1821d346d",
+      "sequence": 37753,
+      "hash": "3ee3c2003d8cc94fca848ec0476ea63c70e5011306e21ae011e40bebcc40c6a6",
+      "lastKnownAt": "2026-10-06T07:08:26.580Z"
+    },
+    "account": {
+      "bytes": 2948027,
+      "sha256": "9909ab30b87aad136f7c15e0316a31d50cfd573057ba9f5316e1afd04cd377ba",
+      "sequence": 4899,
+      "hash": "7ebbbdcbb9776cfde59e2e471b3943d96c9b66cc2b88f95c7c13adde37c29e62",
+      "lastKnownAt": "2026-10-06T07:08:25.354Z"
+    },
+    "prices": {
+      "bytes": 241448264,
+      "sha256": "94592c9b3ad8e3cf68d9293bda69463fa18657d2a4faa29605c03504e2149286",
+      "sequence": 21538,
+      "hash": "35cc84431c5d1308f64ebe0bf054848eb9149e25d4f207ec9a3a774bace71fac",
+      "lastKnownAt": "2026-10-06T07:08:05.232Z"
+    }
+  },
+  "policies": [
+    {
+      "name": "baseline",
+      "dipTicks": 1
+    },
+    {
+      "name": "trend_30_30",
+      "recentWindowMs": 1800000,
+      "olderWindowMs": 1800000,
+      "minimumSegmentSamples": 5,
+      "rejectDeclineTicks": 1
+    },
+    {
+      "name": "trend_15_45",
+      "recentWindowMs": 900000,
+      "olderWindowMs": 2700000,
+      "minimumSegmentSamples": 5,
+      "rejectDeclineTicks": 1
+    }
+  ],
+  "shared": {
+    "upperMedian": true,
+    "knownBeforeOriginalBookRequest": true,
+    "dropNewestEligiblePoint": true,
+    "fees": 0,
+    "shares": 1,
+    "profitTicks": 1,
+    "stopTicks": 4,
+    "maximumHoldMs": 7200000,
+    "latencyMs": 3000
+  },
+  "historicalResultsAreDevelopmentOnly": true,
+  "subsequentReplayMustStartFromIndependentFutureWallets": true,
+  "profitabilityEstablished": false,
+  "executionChangesAuthorizedByThisFile": false
+}
