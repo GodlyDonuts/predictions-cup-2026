@@ -1,3 +1,7 @@
+# Baal current status — October6
+
+Current deployment, attributed official fills and remaining work are recorded in [CURRENT_STATE](docs/CURRENT_STATE.md). Baal is the sole execution owner. The generic live strategy has one NO purchase acknowledgment awaiting scoped terminal verification; original closed official trades net+0.005SUSQies, zero fees, a tiny sample. Historical dated reports below do not describe the current runtime.
+
 # October5: accelerated paired-contract paper and Rust transport
 
 Baal now runs two separately frozen Michigan Governor dual-NO paper policies inside the single collector. Full two-leg funding, later receipts, observed depth, zero fees and failed-hedge accounting are enforced. The original cohort holds a0.975 package with zero realized profit; its0.025 ordinary settlement surplus is conditional and not cash profit. Virtual-clock replay processes81.5 captured hours in about9.7seconds while preserving coverage gaps and exact original journal parity.125 correctness checks pass. Contrary Texas polls now block new fundamental entries, and two expired flat hosts are retired with accounting preserved. No contest activation was renewed. See [the measured sprint results](docs/PROFIT_SPRINT_RESULTS.md) for results and limitations.

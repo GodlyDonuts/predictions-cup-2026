@@ -1,3 +1,11 @@
+# October6 14:07 UTC: corrected recovery host deployed; terminal verification pending
+
+Collector15272 started14:07:08UTC and is restoring preserved history. The sole account queue remains unchanged. A separate GET-only recovery host validates the original neutral NO acknowledgment and appends verified reconciliation to the same actor/funding journals. It cannot submit, cancel, hedge or replace an order. Its8 integration checks include real wall-clock separation between candidate qualification and actor initialization: both original plan hashes remain distinct and preserved. Original review13:48:14.155 and outer14:26:11.789 expiries were not extended. [Configuration](../data/neutral-ack-recovery-configuration-20261006.json).
+
+The previous startup ownership error occurred22ms after the engineering STOP request interrupted restore; no evidence of portfolio corruption or stale financial ownership was found. The new collector has no recorded startup errors yet, but fresh terminal order/fill/position verification is still pending. The original178451-byte paired actor prefix and0.990 reserve were preserved.
+
+Runner admissions now reserve the auxiliary window before fresh account reads, preventing a newly nominated pair from spending a second auxiliary allowance in the same cycle. A cold idle capture can nominate its first candidate.82 runner and7 selector checks pass. New owned-NO exit signal and scoped SELL reconciliation have21 checks; they do not dispatch orders. No extra clients, credentials or services were created, and no paper marks are presented as realized gains.
+
 # October6 13:51 UTC: first generic NO order acknowledged; neutral-economics repair checked
 
 The new generic selector obtained fresh rules/depth for384/385 at13:43:35UTC, protected pair cost0.925 with31/187 eligible shares. Actual order16297733 on384/ex1073 returned a closed one-share NO BUY acknowledgment at0.070. The original raw acknowledgment reports a neutral non-null ALL economics object: no collateral, relationships, advances or redemption. The old verifier required null, so its semantic latch correctly retained the whole0.990 reserve, but unnecessarily prevented scoped terminal reconciliation and the hedge. No replacement/second-leg order was sent. The source review expired13:48:14.155UTC without an extension.

@@ -28,6 +28,7 @@ import {exactMoneyFetch,createMoneyReceiptWriter} from '../execution/exact-money
 import {createScopedRestReceipts} from '../execution/scoped-rest-receipts.mjs';
 import {openPairedLiveHost} from '../execution/paired-live-host.mjs';
 import {openPairedLiveHostV2} from '../execution/paired-live-host-v2.mjs';
+import {openPairedNeutralRecoveryHost} from '../execution/paired-neutral-recovery-host-v1.mjs';
 import {openPartyWinnerPairCollector} from './party-winner-pair-collector-v1.mjs';
 import {createBookPublication} from './book-publication-v2.mjs';
 import {createNativeBookPublication} from './book-publication-v3.mjs';
@@ -330,7 +331,7 @@ try{
   if(runtime.collectionPlan)runtime.collectionPlan.readIntervalMs=networkIntervalMs;
   const activationFile=path.join(runtimeDir,'competition-activation.json');
   if(productionActivation?.enabled===true){const Controller=controllerForActivation(productionActivation);competition=new Controller({runtimeDir,api,universe,config:c,isStopped:()=>stopping||pairedLiveHost?.blocksLegacyWrites()===true,activation:productionActivation});if(productionActivation.strategyId==='historical-median-receipt-v1')await competition.initializeMedianReference();}
-  if(scopedReceipts)pairedLiveHost=(fs.existsSync(path.join(runtimeDir,'paired-live-v2-request.json'))?openPairedLiveHostV2:openPairedLiveHost)({runtimeDir,workspace,universe,api,receiptOf:scopedReceipts.receiptOf,getAccountLease:()=>{if(!competition)throw Error('PAIRED_HOST_NO_ACCOUNT_OWNER');competition.ledger.snapshot();const record=JSON.parse(fs.readFileSync(path.join(competition.dir,'execution-owner.lock')));if(record.ownerId!=='Codex'||record.pid!==process.pid||record.scope!==c.tournamentId||record.runId!==competition.activation.runId)throw Error('PAIRED_HOST_ACCOUNT_LEASE');return{ownerId:'Codex',tournamentId:c.tournamentId,leaseId:payloadHash(record)};},getOtherState:()=>{competition.assertLedgers();return structuredClone(competition.state);},canOperate:()=>!stopping&&!api.manualReview&&api.cooldown<=Date.now()&&!fs.existsSync(stopFile)&&!fs.existsSync(paperStop)&&!fs.existsSync(collectorStop)&&!fs.existsSync(path.join(runtimeDir,'EXECUTION_STOP')),hasReadHeadroom:n=>recentReadTimings.filter(x=>x.admittedAt&&Date.now()-Date.parse(x.admittedAt)<60000).length+n+4<=60});
+  if(scopedReceipts)pairedLiveHost=(fs.existsSync(path.join(runtimeDir,'paired-neutral-ack-recovery.json'))?openPairedNeutralRecoveryHost:fs.existsSync(path.join(runtimeDir,'paired-live-v2-request.json'))?openPairedLiveHostV2:openPairedLiveHost)({runtimeDir,workspace,universe,api,receiptOf:scopedReceipts.receiptOf,getAccountLease:()=>{if(!competition)throw Error('PAIRED_HOST_NO_ACCOUNT_OWNER');competition.ledger.snapshot();const record=JSON.parse(fs.readFileSync(path.join(competition.dir,'execution-owner.lock')));if(record.ownerId!=='Codex'||record.pid!==process.pid||record.scope!==c.tournamentId||record.runId!==competition.activation.runId)throw Error('PAIRED_HOST_ACCOUNT_LEASE');return{ownerId:'Codex',tournamentId:c.tournamentId,leaseId:payloadHash(record)};},getOtherState:()=>{competition.assertLedgers();return structuredClone(competition.state);},canOperate:()=>!stopping&&!api.manualReview&&api.cooldown<=Date.now()&&!fs.existsSync(stopFile)&&!fs.existsSync(paperStop)&&!fs.existsSync(collectorStop)&&!fs.existsSync(path.join(runtimeDir,'EXECUTION_STOP')),hasReadHeadroom:n=>recentReadTimings.filter(x=>x.admittedAt&&Date.now()-Date.parse(x.admittedAt)<60000).length+n+4<=60});
   partyPairSelector=fs.existsSync(path.join(runtimeDir,'party-pair-source-plan.json'))?openPartyWinnerPairCollector({runtimeDir,universe,getAccount:()=>candidateAccount?{...candidateAccount,unknownAcceptance:competition?.active()?.acceptanceUncertain===true}:null,getCapture:()=>pairedCandidate?.status(),getBoundPlanHash:()=>pairedLiveHost?.status().selectionHash??null,canOperate:()=>!stopping&&!api.manualReview&&api.cooldown<=Date.now()&&!fs.existsSync(stopFile)&&!fs.existsSync(paperStop)&&!fs.existsSync(collectorStop)}):null;
   if(fs.existsSync(path.join(runtimeDir,'rate.json'))){const rate=JSON.parse(fs.readFileSync(path.join(runtimeDir,'rate.json')));if(rate.manualReview||rate.next===null)throw Error('Rate cooldown requires manual review');if(!Number.isFinite(rate.next)||rate.next<0||rate.next>8640000000000000)throw Error('Invalid persisted rate state');api.next=rate.next;}
   const realtimeFile=path.join(runtimeDir,'realtime-capture.json');
@@ -410,6 +411,7 @@ try{
   }
   while(!stopping&&runtime.cycles<maxCycles){
     try{await hotArmMedian();}catch{runtime.productionArm={status:'blocked',at:new Date().toISOString()};}
+    const pairedAuxiliaryOwner=pairedCandidate?.pending()===true;
     const cycleStart=Date.now(),checkpoint=structuredClone(state);const events=[];let successful=0,cycleCommitted=false,profitSprintApplied=false,cycleRiskMarketIds=[];
     try{
       if(dipBank){
@@ -420,7 +422,7 @@ try{
         // During a bounded sprint, flat drained makers need no anonymous tape
         // and retired dip engines need no candle reads. Explicit metadata work
         // keeps its existing auxiliary slot. Account reconciliation is unchanged.
-        const auxiliary=baalReadAttention.reserve(pairedCandidate?.pending()?0:profitSprintApplied?(productionMetadata?.pending()?1:0):(officialSync?1:2),{makerActive:profitSprintApplied?false:makerActive});runtime.auxiliaryReadAllocation=auxiliary;
+        const auxiliary=baalReadAttention.reserve(pairedAuxiliaryOwner?0:profitSprintApplied?(productionMetadata?.pending()?1:0):(officialSync?1:2),{makerActive:profitSprintApplied?false:makerActive});runtime.auxiliaryReadAllocation=auxiliary;
         runtime.profitSprint={enabled:profitSprintApplied,reason:profitSprintApplied?'bounded_source_bound_risk_priority':'normal_or_liabilities_retained',executionAuthority:false};
         if(productionMetadata?.pending()&&(auxiliary.historyReads||auxiliary.tapeReads)&&!stopping&&api.cooldown<=Date.now()){
           await productionMetadata.consumeOne();
@@ -444,7 +446,7 @@ try{
       if(officialSync){try{accountCache.orders=accountOrders(orders,new Date().toISOString());delete accountCache.errors.orders;publishAccount();}catch{accountCache.errors.orders={at:new Date().toISOString(),reason:'unavailable_or_invalid'};publishAccount();}}
       candidateAccount={complete:true,availableAt:eligibilityOrdersAt,snapshot:{schemaVersion:1,positionsAt:positions.receivedAt,ordersAt:eligibilityOrdersAt,excludedExchangeIds:[...excluded]}};
       partyPairSelector?.afterAccountRefresh();
-      if(pairedCandidate?.pending()){await pairedCandidate.afterAccountRefresh();runtime.pairedCandidate=pairedCandidate.status();}
+      if(pairedAuxiliaryOwner&&pairedCandidate?.pending()){await pairedCandidate.afterAccountRefresh();runtime.pairedCandidate=pairedCandidate.status();}
       if(pairedLiveHost){await pairedLiveHost.step(pairedCandidate?.status());runtime.pairedLive=pairedLiveHost.status();}
       // Freeze one plan before metadata selection; do not resample shadow state
       // or reorder candidates between the controller and these book requests.
