@@ -1,0 +1,21 @@
+[package]
+name = "baal-execution"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+num-bigint = "0.4"
+baal-service-runtime = { path = "../service-runtime" }
+serde = { version = "1", features = ["derive"] }
+serde_json = { version = "1", features = ["preserve_order", "float_roundtrip"] }
+sha2 = "0.10"
+ryu-js = "=1.0.3"
+chrono = { version = "0.4", default-features = false, features = ["std", "clock"] }
+uuid = { version = "1", features = ["v4"] }
+
+[build-dependencies]
+sha2 = "0.10"
+
+[profile.release]
+lto = "thin"
+codegen-units = 1
