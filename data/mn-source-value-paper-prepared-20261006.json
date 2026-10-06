@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "at": "2026-10-06T05:49:34.819Z",
+  "cohort": "mn-republican-source-value-20261006-v1",
+  "bankHash": "94e4dd8ecb8f29bfa647f5050c0de104ed54c84e438e76d55ef59451efd2d84e",
+  "canonicalIndexKey": "37a1b231f8ecbc57935c4522f36d18e3d046ffa06e532137bf398eb07ae34ddf",
+  "snapshot": "fa7f1a3da57d09d4ce2c77ce695625be6ce4be552e841cda77f7400ee6942073",
+  "frozenFiles": 29,
+  "cutoff": "2026-10-06T05:47:17.254Z",
+  "researchId": "mn-republican-senate-source-point-reserve-20261006-v1",
+  "researchBundleHash": "5c9f2b972bcf7f8b45313a8b5bf15773d6af619e2ba812fc3ddac4c0b5ccc8e0",
+  "originalSourceAt": "2026-10-06T05:47:16.705Z",
+  "researchExpiresAt": "2026-10-06T11:21:12.807Z",
+  "entryValuation": "0.314409",
+  "estimateMeaning": "Point estimate minus10pp judgment reserve, not a confidence lower bound. Known sensitivitymin0.115 and severe0 retained.",
+  "policy": {
+    "fees": 0,
+    "shares": 1,
+    "latenciesMs": [
+      1000,
+      3000
+    ],
+    "maxHoldMs": 172800000,
+    "oneAdverseTick": true
+  },
+  "preserved": [
+    {
+      "pointer": "probability-receipt-active.json",
+      "cohort": "source-probability-native-20261004-v3",
+      "bankHash": "3e445d6b7f436cab79245ed588efa627734d8d2a4a6a6b788ac2873582ed4ef2",
+      "bankFileHash": "ccf44ba66d259e518d81c2cc14fc3342214254918675860d31b96eecb81c26cd"
+    },
+    {
+      "pointer": "calibrated-poll-paper-active.json",
+      "cohort": "calibrated-kansas-poll-20261005-v1",
+      "bankHash": "3e57289fda56eb58a833fbcf62c8c488064b3e84c0ab0642ece81f6b8549fcce",
+      "bankFileHash": "ba94bbf1d65a25a8538da6b05a90457c11a1b9fe200cd3ed60e8d9b6c18df6ea"
+    },
+    {
+      "pointer": "primary-breadth-paper-active.json",
+      "cohort": "primary-texas-governor-20261005-v3",
+      "bankHash": "b01aacf6ab1c3a4ccdcd50f1cb56edd1651c95395134a7ffef8c4bb2e45e5ce3",
+      "bankFileHash": "9e8e52563f2ecbdc1897214e02615506bca33dd9d915583365081b88fbc31ebe"
+    }
+  ],
+  "workerStarted": false,
+  "accountRequests": 0,
+  "competitionOrders": 0,
+  "profitabilityEstablished": false
+}

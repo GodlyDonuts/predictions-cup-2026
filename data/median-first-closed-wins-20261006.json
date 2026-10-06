@@ -1,0 +1,204 @@
+{
+  "schemaVersion": 1,
+  "observedAt": "2026-10-06T06:11:28.059Z",
+  "reportedAt": "2026-10-06T06:05:46.598Z",
+  "bankHash": "fe61bfcee3e0fbc2bda5170de3fff0f3841c82d451529df2a20403a027098331",
+  "source": 37299,
+  "journal": 1686,
+  "cases": [
+    {
+      "dipTicks": 1,
+      "cash": "99.100000",
+      "realizedPnl": "0.010000",
+      "cumulativeBuys": "1.180000",
+      "reservedCost": "0.700000",
+      "fills": [
+        {
+          "marketId": "305",
+          "exchangeId": "994",
+          "action": "buy",
+          "quantity": 1,
+          "price": "0.860000",
+          "fee": "0.000000",
+          "availableAtMs": 1791259877929,
+          "requestAtMs": 1791259877483,
+          "sourceSequence": 35549,
+          "reason": "ask_below_earlier_hour_bid_median",
+          "protectiveLimit": "0.865000",
+          "counterfactual": true
+        },
+        {
+          "marketId": "274",
+          "exchangeId": "963",
+          "action": "buy",
+          "quantity": 1,
+          "price": "0.105000",
+          "fee": "0.000000",
+          "availableAtMs": 1791260761478,
+          "requestAtMs": 1791260760065,
+          "sourceSequence": 35643,
+          "reason": "ask_below_earlier_hour_bid_median",
+          "protectiveLimit": "0.110000",
+          "counterfactual": true
+        },
+        {
+          "marketId": "361",
+          "exchangeId": "1050",
+          "action": "buy",
+          "quantity": 1,
+          "price": "0.165000",
+          "fee": "0.000000",
+          "availableAtMs": 1791260763226,
+          "requestAtMs": 1791260761460,
+          "sourceSequence": 35644,
+          "reason": "ask_below_earlier_hour_bid_median",
+          "protectiveLimit": "0.170000",
+          "counterfactual": true
+        },
+        {
+          "marketId": "274",
+          "exchangeId": "963",
+          "action": "sell",
+          "quantity": 1,
+          "price": "0.110000",
+          "fee": "0.000000",
+          "availableAtMs": 1791262971670,
+          "requestAtMs": 1791262971297,
+          "sourceSequence": 36259,
+          "reason": "profit_target",
+          "protectiveLimit": "0.110000",
+          "counterfactual": true
+        },
+        {
+          "marketId": "262",
+          "exchangeId": "951",
+          "action": "buy",
+          "quantity": 1,
+          "price": "0.050000",
+          "fee": "0.000000",
+          "availableAtMs": 1791263124296,
+          "requestAtMs": 1791263123319,
+          "sourceSequence": 36302,
+          "reason": "ask_below_earlier_hour_bid_median",
+          "protectiveLimit": "0.055000",
+          "counterfactual": true
+        },
+        {
+          "marketId": "361",
+          "exchangeId": "1050",
+          "action": "sell",
+          "quantity": 1,
+          "price": "0.170000",
+          "fee": "0.000000",
+          "availableAtMs": 1791263532144,
+          "requestAtMs": 1791263530021,
+          "sourceSequence": 36413,
+          "reason": "profit_target",
+          "protectiveLimit": "0.170000",
+          "counterfactual": true
+        }
+      ],
+      "closedTrades": 2,
+      "positions": [
+        {
+          "marketId": "262",
+          "exchangeId": "951",
+          "quantity": 1,
+          "cost": "0.050000",
+          "enteredAtMs": 1791263124296,
+          "estimatedLiquidation": null
+        },
+        {
+          "marketId": "305",
+          "exchangeId": "994",
+          "quantity": 1,
+          "cost": "0.860000",
+          "enteredAtMs": 1791259877929,
+          "estimatedLiquidation": "0.855000"
+        }
+      ],
+      "pendingIntents": 1,
+      "estimatedLiquidationPnl": null,
+      "counts": {
+        "account_unknown_stale_or_excluded": 7,
+        "dip_intent": 12,
+        "intent_expired": 7,
+        "later_raw_receipt_fill": 6,
+        "no_funded_dip": 947,
+        "source_boundary": 3005,
+        "stale_book": 501
+      },
+      "officialOrders": 0,
+      "profitabilityEstablished": false
+    },
+    {
+      "dipTicks": 2,
+      "cash": "99.950000",
+      "realizedPnl": "0.000000",
+      "cumulativeBuys": "0.050000",
+      "reservedCost": "0.000000",
+      "fills": [
+        {
+          "marketId": "262",
+          "exchangeId": "951",
+          "action": "buy",
+          "quantity": 1,
+          "price": "0.050000",
+          "fee": "0.000000",
+          "availableAtMs": 1791263124296,
+          "requestAtMs": 1791263123319,
+          "sourceSequence": 36302,
+          "reason": "ask_below_earlier_hour_bid_median",
+          "protectiveLimit": "0.055000",
+          "counterfactual": true
+        }
+      ],
+      "closedTrades": 0,
+      "positions": [
+        {
+          "marketId": "262",
+          "exchangeId": "951",
+          "quantity": 1,
+          "cost": "0.050000",
+          "enteredAtMs": 1791263124296,
+          "estimatedLiquidation": null
+        }
+      ],
+      "pendingIntents": 0,
+      "estimatedLiquidationPnl": null,
+      "counts": {
+        "account_unknown_stale_or_excluded": 7,
+        "dip_intent": 1,
+        "later_raw_receipt_fill": 1,
+        "no_funded_dip": 1298,
+        "source_boundary": 3005,
+        "stale_book": 501
+      },
+      "officialOrders": 0,
+      "profitabilityEstablished": false
+    },
+    {
+      "dipTicks": 4,
+      "cash": "100.000000",
+      "realizedPnl": "0.000000",
+      "cumulativeBuys": "0.000000",
+      "reservedCost": "0.000000",
+      "fills": [],
+      "closedTrades": 0,
+      "positions": [],
+      "pendingIntents": 0,
+      "estimatedLiquidationPnl": "0.000000",
+      "counts": {
+        "account_unknown_stale_or_excluded": 7,
+        "no_funded_dip": 1351,
+        "source_boundary": 3005,
+        "stale_book": 501
+      },
+      "officialOrders": 0,
+      "profitabilityEstablished": false
+    }
+  ],
+  "case1NetIncludingLastCompleteLiquidation": null,
+  "competitionOrders": 0,
+  "profitabilityEstablished": false
+}

@@ -38,7 +38,7 @@ import {openNativeDipIntentHost} from './native-dip-host-v3.mjs';
 import {openNativeQuoteHost} from './native-quote-host-v1.mjs';
 import {createAccountEligibilityPublication} from './account-eligibility-publication-v1.mjs';
 import {openCollectorMarketScreen} from './collector-market-screen-v1.mjs';
-import {openCollectorMedianDiscovery} from './collector-median-discovery-v1.mjs';
+import {openCollectorMedianDiscovery} from './collector-median-discovery-v2.mjs';
 import {planNativeDiscoveryBooks,recordNativeDiscoveryAttempt} from './native-discovery-plan-v1.mjs';
 import {planComparisonSampling,recordComparisonAttempt} from './comparison-sampling.mjs';
 import {atomicJson as durableAtomicJson} from '../execution/ledger.mjs';

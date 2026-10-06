@@ -47,7 +47,7 @@ try {
   $taskPids=Get-Content -LiteralPath $taskPidsFile -Raw|ConvertFrom-Json
   $taskServices=@(
     @{key='collector';pattern='live-paper[/\\]runner\.mjs';args=@('live-paper/runner.mjs');locks=@((Join-Path $env:LOCALAPPDATA 'SigTradingCup/bot.lock'),(Join-Path $taskRuntime ('competition-runs/'+$taskActivation.runId+'/execution-owner.lock')));port=8787},
-    @{key='paper';pattern='live-paper[/\\]probability-receipt-observe-v3\.mjs';args=@('live-paper/probability-receipt-observe-v3.mjs','--name',$taskPaper.cohort);locks=@((Join-Path $taskPaperDir 'worker.lock'));port=0},
+    @{key='paper';pattern='live-paper[/\\]probability-receipt-observe-v[34]\.mjs';args=@('live-paper/probability-receipt-observe-v4.mjs','--name',$taskPaper.cohort);locks=@((Join-Path $taskPaperDir 'worker.lock'));port=0},
     @{key='dashboard';pattern='next[/\\]dist[/\\]bin[/\\]next.*--port 3000';args=@('frontend/node_modules/next/dist/bin/next','start',$taskBuild,'--hostname','127.0.0.1','--port','3000');locks=@();port=3000}
   )
   $taskRecovered=@()

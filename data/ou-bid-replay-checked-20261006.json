@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "at": "2026-10-06T06:11:28.055Z",
+  "testsPassed": 9,
+  "binarySha256": "51a59c6c285aaf695489d8b28a838182cb0755f27091f6e087b48fb426bd3269",
+  "sourceHashes": {
+    "Cargo.toml": "97fa5a11d88adc76e5a44c6b78d4546210458dabac2825a4a8694e09560ced06",
+    "Cargo.lock": "728f8642c980d92bc72c4fec1e9ac28eec84975a7c6f47b562929fa3aa1f93da",
+    "src/lib.rs": "9e9bc55abff983777339cb9f969a28c078b9a91b076c236fe1d6afdc43c1e4e8",
+    "src/main.rs": "3fb7ceff18c545a26d508612cc7a52a6ae81e4180b7658eb56b06a3b66269263",
+    "src/ou.rs": "3b24e34343702b300d39a3f1beda7dc5aded63f063ad65b44a7a062cb7b5414b"
+  },
+  "resultSha256": "253e3f9714d349fe2a7ec2bbc541871056a45b8a38fd26ff89b6a979c9e377a0",
+  "hours": 86.27694361111111,
+  "books": 31447,
+  "wallMs": 4547.7563,
+  "qualifiedTrades": 0,
+  "activePolicyChanged": false,
+  "profitabilityEstablished": false
+}

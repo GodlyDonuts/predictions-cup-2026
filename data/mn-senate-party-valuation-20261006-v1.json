@@ -1,0 +1,2076 @@
+{
+  "party": "REP",
+  "at": "2026-10-06T05:34:34.500Z",
+  "marginPoints": 1.3838939190980717,
+  "pollWeights": [
+    {
+      "pollster": "SurveyUSA",
+      "weight": 0.37095730950087524,
+      "fieldEndAt": "2026-09-14T23:59:59.999Z"
+    },
+    {
+      "pollster": "Big Data Poll",
+      "weight": 0.6290426904991248,
+      "fieldEndAt": "2026-09-30T23:59:59.999Z"
+    }
+  ],
+  "centralEstimate": 0.41440892691384146,
+  "ordinaryRange": [
+    0.11538217239645022,
+    0.6810907057026041
+  ],
+  "severeOpponentUndecidedAllocation": 0,
+  "scenarios": [
+    {
+      "omittedCycle": null,
+      "transportShift": -3,
+      "roundingShift": -1,
+      "possibleRepublicanHouseShift": 0,
+      "margin": -2.616106080901928,
+      "value": 0.6611593192931042
+    },
+    {
+      "omittedCycle": null,
+      "transportShift": -3,
+      "roundingShift": -1,
+      "possibleRepublicanHouseShift": 3,
+      "margin": -0.7289780094045537,
+      "value": 0.5491414361848832
+    },
+    {
+      "omittedCycle": null,
+      "transportShift": -3,
+      "roundingShift": 0,
+      "possibleRepublicanHouseShift": 0,
+      "margin": -1.6161060809019283,
+      "value": 0.6036745258380036
+    },
+    {
+      "omittedCycle": null,
+      "transportShift": -3,
+      "roundingShift": 0,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 0.27102199059544607,
+      "value": 0.4854347838459856
+    },
+    {
+      "omittedCycle": null,
+      "transportShift": -3,
+      "roundingShift": 1,
+      "possibleRepublicanHouseShift": 0,
+      "margin": -0.6161060809019283,
+      "value": 0.5420334109555754
+    },
+    {
+      "omittedCycle": null,
+      "transportShift": -3,
+      "roundingShift": 1,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 1.271021990595446,
+      "value": 0.4215315574457362
+    },
+    {
+      "omittedCycle": null,
+      "transportShift": 0,
+      "roundingShift": -1,
+      "possibleRepublicanHouseShift": 0,
+      "margin": 0.3838939190980717,
+      "value": 0.4781884025387215
+    },
+    {
+      "omittedCycle": null,
+      "transportShift": 0,
+      "roundingShift": -1,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 2.271021990595446,
+      "value": 0.3597097915319579
+    },
+    {
+      "omittedCycle": null,
+      "transportShift": 0,
+      "roundingShift": 0,
+      "possibleRepublicanHouseShift": 0,
+      "margin": 1.3838939190980717,
+      "value": 0.41440892691384146
+    },
+    {
+      "omittedCycle": null,
+      "transportShift": 0,
+      "roundingShift": 0,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 3.271021990595446,
+      "value": 0.3019472467087443
+    },
+    {
+      "omittedCycle": null,
+      "transportShift": 0,
+      "roundingShift": 1,
+      "possibleRepublicanHouseShift": 0,
+      "margin": 2.383893919098072,
+      "value": 0.35295473502027785
+    },
+    {
+      "omittedCycle": null,
+      "transportShift": 0,
+      "roundingShift": 1,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 4.271021990595447,
+      "value": 0.24968061393183463
+    },
+    {
+      "omittedCycle": null,
+      "transportShift": 3,
+      "roundingShift": -1,
+      "possibleRepublicanHouseShift": 0,
+      "margin": 3.383893919098072,
+      "value": 0.29575216513621083
+    },
+    {
+      "omittedCycle": null,
+      "transportShift": 3,
+      "roundingShift": -1,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 5.271021990595447,
+      "value": 0.20370840301616602
+    },
+    {
+      "omittedCycle": null,
+      "transportShift": 3,
+      "roundingShift": 0,
+      "possibleRepublicanHouseShift": 0,
+      "margin": 4.383893919098072,
+      "value": 0.24416790414660441
+    },
+    {
+      "omittedCycle": null,
+      "transportShift": 3,
+      "roundingShift": 0,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 6.271021990595447,
+      "value": 0.16423263515545486
+    },
+    {
+      "omittedCycle": null,
+      "transportShift": 3,
+      "roundingShift": 1,
+      "possibleRepublicanHouseShift": 0,
+      "margin": 5.383893919098072,
+      "value": 0.1989288424860516
+    },
+    {
+      "omittedCycle": null,
+      "transportShift": 3,
+      "roundingShift": 1,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 7.271021990595447,
+      "value": 0.1309911980850004
+    },
+    {
+      "omittedCycle": 1998,
+      "transportShift": -3,
+      "roundingShift": -1,
+      "possibleRepublicanHouseShift": 0,
+      "margin": -2.616106080901928,
+      "value": 0.6810907057026041
+    },
+    {
+      "omittedCycle": 1998,
+      "transportShift": -3,
+      "roundingShift": -1,
+      "possibleRepublicanHouseShift": 3,
+      "margin": -0.7289780094045537,
+      "value": 0.5687691641995789
+    },
+    {
+      "omittedCycle": 1998,
+      "transportShift": -3,
+      "roundingShift": 0,
+      "possibleRepublicanHouseShift": 0,
+      "margin": -1.6161060809019283,
+      "value": 0.6238109148745853
+    },
+    {
+      "omittedCycle": 1998,
+      "transportShift": -3,
+      "roundingShift": 0,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 0.27102199059544607,
+      "value": 0.5037054347387874
+    },
+    {
+      "omittedCycle": 1998,
+      "transportShift": -3,
+      "roundingShift": 1,
+      "possibleRepublicanHouseShift": 0,
+      "margin": -0.6161060809019283,
+      "value": 0.5615485024931854
+    },
+    {
+      "omittedCycle": 1998,
+      "transportShift": -3,
+      "roundingShift": 1,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 1.271021990595446,
+      "value": 0.43773573923068665
+    },
+    {
+      "omittedCycle": 1998,
+      "transportShift": 0,
+      "roundingShift": -1,
+      "possibleRepublicanHouseShift": 0,
+      "margin": 0.3838939190980717,
+      "value": 0.49625778784099217
+    },
+    {
+      "omittedCycle": 1998,
+      "transportShift": 0,
+      "roundingShift": -1,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 2.271021990595446,
+      "value": 0.3733720767167952
+    },
+    {
+      "omittedCycle": 1998,
+      "transportShift": 0,
+      "roundingShift": 0,
+      "possibleRepublicanHouseShift": 0,
+      "margin": 1.3838939190980717,
+      "value": 0.43034487749550554
+    },
+    {
+      "omittedCycle": 1998,
+      "transportShift": 0,
+      "roundingShift": 0,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 3.271021990595446,
+      "value": 0.31287868789465
+    },
+    {
+      "omittedCycle": 1998,
+      "transportShift": 0,
+      "roundingShift": 1,
+      "possibleRepublicanHouseShift": 0,
+      "margin": 2.383893919098072,
+      "value": 0.36631285002777336
+    },
+    {
+      "omittedCycle": 1998,
+      "transportShift": 0,
+      "roundingShift": 1,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 4.271021990595447,
+      "value": 0.2579615221377838
+    },
+    {
+      "omittedCycle": 1998,
+      "transportShift": 3,
+      "roundingShift": -1,
+      "possibleRepublicanHouseShift": 0,
+      "margin": 3.383893919098072,
+      "value": 0.30637595851266297
+    },
+    {
+      "omittedCycle": 1998,
+      "transportShift": 3,
+      "roundingShift": -1,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 5.271021990595447,
+      "value": 0.20961911223594112
+    },
+    {
+      "omittedCycle": 1998,
+      "transportShift": 3,
+      "roundingShift": 0,
+      "possibleRepublicanHouseShift": 0,
+      "margin": 4.383893919098072,
+      "value": 0.2521643987520491
+    },
+    {
+      "omittedCycle": 1998,
+      "transportShift": 3,
+      "roundingShift": 0,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 6.271021990595447,
+      "value": 0.16816417449974
+    },
+    {
+      "omittedCycle": 1998,
+      "transportShift": 3,
+      "roundingShift": 1,
+      "possibleRepublicanHouseShift": 0,
+      "margin": 5.383893919098072,
+      "value": 0.204595391933488
+    },
+    {
+      "omittedCycle": 1998,
+      "transportShift": 3,
+      "roundingShift": 1,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 7.271021990595447,
+      "value": 0.1333644279581583
+    },
+    {
+      "omittedCycle": 2000,
+      "transportShift": -3,
+      "roundingShift": -1,
+      "possibleRepublicanHouseShift": 0,
+      "margin": -2.616106080901928,
+      "value": 0.6648905405437908
+    },
+    {
+      "omittedCycle": 2000,
+      "transportShift": -3,
+      "roundingShift": -1,
+      "possibleRepublicanHouseShift": 3,
+      "margin": -0.7289780094045537,
+      "value": 0.5513517509114311
+    },
+    {
+      "omittedCycle": 2000,
+      "transportShift": -3,
+      "roundingShift": 0,
+      "possibleRepublicanHouseShift": 0,
+      "margin": -1.6161060809019283,
+      "value": 0.6067046759946267
+    },
+    {
+      "omittedCycle": 2000,
+      "transportShift": -3,
+      "roundingShift": 0,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 0.27102199059544607,
+      "value": 0.4865710401915455
+    },
+    {
+      "omittedCycle": 2000,
+      "transportShift": -3,
+      "roundingShift": 1,
+      "possibleRepublicanHouseShift": 0,
+      "margin": -0.6161060809019283,
+      "value": 0.5441287492374614
+    },
+    {
+      "omittedCycle": 2000,
+      "transportShift": -3,
+      "roundingShift": 1,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 1.271021990595446,
+      "value": 0.4215443930598941
+    },
+    {
+      "omittedCycle": 2000,
+      "transportShift": 0,
+      "roundingShift": -1,
+      "possibleRepublicanHouseShift": 0,
+      "margin": 0.3838939190980717,
+      "value": 0.4791980324558395
+    },
+    {
+      "omittedCycle": 2000,
+      "transportShift": 0,
+      "roundingShift": -1,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 2.271021990595446,
+      "value": 0.3586712853357058
+    },
+    {
+      "omittedCycle": 2000,
+      "transportShift": 0,
+      "roundingShift": 0,
+      "possibleRepublicanHouseShift": 0,
+      "margin": 1.3838939190980717,
+      "value": 0.4142973371034415
+    },
+    {
+      "omittedCycle": 2000,
+      "transportShift": 0,
+      "roundingShift": 0,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 3.271021990595446,
+      "value": 0.3000299959588779
+    },
+    {
+      "omittedCycle": 2000,
+      "transportShift": 0,
+      "roundingShift": 1,
+      "possibleRepublicanHouseShift": 0,
+      "margin": 2.383893919098072,
+      "value": 0.3518068922378479
+    },
+    {
+      "omittedCycle": 2000,
+      "transportShift": 0,
+      "roundingShift": 1,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 4.271021990595447,
+      "value": 0.24711662254301728
+    },
+    {
+      "omittedCycle": 2000,
+      "transportShift": 3,
+      "roundingShift": -1,
+      "possibleRepublicanHouseShift": 0,
+      "margin": 3.383893919098072,
+      "value": 0.2937496587233255
+    },
+    {
+      "omittedCycle": 2000,
+      "transportShift": 3,
+      "roundingShift": -1,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 5.271021990595447,
+      "value": 0.20074338482608237
+    },
+    {
+      "omittedCycle": 2000,
+      "transportShift": 3,
+      "roundingShift": 0,
+      "possibleRepublicanHouseShift": 0,
+      "margin": 4.383893919098072,
+      "value": 0.24154650386289936
+    },
+    {
+      "omittedCycle": 2000,
+      "transportShift": 3,
+      "roundingShift": 0,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 6.271021990595447,
+      "value": 0.16108928465499953
+    },
+    {
+      "omittedCycle": 2000,
+      "transportShift": 3,
+      "roundingShift": 1,
+      "possibleRepublicanHouseShift": 0,
+      "margin": 5.383893919098072,
+      "value": 0.19593324338552223
+    },
+    {
+      "omittedCycle": 2000,
+      "transportShift": 3,
+      "roundingShift": 1,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 7.271021990595447,
+      "value": 0.1278478532005464
+    },
+    {
+      "omittedCycle": 2002,
+      "transportShift": -3,
+      "roundingShift": -1,
+      "possibleRepublicanHouseShift": 0,
+      "margin": -2.616106080901928,
+      "value": 0.6705011329532045
+    },
+    {
+      "omittedCycle": 2002,
+      "transportShift": -3,
+      "roundingShift": -1,
+      "possibleRepublicanHouseShift": 3,
+      "margin": -0.7289780094045537,
+      "value": 0.5593604174846609
+    },
+    {
+      "omittedCycle": 2002,
+      "transportShift": -3,
+      "roundingShift": 0,
+      "possibleRepublicanHouseShift": 0,
+      "margin": -1.6161060809019283,
+      "value": 0.6136205925488614
+    },
+    {
+      "omittedCycle": 2002,
+      "transportShift": -3,
+      "roundingShift": 0,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 0.27102199059544607,
+      "value": 0.4956141962477866
+    },
+    {
+      "omittedCycle": 2002,
+      "transportShift": -3,
+      "roundingShift": 1,
+      "possibleRepublicanHouseShift": 0,
+      "margin": -0.6161060809019283,
+      "value": 0.5522668799430355
+    },
+    {
+      "omittedCycle": 2002,
+      "transportShift": -3,
+      "roundingShift": 1,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 1.271021990595446,
+      "value": 0.4312987163082411
+    },
+    {
+      "omittedCycle": 2002,
+      "transportShift": 0,
+      "roundingShift": -1,
+      "possibleRepublicanHouseShift": 0,
+      "margin": 0.3838939190980717,
+      "value": 0.48833949653903996
+    },
+    {
+      "omittedCycle": 2002,
+      "transportShift": 0,
+      "roundingShift": -1,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 2.271021990595446,
+      "value": 0.3687411935325199
+    },
+    {
+      "omittedCycle": 2002,
+      "transportShift": 0,
+      "roundingShift": 0,
+      "possibleRepublicanHouseShift": 0,
+      "margin": 1.3838939190980717,
+      "value": 0.42410782710316997
+    },
+    {
+      "omittedCycle": 2002,
+      "transportShift": 0,
+      "roundingShift": 0,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 3.271021990595446,
+      "value": 0.3100111881277091
+    },
+    {
+      "omittedCycle": 2002,
+      "transportShift": 0,
+      "roundingShift": 1,
+      "possibleRepublicanHouseShift": 0,
+      "margin": 2.383893919098072,
+      "value": 0.3618865532131982
+    },
+    {
+      "omittedCycle": 2002,
+      "transportShift": 0,
+      "roundingShift": 1,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 4.271021990595447,
+      "value": 0.25665558081283646
+    },
+    {
+      "omittedCycle": 2002,
+      "transportShift": 3,
+      "roundingShift": -1,
+      "possibleRepublicanHouseShift": 0,
+      "margin": 3.383893919098072,
+      "value": 0.3036972116705384
+    },
+    {
+      "omittedCycle": 2002,
+      "transportShift": 3,
+      "roundingShift": -1,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 5.271021990595447,
+      "value": 0.20957648103622364
+    },
+    {
+      "omittedCycle": 2002,
+      "transportShift": 3,
+      "roundingShift": 0,
+      "possibleRepublicanHouseShift": 0,
+      "margin": 4.383893919098072,
+      "value": 0.25101709718273646
+    },
+    {
+      "omittedCycle": 2002,
+      "transportShift": 3,
+      "roundingShift": 0,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 6.271021990595447,
+      "value": 0.16905583717916864
+    },
+    {
+      "omittedCycle": 2002,
+      "transportShift": 3,
+      "roundingShift": 1,
+      "possibleRepublicanHouseShift": 0,
+      "margin": 5.383893919098072,
+      "value": 0.2046746842994355
+    },
+    {
+      "omittedCycle": 2002,
+      "transportShift": 3,
+      "roundingShift": 1,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 7.271021990595447,
+      "value": 0.13488156766070405
+    },
+    {
+      "omittedCycle": 2004,
+      "transportShift": -3,
+      "roundingShift": -1,
+      "possibleRepublicanHouseShift": 0,
+      "margin": -2.616106080901928,
+      "value": 0.6642066158729718
+    },
+    {
+      "omittedCycle": 2004,
+      "transportShift": -3,
+      "roundingShift": -1,
+      "possibleRepublicanHouseShift": 3,
+      "margin": -0.7289780094045537,
+      "value": 0.5528884154133757
+    },
+    {
+      "omittedCycle": 2004,
+      "transportShift": -3,
+      "roundingShift": 0,
+      "possibleRepublicanHouseShift": 0,
+      "margin": -1.6161060809019283,
+      "value": 0.6071272315903272
+    },
+    {
+      "omittedCycle": 2004,
+      "transportShift": -3,
+      "roundingShift": 0,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 0.27102199059544607,
+      "value": 0.4894034173351921
+    },
+    {
+      "omittedCycle": 2004,
+      "transportShift": -3,
+      "roundingShift": 1,
+      "possibleRepublicanHouseShift": 0,
+      "margin": -0.6161060809019283,
+      "value": 0.5458118291225694
+    },
+    {
+      "omittedCycle": 2004,
+      "transportShift": -3,
+      "roundingShift": 1,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 1.271021990595446,
+      "value": 0.4255798233936179
+    },
+    {
+      "omittedCycle": 2004,
+      "transportShift": 0,
+      "roundingShift": -1,
+      "possibleRepublicanHouseShift": 0,
+      "margin": 0.3838939190980717,
+      "value": 0.4821734452392834
+    },
+    {
+      "omittedCycle": 2004,
+      "transportShift": 0,
+      "roundingShift": -1,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 2.271021990595446,
+      "value": 0.36368959162390513
+    },
+    {
+      "omittedCycle": 2004,
+      "transportShift": 0,
+      "roundingShift": 0,
+      "possibleRepublicanHouseShift": 0,
+      "margin": 1.3838939190980717,
+      "value": 0.41845677001284765
+    },
+    {
+      "omittedCycle": 2004,
+      "transportShift": 0,
+      "roundingShift": 0,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 3.271021990595446,
+      "value": 0.30572603990228353
+    },
+    {
+      "omittedCycle": 2004,
+      "transportShift": 0,
+      "roundingShift": 1,
+      "possibleRepublicanHouseShift": 0,
+      "margin": 2.383893919098072,
+      "value": 0.3569180052803629
+    },
+    {
+      "omittedCycle": 2004,
+      "transportShift": 0,
+      "roundingShift": 1,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 4.271021990595447,
+      "value": 0.2531575726166315
+    },
+    {
+      "omittedCycle": 2004,
+      "transportShift": 3,
+      "roundingShift": -1,
+      "possibleRepublicanHouseShift": 0,
+      "margin": 3.383893919098072,
+      "value": 0.2995012429367069
+    },
+    {
+      "omittedCycle": 2004,
+      "transportShift": 3,
+      "roundingShift": -1,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 5.271021990595447,
+      "value": 0.20682156977560653
+    },
+    {
+      "omittedCycle": 2004,
+      "transportShift": 3,
+      "roundingShift": 0,
+      "possibleRepublicanHouseShift": 0,
+      "margin": 4.383893919098072,
+      "value": 0.2476061682707902
+    },
+    {
+      "omittedCycle": 2004,
+      "transportShift": 3,
+      "roundingShift": 0,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 6.271021990595447,
+      "value": 0.16695738099075
+    },
+    {
+      "omittedCycle": 2004,
+      "transportShift": 3,
+      "roundingShift": 1,
+      "possibleRepublicanHouseShift": 0,
+      "margin": 5.383893919098072,
+      "value": 0.2019987646838454
+    },
+    {
+      "omittedCycle": 2004,
+      "transportShift": 3,
+      "roundingShift": 1,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 7.271021990595447,
+      "value": 0.1333329135823164
+    },
+    {
+      "omittedCycle": 2006,
+      "transportShift": -3,
+      "roundingShift": -1,
+      "possibleRepublicanHouseShift": 0,
+      "margin": -2.616106080901928,
+      "value": 0.6723026974142309
+    },
+    {
+      "omittedCycle": 2006,
+      "transportShift": -3,
+      "roundingShift": -1,
+      "possibleRepublicanHouseShift": 3,
+      "margin": -0.7289780094045537,
+      "value": 0.562467493293954
+    },
+    {
+      "omittedCycle": 2006,
+      "transportShift": -3,
+      "roundingShift": 0,
+      "possibleRepublicanHouseShift": 0,
+      "margin": -1.6161060809019283,
+      "value": 0.6161086561332656
+    },
+    {
+      "omittedCycle": 2006,
+      "transportShift": -3,
+      "roundingShift": 0,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 0.27102199059544607,
+      "value": 0.499365912687292
+    },
+    {
+      "omittedCycle": 2006,
+      "transportShift": -3,
+      "roundingShift": 1,
+      "possibleRepublicanHouseShift": 0,
+      "margin": -0.6161060809019283,
+      "value": 0.5554507741722456
+    },
+    {
+      "omittedCycle": 2006,
+      "transportShift": -3,
+      "roundingShift": 1,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 1.271021990595446,
+      "value": 0.4355707025253037
+    },
+    {
+      "omittedCycle": 2006,
+      "transportShift": 0,
+      "roundingShift": -1,
+      "possibleRepublicanHouseShift": 0,
+      "margin": 0.3838939190980717,
+      "value": 0.4921573755597711
+    },
+    {
+      "omittedCycle": 2006,
+      "transportShift": 0,
+      "roundingShift": -1,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 2.271021990595446,
+      "value": 0.37335496595113893
+    },
+    {
+      "omittedCycle": 2006,
+      "transportShift": 0,
+      "roundingShift": 0,
+      "possibleRepublicanHouseShift": 0,
+      "margin": 1.3838939190980717,
+      "value": 0.42842807478843536
+    },
+    {
+      "omittedCycle": 2006,
+      "transportShift": 0,
+      "roundingShift": 0,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 3.271021990595446,
+      "value": 0.31476351504081146
+    },
+    {
+      "omittedCycle": 2006,
+      "transportShift": 0,
+      "roundingShift": 1,
+      "possibleRepublicanHouseShift": 0,
+      "margin": 2.383893919098072,
+      "value": 0.3665262718997514
+    },
+    {
+      "omittedCycle": 2006,
+      "transportShift": 0,
+      "roundingShift": 1,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 4.271021990595447,
+      "value": 0.26135084933951125
+    },
+    {
+      "omittedCycle": 2006,
+      "transportShift": 3,
+      "roundingShift": -1,
+      "possibleRepublicanHouseShift": 0,
+      "margin": 3.383893919098072,
+      "value": 0.30845245885745076
+    },
+    {
+      "omittedCycle": 2006,
+      "transportShift": 3,
+      "roundingShift": -1,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 5.271021990595447,
+      "value": 0.21405236970986766
+    },
+    {
+      "omittedCycle": 2006,
+      "transportShift": 3,
+      "roundingShift": 0,
+      "possibleRepublicanHouseShift": 0,
+      "margin": 4.383893919098072,
+      "value": 0.25569493035355495
+    },
+    {
+      "omittedCycle": 2006,
+      "transportShift": 3,
+      "roundingShift": 0,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 6.271021990595447,
+      "value": 0.17319693426747143
+    },
+    {
+      "omittedCycle": 2006,
+      "transportShift": 3,
+      "roundingShift": 1,
+      "possibleRepublicanHouseShift": 0,
+      "margin": 5.383893919098072,
+      "value": 0.20911763632899463
+    },
+    {
+      "omittedCycle": 2006,
+      "transportShift": 3,
+      "roundingShift": 1,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 7.271021990595447,
+      "value": 0.13862099401427477
+    },
+    {
+      "omittedCycle": 2008,
+      "transportShift": -3,
+      "roundingShift": -1,
+      "possibleRepublicanHouseShift": 0,
+      "margin": -2.616106080901928,
+      "value": 0.6659215823064447
+    },
+    {
+      "omittedCycle": 2008,
+      "transportShift": -3,
+      "roundingShift": -1,
+      "possibleRepublicanHouseShift": 3,
+      "margin": -0.7289780094045537,
+      "value": 0.5561784217495882
+    },
+    {
+      "omittedCycle": 2008,
+      "transportShift": -3,
+      "roundingShift": 0,
+      "possibleRepublicanHouseShift": 0,
+      "margin": -1.6161060809019283,
+      "value": 0.6096646685274613
+    },
+    {
+      "omittedCycle": 2008,
+      "transportShift": -3,
+      "roundingShift": 0,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 0.27102199059544607,
+      "value": 0.4934908557253921
+    },
+    {
+      "omittedCycle": 2008,
+      "transportShift": -3,
+      "roundingShift": 1,
+      "possibleRepublicanHouseShift": 0,
+      "margin": -0.6161060809019283,
+      "value": 0.5491960286475355
+    },
+    {
+      "omittedCycle": 2008,
+      "transportShift": -3,
+      "roundingShift": 1,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 1.271021990595446,
+      "value": 0.4303283942699866
+    },
+    {
+      "omittedCycle": 2008,
+      "transportShift": 0,
+      "roundingShift": -1,
+      "possibleRepublicanHouseShift": 0,
+      "margin": 0.3838939190980717,
+      "value": 0.4863438127880617
+    },
+    {
+      "omittedCycle": 2008,
+      "transportShift": 0,
+      "roundingShift": -1,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 2.271021990595446,
+      "value": 0.3688958354193552
+    },
+    {
+      "omittedCycle": 2008,
+      "transportShift": 0,
+      "roundingShift": 0,
+      "possibleRepublicanHouseShift": 0,
+      "margin": 1.3838939190980717,
+      "value": 0.4232681391600127
+    },
+    {
+      "omittedCycle": 2008,
+      "transportShift": 0,
+      "roundingShift": 0,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 3.271021990595446,
+      "value": 0.3111531663689068
+    },
+    {
+      "omittedCycle": 2008,
+      "transportShift": 0,
+      "roundingShift": 1,
+      "possibleRepublicanHouseShift": 0,
+      "margin": 2.383893919098072,
+      "value": 0.3621612730239122
+    },
+    {
+      "omittedCycle": 2008,
+      "transportShift": 0,
+      "roundingShift": 1,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 4.271021990595447,
+      "value": 0.25857347397486663
+    },
+    {
+      "omittedCycle": 2008,
+      "transportShift": 3,
+      "roundingShift": -1,
+      "possibleRepublicanHouseShift": 0,
+      "margin": 3.383893919098072,
+      "value": 0.3049382893558015
+    },
+    {
+      "omittedCycle": 2008,
+      "transportShift": 3,
+      "roundingShift": -1,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 5.271021990595447,
+      "value": 0.21202967068522274
+    },
+    {
+      "omittedCycle": 2008,
+      "transportShift": 3,
+      "roundingShift": 0,
+      "possibleRepublicanHouseShift": 0,
+      "margin": 4.383893919098072,
+      "value": 0.25300757226740145
+    },
+    {
+      "omittedCycle": 2008,
+      "transportShift": 3,
+      "roundingShift": 0,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 6.271021990595447,
+      "value": 0.17181384161287386
+    },
+    {
+      "omittedCycle": 2008,
+      "transportShift": 3,
+      "roundingShift": 1,
+      "possibleRepublicanHouseShift": 0,
+      "margin": 5.383893919098072,
+      "value": 0.20717331909638873
+    },
+    {
+      "omittedCycle": 2008,
+      "transportShift": 3,
+      "roundingShift": 1,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 7.271021990595447,
+      "value": 0.13774990822219516
+    },
+    {
+      "omittedCycle": 2010,
+      "transportShift": -3,
+      "roundingShift": -1,
+      "possibleRepublicanHouseShift": 0,
+      "margin": -2.616106080901928,
+      "value": 0.660835399488131
+    },
+    {
+      "omittedCycle": 2010,
+      "transportShift": -3,
+      "roundingShift": -1,
+      "possibleRepublicanHouseShift": 3,
+      "margin": -0.7289780094045537,
+      "value": 0.5492070999840797
+    },
+    {
+      "omittedCycle": 2010,
+      "transportShift": -3,
+      "roundingShift": 0,
+      "possibleRepublicanHouseShift": 0,
+      "margin": -1.6161060809019283,
+      "value": 0.6035416679796184
+    },
+    {
+      "omittedCycle": 2010,
+      "transportShift": -3,
+      "roundingShift": 0,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 0.27102199059544607,
+      "value": 0.4857381020100213
+    },
+    {
+      "omittedCycle": 2010,
+      "transportShift": -3,
+      "roundingShift": 1,
+      "possibleRepublicanHouseShift": 0,
+      "margin": -0.6161060809019283,
+      "value": 0.5421255638681551
+    },
+    {
+      "omittedCycle": 2010,
+      "transportShift": -3,
+      "roundingShift": 1,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 1.271021990595446,
+      "value": 0.42206306785197223
+    },
+    {
+      "omittedCycle": 2010,
+      "transportShift": 0,
+      "roundingShift": -1,
+      "possibleRepublicanHouseShift": 0,
+      "margin": 0.3838939190980717,
+      "value": 0.47851842712708803
+    },
+    {
+      "omittedCycle": 2010,
+      "transportShift": 0,
+      "roundingShift": -1,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 2.271021990595446,
+      "value": 0.3604362045809518
+    },
+    {
+      "omittedCycle": 2010,
+      "transportShift": 0,
+      "roundingShift": 0,
+      "possibleRepublicanHouseShift": 0,
+      "margin": 1.3838939190980717,
+      "value": 0.4149644963521132
+    },
+    {
+      "omittedCycle": 2010,
+      "transportShift": 0,
+      "roundingShift": 0,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 3.271021990595446,
+      "value": 0.30281820901333667
+    },
+    {
+      "omittedCycle": 2010,
+      "transportShift": 0,
+      "roundingShift": 1,
+      "possibleRepublicanHouseShift": 0,
+      "margin": 2.383893919098072,
+      "value": 0.3537002100319505
+    },
+    {
+      "omittedCycle": 2010,
+      "transportShift": 0,
+      "roundingShift": 1,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 4.271021990595447,
+      "value": 0.2506385202106499
+    },
+    {
+      "omittedCycle": 2010,
+      "transportShift": 3,
+      "roundingShift": -1,
+      "possibleRepublicanHouseShift": 0,
+      "margin": 3.383893919098072,
+      "value": 0.29663585921402524
+    },
+    {
+      "omittedCycle": 2010,
+      "transportShift": 3,
+      "roundingShift": -1,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 5.271021990595447,
+      "value": 0.2046979286334745
+    },
+    {
+      "omittedCycle": 2010,
+      "transportShift": 3,
+      "roundingShift": 0,
+      "possibleRepublicanHouseShift": 0,
+      "margin": 4.383893919098072,
+      "value": 0.24513202723429253
+    },
+    {
+      "omittedCycle": 2010,
+      "transportShift": 3,
+      "roundingShift": 0,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 6.271021990595447,
+      "value": 0.16520751397842384
+    },
+    {
+      "omittedCycle": 2010,
+      "transportShift": 3,
+      "roundingShift": 1,
+      "possibleRepublicanHouseShift": 0,
+      "margin": 5.383893919098072,
+      "value": 0.19991881871051212
+    },
+    {
+      "omittedCycle": 2010,
+      "transportShift": 3,
+      "roundingShift": 1,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 7.271021990595447,
+      "value": 0.13191740156028722
+    },
+    {
+      "omittedCycle": 2012,
+      "transportShift": -3,
+      "roundingShift": -1,
+      "possibleRepublicanHouseShift": 0,
+      "margin": -2.616106080901928,
+      "value": 0.6751501837809563
+    },
+    {
+      "omittedCycle": 2012,
+      "transportShift": -3,
+      "roundingShift": -1,
+      "possibleRepublicanHouseShift": 3,
+      "margin": -0.7289780094045537,
+      "value": 0.5665357065724441
+    },
+    {
+      "omittedCycle": 2012,
+      "transportShift": -3,
+      "roundingShift": 0,
+      "possibleRepublicanHouseShift": 0,
+      "margin": -1.6161060809019283,
+      "value": 0.6196169671532294
+    },
+    {
+      "omittedCycle": 2012,
+      "transportShift": -3,
+      "roundingShift": 0,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 0.27102199059544607,
+      "value": 0.5039752394681002
+    },
+    {
+      "omittedCycle": 2012,
+      "transportShift": -3,
+      "roundingShift": 1,
+      "possibleRepublicanHouseShift": 0,
+      "margin": -0.6161060809019283,
+      "value": 0.5595859460203421
+    },
+    {
+      "omittedCycle": 2012,
+      "transportShift": -3,
+      "roundingShift": 1,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 1.271021990595446,
+      "value": 0.44056788081497467
+    },
+    {
+      "omittedCycle": 2012,
+      "transportShift": 0,
+      "roundingShift": -1,
+      "possibleRepublicanHouseShift": 0,
+      "margin": 0.3838939190980717,
+      "value": 0.49681912006008
+    },
+    {
+      "omittedCycle": 2012,
+      "transportShift": 0,
+      "roundingShift": -1,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 2.271021990595446,
+      "value": 0.3785470396002456
+    },
+    {
+      "omittedCycle": 2012,
+      "transportShift": 0,
+      "roundingShift": 0,
+      "possibleRepublicanHouseShift": 0,
+      "margin": 1.3838939190980717,
+      "value": 0.43345737337685
+    },
+    {
+      "omittedCycle": 2012,
+      "transportShift": 0,
+      "roundingShift": 0,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 3.271021990595446,
+      "value": 0.31994766584618706
+    },
+    {
+      "omittedCycle": 2012,
+      "transportShift": 0,
+      "roundingShift": 1,
+      "possibleRepublicanHouseShift": 0,
+      "margin": 2.383893919098072,
+      "value": 0.37172747851594923
+    },
+    {
+      "omittedCycle": 2012,
+      "transportShift": 0,
+      "roundingShift": 1,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 4.271021990595447,
+      "value": 0.26634404803926115
+    },
+    {
+      "omittedCycle": 2012,
+      "transportShift": 3,
+      "roundingShift": -1,
+      "possibleRepublicanHouseShift": 0,
+      "margin": 3.383893919098072,
+      "value": 0.3136236018190477
+    },
+    {
+      "omittedCycle": 2012,
+      "transportShift": 3,
+      "roundingShift": -1,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 5.271021990595447,
+      "value": 0.21871256701695532
+    },
+    {
+      "omittedCycle": 2012,
+      "transportShift": 3,
+      "roundingShift": 0,
+      "possibleRepublicanHouseShift": 0,
+      "margin": 4.383893919098072,
+      "value": 0.26065675881053196
+    },
+    {
+      "omittedCycle": 2012,
+      "transportShift": 3,
+      "roundingShift": 0,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 6.271021990595447,
+      "value": 0.17743206224990007
+    },
+    {
+      "omittedCycle": 2012,
+      "transportShift": 3,
+      "roundingShift": 1,
+      "possibleRepublicanHouseShift": 0,
+      "margin": 5.383893919098072,
+      "value": 0.21373352195621523
+    },
+    {
+      "omittedCycle": 2012,
+      "transportShift": 3,
+      "roundingShift": 1,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 7.271021990595447,
+      "value": 0.1423869632991516
+    },
+    {
+      "omittedCycle": 2014,
+      "transportShift": -3,
+      "roundingShift": -1,
+      "possibleRepublicanHouseShift": 0,
+      "margin": -2.616106080901928,
+      "value": 0.6474718924860132
+    },
+    {
+      "omittedCycle": 2014,
+      "transportShift": -3,
+      "roundingShift": -1,
+      "possibleRepublicanHouseShift": 3,
+      "margin": -0.7289780094045537,
+      "value": 0.5349531186667782
+    },
+    {
+      "omittedCycle": 2014,
+      "transportShift": -3,
+      "roundingShift": 0,
+      "possibleRepublicanHouseShift": 0,
+      "margin": -1.6161060809019283,
+      "value": 0.5895010341282141
+    },
+    {
+      "omittedCycle": 2014,
+      "transportShift": -3,
+      "roundingShift": 0,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 0.27102199059544607,
+      "value": 0.471729895074088
+    },
+    {
+      "omittedCycle": 2014,
+      "transportShift": -3,
+      "roundingShift": 1,
+      "possibleRepublicanHouseShift": 0,
+      "margin": -0.6161060809019283,
+      "value": 0.5278732003045928
+    },
+    {
+      "omittedCycle": 2014,
+      "transportShift": -3,
+      "roundingShift": 1,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 1.271021990595446,
+      "value": 0.4087990621168527
+    },
+    {
+      "omittedCycle": 2014,
+      "transportShift": 0,
+      "roundingShift": -1,
+      "possibleRepublicanHouseShift": 0,
+      "margin": 0.3838939190980717,
+      "value": 0.46457031287546235
+    },
+    {
+      "omittedCycle": 2014,
+      "transportShift": 0,
+      "roundingShift": -1,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 2.271021990595446,
+      "value": 0.3483269949216554
+    },
+    {
+      "omittedCycle": 2014,
+      "transportShift": 0,
+      "roundingShift": 0,
+      "possibleRepublicanHouseShift": 0,
+      "margin": 1.3838939190980717,
+      "value": 0.4018125132487289
+    },
+    {
+      "omittedCycle": 2014,
+      "transportShift": 0,
+      "roundingShift": 0,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 3.271021990595446,
+      "value": 0.29213701965168903
+    },
+    {
+      "omittedCycle": 2014,
+      "transportShift": 0,
+      "roundingShift": 1,
+      "possibleRepublicanHouseShift": 0,
+      "margin": 2.383893919098072,
+      "value": 0.3417413372540581
+    },
+    {
+      "omittedCycle": 2014,
+      "transportShift": 0,
+      "roundingShift": 1,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 4.271021990595447,
+      "value": 0.24150612096487437
+    },
+    {
+      "omittedCycle": 2014,
+      "transportShift": 3,
+      "roundingShift": -1,
+      "possibleRepublicanHouseShift": 0,
+      "margin": 3.383893919098072,
+      "value": 0.2861262034477826
+    },
+    {
+      "omittedCycle": 2014,
+      "transportShift": 3,
+      "roundingShift": -1,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 5.271021990595447,
+      "value": 0.19709949886987135
+    },
+    {
+      "omittedCycle": 2014,
+      "transportShift": 3,
+      "roundingShift": 0,
+      "possibleRepublicanHouseShift": 0,
+      "margin": 4.383893919098072,
+      "value": 0.23617571635411874
+    },
+    {
+      "omittedCycle": 2014,
+      "transportShift": 3,
+      "roundingShift": 0,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 6.271021990595447,
+      "value": 0.15902901390281002
+    },
+    {
+      "omittedCycle": 2014,
+      "transportShift": 3,
+      "roundingShift": 1,
+      "possibleRepublicanHouseShift": 0,
+      "margin": 5.383893919098072,
+      "value": 0.1924877991430091
+    },
+    {
+      "omittedCycle": 2014,
+      "transportShift": 3,
+      "roundingShift": 1,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 7.271021990595447,
+      "value": 0.12698694021666038
+    },
+    {
+      "omittedCycle": 2016,
+      "transportShift": -3,
+      "roundingShift": -1,
+      "possibleRepublicanHouseShift": 0,
+      "margin": -2.616106080901928,
+      "value": 0.653405274519915
+    },
+    {
+      "omittedCycle": 2016,
+      "transportShift": -3,
+      "roundingShift": -1,
+      "possibleRepublicanHouseShift": 3,
+      "margin": -0.7289780094045537,
+      "value": 0.541592157224126
+    },
+    {
+      "omittedCycle": 2016,
+      "transportShift": -3,
+      "roundingShift": 0,
+      "possibleRepublicanHouseShift": 0,
+      "margin": -1.6161060809019283,
+      "value": 0.5958920111974544
+    },
+    {
+      "omittedCycle": 2016,
+      "transportShift": -3,
+      "roundingShift": 0,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 0.27102199059544607,
+      "value": 0.4784340282410856
+    },
+    {
+      "omittedCycle": 2016,
+      "transportShift": -3,
+      "roundingShift": 1,
+      "possibleRepublicanHouseShift": 0,
+      "margin": -0.6161060809019283,
+      "value": 0.5345314064567266
+    },
+    {
+      "omittedCycle": 2016,
+      "transportShift": -3,
+      "roundingShift": 1,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 1.271021990595446,
+      "value": 0.41533134322164544
+    },
+    {
+      "omittedCycle": 2016,
+      "transportShift": 0,
+      "roundingShift": -1,
+      "possibleRepublicanHouseShift": 0,
+      "margin": 0.3838939190980717,
+      "value": 0.47126677121206706
+    },
+    {
+      "omittedCycle": 2016,
+      "transportShift": 0,
+      "roundingShift": -1,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 2.271021990595446,
+      "value": 0.3544737833948314
+    },
+    {
+      "omittedCycle": 2016,
+      "transportShift": 0,
+      "roundingShift": 0,
+      "possibleRepublicanHouseShift": 0,
+      "margin": 1.3838939190980717,
+      "value": 0.4083112338292515
+    },
+    {
+      "omittedCycle": 2016,
+      "transportShift": 0,
+      "roundingShift": 0,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 3.271021990595446,
+      "value": 0.29773551148825783
+    },
+    {
+      "omittedCycle": 2016,
+      "transportShift": 0,
+      "roundingShift": 1,
+      "possibleRepublicanHouseShift": 0,
+      "margin": 2.383893919098072,
+      "value": 0.3478332516296194
+    },
+    {
+      "omittedCycle": 2016,
+      "transportShift": 0,
+      "roundingShift": 1,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 4.271021990595447,
+      "value": 0.2464581943955604
+    },
+    {
+      "omittedCycle": 2016,
+      "transportShift": 3,
+      "roundingShift": -1,
+      "possibleRepublicanHouseShift": 0,
+      "margin": 3.383893919098072,
+      "value": 0.29165540326344785
+    },
+    {
+      "omittedCycle": 2016,
+      "transportShift": 3,
+      "roundingShift": -1,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 5.271021990595447,
+      "value": 0.20137076787641497
+    },
+    {
+      "omittedCycle": 2016,
+      "transportShift": 3,
+      "roundingShift": 0,
+      "possibleRepublicanHouseShift": 0,
+      "margin": 4.383893919098072,
+      "value": 0.24105157057402096
+    },
+    {
+      "omittedCycle": 2016,
+      "transportShift": 3,
+      "roundingShift": 0,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 6.271021990595447,
+      "value": 0.1626370707807772
+    },
+    {
+      "omittedCycle": 2016,
+      "transportShift": 3,
+      "roundingShift": 1,
+      "possibleRepublicanHouseShift": 0,
+      "margin": 5.383893919098072,
+      "value": 0.19668252008015155
+    },
+    {
+      "omittedCycle": 2016,
+      "transportShift": 3,
+      "roundingShift": 1,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 7.271021990595447,
+      "value": 0.12998479888462014
+    },
+    {
+      "omittedCycle": 2018,
+      "transportShift": -3,
+      "roundingShift": -1,
+      "possibleRepublicanHouseShift": 0,
+      "margin": -2.616106080901928,
+      "value": 0.6514329306536168
+    },
+    {
+      "omittedCycle": 2018,
+      "transportShift": -3,
+      "roundingShift": -1,
+      "possibleRepublicanHouseShift": 3,
+      "margin": -0.7289780094045537,
+      "value": 0.5407715509581545
+    },
+    {
+      "omittedCycle": 2018,
+      "transportShift": -3,
+      "roundingShift": 0,
+      "possibleRepublicanHouseShift": 0,
+      "margin": -1.6161060809019283,
+      "value": 0.5944710748758054
+    },
+    {
+      "omittedCycle": 2018,
+      "transportShift": -3,
+      "roundingShift": 0,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 0.27102199059544607,
+      "value": 0.47836076571770947
+    },
+    {
+      "omittedCycle": 2018,
+      "transportShift": -3,
+      "roundingShift": 1,
+      "possibleRepublicanHouseShift": 0,
+      "margin": -0.6161060809019283,
+      "value": 0.533792600565856
+    },
+    {
+      "omittedCycle": 2018,
+      "transportShift": -3,
+      "roundingShift": 1,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 1.271021990595446,
+      "value": 0.41600665209377474
+    },
+    {
+      "omittedCycle": 2018,
+      "transportShift": 0,
+      "roundingShift": -1,
+      "possibleRepublicanHouseShift": 0,
+      "margin": 0.3838939190980717,
+      "value": 0.47127942373972465
+    },
+    {
+      "omittedCycle": 2018,
+      "transportShift": 0,
+      "roundingShift": -1,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 2.271021990595446,
+      "value": 0.3558227965120839
+    },
+    {
+      "omittedCycle": 2018,
+      "transportShift": 0,
+      "roundingShift": 0,
+      "possibleRepublicanHouseShift": 0,
+      "margin": 1.3838939190980717,
+      "value": 0.40906763177279837
+    },
+    {
+      "omittedCycle": 2018,
+      "transportShift": 0,
+      "roundingShift": 0,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 3.271021990595446,
+      "value": 0.29962460555452874
+    },
+    {
+      "omittedCycle": 2018,
+      "transportShift": 0,
+      "roundingShift": 1,
+      "possibleRepublicanHouseShift": 0,
+      "margin": 2.383893919098072,
+      "value": 0.3492507531615956
+    },
+    {
+      "omittedCycle": 2018,
+      "transportShift": 0,
+      "roundingShift": 1,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 4.271021990595447,
+      "value": 0.24872285680775377
+    },
+    {
+      "omittedCycle": 2018,
+      "transportShift": 3,
+      "roundingShift": -1,
+      "possibleRepublicanHouseShift": 0,
+      "margin": 3.383893919098072,
+      "value": 0.2935954017787086
+    },
+    {
+      "omittedCycle": 2018,
+      "transportShift": 3,
+      "roundingShift": -1,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 5.271021990595447,
+      "value": 0.2038443781480477
+    },
+    {
+      "omittedCycle": 2018,
+      "transportShift": 3,
+      "roundingShift": 0,
+      "possibleRepublicanHouseShift": 0,
+      "margin": 4.383893919098072,
+      "value": 0.2433479474381375
+    },
+    {
+      "omittedCycle": 2018,
+      "transportShift": 3,
+      "roundingShift": 0,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 6.271021990595447,
+      "value": 0.16517292061999148
+    },
+    {
+      "omittedCycle": 2018,
+      "transportShift": 3,
+      "roundingShift": 1,
+      "possibleRepublicanHouseShift": 0,
+      "margin": 5.383893919098072,
+      "value": 0.19916997476751944
+    },
+    {
+      "omittedCycle": 2018,
+      "transportShift": 3,
+      "roundingShift": 1,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 7.271021990595447,
+      "value": 0.13246812552595613
+    },
+    {
+      "omittedCycle": 2020,
+      "transportShift": -3,
+      "roundingShift": -1,
+      "possibleRepublicanHouseShift": 0,
+      "margin": -2.616106080901928,
+      "value": 0.6439079212505592
+    },
+    {
+      "omittedCycle": 2020,
+      "transportShift": -3,
+      "roundingShift": -1,
+      "possibleRepublicanHouseShift": 3,
+      "margin": -0.7289780094045537,
+      "value": 0.5282373471030546
+    },
+    {
+      "omittedCycle": 2020,
+      "transportShift": -3,
+      "roundingShift": 0,
+      "possibleRepublicanHouseShift": 0,
+      "margin": -1.6161060809019283,
+      "value": 0.5842718308058708
+    },
+    {
+      "omittedCycle": 2020,
+      "transportShift": -3,
+      "roundingShift": 0,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 0.27102199059544607,
+      "value": 0.4634878346466619
+    },
+    {
+      "omittedCycle": 2020,
+      "transportShift": -3,
+      "roundingShift": 1,
+      "possibleRepublicanHouseShift": 0,
+      "margin": -0.6161060809019283,
+      "value": 0.52097424015471
+    },
+    {
+      "omittedCycle": 2020,
+      "transportShift": -3,
+      "roundingShift": 1,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 1.271021990595446,
+      "value": 0.3993481898704849
+    },
+    {
+      "omittedCycle": 2020,
+      "transportShift": 0,
+      "roundingShift": -1,
+      "possibleRepublicanHouseShift": 0,
+      "margin": 0.3838939190980717,
+      "value": 0.4561731917325965
+    },
+    {
+      "omittedCycle": 2020,
+      "transportShift": 0,
+      "roundingShift": -1,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 2.271021990595446,
+      "value": 0.3381010450748392
+    },
+    {
+      "omittedCycle": 2020,
+      "transportShift": 0,
+      "roundingShift": 0,
+      "possibleRepublicanHouseShift": 0,
+      "margin": 1.3838939190980717,
+      "value": 0.3922509647669147
+    },
+    {
+      "omittedCycle": 2020,
+      "transportShift": 0,
+      "roundingShift": 0,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 3.271021990595446,
+      "value": 0.2816117348960919
+    },
+    {
+      "omittedCycle": 2020,
+      "transportShift": 0,
+      "roundingShift": 1,
+      "possibleRepublicanHouseShift": 0,
+      "margin": 2.383893919098072,
+      "value": 0.331457778488747
+    },
+    {
+      "omittedCycle": 2020,
+      "transportShift": 0,
+      "roundingShift": 1,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 4.271021990595447,
+      "value": 0.23112495877629294
+    },
+    {
+      "omittedCycle": 2020,
+      "transportShift": 3,
+      "roundingShift": -1,
+      "possibleRepublicanHouseShift": 0,
+      "margin": 3.383893919098072,
+      "value": 0.2755962138076343
+    },
+    {
+      "omittedCycle": 2020,
+      "transportShift": 3,
+      "roundingShift": -1,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 5.271021990595447,
+      "value": 0.18721998502279938
+    },
+    {
+      "omittedCycle": 2020,
+      "transportShift": 3,
+      "roundingShift": 0,
+      "possibleRepublicanHouseShift": 0,
+      "margin": 4.383893919098072,
+      "value": 0.2258352210427265
+    },
+    {
+      "omittedCycle": 2020,
+      "transportShift": 3,
+      "roundingShift": 0,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 6.271021990595447,
+      "value": 0.14989838705939276
+    },
+    {
+      "omittedCycle": 2020,
+      "transportShift": 3,
+      "roundingShift": 1,
+      "possibleRepublicanHouseShift": 0,
+      "margin": 5.383893919098072,
+      "value": 0.18268254740815762
+    },
+    {
+      "omittedCycle": 2020,
+      "transportShift": 3,
+      "roundingShift": 1,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 7.271021990595447,
+      "value": 0.11874384179579257
+    },
+    {
+      "omittedCycle": 2022,
+      "transportShift": -3,
+      "roundingShift": -1,
+      "possibleRepublicanHouseShift": 0,
+      "margin": -2.616106080901928,
+      "value": 0.6442166825486477
+    },
+    {
+      "omittedCycle": 2022,
+      "transportShift": -3,
+      "roundingShift": -1,
+      "possibleRepublicanHouseShift": 3,
+      "margin": -0.7289780094045537,
+      "value": 0.5270426943429107
+    },
+    {
+      "omittedCycle": 2022,
+      "transportShift": -3,
+      "roundingShift": 0,
+      "possibleRepublicanHouseShift": 0,
+      "margin": -1.6161060809019283,
+      "value": 0.5838199074808881
+    },
+    {
+      "omittedCycle": 2022,
+      "transportShift": -3,
+      "roundingShift": 0,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 0.27102199059544607,
+      "value": 0.4614585469076721
+    },
+    {
+      "omittedCycle": 2022,
+      "transportShift": -3,
+      "roundingShift": 1,
+      "possibleRepublicanHouseShift": 0,
+      "margin": -0.6161060809019283,
+      "value": 0.5196836663733144
+    },
+    {
+      "omittedCycle": 2022,
+      "transportShift": -3,
+      "roundingShift": 1,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 1.271021990595446,
+      "value": 0.3965762726143477
+    },
+    {
+      "omittedCycle": 2022,
+      "transportShift": 0,
+      "roundingShift": -1,
+      "possibleRepublicanHouseShift": 0,
+      "margin": 0.3838939190980717,
+      "value": 0.4540538328521363
+    },
+    {
+      "omittedCycle": 2022,
+      "transportShift": 0,
+      "roundingShift": -1,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 2.271021990595446,
+      "value": 0.3347548091740339
+    },
+    {
+      "omittedCycle": 2022,
+      "transportShift": 0,
+      "roundingShift": 0,
+      "possibleRepublicanHouseShift": 0,
+      "margin": 1.3838939190980717,
+      "value": 0.38940466698537846
+    },
+    {
+      "omittedCycle": 2022,
+      "transportShift": 0,
+      "roundingShift": 0,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 3.271021990595446,
+      "value": 0.27790210912189695
+    },
+    {
+      "omittedCycle": 2022,
+      "transportShift": 0,
+      "roundingShift": 1,
+      "possibleRepublicanHouseShift": 0,
+      "margin": 2.383893919098072,
+      "value": 0.32805956084762533
+    },
+    {
+      "omittedCycle": 2022,
+      "transportShift": 0,
+      "roundingShift": 1,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 4.271021990595447,
+      "value": 0.2272669241185218
+    },
+    {
+      "omittedCycle": 2022,
+      "transportShift": 3,
+      "roundingShift": -1,
+      "possibleRepublicanHouseShift": 0,
+      "margin": 3.383893919098072,
+      "value": 0.2718593506937452
+    },
+    {
+      "omittedCycle": 2022,
+      "transportShift": 3,
+      "roundingShift": -1,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 5.271021990595447,
+      "value": 0.18340120976559707
+    },
+    {
+      "omittedCycle": 2022,
+      "transportShift": 3,
+      "roundingShift": 0,
+      "possibleRepublicanHouseShift": 0,
+      "margin": 4.383893919098072,
+      "value": 0.22197295795474017
+    },
+    {
+      "omittedCycle": 2022,
+      "transportShift": 3,
+      "roundingShift": 0,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 6.271021990595447,
+      "value": 0.14626148439959888
+    },
+    {
+      "omittedCycle": 2022,
+      "transportShift": 3,
+      "roundingShift": 1,
+      "possibleRepublicanHouseShift": 0,
+      "margin": 5.383893919098072,
+      "value": 0.17887808246459316
+    },
+    {
+      "omittedCycle": 2022,
+      "transportShift": 3,
+      "roundingShift": 1,
+      "possibleRepublicanHouseShift": 3,
+      "margin": 7.271021990595447,
+      "value": 0.11538217239645022
+    }
+  ],
+  "distribution": "fixed_t4",
+  "estimateMeaning": "Conditional settlement-value research, not a forecast of near-term bid returns or a confidence interval",
+  "executionAuthority": false,
+  "profitabilityEstablished": false,
+  "polls": [
+    {
+      "pollster": "SurveyUSA",
+      "population": "likely_voters",
+      "democratic": 42,
+      "republican": 42,
+      "undecided": 12,
+      "fieldEndAt": "2026-09-14T23:59:59.999Z",
+      "possibleRepublicanHouseBias": false
+    },
+    {
+      "pollster": "Big Data Poll",
+      "population": "likely_voters",
+      "democratic": 45.8,
+      "republican": 43.6,
+      "undecided": 10.6,
+      "fieldEndAt": "2026-09-30T23:59:59.999Z",
+      "possibleRepublicanHouseBias": true,
+      "undecidedMeaning": "Conservative entire non-major remainder; original leaned ballot remainder not separated here"
+    }
+  ],
+  "sourceModelHash": "9f0b185506e59117c150fb988e73b612346effe8e3a8f0d90fdafcad07f54756",
+  "marketId": "361",
+  "exchangeId": "1050",
+  "sourceQualityFlags": [
+    "SurveyUSA chart contains an unrelated2024template caption; actual publisher article and candidate table agree on tie",
+    "BigData residual10.6 includes non-major/undecided; severe allocation intentionally conservative",
+    "Government filing page retains primary candidates; full certified general ballot not proven"
+  ],
+  "activeBankChanged": false,
+  "competitionOrders": 0
+}
