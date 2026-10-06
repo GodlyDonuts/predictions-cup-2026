@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "runId": "baal-scaled-no-20261006-human",
+  "source": "actual_terminal_fills_signed_positions_scoped_history_and_funding",
+  "observedAt": "2026-10-06T17:23:17.133Z",
+  "capital": "1000.000000",
+  "entryExpiresAt": "2026-10-06T18:01:56.310Z",
+  "inventory": [
+    {
+      "exchangeId": "1042",
+      "marketId": "353",
+      "orderId": "16825098",
+      "proofHash": "7bdd18780949a2bb7840b923840c1028ae805707084f5eeba100b6194b6aba5c",
+      "verifiedAt": "2026-10-06T17:11:54.672Z",
+      "remainingOwnedQuantity": 28,
+      "remainingOwnedCost": "2.660000",
+      "cumulativeRealizedPnl": "0.000000",
+      "fills": [
+        {
+          "id": 70721636,
+          "orderId": "16825098",
+          "marketId": "353",
+          "exchangeId": "1042",
+          "side": "no",
+          "action": "buy",
+          "quantity": 28,
+          "price": "0.095000",
+          "principal": "2.660000",
+          "filledAt": "2026-10-06T17:11:23.805Z"
+        }
+      ]
+    },
+    {
+      "exchangeId": "1073",
+      "marketId": "384",
+      "orderId": "16817788",
+      "proofHash": "ddb49405c78031f1f48bf3b480540995df77841e08cb68c34f4974cc3c46b574",
+      "verifiedAt": "2026-10-06T17:09:14.190Z",
+      "remainingOwnedQuantity": 29,
+      "remainingOwnedCost": "2.465000",
+      "cumulativeRealizedPnl": "0.000000",
+      "fills": [
+        {
+          "id": 70692281,
+          "orderId": "16817788",
+          "marketId": "384",
+          "exchangeId": "1073",
+          "side": "no",
+          "action": "buy",
+          "quantity": 29,
+          "price": "0.085000",
+          "principal": "2.465000",
+          "filledAt": "2026-10-06T17:08:28.005Z"
+        }
+      ]
+    }
+  ],
+  "actualOrderCount": 2,
+  "scaledRealizedPnl": "0.000000",
+  "oldFourClosedPilotNetRealized": "0.015000",
+  "fees": "0.000000",
+  "ownedPrincipal": "5.125000",
+  "reservedCash": "51.305000",
+  "fullNominalExposure": "56.430000",
+  "automaticCounterpartHedge": false,
+  "profitabilityEstablished": false
+}

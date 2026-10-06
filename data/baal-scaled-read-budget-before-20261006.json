@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "observedAt": "2026-10-06T17:26:21.372Z",
+  "windowStart": "2026-10-06T17:16:20.431Z",
+  "windowEnd": "2026-10-06T17:26:20.431Z",
+  "readCount": 422,
+  "byKind": {
+    "positions": {
+      "count": 61,
+      "totalMs": 91200.74520000035,
+      "serviceMs": 21943.03990000114
+    },
+    "orders": {
+      "count": 103,
+      "totalMs": 145501.42630000028,
+      "serviceMs": 23875.12059999979
+    },
+    "tournament": {
+      "count": 63,
+      "totalMs": 65516.16329999978,
+      "serviceMs": 16158.73609999963
+    },
+    "book": {
+      "count": 120,
+      "totalMs": 109075.64449999982,
+      "serviceMs": 32525.680800001137
+    },
+    "prices": {
+      "count": 54,
+      "totalMs": 45633.971900000586,
+      "serviceMs": 13700.423800000222
+    },
+    "history": {
+      "count": 9,
+      "totalMs": 6993.279600000242,
+      "serviceMs": 1620.052200000384
+    },
+    "pnl": {
+      "count": 6,
+      "totalMs": 8334.715400000336,
+      "serviceMs": 2434.081600000034
+    },
+    "fills": {
+      "count": 6,
+      "totalMs": 7029.095399999875,
+      "serviceMs": 1127.2981999996118
+    }
+  },
+  "ownedDepthReads": 36,
+  "ownedDepthReadsByMarket": {
+    "353": 18,
+    "384": 18
+  },
+  "inferredOwnedFiveGetPreparationReads": 180,
+  "estimationCaveat": "Owned-book counts may also include reconciliation/frozen observer reads; the 17:18 two packet trace separately confirms ten failed exit preparation reads over approximately fourteen seconds.",
+  "savedReadsNotYetMeasured": true,
+  "extraApiClients": 0,
+  "rateLimitChanged": false,
+  "exactPacketAnalysis": {
+    "windowStart": "2026-10-06T17:07:27.356Z",
+    "windowEnd": "2026-10-06T17:18:28.510Z",
+    "readReceipts": 424,
+    "identifiedFiveGetSellPackets": 27,
+    "sellPreparationReads": 135,
+    "sellPreparationReadShare": 0.31839622641509435,
+    "packetElapsedMs": 175411,
+    "packetsByMarket": {
+      "353": 12,
+      "384": 15
+    },
+    "identification": "Contiguous tournament→positions→orders→orders→owned book; initial BUY packet books excluded",
+    "lastTwoPacketStart": "2026-10-06T17:18:01.019Z",
+    "lastTwoPacketEnd": "2026-10-06T17:18:15.020Z",
+    "bulkRefreshStartAfterPackets": "2026-10-06T17:18:20.940Z",
+    "quoteAgeBeforeMs": 15000,
+    "quoteAgeAtRankingMs": 29000,
+    "entryQuoteMaximumAgeMs": 20000
+  }
+}

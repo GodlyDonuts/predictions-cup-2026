@@ -1,3 +1,9 @@
+# October6 17:23 UTC: scaled production owns57shares across two markets
+
+The active1,000SUSQ allocation has two verified official NO purchases:29 Rhode Island Democratic Governor shares at0.085 (cost2.465), and28 Delaware Democratic Senate shares at0.095 (cost2.660). Total attributed purchase cost is5.125; both positions remain open and the scaled run has zero realized profit. Remaining package-risk reservations are51.305, for total full-nominal exposure56.430. These reservations are funding headroom, not purchased hedges or guaranteed profit. [Verified inventory and fills](../data/baal-scaled-official-inventory-20261006.json).
+
+Actual collector25896 read traces identified a limiting defect: two unsuccessful protected-exit preparations consumed10GETs/about14seconds before entry ranking, aging previous bulk hints beyond the20second limit. A separately versioned scheduling improvement is being checked; fresh negative hints may skip only preparation reads, while trade dispatch and order reconciliation retain actual source verification. Original run/accounting and18:01:56.310UTC BUY cutoff remain unchanged.
+
 # October6 17:09 UTC:1,000SUSQ scaled production verified;29-share fill
 
 The newproduction run bought29NOshares on384/ex1073 in officialorder16817788/fill70692281 at0.085, actualnominalcost2.465, filled17:08:28.005UTC. Full terminal fills/signedposition/history andbudget proofverified; collector25896 is actuallyrunning withno recordederrors. Sourceproofddb49405... records the29-share inventory andfull28.710 packagebudget (2.465owned+26.245unusedhedge-riskreserve). No automaticcounterparthedge orscaledrealizedprofit is claimed. [Official fill](../data/baal-scaled-first-official-fill-20261006.json).

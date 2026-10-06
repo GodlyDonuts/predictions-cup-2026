@@ -1,0 +1,84 @@
+{
+  "schemaVersion": 1,
+  "mode": "actual_scaled_owned_read_starvation_profile_v1",
+  "observedAt": "2026-10-06T17:27:59.460Z",
+  "collectorPidObserved": 25896,
+  "readTimingsSource": {
+    "sealedPrefixBytes": 56165926,
+    "sha256": "501535b30fbd50ee685a58efc5b507dd506d9bdedc0cc5055f3a7fc837c2cf24"
+  },
+  "measuredSegment": {
+    "from": "2026-10-06T17:07:27.356Z",
+    "through": "2026-10-06T17:18:28.510Z",
+    "readReceipts": 424,
+    "exactFiveGetSellPatterns": 27,
+    "sellPreparationReadReceipts": 135,
+    "shareOfReadReceipts": 0.31839622641509435,
+    "packetElapsedSumMs": 175411,
+    "byMarket": {
+      "353": 12,
+      "384": 15
+    }
+  },
+  "lastCycle": {
+    "previousBulkQuoteReceivedAt": "2026-10-06T17:17:46.067Z",
+    "ownedSellPackets": [
+      {
+        "marketId": "353",
+        "firstReadAdmittedAt": "2026-10-06T17:18:01.019Z",
+        "bookFinishedAt": "2026-10-06T17:18:07.340Z",
+        "elapsedMs": 6321
+      },
+      {
+        "marketId": "384",
+        "firstReadAdmittedAt": "2026-10-06T17:18:08.669Z",
+        "bookFinishedAt": "2026-10-06T17:18:15.020Z",
+        "elapsedMs": 6351
+      }
+    ],
+    "subsequentBulkReadWindow": {
+      "firstAdmittedAt": "2026-10-06T17:18:20.940Z",
+      "lastFinishedAt": "2026-10-06T17:18:23.543Z"
+    },
+    "oldQuoteAgeAtFirstSellMs": 14952,
+    "oldQuoteAgeAfterOwnedPacketsMs": 28953,
+    "unownedHintMaximumAgeMs": 20000
+  },
+  "ownedPolicyChecks": [
+    {
+      "marketId": "353",
+      "exchangeId": "1042",
+      "quantity": 28,
+      "firstFifoUnitCost": "0.095000",
+      "requiredRawNoBid": "0.105000",
+      "maximumYesAsk": "0.895000",
+      "observedEarlierBulkYesAsk": "0.910000"
+    },
+    {
+      "marketId": "384",
+      "exchangeId": "1073",
+      "quantity": 29,
+      "firstFifoUnitCost": "0.085000",
+      "requiredRawNoBid": "0.095000",
+      "maximumYesAsk": "0.905000",
+      "observedEarlierBulkYesAsk": "0.920000"
+    }
+  ],
+  "newHelper": {
+    "source": "execution/baal-scaled-owned-exit-read-hint-v1.mjs",
+    "sha256": "21ae0c5e1b8332e34d5cdec07c2f3d3d4b8cf9ad035ee7a98ea7bc0c9262abd4",
+    "testsPassed": 6,
+    "activePolicy": "each_consumed_fifo_lot",
+    "skipOnlyFreshKnownStrictNegativePreparation": true,
+    "staleMissingAndDifferentPolicyFallback": true,
+    "knownUnknownReconciliationNeverSkipped": true
+  },
+  "estimatedLastCycleAvoidableReads": 10,
+  "estimatedLastCycleAvoidableElapsedMs": 14001,
+  "claim": "Fresh negative bulk hints can skip futile preparation; only future full-book receipts establish actual exit opportunity.",
+  "networkRequests": 0,
+  "competitionOrders": 0,
+  "runtimeChanges": 0,
+  "performanceImprovementMeasuredAfterDeployment": false,
+  "profitabilityEstablished": false
+}
