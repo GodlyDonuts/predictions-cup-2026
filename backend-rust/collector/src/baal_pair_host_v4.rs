@@ -52,8 +52,8 @@ impl BaalPairHost {
         let mut r = crate::baal_pair_paper_v3::baal_pair_report(&self.state["paper"], &self.bank, &self.stamp())
             .unwrap_or_else(|_| json!({"error": "report_failed"}));
         r["failed"] = json!(self.failed);
-        r["journalSequence"] = json!(self.journal.sequence());
-        r["journalHash"] = json!(self.journal.previous());
+        r["journalSequence"] = json!(self.journal.sequence as i64);
+        r["journalHash"] = json!(self.journal.previous);
         let mut risks: Vec<String> = self.state["paper"]["positions"].as_object()
             .map(|o| o.values().filter_map(|p| p["marketId"].as_str().map(String::from)).collect()).unwrap_or_default();
         if let Some(m) = self.state["paper"]["pending"]["marketId"].as_str() { risks.push(m.to_string()); }
@@ -71,7 +71,7 @@ impl BaalPairHost {
         let res = (|| -> Result<(), String> {
             self.journal.commit(&next, event).map_err(|_| "BAAL_PAIR_HOST_DURABILITY".to_string())?;
             self.state = next;
-            baal_service_runtime::ledger::atomic_json(&self.stats_file, &self.status_impl())
+            baal_service_runtime::atomic::atomic_json(&self.stats_file, &self.status_impl())
                 .map_err(|_| "BAAL_PAIR_HOST_DURABILITY".to_string())
         })();
         if res.is_err() { self.failed = true; return Err("BAAL_PAIR_HOST_DURABILITY".into()); }
@@ -160,7 +160,7 @@ impl BaalPairHost {
             crate::baal_pair_paper_v3::advance_baal_pair(&seeded,
                 &json!({"kind":"boundary","availableAt":bank["cutoff"]}), bank)
         };
-        let mut state = match journal.last() {
+        let mut state = match &journal.last {
             Some(l) => l["state"].clone(),
             None => json!({"paper": opening(&bank, &dir)?,
                 "sourceSequence": bank["sourcePrefixSequence"], "sourceHash": bank["sourcePrefixTailHash"]}),
@@ -172,12 +172,12 @@ impl BaalPairHost {
             let old: V = serde_json::from_str(&std::fs::read_to_string(&host.stats_file).map_err(|e| e.to_string())?)
                 .map_err(|_| "BAAL_PAIR_HOST_STATS".to_string())?;
             need(old["bankHash"].as_str() == Some(host.bank_hash.as_str())
-                && old["journalSequence"].as_i64().unwrap_or(i64::MAX) <= host.journal.sequence(), "PUBLISHED_ROLLBACK")?;
-            if old["journalSequence"].as_i64() == Some(host.journal.sequence()) {
-                need(old["journalHash"].as_str() == Some(host.journal.previous()), "PUBLISHED_TAIL")?;
+                && old["journalSequence"].as_i64().unwrap_or(i64::MAX) <= host.journal.sequence as i64, "PUBLISHED_ROLLBACK")?;
+            if old["journalSequence"].as_i64() == Some(host.journal.sequence as i64) {
+                need(old["journalHash"].as_str() == Some(host.journal.previous.as_str()), "PUBLISHED_TAIL")?;
             }
         }
-        if host.journal.last().is_none() {
+        if host.journal.last.is_none() {
             let next = state.clone();
             host.append(next, &json!({"kind":"genesis","cutoff":bank["cutoff"]}), false)?;
         } else {
@@ -198,7 +198,7 @@ impl BaalPairHost {
         self.verify(false)?;
         let leg = self.bank["review"]["legs"].as_array().cloned().unwrap_or_default().into_iter()
             .find(|l| l["marketId"].as_str() == Some(market_id));
-        if leg.is_none() { return Ok(()); }
+        let Some(leg) = leg else { return Ok(()); };
         let book = publication["books"][format!("{}:YES", leg["exchangeId"].as_str().unwrap_or(""))].clone();
         if book.is_null() { return Ok(()); }
         need(publication["sequence"].as_i64().unwrap_or(0) > self.state["sourceSequence"].as_i64().unwrap_or(0)
@@ -210,8 +210,6 @@ impl BaalPairHost {
         let mut admission = json!({"reason":"pair_incomplete_or_closed","positiveConditionalCapacity":false});
         if !publication["closed"].as_bool().unwrap_or(false) && books.iter().all(|b| !b.is_null()) {
             admission = crate::canonical_no_capacity::evaluate_canonical_no_capacity(
-                &json!({"review": self.bank["review"], "policy": self.bank["capacityPolicy"],
-                    "books": books, "account": account_eligibility, "now": at}),
                 &self.bank["review"], &books, Some(account_eligibility), &at, &self.bank["capacityPolicy"])
                 .unwrap_or_else(|_| json!({"reason":"pair_validation_failed","positiveConditionalCapacity":false}));
         }
