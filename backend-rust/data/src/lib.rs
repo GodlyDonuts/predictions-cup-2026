@@ -169,6 +169,7 @@ pub mod record_nh_milestone_20261004;
 pub mod record_pair_anchor_20261004;
 pub mod record_settlement_value_milestone_20261004;
 pub mod recover_pair_anchor_preparation_20261004;
+pub mod refresh_baal_official_profit_20261006;
 pub mod repair_transport_bindings_20261005;
 pub mod replay_baal_liquidity_sweep_20261006;
 pub mod replay_book_alpha_20261006;
