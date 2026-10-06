@@ -1,143 +1,157 @@
-// live-paper/public-recovery-confirmation.mjs — like recovery-confirmation.mjs with
-// wider windows and a gap reset inside the spacing collapse.
-use baal_paper::fixed::{big_amount, big_sequence, instant, TICK};
+// live-paper/public-recovery-confirmation.mjs — verified recovery point
+// accumulator + confirmation gate for the public-rest cohort
+// (windowMs 600000, maximumGapMs 180000; oversized gaps collapse the window).
+use baal_paper::fixed::{big_amount, instant, big_sequence, TICK};
 use baal_service_runtime::contract::instant_ns;
+use baal_service_runtime::json_text::js_truthy;
 use num_bigint::BigInt;
 use serde_json::{json, Value as V};
 
+/// RECOVERY_CONFIRMATION_POLICY (frozen object).
 pub fn recovery_confirmation_policy() -> V {
-    json!({"windowMs":600000,"minimumObservations":4,"minimumSpacingMs":1000,"maximumGapMs":180000,
-        "minimumDropTicks":2,"minimumReboundTicks":1,"minimumAfterTrough":2})
+    json!({"windowMs":600000,"minimumObservations":4,"minimumSpacingMs":1000,
+        "maximumGapMs":180000,"minimumDropTicks":2,"minimumReboundTicks":1,
+        "minimumAfterTrough":2})
 }
-
-fn amount(v: &V) -> Result<BigInt, String> { big_amount(v.as_str().unwrap_or("")) }
-fn seq(v: &V) -> Result<BigInt, String> { big_sequence(v.as_str().unwrap_or("")) }
-fn ins(v: &V) -> Result<i64, String> { instant(v.as_str().unwrap_or("")) }
+fn f64_of_big(v: &BigInt) -> f64 { v.to_string().parse().unwrap_or(f64::NAN) }
 
 // These are point observations across verified recoveries, not a complete tape.
 // A temporary input invalidation does not retroactively falsify an earlier point.
-pub fn observe_recovery(points: &[V], event: &V, policy: &V) -> Result<Vec<V>, String> {
+/// observeRecovery(points, event, policy)
+pub fn observe_recovery(points: &V, event: &V, policy: &V) -> Result<V, String> {
     let book = &event["book"];
-    let at = ins(&event["quoteReceivedAt"])?;
-    let prior = points.last();
-    if !event["decisionEligible"].as_bool().unwrap_or(false)
-        || !event["continuity"]["ready"].as_bool().unwrap_or(false)
-        || !event["continuity"]["continuous"].as_bool().unwrap_or(false)
+    let at = instant(event["quoteReceivedAt"].as_str().unwrap_or(""))?;
+    let list: Vec<V> = points.as_array().cloned().unwrap_or_default();
+    let prior = list.last().cloned();
+    if !js_truthy(event.get("decisionEligible"))
+        || !js_truthy(event["continuity"].get("ready"))
+        || !js_truthy(event["continuity"].get("continuous"))
     {
-        return Ok(points.to_vec());
+        return Ok(points.clone());
     }
-    if let Some(prior) = prior {
-        if seq(&book["sequence"])? <= seq(&prior["sequence"])?
+    if let Some(p) = &prior {
+        if big_sequence(book["sequence"].as_str().unwrap_or(""))?
+            <= big_sequence(p["sequence"].as_str().unwrap_or(""))?
             || instant_ns(book["sourceAt"].as_str().unwrap_or("")).map_err(|e| e.0)?
-                <= instant_ns(prior["sourceAt"].as_str().unwrap_or("")).map_err(|e| e.0)?
+                <= instant_ns(p["sourceAt"].as_str().unwrap_or("")).map_err(|e| e.0)?
         {
-            return Ok(points.to_vec());
+            return Ok(points.clone());
         }
-        if at <= ins(&prior["receivedAt"])? {
-            return Ok(points.to_vec());
+        if at <= instant(p["receivedAt"].as_str().unwrap_or(""))? {
+            return Ok(points.clone());
         }
     }
     let next = json!({"receivedAt":event["quoteReceivedAt"],"confirmedAt":event["confirmedAt"],
-        "availableAt":event["availableAt"],"sourceAt":book["sourceAt"],"sequence":book["sequence"],
-        "bid":book["bids"][0]["price"],"ask":book["asks"][0]["price"]});
+        "availableAt":event["availableAt"],"sourceAt":book["sourceAt"],
+        "sequence":book["sequence"],"bid":book["bids"][0]["price"],"ask":book["asks"][0]["price"]});
+    let mut out: Vec<V> = list;
+    out.push(next);
     let window_ms = policy["windowMs"].as_i64().unwrap_or(0);
-    let mut out: Vec<V> = points.iter().cloned().chain(std::iter::once(next)).collect();
-    out.retain(|x| ins(&x["receivedAt"]).map(|t| t >= at - window_ms).unwrap_or(false));
-    if out.len() > 256 {
-        out = out[out.len() - 256..].to_vec();
+    let mut kept: Vec<V> = Vec::new();
+    for x in out {
+        if instant(x["receivedAt"].as_str().unwrap_or(""))? >= at - window_ms {
+            kept.push(x);
+        }
     }
-    Ok(out)
+    if kept.len() > 256 { kept = kept[kept.len() - 256..].to_vec(); }
+    Ok(json!(kept))
 }
 
-pub fn recovery_confirmation(
-    points: &[V],
-    event: &V,
-    at: &str,
-    policy: &V,
-) -> Result<V, String> {
+/// recoveryConfirmation(points, event, at, policy)
+pub fn recovery_confirmation(points: &V, event: &V, at: &str, policy: &V) -> Result<V, String> {
     let now = instant(at)?;
     let current = &event["book"];
     let window_ms = policy["windowMs"].as_i64().unwrap_or(0);
-    let eligible: Vec<&V> = points
-        .iter()
-        .filter(|x| {
-            ins(&x["receivedAt"]).map(|t| t <= now).unwrap_or(false)
-                && ins(&x["confirmedAt"]).map(|t| t <= now).unwrap_or(false)
-                && ins(&x["availableAt"]).map(|t| t <= now).unwrap_or(false)
-                && ins(&x["receivedAt"]).map(|t| t >= now - window_ms).unwrap_or(false)
-        })
-        .collect();
+    let mut eligible: Vec<V> = Vec::new();
+    for x in points.as_array().cloned().unwrap_or_default() {
+        if instant(x["receivedAt"].as_str().unwrap_or(""))? <= now
+            && instant(x["confirmedAt"].as_str().unwrap_or(""))? <= now
+            && instant(x["availableAt"].as_str().unwrap_or(""))? <= now
+            && instant(x["receivedAt"].as_str().unwrap_or(""))? >= now - window_ms
+        {
+            eligible.push(x);
+        }
+    }
     // Collapse receipts that are too close; use the first observation in each
-    // spacing interval. Unlike recovery-confirmation.mjs this resets the run on
-    // a gap beyond maximumGapMs so stale bursts cannot join the confirmation.
-    let spacing = policy["minimumSpacingMs"].as_i64().unwrap_or(0);
-    let max_gap = policy["maximumGapMs"].as_i64().unwrap_or(0);
+    // spacing interval so burst intensity cannot manufacture confirmation.
+    let minimum_spacing = policy["minimumSpacingMs"].as_i64().unwrap_or(0);
+    let maximum_gap = policy["maximumGapMs"].as_i64().unwrap_or(0);
     let mut a: Vec<V> = Vec::new();
     for x in &eligible {
         if !a.is_empty()
-            && ins(&x["receivedAt"])? - ins(&a.last().unwrap()["receivedAt"])? > max_gap
+            && instant(x["receivedAt"].as_str().unwrap_or(""))?
+                - instant(a.last().unwrap()["receivedAt"].as_str().unwrap_or(""))?
+                > maximum_gap
         {
-            a.clear();
+            a = Vec::new();
         }
         if a.is_empty()
-            || ins(&x["receivedAt"])? - ins(&a.last().unwrap()["receivedAt"])? >= spacing
+            || instant(x["receivedAt"].as_str().unwrap_or(""))?
+                - instant(a.last().unwrap()["receivedAt"].as_str().unwrap_or(""))?
+                >= minimum_spacing
         {
-            a.push((*x).clone());
+            a.push(x.clone());
         }
     }
-    let observations = a.len();
-    let reject = |reason: &str| -> V {
-        json!({"admitted":false,"reason":reason,"observations":observations})
+    let reject = |reason: &str, n: usize| -> V {
+        json!({"admitted":false,"reason":reason,"observations":n})
     };
-    if a.len() < policy["minimumObservations"].as_u64().unwrap_or(0) as usize {
-        return Ok(reject("recovery_insufficient_observations"));
+    if (a.len() as i64) < policy["minimumObservations"].as_i64().unwrap_or(0) {
+        return Ok(reject("recovery_insufficient_observations", a.len()));
     }
     let last = a.last().unwrap();
     if last["sequence"] != current["sequence"] || last["sourceAt"] != current["sourceAt"] {
-        return Ok(reject("recovery_current_not_independent"));
+        return Ok(reject("recovery_current_not_independent", a.len()));
     }
     for i in 1..a.len() {
-        if ins(&a[i]["receivedAt"])? - ins(&a[i - 1]["receivedAt"])? > max_gap {
-            return Ok(reject("recovery_observation_gap"));
+        if instant(a[i]["receivedAt"].as_str().unwrap_or(""))?
+            - instant(a[i - 1]["receivedAt"].as_str().unwrap_or(""))?
+            > maximum_gap
+        {
+            return Ok(reject("recovery_observation_gap", a.len()));
         }
     }
     let mut trough = 0usize;
     for i in 1..a.len() {
-        if amount(&a[i]["bid"])? < amount(&a[trough]["bid"])? {
+        if big_amount(a[i]["bid"].as_str().unwrap_or(""))?
+            < big_amount(a[trough]["bid"].as_str().unwrap_or(""))?
+        {
             trough = i;
         }
     }
     if trough == 0 {
-        return Ok(reject("recovery_no_prior_drop"));
+        return Ok(reject("recovery_no_prior_drop", a.len()));
     }
-    if a.len() - 1 - trough < policy["minimumAfterTrough"].as_u64().unwrap_or(0) as usize {
-        return Ok(reject("recovery_insufficient_after_trough"));
+    if ((a.len() - 1 - trough) as i64)
+        < policy["minimumAfterTrough"].as_i64().unwrap_or(0)
+    {
+        return Ok(reject("recovery_insufficient_after_trough", a.len()));
     }
-    let low = amount(&a[trough]["bid"])?;
+    let low = big_amount(a[trough]["bid"].as_str().unwrap_or(""))?;
     let mut peak = BigInt::from(0);
     for x in &a[..trough] {
-        let b = amount(&x["bid"])?;
-        if b > peak {
-            peak = b;
-        }
+        let v = big_amount(x["bid"].as_str().unwrap_or(""))?;
+        if v > peak { peak = v; }
     }
-    let bid = amount(&last["bid"])?;
+    let bid = big_amount(last["bid"].as_str().unwrap_or(""))?;
     let tick = BigInt::from(TICK);
     if &peak - &low < &tick * BigInt::from(policy["minimumDropTicks"].as_i64().unwrap_or(0)) {
-        return Ok(reject("recovery_drop_too_small"));
+        return Ok(reject("recovery_drop_too_small", a.len()));
     }
     if &bid - &low < &tick * BigInt::from(policy["minimumReboundTicks"].as_i64().unwrap_or(0)) {
-        return Ok(reject("recovery_rebound_too_small"));
+        return Ok(reject("recovery_rebound_too_small", a.len()));
     }
-    if amount(&a[a.len() - 2]["bid"])? > bid {
-        return Ok(reject("recovery_bid_falling"));
+    if a.len() < 2 {
+        return Err("Money must be a canonical decimal string with at most six places".into());
     }
-    let drop_ticks = (&peak - &low) / &tick;
-    let rebound_ticks = (&bid - &low) / &tick;
+    if big_amount(a[a.len() - 2]["bid"].as_str().unwrap_or(""))? > bid {
+        return Ok(reject("recovery_bid_falling", a.len()));
+    }
     Ok(json!({"admitted":true,"reason":"recovery_confirmed","observations":a.len(),
         "troughReceivedAt":a[trough]["receivedAt"],
-        "dropTicks":drop_ticks.to_string().parse::<u64>().unwrap_or(0),
-        "reboundTicks":rebound_ticks.to_string().parse::<u64>().unwrap_or(0),
-        "observedSpanMs":ins(&last["receivedAt"])?-ins(&a[0]["receivedAt"])?,
+        "dropTicks":f64_of_big(&((&peak - &low) / &tick)),
+        "reboundTicks":f64_of_big(&((&bid - &low) / &tick)),
+        "observedSpanMs":instant(last["receivedAt"].as_str().unwrap_or(""))?
+            - instant(a[0]["receivedAt"].as_str().unwrap_or(""))?,
         "evidence":"discrete_verified_bid_observations_not_continuous_tape_or_forecast"}))
 }
