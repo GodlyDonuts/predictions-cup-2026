@@ -1,0 +1,1141 @@
+{
+  "schemaVersion": 1,
+  "observedAt": "2026-10-06T01:12:05.728Z",
+  "current": [
+    {
+      "cohort": "source-probability-native-20261004-v3",
+      "bankHash": "3e445d6b7f436cab79245ed588efa627734d8d2a4a6a6b788ac2873582ed4ef2",
+      "bankMode": "source_probability_native_continuation_v3",
+      "authoritativeOwner": "original_reducer",
+      "overlayHash": null,
+      "status": "current_reducer",
+      "accounting": {
+        "wallets": {
+          "1000": {
+            "cash": "100.040000",
+            "closedTrades": 2,
+            "equityCurve": [],
+            "estimatedLiquidationEquity": "100.040000",
+            "expiredIntents": 0,
+            "fees": "0.000000",
+            "filledShares": 4,
+            "fills": 4,
+            "intents": 4,
+            "liquidationPnl": "0.040000",
+            "maxObservedDrawdown": "0.000000",
+            "pending": [],
+            "positions": [],
+            "realizedPnl": "0.040000",
+            "recentFills": [
+              {
+                "action": "buy",
+                "at": "2026-10-03T21:51:39.691Z",
+                "depthFractionBps": 100,
+                "fee": "0.000000",
+                "instrument": "1052:YES",
+                "intentId": 1,
+                "model": "hypothetical_next_snapshot_taker",
+                "price": "0.905000",
+                "quantity": 1,
+                "slippageTicks": 1,
+                "sourceAt": "2026-10-03T21:51:40.018224400Z",
+                "sourceVersion": "27397233:2026-10-03T21:51:40.018224400Z"
+              },
+              {
+                "action": "buy",
+                "at": "2026-10-03T21:51:42.990Z",
+                "depthFractionBps": 100,
+                "fee": "0.000000",
+                "instrument": "986:YES",
+                "intentId": 2,
+                "model": "hypothetical_next_snapshot_taker",
+                "price": "0.895000",
+                "quantity": 1,
+                "slippageTicks": 1,
+                "sourceAt": "2026-10-03T21:51:43.320073200Z",
+                "sourceVersion": "27397507:2026-10-03T21:51:43.320073200Z"
+              },
+              {
+                "action": "sell",
+                "at": "2026-10-04T08:50:48.625Z",
+                "depthFractionBps": 100,
+                "fee": "0.000000",
+                "instrument": "1052:YES",
+                "intentId": 3,
+                "model": "hypothetical_next_snapshot_taker",
+                "price": "0.925000",
+                "quantity": 1,
+                "slippageTicks": 1,
+                "sourceAt": "2026-10-04T08:50:49.103395000Z",
+                "sourceVersion": "33884515:2026-10-04T08:50:49.103395000Z"
+              },
+              {
+                "action": "sell",
+                "at": "2026-10-05T20:09:12.401Z",
+                "depthFractionBps": 100,
+                "fee": "0.000000",
+                "instrument": "986:YES",
+                "intentId": 4,
+                "model": "hypothetical_next_snapshot_taker",
+                "price": "0.915000",
+                "quantity": 1,
+                "slippageTicks": 1,
+                "sourceAt": "2026-10-05T20:09:12.539898500Z",
+                "sourceVersion": "57067144:2026-10-05T20:09:12.539898500Z"
+              }
+            ],
+            "referenceEquity": "100.040000",
+            "referencePnl": "0.040000",
+            "sellExecutions": 2,
+            "turnover": "3.640000",
+            "winRate": 1,
+            "winningTrades": 2
+          },
+          "3000": {
+            "cash": "100.040000",
+            "closedTrades": 2,
+            "equityCurve": [],
+            "estimatedLiquidationEquity": "100.040000",
+            "expiredIntents": 0,
+            "fees": "0.000000",
+            "filledShares": 4,
+            "fills": 4,
+            "intents": 4,
+            "liquidationPnl": "0.040000",
+            "maxObservedDrawdown": "0.000000",
+            "pending": [],
+            "positions": [],
+            "realizedPnl": "0.040000",
+            "recentFills": [
+              {
+                "action": "buy",
+                "at": "2026-10-03T21:51:39.691Z",
+                "depthFractionBps": 100,
+                "fee": "0.000000",
+                "instrument": "1052:YES",
+                "intentId": 1,
+                "model": "hypothetical_next_snapshot_taker",
+                "price": "0.905000",
+                "quantity": 1,
+                "slippageTicks": 1,
+                "sourceAt": "2026-10-03T21:51:40.018224400Z",
+                "sourceVersion": "27397233:2026-10-03T21:51:40.018224400Z"
+              },
+              {
+                "action": "buy",
+                "at": "2026-10-03T21:51:42.990Z",
+                "depthFractionBps": 100,
+                "fee": "0.000000",
+                "instrument": "986:YES",
+                "intentId": 2,
+                "model": "hypothetical_next_snapshot_taker",
+                "price": "0.895000",
+                "quantity": 1,
+                "slippageTicks": 1,
+                "sourceAt": "2026-10-03T21:51:43.320073200Z",
+                "sourceVersion": "27397507:2026-10-03T21:51:43.320073200Z"
+              },
+              {
+                "action": "sell",
+                "at": "2026-10-04T08:50:48.625Z",
+                "depthFractionBps": 100,
+                "fee": "0.000000",
+                "instrument": "1052:YES",
+                "intentId": 3,
+                "model": "hypothetical_next_snapshot_taker",
+                "price": "0.925000",
+                "quantity": 1,
+                "slippageTicks": 1,
+                "sourceAt": "2026-10-04T08:50:49.103395000Z",
+                "sourceVersion": "33884515:2026-10-04T08:50:49.103395000Z"
+              },
+              {
+                "action": "sell",
+                "at": "2026-10-05T20:09:12.401Z",
+                "depthFractionBps": 100,
+                "fee": "0.000000",
+                "instrument": "986:YES",
+                "intentId": 4,
+                "model": "hypothetical_next_snapshot_taker",
+                "price": "0.915000",
+                "quantity": 1,
+                "slippageTicks": 1,
+                "sourceAt": "2026-10-05T20:09:12.539898500Z",
+                "sourceVersion": "57067144:2026-10-05T20:09:12.539898500Z"
+              }
+            ],
+            "referenceEquity": "100.040000",
+            "referencePnl": "0.040000",
+            "sellExecutions": 2,
+            "turnover": "3.640000",
+            "winRate": 1,
+            "winningTrades": 2
+          }
+        }
+      },
+      "anchors": {
+        "bankHashMethod": "model_digest",
+        "bankFileHash": "ccf44ba66d259e518d81c2cc14fc3342214254918675860d31b96eecb81c26cd",
+        "journalPrefixBytes": 11211879,
+        "journalPrefixHash": "c365771ad691f5e2e47e6b8f25bedcb6d7fb0fea2baa69caa274a98bb82ff91b",
+        "journalSequence": 15588,
+        "journalHash": "87e732e7362e364154a43264c41ae966b6956e2a5acbf6c79206226ea97417d9",
+        "openingHash": null,
+        "sourceHash": "87fad1a48c97b73e182dfd9cf81dd9509b7599eb4796e683fe286473a322ad63",
+        "sourceSequence": 32588,
+        "sourcePrefixHash": "5b5916829d81ca9eee261abdbbd720800c22d310f4e796b0a770d5c95d03e88c",
+        "sourcePrefixBytes": 33269822
+      },
+      "scope": {
+        "pointer": "probability-receipt-active.json",
+        "family": "probability-receipt-cohorts",
+        "authoritativeDirectory": "probability-receipt-cohorts/source-probability-native-20261004-v3",
+        "publishedAt": "2026-10-06T01:11:55.091Z",
+        "baseActorMustRemainFenced": false
+      }
+    },
+    {
+      "cohort": "calibrated-kansas-poll-20261005-v1",
+      "bankHash": "3e57289fda56eb58a833fbcf62c8c488064b3e84c0ab0642ece81f6b8549fcce",
+      "bankMode": "source_probability_actual_receipt_paper",
+      "authoritativeOwner": "original_reducer",
+      "overlayHash": null,
+      "status": "current_reducer",
+      "accounting": {
+        "wallets": {
+          "1000": {
+            "cash": "99.655000",
+            "closedTrades": 0,
+            "equityCurve": [],
+            "estimatedLiquidationEquity": "99.995000",
+            "expiredIntents": 0,
+            "fees": "0.000000",
+            "filledShares": 1,
+            "fills": 1,
+            "intents": 1,
+            "liquidationPnl": "-0.005000",
+            "maxObservedDrawdown": "0.000000",
+            "pending": [],
+            "positions": [
+              {
+                "cost": "0.345000",
+                "enteredAt": "2026-10-05T12:15:39.908Z",
+                "estimatedProceeds": "0.340000",
+                "instrument": "1045:YES",
+                "label": "Market 356 · YES",
+                "lots": [
+                  {
+                    "cost": "0.345000",
+                    "quantity": 1
+                  }
+                ],
+                "observationAgeMs": 10531,
+                "quantity": 1,
+                "quoteAgeMs": 10531,
+                "quoteInvalidated": false,
+                "quoteReceivedAt": "2026-10-06T01:11:44.730Z",
+                "unsoldShares": 0
+              }
+            ],
+            "realizedPnl": "0.000000",
+            "recentFills": [
+              {
+                "action": "buy",
+                "at": "2026-10-05T12:15:39.908Z",
+                "depthFractionBps": 100,
+                "fee": "0.000000",
+                "instrument": "1045:YES",
+                "intentId": 1,
+                "model": "hypothetical_next_snapshot_taker",
+                "price": "0.345000",
+                "quantity": 1,
+                "slippageTicks": 1,
+                "sourceAt": "2026-10-05T12:15:40.241914800Z",
+                "sourceVersion": "51877089:2026-10-05T12:15:40.241914800Z"
+              }
+            ],
+            "referenceEquity": "100.002500",
+            "referencePnl": "0.002500",
+            "sellExecutions": 0,
+            "turnover": "0.345000",
+            "winRate": null,
+            "winningTrades": 0
+          },
+          "3000": {
+            "cash": "99.655000",
+            "closedTrades": 0,
+            "equityCurve": [],
+            "estimatedLiquidationEquity": "99.995000",
+            "expiredIntents": 0,
+            "fees": "0.000000",
+            "filledShares": 1,
+            "fills": 1,
+            "intents": 1,
+            "liquidationPnl": "-0.005000",
+            "maxObservedDrawdown": "0.000000",
+            "pending": [],
+            "positions": [
+              {
+                "cost": "0.345000",
+                "enteredAt": "2026-10-05T12:15:39.908Z",
+                "estimatedProceeds": "0.340000",
+                "instrument": "1045:YES",
+                "label": "Market 356 · YES",
+                "lots": [
+                  {
+                    "cost": "0.345000",
+                    "quantity": 1
+                  }
+                ],
+                "observationAgeMs": 10531,
+                "quantity": 1,
+                "quoteAgeMs": 10531,
+                "quoteInvalidated": false,
+                "quoteReceivedAt": "2026-10-06T01:11:44.730Z",
+                "unsoldShares": 0
+              }
+            ],
+            "realizedPnl": "0.000000",
+            "recentFills": [
+              {
+                "action": "buy",
+                "at": "2026-10-05T12:15:39.908Z",
+                "depthFractionBps": 100,
+                "fee": "0.000000",
+                "instrument": "1045:YES",
+                "intentId": 1,
+                "model": "hypothetical_next_snapshot_taker",
+                "price": "0.345000",
+                "quantity": 1,
+                "slippageTicks": 1,
+                "sourceAt": "2026-10-05T12:15:40.241914800Z",
+                "sourceVersion": "51877089:2026-10-05T12:15:40.241914800Z"
+              }
+            ],
+            "referenceEquity": "100.002500",
+            "referencePnl": "0.002500",
+            "sellExecutions": 0,
+            "turnover": "0.345000",
+            "winRate": null,
+            "winningTrades": 0
+          }
+        }
+      },
+      "anchors": {
+        "bankHashMethod": "model_digest",
+        "bankFileHash": "ba94bbf1d65a25a8538da6b05a90457c11a1b9fe200cd3ed60e8d9b6c18df6ea",
+        "journalPrefixBytes": 6610457,
+        "journalPrefixHash": "0d9524f32078ba4359cfbcd95aebe9c91288e8ef08f9ef56394026accfef7b97",
+        "journalSequence": 9541,
+        "journalHash": "f7d130a60208b557146cf19fc1e0a747f7237ca4e827b80c6cf8aefd5d144d43",
+        "openingHash": null,
+        "sourceHash": "87fad1a48c97b73e182dfd9cf81dd9509b7599eb4796e683fe286473a322ad63",
+        "sourceSequence": 32588,
+        "sourcePrefixHash": "db29b5f552504acd3d82b693558369058d5546e5f65461ae99a022c444a37647",
+        "sourcePrefixBytes": 47107794
+      },
+      "scope": {
+        "pointer": "calibrated-poll-paper-active.json",
+        "family": "probability-receipt-cohorts",
+        "authoritativeDirectory": "probability-receipt-cohorts/calibrated-kansas-poll-20261005-v1",
+        "publishedAt": "2026-10-06T01:11:55.261Z",
+        "baseActorMustRemainFenced": false
+      }
+    },
+    {
+      "cohort": "primary-texas-governor-20261005-v3",
+      "bankHash": "b01aacf6ab1c3a4ccdcd50f1cb56edd1651c95395134a7ffef8c4bb2e45e5ce3",
+      "bankMode": "source_probability_actual_receipt_paper",
+      "authoritativeOwner": "original_reducer",
+      "overlayHash": null,
+      "status": "current_reducer",
+      "accounting": {
+        "wallets": {
+          "1000": {
+            "cash": "99.705000",
+            "closedTrades": 0,
+            "equityCurve": [],
+            "estimatedLiquidationEquity": "99.995000",
+            "expiredIntents": 0,
+            "fees": "0.000000",
+            "filledShares": 1,
+            "fills": 1,
+            "intents": 1,
+            "liquidationPnl": "-0.005000",
+            "maxObservedDrawdown": "0.000000",
+            "pending": [],
+            "positions": [
+              {
+                "cost": "0.295000",
+                "enteredAt": "2026-10-05T19:22:27.933Z",
+                "estimatedProceeds": "0.290000",
+                "instrument": "884:YES",
+                "label": "Market 195 · YES",
+                "lots": [
+                  {
+                    "cost": "0.295000",
+                    "quantity": 1
+                  }
+                ],
+                "observationAgeMs": 12479,
+                "quantity": 1,
+                "quoteAgeMs": 12479,
+                "quoteInvalidated": false,
+                "quoteReceivedAt": "2026-10-06T01:11:42.948Z",
+                "unsoldShares": 0
+              }
+            ],
+            "realizedPnl": "0.000000",
+            "recentFills": [
+              {
+                "action": "buy",
+                "at": "2026-10-05T19:22:27.933Z",
+                "depthFractionBps": 100,
+                "fee": "0.000000",
+                "instrument": "884:YES",
+                "intentId": 1,
+                "model": "hypothetical_next_snapshot_taker",
+                "price": "0.295000",
+                "quantity": 1,
+                "slippageTicks": 1,
+                "sourceAt": "2026-10-05T19:22:26.214730100Z",
+                "sourceVersion": "56583269:2026-10-05T19:22:26.214730100Z"
+              }
+            ],
+            "referenceEquity": "100.002500",
+            "referencePnl": "0.002500",
+            "sellExecutions": 0,
+            "turnover": "0.295000",
+            "winRate": null,
+            "winningTrades": 0
+          },
+          "3000": {
+            "cash": "99.705000",
+            "closedTrades": 0,
+            "equityCurve": [],
+            "estimatedLiquidationEquity": "99.995000",
+            "expiredIntents": 0,
+            "fees": "0.000000",
+            "filledShares": 1,
+            "fills": 1,
+            "intents": 1,
+            "liquidationPnl": "-0.005000",
+            "maxObservedDrawdown": "0.000000",
+            "pending": [],
+            "positions": [
+              {
+                "cost": "0.295000",
+                "enteredAt": "2026-10-05T19:22:27.933Z",
+                "estimatedProceeds": "0.290000",
+                "instrument": "884:YES",
+                "label": "Market 195 · YES",
+                "lots": [
+                  {
+                    "cost": "0.295000",
+                    "quantity": 1
+                  }
+                ],
+                "observationAgeMs": 12479,
+                "quantity": 1,
+                "quoteAgeMs": 12479,
+                "quoteInvalidated": false,
+                "quoteReceivedAt": "2026-10-06T01:11:42.948Z",
+                "unsoldShares": 0
+              }
+            ],
+            "realizedPnl": "0.000000",
+            "recentFills": [
+              {
+                "action": "buy",
+                "at": "2026-10-05T19:22:27.933Z",
+                "depthFractionBps": 100,
+                "fee": "0.000000",
+                "instrument": "884:YES",
+                "intentId": 1,
+                "model": "hypothetical_next_snapshot_taker",
+                "price": "0.295000",
+                "quantity": 1,
+                "slippageTicks": 1,
+                "sourceAt": "2026-10-05T19:22:26.214730100Z",
+                "sourceVersion": "56583269:2026-10-05T19:22:26.214730100Z"
+              }
+            ],
+            "referenceEquity": "100.002500",
+            "referencePnl": "0.002500",
+            "sellExecutions": 0,
+            "turnover": "0.295000",
+            "winRate": null,
+            "winningTrades": 0
+          }
+        }
+      },
+      "anchors": {
+        "bankHashMethod": "model_digest",
+        "bankFileHash": "9e8e52563f2ecbdc1897214e02615506bca33dd9d915583365081b88fbc31ebe",
+        "journalPrefixBytes": 3388700,
+        "journalPrefixHash": "9481a59d890bc4af6b97a2199d7e7c1c30f97aa6dc7969ca101782f1bac753e8",
+        "journalSequence": 4892,
+        "journalHash": "5fdeece50bbab4827568ff4064b6c189a8a50ceb9ba6a1908b30bacbb74117b9",
+        "openingHash": null,
+        "sourceHash": "87fad1a48c97b73e182dfd9cf81dd9509b7599eb4796e683fe286473a322ad63",
+        "sourceSequence": 32588,
+        "sourcePrefixHash": "f7d65fc54a43710d5726de957d9dfb4c8927d52450664be424b3e73c6b63b8fb",
+        "sourcePrefixBytes": 57917568
+      },
+      "scope": {
+        "pointer": "primary-breadth-paper-active.json",
+        "family": "probability-receipt-cohorts",
+        "authoritativeDirectory": "probability-receipt-cohorts/primary-texas-governor-20261005-v3",
+        "publishedAt": "2026-10-06T01:11:55.427Z",
+        "baseActorMustRemainFenced": false
+      }
+    },
+    {
+      "cohort": "texas-governor-fundamental-20261005-v1",
+      "bankHash": "fdfb0c25e1bba643c1ec203fa82a34b4fc88e864a5e9174571a3115302deb3a9",
+      "bankMode": "funded_settlement_value_paper_v1",
+      "authoritativeOwner": "operator_overlay",
+      "overlayHash": "045444cfd2e679385ec2542901bb3a8e8e1f45f3b003c65ed9fa2b56e5420cc8",
+      "status": "entry_draining",
+      "accounting": {
+        "wallets": {
+          "1000": {
+            "cash": "99.985000",
+            "closedTrades": 1,
+            "cumulativeBuys": "0.295000",
+            "fills": 2,
+            "newEntries": false,
+            "pending": [],
+            "positions": [],
+            "realizedPnl": "-0.015000",
+            "recentFills": [
+              {
+                "action": "buy",
+                "at": "2026-10-05T20:07:12.345Z",
+                "exchangeId": "884",
+                "fee": "0.000000",
+                "instrument": "884:YES",
+                "intentId": 1,
+                "intentSourceHash": "276a56c88a3bfe356991b5037ae5ba1a19071f86c4b597651b14d56751c55871",
+                "latencyMs": 1000,
+                "marketId": "195",
+                "model": "later_rest_request_counterfactual",
+                "price": "0.295000",
+                "quantity": 1,
+                "reason": "positive_settlement_scenario_edge",
+                "receivedAt": "2026-10-05T20:07:12.237Z",
+                "requestStartedAt": "2026-10-05T20:07:10.792Z",
+                "researchHash": "7e24ffff1f1d79ce369d4226376aee7f14788526163998ef508aaf4d3119fd42",
+                "sourceHash": "b117a77743c4574576f014e109d91e48b439edbd5b3b4a5a4cf4af8761c57631",
+                "sourceSequence": 27555,
+                "sourceVersion": "57041184:2026-10-05T20:07:11.567394100Z"
+              },
+              {
+                "action": "sell",
+                "at": "2026-10-05T22:09:22.971Z",
+                "exchangeId": "884",
+                "fee": "0.000000",
+                "instrument": "884:YES",
+                "intentId": 1,
+                "marketId": "195",
+                "model": "later_rest_request_counterfactual",
+                "price": "0.280000",
+                "quantity": 1,
+                "reason": "invalidated_forecast_robust_value_reduction",
+                "receivedAt": "2026-10-05T22:09:22.858Z",
+                "requestStartedAt": "2026-10-05T22:09:21.906Z",
+                "revisionHash": "045444cfd2e679385ec2542901bb3a8e8e1f45f3b003c65ed9fa2b56e5420cc8",
+                "sourceHash": "a9033b1a26ea609a9ea3dfe9318770639b3f532ad73c1b668bb6115381c1c55b",
+                "sourceSequence": 29314,
+                "sourceVersion": "58593145:2026-10-05T22:09:22.553861300Z"
+              }
+            ],
+            "reservedCost": "0.000000"
+          },
+          "3000": {
+            "cash": "99.985000",
+            "closedTrades": 1,
+            "cumulativeBuys": "0.295000",
+            "fills": 2,
+            "newEntries": false,
+            "pending": [],
+            "positions": [],
+            "realizedPnl": "-0.015000",
+            "recentFills": [
+              {
+                "action": "buy",
+                "at": "2026-10-05T20:07:12.345Z",
+                "exchangeId": "884",
+                "fee": "0.000000",
+                "instrument": "884:YES",
+                "intentId": 1,
+                "intentSourceHash": "276a56c88a3bfe356991b5037ae5ba1a19071f86c4b597651b14d56751c55871",
+                "latencyMs": 3000,
+                "marketId": "195",
+                "model": "later_rest_request_counterfactual",
+                "price": "0.295000",
+                "quantity": 1,
+                "reason": "positive_settlement_scenario_edge",
+                "receivedAt": "2026-10-05T20:07:12.237Z",
+                "requestStartedAt": "2026-10-05T20:07:10.792Z",
+                "researchHash": "7e24ffff1f1d79ce369d4226376aee7f14788526163998ef508aaf4d3119fd42",
+                "sourceHash": "b117a77743c4574576f014e109d91e48b439edbd5b3b4a5a4cf4af8761c57631",
+                "sourceSequence": 27555,
+                "sourceVersion": "57041184:2026-10-05T20:07:11.567394100Z"
+              },
+              {
+                "action": "sell",
+                "at": "2026-10-05T22:09:22.971Z",
+                "exchangeId": "884",
+                "fee": "0.000000",
+                "instrument": "884:YES",
+                "intentId": 1,
+                "marketId": "195",
+                "model": "later_rest_request_counterfactual",
+                "price": "0.280000",
+                "quantity": 1,
+                "reason": "invalidated_forecast_robust_value_reduction",
+                "receivedAt": "2026-10-05T22:09:22.858Z",
+                "requestStartedAt": "2026-10-05T22:09:21.906Z",
+                "revisionHash": "045444cfd2e679385ec2542901bb3a8e8e1f45f3b003c65ed9fa2b56e5420cc8",
+                "sourceHash": "a9033b1a26ea609a9ea3dfe9318770639b3f532ad73c1b668bb6115381c1c55b",
+                "sourceSequence": 29314,
+                "sourceVersion": "58593145:2026-10-05T22:09:22.553861300Z"
+              }
+            ],
+            "reservedCost": "0.000000"
+          }
+        }
+      },
+      "anchors": {
+        "bankHashMethod": "model_digest",
+        "bankFileHash": "6677fc512ae331ff3d47bd9b0baed5cac708471daea7b3deda6333302e90018a",
+        "journalPrefixBytes": 21036358,
+        "journalPrefixHash": "8a5d5dd6dcec68604541470c581512f439fc2aef086b8b2fec2770cca0a1148b",
+        "journalSequence": 3284,
+        "journalHash": "b273b9ffbdc27866b0d911c2f8b61ce43828e71072f0881fcd06ad58270d4c64",
+        "openingHash": "cad0000bd1b210068c8528b7bc0369aefa90af3a0964828a20cb196666faecd2",
+        "sourceHash": "87fad1a48c97b73e182dfd9cf81dd9509b7599eb4796e683fe286473a322ad63",
+        "sourceSequence": 32588,
+        "sourcePrefixHash": "e81fbbbb69cc5a7f936b804c8226834c42a81cd97d3cc1b27b21c026f6411b22",
+        "sourcePrefixBytes": 59726083
+      },
+      "scope": {
+        "pointer": "settlement-paper-active.json",
+        "family": "settlement-paper-cohorts",
+        "authoritativeDirectory": "settlement-paper-cohorts/texas-governor-fundamental-20261005-v1/operator-value-revision",
+        "publishedAt": "2026-10-06T01:11:47.673Z",
+        "baseActorMustRemainFenced": true
+      }
+    },
+    {
+      "cohort": "kansas-horizon-portfolio-20261005-v2",
+      "bankHash": "77f83ee28a211ee1540f23b74b6698a327c7350562afd45ca98aca29f59652c6",
+      "bankMode": "funded_settlement_portfolio_paper_v2",
+      "authoritativeOwner": "original_reducer",
+      "overlayHash": null,
+      "status": "current_reducer",
+      "accounting": {
+        "wallets": {
+          "1000": {
+            "cash": "99.645000",
+            "closedTrades": 0,
+            "cumulativeBuys": "0.355000",
+            "fills": 1,
+            "liquidationPnl": "-0.015000",
+            "pending": [],
+            "positions": [
+              {
+                "cost": "0.355000",
+                "enteredAt": "2026-10-06T00:24:53.968Z",
+                "instrument": "1045:YES",
+                "liquidation": "0.340000",
+                "liquidationPnl": "-0.015000",
+                "marketId": "356",
+                "quantity": 1,
+                "researchExpired": false
+              }
+            ],
+            "realizedPnl": "0.000000",
+            "recentFills": [
+              {
+                "action": "buy",
+                "at": "2026-10-06T00:24:53.968Z",
+                "exchangeId": "1045",
+                "fee": "0.000000",
+                "instrument": "1045:YES",
+                "intentId": 1,
+                "intentSourceHash": "f6e072f08c43f7c01fa7feb529bf8cfd2baaf7e8e3f4f28343f9fced8afe77ef",
+                "latencyMs": 1000,
+                "marketId": "356",
+                "model": "later_rest_request_counterfactual",
+                "price": "0.355000",
+                "quantity": 1,
+                "reason": "positive_settlement_scenario_edge",
+                "receivedAt": "2026-10-06T00:24:50.953Z",
+                "requestStartedAt": "2026-10-06T00:24:50.761Z",
+                "researchHash": "6f2cdf7914688f6f0bc27d7435c913e3b0f5cbcde211527c258fb5cf1c396e9d",
+                "sourceHash": "607bb02f33cc53684ac699b44c2e454cab6eb96b22d3804f95643e7e19bbbcb8",
+                "sourceSequence": 31710,
+                "sourceVersion": "60170368:2026-10-06T00:24:51.066605100Z"
+              }
+            ],
+            "reservedCost": "0.000000"
+          },
+          "3000": {
+            "cash": "99.645000",
+            "closedTrades": 0,
+            "cumulativeBuys": "0.355000",
+            "fills": 1,
+            "liquidationPnl": "-0.015000",
+            "pending": [],
+            "positions": [
+              {
+                "cost": "0.355000",
+                "enteredAt": "2026-10-06T00:24:53.968Z",
+                "instrument": "1045:YES",
+                "liquidation": "0.340000",
+                "liquidationPnl": "-0.015000",
+                "marketId": "356",
+                "quantity": 1,
+                "researchExpired": false
+              }
+            ],
+            "realizedPnl": "0.000000",
+            "recentFills": [
+              {
+                "action": "buy",
+                "at": "2026-10-06T00:24:53.968Z",
+                "exchangeId": "1045",
+                "fee": "0.000000",
+                "instrument": "1045:YES",
+                "intentId": 1,
+                "intentSourceHash": "f6e072f08c43f7c01fa7feb529bf8cfd2baaf7e8e3f4f28343f9fced8afe77ef",
+                "latencyMs": 3000,
+                "marketId": "356",
+                "model": "later_rest_request_counterfactual",
+                "price": "0.355000",
+                "quantity": 1,
+                "reason": "positive_settlement_scenario_edge",
+                "receivedAt": "2026-10-06T00:24:50.953Z",
+                "requestStartedAt": "2026-10-06T00:24:50.761Z",
+                "researchHash": "6f2cdf7914688f6f0bc27d7435c913e3b0f5cbcde211527c258fb5cf1c396e9d",
+                "sourceHash": "607bb02f33cc53684ac699b44c2e454cab6eb96b22d3804f95643e7e19bbbcb8",
+                "sourceSequence": 31710,
+                "sourceVersion": "60170368:2026-10-06T00:24:51.066605100Z"
+              }
+            ],
+            "reservedCost": "0.000000"
+          }
+        }
+      },
+      "anchors": {
+        "bankHashMethod": "model_digest",
+        "bankFileHash": "9c60ae3ce7138f52f22f88c6ea29d208e6eda75ec81e61d693a11d8be0af1fca",
+        "journalPrefixBytes": 17307775,
+        "journalPrefixHash": "435a689aa1614861183bc4392702fe0c1fbebd80a0a67e2b69c0e867263b88a3",
+        "journalSequence": 228,
+        "journalHash": "6254ec9d80d928a29b2e4a946a1a774a5aef985b939ade802fc811a3dde74103",
+        "openingHash": null,
+        "sourceHash": "87fad1a48c97b73e182dfd9cf81dd9509b7599eb4796e683fe286473a322ad63",
+        "sourceSequence": 32588,
+        "sourcePrefixHash": "7c8c203a05dc4f487131d5b8f7645f593ed3719dcf1083df2cc85381ffbdf613",
+        "sourcePrefixBytes": 67988043
+      },
+      "scope": {
+        "pointer": "settlement-portfolio-v2-active.json",
+        "family": "settlement-portfolio-v2-cohorts",
+        "authoritativeDirectory": "settlement-portfolio-v2-cohorts/kansas-horizon-portfolio-20261005-v2",
+        "publishedAt": "2026-10-06T01:11:48.864Z",
+        "baseActorMustRemainFenced": false
+      }
+    },
+    {
+      "cohort": "michigan-governor-dual-no-20261005-v1",
+      "bankHash": "0d53558dda330cd5a41f267dfc0310bd3902418572c6679335dcbf7d49ff5217",
+      "bankMode": "dual_no_sequential_paper_v1",
+      "authoritativeOwner": "original_reducer",
+      "overlayHash": null,
+      "status": "current_reducer",
+      "accounting": {
+        "wallets": {
+          "single": {
+            "cash": "99.025000",
+            "realizedPnl": "0.000000",
+            "cumulativeBuys": "0.975000",
+            "positions": [
+              {
+                "cost": "0.120000",
+                "enteredAt": "2026-10-05T21:19:50.923Z",
+                "estimatedLiquidationProceeds": "0.105000",
+                "exchangeId": "994",
+                "marketId": "305",
+                "quantity": 1,
+                "quoteAgeMs": 2073,
+                "quoteReceivedAt": "2026-10-06T01:11:46.053Z",
+                "quoteRequestStartedAt": "2026-10-06T01:11:45.745Z",
+                "unsoldShares": 0
+              },
+              {
+                "cost": "0.855000",
+                "enteredAt": "2026-10-05T21:20:31.534Z",
+                "estimatedLiquidationProceeds": "0.870000",
+                "exchangeId": "995",
+                "marketId": "306",
+                "quantity": 1,
+                "quoteAgeMs": 753,
+                "quoteReceivedAt": "2026-10-06T01:11:47.318Z",
+                "quoteRequestStartedAt": "2026-10-06T01:11:47.065Z",
+                "unsoldShares": 0
+              }
+            ],
+            "pending": null,
+            "reserved": "0.000000",
+            "fills": 2,
+            "recentFills": [
+              {
+                "action": "buy",
+                "at": "2026-10-05T21:19:50.923Z",
+                "createdAt": "2026-10-05T21:19:15.324Z",
+                "decisionVersion": "57966363:2026-10-05T21:19:10.162050000Z",
+                "exchangeId": "994",
+                "expiresAt": "2026-10-05T21:21:15.324Z",
+                "fees": "0.000000",
+                "id": 1,
+                "limit": "0.125000",
+                "marketId": "305",
+                "model": "counterfactual_later_independent_book_not_proven_execution",
+                "packageId": 1,
+                "price": "0.120000",
+                "quantity": 1,
+                "source": {
+                  "eligibleDepth": 3,
+                  "levelIndex": 0,
+                  "publicationHash": "ba6180f2d40683d7f3a7e0c0ab5a605bffb5e29e7f2350332d4147c6e16b3b52",
+                  "publicationSequence": 28552,
+                  "rawYesPrice": "0.885000",
+                  "receivedAt": "2026-10-05T21:19:50.657Z",
+                  "requestStartedAt": "2026-10-05T21:19:48.683Z",
+                  "version": "57973750:2026-10-05T21:19:49.529069500Z"
+                },
+                "stage": "entry_first"
+              },
+              {
+                "action": "buy",
+                "at": "2026-10-05T21:20:31.534Z",
+                "createdAt": "2026-10-05T21:19:50.923Z",
+                "decisionVersion": null,
+                "exchangeId": "995",
+                "expiresAt": "2026-10-05T21:21:50.923Z",
+                "fees": "0.000000",
+                "id": 2,
+                "limit": "0.855000",
+                "marketId": "306",
+                "model": "counterfactual_later_independent_book_not_proven_execution",
+                "packageId": 1,
+                "price": "0.855000",
+                "quantity": 1,
+                "source": {
+                  "eligibleDepth": 6,
+                  "levelIndex": 0,
+                  "publicationHash": "dc82d3a485391f246040c3d79f9b48f2eb423c6681e8457811fe645def89a08d",
+                  "publicationSequence": 28557,
+                  "rawYesPrice": "0.150000",
+                  "receivedAt": "2026-10-05T21:20:31.261Z",
+                  "requestStartedAt": "2026-10-05T21:20:28.496Z",
+                  "version": "57982800:2026-10-05T21:20:29.520691900Z"
+                },
+                "stage": "entry_second"
+              }
+            ],
+            "package": {
+              "buyCost": "0.975000",
+              "completedAt": "2026-10-05T21:20:31.534Z",
+              "completedPair": true,
+              "createdAt": "2026-10-05T21:19:15.324Z",
+              "entryLimits": {
+                "994": "0.125000",
+                "995": "0.855000"
+              },
+              "entryVersions": [
+                "57966363:2026-10-05T21:19:10.162050000Z",
+                "57967001:2026-10-05T21:19:13.576438900Z"
+              ],
+              "first": "994",
+              "id": 1,
+              "saleProceeds": "0.000000",
+              "second": "995",
+              "stage": "holding"
+            },
+            "closedPackages": 0,
+            "fees": "0.000000"
+          }
+        }
+      },
+      "anchors": {
+        "bankHashMethod": "canonical_payload",
+        "bankFileHash": "5fa1b088ba8a1e9926a5398b9212f7998a77102077ba0c4ca4529725df07e83f",
+        "journalPrefixBytes": 27881066,
+        "journalPrefixHash": "7f232982848c53109a102b237fc1ada613f6eebd68e8f7c873cf11a34d4e5446",
+        "journalSequence": 2032,
+        "journalHash": "b15424e1621be2ab709a4a26efa467cd1782152b0c9be46746411909e0ad5609",
+        "openingHash": null,
+        "sourceHash": "87fad1a48c97b73e182dfd9cf81dd9509b7599eb4796e683fe286473a322ad63",
+        "sourceSequence": 32588,
+        "sourcePrefixHash": "ed9e4dbec22db09903ed1c61f0c85e920b0d9d90e87f8a3eadd8d9a9a0b2a191",
+        "sourcePrefixBytes": 62062801
+      },
+      "scope": {
+        "pointer": "dual-no-pair-active.json",
+        "family": "dual-no-pair-cohorts",
+        "authoritativeDirectory": "dual-no-pair-cohorts/michigan-governor-dual-no-20261005-v1",
+        "publishedAt": "2026-10-06T01:11:47.818Z",
+        "baseActorMustRemainFenced": false
+      }
+    },
+    {
+      "cohort": "michigan-governor-dual-no-20261005-v2",
+      "bankHash": "13181f258f693ed6510fefcb4cd140e5601fc937659def372e8ce7d1d4300e41",
+      "bankMode": "dual_no_sequential_paper_v2_exact_receipt",
+      "authoritativeOwner": "original_reducer",
+      "overlayHash": null,
+      "status": "current_reducer",
+      "accounting": {
+        "wallets": {
+          "single": {
+            "cash": "99.020000",
+            "realizedPnl": "0.000000",
+            "cumulativeBuys": "0.980000",
+            "positions": [
+              {
+                "cost": "0.120000",
+                "enteredAt": "2026-10-05T21:39:36.357Z",
+                "estimatedLiquidationProceeds": "0.110000",
+                "exchangeId": "994",
+                "marketId": "305",
+                "quantity": 1,
+                "quoteAgeMs": 2172,
+                "quoteReceivedAt": "2026-10-06T01:11:46.053Z",
+                "quoteRequestStartedAt": "2026-10-06T01:11:45.745Z",
+                "unsoldShares": 0
+              },
+              {
+                "cost": "0.860000",
+                "enteredAt": "2026-10-05T21:39:59.967Z",
+                "estimatedLiquidationProceeds": "0.875000",
+                "exchangeId": "995",
+                "marketId": "306",
+                "quantity": 1,
+                "quoteAgeMs": 852,
+                "quoteReceivedAt": "2026-10-06T01:11:47.318Z",
+                "quoteRequestStartedAt": "2026-10-06T01:11:47.065Z",
+                "unsoldShares": 0
+              }
+            ],
+            "pending": null,
+            "reserved": "0.000000",
+            "fills": 2,
+            "recentFills": [
+              {
+                "action": "buy",
+                "at": "2026-10-05T21:39:36.357Z",
+                "createdAt": "2026-10-05T21:39:17.843Z",
+                "decisionVersion": "58218795:2026-10-05T21:39:14.084439300Z",
+                "exchangeId": "994",
+                "expiresAt": "2026-10-05T21:41:17.843Z",
+                "fees": "0.000000",
+                "id": 1,
+                "limit": "0.120000",
+                "marketId": "305",
+                "model": "counterfactual_later_independent_book_not_proven_execution",
+                "packageId": 1,
+                "price": "0.120000",
+                "quantity": 1,
+                "source": {
+                  "eligibleDepth": 15,
+                  "fillAdverseTicks": 0,
+                  "levelIndex": 0,
+                  "limitAdmissionAdverseTicks": 1,
+                  "publicationHash": "c9d2ab1d7eac77a62f570dcb11252d2eeb3f359ef6ca6a41e2ed024daee3eac5",
+                  "publicationSequence": 28814,
+                  "rawYesPrice": "0.880000",
+                  "receivedAt": "2026-10-05T21:39:36.143Z",
+                  "requestStartedAt": "2026-10-05T21:39:35.235Z",
+                  "version": "58222791:2026-10-05T21:39:36.055024200Z"
+                },
+                "stage": "entry_first"
+              },
+              {
+                "action": "buy",
+                "at": "2026-10-05T21:39:59.967Z",
+                "createdAt": "2026-10-05T21:39:36.357Z",
+                "decisionVersion": null,
+                "exchangeId": "995",
+                "expiresAt": "2026-10-05T21:41:36.357Z",
+                "fees": "0.000000",
+                "id": 2,
+                "limit": "0.865000",
+                "marketId": "306",
+                "model": "counterfactual_later_independent_book_not_proven_execution",
+                "packageId": 1,
+                "price": "0.860000",
+                "quantity": 1,
+                "source": {
+                  "eligibleDepth": 37,
+                  "fillAdverseTicks": 0,
+                  "levelIndex": 0,
+                  "limitAdmissionAdverseTicks": 1,
+                  "publicationHash": "44bd7b35c692877f270d971d027643a158b5bad700e0cf28e0b81983ca747314",
+                  "publicationSequence": 28819,
+                  "rawYesPrice": "0.140000",
+                  "receivedAt": "2026-10-05T21:39:59.756Z",
+                  "requestStartedAt": "2026-10-05T21:39:58.219Z",
+                  "version": "58227243:2026-10-05T21:39:58.888378000Z"
+                },
+                "stage": "entry_second"
+              }
+            ],
+            "package": {
+              "buyCost": "0.980000",
+              "completedAt": "2026-10-05T21:39:59.967Z",
+              "completedPair": true,
+              "createdAt": "2026-10-05T21:39:17.843Z",
+              "entryLimits": {
+                "994": "0.120000",
+                "995": "0.865000"
+              },
+              "entryVersions": [
+                "58218795:2026-10-05T21:39:14.084439300Z",
+                "58219206:2026-10-05T21:39:16.534383500Z"
+              ],
+              "first": "994",
+              "id": 1,
+              "saleProceeds": "0.000000",
+              "second": "995",
+              "stage": "holding"
+            },
+            "closedPackages": 0,
+            "fees": "0.000000"
+          }
+        }
+      },
+      "anchors": {
+        "bankHashMethod": "canonical_payload",
+        "bankFileHash": "34e52aa749350dc98a220dc1cbe57ac32265c25b2d5b9b5a1b44f05cb9c860df",
+        "journalPrefixBytes": 26202531,
+        "journalPrefixHash": "0fe319ad9fb888d1e401e5a93e803138b70be8222908c76e0e2a6ef954117b4b",
+        "journalSequence": 1900,
+        "journalHash": "5389c71eb0f4f15a33ae7549d21af139dc866f6a89bdf3ee82d9d5a97f9a0487",
+        "openingHash": null,
+        "sourceHash": "87fad1a48c97b73e182dfd9cf81dd9509b7599eb4796e683fe286473a322ad63",
+        "sourceSequence": 32588,
+        "sourcePrefixHash": "5eea7cc0cc2ea9be2fab891ca76321fa40593f25f0472a36e29116bdd409ff24",
+        "sourcePrefixBytes": 62418566
+      },
+      "scope": {
+        "pointer": "dual-no-pair-v2-active.json",
+        "family": "dual-no-pair-v2-cohorts",
+        "authoritativeDirectory": "dual-no-pair-v2-cohorts/michigan-governor-dual-no-20261005-v2",
+        "publishedAt": "2026-10-06T01:11:47.917Z",
+        "baseActorMustRemainFenced": false
+      }
+    },
+    {
+      "cohort": "baal-coupled-bulk-20261005-v2c-live",
+      "bankHash": "d9e27c27bed40738f7526fdeb256633398dea60eeea42457c5dc40315ca3b2cf",
+      "bankMode": "coupled_bulk_history_trade_tape_paper_v2",
+      "authoritativeOwner": "original_reducer",
+      "overlayHash": null,
+      "status": "entry_draining",
+      "accounting": {
+        "wallets": {
+          "COUPLED": {
+            "cash": "99.990000",
+            "closedTrades": 1,
+            "cumulativeBuys": "0.930000",
+            "estimatedLiquidationPnl": "-0.010000",
+            "fees": "0.000000",
+            "fills": 2,
+            "pairedRedemptions": 0,
+            "positions": [],
+            "realizedPnl": "-0.010000",
+            "recentFills": [
+              {
+                "action": "buy",
+                "at": "2026-10-05T18:48:40.868Z",
+                "exchangeId": "1016",
+                "marketId": "327",
+                "model": "hypothetical_strict_trade_through_not_proven_execution",
+                "price": "0.930000",
+                "quantity": 1,
+                "quoteId": 82,
+                "side": "NO",
+                "source": {
+                  "aggressorSide": null,
+                  "createdAt": "2026-10-05T18:48:10.011Z",
+                  "executionProven": false,
+                  "firstAvailableAt": "2026-10-05T18:48:40.799Z",
+                  "id": "56203766",
+                  "key": "dcc08510162a03d399afa155d326a0472a0c2e4eb4b0a781a05135cbf4ec3c0b",
+                  "kind": "trade",
+                  "normalizedYesPrice": "0.075000",
+                  "queuePositionProven": false
+                }
+              },
+              {
+                "action": "sell",
+                "at": "2026-10-05T20:49:12.240Z",
+                "exchangeId": "1016",
+                "marketId": "327",
+                "model": "hypothetical_later_request_taker",
+                "price": "0.920000",
+                "quantity": 1,
+                "quoteId": 141,
+                "side": "NO",
+                "source": {
+                  "kind": "book",
+                  "publicationHash": "99bac452073d0d1ea87bca7859abba3f9155e3fe0d06fbc0c493d3eca434a953",
+                  "publicationSequence": 28153,
+                  "version": "57587210:2026-10-05T20:49:12.140478700Z"
+                }
+              }
+            ],
+            "recentRedemptions": [],
+            "reserved": "0.000000",
+            "unresolvedQuotes": []
+          }
+        }
+      },
+      "anchors": {
+        "bankHashMethod": "model_digest",
+        "bankFileHash": "d1a9ea064ef551fbf3c10f1810a5499839b460f0bb129a322466c7a69c0abb9b",
+        "journalPrefixBytes": 9661509799,
+        "journalPrefixHash": "fbe14591827394b58bcd4e52dd1599a005c658d0f6660f66c8fd8b6d542b8799",
+        "journalSequence": 18053,
+        "journalHash": "95e2e8c70de46e82263fae9caf36d1e81d2eec9d97323f702230874996c823c7",
+        "openingHash": null,
+        "sourceHash": null,
+        "sourceSequence": null,
+        "sourcePrefixHash": null,
+        "sourcePrefixBytes": null
+      },
+      "scope": {
+        "pointer": "coupled-bulk-active.json",
+        "family": "coupled-bulk-cohorts",
+        "authoritativeDirectory": "coupled-bulk-cohorts/baal-coupled-bulk-20261005-v2c-live",
+        "publishedAt": "2026-10-06T01:11:54.450Z",
+        "baseActorMustRemainFenced": false
+      }
+    }
+  ],
+  "independentEconomicReplay": false,
+  "cutoverReady": false,
+  "activationAuthority": false,
+  "competitionOrders": 0,
+  "accountRequests": 0,
+  "limitations": [
+    "A fresh derived publication matched to its sealed journal tail is an inventory checkpoint, not independent economic/source replay.",
+    "All archived banks and journals remain preserved outside this current-reducer manifest.",
+    "Final cutover requires stopped original writers, fresh reconciled native replay and the account queue migration boundary."
+  ]
+}

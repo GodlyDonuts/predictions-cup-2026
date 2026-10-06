@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "at": "2026-10-06T01:14:35.442Z",
+  "inventoryObservedAt": "2026-10-06T01:12:05.728Z",
+  "currentReducers": 8,
+  "rejectedUnprovenNativeImport": true,
+  "rejectedHistoricalBaseResurrection": true,
+  "actualOverlayCash": "99.985000",
+  "actualOverlayRealizedPnl": "-0.015000",
+  "nativeImportProven": false,
+  "cutoverReady": false,
+  "runtimeChanges": 0,
+  "accountRequests": 0,
+  "competitionOrders": 0
+}
