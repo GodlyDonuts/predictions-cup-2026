@@ -7,6 +7,11 @@ const need=(ok,code)=>{if(!ok)throw Error('PRODUCTION_'+code);};
 const hash=x=>typeof x==='string'&&/^[a-f0-9]{64}$/.test(x);
 const stamp=x=>typeof x==='string'&&Number.isFinite(Date.parse(x))&&new Date(x).toISOString()===x;
 const comment=x=>Number.isSafeInteger(x)&&x>0;
+const ownerAssignment=5984685670,ownerAck=5984845412;
+function medianHumanActivation(a){
+ const u=a.activationAuthority;
+ need(a.authorityKind==='direct_human_assignment'&&a.assignmentCommentId===ownerAssignment&&a.ackCommentId===ownerAck&&u?.kind==='direct_human_activation'&&u.threadId==='01a0f8cc-b9bb-77d2-9f4c-2844396f1b79'&&u.runId===a.runId&&u.exploratory===true&&u.profitabilityEstablished===false&&typeof u.quote==='string'&&u.quote.length>0&&u.quote.length<=2000&&stamp(u.recordedAt)&&Date.parse(u.recordedAt)<=Date.parse(a.startedAt),'MEDIAN_HUMAN_ACTIVATION');
+}
 export function productionAuthorityFields(a){
  if(a?.authorityKind==='direct_human_assignment'){
   need(/^human-to-baal-[a-z0-9-]{1,70}$/.test(a.handoffId)&&comment(a.assignmentCommentId)&&a.releaseCommentId===undefined,'HUMAN_ASSIGNMENT');
@@ -16,17 +21,32 @@ export function productionAuthorityFields(a){
  return ['handoffId','releaseCommentId','ackCommentId'];
 }
 export function validateProductionActivation(a){
- need(a?.schemaVersion===2&&a.enabled===true&&a.ownerId==='Codex'&&a.tournamentId===TID&&/^sig-pilot-[a-z0-9-]{1,64}$/.test(a.runId)&&['settlement-value-native-v1','probability-receipt-native-v1'].includes(a.strategyId),'ACTIVATION');
+ need(a?.schemaVersion===2&&a.enabled===true&&a.ownerId==='Codex'&&a.tournamentId===TID&&/^sig-pilot-[a-z0-9-]{1,64}$/.test(a.runId)&&['settlement-value-native-v1','probability-receipt-native-v1','historical-median-receipt-v1'].includes(a.strategyId),'ACTIVATION');
  need(hash(a.handoffHash)&&hash(a.strategyBankHash)&&typeof a.handoffId==='string'&&comment(a.ackCommentId),'HANDOFF');
  productionAuthorityFields(a);
  need(a.feeBps===0&&a.depthFractionBps===100&&a.maxManagedMarkets===3,'POLICY');
  const order=decimalMicros(a.maxOrderCost),total=decimalMicros(a.maxAggregateCost),buys=decimalMicros(a.maxCumulativeBuyCost),reserve=decimalMicros(a.cashReserve),capital=decimalMicros(a.sizingCapital);
  need(order>0n&&order<=1000000n&&total>=order&&total<=10000000n&&buys>=order&&buys<=25000000n&&reserve>=0n&&capital>reserve&&capital<=100000000000n,'LIMITS');
  need(stamp(a.startedAt)&&stamp(a.entryExpiresAt)&&Date.parse(a.entryExpiresAt)>Date.parse(a.startedAt)&&Date.parse(a.entryExpiresAt)-Date.parse(a.startedAt)<=21600000,'WINDOW');
+ if(a.strategyId==='historical-median-receipt-v1')medianHumanActivation(a);
  return a;
 }
 export function validateProductionHandoff(h,a){
  validateProductionActivation(a);
+ if(h?.schemaVersion===3){
+  need(a.strategyId==='historical-median-receipt-v1'&&h.kind==='same_owner_explicit_human_activation'&&h.executionOwner==='Codex'&&h.ownershipTransferred===false&&payloadHash(h)===a.handoffHash&&productionAuthorityFields(a).every(k=>h[k]===a[k]),'SAME_OWNER_ACTIVATION');
+  const old=h.inheritedOwnershipRecord,prior=h.inheritedActivation;
+  need(old?.schemaVersion===2&&prior?.authorityKind==='direct_human_assignment'&&prior.strategyId!=='historical-median-receipt-v1'&&prior.runId!==a.runId&&prior.assignmentCommentId===ownerAssignment&&prior.ackCommentId===ownerAck&&productionAuthorityFields(a).every(k=>prior[k]===a[k]),'INHERITED_OWNERSHIP');
+  validateProductionHandoff(old,prior);
+  need(Date.parse(prior.startedAt)<=Date.parse(a.activationAuthority.recordedAt),'ACTIVATION_AUTHORITY_CLOCK');
+  need(payloadHash(h.humanActivation)===payloadHash(a.activationAuthority),'ACTIVATION_AUDIT');
+  const r=h.reconciliation;
+  need(r?.complete===true&&r.tournamentId===TID&&hash(r.receiptHash)&&stamp(r.oldestReceivedAt)&&stamp(r.newestReceivedAt)&&stamp(h.reconciledAt)&&Date.parse(r.oldestReceivedAt)<=Date.parse(r.newestReceivedAt)&&Date.parse(r.newestReceivedAt)<=Date.parse(h.reconciledAt)&&Date.parse(r.oldestReceivedAt)>=Date.parse(a.activationAuthority.recordedAt)&&Date.parse(a.startedAt)-Date.parse(r.oldestReceivedAt)<=120000,'RECONCILIATION');
+  need(stamp(h.acknowledgedAt)&&Date.parse(h.reconciledAt)<=Date.parse(h.acknowledgedAt)&&Date.parse(h.acknowledgedAt)<=Date.parse(a.startedAt),'HANDOFF_CLOCK');
+  need(h.writerStopEvidence===undefined&&h.releasedAt===undefined&&h.releaseCommentId===undefined,'NO_NEW_REMOTE_STOP_OR_RELEASE');
+  return h;
+ }
+ need(a.strategyId!=='historical-median-receipt-v1','MEDIAN_SAME_OWNER_RECORD_REQUIRED');
  need(payloadHash(h)===a.handoffHash&&productionAuthorityFields(a).every(k=>h[k]===a[k])&&h.formerWriter==='Daenerys'&&h.executionOwner==='Codex'&&h.writerStopped===true&&h.inFlightResolved===true&&h.formerReadsPerMinute===0&&h.formerWritesPerMinute===0,'HANDOFF_RECORD');
  if(a.authorityKind==='direct_human_assignment'){
   const u=h.humanAuthority,s=h.writerStopEvidence,r=h.reconciliation;
