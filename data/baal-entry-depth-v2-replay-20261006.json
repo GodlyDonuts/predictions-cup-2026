@@ -1,0 +1,167 @@
+{
+  "schemaVersion": 1,
+  "observedAt": "2026-10-06T22:53:41.910Z",
+  "sourceAnchor": {
+    "bytes": 91730907,
+    "sha256": "e27cd96cf6e1dec76d7db0c2545961f432aeafaafb71702c639f676326f82f4c",
+    "sequence": 276,
+    "hash": "aa20530a766fdd43ff71b859360da747d3b16aa6069b781c9cf12de466be189f"
+  },
+  "packets": [
+    {
+      "originalSequence": 4,
+      "originalDecisionAt": "2026-10-06T17:08:26.087Z",
+      "originalPreparedQuantity": 29,
+      "originalPreparedExchangeId": "1073",
+      "originalPolicy": {
+        "ready": true,
+        "reason": "FUNDED_CONDITIONAL_PACKAGE_GAP_CHEAP_FIRST_PROPOSAL",
+        "quantity": 29
+      },
+      "depthPolicy": {
+        "ready": true,
+        "reason": "FUNDED_CONDITIONAL_PACKAGE_GAP_CHEAP_FIRST_PROPOSAL",
+        "quantity": 29,
+        "chosenExchangeId": "1073",
+        "unitMargin": "0.050000",
+        "fullPackageReservation": "28.710000"
+      }
+    },
+    {
+      "originalSequence": 17,
+      "originalDecisionAt": "2026-10-06T17:11:22.066Z",
+      "originalPreparedQuantity": 28,
+      "originalPreparedExchangeId": "1042",
+      "originalPolicy": {
+        "ready": true,
+        "reason": "FUNDED_CONDITIONAL_PACKAGE_GAP_CHEAP_FIRST_PROPOSAL",
+        "quantity": 28
+      },
+      "depthPolicy": {
+        "ready": true,
+        "reason": "FUNDED_CONDITIONAL_PACKAGE_GAP_CHEAP_FIRST_PROPOSAL",
+        "quantity": 28,
+        "chosenExchangeId": "1042",
+        "unitMargin": "0.015000",
+        "fullPackageReservation": "27.720000"
+      }
+    },
+    {
+      "originalSequence": 97,
+      "originalDecisionAt": "2026-10-06T17:42:18.628Z",
+      "originalPreparedQuantity": 37,
+      "originalPreparedExchangeId": "1066",
+      "originalPolicy": {
+        "ready": true,
+        "reason": "FUNDED_CONDITIONAL_PACKAGE_GAP_CHEAP_FIRST_PROPOSAL",
+        "quantity": 37
+      },
+      "depthPolicy": {
+        "ready": true,
+        "reason": "FUNDED_CONDITIONAL_PACKAGE_GAP_CHEAP_FIRST_PROPOSAL",
+        "quantity": 37,
+        "chosenExchangeId": "1066",
+        "unitMargin": "0.015000",
+        "fullPackageReservation": "36.630000"
+      }
+    },
+    {
+      "originalSequence": 104,
+      "originalDecisionAt": "2026-10-06T17:43:42.357Z",
+      "originalPreparedQuantity": 37,
+      "originalPreparedExchangeId": "1066",
+      "originalPolicy": {
+        "ready": true,
+        "reason": "FUNDED_CONDITIONAL_PACKAGE_GAP_CHEAP_FIRST_PROPOSAL",
+        "quantity": 37
+      },
+      "depthPolicy": {
+        "ready": true,
+        "reason": "FUNDED_CONDITIONAL_PACKAGE_GAP_CHEAP_FIRST_PROPOSAL",
+        "quantity": 37,
+        "chosenExchangeId": "1066",
+        "unitMargin": "0.015000",
+        "fullPackageReservation": "36.630000"
+      }
+    },
+    {
+      "originalSequence": 113,
+      "originalDecisionAt": "2026-10-06T17:45:31.875Z",
+      "originalPreparedQuantity": 37,
+      "originalPreparedExchangeId": "1066",
+      "originalPolicy": {
+        "ready": true,
+        "reason": "FUNDED_CONDITIONAL_PACKAGE_GAP_CHEAP_FIRST_PROPOSAL",
+        "quantity": 37
+      },
+      "depthPolicy": {
+        "ready": true,
+        "reason": "FUNDED_CONDITIONAL_PACKAGE_GAP_CHEAP_FIRST_PROPOSAL",
+        "quantity": 37,
+        "chosenExchangeId": "1066",
+        "unitMargin": "0.015000",
+        "fullPackageReservation": "36.630000"
+      }
+    },
+    {
+      "originalSequence": 123,
+      "originalDecisionAt": "2026-10-06T17:46:34.477Z",
+      "originalPreparedQuantity": 29,
+      "originalPreparedExchangeId": "1070",
+      "originalPolicy": {
+        "ready": true,
+        "reason": "FUNDED_CONDITIONAL_PACKAGE_GAP_CHEAP_FIRST_PROPOSAL",
+        "quantity": 29
+      },
+      "depthPolicy": {
+        "ready": true,
+        "reason": "FUNDED_CONDITIONAL_PACKAGE_GAP_CHEAP_FIRST_PROPOSAL",
+        "quantity": 29,
+        "chosenExchangeId": "1070",
+        "unitMargin": "0.015000",
+        "fullPackageReservation": "28.710000"
+      }
+    },
+    {
+      "originalSequence": 133,
+      "originalDecisionAt": "2026-10-06T17:47:38.650Z",
+      "originalPreparedQuantity": 2,
+      "originalPreparedExchangeId": "994",
+      "originalPolicy": {
+        "ready": true,
+        "reason": "FUNDED_CONDITIONAL_PACKAGE_GAP_CHEAP_FIRST_PROPOSAL",
+        "quantity": 2
+      },
+      "depthPolicy": {
+        "ready": true,
+        "reason": "FUNDED_CONDITIONAL_PACKAGE_GAP_CHEAP_FIRST_PROPOSAL",
+        "quantity": 29,
+        "chosenExchangeId": "994",
+        "unitMargin": "0.010000",
+        "fullPackageReservation": "28.710000"
+      }
+    },
+    {
+      "originalSequence": 143,
+      "originalDecisionAt": "2026-10-06T17:48:44.847Z",
+      "originalPreparedQuantity": 37,
+      "originalPreparedExchangeId": "1046",
+      "originalPolicy": {
+        "ready": true,
+        "reason": "FUNDED_CONDITIONAL_PACKAGE_GAP_CHEAP_FIRST_PROPOSAL",
+        "quantity": 37
+      },
+      "depthPolicy": {
+        "ready": true,
+        "reason": "FUNDED_CONDITIONAL_PACKAGE_GAP_CHEAP_FIRST_PROPOSAL",
+        "quantity": 37,
+        "chosenExchangeId": "1046",
+        "unitMargin": "0.010000",
+        "fullPackageReservation": "36.630000"
+      }
+    }
+  ],
+  "interpretation": "Original clocks and account/risk/rule/depth receipts. Proposal capacity only; no new fill, profitability or historical counterfactual P&L. Selected preparation packets include abandoned attempts and cannot establish broad strategy performance.",
+  "networkRequests": 0,
+  "actualAdditionalOrders": 0
+}

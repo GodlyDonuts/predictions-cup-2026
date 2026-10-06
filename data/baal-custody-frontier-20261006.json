@@ -1,0 +1,57 @@
+{
+  "schemaVersion": 1,
+  "observedAt": "2026-10-06T23:00:46.793Z",
+  "stateHash": "5643e7a0734cb7cb89116cdbbdb0311325aa21dd3a40deff5efc6c64cece1a73",
+  "currentActorAnchor": {
+    "bytes": 11932347,
+    "sha256": "cc6f6cd1b35ca2b8ddd4a24d8b58b8a773942e701bbbda6d3b25ffac0887a0bb",
+    "sequence": 12,
+    "hash": "791f3d98ab4f0e315eec89404323e6ce32eee9903bd616f2608ef091cb74493e"
+  },
+  "budgetAnchor": {
+    "bytes": 224390,
+    "sha256": "7c379339c24d3ce23ddc05b7530536bb34e2c8530e7c291dc6dbe2945736d64f",
+    "sequence": 9,
+    "hash": "319cfcccaa584d74d8a1d854196d466e289d6980ae50bbbc08d3ebf5461e1771"
+  },
+  "sourceHashes": [
+    {
+      "relative": "baal-combined-custody-request-v6.json",
+      "bytes": 7912,
+      "sha256": "b207543026ecf615d71bf03424c319a5ecc801695ca9e446794ba59fca9e72e6"
+    },
+    {
+      "relative": "baal-scaled-live-runs\\baal-scaled-no-20261006-human\\controller\\baal-scaled-no-journal.jsonl",
+      "bytes": 91730907,
+      "sha256": "e27cd96cf6e1dec76d7db0c2545961f432aeafaafb71702c639f676326f82f4c"
+    },
+    {
+      "relative": "baal-combined-custody-runs\\baal-scaled-no-20261006-human\\combined-v6-20261006-root\\coordinator\\neutral-owned-counterpart-pilot-v2.jsonl",
+      "bytes": 11932347,
+      "sha256": "cc6f6cd1b35ca2b8ddd4a24d8b58b8a773942e701bbbda6d3b25ffac0887a0bb"
+    },
+    {
+      "relative": "baal-combined-custody-runs\\baal-scaled-no-20261006-human\\combined-v6-20261006-root\\budget\\owned-hedge-shared-budget-v2.jsonl",
+      "bytes": 224390,
+      "sha256": "7c379339c24d3ce23ddc05b7530536bb34e2c8530e7c291dc6dbe2945736d64f"
+    }
+  ],
+  "summary": {
+    "ownedQuantity": 68,
+    "ownedPrincipal": "15.780000",
+    "realizedPnl": "0.975000",
+    "legacyOrders": 16,
+    "currentCoordinatorOrders": 1,
+    "inheritedOrders": 17,
+    "abandonedOrders": 3,
+    "pairAssignments": 0,
+    "pairRetirements": 0,
+    "unknownAcceptance": false,
+    "unresolvedIntentIds": []
+  },
+  "freshAccountStillRequired": true,
+  "newActivationStillRequired": true,
+  "networkRequests": 0,
+  "originalJournalsChanged": false,
+  "executionAuthority": false
+}
