@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "observedAt": "2026-10-06T18:13:13.931Z",
+  "collectorPid": 28156,
+  "hostVersion": 3,
+  "runId": "baal-scaled-no-20261006-human",
+  "upgradeHash": "ed689e93de853f205b8b258f4033fb3d3766b842290d06c27df53e72efe143f7",
+  "entryExpiresAt": "2026-10-06T18:01:56.310Z",
+  "newEntryWindow": false,
+  "lastAction": "entry_window_expired_owned_risk_retained",
+  "lastFailure": "BAAL_SCALED_PROTECTED_SELL_UNAVAILABLE",
+  "controllerPhase": "ready",
+  "actualOrderCount": 6,
+  "inventory": {
+    "994": {
+      "cost": "0.250000",
+      "cumulativeRealizedPnl": "0.000000",
+      "eventId": "e23df991ae80c8f76231ab98361fbe7142a77b5b3d15c6d90c04fab8dde7e568",
+      "marketId": "305",
+      "proofHash": "778a08b5e73d122464419b4d537f4f853fea01d3c6fb431e61a5fc2ba04f7b8c",
+      "quantity": 2
+    },
+    "1042": {
+      "cost": "2.660000",
+      "cumulativeRealizedPnl": "0.000000",
+      "eventId": "2a9c83ff96398f1c2644e8309df6442685a057ca9597f2fab468123f1c50705b",
+      "marketId": "353",
+      "proofHash": "7bdd18780949a2bb7840b923840c1028ae805707084f5eeba100b6194b6aba5c",
+      "quantity": 28
+    },
+    "1046": {
+      "cost": "12.025000",
+      "cumulativeRealizedPnl": "0.000000",
+      "eventId": "1ff13cd24a109bb0be72deac8e1c18f5f8c410ef05c6ef07c4961370f6794e35",
+      "marketId": "357",
+      "proofHash": "f27365e6072ad852a788d7ab9b85e76418ea90261c0f6d8582a684f1f526a790",
+      "quantity": 37
+    },
+    "1066": {
+      "cost": "11.470000",
+      "cumulativeRealizedPnl": "0.000000",
+      "eventId": "d33e0afc47bb6cbf9fd349c952f626ce6590933c5e2afe5246ee8915ef2fbda4",
+      "marketId": "377",
+      "proofHash": "08fc109741d6a1268b92a5b9e44ffa2dd0e9e3befe6500807d37bbc0d4149dfc",
+      "quantity": 37
+    },
+    "1070": {
+      "cost": "4.060000",
+      "cumulativeRealizedPnl": "0.000000",
+      "eventId": "298ff619a93d7ae7f33bbc07da73786f7cde698e4b9ffff72bb3ac6d47158636",
+      "marketId": "381",
+      "proofHash": "8b38a54d0f93dabae7cc5c1ecf2adfd1783d33beb63c5bb3538d4d5813c31108",
+      "quantity": 29
+    },
+    "1073": {
+      "cost": "2.465000",
+      "cumulativeRealizedPnl": "0.000000",
+      "eventId": "daa9af0d453ce53f44d53dad7460f92d511e1774b471f87c165a615917c0c428",
+      "marketId": "384",
+      "proofHash": "ddb49405c78031f1f48bf3b480540995df77841e08cb68c34f4974cc3c46b574",
+      "quantity": 29
+    }
+  },
+  "scaledRealizedPnl": "0.000000",
+  "fullNominalExposure": "160.380000",
+  "remainingPackageReserve": "127.450000",
+  "budgetDiagnostics": {
+    "cacheHits": 80,
+    "cacheMisses": 7
+  },
+  "originalControllerAndBudgetPrefixesVerified": true,
+  "sourceAgeLimitMs": 20000,
+  "capital": "1000.000000",
+  "additionalAccountClients": 0,
+  "profitabilityEstablished": false
+}

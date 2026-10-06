@@ -1,3 +1,9 @@
+# October6 18:13 UTC: six official positions preserved; faster risk verification live
+
+Baal owns162NOshares across six markets with verified cost32.930 and zero scaled realized profit. Collector28156 is running hostV3 without errors. Exact-full-bytes projection reuse measured about218ms→39ms on the actual22.62MB sealed actor source; runtime reports80cache hits/7misses, with complete bytes/SHA, owner/STOP and fresh cash/risk checks retained. Original controller/budget prefixes verified unchanged. [Live evidence](../data/baal-scaled-projection-live-20261006.json), [six terminal fills](../data/baal-scaled-official-six-fills-20261006.json).
+
+The original unowned BUY window ended18:01:56.310UTC and was not renewed. Existing positions remain managed for protected exits. No paired counterpart purchases, new entry activation, scalable profit or settlement gain are claimed. An independently checked exact-bid exit proposal found zero additional one-tick opportunities in the sealed captured window; five positions lacked post-proof public depth coverage.
+
 # October6 17:23 UTC: scaled production owns57shares across two markets
 
 The active1,000SUSQ allocation has two verified official NO purchases:29 Rhode Island Democratic Governor shares at0.085 (cost2.465), and28 Delaware Democratic Senate shares at0.095 (cost2.660). Total attributed purchase cost is5.125; both positions remain open and the scaled run has zero realized profit. Remaining package-risk reservations are51.305, for total full-nominal exposure56.430. These reservations are funding headroom, not purchased hedges or guaranteed profit. [Verified inventory and fills](../data/baal-scaled-official-inventory-20261006.json).

@@ -1,0 +1,169 @@
+{
+  "schemaVersion": 1,
+  "runId": "baal-scaled-no-20261006-human",
+  "observedAt": "2026-10-06T17:51:15.201Z",
+  "collectorPid": 3720,
+  "hostVersion": 2,
+  "source": "actual_terminal_fills_signed_positions_scoped_history_and_funding",
+  "capital": "1000.000000",
+  "entryExpiresAt": "2026-10-06T18:01:56.310Z",
+  "inventory": [
+    {
+      "exchangeId": "994",
+      "marketId": "305",
+      "orderId": "16911673",
+      "proofHash": "778a08b5e73d122464419b4d537f4f853fea01d3c6fb431e61a5fc2ba04f7b8c",
+      "verifiedAt": "2026-10-06T17:48:11.099Z",
+      "quantity": 2,
+      "cost": "0.250000",
+      "cumulativeRealizedPnl": "0.000000",
+      "fills": [
+        {
+          "id": 71074769,
+          "orderId": "16911673",
+          "marketId": "305",
+          "exchangeId": "994",
+          "side": "no",
+          "action": "buy",
+          "quantity": 2,
+          "price": "0.125000",
+          "principal": "0.250000",
+          "filledAt": "2026-10-06T17:47:42.526Z"
+        }
+      ]
+    },
+    {
+      "exchangeId": "1042",
+      "marketId": "353",
+      "orderId": "16825098",
+      "proofHash": "7bdd18780949a2bb7840b923840c1028ae805707084f5eeba100b6194b6aba5c",
+      "verifiedAt": "2026-10-06T17:11:54.672Z",
+      "quantity": 28,
+      "cost": "2.660000",
+      "cumulativeRealizedPnl": "0.000000",
+      "fills": [
+        {
+          "id": 70721636,
+          "orderId": "16825098",
+          "marketId": "353",
+          "exchangeId": "1042",
+          "side": "no",
+          "action": "buy",
+          "quantity": 28,
+          "price": "0.095000",
+          "principal": "2.660000",
+          "filledAt": "2026-10-06T17:11:23.805Z"
+        }
+      ]
+    },
+    {
+      "exchangeId": "1046",
+      "marketId": "357",
+      "orderId": "16914066",
+      "proofHash": "f27365e6072ad852a788d7ab9b85e76418ea90261c0f6d8582a684f1f526a790",
+      "verifiedAt": "2026-10-06T17:49:18.256Z",
+      "quantity": 37,
+      "cost": "12.025000",
+      "cumulativeRealizedPnl": "0.000000",
+      "fills": [
+        {
+          "id": 71084755,
+          "orderId": "16914066",
+          "marketId": "357",
+          "exchangeId": "1046",
+          "side": "no",
+          "action": "buy",
+          "quantity": 37,
+          "price": "0.325000",
+          "principal": "12.025000",
+          "filledAt": "2026-10-06T17:48:48.954Z"
+        }
+      ]
+    },
+    {
+      "exchangeId": "1066",
+      "marketId": "377",
+      "orderId": "16906622",
+      "proofHash": "08fc109741d6a1268b92a5b9e44ffa2dd0e9e3befe6500807d37bbc0d4149dfc",
+      "verifiedAt": "2026-10-06T17:46:02.866Z",
+      "quantity": 37,
+      "cost": "11.470000",
+      "cumulativeRealizedPnl": "0.000000",
+      "fills": [
+        {
+          "id": 71054470,
+          "orderId": "16906622",
+          "marketId": "377",
+          "exchangeId": "1066",
+          "side": "no",
+          "action": "buy",
+          "quantity": 37,
+          "price": "0.310000",
+          "principal": "11.470000",
+          "filledAt": "2026-10-06T17:45:35.108Z"
+        }
+      ]
+    },
+    {
+      "exchangeId": "1070",
+      "marketId": "381",
+      "orderId": "16909171",
+      "proofHash": "8b38a54d0f93dabae7cc5c1ecf2adfd1783d33beb63c5bb3538d4d5813c31108",
+      "verifiedAt": "2026-10-06T17:47:05.857Z",
+      "quantity": 29,
+      "cost": "4.060000",
+      "cumulativeRealizedPnl": "0.000000",
+      "fills": [
+        {
+          "id": 71064824,
+          "orderId": "16909171",
+          "marketId": "381",
+          "exchangeId": "1070",
+          "side": "no",
+          "action": "buy",
+          "quantity": 29,
+          "price": "0.140000",
+          "principal": "4.060000",
+          "filledAt": "2026-10-06T17:46:37.887Z"
+        }
+      ]
+    },
+    {
+      "exchangeId": "1073",
+      "marketId": "384",
+      "orderId": "16817788",
+      "proofHash": "ddb49405c78031f1f48bf3b480540995df77841e08cb68c34f4974cc3c46b574",
+      "verifiedAt": "2026-10-06T17:09:14.190Z",
+      "quantity": 29,
+      "cost": "2.465000",
+      "cumulativeRealizedPnl": "0.000000",
+      "fills": [
+        {
+          "id": 70692281,
+          "orderId": "16817788",
+          "marketId": "384",
+          "exchangeId": "1073",
+          "side": "no",
+          "action": "buy",
+          "quantity": 29,
+          "price": "0.085000",
+          "principal": "2.465000",
+          "filledAt": "2026-10-06T17:08:28.005Z"
+        }
+      ]
+    }
+  ],
+  "totalOwnedQuantity": 162,
+  "totalOwnedPrincipal": "32.930000",
+  "actualOrderCount": 6,
+  "scaledRealizedPnl": "0.000000",
+  "oldFourClosedPilotNetRealized": "0.015000",
+  "fees": "0.000000",
+  "remainingPackageReserve": "127.450000",
+  "fullNominalExposure": "160.380000",
+  "exitPacketsSkipped": 42,
+  "avoidedFiveGetReads": 210,
+  "counterScope": "current_host_process",
+  "automaticCounterpartHedge": false,
+  "profitabilityEstablished": false
+}
