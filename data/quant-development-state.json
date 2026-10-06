@@ -1,16 +1,17 @@
 {
   "schemaVersion": 2,
-  "updatedAt": "2026-10-06T12:44:34.652Z",
+  "updatedAt": "2026-10-06T13:40:30.752Z",
   "objective": "Build and improve Baal for the official 2026 Susquehanna Predictions Cup",
   "executionOwner": "Codex",
   "historicalTrackerArchive": "data/quant-development-state.before-paired-live-20261006.local.json",
   "accountingPreserved": "All original runtime banks, journals, positions and intent identities remain authoritative; this file is a development backlog only.",
   "activeProcesses": {
-    "collector": 14316,
+    "collector": 28804,
     "probabilityWorker": 28488,
     "dashboard": 29228,
     "persistent": 3,
-    "observedAt": "2026-10-06T12:22:33.816Z"
+    "observedAt": "2026-10-06T13:40:30.752Z",
+    "collectorStage": "cold_restore_process_verified"
   },
   "medianUptrendCap": {
     "stage": "checked_offline_no_promotion",
@@ -48,23 +49,31 @@
     "latestEvidence": "data/median-official-third-roundtrip-20261006.json"
   },
   "pairedLive": {
-    "stage": "corrected_book_schema_launched_pending_fresh_capture",
-    "request": "sig-pilot-paired-book-schema-20261006-human",
-    "markets": [
-      "354",
-      "355"
-    ],
+    "stage": "generic_selector_installed_cold_restore",
+    "request": "sig-pilot-paired-generic-20261006-human",
+    "markets": "source_selected_one_pair_from_237_approved_markets",
     "capital": "2.000000",
     "pairCeiling": "0.990000",
     "minimumConditionalOrdinaryMargin": "0.010000",
     "orders": 0,
-    "entryExpiresAt": "2026-10-06T13:11:07.326Z",
-    "configuration": "data/paired-live-configuration-20261006.json",
-    "next": "Verify actual fresh bootstrap/paired initialization, bounded scoped fills and cash consistency; no silent renewal.",
-    "retiredUnexecutedRun": "sig-pilot-paired-20261006-human",
+    "entryExpiresAt": "2026-10-06T14:26:11.789Z",
+    "configuration": "data/generic-paired-live-configuration-20261006.json",
+    "next": "Verify fresh source nomination, scoped NO dispatch and actual fill attribution; retain all unknown/orphan exposure.",
+    "retiredUnexecutedRun": "sig-pilot-paired-book-schema-20261006-human",
     "repairEvidence": "data/paired-book-schema-repair-20261006.json",
     "ordersInRetiredRun": 0,
-    "outerExpiryUnchanged": true
+    "outerExpiryUnchanged": true,
+    "runtimeObservedAt": "2026-10-06T13:40:30.752Z",
+    "latestCapture": {
+      "name": "florida-senate-book-schema-20261006-v2",
+      "at": "2026-10-06T13:00:08.017Z",
+      "cushionedCost": "1.010000",
+      "ordinarySurplus": "-0.010000",
+      "orders": 0
+    },
+    "commit": "313cdbc6b49ef7f7731cbd2a8035ae73eb2812b0",
+    "sourceReadExpiresAt": "2026-10-06T13:56:11.789Z",
+    "retiredExpiry": "2026-10-06T13:11:07.326Z"
   },
   "originalPilot": {
     "runId": "sig-pilot-median-20261006-human",
@@ -82,16 +91,23 @@
     "existingCredentialStorageUnchanged": true
   },
   "backlog": [
-    "Verify collector18440 fresh bootstrap and the separately bounded one-pair initialization.",
-    "Verify actual NO order/fill/position cash consistency and keep all unknown outcomes reserved.",
-    "Develop funded pair liquidation when both executable proceeds cover original cost and realistic latency, preserving orphan exposure.",
-    "Broaden source-bound pair selection and size only from subsequent actual depth/fill evidence.",
-    "Continue independent Rust conversion integration without resetting live holdings or banks."
+    "Verify collector28804 fresh bootstrap and generic source nomination before bounded source deadline.",
+    "Verify actual paired NO order/fill/position consistency; unknown acceptance blocks replacements.",
+    "Implement owned-pair liquidation only from current signed holdings and complete original lot proofs, preserving partial-exit exposure.",
+    "Size from measured subsequent fills and actual realized profit; no forced negative-margin entries."
   ],
   "evidence": [
     "docs/PAIRED_EXECUTION_PROGRESS.md",
     "data/paired-live-configuration-20261006.json",
     "data/party-winner-no-source-screen-20261006T105231940Z-v2.json",
     "data/median-uptrend-cap-subsequent-20261006T102335862Z.summary.json"
-  ]
+  ],
+  "pairedLiquidation": {
+    "stage": "pure_signal_checked_no_sell_dispatcher",
+    "module": "execution/paired-no-liquidation.mjs",
+    "checksPassed": 14,
+    "minimumNetProceedsMargin": "0.005000",
+    "fees": "0.000000",
+    "unknownOrphanRisksExplicit": true
+  }
 }

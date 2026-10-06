@@ -1,0 +1,3795 @@
+{
+  "selection": {
+    "schemaVersion": 1,
+    "mode": "party_pair_read_request_proposal_only",
+    "reason": "current_account_unavailable",
+    "request": null,
+    "selected": null,
+    "nextState": {
+      "schemaVersion": 1,
+      "universeHash": "3dad67c230d98e690dbea72c8bbffb4cd1baff2ee5a2276b79314ad6f41e1560",
+      "policyHash": "6841bafe212f079e5aa6fc777c6ddb56656b7ae6f5911d0e61b6bcea2e25dfb0",
+      "nextSequence": 0,
+      "attempts": {},
+      "handledTerminals": {
+        "b5a954a90c8caf673b21efed61ade4e3d96f88611860f3dc797732585d978f9f": "97c02c4373af9547990e196537f043abf7c1f2bbb2cffb5b17de007ff2a78883",
+        "11f71fc33f5326ac50b3f9c56d92b1ba62f46abc84f9bc7e5fadfd5e0ea04dc0": "e6704813ec60ade85f27174d73d7d5f1057db1d34d4acbeedc4574f7a2d557b2",
+        "60480124aeb06b042dbd7cf83aefe38b332ae51536411fa6c3cfe743c4763100": "65790ae75c8a04be7a6daab311331d93de77ddfb37b071c48e4d1301513a2cb1",
+        "7fc2b9af5ac388a414f2cae2ea838cbe613be01ac048d31310d2f448d6c9bf44": "4637dbdcad60699cf1bd977ca9f84ab6ce88d8806ded75e67e882e3b20ef904e",
+        "290fa795a67403c6fb17396b1144841a3f21751d1b0ba2af640b5a25149f2509": "9618c2e7674968bbfdf6aa7fa1c935a73ea835dfe7d72df5e5bb56d75889d517",
+        "f8cbe949d10c1c983c12defb3e5281475de41fe2541ff742a2a70de503808a52": "69eb142e2db73a316bbd31a572672d07bd415acaff28eae8e25aaffe425fdb61",
+        "f621fd8c6af32350004784c443e864706bab25a3622c50b900ce7cfb3d86e2b2": "3948f8df4907d15feff1405ce131c85e214a90ed823a75d2facc022cde9a4310",
+        "600e2392307df652ce5e65681d2c1dea715446a69b8c1981bbcc1daa6b804cd0": "f8a55fcf2bb3458abda019eaec016567cc0fc6d278b7ad40714640fb91551a66"
+      },
+      "cooldowns": {
+        "354:355": 1791291908022
+      },
+      "handledSources": {}
+    },
+    "sourcePlanHash": null,
+    "protectedBookSlots": 4,
+    "maximumAuxiliarySlots": 2,
+    "competitionOrders": 0,
+    "networkRequests": 0,
+    "executionAuthority": false
+  },
+  "screen": {
+    "schemaVersion": 1,
+    "mode": "source_bound_party_winner_conditional_no_read_ranking",
+    "evaluatedAt": "2026-10-06T13:25:57.915Z",
+    "policy": {
+      "quoteMaximumAgeMs": 20000,
+      "maximumSkewMs": 10000,
+      "rootMaximumAgeMs": 300000,
+      "accountMaximumAgeMs": 20000,
+      "minimumOrdinarySurplus": "0.010000",
+      "protectiveTicksPerLeg": 1,
+      "fees": "0.000000"
+    },
+    "rootCaptureCount": 110,
+    "validLatestRoots": 87,
+    "semanticPairCount": 37,
+    "groupsWithoutOpposingParty": 13,
+    "rejections": [],
+    "pairs": [
+      {
+        "id": "source-pair-384-385",
+        "race": "Governor of Rhode Island",
+        "eventKey": "daa9af0d453ce53f44d53dad7460f92d511e1774b471f87c165a615917c0c428",
+        "marketIds": [
+          "384",
+          "385"
+        ],
+        "exchangeIds": [
+          "1073",
+          "1074"
+        ],
+        "rootHashes": [
+          "17d2e89d5d8da54f156f34622cd0fddc27158306fe765d20a2433f5e4c923a1a",
+          "12dd10e952d151920d90d251ad2263cb75335a4a783145b9589bb8df3f6fe13d"
+        ],
+        "rootSourceHashes": [
+          "517f209967bb9ba768332e77659184c9666d34bbce2fe1cbaf645fe3dd42f542",
+          "51179f2d0bedec3897406a3575cca6c7994e8158fb0acc8139d78d07922dd433"
+        ],
+        "rootKnownAt": [
+          "2026-10-01T19:10:01.479Z",
+          "2026-10-01T19:10:01.199Z"
+        ],
+        "quoteSourceHashes": [
+          "84f363548e43c5e0f28126d52745b7e61c3c0f46e7871a01bcc9106a06eecb05",
+          "84f363548e43c5e0f28126d52745b7e61c3c0f46e7871a01bcc9106a06eecb05"
+        ],
+        "quoteClocks": [
+          {
+            "requestStartedAt": "2026-10-06T13:22:13.361Z",
+            "receivedAt": "2026-10-06T13:22:13.529Z",
+            "knownAt": "2026-10-06T13:25:57.915Z"
+          },
+          {
+            "requestStartedAt": "2026-10-06T13:22:13.361Z",
+            "receivedAt": "2026-10-06T13:22:13.529Z",
+            "knownAt": "2026-10-06T13:25:57.915Z"
+          }
+        ],
+        "indicativeMathValid": true,
+        "rawNoAsks": [
+          "0.065000",
+          "0.850000"
+        ],
+        "rawNoCost": "0.915000",
+        "conditionalOrdinaryPayoutFloor": "1.000000",
+        "conditionalRawSurplus": "0.085000",
+        "protectiveTickCost": "0.925000",
+        "conditionalProtectiveSurplus": "0.075000",
+        "zeroPayoutExceptionLoss": "-0.915000",
+        "zeroPayoutExceptionLossAtProtectiveCost": "-0.925000",
+        "quoteSkewMs": 168,
+        "rootsCurrent": false,
+        "quotesCurrentAndCofresh": false,
+        "accountCurrent": false,
+        "cachedAccountExposureKnown": true,
+        "accountKnownBeforeBothRequests": false,
+        "wholeAccountExposure": false,
+        "rawSurplusQualified": true,
+        "protectiveSurplusQualified": true,
+        "unownedReadCandidate": false,
+        "unownedIndicativeCandidate": true,
+        "quantityPerLeg": 1,
+        "depthKnown": false,
+        "depthQualifiedQuantity": null,
+        "nativeNoBookObserved": false,
+        "ordinaryResolutionOnly": true,
+        "fullResolutionCompletenessProven": false,
+        "guaranteedProfit": false,
+        "flags": [
+          "quantity_and_depth_unknown",
+          "ordinary_resolution_only_exception_unprotected",
+          "account_unavailable_stale_or_unknown_acceptance",
+          "cached_rules_need_refresh",
+          "PARTY_NO_SCREEN_QUOTE_AGE",
+          "account_not_known_before_both_quote_requests"
+        ],
+        "orderEligible": false,
+        "executionAuthority": false
+      },
+      {
+        "id": "source-pair-353-386",
+        "race": "U.S. Senate Delaware",
+        "eventKey": "2a9c83ff96398f1c2644e8309df6442685a057ca9597f2fab468123f1c50705b",
+        "marketIds": [
+          "353",
+          "386"
+        ],
+        "exchangeIds": [
+          "1042",
+          "1075"
+        ],
+        "rootHashes": [
+          "b4d6f5b6df47f22d271d880f6385c6434cb9990222e6b67811ca8a20c374d472",
+          "a475d827bbc2d20bd3c0c439dbd0f14835c2a23b38a4bdf479c75f2534cc0f93"
+        ],
+        "rootSourceHashes": [
+          "37a2da42f7a4895062b16640ad1a4b75c9e40e5e453da870e330e8ee2116ead9",
+          "7945958e9c027edf0035113bcb05fac823fa4e5298d34bbd6c1bf6c8aa9dcb92"
+        ],
+        "rootKnownAt": [
+          "2026-10-05T21:46:36.866Z",
+          "2026-10-05T21:47:01.971Z"
+        ],
+        "quoteSourceHashes": [
+          "84f363548e43c5e0f28126d52745b7e61c3c0f46e7871a01bcc9106a06eecb05",
+          "84f363548e43c5e0f28126d52745b7e61c3c0f46e7871a01bcc9106a06eecb05"
+        ],
+        "quoteClocks": [
+          {
+            "requestStartedAt": "2026-10-06T13:22:13.361Z",
+            "receivedAt": "2026-10-06T13:22:13.529Z",
+            "knownAt": "2026-10-06T13:25:57.915Z"
+          },
+          {
+            "requestStartedAt": "2026-10-06T13:22:13.361Z",
+            "receivedAt": "2026-10-06T13:22:13.529Z",
+            "knownAt": "2026-10-06T13:25:57.915Z"
+          }
+        ],
+        "indicativeMathValid": true,
+        "rawNoAsks": [
+          "0.095000",
+          "0.880000"
+        ],
+        "rawNoCost": "0.975000",
+        "conditionalOrdinaryPayoutFloor": "1.000000",
+        "conditionalRawSurplus": "0.025000",
+        "protectiveTickCost": "0.985000",
+        "conditionalProtectiveSurplus": "0.015000",
+        "zeroPayoutExceptionLoss": "-0.975000",
+        "zeroPayoutExceptionLossAtProtectiveCost": "-0.985000",
+        "quoteSkewMs": 168,
+        "rootsCurrent": false,
+        "quotesCurrentAndCofresh": false,
+        "accountCurrent": false,
+        "cachedAccountExposureKnown": true,
+        "accountKnownBeforeBothRequests": false,
+        "wholeAccountExposure": false,
+        "rawSurplusQualified": true,
+        "protectiveSurplusQualified": true,
+        "unownedReadCandidate": false,
+        "unownedIndicativeCandidate": true,
+        "quantityPerLeg": 1,
+        "depthKnown": false,
+        "depthQualifiedQuantity": null,
+        "nativeNoBookObserved": false,
+        "ordinaryResolutionOnly": true,
+        "fullResolutionCompletenessProven": false,
+        "guaranteedProfit": false,
+        "flags": [
+          "quantity_and_depth_unknown",
+          "ordinary_resolution_only_exception_unprotected",
+          "account_unavailable_stale_or_unknown_acceptance",
+          "cached_rules_need_refresh",
+          "PARTY_NO_SCREEN_QUOTE_AGE",
+          "account_not_known_before_both_quote_requests"
+        ],
+        "orderEligible": false,
+        "executionAuthority": false
+      },
+      {
+        "id": "source-pair-305-306",
+        "race": "Governor of Michigan",
+        "eventKey": "e23df991ae80c8f76231ab98361fbe7142a77b5b3d15c6d90c04fab8dde7e568",
+        "marketIds": [
+          "305",
+          "306"
+        ],
+        "exchangeIds": [
+          "994",
+          "995"
+        ],
+        "rootHashes": [
+          "07df0bccbf6ee1d085dd3f4fc38adf7d168e865bf7dd4ce956bef6938de2b07f",
+          "ca411355dabd331043fecfac80eb0481e89b8278e66f13054c991866ec495e70"
+        ],
+        "rootSourceHashes": [
+          "4105e145f524645f27389fe4cee67abc0d4df27fb622d518c028b8b38b10164a",
+          "ab85d2aaa1f2957ca9782797d4538980086cc08a2fcaf87002d6dd0a12e0f405"
+        ],
+        "rootKnownAt": [
+          "2026-10-06T04:34:57.773Z",
+          "2026-10-05T21:05:02.898Z"
+        ],
+        "quoteSourceHashes": [
+          "84f363548e43c5e0f28126d52745b7e61c3c0f46e7871a01bcc9106a06eecb05",
+          "84f363548e43c5e0f28126d52745b7e61c3c0f46e7871a01bcc9106a06eecb05"
+        ],
+        "quoteClocks": [
+          {
+            "requestStartedAt": "2026-10-06T13:22:13.361Z",
+            "receivedAt": "2026-10-06T13:22:13.529Z",
+            "knownAt": "2026-10-06T13:25:57.915Z"
+          },
+          {
+            "requestStartedAt": "2026-10-06T13:22:13.361Z",
+            "receivedAt": "2026-10-06T13:22:13.529Z",
+            "knownAt": "2026-10-06T13:25:57.915Z"
+          }
+        ],
+        "indicativeMathValid": true,
+        "rawNoAsks": [
+          "0.125000",
+          "0.855000"
+        ],
+        "rawNoCost": "0.980000",
+        "conditionalOrdinaryPayoutFloor": "1.000000",
+        "conditionalRawSurplus": "0.020000",
+        "protectiveTickCost": "0.990000",
+        "conditionalProtectiveSurplus": "0.010000",
+        "zeroPayoutExceptionLoss": "-0.980000",
+        "zeroPayoutExceptionLossAtProtectiveCost": "-0.990000",
+        "quoteSkewMs": 168,
+        "rootsCurrent": false,
+        "quotesCurrentAndCofresh": false,
+        "accountCurrent": false,
+        "cachedAccountExposureKnown": true,
+        "accountKnownBeforeBothRequests": false,
+        "wholeAccountExposure": false,
+        "rawSurplusQualified": true,
+        "protectiveSurplusQualified": true,
+        "unownedReadCandidate": false,
+        "unownedIndicativeCandidate": true,
+        "quantityPerLeg": 1,
+        "depthKnown": false,
+        "depthQualifiedQuantity": null,
+        "nativeNoBookObserved": false,
+        "ordinaryResolutionOnly": true,
+        "fullResolutionCompletenessProven": false,
+        "guaranteedProfit": false,
+        "flags": [
+          "quantity_and_depth_unknown",
+          "ordinary_resolution_only_exception_unprotected",
+          "account_unavailable_stale_or_unknown_acceptance",
+          "cached_rules_need_refresh",
+          "PARTY_NO_SCREEN_QUOTE_AGE",
+          "account_not_known_before_both_quote_requests"
+        ],
+        "orderEligible": false,
+        "executionAuthority": false
+      },
+      {
+        "id": "source-pair-328-329",
+        "race": "U.S. House Florida District 22",
+        "eventKey": "102432893e90e5e18b2778c245e8898b99ea3dd564e3b9da2f49b65a457c6dd0",
+        "marketIds": [
+          "328",
+          "329"
+        ],
+        "exchangeIds": [
+          "1017",
+          "1018"
+        ],
+        "rootHashes": [
+          "740a203309fec050c51636ffb149ffb3fde0a8dcddcfaf408564f5c8d91a3e73",
+          "92a832764aab1b718f79dfcb00c627ad0566c649c03a45e4107f698908a39b3f"
+        ],
+        "rootSourceHashes": [
+          "c6c909d31d625c8bce7d3ecd67b914b619dccffe7014604329d8870136a78d03",
+          "9740c290937752a9a6e8bcd5822cb22f68f7f7a08bc7fdd9c1c8d2283832de3b"
+        ],
+        "rootKnownAt": [
+          "2026-10-01T19:11:33.037Z",
+          "2026-10-01T19:11:36.253Z"
+        ],
+        "quoteSourceHashes": [
+          "84f363548e43c5e0f28126d52745b7e61c3c0f46e7871a01bcc9106a06eecb05",
+          "84f363548e43c5e0f28126d52745b7e61c3c0f46e7871a01bcc9106a06eecb05"
+        ],
+        "quoteClocks": [
+          {
+            "requestStartedAt": "2026-10-06T13:22:13.361Z",
+            "receivedAt": "2026-10-06T13:22:13.529Z",
+            "knownAt": "2026-10-06T13:25:57.915Z"
+          },
+          {
+            "requestStartedAt": "2026-10-06T13:22:13.361Z",
+            "receivedAt": "2026-10-06T13:22:13.529Z",
+            "knownAt": "2026-10-06T13:25:57.915Z"
+          }
+        ],
+        "indicativeMathValid": true,
+        "rawNoAsks": [
+          "0.465000",
+          "0.515000"
+        ],
+        "rawNoCost": "0.980000",
+        "conditionalOrdinaryPayoutFloor": "1.000000",
+        "conditionalRawSurplus": "0.020000",
+        "protectiveTickCost": "0.990000",
+        "conditionalProtectiveSurplus": "0.010000",
+        "zeroPayoutExceptionLoss": "-0.980000",
+        "zeroPayoutExceptionLossAtProtectiveCost": "-0.990000",
+        "quoteSkewMs": 168,
+        "rootsCurrent": false,
+        "quotesCurrentAndCofresh": false,
+        "accountCurrent": false,
+        "cachedAccountExposureKnown": true,
+        "accountKnownBeforeBothRequests": false,
+        "wholeAccountExposure": false,
+        "rawSurplusQualified": true,
+        "protectiveSurplusQualified": true,
+        "unownedReadCandidate": false,
+        "unownedIndicativeCandidate": true,
+        "quantityPerLeg": 1,
+        "depthKnown": false,
+        "depthQualifiedQuantity": null,
+        "nativeNoBookObserved": false,
+        "ordinaryResolutionOnly": true,
+        "fullResolutionCompletenessProven": false,
+        "guaranteedProfit": false,
+        "flags": [
+          "quantity_and_depth_unknown",
+          "ordinary_resolution_only_exception_unprotected",
+          "account_unavailable_stale_or_unknown_acceptance",
+          "cached_rules_need_refresh",
+          "PARTY_NO_SCREEN_QUOTE_AGE",
+          "account_not_known_before_both_quote_requests"
+        ],
+        "orderEligible": false,
+        "executionAuthority": false
+      },
+      {
+        "id": "source-pair-344-345",
+        "race": "U.S. House Virginia District 5",
+        "eventKey": "b1467aa539bc19d59b7adeaf64155aeea0fb997f73a017f7fff3c7d779c88156",
+        "marketIds": [
+          "344",
+          "345"
+        ],
+        "exchangeIds": [
+          "1033",
+          "1034"
+        ],
+        "rootHashes": [
+          "ed0b8e816e1feda2729c1e13778ada738de10804544deb764fbc92204e4b993d",
+          "f64d6bfff1fd9225c910bc6d58f4928e2d471341937ec29d3243f52d0a370d4a"
+        ],
+        "rootSourceHashes": [
+          "03c421348f203498dcd032643df87e0fcb2fb168374fbdd96456005bf70bd57a",
+          "9b0ae2e9bfb858b5ea2b838d725042f0926f1798ad676f96c8b5784d31742a7a"
+        ],
+        "rootKnownAt": [
+          "2026-10-01T19:11:12.006Z",
+          "2026-10-01T19:11:12.978Z"
+        ],
+        "quoteSourceHashes": [
+          "84f363548e43c5e0f28126d52745b7e61c3c0f46e7871a01bcc9106a06eecb05",
+          "84f363548e43c5e0f28126d52745b7e61c3c0f46e7871a01bcc9106a06eecb05"
+        ],
+        "quoteClocks": [
+          {
+            "requestStartedAt": "2026-10-06T13:22:13.361Z",
+            "receivedAt": "2026-10-06T13:22:13.529Z",
+            "knownAt": "2026-10-06T13:25:57.915Z"
+          },
+          {
+            "requestStartedAt": "2026-10-06T13:22:13.361Z",
+            "receivedAt": "2026-10-06T13:22:13.529Z",
+            "knownAt": "2026-10-06T13:25:57.915Z"
+          }
+        ],
+        "indicativeMathValid": true,
+        "rawNoAsks": [
+          "0.740000",
+          "0.240000"
+        ],
+        "rawNoCost": "0.980000",
+        "conditionalOrdinaryPayoutFloor": "1.000000",
+        "conditionalRawSurplus": "0.020000",
+        "protectiveTickCost": "0.990000",
+        "conditionalProtectiveSurplus": "0.010000",
+        "zeroPayoutExceptionLoss": "-0.980000",
+        "zeroPayoutExceptionLossAtProtectiveCost": "-0.990000",
+        "quoteSkewMs": 168,
+        "rootsCurrent": false,
+        "quotesCurrentAndCofresh": false,
+        "accountCurrent": false,
+        "cachedAccountExposureKnown": true,
+        "accountKnownBeforeBothRequests": false,
+        "wholeAccountExposure": false,
+        "rawSurplusQualified": true,
+        "protectiveSurplusQualified": true,
+        "unownedReadCandidate": false,
+        "unownedIndicativeCandidate": true,
+        "quantityPerLeg": 1,
+        "depthKnown": false,
+        "depthQualifiedQuantity": null,
+        "nativeNoBookObserved": false,
+        "ordinaryResolutionOnly": true,
+        "fullResolutionCompletenessProven": false,
+        "guaranteedProfit": false,
+        "flags": [
+          "quantity_and_depth_unknown",
+          "ordinary_resolution_only_exception_unprotected",
+          "account_unavailable_stale_or_unknown_acceptance",
+          "cached_rules_need_refresh",
+          "PARTY_NO_SCREEN_QUOTE_AGE",
+          "account_not_known_before_both_quote_requests"
+        ],
+        "orderEligible": false,
+        "executionAuthority": false
+      },
+      {
+        "id": "source-pair-377-378",
+        "race": "U.S. Senate Alaska",
+        "eventKey": "d33e0afc47bb6cbf9fd349c952f626ce6590933c5e2afe5246ee8915ef2fbda4",
+        "marketIds": [
+          "377",
+          "378"
+        ],
+        "exchangeIds": [
+          "1066",
+          "1067"
+        ],
+        "rootHashes": [
+          "95926f3f34cf6a3e28e3813321f2533f4353e56c449721c30aca2035c526f9ee",
+          "8fe67c16b16544d7f71c3c955e40adaaa0baaa6b19e7ac29d6aafe931ae84c8a"
+        ],
+        "rootSourceHashes": [
+          "954f4a51079d736a466bc76f6b965bc15303e1754e4616bfa70f4e6ef89c2c92",
+          "bd4d93faf716b6d2f92b400bec6f39b792249f3a462f013fdea64ee1249e9f68"
+        ],
+        "rootKnownAt": [
+          "2026-10-05T18:49:46.551Z",
+          "2026-10-01T19:10:13.683Z"
+        ],
+        "quoteSourceHashes": [
+          "84f363548e43c5e0f28126d52745b7e61c3c0f46e7871a01bcc9106a06eecb05",
+          "84f363548e43c5e0f28126d52745b7e61c3c0f46e7871a01bcc9106a06eecb05"
+        ],
+        "quoteClocks": [
+          {
+            "requestStartedAt": "2026-10-06T13:22:13.361Z",
+            "receivedAt": "2026-10-06T13:22:13.529Z",
+            "knownAt": "2026-10-06T13:25:57.915Z"
+          },
+          {
+            "requestStartedAt": "2026-10-06T13:22:13.361Z",
+            "receivedAt": "2026-10-06T13:22:13.529Z",
+            "knownAt": "2026-10-06T13:25:57.915Z"
+          }
+        ],
+        "indicativeMathValid": true,
+        "rawNoAsks": [
+          "0.310000",
+          "0.670000"
+        ],
+        "rawNoCost": "0.980000",
+        "conditionalOrdinaryPayoutFloor": "1.000000",
+        "conditionalRawSurplus": "0.020000",
+        "protectiveTickCost": "0.990000",
+        "conditionalProtectiveSurplus": "0.010000",
+        "zeroPayoutExceptionLoss": "-0.980000",
+        "zeroPayoutExceptionLossAtProtectiveCost": "-0.990000",
+        "quoteSkewMs": 168,
+        "rootsCurrent": false,
+        "quotesCurrentAndCofresh": false,
+        "accountCurrent": false,
+        "cachedAccountExposureKnown": true,
+        "accountKnownBeforeBothRequests": false,
+        "wholeAccountExposure": false,
+        "rawSurplusQualified": true,
+        "protectiveSurplusQualified": true,
+        "unownedReadCandidate": false,
+        "unownedIndicativeCandidate": true,
+        "quantityPerLeg": 1,
+        "depthKnown": false,
+        "depthQualifiedQuantity": null,
+        "nativeNoBookObserved": false,
+        "ordinaryResolutionOnly": true,
+        "fullResolutionCompletenessProven": false,
+        "guaranteedProfit": false,
+        "flags": [
+          "quantity_and_depth_unknown",
+          "ordinary_resolution_only_exception_unprotected",
+          "account_unavailable_stale_or_unknown_acceptance",
+          "cached_rules_need_refresh",
+          "PARTY_NO_SCREEN_QUOTE_AGE",
+          "account_not_known_before_both_quote_requests"
+        ],
+        "orderEligible": false,
+        "executionAuthority": false
+      },
+      {
+        "id": "source-pair-381-382",
+        "race": "U.S. Senate New Hampshire",
+        "eventKey": "298ff619a93d7ae7f33bbc07da73786f7cde698e4b9ffff72bb3ac6d47158636",
+        "marketIds": [
+          "381",
+          "382"
+        ],
+        "exchangeIds": [
+          "1070",
+          "1071"
+        ],
+        "rootHashes": [
+          "a053e8c5c102efb72b6760b3ca43b622368233860e9b53ddf7ac3cee67aed353",
+          "6516a7d2092334ecc9baf501971eb93c247dde9a6da5ca19362703fb727b6b4b"
+        ],
+        "rootSourceHashes": [
+          "7c8c3b8c5f966ab9002a49d2a87509d75a8ea8ea9ea0f2ab4ad1b2db62f59ded",
+          "790e6f95c6dbcf779456e5f7291585e6a6c8800b82580c91dc485e0b2b4d76fd"
+        ],
+        "rootKnownAt": [
+          "2026-10-05T17:54:30.902Z",
+          "2026-10-05T17:55:02.983Z"
+        ],
+        "quoteSourceHashes": [
+          "84f363548e43c5e0f28126d52745b7e61c3c0f46e7871a01bcc9106a06eecb05",
+          "84f363548e43c5e0f28126d52745b7e61c3c0f46e7871a01bcc9106a06eecb05"
+        ],
+        "quoteClocks": [
+          {
+            "requestStartedAt": "2026-10-06T13:22:13.361Z",
+            "receivedAt": "2026-10-06T13:22:13.529Z",
+            "knownAt": "2026-10-06T13:25:57.915Z"
+          },
+          {
+            "requestStartedAt": "2026-10-06T13:22:13.361Z",
+            "receivedAt": "2026-10-06T13:22:13.529Z",
+            "knownAt": "2026-10-06T13:25:57.915Z"
+          }
+        ],
+        "indicativeMathValid": true,
+        "rawNoAsks": [
+          "0.155000",
+          "0.825000"
+        ],
+        "rawNoCost": "0.980000",
+        "conditionalOrdinaryPayoutFloor": "1.000000",
+        "conditionalRawSurplus": "0.020000",
+        "protectiveTickCost": "0.990000",
+        "conditionalProtectiveSurplus": "0.010000",
+        "zeroPayoutExceptionLoss": "-0.980000",
+        "zeroPayoutExceptionLossAtProtectiveCost": "-0.990000",
+        "quoteSkewMs": 168,
+        "rootsCurrent": false,
+        "quotesCurrentAndCofresh": false,
+        "accountCurrent": false,
+        "cachedAccountExposureKnown": true,
+        "accountKnownBeforeBothRequests": false,
+        "wholeAccountExposure": false,
+        "rawSurplusQualified": true,
+        "protectiveSurplusQualified": true,
+        "unownedReadCandidate": false,
+        "unownedIndicativeCandidate": true,
+        "quantityPerLeg": 1,
+        "depthKnown": false,
+        "depthQualifiedQuantity": null,
+        "nativeNoBookObserved": false,
+        "ordinaryResolutionOnly": true,
+        "fullResolutionCompletenessProven": false,
+        "guaranteedProfit": false,
+        "flags": [
+          "quantity_and_depth_unknown",
+          "ordinary_resolution_only_exception_unprotected",
+          "account_unavailable_stale_or_unknown_acceptance",
+          "cached_rules_need_refresh",
+          "PARTY_NO_SCREEN_QUOTE_AGE",
+          "account_not_known_before_both_quote_requests"
+        ],
+        "orderEligible": false,
+        "executionAuthority": false
+      },
+      {
+        "id": "source-pair-330-331",
+        "race": "U.S. House Michigan District 7",
+        "eventKey": "b7f806062451bc4db6ecc28223dfe31f8eef9cf3c4838565826b6ed53ac9ca66",
+        "marketIds": [
+          "330",
+          "331"
+        ],
+        "exchangeIds": [
+          "1019",
+          "1020"
+        ],
+        "rootHashes": [
+          "ef9fbaedb2f262cc1fcb547295196bad82baa2797816a6d017194862b1f1ac49",
+          "bbbd9f8b1bec12e7b30e4fcb6c8be2706ed072a5874202ec72e44b482fc07dd0"
+        ],
+        "rootSourceHashes": [
+          "311781f69fd336d87e377be7b57f1423bde1a95a6d1dc941e1453d4571198d93",
+          "a028922d3e6f7069b219589f1352f1a27ca69d9c48485935213b933b08b28388"
+        ],
+        "rootKnownAt": [
+          "2026-10-01T19:11:36.005Z",
+          "2026-10-01T19:11:28.342Z"
+        ],
+        "quoteSourceHashes": [
+          "84f363548e43c5e0f28126d52745b7e61c3c0f46e7871a01bcc9106a06eecb05",
+          "84f363548e43c5e0f28126d52745b7e61c3c0f46e7871a01bcc9106a06eecb05"
+        ],
+        "quoteClocks": [
+          {
+            "requestStartedAt": "2026-10-06T13:22:13.361Z",
+            "receivedAt": "2026-10-06T13:22:13.529Z",
+            "knownAt": "2026-10-06T13:25:57.915Z"
+          },
+          {
+            "requestStartedAt": "2026-10-06T13:22:13.361Z",
+            "receivedAt": "2026-10-06T13:22:13.529Z",
+            "knownAt": "2026-10-06T13:25:57.915Z"
+          }
+        ],
+        "indicativeMathValid": true,
+        "rawNoAsks": [
+          "0.385000",
+          "0.600000"
+        ],
+        "rawNoCost": "0.985000",
+        "conditionalOrdinaryPayoutFloor": "1.000000",
+        "conditionalRawSurplus": "0.015000",
+        "protectiveTickCost": "0.995000",
+        "conditionalProtectiveSurplus": "0.005000",
+        "zeroPayoutExceptionLoss": "-0.985000",
+        "zeroPayoutExceptionLossAtProtectiveCost": "-0.995000",
+        "quoteSkewMs": 168,
+        "rootsCurrent": false,
+        "quotesCurrentAndCofresh": false,
+        "accountCurrent": false,
+        "cachedAccountExposureKnown": true,
+        "accountKnownBeforeBothRequests": false,
+        "wholeAccountExposure": false,
+        "rawSurplusQualified": true,
+        "protectiveSurplusQualified": false,
+        "unownedReadCandidate": false,
+        "unownedIndicativeCandidate": false,
+        "quantityPerLeg": 1,
+        "depthKnown": false,
+        "depthQualifiedQuantity": null,
+        "nativeNoBookObserved": false,
+        "ordinaryResolutionOnly": true,
+        "fullResolutionCompletenessProven": false,
+        "guaranteedProfit": false,
+        "flags": [
+          "quantity_and_depth_unknown",
+          "ordinary_resolution_only_exception_unprotected",
+          "account_unavailable_stale_or_unknown_acceptance",
+          "cached_rules_need_refresh",
+          "PARTY_NO_SCREEN_QUOTE_AGE",
+          "account_not_known_before_both_quote_requests",
+          "minimum_protective_ordinary_surplus_not_met"
+        ],
+        "orderEligible": false,
+        "executionAuthority": false
+      },
+      {
+        "id": "source-pair-349-350",
+        "race": "U.S. House Wisconsin District 1",
+        "eventKey": "1cc10ef398e6bd5826742b10bb759a14d1c9fc9f017f5e89d95d901c552e4076",
+        "marketIds": [
+          "349",
+          "350"
+        ],
+        "exchangeIds": [
+          "1038",
+          "1039"
+        ],
+        "rootHashes": [
+          "38898410e8351d0cd106688ce37ce11d0d63e4f91b9d0311e6d6943a796d534b",
+          "0f6d2995cd3de54e5aaac739a8f559581a256d45f3401355c3e54c5e8b53507d"
+        ],
+        "rootSourceHashes": [
+          "9f1f83054f4f0ad42263d9927b4f742ba076a9355ee7a124c6ea8336d976e567",
+          "1fb4776352102b9295930217b8de52d0575a7922e6775395c3c8c158d6e9625e"
+        ],
+        "rootKnownAt": [
+          "2026-10-01T19:10:59.524Z",
+          "2026-10-01T19:10:58.034Z"
+        ],
+        "quoteSourceHashes": [
+          "84f363548e43c5e0f28126d52745b7e61c3c0f46e7871a01bcc9106a06eecb05",
+          "84f363548e43c5e0f28126d52745b7e61c3c0f46e7871a01bcc9106a06eecb05"
+        ],
+        "quoteClocks": [
+          {
+            "requestStartedAt": "2026-10-06T13:22:13.361Z",
+            "receivedAt": "2026-10-06T13:22:13.529Z",
+            "knownAt": "2026-10-06T13:25:57.915Z"
+          },
+          {
+            "requestStartedAt": "2026-10-06T13:22:13.361Z",
+            "receivedAt": "2026-10-06T13:22:13.529Z",
+            "knownAt": "2026-10-06T13:25:57.915Z"
+          }
+        ],
+        "indicativeMathValid": true,
+        "rawNoAsks": [
+          "0.610000",
+          "0.375000"
+        ],
+        "rawNoCost": "0.985000",
+        "conditionalOrdinaryPayoutFloor": "1.000000",
+        "conditionalRawSurplus": "0.015000",
+        "protectiveTickCost": "0.995000",
+        "conditionalProtectiveSurplus": "0.005000",
+        "zeroPayoutExceptionLoss": "-0.985000",
+        "zeroPayoutExceptionLossAtProtectiveCost": "-0.995000",
+        "quoteSkewMs": 168,
+        "rootsCurrent": false,
+        "quotesCurrentAndCofresh": false,
+        "accountCurrent": false,
+        "cachedAccountExposureKnown": true,
+        "accountKnownBeforeBothRequests": false,
+        "wholeAccountExposure": false,
+        "rawSurplusQualified": true,
+        "protectiveSurplusQualified": false,
+        "unownedReadCandidate": false,
+        "unownedIndicativeCandidate": false,
+        "quantityPerLeg": 1,
+        "depthKnown": false,
+        "depthQualifiedQuantity": null,
+        "nativeNoBookObserved": false,
+        "ordinaryResolutionOnly": true,
+        "fullResolutionCompletenessProven": false,
+        "guaranteedProfit": false,
+        "flags": [
+          "quantity_and_depth_unknown",
+          "ordinary_resolution_only_exception_unprotected",
+          "account_unavailable_stale_or_unknown_acceptance",
+          "cached_rules_need_refresh",
+          "PARTY_NO_SCREEN_QUOTE_AGE",
+          "account_not_known_before_both_quote_requests",
+          "minimum_protective_ordinary_surplus_not_met"
+        ],
+        "orderEligible": false,
+        "executionAuthority": false
+      },
+      {
+        "id": "source-pair-356-357",
+        "race": "U.S. Senate Kansas",
+        "eventKey": "1ff13cd24a109bb0be72deac8e1c18f5f8c410ef05c6ef07c4961370f6794e35",
+        "marketIds": [
+          "356",
+          "357"
+        ],
+        "exchangeIds": [
+          "1045",
+          "1046"
+        ],
+        "rootHashes": [
+          "39acdb6801c5f8f10f675de9fa3f3aa997c5c20788e6790e1d3d21eba8e76156",
+          "bc581dc5b1b693b7fc2ea278b5e8703e5838566030c6420e2b700eb968105eaa"
+        ],
+        "rootSourceHashes": [
+          "8a8f8227a1264a0c39e27f7114061a30aac535d6c4e8088c80b1cf49d25d1358",
+          "41d6d8dadbae9afef08ca80dbbc7ba728abe37fe4ab40aed55e5005f0a85c20a"
+        ],
+        "rootKnownAt": [
+          "2026-10-05T23:23:02.507Z",
+          "2026-10-04T20:52:18.085Z"
+        ],
+        "quoteSourceHashes": [
+          "84f363548e43c5e0f28126d52745b7e61c3c0f46e7871a01bcc9106a06eecb05",
+          "84f363548e43c5e0f28126d52745b7e61c3c0f46e7871a01bcc9106a06eecb05"
+        ],
+        "quoteClocks": [
+          {
+            "requestStartedAt": "2026-10-06T13:22:13.361Z",
+            "receivedAt": "2026-10-06T13:22:13.529Z",
+            "knownAt": "2026-10-06T13:25:57.915Z"
+          },
+          {
+            "requestStartedAt": "2026-10-06T13:22:13.361Z",
+            "receivedAt": "2026-10-06T13:22:13.529Z",
+            "knownAt": "2026-10-06T13:25:57.915Z"
+          }
+        ],
+        "indicativeMathValid": true,
+        "rawNoAsks": [
+          "0.650000",
+          "0.335000"
+        ],
+        "rawNoCost": "0.985000",
+        "conditionalOrdinaryPayoutFloor": "1.000000",
+        "conditionalRawSurplus": "0.015000",
+        "protectiveTickCost": "0.995000",
+        "conditionalProtectiveSurplus": "0.005000",
+        "zeroPayoutExceptionLoss": "-0.985000",
+        "zeroPayoutExceptionLossAtProtectiveCost": "-0.995000",
+        "quoteSkewMs": 168,
+        "rootsCurrent": false,
+        "quotesCurrentAndCofresh": false,
+        "accountCurrent": false,
+        "cachedAccountExposureKnown": true,
+        "accountKnownBeforeBothRequests": false,
+        "wholeAccountExposure": false,
+        "rawSurplusQualified": true,
+        "protectiveSurplusQualified": false,
+        "unownedReadCandidate": false,
+        "unownedIndicativeCandidate": false,
+        "quantityPerLeg": 1,
+        "depthKnown": false,
+        "depthQualifiedQuantity": null,
+        "nativeNoBookObserved": false,
+        "ordinaryResolutionOnly": true,
+        "fullResolutionCompletenessProven": false,
+        "guaranteedProfit": false,
+        "flags": [
+          "quantity_and_depth_unknown",
+          "ordinary_resolution_only_exception_unprotected",
+          "account_unavailable_stale_or_unknown_acceptance",
+          "cached_rules_need_refresh",
+          "PARTY_NO_SCREEN_QUOTE_AGE",
+          "account_not_known_before_both_quote_requests",
+          "minimum_protective_ordinary_surplus_not_met"
+        ],
+        "orderEligible": false,
+        "executionAuthority": false
+      },
+      {
+        "id": "source-pair-358-359",
+        "race": "U.S. Senate Michigan",
+        "eventKey": "77406cb365a62301bbb8acfdacc61ff9429dbc06055d6adfdaa8f080f2f54cc9",
+        "marketIds": [
+          "358",
+          "359"
+        ],
+        "exchangeIds": [
+          "1047",
+          "1048"
+        ],
+        "rootHashes": [
+          "c2270f3d0aabf06658e9a4b4ea9fd4669bf61df7f504ad6af0bda193b7ea8075",
+          "1b574ca0771cfa341678ac81873ebe11856f8ca1365c26d10bcb8c87bf79547a"
+        ],
+        "rootSourceHashes": [
+          "9826907da723b38f976b0375440367bfb66c36a35d9e5e90aac4b014f88388ca",
+          "89e1801adb285d85fc01b74d4a85f20b4eb35ded88ebcca69848959a7b8afa9a"
+        ],
+        "rootKnownAt": [
+          "2026-10-05T18:40:56.961Z",
+          "2026-10-01T19:10:44.753Z"
+        ],
+        "quoteSourceHashes": [
+          "84f363548e43c5e0f28126d52745b7e61c3c0f46e7871a01bcc9106a06eecb05",
+          "84f363548e43c5e0f28126d52745b7e61c3c0f46e7871a01bcc9106a06eecb05"
+        ],
+        "quoteClocks": [
+          {
+            "requestStartedAt": "2026-10-06T13:22:13.361Z",
+            "receivedAt": "2026-10-06T13:22:13.529Z",
+            "knownAt": "2026-10-06T13:25:57.915Z"
+          },
+          {
+            "requestStartedAt": "2026-10-06T13:22:13.361Z",
+            "receivedAt": "2026-10-06T13:22:13.529Z",
+            "knownAt": "2026-10-06T13:25:57.915Z"
+          }
+        ],
+        "indicativeMathValid": true,
+        "rawNoAsks": [
+          "0.270000",
+          "0.715000"
+        ],
+        "rawNoCost": "0.985000",
+        "conditionalOrdinaryPayoutFloor": "1.000000",
+        "conditionalRawSurplus": "0.015000",
+        "protectiveTickCost": "0.995000",
+        "conditionalProtectiveSurplus": "0.005000",
+        "zeroPayoutExceptionLoss": "-0.985000",
+        "zeroPayoutExceptionLossAtProtectiveCost": "-0.995000",
+        "quoteSkewMs": 168,
+        "rootsCurrent": false,
+        "quotesCurrentAndCofresh": false,
+        "accountCurrent": false,
+        "cachedAccountExposureKnown": true,
+        "accountKnownBeforeBothRequests": false,
+        "wholeAccountExposure": false,
+        "rawSurplusQualified": true,
+        "protectiveSurplusQualified": false,
+        "unownedReadCandidate": false,
+        "unownedIndicativeCandidate": false,
+        "quantityPerLeg": 1,
+        "depthKnown": false,
+        "depthQualifiedQuantity": null,
+        "nativeNoBookObserved": false,
+        "ordinaryResolutionOnly": true,
+        "fullResolutionCompletenessProven": false,
+        "guaranteedProfit": false,
+        "flags": [
+          "quantity_and_depth_unknown",
+          "ordinary_resolution_only_exception_unprotected",
+          "account_unavailable_stale_or_unknown_acceptance",
+          "cached_rules_need_refresh",
+          "PARTY_NO_SCREEN_QUOTE_AGE",
+          "account_not_known_before_both_quote_requests",
+          "minimum_protective_ordinary_surplus_not_met"
+        ],
+        "orderEligible": false,
+        "executionAuthority": false
+      },
+      {
+        "id": "source-pair-375-376",
+        "race": "U.S. House New Hampshire District 1",
+        "eventKey": "c4fbbe776f2e15250c4b12d48d5cb8deb44c03ccbe7ad2594a231101a5ff9637",
+        "marketIds": [
+          "375",
+          "376"
+        ],
+        "exchangeIds": [
+          "1064",
+          "1065"
+        ],
+        "rootHashes": [
+          "4981e396d67e5b5781afd48bd937194259fc5c33073336e6311f17d092260bbb",
+          "95b087b02daaa7f360abb1ac17e328a8b32626c46921e7f87c1fb60f87d2c22a"
+        ],
+        "rootSourceHashes": [
+          "dcd2b66cf8ba2f731f06e583bd48e0069ef8ad473a7981c320eff77d362bd0d3",
+          "c4b6ca93eda487190ca423c62f16097b55275a18d4ee329cbccc83082e39fccc"
+        ],
+        "rootKnownAt": [
+          "2026-10-01T19:10:25.709Z",
+          "2026-10-01T19:10:25.714Z"
+        ],
+        "quoteSourceHashes": [
+          "84f363548e43c5e0f28126d52745b7e61c3c0f46e7871a01bcc9106a06eecb05",
+          "84f363548e43c5e0f28126d52745b7e61c3c0f46e7871a01bcc9106a06eecb05"
+        ],
+        "quoteClocks": [
+          {
+            "requestStartedAt": "2026-10-06T13:22:13.361Z",
+            "receivedAt": "2026-10-06T13:22:13.529Z",
+            "knownAt": "2026-10-06T13:25:57.915Z"
+          },
+          {
+            "requestStartedAt": "2026-10-06T13:22:13.361Z",
+            "receivedAt": "2026-10-06T13:22:13.529Z",
+            "knownAt": "2026-10-06T13:25:57.915Z"
+          }
+        ],
+        "indicativeMathValid": true,
+        "rawNoAsks": [
+          "0.085000",
+          "0.900000"
+        ],
+        "rawNoCost": "0.985000",
+        "conditionalOrdinaryPayoutFloor": "1.000000",
+        "conditionalRawSurplus": "0.015000",
+        "protectiveTickCost": "0.995000",
+        "conditionalProtectiveSurplus": "0.005000",
+        "zeroPayoutExceptionLoss": "-0.985000",
+        "zeroPayoutExceptionLossAtProtectiveCost": "-0.995000",
+        "quoteSkewMs": 168,
+        "rootsCurrent": false,
+        "quotesCurrentAndCofresh": false,
+        "accountCurrent": false,
+        "cachedAccountExposureKnown": true,
+        "accountKnownBeforeBothRequests": false,
+        "wholeAccountExposure": false,
+        "rawSurplusQualified": true,
+        "protectiveSurplusQualified": false,
+        "unownedReadCandidate": false,
+        "unownedIndicativeCandidate": false,
+        "quantityPerLeg": 1,
+        "depthKnown": false,
+        "depthQualifiedQuantity": null,
+        "nativeNoBookObserved": false,
+        "ordinaryResolutionOnly": true,
+        "fullResolutionCompletenessProven": false,
+        "guaranteedProfit": false,
+        "flags": [
+          "quantity_and_depth_unknown",
+          "ordinary_resolution_only_exception_unprotected",
+          "account_unavailable_stale_or_unknown_acceptance",
+          "cached_rules_need_refresh",
+          "PARTY_NO_SCREEN_QUOTE_AGE",
+          "account_not_known_before_both_quote_requests",
+          "minimum_protective_ordinary_surplus_not_met"
+        ],
+        "orderEligible": false,
+        "executionAuthority": false
+      },
+      {
+        "id": "source-pair-360-361",
+        "race": "U.S. Senate Minnesota",
+        "eventKey": "fb2aac4a9c4799fed2ab7c1dfd05e18e3f3a475368a648189e59334499b6adc1",
+        "marketIds": [
+          "360",
+          "361"
+        ],
+        "exchangeIds": [
+          "1049",
+          "1050"
+        ],
+        "rootHashes": [
+          "9be708942b7f2a1c3ef943a775a0ce759a375a577a8726904ddcc21a83bace3f",
+          "e8c9fac356eb5aae41248dc530e506895008ee643e45d6a869c977de9f445ce8"
+        ],
+        "rootSourceHashes": [
+          "9084a810def030c6f946101978684eb68ab13cf76eb490fa3aca59c1163a1dc2",
+          "51ca7cf39273b6bd3c6691c095ab7676641609ae65b35b29a3f37f40830d5714"
+        ],
+        "rootKnownAt": [
+          "2026-10-01T19:10:47.641Z",
+          "2026-10-06T04:35:18.212Z"
+        ],
+        "quoteSourceHashes": [
+          "84f363548e43c5e0f28126d52745b7e61c3c0f46e7871a01bcc9106a06eecb05",
+          "84f363548e43c5e0f28126d52745b7e61c3c0f46e7871a01bcc9106a06eecb05"
+        ],
+        "quoteClocks": [
+          {
+            "requestStartedAt": "2026-10-06T13:22:13.361Z",
+            "receivedAt": "2026-10-06T13:22:13.529Z",
+            "knownAt": "2026-10-06T13:25:57.915Z"
+          },
+          {
+            "requestStartedAt": "2026-10-06T13:22:13.361Z",
+            "receivedAt": "2026-10-06T13:22:13.529Z",
+            "knownAt": "2026-10-06T13:25:57.915Z"
+          }
+        ],
+        "indicativeMathValid": true,
+        "rawNoAsks": [
+          "0.160000",
+          "0.830000"
+        ],
+        "rawNoCost": "0.990000",
+        "conditionalOrdinaryPayoutFloor": "1.000000",
+        "conditionalRawSurplus": "0.010000",
+        "protectiveTickCost": "1.000000",
+        "conditionalProtectiveSurplus": "0.000000",
+        "zeroPayoutExceptionLoss": "-0.990000",
+        "zeroPayoutExceptionLossAtProtectiveCost": "-1.000000",
+        "quoteSkewMs": 168,
+        "rootsCurrent": false,
+        "quotesCurrentAndCofresh": false,
+        "accountCurrent": false,
+        "cachedAccountExposureKnown": true,
+        "accountKnownBeforeBothRequests": false,
+        "wholeAccountExposure": false,
+        "rawSurplusQualified": true,
+        "protectiveSurplusQualified": false,
+        "unownedReadCandidate": false,
+        "unownedIndicativeCandidate": false,
+        "quantityPerLeg": 1,
+        "depthKnown": false,
+        "depthQualifiedQuantity": null,
+        "nativeNoBookObserved": false,
+        "ordinaryResolutionOnly": true,
+        "fullResolutionCompletenessProven": false,
+        "guaranteedProfit": false,
+        "flags": [
+          "quantity_and_depth_unknown",
+          "ordinary_resolution_only_exception_unprotected",
+          "account_unavailable_stale_or_unknown_acceptance",
+          "cached_rules_need_refresh",
+          "PARTY_NO_SCREEN_QUOTE_AGE",
+          "account_not_known_before_both_quote_requests",
+          "minimum_protective_ordinary_surplus_not_met"
+        ],
+        "orderEligible": false,
+        "executionAuthority": false
+      },
+      {
+        "id": "source-pair-368-369",
+        "race": "Governor of Alaska",
+        "eventKey": "7ee2f78a072d2bb8bd8d04ab9bf4ae6c39abadcbfb9e792dcaa94e46d9cb9c53",
+        "marketIds": [
+          "368",
+          "369"
+        ],
+        "exchangeIds": [
+          "1057",
+          "1058"
+        ],
+        "rootHashes": [
+          "7c4aeb47cb580e3587c660603ed27eda5a01e2f921c9981b8521bd824693f08a",
+          "e91cedc146ba6f26ac13ccfef1fc6a49d55c75af93e137ec1886e66e65f415ba"
+        ],
+        "rootSourceHashes": [
+          "f1163d8e972bf491a8fadc287af6ea2b3cd3ef1ea95dc06774bed2ad0b1bbf42",
+          "275389f908b5d4853fc50154f2ae87092f1f3d2d4cf5b1d4b23a65bae81d080b"
+        ],
+        "rootKnownAt": [
+          "2026-10-01T19:10:35.257Z",
+          "2026-10-01T19:10:30.439Z"
+        ],
+        "quoteSourceHashes": [
+          "84f363548e43c5e0f28126d52745b7e61c3c0f46e7871a01bcc9106a06eecb05",
+          "84f363548e43c5e0f28126d52745b7e61c3c0f46e7871a01bcc9106a06eecb05"
+        ],
+        "quoteClocks": [
+          {
+            "requestStartedAt": "2026-10-06T13:22:13.361Z",
+            "receivedAt": "2026-10-06T13:22:13.529Z",
+            "knownAt": "2026-10-06T13:25:57.915Z"
+          },
+          {
+            "requestStartedAt": "2026-10-06T13:22:13.361Z",
+            "receivedAt": "2026-10-06T13:22:13.529Z",
+            "knownAt": "2026-10-06T13:25:57.915Z"
+          }
+        ],
+        "indicativeMathValid": true,
+        "rawNoAsks": [
+          "0.260000",
+          "0.730000"
+        ],
+        "rawNoCost": "0.990000",
+        "conditionalOrdinaryPayoutFloor": "1.000000",
+        "conditionalRawSurplus": "0.010000",
+        "protectiveTickCost": "1.000000",
+        "conditionalProtectiveSurplus": "0.000000",
+        "zeroPayoutExceptionLoss": "-0.990000",
+        "zeroPayoutExceptionLossAtProtectiveCost": "-1.000000",
+        "quoteSkewMs": 168,
+        "rootsCurrent": false,
+        "quotesCurrentAndCofresh": false,
+        "accountCurrent": false,
+        "cachedAccountExposureKnown": true,
+        "accountKnownBeforeBothRequests": false,
+        "wholeAccountExposure": true,
+        "rawSurplusQualified": true,
+        "protectiveSurplusQualified": false,
+        "unownedReadCandidate": false,
+        "unownedIndicativeCandidate": false,
+        "quantityPerLeg": 1,
+        "depthKnown": false,
+        "depthQualifiedQuantity": null,
+        "nativeNoBookObserved": false,
+        "ordinaryResolutionOnly": true,
+        "fullResolutionCompletenessProven": false,
+        "guaranteedProfit": false,
+        "flags": [
+          "quantity_and_depth_unknown",
+          "ordinary_resolution_only_exception_unprotected",
+          "whole_account_holding_or_open_order",
+          "account_unavailable_stale_or_unknown_acceptance",
+          "cached_rules_need_refresh",
+          "PARTY_NO_SCREEN_QUOTE_AGE",
+          "account_not_known_before_both_quote_requests",
+          "minimum_protective_ordinary_surplus_not_met"
+        ],
+        "orderEligible": false,
+        "executionAuthority": false
+      },
+      {
+        "id": "source-pair-260-261",
+        "race": "U.S. Senate Iowa",
+        "eventKey": "49d05c89c585290c31adc84c4e7842c6d7f803e96f172e13f3947e5f11964724",
+        "marketIds": [
+          "260",
+          "261"
+        ],
+        "exchangeIds": [
+          "949",
+          "950"
+        ],
+        "rootHashes": [
+          "640582be18719ff760c07baf831de419b234fa0d2f1addd67907b19a969250ce",
+          "d77552ed69fac7a5a63a8edf51c3e160f2afdecb75a61c7cb73e90a3dc79ac5e"
+        ],
+        "rootSourceHashes": [
+          "4ce72a5d4f37c724ce80eb434839655cc1b50f9cfba7afda5e9baeaebe29133f",
+          "890d99dded052bff9f71565c7e3ba014db352bea9f4305258cd81509d5f63dbd"
+        ],
+        "rootKnownAt": [
+          "2026-10-05T18:42:04.466Z",
+          "2026-10-05T11:34:20.269Z"
+        ],
+        "quoteSourceHashes": [
+          "84f363548e43c5e0f28126d52745b7e61c3c0f46e7871a01bcc9106a06eecb05",
+          "84f363548e43c5e0f28126d52745b7e61c3c0f46e7871a01bcc9106a06eecb05"
+        ],
+        "quoteClocks": [
+          {
+            "requestStartedAt": "2026-10-06T13:22:11.014Z",
+            "receivedAt": "2026-10-06T13:22:11.191Z",
+            "knownAt": "2026-10-06T13:25:57.915Z"
+          },
+          {
+            "requestStartedAt": "2026-10-06T13:22:11.014Z",
+            "receivedAt": "2026-10-06T13:22:11.191Z",
+            "knownAt": "2026-10-06T13:25:57.915Z"
+          }
+        ],
+        "indicativeMathValid": true,
+        "rawNoAsks": [
+          "0.530000",
+          "0.465000"
+        ],
+        "rawNoCost": "0.995000",
+        "conditionalOrdinaryPayoutFloor": "1.000000",
+        "conditionalRawSurplus": "0.005000",
+        "protectiveTickCost": "1.005000",
+        "conditionalProtectiveSurplus": "-0.005000",
+        "zeroPayoutExceptionLoss": "-0.995000",
+        "zeroPayoutExceptionLossAtProtectiveCost": "-1.005000",
+        "quoteSkewMs": 177,
+        "rootsCurrent": false,
+        "quotesCurrentAndCofresh": false,
+        "accountCurrent": false,
+        "cachedAccountExposureKnown": true,
+        "accountKnownBeforeBothRequests": false,
+        "wholeAccountExposure": false,
+        "rawSurplusQualified": false,
+        "protectiveSurplusQualified": false,
+        "unownedReadCandidate": false,
+        "unownedIndicativeCandidate": false,
+        "quantityPerLeg": 1,
+        "depthKnown": false,
+        "depthQualifiedQuantity": null,
+        "nativeNoBookObserved": false,
+        "ordinaryResolutionOnly": true,
+        "fullResolutionCompletenessProven": false,
+        "guaranteedProfit": false,
+        "flags": [
+          "quantity_and_depth_unknown",
+          "ordinary_resolution_only_exception_unprotected",
+          "account_unavailable_stale_or_unknown_acceptance",
+          "cached_rules_need_refresh",
+          "PARTY_NO_SCREEN_QUOTE_AGE",
+          "account_not_known_before_both_quote_requests",
+          "minimum_protective_ordinary_surplus_not_met"
+        ],
+        "orderEligible": false,
+        "executionAuthority": false
+      },
+      {
+        "id": "source-pair-324-325",
+        "race": "U.S. House Florida District 16",
+        "eventKey": "a824a9acb587a78a6a89a0205c35199468760a1add39696e0516c03ff78d12c3",
+        "marketIds": [
+          "324",
+          "325"
+        ],
+        "exchangeIds": [
+          "1013",
+          "1014"
+        ],
+        "rootHashes": [
+          "6d0afb738b4628a3fbc071f45d186df0caedba4eb72543e71c6f5cbfb75331e7",
+          "38da1964cd21097d29d9bb541721e95eade6156cf2a114e678c51655b60c418e"
+        ],
+        "rootSourceHashes": [
+          "3d9076d666de00732e51e3a245e5ee85c202794e9713269e51c17fedaaae88ac",
+          "b4146aa938779e5d9e7dd87b397e978f3ff554d6af66d4489e35f84732e201b7"
+        ],
+        "rootKnownAt": [
+          "2026-10-01T19:11:38.874Z",
+          "2026-10-01T19:11:37.380Z"
+        ],
+        "quoteSourceHashes": [
+          "84f363548e43c5e0f28126d52745b7e61c3c0f46e7871a01bcc9106a06eecb05",
+          "84f363548e43c5e0f28126d52745b7e61c3c0f46e7871a01bcc9106a06eecb05"
+        ],
+        "quoteClocks": [
+          {
+            "requestStartedAt": "2026-10-06T13:22:13.361Z",
+            "receivedAt": "2026-10-06T13:22:13.529Z",
+            "knownAt": "2026-10-06T13:25:57.915Z"
+          },
+          {
+            "requestStartedAt": "2026-10-06T13:22:13.361Z",
+            "receivedAt": "2026-10-06T13:22:13.529Z",
+            "knownAt": "2026-10-06T13:25:57.915Z"
+          }
+        ],
+        "indicativeMathValid": true,
+        "rawNoAsks": [
+          "0.840000",
+          "0.155000"
+        ],
+        "rawNoCost": "0.995000",
+        "conditionalOrdinaryPayoutFloor": "1.000000",
+        "conditionalRawSurplus": "0.005000",
+        "protectiveTickCost": "1.005000",
+        "conditionalProtectiveSurplus": "-0.005000",
+        "zeroPayoutExceptionLoss": "-0.995000",
+        "zeroPayoutExceptionLossAtProtectiveCost": "-1.005000",
+        "quoteSkewMs": 168,
+        "rootsCurrent": false,
+        "quotesCurrentAndCofresh": false,
+        "accountCurrent": false,
+        "cachedAccountExposureKnown": true,
+        "accountKnownBeforeBothRequests": false,
+        "wholeAccountExposure": false,
+        "rawSurplusQualified": false,
+        "protectiveSurplusQualified": false,
+        "unownedReadCandidate": false,
+        "unownedIndicativeCandidate": false,
+        "quantityPerLeg": 1,
+        "depthKnown": false,
+        "depthQualifiedQuantity": null,
+        "nativeNoBookObserved": false,
+        "ordinaryResolutionOnly": true,
+        "fullResolutionCompletenessProven": false,
+        "guaranteedProfit": false,
+        "flags": [
+          "quantity_and_depth_unknown",
+          "ordinary_resolution_only_exception_unprotected",
+          "account_unavailable_stale_or_unknown_acceptance",
+          "cached_rules_need_refresh",
+          "PARTY_NO_SCREEN_QUOTE_AGE",
+          "account_not_known_before_both_quote_requests",
+          "minimum_protective_ordinary_surplus_not_met"
+        ],
+        "orderEligible": false,
+        "executionAuthority": false
+      },
+      {
+        "id": "source-pair-351-352",
+        "race": "U.S. House Wisconsin District 3",
+        "eventKey": "5a9356ee69ab6a53ca062adf69a79ae20822ecb71572aa95b4db2776dcc283b8",
+        "marketIds": [
+          "351",
+          "352"
+        ],
+        "exchangeIds": [
+          "1040",
+          "1041"
+        ],
+        "rootHashes": [
+          "3c6dd9f87af274cd75bf0b15631fb9acc997c99d2f58649171dd2f9c544663f2",
+          "d0fa8144bbbc82524415c8268804420a10dba91c2d039b087205c3509115b0e0"
+        ],
+        "rootSourceHashes": [
+          "35e5a1cf0053b7dd83f1d9ddede06e55ece5ced582aa766dbeac4627798e4f26",
+          "ee0aea144e8de2c8b4492f27254d5ed8e0d5935e03a614dd462010f369de7af9"
+        ],
+        "rootKnownAt": [
+          "2026-10-01T19:11:09.211Z",
+          "2026-10-01T19:10:55.213Z"
+        ],
+        "quoteSourceHashes": [
+          "84f363548e43c5e0f28126d52745b7e61c3c0f46e7871a01bcc9106a06eecb05",
+          "84f363548e43c5e0f28126d52745b7e61c3c0f46e7871a01bcc9106a06eecb05"
+        ],
+        "quoteClocks": [
+          {
+            "requestStartedAt": "2026-10-06T13:22:13.361Z",
+            "receivedAt": "2026-10-06T13:22:13.529Z",
+            "knownAt": "2026-10-06T13:25:57.915Z"
+          },
+          {
+            "requestStartedAt": "2026-10-06T13:22:13.361Z",
+            "receivedAt": "2026-10-06T13:22:13.529Z",
+            "knownAt": "2026-10-06T13:25:57.915Z"
+          }
+        ],
+        "indicativeMathValid": true,
+        "rawNoAsks": [
+          "0.300000",
+          "0.695000"
+        ],
+        "rawNoCost": "0.995000",
+        "conditionalOrdinaryPayoutFloor": "1.000000",
+        "conditionalRawSurplus": "0.005000",
+        "protectiveTickCost": "1.005000",
+        "conditionalProtectiveSurplus": "-0.005000",
+        "zeroPayoutExceptionLoss": "-0.995000",
+        "zeroPayoutExceptionLossAtProtectiveCost": "-1.005000",
+        "quoteSkewMs": 168,
+        "rootsCurrent": false,
+        "quotesCurrentAndCofresh": false,
+        "accountCurrent": false,
+        "cachedAccountExposureKnown": true,
+        "accountKnownBeforeBothRequests": false,
+        "wholeAccountExposure": false,
+        "rawSurplusQualified": false,
+        "protectiveSurplusQualified": false,
+        "unownedReadCandidate": false,
+        "unownedIndicativeCandidate": false,
+        "quantityPerLeg": 1,
+        "depthKnown": false,
+        "depthQualifiedQuantity": null,
+        "nativeNoBookObserved": false,
+        "ordinaryResolutionOnly": true,
+        "fullResolutionCompletenessProven": false,
+        "guaranteedProfit": false,
+        "flags": [
+          "quantity_and_depth_unknown",
+          "ordinary_resolution_only_exception_unprotected",
+          "account_unavailable_stale_or_unknown_acceptance",
+          "cached_rules_need_refresh",
+          "PARTY_NO_SCREEN_QUOTE_AGE",
+          "account_not_known_before_both_quote_requests",
+          "minimum_protective_ordinary_surplus_not_met"
+        ],
+        "orderEligible": false,
+        "executionAuthority": false
+      },
+      {
+        "id": "source-pair-354-355",
+        "race": "U.S. Senate Florida",
+        "eventKey": "18dad7018fcb0a378cd6899cdaf9f85b32f0b1ff99525d17210276a988f1e7f7",
+        "marketIds": [
+          "354",
+          "355"
+        ],
+        "exchangeIds": [
+          "1043",
+          "1044"
+        ],
+        "rootHashes": [
+          "70ca71f69b46f49d362a0dfa80173f66364897aa516ae564666037de09814ca8",
+          "4e3073492a9b50531b101d9f0f9b2a248e52c3b0d5f923928c9a7ce297f393b5"
+        ],
+        "rootSourceHashes": [
+          "1f6d516ee6f97ffc61e2f2727099c5fa83a60ffdb70bc703cf2729a4e4eb7460",
+          "1f6d516ee6f97ffc61e2f2727099c5fa83a60ffdb70bc703cf2729a4e4eb7460"
+        ],
+        "rootKnownAt": [
+          "2026-10-06T12:59:26.349Z",
+          "2026-10-06T12:59:27.603Z"
+        ],
+        "quoteSourceHashes": [
+          "84f363548e43c5e0f28126d52745b7e61c3c0f46e7871a01bcc9106a06eecb05",
+          "84f363548e43c5e0f28126d52745b7e61c3c0f46e7871a01bcc9106a06eecb05"
+        ],
+        "quoteClocks": [
+          {
+            "requestStartedAt": "2026-10-06T13:22:13.361Z",
+            "receivedAt": "2026-10-06T13:22:13.529Z",
+            "knownAt": "2026-10-06T13:25:57.915Z"
+          },
+          {
+            "requestStartedAt": "2026-10-06T13:22:13.361Z",
+            "receivedAt": "2026-10-06T13:22:13.529Z",
+            "knownAt": "2026-10-06T13:25:57.915Z"
+          }
+        ],
+        "indicativeMathValid": true,
+        "rawNoAsks": [
+          "0.825000",
+          "0.170000"
+        ],
+        "rawNoCost": "0.995000",
+        "conditionalOrdinaryPayoutFloor": "1.000000",
+        "conditionalRawSurplus": "0.005000",
+        "protectiveTickCost": "1.005000",
+        "conditionalProtectiveSurplus": "-0.005000",
+        "zeroPayoutExceptionLoss": "-0.995000",
+        "zeroPayoutExceptionLossAtProtectiveCost": "-1.005000",
+        "quoteSkewMs": 168,
+        "rootsCurrent": false,
+        "quotesCurrentAndCofresh": false,
+        "accountCurrent": false,
+        "cachedAccountExposureKnown": true,
+        "accountKnownBeforeBothRequests": false,
+        "wholeAccountExposure": false,
+        "rawSurplusQualified": false,
+        "protectiveSurplusQualified": false,
+        "unownedReadCandidate": false,
+        "unownedIndicativeCandidate": false,
+        "quantityPerLeg": 1,
+        "depthKnown": false,
+        "depthQualifiedQuantity": null,
+        "nativeNoBookObserved": false,
+        "ordinaryResolutionOnly": true,
+        "fullResolutionCompletenessProven": false,
+        "guaranteedProfit": false,
+        "flags": [
+          "quantity_and_depth_unknown",
+          "ordinary_resolution_only_exception_unprotected",
+          "account_unavailable_stale_or_unknown_acceptance",
+          "cached_rules_need_refresh",
+          "PARTY_NO_SCREEN_QUOTE_AGE",
+          "account_not_known_before_both_quote_requests",
+          "minimum_protective_ordinary_surplus_not_met"
+        ],
+        "orderEligible": false,
+        "executionAuthority": false
+      },
+      {
+        "id": "source-pair-387-388",
+        "race": "U.S. Senate Rhode Island",
+        "eventKey": "2ac6cee808e136be1bf07cc34351875078cdd8862d815adec66ac4888135168a",
+        "marketIds": [
+          "387",
+          "388"
+        ],
+        "exchangeIds": [
+          "1076",
+          "1077"
+        ],
+        "rootHashes": [
+          "9c047b15ffad55e85deee3b991a07b2be597a974708eaede5fec38937e4f958e",
+          "0d45940da1f8bad2fcf110bb84dc6c7b009e6665beb887a372d306798e4ec795"
+        ],
+        "rootSourceHashes": [
+          "2b41c71e5502087b88aebbcf964e2eac57324d240f6868e17a4aebd7ec6bf810",
+          "97848e40e6e93cb13541c1f2e9fbdaf5e12c12b18d581084cfb2b6566a6d61e0"
+        ],
+        "rootKnownAt": [
+          "2026-10-01T19:10:01.221Z",
+          "2026-10-01T19:10:02.268Z"
+        ],
+        "quoteSourceHashes": [
+          "84f363548e43c5e0f28126d52745b7e61c3c0f46e7871a01bcc9106a06eecb05",
+          "84f363548e43c5e0f28126d52745b7e61c3c0f46e7871a01bcc9106a06eecb05"
+        ],
+        "quoteClocks": [
+          {
+            "requestStartedAt": "2026-10-06T13:22:13.361Z",
+            "receivedAt": "2026-10-06T13:22:13.529Z",
+            "knownAt": "2026-10-06T13:25:57.915Z"
+          },
+          {
+            "requestStartedAt": "2026-10-06T13:22:13.361Z",
+            "receivedAt": "2026-10-06T13:22:13.529Z",
+            "knownAt": "2026-10-06T13:25:57.915Z"
+          }
+        ],
+        "indicativeMathValid": true,
+        "rawNoAsks": [
+          "0.140000",
+          "0.855000"
+        ],
+        "rawNoCost": "0.995000",
+        "conditionalOrdinaryPayoutFloor": "1.000000",
+        "conditionalRawSurplus": "0.005000",
+        "protectiveTickCost": "1.005000",
+        "conditionalProtectiveSurplus": "-0.005000",
+        "zeroPayoutExceptionLoss": "-0.995000",
+        "zeroPayoutExceptionLossAtProtectiveCost": "-1.005000",
+        "quoteSkewMs": 168,
+        "rootsCurrent": false,
+        "quotesCurrentAndCofresh": false,
+        "accountCurrent": false,
+        "cachedAccountExposureKnown": true,
+        "accountKnownBeforeBothRequests": false,
+        "wholeAccountExposure": true,
+        "rawSurplusQualified": false,
+        "protectiveSurplusQualified": false,
+        "unownedReadCandidate": false,
+        "unownedIndicativeCandidate": false,
+        "quantityPerLeg": 1,
+        "depthKnown": false,
+        "depthQualifiedQuantity": null,
+        "nativeNoBookObserved": false,
+        "ordinaryResolutionOnly": true,
+        "fullResolutionCompletenessProven": false,
+        "guaranteedProfit": false,
+        "flags": [
+          "quantity_and_depth_unknown",
+          "ordinary_resolution_only_exception_unprotected",
+          "whole_account_holding_or_open_order",
+          "account_unavailable_stale_or_unknown_acceptance",
+          "cached_rules_need_refresh",
+          "PARTY_NO_SCREEN_QUOTE_AGE",
+          "account_not_known_before_both_quote_requests",
+          "minimum_protective_ordinary_surplus_not_met"
+        ],
+        "orderEligible": false,
+        "executionAuthority": false
+      },
+      {
+        "id": "source-pair-312-313",
+        "race": "Governor of Vermont",
+        "eventKey": "ccd39439eb2d5997370946ed542922f1f8795315b72123c32c91a6e8c1519a5e",
+        "marketIds": [
+          "312",
+          "313"
+        ],
+        "exchangeIds": [
+          "1001",
+          "1002"
+        ],
+        "rootHashes": [
+          "c34de3b32259d1323b8a9fb475d50c549c33945b9fe46a91b4e46b471e202631",
+          "fe761ceb0913d18aa2b6c10ae770e2f49cf4c765dd04844bcad3a4aa052b29af"
+        ],
+        "rootSourceHashes": [
+          "0cfa67d448ddc8697495b846a48e2ffaf6d1611561322d50689ace59badfb661",
+          "3eed0705a0779abe5b8e6fab1d9ebeafd771a2cd5f6f7318bf740b3e1420c306"
+        ],
+        "rootKnownAt": [
+          "2026-10-01T19:11:58.853Z",
+          "2026-10-01T19:12:03.050Z"
+        ],
+        "quoteSourceHashes": [
+          "84f363548e43c5e0f28126d52745b7e61c3c0f46e7871a01bcc9106a06eecb05",
+          "84f363548e43c5e0f28126d52745b7e61c3c0f46e7871a01bcc9106a06eecb05"
+        ],
+        "quoteClocks": [
+          {
+            "requestStartedAt": "2026-10-06T13:22:13.361Z",
+            "receivedAt": "2026-10-06T13:22:13.529Z",
+            "knownAt": "2026-10-06T13:25:57.915Z"
+          },
+          {
+            "requestStartedAt": "2026-10-06T13:22:13.361Z",
+            "receivedAt": "2026-10-06T13:22:13.529Z",
+            "knownAt": "2026-10-06T13:25:57.915Z"
+          }
+        ],
+        "indicativeMathValid": true,
+        "rawNoAsks": [
+          "0.760000",
+          "0.240000"
+        ],
+        "rawNoCost": "1.000000",
+        "conditionalOrdinaryPayoutFloor": "1.000000",
+        "conditionalRawSurplus": "0.000000",
+        "protectiveTickCost": "1.010000",
+        "conditionalProtectiveSurplus": "-0.010000",
+        "zeroPayoutExceptionLoss": "-1.000000",
+        "zeroPayoutExceptionLossAtProtectiveCost": "-1.010000",
+        "quoteSkewMs": 168,
+        "rootsCurrent": false,
+        "quotesCurrentAndCofresh": false,
+        "accountCurrent": false,
+        "cachedAccountExposureKnown": true,
+        "accountKnownBeforeBothRequests": false,
+        "wholeAccountExposure": false,
+        "rawSurplusQualified": false,
+        "protectiveSurplusQualified": false,
+        "unownedReadCandidate": false,
+        "unownedIndicativeCandidate": false,
+        "quantityPerLeg": 1,
+        "depthKnown": false,
+        "depthQualifiedQuantity": null,
+        "nativeNoBookObserved": false,
+        "ordinaryResolutionOnly": true,
+        "fullResolutionCompletenessProven": false,
+        "guaranteedProfit": false,
+        "flags": [
+          "quantity_and_depth_unknown",
+          "ordinary_resolution_only_exception_unprotected",
+          "account_unavailable_stale_or_unknown_acceptance",
+          "cached_rules_need_refresh",
+          "PARTY_NO_SCREEN_QUOTE_AGE",
+          "account_not_known_before_both_quote_requests",
+          "minimum_protective_ordinary_surplus_not_met"
+        ],
+        "orderEligible": false,
+        "executionAuthority": false
+      },
+      {
+        "id": "source-pair-334-335",
+        "race": "U.S. House Minnesota District 1",
+        "eventKey": "3bcfca0bad1e866ad02e714a7919581f0d66a598802ed18727e2cc98e7c3944d",
+        "marketIds": [
+          "334",
+          "335"
+        ],
+        "exchangeIds": [
+          "1023",
+          "1024"
+        ],
+        "rootHashes": [
+          "a9df4e7eea47a02f2c203716919f5333e93c63e81c2343c5cabaad5b6db4d960",
+          "2de306b7d927b174210e9a89501f91eb74d814716d5a55fb6bf5af94c921537c"
+        ],
+        "rootSourceHashes": [
+          "b4b1bfbe6e98b5778337884952838af1cafadcf65c28eeb0f66d79a8226df85d",
+          "17f431b763ecb057af8ca2823a6ad31e1437f08d9b4073eb2f38de34eb071c5e"
+        ],
+        "rootKnownAt": [
+          "2026-10-01T19:11:23.883Z",
+          "2026-10-01T19:11:22.954Z"
+        ],
+        "quoteSourceHashes": [
+          "84f363548e43c5e0f28126d52745b7e61c3c0f46e7871a01bcc9106a06eecb05",
+          "84f363548e43c5e0f28126d52745b7e61c3c0f46e7871a01bcc9106a06eecb05"
+        ],
+        "quoteClocks": [
+          {
+            "requestStartedAt": "2026-10-06T13:22:13.361Z",
+            "receivedAt": "2026-10-06T13:22:13.529Z",
+            "knownAt": "2026-10-06T13:25:57.915Z"
+          },
+          {
+            "requestStartedAt": "2026-10-06T13:22:13.361Z",
+            "receivedAt": "2026-10-06T13:22:13.529Z",
+            "knownAt": "2026-10-06T13:25:57.915Z"
+          }
+        ],
+        "indicativeMathValid": true,
+        "rawNoAsks": [
+          "0.750000",
+          "0.250000"
+        ],
+        "rawNoCost": "1.000000",
+        "conditionalOrdinaryPayoutFloor": "1.000000",
+        "conditionalRawSurplus": "0.000000",
+        "protectiveTickCost": "1.010000",
+        "conditionalProtectiveSurplus": "-0.010000",
+        "zeroPayoutExceptionLoss": "-1.000000",
+        "zeroPayoutExceptionLossAtProtectiveCost": "-1.010000",
+        "quoteSkewMs": 168,
+        "rootsCurrent": false,
+        "quotesCurrentAndCofresh": false,
+        "accountCurrent": false,
+        "cachedAccountExposureKnown": true,
+        "accountKnownBeforeBothRequests": false,
+        "wholeAccountExposure": false,
+        "rawSurplusQualified": false,
+        "protectiveSurplusQualified": false,
+        "unownedReadCandidate": false,
+        "unownedIndicativeCandidate": false,
+        "quantityPerLeg": 1,
+        "depthKnown": false,
+        "depthQualifiedQuantity": null,
+        "nativeNoBookObserved": false,
+        "ordinaryResolutionOnly": true,
+        "fullResolutionCompletenessProven": false,
+        "guaranteedProfit": false,
+        "flags": [
+          "quantity_and_depth_unknown",
+          "ordinary_resolution_only_exception_unprotected",
+          "account_unavailable_stale_or_unknown_acceptance",
+          "cached_rules_need_refresh",
+          "PARTY_NO_SCREEN_QUOTE_AGE",
+          "account_not_known_before_both_quote_requests",
+          "minimum_protective_ordinary_surplus_not_met"
+        ],
+        "orderEligible": false,
+        "executionAuthority": false
+      },
+      {
+        "id": "source-pair-338-339",
+        "race": "U.S. House Minnesota District 5",
+        "eventKey": "90376a8384a9268ed2e4ebf088d915fcab1df023a17885d380f22420a7f772c0",
+        "marketIds": [
+          "338",
+          "339"
+        ],
+        "exchangeIds": [
+          "1027",
+          "1028"
+        ],
+        "rootHashes": [
+          "1fe39be13fdd4e190c56b510929f2a9c1c37bc57b12ec06c5665b29a113b5e7a",
+          "4c56d52eae61222978a2503f54c6222b908b458d13546f8fa98b08f1ac0757ca"
+        ],
+        "rootSourceHashes": [
+          "e55038c1b234da8923505dff8b403c5415d2256afee54212e5ff6a68c88b4050",
+          "eaca38bbb1d92f369f8af66c18021ed6ecd88688c9844e6f35c23d17f4963d26"
+        ],
+        "rootKnownAt": [
+          "2026-10-01T19:11:22.134Z",
+          "2026-10-01T19:11:22.218Z"
+        ],
+        "quoteSourceHashes": [
+          "84f363548e43c5e0f28126d52745b7e61c3c0f46e7871a01bcc9106a06eecb05",
+          "84f363548e43c5e0f28126d52745b7e61c3c0f46e7871a01bcc9106a06eecb05"
+        ],
+        "quoteClocks": [
+          {
+            "requestStartedAt": "2026-10-06T13:22:13.361Z",
+            "receivedAt": "2026-10-06T13:22:13.529Z",
+            "knownAt": "2026-10-06T13:25:57.915Z"
+          },
+          {
+            "requestStartedAt": "2026-10-06T13:22:13.361Z",
+            "receivedAt": "2026-10-06T13:22:13.529Z",
+            "knownAt": "2026-10-06T13:25:57.915Z"
+          }
+        ],
+        "indicativeMathValid": true,
+        "rawNoAsks": [
+          "0.045000",
+          "0.955000"
+        ],
+        "rawNoCost": "1.000000",
+        "conditionalOrdinaryPayoutFloor": "1.000000",
+        "conditionalRawSurplus": "0.000000",
+        "protectiveTickCost": "1.010000",
+        "conditionalProtectiveSurplus": "-0.010000",
+        "zeroPayoutExceptionLoss": "-1.000000",
+        "zeroPayoutExceptionLossAtProtectiveCost": "-1.010000",
+        "quoteSkewMs": 168,
+        "rootsCurrent": false,
+        "quotesCurrentAndCofresh": false,
+        "accountCurrent": false,
+        "cachedAccountExposureKnown": true,
+        "accountKnownBeforeBothRequests": false,
+        "wholeAccountExposure": false,
+        "rawSurplusQualified": false,
+        "protectiveSurplusQualified": false,
+        "unownedReadCandidate": false,
+        "unownedIndicativeCandidate": false,
+        "quantityPerLeg": 1,
+        "depthKnown": false,
+        "depthQualifiedQuantity": null,
+        "nativeNoBookObserved": false,
+        "ordinaryResolutionOnly": true,
+        "fullResolutionCompletenessProven": false,
+        "guaranteedProfit": false,
+        "flags": [
+          "quantity_and_depth_unknown",
+          "ordinary_resolution_only_exception_unprotected",
+          "account_unavailable_stale_or_unknown_acceptance",
+          "cached_rules_need_refresh",
+          "PARTY_NO_SCREEN_QUOTE_AGE",
+          "account_not_known_before_both_quote_requests",
+          "minimum_protective_ordinary_surplus_not_met"
+        ],
+        "orderEligible": false,
+        "executionAuthority": false
+      },
+      {
+        "id": "source-pair-340-341",
+        "race": "U.S. House Tennessee District 5",
+        "eventKey": "154e28d1ee7132d32cc9100bb0e96f1df2eac58e518e4aa8adf96a7a8455f750",
+        "marketIds": [
+          "340",
+          "341"
+        ],
+        "exchangeIds": [
+          "1029",
+          "1030"
+        ],
+        "rootHashes": [
+          "2252f71807f247e78a44e57b8339853a22dd6993e4b9d91afa0da05640fa5485",
+          "0c6f34acfcc7df4911551e9d81bf963cc72c250e849350d2289a1ddda4833598"
+        ],
+        "rootSourceHashes": [
+          "031df2741cf2ef4fc5e496c15a941380cf8fb1111b792310693b82db2884b95b",
+          "56b182378b6e05d12729118d95951c49053eb4cddef200c301cef1d21f23cce6"
+        ],
+        "rootKnownAt": [
+          "2026-10-01T19:11:13.738Z",
+          "2026-10-01T19:11:18.458Z"
+        ],
+        "quoteSourceHashes": [
+          "84f363548e43c5e0f28126d52745b7e61c3c0f46e7871a01bcc9106a06eecb05",
+          "84f363548e43c5e0f28126d52745b7e61c3c0f46e7871a01bcc9106a06eecb05"
+        ],
+        "quoteClocks": [
+          {
+            "requestStartedAt": "2026-10-06T13:22:13.361Z",
+            "receivedAt": "2026-10-06T13:22:13.529Z",
+            "knownAt": "2026-10-06T13:25:57.915Z"
+          },
+          {
+            "requestStartedAt": "2026-10-06T13:22:13.361Z",
+            "receivedAt": "2026-10-06T13:22:13.529Z",
+            "knownAt": "2026-10-06T13:25:57.915Z"
+          }
+        ],
+        "indicativeMathValid": true,
+        "rawNoAsks": [
+          "0.905000",
+          "0.095000"
+        ],
+        "rawNoCost": "1.000000",
+        "conditionalOrdinaryPayoutFloor": "1.000000",
+        "conditionalRawSurplus": "0.000000",
+        "protectiveTickCost": "1.010000",
+        "conditionalProtectiveSurplus": "-0.010000",
+        "zeroPayoutExceptionLoss": "-1.000000",
+        "zeroPayoutExceptionLossAtProtectiveCost": "-1.010000",
+        "quoteSkewMs": 168,
+        "rootsCurrent": false,
+        "quotesCurrentAndCofresh": false,
+        "accountCurrent": false,
+        "cachedAccountExposureKnown": true,
+        "accountKnownBeforeBothRequests": false,
+        "wholeAccountExposure": false,
+        "rawSurplusQualified": false,
+        "protectiveSurplusQualified": false,
+        "unownedReadCandidate": false,
+        "unownedIndicativeCandidate": false,
+        "quantityPerLeg": 1,
+        "depthKnown": false,
+        "depthQualifiedQuantity": null,
+        "nativeNoBookObserved": false,
+        "ordinaryResolutionOnly": true,
+        "fullResolutionCompletenessProven": false,
+        "guaranteedProfit": false,
+        "flags": [
+          "quantity_and_depth_unknown",
+          "ordinary_resolution_only_exception_unprotected",
+          "account_unavailable_stale_or_unknown_acceptance",
+          "cached_rules_need_refresh",
+          "PARTY_NO_SCREEN_QUOTE_AGE",
+          "account_not_known_before_both_quote_requests",
+          "minimum_protective_ordinary_surplus_not_met"
+        ],
+        "orderEligible": false,
+        "executionAuthority": false
+      },
+      {
+        "id": "source-pair-372-373",
+        "race": "Governor of New Hampshire",
+        "eventKey": "19f69f9001ec1c3d7cb9e89bc098400e874d10b68993e8a3768eafc7a2bc3107",
+        "marketIds": [
+          "372",
+          "373"
+        ],
+        "exchangeIds": [
+          "1061",
+          "1062"
+        ],
+        "rootHashes": [
+          "1f4732a3b0d0ee8232944629e934e50d879e99cc2c0648c3bff205ded08c2552",
+          "a8ce37876c0a9f158830aa15b6b46b737ce521c32dc3183c68386273248f536d"
+        ],
+        "rootSourceHashes": [
+          "12cf77b01c332f17400b3bc87474480b08f253be534f2e2c7859bae37bff0cf1",
+          "2e53bd941a1cdb882cc9657ea6a60492106528de3aff74d50854657104db3012"
+        ],
+        "rootKnownAt": [
+          "2026-10-01T19:10:26.980Z",
+          "2026-10-01T19:10:20.668Z"
+        ],
+        "quoteSourceHashes": [
+          "84f363548e43c5e0f28126d52745b7e61c3c0f46e7871a01bcc9106a06eecb05",
+          "84f363548e43c5e0f28126d52745b7e61c3c0f46e7871a01bcc9106a06eecb05"
+        ],
+        "quoteClocks": [
+          {
+            "requestStartedAt": "2026-10-06T13:22:13.361Z",
+            "receivedAt": "2026-10-06T13:22:13.529Z",
+            "knownAt": "2026-10-06T13:25:57.915Z"
+          },
+          {
+            "requestStartedAt": "2026-10-06T13:22:13.361Z",
+            "receivedAt": "2026-10-06T13:22:13.529Z",
+            "knownAt": "2026-10-06T13:25:57.915Z"
+          }
+        ],
+        "indicativeMathValid": true,
+        "rawNoAsks": [
+          "0.890000",
+          "0.110000"
+        ],
+        "rawNoCost": "1.000000",
+        "conditionalOrdinaryPayoutFloor": "1.000000",
+        "conditionalRawSurplus": "0.000000",
+        "protectiveTickCost": "1.010000",
+        "conditionalProtectiveSurplus": "-0.010000",
+        "zeroPayoutExceptionLoss": "-1.000000",
+        "zeroPayoutExceptionLossAtProtectiveCost": "-1.010000",
+        "quoteSkewMs": 168,
+        "rootsCurrent": false,
+        "quotesCurrentAndCofresh": false,
+        "accountCurrent": false,
+        "cachedAccountExposureKnown": true,
+        "accountKnownBeforeBothRequests": false,
+        "wholeAccountExposure": false,
+        "rawSurplusQualified": false,
+        "protectiveSurplusQualified": false,
+        "unownedReadCandidate": false,
+        "unownedIndicativeCandidate": false,
+        "quantityPerLeg": 1,
+        "depthKnown": false,
+        "depthQualifiedQuantity": null,
+        "nativeNoBookObserved": false,
+        "ordinaryResolutionOnly": true,
+        "fullResolutionCompletenessProven": false,
+        "guaranteedProfit": false,
+        "flags": [
+          "quantity_and_depth_unknown",
+          "ordinary_resolution_only_exception_unprotected",
+          "account_unavailable_stale_or_unknown_acceptance",
+          "cached_rules_need_refresh",
+          "PARTY_NO_SCREEN_QUOTE_AGE",
+          "account_not_known_before_both_quote_requests",
+          "minimum_protective_ordinary_surplus_not_met"
+        ],
+        "orderEligible": false,
+        "executionAuthority": false
+      },
+      {
+        "id": "source-pair-318-319",
+        "race": "U.S. House Alabama District 2",
+        "eventKey": "9795eaf1b3e11e7cd5feaecbd286e99aeb4bfc974fc93b526c48836b1b15aa37",
+        "marketIds": [
+          "318",
+          "319"
+        ],
+        "exchangeIds": [
+          "1007",
+          "1008"
+        ],
+        "rootHashes": [
+          "aec07adde6b3b18501cf1c052e65d28a1cde5593cc37573eeb8f47444062f9d8",
+          "08f712e0e0c15198f2421284500a47720ac9b384dad0286ac3090bfa74ef8f03"
+        ],
+        "rootSourceHashes": [
+          "f3674a2b3797f261ca9a144d16eb1013a5afc0065f1335bc09594a86d772c6b6",
+          "7c32bcd1a42c38558d1e4c14058fbcdf7adf6de068dcb21d81355990d6e0475d"
+        ],
+        "rootKnownAt": [
+          "2026-10-01T19:11:57.072Z",
+          "2026-10-01T19:11:54.077Z"
+        ],
+        "quoteSourceHashes": [
+          "84f363548e43c5e0f28126d52745b7e61c3c0f46e7871a01bcc9106a06eecb05",
+          "84f363548e43c5e0f28126d52745b7e61c3c0f46e7871a01bcc9106a06eecb05"
+        ],
+        "quoteClocks": [
+          {
+            "requestStartedAt": "2026-10-06T13:22:13.361Z",
+            "receivedAt": "2026-10-06T13:22:13.529Z",
+            "knownAt": "2026-10-06T13:25:57.915Z"
+          },
+          {
+            "requestStartedAt": "2026-10-06T13:22:13.361Z",
+            "receivedAt": "2026-10-06T13:22:13.529Z",
+            "knownAt": "2026-10-06T13:25:57.915Z"
+          }
+        ],
+        "indicativeMathValid": true,
+        "rawNoAsks": [
+          "0.740000",
+          "0.265000"
+        ],
+        "rawNoCost": "1.005000",
+        "conditionalOrdinaryPayoutFloor": "1.000000",
+        "conditionalRawSurplus": "-0.005000",
+        "protectiveTickCost": "1.015000",
+        "conditionalProtectiveSurplus": "-0.015000",
+        "zeroPayoutExceptionLoss": "-1.005000",
+        "zeroPayoutExceptionLossAtProtectiveCost": "-1.015000",
+        "quoteSkewMs": 168,
+        "rootsCurrent": false,
+        "quotesCurrentAndCofresh": false,
+        "accountCurrent": false,
+        "cachedAccountExposureKnown": true,
+        "accountKnownBeforeBothRequests": false,
+        "wholeAccountExposure": false,
+        "rawSurplusQualified": false,
+        "protectiveSurplusQualified": false,
+        "unownedReadCandidate": false,
+        "unownedIndicativeCandidate": false,
+        "quantityPerLeg": 1,
+        "depthKnown": false,
+        "depthQualifiedQuantity": null,
+        "nativeNoBookObserved": false,
+        "ordinaryResolutionOnly": true,
+        "fullResolutionCompletenessProven": false,
+        "guaranteedProfit": false,
+        "flags": [
+          "quantity_and_depth_unknown",
+          "ordinary_resolution_only_exception_unprotected",
+          "account_unavailable_stale_or_unknown_acceptance",
+          "cached_rules_need_refresh",
+          "PARTY_NO_SCREEN_QUOTE_AGE",
+          "account_not_known_before_both_quote_requests",
+          "minimum_protective_ordinary_surplus_not_met"
+        ],
+        "orderEligible": false,
+        "executionAuthority": false
+      },
+      {
+        "id": "source-pair-332-333",
+        "race": "U.S. House Michigan District 10",
+        "eventKey": "7593cf8dc1a8111b2ea8d12603ac409f66747d923849805b73d57aeb79acf1ca",
+        "marketIds": [
+          "332",
+          "333"
+        ],
+        "exchangeIds": [
+          "1021",
+          "1022"
+        ],
+        "rootHashes": [
+          "eeb06fe0eac919334887ff727b067607d57df6229e8e7ae7df61d134243718e4",
+          "8634ef7c52fd81f2402721694390176de096cfc9704890180dc63e2132dc9033"
+        ],
+        "rootSourceHashes": [
+          "367f593cd7477037299eb26d2158e6ca899b1bfe7df144ae02820edbb3ce88ad",
+          "aa6b91ff3290d47b24cd8cea726728ebfceff243e3a8d7cb751d75481d7c14bb"
+        ],
+        "rootKnownAt": [
+          "2026-10-01T19:11:26.922Z",
+          "2026-10-01T19:11:31.859Z"
+        ],
+        "quoteSourceHashes": [
+          "84f363548e43c5e0f28126d52745b7e61c3c0f46e7871a01bcc9106a06eecb05",
+          "84f363548e43c5e0f28126d52745b7e61c3c0f46e7871a01bcc9106a06eecb05"
+        ],
+        "quoteClocks": [
+          {
+            "requestStartedAt": "2026-10-06T13:22:13.361Z",
+            "receivedAt": "2026-10-06T13:22:13.529Z",
+            "knownAt": "2026-10-06T13:25:57.915Z"
+          },
+          {
+            "requestStartedAt": "2026-10-06T13:22:13.361Z",
+            "receivedAt": "2026-10-06T13:22:13.529Z",
+            "knownAt": "2026-10-06T13:25:57.915Z"
+          }
+        ],
+        "indicativeMathValid": true,
+        "rawNoAsks": [
+          "0.335000",
+          "0.670000"
+        ],
+        "rawNoCost": "1.005000",
+        "conditionalOrdinaryPayoutFloor": "1.000000",
+        "conditionalRawSurplus": "-0.005000",
+        "protectiveTickCost": "1.015000",
+        "conditionalProtectiveSurplus": "-0.015000",
+        "zeroPayoutExceptionLoss": "-1.005000",
+        "zeroPayoutExceptionLossAtProtectiveCost": "-1.015000",
+        "quoteSkewMs": 168,
+        "rootsCurrent": false,
+        "quotesCurrentAndCofresh": false,
+        "accountCurrent": false,
+        "cachedAccountExposureKnown": true,
+        "accountKnownBeforeBothRequests": false,
+        "wholeAccountExposure": false,
+        "rawSurplusQualified": false,
+        "protectiveSurplusQualified": false,
+        "unownedReadCandidate": false,
+        "unownedIndicativeCandidate": false,
+        "quantityPerLeg": 1,
+        "depthKnown": false,
+        "depthQualifiedQuantity": null,
+        "nativeNoBookObserved": false,
+        "ordinaryResolutionOnly": true,
+        "fullResolutionCompletenessProven": false,
+        "guaranteedProfit": false,
+        "flags": [
+          "quantity_and_depth_unknown",
+          "ordinary_resolution_only_exception_unprotected",
+          "account_unavailable_stale_or_unknown_acceptance",
+          "cached_rules_need_refresh",
+          "PARTY_NO_SCREEN_QUOTE_AGE",
+          "account_not_known_before_both_quote_requests",
+          "minimum_protective_ordinary_surplus_not_met"
+        ],
+        "orderEligible": false,
+        "executionAuthority": false
+      },
+      {
+        "id": "source-pair-336-337",
+        "race": "U.S. House Minnesota District 2",
+        "eventKey": "77b47ab4feffb7be1c975f90bcbda287a17ed048164b1b9fd0e8564e9ef7e913",
+        "marketIds": [
+          "336",
+          "337"
+        ],
+        "exchangeIds": [
+          "1025",
+          "1026"
+        ],
+        "rootHashes": [
+          "523c147ff42ad79f339f6c5d4d8f3c508d26d4859105468bd0b5828fa0a00bab",
+          "33f457efad4282eb3949ac65ca2a34f0379e1cbe7795a964f4468c587a0e4c6d"
+        ],
+        "rootSourceHashes": [
+          "7b95baea9f2c83867b3359bc94e1bdc8f2dbf83abb0d512d4d7a2641ec728887",
+          "8d6e96b99dbf6e3f9316bcbdf98aa81623042d6a4da676f095239648860adb18"
+        ],
+        "rootKnownAt": [
+          "2026-10-01T19:11:26.338Z",
+          "2026-10-01T19:11:24.225Z"
+        ],
+        "quoteSourceHashes": [
+          "84f363548e43c5e0f28126d52745b7e61c3c0f46e7871a01bcc9106a06eecb05",
+          "84f363548e43c5e0f28126d52745b7e61c3c0f46e7871a01bcc9106a06eecb05"
+        ],
+        "quoteClocks": [
+          {
+            "requestStartedAt": "2026-10-06T13:22:13.361Z",
+            "receivedAt": "2026-10-06T13:22:13.529Z",
+            "knownAt": "2026-10-06T13:25:57.915Z"
+          },
+          {
+            "requestStartedAt": "2026-10-06T13:22:13.361Z",
+            "receivedAt": "2026-10-06T13:22:13.529Z",
+            "knownAt": "2026-10-06T13:25:57.915Z"
+          }
+        ],
+        "indicativeMathValid": true,
+        "rawNoAsks": [
+          "0.110000",
+          "0.895000"
+        ],
+        "rawNoCost": "1.005000",
+        "conditionalOrdinaryPayoutFloor": "1.000000",
+        "conditionalRawSurplus": "-0.005000",
+        "protectiveTickCost": "1.015000",
+        "conditionalProtectiveSurplus": "-0.015000",
+        "zeroPayoutExceptionLoss": "-1.005000",
+        "zeroPayoutExceptionLossAtProtectiveCost": "-1.015000",
+        "quoteSkewMs": 168,
+        "rootsCurrent": false,
+        "quotesCurrentAndCofresh": false,
+        "accountCurrent": false,
+        "cachedAccountExposureKnown": true,
+        "accountKnownBeforeBothRequests": false,
+        "wholeAccountExposure": false,
+        "rawSurplusQualified": false,
+        "protectiveSurplusQualified": false,
+        "unownedReadCandidate": false,
+        "unownedIndicativeCandidate": false,
+        "quantityPerLeg": 1,
+        "depthKnown": false,
+        "depthQualifiedQuantity": null,
+        "nativeNoBookObserved": false,
+        "ordinaryResolutionOnly": true,
+        "fullResolutionCompletenessProven": false,
+        "guaranteedProfit": false,
+        "flags": [
+          "quantity_and_depth_unknown",
+          "ordinary_resolution_only_exception_unprotected",
+          "account_unavailable_stale_or_unknown_acceptance",
+          "cached_rules_need_refresh",
+          "PARTY_NO_SCREEN_QUOTE_AGE",
+          "account_not_known_before_both_quote_requests",
+          "minimum_protective_ordinary_surplus_not_met"
+        ],
+        "orderEligible": false,
+        "executionAuthority": false
+      },
+      {
+        "id": "source-pair-365-366",
+        "race": "U.S. Senate Wyoming",
+        "eventKey": "a00bb76f1821a4bc7c364f8c75dc3d8ab904eaac59e1182fdfa69be82275745f",
+        "marketIds": [
+          "365",
+          "366"
+        ],
+        "exchangeIds": [
+          "1054",
+          "1055"
+        ],
+        "rootHashes": [
+          "9594280f0eb2da20415f3df9a66a41faae04ff0f9ebd88fe36ff8e3b9b41e4fd",
+          "46b2cceaced93992cd9b4e7bd20cb389f685f3bcc6c087505bf353e68cd5a616"
+        ],
+        "rootSourceHashes": [
+          "5692411a4e18d30b0523d526f93c05cd7256a9c0836dbf4d21f0630f6cdfb674",
+          "642ea580ce7a7cac2fd22d6003b83b336a6ad3e9ade41633957428de4c40509f"
+        ],
+        "rootKnownAt": [
+          "2026-10-01T19:10:30.459Z",
+          "2026-10-01T19:10:28.980Z"
+        ],
+        "quoteSourceHashes": [
+          "84f363548e43c5e0f28126d52745b7e61c3c0f46e7871a01bcc9106a06eecb05",
+          "84f363548e43c5e0f28126d52745b7e61c3c0f46e7871a01bcc9106a06eecb05"
+        ],
+        "quoteClocks": [
+          {
+            "requestStartedAt": "2026-10-06T13:22:13.361Z",
+            "receivedAt": "2026-10-06T13:22:13.529Z",
+            "knownAt": "2026-10-06T13:25:57.915Z"
+          },
+          {
+            "requestStartedAt": "2026-10-06T13:22:13.361Z",
+            "receivedAt": "2026-10-06T13:22:13.529Z",
+            "knownAt": "2026-10-06T13:25:57.915Z"
+          }
+        ],
+        "indicativeMathValid": true,
+        "rawNoAsks": [
+          "0.935000",
+          "0.070000"
+        ],
+        "rawNoCost": "1.005000",
+        "conditionalOrdinaryPayoutFloor": "1.000000",
+        "conditionalRawSurplus": "-0.005000",
+        "protectiveTickCost": "1.015000",
+        "conditionalProtectiveSurplus": "-0.015000",
+        "zeroPayoutExceptionLoss": "-1.005000",
+        "zeroPayoutExceptionLossAtProtectiveCost": "-1.015000",
+        "quoteSkewMs": 168,
+        "rootsCurrent": false,
+        "quotesCurrentAndCofresh": false,
+        "accountCurrent": false,
+        "cachedAccountExposureKnown": true,
+        "accountKnownBeforeBothRequests": false,
+        "wholeAccountExposure": false,
+        "rawSurplusQualified": false,
+        "protectiveSurplusQualified": false,
+        "unownedReadCandidate": false,
+        "unownedIndicativeCandidate": false,
+        "quantityPerLeg": 1,
+        "depthKnown": false,
+        "depthQualifiedQuantity": null,
+        "nativeNoBookObserved": false,
+        "ordinaryResolutionOnly": true,
+        "fullResolutionCompletenessProven": false,
+        "guaranteedProfit": false,
+        "flags": [
+          "quantity_and_depth_unknown",
+          "ordinary_resolution_only_exception_unprotected",
+          "account_unavailable_stale_or_unknown_acceptance",
+          "cached_rules_need_refresh",
+          "PARTY_NO_SCREEN_QUOTE_AGE",
+          "account_not_known_before_both_quote_requests",
+          "minimum_protective_ordinary_surplus_not_met"
+        ],
+        "orderEligible": false,
+        "executionAuthority": false
+      },
+      {
+        "id": "source-pair-314-315",
+        "race": "Governor of Wisconsin",
+        "eventKey": "3b881b1990a51844a291795e6fee954a66aa39a17abe9c6b06168a2739532a19",
+        "marketIds": [
+          "314",
+          "315"
+        ],
+        "exchangeIds": [
+          "1003",
+          "1004"
+        ],
+        "rootHashes": [
+          "c716a00470d303a85dffb45926c7f8503e909d834e0d9d48c9ddfc7ff7a23f86",
+          "2cca6e43ea335ebc70f161abd50b03f70490fd669bb48663e12ee5b2364e420b"
+        ],
+        "rootSourceHashes": [
+          "8772c03a0412d8f1c74a3aaf1f5f0b5d9310411041b1a59918118c7f65eb0b21",
+          "5828986cc3e200440544e841478853bd7de62099aea8fec163dcf32c194bbfdc"
+        ],
+        "rootKnownAt": [
+          "2026-10-01T19:11:55.780Z",
+          "2026-10-01T19:11:54.851Z"
+        ],
+        "quoteSourceHashes": [
+          "84f363548e43c5e0f28126d52745b7e61c3c0f46e7871a01bcc9106a06eecb05",
+          "84f363548e43c5e0f28126d52745b7e61c3c0f46e7871a01bcc9106a06eecb05"
+        ],
+        "quoteClocks": [
+          {
+            "requestStartedAt": "2026-10-06T13:22:13.361Z",
+            "receivedAt": "2026-10-06T13:22:13.529Z",
+            "knownAt": "2026-10-06T13:25:57.915Z"
+          },
+          {
+            "requestStartedAt": "2026-10-06T13:22:13.361Z",
+            "receivedAt": "2026-10-06T13:22:13.529Z",
+            "knownAt": "2026-10-06T13:25:57.915Z"
+          }
+        ],
+        "indicativeMathValid": true,
+        "rawNoAsks": [
+          "0.230000",
+          "0.780000"
+        ],
+        "rawNoCost": "1.010000",
+        "conditionalOrdinaryPayoutFloor": "1.000000",
+        "conditionalRawSurplus": "-0.010000",
+        "protectiveTickCost": "1.020000",
+        "conditionalProtectiveSurplus": "-0.020000",
+        "zeroPayoutExceptionLoss": "-1.010000",
+        "zeroPayoutExceptionLossAtProtectiveCost": "-1.020000",
+        "quoteSkewMs": 168,
+        "rootsCurrent": false,
+        "quotesCurrentAndCofresh": false,
+        "accountCurrent": false,
+        "cachedAccountExposureKnown": true,
+        "accountKnownBeforeBothRequests": false,
+        "wholeAccountExposure": true,
+        "rawSurplusQualified": false,
+        "protectiveSurplusQualified": false,
+        "unownedReadCandidate": false,
+        "unownedIndicativeCandidate": false,
+        "quantityPerLeg": 1,
+        "depthKnown": false,
+        "depthQualifiedQuantity": null,
+        "nativeNoBookObserved": false,
+        "ordinaryResolutionOnly": true,
+        "fullResolutionCompletenessProven": false,
+        "guaranteedProfit": false,
+        "flags": [
+          "quantity_and_depth_unknown",
+          "ordinary_resolution_only_exception_unprotected",
+          "whole_account_holding_or_open_order",
+          "account_unavailable_stale_or_unknown_acceptance",
+          "cached_rules_need_refresh",
+          "PARTY_NO_SCREEN_QUOTE_AGE",
+          "account_not_known_before_both_quote_requests",
+          "minimum_protective_ordinary_surplus_not_met"
+        ],
+        "orderEligible": false,
+        "executionAuthority": false
+      },
+      {
+        "id": "source-pair-370-371",
+        "race": "Governor of Massachusetts",
+        "eventKey": "4fe5042ad85cd1c215915fd1716b268afb77b4cad78b044238b0752a790e1aad",
+        "marketIds": [
+          "370",
+          "371"
+        ],
+        "exchangeIds": [
+          "1059",
+          "1060"
+        ],
+        "rootHashes": [
+          "234d3a900f10041b5b6048afde44d0d96e20c8b7889ac09fcbff5dc822bcd4fd",
+          "61e5eb783295fec62e35a60b2d4944471e3a4a3bb60b648c5eddacfdd1fca506"
+        ],
+        "rootSourceHashes": [
+          "55637e27766b132577a4acbb07bd4f2abef6e5ada2684760099ec8b2a5bdc74e",
+          "bfdbc642bb8f075d21d7e987221def4bf6300707d16ce92b54ca5f5079398953"
+        ],
+        "rootKnownAt": [
+          "2026-10-01T19:10:30.353Z",
+          "2026-10-01T19:10:22.518Z"
+        ],
+        "quoteSourceHashes": [
+          "84f363548e43c5e0f28126d52745b7e61c3c0f46e7871a01bcc9106a06eecb05",
+          "84f363548e43c5e0f28126d52745b7e61c3c0f46e7871a01bcc9106a06eecb05"
+        ],
+        "quoteClocks": [
+          {
+            "requestStartedAt": "2026-10-06T13:22:13.361Z",
+            "receivedAt": "2026-10-06T13:22:13.529Z",
+            "knownAt": "2026-10-06T13:25:57.915Z"
+          },
+          {
+            "requestStartedAt": "2026-10-06T13:22:13.361Z",
+            "receivedAt": "2026-10-06T13:22:13.529Z",
+            "knownAt": "2026-10-06T13:25:57.915Z"
+          }
+        ],
+        "indicativeMathValid": true,
+        "rawNoAsks": [
+          "0.100000",
+          "0.910000"
+        ],
+        "rawNoCost": "1.010000",
+        "conditionalOrdinaryPayoutFloor": "1.000000",
+        "conditionalRawSurplus": "-0.010000",
+        "protectiveTickCost": "1.020000",
+        "conditionalProtectiveSurplus": "-0.020000",
+        "zeroPayoutExceptionLoss": "-1.010000",
+        "zeroPayoutExceptionLossAtProtectiveCost": "-1.020000",
+        "quoteSkewMs": 168,
+        "rootsCurrent": false,
+        "quotesCurrentAndCofresh": false,
+        "accountCurrent": false,
+        "cachedAccountExposureKnown": true,
+        "accountKnownBeforeBothRequests": false,
+        "wholeAccountExposure": false,
+        "rawSurplusQualified": false,
+        "protectiveSurplusQualified": false,
+        "unownedReadCandidate": false,
+        "unownedIndicativeCandidate": false,
+        "quantityPerLeg": 1,
+        "depthKnown": false,
+        "depthQualifiedQuantity": null,
+        "nativeNoBookObserved": false,
+        "ordinaryResolutionOnly": true,
+        "fullResolutionCompletenessProven": false,
+        "guaranteedProfit": false,
+        "flags": [
+          "quantity_and_depth_unknown",
+          "ordinary_resolution_only_exception_unprotected",
+          "account_unavailable_stale_or_unknown_acceptance",
+          "cached_rules_need_refresh",
+          "PARTY_NO_SCREEN_QUOTE_AGE",
+          "account_not_known_before_both_quote_requests",
+          "minimum_protective_ordinary_surplus_not_met"
+        ],
+        "orderEligible": false,
+        "executionAuthority": false
+      },
+      {
+        "id": "source-pair-316-317",
+        "race": "Governor of Wyoming",
+        "eventKey": "96a00d647a00f3a9db323a13400338bcdb72a10c6aea0bc7f5075c417c6e18ee",
+        "marketIds": [
+          "316",
+          "317"
+        ],
+        "exchangeIds": [
+          "1005",
+          "1006"
+        ],
+        "rootHashes": [
+          "58655964b28660035bc77272257bb63829209a9f98b2c2ec07d2014eaded9a19",
+          "27c3fd6872678b10b3ab30f3e56b62de7f5f3cd0897098f77300f497055d8853"
+        ],
+        "rootSourceHashes": [
+          "bb684acd903b2b013be187aad5e3f74ca1793b60c865411d5c725a3057497aa9",
+          "9744867687db442823a79ebd1c32098236bb35dade186d32cf7bdebe8dc79494"
+        ],
+        "rootKnownAt": [
+          "2026-10-01T19:11:57.065Z",
+          "2026-10-01T19:11:57.899Z"
+        ],
+        "quoteSourceHashes": [
+          "84f363548e43c5e0f28126d52745b7e61c3c0f46e7871a01bcc9106a06eecb05",
+          "84f363548e43c5e0f28126d52745b7e61c3c0f46e7871a01bcc9106a06eecb05"
+        ],
+        "quoteClocks": [
+          {
+            "requestStartedAt": "2026-10-06T13:22:13.361Z",
+            "receivedAt": "2026-10-06T13:22:13.529Z",
+            "knownAt": "2026-10-06T13:25:57.915Z"
+          },
+          {
+            "requestStartedAt": "2026-10-06T13:22:13.361Z",
+            "receivedAt": "2026-10-06T13:22:13.529Z",
+            "knownAt": "2026-10-06T13:25:57.915Z"
+          }
+        ],
+        "indicativeMathValid": true,
+        "rawNoAsks": [
+          "0.955000",
+          "0.060000"
+        ],
+        "rawNoCost": "1.015000",
+        "conditionalOrdinaryPayoutFloor": "1.000000",
+        "conditionalRawSurplus": "-0.015000",
+        "protectiveTickCost": "1.025000",
+        "conditionalProtectiveSurplus": "-0.025000",
+        "zeroPayoutExceptionLoss": "-1.015000",
+        "zeroPayoutExceptionLossAtProtectiveCost": "-1.025000",
+        "quoteSkewMs": 168,
+        "rootsCurrent": false,
+        "quotesCurrentAndCofresh": false,
+        "accountCurrent": false,
+        "cachedAccountExposureKnown": true,
+        "accountKnownBeforeBothRequests": false,
+        "wholeAccountExposure": false,
+        "rawSurplusQualified": false,
+        "protectiveSurplusQualified": false,
+        "unownedReadCandidate": false,
+        "unownedIndicativeCandidate": false,
+        "quantityPerLeg": 1,
+        "depthKnown": false,
+        "depthQualifiedQuantity": null,
+        "nativeNoBookObserved": false,
+        "ordinaryResolutionOnly": true,
+        "fullResolutionCompletenessProven": false,
+        "guaranteedProfit": false,
+        "flags": [
+          "quantity_and_depth_unknown",
+          "ordinary_resolution_only_exception_unprotected",
+          "account_unavailable_stale_or_unknown_acceptance",
+          "cached_rules_need_refresh",
+          "PARTY_NO_SCREEN_QUOTE_AGE",
+          "account_not_known_before_both_quote_requests",
+          "minimum_protective_ordinary_surplus_not_met"
+        ],
+        "orderEligible": false,
+        "executionAuthority": false
+      },
+      {
+        "id": "source-pair-362-363",
+        "race": "U.S. Senate Tennessee",
+        "eventKey": "ebbce2d7c2618c1c8e3acab86c030ea2215af3c818dad35814e754291ebeee42",
+        "marketIds": [
+          "362",
+          "363"
+        ],
+        "exchangeIds": [
+          "1051",
+          "1052"
+        ],
+        "rootHashes": [
+          "40d8eb10e71ab0829b11fb16fdc87142a274c99aec89a30dbae612e077f9830f",
+          "7d55eb130b989e31130d8aedec687767e32a02d429e35883e802562589e20c28"
+        ],
+        "rootSourceHashes": [
+          "02179da2d38e7042581ecc4e7ea641ec11898146d5cfd2c3f5bf257f10ea83a2",
+          "e92b5caa863286ab79c3e7445cbddc5b81fe53fc130a86f97905bc54a24d76a5"
+        ],
+        "rootKnownAt": [
+          "2026-10-01T19:10:42.836Z",
+          "2026-10-06T05:18:56.348Z"
+        ],
+        "quoteSourceHashes": [
+          "84f363548e43c5e0f28126d52745b7e61c3c0f46e7871a01bcc9106a06eecb05",
+          "84f363548e43c5e0f28126d52745b7e61c3c0f46e7871a01bcc9106a06eecb05"
+        ],
+        "quoteClocks": [
+          {
+            "requestStartedAt": "2026-10-06T13:22:13.361Z",
+            "receivedAt": "2026-10-06T13:22:13.529Z",
+            "knownAt": "2026-10-06T13:25:57.915Z"
+          },
+          {
+            "requestStartedAt": "2026-10-06T13:22:13.361Z",
+            "receivedAt": "2026-10-06T13:22:13.529Z",
+            "knownAt": "2026-10-06T13:25:57.915Z"
+          }
+        ],
+        "indicativeMathValid": true,
+        "rawNoAsks": [
+          "0.925000",
+          "0.090000"
+        ],
+        "rawNoCost": "1.015000",
+        "conditionalOrdinaryPayoutFloor": "1.000000",
+        "conditionalRawSurplus": "-0.015000",
+        "protectiveTickCost": "1.025000",
+        "conditionalProtectiveSurplus": "-0.025000",
+        "zeroPayoutExceptionLoss": "-1.015000",
+        "zeroPayoutExceptionLossAtProtectiveCost": "-1.025000",
+        "quoteSkewMs": 168,
+        "rootsCurrent": false,
+        "quotesCurrentAndCofresh": false,
+        "accountCurrent": false,
+        "cachedAccountExposureKnown": true,
+        "accountKnownBeforeBothRequests": false,
+        "wholeAccountExposure": false,
+        "rawSurplusQualified": false,
+        "protectiveSurplusQualified": false,
+        "unownedReadCandidate": false,
+        "unownedIndicativeCandidate": false,
+        "quantityPerLeg": 1,
+        "depthKnown": false,
+        "depthQualifiedQuantity": null,
+        "nativeNoBookObserved": false,
+        "ordinaryResolutionOnly": true,
+        "fullResolutionCompletenessProven": false,
+        "guaranteedProfit": false,
+        "flags": [
+          "quantity_and_depth_unknown",
+          "ordinary_resolution_only_exception_unprotected",
+          "account_unavailable_stale_or_unknown_acceptance",
+          "cached_rules_need_refresh",
+          "PARTY_NO_SCREEN_QUOTE_AGE",
+          "account_not_known_before_both_quote_requests",
+          "minimum_protective_ordinary_surplus_not_met"
+        ],
+        "orderEligible": false,
+        "executionAuthority": false
+      },
+      {
+        "id": "source-pair-310-311",
+        "race": "Governor of Tennessee",
+        "eventKey": "c98035b2712483ad58c05a6fb50f5cc2623f9179a65d9900193cd4a9ab0dba2f",
+        "marketIds": [
+          "310",
+          "311"
+        ],
+        "exchangeIds": [
+          "999",
+          "1000"
+        ],
+        "rootHashes": [
+          "70babc75cadac8e8735204b11dcfa5942f948528b2a5b6fdfecd568afd120868",
+          "fe98ba27077b7a10587e284d199323f7a1dfcdfed39cad24fbc13da7ba85ec65"
+        ],
+        "rootSourceHashes": [
+          "ce8a67727d4bd2b9b3f2f12802c3862ce34ec20d67556079bb5078eb30429267",
+          "b0dc76376fcf0ea6f733c420c2ead43db1ffad61ed54a16cab44e9ab96f643c6"
+        ],
+        "rootKnownAt": [
+          "2026-10-01T19:12:06.786Z",
+          "2026-10-06T05:18:40.489Z"
+        ],
+        "quoteSourceHashes": [
+          "84f363548e43c5e0f28126d52745b7e61c3c0f46e7871a01bcc9106a06eecb05",
+          "84f363548e43c5e0f28126d52745b7e61c3c0f46e7871a01bcc9106a06eecb05"
+        ],
+        "quoteClocks": [
+          {
+            "requestStartedAt": "2026-10-06T13:22:13.361Z",
+            "receivedAt": "2026-10-06T13:22:13.529Z",
+            "knownAt": "2026-10-06T13:25:57.915Z"
+          },
+          {
+            "requestStartedAt": "2026-10-06T13:22:13.361Z",
+            "receivedAt": "2026-10-06T13:22:13.529Z",
+            "knownAt": "2026-10-06T13:25:57.915Z"
+          }
+        ],
+        "indicativeMathValid": true,
+        "rawNoAsks": [
+          "0.930000",
+          "0.090000"
+        ],
+        "rawNoCost": "1.020000",
+        "conditionalOrdinaryPayoutFloor": "1.000000",
+        "conditionalRawSurplus": "-0.020000",
+        "protectiveTickCost": "1.030000",
+        "conditionalProtectiveSurplus": "-0.030000",
+        "zeroPayoutExceptionLoss": "-1.020000",
+        "zeroPayoutExceptionLossAtProtectiveCost": "-1.030000",
+        "quoteSkewMs": 168,
+        "rootsCurrent": false,
+        "quotesCurrentAndCofresh": false,
+        "accountCurrent": false,
+        "cachedAccountExposureKnown": true,
+        "accountKnownBeforeBothRequests": false,
+        "wholeAccountExposure": false,
+        "rawSurplusQualified": false,
+        "protectiveSurplusQualified": false,
+        "unownedReadCandidate": false,
+        "unownedIndicativeCandidate": false,
+        "quantityPerLeg": 1,
+        "depthKnown": false,
+        "depthQualifiedQuantity": null,
+        "nativeNoBookObserved": false,
+        "ordinaryResolutionOnly": true,
+        "fullResolutionCompletenessProven": false,
+        "guaranteedProfit": false,
+        "flags": [
+          "quantity_and_depth_unknown",
+          "ordinary_resolution_only_exception_unprotected",
+          "account_unavailable_stale_or_unknown_acceptance",
+          "cached_rules_need_refresh",
+          "PARTY_NO_SCREEN_QUOTE_AGE",
+          "account_not_known_before_both_quote_requests",
+          "minimum_protective_ordinary_surplus_not_met"
+        ],
+        "orderEligible": false,
+        "executionAuthority": false
+      },
+      {
+        "id": "source-pair-379-380",
+        "race": "U.S. Senate Massachusetts",
+        "eventKey": "64c1cf74c4e605fc16fed52f8cf4b22a8a15e2ab660ecf520fd4f5218d623f54",
+        "marketIds": [
+          "379",
+          "380"
+        ],
+        "exchangeIds": [
+          "1068",
+          "1069"
+        ],
+        "rootHashes": [
+          "8981f973d98643bcdd91df6b4d7290bfed120be764e34c26d913856aedb39a6c",
+          "067df852eb418732b15b6878facd989921906e4c4bf89b0ea9dd74be52da1493"
+        ],
+        "rootSourceHashes": [
+          "da5c735da331aac9c399a7c7500e64c66df637ac477bcc4ee5293e11fb087870",
+          "756b4e9de2baa7a66b7148c351c19539ad4557d76fb21531b0d77050d91cd471"
+        ],
+        "rootKnownAt": [
+          "2026-10-01T19:10:12.719Z",
+          "2026-10-01T19:10:07.812Z"
+        ],
+        "quoteSourceHashes": [
+          "84f363548e43c5e0f28126d52745b7e61c3c0f46e7871a01bcc9106a06eecb05",
+          "84f363548e43c5e0f28126d52745b7e61c3c0f46e7871a01bcc9106a06eecb05"
+        ],
+        "quoteClocks": [
+          {
+            "requestStartedAt": "2026-10-06T13:22:13.361Z",
+            "receivedAt": "2026-10-06T13:22:13.529Z",
+            "knownAt": "2026-10-06T13:25:57.915Z"
+          },
+          {
+            "requestStartedAt": "2026-10-06T13:22:13.361Z",
+            "receivedAt": "2026-10-06T13:22:13.529Z",
+            "knownAt": "2026-10-06T13:25:57.915Z"
+          }
+        ],
+        "indicativeMathValid": true,
+        "rawNoAsks": [
+          "0.065000",
+          "0.955000"
+        ],
+        "rawNoCost": "1.020000",
+        "conditionalOrdinaryPayoutFloor": "1.000000",
+        "conditionalRawSurplus": "-0.020000",
+        "protectiveTickCost": "1.030000",
+        "conditionalProtectiveSurplus": "-0.030000",
+        "zeroPayoutExceptionLoss": "-1.020000",
+        "zeroPayoutExceptionLossAtProtectiveCost": "-1.030000",
+        "quoteSkewMs": 168,
+        "rootsCurrent": false,
+        "quotesCurrentAndCofresh": false,
+        "accountCurrent": false,
+        "cachedAccountExposureKnown": true,
+        "accountKnownBeforeBothRequests": false,
+        "wholeAccountExposure": true,
+        "rawSurplusQualified": false,
+        "protectiveSurplusQualified": false,
+        "unownedReadCandidate": false,
+        "unownedIndicativeCandidate": false,
+        "quantityPerLeg": 1,
+        "depthKnown": false,
+        "depthQualifiedQuantity": null,
+        "nativeNoBookObserved": false,
+        "ordinaryResolutionOnly": true,
+        "fullResolutionCompletenessProven": false,
+        "guaranteedProfit": false,
+        "flags": [
+          "quantity_and_depth_unknown",
+          "ordinary_resolution_only_exception_unprotected",
+          "whole_account_holding_or_open_order",
+          "account_unavailable_stale_or_unknown_acceptance",
+          "cached_rules_need_refresh",
+          "PARTY_NO_SCREEN_QUOTE_AGE",
+          "account_not_known_before_both_quote_requests",
+          "minimum_protective_ordinary_surplus_not_met"
+        ],
+        "orderEligible": false,
+        "executionAuthority": false
+      },
+      {
+        "id": "source-pair-326-327",
+        "race": "U.S. House Florida District 20",
+        "eventKey": "bf08a967836922438bf15678d845d83d8747f8c1dc980797fe0599e022171adf",
+        "marketIds": [
+          "326",
+          "327"
+        ],
+        "exchangeIds": [
+          "1015",
+          "1016"
+        ],
+        "rootHashes": [
+          "7c3d863939d6f6edf9807b55f266b6af15680d57879658cb859f70c866491970",
+          "3931a7e740281666f9d5a3c5ee600fdcb8cd84985a4c30cb698c64211ad87b47"
+        ],
+        "rootSourceHashes": [
+          "dded33c66555e1a3990904a1963cfa0e11cad7d93d42cb22243688ccaa926bbb",
+          "4a47f4d3a22a1bd39c4511f0bb780a4d996008faeb8a6e21a789eecc32db7409"
+        ],
+        "rootKnownAt": [
+          "2026-10-01T19:11:40.104Z",
+          "2026-10-01T19:11:47.000Z"
+        ],
+        "quoteSourceHashes": [
+          "84f363548e43c5e0f28126d52745b7e61c3c0f46e7871a01bcc9106a06eecb05",
+          "84f363548e43c5e0f28126d52745b7e61c3c0f46e7871a01bcc9106a06eecb05"
+        ],
+        "quoteClocks": [
+          {
+            "requestStartedAt": "2026-10-06T13:22:13.361Z",
+            "receivedAt": "2026-10-06T13:22:13.529Z",
+            "knownAt": "2026-10-06T13:25:57.915Z"
+          },
+          {
+            "requestStartedAt": "2026-10-06T13:22:13.361Z",
+            "receivedAt": "2026-10-06T13:22:13.529Z",
+            "knownAt": "2026-10-06T13:25:57.915Z"
+          }
+        ],
+        "indicativeMathValid": true,
+        "rawNoAsks": [
+          "0.085000",
+          "0.940000"
+        ],
+        "rawNoCost": "1.025000",
+        "conditionalOrdinaryPayoutFloor": "1.000000",
+        "conditionalRawSurplus": "-0.025000",
+        "protectiveTickCost": "1.035000",
+        "conditionalProtectiveSurplus": "-0.035000",
+        "zeroPayoutExceptionLoss": "-1.025000",
+        "zeroPayoutExceptionLossAtProtectiveCost": "-1.035000",
+        "quoteSkewMs": 168,
+        "rootsCurrent": false,
+        "quotesCurrentAndCofresh": false,
+        "accountCurrent": false,
+        "cachedAccountExposureKnown": true,
+        "accountKnownBeforeBothRequests": false,
+        "wholeAccountExposure": false,
+        "rawSurplusQualified": false,
+        "protectiveSurplusQualified": false,
+        "unownedReadCandidate": false,
+        "unownedIndicativeCandidate": false,
+        "quantityPerLeg": 1,
+        "depthKnown": false,
+        "depthQualifiedQuantity": null,
+        "nativeNoBookObserved": false,
+        "ordinaryResolutionOnly": true,
+        "fullResolutionCompletenessProven": false,
+        "guaranteedProfit": false,
+        "flags": [
+          "quantity_and_depth_unknown",
+          "ordinary_resolution_only_exception_unprotected",
+          "account_unavailable_stale_or_unknown_acceptance",
+          "cached_rules_need_refresh",
+          "PARTY_NO_SCREEN_QUOTE_AGE",
+          "account_not_known_before_both_quote_requests",
+          "minimum_protective_ordinary_surplus_not_met"
+        ],
+        "orderEligible": false,
+        "executionAuthority": false
+      },
+      {
+        "id": "source-pair-320-321",
+        "race": "U.S. House Florida District 7",
+        "eventKey": "1f91f75cb7eccee266148d9dc6f7f6695836ba7ad0a01e365c40685685e76294",
+        "marketIds": [
+          "320",
+          "321"
+        ],
+        "exchangeIds": [
+          "1009",
+          "1010"
+        ],
+        "rootHashes": [
+          "53b301128bc6ae9d5b13cf286eca1b432a54a95cec2e4c9ed1d604d470f39555",
+          "857928815e390baa607e54bda48c929bec6c80022952a0280dba3d1fe692192e"
+        ],
+        "rootSourceHashes": [
+          "b2ba084ed76c2a6f9f80d5dfd151874fceb8be825194b4ad69788e357e579585",
+          "6c0bb9e5cbdb052919d0f7803e2e94f59453d7e271afacdbaea4ea5869944a3e"
+        ],
+        "rootKnownAt": [
+          "2026-10-01T19:11:45.455Z",
+          "2026-10-01T19:11:48.024Z"
+        ],
+        "quoteSourceHashes": [
+          "84f363548e43c5e0f28126d52745b7e61c3c0f46e7871a01bcc9106a06eecb05",
+          "84f363548e43c5e0f28126d52745b7e61c3c0f46e7871a01bcc9106a06eecb05"
+        ],
+        "quoteClocks": [
+          {
+            "requestStartedAt": "2026-10-06T13:22:13.361Z",
+            "receivedAt": "2026-10-06T13:22:13.529Z",
+            "knownAt": "2026-10-06T13:25:57.915Z"
+          },
+          {
+            "requestStartedAt": "2026-10-06T13:22:13.361Z",
+            "receivedAt": "2026-10-06T13:22:13.529Z",
+            "knownAt": "2026-10-06T13:25:57.915Z"
+          }
+        ],
+        "indicativeMathValid": true,
+        "rawNoAsks": [
+          "0.660000",
+          "0.370000"
+        ],
+        "rawNoCost": "1.030000",
+        "conditionalOrdinaryPayoutFloor": "1.000000",
+        "conditionalRawSurplus": "-0.030000",
+        "protectiveTickCost": "1.040000",
+        "conditionalProtectiveSurplus": "-0.040000",
+        "zeroPayoutExceptionLoss": "-1.030000",
+        "zeroPayoutExceptionLossAtProtectiveCost": "-1.040000",
+        "quoteSkewMs": 168,
+        "rootsCurrent": false,
+        "quotesCurrentAndCofresh": false,
+        "accountCurrent": false,
+        "cachedAccountExposureKnown": true,
+        "accountKnownBeforeBothRequests": false,
+        "wholeAccountExposure": false,
+        "rawSurplusQualified": false,
+        "protectiveSurplusQualified": false,
+        "unownedReadCandidate": false,
+        "unownedIndicativeCandidate": false,
+        "quantityPerLeg": 1,
+        "depthKnown": false,
+        "depthQualifiedQuantity": null,
+        "nativeNoBookObserved": false,
+        "ordinaryResolutionOnly": true,
+        "fullResolutionCompletenessProven": false,
+        "guaranteedProfit": false,
+        "flags": [
+          "quantity_and_depth_unknown",
+          "ordinary_resolution_only_exception_unprotected",
+          "account_unavailable_stale_or_unknown_acceptance",
+          "cached_rules_need_refresh",
+          "PARTY_NO_SCREEN_QUOTE_AGE",
+          "account_not_known_before_both_quote_requests",
+          "minimum_protective_ordinary_surplus_not_met"
+        ],
+        "orderEligible": false,
+        "executionAuthority": false
+      },
+      {
+        "id": "source-pair-347-348",
+        "race": "U.S. House Washington District 3",
+        "eventKey": "4da1155c2086aea88d9a7ca1dd793733e05c4708ad7126024c9ce23512087a58",
+        "marketIds": [
+          "347",
+          "348"
+        ],
+        "exchangeIds": [
+          "1036",
+          "1037"
+        ],
+        "rootHashes": [
+          "baacc763899e135d40f40a814c7e5f2f1460b275ce3bc4b9020ef54417f44f3b",
+          "2504c20eb5b854d3f6f1420b49f98a321e6a61c8dffac706afbf5e17f60d27ce"
+        ],
+        "rootSourceHashes": [
+          "06c4f27233fe96a7b05864638c406073828b2c1bb44d3a37c2723bf0961ad11a",
+          "f55c9aba627e8694b561456421da729f2dc48137e76daab1a7af1512c79fe3de"
+        ],
+        "rootKnownAt": [
+          "2026-10-01T19:11:02.688Z",
+          "2026-10-01T19:11:05.392Z"
+        ],
+        "quoteSourceHashes": [
+          "84f363548e43c5e0f28126d52745b7e61c3c0f46e7871a01bcc9106a06eecb05",
+          "84f363548e43c5e0f28126d52745b7e61c3c0f46e7871a01bcc9106a06eecb05"
+        ],
+        "quoteClocks": [
+          {
+            "requestStartedAt": "2026-10-06T13:22:13.361Z",
+            "receivedAt": "2026-10-06T13:22:13.529Z",
+            "knownAt": "2026-10-06T13:25:57.915Z"
+          },
+          {
+            "requestStartedAt": "2026-10-06T13:22:13.361Z",
+            "receivedAt": "2026-10-06T13:22:13.529Z",
+            "knownAt": "2026-10-06T13:25:57.915Z"
+          }
+        ],
+        "indicativeMathValid": true,
+        "rawNoAsks": [
+          "0.175000",
+          "0.860000"
+        ],
+        "rawNoCost": "1.035000",
+        "conditionalOrdinaryPayoutFloor": "1.000000",
+        "conditionalRawSurplus": "-0.035000",
+        "protectiveTickCost": "1.045000",
+        "conditionalProtectiveSurplus": "-0.045000",
+        "zeroPayoutExceptionLoss": "-1.035000",
+        "zeroPayoutExceptionLossAtProtectiveCost": "-1.045000",
+        "quoteSkewMs": 168,
+        "rootsCurrent": false,
+        "quotesCurrentAndCofresh": false,
+        "accountCurrent": false,
+        "cachedAccountExposureKnown": true,
+        "accountKnownBeforeBothRequests": false,
+        "wholeAccountExposure": false,
+        "rawSurplusQualified": false,
+        "protectiveSurplusQualified": false,
+        "unownedReadCandidate": false,
+        "unownedIndicativeCandidate": false,
+        "quantityPerLeg": 1,
+        "depthKnown": false,
+        "depthQualifiedQuantity": null,
+        "nativeNoBookObserved": false,
+        "ordinaryResolutionOnly": true,
+        "fullResolutionCompletenessProven": false,
+        "guaranteedProfit": false,
+        "flags": [
+          "quantity_and_depth_unknown",
+          "ordinary_resolution_only_exception_unprotected",
+          "account_unavailable_stale_or_unknown_acceptance",
+          "cached_rules_need_refresh",
+          "PARTY_NO_SCREEN_QUOTE_AGE",
+          "account_not_known_before_both_quote_requests",
+          "minimum_protective_ordinary_surplus_not_met"
+        ],
+        "orderEligible": false,
+        "executionAuthority": false
+      }
+    ],
+    "ranking": [],
+    "indicativeRanking": [
+      "source-pair-384-385",
+      "source-pair-353-386",
+      "source-pair-305-306",
+      "source-pair-328-329",
+      "source-pair-344-345",
+      "source-pair-377-378",
+      "source-pair-381-382"
+    ],
+    "networkRequests": 0,
+    "competitionOrders": 0,
+    "executionAuthority": false,
+    "profitabilityEstablished": false,
+    "limitations": [
+      "Opposing party roots establish only conditional ordinary-election mutual exclusion; they do not protect against inconsistent resolution/void/refund exceptions.",
+      "Bulk YES bids are converted to same-exchange NO asks with exact decimals; there is no independently observed native NO book or depth.",
+      "Read ranking never establishes executable quantities, atomic two-leg fills, guaranteed profit or authority to submit orders.",
+      "ranking requires current rules/cofresh quotes/causal fresh account; indicativeRanking is only cached-cost read-refresh prioritization and can include stale rules or quotes. Neither ranking is order authority.",
+      "Stale rules remain source-dated and flagged; fresh original metadata/account/depth receipts are required before any later economic test."
+    ]
+  },
+  "sourceSummary": {
+    "universeHash": "3dad67c230d98e690dbea72c8bbffb4cd1baff2ee5a2276b79314ad6f41e1560",
+    "universeSourceSha256": "82efdc3dd9dc4f205e05264fd38a6db0cbd3e0d3269c2faabf55f044a652ed24",
+    "rootSources": [
+      {
+        "id": "captured-nodes/2026-10-01T19-10-01.199Z-2.json",
+        "sha256": "51179f2d0bedec3897406a3575cca6c7994e8158fb0acc8139d78d07922dd433",
+        "marketId": "385",
+        "receivedAt": "2026-10-01T19:10:01.199Z"
+      },
+      {
+        "id": "captured-nodes/2026-10-01T19-10-01.221Z-3.json",
+        "sha256": "2b41c71e5502087b88aebbcf964e2eac57324d240f6868e17a4aebd7ec6bf810",
+        "marketId": "387",
+        "receivedAt": "2026-10-01T19:10:01.221Z"
+      },
+      {
+        "id": "captured-nodes/2026-10-01T19-10-01.479Z-4.json",
+        "sha256": "517f209967bb9ba768332e77659184c9666d34bbce2fe1cbaf645fe3dd42f542",
+        "marketId": "384",
+        "receivedAt": "2026-10-01T19:10:01.479Z"
+      },
+      {
+        "id": "captured-nodes/2026-10-01T19-10-02.264Z-5.json",
+        "sha256": "ab670da0668d405f5819a130dea33691eb7c63908399e0a68a3442e478ea0376",
+        "marketId": "386",
+        "receivedAt": "2026-10-01T19:10:02.264Z"
+      },
+      {
+        "id": "captured-nodes/2026-10-01T19-10-02.268Z-6.json",
+        "sha256": "97848e40e6e93cb13541c1f2e9fbdaf5e12c12b18d581084cfb2b6566a6d61e0",
+        "marketId": "388",
+        "receivedAt": "2026-10-01T19:10:02.268Z"
+      },
+      {
+        "id": "captured-nodes/2026-10-01T19-10-03.642Z-7.json",
+        "sha256": "decb8d6777c7fc7bab8625a822903f0dca4c7859b6a39f8e2678375a20b3a757",
+        "marketId": "383",
+        "receivedAt": "2026-10-01T19:10:03.642Z"
+      },
+      {
+        "id": "captured-nodes/2026-10-01T19-10-04.462Z-8.json",
+        "sha256": "0cceacc548f69598e30895d2078f4ccdba1a85fee87b28283234369cc17b5b13",
+        "marketId": "382",
+        "receivedAt": "2026-10-01T19:10:04.462Z"
+      },
+      {
+        "id": "captured-nodes/2026-10-01T19-10-07.812Z-9.json",
+        "sha256": "756b4e9de2baa7a66b7148c351c19539ad4557d76fb21531b0d77050d91cd471",
+        "marketId": "380",
+        "receivedAt": "2026-10-01T19:10:07.812Z"
+      },
+      {
+        "id": "captured-nodes/2026-10-01T19-10-08.609Z-10.json",
+        "sha256": "0042338f38fb9f56601167ce5cdd2c2a6986b04ae48a3aa7e71d963ed24b34a2",
+        "marketId": "381",
+        "receivedAt": "2026-10-01T19:10:08.609Z"
+      },
+      {
+        "id": "captured-nodes/2026-10-01T19-10-12.000Z-11.json",
+        "sha256": "1d695da69aa73565b24664803d0c539d1e4e6d1bb1a453503e20888278e82a4f",
+        "marketId": "377",
+        "receivedAt": "2026-10-01T19:10:12.000Z"
+      },
+      {
+        "id": "captured-nodes/2026-10-01T19-10-12.719Z-12.json",
+        "sha256": "da5c735da331aac9c399a7c7500e64c66df637ac477bcc4ee5293e11fb087870",
+        "marketId": "379",
+        "receivedAt": "2026-10-01T19:10:12.719Z"
+      },
+      {
+        "id": "captured-nodes/2026-10-01T19-10-13.683Z-13.json",
+        "sha256": "bd4d93faf716b6d2f92b400bec6f39b792249f3a462f013fdea64ee1249e9f68",
+        "marketId": "378",
+        "receivedAt": "2026-10-01T19:10:13.683Z"
+      },
+      {
+        "id": "captured-nodes/2026-10-01T19-10-20.668Z-14.json",
+        "sha256": "2e53bd941a1cdb882cc9657ea6a60492106528de3aff74d50854657104db3012",
+        "marketId": "373",
+        "receivedAt": "2026-10-01T19:10:20.668Z"
+      },
+      {
+        "id": "captured-nodes/2026-10-01T19-10-22.250Z-15.json",
+        "sha256": "1e538324bf181f87e95410b29ca290c6711b5356b13dfafe7e440b232f8ab268",
+        "marketId": "374",
+        "receivedAt": "2026-10-01T19:10:22.250Z"
+      },
+      {
+        "id": "captured-nodes/2026-10-01T19-10-22.518Z-16.json",
+        "sha256": "bfdbc642bb8f075d21d7e987221def4bf6300707d16ce92b54ca5f5079398953",
+        "marketId": "371",
+        "receivedAt": "2026-10-01T19:10:22.518Z"
+      },
+      {
+        "id": "captured-nodes/2026-10-01T19-10-25.709Z-17.json",
+        "sha256": "dcd2b66cf8ba2f731f06e583bd48e0069ef8ad473a7981c320eff77d362bd0d3",
+        "marketId": "375",
+        "receivedAt": "2026-10-01T19:10:25.709Z"
+      },
+      {
+        "id": "captured-nodes/2026-10-01T19-10-25.714Z-18.json",
+        "sha256": "c4b6ca93eda487190ca423c62f16097b55275a18d4ee329cbccc83082e39fccc",
+        "marketId": "376",
+        "receivedAt": "2026-10-01T19:10:25.714Z"
+      },
+      {
+        "id": "captured-nodes/2026-10-01T19-10-26.980Z-19.json",
+        "sha256": "12cf77b01c332f17400b3bc87474480b08f253be534f2e2c7859bae37bff0cf1",
+        "marketId": "372",
+        "receivedAt": "2026-10-01T19:10:26.980Z"
+      },
+      {
+        "id": "captured-nodes/2026-10-01T19-10-28.980Z-20.json",
+        "sha256": "642ea580ce7a7cac2fd22d6003b83b336a6ad3e9ade41633957428de4c40509f",
+        "marketId": "366",
+        "receivedAt": "2026-10-01T19:10:28.980Z"
+      },
+      {
+        "id": "captured-nodes/2026-10-01T19-10-30.353Z-21.json",
+        "sha256": "55637e27766b132577a4acbb07bd4f2abef6e5ada2684760099ec8b2a5bdc74e",
+        "marketId": "370",
+        "receivedAt": "2026-10-01T19:10:30.353Z"
+      },
+      {
+        "id": "captured-nodes/2026-10-01T19-10-30.439Z-22.json",
+        "sha256": "275389f908b5d4853fc50154f2ae87092f1f3d2d4cf5b1d4b23a65bae81d080b",
+        "marketId": "369",
+        "receivedAt": "2026-10-01T19:10:30.439Z"
+      },
+      {
+        "id": "captured-nodes/2026-10-01T19-10-30.459Z-23.json",
+        "sha256": "5692411a4e18d30b0523d526f93c05cd7256a9c0836dbf4d21f0630f6cdfb674",
+        "marketId": "365",
+        "receivedAt": "2026-10-01T19:10:30.459Z"
+      },
+      {
+        "id": "captured-nodes/2026-10-01T19-10-35.257Z-24.json",
+        "sha256": "f1163d8e972bf491a8fadc287af6ea2b3cd3ef1ea95dc06774bed2ad0b1bbf42",
+        "marketId": "368",
+        "receivedAt": "2026-10-01T19:10:35.257Z"
+      },
+      {
+        "id": "captured-nodes/2026-10-01T19-10-42.805Z-25.json",
+        "sha256": "bc127ce41dece243ccff2d03d0137b3869d6a468618c86946f31ccba811cbf38",
+        "marketId": "363",
+        "receivedAt": "2026-10-01T19:10:42.805Z"
+      },
+      {
+        "id": "captured-nodes/2026-10-01T19-10-42.826Z-26.json",
+        "sha256": "9069daafa8552ad07234ca74b2af87d5605e7ae6647a70b72a30e9ae9fa6c36d",
+        "marketId": "364",
+        "receivedAt": "2026-10-01T19:10:42.826Z"
+      },
+      {
+        "id": "captured-nodes/2026-10-01T19-10-42.836Z-27.json",
+        "sha256": "02179da2d38e7042581ecc4e7ea641ec11898146d5cfd2c3f5bf257f10ea83a2",
+        "marketId": "362",
+        "receivedAt": "2026-10-01T19:10:42.836Z"
+      },
+      {
+        "id": "captured-nodes/2026-10-01T19-10-42.839Z-28.json",
+        "sha256": "b6a5944efefea172dc4b6370b1c483246e54275ace668105650d5a29915cc3a3",
+        "marketId": "361",
+        "receivedAt": "2026-10-01T19:10:42.839Z"
+      },
+      {
+        "id": "captured-nodes/2026-10-01T19-10-44.753Z-29.json",
+        "sha256": "89e1801adb285d85fc01b74d4a85f20b4eb35ded88ebcca69848959a7b8afa9a",
+        "marketId": "359",
+        "receivedAt": "2026-10-01T19:10:44.753Z"
+      },
+      {
+        "id": "captured-nodes/2026-10-01T19-10-47.641Z-30.json",
+        "sha256": "9084a810def030c6f946101978684eb68ab13cf76eb490fa3aca59c1163a1dc2",
+        "marketId": "360",
+        "receivedAt": "2026-10-01T19:10:47.641Z"
+      },
+      {
+        "id": "captured-nodes/2026-10-01T19-10-49.296Z-31.json",
+        "sha256": "36d82965208d75fb28431e723a02d7ee0b6b7b279a87af4ba283fad196a6be25",
+        "marketId": "356",
+        "receivedAt": "2026-10-01T19:10:49.296Z"
+      },
+      {
+        "id": "captured-nodes/2026-10-01T19-10-50.762Z-32.json",
+        "sha256": "09b4395347d4f91685b0a1aae836351a0b82cccb8f31c93c42061d5fda9b4225",
+        "marketId": "358",
+        "receivedAt": "2026-10-01T19:10:50.762Z"
+      },
+      {
+        "id": "captured-nodes/2026-10-01T19-10-52.049Z-33.json",
+        "sha256": "5572d68a03bc6f96cf57eb9b5ec08db81b2748f7d7ee60c7c4448a82bfd8e472",
+        "marketId": "354",
+        "receivedAt": "2026-10-01T19:10:52.049Z"
+      },
+      {
+        "id": "captured-nodes/2026-10-01T19-10-53.783Z-34.json",
+        "sha256": "d052ce6c452a3d635c492d5b9c7d1a01762ca36d9a646757b3a0702a157216bd",
+        "marketId": "353",
+        "receivedAt": "2026-10-01T19:10:53.783Z"
+      },
+      {
+        "id": "captured-nodes/2026-10-01T19-10-55.006Z-35.json",
+        "sha256": "452f709c27395df4ddfcbd504e76a92363991722bae61c679cc0548feb1b9ff4",
+        "marketId": "357",
+        "receivedAt": "2026-10-01T19:10:55.006Z"
+      },
+      {
+        "id": "captured-nodes/2026-10-01T19-10-55.213Z-36.json",
+        "sha256": "ee0aea144e8de2c8b4492f27254d5ed8e0d5935e03a614dd462010f369de7af9",
+        "marketId": "352",
+        "receivedAt": "2026-10-01T19:10:55.213Z"
+      },
+      {
+        "id": "captured-nodes/2026-10-01T19-10-56.150Z-37.json",
+        "sha256": "5ac91f0fc30a01eebfc5e70b74c3d5d275210fdaa9149ec1c09b452e8287fdec",
+        "marketId": "355",
+        "receivedAt": "2026-10-01T19:10:56.150Z"
+      },
+      {
+        "id": "captured-nodes/2026-10-01T19-10-58.034Z-38.json",
+        "sha256": "1fb4776352102b9295930217b8de52d0575a7922e6775395c3c8c158d6e9625e",
+        "marketId": "350",
+        "receivedAt": "2026-10-01T19:10:58.034Z"
+      },
+      {
+        "id": "captured-nodes/2026-10-01T19-10-59.524Z-39.json",
+        "sha256": "9f1f83054f4f0ad42263d9927b4f742ba076a9355ee7a124c6ea8336d976e567",
+        "marketId": "349",
+        "receivedAt": "2026-10-01T19:10:59.524Z"
+      },
+      {
+        "id": "captured-nodes/2026-10-01T19-11-02.688Z-40.json",
+        "sha256": "06c4f27233fe96a7b05864638c406073828b2c1bb44d3a37c2723bf0961ad11a",
+        "marketId": "347",
+        "receivedAt": "2026-10-01T19:11:02.688Z"
+      },
+      {
+        "id": "captured-nodes/2026-10-01T19-11-04.025Z-41.json",
+        "sha256": "9596294ca972e2df78d8dce711f9ffba447471677bef79e05a88a9b2f2e28150",
+        "marketId": "346",
+        "receivedAt": "2026-10-01T19:11:04.025Z"
+      },
+      {
+        "id": "captured-nodes/2026-10-01T19-11-05.392Z-42.json",
+        "sha256": "f55c9aba627e8694b561456421da729f2dc48137e76daab1a7af1512c79fe3de",
+        "marketId": "348",
+        "receivedAt": "2026-10-01T19:11:05.392Z"
+      },
+      {
+        "id": "captured-nodes/2026-10-01T19-11-09.211Z-43.json",
+        "sha256": "35e5a1cf0053b7dd83f1d9ddede06e55ece5ced582aa766dbeac4627798e4f26",
+        "marketId": "351",
+        "receivedAt": "2026-10-01T19:11:09.211Z"
+      },
+      {
+        "id": "captured-nodes/2026-10-01T19-11-12.006Z-44.json",
+        "sha256": "03c421348f203498dcd032643df87e0fcb2fb168374fbdd96456005bf70bd57a",
+        "marketId": "344",
+        "receivedAt": "2026-10-01T19:11:12.006Z"
+      },
+      {
+        "id": "captured-nodes/2026-10-01T19-11-12.978Z-45.json",
+        "sha256": "9b0ae2e9bfb858b5ea2b838d725042f0926f1798ad676f96c8b5784d31742a7a",
+        "marketId": "345",
+        "receivedAt": "2026-10-01T19:11:12.978Z"
+      },
+      {
+        "id": "captured-nodes/2026-10-01T19-11-13.738Z-46.json",
+        "sha256": "031df2741cf2ef4fc5e496c15a941380cf8fb1111b792310693b82db2884b95b",
+        "marketId": "340",
+        "receivedAt": "2026-10-01T19:11:13.738Z"
+      },
+      {
+        "id": "captured-nodes/2026-10-01T19-11-15.747Z-47.json",
+        "sha256": "2f59083adbeeacb2ec7696f493a18e9d070a8c0f4c474365b17de764164f3706",
+        "marketId": "343",
+        "receivedAt": "2026-10-01T19:11:15.747Z"
+      },
+      {
+        "id": "captured-nodes/2026-10-01T19-11-18.458Z-48.json",
+        "sha256": "56b182378b6e05d12729118d95951c49053eb4cddef200c301cef1d21f23cce6",
+        "marketId": "341",
+        "receivedAt": "2026-10-01T19:11:18.458Z"
+      },
+      {
+        "id": "captured-nodes/2026-10-01T19-11-20.624Z-49.json",
+        "sha256": "734c4e367a5c5c80c48055bcb14366e373e15194f619e3b203534385c6bcabfb",
+        "marketId": "342",
+        "receivedAt": "2026-10-01T19:11:20.624Z"
+      },
+      {
+        "id": "captured-nodes/2026-10-01T19-11-22.134Z-50.json",
+        "sha256": "e55038c1b234da8923505dff8b403c5415d2256afee54212e5ff6a68c88b4050",
+        "marketId": "338",
+        "receivedAt": "2026-10-01T19:11:22.134Z"
+      },
+      {
+        "id": "captured-nodes/2026-10-01T19-11-22.218Z-51.json",
+        "sha256": "eaca38bbb1d92f369f8af66c18021ed6ecd88688c9844e6f35c23d17f4963d26",
+        "marketId": "339",
+        "receivedAt": "2026-10-01T19:11:22.218Z"
+      },
+      {
+        "id": "captured-nodes/2026-10-01T19-11-22.954Z-52.json",
+        "sha256": "17f431b763ecb057af8ca2823a6ad31e1437f08d9b4073eb2f38de34eb071c5e",
+        "marketId": "335",
+        "receivedAt": "2026-10-01T19:11:22.954Z"
+      },
+      {
+        "id": "captured-nodes/2026-10-01T19-11-23.883Z-53.json",
+        "sha256": "b4b1bfbe6e98b5778337884952838af1cafadcf65c28eeb0f66d79a8226df85d",
+        "marketId": "334",
+        "receivedAt": "2026-10-01T19:11:23.883Z"
+      },
+      {
+        "id": "captured-nodes/2026-10-01T19-11-24.225Z-54.json",
+        "sha256": "8d6e96b99dbf6e3f9316bcbdf98aa81623042d6a4da676f095239648860adb18",
+        "marketId": "337",
+        "receivedAt": "2026-10-01T19:11:24.225Z"
+      },
+      {
+        "id": "captured-nodes/2026-10-01T19-11-26.338Z-55.json",
+        "sha256": "7b95baea9f2c83867b3359bc94e1bdc8f2dbf83abb0d512d4d7a2641ec728887",
+        "marketId": "336",
+        "receivedAt": "2026-10-01T19:11:26.338Z"
+      },
+      {
+        "id": "captured-nodes/2026-10-01T19-11-26.922Z-56.json",
+        "sha256": "367f593cd7477037299eb26d2158e6ca899b1bfe7df144ae02820edbb3ce88ad",
+        "marketId": "332",
+        "receivedAt": "2026-10-01T19:11:26.922Z"
+      },
+      {
+        "id": "captured-nodes/2026-10-01T19-11-28.342Z-57.json",
+        "sha256": "a028922d3e6f7069b219589f1352f1a27ca69d9c48485935213b933b08b28388",
+        "marketId": "331",
+        "receivedAt": "2026-10-01T19:11:28.342Z"
+      },
+      {
+        "id": "captured-nodes/2026-10-01T19-11-31.859Z-58.json",
+        "sha256": "aa6b91ff3290d47b24cd8cea726728ebfceff243e3a8d7cb751d75481d7c14bb",
+        "marketId": "333",
+        "receivedAt": "2026-10-01T19:11:31.859Z"
+      },
+      {
+        "id": "captured-nodes/2026-10-01T19-11-33.037Z-59.json",
+        "sha256": "c6c909d31d625c8bce7d3ecd67b914b619dccffe7014604329d8870136a78d03",
+        "marketId": "328",
+        "receivedAt": "2026-10-01T19:11:33.037Z"
+      },
+      {
+        "id": "captured-nodes/2026-10-01T19-11-36.005Z-60.json",
+        "sha256": "311781f69fd336d87e377be7b57f1423bde1a95a6d1dc941e1453d4571198d93",
+        "marketId": "330",
+        "receivedAt": "2026-10-01T19:11:36.005Z"
+      },
+      {
+        "id": "captured-nodes/2026-10-01T19-11-36.253Z-61.json",
+        "sha256": "9740c290937752a9a6e8bcd5822cb22f68f7f7a08bc7fdd9c1c8d2283832de3b",
+        "marketId": "329",
+        "receivedAt": "2026-10-01T19:11:36.253Z"
+      },
+      {
+        "id": "captured-nodes/2026-10-01T19-11-37.380Z-62.json",
+        "sha256": "b4146aa938779e5d9e7dd87b397e978f3ff554d6af66d4489e35f84732e201b7",
+        "marketId": "325",
+        "receivedAt": "2026-10-01T19:11:37.380Z"
+      },
+      {
+        "id": "captured-nodes/2026-10-01T19-11-38.874Z-63.json",
+        "sha256": "3d9076d666de00732e51e3a245e5ee85c202794e9713269e51c17fedaaae88ac",
+        "marketId": "324",
+        "receivedAt": "2026-10-01T19:11:38.874Z"
+      },
+      {
+        "id": "captured-nodes/2026-10-01T19-11-40.104Z-64.json",
+        "sha256": "dded33c66555e1a3990904a1963cfa0e11cad7d93d42cb22243688ccaa926bbb",
+        "marketId": "326",
+        "receivedAt": "2026-10-01T19:11:40.104Z"
+      },
+      {
+        "id": "captured-nodes/2026-10-01T19-11-41.880Z-65.json",
+        "sha256": "ed68b50da889abaaef3079b2d24a6027da0b16d8c280b23f0c2dab1e44b24b8f",
+        "marketId": "322",
+        "receivedAt": "2026-10-01T19:11:41.880Z"
+      },
+      {
+        "id": "captured-nodes/2026-10-01T19-11-45.455Z-66.json",
+        "sha256": "b2ba084ed76c2a6f9f80d5dfd151874fceb8be825194b4ad69788e357e579585",
+        "marketId": "320",
+        "receivedAt": "2026-10-01T19:11:45.455Z"
+      },
+      {
+        "id": "captured-nodes/2026-10-01T19-11-47.000Z-67.json",
+        "sha256": "4a47f4d3a22a1bd39c4511f0bb780a4d996008faeb8a6e21a789eecc32db7409",
+        "marketId": "327",
+        "receivedAt": "2026-10-01T19:11:47.000Z"
+      },
+      {
+        "id": "captured-nodes/2026-10-01T19-11-47.184Z-68.json",
+        "sha256": "adf5c6c13d38b145130a61c9e0b23c70b79a3015b8ed8610f4d329974a0378e1",
+        "marketId": "323",
+        "receivedAt": "2026-10-01T19:11:47.184Z"
+      },
+      {
+        "id": "captured-nodes/2026-10-01T19-11-48.024Z-69.json",
+        "sha256": "6c0bb9e5cbdb052919d0f7803e2e94f59453d7e271afacdbaea4ea5869944a3e",
+        "marketId": "321",
+        "receivedAt": "2026-10-01T19:11:48.024Z"
+      },
+      {
+        "id": "captured-nodes/2026-10-01T19-11-54.077Z-70.json",
+        "sha256": "7c32bcd1a42c38558d1e4c14058fbcdf7adf6de068dcb21d81355990d6e0475d",
+        "marketId": "319",
+        "receivedAt": "2026-10-01T19:11:54.077Z"
+      },
+      {
+        "id": "captured-nodes/2026-10-01T19-11-54.851Z-71.json",
+        "sha256": "5828986cc3e200440544e841478853bd7de62099aea8fec163dcf32c194bbfdc",
+        "marketId": "315",
+        "receivedAt": "2026-10-01T19:11:54.851Z"
+      },
+      {
+        "id": "captured-nodes/2026-10-01T19-11-55.780Z-72.json",
+        "sha256": "8772c03a0412d8f1c74a3aaf1f5f0b5d9310411041b1a59918118c7f65eb0b21",
+        "marketId": "314",
+        "receivedAt": "2026-10-01T19:11:55.780Z"
+      },
+      {
+        "id": "captured-nodes/2026-10-01T19-11-57.065Z-73.json",
+        "sha256": "bb684acd903b2b013be187aad5e3f74ca1793b60c865411d5c725a3057497aa9",
+        "marketId": "316",
+        "receivedAt": "2026-10-01T19:11:57.065Z"
+      },
+      {
+        "id": "captured-nodes/2026-10-01T19-11-57.072Z-74.json",
+        "sha256": "f3674a2b3797f261ca9a144d16eb1013a5afc0065f1335bc09594a86d772c6b6",
+        "marketId": "318",
+        "receivedAt": "2026-10-01T19:11:57.072Z"
+      },
+      {
+        "id": "captured-nodes/2026-10-01T19-11-57.899Z-75.json",
+        "sha256": "9744867687db442823a79ebd1c32098236bb35dade186d32cf7bdebe8dc79494",
+        "marketId": "317",
+        "receivedAt": "2026-10-01T19:11:57.899Z"
+      },
+      {
+        "id": "captured-nodes/2026-10-01T19-11-58.853Z-76.json",
+        "sha256": "0cfa67d448ddc8697495b846a48e2ffaf6d1611561322d50689ace59badfb661",
+        "marketId": "312",
+        "receivedAt": "2026-10-01T19:11:58.853Z"
+      },
+      {
+        "id": "captured-nodes/2026-10-01T19-12-03.050Z-77.json",
+        "sha256": "3eed0705a0779abe5b8e6fab1d9ebeafd771a2cd5f6f7318bf740b3e1420c306",
+        "marketId": "313",
+        "receivedAt": "2026-10-01T19:12:03.050Z"
+      },
+      {
+        "id": "captured-nodes/2026-10-01T19-12-03.400Z-78.json",
+        "sha256": "88e82a0d76961169c3c046e0538dce259cfc577865b0da6cbf357f05632c757d",
+        "marketId": "309",
+        "receivedAt": "2026-10-01T19:12:03.400Z"
+      },
+      {
+        "id": "captured-nodes/2026-10-01T19-12-05.114Z-79.json",
+        "sha256": "0c407781a0c051f6f314ead86b021be2671ddc02d31bffa68896e6e5c6e69346",
+        "marketId": "311",
+        "receivedAt": "2026-10-01T19:12:05.114Z"
+      },
+      {
+        "id": "captured-nodes/2026-10-01T19-12-06.786Z-80.json",
+        "sha256": "ce8a67727d4bd2b9b3f2f12802c3862ce34ec20d67556079bb5078eb30429267",
+        "marketId": "310",
+        "receivedAt": "2026-10-01T19:12:06.786Z"
+      },
+      {
+        "id": "production-metadata/baal-production-20261004-v1/297.json",
+        "sha256": "c831977812155ff44edc6cf359f6714b1ef224bd723cb0e65f5069b610d81890",
+        "marketId": "297",
+        "receivedAt": "2026-10-04T20:50:49.121Z"
+      },
+      {
+        "id": "production-metadata/baal-production-20261004-v1/357.json",
+        "sha256": "41d6d8dadbae9afef08ca80dbbc7ba728abe37fe4ab40aed55e5005f0a85c20a",
+        "marketId": "357",
+        "receivedAt": "2026-10-04T20:52:18.085Z"
+      },
+      {
+        "id": "production-metadata/baal-production-20261004-v1/363.json",
+        "sha256": "7b4baef3c453693f28342567899fb9f7c4f8ab6e4853469e119997d28430ff65",
+        "marketId": "363",
+        "receivedAt": "2026-10-04T20:51:32.812Z"
+      },
+      {
+        "id": "production-metadata/current-marist-20261005-v2/260.json",
+        "sha256": "4ce72a5d4f37c724ce80eb434839655cc1b50f9cfba7afda5e9baeaebe29133f",
+        "marketId": "260",
+        "receivedAt": "2026-10-05T18:42:04.466Z"
+      },
+      {
+        "id": "production-metadata/current-marist-20261005-v2/293.json",
+        "sha256": "46535fdbfb7a14f5bedd83ae9a3042b69d5064e916b0d20fc23a90e6d2387ee5",
+        "marketId": "293",
+        "receivedAt": "2026-10-05T18:41:30.926Z"
+      },
+      {
+        "id": "production-metadata/current-marist-20261005-v2/358.json",
+        "sha256": "9826907da723b38f976b0375440367bfb66c36a35d9e5e90aac4b014f88388ca",
+        "marketId": "358",
+        "receivedAt": "2026-10-05T18:40:56.961Z"
+      },
+      {
+        "id": "production-metadata/current-poll-breadth-20261005-v1/260.json",
+        "sha256": "e5829917f60c3c424a6af8d773c132b8de1bed6a920f2166a5a36157a36bbc5e",
+        "marketId": "260",
+        "receivedAt": "2026-10-05T11:24:28.216Z"
+      },
+      {
+        "id": "production-metadata/current-poll-breadth-20261005-v1/261.json",
+        "sha256": "7e4a6a91ad805ea37fd83ba5580e1ebee407f23c1e406af2d37b1f5acd4942e9",
+        "marketId": "261",
+        "receivedAt": "2026-10-05T11:23:02.449Z"
+      },
+      {
+        "id": "production-metadata/current-poll-breadth-20261005-v1/356.json",
+        "sha256": "dd1bee04f39915b21e6264d0d5db382836419ce8ca1cd63271a638f0147f6bed",
+        "marketId": "356",
+        "receivedAt": "2026-10-05T11:25:16.282Z"
+      },
+      {
+        "id": "production-metadata/current-poll-post-assessment-20261005-v1/260.json",
+        "sha256": "61da78fa240a97ed911a217187d6745d61e1ea68746d4a6c356ec39eb400c981",
+        "marketId": "260",
+        "receivedAt": "2026-10-05T11:35:53.194Z"
+      },
+      {
+        "id": "production-metadata/current-poll-post-assessment-20261005-v1/261.json",
+        "sha256": "890d99dded052bff9f71565c7e3ba014db352bea9f4305258cd81509d5f63dbd",
+        "marketId": "261",
+        "receivedAt": "2026-10-05T11:34:20.269Z"
+      },
+      {
+        "id": "production-metadata/current-poll-post-assessment-20261005-v1/356.json",
+        "sha256": "9baaf99f608e9aa2d318f0e145184411347d3ab90b2262b0f937addecc1d8dc1",
+        "marketId": "356",
+        "receivedAt": "2026-10-05T11:37:06.563Z"
+      },
+      {
+        "id": "production-metadata/current-siena-breadth-20261005-v3/195.json",
+        "sha256": "2b2957510aff1bb956089f98d38a9c9024f5790ad2fb0bb8a6a841ae19d82e69",
+        "marketId": "195",
+        "receivedAt": "2026-10-05T18:49:13.566Z"
+      },
+      {
+        "id": "production-metadata/current-siena-breadth-20261005-v3/356.json",
+        "sha256": "749afac8437e32d134db06132ec7da0a960ceb5f771646c697c5f9ee8cebfc3c",
+        "marketId": "356",
+        "receivedAt": "2026-10-05T18:50:19.606Z"
+      },
+      {
+        "id": "production-metadata/current-siena-breadth-20261005-v3/377.json",
+        "sha256": "954f4a51079d736a466bc76f6b965bc15303e1754e4616bfa70f4e6ef89c2c92",
+        "marketId": "377",
+        "receivedAt": "2026-10-05T18:49:46.551Z"
+      },
+      {
+        "id": "production-metadata/delaware-dual-no-profit-sprint-20261005/353.json",
+        "sha256": "37a2da42f7a4895062b16640ad1a4b75c9e40e5e453da870e330e8ee2116ead9",
+        "marketId": "353",
+        "receivedAt": "2026-10-05T21:46:36.866Z"
+      },
+      {
+        "id": "production-metadata/delaware-dual-no-profit-sprint-20261005/386.json",
+        "sha256": "7945958e9c027edf0035113bcb05fac823fa4e5298d34bbd6c1bf6c8aa9dcb92",
+        "marketId": "386",
+        "receivedAt": "2026-10-05T21:47:01.971Z"
+      },
+      {
+        "id": "production-metadata/kansas-portfolio-horizon-20261005-v2/356.json",
+        "sha256": "8a8f8227a1264a0c39e27f7114061a30aac535d6c4e8088c80b1cf49d25d1358",
+        "marketId": "356",
+        "receivedAt": "2026-10-05T23:23:02.507Z"
+      },
+      {
+        "id": "production-metadata/median-owned-contracts-20261006-v1/274.json",
+        "sha256": "d77c4bf13b1fb366883415ec2f6078ab185d6780733d1dd9bda1e982f4b29fdf",
+        "marketId": "274",
+        "receivedAt": "2026-10-06T04:34:42.130Z"
+      },
+      {
+        "id": "production-metadata/median-owned-contracts-20261006-v1/305.json",
+        "sha256": "4105e145f524645f27389fe4cee67abc0d4df27fb622d518c028b8b38b10164a",
+        "marketId": "305",
+        "receivedAt": "2026-10-06T04:34:57.773Z"
+      },
+      {
+        "id": "production-metadata/median-owned-contracts-20261006-v1/361.json",
+        "sha256": "51ca7cf39273b6bd3c6691c095ab7676641609ae65b35b29a3f37f40830d5714",
+        "marketId": "361",
+        "receivedAt": "2026-10-06T04:35:18.212Z"
+      },
+      {
+        "id": "production-metadata/michigan-dual-no-profit-sprint-20261005/305.json",
+        "sha256": "1c3a7c2f7059034fcabc975296b94e335a56c4c6cd53e13a822c7c63c8ab4ea1",
+        "marketId": "305",
+        "receivedAt": "2026-10-05T21:04:29.417Z"
+      },
+      {
+        "id": "production-metadata/michigan-dual-no-profit-sprint-20261005/306.json",
+        "sha256": "ab85d2aaa1f2957ca9782797d4538980086cc08a2fcaf87002d6dd0a12e0f405",
+        "marketId": "306",
+        "receivedAt": "2026-10-05T21:05:02.898Z"
+      },
+      {
+        "id": "production-metadata/nh-settlement-spread-20261005-v1/381.json",
+        "sha256": "7c8c3b8c5f966ab9002a49d2a87509d75a8ea8ea9ea0f2ab4ad1b2db62f59ded",
+        "marketId": "381",
+        "receivedAt": "2026-10-05T17:54:30.902Z"
+      },
+      {
+        "id": "production-metadata/nh-settlement-spread-20261005-v1/382.json",
+        "sha256": "790e6f95c6dbcf779456e5f7291585e6a6c8800b82580c91dc485e0b2b4d76fd",
+        "marketId": "382",
+        "receivedAt": "2026-10-05T17:55:02.983Z"
+      },
+      {
+        "id": "production-metadata/quant-value-contracts-20261006-v1/297.json",
+        "sha256": "376d2864a73beb41f9c6f68e6499d5e1aea9903aa91427d7c50f73ecda20d447",
+        "marketId": "297",
+        "receivedAt": "2026-10-06T05:18:24.597Z"
+      },
+      {
+        "id": "production-metadata/quant-value-contracts-20261006-v1/311.json",
+        "sha256": "b0dc76376fcf0ea6f733c420c2ead43db1ffad61ed54a16cab44e9ab96f643c6",
+        "marketId": "311",
+        "receivedAt": "2026-10-06T05:18:40.489Z"
+      },
+      {
+        "id": "production-metadata/quant-value-contracts-20261006-v1/363.json",
+        "sha256": "e92b5caa863286ab79c3e7445cbddc5b81fe53fc130a86f97905bc54a24d76a5",
+        "marketId": "363",
+        "receivedAt": "2026-10-06T05:18:56.348Z"
+      },
+      {
+        "id": "production-metadata/tennessee-current-assessment-20261004-v1/363.json",
+        "sha256": "a88952d1afdd1c67e049c83ba49db2fb37d9cdfdea59448024cef52ed2ae1130",
+        "marketId": "363",
+        "receivedAt": "2026-10-04T23:07:05.158Z"
+      },
+      {
+        "id": "current-paired-capture",
+        "sha256": "1f6d516ee6f97ffc61e2f2727099c5fa83a60ffdb70bc703cf2729a4e4eb7460",
+        "marketId": "354",
+        "receivedAt": "2026-10-06T12:59:26.349Z"
+      },
+      {
+        "id": "current-paired-capture",
+        "sha256": "1f6d516ee6f97ffc61e2f2727099c5fa83a60ffdb70bc703cf2729a4e4eb7460",
+        "marketId": "355",
+        "receivedAt": "2026-10-06T12:59:27.603Z"
+      }
+    ],
+    "quoteCoverageSha256": "84f363548e43c5e0f28126d52745b7e61c3c0f46e7871a01bcc9106a06eecb05",
+    "quoteCoverageUpdatedAt": "2026-10-06T13:22:13.529Z",
+    "accountProjectionSourceHash": "b41565c26bd271a4ad3e50b3f0d360dfb04528b216d8a9adc6d9fd568768e588",
+    "wholeAccountExcludedExchangeCount": 6,
+    "currentRequestHash": "4473354945a268eb3f281dc5016d9ab369da1d5b2b28e23a44cbd91c9b430d98",
+    "captureSourceHash": "1f6d516ee6f97ffc61e2f2727099c5fa83a60ffdb70bc703cf2729a4e4eb7460",
+    "stateSourceHash": null
+  },
+  "networkRequests": 0,
+  "competitionOrders": 0,
+  "runtimeFilesWritten": 0,
+  "executionAuthority": false,
+  "observedAt": "2026-10-06T13:25:57.915Z",
+  "codeHashes": {
+    "live-paper/party-winner-pair-selector-v1.mjs": "0a454a07cc8679328e4ab235b704e5ef3741eb7cfbf0e4fe2c04a7895fa8fce2",
+    "live-paper/party-winner-pair-selector-cached-v1.mjs": "78668a2e810a56d5f04f6d10d5060d86c47184c18170286c6cf9fa5dcfe6b693",
+    "live-paper/party-winner-no-screen-v1.mjs": "cf4abaa65bbc81d6820662ecdfcf90ce6d0ef1e88c53d46e57083e693ea76b79"
+  },
+  "correctnessTestsPassed": 8,
+  "sourcePlanInstalledByThisRun": false,
+  "oldSourceWindowRenewed": false
+}

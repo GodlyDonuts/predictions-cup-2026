@@ -1,3 +1,11 @@
+# October6 13:39 UTC: generic pair selector installed; live restoration pending
+
+A separately bounded version2 host can select one fresh source-verified opposing-party NO pair from all237 approved markets. The read selector reuses current bulk publications and the existing auxiliary capture slots; no extra account clients or services were created. Selection is immutable within a run, both legs receive full funding, and prior expired zero-order trials and every journal remain preserved. New run sig-pilot-paired-generic-20261006-human ends14:26:11.789UTC; its read-source plan ends13:56:11.789UTC. These clocks do not extend the original median or fixed-Florida activations.
+
+Collector28804 was actually verified running at13:39UTC with empty startup logs while restoring original history. Fresh connection, candidate nomination and paired fills are not yet verified. Paper28488 and dashboard29228 were verified present. The original official pilot has three closed trades netting+0.005SUSQies, zero fees: this tiny sample does not establish profitable scale. [Configuration](../data/generic-paired-live-configuration-20261006.json).
+
+A separate exact-decimal NO liquidation signal checks original buy proofs, current executable complementary ask depth, two-leg protection and minimum0.005 net margin. It has14 correctness checks; it does not dispatch sells or claim profit from test data.
+
 # October6 12:42 UTC: official book shape corrected; zero-spend trial preserved
 
 The live bridge wrongly required top-level marketId, which the official CombinedMarketOrderbook response omits. The genuine documented/observed shape contains exchanges, overround, hasArbitrageOpportunity and tournament contexts. Five primary-schema regressions now pass; exact endpoint, tournament, expected exchange, depth and contradictory-ID checks remain enforced. This was an integration defect, not a missing price signal.
