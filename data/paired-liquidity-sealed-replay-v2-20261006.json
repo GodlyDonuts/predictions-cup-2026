@@ -1,0 +1,460 @@
+{
+  "schemaVersion": 2,
+  "mode": "sealed_original_paired_liquidity_sweep_diagnostic_v2",
+  "observedAt": "2026-10-06T18:47:17.805Z",
+  "algorithmSource": "execution/baal-paired-liquidity-sweep-v1.mjs",
+  "algorithmSourceSha256": "91d54bb5fe6a85278c2e24068b2ed719b78f69a28a541d62aa037a42aa47ccef",
+  "policy": {
+    "maximumLegCost": "25.000000",
+    "maximumEventCost": "200.000000",
+    "maximumQuantity": 100,
+    "minimumMarginPerMatchedShare": "0.010000",
+    "maximumHintWholeWindowMs": 10000,
+    "fees": "0.000000",
+    "fundingUsesWorstExecutableRawLimit": true,
+    "quantityChoice": "max_conditional_protected_dollar_margin",
+    "onePercentControl": "best_rung_only"
+  },
+  "originalSource": {
+    "sealedPrefixBytes": 25580495,
+    "sha256": "6c5877b65d34e8fb3dad0175538bb59a88aff36c05dbce6215a7dc3c6ca1e116",
+    "records": 158,
+    "tailHash": "bac7b2080f154fbabb6bcc8295e306435a3e034d106d70e7a6a93aec6332cd1b"
+  },
+  "packets": 8,
+  "cases": [
+    {
+      "sourceSequence": 4,
+      "sourceHash": "79d845b6c09336b10ac34fb45090c679598c7da4aeb13bf1a691a010231aeae4",
+      "at": "2026-10-06T17:08:26.087Z",
+      "eventId": "daa9af0d453ce53f44d53dad7460f92d511e1774b471f87c165a615917c0c428",
+      "marketIds": [
+        "384",
+        "385"
+      ],
+      "availableNominalCapital": "1000.000000",
+      "selected": {
+        "quantity": 29,
+        "limits": [
+          "0.085000",
+          "0.855000"
+        ],
+        "maximumLegCosts": [
+          "2.465000",
+          "24.795000"
+        ],
+        "maximumNominalCost": "27.260000",
+        "displayedDepthNotional": "27.260000",
+        "conditionalOrdinaryMarginLowerBound": "1.740000",
+        "conditionalOrdinaryPayout": "29.000000",
+        "unitMarginLowerBound": "0.060000"
+      },
+      "onePercentBestRungControl": {
+        "quantity": 29,
+        "limits": [
+          "0.085000",
+          "0.855000"
+        ],
+        "maximumLegCosts": [
+          "2.465000",
+          "24.795000"
+        ],
+        "maximumNominalCost": "27.260000",
+        "displayedDepthNotional": "27.260000",
+        "conditionalOrdinaryMarginLowerBound": "1.740000",
+        "conditionalOrdinaryPayout": "29.000000",
+        "unitMarginLowerBound": "0.060000"
+      },
+      "proposalHash": "79a828f3cea1d56aa72f26c59b3f6a0478bba9939d87b30a51099227016206da",
+      "sourceBookHashes": [
+        "415b3fcdf15d1f321a0e8b906ad5367e39bdda6867ab8ae7aac343b8915b5dfe",
+        "2b3cf1dbb155ce3bb8e66f9e0cf2f4cb0cfbcef7f5c6b4f2123e8075cb02e170"
+      ],
+      "sourceStartedAt": [
+        "2026-10-06T17:08:22.231Z",
+        "2026-10-06T17:08:24.576Z"
+      ]
+    },
+    {
+      "sourceSequence": 17,
+      "sourceHash": "72322450bec84faf6a6c0cb41bd1000f4d2207fb9cc71bb31d50a9d1b0819129",
+      "at": "2026-10-06T17:11:22.066Z",
+      "eventId": "2a9c83ff96398f1c2644e8309df6442685a057ca9597f2fab468123f1c50705b",
+      "marketIds": [
+        "353",
+        "386"
+      ],
+      "availableNominalCapital": "971.290000",
+      "selected": {
+        "quantity": 28,
+        "limits": [
+          "0.095000",
+          "0.880000"
+        ],
+        "maximumLegCosts": [
+          "2.660000",
+          "24.640000"
+        ],
+        "maximumNominalCost": "27.300000",
+        "displayedDepthNotional": "27.300000",
+        "conditionalOrdinaryMarginLowerBound": "0.700000",
+        "conditionalOrdinaryPayout": "28.000000",
+        "unitMarginLowerBound": "0.025000"
+      },
+      "onePercentBestRungControl": {
+        "quantity": 28,
+        "limits": [
+          "0.095000",
+          "0.880000"
+        ],
+        "maximumLegCosts": [
+          "2.660000",
+          "24.640000"
+        ],
+        "maximumNominalCost": "27.300000",
+        "displayedDepthNotional": "27.300000",
+        "conditionalOrdinaryMarginLowerBound": "0.700000",
+        "conditionalOrdinaryPayout": "28.000000",
+        "unitMarginLowerBound": "0.025000"
+      },
+      "proposalHash": "6e83dabcd0a3460fe0ff1a769e7c37150cf0b02f1560b68db4fd05f2b8448bd2",
+      "sourceBookHashes": [
+        "89ad1acc6c76a5e0d370cfacb74a04f678396bff912e8f723f619f57fe1461ca",
+        "7fbf65ab0f191e85d19a2484ef665edc816003569fe1ba2266c17d079b63e8f8"
+      ],
+      "sourceStartedAt": [
+        "2026-10-06T17:11:19.806Z",
+        "2026-10-06T17:11:21.274Z"
+      ]
+    },
+    {
+      "sourceSequence": 97,
+      "sourceHash": "1aadd3d55ee7da8e36d5e6cf4d53b3afb5c877fbd234a88827946f5dee797e53",
+      "at": "2026-10-06T17:42:18.628Z",
+      "eventId": "d33e0afc47bb6cbf9fd349c952f626ce6590933c5e2afe5246ee8915ef2fbda4",
+      "marketIds": [
+        "377",
+        "378"
+      ],
+      "availableNominalCapital": "943.570000",
+      "selected": {
+        "quantity": 37,
+        "limits": [
+          "0.310000",
+          "0.665000"
+        ],
+        "maximumLegCosts": [
+          "11.470000",
+          "24.605000"
+        ],
+        "maximumNominalCost": "36.075000",
+        "displayedDepthNotional": "36.075000",
+        "conditionalOrdinaryMarginLowerBound": "0.925000",
+        "conditionalOrdinaryPayout": "37.000000",
+        "unitMarginLowerBound": "0.025000"
+      },
+      "onePercentBestRungControl": {
+        "quantity": 37,
+        "limits": [
+          "0.310000",
+          "0.665000"
+        ],
+        "maximumLegCosts": [
+          "11.470000",
+          "24.605000"
+        ],
+        "maximumNominalCost": "36.075000",
+        "displayedDepthNotional": "36.075000",
+        "conditionalOrdinaryMarginLowerBound": "0.925000",
+        "conditionalOrdinaryPayout": "37.000000",
+        "unitMarginLowerBound": "0.025000"
+      },
+      "proposalHash": "0134b632b0208fc6cae9a2713ffbc6a2af0ffe6e021b4b72652fd742200145bc",
+      "sourceBookHashes": [
+        "e8af0cec6ac149985f4a9bf6c76b835fe0e52d583a5bdf7ed7aec06f22e99fdd",
+        "7889c5d3a45b900eaebd1a819802b1a3defb786d1eb5aea1fe60eaf978ea1455"
+      ],
+      "sourceStartedAt": [
+        "2026-10-06T17:42:13.686Z",
+        "2026-10-06T17:42:16.419Z"
+      ]
+    },
+    {
+      "sourceSequence": 104,
+      "sourceHash": "7055a34bea8ae2b4afbdd1b8bd629578db4bc7b5b0cc152b661fb9ae7bae8b76",
+      "at": "2026-10-06T17:43:42.357Z",
+      "eventId": "d33e0afc47bb6cbf9fd349c952f626ce6590933c5e2afe5246ee8915ef2fbda4",
+      "marketIds": [
+        "377",
+        "378"
+      ],
+      "availableNominalCapital": "943.570000",
+      "selected": {
+        "quantity": 37,
+        "limits": [
+          "0.310000",
+          "0.665000"
+        ],
+        "maximumLegCosts": [
+          "11.470000",
+          "24.605000"
+        ],
+        "maximumNominalCost": "36.075000",
+        "displayedDepthNotional": "36.075000",
+        "conditionalOrdinaryMarginLowerBound": "0.925000",
+        "conditionalOrdinaryPayout": "37.000000",
+        "unitMarginLowerBound": "0.025000"
+      },
+      "onePercentBestRungControl": {
+        "quantity": 37,
+        "limits": [
+          "0.310000",
+          "0.665000"
+        ],
+        "maximumLegCosts": [
+          "11.470000",
+          "24.605000"
+        ],
+        "maximumNominalCost": "36.075000",
+        "displayedDepthNotional": "36.075000",
+        "conditionalOrdinaryMarginLowerBound": "0.925000",
+        "conditionalOrdinaryPayout": "37.000000",
+        "unitMarginLowerBound": "0.025000"
+      },
+      "proposalHash": "7fdd0140c24d1463d9054f388c1d2b4013fa6ee2089c3a670456f498a6815f5b",
+      "sourceBookHashes": [
+        "f42ec416958c6582ef5e8b87d9d938b7373e8ba649b962af0427a490f933a512",
+        "5b68727293a1780dcfccd4040286c52d30722f42a8965ecbd003babdb56f04dd"
+      ],
+      "sourceStartedAt": [
+        "2026-10-06T17:43:37.047Z",
+        "2026-10-06T17:43:39.988Z"
+      ]
+    },
+    {
+      "sourceSequence": 113,
+      "sourceHash": "c2d1e3aa823e42983fe2e158a87646d0192f7f37843dd73ff84206946dcdc4bf",
+      "at": "2026-10-06T17:45:31.875Z",
+      "eventId": "d33e0afc47bb6cbf9fd349c952f626ce6590933c5e2afe5246ee8915ef2fbda4",
+      "marketIds": [
+        "377",
+        "378"
+      ],
+      "availableNominalCapital": "943.570000",
+      "selected": {
+        "quantity": 37,
+        "limits": [
+          "0.310000",
+          "0.665000"
+        ],
+        "maximumLegCosts": [
+          "11.470000",
+          "24.605000"
+        ],
+        "maximumNominalCost": "36.075000",
+        "displayedDepthNotional": "36.075000",
+        "conditionalOrdinaryMarginLowerBound": "0.925000",
+        "conditionalOrdinaryPayout": "37.000000",
+        "unitMarginLowerBound": "0.025000"
+      },
+      "onePercentBestRungControl": {
+        "quantity": 37,
+        "limits": [
+          "0.310000",
+          "0.665000"
+        ],
+        "maximumLegCosts": [
+          "11.470000",
+          "24.605000"
+        ],
+        "maximumNominalCost": "36.075000",
+        "displayedDepthNotional": "36.075000",
+        "conditionalOrdinaryMarginLowerBound": "0.925000",
+        "conditionalOrdinaryPayout": "37.000000",
+        "unitMarginLowerBound": "0.025000"
+      },
+      "proposalHash": "f4c4e7bee4158c01d5a511e292a88acdddbf1da078b2d3b567cd95d4927382b2",
+      "sourceBookHashes": [
+        "860684718c60562a60c5de0f102dc79f77db9385c2bdcb4e9a5b7ea41889199c",
+        "7763b77a5fed3581fe7166ae752b66b13930180e48f44fd72bef63ca94196bce"
+      ],
+      "sourceStartedAt": [
+        "2026-10-06T17:45:28.810Z",
+        "2026-10-06T17:45:30.589Z"
+      ]
+    },
+    {
+      "sourceSequence": 123,
+      "sourceHash": "0f0e417c9272d94d6850357603a7f1b937b00310031811abcbc72052dc85440a",
+      "at": "2026-10-06T17:46:34.477Z",
+      "eventId": "298ff619a93d7ae7f33bbc07da73786f7cde698e4b9ffff72bb3ac6d47158636",
+      "marketIds": [
+        "381",
+        "382"
+      ],
+      "availableNominalCapital": "906.940000",
+      "selected": {
+        "quantity": 29,
+        "limits": [
+          "0.140000",
+          "0.835000"
+        ],
+        "maximumLegCosts": [
+          "4.060000",
+          "24.215000"
+        ],
+        "maximumNominalCost": "28.275000",
+        "displayedDepthNotional": "28.275000",
+        "conditionalOrdinaryMarginLowerBound": "0.725000",
+        "conditionalOrdinaryPayout": "29.000000",
+        "unitMarginLowerBound": "0.025000"
+      },
+      "onePercentBestRungControl": {
+        "quantity": 29,
+        "limits": [
+          "0.140000",
+          "0.835000"
+        ],
+        "maximumLegCosts": [
+          "4.060000",
+          "24.215000"
+        ],
+        "maximumNominalCost": "28.275000",
+        "displayedDepthNotional": "28.275000",
+        "conditionalOrdinaryMarginLowerBound": "0.725000",
+        "conditionalOrdinaryPayout": "29.000000",
+        "unitMarginLowerBound": "0.025000"
+      },
+      "proposalHash": "8c3cac45956c072c5fbee643db17c1497b4879acc22943a14612172913288c82",
+      "sourceBookHashes": [
+        "746c0c6633126a521c5ed4a73621fe4418d9bb65163fb6a28afd690898f34487",
+        "51365d14f23c5630516d8bbb43ae2fcf22a85fa119288d6c377dc088d23d0034"
+      ],
+      "sourceStartedAt": [
+        "2026-10-06T17:46:31.260Z",
+        "2026-10-06T17:46:33.038Z"
+      ]
+    },
+    {
+      "sourceSequence": 133,
+      "sourceHash": "0fa9dc41d80fdd1748bf5bd738762b64f7cf719ecb46d991047bca4209634815",
+      "at": "2026-10-06T17:47:38.650Z",
+      "eventId": "e23df991ae80c8f76231ab98361fbe7142a77b5b3d15c6d90c04fab8dde7e568",
+      "marketIds": [
+        "305",
+        "306"
+      ],
+      "availableNominalCapital": "878.230000",
+      "selected": {
+        "quantity": 29,
+        "limits": [
+          "0.125000",
+          "0.855000"
+        ],
+        "maximumLegCosts": [
+          "3.625000",
+          "24.795000"
+        ],
+        "maximumNominalCost": "28.420000",
+        "displayedDepthNotional": "28.420000",
+        "conditionalOrdinaryMarginLowerBound": "0.580000",
+        "conditionalOrdinaryPayout": "29.000000",
+        "unitMarginLowerBound": "0.020000"
+      },
+      "onePercentBestRungControl": {
+        "quantity": 2,
+        "limits": [
+          "0.125000",
+          "0.855000"
+        ],
+        "maximumLegCosts": [
+          "0.250000",
+          "1.710000"
+        ],
+        "maximumNominalCost": "1.960000",
+        "displayedDepthNotional": "1.960000",
+        "conditionalOrdinaryMarginLowerBound": "0.040000",
+        "conditionalOrdinaryPayout": "2.000000",
+        "unitMarginLowerBound": "0.020000"
+      },
+      "proposalHash": "0c7b1a5165b06dbfbe550175d34ef376388044860c57e6946c5d9d26d03236cc",
+      "sourceBookHashes": [
+        "e95c3299009a9680606715ec16d517ff5e182f8e97d33cad9c95ae1dee4a373c",
+        "ce96095d12361e5544e971038a9d49a1d4bd943442e8d23f9d3e70bbdfe43abd"
+      ],
+      "sourceStartedAt": [
+        "2026-10-06T17:47:35.154Z",
+        "2026-10-06T17:47:37.109Z"
+      ]
+    },
+    {
+      "sourceSequence": 143,
+      "sourceHash": "ae82ce9eb3a9de19303c93629e1f2ee999f82d82fbca1c55f21c72db97f66f7b",
+      "at": "2026-10-06T17:48:44.847Z",
+      "eventId": "1ff13cd24a109bb0be72deac8e1c18f5f8c410ef05c6ef07c4961370f6794e35",
+      "marketIds": [
+        "356",
+        "357"
+      ],
+      "availableNominalCapital": "876.250000",
+      "selected": {
+        "quantity": 38,
+        "limits": [
+          "0.655000",
+          "0.325000"
+        ],
+        "maximumLegCosts": [
+          "24.890000",
+          "12.350000"
+        ],
+        "maximumNominalCost": "37.240000",
+        "displayedDepthNotional": "37.240000",
+        "conditionalOrdinaryMarginLowerBound": "0.760000",
+        "conditionalOrdinaryPayout": "38.000000",
+        "unitMarginLowerBound": "0.020000"
+      },
+      "onePercentBestRungControl": {
+        "quantity": 38,
+        "limits": [
+          "0.655000",
+          "0.325000"
+        ],
+        "maximumLegCosts": [
+          "24.890000",
+          "12.350000"
+        ],
+        "maximumNominalCost": "37.240000",
+        "displayedDepthNotional": "37.240000",
+        "conditionalOrdinaryMarginLowerBound": "0.760000",
+        "conditionalOrdinaryPayout": "38.000000",
+        "unitMarginLowerBound": "0.020000"
+      },
+      "proposalHash": "e01718ef76d0a826185abecc8a55eb6f3ab7bab18534ba2a285abc844e81dfdb",
+      "sourceBookHashes": [
+        "266ad6e03b2d9b122b7b71375e9ce089493c1df1063bb4f788230f8ed5b9d6d0",
+        "f17f76f36923555698288bc19fee93a23a0743478e0dabd5fd5e85b7038625ec"
+      ],
+      "sourceStartedAt": [
+        "2026-10-06T17:48:40.957Z",
+        "2026-10-06T17:48:42.899Z"
+      ]
+    }
+  ],
+  "elapsedMs": 192.6343,
+  "summary": {
+    "selectedMatchedQuantity": 264,
+    "selectedConditionalMargin": "7.280000",
+    "controlMatchedQuantity": 237,
+    "controlConditionalMargin": "6.740000"
+  },
+  "networkRequests": 0,
+  "competitionOrders": 0,
+  "realizedProfit": false,
+  "profitabilityEstablished": false,
+  "limitations": [
+    "Prepared packets can overlap the same market/event/time; totals are diagnostic opportunity sums, never funded wealth or compounding.",
+    "Semantics remain explicitly unvalidated by this price/depth mathematics helper.",
+    "Both leg fills, temporal revalidation, custody and ALL debt/credit are required before executable or realized-profit claims.",
+    "Exact known IEEE decimal aliases are permitted, arbitrary tails that only round to an alias are rejected."
+  ]
+}

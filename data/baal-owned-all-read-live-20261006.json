@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "collectorPid": 5916,
+  "id": "owned-ri-all-20261006",
+  "runId": "baal-scaled-no-20261006-human",
+  "marketId": "384",
+  "exchangeId": "1073",
+  "tournamentId": "bda92870-621e-47b0-bc3c-3602c5c26f55",
+  "jobHash": "e48cfd63d13abf813f2eeba1bdb91670eebcbeee72dc3c8236556fd4fbc631a4",
+  "observedAt": "2026-10-06T19:13:42.127Z",
+  "capturedAt": "2026-10-06T18:59:16.471Z",
+  "packetHash": "31d30462f314cef5dc8dbfa6ca7f963f96868ccd6818824b74e7994cb9dcc85d",
+  "sourceHashes": [
+    "8fe32e407a1038ee38753b70e5374b3a46d6ae9d5f16cd5b73c53abaca8f5ed0",
+    "88cf26c360b8c6cc22addb471047a4c5c29005337454066de852c40eefc4d48c"
+  ],
+  "collateralComponents": 0,
+  "graphRelationships": 0,
+  "graphNodes": 0,
+  "graphDepth": 4,
+  "sharedQueueReadCount": 2,
+  "newAccountClients": 0,
+  "originalFinancialPrefixesVerified": true,
+  "originalEntryExpiresAt": "2026-10-06T18:01:56.310Z",
+  "originalEntryRenewed": false,
+  "executionAuthority": false,
+  "hedgeReadinessEstablished": false,
+  "limitation": "Empty graph/component snapshot is point-in-time evidence; future execution requires fresh capture and exact neutral or supported collateral economics."
+}
