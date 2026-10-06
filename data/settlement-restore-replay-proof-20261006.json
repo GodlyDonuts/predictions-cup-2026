@@ -1,0 +1,108 @@
+{
+  "schemaVersion": 2,
+  "mode": "offline_settlement_restore_exact_recorded_prefix_proof",
+  "observedAt": "2026-10-06T07:56:46.312Z",
+  "binarySha256": "90855da7c83003950de84cecbba354faed0e81ed0e24c0f40c5f7d1fbdcf0c38",
+  "correctnessTestsPassed": 3,
+  "sourceHashes": {
+    "backend-rust/settlement-restore-replay/Cargo.toml": "fb9342527ab99cc6d7cddbbb8181e8db484134769087ec2893390a8b6c67006b",
+    "backend-rust/settlement-restore-replay/Cargo.lock": "320d1c13679bf70a6703518efeb5a39b1237df4163179f2087ffc8386a541088",
+    "backend-rust/settlement-restore-replay/src/lib.rs": "25e4912de5c08057bb74a25fefec590d5a0de868873d654e91b5d85f57c15906",
+    "backend-rust/settlement-restore-replay/src/main.rs": "ead5b1d528afe8de201d749821729485b46b8d971cba5fc6d6e65f32ce529b56",
+    "backend-rust/settlement-restore-replay/src/overlay_fast.rs": "c302f10212db588e5d7465fec2fbffcb0764d64e93564e24faf9968c01516e58"
+  },
+  "ks": {
+    "originalBankHash": "77f83ee28a211ee1540f23b74b6698a327c7350562afd45ca98aca29f59652c6",
+    "checkpointBytes": 127771276,
+    "checkpointSha256": "2d1fd091d4d9330957023f0efd5910bd3cf8597ca0f4fd2120148f04b85bbfa7",
+    "publicBytes": 84434281,
+    "publicSha256": "da36511353b82413281fd18c7c94c259dd35ecd998f11aee557311869241ded7",
+    "exactCheckpoints": 1490,
+    "stateHash": "01f862d71407ab1c16f1ad0f571ba60d27b3741ea2929a7e0e9ec63df5f9a182",
+    "archivedWalletParityVerified": true,
+    "elapsedMs": 37795.3199,
+    "frozenHostCapturedColdBootMs": 294420.46680000005,
+    "operationalRatio": 7.7898657182684685
+  },
+  "txAuthoritativeOverlay": {
+    "originalBankHash": "fdfb0c25e1bba643c1ec203fa82a34b4fc88e864a5e9174571a3115302deb3a9",
+    "checkpointBytes": 55352980,
+    "checkpointSha256": "b869431424d895fffadfdf675c11c89c8f25f99bd846e0302d352eb614e57f49",
+    "publicBytes": 84610085,
+    "publicSha256": "3d74cb8d31e44da808fea7171b5bbfcf2e6874bd202f61684445bb6c9c18b43e",
+    "historicalBaseCheckpoints": 1656,
+    "authoritativeOverlayCheckpoints": 8661,
+    "stateHash": "9b91386c284b391541620ca2f407843c48f92afffe8803412ade719366c7f35a",
+    "archivedWalletParityVerified": true,
+    "elapsedMs": 77313.9724,
+    "authoritativeOverlayApplied": true,
+    "comparisonSameSealedHeadPriorImporterMs": 84077.53769999999,
+    "comparisonLimitation": "Only modest improvement; not proven faster than frozen Node operator restoration."
+  },
+  "preservedWallets": {
+    "ks": {
+      "1000": {
+        "cash": "99.645000",
+        "realizedPnl": "0.000000",
+        "positions": [
+          {
+            "marketId": "356",
+            "instrument": "1045:YES",
+            "quantity": 1,
+            "cost": "0.355000",
+            "enteredAt": "2026-10-06T00:24:53.968Z",
+            "liquidation": null,
+            "liquidationPnl": null,
+            "researchExpired": true
+          }
+        ],
+        "closedTrades": 0
+      },
+      "3000": {
+        "cash": "99.645000",
+        "realizedPnl": "0.000000",
+        "positions": [
+          {
+            "marketId": "356",
+            "instrument": "1045:YES",
+            "quantity": 1,
+            "cost": "0.355000",
+            "enteredAt": "2026-10-06T00:24:53.968Z",
+            "liquidation": null,
+            "liquidationPnl": null,
+            "researchExpired": true
+          }
+        ],
+        "closedTrades": 0
+      }
+    },
+    "tx": {
+      "1000": {
+        "cash": "99.985000",
+        "realizedPnl": "-0.015000",
+        "positions": [],
+        "closedTrades": 1
+      },
+      "3000": {
+        "cash": "99.985000",
+        "realizedPnl": "-0.015000",
+        "positions": [],
+        "closedTrades": 1
+      }
+    }
+  },
+  "negativeChecks": [
+    "Public source prefix older than authoritative overlay frontier was rejected; later independently sealed source prefix passed.",
+    "Wrapper source pin changed during a run was rejected rather than emitting a trusted result.",
+    "Same-file/same-size interior rewrite is rejected by final full-prefix rehash test."
+  ],
+  "comparisonLimitation": "KS frozen host captured startup frontier was slightly earlier; operational ratio is not an identical-head slow-host rerun.",
+  "allOriginalCheckpointsVerified": true,
+  "perBookProcessesSpawned": 0,
+  "originalFilesModified": false,
+  "officialHoldingsAdopted": false,
+  "networkRequests": 0,
+  "competitionOrders": 0,
+  "executionAuthority": false,
+  "profitabilityEstablished": false
+}

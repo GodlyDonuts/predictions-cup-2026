@@ -1,0 +1,85 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-06T08:15:41.369Z",
+  "mode": "offline_fixed_median_entry_cap_v2",
+  "experimentCutoff": "2026-10-06T07:37:20.792Z",
+  "elapsedMs": 33870.8819,
+  "source": {
+    "publicRecords": 38294,
+    "accountRecords": 5088,
+    "priceRecords": 21734,
+    "priceRecordsCausallyConsumed": 21733,
+    "publicBytes": 85341509,
+    "publicSha256": "ca1c2c9ca176bcf6a8249f87dc84638ca2a4f83bde26b147cbce682d17628252",
+    "accountBytes": 3062597,
+    "accountSha256": "45ff9a35280953cd82cc6ee2f3a3c6124feafef1d8d9970fbdcbac32253ff6b6",
+    "priceBytes": 243649091,
+    "priceSha256": "450e1282db9eeb0723a464dd6b82b790b72a743c8d2442091e6725310306d212",
+    "publicSequence": 38294,
+    "publicTailHash": "7e5d5b96d92ad2c17e8c2b444afc3b4f5c2093754c690b51cfb43a728632eff6",
+    "hours": 92.03470166666666,
+    "books": 35784
+  },
+  "results": [
+    {
+      "case": "one_tick_native_control",
+      "proposalCount": 3,
+      "loweredCapCount": 0,
+      "realizedPnl": "0.000000",
+      "closedTrades": 0,
+      "positions": [
+        {
+          "marketId": "195",
+          "exchangeId": "884",
+          "quantity": 1,
+          "cost": "0.290000",
+          "enteredAtMs": 1791272289980,
+          "estimatedLiquidation": "0.285000"
+        },
+        {
+          "marketId": "306",
+          "exchangeId": "995",
+          "quantity": 1,
+          "cost": "0.165000",
+          "enteredAtMs": 1791272759610,
+          "estimatedLiquidation": "0.155000"
+        }
+      ],
+      "estimatedLiquidationPnl": "-0.015000"
+    },
+    {
+      "case": "one_tick_original_reference_entry_cap",
+      "proposalCount": 4,
+      "loweredCapCount": 4,
+      "realizedPnl": "0.000000",
+      "closedTrades": 0,
+      "positions": [
+        {
+          "marketId": "195",
+          "exchangeId": "884",
+          "quantity": 1,
+          "cost": "0.290000",
+          "enteredAtMs": 1791272289980,
+          "estimatedLiquidation": "0.285000"
+        },
+        {
+          "marketId": "306",
+          "exchangeId": "995",
+          "quantity": 1,
+          "cost": "0.160000",
+          "enteredAtMs": 1791273848942,
+          "estimatedLiquidation": "0.155000"
+        }
+      ],
+      "estimatedLiquidationPnl": "-0.010000"
+    }
+  ],
+  "profitabilityEstablished": false,
+  "productionPolicyChanged": false,
+  "limitations": [
+    "Original fixed cutoff retained; no earlier fills or inventory imported.",
+    "Observed liquidity marks are not completed sales.",
+    "Capped and baseline cases are correlated and must not be summed.",
+    "Actual uncapped production fill at.160 is separate evidence; not attributed to this paper cap."
+  ]
+}

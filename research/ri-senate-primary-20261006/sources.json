@@ -1,0 +1,151 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Primary-source research for RI Republican U.S. Senate market; not an execution signal or calibrated election forecast",
+  "observation": {
+    "startedUtc": "2026-10-06T07:59:12Z",
+    "completedByUtc": "2026-10-06T08:07:12Z",
+    "precision": "Session clock bounds; individual HTTP receipt timestamps were not retained",
+    "sourceClockRenewed": false
+  },
+  "market": {
+    "marketId": "388",
+    "exchangeId": "1077",
+    "option": "YES",
+    "contractId": "389",
+    "nodeId": "389",
+    "tournamentId": "bda92870-621e-47b0-bc3c-3602c5c26f55",
+    "title": "Will the Republican Party win the Rhode Island Senate?",
+    "raceId": "62978",
+    "stageId": "98108",
+    "officeLevel": "Federal",
+    "raceName": "U.S. Senate Rhode Island",
+    "raceStage": "General",
+    "state": "RI",
+    "electionDate": "2026-11-03",
+    "winnerName": "Republican Party",
+    "resolutionType": "Party Winner",
+    "scheduledSettlementUtc": "2026-11-04T17:00:00Z",
+    "nodeObservedUtc": "2026-10-01T19:10:02.268Z",
+    "cacheSources": [
+      {"path": "data/markets.json", "selector": "id == 388; exchanges.id == 1077", "sha256": "41dcb6472ab60302aee6656d3cb75e7baba4b4976671b4419e8334c02189e37c"},
+      {"path": "data/nodes.json", "selector": "[388].root", "sha256": "44614e70ed4441a509db98521283676f68680e179150a7bdd2fa5fd601113764"}
+    ],
+    "fullSettlementRulesVerified": false,
+    "unknownConditions": ["recount handling", "certification delay handling", "complete void/refund rules"],
+    "cachedLastPriceIsCurrentExecutionEvidence": false
+  },
+  "positionContext": {
+    "sourcePath": "data/median-first-official-fill-20261006.json",
+    "corroboratingPath": "docs/CURRENT_STATE.md",
+    "independentlyRefreshedAccount": false,
+    "quantity": "1",
+    "purchasePrice": "0.170",
+    "originalHistoricalBidMedian": "0.175",
+    "fillAtUtc": "2026-10-06T07:37:48.170Z",
+    "holdingHorizonMs": 7200000,
+    "interpretation": "Historical-price mean reversion; original median is not a calibrated settlement probability"
+  },
+  "sources": [
+    {
+      "id": "ri-sos-candidates",
+      "publisher": "Rhode Island Secretary of State",
+      "title": "Candidates for SENATOR IN CONGRESS",
+      "url": "https://vote.sos.ri.gov/Candidates/CandidateSearchSummary?Election=18144&OfficeType=620",
+      "publishedDate": null,
+      "pageAsOfLiteral": "Tuesday, October 6, 2026 3:59 AM",
+      "pageAsOfTimezoneExplicit": false,
+      "observedUtcWindow": ["2026-10-06T07:59:12Z", "2026-10-06T08:07:12Z"],
+      "candidates": [
+        {"name": "JOHN FRANCIS REED", "commonName": "Jack Reed", "party": "Democrat", "wonPrimary": true, "onGeneralElectionBallot": true},
+        {"name": "RAYMOND T MCKAY", "party": "Republican", "wonPrimary": true, "onGeneralElectionBallot": true},
+        {"name": "MICHAEL ANTHONY BAHRY", "party": "Independent", "wonPrimary": null, "onGeneralElectionBallot": true}
+      ]
+    },
+    {
+      "id": "ri-sos-election-guide",
+      "publisher": "Rhode Island Secretary of State",
+      "title": "2026 Run for Office guide",
+      "url": "https://vote.sos.ri.gov/Forms/Elections/Guides/2026RunforOffice.pdf",
+      "publishedDate": null,
+      "observedUtcWindow": ["2026-10-06T07:59:12Z", "2026-10-06T08:07:12Z"],
+      "primaryElectionDate": "2026-09-09",
+      "generalElectionDate": "2026-11-03"
+    },
+    {
+      "id": "unh-ocean-state-20260924",
+      "publisher": "University of New Hampshire Survey Center",
+      "title": "Democrats Foulkes & Reed Enjoy Wide Leads in Rhode Island While Matos Embattled in Lt. Governor Race 9/24/2026",
+      "publicationRecordUrl": "https://scholars.unh.edu/survey_center_polls/1009/",
+      "officialDownloadUrl": "https://scholars.unh.edu/cgi/viewcontent.cgi?article=2008&context=survey_center_polls",
+      "originalDocumentMirrorUrl": "https://rhodeislandcurrent.com/wp-content/uploads/2026/09/Democrats-Foulkes-Reed-Enjoy-Wide-Leads-in-Rhode-Island-While-M.pdf",
+      "publishedDate": "2026-09-24",
+      "observedUtcWindow": ["2026-10-06T07:59:12Z", "2026-10-06T08:07:12Z"],
+      "retrieval": {
+        "officialRecordRead": true,
+        "officialPdfAccess": "Access challenge/403",
+        "mirrorPdfRead": true,
+        "primaryAuthoredDocumentNotNewsSummary": true,
+        "officialRecordTitleAndDateMatch": true,
+        "independentOfficialPdfByteComparisonPossible": false,
+        "pdfSha256": "8662b0fdd3242efb94bcd3d5f0dce5ee5c52a77d79e0c8dd4ed711775b5c6e54",
+        "pdfBytes": 1008784,
+        "extraction": "pypdf in memory",
+        "localPdfPath": null,
+        "fullTextSaved": false,
+        "relevantPdfPages": [2, 8, 18]
+      },
+      "fieldwork": {"startDate": "2026-09-17", "endDate": "2026-09-21", "mode": "online probability-based panel"},
+      "sample": {
+        "adultsCompleted": 608,
+        "likelyGeneralElectionVoters": 598,
+        "senateQuestionRespondents": 595,
+        "senatePopulation": "Likely general-election voters",
+        "registeredVotersOnly": false,
+        "responseRatePercent": 30,
+        "panelSizeApproximate": 2500,
+        "questionNonresponseExplainsDifferentTableN": true
+      },
+      "senateVotePreferencePercent": {"Jack Reed": 53, "Raymond McKay": 33, "Michael Bahry": 5, "anotherCandidate": 1, "undecided": 8},
+      "reedMinusMckayMarginPercentagePoints": 20,
+      "reportedSamplingError": {
+        "overallPlusMinusPercentagePoints": 4,
+        "likelyVotersPlusMinusPercentagePoints": 4,
+        "senateQuestionSpecificErrorSeparatelyReported": false,
+        "adjustedForDesignEffect": false,
+        "designEffectLiteral": "2.7%",
+        "designEffectInterpretation": "Unusual published notation preserved; no conversion to forecast uncertainty or win probability",
+        "candidateShareErrorIsNotMarginErrorOrWinProbability": true
+      },
+      "methodology": {
+        "recruitment": "Random phone numbers or addresses through phone, text-to-web or mail-to-web recruitment",
+        "weighting": ["sex", "age", "education", "region", "RI party registration", "2024 RI election results"],
+        "language": "English",
+        "limitations": ["sampling uncertainty", "nonresponse", "question wording/order", "turnout-model uncertainty", "same-panel historical waves are not independent polls", "no calibrated forecast distribution established"]
+      },
+      "contraryFactsToSimpleReedCertainty": {
+        "reedFavorablePercent": 35,
+        "reedUnfavorablePercent": 37,
+        "mckaySupportAmongSelfIdentifiedIndependentsPercent": 52,
+        "mckayInsufficientKnowledgeForOpinionPercent": 65,
+        "undecidedPercent": 8,
+        "daysFromFieldworkEndToResearchDate": 15,
+        "daysFromResearchDateToElection": 28
+      }
+    }
+  ],
+  "assessment": {
+    "republicanWinProbability": null,
+    "calibratedSettlementForecastEstablished": false,
+    "settlementValueAtPurchaseEstablished": false,
+    "conditionalZeroFeeOneUnitPayoutBreakEvenProbability": "0.170",
+    "pollVoteShareIsNotWinProbability": true,
+    "historicalMedianIsNotWinProbability": true,
+    "latestOriginalSenateHeadToHeadReleaseFound": "2026-09-24",
+    "searchClaimsExhaustiveCoverage": false,
+    "shortHorizonTradingEdgeEstablishedByThisResearch": false,
+    "wholePolicyOverwriteRecommended": false,
+    "sourceClockRenewal": false,
+    "orderInstruction": null,
+    "conclusion": "Latest verified primary polling favors Reed strongly. No calibrated probability above the 17% ordinary-settlement break-even threshold is established. Keep settlement and two-hour mean-reversion hypotheses separate."
+  }
+}

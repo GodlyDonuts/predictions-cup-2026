@@ -1,4 +1,14 @@
-# October6 07:52 UTC: first official median purchase reconciled
+# October6 08:08 UTC: two official purchases; no completed exit
+
+The existing pilot has two reconciled one-share BUY fills: Rhode Island Republican Senate388/ex1077 at0.170, and Michigan Republican Governor306/ex995 at0.160 (order15443862, fill64960172, 08:04:28.289UTC). Total attributed cost0.330; zero unconfirmed intents and zero realized official profit. No exit or scale-up is claimed. Collector20964 remains running under the unchanged bank and13:01:24.019UTC entry expiry. See [two-buy evidence](../data/median-official-two-buys-20261006.json).
+
+The fixed entry-cap paper comparison extends its original07:37:20.792UTC cutoff. Through the08:05 capture, both wallets have two open positions/zero closes: observed total P&L -0.015 baseline versus -0.010 capped. The cap delayed Michigan306's acquisition from0.165 to0.160; neither wallet is profitable. The actual production purchase at0.160 is separate evidence and did not use the new cap. See [subsequent evidence](../data/median-entry-cap-subsequent-20261006-0805.json).
+
+Primary [Rhode Island research](../research/ri-senate-primary-20261006/README.md) confirms the federal general-election contract and a recent UNH poll with a substantial Reed lead. No calibrated Republican win probability supports the0.170 purchase as settlement value; its rationale remains two-hour price reversion. The live policy, inventory and research clocks were not rewritten.
+
+The [offline Rust restore utility](RESTORE_REPLAY_RESULTS.md) verifies every original KS/TX checkpoint and archived wallet exactly. Kansas took37.80s versus the captured host's294.42s at a slightly different frontier; Texas speed improvement is modest. It is checked but not deployed over live holdings.
+
+# Historical: first official median purchase reconciled
 
 Discovery v3 and shared protected-receipt servicing are checked in main `5e57aa3ff5a7808ab6e6946c09793c9e7bc8a02e`; 107 integration checks pass. Collector20964 restored, refreshed its execution bootstrap at07:35:47UTC, and runs alongside paper28488/dashboard29228. Pilot `sig-pilot-median-20261006-human` has one confirmed BUY: market388/ex1077, order15377038, fill64685852 at07:37:48.170UTC, one share at0.170, attributed cost0.170. Original reference0.175. Zero unconfirmed intents; zero realized official profit. The 07:49:21 fresh bid snapshot valued inventory at0.165 (-0.005 observed total P&L), not an actual sale. Reverify current reports. The existing bank and **13:01:24.019UTC entry expiry** remain unchanged; no activation renewal or scaling occurred. See [official evidence](../data/median-first-official-fill-20261006.json).
 
