@@ -1,0 +1,15 @@
+cargo:rerun-if-changed=Cargo.toml
+cargo:rerun-if-changed=build.rs
+cargo:rerun-if-changed=src/lib.rs
+cargo:rerun-if-changed=src/json_text.rs
+cargo:rerun-if-changed=src/atomic.rs
+cargo:rerun-if-changed=src/journal.rs
+cargo:rerun-if-changed=src/ledger.rs
+cargo:rerun-if-changed=src/wait.rs
+cargo:rerun-if-changed=src/budget.rs
+cargo:rerun-if-changed=src/timing.rs
+cargo:rerun-if-changed=src/client.rs
+cargo:rerun-if-changed=src/exclusions.rs
+cargo:rerun-if-changed=src/history.rs
+cargo:rerun-if-changed=src/tests.rs
+cargo:rustc-env=BAAL_SERVICE_RUNTIME_HASH=15b1852deab78d39d0de591fac9c4f4b5cfc28ebff0836163507c8879f409355

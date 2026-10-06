@@ -5,24 +5,25 @@ edition = "2021"
 build = "build.rs"
 
 [dependencies]
-baal-service-runtime = { path = "../service-runtime" }
-baal-execution = { path = "../execution" }
 baal-collector = { path = "../collector" }
+baal-execution = { path = "../execution" }
 baal-feed = { path = "../feed" }
 baal-paper = { path = "../paper" }
-serde_json = { version = "1", features = ["preserve_order", "float_roundtrip"] }
-serde = { version = "1", features = ["derive"] }
-ryu-js = "=1.0.3"
-sha2 = "0.10"
-sha1 = "0.10"
+baal-service-runtime = { path = "../service-runtime" }
 chrono = "0.4"
-num-bigint = "0.4"
+flate2 = "1"
 indexmap = "2"
+libc = "0.2"
+num-bigint = "0.4"
+regex = "1"
 reqwest = { version = "0.12", features = ["rustls-tls", "blocking", "json"] }
+ryu-js = "=1.0.3"
+serde = { version = "1", features = ["derive"] }
+serde_json = { version = "1", features = ["preserve_order", "float_roundtrip"] }
+sha1 = "0.10"
+sha2 = "0.10"
 tungstenite = "0.24"
 uuid = { version = "1", features = ["v4"] }
-flate2 = "1"
-libc = "0.2"
 
 [profile.release]
 lto = "thin"

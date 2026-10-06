@@ -1,0 +1,2 @@
+cargo:rustc-env=BAAL_COLLECTOR_HASH=fb2b9f0a28c08b54
+cargo:rerun-if-changed=src

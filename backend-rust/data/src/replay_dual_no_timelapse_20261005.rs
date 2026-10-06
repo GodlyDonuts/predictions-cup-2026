@@ -1,122 +1,119 @@
-// data/replay-dual-no-timelapse-20261005.mjs — sealed-prefix dual-NO replay with
-// causal account eligibility, publication reconstruction and optional historical
-// development transport. The module selects the v1 or v2 frozen paper engine by
-// bank.mode; JS dynamic import becomes the verified-archive check plus a
-// statically-dispatched function set.
+// data/replay-dual-no-timelapse-20261005.mjs — dual no-pair timelapse replay (module + CLI).
 use baal_collector::book_publication_v2::{apply_book_publication, create_book_publication_state};
+use baal_collector::canonical_no_capacity::evaluate_canonical_no_capacity;
+use baal_collector::dual_no_pair_paper_v1::{advance_dual_no_pair, create_dual_no_pair_state,
+    dual_no_pair_report};
+use baal_collector::dual_no_pair_paper_v2::{advance_dual_no_pair_v2, create_dual_no_pair_state_v2,
+    dual_no_pair_report_v2};
 use baal_collector::frozen_paper_runtime::frozen_paper_module;
 use baal_collector::read_timing::timing_distribution;
+use baal_service_runtime::contract::{ms_to_iso, parse_iso_ms};
 use baal_service_runtime::journal::{journal_lines, JournalReadOptions};
-use baal_service_runtime::json_text::{js_stringify, sha256};
+use baal_service_runtime::json_text::js_stringify;
+use baal_service_runtime::ledger::payload_hash as ledger_payload_hash;
 use serde_json::{json, Value as V};
 use sha2::{Digest, Sha256};
 use std::io::{Read, Seek, SeekFrom};
 use std::path::{Path, PathBuf};
+use std::time::Instant;
 
+fn now_ms() -> f64 {
+    std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).map(|d| d.as_millis() as f64).unwrap_or(0.0)
+}
+fn sha(b: &[u8]) -> String {
+    Sha256::digest(b).iter().map(|x| format!("{:02x}", x)).collect()
+}
 fn need(ok: bool, code: &str) -> Result<(), String> {
     if ok { Ok(()) } else { Err(format!("DUAL_TIMELAPSE_{}", code)) }
 }
-fn sha(b: &[u8]) -> String { sha256(b) }
-fn ph(v: &V) -> Result<String, String> { baal_execution::core::payload_hash(v) }
-fn now_iso() -> String {
-    baal_service_runtime::contract::ms_to_iso(
-        std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_millis() as f64)
+fn instant(s: &V) -> f64 { s.as_str().and_then(parse_iso_ms).unwrap_or(f64::NAN) }
+fn payload_hash(v: &V) -> Result<String, String> {
+    ledger_payload_hash(v).map_err(|e| e.to_string())
 }
-fn parse_ms(s: &V) -> f64 {
-    baal_service_runtime::contract::parse_iso_ms(s.as_str().unwrap_or("")).unwrap_or(f64::NAN)
-}
-// JS Math.max/Math.min propagate NaN.
-fn fmax(a: f64, b: f64) -> f64 { if a.is_nan() || b.is_nan() { f64::NAN } else { a.max(b) } }
-fn fmin(a: f64, b: f64) -> f64 { if a.is_nan() || b.is_nan() { f64::NAN } else { a.min(b) } }
 
-/// The resolved paper engine: which createDualNoPairState / advanceDualNoPair /
-/// dualNoPairReport set the frozen module provides.
-#[derive(Clone, Copy)]
-pub struct PaperModule { pub exact_v2: bool }
-impl PaperModule {
-    pub fn create(&self, bank: &V) -> Result<V, String> {
-        if self.exact_v2 { baal_collector::dual_no_pair_paper_v2::create_dual_no_pair_state_v2(bank) }
-        else { baal_collector::dual_no_pair_paper_v1::create_dual_no_pair_state(bank) }
+/// The JS paper module namespace: V1 exports unified names; V2 exports *_v2 names;
+/// Empty stands in for a namespace lacking the v2 functions (e.g. `{}` in tests).
+#[derive(Clone, Copy, PartialEq)]
+pub enum PaperNamespace { V1, V2, Empty }
+
+/// The adapted module object JS returns from adaptPaperModule: unified fn names.
+#[derive(Clone, Copy, PartialEq)]
+pub struct AdaptedPaper { pub v2: bool }
+
+impl AdaptedPaper {
+    pub fn create_dual_no_pair_state(&self, bank: &V) -> Result<V, String> {
+        if self.v2 { create_dual_no_pair_state_v2(bank) } else { create_dual_no_pair_state(bank) }
     }
-    pub fn advance(&self, s: &V, e: &V, bank: &V) -> Result<V, String> {
-        if self.exact_v2 { baal_collector::dual_no_pair_paper_v2::advance_dual_no_pair_v2(s, e, bank) }
-        else { baal_collector::dual_no_pair_paper_v1::advance_dual_no_pair(s, e, bank) }
+    pub fn advance_dual_no_pair(&self, state: &V, event: &V, bank: &V) -> Result<V, String> {
+        if self.v2 { advance_dual_no_pair_v2(state, event, bank) }
+        else { advance_dual_no_pair(state, event, bank) }
     }
-    pub fn report(&self, s: &V, b: &V, at: &str) -> Result<V, String> {
-        if self.exact_v2 { baal_collector::dual_no_pair_paper_v2::dual_no_pair_report_v2(s, b, at) }
-        else { baal_collector::dual_no_pair_paper_v1::dual_no_pair_report(s, b, at) }
+    pub fn dual_no_pair_report(&self, state: &V, bank: &V, at: &str) -> Result<V, String> {
+        if self.v2 { dual_no_pair_report_v2(state, bank, at) }
+        else { dual_no_pair_report(state, bank, at) }
     }
 }
 
-/// adaptPaperModule(module, mode). In Rust the module namespace is always the
-// matching crate module, so only the mode tag selects the function set.
-pub fn adapt_paper_module(mode: &str) -> Result<PaperModule, String> {
-    if mode == "dual_no_sequential_paper_v1" { return Ok(PaperModule { exact_v2: false }); }
-    need(mode == "dual_no_sequential_paper_v2_exact_receipt", "MODE_ADAPTER")?;
-    Ok(PaperModule { exact_v2: true })
+/// adaptPaperModule(module, mode)
+pub fn adapt_paper_module(module: PaperNamespace, mode: &str) -> Result<AdaptedPaper, String> {
+    if mode == "dual_no_sequential_paper_v1" { return Ok(AdaptedPaper { v2: false }); }
+    need(mode == "dual_no_sequential_paper_v2_exact_receipt" && module == PaperNamespace::V2,
+        "MODE_ADAPTER")?;
+    Ok(AdaptedPaper { v2: true })
 }
 
-/// compareIndependentReports(reference, current).
+/// compareIndependentReports(reference, current)
 pub fn compare_independent_reports(reference: &V, current: &V) -> Result<V, String> {
     need(reference["schemaVersion"].as_i64() == Some(1)
-        && !reference["strict"]["report"].is_null() && reference["source"]["sha256"].is_string()
+        && reference["strict"]["report"].is_object()
+        && reference["source"]["sha256"].is_string()
         && reference["originalBankHash"].is_string(), "REFERENCE_REPORT")?;
-    let summarize = |r: &V| -> V {
-        json!({"cohort": r["cohort"], "bankHash": r["originalBankHash"],
-            "cutoff": r["strict"]["report"]["cutoff"], "captureEnd": r["source"]["lastAt"],
-            "fills": r["strict"]["report"]["fills"],
-            "closedPackages": r["strict"]["report"]["closedPackages"],
-            "realizedPnl": r["strict"]["report"]["realizedPnl"],
-            "estimatedLiquidationPnl": r["strict"]["report"]["estimatedLiquidationPnl"],
-            "conditionalSettlementSurplus": r["strict"]["report"]["ordinaryConditionalSettlementSurplus"]})
-    };
+    let summarize = |r: &V| json!({"cohort": r["cohort"], "bankHash": r["originalBankHash"],
+        "cutoff": r["strict"]["report"]["cutoff"], "captureEnd": r["source"]["lastAt"],
+        "fills": r["strict"]["report"]["fills"],
+        "closedPackages": r["strict"]["report"]["closedPackages"],
+        "realizedPnl": r["strict"]["report"]["realizedPnl"],
+        "estimatedLiquidationPnl": r["strict"]["report"]["estimatedLiquidationPnl"],
+        "conditionalSettlementSurplus": r["strict"]["report"]["ordinaryConditionalSettlementSurplus"]});
     Ok(json!({"reference": summarize(reference), "current": summarize(current),
         "identicalSealedCapture": reference["source"]["sha256"] == current["source"]["sha256"],
-        "sameOriginalCutoff": reference["strict"]["report"]["cutoff"] == current["strict"]["report"]["cutoff"],
+        "sameOriginalCutoff": reference["strict"]["report"]["cutoff"]
+            == current["strict"]["report"]["cutoff"],
         "profitabilityProof": false,
         "limitation": "Different frozen cohort cutoffs and sealed capture windows are independent experiments, not a paired causal cost-model comparison. Conditional surplus and open marks never prove realized or robust profit."}))
 }
 
-/// frozenStrategyModule(runtime, bank, modulePath): verified-archive check; the
-/// returned object is only a marker since dispatch is static in Rust.
-pub fn frozen_strategy_module(runtime_dir: &Path, bank: &V, module_path: &str,
-    live_paper_dir: &Path) -> Result<(), String> {
-    if frozen_paper_module(runtime_dir, bank, module_path)?.is_some() { return Ok(()); }
-    // A missing archive never permits a future edited dependency graph. The full
-    // original graph must still match before any current checkout fallback loads.
-    if let V::Object(m) = &bank["codeIdentity"] {
-        for (relative, hash) in m {
-            let bytes = std::fs::read(live_paper_dir.join(relative)).map_err(|e| e.to_string())?;
-            need(sha(&bytes) == hash.as_str().unwrap_or(""), "UNARCHIVED_GRAPH_CHANGED")?;
-        }
+/// frozenStrategyModule(runtime, bank, modulePath) — returns the namespace kind.
+/// A missing archive never permits an edited dependency graph: the whole original
+/// graph must still match before the current checkout may be used.
+fn frozen_strategy_module(root: &Path, runtime: &Path, bank: &V,
+    module_path: &str) -> Result<PaperNamespace, String> {
+    let namespace = if module_path.contains("-v2") { PaperNamespace::V2 }
+        else { PaperNamespace::V1 };
+    if let Some(_) = frozen_paper_module(runtime, bank, module_path)? {
+        return Ok(namespace);
     }
-    Ok(())
+    for (relative, hash) in bank["codeIdentity"].as_object().cloned().unwrap_or_default() {
+        need(sha(&std::fs::read(root.join("live-paper").join(&relative))
+                .map_err(|e| e.to_string())?) == hash.as_str().unwrap_or(""),
+            "UNARCHIVED_GRAPH_CHANGED")?;
+    }
+    Ok(namespace)
 }
 
-/// evaluateCanonicalNoCapacity wrapper matching the JS single-object call shape.
-pub fn evaluate_capacity(input: &V) -> Result<V, String> {
-    let books: Vec<V> = input["books"].as_array().cloned().unwrap_or_default();
-    let account = if input["account"].is_null() { None } else { Some(input["account"].clone()) };
-    baal_collector::canonical_no_capacity::evaluate_canonical_no_capacity(
-        &input["review"], &books, account.as_ref(),
-        input["now"].as_str().unwrap_or(""), &input["policy"])
-}
-
-/// sealedEnd(file) — byte offset after the last newline in the ≤1MB tail.
+/// sealedEnd(file)
 pub fn sealed_end(file: &Path) -> Result<u64, String> {
     let size = std::fs::metadata(file).map_err(|e| e.to_string())?.len();
     let mut fd = std::fs::File::open(file).map_err(|e| e.to_string())?;
-    let want = size.min(1_048_576) as usize;
-    let mut b = vec![0u8; want];
-    fd.seek(SeekFrom::Start(size - want as u64)).and_then(|_| fd.read_exact(&mut b))
-        .map_err(|e| e.to_string())?;
-    match b.iter().rposition(|c| *c == b'\n') {
-        Some(n) => Ok(size - want as u64 + n as u64 + 1),
-        None => Err("DUAL_TIMELAPSE_EMPTY".into()),
-    }
+    let mut b = vec![0u8; std::cmp::min(size, 1048576) as usize];
+    fd.seek(SeekFrom::Start(size - b.len() as u64)).map_err(|e| e.to_string())?;
+    fd.read(&mut b).map_err(|e| e.to_string())?;
+    let n = b.iter().rposition(|x| *x == 10);
+    need(n.is_some(), "EMPTY")?;
+    Ok(size - b.len() as u64 + n.unwrap() as u64 + 1)
 }
 
-/// readEligibility(lines) — chain-verify account eligibility rows.
+/// readEligibility(lines) -> {snapshots,sequence,hash}
 pub fn read_eligibility(lines: &[String]) -> Result<V, String> {
     let mut sequence = 0i64;
     let mut previous = String::new();
@@ -124,184 +121,205 @@ pub fn read_eligibility(lines: &[String]) -> Result<V, String> {
     let mut snapshots: Vec<V> = Vec::new();
     for line in lines {
         let row: V = serde_json::from_str(line).map_err(|e| e.to_string())?;
-        let mut body = row.clone();
         let hash = row["hash"].as_str().unwrap_or("").to_string();
-        if let V::Object(m) = &mut body { m.shift_remove("hash"); }
+        let mut body = row.clone();
+        if let Some(o) = body.as_object_mut() { o.remove("hash"); }
         sequence += 1;
-        need(baal_service_runtime::json_text::js_int(&row["sequence"]) == Some(sequence)
+        need(row["sequence"].as_i64() == Some(sequence)
             && row["previous"].as_str().unwrap_or("") == previous
             && sha(js_stringify(&body).as_bytes()) == hash, "ACCOUNT_CHAIN")?;
         previous = hash.clone();
         let s = &row["event"]["snapshot"];
-        need(row["state"].is_null()
+        let excluded_ok = s["excludedMarketIds"].as_array().map(|a| a.iter().all(|x|
+            x.as_str().map(|v| !v.is_empty() && v.chars().all(|c| c.is_ascii_digit())
+                && !v.starts_with('0')).unwrap_or(false))).unwrap_or(false);
+        need(row.get("state").map(|v| v.is_null()).unwrap_or(false)
             && row["event"]["type"].as_str() == Some("market_account_eligibility")
-            && s["complete"] == V::Bool(true)
-            && s["excludedMarketIds"].as_array().is_some_and(|a| a.iter().all(|x| {
-                x.as_str().is_some_and(|s| {
-                    s.bytes().all(|b| b.is_ascii_digit())
-                        && s.len() > 0 && s.as_bytes()[0] != b'0'
-                })
-            })), "ACCOUNT_SCHEMA")?;
-        let known_at = fmax(fmax(parse_ms(&row["at"]), parse_ms(&s["positionsAt"])), parse_ms(&s["ordersAt"]));
+            && s["complete"] == json!(true) && excluded_ok, "ACCOUNT_SCHEMA")?;
+        // Math.max propagates NaN (Rust f64::max does not)
+        let known_at = [instant(&row["at"]), instant(&s["positionsAt"]),
+            instant(&s["ordersAt"])].iter()
+            .fold(f64::NAN, |m, v| if m.is_nan() || v.is_nan() { f64::NAN } else { m.max(*v) });
         need(known_at.is_finite() && known_at >= last
-            && parse_ms(&s["ordersAt"]) >= parse_ms(&s["positionsAt"])
-            && parse_ms(&s["expiresAt"]) == fmin(parse_ms(&s["positionsAt"]), parse_ms(&s["ordersAt"])) + 20000.0,
-            "ACCOUNT_CLOCK")?;
+            && instant(&s["ordersAt"]) >= instant(&s["positionsAt"])
+            && instant(&s["expiresAt"]) == instant(&s["positionsAt"])
+                .min(instant(&s["ordersAt"])) + 20000.0, "ACCOUNT_CLOCK")?;
         last = known_at;
-        snapshots.push(json!({"knownAt": known_at, "snapshot": s, "sequence": sequence, "hash": hash}));
+        snapshots.push(json!({"knownAt": known_at, "snapshot": s,
+            "sequence": row["sequence"], "hash": hash}));
     }
     Ok(json!({"snapshots": snapshots, "sequence": sequence, "hash": previous}))
 }
 
-/// causalAccount(snapshots, requestAt, scope).
-pub fn causal_account(snapshots: &[V], request_at: f64, scope: &V) -> Result<Option<V>, String> {
+/// causalAccount(snapshots, requestAt, scope)
+pub fn causal_account(snapshots: &[V], request_at: f64, scope: &V) -> Result<V, String> {
     let mut lo = 0usize;
-    let mut hi = snapshots.len().saturating_sub(1);
+    let mut hi: i64 = snapshots.len() as i64 - 1;
     let mut index: i64 = -1;
-    if !snapshots.is_empty() {
-        while lo <= hi {
-            let mid = (lo + hi) >> 1;
-            if snapshots[mid]["knownAt"].as_f64().unwrap_or(f64::NAN) <= request_at {
-                index = mid as i64;
-                lo = mid + 1;
-            } else if mid == 0 { break } else { hi = mid - 1; }
+    while lo as i64 <= hi {
+        let mid = ((lo as i64 + hi) >> 1) as usize;
+        if snapshots[mid]["knownAt"].as_f64().unwrap_or(f64::NAN) <= request_at {
+            index = mid as i64;
+            lo = mid + 1;
+        } else {
+            hi = mid as i64 - 1;
         }
     }
-    if index < 0 { return Ok(None); }
+    if index < 0 { return Ok(V::Null); }
     let s = &snapshots[index as usize]["snapshot"];
     need(s["tournamentId"] == scope["tournamentId"], "ACCOUNT_TOURNAMENT")?;
-    let mut members: indexmap::IndexMap<String, String> = indexmap::IndexMap::new();
-    for x in scope["exchanges"].as_array().cloned().unwrap_or_default() {
-        members.insert(x["marketId"].as_str().unwrap_or("").to_string(),
-            x["exchangeId"].as_str().unwrap_or("").to_string());
+    let members: serde_json::Map<String, V> = scope["exchanges"].as_array().cloned()
+        .unwrap_or_default().iter()
+        .filter_map(|x| x["marketId"].as_str().map(|m| (m.to_string(), x["exchangeId"].clone())))
+        .collect();
+    if s["excludedMarketIds"].as_array().cloned().unwrap_or_default().iter()
+        .any(|id| id.as_str().map(|m| !members.contains_key(m)).unwrap_or(true)) {
+        return Ok(V::Null);
     }
-    for id in s["excludedMarketIds"].as_array().cloned().unwrap_or_default() {
-        if !members.contains_key(id.as_str().unwrap_or("")) { return Ok(None); }
-    }
-    let mut excluded: Vec<V> = s["excludedMarketIds"].as_array().cloned().unwrap_or_default().iter()
-        .filter_map(|id| members.get(id.as_str().unwrap_or("")).map(|e| json!(e))).collect();
+    let mut excluded: Vec<V> = s["excludedMarketIds"].as_array().cloned().unwrap_or_default()
+        .iter().filter_map(|id| id.as_str().and_then(|m| members.get(m).cloned())).collect();
     excluded.sort_by(|a, b| {
-        a.as_str().unwrap_or("").parse::<f64>().unwrap_or(f64::NAN)
-            .partial_cmp(&b.as_str().unwrap_or("").parse::<f64>().unwrap_or(f64::NAN)).unwrap_or(std::cmp::Ordering::Equal)
+        a.as_str().and_then(|x| x.parse::<i64>().ok())
+            .cmp(&b.as_str().and_then(|x| x.parse::<i64>().ok()))
     });
-    Ok(Some(json!({"schemaVersion": 1, "positionsAt": s["positionsAt"], "ordersAt": s["ordersAt"],
-        "excludedExchangeIds": excluded})))
+    Ok(json!({"schemaVersion": 1, "positionsAt": s["positionsAt"],
+        "ordersAt": s["ordersAt"], "excludedExchangeIds": excluded}))
 }
 
-/// verifyLiveJournal(lines, bank, module).
-pub fn verify_live_journal(lines: &[String], bank: &V, module: &PaperModule) -> Result<V, String> {
+/// verifyLiveJournal(lines, bank, module)
+pub fn verify_live_journal(lines: &[String], bank: &V,
+    module: &AdaptedPaper) -> Result<V, String> {
     let mut seq = 0i64;
     let mut previous = String::new();
-    let mut state = json!({"paper": module.create(bank)?,
-        "sourceSequence": bank["sourcePrefixSequence"], "sourceHash": bank["sourcePrefixTailHash"]});
+    let mut state = json!({"paper": module.create_dual_no_pair_state(bank)?,
+        "sourceSequence": bank["sourcePrefixSequence"],
+        "sourceHash": bank["sourcePrefixTailHash"]});
     for line in lines {
         let row: V = serde_json::from_str(line).map_err(|e| e.to_string())?;
-        let mut body = row.clone();
         let hash = row["hash"].as_str().unwrap_or("").to_string();
-        if let V::Object(m) = &mut body { m.shift_remove("hash"); }
+        let mut body = row.clone();
+        if let Some(o) = body.as_object_mut() { o.remove("hash"); }
         seq += 1;
-        need(baal_service_runtime::json_text::js_int(&row["sequence"]) == Some(seq)
+        need(row["sequence"].as_i64() == Some(seq)
             && row["previous"].as_str().unwrap_or("") == previous
             && sha(js_stringify(&body).as_bytes()) == hash, "LIVE_CHAIN")?;
         previous = hash;
         let e = &row["event"];
         if seq == 1 {
-            need(e["kind"].as_str() == Some("genesis") && e["bankHash"].as_str() == ph(bank).ok().as_deref()
+            need(e["kind"].as_str() == Some("genesis")
+                && e["bankHash"].as_str().unwrap_or("") == payload_hash(bank)?
                 && e["cutoff"] == bank["cutoff"], "LIVE_GENESIS")?;
         } else {
-            need(["book", "boundary"].contains(&e["kind"].as_str().unwrap_or("")), "LIVE_EVENT")?;
-            let p = module.advance(&state["paper"], e, bank)?;
+            need(["book", "boundary"].contains(&e["kind"].as_str().unwrap_or("")),
+                "LIVE_EVENT")?;
+            let p = module.advance_dual_no_pair(&state["paper"], e, bank)?;
             if e["kind"].as_str() == Some("book") {
-                need(e["sourceSequence"].as_f64().unwrap_or(f64::NAN)
-                    > state["sourceSequence"].as_f64().unwrap_or(f64::NAN), "LIVE_FRONTIER")?;
-                state = json!({"paper": p, "sourceSequence": e["sourceSequence"], "sourceHash": e["sourceHash"]});
+                need(e["sourceSequence"].as_i64().unwrap_or(0)
+                    > state["sourceSequence"].as_i64().unwrap_or(0), "LIVE_FRONTIER")?;
+                state = json!({"paper": p, "sourceSequence": e["sourceSequence"],
+                    "sourceHash": e["sourceHash"]});
             } else {
                 state["paper"] = p;
             }
         }
-        need(ph(&state).ok() == ph(&row["state"]).ok(), "LIVE_STATE_PARITY")?;
+        need(payload_hash(&state)? == payload_hash(&row["state"])?, "LIVE_STATE_PARITY")?;
     }
-    Ok(json!({"records": seq, "journalHash": previous, "stateHash": ph(&state)?,
-        "paperStateHash": ph(&state["paper"])?,
-        "fills": state["paper"]["fills"].as_array().map(|a| a.len()).unwrap_or(0),
+    Ok(json!({"records": seq, "journalHash": previous,
+        "stateHash": payload_hash(&state)?,
+        "paperStateHash": payload_hash(&state["paper"])?,
+        "fills": state["paper"]["fills"].as_array().map(|a| a.len() as i64).unwrap_or(0),
         "realizedPnl": state["paper"]["realizedPnl"],
         "sourceSequence": state["sourceSequence"], "sourceHash": state["sourceHash"],
         "exactAsRecordedIdentityParity": true}))
 }
 
 struct Experiment {
-    bank: V, state: V, label: String,
-    scope_books: i64, eligible_account_books: i64, no_eligible_account_books: i64,
-    conditional_capacity_books: i64, eligible_pair_book_events: i64,
-    account_ages_ms: Vec<f64>, account_missing_books: i64,
-    current_pair_run_start: Option<f64>, last_eligible_pair_at: Option<f64>,
+    bank: V,
+    state: V,
+    label: String,
+    scope_books: i64,
+    eligible_account_books: i64,
+    no_eligible_account_books: i64,
+    conditional_capacity_books: i64,
+    eligible_pair_book_events: i64,
+    account_ages_ms: Vec<f64>,
+    account_missing_books: i64,
+    current_pair_run_start: Option<f64>,
+    last_eligible_pair_at: Option<f64>,
     longest_continuous_eligible_pair_ms: f64,
-    first: Option<V>, last: Option<V>,
-    days: serde_json::Map<String, V>, boundaries: i64,
+    first: Option<V>,
+    last: Option<V>,
+    days: serde_json::Map<String, V>,
+    boundaries: i64,
 }
-fn new_experiment(bank: &V, module: &PaperModule, label: &str) -> Result<Experiment, String> {
-    Ok(Experiment { bank: bank.clone(), state: module.create(bank)?, label: label.to_string(),
-        scope_books: 0, eligible_account_books: 0, no_eligible_account_books: 0,
-        conditional_capacity_books: 0, eligible_pair_book_events: 0,
-        account_ages_ms: Vec::new(), account_missing_books: 0,
-        current_pair_run_start: None, last_eligible_pair_at: None,
-        longest_continuous_eligible_pair_ms: 0.0,
+fn new_experiment(bank: &V, module: &AdaptedPaper, label: &str) -> Result<Experiment, String> {
+    Ok(Experiment {
+        bank: bank.clone(), state: module.create_dual_no_pair_state(bank)?,
+        label: label.to_string(), scope_books: 0, eligible_account_books: 0,
+        no_eligible_account_books: 0, conditional_capacity_books: 0,
+        eligible_pair_book_events: 0, account_ages_ms: Vec::new(),
+        account_missing_books: 0, current_pair_run_start: None,
+        last_eligible_pair_at: None, longest_continuous_eligible_pair_ms: 0.0,
         first: None, last: None, days: serde_json::Map::new(), boundaries: 0 })
 }
 
-fn consume(x: &mut Experiment, row: &V, pub_state: &V, eligibility: &V, module: &PaperModule) -> Result<(), String> {
-    let at = row["at"].as_str().unwrap_or("").to_string();
-    if parse_ms(&row["at"]) < parse_ms(&x.bank["cutoff"]) { return Ok(()); }
+/// consume(x, row, pub, eligibility, module)
+fn consume<F>(x: &mut Experiment, row: &V, pub_: &V, eligibility: &V,
+    module: &AdaptedPaper, evaluate_capacity: &F) -> Result<(), String>
+where F: Fn(&V, &[V], Option<&V>, &str, &V) -> Result<V, String> {
+    let at = row["at"].as_str().unwrap_or("");
+    if instant(&row["at"]) < instant(&x.bank["cutoff"]) { return Ok(()); }
     if row["kind"].as_str() != Some("book") {
-        x.state = module.advance(&x.state, &json!({"kind": "boundary", "availableAt": at}), &x.bank)?;
+        x.state = module.advance_dual_no_pair(&x.state,
+            &json!({"kind": "boundary", "availableAt": at}), &x.bank)?;
         x.boundaries += 1;
         x.current_pair_run_start = None;
         x.last_eligible_pair_at = None;
         return Ok(());
     }
-    let legs = x.bank["review"]["legs"].as_array().cloned().unwrap_or_default();
-    let Some(leg) = legs.iter().find(|l| l["marketId"] == row["payload"]["book"]["marketId"]).cloned()
-        else { return Ok(()); };
-    let book = &pub_state["books"][&format!("{}:YES", leg["exchangeId"].as_str().unwrap_or(""))];
+    let leg = x.bank["review"]["legs"].as_array().cloned().unwrap_or_default().into_iter()
+        .find(|l| l["marketId"] == row["payload"]["book"]["marketId"]);
+    let leg = match leg { Some(l) => l, None => return Ok(()) };
+    let key = format!("{}:YES", leg["exchangeId"].as_str().unwrap_or(""));
+    let book = pub_["books"].get(&key).cloned().unwrap_or(V::Null);
     if book.is_null() { return Ok(()); }
-    let books: Vec<V> = legs.iter()
-        .map(|l| pub_state["books"][&format!("{}:YES", l["exchangeId"].as_str().unwrap_or(""))].clone())
-        .collect();
-    let account = causal_account(eligibility["snapshots"].as_array().cloned().unwrap_or_default().as_slice(),
-        parse_ms(&book["requestStartedAt"]), &pub_state["scope"])?;
+    let books: Vec<V> = x.bank["review"]["legs"].as_array().cloned().unwrap_or_default()
+        .iter().map(|l| pub_["books"]
+            .get(&format!("{}:YES", l["exchangeId"].as_str().unwrap_or("")))
+            .cloned().unwrap_or(V::Null)).collect();
+    let snapshots = eligibility["snapshots"].as_array().cloned().unwrap_or_default();
+    let account = causal_account(&snapshots,
+        instant(&book["requestStartedAt"]), &pub_["scope"])?;
     let mut admission = json!({"positiveConditionalCapacity": false});
-    let all_present = books.iter().all(|b| !b.is_null());
-    if !(pub_state["closed"] == V::Bool(true)) && all_present {
-        match evaluate_capacity(&json!({"review": x.bank["review"], "policy": x.bank["capacityPolicy"],
-            "books": books, "account": account.clone().unwrap_or(V::Null), "now": at})) {
-            Ok(a) => admission = a,
-            Err(_) => admission = json!({"positiveConditionalCapacity": false, "reason": "invalid_pair"}),
+    if pub_["closed"] != json!(true) && books.iter().all(|b| !b.is_null()) {
+        match evaluate_capacity(&x.bank["review"], &books, if account.is_null() { None }
+                else { Some(&account) }, at, &x.bank["capacityPolicy"]) {
+            Ok(v) => admission = v,
+            Err(_) => admission = json!({"positiveConditionalCapacity": false,
+                "reason": "invalid_pair"}),
         }
     }
     x.scope_books += 1;
     if x.first.is_none() { x.first = Some(json!(at)); }
-    x.last = Some(json!(at.clone()));
-    let day_key = at.get(..10).unwrap_or("").to_string();
-    let day = x.days.entry(day_key).or_insert_with(|| json!({"marketCounts": {},
-        "accountEligibleBooks": 0, "accountMissingOrStaleBooks": 0}));
+    x.last = Some(json!(at));
+    let day_key = &at[..10.min(at.len())];
+    let mut day = x.days.get(day_key).cloned()
+        .unwrap_or_else(|| json!({"marketCounts": {}, "accountEligibleBooks": 0,
+            "accountMissingOrStaleBooks": 0}));
     {
-        let mid = leg["marketId"].as_str().unwrap_or("").to_string();
-        let mc = day["marketCounts"].as_object_mut();
-        if let Some(mc) = mc {
-            let cur = mc.get(&mid).and_then(|v| v.as_i64()).unwrap_or(0);
-            mc.insert(mid, json!(cur + 1));
-        }
+        let counts = day["marketCounts"].as_object_mut()
+            .ok_or_else(|| "marketCounts".to_string())?;
+        let id = leg["marketId"].as_str().unwrap_or("").to_string();
+        let c = counts.entry(id).or_insert(json!(0));
+        *c = json!(c.as_i64().unwrap_or(0) + 1);
     }
-    let start_ms = parse_ms(&book["requestStartedAt"]);
-    let at_ms = parse_ms(&row["at"]);
-    let account_fresh = account.as_ref().is_some_and(|a| {
-        [a["positionsAt"].as_str().unwrap_or(""), a["ordersAt"].as_str().unwrap_or("")].iter().all(|t| {
-            let t = baal_service_runtime::contract::parse_iso_ms(t).unwrap_or(f64::NAN);
-            t <= start_ms && at_ms - t <= 20000.0
-        })
-    });
-    if let Some(a) = &account {
-        x.account_ages_ms.push(at_ms - fmin(parse_ms(&a["positionsAt"]), parse_ms(&a["ordersAt"])));
+    let account_fresh = !account.is_null()
+        && [account["positionsAt"].clone(), account["ordersAt"].clone()].iter()
+            .all(|t| instant(t) <= instant(&book["requestStartedAt"])
+                && instant(&row["at"]) - instant(t) <= 20000.0);
+    if !account.is_null() {
+        x.account_ages_ms.push(instant(&row["at"])
+            - instant(&account["positionsAt"]).min(instant(&account["ordersAt"])));
     } else {
         x.account_missing_books += 1;
     }
@@ -310,34 +328,38 @@ fn consume(x: &mut Experiment, row: &V, pub_state: &V, eligibility: &V, module: 
         day["accountEligibleBooks"] = json!(day["accountEligibleBooks"].as_i64().unwrap_or(0) + 1);
     } else {
         x.no_eligible_account_books += 1;
-        day["accountMissingOrStaleBooks"] = json!(day["accountMissingOrStaleBooks"].as_i64().unwrap_or(0) + 1);
+        day["accountMissingOrStaleBooks"] =
+            json!(day["accountMissingOrStaleBooks"].as_i64().unwrap_or(0) + 1);
     }
-    if admission["positiveConditionalCapacity"] == V::Bool(true) { x.conditional_capacity_books += 1; }
-    let present: Vec<&V> = books.iter().filter(|b| !b.is_null()).collect();
-    let pair_starts: Vec<f64> = present.iter().map(|b| parse_ms(&b["requestStartedAt"])).collect();
-    let pair_receipts: Vec<f64> = present.iter().map(|b| parse_ms(&b["receivedAt"])).collect();
-    let min_start = pair_starts.iter().copied().fold(f64::INFINITY, fmin);
-    let max_age = x.bank["policy"]["maxAgeMs"].as_f64().unwrap_or(f64::NAN);
-    let max_skew = x.bank["policy"]["maxSkewMs"].as_f64().unwrap_or(f64::NAN);
-    let excluded_ids: Vec<String> = account.as_ref()
-        .map(|a| a["excludedExchangeIds"].as_array().cloned().unwrap_or_default().iter()
-            .filter_map(|v| v.as_str().map(|s| s.to_string())).collect())
-        .unwrap_or_default();
-    let eligible_pair = all_present
-        && pair_starts.iter().all(|t| at_ms - t <= max_age)
-        && pair_receipts.iter().copied().fold(f64::NEG_INFINITY, fmax) - min_start <= max_skew
-        && account.as_ref().is_some_and(|a| {
-            [a["positionsAt"].as_str().unwrap_or(""), a["ordersAt"].as_str().unwrap_or("")].iter().all(|t| {
-                let t = baal_service_runtime::contract::parse_iso_ms(t).unwrap_or(f64::NAN);
-                t <= min_start && at_ms - t <= 20000.0
-            })
-        })
-        && !legs.iter().any(|l| excluded_ids.contains(&l["exchangeId"].as_str().unwrap_or("").to_string()));
+    if admission["positiveConditionalCapacity"] == json!(true) {
+        x.conditional_capacity_books += 1;
+    }
+    let live_books: Vec<&V> = books.iter().filter(|b| !b.is_null()).collect();
+    let pair_starts: Vec<f64> = live_books.iter()
+        .map(|b| instant(&b["requestStartedAt"])).collect();
+    let pair_receipts: Vec<f64> = live_books.iter()
+        .map(|b| instant(&b["receivedAt"])).collect();
+    let eligible_pair = books.iter().all(|b| !b.is_null())
+        && pair_starts.iter().all(|t| instant(&row["at"]) - t
+            <= x.bank["policy"]["maxAgeMs"].as_f64().unwrap_or(f64::NAN))
+        && pair_receipts.iter().cloned().fold(f64::NEG_INFINITY, f64::max)
+            - pair_starts.iter().cloned().fold(f64::INFINITY, f64::min)
+            <= x.bank["policy"]["maxSkewMs"].as_f64().unwrap_or(f64::NAN)
+        && !account.is_null()
+        && [account["positionsAt"].clone(), account["ordersAt"].clone()].iter()
+            .all(|t| instant(t) <= pair_starts.iter().cloned().fold(f64::INFINITY, f64::min)
+                && instant(&row["at"]) - instant(t) <= 20000.0)
+        && !x.bank["review"]["legs"].as_array().cloned().unwrap_or_default().iter()
+            .any(|l| account["excludedExchangeIds"].as_array().cloned().unwrap_or_default()
+                .contains(&l["exchangeId"]));
     if eligible_pair {
         x.eligible_pair_book_events += 1;
-        day["eligiblePairBookEvents"] = json!(day["eligiblePairBookEvents"].as_i64().unwrap_or(0) + 1);
-        let now = at_ms;
-        if x.last_eligible_pair_at.is_none() || now - x.last_eligible_pair_at.unwrap() > max_age {
+        day["eligiblePairBookEvents"] =
+            json!(day["eligiblePairBookEvents"].as_i64().unwrap_or(0) + 1);
+        let now = instant(&row["at"]);
+        if x.last_eligible_pair_at.is_none()
+            || now - x.last_eligible_pair_at.unwrap()
+                > x.bank["policy"]["maxAgeMs"].as_f64().unwrap_or(f64::NAN) {
             x.current_pair_run_start = Some(now);
         }
         x.last_eligible_pair_at = Some(now);
@@ -347,244 +369,295 @@ fn consume(x: &mut Experiment, row: &V, pub_state: &V, eligibility: &V, module: 
         x.current_pair_run_start = None;
         x.last_eligible_pair_at = None;
     }
-    let closed = pub_state["closed"] == V::Bool(true);
-    let pair_books: Vec<V> = if closed { Vec::new() } else { present.iter().map(|b| (*b).clone()).collect() };
-    x.state = module.advance(&x.state, &json!({"kind": "book", "book": book,
-        "pairBooks": pair_books, "availableAt": at,
-        "accountEligibility": if closed { V::Null } else { account.clone().unwrap_or(V::Null) },
+    x.days.insert(day_key.to_string(), day);
+    x.state = module.advance_dual_no_pair(&x.state, &json!({"kind": "book",
+        "book": book,
+        "pairBooks": if pub_["closed"] == json!(true) { Vec::<V>::new() }
+            else { books.iter().filter(|b| !b.is_null()).cloned().collect() },
+        "availableAt": at,
+        "accountEligibility": if pub_["closed"] == json!(true) { V::Null } else { account },
         "admission": admission}), &x.bank)?;
     Ok(())
 }
 
-/// replayPublicationLines({lines, eligibility, bank, module, development, evaluateCapacity}).
-pub fn replay_publication_lines(lines: &[String], eligibility: &V, bank: &V, module: &PaperModule,
-    development: bool) -> Result<V, String> {
-    let mut pub_state: Option<V> = None;
+/// replayPublicationLines({lines,eligibility,bank,module,development,evaluateCapacity})
+pub fn replay_publication_lines<F>(lines: &[String], eligibility: &V, bank: &V,
+    module: &AdaptedPaper, development: bool, evaluate_capacity: F) -> Result<V, String>
+where F: Fn(&V, &[V], Option<&V>, &str, &V) -> Result<V, String> {
+    let mut pub_: Option<V> = None;
     let mut records = 0i64;
     let mut bytes = 0u64;
     let mut first: Option<V> = None;
     let mut last: Option<V> = None;
     let mut prefix_verified = false;
-    let mut running_hash = Sha256::new();
+    let mut hasher = Sha256::new();
     let mut strict = new_experiment(bank, module, "subsequent_original_frozen_bank")?;
+    strict.bank["capacityPolicy"] = bank["capacityPolicy"].clone();
     let mut dev: Option<Experiment> = None;
-    let leg_ids: Vec<String> = bank["review"]["legs"].as_array().cloned().unwrap_or_default().iter()
-        .map(|x| x["marketId"].as_str().unwrap_or("").to_string()).collect();
-    let mut coverage_days: serde_json::Map<String, V> = serde_json::Map::new();
-    let mut coverage_first: Option<V> = None;
-    let mut coverage_last: Option<V> = None;
-    let mut coverage_rows = 0i64;
-    let mut leg_clocks: indexmap::IndexMap<String, f64> = indexmap::IndexMap::new();
-    let mut leg_gaps: indexmap::IndexMap<String, Vec<f64>> = indexmap::IndexMap::new();
+    let mut coverage = json!({"firstAt": V::Null, "lastAt": V::Null, "rows": 0,
+        "marketIds": bank["review"]["legs"].as_array().cloned().unwrap_or_default().iter()
+            .map(|x| x["marketId"].clone()).collect::<Vec<V>>(),
+        "days": {}, "nanosecondSourceValidation": true,
+        "missingDataInterpolated": false});
+    let mut leg_clocks: std::collections::HashMap<String, f64> = Default::default();
+    let mut leg_gaps: std::collections::HashMap<String, Vec<f64>> = Default::default();
     for line in lines {
         let row: V = serde_json::from_str(line).map_err(|e| e.to_string())?;
-        if pub_state.is_none() {
+        if pub_.is_none() {
             need(row["kind"].as_str() == Some("session_start"), "FIRST_SESSION")?;
-            pub_state = Some(create_book_publication_state(&row["payload"]["scope"])?);
+            pub_ = Some(create_book_publication_state(&row["payload"]["scope"])?);
             if development {
                 let mut historical = bank.clone();
                 historical["cutoff"] = row["at"].clone();
-                historical["review"]["recordedAt"] =
-                    json!(baal_service_runtime::contract::ms_to_iso(parse_ms(&row["at"]) - 1.0));
+                let t = (instant(&row["at"]) - 1.0) as i64;
+                let secs = t / 1000;
+                let rem = t % 1000;
+                historical["review"]["recordedAt"] = json!(chrono::DateTime::
+                    from_timestamp(secs, (rem.max(0) * 1_000_000) as u32)
+                    .map(|d| d.format("%Y-%m-%dT%H:%M:%S%.3fZ").to_string())
+                    .unwrap_or_default());
                 historical["review"]["expiresAt"] = json!("2030-01-01T00:00:00.000Z");
-                historical["capacityPolicy"]["maximumReviewAgeMs"] = json!(366.0 * 86_400_000.0);
+                historical["capacityPolicy"]["maximumReviewAgeMs"] =
+                    json!(366.0 * 86400000.0);
                 dev = Some(new_experiment(&historical, module,
                     "historical_development_static_rule_transport_assumption")?);
             }
         }
-        let p = pub_state.take().unwrap();
-        pub_state = Some(apply_book_publication(&p, &row)?);
+        let p = pub_.take().unwrap();
+        pub_ = Some(apply_book_publication(&p, &row)?);
         records += 1;
         if first.is_none() { first = Some(row["at"].clone()); }
         last = Some(row["at"].clone());
-        bytes += line.len() as u64 + 1;
-        running_hash.update(line.as_bytes());
-        running_hash.update(b"\n");
+        let line_bytes = format!("{}\n", line);
+        bytes += line_bytes.len() as u64;
+        hasher.update(line_bytes.as_bytes());
         if bytes == bank["sourcePrefixBytes"].as_u64().unwrap_or(u64::MAX) {
-            need(format!("{:x}", running_hash.clone().finalize()) == bank["sourcePrefixHash"].as_str().unwrap_or("")
-                && baal_service_runtime::json_text::js_int(&row["sequence"])
-                    == baal_service_runtime::json_text::js_int(&bank["sourcePrefixSequence"])
-                && row["hash"].as_str().unwrap_or("") == bank["sourcePrefixTailHash"].as_str().unwrap_or(""),
-                "FROZEN_PREFIX")?;
+            let h: String = hasher.clone().finalize().iter()
+                .map(|x| format!("{:02x}", x)).collect();
+            need(h == bank["sourcePrefixHash"].as_str().unwrap_or("")
+                && row["sequence"] == bank["sourcePrefixSequence"]
+                && row["hash"] == bank["sourcePrefixTailHash"], "FROZEN_PREFIX")?;
             prefix_verified = true;
         }
         if row["kind"].as_str() == Some("book")
-            && leg_ids.contains(&row["payload"]["book"]["marketId"].as_str().unwrap_or("").to_string()) {
-            coverage_rows += 1;
-            if coverage_first.is_none() { coverage_first = Some(row["at"].clone()); }
-            coverage_last = Some(row["at"].clone());
+            && bank["review"]["legs"].as_array().cloned().unwrap_or_default().iter()
+                .any(|l| l["marketId"] == row["payload"]["book"]["marketId"]) {
+            coverage["rows"] = json!(coverage["rows"].as_i64().unwrap_or(0) + 1);
+            if coverage["firstAt"].is_null() { coverage["firstAt"] = row["at"].clone(); }
+            coverage["lastAt"] = row["at"].clone();
             let id = row["payload"]["book"]["marketId"].as_str().unwrap_or("").to_string();
-            let clock = parse_ms(&row["payload"]["book"]["receivedAt"]);
+            let clock = instant(&row["payload"]["book"]["receivedAt"]);
             if let Some(prev) = leg_clocks.get(&id) {
                 leg_gaps.entry(id.clone()).or_default().push(clock - prev);
             }
             leg_clocks.insert(id.clone(), clock);
-            let day_key = row["at"].as_str().unwrap_or("").get(..10).unwrap_or("").to_string();
-            let day = coverage_days.entry(day_key).or_insert_with(|| json!({}));
-            let cur = day[&id].as_i64().unwrap_or(0);
-            day[&id] = json!(cur + 1);
+            let day_key = row["at"].as_str().unwrap_or("")[..10.min(
+                row["at"].as_str().unwrap_or("").len())].to_string();
+            let days = coverage["days"].as_object_mut()
+                .ok_or_else(|| "days".to_string())?;
+            let day = days.entry(day_key).or_insert(json!({}));
+            let d = day.as_object_mut().ok_or_else(|| "day".to_string())?;
+            let c = d.entry(id).or_insert(json!(0));
+            *c = json!(c.as_i64().unwrap_or(0) + 1);
         }
-        if baal_service_runtime::json_text::js_int(&row["sequence"])
-            .zip(baal_service_runtime::json_text::js_int(&bank["sourcePrefixSequence"]))
-            .is_some_and(|(a, b)| a > b) {
-            consume(&mut strict, &row, pub_state.as_ref().unwrap(), eligibility, module)?;
+        if row["sequence"].as_i64().unwrap_or(0)
+            > bank["sourcePrefixSequence"].as_i64().unwrap_or(0) {
+            consume(&mut strict, &row, pub_.as_ref().unwrap(), eligibility, module,
+                &evaluate_capacity)?;
         }
         if let Some(d) = dev.as_mut() {
-            consume(d, &row, pub_state.as_ref().unwrap(), eligibility, module)?;
+            consume(d, &row, pub_.as_ref().unwrap(), eligibility, module, &evaluate_capacity)?;
         }
     }
     need(prefix_verified, "PREFIX_NOT_IN_CAPTURE")?;
-    let summarize = |x: &Experiment, last: &Option<V>| -> Result<V, String> {
-        let at = last.clone().map(|v| v.as_str().unwrap_or("").to_string())
-            .unwrap_or_else(|| x.bank["cutoff"].as_str().unwrap_or("").to_string());
-        let report = module.report(&x.state, &x.bank, &at)?;
-        let is_dev = x.label == "historical_development_static_rule_transport_assumption";
-        Ok(json!({"label": x.label, "bankHash": ph(&x.bank)?,
+    let summarize = |x: &Experiment| -> Result<V, String> {
+        let at = last.clone().unwrap_or_else(|| x.bank["cutoff"].clone());
+        let report = module.dual_no_pair_report(&x.state, &x.bank,
+            at.as_str().unwrap_or(""))?;
+        let positions_len = report["positions"].as_array().map(|a| a.len()).unwrap_or(0);
+        Ok(json!({"label": x.label, "bankHash": payload_hash(&x.bank)?,
             "scopeBooks": x.scope_books, "eligibleAccountBooks": x.eligible_account_books,
             "noEligibleAccountBooks": x.no_eligible_account_books,
             "accountMissingBooks": x.account_missing_books,
-            "causalAccountAgeMs": timing_distribution(&x.account_ages_ms.iter().map(|a| json!(a)).collect::<Vec<_>>()),
+            "causalAccountAgeMs": timing_distribution(&x.account_ages_ms.iter()
+                .map(|v| json!(v)).collect::<Vec<V>>()),
             "eligiblePairBookEvents": x.eligible_pair_book_events,
             "longestContinuousEligiblePairMs": x.longest_continuous_eligible_pair_ms,
             "conditionalCapacityBooks": x.conditional_capacity_books,
             "firstBookAt": x.first, "lastBookAt": x.last,
             "days": V::Object(x.days.clone()), "boundaries": x.boundaries,
-            "stateHash": ph(&x.state)?, "report": report,
-            "openOrPendingCensored": report["positions"].as_array().map(|a| !a.is_empty()).unwrap_or(false)
-                || baal_service_runtime::json_text::js_truthy(report.get("pending")),
+            "stateHash": payload_hash(&x.state)?,
+            "report": report,
+            "openOrPendingCensored": positions_len > 0
+                || !(report["pending"].is_null() || report["pending"] == json!(false)
+                    || report["pending"] == json!(0)),
             "nearTermProfitabilityEstablished": false,
-            "ruleTransport": if is_dev { json!({
-                "historicalAsOfRulesKnown": false,
-                "originalRuleReviewRecordedAt": bank["review"]["recordedAt"],
-                "assumptions": ["Today's exact party-winner predicates transported backward without historical rule verification",
-                    "Review validity/age transported across captured history solely for development; not actual historical authorization",
-                    "Original fill, depth, latency, cash, package limits and risk policy remain fixed",
-                    "No current account snapshot backfill; only causally published eligibility records"]})
+            "ruleTransport": if x.label.starts_with("historical_development") {
+                json!({"historicalAsOfRulesKnown": false,
+                    "originalRuleReviewRecordedAt": bank["review"]["recordedAt"],
+                    "assumptions": [
+                        "Today's exact party-winner predicates transported backward without historical rule verification",
+                        "Review validity/age transported across captured history solely for development; not actual historical authorization",
+                        "Original fill, depth, latency, cash, package limits and risk policy remain fixed",
+                        "No current account snapshot backfill; only causally published eligibility records"]})
             } else { V::Null }}))
     };
-    let first_ms = first.as_ref().map(|v| parse_ms(v)).unwrap_or(f64::NAN);
-    let last_ms = last.as_ref().map(|v| parse_ms(v)).unwrap_or(f64::NAN);
-    let cov_first_ms = coverage_first.as_ref().map(|v| parse_ms(v)).unwrap_or(f64::NAN);
-    let cov_last_ms = coverage_last.as_ref().map(|v| parse_ms(v)).unwrap_or(f64::NAN);
-    let days_with_both = coverage_days.values()
-        .filter(|d| leg_ids.iter().all(|id| d[id].as_i64().unwrap_or(0) > 0)).count();
-    let leg_gap_dist: serde_json::Map<String, V> = leg_ids.iter().map(|id| {
-        let vals: Vec<V> = leg_gaps.get(id).cloned().unwrap_or_default().iter().map(|g| json!(g)).collect();
-        (id.clone(), timing_distribution(&vals))
-    }).collect();
-    let longest = strict.longest_continuous_eligible_pair_ms
-        .max(dev.as_ref().map(|d| d.longest_continuous_eligible_pair_ms).unwrap_or(0.0));
+    let source_hours = (instant(&last.clone().unwrap_or(V::Null))
+        - instant(&first.clone().unwrap_or(V::Null))) / 3600000.0;
+    let leg_gap_dist: serde_json::Map<String, V> = coverage["marketIds"].as_array()
+        .cloned().unwrap_or_default().iter().map(|id| {
+            let key = id.as_str().unwrap_or("").to_string();
+            (key.clone(), timing_distribution(&leg_gaps.get(&key).cloned()
+                .unwrap_or_default().iter().map(|v| json!(v)).collect::<Vec<V>>()))
+        }).collect();
+    let days_with_both = coverage["days"].as_object().cloned().unwrap_or_default().values()
+        .filter(|d| coverage["marketIds"].as_array().cloned().unwrap_or_default().iter()
+            .all(|id| d[id.as_str().unwrap_or("")].as_i64().unwrap_or(0) > 0))
+        .count();
+    let span_hours = if coverage["firstAt"].is_null() { 0.0 } else {
+        (instant(&coverage["lastAt"]) - instant(&coverage["firstAt"])) / 3600000.0
+    };
+    let mut cov = coverage.as_object().cloned().unwrap_or_default();
+    cov.insert("spanHours".into(), json!(span_hours));
+    cov.insert("daysWithBothMarkets".into(), json!(days_with_both as i64));
+    cov.insert("legReceiptGapsMs".into(), V::Object(leg_gap_dist));
+    cov.insert("threeDaysOfContinuousEligibleCoverageEstablished".into(),
+        json!(strict.longest_continuous_eligible_pair_ms
+            .max(dev.as_ref().map(|d| d.longest_continuous_eligible_pair_ms)
+                .unwrap_or(0.0)) >= 72.0 * 3600000.0));
     Ok(json!({"source": {"records": records, "bytes": bytes,
-        "sha256": format!("{:x}", running_hash.finalize()),
-        "firstAt": first, "lastAt": last, "hours": (last_ms - first_ms) / 3_600_000.0,
-        "sealedCompleteRecordsOnly": true, "frozenPrefixVerified": true},
-        "coverage": {"firstAt": coverage_first, "lastAt": coverage_last, "rows": coverage_rows,
-            "marketIds": leg_ids, "days": V::Object(coverage_days),
-            "nanosecondSourceValidation": true, "missingDataInterpolated": false,
-            "spanHours": if coverage_first.is_some() { (cov_last_ms - cov_first_ms) / 3_600_000.0 } else { 0.0 },
-            "daysWithBothMarkets": days_with_both,
-            "legReceiptGapsMs": V::Object(leg_gap_dist),
-            "threeDaysOfContinuousEligibleCoverageEstablished": longest >= 72.0 * 3_600_000.0},
-        "strict": summarize(&strict, &last)?,
-        "development": match &dev { Some(d) => summarize(d, &last)?, None => V::Null }}))
+            "sha256": sha(&hasher.finalize().to_vec()),
+            "firstAt": first, "lastAt": last, "hours": source_hours,
+            "sealedCompleteRecordsOnly": true, "frozenPrefixVerified": true},
+        "coverage": V::Object(cov),
+        "strict": summarize(&strict)?,
+        "development": match &dev { Some(d) => summarize(d)?, None => V::Null }}))
 }
 
-/// main(argv) — argv is process.argv.slice(2).
-pub fn main(argv: &[String]) -> Result<V, String> {
-    let option = |key: &str, fallback: Option<String>| -> Option<String> {
-        argv.iter().position(|a| a == key).map(|i| argv[i + 1].clone()).or(fallback)
+pub fn run(root: &Path, argv: &[String]) -> Result<V, String> {
+    let args = &argv[2.min(argv.len())..];
+    let option = |key: &str, fallback: Option<&str>| -> Option<String> {
+        args.iter().position(|a| a == key)
+            .and_then(|i| args.get(i + 1)).cloned()
+            .or_else(|| fallback.map(String::from))
     };
     let runtime = option("--runtime", None)
-        .map(PathBuf::from)
-        .unwrap_or_else(|| PathBuf::from(std::env::var_os("LOCALAPPDATA").unwrap_or_default())
+        .map(PathBuf::from).unwrap_or_else(|| Path::new(
+            &std::env::var("LOCALAPPDATA").unwrap_or_default())
             .join("SigTradingCup").join("paper-runtime"));
-    let runtime = if runtime.is_absolute() { runtime } else {
-        std::env::current_dir().map_err(|e| e.to_string())?.join(runtime)
-    };
-    let scenario = option("--scenario", Some("stress".into())).unwrap();
+    let scenario = option("--scenario", Some("stress")).unwrap();
     need(["stress", "exact", "v2"].contains(&scenario.as_str()), "SCENARIO")?;
     let exact = scenario != "stress";
-    let pointer_file = option("--pointer", Some(if exact { "dual-no-pair-v2-active.json" } else { "dual-no-pair-active.json" }.into())).unwrap();
-    let explicit_cohort = option("--cohort", None);
-    let cohort = match explicit_cohort {
+    let pointer_file = option("--pointer",
+        Some(if exact { "dual-no-pair-v2-active.json" } else { "dual-no-pair-active.json" }))
+        .unwrap();
+    let explicit = option("--cohort", None);
+    let cohort = match explicit {
         Some(c) => c,
-        None => serde_json::from_slice::<V>(&std::fs::read(runtime.join(&pointer_file)).map_err(|e| e.to_string())?)
+        None => serde_json::from_slice::<V>(
+                &std::fs::read(runtime.join(&pointer_file)).map_err(|e| e.to_string())?)
             .map_err(|e| e.to_string())?["cohort"].as_str().unwrap_or("").to_string(),
     };
-    need(cohort.len() >= 2 && cohort.len() <= 64 && {
-            let mut it = cohort.bytes();
-            matches!(it.next(), Some(b) if b.is_ascii_lowercase())
-                && it.all(|b| b.is_ascii_lowercase() || b.is_ascii_digit() || b == b'-')
-        }, "COHORT")?;
-    let dir = runtime.join(if exact { "dual-no-pair-v2-cohorts" } else { "dual-no-pair-cohorts" }).join(&cohort);
+    let re = regex::Regex::new("^[a-z][a-z0-9-]{1,63}$").map_err(|e| e.to_string())?;
+    need(re.is_match(&cohort), "COHORT")?;
+    let dir = runtime.join(if exact { "dual-no-pair-v2-cohorts" } else { "dual-no-pair-cohorts" })
+        .join(&cohort);
     let bank_bytes = std::fs::read(dir.join("bank.json")).map_err(|e| e.to_string())?;
     let bank: V = serde_json::from_slice(&bank_bytes).map_err(|e| e.to_string())?;
-    let leg_markets: Vec<String> = bank["review"]["legs"].as_array().cloned().unwrap_or_default().iter()
-        .map(|l| l["marketId"].as_str().unwrap_or("").to_string()).collect();
-    let requested = option("--markets", Some(leg_markets.join(","))).unwrap();
-    need(requested == leg_markets.join(","), "MARKET_BANK_SCOPE")?;
-    need(bank["mode"].as_str() == Some(if exact { "dual_no_sequential_paper_v2_exact_receipt" } else { "dual_no_sequential_paper_v1" }),
+    let requested = option("--markets", None).unwrap_or_else(|| {
+        bank["review"]["legs"].as_array().cloned().unwrap_or_default().iter()
+            .map(|l| l["marketId"].as_str().unwrap_or("").to_string())
+            .collect::<Vec<String>>().join(",")
+    });
+    need(requested == bank["review"]["legs"].as_array().cloned().unwrap_or_default().iter()
+        .map(|l| l["marketId"].as_str().unwrap_or("").to_string())
+        .collect::<Vec<String>>().join(","), "MARKET_BANK_SCOPE")?;
+    need(bank["mode"].as_str() == Some(if exact {
+            "dual_no_sequential_paper_v2_exact_receipt" } else { "dual_no_sequential_paper_v1" }),
         "SCENARIO_BANK_MODE")?;
-    let live_paper_dir = std::env::current_dir().map_err(|e| e.to_string())?.join("live-paper");
-    let module_path = format!("live-paper/dual-no-pair-paper-{}.mjs", if exact { "v2" } else { "v1" });
-    frozen_strategy_module(&runtime, &bank, &module_path, &live_paper_dir)?;
-    let module = adapt_paper_module(bank["mode"].as_str().unwrap_or(""))?;
-    frozen_strategy_module(&runtime, &bank, "live-paper/canonical-no-capacity.mjs", &live_paper_dir)?;
-    let start = std::time::Instant::now();
+    let module_path = format!("live-paper/dual-no-pair-paper-{}.mjs",
+        if exact { "v2" } else { "v1" });
+    let module = adapt_paper_module(
+        frozen_strategy_module(root, &runtime, &bank, &module_path)?,
+        bank["mode"].as_str().unwrap_or(""))?;
+    let _capacity_namespace = frozen_strategy_module(root, &runtime, &bank,
+        "live-paper/canonical-no-capacity.mjs")?;
+    let evaluate_capacity = |review: &V, books: &[V], account: Option<&V>, now: &str,
+        policy: &V| evaluate_canonical_no_capacity(review, books, account, now, policy);
+    let start = Instant::now();
     let source = runtime.join("public-books.jsonl");
-    let account = runtime.join("account-eligibility.jsonl");
+    let account_file = runtime.join("account-eligibility.jsonl");
     let live = dir.join("journal.jsonl");
-    let ends = (sealed_end(&source)?, sealed_end(&account)?, sealed_end(&live)?);
-    let opts = |end: u64| JournalReadOptions { end_byte: Some(end), ..Default::default() };
-    let eligibility = read_eligibility(&journal_lines(&account, &opts(ends.1))?)?;
-    let identity = verify_live_journal(&journal_lines(&live, &opts(ends.2))?, &bank, &module)?;
-    let result = replay_publication_lines(&journal_lines(&source, &opts(ends.0))?,
-        &eligibility, &bank, &module, argv.iter().any(|a| a == "--development"))?;
-    need(sha(&std::fs::read(dir.join("bank.json")).map_err(|e| e.to_string())?) == sha(&bank_bytes), "BANK_CHANGED")?;
+    let ends = json!({"books": sealed_end(&source)?, "account": sealed_end(&account_file)?,
+        "live": sealed_end(&live)?});
+    let account_lines = journal_lines(&account_file, &JournalReadOptions {
+        end_byte: Some(ends["account"].as_u64().unwrap()), ..Default::default() })?;
+    let eligibility = read_eligibility(&account_lines)?;
+    let live_lines = journal_lines(&live, &JournalReadOptions {
+        end_byte: Some(ends["live"].as_u64().unwrap()), ..Default::default() })?;
+    let identity = verify_live_journal(&live_lines, &bank, &module)?;
+    let source_lines = journal_lines(&source, &JournalReadOptions {
+        end_byte: Some(ends["books"].as_u64().unwrap()), ..Default::default() })?;
+    let result = replay_publication_lines(&source_lines, &eligibility, &bank, &module,
+        args.iter().any(|a| a == "--development"), evaluate_capacity)?;
+    need(sha(&std::fs::read(dir.join("bank.json")).map_err(|e| e.to_string())?)
+        == sha(&bank_bytes), "BANK_CHANGED")?;
     let wall_ms = start.elapsed().as_secs_f64() * 1000.0;
-    let parser_hash = sha(&std::fs::read(live_paper_dir.join("book-publication-v2.mjs")).map_err(|e| e.to_string())?);
-    let snaps = eligibility["snapshots"].as_array().cloned().unwrap_or_default();
-    let mut output = json!({"schemaVersion": 1, "createdAt": now_iso(), "cohort": cohort,
+    let mut output = json!({"schemaVersion": 1, "createdAt": ms_to_iso(now_ms()),
+        "cohort": cohort,
         "scenario": if exact { "exact_later_receipt_v2" } else { "one_adverse_tick_stress_v1" },
         "modulePath": module_path, "frozenCapacityModule": true,
-        "originalBankHash": ph(&bank)?, "originalBankBytesSha256": sha(&bank_bytes),
-        "frozenCodeIdentity": bank["codeIdentity"], "parserHash": parser_hash,
-        "eligibility": {"records": eligibility["sequence"], "journalHash": eligibility["hash"],
-            "firstKnownAt": baal_service_runtime::contract::ms_to_iso(snaps.first().map(|s| s["knownAt"].as_f64().unwrap_or(0.0)).unwrap_or(0.0)),
-            "lastKnownAt": baal_service_runtime::contract::ms_to_iso(snaps.last().map(|s| s["knownAt"].as_f64().unwrap_or(0.0)).unwrap_or(0.0)),
+        "originalBankHash": payload_hash(&bank)?,
+        "originalBankBytesSha256": sha(&bank_bytes),
+        "frozenCodeIdentity": bank["codeIdentity"],
+        "parserHash": sha(&std::fs::read(root.join("live-paper/book-publication-v2.mjs"))
+            .map_err(|e| e.to_string())?),
+        "eligibility": {"records": eligibility["sequence"],
+            "journalHash": eligibility["hash"],
+            "firstKnownAt": ms_to_iso(eligibility["snapshots"][0]["knownAt"]
+                .as_f64().unwrap_or(f64::NAN)),
+            "lastKnownAt": ms_to_iso(eligibility["snapshots"].as_array().cloned()
+                .unwrap_or_default().last().cloned().unwrap_or(V::Null)["knownAt"]
+                .as_f64().unwrap_or(f64::NAN)),
             "currentAccountBackfilled": false},
         "identity": identity,
         "source": result["source"], "coverage": result["coverage"],
         "strict": result["strict"], "development": result["development"],
         "performance": {"wallMs": wall_ms,
             "simulatedSourceHours": result["source"]["hours"],
-            "speedupAgainstWallClock": result["source"]["hours"].as_f64().unwrap_or(0.0) * 3_600_000.0 / wall_ms,
-            "recordsPerSecond": result["source"]["records"].as_f64().unwrap_or(0.0) / (wall_ms / 1000.0),
+            "speedupAgainstWallClock": result["source"]["hours"].as_f64().unwrap_or(0.0)
+                * 3600000.0 / wall_ms,
+            "recordsPerSecond": result["source"]["records"].as_f64().unwrap_or(0.0)
+                / (wall_ms / 1000.0),
             "intentSleeps": 0},
-        "fees": "0.000000", "networkRequests": 0, "contestOrders": 0, "profitabilityEstablished": false,
-        "limitations": ["Accelerated replay changes wall time, never the chronological availability or latency gates.",
+        "fees": "0.000000", "networkRequests": 0, "contestOrders": 0,
+        "profitabilityEstablished": false,
+        "limitations": [
+            "Accelerated replay changes wall time, never the chronological availability or latency gates.",
             "As-recorded journal parity is exact; row-at replay is a separate virtual-consumption experiment, not necessarily bit-identical to live processing delays.",
             "Coverage gaps and pre-eligibility hours are censored; three days of executable paired observations are not manufactured.",
             "Historical static-rule transport is a development assumption, never held-out profitability evidence.",
             "Conditional settlement surplus is never realized P&L; unsold and unmatched inventory remains in results."]});
     if let Some(reference) = option("--reference-report", None) {
-        let p = PathBuf::from(&reference);
-        let p = if p.is_absolute() { p } else { std::env::current_dir().map_err(|e| e.to_string())?.join(p) };
-        let reference: V = serde_json::from_slice(&std::fs::read(p).map_err(|e| e.to_string())?).map_err(|e| e.to_string())?;
-        output["independentComparison"] = compare_independent_reports(&reference, &output)?;
+        let r: V = serde_json::from_slice(&std::fs::read(Path::new(&reference))
+            .map_err(|e| e.to_string())?).map_err(|e| e.to_string())?;
+        output["independentComparison"] = compare_independent_reports(&r, &output)?;
     }
-    let default_out = format!("data/dual-no-timelapse{}-results-20261005.json", if exact { "-v2" } else { "" });
-    let out = option("--out", Some(default_out)).unwrap();
-    let out_path = PathBuf::from(&out);
-    let out_path = if out_path.is_absolute() { out_path } else {
-        std::env::current_dir().map_err(|e| e.to_string())?.join(out_path)
-    };
-    std::fs::write(&out_path, format!("{}\n", serde_json::to_string_pretty(&output).map_err(|e| e.to_string())?))
+    let default_out = if exact { "dual-no-timelapse-v2-results-20261005.json" }
+        else { "dual-no-timelapse-results-20261005.json" };
+    let out = option("--out", None)
+        .map(PathBuf::from)
+        .map(|p| if p.is_absolute() { p } else { root.join(p) })
+        .unwrap_or_else(|| root.join("data").join(default_out));
+    std::fs::write(&out, format!("{}\n",
+        serde_json::to_string_pretty(&output).map_err(|e| e.to_string())?))
         .map_err(|e| e.to_string())?;
-    Ok(json!({"out": out_path, "cohort": cohort, "wallMs": wall_ms,
+    println!("{}", js_stringify(&json!({"out": out.to_string_lossy(),
+        "cohort": cohort, "wallMs": wall_ms,
         "sourceHours": result["source"]["hours"],
         "strictFills": result["strict"]["report"]["fills"],
         "strictRealized": result["strict"]["report"]["realizedPnl"],
         "developmentFills": result["development"]["report"]["fills"],
-        "developmentRealized": result["development"]["report"]["realizedPnl"]}))
+        "developmentRealized": result["development"]["report"]["realizedPnl"]})));
+    Ok(output)
 }
