@@ -1,0 +1,426 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-06T10:34:54.335Z",
+  "captureAt": "2026-10-06T10:30:27.786Z",
+  "mode": "historical_capture_plan_reproduction",
+  "freshForLiveDispatch": false,
+  "plan": {
+    "schemaVersion": 1,
+    "mode": "paired_no_dry_run_v1",
+    "name": "alaska-senate-minpay-20261006-v2",
+    "scope": {
+      "ownerId": "Codex",
+      "runId": "draft-alaska-one-pair-20261006-v2",
+      "tournamentId": "bda92870-621e-47b0-bc3c-3602c5c26f55",
+      "tournamentSlug": "midterm-elections",
+      "markets": [
+        {
+          "exchangeId": "1066",
+          "marketId": "377"
+        },
+        {
+          "exchangeId": "1067",
+          "marketId": "378"
+        }
+      ]
+    },
+    "policy": {
+      "schemaVersion": 1,
+      "quantity": 1,
+      "maxPairs": 1,
+      "allocatedCapital": "2.000000",
+      "maxOrderCost": "1.000000",
+      "maxCumulativeBuy": "2.000000",
+      "maxFirstLegOrphanPrincipal": "0.500000",
+      "minimumOrdinaryMargin": "0.010000",
+      "fee": "0.000000",
+      "lifetimeMs": 30000,
+      "maxAccountAgeMs": 20000,
+      "maxBookAgeMs": 20000,
+      "maxBookSkewMs": 10000,
+      "depthFractionBps": 100
+    },
+    "createdAt": "2026-10-06T10:30:27.786Z",
+    "reviewExpiresAt": "2026-10-06T10:35:04.800Z",
+    "captureHash": "2988b5c046f59d3c9aef9c107b34bde58d90d0e5f940dd5da402c0987c909703",
+    "reviewHash": "3aa358647f6d99765763dfbab5d732cbb1aa159466f09591ab0f9c90e322d997",
+    "legs": [
+      {
+        "exchangeId": "1066",
+        "marketId": "377",
+        "originalLimit": "0.330000",
+        "originalRawNoAsk": "0.325000",
+        "eligibleDepth": 93,
+        "book": {
+          "asks": [
+            {
+              "price": "0.680000",
+              "quantity": 1207
+            },
+            {
+              "price": "0.685000",
+              "quantity": 6445
+            },
+            {
+              "price": "0.690000",
+              "quantity": 11271
+            },
+            {
+              "price": "0.695000",
+              "quantity": 3402
+            },
+            {
+              "price": "0.700000",
+              "quantity": 4244
+            },
+            {
+              "price": "0.705000",
+              "quantity": 49441
+            },
+            {
+              "price": "0.710000",
+              "quantity": 70400
+            },
+            {
+              "price": "0.715000",
+              "quantity": 128844
+            },
+            {
+              "price": "0.720000",
+              "quantity": 95674
+            },
+            {
+              "price": "0.725000",
+              "quantity": 185142
+            },
+            {
+              "price": "0.730000",
+              "quantity": 82632
+            },
+            {
+              "price": "0.735000",
+              "quantity": 58417
+            },
+            {
+              "price": "0.740000",
+              "quantity": 132008
+            },
+            {
+              "price": "0.745000",
+              "quantity": 20250
+            },
+            {
+              "price": "0.750000",
+              "quantity": 134841
+            },
+            {
+              "price": "0.755000",
+              "quantity": 80747
+            },
+            {
+              "price": "0.760000",
+              "quantity": 41261
+            },
+            {
+              "price": "0.765000",
+              "quantity": 99019
+            },
+            {
+              "price": "0.770000",
+              "quantity": 173063
+            },
+            {
+              "price": "0.775000",
+              "quantity": 247726
+            }
+          ],
+          "bids": [
+            {
+              "price": "0.675000",
+              "quantity": 9356
+            },
+            {
+              "price": "0.670000",
+              "quantity": 24617
+            },
+            {
+              "price": "0.665000",
+              "quantity": 47987
+            },
+            {
+              "price": "0.660000",
+              "quantity": 67578
+            },
+            {
+              "price": "0.655000",
+              "quantity": 71782
+            },
+            {
+              "price": "0.650000",
+              "quantity": 33008
+            },
+            {
+              "price": "0.645000",
+              "quantity": 191030
+            },
+            {
+              "price": "0.640000",
+              "quantity": 158183
+            },
+            {
+              "price": "0.635000",
+              "quantity": 243098
+            },
+            {
+              "price": "0.630000",
+              "quantity": 147136
+            },
+            {
+              "price": "0.625000",
+              "quantity": 116191
+            },
+            {
+              "price": "0.620000",
+              "quantity": 70591
+            },
+            {
+              "price": "0.615000",
+              "quantity": 102178
+            },
+            {
+              "price": "0.610000",
+              "quantity": 44806
+            },
+            {
+              "price": "0.605000",
+              "quantity": 225342
+            },
+            {
+              "price": "0.600000",
+              "quantity": 31972
+            },
+            {
+              "price": "0.595000",
+              "quantity": 25
+            },
+            {
+              "price": "0.590000",
+              "quantity": 20534
+            },
+            {
+              "price": "0.585000",
+              "quantity": 135847
+            },
+            {
+              "price": "0.580000",
+              "quantity": 64061
+            }
+          ],
+          "exchangeId": "1066",
+          "freshnessPolicy": "authoritative_receipt_v1",
+          "instrument": "1066:YES",
+          "marketId": "377",
+          "receivedAt": "2026-10-06T10:30:26.512Z",
+          "requestStartedAt": "2026-10-06T10:30:26.315Z",
+          "sequence": "66458041",
+          "sourceAt": "2026-10-06T10:30:26.475365100Z",
+          "sourceEventAgeMs": 37,
+          "versionKey": "66458041:2026-10-06T10:30:26.475365100Z"
+        }
+      },
+      {
+        "exchangeId": "1067",
+        "marketId": "378",
+        "originalLimit": "0.660000",
+        "originalRawNoAsk": "0.655000",
+        "eligibleDepth": 10,
+        "book": {
+          "asks": [
+            {
+              "price": "0.350000",
+              "quantity": 4509
+            },
+            {
+              "price": "0.355000",
+              "quantity": 3301
+            },
+            {
+              "price": "0.360000",
+              "quantity": 22216
+            },
+            {
+              "price": "0.365000",
+              "quantity": 34481
+            },
+            {
+              "price": "0.370000",
+              "quantity": 77245
+            },
+            {
+              "price": "0.375000",
+              "quantity": 150554
+            },
+            {
+              "price": "0.380000",
+              "quantity": 175007
+            },
+            {
+              "price": "0.385000",
+              "quantity": 153635
+            },
+            {
+              "price": "0.390000",
+              "quantity": 167249
+            },
+            {
+              "price": "0.395000",
+              "quantity": 184182
+            },
+            {
+              "price": "0.400000",
+              "quantity": 137793
+            },
+            {
+              "price": "0.405000",
+              "quantity": 77063
+            },
+            {
+              "price": "0.410000",
+              "quantity": 120022
+            },
+            {
+              "price": "0.415000",
+              "quantity": 5576
+            },
+            {
+              "price": "0.420000",
+              "quantity": 50403
+            },
+            {
+              "price": "0.425000",
+              "quantity": 135289
+            },
+            {
+              "price": "0.430000",
+              "quantity": 94228
+            },
+            {
+              "price": "0.435000",
+              "quantity": 3126
+            },
+            {
+              "price": "0.440000",
+              "quantity": 15988
+            },
+            {
+              "price": "0.445000",
+              "quantity": 75836
+            }
+          ],
+          "bids": [
+            {
+              "price": "0.345000",
+              "quantity": 1068
+            },
+            {
+              "price": "0.340000",
+              "quantity": 5570
+            },
+            {
+              "price": "0.335000",
+              "quantity": 14946
+            },
+            {
+              "price": "0.330000",
+              "quantity": 12528
+            },
+            {
+              "price": "0.325000",
+              "quantity": 28991
+            },
+            {
+              "price": "0.320000",
+              "quantity": 23550
+            },
+            {
+              "price": "0.315000",
+              "quantity": 108218
+            },
+            {
+              "price": "0.310000",
+              "quantity": 32517
+            },
+            {
+              "price": "0.305000",
+              "quantity": 27153
+            },
+            {
+              "price": "0.300000",
+              "quantity": 196172
+            },
+            {
+              "price": "0.295000",
+              "quantity": 74712
+            },
+            {
+              "price": "0.290000",
+              "quantity": 41843
+            },
+            {
+              "price": "0.285000",
+              "quantity": 299588
+            },
+            {
+              "price": "0.280000",
+              "quantity": 39940
+            },
+            {
+              "price": "0.275000",
+              "quantity": 18977
+            },
+            {
+              "price": "0.270000",
+              "quantity": 4781
+            },
+            {
+              "price": "0.265000",
+              "quantity": 73476
+            },
+            {
+              "price": "0.260000",
+              "quantity": 26627
+            },
+            {
+              "price": "0.255000",
+              "quantity": 56584
+            },
+            {
+              "price": "0.250000",
+              "quantity": 69004
+            }
+          ],
+          "exchangeId": "1067",
+          "freshnessPolicy": "authoritative_receipt_v1",
+          "instrument": "1067:YES",
+          "marketId": "378",
+          "receivedAt": "2026-10-06T10:30:27.782Z",
+          "requestStartedAt": "2026-10-06T10:30:27.515Z",
+          "sequence": "66458166",
+          "sourceAt": "2026-10-06T10:30:27.744162600Z",
+          "sourceEventAgeMs": 38,
+          "versionKey": "66458166:2026-10-06T10:30:27.744162600Z"
+        }
+      }
+    ],
+    "pairCostCeiling": "0.990000",
+    "conditionalOrdinaryMinimumPayout": "1.000000",
+    "conditionalOrdinarySurplus": "0.010000",
+    "unconditionalPayoutFloor": null,
+    "exceptionLoss": "-0.990000",
+    "priceBasis": "side_relative_no_limit_from_yes_bid_complement",
+    "executionAuthority": false,
+    "planHash": "2c989a35a19989ebcadd797218cd748f55ed91681fe29ef38da9bdffdb9cc24c"
+  },
+  "ordersSubmitted": 0,
+  "profitRealized": "0.000000"
+}

@@ -1,0 +1,204 @@
+{
+  "schemaVersion": 1,
+  "mode": "fixed_uptrend_cap_same_cutoff_subsequent_extension",
+  "observedAt": "2026-10-06T10:28:30.974Z",
+  "experiment": "median-uptrend-cap-20261006-v1",
+  "experimentCutoff": "2026-10-06T08:59:42.428Z",
+  "policyChanged": false,
+  "thresholdsTuned": false,
+  "oldReportsOverwritten": false,
+  "binarySha256": "e9e3d0e7efd951f506dc22dac8953d66c71bf4f391df76fb2853b4643829a7b9",
+  "nativeElapsedMs": 34137.7638,
+  "eventsProcessed": 39792,
+  "source": {
+    "publicRecords": 39792,
+    "accountRecords": 5589,
+    "priceRecords": 22054,
+    "priceRecordsCausallyConsumed": 22054,
+    "publicBytes": 88917615,
+    "publicSha256": "58a323762af2dd60bfaec00a166736f63b28aca62406168a7f3d3cb9513e4023",
+    "accountBytes": 3368675,
+    "accountSha256": "53fc3fa5345f82f2165d99d97a1e97c6f34315268e851379ebfd38155d06d973",
+    "priceBytes": 247233712,
+    "priceSha256": "cd5d006ce142490b2e45a1dde94fe1bd7ab6d2a0ca1538eb16b4cea1f7b3eb0d",
+    "publicSequence": 39792,
+    "publicTailHash": "93c21ef11aecde8471e3b7b0d8f253761fbf9c097172cdee30f6c20d60cf79ec",
+    "hours": 94.26704388888889,
+    "books": 37278
+  },
+  "resultArtifact": {
+    "file": "median-uptrend-cap-subsequent-20261006T102335862Z.json",
+    "sha256": "75677ee00c5ab9a7aefe886112fd8eab4ad2302ee08282e5f9e3cb8744d6cc70"
+  },
+  "priorReportSha256": "1c75a005c81edc92a7c96791fc6ac32fbb7262a72b055f345149a372a71b9062",
+  "prospectiveCoverage": {
+    "firstPublicRow": "2026-10-06T08:59:44.976Z",
+    "throughPublicRow": "2026-10-06T10:19:38.102Z",
+    "lastActualBook": "2026-10-06T10:16:14.307Z",
+    "bookRowsAfterCutoff": 848,
+    "distinctBookMarkets": 7,
+    "boundaryCounts": {
+      "session_stop": 2,
+      "session_start": 2
+    },
+    "maxObservedPublicRowGapMs": 602635,
+    "continuousCoverageProven": false
+  },
+  "cases": [
+    {
+      "case": "one_tick_native_control",
+      "proposalCount": 1,
+      "loweredCapCount": 0,
+      "trendCounts": {},
+      "cash": "99.840000",
+      "cumulativeBuys": "0.160000",
+      "reservedCost": "0.000000",
+      "fillCount": 1,
+      "closedTrades": 0,
+      "closedLosingTrades": 0,
+      "realizedPnl": "0.000000",
+      "estimatedLiquidationPnl": null,
+      "pendingIntents": 0,
+      "positions": [
+        {
+          "marketId": "388",
+          "exchangeId": "1077",
+          "quantity": 1,
+          "cost": "0.160000",
+          "enteredAtMs": 1791281216640,
+          "estimatedLiquidation": null,
+          "enteredAt": "2026-10-06T10:06:56.640Z",
+          "lastCapturedQuote": {
+            "knownAt": "2026-10-06T10:16:01.727Z",
+            "receivedAt": "2026-10-06T10:16:01.722Z",
+            "depthQualifiedBid": "0.150000",
+            "ageAtReportMs": 216380,
+            "observedReceiptCount": 67,
+            "maxObservedReceiptGapMs": 840516,
+            "staleOrInvalidated": true,
+            "historicalSnapshotOnly": true,
+            "estimatedPnlAtThatOldQuote": "-0.010000"
+          }
+        }
+      ],
+      "counts": {
+        "account_unknown_stale_or_excluded": 193,
+        "dip_intent": 1,
+        "later_raw_receipt_fill": 1,
+        "no_funded_dip": 640,
+        "source_boundary": 2514
+      },
+      "finalWalletStateHash": "313118b4c97ff913c5a4121c557884112da5bc926b0c5201aabd73bab2a69fd3"
+    },
+    {
+      "case": "one_tick_original_reference_entry_cap",
+      "proposalCount": 1,
+      "loweredCapCount": 1,
+      "trendCounts": {},
+      "cash": "99.840000",
+      "cumulativeBuys": "0.160000",
+      "reservedCost": "0.000000",
+      "fillCount": 1,
+      "closedTrades": 0,
+      "closedLosingTrades": 0,
+      "realizedPnl": "0.000000",
+      "estimatedLiquidationPnl": null,
+      "pendingIntents": 0,
+      "positions": [
+        {
+          "marketId": "388",
+          "exchangeId": "1077",
+          "quantity": 1,
+          "cost": "0.160000",
+          "enteredAtMs": 1791281216640,
+          "estimatedLiquidation": null,
+          "enteredAt": "2026-10-06T10:06:56.640Z",
+          "lastCapturedQuote": {
+            "knownAt": "2026-10-06T10:16:01.727Z",
+            "receivedAt": "2026-10-06T10:16:01.722Z",
+            "depthQualifiedBid": "0.150000",
+            "ageAtReportMs": 216380,
+            "observedReceiptCount": 67,
+            "maxObservedReceiptGapMs": 840516,
+            "staleOrInvalidated": true,
+            "historicalSnapshotOnly": true,
+            "estimatedPnlAtThatOldQuote": "-0.010000"
+          }
+        }
+      ],
+      "counts": {
+        "account_unknown_stale_or_excluded": 193,
+        "dip_intent": 1,
+        "later_raw_receipt_fill": 1,
+        "no_funded_dip": 640,
+        "source_boundary": 2514
+      },
+      "finalWalletStateHash": "a6ba5b677492de792168955d87cb7d36a9a8acfb312057c1928d3699cc973183"
+    },
+    {
+      "case": "one_tick_cap_strict_positive_30m_trend",
+      "proposalCount": 0,
+      "loweredCapCount": 0,
+      "trendCounts": {
+        "declining_recent_segment": 15,
+        "flat_or_below_one_tick_rise": 0,
+        "funded_candidates_before_trend": 15,
+        "strict_uptrend_admitted": 0,
+        "unknown_segment_coverage": 0
+      },
+      "cash": "100.000000",
+      "cumulativeBuys": "0.000000",
+      "reservedCost": "0.000000",
+      "fillCount": 0,
+      "closedTrades": 0,
+      "closedLosingTrades": 0,
+      "realizedPnl": "0.000000",
+      "estimatedLiquidationPnl": "0.000000",
+      "pendingIntents": 0,
+      "positions": [],
+      "counts": {
+        "account_unknown_stale_or_excluded": 193,
+        "insufficient_history": 471,
+        "no_funded_dip": 184,
+        "source_boundary": 2514
+      },
+      "finalWalletStateHash": "15ade83143cad736ab27fefbffe9d36483c51ac981a0bcfdc9d9e770c70bea75"
+    }
+  ],
+  "comparisonToPrior": [
+    {
+      "case": "one_tick_native_control",
+      "closedTradeDelta": 0,
+      "fillDelta": 1,
+      "realizedPnlBefore": "0.000000",
+      "realizedPnlNow": "0.000000"
+    },
+    {
+      "case": "one_tick_original_reference_entry_cap",
+      "closedTradeDelta": 0,
+      "fillDelta": 1,
+      "realizedPnlBefore": "0.000000",
+      "realizedPnlNow": "0.000000"
+    },
+    {
+      "case": "one_tick_cap_strict_positive_30m_trend",
+      "closedTradeDelta": 0,
+      "fillDelta": 0,
+      "realizedPnlBefore": "0.000000",
+      "realizedPnlNow": "0.000000"
+    }
+  ],
+  "finding": "No subsequent closed profitable trades. Native and cap-only controls each retain one388 share at0.160 with zero realizedPnl; final liquidation unpriced after collection boundaries. Strict positive trend rejects all15 funded candidate observations for declining recent segment and remains flat; avoidance is not profit.",
+  "correlatedControlsNotSummed": true,
+  "fees": 0,
+  "networkRequests": 0,
+  "competitionOrders": 0,
+  "executionAuthority": false,
+  "profitabilityEstablished": false,
+  "limitations": [
+    "All fills are local counterfactual later-depth receipts, not accepted contest orders.",
+    "Old captured0.150 bid implies−0.010 at that old snapshot only; it is stale/invalidated and must not be presented as currently executable liquidation or realized loss.",
+    "Receipt gaps and restarts are explicit; no trade/tape absence or continuous execution is inferred.",
+    "The earlier development+.030 single close is not reused as evidence of repeatability."
+  ]
+}

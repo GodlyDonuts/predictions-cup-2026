@@ -13696,12 +13696,23 @@
   },
   "medianProposalClockRepair": {
     "at": "2026-10-06T10:19:22.299Z",
-    "status": "launched_pending_cold_restore",
+    "status": "live_exit_verified",
     "collector": 20172,
     "policyBankHash": "da6162418dc06cb28e1873b8f1b0613f8b43f7b1c49b3e61e32cc8bd4ead8854",
     "entryExpiresAt": "2026-10-06T13:01:24.019Z",
     "testsPassed": 38,
     "evidence": "data/median-proposal-clock-deployment-20261006.json",
-    "next": "Verify fresh bootstrap and actual attributed Michigan exit; develop bounded opposing-NO execution evidence."
+    "next": "Verify fresh bootstrap and actual attributed Michigan exit; develop bounded opposing-NO execution evidence.",
+    "freshBootstrapVerified": true,
+    "exitOrderId": 15801594,
+    "exitFillId": 66455402,
+    "netClosedRoundTrips": "0.000000"
+  },
+  "profitNext": {
+    "at": "2026-10-06T10:34:34.571Z",
+    "focus": "Opposing-party NO pricing mismatch with actual fill attribution, conservative rounded cash and scoped order history",
+    "evidence": "data/median-official-second-roundtrip-20261006.json",
+    "noProfitableStrategyEstablished": true,
+    "next": "Complete reviewed REST pair evidence adapter and bounded single-collector execution integration; preserve current attributed exits."
   }
 }

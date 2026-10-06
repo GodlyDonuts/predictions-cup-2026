@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "observedAt": "2026-10-06T10:06:20.753Z",
+  "primaryUrl": "https://sig.thesuper.market/api/v1/docs",
+  "publicUnauthenticatedRead": true,
+  "specDelivery": "Inline Scalar.createApiReference configuration content; no separate spec URL advertised or guessed.",
+  "inlineSpecSha256": "e051be9959929c5adce070c911f1702456113fc18a8d0d1e8d5ae613405b1491",
+  "hashRepresentation": "SHA-256 of JSON.stringify(parsed Scalar configuration.content), preserving parsed property order.",
+  "facts": [
+    {
+      "pointers": ["/components/schemas/Fill/properties/price", "/paths/~1orders~1{id}~1fills/get/responses/200/content/application~1json/schema/properties/avgFillPrice"],
+      "finding": "REST fills and averages use the traded outcome's price; NO is side-relative. Realtime fill prices use YES denomination."
+    },
+    {
+      "pointers": ["/paths/~1orders/post/responses/200/content/application~1json/schema/properties/price", "/paths/~1orders/post/responses/200/content/application~1json/schema/properties/totalCost", "/components/schemas/Order/properties/quantityFilled"],
+      "finding": "POST returns canonical side-relative limits and filled notional. Terminal GET supplies status and filled quantity, not the POST principal. Netting or ALL collateral can change actual cash differently."
+    },
+    {
+      "pointers": ["/components/schemas/Position/properties/quantity", "/paths/~1orders/post/description"],
+      "finding": "Positions are YES-positive and NO-negative. Opposite BUY nets existing inventory; an unbacked SELL becomes a complementary BUY."
+    },
+    {
+      "pointers": ["/paths/~1tournaments~1{slug}/get/responses/200/content/application~1json/schema/properties/myBalance"],
+      "finding": "Tournament cash is rounded to two decimals; preserving its numeric lexeme does not recover exact gross cash.",
+      "conservativeAssumption": "A plus/minus 0.010000 cash interval is an explicit conservative modeling assumption, not documented exact precision or proof of isolated activity."
+    },
+    {
+      "pointers": ["/paths/~1tournaments~1{slug}~1portfolio~1transactions/get", "/components/schemas/TournamentEconomicCommandCoverage/properties/complete", "/components/schemas/TournamentTransaction/properties/event_id"],
+      "finding": "Published transaction history is cursor-paginated. Its completeness flag can fail at a twenty-page internal budget. No order/fill linkage is documented; complete fills alone cannot establish complete isolated account activity."
+    }
+  ],
+  "historicalEvidence": {
+    "path": "data/rest-no-price-basis-audit.json",
+    "observedAt": "2026-10-02T20:59:38.442Z",
+    "noBuyOrders": 3,
+    "fillRows": 14,
+    "limitation": "Derived historical limit consistency supports side-relative pricing; it is not complete terminal cash/activity reconciliation."
+  },
+  "authenticatedRequests": 0,
+  "executionAuthority": false
+}

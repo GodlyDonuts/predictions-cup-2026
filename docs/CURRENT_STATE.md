@@ -1,3 +1,9 @@
+# October6 10:32 UTC: exit repair verified; pilot realized net zero
+
+Collector20172 completed cold restore and fresh bootstrap and submitted the latched Michigan exit. Official order15801594/fill66455402 sold one share at0.150 on10:30:12.989UTC against0.160 cost:−0.010. This offsets Rhode Island's +0.010. **Two closed round trips have zero net realized profit; no profitable strategy is established.** The controller subsequently bought one Rhode Island share at0.155 (order15805641/fill66471755,10:32:01.510UTC) under the original bounded activation. No liability was discarded. [Official evidence](../data/median-official-second-roundtrip-20261006.json).
+
+The unchanged08:59:42.428UTC prospective cutoff was replayed through a later sealed capture in34.14s,39,792 events. All three cases have zero closed trades. Native/capped controls each hold a0.160 Rhode Island share; the strict uptrend case rejected all15 funded candidates because their recent segment declined and holds none. Avoidance is not profit. [Subsequent comparison](../data/median-uptrend-cap-subsequent-20261006T102335862Z.summary.json).
+
 # October6 10:18 UTC: proposal clock defect repaired
 
 The original V2 proposal constructor sampled time twice. A one-millisecond advance produced a 120001 ms lifetime and failed its exact 120000 ms proof check before committing a SELL. Offline reproduction and five focused regressions establish this defect; the live halt followed Michigan's holding-timeout latch, but the old generic failure log did not retain the original exception. A separate synchronous clock adapter captures one timestamp and restores real time immediately after proposal creation. It leaves the original controller, strategy bank, ownership, accounting and activation expiry unchanged. Thirty-eight controller, clock and runner checks passed; independent review found no blocker.

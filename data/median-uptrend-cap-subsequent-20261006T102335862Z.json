@@ -1,0 +1,272 @@
+{
+  "schemaVersion": 1,
+  "mode": "offline_fixed_median_cap_strict_positive_trend_v1",
+  "elapsedMs": 34137.7638,
+  "eventsProcessed": 39792,
+  "originalKernelSha256": "34b544e4619b5a18b0da9692c8340d4b8c1ee11e1264e9353b7290f99be52ada",
+  "comparatorSha256": "666e6684cddbcabac2a6e265eb2676870f64c367117a1254a50cb8e0cc38f513",
+  "sourceReaderSha256": "4ac260eec5f661ecfe4dbdc0089d67d84b8aa4e79d42e519f74998e76019885b",
+  "universeBankSha256": "44e04fbbf4b7b3454eed1137992cb4132ed043d93ea36c60b62cf2fe15eb5059",
+  "experimentCutoff": "2026-10-06T08:59:42.428Z",
+  "freshIndependentWallets": true,
+  "referencePolicy": {
+    "source": "declared_market_price_observation",
+    "feature": "lagged_one_hour_bid_only",
+    "excludeMostRecentKnownBulkPoint": true,
+    "knownBeforeOriginalBookRequest": true,
+    "depthAvailable": false,
+    "executable": false
+  },
+  "executionPolicy": {
+    "prospectiveRevision": 1,
+    "riskPriority": "stop_or_horizon_before_virtual_profit_fill",
+    "riskIntentRefresh": "new_intent_new_clock_and_source_on_bid_below_old_limit",
+    "stopIsNotGuaranteedLossBound": true,
+    "entryDipTicks": [
+      1,
+      2,
+      4
+    ],
+    "historyMs": 3600000,
+    "minimumHistorySpanMs": 1800000,
+    "minimumHistoryReceipts": 20,
+    "latencyMs": 3000,
+    "intentLifetimeMs": 120000,
+    "maximumHoldMs": 7200000,
+    "lossLimitTicks": 4,
+    "profitTargetTicks": 1,
+    "cooldownMs": 900000,
+    "cashReserve": "90.000000",
+    "maxExposure": "3.000000",
+    "maxMarkets": 3,
+    "cumulativeBuyBudget": "25.000000",
+    "initialCash": "100.000000",
+    "fees": 0,
+    "depthFractionBps": 100,
+    "fillAdverseTicks": 0,
+    "limitCushionTicks": 1
+  },
+  "entryCapPolicy": {
+    "formula": "min(original_protective_limit, original_causal_median_bid - 0.005000)",
+    "applies": "new_buy_proposal_only",
+    "recomputedAtFollowup": false,
+    "nativeFundingAdmissionUnchanged": true,
+    "reservationUsesActualCap": true,
+    "trendFilter": "third_arm_only_strict_positive_30m_upper_median_vs_prior30m_plus_one_tick",
+    "minimumEachTrendSegment": 5,
+    "trendIntervals": "[availableAt-1h,availableAt-30m) vs[availableAt-30m,originalRequest); causal retained points only"
+  },
+  "source": {
+    "publicRecords": 39792,
+    "accountRecords": 5589,
+    "priceRecords": 22054,
+    "priceRecordsCausallyConsumed": 22054,
+    "publicBytes": 88917615,
+    "publicSha256": "58a323762af2dd60bfaec00a166736f63b28aca62406168a7f3d3cb9513e4023",
+    "accountBytes": 3368675,
+    "accountSha256": "53fc3fa5345f82f2165d99d97a1e97c6f34315268e851379ebfd38155d06d973",
+    "priceBytes": 247233712,
+    "priceSha256": "cd5d006ce142490b2e45a1dde94fe1bd7ab6d2a0ca1538eb16b4cea1f7b3eb0d",
+    "publicSequence": 39792,
+    "publicTailHash": "93c21ef11aecde8471e3b7b0d8f253761fbf9c097172cdee30f6c20d60cf79ec",
+    "hours": 94.26704388888889,
+    "books": 37278
+  },
+  "results": [
+    {
+      "case": "one_tick_native_control",
+      "trendCounts": {},
+      "proposalCount": 1,
+      "loweredCapCount": 0,
+      "proposals": [
+        {
+          "marketId": "388",
+          "exchangeId": "1077",
+          "sourceSequence": 39589,
+          "sourceRowHash": "4c7b1711c8b41cfd870525f6c8e8a23c406b135533a121f07e459a668110c745",
+          "sourceVersion": "66206836:2026-10-06T10:06:12.560855700Z",
+          "availableAtMs": 1791281172596,
+          "requestAtMs": 1791281172410,
+          "receivedAtMs": 1791281172592,
+          "originalAsk": "0.160000",
+          "originalCausalMedianBid": "0.165000",
+          "referencePoints": 43,
+          "firstReferenceKnownAtMs": 1791278185028,
+          "lastReferenceKnownAtMs": 1791281103489,
+          "originalProtectiveLimit": "0.165000",
+          "fixedBuyLimit": "0.165000",
+          "lowered": false,
+          "quantity": 1
+        }
+      ],
+      "closedLosingTrades": 0,
+      "wallet": {
+        "dipTicks": 1,
+        "cash": "99.840000",
+        "realizedPnl": "0.000000",
+        "cumulativeBuys": "0.160000",
+        "reservedCost": "0.000000",
+        "fills": [
+          {
+            "marketId": "388",
+            "exchangeId": "1077",
+            "action": "buy",
+            "quantity": 1,
+            "price": "0.160000",
+            "fee": "0.000000",
+            "availableAtMs": 1791281216640,
+            "requestAtMs": 1791281216445,
+            "sourceSequence": 39603,
+            "reason": "ask_below_earlier_hour_bid_median",
+            "protectiveLimit": "0.165000",
+            "counterfactual": true
+          }
+        ],
+        "closedTrades": 0,
+        "positions": [
+          {
+            "marketId": "388",
+            "exchangeId": "1077",
+            "quantity": 1,
+            "cost": "0.160000",
+            "enteredAtMs": 1791281216640,
+            "estimatedLiquidation": null
+          }
+        ],
+        "pendingIntents": 0,
+        "estimatedLiquidationPnl": null,
+        "counts": {
+          "account_unknown_stale_or_excluded": 193,
+          "dip_intent": 1,
+          "later_raw_receipt_fill": 1,
+          "no_funded_dip": 640,
+          "source_boundary": 2514
+        },
+        "officialOrders": 0,
+        "profitabilityEstablished": false
+      },
+      "finalWalletStateHash": "313118b4c97ff913c5a4121c557884112da5bc926b0c5201aabd73bab2a69fd3"
+    },
+    {
+      "case": "one_tick_original_reference_entry_cap",
+      "trendCounts": {},
+      "proposalCount": 1,
+      "loweredCapCount": 1,
+      "proposals": [
+        {
+          "marketId": "388",
+          "exchangeId": "1077",
+          "sourceSequence": 39589,
+          "sourceRowHash": "4c7b1711c8b41cfd870525f6c8e8a23c406b135533a121f07e459a668110c745",
+          "sourceVersion": "66206836:2026-10-06T10:06:12.560855700Z",
+          "availableAtMs": 1791281172596,
+          "requestAtMs": 1791281172410,
+          "receivedAtMs": 1791281172592,
+          "originalAsk": "0.160000",
+          "originalCausalMedianBid": "0.165000",
+          "referencePoints": 43,
+          "firstReferenceKnownAtMs": 1791278185028,
+          "lastReferenceKnownAtMs": 1791281103489,
+          "originalProtectiveLimit": "0.165000",
+          "fixedBuyLimit": "0.160000",
+          "lowered": true,
+          "quantity": 1
+        }
+      ],
+      "closedLosingTrades": 0,
+      "wallet": {
+        "dipTicks": 1,
+        "cash": "99.840000",
+        "realizedPnl": "0.000000",
+        "cumulativeBuys": "0.160000",
+        "reservedCost": "0.000000",
+        "fills": [
+          {
+            "marketId": "388",
+            "exchangeId": "1077",
+            "action": "buy",
+            "quantity": 1,
+            "price": "0.160000",
+            "fee": "0.000000",
+            "availableAtMs": 1791281216640,
+            "requestAtMs": 1791281216445,
+            "sourceSequence": 39603,
+            "reason": "ask_below_earlier_hour_bid_median",
+            "protectiveLimit": "0.160000",
+            "counterfactual": true
+          }
+        ],
+        "closedTrades": 0,
+        "positions": [
+          {
+            "marketId": "388",
+            "exchangeId": "1077",
+            "quantity": 1,
+            "cost": "0.160000",
+            "enteredAtMs": 1791281216640,
+            "estimatedLiquidation": null
+          }
+        ],
+        "pendingIntents": 0,
+        "estimatedLiquidationPnl": null,
+        "counts": {
+          "account_unknown_stale_or_excluded": 193,
+          "dip_intent": 1,
+          "later_raw_receipt_fill": 1,
+          "no_funded_dip": 640,
+          "source_boundary": 2514
+        },
+        "officialOrders": 0,
+        "profitabilityEstablished": false
+      },
+      "finalWalletStateHash": "a6ba5b677492de792168955d87cb7d36a9a8acfb312057c1928d3699cc973183"
+    },
+    {
+      "case": "one_tick_cap_strict_positive_30m_trend",
+      "trendCounts": {
+        "declining_recent_segment": 15,
+        "flat_or_below_one_tick_rise": 0,
+        "funded_candidates_before_trend": 15,
+        "strict_uptrend_admitted": 0,
+        "unknown_segment_coverage": 0
+      },
+      "proposalCount": 0,
+      "loweredCapCount": 0,
+      "proposals": [],
+      "closedLosingTrades": 0,
+      "wallet": {
+        "dipTicks": 1,
+        "cash": "100.000000",
+        "realizedPnl": "0.000000",
+        "cumulativeBuys": "0.000000",
+        "reservedCost": "0.000000",
+        "fills": [],
+        "closedTrades": 0,
+        "positions": [],
+        "pendingIntents": 0,
+        "estimatedLiquidationPnl": "0.000000",
+        "counts": {
+          "account_unknown_stale_or_excluded": 193,
+          "insufficient_history": 471,
+          "no_funded_dip": 184,
+          "source_boundary": 2514
+        },
+        "officialOrders": 0,
+        "profitabilityEstablished": false
+      },
+      "finalWalletStateHash": "15ade83143cad736ab27fefbffe9d36483c51ac981a0bcfdc9d9e770c70bea75"
+    }
+  ],
+  "fees": 0,
+  "networkRequests": 0,
+  "competitionOrders": 0,
+  "profitabilityEstablished": false,
+  "limitations": [
+    "Offline counterfactual comparison, not observed competition fills or an active deployment.",
+    "All three wallets are independent controls and must not be added together.",
+    "New proposals retain the original conservative ask-plus-tick funding admission before lowering the reservation; no extra funding-only admissions are introduced.",
+    "Only newly created BUY limit and third-arm NEW-entry permission change. Existing pending orders, original reference, latency, depth, expiry, sizing, stop, target, holding time and accounting remain frozen.",
+    "A missing later executable receipt does not establish that a real resting order would or would not fill; open inventory and pending intents remain reported.",
+    "Future-cutoff mode primes only history before the cutoff and imports no earlier orders, fills, cash changes or inventory. Historical development results do not establish profitability."
+  ]
+}

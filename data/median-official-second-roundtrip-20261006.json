@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "observedAt": "2026-10-06T10:34:34.571Z",
+  "runId": "sig-pilot-median-20261006-human",
+  "owner": "Codex",
+  "source": "official order/fill/account reconciliation by sole collector",
+  "closedRoundTrips": [
+    {
+      "marketId": "388",
+      "exchangeId": "1077",
+      "buyOrderId": 15377038,
+      "buyFillId": 64685852,
+      "buyPrice": "0.170000",
+      "sellOrderId": 15622673,
+      "sellFillId": 65703409,
+      "sellPrice": "0.180000",
+      "realizedPnl": "0.010000"
+    },
+    {
+      "marketId": "306",
+      "exchangeId": "995",
+      "buyOrderId": 15443862,
+      "buyFillId": 64960172,
+      "buyPrice": "0.160000",
+      "sellOrderId": 15801594,
+      "sellFillId": 66455402,
+      "sellPrice": "0.150000",
+      "soldAt": "2026-10-06T10:30:12.989Z",
+      "realizedPnl": "-0.010000"
+    }
+  ],
+  "netClosedRoundTripPnl": "0.000000",
+  "fees": "0.000000",
+  "ordersSubmitted": 5,
+  "unconfirmedIntents": 0,
+  "positionsAtObservation": {
+    "1077": {
+      "cost": "0.155000",
+      "lots": [
+        {
+          "cost": "0.155000",
+          "quantity": 1
+        }
+      ],
+      "marketId": "388",
+      "quantity": 1
+    }
+  },
+  "latestOfficialFill": {
+    "action": "buy",
+    "exchangeId": "1077",
+    "filledAt": "2026-10-06T10:32:01.510Z",
+    "id": 66471755,
+    "marketId": "388",
+    "orderId": 15805641,
+    "price": "0.155000",
+    "quantity": 1
+  },
+  "profitabilityEstablished": false,
+  "policyBankHash": "da6162418dc06cb28e1873b8f1b0613f8b43f7b1c49b3e61e32cc8bd4ead8854",
+  "originalEntryExpiry": "2026-10-06T13:01:24.019Z",
+  "evidenceHash": "8dbf79ee480d0a0ee7d03b3e994e27407dd066423c1d54327593c97b693d2b28"
+}
