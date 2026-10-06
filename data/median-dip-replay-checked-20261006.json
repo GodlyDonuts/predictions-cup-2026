@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "at": "2026-10-06T03:22:09.050Z",
+  "binarySha256": "4e671f930d74db07cfe96865e1759540c3f2a843a2d65fed1904b4be6241c2e2",
+  "sourceHashes": {
+    "Cargo.toml": "92e813d3a00fed9181a4a17534e829758cfc9f633c8fd781981ce07eebca0e89",
+    "Cargo.lock": "23749418bd2f05ffcc03b65b1117d5dae3cd0b291f0d7280540fb8729218e6aa",
+    "src/lib.rs": "820790d2c846f0c5ccf91a770e26b9bce21a53e79eb04ede814f9174528c300f",
+    "src/main.rs": "bf5e6ba1a6df08d1a9f177dc018fa1a7574c30eba0f42f1185ab192c1166a498"
+  },
+  "resultSha256": "e06946b91f6d4c52354f0c9f18c87ca91dfec3fdd96c2e9e64d031552c7fab57",
+  "correctnessTestsPassed": 4,
+  "sourceScopeAndAccountChainsVerified": true,
+  "fixedAlternatives": [
+    1,
+    2,
+    4
+  ],
+  "positiveAlternative": {
+    "ticks": 4,
+    "closedTrades": 2,
+    "distinctMarkets": 1,
+    "realizedCounterfactualPnl": "0.010000",
+    "finalPositions": 0
+  },
+  "negativeControls": [
+    {
+      "ticks": 1,
+      "realizedCounterfactualPnl": "-0.005000"
+    },
+    {
+      "ticks": 2,
+      "realizedCounterfactualPnl": "-0.005000"
+    }
+  ],
+  "acceptedOrders": 0,
+  "profitabilityEstablished": false,
+  "prospectiveBankLaunched": false
+}

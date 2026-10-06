@@ -1,0 +1,91 @@
+{
+  "schemaVersion": 1,
+  "at": "2026-10-06T03:17:38.662Z",
+  "marketId": "311",
+  "exchangeId": "1000",
+  "race": "Tennessee Governor",
+  "sources": [
+    {
+      "name": "beacon.html",
+      "url": "https://tennsight.com/polls/august-2026/",
+      "finalUrl": "https://tennsight.com/polls/august-2026/",
+      "observedAt": "2026-10-06T03:17:38.410Z",
+      "bytes": 255774,
+      "sha256": "f8532c6debe7500d18f42bdf778a633bc214155fc570fd5f82441f4b99a804f5"
+    },
+    {
+      "name": "beacon-marginals.pdf",
+      "url": "https://tennsight.com/wp-content/uploads/2026/09/Beacon-Poll-of-TN-August-2026-Marginals.pdf",
+      "finalUrl": "https://tennsight.com/wp-content/uploads/2026/09/Beacon-Poll-of-TN-August-2026-Marginals.pdf",
+      "observedAt": "2026-10-06T03:17:38.566Z",
+      "bytes": 285583,
+      "sha256": "4e407da80a022b3c25688e0c5ff576dead23525537aa6da071a07e1e66d4961f"
+    },
+    {
+      "name": "targetsmart.pdf",
+      "url": "https://static1.squarespace.com/static/6a5f8cee70d79f7c81148115/t/6aac27e65ceec94e215a260b/1789667303333/TSmart_TN+Statewide+Baseline_Toplines_2026.09.14.pdf",
+      "finalUrl": "https://static1.squarespace.com/static/6a5f8cee70d79f7c81148115/t/6aac27e65ceec94e215a260b/1789667303333/TSmart_TN+Statewide+Baseline_Toplines_2026.09.14.pdf",
+      "observedAt": "2026-10-06T03:17:38.661Z",
+      "bytes": 519389,
+      "sha256": "192b08237bb56f22c07eb9729d51bb89bf7fef93c467d25242798ea80b62073c"
+    }
+  ],
+  "polls": [
+    {
+      "source": "beacon-marginals.pdf",
+      "pageZeroBased": 42,
+      "fieldStart": "2026-08-15",
+      "fieldEnd": "2026-08-26",
+      "population": "likely_voters",
+      "effectiveSample": 601,
+      "fullSurveySample": 1200,
+      "republican": 55,
+      "democratic": 34,
+      "independent": 7,
+      "undecided": 4,
+      "marginPoints": 21,
+      "fullSurveyMoeNotSubsampleMarginMoe": true
+    },
+    {
+      "source": "targetsmart.pdf",
+      "pagesZeroBased": [
+        0,
+        2,
+        10
+      ],
+      "fieldStart": "2026-09-09",
+      "fieldEnd": "2026-09-12",
+      "population": "registered_almost_certain_or_probably_vote",
+      "effectiveSample": 600,
+      "republican": 45,
+      "democratic": 36,
+      "independentHatley": 10,
+      "independentPinkston": 2,
+      "undecided": 7,
+      "marginPoints": 9,
+      "includesLeaners": true,
+      "unpublishedPreBallotQuestions": [
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "contextUnverified": true,
+      "roundingMismatchHatleyComponents": true
+    }
+  ],
+  "pointForecastNotConstructed": true,
+  "contractRootCurrentReview": false,
+  "activeResearchClocksRenewed": false,
+  "existingBanksChanged": false,
+  "executionAuthority": false,
+  "accountRequests": 0,
+  "competitionOrders": 0,
+  "limitations": [
+    "Dated fieldwork and different turnout screening remain explicit; no currentness from merely redownloading a source.",
+    "Unknown preballot questionnaire context and sponsor lineage are not silently ignored.",
+    "Initial topline shares are not win probabilities or near-term repricing forecasts.",
+    "This exploratory market was identified in two concentrated historical dip roundtrips; selection is not independent profitability evidence."
+  ]
+}
