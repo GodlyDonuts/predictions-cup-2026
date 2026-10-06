@@ -1,0 +1,25 @@
+[package]
+name = "baal-service"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = { version = "1", features = ["preserve_order", "float_roundtrip"] }
+sha2 = "0.10"
+chrono = { version = "0.4", default-features = false, features = ["std", "clock"] }
+baal-journal-append = { path = "../journal-append" }
+baal-portfolio-engine = { path = "../portfolio-engine" }
+baal-transport-service = { path = "../transport-service" }
+zeroize = "1"
+
+[features]
+default = []
+offline-fixtures = ["baal-transport-service/offline-fixtures"]
+
+[build-dependencies]
+sha2 = "0.10"
+
+[profile.release]
+lto = "thin"
+codegen-units = 1

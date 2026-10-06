@@ -12,6 +12,7 @@ import {bulkDipWalletViews} from '../../bulk-dip-view.mjs';
 import {probabilityWalletViews} from '../../probability-view.mjs';
 import {noMakerWalletViews} from '../../no-maker-view.mjs';
 import {baalPairWalletView} from '../../baal-pair-view.mjs';
+import {receiptPortfolioManifestValid,receiptPortfolioWalletViews} from '../../receipt-portfolio-view.mjs';
 export async function GET(){
  let execution;try{const r=await fetch('http://127.0.0.1:8787/api/execution',{cache:'no-store',signal:AbortSignal.timeout(4000)});if(!r.ok)throw Error();const x=await r.json();let performance={available:false};try{const dir=process.env.SIG_PAPER_DIR||path.join(process.env.LOCALAPPDATA,'SigTradingCup','paper-runtime');performance=executionPerformanceView(JSON.parse(await readFile(path.join(dir,'performance-stats.json'),'utf8')),x);}catch{}execution={status:x.status,reason:x.reason??null,updatedAt:x.updatedAt??null,ordersSubmitted:x.ordersSubmitted??0,dispatchAttempts:x.dispatchAttempts??0,unconfirmedIntents:x.unconfirmedIntents??0,attributedFills:x.fills?.length??0,realizedPnl:x.realizedPnl??null,limits:x.limits??null,performance};}catch{execution={status:'unavailable'};}
  let official;try{const r=await fetch('http://127.0.0.1:8787/api/account',{cache:'no-store',signal:AbortSignal.timeout(4000)});if(!r.ok)throw Error();const d=await r.json();official={...d,id:'official',name:'Official account',official:true};}catch{official={id:'official',name:'Official account',official:true,available:false};}
@@ -77,5 +78,6 @@ export async function GET(){
   }catch{}
   pairs=[baalPairWalletView(report,manifest,bank,{collectorAlive})];
  }catch{}
- return Response.json({updatedAt:new Date().toISOString(),execution,wallets:[official,...pairs,...makers,...probability,...bulk,...wallets,...comparisons,...limits,...recoveries,...edges]},{headers:{'Cache-Control':'no-store'}});
+ let receipts=[];try{const dir=process.env.SIG_PAPER_DIR||path.join(process.env.LOCALAPPDATA,'SigTradingCup','paper-runtime'),manifest=JSON.parse(await readFile(path.join(dir,'settlement-portfolio-v3-active.json'),'utf8'));if(!receiptPortfolioManifestValid(manifest))throw Error('Invalid native receipt cohort');const cohortDir=path.join(dir,'settlement-portfolio-v3-cohorts',manifest.cohort),bank=JSON.parse(await readFile(path.join(cohortDir,'bank.json'),'utf8')),report=JSON.parse(await readFile(path.join(cohortDir,'stats.json'),'utf8'));receipts=receiptPortfolioWalletViews(report,manifest,bank);}catch{}
+ return Response.json({updatedAt:new Date().toISOString(),execution,wallets:[official,...receipts,...pairs,...makers,...probability,...bulk,...wallets,...comparisons,...limits,...recoveries,...edges]},{headers:{'Cache-Control':'no-store'}});
 }

@@ -1,3 +1,4 @@
+import {receiptObservationHealth}from'./receipt-portfolio-freshness.mjs';
 export const paperCohorts=[['dip-responsive','Responsive dip'],['shock','Shock rebound'],['dip-scale','Scaled dip'],['dip','Conservative dip']];
 export function paperWalletView(d,id,name){
  if(!d?.strategy)throw Error('Unavailable');const s=d.strategy;
@@ -9,6 +10,7 @@ export function paperWalletView(d,id,name){
 }
 export function walletConnection(wallet,now=Date.now()){
  if(!wallet?.available)return {healthy:false,label:wallet?.official?'Account unavailable':'Worker unavailable'};
+ if(wallet.receiptPortfolio)return receiptObservationHealth(wallet,now);
  if(wallet.official){
   // Recheck all source clocks in the browser as a stalled response can age out.
   const keys=['positions','orders','fills','pnl'],ages=keys.map(k=>wallet.sourceTimes?.[k]==null?null:now-Date.parse(wallet.sourceTimes[k]));

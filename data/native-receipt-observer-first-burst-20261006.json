@@ -1,0 +1,123 @@
+{
+  "schemaVersion": 1,
+  "at": "2026-10-06T01:51:23.752Z",
+  "cohort": "kansas-receipt-baseline-20261006-v3",
+  "bankHash": "07d19cae5524dcd50b7d1651067005670956dd5773d2d7324609fd65e08e58b2",
+  "wallMs": 43730,
+  "batches": 8,
+  "journalSequence": 14,
+  "sourceSequence": 33384,
+  "actualAvailableAt": "2026-10-06T01:51:23.003Z",
+  "counts": {
+    "stale_or_pre_boundary": 133,
+    "source_boundary": 1,
+    "account_not_causal_or_fresh": 1,
+    "positive_settlement_scenario_edge": 2,
+    "later_receipt_fill": 2,
+    "settlement_value_retained": 2
+  },
+  "wallets": {
+    "1000": {
+      "cash": "99.650000",
+      "realizedPnl": "0.000000",
+      "fills": 1,
+      "closedTrades": 0,
+      "positions": [
+        {
+          "marketId": "356",
+          "instrument": "1045:YES",
+          "quantity": 1,
+          "cost": "0.350000",
+          "enteredAt": "2026-10-06T01:51:00.898Z",
+          "liquidation": "0.345000",
+          "liquidationPnl": "-0.005000",
+          "researchExpired": false
+        }
+      ],
+      "pending": [],
+      "liquidationPnl": "-0.005000",
+      "recentFills": [
+        {
+          "intentId": 1,
+          "marketId": "356",
+          "exchangeId": "1045",
+          "instrument": "1045:YES",
+          "action": "buy",
+          "quantity": 1,
+          "price": "0.350000",
+          "fee": "0.000000",
+          "at": "2026-10-06T01:51:00.898Z",
+          "requestStartedAt": "2026-10-06T01:51:00.040Z",
+          "receivedAt": "2026-10-06T01:51:00.243Z",
+          "sourceVersion": "61072450:2026-10-06T01:51:00.253178600Z",
+          "sourceSequence": 33377,
+          "sourceHash": "a40502fcfa0ae20c471659195f41f6f050f205e45ff599c4ed2e9ad0f7ba1897",
+          "intentSourceHash": "7002c115f0008fa9971a2c3638e8351c2c637a0abbcf71829e075c1af0ada504",
+          "researchHash": "6f2cdf7914688f6f0bc27d7435c913e3b0f5cbcde211527c258fb5cf1c396e9d",
+          "latencyMs": 1000,
+          "model": "later_rest_request_raw_receipt_counterfactual",
+          "reason": "positive_settlement_scenario_edge",
+          "rawObservedPrice": "0.350000",
+          "protectiveOrderLimit": "0.360000",
+          "limitCushionTicks": 1,
+          "fillAdverseTicks": 0,
+          "eligibleDepthShares": 3,
+          "levelIndex": 0
+        }
+      ]
+    },
+    "3000": {
+      "cash": "99.650000",
+      "realizedPnl": "0.000000",
+      "fills": 1,
+      "closedTrades": 0,
+      "positions": [
+        {
+          "marketId": "356",
+          "instrument": "1045:YES",
+          "quantity": 1,
+          "cost": "0.350000",
+          "enteredAt": "2026-10-06T01:51:00.898Z",
+          "liquidation": "0.345000",
+          "liquidationPnl": "-0.005000",
+          "researchExpired": false
+        }
+      ],
+      "pending": [],
+      "liquidationPnl": "-0.005000",
+      "recentFills": [
+        {
+          "intentId": 1,
+          "marketId": "356",
+          "exchangeId": "1045",
+          "instrument": "1045:YES",
+          "action": "buy",
+          "quantity": 1,
+          "price": "0.350000",
+          "fee": "0.000000",
+          "at": "2026-10-06T01:51:00.898Z",
+          "requestStartedAt": "2026-10-06T01:51:00.040Z",
+          "receivedAt": "2026-10-06T01:51:00.243Z",
+          "sourceVersion": "61072450:2026-10-06T01:51:00.253178600Z",
+          "sourceSequence": 33377,
+          "sourceHash": "a40502fcfa0ae20c471659195f41f6f050f205e45ff599c4ed2e9ad0f7ba1897",
+          "intentSourceHash": "7002c115f0008fa9971a2c3638e8351c2c637a0abbcf71829e075c1af0ada504",
+          "researchHash": "6f2cdf7914688f6f0bc27d7435c913e3b0f5cbcde211527c258fb5cf1c396e9d",
+          "latencyMs": 3000,
+          "model": "later_rest_request_raw_receipt_counterfactual",
+          "reason": "positive_settlement_scenario_edge",
+          "rawObservedPrice": "0.350000",
+          "protectiveOrderLimit": "0.360000",
+          "limitCushionTicks": 1,
+          "fillAdverseTicks": 0,
+          "eligibleDepthShares": 3,
+          "levelIndex": 0
+        }
+      ]
+    }
+  },
+  "networkRequests": 0,
+  "competitionOrders": 0,
+  "persistentServicesAdded": 0,
+  "profitabilityEstablished": false
+}

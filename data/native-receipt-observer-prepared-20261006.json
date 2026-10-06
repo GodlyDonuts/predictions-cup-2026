@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "at": "2026-10-06T01:43:50.385Z",
+  "cohort": "kansas-receipt-baseline-20261006-v3",
+  "bankHash": "07d19cae5524dcd50b7d1651067005670956dd5773d2d7324609fd65e08e58b2",
+  "serviceBinaryHash": "5547769c2f77ce30b51fd6e28d58eccbed9b1a2d813ebc238553b79372d915c8",
+  "serviceEngineHash": "1d44b502860d9a9f4de89e9570a0af75cee01aac4e2dca98751719162f66dc96",
+  "portfolioEngineHash": "207180c11f4cbaad8ca3d99c9df260fb52fe72fbb34c9dd7fb34b0c979a3be5a",
+  "sourcePins": 37,
+  "configFileRelative": "settlement-portfolio-v3-cohorts/kansas-receipt-baseline-20261006-v3/observer-config.json",
+  "binaryRelative": "native-observer-builds/5547769c2f77ce30b51fd6e28d58eccbed9b1a2d813ebc238553b79372d915c8/baal-service.exe",
+  "prepared": true,
+  "activated": false,
+  "accountRequests": 0,
+  "competitionOrders": 0,
+  "persistentServicesAdded": 0
+}

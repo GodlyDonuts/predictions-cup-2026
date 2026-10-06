@@ -15,6 +15,7 @@ export const CURRENT_PAPER_POINTERS=Object.freeze([
  ['dual-no-pair-active.json','dual-no-pair-cohorts'],
  ['dual-no-pair-v2-active.json','dual-no-pair-v2-cohorts'],
  ['coupled-bulk-active.json','coupled-bulk-cohorts'],
+ ['settlement-portfolio-v3-active.json','settlement-portfolio-v3-cohorts'],
 ]);
 const need=(v,c)=>{if(!v)throw Error('PAPER_INVENTORY_'+c);};
 const sha=b=>createHash('sha256').update(b).digest('hex');
@@ -33,22 +34,22 @@ export function capturePaperMigrationInventory({runtimeDir,now=Date.now,maximumA
   const base=path.join(runtimeDir,family,p.cohort),bankBytes=fs.readFileSync(path.join(base,'bank.json')),bank=JSON.parse(bankBytes),bankHashMethod=['dual-no-pair-cohorts','dual-no-pair-v2-cohorts'].includes(family)?'canonical_payload':'model_digest';need((bankHashMethod==='canonical_payload'?payloadHash(bank):digest(bank))===p.bankHash,'BANK_IDENTITY');
   const overlay=path.join(base,'operator-value-revision'),hasOverlay=fs.existsSync(path.join(overlay,'opening.json'))||fs.existsSync(path.join(overlay,'journal.jsonl')),dir=hasOverlay?overlay:base;
   if(hasOverlay)need(fs.existsSync(path.join(overlay,'opening.json'))&&fs.existsSync(path.join(overlay,'journal.jsonl')),'INCOMPLETE_OVERLAY');
-  let stats,receipt,statsBytes;
+  const nativeObserver=family==='settlement-portfolio-v3-cohorts',journalFile=path.join(dir,nativeObserver?'native-observer.jsonl':'journal.jsonl');let stats,receipt,statsBytes;
   for(let attempt=0;attempt<8;attempt++){
-   statsBytes=fs.readFileSync(path.join(dir,'stats.json'));stats=JSON.parse(statsBytes);receipt=tail(path.join(dir,'journal.jsonl'));
-   if(stats.journalHash===receipt.row.hash&&stats.journalSequence===receipt.row.sequence&&sha(fs.readFileSync(path.join(dir,'stats.json')))===sha(statsBytes))break;
+   statsBytes=fs.readFileSync(path.join(dir,'stats.json'));stats=JSON.parse(statsBytes);receipt=tail(journalFile);const owner=nativeObserver?stats.observer:stats;
+   if(owner?.journalHash===receipt.row.hash&&owner.journalSequence===receipt.row.sequence&&sha(fs.readFileSync(path.join(dir,'stats.json')))===sha(statsBytes))break;
    stats=null;
   }
-  need(stats,'PUBLICATION_RACE');need(stats.bankHash===p.bankHash&&stats.cohort===p.cohort&&stats.failed===false,'PUBLICATION_IDENTITY');
+  need(stats,'PUBLICATION_RACE');need(stats.bankHash===p.bankHash&&stats.cohort===p.cohort&&(nativeObserver?stats.mode===bank.mode&&stats.observer?.status==='completed_batch'&&stats.observer.persistentWorker===false:stats.failed===false),'PUBLICATION_IDENTITY');
   const observed=Date.parse(stats.updatedAt),readAt=clock();need(Number.isFinite(observed)&&observed<=readAt&&readAt-observed<=maximumAgeMs,'STALE_PUBLICATION');
   need(sha(fs.readFileSync(pointerFile))===sha(pointerBytes)&&sha(fs.readFileSync(path.join(base,'bank.json')))===sha(bankBytes),'IDENTITY_CHANGED');
   const singleFields=['cash','realizedPnl','cumulativeBuys','positions','pending','reserved','fills','recentFills','package','closedPackages','fees'];
   const wallets=stats.wallets||{single:Object.fromEntries(singleFields.filter(k=>k in stats).map(k=>[k,stats[k]]))};need(Object.keys(wallets).length>0,'NO_ACCOUNTING');
   const drain=family==='coupled-bulk-cohorts'?'COUPLED_BULK_ENTRY_DRAIN':family==='settlement-paper-cohorts'?'FUNDAMENTAL_ENTRY_DRAIN':null;
   const status=hasOverlay||drain&&fs.existsSync(path.join(runtimeDir,drain))?'entry_draining':'current_reducer';
-  const anchors={bankHashMethod,bankFileHash:sha(bankBytes),journalPrefixBytes:receipt.bytes,journalPrefixHash:hashFile(path.join(dir,'journal.jsonl'),receipt.bytes),journalSequence:receipt.row.sequence,journalHash:receipt.row.hash,openingHash:optionalHash(path.join(dir,'opening.json')),sourceHash:stats.sourceHash??null,sourceSequence:stats.sourceSequence??null,sourcePrefixHash:stats.sourcePrefixHash??bank.sourcePrefixHash??null,sourcePrefixBytes:bank.sourcePrefixBytes??null};
+  const owner=nativeObserver?stats.observer:stats,anchors={bankHashMethod,bankFileHash:sha(bankBytes),journalPrefixBytes:receipt.bytes,journalPrefixHash:hashFile(journalFile,receipt.bytes),journalSequence:receipt.row.sequence,journalHash:receipt.row.hash,openingHash:optionalHash(path.join(dir,'opening.json')),sourceHash:owner.sourceHash??null,sourceSequence:owner.sourceSequence??null,sourcePrefixHash:stats.sourcePrefixHash??bank.sourcePrefixHash??null,sourcePrefixBytes:bank.sourcePrefixBytes??null};
   const overlayHash=hasOverlay?stats.revisionHash:null;need(!hasOverlay||/^[a-f0-9]{64}$/.test(overlayHash),'OVERLAY_BINDING');
-  current.push({cohort:p.cohort,bankHash:p.bankHash,bankMode:bank.mode,authoritativeOwner:hasOverlay?'operator_overlay':'original_reducer',overlayHash,status,accounting:{wallets},anchors,scope:{pointer,family,authoritativeDirectory:path.relative(runtimeDir,dir).split(path.sep).join('/'),publishedAt:stats.updatedAt,baseActorMustRemainFenced:hasOverlay}});
+  current.push({cohort:p.cohort,bankHash:p.bankHash,bankMode:bank.mode,authoritativeOwner:hasOverlay?'operator_overlay':nativeObserver?'native_receipt_observer':'original_reducer',overlayHash,status,accounting:{wallets},anchors,scope:{pointer,family,authoritativeDirectory:path.relative(runtimeDir,dir).split(path.sep).join('/'),publishedAt:stats.updatedAt,baseActorMustRemainFenced:hasOverlay}});
  }
  const finished=clock();need(current.every(r=>finished-Date.parse(r.scope.publishedAt)<=maximumAgeMs),'SNAPSHOT_TOO_SLOW');
  need(new Set(current.map(r=>r.cohort)).size===current.length,'DUPLICATE_COHORT');

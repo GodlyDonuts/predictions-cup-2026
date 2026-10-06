@@ -1,3 +1,7 @@
+# October6: native receipt paper purchase and dashboard
+
+The separately frozen Rust receipt observer bought one subsequent Kansas YES share at0.350 with zero fees; each correlated case retains99.650 cash,0 realized profit and−0.005 observed estimated liquidation. Old wallets remain unchanged. The deployed Next dashboard shows its actual holding/fill and suppresses stale quote marks. This observer uses existing captured sources only, with no API client or persistent service; the full Rust account-service migration remains incomplete and contest activation expired. Nine original/native owners are now in the migration inventory. See [the native observer and exact live evidence](NATIVE_RECEIPT_OBSERVER.md).
+
 # October5: accelerated paired-contract paper and Rust transport
 
 Baal now runs two separately frozen Michigan Governor dual-NO paper policies inside the single collector. Full two-leg funding, later receipts, observed depth, zero fees and failed-hedge accounting are enforced. The original cohort holds a0.975 package with zero realized profit; its0.025 ordinary settlement surplus is conditional and not cash profit. Virtual-clock replay processes81.5 captured hours in about9.7seconds while preserving coverage gaps and exact original journal parity.125 correctness checks pass. Contrary Texas polls now block new fundamental entries, and two expired flat hosts are retired with accounting preserved. No contest activation was renewed. See [the measured sprint results](PROFIT_SPRINT_RESULTS.md) for results and limitations.
