@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "name": "median-entry-cap-fixed-20261006-v1",
+  "prospectiveCutoff": "2026-10-06T07:37:20.792Z",
+  "recordedAt": "2026-10-06T07:37:20.792Z",
+  "baselinePaperBankHash": "fe61bfcee3e0fbc2bda5170de3fff0f3841c82d451529df2a20403a027098331",
+  "baseline": "original_ask_plus_one_tick",
+  "variant": "min(original_ask_plus_one_tick, original_causal_reference_bid_minus_one_tick)",
+  "requiredRemainingMarginTicks": 1,
+  "recomputeReferenceAtFollowup": false,
+  "unchanged": {
+    "dipTicks": 1,
+    "shares": 1,
+    "fees": 0,
+    "depthFractionBps": 100,
+    "latencyMs": 3000,
+    "intentLifetimeMs": 120000,
+    "profitTargetTicks": 1,
+    "stopLossTicks": 4,
+    "maximumHoldMs": 7200000,
+    "minimumHistoryReceipts": 20,
+    "minimumHistorySpanMs": 1800000,
+    "historyMs": 3600000,
+    "newestEligiblePointExcluded": true
+  },
+  "futureWallets": {
+    "initialCash": "100.000000",
+    "importEarlierFills": false,
+    "historyPrimeOnlyBeforeCutoff": true
+  },
+  "historicalResultsDevelopmentOnly": true,
+  "productionPolicyChanged": false
+}

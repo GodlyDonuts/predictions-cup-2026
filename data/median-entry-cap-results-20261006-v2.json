@@ -1,0 +1,130 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-06T07:53:47.033Z",
+  "plan": "data/median-entry-cap-experiment-plan-20261006.json",
+  "binarySha256": "b62be2d91fb9d33ab8247ebb316491ed99ab63ddcd095523a8d0c517897cf3a6",
+  "correctnessTests": 25,
+  "independentEconomicReviewPassed": true,
+  "sourceHardeningRerunPreservedExactResults": true,
+  "development": {
+    "mode": "offline_fixed_median_entry_cap_v2",
+    "elapsedMs": 36977.0086,
+    "source": {
+      "publicRecords": 37753,
+      "accountRecords": 4899,
+      "priceRecords": 21538,
+      "priceRecordsCausallyConsumed": 21538,
+      "publicBytes": 84048391,
+      "publicSha256": "625fe4c5c8abbb2f6df1e1f7143dc417ab6737a07c6c6b0605cf04c1821d346d",
+      "accountBytes": 2948027,
+      "accountSha256": "9909ab30b87aad136f7c15e0316a31d50cfd573057ba9f5316e1afd04cd377ba",
+      "priceBytes": 241448264,
+      "priceSha256": "94592c9b3ad8e3cf68d9293bda69463fa18657d2a4faa29605c03504e2149286",
+      "publicSequence": 37753,
+      "publicTailHash": "3ee3c2003d8cc94fca848ec0476ea63c70e5011306e21ae011e40bebcc40c6a6",
+      "hours": 91.08051,
+      "books": 35245
+    },
+    "eventsProcessed": 37753,
+    "experimentCutoff": null,
+    "results": [
+      {
+        "case": "one_tick_native_control",
+        "proposalCount": 14,
+        "loweredCapCount": 0,
+        "realizedPnl": "-0.065000",
+        "closedTrades": 8,
+        "closedLosingTrades": 6,
+        "openCost": "0.945000",
+        "openPositions": 3,
+        "pendingIntents": 0,
+        "reservedCost": "0.000000",
+        "estimatedLiquidationPnl": null
+      },
+      {
+        "case": "one_tick_original_reference_entry_cap",
+        "proposalCount": 14,
+        "loweredCapCount": 7,
+        "realizedPnl": "-0.065000",
+        "closedTrades": 8,
+        "closedLosingTrades": 6,
+        "openCost": "0.945000",
+        "openPositions": 3,
+        "pendingIntents": 0,
+        "reservedCost": "0.000000",
+        "estimatedLiquidationPnl": null
+      }
+    ],
+    "limitations": [
+      "Offline counterfactual comparison, not observed competition fills or an active deployment.",
+      "The two wallets are independent controls and must not be added together.",
+      "New proposals retain the original conservative ask-plus-tick funding admission before lowering the reservation; no extra funding-only admissions are introduced.",
+      "Only the newly created BUY limit changes. Existing pending orders, original reference, latency, depth, expiry, sizing, stop, target, holding time and accounting remain frozen.",
+      "A missing later executable receipt does not establish that a real resting order would or would not fill; open inventory and pending intents remain reported.",
+      "Future-cutoff mode primes only history before the cutoff and imports no earlier orders, fills, cash changes or inventory. Historical development results do not establish profitability."
+    ]
+  },
+  "subsequent": {
+    "mode": "offline_fixed_median_entry_cap_v2",
+    "elapsedMs": 36421.9503,
+    "source": {
+      "publicRecords": 38014,
+      "accountRecords": 4988,
+      "priceRecords": 21674,
+      "priceRecordsCausallyConsumed": 21673,
+      "publicBytes": 84676583,
+      "publicSha256": "bb6f7df8448e2b68a180640f9bde6b718df413ea602e28566778494b95cc8893",
+      "accountBytes": 3001767,
+      "accountSha256": "cdd04bc89d44b5511fe2cd5f4462cc446f7fcacf442bd2e99ff8621d0c1f1d3a",
+      "priceBytes": 242976274,
+      "priceSha256": "35ed913e692050155582191a5b558c2fcfdc1757d214e9f3fd0c5086858521e0",
+      "publicSequence": 38014,
+      "publicTailHash": "7c3291a56c4ee9d6898faaaa75501df82965c59a0be35dc73a053c52bc45df85",
+      "hours": 91.66533666666666,
+      "books": 35504
+    },
+    "eventsProcessed": 38014,
+    "experimentCutoff": "2026-10-06T07:37:20.792Z",
+    "results": [
+      {
+        "case": "one_tick_native_control",
+        "proposalCount": 2,
+        "loweredCapCount": 0,
+        "realizedPnl": "0.000000",
+        "closedTrades": 0,
+        "closedLosingTrades": 0,
+        "openCost": "0.290000",
+        "openPositions": 1,
+        "pendingIntents": 0,
+        "reservedCost": "0.000000",
+        "estimatedLiquidationPnl": null
+      },
+      {
+        "case": "one_tick_original_reference_entry_cap",
+        "proposalCount": 2,
+        "loweredCapCount": 2,
+        "realizedPnl": "0.000000",
+        "closedTrades": 0,
+        "closedLosingTrades": 0,
+        "openCost": "0.290000",
+        "openPositions": 1,
+        "pendingIntents": 0,
+        "reservedCost": "0.000000",
+        "estimatedLiquidationPnl": null
+      }
+    ],
+    "limitations": [
+      "Offline counterfactual comparison, not observed competition fills or an active deployment.",
+      "The two wallets are independent controls and must not be added together.",
+      "New proposals retain the original conservative ask-plus-tick funding admission before lowering the reservation; no extra funding-only admissions are introduced.",
+      "Only the newly created BUY limit changes. Existing pending orders, original reference, latency, depth, expiry, sizing, stop, target, holding time and accounting remain frozen.",
+      "A missing later executable receipt does not establish that a real resting order would or would not fill; open inventory and pending intents remain reported.",
+      "Future-cutoff mode primes only history before the cutoff and imports no earlier orders, fills, cash changes or inventory. Historical development results do not establish profitability."
+    ]
+  },
+  "fees": 0,
+  "networkRequests": 0,
+  "competitionOrders": 0,
+  "profitabilityEstablished": false,
+  "productionPolicyChanged": false
+}

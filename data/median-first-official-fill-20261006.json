@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 1,
+  "observedAt": "2026-10-06T07:39:59.337Z",
+  "runId": "sig-pilot-median-20261006-human",
+  "bankHash": "af566e22332573e759e6dbd45fd4c6dcf3ab4d111362a245e51bc19c66e2fd70",
+  "sourceStatsAt": "2026-10-06T07:39:46.275Z",
+  "confirmedOrders": 1,
+  "unconfirmedIntents": 0,
+  "attributedPositions": {
+    "1077": {
+      "cost": "0.170000",
+      "lots": [
+        {
+          "cost": "0.170000",
+          "quantity": 1
+        }
+      ],
+      "marketId": "388",
+      "quantity": 1
+    }
+  },
+  "attributedFills": [
+    {
+      "action": "buy",
+      "exchangeId": "1077",
+      "filledAt": "2026-10-06T07:37:48.170Z",
+      "id": 64685852,
+      "marketId": "388",
+      "orderId": 15377038,
+      "price": "0.170000",
+      "quantity": 1
+    }
+  ],
+  "realizedPnl": "0.000000",
+  "fees": "0.000000",
+  "originalReference": "0.855000",
+  "entryExpiresAt": "2026-10-06T13:01:24.019Z",
+  "profitabilityEstablished": false,
+  "observedInventorySnapshot": {
+    "at": "2026-10-06T07:49:21.438Z",
+    "quoteReceivedAt": "2026-10-06T07:49:16.899Z",
+    "ownedCost": "0.170000",
+    "observedLiquidationValue": "0.165000",
+    "observedLiquidationTotalPnl": "-0.005000",
+    "sourceTailHash": "0cbc54b5bb9b4e191352c11de53d031910024c9657b8bde47ff1ffe81689d4ce",
+    "actualSale": false,
+    "fullHistoricPrefixReplayed": false
+  }
+}

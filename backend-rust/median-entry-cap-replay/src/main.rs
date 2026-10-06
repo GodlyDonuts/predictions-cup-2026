@@ -1,0 +1,32 @@
+use std::{fs::{self, OpenOptions}, io::Write, path::PathBuf};
+
+fn main() {
+    let run = || -> Result<(), String> {
+        let path = PathBuf::from(std::env::args().nth(1).ok_or("CONFIG_REQUIRED")?);
+        if !path.is_absolute() { return Err("ABSOLUTE_CONFIG_REQUIRED".into()); }
+        let cfg: baal_median_entry_cap_replay::Config = serde_json::from_slice(
+            &fs::read(path).map_err(|_| "CONFIG_READ")?
+        ).map_err(|_| "CONFIG_JSON")?;
+        let result = baal_median_entry_cap_replay::run(&cfg)?;
+        let mut out = OpenOptions::new().write(true).create_new(true).open(&cfg.output)
+            .map_err(|_| "FRESH_OUTPUT_REQUIRED")?;
+        out.write_all(&serde_json::to_vec_pretty(&result).map_err(|_| "OUTPUT_JSON")?)
+            .and_then(|_| out.sync_all()).map_err(|_| "OUTPUT_WRITE")?;
+        println!("{}", serde_json::json!({
+            "mode": result["mode"], "elapsedMs": result["elapsedMs"],
+            "eventsProcessed": result["eventsProcessed"],
+            "results": result["results"].as_array().unwrap().iter().map(|r| serde_json::json!({
+                "case": r["case"], "proposalCount": r["proposalCount"],
+                "loweredCapCount": r["loweredCapCount"],
+                "realizedPnl": r["wallet"]["realizedPnl"],
+                "closedTrades": r["wallet"]["closedTrades"],
+                "closedLosingTrades": r["closedLosingTrades"],
+                "positions": r["wallet"]["positions"],
+                "pendingIntents": r["wallet"]["pendingIntents"],
+                "estimatedLiquidationPnl": r["wallet"]["estimatedLiquidationPnl"]
+            })).collect::<Vec<_>>(), "profitabilityEstablished": false
+        }));
+        Ok(())
+    };
+    if let Err(error) = run() { eprintln!("{error}"); std::process::exit(1); }
+}
