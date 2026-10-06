@@ -194,9 +194,9 @@ pub fn open_passive_watch(runtime: &Path, initialize: bool,
             != bank["sourcePrefixHash"].as_str().unwrap_or("") {
         return Err("Passive source prefix changed".into());
     }
-    let mut state = crate::passive_capture::create_passive_capture(&bank["scope"],
-        bank["sourceHash"].as_str().unwrap_or(""), bank["cutoff"].as_str().unwrap_or(""),
-        bank["sessionId"].as_str().unwrap_or(""))?;
+    let mut capture_args = bank.clone();
+    capture_args["sourceHash"] = bank["sourceHash"].clone();
+    let mut state = crate::passive_capture::create_passive_capture(&capture_args)?;
     let mut offset = 0usize;
     let mut sequence = 0i64;
     let mut previous = hash(&bank);

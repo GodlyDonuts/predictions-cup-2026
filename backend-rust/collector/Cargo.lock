@@ -55,6 +55,7 @@ dependencies = [
 name = "baal-execution"
 version = "0.1.0"
 dependencies = [
+ "baal-paper",
  "baal-service-runtime",
  "chrono",
  "num-bigint",

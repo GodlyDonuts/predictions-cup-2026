@@ -362,7 +362,7 @@ pub fn warm_public_recovery(input: &V, books: &[V], bank: &V) -> Result<V, Strin
         let id = obj_key(&e["marketId"]);
         let points = s["recoveryPoints"][&id].as_array().cloned().unwrap_or_default();
         s["recoveryPoints"][&id] = json!(crate::public_recovery_confirmation::observe_recovery(
-            &points,
+            &V::Array(points),
             e,
             &bank["confirmationPolicy"],
         )?);
@@ -767,7 +767,7 @@ fn decide(s: &V, w: &mut V, e: &V, at: &str, bank: &V) -> Result<(), String> {
     };
     let points = s["recoveryPoints"][&id].as_array().cloned().unwrap_or_default();
     let confirmation = crate::public_recovery_confirmation::recovery_confirmation(
-        &points,
+        &V::Array(points),
         e,
         at,
         &bank["confirmationPolicy"],
@@ -958,7 +958,7 @@ pub fn advance_public_recovery(
         }
         let points = s["recoveryPoints"][&id].as_array().cloned().unwrap_or_default();
         s["recoveryPoints"][&id] = json!(crate::public_recovery_confirmation::observe_recovery(
-            &points,
+            &V::Array(points),
             e,
             &bank["confirmationPolicy"],
         )?);
