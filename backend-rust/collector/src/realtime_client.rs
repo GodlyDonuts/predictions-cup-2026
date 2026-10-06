@@ -171,7 +171,7 @@ impl RealtimeClient {
         });
         let _ = fence;
         self.inner.lock().unwrap().token_requests += 1;
-        let response = self.dispatch(&json!({"method": "POST", "endpoint": "/realtime/token"}))
+        let response = (self.dispatch)(&json!({"method": "POST", "endpoint": "/realtime/token"}))
             .map_err(|_| err(if !self.allowed() { "REALTIME_STOPPED" } else if !self.token_allowed() { "REALTIME_TOKEN_BUDGET_BLOCKED" } else { "REALTIME_TOKEN_UNAVAILABLE" }))?;
         if !self.allowed() { return Err(err("REALTIME_STOPPED")); }
         let d = &response["data"];
@@ -382,6 +382,7 @@ impl RealtimeClient {
             let mode = mode.clone();
             let mid = this_mid.clone();
             ch.on("broadcast", "*", Arc::new(move |msg: &V| {
+                let _ = (&mode, &mid);
                 let mut i = inner.lock().unwrap();
                 i.diagnostics["broadcastCallbacks"] = json!(i.diagnostics["broadcastCallbacks"].as_i64().unwrap_or(0) + 1);
                 let name = msg["event"].as_str().map(|s| s.to_lowercase());
@@ -391,7 +392,6 @@ impl RealtimeClient {
                     }
                     _ => { i.diagnostics["unknownBroadcasts"] = json!(i.diagnostics["unknownBroadcasts"].as_i64().unwrap_or(0) + 1); }
                 }
-                let _ = (mode, mid);
             }));
         }
         for event in self.watched_events.clone() {

@@ -5,12 +5,12 @@ use std::collections::HashMap;
 use std::sync::{Arc, Mutex};
 
 use crate::realtime_books::RealtimeBooks;
-use crate::realtime_client::{Dispatch, EventCb, RealtimeClient};
+use crate::realtime_client::RealtimeClient;
 
-pub struct RealtimeHost<D: Fn(&V) -> Result<V, String> + Send + Sync> {
+pub struct RealtimeHost<D: Fn(&V) -> Result<V, String> + Send + Sync, F: Fn() -> f64 + Send> {
     dispatch: Arc<D>,
     client: Arc<RealtimeClient>,
-    books: Arc<Mutex<RealtimeBooks<EventCb>>>,
+    books: Arc<Mutex<RealtimeBooks<F>>>,
     can_operate: Arc<dyn Fn() -> bool + Send + Sync>,
     can_mint_token: Arc<dyn Fn() -> bool + Send + Sync>,
     silent_recovery_interval_ms: i64,
@@ -30,13 +30,13 @@ struct HostInner {
     last_code: Option<String>,
     quiet_recovery_deferrals: i64,
     recovered: HashMap<String, (String, i64)>,
-    now: Arc<dyn Fn() -> i64 + Send + Sync>,
+    now: Arc<dyn Fn() -> f64 + Send + Sync>,
 }
-impl<D: Fn(&V) -> Result<V, String> + Send + Sync + 'static> RealtimeHost<D> {
+impl<D: Fn(&V) -> Result<V, String> + Send + Sync + 'static, F: Fn() -> f64 + Send> RealtimeHost<D, F> {
     #[allow(clippy::too_many_arguments)]
-    pub fn new(dispatch: Arc<D>, client: Arc<RealtimeClient>, books: RealtimeBooks<EventCb>,
+    pub fn new(dispatch: Arc<D>, client: Arc<RealtimeClient>, books: RealtimeBooks<F>,
         can_operate: Arc<dyn Fn() -> bool + Send + Sync>, can_mint_token: Arc<dyn Fn() -> bool + Send + Sync>,
-        now: Arc<dyn Fn() -> i64 + Send + Sync>, silent_recovery_interval_ms: i64) -> Result<Self, String> {
+        now: Arc<dyn Fn() -> f64 + Send + Sync>, silent_recovery_interval_ms: i64) -> Result<Self, String> {
         if silent_recovery_interval_ms < 60_000 || silent_recovery_interval_ms > 120_000 {
             return Err("REALTIME_SILENT_RECOVERY_POLICY".into());
         }
@@ -49,7 +49,7 @@ impl<D: Fn(&V) -> Result<V, String> + Send + Sync + 'static> RealtimeHost<D> {
     }
     fn allowed(&self) -> bool { !self.inner.lock().unwrap().closed && (self.can_operate)() }
     fn token_allowed(&self) -> bool { (self.can_mint_token)() }
-    fn now(&self) -> i64 { (self.inner.lock().unwrap().now)() }
+    fn now(&self) -> i64 { let g = self.inner.lock().unwrap(); (*g.now)() as i64 }
     fn market_status(&self) -> Vec<V> {
         let now = self.now();
         let mut books = self.books.lock().unwrap();
@@ -69,7 +69,7 @@ impl<D: Fn(&V) -> Result<V, String> + Send + Sync + 'static> RealtimeHost<D> {
         if !self.allowed() { return false; }
         if self.client.authorizes(spec) { return true; }
         spec["method"].as_str() == Some("GET") && spec["body"].is_null() && spec["bodyJson"].is_null()
-            && fence_id.is_some_and(|f| self.fences.lock().unwrap().get(&f) == spec["endpoint"].as_str().map(|s| &s.to_string()).as_ref())
+            && fence_id.is_some_and(|f| self.fences.lock().unwrap().get(&f) == spec["endpoint"].as_str().map(String::from).as_ref())
     }
     pub fn status(&self) -> V {
         let mut inner = self.inner.lock().unwrap();
