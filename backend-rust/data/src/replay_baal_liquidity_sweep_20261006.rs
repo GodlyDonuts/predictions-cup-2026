@@ -64,7 +64,11 @@ pub fn run() -> Result<V, String> {
             return Err("CHAIN".into());
         }
         prior = hash_v.unwrap_or(V::Null);
-        let e = get(get(&row, "event"), "input");
+        // row.event.input on a missing member throws (TypeError) in JS.
+        let e = row
+            .get("event")
+            .and_then(|x| x.get("input"))
+            .ok_or_else(|| "TypeError: row.event.input".to_string())?;
         if get(e, "kind") != &json!("prepared") || get(e, "action") != &json!("buy") {
             continue;
         }
