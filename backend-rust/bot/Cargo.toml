@@ -1,0 +1,16 @@
+[package]
+name = "baal-bot"
+version = "0.1.0"
+edition = "2021"
+build = "build.rs"
+
+[dependencies]
+baal-service-runtime = { path = "../service-runtime" }
+serde_json = { version = "1", features = ["preserve_order", "float_roundtrip"] }
+serde = { version = "1", features = ["derive"] }
+ryu-js = "=1.0.3"
+indexmap = "2"
+
+[profile.release]
+lto = "thin"
+codegen-units = 1
