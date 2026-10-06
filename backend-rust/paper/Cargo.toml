@@ -1,0 +1,18 @@
+[package]
+name = "baal-paper"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = { version = "1", features = ["preserve_order", "float_roundtrip"] }
+num-bigint = "0.4"
+indexmap = { version = "2", features = ["serde"] }
+baal-service-runtime = { path = "../service-runtime" }
+
+[build-dependencies]
+sha2 = "0.10"
+
+[profile.release]
+lto = "thin"
+codegen-units = 1

@@ -10,6 +10,7 @@ fn numeric_str(s: &str) -> bool {
 fn timestamp_ok(s: &str) -> bool {
     chrono::DateTime::parse_from_rfc3339(s).is_ok()
 }
+#[allow(dead_code)]
 fn finite(v: &V) -> bool {
     v.as_f64().is_some_and(|x| x.is_finite())
 }

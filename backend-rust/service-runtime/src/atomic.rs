@@ -26,6 +26,7 @@ fn fsync_dir(path: &Path) -> Result<(), String> {
     let file = fs::File::open(dir).map_err(|e| e.to_string())?;
     file.sync_all().map_err(|e| e.to_string())
 }
+#[allow(dead_code)]
 fn fsync_file(path: &Path) -> Result<(), String> {
     let file = fs::File::open(path).map_err(|e| e.to_string())?;
     file.sync_all().map_err(|e| e.to_string())

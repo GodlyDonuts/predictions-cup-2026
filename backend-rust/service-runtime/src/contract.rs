@@ -1,4 +1,4 @@
-use serde_json::{json, Map, Value as V};
+use serde_json::{json, Value as V};
 
 // feed/contract.mjs: supported API v1 market-feed subset. No transport/auth.
 pub const CAPTURE_SCHEMA_VERSION: i64 = 1;
@@ -65,6 +65,18 @@ pub fn timestamp_str(s: &str) -> Result<String, ContractError> {
         .unwrap_or_default();
     // JS: iso.slice(0,19) + '.' + fraction.padEnd(9,'0') + 'Z'
     Ok(format!("{}.{:0<9}Z", &iso[..19], frac_part))
+}
+// JS Date.parse(canonical ISO) -> epoch ms (f64).
+pub fn parse_iso_ms(s: &str) -> Option<f64> {
+    let t = timestamp_str(s).ok()?;
+    let ms = chrono::DateTime::parse_from_rfc3339(&format!("{}.{}Z", &t[..19], &t[20..23])).ok()?;
+    Some(ms.timestamp_millis() as f64)
+}
+// new Date(ms).toISOString()
+pub fn ms_to_iso(ms: f64) -> String {
+    chrono::DateTime::from_timestamp_millis(ms as i64)
+        .map(|d| d.to_rfc3339_opts(chrono::SecondsFormat::Millis, true))
+        .unwrap_or_default()
 }
 // instantNs: ms*1e6 + last 6 digits of the 9-digit fraction.
 pub fn instant_ns(v: &str) -> Result<i128, ContractError> {
