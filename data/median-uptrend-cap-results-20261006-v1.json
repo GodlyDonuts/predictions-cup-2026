@@ -1,0 +1,205 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-06T09:38:40.188Z",
+  "plan": "data/median-uptrend-cap-experiment-plan-20261006.json",
+  "binarySha256": "e9e3d0e7efd951f506dc22dac8953d66c71bf4f391df76fb2853b4643829a7b9",
+  "correctnessTests": 30,
+  "development": {
+    "mode": "offline_fixed_median_cap_strict_positive_trend_v1",
+    "elapsedMs": 36160.7004,
+    "source": {
+      "publicRecords": 37753,
+      "accountRecords": 4899,
+      "priceRecords": 21538,
+      "priceRecordsCausallyConsumed": 21538,
+      "publicBytes": 84048391,
+      "publicSha256": "625fe4c5c8abbb2f6df1e1f7143dc417ab6737a07c6c6b0605cf04c1821d346d",
+      "accountBytes": 2948027,
+      "accountSha256": "9909ab30b87aad136f7c15e0316a31d50cfd573057ba9f5316e1afd04cd377ba",
+      "priceBytes": 241448264,
+      "priceSha256": "94592c9b3ad8e3cf68d9293bda69463fa18657d2a4faa29605c03504e2149286",
+      "publicSequence": 37753,
+      "publicTailHash": "3ee3c2003d8cc94fca848ec0476ea63c70e5011306e21ae011e40bebcc40c6a6",
+      "hours": 91.08051,
+      "books": 35245
+    },
+    "experimentCutoff": null,
+    "results": [
+      {
+        "case": "one_tick_native_control",
+        "proposalCount": 14,
+        "trendCounts": {},
+        "realizedPnl": "-0.065000",
+        "closedTrades": 8,
+        "closedLosingTrades": 6,
+        "openCost": "0.945000",
+        "positions": [
+          {
+            "marketId": "272",
+            "exchangeId": "961",
+            "quantity": 1,
+            "cost": "0.135000",
+            "enteredAtMs": 1791146811185,
+            "estimatedLiquidation": null
+          },
+          {
+            "marketId": "318",
+            "exchangeId": "1007",
+            "quantity": 1,
+            "cost": "0.275000",
+            "enteredAtMs": 1791233166673,
+            "estimatedLiquidation": null
+          },
+          {
+            "marketId": "328",
+            "exchangeId": "1017",
+            "quantity": 1,
+            "cost": "0.535000",
+            "enteredAtMs": 1791141886853,
+            "estimatedLiquidation": null
+          }
+        ],
+        "pendingIntents": 0,
+        "estimatedLiquidationPnl": null
+      },
+      {
+        "case": "one_tick_original_reference_entry_cap",
+        "proposalCount": 14,
+        "trendCounts": {},
+        "realizedPnl": "-0.065000",
+        "closedTrades": 8,
+        "closedLosingTrades": 6,
+        "openCost": "0.945000",
+        "positions": [
+          {
+            "marketId": "272",
+            "exchangeId": "961",
+            "quantity": 1,
+            "cost": "0.135000",
+            "enteredAtMs": 1791146811185,
+            "estimatedLiquidation": null
+          },
+          {
+            "marketId": "318",
+            "exchangeId": "1007",
+            "quantity": 1,
+            "cost": "0.275000",
+            "enteredAtMs": 1791233166673,
+            "estimatedLiquidation": null
+          },
+          {
+            "marketId": "328",
+            "exchangeId": "1017",
+            "quantity": 1,
+            "cost": "0.535000",
+            "enteredAtMs": 1791141886853,
+            "estimatedLiquidation": null
+          }
+        ],
+        "pendingIntents": 0,
+        "estimatedLiquidationPnl": null
+      },
+      {
+        "case": "one_tick_cap_strict_positive_30m_trend",
+        "proposalCount": 5,
+        "trendCounts": {
+          "declining_recent_segment": 697,
+          "flat_or_below_one_tick_rise": 284,
+          "funded_candidates_before_trend": 986,
+          "strict_uptrend_admitted": 5,
+          "unknown_segment_coverage": 0
+        },
+        "realizedPnl": "0.030000",
+        "closedTrades": 1,
+        "closedLosingTrades": 0,
+        "openCost": "0.000000",
+        "positions": [],
+        "pendingIntents": 0,
+        "estimatedLiquidationPnl": "0.030000"
+      }
+    ],
+    "limitations": [
+      "Offline counterfactual comparison, not observed competition fills or an active deployment.",
+      "All three wallets are independent controls and must not be added together.",
+      "New proposals retain the original conservative ask-plus-tick funding admission before lowering the reservation; no extra funding-only admissions are introduced.",
+      "Only newly created BUY limit and third-arm NEW-entry permission change. Existing pending orders, original reference, latency, depth, expiry, sizing, stop, target, holding time and accounting remain frozen.",
+      "A missing later executable receipt does not establish that a real resting order would or would not fill; open inventory and pending intents remain reported.",
+      "Future-cutoff mode primes only history before the cutoff and imports no earlier orders, fills, cash changes or inventory. Historical development results do not establish profitability."
+    ]
+  },
+  "subsequent": {
+    "mode": "offline_fixed_median_cap_strict_positive_trend_v1",
+    "elapsedMs": 36480.7626,
+    "source": {
+      "publicRecords": 39070,
+      "accountRecords": 5365,
+      "priceRecords": 21900,
+      "priceRecordsCausallyConsumed": 21899,
+      "publicBytes": 87194793,
+      "publicSha256": "cee2181eb9b1f9fde2b4ff98c26fa404f1360a907dfd89ef72efeb148129f188",
+      "accountBytes": 3232483,
+      "accountSha256": "9125bd8149f95694f73f8dd7f1ae385efeeb01b2bed16666c2b3060cd8ceac06",
+      "priceBytes": 245505004,
+      "priceSha256": "2b7345edd52ffb4e841760b3d11463d38de828e90033556e1abdc4cacca2182e",
+      "publicSequence": 39070,
+      "publicTailHash": "2fa5ab363c81c2c3e38223eb511924e816733653131f4d74e5228c44a5b35a4c",
+      "hours": 93.34015583333333,
+      "books": 36558
+    },
+    "experimentCutoff": "2026-10-06T08:59:42.428Z",
+    "results": [
+      {
+        "case": "one_tick_native_control",
+        "proposalCount": 0,
+        "trendCounts": {},
+        "realizedPnl": "0.000000",
+        "closedTrades": 0,
+        "closedLosingTrades": 0,
+        "openCost": "0.000000",
+        "positions": [],
+        "pendingIntents": 0,
+        "estimatedLiquidationPnl": "0.000000"
+      },
+      {
+        "case": "one_tick_original_reference_entry_cap",
+        "proposalCount": 0,
+        "trendCounts": {},
+        "realizedPnl": "0.000000",
+        "closedTrades": 0,
+        "closedLosingTrades": 0,
+        "openCost": "0.000000",
+        "positions": [],
+        "pendingIntents": 0,
+        "estimatedLiquidationPnl": "0.000000"
+      },
+      {
+        "case": "one_tick_cap_strict_positive_30m_trend",
+        "proposalCount": 0,
+        "trendCounts": {
+          "declining_recent_segment": 0,
+          "flat_or_below_one_tick_rise": 0,
+          "funded_candidates_before_trend": 0,
+          "strict_uptrend_admitted": 0,
+          "unknown_segment_coverage": 0
+        },
+        "realizedPnl": "0.000000",
+        "closedTrades": 0,
+        "closedLosingTrades": 0,
+        "openCost": "0.000000",
+        "positions": [],
+        "pendingIntents": 0,
+        "estimatedLiquidationPnl": "0.000000"
+      }
+    ],
+    "limitations": [
+      "Offline counterfactual comparison, not observed competition fills or an active deployment.",
+      "All three wallets are independent controls and must not be added together.",
+      "New proposals retain the original conservative ask-plus-tick funding admission before lowering the reservation; no extra funding-only admissions are introduced.",
+      "Only newly created BUY limit and third-arm NEW-entry permission change. Existing pending orders, original reference, latency, depth, expiry, sizing, stop, target, holding time and accounting remain frozen.",
+      "A missing later executable receipt does not establish that a real resting order would or would not fill; open inventory and pending intents remain reported.",
+      "Future-cutoff mode primes only history before the cutoff and imports no earlier orders, fills, cash changes or inventory. Historical development results do not establish profitability."
+    ]
+  },
+  "productionPolicyChanged": false,
+  "profitabilityEstablished": false
+}
