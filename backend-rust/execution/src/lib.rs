@@ -1,33 +1,54 @@
-// baal-execution: port of execution/*.mjs — the order path's offline core,
-// transport adapter, controllers, median/settlement strategies and audits.
-pub const EXECUTION_HASH: &str = env!("BAAL_EXECUTION_HASH");
-pub const TOURNAMENT_ID: &str = "bda92870-621e-47b0-bc3c-3602c5c26f55";
+// baal-execution modules: execution/ port.
+#![allow(clippy::too_many_arguments)]
+
+use serde_json::Value as V;
+
+pub const TOURNAMENT_ID: &str = baal_service_runtime::client::TOURNAMENT_ID;
 pub const TOURNAMENT_SLUG: &str = "midterm-elections";
 
+/// JS String(v) for scalar id fields (orderId comparisons etc.).
+pub fn js_key(v: &V) -> String {
+    match v {
+        V::String(s) => s.clone(),
+        V::Number(n) => {
+            let mut b = ryu_js::Buffer::new();
+            b.format_finite(n.as_f64().unwrap_or(f64::NAN)).to_string()
+        }
+        V::Bool(b) => if *b { "true".into() } else { "false".into() },
+        V::Null => "null".into(),
+        _ => "[object Object]".into(),
+    }
+}
+
+/// JS String(number) used when a field arrives as a JSON number, not a string.
+pub fn json_number(v: &V) -> String {
+    match v {
+        V::Number(n) => {
+            let mut b = ryu_js::Buffer::new();
+            b.format_finite(n.as_f64().unwrap_or(f64::NAN)).to_string()
+        }
+        other => js_key(other),
+    }
+}
+
+pub mod basket_risk;
+pub mod candidate_markouts;
+pub mod candidate_markouts_audit;
 pub mod controller;
 pub mod core;
 pub mod decision;
+pub mod decision_audit;
+pub mod entry_gates;
+pub mod entry_markouts;
+pub mod entry_path_quality;
+pub mod entry_path_quality_audit;
 pub mod frozen;
 pub mod gates;
 pub mod median;
 pub mod median_controller;
+pub mod owned_risk_timing_audit;
 pub mod production;
 pub mod receipts;
+pub mod reference_quality_audit;
 pub mod settlement;
 pub mod transport;
-
-// JS String(value) for an order id / loose value used in endpoint paths and
-// comparisons — integers print without a decimal point.
-pub fn js_key(v: &serde_json::Value) -> String {
-    match v {
-        serde_json::Value::String(s) => s.clone(),
-        serde_json::Value::Number(_) => baal_service_runtime::json_text::js_stringify(v),
-        serde_json::Value::Bool(b) => b.to_string(),
-        serde_json::Value::Null => "null".into(),
-        _ => baal_service_runtime::json_text::js_stringify(v),
-    }
-}
-// JS String(x) on a JSON value for decimalMicros(String(x)).
-pub fn json_number(v: &serde_json::Value) -> String {
-    js_key(v)
-}
