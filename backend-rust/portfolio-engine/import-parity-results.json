@@ -1,0 +1,16 @@
+{
+  "at": "2026-10-06T01:02:53.710Z",
+  "cohort": "kansas-horizon-portfolio-20261005-v2",
+  "originalBankHash": "77f83ee28a211ee1540f23b74b6698a327c7350562afd45ca98aca29f59652c6",
+  "journalBytes": 13310163,
+  "journalSha": "bafe226dadf2b396cc13bc70a52843ded81dc3108c8894193f2bfbd8f2da2fb1",
+  "publicBytes": 71355696,
+  "publicSha": "3a91860f45d00537a652e40490b278966a801e1f7432d509b91b373af5c53043",
+  "originalJournalRecords": 182,
+  "nativeStateHash": "9e9e0a2a3a5c665d34f0e96c098d507614afb64eb2dde06d7d8898188c5bbc16",
+  "allOriginalCheckpointsVerified": true,
+  "exactOriginalStateParity": true,
+  "wallMs": 8811.3244,
+  "networkRequests": 0,
+  "contestOrders": 0
+}

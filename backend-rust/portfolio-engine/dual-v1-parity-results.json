@@ -1,0 +1,17 @@
+{
+  "at": "2026-10-06T00:46:27.878Z",
+  "cohort": "michigan-governor-dual-no-20261005-v1",
+  "bankHash": "0d53558dda330cd5a41f267dfc0310bd3902418572c6679335dcbf7d49ff5217",
+  "records": 1788,
+  "sourceBytes": 24540488,
+  "sourceHash": "8f4679262c3c36015fd9d2d4ab9e17504173426f7aa13ae8ef0beef452a65be3",
+  "responses": 3575,
+  "fullStateReportParity": true,
+  "wallMs": 3721.9626999999996,
+  "cash": "99.025000",
+  "realizedPnl": "0.000000",
+  "positionsPreserved": 2,
+  "originalV1Mode": "dual_no_sequential_paper_v1",
+  "networkRequests": 0,
+  "contestOrders": 0
+}

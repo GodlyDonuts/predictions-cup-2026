@@ -1,0 +1,34 @@
+{
+  "files": [
+    "backend-rust/portfolio-engine/Cargo.toml",
+    "backend-rust/portfolio-engine/Cargo.lock",
+    "backend-rust/portfolio-engine/build.rs",
+    "backend-rust/portfolio-engine/README.md",
+    "backend-rust/portfolio-engine/src/lib.rs",
+    "backend-rust/portfolio-engine/src/money.rs",
+    "backend-rust/portfolio-engine/src/settlement_value.rs",
+    "backend-rust/portfolio-engine/src/publication.rs",
+    "backend-rust/portfolio-engine/src/history.rs",
+    "backend-rust/portfolio-engine/src/dual_v1.rs",
+    "backend-rust/portfolio-engine/src/main.rs",
+    "backend-rust/portfolio-engine/test.mjs",
+    "backend-rust/portfolio-engine/parity.mjs",
+    "backend-rust/portfolio-engine/dual-v1-parity.mjs",
+    "backend-rust/portfolio-engine/settlement-v1-parity.mjs",
+    "backend-rust/portfolio-engine/import-parity.mjs",
+    "backend-rust/portfolio-engine/overlay-opening-parity.mjs",
+    "backend-rust/portfolio-engine/parity-results.json",
+    "backend-rust/portfolio-engine/dual-v1-parity-results.json",
+    "backend-rust/portfolio-engine/settlement-v1-parity-results.json",
+    "backend-rust/portfolio-engine/import-parity-results.json",
+    "backend-rust/portfolio-engine/overlay-opening-parity-results.json",
+    "backend-rust/portfolio-engine/release-binding.json",
+    "backend-rust/portfolio-engine/receipt-baseline-checks.json",
+    "backend-rust/portfolio-engine/publication-allowlist.json"
+  ],
+  "excluded": [
+    "target/**",
+    "*mismatch*.json"
+  ],
+  "runtimeActivated": false
+}

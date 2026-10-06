@@ -1,0 +1,219 @@
+{
+  "schemaVersion": 1,
+  "at": "2026-10-06T01:22:42.267Z",
+  "policy": {
+    "horizonsMs": [
+      30000,
+      120000,
+      300000
+    ],
+    "ridge": 200,
+    "trainFraction": 0.6,
+    "latencyMs": 1000,
+    "maximumLatenessMs": 30000,
+    "minimumNet": 0.005,
+    "tick": 0.005,
+    "depthFractionBps": 100,
+    "fees": 0
+  },
+  "source": {
+    "prefixBytes": 72272227,
+    "sha256": "1109d7d8344c5adef265ba3c7a037ef7fd7ce5ad6e1cfd6164d3a09996a0e20d",
+    "sequence": 32789,
+    "tailHash": "f6afe6723d651a4bb6462e5de93093cd799c1e93f9bb9e04c5165b13da5689bf",
+    "first": "2026-10-02T12:04:20.364Z",
+    "last": "2026-10-06T01:22:21.020Z",
+    "hours": 85.30018222222222,
+    "bookRows": 30294,
+    "streams": 4899
+  },
+  "cutoff": "2026-10-04T15:15:08.757Z",
+  "wallMs": 20679.4744,
+  "results": [
+    {
+      "horizonMs": 30000,
+      "labels": 10660,
+      "model": {
+        "cutoff": 1791126908757,
+        "trainLabels": 1900,
+        "mean": [
+          0.007805263157894775,
+          -0.200780466752346,
+          -0.0007995875727632449,
+          -0.000060526315789473594,
+          0.13833836842105293
+        ],
+        "scale": [
+          0.004533381877421883,
+          0.4442349882496127,
+          0.002501663408308075,
+          0.0019474057606661357,
+          0.05583982795760256
+        ],
+        "coefficients": [
+          -0.00006428571428570874,
+          0.0005277461986098395,
+          0.000023977898264964937,
+          0.000192030972841228,
+          -0.00028634240080727824,
+          0.0000930959051161854
+        ],
+        "policy": {
+          "horizonsMs": [
+            30000,
+            120000,
+            300000
+          ],
+          "ridge": 200,
+          "trainFraction": 0.6,
+          "latencyMs": 1000,
+          "maximumLatenessMs": 30000,
+          "minimumNet": 0.005,
+          "tick": 0.005,
+          "depthFractionBps": 100,
+          "fees": 0
+        }
+      },
+      "score": {
+        "laterLabels": 8760,
+        "laterDecisionObservations": 14731,
+        "rmse": 0.0009048484451113897,
+        "unchangedBidRmse": 0.0008663548789357077,
+        "selectedQuoteSignals": 0,
+        "censoredSelectedSignals": 0,
+        "selected": [],
+        "accountRequests": 0,
+        "acceptedOrders": 0,
+        "realizedPnl": null,
+        "profitabilityEstablished": false
+      }
+    },
+    {
+      "horizonMs": 120000,
+      "labels": 9882,
+      "model": {
+        "cutoff": 1791126908757,
+        "trainLabels": 1855,
+        "mean": [
+          0.007770889487870653,
+          -0.20308534600763475,
+          -0.0008485052168637628,
+          -0.000079514824797843,
+          0.13785306940700864
+        ],
+        "scale": [
+          0.004484632522114453,
+          0.43706037353938426,
+          0.0023864312914826428,
+          0.001991494253140744,
+          0.05554844257559504
+        ],
+        "coefficients": [
+          -0.00009489051094890254,
+          0.001005532915266613,
+          0.0001605303148982292,
+          0.0002348606496172469,
+          -0.0001488447479282138,
+          0.00010845044503546428
+        ],
+        "policy": {
+          "horizonsMs": [
+            30000,
+            120000,
+            300000
+          ],
+          "ridge": 200,
+          "trainFraction": 0.6,
+          "latencyMs": 1000,
+          "maximumLatenessMs": 30000,
+          "minimumNet": 0.005,
+          "tick": 0.005,
+          "depthFractionBps": 100,
+          "fees": 0
+        }
+      },
+      "score": {
+        "laterLabels": 8027,
+        "laterDecisionObservations": 14731,
+        "rmse": 0.0014259589502116775,
+        "unchangedBidRmse": 0.0013171067347566255,
+        "selectedQuoteSignals": 0,
+        "censoredSelectedSignals": 0,
+        "selected": [],
+        "accountRequests": 0,
+        "acceptedOrders": 0,
+        "realizedPnl": null,
+        "profitabilityEstablished": false
+      }
+    },
+    {
+      "horizonMs": 300000,
+      "labels": 8542,
+      "model": {
+        "cutoff": 1791126908757,
+        "trainLabels": 1555,
+        "mean": [
+          0.007543408360128611,
+          -0.1714865955999335,
+          -0.0006492484707763994,
+          -0.00004823151125401918,
+          0.13861260450160803
+        ],
+        "scale": [
+          0.003962510810087332,
+          0.4246774966656267,
+          0.0019811814609017736,
+          0.001982054966070474,
+          0.05535856267828675
+        ],
+        "coefficients": [
+          -0.00016524216524216757,
+          0.0011777138635625036,
+          0.0002335082147048417,
+          0.0006965038807757333,
+          0.00006725250675922741,
+          0.0002254186259332698
+        ],
+        "policy": {
+          "horizonsMs": [
+            30000,
+            120000,
+            300000
+          ],
+          "ridge": 200,
+          "trainFraction": 0.6,
+          "latencyMs": 1000,
+          "maximumLatenessMs": 30000,
+          "minimumNet": 0.005,
+          "tick": 0.005,
+          "depthFractionBps": 100,
+          "fees": 0
+        }
+      },
+      "score": {
+        "laterLabels": 6987,
+        "laterDecisionObservations": 14731,
+        "rmse": 0.002084632153230836,
+        "unchangedBidRmse": 0.0018514303863376694,
+        "selectedQuoteSignals": 0,
+        "censoredSelectedSignals": 0,
+        "selected": [],
+        "accountRequests": 0,
+        "acceptedOrders": 0,
+        "realizedPnl": null,
+        "profitabilityEstablished": false
+      }
+    }
+  ],
+  "accountRequests": 0,
+  "acceptedOrders": 0,
+  "realizedPnl": null,
+  "profitabilityEstablished": false,
+  "limitations": [
+    "Quote-only diagnostic has no funded wallet, order acceptance or queue proof; observed margins are not P&L.",
+    "Only later independently requested depth-qualified receipts label outcomes; missing horizons/depth/limit fills are censored.",
+    "Training uses labels already available at cutoff; subsequent fitting segment is chronological but this capture has been examined in other development research.",
+    "Repeated receipts and overlapping labels/related elections are correlated, not independent statistical samples.",
+    "All three fixed horizons are retained, not a selected winner; new prospective frozen evidence is required."
+  ]
+}

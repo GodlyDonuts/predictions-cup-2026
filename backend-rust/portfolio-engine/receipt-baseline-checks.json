@@ -1,0 +1,20 @@
+{
+  "at": "2026-10-06T01:21:47.679Z",
+  "mode": "funded_settlement_portfolio_receipt_baseline_v3",
+  "schemaVersion": 3,
+  "checksPassed": 15,
+  "sourceClockRenewed": false,
+  "originalV2FullStateReportParity": true,
+  "originalV2RecordedResponses": 3319,
+  "syntheticCorrectnessOnly": true,
+  "protectiveLimit": "0.355000",
+  "rawLaterFill": "0.350000",
+  "rawLiquidationPnl": "-0.005000",
+  "oneTickLiquidationSensitivity": "-0.010000",
+  "twoTickLiquidationSensitivity": "-0.015000",
+  "quotesAreNotRealized": true,
+  "fees": "0.000000",
+  "networkRequests": 0,
+  "contestOrders": 0,
+  "runtimeActivated": false
+}

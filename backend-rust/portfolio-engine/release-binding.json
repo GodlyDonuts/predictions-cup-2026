@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "at": "2026-10-06T01:20:51.400Z",
+  "mode": "native_portfolio_strategy_release_v3",
+  "binaryHash": "612f1c50748c8e5a7616c8aea455b9cb8fd10fbe70cf0eed68088ab355ce7990",
+  "engineHash": "207180c11f4cbaad8ca3d99c9df260fb52fe72fbb34c9dd7fb34b0c979a3be5a",
+  "sourceFiles": {
+    "Cargo.toml": "68e546bdccca04a48a1f95f123a56083c2e7f5e3269cc34438aa88e0b35f1b3b",
+    "Cargo.lock": "d1ea5985bdae3745a2bcf1635de5f18d870fe7a28da6165d3a9b45071e43295c",
+    "build.rs": "624ed546914640bce6420d0aa5d390931e583391bb73a46d58f603abd5f915ce",
+    "src/lib.rs": "c5d083a531318233d19ad95cd697e9adacc2b946b428cfbf28bd6dee417e865e",
+    "src/dual_v1.rs": "9052646bc486780b5c522c30878646e3c3b9756cff51446cc9e8d63b5d3aef4f",
+    "src/publication.rs": "5848ea63970c7fa79a4328061da65c1e164ed5707603f692b4a3aef7d618d379",
+    "src/history.rs": "96746939aeeb065b8f19aa35e5c01fb30a633c20648694a3ab06082df508eeaf",
+    "src/main.rs": "272780d5da8a712198250abe17aaecf05e83d54a1f4593a45a6b496b0d575213",
+    "src/settlement_value.rs": "8cd3dae02bf60ab511a1044a9c0886067f1f6699e637efd83681c45efeb291f2",
+    "src/money.rs": "879298022b838d1ea2066e6594ebdaa05c3cf5a392b1b9fee7404f6981007f58",
+    "../dual-no-engine/src/lib.rs": "87940b5c72c333a7b514cd904f86f076789d72cb6afaa000d20c57bfefeb23b8",
+    "../dual-no-engine/Cargo.toml": "47a6f86954dccb35286382ea615844f5f75494ed15183ec87ccfeaaac4036b69",
+    "../dual-no-engine/Cargo.lock": "2bc433557207b82bae4e2682934b1c8e1c71b59c254baa1d5aa3e3112cff1241"
+  },
+  "receiptBaselineMode": "funded_settlement_portfolio_receipt_baseline_v3",
+  "receiptBaselineSchemaVersion": 3,
+  "fillPolicyResidualTicks": 0,
+  "liquidationResidualTicks": 0,
+  "limitCushionTicks": 1,
+  "fees": 0,
+  "officialOrders": 0,
+  "runtimeActivated": false
+}

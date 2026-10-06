@@ -1,0 +1,20 @@
+{
+  "at": "2026-10-06T00:53:29.061Z",
+  "cohort": "texas-governor-fundamental-20261005-v1",
+  "originalMode": "funded_settlement_value_paper_v1",
+  "originalBankHash": "fdfb0c25e1bba643c1ec203fa82a34b4fc88e864a5e9174571a3115302deb3a9",
+  "records": 1656,
+  "sourceBytes": 1146152,
+  "sourceFrontierBytes": 63678194,
+  "sourceFrontierSequence": 29197,
+  "responses": 3311,
+  "fullStateReportParity": true,
+  "allOriginalStateHashesVerified": true,
+  "wallMs": 61951.1275,
+  "nativeInputsEvaluated": 820,
+  "cash": "99.705000",
+  "realizedPnl": "0.000000",
+  "positionsPreserved": 1,
+  "networkRequests": 0,
+  "contestOrders": 0
+}

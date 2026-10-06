@@ -1,0 +1,142 @@
+{
+  "schemaVersion": 1,
+  "mode": "offline_original_frozen_Js_Rust_probability_parity",
+  "recordedAt": "2026-10-06T01:13:45.229Z",
+  "cohorts": [
+    {
+      "cohort": "source-probability-native-20261004-v3",
+      "bankHash": "3e445d6b7f436cab79245ed588efa627734d8d2a4a6a6b788ac2873582ed4ef2",
+      "checkpoints": 15591,
+      "sourceRecords": 32593,
+      "sealedSourceBytes": 71805675,
+      "sealedSourceSha256": "07fe967f6eb9e28c8b61a17bd25f295cfc82dc2e0e0ad12f482f9350fc3a0644",
+      "sealedCheckpointBytes": 11214039,
+      "sealedCheckpointSha256": "061fc1d9e828b9cbe2a6581cc85032ba40f265fed44a4152ee9980a5e98c575d",
+      "everyOriginalCheckpointMatched": true,
+      "stateHash": "6ab282f779036d86ceac936105b930cef367ed7b879e1f8fb76485d26c5533a9",
+      "reportHash": "35535e9461cd3b8d1a0f31f5912984ffb6078de3f3b5de06817997b2a1d1811e",
+      "nodeMs": 26833.2898,
+      "rustMs": 18419.574400000005,
+      "speedRatio": 1.4567812055418605,
+      "wallets": {
+        "1000": {
+          "cash": "100.040000",
+          "realizedPnl": "0.040000",
+          "fills": 4,
+          "positions": [],
+          "pending": 0
+        },
+        "3000": {
+          "cash": "100.040000",
+          "realizedPnl": "0.040000",
+          "fills": 4,
+          "positions": [],
+          "pending": 0
+        }
+      },
+      "networkRequests": 0,
+      "competitionOrders": 0,
+      "profitabilityEstablished": false
+    },
+    {
+      "cohort": "calibrated-kansas-poll-20261005-v1",
+      "bankHash": "3e57289fda56eb58a833fbcf62c8c488064b3e84c0ab0642ece81f6b8549fcce",
+      "checkpoints": 9544,
+      "sourceRecords": 32593,
+      "sealedSourceBytes": 71805675,
+      "sealedSourceSha256": "07fe967f6eb9e28c8b61a17bd25f295cfc82dc2e0e0ad12f482f9350fc3a0644",
+      "sealedCheckpointBytes": 6612536,
+      "sealedCheckpointSha256": "33d34d60e25de1bfcc0e5a3ac454d99a61cba248e8df9db15987589cbac3c6ea",
+      "everyOriginalCheckpointMatched": true,
+      "stateHash": "d6f1199256cc3793b410bb5d98d68817ce44a78fa82e6f156c9fa3d15e1c294b",
+      "reportHash": "77e62e30866e81ba9bb3c4eecf8b56614d6ff7e215ecc111b4131851aacd9cea",
+      "nodeMs": 16342.0472,
+      "rustMs": 11755.043900000004,
+      "speedRatio": 1.3902157524056542,
+      "wallets": {
+        "1000": {
+          "cash": "99.655000",
+          "realizedPnl": "0.000000",
+          "fills": 1,
+          "positions": [
+            {
+              "instrument": "1045:YES",
+              "quantity": 1,
+              "cost": "0.345000"
+            }
+          ],
+          "pending": 0
+        },
+        "3000": {
+          "cash": "99.655000",
+          "realizedPnl": "0.000000",
+          "fills": 1,
+          "positions": [
+            {
+              "instrument": "1045:YES",
+              "quantity": 1,
+              "cost": "0.345000"
+            }
+          ],
+          "pending": 0
+        }
+      },
+      "networkRequests": 0,
+      "competitionOrders": 0,
+      "profitabilityEstablished": false
+    },
+    {
+      "cohort": "primary-texas-governor-20261005-v3",
+      "bankHash": "b01aacf6ab1c3a4ccdcd50f1cb56edd1651c95395134a7ffef8c4bb2e45e5ce3",
+      "checkpoints": 4895,
+      "sourceRecords": 32593,
+      "sealedSourceBytes": 71805675,
+      "sealedSourceSha256": "07fe967f6eb9e28c8b61a17bd25f295cfc82dc2e0e0ad12f482f9350fc3a0644",
+      "sealedCheckpointBytes": 3390779,
+      "sealedCheckpointSha256": "92aaf19e7829a41e2590249fe88465d6a291c3af97fd3d25be99032bf002579d",
+      "everyOriginalCheckpointMatched": true,
+      "stateHash": "a8491b2e3be1bb375ba7b497e328a3c7ce23a88594ae614ca71fe96763dd36e9",
+      "reportHash": "ba30702fdea27435c8f713610fc454b11403b81f8ee2da9ce4f5e6d2ae06be81",
+      "nodeMs": 7665.596300000005,
+      "rustMs": 7533.698000000004,
+      "speedRatio": 1.017507776393479,
+      "wallets": {
+        "1000": {
+          "cash": "99.705000",
+          "realizedPnl": "0.000000",
+          "fills": 1,
+          "positions": [
+            {
+              "instrument": "884:YES",
+              "quantity": 1,
+              "cost": "0.295000"
+            }
+          ],
+          "pending": 0
+        },
+        "3000": {
+          "cash": "99.705000",
+          "realizedPnl": "0.000000",
+          "fills": 1,
+          "positions": [
+            {
+              "instrument": "884:YES",
+              "quantity": 1,
+              "cost": "0.295000"
+            }
+          ],
+          "pending": 0
+        }
+      },
+      "networkRequests": 0,
+      "competitionOrders": 0,
+      "profitabilityEstablished": false
+    }
+  ],
+  "limitations": [
+    "These are original local counterfactual paper wallets, not contest fills.",
+    "Exact sealed-original replay is correctness evidence, not strategy profitability.",
+    "Rust timing includes full source protocol verification; Node is the original frozen economic reducer checked against every committed state hash, with unrelated book rows represented by their exact lastAvailableAt-only effect. Ratios are descriptive, not equal-work production benchmarks.",
+    "Latency wallets are correlated and must not be summed."
+  ]
+}

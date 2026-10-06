@@ -1,0 +1,14 @@
+{
+  "at": "2026-10-06T01:20:17.427Z",
+  "bankHash": "fdfb0c25e1bba643c1ec203fa82a34b4fc88e864a5e9174571a3115302deb3a9",
+  "historicalStateHash": "e5a63be94263f2b6e68ffd2432b613a97e1118cc422d64858dbf50cba83676f2",
+  "historicalOriginalJournalBytes": 1146152,
+  "historicalOriginalJournalHash": "f7750a25694a4587f0989468ef1cf69b7d4f22723395d081d2cc242b2fc1846b",
+  "exactOriginalOpeningAccounting": true,
+  "historicalNotCurrent": true,
+  "authoritativeOverlayApplied": false,
+  "wallMs": 19742.8199,
+  "networkRequests": 0,
+  "contestOrders": 0,
+  "warning": "This is an authenticated historical opening for subsequent overlay replay. It cannot be exposed as current inventory or added to the authoritative overlay."
+}
