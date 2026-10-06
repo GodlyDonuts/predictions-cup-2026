@@ -1,0 +1,26 @@
+[package]
+name = "baal-data"
+version = "0.1.0"
+edition = "2021"
+build = "build.rs"
+
+[dependencies]
+baal-collector = { path = "../collector" }
+baal-execution = { path = "../execution" }
+baal-service-runtime = { path = "../service-runtime" }
+baal-paper = { path = "../paper" }
+baal-feed = { path = "../feed" }
+serde_json = { version = "1", features = ["preserve_order", "float_roundtrip"] }
+serde = { version = "1", features = ["derive"] }
+sha2 = "0.10"
+chrono = "0.4"
+num-bigint = "0.4"
+indexmap = "2"
+ryu-js = "=1.0.3"
+regex = "1"
+uuid = { version = "1", features = ["v4"] }
+reqwest = { version = "0.12", features = ["rustls-tls", "blocking", "json"] }
+
+[profile.release]
+lto = "thin"
+codegen-units = 1
