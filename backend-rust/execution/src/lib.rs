@@ -30,7 +30,6 @@ pub fn json_number(v: &V) -> String {
         other => js_key(other),
     }
 }
-
 pub mod api_tick_price;
 pub mod atomic_rename;
 pub mod basket_risk;
@@ -51,6 +50,7 @@ pub mod entry_path_quality_audit;
 pub mod exact_money_receipts;
 pub mod frozen;
 pub mod gates;
+pub mod ledger;
 pub mod median;
 pub mod median_controller;
 pub mod median_controller_v2;

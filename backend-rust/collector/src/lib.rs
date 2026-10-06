@@ -1,6 +1,5 @@
 // baal-collector modules: live-paper collector port.
 #![allow(clippy::too_many_arguments)]
-
 pub mod account;
 pub mod account_eligibility_publication_v1;
 pub mod baal_pair_host;
@@ -105,6 +104,7 @@ pub mod funded_quote_replay;
 pub mod gpu_dataset;
 pub mod gpu_freeze;
 pub mod gpu_inference;
+pub mod history;
 pub mod history_allocation;
 pub mod history_policy;
 pub mod identity_join;
@@ -219,6 +219,7 @@ pub mod relative_dip;
 pub mod relative_dip_audit;
 pub mod replay;
 pub mod roundtrip_target;
+pub mod runtime;
 pub mod rust_backend;
 pub mod settlement_paper;
 pub mod settlement_paper_collector;

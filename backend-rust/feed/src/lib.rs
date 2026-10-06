@@ -1,6 +1,8 @@
 // feed/*.mjs -> Rust port: offline market-data collection, capture and replay.
 pub mod capture;
+pub mod cli;
 pub mod collector;
+pub mod contract;
 pub mod replay;
 pub mod runtime;
 
