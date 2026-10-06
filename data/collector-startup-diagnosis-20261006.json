@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "observedAt": "2026-10-06T04:28:32.122Z",
+  "activeSourcesModified": false,
+  "processesStopped": false,
+  "accountRequests": 0,
+  "collector": {
+    "status": "running",
+    "cycles": 14,
+    "readRequests": 202,
+    "lastCycleAt": "2026-10-06T04:28:14.099Z"
+  },
+  "mainJournalRestore": {
+    "sourceBytes": 10399315878,
+    "records": 16494,
+    "prefixHashMs": 14845.3731,
+    "verifyMs": 31637.648599999997,
+    "totalMs": 46613.89260000001,
+    "completedAt": "2026-10-06T04:16:48.837Z"
+  },
+  "retainedKansasPortfolio": {
+    "coldBootMs": 174325.96550000002,
+    "sourcePrefixBytes": 67988043,
+    "publicSourceVerification": {
+      "mode": "full_consumed_prefix_each_consume",
+      "producerExclusivityEstablished": false,
+      "publicPrefixVerifyMs": 183239.1412,
+      "sourceBytesVerified": 1186029600
+    },
+    "attributedHoldingMarkets": [
+      [
+        "356"
+      ],
+      [
+        "356"
+      ]
+    ],
+    "casesAreCorrelatedNotSummed": true
+  },
+  "medianBootstrapIdentityBenchmark": {
+    "iterations": 100,
+    "sourceBytesPerIteration": 132299,
+    "elapsedMs": 125.0744,
+    "perIterationMs": 1.250744,
+    "estimatedExtraCpuFor20095RowsMs": 25133.70068,
+    "kind": "offline microbenchmark; not isolated live causal timing"
+  },
+  "retainedLegacyState": {
+    "mean_reversion": {
+      "positions": 0,
+      "pending": 0,
+      "fills": 5,
+      "realized": "-0.494635",
+      "cash": "99999.505365"
+    },
+    "buy_hold_benchmark": {
+      "positions": 4,
+      "pending": 0,
+      "fills": 4,
+      "realized": "0.000000",
+      "cash": "99974.099125"
+    }
+  },
+  "nextMinimalChange": "On a separately pinned future collector revision, check six source identities before/after bootstrap and before each live callback/admission instead of rereading/hashing all six files for every historical row; keep STOP checks and full original source chain verification. Do not modify active pinned graph.",
+  "quiescenceDecision": "Blanket flat retirement rejected: historical buy-hold benchmark retains four attributed paper positions. Main journal restore is already complete, so main quiescence would not cure current steady collection. Preserve raw10GB journal and all losses/holdings; exact checkpoint acceleration would require explicit lineage-bound opening proof, not reset.",
+  "latencyInterpretation": "Kansas publicPrefixVerifyMs is cumulative wall time and may include Node event-loop contention; it is not a measured isolated disk/hash time."
+}

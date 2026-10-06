@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "at": "2026-10-06T04:51:57.469Z",
+  "binarySha256": "44244135d7b025ed6917e72ba7ed40d651882324a366ed9447a4cb0813a667fe",
+  "sourceHashes": {
+    "Cargo.toml": "42a3eedd5a345675f3859f8e6fb3ecd4084cded9b0037164671cd8444cd3c34a",
+    "Cargo.lock": "39114c39a253185a0235bd6c00eeb9a61498471337d9c3b62f888a6f9b0a3f26",
+    "src/lib.rs": "67a4381e1c84b7f6b8fcb1bd671ecf4bf7fc40d2491afe9c01511d653b26296e",
+    "src/main.rs": "579a871830668604c7fc2e438dc76a37157bfa228b1e410e34d5ab7cd518a64e"
+  },
+  "resultsSha256": "e3bf9697689a5ed1d85493ec07f85c7958d0fb2cbf9278da04dc39fc1469ce62",
+  "correctnessTestsPassed": 7,
+  "hours": 86.27694361111111,
+  "books": 31447,
+  "wallMs": 4231.3878,
+  "allSixCasesRetained": true,
+  "activePolicyChanged": false,
+  "candidateRejected": true,
+  "reason": "Reference exits worsen shallow cases and leave unresolved unpriced inventory; deeper realized return unchanged with fewer trades",
+  "profitabilityEstablished": false
+}

@@ -1,0 +1,147 @@
+{
+  "schemaVersion": 1,
+  "at": "2026-10-06T04:44:47.010Z",
+  "binaryPath": "C:\\Users\\Sai\\OneDrive - St. Johns County School District\\Desktop\\Sig Trading Cup\\backend-rust\\median-prefix-replay\\target\\release\\baal-median-prefix-replay.exe",
+  "binaryHash": "f3d5d78e7d9cffcf61191817c1c52206a801626cf18c40e0d97bb14026f455c7",
+  "engineHash": "d3cd3d840a7ae28279e78c459218dae9da77f6e1bbf848ae56481cee012d7aaf",
+  "originalEngineHash": "d856d272d5c4f64d34836fd1f78c7e65f45897efd331c0a7ef813ab26d7c5778",
+  "originalBinaryHash": "b7cb0596fc290714f923a04736774e63ee951a89adaf93db84ca1ee86f342887",
+  "sourcePins": [
+    {
+      "relativePath": "backend-rust/median-prefix-replay/Cargo.toml",
+      "sha256": "f4f6af3f85cbcd1bfebea3536ab29eed769058ba125affb88f1ee91f7461b429"
+    },
+    {
+      "relativePath": "backend-rust/median-prefix-replay/Cargo.lock",
+      "sha256": "1dbed0ade103f40b88089c9ab4f1007f74f5c7890e0b6fdca9174b2b2766ac37"
+    },
+    {
+      "relativePath": "backend-rust/median-prefix-replay/build.rs",
+      "sha256": "05c6093c0724fb5a5f5ee8a35b55587304c1476be602ca7c3b1bc0f7b3ef3d71"
+    },
+    {
+      "relativePath": "backend-rust/median-prefix-replay/src/lib.rs",
+      "sha256": "35f8624ad565b44a99254203e67344438f68c1e30b00f7b178995f34d00b4d99"
+    },
+    {
+      "relativePath": "backend-rust/median-prefix-replay/src/main.rs",
+      "sha256": "7a8263d92889d58667ba7c302e271d271f08f71957df641c31b0c1ed9f46fe72"
+    },
+    {
+      "relativePath": "backend-rust/median-prefix-replay/src/frozen_kernel.rs",
+      "sha256": "34b544e4619b5a18b0da9692c8340d4b8c1ee11e1264e9353b7290f99be52ada"
+    },
+    {
+      "relativePath": "backend-rust/median-prefix-replay/src/frozen_observe.rs",
+      "sha256": "d3f9286d8b7d63c0e8c6b7bd422cae3547359f69a2d19b53d02b0013081d980d"
+    },
+    {
+      "relativePath": "backend-rust/median-prefix-replay/src/fast_extension.rs",
+      "sha256": "8fd8dc87043e53dcba131d74131e2e35945db923394841528324a10d974976cf"
+    },
+    {
+      "relativePath": "backend-rust/median-prefix-replay/src/frontiers.rs",
+      "sha256": "e892aa19a5e974e9f8b55274deeaf383734897f6acdeb1664faac64230829d27"
+    },
+    {
+      "relativePath": "backend-rust/baal-service/src/storage.rs",
+      "sha256": "d145d4141ef3a3cccf625d604ca1d74e22e72d3296893016fa59199b9ba76324"
+    },
+    {
+      "relativePath": "backend-rust/journal-append/src/lib.rs",
+      "sha256": "8a98926304540c96126f02d8bd95347360930ab8ca360018143fbfd6d3b0cba8"
+    },
+    {
+      "relativePath": "backend-rust/journal-append/src/canonical.rs",
+      "sha256": "8585d3b62de8023f02fb42774355039f2509455f34d49517ca9557a3b4ddacf0"
+    },
+    {
+      "relativePath": "backend-rust/portfolio-engine/Cargo.toml",
+      "sha256": "68e546bdccca04a48a1f95f123a56083c2e7f5e3269cc34438aa88e0b35f1b3b"
+    },
+    {
+      "relativePath": "backend-rust/portfolio-engine/Cargo.lock",
+      "sha256": "d1ea5985bdae3745a2bcf1635de5f18d870fe7a28da6165d3a9b45071e43295c"
+    },
+    {
+      "relativePath": "backend-rust/portfolio-engine/build.rs",
+      "sha256": "624ed546914640bce6420d0aa5d390931e583391bb73a46d58f603abd5f915ce"
+    },
+    {
+      "relativePath": "backend-rust/portfolio-engine/src/lib.rs",
+      "sha256": "c5d083a531318233d19ad95cd697e9adacc2b946b428cfbf28bd6dee417e865e"
+    },
+    {
+      "relativePath": "backend-rust/portfolio-engine/src/dual_v1.rs",
+      "sha256": "9052646bc486780b5c522c30878646e3c3b9756cff51446cc9e8d63b5d3aef4f"
+    },
+    {
+      "relativePath": "backend-rust/portfolio-engine/src/publication.rs",
+      "sha256": "5848ea63970c7fa79a4328061da65c1e164ed5707603f692b4a3aef7d618d379"
+    },
+    {
+      "relativePath": "backend-rust/portfolio-engine/src/history.rs",
+      "sha256": "96746939aeeb065b8f19aa35e5c01fb30a633c20648694a3ab06082df508eeaf"
+    },
+    {
+      "relativePath": "backend-rust/portfolio-engine/src/main.rs",
+      "sha256": "272780d5da8a712198250abe17aaecf05e83d54a1f4593a45a6b496b0d575213"
+    },
+    {
+      "relativePath": "backend-rust/portfolio-engine/src/settlement_value.rs",
+      "sha256": "8cd3dae02bf60ab511a1044a9c0886067f1f6699e637efd83681c45efeb291f2"
+    },
+    {
+      "relativePath": "backend-rust/portfolio-engine/src/money.rs",
+      "sha256": "879298022b838d1ea2066e6594ebdaa05c3cf5a392b1b9fee7404f6981007f58"
+    },
+    {
+      "relativePath": "backend-rust/dual-no-engine/src/lib.rs",
+      "sha256": "87940b5c72c333a7b514cd904f86f076789d72cb6afaa000d20c57bfefeb23b8"
+    },
+    {
+      "relativePath": "backend-rust/dual-no-engine/Cargo.toml",
+      "sha256": "47a6f86954dccb35286382ea615844f5f75494ed15183ec87ccfeaaac4036b69"
+    },
+    {
+      "relativePath": "backend-rust/dual-no-engine/Cargo.lock",
+      "sha256": "2bc433557207b82bae4e2682934b1c8e1c71b59c254baa1d5aa3e3112cff1241"
+    },
+    {
+      "relativePath": "backend-rust/journal-append/Cargo.toml",
+      "sha256": "242a2d3237eb9933816c15242d2f62b4010f29542625c4c46290c522c14ee24c"
+    },
+    {
+      "relativePath": "backend-rust/journal-append/Cargo.lock",
+      "sha256": "15c54d3f86f15bf8ad975831ddcb29afe8f2092e7b351bd88ddd602b9877c80b"
+    },
+    {
+      "relativePath": "backend-rust/journal-append/build.rs",
+      "sha256": "d65a7ad800bae1ab79153b6386bf95ff348875341af7308ba4228d211c561b67"
+    }
+  ],
+  "originalFrozenKernelSha256": "34b544e4619b5a18b0da9692c8340d4b8c1ee11e1264e9353b7290f99be52ada",
+  "originalFrozenObserverPrefixSha256": "332176774fcdd96b15421294cd637dfcebf2e04abe30b36b3ff311925392977a",
+  "tests": {
+    "prefixAndBounds": 4,
+    "actualOriginalCheckpointParity": 205,
+    "fullActualWalletStateAndReportParity": true,
+    "finalContinuationReplayMilliseconds": 45360.0669
+  },
+  "configFields": [
+    "originalConfigPath",
+    "newBinaryPath",
+    "newBinaryHash",
+    "newSourcePins",
+    "intervalMs"
+  ],
+  "cli": "<new-config-absolute> --seconds 3600 --maximum-batches 3600 --maximum-rows 4096",
+  "maximumSessionSeconds": 3600,
+  "preservesOriginalBankConfigBinaryAndFinancialJournal": true,
+  "revisionSidecar": "median-code-revisions.jsonl",
+  "originalActorGuardUnchanged": true,
+  "networkRequests": 0,
+  "competitionOrders": 0,
+  "runtimeLaunched": false,
+  "profitabilityEstablished": false
+}

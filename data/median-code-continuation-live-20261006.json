@@ -1,0 +1,183 @@
+{
+  "schemaVersion": 1,
+  "observedAt": "2026-10-06T04:51:57.486Z",
+  "sourceReportedAt": "2026-10-06T04:51:56.877Z",
+  "cohort": "baal-median-prospective-20261006-v1",
+  "bankHash": "fe61bfcee3e0fbc2bda5170de3fff0f3841c82d451529df2a20403a027098331",
+  "observer": {
+    "pid": 13632,
+    "status": "completed_batch",
+    "boundedSession": true,
+    "persistentDaemon": false,
+    "sourceBytes": 80083592,
+    "sourceSha256": "9ce3fd9a908e4d79201b46710cea9bdb1934171865cb1934367fc0d6939b3c72",
+    "sourceSequence": 36075,
+    "sourceHash": "554c6cc82478fd8b5abb95b4df214ecf269f8fe4cc4666d436d309e5bae8d054",
+    "journalSequence": 491,
+    "journalHash": "e827b1113a6fa8f5696e58d4794717ea2f0b5f7cba679feee48fb8d3f2362d08",
+    "entryDraining": false,
+    "featureFrontier": {
+      "enabled": true,
+      "bytes": 228899075,
+      "sequence": 20419,
+      "hash": "ea0096ee10a4202c494b37792a4328a2cec35f6dcf867c1bff1bbc366868ea25",
+      "sha256": "3136af5d9d0565ff7f5fc3127408e6c78ba81f6bc312d382061686bf73d3e4e8",
+      "lastKnownAtMs": 1791262306060,
+      "executable": false,
+      "depthAvailable": false
+    },
+    "lastAvailableAtMs": 1791262316079,
+    "casesAreIndependentNotSummed": true,
+    "codeRevision": {
+      "journal": "median-code-revisions.jsonl",
+      "sequence": 1,
+      "hash": "61f761b1e6573f18a40ac7f7ae95ac2a8303d74c49b1f23798189e954c36b10d",
+      "newBinaryHash": "f3d5d78e7d9cffcf61191817c1c52206a801626cf18c40e0d97bb14026f455c7",
+      "newEngineHash": "d3cd3d840a7ae28279e78c459218dae9da77f6e1bbf848ae56481cee012d7aaf",
+      "originalBankHash": "fe61bfcee3e0fbc2bda5170de3fff0f3841c82d451529df2a20403a027098331",
+      "originalBinaryHash": "b7cb0596fc290714f923a04736774e63ee951a89adaf93db84ca1ee86f342887",
+      "accountingReset": false
+    },
+    "coldImports": 1,
+    "sessionBatches": 132
+  },
+  "cases": [
+    {
+      "dipTicks": 1,
+      "cash": "98.870000",
+      "realizedPnl": "0.000000",
+      "cumulativeBuys": "1.130000",
+      "reservedCost": "0.000000",
+      "fills": [
+        {
+          "marketId": "305",
+          "exchangeId": "994",
+          "action": "buy",
+          "quantity": 1,
+          "price": "0.860000",
+          "fee": "0.000000",
+          "availableAtMs": 1791259877929,
+          "requestAtMs": 1791259877483,
+          "sourceSequence": 35549,
+          "reason": "ask_below_earlier_hour_bid_median",
+          "protectiveLimit": "0.865000",
+          "counterfactual": true
+        },
+        {
+          "marketId": "274",
+          "exchangeId": "963",
+          "action": "buy",
+          "quantity": 1,
+          "price": "0.105000",
+          "fee": "0.000000",
+          "availableAtMs": 1791260761478,
+          "requestAtMs": 1791260760065,
+          "sourceSequence": 35643,
+          "reason": "ask_below_earlier_hour_bid_median",
+          "protectiveLimit": "0.110000",
+          "counterfactual": true
+        },
+        {
+          "marketId": "361",
+          "exchangeId": "1050",
+          "action": "buy",
+          "quantity": 1,
+          "price": "0.165000",
+          "fee": "0.000000",
+          "availableAtMs": 1791260763226,
+          "requestAtMs": 1791260761460,
+          "sourceSequence": 35644,
+          "reason": "ask_below_earlier_hour_bid_median",
+          "protectiveLimit": "0.170000",
+          "counterfactual": true
+        }
+      ],
+      "closedTrades": 0,
+      "positions": [
+        {
+          "marketId": "274",
+          "exchangeId": "963",
+          "quantity": 1,
+          "cost": "0.105000",
+          "enteredAtMs": 1791260761478,
+          "estimatedLiquidation": null
+        },
+        {
+          "marketId": "305",
+          "exchangeId": "994",
+          "quantity": 1,
+          "cost": "0.860000",
+          "enteredAtMs": 1791259877929,
+          "estimatedLiquidation": "0.855000"
+        },
+        {
+          "marketId": "361",
+          "exchangeId": "1050",
+          "quantity": 1,
+          "cost": "0.165000",
+          "enteredAtMs": 1791260763226,
+          "estimatedLiquidation": null
+        }
+      ],
+      "pendingIntents": 0,
+      "estimatedLiquidationPnl": null,
+      "counts": {
+        "account_unknown_stale_or_excluded": 4,
+        "dip_intent": 3,
+        "later_raw_receipt_fill": 3,
+        "no_funded_dip": 294,
+        "source_boundary": 2744,
+        "stale_book": 240
+      },
+      "officialOrders": 0,
+      "profitabilityEstablished": false
+    },
+    {
+      "dipTicks": 2,
+      "cash": "100.000000",
+      "realizedPnl": "0.000000",
+      "cumulativeBuys": "0.000000",
+      "reservedCost": "0.000000",
+      "fills": [],
+      "closedTrades": 0,
+      "positions": [],
+      "pendingIntents": 0,
+      "estimatedLiquidationPnl": "0.000000",
+      "counts": {
+        "account_unknown_stale_or_excluded": 4,
+        "no_funded_dip": 391,
+        "source_boundary": 2744,
+        "stale_book": 240
+      },
+      "officialOrders": 0,
+      "profitabilityEstablished": false
+    },
+    {
+      "dipTicks": 4,
+      "cash": "100.000000",
+      "realizedPnl": "0.000000",
+      "cumulativeBuys": "0.000000",
+      "reservedCost": "0.000000",
+      "fills": [],
+      "closedTrades": 0,
+      "positions": [],
+      "pendingIntents": 0,
+      "estimatedLiquidationPnl": "0.000000",
+      "counts": {
+        "account_unknown_stale_or_excluded": 4,
+        "no_funded_dip": 391,
+        "source_boundary": 2744,
+        "stale_book": 240
+      },
+      "officialOrders": 0,
+      "profitabilityEstablished": false
+    }
+  ],
+  "pinsVerified": 30,
+  "declaredSessionSeconds": 3600,
+  "originalBankConfigPreserved": true,
+  "sessionCompleted": false,
+  "networkRequests": 0,
+  "competitionOrders": 0,
+  "profitabilityEstablished": false
+}

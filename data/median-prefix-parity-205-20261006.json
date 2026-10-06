@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "at": "2026-10-06T04:39:45.504Z",
+  "actualSealedJournal": {
+    "bytes": 673881,
+    "sha256": "b4c214f6d298190f5b4793bc424560a48090ffd9d76e83d8810395d3602a6e20",
+    "sequence": 205,
+    "hash": "2c4eb6499fb79367f2d24fd0e9cd9e21f43c530dbdfdc92953fe5ca4ec8fe1ef"
+  },
+  "originalBankHash": "fe61bfcee3e0fbc2bda5170de3fff0f3841c82d451529df2a20403a027098331",
+  "all205OriginalCheckpointHashesMatched": true,
+  "fullWalletStatesAndReportsEqual": true,
+  "sourceAndFeatureAndAccountFrontiersEqual": true,
+  "stateHashes": [
+    "3ee3786eceb794ece82f3a2a0221d7ed4d10f0a4f6b58e7fd21d6f81dd135c23",
+    "084ef05de30e65663fe7fb7a28a628458c38b7947b0b704f0a291044006c0bd7",
+    "552f2eecd64be41db779332c6dbefa2cf56c74131417f2e60ce9747c0a718e3b"
+  ],
+  "baseline": {
+    "milliseconds": 124975.755,
+    "prefixBytesRead": 92693266276,
+    "prefixCalls": 616
+  },
+  "forward": {
+    "milliseconds": 46720.057,
+    "prefixBytesRead": 307183314,
+    "prefixCalls": 616,
+    "distinctFrontiers": 255
+  },
+  "measuredSpeedup": 2.674991492411921,
+  "prefixReadReduction": 301.75228292510707,
+  "reports": [
+    {
+      "dipTicks": 1,
+      "cash": "99.140000",
+      "realizedPnl": "0.000000",
+      "positions": [
+        {
+          "marketId": "305",
+          "exchangeId": "994",
+          "quantity": 1,
+          "cost": "0.860000",
+          "enteredAtMs": 1791259877929,
+          "estimatedLiquidation": "0.855000"
+        }
+      ],
+      "pendingIntents": 0
+    },
+    {
+      "dipTicks": 2,
+      "cash": "100.000000",
+      "realizedPnl": "0.000000",
+      "positions": [],
+      "pendingIntents": 0
+    },
+    {
+      "dipTicks": 4,
+      "cash": "100.000000",
+      "realizedPnl": "0.000000",
+      "positions": [],
+      "pendingIntents": 0
+    }
+  ],
+  "measurementConditions": "Same actual205 source and exact frozen economics. Runs occurred under live machine load; timings are observed, not isolated universal estimates.",
+  "originalsModified": false,
+  "networkRequests": 0,
+  "competitionOrders": 0,
+  "profitabilityEstablished": false
+}

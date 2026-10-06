@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "at": "2026-10-06T04:46:57.721Z",
+  "binaryHash": "f3d5d78e7d9cffcf61191817c1c52206a801626cf18c40e0d97bb14026f455c7",
+  "engineHash": "d3cd3d840a7ae28279e78c459218dae9da77f6e1bbf848ae56481cee012d7aaf",
+  "originalBinaryHash": "b7cb0596fc290714f923a04736774e63ee951a89adaf93db84ca1ee86f342887",
+  "originalEngineHash": "d856d272d5c4f64d34836fd1f78c7e65f45897efd331c0a7ef813ab26d7c5778",
+  "pins": 30,
+  "binaryRelative": "median-observer-revisions\\f3d5d78e7d9cffcf61191817c1c52206a801626cf18c40e0d97bb14026f455c7\\bin\\baal-median-prefix-replay.exe",
+  "configRelative": "median-observer-revisions\\f3d5d78e7d9cffcf61191817c1c52206a801626cf18c40e0d97bb14026f455c7\\continuation-config.json",
+  "originalBankConfigUnchanged": true,
+  "sessionLaunched": false,
+  "competitionOrders": 0,
+  "profitabilityEstablished": false
+}
