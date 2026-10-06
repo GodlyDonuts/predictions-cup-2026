@@ -1,3 +1,9 @@
+# October6 14:17 UTC: first generic NO fill verified in the official account
+
+The corrected collector15272 completed full scoped reconciliation of original order16297733 and fill68545127: one Democratic Rhode Island Governor NO share (market384/ex1073), actual0.070 cost, filled13:43:44.169UTC. The original raw acknowledgment, terminal order, complete signed REST fills, scoped history and current NO position agree. Original prefix, key and clocks remain intact; no replacement or hedge order was sent. The actor retains its0.920 remaining reservation, and global cash/activity is still not claimed exactly verified. [Official fill evidence](../data/paired-first-no-official-fill-20261006.json).
+
+Collector15272 had16 healthy cycles/noerrors at14:23:38UTC. Its previous delay was primarily6m40s cold settlement-paper restoration; steady cycles are14–19seconds. New owned-exit controller/evidence bridge/accounting checks pass46 parenttests, and independent source review passes16 controllerchecks. They are not activated yet. The protected exit policy needs at least0.005 verified net gain; there is no forced trade. Original three closed median trades remain+0.005 actual, and the new NO lot has zero realized profit.
+
 # October6 14:07 UTC: corrected recovery host deployed; terminal verification pending
 
 Collector15272 started14:07:08UTC and is restoring preserved history. The sole account queue remains unchanged. A separate GET-only recovery host validates the original neutral NO acknowledgment and appends verified reconciliation to the same actor/funding journals. It cannot submit, cancel, hedge or replace an order. Its8 integration checks include real wall-clock separation between candidate qualification and actor initialization: both original plan hashes remain distinct and preserved. Original review13:48:14.155 and outer14:26:11.789 expiries were not extended. [Configuration](../data/neutral-ack-recovery-configuration-20261006.json).

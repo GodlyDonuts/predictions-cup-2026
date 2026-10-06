@@ -9,19 +9,25 @@
   "accountingPreserved": "All original runtime banks, journals, positions and intent identities remain authoritative; this file is a development backlog only.",
   "activeProcesses": {
     "collector": 15272,
-    "probabilityWorker": 28488,
+    "collectorStage": "running_scoped_reconciliation_verified",
     "dashboard": 29228,
+    "observedAt": "2026-10-06T14:18:13.145Z",
     "persistent": 3,
-    "observedAt": "2026-10-06T14:14:24.684Z",
-    "collectorStage": "verified_live_cold_restore"
+    "probabilityWorker": 28488
   },
   "backlog": [
-    "Resolve actual neutral-ALL response with terminal scoped evidence, without duplicate submissions or resetting attribution.",
-    "Verify collector28804 fresh bootstrap and generic source nomination before bounded source deadline.",
-    "Verify actual paired NO order/fill/position consistency; unknown acceptance blocks replacements.",
-    "Implement owned-pair liquidation only from current signed holdings and complete original lot proofs, preserving partial-exit exposure.",
-    "Size from measured subsequent fills and actual realized profit; no forced negative-margin entries."
+    "Activate separately bounded protected owned-NO exit/hedge host on the same API/lease after fresh source/account checks; original windows are not renewed.",
+    "Retain exact original BUY basis and verify actual SELL economics before any realized P&L or reserve retirement.",
+    "Investigate newly source-bound pair hedge using actual .070 first cost and fresh opposing-party rules/depth.",
+    "Retire only verified flat paper work and optionally explicitly freeze comparisons without resetting owned paper banks/journals.",
+    "Scale only from actual net execution evidence while preserving shared account pacing and portfolio attribution."
   ],
+  "collectorAdmissionRepair": {
+    "cycleAuxiliaryBudgetPreserved": true,
+    "idleCaptureAllowsFirstNomination": true,
+    "newAccountNominationsDeferUntilNextCycle": true,
+    "runnerChecksPassed": 82
+  },
   "evidence": [
     "docs/PAIRED_EXECUTION_PROGRESS.md",
     "data/paired-live-configuration-20261006.json",
@@ -61,6 +67,22 @@
     "officialClosedRoundTrips": 3,
     "runId": "sig-pilot-median-20261006-human"
   },
+  "ownedNoExit": {
+    "checksPassed": 21,
+    "fees": "0.000000",
+    "minimumProtectedNetProfit": "0.005000",
+    "noLiveSellOrders": true,
+    "nonNullSellALL": "unsupported_pending_actual_or_primary_evidence",
+    "signal": "execution/single-owned-no-exit-signal-v1.mjs",
+    "stage": "controller_bridge_accounting_checked_not_activated",
+    "verifier": "execution/no-rest-sell-reconciliation-v1.mjs",
+    "controller": "execution/owned-no-exit-controller-v1.mjs",
+    "bridge": "execution/owned-no-exit-evidence-bridge-v1.mjs",
+    "parentChecksPassed": 46,
+    "independentControllerChecks": 16,
+    "retirementOverlay": "execution/paired-owned-exit-retirement-v1.mjs",
+    "retirementChecks": 7
+  },
   "pairedLiquidation": {
     "checksPassed": 14,
     "fees": "0.000000",
@@ -71,10 +93,15 @@
   },
   "pairedLive": {
     "ackReportedCost": "0.070000",
+    "actualCost": "0.070000",
+    "actualEvidence": "data/paired-first-no-official-fill-20261006.json",
+    "actualFillAt": "2026-10-06T13:43:44.169Z",
+    "actualFillId": 68545127,
     "capital": "2.000000",
     "commit": "313cdbc6b49ef7f7731cbd2a8035ae73eb2812b0",
     "configuration": "data/generic-paired-live-configuration-20261006.json",
     "entryExpiresAt": "2026-10-06T14:26:11.789Z",
+    "expiryExtended": false,
     "finding": "data/paired-neutral-ack-finding-20261006.json",
     "firstOrderId": "16297733",
     "latestCapture": {
@@ -89,25 +116,29 @@
       "385"
     ],
     "minimumConditionalOrdinaryMargin": "0.010000",
-    "next": "Verify existing order terminal fill/account on corrected recoveryhost; keep original first lot and reserve, then source-bound funded exit or hedge in a separately explicit policy.",
+    "next": "Use fresh original-owned account/book evidence for protected profitable exit or separately source-verified bounded hedge; preserve old review expiry and all attribution.",
     "orders": 1,
     "ordersInRetiredRun": 0,
     "originalReviewExpiresAt": "2026-10-06T13:48:14.155Z",
     "outerExpiryUnchanged": true,
-    "ownedProofs": 0,
+    "ownedProofs": 1,
     "pairCeiling": "0.990000",
+    "recoveryConfiguration": "data/neutral-ack-recovery-configuration-20261006.json",
+    "remainingReservation": "0.920000",
     "repairEvidence": "data/paired-book-schema-repair-20261006.json",
     "request": "sig-pilot-paired-generic-20261006-human",
     "retiredExpiry": "2026-10-06T13:11:07.326Z",
     "retiredUnexecutedRun": "sig-pilot-paired-book-schema-20261006-human",
     "runtimeObservedAt": "2026-10-06T13:40:30.752Z",
     "sourceReadExpiresAt": "2026-10-06T13:56:11.789Z",
-    "stage": "neutral_recovery_only_deployed_cold_restore",
+    "stage": "first_owned_NO_verified_hedge_or_exit_next",
+    "terminalRestReconciliationVerified": true,
     "unknownReserveRetained": true,
-    "recoveryConfiguration": "data/neutral-ack-recovery-configuration-20261006.json",
-    "terminalRestReconciliationVerified": false,
     "writeCapability": false,
-    "expiryExtended": false
+    "freshHedgePlan": "execution/owned-no-hedge-plan-v1.mjs",
+    "freshHedgeChecks": 6,
+    "freshHedgeMaxCost": "0.920000",
+    "freshHedgeActivated": false
   },
   "profitNext": {
     "accountingChecksPassed": 65,
@@ -123,21 +154,5 @@
     "runtimeProofAt": "2026-10-06T10:40:42.492Z"
   },
   "schemaVersion": 2,
-  "updatedAt": "2026-10-06T14:14:24.684Z",
-  "ownedNoExit": {
-    "stage": "signal_and_sell_accounting_checked_controller_in_progress",
-    "signal": "execution/single-owned-no-exit-signal-v1.mjs",
-    "verifier": "execution/no-rest-sell-reconciliation-v1.mjs",
-    "minimumProtectedNetProfit": "0.005000",
-    "fees": "0.000000",
-    "checksPassed": 21,
-    "nonNullSellALL": "unsupported_pending_actual_or_primary_evidence",
-    "noLiveSellOrders": true
-  },
-  "collectorAdmissionRepair": {
-    "cycleAuxiliaryBudgetPreserved": true,
-    "newAccountNominationsDeferUntilNextCycle": true,
-    "idleCaptureAllowsFirstNomination": true,
-    "runnerChecksPassed": 82
-  }
+  "updatedAt": "2026-10-06T14:31:21.105Z"
 }
