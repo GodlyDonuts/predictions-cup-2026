@@ -5,6 +5,7 @@ edition = "2024"
 
 [dependencies]
 num-bigint = "0.4"
+baal-paper = { path = "../paper" }
 baal-service-runtime = { path = "../service-runtime" }
 serde = { version = "1", features = ["derive"] }
 serde_json = { version = "1", features = ["preserve_order", "float_roundtrip"] }

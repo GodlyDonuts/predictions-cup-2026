@@ -27,6 +27,7 @@ checksum = "f2032f911046de80f0a198e0901378627c33f59ea0ac00e363d481118bd70a53"
 name = "baal-execution"
 version = "0.1.0"
 dependencies = [
+ "baal-paper",
  "baal-service-runtime",
  "chrono",
  "num-bigint",
@@ -35,6 +36,19 @@ dependencies = [
  "serde_json",
  "sha2",
  "uuid",
+]
+
+[[package]]
+name = "baal-paper"
+version = "0.1.0"
+dependencies = [
+ "baal-service-runtime",
+ "chrono",
+ "indexmap",
+ "num-bigint",
+ "serde",
+ "serde_json",
+ "sha2",
 ]
 
 [[package]]
@@ -112,7 +126,9 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1aa79e62e7697b8e29b513a68abacf485adcd1fe8284a4316c5ae868e6633327"
 dependencies = [
  "iana-time-zone",
+ "js-sys",
  "num-traits",
+ "wasm-bindgen",
  "windows-link",
 ]
 
@@ -541,6 +557,8 @@ checksum = "cc4e190f5d26ca7051642629da2c52fc03bde85a03197c99408dcd291734c855"
 dependencies = [
  "equivalent",
  "hashbrown",
+ "serde",
+ "serde_core",
 ]
 
 [[package]]

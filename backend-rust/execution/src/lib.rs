@@ -58,6 +58,7 @@ pub mod median_controller_v2_clock;
 pub mod median_preflight;
 pub mod median_protected_candidate_plan;
 pub mod median_reference;
+pub mod no_neutral_all;
 pub mod no_order_economics;
 pub mod no_rest_reconciliation;
 pub mod owned_risk_timing_audit;
