@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "at": "2026-10-05T23:50:24.863Z",
+  "cohort": "kansas-horizon-portfolio-20261005-v2",
+  "bankHash": "77f83ee28a211ee1540f23b74b6698a327c7350562afd45ca98aca29f59652c6",
+  "sourceBytes": 67988043,
+  "sourceSequence": 30997,
+  "sourceHash": "1d7865a74caf428b5edfc5ff8cc9ee1625eb0a3fb1b2bbc118c98c16f3402b33",
+  "journalSequence": 1,
+  "journalHash": "4990b37e2027e94a52de76ecfec9e1d85293f1e6584f55db4a3c7d289d89ac11",
+  "startupMs": 12696.7816,
+  "realOriginalPrefixVerified": true,
+  "genesisOnly": true,
+  "initialCashPerCorrelatedLatency": "100.000000",
+  "networkRequests": 0,
+  "competitionOrders": 0,
+  "sourceClockRenewal": false,
+  "profitabilityEstablished": false
+}

@@ -89,6 +89,7 @@ import {openBaalPairHost as openBaalPairHostV3} from './baal-pair-host-v3.mjs';
 import {openBaalPairHost as openBaalPairHostV4} from './baal-pair-host-v4.mjs';
 import {probabilityAccountEligibility} from './probability-receipt.mjs';
 import {openCollectorSettlementPaper} from './settlement-paper-collector.mjs';
+import {openCollectorSettlementPortfolioV2} from './settlement-portfolio-collector-v2.mjs';
 import {openCollectorDualNoPaper} from './dual-no-pair-collector-v1.mjs';
 import {openCollectorDualNoPaperV2} from './dual-no-pair-collector-v2.mjs';
 import {readExpiredFlatPaperRetirement} from './expired-flat-paper-retirement.mjs';
@@ -123,7 +124,7 @@ const stop=(cause='unspecified',errorCode=null)=>{
 };process.on('SIGINT',()=>stop('SIGINT'));process.on('SIGTERM',()=>stop('SIGTERM'));
 const stopWatch=setInterval(()=>{for(const [file,cause]of [[stopFile,'workspace_STOP'],[paperStop,'runtime_STOP'],[collectorStop,'COLLECTOR_STOP']])if(fs.existsSync(file)){stop(cause);break;}},200);
 let journal,state,api,server,heartbeat,competition,realtime,realtimeCapture,basketRelationships,contractEvidence,bookPublication,basketFollowupSource,basketFollowupBankHash,comparisonRiskSource,settlementPaper,dualNoPaper,dualNoPaperV2;
-let productionMetadata,pairedCandidate,candidateAccount=null;
+let productionMetadata,pairedCandidate,candidateAccount=null,settlementPortfolio;
 const samplingSessionId=randomUUID();
 let universe,coverage,depthPlan,dipBank,scaleBank,responsiveBank,scheduler,schedulerScope;const recentReadTimings=[];
 let diagnosticSource,diagnosticLoading=false,diagnosticFailed=false;
@@ -273,6 +274,7 @@ try{
   bookPublication=nativePublication?await createNativeBookPublication({...publicationOptions,runtimeDir,nativeBackend:nativePublication.nativeBackend,receiptDir:path.join(runtimeDir,'collector-native-publication-receipts')}):createBookPublication(publicationOptions);
   runtime.bookPublisher={revision:nativePublication?3:2,startupReplayMs:performance.now()-publicationReplayStarted,frozenPublisherFileChanged:false,...(nativePublication?{native:bookPublication.startup()}:{} )};
   settlementPaper=await openCollectorSettlementPaper({runtimeDir,universe});if(settlementPaper){settlementPaper.consume();settlementPaper.publish();runtime.settlementPaper=settlementPaper.status();}
+  settlementPortfolio=await openCollectorSettlementPortfolioV2({runtimeDir,universe,now:Date.now,workspaceDir:workspace,canOperate:()=>!stopping&&!api?.manualReview&&!fs.existsSync(stopFile)&&!fs.existsSync(paperStop)&&!fs.existsSync(collectorStop)});if(settlementPortfolio)runtime.settlementPortfolio=settlementPortfolio.status();
   dualNoPaper=await openCollectorDualNoPaper({runtimeDir,universe,canOperate:()=>!stopping&&!api?.manualReview});if(dualNoPaper)runtime.dualNoPaper=dualNoPaper.status();
   dualNoPaperV2=await openCollectorDualNoPaperV2({runtimeDir,universe,canOperate:()=>!stopping&&!api?.manualReview});if(dualNoPaperV2)runtime.dualNoPaperV2=dualNoPaperV2.status();
   try{canonicalCapacity=guardCanonicalCapacity(openCanonicalCapacityMonitor({runtimeDir,universe}));runtime.canonicalCapacity=canonicalCapacity?.status()||{status:'not_initialized',executionAuthority:false};}catch{runtime.canonicalCapacity={status:'unavailable',executionAuthority:false};}
@@ -379,7 +381,7 @@ try{
     try{
       if(dipBank){
         const makerStatus=noMaker?.status(),stableStatuses=stableHosts().map(([,host])=>({host,status:host.status()})),makerFocus=mergeMakerTapeFocus(makerStatus,...stableStatuses.map(x=>x.status)),oldMakerActive=!!noMaker&&!makerStatus.failed&&(makerStatus.riskMarketIds.length>0||Date.now()<Date.parse(noMaker.bank.reviewExpiresAt)),stableActive=stableStatuses.some(({host,status})=>!status.failed&&(status.riskMarketIds.length>0||Date.now()<Date.parse(host.bank.entryExpiresAt))),makerActive=oldMakerActive||stableActive;
-        const earlyProbabilityFocus=mergeProbabilityReadFocus([readProbabilityReadFocus(runtimeDir,universe,Date.now()),readProbabilityReadFocus(runtimeDir,universe,Date.now(),'calibrated-poll-paper-active.json'),readProbabilityReadFocus(runtimeDir,universe,Date.now(),'primary-breadth-paper-active.json'),settlementPaper?.focus(),dualNoPaper?.focus(),dualNoPaperV2?.focus()]);
+        const earlyProbabilityFocus=mergeProbabilityReadFocus([readProbabilityReadFocus(runtimeDir,universe,Date.now()),readProbabilityReadFocus(runtimeDir,universe,Date.now(),'calibrated-poll-paper-active.json'),readProbabilityReadFocus(runtimeDir,universe,Date.now(),'primary-breadth-paper-active.json'),settlementPaper?.focus(),settlementPortfolio?.focus(),dualNoPaper?.focus(),dualNoPaperV2?.focus()]);
         const earlyRisk=scopedRiskMarketIds(competition?.managedMarketIds()||[],earlyProbabilityFocus);
         profitSprintApplied=!!readProfitSprint(runtimeDir)&&earlyRisk.length>0&&fs.existsSync(path.join(runtimeDir,'COUPLED_BULK_ENTRY_DRAIN'))&&!noMaker&&!baalPair&&runtime.coupledBulk?.liabilitiesUnverified!==true&&passiveHostsCompletelyFlat(stableStatuses.map(x=>x.status));
         // During a bounded sprint, flat drained makers need no anonymous tape
@@ -411,7 +413,7 @@ try{
       if(pairedCandidate?.pending()){await pairedCandidate.afterAccountRefresh();runtime.pairedCandidate=pairedCandidate.status();}
       // Freeze one plan before metadata selection; do not resample shadow state
       // or reorder candidates between the controller and these book requests.
-      const probabilityFocus=mergeProbabilityReadFocus([readProbabilityReadFocus(runtimeDir,universe,Date.now()),readProbabilityReadFocus(runtimeDir,universe,Date.now(),'calibrated-poll-paper-active.json'),readProbabilityReadFocus(runtimeDir,universe,Date.now(),'primary-breadth-paper-active.json'),settlementPaper?.focus(),dualNoPaper?.focus(),dualNoPaperV2?.focus()]),bulkFocus=readBulkReadFocus(runtimeDir,universe,Date.now()),anchorFocus=readAnchorReadFocus(runtimeDir,universe,Date.now()),diagnosticFocus=collectDiagnosticFocus(),paperFocus=mergePaperReadFocus(anchorFocus,bulkFocus,probabilityFocus,diagnosticFocus);
+      const probabilityFocus=mergeProbabilityReadFocus([readProbabilityReadFocus(runtimeDir,universe,Date.now()),readProbabilityReadFocus(runtimeDir,universe,Date.now(),'calibrated-poll-paper-active.json'),readProbabilityReadFocus(runtimeDir,universe,Date.now(),'primary-breadth-paper-active.json'),settlementPaper?.focus(),settlementPortfolio?.focus(),dualNoPaper?.focus(),dualNoPaperV2?.focus()]),bulkFocus=readBulkReadFocus(runtimeDir,universe,Date.now()),anchorFocus=readAnchorReadFocus(runtimeDir,universe,Date.now()),diagnosticFocus=collectDiagnosticFocus(),paperFocus=mergePaperReadFocus(anchorFocus,bulkFocus,probabilityFocus,diagnosticFocus);
       const inputs=schedulingInputs();
       const retainedPaperFocus=nativeDip?paperFocus:probabilityFocus;
       for(const x of retainedPaperFocus?.markets||[])if(['held','exit_pending','entry_pending'].includes(x.phase)){const key=x.phase==='entry_pending'?'pendingMarketIds':'heldMarketIds';inputs[key]=[...new Set([...inputs[key],x.marketId])];}
@@ -471,6 +473,7 @@ try{
         }catch(e){if(e.durableRecordingFailed)throw e;if(stopping)break;if(!receivedBook)publishBookEvent('invalidate',{marketId,reason:'BOOK_READ_FAILED'});if(e.fatal||api.manualReview||e.status===401||e.status===403)throw e;const reason=e.status?'http_'+e.status:e.message,at=new Date().toISOString();if(spec.path==='sourceSnapshots'){state.skips[marketId]={at,reason};invalidate(state,marketId,at,reason);}target.push({marketId,skipped:reason,at});if(e.status===429||e.status===503)break;}
       }
       runtime.scheduling={managedMarketIds:planned.managedMarketIds,entryMarketIds:planned.entryMarketIds,overCapacity:planned.overCapacity,reads:planned.reads,nativeDiscovery:planned.nativeDiscovery||null};
+      if(settlementPortfolio)try{await settlementPortfolio.consume({availableAt:new Date().toISOString(),accountEligibility:probabilityAccountEligibility(accountCache)});runtime.settlementPortfolio=settlementPortfolio.status();}catch{let retained=runtime.settlementPortfolio;try{retained=settlementPortfolio.status();}catch{}runtime.settlementPortfolio={...retained,failed:true,accountingRetained:true,executionAuthority:false};const e=Error('Settlement portfolio recording failed');e.durableRecordingFailed=true;e.fatal=true;throw e;}
       runtime.supplementalDepth={marketIds:planned.reads.filter(x=>x.path==='supplementalDepth').map(x=>x.marketId),observations:supplementalDepth.filter(x=>x.endpoint).length,skips:supplementalDepth.filter(x=>x.skipped).map(x=>({marketId:x.marketId,reason:x.skipped}))};
       let bulkPrices=null,bulkPriceError=null;
       if(!stopping&&api.cooldown<=Date.now()){
@@ -497,4 +500,4 @@ try{
   if(runtime.status==='failed')process.exitCode=1;
   commit({type:'stopped',stopProvenance:runtime.stopProvenance||null});persistStatus();
 }catch(e){const stopped=stopping&&!e.durableRecordingFailed&&runtime.stopProvenance?.cause!=='status_publication_failed';if(state){runtime.status=stopped?'stopped':'failed';runtime.errors.push({at:new Date().toISOString(),reason:stopped?'stop_requested':e.message});try{persistStatus();}catch{}}console.error(stopped?'Paper runner stopped':'Paper runner failed; see local stats');process.exitCode=stopped?0:1;
-}finally{clearInterval(stopWatch);clearInterval(heartbeat);try{publishBookEvent('close',runtime.status==='failed'?'COLLECTOR_FAILURE':'STOP');}finally{try{collectorMarketScreen?.close();await nativeDip?.close();await nativeQuote?.close();await realtime?.stop();}finally{dualNoPaperV2?.close();dualNoPaper?.close();settlementPaper?.close();comparisonRiskSource?.close();basketFollowupSource?.close();realtimeCapture?.close();competition?.close();api?.close();server?.close();cleanup();}}}
+}finally{clearInterval(stopWatch);clearInterval(heartbeat);try{publishBookEvent('close',runtime.status==='failed'?'COLLECTOR_FAILURE':'STOP');}finally{try{collectorMarketScreen?.close();await nativeDip?.close();await nativeQuote?.close();await realtime?.stop();}finally{let closeFailure;for(const close of [()=>dualNoPaperV2?.close(),()=>dualNoPaper?.close(),()=>settlementPaper?.close(),()=>settlementPortfolio?.close(),()=>comparisonRiskSource?.close(),()=>basketFollowupSource?.close(),()=>realtimeCapture?.close(),()=>competition?.close(),()=>api?.close(),()=>server?.close()])try{await close();}catch(error){closeFailure??=error;}cleanup();if(closeFailure)throw closeFailure;}}}

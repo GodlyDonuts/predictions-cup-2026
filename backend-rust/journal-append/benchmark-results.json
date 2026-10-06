@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "at": "2026-10-05T22:46:29.603Z",
+  "originalSealedBytes": 8288133,
+  "originalRecords": 600,
+  "restoreMs": 57.6721,
+  "commits": 50,
+  "commitMsIncludingIndependentFullHashAssertions": 767.9707,
+  "workerCommitMs": 442.15970000000044,
+  "perWorkerCommitMs": 8.84319400000001,
+  "nodeOriginalFullScanAppendMs": 1102.772,
+  "speedup": 2.4940581423408754,
+  "sourceHash": "14b736b417c6b1f893bd5d18c6cb2ec10b105714b79d6bf92823d4900267c087",
+  "originalUntouched": true,
+  "networkRequests": 0,
+  "contestOrders": 0
+}

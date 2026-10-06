@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 1,
+  "at": "2026-10-06T00:06:16.560Z",
+  "testsPassed": true,
+  "checksPassed": 91,
+  "scope": "paper_only_generic_funded_portfolio",
+  "sourceFiles": [
+    {
+      "path": "live-paper/runner.mjs",
+      "hash": "05cbc25fc7f8996e214790d08ec9ac2fd7d123bae6a2d6f579817521ef532560"
+    },
+    {
+      "path": "live-paper/settlement-portfolio-collector-v2.mjs",
+      "hash": "e636a79b7adafa792632bdb24251faa5d6c867f970824fc3331ef76bc4f993df"
+    },
+    {
+      "path": "live-paper/settlement-portfolio-paper-v2.mjs",
+      "hash": "d20833581f4f9d5c1d8dce63e7cfcf6722d35946fa55777df0452d882153b02b"
+    },
+    {
+      "path": "live-paper/settlement-portfolio-host-v2.mjs",
+      "hash": "fca26b1b016969eb88949d3c223298582410770abc6369afed446ec43a456d16"
+    },
+    {
+      "path": "live-paper/native-journal-append.mjs",
+      "hash": "7ab39670e861095fe27b3ea9fc85f11f074880ea7179e525b887771af1818f6d"
+    },
+    {
+      "path": "live-paper/paired-candidate-collector.mjs",
+      "hash": "57b8e0489dca2e31ec786cec584ca960ef3aeb10a74b0e57b62da63f2ac71b18"
+    },
+    {
+      "path": "live-paper/paired-candidate-capture.mjs",
+      "hash": "cdb244567bb8721d2e9e7f76eca1cf07fc8acdab33cea99b197357ef2e83c260"
+    }
+  ],
+  "runtimeFiles": [],
+  "additionalAccountClients": 0,
+  "ordinaryBookSlots": 4,
+  "contestActivationChanged": false,
+  "pointForecastNotConfidenceBound": true,
+  "sourceClockRenewal": false,
+  "profitabilityEstablished": false
+}

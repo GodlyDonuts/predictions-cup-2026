@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "at": "2026-10-05T23:36:15.817Z",
+  "cohort": "kansas-horizon-portfolio-20261005-v2",
+  "bankHash": "77f83ee28a211ee1540f23b74b6698a327c7350562afd45ca98aca29f59652c6",
+  "bankFileHash": "9c60ae3ce7138f52f22f88c6ea29d208e6eda75ec81e61d693a11d8be0af1fca",
+  "cutoff": "2026-10-05T23:36:15.780Z",
+  "sourcePrefixBytes": 67988043,
+  "sourcePrefixHash": "6084fa9de3f37b13a69234d623356cd4dea6ecb5d5eb9f19a926761a39d37ba1",
+  "sourcePrefixSequence": 30997,
+  "nativeAppend": {
+    "binaryHash": "fcb1b690e1d619e7d914a1d62cd27e6e611647886b6b6b4fa99e4e32abe57b13",
+    "engineHash": "085ee3552c9b109faf684762509fc0849c509710f0d8bb80cb68d242c6c3d00d",
+    "binaryPathRelative": "journal-append-native-builds\\fcb1b690e1d619e7d914a1d62cd27e6e611647886b6b6b4fa99e4e32abe57b13\\baal-journal-append.exe",
+    "sourceRootRelative": "journal-append-native-sources\\085ee3552c9b109faf684762509fc0849c509710f0d8bb80cb68d242c6c3d00d"
+  },
+  "researchSourceAt": "2026-10-05T22:56:38.550Z",
+  "researchExpiry": "2026-10-06T04:56:38.550Z",
+  "modelPointValue": "0.398402",
+  "pointIsNotConfidenceBound": true,
+  "initialCash": "100.000000",
+  "markets": [
+    "356"
+  ],
+  "preparedOnly": true,
+  "activated": false,
+  "existingBanksChanged": false,
+  "competitionOrders": 0,
+  "profitabilityEstablished": false
+}
