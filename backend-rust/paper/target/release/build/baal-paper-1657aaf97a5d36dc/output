@@ -1,0 +1,8 @@
+cargo:rerun-if-changed=Cargo.toml
+cargo:rerun-if-changed=build.rs
+cargo:rerun-if-changed=src/lib.rs
+cargo:rerun-if-changed=src/schema.rs
+cargo:rerun-if-changed=src/split.rs
+cargo:rerun-if-changed=src/engine.rs
+cargo:rerun-if-changed=src/cli.rs
+cargo:rustc-env=BAAL_PAPER_HASH=834129f157026adc21ced3116688d1aea4dde9180c4e8334dbf482f1c698f9df

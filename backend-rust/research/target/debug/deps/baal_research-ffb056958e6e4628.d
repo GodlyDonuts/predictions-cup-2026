@@ -1,0 +1,46 @@
+/home/ubuntu/repos/predictions-cup-2026/backend-rust/research/target/debug/deps/baal_research-ffb056958e6e4628.d: src/lib.rs src/book_alpha_v1.rs src/current_election__assessment.rs src/current_election__prepare_bank.rs src/current_election__prepare_tennessee.rs src/current_polls_v1__assessment.rs src/current_polls_v1__build.rs src/current_polls_v1__capture.rs src/current_polls_v1__compare.rs src/current_polls_v2__assessment.rs src/current_polls_v2__build.rs src/current_polls_v2__capture.rs src/current_polls_v2__capture_comparators.rs src/current_polls_v2__compare.rs src/current_polls_v2__party_assessment.rs src/current_polls_v3__capture.rs src/current_polls_v3__prepare_texas_governor.rs src/election_baseline_v1__download_sources.rs src/election_baseline_v1__model.rs src/election_baseline_v1__train.rs src/election_baseline_v2__download_sources.rs src/election_baseline_v2__model.rs src/election_baseline_v2__screen.rs src/election_baseline_v2__train.rs src/files.rs src/governor_error_v1__build.rs src/governor_error_v1__model.rs src/js.rs src/median_barrier_diagnostic.rs src/paired_forecast_v1.rs src/poll_calibration_v1__capture.rs src/poll_calibration_v1__frozen_model_baseline_20261005.rs src/poll_calibration_v1__model.rs src/poll_calibration_v1__prepare_kansas_paper.rs src/poll_calibration_v1__train.rs src/poll_horizon_v2.rs src/profit_sprint_20261005__capture.rs src/profit_sprint_20261005__compare.rs src/profit_sprint_20261005__identities.rs src/profit_sprint_20261005__verify.rs
+
+/home/ubuntu/repos/predictions-cup-2026/backend-rust/research/target/debug/deps/libbaal_research-ffb056958e6e4628.rmeta: src/lib.rs src/book_alpha_v1.rs src/current_election__assessment.rs src/current_election__prepare_bank.rs src/current_election__prepare_tennessee.rs src/current_polls_v1__assessment.rs src/current_polls_v1__build.rs src/current_polls_v1__capture.rs src/current_polls_v1__compare.rs src/current_polls_v2__assessment.rs src/current_polls_v2__build.rs src/current_polls_v2__capture.rs src/current_polls_v2__capture_comparators.rs src/current_polls_v2__compare.rs src/current_polls_v2__party_assessment.rs src/current_polls_v3__capture.rs src/current_polls_v3__prepare_texas_governor.rs src/election_baseline_v1__download_sources.rs src/election_baseline_v1__model.rs src/election_baseline_v1__train.rs src/election_baseline_v2__download_sources.rs src/election_baseline_v2__model.rs src/election_baseline_v2__screen.rs src/election_baseline_v2__train.rs src/files.rs src/governor_error_v1__build.rs src/governor_error_v1__model.rs src/js.rs src/median_barrier_diagnostic.rs src/paired_forecast_v1.rs src/poll_calibration_v1__capture.rs src/poll_calibration_v1__frozen_model_baseline_20261005.rs src/poll_calibration_v1__model.rs src/poll_calibration_v1__prepare_kansas_paper.rs src/poll_calibration_v1__train.rs src/poll_horizon_v2.rs src/profit_sprint_20261005__capture.rs src/profit_sprint_20261005__compare.rs src/profit_sprint_20261005__identities.rs src/profit_sprint_20261005__verify.rs
+
+src/lib.rs:
+src/book_alpha_v1.rs:
+src/current_election__assessment.rs:
+src/current_election__prepare_bank.rs:
+src/current_election__prepare_tennessee.rs:
+src/current_polls_v1__assessment.rs:
+src/current_polls_v1__build.rs:
+src/current_polls_v1__capture.rs:
+src/current_polls_v1__compare.rs:
+src/current_polls_v2__assessment.rs:
+src/current_polls_v2__build.rs:
+src/current_polls_v2__capture.rs:
+src/current_polls_v2__capture_comparators.rs:
+src/current_polls_v2__compare.rs:
+src/current_polls_v2__party_assessment.rs:
+src/current_polls_v3__capture.rs:
+src/current_polls_v3__prepare_texas_governor.rs:
+src/election_baseline_v1__download_sources.rs:
+src/election_baseline_v1__model.rs:
+src/election_baseline_v1__train.rs:
+src/election_baseline_v2__download_sources.rs:
+src/election_baseline_v2__model.rs:
+src/election_baseline_v2__screen.rs:
+src/election_baseline_v2__train.rs:
+src/files.rs:
+src/governor_error_v1__build.rs:
+src/governor_error_v1__model.rs:
+src/js.rs:
+src/median_barrier_diagnostic.rs:
+src/paired_forecast_v1.rs:
+src/poll_calibration_v1__capture.rs:
+src/poll_calibration_v1__frozen_model_baseline_20261005.rs:
+src/poll_calibration_v1__model.rs:
+src/poll_calibration_v1__prepare_kansas_paper.rs:
+src/poll_calibration_v1__train.rs:
+src/poll_horizon_v2.rs:
+src/profit_sprint_20261005__capture.rs:
+src/profit_sprint_20261005__compare.rs:
+src/profit_sprint_20261005__identities.rs:
+src/profit_sprint_20261005__verify.rs:
+
+# env-dep:CARGO_MANIFEST_DIR=/home/ubuntu/repos/predictions-cup-2026/backend-rust/research

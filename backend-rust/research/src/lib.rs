@@ -2,8 +2,6 @@
 #![allow(clippy::too_many_arguments)]
 #![allow(non_snake_case)]
 #![allow(dead_code)]
-mod js;
-mod files;
 pub mod book_alpha_v1;
 pub mod current_election__assessment;
 pub mod current_election__prepare_bank;
@@ -27,8 +25,10 @@ pub mod election_baseline_v2__download_sources;
 pub mod election_baseline_v2__model;
 pub mod election_baseline_v2__screen;
 pub mod election_baseline_v2__train;
+pub mod files;
 pub mod governor_error_v1__build;
 pub mod governor_error_v1__model;
+pub mod js;
 pub mod median_barrier_diagnostic;
 pub mod paired_forecast_v1;
 pub mod poll_calibration_v1__capture;

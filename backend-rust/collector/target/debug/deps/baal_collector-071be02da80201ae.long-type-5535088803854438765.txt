@@ -1,0 +1,1 @@
+std::sync::MutexGuard<'_, RealtimeBooks<Arc<(dyn for<'a> Fn(&'a Value) + Send + Sync + 'static)>>>

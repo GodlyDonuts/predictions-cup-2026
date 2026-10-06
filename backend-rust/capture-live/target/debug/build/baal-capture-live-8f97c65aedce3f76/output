@@ -1,0 +1,6 @@
+cargo:rerun-if-changed=Cargo.toml
+cargo:rerun-if-changed=build.rs
+cargo:rerun-if-changed=src/lib.rs
+cargo:rerun-if-changed=src/pilot.rs
+cargo:rerun-if-changed=src/transport.rs
+cargo:rustc-env=BAAL_CAPTURE_LIVE_HASH=09541616fbbf312bf8546a7fa6d46ef4e5085fa220224983a57894ec19557255
