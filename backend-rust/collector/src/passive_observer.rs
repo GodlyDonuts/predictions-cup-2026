@@ -1,546 +1,743 @@
-// live-paper/passive-observer.mjs — pure market research: no orders, fill
-// simulation, cash or PnL.
+// live-paper/passive-observer.mjs — measurement-only passive quote observer.
+// Pure market research, no orders/fills/cash/PnL. digest = sha256 over the
+// sorted-key canonical JSON (ledger-style canonical, not insertion-order).
+use baal_paper::fixed::{big_amount, big_price, big_sequence, instant, money, SCALE, TICK};
+use baal_service_runtime::contract::{instant_ns, ms_to_iso, timestamp};
+use baal_service_runtime::json_text::{canonical_hash, js_int, js_truthy};
 use num_bigint::BigInt;
-use serde_json::{json, Value as V};
+use serde_json::{json, Map, Value as V};
 
-fn canonical_digest(x: &V) -> String {
-    baal_service_runtime::json_text::sha256(
-        baal_service_runtime::json_text::canonical_json(x).unwrap_or_default().as_bytes())
-}
-fn check(v: bool, message: &str) -> Result<(), String> {
-    if !v { return Err(message.to_string()); }
+/// canonical-sorted sha256 (JS: sha256(canonical(x))); serde_json::Value cannot
+/// hold non-finite numbers, so canonical_hash is infallible here.
+fn digest(v: &V) -> String { canonical_hash(v).unwrap_or_default() }
+fn check(ok: bool, message: &str) -> Result<(), String> {
+    if !ok { return Err(message.into()); }
     Ok(())
 }
-fn is_id(v: &V) -> bool {
-    v.as_str().is_some_and(|s| !s.is_empty() && !s.starts_with('0')
-        && s.bytes().all(|b| b.is_ascii_digit()))
+fn id(v: &V) -> bool {
+    v.as_str().is_some_and(|s| {
+        !s.is_empty()
+            && s.as_bytes()[0].is_ascii_digit()
+            && s.as_bytes()[0] != b'0'
+            && s.bytes().all(|b| b.is_ascii_digit())
+    })
 }
-fn is_identity(v: &V) -> bool {
-    v.as_str().is_some_and(|s| !s.is_empty() && s.len() <= 100
-        && s.bytes().all(|b| b.is_ascii_alphanumeric() || b == b'_' || b == b'-'))
+fn identity(v: &V) -> bool {
+    v.as_str().is_some_and(|s| {
+        !s.is_empty() && s.len() <= 100
+            && s.bytes().all(|b| b.is_ascii_alphanumeric() || b == b'_' || b == b'-')
+    })
 }
-fn inc(s: &mut V, key: &str) {
-    let c = s["counts"][key].as_i64().unwrap_or(0) + 1;
-    s["counts"][key] = json!(c);
+fn truthy(v: &V) -> bool { js_truthy(Some(v)) }
+fn ms_instant(v: &V) -> Result<i64, String> { instant(v.as_str().unwrap_or("")) }
+fn ns_of(v: &V) -> Result<i128, String> {
+    instant_ns(v.as_str().unwrap_or("")).map_err(|e| e.to_string())
 }
-fn instant_ms(v: &V) -> i64 {
-    baal_paper::fixed::instant(v.as_str().unwrap_or("")).unwrap_or(i64::MIN)
+fn seq_of(v: &V) -> Result<BigInt, String> { big_sequence(v.as_str().unwrap_or("")) }
+/// JS BigInt(v) on stored strings/integers: null -> TypeError, bad string ->
+/// SyntaxError, non-integer number -> RangeError.
+fn to_bigint(v: &V) -> Result<BigInt, String> {
+    match v {
+        V::Null => Err("Cannot convert null to a BigInt".into()),
+        V::Bool(b) => Err(format!("Cannot convert {} to a BigInt", b)),
+        V::Number(n) => js_int(v)
+            .map(BigInt::from)
+            .ok_or_else(|| format!("The number {} cannot be converted to a BigInt because it is not an integer", n)),
+        V::String(s) => big_sequence(s).map_err(|_| format!("Cannot convert {} to a BigInt", s)),
+        _ => Err("Cannot convert [object Object] to a BigInt".into()),
+    }
 }
-/// PASSIVE_DEFAULTS
+fn inc(s: &mut V, key: &str) -> Result<(), String> {
+    if !s["counts"].is_object() {
+        // JS: (undefined)[key] — TypeError.
+        return Err(format!("Cannot read properties of undefined (reading '{}')", key));
+    }
+    let n = s["counts"][key].as_i64().unwrap_or(0);
+    s["counts"][key] = json!(n + 1);
+    Ok(())
+}
+/// PASSIVE_DEFAULTS (frozen).
 pub fn passive_defaults() -> V {
     json!({"latencyMs":500,"maxDataAgeMs":20000,"maxSourceClockSkewMs":2000,
         "quoteLifetimeMs":60000,"quoteEveryMs":60000,"horizonsMs":[60000,120000,300000],
         "markoutLatenessMs":20000,"orderQuantity":10,"slippageTicks":1,
         "maxQuotePairs":1000,"maxTradeIds":100000})
 }
+const DEFAULT_KEYS: [&str; 11] = [
+    "latencyMs","maxDataAgeMs","maxSourceClockSkewMs","quoteLifetimeMs","quoteEveryMs",
+    "horizonsMs","markoutLatenessMs","orderQuantity","slippageTicks","maxQuotePairs","maxTradeIds",
+];
 fn checked_config(input: Option<&V>) -> Result<V, String> {
-    let defaults = passive_defaults();
-    let input = input.cloned().unwrap_or(json!({}));
-    check(input.as_object().map(|m| m.keys().all(|k|
-        defaults.as_object().unwrap().contains_key(k))).unwrap_or(false),
-        "Unknown passive observer config")?;
-    let mut c = serde_json::Map::new();
-    for (k, v) in defaults.as_object().unwrap() { c.insert(k.clone(), v.clone()); }
-    for (k, v) in input.as_object().unwrap() { c.insert(k.clone(), v.clone()); }
-    let c = V::Object(c);
-    for (key, n) in c.as_object().unwrap() {
-        if key != "horizonsMs" {
-            check(n.as_i64().is_some_and(|v| v > 0), &format!("Invalid config {}", key))?;
-        }
+    // Object.keys(input): strings enumerate index keys; other primitives give
+    // none; null throws a TypeError.
+    let input_map: Map<String, V> = match input {
+        None => Map::new(),
+        Some(V::Null) => return Err("Cannot convert undefined or null to object".into()),
+        Some(V::Object(m)) => m.clone(),
+        Some(V::String(s)) => (0..s.chars().count())
+            .map(|i| (i.to_string(), json!("")))
+            .collect(),
+        Some(_) => Map::new(),
+    };
+    check(
+        input_map.keys().all(|k| DEFAULT_KEYS.contains(&k.as_str())),
+        "Unknown passive observer config",
+    )?;
+    // structuredClone({...defaults, ...input}): default key order, overridden values.
+    let mut c = passive_defaults();
+    for (k, v) in &input_map {
+        c[k] = v.clone();
     }
-    check(c["maxSourceClockSkewMs"].as_i64().unwrap_or(0) <= 2000
-        && c["maxDataAgeMs"].as_i64().unwrap_or(0) <= 60000
-        && c["latencyMs"].as_i64().unwrap_or(0) < c["quoteLifetimeMs"].as_i64().unwrap_or(0)
-        && c["quoteLifetimeMs"].as_i64().unwrap_or(0) <= 300000
-        && c["quoteEveryMs"].as_i64().unwrap_or(0) >= c["quoteLifetimeMs"].as_i64().unwrap_or(0)
-        && c["orderQuantity"].as_i64().unwrap_or(0) <= 100
-        && c["slippageTicks"].as_i64().unwrap_or(0) <= 5
-        && c["maxQuotePairs"].as_i64().unwrap_or(0) <= 10000
-        && c["maxTradeIds"].as_i64().unwrap_or(0) <= 100000, "Unsafe observer bounds")?;
-    let h = &c["horizonsMs"];
-    check(h.is_array() && !h.as_array().unwrap().is_empty() && h.as_array().unwrap().len() <= 10
-        && h.as_array().unwrap().iter().enumerate().all(|(i, v)|
-            v.as_i64().is_some_and(|x| x > c["latencyMs"].as_i64().unwrap_or(0) && x <= 3600000
-                && (i == 0 || x > h.as_array().unwrap()[i - 1].as_i64().unwrap_or(0)))),
-        "Invalid markout horizons")?;
+    for k in DEFAULT_KEYS {
+        if k == "horizonsMs" {
+            continue;
+        }
+        check(js_int(&c[k]).is_some_and(|n| n > 0), &format!("Invalid config {}", k))?;
+    }
+    let ci = |k: &str| js_int(&c[k]).unwrap_or(i64::MIN);
+    check(
+        ci("maxSourceClockSkewMs") <= 2000 && ci("maxDataAgeMs") <= 60000
+            && ci("latencyMs") < ci("quoteLifetimeMs") && ci("quoteLifetimeMs") <= 300000
+            && ci("quoteEveryMs") >= ci("quoteLifetimeMs") && ci("orderQuantity") <= 100
+            && ci("slippageTicks") <= 5 && ci("maxQuotePairs") <= 10000 && ci("maxTradeIds") <= 100000,
+        "Unsafe observer bounds",
+    )?;
+    let h_ok = c["horizonsMs"].as_array().is_some_and(|h| {
+        !h.is_empty() && h.len() <= 10
+            && h.iter().enumerate().all(|(i, v)| {
+                js_int(v).is_some_and(|x| x > ci("latencyMs") && x <= 3600000)
+                    && (i == 0 || js_int(v) > js_int(&h[i - 1]))
+            })
+    });
+    check(h_ok, "Invalid markout horizons")?;
     Ok(c)
 }
-/// createPassiveObserver({marketId, exchangeId, tournamentId, sourceHash, cutoff, config})
-pub fn create_passive_observer(market_id: &str, exchange_id: &str, tournament_id: &str,
-    source_hash: &str, cutoff: &str, config: Option<&V>) -> Result<V, String> {
-    check(is_id(&json!(market_id)) && is_id(&json!(exchange_id))
-        && tournament_id.len() == 36
-        && tournament_id.bytes().all(|b| b.is_ascii_hexdigit() && !b.is_ascii_uppercase() || b == b'-'),
-        "Invalid market scope")?;
-    check(source_hash.len() == 64 && source_hash.bytes().all(|b| b.is_ascii_hexdigit() && !b.is_ascii_uppercase()),
-        "Frozen source hash required")?;
-    baal_paper::fixed::instant(cutoff)?;
-    let c = checked_config(config)?;
-    let bank = json!({"schemaVersion":1,"name":"passive-opportunity-observer-v1","mode":"measurement_only",
-        "marketId":market_id,"exchangeId":exchange_id,"tournamentId":tournament_id,"cutoff":cutoff,
-        "sourceHash":source_hash,"config":c,"configHash":canonical_digest(&c)});
-    Ok(json!({"bank": bank, "state": {"schemaVersion":1,"bankHash":canonical_digest(&bank),
-        "index":0,"chainHash":source_hash,"lastInputHash":V::Null,"lastAt":V::Null,"epoch":V::Null,
-        "revision":V::Null,"ready":false,"lastBook":V::Null,"quotes":[],"lastQuoteAt":V::Null,
-        "seenTrades":{},"lastTradeSequence":V::Null,"lastTradeSourceNs":V::Null,"pairs":0,"counts":{}}}))
+/// createPassiveObserver(scope)
+pub fn create_passive_observer(scope: &V) -> Result<V, String> {
+    // JS destructuring default only applies to undefined (absent key), not null.
+    let tournament_id = scope
+        .get("tournamentId")
+        .cloned()
+        .unwrap_or_else(|| json!("bda92870-621e-47b0-bc3c-3602c5c26f55"));
+    let tournament_ok = tournament_id.as_str().is_some_and(|s| {
+        s.len() == 36
+            && s.bytes().all(|b| b.is_ascii_digit() || (b'a'..=b'f').contains(&b) || b == b'-')
+    });
+    check(
+        id(&scope["marketId"]) && id(&scope["exchangeId"]) && tournament_ok,
+        "Invalid market scope",
+    )?;
+    check(
+        scope["sourceHash"].as_str().is_some_and(|s| {
+            s.len() == 64 && s.bytes().all(|b| b.is_ascii_digit() || (b'a'..=b'f').contains(&b))
+        }),
+        "Frozen source hash required",
+    )?;
+    instant(scope["cutoff"].as_str().unwrap_or(""))?;
+    let c = checked_config(scope.get("config"))?;
+    let config_hash = digest(&c);
+    let mut bank = json!({"schemaVersion":1,"name":"passive-opportunity-observer-v1",
+        "mode":"measurement_only","marketId":scope["marketId"],"exchangeId":scope["exchangeId"],
+        "tournamentId":tournament_id,"cutoff":scope["cutoff"],"sourceHash":scope["sourceHash"],
+        "config":c});
+    bank["configHash"] = json!(config_hash);
+    let bank_hash = digest(&bank);
+    let state = json!({"schemaVersion":1,"bankHash":bank_hash,"index":0,
+        "chainHash":bank["sourceHash"],"lastInputHash":V::Null,"lastAt":V::Null,
+        "epoch":V::Null,"revision":V::Null,"ready":false,"lastBook":V::Null,
+        "quotes":[],"lastQuoteAt":V::Null,"seenTrades":{},"lastTradeSequence":V::Null,
+        "lastTradeSourceNs":V::Null,"pairs":0,"counts":{}});
+    Ok(json!({"bank":bank,"state":state}))
 }
 fn assert_state(s: &V, bank: &V) -> Result<(), String> {
-    check(bank["name"].as_str() == Some("passive-opportunity-observer-v1")
-        && bank["mode"].as_str() == Some("measurement_only")
-        && bank["configHash"].as_str() == Some(canonical_digest(&checked_config(Some(&bank["config"]))?).as_str())
-        && s["bankHash"].as_str() == Some(canonical_digest(bank).as_str())
-        && s["schemaVersion"].as_i64() == Some(1), "Frozen observer bank changed")?;
-    check(s["index"].as_i64().is_some_and(|i| i >= 0) && s["quotes"].is_array(),
-        "Invalid observer state")
+    // JS && short-circuit: checkedConfig runs only when name/mode pass.
+    check(
+        bank["name"].as_str() == Some("passive-opportunity-observer-v1")
+            && bank["mode"].as_str() == Some("measurement_only"),
+        "Frozen observer bank changed",
+    )?;
+    let cfg = checked_config(bank.get("config"))?;
+    check(
+        bank["configHash"].as_str() == Some(digest(&cfg).as_str())
+            && s["bankHash"].as_str() == Some(digest(bank).as_str())
+            && s["schemaVersion"].as_i64() == Some(1),
+        "Frozen observer bank changed",
+    )?;
+    check(
+        js_int(&s["index"]).is_some_and(|i| i >= 0) && s["quotes"].is_array(),
+        "Invalid observer state",
+    )?;
+    Ok(())
 }
 fn normalized(input: &V, bank: &V) -> Result<V, String> {
-    check(input["index"].as_i64().is_some_and(|i| i >= 1)
-        && ["book", "trade", "invalidate", "clock"].contains(&input["kind"].as_str().unwrap_or("")),
-        "Invalid observer event")?;
-    let at = baal_paper::fixed::instant(input["receivedAt"].as_str().unwrap_or(""))?;
+    check(
+        js_int(&input["index"]).is_some_and(|i| i >= 1)
+            && ["book", "trade", "invalidate", "clock"].contains(&input["kind"].as_str().unwrap_or("")),
+        "Invalid observer event",
+    )?;
+    let at = ms_instant(&input["receivedAt"])?;
     let c = &input["continuity"];
-    check(c.is_object() && is_identity(&c["epoch"])
-        && c["revision"].as_i64().is_some_and(|r| r >= 0)
-        && c["previousRevision"].as_i64().is_some_and(|p| p >= 0
-            && p <= c["revision"].as_i64().unwrap_or(-1))
-        && c["ready"].is_boolean() && c["continuous"].is_boolean()
-        && (c["recovered"].is_null() || c["recovered"].is_boolean()),
-        "Invalid continuity metadata")?;
-    let mut e = json!({"index": input["index"], "kind": input["kind"], "receivedAt": input["receivedAt"],
-        "continuity": {"epoch": c["epoch"], "revision": c["revision"],
-            "previousRevision": c["previousRevision"], "ready": c["ready"],
-            "continuous": c["continuous"], "recovered": c["recovered"] == V::Bool(true)}});
+    check(
+        truthy(c)
+            && identity(&c["epoch"])
+            && js_int(&c["revision"]).is_some_and(|r| r >= 0)
+            && js_int(&c["previousRevision"]).is_some_and(|r| r >= 0)
+            && js_int(&c["previousRevision"]).unwrap_or(i64::MAX) <= js_int(&c["revision"]).unwrap_or(i64::MIN)
+            && c["ready"].is_boolean() && c["continuous"].is_boolean(),
+        "Invalid continuity metadata",
+    )?;
+    // JS: (c.recovered===undefined || typeof c.recovered==='boolean').
+    if let Some(r) = c.get("recovered") {
+        check(r.is_boolean(), "Invalid continuity metadata")?;
+    }
+    let mut e = json!({"index":input["index"],"kind":input["kind"],"receivedAt":input["receivedAt"],
+        "continuity":{"epoch":c["epoch"],"revision":c["revision"],"previousRevision":c["previousRevision"],
+            "ready":c["ready"],"continuous":c["continuous"],
+            "recovered":c["recovered"].as_bool() == Some(true)}});
     if e["kind"].as_str() == Some("invalidate") {
-        check(["gap", "disconnect", "stale", "resync", "settlement", "schema", "book_dirty"]
-            .contains(&input["reason"].as_str().unwrap_or("")), "Invalid invalidation reason")?;
+        check(
+            ["gap", "disconnect", "stale", "resync", "settlement", "schema", "book_dirty"]
+                .contains(&input["reason"].as_str().unwrap_or("")),
+            "Invalid invalidation reason",
+        )?;
         e["reason"] = input["reason"].clone();
     }
     if e["kind"].as_str() == Some("book") {
         let b = &input["book"];
-        check(b["marketId"] == bank["marketId"] && b["exchangeId"] == bank["exchangeId"]
-            && b["instrument"].as_str()
-                == Some(format!("{}:YES", bank["exchangeId"].as_str().unwrap_or("")).as_str())
-            && b["receivedAt"] == e["receivedAt"], "Book scope mismatch")?;
-        let request = baal_paper::fixed::instant(b["requestStartedAt"].as_str().unwrap_or(""))?;
-        baal_paper::fixed::big_sequence(b["sequence"].as_str().unwrap_or(""))?;
-        check(request <= at && at - request <= bank["config"]["maxDataAgeMs"].as_i64().unwrap_or(0),
-            "Invalid book request clock")?;
-        let source_at = baal_service_runtime::contract::timestamp_str(
-            b["sourceAt"].as_str().unwrap_or("")).map_err(|e| e.to_string())?;
-        check(b["versionKey"].as_str() == Some(format!("{}:{}",
-            b["sequence"].as_str().unwrap_or(""), source_at).as_str())
-            && baal_service_runtime::contract::instant_ns(&source_at).map_err(|e| e.to_string())?
-                <= i128::from(at + bank["config"]["maxSourceClockSkewMs"].as_i64().unwrap_or(0)) * 1_000_000,
-            "Invalid book source clock")?;
-        let mut book = json!({"marketId": b["marketId"], "exchangeId": b["exchangeId"],
-            "instrument": b["instrument"], "requestStartedAt": b["requestStartedAt"],
-            "receivedAt": b["receivedAt"], "sourceAt": source_at, "sequence": b["sequence"],
-            "versionKey": b["versionKey"]});
+        check(
+            b["marketId"] == bank["marketId"] && b["exchangeId"] == bank["exchangeId"]
+                && b["instrument"].as_str() == Some(format!("{}:YES", bank["exchangeId"].as_str().unwrap_or("")).as_str())
+                && b["receivedAt"] == input["receivedAt"],
+            "Book scope mismatch",
+        )?;
+        let request = ms_instant(&b["requestStartedAt"])?;
+        seq_of(&b["sequence"])?;
+        check(
+            request <= at && at - request <= js_int(&bank["config"]["maxDataAgeMs"]).unwrap_or(0),
+            "Invalid book request clock",
+        )?;
+        let source_at = timestamp(&b["sourceAt"]).map_err(|x| x.to_string())?;
+        check(
+            b["versionKey"].as_str() == Some(&format!("{}:{}", b["sequence"].as_str().unwrap_or(""), source_at))
+                && instant_ns(&source_at).map_err(|x| x.to_string())?
+                    <= (at + js_int(&bank["config"]["maxSourceClockSkewMs"]).unwrap_or(0)) as i128 * 1_000_000,
+            "Invalid book source clock",
+        )?;
+        let mut book = json!({"marketId":b["marketId"],"exchangeId":b["exchangeId"],
+            "instrument":b["instrument"],"requestStartedAt":b["requestStartedAt"],
+            "receivedAt":b["receivedAt"],"sourceAt":source_at,"sequence":b["sequence"],
+            "versionKey":b["versionKey"]});
         for (side, direction) in [("bids", -1i64), ("asks", 1i64)] {
-            let levels = &b[side];
-            check(levels.is_array() && !levels.as_array().unwrap().is_empty()
-                && levels.as_array().unwrap().len() <= 200, "Missing bounded depth")?;
-            let mut out = Vec::new();
-            for (i, l) in levels.as_array().unwrap().iter().enumerate() {
-                let p = baal_paper::fixed::big_price(l["price"].as_str().unwrap_or(""))?;
-                check(l["quantity"].as_i64().is_some_and(|q| q > 0), "Invalid depth quantity")?;
+            check(
+                b[side].as_array().is_some_and(|a| !a.is_empty() && a.len() <= 200),
+                "Missing bounded depth",
+            )?;
+            let raw = b[side].as_array().cloned().unwrap_or_default();
+            let mut levels: Vec<V> = Vec::new();
+            for (i, l) in raw.iter().enumerate() {
+                let p = big_price(l["price"].as_str().unwrap_or(""))?;
+                check(
+                    js_int(&l["quantity"]).is_some_and(|q| q > 0),
+                    "Invalid depth quantity",
+                )?;
                 if i > 0 {
-                    let prev = baal_paper::fixed::big_price(
-                        levels.as_array().unwrap()[i - 1]["price"].as_str().unwrap_or(""))?;
-                    check(if direction == -1 { p < prev } else { p > prev }, "Unsorted depth")?;
+                    let prev = big_price(raw[i - 1]["price"].as_str().unwrap_or(""))?;
+                    check(
+                        if direction == -1 { p < prev } else { p > prev },
+                        "Unsorted depth",
+                    )?;
                 }
-                out.push(json!({"price": baal_paper::fixed::money(&p), "quantity": l["quantity"]}));
+                levels.push(json!({"price":money(&p),"quantity":l["quantity"]}));
             }
-            book[side] = json!(out);
+            book[side] = V::Array(levels);
         }
-        check(baal_paper::fixed::big_price(book["bids"][0]["price"].as_str().unwrap_or(""))?
-            < baal_paper::fixed::big_price(book["asks"][0]["price"].as_str().unwrap_or(""))?,
-            "Crossed or locked book")?;
+        check(
+            big_price(book["bids"][0]["price"].as_str().unwrap_or(""))?
+                < big_price(book["asks"][0]["price"].as_str().unwrap_or(""))?,
+            "Crossed or locked book",
+        )?;
         e["book"] = book;
     }
     if e["kind"].as_str() == Some("trade") {
         let t = &input["trade"];
-        check(t["marketId"] == bank["marketId"] && t["exchangeId"] == bank["exchangeId"]
-            && t["tournamentId"] == bank["tournamentId"], "Trade scope mismatch")?;
-        check(is_identity(&t["id"]) && t["quantity"].as_i64().is_some_and(|q| q > 0),
-            "Ordered stable trade identity and integer size required")?;
-        baal_paper::fixed::big_sequence(t["sequence"].as_str().unwrap_or(""))?;
-        let p = baal_paper::fixed::big_amount(t["price"].as_str().unwrap_or(""))?;
-        let source_at = baal_service_runtime::contract::timestamp_str(
-            t["sourceAt"].as_str().unwrap_or("")).map_err(|e| e.to_string())?;
-        check(p >= BigInt::from(0) && p <= BigInt::from(baal_paper::fixed::SCALE)
-            && baal_service_runtime::contract::instant_ns(&source_at).map_err(|e| e.to_string())?
-                <= i128::from(at + bank["config"]["maxSourceClockSkewMs"].as_i64().unwrap_or(0)) * 1_000_000,
-            "Invalid trade price or clock")?;
-        e["trade"] = json!({"id": t["id"], "sequence": t["sequence"], "marketId": t["marketId"],
-            "exchangeId": t["exchangeId"], "tournamentId": t["tournamentId"],
-            "price": baal_paper::fixed::money(&p), "quantity": t["quantity"], "sourceAt": source_at});
+        check(
+            t["marketId"] == bank["marketId"] && t["exchangeId"] == bank["exchangeId"]
+                && t["tournamentId"] == bank["tournamentId"],
+            "Trade scope mismatch",
+        )?;
+        check(
+            identity(&t["id"]) && js_int(&t["quantity"]).is_some_and(|q| q > 0),
+            "Ordered stable trade identity and integer size required",
+        )?;
+        seq_of(&t["sequence"])?;
+        let p = big_amount(t["price"].as_str().unwrap_or(""))?;
+        let source_at = timestamp(&t["sourceAt"]).map_err(|x| x.to_string())?;
+        check(
+            p >= BigInt::from(0) && p <= BigInt::from(SCALE)
+                && instant_ns(&source_at).map_err(|x| x.to_string())?
+                    <= (at + js_int(&bank["config"]["maxSourceClockSkewMs"]).unwrap_or(0)) as i128 * 1_000_000,
+            "Invalid trade price or clock",
+        )?;
+        e["trade"] = json!({"id":t["id"],"sequence":t["sequence"],"marketId":t["marketId"],
+            "exchangeId":t["exchangeId"],"tournamentId":t["tournamentId"],
+            "price":money(&p),"quantity":t["quantity"],"sourceAt":source_at});
     }
     Ok(e)
 }
-fn censor(s: &mut V, reason: &str, at: &str, events: &mut Vec<V>) {
+fn censor(s: &mut V, reason: &str, at: &str, events: &mut Vec<V>) -> Result<(), String> {
     s["ready"] = json!(false);
-    for q in s["quotes"].as_array_mut().map(|a| a.iter_mut().collect::<Vec<_>>()).unwrap_or_default() {
-        if q["closedAt"].is_null() {
-            q["closedAt"] = json!(at);
-            q["closedReason"] = json!(reason);
-        }
-        for (h, m) in q["markouts"].as_object().cloned().unwrap_or_default() {
-            if m["status"].as_str() == Some("pending") {
-                q["markouts"][&h] = json!({"status":"censored_continuity","reason":reason,"at":at});
+    if let Some(quotes) = s["quotes"].as_array_mut() {
+        for q in quotes.iter_mut() {
+            if q["closedAt"].is_null() {
+                q["closedAt"] = json!(at);
+                q["closedReason"] = json!(reason);
+            }
+            if let Some(markouts) = q["markouts"].as_object_mut() {
+                for (_h, m) in markouts.iter_mut() {
+                    if m["status"].as_str() == Some("pending") {
+                        *m = json!({"status":"censored_continuity","reason":reason,"at":at});
+                    }
+                }
             }
         }
     }
-    inc(s, "continuityInvalidations");
+    inc(s, "continuityInvalidations")?;
     events.push(json!({"kind":"continuity_invalidated","reason":reason,"at":at}));
+    Ok(())
 }
-fn age(s: &mut V, at: &str, bank: &V) {
-    let now = baal_paper::fixed::instant(at).unwrap_or(0);
-    for q in s["quotes"].as_array_mut().map(|a| a.iter_mut().collect::<Vec<_>>()).unwrap_or_default() {
-        if q["closedAt"].is_null() && now >= instant_ms(&q["expiresAt"]) {
-            q["closedAt"] = q["expiresAt"].clone();
-            q["closedReason"] = json!("hypothesis_expired");
-        }
-        for (h, m) in q["markouts"].as_object().cloned().unwrap_or_default() {
-            if m["status"].as_str() == Some("pending")
-                && now > instant_ms(&q["createdAt"]) + h.parse::<i64>().unwrap_or(0)
-                    + bank["config"]["markoutLatenessMs"].as_i64().unwrap_or(0) {
-                q["markouts"][&h] = json!({"status":"missing_fresh_followup","at":at});
+fn age(s: &mut V, at: &str, bank: &V) -> Result<(), String> {
+    let now = instant(at)?;
+    let markout_lateness = js_int(&bank["config"]["markoutLatenessMs"]).unwrap_or(0);
+    if let Some(quotes) = s["quotes"].as_array_mut() {
+        for q in quotes.iter_mut() {
+            if q["closedAt"].is_null()
+                && now >= instant(q["expiresAt"].as_str().unwrap_or(""))? {
+                q["closedAt"] = q["expiresAt"].clone();
+                q["closedReason"] = json!("hypothesis_expired");
+            }
+            let created = instant(q["createdAt"].as_str().unwrap_or(""))?;
+            if let Some(markouts) = q["markouts"].as_object_mut() {
+                let entries: Vec<(String, V)> = markouts.iter().map(|(k, v)| (k.clone(), v.clone())).collect();
+                for (h, m) in entries {
+                    if m["status"].as_str() == Some("pending")
+                        && now > created + h.parse::<i64>().unwrap_or(0) + markout_lateness {
+                        markouts.insert(h, json!({"status":"missing_fresh_followup","at":at}));
+                    }
+                }
             }
         }
     }
+    Ok(())
 }
-fn same_or_better(book: &V, q: &V) -> BigInt {
-    let bid_side = q["side"].as_str() == Some("bid");
-    let levels = if bid_side { &book["bids"] } else { &book["asks"] };
-    let q_price = baal_paper::fixed::big_amount(q["price"].as_str().unwrap_or("")).unwrap_or_default();
-    levels.as_array().cloned().unwrap_or_default().iter().fold(BigInt::from(0), |n, l| {
-        let p = baal_paper::fixed::big_amount(l["price"].as_str().unwrap_or("")).unwrap_or_default();
-        let qualifies = if bid_side { p >= q_price } else { p <= q_price };
-        if qualifies { n + BigInt::from(l["quantity"].as_i64().unwrap_or(0)) } else { n }
-    })
+fn same_or_better(book: &V, q: &V) -> Result<BigInt, String> {
+    let side_bid = q["side"].as_str() == Some("bid");
+    let levels = book[if side_bid { "bids" } else { "asks" }]
+        .as_array().cloned().unwrap_or_default();
+    let q_price = big_amount(q["price"].as_str().unwrap_or(""))?;
+    let mut n = BigInt::from(0);
+    for l in &levels {
+        let p = big_amount(l["price"].as_str().unwrap_or(""))?;
+        let include = if side_bid { p >= q_price } else { p <= q_price };
+        if include {
+            // l.quantity is a validated safe integer -> JS BigInt(l.quantity).
+            n += BigInt::from(js_int(&l["quantity"]).unwrap_or(0));
+        }
+    }
+    Ok(n)
 }
 fn process_book(s: &mut V, e: &V, bank: &V, events: &mut Vec<V>) -> Result<(), String> {
-    let b = &e["book"];
-    let c = &bank["config"];
-    let at = baal_paper::fixed::instant(e["receivedAt"].as_str().unwrap_or(""))?;
-    let source_ns = baal_service_runtime::contract::instant_ns(b["sourceAt"].as_str().unwrap_or(""))
-        .map_err(|e| e.to_string())?;
+    let b = e["book"].clone();
+    let at = ms_instant(&e["receivedAt"])?;
+    let source_ns = ns_of(&b["sourceAt"])?;
     let previous = s["lastBook"].clone();
-    if !previous.is_null() {
-        check(BigInt::from(previous["sequence"].as_str().unwrap_or("0").parse::<i64>().unwrap_or(0))
-            <= BigInt::from(b["sequence"].as_str().unwrap_or("0").parse::<i64>().unwrap_or(0))
-            && source_ns >= baal_service_runtime::contract::instant_ns(
-                previous["sourceAt"].as_str().unwrap_or("")).map_err(|e| e.to_string())?,
-            "Book source rollback")?;
+    let prev_is_book = previous.is_object();
+    let mut prev_ns = 0i128;
+    if prev_is_book {
+        prev_ns = ns_of(&previous["sourceAt"])?;
+        check(
+            big_sequence(b["sequence"].as_str().unwrap_or(""))?
+                >= big_sequence(previous["sequence"].as_str().unwrap_or(""))?
+                && source_ns >= prev_ns,
+            "Book source rollback",
+        )?;
         if previous["versionKey"] == b["versionKey"] {
-            check(canonical_digest(&json!({"bids": previous["bids"], "asks": previous["asks"]}))
-                == canonical_digest(&json!({"bids": b["bids"], "asks": b["asks"]})),
-                "Conflicting equal book version")?;
+            check(
+                digest(&json!({"bids":previous["bids"],"asks":previous["asks"]}))
+                    == digest(&json!({"bids":b["bids"],"asks":b["asks"]})),
+                "Conflicting equal book version",
+            )?;
         }
     }
-    let independent = previous.is_null()
-        || (source_ns > baal_service_runtime::contract::instant_ns(
-            previous["sourceAt"].as_str().unwrap_or("")).map_err(|e| e.to_string())?
-            && b["versionKey"] != previous["versionKey"]);
+    let independent = !prev_is_book
+        || (source_ns > prev_ns && b["versionKey"] != previous["versionKey"]);
     s["lastBook"] = b.clone();
-    inc(s, "bookObservations");
-    if s["ready"] != V::Bool(true) || !independent {
-        inc(s, if s["ready"] != V::Bool(true) { "unreadyBooks" } else { "repeatedBooks" });
+    inc(s, "bookObservations")?;
+    if !truthy(&s["ready"]) || !independent {
+        inc(s, if !truthy(&s["ready"]) { "unreadyBooks" } else { "repeatedBooks" })?;
         return Ok(());
     }
-    let bid = baal_paper::fixed::big_amount(b["bids"][0]["price"].as_str().unwrap_or(""))?;
-    let ask = baal_paper::fixed::big_amount(b["asks"][0]["price"].as_str().unwrap_or(""))?;
-    let b_seq: BigInt = b["sequence"].as_str().unwrap_or("0").parse().unwrap_or_default();
-    for qi in 0..s["quotes"].as_array().map(|a| a.len()).unwrap_or(0) {
-        let q = s["quotes"][qi].clone();
-        if q["epoch"] != s["epoch"] || at <= instant_ms(&q["createdAt"])
-            || source_ns <= i128::from(q["sourceNs"].as_str().unwrap_or("0").parse::<i64>().unwrap_or(0))
-            || b_seq <= q["sequence"].as_str().unwrap_or("0").parse::<BigInt>().unwrap_or_default()
-            || e["continuity"]["revision"].as_i64().unwrap_or(0) <= q["revision"].as_i64().unwrap_or(0)
-            || baal_paper::fixed::instant(b["requestStartedAt"].as_str().unwrap_or("")).unwrap_or(i64::MIN)
-                < baal_paper::fixed::instant(q["activationAt"].as_str().unwrap_or("")).unwrap_or(i64::MIN) {
-            continue;
-        }
-        let mut q = q;
-        if q["closedAt"].is_null() {
-            let visible = same_or_better(b, &q);
-            q["visibleSameOrBetterNow"] = json!(visible.to_string());
-            let hwm: BigInt = q["visibleQueueAheadHighWater"].as_str().unwrap_or("0").parse().unwrap_or_default();
-            if visible > hwm { q["visibleQueueAheadHighWater"] = json!(visible.to_string()); }
-            let q_price = baal_paper::fixed::big_amount(q["price"].as_str().unwrap_or(""))?;
-            let crossed = if q["side"].as_str() == Some("bid") { ask <= q_price } else { bid >= q_price };
-            if crossed && q["firstOppositeQuoteTouchOrCrossAt"].is_null() {
-                q["firstOppositeQuoteTouchOrCrossAt"] = e["receivedAt"].clone();
-                inc(s, "oppositeQuoteTouchesOrCrossings");
+    let bid = big_amount(b["bids"][0]["price"].as_str().unwrap_or(""))?;
+    let ask = big_amount(b["asks"][0]["price"].as_str().unwrap_or(""))?;
+    let s_epoch = s["epoch"].clone();
+    let rev = js_int(&e["continuity"]["revision"]).unwrap_or(i64::MIN);
+    // Counter increments that JS applies to s.counts mid-loop are applied after
+    // the borrow of s.quotes ends; ordering of distinct counter keys is
+    // irrelevant to the hashed state.
+    let mut deferred_inc: Vec<&'static str> = Vec::new();
+    if let Some(quotes) = s["quotes"].as_array_mut() {
+        for q in quotes.iter_mut() {
+            let skip = q["epoch"] != s_epoch
+                || at <= instant(q["createdAt"].as_str().unwrap_or(""))?
+                || BigInt::from(source_ns) <= to_bigint(&q["sourceNs"])?
+                || big_sequence(b["sequence"].as_str().unwrap_or(""))? <= to_bigint(&q["sequence"])?
+                || rev <= js_int(&q["revision"]).unwrap_or(0)
+                || instant(b["requestStartedAt"].as_str().unwrap_or(""))?
+                    < instant(q["activationAt"].as_str().unwrap_or(""))?;
+            if skip {
+                continue;
             }
-            if q["activationStatus"].as_str() == Some("awaiting_independent_book")
-                && at >= baal_paper::fixed::instant(q["activationAt"].as_str().unwrap_or("")).unwrap_or(i64::MAX) {
-                q["activationStatus"] = json!(if crossed { "marketable_at_first_followup" } else { "observed_nonmarketable" });
-                q["activationObservedAt"] = e["receivedAt"].clone();
-                q["activationSourceNs"] = json!(source_ns.to_string());
-                q["activationSequence"] = b["sequence"].clone();
-                q["activationRevision"] = e["continuity"]["revision"].clone();
-                if crossed {
-                    q["closedAt"] = e["receivedAt"].clone();
-                    q["closedReason"] = json!("not_passive_at_activation_observation");
+            if q["closedAt"].is_null() {
+                let visible = same_or_better(&b, q)?;
+                q["visibleSameOrBetterNow"] = json!(visible.to_string());
+                if visible > to_bigint(&q["visibleQueueAheadHighWater"])? {
+                    q["visibleQueueAheadHighWater"] = json!(visible.to_string());
                 }
-                events.push(json!({"kind":"activation_observation","quoteId":q["id"],
-                    "status":q["activationStatus"],"at":e["receivedAt"]}));
+                let q_price = big_amount(q["price"].as_str().unwrap_or(""))?;
+                let crossed = if q["side"].as_str() == Some("bid") {
+                    ask <= q_price
+                } else {
+                    bid >= q_price
+                };
+                if crossed && q["firstOppositeQuoteTouchOrCrossAt"].is_null() {
+                    q["firstOppositeQuoteTouchOrCrossAt"] = e["receivedAt"].clone();
+                    deferred_inc.push("oppositeQuoteTouchesOrCrossings");
+                }
+                if q["activationStatus"].as_str() == Some("awaiting_independent_book")
+                    && at >= instant(q["activationAt"].as_str().unwrap_or(""))? {
+                    q["activationStatus"] = json!(if crossed {
+                        "marketable_at_first_followup"
+                    } else {
+                        "observed_nonmarketable"
+                    });
+                    q["activationObservedAt"] = e["receivedAt"].clone();
+                    q["activationSourceNs"] = json!(source_ns.to_string());
+                    q["activationSequence"] = b["sequence"].clone();
+                    q["activationRevision"] = e["continuity"]["revision"].clone();
+                    if crossed {
+                        q["closedAt"] = e["receivedAt"].clone();
+                        q["closedReason"] = json!("not_passive_at_activation_observation");
+                    }
+                    events.push(json!({"kind":"activation_observation","quoteId":q["id"],
+                        "status":q["activationStatus"],"at":e["receivedAt"]}));
+                }
+            }
+            if q["markouts"].is_object() {
+                let entries: Vec<(String, V)> = q["markouts"].as_object().unwrap()
+                    .iter().map(|(k, v)| (k.clone(), v.clone())).collect();
+                let created = instant(q["createdAt"].as_str().unwrap_or(""))?;
+                let q_price = q["price"].clone();
+                let q_side = q["side"].clone();
+                let after_cross = !q["firstOppositeQuoteTouchOrCrossAt"].is_null();
+                let after_through = !q["firstQualifiedTradeThroughAt"].is_null();
+                let q_id = q["id"].clone();
+                for (h, m) in entries {
+                    let hnum = h.parse::<i64>().unwrap_or(0);
+                    if m["status"].as_str() == Some("pending") && at >= created + hnum {
+                        let quote_price = big_amount(q_price.as_str().unwrap_or(""))?;
+                        let slip = BigInt::from(js_int(&bank["config"]["slippageTicks"]).unwrap_or(0))
+                            * BigInt::from(TICK);
+                        let midpoint_move_twice = if q_side.as_str() == Some("bid") {
+                            &bid + &ask - BigInt::from(2) * &quote_price
+                        } else {
+                            BigInt::from(2) * &quote_price - &bid - &ask
+                        };
+                        let executable_side_move = if q_side.as_str() == Some("bid") {
+                            &bid - &slip - &quote_price
+                        } else {
+                            &quote_price - &ask - &slip
+                        };
+                        // JS / on BigInt truncates toward zero; num-bigint matches.
+                        let markout = json!({"status":"observed_unexecuted_quote_markout",
+                            "at":e["receivedAt"],"sourceVersion":b["versionKey"],
+                            "latenessMs":at-created-hnum,
+                            "signedMidpointMove":money(&(midpoint_move_twice/BigInt::from(2))),
+                            "signedOppositeExecutableMoveAfterCushion":money(&executable_side_move),
+                            "afterQuoteCross":after_cross,
+                            "afterQualifiedTradeThrough":after_through});
+                        q["markouts"][h.as_str()] = markout.clone();
+                        deferred_inc.push("observedMarkouts");
+                        let mut ev = json!({"kind":"quote_markout","quoteId":q_id,
+                            "horizonMs":hnum});
+                        if let (V::Object(em), V::Object(mm)) = (&mut ev, &markout) {
+                            for (k, v) in mm { em.insert(k.clone(), v.clone()); }
+                        }
+                        events.push(ev);
+                    }
+                }
             }
         }
-        for (h, m) in q["markouts"].as_object().cloned().unwrap_or_default() {
-            if m["status"].as_str() == Some("pending")
-                && at >= instant_ms(&q["createdAt"]) + h.parse::<i64>().unwrap_or(0) {
-                let quote_price = baal_paper::fixed::big_amount(q["price"].as_str().unwrap_or(""))?;
-                let slip = BigInt::from(c["slippageTicks"].as_i64().unwrap_or(0))
-                    * BigInt::from(baal_paper::fixed::TICK);
-                let mid_twice = if q["side"].as_str() == Some("bid") {
-                    &bid + &ask - BigInt::from(2) * &quote_price
-                } else {
-                    BigInt::from(2) * &quote_price - &bid - &ask
-                };
-                let exec_move = if q["side"].as_str() == Some("bid") {
-                    &bid - &slip - &quote_price
-                } else {
-                    &quote_price - &ask - &slip
-                };
-                let markout = json!({"status":"observed_unexecuted_quote_markout","at":e["receivedAt"],
-                    "sourceVersion":b["versionKey"],
-                    "latenessMs": at - instant_ms(&q["createdAt"]) - h.parse::<i64>().unwrap_or(0),
-                    "signedMidpointMove": baal_paper::fixed::money(&(mid_twice / BigInt::from(2))),
-                    "signedOppositeExecutableMoveAfterCushion": baal_paper::fixed::money(&exec_move),
-                    "afterQuoteCross": !q["firstOppositeQuoteTouchOrCrossAt"].is_null(),
-                    "afterQualifiedTradeThrough": !q["firstQualifiedTradeThroughAt"].is_null()});
-                q["markouts"][&h] = markout.clone();
-                inc(s, "observedMarkouts");
-                let mut ev = json!({"kind":"quote_markout","quoteId":q["id"],
-                    "horizonMs": h.parse::<i64>().unwrap_or(0)});
-                for (k, v) in markout.as_object().unwrap() { ev[k] = v.clone(); }
-                events.push(ev);
-            }
-        }
-        s["quotes"][qi] = q;
     }
-    if at <= instant_ms(&bank["cutoff"]) || instant_ms(&b["requestStartedAt"]) <= instant_ms(&bank["cutoff"]) {
-        inc(s, "developmentBooks");
+    for k in deferred_inc {
+        inc(s, k)?;
+    }
+    let cutoff = instant(bank["cutoff"].as_str().unwrap_or(""))?;
+    if at <= cutoff || instant(b["requestStartedAt"].as_str().unwrap_or(""))? <= cutoff {
+        inc(s, "developmentBooks")?;
         return Ok(());
     }
-    if !s["lastQuoteAt"].is_null()
-        && at - instant_ms(&s["lastQuoteAt"]) < c["quoteEveryMs"].as_i64().unwrap_or(0) {
+    if truthy(&s["lastQuoteAt"])
+        && at - instant(s["lastQuoteAt"].as_str().unwrap_or(""))?
+            < js_int(&bank["config"]["quoteEveryMs"]).unwrap_or(0) {
         return Ok(());
     }
-    if s["pairs"].as_i64().unwrap_or(0) >= c["maxQuotePairs"].as_i64().unwrap_or(0) {
-        inc(s, "quoteCapacityReached");
+    if s["pairs"].as_i64().unwrap_or(0) >= js_int(&bank["config"]["maxQuotePairs"]).unwrap_or(0) {
+        inc(s, "quoteCapacityReached")?;
         return Ok(());
     }
-    let tick = BigInt::from(baal_paper::fixed::TICK);
-    let scale = BigInt::from(baal_paper::fixed::SCALE);
-    let inside_bid = &bid + &tick;
-    let inside_ask = &ask - &tick;
-    if &ask - &bid < BigInt::from(2) * &tick || inside_bid >= inside_ask
-        || inside_bid < tick || inside_ask > &scale - &tick {
-        inc(s, "noDistinctInteriorPrices");
+    let inside_bid = &bid + BigInt::from(TICK);
+    let inside_ask = &ask - BigInt::from(TICK);
+    if &ask - &bid < BigInt::from(2 * TICK)
+        || inside_bid >= inside_ask
+        || inside_bid < BigInt::from(TICK)
+        || inside_ask > BigInt::from(SCALE - TICK) {
+        inc(s, "noDistinctInteriorPrices")?;
         return Ok(());
     }
     for (side, p) in [("bid", inside_bid.clone()), ("ask", inside_ask.clone())] {
-        let mut q = json!({"id": canonical_digest(&json!({"bankHash": s["bankHash"],
-                "version": b["versionKey"], "at": e["receivedAt"], "side": side})),
-            "side": side, "price": baal_paper::fixed::money(&p), "quantity": c["orderQuantity"],
-            "createdAt": e["receivedAt"],
-            "activationAt": baal_service_runtime::contract::ms_to_iso(
-                (at + c["latencyMs"].as_i64().unwrap_or(0)) as f64),
-            "expiresAt": baal_service_runtime::contract::ms_to_iso(
-                (at + c["quoteLifetimeMs"].as_i64().unwrap_or(0)) as f64),
-            "epoch": s["epoch"], "revision": e["continuity"]["revision"],
-            "sequence": b["sequence"], "sourceNs": source_ns.to_string(),
-            "sourceVersion": b["versionKey"],
-            "activationStatus": "awaiting_independent_book", "activationObservedAt": V::Null,
-            "closedAt": V::Null, "closedReason": V::Null,
-            "visibleSameOrBetterNow": "0", "visibleQueueAheadHighWater": "0",
-            "qualifiedTradeThroughQuantity": "0", "qualifiedTradeThroughEvents": 0,
-            "firstOppositeQuoteTouchOrCrossAt": V::Null, "firstQualifiedTradeThroughAt": V::Null,
-            "markouts": c["horizonsMs"].as_array().cloned().unwrap_or_default().into_iter()
-                .map(|h| (h.as_i64().unwrap_or(0).to_string(), json!({"status":"pending"})))
-                .collect::<serde_json::Map<String, V>>()});
-        let visible = same_or_better(b, &q).to_string();
-        q["visibleSameOrBetterNow"] = json!(visible);
-        q["visibleQueueAheadHighWater"] = q["visibleSameOrBetterNow"].clone();
-        let quotes = s["quotes"].as_array_mut().unwrap();
-        quotes.push(q.clone());
+        let qid = digest(&json!({"bankHash":s["bankHash"],"version":b["versionKey"],
+            "at":e["receivedAt"],"side":side}));
+        let mut markouts = Map::new();
+        for h in bank["config"]["horizonsMs"].as_array().cloned().unwrap_or_default() {
+            markouts.insert(js_int(&h).unwrap_or(0).to_string(), json!({"status":"pending"}));
+        }
+        let mut q = json!({"id":qid,"side":side,"price":money(&p),"quantity":bank["config"]["orderQuantity"],
+            "createdAt":e["receivedAt"],
+            "activationAt":ms_to_iso((at + js_int(&bank["config"]["latencyMs"]).unwrap_or(0)) as f64),
+            "expiresAt":ms_to_iso((at + js_int(&bank["config"]["quoteLifetimeMs"]).unwrap_or(0)) as f64),
+            "epoch":s_epoch,"revision":e["continuity"]["revision"],"sequence":b["sequence"],
+            "sourceNs":source_ns.to_string(),"sourceVersion":b["versionKey"],
+            "activationStatus":"awaiting_independent_book","activationObservedAt":V::Null,
+            "closedAt":V::Null,"closedReason":V::Null,
+            "visibleSameOrBetterNow":"0","visibleQueueAheadHighWater":"0",
+            "qualifiedTradeThroughQuantity":"0","qualifiedTradeThroughEvents":0,
+            "firstOppositeQuoteTouchOrCrossAt":V::Null,"firstQualifiedTradeThroughAt":V::Null});
+        q["markouts"] = V::Object(markouts);
+        let visible = same_or_better(&b, &q)?;
+        q["visibleSameOrBetterNow"] = json!(visible.to_string());
+        q["visibleQueueAheadHighWater"] = json!(visible.to_string());
+        if let Some(arr) = s["quotes"].as_array_mut() {
+            arr.push(q.clone());
+        }
         events.push(json!({"kind":"hypothetical_quote","quoteId":q["id"],"side":side,
             "price":q["price"],"quantity":q["quantity"],"at":e["receivedAt"],
             "activationAt":q["activationAt"],"visibleQueueAhead":q["visibleQueueAheadHighWater"],
             "executionClaim":"none"}));
     }
-    s["pairs"] = json!(s["pairs"].as_i64().unwrap_or(0) + 1);
+    let pairs = s["pairs"].as_i64().unwrap_or(0) + 1;
+    s["pairs"] = json!(pairs);
     s["lastQuoteAt"] = e["receivedAt"].clone();
-    inc(s, "quotePairs");
+    inc(s, "quotePairs")?;
     Ok(())
 }
 fn process_trade(s: &mut V, e: &V, bank: &V, events: &mut Vec<V>) -> Result<(), String> {
-    let t = &e["trade"];
-    let key = canonical_digest(t);
-    let old = s["seenTrades"][t["id"].as_str().unwrap_or("")].clone();
+    let t = e["trade"].clone();
+    let key = digest(&t);
+    let tid = t["id"].as_str().unwrap_or("").to_string();
+    let old = s["seenTrades"][tid.as_str()].clone();
     if !old.is_null() {
         check(old.as_str() == Some(key.as_str()), "Conflicting duplicate trade")?;
-        inc(s, "duplicateTrades");
+        inc(s, "duplicateTrades")?;
         return Ok(());
     }
-    if s["seenTrades"].as_object().map(|m| m.len()).unwrap_or(0)
-        >= bank["config"]["maxTradeIds"].as_i64().unwrap_or(0) as usize {
-        censor(s, "trade_identity_capacity", e["receivedAt"].as_str().unwrap_or(""), events);
+    let seen_len = s["seenTrades"].as_object().map(|m| m.len()).unwrap_or(0);
+    if seen_len >= js_int(&bank["config"]["maxTradeIds"]).unwrap_or(0) as usize {
+        censor(s, "trade_identity_capacity", e["receivedAt"].as_str().unwrap_or(""), events)?;
         return Ok(());
     }
-    s["seenTrades"][t["id"].as_str().unwrap_or("")] = json!(key);
-    inc(s, "uniqueTradesObserved");
-    let ns = baal_service_runtime::contract::instant_ns(t["sourceAt"].as_str().unwrap_or(""))
-        .map_err(|e| e.to_string())?;
-    let t_seq: BigInt = t["sequence"].as_str().unwrap_or("0").parse().unwrap_or_default();
+    s["seenTrades"][tid] = json!(key);
+    inc(s, "uniqueTradesObserved")?;
+    let ns = ns_of(&t["sourceAt"])?;
     if !s["lastTradeSequence"].is_null()
-        && (t_seq <= s["lastTradeSequence"].as_str().unwrap_or("0").parse::<BigInt>().unwrap_or_default()
-            || ns < i128::from(s["lastTradeSourceNs"].as_str().unwrap_or("0").parse::<i64>().unwrap_or(0))) {
-        censor(s, "trade_ordering_ambiguous", e["receivedAt"].as_str().unwrap_or(""), events);
+        && (big_sequence(t["sequence"].as_str().unwrap_or(""))?
+            <= to_bigint(&s["lastTradeSequence"])?
+            || BigInt::from(ns) < to_bigint(&s["lastTradeSourceNs"])?)
+    {
+        censor(s, "trade_ordering_ambiguous", e["receivedAt"].as_str().unwrap_or(""), events)?;
         return Ok(());
     }
     s["lastTradeSequence"] = t["sequence"].clone();
     s["lastTradeSourceNs"] = json!(ns.to_string());
-    if s["ready"] != V::Bool(true) || e["continuity"]["continuous"] != V::Bool(true) {
-        inc(s, "unqualifiedTrades");
+    if !truthy(&s["ready"]) || !truthy(&e["continuity"]["continuous"]) {
+        inc(s, "unqualifiedTrades")?;
         return Ok(());
     }
+    let e_at = ms_instant(&e["receivedAt"])?;
     if s["lastBook"].is_null()
-        || instant_ms(&e["receivedAt"]) - instant_ms(&s["lastBook"]["receivedAt"])
-            > bank["config"]["maxDataAgeMs"].as_i64().unwrap_or(0) {
-        censor(s, "stale_book", e["receivedAt"].as_str().unwrap_or(""), events);
-        inc(s, "unqualifiedTrades");
+        || e_at - instant(s["lastBook"]["receivedAt"].as_str().unwrap_or(""))?
+            > js_int(&bank["config"]["maxDataAgeMs"]).unwrap_or(0)
+    {
+        censor(s, "stale_book", e["receivedAt"].as_str().unwrap_or(""), events)?;
+        inc(s, "unqualifiedTrades")?;
         return Ok(());
     }
-    for qi in 0..s["quotes"].as_array().map(|a| a.len()).unwrap_or(0) {
-        let q = s["quotes"][qi].clone();
-        if !q["closedAt"].is_null() || q["epoch"] != s["epoch"]
-            || q["activationStatus"].as_str() != Some("observed_nonmarketable")
-            || instant_ms(&e["receivedAt"]) <= instant_ms(&q["activationObservedAt"])
-            || ns <= i128::from(q["activationSourceNs"].as_str().unwrap_or("0").parse::<i64>().unwrap_or(0))
-            || t_seq <= q["activationSequence"].as_str().unwrap_or("0").parse::<BigInt>().unwrap_or_default()
-            || e["continuity"]["revision"].as_i64().unwrap_or(0) <= q["activationRevision"].as_i64().unwrap_or(0) {
-            continue;
+    let s_epoch = s["epoch"].clone();
+    let t_seq = big_sequence(t["sequence"].as_str().unwrap_or(""))?;
+    let t_qty = BigInt::from(js_int(&t["quantity"]).unwrap_or(0));
+    let rev = js_int(&e["continuity"]["revision"]).unwrap_or(i64::MIN);
+    let mut deferred_inc: Vec<&'static str> = Vec::new();
+    if let Some(quotes) = s["quotes"].as_array_mut() {
+        for q in quotes.iter_mut() {
+            let skip = !q["closedAt"].is_null()
+                || q["epoch"] != s_epoch
+                || q["activationStatus"].as_str() != Some("observed_nonmarketable")
+                || e_at <= instant(q["activationObservedAt"].as_str().unwrap_or(""))?
+                || BigInt::from(ns) <= to_bigint(&q["activationSourceNs"])?
+                || t_seq <= to_bigint(&q["activationSequence"])?
+                || rev <= js_int(&q["activationRevision"]).unwrap_or(0);
+            if skip {
+                continue;
+            }
+            let traded = big_amount(t["price"].as_str().unwrap_or(""))?;
+            let limit = big_amount(q["price"].as_str().unwrap_or(""))?;
+            if traded == limit {
+                deferred_inc.push("qualifiedTradeTouches");
+                continue;
+            }
+            let through = if q["side"].as_str() == Some("bid") {
+                traded < limit
+            } else {
+                traded > limit
+            };
+            if !through {
+                continue;
+            }
+            let cur = to_bigint(&q["qualifiedTradeThroughQuantity"])?;
+            q["qualifiedTradeThroughQuantity"] = json!((cur + &t_qty).to_string());
+            let ne = q["qualifiedTradeThroughEvents"].as_i64().unwrap_or(0) + 1;
+            q["qualifiedTradeThroughEvents"] = json!(ne);
+            if q["firstQualifiedTradeThroughAt"].is_null() {
+                q["firstQualifiedTradeThroughAt"] = e["receivedAt"].clone();
+            }
+            deferred_inc.push("qualifiedTradeThroughEvents");
+            events.push(json!({"kind":"trade_through_evidence","quoteId":q["id"],
+                "tradeId":t["id"],"at":e["receivedAt"],"observedQuantity":t["quantity"],
+                "visibleQueueAheadHighWater":q["visibleQueueAheadHighWater"],
+                "executionClaim":"unverified","queueConsumed":false}));
         }
-        let mut q = q;
-        let traded = baal_paper::fixed::big_amount(t["price"].as_str().unwrap_or(""))?;
-        let limit = baal_paper::fixed::big_amount(q["price"].as_str().unwrap_or(""))?;
-        if traded == limit {
-            inc(s, "qualifiedTradeTouches");
-            continue;
-        }
-        let through = if q["side"].as_str() == Some("bid") { traded < limit } else { traded > limit };
-        if !through { continue; }
-        let total: BigInt = q["qualifiedTradeThroughQuantity"].as_str().unwrap_or("0").parse::<BigInt>().unwrap_or_default()
-            + BigInt::from(t["quantity"].as_i64().unwrap_or(0));
-        q["qualifiedTradeThroughQuantity"] = json!(total.to_string());
-        q["qualifiedTradeThroughEvents"] = json!(q["qualifiedTradeThroughEvents"].as_i64().unwrap_or(0) + 1);
-        if q["firstQualifiedTradeThroughAt"].is_null() {
-            q["firstQualifiedTradeThroughAt"] = e["receivedAt"].clone();
-        }
-        inc(s, "qualifiedTradeThroughEvents");
-        events.push(json!({"kind":"trade_through_evidence","quoteId":q["id"],"tradeId":t["id"],
-            "at":e["receivedAt"],"observedQuantity":t["quantity"],
-            "visibleQueueAheadHighWater":q["visibleQueueAheadHighWater"],
-            "executionClaim":"unverified","queueConsumed":false}));
-        s["quotes"][qi] = q;
+    }
+    for k in deferred_inc {
+        inc(s, k)?;
     }
     Ok(())
 }
-/// observePassive(input, event, bank)
+/// observePassive(input,event,bank) -> {state,events,record}
 pub fn observe_passive(input: &V, event: &V, bank: &V) -> Result<V, String> {
     assert_state(input, bank)?;
     let e = normalized(event, bank)?;
-    let input_hash = canonical_digest(&e);
-    if e["index"] == input["index"] {
-        check(input_hash == input["lastInputHash"].as_str().unwrap_or(""), "Conflicting replay index")?;
-        return Ok(json!({"state": input, "events": [], "record": V::Null}));
+    let input_hash = digest(&e);
+    if js_int(&e["index"]) == js_int(&input["index"]) {
+        check(
+            input["lastInputHash"].as_str() == Some(input_hash.as_str()),
+            "Conflicting replay index",
+        )?;
+        return Ok(json!({"state":input,"events":[],"record":V::Null}));
     }
-    check(e["index"].as_i64() == Some(input["index"].as_i64().unwrap_or(0) + 1),
-        "Missing or reordered observer event")?;
-    check(input["lastAt"].is_null() || instant_ms(&e["receivedAt"]) >= instant_ms(&input["lastAt"]),
-        "Receipt rollback")?;
+    check(
+        js_int(&e["index"]) == js_int(&input["index"]).map(|i| i + 1),
+        "Missing or reordered observer event",
+    )?;
+    check(
+        input["lastAt"].is_null()
+            || ms_instant(&e["receivedAt"])? >= ms_instant(&input["lastAt"])?,
+        "Receipt rollback",
+    )?;
     let mut s = input.clone();
     let mut events: Vec<V> = Vec::new();
     let co = &e["continuity"];
     let epoch_changed = !s["epoch"].is_null() && s["epoch"] != co["epoch"];
-    let revision_gap = !s["revision"].is_null() && !epoch_changed
-        && (co["revision"].as_i64().unwrap_or(0) < s["revision"].as_i64().unwrap_or(0)
-            || (co["revision"].as_i64().unwrap_or(0) > s["revision"].as_i64().unwrap_or(0)
-                && co["previousRevision"].as_i64().unwrap_or(0) > s["revision"].as_i64().unwrap_or(0)));
-    if epoch_changed || revision_gap || co["ready"] != V::Bool(true)
-        || co["continuous"] != V::Bool(true) || e["kind"].as_str() == Some("invalidate") {
-        let reason = if !e["reason"].is_null() {
-            e["reason"].as_str().unwrap_or("").to_string()
-        } else if epoch_changed {
-            "epoch_changed".to_string()
+    // A merged delivery may overlap revisions already received. Only a start
+    // strictly beyond the watermark proves a forward gap; overlap is continuous.
+    let s_rev = js_int(&s["revision"]);
+    let co_rev = js_int(&co["revision"]).unwrap_or(i64::MIN);
+    let co_prev = js_int(&co["previousRevision"]).unwrap_or(i64::MIN);
+    let revision_gap = s_rev.is_some() && !epoch_changed
+        && (co_rev < s_rev.unwrap()
+            || (co_rev > s_rev.unwrap() && co_prev > s_rev.unwrap()));
+    if epoch_changed || revision_gap || !truthy(&co["ready"]) || !truthy(&co["continuous"])
+        || e["kind"].as_str() == Some("invalidate") {
+        let fallback = if epoch_changed {
+            "epoch_changed"
         } else if revision_gap {
-            "delivery_gap".to_string()
+            "delivery_gap"
         } else {
-            "not_continuous".to_string()
+            "not_continuous"
         };
-        censor(&mut s, &reason, e["receivedAt"].as_str().unwrap_or(""), &mut events);
+        let reason = e["reason"].as_str().filter(|r| !r.is_empty()).unwrap_or(fallback);
+        censor(&mut s, reason, e["receivedAt"].as_str().unwrap_or(""), &mut events)?;
     }
     s["epoch"] = co["epoch"].clone();
     s["revision"] = co["revision"].clone();
-    if e["kind"].as_str() == Some("book") && co["recovered"] == V::Bool(true)
-        && co["ready"] == V::Bool(true) && co["continuous"] == V::Bool(true) {
+    if e["kind"].as_str() == Some("book") && truthy(&co["recovered"])
+        && truthy(&co["ready"]) && truthy(&co["continuous"]) {
         s["ready"] = json!(true);
     }
-    age(&mut s, e["receivedAt"].as_str().unwrap_or(""), bank);
-    if e["kind"].as_str() == Some("book") { process_book(&mut s, &e, bank, &mut events)?; }
-    if e["kind"].as_str() == Some("trade") { process_trade(&mut s, &e, bank, &mut events)?; }
-    let mut record = json!({"index": e["index"], "previousHash": s["chainHash"], "event": e});
-    record["hash"] = json!(canonical_digest(&record));
+    age(&mut s, e["receivedAt"].as_str().unwrap_or(""), bank)?;
+    if e["kind"].as_str() == Some("book") {
+        process_book(&mut s, &e, bank, &mut events)?;
+    }
+    if e["kind"].as_str() == Some("trade") {
+        process_trade(&mut s, &e, bank, &mut events)?;
+    }
+    let mut record = json!({"index":e["index"],"previousHash":s["chainHash"],"event":e});
+    let h = digest(&record);
+    record["hash"] = json!(h);
     s["index"] = e["index"].clone();
     s["chainHash"] = record["hash"].clone();
     s["lastInputHash"] = json!(input_hash);
     s["lastAt"] = e["receivedAt"].clone();
-    Ok(json!({"state": s, "events": events, "record": record}))
+    Ok(json!({"state":s,"events":events,"record":record}))
 }
-/// passiveReport(state, bank)
+/// passiveReport(state,bank)
 pub fn passive_report(state: &V, bank: &V) -> Result<V, String> {
     assert_state(state, bank)?;
-    let mut markouts: serde_json::Map<String, V> = serde_json::Map::new();
+    let mut markouts = Map::new();
     for q in state["quotes"].as_array().cloned().unwrap_or_default() {
-        for (h, m) in q["markouts"].as_object().cloned().unwrap_or_default() {
-            if !markouts.contains_key(&h) { markouts.insert(h.clone(), json!({})); }
-            let status = m["status"].as_str().unwrap_or("");
-            let n = markouts[&h][status].as_i64().unwrap_or(0) + 1;
-            markouts.get_mut(&h).unwrap()[status] = json!(n);
+        if let Some(m) = q["markouts"].as_object() {
+            for (h, mv) in m {
+                if !markouts.contains_key(h) {
+                    markouts.insert(h.clone(), V::Object(Map::new()));
+                }
+                let st = mv["status"].as_str().unwrap_or("").to_string();
+                let cur = markouts[h.as_str()][st.as_str()].as_i64().unwrap_or(0);
+                markouts.get_mut(h).unwrap().as_object_mut().unwrap().insert(st, json!(cur + 1));
+            }
         }
     }
-    Ok(json!({"mode": bank["mode"], "name": bank["name"], "cutoff": bank["cutoff"],
-        "sourceHash": bank["sourceHash"], "bankHash": state["bankHash"],
-        "configHash": bank["configHash"], "throughIndex": state["index"],
-        "chainHash": state["chainHash"], "updatedAt": state["lastAt"], "ready": state["ready"],
-        "quotePairs": state["pairs"], "counts": state["counts"], "markoutStatuses": markouts,
-        "execution": {"ordersSubmitted":0,"simulatedFills":V::Null,"partialFillQuantity":V::Null,
-            "fillProbability":V::Null,"pnl":V::Null},
-        "evidence": {"localContinuityOnly":true,"completeHistoricalTradeTape":false,
+    Ok(json!({"mode":bank["mode"],"name":bank["name"],"cutoff":bank["cutoff"],
+        "sourceHash":bank["sourceHash"],"bankHash":state["bankHash"],
+        "configHash":bank["configHash"],"throughIndex":state["index"],
+        "chainHash":state["chainHash"],"updatedAt":state["lastAt"],
+        "ready":state["ready"],"quotePairs":state["pairs"],
+        "counts":state["counts"],"markoutStatuses":V::Object(markouts),
+        "execution":{"ordersSubmitted":0,"simulatedFills":V::Null,
+            "partialFillQuantity":V::Null,"fillProbability":V::Null,"pnl":V::Null},
+        "evidence":{"localContinuityOnly":true,"completeHistoricalTradeTape":false,
             "aggressorSideKnown":false,"queuePriorityKnown":false,
             "visibleQueueNeverDecrementedByDisappearanceOrTrade":true,
             "quoteCrossingIsNotFill":true,"profitabilityEstablished":false}}))
 }
-/// replayPassive(records, bank)
+/// replayPassive(records,bank)
 pub fn replay_passive(records: &V, bank: &V) -> Result<V, String> {
     check(records.is_array(), "Observer journal records required")?;
-    let created = create_passive_observer(
-        bank["marketId"].as_str().unwrap_or(""), bank["exchangeId"].as_str().unwrap_or(""),
-        bank["tournamentId"].as_str().unwrap_or(""), bank["sourceHash"].as_str().unwrap_or(""),
-        bank["cutoff"].as_str().unwrap_or(""), Some(&bank["config"]))?;
-    check(canonical_digest(&created["bank"]) == canonical_digest(bank),
-        "Unexpected observer bank fields")?;
+    let created = create_passive_observer(bank)?;
+    check(digest(&created["bank"]) == digest(bank), "Unexpected observer bank fields")?;
     let mut state = created["state"].clone();
-    for record in records.as_array().unwrap() {
+    for record in records.as_array().cloned().unwrap_or_default() {
         let out = observe_passive(&state, &record["event"], bank)?;
-        check(!out["record"].is_null()
-            && canonical_digest(&out["record"]) == canonical_digest(record),
-            "Observer journal hash or payload mismatch")?;
+        check(
+            !out["record"].is_null() && digest(&out["record"]) == digest(&record),
+            "Observer journal hash or payload mismatch",
+        )?;
         state = out["state"].clone();
     }
     Ok(state)
