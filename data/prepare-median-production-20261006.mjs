@@ -3,7 +3,7 @@ import path from 'node:path';
 import assert from 'node:assert/strict';
 import {digest} from '../live-paper/model.mjs';
 import {payloadHash} from '../execution/core.mjs';
-import {atomicJson} from '../execution/ledger.mjs';
+import {atomicJson,canonicalJson,replayJournal} from '../execution/ledger.mjs';
 import {Journal} from '../live-paper/runtime.mjs';
 import {MEDIAN_PAPER_POLICY,MEDIAN_EXECUTION_POLICY,medianControllerIdentity} from '../execution/median-controller.mjs';
 import {validateProductionActivation,validateProductionHandoff} from '../execution/production-activation.mjs';
@@ -20,8 +20,8 @@ assert.equal(authority.runId,'sig-pilot-median-20261006-human');
 const preparedName='median-production-prepared-20261006.json';
 if(!process.argv.includes('--activate')){
  const bank={schemaVersion:1,mode:'baal_historical_median_production_v1',cutoff:new Date().toISOString(),tournamentId:paper.universe.tournamentId,universeHash:paper.universe.hash,paperBinding:{bankHash:paperHash,policyHash:digest(MEDIAN_PAPER_POLICY)},sourcePrefix:paper.featurePrefix,policy:MEDIAN_EXECUTION_POLICY,codeIdentity:medianControllerIdentity(process.cwd())};
- const bankHash=digest(bank),dir=path.join(runtime,'production-banks');fs.mkdirSync(dir,{recursive:true});
- const file=path.join(dir,bankHash+'.json');assert(!fs.existsSync(file));atomicJson(file,bank);
+ const storedBank=JSON.parse(canonicalJson(bank)),bankHash=digest(storedBank),dir=path.join(runtime,'production-banks');fs.mkdirSync(dir,{recursive:true});
+ const file=path.join(dir,bankHash+'.json');assert(!fs.existsSync(file));atomicJson(file,storedBank);assert.equal(digest(JSON.parse(fs.readFileSync(file))),bankHash);
  atomicJson(path.join(runtime,preparedName),{schemaVersion:1,bankHash,runId:authority.runId,authorityHash:payloadHash(authority),preparedAt:bank.cutoff});
  console.log(JSON.stringify({prepared:true,bankHash,executionEnabled:false}));
 }else{
@@ -36,7 +36,11 @@ if(!process.argv.includes('--activate')){
  assert(fs.existsSync(stateFile),'Outgoing run status must be available');
  const stats=JSON.parse(fs.readFileSync(stateFile));assert.equal(stats.runId,old.runId);assert.equal(stats.openIntent,null);assert.equal(stats.unconfirmedIntents,0);assert.equal(Object.keys(stats.positions).length,0);
  const journal=new Journal(path.join(runtime,'competition-runs',old.runId,'core-journal.jsonl'));
- assert(journal.last,'Outgoing durable account state must exist');assert(Object.values(journal.last.state.intents).every(i=>i.status==='closed'));assert.equal(Object.keys(journal.last.state.owned).length,0);
+ if(journal.last){assert(Object.values(journal.last.state.intents).every(i=>i.status==='closed'));assert.equal(Object.keys(journal.last.state.owned).length,0);}else{
+  // An unused run has no core commits. Verify the independently durable intent
+  // ledger is also pristine; missing core state with any intent is a blocker.
+  const ledger=read('competition-runs/'+old.runId+'/execution-state.json'),intentFile=path.join(runtime,'competition-runs',old.runId,'execution-journal.jsonl'),actual=replayJournal(fs.existsSync(intentFile)?fs.readFileSync(intentFile,'utf8'):'',{scope:old.tournamentId});assert.deepEqual(ledger,actual);assert.equal(actual.sequence,0);assert.equal(actual.lastHash,'');assert.equal(Object.keys(actual.intents).length,0);assert.equal(stats.ordersSubmitted,0);assert.equal(stats.dispatchAttempts,0);
+ }
  const at=new Date().toISOString();assert(Date.parse(at)-Date.parse(r.oldestReceivedAt)<=120000);
  const h={schemaVersion:3,kind:'same_owner_explicit_human_activation',executionOwner:'Codex',ownershipTransferred:false,handoffId:old.handoffId,authorityKind:old.authorityKind,assignmentCommentId:old.assignmentCommentId,ackCommentId:old.ackCommentId,inheritedOwnershipRecord:oldHandoff,inheritedActivation:old,humanActivation:authority,reconciliation:{complete:true,tournamentId:r.tournamentId,receiptHash:pointer.receiptHash,oldestReceivedAt:r.oldestReceivedAt,newestReceivedAt:r.newestReceivedAt},reconciledAt:r.at,acknowledgedAt:at};
  const a={...old,runId:authority.runId,strategyId:'historical-median-receipt-v1',strategyBankHash:prepared.bankHash,activationAuthority:authority,handoffHash:payloadHash(h),startedAt:at,entryExpiresAt:new Date(Date.parse(at)+6*3600000).toISOString()};
