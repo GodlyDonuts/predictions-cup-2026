@@ -1,4 +1,4 @@
-cargo:rustc-env=BAAL_EXECUTION_HASH=71bcadee1a4a6997a4e663d04f5a815e23c0c0de8e4b27b11eff11b3435f73f7
+cargo:rustc-env=BAAL_EXECUTION_HASH=774c50c25088ce3f753997a078479e1d312f289b7657f3b8fa396060373c99c2
 cargo:rerun-if-changed=src/api_tick_price.rs
 cargo:rerun-if-changed=src/atomic_rename.rs
 cargo:rerun-if-changed=src/baal_capital_sizing_v1.rs
@@ -6,11 +6,13 @@ cargo:rerun-if-changed=src/baal_scaled_entry_signal_v1.rs
 cargo:rerun-if-changed=src/baal_scaled_legacy_risk_v1.rs
 cargo:rerun-if-changed=src/baal_scaled_live_host_v1.rs
 cargo:rerun-if-changed=src/baal_scaled_live_host_v2.rs
+cargo:rerun-if-changed=src/baal_scaled_live_host_v5.rs
 cargo:rerun-if-changed=src/baal_scaled_no_controller_v1.rs
 cargo:rerun-if-changed=src/baal_scaled_no_evidence_bridge_v1.rs
 cargo:rerun-if-changed=src/baal_scaled_owned_exit_read_hint_v1.rs
 cargo:rerun-if-changed=src/baal_scaled_profitable_fifo_prefix_v1.rs
 cargo:rerun-if-changed=src/baal_scaled_shared_budget_v1.rs
+cargo:rerun-if-changed=src/baal_scaled_shared_budget_v3.rs
 cargo:rerun-if-changed=src/basket_risk.rs
 cargo:rerun-if-changed=src/candidate_markouts.rs
 cargo:rerun-if-changed=src/candidate_markouts_audit.rs
