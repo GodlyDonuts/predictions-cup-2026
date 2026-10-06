@@ -1,0 +1,162 @@
+{
+  "schemaVersion": 1,
+  "at": "2026-10-06T04:04:00.518Z",
+  "binaryPath": "C:\\Users\\Sai\\OneDrive - St. Johns County School District\\Desktop\\Sig Trading Cup\\backend-rust\\median-dip-replay\\target\\release\\baal-median-dip-replay.exe",
+  "binaryHash": "b7cb0596fc290714f923a04736774e63ee951a89adaf93db84ca1ee86f342887",
+  "engineHash": "d856d272d5c4f64d34836fd1f78c7e65f45897efd331c0a7ef813ab26d7c5778",
+  "sourcePins": [
+    {
+      "relativePath": "backend-rust/median-dip-replay/Cargo.toml",
+      "sha256": "63dd194ce75deeecac8ec765aea1bcbb366cd9ffcd9dc26122d87029c1437a16"
+    },
+    {
+      "relativePath": "backend-rust/median-dip-replay/Cargo.lock",
+      "sha256": "f606b1f14d2644bc87ac79d55267403366c0a0a57c1a4e79a85702ab03dcda95"
+    },
+    {
+      "relativePath": "backend-rust/median-dip-replay/build.rs",
+      "sha256": "9ced690a7ffc49529a0ee1d5836fdac2053f319127dd31559641816e00d736e8"
+    },
+    {
+      "relativePath": "backend-rust/median-dip-replay/src/lib.rs",
+      "sha256": "34b544e4619b5a18b0da9692c8340d4b8c1ee11e1264e9353b7290f99be52ada"
+    },
+    {
+      "relativePath": "backend-rust/median-dip-replay/src/main.rs",
+      "sha256": "79242d368048384221f4979536de4859795a2f7d659a85c3cafeec08a04f3d94"
+    },
+    {
+      "relativePath": "backend-rust/median-dip-replay/src/observe.rs",
+      "sha256": "332176774fcdd96b15421294cd637dfcebf2e04abe30b36b3ff311925392977a"
+    },
+    {
+      "relativePath": "backend-rust/baal-service/src/storage.rs",
+      "sha256": "d145d4141ef3a3cccf625d604ca1d74e22e72d3296893016fa59199b9ba76324"
+    },
+    {
+      "relativePath": "backend-rust/journal-append/src/lib.rs",
+      "sha256": "8a98926304540c96126f02d8bd95347360930ab8ca360018143fbfd6d3b0cba8"
+    },
+    {
+      "relativePath": "backend-rust/journal-append/src/canonical.rs",
+      "sha256": "8585d3b62de8023f02fb42774355039f2509455f34d49517ca9557a3b4ddacf0"
+    },
+    {
+      "relativePath": "backend-rust/portfolio-engine/Cargo.toml",
+      "sha256": "68e546bdccca04a48a1f95f123a56083c2e7f5e3269cc34438aa88e0b35f1b3b"
+    },
+    {
+      "relativePath": "backend-rust/portfolio-engine/Cargo.lock",
+      "sha256": "d1ea5985bdae3745a2bcf1635de5f18d870fe7a28da6165d3a9b45071e43295c"
+    },
+    {
+      "relativePath": "backend-rust/portfolio-engine/build.rs",
+      "sha256": "624ed546914640bce6420d0aa5d390931e583391bb73a46d58f603abd5f915ce"
+    },
+    {
+      "relativePath": "backend-rust/portfolio-engine/src/lib.rs",
+      "sha256": "c5d083a531318233d19ad95cd697e9adacc2b946b428cfbf28bd6dee417e865e"
+    },
+    {
+      "relativePath": "backend-rust/portfolio-engine/src/dual_v1.rs",
+      "sha256": "9052646bc486780b5c522c30878646e3c3b9756cff51446cc9e8d63b5d3aef4f"
+    },
+    {
+      "relativePath": "backend-rust/portfolio-engine/src/publication.rs",
+      "sha256": "5848ea63970c7fa79a4328061da65c1e164ed5707603f692b4a3aef7d618d379"
+    },
+    {
+      "relativePath": "backend-rust/portfolio-engine/src/history.rs",
+      "sha256": "96746939aeeb065b8f19aa35e5c01fb30a633c20648694a3ab06082df508eeaf"
+    },
+    {
+      "relativePath": "backend-rust/portfolio-engine/src/main.rs",
+      "sha256": "272780d5da8a712198250abe17aaecf05e83d54a1f4593a45a6b496b0d575213"
+    },
+    {
+      "relativePath": "backend-rust/portfolio-engine/src/settlement_value.rs",
+      "sha256": "8cd3dae02bf60ab511a1044a9c0886067f1f6699e637efd83681c45efeb291f2"
+    },
+    {
+      "relativePath": "backend-rust/portfolio-engine/src/money.rs",
+      "sha256": "879298022b838d1ea2066e6594ebdaa05c3cf5a392b1b9fee7404f6981007f58"
+    },
+    {
+      "relativePath": "backend-rust/dual-no-engine/src/lib.rs",
+      "sha256": "87940b5c72c333a7b514cd904f86f076789d72cb6afaa000d20c57bfefeb23b8"
+    },
+    {
+      "relativePath": "backend-rust/dual-no-engine/Cargo.toml",
+      "sha256": "47a6f86954dccb35286382ea615844f5f75494ed15183ec87ccfeaaac4036b69"
+    },
+    {
+      "relativePath": "backend-rust/dual-no-engine/Cargo.lock",
+      "sha256": "2bc433557207b82bae4e2682934b1c8e1c71b59c254baa1d5aa3e3112cff1241"
+    },
+    {
+      "relativePath": "backend-rust/median-dip-replay/src/observe/tests.rs",
+      "sha256": "bb2f996706bc79b23f622e5e8e87e5a5d61835329571c2b3c713faa959528401"
+    },
+    {
+      "relativePath": "backend-rust/journal-append/Cargo.toml",
+      "sha256": "242a2d3237eb9933816c15242d2f62b4010f29542625c4c46290c522c14ee24c"
+    },
+    {
+      "relativePath": "backend-rust/journal-append/Cargo.lock",
+      "sha256": "15c54d3f86f15bf8ad975831ddcb29afe8f2092e7b351bd88ddd602b9877c80b"
+    },
+    {
+      "relativePath": "backend-rust/journal-append/build.rs",
+      "sha256": "d65a7ad800bae1ab79153b6386bf95ff348875341af7308ba4228d211c561b67"
+    }
+  ],
+  "fixedPolicy": {
+    "prospectiveRevision": 1,
+    "riskPriority": "stop_or_horizon_before_virtual_profit_fill",
+    "riskIntentRefresh": "new_intent_new_clock_and_source_on_bid_below_old_limit",
+    "stopIsNotGuaranteedLossBound": true,
+    "entryDipTicks": [
+      1,
+      2,
+      4
+    ],
+    "historyMs": 3600000,
+    "minimumHistorySpanMs": 1800000,
+    "minimumHistoryReceipts": 20,
+    "latencyMs": 3000,
+    "intentLifetimeMs": 120000,
+    "maximumHoldMs": 7200000,
+    "lossLimitTicks": 4,
+    "profitTargetTicks": 1,
+    "cooldownMs": 900000,
+    "cashReserve": "90.000000",
+    "maxExposure": "3.000000",
+    "maxMarkets": 3,
+    "cumulativeBuyBudget": "25.000000",
+    "initialCash": "100.000000",
+    "fees": 0,
+    "depthFractionBps": 100,
+    "fillAdverseTicks": 0,
+    "limitCushionTicks": 1
+  },
+  "featurePolicy": {
+    "source": "declared_market_price_observation",
+    "feature": "lagged_one_hour_bid_only",
+    "excludeMostRecentKnownBulkPoint": true,
+    "knownBeforeOriginalBookRequest": true,
+    "depthAvailable": false,
+    "executable": false
+  },
+  "tests": {
+    "passed": 10,
+    "originalBaselineControls": 4,
+    "prospectiveRiskPriority": 1,
+    "observerRestartAndCausality": 5
+  },
+  "cli": "--observe-config <absolute path> --seconds 60 --maximum-batches 60 --maximum-rows 4096",
+  "networkRequests": 0,
+  "competitionOrders": 0,
+  "persistentServicesAdded": 0,
+  "deploymentPerformed": false,
+  "profitabilityEstablished": false
+}

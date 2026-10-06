@@ -1,0 +1,9 @@
+The new median paper cohort retains three independently funded dip thresholds, 1/2/4 ticks, with zero fees. It uses the existing market-wide bulk capture only for strictly earlier one-hour bid history. Bulk quotes cannot supply executable depth or fills. The current bulk point is excluded from its own historical reference, and features must be known before the original decision-book request.
+
+All simulated buys and sells require subsequent fresh depth20 receipts, causal fresh account eligibility, fixed limits, one share and one percent observed depth. The three wallets are alternatives and their results must not be summed. Earlier capture primes history only; it does not import historical winning trades or reset older wallets.
+
+Prospective revision1 fixes a real exit problem: a stop or holding-horizon obligation takes priority over an unsubmitted virtual profit target. A deteriorated risk limit creates a new intent with a new source and latency clock. It cannot fill on the receipt that creates it. A stop remains an instruction to seek an exit, not a guaranteed maximum loss.
+
+The baseline replay and its original accounting remain unchanged. Its four-tick case closed two same-market roundtrips for +0.010; one adverse residual tick per buy would erase that gain. The other two thresholds each lost 0.005. These development results do not establish repeatable profitability or authorize contest execution.
+
+The native observer consumes existing files in explicitly bounded sessions, preserving immutable bank/code identities, input prefixes, append-only evidence and exact funded restart states. It cannot construct an API client or send an order. See data/median-prospective-prepared-20261006.json and subsequent live evidence for actual launch and accounting; preparation alone is not a successful run.

@@ -1,0 +1,2 @@
+use sha2::{Digest,Sha256};use std::fs;
+fn main(){let mut hash=Sha256::new();for file in ["Cargo.toml","Cargo.lock","build.rs","src/lib.rs","src/main.rs","src/observe.rs","../baal-service/src/storage.rs","../journal-append/src/lib.rs","../journal-append/src/canonical.rs"]{println!("cargo:rerun-if-changed={file}");let bytes=fs::read(file).expect("Pinned median source exists");hash.update(file.as_bytes());hash.update((bytes.len()as u64).to_le_bytes());hash.update(bytes);}println!("cargo:rustc-env=MEDIAN_ENGINE_HASH={:x}",hash.finalize());}

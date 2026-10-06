@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "at": "2026-10-06T04:04:18.671Z",
+  "cohort": "baal-median-prospective-20261006-v1",
+  "bankHash": "fe61bfcee3e0fbc2bda5170de3fff0f3841c82d451529df2a20403a027098331",
+  "engineHash": "d856d272d5c4f64d34836fd1f78c7e65f45897efd331c0a7ef813ab26d7c5778",
+  "binaryHash": "b7cb0596fc290714f923a04736774e63ee951a89adaf93db84ca1ee86f342887",
+  "publicPrefix": {
+    "bytes": 78564290,
+    "sha256": "bda9eca899f9e540ae2140b52b92045c64ee6bda9dff6183fff34a8c231be476",
+    "sequence": 35438,
+    "hash": "441f2d53bf2da32eb18798786c476440a9ecf0fe7e825f346fb771fbdb296183"
+  },
+  "accountPrefix": {
+    "bytes": 2578399,
+    "sha256": "81c90ad3f102a10986ec3ed80b1c7a1f5e9277bfad4eb739b1fcca2d1b013dc6",
+    "sequence": 4285,
+    "hash": "22fea3212ac9bfc04d82b2a5f3779c790f5cb43fb3308bbb4daf1ace30ac4ed0"
+  },
+  "featurePrefix": {
+    "bytes": 224134793,
+    "sha256": "6d536b94620932c7cf570c256c51249a27efea7a5d5e7d02607b8ea98b6287b3",
+    "sequence": 19994,
+    "hash": "81c7cc3e5ecdf143b23f136f7ba132b7416ca8db6251d96bc59f5ee8f80c8bd5"
+  },
+  "thresholds": [
+    1,
+    2,
+    4
+  ],
+  "configRelative": "median-paper-cohorts\\baal-median-prospective-20261006-v1\\observer-config.json",
+  "binaryRelative": "median-paper-cohorts\\baal-median-prospective-20261006-v1\\bin\\baal-median-dip-replay.exe",
+  "pins": 28,
+  "fees": 0,
+  "primedHistoryOnly": true,
+  "oldFillsImported": false,
+  "sessionLaunched": false,
+  "competitionOrders": 0,
+  "networkRequests": 0,
+  "profitabilityEstablished": false
+}

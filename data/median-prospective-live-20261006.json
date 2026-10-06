@@ -1,0 +1,109 @@
+{
+  "schemaVersion": 1,
+  "observedAt": "2026-10-06T04:06:32.752Z",
+  "sourceReportedAt": "2026-10-06T04:06:31.509Z",
+  "cohort": "baal-median-prospective-20261006-v1",
+  "bankHash": "fe61bfcee3e0fbc2bda5170de3fff0f3841c82d451529df2a20403a027098331",
+  "binaryHash": "b7cb0596fc290714f923a04736774e63ee951a89adaf93db84ca1ee86f342887",
+  "engineHash": "d856d272d5c4f64d34836fd1f78c7e65f45897efd331c0a7ef813ab26d7c5778",
+  "pinsVerified": 28,
+  "firstBoundedSession": {
+    "completed": true,
+    "batches": 21,
+    "coldImports": 1,
+    "journalSequence": 12,
+    "sourceSequence": 35454
+  },
+  "observer": {
+    "pid": 2952,
+    "status": "completed_batch",
+    "boundedSession": true,
+    "persistentDaemon": false,
+    "sourceBytes": 78647348,
+    "sourceSha256": "c494c3a2f60c6a0330ff0a59a057e67ac7811c61e9c4687a8615bdb1ebb1971a",
+    "sourceSequence": 35473,
+    "sourceHash": "45f1ffefcbc0836b744f65280adda61921715f242e3aa0ea6fc48bcada129c96",
+    "journalSequence": 20,
+    "journalHash": "21619cf301038a1f64f39ea13122f21710095032b1673ccddae22ac856527dbf",
+    "entryDraining": false,
+    "featureFrontier": {
+      "enabled": true,
+      "bytes": 224423508,
+      "sequence": 20020,
+      "hash": "a2faf17cf371e9e5ee651671e661f1c31724eda033ec078c2c613c13f3110af9",
+      "sha256": "23975d59b0982632a60285c5a9721c7be4e63853b840b6e6869c5d710910328d",
+      "lastKnownAtMs": 1791259580941,
+      "executable": false,
+      "depthAvailable": false
+    },
+    "lastAvailableAtMs": 1791259591509,
+    "casesAreIndependentNotSummed": true
+  },
+  "cases": [
+    {
+      "dipTicks": 1,
+      "cash": "100.000000",
+      "realizedPnl": "0.000000",
+      "cumulativeBuys": "0.000000",
+      "reservedCost": "0.000000",
+      "fills": [],
+      "closedTrades": 0,
+      "positions": [],
+      "pendingIntents": 0,
+      "estimatedLiquidationPnl": "0.000000",
+      "counts": {
+        "no_funded_dip": 23,
+        "source_boundary": 2514,
+        "stale_book": 12
+      },
+      "officialOrders": 0,
+      "profitabilityEstablished": false
+    },
+    {
+      "dipTicks": 2,
+      "cash": "100.000000",
+      "realizedPnl": "0.000000",
+      "cumulativeBuys": "0.000000",
+      "reservedCost": "0.000000",
+      "fills": [],
+      "closedTrades": 0,
+      "positions": [],
+      "pendingIntents": 0,
+      "estimatedLiquidationPnl": "0.000000",
+      "counts": {
+        "no_funded_dip": 23,
+        "source_boundary": 2514,
+        "stale_book": 12
+      },
+      "officialOrders": 0,
+      "profitabilityEstablished": false
+    },
+    {
+      "dipTicks": 4,
+      "cash": "100.000000",
+      "realizedPnl": "0.000000",
+      "cumulativeBuys": "0.000000",
+      "reservedCost": "0.000000",
+      "fills": [],
+      "closedTrades": 0,
+      "positions": [],
+      "pendingIntents": 0,
+      "estimatedLiquidationPnl": "0.000000",
+      "counts": {
+        "no_funded_dip": 23,
+        "source_boundary": 2514,
+        "stale_book": 12
+      },
+      "officialOrders": 0,
+      "profitabilityEstablished": false
+    }
+  ],
+  "secondBoundedSession": {
+    "started": true,
+    "maximumSeconds": 600,
+    "completed": false
+  },
+  "networkRequests": 0,
+  "competitionOrders": 0,
+  "profitabilityEstablished": false
+}

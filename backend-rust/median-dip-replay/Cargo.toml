@@ -6,8 +6,11 @@ edition = "2024"
 serde = { version = "1", features = ["derive"] }
 serde_json = { version = "1", features = ["preserve_order", "float_roundtrip"] }
 sha2 = "0.10"
-chrono = { version = "0.4", default-features = false, features = ["std"] }
+chrono = { version = "0.4", default-features = false, features = ["std", "clock"] }
 baal-portfolio-engine = { path = "../portfolio-engine" }
+baal-journal-append = { path = "../journal-append" }
+[build-dependencies]
+sha2 = "0.10"
 [profile.release]
 lto = "thin"
 codegen-units = 1
