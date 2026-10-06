@@ -19,41 +19,41 @@ use std::path::{Path, PathBuf};
 use std::rc::Rc;
 
 const NEED: &str = "MEDIAN_EXECUTION_";
-fn need(ok: bool, code: &str) -> Result<(), String> {
+pub(crate) fn need(ok: bool, code: &str) -> Result<(), String> {
     if ok {
         Ok(())
     } else {
         Err(format!("{NEED}{code}"))
     }
 }
-fn micros(v: &V) -> i128 {
+pub(crate) fn micros(v: &V) -> i128 {
     amount(&crate::js_key(v)).unwrap_or(i128::MIN)
 }
-fn instant(v: &V) -> i64 {
+pub(crate) fn instant(v: &V) -> i64 {
     crate::controller::parse(v)
 }
-fn iso(n: i64) -> String {
+pub(crate) fn iso(n: i64) -> String {
     crate::controller::iso(n)
 }
-fn stamp(v: &V) -> bool {
+pub(crate) fn stamp(v: &V) -> bool {
     instant(v) != i64::MIN && iso(instant(v)) == v.as_str().unwrap_or("")
 }
-fn hex64(v: &V) -> bool {
+pub(crate) fn hex64(v: &V) -> bool {
     v.as_str()
         .is_some_and(|s| s.len() == 64 && s.bytes().all(|b| b.is_ascii_hexdigit() && !b.is_ascii_uppercase()))
 }
-fn plain(v: &V) -> bool {
+pub(crate) fn plain(v: &V) -> bool {
     v.is_object()
 }
 
 // timestamp(v) + instantNs from feed/contract.mjs: ISO with up to 9 fractional
 // digits, parsed to milliseconds plus the sub-millisecond digits.
-fn timestamp_iso(v: &V) -> Option<String> {
+pub(crate) fn timestamp_iso(v: &V) -> Option<String> {
     let s = v.as_str()?;
     let re = regex_lite_instant(s)?;
     Some(re)
 }
-fn regex_lite_instant(s: &str) -> Option<String> {
+pub(crate) fn regex_lite_instant(s: &str) -> Option<String> {
     // ^(\d{4})-(\d\d)-(\d\d)T(\d\d):(\d\d):(\d\d)(?:\.(\d{1,9}))?(Z|([+-])(\d\d):(\d\d))$
     let b = s.as_bytes();
     if b.len() < 20 {
@@ -113,14 +113,14 @@ fn regex_lite_instant(s: &str) -> Option<String> {
     let base = iso(ms);
     Some(format!("{}.{}Z", &base[..19], format!("{:0<9}", fraction)))
 }
-pub fn instant_ns(v: &V) -> Option<i128> {
+pub(crate) fn instant_ns(v: &V) -> Option<i128> {
     let iso_s = timestamp_iso(v)?;
     let ms = chrono::DateTime::parse_from_rfc3339(&format!("{}Z", &iso_s[..20])).ok()?.timestamp_millis();
     let ns_tail: i128 = iso_s[23..29].parse().ok()?;
     Some(ms as i128 * 1_000_000 + ns_tail)
 }
 // Official freshness compares sequence first, then nanosecond asOf.
-fn compare_book(a: &V, b: &V) -> i64 {
+pub(crate) fn compare_book(a: &V, b: &V) -> i64 {
     let sa: i128 = a.get("sequence").and_then(V::as_str).and_then(|s| s.parse().ok()).unwrap_or(0);
     let sb: i128 = b.get("sequence").and_then(V::as_str).and_then(|s| s.parse().ok()).unwrap_or(0);
     if sa > sb {
