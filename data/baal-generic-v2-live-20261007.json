@@ -1,0 +1,29 @@
+{
+  "checkedAt": "2026-10-07T01:27:31.738Z",
+  "collectorPid": 9828,
+  "hostVersion": 9,
+  "epoch": "generic-v2-20261007-root",
+  "observedAt": "2026-10-07T01:26:50.838Z",
+  "ownerBound": true,
+  "bootstrapComplete": true,
+  "phase": "ready",
+  "actualNewOrders": 0,
+  "realized": "0.975000",
+  "ownedShares": 68,
+  "lastAction": "no_qualified_fresh_entry_or_exit",
+  "lastFailure": "BAAL_SCALED_PROTECTED_SELL_UNAVAILABLE",
+  "bridge": {
+    "additionalApiClients": 0,
+    "busy": false,
+    "cachedKind": "sell",
+    "closed": false,
+    "executionAuthority": false,
+    "lastFailure": null,
+    "lastReadCount": 5,
+    "maximumReads": 5,
+    "mode": "baal_generic_no_evidence_bridge_v4"
+  },
+  "recentReadAdmissions": 42,
+  "recentWriteAdmissions": 0
+}
+

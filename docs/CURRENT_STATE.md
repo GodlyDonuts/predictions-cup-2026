@@ -1,3 +1,7 @@
+# October7 01:27 UTC: repaired generic execution live
+
+Collector9828 runs host9 from checked e4e7a764. Fresh cash/owner and first live cycle verified;68shares/+0.975 realized retained. No new order or profit. Eight-read BUY/five-read SELL preparation and final two confirmations retain20/5s freshness. Same serialized client uses explicitly coordinated100ms completion gap with persistent60READ/24WRITE caps,2500ms writes and existing backoff.29 regressions,85 runner checks, stale-read recovery and real-CPU host/restart passed. Prior V3 journal replay verifies0neworders and immutable source seals. Separate entry window01:22:57.957–02:22:57.957UTC, originalexit22:16:18.437 unchanged. [Actual live evidence](../data/baal-generic-v2-live-20261007.json).
+
 # October6 20:45 UTC: three closed markets, 0.975 official realized gain
 
 Full cryptographic and economic replay of 273 actor rows verifies 14 actual official orders: six BUYs and eight SELLs. The latest Ohio sale, order17352375, sold37NOshares at0.335 against0.325 original FIFO cost, adding0.370; the scaled run now has0.975 realized SUSQies, zero fees.68shares remain across three markets with15.780 cost. Open holdings and historical account losses are excluded from this realized figure; scalable profitability remains unproven. [Sanitized fill proofs](../data/baal-scaled-official-profit-20261006.json).
