@@ -1,0 +1,135 @@
+{
+  "checkedAt": "2026-10-07T04:19:32.832Z",
+  "runId": "baal-scaled-no-20261006-human",
+  "actorAnchor": {
+    "bytes": 1263360,
+    "sha256": "39666f1e89bfe91e3b799733a945398684817e776d0be86a94435f051172a047",
+    "sequence": 10,
+    "hash": "9fc2ea744bcfd5541a19ad8caba3723996e7fb778f8b2ef5c15910344bc57653"
+  },
+  "schemaVersion": 1,
+  "markets": [
+    {
+      "exchangeId": "1073",
+      "marketId": "384",
+      "bought": 29,
+      "sold": 29,
+      "buyCost": "2.465000",
+      "sellProceeds": "2.755000",
+      "realized": "0.290000",
+      "costReturnPercent": 11.764705882352942,
+      "weightedHoldingHours": 1.9349469444444445,
+      "firstBuyAt": "2026-10-06T17:08:28.005Z",
+      "lastSellAt": "2026-10-06T19:04:33.814Z",
+      "orders": 2,
+      "dispatchFillLatenciesMs": [
+        1918,
+        6199
+      ]
+    },
+    {
+      "exchangeId": "1042",
+      "marketId": "353",
+      "bought": 28,
+      "sold": 28,
+      "buyCost": "2.660000",
+      "sellProceeds": "2.975000",
+      "realized": "0.315000",
+      "costReturnPercent": 11.842105263157896,
+      "weightedHoldingHours": 2.332302748015873,
+      "firstBuyAt": "2026-10-06T17:11:23.805Z",
+      "lastSellAt": "2026-10-06T19:50:28.901Z",
+      "orders": 7,
+      "dispatchFillLatenciesMs": [
+        1739,
+        6500,
+        7024,
+        7374,
+        7779,
+        8261,
+        8576
+      ]
+    },
+    {
+      "exchangeId": "1066",
+      "marketId": "377",
+      "bought": 37,
+      "sold": 37,
+      "buyCost": "11.470000",
+      "sellProceeds": "11.285000",
+      "realized": "-0.185000",
+      "costReturnPercent": -1.6129032258064515,
+      "weightedHoldingHours": 10.003472222222221,
+      "firstBuyAt": "2026-10-06T17:45:35.108Z",
+      "lastSellAt": "2026-10-07T03:45:47.608Z",
+      "orders": 2,
+      "dispatchFillLatenciesMs": [
+        3233,
+        6685
+      ]
+    },
+    {
+      "exchangeId": "1070",
+      "marketId": "381",
+      "bought": 29,
+      "sold": 29,
+      "buyCost": "4.060000",
+      "sellProceeds": "4.060000",
+      "realized": "0.000000",
+      "costReturnPercent": 0,
+      "weightedHoldingHours": 10.48890138888889,
+      "firstBuyAt": "2026-10-06T17:46:37.887Z",
+      "lastSellAt": "2026-10-07T04:15:57.932Z",
+      "orders": 2,
+      "dispatchFillLatenciesMs": [
+        3410,
+        4284
+      ]
+    },
+    {
+      "exchangeId": "994",
+      "marketId": "305",
+      "bought": 2,
+      "sold": 2,
+      "buyCost": "0.250000",
+      "sellProceeds": "0.240000",
+      "realized": "-0.010000",
+      "costReturnPercent": -4,
+      "weightedHoldingHours": 9.948135833333334,
+      "firstBuyAt": "2026-10-06T17:47:42.526Z",
+      "lastSellAt": "2026-10-07T03:44:35.815Z",
+      "orders": 2,
+      "dispatchFillLatenciesMs": [
+        3876,
+        4263
+      ]
+    },
+    {
+      "exchangeId": "1046",
+      "marketId": "357",
+      "bought": 37,
+      "sold": 37,
+      "buyCost": "12.025000",
+      "sellProceeds": "12.395000",
+      "realized": "0.370000",
+      "costReturnPercent": 3.076923076923077,
+      "weightedHoldingHours": 2.692213333333333,
+      "firstBuyAt": "2026-10-06T17:48:48.954Z",
+      "lastSellAt": "2026-10-06T20:30:20.922Z",
+      "orders": 2,
+      "dispatchFillLatenciesMs": [
+        4107,
+        9556
+      ]
+    }
+  ],
+  "verifiedOrders": 17,
+  "invested": "32.930000",
+  "proceeds": "33.710000",
+  "realized": "0.780000",
+  "returnOnDeployedPrincipalPercent": 2.368660795627088,
+  "fees": "0.000000",
+  "sampleMarkets": 6,
+  "scalableEdgeEstablished": false
+}
+
