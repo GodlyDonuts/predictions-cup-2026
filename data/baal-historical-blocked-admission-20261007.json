@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "kind": "historical_blocked_admission_audit_v1",
+  "intentBodyHash": "70881ebd0ec349a5440504549a3e83d23767e80749ea4247fa59c678887ae34f",
+  "eventHash": "ebd072bcd84e24090e53802d8cdb7176ffd9c9c1c09bae7503efb6492e19974b",
+  "timingHash": "6fafc15a57f11ee695f435ee068a969e5d10ee902bc53e3d94facf615ab9ff14",
+  "expired": true,
+  "recordedPhysicalFetches": 0,
+  "recordedNetworkFences": 0,
+  "executionAuthority": false,
+  "clearsStop": false,
+  "checkedAt": "2026-10-07T01:36:44.300Z",
+  "actorAnchor": {
+    "bytes": 954636,
+    "sha256": "887c17452e900412ba9f5f648469fe42ef163970df609f81a0ecd77f248e1fa3",
+    "sequence": 7,
+    "hash": "8b5230f24f130f6b41f0e4c7ced69362c779734257a304161a27d2105f91be5c"
+  },
+  "timingSourceBytes": 63956658,
+  "timingSourceHash": "93ff7fb6627e0fa75da5fa9034a8655664f24b61714981985e282d3911dc727b"
+}
+
