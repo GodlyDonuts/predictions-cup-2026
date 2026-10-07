@@ -1,3 +1,9 @@
+# October7 06:30 UTC: foreign-held candidates no longer block discovery
+
+Checked17b54400 host20 is live onsolecollector32364, freshbootstrap verified06:29:47UTC. Existing6verifiedBUYs/600NOshares/120.400principal, newR0 and allcoreV9journals/budget/activation remain unchanged. Explicitpre-intent BUY_TARGET_NOT_FLAT nowdefersonly thatpair andcontinues bounded discovery. Pending/unknown/durable/backoff/STOP conditions stillblock. Actualhostloop firstforeign/secondeligible,twoattempt/headroom andblockingstate tests pass, plus82runner checks. No foreignholdings adopted/offset, no added account client orrenewed08:46entry/Oct8 04:46exit cutoff. [Source-bound live evidence](../data/baal-expansion-live-20261007.json).
+
+The goal remains active. New realized profit is0; old+.780closedcohort is separate. Next substantive work is economically supported quoting/inventory and the current mismatch between relative-value signal and unpaired holding horizon, not more model-count milestones.
+
 # October7 06:17 UTC: exit-read prefilter live, six purchases verified
 
 Collector25816 runs checkedcdb45eec host19/controllerV9. At06:16:58 UTC,6official BUYs are terminally reconciled:600ownedNOshares across6markets,120.400000principal, newrealizedP&L0.000000, no pending intent/unknown acceptance. Prior+.780closedcohort remains separately archived. Same10,000allocation,100shares/order,08:46entry cutoff/Oct8 04:46exit and one60READ/24WRITE queue.

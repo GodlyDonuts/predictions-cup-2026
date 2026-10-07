@@ -1,9 +1,9 @@
 {
   "actorAnchor": {
-    "bytes": 3444226,
-    "hash": "8cf1c66637d1d8e577c29db477c85c8f2bddcb1a0778d2dabe450479bb6638a5",
-    "sequence": 82,
-    "sha256": "6af0c67a21c12a15d9f80cd2556974c37a9399f2dc3b7ff1ccf85db68bdd66c4"
+    "bytes": 3481818,
+    "hash": "37bc8b56e0ccb0e78c2c302131653cbc0e4324623ccac0ef3f00c9d761899cad",
+    "sequence": 86,
+    "sha256": "88b3505bbec619126294f73adb177610422ebd69e294243e50955b16112a9333"
   },
   "allocation": {
     "capital": "10000.000000",
@@ -26,23 +26,23 @@
     "runner": 85,
     "sizingAndProfitPrefix": 3
   },
-  "commit": "cdb45eecc3916132f4602c090d5a0ed940b538be",
+  "commit": "17b544005c7578c95df4dc4f2f30ee8e2cc75a19",
   "currentOwnedPrincipal": "120.400000",
   "currentPhase": "ready",
   "entryExpiresAt": "2026-10-07T08:46:00.739Z",
   "exitExpiresAt": "2026-10-08T04:46:00.739Z",
   "exitHintCounterIsPotentialPacketCostNotMeasuredNetworkSavings": true,
   "exitHintStats": {
-    "avoidedReadPacketMinimum": 140,
-    "deferred": 28,
-    "evaluations": 31
+    "avoidedReadPacketMinimum": 30,
+    "deferred": 6,
+    "evaluations": 12
   },
   "fees": "0.000000",
   "financialOwnerBound": true,
-  "hostVersion": 19,
+  "hostVersion": 20,
   "inheritedClosedIntentCount": 24,
-  "lastAction": "blocked_custody_retained",
-  "lastFailure": "GENERIC_HOST_CASH_HEADROOM",
+  "lastAction": "no_qualified_fresh_entry_or_exit",
+  "lastFailure": null,
   "networkCoordination": {
     "kind": "baal_single_client_rolling_policy_v1",
     "maxReadsPerMinute": 60,
@@ -56,15 +56,15 @@
   "newRunActualOrderCount": 6,
   "newRunOwnedQuantity": 600,
   "newRunRealized": "0.000000",
-  "observedAt": "2026-10-07T06:16:58.422Z",
-  "pid": 25816,
+  "observedAt": "2026-10-07T06:29:47.296Z",
+  "pid": 32364,
   "priorCompleteClosedIntentCount": 23,
   "priorOwnedQuantity": 0,
   "priorRealized": "0.780000",
   "priorRunId": "baal-scaled-no-20261006-human",
   "profitScalabilityEstablished": false,
-  "recordedAt": "2026-10-07T06:17:12.591Z",
-  "requestHash": "3b3c1e0b454b6be9e2e9b1b3fcc2f6a30642aff0583b93026195c1eede03f8a0",
+  "recordedAt": "2026-10-07T06:31:07.850Z",
+  "requestHash": "54b355a845b3aaaa8cf843cc8db1bb901dbc63aa16a4360def1fdb80f1f8063e",
   "runId": "baal-expanded-no-20261007-human",
   "schemaVersion": 1,
   "unresolvedIntentCount": 0,
