@@ -1,9 +1,9 @@
 {
   "actorAnchor": {
-    "bytes": 2192072,
-    "hash": "3a272b272406d8dba3875f068850c363482e5dbf195cb92da5f830f3fa6179d8",
-    "sequence": 40,
-    "sha256": "c4f379aa8ef9bf164954c0ec8fe6deec3b5474c63b64addab313b48e007fc35e"
+    "bytes": 3481818,
+    "hash": "37bc8b56e0ccb0e78c2c302131653cbc0e4324623ccac0ef3f00c9d761899cad",
+    "sequence": 86,
+    "sha256": "88b3505bbec619126294f73adb177610422ebd69e294243e50955b16112a9333"
   },
   "allocation": {
     "capital": "10000.000000",
@@ -26,16 +26,23 @@
     "runner": 85,
     "sizingAndProfitPrefix": 3
   },
-  "commit": "522a9947f939ea50c6c453c1828509e9e490c6b9",
+  "commit": "17b544005c7578c95df4dc4f2f30ee8e2cc75a19",
+  "currentOwnedPrincipal": "120.400000",
   "currentPhase": "ready",
   "entryExpiresAt": "2026-10-07T08:46:00.739Z",
   "exitExpiresAt": "2026-10-08T04:46:00.739Z",
+  "exitHintCounterIsPotentialPacketCostNotMeasuredNetworkSavings": true,
+  "exitHintStats": {
+    "avoidedReadPacketMinimum": 30,
+    "deferred": 6,
+    "evaluations": 12
+  },
   "fees": "0.000000",
   "financialOwnerBound": true,
-  "hostVersion": 18,
+  "hostVersion": 20,
   "inheritedClosedIntentCount": 24,
   "lastAction": "no_qualified_fresh_entry_or_exit",
-  "lastFailure": "NO_PROTECTED_EXIT",
+  "lastFailure": null,
   "networkCoordination": {
     "kind": "baal_single_client_rolling_policy_v1",
     "maxReadsPerMinute": 60,
@@ -46,18 +53,18 @@
   "newClients": 0,
   "newCredentials": 0,
   "newPersistentProcesses": 0,
-  "newRunActualOrderCount": 2,
-  "newRunOwnedQuantity": 200,
+  "newRunActualOrderCount": 6,
+  "newRunOwnedQuantity": 600,
   "newRunRealized": "0.000000",
-  "observedAt": "2026-10-07T05:54:29.504Z",
-  "pid": 28048,
+  "observedAt": "2026-10-07T06:29:47.296Z",
+  "pid": 32364,
   "priorCompleteClosedIntentCount": 23,
   "priorOwnedQuantity": 0,
   "priorRealized": "0.780000",
   "priorRunId": "baal-scaled-no-20261006-human",
   "profitScalabilityEstablished": false,
-  "recordedAt": "2026-10-07T05:54:42.921Z",
-  "requestHash": "bcd094f12a0ec61f626b1b407a52189680cc3e484eede4c0bc2a15ae42e84942",
+  "recordedAt": "2026-10-07T06:31:07.850Z",
+  "requestHash": "54b355a845b3aaaa8cf843cc8db1bb901dbc63aa16a4360def1fdb80f1f8063e",
   "runId": "baal-expanded-no-20261007-human",
   "schemaVersion": 1,
   "unresolvedIntentCount": 0,
@@ -85,6 +92,54 @@
       "proofHash": "46714ecca98529ddd1e365d4187256c84f07ee6587af818cb71e0940f083b986",
       "realizedPnl": "0.000000",
       "verifiedAt": "2026-10-07T05:53:47.618Z"
+    },
+    {
+      "action": "buy",
+      "exchangeId": "994",
+      "filledQuantity": 100,
+      "marketId": "305",
+      "orderId": "18846710",
+      "principal": "12.000000",
+      "proceeds": "0.000000",
+      "proofHash": "e43b01a4bce9d739e80dd646dcffa129393a01e925f44c6758fbd9b68238cd26",
+      "realizedPnl": "0.000000",
+      "verifiedAt": "2026-10-07T05:58:49.031Z"
+    },
+    {
+      "action": "buy",
+      "exchangeId": "1039",
+      "filledQuantity": 100,
+      "marketId": "350",
+      "orderId": "18879031",
+      "principal": "35.000000",
+      "proceeds": "0.000000",
+      "proofHash": "507cc0e8a4903cff2230150fed6b995562ab3384a4e4ae38bf1cb9056c6b6669",
+      "realizedPnl": "0.000000",
+      "verifiedAt": "2026-10-07T06:12:07.577Z"
+    },
+    {
+      "action": "buy",
+      "exchangeId": "1066",
+      "filledQuantity": 100,
+      "marketId": "377",
+      "orderId": "18882457",
+      "principal": "30.900000",
+      "proceeds": "0.000000",
+      "proofHash": "3fb083b6d1dc251528723a02ed70bd79220474f21942852df78ee89945409148",
+      "realizedPnl": "0.000000",
+      "verifiedAt": "2026-10-07T06:13:32.843Z"
+    },
+    {
+      "action": "buy",
+      "exchangeId": "1034",
+      "filledQuantity": 100,
+      "marketId": "345",
+      "orderId": "18885860",
+      "principal": "24.500000",
+      "proceeds": "0.000000",
+      "proofHash": "b7f937d25429b426602c79086d5cd44ca8fdb51dbf38973b893d67241bda7d4e",
+      "realizedPnl": "0.000000",
+      "verifiedAt": "2026-10-07T06:14:46.153Z"
     }
   ]
 }

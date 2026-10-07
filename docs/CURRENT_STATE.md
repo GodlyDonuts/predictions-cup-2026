@@ -1,3 +1,17 @@
+# October7 06:30 UTC: foreign-held candidates no longer block discovery
+
+Checked17b54400 host20 is live onsolecollector32364, freshbootstrap verified06:29:47UTC. Existing6verifiedBUYs/600NOshares/120.400principal, newR0 and allcoreV9journals/budget/activation remain unchanged. Explicitpre-intent BUY_TARGET_NOT_FLAT nowdefersonly thatpair andcontinues bounded discovery. Pending/unknown/durable/backoff/STOP conditions stillblock. Actualhostloop firstforeign/secondeligible,twoattempt/headroom andblockingstate tests pass, plus82runner checks. No foreignholdings adopted/offset, no added account client orrenewed08:46entry/Oct8 04:46exit cutoff. [Source-bound live evidence](../data/baal-expansion-live-20261007.json).
+
+The goal remains active. New realized profit is0; old+.780closedcohort is separate. Next substantive work is economically supported quoting/inventory and the current mismatch between relative-value signal and unpaired holding horizon, not more model-count milestones.
+
+# October7 06:17 UTC: exit-read prefilter live, six purchases verified
+
+Collector25816 runs checkedcdb45eec host19/controllerV9. At06:16:58 UTC,6official BUYs are terminally reconciled:600ownedNOshares across6markets,120.400000principal, newrealizedP&L0.000000, no pending intent/unknown acceptance. Prior+.780closedcohort remains separately archived. Same10,000allocation,100shares/order,08:46entry cutoff/Oct8 04:46exit and one60READ/24WRITE queue.
+
+The source-bound optimistic FIFO hint deferred28unprofitable exit-check packets in31evaluations;140is their potential minimum packet cost, NOT controlled actual-network savings. Fresh bulk prices cannot authorize orders; only a rejection upper bound is used. Missing/stale/foreign/corrupt hints fall through, and realized buffer/FIFO first-lot semantics are preserved. Existing account/depth/fullphysical byte checks and all journals/holdings remain.3hint checks plus82runner checks pass. [Actual source evidence](../data/baal-expansion-live-20261007.json).
+
+Remaining throughput finding: BUY_TARGET_NOT_FLAT should defer a foreign-held pair without ending discovery; never adopt or offset foreign holdings. Higher turnover also requires a separately supported quoting/inventory policy. No scalableprofitability established and no goalcompletion claimed.
+
 # October7 05:54 UTC: expanded trades reconciled; read priority repaired
 
 Sole collector28048 runs522a9947 host18/controllerV9 under the same10,000 allocation and original08:46entry/Oct8 04:46exit deadlines. Both actual BUYs18776087(384/ex1073) and18785674(353/ex1042) are terminally verified:100NOshares each,9.000principal each,200shares/18.000totalcost. New realized P&L0.000; prior fullyclosed+.780 preserved separately. No pending intent at05:54:29. Known-order packets now wait for reserved read capacity before fresh receipts, preventing background capture from starving reconciliation; no rate-cap increase/client/order replacement. Physicalfullsource/actor/knownexpiredorder/risk fences apply to DELETE too.94producer/capacity/cancel/runner checks pass. [Source-bound evidence](../data/baal-expansion-live-20261007.json).
