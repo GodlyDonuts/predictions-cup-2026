@@ -1,0 +1,208 @@
+{
+  "checkedAt": "2026-10-07T02:37:07.779Z",
+  "mode": "dated_depth_counterfactual_NO_portfolio_value_v1",
+  "actorAnchor": {
+    "bytes": 962682,
+    "sha256": "1913b860c8070a72095fd1a08df5f8ba1197683005ced8b457489f9d94b5937e",
+    "sequence": 10,
+    "hash": "919eee813d4b1f309a302a91de22703943473019142e45c3923169e6a9f61fc6"
+  },
+  "publicPrefix": {
+    "bytes": 110361837,
+    "sha256": "38ede5a4d85bd8769b87394f861bb4d7972e5a2bc07a1538ab50929aa5afaa74",
+    "records": 48769,
+    "tailHash": "15f7a7ebe8c75919328a01bf5a31d8d882bce3d31a68973eac5e92290f235af9"
+  },
+  "markets": [
+    {
+      "marketId": "305",
+      "exchangeId": "994",
+      "quantity": 2,
+      "cost": "0.250000",
+      "source": {
+        "requestStartedAt": "2026-10-07T02:35:09.330Z",
+        "receivedAt": "2026-10-07T02:35:10.637Z",
+        "availableAt": "2026-10-07T02:35:10.640Z",
+        "recordHash": "58d1dfc0e51e6be4ce78eeb17db6a49bbaa04bef9f091e4068bfb6c4a0809308",
+        "sequence": 48767
+      },
+      "receiptAgeMs": 117142,
+      "requestDurationMs": 1307,
+      "afterOwnership": true,
+      "activeInPublication": true,
+      "baseline": {
+        "schemaVersion": 1,
+        "kind": "observed_NO_depth_counterfactual_value_v1",
+        "quantity": 2,
+        "valuedQuantity": 2,
+        "unvaluedQuantity": 0,
+        "complete": true,
+        "proceeds": "0.220000",
+        "remainingCost": "0.250000",
+        "unrealizedPnl": "-0.030000",
+        "fees": "0.000000",
+        "slippageTicks": 0,
+        "consumed": [
+          {
+            "quantity": 2,
+            "noPrice": "0.110000"
+          }
+        ],
+        "executionAuthority": false,
+        "actualFill": false
+      },
+      "oneTick": {
+        "schemaVersion": 1,
+        "kind": "observed_NO_depth_counterfactual_value_v1",
+        "quantity": 2,
+        "valuedQuantity": 2,
+        "unvaluedQuantity": 0,
+        "complete": true,
+        "proceeds": "0.210000",
+        "remainingCost": "0.250000",
+        "unrealizedPnl": "-0.040000",
+        "fees": "0.000000",
+        "slippageTicks": 1,
+        "consumed": [
+          {
+            "quantity": 2,
+            "noPrice": "0.105000"
+          }
+        ],
+        "executionAuthority": false,
+        "actualFill": false
+      }
+    },
+    {
+      "marketId": "377",
+      "exchangeId": "1066",
+      "quantity": 37,
+      "cost": "11.470000",
+      "source": {
+        "requestStartedAt": "2026-10-07T02:35:14.852Z",
+        "receivedAt": "2026-10-07T02:35:17.549Z",
+        "availableAt": "2026-10-07T02:35:17.552Z",
+        "recordHash": "15f7a7ebe8c75919328a01bf5a31d8d882bce3d31a68973eac5e92290f235af9",
+        "sequence": 48769
+      },
+      "receiptAgeMs": 110230,
+      "requestDurationMs": 2697,
+      "afterOwnership": true,
+      "activeInPublication": true,
+      "baseline": {
+        "schemaVersion": 1,
+        "kind": "observed_NO_depth_counterfactual_value_v1",
+        "quantity": 37,
+        "valuedQuantity": 37,
+        "unvaluedQuantity": 0,
+        "complete": true,
+        "proceeds": "11.285000",
+        "remainingCost": "11.470000",
+        "unrealizedPnl": "-0.185000",
+        "fees": "0.000000",
+        "slippageTicks": 0,
+        "consumed": [
+          {
+            "quantity": 37,
+            "noPrice": "0.305000"
+          }
+        ],
+        "executionAuthority": false,
+        "actualFill": false
+      },
+      "oneTick": {
+        "schemaVersion": 1,
+        "kind": "observed_NO_depth_counterfactual_value_v1",
+        "quantity": 37,
+        "valuedQuantity": 37,
+        "unvaluedQuantity": 0,
+        "complete": true,
+        "proceeds": "11.100000",
+        "remainingCost": "11.470000",
+        "unrealizedPnl": "-0.370000",
+        "fees": "0.000000",
+        "slippageTicks": 1,
+        "consumed": [
+          {
+            "quantity": 37,
+            "noPrice": "0.300000"
+          }
+        ],
+        "executionAuthority": false,
+        "actualFill": false
+      }
+    },
+    {
+      "marketId": "381",
+      "exchangeId": "1070",
+      "quantity": 29,
+      "cost": "4.060000",
+      "source": {
+        "requestStartedAt": "2026-10-05T20:51:41.377Z",
+        "receivedAt": "2026-10-05T20:51:41.587Z",
+        "availableAt": "2026-10-05T20:51:41.610Z",
+        "recordHash": "f8f88245801a31e0f00762c37a9f99efe13871086f336a7e8e848a9e01a252fb",
+        "sequence": 28191
+      },
+      "receiptAgeMs": 107126192,
+      "requestDurationMs": 210,
+      "afterOwnership": false,
+      "activeInPublication": false,
+      "baseline": {
+        "schemaVersion": 1,
+        "kind": "observed_NO_depth_counterfactual_value_v1",
+        "quantity": 29,
+        "valuedQuantity": 29,
+        "unvaluedQuantity": 0,
+        "complete": true,
+        "proceeds": "4.640000",
+        "remainingCost": "4.060000",
+        "unrealizedPnl": "0.580000",
+        "fees": "0.000000",
+        "slippageTicks": 0,
+        "consumed": [
+          {
+            "quantity": 29,
+            "noPrice": "0.160000"
+          }
+        ],
+        "executionAuthority": false,
+        "actualFill": false
+      },
+      "oneTick": {
+        "schemaVersion": 1,
+        "kind": "observed_NO_depth_counterfactual_value_v1",
+        "quantity": 29,
+        "valuedQuantity": 29,
+        "unvaluedQuantity": 0,
+        "complete": true,
+        "proceeds": "4.495000",
+        "remainingCost": "4.060000",
+        "unrealizedPnl": "0.435000",
+        "fees": "0.000000",
+        "slippageTicks": 1,
+        "consumed": [
+          {
+            "quantity": 29,
+            "noPrice": "0.155000"
+          }
+        ],
+        "executionAuthority": false,
+        "actualFill": false
+      }
+    }
+  ],
+  "realized": "0.975000",
+  "completeDepth": false,
+  "allFresh": false,
+  "historicalDepthUnrealized": null,
+  "currentTotalPnl": null,
+  "executionAuthority": false,
+  "actualNewFills": 0,
+  "limitations": [
+    "Historical depth is not simultaneous, fresh account reconciliation or a fill.",
+    "Own-order contamination is not ruled out by this public capture alone.",
+    "Missing depth or stale books cannot be valued at the top quote."
+  ]
+}
+

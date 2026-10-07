@@ -1,3 +1,4 @@
+import {genericFinancialMarketIds,focusGenericFinancialBooks} from './generic-financial-book-focus-v1.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 import http from 'node:http';
@@ -501,8 +502,9 @@ try{
       runtime.paperPackageFocus=planned.paperPackageFocus||null;
       if(coupledBulk||coupledMaker||stableMakerBroad||stableMaker)planned=(coupledBulk?focusCoupledBulkReads:focusStableMakerReads)(planned,(coupledBulk||coupledMaker||stableMakerBroad||stableMaker).focus(),universe,{now:Date.now(),protectedMarketIds:[...new Set([...(inputs.heldMarketIds||[]),...(inputs.pendingMarketIds||[]),...(planned.bidAnchorReadFocus?.marketIds||[]),...productionCandidates])],excludedMarketIds:observationExclusions});
       if(competition)planned=prioritizeProductionReads(planned,{candidateMarketIds:productionCandidates,ownedMarketIds:competition.managedMarketIds()});
-      cycleRiskMarketIds=scopedRiskMarketIds(competition?.managedMarketIds()||[],probabilityFocus);
+      cycleRiskMarketIds=scopedRiskMarketIds([...(competition?.managedMarketIds()||[]),...genericFinancialMarketIds(pairedLiveHost?.status(),universe)],probabilityFocus);
       planned=focusProfitSprintReads(planned,{enabled:profitSprintApplied,sourceMarketIds:[...(probabilityFocus?.markets||[]).map(x=>x.marketId),...productionCandidates],riskMarketIds:[...cycleRiskMarketIds,...(inputs.heldMarketIds||[]),...(inputs.pendingMarketIds||[])]});
+      planned=focusGenericFinancialBooks(planned,pairedLiveHost?.status(),universe,scheduler?.bookLastAttempt||{});runtime.genericFinancialReadFocus=planned.genericFinancialFocus??null;
       if(competition)try{await competition.beforeBooks({positions,orders,ordersAt:eligibilityOrdersAt,candidateMarketIds:competition.schedulingBankHash?planned.reads.map(x=>x.marketId):planned.reads.map(x=>x.marketId).filter(id=>productionCandidates.includes(id)),metadataCycle:runtime.cycles+1,protectedBulkHints:[...medianCandidateBulkHints.values()]});}catch(e){competition.failure(e);}
       const supplementalDepth=[],samplingReservations=[],samplingReceipts=[];
       for(const spec of planned.reads){
