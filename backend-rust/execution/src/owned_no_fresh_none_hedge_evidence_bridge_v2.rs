@@ -1,73 +1,36 @@
-//! Port of execution/owned-no-fresh-none-hedge-evidence-bridge-v2.mjs.
-//! Read-only shared-client combined evidence wrapper. async -> sync closures.
-
+// execution/owned-no-fresh-none-hedge-evidence-bridge-v2.mjs — read-only
+// shared-client wrapper. Current custody is supplied by the verified
+// coordinator journal, not a stale original inventory snapshot or account marks.
+//
+// Port notes (same conventions as owned_no_fresh_none_hedge_evidence_bridge_v1):
+// - `api.dispatch(spec)` -> transport::Dispatch (spec + guard args).
+// - WeakMap permits -> issued map keyed by the beforeDispatch guard pointer.
+// - `e.code`-style coded errors are bare Strings; foreign errors propagate.
+// - `legs` ordering is insertion order from `options.pairLegs`/opening package.
+use crate::baal_scaled_owned_no_hedge_proposal_v1::plan_baal_owned_no_hedge;
+use crate::baal_scaled_profitable_exit_signal_v2::plan_baal_scaled_profitable_exit_v2;
+use crate::core::payload_hash;
+use crate::no_rest_sell_reconciliation_v2::inspect_scoped_rest_no_account;
+use crate::owned_no_fresh_none_hedge_evidence_bridge_v1::{
+    NoneHedgeBridgeApi, OwnedNoFreshNoneHedgeEvidenceBridge,
+};
+use crate::receipts::parse_number_lexemes;
+use crate::transport::{Dispatch, Guard, OrderTransportError};
+use baal_service_runtime::fixed::{instant, price};
+use baal_service_runtime::json_text::{js_int, js_truthy, sha256};
+use serde_json::{json, Value as V};
 use std::cell::{Cell, RefCell};
 use std::collections::{BTreeMap, HashMap, HashSet};
 use std::rc::Rc;
 
-use serde_json::{json, Map, Value as V};
-
-use baal_service_runtime::fixed::{instant, price};
-use baal_service_runtime::json_text::{js_stringify, sha256 as sha};
-
-use crate::core::payload_hash;
-use crate::no_rest_sell_reconciliation_v2::inspect_scoped_rest_no_account;
-use crate::owned_no_fresh_none_hedge_evidence_bridge_v1::{
-    create_owned_no_fresh_none_hedge_evidence_bridge, EvidenceBridgeApi,
-    OwnedNoFreshNoneBridgeDeps, OwnedNoFreshNoneHedgeEvidenceBridge,
-};
-use crate::paired_rest_controller::WireDispatchError;
-use crate::receipts::parse_number_lexemes;
-use crate::transport::{Guard, OrderTransportError};
-
-fn need(v: bool, code: &str) -> Result<(), String> {
-    if v {
+fn need(ok: bool, code: &str) -> Result<(), String> {
+    if ok {
         Ok(())
     } else {
         Err(format!("COMBINED_NONE_EVIDENCE_{code}"))
     }
 }
-fn get<'a>(v: &'a V, k: &str) -> &'a V {
-    v.get(k).unwrap_or(&V::Null)
-}
-fn sget<'a>(v: &'a V, k: &str) -> Option<&'a str> {
-    get(v, k).as_str()
-}
-fn hex(v: &V) -> bool {
-    v.as_str().is_some_and(|s| {
-        s.len() == 64 && s.bytes().all(|c| c.is_ascii_hexdigit() && !c.is_ascii_uppercase())
-    })
-}
-fn digit_id(s: &str) -> bool {
-    !s.is_empty() && !s.starts_with('0') && s.bytes().all(|b| b.is_ascii_digit())
-}
-fn same(a: &V, b: &V) -> Result<bool, String> {
-    Ok(payload_hash(a)? == payload_hash(b)?)
-}
-fn iso(n: f64) -> String {
-    baal_service_runtime::contract::ms_to_iso(n)
-}
-fn inst(v: &V, k: &str) -> Result<i64, String> {
-    instant(sget(v, k).unwrap_or(""))
-}
-fn is_safe_int(v: &V) -> bool {
-    v.as_f64()
-        .is_some_and(|x| x.is_finite() && x.fract() == 0.0 && x.abs() <= 9007199254740991.0)
-}
-fn js_num_string(v: &V) -> String {
-    match v {
-        V::String(s) => s.clone(),
-        V::Number(n) => {
-            if let Some(i) = n.as_i64() {
-                i.to_string()
-            } else {
-                n.as_f64().map(|f| format!("{f}")).unwrap_or_default()
-            }
-        }
-        _ => v.to_string(),
-    }
-}
-fn ote_for(code: String) -> OrderTransportError {
+fn ote(code: String) -> OrderTransportError {
     OrderTransportError {
         code,
         status: None,
@@ -79,26 +42,62 @@ fn ote_for(code: String) -> OrderTransportError {
         semantic_mismatch: false,
     }
 }
+fn get<'a>(v: &'a V, k: &str) -> &'a V {
+    v.get(k).unwrap_or(&V::Null)
+}
+fn hex(v: &V) -> bool {
+    v.as_str()
+        .is_some_and(|s| s.len() == 64 && s.bytes().all(|b| b.is_ascii_digit() || (b'a'..=b'f').contains(&b)))
+}
+fn same(a: &V, b: &V) -> Result<bool, String> {
+    Ok(payload_hash(a)? == payload_hash(b)?)
+}
+fn iso(n: f64) -> String {
+    baal_service_runtime::contract::ms_to_iso(n)
+}
+fn instant_v(v: &V) -> Result<i64, String> {
+    instant(v.as_str().unwrap_or(""))
+}
+fn id_str(s: &str) -> bool {
+    !s.is_empty() && !s.starts_with('0') && s.bytes().all(|b| b.is_ascii_digit())
+}
+fn js_str(v: &V) -> String {
+    v.as_str()
+        .map(|x| x.to_string())
+        .or_else(|| v.as_i64().map(|x| x.to_string()))
+        .or_else(|| v.as_u64().map(|x| x.to_string()))
+        .or_else(|| v.as_f64().map(|x| x.to_string()))
+        .unwrap_or_default()
+}
+fn sync(v: Result<V, String>) -> Result<V, String> {
+    v.map(|x| x.clone())
+}
 
-#[derive(Clone)]
-pub struct CombinedNoneEvidenceDeps {
-    pub api: Rc<EvidenceBridgeApi>,
+pub struct NoneHedgeBridgeV2Deps {
+    pub api: NoneHedgeBridgeApi,
     pub receipt_of: Rc<dyn Fn(&V, &V) -> Result<V, String>>,
+    pub scope: V,
+    /// options.firstExchangeId
+    pub first_exchange_id: String,
+    /// options.pairLegs — falls back to opening.package.legs.
+    pub pair_legs: Option<V>,
     pub get_owned: Rc<dyn Fn(&V) -> Result<V, String>>,
     pub get_pair_census: Rc<dyn Fn(&V) -> Result<V, String>>,
     pub get_funding: Rc<dyn Fn() -> Result<V, String>>,
     pub get_global_risk: Rc<dyn Fn() -> Result<V, String>>,
     pub get_account_lease: Rc<dyn Fn() -> Result<V, String>>,
     pub can_read: Rc<dyn Fn() -> bool>,
-    pub can_check_read_identity: Option<Rc<dyn Fn() -> bool>>,
-    pub has_read_headroom: Rc<dyn Fn(i64) -> bool>,
-    pub get_active_intent: Rc<dyn Fn() -> Result<V, String>>,
-    pub get_order_binding: Rc<dyn Fn(&V) -> Result<V, String>>,
-    pub refresh_funding_after_account: Option<Rc<dyn Fn() -> Result<V, String>>>,
+    pub has_read_headroom: Rc<dyn Fn(i64) -> Result<bool, String>>,
+    pub get_active_intent: Option<Rc<dyn Fn() -> Result<V, String>>>,
+    pub get_order_binding: Option<Rc<dyn Fn(&V) -> Result<V, String>>>,
+    /// refreshFundingAfterAccount — optional await hook; the return value is
+    /// ignored by the JS caller.
+    pub refresh_funding_after_account: Option<Rc<dyn Fn() -> Result<(), String>>>,
     pub now: Rc<dyn Fn() -> f64>,
 }
 
-pub(crate) struct BridgeV2Inner {
+struct Inner {
+    deps: NoneHedgeBridgeV2Deps,
     scope: V,
     first_exchange_id: String,
     legs: Vec<V>,
@@ -106,740 +105,752 @@ pub(crate) struct BridgeV2Inner {
     hedge_packet: Option<V>,
     cache: Option<V>,
     job: Option<V>,
-    read_timings: Vec<V>,
     total_read_count: i64,
     busy: bool,
     closed: bool,
     reads: i64,
     maximum_reads: i64,
     last_end: Option<i64>,
-    permits: HashMap<usize, (String, usize)>,
+    issued: HashMap<usize, V>,
     watermarks: HashMap<String, (i64, i64)>,
     invocations: HashSet<String>,
-    deps: CombinedNoneEvidenceDeps,
-    v2: bool,
 }
 
 pub struct OwnedNoFreshNoneHedgeEvidenceBridgeV2 {
-    inner: Rc<RefCell<BridgeV2Inner>>,
+    inner: Rc<RefCell<Inner>>,
+}
+
+struct RawOut {
+    data: V,
+    numbers: BTreeMap<String, String>,
+}
+
+const RAW_FIELDS: [&str; 9] = [
+    "method",
+    "endpoint",
+    "status",
+    "requestBodyHash",
+    "bodyText",
+    "sourceBodyHash",
+    "fetchInvocationId",
+    "requestStartedAt",
+    "receivedAt",
+];
+
+/// raw(r, endpoint, age=20000)
+fn raw(inner: &Rc<RefCell<Inner>>, r: &V, endpoint: &str, age: i64) -> Result<RawOut, String> {
+    need(
+        !r.is_null()
+            && get(r, "method").as_str() == Some("GET")
+            && get(r, "endpoint").as_str() == Some(endpoint)
+            && js_int(get(r, "status")) == Some(200)
+            && get(r, "requestBodyHash").is_null()
+            && get(r, "bodyText").as_str().is_some_and(|s| s.len() <= 8 * 1024 * 1024)
+            && get(r, "sourceBodyHash").as_str()
+                == Some(sha256(get(r, "bodyText").as_str().unwrap_or("").as_bytes()).as_str())
+            && get(r, "fetchInvocationId").as_str().is_some_and(|s| !s.is_empty())
+            && r.as_object().map(|o| o.keys().all(|k| RAW_FIELDS.contains(&k.as_str()))).unwrap_or(false),
+        "RAW_SOURCE",
+    )?;
+    let start = instant_v(get(r, "requestStartedAt"))?;
+    let end = instant_v(get(r, "receivedAt"))?;
+    let n = (inner.borrow().deps.now)() as i64;
+    need(start <= end && end <= n && n - start <= age, "SOURCE_AGE")?;
+    let (data, numbers) = parse_number_lexemes(get(r, "bodyText").as_str().unwrap())?;
+    Ok(RawOut { data, numbers })
 }
 
 impl OwnedNoFreshNoneHedgeEvidenceBridgeV2 {
-    fn active(&self) -> Result<V, String> {
-        (self.inner.borrow().deps.get_active_intent)()
-    }
-    fn fund(&self) -> Result<V, String> {
-        (self.inner.borrow().deps.get_funding)()
-    }
-    fn raw(
-        &self,
-        r: &V,
-        endpoint: &str,
-        age: i64,
-    ) -> Result<(V, BTreeMap<String, String>), String> {
-        let allowed = [
-            "method",
-            "endpoint",
-            "status",
-            "requestBodyHash",
-            "bodyText",
-            "sourceBodyHash",
-            "requestStartedAt",
-            "receivedAt",
-            "fetchInvocationId",
-        ];
-        let now = (self.inner.borrow().deps.now)() as i64;
+    /// createOwnedNoFreshNoneHedgeEvidenceBridgeV2(options)
+    pub fn create(deps: NoneHedgeBridgeV2Deps) -> Result<Self, String> {
+        let scope = deps.scope.clone();
+        let first_exchange_id = deps.first_exchange_id.clone();
+        let first = sync((deps.get_owned)(&json!(first_exchange_id)))?;
+        let legs: Vec<V> = match &deps.pair_legs {
+            Some(v) => v.as_array().cloned().unwrap_or_default(),
+            None => get(get(&first, "package"), "legs")
+                .as_array()
+                .cloned()
+                .unwrap_or_default(),
+        };
         need(
-            sget(r, "method") == Some("GET")
-                && sget(r, "endpoint") == Some(endpoint)
-                && get(r, "status") == &json!(200)
-                && get(r, "requestBodyHash").is_null()
-                && get(r, "bodyText").is_string()
-                && sget(r, "bodyText")
-                    .map(|s| s.as_bytes().len())
-                    .unwrap_or(0)
-                    <= 8 * 1024 * 1024
-                && sget(r, "sourceBodyHash")
-                    == Some(sha(sget(r, "bodyText").unwrap_or("").as_bytes()).as_str())
-                && sget(r, "fetchInvocationId").is_some_and(|s| !s.is_empty())
-                && r.as_object()
-                    .is_some_and(|m| m.keys().all(|k| allowed.contains(&k.as_str()))),
-            "RAW_SOURCE",
+            get(&scope, "ownerId").as_str() == Some("Codex")
+                && legs.len() == 2
+                && legs
+                    .iter()
+                    .map(|e| get(e, "exchangeId").as_str().unwrap_or("").to_string())
+                    .collect::<HashSet<_>>()
+                    .len()
+                    == 2
+                && legs
+                    .iter()
+                    .map(|e| get(e, "marketId").as_str().unwrap_or("").to_string())
+                    .collect::<HashSet<_>>()
+                    .len()
+                    == 2
+                && legs.iter().all(|e| {
+                    id_str(get(e, "marketId").as_str().unwrap_or(""))
+                        && id_str(get(e, "exchangeId").as_str().unwrap_or(""))
+                }),
+            "APPROVED_PAIR",
         )?;
-        let start = inst(r, "requestStartedAt")?;
-        let end = inst(r, "receivedAt")?;
-        need(
-            start <= end && end <= now && now - start <= age,
-            "SOURCE_AGE",
-        )?;
-        parse_number_lexemes(sget(r, "bodyText").unwrap_or(""))
+        Ok(Self {
+            inner: Rc::new(RefCell::new(Inner {
+                deps,
+                scope,
+                first_exchange_id,
+                legs,
+                hedge: None,
+                hedge_packet: None,
+                cache: None,
+                job: None,
+                total_read_count: 0,
+                busy: false,
+                closed: false,
+                reads: 0,
+                maximum_reads: 0,
+                last_end: None,
+                issued: HashMap::new(),
+                watermarks: HashMap::new(),
+                invocations: HashSet::new(),
+            })),
+        })
     }
-    fn identity(&self) -> Result<(), String> {
-        let inner = self.inner.borrow();
-        let check = inner
+
+    fn active(inner: &Rc<RefCell<Inner>>) -> Result<V, String> {
+        let b = inner.borrow();
+        let f = b
             .deps
-            .can_check_read_identity
+            .get_active_intent
             .clone()
-            .unwrap_or_else(|| inner.deps.can_read.clone());
-        let check = if inner.v2 { inner.deps.can_read.clone() } else { check };
-        need(!inner.closed && check(), "STOPPED")?;
-        let l = (inner.deps.get_account_lease)()?;
+            .unwrap_or_else(|| Rc::new(|| Ok(V::Null)));
+        sync(f())
+    }
+    fn fund(inner: &Rc<RefCell<Inner>>) -> Result<V, String> {
+        let b = inner.borrow();
+        sync((b.deps.get_funding)())
+    }
+
+    fn identity(inner: &Rc<RefCell<Inner>>) -> Result<(), String> {
+        {
+            let b = inner.borrow();
+            need(!b.closed && (b.deps.can_read)(), "STOPPED")?;
+        }
+        let l = {
+            let b = inner.borrow();
+            sync((b.deps.get_account_lease)())?
+        };
+        let (scope, manual_review, cooldown, n) = {
+            let b = inner.borrow();
+            (b.scope.clone(), b.deps.api.manual_review, b.deps.api.cooldown, (b.deps.now)())
+        };
         need(
-            sget(&l, "ownerId") == sget(&inner.scope, "ownerId")
-                && sget(&l, "tournamentId") == sget(&inner.scope, "tournamentId")
+            get(&l, "ownerId") == get(&scope, "ownerId")
+                && get(&l, "tournamentId") == get(&scope, "tournamentId")
                 && hex(get(&l, "leaseId")),
             "ACCOUNT_LEASE",
         )?;
-        need(
-            !(inner.deps.api.manual_review)() && (inner.deps.now)() >= (inner.deps.api.cooldown)(),
-            "BACKOFF",
-        )?;
+        need(!manual_review && n >= cooldown, "BACKOFF")?;
         Ok(())
     }
-    fn ctx_now(&self) -> Option<V> {
-        let inner = self.inner.borrow();
-        inner.job.clone().or_else(|| inner.cache.clone())
-    }
-    fn guard(&self, fence_risk: Option<&V>) -> Result<V, String> {
-        self.identity()?;
-        {
-            let inner = self.inner.borrow();
-            if !inner.v2 {
-                need((inner.deps.can_read)(), "STOPPED")?;
-            }
-        }
+
+    /// guard(fenceRisk=null)
+    fn guard(inner: &Rc<RefCell<Inner>>, fence_risk: Option<&V>) -> Result<V, String> {
+        Self::identity(inner)?;
         let g = match fence_risk {
-            None => (self.inner.borrow().deps.get_global_risk)()?,
-            Some(f) => f.clone(),
+            Some(v) => v.clone(),
+            None => {
+                let b = inner.borrow();
+                sync((b.deps.get_global_risk)())?
+            }
         };
-        let ctx = self.ctx_now().unwrap_or(V::Null);
-        let a = self.active()?;
-        let inner = self.inner.borrow();
-        let now = (inner.deps.now)();
+        let (scope, ctx, n) = {
+            let b = inner.borrow();
+            (
+                b.scope.clone(),
+                b.job.clone().or_else(|| b.cache.clone()).unwrap_or(V::Null),
+                (b.deps.now)(),
+            )
+        };
+        let a = Self::active(inner)?;
         need(
-            sget(&g, "ownerId") == sget(&inner.scope, "ownerId")
-                && sget(&g, "runId") == sget(&inner.scope, "runId")
-                && sget(&g, "tournamentId") == sget(&inner.scope, "tournamentId")
-                && get(&g, "complete") == &V::Bool(true)
-                && get(&g, "eventScopeComplete") == &V::Bool(true)
-                && get(&g, "soleCollector") == &V::Bool(true)
-                && get(&g, "stopped") == &V::Bool(false)
+            get(&g, "ownerId") == get(&scope, "ownerId")
+                && get(&g, "runId") == get(&scope, "runId")
+                && get(&g, "tournamentId") == get(&scope, "tournamentId")
+                && get(&g, "complete") == &json!(true)
+                && get(&g, "eventScopeComplete") == &json!(true)
+                && get(&g, "soleCollector") == &json!(true)
+                && get(&g, "stopped") == &json!(false)
                 && hex(get(&g, "sourceHash"))
                 && get(&g, "unresolvedIntentIds").is_array()
-                && inst(&g, "at")? <= now as i64
-                && now as i64 - inst(&g, "at")? <= 20000,
+                && instant_v(get(&g, "at"))? <= n as i64
+                && n as i64 - instant_v(get(&g, "at"))? <= 20_000,
             "GLOBAL_SCOPE",
         )?;
-        let pb = get(&ctx, "preparedBinding");
-        if !pb.is_null()
-            && sget(&a, "intentId") == sget(pb, "intentId")
-            && get(&a, "orderId").is_null()
-            && {
-                let afc = get(&a, "actualFetchCount");
-                let fc = get(&a, "fetchCount");
-                if !afc.is_null() {
-                    afc.as_i64() == Some(0)
+        let prepared_binding = get(&ctx, "preparedBinding");
+        let prepared_binding = if prepared_binding.is_null() { None } else { Some(prepared_binding.clone()) };
+        if let Some(pb) = &prepared_binding {
+            if get(&a, "intentId") == get(pb, "intentId")
+                && get(&a, "orderId").is_null()
+                && js_int(if !get(&a, "actualFetchCount").is_null() {
+                    get(&a, "actualFetchCount")
                 } else {
-                    fc.as_i64() == Some(0)
-                }
+                    get(&a, "fetchCount")
+                }) == Some(0)
+            {
+                need(
+                    instant_v(get(get(&a, "body"), "expirationDate"))? > n as i64,
+                    "PREPARED_EXPIRED",
+                )?;
             }
-        {
-            need(
-                inst(get(&a, "body"), "expirationDate")? > now as i64,
-                "PREPARED_EXPIRED",
-            )?;
         }
         let leg = get(&ctx, "leg");
-        let pending_own = if !ctx.is_null()
-            && !a.is_null()
-            && sget(&a, "intentId").is_some()
-            && sget(&a, "bodyHash") == Some(payload_hash(get(&a, "body"))?.as_str())
-            && sget(get(&a, "body"), "exchangeId") == sget(leg, "exchangeId")
-            && sget(get(&a, "body"), "tournamentId") == sget(&inner.scope, "tournamentId")
-            && sget(get(&a, "body"), "side") == Some("no")
-            && (sget(get(&a, "body"), "action") == Some("sell")
-                || (sget(&ctx, "kind") == Some("hedgeFinal")
-                    && sget(get(&a, "body"), "action") == Some("buy")
-                    && get(get(&a, "body"), "quantity") == &json!(1)))
-            && ["prepared", "dispatching"].contains(&sget(&a, "phase").unwrap_or(""))
+        let kind = get(&ctx, "kind").as_str().unwrap_or("").to_string();
+        let pending_own = !ctx.is_null()
+            && js_truthy(Some(&a))
+            && get(&a, "intentId").is_string()
+            && get(&a, "bodyHash").as_str() == Some(payload_hash(get(&a, "body"))?.as_str())
+            && get(get(&a, "body"), "exchangeId") == get(leg, "exchangeId")
+            && get(get(&a, "body"), "tournamentId") == get(&scope, "tournamentId")
+            && get(get(&a, "body"), "side").as_str() == Some("no")
+            && (get(get(&a, "body"), "action").as_str() == Some("sell")
+                || (kind == "hedgeFinal"
+                    && get(get(&a, "body"), "action").as_str() == Some("buy")
+                    && js_int(get(get(&a, "body"), "quantity")) == Some(1)))
+            && ["prepared", "dispatching"].contains(&get(&a, "phase").as_str().unwrap_or(""))
             && get(&a, "orderId").is_null()
-            && {
-                let afc = get(&a, "actualFetchCount");
-                let fc = get(&a, "fetchCount");
-                if !afc.is_null() {
-                    afc.as_i64() == Some(0)
-                } else {
-                    fc.as_i64() == Some(0)
-                }
-            }
-            && is_safe_int(get(get(&a, "body"), "quantity"))
-            && get(get(&a, "body"), "quantity").as_i64().unwrap_or(0) > 0
-            && get(get(&a, "body"), "quantity").as_i64().unwrap_or(0)
-                <= if sget(&ctx, "kind") == Some("hedgeFinal") {
+            && js_int(if !get(&a, "actualFetchCount").is_null() {
+                get(&a, "actualFetchCount")
+            } else {
+                get(&a, "fetchCount")
+            }) == Some(0)
+            && js_int(get(get(&a, "body"), "quantity")).is_some()
+            && js_int(get(get(&a, "body"), "quantity")).unwrap() > 0
+            && js_int(get(get(&a, "body"), "quantity")).unwrap()
+                <= if kind == "hedgeFinal" {
                     1
                 } else {
-                    get(get(get(&ctx, "owned"), "proof"), "remainingOwnedQuantity")
-                        .as_i64()
-                        .unwrap_or(0)
+                    js_int(get(&get(&get(&ctx, "owned"), "proof"), "remainingOwnedQuantity"))
+                        .unwrap_or(i64::MIN)
                 }
-            && inst(get(&a, "body"), "expirationDate")? > now as i64
-        {
-            get(&g, "unresolvedIntentIds")
+            && instant_v(get(get(&a, "body"), "expirationDate"))? > n as i64
+            && get(&g, "unresolvedIntentIds")
                 .as_array()
-                .is_some_and(|ids| ids.iter().all(|id| id == get(&a, "intentId")))
-        } else {
-            false
+                .is_some_and(|ids| ids.iter().all(|id| id == get(&a, "intentId")));
+        let binding = if get(&ctx, "binding").is_null() { None } else { Some(get(&ctx, "binding").clone()) };
+        let known = match &binding {
+            Some(b) => {
+                let f = {
+                    let bb = inner.borrow();
+                    bb.deps
+                        .get_order_binding
+                        .clone()
+                        .unwrap_or_else(|| Rc::new(|_| Ok(V::Null)))
+                };
+                Some(sync(f(get(b, "orderId")))?)
+            }
+            None => None,
         };
-        let binding = get(&ctx, "binding");
-        let known = if binding.is_null() {
-            V::Null
-        } else {
-            (inner.deps.get_order_binding)(get(binding, "orderId"))?
+        let cleanup = match (&binding, &known) {
+            (Some(binding), Some(known)) => {
+                js_truthy(Some(known))
+                    && get(known, "intentId") == get(binding, "intentId")
+                    && get(known, "orderId") == get(binding, "orderId")
+                    && get(known, "bodyHash") == get(binding, "bodyHash")
+                    && same(get(known, "body"), get(binding, "body"))?
+                    && get(&g, "unresolvedIntentIds")
+                        .as_array()
+                        .is_some_and(|ids| ids.iter().all(|id| id == get(binding, "intentId")))
+            }
+            _ => false,
         };
-        let cleanup = !binding.is_null()
-            && !known.is_null()
-            && sget(&known, "intentId") == sget(binding, "intentId")
-            && sget(&known, "orderId") == sget(binding, "orderId")
-            && sget(&known, "bodyHash") == sget(binding, "bodyHash")
-            && same(get(&known, "body"), get(binding, "body"))?
-            && get(&g, "unresolvedIntentIds").as_array().is_some_and(|ids| {
-                ids.iter().all(|id| id == get(binding, "intentId"))
-            });
         need(
-            (get(&g, "unknownAcceptance") == &V::Bool(false) || cleanup)
-                && (get(&g, "unresolvedIntentIds")
-                    .as_array()
-                    .map(|x| x.is_empty())
-                    .unwrap_or(false)
+            (get(&g, "unknownAcceptance") == &json!(false) || cleanup)
+                && (get(&g, "unresolvedIntentIds").as_array().unwrap().is_empty()
                     || pending_own
                     || cleanup),
             "UNKNOWN_OR_FOREIGN_PENDING",
         )?;
-        if !pb.is_null() {
+        if let Some(pb) = &prepared_binding {
+            let job_exists = inner.borrow().job.is_some();
             need(
-                sget(&a, "intentId") == sget(pb, "intentId")
-                    && sget(&a, "bodyHash") == sget(pb, "bodyHash")
+                get(&a, "intentId") == get(pb, "intentId")
+                    && get(&a, "bodyHash") == get(pb, "bodyHash")
                     && same(get(&a, "body"), get(pb, "body"))?
-                    && (inner.job.is_none() || sget(&a, "phase") == Some("prepared")),
+                    && (!job_exists || get(&a, "phase").as_str() == Some("prepared")),
                 "PREPARED_BODY_CHANGED",
             )?;
         }
-        let owned_ctx = get(&ctx, "owned");
-        if !owned_ctx.is_null() {
-            let exid = if sget(&ctx, "ownedExchangeId").is_some() {
-                sget(&ctx, "ownedExchangeId").unwrap_or("").to_string()
+        if !get(&ctx, "owned").is_null() {
+            let owned_ex = if !get(&ctx, "ownedExchangeId").is_null() {
+                get(&ctx, "ownedExchangeId").clone()
             } else {
-                sget(leg, "exchangeId").unwrap_or("").to_string()
+                get(leg, "exchangeId").clone()
             };
-            let current = (inner.deps.get_owned)(&json!(exid))?;
-            need(same(&current, owned_ctx)?, "CURRENT_CUSTODY_CHANGED")?;
+            let fresh = {
+                let b = inner.borrow();
+                sync((b.deps.get_owned)(&owned_ex))?
+            };
+            need(same(&fresh, get(&ctx, "owned"))?, "CURRENT_CUSTODY_CHANGED")?;
         }
         Ok(g)
     }
-    fn none(&self, ctx: &V) -> Result<(), String> {
+
+    /// none(ctx)
+    fn none(inner: &Rc<RefCell<Inner>>, ctx: &V) -> Result<(), String> {
         let (scope, legs) = {
-            let inner = self.inner.borrow();
-            (inner.scope.clone(), inner.legs.clone())
+            let b = inner.borrow();
+            (b.scope.clone(), b.legs.clone())
         };
-        let graph_leg = if !get(ctx, "graphLeg").is_null() {
-            get(ctx, "graphLeg").clone()
-        } else {
+        let graph_leg = if get(ctx, "graphLeg").is_null() {
             get(ctx, "leg").clone()
+        } else {
+            get(ctx, "graphLeg").clone()
         };
         let graph_endpoint = format!(
             "/relationships/graph?marketId={}&depth=4&tournamentId={}",
-            sget(&graph_leg, "marketId").unwrap_or(""),
-            sget(&scope, "tournamentId").unwrap_or("")
+            get(&graph_leg, "marketId").as_str().unwrap_or(""),
+            get(&scope, "tournamentId").as_str().unwrap_or("")
         );
         let collateral_endpoint = format!(
             "/portfolio/collateral?tournamentId={}",
-            sget(&scope, "tournamentId").unwrap_or("")
+            get(&scope, "tournamentId").as_str().unwrap_or("")
         );
-        let graph = self.raw(get(ctx, "graphReceipt"), &graph_endpoint, 5000)?.0;
-        let c = self
-            .raw(get(ctx, "collateralReceipt"), &collateral_endpoint, 5000)?
-            .0;
-        let nodes = get(&graph, "nodes");
-        let uniq: HashSet<String> = nodes
-            .as_array()
-            .cloned()
-            .unwrap_or_default()
-            .iter()
-            .map(|n| sget(n, "exchangeId").unwrap_or("").to_string())
-            .collect();
+        let graph = raw(inner, get(ctx, "graphReceipt"), &graph_endpoint, 5_000)?.data;
+        let collateral = raw(inner, get(ctx, "collateralReceipt"), &collateral_endpoint, 5_000)?.data;
         need(
             !graph.is_null()
-                && graph
-                    .as_object()
-                    .map(|m| {
-                        let mut ks: Vec<&String> = m.keys().collect();
-                        ks.sort();
-                        ks.iter().map(|s| s.as_str()).collect::<Vec<_>>().join("|")
-                            == "nodes|relationships"
-                    })
-                    .unwrap_or(false)
-                && get(&graph, "relationships")
-                    .as_array()
-                    .map(|x| x.is_empty())
-                    .unwrap_or(false)
-                && nodes.as_array().map(|x| x.len() <= 2).unwrap_or(false)
-                && nodes.as_array().cloned().unwrap_or_default().iter().all(|n| {
+                && {
+                    let mut ks: Vec<String> = graph
+                        .as_object()
+                        .map(|o| o.keys().cloned().collect())
+                        .unwrap_or_default();
+                    ks.sort();
+                    ks.join("|") == "nodes|relationships"
+                }
+                && get(&graph, "relationships").as_array().is_some_and(|a| a.is_empty())
+                && get(&graph, "nodes").as_array().is_some_and(|a| a.len() <= 2)
+                && get(&graph, "nodes").as_array().unwrap().iter().all(|n| {
                     legs.iter().any(|e| {
-                        sget(e, "marketId") == sget(n, "marketId")
-                            && sget(e, "exchangeId") == sget(n, "exchangeId")
+                        get(e, "marketId") == get(n, "marketId")
+                            && get(e, "exchangeId") == get(n, "exchangeId")
                     })
                 })
-                && uniq.len() == nodes.as_array().map(|x| x.len()).unwrap_or(0),
+                && get(&graph, "nodes")
+                    .as_array()
+                    .map(|a| {
+                        a.iter()
+                            .map(|n| get(n, "exchangeId").as_str().unwrap_or("").to_string())
+                            .collect::<HashSet<_>>()
+                            .len()
+                            == a.len()
+                    })
+                    .unwrap_or(false),
             "NON_NONE_GRAPH",
         )?;
         need(
-            !c.is_null()
-                && c.as_object()
-                    .map(|m| {
-                        m.keys().map(|k| k.as_str()).collect::<Vec<_>>().join("|") == "data"
-                    })
+            !collateral.is_null()
+                && collateral
+                    .as_object()
+                    .map(|o| o.keys().cloned().collect::<Vec<String>>().join("|") == "data")
                     .unwrap_or(false)
-                && get(&c, "data")
-                    .as_array()
-                    .map(|x| x.is_empty())
-                    .unwrap_or(false),
+                && get(&collateral, "data").as_array().is_some_and(|a| a.is_empty()),
             "NON_NONE_COLLATERAL",
         )?;
-        let preceding = {
-            let book = get(ctx, "book");
-            if !book.is_null() {
-                inst(book, "receivedAt")?
-            } else {
-                let leg1_ex = sget(&legs[1], "exchangeId").unwrap_or("");
-                let arr = get(
-                    get(get(ctx, "after"), "scopedOrdersPagesByExchange"),
-                    leg1_ex,
-                )
-                .as_array()
+        let preceding = if !get(ctx, "book").is_null() {
+            instant_v(get(get(ctx, "book"), "receivedAt"))?
+        } else {
+            let second_ex = get(&legs[1], "exchangeId").as_str().unwrap_or("").to_string();
+            let pages = get(get(ctx, "after"), "scopedOrdersPagesByExchange")
+                .get(&second_ex)
+                .and_then(V::as_array)
                 .cloned()
                 .unwrap_or_default();
-                inst(&arr.last().cloned().unwrap_or(V::Null), "receivedAt")?
-            }
+            let last = match pages.last() {
+                Some(r) => r.clone(),
+                None => return Err("\u{0}TYPE_ERROR".to_string()),
+            };
+            instant_v(get(&last, "receivedAt"))?
         };
         need(
-            inst(get(ctx, "graphReceipt"), "requestStartedAt")? >= preceding
-                && inst(get(ctx, "collateralReceipt"), "requestStartedAt")?
-                    >= inst(get(ctx, "graphReceipt"), "receivedAt")?,
+            instant_v(get(get(ctx, "graphReceipt"), "requestStartedAt"))? >= preceding
+                && instant_v(get(get(ctx, "collateralReceipt"), "requestStartedAt"))?
+                    >= instant_v(get(get(ctx, "graphReceipt"), "receivedAt"))?,
             "NONE_AFTER_OWN_SOURCE",
         )?;
         Ok(())
     }
-    fn read(&self, endpoint: &str) -> Result<V, String> {
-        self.identity()?;
+
+    fn read(inner: &Rc<RefCell<Inner>>, endpoint: &str) -> Result<V, String> {
+        Self::identity(inner)?;
         {
-            let inner = self.inner.borrow();
+            let b = inner.borrow();
             need(
-                inner.reads < inner.maximum_reads
-                    && (inner.deps.has_read_headroom)(inner.maximum_reads - inner.reads),
+                b.reads < b.maximum_reads && (b.deps.has_read_headroom)(b.maximum_reads - b.reads)?,
                 "READ_BOUND",
             )?;
         }
         let admitted = Rc::new(Cell::new(false));
         let network = Rc::new(Cell::new(false));
-        let inner_a = self.inner.clone();
-        let admitted_a = admitted.clone();
-        let self_a = OwnedNoFreshNoneHedgeEvidenceBridgeV2 {
-            inner: self.inner.clone(),
+        let inner2 = inner.clone();
+        let admitted2 = admitted.clone();
+        let before_dispatch = move |_p: &V, _s: &V| -> Result<bool, OrderTransportError> {
+            (|| -> Result<bool, String> {
+                Self::guard(&inner2, None)?;
+                {
+                    let b = inner2.borrow();
+                    need(
+                        !admitted2.get()
+                            && (b.deps.has_read_headroom)(b.maximum_reads - b.reads)?,
+                        "ADMISSION",
+                    )?;
+                }
+                admitted2.set(true);
+                Ok(true)
+            })()
+            .map_err(ote)
         };
-        let bd_impl: Box<Guard<'_>> = Box::new(move |_: &V, _: &V| {
-            self_a.guard(None).map_err(ote_for)?;
-            let g = inner_a.borrow();
-            let ok = !admitted_a.get()
-                && (g.deps.has_read_headroom)(g.maximum_reads - g.reads);
-            drop(g);
-            if !ok {
-                return Err(ote_for("COMBINED_NONE_EVIDENCE_ADMISSION".into()));
-            }
-            admitted_a.set(true);
-            Ok(true)
-        });
-        let inner_n = self.inner.clone();
-        let admitted_n = admitted.clone();
-        let network_n = network.clone();
-        let self_n = OwnedNoFreshNoneHedgeEvidenceBridgeV2 {
-            inner: self.inner.clone(),
+        let inner3 = inner.clone();
+        let admitted3 = admitted.clone();
+        let network2 = network.clone();
+        let before_network = move |_p: &V, _s: &V| -> Result<bool, OrderTransportError> {
+            (|| -> Result<bool, String> {
+                Self::guard(&inner3, None)?;
+                {
+                    let b = inner3.borrow();
+                    need(
+                        admitted3.get()
+                            && !network2.get()
+                            && (b.deps.has_read_headroom)(b.maximum_reads - b.reads - 1)?,
+                        "NETWORK",
+                    )?;
+                }
+                network2.set(true);
+                Ok(true)
+            })()
+            .map_err(ote)
         };
-        let bn_impl: Box<Guard<'_>> = Box::new(move |_: &V, _: &V| {
-            self_n.guard(None).map_err(ote_for)?;
-            let g = inner_n.borrow();
-            let ok = admitted_n.get()
-                && !network_n.get()
-                && (g.deps.has_read_headroom)(g.maximum_reads - g.reads - 1);
-            drop(g);
-            if !ok {
-                return Err(ote_for("COMBINED_NONE_EVIDENCE_NETWORK".into()));
-            }
-            network_n.set(true);
-            Ok(true)
-        });
-        let bd_guard: &Guard<'_> = &*bd_impl;
-        let bn_guard: &Guard<'_> = &*bn_impl;
-        let bd_ptr = bd_guard as *const Guard as *const () as usize;
-        let bn_ptr = bn_guard as *const Guard as *const () as usize;
-        let began = (self.inner.borrow().deps.now)();
-        self.inner
-            .borrow_mut()
-            .permits
-            .insert(bd_ptr, (endpoint.to_string(), bn_ptr));
+        let bd_ptr = &before_dispatch as &Guard as *const Guard as *const () as usize;
+        let bn_ptr = &before_network as &Guard as *const Guard as *const () as usize;
         let spec = json!({"method": "GET", "endpoint": endpoint});
-        let body_result: Result<V, String> = (|| {
-            let response = (self.inner.borrow().deps.api.dispatch)(
+        inner.borrow_mut().issued.insert(
+            bd_ptr,
+            json!({"endpoint": endpoint, "beforeNetworkPtr": bn_ptr as u64}),
+        );
+        let began = (inner.borrow().deps.now)();
+        let result = (|| -> Result<V, String> {
+            let response = (inner.borrow().deps.api.dispatch)(
                 &spec,
-                Some(bd_guard),
-                Some(bn_guard),
+                Some(&before_dispatch),
+                Some(&before_network),
             )
-            .map_err(|e: WireDispatchError| e.message)?;
-            self.identity()?;
+            .map_err(|e| e.code)?;
+            Self::identity(inner)?;
             need(
                 admitted.get()
                     && network.get()
-                    && sget(&response, "endpoint") == Some(endpoint)
-                    && get(&response, "status") == &json!(200),
+                    && get(&response, "endpoint").as_str() == Some(endpoint)
+                    && js_int(get(&response, "status")) == Some(200),
                 "RESPONSE",
             )?;
-            let r =
-                (self.inner.borrow().deps.receipt_of)(&response, &json!({"method": "GET"}))?;
-            let p = self.raw(&r, endpoint, 20_000)?;
+            let r = {
+                let b = inner.borrow();
+                sync((b.deps.receipt_of)(&response, &json!({"method": "GET"})))?
+            };
+            let p = raw(inner, &r, endpoint, 20_000)?;
             need(
-                inst(&r, "requestStartedAt")? >= began as i64
-                    && inst(&r, "requestStartedAt")? >= inst(&response, "requestStartedAt")?
-                    && inst(&r, "receivedAt")? <= inst(&response, "receivedAt")?
-                    && same(&p.0, get(&response, "data"))?
-                    && self
-                        .inner
+                instant_v(get(&r, "requestStartedAt"))? >= began as i64
+                    && instant_v(get(&r, "requestStartedAt"))?
+                        >= instant_v(get(&response, "requestStartedAt"))?
+                    && instant_v(get(&r, "receivedAt"))? <= instant_v(get(&response, "receivedAt"))?
+                    && same(&p.data, get(&response, "data"))?
+                    && inner
                         .borrow()
                         .last_end
-                        .map(|le| inst(&r, "requestStartedAt").map(|x| x >= le))
-                        .transpose()?
+                        .map(|e| instant_v(get(&r, "requestStartedAt")).unwrap_or(0) >= e)
                         .unwrap_or(true)
-                    && !self
-                        .inner
+                    && !inner
                         .borrow()
                         .invocations
-                        .contains(sget(&r, "fetchInvocationId").unwrap_or("")),
+                        .contains(get(&r, "fetchInvocationId").as_str().unwrap_or("")),
                 "RAW_CAUSALITY",
             )?;
-            {
-                let inner = self.inner.borrow();
-                if let Some((os, oe)) = inner.watermarks.get(endpoint) {
-                    need(
-                        inst(&r, "requestStartedAt")? >= *os
-                            && inst(&r, "receivedAt")? >= *oe,
-                        "RAW_ROLLBACK",
-                    )?;
-                }
-            }
-            self.inner.borrow_mut().watermarks.insert(
+            let old = inner.borrow().watermarks.get(endpoint).copied();
+            need(
+                old.map(|(os, oe)| {
+                    instant_v(get(&r, "requestStartedAt")).unwrap_or(0) >= os
+                        && instant_v(get(&r, "receivedAt")).unwrap_or(0) >= oe
+                })
+                .unwrap_or(true),
+                "RAW_ROLLBACK",
+            )?;
+            inner.borrow_mut().watermarks.insert(
                 endpoint.to_string(),
-                (inst(&r, "requestStartedAt")?, inst(&r, "receivedAt")?),
+                (instant_v(get(&r, "requestStartedAt"))?, instant_v(get(&r, "receivedAt"))?),
             );
-            self.inner
+            inner
                 .borrow_mut()
                 .invocations
-                .insert(sget(&r, "fetchInvocationId").unwrap_or("").to_string());
-            let end = inst(&r, "receivedAt")?;
-            self.inner.borrow_mut().last_end = Some(end);
-            Ok(r)
+                .insert(get(&r, "fetchInvocationId").as_str().unwrap_or("").to_string());
+            inner.borrow_mut().last_end = Some(instant_v(get(&r, "receivedAt"))?);
+            Ok(r.clone())
         })();
-        {
-            let mut inner = self.inner.borrow_mut();
-            if !inner.v2 {
-                let now_ms = (inner.deps.now)();
-                inner.read_timings.push(json!({
-                    "endpoint": endpoint,
-                    "startedAt": iso(began),
-                    "finishedAt": iso(now_ms),
-                    "elapsedMs": now_ms - began,
-                    "admitted": admitted.get(),
-                    "network": network.get(),
-                }));
-                if inner.read_timings.len() > 20 {
-                    inner.read_timings.remove(0);
-                }
-            }
-            inner.reads += 1;
-            inner.total_read_count += 1;
-            inner.permits.remove(&bd_ptr);
-        }
-        body_result
+        inner.borrow_mut().reads += 1;
+        inner.borrow_mut().total_read_count += 1;
+        inner.borrow_mut().issued.remove(&bd_ptr);
+        result
     }
-    fn page(&self, endpoint: &str) -> Result<Vec<V>, String> {
-        let r = self.read(endpoint)?;
-        let p = self.raw(&r, endpoint, 20_000)?;
-        let d = &p.0;
+
+    fn page(inner: &Rc<RefCell<Inner>>, endpoint: &str) -> Result<Vec<V>, String> {
+        let r = Self::read(inner, endpoint)?;
+        let p = raw(inner, &r, endpoint, 20_000)?;
+        let d = &p.data;
         need(
-            get(d, "data").as_array().is_some_and(|x| x.len() <= 200)
-                && get(get(d, "pagination"), "limit") == &json!(200)
-                && get(get(d, "pagination"), "hasMore") == &V::Bool(false)
+            get(d, "data").as_array().is_some_and(|a| a.len() <= 200)
+                && js_int(get(get(d, "pagination"), "limit")) == Some(200)
+                && get(get(d, "pagination"), "hasMore") == &json!(false)
                 && get(get(d, "pagination"), "nextCursor").is_null()
-                && get(get(d, "coverage"), "complete") == &V::Bool(true)
+                && get(get(d, "coverage"), "complete") == &json!(true)
                 && (get(get(d, "coverage"), "projectedThroughSequence").is_null()
-                    || (is_safe_int(get(get(d, "coverage"), "projectedThroughSequence"))
-                        && get(get(d, "coverage"), "projectedThroughSequence")
-                            .as_i64()
-                            .unwrap_or(-1)
-                            >= 0)),
+                    || js_int(get(get(d, "coverage"), "projectedThroughSequence"))
+                        .map(|n| n >= 0)
+                        .unwrap_or(false)),
             "COMPLETE_SINGLE_PAGE_REQUIRED",
         )?;
-        let mut ids = HashSet::new();
-        for (i, v) in get(d, "data")
-            .as_array()
-            .cloned()
-            .unwrap_or_default()
-            .iter()
-            .enumerate()
-        {
-            let key = js_stringify(&json!(["data", i, "id"]));
-            let n = p.1.get(&key);
+        let mut ids: HashSet<i64> = HashSet::new();
+        for (i, row) in get(d, "data").as_array().unwrap().iter().enumerate() {
+            let n = p
+                .numbers
+                .get(&baal_service_runtime::json_text::js_stringify(&json!(["data", i, "id"])));
             need(
-                n.is_some_and(|n| digit_id(n))
-                    && is_safe_int(get(v, "id"))
-                    && !ids.contains(&get(v, "id").as_i64().unwrap_or(-1)),
+                n.is_some()
+                    && id_str(n.unwrap())
+                    && js_int(get(row, "id")).is_some()
+                    && !ids.contains(&js_int(get(row, "id")).unwrap()),
                 "EXACT_ID",
             )?;
-            ids.insert(get(v, "id").as_i64().unwrap_or(-1));
+            ids.insert(js_int(get(row, "id")).unwrap());
         }
         Ok(vec![r])
     }
-    fn account(&self, target: &V, both: bool) -> Result<V, String> {
-        let scope = self.inner.borrow().scope.clone();
-        let legs = self.inner.borrow().legs.clone();
-        let slug = sget(&scope, "tournamentSlug").unwrap_or("");
-        let tid = sget(&scope, "tournamentId").unwrap_or("");
-        let cash = self.read(&format!("/tournaments/{slug}"))?;
-        let positions = self.read(&format!("/tournaments/{slug}/portfolio/positions"))?;
-        let open_orders_pages = self.page(&format!(
-            "/orders?status=open&limit=200&tournamentId={tid}"
-        ))?;
-        let mut scoped = Map::new();
-        let selected: Vec<V> = if both {
-            legs.clone()
-        } else {
-            vec![target.clone()]
+
+    /// account(target, both)
+    fn account(inner: &Rc<RefCell<Inner>>, target: &V, both: bool) -> Result<V, String> {
+        let (scope, legs) = {
+            let b = inner.borrow();
+            (b.scope.clone(), b.legs.clone())
         };
-        for e in &selected {
-            let pages = self.page(&format!(
-                "/orders?status=all&exchangeId={}&limit=200&tournamentId={tid}",
-                sget(e, "exchangeId").unwrap_or("")
-            ))?;
+        let slug = get(&scope, "tournamentSlug").as_str().unwrap_or("").to_string();
+        let tid = get(&scope, "tournamentId").as_str().unwrap_or("").to_string();
+        let cash = Self::read(inner, &format!("/tournaments/{slug}"))?;
+        let positions = Self::read(inner, &format!("/tournaments/{slug}/portfolio/positions"))?;
+        let open_orders_pages = Self::page(
+            inner,
+            &format!("/orders?status=open&limit=200&tournamentId={tid}"),
+        )?;
+        let mut scoped = serde_json::Map::new();
+        let targets: Vec<V> = if both { legs.clone() } else { vec![target.clone()] };
+        for e in &targets {
             scoped.insert(
-                sget(e, "exchangeId").unwrap_or("").to_string(),
-                V::Array(pages),
+                get(e, "exchangeId").as_str().unwrap_or("").to_string(),
+                V::Array(Self::page(
+                    inner,
+                    &format!(
+                        "/orders?status=all&exchangeId={}&limit=200&tournamentId={tid}",
+                        get(e, "exchangeId").as_str().unwrap_or("")
+                    ),
+                )?),
             );
         }
-        let scoped_for_target = scoped
-            .get(sget(target, "exchangeId").unwrap_or(""))
+        let scoped_target = scoped
+            .get(get(target, "exchangeId").as_str().unwrap_or(""))
             .cloned()
             .unwrap_or(V::Null);
-        let mut out = Map::new();
-        out.insert("cash".into(), cash);
-        out.insert("positions".into(), positions);
-        out.insert("openOrdersPages".into(), V::Array(open_orders_pages));
-        out.insert("scopedOrdersPages".into(), scoped_for_target);
-        out.insert("scopedOrdersPagesByExchange".into(), V::Object(scoped));
-        Ok(V::Object(out))
+        Ok(json!({
+            "cash": cash,
+            "positions": positions,
+            "openOrdersPages": open_orders_pages,
+            "scopedOrdersPages": scoped_target,
+            "scopedOrdersPagesByExchange": V::Object(scoped),
+        }))
     }
-    fn finish_none(&self, ctx: &mut V) -> Result<(), String> {
-        let (scope, legs) = {
-            let inner = self.inner.borrow();
-            (inner.scope.clone(), inner.legs.clone())
+
+    /// finishNone(ctx) — mutates ctx: graphReceipt/collateralReceipt.
+    fn finish_none(inner: &Rc<RefCell<Inner>>, ctx: &mut V) -> Result<(), String> {
+        let (scope, _) = {
+            let b = inner.borrow();
+            (b.scope.clone(), ())
         };
-        let graph_leg = if !get(ctx, "graphLeg").is_null() {
-            get(ctx, "graphLeg").clone()
-        } else {
+        let graph_leg = if get(ctx, "graphLeg").is_null() {
             get(ctx, "leg").clone()
+        } else {
+            get(ctx, "graphLeg").clone()
         };
-        let _ = legs;
-        let graph_receipt = self.read(&format!(
-            "/relationships/graph?marketId={}&depth=4&tournamentId={}",
-            sget(&graph_leg, "marketId").unwrap_or(""),
-            sget(&scope, "tournamentId").unwrap_or("")
-        ))?;
-        let collateral_receipt = self.read(&format!(
-            "/portfolio/collateral?tournamentId={}",
-            sget(&scope, "tournamentId").unwrap_or("")
-        ))?;
+        let graph_receipt = Self::read(
+            inner,
+            &format!(
+                "/relationships/graph?marketId={}&depth=4&tournamentId={}",
+                get(&graph_leg, "marketId").as_str().unwrap_or(""),
+                get(&scope, "tournamentId").as_str().unwrap_or("")
+            ),
+        )?;
+        let collateral_receipt = Self::read(
+            inner,
+            &format!(
+                "/portfolio/collateral?tournamentId={}",
+                get(&scope, "tournamentId").as_str().unwrap_or("")
+            ),
+        )?;
         ctx.as_object_mut()
             .unwrap()
             .insert("graphReceipt".into(), graph_receipt);
         ctx.as_object_mut()
             .unwrap()
             .insert("collateralReceipt".into(), collateral_receipt);
-        self.none(ctx)
+        Self::none(inner, ctx)
     }
-    fn sell_evidence(&self, operation: &str, fence_risk: Option<&V>) -> Result<V, String> {
-        let g = self.guard(fence_risk)?;
+
+    /// sellEvidence(operation, fenceRisk=null)
+    fn sell_evidence(inner: &Rc<RefCell<Inner>>, operation: &str, fence_risk: Option<&V>) -> Result<V, String> {
+        let g = Self::guard(inner, fence_risk)?;
         let (cache, busy, scope, legs) = {
-            let inner = self.inner.borrow();
-            (
-                inner.cache.clone().unwrap_or(V::Null),
-                inner.busy,
-                inner.scope.clone(),
-                inner.legs.clone(),
-            )
+            let b = inner.borrow();
+            (b.cache.clone(), b.busy, b.scope.clone(), b.legs.clone())
         };
-        need(sget(&cache, "kind") == Some("sell") && !busy, "SELL_CACHE")?;
-        self.none(&cache)?;
+        let cache = match cache {
+            Some(c) => c,
+            None => return Err("COMBINED_NONE_EVIDENCE_SELL_CACHE".into()),
+        };
+        need(get(&cache, "kind").as_str() == Some("sell") && !busy, "SELL_CACHE")?;
+        Self::none(inner, &cache)?;
         if operation == "prepare_sell" {
-            need(self.active()?.is_null(), "ACTIVE_BEFORE_PREPARE")?;
+            need(Self::active(inner)?.is_null(), "ACTIVE_BEFORE_PREPARE")?;
         }
-        let f = self.fund()?;
+        let f = Self::fund(inner)?;
         need(
-            sget(get(&f, "record"), "reservationHash")
-                == sget(&g, "controllerReservationHash")
-                && sget(get(&f, "receipt"), "globalLedgerHash")
-                    == sget(&g, "globalLedgerHash")
-                && sget(get(&f, "receipt"), "reservationHash")
-                    == sget(get(&f, "record"), "reservationHash"),
+            get(get(&f, "record"), "reservationHash") == get(&g, "controllerReservationHash")
+                && get(get(&f, "receipt"), "globalLedgerHash") == get(&g, "globalLedgerHash")
+                && get(get(&f, "receipt"), "reservationHash")
+                    == get(get(&f, "record"), "reservationHash"),
             "CURRENT_INSTALLED_BUDGET",
         )?;
         let economic = |r: &V| -> V {
-            let mut m = r.as_object().cloned().unwrap_or_default();
-            m.shift_remove("reservationHash");
-            m.shift_remove("unresolvedIntentIds");
-            V::Object(m)
+            let mut b = r.as_object().cloned().unwrap_or_default();
+            b.shift_remove("reservationHash");
+            b.shift_remove("unresolvedIntentIds");
+            V::Object(b)
         };
         need(
-            same(
-                &economic(get(&f, "record")),
-                &economic(get(get(&cache, "sourceFunding"), "record")),
-            )?,
+            same(&economic(get(&f, "record")), &economic(get(get(&cache, "sourceFunding"), "record")))?,
             "CURRENT_FULL_ECONOMICS_CHANGED",
         )?;
-        let active_now = self.active()?;
+        let a = Self::active(inner)?;
         need(
             get(get(&cache, "sourceRisk"), "unresolvedIntentIds")
                 .as_array()
-                .map(|x| x.is_empty())
-                .unwrap_or(false)
+                .is_some_and(|v| v.is_empty())
                 && (get(get(&f, "record"), "unresolvedIntentIds")
                     .as_array()
-                    .map(|x| x.is_empty())
+                    .map(|v| v.is_empty())
                     .unwrap_or(true)
-                    || (get(get(&f, "record"), "unresolvedIntentIds")
+                    || get(get(&f, "record"), "unresolvedIntentIds")
                         .as_array()
-                        .map(|x| x.len() == 1 && &x[0] == get(&active_now, "intentId"))
-                        .unwrap_or(false))),
+                        .is_some_and(|v| v.len() == 1 && &v[0] == get(&a, "intentId"))),
             "EXACT_OWN_SELL_PENDING",
         )?;
         let signal_risk = get(&cache, "sourceRisk").clone();
-        let mut scope_v = scope.as_object().cloned().unwrap_or_default();
-        scope_v.insert("exchanges".into(), V::Array(legs.clone()));
-        let p = crate::baal_scaled_profitable_exit_signal_v2::plan_baal_scaled_profitable_exit_v2(
-            &json!({
-                "scope": V::Object(scope_v),
-                "owned": get(&cache,"owned"),
-                "account": get(&cache,"account"),
-                "bookReceipt": get(&cache,"book"),
-                "globalRisk": signal_risk,
-                "now": iso((self.inner.borrow().deps.now)()),
-            }),
-        );
-        let reason = sget(&p, "reason").unwrap_or("").to_string();
+        let mut scope_ex = scope.as_object().cloned().unwrap();
+        scope_ex.insert("exchanges".into(), V::Array(legs.clone()));
+        let p = plan_baal_scaled_profitable_exit_v2(&json!({
+            "scope": V::Object(scope_ex),
+            "owned": get(&cache, "owned"),
+            "account": get(&cache, "account"),
+            "bookReceipt": get(&cache, "book"),
+            "globalRisk": signal_risk,
+            "now": iso((inner.borrow().deps.now)()),
+        }));
         need(
-            get(&p, "proposalReady") == &V::Bool(true),
-            &format!("CURRENT_FIFO_OR_PROFIT_{reason}"),
+            get(&p, "proposalReady") == &json!(true),
+            &format!("CURRENT_FIFO_OR_PROFIT_{}", get(&p, "reason").as_str().unwrap_or("")),
         )?;
-        if !active_now.is_null() {
+        if js_truthy(Some(&a)) {
             need(
-                get(get(&active_now, "body"), "quantity").as_i64().unwrap_or(0)
-                    <= get(&p, "quantity").as_i64().unwrap_or(0)
-                    && price(&js_num_string(get(get(&active_now, "body"), "price")))?
-                        <= price(sget(&p, "limit").unwrap_or(""))?,
+                js_int(get(get(&a, "body"), "quantity")).unwrap_or(i64::MAX)
+                    <= js_int(get(&p, "quantity")).unwrap_or(i64::MIN)
+                    && price(&js_str(get(get(&a, "body"), "price")))?
+                        <= price(get(&p, "limit").as_str().unwrap_or(""))?,
                 "FIXED_PROFITABLE_INTENT_DEPTH",
             )?;
         }
         Ok(json!({
-            "account": get(&cache,"account"),
-            "book": get(&cache,"book"),
+            "account": get(&cache, "account"),
+            "book": get(&cache, "book"),
             "globalRisk": signal_risk,
             "currentGlobalRisk": g,
-            "graphReceipt": get(&cache,"graphReceipt"),
-            "collateralReceipt": get(&cache,"collateralReceipt"),
+            "graphReceipt": get(&cache, "graphReceipt"),
+            "collateralReceipt": get(&cache, "collateralReceipt"),
             "funding": f,
-            "owned": get(&cache,"owned"),
+            "owned": get(&cache, "owned"),
         }))
     }
-    /// evidence(c)
-    pub fn get_evidence(&self, c: &V) -> Result<V, String> {
-        let op = sget(c, "operation").unwrap_or("prepare_hedge").to_string();
+
+    /// evidence(c={})
+    fn evidence(&self, c: &V) -> Result<V, String> {
+        let inner = self.inner.clone();
+        let op_v = get(c, "operation");
+        let op = if op_v.is_null() {
+            "prepare_hedge".to_string()
+        } else {
+            op_v.as_str().unwrap_or("").to_string()
+        };
         if ["prepare_hedge", "place_hedge", "hedge"].contains(&op.as_str()) {
-            let (hedge_has, cache, busy) = {
-                let inner = self.inner.borrow();
+            let (hedge_exists, cache_kind) = {
+                let b = inner.borrow();
                 (
-                    inner.hedge.is_some(),
-                    inner.cache.clone().unwrap_or(V::Null),
-                    inner.busy,
+                    b.hedge.is_some(),
+                    b.cache
+                        .as_ref()
+                        .map(|c| get(c, "kind").as_str().unwrap_or("").to_string()),
                 )
             };
-            let _ = busy;
-            need(
-                hedge_has || sget(&cache, "kind") == Some("hedgeFinal"),
-                "HEDGE_CACHE",
-            )?;
-            if sget(&cache, "kind") == Some("hedgeFinal") {
-                let fence = if get(c, "fenceRisk").is_null() {
-                    None
-                } else {
-                    Some(get(c, "fenceRisk").clone())
-                };
-                let g = self.guard(fence.as_ref())?;
-                self.none(&cache)?;
-                let f = self.fund()?;
+            need(hedge_exists || cache_kind.as_deref() == Some("hedgeFinal"), "HEDGE_CACHE")?;
+            if cache_kind.as_deref() == Some("hedgeFinal") {
+                let fence = get(c, "fenceRisk");
+                let g = Self::guard(&inner, if fence.is_null() { None } else { Some(fence) })?;
+                let cache = inner.borrow().cache.clone().unwrap();
+                Self::none(&inner, &cache)?;
+                let f = Self::fund(&inner)?;
                 let economic = |r: &V| -> V {
-                    let mut m = r.as_object().cloned().unwrap_or_default();
-                    m.shift_remove("reservationHash");
-                    m.shift_remove("unresolvedIntentIds");
-                    V::Object(m)
+                    let mut b = r.as_object().cloned().unwrap_or_default();
+                    b.shift_remove("reservationHash");
+                    b.shift_remove("unresolvedIntentIds");
+                    V::Object(b)
                 };
                 need(
                     same(
                         &economic(get(&f, "record")),
-                        &economic(get(
-                            get(&cache, "hedgePacket"),
-                            "funding",
-                        ).get("record")
-                        .unwrap_or(&V::Null)),
-                    )? && sget(get(&f, "record"), "reservationHash")
-                        == sget(&g, "controllerReservationHash")
-                        && sget(get(&f, "receipt"), "globalLedgerHash")
-                            == sget(&g, "globalLedgerHash"),
+                        &economic(get(get(get(&cache, "hedgePacket"), "funding"), "record")),
+                    )?
+                    && get(get(&f, "record"), "reservationHash")
+                        == get(&g, "controllerReservationHash")
+                    && get(get(&f, "receipt"), "globalLedgerHash") == get(&g, "globalLedgerHash"),
                     "CURRENT_HEDGE_ECONOMICS_CHANGED",
                 )?;
-                let mut e = get(&cache, "hedgePacket")
+                let packet = get(&cache, "hedgePacket").clone();
+                let mut e = packet.as_object().cloned().unwrap_or_default();
+                e.insert("graphReceipt".into(), get(&cache, "graphReceipt").clone());
+                e.insert("collateralReceipt".into(), get(&cache, "collateralReceipt").clone());
+                let mut ane = get(&packet, "allNoneEvidence")
                     .as_object()
                     .cloned()
                     .unwrap_or_default();
-                e.insert(
-                    "graphReceipt".into(),
-                    get(&cache, "graphReceipt").clone(),
-                );
-                e.insert(
-                    "collateralReceipt".into(),
-                    get(&cache, "collateralReceipt").clone(),
-                );
-                let mut ane = get(get(&cache, "hedgePacket"), "allNoneEvidence")
-                    .as_object()
-                    .cloned()
-                    .unwrap_or_default();
-                ane.insert(
-                    "graphReceipt".into(),
-                    get(&cache, "graphReceipt").clone(),
-                );
-                ane.insert(
-                    "collateralReceipt".into(),
-                    get(&cache, "collateralReceipt").clone(),
-                );
+                ane.insert("graphReceipt".into(), get(&cache, "graphReceipt").clone());
+                ane.insert("collateralReceipt".into(), get(&cache, "collateralReceipt").clone());
                 ane.insert(
                     "sourceHash".into(),
                     json!(payload_hash(&json!({
-                        "graph": get(get(&cache,"graphReceipt"),"sourceBodyHash"),
-                        "collateral": get(get(&cache,"collateralReceipt"),"sourceBodyHash"),
+                        "graph": get(get(&cache, "graphReceipt"), "sourceBodyHash"),
+                        "collateral": get(get(&cache, "collateralReceipt"), "sourceBodyHash"),
                     }))?),
                 );
                 ane.insert(
@@ -847,281 +858,258 @@ impl OwnedNoFreshNoneHedgeEvidenceBridgeV2 {
                     get(get(&cache, "collateralReceipt"), "receivedAt").clone(),
                 );
                 e.insert("allNoneEvidence".into(), V::Object(ane));
-                e.insert(
-                    "now".into(),
-                    json!(iso((self.inner.borrow().deps.now)())),
-                );
+                e.insert("now".into(), json!(iso((inner.borrow().deps.now)())));
                 let e = V::Object(e);
-                let p =
-                    crate::baal_scaled_owned_no_hedge_proposal_v1::plan_baal_owned_no_hedge(&e);
-                let reason = sget(&p, "reason").unwrap_or("").to_string();
+                let p = plan_baal_owned_no_hedge(&e);
                 need(
-                    get(&p, "proposalReady") == &V::Bool(true),
-                    &format!("ORIGINAL_HEDGE_PACKET_{reason}"),
+                    get(&p, "proposalReady") == &json!(true),
+                    &format!("ORIGINAL_HEDGE_PACKET_{}", get(&p, "reason").as_str().unwrap_or("")),
                 )?;
                 return Ok(e);
             }
-            let inner = self.inner.borrow();
-            let h = inner.hedge.as_ref().unwrap();
-            let order_id = sget(c, "orderId");
-            return h.get_evidence(&op, order_id);
+            let hedge = inner.borrow().hedge.clone();
+            return hedge.unwrap().get_evidence(c);
         }
         if ["prepare_sell", "place_sell"].contains(&op.as_str()) {
-            let fence = if get(c, "fenceRisk").is_null() {
-                None
-            } else {
-                Some(get(c, "fenceRisk").clone())
-            };
-            return self.sell_evidence(&op, fence.as_ref());
+            let fence = get(c, "fenceRisk");
+            return Self::sell_evidence(
+                &inner,
+                &op,
+                if fence.is_null() { None } else { Some(fence) },
+            );
         }
+        let order_id = get(c, "orderId");
         let (cache, busy) = {
-            let inner = self.inner.borrow();
-            (inner.cache.clone().unwrap_or(V::Null), inner.busy)
+            let b = inner.borrow();
+            (b.cache.clone(), b.busy)
+        };
+        let cache = match cache {
+            Some(v) => v,
+            None => V::Null,
         };
         need(
             op == "reconcile"
-                && sget(&cache, "kind") == Some("reconcile")
+                && get(&cache, "kind").as_str() == Some("reconcile")
                 && !busy
-                && (sget(c, "orderId").is_none()
-                    || sget(c, "orderId") == sget(get(&cache, "binding"), "orderId")),
+                && (order_id.is_null() || *order_id == get(get(&cache, "binding"), "orderId").clone()),
             "RECONCILE_CACHE",
         )?;
-        let g = self.guard(None)?;
-        self.none(&cache)?;
-        let mut to_check: Vec<V> = Vec::new();
-        to_check.push(get(&cache, "order").clone());
-        to_check.extend(
-            get(&cache, "fillPages")
-                .as_array()
-                .cloned()
-                .unwrap_or_default(),
-        );
-        for key in ["cash", "positions"] {
-            to_check.push(get(get(&cache, "after"), key).clone());
+        let g = Self::guard(&inner, None)?;
+        Self::none(&inner, &cache)?;
+        let mut rows: Vec<V> = Vec::new();
+        rows.push(get(&cache, "order").clone());
+        rows.extend(get(&cache, "fillPages").as_array().cloned().unwrap_or_default());
+        let after = get(&cache, "after").clone();
+        rows.push(get(&after, "cash").clone());
+        rows.push(get(&after, "positions").clone());
+        rows.extend(get(&after, "openOrdersPages").as_array().cloned().unwrap_or_default());
+        if let Some(m) = get(&after, "scopedOrdersPagesByExchange").as_object() {
+            for (_, pages) in m {
+                rows.extend(pages.as_array().cloned().unwrap_or_default());
+            }
         }
-        to_check.extend(
-            get(get(&cache, "after"), "openOrdersPages")
-                .as_array()
-                .cloned()
-                .unwrap_or_default(),
-        );
-        for (_, pages) in get(get(&cache, "after"), "scopedOrdersPagesByExchange")
-            .as_object()
-            .cloned()
-            .unwrap_or_default()
-        {
-            to_check.extend(pages.as_array().cloned().unwrap_or_default());
-        }
-        for r in to_check {
-            self.raw(&r, sget(&r, "endpoint").unwrap_or(""), 20_000)?;
+        for r in &rows {
+            let ep = get(r, "endpoint").as_str().unwrap_or("").to_string();
+            let _ = raw(&inner, r, &ep, 20_000)?;
         }
         Ok(json!({
-            "order": get(&cache,"order"),
-            "fillPages": get(&cache,"fillPages"),
-            "after": get(&cache,"after"),
+            "order": get(&cache, "order"),
+            "fillPages": get(&cache, "fillPages"),
+            "after": after,
             "globalRisk": g,
-            "graphReceipt": get(&cache,"graphReceipt"),
-            "collateralReceipt": get(&cache,"collateralReceipt"),
+            "graphReceipt": get(&cache, "graphReceipt"),
+            "collateralReceipt": get(&cache, "collateralReceipt"),
         }))
     }
-    /// authorizes(spec, beforeDispatch, beforeNetwork)
-    pub fn authorizes(
-        &self,
-        spec: &V,
-        before_dispatch: Option<&Guard<'_>>,
-        before_network: Option<&Guard<'_>>,
-    ) -> bool {
+
+    /// getEvidence(c)
+    pub fn get_evidence(&self, c: &V) -> Result<V, String> {
+        self.evidence(c)
+    }
+
+    /// authorizes(spec)
+    pub fn authorizes(&self, spec: &V, before_dispatch: &Guard, before_network: &Guard) -> bool {
         let r: Result<bool, String> = (|| {
             need(!self.inner.borrow().closed, "CLOSED")?;
-            let bd_ptr = before_dispatch
-                .map(|x| x as *const Guard as *const () as usize)
-                .unwrap_or(0);
-            let bn_ptr = before_network
-                .map(|x| x as *const Guard as *const () as usize)
-                .unwrap_or(0);
-            let inner = self.inner.borrow();
-            let p = inner.permits.get(&bd_ptr);
-            if p.is_none() {
-                return Ok(inner
-                    .hedge
-                    .as_ref()
-                    .map(|h| h.authorizes(spec, before_dispatch, before_network))
-                    .unwrap_or(false));
-            }
-            let p = p.unwrap().clone();
-            drop(inner);
-            self.identity()?;
-            Ok(sget(spec, "method") == Some("GET")
-                && sget(spec, "endpoint") == Some(p.0.as_str())
-                && p.1 == bn_ptr
-                && spec.as_object().is_some_and(|m| {
-                    !m.contains_key("body")
-                        && !m.contains_key("bodyJson")
-                        && !m.contains_key("headers")
-                }))
+            let key = before_dispatch as *const Guard as *const () as usize;
+            let p = self.inner.borrow().issued.get(&key).cloned();
+            let p = match p {
+                Some(p) => p,
+                None => {
+                    return Ok(self
+                        .inner
+                        .borrow()
+                        .hedge
+                        .as_ref()
+                        .map(|h| h.authorizes(spec, before_dispatch, before_network))
+                        .unwrap_or(false));
+                }
+            };
+            Self::identity(&self.inner)?;
+            Ok(get(spec, "method").as_str() == Some("GET")
+                && get(spec, "endpoint") == get(&p, "endpoint")
+                && (before_network as *const Guard as *const () as usize)
+                    == get(&p, "beforeNetworkPtr").as_u64().unwrap_or(0) as usize
+                && spec.get("body").is_none()
+                && spec.get("bodyJson").is_none()
+                && spec.get("headers").is_none())
         })();
         r.unwrap_or(false)
     }
-    fn begin<F>(&self, ctx: &mut V, max: i64, f: F) -> Result<V, String>
+
+    /// begin(ctx, max, fn)
+    fn begin<F>(inner: &Rc<RefCell<Inner>>, mut ctx: V, max: i64, f: F) -> Result<V, String>
     where
-        F: FnOnce(&OwnedNoFreshNoneHedgeEvidenceBridgeV2, &mut V) -> Result<(), String>,
+        F: FnOnce(&Rc<RefCell<Inner>>, &mut V) -> Result<(), String>,
     {
-        need(!self.inner.borrow().busy, "BUSY")?;
-        {
-            let mut inner = self.inner.borrow_mut();
-            inner.cache = None;
-            inner.job = Some(ctx.clone());
-            inner.busy = true;
-            inner.reads = 0;
-            inner.maximum_reads = max;
-            inner.last_end = None;
-            inner.invocations.clear();
-        }
-        let result: Result<(), String> = (|| {
-            self.identity()?;
-            f(self, ctx)?;
-            self.inner.borrow_mut().cache = Some(ctx.clone());
+        need(!inner.borrow().busy, "BUSY")?;
+        inner.borrow_mut().cache = None;
+        inner.borrow_mut().job = Some(ctx.clone());
+        inner.borrow_mut().busy = true;
+        inner.borrow_mut().reads = 0;
+        inner.borrow_mut().maximum_reads = max;
+        inner.borrow_mut().last_end = None;
+        inner.borrow_mut().invocations.clear();
+        let result = (|| -> Result<(), String> {
+            Self::identity(inner)?;
+            f(inner, &mut ctx)?;
+            inner.borrow_mut().cache = Some(ctx.clone());
             Ok(())
         })();
-        {
-            let mut inner = self.inner.borrow_mut();
-            inner.busy = false;
-            inner.job = None;
-        }
+        inner.borrow_mut().busy = false;
+        inner.borrow_mut().job = None;
         result?;
-        Ok(ctx.clone())
+        Ok(ctx)
     }
+
     /// refresh()
     pub fn refresh(&self) -> Result<V, String> {
-        need(!self.inner.borrow().busy, "BUSY")?;
-        {
-            let mut inner = self.inner.borrow_mut();
-            inner.cache = None;
-            inner.job = None;
-            if let Some(h) = inner.hedge.take() {
-                drop(inner);
-                let _ = h.close();
-                self.inner.borrow_mut().hedge = None;
-            }
+        let inner = self.inner.clone();
+        need(!inner.borrow().busy, "BUSY")?;
+        inner.borrow_mut().cache = None;
+        inner.borrow_mut().job = None;
+        if let Some(h) = inner.borrow().hedge.as_ref() {
+            let _ = h.close();
         }
-        if self.inner.borrow().deps.refresh_funding_after_account.is_some() {
-            let first_exchange_id = self.inner.borrow().first_exchange_id.clone();
-            let owned =
-                (self.inner.borrow().deps.get_owned)(&json!(first_exchange_id.clone()))?;
-            let legs = self.inner.borrow().legs.clone();
+        inner.borrow_mut().hedge = None;
+        if inner.borrow().deps.refresh_funding_after_account.is_some() {
+            let first_ex = inner.borrow().first_exchange_id.clone();
+            let owned = sync((inner.borrow().deps.get_owned)(&json!(first_ex)))?;
+            let legs = inner.borrow().legs.clone();
             let graph_leg = legs
                 .iter()
-                .find(|e| sget(e, "exchangeId") == Some(first_exchange_id.as_str()))
-                .cloned()
-                .unwrap_or(V::Null);
+                .find(|e| get(e, "exchangeId").as_str() == Some(first_ex.as_str()))
+                .cloned();
             let leg = legs
                 .iter()
-                .find(|e| sget(e, "exchangeId") != Some(first_exchange_id.as_str()))
-                .cloned()
-                .unwrap_or(V::Null);
+                .find(|e| get(e, "exchangeId").as_str() != Some(first_ex.as_str()))
+                .cloned();
             need(
-                get(get(&owned, "proof"), "remainingOwnedQuantity")
-                    .as_i64()
-                    .unwrap_or(0)
-                    > 0
-                    && !graph_leg.is_null()
-                    && !leg.is_null(),
+                js_int(get(get(&owned, "proof"), "remainingOwnedQuantity"))
+                    .map(|q| q > 0)
+                    .unwrap_or(false)
+                    && graph_leg.is_some()
+                    && leg.is_some(),
                 "CURRENT_HEDGE_SEED",
             )?;
-            let mut ctx = json!({
+            let graph_leg = graph_leg.unwrap();
+            let leg = leg.unwrap();
+            let ctx_in = json!({
                 "kind": "hedgeFinal",
                 "leg": leg,
                 "graphLeg": graph_leg,
                 "owned": owned,
-                "ownedExchangeId": first_exchange_id,
+                "ownedExchangeId": first_ex,
             });
-            self.begin(&mut ctx, 10, |this, ctx| {
-                let mut root_receipts = Vec::new();
-                for e in [
-                    get(ctx, "graphLeg").clone(),
-                    get(ctx, "leg").clone(),
-                ] {
-                    let receipt = this.read(&format!(
-                        "/markets/{}/nodes?tournamentId={}",
-                        sget(&e, "marketId").unwrap_or(""),
-                        sget(&this.inner.borrow().scope, "tournamentId").unwrap_or("")
-                    ))?;
-                    let mut er = e.as_object().cloned().unwrap_or_default();
-                    er.insert("receipt".into(), receipt);
-                    root_receipts.push(V::Object(er));
+            let inner_c = inner.clone();
+            Self::begin(&inner, ctx_in, 10, move |inner, ctx| {
+                let (scope, first_ex) = {
+                    let b = inner.borrow();
+                    (b.scope.clone(), b.first_exchange_id.clone())
+                };
+                let tid = get(&scope, "tournamentId").as_str().unwrap_or("").to_string();
+                let graph_leg = get(ctx, "graphLeg").clone();
+                let leg = get(ctx, "leg").clone();
+                let mut root_receipts: Vec<V> = Vec::new();
+                for e in [&graph_leg, &leg] {
+                    let receipt = Self::read(
+                        inner,
+                        &format!(
+                            "/markets/{}/nodes?tournamentId={tid}",
+                            get(e, "marketId").as_str().unwrap_or("")
+                        ),
+                    )?;
+                    let mut o = e.as_object().cloned().unwrap();
+                    o.insert("receipt".into(), receipt);
+                    root_receipts.push(V::Object(o));
                 }
-                let account_source = this.account(get(ctx, "graphLeg"), true)?;
-                let mut binding = this
-                    .inner
-                    .borrow()
-                    .scope
-                    .as_object()
-                    .cloned()
-                    .unwrap_or_default();
-                if let Some(m) = get(ctx, "graphLeg").as_object() {
-                    for (k, v) in m {
-                        binding.insert(k.clone(), v.clone());
-                    }
+                let account_source = Self::account(inner, &graph_leg, true)?;
+                let mut binding = scope.as_object().cloned().unwrap();
+                for (k, v) in graph_leg.as_object().unwrap() {
+                    binding.insert(k.clone(), v.clone());
                 }
                 let view = inspect_scoped_rest_no_account(&json!({
                     "account": account_source,
                     "binding": V::Object(binding),
-                    "readAt": iso((this.inner.borrow().deps.now)()),
+                    "readAt": iso((inner.borrow().deps.now)()),
                 }))?;
-                let positions = get(&view, "positions").as_array().cloned().unwrap_or_default();
+                let owned = get(ctx, "owned").clone();
                 need(
-                    positions.iter().any(|p| {
-                        sget(p, "exchangeId")
-                            == sget(get(ctx, "graphLeg"), "exchangeId")
-                            && sget(p, "marketId")
-                                == sget(get(ctx, "graphLeg"), "marketId")
-                            && get(p, "quantity").as_i64().unwrap_or(0)
-                                == -get(get(get(ctx, "owned"), "proof"), "remainingOwnedQuantity")
-                                    .as_i64()
-                                    .unwrap_or(0)
-                            && get(p, "settled") != &V::Bool(true)
-                    }) && !positions.iter().any(|p| {
-                        sget(p, "exchangeId") == sget(get(ctx, "leg"), "exchangeId")
-                            && get(p, "quantity").as_i64().unwrap_or(0) != 0
+                    get(&view, "positions").as_array().is_some_and(|ps| {
+                        ps.iter().any(|p| {
+                            get(p, "exchangeId") == get(&graph_leg, "exchangeId")
+                                && get(p, "marketId") == get(&graph_leg, "marketId")
+                                && js_int(get(p, "quantity"))
+                                    == js_int(get(get(&owned, "proof"), "remainingOwnedQuantity"))
+                                        .map(|q| -q)
+                                && !js_truthy(Some(get(p, "settled")))
+                        })
+                    }) && !get(&view, "positions").as_array().is_some_and(|ps| {
+                        ps.iter().any(|p| {
+                            get(p, "exchangeId") == get(&leg, "exchangeId")
+                                && js_int(get(p, "quantity")).map(|q| q != 0).unwrap_or(true)
+                        })
                     }),
                     "CURRENT_SOURCE_CUSTODY",
                 )?;
-                if let Some(rfa) = &this.inner.borrow().deps.refresh_funding_after_account {
-                    let rfa = rfa.clone();
-                    drop(this.inner.borrow());
-                    rfa()?;
+                {
+                    let b = inner.borrow();
+                    let f = b.deps.refresh_funding_after_account.clone().unwrap();
+                    f()?;
                 }
-                let funding = this.fund()?;
-                let pair_census = (this.inner.borrow().deps.get_pair_census)(&json!(
-                    this.inner.borrow().first_exchange_id.clone()
-                ))?;
-                let global_risk = this.guard(None)?;
-                let other_book_receipt = this.read(&format!(
-                    "/markets/{}/orderbook?tournamentId={}&depth=20",
-                    sget(get(ctx, "leg"), "marketId").unwrap_or(""),
-                    sget(&this.inner.borrow().scope, "tournamentId").unwrap_or("")
-                ))?;
-                ctx.as_object_mut().unwrap().insert(
-                    "otherBookReceipt".into(),
-                    other_book_receipt.clone(),
-                );
+                let funding = Self::fund(inner)?;
+                let pair_census = {
+                    let b = inner.borrow();
+                    sync((b.deps.get_pair_census)(&json!(first_ex)))?
+                };
+                let global_risk = Self::guard(inner, None)?;
+                let other_book_receipt = Self::read(
+                    inner,
+                    &format!(
+                        "/markets/{}/orderbook?tournamentId={tid}&depth=20",
+                        get(&leg, "marketId").as_str().unwrap_or("")
+                    ),
+                )?;
+                ctx.as_object_mut()
+                    .unwrap()
+                    .insert("otherBookReceipt".into(), other_book_receipt.clone());
                 ctx.as_object_mut()
                     .unwrap()
                     .insert("book".into(), other_book_receipt.clone());
-                this.finish_none(ctx)?;
+                Self::finish_none(inner, ctx)?;
                 let hedge_packet = json!({
-                    "scope": this.inner.borrow().scope.clone(),
-                    "firstExchangeId": this.inner.borrow().first_exchange_id.clone(),
-                    "owned": get(ctx,"owned"),
+                    "scope": scope,
+                    "firstExchangeId": first_ex,
+                    "owned": owned,
                     "pairCensus": pair_census,
                     "funding": funding,
                     "globalRisk": global_risk,
                     "account": account_source,
                     "rootReceipts": root_receipts,
                     "otherBookReceipt": other_book_receipt,
-                    "graphReceipt": get(ctx,"graphReceipt"),
-                    "collateralReceipt": get(ctx,"collateralReceipt"),
-                    "now": iso((this.inner.borrow().deps.now)()),
+                    "graphReceipt": get(ctx, "graphReceipt"),
+                    "collateralReceipt": get(ctx, "collateralReceipt"),
+                    "now": iso((inner.borrow().deps.now)()),
                     "maximumPilotQuantity": 1,
                 });
                 ctx.as_object_mut()
@@ -1129,193 +1117,198 @@ impl OwnedNoFreshNoneHedgeEvidenceBridgeV2 {
                     .insert("hedgePacket".into(), hedge_packet);
                 Ok(())
             })?;
-            let hp = {
-                let inner = self.inner.borrow();
-                get(inner.cache.as_ref().unwrap_or(&V::Null), "hedgePacket").clone()
-            };
-            self.inner.borrow_mut().hedge_packet = Some(hp);
-            return self.get_evidence(&json!({"operation": "prepare_hedge"}));
+            let packet = get(inner.borrow().cache.as_ref().unwrap(), "hedgePacket").clone();
+            inner.borrow_mut().hedge_packet = Some(packet);
+            return self.evidence(&json!({"operation": "prepare_hedge"}));
         }
-        let inner = self.inner.borrow();
-        let base = OwnedNoFreshNoneBridgeDeps {
-            api: inner.deps.api.clone(),
-            receipt_of: inner.deps.receipt_of.clone(),
-            get_owned: inner.deps.get_owned.clone(),
-            get_pair_census: inner.deps.get_pair_census.clone(),
-            get_funding: inner.deps.get_funding.clone(),
-            get_global_risk: inner.deps.get_global_risk.clone(),
-            get_account_lease: inner.deps.get_account_lease.clone(),
-            can_read: inner.deps.can_read.clone(),
-            has_read_headroom: inner.deps.has_read_headroom.clone(),
-            get_active_intent: inner.deps.get_active_intent.clone(),
-            get_order_binding: inner.deps.get_order_binding.clone(),
-            now: inner.deps.now.clone(),
+        let (deps_first_ex, scope, api, receipt_of, get_owned, get_pair_census, get_funding, get_global_risk, get_account_lease, can_read, has_read_headroom, get_active_intent, get_order_binding, now) = {
+            let b = inner.borrow();
+            (
+                b.first_exchange_id.clone(),
+                b.scope.clone(),
+                NoneHedgeBridgeApi {
+                    dispatch: b.deps.api.dispatch.clone(),
+                    manual_review: b.deps.api.manual_review,
+                    cooldown: b.deps.api.cooldown,
+                },
+                b.deps.receipt_of.clone(),
+                b.deps.get_owned.clone(),
+                b.deps.get_pair_census.clone(),
+                b.deps.get_funding.clone(),
+                b.deps.get_global_risk.clone(),
+                b.deps.get_account_lease.clone(),
+                b.deps.can_read.clone(),
+                b.deps.has_read_headroom.clone(),
+                b.deps.get_active_intent.clone(),
+                b.deps.get_order_binding.clone(),
+                b.deps.now.clone(),
+            )
         };
-        let scope = inner.scope.clone();
-        let first_exchange_id = inner.first_exchange_id.clone();
-        drop(inner);
-        let hedge =
-            create_owned_no_fresh_none_hedge_evidence_bridge(&scope, &first_exchange_id, base)?;
-        let result = hedge.refresh();
-        {
-            let mut inner = self.inner.borrow_mut();
-            inner.total_read_count +=
-                get(&hedge.status(), "lastReadCount").as_i64().unwrap_or(0);
-            if let Ok(hp) = &result {
-                inner.hedge_packet = Some(hp.clone());
-            }
-            inner.hedge = Some(hedge);
-        }
-        result
+        let hedge = OwnedNoFreshNoneHedgeEvidenceBridge::create(crate::owned_no_fresh_none_hedge_evidence_bridge_v1::NoneHedgeBridgeV1Deps {
+            api,
+            receipt_of,
+            scope,
+            first_exchange_id: deps_first_ex,
+            get_owned,
+            get_pair_census,
+            get_funding,
+            get_global_risk,
+            get_account_lease,
+            can_read,
+            has_read_headroom,
+            get_active_intent,
+            get_order_binding,
+            now,
+        })?;
+        let refresh_result = hedge.refresh();
+        let status = hedge.status();
+        inner.borrow_mut().total_read_count += js_int(get(&status, "lastReadCount")).unwrap_or(0);
+        let packet = refresh_result?;
+        inner.borrow_mut().hedge = Some(hedge);
+        inner.borrow_mut().hedge_packet = Some(packet.clone());
+        Ok(packet)
     }
+
     /// refreshSell(leg)
     pub fn refresh_sell(&self, leg: &V) -> Result<V, String> {
-        let legs = self.inner.borrow().legs.clone();
-        let mut matched = false;
-        for e in &legs {
-            if same(e, leg)? {
-                matched = true;
-                break;
-            }
+        let inner = self.inner.clone();
+        {
+            let b = inner.borrow();
+            need(b.legs.iter().any(|e| same(e, leg).unwrap_or(false)), "OWN_SELL_SCOPE")?;
         }
-        need(matched, "OWN_SELL_SCOPE")?;
-        let owned = (self.inner.borrow().deps.get_owned)(get(leg, "exchangeId"))?;
+        let owned = {
+            let b = inner.borrow();
+            sync((b.deps.get_owned)(get(leg, "exchangeId")))?
+        };
         need(
-            sget(get(&owned, "proof"), "marketId") == sget(leg, "marketId")
-                && sget(get(&owned, "proof"), "exchangeId") == sget(leg, "exchangeId")
-                && get(get(&owned, "proof"), "remainingOwnedQuantity")
-                    .as_i64()
-                    .unwrap_or(0)
-                    > 0,
+            get(get(&owned, "proof"), "marketId") == get(leg, "marketId")
+                && get(get(&owned, "proof"), "exchangeId") == get(leg, "exchangeId")
+                && js_int(get(get(&owned, "proof"), "remainingOwnedQuantity"))
+                    .map(|q| q > 0)
+                    .unwrap_or(false),
             "OWN_CURRENT_SELL",
         )?;
-        let mut ctx = json!({"kind": "sell", "leg": leg, "owned": owned});
-        self.begin(&mut ctx, 7, |this, ctx| {
-            let account = this.account(get(ctx, "leg"), false)?;
-            ctx.as_object_mut()
-                .unwrap()
-                .insert("account".into(), account.clone());
-            let mut binding = this
-                .inner
-                .borrow()
-                .scope
-                .as_object()
-                .cloned()
-                .unwrap_or_default();
-            if let Some(m) = get(ctx, "leg").as_object() {
-                for (k, v) in m {
-                    binding.insert(k.clone(), v.clone());
-                }
+        let ctx_in = json!({
+            "kind": "sell",
+            "leg": leg,
+            "owned": owned,
+        });
+        Self::begin(&inner, ctx_in, 7, |inner, ctx| {
+            let scope = inner.borrow().scope.clone();
+            let leg = get(ctx, "leg").clone();
+            let account = Self::account(inner, &leg, false)?;
+            ctx.as_object_mut().unwrap().insert("account".into(), account.clone());
+            let mut binding = scope.as_object().cloned().unwrap();
+            for (k, v) in leg.as_object().unwrap() {
+                binding.insert(k.clone(), v.clone());
             }
-            inspect_scoped_rest_no_account(&json!({
+            let _ = inspect_scoped_rest_no_account(&json!({
                 "account": account,
                 "binding": V::Object(binding),
-                "readAt": iso((this.inner.borrow().deps.now)()),
+                "readAt": iso((inner.borrow().deps.now)()),
             }))?;
-            if let Some(rfa) = &this.inner.borrow().deps.refresh_funding_after_account {
-                let rfa = rfa.clone();
-                drop(this.inner.borrow());
-                rfa()?;
+            {
+                let b = inner.borrow();
+                if let Some(f) = b.deps.refresh_funding_after_account.clone() {
+                    f()?;
+                }
             }
-            let source_funding = this.fund()?;
+            let source_funding = Self::fund(inner)?;
             ctx.as_object_mut()
                 .unwrap()
                 .insert("sourceFunding".into(), source_funding);
-            let source_risk = this.guard(None)?;
+            let source_risk = Self::guard(inner, None)?;
+            ctx.as_object_mut()
+                .unwrap()
+                .insert("sourceRisk".into(), source_risk.clone());
             need(
                 get(&source_risk, "unresolvedIntentIds")
                     .as_array()
-                    .map(|x| x.is_empty())
-                    .unwrap_or(false),
+                    .is_some_and(|a| a.is_empty()),
                 "PENDING_BEFORE_BOOK",
             )?;
-            ctx.as_object_mut()
-                .unwrap()
-                .insert("sourceRisk".into(), source_risk);
-            let book = this.read(&format!(
-                "/markets/{}/orderbook?tournamentId={}&depth=20",
-                sget(get(ctx, "leg"), "marketId").unwrap_or(""),
-                sget(&this.inner.borrow().scope, "tournamentId").unwrap_or("")
-            ))?;
+            let (scope, _) = (inner.borrow().scope.clone(), ());
+            let book = Self::read(
+                inner,
+                &format!(
+                    "/markets/{}/orderbook?tournamentId={}&depth=20",
+                    get(&leg, "marketId").as_str().unwrap_or(""),
+                    get(&scope, "tournamentId").as_str().unwrap_or("")
+                ),
+            )?;
             ctx.as_object_mut().unwrap().insert("book".into(), book);
-            this.finish_none(ctx)
+            Self::finish_none(inner, ctx)
         })?;
-        self.sell_evidence("prepare_sell", None)
+        Self::sell_evidence(&inner, "prepare_sell", None)
     }
+
     /// refreshPreparedNone()
     pub fn refresh_prepared_none(&self) -> Result<V, String> {
-        need(!self.inner.borrow().busy, "BUSY")?;
-        let a = self.active()?;
+        let inner = self.inner.clone();
+        need(!inner.borrow().busy, "BUSY")?;
+        let a = Self::active(&inner)?;
         need(
-            sget(&a, "phase") == Some("prepared")
+            get(&a, "phase").as_str() == Some("prepared")
                 && get(&a, "orderId").is_null()
-                && {
-                    let afc = get(&a, "actualFetchCount");
-                    let fc = get(&a, "fetchCount");
-                    if !afc.is_null() {
-                        afc.as_i64() == Some(0)
-                    } else {
-                        fc.as_i64() == Some(0)
-                    }
-                }
-                && sget(&a, "bodyHash") == Some(payload_hash(get(&a, "body"))?.as_str())
-                && sget(get(&a, "body"), "side") == Some("no")
-                && inst(get(&a, "body"), "expirationDate")?
-                    > (self.inner.borrow().deps.now)() as i64,
+                && js_int(if !get(&a, "actualFetchCount").is_null() {
+                    get(&a, "actualFetchCount")
+                } else {
+                    get(&a, "fetchCount")
+                }) == Some(0)
+                && get(&a, "bodyHash").as_str() == Some(payload_hash(get(&a, "body"))?.as_str())
+                && get(get(&a, "body"), "side").as_str() == Some("no")
+                && instant_v(get(get(&a, "body"), "expirationDate"))?
+                    > (inner.borrow().deps.now)() as i64,
             "EXACT_UNFETCHED_PREPARED",
         )?;
-        let is_buy = sget(get(&a, "body"), "action") == Some("buy");
+        let is_buy = get(get(&a, "body"), "action").as_str() == Some("buy");
         let mut ctx: V;
         if is_buy {
-            let hedge_packet = self.inner.borrow().hedge_packet.clone().unwrap_or(V::Null);
+            let (hedge_packet, legs, scope, first_ex) = {
+                let b = inner.borrow();
+                (b.hedge_packet.clone(), b.legs.clone(), b.scope.clone(), b.first_exchange_id.clone())
+            };
             need(
-                !hedge_packet.is_null()
-                    && get(get(&a, "body"), "quantity") == &json!(1)
-                    && sget(&a, "firstExchangeId")
-                        == sget(&hedge_packet, "firstExchangeId"),
+                hedge_packet.is_some()
+                    && js_int(get(get(&a, "body"), "quantity")) == Some(1)
+                    && get(&a, "firstExchangeId") == get(hedge_packet.as_ref().unwrap(), "firstExchangeId"),
                 "ORIGINAL_HEDGE_BINDING",
             )?;
-            let legs = self.inner.borrow().legs.clone();
+            let hedge_packet = hedge_packet.unwrap();
             let leg = legs
                 .iter()
-                .find(|e| {
-                    sget(e, "exchangeId") == sget(get(&a, "body"), "exchangeId")
-                })
-                .cloned()
-                .unwrap_or(V::Null);
+                .find(|e| get(e, "exchangeId") == get(get(&a, "body"), "exchangeId"))
+                .cloned();
             let graph_leg = legs
                 .iter()
-                .find(|e| sget(e, "exchangeId") == sget(&a, "firstExchangeId"))
-                .cloned()
-                .unwrap_or(V::Null);
+                .find(|e| get(e, "exchangeId") == get(&a, "firstExchangeId"))
+                .cloned();
             need(
-                !leg.is_null()
-                    && !graph_leg.is_null()
-                    && sget(get(&a, "body"), "tournamentId")
-                        == sget(&self.inner.borrow().scope, "tournamentId"),
+                leg.is_some()
+                    && graph_leg.is_some()
+                    && get(get(&a, "body"), "tournamentId") == get(&scope, "tournamentId"),
                 "ORIGINAL_HEDGE_SCOPE",
             )?;
+            let _ = first_ex;
             ctx = json!({
                 "kind": "hedgeFinal",
                 "leg": leg,
                 "graphLeg": graph_leg,
-                "owned": get(&hedge_packet,"owned"),
-                "ownedExchangeId": get(&a,"firstExchangeId"),
-                "otherBookReceipt": get(&hedge_packet,"otherBookReceipt"),
-                "book": get(&hedge_packet,"otherBookReceipt"),
+                "owned": get(&hedge_packet, "owned"),
+                "ownedExchangeId": get(&a, "firstExchangeId"),
+                "otherBookReceipt": get(&hedge_packet, "otherBookReceipt"),
+                "book": get(&hedge_packet, "otherBookReceipt"),
                 "hedgePacket": hedge_packet,
             });
         } else {
-            let cache = self.inner.borrow().cache.clone().unwrap_or(V::Null);
+            let cache = inner.borrow().cache.clone().unwrap_or(V::Null);
             need(
-                sget(get(&a, "body"), "action") == Some("sell")
-                    && sget(&cache, "kind") == Some("sell")
-                    && sget(get(&cache, "leg"), "exchangeId")
-                        == sget(get(&a, "body"), "exchangeId")
-                    && get(get(&a, "body"), "quantity").as_i64().unwrap_or(0)
-                        <= get(get(get(&cache, "owned"), "proof"), "remainingOwnedQuantity")
-                            .as_i64()
-                            .unwrap_or(0),
+                get(get(&a, "body"), "action").as_str() == Some("sell")
+                    && get(&cache, "kind").as_str() == Some("sell")
+                    && get(get(&cache, "leg"), "exchangeId") == get(get(&a, "body"), "exchangeId")
+                    && js_int(get(get(&a, "body"), "quantity")).unwrap_or(i64::MAX)
+                        <= js_int(get(get(get(&cache, "owned"), "proof"), "remainingOwnedQuantity"))
+                            .unwrap_or(i64::MIN),
                 "ORIGINAL_SELL_BINDING",
             )?;
             ctx = cache;
@@ -1323,257 +1316,194 @@ impl OwnedNoFreshNoneHedgeEvidenceBridgeV2 {
         ctx.as_object_mut()
             .unwrap()
             .insert("preparedBinding".into(), a.clone());
-        let source_pin = payload_hash(&if is_buy {
-            get(&ctx, "hedgePacket").clone()
+        let source_pin = if is_buy {
+            payload_hash(get(&ctx, "hedgePacket"))?
         } else {
-            json!({
-                "account": get(&ctx,"account"),
-                "book": get(&ctx,"book"),
-                "owned": get(&ctx,"owned"),
-                "sourceRisk": get(&ctx,"sourceRisk"),
-                "sourceFunding": get(&ctx,"sourceFunding"),
-            })
-        })?;
-        self.begin(&mut ctx, 2, |this, ctx| this.finish_none(ctx))?;
-        let cache = self.inner.borrow().cache.clone().unwrap_or(V::Null);
-        let after_pin = payload_hash(&if is_buy {
-            get(&cache, "hedgePacket").clone()
-        } else {
-            json!({
-                "account": get(&cache,"account"),
-                "book": get(&cache,"book"),
-                "owned": get(&cache,"owned"),
-                "sourceRisk": get(&cache,"sourceRisk"),
-                "sourceFunding": get(&cache,"sourceFunding"),
-            })
-        })?;
-        need(source_pin == after_pin, "ORIGINAL_PACKET_CHANGED")?;
-        self.get_evidence(&json!({
+            payload_hash(&json!({
+                "account": get(&ctx, "account"),
+                "book": get(&ctx, "book"),
+                "owned": get(&ctx, "owned"),
+                "sourceRisk": get(&ctx, "sourceRisk"),
+                "sourceFunding": get(&ctx, "sourceFunding"),
+            }))?
+        };
+        Self::begin(&inner, ctx, 2, Self::finish_none)?;
+        {
+            let b = inner.borrow();
+            let cache = b.cache.clone().unwrap();
+            let after_pin = if is_buy {
+                payload_hash(get(&cache, "hedgePacket"))?
+            } else {
+                payload_hash(&json!({
+                    "account": get(&cache, "account"),
+                    "book": get(&cache, "book"),
+                    "owned": get(&cache, "owned"),
+                    "sourceRisk": get(&cache, "sourceRisk"),
+                    "sourceFunding": get(&cache, "sourceFunding"),
+                }))?
+            };
+            need(source_pin == after_pin, "ORIGINAL_PACKET_CHANGED")?;
+        }
+        self.evidence(&json!({
             "operation": if is_buy { "place_hedge" } else { "place_sell" }
         }))
     }
-    /// refreshFinalNone() -> refreshPreparedNone()
+
+    /// refreshFinalNone()
     pub fn refresh_final_none(&self) -> Result<V, String> {
         self.refresh_prepared_none()
     }
+
     /// refreshReconciliation(orderId)
-    pub fn refresh_reconciliation(&self, order_id: &str) -> Result<V, String> {
-        let binding = (self.inner.borrow().deps.get_order_binding)(&json!(order_id))?;
-        let legs = self.inner.borrow().legs.clone();
+    pub fn refresh_reconciliation(&self, order_id: &V) -> Result<V, String> {
+        let inner = self.inner.clone();
+        let binding = {
+            let b = inner.borrow();
+            let f = b
+                .deps
+                .get_order_binding
+                .clone()
+                .unwrap_or_else(|| Rc::new(|_| Ok(V::Null)));
+            sync(f(order_id))?
+        };
+        let legs = inner.borrow().legs.clone();
         let leg = legs
             .iter()
-            .find(|e| {
-                sget(e, "exchangeId") == sget(get(&binding, "body"), "exchangeId")
-            })
-            .cloned()
-            .unwrap_or(V::Null);
+            .find(|e| get(e, "exchangeId") == get(get(&binding, "body"), "exchangeId"))
+            .cloned();
         need(
-            sget(&binding, "orderId") == Some(order_id)
-                && !leg.is_null()
-                && sget(&binding, "bodyHash")
+            get(&binding, "orderId") == order_id
+                && leg.is_some()
+                && get(&binding, "bodyHash").as_str()
                     == Some(payload_hash(get(&binding, "body"))?.as_str())
-                && sget(get(&binding, "body"), "side") == Some("no")
-                && ["buy", "sell"].contains(&sget(get(&binding, "body"), "action").unwrap_or(""))
-                && sget(get(&binding, "body"), "tournamentId")
-                    == sget(&self.inner.borrow().scope, "tournamentId")
-                && is_safe_int(get(get(&binding, "body"), "quantity"))
-                && get(get(&binding, "body"), "quantity").as_i64().unwrap_or(0) > 0
-                && get(get(&binding, "body"), "quantity").as_i64().unwrap_or(0) <= 100,
+                && get(get(&binding, "body"), "side").as_str() == Some("no")
+                && ["buy", "sell"].contains(&get(get(&binding, "body"), "action").as_str().unwrap_or(""))
+                && get(get(&binding, "body"), "tournamentId")
+                    == get(&inner.borrow().scope, "tournamentId")
+                && js_int(get(get(&binding, "body"), "quantity"))
+                    .map(|q| q > 0 && q <= 100)
+                    .unwrap_or(false),
             "KNOWN_OWN_BINDING",
         )?;
-        let graph_leg = if sget(get(&binding, "body"), "action") == Some("buy") {
-            let fe = if sget(&binding, "firstExchangeId").is_some() {
-                sget(&binding, "firstExchangeId").unwrap_or("").to_string()
+        let leg = leg.unwrap();
+        let first_ex = inner.borrow().first_exchange_id.clone();
+        let graph_leg = if get(get(&binding, "body"), "action").as_str() == Some("buy") {
+            let fe = if !get(&binding, "firstExchangeId").is_null() {
+                get(&binding, "firstExchangeId").as_str().unwrap_or("").to_string()
             } else {
-                self.inner.borrow().first_exchange_id.clone()
+                first_ex
             };
             legs.iter()
-                .find(|e| sget(e, "exchangeId") == Some(fe.as_str()))
+                .find(|e| get(e, "exchangeId").as_str() == Some(fe.as_str()))
                 .cloned()
-                .unwrap_or(V::Null)
         } else {
-            leg.clone()
+            Some(leg.clone())
         };
-        need(!graph_leg.is_null(), "ACTUAL_ORDER_GRAPH_SCOPE")?;
-        let mut ctx = json!({
+        need(graph_leg.is_some(), "ACTUAL_ORDER_GRAPH_SCOPE")?;
+        let graph_leg = graph_leg.unwrap();
+        let ctx_in = json!({
             "kind": "reconcile",
             "leg": leg,
             "graphLeg": graph_leg,
             "binding": binding,
         });
-        self.begin(&mut ctx, 9, |this, ctx| {
-            let order = this.read(&format!("/orders/{order_id}"))?;
-            ctx.as_object_mut()
-                .unwrap()
-                .insert("order".into(), order.clone());
-            let parsed = this.raw(&order, sget(&order, "endpoint").unwrap_or(""), 20_000)?;
-            let od = &parsed.0;
-            let binding_body = get(get(ctx, "binding"), "body").clone();
-            let scope_tid = sget(&this.inner.borrow().scope, "tournamentId")
-                .unwrap_or("")
-                .to_string();
-            let leg_ex = sget(get(ctx, "leg"), "exchangeId")
-                .unwrap_or("")
-                .to_string();
-            let order_id_num = order_id.parse::<i64>().unwrap_or(0);
-            let key = js_stringify(&json!(["id"]));
+        let order_id_str = order_id.as_str().unwrap_or("").to_string();
+        Self::begin(&inner, ctx_in, 9, move |inner, ctx| {
+            let (scope, _legs) = {
+                let b = inner.borrow();
+                (b.scope.clone(), b.legs.clone())
+            };
+            let order = Self::read(inner, &format!("/orders/{order_id_str}"))?;
+            ctx.as_object_mut().unwrap().insert("order".into(), order.clone());
+            let od_ep = get(&order, "endpoint").as_str().unwrap_or("").to_string();
+            let parsed = raw(inner, &order, &od_ep, 20_000)?;
+            let od = parsed.data.clone();
             need(
-                get(od, "id").as_i64() == Some(order_id_num)
-                    && parsed.1.get(&key).map(|s| s.as_str()) == Some(order_id)
-                    && sget(od, "exchangeId") == Some(leg_ex.as_str())
-                    && sget(od, "tournamentId") == Some(scope_tid.as_str())
-                    && sget(od, "side") == Some("no")
-                    && sget(od, "action") == sget(&binding_body, "action")
-                    && is_safe_int(get(od, "quantity"))
-                    && get(od, "quantity").as_i64().unwrap_or(0) >= 1
-                    && get(od, "quantity").as_i64().unwrap_or(0)
-                        <= get(&binding_body, "quantity").as_i64().unwrap_or(0)
-                    && is_safe_int(get(od, "quantityFilled"))
-                    && get(od, "quantityFilled").as_i64().unwrap_or(-1) >= 0
-                    && get(od, "open").is_boolean()
-                    && (get(od, "open") == &V::Bool(true)
-                        || get(od, "quantityFilled").as_i64().unwrap_or(0)
-                            <= get(od, "quantity").as_i64().unwrap_or(0)),
+                js_int(get(&od, "id")) == order_id_str.parse::<i64>().ok()
+                    && parsed
+                        .numbers
+                        .get(&baal_service_runtime::json_text::js_stringify(&json!(["id"])))
+                        .map(|s| s.as_str())
+                        == Some(order_id_str.as_str())
+                    && get(&od, "exchangeId") == get(&leg, "exchangeId")
+                    && get(&od, "tournamentId") == get(&scope, "tournamentId")
+                    && get(&od, "side").as_str() == Some("no")
+                    && get(&od, "action") == get(get(&binding, "body"), "action")
+                    && js_int(get(&od, "quantity")).map(|q| q >= 1).unwrap_or(false)
+                    && js_int(get(&od, "quantity")).unwrap_or(i64::MAX)
+                        <= js_int(get(get(&binding, "body"), "quantity")).unwrap_or(i64::MIN)
+                    && js_int(get(&od, "quantityFilled")).map(|q| q >= 0).unwrap_or(false)
+                    && get(&od, "open").is_boolean()
+                    && (get(&od, "open") == &json!(true)
+                        || js_int(get(&od, "quantityFilled")).unwrap_or(i64::MAX)
+                            <= js_int(get(&od, "quantity")).unwrap_or(i64::MIN)),
                 "EXACT_OWN_ORDER_RESPONSE",
             )?;
-            let fill_pages = this.page(&format!("/orders/{order_id}/fills?limit=200"))?;
+            let fill_pages = Self::page(inner, &format!("/orders/{order_id_str}/fills?limit=200"))?;
             ctx.as_object_mut()
                 .unwrap()
-                .insert("fillPages".into(), V::Array(fill_pages.clone()));
-            let fills = this
-                .raw(&fill_pages[0], sget(&fill_pages[0], "endpoint").unwrap_or(""), 20_000)?
-                .0;
+                .insert("fillPages".into(), json!(fill_pages));
+            let fp_ep = get(&fill_pages[0], "endpoint").as_str().unwrap_or("").to_string();
+            let fills = raw(inner, &fill_pages[0], &fp_ep, 20_000)?.data;
             need(
-                get(&fills, "orderId").as_i64() == Some(order_id_num)
-                    && sget(&fills, "exchangeId") == Some(leg_ex.as_str())
-                    && sget(&fills, "tournamentId") == Some(scope_tid.as_str())
-                    && get(&fills, "data").as_array().is_some_and(|xs| {
-                        xs.iter().all(|v| {
-                            sget(v, "side") == Some("no")
-                                && is_safe_int(get(v, "quantity"))
-                                && get(v, "quantity").as_i64().unwrap_or(0) < 0
+                js_int(get(&fills, "orderId")) == order_id_str.parse::<i64>().ok()
+                    && get(&fills, "exchangeId") == get(&leg, "exchangeId")
+                    && get(&fills, "tournamentId") == get(&scope, "tournamentId")
+                    && get(&fills, "data").as_array().is_some_and(|a| {
+                        a.iter().all(|v| {
+                            get(v, "side").as_str() == Some("no")
+                                && js_int(get(v, "quantity")).map(|q| q < 0).unwrap_or(false)
                         })
                     }),
                 "EXACT_OWN_FILL_RESPONSE",
             )?;
-            let after = this.account(get(ctx, "leg"), true)?;
-            ctx.as_object_mut()
-                .unwrap()
-                .insert("after".into(), after);
-            this.finish_none(ctx)
+            let after = Self::account(inner, &leg, true)?;
+            ctx.as_object_mut().unwrap().insert("after".into(), after);
+            Self::finish_none(inner, ctx)
         })?;
-        self.get_evidence(&json!({"operation": "reconcile", "orderId": order_id}))
+        self.evidence(&json!({"operation": "reconcile", "orderId": order_id}))
     }
+
+    /// status()
     pub fn status(&self) -> V {
-        let inner = self.inner.borrow();
+        let b = self.inner.borrow();
         json!({
-            "mode": if inner.v2 {"combined_owned_no_none_evidence_bridge_v2"} else {"combined_owned_no_none_evidence_bridge_v3"},
-            "busy": inner.busy,
-            "closed": inner.closed,
-            "cacheKind": inner.cache.as_ref().map(|c| get(c,"kind").clone()).unwrap_or(V::Null),
-            "lastReadCount": inner.reads,
-            "maximumReads": inner.maximum_reads,
-            "totalReadCount": inner.total_read_count,
-            "readTimings": inner.read_timings,
-            "hedge": inner.hedge.as_ref().map(|h| h.status()).unwrap_or(V::Null),
+            "mode": "combined_owned_no_none_evidence_bridge_v2",
+            "busy": b.busy,
+            "closed": b.closed,
+            "cacheKind": b.cache.as_ref().map(|c| get(c, "kind").clone()).unwrap_or(V::Null),
+            "lastReadCount": b.reads,
+            "maximumReads": b.maximum_reads,
+            "totalReadCount": b.total_read_count,
+            "hedge": b.hedge.as_ref().map(|h| h.status()).unwrap_or(V::Null),
             "executionAuthority": false,
             "additionalApiClients": 0,
         })
     }
+
+    /// clear()
     pub fn clear(&self) {
-        let mut inner = self.inner.borrow_mut();
-        inner.cache = None;
-        if let Some(h) = &inner.hedge {
+        self.inner.borrow_mut().cache = None;
+        if let Some(h) = self.inner.borrow().hedge.as_ref() {
             h.clear();
         }
     }
+
+    /// close()
     pub fn close(&self) -> Result<(), String> {
-        let mut inner = self.inner.borrow_mut();
-        need(!inner.busy, "BUSY")?;
-        inner.closed = true;
-        inner.cache = None;
-        if let Some(h) = &inner.hedge {
-            let _ = h.close();
+        {
+            let b = self.inner.borrow();
+            need(!b.busy, "BUSY")?;
         }
-        inner.watermarks.clear();
+        {
+            let mut b = self.inner.borrow_mut();
+            b.closed = true;
+            b.cache = None;
+            b.watermarks.clear();
+        }
+        if let Some(h) = self.inner.borrow().hedge.as_ref() {
+            h.close()?;
+        }
         Ok(())
     }
-}
-
-/// createOwnedNoFreshNoneHedgeEvidenceBridgeV2/V3(options)
-/// `v3`: Revision V3 splits mechanical read identity (canCheckReadIdentity)
-/// from full admission checks (canRead inside guard). v2 keeps them identical.
-pub fn create_owned_no_fresh_none_hedge_evidence_bridge_v2(
-    scope: &V,
-    first_exchange_id: &str,
-    pair_legs: Option<&V>,
-    deps: CombinedNoneEvidenceDeps,
-) -> Result<OwnedNoFreshNoneHedgeEvidenceBridgeV2, String> {
-    create_inner(scope, first_exchange_id, pair_legs, deps, true)
-}
-pub fn create_owned_no_fresh_none_hedge_evidence_bridge_v3(
-    scope: &V,
-    first_exchange_id: &str,
-    pair_legs: Option<&V>,
-    deps: CombinedNoneEvidenceDeps,
-) -> Result<OwnedNoFreshNoneHedgeEvidenceBridgeV2, String> {
-    create_inner(scope, first_exchange_id, pair_legs, deps, false)
-}
-
-fn create_inner(
-    scope: &V,
-    first_exchange_id: &str,
-    pair_legs: Option<&V>,
-    deps: CombinedNoneEvidenceDeps,
-    v2: bool,
-) -> Result<OwnedNoFreshNoneHedgeEvidenceBridgeV2, String> {
-    let first = (deps.get_owned)(&json!(first_exchange_id))?;
-    let legs = pair_legs
-        .cloned()
-        .or_else(|| get(get(&first, "package"), "legs").clone().into())
-        .unwrap_or(V::Null);
-    let legs_arr = legs.as_array().cloned().unwrap_or_default();
-    let ex_ids: HashSet<String> = legs_arr
-        .iter()
-        .map(|e| sget(e, "exchangeId").unwrap_or("").to_string())
-        .collect();
-    let m_ids: HashSet<String> = legs_arr
-        .iter()
-        .map(|e| sget(e, "marketId").unwrap_or("").to_string())
-        .collect();
-    need(
-        sget(scope, "ownerId") == Some("Codex")
-            && legs.is_array()
-            && legs_arr.len() == 2
-            && ex_ids.len() == 2
-            && m_ids.len() == 2
-            && legs_arr.iter().all(|e| {
-                sget(e, "marketId").is_some_and(digit_id)
-                    && sget(e, "exchangeId").is_some_and(digit_id)
-            }),
-        "APPROVED_PAIR",
-    )?;
-    Ok(OwnedNoFreshNoneHedgeEvidenceBridgeV2 {
-        inner: Rc::new(RefCell::new(BridgeV2Inner {
-            scope: scope.clone(),
-            first_exchange_id: first_exchange_id.to_string(),
-            legs: legs_arr,
-            hedge: None,
-            hedge_packet: None,
-            cache: None,
-            job: None,
-            read_timings: Vec::new(),
-            total_read_count: 0,
-            busy: false,
-            closed: false,
-            reads: 0,
-            maximum_reads: 0,
-            last_end: None,
-            permits: HashMap::new(),
-            watermarks: HashMap::new(),
-            invocations: HashSet::new(),
-            deps,
-            v2,
-        })),
-    })
 }

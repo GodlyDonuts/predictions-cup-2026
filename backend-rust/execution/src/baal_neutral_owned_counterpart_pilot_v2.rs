@@ -2,29 +2,34 @@
 // neutral-only owned counterpart pilot. Never enables a prior window.
 //
 // Port notes:
-// - `need` throws 'HEDGE_COORDINATOR_'+code (this module's own prefix).
-// - The pilot seeds from a verified legacy scaled-controller journal replay
-//   (crate::baal_scaled_controller_legacy_replay_v1).
-// - sync(fn) -> direct Result propagation (undefined cannot occur).
-// - `issued` WeakMap -> pointer-keyed HashMap, same as
-//   baal_scaled_no_controller_v1.rs.
-// - JS `f.fatal=true;f.durableRecordingFailed=true` on journal-append failures
-//   is proxied by `inner.failed` (the only code paths that set those flags also
-//   set failed).
-// - fetchDeadline: f64 Option (None == JS null); Number.isSafeInteger check on
-//   it is an integral-finite check.
+// - `need` in JS throws bare `Error('HEDGE_COORDINATOR_'+c)` (no .code) — kept
+//   as bare Strings here; `diagnosticCode` uppercases them identically.
+// - `randomUUID()` -> uuid::Uuid::new_v4(). `performance.now()` -> Instant.
+// - `dispatch` is `paired_rest_controller::WireDispatch` (spec + guards +
+//   WireDispatchError.wire_receipt), mirroring the JS spec-function wrappers.
+// - `issued` WeakMap on spec.beforeDispatch -> HashMap<usize,V> keyed by guard
+//   pointer (same convention as the evidence bridges).
+// - `error.fatal`/`error.durableRecordingFailed` flags cannot ride on String
+//   errors: guardedPermit wraps every guard failure in
+//   OWNED_CUSTODY_DISPATCH_GUARD (noted divergence).
+use crate::baal_scaled_controller_legacy_replay_v1::{
+    replay_baal_scaled_controller_v1, validate_legacy_scaled_neutral_ack,
+};
+use crate::baal_scaled_owned_no_hedge_proposal_v1::plan_baal_owned_no_hedge;
+use crate::baal_scaled_profitable_exit_signal_v2::plan_baal_scaled_profitable_exit_v2;
 use crate::core::{canonical_payload, payload_hash};
 use crate::frozen::collect_frozen_paper_files;
+use crate::no_rest_multishare_reconciliation_v1::verify_scoped_rest_no_multishare;
+use crate::paired_rest_controller::{WireDispatch, WireDispatchError};
 use crate::receipts::parse_number_lexemes;
-use crate::transport::{Guard, OrderTransport, OrderTransportError, OrderTransportOptions};
-use baal_service_runtime::contract::ms_to_iso;
+use crate::transport::{Guard, OrderTransport, OrderTransportError, OrderTransportOptions, TransportScope};
 use baal_service_runtime::fixed::{amount, instant, money, price};
 use baal_service_runtime::journal::Journal;
-use baal_service_runtime::json_text::{js_int, js_stringify, sha256};
-use baal_service_runtime::ledger::OwnerLease;
+use baal_service_runtime::json_text::{js_int, js_stringify, js_truthy, sha256};
+use baal_service_runtime::ledger::{acquire_owner_lease, OwnerLease};
 use serde_json::{json, Map, Value as V};
-use std::cell::RefCell;
-use std::collections::HashMap;
+use std::cell::{Cell, RefCell};
+use std::collections::BTreeMap;
 use std::fs;
 use std::path::{Path, PathBuf};
 use std::rc::Rc;
@@ -40,61 +45,69 @@ fn need(ok: bool, code: &str) -> Result<(), String> {
 fn get<'a>(v: &'a V, k: &str) -> &'a V {
     v.get(k).unwrap_or(&V::Null)
 }
-fn sget<'a>(v: &'a V, k: &str) -> Option<&'a str> {
-    v.get(k).and_then(V::as_str)
-}
-fn hex(x: &V) -> bool {
-    x.as_str()
-        .is_some_and(|s| s.len() == 64 && s.bytes().all(|b| b.is_ascii_hexdigit() && !b.is_ascii_uppercase()))
-}
 fn same(a: &V, b: &V) -> Result<bool, String> {
     Ok(payload_hash(a)? == payload_hash(b)?)
 }
-fn sha(s: &str) -> String {
-    sha256(s.as_bytes())
+fn hex(v: &V) -> bool {
+    v.as_str()
+        .is_some_and(|s| s.len() == 64 && s.bytes().all(|b| b.is_ascii_digit() || (b'a'..=b'f').contains(&b)))
 }
-fn sha_bytes(b: &[u8]) -> String {
+fn sha(b: &[u8]) -> String {
     sha256(b)
 }
 fn iso(n: f64) -> String {
-    ms_to_iso(n)
+    baal_service_runtime::contract::ms_to_iso(n)
 }
 fn instant_v(v: &V) -> Result<i64, String> {
-    instant(v.as_str().ok_or_else(|| "INVALID_INSTANT".to_string())?)
+    instant(v.as_str().unwrap_or(""))
 }
-fn num_str(v: &V) -> String {
-    js_stringify(v)
+fn sync(v: Result<V, String>) -> Result<V, String> {
+    v.map(|x| x.clone())
 }
-// JS Number(x) on numbers or numeric strings (money strings like "0.995000").
-fn js_number(v: &V) -> Option<f64> {
-    v.as_f64()
-        .or_else(|| v.as_str().and_then(|s| s.parse::<f64>().ok()))
+fn js_str(v: &V) -> String {
+    v.as_str()
+        .map(|x| x.to_string())
+        .or_else(|| v.as_i64().map(|x| x.to_string()))
+        .or_else(|| v.as_u64().map(|x| x.to_string()))
+        .or_else(|| v.as_f64().map(|x| x.to_string()))
+        .unwrap_or_default()
 }
-fn first_non_null<'a>(v: &'a V, keys: &[&str]) -> &'a V {
-    for k in keys {
-        if let Some(x) = v.get(k) {
-            if !x.is_null() {
-                return x;
-            }
-        }
+fn diagnostic_code(error: &str) -> String {
+    let stripped = error.strip_prefix('\u{0}').unwrap_or(error);
+    let ok = !stripped.is_empty()
+        && stripped.len() <= 141
+        && stripped.bytes().next().is_some_and(|b| b.is_ascii_alphabetic())
+        && stripped.bytes().all(|b| b.is_ascii_alphanumeric() || b == b'_');
+    if ok {
+        stripped.to_uppercase()
+    } else {
+        "OPERATION_FAILED".to_string()
     }
-    &V::Null
 }
 
 /// liveCoordinatorIdentity(workspace)
 pub fn live_coordinator_identity(workspace: &Path) -> Result<V, String> {
-    collect_frozen_paper_files(workspace, &["execution/baal-neutral-owned-counterpart-pilot-v2.mjs"])
+    collect_frozen_paper_files(
+        workspace,
+        &["execution/baal-neutral-owned-counterpart-pilot-v2.mjs"],
+    )
 }
 
-fn active(s: &V) -> Option<V> {
-    get(s, "orders").as_array().and_then(|orders| {
-        orders
-            .iter()
-            .find(|o| get(o, "proof").is_null() && get(o, "phase").as_str() != Some("abandoned"))
-            .cloned()
-    })
+fn find_active_index(s: &V) -> Option<usize> {
+    get(s, "orders")
+        .as_array()
+        .and_then(|o| {
+            o.iter()
+                .position(|o| get(o, "proof").is_null() && get(o, "phase").as_str() != Some("abandoned"))
+        })
+}
+fn active(s: &V) -> V {
+    find_active_index(s)
+        .map(|i| get(s, "orders")[i].clone())
+        .unwrap_or(V::Null)
 }
 fn active_pair_quantity(s: &V, a: &V) -> i64 {
+    let aq = js_int(get(a, "quantity")).unwrap_or(0);
     let retired: i64 = get(s, "pairRetirements")
         .as_array()
         .map(|rs| {
@@ -104,112 +117,132 @@ fn active_pair_quantity(s: &V, a: &V) -> i64 {
                 .sum()
         })
         .unwrap_or(0);
-    js_int(get(a, "quantity")).unwrap_or(0) - retired
+    aq - retired
 }
 fn matched(s: &V) -> i64 {
     get(s, "assignments")
         .as_array()
-        .map(|xs| xs.iter().map(|a| active_pair_quantity(s, a)).sum())
+        .map(|a| a.iter().map(|a| active_pair_quantity(s, a)).sum())
         .unwrap_or(0)
 }
 fn scope_account(account: &V, ex: &str) -> V {
     let scoped = get(account, "scopedOrdersPagesByExchange")
         .get(ex)
-        .filter(|v| !v.is_null())
         .cloned()
-        .unwrap_or_else(|| get(account, "scopedOrdersPages").clone());
-    let mut out = Map::new();
-    out.insert("cash".into(), get(account, "cash").clone());
-    out.insert("positions".into(), get(account, "positions").clone());
-    out.insert("openOrdersPages".into(), get(account, "openOrdersPages").clone());
-    out.insert("scopedOrdersPages".into(), scoped);
-    V::Object(out)
+        .or_else(|| {
+            let d = get(account, "scopedOrdersPages").clone();
+            if d.is_null() {
+                None
+            } else {
+                Some(d)
+            }
+        })
+        .unwrap_or(V::Null);
+    json!({
+        "cash": get(account, "cash"),
+        "positions": get(account, "positions"),
+        "openOrdersPages": get(account, "openOrdersPages"),
+        "scopedOrdersPages": scoped,
+    })
 }
-fn pair_census(s: &V, first_ex: &str, at: &str) -> V {
-    let first = get(get(s, "currentInventory"), first_ex);
+fn by_market_of(scope: &V) -> BTreeMap<String, Vec<String>> {
+    let mut m: BTreeMap<String, Vec<String>> = BTreeMap::new();
+    for x in get(scope, "exchanges").as_array().cloned().unwrap_or_default() {
+        m.entry(get(&x, "marketId").as_str().unwrap_or("").to_string())
+            .or_default()
+            .push(get(&x, "exchangeId").as_str().unwrap_or("").to_string());
+    }
+    m
+}
+/// pairCensus(s, firstEx, at)
+fn pair_census_of(s: &V, first_ex: &str, at: &V) -> Result<V, String> {
+    let first = get(&get(s, "currentInventory"), first_ex);
     let other_ex = get(get(first, "package"), "legs")
         .as_array()
         .and_then(|ls| {
             ls.iter()
-                .find(|l| sget(l, "exchangeId") != Some(first_ex))
-                .and_then(|l| l.get("exchangeId"))
-                .and_then(V::as_str)
+                .find(|l| get(l, "exchangeId").as_str() != Some(first_ex))
         })
-        .unwrap_or("");
-    let counterpart = get(get(s, "currentInventory"), other_ex);
-    let mut out = V::Object(s.get("scope").and_then(|x| x.as_object()).cloned().unwrap_or_default());
-    if let Some(m) = out.as_object_mut() {
-        m.insert("complete".into(), json!(true));
-        m.insert(
-            "firstProofHash".into(),
-            get(get(first, "proof"), "verificationHash").clone(),
-        );
-        m.insert(
-            "sourceHash".into(),
-            json!(payload_hash(&json!({
-                "seed": get(s, "seedHash"),
-                "assignments": get(s, "assignments"),
-                "counterpart": get(get(counterpart, "proof"), "verificationHash"),
-            }))
-            .unwrap_or_default()),
-        );
-        m.insert("at".into(), json!(at));
-        m.insert(
-            "matchedLots".into(),
-            V::Array(
-                get(s, "assignments")
-                    .as_array()
-                    .cloned()
-                    .unwrap_or_default()
-                    .into_iter()
-                    .filter(|a| {
-                        sget(a, "firstExchangeId") == Some(first_ex) && active_pair_quantity(s, a) > 0
-                    })
-                    .map(|a| {
-                        json!({
-                            "assignmentId": get(&a, "assignmentId"),
-                            "firstLotId": get(&a, "firstLotId"),
-                            "counterpartLotId": get(&a, "counterpartLotId"),
-                            "quantity": active_pair_quantity(s, &a),
-                        })
-                    })
-                    .collect(),
-            ),
-        );
-        m.insert(
-            "counterpartOwned".into(),
-            if js_int(get(get(counterpart, "proof"), "remainingOwnedQuantity")).unwrap_or(0) > 0 {
-                counterpart.clone()
-            } else {
-                V::Null
-            },
-        );
-    }
-    out
+        .map(|l| get(l, "exchangeId").as_str().unwrap_or("").to_string())
+        .unwrap_or_default();
+    let mut out = get(s, "scope").as_object().cloned().unwrap_or_default();
+    out.insert("complete".into(), json!(true));
+    out.insert(
+        "firstProofHash".into(),
+        get(get(first, "proof"), "verificationHash").clone(),
+    );
+    out.insert(
+        "sourceHash".into(),
+        json!(payload_hash(&json!({
+            "seed": get(s, "seedHash"),
+            "assignments": get(s, "assignments"),
+            "counterpart": get(&get(get(s, "currentInventory"), &other_ex), "proof")
+                .get("verificationHash")
+                .cloned()
+                .unwrap_or(V::Null),
+        }))?),
+    );
+    out.insert("at".into(), at.clone());
+    let matched_lots: Vec<V> = get(s, "assignments")
+        .as_array()
+        .cloned()
+        .unwrap_or_default()
+        .into_iter()
+        .filter(|a| get(a, "firstExchangeId").as_str() == Some(first_ex))
+        .filter(|a| active_pair_quantity(s, a) > 0)
+        .map(|a| {
+            json!({
+                "assignmentId": get(&a, "assignmentId"),
+                "firstLotId": get(&a, "firstLotId"),
+                "counterpartLotId": get(&a, "counterpartLotId"),
+                "quantity": active_pair_quantity(s, &a),
+            })
+        })
+        .collect();
+    out.insert("matchedLots".into(), V::Array(matched_lots));
+    let cp = get(&get(s, "currentInventory"), &other_ex);
+    let counterpart_owned = if js_int(get(get(cp, "proof"), "remainingOwnedQuantity"))
+        .map(|q| q > 0)
+        .unwrap_or(false)
+    {
+        cp.clone()
+    } else {
+        V::Null
+    };
+    out.insert("counterpartOwned".into(), counterpart_owned);
+    Ok(V::Object(out))
 }
-
-/// projectRisk(state) — also `funding`.
+/// projectRisk(s)
 pub fn project_risk(s: &V) -> Result<V, String> {
     let mut rows: Vec<V> = Vec::new();
     let mut owned: Vec<V> = Vec::new();
-    if let Some(inv) = get(s, "currentInventory").as_object() {
-        for (ex, slot) in inv {
+    if let Some(m) = get(s, "currentInventory").as_object() {
+        for (ex, slot) in m {
             if js_int(get(get(slot, "proof"), "remainingOwnedQuantity")).unwrap_or(0) == 0 {
                 continue;
             }
-            let mut allocated: HashMap<String, i64> = HashMap::new();
+            let mut allocated: Map<String, V> = Map::new();
             for a in get(s, "assignments").as_array().cloned().unwrap_or_default() {
                 let n = active_pair_quantity(s, &a);
                 need(n >= 0, "PAIR_OVERRETIRE")?;
-                let lot = if sget(&a, "firstExchangeId") == Some(ex.as_str()) {
-                    sget(&a, "firstLotId")
-                } else if sget(&a, "counterpartExchangeId") == Some(ex.as_str()) {
-                    sget(&a, "counterpartLotId")
+                let lot = if get(&a, "firstExchangeId").as_str() == Some(ex.as_str()) {
+                    get(&a, "firstLotId").clone()
+                } else if get(&a, "counterpartExchangeId").as_str() == Some(ex.as_str()) {
+                    get(&a, "counterpartLotId").clone()
                 } else {
-                    None
+                    V::Null
                 };
-                if let Some(lot) = lot {
-                    *allocated.entry(lot.to_string()).or_insert(0) += n;
+                if !lot.is_null() {
+                    let key = get(&lot, "as_str").as_str();
+                    let _ = key;
+                    let prev = allocated
+                        .get(&lot.as_str().unwrap_or("").to_string())
+                        .and_then(V::as_i64)
+                        .unwrap_or(0);
+                    allocated.insert(
+                        lot.as_str().unwrap_or("").to_string(),
+                        json!(prev + n),
+                    );
                 }
             }
             let mut q: i64 = 0;
@@ -221,246 +254,245 @@ pub fn project_risk(s: &V) -> Result<V, String> {
             {
                 let n = js_int(get(&l, "quantity")).unwrap_or(0)
                     - allocated
-                        .get(sget(&l, "lotId").unwrap_or(""))
-                        .copied()
+                        .get(get(&l, "lotId").as_str().unwrap_or(""))
+                        .and_then(V::as_i64)
                         .unwrap_or(0);
                 need(n >= 0, "PAIR_EXCEEDS_CURRENT_LOT")?;
                 q += n;
-                cost += price(sget(&l, "entryPrice").unwrap_or(""))? * n as i128;
+                cost += price(get(&l, "entryPrice").as_str().unwrap_or(""))? * n as i128;
             }
             let other = get(get(slot, "package"), "legs")
                 .as_array()
                 .and_then(|ls| {
                     ls.iter()
-                        .find(|l| sget(l, "exchangeId") != Some(ex.as_str()))
+                        .find(|l| get(l, "exchangeId").as_str() != Some(ex.as_str()))
                         .cloned()
                 })
                 .unwrap_or(V::Null);
             owned.push(json!({
-                "exposureId": format!("scaled:{}:{}:owned", sget(get(s,"scope"),"runId").unwrap_or(""), ex),
-                "marketId": get(get(slot,"proof"),"marketId"),
-                "eventId": get(get(slot,"package"),"eventId"),
-                "nominalCost": get(get(slot,"proof"),"remainingOwnedCost"),
+                "exposureId": format!("scaled:{}:{}:owned", get(get(s, "scope"), "runId").as_str().unwrap_or(""), ex),
+                "marketId": get(get(slot, "proof"), "marketId"),
+                "eventId": get(get(slot, "package"), "eventId"),
+                "nominalCost": get(get(slot, "proof"), "remainingOwnedCost"),
             }));
-            if q != 0 {
+            if q > 0 {
                 rows.push(json!({
-                    "exposureId": format!("scaled:{}:{}:hedge-for-{}", sget(get(s,"scope"),"runId").unwrap_or(""), sget(&other,"exchangeId").unwrap_or(""), ex),
-                    "marketId": get(&other,"marketId"),
-                    "eventId": get(get(slot,"package"),"eventId"),
-                    "maximumNominalCost": money(990000i128 * q as i128 - cost),
+                    "exposureId": format!("scaled:{}:{}:hedge-for-{}", get(get(s, "scope"), "runId").as_str().unwrap_or(""), get(&other, "exchangeId").as_str().unwrap_or(""), ex),
+                    "marketId": get(&other, "marketId"),
+                    "eventId": get(get(slot, "package"), "eventId"),
+                    "maximumNominalCost": money(990_000_i128 * q as i128 - cost),
                 }));
             }
         }
     }
     let o = active(s);
-    let cash_reserved: i128 = rows
-        .iter()
-        .map(|r| amount(sget(r, "maximumNominalCost").unwrap_or("")).unwrap_or(0))
-        .sum();
-    let owned_principal: i128 = owned
-        .iter()
-        .map(|r| amount(sget(r, "nominalCost").unwrap_or("")).unwrap_or(0))
-        .sum();
     let mut body = Map::new();
     body.insert("schemaVersion".into(), json!(1));
     body.insert("kind".into(), json!("baal_scaled_no_full_nominal_reservation_v1"));
     body.insert("ownerId".into(), get(get(s, "scope"), "ownerId").clone());
     body.insert("runId".into(), get(get(s, "scope"), "runId").clone());
-    body.insert("tournamentId".into(), get(get(s, "scope"), "tournamentId").clone());
-    body.insert("allocationHash".into(), json!(payload_hash(get(s, "allocation"))?));
+    body.insert(
+        "tournamentId".into(),
+        get(get(s, "scope"), "tournamentId").clone(),
+    );
+    body.insert(
+        "allocationHash".into(),
+        json!(payload_hash(get(s, "allocation"))?),
+    );
     body.insert("seedHash".into(), get(s, "seedHash").clone());
     body.insert(
         "implementationEpoch".into(),
         get(get(s, "migration"), "implementationEpoch").clone(),
     );
     body.insert("owned".into(), V::Array(owned.clone()));
-    body.insert("reservations".into(), V::Array(rows));
+    body.insert("reservations".into(), V::Array(rows.clone()));
     body.insert(
         "unresolvedIntentIds".into(),
-        o.map(|o| json!([get(&o, "intentId")]))
-            .unwrap_or_else(|| json!([])),
+        if o.is_null() {
+            json!([])
+        } else {
+            json!([get(&o, "intentId")])
+        },
     );
-    body.insert("cashReserved".into(), json!(money(cash_reserved)));
+    let cash: i128 = rows
+        .iter()
+        .map(|r| amount(get(r, "maximumNominalCost").as_str().unwrap_or("")).unwrap_or(0))
+        .sum();
+    body.insert("cashReserved".into(), json!(money(cash)));
+    let owned_principal: i128 = owned
+        .iter()
+        .map(|r| amount(get(r, "nominalCost").as_str().unwrap_or("")).unwrap_or(0))
+        .sum();
     body.insert("ownedPrincipal".into(), json!(money(owned_principal)));
-    let mut out = V::Object(body);
-    let h = payload_hash(&out)?;
-    out.as_object_mut().unwrap().insert("reservationHash".into(), json!(h));
-    Ok(out)
+    let body = V::Object(body);
+    let mut out = body.as_object().cloned().unwrap();
+    out.insert("reservationHash".into(), json!(payload_hash(&body)?));
+    Ok(V::Object(out))
 }
+/// funding = projectRisk
 fn funding(s: &V) -> Result<V, String> {
     project_risk(s)
 }
-/// pilotUnknown
+/// pilotUnknown(s)
 pub fn pilot_unknown(s: &V) -> bool {
-    match active(s) {
-        Some(o) => {
-            sget(&o, "phase") == Some("uncertain")
-                || sget(&o, "phase") == Some("semantic_mismatch")
-                || (get(&o, "orderId").is_null()
-                    && get(&o, "fetchStarts")
-                        .as_array()
-                        .map(|x| !x.is_empty())
-                        .unwrap_or(false))
-        }
-        None => false,
-    }
+    let o = active(s);
+    !o.is_null()
+        && (get(&o, "phase").as_str() == Some("uncertain")
+            || get(&o, "phase").as_str() == Some("semantic_mismatch")
+            || (get(&o, "orderId").is_null()
+                && get(&o, "fetchStarts").as_array().is_some_and(|f| !f.is_empty())))
 }
+/// emptyAll(e, s, at)
 fn empty_all(e: &V, s: &V, at: i64) -> Result<(), String> {
-    let first_ex = sget(e, "firstExchangeId").unwrap_or("");
-    let market_id = sget(
-        get(get(get(s, "currentInventory"), first_ex), "proof"),
-        "marketId",
-    )
-    .unwrap_or("");
+    let first_ex = get(e, "firstExchangeId").as_str().unwrap_or("");
     for (key, endpoint) in [
         (
             "graphReceipt",
             format!(
                 "/relationships/graph?marketId={}&depth=4&tournamentId={}",
-                market_id,
-                sget(get(s, "scope"), "tournamentId").unwrap_or("")
+                get(&get(&get(s, "currentInventory"), first_ex), "proof")
+                    .get("marketId")
+                    .and_then(V::as_str)
+                    .unwrap_or(""),
+                get(get(s, "scope"), "tournamentId").as_str().unwrap_or("")
             ),
         ),
         (
             "collateralReceipt",
             format!(
                 "/portfolio/collateral?tournamentId={}",
-                sget(get(s, "scope"), "tournamentId").unwrap_or("")
+                get(get(s, "scope"), "tournamentId").as_str().unwrap_or("")
             ),
         ),
     ] {
         let r = get(e, key);
         need(
-            sget(r, "method") == Some("GET")
+            !r.is_null()
+                && get(r, "method").as_str() == Some("GET")
                 && js_int(get(r, "status")) == Some(200)
-                && sget(r, "endpoint") == Some(endpoint.as_str())
-                && get(r, "bodyText").as_str().is_some()
-                && sget(r, "sourceBodyHash") == Some(sha(sget(r, "bodyText").unwrap_or("")).as_str())
+                && get(r, "endpoint").as_str() == Some(endpoint.as_str())
+                && get(r, "bodyText").is_string()
+                && get(r, "sourceBodyHash").as_str()
+                    == Some(sha(get(r, "bodyText").as_str().unwrap_or("").as_bytes()).as_str())
                 && instant_v(get(r, "requestStartedAt"))? <= instant_v(get(r, "receivedAt"))?
                 && instant_v(get(r, "receivedAt"))? <= at
-                && at - instant_v(get(r, "requestStartedAt"))? <= 5000,
+                && at - instant_v(get(r, "requestStartedAt"))? <= 5_000,
             &format!("FRESH_NONE_{key}"),
         )?;
-        let d = parse_number_lexemes(sget(r, "bodyText").unwrap_or(""))?.0;
+        let (d, _) = parse_number_lexemes(get(r, "bodyText").as_str().unwrap_or(""))?;
         need(
             if key == "graphReceipt" {
-                get(&d, "nodes").as_array().map(|x| x.is_empty()).unwrap_or(false)
-                    && get(&d, "relationships")
-                        .as_array()
-                        .map(|x| x.is_empty())
-                        .unwrap_or(false)
+                get(&d, "nodes").as_array().is_some_and(|a| a.is_empty())
+                    && get(&d, "relationships").as_array().is_some_and(|a| a.is_empty())
             } else {
-                get(&d, "data").as_array().map(|x| x.is_empty()).unwrap_or(false)
+                get(&d, "data").as_array().is_some_and(|a| a.is_empty())
             },
             &format!("NON_NEUTRAL_{key}"),
         )?;
     }
-    let book = first_non_null(e, &["otherBookReceipt", "bookReceipt", "book"]);
-    let after = get(e, "after");
-    let last_account: Option<i64> = if after.is_null() {
-        None
+    let book = if !get(e, "otherBookReceipt").is_null() {
+        get(e, "otherBookReceipt").clone()
+    } else if !get(e, "bookReceipt").is_null() {
+        get(e, "bookReceipt").clone()
     } else {
-        let mut v = instant_v(get(get(after, "cash"), "receivedAt"))?.max(instant_v(get(
-            get(after, "positions"),
-            "receivedAt",
-        ))?);
-        for r in get(after, "openOrdersPages")
-            .as_array()
-            .cloned()
-            .unwrap_or_default()
-            .into_iter()
-            .chain(
-                get(after, "scopedOrdersPages")
-                    .as_array()
-                    .cloned()
-                    .unwrap_or_default(),
-            )
-        {
-            v = v.max(instant_v(get(&r, "receivedAt"))?);
-        }
-        Some(v)
+        get(e, "book").clone()
     };
-    let floor = if !book.is_null() {
-        instant_v(get(book, "receivedAt"))?
+    let last_account = if !get(e, "after").is_null() {
+        let after = get(e, "after");
+        let mut v = vec![
+            instant_v(get(get(after, "cash"), "receivedAt"))?,
+            instant_v(get(get(after, "positions"), "receivedAt"))?,
+        ];
+        for r in get(after, "openOrdersPages").as_array().cloned().unwrap_or_default() {
+            v.push(instant_v(get(&r, "receivedAt"))?);
+        }
+        for r in get(after, "scopedOrdersPages").as_array().cloned().unwrap_or_default() {
+            v.push(instant_v(get(&r, "receivedAt"))?);
+        }
+        Some(v.into_iter().max().unwrap_or(0))
     } else {
-        last_account.unwrap_or(0)
+        None
     };
     need(
         instant_v(get(get(e, "graphReceipt"), "receivedAt"))?
             <= instant_v(get(get(e, "collateralReceipt"), "requestStartedAt"))?
-            && instant_v(get(get(e, "graphReceipt"), "requestStartedAt"))? >= floor,
+            && instant_v(get(get(e, "graphReceipt"), "requestStartedAt"))?
+                >= if !book.is_null() {
+                    instant_v(get(&book, "receivedAt"))?
+                } else {
+                    last_account.unwrap_or(0)
+                },
         "COLLATERAL_LAST",
     )?;
     Ok(())
 }
+/// guarded(s, e, g, at)
 fn guarded(s: &V, e: &V, g: &V, at: i64) -> Result<V, String> {
     need(
         at >= instant_v(get(get(s, "activation"), "startedAt"))?
             && at < instant_v(get(get(s, "activation"), "hedgeExpiresAt"))?,
         "HEDGE_WINDOW",
     )?;
+    let o = active(s);
     need(
-        sget(g, "ownerId") == sget(get(s, "scope"), "ownerId")
-            && sget(g, "runId") == sget(get(s, "scope"), "runId")
-            && sget(g, "tournamentId") == sget(get(s, "scope"), "tournamentId")
-            && get(g, "complete") == &V::Bool(true)
-            && get(g, "eventScopeComplete") == &V::Bool(true)
-            && get(g, "soleCollector") == &V::Bool(true)
-            && get(g, "stopped") == &V::Bool(false)
+        !g.is_null()
+            && get(g, "ownerId") == get(get(s, "scope"), "ownerId")
+            && get(g, "runId") == get(get(s, "scope"), "runId")
+            && get(g, "tournamentId") == get(get(s, "scope"), "tournamentId")
+            && get(g, "complete") == &json!(true)
+            && get(g, "eventScopeComplete") == &json!(true)
+            && get(g, "soleCollector") == &json!(true)
+            && get(g, "stopped") == &json!(false)
             && hex(get(g, "sourceHash"))
-            && get(g, "unknownAcceptance") == &V::Bool(false)
-            && get(g, "unresolvedIntentIds").as_array().is_some_and(|ids| {
-                ids.iter()
-                    .all(|id| get(&active(s).unwrap_or(V::Null), "intentId") == id)
-            })
+            && get(g, "unknownAcceptance") == &json!(false)
+            && get(g, "unresolvedIntentIds").is_array()
+            && get(g, "unresolvedIntentIds")
+                .as_array()
+                .unwrap()
+                .iter()
+                .all(|id| id == &get(&o, "intentId").clone())
             && instant_v(get(g, "at"))? <= at
-            && at - instant_v(get(g, "at"))? <= 20000,
+            && at - instant_v(get(g, "at"))? <= 20_000,
         "GLOBAL_UNKNOWN",
     )?;
-    {
-        let reservations = get(g, "reservations").as_array();
-        let shape_ok = reservations
-            .map(|rs| {
-                rs.iter().all(|r| {
-                    amount(sget(r, "maximumNominalCost").unwrap_or(""))
-                        .map(|x| x >= 0)
-                        .unwrap_or(false)
-                        && get(r, "unknownAcceptance") != &V::Bool(true)
-                }) && {
-                    let mut seen = std::collections::HashSet::new();
-                    rs.iter()
-                        .all(|r| seen.insert(sget(r, "exposureId").unwrap_or("").to_string()))
-                }
+    need(
+        get(g, "fundingSatisfied") != &json!(false)
+            && get(g, "reservations").is_array()
+            && get(g, "reservations").as_array().unwrap().iter().all(|r| {
+                amount(get(r, "maximumNominalCost").as_str().unwrap_or(""))
+                    .map(|n| n >= 0)
+                    .unwrap_or(false)
+                    && get(r, "unknownAcceptance") != &json!(true)
             })
-            .unwrap_or(false);
-        let fits = if get(g, "fundingSatisfied") != &V::Bool(false)
-            && reservations.is_some()
-            && shape_ok
-        {
-            let sum = reservations
-                .unwrap_or(&Vec::new())
+            && get(g, "reservations")
+                .as_array()
+                .map(|a| {
+                    a.iter()
+                        .map(|r| get(r, "exposureId").as_str().unwrap_or("").to_string())
+                        .collect::<std::collections::HashSet<_>>()
+                        .len()
+                        == a.len()
+                })
+                .unwrap_or(false)
+            && get(g, "reservations")
+                .as_array()
+                .unwrap()
                 .iter()
-                .try_fold(0i128, |n, r| {
-                    amount(sget(r, "maximumNominalCost").unwrap_or("")).map(|x| n + x)
-                })?;
-            sum <= amount(sget(g, "cashLower").unwrap_or(""))?
-        } else {
-            false
-        };
-        need(
-            get(g, "fundingSatisfied") != &V::Bool(false)
-                && reservations.is_some()
-                && shape_ok
-                && fits,
-            "CURRENT_CASH_FUNDS_FULL_RESERVE",
-        )?;
-    }
+                .map(|r| amount(get(r, "maximumNominalCost").as_str().unwrap_or("")).unwrap_or(0))
+                .sum::<i128>()
+                <= amount(get(g, "cashLower").as_str().unwrap_or("")).unwrap_or(i128::MIN),
+        "CURRENT_CASH_FUNDS_FULL_RESERVE",
+    )?;
     empty_all(e, s, at)?;
     need(
         !get(e, "pairCensus").is_null()
             && same(
                 get(e, "pairCensus"),
-                &pair_census(s, sget(e, "firstExchangeId").unwrap_or(""), sget(get(e, "pairCensus"), "at").unwrap_or("")),
+                &pair_census_of(
+                    s,
+                    get(e, "firstExchangeId").as_str().unwrap_or(""),
+                    get(get(e, "pairCensus"), "at"),
+                )?,
             )?,
         "CAPTURED_PAIR_CENSUS",
     )?;
@@ -469,44 +501,38 @@ fn guarded(s: &V, e: &V, g: &V, at: i64) -> Result<V, String> {
             && get(get(e, "globalRisk"), "allocationHash") == get(g, "allocationHash")
             && same(get(get(e, "globalRisk"), "reservations"), get(g, "reservations"))?
             && get(g, "controllerReservationHash") == get(&funding(s)?, "reservationHash")
-            && get(g, "globalLedgerHash") == get(get(s, "reservation"), "globalLedgerHash"),
+            && get(g, "globalLedgerHash")
+                == get(&get(s, "reservation"), "globalLedgerHash"),
         "CAPTURED_BUDGET_STILL_MATCHES",
     )?;
-    let source_risk = get(e, "globalRisk");
+    let source_risk = get(e, "globalRisk").clone();
     need(
-        get(source_risk, "unresolvedIntentIds")
+        get(&source_risk, "unresolvedIntentIds")
             .as_array()
-            .map(|x| x.is_empty())
-            .unwrap_or(false),
+            .is_some_and(|a| a.is_empty()),
         "SOURCE_RISK_PENDING",
     )?;
-    let mut entry = e.clone();
-    entry
-        .as_object_mut()
-        .map(|m| {
-            m.insert("globalRisk".into(), source_risk.clone());
-            m.insert("scope".into(), get(s, "scope").clone());
-            m.insert(
-                "owned".into(),
-                get(get(s, "currentInventory"), sget(e, "firstExchangeId").unwrap_or("")).clone(),
-            );
-            m.insert("now".into(), json!(iso(at as f64)));
-        });
-    let p = crate::baal_scaled_owned_no_hedge_proposal_v1::plan_baal_owned_no_hedge(&entry);
+    let mut p_in = e.as_object().cloned().unwrap_or_default();
+    p_in.insert("globalRisk".into(), source_risk);
+    p_in.insert("scope".into(), get(s, "scope").clone());
+    p_in.insert(
+        "owned".into(),
+        get(&get(s, "currentInventory"), get(e, "firstExchangeId").as_str().unwrap_or(""))
+            .clone(),
+    );
+    p_in.insert("now".into(), json!(iso(at as f64)));
+    let p = plan_baal_owned_no_hedge(&V::Object(p_in));
     need(
-        get(&p, "proposalReady") == &V::Bool(true),
-        &format!(
-            "PROPOSAL_{}",
-            sget(&p, "reason").unwrap_or("")
-        ),
+        get(&p, "proposalReady") == &json!(true),
+        &format!("PROPOSAL_{}", get(&p, "reason").as_str().unwrap_or("")),
     )?;
     let first = get(&p, "matchedAssignmentsIfFilled")
         .as_array()
-        .and_then(|x| x.first())
+        .and_then(|a| a.first())
         .cloned()
         .unwrap_or(V::Null);
     need(
-        !first.is_null() && price(sget(&p, "protectedLimit").unwrap_or(""))? <= 995000,
+        !first.is_null() && price(get(&p, "protectedLimit").as_str().unwrap_or(""))? <= 995_000,
         "PILOT_COST",
     )?;
     let mut q = p.as_object().cloned().unwrap_or_default();
@@ -521,8 +547,8 @@ fn guarded(s: &V, e: &V, g: &V, at: i64) -> Result<V, String> {
     q.insert(
         "protectedMatchedPairCost".into(),
         json!(money(
-            price(sget(&first, "entryPrice").unwrap_or(""))?
-                + price(sget(&p, "protectedLimit").unwrap_or(""))?,
+            price(get(&first, "entryPrice").as_str().unwrap_or(""))?
+                + price(get(&p, "protectedLimit").as_str().unwrap_or(""))?
         )),
     );
     q.insert("conditionalOrdinaryMinimumPayout".into(), json!("1.000000"));
@@ -530,93 +556,100 @@ fn guarded(s: &V, e: &V, g: &V, at: i64) -> Result<V, String> {
     q.insert(
         "conditionalOrdinarySurplus".into(),
         json!(money(
-            1000000i128
-                - price(sget(&first, "entryPrice").unwrap_or(""))?
-                - price(sget(&p, "protectedLimit").unwrap_or(""))?,
+            1_000_000_i128
+                - price(get(&first, "entryPrice").as_str().unwrap_or(""))?
+                - price(get(&p, "protectedLimit").as_str().unwrap_or(""))?
         )),
     );
     q.insert(
         "administrativeZeroPayoutLoss".into(),
         json!(money(
-            -price(sget(&first, "entryPrice").unwrap_or(""))?
-                - price(sget(&p, "protectedLimit").unwrap_or(""))?,
+            -price(get(&first, "entryPrice").as_str().unwrap_or(""))?
+                - price(get(&p, "protectedLimit").as_str().unwrap_or(""))?
         )),
     );
-    let mut first_one = first.as_object().cloned().unwrap_or_default();
-    first_one.insert("quantity".into(), json!(1));
-    first_one.insert("firstPrincipal".into(), get(&first, "entryPrice").clone());
-    q.insert("matchedAssignmentsIfFilled".into(), json!([V::Object(first_one)]));
+    let mut first_row = first.as_object().cloned().unwrap_or_default();
+    first_row.insert("quantity".into(), json!(1));
+    first_row.insert("firstPrincipal".into(), get(&first, "entryPrice").clone());
+    q.insert(
+        "matchedAssignmentsIfFilled".into(),
+        V::Array(vec![V::Object(first_row)]),
+    );
     q.shift_remove("proposalHash");
-    let qv = V::Object(q);
-    let h = payload_hash(&qv)?;
-    let mut out = qv.as_object().cloned().unwrap_or_default();
-    out.insert("proposalHash".into(), json!(h));
+    let q = V::Object(q);
+    let mut out = q.as_object().cloned().unwrap();
+    out.insert("proposalHash".into(), json!(payload_hash(&q)?));
     Ok(V::Object(out))
 }
-
+/// sellProposal(s, ex, e, g, at)
 fn sell_proposal(s: &V, ex: &str, e: &V, g: &V, at: i64) -> Result<V, String> {
     need(
         at >= instant_v(get(get(s, "activation"), "startedAt"))?
             && at < instant_v(get(get(s, "activation"), "exitExpiresAt"))?,
         "OWNED_EXIT_WINDOW",
     )?;
+    let o = active(s);
     need(
-        sget(g, "ownerId") == sget(get(s, "scope"), "ownerId")
-            && sget(g, "runId") == sget(get(s, "scope"), "runId")
-            && sget(g, "tournamentId") == sget(get(s, "scope"), "tournamentId")
-            && get(g, "complete") == &V::Bool(true)
-            && get(g, "eventScopeComplete") == &V::Bool(true)
-            && get(g, "soleCollector") == &V::Bool(true)
-            && get(g, "stopped") == &V::Bool(false)
+        !g.is_null()
+            && get(g, "ownerId") == get(get(s, "scope"), "ownerId")
+            && get(g, "runId") == get(get(s, "scope"), "runId")
+            && get(g, "tournamentId") == get(get(s, "scope"), "tournamentId")
+            && get(g, "complete") == &json!(true)
+            && get(g, "eventScopeComplete") == &json!(true)
+            && get(g, "soleCollector") == &json!(true)
+            && get(g, "stopped") == &json!(false)
             && hex(get(g, "sourceHash"))
-            && get(g, "unknownAcceptance") == &V::Bool(false)
-            && get(g, "unresolvedIntentIds").as_array().is_some_and(|ids| {
-                ids.iter()
-                    .all(|id| get(&active(s).unwrap_or(V::Null), "intentId") == id)
-            })
+            && get(g, "unknownAcceptance") == &json!(false)
+            && get(g, "unresolvedIntentIds").is_array()
+            && get(g, "unresolvedIntentIds")
+                .as_array()
+                .unwrap()
+                .iter()
+                .all(|id| id == &get(&o, "intentId").clone())
             && instant_v(get(g, "at"))? <= at
-            && at - instant_v(get(g, "at"))? <= 20000,
+            && at - instant_v(get(g, "at"))? <= 20_000,
         "GLOBAL_UNKNOWN",
     )?;
     need(
         get(g, "controllerReservationHash") == get(&funding(s)?, "reservationHash")
-            && get(g, "globalLedgerHash") == get(get(s, "reservation"), "globalLedgerHash"),
+            && get(g, "globalLedgerHash")
+                == get(&get(s, "reservation"), "globalLedgerHash"),
         "CURRENT_RESERVE_BINDING",
     )?;
-    {
-        let mut e2 = e.clone();
-        e2.as_object_mut()
-            .map(|m| m.insert("firstExchangeId".into(), json!(ex)));
-        empty_all(&e2, s, at)?;
-    }
-    let slot = get(get(s, "currentInventory"), ex);
+    let mut e2 = e.as_object().cloned().unwrap_or_default();
+    e2.insert("firstExchangeId".into(), json!(ex));
+    empty_all(&V::Object(e2.clone()), s, at)?;
+    let slot = get(&get(s, "currentInventory"), ex);
     need(
-        js_int(get(get(slot, "proof"), "remainingOwnedQuantity")).unwrap_or(0) > 0,
+        js_int(get(get(slot, "proof"), "remainingOwnedQuantity"))
+            .map(|q| q > 0)
+            .unwrap_or(false),
         "OWNED_POSITIVE",
     )?;
-    let book_receipt = first_non_null(e, &["bookReceipt", "book"]).clone();
-    let requested = e.get("requestedQuantity").cloned().unwrap_or(V::Null);
-    let p = crate::baal_scaled_profitable_exit_signal_v2::plan_baal_scaled_profitable_exit_v2(
-        &json!({
-            "scope": get(s, "scope"),
-            "owned": slot,
-            "account": scope_account(get(e, "account"), ex),
-            "bookReceipt": book_receipt,
-            "globalRisk": get(e, "globalRisk"),
-            "now": iso(at as f64),
-            "protectiveTicks": 0,
-            "maximumSharesPerOrder": 100,
-            "maximumOrderCost": "25.000000",
-            "feesPerShare": "0.000000",
-            "requestedQuantity": requested,
-        }),
-    );
+    let p = plan_baal_scaled_profitable_exit_v2(&json!({
+        "scope": get(s, "scope"),
+        "owned": slot,
+        "account": scope_account(get(e, "account"), ex),
+        "bookReceipt": if !get(e, "bookReceipt").is_null() {
+            get(e, "bookReceipt").clone()
+        } else {
+            get(e, "book").clone()
+        },
+        "globalRisk": get(e, "globalRisk"),
+        "now": iso(at as f64),
+        "protectiveTicks": 0,
+        "maximumSharesPerOrder": 100,
+        "maximumOrderCost": "25.000000",
+        "feesPerShare": "0.000000",
+        "requestedQuantity": get(e, "requestedQuantity"),
+    }));
     need(
-        get(&p, "proposalReady") == &V::Bool(true),
-        &format!("PROFIT_EXIT_{}", sget(&p, "reason").unwrap_or("")),
+        get(&p, "proposalReady") == &json!(true),
+        &format!("PROFIT_EXIT_{}", get(&p, "reason").as_str().unwrap_or("")),
     )?;
     Ok(p)
 }
+/// retireSoldPairs(s, o, proof)
 fn retire_sold_pairs(s: &V, o: &V, proof: &V) -> Result<Vec<V>, String> {
     let mut out: Vec<V> = Vec::new();
     for old in get(get(o, "priorProof"), "remainingLots")
@@ -626,8 +659,8 @@ fn retire_sold_pairs(s: &V, o: &V, proof: &V) -> Result<Vec<V>, String> {
     {
         let next = get(proof, "remainingLots")
             .as_array()
-            .and_then(|ls| {
-                ls.iter()
+            .and_then(|a| {
+                a.iter()
                     .find(|l| get(l, "lotId") == get(&old, "lotId"))
                     .cloned()
             })
@@ -645,114 +678,108 @@ fn retire_sold_pairs(s: &V, o: &V, proof: &V) -> Result<Vec<V>, String> {
             if active_pair_quantity(s, &a) <= 0 {
                 continue;
             }
-            let first = sget(&a, "firstExchangeId") == sget(get(o, "body"), "exchangeId")
+            let first = get(&a, "firstExchangeId") == get(get(o, "body"), "exchangeId")
                 && get(&a, "firstLotId") == get(&old, "lotId");
-            let counter = sget(&a, "counterpartExchangeId") == sget(get(o, "body"), "exchangeId")
+            let counter = get(&a, "counterpartExchangeId") == get(get(o, "body"), "exchangeId")
                 && get(&a, "counterpartLotId") == get(&old, "lotId");
             if !first && !counter {
                 continue;
             }
             let offset = if first {
-                js_int(get(&a, "firstUnitStart"))
+                get(&a, "firstUnitStart")
             } else {
-                js_int(get(&a, "counterpartUnitStart"))
+                get(&a, "counterpartUnitStart")
             };
+            let offset = js_int(offset);
             need(
                 offset.is_some() && js_int(get(&a, "quantity")) == Some(1),
                 "ONE_SHARE_PAIR_INTERVAL",
             )?;
-            let offset = offset.unwrap_or(0);
-            let n = (end.min(offset + js_int(get(&a, "quantity")).unwrap_or(0))
-                - begin.max(offset))
-            .max(0);
-            if n != 0 {
+            let offset = offset.unwrap();
+            let n = std::cmp::min(end, offset + js_int(get(&a, "quantity")).unwrap())
+                - std::cmp::max(begin, offset);
+            let n = n.max(0);
+            if n > 0 {
                 out.push(json!({
-                    "retirementId": format!("{}:{}", sget(o,"intentId").unwrap_or(""), sget(&a,"assignmentId").unwrap_or("")),
+                    "retirementId": format!("{}:{}", get(o, "intentId").as_str().unwrap_or(""), get(&a, "assignmentId").as_str().unwrap_or("")),
                     "assignmentId": get(&a, "assignmentId"),
                     "quantity": n,
-                    "consumedExchangeId": get(get(o,"body"),"exchangeId"),
-                    "consumedLotId": get(&old,"lotId"),
-                    "consumedUnitStart": begin.max(offset),
-                    "sellProofHash": get(proof,"verificationHash"),
+                    "consumedExchangeId": get(get(o, "body"), "exchangeId"),
+                    "consumedLotId": get(&old, "lotId"),
+                    "consumedUnitStart": std::cmp::max(begin, offset),
+                    "sellProofHash": get(proof, "verificationHash"),
                     "reason": "actual_fifo_owned_sell",
                 }));
             }
         }
     }
     need(
-        {
-            let mut seen = std::collections::HashSet::new();
-            out.iter()
-                .all(|r| seen.insert(sget(r, "assignmentId").unwrap_or("").to_string()))
-        },
+        out.iter()
+            .map(|r| get(r, "assignmentId").as_str().unwrap_or("").to_string())
+            .collect::<std::collections::HashSet<_>>()
+            .len()
+            == out.len(),
         "PAIR_DOUBLE_RETIREMENT",
     )?;
     Ok(out)
 }
+/// assignFill(s, o, p)
 fn assign_fill(s: &V, o: &V, p: &V) -> Result<Vec<V>, String> {
     let mut result: Vec<V> = Vec::new();
     let mut target: usize = 0;
-    let proposals = get(get(o, "proposal"), "matchedAssignmentsIfFilled")
-        .as_array()
-        .cloned()
-        .unwrap_or_default();
-    let mut left = proposals
-        .first()
-        .and_then(|f| js_int(get(f, "quantity")))
+    let mut left = js_int(get(&get(&get(o, "proposal"), "matchedAssignmentsIfFilled")[0], "quantity"))
         .unwrap_or(0);
     for lot in get(p, "remainingLots").as_array().cloned().unwrap_or_default() {
         let mut remaining = js_int(get(&lot, "quantity")).unwrap_or(0);
         if get(get(o, "priorProof"), "remainingLots")
             .as_array()
-            .map(|olds| olds.iter().any(|old| get(old, "lotId") == get(&lot, "lotId")))
-            .unwrap_or(false)
+            .is_some_and(|a| a.iter().any(|old| get(old, "lotId") == get(&lot, "lotId")))
         {
             continue;
         }
         while remaining > 0 {
-            let first = proposals.get(target).cloned().unwrap_or(V::Null);
+            let first = get(&get(o, "proposal"), "matchedAssignmentsIfFilled")
+                .as_array()
+                .and_then(|a| a.get(target))
+                .cloned()
+                .unwrap_or(V::Null);
             need(!first.is_null() && left > 0, "MATCHED_FILL_EXCEEDS_PROPOSAL")?;
-            let n = left.min(remaining);
+            let n = std::cmp::min(left, remaining);
             need(
-                price(sget(&first, "entryPrice").unwrap_or(""))?
-                    + price(sget(&lot, "entryPrice").unwrap_or(""))?
-                    <= 990000,
+                price(get(&first, "entryPrice").as_str().unwrap_or(""))?
+                    + price(get(&lot, "entryPrice").as_str().unwrap_or(""))?
+                    <= 990_000,
                 "ACTUAL_PAIR_MARGIN",
             )?;
-            let first_lot = || {
-                get(get(get(s, "currentInventory"), sget(o, "firstExchangeId").unwrap_or("")), "proof")
-                    .get("remainingLots")
-                    .and_then(|ls| ls.as_array())
-                    .and_then(|ls| {
-                        ls.iter()
-                            .find(|l| get(l, "lotId") == get(&first, "firstLotId"))
-                            .cloned()
-                    })
-                    .unwrap_or(V::Null)
-            };
-            let fl = first_lot();
+            let first_lots = get(&get(&get(s, "currentInventory"), get(o, "firstExchangeId").as_str().unwrap_or("")), "proof");
+            let first_lots = get(first_lots, "remainingLots").as_array().cloned().unwrap_or_default();
+            let flot = first_lots
+                .iter()
+                .find(|l| get(l, "lotId") == get(&first, "firstLotId"))
+                .cloned()
+                .unwrap_or(V::Null);
             result.push(json!({
-                "assignmentId": format!("{}:{}:{}", sget(o,"intentId").unwrap_or(""), sget(&lot,"lotId").unwrap_or(""), target),
-                "firstExchangeId": get(o,"firstExchangeId"),
-                "counterpartExchangeId": get(get(o,"body"),"exchangeId"),
-                "firstLotId": get(&first,"firstLotId"),
-                "counterpartLotId": get(&lot,"lotId"),
+                "assignmentId": format!("{}:{}:{}", get(o, "intentId").as_str().unwrap_or(""), get(&lot, "lotId").as_str().unwrap_or(""), target),
+                "firstExchangeId": get(o, "firstExchangeId"),
+                "counterpartExchangeId": get(get(o, "body"), "exchangeId"),
+                "firstLotId": get(&first, "firstLotId"),
+                "counterpartLotId": get(&lot, "lotId"),
                 "quantity": n,
-                "firstUnitCost": get(&first,"entryPrice"),
-                "counterpartUnitCost": get(&lot,"entryPrice"),
-                "firstProofHash": get(get(o,"proposal"),"firstProofHash"),
-                "counterpartProofHash": get(p,"verificationHash"),
-                "firstUnitStart": js_int(get(&fl,"originalQuantity")).unwrap_or(0) - js_int(get(&fl,"quantity")).unwrap_or(0),
-                "counterpartUnitStart": js_int(get(&lot,"originalQuantity")).unwrap_or(0) - js_int(get(&lot,"quantity")).unwrap_or(0),
+                "firstUnitCost": get(&first, "entryPrice"),
+                "counterpartUnitCost": get(&lot, "entryPrice"),
+                "firstProofHash": get(get(o, "proposal"), "firstProofHash"),
+                "counterpartProofHash": get(p, "verificationHash"),
+                "firstUnitStart": js_int(get(&flot, "originalQuantity")).unwrap_or(0) - js_int(get(&flot, "quantity")).unwrap_or(0),
+                "counterpartUnitStart": js_int(get(&lot, "originalQuantity")).unwrap_or(0) - js_int(get(&lot, "quantity")).unwrap_or(0),
             }));
             remaining -= n;
             left -= n;
             if left == 0 {
                 target += 1;
-                left = proposals
-                    .get(target)
-                    .and_then(|f| js_int(get(f, "quantity")))
-                    .unwrap_or(0);
+                left = js_int(
+                    get(&get(&get(o, "proposal"), "matchedAssignmentsIfFilled")[target], "quantity"),
+                )
+                .unwrap_or(0);
             }
         }
     }
@@ -761,41 +788,41 @@ fn assign_fill(s: &V, o: &V, p: &V) -> Result<Vec<V>, String> {
             .iter()
             .map(|a| js_int(get(a, "quantity")).unwrap_or(0))
             .sum::<i64>()
-            == js_int(get(p, "filledQuantity")).unwrap_or(-1),
+            == js_int(get(p, "filledQuantity")).unwrap_or(i64::MIN),
         "EXACT_PARTIAL_PAIR_COUNT",
     )?;
     Ok(result)
 }
-fn reduce(s: Option<V>, e: &V) -> Result<V, String> {
-    let kind = sget(e, "kind").unwrap_or("");
+/// reduce(s, e)
+fn reduce(s: Option<&V>, e: &V) -> Result<V, String> {
+    let kind = get(e, "kind").as_str().unwrap_or("").to_string();
     if kind == "seed" {
         need(
             s.is_none()
-                && get(get(e, "seed"), "economicReplayPerformed") == &V::Bool(true)
-                && !get(get(get(e, "seed"), "state"), "orders")
+                && get(get(e, "seed"), "economicReplayPerformed") == &json!(true)
+                && !get(&get(get(e, "seed"), "state"), "orders")
                     .as_array()
-                    .map(|orders| {
-                        orders.iter().any(|o| {
+                    .is_some_and(|o| {
+                        o.iter().any(|o| {
                             get(o, "proof").is_null()
                                 && get(o, "phase").as_str() != Some("abandoned")
                         })
-                    })
-                    .unwrap_or(false),
+                    }),
             "VERIFIED_SEED",
         )?;
-        let seed_state = get(get(e, "seed"), "state");
+        let seed = get(e, "seed").clone();
         return Ok(json!({
             "schemaVersion": 1,
             "mode": "baal_neutral_owned_counterpart_pilot_v2",
-            "scope": get(seed_state, "scope"),
-            "allocation": get(seed_state, "allocation"),
-            "originalActivation": get(seed_state, "activation"),
-            "originalOrders": get(seed_state, "orders"),
-            "originalInventory": get(seed_state, "inventory"),
-            "currentInventory": get(seed_state, "inventory"),
+            "scope": get(&get(&seed, "state"), "scope"),
+            "allocation": get(&get(&seed, "state"), "allocation"),
+            "originalActivation": get(&get(&seed, "state"), "activation"),
+            "originalOrders": get(&get(&seed, "state"), "orders"),
+            "originalInventory": get(&get(&seed, "state"), "inventory"),
+            "currentInventory": get(&get(&seed, "state"), "inventory"),
             "pairRetirements": [],
             "seedHash": get(e, "seedHash"),
-            "seedAnchor": get(get(e, "seed"), "anchor"),
+            "seedAnchor": get(&seed, "anchor"),
             "activation": get(e, "activation"),
             "migration": get(e, "migration"),
             "orders": [],
@@ -804,21 +831,16 @@ fn reduce(s: Option<V>, e: &V) -> Result<V, String> {
             "reservation": V::Null,
         }));
     }
-    let s = s.ok_or_else(|| "HEDGE_COORDINATOR_NOT_SEEDED".to_string())?;
+    need(s.is_some(), "NOT_SEEDED")?;
+    let s = s.unwrap();
     let mut n = s.clone();
-    let oi = get(&n, "orders")
-        .as_array()
-        .and_then(|orders| {
-            orders
-                .iter()
-                .position(|o| get(o, "proof").is_null() && get(o, "phase").as_str() != Some("abandoned"))
-        });
-    let o = oi.map(|i| get(&n, "orders").as_array().unwrap()[i].clone());
+    let o = active(&n);
     if kind == "reservation" {
         need(
-            get(get(e, "receipt"), "reservationHash") == get(&funding(&s)?, "reservationHash")
-                && get(get(e, "receipt"), "seedHash") == get(&s, "seedHash")
-                && hex(get(get(e, "receipt"), "globalLedgerHash")),
+            get(get(e, "receipt"), "reservationHash")
+                == get(&funding(&n)?, "reservationHash")
+            && get(get(e, "receipt"), "seedHash") == get(&n, "seedHash")
+            && hex(get(get(e, "receipt"), "globalLedgerHash")),
             "RESERVATION",
         )?;
         n.as_object_mut()
@@ -827,60 +849,57 @@ fn reduce(s: Option<V>, e: &V) -> Result<V, String> {
         return Ok(n);
     }
     if kind == "prepared_sell" {
-        need(o.is_none(), "UNKNOWN_OR_ACTIVE")?;
-        let ex = sget(e, "exchangeId").unwrap_or("");
+        need(o.is_null(), "UNKNOWN_OR_ACTIVE")?;
+        let ex = get(e, "exchangeId").as_str().unwrap_or("").to_string();
         let p = sell_proposal(
-            &s,
-            ex,
+            &n,
+            &ex,
             get(e, "evidence"),
             get(e, "globalRisk"),
             instant_v(get(e, "at"))?,
         )?;
-        let slot = get(get(&s, "currentInventory"), ex);
-        let expires = iso(
-            (instant_v(get(e, "at"))? + 30000)
-                .min(instant_v(get(&p, "expiresAt"))?)
-                .min(instant_v(get(get(&s, "activation"), "exitExpiresAt"))?) as f64,
-        );
+        let slot = get(&get(&n, "currentInventory"), &ex).clone();
         let body = json!({
             "idempotencyKey": get(e, "key"),
             "exchangeId": ex,
             "side": "no",
             "action": "sell",
             "quantity": get(&p, "quantity"),
-            "price": js_number(get(&p, "limit")),
-            "expirationDate": expires,
-            "tournamentId": sget(get(&s,"scope"),"tournamentId"),
+            "price": get(&p, "limit").as_str().unwrap_or("").parse::<f64>().unwrap_or(f64::NAN),
+            "expirationDate": iso(std::cmp::min(
+                instant_v(get(e, "at"))? + 30_000,
+                std::cmp::min(
+                    instant_v(get(&p, "expiresAt"))?,
+                    instant_v(get(get(&n, "activation"), "exitExpiresAt"))?,
+                ),
+            ) as f64),
+            "tournamentId": get(get(&n, "scope"), "tournamentId"),
         });
         need(
-            !get(&s, "originalOrders")
-                .as_array()
-                .map(|os| os.iter().any(|o| get(get(o, "body"), "idempotencyKey") == get(e, "key")))
-                .unwrap_or(false)
-                && !get(&s, "orders")
-                    .as_array()
-                    .map(|os| {
-                        os.iter().any(|o| {
-                            get(get(o, "body"), "idempotencyKey") == get(e, "key")
-                                || get(o, "intentId") == get(e, "intentId")
-                        })
-                    })
-                    .unwrap_or(false),
+            !get(&n, "originalOrders").as_array().is_some_and(|os| {
+                os.iter()
+                    .any(|o| get(get(o, "body"), "idempotencyKey") == get(e, "key"))
+            }) && !get(&n, "orders").as_array().is_some_and(|os| {
+                os.iter().any(|o| {
+                    get(get(o, "body"), "idempotencyKey") == get(e, "key")
+                        || get(o, "intentId") == get(e, "intentId")
+                })
+            }),
             "KEY_REUSE",
         )?;
-        let candidate = json!({
+        let row = json!({
             "intentId": get(e, "intentId"),
             "firstExchangeId": ex,
             "marketId": get(&p, "marketId"),
             "createdAt": get(e, "at"),
             "body": body,
-            "bodyJson": canonical_payload(&body)?,
+            "bodyJson": canonical_payload(&body),
             "bodyHash": payload_hash(&body)?,
             "proposal": p,
-            "before": scope_account(get(get(e,"evidence"),"account"), ex),
-            "priorProof": get(slot, "proof"),
-            "priorAfter": get(slot, "after"),
-            "package": get(slot, "package"),
+            "before": scope_account(get(get(e, "evidence"), "account"), &ex),
+            "priorProof": get(&slot, "proof"),
+            "priorAfter": get(&slot, "after"),
+            "package": get(&slot, "package"),
             "phase": "prepared",
             "orderId": V::Null,
             "ack": V::Null,
@@ -894,87 +913,82 @@ fn reduce(s: Option<V>, e: &V) -> Result<V, String> {
         n.as_object_mut()
             .unwrap()
             .get_mut("orders")
+            .and_then(|v| v.as_array_mut())
             .unwrap()
-            .as_array_mut()
-            .unwrap()
-            .push(candidate);
+            .push(row);
         return Ok(n);
     }
     if kind == "prepared" {
         need(
-            o.is_none()
-                && get(&s, "orders")
+            o.is_null()
+                && get(&n, "orders")
                     .as_array()
-                    .map(|os| {
-                        os.iter()
-                            .filter(|o| sget(get(o, "body"), "action") == Some("buy"))
+                    .map(|a| {
+                        a.iter()
+                            .filter(|o| get(get(o, "body"), "action").as_str() == Some("buy"))
                             .count()
                             == 0
                     })
                     .unwrap_or(false)
-                && get(get(&s, "activation"), "allowedFirstExchangeIds")
+                && get(get(&n, "activation"), "allowedFirstExchangeIds")
                     .as_array()
-                    .map(|xs| {
-                        xs.iter()
+                    .is_some_and(|a| {
+                        a.iter()
                             .any(|x| x == get(get(e, "evidence"), "firstExchangeId"))
                     })
-                    .unwrap_or(false)
-                && js_int(get(
-                    get(get(get(&s, "originalInventory"), sget(get(e, "evidence"), "firstExchangeId").unwrap_or("")), "proof"),
-                    "remainingOwnedQuantity",
-                ))
-                .unwrap_or(0)
-                    > 0,
+                && js_int(
+                    get(&get(&get(&get(&n, "originalInventory"), get(get(e, "evidence"), "firstExchangeId").as_str().unwrap_or("")), "proof"), "remainingOwnedQuantity"),
+                )
+                .map(|q| q > 0)
+                .unwrap_or(false),
             "ORIGINAL_UNPAIRED_ONLY",
         )?;
         let p = guarded(
-            &s,
+            &n,
             get(e, "evidence"),
             get(e, "globalRisk"),
             instant_v(get(e, "at"))?,
         )?;
-        let expires = iso(
-            (instant_v(get(e, "at"))? + 30000)
-                .min(instant_v(get(&p, "expiresAt"))?)
-                .min(instant_v(get(get(&s, "activation"), "hedgeExpiresAt"))?) as f64,
-        );
         let body = json!({
             "idempotencyKey": get(e, "key"),
             "exchangeId": get(&p, "exchangeId"),
             "side": "no",
             "action": "buy",
             "quantity": get(&p, "quantity"),
-            "price": js_number(get(&p, "protectedLimit")),
-            "expirationDate": expires,
-            "tournamentId": sget(get(&s,"scope"),"tournamentId"),
+            "price": get(&p, "protectedLimit").as_str().unwrap_or("").parse::<f64>().unwrap_or(f64::NAN),
+            "expirationDate": iso(std::cmp::min(
+                instant_v(get(e, "at"))? + 30_000,
+                std::cmp::min(
+                    instant_v(get(&p, "expiresAt"))?,
+                    instant_v(get(get(&n, "activation"), "hedgeExpiresAt"))?,
+                ),
+            ) as f64),
+            "tournamentId": get(get(&n, "scope"), "tournamentId"),
         });
         need(
-            !get(&s, "orders")
-                .as_array()
-                .map(|os| {
-                    os.iter().any(|o| {
-                        get(get(o, "body"), "idempotencyKey") == get(e, "key")
-                            || get(o, "intentId") == get(e, "intentId")
-                    })
+            !get(&n, "orders").as_array().is_some_and(|os| {
+                os.iter().any(|o| {
+                    get(get(o, "body"), "idempotencyKey") == get(e, "key")
+                        || get(o, "intentId") == get(e, "intentId")
                 })
-                .unwrap_or(false),
+            }),
             "KEY_REUSE",
         )?;
-        let bought_ex = sget(&p, "exchangeId").unwrap_or("");
-        let first_ex = sget(get(e, "evidence"), "firstExchangeId").unwrap_or("");
-        let candidate = json!({
+        let prior_slot = get(&get(&n, "currentInventory"), get(&p, "exchangeId").as_str().unwrap_or(""))
+            .clone();
+        let row = json!({
             "intentId": get(e, "intentId"),
-            "firstExchangeId": first_ex,
+            "firstExchangeId": get(get(e, "evidence"), "firstExchangeId"),
             "marketId": get(&p, "marketId"),
             "createdAt": get(e, "at"),
             "body": body,
-            "bodyJson": canonical_payload(&body)?,
+            "bodyJson": canonical_payload(&body),
             "bodyHash": payload_hash(&body)?,
             "proposal": p,
-            "before": scope_account(get(get(e,"evidence"),"account"), bought_ex),
-            "priorProof": get(get(get(&s,"currentInventory"), bought_ex), "proof"),
-            "priorAfter": get(get(get(&s,"currentInventory"), bought_ex), "after"),
-            "package": get(get(get(&s,"originalInventory"), first_ex), "package"),
+            "before": scope_account(get(get(e, "evidence"), "account"), get(&p, "exchangeId").as_str().unwrap_or("")),
+            "priorProof": get(&prior_slot, "proof"),
+            "priorAfter": get(&prior_slot, "after"),
+            "package": get(&get(&get(&n, "originalInventory"), get(get(e, "evidence"), "firstExchangeId").as_str().unwrap_or("")), "package"),
             "phase": "prepared",
             "orderId": V::Null,
             "ack": V::Null,
@@ -988,59 +1002,63 @@ fn reduce(s: Option<V>, e: &V) -> Result<V, String> {
         n.as_object_mut()
             .unwrap()
             .get_mut("orders")
+            .and_then(|v| v.as_array_mut())
             .unwrap()
-            .as_array_mut()
-            .unwrap()
-            .push(candidate);
+            .push(row);
         return Ok(n);
     }
     if kind == "abandoned_prepared" {
-        let o = o.ok_or_else(|| "HEDGE_COORDINATOR_ABANDON_REQUIRES_EXPIRED_UNADMITTED_UNFETCHED".to_string())?;
         need(
-            sget(&o, "phase") == Some("prepared")
+            !o.is_null()
+                && get(&o, "phase").as_str() == Some("prepared")
                 && get(&o, "orderId").is_null()
                 && get(&o, "ack").is_null()
                 && get(&o, "proof").is_null()
-                && get(&o, "semanticMismatch") == &V::Bool(false)
-                && get(&o, "mayHaveExecuted") == &V::Bool(false)
-                && get(&o, "fences").as_array().map(|x| x.is_empty()).unwrap_or(false)
-                && get(&o, "fetchStarts").as_array().map(|x| x.is_empty()).unwrap_or(false)
-                && get(&o, "receipts").as_array().map(|x| x.is_empty()).unwrap_or(false)
+                && get(&o, "semanticMismatch") == &json!(false)
+                && get(&o, "mayHaveExecuted") == &json!(false)
+                && get(&o, "fences").as_array().is_some_and(|a| a.is_empty())
+                && get(&o, "fetchStarts").as_array().is_some_and(|a| a.is_empty())
+                && get(&o, "receipts").as_array().is_some_and(|a| a.is_empty())
                 && instant_v(get(e, "at"))? >= instant_v(get(get(&o, "body"), "expirationDate"))?,
             "ABANDON_REQUIRES_EXPIRED_UNADMITTED_UNFETCHED",
         )?;
-        let m = n
+        let idx = find_active_index(&n).unwrap();
+        let orders = n
             .as_object_mut()
             .unwrap()
             .get_mut("orders")
-            .unwrap()
-            .as_array_mut()
-            .unwrap()[oi.unwrap()]
-            .as_object_mut()
+            .and_then(|v| v.as_array_mut())
             .unwrap();
-        m.insert("phase".into(), json!("abandoned"));
-        m.insert("abandonedAt".into(), get(e, "at").clone());
-        m.insert("abandonedReason".into(), json!("expired_before_any_admission"));
+        orders[idx]
+            .as_object_mut()
+            .unwrap()
+            .insert("phase".into(), json!("abandoned"));
+        orders[idx]
+            .as_object_mut()
+            .unwrap()
+            .insert("abandonedAt".into(), get(e, "at").clone());
+        orders[idx].as_object_mut().unwrap().insert(
+            "abandonedReason".into(),
+            json!("expired_before_any_admission"),
+        );
         return Ok(n);
     }
-    let o = o.ok_or_else(|| "HEDGE_COORDINATOR_NO_PENDING".to_string())?;
-    let oi = oi.unwrap();
-    need(get(&o, "proof").is_null(), "NO_PENDING")?;
+    need(!o.is_null() && get(&o, "proof").is_null(), "NO_PENDING")?;
     if kind == "admitted" || kind == "network_fence" {
         need(
             if kind == "admitted" {
-                sget(&o, "phase") == Some("prepared")
+                get(&o, "phase").as_str() == Some("prepared")
             } else {
-                sget(&o, "phase") == Some("dispatching")
+                get(&o, "phase").as_str() == Some("dispatching")
             },
             "SINGLE_ATTEMPT",
         )?;
-        let p = if sget(get(&o, "body"), "action") == Some("buy") {
-            guarded(&s, get(e, "evidence"), get(e, "globalRisk"), instant_v(get(e, "at"))?)?
+        let p = if get(get(&o, "body"), "action").as_str() == Some("buy") {
+            guarded(&n, get(e, "evidence"), get(e, "globalRisk"), instant_v(get(e, "at"))?)?
         } else {
             sell_proposal(
-                &s,
-                sget(get(&o, "body"), "exchangeId").unwrap_or(""),
+                &n,
+                get(get(&o, "body"), "exchangeId").as_str().unwrap_or(""),
                 get(e, "evidence"),
                 get(e, "globalRisk"),
                 instant_v(get(e, "at"))?,
@@ -1048,46 +1066,42 @@ fn reduce(s: Option<V>, e: &V) -> Result<V, String> {
         };
         need(
             get(&p, "exchangeId") == get(get(&o, "body"), "exchangeId")
-                && js_int(get(&p, "quantity")).unwrap_or(-1)
-                    >= js_int(get(get(&o, "body"), "quantity")).unwrap_or(0)
-                && if sget(get(&o, "body"), "action") == Some("buy") {
+                && js_int(get(&p, "quantity")).unwrap_or(i64::MIN)
+                    >= js_int(get(get(&o, "body"), "quantity")).unwrap_or(i64::MAX)
+                && (if get(get(&o, "body"), "action").as_str() == Some("buy") {
                     get(&p, "firstProofHash") == get(get(&o, "proposal"), "firstProofHash")
-                        && price(sget(&p, "protectedLimit").unwrap_or(""))?
-                            <= price(&num_str(get(get(&o, "body"), "price")))?
+                        && price(get(&p, "protectedLimit").as_str().unwrap_or(""))?
+                            <= price(&js_str(get(get(&o, "body"), "price")))?
                 } else {
                     get(&p, "ownedProofHash") == get(get(&o, "priorProof"), "verificationHash")
-                        && price(sget(&p, "limit").unwrap_or(""))?
-                            >= price(&num_str(get(get(&o, "body"), "price")))?
-                }
+                        && price(get(&p, "limit").as_str().unwrap_or(""))?
+                            >= price(&js_str(get(get(&o, "body"), "price")))?
+                })
                 && instant_v(get(e, "at"))? < instant_v(get(get(&o, "body"), "expirationDate"))?,
             "FIXED_LIMIT_SOURCE",
         )?;
+        let idx = find_active_index(&n).unwrap();
+        let orders = n
+            .as_object_mut()
+            .unwrap()
+            .get_mut("orders")
+            .and_then(|v| v.as_array_mut())
+            .unwrap();
         if kind == "admitted" {
-            n.as_object_mut()
-                .unwrap()
-                .get_mut("orders")
-                .unwrap()
-                .as_array_mut()
-                .unwrap()[oi]
+            orders[idx]
                 .as_object_mut()
                 .unwrap()
                 .insert("phase".into(), json!("dispatching"));
         } else {
             need(
-                payload_hash(get(e, "lease"))? == get(e, "leaseHash").as_str().unwrap_or("\u{0}"),
+                payload_hash(get(e, "lease"))? == get(e, "leaseHash").as_str().unwrap_or(""),
                 "ACTUAL_LEASE",
             )?;
-            n.as_object_mut()
-                .unwrap()
-                .get_mut("orders")
-                .unwrap()
-                .as_array_mut()
-                .unwrap()[oi]
+            orders[idx]
                 .as_object_mut()
                 .unwrap()
                 .get_mut("fences")
-                .unwrap()
-                .as_array_mut()
+                .and_then(|v| v.as_array_mut())
                 .unwrap()
                 .push(json!({
                     "at": get(e, "at"),
@@ -1098,405 +1112,398 @@ fn reduce(s: Option<V>, e: &V) -> Result<V, String> {
         return Ok(n);
     }
     if kind == "fetch_start" {
-        let f = get(&o, "fences")
-            .as_array()
-            .and_then(|x| x.last())
-            .cloned()
-            .unwrap_or(V::Null);
+        let f = get(&o, "fences").as_array().and_then(|a| a.last()).cloned();
         let w = get(e, "meta");
         need(
-            !f.is_null()
-                && sget(w, "method") == Some("POST")
-                && sget(w, "endpoint") == Some("/orders")
-                && sget(w, "requestBodyHash") == sget(&o, "bodyHash")
-                && instant_v(get(w, "requestStartedAt"))? >= instant_v(get(&f, "at"))?
-                && get(&o, "fetchStarts")
-                    .as_array()
-                    .map(|x| x.is_empty())
-                    .unwrap_or(false),
+            f.is_some()
+                && get(w, "method").as_str() == Some("POST")
+                && get(w, "endpoint").as_str() == Some("/orders")
+                && get(w, "requestBodyHash") == get(&o, "bodyHash")
+                && instant_v(get(w, "requestStartedAt"))?
+                    >= instant_v(get(&f.unwrap(), "at"))?
+                && get(&o, "fetchStarts").as_array().is_some_and(|a| a.is_empty()),
             "ACTUAL_INVOCATION",
         )?;
-        {
-            let m = n
-                .as_object_mut()
-                .unwrap()
-                .get_mut("orders")
-                .unwrap()
-                .as_array_mut()
-                .unwrap()[oi]
-                .as_object_mut()
-                .unwrap();
-            m.get_mut("fetchStarts")
-                .unwrap()
-                .as_array_mut()
-                .unwrap()
-                .push(w.clone());
-            m.insert("mayHaveExecuted".into(), json!(true));
-        }
-        return Ok(n);
-    }
-    if kind == "wire" {
-        let w = get(&o, "fetchStarts")
-            .as_array()
-            .and_then(|x| x.first())
-            .cloned()
-            .unwrap_or(V::Null);
-        let r = get(e, "receipt");
-        need(
-            !w.is_null()
-                && sget(r, "method") == Some("POST")
-                && sget(r, "endpoint") == Some("/orders")
-                && sget(r, "sourceBodyHash") == Some(sha(sget(r, "bodyText").unwrap_or("")).as_str())
-                && get(r, "fetchInvocationId") == get(&w, "fetchInvocationId")
-                && get(r, "requestStartedAt") == get(&w, "requestStartedAt"),
-            "ORIGINAL_WIRE",
-        )?;
-        let mut ack = r.clone();
-        ack.as_object_mut()
-            .map(|m| m.insert("requestBodyHash".into(), get(&o, "bodyHash").clone()));
-        let parsed = parse_number_lexemes(sget(r, "bodyText").unwrap_or(""))?;
-        let d = parsed.0;
-        let order_id = if js_int(get(&d, "orderId")).map(|x| x > 0).unwrap_or(false) {
-            json!(js_int(get(&d, "orderId")).unwrap().to_string())
-        } else {
-            get(&o, "orderId").clone()
-        };
-        let mismatch = !crate::baal_scaled_controller_legacy_replay_v1::validate_legacy_scaled_neutral_ack(&o, &ack);
-        {
-            let m = n
-                .as_object_mut()
-                .unwrap()
-                .get_mut("orders")
-                .unwrap()
-                .as_array_mut()
-                .unwrap()[oi]
-                .as_object_mut()
-                .unwrap();
-            m.get_mut("receipts")
-                .unwrap()
-                .as_array_mut()
-                .unwrap()
-                .push(r.clone());
-            m.insert("orderId".into(), order_id);
-            m.insert("ack".into(), ack);
-            m.insert("semanticMismatch".into(), json!(mismatch));
-            m.insert(
-                "phase".into(),
-                json!(if mismatch { "semantic_mismatch" } else { "acknowledged" }),
-            );
-        }
-        return Ok(n);
-    }
-    if kind == "error" {
-        let (ph, may) = if sget(&o, "phase") == Some("dispatching")
-            || get(e, "mayHaveExecuted") != &V::Bool(false)
-        {
-            (json!("uncertain"), json!(true))
-        } else {
-            need(
-                sget(&o, "phase") == Some("prepared")
-                    && get(&o, "fences").as_array().map(|x| x.is_empty()).unwrap_or(false)
-                    && get(&o, "fetchStarts").as_array().map(|x| x.is_empty()).unwrap_or(false)
-                    && get(&o, "receipts").as_array().map(|x| x.is_empty()).unwrap_or(false)
-                    && get(&o, "orderId").is_null()
-                    && get(&o, "ack").is_null()
-                    && get(&o, "mayHaveExecuted") == &V::Bool(false),
-                "KNOWN_UNADMITTED_ERROR_ONLY",
-            )?;
-            (get(&o, "phase").clone(), get(&o, "mayHaveExecuted").clone())
-        };
-        let m = n
+        let idx = find_active_index(&n).unwrap();
+        let orders = n
             .as_object_mut()
             .unwrap()
             .get_mut("orders")
-            .unwrap()
-            .as_array_mut()
-            .unwrap()[oi]
-            .as_object_mut()
+            .and_then(|v| v.as_array_mut())
             .unwrap();
-        m.insert("phase".into(), ph);
-        m.insert("mayHaveExecuted".into(), may);
+        orders[idx]
+            .as_object_mut()
+            .unwrap()
+            .get_mut("fetchStarts")
+            .and_then(|v| v.as_array_mut())
+            .unwrap()
+            .push(w.clone());
+        orders[idx]
+            .as_object_mut()
+            .unwrap()
+            .insert("mayHaveExecuted".into(), json!(true));
+        return Ok(n);
+    }
+    if kind == "wire" {
+        let w = get(&o, "fetchStarts").as_array().and_then(|a| a.first()).cloned();
+        let r = get(e, "receipt");
+        need(
+            w.is_some()
+                && get(r, "method").as_str() == Some("POST")
+                && get(r, "endpoint").as_str() == Some("/orders")
+                && get(r, "sourceBodyHash").as_str()
+                    == Some(sha(get(r, "bodyText").as_str().unwrap_or("").as_bytes()).as_str())
+                && get(r, "fetchInvocationId") == get(&w.as_ref().unwrap(), "fetchInvocationId")
+                && get(r, "requestStartedAt") == get(&w.as_ref().unwrap(), "requestStartedAt"),
+            "ORIGINAL_WIRE",
+        )?;
+        let idx = find_active_index(&n).unwrap();
+        let (d, _) = parse_number_lexemes(get(r, "bodyText").as_str().unwrap_or(""))?;
+        let orders = n
+            .as_object_mut()
+            .unwrap()
+            .get_mut("orders")
+            .and_then(|v| v.as_array_mut())
+            .unwrap();
+        orders[idx]
+            .as_object_mut()
+            .unwrap()
+            .get_mut("receipts")
+            .and_then(|v| v.as_array_mut())
+            .unwrap()
+            .push(r.clone());
+        if let Some(id) = js_int(get(&d, "orderId")).filter(|id| *id > 0) {
+            orders[idx]
+                .as_object_mut()
+                .unwrap()
+                .insert("orderId".into(), json!(id.to_string()));
+        }
+        let mut ack = r.as_object().cloned().unwrap_or_default();
+        ack.insert("requestBodyHash".into(), get(&orders[idx], "bodyHash").clone());
+        orders[idx]
+            .as_object_mut()
+            .unwrap()
+            .insert("ack".into(), V::Object(ack));
+        let mismatch = !validate_legacy_scaled_neutral_ack(&orders[idx], get(&orders[idx], "ack"));
+        orders[idx]
+            .as_object_mut()
+            .unwrap()
+            .insert("semanticMismatch".into(), json!(mismatch));
+        orders[idx].as_object_mut().unwrap().insert(
+            "phase".into(),
+            json!(if mismatch { "semantic_mismatch" } else { "acknowledged" }),
+        );
+        return Ok(n);
+    }
+    if kind == "error" {
+        let idx = find_active_index(&n).unwrap();
+        let orders = n
+            .as_object_mut()
+            .unwrap()
+            .get_mut("orders")
+            .and_then(|v| v.as_array_mut())
+            .unwrap();
+        if get(&orders[idx], "phase").as_str() == Some("dispatching")
+            || get(e, "mayHaveExecuted") != &json!(false)
+        {
+            orders[idx]
+                .as_object_mut()
+                .unwrap()
+                .insert("phase".into(), json!("uncertain"));
+            orders[idx]
+                .as_object_mut()
+                .unwrap()
+                .insert("mayHaveExecuted".into(), json!(true));
+        } else {
+            need(
+                get(&orders[idx], "phase").as_str() == Some("prepared")
+                    && get(&orders[idx], "fences").as_array().is_some_and(|a| a.is_empty())
+                    && get(&orders[idx], "fetchStarts").as_array().is_some_and(|a| a.is_empty())
+                    && get(&orders[idx], "receipts").as_array().is_some_and(|a| a.is_empty())
+                    && get(&orders[idx], "orderId").is_null()
+                    && get(&orders[idx], "ack").is_null()
+                    && get(&orders[idx], "mayHaveExecuted") == &json!(false),
+                "KNOWN_UNADMITTED_ERROR_ONLY",
+            )?;
+        }
         return Ok(n);
     }
     if kind == "financial_mismatch" {
         need(
-            sget(e, "reason") == Some("NON_NEUTRAL_POST_ACCOUNT"),
+            get(e, "reason").as_str() == Some("NON_NEUTRAL_POST_ACCOUNT"),
             "FINANCIAL_MISMATCH_REASON",
         )?;
-        let m = n
+        let idx = find_active_index(&n).unwrap();
+        let orders = n
             .as_object_mut()
             .unwrap()
             .get_mut("orders")
-            .unwrap()
-            .as_array_mut()
-            .unwrap()[oi]
-            .as_object_mut()
+            .and_then(|v| v.as_array_mut())
             .unwrap();
-        m.insert("semanticMismatch".into(), json!(true));
-        m.insert("phase".into(), json!("semantic_mismatch"));
+        orders[idx]
+            .as_object_mut()
+            .unwrap()
+            .insert("semanticMismatch".into(), json!(true));
+        orders[idx]
+            .as_object_mut()
+            .unwrap()
+            .insert("phase".into(), json!("semantic_mismatch"));
         return Ok(n);
     }
     if kind == "reconciled" {
-        {
-            let mut e2 = get(e, "evidence").clone();
-            e2.as_object_mut()
-                .map(|m| m.insert("firstExchangeId".into(), get(&o, "firstExchangeId").clone()));
-            empty_all(&e2, &s, instant_v(get(e, "at"))?)?;
-        }
+        let mut e2 = get(e, "evidence").as_object().cloned().unwrap_or_default();
+        e2.insert("firstExchangeId".into(), get(&o, "firstExchangeId").clone());
+        empty_all(&V::Object(e2), &n, instant_v(get(e, "at"))?)?;
         need(
             !get(&o, "orderId").is_null()
                 && !get(&o, "ack").is_null()
-                && get(&o, "semanticMismatch") != &V::Bool(true)
-                && sget(&o, "phase") == Some("acknowledged"),
+                && get(&o, "semanticMismatch") == &json!(false)
+                && get(&o, "phase").as_str() == Some("acknowledged"),
             "NON_NEUTRAL_OR_UNKNOWN_BLOCKS",
         )?;
-        let mut proof_input = get(e, "evidence").clone();
-        {
-            let mut bm = get(&s, "scope").as_object().cloned().unwrap_or_default();
-            bm.insert("intentId".into(), get(&o, "intentId").clone());
-            bm.insert(
-                "idempotencyKey".into(),
-                get(get(&o, "body"), "idempotencyKey").clone(),
-            );
-            bm.insert("orderId".into(), get(&o, "orderId").clone());
-            bm.insert("marketId".into(), get(&o, "marketId").clone());
-            bm.insert(
-                "exchangeId".into(),
-                get(get(&o, "body"), "exchangeId").clone(),
-            );
-            bm.insert("side".into(), json!("no"));
-            bm.insert("action".into(), get(get(&o, "body"), "action").clone());
-            bm.insert("quantity".into(), get(get(&o, "body"), "quantity").clone());
-            bm.insert(
-                "limit".into(),
-                json!(money(price(&num_str(get(get(&o, "body"), "price"))).unwrap_or(0))),
-            );
-            bm.insert("createdAt".into(), get(&o, "createdAt").clone());
-            bm.insert(
-                "expirationDate".into(),
-                get(get(&o, "body"), "expirationDate").clone(),
-            );
-            let binding = V::Object(bm);
-            proof_input.as_object_mut().map(|m| {
-                m.insert("binding".into(), binding);
-                m.insert("before".into(), get(&o, "before").clone());
-                m.insert("ack".into(), get(&o, "ack").clone());
-                m.insert(
-                    "dispatchReceipt".into(),
-                    get(&o, "fetchStarts")
-                        .as_array()
-                        .and_then(|x| x.first())
-                        .cloned()
-                        .unwrap_or(V::Null),
-                );
-                m.insert("readAt".into(), get(e, "at").clone());
-                m.insert(
-                    "reservedFunding".into(),
-                    json!(if sget(get(&o, "body"), "action") == Some("buy") {
-                        money(990000i128 * js_int(get(get(&o, "body"), "quantity")).unwrap_or(0) as i128)
-                    } else {
-                        "0.000000".to_string()
-                    }),
-                );
-                m.insert("priorProof".into(), get(&o, "priorProof").clone());
-                m.insert("priorAfter".into(), get(&o, "priorAfter").clone());
-            });
-        }
-        let proof = crate::no_rest_multishare_reconciliation_v1::verify_scoped_rest_no_multishare(&proof_input)?;
-        let mut n2 = n.clone();
-        if sget(get(&o, "body"), "action") == Some("sell") {
+        let mut binding = get(&n, "scope").as_object().cloned().unwrap_or_default();
+        binding.insert("intentId".into(), get(&o, "intentId").clone());
+        binding.insert(
+            "idempotencyKey".into(),
+            get(get(&o, "body"), "idempotencyKey").clone(),
+        );
+        binding.insert("orderId".into(), get(&o, "orderId").clone());
+        binding.insert("marketId".into(), get(&o, "marketId").clone());
+        binding.insert(
+            "exchangeId".into(),
+            get(get(&o, "body"), "exchangeId").clone(),
+        );
+        binding.insert("side".into(), json!("no"));
+        binding.insert(
+            "action".into(),
+            get(get(&o, "body"), "action").clone(),
+        );
+        binding.insert("quantity".into(), get(get(&o, "body"), "quantity").clone());
+        binding.insert(
+            "limit".into(),
+            json!(money(price(&js_str(get(get(&o, "body"), "price")))?)),
+        );
+        binding.insert("createdAt".into(), get(&o, "createdAt").clone());
+        binding.insert(
+            "expirationDate".into(),
+            get(get(&o, "body"), "expirationDate").clone(),
+        );
+        let mut verify_input = get(e, "evidence").as_object().cloned().unwrap_or_default();
+        verify_input.insert("binding".into(), V::Object(binding));
+        verify_input.insert("before".into(), get(&o, "before").clone());
+        verify_input.insert("ack".into(), get(&o, "ack").clone());
+        verify_input.insert(
+            "dispatchReceipt".into(),
+            get(&o, "fetchStarts")
+                .as_array()
+                .and_then(|a| a.first())
+                .cloned()
+                .unwrap_or(V::Null),
+        );
+        verify_input.insert("readAt".into(), get(e, "at").clone());
+        verify_input.insert(
+            "reservedFunding".into(),
+            json!(if get(get(&o, "body"), "action").as_str() == Some("buy") {
+                money(990_000_i128 * js_int(get(get(&o, "body"), "quantity")).unwrap_or(0) as i128)
+            } else {
+                "0.000000".to_string()
+            }),
+        );
+        verify_input.insert("priorProof".into(), get(&o, "priorProof").clone());
+        verify_input.insert("priorAfter".into(), get(&o, "priorAfter").clone());
+        let proof = verify_scoped_rest_no_multishare(&V::Object(verify_input))?;
+        let idx = find_active_index(&n).unwrap();
+        if get(get(&o, "body"), "action").as_str() == Some("sell") {
             need(
-                amount(sget(&proof, "realizedPnl").unwrap_or(""))?
-                    >= 5000i128 * js_int(get(&proof, "filledQuantity")).unwrap_or(0) as i128,
+                amount(get(&proof, "realizedPnl").as_str().unwrap_or(""))?
+                    >= 5_000 * js_int(get(&proof, "filledQuantity")).unwrap_or(0) as i128,
                 "ACTUAL_NET_PROFIT",
             )?;
-            let retires = retire_sold_pairs(&s, &o, &proof)?;
-            n2.as_object_mut()
+            let retires = retire_sold_pairs(&n, &o, &proof)?;
+            n.as_object_mut()
                 .unwrap()
                 .get_mut("pairRetirements")
-                .unwrap()
-                .as_array_mut()
+                .and_then(|v| v.as_array_mut())
                 .unwrap()
                 .extend(retires);
         } else {
-            let pairs = assign_fill(&s, &o, &proof)?;
-            n2.as_object_mut()
+            let pairs = assign_fill(&n, &o, &proof)?;
+            n.as_object_mut()
                 .unwrap()
                 .get_mut("assignments")
-                .unwrap()
-                .as_array_mut()
+                .and_then(|v| v.as_array_mut())
                 .unwrap()
                 .extend(pairs);
         }
         need(
-            {
-                let mut seen = std::collections::HashSet::new();
-                get(&n2, "assignments")
-                    .as_array()
-                    .map(|xs| {
-                        xs.iter()
-                            .all(|a| seen.insert(sget(a, "assignmentId").unwrap_or("").to_string()))
-                    })
-                    .unwrap_or(false)
-            },
+            get(&n, "assignments")
+                .as_array()
+                .map(|a| {
+                    a.iter()
+                        .map(|x| get(x, "assignmentId").as_str().unwrap_or("").to_string())
+                        .collect::<std::collections::HashSet<_>>()
+                        .len()
+                        == a.len()
+                })
+                .unwrap_or(false),
             "DUPLICATE_PAIR",
         )?;
         {
-            let m = n2
+            let orders = n
                 .as_object_mut()
                 .unwrap()
                 .get_mut("orders")
-                .unwrap()
-                .as_array_mut()
-                .unwrap()[oi]
-                .as_object_mut()
+                .and_then(|v| v.as_array_mut())
                 .unwrap();
-            m.insert("proof".into(), proof.clone());
-            m.insert("phase".into(), json!("reconciled"));
+            orders[idx]
+                .as_object_mut()
+                .unwrap()
+                .insert("proof".into(), proof.clone());
+            orders[idx]
+                .as_object_mut()
+                .unwrap()
+                .insert("phase".into(), json!("reconciled"));
         }
-        let ex_key = sget(get(&o, "body"), "exchangeId").unwrap_or("").to_string();
-        n2.as_object_mut()
+        n.as_object_mut()
             .unwrap()
             .get_mut("currentInventory")
-            .unwrap()
-            .as_object_mut()
+            .and_then(|v| v.as_object_mut())
             .unwrap()
             .insert(
-                ex_key.clone(),
+                get(get(&o, "body"), "exchangeId").as_str().unwrap_or("").to_string(),
                 json!({
                     "proof": proof,
-                    "after": get(get(e,"evidence"),"after"),
-                    "package": get(&o,"package"),
+                    "after": get(get(e, "evidence"), "after"),
+                    "package": get(&o, "package"),
                 }),
             );
-        if sget(get(&o, "body"), "action") == Some("buy")
-            || get(&s, "counterInventory").as_object().map(|m| m.contains_key(&ex_key)).unwrap_or(false)
+        if get(get(&o, "body"), "action").as_str() == Some("buy")
+            || get(&n, "counterInventory")
+                .as_object()
+                .map(|m| m.contains_key(get(get(&o, "body"), "exchangeId").as_str().unwrap_or("")))
+                .unwrap_or(false)
         {
-            let ci = get(get(&n2, "currentInventory"), ex_key.as_str()).clone();
-            n2.as_object_mut()
+            let entry = get(&get(&n, "currentInventory"), get(get(&o, "body"), "exchangeId").as_str().unwrap_or("")).clone();
+            n.as_object_mut()
                 .unwrap()
                 .get_mut("counterInventory")
+                .and_then(|v| v.as_object_mut())
                 .unwrap()
-                .as_object_mut()
-                .unwrap()
-                .insert(ex_key, ci);
+                .insert(
+                    get(get(&o, "body"), "exchangeId").as_str().unwrap_or("").to_string(),
+                    entry,
+                );
         }
-        return Ok(n2);
+        return Ok(n);
     }
-    need(false, "EVENT").map(|_| n)
+    need(false, "EVENT")?;
+    unreachable!()
 }
-
+/// configuration(seed, activation, migration, code)
 fn configuration(seed: &V, activation: &V, migration: &V, code: &V) -> Result<(), String> {
     need(
-        get(seed, "economicReplayPerformed") == &V::Bool(true)
+        get(seed, "economicReplayPerformed") == &json!(true)
             && get(seed, "stateHash").as_str()
                 == Some(payload_hash(get(seed, "state"))?.as_str())
             && !get(seed, "legacyCodeIdentityHash").is_null()
-            && js_int(get(migration, "schemaVersion")) == Some(1)
-            && get(migration, "seedHash").as_str()
-                == Some(payload_hash(seed)?.as_str())
+            && get(migration, "schemaVersion") == &json!(1)
+            && get(migration, "seedHash").as_str() == Some(payload_hash(seed)?.as_str())
             && same(get(migration, "legacyAnchor"), get(seed, "anchor"))?
             && get(migration, "legacyCodeIdentityHash") == get(seed, "legacyCodeIdentityHash")
-            && sget(migration, "implementationEpoch").is_some_and(|s| !s.is_empty())
+            && get(migration, "implementationEpoch")
+                .as_str()
+                .is_some_and(|s| !s.is_empty())
             && hex(get(migration, "authorityHash")),
         "VERIFIED_MIGRATION",
     )?;
     need(
-        js_int(get(activation, "schemaVersion")) == Some(1)
-            && sget(activation, "mode") == Some("baal_neutral_owned_counterpart_pilot_v2")
-            && sget(activation, "ownerId") == sget(get(get(seed, "state"), "scope"), "ownerId")
-            && sget(activation, "runId") == sget(get(get(seed, "state"), "scope"), "runId")
-            && sget(activation, "tournamentId")
-                == sget(get(get(seed, "state"), "scope"), "tournamentId")
+        get(activation, "schemaVersion") == &json!(1)
+            && get(activation, "mode").as_str()
+                == Some("baal_neutral_owned_counterpart_pilot_v2")
+            && get(activation, "ownerId") == get(&get(&get(seed, "state"), "scope"), "ownerId")
+            && get(activation, "runId") == get(&get(&get(seed, "state"), "scope"), "runId")
+            && get(activation, "tournamentId")
+                == get(&get(&get(seed, "state"), "scope"), "tournamentId")
             && get(activation, "seedHash").as_str() == Some(payload_hash(seed)?.as_str())
-            && get(activation, "implementationEpoch") == get(migration, "implementationEpoch")
+            && get(activation, "implementationEpoch")
+                == get(migration, "implementationEpoch")
             && get(activation, "codeIdentityHash").as_str()
                 == Some(payload_hash(code)?.as_str())
             && hex(get(activation, "authorityHash"))
             && get(activation, "authorityHash") == get(migration, "authorityHash")
             && js_int(get(activation, "maximumHedgeOrders")) == Some(1)
             && js_int(get(activation, "quantity")) == Some(1)
-            && sget(activation, "maximumOrderCost") == Some("0.995000")
-            && sget(activation, "maximumPairUnitCost") == Some("0.990000")
+            && get(activation, "maximumOrderCost").as_str() == Some("0.995000")
+            && get(activation, "maximumPairUnitCost").as_str() == Some("0.990000")
             && instant_v(get(activation, "exitExpiresAt"))?
                 > instant_v(get(activation, "startedAt"))?
             && instant_v(get(activation, "exitExpiresAt"))?
                 - instant_v(get(activation, "startedAt"))?
-                <= 86400000
+                <= 86_400_000
             && get(activation, "allowedFirstExchangeIds")
                 .as_array()
-                .is_some_and(|xs| xs.len() == 1)
-            && js_int(get(
-                get(
-                    get(
-                        get(get(seed, "state"), "inventory"),
-                        get(activation, "allowedFirstExchangeIds")
-                            .as_array()
-                            .and_then(|xs| xs.first())
-                            .and_then(V::as_str)
+                .is_some_and(|a| a.len() == 1)
+            && js_int(&get(
+                &get(
+                    &get(
+                        &get(&get(seed, "state"), "inventory"),
+                        get(activation, "allowedFirstExchangeIds")[0]
+                            .as_str()
                             .unwrap_or(""),
                     ),
                     "proof",
                 ),
                 "remainingOwnedQuantity",
             ))
-            .unwrap_or(0)
-                > 0
+            .map(|q| q > 0)
+            .unwrap_or(false)
             && instant_v(get(activation, "hedgeExpiresAt"))?
                 > instant_v(get(activation, "startedAt"))?
             && instant_v(get(activation, "hedgeExpiresAt"))?
                 - instant_v(get(activation, "startedAt"))?
-                <= 3600000,
+                <= 3_600_000,
         "BOUNDED_NEW_HEDGE_ONLY",
     )?;
     Ok(())
 }
-
 /// replayLiveHedgeJournal({bodyText,seed,activation,migration,expectedCodeIdentity})
-pub fn replay_live_hedge_journal(input: &V) -> Result<V, String> {
-    let seed = get(input, "seed");
-    let activation = get(input, "activation");
-    let migration = get(input, "migration");
-    let expected_code_identity = get(input, "expectedCodeIdentity");
+pub fn replay_live_hedge_journal(
+    body_text: &str,
+    seed: &V,
+    activation: &V,
+    migration: &V,
+    expected_code_identity: &V,
+) -> Result<V, String> {
     configuration(seed, activation, migration, expected_code_identity)?;
-    let body_text = get(input, "bodyText");
     need(
-        body_text
-            .as_str()
-            .is_some_and(|s| s.ends_with('\n') && s.len() <= 128 * 1024 * 1024),
+        !body_text.is_empty()
+            && body_text.ends_with('\n')
+            && body_text.len() <= 128 * 1024 * 1024,
         "REPLAY_INPUT",
     )?;
-    let body_text = body_text.as_str().unwrap_or("");
     let mut state: Option<V> = None;
-    let mut sequence: i64 = 0;
+    let mut sequence: u64 = 0;
     let mut previous = String::new();
     let mut root_prefix: Option<V> = None;
     for line in body_text.trim_end().split('\n') {
         let row: V = serde_json::from_str(line).map_err(|e| e.to_string())?;
-        let mut body = row.clone();
-        let hash = match body.as_object_mut() {
-            Some(m) => m.shift_remove("hash").unwrap_or(V::Null),
-            None => V::Null,
-        };
-        sequence += 1;
+        let hash = get(&row, "hash").as_str().unwrap_or("").to_string();
+        let mut body = row.as_object().cloned().unwrap_or_default();
+        body.shift_remove("hash");
+        let body = V::Object(body);
         need(
             js_stringify(&row) == line
-                && js_int(get(&body, "sequence")) == Some(sequence)
+                && js_int(get(&body, "sequence")) == Some((sequence + 1) as i64)
                 && get(&body, "previous").as_str() == Some(previous.as_str())
-                && sha(&js_stringify(&body)) == hash.as_str().unwrap_or("\u{0}")
-                && same(
-                    get(get(&body, "event"), "codeIdentity"),
-                    expected_code_identity,
-                )?,
+                && sha(js_stringify(&body).as_bytes()) == hash
+                && same(get(get(&body, "event"), "codeIdentity"), expected_code_identity)?,
             "CHAIN_CODE",
         )?;
+        sequence += 1;
         if sequence == 1 {
             need(
-                sget(get(get(&body, "event"), "input"), "kind") == Some("seed")
-                    && same(
-                        get(get(get(&body, "event"), "input"), "seed"),
-                        seed,
-                    )?
+                get(get(get(&body, "event"), "input"), "kind").as_str() == Some("seed")
+                    && same(get(get(get(&body, "event"), "input"), "seed"), seed)?
                     && same(
                         get(get(get(&body, "event"), "input"), "activation"),
                         activation,
@@ -1508,217 +1515,199 @@ pub fn replay_live_hedge_journal(input: &V) -> Result<V, String> {
                 "EXACT_SEED",
             )?;
         }
-        state = Some(reduce(state, get(get(&body, "event"), "input"))?);
+        state = Some(reduce(state.as_ref(), get(&get(&body, "event"), "input"))?);
         need(
             same(state.as_ref().unwrap(), get(&body, "state"))?,
             "ECONOMIC_STATE_REPLAY",
         )?;
-        previous = hash.as_str().unwrap_or("").to_string();
+        previous = hash.clone();
         if sequence == 1 {
             root_prefix = Some(json!({
                 "bytes": line.len() + 1,
-                "sha256": sha(&(line.to_string() + "\n")),
+                "sha256": sha(format!("{line}\n").as_bytes()),
                 "sequence": sequence,
-                "hash": hash,
+                "hash": previous,
             }));
         }
     }
-    let state = state.unwrap_or(V::Null);
+    let anchor = json!({
+        "bytes": body_text.len(),
+        "sha256": sha(body_text.as_bytes()),
+        "sequence": sequence,
+        "hash": previous,
+    });
+    let unknown = pilot_unknown(state.as_ref().unwrap_or(&V::Null));
     Ok(json!({
-        "state": state,
-        "anchor": {
-            "bytes": body_text.len(),
-            "sha256": sha(body_text),
-            "sequence": sequence,
-            "hash": previous,
-        },
-        "rootPrefix": root_prefix,
+        "state": state.unwrap_or(V::Null),
+        "anchor": anchor,
+        "rootPrefix": root_prefix.unwrap_or(V::Null),
         "economicReplayPerformed": true,
-        "unknownAcceptance": pilot_unknown(&state),
+        "unknownAcceptance": unknown,
     }))
 }
 
-// ---------------------------------------------------------------------------
-// openBaalNeutralOwnedCounterpartPilotV2 — the live pilot controller.
-
-struct InFlight {
-    spec: V,
-    bd_ptr: usize,
-    #[allow(dead_code)]
-    bn_ptr: usize,
+fn created_ms(st: &fs::Metadata) -> f64 {
+    #[cfg(unix)]
+    {
+        st.created()
+            .ok()
+            .map(|c| {
+                c.duration_since(std::time::UNIX_EPOCH)
+                    .unwrap_or_default()
+                    .as_secs_f64()
+                    * 1000.0
+            })
+            .unwrap_or(0.0)
+    }
+    #[cfg(not(unix))]
+    {
+        let _ = st;
+        0.0
+    }
+}
+#[cfg(unix)]
+fn stat_ino(st: &fs::Metadata) -> u64 {
+    use std::os::unix::fs::MetadataExt;
+    st.ino()
+}
+#[cfg(not(unix))]
+fn stat_ino(_st: &fs::Metadata) -> u64 {
+    0
 }
 
 pub struct NeutralPilotDeps {
-    pub dispatch: Rc<crate::paired_rest_controller::WireDispatch>,
+    pub dispatch: Rc<WireDispatch>,
     pub raw_receipt_of: Rc<dyn Fn(&V, &V) -> Result<V, String>>,
     pub assert_account_lease: Rc<dyn Fn() -> Result<V, String>>,
     pub assert_financial_owner_lease: Rc<dyn Fn() -> Result<V, String>>,
     pub install_funding_reservation: Rc<dyn Fn(&V) -> Result<V, String>>,
     pub get_global_risk: Rc<dyn Fn() -> Result<V, String>>,
     pub get_evidence: Rc<dyn Fn(&V) -> Result<V, String>>,
-    pub on_financial_halt: Rc<dyn Fn(&V) -> Result<(), String>>,
+    pub on_financial_halt: Rc<dyn Fn(&V) -> Result<V, String>>,
     pub can_operate: Rc<dyn Fn() -> bool>,
-    /// Defaults to can_operate (JS canCheckMechanical=canOperate).
+    /// canCheckMechanical — defaults to can_operate.
     pub can_check_mechanical: Option<Rc<dyn Fn() -> bool>>,
-    /// Defaults to assert_account_lease (JS assertMechanicalAccountLease).
+    /// assertMechanicalAccountLease — defaults to assert_account_lease.
     pub assert_mechanical_account_lease: Option<Rc<dyn Fn() -> Result<V, String>>>,
-    /// Defaults to assert_financial_owner_lease (JS assertMechanicalFinancialOwnerLease).
+    /// assertMechanicalFinancialOwnerLease — defaults to
+    /// assert_financial_owner_lease.
     pub assert_mechanical_financial_owner_lease: Option<Rc<dyn Fn() -> Result<V, String>>>,
     pub now: Rc<dyn Fn() -> f64>,
+    pub workspace_dir: PathBuf,
 }
 
-struct Inner {
+struct PilotInner {
+    deps: NeutralPilotDeps,
     seed: V,
     seed_hash: String,
     original_inventory_hash: String,
     original_orders_hash: String,
+    code: V,
     activation: V,
     migration: V,
-    file: PathBuf,
-    code: V,
-    journal: Journal,
+    legacy_file: PathBuf,
+    bytes: Vec<u8>,
     state: Option<V>,
     closed: bool,
     failed: bool,
     busy: bool,
+    in_flight: Option<V>,
+    journal: Journal,
+    file: PathBuf,
     size: u64,
-    bytes_hash: String,
-    ino: u64,
-    birthtime_ms: f64,
-    in_flight: Option<InFlight>,
-    issued: HashMap<usize, V>,
-    lease: OwnerLease,
+    hash: String,
+    stat_ino: u64,
+    stat_birthtime_ms: f64,
     last_guard_failure: Option<V>,
     fetch_deadline: Option<f64>,
-    local_timings: RefCell<Vec<V>>,
-    can_check_mechanical: Rc<dyn Fn() -> bool>,
-    assert_mechanical_account_lease: Rc<dyn Fn() -> Result<V, String>>,
-    assert_mechanical_financial_owner_lease: Rc<dyn Fn() -> Result<V, String>>,
-    legacy_file: PathBuf,
-    legacy_bytes: Vec<u8>,
-    workspace: PathBuf,
-    deps: NeutralPilotDeps,
+    issued: std::collections::HashMap<usize, V>,
+    local_timings: Vec<V>,
+    lease: OwnerLease,
 }
 
-pub struct BaalNeutralOwnedCounterpartPilotV2 {
-    inner: Rc<RefCell<Inner>>,
+pub struct BaalNeutralOwnedCounterpartPilot {
+    inner: Rc<RefCell<PilotInner>>,
     transport: OrderTransport,
 }
 
-fn diagnostic_code(message: &str) -> String {
-    let ok = |s: &str| {
-        let b = s.as_bytes();
-        !b.is_empty()
-            && b.len() >= 2
-            && b.len() <= 141
-            && b[0].is_ascii_alphabetic()
-            && b[1..].iter().all(|c| c.is_ascii_alphanumeric() || *c == b'_')
-    };
-    if ok(message) {
-        message.to_uppercase()
-    } else {
-        "OPERATION_FAILED".to_string()
+fn measure<F, T>(inner: &Rc<RefCell<PilotInner>>, name: &str, f: F) -> Result<T, String>
+where
+    F: FnOnce() -> Result<T, String>,
+{
+    let start = Instant::now();
+    let result = f();
+    let mut entry = Map::new();
+    entry.insert("name".into(), json!(name));
+    entry.insert(
+        "durationMs".into(),
+        json!((start.elapsed().as_secs_f64() * 1_000_000.0).round() / 1000.0),
+    );
+    if let Err(e) = &result {
+        let at = (inner.borrow().deps.now)();
+        entry.insert("errorCode".into(), json!(diagnostic_code(e)));
+        entry.insert("failedAt".into(), json!(iso(at)));
     }
+    let mut b = inner.borrow_mut();
+    b.local_timings.push(V::Object(entry));
+    if b.local_timings.len() > 96 {
+        b.local_timings.remove(0);
+    }
+    drop(b);
+    result
 }
 
-fn measure<T>(
-    inner: &Rc<RefCell<Inner>>,
-    name: &str,
-    f: impl FnOnce() -> Result<T, String>,
-) -> Result<T, String> {
-    let start = Instant::now();
-    let mut failure: Option<(String, String)> = None;
-    let r = f();
-    if let Err(e) = &r {
-        failure = Some((
-            diagnostic_code(e),
-            iso((inner.borrow().deps.now)()),
-        ));
-    }
-    let dur = (start.elapsed().as_secs_f64() * 1000.0 * 1000.0).round() / 1000.0;
-    let mut row = Map::new();
-    row.insert("name".into(), json!(name));
-    row.insert("durationMs".into(), json!(dur));
-    if let Some((code, at)) = failure {
-        row.insert("errorCode".into(), json!(code));
-        row.insert("failedAt".into(), json!(at));
-    }
+fn mechanical(inner: &Rc<RefCell<PilotInner>>) -> Result<V, String> {
     {
-        let g = inner.borrow();
-        let mut t = g.local_timings.borrow_mut();
-        t.push(V::Object(row));
-        if t.len() > 96 {
-            t.remove(0);
-        }
+        let b = inner.borrow();
+        let f = b
+            .deps
+            .can_check_mechanical
+            .clone()
+            .unwrap_or_else(|| b.deps.can_operate.clone());
+        need(!b.closed && !b.failed && f(), "STOPPED")?;
     }
-    r
-}
-
-fn measure_into<T>(
-    timings: &RefCell<Vec<V>>,
-    now: &dyn Fn() -> f64,
-    name: &str,
-    f: impl FnOnce() -> Result<T, String>,
-) -> Result<T, String> {
-    let start = Instant::now();
-    let mut failure: Option<(String, String)> = None;
-    let r = f();
-    if let Err(e) = &r {
-        failure = Some((diagnostic_code(e), iso(now())));
-    }
-    let dur = (start.elapsed().as_secs_f64() * 1000.0 * 1000.0).round() / 1000.0;
-    let mut row = Map::new();
-    row.insert("name".into(), json!(name));
-    row.insert("durationMs".into(), json!(dur));
-    if let Some((code, at)) = failure {
-        row.insert("errorCode".into(), json!(code));
-        row.insert("failedAt".into(), json!(at));
-    }
-    let mut t = timings.borrow_mut();
-    t.push(V::Object(row));
-    if t.len() > 96 {
-        t.remove(0);
-    }
-    r
-}
-
-#[allow(clippy::too_many_arguments)]
-fn mechanical_at(
-    stopped: bool,
-    can_check_mechanical: &dyn Fn() -> bool,
-    lease: &OwnerLease,
-    assert_mechanical_account_lease: &dyn Fn() -> Result<V, String>,
-    assert_mechanical_financial_owner_lease: &dyn Fn() -> Result<V, String>,
-    activation: &V,
-    migration: &V,
-    timings: &RefCell<Vec<V>>,
-    now: &dyn Fn() -> f64,
-) -> Result<V, String> {
-    need(!stopped && can_check_mechanical(), "STOPPED")?;
-    lease.assert_ownership().map_err(|e| e.message)?;
-    let l = measure_into(timings, now, "basic_account_lease", || {
-        assert_mechanical_account_lease()
-    })?;
-    let f = measure_into(timings, now, "basic_financial_lease", || {
-        assert_mechanical_financial_owner_lease()
-    })?;
-    for x in [&l, &f] {
+    inner.borrow().lease.assert_ownership().map_err(|e| e.message)?;
+    let l = {
+        let f = {
+            let b = inner.borrow();
+            b.deps
+                .assert_mechanical_account_lease
+                .clone()
+                .unwrap_or_else(|| b.deps.assert_account_lease.clone())
+        };
+        measure(inner, "basic_account_lease", move || sync(f()))?
+    };
+    let f_lease = {
+        let f = {
+            let b = inner.borrow();
+            b.deps
+                .assert_mechanical_financial_owner_lease
+                .clone()
+                .unwrap_or_else(|| b.deps.assert_financial_owner_lease.clone())
+        };
+        measure(inner, "basic_financial_lease", move || sync(f()))?
+    };
+    let (activation, migration) = {
+        let b = inner.borrow();
+        (b.activation.clone(), b.migration.clone())
+    };
+    for x in [&l, &f_lease] {
         need(
-            sget(x, "ownerId") == sget(activation, "ownerId")
-                && sget(x, "runId") == sget(activation, "runId")
-                && sget(x, "tournamentId") == sget(activation, "tournamentId")
-                && sget(x, "leaseId").is_some_and(|s| !s.is_empty()),
+            get(x, "ownerId") == get(&activation, "ownerId")
+                && get(x, "runId") == get(&activation, "runId")
+                && get(x, "tournamentId") == get(&activation, "tournamentId")
+                && get(x, "leaseId").as_str().is_some_and(|s| !s.is_empty()),
             "ACTUAL_ACCOUNT_LEASE",
         )?;
     }
     need(
-        get(&f, "implementationEpoch") == get(migration, "implementationEpoch"),
+        get(&f_lease, "implementationEpoch") == get(&migration, "implementationEpoch"),
         "FINANCIAL_OWNER_EPOCH",
     )?;
     need(
         l.as_object()
-            .map(|m| {
-                m.keys()
+            .map(|o| {
+                o.keys()
                     .all(|k| ["ownerId", "runId", "tournamentId", "leaseId"].contains(&k.as_str()))
             })
             .unwrap_or(false),
@@ -1727,57 +1716,43 @@ fn mechanical_at(
     Ok(l)
 }
 
-#[allow(clippy::too_many_arguments)]
-fn basic_at(
-    can_operate: &dyn Fn() -> bool,
-    can_check_mechanical: &dyn Fn() -> bool,
-    lease: &OwnerLease,
-    assert_mechanical_account_lease: &dyn Fn() -> Result<V, String>,
-    assert_mechanical_financial_owner_lease: &dyn Fn() -> Result<V, String>,
-    activation: &V,
-    migration: &V,
-    legacy_file: &Path,
-    legacy_bytes: &[u8],
-    seed: &V,
-    workspace: &Path,
-    code: &V,
-    timings: &RefCell<Vec<V>>,
-    now: &dyn Fn() -> f64,
-) -> Result<V, String> {
-    need(can_operate(), "STOPPED")?;
-    let l = mechanical_at(
-        false,
-        can_check_mechanical,
-        lease,
-        assert_mechanical_account_lease,
-        assert_mechanical_financial_owner_lease,
-        activation,
-        migration,
-        timings,
-        now,
-    )?;
-    let actual = measure_into(timings, now, "basic_legacy_fresh_read", || {
-        fs::read(legacy_file).map_err(|e| e.to_string())
+fn basic(inner: &Rc<RefCell<PilotInner>>) -> Result<V, String> {
+    need((inner.borrow().deps.can_operate)(), "STOPPED")?;
+    let l = mechanical(inner)?;
+    let (legacy_file, seed_bytes, workspace, code, seed_anchor_bytes) = {
+        let b = inner.borrow();
+        (
+            b.legacy_file.clone(),
+            b.bytes.clone(),
+            b.deps.workspace_dir.clone(),
+            b.code.clone(),
+            js_int(get(get(&b.seed, "anchor"), "bytes")).unwrap_or(0) as usize,
+        )
+    };
+    let actual = measure(inner, "basic_legacy_fresh_read", || {
+        fs::read(&legacy_file).map_err(|e| e.to_string())
     })?;
-    let unchanged = measure_into(timings, now, "basic_legacy_exact_compare", || {
-        Ok(actual == legacy_bytes)
-    })?;
-    let code_same = measure_into(timings, now, "basic_current_code_graph", || {
-        same(&live_coordinator_identity(workspace)?, code)
-    })?;
+    let inner2 = inner.clone();
+    let actual2 = actual.clone();
     need(
-        actual.len()
-            == get(get(seed, "anchor"), "bytes")
-                .as_u64()
-                .unwrap_or(0) as usize
-            && unchanged
-            && code_same,
+        actual.len() == seed_anchor_bytes
+            && measure(inner, "basic_legacy_exact_compare", move || {
+                let _ = &inner2;
+                Ok(actual2 == seed_bytes)
+            })?
+            && measure(inner, "basic_current_code_graph", || {
+                let ws = {
+                    let _ = &workspace;
+                    inner.borrow().deps.workspace_dir.clone()
+                };
+                same(&live_coordinator_identity(&ws)?, &code)
+            })?,
         "LEGACY_NOT_SEALED_OR_CODE_CHANGED",
     )?;
     need(
         l.as_object()
-            .map(|m| {
-                m.keys()
+            .map(|o| {
+                o.keys()
                     .all(|k| ["ownerId", "runId", "tournamentId", "leaseId"].contains(&k.as_str()))
             })
             .unwrap_or(false),
@@ -1786,186 +1761,134 @@ fn basic_at(
     Ok(l)
 }
 
-impl Inner {
-    fn mechanical(&self) -> Result<V, String> {
-        let stopped = self.closed || self.failed;
-        mechanical_at(
-            stopped,
-            &*self.can_check_mechanical,
-            &self.lease,
-            &*self.assert_mechanical_account_lease,
-            &*self.assert_mechanical_financial_owner_lease,
-            &self.activation,
-            &self.migration,
-            &self.local_timings,
-            &*self.deps.now,
-        )
-    }
-    fn basic(&self) -> Result<V, String> {
-        need((self.deps.can_operate)(), "STOPPED")?;
-        let l = self.mechanical()?;
-        let timings = &self.local_timings;
-        let now_fn = &*self.deps.now;
-        let actual = measure_into(timings, now_fn, "basic_legacy_fresh_read", || {
-            fs::read(&self.legacy_file).map_err(|e| e.to_string())
-        })?;
-        let unchanged = measure_into(timings, now_fn, "basic_legacy_exact_compare", || {
-            Ok(actual == self.legacy_bytes)
-        })?;
-        let code_same = measure_into(timings, now_fn, "basic_current_code_graph", || {
-            same(&live_coordinator_identity(&self.workspace)?, &self.code)
-        })?;
-        need(
-            actual.len()
-                == get(get(&self.seed, "anchor"), "bytes")
-                    .as_u64()
-                    .unwrap_or(0) as usize
-                && unchanged
-                && code_same,
-            "LEGACY_NOT_SEALED_OR_CODE_CHANGED",
-        )?;
-        need(
-            l.as_object()
-                .map(|m| {
-                    m.keys().all(|k| {
-                        ["ownerId", "runId", "tournamentId", "leaseId"].contains(&k.as_str())
-                    })
-                })
-                .unwrap_or(false),
-            "LEASE_RECEIPT_SCHEMA",
-        )?;
-        Ok(l)
-    }
-}
-
-fn append(inner: &Rc<RefCell<Inner>>, input: &V) -> Result<(), String> {
-    inner.borrow().basic()?;
-    let (before, size, bytes_hash, ino, birthtime) = {
-        let g = inner.borrow();
-        let before = fs::read(&g.file).map_err(|e| e.to_string())?;
-        let stat = fs::metadata(&g.file).map_err(|e| e.to_string())?;
-        use std::os::unix::fs::MetadataExt;
+fn append(inner: &Rc<RefCell<PilotInner>>, e: &V) -> Result<(), String> {
+    basic(inner)?;
+    let (file, size, hash, stat_in, stat_birth, event) = {
+        let b = inner.borrow();
         (
-            before,
-            g.size,
-            g.bytes_hash.clone(),
-            stat.ino(),
-            stat.created()
-                .ok()
-                .and_then(|t| t.duration_since(std::time::UNIX_EPOCH).ok())
-                .map(|d| d.as_secs_f64() * 1000.0)
-                .unwrap_or(0.0),
+            b.file.clone(),
+            b.size,
+            b.hash.clone(),
+            b.stat_ino,
+            b.stat_birthtime_ms,
+            json!({"codeIdentity": b.code, "input": e}),
         )
     };
+    let old = fs::read(&file).map_err(|er| er.to_string())?;
+    let st = fs::metadata(&file).map_err(|er| er.to_string())?;
     need(
-        ino == inner.borrow().ino
-            && birthtime == inner.borrow().birthtime_ms
-            && before.len() as u64 == size
-            && sha_bytes(&before) == bytes_hash,
+        stat_ino(&st) == stat_in && created_ms(&st) == stat_birth,
         "JOURNAL_CHANGED",
     )?;
-    let next = reduce(inner.borrow().state.clone(), input)?;
+    need(old.len() as u64 == size && sha(&old) == hash, "JOURNAL_CHANGED")?;
+    let state = inner.borrow().state.clone();
+    let next = reduce(state.as_ref(), e)?;
     need(
-        (size + js_stringify(&next).len() as u64 + js_stringify(input).len() as u64)
-            < 128 * 1024 * 1024,
+        (size + js_stringify(&next).len() as u64 + js_stringify(e).len() as u64)
+            < 134_217_728,
         "JOURNAL_BOUND",
     )?;
-    let event = {
-        let g = inner.borrow();
-        json!({"codeIdentity": g.code, "input": input})
+    let commit_result = {
+        let mut b = inner.borrow_mut();
+        b.journal.commit(&next, &event)
     };
-    match inner.borrow_mut().journal.commit(&next, &event) {
+    match commit_result {
         Ok(_) => {
-            inner.borrow().basic()?;
-            let all = fs::read(&inner.borrow().file).map_err(|e| e.to_string())?;
-            need(
-                all[..size as usize] == before[..] && all.len() as u64 > size,
-                "PREFIX_CHANGED",
-            )?;
-            let mut g = inner.borrow_mut();
-            g.state = Some(next);
-            g.size = all.len() as u64;
-            g.bytes_hash = sha_bytes(&all);
+            basic(inner)?;
+            let after = fs::read(&file).map_err(|er| er.to_string())?;
+            need(after[..size as usize] == old[..], "PREFIX_CHANGED")?;
+            let mut b = inner.borrow_mut();
+            b.state = Some(next);
+            b.size = after.len() as u64;
+            b.hash = sha(&after);
             Ok(())
         }
-        Err(e) => {
+        Err(f) => {
             inner.borrow_mut().failed = true;
-            Err(e)
+            Err(f)
         }
     }
 }
 
-fn reserve(inner: &Rc<RefCell<Inner>>) -> Result<V, String> {
-    // JS: the entire body is wrapped in try/catch marking failed+fatal.
-    let result = (|| -> Result<V, String> {
-        let res = {
-            let g = inner.borrow();
-            funding(g.state.as_ref().unwrap_or(&V::Null))?
-        };
-        let receipt = (inner.borrow().deps.install_funding_reservation)(&res)?;
-        append(
-            inner,
-            &json!({"kind": "reservation", "receipt": receipt, "at": iso((inner.borrow().deps.now)())}),
-        )?;
-        Ok(receipt)
-    })();
-    match result {
-        Ok(v) => Ok(v),
-        Err(e) => {
-            inner.borrow_mut().failed = true;
-            Err(e)
-        }
-    }
+fn state_of(inner: &Rc<RefCell<PilotInner>>) -> V {
+    inner.borrow().state.clone().unwrap_or(V::Null)
+}
+fn funding_of(inner: &Rc<RefCell<PilotInner>>) -> Result<V, String> {
+    funding(&state_of(inner))
 }
 
-fn ensure_installed(inner: &Rc<RefCell<Inner>>) -> Result<V, String> {
-    inner.borrow().basic()?;
-    let (record, r, state, seed_hash, epoch) = {
-        let g = inner.borrow();
-        let st = g.state.clone().unwrap_or(V::Null);
-        (
-            funding(&st)?,
-            get(&st, "reservation").clone(),
-            st,
-            g.seed_hash.clone(),
-            get(&g.migration, "implementationEpoch").clone(),
-        )
+fn reserve(inner: &Rc<RefCell<PilotInner>>) -> Result<V, String> {
+    let record = funding_of(inner)?;
+    let r = {
+        let b = inner.borrow();
+        (b.deps.install_funding_reservation)(&record)
     };
-    let now = (inner.borrow().deps.now)() as i64;
+    let r = match r {
+        Ok(v) => sync(Ok(v))?,
+        Err(e) => {
+            inner.borrow_mut().failed = true;
+            return Err(e);
+        }
+    };
+    if let Err(f) = append(
+        inner,
+        &json!({"kind": "reservation", "receipt": r, "at": iso((inner.borrow().deps.now)())}),
+    ) {
+        inner.borrow_mut().failed = true;
+        return Err(f);
+    }
+    Ok(r)
+}
+
+fn ensure_installed(inner: &Rc<RefCell<PilotInner>>) -> Result<V, String> {
+    basic(inner)?;
+    let record = funding_of(inner)?;
+    let state = state_of(inner);
+    let r = get(&state, "reservation").clone();
+    let seed_hash = inner.borrow().seed_hash.clone();
+    let migration_epoch = get(&inner.borrow().migration, "implementationEpoch").clone();
+    let n = (inner.borrow().deps.now)() as i64;
     let mut valid = get(&r, "reservationHash") == get(&record, "reservationHash")
         && get(&r, "allocationHash") == get(&record, "allocationHash")
         && get(&r, "seedHash").as_str() == Some(seed_hash.as_str())
         && hex(get(&r, "globalLedgerHash"))
         && hex(get(&r, "budgetInstalledHash"))
-        && instant_v(get(&r, "confirmedAt"))? <= now
-        && now - instant_v(get(&r, "confirmedAt"))? <= 20000;
+        && instant_v(get(&r, "confirmedAt"))
+            .map(|t| t <= n && n - t <= 20_000)
+            .unwrap_or(false);
     if valid {
-        let g = (inner.borrow().deps.get_global_risk)()?;
+        let g = {
+            let b = inner.borrow();
+            sync((b.deps.get_global_risk)())?
+        };
         let o = active(&state);
-        valid = sget(&g, "ownerId") == sget(&state, "ownerId")
-            && sget(&g, "runId") == sget(&state, "runId")
-            && sget(&g, "tournamentId") == sget(&state, "tournamentId")
-            && get(&g, "complete") == &V::Bool(true)
-            && get(&g, "eventScopeComplete") == &V::Bool(true)
-            && get(&g, "soleCollector") == &V::Bool(true)
-            && get(&g, "stopped") == &V::Bool(false)
-            && get(&g, "unknownAcceptance") == &V::Bool(false)
+        valid = get(&g, "ownerId") == get(get(&state, "scope"), "ownerId")
+            && get(&g, "runId") == get(get(&state, "scope"), "runId")
+            && get(&g, "tournamentId") == get(get(&state, "scope"), "tournamentId")
+            && get(&g, "complete") == &json!(true)
+            && get(&g, "eventScopeComplete") == &json!(true)
+            && get(&g, "soleCollector") == &json!(true)
+            && get(&g, "stopped") == &json!(false)
+            && get(&g, "unknownAcceptance") == &json!(false)
             && hex(get(&g, "sourceHash"))
-            && get(&g, "unresolvedIntentIds").as_array().is_some_and(|ids| {
-                ids.iter()
-                    .all(|id| get(&o.clone().unwrap_or(V::Null), "intentId") == id)
-            })
+            && get(&g, "unresolvedIntentIds").is_array()
+            && get(&g, "unresolvedIntentIds")
+                .as_array()
+                .unwrap()
+                .iter()
+                .all(|id| id == &get(&o, "intentId").clone())
             && get(&g, "controllerReservationHash") == get(&record, "reservationHash")
             && get(&g, "globalLedgerHash") == get(&r, "globalLedgerHash")
             && get(&g, "budgetInstalledHash") == get(&r, "budgetInstalledHash")
             && get(&g, "allocationHash") == get(&record, "allocationHash")
             && get(&g, "seedHash").as_str() == Some(seed_hash.as_str())
-            && get(&g, "implementationEpoch") == &epoch
-            && get(&g, "fundingSatisfied") == &V::Bool(true)
-            && get(&g, "installedCashLower").as_str().is_some()
+            && get(&g, "implementationEpoch") == &migration_epoch
+            && get(&g, "fundingSatisfied") == &json!(true)
+            && get(&g, "installedCashLower").is_string()
             && get(&g, "cashLower") == get(&g, "installedCashLower")
-            && instant_v(get(&g, "at"))? <= now
-            && now - instant_v(get(&g, "at"))? <= 20000;
+            && instant_v(get(&g, "at"))
+                .map(|t| t <= n && n - t <= 20_000)
+                .unwrap_or(false);
     }
     if !valid {
         return reserve(inner);
@@ -1973,83 +1896,75 @@ fn ensure_installed(inner: &Rc<RefCell<Inner>>) -> Result<V, String> {
     Ok(r)
 }
 
-fn evidence(
-    inner: &Rc<RefCell<Inner>>,
+/// evidence(operation, firstEx=null, fenceRisk=null)
+fn evidence_of(
+    inner: &Rc<RefCell<PilotInner>>,
     operation: &str,
     first_ex: Option<&str>,
-    fence_risk: Option<&V>,
+    fence_risk: &V,
 ) -> Result<V, String> {
-    let (o, exchanges) = {
-        let g = inner.borrow();
-        let st = g.state.clone().unwrap_or(V::Null);
-        (
-            active(&st).unwrap_or(V::Null),
-            get(get(&st, "scope"), "exchanges").clone(),
-        )
-    };
-    let first = first_ex
-        .map(|x| x.to_string())
-        .or_else(|| sget(&o, "firstExchangeId").map(|x| x.to_string()));
-    let exchange_id = sget(get(&o, "body"), "exchangeId")
-        .map(|x| x.to_string())
-        .or_else(|| first.clone());
-    // JS: o?.marketId ?? scope.exchanges.find(x=>x.exchangeId===firstEx)?.marketId ?? null
-    // — the find() uses the firstEx PARAMETER only (no o.firstExchangeId fallback).
+    let state = state_of(inner);
+    let o = active(&state);
+    let body_ex = get(get(&o, "body"), "exchangeId").clone();
     let market_id = if !get(&o, "marketId").is_null() {
         get(&o, "marketId").clone()
     } else {
-        first_ex
-            .and_then(|fx| {
-                exchanges.as_array().and_then(|xs| {
-                    xs.iter()
-                        .find(|x| sget(x, "exchangeId") == Some(fx))
-                        .and_then(|x| x.get("marketId"))
-                        .cloned()
-                })
+        get(get(&state, "scope"), "exchanges")
+            .as_array()
+            .and_then(|xs| {
+                xs.iter()
+                    .find(|x| Some(get(x, "exchangeId").as_str().unwrap_or("")) == first_ex)
+                    .map(|x| get(x, "marketId").clone())
             })
             .unwrap_or(V::Null)
     };
-    (inner.borrow().deps.get_evidence)(&json!({
+    let ctx = json!({
         "operation": operation,
-        "fenceRisk": fence_risk.map(|x| x.clone()).unwrap_or(V::Null),
+        "fenceRisk": fence_risk,
         "intentId": get(&o, "intentId"),
         "orderId": get(&o, "orderId"),
-        "firstExchangeId": first,
-        "exchangeId": exchange_id,
+        "firstExchangeId": first_ex.map(|x| json!(x)).unwrap_or_else(|| get(&o, "firstExchangeId").clone()),
+        "exchangeId": if !body_ex.is_null() { body_ex } else { first_ex.map(|x| json!(x)).unwrap_or(V::Null) },
         "marketId": market_id,
-    }))
+    });
+    let b = inner.borrow();
+    sync((b.deps.get_evidence)(&ctx))
 }
 
-fn validate(inner: &Rc<RefCell<Inner>>, p: &V, spec: &V, network: bool) -> Result<bool, String> {
-    inner.borrow().mechanical()?;
-    let (state, o) = {
-        let g = inner.borrow();
-        let st = g.state.clone().unwrap_or(V::Null);
-        (st.clone(), active(&st))
-    };
-    let o = o.ok_or_else(|| "HEDGE_COORDINATOR_HEDGE_ONLY_FIXED_PERMIT".to_string())?;
+/// validate(permit, spec, network)
+fn validate(
+    inner: &Rc<RefCell<PilotInner>>,
+    permit: &V,
+    spec: &V,
+    network: bool,
+) -> Result<bool, String> {
+    mechanical(inner)?;
+    let state = state_of(inner);
+    let o = active(&state);
     need(
-        get(p, "intentId") == get(&o, "intentId")
-            && get(p, "bodyHash") == get(&o, "bodyHash")
-            && sget(spec, "method") == Some("POST")
-            && sget(spec, "endpoint") == Some("/orders")
+        !o.is_null()
+            && get(permit, "intentId") == get(&o, "intentId")
+            && get(permit, "bodyHash") == get(&o, "bodyHash")
+            && get(spec, "method").as_str() == Some("POST")
+            && get(spec, "endpoint").as_str() == Some("/orders")
             && get(spec, "bodyJson") == get(&o, "bodyJson")
             && !pilot_unknown(&state),
         "HEDGE_ONLY_FIXED_PERMIT",
     )?;
-    let r = get(&state, "reservation");
-    let now = (inner.borrow().deps.now)();
+    let r = get(&state, "reservation").clone();
+    let n = (inner.borrow().deps.now)() as i64;
     need(
-        get(r, "reservationHash") == get(&funding(&state)?, "reservationHash")
-            && get(r, "allocationHash").as_str()
+        get(&r, "reservationHash") == get(&funding_of(inner)?, "reservationHash")
+            && get(&r, "allocationHash").as_str()
                 == Some(payload_hash(get(&state, "allocation"))?.as_str())
-            && hex(get(r, "globalLedgerHash"))
-            && instant_v(get(r, "confirmedAt"))? <= now as i64
-            && now as i64 - instant_v(get(r, "confirmedAt"))? <= 20000,
+            && hex(get(&r, "globalLedgerHash"))
+            && instant_v(get(&r, "confirmedAt"))
+                .map(|t| t <= n && n - t <= 20_000)
+                .unwrap_or(false),
         "FULL_RESERVE_INSTALLED",
     )?;
     let before_fence = json!({
-        "recordHash": get(&funding(&state)?, "reservationHash"),
+        "recordHash": get(&funding_of(inner)?, "reservationHash"),
         "bodyHash": get(&o, "bodyHash"),
         "bodyJson": get(&o, "bodyJson"),
         "custodyHash": payload_hash(get(&state, "currentInventory"))?,
@@ -2061,111 +1976,104 @@ fn validate(inner: &Rc<RefCell<Inner>>, p: &V, spec: &V, network: bool) -> Resul
         }))?,
         "unknown": pilot_unknown(&state),
     });
-    let l = measure(inner, "guard_current_lease", || inner.borrow().basic())?;
-    let g = measure(
-        inner,
-        if network {
-            "network_current_budget_risk"
-        } else {
-            "admission_current_budget_risk"
-        },
-        || (inner.borrow().deps.get_global_risk)(),
-    )?;
-    let op = if sget(get(&o, "body"), "action") == Some("buy") {
-        "place_hedge"
+    let l = measure(inner, "guard_current_lease", || basic(inner))?;
+    let name = if network {
+        "network_current_budget_risk"
     } else {
-        "place_sell"
+        "admission_current_budget_risk"
     };
-    let e = measure(
-        inner,
-        if network {
-            "network_cached_evidence"
-        } else {
-            "admission_cached_evidence"
-        },
-        || evidence(inner, op, None, Some(&g)),
-    )?;
-    let lease_hash = payload_hash(&l)?;
-    let at_iso = iso((inner.borrow().deps.now)());
-    measure(
-        inner,
-        if network {
-            "network_durable_fence_append"
-        } else {
-            "admission_durable_event_append"
-        },
-        || {
+    let g = {
+        let f = inner.borrow().deps.get_global_risk.clone();
+        measure(inner, name, move || sync(f()))?
+    };
+    let name2 = if network {
+        "network_cached_evidence"
+    } else {
+        "admission_cached_evidence"
+    };
+    let o_action_str = get(get(&o, "body"), "action").as_str().unwrap_or("").to_string();
+    let o_action = o_action_str.clone();
+    let g_c = g.clone();
+    let e = measure(inner, name2, move || {
+        evidence_of(
+            inner,
+            if o_action == "buy" { "place_hedge" } else { "place_sell" },
+            None,
+            &g_c,
+        )
+    })?;
+    let name3 = if network {
+        "network_durable_fence_append"
+    } else {
+        "admission_durable_event_append"
+    };
+    {
+        let inner2 = inner.clone();
+        let e2 = e.clone();
+        let g2 = g.clone();
+        let l2 = l.clone();
+        measure(inner, name3, move || {
+            let lease_hash = payload_hash(&l2)?;
             append(
-                inner,
+                &inner2,
                 &json!({
                     "kind": if network { "network_fence" } else { "admitted" },
-                    "evidence": e,
-                    "globalRisk": g,
-                    "lease": l,
+                    "evidence": e2,
+                    "globalRisk": g2,
+                    "lease": l2,
                     "leaseHash": lease_hash,
-                    "at": at_iso,
+                    "at": iso((inner2.borrow().deps.now)()),
                 }),
             )
-        },
-    )?;
+        })?;
+    }
     if network {
-        let o = {
-            let g2 = inner.borrow();
-            active(&g2.state.clone().unwrap_or(V::Null)).unwrap_or(V::Null)
-        };
-        let l2 = measure(inner, "network_postappend_current_lease", || {
-            inner.borrow().basic()
-        })?;
-        need(same(&l2, &l)?, "NETWORK_LEASE_CHANGED_AFTER_COMMIT")?;
-        measure(inner, "network_postappend_current_journal", || {
-            let (file, size, bytes_hash, ino, birthtime, seq, prev) = {
-                let g = inner.borrow();
-                (
-                    g.file.clone(),
-                    g.size,
-                    g.bytes_hash.clone(),
-                    g.ino,
-                    g.birthtime_ms,
-                    g.journal.sequence,
-                    g.journal.previous.clone(),
+        let state = state_of(inner);
+        let o = active(&state);
+        let post_l = measure(inner, "network_postappend_current_lease", || basic(inner))?;
+        need(same(&post_l, &l)?, "NETWORK_LEASE_CHANGED_AFTER_COMMIT")?;
+        {
+            let inner2 = inner.clone();
+            measure(inner, "network_postappend_current_journal", || {
+                let (file, size, hash, stat_in, stat_birth, jseq, jprev) = {
+                    let b = inner2.borrow();
+                    (
+                        b.file.clone(),
+                        b.size,
+                        b.hash.clone(),
+                        b.stat_ino,
+                        b.stat_birthtime_ms,
+                        b.journal.sequence,
+                        b.journal.previous.clone(),
+                    )
+                };
+                let st = fs::metadata(&file).map_err(|er| er.to_string())?;
+                need(
+                    stat_ino(&st) == stat_in && created_ms(&st) == stat_birth,
+                    "CURRENT_JOURNAL_CHANGED",
+                )?;
+                let fresh = fs::read(&file).map_err(|er| er.to_string())?;
+                let last_start = fresh[..fresh.len().saturating_sub(1)]
+                    .iter()
+                    .rposition(|b| *b == 10)
+                    .map(|i| i + 1)
+                    .unwrap_or(0);
+                let last: V = serde_json::from_str(
+                    std::str::from_utf8(&fresh[last_start..]).map_err(|er| er.to_string())?,
                 )
-            };
-            let stat = fs::metadata(&file).map_err(|e| e.to_string())?;
-            let fresh = fs::read(&file).map_err(|e| e.to_string())?;
-            let nl = {
-                let mut idx = fresh.len().saturating_sub(2);
-                while idx > 0 && fresh[idx] != b'\n' {
-                    idx -= 1;
-                }
-                if fresh.len() >= 2 && idx == 0 && fresh[0] != b'\n' {
-                    0
-                } else {
-                    idx + 1
-                }
-            };
-            let last: V = serde_json::from_str(&String::from_utf8_lossy(&fresh[nl.min(fresh.len())..]))
-                .map_err(|e| e.to_string())?;
-            use std::os::unix::fs::MetadataExt;
-            let st_ino = stat.ino();
-            let st_birth = stat
-                .created()
-                .ok()
-                .and_then(|t| t.duration_since(std::time::UNIX_EPOCH).ok())
-                .map(|d| d.as_secs_f64() * 1000.0)
-                .unwrap_or(0.0);
-            need(
-                st_ino == ino
-                    && st_birth == birthtime
-                    && fresh.len() as u64 == size
-                    && sha_bytes(&fresh) == bytes_hash
-                    && js_int(get(&last, "sequence")).map(|x| x as u64) == Some(seq)
-                    && get(&last, "hash").as_str() == Some(prev.as_str()),
-                "CURRENT_JOURNAL_CHANGED",
-            )?;
-            Ok(())
-        })?;
+                .map_err(|er| er.to_string())?;
+                need(
+                    fresh.len() as u64 == size
+                        && sha(&fresh) == hash
+                        && js_int(get(&last, "sequence")) == Some(jseq as i64)
+                        && get(&last, "hash").as_str() == Some(jprev.as_str()),
+                    "CURRENT_JOURNAL_CHANGED",
+                )?;
+                Ok(())
+            })?;
+        }
         need(
-            get(&before_fence, "recordHash") == get(&funding(&state)?, "reservationHash")
+            get(&before_fence, "recordHash") == get(&funding_of(inner)?, "reservationHash")
                 && get(&before_fence, "bodyHash") == get(&o, "bodyHash")
                 && get(&before_fence, "bodyJson") == get(&o, "bodyJson")
                 && get(&o, "bodyHash").as_str()
@@ -2189,696 +2097,590 @@ fn validate(inner: &Rc<RefCell<Inner>>, p: &V, spec: &V, network: bool) -> Resul
             (inner.borrow().deps.now)() < instant_v(get(get(&o, "body"), "expirationDate"))? as f64,
             "ORDER_EXPIRED_AFTER_FENCE",
         )?;
-        let at_now = (inner.borrow().deps.now)() as i64;
-        let state2 = inner.borrow().state.clone().unwrap_or(V::Null);
-        measure(inner, "network_postappend_policy_validation", || {
-            if sget(get(&o, "body"), "action") == Some("buy") {
-                guarded(&state2, &e, &g, at_now).map(|_| ())
-            } else {
-                sell_proposal(
-                    &state2,
-                    sget(get(&o, "body"), "exchangeId").unwrap_or(""),
-                    &e,
-                    &g,
-                    at_now,
-                )
-                .map(|_| ())
-            }
-        })?;
-        let deadline = instant_v(get(get(&o, "body"), "expirationDate"))?
-            .min(instant_v(get(get(&e, "graphReceipt"), "requestStartedAt"))? + 5000)
-            .min(instant_v(get(get(&e, "collateralReceipt"), "requestStartedAt"))? + 5000);
-        inner.borrow_mut().fetch_deadline = Some(deadline as f64);
+        let o_exchange_id = get(get(&o, "body"), "exchangeId").as_str().unwrap_or("").to_string();
+        let o_expiration = get(get(&o, "body"), "expirationDate").clone();
+        {
+            let inner2 = inner.clone();
+            let e2 = e.clone();
+            let g2 = g.clone();
+            measure(inner, "network_postappend_policy_validation", move || {
+                if o_action_str == "buy" {
+                    guarded(
+                        &inner2.borrow().state.clone().unwrap_or(V::Null),
+                        &e2,
+                        &g2,
+                        (inner2.borrow().deps.now)() as i64,
+                    )
+                    .map(|_| ())
+                } else {
+                    sell_proposal(
+                        &inner2.borrow().state.clone().unwrap_or(V::Null),
+                        &o_exchange_id,
+                        &e2,
+                        &g2,
+                        (inner2.borrow().deps.now)() as i64,
+                    )
+                    .map(|_| ())
+                }
+            })?;
+        }
+        {
+            let mut b = inner.borrow_mut();
+            b.fetch_deadline = Some(std::cmp::min(
+                instant_v(&o_expiration)?,
+                std::cmp::min(
+                    instant_v(get(get(&e, "graphReceipt"), "requestStartedAt"))? + 5_000,
+                    instant_v(get(get(&e, "collateralReceipt"), "requestStartedAt"))? + 5_000,
+                ),
+            ) as f64);
+        }
     }
     Ok(true)
 }
 
-fn guarded_permit(
-    inner: &Rc<RefCell<Inner>>,
-    p: &V,
-    s: &V,
-    network: bool,
-) -> Result<bool, OrderTransportError> {
-    match validate(inner, p, s, network) {
-        Ok(v) => Ok(v),
-        Err(e) => {
-            {
-                let mut g = inner.borrow_mut();
-                g.last_guard_failure = Some(json!({
-                    "stage": if network { "network" } else { "admission" },
-                    "errorCode": diagnostic_code(&e),
-                    "failedAt": iso((g.deps.now)()),
-                }));
-            }
-            if inner.borrow().failed {
-                // JS: if(error.fatal||error.durableRecordingFailed)throw error;
-                return Err(OrderTransportError {
-                    code: e,
-                    outcome: "unknown".into(),
-                    may_have_executed: true,
-                    retry_same_request_only: false,
-                    retry_after_ms: 0.0,
-                    status: None,
-                    api_code: None,
-                    semantic_mismatch: false,
-                });
-            }
-            Err(OrderTransportError {
-                code: "OWNED_CUSTODY_DISPATCH_GUARD".into(),
-                outcome: "blocked".into(),
-                may_have_executed: false,
-                retry_same_request_only: false,
-                retry_after_ms: 0.0,
-                status: None,
-                api_code: None,
-                semantic_mismatch: false,
-            })
-        }
-    }
-}
-
-fn wrap(
-    inner: &Rc<RefCell<Inner>>,
-    spec: &V,
-    bd: Option<&Guard<'_>>,
-    bn: Option<&Guard<'_>>,
-) -> Result<V, crate::paired_rest_controller::WireDispatchError> {
-    let out = (|| -> Result<V, String> {
-        let bd_ptr = bd
-            .map(|g| g as *const Guard as *const () as usize)
-            .unwrap_or(0);
-        let bn_ptr = bn
-            .map(|g| g as *const Guard as *const () as usize)
-            .unwrap_or(0);
-        {
-            let mut g = inner.borrow_mut();
-            g.issued.insert(
-                bd_ptr,
-                json!({
-                    "method": get(spec, "method"),
-                    "endpoint": get(spec, "endpoint"),
-                    "bodyJson": get(spec, "bodyJson"),
-                    "beforeNetwork": bn_ptr,
-                }),
-            );
-            g.in_flight = Some(InFlight {
-                spec: spec.clone(),
-                bd_ptr,
-                bn_ptr,
-            });
-        }
-        let capture = |response: &V| -> Result<(), String> {
-            let o = {
-                let g = inner.borrow();
-                active(&g.state.clone().unwrap_or(V::Null)).unwrap_or(V::Null)
-            };
-            let r = (inner.borrow().deps.raw_receipt_of)(
-                response,
-                &json!({
-                    "method": "POST",
-                    "requestBodyHash": get(&o, "bodyHash"),
-                }),
-            )?;
-            need(
-                get(&r, "status") == get(response, "status")
-                    && sget(&r, "endpoint") == Some("/orders")
-                    && instant_v(get(&r, "requestStartedAt"))?
-                        >= instant_v(get(response, "requestStartedAt"))?
-                    && instant_v(get(&r, "receivedAt"))?
-                        <= instant_v(get(response, "receivedAt"))?
-                    && same(
-                        &parse_number_lexemes(sget(&r, "bodyText").unwrap_or(""))?.0,
-                        get(response, "data"),
-                    )?,
-                "RAW_RESPONSE_BINDING",
-            )?;
-            append(
-                inner,
-                &json!({"kind": "wire", "receipt": r, "at": iso((inner.borrow().deps.now)())}),
-            )?;
-            {
-                let g = inner.borrow();
-                if pilot_unknown(&g.state.clone().unwrap_or(V::Null)) {
-                    let o = active(&g.state.clone().unwrap_or(V::Null)).unwrap_or(V::Null);
-                    (g.deps.on_financial_halt)(&json!({
-                        "kind": "non_neutral_or_unknown_hedge",
-                        "intentId": get(&o, "intentId"),
-                        "sourceHash": get(&r, "sourceBodyHash"),
-                        "allWritersStop": true,
-                    }))?;
-                }
-            }
-            Ok(())
-        };
-        let result = (inner.borrow().deps.dispatch)(spec, bd, bn);
-        let r = match result {
-            Ok(response) => {
-                capture(&response)?;
-                Ok(response)
-            }
-            Err(e) => {
-                if let Some(wr) = e.wire_receipt.clone() {
-                    capture(&wr)?;
-                }
-                Err(e.message)
-            }
-        };
-        {
-            let mut g = inner.borrow_mut();
-            g.issued.remove(&bd_ptr);
-            g.in_flight = None;
-        }
-        r
-    })();
-    out.map_err(|e| crate::paired_rest_controller::WireDispatchError {
-        message: e,
-        wire_receipt: None,
-    })
-}
-
-fn status_of(inner: &Rc<RefCell<Inner>>) -> Result<V, String> {
-    let g = inner.borrow();
-    let state = g.state.clone().unwrap_or(V::Null);
+fn capture(inner: &Rc<RefCell<PilotInner>>, response: &V) -> Result<(), String> {
+    let state = state_of(inner);
     let o = active(&state);
-    let orders = get(&state, "orders").as_array().cloned().unwrap_or_default();
-    let mut inv = Map::new();
-    if let Some(inventory) = get(&state, "currentInventory").as_object() {
-        for (ex, x) in inventory {
-            inv.insert(
-                ex.clone(),
-                json!({
-                    "quantity": get(get(x,"proof"),"remainingOwnedQuantity"),
-                    "cost": get(get(x,"proof"),"remainingOwnedCost"),
-                    "realizedPnl": get(get(x,"proof"),"cumulativeRealizedPnl"),
-                }),
-            );
-        }
-    }
-    let realized: i128 = get(&state, "currentInventory")
-        .as_object()
-        .map(|inventory| {
-            inventory
-                .values()
-                .map(|x| {
-                    amount(sget(get(x, "proof"), "cumulativeRealizedPnl").unwrap_or(""))
-                        .unwrap_or(0)
-                })
-                .sum()
-        })
-        .unwrap_or(0);
-    let intent = o.as_ref().map(|o| {
-        json!({
-            "intentId": get(o,"intentId"),
-            "firstExchangeId": get(o,"firstExchangeId"),
-            "orderId": get(o,"orderId"),
-            "action": get(get(o,"body"),"action"),
-            "marketId": get(o,"marketId"),
-            "exchangeId": get(get(o,"body"),"exchangeId"),
-            "body": get(o,"body"),
-            "bodyHash": get(o,"bodyHash"),
-            "phase": get(o,"phase"),
-            "createdAt": get(o,"createdAt"),
-            "packageLegs": get(get(o,"package"),"legs"),
-            "actualFetchCount": get(o,"fetchStarts").as_array().map(|x|x.len()).unwrap_or(0),
-            "mayHaveExecuted": get(o,"mayHaveExecuted"),
-            "cancelPending": false,
-        })
-    });
-    let phase = o
-        .as_ref()
-        .and_then(|o| sget(o, "phase").map(|x| x.to_string()))
-        .unwrap_or_else(|| {
-            if orders.is_empty() {
-                "ready".to_string()
-            } else {
-                "terminal".to_string()
-            }
-        });
-    let mut out = Map::new();
-    out.insert("mode".into(), get(&state, "mode").clone());
-    // {...state.scope} spread after mode — scope keys in scope order.
-    if let Some(m) = get(&state, "scope").as_object() {
-        for (k, v) in m {
-            out.insert(k.clone(), v.clone());
-        }
-    }
-    out.insert("seedHash".into(), json!(g.seed_hash));
-    out.insert(
-        "implementationEpoch".into(),
-        get(&g.migration, "implementationEpoch").clone(),
-    );
-    out.insert("sequence".into(), json!(g.journal.sequence));
-    out.insert("hash".into(), json!(g.journal.previous));
-    out.insert("phase".into(), json!(phase));
-    out.insert("intent".into(), intent.unwrap_or(V::Null));
-    out.insert(
-        "unknownAcceptance".into(),
-        json!(pilot_unknown(&state)),
-    );
-    out.insert("assignments".into(), get(&state, "assignments").clone());
-    out.insert(
-        "pairRetirements".into(),
-        get(&state, "pairRetirements").clone(),
-    );
-    out.insert("inventory".into(), V::Object(inv));
-    out.insert("realizedPnl".into(), json!(money(realized)));
-    out.insert("matchedQuantity".into(), json!(matched(&state)));
-    out.insert(
-        "originalInventoryHash".into(),
-        json!(g.original_inventory_hash),
-    );
-    out.insert("originalOrdersHash".into(), json!(g.original_orders_hash));
-    out.insert("funding".into(), funding(&state)?);
-    out.insert(
-        "competitionOrders".into(),
-        json!(orders
-            .iter()
-            .filter(|o| {
-                get(o, "fetchStarts")
-                    .as_array()
-                    .map(|x| !x.is_empty())
-                    .unwrap_or(false)
-            })
-            .count()),
-    );
-    out.insert(
-        "hedgeIntentCount".into(),
-        json!(orders
-            .iter()
-            .filter(|o| sget(get(o, "body"), "action") == Some("buy"))
-            .count()),
-    );
-    out.insert(
-        "abandonedIntentCount".into(),
-        json!(orders
-            .iter()
-            .filter(|o| sget(o, "phase") == Some("abandoned"))
-            .count()),
-    );
-    out.insert(
-        "executionOwnerEpoch".into(),
-        get(&g.migration, "implementationEpoch").clone(),
-    );
-    out.insert("ownedSellSupported".into(), json!(true));
-    out.insert(
-        "handbackRequiresExplicitImplementationMigration".into(),
-        json!(true),
-    );
-    out.insert("cashProfitEstablished".into(), json!(false));
-    out.insert("recentLocalTimings".into(), json!(g.local_timings));
-    out.insert(
-        "lastGuardFailure".into(),
-        g.last_guard_failure.clone().unwrap_or(V::Null),
-    );
-    out.insert("closed".into(), json!(g.closed));
-    out.insert("failed".into(), json!(g.failed));
-    out.insert("busy".into(), json!(g.busy));
-    Ok(V::Object(out))
-}
-
-fn run<T>(
-    inner: &Rc<RefCell<Inner>>,
-    f: impl FnOnce() -> Result<T, String>,
-) -> Result<T, String> {
-    need(!inner.borrow().busy, "BUSY")?;
-    inner.borrow_mut().busy = true;
-    let r = f();
-    inner.borrow_mut().busy = false;
-    r
-}
-
-/// openBaalNeutralOwnedCounterpartPilotV2({dir,workspace,legacyFile,
-/// legacyCodeIdentity,legacyScope,legacyAllocation,activation,migration,...deps})
-#[allow(clippy::too_many_arguments)]
-pub fn open_baal_neutral_owned_counterpart_pilot_v2(
-    dir: &Path,
-    workspace: &Path,
-    legacy_file: &Path,
-    legacy_code_identity: &V,
-    legacy_scope: &V,
-    legacy_allocation: &V,
-    activation: &V,
-    migration: &V,
-    deps: NeutralPilotDeps,
-) -> Result<BaalNeutralOwnedCounterpartPilotV2, String> {
+    let r = {
+        let b = inner.borrow();
+        sync((b.deps.raw_receipt_of)(
+            response,
+            &json!({"method": "POST", "requestBodyHash": get(&o, "bodyHash")}),
+        ))?
+    };
     need(
-        dir.is_absolute() && workspace.is_absolute() && legacy_file.is_absolute(),
-        "DEPENDENCIES",
+        js_int(get(&r, "status")) == js_int(get(response, "status"))
+            && get(&r, "endpoint").as_str() == Some("/orders")
+            && instant_v(get(&r, "requestStartedAt"))?
+                >= instant_v(get(response, "requestStartedAt"))?
+            && instant_v(get(&r, "receivedAt"))? <= instant_v(get(response, "receivedAt"))?
+            && same(
+                &parse_number_lexemes(get(&r, "bodyText").as_str().unwrap_or(""))?.0,
+                get(response, "data"),
+            )?,
+        "RAW_RESPONSE_BINDING",
     )?;
-    let bytes = fs::read(legacy_file).map_err(|e| e.to_string())?;
-    let seed = crate::baal_scaled_controller_legacy_replay_v1::replay_baal_scaled_controller_v1(
-        &json!({
-            "bodyText": String::from_utf8_lossy(&bytes),
+    append(inner, &json!({"kind": "wire", "receipt": r, "at": iso((inner.borrow().deps.now)())}))?;
+    if pilot_unknown(&state_of(inner)) {
+        let b = inner.borrow();
+        sync((b.deps.on_financial_halt)(&json!({
+            "kind": "non_neutral_or_unknown_hedge",
+            "intentId": get(&o, "intentId"),
+            "sourceHash": get(&r, "sourceBodyHash"),
+            "allWritersStop": true,
+        })))?;
+    }
+    Ok(())
+}
+
+impl BaalNeutralOwnedCounterpartPilot {
+    /// openBaalNeutralOwnedCounterpartPilotV2(options)
+    #[allow(clippy::too_many_arguments)]
+    pub fn open(
+        dir: &Path,
+        workspace: &Path,
+        legacy_file: &Path,
+        legacy_code_identity: &V,
+        legacy_scope: &V,
+        legacy_allocation: &V,
+        activation: &V,
+        migration: &V,
+        deps: NeutralPilotDeps,
+    ) -> Result<Self, String> {
+        need(
+            dir.is_absolute() && workspace.is_absolute() && legacy_file.is_absolute(),
+            "DEPENDENCIES",
+        )?;
+        let bytes = fs::read(legacy_file).map_err(|e| e.to_string())?;
+        let seed = replay_baal_scaled_controller_v1(&json!({
+            "bodyText": std::str::from_utf8(&bytes).map_err(|e| e.to_string())?,
             "expectedCodeIdentity": legacy_code_identity,
             "expectedScope": legacy_scope,
             "expectedAllocation": legacy_allocation,
-        }),
-    )?;
-    let seed_hash = payload_hash(&seed)?;
-    let original_inventory_hash = payload_hash(get(get(&seed, "state"), "inventory"))?;
-    let original_orders_hash = payload_hash(get(get(&seed, "state"), "orders"))?;
-    let code = live_coordinator_identity(workspace)?;
-    configuration(&seed, activation, migration, &code)?;
-    let mut lease = crate::ledger::acquire_owner_lease(
-        dir,
-        sget(activation, "ownerId").unwrap_or(""),
-        sget(activation, "runId").unwrap_or(""),
-        "neutral-owned-counterpart-pilot",
-        (deps.now)(),
-    )
-    .map_err(|e| e.message)?;
-    let file = dir.join("neutral-owned-counterpart-pilot-v2.jsonl");
-    let can_check_mechanical = deps
-        .can_check_mechanical
-        .clone()
-        .unwrap_or_else(|| deps.can_operate.clone());
-    let assert_mechanical_account_lease = deps
-        .assert_mechanical_account_lease
-        .clone()
-        .unwrap_or_else(|| deps.assert_account_lease.clone());
-    let assert_mechanical_financial_owner_lease = deps
-        .assert_mechanical_financial_owner_lease
-        .clone()
-        .unwrap_or_else(|| deps.assert_financial_owner_lease.clone());
-    let open_timings: RefCell<Vec<V>> = RefCell::new(Vec::new());
-    let open_result: Result<(Journal, Option<V>, u64, String, u64, f64), String> = (|| {
-        basic_at(
-            &*deps.can_operate,
-            &*can_check_mechanical,
-            &lease,
-            &*assert_mechanical_account_lease,
-            &*assert_mechanical_financial_owner_lease,
-            activation,
-            migration,
-            legacy_file,
-            &bytes,
-            &seed,
-            workspace,
-            &code,
-            &open_timings,
-            &*deps.now,
-        )?;
-        if !file.exists() {
-            fs::OpenOptions::new()
-                .write(true)
-                .create_new(true)
-                .open(&file)
-                .map_err(|e| e.to_string())?;
-        }
-        let data = fs::read(&file).map_err(|e| e.to_string())?;
-        need(data.is_empty() || *data.last().unwrap() == 10, "PARTIAL_JOURNAL")?;
-        let journal = Journal::open(&file)?;
-        let mut state: Option<V> = None;
-        if !data.is_empty() {
-            state = Some(
-                get(
-                    &replay_live_hedge_journal(&json!({
-                        "bodyText": String::from_utf8_lossy(&data),
-                        "seed": seed,
-                        "activation": activation,
-                        "migration": migration,
-                        "expectedCodeIdentity": code,
-                    }))?,
-                    "state",
-                )
-                .clone(),
-            );
-        }
-        let size = data.len() as u64;
-        let bytes_hash = sha_bytes(&data);
-        let stat = fs::metadata(&file).map_err(|e| e.to_string())?;
-        use std::os::unix::fs::MetadataExt;
-        Ok((
-            journal,
-            state,
-            size,
-            bytes_hash,
-            stat.ino(),
-            stat.created()
-                .ok()
-                .and_then(|t| t.duration_since(std::time::UNIX_EPOCH).ok())
-                .map(|d| d.as_secs_f64() * 1000.0)
-                .unwrap_or(0.0),
-        ))
-    })();
-    let (journal, state, size, bytes_hash, ino, birthtime) = match open_result {
-        Ok(v) => v,
-        Err(e) => {
-            let _ = lease.release();
+        }))?;
+        let seed_hash = payload_hash(&seed)?;
+        let original_inventory_hash = payload_hash(get(&get(&seed, "state"), "inventory"))?;
+        let original_orders_hash = payload_hash(get(&get(&seed, "state"), "orders"))?;
+        let code = live_coordinator_identity(workspace)?;
+        configuration(&seed, activation, migration, &code)?;
+        let mut lease = acquire_owner_lease(
+            dir,
+            get(activation, "ownerId").as_str().unwrap_or(""),
+            get(activation, "runId").as_str().unwrap_or(""),
+            "neutral-owned-counterpart-pilot",
+            (deps.now)(),
+        )
+        .map_err(|e| e.message)?;
+        let file = dir.join("neutral-owned-counterpart-pilot-v2.jsonl");
+        let inner = Rc::new(RefCell::new(PilotInner {
+                deps: NeutralPilotDeps {
+                    dispatch: deps.dispatch.clone(),
+                    raw_receipt_of: deps.raw_receipt_of.clone(),
+                    assert_account_lease: deps.assert_account_lease.clone(),
+                    assert_financial_owner_lease: deps.assert_financial_owner_lease.clone(),
+                    install_funding_reservation: deps.install_funding_reservation.clone(),
+                    get_global_risk: deps.get_global_risk.clone(),
+                    get_evidence: deps.get_evidence.clone(),
+                    on_financial_halt: deps.on_financial_halt.clone(),
+                    can_operate: deps.can_operate.clone(),
+                    can_check_mechanical: deps.can_check_mechanical.clone(),
+                    assert_mechanical_account_lease: deps.assert_mechanical_account_lease.clone(),
+                    assert_mechanical_financial_owner_lease: deps
+                        .assert_mechanical_financial_owner_lease
+                        .clone(),
+                    now: deps.now.clone(),
+                    workspace_dir: workspace.to_path_buf(),
+                },
+                seed: seed.clone(),
+                seed_hash: seed_hash.clone(),
+                original_inventory_hash,
+                original_orders_hash,
+                code: code.clone(),
+                activation: activation.clone(),
+                migration: migration.clone(),
+                legacy_file: legacy_file.to_path_buf(),
+                bytes,
+                state: None,
+                closed: false,
+                failed: false,
+                busy: false,
+                in_flight: None,
+                journal: Journal {
+                    file: file.clone(),
+                    sequence: 0,
+                    previous: String::new(),
+                    last: None,
+                },
+                file: file.clone(),
+                size: 0,
+                hash: String::new(),
+                stat_ino: 0,
+                stat_birthtime_ms: 0.0,
+                last_guard_failure: None,
+                fetch_deadline: None,
+                issued: std::collections::HashMap::new(),
+                local_timings: Vec::new(),
+                lease,
+            }));
+        if let Err(e) = (|| -> Result<(), String> {
+            basic(&inner)?;
+            if !file.exists() {
+                fs::OpenOptions::new()
+                    .write(true)
+                    .create_new(true)
+                    .open(&file)
+                    .map_err(|e| e.to_string())?;
+            }
+            let data = fs::read(&file).map_err(|e| e.to_string())?;
+            need(data.is_empty() || data.last() == Some(&10), "PARTIAL_JOURNAL")?;
+            inner.borrow_mut().journal = Journal::open(&file)?;
+            if !data.is_empty() {
+                let replayed = replay_live_hedge_journal(
+                    std::str::from_utf8(&data).map_err(|e| e.to_string())?,
+                    &seed,
+                    activation,
+                    migration,
+                    &code,
+                )?;
+                inner.borrow_mut().state = Some(get(&replayed, "state").clone());
+            }
+            {
+                let mut b = inner.borrow_mut();
+                b.size = data.len() as u64;
+                b.hash = sha(&data);
+                let st = fs::metadata(&file).map_err(|e| e.to_string())?;
+                b.stat_ino = stat_ino(&st);
+                b.stat_birthtime_ms = created_ms(&st);
+            }
+            Ok(())
+        })() {
+            inner.borrow_mut().lease.release().ok();
             return Err(e);
         }
-    };
-    let inner = Rc::new(RefCell::new(Inner {
-        seed,
-        seed_hash,
-        original_inventory_hash,
-        original_orders_hash,
-        activation: activation.clone(),
-        migration: migration.clone(),
-        file: file.clone(),
-        code,
-        journal,
-        state,
-        closed: false,
-        failed: false,
-        busy: false,
-        size,
-        bytes_hash,
-        ino,
-        birthtime_ms: birthtime,
-        in_flight: None,
-        issued: HashMap::new(),
-        lease,
-        last_guard_failure: None,
-        fetch_deadline: None,
-        local_timings: RefCell::new(open_timings.into_inner()),
-        can_check_mechanical,
-        assert_mechanical_account_lease,
-        assert_mechanical_financial_owner_lease,
-        legacy_file: legacy_file.to_path_buf(),
-        legacy_bytes: bytes,
-        workspace: workspace.to_path_buf(),
-        deps,
-    }));
-    if inner.borrow().state.is_none() {
-        let (sd, sh, ac, mg, at) = {
-            let g = inner.borrow();
-            (
-                g.seed.clone(),
-                g.seed_hash.clone(),
-                g.activation.clone(),
-                g.migration.clone(),
-                iso((g.deps.now)()),
-            )
-        };
-        append(
-            &inner,
-            &json!({
-                "kind": "seed",
-                "seed": sd,
-                "seedHash": sh,
-                "activation": ac,
-                "migration": mg,
-                "at": at,
-            }),
-        )?;
-    }
-    let transport = {
-        let inner_w = inner.clone();
-        let dispatch_wrap: Box<crate::transport::Dispatch> = Box::new(move |spec, bd, bn| {
-            wrap(&inner_w, spec, bd, bn).map_err(|e| OrderTransportError {
-                code: e.message,
-                outcome: "unknown".into(),
-                may_have_executed: true,
-                retry_same_request_only: false,
-                retry_after_ms: 0.0,
-                status: None,
-                api_code: None,
-                semantic_mismatch: false,
-            })
-        });
-        let scope = get(&inner.borrow().state.clone().unwrap_or(V::Null), "scope").clone();
-        OrderTransport::new(OrderTransportOptions {
-            dispatch: dispatch_wrap,
-            scope: crate::transport::scope_of(&scope).map_err(|e| e.code)?,
-            can_write: Box::new({
-                let inner = inner.clone();
-                move || {
-                    let g = inner.borrow();
-                    g.mechanical().is_ok()
-                        && !pilot_unknown(&g.state.clone().unwrap_or(V::Null))
-                }
-            }),
-            owns_order: Box::new({
-                let inner = inner.clone();
-                move |oid: &str| {
-                    let g = inner.borrow();
-                    active(&g.state.clone().unwrap_or(V::Null))
-                        .map(|o| get(&o, "orderId").as_str() == Some(oid))
-                        .unwrap_or(false)
-                }
-            }),
-            validate_permit: Box::new({
-                let inner = inner.clone();
-                move |p: &V, spec: &V| guarded_permit(&inner, p, spec, false)
-            }),
-            validate_network_permit: Box::new({
-                let inner = inner.clone();
-                move |p: &V, spec: &V| guarded_permit(&inner, p, spec, true)
-            }),
-            validate_lease: Box::new({
-                let inner = inner.clone();
-                move |l: &V, _s: &V| {
-                    inner
-                        .borrow()
-                        .mechanical()
-                        .map_err(|e| OrderTransportError {
-                            code: e,
-                            outcome: "unknown".into(),
-                            may_have_executed: true,
-                            retry_same_request_only: false,
-                            retry_after_ms: 0.0,
+        if inner.borrow().state.is_none() {
+            if let Err(e) = append(
+                &inner,
+                &json!({
+                    "kind": "seed",
+                    "seed": seed,
+                    "seedHash": seed_hash,
+                    "activation": activation,
+                    "migration": migration,
+                    "at": iso((inner.borrow().deps.now)()),
+                }),
+            ) {
+                inner.borrow_mut().lease.release().ok();
+                return Err(e);
+            }
+        }
+        let transport = {
+            let inner_c = inner.clone();
+            let scope = get(&state_of(&inner), "scope").clone();
+            let mut by_exchange = BTreeMap::new();
+            for x in get(&scope, "exchanges").as_array().cloned().unwrap_or_default() {
+                by_exchange.insert(
+                    get(&x, "exchangeId").as_str().unwrap_or("").to_string(),
+                    get(&x, "marketId").as_str().unwrap_or("").to_string(),
+                );
+            }
+            let tscope = TransportScope {
+                tournament_id: get(&scope, "tournamentId").as_str().unwrap_or("").to_string(),
+                tournament_slug: get(&scope, "tournamentSlug").as_str().unwrap_or("").to_string(),
+                by_exchange,
+                by_market: by_market_of(&scope),
+            };
+            let wrap_inner = inner.clone();
+            let wrap_dispatch = inner.borrow().deps.dispatch.clone();
+            let wrap: Box<crate::transport::Dispatch> = Box::new(
+                move |spec: &V, bd: Option<&Guard>, bn: Option<&Guard>| {
+                    let bd_ptr = bd.map(|g| g as *const Guard as *const () as usize).unwrap_or(0);
+                    let bn_ptr = bn.map(|g| g as *const Guard as *const () as usize).unwrap_or(0);
+                    wrap_inner.borrow_mut().issued.insert(
+                        bd_ptr,
+                        json!({
+                            "method": get(spec, "method"),
+                            "endpoint": get(spec, "endpoint"),
+                            "bodyJson": get(spec, "bodyJson"),
+                            "beforeNetworkPtr": bn_ptr as u64,
+                        }),
+                    );
+                    wrap_inner.borrow_mut().in_flight = Some(spec.clone());
+                    let result = (|| -> Result<V, String> {
+                        match (wrap_dispatch)(spec, bd, bn) {
+                            Ok(r) => {
+                                capture(&wrap_inner, &r)?;
+                                Ok(r)
+                            }
+                            Err(e) => {
+                                if let Some(wr) = e.wire_receipt.as_ref() {
+                                    capture(&wrap_inner, wr)?;
+                                }
+                                Err(e.message)
+                            }
+                        }
+                    })();
+                    wrap_inner.borrow_mut().issued.remove(&bd_ptr);
+                    wrap_inner.borrow_mut().in_flight = None;
+                    result.map_err(|code| OrderTransportError {
+                        code,
+                        status: None,
+                        api_code: None,
+                        outcome: "blocked".into(),
+                        may_have_executed: false,
+                        retry_same_request_only: false,
+                        retry_after_ms: 0.0,
+                        semantic_mismatch: false,
+                    })
+                },
+            );
+            let inner_cw = inner.clone();
+            let inner_ow = inner.clone();
+            let inner_vp = inner.clone();
+            let inner_vn = inner.clone();
+            let inner_vl = inner.clone();
+            let now_fn = inner.borrow().deps.now.clone();
+            let t_result = OrderTransport::new(OrderTransportOptions {
+                dispatch: wrap,
+                scope: tscope,
+                can_write: Box::new(move || {
+                    let _ = &inner_cw;
+                    mechanical(&inner_cw).is_ok() && !pilot_unknown(&state_of(&inner_cw))
+                }),
+                owns_order: Box::new(move |id: &str| {
+                    let o = active(&state_of(&inner_ow));
+                    get(&o, "orderId").as_str() == Some(id)
+                }),
+                validate_permit: Box::new(move |p: &V, s: &V| {
+                    guarded_permit(&inner_vp, p, s, false)
+                }),
+                validate_network_permit: Box::new(move |p: &V, s: &V| {
+                    guarded_permit(&inner_vn, p, s, true)
+                }),
+                validate_lease: Box::new(move |l: &V, _s: &V| {
+                    match (|| -> Result<bool, String> {
+                        Ok(same(l, &mechanical(&inner_vl)?)?)
+                    })() {
+                        Ok(v) => Ok(v),
+                        Err(code) => Err(OrderTransportError {
+                            code,
                             status: None,
                             api_code: None,
+                            outcome: "blocked".into(),
+                            may_have_executed: false,
+                            retry_same_request_only: false,
+                            retry_after_ms: 0.0,
                             semantic_mismatch: false,
-                        })
-                        .and_then(|v| {
-                            same(l, &v).map_err(|e| OrderTransportError {
-                                code: e,
-                                outcome: "unknown".into(),
-                                may_have_executed: true,
-                                retry_same_request_only: false,
-                                retry_after_ms: 0.0,
-                                status: None,
-                                api_code: None,
-                                semantic_mismatch: false,
-                            })
-                        })
+                        }),
+                    }
+                }),
+                now: Box::new(move || now_fn() as i64),
+                max_pages: 10,
+            });
+            let _ = inner_c;
+            match t_result {
+                Ok(t) => t,
+                Err(e) => {
+                    inner.borrow_mut().lease.release().ok();
+                    return Err(e.code);
                 }
-            }),
-            now: Box::new({
-                let inner = inner.clone();
-                move || (inner.borrow().deps.now)() as i64
-            }),
-            max_pages: 10,
-        })
-        .map_err(|e| e.code)?
-    };
-    Ok(BaalNeutralOwnedCounterpartPilotV2 { inner, transport })
-}
-
-impl BaalNeutralOwnedCounterpartPilotV2 {
-    pub fn active_intent_status(&self) -> V {
-        let g = self.inner.borrow();
-        let o = active(&g.state.clone().unwrap_or(V::Null));
-        o.map(|o| {
-            json!({
-                "intentId": get(&o,"intentId"),
-                "firstExchangeId": get(&o,"firstExchangeId"),
-                "orderId": get(&o,"orderId"),
-                "action": get(get(&o,"body"),"action"),
-                "marketId": get(&o,"marketId"),
-                "exchangeId": get(get(&o,"body"),"exchangeId"),
-                "body": get(&o,"body"),
-                "bodyHash": get(&o,"bodyHash"),
-                "phase": get(&o,"phase"),
-                "createdAt": get(&o,"createdAt"),
-                "packageLegs": get(get(&o,"package"),"legs"),
-                "actualFetchCount": get(&o,"fetchStarts").as_array().map(|x|x.len()).unwrap_or(0),
-                "mayHaveExecuted": get(&o,"mayHaveExecuted"),
-                "cancelPending": false,
-            })
-        })
-        .unwrap_or(V::Null)
-    }
-    pub fn status(&self) -> Result<V, String> {
-        status_of(&self.inner)
-    }
-    /// onBeforeFetch(meta) -> {notAfter}
-    pub fn on_before_fetch(&self, meta: &V) -> Result<V, String> {
-        self.inner.borrow().mechanical()?;
-        let (o, in_flight, deadline, now) = {
-            let g = self.inner.borrow();
-            (
-                active(&g.state.clone().unwrap_or(V::Null)),
-                g.in_flight.is_some(),
-                g.fetch_deadline,
-                (g.deps.now)(),
-            )
+            }
         };
-        let d = deadline.unwrap_or(f64::NAN);
+        Ok(Self { inner, transport })
+    }
+
+    fn run_guard<F, T>(&self, f: F) -> Result<T, String>
+    where
+        F: FnOnce() -> Result<T, String>,
+    {
+        need(!self.inner.borrow().busy, "BUSY")?;
+        self.inner.borrow_mut().busy = true;
+        let r = f();
+        self.inner.borrow_mut().busy = false;
+        r
+    }
+
+    fn active_intent_status_of(state: &V) -> V {
+        let o = active(state);
+        if o.is_null() {
+            return V::Null;
+        }
+        json!({
+            "intentId": get(&o, "intentId"),
+            "firstExchangeId": get(&o, "firstExchangeId"),
+            "orderId": get(&o, "orderId"),
+            "action": get(get(&o, "body"), "action"),
+            "marketId": get(&o, "marketId"),
+            "exchangeId": get(get(&o, "body"), "exchangeId"),
+            "body": get(&o, "body"),
+            "bodyHash": get(&o, "bodyHash"),
+            "phase": get(&o, "phase"),
+            "createdAt": get(&o, "createdAt"),
+            "packageLegs": get(get(&o, "package"), "legs"),
+            "actualFetchCount": get(&o, "fetchStarts").as_array().map(|a| a.len()).unwrap_or(0),
+            "mayHaveExecuted": get(&o, "mayHaveExecuted"),
+            "cancelPending": false,
+        })
+    }
+    /// activeIntentStatus()
+    pub fn active_intent_status(&self) -> V {
+        Self::active_intent_status_of(&state_of(&self.inner))
+    }
+    /// status()
+    pub fn status(&self) -> V {
+        let b = self.inner.borrow();
+        let state = b.state.clone().unwrap_or(V::Null);
+        let o = active(&state);
+        let mut inventory = Map::new();
+        if let Some(m) = get(&state, "currentInventory").as_object() {
+            for (ex, x) in m {
+                inventory.insert(
+                    ex.clone(),
+                    json!({
+                        "quantity": get(get(x, "proof"), "remainingOwnedQuantity"),
+                        "cost": get(get(x, "proof"), "remainingOwnedCost"),
+                        "realizedPnl": get(get(x, "proof"), "cumulativeRealizedPnl"),
+                    }),
+                );
+            }
+        }
+        let realized: i128 = get(&state, "currentInventory")
+            .as_object()
+            .map(|m| {
+                m.values()
+                    .map(|x| {
+                        amount(get(get(x, "proof"), "cumulativeRealizedPnl").as_str().unwrap_or(""))
+                            .unwrap_or(0)
+                    })
+                    .sum()
+            })
+            .unwrap_or(0);
+        let phase = if !o.is_null() {
+            get(&o, "phase").clone()
+        } else if get(&state, "orders").as_array().is_some_and(|a| !a.is_empty()) {
+            json!("terminal")
+        } else {
+            json!("ready")
+        };
+        let mut out = Map::new();
+        out.insert("mode".into(), get(&state, "mode").clone());
+        for (k, v) in get(&state, "scope").as_object().cloned().unwrap_or_default() {
+            out.insert(k, v);
+        }
+        out.insert("seedHash".into(), json!(b.seed_hash));
+        out.insert(
+            "implementationEpoch".into(),
+            get(&b.migration, "implementationEpoch").clone(),
+        );
+        out.insert("sequence".into(), json!(b.journal.sequence));
+        out.insert("hash".into(), json!(b.journal.previous));
+        out.insert("phase".into(), phase);
+        out.insert("intent".into(), Self::active_intent_status_of(&state));
+        out.insert("unknownAcceptance".into(), json!(pilot_unknown(&state)));
+        out.insert("assignments".into(), get(&state, "assignments").clone());
+        out.insert("pairRetirements".into(), get(&state, "pairRetirements").clone());
+        out.insert("inventory".into(), V::Object(inventory));
+        out.insert("realizedPnl".into(), json!(money(realized)));
+        out.insert("matchedQuantity".into(), json!(matched(&state)));
+        out.insert(
+            "originalInventoryHash".into(),
+            json!(b.original_inventory_hash),
+        );
+        out.insert("originalOrdersHash".into(), json!(b.original_orders_hash));
+        out.insert(
+            "funding".into(),
+            funding(&state).unwrap_or(V::Null),
+        );
+        out.insert(
+            "competitionOrders".into(),
+            json!(get(&state, "orders")
+                .as_array()
+                .map(|a| a
+                    .iter()
+                    .filter(|o| {
+                        get(o, "fetchStarts").as_array().is_some_and(|f| !f.is_empty())
+                    })
+                    .count())
+                .unwrap_or(0)),
+        );
+        out.insert(
+            "hedgeIntentCount".into(),
+            json!(get(&state, "orders")
+                .as_array()
+                .map(|a| a
+                    .iter()
+                    .filter(|o| get(get(o, "body"), "action").as_str() == Some("buy"))
+                    .count())
+                .unwrap_or(0)),
+        );
+        out.insert(
+            "abandonedIntentCount".into(),
+            json!(get(&state, "orders")
+                .as_array()
+                .map(|a| a
+                    .iter()
+                    .filter(|o| get(o, "phase").as_str() == Some("abandoned"))
+                    .count())
+                .unwrap_or(0)),
+        );
+        out.insert(
+            "executionOwnerEpoch".into(),
+            get(&b.migration, "implementationEpoch").clone(),
+        );
+        out.insert("ownedSellSupported".into(), json!(true));
+        out.insert(
+            "handbackRequiresExplicitImplementationMigration".into(),
+            json!(true),
+        );
+        out.insert("cashProfitEstablished".into(), json!(false));
+        out.insert(
+            "recentLocalTimings".into(),
+            V::Array(b.local_timings.clone()),
+        );
+        out.insert(
+            "lastGuardFailure".into(),
+            b.last_guard_failure.clone().unwrap_or(V::Null),
+        );
+        out.insert("closed".into(), json!(b.closed));
+        out.insert("failed".into(), json!(b.failed));
+        out.insert("busy".into(), json!(b.busy));
+        V::Object(out)
+    }
+
+    /// authorizes(spec)
+    pub fn authorizes(&self, spec: &V, before_dispatch: &Guard, before_network: &Guard) -> bool {
+        let r: Result<bool, String> = (|| {
+            mechanical(&self.inner)?;
+            let bd_ptr = before_dispatch as *const Guard as *const () as usize;
+            let p = self.inner.borrow().issued.get(&bd_ptr).cloned();
+            let p = match p {
+                Some(p) => p,
+                None => return Ok(false),
+            };
+            Ok(!pilot_unknown(&state_of(&self.inner))
+                && get(&p, "method") == get(spec, "method")
+                && get(&p, "endpoint") == get(spec, "endpoint")
+                && get(&p, "bodyJson") == get(spec, "bodyJson")
+                && (before_network as *const Guard as *const () as usize)
+                    == get(&p, "beforeNetworkPtr").as_u64().unwrap_or(0) as usize
+                && self
+                    .transport
+                    .authorize_request(spec)
+                    .map(|v| v == true)
+                    .unwrap_or(false))
+        })();
+        r.unwrap_or(false)
+    }
+
+    /// onBeforeFetch(meta)
+    pub fn on_before_fetch(&self, meta: &V) -> Result<V, String> {
+        mechanical(&self.inner)?;
+        let state = state_of(&self.inner);
+        let o = active(&state);
+        let deadline = self.inner.borrow().fetch_deadline;
         need(
-            in_flight
-                && o.is_some()
-                && sget(meta, "method") == Some("POST")
-                && sget(meta, "endpoint") == Some("/orders")
-                && sget(meta, "requestBodyHash")
-                    == sget(&o.unwrap_or(V::Null), "bodyHash")
-                && d.is_finite()
-                && d.fract() == 0.0
-                && d.abs() <= 9007199254740991.0
-                && now < d,
+            self.inner.borrow().in_flight.is_some()
+                && !o.is_null()
+                && get(meta, "method").as_str() == Some("POST")
+                && get(meta, "endpoint").as_str() == Some("/orders")
+                && get(meta, "requestBodyHash") == get(&o, "bodyHash")
+                && deadline.is_some()
+                && (self.inner.borrow().deps.now)() < deadline.unwrap(),
             "FINAL_FETCH_CLOCK_OR_BINDING",
         )?;
-        Ok(json!({"notAfter": d}))
+        Ok(json!({"notAfter": deadline.unwrap()}))
     }
-    /// onFetchStart(meta) -> bool; journal append failure marks failed and throws.
+
+    /// onFetchStart(meta)
     pub fn on_fetch_start(&self, meta: &V) -> Result<bool, String> {
-        if sget(meta, "method") == Some("GET") || self.inner.borrow().in_flight.is_none() {
+        if get(meta, "method").as_str() == Some("GET")
+            || self.inner.borrow().in_flight.is_none()
+        {
             return Ok(false);
         }
-        let r: Result<bool, String> = (|| {
-            self.inner.borrow().basic()?;
-            let (o, f, spec) = {
-                let g = self.inner.borrow();
-                let st = g.state.clone().unwrap_or(V::Null);
-                (
-                    active(&st).unwrap_or(V::Null),
-                    get(&active(&st).unwrap_or(V::Null), "fences")
-                        .as_array()
-                        .and_then(|x| x.last())
-                        .cloned()
-                        .unwrap_or(V::Null),
-                    g.in_flight.as_ref().map(|i| i.spec.clone()).unwrap_or(V::Null),
-                )
-            };
+        let result = (|| -> Result<bool, String> {
+            basic(&self.inner)?;
+            let state = state_of(&self.inner);
+            let o = active(&state);
+            let f = get(&o, "fences").as_array().and_then(|a| a.last()).cloned();
             need(
-                !f.is_null()
-                    && sget(meta, "method") == Some("POST")
-                    && sget(meta, "endpoint") == Some("/orders")
-                    && sget(meta, "requestBodyHash") == sget(&o, "bodyHash")
-                    && get(meta, "fetchInvocationId").as_str().is_some()
-                    && get(&spec, "bodyJson") == get(&o, "bodyJson"),
+                f.is_some()
+                    && get(meta, "method").as_str() == Some("POST")
+                    && get(meta, "endpoint").as_str() == Some("/orders")
+                    && get(meta, "requestBodyHash") == get(&o, "bodyHash")
+                    && get(meta, "fetchInvocationId").is_string()
+                    && get(&self.inner.borrow().in_flight.clone().unwrap_or(V::Null), "bodyJson")
+                        == get(&o, "bodyJson"),
                 "BOUND_ACTUAL_FETCH",
             )?;
-            let scope = {
-                let g = self.inner.borrow();
-                get(&g.state.clone().unwrap_or(V::Null), "scope").clone()
-            };
-            let mut start = meta.as_object().cloned().unwrap_or_default();
-            start.insert("kind".into(), json!("place"));
-            start.insert("ownerId".into(), get(&scope, "ownerId").clone());
-            start.insert("runId".into(), get(&scope, "runId").clone());
-            start.insert(
+            let f = f.unwrap();
+            let mut m = meta.as_object().cloned().unwrap_or_default();
+            m.insert("kind".into(), json!("place"));
+            m.insert("ownerId".into(), get(get(&state, "scope"), "ownerId").clone());
+            m.insert("runId".into(), get(get(&state, "scope"), "runId").clone());
+            m.insert(
                 "tournamentId".into(),
-                get(&scope, "tournamentId").clone(),
+                get(get(&state, "scope"), "tournamentId").clone(),
             );
-            start.insert("intentId".into(), get(&o, "intentId").clone());
-            start.insert(
+            m.insert("intentId".into(), get(&o, "intentId").clone());
+            m.insert(
                 "idempotencyKey".into(),
                 get(get(&o, "body"), "idempotencyKey").clone(),
             );
-            start.insert("requestBodyJson".into(), get(&o, "bodyJson").clone());
-            start.insert("requestBodyHash".into(), get(&o, "bodyHash").clone());
-            start.insert("leaseIdentity".into(), get(&f, "lease").clone());
-            start.insert("leaseHash".into(), get(&f, "leaseHash").clone());
+            m.insert("requestBodyJson".into(), get(&o, "bodyJson").clone());
+            m.insert("requestBodyHash".into(), get(&o, "bodyHash").clone());
+            m.insert("leaseIdentity".into(), get(&f, "lease").clone());
+            m.insert("leaseHash".into(), get(&f, "leaseHash").clone());
             append(
                 &self.inner,
-                &json!({"kind": "fetch_start", "meta": V::Object(start), "at": iso((self.inner.borrow().deps.now)())}),
+                &json!({
+                    "kind": "fetch_start",
+                    "meta": V::Object(m),
+                    "at": iso((self.inner.borrow().deps.now)()),
+                }),
             )?;
             Ok(true)
         })();
-        match r {
+        match result {
             Ok(v) => Ok(v),
             Err(e) => {
                 self.inner.borrow_mut().failed = true;
@@ -2886,101 +2688,78 @@ impl BaalNeutralOwnedCounterpartPilotV2 {
             }
         }
     }
-    /// authorizes(spec, beforeDispatch, beforeNetwork) -> bool
-    pub fn authorizes(
-        &self,
-        spec: &V,
-        before_dispatch: Option<&Guard<'_>>,
-        before_network: Option<&Guard<'_>>,
-    ) -> bool {
-        let r: Result<bool, String> = (|| {
-            self.inner.borrow().mechanical()?;
-            let bd_ptr = before_dispatch
-                .map(|x| x as *const Guard as *const () as usize)
-                .unwrap_or(0);
-            let bn_ptr = before_network
-                .map(|x| x as *const Guard as *const () as usize)
-                .unwrap_or(0);
-            let g = self.inner.borrow();
-            let st = g.state.clone().unwrap_or(V::Null);
-            let p = g.issued.get(&bd_ptr).cloned();
-            Ok(!pilot_unknown(&st)
-                && p.is_some()
-                && get(p.as_ref().unwrap(), "method") == get(spec, "method")
-                && get(p.as_ref().unwrap(), "endpoint") == get(spec, "endpoint")
-                && get(p.as_ref().unwrap(), "bodyJson") == get(spec, "bodyJson")
-                && get(p.as_ref().unwrap(), "beforeNetwork") == &json!(bn_ptr)
-                && self
-                    .transport
-                    .authorize_request(spec)
-                    .map(|x| x)
-                    .unwrap_or(false))
-        })();
-        r.unwrap_or(false)
-    }
+
     /// journalSource()
     pub fn journal_source(&self) -> Result<V, String> {
-        let g = self.inner.borrow();
-        let bytes = fs::read(&g.file).map_err(|e| e.to_string())?;
-        let nl = bytes.iter().position(|b| *b == 10).unwrap_or(0);
-        let first = &bytes[..nl + 1];
-        let row: V = serde_json::from_str(&String::from_utf8_lossy(first))
+        let (file, size, hash, jseq, jprev) = {
+            let b = self.inner.borrow();
+            (
+                b.file.clone(),
+                b.size,
+                b.hash.clone(),
+                b.journal.sequence,
+                b.journal.previous.clone(),
+            )
+        };
+        let bytes = fs::read(&file).map_err(|e| e.to_string())?;
+        let first_nl = bytes.iter().position(|b| *b == 10).unwrap_or(bytes.len() - 1);
+        let first = &bytes[..first_nl + 1];
+        let row: V = serde_json::from_str(std::str::from_utf8(first).map_err(|e| e.to_string())?)
             .map_err(|e| e.to_string())?;
-        let st = g.state.clone().unwrap_or(V::Null);
+        let state = state_of(&self.inner);
         Ok(json!({
-            "journalFile": g.file.to_string_lossy(),
-            "record": funding(&st)?,
-            "sequence": g.journal.sequence,
-            "hash": g.journal.previous,
+            "journalFile": file.to_string_lossy(),
+            "record": funding(&state)?,
+            "sequence": jseq,
+            "hash": jprev,
             "rootPrefix": {
                 "bytes": first.len(),
-                "sha256": sha_bytes(first),
-                "sequence": get(&row,"sequence"),
-                "hash": get(&row,"hash"),
+                "sha256": sha(first),
+                "sequence": get(&row, "sequence"),
+                "hash": get(&row, "hash"),
             },
             "headPrefix": {
-                "bytes": g.size,
-                "sha256": g.bytes_hash,
-                "sequence": g.journal.sequence,
-                "hash": g.journal.previous,
+                "bytes": size,
+                "sha256": hash,
+                "sequence": jseq,
+                "hash": jprev,
             },
-            "status": status_of(&self.inner)?,
+            "status": self.status(),
         }))
     }
+
     /// abandonPrepared()
     pub fn abandon_prepared(&self) -> Result<V, String> {
-        run(&self.inner, || {
-            self.inner.borrow().basic()?;
-            need(
-                self.inner.borrow().in_flight.is_none(),
-                "ABANDON_IN_FLIGHT",
-            )?;
+        self.run_guard(|| {
+            basic(&self.inner)?;
+            need(self.inner.borrow().in_flight.is_none(), "ABANDON_IN_FLIGHT")?;
             append(
                 &self.inner,
                 &json!({"kind": "abandoned_prepared", "at": iso((self.inner.borrow().deps.now)())}),
             )?;
             reserve(&self.inner)?;
-            self.status()
+            Ok(self.status())
         })
     }
+
     /// inventory(ex)
     pub fn inventory(&self, ex: &str) -> V {
-        let g = self.inner.borrow();
-        get(get(&g.state.clone().unwrap_or(V::Null), "currentInventory"), ex).clone()
+        get(&get(&state_of(&self.inner), "currentInventory"), ex).clone()
     }
+
     /// orderBinding(id)
-    pub fn order_binding(&self, id: &str) -> V {
-        let g = self.inner.borrow();
-        let st = g.state.clone().unwrap_or(V::Null);
-        let o = active(&st).unwrap_or(V::Null);
-        if get(&o, "orderId").as_str() != Some(id) {
+    pub fn order_binding(&self, id: &V) -> V {
+        let state = state_of(&self.inner);
+        let o = active(&state);
+        if get(&o, "orderId").as_str() != Some(js_str(id).as_str()) || o.is_null() {
             return V::Null;
         }
-        let mut out = self.active_intent_status().as_object().cloned().unwrap_or_default();
-        if let Some(m) = get(&st, "scope").as_object() {
-            for (k, v) in m {
-                out.insert(k.clone(), v.clone());
-            }
+        let mut out = Self::active_intent_status_of(&state)
+            .as_object()
+            .cloned()
+            .unwrap_or_default();
+        for (k, v) in get(&state, "scope").as_object().cloned().unwrap_or_default() {
+            out.insert(k, v);
         }
         out.insert(
             "idempotencyKey".into(),
@@ -2990,7 +2769,9 @@ impl BaalNeutralOwnedCounterpartPilotV2 {
         out.insert("quantity".into(), get(get(&o, "body"), "quantity").clone());
         out.insert(
             "limit".into(),
-            json!(money(price(&num_str(get(get(&o, "body"), "price"))).unwrap_or(0))),
+            json!(money(
+                price(&js_str(get(get(&o, "body"), "price"))).unwrap_or(0)
+            )),
         );
         out.insert(
             "expirationDate".into(),
@@ -2998,272 +2779,300 @@ impl BaalNeutralOwnedCounterpartPilotV2 {
         );
         V::Object(out)
     }
-    /// prepareSell(ex,{requestedQuantity=null})
-    pub fn prepare_sell(&self, ex: &str, requested_quantity: Option<i64>) -> Result<V, String> {
-        run(&self.inner, || {
-            self.inner.borrow().basic()?;
-            need(
-                active(&self.inner.borrow().state.clone().unwrap_or(V::Null)).is_none(),
-                "UNKNOWN_OR_ACTIVE",
-            )?;
-            let mut captured = evidence(&self.inner, "prepare_sell", Some(ex), None)?;
-            captured.as_object_mut().map(|m| {
-                m.insert(
-                    "requestedQuantity".into(),
-                    requested_quantity.map(|q| json!(q)).unwrap_or(V::Null),
-                )
-            });
+
+    /// prepareSell(ex, {requestedQuantity=null}={})
+    pub fn prepare_sell(&self, ex: &str, requested_quantity: Option<&V>) -> Result<V, String> {
+        self.run_guard(|| {
+            basic(&self.inner)?;
+            let state = state_of(&self.inner);
+            need(active(&state).is_null(), "UNKNOWN_OR_ACTIVE")?;
+            let mut captured = evidence_of(&self.inner, "prepare_sell", Some(ex), &V::Null)?;
+            captured.as_object_mut().unwrap().insert(
+                "requestedQuantity".into(),
+                requested_quantity.cloned().unwrap_or(V::Null),
+            );
+            let g_risk = {
+                let b = self.inner.borrow();
+                sync((b.deps.get_global_risk)())?
+            };
             ensure_installed(&self.inner)?;
-            let g = (self.inner.borrow().deps.get_global_risk)()?;
             append(
                 &self.inner,
                 &json!({
                     "kind": "prepared_sell",
                     "exchangeId": ex,
                     "evidence": captured,
-                    "globalRisk": g,
+                    "globalRisk": g_risk,
                     "intentId": format!("neutral-owned-sell-{}", uuid::Uuid::new_v4()),
                     "key": uuid::Uuid::new_v4().to_string(),
                     "at": iso((self.inner.borrow().deps.now)()),
                 }),
             )?;
             reserve(&self.inner)?;
-            self.status()
+            Ok(self.status())
         })
     }
+
     /// pairCensus(firstEx)
     pub fn pair_census(&self, first_ex: &str) -> Result<V, String> {
-        self.inner.borrow().basic()?;
-        let (st, now) = {
-            let g = self.inner.borrow();
-            (g.state.clone().unwrap_or(V::Null), (g.deps.now)())
-        };
-        Ok(pair_census(&st, first_ex, &iso(now)))
+        basic(&self.inner)?;
+        pair_census_of(
+            &state_of(&self.inner),
+            first_ex,
+            &json!(iso((self.inner.borrow().deps.now)())),
+        )
     }
+
     /// fundingReservation()
-    pub fn funding_reservation(&self) -> V {
-        funding(&self.inner.borrow().state.clone().unwrap_or(V::Null)).unwrap_or(V::Null)
+    pub fn funding_reservation(&self) -> Result<V, String> {
+        funding(&state_of(&self.inner))
     }
+
     /// fundingReservationStatus()
-    pub fn funding_reservation_status(&self) -> V {
-        let g = self.inner.borrow();
-        let st = g.state.clone().unwrap_or(V::Null);
-        json!({
-            "record": funding(&st).unwrap_or(V::Null),
-            "receipt": get(&st, "reservation"),
-        })
+    pub fn funding_reservation_status(&self) -> Result<V, String> {
+        Ok(json!({
+            "record": funding(&state_of(&self.inner))?,
+            "receipt": get(&state_of(&self.inner), "reservation"),
+        }))
     }
+
     /// refreshReservation()
     pub fn refresh_reservation(&self) -> Result<V, String> {
-        run(&self.inner, || {
-            self.inner.borrow().basic()?;
+        self.run_guard(|| {
+            basic(&self.inner)?;
             reserve(&self.inner)?;
-            self.status()
+            Ok(self.status())
         })
     }
+
     /// prepareHedge(firstEx)
     pub fn prepare_hedge(&self, first_ex: &str) -> Result<V, String> {
-        run(&self.inner, || {
-            self.inner.borrow().basic()?;
-            {
-                let g = self.inner.borrow();
-                let st = g.state.clone().unwrap_or(V::Null);
-                need(
-                    active(&st).is_none()
-                        && get(&st, "orders")
-                            .as_array()
-                            .map(|os| {
-                                os.iter()
-                                    .filter(|o| sget(get(o, "body"), "action") == Some("buy"))
-                                    .count()
-                                    == 0
-                            })
-                            .unwrap_or(false),
-                    "ONE_ORDER_PILOT",
-                )?;
-            }
-            let captured = evidence(&self.inner, "prepare_hedge", Some(first_ex), None)?;
+        self.run_guard(|| {
+            basic(&self.inner)?;
+            let state = state_of(&self.inner);
+            need(
+                active(&state).is_null()
+                    && get(&state, "orders")
+                        .as_array()
+                        .map(|a| {
+                            a.iter()
+                                .filter(|o| get(get(o, "body"), "action").as_str() == Some("buy"))
+                                .count()
+                                == 0
+                        })
+                        .unwrap_or(false),
+                "ONE_ORDER_PILOT",
+            )?;
+            let captured = evidence_of(&self.inner, "prepare_hedge", Some(first_ex), &V::Null)?;
+            let g_risk = {
+                let b = self.inner.borrow();
+                sync((b.deps.get_global_risk)())?
+            };
             ensure_installed(&self.inner)?;
-            let g = (self.inner.borrow().deps.get_global_risk)()?;
             append(
                 &self.inner,
                 &json!({
                     "kind": "prepared",
                     "evidence": captured,
-                    "globalRisk": g,
+                    "globalRisk": g_risk,
                     "intentId": format!("neutral-owned-hedge-{}", uuid::Uuid::new_v4()),
                     "key": uuid::Uuid::new_v4().to_string(),
                     "at": iso((self.inner.borrow().deps.now)()),
                 }),
             )?;
             reserve(&self.inner)?;
-            self.status()
+            Ok(self.status())
         })
     }
+
     /// dispatchPrepared()
     pub fn dispatch_prepared(&self) -> Result<V, String> {
-        run(&self.inner, || {
-            self.inner.borrow().basic()?;
-            let o = {
-                let g = self.inner.borrow();
-                active(&g.state.clone().unwrap_or(V::Null)).unwrap_or(V::Null)
-            };
+        self.run_guard(|| {
+            basic(&self.inner)?;
+            let state = state_of(&self.inner);
+            let o = active(&state);
             need(
-                sget(&o, "phase") == Some("prepared")
-                    && get(&o, "fetchStarts")
-                        .as_array()
-                        .map(|x| x.is_empty())
-                        .unwrap_or(false),
+                get(&o, "phase").as_str() == Some("prepared")
+                    && get(&o, "fetchStarts").as_array().is_some_and(|a| a.is_empty()),
                 "UNKNOWN_NEVER_RETRY",
             )?;
             ensure_installed(&self.inner)?;
-            let l = self.inner.borrow().basic()?;
-            let result = self.transport.place(
-                get(&o, "body"),
-                &json!({
-                    "permit": {"intentId": get(&o,"intentId"), "bodyHash": get(&o,"bodyHash")},
-                    "lease": l,
-                }),
-            );
+            let intent_id = get(&o, "intentId").clone();
+            let body = get(&o, "body").clone();
+            let authority = json!({
+                "permit": {
+                    "intentId": get(&o, "intentId"),
+                    "bodyHash": get(&o, "bodyHash"),
+                },
+                "lease": basic(&self.inner)?,
+            });
+            let result = self.transport.place(&body, &authority);
             if let Err(e) = result {
                 if !self.inner.borrow().failed {
-                    append(
+                    let _ = append(
                         &self.inner,
                         &json!({
                             "kind": "error",
                             "mayHaveExecuted": e.may_have_executed,
                             "at": iso((self.inner.borrow().deps.now)()),
                         }),
-                    )?;
-                    let st = self.inner.borrow().state.clone().unwrap_or(V::Null);
-                    let o2 = active(&st).unwrap_or(V::Null);
-                    if pilot_unknown(&st) {
-                        (self.inner.borrow().deps.on_financial_halt)(&json!({
+                    );
+                    if pilot_unknown(&state_of(&self.inner)) {
+                        let b = self.inner.borrow();
+                        let _ = (b.deps.on_financial_halt)(&json!({
                             "kind": "uncertain_hedge",
-                            "intentId": get(&o2, "intentId"),
+                            "intentId": intent_id,
                             "allWritersStop": true,
-                        }))?;
+                        }));
                     }
                 }
                 return Err(e.code);
             }
-            self.status()
+            Ok(self.status())
         })
     }
-    /// reconcile(evidence)
+
+    /// reconcile(e)
     pub fn reconcile(&self, e: &V) -> Result<V, String> {
-        run(&self.inner, || {
-            self.inner.borrow().basic()?;
-            let g = (self.inner.borrow().deps.get_global_risk)()?;
-            let mut ev = e.as_object().cloned().unwrap_or_default();
-            ev.insert("globalRisk".into(), g);
-            let r = append(
-                &self.inner,
-                &json!({
-                    "kind": "reconciled",
-                    "evidence": V::Object(ev),
-                    "at": iso((self.inner.borrow().deps.now)()),
-                }),
-            );
-            if let Err(error) = r {
-                if !self.inner.borrow().failed
-                    && regex_non_neutral_post_account(&error)
+        self.run_guard(|| {
+            basic(&self.inner)?;
+            let mut evidence = e.as_object().cloned().unwrap_or_default();
+            evidence.insert(
+                "globalRisk".into(),
                 {
-                    let _ = append(
+                    let b = self.inner.borrow();
+                    sync((b.deps.get_global_risk)())?
+                },
+            );
+            let event = json!({
+                "kind": "reconciled",
+                "evidence": V::Object(evidence),
+                "at": iso((self.inner.borrow().deps.now)()),
+            });
+            if let Err(error) = append(&self.inner, &event) {
+                if !self.inner.borrow().failed
+                    && (error == "HEDGE_COORDINATOR_NON_NEUTRAL_graphReceipt"
+                        || error == "HEDGE_COORDINATOR_NON_NEUTRAL_collateralReceipt")
+                {
+                    append(
                         &self.inner,
                         &json!({
                             "kind": "financial_mismatch",
                             "reason": "NON_NEUTRAL_POST_ACCOUNT",
                             "at": iso((self.inner.borrow().deps.now)()),
                         }),
-                    );
-                    let _ = (self.inner.borrow().deps.on_financial_halt)(&json!({
+                    )?;
+                    let b = self.inner.borrow();
+                    sync((b.deps.on_financial_halt)(&json!({
                         "kind": "non_neutral_post_account",
                         "allWritersStop": true,
-                    }));
+                    })))?;
                 }
                 return Err(error);
             }
             reserve(&self.inner)?;
-            self.status()
+            Ok(self.status())
         })
     }
+
     /// exportHandbackEvidence()
     pub fn export_handback_evidence(&self) -> Result<V, String> {
-        self.inner.borrow().basic()?;
-        let g = self.inner.borrow();
-        let st = g.state.clone().unwrap_or(V::Null);
+        basic(&self.inner)?;
+        let state = state_of(&self.inner);
         need(
-            active(&st).is_none() && !pilot_unknown(&st),
+            active(&state).is_null() && !pilot_unknown(&state),
             "HANDOFF_NOT_TERMINAL",
         )?;
-        let head = self.journal_source()?;
         let mut body = Map::new();
         body.insert("schemaVersion".into(), json!(1));
         body.insert(
             "kind".into(),
             json!("neutral_owned_hedge_explicit_handback_evidence_v2"),
         );
-        if let Some(m) = get(&st, "scope").as_object() {
-            for (k, v) in m {
-                body.insert(k.clone(), v.clone());
-            }
+        for (k, v) in get(&state, "scope").as_object().cloned().unwrap_or_default() {
+            body.insert(k, v);
         }
-        body.insert("seedHash".into(), json!(g.seed_hash));
-        body.insert("migration".into(), g.migration.clone());
+        body.insert("seedHash".into(), json!(self.inner.borrow().seed_hash));
+        body.insert(
+            "migration".into(),
+            self.inner.borrow().migration.clone(),
+        );
         body.insert(
             "legacyAnchor".into(),
-            get(&g.seed, "anchor").clone(),
+            get(&self.inner.borrow().seed, "anchor").clone(),
         );
         body.insert(
             "coordinatorAnchor".into(),
-            get(&head, "headPrefix").clone(),
+            get(&self.journal_source()?, "headPrefix").clone(),
         );
         body.insert(
             "originalInventory".into(),
-            get(&st, "originalInventory").clone(),
+            get(&state, "originalInventory").clone(),
         );
         body.insert(
             "currentInventory".into(),
-            get(&st, "currentInventory").clone(),
+            get(&state, "currentInventory").clone(),
         );
         body.insert(
             "pairRetirements".into(),
-            get(&st, "pairRetirements").clone(),
+            get(&state, "pairRetirements").clone(),
         );
         body.insert(
             "counterInventory".into(),
-            get(&st, "counterInventory").clone(),
+            get(&state, "counterInventory").clone(),
         );
-        body.insert("assignments".into(), get(&st, "assignments").clone());
-        body.insert("funding".into(), funding(&st)?);
+        body.insert("assignments".into(), get(&state, "assignments").clone());
+        body.insert("funding".into(), funding(&state)?);
         body.insert(
             "requiresExplicitNewOwnerImplementation".into(),
             json!(true),
         );
-        let mut out = V::Object(body);
-        let h = payload_hash(&out)?;
-        out.as_object_mut()
-            .unwrap()
-            .insert("proofHash".into(), json!(h));
-        Ok(out)
+        let body = V::Object(body);
+        let mut out = body.as_object().cloned().unwrap();
+        out.insert("proofHash".into(), json!(payload_hash(&body)?));
+        Ok(V::Object(out))
     }
+
     /// close()
     pub fn close(&self) -> Result<(), String> {
         need(!self.inner.borrow().busy, "BUSY")?;
-        {
-            let mut g = self.inner.borrow_mut();
-            if g.closed {
-                return Ok(());
-            }
-            g.closed = true;
-            g.lease.release().map_err(|e| e.message)?;
+        let mut b = self.inner.borrow_mut();
+        if b.closed {
+            return Ok(());
         }
+        b.closed = true;
+        b.lease.release().map_err(|e| e.message)?;
         Ok(())
     }
 }
 
-fn regex_non_neutral_post_account(message: &str) -> bool {
-    message == "HEDGE_COORDINATOR_NON_NEUTRAL_graphReceipt"
-        || message == "HEDGE_COORDINATOR_NON_NEUTRAL_collateralReceipt"
+/// guardedPermit(p, s, network) — wraps validate; non-fatal guard failures
+/// become OWNED_CUSTODY_DISPATCH_GUARD transport errors.
+fn guarded_permit(
+    inner: &Rc<RefCell<PilotInner>>,
+    p: &V,
+    s: &V,
+    network: bool,
+) -> Result<bool, OrderTransportError> {
+    match validate(inner, p, s, network) {
+        Ok(v) => Ok(v),
+        Err(error) => {
+            let at = (inner.borrow().deps.now)();
+            inner.borrow_mut().last_guard_failure = Some(json!({
+                "stage": if network { "network" } else { "admission" },
+                "errorCode": diagnostic_code(&error),
+                "failedAt": iso(at),
+            }));
+            Err(OrderTransportError {
+                code: "OWNED_CUSTODY_DISPATCH_GUARD".into(),
+                status: None,
+                api_code: None,
+                outcome: "blocked".into(),
+                may_have_executed: false,
+                retry_same_request_only: false,
+                retry_after_ms: 0.0,
+                semantic_mismatch: false,
+            })
+        }
+    }
 }
