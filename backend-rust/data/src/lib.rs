@@ -2,6 +2,7 @@
 #![recursion_limit = "512"]
 pub mod activate_human_pilot_20261004;
 pub mod analyze_baal_current_depth_20261007;
+pub mod analyze_official_entry_horizons_20261007;
 pub mod archive_checked_native_graph;
 pub mod archive_journal_native_20261004;
 pub mod archive_native_request_clock_first_20261004;
@@ -105,6 +106,7 @@ pub mod no_rest_reconciliation;
 pub mod no_rest_reconciliation_v2;
 pub mod no_rest_sell_reconciliation_v1;
 pub mod no_rest_sell_reconciliation_v2;
+pub mod official_entry_horizon_v1;
 pub mod optimistic_owned_no_exit_hint_v1;
 pub mod owned_no_exit_controller_v1;
 pub mod owned_no_exit_controller_v2;

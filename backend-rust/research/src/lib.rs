@@ -30,6 +30,7 @@ pub mod governor_error_v1__build;
 pub mod governor_error_v1__model;
 pub mod js;
 pub mod median_barrier_diagnostic;
+pub mod official_entry_horizon_v1;
 pub mod paired_forecast_v1;
 pub mod poll_calibration_v1__capture;
 pub mod poll_calibration_v1__frozen_model_baseline_20261005;
