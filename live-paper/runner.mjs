@@ -1,3 +1,4 @@
+import {matchedTradeTapeFocusV2} from './matched-trade-tape-focus-v2.mjs';
 import {openBaalGenericLiveHostV11} from '../execution/baal-generic-live-host-v11.mjs';
 import {openBaalGenericLiveHostV10} from '../execution/baal-generic-live-host-v10.mjs';
 import {openBaalGenericLiveHostV9} from '../execution/baal-generic-live-host-v9.mjs';import {createScopedRestReceiptsV7} from '../execution/scoped-rest-receipts-v7.mjs';
@@ -470,7 +471,7 @@ try{
           runtime.productionMetadata={status:'requested_contract_read_completed',executionAuthority:false,additionalReadSlots:0};
         }
         if(auxiliary.tapeReads&&tradeTape&&!stopping&&api.cooldown<=Date.now()){
-          try{const focus=tradeTapeFocus(universe,{activeBanks:[...(oldMakerActive?[noMaker.bank]:[]),...stableStatuses.filter(({host,status})=>!status.failed&&(status.riskMarketIds.length>0||Date.now()<Date.parse(host.bank.entryExpiresAt))).map(({host})=>host.bank)],riskMarketIds:makerFocus.riskMarketIds,recoveryWindows:makerFocus.projectionRecoveryRequests});runtime.tradeTape=await tradeTape.collect(spec=>api.dispatch(spec),focus.marketIds,focus);}
+          try{const matchedEnabled=fs.existsSync(path.join(runtimeDir,'matched-tape-focus-v2.json')),focus=(matchedEnabled?matchedTradeTapeFocusV2:tradeTapeFocus)(universe,{...(matchedEnabled?{publication:bookPublication?.status(),financialMarketIds:genericFinancialMarketIds(pairedLiveHost?.status(),universe),now:Date.now()}:{}),activeBanks:[...(oldMakerActive?[noMaker.bank]:[]),...stableStatuses.filter(({host,status})=>!status.failed&&(status.riskMarketIds.length>0||Date.now()<Date.parse(host.bank.entryExpiresAt))).map(({host})=>host.bank)],riskMarketIds:makerFocus.riskMarketIds,recoveryWindows:makerFocus.projectionRecoveryRequests});runtime.tradeTape={...await tradeTape.collect(spec=>api.dispatch(spec),focus.marketIds,focus),matchedBookSelection:focus.matchedBookSelection??null};}
           catch(e){if(e.durableRecordingFailed||api.manualReview||e.status===401||e.status===403)throw e;if(!stopping)runtime.tradeTape={...tradeTape.status(),status:'degraded',lastErrorAt:new Date().toISOString(),reason:e.status?'http_'+e.status:/^TRADE_TAPE_[A-Z_]+$/.test(e.message)?e.message:'trade_tape_unavailable'};}
         }
         if(auxiliary.historyReads)await collectHistory(auxiliary.historyReads);
