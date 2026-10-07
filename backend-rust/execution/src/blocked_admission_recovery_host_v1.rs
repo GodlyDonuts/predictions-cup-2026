@@ -169,11 +169,11 @@ pub fn open_blocked_admission_recovery_host_v1(
         "custodySeed",
     )
     .clone();
-    let replay = replay_baal_generic_no_journal_v4(&json!({
-        "bodyText": body_text,
-        "expectedCodeIdentity": baal_generic_no_controller_v4_identity()?,
-        "custodySeed": custody_seed,
-    }))?;
+    let replay = replay_baal_generic_no_journal_v4(
+        &body_text,
+        &baal_generic_no_controller_v4_identity()?,
+        &custody_seed,
+    )?;
     let state = get(&replay, "state").clone();
     let events: Vec<V> = rows
         .iter()
