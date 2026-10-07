@@ -1,0 +1,8 @@
+import fs from 'node:fs';import os from 'node:os';import path from 'node:path';import test from 'node:test';import assert from 'node:assert/strict';import {openPairedSequencingObserverV1 as open} from './paired-sequencing-observer-v1.mjs';
+test('observer accepts only later cofresh depth, deduplicates on restart and never simulates a fill',()=>{
+ const runtimeDir=fs.mkdtempSync(path.join(os.tmpdir(),'baal-sequencing-')),universe={tournamentId:'T',hash:'a'.repeat(64),exchanges:[{marketId:'1',exchangeId:'2'},{marketId:'3',exchangeId:'4'}]},cutoff='2026-10-07T00:00:00Z',request={kind:'paired_sequencing_prospective_observer_v1',tournamentId:'T',universeHash:universe.hash,cutoff,pairs:[universe.exchanges]},file=path.join(runtimeDir,'paired-sequencing-observer-request.json');fs.writeFileSync(file,JSON.stringify(request));let clock=Date.parse(cutoff)+5000;
+ const book=(ex,bid,ask)=>({exchangeId:ex,requestStartedAt:new Date(clock-1000).toISOString(),receivedAt:new Date(clock-500).toISOString(),publicationHash:ex.repeat(64),versionKey:'1',bids:[{price:bid,quantity:100}],asks:[{price:ask,quantity:100}]}),publication={tournamentId:'T',closed:false,sequence:1,books:{'2:YES':book('2','0.905000','0.935000'),'4:YES':book('4','0.125000','0.130000')}};
+ let h=open({runtimeDir,universe,now:()=>clock});h.onBook(publication);assert.equal(h.status().observations,1);assert.equal(h.status().orders,0);assert.equal(h.status().paperFills,0);h=open({runtimeDir,universe,now:()=>clock});h.onBook(publication);assert.equal(h.status().observations,1);clock+=30000;h.onBook({...publication,sequence:2});assert.equal(h.status().observations,1);
+ fs.writeFileSync(file,JSON.stringify({...request,cutoff:'2026-10-07T00:00:01Z'}));assert.throws(()=>h.onBook(publication),/CHANGED/);
+});
+

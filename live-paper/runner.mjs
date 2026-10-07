@@ -1,3 +1,4 @@
+import {openPairedSequencingObserverV1} from './paired-sequencing-observer-v1.mjs';
 import {appendReadTimingV1} from './durable-read-timing-v1.mjs';
 import {genericFinancialMarketIds,focusGenericFinancialBooks} from './generic-financial-book-focus-v1.mjs';
 import fs from 'node:fs';
@@ -165,7 +166,7 @@ const stop=(cause='unspecified',errorCode=null)=>{
  stopping=true;control.abort();
 };process.on('SIGINT',()=>stop('SIGINT'));process.on('SIGTERM',()=>stop('SIGTERM'));
 const stopWatch=setInterval(()=>{for(const [file,cause]of [[stopFile,'workspace_STOP'],[paperStop,'runtime_STOP'],[collectorStop,'COLLECTOR_STOP']])if(fs.existsSync(file)){stop(cause);break;}},200);
-let journal,state,api,server,heartbeat,competition,realtime,realtimeCapture,basketRelationships,contractEvidence,bookPublication,basketFollowupSource,basketFollowupBankHash,comparisonRiskSource,settlementPaper,dualNoPaper,dualNoPaperV2;
+let journal,state,api,server,heartbeat,competition,realtime,realtimeCapture,basketRelationships,contractEvidence,bookPublication,basketFollowupSource,basketFollowupBankHash,comparisonRiskSource,settlementPaper,dualNoPaper,dualNoPaperV2,pairedSequencingObserver;
 let productionMetadata,pairedCandidate,candidateAccount=null,settlementPortfolio,medianDiscovery,medianPreflight,pairedLiveHost,scopedReceipts,partyPairSelector;
 const medianCandidateBulkHints=new Map();
 function controllerForActivation(a){
@@ -327,6 +328,7 @@ try{
   dualNoPaper=await openCollectorDualNoPaper({runtimeDir,universe,canOperate:()=>!stopping&&!api?.manualReview});if(dualNoPaper)runtime.dualNoPaper=dualNoPaper.status();
   dualNoPaperV2=await openCollectorDualNoPaperV2({runtimeDir,universe,canOperate:()=>!stopping&&!api?.manualReview});if(dualNoPaperV2)runtime.dualNoPaperV2=dualNoPaperV2.status();
   try{canonicalCapacity=guardCanonicalCapacity(openCanonicalCapacityMonitor({runtimeDir,universe}));runtime.canonicalCapacity=canonicalCapacity?.status()||{status:'not_initialized',executionAuthority:false};}catch{runtime.canonicalCapacity={status:'unavailable',executionAuthority:false};}
+  try{pairedSequencingObserver=openPairedSequencingObserverV1({runtimeDir,universe});if(pairedSequencingObserver)runtime.pairedSequencingObserver=pairedSequencingObserver.status();}catch{runtime.pairedSequencingObserver={status:'failed',executionAuthority:false};}
   depthPlan=validateDepthPlan(JSON.parse(fs.readFileSync(path.join(root,'depth-plan.json'),'utf8')),c,universe);
   const dipFile=path.join(runtimeDir,'dip-bank.json');if(fs.existsSync(dipFile)){dipBank=JSON.parse(fs.readFileSync(dipFile));validateDipPolicy(dipBank.policy);if(dipBank.universe.hash!==universe.hash||dipBank.config.feeBps!==0||dipBank.policy.historyReadsPerCycle!==2||dipBank.policy.comparisonBooksPerCycle!==2||dipBank.policy.dynamicBooksPerCycle!==2)throw Error('Invalid dip collection plan');runtime.collectionPlan={mode:'diversified_dip',historyReads:officialSync?1:2,fullBookBudget:4,managedCapacity:3,bulkReads:marketSweep?Math.ceil(universe.exchanges.length/100):1,accountReads:'positions plus paginated orders',readIntervalMs:c.readIntervalMs};}
   const coverageFile=path.join(runtimeDir,'price-coverage.json');
@@ -537,6 +539,7 @@ try{
           if(noMaker)try{noMaker.onBook(bookPublication.status(),marketId,probabilityAccountEligibility(accountCache));runtime.noMaker=noMaker.status();}catch{runtime.noMaker={status:'failed',executionAuthority:false};noMaker=null;}
           for(const[key,host]of stableHosts())try{if((coupledBulk&&key!=='coupledBulk'||key==='stableMaker'&&(coupledMaker||stableMakerBroad))&&!host.status().riskMarketIds.includes(marketId))continue;host.onBook(bookPublication.status(),marketId,probabilityAccountEligibility(accountCache));runtime[key]=host.status();}catch{stableHostFailed(key);}
           for(const[key,host]of [['dualNoPaper',dualNoPaper],['dualNoPaperV2',dualNoPaperV2]])if(host){try{host.onBook(bookPublication.status(),marketId,probabilityAccountEligibility(accountCache));runtime[key]=host.status();}catch{const e=Error('Dual NO paper durability failed');e.durableRecordingFailed=true;e.fatal=true;throw e;}}
+          if(pairedSequencingObserver)try{pairedSequencingObserver.onBook(bookPublication.status());runtime.pairedSequencingObserver=pairedSequencingObserver.status();}catch{runtime.pairedSequencingObserver={status:'failed',executionAuthority:false};pairedSequencingObserver=null;}
           if(baalPair)try{baalPair.onBook(bookPublication.status(),marketId,probabilityAccountEligibility(accountCache));runtime.baalPair=baalPair.status();}catch{runtime.baalPair={status:'failed',executionAuthority:false};baalPair=null;}
           if(canonicalCapacity)try{canonicalCapacity.inspect(bookPublication.status());runtime.canonicalCapacity=canonicalCapacity.status();}catch{canonicalCapacity=null;runtime.canonicalCapacity={status:'failed',executionAuthority:false};}
           const attributedOfficialExposure=(competition?.state?.owned?.[validatedReceipt.exchangeId]?.quantity||0)>0||Object.values(competition?.state?.intents||{}).some(i=>i.exchangeId===validatedReceipt.exchangeId&&i.status!=='closed');
