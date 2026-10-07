@@ -1,3 +1,9 @@
+# October7 05:54 UTC: expanded trades reconciled; read priority repaired
+
+Sole collector28048 runs522a9947 host18/controllerV9 under the same10,000 allocation and original08:46entry/Oct8 04:46exit deadlines. Both actual BUYs18776087(384/ex1073) and18785674(353/ex1042) are terminally verified:100NOshares each,9.000principal each,200shares/18.000totalcost. New realized P&L0.000; prior fullyclosed+.780 preserved separately. No pending intent at05:54:29. Known-order packets now wait for reserved read capacity before fresh receipts, preventing background capture from starving reconciliation; no rate-cap increase/client/order replacement. Physicalfullsource/actor/knownexpiredorder/risk fences apply to DELETE too.94producer/capacity/cancel/runner checks pass. [Source-bound evidence](../data/baal-expansion-live-20261007.json).
+
+Current policy remains low-turnover:37source-qualified paired opportunities within237exchanges, one active intent, one lot per market and protected profitable exits. Raising capital alone does not createhigh-frequency alpha. Next work should reduce avoidable read/capture contention and implement/validate a separate economically supported quoting/inventory policy; do not force turnover or import old profit into new wallets.
+
 # October7 05:34 UTC: 10,000-SUSQie Baal expansion live
 
 Baal's sole collector24452 runs checked4435041a host17/controllerV9. The human-requested allocation increased1,000→10,000, order cap25→100, market100→1,000, race200→2,000 and active-market20→100;100shares/order and zero fees remain. First actual expanded BUY18776087 acquired100NOshares on384/ex1073 at0.090, exact principal9.000; complete official terminal proof verified05:31:02.397UTC. At05:34:02 the new run holds100shares, zero realized P&L and zero unresolved intents. Prior fullyclosed scaled cohort+.780 remains separately archived. No scalable-profit claim.

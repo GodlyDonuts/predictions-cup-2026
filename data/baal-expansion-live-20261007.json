@@ -1,9 +1,9 @@
 {
   "actorAnchor": {
-    "bytes": 2047049,
-    "hash": "92fad7b37e6554ccb2543643508de7e3ec6e69c53abfa585e90dbb63d08e892c",
-    "sequence": 34,
-    "sha256": "44dd40a21ce3c53c6d53ef620a481e3f6b08506ddc22df22fbfe7914dac60548"
+    "bytes": 2192072,
+    "hash": "3a272b272406d8dba3875f068850c363482e5dbf195cb92da5f830f3fa6179d8",
+    "sequence": 40,
+    "sha256": "c4f379aa8ef9bf164954c0ec8fe6deec3b5474c63b64addab313b48e007fc35e"
   },
   "allocation": {
     "capital": "10000.000000",
@@ -26,16 +26,16 @@
     "runner": 85,
     "sizingAndProfitPrefix": 3
   },
-  "commit": "4435041a7ae04e9f0590699c4ca30b0e8c4e059e",
+  "commit": "522a9947f939ea50c6c453c1828509e9e490c6b9",
   "currentPhase": "ready",
   "entryExpiresAt": "2026-10-07T08:46:00.739Z",
   "exitExpiresAt": "2026-10-08T04:46:00.739Z",
   "fees": "0.000000",
   "financialOwnerBound": true,
-  "hostVersion": 17,
+  "hostVersion": 18,
   "inheritedClosedIntentCount": 24,
-  "lastAction": "expired_unadmitted_intent_preserved_abandoned",
-  "lastFailure": null,
+  "lastAction": "no_qualified_fresh_entry_or_exit",
+  "lastFailure": "NO_PROTECTED_EXIT",
   "networkCoordination": {
     "kind": "baal_single_client_rolling_policy_v1",
     "maxReadsPerMinute": 60,
@@ -46,18 +46,18 @@
   "newClients": 0,
   "newCredentials": 0,
   "newPersistentProcesses": 0,
-  "newRunActualOrderCount": 1,
-  "newRunOwnedQuantity": 100,
+  "newRunActualOrderCount": 2,
+  "newRunOwnedQuantity": 200,
   "newRunRealized": "0.000000",
-  "observedAt": "2026-10-07T05:34:02.010Z",
-  "pid": 24452,
+  "observedAt": "2026-10-07T05:54:29.504Z",
+  "pid": 28048,
   "priorCompleteClosedIntentCount": 23,
   "priorOwnedQuantity": 0,
   "priorRealized": "0.780000",
   "priorRunId": "baal-scaled-no-20261006-human",
   "profitScalabilityEstablished": false,
-  "recordedAt": "2026-10-07T05:34:28.194Z",
-  "requestHash": "465cbc5a0aae6bd73ee456ff89a54d888558be2e2a107e60b328623c9ee0a934",
+  "recordedAt": "2026-10-07T05:54:42.921Z",
+  "requestHash": "bcd094f12a0ec61f626b1b407a52189680cc3e484eede4c0bc2a15ae42e84942",
   "runId": "baal-expanded-no-20261007-human",
   "schemaVersion": 1,
   "unresolvedIntentCount": 0,
@@ -73,6 +73,18 @@
       "proofHash": "6850c381af1964769bb4634223c51e0368cf7c809e908ba87b8206c366f36bb3",
       "realizedPnl": "0.000000",
       "verifiedAt": "2026-10-07T05:31:02.397Z"
+    },
+    {
+      "action": "buy",
+      "exchangeId": "1042",
+      "filledQuantity": 100,
+      "marketId": "353",
+      "orderId": "18785674",
+      "principal": "9.000000",
+      "proceeds": "0.000000",
+      "proofHash": "46714ecca98529ddd1e365d4187256c84f07ee6587af818cb71e0940f083b986",
+      "realizedPnl": "0.000000",
+      "verifiedAt": "2026-10-07T05:53:47.618Z"
     }
   ]
 }
