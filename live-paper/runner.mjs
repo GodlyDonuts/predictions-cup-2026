@@ -6,6 +6,7 @@ import {fileURLToPath} from 'node:url';
 import {loadKey} from '../bot/api.mjs';
 import {initialState,normalizeBook,observe,report,assertState,sampleEquity,validateConfig,restoreState,invalidate,digest} from './model.mjs';
 import {Journal,lock,ReadClient,atomicJson,exclusionSet} from './transport-runtime.mjs';
+import {paperConsumerStopped,frozenPaperStopView} from './paper-consumer-stop-gate.mjs';
 import {publicationFailure} from './publication-failure.mjs';
 import {writeCollectorStatus} from './collector-status-writer.mjs';
 import {validateUniverse,priceBatch,priceEndpoint,normalizePrices,updateCoverage} from './breadth.mjs';
@@ -268,7 +269,7 @@ async function collectAccountExtra(){
 let runtime={status:'starting',pid:process.pid,runtimeDir,readRequests:0,errors:[],cycles:0,lastCycleAt:null,dashboard:'http://127.0.0.1:'+c.port};
 function persistStatus(){const r=report(state,c);if(realtime)writeCollectorStatus(path.join(runtimeDir,'realtime-stats.json'),{...realtime.status(),pid:process.pid});writeCollectorStatus(path.join(runtimeDir,'stats.json'),{...r,runtime:{...runtime,readRequests:api?.requests||0}});return r;}
 function commit(event){try{journal.commit(state,event);}catch{const e=Error('Paper journal recording failed');e.durableRecordingFailed=true;throw e;}}
-function publishBookEvent(method,value){try{const result=bookPublication?.[method](value);if(settlementPaper&&runtime.settlementPaper?.status!=='failed')try{settlementPaper.consume();settlementPaper.publish();runtime.settlementPaper=settlementPaper.status();}catch{let retained=runtime.settlementPaper;try{retained=settlementPaper.status();}catch{}runtime.settlementPaper={...retained,status:'failed',failed:true,reason:'SETTLEMENT_PAPER_CONSUMER_FAILED',accountingRetained:!!retained?.wallets,executionAuthority:false};const failure=Error('Funded paper recording failed');failure.durableRecordingFailed=true;failure.fatal=true;throw failure;}if(['invalidate','close'].includes(method)||method==='publishBook'&&result===false){
+function publishBookEvent(method,value){try{const result=bookPublication?.[method](value);if(settlementPaper&&paperConsumerStopped(runtimeDir))runtime.settlementPaper=frozenPaperStopView(runtime.settlementPaper);if(settlementPaper&&!paperConsumerStopped(runtimeDir)&&runtime.settlementPaper?.status!=='failed')try{settlementPaper.consume();settlementPaper.publish();runtime.settlementPaper=settlementPaper.status();}catch{let retained=runtime.settlementPaper;try{retained=settlementPaper.status();}catch{}runtime.settlementPaper={...retained,status:'failed',failed:true,reason:'SETTLEMENT_PAPER_CONSUMER_FAILED',accountingRetained:!!retained?.wallets,executionAuthority:false};const failure=Error('Funded paper recording failed');failure.durableRecordingFailed=true;failure.fatal=true;throw failure;}if(['invalidate','close'].includes(method)||method==='publishBook'&&result===false){
  for(const[key,host]of [['dualNoPaper',dualNoPaper],['dualNoPaperV2',dualNoPaperV2]])if(host){host.boundary(method);runtime[key]=host.status();}
  if(noMaker)try{noMaker.boundary(method);runtime.noMaker=noMaker.status();}catch{runtime.noMaker={status:'failed',executionAuthority:false};noMaker=null;}
  for(const[key,host]of stableHosts())try{host.boundary(method);runtime[key]=host.status();}catch{stableHostFailed(key);}
