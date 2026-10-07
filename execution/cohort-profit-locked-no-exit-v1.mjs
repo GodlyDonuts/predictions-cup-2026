@@ -1,0 +1,13 @@
+import {amount,money,price,TICK,SCALE} from '../paper/fixed.mjs';import {payloadHash} from './core.mjs';
+// Alternative to refusing every losing lot: spend only already-realized cohort
+// gains, and protect the profit floor for EVERY possible FIFO partial fill.
+export function sizeCohortProfitLockedNoExitV1({remainingLots,remainingOwnedQuantity,yesAskLevel,realizedProfit,minimumCohortProfit='0.005000',protectiveTicks=1,maximumOrderCost='25.000000',maximumSharesPerOrder=100,feesPerShare='0.000000'}){
+ const need=(v,c)=>{if(!v)throw Error('COHORT_EXIT_'+c);};need(Array.isArray(remainingLots)&&remainingLots.length>0&&Number.isSafeInteger(remainingOwnedQuantity)&&remainingOwnedQuantity>0,'LOTS');
+ let owned=0;for(const lot of remainingLots){need(Number.isSafeInteger(lot.quantity)&&lot.quantity>0,'LOT_QUANTITY');price(lot.entryPrice);owned+=lot.quantity;}need(owned===remainingOwnedQuantity,'OWNED_TOTAL');
+ const realized=amount(realizedProfit),floor=amount(minimumCohortProfit),orderCap=amount(maximumOrderCost);need(floor>=TICK&&feesPerShare==='0.000000'&&[0,1].includes(protectiveTicks)&&orderCap>0n&&orderCap<=25000000n&&Number.isSafeInteger(maximumSharesPerOrder)&&maximumSharesPerOrder>0&&maximumSharesPerOrder<=100,'POLICY');
+ need(yesAskLevel&&Number.isSafeInteger(yesAskLevel.quantity)&&yesAskLevel.quantity>0,'DEPTH');const limit=SCALE-price(yesAskLevel.price)-BigInt(protectiveTicks)*TICK;need(limit>=TICK&&limit<=SCALE-TICK&&limit%TICK===0n,'LIMIT');
+ const cap=Math.min(remainingOwnedQuantity,yesAskLevel.quantity,maximumSharesPerOrder,Number(orderCap/limit));let quantity=0,principal=0n,delta=0n,worst=realized,blocked=false;const prefixes=[];
+ if(realized>=floor)for(const lot of remainingLots){for(let i=0;i<lot.quantity&&quantity<cap;i++){const next=delta+limit-price(lot.entryPrice);if(realized+next<floor){blocked=true;break;}delta=next;quantity++;principal+=price(lot.entryPrice);if(realized+delta<worst)worst=realized+delta;prefixes.push({quantity,cohortRealizedLowerBound:money(realized+delta)});}if(blocked||quantity===cap)break;}
+ const result={schemaVersion:1,kind:'cohort_profit_locked_FIFO_NO_exit_v1',quantity,protectedLimit:money(limit),orderNotional:money(limit*BigInt(quantity)),removedPrincipalIfFilled:money(principal),protectedTradePnlIfFilled:money(delta),cohortRealizedBefore:realizedProfit,cohortRealizedIfFullyFilledLowerBound:money(realized+delta),worstPartialFillCohortLowerBound:money(worst),minimumCohortProfit,partialFillBounds:prefixes,sourceLotsHash:payloadHash(remainingLots),sourceLevelHash:payloadHash(yesAskLevel),fees:feesPerShare,executionAuthority:false,actualFill:false};return{...result,proposalHash:payloadHash(result)};
+}
+

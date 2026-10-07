@@ -1,0 +1,380 @@
+{
+  "checkedAt": "2026-10-07T02:49:07.705Z",
+  "mode": "dated_sequential_cohort_profit_lock_candidate_v1",
+  "actorAnchor": {
+    "bytes": 969570,
+    "sha256": "0b3a9aed80dd0347100fc599000bdeb8d26b2859f4621d06be156556bf007e00",
+    "sequence": 11,
+    "hash": "2a31c1bca4b3d1053c12073375ab9f34cd32fea0eab5f925c17714cf1bcf1337"
+  },
+  "depthReportHash": "abc62f018ec3d216904f83695c6df93ccdcc13a34b723369151a4cdfeca97854",
+  "startingRealized": "0.975000",
+  "selectedShares": 68,
+  "remainingShares": 0,
+  "conditionalCohortRealizedAfterAllSelectedFills": "0.285000",
+  "minimumCohortFloor": "0.005000",
+  "plans": [
+    {
+      "exchangeId": "994",
+      "marketId": "305",
+      "sourceRecordHash": "f0a7753ed88d0d092ba2f332f79c0dd5253d7ba26cdb8338f88800dd18eddc15",
+      "sourceReceivedAt": "2026-10-07T02:44:41.776Z",
+      "plan": {
+        "schemaVersion": 1,
+        "kind": "cohort_profit_locked_FIFO_NO_exit_v1",
+        "quantity": 2,
+        "protectedLimit": "0.110000",
+        "orderNotional": "0.220000",
+        "removedPrincipalIfFilled": "0.250000",
+        "protectedTradePnlIfFilled": "-0.030000",
+        "cohortRealizedBefore": "0.975000",
+        "cohortRealizedIfFullyFilledLowerBound": "0.945000",
+        "worstPartialFillCohortLowerBound": "0.945000",
+        "minimumCohortProfit": "0.005000",
+        "partialFillBounds": [
+          {
+            "quantity": 1,
+            "cohortRealizedLowerBound": "0.960000"
+          },
+          {
+            "quantity": 2,
+            "cohortRealizedLowerBound": "0.945000"
+          }
+        ],
+        "sourceLotsHash": "09d92b132ed168aca4c73dd9bdb4241a4dd50f5b3faa004e235c9bb89c4e9d85",
+        "sourceLevelHash": "9a4edf14aa7589eb42e5ca34d2988c85753b8c2e55786d952655967bb68648aa",
+        "fees": "0.000000",
+        "executionAuthority": false,
+        "actualFill": false,
+        "proposalHash": "72bd9bcdf2b2b6b259074631d05931a9a49c7de830f00d744227f997f55e8af7"
+      }
+    },
+    {
+      "exchangeId": "1066",
+      "marketId": "377",
+      "sourceRecordHash": "50d4c1b53d21801c4dfaa7bb3acfb54fe8248ec976de9bb940b73a41a9577628",
+      "sourceReceivedAt": "2026-10-07T02:45:00.211Z",
+      "plan": {
+        "schemaVersion": 1,
+        "kind": "cohort_profit_locked_FIFO_NO_exit_v1",
+        "quantity": 37,
+        "protectedLimit": "0.300000",
+        "orderNotional": "11.100000",
+        "removedPrincipalIfFilled": "11.470000",
+        "protectedTradePnlIfFilled": "-0.370000",
+        "cohortRealizedBefore": "0.945000",
+        "cohortRealizedIfFullyFilledLowerBound": "0.575000",
+        "worstPartialFillCohortLowerBound": "0.575000",
+        "minimumCohortProfit": "0.005000",
+        "partialFillBounds": [
+          {
+            "quantity": 1,
+            "cohortRealizedLowerBound": "0.935000"
+          },
+          {
+            "quantity": 2,
+            "cohortRealizedLowerBound": "0.925000"
+          },
+          {
+            "quantity": 3,
+            "cohortRealizedLowerBound": "0.915000"
+          },
+          {
+            "quantity": 4,
+            "cohortRealizedLowerBound": "0.905000"
+          },
+          {
+            "quantity": 5,
+            "cohortRealizedLowerBound": "0.895000"
+          },
+          {
+            "quantity": 6,
+            "cohortRealizedLowerBound": "0.885000"
+          },
+          {
+            "quantity": 7,
+            "cohortRealizedLowerBound": "0.875000"
+          },
+          {
+            "quantity": 8,
+            "cohortRealizedLowerBound": "0.865000"
+          },
+          {
+            "quantity": 9,
+            "cohortRealizedLowerBound": "0.855000"
+          },
+          {
+            "quantity": 10,
+            "cohortRealizedLowerBound": "0.845000"
+          },
+          {
+            "quantity": 11,
+            "cohortRealizedLowerBound": "0.835000"
+          },
+          {
+            "quantity": 12,
+            "cohortRealizedLowerBound": "0.825000"
+          },
+          {
+            "quantity": 13,
+            "cohortRealizedLowerBound": "0.815000"
+          },
+          {
+            "quantity": 14,
+            "cohortRealizedLowerBound": "0.805000"
+          },
+          {
+            "quantity": 15,
+            "cohortRealizedLowerBound": "0.795000"
+          },
+          {
+            "quantity": 16,
+            "cohortRealizedLowerBound": "0.785000"
+          },
+          {
+            "quantity": 17,
+            "cohortRealizedLowerBound": "0.775000"
+          },
+          {
+            "quantity": 18,
+            "cohortRealizedLowerBound": "0.765000"
+          },
+          {
+            "quantity": 19,
+            "cohortRealizedLowerBound": "0.755000"
+          },
+          {
+            "quantity": 20,
+            "cohortRealizedLowerBound": "0.745000"
+          },
+          {
+            "quantity": 21,
+            "cohortRealizedLowerBound": "0.735000"
+          },
+          {
+            "quantity": 22,
+            "cohortRealizedLowerBound": "0.725000"
+          },
+          {
+            "quantity": 23,
+            "cohortRealizedLowerBound": "0.715000"
+          },
+          {
+            "quantity": 24,
+            "cohortRealizedLowerBound": "0.705000"
+          },
+          {
+            "quantity": 25,
+            "cohortRealizedLowerBound": "0.695000"
+          },
+          {
+            "quantity": 26,
+            "cohortRealizedLowerBound": "0.685000"
+          },
+          {
+            "quantity": 27,
+            "cohortRealizedLowerBound": "0.675000"
+          },
+          {
+            "quantity": 28,
+            "cohortRealizedLowerBound": "0.665000"
+          },
+          {
+            "quantity": 29,
+            "cohortRealizedLowerBound": "0.655000"
+          },
+          {
+            "quantity": 30,
+            "cohortRealizedLowerBound": "0.645000"
+          },
+          {
+            "quantity": 31,
+            "cohortRealizedLowerBound": "0.635000"
+          },
+          {
+            "quantity": 32,
+            "cohortRealizedLowerBound": "0.625000"
+          },
+          {
+            "quantity": 33,
+            "cohortRealizedLowerBound": "0.615000"
+          },
+          {
+            "quantity": 34,
+            "cohortRealizedLowerBound": "0.605000"
+          },
+          {
+            "quantity": 35,
+            "cohortRealizedLowerBound": "0.595000"
+          },
+          {
+            "quantity": 36,
+            "cohortRealizedLowerBound": "0.585000"
+          },
+          {
+            "quantity": 37,
+            "cohortRealizedLowerBound": "0.575000"
+          }
+        ],
+        "sourceLotsHash": "27aba9f3284b7256fa90b56681450b2f3e09b7b0ec3c79c032ac8fee6dc3dae2",
+        "sourceLevelHash": "e38244d931555c5ce6db1aea59d3d5460fb256098b1b0bb3c7e9515435120925",
+        "fees": "0.000000",
+        "executionAuthority": false,
+        "actualFill": false,
+        "proposalHash": "1101950dce967e6a1692cc0297aa3c926d54eb8c80046e3a0a432a0e667e49ab"
+      }
+    },
+    {
+      "exchangeId": "1070",
+      "marketId": "381",
+      "sourceRecordHash": "2caae83c340a152eb6de3d10c4e4aaa4eefc93f8fe53fb95b49a436b6276a41a",
+      "sourceReceivedAt": "2026-10-07T02:44:58.613Z",
+      "plan": {
+        "schemaVersion": 1,
+        "kind": "cohort_profit_locked_FIFO_NO_exit_v1",
+        "quantity": 29,
+        "protectedLimit": "0.130000",
+        "orderNotional": "3.770000",
+        "removedPrincipalIfFilled": "4.060000",
+        "protectedTradePnlIfFilled": "-0.290000",
+        "cohortRealizedBefore": "0.575000",
+        "cohortRealizedIfFullyFilledLowerBound": "0.285000",
+        "worstPartialFillCohortLowerBound": "0.285000",
+        "minimumCohortProfit": "0.005000",
+        "partialFillBounds": [
+          {
+            "quantity": 1,
+            "cohortRealizedLowerBound": "0.565000"
+          },
+          {
+            "quantity": 2,
+            "cohortRealizedLowerBound": "0.555000"
+          },
+          {
+            "quantity": 3,
+            "cohortRealizedLowerBound": "0.545000"
+          },
+          {
+            "quantity": 4,
+            "cohortRealizedLowerBound": "0.535000"
+          },
+          {
+            "quantity": 5,
+            "cohortRealizedLowerBound": "0.525000"
+          },
+          {
+            "quantity": 6,
+            "cohortRealizedLowerBound": "0.515000"
+          },
+          {
+            "quantity": 7,
+            "cohortRealizedLowerBound": "0.505000"
+          },
+          {
+            "quantity": 8,
+            "cohortRealizedLowerBound": "0.495000"
+          },
+          {
+            "quantity": 9,
+            "cohortRealizedLowerBound": "0.485000"
+          },
+          {
+            "quantity": 10,
+            "cohortRealizedLowerBound": "0.475000"
+          },
+          {
+            "quantity": 11,
+            "cohortRealizedLowerBound": "0.465000"
+          },
+          {
+            "quantity": 12,
+            "cohortRealizedLowerBound": "0.455000"
+          },
+          {
+            "quantity": 13,
+            "cohortRealizedLowerBound": "0.445000"
+          },
+          {
+            "quantity": 14,
+            "cohortRealizedLowerBound": "0.435000"
+          },
+          {
+            "quantity": 15,
+            "cohortRealizedLowerBound": "0.425000"
+          },
+          {
+            "quantity": 16,
+            "cohortRealizedLowerBound": "0.415000"
+          },
+          {
+            "quantity": 17,
+            "cohortRealizedLowerBound": "0.405000"
+          },
+          {
+            "quantity": 18,
+            "cohortRealizedLowerBound": "0.395000"
+          },
+          {
+            "quantity": 19,
+            "cohortRealizedLowerBound": "0.385000"
+          },
+          {
+            "quantity": 20,
+            "cohortRealizedLowerBound": "0.375000"
+          },
+          {
+            "quantity": 21,
+            "cohortRealizedLowerBound": "0.365000"
+          },
+          {
+            "quantity": 22,
+            "cohortRealizedLowerBound": "0.355000"
+          },
+          {
+            "quantity": 23,
+            "cohortRealizedLowerBound": "0.345000"
+          },
+          {
+            "quantity": 24,
+            "cohortRealizedLowerBound": "0.335000"
+          },
+          {
+            "quantity": 25,
+            "cohortRealizedLowerBound": "0.325000"
+          },
+          {
+            "quantity": 26,
+            "cohortRealizedLowerBound": "0.315000"
+          },
+          {
+            "quantity": 27,
+            "cohortRealizedLowerBound": "0.305000"
+          },
+          {
+            "quantity": 28,
+            "cohortRealizedLowerBound": "0.295000"
+          },
+          {
+            "quantity": 29,
+            "cohortRealizedLowerBound": "0.285000"
+          }
+        ],
+        "sourceLotsHash": "8801bc21209d2b03aee4b62c93470231ca1a201348a2881413cd244e6afe5b22",
+        "sourceLevelHash": "fae3a0772b24cc623e4d247d4cd6885251c1f4ea0b3b474f3e6598aa92a7f178",
+        "fees": "0.000000",
+        "executionAuthority": false,
+        "actualFill": false,
+        "proposalHash": "42684e6546694ec5c45423b95adf8bdf7c4ad54bc567209b0fa66fea3bbac74f"
+      }
+    }
+  ],
+  "executionAuthority": false,
+  "actualOrders": 0,
+  "deployed": false,
+  "limitations": [
+    "All fills are hypothetical; later fresh account/book/rule and graph/collateral checks remain required.",
+    "Displayed liquidity and a profit floor do not guarantee fills or exclude own resting orders.",
+    "Realized profit floor alone does not bound losses on any shares left unsold."
+  ]
+}
+

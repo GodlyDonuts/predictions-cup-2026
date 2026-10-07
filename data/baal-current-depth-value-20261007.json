@@ -1,17 +1,17 @@
 {
-  "checkedAt": "2026-10-07T02:37:07.779Z",
+  "checkedAt": "2026-10-07T02:45:20.174Z",
   "mode": "dated_depth_counterfactual_NO_portfolio_value_v1",
   "actorAnchor": {
-    "bytes": 962682,
-    "sha256": "1913b860c8070a72095fd1a08df5f8ba1197683005ced8b457489f9d94b5937e",
-    "sequence": 10,
-    "hash": "919eee813d4b1f309a302a91de22703943473019142e45c3923169e6a9f61fc6"
+    "bytes": 969570,
+    "sha256": "0b3a9aed80dd0347100fc599000bdeb8d26b2859f4621d06be156556bf007e00",
+    "sequence": 11,
+    "hash": "2a31c1bca4b3d1053c12073375ab9f34cd32fea0eab5f925c17714cf1bcf1337"
   },
   "publicPrefix": {
-    "bytes": 110361837,
-    "sha256": "38ede5a4d85bd8769b87394f861bb4d7972e5a2bc07a1538ab50929aa5afaa74",
-    "records": 48769,
-    "tailHash": "15f7a7ebe8c75919328a01bf5a31d8d882bce3d31a68973eac5e92290f235af9"
+    "bytes": 110546958,
+    "sha256": "886c794268c76ae78e36e24ab92624f52e241188ee32621ad61a8c7ad7e630a6",
+    "records": 48845,
+    "tailHash": "50d4c1b53d21801c4dfaa7bb3acfb54fe8248ec976de9bb940b73a41a9577628"
   },
   "markets": [
     {
@@ -20,14 +20,14 @@
       "quantity": 2,
       "cost": "0.250000",
       "source": {
-        "requestStartedAt": "2026-10-07T02:35:09.330Z",
-        "receivedAt": "2026-10-07T02:35:10.637Z",
-        "availableAt": "2026-10-07T02:35:10.640Z",
-        "recordHash": "58d1dfc0e51e6be4ce78eeb17db6a49bbaa04bef9f091e4068bfb6c4a0809308",
-        "sequence": 48767
+        "requestStartedAt": "2026-10-07T02:44:41.063Z",
+        "receivedAt": "2026-10-07T02:44:41.776Z",
+        "availableAt": "2026-10-07T02:44:41.780Z",
+        "recordHash": "f0a7753ed88d0d092ba2f332f79c0dd5253d7ba26cdb8338f88800dd18eddc15",
+        "sequence": 48842
       },
-      "receiptAgeMs": 117142,
-      "requestDurationMs": 1307,
+      "receiptAgeMs": 38398,
+      "requestDurationMs": 713,
       "afterOwnership": true,
       "activeInPublication": true,
       "baseline": {
@@ -37,15 +37,15 @@
         "valuedQuantity": 2,
         "unvaluedQuantity": 0,
         "complete": true,
-        "proceeds": "0.220000",
+        "proceeds": "0.230000",
         "remainingCost": "0.250000",
-        "unrealizedPnl": "-0.030000",
+        "unrealizedPnl": "-0.020000",
         "fees": "0.000000",
         "slippageTicks": 0,
         "consumed": [
           {
             "quantity": 2,
-            "noPrice": "0.110000"
+            "noPrice": "0.115000"
           }
         ],
         "executionAuthority": false,
@@ -58,15 +58,15 @@
         "valuedQuantity": 2,
         "unvaluedQuantity": 0,
         "complete": true,
-        "proceeds": "0.210000",
+        "proceeds": "0.220000",
         "remainingCost": "0.250000",
-        "unrealizedPnl": "-0.040000",
+        "unrealizedPnl": "-0.030000",
         "fees": "0.000000",
         "slippageTicks": 1,
         "consumed": [
           {
             "quantity": 2,
-            "noPrice": "0.105000"
+            "noPrice": "0.110000"
           }
         ],
         "executionAuthority": false,
@@ -79,14 +79,14 @@
       "quantity": 37,
       "cost": "11.470000",
       "source": {
-        "requestStartedAt": "2026-10-07T02:35:14.852Z",
-        "receivedAt": "2026-10-07T02:35:17.549Z",
-        "availableAt": "2026-10-07T02:35:17.552Z",
-        "recordHash": "15f7a7ebe8c75919328a01bf5a31d8d882bce3d31a68973eac5e92290f235af9",
-        "sequence": 48769
+        "requestStartedAt": "2026-10-07T02:44:59.249Z",
+        "receivedAt": "2026-10-07T02:45:00.211Z",
+        "availableAt": "2026-10-07T02:45:00.215Z",
+        "recordHash": "50d4c1b53d21801c4dfaa7bb3acfb54fe8248ec976de9bb940b73a41a9577628",
+        "sequence": 48845
       },
-      "receiptAgeMs": 110230,
-      "requestDurationMs": 2697,
+      "receiptAgeMs": 19963,
+      "requestDurationMs": 962,
       "afterOwnership": true,
       "activeInPublication": true,
       "baseline": {
@@ -138,16 +138,16 @@
       "quantity": 29,
       "cost": "4.060000",
       "source": {
-        "requestStartedAt": "2026-10-05T20:51:41.377Z",
-        "receivedAt": "2026-10-05T20:51:41.587Z",
-        "availableAt": "2026-10-05T20:51:41.610Z",
-        "recordHash": "f8f88245801a31e0f00762c37a9f99efe13871086f336a7e8e848a9e01a252fb",
-        "sequence": 28191
+        "requestStartedAt": "2026-10-07T02:44:57.385Z",
+        "receivedAt": "2026-10-07T02:44:58.613Z",
+        "availableAt": "2026-10-07T02:44:58.623Z",
+        "recordHash": "2caae83c340a152eb6de3d10c4e4aaa4eefc93f8fe53fb95b49a436b6276a41a",
+        "sequence": 48844
       },
-      "receiptAgeMs": 107126192,
-      "requestDurationMs": 210,
-      "afterOwnership": false,
-      "activeInPublication": false,
+      "receiptAgeMs": 21561,
+      "requestDurationMs": 1228,
+      "afterOwnership": true,
+      "activeInPublication": true,
       "baseline": {
         "schemaVersion": 1,
         "kind": "observed_NO_depth_counterfactual_value_v1",
@@ -155,15 +155,15 @@
         "valuedQuantity": 29,
         "unvaluedQuantity": 0,
         "complete": true,
-        "proceeds": "4.640000",
+        "proceeds": "3.915000",
         "remainingCost": "4.060000",
-        "unrealizedPnl": "0.580000",
+        "unrealizedPnl": "-0.145000",
         "fees": "0.000000",
         "slippageTicks": 0,
         "consumed": [
           {
             "quantity": 29,
-            "noPrice": "0.160000"
+            "noPrice": "0.135000"
           }
         ],
         "executionAuthority": false,
@@ -176,15 +176,15 @@
         "valuedQuantity": 29,
         "unvaluedQuantity": 0,
         "complete": true,
-        "proceeds": "4.495000",
+        "proceeds": "3.770000",
         "remainingCost": "4.060000",
-        "unrealizedPnl": "0.435000",
+        "unrealizedPnl": "-0.290000",
         "fees": "0.000000",
         "slippageTicks": 1,
         "consumed": [
           {
             "quantity": 29,
-            "noPrice": "0.155000"
+            "noPrice": "0.130000"
           }
         ],
         "executionAuthority": false,
@@ -193,9 +193,9 @@
     }
   ],
   "realized": "0.975000",
-  "completeDepth": false,
+  "completeDepth": true,
   "allFresh": false,
-  "historicalDepthUnrealized": null,
+  "historicalDepthUnrealized": "-0.350000",
   "currentTotalPnl": null,
   "executionAuthority": false,
   "actualNewFills": 0,
