@@ -1,0 +1,59 @@
+{
+  "checkedAt": "2026-10-07T04:35:18.394Z",
+  "collectorPid": 12524,
+  "additionalApiClients": 0,
+  "cohort": "sequencing-depth-20261007-v2",
+  "conditionalPositive": 1,
+  "cutoff": "2026-10-07T04:31:31.580Z",
+  "executionAuthority": false,
+  "kind": "paired_sequencing_prospective_observer_v1",
+  "latestPairs": {
+    "994:995": {
+      "at": "2026-10-07T04:35:05.086Z",
+      "executionAuthority": false,
+      "kind": "paired_entry_sequencing_scenario_v1",
+      "preferLowerUnhedgedLossExchangeId": "994",
+      "quantity": 29,
+      "rootsReviewed": false,
+      "scenarios": [
+        {
+          "conditionalOrdinarySurplusIfBothFill": "0.290000",
+          "firstCost": "3.770000",
+          "firstExchangeId": "994",
+          "fullFunding": "28.710000",
+          "hedgeCost": "24.940000",
+          "hedgeExchangeId": "995",
+          "minimumHedgeCompletionProbabilityForScenarioBreakEven": 0.6,
+          "probabilityEstimated": false,
+          "stressedFirstLegLiquidationPnlIfHedgeFails": "-0.435000",
+          "unconditionalSettlementGuarantee": false
+        },
+        {
+          "conditionalOrdinarySurplusIfBothFill": "0.290000",
+          "firstCost": "24.940000",
+          "firstExchangeId": "995",
+          "fullFunding": "28.710000",
+          "hedgeCost": "3.770000",
+          "hedgeExchangeId": "994",
+          "minimumHedgeCompletionProbabilityForScenarioBreakEven": 0.6666666666666666,
+          "probabilityEstimated": false,
+          "stressedFirstLegLiquidationPnlIfHedgeFails": "-0.580000",
+          "unconditionalSettlementGuarantee": false
+        }
+      ],
+      "schemaVersion": 1,
+      "sourceHash": "978c70b77a9b2c0752378d3d050d88dccf7cf94f759f761dfae324f7763c2795",
+      "sourceSequence": 49779
+    }
+  },
+  "observations": 1,
+  "orders": 0,
+  "paperFills": 0,
+  "probabilityEstimated": false,
+  "sourceSequence": 49779,
+  "limitations": [
+    "Scenario arithmetic is not hedge-completion probability, a paper fill or profitable strategy.",
+    "Current contract semantics remain unreviewed in this observer."
+  ]
+}
+
