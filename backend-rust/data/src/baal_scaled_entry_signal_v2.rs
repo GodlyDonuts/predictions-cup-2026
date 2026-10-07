@@ -1,0 +1,928 @@
+// execution/baal-scaled-entry-signal-v2.mjs — multi-rung depth-swept successor
+// to the v1 scaled-entry proposal: walks the full strictly-unique bid curve at
+// a protected worst limit instead of requiring a single 1%-depth level, and
+// reserves 0.990 per share regardless of the displayed pair cost.
+//
+// Port notes (same contract as the v1 port in baal-execution):
+// - Every failure inside the plan body is caught exactly like JS: codes
+//   matching /^BAAL_SCALED_ENTRY_[A-Z_]+$/ surface as `reason`; anything else
+//   (fixed-money parse errors, TypeError-equivalents, verifier errors)
+//   becomes 'INVALID_OR_INCOMPLETE_SCALED_ENTRY_EVIDENCE'.
+// - `x ?? y` -> explicit absent-or-null fallback; `a?.b` -> Option chains.
+// - JS BigInt -> i128 (all quantities/prices are bounded by the ceilings).
+// - `Buffer.byteLength` -> str::len (UTF-8 bytes).
+// - price(l.price) on normalized book levels reads the money string
+//   directly (str_price); price(String(l.price)) on raw lexeme data uses
+//   js_str (String() semantics: strings pass through, numbers stringify).
+use baal_execution::baal_capital_sizing_v1::baal_capital_ceilings;
+use baal_execution::core::payload_hash;
+use baal_execution::no_rest_reconciliation_v2::inspect_scoped_rest_no_account;
+use baal_execution::party_winner_no_screen_v1::screen_party_winner_no_pairs;
+use baal_execution::receipts::parse_number_lexemes;
+use baal_service_runtime::contract::ms_to_iso;
+use baal_service_runtime::fixed::{amount, instant, money, price, SCALE, TICK};
+use baal_service_runtime::json_text::{js_int, js_stringify, js_truthy, sha256};
+use baal_service_runtime::market::normalize_book;
+use num_bigint::BigInt;
+use serde_json::{json, Map, Value as V};
+use std::collections::{BTreeMap, BTreeSet, HashSet};
+
+fn need(ok: bool, code: &str) -> Result<(), String> {
+    if ok {
+        Ok(())
+    } else {
+        Err(format!("BAAL_SCALED_ENTRY_{code}"))
+    }
+}
+fn get<'a>(v: &'a V, k: &str) -> &'a V {
+    v.get(k).unwrap_or(&V::Null)
+}
+fn sget<'a>(v: &'a V, k: &str) -> Option<&'a str> {
+    v.get(k).and_then(V::as_str)
+}
+fn hex(x: &V) -> bool {
+    x.as_str()
+        .is_some_and(|s| s.len() == 64 && s.bytes().all(|b| b.is_ascii_hexdigit() && !b.is_ascii_uppercase()))
+}
+fn id(x: &V) -> bool {
+    x.as_str().is_some_and(|s| {
+        !s.is_empty()
+            && s.bytes().all(|b| b.is_ascii_digit())
+            && !s.starts_with('0')
+            && s.parse::<i64>().is_ok()
+    })
+}
+fn str_amount(v: &V) -> Result<i128, String> {
+    amount(v.as_str().ok_or_else(|| "INVALID_AMOUNT".to_string())?)
+}
+fn str_price(v: &V) -> Result<i128, String> {
+    price(v.as_str().ok_or_else(|| "INVALID_PRICE".to_string())?)
+}
+fn str_instant(v: &V) -> Result<i64, String> {
+    instant(v.as_str().ok_or_else(|| "INVALID_INSTANT".to_string())?)
+}
+// JS String(v): strings pass through verbatim, other primitives stringify.
+fn js_str(v: &V) -> String {
+    match v {
+        V::String(s) => s.clone(),
+        V::Null => "null".into(),
+        V::Bool(b) => b.to_string(),
+        _ => js_stringify(v),
+    }
+}
+fn is_entry_code(e: &str) -> bool {
+    e.starts_with("BAAL_SCALED_ENTRY_")
+        && e.len() > "BAAL_SCALED_ENTRY_".len()
+        && e.bytes().all(|b| b.is_ascii_uppercase() || b == b'_')
+}
+fn num_key(path: &[V]) -> String {
+    serde_json::to_string(path).unwrap()
+}
+fn lexeme_int_eq(raw: &str, value: i64) -> bool {
+    // BigInt(raw.split('.')[0]) === BigInt(value)
+    let part = raw.split('.').next().unwrap_or("");
+    BigInt::parse_bytes(part.as_bytes(), 10) == Some(BigInt::from(value))
+}
+
+struct Raw {
+    data: V,
+    numbers: BTreeMap<String, String>,
+    start: i64,
+    end: i64,
+    source_body_hash: String,
+    request_started_at: V,
+    received_at: V,
+}
+fn raw(receipt: &V, endpoint: &str, at: i64, max_age: i64) -> Result<Raw, String> {
+    need(
+        get(receipt, "method").as_str() == Some("GET")
+            && get(receipt, "endpoint").as_str() == Some(endpoint)
+            && js_int(get(receipt, "status")) == Some(200)
+            && get(receipt, "bodyText")
+                .as_str()
+                .is_some_and(|s| s.len() <= 8 * 1024 * 1024),
+        "RAW_RECEIPT",
+    )?;
+    let start = str_instant(get(receipt, "requestStartedAt"))?;
+    let end = str_instant(get(receipt, "receivedAt"))?;
+    need(
+        start <= end && end <= at && at - start <= max_age && end - start <= 20000,
+        "RECEIPT_TIME",
+    )?;
+    let source_body_hash = sha256(get(receipt, "bodyText").as_str().unwrap_or("").as_bytes());
+    need(
+        receipt.get("sourceBodyHash").is_none()
+            || get(receipt, "sourceBodyHash").as_str() == Some(source_body_hash.as_str()),
+        "RECEIPT_HASH",
+    )?;
+    let (data, numbers) = parse_number_lexemes(get(receipt, "bodyText").as_str().unwrap_or(""))?;
+    Ok(Raw {
+        data,
+        numbers,
+        start,
+        end,
+        source_body_hash,
+        request_started_at: get(receipt, "requestStartedAt").clone(),
+        received_at: get(receipt, "receivedAt").clone(),
+    })
+}
+
+// One consumed sweep across a leg's normalized bid curve: the price to cross
+// `q` shares is the worst consumed level plus one protective tick.
+struct Consumed {
+    raw_no_ask: i128,
+    limit: i128,
+    #[allow(dead_code)]
+    displayed: i128,
+    used: Vec<V>,
+    last_index: usize,
+}
+
+struct Leg {
+    market_id: String,
+    exchange_id: String,
+    limit: i128,
+    raw_no_ask: i128,
+    depth: i64,
+    displayed: i128,
+    used: Vec<V>,
+    source: Raw,
+    book: V,
+    yes_bid_level: V,
+}
+
+fn consume(leg: &Leg, q: i64) -> Result<Option<Consumed>, String> {
+    let bids = leg
+        .book
+        .get("bids")
+        .and_then(V::as_array)
+        .ok_or_else(|| "INVALID".to_string())?;
+    let mut worst: i128 = 0;
+    let mut displayed: i128 = 0;
+    let mut used: Vec<V> = Vec::new();
+    let mut last_index = 0usize;
+    let mut left = q as f64;
+    for (index, level) in bids.iter().enumerate() {
+        // Math.min(left, level.quantity): non-numeric depth is NaN (skipped);
+        // a fractional take then blows up inside BigInt(take), which the
+        // plan-level catch maps to INVALID_OR_INCOMPLETE.
+        let qty_f = get(level, "quantity").as_f64().unwrap_or(f64::NAN);
+        let take_f = left.min(qty_f);
+        if take_f != 0.0 && !take_f.is_nan() {
+            // JS evaluates worst=SCALE-price(level.price) before
+            // BigInt(take) in `displayed += worst*BigInt(take)`.
+            worst = SCALE - str_price(get(level, "price"))?;
+            if take_f.fract() != 0.0 || !take_f.is_finite() {
+                return Err("Cannot convert to a BigInt".to_string());
+            }
+            let take = take_f as i128;
+            displayed += worst * take;
+            used.push(json!({
+                "index": index,
+                "quantity": if take_f.fract() == 0.0 && take_f.abs() < 1e15 {
+                    json!(take_f as i64)
+                } else {
+                    json!(take_f)
+                },
+                "yesBidPrice": get(level, "price"),
+            }));
+            left -= take_f;
+            last_index = index;
+        }
+        if left == 0.0 {
+            break;
+        }
+    }
+    if left != 0.0 {
+        return Ok(None);
+    }
+    let limit = worst + TICK;
+    if limit > SCALE - TICK {
+        return Ok(None);
+    }
+    Ok(Some(Consumed {
+        raw_no_ask: worst,
+        limit,
+        displayed,
+        used,
+        last_index,
+    }))
+}
+
+fn plan_inner(input: &V) -> Result<V, String> {
+    let scope = get(input, "scope");
+    let a = get(input, "allocation");
+    let account = get(input, "account");
+    let g = get(input, "accountRisk");
+    let root_receipts = get(input, "rootReceipts");
+    let book_receipts = get(input, "bookReceipts");
+    let now_v = get(input, "now");
+    let at = str_instant(now_v)?;
+    need(
+        sget(scope, "ownerId") == Some("Codex")
+            && sget(scope, "runId").is_some_and(|s| !s.is_empty())
+            && sget(scope, "tournamentId").is_some_and(|s| !s.is_empty())
+            && sget(scope, "tournamentSlug").is_some_and(|s| {
+                !s.is_empty()
+                    && s.split('-').all(|p| {
+                        !p.is_empty() && p.bytes().all(|b| b.is_ascii_lowercase() || b.is_ascii_digit())
+                    })
+            }),
+        "SCOPE",
+    )?;
+    let ceilings = baal_capital_ceilings();
+    need(
+        js_int(get(a, "schemaVersion")) == Some(1)
+            && get(a, "ownerId") == get(scope, "ownerId")
+            && get(a, "runId") == get(scope, "runId")
+            && get(a, "tournamentId") == get(scope, "tournamentId")
+            && get(a, "capital") == get(&ceilings, "capital")
+            && hex(get(a, "humanAllocationSourceHash"))
+            && str_instant(get(a, "recordedAt"))? <= at,
+        "HUMAN_ALLOCATION",
+    )?;
+    let opt = |v: &V, k: &str, d: &str| -> V {
+        match v.get(k) {
+            Some(x) if !x.is_null() => x.clone(),
+            _ => json!(d),
+        }
+    };
+    let order_cap = str_amount(&opt(a, "maximumOrderCost", "25.000000"))?;
+    let market_cap = str_amount(&opt(a, "maximumMarketCost", "100.000000"))?;
+    let event_cap = str_amount(&opt(a, "maximumEventCost", "200.000000"))?;
+    let share_cap = match a.get("maximumSharesPerOrder") {
+        Some(x) if !x.is_null() => js_int(x),
+        _ => Some(100),
+    };
+    need(
+        order_cap > 0
+            && order_cap <= 25000000
+            && market_cap > 0
+            && market_cap <= 100000000
+            && event_cap > 0
+            && event_cap <= 200000000
+            && share_cap.is_some_and(|s| (1..=100).contains(&s)),
+        "CAPITAL_CEILINGS",
+    )?;
+    let share_cap = share_cap.unwrap();
+    need(
+        get(g, "ownerId") == get(scope, "ownerId")
+            && get(g, "runId") == get(scope, "runId")
+            && get(g, "tournamentId") == get(scope, "tournamentId")
+            && get(g, "complete") == &V::Bool(true)
+            && get(g, "eventScopeComplete") == &V::Bool(true)
+            && get(g, "unknownAcceptance") == &V::Bool(false)
+            && get(g, "unresolvedIntentIds")
+                .as_array()
+                .is_some_and(|x| x.is_empty())
+            && get(g, "stopped") == &V::Bool(false)
+            && get(g, "soleCollector") == &V::Bool(true)
+            && hex(get(g, "sourceHash"))
+            && str_instant(get(g, "at"))? <= at
+            && at - str_instant(get(g, "at"))? <= 20000
+            && ["owned", "reservations", "loans"]
+                .iter()
+                .all(|k| g.get(k).is_some_and(V::is_array)),
+        "FRESH_RISK_OR_UNKNOWN",
+    )?;
+    need(
+        root_receipts.as_array().is_some_and(|x| x.len() == 2)
+            && book_receipts.as_array().is_some_and(|x| x.len() == 2),
+        "TWO_ROOTS_AND_BOOKS",
+    )?;
+    let mut roots: Vec<V> = Vec::new();
+    for c in root_receipts.as_array().unwrap() {
+        need(id(get(c, "marketId")) && id(get(c, "exchangeId")), "ROOT_MEMBER")?;
+        let r = raw(
+            get(c, "receipt"),
+            &format!(
+                "/markets/{}/nodes?tournamentId={}",
+                get(c, "marketId").as_str().unwrap(),
+                sget(scope, "tournamentId").unwrap()
+            ),
+            at,
+            300000,
+        )?;
+        let d = &r.data;
+        let contexts = d.get("contexts").and_then(V::as_array);
+        need(
+            get(d, "market_id") == get(c, "marketId")
+                && contexts.is_some_and(|x| x.len() == 1)
+                && contexts
+                    .map(|x| get(&x[0], "type").as_str())
+                    == Some(Some("tournament"))
+                && contexts
+                    .and_then(|x| x[0].get("tournament"))
+                    .and_then(|t| t.get("id"))
+                    .and_then(V::as_str)
+                    == sget(scope, "tournamentId"),
+            "ROOT_SCOPE",
+        )?;
+        roots.push(json!({
+            "marketId": get(c, "marketId"),
+            "exchangeId": get(c, "exchangeId"),
+            "tournamentId": get(scope, "tournamentId"),
+            "option": "YES",
+            "root": get(d, "root"),
+            "rootHash": payload_hash(get(d, "root"))?,
+            "sourceHash": r.source_body_hash,
+            "requestStartedAt": r.request_started_at,
+            "receivedAt": r.received_at,
+            "knownAt": r.received_at,
+        }));
+    }
+    need(
+        roots
+            .iter()
+            .map(|r| get(r, "marketId").as_str().unwrap_or(""))
+            .collect::<HashSet<_>>()
+            .len()
+            == 2
+            && roots
+                .iter()
+                .map(|r| get(r, "exchangeId").as_str().unwrap_or(""))
+                .collect::<HashSet<_>>()
+                .len()
+                == 2,
+        "DISTINCT_CONTRACTS",
+    )?;
+    let semantic = screen_party_winner_no_pairs(&json!({
+        "universe": {
+            "tournamentId": get(scope, "tournamentId"),
+            "exchanges": roots.iter().map(|r| json!({
+                "marketId": get(r, "marketId"),
+                "exchangeId": get(r, "exchangeId"),
+                "option": get(r, "option"),
+            })).collect::<Vec<V>>(),
+        },
+        "rootCaptures": roots,
+        "quoteCaptures": [],
+        "account": V::Null,
+        "now": now_v,
+    }))?;
+    let pairs = get(&semantic, "pairs").as_array();
+    need(
+        js_int(get(&semantic, "semanticPairCount")) == Some(1)
+            && pairs.is_some_and(|p| !p.is_empty())
+            && js_truthy(pairs.and_then(|p| p[0].get("rootsCurrent"))),
+        "OPPOSING_SAME_SINGLE_WINNER_RACE",
+    )?;
+    let event_id = pairs.unwrap()[0].get("eventKey").cloned().unwrap_or(V::Null);
+
+    let mut legs: Vec<Leg> = Vec::new();
+    for c in book_receipts.as_array().unwrap() {
+        let member = roots.iter().find(|r| {
+            get(r, "marketId") == get(c, "marketId") && get(r, "exchangeId") == get(c, "exchangeId")
+        });
+        need(member.is_some(), "BOOK_MEMBER")?;
+        let r = raw(
+            get(c, "receipt"),
+            &format!(
+                "/markets/{}/orderbook?tournamentId={}&depth=20",
+                get(c, "marketId").as_str().unwrap_or(""),
+                sget(scope, "tournamentId").unwrap()
+            ),
+            at,
+            20000,
+        )?;
+        let d = &r.data;
+        let contexts = d.get("contexts").and_then(V::as_array);
+        need(
+            contexts.is_some_and(|x| x.len() == 1)
+                && contexts.map(|x| get(&x[0], "type").as_str()) == Some(Some("tournament"))
+                && contexts
+                    .and_then(|x| x[0].get("tournament"))
+                    .and_then(|t| t.get("id"))
+                    .and_then(V::as_str)
+                    == sget(scope, "tournamentId")
+                && roots.iter().all(|v| {
+                    str_instant(get(v, "receivedAt")).map(|t| t <= r.start).unwrap_or(false)
+                }),
+            "RULES_BEFORE_EXACT_BOOK",
+        )?;
+        let b = normalize_book(
+            d,
+            get(c, "marketId").as_str().unwrap_or(""),
+            sget(scope, "tournamentId").unwrap(),
+            r.received_at.as_str().unwrap_or(""),
+            r.request_started_at.as_str().unwrap_or(""),
+            20000.0,
+            &BTreeSet::new(),
+            "authoritative_receipt_v1",
+        )?;
+        need(
+            get(&b, "exchangeId") == get(c, "exchangeId")
+                && get(&b, "bids").as_array().is_some_and(|x| x.len() <= 20)
+                && get(&b, "asks").as_array().is_some_and(|x| x.len() <= 20),
+            "BOOK_DEPTH20",
+        )?;
+        let bids = contexts
+            .and_then(|x| x[0].get("orderbook"))
+            .and_then(|o| o.get("exchanges"))
+            .and_then(V::as_array)
+            .and_then(|e| e.first())
+            .and_then(|e| e.get("bids"))
+            .and_then(V::as_array)
+            .cloned()
+            .ok_or_else(|| "INVALID".to_string())?;
+        for (i, l) in bids.iter().enumerate() {
+            let q = r.numbers.get(&num_key(&[
+                json!("contexts"),
+                json!(0),
+                json!("orderbook"),
+                json!("exchanges"),
+                json!(0),
+                json!("bids"),
+                json!(i),
+                json!("quantity"),
+            ]));
+            let p = r.numbers.get(&num_key(&[
+                json!("contexts"),
+                json!(0),
+                json!("orderbook"),
+                json!("exchanges"),
+                json!(0),
+                json!("bids"),
+                json!(i),
+                json!("price"),
+            ]));
+            // JS evaluates BigInt(l.quantity) inside the single need only
+            // after the lexeme string checks pass — a non-integer normalized
+            // quantity throws uncoded (INVALID), not EXACT_..._.
+            need(
+                q.is_some_and(|q| {
+                    q.len() <= 128
+                        && q.bytes().filter(|b| *b == b'.').count() <= 1
+                        && {
+                            let int_part = q.split('.').next().unwrap_or("");
+                            !int_part.is_empty()
+                                && (!int_part.starts_with('0') || int_part == "0")
+                                && int_part.bytes().all(|b| b.is_ascii_digit())
+                                && q.split('.').nth(1).is_none_or(|f| {
+                                    !f.is_empty() && f.bytes().all(|b| b == b'0')
+                                })
+                        }
+                }),
+                "EXACT_DEPTH_AND_PRICE_LEXEMES",
+            )?;
+            let qv = js_int(get(l, "quantity"))
+                .ok_or_else(|| "Cannot convert to a BigInt".to_string())?;
+            need(
+                lexeme_int_eq(q.unwrap(), qv),
+                "EXACT_DEPTH_AND_PRICE_LEXEMES",
+            )?;
+            // JS evaluates `price(p)` inside the need expression: an absent or
+            // non-string lexeme throws a non-entry error before the
+            // comparison can fail, so reason stays INVALID_OR_INCOMPLETE.
+            let px = p
+                .ok_or_else(|| "INVALID_PRICE".to_string())
+                .and_then(|p| price(p))?;
+            let lpx = str_price(&json!(js_str(get(l, "price"))))?;
+            need(px == lpx, "EXACT_DEPTH_AND_PRICE_LEXEMES")?;
+        }
+        // v2: accept any displayed depth, but the normalized bid curve must be
+        // strictly decreasing (unique prices) before the sweep is trusted.
+        let book_bids = get(&b, "bids").as_array().cloned().unwrap_or_default();
+        need(!book_bids.is_empty(), "NO_DISPLAYED_DEPTH")?;
+        let mut previous = SCALE;
+        for l in &book_bids {
+            let px = str_price(get(l, "price"))?;
+            need(px < previous, "STRICT_UNIQUE_BID_CURVE")?;
+            previous = px;
+        }
+        let level = book_bids[0].clone();
+        let raw_no_ask = SCALE - str_price(get(&level, "price"))?;
+        let limit = raw_no_ask + TICK;
+        str_price(&json!(money(limit)))?;
+        // depth:Number(min(Σ BigInt(l.quantity), 100n)) — normalized book
+        // quantities are JSON numbers; BigInt throws on a non-integer
+        // (caught as INVALID_OR_INCOMPLETE by the plan-level catch).
+        let mut total_quantity: i128 = 0;
+        for l in &book_bids {
+            total_quantity += js_int(get(l, "quantity"))
+                .ok_or_else(|| "Cannot convert to a BigInt".to_string())?
+                as i128;
+        }
+        legs.push(Leg {
+            market_id: get(c, "marketId").as_str().unwrap().to_string(),
+            exchange_id: get(c, "exchangeId").as_str().unwrap().to_string(),
+            limit,
+            raw_no_ask,
+            depth: total_quantity.min(100) as i64,
+            displayed: 0,
+            used: Vec::new(),
+            source: r,
+            book: b,
+            yes_bid_level: level,
+        });
+    }
+    need(
+        legs.iter().map(|l| l.exchange_id.clone()).collect::<HashSet<_>>().len() == 2
+            && legs.iter().map(|l| l.source.end).max().unwrap()
+                - legs.iter().map(|l| l.source.start).min().unwrap()
+                <= 10000,
+        "COFRESH_DISTINCT_BOOKS",
+    )?;
+    legs.sort_by(|x, y| {
+        x.limit
+            .cmp(&y.limit)
+            .then_with(|| {
+                x.exchange_id
+                    .parse::<i64>()
+                    .unwrap_or(0)
+                    .cmp(&y.exchange_id.parse::<i64>().unwrap_or(0))
+            })
+    });
+    let mut total = legs[0].limit + legs[1].limit;
+    need(total <= 990000, "MINIMUM_PROTECTIVE_PACKAGE_GAP")?;
+
+    let scoped = get(account, "scopedOrdersPagesByExchange")
+        .get(&legs[0].exchange_id)
+        .filter(|v| !v.is_null())
+        .cloned()
+        .unwrap_or_else(|| get(account, "scopedOrdersPages").clone());
+    let full = json!({
+        "cash": get(account, "cash"),
+        "positions": get(account, "positions"),
+        "openOrdersPages": get(account, "openOrdersPages"),
+        "scopedOrdersPages": scoped,
+    });
+    let mut binding = scope.as_object().cloned().unwrap_or_default();
+    binding.insert("exchangeId".into(), json!(legs[0].exchange_id));
+    let current = inspect_scoped_rest_no_account(&json!({
+        "account": full,
+        "binding": V::Object(binding),
+        "readAt": now_v,
+    }))?;
+    let raw_positions =
+        parse_number_lexemes(get(get(account, "positions"), "bodyText").as_str().unwrap_or(""))?;
+    for (i, p) in get(&raw_positions.0, "positions")
+        .as_array()
+        .ok_or_else(|| "INVALID".to_string())?
+        .iter()
+        .enumerate()
+    {
+        let q = raw_positions
+            .1
+            .get(&num_key(&[json!("positions"), json!(i), json!("quantity")]));
+        need(
+            q.is_some_and(|q| {
+                q.len() <= 128
+                    && q.bytes().filter(|b| *b == b'.').count() <= 1
+                    && {
+                        let t = q.strip_prefix('-').unwrap_or(q);
+                        let int_part = t.split('.').next().unwrap_or("");
+                        !int_part.is_empty()
+                            && (!int_part.starts_with('0') || int_part == "0")
+                            && int_part.bytes().all(|b| b.is_ascii_digit())
+                            && q.split('.').nth(1).is_none_or(|f| {
+                                !f.is_empty() && f.bytes().all(|b| b == b'0')
+                            })
+                    }
+            }),
+            "EXACT_ACCOUNT_POSITION_QUANTITY",
+        )?;
+        // BigInt(p.quantity) is evaluated only after the lexeme checks pass.
+        let pv = js_int(get(p, "quantity"))
+            .ok_or_else(|| "Cannot convert to a BigInt".to_string())?;
+        need(
+            lexeme_int_eq(q.unwrap(), pv),
+            "EXACT_ACCOUNT_POSITION_QUANTITY",
+        )?;
+    }
+    let min_book_start = legs.iter().map(|l| l.source.start).min().unwrap();
+    let cur_positions = get(&current, "positions")
+        .as_array()
+        .ok_or_else(|| "INVALID".to_string())?;
+    need(
+        !cur_positions
+            .iter()
+            .any(|p| {
+                legs.iter().any(|l| get(p, "exchangeId").as_str() == Some(l.exchange_id.as_str()))
+                    && get(p, "quantity").as_f64() != Some(0.0)
+            })
+            && str_instant(get(&current, "completedAt"))? <= min_book_start
+            && str_instant(get(g, "at"))? >= str_instant(get(&current, "completedAt"))?
+            && str_instant(get(g, "at"))? <= min_book_start,
+        "WHOLE_ACCOUNT_TARGET_FLAT_AND_CAUSAL",
+    )?;
+
+    let mut nominal: i128 = 0;
+    let mut event_exposure: i128 = 0;
+    let mut markets: std::collections::HashMap<String, i128> = legs
+        .iter()
+        .map(|l| (l.market_id.clone(), 0i128))
+        .collect();
+    for (k, field) in [
+        ("owned", "nominalCost"),
+        ("reservations", "maximumNominalCost"),
+        ("loans", "fullNominalPrincipal"),
+    ] {
+        for e in get(g, k).as_array().cloned().unwrap_or_default() {
+            need(
+                !e.is_null()
+                    && id(get(&e, "marketId"))
+                    && sget(&e, "eventId").is_some_and(|s| !s.is_empty())
+                    && sget(&e, "exposureId").is_some_and(|s| !s.is_empty())
+                    && get(&e, "unknownAcceptance") != &V::Bool(true),
+                "EXACT_NOMINAL_EXPOSURE",
+            )?;
+            let n = str_amount(get(&e, field))?;
+            need(
+                n >= 0
+                    && (!markets.contains_key(get(&e, "marketId").as_str().unwrap_or(""))
+                        || get(&e, "eventId") == &event_id),
+                "EVENT_SCOPE",
+            )?;
+            nominal += n;
+            if get(&e, "eventId") == &event_id {
+                event_exposure += n;
+            }
+            if let Some(v) = markets.get_mut(get(&e, "marketId").as_str().unwrap_or("")) {
+                *v += n;
+            }
+        }
+    }
+    let cash_lower = str_amount(get(&current, "cashLower"))?;
+    let cash = std::cmp::min(
+        cash_lower,
+        if g.get("cashLower").is_none() {
+            cash_lower
+        } else {
+            str_amount(get(g, "cashLower"))?
+        },
+    );
+    let capital_remaining = 1000000000i128 - nominal;
+    let event_remaining = event_cap - event_exposure;
+    need(cash >= 0, "CASH_LOWER")?;
+    let first_remaining = market_cap - markets.get(&legs[0].market_id).copied().unwrap_or(0);
+    let second_remaining = market_cap - markets.get(&legs[1].market_id).copied().unwrap_or(0);
+
+    // Depth sweep: for every candidate quantity 1..=shareCap, walk both bid
+    // curves and keep only fully-funded whole-package reservations.
+    let mut depth_candidates: Vec<(i64, Vec<Consumed>, i128, i128)> = Vec::new();
+    for q in 1..=share_cap {
+        let mut consumed: Vec<Consumed> = Vec::new();
+        let mut failed = false;
+        for l in &legs {
+            match consume(l, q)? {
+                Some(c) => consumed.push(c),
+                None => {
+                    failed = true;
+                    break;
+                }
+            }
+        }
+        if failed || consumed.len() != legs.len() {
+            continue;
+        }
+        let cost: Vec<i128> = consumed.iter().map(|x| x.limit * q as i128).collect();
+        let unit = consumed[0].limit + consumed[1].limit;
+        let reservation = 990000i128 * q as i128;
+        if unit > 990000
+            || cost.iter().any(|x| *x > order_cap)
+            || cost[0] > first_remaining
+            || cost[1] > second_remaining
+            || reservation > capital_remaining
+            || reservation > event_remaining
+            || reservation > cash
+        {
+            continue;
+        }
+        let margin = (SCALE - unit) * q as i128;
+        depth_candidates.push((q, consumed, margin, unit));
+    }
+    depth_candidates.sort_by(|a, b| b.2.cmp(&a.2).then_with(|| b.0.cmp(&a.0)));
+    let chosen = depth_candidates.into_iter().next();
+    let quantity = chosen.as_ref().map(|c| c.0).unwrap_or(0);
+    if let Some(chosen) = chosen {
+        // Object.assign(l, chosen.consumed[i]); l.yesBidLevel = last consumed bid.
+        for (i, l) in legs.iter_mut().enumerate() {
+            let c = &chosen.1[i];
+            l.raw_no_ask = c.raw_no_ask;
+            l.limit = c.limit;
+            l.displayed = c.displayed;
+            l.used = c.used.clone();
+            let idx = c.last_index;
+            l.yes_bid_level = get(&l.book, "bids").as_array().unwrap()[idx].clone();
+        }
+        total = chosen.3;
+    }
+
+    let mut risk = Map::new();
+    risk.insert("nominalExposure".into(), json!(money(nominal)));
+    risk.insert("eventNominalExposure".into(), json!(money(event_exposure)));
+    risk.insert("capitalRemaining".into(), json!(money(capital_remaining)));
+    risk.insert("eventRemaining".into(), json!(money(event_remaining)));
+    risk.insert("firstMarketRemaining".into(), json!(money(first_remaining)));
+    risk.insert("secondMarketRemaining".into(), json!(money(second_remaining)));
+    risk.insert("cashLower".into(), json!(money(cash)));
+    risk.insert("fullNominalLoansAndReservationsCounted".into(), json!(true));
+    risk.insert("loanAdvanceDiscount".into(), json!(false));
+    let risk = V::Object(risk);
+    if quantity < 1 {
+        let mut out = base_map(now_v);
+        out.insert("reason".into(), json!("NO_FULL_PACKAGE_FUNDED_INTEGER_QUANTITY"));
+        out.insert("risk".into(), risk);
+        return Ok(V::Object(out));
+    }
+    let mut expiry_floor = i64::MAX;
+    for r in &roots {
+        expiry_floor = expiry_floor.min(str_instant(get(r, "receivedAt"))? + 300000);
+    }
+    for l in &legs {
+        expiry_floor = expiry_floor.min(l.source.start + 20000);
+    }
+    expiry_floor = expiry_floor.min(str_instant(get(&current, "startedAt"))? + 20000);
+    let expires_at = ms_to_iso(expiry_floor as f64);
+    need(str_instant(&json!(expires_at.clone()))? > at, "EXPIRED_ENTRY_SOURCE")?;
+    let public_leg = |l: &Leg, quantity: i64| -> V {
+        let mut p = Map::new();
+        p.insert("marketId".into(), json!(l.market_id));
+        p.insert("exchangeId".into(), json!(l.exchange_id));
+        p.insert("side".into(), json!("no"));
+        p.insert("limit".into(), json!(money(l.limit)));
+        p.insert("rawObservedNoAsk".into(), json!(money(l.raw_no_ask)));
+        p.insert("maximumQuantity".into(), json!(quantity));
+        p.insert(
+            "observedDepthQuantityWithinShareCap".into(),
+            json!(l.depth),
+        );
+        p.insert("consumedBidLevels".into(), V::Array(l.used.clone()));
+        p.insert("yesBidSourceLevel".into(), l.yes_bid_level.clone());
+        p.insert(
+            "maximumObservedNotional".into(),
+            json!(money(l.limit * quantity as i128)),
+        );
+        p.insert("bookVersion".into(), get(&l.book, "versionKey").clone());
+        V::Object(p)
+    };
+    let mut residual = Map::new();
+    residual.insert("kind".into(), json!("conditional_two_no_relative_value_gap"));
+    residual.insert("eventId".into(), event_id.clone());
+    residual.insert("protectiveUnitCost".into(), json!(money(total)));
+    residual.insert("ordinaryPayoutFloor".into(), json!("1.000000"));
+    residual.insert("conditionalGap".into(), json!(money(SCALE - total)));
+    residual.insert(
+        "rootHashes".into(),
+        json!(roots.iter().map(|r| get(r, "rootHash").clone()).collect::<Vec<V>>()),
+    );
+    residual.insert(
+        "bookHashes".into(),
+        json!(legs
+            .iter()
+            .map(|l| json!(l.source.source_body_hash))
+            .collect::<Vec<V>>()),
+    );
+    let residual = V::Object(residual);
+
+    let mut proposal = base_map(now_v);
+    proposal.insert("proposalReady".into(), json!(true));
+    proposal.insert("reason".into(), json!("FUNDED_CONDITIONAL_PACKAGE_GAP_CHEAP_FIRST_PROPOSAL"));
+    proposal.insert("ownerId".into(), get(scope, "ownerId").clone());
+    proposal.insert("runId".into(), get(scope, "runId").clone());
+    proposal.insert("tournamentId".into(), get(scope, "tournamentId").clone());
+    proposal.insert("tournamentSlug".into(), get(scope, "tournamentSlug").clone());
+    proposal.insert("eventId".into(), event_id.clone());
+    proposal.insert("allocationHash".into(), json!(payload_hash(a)?));
+    proposal.insert("riskHash".into(), json!(payload_hash(g)?));
+    proposal.insert(
+        "legs".into(),
+        json!(legs.iter().map(|l| public_leg(l, quantity)).collect::<Vec<V>>()),
+    );
+    let mut chosen_leg = Map::new();
+    chosen_leg.insert("marketId".into(), json!(legs[0].market_id));
+    chosen_leg.insert("exchangeId".into(), json!(legs[0].exchange_id));
+    chosen_leg.insert("side".into(), json!("no"));
+    chosen_leg.insert("action".into(), json!("buy"));
+    chosen_leg.insert("quantity".into(), json!(quantity));
+    chosen_leg.insert("limit".into(), json!(money(legs[0].limit)));
+    proposal.insert("chosenLeg".into(), V::Object(chosen_leg));
+    proposal.insert(
+        "fullPackageReservation".into(),
+        json!(money(990000i128 * quantity as i128)),
+    );
+    proposal.insert("unitPackageCeiling".into(), json!("0.990000"));
+    proposal.insert("minimumOrdinaryMargin".into(), json!("0.010000"));
+    proposal.insert("observedProtectivePackageUnitCost".into(), json!(money(total)));
+    proposal.insert("conditionalOrdinaryGap".into(), json!(money(SCALE - total)));
+    proposal.insert("conditionalOrdinaryFloor".into(), json!("1.000000"));
+    proposal.insert("unconditionalFloor".into(), V::Null);
+    proposal.insert(
+        "exceptionLossAtFullReservation".into(),
+        json!(money(-990000i128 * quantity as i128)),
+    );
+    proposal.insert(
+        "maximumFirstOrderNotional".into(),
+        json!(money(legs[0].limit * quantity as i128)),
+    );
+    proposal.insert(
+        "maximumFutureHedgeOrderNotional".into(),
+        json!(money(std::cmp::min(order_cap, second_remaining))),
+    );
+    proposal.insert("futureHedgeLimitRule".into(), json!("min(0.990-actual_first_unit_cost, tick_floor(max_order_notional/remaining_quantity), tick_floor(fresh_market_remaining/remaining_quantity))"));
+    proposal.insert("futureHedgeAutomaticallyAuthorized".into(), json!(false));
+    proposal.insert("sellTargetRule".into(), json!("actual_verified_unit_cost + 0.005 with fresh protected net exit/depth and separate authority"));
+    proposal.insert("valuationKind".into(), get(&residual, "kind").clone());
+    proposal.insert("valuationHash".into(), json!(payload_hash(&residual)?));
+    proposal.insert("risk".into(), risk);
+    proposal.insert("expiresAt".into(), json!(expires_at));
+    let mut receipts = Map::new();
+    receipts.insert(
+        "roots".into(),
+        json!(roots
+            .iter()
+            .map(|r| {
+                json!({
+                    "marketId": get(r, "marketId"),
+                    "exchangeId": get(r, "exchangeId"),
+                    "rootHash": get(r, "rootHash"),
+                    "sourceBodyHash": get(r, "sourceHash"),
+                    "requestStartedAt": get(r, "requestStartedAt"),
+                    "receivedAt": get(r, "receivedAt"),
+                })
+            })
+            .collect::<Vec<V>>()),
+    );
+    receipts.insert(
+        "books".into(),
+        json!(legs
+            .iter()
+            .map(|l| {
+                json!({
+                    "marketId": l.market_id,
+                    "exchangeId": l.exchange_id,
+                    "sourceBodyHash": l.source.source_body_hash,
+                    "requestStartedAt": l.source.request_started_at,
+                    "receivedAt": l.source.received_at,
+                    "versionKey": get(&l.book, "versionKey"),
+                })
+            })
+            .collect::<Vec<V>>()),
+    );
+    receipts.insert("account".into(), get(&current, "sourceReceipts").clone());
+    proposal.insert("sourceReceipts".into(), V::Object(receipts));
+    proposal.insert("fees".into(), json!("0.000000"));
+    proposal.insert("depthCombinedAcrossLevels".into(), json!(true));
+    proposal.insert(
+        "depthPolicy".into(),
+        json!("full_observed_unique_bid_curve_at_protected_worst_limit"),
+    );
+    proposal.insert(
+        "objective".into(),
+        json!("maximum_conditional_ordinary_package_dollar_margin"),
+    );
+    proposal.insert("minimumFirstLotCorpusProfitabilityProven".into(), json!(false));
+    proposal.insert(
+        "assumptions".into(),
+        json!([
+            "Opposing same-race Party Winner NO/NO has only a conditional ordinary-resolution floor; separate contracts are not exhaustive complements.",
+            "The first leg is directional until a independently funded/verified hedge fills; cheap is relative to the package, not a fair point probability.",
+            "Administrative, void/refund, affiliation or inconsistent-resolution exceptions can lose the full package cost.",
+            "Observed gaps need not revert on a short horizon; one original profitable share does not prove scaled profitability.",
+            "No entry window, order, automatic hedge or guaranteed sale is authorized by this proposal."
+        ]),
+    );
+    let proposal_v = V::Object(proposal);
+    let hash = payload_hash(&proposal_v)?;
+    let mut out = proposal_v.as_object().unwrap().clone();
+    out.insert("proposalHash".into(), json!(hash));
+    Ok(V::Object(out))
+}
+
+fn base_map(now: &V) -> Map<String, V> {
+    let mut m = Map::new();
+    m.insert("schemaVersion".into(), json!(1));
+    m.insert(
+        "mode".into(),
+        json!("baal_scaled_depth_swept_conditional_party_winner_entry_v2"),
+    );
+    m.insert("at".into(), now.clone());
+    m.insert("proposalReady".into(), json!(false));
+    m.insert("orderEligible".into(), json!(false));
+    m.insert("executionAuthority".into(), json!(false));
+    m.insert("networkRequests".into(), json!(0));
+    m.insert("competitionOrders".into(), json!(0));
+    m.insert("profitabilityEstablished".into(), json!(false));
+    m.insert("priorOneShareTradeProvesScale".into(), json!(false));
+    m
+}
+
+pub fn plan_baal_scaled_entry_v2(input: &V) -> V {
+    let now = get(input, "now").clone();
+    match plan_inner(input) {
+        Ok(v) => v,
+        Err(e) => {
+            let mut out = base_map(&now);
+            out.insert(
+                "reason".into(),
+                json!(if is_entry_code(&e) {
+                    e
+                } else {
+                    "INVALID_OR_INCOMPLETE_SCALED_ENTRY_EVIDENCE".to_string()
+                }),
+            );
+            V::Object(out)
+        }
+    }
+}
