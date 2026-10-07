@@ -1,0 +1,13 @@
+# Causal inventory quote wallet — October7
+
+Implemented [exact paper accounting](../paper/inventory-quote-wallet-v1.mjs) behind the inventory-aware quote planner. It models partial fills, FIFO costs, complementary netting, fully funded buy reservations, and disjoint share reservations for sales versus opposite-side acquisitions. Both quote legs share each observed depth rung or anonymous trade's available quantity. Decision receipts cannot fill new quotes; activation latency, independent source versions, strict price-through and original expiry windows apply.
+
+The book-based model retains censored liabilities after coverage gaps. The tape-based model retains expiry/cancellation reservations until complete contiguous trade windows cover the modeled active interval. Cancellation latency is a paper assumption, not confirmation of any venue action. Duplicate trades cannot produce additional fills. Missing or stale prior tape coverage blocks quote creation causally.
+
+Four fixed risk settings (`0,5,10,20`) were compared over previously seen chronological captures beginning October6. The final tape replay semantically verifies the public-book chain and validates the anonymous-trade chain, then merges by availability time. Source byte prefixes and SHA256 hashes are in [the replay report](../data/inventory-tape-replay-20261007.json). It processed22,514 available events in44.79seconds without API calls or competition orders. This is development evidence, not an untouched test or proof of profitability.
+
+All four cohorts had zero supported fills and zero realized profit. Each created50 paper quotes, resolved48 expiry obligations from complete tape coverage, and retained two unresolved quotes reserving0.985SUSQies. Inventory skew cannot meaningfully be compared when no inventory fills occur.
+
+The important data finding is that this captured tape covers only four exchanges (`986,1052,1070,1071`) after the cutoff, despite the broader book universe. Most book opportunities lack contemporaneous complete tape coverage. Do not treat those missing observations as proof that quotes could not fill, or release their reservations without a covered interval. The strict-through fill assumption also leaves touches and queue priority unproven. Broader matched book/tape capture and an empirically supported fill model are required before this candidate can be evaluated or activated credibly.
+
+Eight accounting/causality/coverage/planner checks pass. Production remains on its existing separately attributed policy, allocation, ownership, journals and activation deadlines. No new service, account client, API credential or production quoting policy was created.

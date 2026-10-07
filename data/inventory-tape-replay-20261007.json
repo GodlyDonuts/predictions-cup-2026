@@ -1,0 +1,375 @@
+{
+  "schemaVersion": 1,
+  "createdAt": "2026-10-07T07:19:06.073Z",
+  "mode": "inventory_strict_tape_seen_capture_development_v1",
+  "bindings": {
+    "public-books.jsonl": {
+      "bytes": 117759791,
+      "sha256": "d2b1f8fb2ec38aba632cc170fefc721fe63c5081eae14c5790160beccba55b72",
+      "records": 51879
+    },
+    "anonymous-trades.jsonl": {
+      "bytes": 3011757601,
+      "sha256": "c9afc3a012f4d021053ddbaa0ea3d461e34304016d09f568e8b0420e9dde0798",
+      "records": 4619
+    }
+  },
+  "processed": 22514,
+  "elapsedMs": 44794.922900000005,
+  "tradeCoverage": {
+    "986": {
+      "pages": 533,
+      "completePages": 533,
+      "firstAt": "2026-10-06T00:02:01.220Z",
+      "lastAt": "2026-10-07T07:18:13.179Z"
+    },
+    "1052": {
+      "pages": 532,
+      "completePages": 532,
+      "firstAt": "2026-10-06T00:02:32.429Z",
+      "lastAt": "2026-10-07T07:18:32.646Z"
+    },
+    "1070": {
+      "pages": 533,
+      "completePages": 533,
+      "firstAt": "2026-10-06T00:01:28.487Z",
+      "lastAt": "2026-10-07T07:17:46.983Z"
+    },
+    "1071": {
+      "pages": 533,
+      "completePages": 532,
+      "firstAt": "2026-10-06T00:03:02.662Z",
+      "lastAt": "2026-10-07T07:17:27.588Z"
+    }
+  },
+  "cohorts": [
+    {
+      "policy": {
+        "cutoff": "2026-10-06T00:00:00.000Z",
+        "initialCash": "100.000000",
+        "maximumCommitted": "25.000000",
+        "maximumMarkets": 12,
+        "maximumOrderCost": "5.000000",
+        "quantity": 1,
+        "latencyMs": 3000,
+        "lifetimeMs": 120000,
+        "maximumGapMs": 120000,
+        "minimumSamples": 4,
+        "minimumHistoryMs": 120000,
+        "depthFractionBps": 100,
+        "horizonSeconds": 300,
+        "fillModel": "strict_tape_through",
+        "requirePriorTape": true,
+        "riskAversion": 0,
+        "id": "tape-risk-0"
+      },
+      "report": {
+        "cash": "100.000000",
+        "ownedPrincipal": "0.000000",
+        "reservedCash": "0.985000",
+        "realized": "0.000000",
+        "positions": {},
+        "fills": 0,
+        "redemptions": 0,
+        "unresolvedQuotes": 2,
+        "censoredQuotes": 0,
+        "counts": {
+          "missing_causal_tape_coverage": 18875,
+          "quote_created": 50,
+          "tape_expiry_resolved": 48,
+          "model_cancel_pending": 6
+        },
+        "executionAuthority": false,
+        "profitabilityEstablished": false
+      },
+      "unresolvedQuotes": [
+        {
+          "side": "YES",
+          "action": "buy",
+          "quantity": 1,
+          "limit": "0.850000",
+          "id": 49,
+          "marketId": "381",
+          "exchangeId": "1070",
+          "remaining": 1,
+          "createdAt": "2026-10-07T07:16:34.305Z",
+          "activationAt": 1791357397305,
+          "expiresAt": 1791357514305,
+          "decisionVersion": "80262717:2026-10-07T07:16:34.252035200Z",
+          "decisionHash": "7413abb71997ed1e94d0f1124c925934168ae2bf9039d1a5db2c9f535d4d645d",
+          "censored": false,
+          "closedAt": null,
+          "coveredThrough": 1791357465000
+        },
+        {
+          "side": "NO",
+          "action": "buy",
+          "quantity": 1,
+          "limit": "0.135000",
+          "id": 50,
+          "marketId": "381",
+          "exchangeId": "1070",
+          "remaining": 1,
+          "createdAt": "2026-10-07T07:16:34.305Z",
+          "activationAt": 1791357397305,
+          "expiresAt": 1791357514305,
+          "decisionVersion": "80262717:2026-10-07T07:16:34.252035200Z",
+          "decisionHash": "7413abb71997ed1e94d0f1124c925934168ae2bf9039d1a5db2c9f535d4d645d",
+          "censored": false,
+          "closedAt": null,
+          "coveredThrough": 1791357465000
+        }
+      ],
+      "fills": [],
+      "redemptions": []
+    },
+    {
+      "policy": {
+        "cutoff": "2026-10-06T00:00:00.000Z",
+        "initialCash": "100.000000",
+        "maximumCommitted": "25.000000",
+        "maximumMarkets": 12,
+        "maximumOrderCost": "5.000000",
+        "quantity": 1,
+        "latencyMs": 3000,
+        "lifetimeMs": 120000,
+        "maximumGapMs": 120000,
+        "minimumSamples": 4,
+        "minimumHistoryMs": 120000,
+        "depthFractionBps": 100,
+        "horizonSeconds": 300,
+        "fillModel": "strict_tape_through",
+        "requirePriorTape": true,
+        "riskAversion": 5,
+        "id": "tape-risk-5"
+      },
+      "report": {
+        "cash": "100.000000",
+        "ownedPrincipal": "0.000000",
+        "reservedCash": "0.985000",
+        "realized": "0.000000",
+        "positions": {},
+        "fills": 0,
+        "redemptions": 0,
+        "unresolvedQuotes": 2,
+        "censoredQuotes": 0,
+        "counts": {
+          "missing_causal_tape_coverage": 18875,
+          "quote_created": 50,
+          "tape_expiry_resolved": 48,
+          "model_cancel_pending": 6
+        },
+        "executionAuthority": false,
+        "profitabilityEstablished": false
+      },
+      "unresolvedQuotes": [
+        {
+          "side": "YES",
+          "action": "buy",
+          "quantity": 1,
+          "limit": "0.850000",
+          "id": 49,
+          "marketId": "381",
+          "exchangeId": "1070",
+          "remaining": 1,
+          "createdAt": "2026-10-07T07:16:34.305Z",
+          "activationAt": 1791357397305,
+          "expiresAt": 1791357514305,
+          "decisionVersion": "80262717:2026-10-07T07:16:34.252035200Z",
+          "decisionHash": "6e2d112d8be465175ec11c60d5e07dd97b0ce6e4b117dceb1fd557ec33847222",
+          "censored": false,
+          "closedAt": null,
+          "coveredThrough": 1791357465000
+        },
+        {
+          "side": "NO",
+          "action": "buy",
+          "quantity": 1,
+          "limit": "0.135000",
+          "id": 50,
+          "marketId": "381",
+          "exchangeId": "1070",
+          "remaining": 1,
+          "createdAt": "2026-10-07T07:16:34.305Z",
+          "activationAt": 1791357397305,
+          "expiresAt": 1791357514305,
+          "decisionVersion": "80262717:2026-10-07T07:16:34.252035200Z",
+          "decisionHash": "6e2d112d8be465175ec11c60d5e07dd97b0ce6e4b117dceb1fd557ec33847222",
+          "censored": false,
+          "closedAt": null,
+          "coveredThrough": 1791357465000
+        }
+      ],
+      "fills": [],
+      "redemptions": []
+    },
+    {
+      "policy": {
+        "cutoff": "2026-10-06T00:00:00.000Z",
+        "initialCash": "100.000000",
+        "maximumCommitted": "25.000000",
+        "maximumMarkets": 12,
+        "maximumOrderCost": "5.000000",
+        "quantity": 1,
+        "latencyMs": 3000,
+        "lifetimeMs": 120000,
+        "maximumGapMs": 120000,
+        "minimumSamples": 4,
+        "minimumHistoryMs": 120000,
+        "depthFractionBps": 100,
+        "horizonSeconds": 300,
+        "fillModel": "strict_tape_through",
+        "requirePriorTape": true,
+        "riskAversion": 10,
+        "id": "tape-risk-10"
+      },
+      "report": {
+        "cash": "100.000000",
+        "ownedPrincipal": "0.000000",
+        "reservedCash": "0.985000",
+        "realized": "0.000000",
+        "positions": {},
+        "fills": 0,
+        "redemptions": 0,
+        "unresolvedQuotes": 2,
+        "censoredQuotes": 0,
+        "counts": {
+          "missing_causal_tape_coverage": 18875,
+          "quote_created": 50,
+          "tape_expiry_resolved": 48,
+          "model_cancel_pending": 6
+        },
+        "executionAuthority": false,
+        "profitabilityEstablished": false
+      },
+      "unresolvedQuotes": [
+        {
+          "side": "YES",
+          "action": "buy",
+          "quantity": 1,
+          "limit": "0.850000",
+          "id": 49,
+          "marketId": "381",
+          "exchangeId": "1070",
+          "remaining": 1,
+          "createdAt": "2026-10-07T07:16:34.305Z",
+          "activationAt": 1791357397305,
+          "expiresAt": 1791357514305,
+          "decisionVersion": "80262717:2026-10-07T07:16:34.252035200Z",
+          "decisionHash": "0a4337ff8b1f1e12039c8f58677e7331de678011b73c8b37e681292285a287b7",
+          "censored": false,
+          "closedAt": null,
+          "coveredThrough": 1791357465000
+        },
+        {
+          "side": "NO",
+          "action": "buy",
+          "quantity": 1,
+          "limit": "0.135000",
+          "id": 50,
+          "marketId": "381",
+          "exchangeId": "1070",
+          "remaining": 1,
+          "createdAt": "2026-10-07T07:16:34.305Z",
+          "activationAt": 1791357397305,
+          "expiresAt": 1791357514305,
+          "decisionVersion": "80262717:2026-10-07T07:16:34.252035200Z",
+          "decisionHash": "0a4337ff8b1f1e12039c8f58677e7331de678011b73c8b37e681292285a287b7",
+          "censored": false,
+          "closedAt": null,
+          "coveredThrough": 1791357465000
+        }
+      ],
+      "fills": [],
+      "redemptions": []
+    },
+    {
+      "policy": {
+        "cutoff": "2026-10-06T00:00:00.000Z",
+        "initialCash": "100.000000",
+        "maximumCommitted": "25.000000",
+        "maximumMarkets": 12,
+        "maximumOrderCost": "5.000000",
+        "quantity": 1,
+        "latencyMs": 3000,
+        "lifetimeMs": 120000,
+        "maximumGapMs": 120000,
+        "minimumSamples": 4,
+        "minimumHistoryMs": 120000,
+        "depthFractionBps": 100,
+        "horizonSeconds": 300,
+        "fillModel": "strict_tape_through",
+        "requirePriorTape": true,
+        "riskAversion": 20,
+        "id": "tape-risk-20"
+      },
+      "report": {
+        "cash": "100.000000",
+        "ownedPrincipal": "0.000000",
+        "reservedCash": "0.985000",
+        "realized": "0.000000",
+        "positions": {},
+        "fills": 0,
+        "redemptions": 0,
+        "unresolvedQuotes": 2,
+        "censoredQuotes": 0,
+        "counts": {
+          "missing_causal_tape_coverage": 18875,
+          "quote_created": 50,
+          "tape_expiry_resolved": 48,
+          "model_cancel_pending": 6
+        },
+        "executionAuthority": false,
+        "profitabilityEstablished": false
+      },
+      "unresolvedQuotes": [
+        {
+          "side": "YES",
+          "action": "buy",
+          "quantity": 1,
+          "limit": "0.850000",
+          "id": 49,
+          "marketId": "381",
+          "exchangeId": "1070",
+          "remaining": 1,
+          "createdAt": "2026-10-07T07:16:34.305Z",
+          "activationAt": 1791357397305,
+          "expiresAt": 1791357514305,
+          "decisionVersion": "80262717:2026-10-07T07:16:34.252035200Z",
+          "decisionHash": "141cf41fe28e8e3efddb4072dfe4784aac7bb1742210f845b22132cab2226405",
+          "censored": false,
+          "closedAt": null,
+          "coveredThrough": 1791357465000
+        },
+        {
+          "side": "NO",
+          "action": "buy",
+          "quantity": 1,
+          "limit": "0.135000",
+          "id": 50,
+          "marketId": "381",
+          "exchangeId": "1070",
+          "remaining": 1,
+          "createdAt": "2026-10-07T07:16:34.305Z",
+          "activationAt": 1791357397305,
+          "expiresAt": 1791357514305,
+          "decisionVersion": "80262717:2026-10-07T07:16:34.252035200Z",
+          "decisionHash": "141cf41fe28e8e3efddb4072dfe4784aac7bb1742210f845b22132cab2226405",
+          "censored": false,
+          "closedAt": null,
+          "coveredThrough": 1791357465000
+        }
+      ],
+      "fills": [],
+      "redemptions": []
+    }
+  ],
+  "networkRequests": 0,
+  "competitionOrders": 0,
+  "profitabilityEstablished": false,
+  "limitations": [
+    "Previouslyseen development captures, not holdout/prospective evidence.",
+    "Strict-through anonymous trades cannot prove actual queue priority or aggressor direction.",
+    "Unknown/censored quotes retain reservations; normal complementary netting is counterfactual."
+  ]
+}
