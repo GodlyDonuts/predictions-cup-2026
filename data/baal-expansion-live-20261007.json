@@ -1,1 +1,78 @@
-{"actorAnchor":{"bytes":1090385,"hash":"8500e72f130706b1c637b5b183340e5f6eb79464c1ed0716930cc88695155372","sequence":4,"sha256":"b9193ec43a16a7b96df5c3ee19e254bae8a7e3c4b53f8cc3b7233c59dced7e19"},"allocation":{"capital":"10000.000000","humanAllocationSourceHash":"ea9e87ab8b3cac9cced23af0f91ed6e02bdd3ceb8662b90544002e1b4da36f7a","maximumActiveMarkets":100,"maximumEventCost":"2000.000000","maximumMarketCost":"1000.000000","maximumOrderCost":"100.000000","maximumSharesPerOrder":100,"ownerId":"Codex","recordedAt":"2026-10-07T04:46:00.739Z","runId":"baal-expanded-no-20261007-human","schemaVersion":1,"tournamentId":"bda92870-621e-47b0-bc3c-3602c5c26f55"},"bootstrapFreshlyVerified":true,"checks":{"actualSourceControllerBudgetAndRestart":2,"bridge":16,"runner":85,"sizingAndProfitPrefix":3},"commit":"9fe5fa61e0eb7d67154b6d1e1c102aa37990f9e6","entryExpiresAt":"2026-10-07T08:46:00.739Z","exitExpiresAt":"2026-10-08T04:46:00.739Z","fees":"0.000000","financialOwnerBound":true,"hostVersion":14,"lastAction":"blocked_custody_retained","lastFailure":"BAAL_SCALED_EVIDENCE_ENTRY_INVALID_OR_INCOMPLETE_SCALED_ENTRY_EVIDENCE","networkCoordination":{"kind":"baal_single_client_rolling_policy_v1","maxReadsPerMinute":60,"maxWritesPerMinute":24,"readCompletionGapMs":100,"writeCompletionGapMs":2500},"newClients":0,"newCredentials":0,"newPersistentProcesses":0,"newRunActualOrderCount":0,"newRunOwnedQuantity":0,"newRunRealized":"0.000000","observedAt":"2026-10-07T04:56:14.082Z","pid":26892,"priorCompleteClosedIntentCount":23,"priorOwnedQuantity":0,"priorRealized":"0.780000","priorRunId":"baal-scaled-no-20261006-human","profitScalabilityEstablished":false,"recordedAt":"2026-10-07T04:56:29.460Z","requestHash":"b58f0ba787f878da922f00a2a8271a41ac23b821994225edf67ccd56f57ac4b3","runId":"baal-expanded-no-20261007-human","schemaVersion":1}
+{
+  "actorAnchor": {
+    "bytes": 2047049,
+    "hash": "92fad7b37e6554ccb2543643508de7e3ec6e69c53abfa585e90dbb63d08e892c",
+    "sequence": 34,
+    "sha256": "44dd40a21ce3c53c6d53ef620a481e3f6b08506ddc22df22fbfe7914dac60548"
+  },
+  "allocation": {
+    "capital": "10000.000000",
+    "humanAllocationSourceHash": "ea9e87ab8b3cac9cced23af0f91ed6e02bdd3ceb8662b90544002e1b4da36f7a",
+    "maximumActiveMarkets": 100,
+    "maximumEventCost": "2000.000000",
+    "maximumMarketCost": "1000.000000",
+    "maximumOrderCost": "100.000000",
+    "maximumSharesPerOrder": 100,
+    "ownerId": "Codex",
+    "recordedAt": "2026-10-07T04:46:00.739Z",
+    "runId": "baal-expanded-no-20261007-human",
+    "schemaVersion": 1,
+    "tournamentId": "bda92870-621e-47b0-bc3c-3602c5c26f55"
+  },
+  "bootstrapFreshlyVerified": true,
+  "checks": {
+    "actualSourceControllerBudgetAndRestart": 2,
+    "bridge": 16,
+    "runner": 85,
+    "sizingAndProfitPrefix": 3
+  },
+  "commit": "4435041a7ae04e9f0590699c4ca30b0e8c4e059e",
+  "currentPhase": "ready",
+  "entryExpiresAt": "2026-10-07T08:46:00.739Z",
+  "exitExpiresAt": "2026-10-08T04:46:00.739Z",
+  "fees": "0.000000",
+  "financialOwnerBound": true,
+  "hostVersion": 17,
+  "inheritedClosedIntentCount": 24,
+  "lastAction": "expired_unadmitted_intent_preserved_abandoned",
+  "lastFailure": null,
+  "networkCoordination": {
+    "kind": "baal_single_client_rolling_policy_v1",
+    "maxReadsPerMinute": 60,
+    "maxWritesPerMinute": 24,
+    "readCompletionGapMs": 100,
+    "writeCompletionGapMs": 2500
+  },
+  "newClients": 0,
+  "newCredentials": 0,
+  "newPersistentProcesses": 0,
+  "newRunActualOrderCount": 1,
+  "newRunOwnedQuantity": 100,
+  "newRunRealized": "0.000000",
+  "observedAt": "2026-10-07T05:34:02.010Z",
+  "pid": 24452,
+  "priorCompleteClosedIntentCount": 23,
+  "priorOwnedQuantity": 0,
+  "priorRealized": "0.780000",
+  "priorRunId": "baal-scaled-no-20261006-human",
+  "profitScalabilityEstablished": false,
+  "recordedAt": "2026-10-07T05:34:28.194Z",
+  "requestHash": "465cbc5a0aae6bd73ee456ff89a54d888558be2e2a107e60b328623c9ee0a934",
+  "runId": "baal-expanded-no-20261007-human",
+  "schemaVersion": 1,
+  "unresolvedIntentCount": 0,
+  "verifiedTrades": [
+    {
+      "action": "buy",
+      "exchangeId": "1073",
+      "filledQuantity": 100,
+      "marketId": "384",
+      "orderId": "18776087",
+      "principal": "9.000000",
+      "proceeds": "0.000000",
+      "proofHash": "6850c381af1964769bb4634223c51e0368cf7c809e908ba87b8206c366f36bb3",
+      "realizedPnl": "0.000000",
+      "verifiedAt": "2026-10-07T05:31:02.397Z"
+    }
+  ]
+}
