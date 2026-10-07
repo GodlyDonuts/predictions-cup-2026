@@ -1,0 +1,20 @@
+{
+  "checkedAt": "2026-10-07T04:02:26.744Z",
+  "accountReadAt": "2026-10-07T04:01:34.844Z",
+  "collectorPid": 12024,
+  "actorAnchor": {
+    "bytes": 1582555,
+    "sha256": "1e1a679ce415fd23eb888c7aa33b3e56a94dc8cead3c791354842f633a6c4493",
+    "sequence": 25,
+    "hash": "c2172c4a2b8031ef278907f77f0f1525fd89d7f1499eaeee3a5de52c10ef54de"
+  },
+  "originalActorPreserved": true,
+  "financialStopPreserved": true,
+  "completedSalesRetained": 2,
+  "lastIntentPhase": "abandoned",
+  "cohortRealized": "0.780000",
+  "remainingShares": 29,
+  "recoveryProofHash": "576d1e837407ae2e10a6c350c06f99acceebfc58e5f05c1b995bf8e85f0b3738",
+  "executionAuthority": false
+}
+
