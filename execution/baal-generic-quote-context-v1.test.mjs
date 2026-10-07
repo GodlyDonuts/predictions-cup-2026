@@ -1,0 +1,7 @@
+import test from 'node:test';import assert from 'node:assert/strict';
+import {bindBaalGenericQuoteContextV1 as bind} from './baal-generic-quote-context-v1.mjs';
+import {partyWinnerQuoteHash} from '../live-paper/party-winner-no-screen-v1.mjs';
+const q={marketId:'384',exchangeId:'1073',option:'YES',bestBid:.90,bestAsk:.905,requestStartedAt:'2026-10-07T00:20:00.000Z',receivedAt:'2026-10-07T00:20:00.100Z'},base={tournamentId:'t',universeHash:'u'};
+test('actual collector-shaped row gains only missing context before hashing',()=>{const before=structuredClone(q),[r]=bind({...base,hints:{...base,quoteCaptures:[q]}});assert.equal(r.tournamentId,'t');assert.equal(r.knownAt,q.receivedAt);assert.equal(r.quoteHash,partyWinnerQuoteHash(r));assert.deepEqual(q,before);});
+test('foreign row context and original knownAt are preserved for downstream refusal',()=>{const [r]=bind({...base,hints:{...base,quoteCaptures:[{...q,tournamentId:'foreign',knownAt:'2026-10-07T00:19:00.000Z'}]}});assert.equal(r.tournamentId,'foreign');assert.equal(r.knownAt,'2026-10-07T00:19:00.000Z');});
+test('foreign envelope cannot supply context and source clock is never renewed',()=>{assert.throws(()=>bind({...base,hints:{...base,tournamentId:'foreign',quoteCaptures:[q]}}),/ENVELOPE/);const [r]=bind({...base,hints:{...base,quoteCaptures:[q]}});assert.equal(r.requestStartedAt,q.requestStartedAt);assert.equal(r.receivedAt,q.receivedAt);});
