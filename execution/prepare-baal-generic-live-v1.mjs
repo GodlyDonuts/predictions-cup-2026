@@ -10,7 +10,7 @@ export function prepareBaalGenericLiveV1({runtimeDir,workspace,epoch,startedAt,p
  need(path.isAbsolute(runtimeDir)&&path.isAbsolute(workspace)&&Number.isFinite(Date.parse(startedAt))&&Date.parse(startedAt)<=now&&now-Date.parse(startedAt)<=300000,'FRESH_ROOT_CLOCK');
  const stop=JSON.parse(fs.readFileSync(path.join(runtimeDir,'COLLECTOR_STOP')));
  need(stop.kind==='baal_root_controlled_engineering_stop_v1'&&stop.ownerId==='Codex'&&stop.humanStop===false&&stop.reason==='generic_v1_upgrade'&&Array.isArray(processSnapshot)&&!processSnapshot.some(p=>p.pid===stop.oldPid),'ROOT_STOP_AND_OLD_PID');
- need(!processSnapshot.some(p=>/live-paper[\\/]runner\.mjs/.test(p.commandLine)),'ANOTHER_COLLECTOR');
+ need(!processSnapshot.some(p=>/^(?:"[^"]*[\\/]node\.exe"|node(?:\.exe)?)\s+/i.test(p.commandLine)&&/live-paper[\\/]runner\.mjs/.test(p.commandLine)),'ANOTHER_COLLECTOR');
  need(!fs.existsSync(path.join(runtimeDir,'EXECUTION_STOP')),'HUMAN_OR_FINANCIAL_STOP');
  const frontier=readBaalCustodyFrontierV1({runtimeDir,workspace});
  for(const relative of ['baal-financial-owner/execution-owner.lock',`baal-combined-custody-runs/${frontier.currentState.scope.runId}/${frontier.migration.implementationEpoch}/coordinator/execution-owner.lock`,`baal-combined-custody-runs/${frontier.currentState.scope.runId}/${frontier.migration.implementationEpoch}/budget/execution-owner.lock`,'competition-runs/sig-pilot-median-20261006-human/execution-owner.lock'])need(!fs.existsSync(path.join(runtimeDir,relative)),'PRIOR_WRITER_LEASE');
