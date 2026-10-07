@@ -1,3 +1,13 @@
+# October7 05:34 UTC: 10,000-SUSQie Baal expansion live
+
+Baal's sole collector24452 runs checked4435041a host17/controllerV9. The human-requested allocation increased1,000→10,000, order cap25→100, market100→1,000, race200→2,000 and active-market20→100;100shares/order and zero fees remain. First actual expanded BUY18776087 acquired100NOshares on384/ex1073 at0.090, exact principal9.000; complete official terminal proof verified05:31:02.397UTC. At05:34:02 the new run holds100shares, zero realized P&L and zero unresolved intents. Prior fullyclosed scaled cohort+.780 remains separately archived. No scalable-profit claim.
+
+The earlier100-share pre-fetch rejection was affirmatively audited and reconciled with fresh official holdings/history; original actor/STOP and24closed inherited intents are preserved. V9 records proven clock-before-fetch blocks, releases only expired demonstrably unfetched reservations, and still halts on ambiguous actual acceptance. Preliminary historical checks use pinned metadata; initial and physical full-byte checks remain. Candidate rejection cannot starve discovery; at most2attempts/cycle within the same60READ/24WRITE queue,100msread/2500mswrite completion/backoff. Same08:46UTC entry cutoff andOct8 04:46UTC exit deadline, no renewed window. 3actual-source controller tests,16bridge,85runner and proof/pinning/sizing checks passed. [Live source-bound evidence](../data/baal-expansion-live-20261007.json).
+
+# October7: human-requested10× capital expansion prepared
+
+New separately bounded Baal run allocates10,000 SUSQies,100/order,1,000/market,2,000/race,100active markets and100shares/order, zero fees. It preserves23closed inherited intents and the original flat+.780 cohort as verified immutable history; the new run starts at zero realized P&L. Three sizing/partial-profit checks, two actual-source BUY/unknown/restart tests,16bridge checks and85runner checks pass. Activation is being installed; fresh live execution evidence follows separately. Single shared60read/24write limiter and source-age gates remain. No subagents/new keys/new API clients.
+
 # October7 04:17 UTC: full official cohort flat with +0.780 realized profit
 
 The complete attributed scaled cohort is now liquidated. Official Nevada SELL18591078 filled29NOshares for4.060 against4.060 cost; terminal fills/current signed position/scoped history and rounded cash consistency verified. Full economic journal replay reports zero remaining attributed shares, zero pending intents, zero fees and+0.780SUSQies net realized across the whole cohort. The two previous losing exits and all22inherited intents remain intact; none were excluded or reset. [Verified full-cohort result](../data/baal-full-cohort-profit-20261007.json).

@@ -1,3 +1,7 @@
+# Baal current status — October7
+
+Baal's capital allocation is now10,000 SUSQies, with100/order,1,000/market and2,000/race limits. The first larger official trade bought100NOshares for9.000SUSQies and is fully reconciled; new realized profit is0.000 while the position remains open. The previous complete scaled cohort closed at+.780, including its losses. Current deployment and source-bound evidence are in [CURRENT_STATE](docs/CURRENT_STATE.md). Older dated sections below are historical.
+
 # Baal current status — October6
 
 Current deployment, attributed official fills and remaining work are recorded in [CURRENT_STATE](docs/CURRENT_STATE.md). Baal is the sole execution owner. The generic live strategy has four closed current-pilot trades netting+0.015SUSQies, with no current pilot holdings; the new1,000SUSQie allocation is live and its six purchases and eight verified profitable exits have realized0.975SUSQies;68shares remain across three markets; the original buy window has closed and owned exits remain managed, zero fees, a tiny sample. Historical dated reports below do not describe the current runtime.
