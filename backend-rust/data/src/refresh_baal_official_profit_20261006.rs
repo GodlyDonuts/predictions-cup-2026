@@ -2,27 +2,10 @@
 // profit report from the sealed controller journal (proof-hash verification only,
 // never account queries or raw receipt publication).
 //
-// PORT GAP: the .mjs imports '../execution/baal-scaled-controller-legacy-replay-v1.mjs'
-// which does NOT exist anywhere in the repository (the upstream script cannot run
-// in Node either — the import throws ERR_MODULE_NOT_FOUND). The corresponding
-// replay module therefore does not exist in Rust; `run()` surfaces the same
-// failure as a missing-dependency error.
-use serde_json::{Value as V};
-
-/// Result of `replayBaalScaledControllerV1({bodyText, expectedCodeIdentity})`.
-/// The upstream implementation is absent (see module note); this stub preserves
-/// the call site so the gap is explicit rather than silently dropped.
-pub struct BaalScaledControllerReplay {
-    pub state: V,
-    pub anchor: V,
-}
-
-#[allow(dead_code)]
-fn replay_baal_scaled_controller_v1(
-    _body_text: &str,
-    _expected_code_identity: &V,
-) -> Result<BaalScaledControllerReplay, String> {
-    Err("BAAL_SCALED_CONTROLLER_LEGACY_REPLAY_V1_UNAVAILABLE".into())
+use baal_execution::baal_scaled_controller_legacy_replay_v1::replay_baal_scaled_controller_v1;
+use serde_json::{json, Value as V};
+fn get<'a>(v: &'a V, k: &str) -> &'a V {
+    v.get(k).unwrap_or(&V::Null)
 }
 
 /// run() — reads the sealed baal-scaled journal, verifies every sell proof hash,
@@ -38,11 +21,11 @@ pub fn run() -> Result<V, String> {
     let body_text = std::fs::read_to_string(&file).map_err(|e| e.to_string())?;
     let first: V = serde_json::from_str(body_text.split('\n').next().unwrap_or(""))
         .map_err(|e| e.to_string())?;
-    let replay = replay_baal_scaled_controller_v1(
-        &body_text,
-        &first["event"]["codeIdentity"],
-    )?;
-    let sells: Vec<V> = replay.state["orders"]
+    let replay = replay_baal_scaled_controller_v1(&json!({
+        "bodyText": body_text,
+        "expectedCodeIdentity": get(&first, "event").get("codeIdentity").cloned().unwrap_or(V::Null),
+    }))?;
+    let sells: Vec<V> = get(&replay, "state")["orders"]
         .as_array()
         .map(|a| {
             a.iter()
@@ -77,7 +60,7 @@ pub fn run() -> Result<V, String> {
             }))
         })
         .collect::<Result<Vec<V>, String>>()?;
-    let inventory: serde_json::Map<String, V> = replay.state["inventory"]
+    let inventory: serde_json::Map<String, V> = get(&replay, "state")["inventory"]
         .as_object()
         .map(|m| {
             m.iter()
@@ -115,7 +98,7 @@ pub fn run() -> Result<V, String> {
     })?;
     let out = serde_json::json!({
         "schemaVersion": 1,
-        "runId": replay.state["scope"]["runId"],
+        "runId": get(&replay, "state")["scope"]["runId"],
         "observedAt": baal_service_runtime::contract::ms_to_iso(
             std::time::SystemTime::now()
                 .duration_since(std::time::UNIX_EPOCH)
@@ -123,7 +106,7 @@ pub fn run() -> Result<V, String> {
                 .unwrap_or(0.0)
         ),
         "sourceThroughAt": last["at"],
-        "actualOrders": replay.state["orders"].as_array().map(|a| a.iter()
+        "actualOrders": get(&replay, "state")["orders"].as_array().map(|a| a.iter()
             .filter(|o| o["fetchStarts"].as_array().map(|f| f.iter()
                 .any(|x| x["method"] == "POST")).unwrap_or(false)).count()).unwrap_or(0),
         "scaledRealizedPnl": baal_paper::fixed::money(&pnl),
@@ -133,9 +116,9 @@ pub fn run() -> Result<V, String> {
         "inventory": inventory,
         "remainingQuantity": remaining_quantity,
         "remainingCost": baal_paper::fixed::money(&remaining_cost),
-        "sourceActorSequence": replay.anchor["sequence"],
-        "sourceActorHash": replay.anchor["hash"],
-        "sourceBytesHash": replay.anchor["sha256"],
+        "sourceActorSequence": get(&replay, "anchor")["sequence"],
+        "sourceActorHash": get(&replay, "anchor")["hash"],
+        "sourceBytesHash": get(&replay, "anchor")["sha256"],
         "proofsHashVerified": true,
         "economicReplayPerformed": true,
         "includesUnrealizedPnl": false,
