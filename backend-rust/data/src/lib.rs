@@ -1,5 +1,6 @@
 #![allow(clippy::too_many_arguments)]
-#![recursion_limit = "512"]pub mod activate_human_pilot_20261004;
+#![recursion_limit = "512"]
+pub mod activate_human_pilot_20261004;
 pub mod archive_checked_native_graph;
 pub mod archive_journal_native_20261004;
 pub mod archive_native_request_clock_first_20261004;
@@ -7,11 +8,13 @@ pub mod audit_baal_maker_roundtrip_20261004;
 pub mod audit_rebound_censor_v2_20261003;
 pub mod baal_combined_custody_host_v6;
 pub mod baal_combined_custody_host_v7;
+pub mod baal_custody_frontier_v1;
 pub mod baal_neutral_owned_counterpart_pilot_v2;
 pub mod baal_owned_exit_priority_v1;
 pub mod baal_owned_hedge_shared_budget_v2;
 pub mod baal_paired_liquidity_sweep_v1;
 pub mod baal_scaled_controller_legacy_replay_v1;
+pub mod baal_scaled_entry_signal_v2;
 pub mod baal_scaled_legacy_risk_v1;
 pub mod baal_scaled_live_host_v1;
 pub mod baal_scaled_owned_no_hedge_proposal_v1;
@@ -36,6 +39,7 @@ pub mod capture_diagnostic_preservation_20261003;
 pub mod capture_kansas_lead_20261004;
 pub mod capture_paper_migration_inventory_20261006;
 pub mod check_actual_receipt_fill_pricing_20261006;
+pub mod check_baal_custody_frontier_20261006;
 pub mod check_pair_anchor_prepared_20261004;
 pub mod check_paper_migration_inventory_20261006;
 pub mod check_receipt_policy_live_20261005;
@@ -184,6 +188,7 @@ pub mod record_settlement_value_milestone_20261004;
 pub mod recover_pair_anchor_preparation_20261004;
 pub mod refresh_baal_official_profit_20261006;
 pub mod repair_transport_bindings_20261005;
+pub mod replay_baal_entry_depth_v2_20261006;
 pub mod replay_baal_liquidity_sweep_20261006;
 pub mod replay_book_alpha_20261006;
 pub mod replay_dual_no_timelapse_20261005;
