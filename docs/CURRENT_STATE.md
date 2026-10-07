@@ -1,3 +1,9 @@
+# October7 04:17 UTC: full official cohort flat with +0.780 realized profit
+
+The complete attributed scaled cohort is now liquidated. Official Nevada SELL18591078 filled29NOshares for4.060 against4.060 cost; terminal fills/current signed position/scoped history and rounded cash consistency verified. Full economic journal replay reports zero remaining attributed shares, zero pending intents, zero fees and+0.780SUSQies net realized across the whole cohort. The two previous losing exits and all22inherited intents remain intact; none were excluded or reset. [Verified full-cohort result](../data/baal-full-cohort-profit-20261007.json).
+
+Collector20832 remains running; new buying is disabled and the old entry cutoff remains expired. This is one measured profitable cohort, not proof of scalable edge, whole-account profitability or a winning competition bot. Next compare actual fill/depth/latency and capital turnover before a separately bounded prospective policy. Historical status below is superseded.
+
 # October7 01:57 UTC: blocked intent reconciled; production remains stopped
 
 GET-only collector15020 obtained fresh official account receipts01:55:50.978UTC. Full actor/timing replay and exact unchanged target holdings/scoped history validate closure of the expired blocked intent in a separate recovery record. Original actor/body and financialSTOP remain unchanged;68 shares retained, no recovery orders or incremental profit. Earlier host9 healthy first-cycle status below is historical: later final-gate failure stopped trading. The apparent API connection retries were a missing read-only receipt callback, fixed2233637f with86checks; no outage conclusion remains. Final-confirmation bridgeV5 candidate removes two redundant risk calls but is not deployed. Next import verified closure and validate reduced final-gate latency before any production restart. [Verified live reconciliation](../data/baal-blocked-intent-live-recovery-20261007.json).
