@@ -232,6 +232,8 @@ pub mod replay_book_alpha_20261006;
 pub mod replay_dual_no_timelapse_20261005;
 pub mod replay_dual_no_timelapse_20261005_test;
 pub mod replay_funded_quote_selectors_20261005;
+pub mod replay_inventory_quotes_20261007;
+pub mod replay_inventory_tape_20261007;
 pub mod replay_paired_forecast_20261005;
 pub mod research__book_alpha_v1;
 pub mod research__paired_forecast_v1;
