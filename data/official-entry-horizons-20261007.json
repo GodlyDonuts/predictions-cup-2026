@@ -1,0 +1,1430 @@
+{
+  "schemaVersion": 1,
+  "createdAt": "2026-10-07T06:38:33.487Z",
+  "mode": "actual_official_entries_future_depth_diagnostic_v1",
+  "source": {
+    "bytes": 115705325,
+    "sha256": "7de164cabdedff3e0cf7995c86eebd9c8361c8036a5f0ed0ab8d419c15459eb3",
+    "records": 51006,
+    "chainHash": "2d22fad58680ebc04dc27a83ee9ddfa6f6b8c6384bc7806acf66f7457f8e02c2",
+    "through": "2026-10-07T06:38:13.764Z",
+    "fullSemanticReplay": true,
+    "boundaries": 2613
+  },
+  "actorAnchor": {
+    "bytes": 4327762,
+    "sha256": "1d88b6e6e9f00f4b4c1eed6216b15a36c2dfb840c6911b92b72d41f5a551cff9",
+    "sequence": 112,
+    "hash": "6be28a1eac247fe878054c07ec209499a7299a222c9ce4f5c4fbee6e00f73833"
+  },
+  "entries": [
+    {
+      "runId": "baal-scaled-no-20261006-human",
+      "marketId": "384",
+      "exchangeId": "1073",
+      "orderId": "16817788",
+      "quantity": 29,
+      "cost": "2.465000",
+      "fillAt": "2026-10-06T17:08:28.005Z",
+      "proofHash": "ddb49405c78031f1f48bf3b480540995df77841e08cb68c34f4974cc3c46b574",
+      "conditionalGap": "0.050000",
+      "horizons": {}
+    },
+    {
+      "runId": "baal-scaled-no-20261006-human",
+      "marketId": "353",
+      "exchangeId": "1042",
+      "orderId": "16825098",
+      "quantity": 28,
+      "cost": "2.660000",
+      "fillAt": "2026-10-06T17:11:23.805Z",
+      "proofHash": "7bdd18780949a2bb7840b923840c1028ae805707084f5eeba100b6194b6aba5c",
+      "conditionalGap": "0.015000",
+      "horizons": {}
+    },
+    {
+      "runId": "baal-scaled-no-20261006-human",
+      "marketId": "377",
+      "exchangeId": "1066",
+      "orderId": "16906622",
+      "quantity": 37,
+      "cost": "11.470000",
+      "fillAt": "2026-10-06T17:45:35.108Z",
+      "proofHash": "08fc109741d6a1268b92a5b9e44ffa2dd0e9e3befe6500807d37bbc0d4149dfc",
+      "conditionalGap": "0.015000",
+      "horizons": {}
+    },
+    {
+      "runId": "baal-scaled-no-20261006-human",
+      "marketId": "381",
+      "exchangeId": "1070",
+      "orderId": "16909171",
+      "quantity": 29,
+      "cost": "4.060000",
+      "fillAt": "2026-10-06T17:46:37.887Z",
+      "proofHash": "8b38a54d0f93dabae7cc5c1ecf2adfd1783d33beb63c5bb3538d4d5813c31108",
+      "conditionalGap": "0.015000",
+      "horizons": {}
+    },
+    {
+      "runId": "baal-scaled-no-20261006-human",
+      "marketId": "305",
+      "exchangeId": "994",
+      "orderId": "16911673",
+      "quantity": 2,
+      "cost": "0.250000",
+      "fillAt": "2026-10-06T17:47:42.526Z",
+      "proofHash": "778a08b5e73d122464419b4d537f4f853fea01d3c6fb431e61a5fc2ba04f7b8c",
+      "conditionalGap": "0.010000",
+      "horizons": {
+        "5": {
+          "horizonMinutes": 5,
+          "requestStartedAt": "2026-10-06T17:52:44.383Z",
+          "receivedAt": "2026-10-06T17:52:44.573Z",
+          "delayAfterHorizonMs": 1857,
+          "exactObservedDepth": {
+            "schemaVersion": 1,
+            "kind": "observed_NO_depth_counterfactual_value_v1",
+            "quantity": 2,
+            "valuedQuantity": 2,
+            "unvaluedQuantity": 0,
+            "complete": true,
+            "proceeds": "0.240000",
+            "remainingCost": "0.250000",
+            "unrealizedPnl": "-0.010000",
+            "fees": "0.000000",
+            "slippageTicks": 0,
+            "consumed": [
+              {
+                "quantity": 2,
+                "noPrice": "0.120000"
+              }
+            ],
+            "executionAuthority": false,
+            "actualFill": false
+          },
+          "oneTickStress": {
+            "schemaVersion": 1,
+            "kind": "observed_NO_depth_counterfactual_value_v1",
+            "quantity": 2,
+            "valuedQuantity": 2,
+            "unvaluedQuantity": 0,
+            "complete": true,
+            "proceeds": "0.230000",
+            "remainingCost": "0.250000",
+            "unrealizedPnl": "-0.020000",
+            "fees": "0.000000",
+            "slippageTicks": 1,
+            "consumed": [
+              {
+                "quantity": 2,
+                "noPrice": "0.115000"
+              }
+            ],
+            "executionAuthority": false,
+            "actualFill": false
+          },
+          "actualSale": false,
+          "sourceSequence": 43673,
+          "sourceHash": "7009553ac13b5715e2cbdfb357240b244998807d203e9a378e7d8126fa1936d8"
+        },
+        "15": {
+          "horizonMinutes": 15,
+          "requestStartedAt": "2026-10-06T18:02:45.640Z",
+          "receivedAt": "2026-10-06T18:02:45.839Z",
+          "delayAfterHorizonMs": 3114,
+          "exactObservedDepth": {
+            "schemaVersion": 1,
+            "kind": "observed_NO_depth_counterfactual_value_v1",
+            "quantity": 2,
+            "valuedQuantity": 2,
+            "unvaluedQuantity": 0,
+            "complete": true,
+            "proceeds": "0.240000",
+            "remainingCost": "0.250000",
+            "unrealizedPnl": "-0.010000",
+            "fees": "0.000000",
+            "slippageTicks": 0,
+            "consumed": [
+              {
+                "quantity": 2,
+                "noPrice": "0.120000"
+              }
+            ],
+            "executionAuthority": false,
+            "actualFill": false
+          },
+          "oneTickStress": {
+            "schemaVersion": 1,
+            "kind": "observed_NO_depth_counterfactual_value_v1",
+            "quantity": 2,
+            "valuedQuantity": 2,
+            "unvaluedQuantity": 0,
+            "complete": true,
+            "proceeds": "0.230000",
+            "remainingCost": "0.250000",
+            "unrealizedPnl": "-0.020000",
+            "fees": "0.000000",
+            "slippageTicks": 1,
+            "consumed": [
+              {
+                "quantity": 2,
+                "noPrice": "0.115000"
+              }
+            ],
+            "executionAuthority": false,
+            "actualFill": false
+          },
+          "actualSale": false,
+          "sourceSequence": 43837,
+          "sourceHash": "b1efd5022ddc77812caee42cb8241cc8a5ada5384c616308f56ea2c4396d3da6"
+        },
+        "30": {
+          "horizonMinutes": 30,
+          "requestStartedAt": "2026-10-06T18:17:47.775Z",
+          "receivedAt": "2026-10-06T18:17:48.131Z",
+          "delayAfterHorizonMs": 5249,
+          "exactObservedDepth": {
+            "schemaVersion": 1,
+            "kind": "observed_NO_depth_counterfactual_value_v1",
+            "quantity": 2,
+            "valuedQuantity": 2,
+            "unvaluedQuantity": 0,
+            "complete": true,
+            "proceeds": "0.240000",
+            "remainingCost": "0.250000",
+            "unrealizedPnl": "-0.010000",
+            "fees": "0.000000",
+            "slippageTicks": 0,
+            "consumed": [
+              {
+                "quantity": 2,
+                "noPrice": "0.120000"
+              }
+            ],
+            "executionAuthority": false,
+            "actualFill": false
+          },
+          "oneTickStress": {
+            "schemaVersion": 1,
+            "kind": "observed_NO_depth_counterfactual_value_v1",
+            "quantity": 2,
+            "valuedQuantity": 2,
+            "unvaluedQuantity": 0,
+            "complete": true,
+            "proceeds": "0.230000",
+            "remainingCost": "0.250000",
+            "unrealizedPnl": "-0.020000",
+            "fees": "0.000000",
+            "slippageTicks": 1,
+            "consumed": [
+              {
+                "quantity": 2,
+                "noPrice": "0.115000"
+              }
+            ],
+            "executionAuthority": false,
+            "actualFill": false
+          },
+          "actualSale": false,
+          "sourceSequence": 43886,
+          "sourceHash": "05e8d1590e36775416d86f884269fe31ffebb9ebea37a858d0872a575683329d"
+        },
+        "60": {
+          "horizonMinutes": 60,
+          "requestStartedAt": "2026-10-06T18:47:47.210Z",
+          "receivedAt": "2026-10-06T18:47:48.013Z",
+          "delayAfterHorizonMs": 4684,
+          "exactObservedDepth": {
+            "schemaVersion": 1,
+            "kind": "observed_NO_depth_counterfactual_value_v1",
+            "quantity": 2,
+            "valuedQuantity": 2,
+            "unvaluedQuantity": 0,
+            "complete": true,
+            "proceeds": "0.230000",
+            "remainingCost": "0.250000",
+            "unrealizedPnl": "-0.020000",
+            "fees": "0.000000",
+            "slippageTicks": 0,
+            "consumed": [
+              {
+                "quantity": 2,
+                "noPrice": "0.115000"
+              }
+            ],
+            "executionAuthority": false,
+            "actualFill": false
+          },
+          "oneTickStress": {
+            "schemaVersion": 1,
+            "kind": "observed_NO_depth_counterfactual_value_v1",
+            "quantity": 2,
+            "valuedQuantity": 2,
+            "unvaluedQuantity": 0,
+            "complete": true,
+            "proceeds": "0.220000",
+            "remainingCost": "0.250000",
+            "unrealizedPnl": "-0.030000",
+            "fees": "0.000000",
+            "slippageTicks": 1,
+            "consumed": [
+              {
+                "quantity": 2,
+                "noPrice": "0.110000"
+              }
+            ],
+            "executionAuthority": false,
+            "actualFill": false
+          },
+          "actualSale": false,
+          "sourceSequence": 44346,
+          "sourceHash": "daf6a29b99cb11237039dd7615fa33fcda736ea69ffb99431ae58d661f80d1f9"
+        },
+        "120": {
+          "horizonMinutes": 120,
+          "requestStartedAt": "2026-10-06T19:50:35.375Z",
+          "receivedAt": "2026-10-06T19:50:36.911Z",
+          "delayAfterHorizonMs": 172849,
+          "exactObservedDepth": {
+            "schemaVersion": 1,
+            "kind": "observed_NO_depth_counterfactual_value_v1",
+            "quantity": 2,
+            "valuedQuantity": 2,
+            "unvaluedQuantity": 0,
+            "complete": true,
+            "proceeds": "0.220000",
+            "remainingCost": "0.250000",
+            "unrealizedPnl": "-0.030000",
+            "fees": "0.000000",
+            "slippageTicks": 0,
+            "consumed": [
+              {
+                "quantity": 2,
+                "noPrice": "0.110000"
+              }
+            ],
+            "executionAuthority": false,
+            "actualFill": false
+          },
+          "oneTickStress": {
+            "schemaVersion": 1,
+            "kind": "observed_NO_depth_counterfactual_value_v1",
+            "quantity": 2,
+            "valuedQuantity": 2,
+            "unvaluedQuantity": 0,
+            "complete": true,
+            "proceeds": "0.210000",
+            "remainingCost": "0.250000",
+            "unrealizedPnl": "-0.040000",
+            "fees": "0.000000",
+            "slippageTicks": 1,
+            "consumed": [
+              {
+                "quantity": 2,
+                "noPrice": "0.105000"
+              }
+            ],
+            "executionAuthority": false,
+            "actualFill": false
+          },
+          "actualSale": false,
+          "sourceSequence": 44795,
+          "sourceHash": "973d36ef65d2571536d5c9d335d8ec87466bd993ec9222b542c18d766a628036"
+        }
+      }
+    },
+    {
+      "runId": "baal-scaled-no-20261006-human",
+      "marketId": "357",
+      "exchangeId": "1046",
+      "orderId": "16914066",
+      "quantity": 37,
+      "cost": "12.025000",
+      "fillAt": "2026-10-06T17:48:48.954Z",
+      "proofHash": "f27365e6072ad852a788d7ab9b85e76418ea90261c0f6d8582a684f1f526a790",
+      "conditionalGap": "0.010000",
+      "horizons": {}
+    },
+    {
+      "runId": "baal-expanded-no-20261007-human",
+      "marketId": "384",
+      "exchangeId": "1073",
+      "orderId": "18776087",
+      "quantity": 100,
+      "cost": "9.000000",
+      "fillAt": "2026-10-07T05:30:25.435Z",
+      "proofHash": "6850c381af1964769bb4634223c51e0368cf7c809e908ba87b8206c366f36bb3",
+      "conditionalGap": "0.025000",
+      "horizons": {
+        "5": {
+          "horizonMinutes": 5,
+          "requestStartedAt": "2026-10-07T05:35:25.441Z",
+          "receivedAt": "2026-10-07T05:35:25.642Z",
+          "delayAfterHorizonMs": 6,
+          "exactObservedDepth": {
+            "schemaVersion": 1,
+            "kind": "observed_NO_depth_counterfactual_value_v1",
+            "quantity": 100,
+            "valuedQuantity": 100,
+            "unvaluedQuantity": 0,
+            "complete": true,
+            "proceeds": "8.500000",
+            "remainingCost": "9.000000",
+            "unrealizedPnl": "-0.500000",
+            "fees": "0.000000",
+            "slippageTicks": 0,
+            "consumed": [
+              {
+                "quantity": 100,
+                "noPrice": "0.085000"
+              }
+            ],
+            "executionAuthority": false,
+            "actualFill": false
+          },
+          "oneTickStress": {
+            "schemaVersion": 1,
+            "kind": "observed_NO_depth_counterfactual_value_v1",
+            "quantity": 100,
+            "valuedQuantity": 100,
+            "unvaluedQuantity": 0,
+            "complete": true,
+            "proceeds": "8.000000",
+            "remainingCost": "9.000000",
+            "unrealizedPnl": "-1.000000",
+            "fees": "0.000000",
+            "slippageTicks": 1,
+            "consumed": [
+              {
+                "quantity": 100,
+                "noPrice": "0.080000"
+              }
+            ],
+            "executionAuthority": false,
+            "actualFill": false
+          },
+          "actualSale": false,
+          "sourceSequence": 50252,
+          "sourceHash": "18496eb94dfa1a76e4a92067a6652da75578ae9b10aae24675e8ff572a4582c7"
+        },
+        "15": {
+          "horizonMinutes": 15,
+          "requestStartedAt": "2026-10-07T05:45:27.528Z",
+          "receivedAt": "2026-10-07T05:45:27.736Z",
+          "delayAfterHorizonMs": 2093,
+          "exactObservedDepth": {
+            "schemaVersion": 1,
+            "kind": "observed_NO_depth_counterfactual_value_v1",
+            "quantity": 100,
+            "valuedQuantity": 100,
+            "unvaluedQuantity": 0,
+            "complete": true,
+            "proceeds": "8.500000",
+            "remainingCost": "9.000000",
+            "unrealizedPnl": "-0.500000",
+            "fees": "0.000000",
+            "slippageTicks": 0,
+            "consumed": [
+              {
+                "quantity": 100,
+                "noPrice": "0.085000"
+              }
+            ],
+            "executionAuthority": false,
+            "actualFill": false
+          },
+          "oneTickStress": {
+            "schemaVersion": 1,
+            "kind": "observed_NO_depth_counterfactual_value_v1",
+            "quantity": 100,
+            "valuedQuantity": 100,
+            "unvaluedQuantity": 0,
+            "complete": true,
+            "proceeds": "8.000000",
+            "remainingCost": "9.000000",
+            "unrealizedPnl": "-1.000000",
+            "fees": "0.000000",
+            "slippageTicks": 1,
+            "consumed": [
+              {
+                "quantity": 100,
+                "noPrice": "0.080000"
+              }
+            ],
+            "executionAuthority": false,
+            "actualFill": false
+          },
+          "actualSale": false,
+          "sourceSequence": 50468,
+          "sourceHash": "8070bc449735dde820f1f829045da45fefe9625814f4128e7ee144f7ffbeb701"
+        },
+        "30": {
+          "horizonMinutes": 30,
+          "requestStartedAt": "2026-10-07T06:00:33.665Z",
+          "receivedAt": "2026-10-07T06:00:45.129Z",
+          "delayAfterHorizonMs": 8230,
+          "exactObservedDepth": {
+            "schemaVersion": 1,
+            "kind": "observed_NO_depth_counterfactual_value_v1",
+            "quantity": 100,
+            "valuedQuantity": 100,
+            "unvaluedQuantity": 0,
+            "complete": true,
+            "proceeds": "8.500000",
+            "remainingCost": "9.000000",
+            "unrealizedPnl": "-0.500000",
+            "fees": "0.000000",
+            "slippageTicks": 0,
+            "consumed": [
+              {
+                "quantity": 100,
+                "noPrice": "0.085000"
+              }
+            ],
+            "executionAuthority": false,
+            "actualFill": false
+          },
+          "oneTickStress": {
+            "schemaVersion": 1,
+            "kind": "observed_NO_depth_counterfactual_value_v1",
+            "quantity": 100,
+            "valuedQuantity": 100,
+            "unvaluedQuantity": 0,
+            "complete": true,
+            "proceeds": "8.000000",
+            "remainingCost": "9.000000",
+            "unrealizedPnl": "-1.000000",
+            "fees": "0.000000",
+            "slippageTicks": 1,
+            "consumed": [
+              {
+                "quantity": 100,
+                "noPrice": "0.080000"
+              }
+            ],
+            "executionAuthority": false,
+            "actualFill": false
+          },
+          "actualSale": false,
+          "sourceSequence": 50581,
+          "sourceHash": "30ff33c0bf0d923c39a93b27c4665153170457fae4dbd33221595a8c6f440243"
+        },
+        "60": {
+          "horizonMinutes": 60,
+          "requestStartedAt": "2026-10-07T06:31:10.800Z",
+          "receivedAt": "2026-10-07T06:31:11.851Z",
+          "delayAfterHorizonMs": 45365,
+          "exactObservedDepth": {
+            "schemaVersion": 1,
+            "kind": "observed_NO_depth_counterfactual_value_v1",
+            "quantity": 100,
+            "valuedQuantity": 100,
+            "unvaluedQuantity": 0,
+            "complete": true,
+            "proceeds": "8.500000",
+            "remainingCost": "9.000000",
+            "unrealizedPnl": "-0.500000",
+            "fees": "0.000000",
+            "slippageTicks": 0,
+            "consumed": [
+              {
+                "quantity": 100,
+                "noPrice": "0.085000"
+              }
+            ],
+            "executionAuthority": false,
+            "actualFill": false
+          },
+          "oneTickStress": {
+            "schemaVersion": 1,
+            "kind": "observed_NO_depth_counterfactual_value_v1",
+            "quantity": 100,
+            "valuedQuantity": 100,
+            "unvaluedQuantity": 0,
+            "complete": true,
+            "proceeds": "8.000000",
+            "remainingCost": "9.000000",
+            "unrealizedPnl": "-1.000000",
+            "fees": "0.000000",
+            "slippageTicks": 1,
+            "consumed": [
+              {
+                "quantity": 100,
+                "noPrice": "0.080000"
+              }
+            ],
+            "executionAuthority": false,
+            "actualFill": false
+          },
+          "actualSale": false,
+          "sourceSequence": 50902,
+          "sourceHash": "a14ac2bb078aa74c5d41cec5cd7b78437f54ba083511fcf4e851f520355999a7"
+        }
+      }
+    },
+    {
+      "runId": "baal-expanded-no-20261007-human",
+      "marketId": "353",
+      "exchangeId": "1042",
+      "orderId": "18785674",
+      "quantity": 100,
+      "cost": "9.000000",
+      "fillAt": "2026-10-07T05:34:29.360Z",
+      "proofHash": "46714ecca98529ddd1e365d4187256c84f07ee6587af818cb71e0940f083b986",
+      "conditionalGap": "0.020000",
+      "horizons": {
+        "5": {
+          "horizonMinutes": 5,
+          "requestStartedAt": "2026-10-07T05:39:32.263Z",
+          "receivedAt": "2026-10-07T05:39:32.449Z",
+          "delayAfterHorizonMs": 2903,
+          "exactObservedDepth": {
+            "schemaVersion": 1,
+            "kind": "observed_NO_depth_counterfactual_value_v1",
+            "quantity": 100,
+            "valuedQuantity": 100,
+            "unvaluedQuantity": 0,
+            "complete": true,
+            "proceeds": "7.500000",
+            "remainingCost": "9.000000",
+            "unrealizedPnl": "-1.500000",
+            "fees": "0.000000",
+            "slippageTicks": 0,
+            "consumed": [
+              {
+                "quantity": 100,
+                "noPrice": "0.075000"
+              }
+            ],
+            "executionAuthority": false,
+            "actualFill": false
+          },
+          "oneTickStress": {
+            "schemaVersion": 1,
+            "kind": "observed_NO_depth_counterfactual_value_v1",
+            "quantity": 100,
+            "valuedQuantity": 100,
+            "unvaluedQuantity": 0,
+            "complete": true,
+            "proceeds": "7.000000",
+            "remainingCost": "9.000000",
+            "unrealizedPnl": "-2.000000",
+            "fees": "0.000000",
+            "slippageTicks": 1,
+            "consumed": [
+              {
+                "quantity": 100,
+                "noPrice": "0.070000"
+              }
+            ],
+            "executionAuthority": false,
+            "actualFill": false
+          },
+          "actualSale": false,
+          "sourceSequence": 50339,
+          "sourceHash": "19714a952417062c936d42c44bd49c924e13ac8fa613396e532e7ef8d5f6a442"
+        },
+        "15": {
+          "horizonMinutes": 15,
+          "requestStartedAt": "2026-10-07T05:53:51.837Z",
+          "receivedAt": "2026-10-07T05:53:52.549Z",
+          "delayAfterHorizonMs": 262477,
+          "exactObservedDepth": {
+            "schemaVersion": 1,
+            "kind": "observed_NO_depth_counterfactual_value_v1",
+            "quantity": 100,
+            "valuedQuantity": 100,
+            "unvaluedQuantity": 0,
+            "complete": true,
+            "proceeds": "8.500000",
+            "remainingCost": "9.000000",
+            "unrealizedPnl": "-0.500000",
+            "fees": "0.000000",
+            "slippageTicks": 0,
+            "consumed": [
+              {
+                "quantity": 100,
+                "noPrice": "0.085000"
+              }
+            ],
+            "executionAuthority": false,
+            "actualFill": false
+          },
+          "oneTickStress": {
+            "schemaVersion": 1,
+            "kind": "observed_NO_depth_counterfactual_value_v1",
+            "quantity": 100,
+            "valuedQuantity": 100,
+            "unvaluedQuantity": 0,
+            "complete": true,
+            "proceeds": "8.000000",
+            "remainingCost": "9.000000",
+            "unrealizedPnl": "-1.000000",
+            "fees": "0.000000",
+            "slippageTicks": 1,
+            "consumed": [
+              {
+                "quantity": 100,
+                "noPrice": "0.080000"
+              }
+            ],
+            "executionAuthority": false,
+            "actualFill": false
+          },
+          "actualSale": false,
+          "sourceSequence": 50504,
+          "sourceHash": "e1657929930d1d1077e3584c7b85afc1bba1e15c516be303f4287c826a3012cd"
+        },
+        "30": {
+          "horizonMinutes": 30,
+          "requestStartedAt": "2026-10-07T06:04:45.914Z",
+          "receivedAt": "2026-10-07T06:04:46.162Z",
+          "delayAfterHorizonMs": 16554,
+          "exactObservedDepth": {
+            "schemaVersion": 1,
+            "kind": "observed_NO_depth_counterfactual_value_v1",
+            "quantity": 100,
+            "valuedQuantity": 100,
+            "unvaluedQuantity": 0,
+            "complete": true,
+            "proceeds": "8.500000",
+            "remainingCost": "9.000000",
+            "unrealizedPnl": "-0.500000",
+            "fees": "0.000000",
+            "slippageTicks": 0,
+            "consumed": [
+              {
+                "quantity": 100,
+                "noPrice": "0.085000"
+              }
+            ],
+            "executionAuthority": false,
+            "actualFill": false
+          },
+          "oneTickStress": {
+            "schemaVersion": 1,
+            "kind": "observed_NO_depth_counterfactual_value_v1",
+            "quantity": 100,
+            "valuedQuantity": 100,
+            "unvaluedQuantity": 0,
+            "complete": true,
+            "proceeds": "8.000000",
+            "remainingCost": "9.000000",
+            "unrealizedPnl": "-1.000000",
+            "fees": "0.000000",
+            "slippageTicks": 1,
+            "consumed": [
+              {
+                "quantity": 100,
+                "noPrice": "0.080000"
+              }
+            ],
+            "executionAuthority": false,
+            "actualFill": false
+          },
+          "actualSale": false,
+          "sourceSequence": 50668,
+          "sourceHash": "b54f767c2dd291e1ec6f5fde448c5d5500fda5622a11e24fa50f5fb1550deefc"
+        },
+        "60": {
+          "horizonMinutes": 60,
+          "requestStartedAt": "2026-10-07T06:35:04.206Z",
+          "receivedAt": "2026-10-07T06:35:04.586Z",
+          "delayAfterHorizonMs": 34846,
+          "exactObservedDepth": {
+            "schemaVersion": 1,
+            "kind": "observed_NO_depth_counterfactual_value_v1",
+            "quantity": 100,
+            "valuedQuantity": 100,
+            "unvaluedQuantity": 0,
+            "complete": true,
+            "proceeds": "8.500000",
+            "remainingCost": "9.000000",
+            "unrealizedPnl": "-0.500000",
+            "fees": "0.000000",
+            "slippageTicks": 0,
+            "consumed": [
+              {
+                "quantity": 100,
+                "noPrice": "0.085000"
+              }
+            ],
+            "executionAuthority": false,
+            "actualFill": false
+          },
+          "oneTickStress": {
+            "schemaVersion": 1,
+            "kind": "observed_NO_depth_counterfactual_value_v1",
+            "quantity": 100,
+            "valuedQuantity": 100,
+            "unvaluedQuantity": 0,
+            "complete": true,
+            "proceeds": "8.000000",
+            "remainingCost": "9.000000",
+            "unrealizedPnl": "-1.000000",
+            "fees": "0.000000",
+            "slippageTicks": 1,
+            "consumed": [
+              {
+                "quantity": 100,
+                "noPrice": "0.080000"
+              }
+            ],
+            "executionAuthority": false,
+            "actualFill": false
+          },
+          "actualSale": false,
+          "sourceSequence": 50938,
+          "sourceHash": "eca08e309d25b875a1843eada1c91d7992f927fe21744d400743705099afd6ec"
+        }
+      }
+    },
+    {
+      "runId": "baal-expanded-no-20261007-human",
+      "marketId": "305",
+      "exchangeId": "994",
+      "orderId": "18846710",
+      "quantity": 100,
+      "cost": "12.000000",
+      "fillAt": "2026-10-07T05:58:19.760Z",
+      "proofHash": "e43b01a4bce9d739e80dd646dcffa129393a01e925f44c6758fbd9b68238cd26",
+      "conditionalGap": "0.020000",
+      "horizons": {
+        "5": {
+          "horizonMinutes": 5,
+          "requestStartedAt": "2026-10-07T06:03:23.901Z",
+          "receivedAt": "2026-10-07T06:03:24.103Z",
+          "delayAfterHorizonMs": 4141,
+          "exactObservedDepth": {
+            "schemaVersion": 1,
+            "kind": "observed_NO_depth_counterfactual_value_v1",
+            "quantity": 100,
+            "valuedQuantity": 100,
+            "unvaluedQuantity": 0,
+            "complete": true,
+            "proceeds": "11.500000",
+            "remainingCost": "12.000000",
+            "unrealizedPnl": "-0.500000",
+            "fees": "0.000000",
+            "slippageTicks": 0,
+            "consumed": [
+              {
+                "quantity": 100,
+                "noPrice": "0.115000"
+              }
+            ],
+            "executionAuthority": false,
+            "actualFill": false
+          },
+          "oneTickStress": {
+            "schemaVersion": 1,
+            "kind": "observed_NO_depth_counterfactual_value_v1",
+            "quantity": 100,
+            "valuedQuantity": 100,
+            "unvaluedQuantity": 0,
+            "complete": true,
+            "proceeds": "11.000000",
+            "remainingCost": "12.000000",
+            "unrealizedPnl": "-1.000000",
+            "fees": "0.000000",
+            "slippageTicks": 1,
+            "consumed": [
+              {
+                "quantity": 100,
+                "noPrice": "0.110000"
+              }
+            ],
+            "executionAuthority": false,
+            "actualFill": false
+          },
+          "actualSale": false,
+          "sourceSequence": 50642,
+          "sourceHash": "c452783ee75d49e477355d92fe01e52da8b2ddaa5dcf2d49201d0fd6d95a7c9c"
+        },
+        "15": {
+          "horizonMinutes": 15,
+          "requestStartedAt": "2026-10-07T06:13:34.571Z",
+          "receivedAt": "2026-10-07T06:13:35.239Z",
+          "delayAfterHorizonMs": 14811,
+          "exactObservedDepth": {
+            "schemaVersion": 1,
+            "kind": "observed_NO_depth_counterfactual_value_v1",
+            "quantity": 100,
+            "valuedQuantity": 100,
+            "unvaluedQuantity": 0,
+            "complete": true,
+            "proceeds": "11.500000",
+            "remainingCost": "12.000000",
+            "unrealizedPnl": "-0.500000",
+            "fees": "0.000000",
+            "slippageTicks": 0,
+            "consumed": [
+              {
+                "quantity": 100,
+                "noPrice": "0.115000"
+              }
+            ],
+            "executionAuthority": false,
+            "actualFill": false
+          },
+          "oneTickStress": {
+            "schemaVersion": 1,
+            "kind": "observed_NO_depth_counterfactual_value_v1",
+            "quantity": 100,
+            "valuedQuantity": 100,
+            "unvaluedQuantity": 0,
+            "complete": true,
+            "proceeds": "11.000000",
+            "remainingCost": "12.000000",
+            "unrealizedPnl": "-1.000000",
+            "fees": "0.000000",
+            "slippageTicks": 1,
+            "consumed": [
+              {
+                "quantity": 100,
+                "noPrice": "0.110000"
+              }
+            ],
+            "executionAuthority": false,
+            "actualFill": false
+          },
+          "actualSale": false,
+          "sourceSequence": 50710,
+          "sourceHash": "e8c21026cb3d8ac3da02e1763b373a06d1b31e7e0d3c84dde273e233d23cbdc7"
+        },
+        "30": {
+          "horizonMinutes": 30,
+          "requestStartedAt": "2026-10-07T06:29:50.856Z",
+          "receivedAt": "2026-10-07T06:29:52.931Z",
+          "delayAfterHorizonMs": 91096,
+          "exactObservedDepth": {
+            "schemaVersion": 1,
+            "kind": "observed_NO_depth_counterfactual_value_v1",
+            "quantity": 100,
+            "valuedQuantity": 100,
+            "unvaluedQuantity": 0,
+            "complete": true,
+            "proceeds": "11.500000",
+            "remainingCost": "12.000000",
+            "unrealizedPnl": "-0.500000",
+            "fees": "0.000000",
+            "slippageTicks": 0,
+            "consumed": [
+              {
+                "quantity": 100,
+                "noPrice": "0.115000"
+              }
+            ],
+            "executionAuthority": false,
+            "actualFill": false
+          },
+          "oneTickStress": {
+            "schemaVersion": 1,
+            "kind": "observed_NO_depth_counterfactual_value_v1",
+            "quantity": 100,
+            "valuedQuantity": 100,
+            "unvaluedQuantity": 0,
+            "complete": true,
+            "proceeds": "11.000000",
+            "remainingCost": "12.000000",
+            "unrealizedPnl": "-1.000000",
+            "fees": "0.000000",
+            "slippageTicks": 1,
+            "consumed": [
+              {
+                "quantity": 100,
+                "noPrice": "0.110000"
+              }
+            ],
+            "executionAuthority": false,
+            "actualFill": false
+          },
+          "actualSale": false,
+          "sourceSequence": 50897,
+          "sourceHash": "0d3609d47bb44412ccb945726dbddbc829c6ffb352e49ae01b21858064e3be67"
+        }
+      }
+    },
+    {
+      "runId": "baal-expanded-no-20261007-human",
+      "marketId": "350",
+      "exchangeId": "1039",
+      "orderId": "18879031",
+      "quantity": 100,
+      "cost": "35.000000",
+      "fillAt": "2026-10-07T06:11:35.990Z",
+      "proofHash": "507cc0e8a4903cff2230150fed6b995562ab3384a4e4ae38bf1cb9056c6b6669",
+      "conditionalGap": "0.015000",
+      "horizons": {
+        "5": {
+          "horizonMinutes": 5,
+          "requestStartedAt": "2026-10-07T06:16:44.849Z",
+          "receivedAt": "2026-10-07T06:16:45.078Z",
+          "delayAfterHorizonMs": 8859,
+          "exactObservedDepth": {
+            "schemaVersion": 1,
+            "kind": "observed_NO_depth_counterfactual_value_v1",
+            "quantity": 100,
+            "valuedQuantity": 100,
+            "unvaluedQuantity": 0,
+            "complete": true,
+            "proceeds": "34.500000",
+            "remainingCost": "35.000000",
+            "unrealizedPnl": "-0.500000",
+            "fees": "0.000000",
+            "slippageTicks": 0,
+            "consumed": [
+              {
+                "quantity": 100,
+                "noPrice": "0.345000"
+              }
+            ],
+            "executionAuthority": false,
+            "actualFill": false
+          },
+          "oneTickStress": {
+            "schemaVersion": 1,
+            "kind": "observed_NO_depth_counterfactual_value_v1",
+            "quantity": 100,
+            "valuedQuantity": 100,
+            "unvaluedQuantity": 0,
+            "complete": true,
+            "proceeds": "34.000000",
+            "remainingCost": "35.000000",
+            "unrealizedPnl": "-1.000000",
+            "fees": "0.000000",
+            "slippageTicks": 1,
+            "consumed": [
+              {
+                "quantity": 100,
+                "noPrice": "0.340000"
+              }
+            ],
+            "executionAuthority": false,
+            "actualFill": false
+          },
+          "actualSale": false,
+          "sourceSequence": 50765,
+          "sourceHash": "291ad1e0f5fa8849c55eab4fc62ae7c6011544330706461ddcd0943f1c5cec08"
+        },
+        "15": {
+          "horizonMinutes": 15,
+          "requestStartedAt": "2026-10-07T06:29:25.018Z",
+          "receivedAt": "2026-10-07T06:29:26.430Z",
+          "delayAfterHorizonMs": 169028,
+          "exactObservedDepth": {
+            "schemaVersion": 1,
+            "kind": "observed_NO_depth_counterfactual_value_v1",
+            "quantity": 100,
+            "valuedQuantity": 100,
+            "unvaluedQuantity": 0,
+            "complete": true,
+            "proceeds": "34.500000",
+            "remainingCost": "35.000000",
+            "unrealizedPnl": "-0.500000",
+            "fees": "0.000000",
+            "slippageTicks": 0,
+            "consumed": [
+              {
+                "quantity": 100,
+                "noPrice": "0.345000"
+              }
+            ],
+            "executionAuthority": false,
+            "actualFill": false
+          },
+          "oneTickStress": {
+            "schemaVersion": 1,
+            "kind": "observed_NO_depth_counterfactual_value_v1",
+            "quantity": 100,
+            "valuedQuantity": 100,
+            "unvaluedQuantity": 0,
+            "complete": true,
+            "proceeds": "34.000000",
+            "remainingCost": "35.000000",
+            "unrealizedPnl": "-1.000000",
+            "fees": "0.000000",
+            "slippageTicks": 1,
+            "consumed": [
+              {
+                "quantity": 100,
+                "noPrice": "0.340000"
+              }
+            ],
+            "executionAuthority": false,
+            "actualFill": false
+          },
+          "actualSale": false,
+          "sourceSequence": 50893,
+          "sourceHash": "23d4ced97bead11fb9204699936b0012f60b9b83ab96b9b70f0276bd51f39d81"
+        }
+      }
+    },
+    {
+      "runId": "baal-expanded-no-20261007-human",
+      "marketId": "377",
+      "exchangeId": "1066",
+      "orderId": "18882457",
+      "quantity": 100,
+      "cost": "30.900000",
+      "fillAt": "2026-10-07T06:13:02.222Z",
+      "proofHash": "3fb083b6d1dc251528723a02ed70bd79220474f21942852df78ee89945409148",
+      "conditionalGap": "0.010000",
+      "horizons": {
+        "5": {
+          "horizonMinutes": 5,
+          "requestStartedAt": "2026-10-07T06:18:04.626Z",
+          "receivedAt": "2026-10-07T06:18:04.819Z",
+          "delayAfterHorizonMs": 2404,
+          "exactObservedDepth": {
+            "schemaVersion": 1,
+            "kind": "observed_NO_depth_counterfactual_value_v1",
+            "quantity": 100,
+            "valuedQuantity": 100,
+            "unvaluedQuantity": 0,
+            "complete": true,
+            "proceeds": "30.000000",
+            "remainingCost": "30.900000",
+            "unrealizedPnl": "-0.900000",
+            "fees": "0.000000",
+            "slippageTicks": 0,
+            "consumed": [
+              {
+                "quantity": 100,
+                "noPrice": "0.300000"
+              }
+            ],
+            "executionAuthority": false,
+            "actualFill": false
+          },
+          "oneTickStress": {
+            "schemaVersion": 1,
+            "kind": "observed_NO_depth_counterfactual_value_v1",
+            "quantity": 100,
+            "valuedQuantity": 100,
+            "unvaluedQuantity": 0,
+            "complete": true,
+            "proceeds": "29.500000",
+            "remainingCost": "30.900000",
+            "unrealizedPnl": "-1.400000",
+            "fees": "0.000000",
+            "slippageTicks": 1,
+            "consumed": [
+              {
+                "quantity": 100,
+                "noPrice": "0.295000"
+              }
+            ],
+            "executionAuthority": false,
+            "actualFill": false
+          },
+          "actualSale": false,
+          "sourceSequence": 50794,
+          "sourceHash": "4f03d9ce188f9ce83e998909dd4122f64ebfc56a563027f698db92bafcc4f84e"
+        },
+        "15": {
+          "horizonMinutes": 15,
+          "requestStartedAt": "2026-10-07T06:29:23.166Z",
+          "receivedAt": "2026-10-07T06:29:24.087Z",
+          "delayAfterHorizonMs": 80944,
+          "exactObservedDepth": {
+            "schemaVersion": 1,
+            "kind": "observed_NO_depth_counterfactual_value_v1",
+            "quantity": 100,
+            "valuedQuantity": 100,
+            "unvaluedQuantity": 0,
+            "complete": true,
+            "proceeds": "30.000000",
+            "remainingCost": "30.900000",
+            "unrealizedPnl": "-0.900000",
+            "fees": "0.000000",
+            "slippageTicks": 0,
+            "consumed": [
+              {
+                "quantity": 100,
+                "noPrice": "0.300000"
+              }
+            ],
+            "executionAuthority": false,
+            "actualFill": false
+          },
+          "oneTickStress": {
+            "schemaVersion": 1,
+            "kind": "observed_NO_depth_counterfactual_value_v1",
+            "quantity": 100,
+            "valuedQuantity": 100,
+            "unvaluedQuantity": 0,
+            "complete": true,
+            "proceeds": "29.500000",
+            "remainingCost": "30.900000",
+            "unrealizedPnl": "-1.400000",
+            "fees": "0.000000",
+            "slippageTicks": 1,
+            "consumed": [
+              {
+                "quantity": 100,
+                "noPrice": "0.295000"
+              }
+            ],
+            "executionAuthority": false,
+            "actualFill": false
+          },
+          "actualSale": false,
+          "sourceSequence": 50892,
+          "sourceHash": "d7eb168acf3ab646fb90248795856cb21ca45fcae1c3ab1ddf231c6627858c34"
+        }
+      }
+    },
+    {
+      "runId": "baal-expanded-no-20261007-human",
+      "marketId": "345",
+      "exchangeId": "1034",
+      "orderId": "18885860",
+      "quantity": 100,
+      "cost": "24.500000",
+      "fillAt": "2026-10-07T06:14:25.460Z",
+      "proofHash": "b7f937d25429b426602c79086d5cd44ca8fdb51dbf38973b893d67241bda7d4e",
+      "conditionalGap": "0.010000",
+      "horizons": {
+        "5": {
+          "horizonMinutes": 5,
+          "requestStartedAt": "2026-10-07T06:19:34.230Z",
+          "receivedAt": "2026-10-07T06:19:34.840Z",
+          "delayAfterHorizonMs": 8770,
+          "exactObservedDepth": {
+            "schemaVersion": 1,
+            "kind": "observed_NO_depth_counterfactual_value_v1",
+            "quantity": 100,
+            "valuedQuantity": 100,
+            "unvaluedQuantity": 0,
+            "complete": true,
+            "proceeds": "24.000000",
+            "remainingCost": "24.500000",
+            "unrealizedPnl": "-0.500000",
+            "fees": "0.000000",
+            "slippageTicks": 0,
+            "consumed": [
+              {
+                "quantity": 100,
+                "noPrice": "0.240000"
+              }
+            ],
+            "executionAuthority": false,
+            "actualFill": false
+          },
+          "oneTickStress": {
+            "schemaVersion": 1,
+            "kind": "observed_NO_depth_counterfactual_value_v1",
+            "quantity": 100,
+            "valuedQuantity": 100,
+            "unvaluedQuantity": 0,
+            "complete": true,
+            "proceeds": "23.500000",
+            "remainingCost": "24.500000",
+            "unrealizedPnl": "-1.000000",
+            "fees": "0.000000",
+            "slippageTicks": 1,
+            "consumed": [
+              {
+                "quantity": 100,
+                "noPrice": "0.235000"
+              }
+            ],
+            "executionAuthority": false,
+            "actualFill": false
+          },
+          "actualSale": false,
+          "sourceSequence": 50826,
+          "sourceHash": "7c960fde1e4ed062e4f98f3d8744e4c2a84a2f8edf3a52b2648a92049cfb0f29"
+        },
+        "15": {
+          "horizonMinutes": 15,
+          "requestStartedAt": "2026-10-07T06:29:27.272Z",
+          "receivedAt": "2026-10-07T06:29:29.156Z",
+          "delayAfterHorizonMs": 1812,
+          "exactObservedDepth": {
+            "schemaVersion": 1,
+            "kind": "observed_NO_depth_counterfactual_value_v1",
+            "quantity": 100,
+            "valuedQuantity": 100,
+            "unvaluedQuantity": 0,
+            "complete": true,
+            "proceeds": "24.500000",
+            "remainingCost": "24.500000",
+            "unrealizedPnl": "0.000000",
+            "fees": "0.000000",
+            "slippageTicks": 0,
+            "consumed": [
+              {
+                "quantity": 100,
+                "noPrice": "0.245000"
+              }
+            ],
+            "executionAuthority": false,
+            "actualFill": false
+          },
+          "oneTickStress": {
+            "schemaVersion": 1,
+            "kind": "observed_NO_depth_counterfactual_value_v1",
+            "quantity": 100,
+            "valuedQuantity": 100,
+            "unvaluedQuantity": 0,
+            "complete": true,
+            "proceeds": "24.000000",
+            "remainingCost": "24.500000",
+            "unrealizedPnl": "-0.500000",
+            "fees": "0.000000",
+            "slippageTicks": 1,
+            "consumed": [
+              {
+                "quantity": 100,
+                "noPrice": "0.240000"
+              }
+            ],
+            "executionAuthority": false,
+            "actualFill": false
+          },
+          "actualSale": false,
+          "sourceSequence": 50894,
+          "sourceHash": "7c1838f73074a5f1b8583938dbc43f73e685e50d00663706f67add55e29dc339"
+        }
+      }
+    },
+    {
+      "runId": "baal-expanded-no-20261007-human",
+      "marketId": "358",
+      "exchangeId": "1047",
+      "orderId": "18930392",
+      "quantity": 100,
+      "cost": "27.500000",
+      "fillAt": "2026-10-07T06:32:22.240Z",
+      "proofHash": "e19b16515d290f9f3c9a4e7b06355bbaf9e717edf588831de2c6c97b20e6e0aa",
+      "conditionalGap": "0.015000",
+      "horizons": {
+        "5": {
+          "horizonMinutes": 5,
+          "requestStartedAt": "2026-10-07T06:37:30.829Z",
+          "receivedAt": "2026-10-07T06:37:31.343Z",
+          "delayAfterHorizonMs": 8589,
+          "exactObservedDepth": {
+            "schemaVersion": 1,
+            "kind": "observed_NO_depth_counterfactual_value_v1",
+            "quantity": 100,
+            "valuedQuantity": 100,
+            "unvaluedQuantity": 0,
+            "complete": true,
+            "proceeds": "27.000000",
+            "remainingCost": "27.500000",
+            "unrealizedPnl": "-0.500000",
+            "fees": "0.000000",
+            "slippageTicks": 0,
+            "consumed": [
+              {
+                "quantity": 100,
+                "noPrice": "0.270000"
+              }
+            ],
+            "executionAuthority": false,
+            "actualFill": false
+          },
+          "oneTickStress": {
+            "schemaVersion": 1,
+            "kind": "observed_NO_depth_counterfactual_value_v1",
+            "quantity": 100,
+            "valuedQuantity": 100,
+            "unvaluedQuantity": 0,
+            "complete": true,
+            "proceeds": "26.500000",
+            "remainingCost": "27.500000",
+            "unrealizedPnl": "-1.000000",
+            "fees": "0.000000",
+            "slippageTicks": 1,
+            "consumed": [
+              {
+                "quantity": 100,
+                "noPrice": "0.265000"
+              }
+            ],
+            "executionAuthority": false,
+            "actualFill": false
+          },
+          "actualSale": false,
+          "sourceSequence": 50995,
+          "sourceHash": "c671a6adcbca3b4dcbcac3cbbcfe6dd371c650ee9c8c71a49655d8153ad9bc1c"
+        }
+      }
+    },
+    {
+      "runId": "baal-expanded-no-20261007-human",
+      "marketId": "381",
+      "exchangeId": "1070",
+      "orderId": "18935451",
+      "quantity": 100,
+      "cost": "14.500000",
+      "fillAt": "2026-10-07T06:34:20.902Z",
+      "proofHash": "d8042bf69f5799bad7ea5f9e818b6539ae8b52902acbf5dc79c9ba1253d4abd8",
+      "conditionalGap": "0.015000",
+      "horizons": {}
+    }
+  ],
+  "aggregate": {
+    "5": {
+      "entries": 14,
+      "observed": 8,
+      "fullDepthObserved": 8,
+      "unavailable": 6,
+      "sumSnapshotPnl": "-8.420000",
+      "positive": 0,
+      "negative": 8
+    },
+    "15": {
+      "entries": 14,
+      "observed": 7,
+      "fullDepthObserved": 7,
+      "unavailable": 7,
+      "sumSnapshotPnl": "-5.920000",
+      "positive": 0,
+      "negative": 7
+    },
+    "30": {
+      "entries": 14,
+      "observed": 4,
+      "fullDepthObserved": 4,
+      "unavailable": 10,
+      "sumSnapshotPnl": "-3.020000",
+      "positive": 0,
+      "negative": 4
+    },
+    "60": {
+      "entries": 14,
+      "observed": 3,
+      "fullDepthObserved": 3,
+      "unavailable": 11,
+      "sumSnapshotPnl": "-2.030000",
+      "positive": 0,
+      "negative": 3
+    },
+    "120": {
+      "entries": 14,
+      "observed": 1,
+      "fullDepthObserved": 1,
+      "unavailable": 13,
+      "sumSnapshotPnl": "-0.040000",
+      "positive": 0,
+      "negative": 1
+    }
+  },
+  "elapsedMs": 20090.996600000002,
+  "networkRequests": 0,
+  "competitionOrders": 0,
+  "actualSalesSimulated": 0,
+  "fees": "0.000000",
+  "profitabilityEstablished": false,
+  "limitations": [
+    "Already seen development captures; not held-out evidence.",
+    "Future snapshot values are not actual exits or a funded portfolio replay.",
+    "Five-minute timing tolerance and receipt gaps remain explicit; continuous path/queue execution is not proven.",
+    "Ordinary package payout gap does not establish first-leg direction or short-horizon recovery."
+  ]
+}
