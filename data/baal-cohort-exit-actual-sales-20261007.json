@@ -1,0 +1,56 @@
+{
+  "checkedAt": "2026-10-07T03:53:20.539Z",
+  "collectorPid": 22156,
+  "epoch": "cohort-profit-lock-20261007-root",
+  "actorAnchor": {
+    "bytes": 1582555,
+    "sha256": "1e1a679ce415fd23eb888c7aa33b3e56a94dc8cead3c791354842f633a6c4493",
+    "sequence": 25,
+    "hash": "c2172c4a2b8031ef278907f77f0f1525fd89d7f1499eaeee3a5de52c10ef54de"
+  },
+  "economicReplayVerified": true,
+  "closedSales": [
+    {
+      "marketId": "305",
+      "exchangeId": "994",
+      "orderId": "18505238",
+      "quantity": 2,
+      "proceeds": "0.240000",
+      "removedPrincipal": "0.250000",
+      "realized": "-0.010000",
+      "proofHash": "3a3982f09b3c2aefa754be9f9b406782e6d81917bce1e4c2d4c6a76a4e6388a1",
+      "fees": "0.000000"
+    },
+    {
+      "marketId": "377",
+      "exchangeId": "1066",
+      "orderId": "18508311",
+      "quantity": 37,
+      "proceeds": "11.285000",
+      "removedPrincipal": "11.470000",
+      "realized": "-0.185000",
+      "proofHash": "19ea9157fda0faefb0b35ffaaecc867100eb220fd02470c0d71fcd9584007234",
+      "fees": "0.000000"
+    }
+  ],
+  "cohortRealized": "0.780000",
+  "remaining": [
+    {
+      "exchangeId": "1070",
+      "marketId": "381",
+      "quantity": 29,
+      "cost": "4.060000"
+    }
+  ],
+  "pending": {
+    "phase": "uncertain",
+    "orderId": null,
+    "exchangeId": "1070",
+    "fetchStarts": 0,
+    "networkFences": 1,
+    "lastError": "EXECUTION_AUTHORITY_UNAVAILABLE",
+    "bodyHash": "c8b5e3402f99bd907910efb2b84e75bb2988491654fdd85c110f2d86d7f76875"
+  },
+  "wholeCohortProfitabilityEstablished": false
+}
+

@@ -1,0 +1,5 @@
+import fs from 'node:fs';import os from 'node:os';import path from 'node:path';import {createHash} from 'node:crypto';import test from 'node:test';import assert from 'node:assert/strict';import {createPinnedCodeGuardV1} from './pinned-code-guard-v1.mjs';
+test('metadata guards detect normal edits and final byte guard catches unchanged-stat tampering',()=>{
+ const dir=fs.mkdtempSync(path.join(os.tmpdir(),'baal-code-guard-')),file=path.join(dir,'code.mjs'),bytes=Buffer.from('original');fs.writeFileSync(file,bytes);const hash=createHash('sha256').update(bytes).digest('hex'),guard=createPinnedCodeGuardV1({workspace:dir,identity:{'code.mjs':hash}});assert.equal(guard(),true);assert.equal(guard({full:true}),true);fs.writeFileSync(file,'modified');assert.throws(()=>guard(),/CHANGED/);
+ fs.writeFileSync(file,bytes);const stat=fs.statSync(file,{bigint:true}),fake={statSync:()=>stat,lstatSync:()=>({isSymbolicLink:()=>false}),readFileSync:()=>bytes},held=createPinnedCodeGuardV1({workspace:dir,identity:{'code.mjs':hash},filesystem:fake});fake.readFileSync=()=>Buffer.from('modified');assert.equal(held(),true);assert.throws(()=>held({full:true}),/BYTES_CHANGED/);
+});

@@ -1,0 +1,20 @@
+{
+  "checkedAt": "2026-10-07T03:26:59.801Z",
+  "rateManualReview": true,
+  "rateNext": null,
+  "timingRecordsVerified": 146902,
+  "timingBytes": 64631120,
+  "timingHash": "49b30d4d76b85fd254b7f61b4da01698d34f02635d72ab8f05dbb81a4d201cd9",
+  "lastTimingAt": "2026-10-07T02:59:18.058Z",
+  "lastTimingOutcome": "success",
+  "lastTimingStatus": 200,
+  "actorAnchor": {
+    "bytes": 969570,
+    "sha256": "0b3a9aed80dd0347100fc599000bdeb8d26b2859f4621d06be156556bf007e00",
+    "sequence": 11,
+    "hash": "2a31c1bca4b3d1053c12073375ab9f34cd32fea0eab5f925c17714cf1bcf1337"
+  },
+  "unknownOrPending": false,
+  "actualOrders": 0,
+  "clearsManualReview": false
+}

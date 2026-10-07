@@ -1,0 +1,37 @@
+{
+  "checkedAt": "2026-10-07T04:17:35.921Z",
+  "runId": "baal-scaled-no-20261006-human",
+  "epoch": "cohort-profit-lock-recovered-20261007-root",
+  "actorAnchor": {
+    "bytes": 1263360,
+    "sha256": "39666f1e89bfe91e3b799733a945398684817e776d0be86a94435f051172a047",
+    "sequence": 10,
+    "hash": "9fc2ea744bcfd5541a19ad8caba3723996e7fb778f8b2ef5c15910344bc57653"
+  },
+  "economicReplayVerified": true,
+  "collectorPid": 20832,
+  "sourceInheritedIntents": 22,
+  "newClosedOrders": [
+    {
+      "orderId": "18591078",
+      "exchangeId": "1070",
+      "marketId": "381",
+      "requestedQuantity": 29,
+      "filledQuantity": 29,
+      "proceeds": "4.060000",
+      "removedCost": "4.060000",
+      "realized": "0.000000",
+      "remainingQuantity": 0,
+      "proofHash": "3d157f292ca04da0551fc31db12aaa7f3bbc71dfadd373aab1f11217c061244b",
+      "fee": "0.000000"
+    }
+  ],
+  "remainingOwnedShares": 0,
+  "pendingIntents": 0,
+  "cohortRealized": "0.780000",
+  "cohortFullyLiquidated": true,
+  "fees": "0.000000",
+  "scalableProfitabilityEstablished": false,
+  "wholeAccountProfitClaim": false
+}
+
