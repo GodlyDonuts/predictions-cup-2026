@@ -1,0 +1,17 @@
+{
+  "checkedAt": "2026-10-07T01:57:11.060Z",
+  "accountReadAt": "2026-10-07T01:55:50.978Z",
+  "collectorPid": 15020,
+  "mode": "GET_only",
+  "exactReconciliationReplayVerified": true,
+  "originalActorPreserved": true,
+  "financialStopPreserved": true,
+  "recoveredIntentPhase": "abandoned",
+  "bodyUnchanged": true,
+  "ownedShares": 68,
+  "recoveryProofHash": "a3e625a45bf020c46493e8a0e8c40d60d7fdf8a7393710322b8a2485b3d17c9e",
+  "afterSourceHash": "7163ce00dff9d903def402339ff3c02b4dd31efa5e93ef40eeb0ca8feec264d1",
+  "executionAuthority": false,
+  "actualRecoveryOrders": 0
+}
+
