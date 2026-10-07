@@ -6,6 +6,7 @@ import {fileURLToPath} from 'node:url';
 import {loadKey} from '../bot/api.mjs';
 import {initialState,normalizeBook,observe,report,assertState,sampleEquity,validateConfig,restoreState,invalidate,digest} from './model.mjs';
 import {Journal,lock,ReadClient,atomicJson,exclusionSet} from './transport-runtime.mjs';
+import {publicationFailure} from './publication-failure.mjs';
 import {writeCollectorStatus} from './collector-status-writer.mjs';
 import {validateUniverse,priceBatch,priceEndpoint,normalizePrices,updateCoverage} from './breadth.mjs';
 import {validateDepthPlan} from './depth-scope.mjs';
@@ -272,7 +273,7 @@ function publishBookEvent(method,value){try{const result=bookPublication?.[metho
  if(noMaker)try{noMaker.boundary(method);runtime.noMaker=noMaker.status();}catch{runtime.noMaker={status:'failed',executionAuthority:false};noMaker=null;}
  for(const[key,host]of stableHosts())try{host.boundary(method);runtime[key]=host.status();}catch{stableHostFailed(key);}
  if(baalPair)try{baalPair.boundary(method);runtime.baalPair=baalPair.status();}catch{runtime.baalPair={status:'failed',executionAuthority:false};baalPair=null;}
- }return result;}catch{const e=Error('Public book recording failed');e.durableRecordingFailed=true;e.fatal=true;throw e;}}
+ }return result;}catch(cause){throw publicationFailure(cause,method);}}
 async function collectHistory(limit=2){
  const inputs=schedulingInputs(),bookPlan=planBookReads(scheduler,schedulerScope,inputs);
  const plan=planHistoryReads(scheduler,schedulerScope,{...inputs,candidateMarketIds:bookPlan.entryMarketIds},{budget:limit});
@@ -562,3 +563,4 @@ try{
   commit({type:'stopped',stopProvenance:runtime.stopProvenance||null});persistStatus();
 }catch(e){const stopped=stopping&&!e.durableRecordingFailed&&runtime.stopProvenance?.cause!=='status_publication_failed';if(state){runtime.status=stopped?'stopped':'failed';runtime.errors.push({at:new Date().toISOString(),reason:stopped?'stop_requested':e.message});try{persistStatus();}catch{}}console.error(stopped?'Paper runner stopped':'Paper runner failed; see local stats');process.exitCode=stopped?0:1;
 }finally{clearInterval(stopWatch);clearInterval(heartbeat);try{publishBookEvent('close',runtime.status==='failed'?'COLLECTOR_FAILURE':'STOP');}finally{try{collectorMarketScreen?.close();await nativeDip?.close();await nativeQuote?.close();await realtime?.stop();}finally{let closeFailure;for(const close of [()=>dualNoPaperV2?.close(),()=>dualNoPaper?.close(),()=>settlementPaper?.close(),()=>settlementPortfolio?.close(),()=>comparisonRiskSource?.close(),()=>basketFollowupSource?.close(),()=>realtimeCapture?.close(),()=>pairedLiveHost?.close(),()=>scopedReceipts?.close(),()=>competition?.close(),()=>api?.close(),()=>server?.close()])try{await close();}catch(error){closeFailure??=error;}cleanup();if(closeFailure)throw closeFailure;}}}
+

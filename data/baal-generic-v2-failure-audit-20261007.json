@@ -1,0 +1,25 @@
+{
+  "checkedAt": "2026-10-07T01:31:41.521Z",
+  "epoch": "generic-v2-20261007-root",
+  "actorAnchor": {
+    "bytes": 954636,
+    "sha256": "887c17452e900412ba9f5f648469fe42ef163970df609f81a0ecd77f248e1fa3",
+    "sequence": 7,
+    "hash": "8b5230f24f130f6b41f0e4c7ced69362c779734257a304161a27d2105f91be5c"
+  },
+  "economicReplayVerified": true,
+  "phase": "uncertain",
+  "orderId": null,
+  "fetchStarts": 0,
+  "networkFences": 0,
+  "receipts": 0,
+  "bodyExpired": true,
+  "failureCode": "EXECUTION_AUTHORITY_UNAVAILABLE",
+  "graphAgeAtFailedGateMs": 5991,
+  "collateralAgeAtFailedGateMs": 4391,
+  "cashAgeAtFailedGateMs": 18585,
+  "automaticReplacementAllowed": false,
+  "automaticStopClearAllowed": false,
+  "remainingWork": "Retain original admitted intent; implement source-bound no-fetch recovery with transport evidence, then reduce final synchronous verification latency without extending clocks."
+}
+
