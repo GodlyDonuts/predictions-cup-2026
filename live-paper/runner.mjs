@@ -452,7 +452,7 @@ try{
   }
   while(!stopping&&runtime.cycles<maxCycles){
     try{await hotArmMedian();}catch{runtime.productionArm={status:'blocked',at:new Date().toISOString()};}
-    const pairedAuxiliaryOwner=pairedCandidate?.pending()===true;
+    const pairedAuxiliaryOwner=Boolean(pairedCandidate?.pending());
     const cycleStart=Date.now(),checkpoint=structuredClone(state);const events=[];let successful=0,cycleCommitted=false,profitSprintApplied=false,cycleRiskMarketIds=[];
     try{
       if(dipBank){
