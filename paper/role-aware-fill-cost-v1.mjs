@@ -17,4 +17,3 @@ export function roleAwareFillCostV1({intent,observation,allocations,now,latencyM
  const posted=limit*BigInt(quantity),improvement=intent.action==='buy'?posted-value:value-posted;
  return {...base,eligible:quantity>0,reason:quantity?'COUNTERFACTUAL_ROLE_PRICE_SCENARIO':'NO_SUPPORTED_LIMIT_CROSSING',modeledQuantity:quantity,modeledNotional:money(value),postedLimitNotionalForModeledFills:money(posted),modeledPriceImprovementAgainstLimit:money(improvement),remainingCashReservation:intent.action==='buy'?money(limit*BigInt(intent.quantity-quantity)):'0.000000',remainingOrderQuantity:intent.quantity-quantity,rows,liquidityMustBeConsumedByCaller:true,queuePriorityKnown:false,priceImprovementIsNotProfit:true};
 }
-
