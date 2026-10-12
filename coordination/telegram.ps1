@@ -7,6 +7,8 @@ param(
  [string]$CredentialTarget = 'Codex/Telegram/RhaegalCodex_bot'
 )
 $ErrorActionPreference = 'Stop'
+[Console]::OutputEncoding = [System.Text.UTF8Encoding]::new($false)
+$OutputEncoding = [Console]::OutputEncoding
 if ($Action -eq 'Send' -and (-not $ChatId -or -not $Text)) { throw 'Send requires -ChatId and -Text.' }
 if ($Text.Length -gt 4096) { throw 'Keep messages under 4096 characters.' }
 if (-not ('RhaegalTelegramCredential' -as [type])) {
