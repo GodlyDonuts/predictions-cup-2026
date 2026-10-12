@@ -1,0 +1,8 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {referencePassivePlanV2 as plan} from './reference-passive-plan-v2.mjs';
+const sizing={equityLower:'100000.000000',cashAvailable:'100000.000000',referenceValue:'0.608354',currentQuantity:0,reservedBuyQuantity:0,kellyFractionBps:1000,eventFractionBps:1000,eventPrincipal:'0.000000',grossRemaining:'50000.000000'};
+const book={marketId:'1',versionKey:'v',bids:[{price:'0.555000',quantity:100000}],asks:[{price:'0.560000',quantity:100000}]};
+test('one-tick spread joins bid with funded reservation and no queue claim',()=>{const r=plan({book,side:'YES',sizing,minimumGap:'0.005000'});assert.equal(r.limit,'0.555000');assert.equal(r.quotePlacement,'join_bid');assert.equal(r.maximumCost,'555.000000');assert.equal(r.queuePriorityKnown,false);});
+test('wider spread improves bid without crossing, including exact NO complement',()=>{const r=plan({book:{...book,asks:[{price:'0.565000',quantity:100000}]},side:'YES',sizing,minimumGap:'0.005000'});assert.equal(r.limit,'0.560000');assert.equal(r.quotePlacement,'improve_bid');const n=plan({book,side:'NO',sizing,minimumGap:'0.005000'});assert.equal(n.limit,'0.440000');});
+test('locked book, insufficient value and reentry ceiling reject quotes',()=>{assert.equal(plan({book:{...book,asks:book.bids},side:'YES',sizing,minimumGap:'0.005000'}).quantity,0);assert.equal(plan({book,side:'YES',sizing:{...sizing,referenceValue:'0.555000'},minimumGap:'0.005000'}).quantity,0);assert.equal(plan({book,side:'YES',sizing,minimumGap:'0.005000',reentryMaximumLimit:'0.550000'}).quantity,0);});
