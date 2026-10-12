@@ -1,0 +1,2625 @@
+{
+  "schemaVersion": 1,
+  "at": "2026-10-12T08:04:02.654Z",
+  "mode": "synthetic_causal_funded_inventory_policy_comparison",
+  "codeIdentity": {
+    "../../paper/shared-reference-wallet-v6.mjs": "568ae6851aa862aa2cc135ef8ebb6eb0fdc7036574f5095892e6f28925869d59",
+    "../../paper/shared-reference-wallet-v7.mjs": "fa5b1ebcb65f0121468991757fde84fe3c28a47fcf774b26cb3d01f793c0d425",
+    "../shared-wallet-economics-v6.mjs": "ff774b99631ef65e35979f20156cf4e7005692f55ab26b8dffe68331badfc103",
+    "compare.mjs": "603c1e4f5d70c1c9a992f1a295ca7c02d97dfd594f19457e0a8933a0d4830a76"
+  },
+  "policy": {
+    "maxHoldingMs": 30000,
+    "maximumAdverseTicks": 4
+  },
+  "results": [
+    {
+      "name": "continuedDecline",
+      "path": [
+        [
+          1,
+          "0.555000",
+          "0.560000"
+        ],
+        [
+          8,
+          "0.545000",
+          "0.550000"
+        ],
+        [
+          12,
+          "0.500000",
+          "0.505000"
+        ],
+        [
+          15,
+          "0.500000",
+          "0.505000"
+        ],
+        [
+          18,
+          "0.500000",
+          "0.505000"
+        ],
+        [
+          25,
+          "0.400000",
+          "0.405000"
+        ],
+        [
+          28,
+          "0.400000",
+          "0.405000"
+        ],
+        [
+          40,
+          "0.400000",
+          "0.405000"
+        ]
+      ],
+      "original": {
+        "bankHash": "5d7c3b0e02172567ad71281560a23edf36f82dc7306e33d95c7741c3ee50ec52",
+        "economics": {
+          "at": "2026-10-12T08:00:41.000Z",
+          "bankHash": "5d7c3b0e02172567ad71281560a23edf36f82dc7306e33d95c7741c3ee50ec52",
+          "cash": "958.220000",
+          "reservedBuyCash": "8.000000",
+          "availableCash": "950.220000",
+          "ownedPrincipal": "41.780000",
+          "realized": "0.000000",
+          "rows": [
+            {
+              "marketId": "1",
+              "quantity": 77,
+              "principal": "41.780000",
+              "bookAt": "2026-10-12T08:00:40.000Z",
+              "complete": true,
+              "fresh": true,
+              "reason": "INDEPENDENT_DEPTH_MARK",
+              "liquidationValue": "30.415000",
+              "unrealizedPnl": "-11.365000"
+            }
+          ],
+          "allPositionsMarked": true,
+          "allMarksFresh": true,
+          "datedNetPnl": "-11.365000",
+          "freshNetPnl": "-11.365000",
+          "datedEquity": "988.635000",
+          "marksAreCounterfactualLiquidation": true,
+          "actualOrders": 0,
+          "profitabilityEstablished": false
+        },
+        "riskStops": {},
+        "fills": [
+          {
+            "action": "buy",
+            "marketId": "1",
+            "exchangeId": "1",
+            "side": "YES",
+            "quantity": 58,
+            "price": "0.555000",
+            "value": "32.190000",
+            "at": "2026-10-12T08:00:08.000Z",
+            "sourceHash": "d073393d1ed52e54767b67c2d00bc7dd1c7823d93168b127d669bc17f0498883",
+            "intentId": "4cc2513ab2a72ea13217545eb6c843c986033a7221b3a0d3457037e572c3d23c",
+            "depthAllocations": [
+              {
+                "key": "1:YES:buy:v8:0.550000",
+                "quantity": 58,
+                "observedRawPrice": "0.550000"
+              }
+            ],
+            "actualFill": false
+          },
+          {
+            "action": "buy",
+            "marketId": "1",
+            "exchangeId": "1",
+            "side": "YES",
+            "quantity": 2,
+            "price": "0.545000",
+            "value": "1.090000",
+            "at": "2026-10-12T08:00:12.000Z",
+            "sourceHash": "261d93c279f66942b1a93b3251262d82168c64ed7dd9cc84de919179eb047237",
+            "intentId": "ee00135a6070487207bc1fe7259e133e1476201bbf61c9abf1ece39e50a21c03",
+            "depthAllocations": [
+              {
+                "key": "1:YES:buy:v12:0.505000",
+                "quantity": 2,
+                "observedRawPrice": "0.505000"
+              }
+            ],
+            "actualFill": false
+          },
+          {
+            "action": "buy",
+            "marketId": "1",
+            "exchangeId": "1",
+            "side": "YES",
+            "quantity": 17,
+            "price": "0.500000",
+            "value": "8.500000",
+            "at": "2026-10-12T08:00:25.000Z",
+            "sourceHash": "35968a54b8c924cbbd7c74a3255c04479f072c676b0be1a2c48415f80d00150f",
+            "intentId": "696a7198cb75adfb2885562613301ddaa21ca39199f9b70e00d17afb50f481e4",
+            "depthAllocations": [
+              {
+                "key": "1:YES:buy:v25:0.405000",
+                "quantity": 17,
+                "observedRawPrice": "0.405000"
+              }
+            ],
+            "actualFill": false
+          }
+        ],
+        "trace": [
+          {
+            "at": "2026-10-12T08:00:01.000Z",
+            "decision": {
+              "reason": "SHARED_FUNDED_DECISION",
+              "newBuys": 1,
+              "reservedCash": "32.190000",
+              "actualOrders": 0
+            },
+            "positions": {},
+            "pending": {
+              "4cc2513ab2a72ea13217545eb6c843c986033a7221b3a0d3457037e572c3d23c": {
+                "action": "buy",
+                "marketId": "1",
+                "quantity": 58,
+                "limit": "0.555000",
+                "at": "2026-10-12T08:00:01.000Z",
+                "expiresAt": "2026-10-12T08:02:01.000Z"
+              }
+            },
+            "realized": "0.000000"
+          },
+          {
+            "at": "2026-10-12T08:00:08.000Z",
+            "decision": {
+              "reason": "COUNTERFACTUAL_LATER_FILL",
+              "newBuys": 1,
+              "reservedCash": "1.090000",
+              "actualOrders": 0
+            },
+            "positions": {
+              "1": {
+                "quantity": 58,
+                "cost": "32.190000",
+                "lots": [
+                  {
+                    "quantity": 58,
+                    "price": "0.555000"
+                  }
+                ],
+                "enteredAt": "2026-10-12T08:00:08.000Z",
+                "lastBoughtAt": "2026-10-12T08:00:08.000Z"
+              }
+            },
+            "pending": {
+              "ee00135a6070487207bc1fe7259e133e1476201bbf61c9abf1ece39e50a21c03": {
+                "action": "buy",
+                "marketId": "1",
+                "quantity": 2,
+                "limit": "0.545000",
+                "at": "2026-10-12T08:00:08.000Z",
+                "expiresAt": "2026-10-12T08:02:08.000Z"
+              }
+            },
+            "realized": "0.000000"
+          },
+          {
+            "at": "2026-10-12T08:00:12.000Z",
+            "decision": {
+              "reason": "COUNTERFACTUAL_LATER_FILL",
+              "newBuys": 1,
+              "reservedCash": "8.500000",
+              "actualOrders": 0
+            },
+            "positions": {
+              "1": {
+                "quantity": 60,
+                "cost": "33.280000",
+                "lots": [
+                  {
+                    "quantity": 58,
+                    "price": "0.555000"
+                  },
+                  {
+                    "quantity": 2,
+                    "price": "0.545000"
+                  }
+                ],
+                "enteredAt": "2026-10-12T08:00:08.000Z",
+                "lastBoughtAt": "2026-10-12T08:00:12.000Z"
+              }
+            },
+            "pending": {
+              "696a7198cb75adfb2885562613301ddaa21ca39199f9b70e00d17afb50f481e4": {
+                "action": "buy",
+                "marketId": "1",
+                "quantity": 17,
+                "limit": "0.500000",
+                "at": "2026-10-12T08:00:12.000Z",
+                "expiresAt": "2026-10-12T08:02:12.000Z"
+              }
+            },
+            "realized": "0.000000"
+          },
+          {
+            "at": "2026-10-12T08:00:15.000Z",
+            "decision": {
+              "reason": "SHARED_FUNDED_DECISION",
+              "newBuys": 0,
+              "reservedCash": "8.500000",
+              "actualOrders": 0
+            },
+            "positions": {
+              "1": {
+                "quantity": 60,
+                "cost": "33.280000",
+                "lots": [
+                  {
+                    "quantity": 58,
+                    "price": "0.555000"
+                  },
+                  {
+                    "quantity": 2,
+                    "price": "0.545000"
+                  }
+                ],
+                "enteredAt": "2026-10-12T08:00:08.000Z",
+                "lastBoughtAt": "2026-10-12T08:00:12.000Z"
+              }
+            },
+            "pending": {
+              "696a7198cb75adfb2885562613301ddaa21ca39199f9b70e00d17afb50f481e4": {
+                "action": "buy",
+                "marketId": "1",
+                "quantity": 17,
+                "limit": "0.500000",
+                "at": "2026-10-12T08:00:12.000Z",
+                "expiresAt": "2026-10-12T08:02:12.000Z"
+              }
+            },
+            "realized": "0.000000"
+          },
+          {
+            "at": "2026-10-12T08:00:18.000Z",
+            "decision": {
+              "reason": "SHARED_FUNDED_DECISION",
+              "newBuys": 0,
+              "reservedCash": "8.500000",
+              "actualOrders": 0
+            },
+            "positions": {
+              "1": {
+                "quantity": 60,
+                "cost": "33.280000",
+                "lots": [
+                  {
+                    "quantity": 58,
+                    "price": "0.555000"
+                  },
+                  {
+                    "quantity": 2,
+                    "price": "0.545000"
+                  }
+                ],
+                "enteredAt": "2026-10-12T08:00:08.000Z",
+                "lastBoughtAt": "2026-10-12T08:00:12.000Z"
+              }
+            },
+            "pending": {
+              "696a7198cb75adfb2885562613301ddaa21ca39199f9b70e00d17afb50f481e4": {
+                "action": "buy",
+                "marketId": "1",
+                "quantity": 17,
+                "limit": "0.500000",
+                "at": "2026-10-12T08:00:12.000Z",
+                "expiresAt": "2026-10-12T08:02:12.000Z"
+              }
+            },
+            "realized": "0.000000"
+          },
+          {
+            "at": "2026-10-12T08:00:25.000Z",
+            "decision": {
+              "reason": "COUNTERFACTUAL_LATER_FILL",
+              "newBuys": 1,
+              "reservedCash": "8.000000",
+              "actualOrders": 0
+            },
+            "positions": {
+              "1": {
+                "quantity": 77,
+                "cost": "41.780000",
+                "lots": [
+                  {
+                    "quantity": 58,
+                    "price": "0.555000"
+                  },
+                  {
+                    "quantity": 2,
+                    "price": "0.545000"
+                  },
+                  {
+                    "quantity": 17,
+                    "price": "0.500000"
+                  }
+                ],
+                "enteredAt": "2026-10-12T08:00:08.000Z",
+                "lastBoughtAt": "2026-10-12T08:00:25.000Z"
+              }
+            },
+            "pending": {
+              "2c90fc6cd1408370e2878a5c0bd6e5329331ef5b7824f5e88730402d9a0d7fad": {
+                "action": "buy",
+                "marketId": "1",
+                "quantity": 20,
+                "limit": "0.400000",
+                "at": "2026-10-12T08:00:25.000Z",
+                "expiresAt": "2026-10-12T08:02:25.000Z"
+              }
+            },
+            "realized": "0.000000"
+          },
+          {
+            "at": "2026-10-12T08:00:28.000Z",
+            "decision": {
+              "reason": "SHARED_FUNDED_DECISION",
+              "newBuys": 0,
+              "reservedCash": "8.000000",
+              "actualOrders": 0
+            },
+            "positions": {
+              "1": {
+                "quantity": 77,
+                "cost": "41.780000",
+                "lots": [
+                  {
+                    "quantity": 58,
+                    "price": "0.555000"
+                  },
+                  {
+                    "quantity": 2,
+                    "price": "0.545000"
+                  },
+                  {
+                    "quantity": 17,
+                    "price": "0.500000"
+                  }
+                ],
+                "enteredAt": "2026-10-12T08:00:08.000Z",
+                "lastBoughtAt": "2026-10-12T08:00:25.000Z"
+              }
+            },
+            "pending": {
+              "2c90fc6cd1408370e2878a5c0bd6e5329331ef5b7824f5e88730402d9a0d7fad": {
+                "action": "buy",
+                "marketId": "1",
+                "quantity": 20,
+                "limit": "0.400000",
+                "at": "2026-10-12T08:00:25.000Z",
+                "expiresAt": "2026-10-12T08:02:25.000Z"
+              }
+            },
+            "realized": "0.000000"
+          },
+          {
+            "at": "2026-10-12T08:00:40.000Z",
+            "decision": {
+              "reason": "SHARED_FUNDED_DECISION",
+              "newBuys": 0,
+              "reservedCash": "8.000000",
+              "actualOrders": 0
+            },
+            "positions": {
+              "1": {
+                "quantity": 77,
+                "cost": "41.780000",
+                "lots": [
+                  {
+                    "quantity": 58,
+                    "price": "0.555000"
+                  },
+                  {
+                    "quantity": 2,
+                    "price": "0.545000"
+                  },
+                  {
+                    "quantity": 17,
+                    "price": "0.500000"
+                  }
+                ],
+                "enteredAt": "2026-10-12T08:00:08.000Z",
+                "lastBoughtAt": "2026-10-12T08:00:25.000Z"
+              }
+            },
+            "pending": {
+              "2c90fc6cd1408370e2878a5c0bd6e5329331ef5b7824f5e88730402d9a0d7fad": {
+                "action": "buy",
+                "marketId": "1",
+                "quantity": 20,
+                "limit": "0.400000",
+                "at": "2026-10-12T08:00:25.000Z",
+                "expiresAt": "2026-10-12T08:02:25.000Z"
+              }
+            },
+            "realized": "0.000000"
+          }
+        ]
+      },
+      "inventoryRisk": {
+        "bankHash": "dd95cecd329499eaadf7c9269ddd92bb3d6f0c7700f19c9b32288f30799648b6",
+        "economics": {
+          "at": "2026-10-12T08:00:41.000Z",
+          "bankHash": "dd95cecd329499eaadf7c9269ddd92bb3d6f0c7700f19c9b32288f30799648b6",
+          "cash": "996.520000",
+          "reservedBuyCash": "0.000000",
+          "availableCash": "996.520000",
+          "ownedPrincipal": "0.000000",
+          "realized": "-3.480000",
+          "rows": [],
+          "allPositionsMarked": true,
+          "allMarksFresh": true,
+          "datedNetPnl": "-3.480000",
+          "freshNetPnl": "-3.480000",
+          "datedEquity": "996.520000",
+          "marksAreCounterfactualLiquidation": true,
+          "actualOrders": 0,
+          "profitabilityEstablished": false
+        },
+        "riskStops": {
+          "1": {
+            "at": "2026-10-12T08:00:12.000Z",
+            "reason": "ADVERSE_PRICE_MOVE"
+          }
+        },
+        "fills": [
+          {
+            "action": "buy",
+            "marketId": "1",
+            "exchangeId": "1",
+            "side": "YES",
+            "quantity": 58,
+            "price": "0.555000",
+            "value": "32.190000",
+            "at": "2026-10-12T08:00:08.000Z",
+            "sourceHash": "d073393d1ed52e54767b67c2d00bc7dd1c7823d93168b127d669bc17f0498883",
+            "intentId": "4f16468cc2ed1f7f272aa1d0ace3858532e683e4a1b2b8780cee4d1d1fdb27f9",
+            "depthAllocations": [
+              {
+                "key": "1:YES:buy:v8:0.550000",
+                "quantity": 58,
+                "observedRawPrice": "0.550000"
+              }
+            ],
+            "actualFill": false
+          },
+          {
+            "action": "sell",
+            "marketId": "1",
+            "exchangeId": "1",
+            "side": "YES",
+            "quantity": 58,
+            "price": "0.495000",
+            "value": "28.710000",
+            "at": "2026-10-12T08:00:15.000Z",
+            "sourceHash": "ea651629c384dcd462b3be9692976f2ba4ec670698a3fbfc490b9095b6a8e08e",
+            "intentId": "28a722b299f8ff9d00060476cb63d688d5f32565703ef457e7d1eca1b8f39054",
+            "depthAllocations": [
+              {
+                "key": "1:YES:sell:v15:0.500000",
+                "quantity": 58,
+                "observedRawPrice": "0.500000"
+              }
+            ],
+            "actualFill": false,
+            "removedCost": "32.190000"
+          }
+        ],
+        "trace": [
+          {
+            "at": "2026-10-12T08:00:01.000Z",
+            "decision": {
+              "reason": "SHARED_FUNDED_DECISION",
+              "newBuys": 1,
+              "reservedCash": "32.190000",
+              "actualOrders": 0
+            },
+            "positions": {},
+            "pending": {
+              "4f16468cc2ed1f7f272aa1d0ace3858532e683e4a1b2b8780cee4d1d1fdb27f9": {
+                "action": "buy",
+                "marketId": "1",
+                "quantity": 58,
+                "limit": "0.555000",
+                "at": "2026-10-12T08:00:01.000Z",
+                "expiresAt": "2026-10-12T08:02:01.000Z"
+              }
+            },
+            "realized": "0.000000"
+          },
+          {
+            "at": "2026-10-12T08:00:08.000Z",
+            "decision": {
+              "reason": "COUNTERFACTUAL_LATER_FILL",
+              "newBuys": 0,
+              "reservedCash": "0.000000",
+              "actualOrders": 0
+            },
+            "positions": {
+              "1": {
+                "quantity": 58,
+                "cost": "32.190000",
+                "lots": [
+                  {
+                    "quantity": 58,
+                    "price": "0.555000"
+                  }
+                ],
+                "enteredAt": "2026-10-12T08:00:08.000Z",
+                "lastBoughtAt": "2026-10-12T08:00:08.000Z"
+              }
+            },
+            "pending": {},
+            "realized": "0.000000"
+          },
+          {
+            "at": "2026-10-12T08:00:12.000Z",
+            "decision": {
+              "reason": "SHARED_FUNDED_DECISION",
+              "newBuys": 0,
+              "reservedCash": "0.000000",
+              "actualOrders": 0
+            },
+            "positions": {
+              "1": {
+                "quantity": 58,
+                "cost": "32.190000",
+                "lots": [
+                  {
+                    "quantity": 58,
+                    "price": "0.555000"
+                  }
+                ],
+                "enteredAt": "2026-10-12T08:00:08.000Z",
+                "lastBoughtAt": "2026-10-12T08:00:08.000Z"
+              }
+            },
+            "pending": {
+              "28a722b299f8ff9d00060476cb63d688d5f32565703ef457e7d1eca1b8f39054": {
+                "action": "sell",
+                "marketId": "1",
+                "quantity": 58,
+                "limit": "0.495000",
+                "at": "2026-10-12T08:00:12.000Z",
+                "expiresAt": "2026-10-12T08:02:12.000Z"
+              }
+            },
+            "realized": "0.000000"
+          },
+          {
+            "at": "2026-10-12T08:00:15.000Z",
+            "decision": {
+              "reason": "COUNTERFACTUAL_LATER_FILL",
+              "newBuys": 0,
+              "reservedCash": "0.000000",
+              "actualOrders": 0
+            },
+            "positions": {},
+            "pending": {},
+            "realized": "-3.480000"
+          },
+          {
+            "at": "2026-10-12T08:00:18.000Z",
+            "decision": {
+              "reason": "SHARED_FUNDED_DECISION",
+              "newBuys": 0,
+              "reservedCash": "0.000000",
+              "actualOrders": 0
+            },
+            "positions": {},
+            "pending": {},
+            "realized": "-3.480000"
+          },
+          {
+            "at": "2026-10-12T08:00:25.000Z",
+            "decision": {
+              "reason": "SHARED_FUNDED_DECISION",
+              "newBuys": 0,
+              "reservedCash": "0.000000",
+              "actualOrders": 0
+            },
+            "positions": {},
+            "pending": {},
+            "realized": "-3.480000"
+          },
+          {
+            "at": "2026-10-12T08:00:28.000Z",
+            "decision": {
+              "reason": "SHARED_FUNDED_DECISION",
+              "newBuys": 0,
+              "reservedCash": "0.000000",
+              "actualOrders": 0
+            },
+            "positions": {},
+            "pending": {},
+            "realized": "-3.480000"
+          },
+          {
+            "at": "2026-10-12T08:00:40.000Z",
+            "decision": {
+              "reason": "SHARED_FUNDED_DECISION",
+              "newBuys": 0,
+              "reservedCash": "0.000000",
+              "actualOrders": 0
+            },
+            "positions": {},
+            "pending": {},
+            "realized": "-3.480000"
+          }
+        ]
+      }
+    },
+    {
+      "name": "quickProfitableRebound",
+      "path": [
+        [
+          1,
+          "0.555000",
+          "0.560000"
+        ],
+        [
+          8,
+          "0.545000",
+          "0.550000"
+        ],
+        [
+          12,
+          "0.580000",
+          "0.585000"
+        ],
+        [
+          15,
+          "0.580000",
+          "0.585000"
+        ],
+        [
+          129,
+          "0.580000",
+          "0.585000"
+        ],
+        [
+          132,
+          "0.580000",
+          "0.585000"
+        ]
+      ],
+      "original": {
+        "bankHash": "5d7c3b0e02172567ad71281560a23edf36f82dc7306e33d95c7741c3ee50ec52",
+        "economics": {
+          "at": "2026-10-12T08:02:13.000Z",
+          "bankHash": "5d7c3b0e02172567ad71281560a23edf36f82dc7306e33d95c7741c3ee50ec52",
+          "cash": "1001.160000",
+          "reservedBuyCash": "0.000000",
+          "availableCash": "1001.160000",
+          "ownedPrincipal": "0.000000",
+          "realized": "1.160000",
+          "rows": [],
+          "allPositionsMarked": true,
+          "allMarksFresh": true,
+          "datedNetPnl": "1.160000",
+          "freshNetPnl": "1.160000",
+          "datedEquity": "1001.160000",
+          "marksAreCounterfactualLiquidation": true,
+          "actualOrders": 0,
+          "profitabilityEstablished": false
+        },
+        "riskStops": {},
+        "fills": [
+          {
+            "action": "buy",
+            "marketId": "1",
+            "exchangeId": "1",
+            "side": "YES",
+            "quantity": 58,
+            "price": "0.555000",
+            "value": "32.190000",
+            "at": "2026-10-12T08:00:08.000Z",
+            "sourceHash": "d073393d1ed52e54767b67c2d00bc7dd1c7823d93168b127d669bc17f0498883",
+            "intentId": "4cc2513ab2a72ea13217545eb6c843c986033a7221b3a0d3457037e572c3d23c",
+            "depthAllocations": [
+              {
+                "key": "1:YES:buy:v8:0.550000",
+                "quantity": 58,
+                "observedRawPrice": "0.550000"
+              }
+            ],
+            "actualFill": false
+          },
+          {
+            "action": "sell",
+            "marketId": "1",
+            "exchangeId": "1",
+            "side": "YES",
+            "quantity": 58,
+            "price": "0.575000",
+            "value": "33.350000",
+            "at": "2026-10-12T08:02:12.000Z",
+            "sourceHash": "290f9c6820d6e7656ac13a6372c57ef49d224ffd62c8582e4e01a3b85cc35253",
+            "intentId": "9b912bfe0eab65da2ef41b9c19ad870e305e63c83e8f3c727222f66c47833f5e",
+            "depthAllocations": [
+              {
+                "key": "1:YES:sell:v132:0.580000",
+                "quantity": 58,
+                "observedRawPrice": "0.580000"
+              }
+            ],
+            "actualFill": false,
+            "removedCost": "32.190000"
+          }
+        ],
+        "trace": [
+          {
+            "at": "2026-10-12T08:00:01.000Z",
+            "decision": {
+              "reason": "SHARED_FUNDED_DECISION",
+              "newBuys": 1,
+              "reservedCash": "32.190000",
+              "actualOrders": 0
+            },
+            "positions": {},
+            "pending": {
+              "4cc2513ab2a72ea13217545eb6c843c986033a7221b3a0d3457037e572c3d23c": {
+                "action": "buy",
+                "marketId": "1",
+                "quantity": 58,
+                "limit": "0.555000",
+                "at": "2026-10-12T08:00:01.000Z",
+                "expiresAt": "2026-10-12T08:02:01.000Z"
+              }
+            },
+            "realized": "0.000000"
+          },
+          {
+            "at": "2026-10-12T08:00:08.000Z",
+            "decision": {
+              "reason": "COUNTERFACTUAL_LATER_FILL",
+              "newBuys": 1,
+              "reservedCash": "1.090000",
+              "actualOrders": 0
+            },
+            "positions": {
+              "1": {
+                "quantity": 58,
+                "cost": "32.190000",
+                "lots": [
+                  {
+                    "quantity": 58,
+                    "price": "0.555000"
+                  }
+                ],
+                "enteredAt": "2026-10-12T08:00:08.000Z",
+                "lastBoughtAt": "2026-10-12T08:00:08.000Z"
+              }
+            },
+            "pending": {
+              "ee00135a6070487207bc1fe7259e133e1476201bbf61c9abf1ece39e50a21c03": {
+                "action": "buy",
+                "marketId": "1",
+                "quantity": 2,
+                "limit": "0.545000",
+                "at": "2026-10-12T08:00:08.000Z",
+                "expiresAt": "2026-10-12T08:02:08.000Z"
+              }
+            },
+            "realized": "0.000000"
+          },
+          {
+            "at": "2026-10-12T08:00:12.000Z",
+            "decision": {
+              "reason": "SHARED_FUNDED_DECISION",
+              "newBuys": 0,
+              "reservedCash": "1.090000",
+              "actualOrders": 0
+            },
+            "positions": {
+              "1": {
+                "quantity": 58,
+                "cost": "32.190000",
+                "lots": [
+                  {
+                    "quantity": 58,
+                    "price": "0.555000"
+                  }
+                ],
+                "enteredAt": "2026-10-12T08:00:08.000Z",
+                "lastBoughtAt": "2026-10-12T08:00:08.000Z"
+              }
+            },
+            "pending": {
+              "ee00135a6070487207bc1fe7259e133e1476201bbf61c9abf1ece39e50a21c03": {
+                "action": "buy",
+                "marketId": "1",
+                "quantity": 2,
+                "limit": "0.545000",
+                "at": "2026-10-12T08:00:08.000Z",
+                "expiresAt": "2026-10-12T08:02:08.000Z"
+              }
+            },
+            "realized": "0.000000"
+          },
+          {
+            "at": "2026-10-12T08:00:15.000Z",
+            "decision": {
+              "reason": "SHARED_FUNDED_DECISION",
+              "newBuys": 0,
+              "reservedCash": "1.090000",
+              "actualOrders": 0
+            },
+            "positions": {
+              "1": {
+                "quantity": 58,
+                "cost": "32.190000",
+                "lots": [
+                  {
+                    "quantity": 58,
+                    "price": "0.555000"
+                  }
+                ],
+                "enteredAt": "2026-10-12T08:00:08.000Z",
+                "lastBoughtAt": "2026-10-12T08:00:08.000Z"
+              }
+            },
+            "pending": {
+              "ee00135a6070487207bc1fe7259e133e1476201bbf61c9abf1ece39e50a21c03": {
+                "action": "buy",
+                "marketId": "1",
+                "quantity": 2,
+                "limit": "0.545000",
+                "at": "2026-10-12T08:00:08.000Z",
+                "expiresAt": "2026-10-12T08:02:08.000Z"
+              }
+            },
+            "realized": "0.000000"
+          },
+          {
+            "at": "2026-10-12T08:02:09.000Z",
+            "decision": {
+              "reason": "SHARED_FUNDED_DECISION",
+              "newBuys": 0,
+              "reservedCash": "0.000000",
+              "actualOrders": 0
+            },
+            "positions": {
+              "1": {
+                "quantity": 58,
+                "cost": "32.190000",
+                "lots": [
+                  {
+                    "quantity": 58,
+                    "price": "0.555000"
+                  }
+                ],
+                "enteredAt": "2026-10-12T08:00:08.000Z",
+                "lastBoughtAt": "2026-10-12T08:00:08.000Z"
+              }
+            },
+            "pending": {
+              "9b912bfe0eab65da2ef41b9c19ad870e305e63c83e8f3c727222f66c47833f5e": {
+                "action": "sell",
+                "marketId": "1",
+                "quantity": 58,
+                "limit": "0.575000",
+                "at": "2026-10-12T08:02:09.000Z",
+                "expiresAt": "2026-10-12T08:04:09.000Z"
+              }
+            },
+            "realized": "0.000000"
+          },
+          {
+            "at": "2026-10-12T08:02:12.000Z",
+            "decision": {
+              "reason": "COUNTERFACTUAL_LATER_FILL",
+              "newBuys": 0,
+              "reservedCash": "0.000000",
+              "actualOrders": 0
+            },
+            "positions": {},
+            "pending": {},
+            "realized": "1.160000"
+          }
+        ]
+      },
+      "inventoryRisk": {
+        "bankHash": "dd95cecd329499eaadf7c9269ddd92bb3d6f0c7700f19c9b32288f30799648b6",
+        "economics": {
+          "at": "2026-10-12T08:02:13.000Z",
+          "bankHash": "dd95cecd329499eaadf7c9269ddd92bb3d6f0c7700f19c9b32288f30799648b6",
+          "cash": "1001.160000",
+          "reservedBuyCash": "0.000000",
+          "availableCash": "1001.160000",
+          "ownedPrincipal": "0.000000",
+          "realized": "1.160000",
+          "rows": [],
+          "allPositionsMarked": true,
+          "allMarksFresh": true,
+          "datedNetPnl": "1.160000",
+          "freshNetPnl": "1.160000",
+          "datedEquity": "1001.160000",
+          "marksAreCounterfactualLiquidation": true,
+          "actualOrders": 0,
+          "profitabilityEstablished": false
+        },
+        "riskStops": {},
+        "fills": [
+          {
+            "action": "buy",
+            "marketId": "1",
+            "exchangeId": "1",
+            "side": "YES",
+            "quantity": 58,
+            "price": "0.555000",
+            "value": "32.190000",
+            "at": "2026-10-12T08:00:08.000Z",
+            "sourceHash": "d073393d1ed52e54767b67c2d00bc7dd1c7823d93168b127d669bc17f0498883",
+            "intentId": "4f16468cc2ed1f7f272aa1d0ace3858532e683e4a1b2b8780cee4d1d1fdb27f9",
+            "depthAllocations": [
+              {
+                "key": "1:YES:buy:v8:0.550000",
+                "quantity": 58,
+                "observedRawPrice": "0.550000"
+              }
+            ],
+            "actualFill": false
+          },
+          {
+            "action": "sell",
+            "marketId": "1",
+            "exchangeId": "1",
+            "side": "YES",
+            "quantity": 58,
+            "price": "0.575000",
+            "value": "33.350000",
+            "at": "2026-10-12T08:00:15.000Z",
+            "sourceHash": "9ea7836bddd59b80637268a72188e7e4c76b5143c1ceddedd74b28a47582fca3",
+            "intentId": "5ba2a5d18d0c557afeb5806ac420982a7071406eaaffe3a48fae213c75f3ecdb",
+            "depthAllocations": [
+              {
+                "key": "1:YES:sell:v15:0.580000",
+                "quantity": 58,
+                "observedRawPrice": "0.580000"
+              }
+            ],
+            "actualFill": false,
+            "removedCost": "32.190000"
+          }
+        ],
+        "trace": [
+          {
+            "at": "2026-10-12T08:00:01.000Z",
+            "decision": {
+              "reason": "SHARED_FUNDED_DECISION",
+              "newBuys": 1,
+              "reservedCash": "32.190000",
+              "actualOrders": 0
+            },
+            "positions": {},
+            "pending": {
+              "4f16468cc2ed1f7f272aa1d0ace3858532e683e4a1b2b8780cee4d1d1fdb27f9": {
+                "action": "buy",
+                "marketId": "1",
+                "quantity": 58,
+                "limit": "0.555000",
+                "at": "2026-10-12T08:00:01.000Z",
+                "expiresAt": "2026-10-12T08:02:01.000Z"
+              }
+            },
+            "realized": "0.000000"
+          },
+          {
+            "at": "2026-10-12T08:00:08.000Z",
+            "decision": {
+              "reason": "COUNTERFACTUAL_LATER_FILL",
+              "newBuys": 0,
+              "reservedCash": "0.000000",
+              "actualOrders": 0
+            },
+            "positions": {
+              "1": {
+                "quantity": 58,
+                "cost": "32.190000",
+                "lots": [
+                  {
+                    "quantity": 58,
+                    "price": "0.555000"
+                  }
+                ],
+                "enteredAt": "2026-10-12T08:00:08.000Z",
+                "lastBoughtAt": "2026-10-12T08:00:08.000Z"
+              }
+            },
+            "pending": {},
+            "realized": "0.000000"
+          },
+          {
+            "at": "2026-10-12T08:00:12.000Z",
+            "decision": {
+              "reason": "SHARED_FUNDED_DECISION",
+              "newBuys": 0,
+              "reservedCash": "0.000000",
+              "actualOrders": 0
+            },
+            "positions": {
+              "1": {
+                "quantity": 58,
+                "cost": "32.190000",
+                "lots": [
+                  {
+                    "quantity": 58,
+                    "price": "0.555000"
+                  }
+                ],
+                "enteredAt": "2026-10-12T08:00:08.000Z",
+                "lastBoughtAt": "2026-10-12T08:00:08.000Z"
+              }
+            },
+            "pending": {
+              "5ba2a5d18d0c557afeb5806ac420982a7071406eaaffe3a48fae213c75f3ecdb": {
+                "action": "sell",
+                "marketId": "1",
+                "quantity": 58,
+                "limit": "0.575000",
+                "at": "2026-10-12T08:00:12.000Z",
+                "expiresAt": "2026-10-12T08:02:12.000Z"
+              }
+            },
+            "realized": "0.000000"
+          },
+          {
+            "at": "2026-10-12T08:00:15.000Z",
+            "decision": {
+              "reason": "COUNTERFACTUAL_LATER_FILL",
+              "newBuys": 0,
+              "reservedCash": "0.000000",
+              "actualOrders": 0
+            },
+            "positions": {},
+            "pending": {},
+            "realized": "1.160000"
+          },
+          {
+            "at": "2026-10-12T08:02:09.000Z",
+            "decision": {
+              "reason": "SHARED_FUNDED_DECISION",
+              "newBuys": 0,
+              "reservedCash": "0.000000",
+              "actualOrders": 0
+            },
+            "positions": {},
+            "pending": {},
+            "realized": "1.160000"
+          },
+          {
+            "at": "2026-10-12T08:02:12.000Z",
+            "decision": {
+              "reason": "SHARED_FUNDED_DECISION",
+              "newBuys": 0,
+              "reservedCash": "0.000000",
+              "actualOrders": 0
+            },
+            "positions": {},
+            "pending": {},
+            "realized": "1.160000"
+          }
+        ]
+      }
+    },
+    {
+      "name": "stopThenRecovery",
+      "path": [
+        [
+          1,
+          "0.555000",
+          "0.560000"
+        ],
+        [
+          8,
+          "0.545000",
+          "0.550000"
+        ],
+        [
+          12,
+          "0.500000",
+          "0.505000"
+        ],
+        [
+          15,
+          "0.500000",
+          "0.505000"
+        ],
+        [
+          18,
+          "0.500000",
+          "0.505000"
+        ],
+        [
+          129,
+          "0.600000",
+          "0.605000"
+        ],
+        [
+          132,
+          "0.600000",
+          "0.605000"
+        ]
+      ],
+      "original": {
+        "bankHash": "5d7c3b0e02172567ad71281560a23edf36f82dc7306e33d95c7741c3ee50ec52",
+        "economics": {
+          "at": "2026-10-12T08:02:13.000Z",
+          "bankHash": "5d7c3b0e02172567ad71281560a23edf36f82dc7306e33d95c7741c3ee50ec52",
+          "cash": "966.720000",
+          "reservedBuyCash": "0.000000",
+          "availableCash": "966.720000",
+          "ownedPrincipal": "33.280000",
+          "realized": "0.000000",
+          "rows": [
+            {
+              "marketId": "1",
+              "quantity": 60,
+              "principal": "33.280000",
+              "bookAt": "2026-10-12T08:02:12.000Z",
+              "complete": true,
+              "fresh": true,
+              "reason": "INDEPENDENT_DEPTH_MARK",
+              "liquidationValue": "35.700000",
+              "unrealizedPnl": "2.420000"
+            }
+          ],
+          "allPositionsMarked": true,
+          "allMarksFresh": true,
+          "datedNetPnl": "2.420000",
+          "freshNetPnl": "2.420000",
+          "datedEquity": "1002.420000",
+          "marksAreCounterfactualLiquidation": true,
+          "actualOrders": 0,
+          "profitabilityEstablished": false
+        },
+        "riskStops": {},
+        "fills": [
+          {
+            "action": "buy",
+            "marketId": "1",
+            "exchangeId": "1",
+            "side": "YES",
+            "quantity": 58,
+            "price": "0.555000",
+            "value": "32.190000",
+            "at": "2026-10-12T08:00:08.000Z",
+            "sourceHash": "d073393d1ed52e54767b67c2d00bc7dd1c7823d93168b127d669bc17f0498883",
+            "intentId": "4cc2513ab2a72ea13217545eb6c843c986033a7221b3a0d3457037e572c3d23c",
+            "depthAllocations": [
+              {
+                "key": "1:YES:buy:v8:0.550000",
+                "quantity": 58,
+                "observedRawPrice": "0.550000"
+              }
+            ],
+            "actualFill": false
+          },
+          {
+            "action": "buy",
+            "marketId": "1",
+            "exchangeId": "1",
+            "side": "YES",
+            "quantity": 2,
+            "price": "0.545000",
+            "value": "1.090000",
+            "at": "2026-10-12T08:00:12.000Z",
+            "sourceHash": "261d93c279f66942b1a93b3251262d82168c64ed7dd9cc84de919179eb047237",
+            "intentId": "ee00135a6070487207bc1fe7259e133e1476201bbf61c9abf1ece39e50a21c03",
+            "depthAllocations": [
+              {
+                "key": "1:YES:buy:v12:0.505000",
+                "quantity": 2,
+                "observedRawPrice": "0.505000"
+              }
+            ],
+            "actualFill": false
+          }
+        ],
+        "trace": [
+          {
+            "at": "2026-10-12T08:00:01.000Z",
+            "decision": {
+              "reason": "SHARED_FUNDED_DECISION",
+              "newBuys": 1,
+              "reservedCash": "32.190000",
+              "actualOrders": 0
+            },
+            "positions": {},
+            "pending": {
+              "4cc2513ab2a72ea13217545eb6c843c986033a7221b3a0d3457037e572c3d23c": {
+                "action": "buy",
+                "marketId": "1",
+                "quantity": 58,
+                "limit": "0.555000",
+                "at": "2026-10-12T08:00:01.000Z",
+                "expiresAt": "2026-10-12T08:02:01.000Z"
+              }
+            },
+            "realized": "0.000000"
+          },
+          {
+            "at": "2026-10-12T08:00:08.000Z",
+            "decision": {
+              "reason": "COUNTERFACTUAL_LATER_FILL",
+              "newBuys": 1,
+              "reservedCash": "1.090000",
+              "actualOrders": 0
+            },
+            "positions": {
+              "1": {
+                "quantity": 58,
+                "cost": "32.190000",
+                "lots": [
+                  {
+                    "quantity": 58,
+                    "price": "0.555000"
+                  }
+                ],
+                "enteredAt": "2026-10-12T08:00:08.000Z",
+                "lastBoughtAt": "2026-10-12T08:00:08.000Z"
+              }
+            },
+            "pending": {
+              "ee00135a6070487207bc1fe7259e133e1476201bbf61c9abf1ece39e50a21c03": {
+                "action": "buy",
+                "marketId": "1",
+                "quantity": 2,
+                "limit": "0.545000",
+                "at": "2026-10-12T08:00:08.000Z",
+                "expiresAt": "2026-10-12T08:02:08.000Z"
+              }
+            },
+            "realized": "0.000000"
+          },
+          {
+            "at": "2026-10-12T08:00:12.000Z",
+            "decision": {
+              "reason": "COUNTERFACTUAL_LATER_FILL",
+              "newBuys": 1,
+              "reservedCash": "8.500000",
+              "actualOrders": 0
+            },
+            "positions": {
+              "1": {
+                "quantity": 60,
+                "cost": "33.280000",
+                "lots": [
+                  {
+                    "quantity": 58,
+                    "price": "0.555000"
+                  },
+                  {
+                    "quantity": 2,
+                    "price": "0.545000"
+                  }
+                ],
+                "enteredAt": "2026-10-12T08:00:08.000Z",
+                "lastBoughtAt": "2026-10-12T08:00:12.000Z"
+              }
+            },
+            "pending": {
+              "696a7198cb75adfb2885562613301ddaa21ca39199f9b70e00d17afb50f481e4": {
+                "action": "buy",
+                "marketId": "1",
+                "quantity": 17,
+                "limit": "0.500000",
+                "at": "2026-10-12T08:00:12.000Z",
+                "expiresAt": "2026-10-12T08:02:12.000Z"
+              }
+            },
+            "realized": "0.000000"
+          },
+          {
+            "at": "2026-10-12T08:00:15.000Z",
+            "decision": {
+              "reason": "SHARED_FUNDED_DECISION",
+              "newBuys": 0,
+              "reservedCash": "8.500000",
+              "actualOrders": 0
+            },
+            "positions": {
+              "1": {
+                "quantity": 60,
+                "cost": "33.280000",
+                "lots": [
+                  {
+                    "quantity": 58,
+                    "price": "0.555000"
+                  },
+                  {
+                    "quantity": 2,
+                    "price": "0.545000"
+                  }
+                ],
+                "enteredAt": "2026-10-12T08:00:08.000Z",
+                "lastBoughtAt": "2026-10-12T08:00:12.000Z"
+              }
+            },
+            "pending": {
+              "696a7198cb75adfb2885562613301ddaa21ca39199f9b70e00d17afb50f481e4": {
+                "action": "buy",
+                "marketId": "1",
+                "quantity": 17,
+                "limit": "0.500000",
+                "at": "2026-10-12T08:00:12.000Z",
+                "expiresAt": "2026-10-12T08:02:12.000Z"
+              }
+            },
+            "realized": "0.000000"
+          },
+          {
+            "at": "2026-10-12T08:00:18.000Z",
+            "decision": {
+              "reason": "SHARED_FUNDED_DECISION",
+              "newBuys": 0,
+              "reservedCash": "8.500000",
+              "actualOrders": 0
+            },
+            "positions": {
+              "1": {
+                "quantity": 60,
+                "cost": "33.280000",
+                "lots": [
+                  {
+                    "quantity": 58,
+                    "price": "0.555000"
+                  },
+                  {
+                    "quantity": 2,
+                    "price": "0.545000"
+                  }
+                ],
+                "enteredAt": "2026-10-12T08:00:08.000Z",
+                "lastBoughtAt": "2026-10-12T08:00:12.000Z"
+              }
+            },
+            "pending": {
+              "696a7198cb75adfb2885562613301ddaa21ca39199f9b70e00d17afb50f481e4": {
+                "action": "buy",
+                "marketId": "1",
+                "quantity": 17,
+                "limit": "0.500000",
+                "at": "2026-10-12T08:00:12.000Z",
+                "expiresAt": "2026-10-12T08:02:12.000Z"
+              }
+            },
+            "realized": "0.000000"
+          },
+          {
+            "at": "2026-10-12T08:02:09.000Z",
+            "decision": {
+              "reason": "SHARED_FUNDED_DECISION",
+              "newBuys": 0,
+              "reservedCash": "8.500000",
+              "actualOrders": 0
+            },
+            "positions": {
+              "1": {
+                "quantity": 60,
+                "cost": "33.280000",
+                "lots": [
+                  {
+                    "quantity": 58,
+                    "price": "0.555000"
+                  },
+                  {
+                    "quantity": 2,
+                    "price": "0.545000"
+                  }
+                ],
+                "enteredAt": "2026-10-12T08:00:08.000Z",
+                "lastBoughtAt": "2026-10-12T08:00:12.000Z"
+              }
+            },
+            "pending": {
+              "696a7198cb75adfb2885562613301ddaa21ca39199f9b70e00d17afb50f481e4": {
+                "action": "buy",
+                "marketId": "1",
+                "quantity": 17,
+                "limit": "0.500000",
+                "at": "2026-10-12T08:00:12.000Z",
+                "expiresAt": "2026-10-12T08:02:12.000Z"
+              }
+            },
+            "realized": "0.000000"
+          },
+          {
+            "at": "2026-10-12T08:02:12.000Z",
+            "decision": {
+              "reason": "SHARED_FUNDED_DECISION",
+              "newBuys": 0,
+              "reservedCash": "0.000000",
+              "actualOrders": 0
+            },
+            "positions": {
+              "1": {
+                "quantity": 60,
+                "cost": "33.280000",
+                "lots": [
+                  {
+                    "quantity": 58,
+                    "price": "0.555000"
+                  },
+                  {
+                    "quantity": 2,
+                    "price": "0.545000"
+                  }
+                ],
+                "enteredAt": "2026-10-12T08:00:08.000Z",
+                "lastBoughtAt": "2026-10-12T08:00:12.000Z"
+              }
+            },
+            "pending": {
+              "b62b2256c00ba64ea1cc4e52573028c4d3e31c4803a32cbf6cf817bdd95c544f": {
+                "action": "sell",
+                "marketId": "1",
+                "quantity": 60,
+                "limit": "0.595000",
+                "at": "2026-10-12T08:02:12.000Z",
+                "expiresAt": "2026-10-12T08:04:12.000Z"
+              }
+            },
+            "realized": "0.000000"
+          }
+        ]
+      },
+      "inventoryRisk": {
+        "bankHash": "dd95cecd329499eaadf7c9269ddd92bb3d6f0c7700f19c9b32288f30799648b6",
+        "economics": {
+          "at": "2026-10-12T08:02:13.000Z",
+          "bankHash": "dd95cecd329499eaadf7c9269ddd92bb3d6f0c7700f19c9b32288f30799648b6",
+          "cash": "996.520000",
+          "reservedBuyCash": "0.000000",
+          "availableCash": "996.520000",
+          "ownedPrincipal": "0.000000",
+          "realized": "-3.480000",
+          "rows": [],
+          "allPositionsMarked": true,
+          "allMarksFresh": true,
+          "datedNetPnl": "-3.480000",
+          "freshNetPnl": "-3.480000",
+          "datedEquity": "996.520000",
+          "marksAreCounterfactualLiquidation": true,
+          "actualOrders": 0,
+          "profitabilityEstablished": false
+        },
+        "riskStops": {
+          "1": {
+            "at": "2026-10-12T08:00:12.000Z",
+            "reason": "ADVERSE_PRICE_MOVE"
+          }
+        },
+        "fills": [
+          {
+            "action": "buy",
+            "marketId": "1",
+            "exchangeId": "1",
+            "side": "YES",
+            "quantity": 58,
+            "price": "0.555000",
+            "value": "32.190000",
+            "at": "2026-10-12T08:00:08.000Z",
+            "sourceHash": "d073393d1ed52e54767b67c2d00bc7dd1c7823d93168b127d669bc17f0498883",
+            "intentId": "4f16468cc2ed1f7f272aa1d0ace3858532e683e4a1b2b8780cee4d1d1fdb27f9",
+            "depthAllocations": [
+              {
+                "key": "1:YES:buy:v8:0.550000",
+                "quantity": 58,
+                "observedRawPrice": "0.550000"
+              }
+            ],
+            "actualFill": false
+          },
+          {
+            "action": "sell",
+            "marketId": "1",
+            "exchangeId": "1",
+            "side": "YES",
+            "quantity": 58,
+            "price": "0.495000",
+            "value": "28.710000",
+            "at": "2026-10-12T08:00:15.000Z",
+            "sourceHash": "ea651629c384dcd462b3be9692976f2ba4ec670698a3fbfc490b9095b6a8e08e",
+            "intentId": "28a722b299f8ff9d00060476cb63d688d5f32565703ef457e7d1eca1b8f39054",
+            "depthAllocations": [
+              {
+                "key": "1:YES:sell:v15:0.500000",
+                "quantity": 58,
+                "observedRawPrice": "0.500000"
+              }
+            ],
+            "actualFill": false,
+            "removedCost": "32.190000"
+          }
+        ],
+        "trace": [
+          {
+            "at": "2026-10-12T08:00:01.000Z",
+            "decision": {
+              "reason": "SHARED_FUNDED_DECISION",
+              "newBuys": 1,
+              "reservedCash": "32.190000",
+              "actualOrders": 0
+            },
+            "positions": {},
+            "pending": {
+              "4f16468cc2ed1f7f272aa1d0ace3858532e683e4a1b2b8780cee4d1d1fdb27f9": {
+                "action": "buy",
+                "marketId": "1",
+                "quantity": 58,
+                "limit": "0.555000",
+                "at": "2026-10-12T08:00:01.000Z",
+                "expiresAt": "2026-10-12T08:02:01.000Z"
+              }
+            },
+            "realized": "0.000000"
+          },
+          {
+            "at": "2026-10-12T08:00:08.000Z",
+            "decision": {
+              "reason": "COUNTERFACTUAL_LATER_FILL",
+              "newBuys": 0,
+              "reservedCash": "0.000000",
+              "actualOrders": 0
+            },
+            "positions": {
+              "1": {
+                "quantity": 58,
+                "cost": "32.190000",
+                "lots": [
+                  {
+                    "quantity": 58,
+                    "price": "0.555000"
+                  }
+                ],
+                "enteredAt": "2026-10-12T08:00:08.000Z",
+                "lastBoughtAt": "2026-10-12T08:00:08.000Z"
+              }
+            },
+            "pending": {},
+            "realized": "0.000000"
+          },
+          {
+            "at": "2026-10-12T08:00:12.000Z",
+            "decision": {
+              "reason": "SHARED_FUNDED_DECISION",
+              "newBuys": 0,
+              "reservedCash": "0.000000",
+              "actualOrders": 0
+            },
+            "positions": {
+              "1": {
+                "quantity": 58,
+                "cost": "32.190000",
+                "lots": [
+                  {
+                    "quantity": 58,
+                    "price": "0.555000"
+                  }
+                ],
+                "enteredAt": "2026-10-12T08:00:08.000Z",
+                "lastBoughtAt": "2026-10-12T08:00:08.000Z"
+              }
+            },
+            "pending": {
+              "28a722b299f8ff9d00060476cb63d688d5f32565703ef457e7d1eca1b8f39054": {
+                "action": "sell",
+                "marketId": "1",
+                "quantity": 58,
+                "limit": "0.495000",
+                "at": "2026-10-12T08:00:12.000Z",
+                "expiresAt": "2026-10-12T08:02:12.000Z"
+              }
+            },
+            "realized": "0.000000"
+          },
+          {
+            "at": "2026-10-12T08:00:15.000Z",
+            "decision": {
+              "reason": "COUNTERFACTUAL_LATER_FILL",
+              "newBuys": 0,
+              "reservedCash": "0.000000",
+              "actualOrders": 0
+            },
+            "positions": {},
+            "pending": {},
+            "realized": "-3.480000"
+          },
+          {
+            "at": "2026-10-12T08:00:18.000Z",
+            "decision": {
+              "reason": "SHARED_FUNDED_DECISION",
+              "newBuys": 0,
+              "reservedCash": "0.000000",
+              "actualOrders": 0
+            },
+            "positions": {},
+            "pending": {},
+            "realized": "-3.480000"
+          },
+          {
+            "at": "2026-10-12T08:02:09.000Z",
+            "decision": {
+              "reason": "SHARED_FUNDED_DECISION",
+              "newBuys": 0,
+              "reservedCash": "0.000000",
+              "actualOrders": 0
+            },
+            "positions": {},
+            "pending": {},
+            "realized": "-3.480000"
+          },
+          {
+            "at": "2026-10-12T08:02:12.000Z",
+            "decision": {
+              "reason": "SHARED_FUNDED_DECISION",
+              "newBuys": 0,
+              "reservedCash": "0.000000",
+              "actualOrders": 0
+            },
+            "positions": {},
+            "pending": {},
+            "realized": "-3.480000"
+          }
+        ]
+      }
+    },
+    {
+      "name": "unchangedLosingLiquidation",
+      "path": [
+        [
+          1,
+          "0.555000",
+          "0.560000"
+        ],
+        [
+          8,
+          "0.545000",
+          "0.550000"
+        ],
+        [
+          39,
+          "0.545000",
+          "0.550000"
+        ],
+        [
+          42,
+          "0.545000",
+          "0.550000"
+        ],
+        [
+          45,
+          "0.545000",
+          "0.550000"
+        ]
+      ],
+      "original": {
+        "bankHash": "5d7c3b0e02172567ad71281560a23edf36f82dc7306e33d95c7741c3ee50ec52",
+        "economics": {
+          "at": "2026-10-12T08:00:46.000Z",
+          "bankHash": "5d7c3b0e02172567ad71281560a23edf36f82dc7306e33d95c7741c3ee50ec52",
+          "cash": "967.810000",
+          "reservedBuyCash": "1.090000",
+          "availableCash": "966.720000",
+          "ownedPrincipal": "32.190000",
+          "realized": "0.000000",
+          "rows": [
+            {
+              "marketId": "1",
+              "quantity": 58,
+              "principal": "32.190000",
+              "bookAt": "2026-10-12T08:00:45.000Z",
+              "complete": true,
+              "fresh": true,
+              "reason": "INDEPENDENT_DEPTH_MARK",
+              "liquidationValue": "31.320000",
+              "unrealizedPnl": "-0.870000"
+            }
+          ],
+          "allPositionsMarked": true,
+          "allMarksFresh": true,
+          "datedNetPnl": "-0.870000",
+          "freshNetPnl": "-0.870000",
+          "datedEquity": "999.130000",
+          "marksAreCounterfactualLiquidation": true,
+          "actualOrders": 0,
+          "profitabilityEstablished": false
+        },
+        "riskStops": {},
+        "fills": [
+          {
+            "action": "buy",
+            "marketId": "1",
+            "exchangeId": "1",
+            "side": "YES",
+            "quantity": 58,
+            "price": "0.555000",
+            "value": "32.190000",
+            "at": "2026-10-12T08:00:08.000Z",
+            "sourceHash": "d073393d1ed52e54767b67c2d00bc7dd1c7823d93168b127d669bc17f0498883",
+            "intentId": "4cc2513ab2a72ea13217545eb6c843c986033a7221b3a0d3457037e572c3d23c",
+            "depthAllocations": [
+              {
+                "key": "1:YES:buy:v8:0.550000",
+                "quantity": 58,
+                "observedRawPrice": "0.550000"
+              }
+            ],
+            "actualFill": false
+          }
+        ],
+        "trace": [
+          {
+            "at": "2026-10-12T08:00:01.000Z",
+            "decision": {
+              "reason": "SHARED_FUNDED_DECISION",
+              "newBuys": 1,
+              "reservedCash": "32.190000",
+              "actualOrders": 0
+            },
+            "positions": {},
+            "pending": {
+              "4cc2513ab2a72ea13217545eb6c843c986033a7221b3a0d3457037e572c3d23c": {
+                "action": "buy",
+                "marketId": "1",
+                "quantity": 58,
+                "limit": "0.555000",
+                "at": "2026-10-12T08:00:01.000Z",
+                "expiresAt": "2026-10-12T08:02:01.000Z"
+              }
+            },
+            "realized": "0.000000"
+          },
+          {
+            "at": "2026-10-12T08:00:08.000Z",
+            "decision": {
+              "reason": "COUNTERFACTUAL_LATER_FILL",
+              "newBuys": 1,
+              "reservedCash": "1.090000",
+              "actualOrders": 0
+            },
+            "positions": {
+              "1": {
+                "quantity": 58,
+                "cost": "32.190000",
+                "lots": [
+                  {
+                    "quantity": 58,
+                    "price": "0.555000"
+                  }
+                ],
+                "enteredAt": "2026-10-12T08:00:08.000Z",
+                "lastBoughtAt": "2026-10-12T08:00:08.000Z"
+              }
+            },
+            "pending": {
+              "ee00135a6070487207bc1fe7259e133e1476201bbf61c9abf1ece39e50a21c03": {
+                "action": "buy",
+                "marketId": "1",
+                "quantity": 2,
+                "limit": "0.545000",
+                "at": "2026-10-12T08:00:08.000Z",
+                "expiresAt": "2026-10-12T08:02:08.000Z"
+              }
+            },
+            "realized": "0.000000"
+          },
+          {
+            "at": "2026-10-12T08:00:39.000Z",
+            "decision": {
+              "reason": "SHARED_FUNDED_DECISION",
+              "newBuys": 0,
+              "reservedCash": "1.090000",
+              "actualOrders": 0
+            },
+            "positions": {
+              "1": {
+                "quantity": 58,
+                "cost": "32.190000",
+                "lots": [
+                  {
+                    "quantity": 58,
+                    "price": "0.555000"
+                  }
+                ],
+                "enteredAt": "2026-10-12T08:00:08.000Z",
+                "lastBoughtAt": "2026-10-12T08:00:08.000Z"
+              }
+            },
+            "pending": {
+              "ee00135a6070487207bc1fe7259e133e1476201bbf61c9abf1ece39e50a21c03": {
+                "action": "buy",
+                "marketId": "1",
+                "quantity": 2,
+                "limit": "0.545000",
+                "at": "2026-10-12T08:00:08.000Z",
+                "expiresAt": "2026-10-12T08:02:08.000Z"
+              }
+            },
+            "realized": "0.000000"
+          },
+          {
+            "at": "2026-10-12T08:00:42.000Z",
+            "decision": {
+              "reason": "SHARED_FUNDED_DECISION",
+              "newBuys": 0,
+              "reservedCash": "1.090000",
+              "actualOrders": 0
+            },
+            "positions": {
+              "1": {
+                "quantity": 58,
+                "cost": "32.190000",
+                "lots": [
+                  {
+                    "quantity": 58,
+                    "price": "0.555000"
+                  }
+                ],
+                "enteredAt": "2026-10-12T08:00:08.000Z",
+                "lastBoughtAt": "2026-10-12T08:00:08.000Z"
+              }
+            },
+            "pending": {
+              "ee00135a6070487207bc1fe7259e133e1476201bbf61c9abf1ece39e50a21c03": {
+                "action": "buy",
+                "marketId": "1",
+                "quantity": 2,
+                "limit": "0.545000",
+                "at": "2026-10-12T08:00:08.000Z",
+                "expiresAt": "2026-10-12T08:02:08.000Z"
+              }
+            },
+            "realized": "0.000000"
+          },
+          {
+            "at": "2026-10-12T08:00:45.000Z",
+            "decision": {
+              "reason": "SHARED_FUNDED_DECISION",
+              "newBuys": 0,
+              "reservedCash": "1.090000",
+              "actualOrders": 0
+            },
+            "positions": {
+              "1": {
+                "quantity": 58,
+                "cost": "32.190000",
+                "lots": [
+                  {
+                    "quantity": 58,
+                    "price": "0.555000"
+                  }
+                ],
+                "enteredAt": "2026-10-12T08:00:08.000Z",
+                "lastBoughtAt": "2026-10-12T08:00:08.000Z"
+              }
+            },
+            "pending": {
+              "ee00135a6070487207bc1fe7259e133e1476201bbf61c9abf1ece39e50a21c03": {
+                "action": "buy",
+                "marketId": "1",
+                "quantity": 2,
+                "limit": "0.545000",
+                "at": "2026-10-12T08:00:08.000Z",
+                "expiresAt": "2026-10-12T08:02:08.000Z"
+              }
+            },
+            "realized": "0.000000"
+          }
+        ]
+      },
+      "inventoryRisk": {
+        "bankHash": "dd95cecd329499eaadf7c9269ddd92bb3d6f0c7700f19c9b32288f30799648b6",
+        "economics": {
+          "at": "2026-10-12T08:00:46.000Z",
+          "bankHash": "dd95cecd329499eaadf7c9269ddd92bb3d6f0c7700f19c9b32288f30799648b6",
+          "cash": "999.130000",
+          "reservedBuyCash": "0.000000",
+          "availableCash": "999.130000",
+          "ownedPrincipal": "0.000000",
+          "realized": "-0.870000",
+          "rows": [],
+          "allPositionsMarked": true,
+          "allMarksFresh": true,
+          "datedNetPnl": "-0.870000",
+          "freshNetPnl": "-0.870000",
+          "datedEquity": "999.130000",
+          "marksAreCounterfactualLiquidation": true,
+          "actualOrders": 0,
+          "profitabilityEstablished": false
+        },
+        "riskStops": {
+          "1": {
+            "at": "2026-10-12T08:00:39.000Z",
+            "reason": "HOLDING_DEADLINE"
+          }
+        },
+        "fills": [
+          {
+            "action": "buy",
+            "marketId": "1",
+            "exchangeId": "1",
+            "side": "YES",
+            "quantity": 58,
+            "price": "0.555000",
+            "value": "32.190000",
+            "at": "2026-10-12T08:00:08.000Z",
+            "sourceHash": "d073393d1ed52e54767b67c2d00bc7dd1c7823d93168b127d669bc17f0498883",
+            "intentId": "4f16468cc2ed1f7f272aa1d0ace3858532e683e4a1b2b8780cee4d1d1fdb27f9",
+            "depthAllocations": [
+              {
+                "key": "1:YES:buy:v8:0.550000",
+                "quantity": 58,
+                "observedRawPrice": "0.550000"
+              }
+            ],
+            "actualFill": false
+          },
+          {
+            "action": "sell",
+            "marketId": "1",
+            "exchangeId": "1",
+            "side": "YES",
+            "quantity": 58,
+            "price": "0.540000",
+            "value": "31.320000",
+            "at": "2026-10-12T08:00:42.000Z",
+            "sourceHash": "cd302cc9de9cda2a0a9a29fe8e568b1c09d41bd1592f34d78c13b6b5aac60043",
+            "intentId": "f8d461aca6b2c7f3c0d46c7d1901d2cf24cd48aaa0c1229958dc8b198c72a691",
+            "depthAllocations": [
+              {
+                "key": "1:YES:sell:v42:0.545000",
+                "quantity": 58,
+                "observedRawPrice": "0.545000"
+              }
+            ],
+            "actualFill": false,
+            "removedCost": "32.190000"
+          }
+        ],
+        "trace": [
+          {
+            "at": "2026-10-12T08:00:01.000Z",
+            "decision": {
+              "reason": "SHARED_FUNDED_DECISION",
+              "newBuys": 1,
+              "reservedCash": "32.190000",
+              "actualOrders": 0
+            },
+            "positions": {},
+            "pending": {
+              "4f16468cc2ed1f7f272aa1d0ace3858532e683e4a1b2b8780cee4d1d1fdb27f9": {
+                "action": "buy",
+                "marketId": "1",
+                "quantity": 58,
+                "limit": "0.555000",
+                "at": "2026-10-12T08:00:01.000Z",
+                "expiresAt": "2026-10-12T08:02:01.000Z"
+              }
+            },
+            "realized": "0.000000"
+          },
+          {
+            "at": "2026-10-12T08:00:08.000Z",
+            "decision": {
+              "reason": "COUNTERFACTUAL_LATER_FILL",
+              "newBuys": 0,
+              "reservedCash": "0.000000",
+              "actualOrders": 0
+            },
+            "positions": {
+              "1": {
+                "quantity": 58,
+                "cost": "32.190000",
+                "lots": [
+                  {
+                    "quantity": 58,
+                    "price": "0.555000"
+                  }
+                ],
+                "enteredAt": "2026-10-12T08:00:08.000Z",
+                "lastBoughtAt": "2026-10-12T08:00:08.000Z"
+              }
+            },
+            "pending": {},
+            "realized": "0.000000"
+          },
+          {
+            "at": "2026-10-12T08:00:39.000Z",
+            "decision": {
+              "reason": "SHARED_FUNDED_DECISION",
+              "newBuys": 0,
+              "reservedCash": "0.000000",
+              "actualOrders": 0
+            },
+            "positions": {
+              "1": {
+                "quantity": 58,
+                "cost": "32.190000",
+                "lots": [
+                  {
+                    "quantity": 58,
+                    "price": "0.555000"
+                  }
+                ],
+                "enteredAt": "2026-10-12T08:00:08.000Z",
+                "lastBoughtAt": "2026-10-12T08:00:08.000Z"
+              }
+            },
+            "pending": {
+              "f8d461aca6b2c7f3c0d46c7d1901d2cf24cd48aaa0c1229958dc8b198c72a691": {
+                "action": "sell",
+                "marketId": "1",
+                "quantity": 58,
+                "limit": "0.540000",
+                "at": "2026-10-12T08:00:39.000Z",
+                "expiresAt": "2026-10-12T08:02:39.000Z"
+              }
+            },
+            "realized": "0.000000"
+          },
+          {
+            "at": "2026-10-12T08:00:42.000Z",
+            "decision": {
+              "reason": "COUNTERFACTUAL_LATER_FILL",
+              "newBuys": 0,
+              "reservedCash": "0.000000",
+              "actualOrders": 0
+            },
+            "positions": {},
+            "pending": {},
+            "realized": "-0.870000"
+          },
+          {
+            "at": "2026-10-12T08:00:45.000Z",
+            "decision": {
+              "reason": "SHARED_FUNDED_DECISION",
+              "newBuys": 0,
+              "reservedCash": "0.000000",
+              "actualOrders": 0
+            },
+            "positions": {},
+            "pending": {},
+            "realized": "-0.870000"
+          }
+        ]
+      }
+    },
+    {
+      "name": "liquidityDisappears",
+      "path": [
+        [
+          1,
+          "0.555000",
+          "0.560000"
+        ],
+        [
+          8,
+          "0.545000",
+          "0.550000"
+        ],
+        [
+          39,
+          "0.545000",
+          "0.550000"
+        ],
+        [
+          42,
+          "0.400000",
+          "0.405000",
+          100
+        ],
+        [
+          45,
+          "0.400000",
+          "0.405000",
+          100
+        ]
+      ],
+      "original": {
+        "bankHash": "5d7c3b0e02172567ad71281560a23edf36f82dc7306e33d95c7741c3ee50ec52",
+        "economics": {
+          "at": "2026-10-12T08:00:46.000Z",
+          "bankHash": "5d7c3b0e02172567ad71281560a23edf36f82dc7306e33d95c7741c3ee50ec52",
+          "cash": "966.720000",
+          "reservedBuyCash": "0.400000",
+          "availableCash": "966.320000",
+          "ownedPrincipal": "33.280000",
+          "realized": "0.000000",
+          "rows": [
+            {
+              "marketId": "1",
+              "quantity": 60,
+              "principal": "33.280000",
+              "bookAt": "2026-10-12T08:00:45.000Z",
+              "complete": false,
+              "fresh": false,
+              "reason": "NO_INDEPENDENT_POST_ENTRY_MARK",
+              "liquidationValue": null,
+              "unrealizedPnl": null
+            }
+          ],
+          "allPositionsMarked": false,
+          "allMarksFresh": false,
+          "datedNetPnl": null,
+          "freshNetPnl": null,
+          "datedEquity": null,
+          "marksAreCounterfactualLiquidation": true,
+          "actualOrders": 0,
+          "profitabilityEstablished": false
+        },
+        "riskStops": {},
+        "fills": [
+          {
+            "action": "buy",
+            "marketId": "1",
+            "exchangeId": "1",
+            "side": "YES",
+            "quantity": 58,
+            "price": "0.555000",
+            "value": "32.190000",
+            "at": "2026-10-12T08:00:08.000Z",
+            "sourceHash": "d073393d1ed52e54767b67c2d00bc7dd1c7823d93168b127d669bc17f0498883",
+            "intentId": "4cc2513ab2a72ea13217545eb6c843c986033a7221b3a0d3457037e572c3d23c",
+            "depthAllocations": [
+              {
+                "key": "1:YES:buy:v8:0.550000",
+                "quantity": 58,
+                "observedRawPrice": "0.550000"
+              }
+            ],
+            "actualFill": false
+          },
+          {
+            "action": "buy",
+            "marketId": "1",
+            "exchangeId": "1",
+            "side": "YES",
+            "quantity": 1,
+            "price": "0.545000",
+            "value": "0.545000",
+            "at": "2026-10-12T08:00:42.000Z",
+            "sourceHash": "f686f93d92736f84e3794877fa2112d0b6f430ddcb393a3fe529d315497868a5",
+            "intentId": "ee00135a6070487207bc1fe7259e133e1476201bbf61c9abf1ece39e50a21c03",
+            "depthAllocations": [
+              {
+                "key": "1:YES:buy:v42:0.405000",
+                "quantity": 1,
+                "observedRawPrice": "0.405000"
+              }
+            ],
+            "actualFill": false
+          },
+          {
+            "action": "buy",
+            "marketId": "1",
+            "exchangeId": "1",
+            "side": "YES",
+            "quantity": 1,
+            "price": "0.545000",
+            "value": "0.545000",
+            "at": "2026-10-12T08:00:45.000Z",
+            "sourceHash": "fab31efb6e306f881c77faaa5f8b8796abe519b15af811a15e97760bfbd2dc22",
+            "intentId": "ee00135a6070487207bc1fe7259e133e1476201bbf61c9abf1ece39e50a21c03",
+            "depthAllocations": [
+              {
+                "key": "1:YES:buy:v45:0.405000",
+                "quantity": 1,
+                "observedRawPrice": "0.405000"
+              }
+            ],
+            "actualFill": false
+          }
+        ],
+        "trace": [
+          {
+            "at": "2026-10-12T08:00:01.000Z",
+            "decision": {
+              "reason": "SHARED_FUNDED_DECISION",
+              "newBuys": 1,
+              "reservedCash": "32.190000",
+              "actualOrders": 0
+            },
+            "positions": {},
+            "pending": {
+              "4cc2513ab2a72ea13217545eb6c843c986033a7221b3a0d3457037e572c3d23c": {
+                "action": "buy",
+                "marketId": "1",
+                "quantity": 58,
+                "limit": "0.555000",
+                "at": "2026-10-12T08:00:01.000Z",
+                "expiresAt": "2026-10-12T08:02:01.000Z"
+              }
+            },
+            "realized": "0.000000"
+          },
+          {
+            "at": "2026-10-12T08:00:08.000Z",
+            "decision": {
+              "reason": "COUNTERFACTUAL_LATER_FILL",
+              "newBuys": 1,
+              "reservedCash": "1.090000",
+              "actualOrders": 0
+            },
+            "positions": {
+              "1": {
+                "quantity": 58,
+                "cost": "32.190000",
+                "lots": [
+                  {
+                    "quantity": 58,
+                    "price": "0.555000"
+                  }
+                ],
+                "enteredAt": "2026-10-12T08:00:08.000Z",
+                "lastBoughtAt": "2026-10-12T08:00:08.000Z"
+              }
+            },
+            "pending": {
+              "ee00135a6070487207bc1fe7259e133e1476201bbf61c9abf1ece39e50a21c03": {
+                "action": "buy",
+                "marketId": "1",
+                "quantity": 2,
+                "limit": "0.545000",
+                "at": "2026-10-12T08:00:08.000Z",
+                "expiresAt": "2026-10-12T08:02:08.000Z"
+              }
+            },
+            "realized": "0.000000"
+          },
+          {
+            "at": "2026-10-12T08:00:39.000Z",
+            "decision": {
+              "reason": "SHARED_FUNDED_DECISION",
+              "newBuys": 0,
+              "reservedCash": "1.090000",
+              "actualOrders": 0
+            },
+            "positions": {
+              "1": {
+                "quantity": 58,
+                "cost": "32.190000",
+                "lots": [
+                  {
+                    "quantity": 58,
+                    "price": "0.555000"
+                  }
+                ],
+                "enteredAt": "2026-10-12T08:00:08.000Z",
+                "lastBoughtAt": "2026-10-12T08:00:08.000Z"
+              }
+            },
+            "pending": {
+              "ee00135a6070487207bc1fe7259e133e1476201bbf61c9abf1ece39e50a21c03": {
+                "action": "buy",
+                "marketId": "1",
+                "quantity": 2,
+                "limit": "0.545000",
+                "at": "2026-10-12T08:00:08.000Z",
+                "expiresAt": "2026-10-12T08:02:08.000Z"
+              }
+            },
+            "realized": "0.000000"
+          },
+          {
+            "at": "2026-10-12T08:00:42.000Z",
+            "decision": {
+              "reason": "COUNTERFACTUAL_LATER_FILL",
+              "newBuys": 0,
+              "reservedCash": "0.545000",
+              "actualOrders": 0
+            },
+            "positions": {
+              "1": {
+                "quantity": 59,
+                "cost": "32.735000",
+                "lots": [
+                  {
+                    "quantity": 58,
+                    "price": "0.555000"
+                  },
+                  {
+                    "quantity": 1,
+                    "price": "0.545000"
+                  }
+                ],
+                "enteredAt": "2026-10-12T08:00:08.000Z",
+                "lastBoughtAt": "2026-10-12T08:00:42.000Z"
+              }
+            },
+            "pending": {
+              "ee00135a6070487207bc1fe7259e133e1476201bbf61c9abf1ece39e50a21c03": {
+                "action": "buy",
+                "marketId": "1",
+                "quantity": 1,
+                "limit": "0.545000",
+                "at": "2026-10-12T08:00:08.000Z",
+                "expiresAt": "2026-10-12T08:02:08.000Z"
+              }
+            },
+            "realized": "0.000000"
+          },
+          {
+            "at": "2026-10-12T08:00:45.000Z",
+            "decision": {
+              "reason": "COUNTERFACTUAL_LATER_FILL",
+              "newBuys": 1,
+              "reservedCash": "0.400000",
+              "actualOrders": 0
+            },
+            "positions": {
+              "1": {
+                "quantity": 60,
+                "cost": "33.280000",
+                "lots": [
+                  {
+                    "quantity": 58,
+                    "price": "0.555000"
+                  },
+                  {
+                    "quantity": 1,
+                    "price": "0.545000"
+                  },
+                  {
+                    "quantity": 1,
+                    "price": "0.545000"
+                  }
+                ],
+                "enteredAt": "2026-10-12T08:00:08.000Z",
+                "lastBoughtAt": "2026-10-12T08:00:45.000Z"
+              }
+            },
+            "pending": {
+              "a4a296763e1b22693cc77278a2cf450f2b81bb272c5e4a54dd1b42bb973704cc": {
+                "action": "buy",
+                "marketId": "1",
+                "quantity": 1,
+                "limit": "0.400000",
+                "at": "2026-10-12T08:00:45.000Z",
+                "expiresAt": "2026-10-12T08:02:45.000Z"
+              }
+            },
+            "realized": "0.000000"
+          }
+        ]
+      },
+      "inventoryRisk": {
+        "bankHash": "dd95cecd329499eaadf7c9269ddd92bb3d6f0c7700f19c9b32288f30799648b6",
+        "economics": {
+          "at": "2026-10-12T08:00:46.000Z",
+          "bankHash": "dd95cecd329499eaadf7c9269ddd92bb3d6f0c7700f19c9b32288f30799648b6",
+          "cash": "967.810000",
+          "reservedBuyCash": "0.000000",
+          "availableCash": "967.810000",
+          "ownedPrincipal": "32.190000",
+          "realized": "0.000000",
+          "rows": [
+            {
+              "marketId": "1",
+              "quantity": 58,
+              "principal": "32.190000",
+              "bookAt": "2026-10-12T08:00:45.000Z",
+              "complete": false,
+              "fresh": true,
+              "reason": "INSUFFICIENT_LIQUIDATION_DEPTH",
+              "liquidationValue": null,
+              "unrealizedPnl": null
+            }
+          ],
+          "allPositionsMarked": false,
+          "allMarksFresh": true,
+          "datedNetPnl": null,
+          "freshNetPnl": null,
+          "datedEquity": null,
+          "marksAreCounterfactualLiquidation": true,
+          "actualOrders": 0,
+          "profitabilityEstablished": false
+        },
+        "riskStops": {
+          "1": {
+            "at": "2026-10-12T08:00:39.000Z",
+            "reason": "HOLDING_DEADLINE"
+          }
+        },
+        "fills": [
+          {
+            "action": "buy",
+            "marketId": "1",
+            "exchangeId": "1",
+            "side": "YES",
+            "quantity": 58,
+            "price": "0.555000",
+            "value": "32.190000",
+            "at": "2026-10-12T08:00:08.000Z",
+            "sourceHash": "d073393d1ed52e54767b67c2d00bc7dd1c7823d93168b127d669bc17f0498883",
+            "intentId": "4f16468cc2ed1f7f272aa1d0ace3858532e683e4a1b2b8780cee4d1d1fdb27f9",
+            "depthAllocations": [
+              {
+                "key": "1:YES:buy:v8:0.550000",
+                "quantity": 58,
+                "observedRawPrice": "0.550000"
+              }
+            ],
+            "actualFill": false
+          }
+        ],
+        "trace": [
+          {
+            "at": "2026-10-12T08:00:01.000Z",
+            "decision": {
+              "reason": "SHARED_FUNDED_DECISION",
+              "newBuys": 1,
+              "reservedCash": "32.190000",
+              "actualOrders": 0
+            },
+            "positions": {},
+            "pending": {
+              "4f16468cc2ed1f7f272aa1d0ace3858532e683e4a1b2b8780cee4d1d1fdb27f9": {
+                "action": "buy",
+                "marketId": "1",
+                "quantity": 58,
+                "limit": "0.555000",
+                "at": "2026-10-12T08:00:01.000Z",
+                "expiresAt": "2026-10-12T08:02:01.000Z"
+              }
+            },
+            "realized": "0.000000"
+          },
+          {
+            "at": "2026-10-12T08:00:08.000Z",
+            "decision": {
+              "reason": "COUNTERFACTUAL_LATER_FILL",
+              "newBuys": 0,
+              "reservedCash": "0.000000",
+              "actualOrders": 0
+            },
+            "positions": {
+              "1": {
+                "quantity": 58,
+                "cost": "32.190000",
+                "lots": [
+                  {
+                    "quantity": 58,
+                    "price": "0.555000"
+                  }
+                ],
+                "enteredAt": "2026-10-12T08:00:08.000Z",
+                "lastBoughtAt": "2026-10-12T08:00:08.000Z"
+              }
+            },
+            "pending": {},
+            "realized": "0.000000"
+          },
+          {
+            "at": "2026-10-12T08:00:39.000Z",
+            "decision": {
+              "reason": "SHARED_FUNDED_DECISION",
+              "newBuys": 0,
+              "reservedCash": "0.000000",
+              "actualOrders": 0
+            },
+            "positions": {
+              "1": {
+                "quantity": 58,
+                "cost": "32.190000",
+                "lots": [
+                  {
+                    "quantity": 58,
+                    "price": "0.555000"
+                  }
+                ],
+                "enteredAt": "2026-10-12T08:00:08.000Z",
+                "lastBoughtAt": "2026-10-12T08:00:08.000Z"
+              }
+            },
+            "pending": {
+              "f8d461aca6b2c7f3c0d46c7d1901d2cf24cd48aaa0c1229958dc8b198c72a691": {
+                "action": "sell",
+                "marketId": "1",
+                "quantity": 58,
+                "limit": "0.540000",
+                "at": "2026-10-12T08:00:39.000Z",
+                "expiresAt": "2026-10-12T08:02:39.000Z"
+              }
+            },
+            "realized": "0.000000"
+          },
+          {
+            "at": "2026-10-12T08:00:42.000Z",
+            "decision": {
+              "reason": "SHARED_FUNDED_DECISION",
+              "newBuys": 0,
+              "reservedCash": "0.000000",
+              "actualOrders": 0
+            },
+            "positions": {
+              "1": {
+                "quantity": 58,
+                "cost": "32.190000",
+                "lots": [
+                  {
+                    "quantity": 58,
+                    "price": "0.555000"
+                  }
+                ],
+                "enteredAt": "2026-10-12T08:00:08.000Z",
+                "lastBoughtAt": "2026-10-12T08:00:08.000Z"
+              }
+            },
+            "pending": {
+              "f8d461aca6b2c7f3c0d46c7d1901d2cf24cd48aaa0c1229958dc8b198c72a691": {
+                "action": "sell",
+                "marketId": "1",
+                "quantity": 58,
+                "limit": "0.540000",
+                "at": "2026-10-12T08:00:39.000Z",
+                "expiresAt": "2026-10-12T08:02:39.000Z"
+              }
+            },
+            "realized": "0.000000"
+          },
+          {
+            "at": "2026-10-12T08:00:45.000Z",
+            "decision": {
+              "reason": "SHARED_FUNDED_DECISION",
+              "newBuys": 0,
+              "reservedCash": "0.000000",
+              "actualOrders": 0
+            },
+            "positions": {
+              "1": {
+                "quantity": 58,
+                "cost": "32.190000",
+                "lots": [
+                  {
+                    "quantity": 58,
+                    "price": "0.555000"
+                  }
+                ],
+                "enteredAt": "2026-10-12T08:00:08.000Z",
+                "lastBoughtAt": "2026-10-12T08:00:08.000Z"
+              }
+            },
+            "pending": {
+              "f8d461aca6b2c7f3c0d46c7d1901d2cf24cd48aaa0c1229958dc8b198c72a691": {
+                "action": "sell",
+                "marketId": "1",
+                "quantity": 58,
+                "limit": "0.540000",
+                "at": "2026-10-12T08:00:39.000Z",
+                "expiresAt": "2026-10-12T08:02:39.000Z"
+              }
+            },
+            "realized": "0.000000"
+          }
+        ]
+      }
+    }
+  ],
+  "networkRequests": 0,
+  "actualOrders": 0,
+  "marketProfitabilityEstablished": false,
+  "limitations": [
+    "Synthetic mechanism paths only; no strategy chosen by this score.",
+    "Risk exits may underperform recovery; losing inventory can remain if later exit depth disappears.",
+    "Declared horizon and adverse ticks are assumptions, not calibrated optimal values.",
+    "Later REST crossing supports hypothetical fills, not actual resting queue fills.",
+    "No source bank, collector, consumer or trading activation changed."
+  ]
+}
