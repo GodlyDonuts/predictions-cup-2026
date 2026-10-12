@@ -7,7 +7,7 @@ export function pairRefundScenariosV1(costs){
  const results=['YES','NO','REFUND'],rows=[];const principal=c[0]+c[1];
  for(const a of results)for(const b of results){
   const outcomes=[a,b],payout=outcomes.reduce((n,o,i)=>n+(o==='NO'?SCALE:o==='REFUND'?c[i]:0n),0n);
-  const category=outcomes.every(o=>o==='REFUND')?'both_refunded':outcomes.includes('REFUND')?'mixed_refund':a==='YES'&&b==='YES'?'inconsistent_both_parties_win':'ordinary_mutually_exclusive_party_winners';
+  const category=outcomes.every(o=>o==='REFUND')?'both_refunded':outcomes.includes('REFUND')?'mixed_refund':a==='YES'&&b==='YES'?'fusion_or_inconsistent_both_parties_win':'ordinary_mutually_exclusive_party_winners';
   rows.push({outcomes,category,payout:money(payout),net:money(payout-principal)});
  }
  const ordinary=rows.filter(r=>r.category==='ordinary_mutually_exclusive_party_winners');
