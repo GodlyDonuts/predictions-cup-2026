@@ -1,0 +1,14 @@
+import {amount,price,money,SCALE,TICK} from './fixed.mjs';import {referenceKellySizingV1} from './reference-kelly-sizing-v1.mjs';
+export function referenceDepthPlanV1({book,side,liquidityUsage,sizing,minimumGap,reentryMaximumLimit=null}){
+ if(!['YES','NO'].includes(side)||typeof book.versionKey!=='string')throw Error('REFERENCE_DEPTH_SCOPE');const levels=side==='YES'?book.asks:book.bids;let previous=0n,available=0,best=null;
+ for(const l of levels){if(!Number.isSafeInteger(l.quantity)||l.quantity<1)throw Error('REFERENCE_DEPTH_QUANTITY');const raw=side==='YES'?price(l.price):SCALE-price(l.price);if(raw<=previous)throw Error('REFERENCE_DEPTH_ORDER');previous=raw;const limit=raw+TICK;if(limit>SCALE-TICK||amount(sizing.referenceValue)-limit<amount(minimumGap))break;if(reentryMaximumLimit!==null&&limit>amount(reentryMaximumLimit))break;
+  const used=liquidityUsage[book.marketId+':'+side+':buy:'+book.versionKey+':'+money(raw)]??0;if(!Number.isSafeInteger(used)||used<0)throw Error('REFERENCE_DEPTH_USAGE');available+=Math.max(0,Math.floor(l.quantity/100)-used);if(!Number.isSafeInteger(available))throw Error('REFERENCE_DEPTH_OVERFLOW');
+  const target=referenceKellySizingV1({...sizing,protectedPrice:money(limit),depthQuantity:available});if(!target.quantity)continue;const surplus=BigInt(target.quantity)*(amount(sizing.referenceValue)-limit);if(!best||surplus>best.surplus)best={...target,limit:money(limit),availableDepth:available,surplus};
+ }
+ if(!best)return{quantity:0,reason:'NO_FUNDED_DEPTH_REFERENCE_EDGE',actualOrders:0};const {surplus,...result}=best;return{...result,judgmentExpectedSurplus:money(surplus),wholeOrderReservedAtWorstLimit:true,notHistoricalProfit:true};
+}
+export function allocateLaterDepthV1({book,side,action,limit,desiredQuantity,liquidityUsage}){
+ if(!['YES','NO'].includes(side)||!['buy','sell'].includes(action)||!Number.isSafeInteger(desiredQuantity)||desiredQuantity<0||typeof book.versionKey!=='string')throw Error('LATER_DEPTH_SCOPE');const levels=side==='YES'?(action==='buy'?book.asks:book.bids):(action==='buy'?book.bids:book.asks),protectedLimit=price(limit),allocations=[];let left=desiredQuantity,previous=action==='buy'?0n:SCALE;
+ for(const l of levels){const raw=side==='YES'?price(l.price):SCALE-price(l.price);if(!Number.isSafeInteger(l.quantity)||l.quantity<1||(action==='buy'?raw<=previous:raw>=previous))throw Error('LATER_DEPTH_ORDER');previous=raw;const stressed=raw+(action==='buy'?TICK:-TICK);if(action==='buy'?stressed>protectedLimit:stressed<protectedLimit)break;const key=book.marketId+':'+side+':'+action+':'+book.versionKey+':'+money(raw),used=liquidityUsage[key]??0;if(!Number.isSafeInteger(used)||used<0)throw Error('LATER_DEPTH_USAGE');const quantity=Math.min(left,Math.max(0,Math.floor(l.quantity/100)-used));if(quantity){allocations.push({key,quantity,observedRawPrice:money(raw)});left-=quantity;}if(!left)break;}
+ return{quantity:desiredQuantity-left,allocations,actualOrders:0};
+}
