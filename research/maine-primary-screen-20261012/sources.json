@@ -1,0 +1,60 @@
+{
+  "at": "2026-10-12T06:17:37.910Z",
+  "captures": [
+    {
+      "id": "marist",
+      "file": "marist.html",
+      "url": "https://maristpoll.marist.edu/polls/midterm-elections-in-maine-october-2026/",
+      "fieldEnd": "2026-10-04",
+      "population": "registered voters",
+      "democraticMargin": 4,
+      "sample": 1505,
+      "sourceBodyHash": "e47656a2bd64ad38e809bef4b02d40f0b52f5c8c13e06bbd65bd884293d0f88d",
+      "at": "2026-10-12T06:17:37.367Z",
+      "pdfToplinesStillRequireVerification": false
+    },
+    {
+      "id": "rasmussen",
+      "file": "rasmussen.html",
+      "url": "https://www.rasmussenreports.com/public_content/politics/elections/election_2026/election_2026_maine_senate",
+      "fieldEnd": "2026-10-08",
+      "population": "likely voters",
+      "democraticMargin": 2,
+      "sample": 804,
+      "sourceBodyHash": "2dc07bc4677e4b4055f87e5dae1fcfaaf221005f0e74c73278386825af9f4ee9",
+      "at": "2026-10-12T06:17:37.672Z",
+      "pdfToplinesStillRequireVerification": false
+    },
+    {
+      "id": "cbs",
+      "file": "cbs.pdf",
+      "url": "https://assets1.cbsnewsstatic.com/hub/cms/prod_cms_alt/file/2026/10/02/3eea12d2-f488-4cf2-bc3b-ac5adff5db7e/cbsnews_20261002_maine.pdf",
+      "fieldEnd": "2026-10-01",
+      "population": "likely voters",
+      "democraticMargin": 0,
+      "sample": 1144,
+      "pdf": true,
+      "sourceBodyHash": "816689e9d262124a5d02a6412abc020c101209067529728205c7e2159f5eb425",
+      "at": "2026-10-12T06:17:37.910Z",
+      "pdfToplinesStillRequireVerification": false,
+      "sampleIsTotalRegisteredNotQuestionSpecificLikely": true
+    },
+    {
+      "id": "wapo-schar",
+      "file": "wapo.pdf",
+      "url": "https://washingtonpost.com/documents/916dd450-a193-4312-9a75-1b14dd95cc28.pdf",
+      "fieldEnd": "2026-10-05",
+      "population": "likely voters",
+      "democraticMargin": 4,
+      "sample": 800,
+      "sourceBodyHash": "83aa90f64a9d101d7f04ef09d9c50384938dcdcb86097d98b73afda98b51e78c",
+      "at": "2026-10-12T06:19:02.437Z",
+      "pdfToplinesStillRequireVerification": false
+    }
+  ],
+  "sourceCensusComplete": false,
+  "unresolvedSources": [
+    "UNH September24 PDF returned403; complete source census still outstanding"
+  ],
+  "actualOrders": 0
+}
