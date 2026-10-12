@@ -1,0 +1,83 @@
+{
+  "observedAt": "2026-10-12T08:19:47.805Z",
+  "task": "Viserion/20261012-maine-unh",
+  "captures": [
+    {
+      "id": "unh-release",
+      "url": "https://scholars.unh.edu/survey_center_polls/1007/",
+      "requestStartedAt": "2026-10-12T08:19:46.761Z",
+      "receivedAt": "2026-10-12T08:19:47.204Z",
+      "httpStatus": 200,
+      "bytes": 32624,
+      "sha256": "8022ba737505b7cc16036dc023c1b798ff71b83def324e343348884fe61479e0",
+      "contentStored": false
+    },
+    {
+      "id": "siena-release",
+      "url": "https://sri.siena.edu/2026/09/24/nytimes-siena-poll-of-likely-voters/",
+      "requestStartedAt": "2026-10-12T08:19:46.812Z",
+      "receivedAt": "2026-10-12T08:19:46.968Z",
+      "httpStatus": 200,
+      "bytes": 80858,
+      "sha256": "9ac7fb5f9c5f2845d9df95857d9a3a173cc94c666cb8cca31fd6353d5b461d76",
+      "contentStored": false
+    },
+    {
+      "id": "co-publisher-article",
+      "url": "https://www.pressherald.com/2026/09/24/5-takeaways-from-the-new-nyt-press-herald-siena-poll/",
+      "requestStartedAt": "2026-10-12T08:19:46.813Z",
+      "receivedAt": "2026-10-12T08:19:47.805Z",
+      "httpStatus": 200,
+      "bytes": 240201,
+      "sha256": "a17438264f58723188f73b9d2cede394e771280ab3cfd505c01a482d0d6c812b",
+      "contentStored": false
+    }
+  ],
+  "unh": {
+    "officialRecordUrl": "https://scholars.unh.edu/survey_center_polls/1007/",
+    "publicationDate": "2026-09-24",
+    "senateCandidates": [
+      "Troy Jackson",
+      "Susan Collins"
+    ],
+    "officialAbstractReportsStatisticalTie": true,
+    "originalPdfUrl": "https://scholars.unh.edu/cgi/viewcontent.cgi?article=2006&context=survey_center_polls",
+    "originalPdfWebFetchStatus": 403,
+    "fieldStart": null,
+    "fieldEnd": null,
+    "questionSpecificSample": null,
+    "democraticMargin": null,
+    "numericInclusion": false,
+    "unverifiedThirdPartyToplinesExcluded": true
+  },
+  "siena": {
+    "id": "siena-nyt-pressherald",
+    "publicationDate": "2026-09-24",
+    "releaseUrl": "https://sri.siena.edu/2026/09/24/nytimes-siena-poll-of-likely-voters/",
+    "coPublisherUrl": "https://www.pressherald.com/2026/09/24/5-takeaways-from-the-new-nyt-press-herald-siena-poll/",
+    "toplinesUrl": "https://www.nytimes.com/interactive/2026/09/24/polls/times-siena-poll-me-toplines.html",
+    "toplinesAccessible": false,
+    "democraticCandidate": "Troy Jackson",
+    "republicanCandidate": "Susan Collins",
+    "democraticVoteSharePercent": 46,
+    "republicanVoteSharePercent": 49,
+    "democraticMargin": -3,
+    "fieldStart": "2026-09-15",
+    "fieldEnd": "2026-09-22",
+    "fieldworkSource": "co-publisher article, not inaccessible detailed toplines",
+    "overallSample": 619,
+    "overallPopulation": "registered voters (co-publisher article)",
+    "releasePopulationLabel": "likely voters",
+    "questionSpecificSample": null,
+    "reportedSamplingErrorPoints": 4.9,
+    "populationDetailUnresolved": true,
+    "samplingErrorIsNotWinProbabilityError": true,
+    "publicationPrecedesLaterAllegationsPerRelease": true,
+    "numericUse": "conditional source-completeness sensitivity only"
+  },
+  "sourceCensusComplete": false,
+  "originalBankChanged": false,
+  "modelRefitted": false,
+  "actualOrders": 0,
+  "accountRequests": 0
+}

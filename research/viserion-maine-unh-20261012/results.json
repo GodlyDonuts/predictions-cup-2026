@@ -1,0 +1,420 @@
+{
+  "at": "2026-10-12T08:20:54.322Z",
+  "mode": "missing_contrary_primary_source_fixed_model_sensitivity",
+  "originalReferenceAt": "2026-10-12T06:21:49.872Z",
+  "rows": [
+    {
+      "halfLifeDays": 7,
+      "declaredDefault": false,
+      "unchangedModel": {
+        "family": "historical_bias_corrected",
+        "races": 235,
+        "cycles": [
+          1998,
+          2000,
+          2002,
+          2004,
+          2006,
+          2008,
+          2010,
+          2012,
+          2014,
+          2016,
+          2018,
+          2020,
+          2022
+        ],
+        "trainedThroughYear": 2022,
+        "biasPoints": -0.5489879105586497,
+        "standardDeviationPoints": 7.385614191845373,
+        "distribution": "fixed_t4",
+        "effectiveUnit": "one_state_race",
+        "historicalPopulationTransportMeasured": false
+      },
+      "original": {
+        "polls": [
+          {
+            "id": "marist",
+            "margin": 4,
+            "weight": 0.4870426163038687,
+            "ageDays": 7.265160567129629
+          },
+          {
+            "id": "rasmussen",
+            "margin": 2,
+            "weight": 0.7237425463938668,
+            "ageDays": 3.2651605671296298
+          },
+          {
+            "id": "cbs",
+            "margin": 0,
+            "weight": 0.36187127319693346,
+            "ageDays": 10.26516056712963
+          },
+          {
+            "id": "wapo-schar",
+            "margin": 4,
+            "weight": 0.5377386453733596,
+            "ageDays": 6.265160567129629
+          }
+        ],
+        "margin": 2.6282330681722263,
+        "referenceValue": 0.6245681914305506,
+        "quotePlan": {
+          "quantity": 1724,
+          "maximumCost": "999.920000",
+          "executionAuthority": false,
+          "actualOrders": 0,
+          "uncalibratedReferenceNotAConfidenceBound": true,
+          "targetCapital": "1061.142857",
+          "remainingTarget": "1061.142857",
+          "eventRemaining": "10000.000000",
+          "reason": "FUNDED_FRACTIONAL_KELLY_REFERENCE",
+          "historicalProfitabilityEstablished": false,
+          "limit": "0.580000",
+          "availableDepth": 13571,
+          "quotePlacement": "join_bid",
+          "postOnlyAtObservation": true,
+          "queuePriorityKnown": false,
+          "quoteSizeDepthIsNotFillEvidence": true,
+          "judgmentExpectedSurplus": "76.835232"
+        }
+      },
+      "withSiena": {
+        "polls": [
+          {
+            "id": "marist",
+            "margin": 4,
+            "weight": 0.4870426163038687,
+            "ageDays": 7.265160567129629
+          },
+          {
+            "id": "rasmussen",
+            "margin": 2,
+            "weight": 0.7237425463938668,
+            "ageDays": 3.2651605671296298
+          },
+          {
+            "id": "cbs",
+            "margin": 0,
+            "weight": 0.36187127319693346,
+            "ageDays": 10.26516056712963
+          },
+          {
+            "id": "wapo-schar",
+            "margin": 4,
+            "weight": 0.5377386453733596,
+            "ageDays": 6.265160567129629
+          },
+          {
+            "id": "siena-nyt-pressherald",
+            "margin": -3,
+            "weight": 0.1484278998634718,
+            "ageDays": 19.26516056712963
+          }
+        ],
+        "margin": 2.2584002741776827,
+        "referenceValue": 0.6000808814057803,
+        "threePointAdverseValue": 0.3884887634435226,
+        "quotePlan": {
+          "quantity": 824,
+          "maximumCost": "477.920000",
+          "executionAuthority": false,
+          "actualOrders": 0,
+          "uncalibratedReferenceNotAConfidenceBound": true,
+          "targetCapital": "478.095238",
+          "remainingTarget": "478.095238",
+          "eventRemaining": "10000.000000",
+          "reason": "FUNDED_FRACTIONAL_KELLY_REFERENCE",
+          "historicalProfitabilityEstablished": false,
+          "limit": "0.580000",
+          "availableDepth": 13571,
+          "quotePlacement": "join_bid",
+          "postOnlyAtObservation": true,
+          "queuePriorityKnown": false,
+          "quoteSizeDepthIsNotFillEvidence": true,
+          "judgmentExpectedSurplus": "16.545920"
+        }
+      },
+      "referenceValueChange": -0.024487310024770337
+    },
+    {
+      "halfLifeDays": 14,
+      "declaredDefault": true,
+      "unchangedModel": {
+        "family": "historical_bias_corrected",
+        "races": 235,
+        "cycles": [
+          1998,
+          2000,
+          2002,
+          2004,
+          2006,
+          2008,
+          2010,
+          2012,
+          2014,
+          2016,
+          2018,
+          2020,
+          2022
+        ],
+        "trainedThroughYear": 2022,
+        "biasPoints": -0.4955042280698584,
+        "standardDeviationPoints": 7.350126787137336,
+        "distribution": "fixed_t4",
+        "effectiveUnit": "one_state_race",
+        "historicalPopulationTransportMeasured": false
+      },
+      "original": {
+        "polls": [
+          {
+            "id": "marist",
+            "margin": 4,
+            "weight": 0.6978843860582272,
+            "ageDays": 7.265160567129629
+          },
+          {
+            "id": "rasmussen",
+            "margin": 2,
+            "weight": 0.8507305956610864,
+            "ageDays": 3.2651605671296298
+          },
+          {
+            "id": "cbs",
+            "margin": 0,
+            "weight": 0.601557373154825,
+            "ageDays": 10.26516056712963
+          },
+          {
+            "id": "wapo-schar",
+            "margin": 4,
+            "weight": 0.7333066516631085,
+            "ageDays": 6.265160567129629
+          }
+        ],
+        "margin": 2.575439365215156,
+        "referenceValue": 0.6252671291171922,
+        "quotePlan": {
+          "quantity": 1724,
+          "maximumCost": "999.920000",
+          "executionAuthority": false,
+          "actualOrders": 0,
+          "uncalibratedReferenceNotAConfidenceBound": true,
+          "targetCapital": "1077.785714",
+          "remainingTarget": "1077.785714",
+          "eventRemaining": "10000.000000",
+          "reason": "FUNDED_FRACTIONAL_KELLY_REFERENCE",
+          "historicalProfitabilityEstablished": false,
+          "limit": "0.580000",
+          "availableDepth": 13571,
+          "quotePlacement": "join_bid",
+          "postOnlyAtObservation": true,
+          "queuePriorityKnown": false,
+          "quoteSizeDepthIsNotFillEvidence": true,
+          "judgmentExpectedSurplus": "78.040308"
+        }
+      },
+      "withSiena": {
+        "polls": [
+          {
+            "id": "marist",
+            "margin": 4,
+            "weight": 0.6978843860582272,
+            "ageDays": 7.265160567129629
+          },
+          {
+            "id": "rasmussen",
+            "margin": 2,
+            "weight": 0.8507305956610864,
+            "ageDays": 3.2651605671296298
+          },
+          {
+            "id": "cbs",
+            "margin": 0,
+            "weight": 0.601557373154825,
+            "ageDays": 10.26516056712963
+          },
+          {
+            "id": "wapo-schar",
+            "margin": 4,
+            "weight": 0.7333066516631085,
+            "ageDays": 6.265160567129629
+          },
+          {
+            "id": "siena-nyt-pressherald",
+            "margin": -3,
+            "weight": 0.38526341620178756,
+            "ageDays": 19.26516056712963
+          }
+        ],
+        "margin": 1.9183019897749722,
+        "referenceValue": 0.5810865353884505,
+        "threePointAdverseValue": 0.36833269044474576,
+        "quotePlan": {
+          "quantity": 0,
+          "reason": "NO_POST_ONLY_REFERENCE_GAP",
+          "actualOrders": 0
+        }
+      },
+      "referenceValueChange": -0.044180593728741724
+    },
+    {
+      "halfLifeDays": 28,
+      "declaredDefault": false,
+      "unchangedModel": {
+        "family": "historical_bias_corrected",
+        "races": 235,
+        "cycles": [
+          1998,
+          2000,
+          2002,
+          2004,
+          2006,
+          2008,
+          2010,
+          2012,
+          2014,
+          2016,
+          2018,
+          2020,
+          2022
+        ],
+        "trainedThroughYear": 2022,
+        "biasPoints": -0.4609115060932263,
+        "standardDeviationPoints": 7.35315148651846,
+        "distribution": "fixed_t4",
+        "effectiveUnit": "one_state_race",
+        "historicalPopulationTransportMeasured": false
+      },
+      "original": {
+        "polls": [
+          {
+            "id": "marist",
+            "margin": 4,
+            "weight": 0.8353947486417587,
+            "ageDays": 7.265160567129629
+          },
+          {
+            "id": "rasmussen",
+            "margin": 2,
+            "weight": 0.922350581753536,
+            "ageDays": 3.2651605671296298
+          },
+          {
+            "id": "cbs",
+            "margin": 0,
+            "weight": 0.7756012978037267,
+            "ageDays": 10.26516056712963
+          },
+          {
+            "id": "wapo-schar",
+            "margin": 4,
+            "weight": 0.8563332596968942,
+            "ageDays": 6.265160567129629
+          }
+        ],
+        "margin": 2.540538777013304,
+        "referenceValue": 0.625191035445869,
+        "quotePlan": {
+          "quantity": 1724,
+          "maximumCost": "999.920000",
+          "executionAuthority": false,
+          "actualOrders": 0,
+          "uncalibratedReferenceNotAConfidenceBound": true,
+          "targetCapital": "1075.976190",
+          "remainingTarget": "1075.976190",
+          "eventRemaining": "10000.000000",
+          "reason": "FUNDED_FRACTIONAL_KELLY_REFERENCE",
+          "historicalProfitabilityEstablished": false,
+          "limit": "0.580000",
+          "availableDepth": 13571,
+          "quotePlacement": "join_bid",
+          "postOnlyAtObservation": true,
+          "queuePriorityKnown": false,
+          "quoteSizeDepthIsNotFillEvidence": true,
+          "judgmentExpectedSurplus": "77.909284"
+        }
+      },
+      "withSiena": {
+        "polls": [
+          {
+            "id": "marist",
+            "margin": 4,
+            "weight": 0.8353947486417587,
+            "ageDays": 7.265160567129629
+          },
+          {
+            "id": "rasmussen",
+            "margin": 2,
+            "weight": 0.922350581753536,
+            "ageDays": 3.2651605671296298
+          },
+          {
+            "id": "cbs",
+            "margin": 0,
+            "weight": 0.7756012978037267,
+            "ageDays": 10.26516056712963
+          },
+          {
+            "id": "wapo-schar",
+            "margin": 4,
+            "weight": 0.8563332596968942,
+            "ageDays": 6.265160567129629
+          },
+          {
+            "id": "siena-nyt-pressherald",
+            "margin": -3,
+            "weight": 0.6206959128283249,
+            "ageDays": 19.26516056712963
+          }
+        ],
+        "margin": 1.6830157056996502,
+        "referenceValue": 0.5671416393483757,
+        "threePointAdverseValue": 0.35480361388153503,
+        "quotePlan": {
+          "quantity": 0,
+          "reason": "NO_POST_ONLY_REFERENCE_GAP",
+          "actualOrders": 0
+        }
+      },
+      "referenceValueChange": -0.05804939609749327
+    }
+  ],
+  "inputSources": [
+    {
+      "path": "research/maine-primary-screen-20261012/sources.json",
+      "sha256": "6dbb72682a833e4b4c59e1df3a84f19ec7bea5a9da9f9d79237994c05c070f65"
+    },
+    {
+      "path": "research/maine-primary-screen-20261012/average-calibration.json",
+      "sha256": "cc1563d7116265572b86b5585551510b036a7bdfbbf89797297cb50a8daa5939"
+    },
+    {
+      "path": "research/viserion-maine-unh-20261012/sources.json",
+      "sha256": "01cb867d88bbaf659694ce414ebb3220e1d6cb8b20cb8d413c7c0a46ca52ccad"
+    },
+    {
+      "path": "data/maine-passive-harvest-paper-20261012-bank.json",
+      "sha256": "d0c7c64e3368a5953d9341a27324759327e11f86728824bfe63d23eebb542948"
+    },
+    {
+      "path": "data/maine-passive-harvest-paper-20261012-state.json",
+      "sha256": "d0f156407091e8343a52468c0aa7c82e6aac59a8f64f5bb55c331374476e11bc"
+    }
+  ],
+  "historicalBookAt": "2026-10-12T06:36:21.413Z",
+  "currentExecutableBookVerified": false,
+  "originalBankChanged": false,
+  "modelRefitted": false,
+  "sourceCensusComplete": false,
+  "unhNumericIncluded": false,
+  "populationTransportValidated": false,
+  "questionSpecificSienaPopulationUnresolved": true,
+  "valuesAreNotConfidenceBounds": true,
+  "winProbabilitiesAreNotShortTermPriceForecasts": true,
+  "parametersSelectedByScore": false,
+  "marketProfitabilityEstablished": false,
+  "actualOrders": 0,
+  "accountRequests": 0
+}
