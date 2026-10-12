@@ -1,0 +1,153 @@
+{
+  "observedAt": "2026-10-12T21:32:24.499Z",
+  "session": "Viserion/kansas-source-20261012",
+  "captures": [
+    {
+      "id": "single-nomination",
+      "url": "https://www.kslegislature.gov/b2025_26/laws/025_000_0000_chapter/025_003_0000_article/025_003_0006_section/025_003_0006_k/",
+      "startedAt": "2026-10-12T21:32:21.626Z",
+      "receivedAt": "2026-10-12T21:32:24.405Z",
+      "status": 200,
+      "sha256": "84617f26b125e2be65feaef02170ec47de8655858c0ae2d35a64526e135f6a7a",
+      "bytes": 58625,
+      "fullContentStored": false,
+      "hashScope": "HTTP response body; no full source text stored"
+    },
+    {
+      "id": "selected-nomination",
+      "url": "https://www.kslegislature.gov/b2025_26/laws/025_000_0000_chapter/025_003_0000_article/025_003_0006e_section/025_003_0006e_k/",
+      "startedAt": "2026-10-12T21:32:21.652Z",
+      "receivedAt": "2026-10-12T21:32:24.498Z",
+      "status": 200,
+      "sha256": "2671626be3cb3cb303161d8d124739e3e7eda7385bcbf142a6d4079fec484bf6",
+      "bytes": 56038,
+      "fullContentStored": false,
+      "hashScope": "HTTP response body; no full source text stored"
+    },
+    {
+      "id": "ballot-designation",
+      "url": "https://www.kslegislature.gov/b2025_26/laws/025_000_0000_chapter/025_006_0000_article/025_006_0013_section/025_006_0013_k/",
+      "startedAt": "2026-10-12T21:32:21.653Z",
+      "receivedAt": "2026-10-12T21:32:24.445Z",
+      "status": 200,
+      "sha256": "cb12e624ae06d389300cf698f04f948e8529d4fff4ddafaf4f55a3293b88429e",
+      "bytes": 58135,
+      "fullContentStored": false,
+      "hashScope": "HTTP response body; no full source text stored"
+    },
+    {
+      "id": "sos-routes",
+      "url": "https://www.sos.ks.gov/elections/candidate-information.html",
+      "startedAt": "2026-10-12T21:32:21.654Z",
+      "receivedAt": "2026-10-12T21:32:21.969Z",
+      "status": 200,
+      "sha256": "91350634c0c4e061282943cc4f5a4abdcc6c17d0950252b9faa84f40d3e3f224",
+      "bytes": 41840,
+      "fullContentStored": false,
+      "hashScope": "HTTP response body; no full source text stored"
+    },
+    {
+      "id": "general-notice",
+      "url": "https://www.sedgwickcounty.org/elections/election-notices-news-releases/notice-of-general-election/",
+      "startedAt": "2026-10-12T21:32:21.654Z",
+      "receivedAt": "2026-10-12T21:32:22.659Z",
+      "status": 200,
+      "sha256": "0cba223df450f093ac5f8342ecb87547e25f56511c0cd040a487e372ec2a256a",
+      "bytes": 115500,
+      "fullContentStored": false,
+      "hashScope": "HTTP response body; no full source text stored"
+    },
+    {
+      "id": "opinion-mirror",
+      "url": "https://law.justia.com/cases/kansas/court-of-appeals/2026/128896.html",
+      "startedAt": "2026-10-12T21:32:21.655Z",
+      "receivedAt": "2026-10-12T21:32:21.778Z",
+      "status": 403,
+      "sha256": "72bb7dd3dbe907d71dd08a33760178009549606c50ae2d4eedb9d4fc0fc030fa",
+      "bytes": 5596,
+      "fullContentStored": false,
+      "hashScope": "non-success HTTP response body, not verified document content"
+    }
+  ],
+  "marketScope": {
+    "marketIds": [
+      "356",
+      "357"
+    ],
+    "raceId": "62962",
+    "stageId": "98092",
+    "electionDate": "2026-11-03",
+    "rootHashes": [
+      "39acdb6801c5f8f10f675de9fa3f3aa997c5c20788e6790e1d3d21eba8e76156",
+      "bc581dc5b1b693b7fc2ea278b5e8703e5838566030c6420e2b700eb968105eaa"
+    ],
+    "rootFactsVerifiedFromPublicCapture": true,
+    "venueInfoRuleIndependentlyViewedByViserion": false,
+    "venueInfoSource": "Rhaegal dated authenticated Info lookup; not a new account read by Viserion"
+  },
+  "statutes": {
+    "singleAcceptedNomination": true,
+    "receivedMultipleNominationsAreNotMultipleAcceptedNominations": true,
+    "decliningOtherNominationsAfterSelection": true,
+    "partyBallotDesignationFollowsNominationPapers": true,
+    "ordinarySenateOneBallotEntrySupported": true,
+    "noLaterInjunctionOrStayVerified": false
+  },
+  "officialGeneralRoster": {
+    "noticePublished": "2026-09-17",
+    "election": "2026-11-03 General",
+    "jurisdiction": "Sedgwick County",
+    "noticeBasis": "KSA25-105; states SOS/local filing sources",
+    "office": "United States Senate",
+    "candidates": [
+      {
+        "name": "Adam Hamilton",
+        "party": "Democratic"
+      },
+      {
+        "name": "Roger Marshall",
+        "party": "Republican"
+      },
+      {
+        "name": "David C Graham",
+        "party": "Libertarian"
+      }
+    ],
+    "listedNamesDistinct": true,
+    "listedPartyDesignationsDistinct": true,
+    "listedUnitedKansasSenateNominee": false,
+    "allPartyAffiliationsVerified": false,
+    "writeInCoverageVerified": false,
+    "noSubsequentCandidateChangesVerified": false
+  },
+  "courtEvidence": {
+    "case": "United Kansas v. Schwab",
+    "docket": "128896",
+    "mirrorReportedOpinionDate": "2026-08-14",
+    "mirrorTextReviewed": true,
+    "mirrorReportsAffirmed": true,
+    "mirrorDistinguishesBallotNominationFromOutsideEndorsement": true,
+    "sourceType": "court-authored opinion mirrored by Justia; official PDF not recovered",
+    "officialPdfUrl": "https://searchdro.kscourts.gov/documents/pdf/caseDecisions/f9df2f9f-e462-4b0b-af61-082ca4bddc27_128896.pdf",
+    "officialPdfWebStatus": 403,
+    "laterAppealStayOrInjunctionVerified": false,
+    "mirrorVerificationSurface": "Web reader rendered opinion text; direct HTTP fetch returned403, so no opinion-body hash recovered"
+  },
+  "excludedEvidence": [
+    {
+      "url": "https://candidatefiling.us/Info/Default?c=181035409877&e=545606222&j=2795522868&s=802933811&st=KS",
+      "reason": "Page labels August4 PRIMARY election, not final general roster; not treated as government-certified without primary linkage."
+    }
+  ],
+  "remaining": [
+    "Platform winner-affiliation/fusion-ticket meaning is not automatically identical to accepted ballot nomination.",
+    "No complete cross-endorsement or write-in audit, later judicial status or nominee-change audit.",
+    "Administrative cancellation/mixed refund and platform rule changes remain possible.",
+    "Neither actual future completion odds nor settlement exception probabilities are estimated."
+  ],
+  "assessment": "Independent statute and official general-election notice support ordinary distinct ballot nominees. Retain non-guaranteed carry classification; do not convert nomination evidence into a universal affiliation payout guarantee.",
+  "guaranteedProfit": false,
+  "actualOrders": 0,
+  "accountRequests": 0,
+  "existingSourceReviewModified": false
+}

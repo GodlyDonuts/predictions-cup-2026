@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "at": "2026-10-12T21:26:48.472Z",
+  "at": "2026-10-12T21:37:03.100Z",
   "mode": "independent_public_receipt_arithmetic_review",
   "sources": [
     {
@@ -10,6 +10,10 @@
     {
       "file": "data/paired-role-comparison-20261012.json",
       "sha256": "58f43e6297360a06a795b5f23cd5b64b4ca1dc26a561419a529581f301560a8c"
+    },
+    {
+      "file": "data/paired-role-source-bundle-20261012.json",
+      "sha256": "b24c56f7664a8f71a85588554f89820441217cf4caeb028ff285c060ba8da715"
     }
   ],
   "sourceBindingsMatch": true,
@@ -128,22 +132,29 @@
       "file": "data/paired-role-study-run-v1.mjs",
       "expectedSHA256": "fd062700d8b87cb8f04f795435a5cba080f8593e0b79688ab4c531046a83088c",
       "rawMatches": false,
-      "exactRecordedLfBytesMatch": false
+      "exactRecordedLfBytesMatch": false,
+      "archivedBytesMatch": true,
+      "archivedBytes": 6510
     },
     {
       "file": "paper/fixed.mjs",
       "expectedSHA256": "a0947ef49854d4a3bf4bce88034aaef5d8aabbdc7e29dff3a7b9b4bc01b072f7",
       "rawMatches": false,
-      "exactRecordedLfBytesMatch": true
+      "exactRecordedLfBytesMatch": true,
+      "archivedBytesMatch": true,
+      "archivedBytes": 1945
     },
     {
       "file": "paper/role-aware-fill-cost-v1.mjs",
       "expectedSHA256": "b9cf6e20fdd4fb6836f2de8c3e51de38a84c3dc152d2679857a06f1b4d1e5719",
       "rawMatches": false,
-      "exactRecordedLfBytesMatch": false
+      "exactRecordedLfBytesMatch": true,
+      "archivedBytesMatch": true,
+      "archivedBytes": 2747
     }
   ],
-  "frozenProducerCodeIdentityReproduced": false,
+  "frozenProducerCodeIdentityReproduced": true,
+  "wholeTransitiveProducerGraphPinned": false,
   "actualFillProven": false,
   "actualOrders": 0,
   "accountRequests": 0,
@@ -153,7 +164,7 @@
     "Recorded public roots/scopes/decision/fill/mark clocks and uniform-price funding reproduce the report.",
     "Both independent later mark scenarios reproduce negative counterfactual immediate liquidation results.",
     "Public projection binds original capture IDs but cannot reconstruct the full omitted-account capture hashes.",
-    "Two recorded producer source identities remain unresolved; requested exact versions from Rhaegal.",
+    "All three directly recorded source identities reproduce from the new archived bytes; the original manifest did not pin the full transitive driver graph.",
     "One percent cumulative-depth participation, zero fees and marketable fill price are assumptions, not verified actual queue fills or fees.",
     "The ordinary settlement payout floor and administrative exceptions remain independently unverified."
   ]
