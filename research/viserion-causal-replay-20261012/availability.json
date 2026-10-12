@@ -1,0 +1,131 @@
+{
+  "at": "2026-10-12T08:13:31.984Z",
+  "bankHash": "1789f2d8e81bedacba85eeb96b065cf02627f188284a0269ab794d6d829f8185",
+  "declaredOriginalJournal": "maine-passive-harvest-paper-20261012.jsonl",
+  "originalReceiptCorpusFound": false,
+  "localHistoricalState": "data/maine-passive-harvest-paper-20261012-state.json",
+  "stateIsReceiptCorpus": false,
+  "checkpointSourceHashCannotReconstructRuleReceipt": true,
+  "frozenSourceFiles": [
+    {
+      "file": "data/source-shared-paper-consumer-v6.mjs",
+      "recordedSha256": "eca4689c0b3b17a2f7b8f3c37513ab1f9aa04de0577f0e031c8bb2120ffc1b14",
+      "checkoutBytesMatch": false,
+      "exactRecordedLfBytesReconstructable": true
+    },
+    {
+      "file": "execution/atomic-rename.mjs",
+      "recordedSha256": "afbe15eadb94f7e5df250d02c9e6cfdabbdc9b8e68c7d42325b91845f0fd0515",
+      "checkoutBytesMatch": false,
+      "exactRecordedLfBytesReconstructable": true
+    },
+    {
+      "file": "execution/core.mjs",
+      "recordedSha256": "8598dd7fd9574a9197b8791d9cd7801d27e2b71bc473515dba9e775924b458d4",
+      "checkoutBytesMatch": false,
+      "exactRecordedLfBytesReconstructable": true
+    },
+    {
+      "file": "execution/ledger.mjs",
+      "recordedSha256": "dd57fe01ce6a4d7219228c01ebfc091ea006f78ba3c96644099abf5e5ff3c014",
+      "checkoutBytesMatch": false,
+      "exactRecordedLfBytesReconstructable": true
+    },
+    {
+      "file": "execution/shared-value-allocation-v1.mjs",
+      "recordedSha256": "aac898dc02584529a4b5cbca68be843ab410e4568fdf71201a4731b497c768bc",
+      "checkoutBytesMatch": false,
+      "exactRecordedLfBytesReconstructable": true
+    },
+    {
+      "file": "execution/source-purchase-allocation-v1.mjs",
+      "recordedSha256": "b375789a60528300cc82f5de00d9b7b130d3a5c9a4365f47db8e2b49036e648b",
+      "checkoutBytesMatch": false,
+      "exactRecordedLfBytesReconstructable": true
+    },
+    {
+      "file": "feed/contract.mjs",
+      "recordedSha256": "39b9b30a72093d99697bc03a3b20f88f1d835507219fc46f7a00bd28fe761465",
+      "checkoutBytesMatch": false,
+      "exactRecordedLfBytesReconstructable": true
+    },
+    {
+      "file": "feed/runtime.mjs",
+      "recordedSha256": "51327d008ad4c9c479b25c14186edeff02f7671bf5efcd367b4b42f06abc884d",
+      "checkoutBytesMatch": false,
+      "exactRecordedLfBytesReconstructable": true
+    },
+    {
+      "file": "live-paper/history.mjs",
+      "recordedSha256": "d820b9d74752df3c2ecc28df3b1662bbc93080f4605db21a838d8957bf82c890",
+      "checkoutBytesMatch": false,
+      "exactRecordedLfBytesReconstructable": true
+    },
+    {
+      "file": "live-paper/model.mjs",
+      "recordedSha256": "3cb8bbd7d31b478fe917270393954382373695149310243eec8b78440d207a2e",
+      "checkoutBytesMatch": false,
+      "exactRecordedLfBytesReconstructable": true
+    },
+    {
+      "file": "live-paper/network-budget.mjs",
+      "recordedSha256": "a5a51f29a2ccd0cdf7a09a2a454907ddd98a74729f3edad0b7989855ff2dd435",
+      "checkoutBytesMatch": false,
+      "exactRecordedLfBytesReconstructable": true
+    },
+    {
+      "file": "live-paper/runtime.mjs",
+      "recordedSha256": "2efad72e778ed5bd37387ae357b0cbd49dc1e2227db401a71684f68ce539471a",
+      "checkoutBytesMatch": false,
+      "exactRecordedLfBytesReconstructable": true
+    },
+    {
+      "file": "paper/fixed.mjs",
+      "recordedSha256": "a0947ef49854d4a3bf4bce88034aaef5d8aabbdc7e29dff3a7b9b4bc01b072f7",
+      "checkoutBytesMatch": false,
+      "exactRecordedLfBytesReconstructable": true
+    },
+    {
+      "file": "paper/reference-depth-plan-v1.mjs",
+      "recordedSha256": "d9f19d6a526c536ffd5a62383d641f0bb77219d5ac75b18686286fae464e8e24",
+      "checkoutBytesMatch": false,
+      "exactRecordedLfBytesReconstructable": true
+    },
+    {
+      "file": "paper/reference-kelly-sizing-v1.mjs",
+      "recordedSha256": "6f0bde8f29f899ea334f0100b3706f0a044a2c828c64c624d44fdbd1fa8b7e96",
+      "checkoutBytesMatch": false,
+      "exactRecordedLfBytesReconstructable": true
+    },
+    {
+      "file": "paper/reference-passive-plan-v2.mjs",
+      "recordedSha256": "0fac425d8e857b51882d9dc47125ceb5af462fc184f76fe77f69c090b6002e06",
+      "checkoutBytesMatch": false,
+      "exactRecordedLfBytesReconstructable": true
+    },
+    {
+      "file": "paper/scoped-rule-receipt-timing-v1.mjs",
+      "recordedSha256": "e4224bbbf272802b7ccec697ab8329c0cb0ffc2d9c7a1f4aeb8c34be9729d6d6",
+      "checkoutBytesMatch": false,
+      "exactRecordedLfBytesReconstructable": true
+    },
+    {
+      "file": "paper/shared-reference-wallet-v6.mjs",
+      "recordedSha256": "26717e1b5aca41353f83cf4f08ac659f1d14b73311207e282592c175a10d2a4c",
+      "checkoutBytesMatch": false,
+      "exactRecordedLfBytesReconstructable": true
+    },
+    {
+      "file": "research/shared-wallet-economics-v6.mjs",
+      "recordedSha256": "f4f9651f61f6033c94702387e333554c57c987a060ff20ea18245729c6f20403",
+      "checkoutBytesMatch": false,
+      "exactRecordedLfBytesReconstructable": true
+    }
+  ],
+  "reconstructedFiles": 19,
+  "marketReplayPerformed": false,
+  "marketProfitabilityEstablished": false,
+  "accountRequests": 0,
+  "actualOrders": 0,
+  "nextAction": "Obtain original matched public rule/book receipts from Rhaegal; full policy comparison remains unproven."
+}
