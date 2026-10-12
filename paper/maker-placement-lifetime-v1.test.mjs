@@ -1,0 +1,4 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {makerPlacementLifetimeV1} from './maker-placement-lifetime-v1.mjs';
+const at='2026-10-12T23:00:00.000Z',q=ms=>({validUntil:new Date(Date.parse(at)+ms).toISOString()});
+test('quotes expiring before activation or with only31ms active time are rejected',()=>{assert.deepEqual(makerPlacementLifetimeV1([q(2997),q(3031)],{at,latencyMs:3000,minimumActiveMs:2500}),[]);});
+test('exact minimum active lifetime qualifies; future quote clocks and invalid policy fail closed',()=>{const quote=q(5500);assert.equal(makerPlacementLifetimeV1([quote],{at,latencyMs:3000,minimumActiveMs:2500})[0],quote);assert.throws(()=>makerPlacementLifetimeV1([q(6000)],{at,latencyMs:0,minimumActiveMs:2500}));assert.throws(()=>makerPlacementLifetimeV1([{validUntil:'invalid'}],{at,latencyMs:3000,minimumActiveMs:2500}));});
