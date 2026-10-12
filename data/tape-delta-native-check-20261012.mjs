@@ -1,0 +1,13 @@
+import fs from 'node:fs';import path from 'node:path';import os from 'node:os';import assert from 'node:assert/strict';import {createHash} from 'node:crypto';
+import {Journal} from '../live-paper/transport-runtime.mjs';import {openNativeJournal} from '../live-paper/native-journal-restore.mjs';
+import {openTapeDeltaJournalV1,restoreTapeLogicalStateV1} from '../live-paper/tape-delta-journal-v1.mjs';import {tapeMarketCopyV1} from '../live-paper/tape-market-copy-v1.mjs';import {verifiedJournalEventLineV1} from '../live-paper/verified-journal-event-line-v1.mjs';
+const runtimeDir=path.join(process.env.LOCALAPPDATA,'SigTradingCup','paper-runtime'),binding=JSON.parse(fs.readFileSync(path.join(runtimeDir,'collector-native-journal.json'))).nativeBackend;
+const dir=fs.mkdtempSync(path.join(os.tmpdir(),'sig-native-tape-check-')),file=path.join(dir,'fixture.jsonl'),journal=new Journal(file);
+let state={schemaVersion:1,seenIdentityVersion:2,scopeHash:'a'.repeat(64),pages:0,tradesCaptured:0,duplicates:0,lastAt:null,markets:{'1':{seen:{}},'2':{seen:{}}}};
+const writer=openTapeDeltaJournalV1(journal,state);
+for(let n=1;n<=70;n++){const ex=n%2?'1':'2',next=tapeMarketCopyV1(state,ex);next.pages++;next.lastAt=new Date(1700000000000+n*1000).toISOString();next.markets[ex].seen[String(n)]={hash:'h'+n};writer.commit(next,{type:'anonymous_trade_page',exchangeId:ex,receivedAt:next.lastAt,trades:[]});state=next;}
+const restored=await openNativeJournal({runtimeDir,binding,file,receiptDir:path.join(dir,'receipts')});assert.deepEqual(restoreTapeLogicalStateV1(restored),state);
+const rows=fs.readFileSync(file,'utf8').trim().split('\n');let previous='';for(const [i,line]of rows.entries()){const row=verifiedJournalEventLineV1(line);assert.equal(row.sequence,i+1);assert.equal(row.previous,previous);previous=row.hash;}
+const resumed=openTapeDeltaJournalV1(restored,state),next=tapeMarketCopyV1(state,'1');next.pages++;next.lastAt=new Date(1700000000000+71000).toISOString();resumed.commit(next,{type:'anonymous_trade_page',exchangeId:'1',receivedAt:next.lastAt,trades:[]});assert.deepEqual(restoreTapeLogicalStateV1(new Journal(file)),next);
+const report={at:new Date().toISOString(),mode:'native_fixture_correctness_only',records:71,nativeBinaryHash:binding.binaryHash,nativeEngineHash:binding.engineHash,sourceHash:createHash('sha256').update(fs.readFileSync(file)).digest('hex'),logicalParity:true,eventProjectionParity:true,resumedAppend:true,fixtureDirectory:dir,networkRequests:0,contestOrders:0,profitabilityEstablished:false};
+fs.writeFileSync('data/tape-delta-native-check-20261012.json',JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify({records:report.records,logicalParity:true,eventProjectionParity:true,resumedAppend:true}));
