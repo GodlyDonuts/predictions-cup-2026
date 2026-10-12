@@ -103,6 +103,7 @@ import {openCoupledBulkRustHost} from './coupled-maker-host-rust.mjs';
 import {readCoupledRustTransport,coupledBulkStartupFailure} from './coupled-rust-transport-config.mjs';
 import {loadNetworkBudget,networkInterval} from './transport-network-budget.mjs';
 import {collectionCycleWait} from './cycle-wait.mjs';
+import {pairedReadCapacityDelayV1} from './paired-read-capacity-v1.mjs';
 import {readProfitSprint,passiveHostsCompletelyFlat,scopedRiskMarketIds,focusProfitSprintReads} from './profit-sprint-read-plan.mjs';
 import {loadMarketSweep,collectMarketSweep} from './market-sweep.mjs';
 import {createMarketPricePublication} from './market-price-publication.mjs';
@@ -453,6 +454,13 @@ try{
   while(!stopping&&runtime.cycles<maxCycles){
     try{await hotArmMedian();}catch{runtime.productionArm={status:'blocked',at:new Date().toISOString()};}
     const pairedAuxiliaryOwner=Boolean(pairedCandidate?.pending());
+    // Wait before taking account receipts, so they remain fresh for the pair.
+    // Recheck pending/stops on every bounded sleep; never bypass API admission.
+    while(pairedAuxiliaryOwner&&!stopping&&!api.manualReview&&pairedCandidate?.pending()){
+      const delay=pairedReadCapacityDelayV1(recentReadTimings,Date.now());
+      if(!delay)break;
+      await pauseUntilNextRead(Math.min(delay,1000));
+    }
     const cycleStart=Date.now(),checkpoint=structuredClone(state);const events=[];let successful=0,cycleCommitted=false,profitSprintApplied=false,cycleRiskMarketIds=[];
     try{
       if(dipBank){
