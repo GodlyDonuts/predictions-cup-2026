@@ -1,0 +1,15 @@
+{
+  "at": "2026-10-12T22:32:53.071Z",
+  "mode": "native_fixture_correctness_only",
+  "records": 71,
+  "nativeBinaryHash": "a571587f0f3cfa075401fa0200d4a81e7d89fe61e75131e8a4d47cc03b5d4879",
+  "nativeEngineHash": "a59a58c8959e88653b692ecff39277466411aadf293058b262b8c7bf2e3a4d41",
+  "sourceHash": "51f40b91094a22b752f76d1fd4d8ab97bcb57120c72b815ad2df5e1cb70dd064",
+  "logicalParity": true,
+  "eventProjectionParity": true,
+  "resumedAppend": true,
+  "fixtureDirectory": "C:\\Users\\Sai\\AppData\\Local\\Temp\\sig-native-tape-check-8CAVhP",
+  "networkRequests": 0,
+  "contestOrders": 0,
+  "profitabilityEstablished": false
+}
