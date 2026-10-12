@@ -1,0 +1,6 @@
+import test from 'node:test';import assert from 'node:assert/strict';
+import {pollDisagreementMixtureV1 as mix} from './poll-disagreement-mixture-v1.mjs';
+const model={biasPoints:0,standardDeviationPoints:8},asOf='2026-10-12T06:00:00.000Z',poll={id:'a',fieldEnd:'2026-10-06',population:'likely voters',democraticMargin:2};
+test('identical additional polls do not manufacture lower uncertainty or change probability',()=>{const a=mix({model,polls:[poll],asOf}),b=mix({model,polls:[poll,{...poll,id:'b'}],asOf});assert.equal(a.weightedDemocraticProbability,b.weightedDemocraticProbability);assert.equal(b.varianceShrunk,false);});
+test('disagreement stays between source probabilities and retains RV/LV qualification',()=>{const r=mix({model,polls:[poll,{...poll,id:'b',population:'registered voters',democraticMargin:-8}],asOf});assert(r.weightedDemocraticProbability>r.betweenPollDemocraticProbabilityRange.lower);assert(r.weightedDemocraticProbability<r.betweenPollDemocraticProbabilityRange.upper);assert.equal(r.differentPopulations,true);assert.equal(r.calibratedPosterior,false);});
+test('future sources, unknown populations and duplicate source identities reject',()=>{for(const p of [{...poll,fieldEnd:'2026-10-13'},{...poll,population:'unknown'}])assert.throws(()=>mix({model,polls:[p],asOf}));assert.throws(()=>mix({model,polls:[poll,poll],asOf}));});
