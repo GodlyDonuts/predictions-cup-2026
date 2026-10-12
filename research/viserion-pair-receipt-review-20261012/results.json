@@ -1,0 +1,160 @@
+{
+  "schemaVersion": 1,
+  "at": "2026-10-12T21:24:32.639Z",
+  "mode": "independent_public_receipt_arithmetic_review",
+  "sources": [
+    {
+      "file": "data/paired-role-public-receipts-20261012.json",
+      "sha256": "a60060b7733cb434b624cb5906eed7e84f2f29ed2fa9f8c8d7b657e7a5a31ab3"
+    },
+    {
+      "file": "data/paired-role-comparison-20261012.json",
+      "sha256": "58f43e6297360a06a795b5f23cd5b64b4ca1dc26a561419a529581f301560a8c"
+    }
+  ],
+  "sourceBindingsMatch": true,
+  "originalFullCaptureHashesReconstructed": false,
+  "accountEvidenceOmitted": true,
+  "clockChecks": [
+    {
+      "capture": 1,
+      "marketId": "356",
+      "rootHash": "39acdb6801c5f8f10f675de9fa3f3aa997c5c20788e6790e1d3d21eba8e76156",
+      "requestStartedAt": "2026-10-12T09:00:32.318Z",
+      "receivedAt": "2026-10-12T09:00:32.991Z",
+      "rootKnownBeforeBook": true,
+      "observationAgeAtCaptureMs": 1109
+    },
+    {
+      "capture": 1,
+      "marketId": "357",
+      "rootHash": "bc581dc5b1b693b7fc2ea278b5e8703e5838566030c6420e2b700eb968105eaa",
+      "requestStartedAt": "2026-10-12T09:00:33.108Z",
+      "receivedAt": "2026-10-12T09:00:33.423Z",
+      "rootKnownBeforeBook": true,
+      "observationAgeAtCaptureMs": 319
+    },
+    {
+      "capture": 2,
+      "marketId": "356",
+      "rootHash": "39acdb6801c5f8f10f675de9fa3f3aa997c5c20788e6790e1d3d21eba8e76156",
+      "requestStartedAt": "2026-10-12T09:00:48.947Z",
+      "receivedAt": "2026-10-12T09:00:49.291Z",
+      "rootKnownBeforeBook": true,
+      "observationAgeAtCaptureMs": 763
+    },
+    {
+      "capture": 2,
+      "marketId": "357",
+      "rootHash": "bc581dc5b1b693b7fc2ea278b5e8703e5838566030c6420e2b700eb968105eaa",
+      "requestStartedAt": "2026-10-12T09:00:49.403Z",
+      "receivedAt": "2026-10-12T09:00:49.706Z",
+      "rootKnownBeforeBook": true,
+      "observationAgeAtCaptureMs": 307
+    },
+    {
+      "capture": 3,
+      "marketId": "356",
+      "rootHash": "39acdb6801c5f8f10f675de9fa3f3aa997c5c20788e6790e1d3d21eba8e76156",
+      "requestStartedAt": "2026-10-12T09:01:31.916Z",
+      "receivedAt": "2026-10-12T09:01:32.226Z",
+      "rootKnownBeforeBook": true,
+      "observationAgeAtCaptureMs": 730
+    },
+    {
+      "capture": 3,
+      "marketId": "357",
+      "rootHash": "bc581dc5b1b693b7fc2ea278b5e8703e5838566030c6420e2b700eb968105eaa",
+      "requestStartedAt": "2026-10-12T09:01:32.330Z",
+      "receivedAt": "2026-10-12T09:01:32.642Z",
+      "rootKnownBeforeBook": true,
+      "observationAgeAtCaptureMs": 316
+    }
+  ],
+  "costChecks": [
+    {
+      "adverseTicks": 0,
+      "reservedPrincipal": "0.985000",
+      "modeledPrincipal": "0.975000",
+      "cash": "0.025000",
+      "liquidationValue": "0.950000",
+      "datedCounterfactualLiquidationPnl": "-0.025000",
+      "ordinaryConditionalSettlementSurplus": "0.025000",
+      "legs": [
+        {
+          "marketId": "356",
+          "exchangeId": "1045",
+          "postedLimit": "0.575000",
+          "independentLaterPrice": "0.570000",
+          "independentLaterLiquidation": "0.560000"
+        },
+        {
+          "marketId": "357",
+          "exchangeId": "1046",
+          "postedLimit": "0.410000",
+          "independentLaterPrice": "0.405000",
+          "independentLaterLiquidation": "0.390000"
+        }
+      ]
+    },
+    {
+      "adverseTicks": 1,
+      "reservedPrincipal": "0.985000",
+      "modeledPrincipal": "0.985000",
+      "cash": "0.015000",
+      "liquidationValue": "0.950000",
+      "datedCounterfactualLiquidationPnl": "-0.035000",
+      "ordinaryConditionalSettlementSurplus": "0.015000",
+      "legs": [
+        {
+          "marketId": "356",
+          "exchangeId": "1045",
+          "postedLimit": "0.575000",
+          "independentLaterPrice": "0.575000",
+          "independentLaterLiquidation": "0.560000"
+        },
+        {
+          "marketId": "357",
+          "exchangeId": "1046",
+          "postedLimit": "0.410000",
+          "independentLaterPrice": "0.410000",
+          "independentLaterLiquidation": "0.390000"
+        }
+      ]
+    }
+  ],
+  "codeChecks": [
+    {
+      "file": "data/paired-role-study-run-v1.mjs",
+      "expectedSHA256": "fd062700d8b87cb8f04f795435a5cba080f8593e0b79688ab4c531046a83088c",
+      "rawMatches": false,
+      "exactRecordedLfBytesMatch": false
+    },
+    {
+      "file": "paper/fixed.mjs",
+      "expectedSHA256": "a0947ef49854d4a3bf4bce88034aaef5d8aabbdc7e29dff3a7b9b4bc01b072f7",
+      "rawMatches": false,
+      "exactRecordedLfBytesMatch": true
+    },
+    {
+      "file": "paper/role-aware-fill-cost-v1.mjs",
+      "expectedSHA256": "b9cf6e20fdd4fb6836f2de8c3e51de38a84c3dc152d2679857a06f1b4d1e5719",
+      "rawMatches": false,
+      "exactRecordedLfBytesMatch": false
+    }
+  ],
+  "frozenProducerCodeIdentityReproduced": false,
+  "actualFillProven": false,
+  "actualOrders": 0,
+  "accountRequests": 0,
+  "profitabilityEstablished": false,
+  "currentReceiptsFresh": false,
+  "findings": [
+    "Recorded public roots/scopes/decision/fill/mark clocks and uniform-price funding reproduce the report.",
+    "Both independent later mark scenarios reproduce negative counterfactual immediate liquidation results.",
+    "Public projection binds original capture IDs but cannot reconstruct the full omitted-account capture hashes.",
+    "Two recorded producer source identities remain unresolved; requested exact versions from Rhaegal.",
+    "One percent cumulative-depth participation, zero fees and marketable fill price are assumptions, not verified actual queue fills or fees.",
+    "The ordinary settlement payout floor and administrative exceptions remain independently unverified."
+  ]
+}
