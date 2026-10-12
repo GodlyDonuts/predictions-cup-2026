@@ -1,0 +1,4 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {makerAdmissionLifetimeV1 as eligible} from './maker-admission-lifetime-v1.mjs';
+const at='2026-10-12T23:00:00.000Z',q={validUntil:'2026-10-12T23:00:01.000Z',admissionValidUntil:'2026-10-12T23:00:01.000Z',orderExpiresAt:'2026-10-12T23:02:00.000Z'},p={at,latencyMs:3000,minimumActiveMs:2500};
+test('one second of valid submission time does not truncate two-minute resting lifetime',()=>{assert.equal(eligible([q],p).length,1);assert.equal(eligible([q],{...p,at:q.validUntil}).length,0);});
+test('expired order or mismatched admission clock cannot submit',()=>{assert.equal(eligible([{...q,orderExpiresAt:'2026-10-12T23:00:02.000Z'}],p).length,0);assert.equal(eligible([{...q,admissionValidUntil:'2026-10-12T23:00:02.000Z'}],p).length,0);});
