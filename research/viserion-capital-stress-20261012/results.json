@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 1,
+  "mode": "shadow_settlement_capital_stress",
+  "executionAuthority": false,
+  "actualOrders": 0,
+  "auditQuantity": 1724,
+  "auditedPrincipal": "999.920000",
+  "maximumSettlementLoss": "999.920000",
+  "allWinSettlementSurplus": "724.080000",
+  "scenarios": [
+    {
+      "id": "declared_14_day_reference",
+      "assumedValue": "0.625267",
+      "edgePerShare": "0.045267",
+      "conditionalExpectedSettlementSurplus": "78.040308",
+      "fundedQuantity": 1724,
+      "maximumCost": "999.920000",
+      "sizingReason": "FUNDED_FRACTIONAL_KELLY_REFERENCE"
+    },
+    {
+      "id": "declared_minus_3_point_margin",
+      "assumedValue": "0.414044",
+      "edgePerShare": "-0.165956",
+      "conditionalExpectedSettlementSurplus": "-286.108144",
+      "fundedQuantity": 0,
+      "maximumCost": "0.000000",
+      "sizingReason": "NO_FUNDED_REFERENCE_EDGE"
+    }
+  ],
+  "worstScenarioId": "declared_minus_3_point_margin",
+  "stressFundedQuantity": 0,
+  "evidenceQualifiedShadowQuantity": 0,
+  "evidenceBlockers": [
+    "NO_FRESH_EXECUTABLE_BOOK",
+    "INCOMPLETE_SOURCE_CENSUS",
+    "UNVALIDATED_POPULATION_TRANSPORT",
+    "UNVERIFIED_FEES",
+    "NO_INDEPENDENT_EXECUTION_PERFORMANCE"
+  ],
+  "bookAgeMs": 4721139,
+  "scenariosAreNotConfidenceBounds": true,
+  "harvestExitProfitInferred": false,
+  "historicalProfitabilityEstablished": false,
+  "auditAt": "2026-10-12T07:55:02.552Z",
+  "sources": [
+    {
+      "path": "data/maine-passive-harvest-paper-20261012-bank.json",
+      "sha256": "d0c7c64e3368a5953d9341a27324759327e11f86728824bfe63d23eebb542948"
+    },
+    {
+      "path": "data/maine-passive-harvest-paper-20261012-state.json",
+      "sha256": "d0f156407091e8343a52468c0aa7c82e6aac59a8f64f5bb55c331374476e11bc"
+    }
+  ],
+  "bankHash": "1789f2d8e81bedacba85eeb96b065cf02627f188284a0269ab794d6d829f8185",
+  "historicalQuote": {
+    "marketId": "271",
+    "exchangeId": "960",
+    "eventId": "62965",
+    "side": "NO",
+    "at": "2026-10-12T06:36:21.413Z",
+    "expiresAt": "2026-10-12T06:38:21.413Z",
+    "price": "0.580000",
+    "quantity": 1724
+  },
+  "currentAccountVerified": false,
+  "currentDepthVerified": false,
+  "adverseInputRounding": "floored to six decimal places; scenario assumption, not statistical bound",
+  "reportedPaperFills": 0,
+  "reportedPaperRealized": "0.000000",
+  "interpretation": "Reference settlement value is not a forecast of short-term harvest exits. This historical shadow audit does not prove a live order, fill, harvest loss, market profit, or a calibrated probability bound."
+}
