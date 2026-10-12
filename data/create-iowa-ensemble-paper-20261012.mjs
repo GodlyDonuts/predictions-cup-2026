@@ -1,0 +1,18 @@
+import fs from 'node:fs';import {createHash} from 'node:crypto';import {atomicJson,payloadHash} from '../execution/ledger.mjs';
+import {createSharedReferenceWalletV4,assertSharedReferenceWalletV4} from '../paper/shared-reference-wallet-v4.mjs';
+const stem='data/iowa-ensemble-harvest-paper-20261012',bankFile=stem+'-bank.json',stateFile=stem+'-state.json',registryFile='data/source-shared-v4-registry-20261009.json';
+if(fs.existsSync(bankFile)||fs.existsSync(stateFile))throw Error('ENSEMBLE_BANK_ALREADY_FROZEN');
+const researchFile='research/iowa-primary-ensemble-20261012/results.json',research=JSON.parse(fs.readFileSync(researchFile));
+const values=research.diagnostics.flatMap(v=>v.halfLifeSensitivity.map(r=>r.discountedRepublicanNo));if(values.some(p=>!Number.isFinite(p)||p<=0||p>=1))throw Error('ENSEMBLE_VALUE');
+const value=(Math.floor(Math.min(...values)*1e6)/1e6).toFixed(6),old=JSON.parse(fs.readFileSync('data/depth-aware-source-value-paper-20261009-bank.json'));
+for(const [file,hash]of Object.entries(old.codeIdentity))if(createHash('sha256').update(fs.readFileSync(file)).digest('hex')!==hash)throw Error('ENSEMBLE_ENGINE_CHANGED');
+const {bankHash:ignored,...body}=old,cutoff=new Date(Date.now()+2000).toISOString(),sourceAt=research.asOf;
+if(Date.parse(sourceAt)>Date.parse(cutoff)||Date.now()-Date.parse(sourceAt)>3600000)throw Error('ENSEMBLE_KNOWLEDGE_CLOCK');
+const expiry=new Date(Date.parse(sourceAt)+21600000).toISOString();
+Object.assign(body,{id:'iowa-ensemble-harvest-paper-20261012-v1',cutoff,exitMode:'net_harvest',kellyFractionBps:100,eventFractionBps:100,capitalLimit:'50000.000000',sourceEvidenceFile:researchFile,sourceEvidenceHash:payloadHash(research),sourceCensusComplete:false,modelTransportUnvalidated:true,lowerValueIsScenarioEnvelopeNotConfidenceBound:true,entryExpiryAppliesToThisNewResearchOnly:true});
+const spec={...body.instruments[0],side:'NO',lowerValue:value,sourceAt,entryExpiresAt:expiry,maximumPrincipal:'1000.000000',eventLimit:'1000.000000'};delete spec.sourceBankFile;delete spec.sourceBankHash;body.instruments=[spec];
+const bank={...body,bankHash:payloadHash(body)},state=createSharedReferenceWalletV4(bank);assertSharedReferenceWalletV4(state,bank);
+const registry=JSON.parse(fs.readFileSync(registryFile)),entry={bankFile,stateFile,bankHash:bank.bankHash,journalFile:'iowa-ensemble-harvest-paper-20261012.jsonl'};
+if(registry.cohorts.some(e=>e.bankFile===bankFile))throw Error('ENSEMBLE_REGISTRY_DUPLICATE');
+atomicJson(bankFile,bank);atomicJson(stateFile,state);registry.cohorts.push(entry);atomicJson(registryFile,registry);
+console.log(JSON.stringify({id:bank.id,bankHash:bank.bankHash,cutoff,side:spec.side,reference:value,sourceAt,entryExpiresAt:expiry,kellyFractionBps:100,eventFractionBps:100,actualOrders:0,existingWalletsUnchanged:true}));
