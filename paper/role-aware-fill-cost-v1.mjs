@@ -4,6 +4,7 @@ export function roleAwareFillCostV1({intent,observation,allocations,now,latencyM
  const at=instant(now),started=instant(observation.requestStartedAt),received=instant(observation.receivedAt),created=instant(intent.at),limit=price(intent.limit);
  if(!['buy','sell'].includes(intent.action)||!['maker','marketable'].includes(intent.role)||!Number.isSafeInteger(intent.quantity)||intent.quantity<1||!Number.isSafeInteger(adverseTicks)||adverseTicks<0||adverseTicks>100||!Number.isSafeInteger(latencyMs)||latencyMs<3000||!Array.isArray(allocations))throw Error('ROLE_FILL_INPUT');
  const base={actualOrders:0,actualFillProven:false,executionAuthority:false,role:intent.role,reservedCash:intent.action==='buy'?money(limit*BigInt(intent.quantity)):'0.000000'};
+ if(intent.expiresAt!==undefined){const expiry=instant(intent.expiresAt);if(expiry<=created)throw Error('ROLE_FILL_EXPIRY');if(received>=expiry)return {...base,eligible:false,reason:'INTENT_EXPIRED_BEFORE_OBSERVATION',modeledQuantity:0,modeledNotional:'0.000000',remainingCashReservation:'0.000000',remainingOrderQuantity:0,expired:true};}
  if(started<created+latencyMs||started>received||received>at||at-started>20000)return {...base,eligible:false,reason:'NO_FRESH_INDEPENDENT_LATER_OBSERVATION',modeledQuantity:0};
  let quantity=0,allocatedQuantity=0,value=0n;const seen=new Set(),rows=[];
  for(const d of allocations){
@@ -16,3 +17,4 @@ export function roleAwareFillCostV1({intent,observation,allocations,now,latencyM
  const posted=limit*BigInt(quantity),improvement=intent.action==='buy'?posted-value:value-posted;
  return {...base,eligible:quantity>0,reason:quantity?'COUNTERFACTUAL_ROLE_PRICE_SCENARIO':'NO_SUPPORTED_LIMIT_CROSSING',modeledQuantity:quantity,modeledNotional:money(value),postedLimitNotionalForModeledFills:money(posted),modeledPriceImprovementAgainstLimit:money(improvement),remainingCashReservation:intent.action==='buy'?money(limit*BigInt(intent.quantity-quantity)):'0.000000',remainingOrderQuantity:intent.quantity-quantity,rows,liquidityMustBeConsumedByCaller:true,queuePriorityKnown:false,priceImprovementIsNotProfit:true};
 }
+
