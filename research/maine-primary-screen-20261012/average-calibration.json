@@ -1,0 +1,286 @@
+{
+  "at": "2026-10-12T06:21:49.872Z",
+  "pollSourceHash": "9f0b185506e59117c150fb988e73b612346effe8e3a8f0d90fdafcad07f54756",
+  "outcomeSourceHash": "6f745db1b4a0026ad837e74428f9ed6f3f77fa51eb6f858b58ebdbc186fdb3bd",
+  "rows": [
+    {
+      "halfLifeDays": 7,
+      "definition": {
+        "forecastHorizonDays": 22,
+        "maximumPollAgeDays": 30,
+        "recencyHalfLifeDays": 7
+      },
+      "model": {
+        "family": "historical_bias_corrected",
+        "races": 235,
+        "cycles": [
+          1998,
+          2000,
+          2002,
+          2004,
+          2006,
+          2008,
+          2010,
+          2012,
+          2014,
+          2016,
+          2018,
+          2020,
+          2022
+        ],
+        "trainedThroughYear": 2022,
+        "biasPoints": -0.5489879105586497,
+        "standardDeviationPoints": 7.385614191845373,
+        "distribution": "fixed_t4",
+        "effectiveUnit": "one_state_race",
+        "historicalPopulationTransportMeasured": false
+      },
+      "diagnostic": {
+        "races": 62,
+        "cycles": [
+          2016,
+          2018,
+          2020,
+          2022
+        ],
+        "brier": 0.07615445062607276,
+        "logLoss": 0.2501271795916812,
+        "correctDirections": 57,
+        "bins": [
+          {
+            "low": 0,
+            "high": 0.2,
+            "n": 18,
+            "meanForecast": 0.06019385764360025,
+            "observedFrequency": 0
+          },
+          {
+            "low": 0.2,
+            "high": 0.4,
+            "n": 7,
+            "meanForecast": 0.2917357261796196,
+            "observedFrequency": 0
+          },
+          {
+            "low": 0.4,
+            "high": 0.6,
+            "n": 5,
+            "meanForecast": 0.4644768747403777,
+            "observedFrequency": 0.4
+          },
+          {
+            "low": 0.6,
+            "high": 0.8,
+            "n": 5,
+            "meanForecast": 0.6597583081013622,
+            "observedFrequency": 1
+          },
+          {
+            "low": 0.8,
+            "high": 1.000001,
+            "n": 27,
+            "meanForecast": 0.9467915873241056,
+            "observedFrequency": 0.8888888888888888
+          }
+        ],
+        "independentElectionCycles": 4,
+        "untouchedOriginalForecastVintage": false,
+        "historicalMarketPnlAvailable": false,
+        "profitabilityEstablished": false
+      },
+      "chronologicalEarlierYearTrainingVerified": true,
+      "currentWeightedDemocraticMargin": 2.6282330681722263,
+      "currentRepublicanNoCentralValue": 0.6245681914305506,
+      "currentThreePointAdverseValue": 0.41430913947722803
+    },
+    {
+      "halfLifeDays": 14,
+      "definition": {
+        "forecastHorizonDays": 22,
+        "maximumPollAgeDays": 30,
+        "recencyHalfLifeDays": 14
+      },
+      "model": {
+        "family": "historical_bias_corrected",
+        "races": 235,
+        "cycles": [
+          1998,
+          2000,
+          2002,
+          2004,
+          2006,
+          2008,
+          2010,
+          2012,
+          2014,
+          2016,
+          2018,
+          2020,
+          2022
+        ],
+        "trainedThroughYear": 2022,
+        "biasPoints": -0.4955042280698584,
+        "standardDeviationPoints": 7.350126787137336,
+        "distribution": "fixed_t4",
+        "effectiveUnit": "one_state_race",
+        "historicalPopulationTransportMeasured": false
+      },
+      "diagnostic": {
+        "races": 62,
+        "cycles": [
+          2016,
+          2018,
+          2020,
+          2022
+        ],
+        "brier": 0.07850070234668673,
+        "logLoss": 0.2542429385928836,
+        "correctDirections": 57,
+        "bins": [
+          {
+            "low": 0,
+            "high": 0.2,
+            "n": 16,
+            "meanForecast": 0.044281565658145075,
+            "observedFrequency": 0
+          },
+          {
+            "low": 0.2,
+            "high": 0.4,
+            "n": 9,
+            "meanForecast": 0.28963764003953896,
+            "observedFrequency": 0
+          },
+          {
+            "low": 0.4,
+            "high": 0.6,
+            "n": 5,
+            "meanForecast": 0.4869496568596154,
+            "observedFrequency": 0.4
+          },
+          {
+            "low": 0.6,
+            "high": 0.8,
+            "n": 6,
+            "meanForecast": 0.6898981215583738,
+            "observedFrequency": 0.8333333333333334
+          },
+          {
+            "low": 0.8,
+            "high": 1.000001,
+            "n": 26,
+            "meanForecast": 0.952215401756489,
+            "observedFrequency": 0.9230769230769231
+          }
+        ],
+        "independentElectionCycles": 4,
+        "untouchedOriginalForecastVintage": false,
+        "historicalMarketPnlAvailable": false,
+        "profitabilityEstablished": false
+      },
+      "chronologicalEarlierYearTrainingVerified": true,
+      "currentWeightedDemocraticMargin": 2.575439365215156,
+      "currentRepublicanNoCentralValue": 0.6252671291171922,
+      "currentThreePointAdverseValue": 0.4140448932846461
+    },
+    {
+      "halfLifeDays": 28,
+      "definition": {
+        "forecastHorizonDays": 22,
+        "maximumPollAgeDays": 30,
+        "recencyHalfLifeDays": 28
+      },
+      "model": {
+        "family": "historical_bias_corrected",
+        "races": 235,
+        "cycles": [
+          1998,
+          2000,
+          2002,
+          2004,
+          2006,
+          2008,
+          2010,
+          2012,
+          2014,
+          2016,
+          2018,
+          2020,
+          2022
+        ],
+        "trainedThroughYear": 2022,
+        "biasPoints": -0.4609115060932263,
+        "standardDeviationPoints": 7.35315148651846,
+        "distribution": "fixed_t4",
+        "effectiveUnit": "one_state_race",
+        "historicalPopulationTransportMeasured": false
+      },
+      "diagnostic": {
+        "races": 62,
+        "cycles": [
+          2016,
+          2018,
+          2020,
+          2022
+        ],
+        "brier": 0.08062005254387106,
+        "logLoss": 0.25845798714979673,
+        "correctDirections": 55,
+        "bins": [
+          {
+            "low": 0,
+            "high": 0.2,
+            "n": 16,
+            "meanForecast": 0.04479744533549013,
+            "observedFrequency": 0
+          },
+          {
+            "low": 0.2,
+            "high": 0.4,
+            "n": 8,
+            "meanForecast": 0.29306826206376746,
+            "observedFrequency": 0
+          },
+          {
+            "low": 0.4,
+            "high": 0.6,
+            "n": 7,
+            "meanForecast": 0.4987076341272787,
+            "observedFrequency": 0.42857142857142855
+          },
+          {
+            "low": 0.6,
+            "high": 0.8,
+            "n": 5,
+            "meanForecast": 0.7105971697266305,
+            "observedFrequency": 0.8
+          },
+          {
+            "low": 0.8,
+            "high": 1.000001,
+            "n": 26,
+            "meanForecast": 0.9516015661979631,
+            "observedFrequency": 0.9230769230769231
+          }
+        ],
+        "independentElectionCycles": 4,
+        "untouchedOriginalForecastVintage": false,
+        "historicalMarketPnlAvailable": false,
+        "profitabilityEstablished": false
+      },
+      "chronologicalEarlierYearTrainingVerified": true,
+      "currentWeightedDemocraticMargin": 2.540538777013304,
+      "currentRepublicanNoCentralValue": 0.625191035445869,
+      "currentThreePointAdverseValue": 0.41404989780032925
+    }
+  ],
+  "recencyFamilySelected": false,
+  "revisedHistoricalArchive": true,
+  "historicalPublicationTimesUnknown": true,
+  "rvLvTransportUnvalidated": true,
+  "currentSourceCensusIncomplete": true,
+  "winProbabilitiesAreNotShortTermPriceForecasts": true,
+  "actualOrders": 0,
+  "historicalMarketPnlAvailable": false,
+  "profitabilityEstablished": false
+}
