@@ -11,7 +11,7 @@ const [entry,fill,mark]=a.captures,decision=instant(r.decisionAt);
 need(instant(m.startedAt)<instant(entry.at)&&instant(entry.at)<=decision&&decision<instant(fill.at)&&instant(fill.at)<instant(mark.at),'CAPTURE_CHRONOLOGY');
 const clockChecks=[],roots=new Map(entry.roots.map(x=>[x.marketId,x.rootHash]));
 for(const[index,capture]of a.captures.entries()){
- need(capture.phase==='complete'&&capture.books.length===2&&capture.roots.length===2&&new Set(capture.books.map(x=>x.book.marketId)).size===2&&new Set(capture.roots.map(x=>x.marketId)).size===2,'COMPLETE_DISTINCT_CAPTURE');
+ need(capture.phase===['entry','fill','mark'][index]&&capture.books.length===2&&capture.roots.length===2&&new Set(capture.books.map(x=>x.book.marketId)).size===2&&new Set(capture.roots.map(x=>x.marketId)).size===2,'COMPLETE_DISTINCT_CAPTURE');
  need(capture.originalCaptureHash===r.sourceHashes[index]&&capture.at===r.captureClocks[index],'SOURCE_HASH_BINDING');
  for(const wrapper of capture.books){const b=wrapper.book,root=capture.roots.find(x=>x.marketId===b.marketId);
   need(root&&payloadHash(root.root)===root.rootHash&&root.rootHash===roots.get(b.marketId),'RULE_ROOT_IDENTITY');
