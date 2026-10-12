@@ -36,3 +36,10 @@ test('caller-bound markout reserve reduces heuristic edge and keeps freshness se
   f.markoutReserve.perShare='0.020000';assert.ok(adaptMakerProposalV1(f).quotes.every(q=>q.netEdgePerShare.startsWith('-')));
   f.markoutReserve.knownAt='2026-10-12T22:40:01.000Z';assert.throws(()=>adaptMakerProposalV1(f),/MARKOUT_RESERVE/);
 });
+test('late receipt cannot extend original request freshness through later scheduler decisions',()=>{
+  const f=fixture();f.book.requestStartedAt='2026-10-12T22:39:51.000Z';const r=adaptMakerProposalV1(f);
+  assert.equal(r.quotes[0].validUntil,'2026-10-12T22:40:01.000Z');
+  const a=allocateFundedMakerQuotesV1({at:'2026-10-12T22:40:02.000Z',cashAvailable:'1.000000',maximumCommitted:'5.000000',
+    maximumOrderCost:'1.000000',maximumShares:2,ownedPositions:[],openOrders:[],proposals:r.quotes});
+  assert.equal(a.quotes.length,0);assert.equal(a.additionalBuyReservation,'0.000000');
+});

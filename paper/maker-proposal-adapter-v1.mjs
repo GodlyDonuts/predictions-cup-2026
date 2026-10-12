@@ -32,7 +32,8 @@ export function adaptMakerProposalV1({proposal,book,valuations,markoutReserve=nu
       instant(v.knownAt)<=now,'VALUATION');
     values.set(key(v),v);
   }
-  const seen=new Set(),validUntil=new Date(now+lifetimeMs).toISOString();
+  // Receipt time is the causal availability clock, not a reset of source age.
+  const seen=new Set(),validUntil=new Date(Math.min(now+lifetimeMs,started+10000)).toISOString();
   const quotes=[...proposal.sells,...proposal.buys].map(q=>{
     need(['YES','NO'].includes(q.side)&&['buy','sell'].includes(q.action)&&!seen.has(key(q))&&
       Number.isSafeInteger(q.quantity)&&q.quantity>0,'QUOTE');seen.add(key(q));
