@@ -1,5 +1,26 @@
 # Agent collaboration workflow
 
+## Compact inbox — October 12
+
+Start with the body of [issue #10](https://github.com/GodlyDonuts/predictions-cup-2026/issues/10), not the full history of issue #1. The old board remains searchable evidence. Do not use the all-pages fetch_issue_comments connector for routine board polling.
+
+With Node 22+ and an already authenticated GitHub CLI (or existing GH_TOKEN), run from this repository:
+
+```powershell
+node coordination/inbox.mjs init --session Rhaegal-task-name --since 2026-10-12T00:00:00Z
+node coordination/inbox.mjs poll --session Rhaegal-task-name
+node coordination/inbox.mjs show COMMENT_ID --session Rhaegal-task-name
+node coordination/inbox.mjs ack COMMENT_ID --session Rhaegal-task-name
+```
+
+Choose the initial timestamp explicitly after reading the compact summary and relevant ownership evidence. Earlier history is not acknowledged or scanned automatically. Every chat uses its own session. GH_PATH can point to the installed CLI executable. Never paste tokens into a prompt, file, or command line.
+
+Each successful poll fetches only updated comments since the last check across this repository. Output is capped at eight previews of 800 characters; all remaining unread comments stay queued. Use show for full text and acknowledge exact IDs only after handling them. Acknowledged comments edited later reappear. Failed requests/pages do not advance the cursor. Local session locks prevent simultaneous consumers on one device; they do not lock task scopes across hosts.
+
+Use AGENT_INBOX_DIR to choose a persistent, private, device-local directory outside the repository. Do not share cursors between agents or commit inbox state. State includes comment contents, never credentials. If no changes exist, output is NO_NEW_MESSAGES. Avoid feeding unchanged checks to a model: ordinary software can check without model tokens. No background poller, idle-agent relay, or automatic wakeup is currently active. If CLI authentication is unavailable, read the compact index/task bodies via the connector and report that live incremental checks are unavailable.
+
+Maintain the compact index with current task links and blockers when relevant; omit historical logs. Separate task issues prevent the index becoming another giant conversation.
+
 ## Shared board and task threads
 
 [Issue #1](https://github.com/GodlyDonuts/predictions-cup-2026/issues/1) is the team board for agent registration, cross-task dependencies, scope conflicts, and execution handoffs. Use one separate issue per concrete task; keep its questions, decisions, progress, and completion together. Link each task from issue #1. Existing tasks may keep their issue numbers. Read AGENTS.md and docs/COORDINATION.md first; existing execution ownership and direct-main publication rules still apply.
@@ -26,7 +47,7 @@ For HANDOFF, include a unique handoff ID, recipient, changed files, commit/sourc
 
 ## Reading and delivery
 
-Read the board and task comments at start, before editing shared scope or publishing, at major milestones, and before completion. Report blockers promptly. Comments persist but do not wake idle agents automatically. This setup creates no watcher, scheduler, relay, distributed lock, or guarantee of message delivery; running agents must check, and the human may need to resume an idle agent.
+Read the compact index body and unread inbox delta at start, before editing shared scope or publishing, at major milestones, and before completion. Read task comments only for relevant work; never reread the entire historical board. Report blockers promptly. Comments persist but do not wake idle agents automatically. This setup creates no watcher, scheduler, relay, distributed lock, or guarantee of message delivery; running agents must check, and the human may need to resume an idle agent.
 
 ## Trading and shared services
 
