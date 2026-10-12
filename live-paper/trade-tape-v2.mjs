@@ -1,5 +1,6 @@
 import path from 'node:path';
 import {tapeMarketCopyV1} from './tape-market-copy-v1.mjs';
+import {openTapeDeltaJournalV1,restoreTapeLogicalStateV1} from './tape-delta-journal-v1.mjs';
 import fs from 'node:fs';
 import {Journal} from './transport-runtime.mjs';
 import {digest} from './model.mjs';
@@ -46,11 +47,12 @@ export function selectAuxiliaryReads(historyBudget,cycle){
  const tapeReads=historyBudget>0&&cycle%2===0?1:0;
  return {historyReads:historyBudget-tapeReads,tapeReads,totalReads:historyBudget};
 }
-export function createTradeTapeV2({runtimeDir,universe,now=Date.now,canOperate=()=>true,onPage=()=>{},restoredJournal=null}){
+export function createTradeTapeV2({runtimeDir,universe,now=Date.now,canOperate=()=>true,onPage=()=>{},restoredJournal=null,compactCheckpoints=false}){
  const scope={tournamentId:universe.tournamentId,exchanges:universe.exchanges.map(({marketId,exchangeId})=>({marketId,exchangeId}))},scopeHash=digest(scope);
  const file=path.join(runtimeDir,'anonymous-trades.jsonl'),journal=restoredJournal??new Journal(file),attemptFile=path.join(runtimeDir,'trade-tape-attempts.json');
  if(restoredJournal)check(journal instanceof Journal&&journal.file===file&&Number.isSafeInteger(journal.sequence)&&journal.sequence>=0&&(journal.sequence===0?journal.last===null&&journal.previous==='':journal.last?.sequence===journal.sequence&&journal.hash(journal.last)===journal.previous),'TRADE_TAPE_RESTORED_JOURNAL');
- let state=journal.last?.state||{schemaVersion:1,seenIdentityVersion:2,scopeHash,pages:0,tradesCaptured:0,duplicates:0,markets:{},lastAt:null},pending=null;
+ check(typeof compactCheckpoints==='boolean','TRADE_TAPE_COMPACT_CONFIGURATION');
+ let state=restoreTapeLogicalStateV1(journal)||{schemaVersion:1,seenIdentityVersion:2,scopeHash,pages:0,tradesCaptured:0,duplicates:0,markets:{},lastAt:null},pending=null;
  check(state.schemaVersion===1&&state.scopeHash===scopeHash,'TRADE_TAPE_RESTART_SCOPE_INVALID');
  // Upgrade only the derived dedup map. The original event bytes and raw source
  // timestamps remain intact; retained legacy identities must not become novel.
@@ -64,6 +66,7 @@ export function createTradeTapeV2({runtimeDir,universe,now=Date.now,canOperate=(
   for(const [exchangeId,m] of Object.entries(state.markets))for(const key of Object.keys(m.seen))check(resolved.has(exchangeId+':'+key),'TRADE_TAPE_LEGACY_UNRESOLVED');
   next.seenIdentityVersion=2;state=next;
  }
+ const writer=compactCheckpoints?openTapeDeltaJournalV1(journal,state):journal;
  let attempts=fs.existsSync(attemptFile)?JSON.parse(fs.readFileSync(attemptFile)):{schemaVersion:1,scopeHash,markets:{}};
  check(attempts.schemaVersion===1&&attempts.scopeHash===scopeHash&&attempts.markets&&Object.entries(attempts.markets).every(([exchangeId,at])=>scope.exchanges.some(x=>x.exchangeId===exchangeId)&&clock(at))
   &&(attempts.attemptsReserved===undefined||Number.isSafeInteger(attempts.attemptsReserved)&&attempts.attemptsReserved>=0),'TRADE_TAPE_ATTEMPT_STATE_INVALID');
@@ -133,7 +136,7 @@ export function createTradeTapeV2({runtimeDir,universe,now=Date.now,canOperate=(
    m.lastRequestWasRecovery=useRecovery;
    next.markets[chosen.exchangeId]=m;next.pages++;next.lastAt=page.receivedAt;
    // The immutable event holds only novel public trades; state holds resumable pagination/deduplication.
-   try{journal.commit(next,{type:'anonymous_trade_page',...page,tapeScheduling:{policy:current.length?'current_tail_three_of_four_v1':'legacy_focus',slot:currentSlot?'current':'background',currentMarketCount:current.length},trades:novel,receivedCount:page.trades.length,duplicateCount:page.trades.length-novel.length,...(useTail?{queryPurpose:'bounded_current_tape_tail_v2',historicalWindowPreserved:true}:useRecovery?{queryPurpose:'expired_paper_quote_coverage_recovery',recoveryRequest:recovery}:{queryPurpose:'historical_tape_backfill'})});}
+   try{writer.commit(next,{type:'anonymous_trade_page',...page,tapeScheduling:{policy:current.length?'current_tail_three_of_four_v1':'legacy_focus',slot:currentSlot?'current':'background',currentMarketCount:current.length},trades:novel,receivedCount:page.trades.length,duplicateCount:page.trades.length-novel.length,...(useTail?{queryPurpose:'bounded_current_tape_tail_v2',historicalWindowPreserved:true}:useRecovery?{queryPurpose:'expired_paper_quote_coverage_recovery',recoveryRequest:recovery}:{queryPurpose:'historical_tape_backfill'})});}
    catch{const e=Error('TRADE_TAPE_RECORDING_FAILED');e.durableRecordingFailed=true;throw e;}
    state=next;onPage(structuredClone({...journal.last,hash:journal.previous}));return stats();
   }finally{pending=null;}
