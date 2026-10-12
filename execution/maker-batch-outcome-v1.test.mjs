@@ -4,8 +4,9 @@ import {bindMakerBatchV1,assertMakerBatchBindingV1,inspectMakerBatchOutcomeV1} f
 import fs from 'node:fs';import os from 'node:os';import path from 'node:path';
 import {CoordinatedAccountClientV2} from '../live-paper/coordinated-account-client-v2.mjs';
 const at='2026-10-12T22:20:00.000Z',tournamentId='550e8400-e29b-41d4-a716-446655440000';
-function fixture(count=2){const desired=Array.from({length:count},(_,i)=>String(101+i)).map(exchangeId=>({exchangeId,side:'yes',action:'buy',quantity:2,price:'0.450000',
-  sourceAt:at,validUntil:'2026-10-12T22:20:10.000Z',netEdgePerShare:'0.010000',reduceOnly:false}));
+function fixture(count=2,coveredSell=false){const desired=Array.from({length:count},(_,i)=>String(101+i)).map((exchangeId,i)=>({exchangeId,side:'yes',
+  action:coveredSell&&i===0?'sell':'buy',quantity:2,price:'0.450000',
+  sourceAt:at,validUntil:'2026-10-12T22:20:10.000Z',netEdgePerShare:'0.010000',reduceOnly:coveredSell&&i===0}));
   const decision=planMakerQuoteV1(createMakerSchedulerV1(),{at,account:{observedAt:at,complete:true,orders:[]},desired,
     budget:{availableWrites:1,nextWriteAt:at},entriesEnabled:true,exitsEnabled:true,cancelEnabled:true});
   const request=bindMakerBatchV1({decision,tournamentId,idempotencyKey:'maker-batch-test-only'});
@@ -57,6 +58,17 @@ test('engine canonicalization mismatch preserves returned identity and blocks re
   const{request}=fixture(),r=inspectMakerBatchOutcomeV1(request,response(200,[accepted(0,{action:'sell',side:'no',price:.55}),accepted(1)]));
   assert.equal(r.items[0].kind,'unknown');assert.equal(r.items[0].reason,'canonical_action_mismatch');
   assert.deepEqual(r.knownOrderIds,['1001','1002']);assert.equal(r.finalEnvelope,false);
+});
+test('documented sell-to-complement-buy keeps actual mapping but never substitutes for cash/fill reconciliation',()=>{
+  const{request}=fixture(2,true);const converted=accepted(0,{side:'no',price:.55});
+  const r=inspectMakerBatchOutcomeV1(request,response(200,[converted,accepted(1)]));
+  assert.equal(r.finalEnvelope,true);assert.equal(r.items[0].kind,'accepted_needs_reconciliation');
+  assert.equal(r.items[0].canonicalMapping,'sell_complement_buy');assert.deepEqual(r.items[0].canonicalPlacement,{action:'buy',side:'no',price:.55,quantity:2});
+  assert.equal(r.accountReconciliationRequired,true);assert.deepEqual(r.knownOrderIds,['1001','1002']);
+  for(const change of [{price:.555},{quantity:1},{side:'yes'},{action:'sell',side:'no'}]){
+    const bad=inspectMakerBatchOutcomeV1(request,response(200,[{...converted,data:{...converted.data,...change}},accepted(1)]));
+    assert.equal(bad.finalEnvelope,false);assert.equal(bad.items[0].kind,'unknown');
+  }
 });
 test('missing order IDs, duplicate indexes and foreign exchanges retain all returned identities',()=>{
   const{request}=fixture();assert.equal(inspectMakerBatchOutcomeV1(request,response(200,[accepted(0,{orderId:null}),accepted(1)])).finalEnvelope,false);

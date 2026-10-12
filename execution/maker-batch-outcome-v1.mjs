@@ -7,6 +7,8 @@ import {payloadHash, canonicalJson} from './ledger.mjs';
 const need=(ok,code)=>{if(!ok)throw Error('MAKER_BATCH_'+code);};
 const object=v=>v!==null&&typeof v==='object'&&!Array.isArray(v);
 const id=v=>typeof v==='string'&&/^[1-9]\d*$/.test(v)||Number.isSafeInteger(v)&&v>0;
+const tick=v=>typeof v==='number'&&Number.isFinite(v)&&v>=.005&&v<=.995&&
+  Math.abs(v*200-Math.round(v*200))<1e-8?Math.round(v*200):null;
 const freeze=v=>{if(object(v)||Array.isArray(v)){Object.values(v).forEach(freeze);Object.freeze(v);}return v;};
 
 export function bindMakerBatchV1({decision,tournamentId,idempotencyKey}) {
@@ -58,8 +60,18 @@ export function inspectMakerBatchOutcomeV1(request,response) {
     const orderId=id(data.orderId)?String(data.orderId):null;
     if(row.ok===true&&row.status>=200&&row.status<300){
       const scoped=data.exchangeId===q.exchangeId;
-      const canonical=data.action===q.action&&data.side===q.side&&data.price===q.price&&data.quantity===q.quantity;
+      const observedTick=tick(data.price),requestedTick=tick(q.price);
+      const sameQuantity=data.quantity===q.quantity;
+      const identity=sameQuantity&&data.action===q.action&&data.side===q.side&&observedTick!==null&&observedTick===requestedTick;
+      // Official engine semantics can express an owned sell as acquisition of
+      // the other outcome. Recognize only the exact tick-complement mapping;
+      // cash proceeds/redemption and coverage still need owner reconciliation.
+      const complement=sameQuantity&&q.action==='sell'&&data.action==='buy'&&
+        data.side===(q.side==='yes'?'no':'yes')&&observedTick!==null&&observedTick===200-requestedTick;
+      const canonical=identity||complement;
       items[i]={index:i,kind:orderId&&scoped&&canonical?'accepted_needs_reconciliation':'unknown',orderId,
+        canonicalMapping:identity?'identity':complement?'sell_complement_buy':null,
+        canonicalPlacement:canonical?{action:data.action,side:data.side,price:data.price,quantity:data.quantity}:null,
         reason:!orderId?'missing_order_identity':!scoped?'exchange_mismatch':!canonical?'canonical_action_mismatch':'placement_only'};
     }else{
       const code=typeof data.code==='string'?data.code:typeof data.error?.code==='string'?data.error.code:null;
