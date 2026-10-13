@@ -1,0 +1,3793 @@
+{
+  "schemaVersion": 2,
+  "mode": "conservative_displayed_queue_touch_audit_v1",
+  "status": "indeterminate_no_confirmed_queue_fills",
+  "runMode": "fixed_source_hashes_fixed_policy_single_chronological_replay",
+  "generatedAt": "2026-10-13T23:05:53.176Z",
+  "policy": {
+    "quote": "one paired hypothetical YES best-bid/best-ask quote per stable exchange per 30-second receipt-time slot",
+    "activationLatencyMs": 3000,
+    "quoteTtlAfterActivationMs": 10000,
+    "maximumBookAgeMs": 3000,
+    "initialQueueAhead": "all displayed top-level quantity at the quote price",
+    "displayedIncreases": "add each observed same-price top-level increase to an observed queue-ahead proxy; snapshots can miss intervening additions",
+    "displayedReductions": "never reduce queue ahead for displayed-size decreases; no cancellation is treated as a trade",
+    "tradeSide": "not inferred; captured trade reports have no aggressor side and sequence comparison does not establish queue-side attribution; trade id and sequence are retained as distinct fields",
+    "fillRule": "no print is allowed to decrement queue or confirm a fill without a supported aggressor-side/queue relationship",
+    "markoutHorizonsMs": [
+      1000,
+      5000,
+      30000
+    ],
+    "fees": "0.000000",
+    "oneTickEachWayStress": "0.010000"
+  },
+  "split": {
+    "developmentDays": [
+      "2026-10-05",
+      "2026-10-06"
+    ],
+    "developmentThrough": "2026-10-06T03:28:12.483Z",
+    "untouchedHeldOutDay": "2026-10-13",
+    "untouchedHeldOutFrom": "2026-10-13T13:28:06.671Z",
+    "order": "all development prefixes replayed before the holdout prefix; policy fixed in code and no fitting, selection, or tuning occurs"
+  },
+  "scope": {
+    "tournamentId": "bda92870-621e-47b0-bc3c-3602c5c26f55",
+    "sourceIdentityCounts": [
+      {
+        "day": "2026-10-05",
+        "count": 237
+      },
+      {
+        "day": "2026-10-06",
+        "count": 237
+      },
+      {
+        "day": "2026-10-13",
+        "count": 237
+      }
+    ],
+    "commonIdentityCount": 237,
+    "commonIdentitySha256": "a946bcbdca57d7a1e7df388916bd5ba2007f6b846eae33fbec096490b4cda548"
+  },
+  "sources": [
+    {
+      "day": "2026-10-05",
+      "role": "development",
+      "file": "realtime-2026-10-05T22-39-17-072Z-a9bb9f87-8ac2-4373-b7ec-b499ddf7176a.jsonl",
+      "prefixBytes": 918966309,
+      "sha256": "20c45ce84282c59efca2f6432666869ba5615b90e53cbdd15c985511751e3fe4",
+      "captureRecords": 226132,
+      "from": "2026-10-05T22:39:17.074Z",
+      "through": "2026-10-06T00:11:21.428Z",
+      "scopeIdentity": {
+        "sourceIdentityCount": 237,
+        "comparableIdentityCount": 237,
+        "excludedIdentityCount": 0,
+        "sha256": "a946bcbdca57d7a1e7df388916bd5ba2007f6b846eae33fbec096490b4cda548"
+      },
+      "acceptedBookPoints": 152335,
+      "rejectedBookPoints": 61100,
+      "marketBatchRowsWithInvalidRevision": 0,
+      "currentFileBytes": 918966309
+    },
+    {
+      "day": "2026-10-06",
+      "role": "development",
+      "file": "realtime-2026-10-06T00-21-21-601Z-1175216a-92f4-49ad-9cb9-550c66ffb2ab.jsonl",
+      "prefixBytes": 1809102092,
+      "sha256": "3d77a1ba4a66ca16ff1c16cc51f9a2cf0b258f33c11b90329c00d39a16ebc2e6",
+      "captureRecords": 451485,
+      "from": "2026-10-06T00:21:21.603Z",
+      "through": "2026-10-06T03:28:12.483Z",
+      "scopeIdentity": {
+        "sourceIdentityCount": 237,
+        "comparableIdentityCount": 237,
+        "excludedIdentityCount": 0,
+        "sha256": "a946bcbdca57d7a1e7df388916bd5ba2007f6b846eae33fbec096490b4cda548"
+      },
+      "acceptedBookPoints": 419375,
+      "rejectedBookPoints": 11238,
+      "marketBatchRowsWithInvalidRevision": 0,
+      "currentFileBytes": 1809102092
+    },
+    {
+      "day": "2026-10-13",
+      "role": "untouched_held_out",
+      "file": "realtime-2026-10-13T13-28-06-669Z-a7674ae9-ed0e-41c6-90c8-390b1ce0dc8b.jsonl",
+      "prefixBytes": 364603159,
+      "sha256": "83dd7cc069ce221617425c533a6d1938c3056fcac20254c4938cddb7d4c96f61",
+      "captureRecords": 104446,
+      "from": "2026-10-13T13:28:06.671Z",
+      "through": "2026-10-13T14:44:08.976Z",
+      "scopeIdentity": {
+        "sourceIdentityCount": 237,
+        "comparableIdentityCount": 237,
+        "excludedIdentityCount": 0,
+        "sha256": "a946bcbdca57d7a1e7df388916bd5ba2007f6b846eae33fbec096490b4cda548"
+      },
+      "acceptedBookPoints": 86902,
+      "rejectedBookPoints": 4369,
+      "marketBatchRowsWithInvalidRevision": 0,
+      "currentFileBytes": 364603159
+    }
+  ],
+  "replaySummary": {
+    "captureRecords": 782063,
+    "observedMarketBatchRecords": 735319,
+    "helperAcceptedBookPoints": 658612,
+    "helperRejectedBookPoints": 76707
+  },
+  "sequenceDiagnostic": {
+    "tradeReports": 20702,
+    "reportsWithPreviousBook": 20149,
+    "previousBookSequenceLessThanTrade": 17225,
+    "previousBookExactlyTradeMinusOne": 0,
+    "reportsWithSameBatchBook": 17392,
+    "sameBatchBookSequenceAtLeastTrade": 17392,
+    "sameBatchBookSequenceGreaterThanTrade": 17392,
+    "exactBookTradeBookAdjacency": 0,
+    "tradeWithinDeliverySequenceBounds": 20702,
+    "invalidOrNullSequence": 0,
+    "interpretation": "saved-field comparability audit only. No common trade/book ordering guarantee, aggressor side, or consumed queue is established; sequence values never create or decrement a fill.",
+    "previousBookRelationDefinition": "last earlier captured valid book for the same exchange since the latest topic-wide lifecycle/revision boundary; per-exchange dirty hints do not erase this descriptive historical snapshot, and no continuity is implied"
+  },
+  "outcomes": {
+    "status": "indeterminate_no_confirmed_queue_fills",
+    "counts": {
+      "marketBatchRecords": 735319,
+      "acceptedBookPoints": 651959,
+      "rejectedBookPoints": 83360,
+      "tradeReportsSeen": 20702,
+      "uniqueScopedTradeReports": 20702,
+      "duplicateTradeReports": 0,
+      "invalidTradeReports": 0,
+      "candidateQuotes": 317482,
+      "activatedQuotes": 46,
+      "staleCensoredQuotes": 203932,
+      "priceMoveCensoredQuotes": 0,
+      "gapCensoredQuotes": 0,
+      "invalidationCensoredQuotes": 113550,
+      "captureBoundaryCensoredQuotes": 0,
+      "expiredQuotes": 0,
+      "observedSamePriceQueueIncreases": 0,
+      "observedDisplayReductionsIgnored": 0,
+      "touchPriceTradeReportsUnknownSide": 0,
+      "touchPriceTradeQuantityUnknownSide": 0,
+      "confirmedQueueFills": 0,
+      "markoutSamples": 0,
+      "quotesByStatus": {
+        "censored_invalidation": 113550,
+        "censored_stale": 203932
+      }
+    },
+    "outcomeTables": [
+      {
+        "fold": "development",
+        "action": "buy",
+        "horizonMs": 1000,
+        "candidateQuotes": 128305,
+        "activatedQuotes": 23,
+        "initialQueueAheadShares": 3002074844,
+        "observedQueueIncreaseSharesAdded": 0,
+        "displayReductionsIgnored": 0,
+        "touchPriceTradeReportsUnknownSide": 0,
+        "touchPriceTradeQuantityUnknownSide": 0,
+        "touchPriceReportMarkets": 0,
+        "confirmedQueueFills": 0,
+        "markoutSamples": 0,
+        "meanExecutableNet": null,
+        "oneTickEachWayStressMean": null,
+        "marketClusterUncertainty": {
+          "quoteMarketClusters": 237,
+          "effectiveIndependentQuoteMarkets": 235.71381632279113,
+          "fillOutcomeMarketClusters": 0,
+          "effectiveIndependentFillMarkets": null,
+          "clusteredStandardError": null,
+          "clustered95PercentInterval": null,
+          "uncertaintyStatus": "unavailable_without_confirmed_queue_fill_outcomes"
+        }
+      },
+      {
+        "fold": "development",
+        "action": "buy",
+        "horizonMs": 5000,
+        "candidateQuotes": 128305,
+        "activatedQuotes": 23,
+        "initialQueueAheadShares": 3002074844,
+        "observedQueueIncreaseSharesAdded": 0,
+        "displayReductionsIgnored": 0,
+        "touchPriceTradeReportsUnknownSide": 0,
+        "touchPriceTradeQuantityUnknownSide": 0,
+        "touchPriceReportMarkets": 0,
+        "confirmedQueueFills": 0,
+        "markoutSamples": 0,
+        "meanExecutableNet": null,
+        "oneTickEachWayStressMean": null,
+        "marketClusterUncertainty": {
+          "quoteMarketClusters": 237,
+          "effectiveIndependentQuoteMarkets": 235.71381632279113,
+          "fillOutcomeMarketClusters": 0,
+          "effectiveIndependentFillMarkets": null,
+          "clusteredStandardError": null,
+          "clustered95PercentInterval": null,
+          "uncertaintyStatus": "unavailable_without_confirmed_queue_fill_outcomes"
+        }
+      },
+      {
+        "fold": "development",
+        "action": "buy",
+        "horizonMs": 30000,
+        "candidateQuotes": 128305,
+        "activatedQuotes": 23,
+        "initialQueueAheadShares": 3002074844,
+        "observedQueueIncreaseSharesAdded": 0,
+        "displayReductionsIgnored": 0,
+        "touchPriceTradeReportsUnknownSide": 0,
+        "touchPriceTradeQuantityUnknownSide": 0,
+        "touchPriceReportMarkets": 0,
+        "confirmedQueueFills": 0,
+        "markoutSamples": 0,
+        "meanExecutableNet": null,
+        "oneTickEachWayStressMean": null,
+        "marketClusterUncertainty": {
+          "quoteMarketClusters": 237,
+          "effectiveIndependentQuoteMarkets": 235.71381632279113,
+          "fillOutcomeMarketClusters": 0,
+          "effectiveIndependentFillMarkets": null,
+          "clusteredStandardError": null,
+          "clustered95PercentInterval": null,
+          "uncertaintyStatus": "unavailable_without_confirmed_queue_fill_outcomes"
+        }
+      },
+      {
+        "fold": "development",
+        "action": "sell",
+        "horizonMs": 1000,
+        "candidateQuotes": 128305,
+        "activatedQuotes": 23,
+        "initialQueueAheadShares": 1258096160,
+        "observedQueueIncreaseSharesAdded": 0,
+        "displayReductionsIgnored": 0,
+        "touchPriceTradeReportsUnknownSide": 0,
+        "touchPriceTradeQuantityUnknownSide": 0,
+        "touchPriceReportMarkets": 0,
+        "confirmedQueueFills": 0,
+        "markoutSamples": 0,
+        "meanExecutableNet": null,
+        "oneTickEachWayStressMean": null,
+        "marketClusterUncertainty": {
+          "quoteMarketClusters": 237,
+          "effectiveIndependentQuoteMarkets": 235.71381632279113,
+          "fillOutcomeMarketClusters": 0,
+          "effectiveIndependentFillMarkets": null,
+          "clusteredStandardError": null,
+          "clustered95PercentInterval": null,
+          "uncertaintyStatus": "unavailable_without_confirmed_queue_fill_outcomes"
+        }
+      },
+      {
+        "fold": "development",
+        "action": "sell",
+        "horizonMs": 5000,
+        "candidateQuotes": 128305,
+        "activatedQuotes": 23,
+        "initialQueueAheadShares": 1258096160,
+        "observedQueueIncreaseSharesAdded": 0,
+        "displayReductionsIgnored": 0,
+        "touchPriceTradeReportsUnknownSide": 0,
+        "touchPriceTradeQuantityUnknownSide": 0,
+        "touchPriceReportMarkets": 0,
+        "confirmedQueueFills": 0,
+        "markoutSamples": 0,
+        "meanExecutableNet": null,
+        "oneTickEachWayStressMean": null,
+        "marketClusterUncertainty": {
+          "quoteMarketClusters": 237,
+          "effectiveIndependentQuoteMarkets": 235.71381632279113,
+          "fillOutcomeMarketClusters": 0,
+          "effectiveIndependentFillMarkets": null,
+          "clusteredStandardError": null,
+          "clustered95PercentInterval": null,
+          "uncertaintyStatus": "unavailable_without_confirmed_queue_fill_outcomes"
+        }
+      },
+      {
+        "fold": "development",
+        "action": "sell",
+        "horizonMs": 30000,
+        "candidateQuotes": 128305,
+        "activatedQuotes": 23,
+        "initialQueueAheadShares": 1258096160,
+        "observedQueueIncreaseSharesAdded": 0,
+        "displayReductionsIgnored": 0,
+        "touchPriceTradeReportsUnknownSide": 0,
+        "touchPriceTradeQuantityUnknownSide": 0,
+        "touchPriceReportMarkets": 0,
+        "confirmedQueueFills": 0,
+        "markoutSamples": 0,
+        "meanExecutableNet": null,
+        "oneTickEachWayStressMean": null,
+        "marketClusterUncertainty": {
+          "quoteMarketClusters": 237,
+          "effectiveIndependentQuoteMarkets": 235.71381632279113,
+          "fillOutcomeMarketClusters": 0,
+          "effectiveIndependentFillMarkets": null,
+          "clusteredStandardError": null,
+          "clustered95PercentInterval": null,
+          "uncertaintyStatus": "unavailable_without_confirmed_queue_fill_outcomes"
+        }
+      },
+      {
+        "fold": "untouched_held_out",
+        "action": "buy",
+        "horizonMs": 1000,
+        "candidateQuotes": 30436,
+        "activatedQuotes": 0,
+        "initialQueueAheadShares": 403638139,
+        "observedQueueIncreaseSharesAdded": 0,
+        "displayReductionsIgnored": 0,
+        "touchPriceTradeReportsUnknownSide": 0,
+        "touchPriceTradeQuantityUnknownSide": 0,
+        "touchPriceReportMarkets": 0,
+        "confirmedQueueFills": 0,
+        "markoutSamples": 0,
+        "meanExecutableNet": null,
+        "oneTickEachWayStressMean": null,
+        "marketClusterUncertainty": {
+          "quoteMarketClusters": 237,
+          "effectiveIndependentQuoteMarkets": 234.48612422460243,
+          "fillOutcomeMarketClusters": 0,
+          "effectiveIndependentFillMarkets": null,
+          "clusteredStandardError": null,
+          "clustered95PercentInterval": null,
+          "uncertaintyStatus": "unavailable_without_confirmed_queue_fill_outcomes"
+        }
+      },
+      {
+        "fold": "untouched_held_out",
+        "action": "buy",
+        "horizonMs": 5000,
+        "candidateQuotes": 30436,
+        "activatedQuotes": 0,
+        "initialQueueAheadShares": 403638139,
+        "observedQueueIncreaseSharesAdded": 0,
+        "displayReductionsIgnored": 0,
+        "touchPriceTradeReportsUnknownSide": 0,
+        "touchPriceTradeQuantityUnknownSide": 0,
+        "touchPriceReportMarkets": 0,
+        "confirmedQueueFills": 0,
+        "markoutSamples": 0,
+        "meanExecutableNet": null,
+        "oneTickEachWayStressMean": null,
+        "marketClusterUncertainty": {
+          "quoteMarketClusters": 237,
+          "effectiveIndependentQuoteMarkets": 234.48612422460243,
+          "fillOutcomeMarketClusters": 0,
+          "effectiveIndependentFillMarkets": null,
+          "clusteredStandardError": null,
+          "clustered95PercentInterval": null,
+          "uncertaintyStatus": "unavailable_without_confirmed_queue_fill_outcomes"
+        }
+      },
+      {
+        "fold": "untouched_held_out",
+        "action": "buy",
+        "horizonMs": 30000,
+        "candidateQuotes": 30436,
+        "activatedQuotes": 0,
+        "initialQueueAheadShares": 403638139,
+        "observedQueueIncreaseSharesAdded": 0,
+        "displayReductionsIgnored": 0,
+        "touchPriceTradeReportsUnknownSide": 0,
+        "touchPriceTradeQuantityUnknownSide": 0,
+        "touchPriceReportMarkets": 0,
+        "confirmedQueueFills": 0,
+        "markoutSamples": 0,
+        "meanExecutableNet": null,
+        "oneTickEachWayStressMean": null,
+        "marketClusterUncertainty": {
+          "quoteMarketClusters": 237,
+          "effectiveIndependentQuoteMarkets": 234.48612422460243,
+          "fillOutcomeMarketClusters": 0,
+          "effectiveIndependentFillMarkets": null,
+          "clusteredStandardError": null,
+          "clustered95PercentInterval": null,
+          "uncertaintyStatus": "unavailable_without_confirmed_queue_fill_outcomes"
+        }
+      },
+      {
+        "fold": "untouched_held_out",
+        "action": "sell",
+        "horizonMs": 1000,
+        "candidateQuotes": 30436,
+        "activatedQuotes": 0,
+        "initialQueueAheadShares": 346133692,
+        "observedQueueIncreaseSharesAdded": 0,
+        "displayReductionsIgnored": 0,
+        "touchPriceTradeReportsUnknownSide": 0,
+        "touchPriceTradeQuantityUnknownSide": 0,
+        "touchPriceReportMarkets": 0,
+        "confirmedQueueFills": 0,
+        "markoutSamples": 0,
+        "meanExecutableNet": null,
+        "oneTickEachWayStressMean": null,
+        "marketClusterUncertainty": {
+          "quoteMarketClusters": 237,
+          "effectiveIndependentQuoteMarkets": 234.48612422460243,
+          "fillOutcomeMarketClusters": 0,
+          "effectiveIndependentFillMarkets": null,
+          "clusteredStandardError": null,
+          "clustered95PercentInterval": null,
+          "uncertaintyStatus": "unavailable_without_confirmed_queue_fill_outcomes"
+        }
+      },
+      {
+        "fold": "untouched_held_out",
+        "action": "sell",
+        "horizonMs": 5000,
+        "candidateQuotes": 30436,
+        "activatedQuotes": 0,
+        "initialQueueAheadShares": 346133692,
+        "observedQueueIncreaseSharesAdded": 0,
+        "displayReductionsIgnored": 0,
+        "touchPriceTradeReportsUnknownSide": 0,
+        "touchPriceTradeQuantityUnknownSide": 0,
+        "touchPriceReportMarkets": 0,
+        "confirmedQueueFills": 0,
+        "markoutSamples": 0,
+        "meanExecutableNet": null,
+        "oneTickEachWayStressMean": null,
+        "marketClusterUncertainty": {
+          "quoteMarketClusters": 237,
+          "effectiveIndependentQuoteMarkets": 234.48612422460243,
+          "fillOutcomeMarketClusters": 0,
+          "effectiveIndependentFillMarkets": null,
+          "clusteredStandardError": null,
+          "clustered95PercentInterval": null,
+          "uncertaintyStatus": "unavailable_without_confirmed_queue_fill_outcomes"
+        }
+      },
+      {
+        "fold": "untouched_held_out",
+        "action": "sell",
+        "horizonMs": 30000,
+        "candidateQuotes": 30436,
+        "activatedQuotes": 0,
+        "initialQueueAheadShares": 346133692,
+        "observedQueueIncreaseSharesAdded": 0,
+        "displayReductionsIgnored": 0,
+        "touchPriceTradeReportsUnknownSide": 0,
+        "touchPriceTradeQuantityUnknownSide": 0,
+        "touchPriceReportMarkets": 0,
+        "confirmedQueueFills": 0,
+        "markoutSamples": 0,
+        "meanExecutableNet": null,
+        "oneTickEachWayStressMean": null,
+        "marketClusterUncertainty": {
+          "quoteMarketClusters": 237,
+          "effectiveIndependentQuoteMarkets": 234.48612422460243,
+          "fillOutcomeMarketClusters": 0,
+          "effectiveIndependentFillMarkets": null,
+          "clusteredStandardError": null,
+          "clustered95PercentInterval": null,
+          "uncertaintyStatus": "unavailable_without_confirmed_queue_fill_outcomes"
+        }
+      }
+    ],
+    "prespecifiedCells": [
+      {
+        "fold": "development",
+        "action": "buy",
+        "horizonMs": 1000,
+        "family": "overall",
+        "bin": "all",
+        "candidateQuotes": 128305,
+        "touchPriceTradeReportsUnknownSide": 0,
+        "confirmedQueueFills": 0,
+        "markoutSamples": 0,
+        "meanExecutableNet": null,
+        "oneTickEachWayStressMean": null,
+        "marketClusterUncertainty": {
+          "quoteMarketClusters": 237,
+          "effectiveIndependentQuoteMarkets": 235.71381632279113,
+          "fillOutcomeMarketClusters": 0,
+          "effectiveIndependentFillMarkets": null,
+          "clusteredStandardError": null,
+          "clustered95PercentInterval": null,
+          "uncertaintyStatus": "unavailable_without_confirmed_queue_fill_outcomes"
+        }
+      },
+      {
+        "fold": "development",
+        "action": "buy",
+        "horizonMs": 1000,
+        "family": "bySpread",
+        "bin": "1 tick",
+        "candidateQuotes": 108639,
+        "touchPriceTradeReportsUnknownSide": 0,
+        "confirmedQueueFills": 0,
+        "markoutSamples": 0,
+        "meanExecutableNet": null,
+        "oneTickEachWayStressMean": null,
+        "marketClusterUncertainty": {
+          "quoteMarketClusters": 237,
+          "effectiveIndependentQuoteMarkets": 221.42394472100995,
+          "fillOutcomeMarketClusters": 0,
+          "effectiveIndependentFillMarkets": null,
+          "clusteredStandardError": null,
+          "clustered95PercentInterval": null,
+          "uncertaintyStatus": "unavailable_without_confirmed_queue_fill_outcomes"
+        }
+      },
+      {
+        "fold": "development",
+        "action": "buy",
+        "horizonMs": 1000,
+        "family": "bySpread",
+        "bin": "2 ticks",
+        "candidateQuotes": 17375,
+        "touchPriceTradeReportsUnknownSide": 0,
+        "confirmedQueueFills": 0,
+        "markoutSamples": 0,
+        "meanExecutableNet": null,
+        "oneTickEachWayStressMean": null,
+        "marketClusterUncertainty": {
+          "quoteMarketClusters": 183,
+          "effectiveIndependentQuoteMarkets": 80.36630095625291,
+          "fillOutcomeMarketClusters": 0,
+          "effectiveIndependentFillMarkets": null,
+          "clusteredStandardError": null,
+          "clustered95PercentInterval": null,
+          "uncertaintyStatus": "unavailable_without_confirmed_queue_fill_outcomes"
+        }
+      },
+      {
+        "fold": "development",
+        "action": "buy",
+        "horizonMs": 1000,
+        "family": "bySpread",
+        "bin": "3+ ticks",
+        "candidateQuotes": 2291,
+        "touchPriceTradeReportsUnknownSide": 0,
+        "confirmedQueueFills": 0,
+        "markoutSamples": 0,
+        "meanExecutableNet": null,
+        "oneTickEachWayStressMean": null,
+        "marketClusterUncertainty": {
+          "quoteMarketClusters": 94,
+          "effectiveIndependentQuoteMarkets": 34.92391991429845,
+          "fillOutcomeMarketClusters": 0,
+          "effectiveIndependentFillMarkets": null,
+          "clusteredStandardError": null,
+          "clustered95PercentInterval": null,
+          "uncertaintyStatus": "unavailable_without_confirmed_queue_fill_outcomes"
+        }
+      },
+      {
+        "fold": "development",
+        "action": "buy",
+        "horizonMs": 1000,
+        "family": "byQueueAhead",
+        "bin": "1-10",
+        "candidateQuotes": 2075,
+        "touchPriceTradeReportsUnknownSide": 0,
+        "confirmedQueueFills": 0,
+        "markoutSamples": 0,
+        "meanExecutableNet": null,
+        "oneTickEachWayStressMean": null,
+        "marketClusterUncertainty": {
+          "quoteMarketClusters": 82,
+          "effectiveIndependentQuoteMarkets": 20.76330853028688,
+          "fillOutcomeMarketClusters": 0,
+          "effectiveIndependentFillMarkets": null,
+          "clusteredStandardError": null,
+          "clustered95PercentInterval": null,
+          "uncertaintyStatus": "unavailable_without_confirmed_queue_fill_outcomes"
+        }
+      },
+      {
+        "fold": "development",
+        "action": "buy",
+        "horizonMs": 1000,
+        "family": "byQueueAhead",
+        "bin": "11-50",
+        "candidateQuotes": 1771,
+        "touchPriceTradeReportsUnknownSide": 0,
+        "confirmedQueueFills": 0,
+        "markoutSamples": 0,
+        "meanExecutableNet": null,
+        "oneTickEachWayStressMean": null,
+        "marketClusterUncertainty": {
+          "quoteMarketClusters": 100,
+          "effectiveIndependentQuoteMarkets": 12.370840317904825,
+          "fillOutcomeMarketClusters": 0,
+          "effectiveIndependentFillMarkets": null,
+          "clusteredStandardError": null,
+          "clustered95PercentInterval": null,
+          "uncertaintyStatus": "unavailable_without_confirmed_queue_fill_outcomes"
+        }
+      },
+      {
+        "fold": "development",
+        "action": "buy",
+        "horizonMs": 1000,
+        "family": "byQueueAhead",
+        "bin": "51-250",
+        "candidateQuotes": 5576,
+        "touchPriceTradeReportsUnknownSide": 0,
+        "confirmedQueueFills": 0,
+        "markoutSamples": 0,
+        "meanExecutableNet": null,
+        "oneTickEachWayStressMean": null,
+        "marketClusterUncertainty": {
+          "quoteMarketClusters": 163,
+          "effectiveIndependentQuoteMarkets": 50.647805278538875,
+          "fillOutcomeMarketClusters": 0,
+          "effectiveIndependentFillMarkets": null,
+          "clusteredStandardError": null,
+          "clustered95PercentInterval": null,
+          "uncertaintyStatus": "unavailable_without_confirmed_queue_fill_outcomes"
+        }
+      },
+      {
+        "fold": "development",
+        "action": "buy",
+        "horizonMs": 1000,
+        "family": "byQueueAhead",
+        "bin": "251+",
+        "candidateQuotes": 118883,
+        "touchPriceTradeReportsUnknownSide": 0,
+        "confirmedQueueFills": 0,
+        "markoutSamples": 0,
+        "meanExecutableNet": null,
+        "oneTickEachWayStressMean": null,
+        "marketClusterUncertainty": {
+          "quoteMarketClusters": 237,
+          "effectiveIndependentQuoteMarkets": 231.08671664466004,
+          "fillOutcomeMarketClusters": 0,
+          "effectiveIndependentFillMarkets": null,
+          "clusteredStandardError": null,
+          "clustered95PercentInterval": null,
+          "uncertaintyStatus": "unavailable_without_confirmed_queue_fill_outcomes"
+        }
+      },
+      {
+        "fold": "development",
+        "action": "buy",
+        "horizonMs": 5000,
+        "family": "overall",
+        "bin": "all",
+        "candidateQuotes": 128305,
+        "touchPriceTradeReportsUnknownSide": 0,
+        "confirmedQueueFills": 0,
+        "markoutSamples": 0,
+        "meanExecutableNet": null,
+        "oneTickEachWayStressMean": null,
+        "marketClusterUncertainty": {
+          "quoteMarketClusters": 237,
+          "effectiveIndependentQuoteMarkets": 235.71381632279113,
+          "fillOutcomeMarketClusters": 0,
+          "effectiveIndependentFillMarkets": null,
+          "clusteredStandardError": null,
+          "clustered95PercentInterval": null,
+          "uncertaintyStatus": "unavailable_without_confirmed_queue_fill_outcomes"
+        }
+      },
+      {
+        "fold": "development",
+        "action": "buy",
+        "horizonMs": 5000,
+        "family": "bySpread",
+        "bin": "1 tick",
+        "candidateQuotes": 108639,
+        "touchPriceTradeReportsUnknownSide": 0,
+        "confirmedQueueFills": 0,
+        "markoutSamples": 0,
+        "meanExecutableNet": null,
+        "oneTickEachWayStressMean": null,
+        "marketClusterUncertainty": {
+          "quoteMarketClusters": 237,
+          "effectiveIndependentQuoteMarkets": 221.42394472100995,
+          "fillOutcomeMarketClusters": 0,
+          "effectiveIndependentFillMarkets": null,
+          "clusteredStandardError": null,
+          "clustered95PercentInterval": null,
+          "uncertaintyStatus": "unavailable_without_confirmed_queue_fill_outcomes"
+        }
+      },
+      {
+        "fold": "development",
+        "action": "buy",
+        "horizonMs": 5000,
+        "family": "bySpread",
+        "bin": "2 ticks",
+        "candidateQuotes": 17375,
+        "touchPriceTradeReportsUnknownSide": 0,
+        "confirmedQueueFills": 0,
+        "markoutSamples": 0,
+        "meanExecutableNet": null,
+        "oneTickEachWayStressMean": null,
+        "marketClusterUncertainty": {
+          "quoteMarketClusters": 183,
+          "effectiveIndependentQuoteMarkets": 80.36630095625291,
+          "fillOutcomeMarketClusters": 0,
+          "effectiveIndependentFillMarkets": null,
+          "clusteredStandardError": null,
+          "clustered95PercentInterval": null,
+          "uncertaintyStatus": "unavailable_without_confirmed_queue_fill_outcomes"
+        }
+      },
+      {
+        "fold": "development",
+        "action": "buy",
+        "horizonMs": 5000,
+        "family": "bySpread",
+        "bin": "3+ ticks",
+        "candidateQuotes": 2291,
+        "touchPriceTradeReportsUnknownSide": 0,
+        "confirmedQueueFills": 0,
+        "markoutSamples": 0,
+        "meanExecutableNet": null,
+        "oneTickEachWayStressMean": null,
+        "marketClusterUncertainty": {
+          "quoteMarketClusters": 94,
+          "effectiveIndependentQuoteMarkets": 34.92391991429845,
+          "fillOutcomeMarketClusters": 0,
+          "effectiveIndependentFillMarkets": null,
+          "clusteredStandardError": null,
+          "clustered95PercentInterval": null,
+          "uncertaintyStatus": "unavailable_without_confirmed_queue_fill_outcomes"
+        }
+      },
+      {
+        "fold": "development",
+        "action": "buy",
+        "horizonMs": 5000,
+        "family": "byQueueAhead",
+        "bin": "1-10",
+        "candidateQuotes": 2075,
+        "touchPriceTradeReportsUnknownSide": 0,
+        "confirmedQueueFills": 0,
+        "markoutSamples": 0,
+        "meanExecutableNet": null,
+        "oneTickEachWayStressMean": null,
+        "marketClusterUncertainty": {
+          "quoteMarketClusters": 82,
+          "effectiveIndependentQuoteMarkets": 20.76330853028688,
+          "fillOutcomeMarketClusters": 0,
+          "effectiveIndependentFillMarkets": null,
+          "clusteredStandardError": null,
+          "clustered95PercentInterval": null,
+          "uncertaintyStatus": "unavailable_without_confirmed_queue_fill_outcomes"
+        }
+      },
+      {
+        "fold": "development",
+        "action": "buy",
+        "horizonMs": 5000,
+        "family": "byQueueAhead",
+        "bin": "11-50",
+        "candidateQuotes": 1771,
+        "touchPriceTradeReportsUnknownSide": 0,
+        "confirmedQueueFills": 0,
+        "markoutSamples": 0,
+        "meanExecutableNet": null,
+        "oneTickEachWayStressMean": null,
+        "marketClusterUncertainty": {
+          "quoteMarketClusters": 100,
+          "effectiveIndependentQuoteMarkets": 12.370840317904825,
+          "fillOutcomeMarketClusters": 0,
+          "effectiveIndependentFillMarkets": null,
+          "clusteredStandardError": null,
+          "clustered95PercentInterval": null,
+          "uncertaintyStatus": "unavailable_without_confirmed_queue_fill_outcomes"
+        }
+      },
+      {
+        "fold": "development",
+        "action": "buy",
+        "horizonMs": 5000,
+        "family": "byQueueAhead",
+        "bin": "51-250",
+        "candidateQuotes": 5576,
+        "touchPriceTradeReportsUnknownSide": 0,
+        "confirmedQueueFills": 0,
+        "markoutSamples": 0,
+        "meanExecutableNet": null,
+        "oneTickEachWayStressMean": null,
+        "marketClusterUncertainty": {
+          "quoteMarketClusters": 163,
+          "effectiveIndependentQuoteMarkets": 50.647805278538875,
+          "fillOutcomeMarketClusters": 0,
+          "effectiveIndependentFillMarkets": null,
+          "clusteredStandardError": null,
+          "clustered95PercentInterval": null,
+          "uncertaintyStatus": "unavailable_without_confirmed_queue_fill_outcomes"
+        }
+      },
+      {
+        "fold": "development",
+        "action": "buy",
+        "horizonMs": 5000,
+        "family": "byQueueAhead",
+        "bin": "251+",
+        "candidateQuotes": 118883,
+        "touchPriceTradeReportsUnknownSide": 0,
+        "confirmedQueueFills": 0,
+        "markoutSamples": 0,
+        "meanExecutableNet": null,
+        "oneTickEachWayStressMean": null,
+        "marketClusterUncertainty": {
+          "quoteMarketClusters": 237,
+          "effectiveIndependentQuoteMarkets": 231.08671664466004,
+          "fillOutcomeMarketClusters": 0,
+          "effectiveIndependentFillMarkets": null,
+          "clusteredStandardError": null,
+          "clustered95PercentInterval": null,
+          "uncertaintyStatus": "unavailable_without_confirmed_queue_fill_outcomes"
+        }
+      },
+      {
+        "fold": "development",
+        "action": "buy",
+        "horizonMs": 30000,
+        "family": "overall",
+        "bin": "all",
+        "candidateQuotes": 128305,
+        "touchPriceTradeReportsUnknownSide": 0,
+        "confirmedQueueFills": 0,
+        "markoutSamples": 0,
+        "meanExecutableNet": null,
+        "oneTickEachWayStressMean": null,
+        "marketClusterUncertainty": {
+          "quoteMarketClusters": 237,
+          "effectiveIndependentQuoteMarkets": 235.71381632279113,
+          "fillOutcomeMarketClusters": 0,
+          "effectiveIndependentFillMarkets": null,
+          "clusteredStandardError": null,
+          "clustered95PercentInterval": null,
+          "uncertaintyStatus": "unavailable_without_confirmed_queue_fill_outcomes"
+        }
+      },
+      {
+        "fold": "development",
+        "action": "buy",
+        "horizonMs": 30000,
+        "family": "bySpread",
+        "bin": "1 tick",
+        "candidateQuotes": 108639,
+        "touchPriceTradeReportsUnknownSide": 0,
+        "confirmedQueueFills": 0,
+        "markoutSamples": 0,
+        "meanExecutableNet": null,
+        "oneTickEachWayStressMean": null,
+        "marketClusterUncertainty": {
+          "quoteMarketClusters": 237,
+          "effectiveIndependentQuoteMarkets": 221.42394472100995,
+          "fillOutcomeMarketClusters": 0,
+          "effectiveIndependentFillMarkets": null,
+          "clusteredStandardError": null,
+          "clustered95PercentInterval": null,
+          "uncertaintyStatus": "unavailable_without_confirmed_queue_fill_outcomes"
+        }
+      },
+      {
+        "fold": "development",
+        "action": "buy",
+        "horizonMs": 30000,
+        "family": "bySpread",
+        "bin": "2 ticks",
+        "candidateQuotes": 17375,
+        "touchPriceTradeReportsUnknownSide": 0,
+        "confirmedQueueFills": 0,
+        "markoutSamples": 0,
+        "meanExecutableNet": null,
+        "oneTickEachWayStressMean": null,
+        "marketClusterUncertainty": {
+          "quoteMarketClusters": 183,
+          "effectiveIndependentQuoteMarkets": 80.36630095625291,
+          "fillOutcomeMarketClusters": 0,
+          "effectiveIndependentFillMarkets": null,
+          "clusteredStandardError": null,
+          "clustered95PercentInterval": null,
+          "uncertaintyStatus": "unavailable_without_confirmed_queue_fill_outcomes"
+        }
+      },
+      {
+        "fold": "development",
+        "action": "buy",
+        "horizonMs": 30000,
+        "family": "bySpread",
+        "bin": "3+ ticks",
+        "candidateQuotes": 2291,
+        "touchPriceTradeReportsUnknownSide": 0,
+        "confirmedQueueFills": 0,
+        "markoutSamples": 0,
+        "meanExecutableNet": null,
+        "oneTickEachWayStressMean": null,
+        "marketClusterUncertainty": {
+          "quoteMarketClusters": 94,
+          "effectiveIndependentQuoteMarkets": 34.92391991429845,
+          "fillOutcomeMarketClusters": 0,
+          "effectiveIndependentFillMarkets": null,
+          "clusteredStandardError": null,
+          "clustered95PercentInterval": null,
+          "uncertaintyStatus": "unavailable_without_confirmed_queue_fill_outcomes"
+        }
+      },
+      {
+        "fold": "development",
+        "action": "buy",
+        "horizonMs": 30000,
+        "family": "byQueueAhead",
+        "bin": "1-10",
+        "candidateQuotes": 2075,
+        "touchPriceTradeReportsUnknownSide": 0,
+        "confirmedQueueFills": 0,
+        "markoutSamples": 0,
+        "meanExecutableNet": null,
+        "oneTickEachWayStressMean": null,
+        "marketClusterUncertainty": {
+          "quoteMarketClusters": 82,
+          "effectiveIndependentQuoteMarkets": 20.76330853028688,
+          "fillOutcomeMarketClusters": 0,
+          "effectiveIndependentFillMarkets": null,
+          "clusteredStandardError": null,
+          "clustered95PercentInterval": null,
+          "uncertaintyStatus": "unavailable_without_confirmed_queue_fill_outcomes"
+        }
+      },
+      {
+        "fold": "development",
+        "action": "buy",
+        "horizonMs": 30000,
+        "family": "byQueueAhead",
+        "bin": "11-50",
+        "candidateQuotes": 1771,
+        "touchPriceTradeReportsUnknownSide": 0,
+        "confirmedQueueFills": 0,
+        "markoutSamples": 0,
+        "meanExecutableNet": null,
+        "oneTickEachWayStressMean": null,
+        "marketClusterUncertainty": {
+          "quoteMarketClusters": 100,
+          "effectiveIndependentQuoteMarkets": 12.370840317904825,
+          "fillOutcomeMarketClusters": 0,
+          "effectiveIndependentFillMarkets": null,
+          "clusteredStandardError": null,
+          "clustered95PercentInterval": null,
+          "uncertaintyStatus": "unavailable_without_confirmed_queue_fill_outcomes"
+        }
+      },
+      {
+        "fold": "development",
+        "action": "buy",
+        "horizonMs": 30000,
+        "family": "byQueueAhead",
+        "bin": "51-250",
+        "candidateQuotes": 5576,
+        "touchPriceTradeReportsUnknownSide": 0,
+        "confirmedQueueFills": 0,
+        "markoutSamples": 0,
+        "meanExecutableNet": null,
+        "oneTickEachWayStressMean": null,
+        "marketClusterUncertainty": {
+          "quoteMarketClusters": 163,
+          "effectiveIndependentQuoteMarkets": 50.647805278538875,
+          "fillOutcomeMarketClusters": 0,
+          "effectiveIndependentFillMarkets": null,
+          "clusteredStandardError": null,
+          "clustered95PercentInterval": null,
+          "uncertaintyStatus": "unavailable_without_confirmed_queue_fill_outcomes"
+        }
+      },
+      {
+        "fold": "development",
+        "action": "buy",
+        "horizonMs": 30000,
+        "family": "byQueueAhead",
+        "bin": "251+",
+        "candidateQuotes": 118883,
+        "touchPriceTradeReportsUnknownSide": 0,
+        "confirmedQueueFills": 0,
+        "markoutSamples": 0,
+        "meanExecutableNet": null,
+        "oneTickEachWayStressMean": null,
+        "marketClusterUncertainty": {
+          "quoteMarketClusters": 237,
+          "effectiveIndependentQuoteMarkets": 231.08671664466004,
+          "fillOutcomeMarketClusters": 0,
+          "effectiveIndependentFillMarkets": null,
+          "clusteredStandardError": null,
+          "clustered95PercentInterval": null,
+          "uncertaintyStatus": "unavailable_without_confirmed_queue_fill_outcomes"
+        }
+      },
+      {
+        "fold": "development",
+        "action": "sell",
+        "horizonMs": 1000,
+        "family": "overall",
+        "bin": "all",
+        "candidateQuotes": 128305,
+        "touchPriceTradeReportsUnknownSide": 0,
+        "confirmedQueueFills": 0,
+        "markoutSamples": 0,
+        "meanExecutableNet": null,
+        "oneTickEachWayStressMean": null,
+        "marketClusterUncertainty": {
+          "quoteMarketClusters": 237,
+          "effectiveIndependentQuoteMarkets": 235.71381632279113,
+          "fillOutcomeMarketClusters": 0,
+          "effectiveIndependentFillMarkets": null,
+          "clusteredStandardError": null,
+          "clustered95PercentInterval": null,
+          "uncertaintyStatus": "unavailable_without_confirmed_queue_fill_outcomes"
+        }
+      },
+      {
+        "fold": "development",
+        "action": "sell",
+        "horizonMs": 1000,
+        "family": "bySpread",
+        "bin": "1 tick",
+        "candidateQuotes": 108639,
+        "touchPriceTradeReportsUnknownSide": 0,
+        "confirmedQueueFills": 0,
+        "markoutSamples": 0,
+        "meanExecutableNet": null,
+        "oneTickEachWayStressMean": null,
+        "marketClusterUncertainty": {
+          "quoteMarketClusters": 237,
+          "effectiveIndependentQuoteMarkets": 221.42394472100995,
+          "fillOutcomeMarketClusters": 0,
+          "effectiveIndependentFillMarkets": null,
+          "clusteredStandardError": null,
+          "clustered95PercentInterval": null,
+          "uncertaintyStatus": "unavailable_without_confirmed_queue_fill_outcomes"
+        }
+      },
+      {
+        "fold": "development",
+        "action": "sell",
+        "horizonMs": 1000,
+        "family": "bySpread",
+        "bin": "2 ticks",
+        "candidateQuotes": 17375,
+        "touchPriceTradeReportsUnknownSide": 0,
+        "confirmedQueueFills": 0,
+        "markoutSamples": 0,
+        "meanExecutableNet": null,
+        "oneTickEachWayStressMean": null,
+        "marketClusterUncertainty": {
+          "quoteMarketClusters": 183,
+          "effectiveIndependentQuoteMarkets": 80.36630095625291,
+          "fillOutcomeMarketClusters": 0,
+          "effectiveIndependentFillMarkets": null,
+          "clusteredStandardError": null,
+          "clustered95PercentInterval": null,
+          "uncertaintyStatus": "unavailable_without_confirmed_queue_fill_outcomes"
+        }
+      },
+      {
+        "fold": "development",
+        "action": "sell",
+        "horizonMs": 1000,
+        "family": "bySpread",
+        "bin": "3+ ticks",
+        "candidateQuotes": 2291,
+        "touchPriceTradeReportsUnknownSide": 0,
+        "confirmedQueueFills": 0,
+        "markoutSamples": 0,
+        "meanExecutableNet": null,
+        "oneTickEachWayStressMean": null,
+        "marketClusterUncertainty": {
+          "quoteMarketClusters": 94,
+          "effectiveIndependentQuoteMarkets": 34.92391991429845,
+          "fillOutcomeMarketClusters": 0,
+          "effectiveIndependentFillMarkets": null,
+          "clusteredStandardError": null,
+          "clustered95PercentInterval": null,
+          "uncertaintyStatus": "unavailable_without_confirmed_queue_fill_outcomes"
+        }
+      },
+      {
+        "fold": "development",
+        "action": "sell",
+        "horizonMs": 1000,
+        "family": "byQueueAhead",
+        "bin": "1-10",
+        "candidateQuotes": 1118,
+        "touchPriceTradeReportsUnknownSide": 0,
+        "confirmedQueueFills": 0,
+        "markoutSamples": 0,
+        "meanExecutableNet": null,
+        "oneTickEachWayStressMean": null,
+        "marketClusterUncertainty": {
+          "quoteMarketClusters": 58,
+          "effectiveIndependentQuoteMarkets": 13.822617388804105,
+          "fillOutcomeMarketClusters": 0,
+          "effectiveIndependentFillMarkets": null,
+          "clusteredStandardError": null,
+          "clustered95PercentInterval": null,
+          "uncertaintyStatus": "unavailable_without_confirmed_queue_fill_outcomes"
+        }
+      },
+      {
+        "fold": "development",
+        "action": "sell",
+        "horizonMs": 1000,
+        "family": "byQueueAhead",
+        "bin": "11-50",
+        "candidateQuotes": 1623,
+        "touchPriceTradeReportsUnknownSide": 0,
+        "confirmedQueueFills": 0,
+        "markoutSamples": 0,
+        "meanExecutableNet": null,
+        "oneTickEachWayStressMean": null,
+        "marketClusterUncertainty": {
+          "quoteMarketClusters": 78,
+          "effectiveIndependentQuoteMarkets": 20.74623727051485,
+          "fillOutcomeMarketClusters": 0,
+          "effectiveIndependentFillMarkets": null,
+          "clusteredStandardError": null,
+          "clustered95PercentInterval": null,
+          "uncertaintyStatus": "unavailable_without_confirmed_queue_fill_outcomes"
+        }
+      },
+      {
+        "fold": "development",
+        "action": "sell",
+        "horizonMs": 1000,
+        "family": "byQueueAhead",
+        "bin": "51-250",
+        "candidateQuotes": 6597,
+        "touchPriceTradeReportsUnknownSide": 0,
+        "confirmedQueueFills": 0,
+        "markoutSamples": 0,
+        "meanExecutableNet": null,
+        "oneTickEachWayStressMean": null,
+        "marketClusterUncertainty": {
+          "quoteMarketClusters": 154,
+          "effectiveIndependentQuoteMarkets": 44.55757568932031,
+          "fillOutcomeMarketClusters": 0,
+          "effectiveIndependentFillMarkets": null,
+          "clusteredStandardError": null,
+          "clustered95PercentInterval": null,
+          "uncertaintyStatus": "unavailable_without_confirmed_queue_fill_outcomes"
+        }
+      },
+      {
+        "fold": "development",
+        "action": "sell",
+        "horizonMs": 1000,
+        "family": "byQueueAhead",
+        "bin": "251+",
+        "candidateQuotes": 118967,
+        "touchPriceTradeReportsUnknownSide": 0,
+        "confirmedQueueFills": 0,
+        "markoutSamples": 0,
+        "meanExecutableNet": null,
+        "oneTickEachWayStressMean": null,
+        "marketClusterUncertainty": {
+          "quoteMarketClusters": 237,
+          "effectiveIndependentQuoteMarkets": 231.77659819259367,
+          "fillOutcomeMarketClusters": 0,
+          "effectiveIndependentFillMarkets": null,
+          "clusteredStandardError": null,
+          "clustered95PercentInterval": null,
+          "uncertaintyStatus": "unavailable_without_confirmed_queue_fill_outcomes"
+        }
+      },
+      {
+        "fold": "development",
+        "action": "sell",
+        "horizonMs": 5000,
+        "family": "overall",
+        "bin": "all",
+        "candidateQuotes": 128305,
+        "touchPriceTradeReportsUnknownSide": 0,
+        "confirmedQueueFills": 0,
+        "markoutSamples": 0,
+        "meanExecutableNet": null,
+        "oneTickEachWayStressMean": null,
+        "marketClusterUncertainty": {
+          "quoteMarketClusters": 237,
+          "effectiveIndependentQuoteMarkets": 235.71381632279113,
+          "fillOutcomeMarketClusters": 0,
+          "effectiveIndependentFillMarkets": null,
+          "clusteredStandardError": null,
+          "clustered95PercentInterval": null,
+          "uncertaintyStatus": "unavailable_without_confirmed_queue_fill_outcomes"
+        }
+      },
+      {
+        "fold": "development",
+        "action": "sell",
+        "horizonMs": 5000,
+        "family": "bySpread",
+        "bin": "1 tick",
+        "candidateQuotes": 108639,
+        "touchPriceTradeReportsUnknownSide": 0,
+        "confirmedQueueFills": 0,
+        "markoutSamples": 0,
+        "meanExecutableNet": null,
+        "oneTickEachWayStressMean": null,
+        "marketClusterUncertainty": {
+          "quoteMarketClusters": 237,
+          "effectiveIndependentQuoteMarkets": 221.42394472100995,
+          "fillOutcomeMarketClusters": 0,
+          "effectiveIndependentFillMarkets": null,
+          "clusteredStandardError": null,
+          "clustered95PercentInterval": null,
+          "uncertaintyStatus": "unavailable_without_confirmed_queue_fill_outcomes"
+        }
+      },
+      {
+        "fold": "development",
+        "action": "sell",
+        "horizonMs": 5000,
+        "family": "bySpread",
+        "bin": "2 ticks",
+        "candidateQuotes": 17375,
+        "touchPriceTradeReportsUnknownSide": 0,
+        "confirmedQueueFills": 0,
+        "markoutSamples": 0,
+        "meanExecutableNet": null,
+        "oneTickEachWayStressMean": null,
+        "marketClusterUncertainty": {
+          "quoteMarketClusters": 183,
+          "effectiveIndependentQuoteMarkets": 80.36630095625291,
+          "fillOutcomeMarketClusters": 0,
+          "effectiveIndependentFillMarkets": null,
+          "clusteredStandardError": null,
+          "clustered95PercentInterval": null,
+          "uncertaintyStatus": "unavailable_without_confirmed_queue_fill_outcomes"
+        }
+      },
+      {
+        "fold": "development",
+        "action": "sell",
+        "horizonMs": 5000,
+        "family": "bySpread",
+        "bin": "3+ ticks",
+        "candidateQuotes": 2291,
+        "touchPriceTradeReportsUnknownSide": 0,
+        "confirmedQueueFills": 0,
+        "markoutSamples": 0,
+        "meanExecutableNet": null,
+        "oneTickEachWayStressMean": null,
+        "marketClusterUncertainty": {
+          "quoteMarketClusters": 94,
+          "effectiveIndependentQuoteMarkets": 34.92391991429845,
+          "fillOutcomeMarketClusters": 0,
+          "effectiveIndependentFillMarkets": null,
+          "clusteredStandardError": null,
+          "clustered95PercentInterval": null,
+          "uncertaintyStatus": "unavailable_without_confirmed_queue_fill_outcomes"
+        }
+      },
+      {
+        "fold": "development",
+        "action": "sell",
+        "horizonMs": 5000,
+        "family": "byQueueAhead",
+        "bin": "1-10",
+        "candidateQuotes": 1118,
+        "touchPriceTradeReportsUnknownSide": 0,
+        "confirmedQueueFills": 0,
+        "markoutSamples": 0,
+        "meanExecutableNet": null,
+        "oneTickEachWayStressMean": null,
+        "marketClusterUncertainty": {
+          "quoteMarketClusters": 58,
+          "effectiveIndependentQuoteMarkets": 13.822617388804105,
+          "fillOutcomeMarketClusters": 0,
+          "effectiveIndependentFillMarkets": null,
+          "clusteredStandardError": null,
+          "clustered95PercentInterval": null,
+          "uncertaintyStatus": "unavailable_without_confirmed_queue_fill_outcomes"
+        }
+      },
+      {
+        "fold": "development",
+        "action": "sell",
+        "horizonMs": 5000,
+        "family": "byQueueAhead",
+        "bin": "11-50",
+        "candidateQuotes": 1623,
+        "touchPriceTradeReportsUnknownSide": 0,
+        "confirmedQueueFills": 0,
+        "markoutSamples": 0,
+        "meanExecutableNet": null,
+        "oneTickEachWayStressMean": null,
+        "marketClusterUncertainty": {
+          "quoteMarketClusters": 78,
+          "effectiveIndependentQuoteMarkets": 20.74623727051485,
+          "fillOutcomeMarketClusters": 0,
+          "effectiveIndependentFillMarkets": null,
+          "clusteredStandardError": null,
+          "clustered95PercentInterval": null,
+          "uncertaintyStatus": "unavailable_without_confirmed_queue_fill_outcomes"
+        }
+      },
+      {
+        "fold": "development",
+        "action": "sell",
+        "horizonMs": 5000,
+        "family": "byQueueAhead",
+        "bin": "51-250",
+        "candidateQuotes": 6597,
+        "touchPriceTradeReportsUnknownSide": 0,
+        "confirmedQueueFills": 0,
+        "markoutSamples": 0,
+        "meanExecutableNet": null,
+        "oneTickEachWayStressMean": null,
+        "marketClusterUncertainty": {
+          "quoteMarketClusters": 154,
+          "effectiveIndependentQuoteMarkets": 44.55757568932031,
+          "fillOutcomeMarketClusters": 0,
+          "effectiveIndependentFillMarkets": null,
+          "clusteredStandardError": null,
+          "clustered95PercentInterval": null,
+          "uncertaintyStatus": "unavailable_without_confirmed_queue_fill_outcomes"
+        }
+      },
+      {
+        "fold": "development",
+        "action": "sell",
+        "horizonMs": 5000,
+        "family": "byQueueAhead",
+        "bin": "251+",
+        "candidateQuotes": 118967,
+        "touchPriceTradeReportsUnknownSide": 0,
+        "confirmedQueueFills": 0,
+        "markoutSamples": 0,
+        "meanExecutableNet": null,
+        "oneTickEachWayStressMean": null,
+        "marketClusterUncertainty": {
+          "quoteMarketClusters": 237,
+          "effectiveIndependentQuoteMarkets": 231.77659819259367,
+          "fillOutcomeMarketClusters": 0,
+          "effectiveIndependentFillMarkets": null,
+          "clusteredStandardError": null,
+          "clustered95PercentInterval": null,
+          "uncertaintyStatus": "unavailable_without_confirmed_queue_fill_outcomes"
+        }
+      },
+      {
+        "fold": "development",
+        "action": "sell",
+        "horizonMs": 30000,
+        "family": "overall",
+        "bin": "all",
+        "candidateQuotes": 128305,
+        "touchPriceTradeReportsUnknownSide": 0,
+        "confirmedQueueFills": 0,
+        "markoutSamples": 0,
+        "meanExecutableNet": null,
+        "oneTickEachWayStressMean": null,
+        "marketClusterUncertainty": {
+          "quoteMarketClusters": 237,
+          "effectiveIndependentQuoteMarkets": 235.71381632279113,
+          "fillOutcomeMarketClusters": 0,
+          "effectiveIndependentFillMarkets": null,
+          "clusteredStandardError": null,
+          "clustered95PercentInterval": null,
+          "uncertaintyStatus": "unavailable_without_confirmed_queue_fill_outcomes"
+        }
+      },
+      {
+        "fold": "development",
+        "action": "sell",
+        "horizonMs": 30000,
+        "family": "bySpread",
+        "bin": "1 tick",
+        "candidateQuotes": 108639,
+        "touchPriceTradeReportsUnknownSide": 0,
+        "confirmedQueueFills": 0,
+        "markoutSamples": 0,
+        "meanExecutableNet": null,
+        "oneTickEachWayStressMean": null,
+        "marketClusterUncertainty": {
+          "quoteMarketClusters": 237,
+          "effectiveIndependentQuoteMarkets": 221.42394472100995,
+          "fillOutcomeMarketClusters": 0,
+          "effectiveIndependentFillMarkets": null,
+          "clusteredStandardError": null,
+          "clustered95PercentInterval": null,
+          "uncertaintyStatus": "unavailable_without_confirmed_queue_fill_outcomes"
+        }
+      },
+      {
+        "fold": "development",
+        "action": "sell",
+        "horizonMs": 30000,
+        "family": "bySpread",
+        "bin": "2 ticks",
+        "candidateQuotes": 17375,
+        "touchPriceTradeReportsUnknownSide": 0,
+        "confirmedQueueFills": 0,
+        "markoutSamples": 0,
+        "meanExecutableNet": null,
+        "oneTickEachWayStressMean": null,
+        "marketClusterUncertainty": {
+          "quoteMarketClusters": 183,
+          "effectiveIndependentQuoteMarkets": 80.36630095625291,
+          "fillOutcomeMarketClusters": 0,
+          "effectiveIndependentFillMarkets": null,
+          "clusteredStandardError": null,
+          "clustered95PercentInterval": null,
+          "uncertaintyStatus": "unavailable_without_confirmed_queue_fill_outcomes"
+        }
+      },
+      {
+        "fold": "development",
+        "action": "sell",
+        "horizonMs": 30000,
+        "family": "bySpread",
+        "bin": "3+ ticks",
+        "candidateQuotes": 2291,
+        "touchPriceTradeReportsUnknownSide": 0,
+        "confirmedQueueFills": 0,
+        "markoutSamples": 0,
+        "meanExecutableNet": null,
+        "oneTickEachWayStressMean": null,
+        "marketClusterUncertainty": {
+          "quoteMarketClusters": 94,
+          "effectiveIndependentQuoteMarkets": 34.92391991429845,
+          "fillOutcomeMarketClusters": 0,
+          "effectiveIndependentFillMarkets": null,
+          "clusteredStandardError": null,
+          "clustered95PercentInterval": null,
+          "uncertaintyStatus": "unavailable_without_confirmed_queue_fill_outcomes"
+        }
+      },
+      {
+        "fold": "development",
+        "action": "sell",
+        "horizonMs": 30000,
+        "family": "byQueueAhead",
+        "bin": "1-10",
+        "candidateQuotes": 1118,
+        "touchPriceTradeReportsUnknownSide": 0,
+        "confirmedQueueFills": 0,
+        "markoutSamples": 0,
+        "meanExecutableNet": null,
+        "oneTickEachWayStressMean": null,
+        "marketClusterUncertainty": {
+          "quoteMarketClusters": 58,
+          "effectiveIndependentQuoteMarkets": 13.822617388804105,
+          "fillOutcomeMarketClusters": 0,
+          "effectiveIndependentFillMarkets": null,
+          "clusteredStandardError": null,
+          "clustered95PercentInterval": null,
+          "uncertaintyStatus": "unavailable_without_confirmed_queue_fill_outcomes"
+        }
+      },
+      {
+        "fold": "development",
+        "action": "sell",
+        "horizonMs": 30000,
+        "family": "byQueueAhead",
+        "bin": "11-50",
+        "candidateQuotes": 1623,
+        "touchPriceTradeReportsUnknownSide": 0,
+        "confirmedQueueFills": 0,
+        "markoutSamples": 0,
+        "meanExecutableNet": null,
+        "oneTickEachWayStressMean": null,
+        "marketClusterUncertainty": {
+          "quoteMarketClusters": 78,
+          "effectiveIndependentQuoteMarkets": 20.74623727051485,
+          "fillOutcomeMarketClusters": 0,
+          "effectiveIndependentFillMarkets": null,
+          "clusteredStandardError": null,
+          "clustered95PercentInterval": null,
+          "uncertaintyStatus": "unavailable_without_confirmed_queue_fill_outcomes"
+        }
+      },
+      {
+        "fold": "development",
+        "action": "sell",
+        "horizonMs": 30000,
+        "family": "byQueueAhead",
+        "bin": "51-250",
+        "candidateQuotes": 6597,
+        "touchPriceTradeReportsUnknownSide": 0,
+        "confirmedQueueFills": 0,
+        "markoutSamples": 0,
+        "meanExecutableNet": null,
+        "oneTickEachWayStressMean": null,
+        "marketClusterUncertainty": {
+          "quoteMarketClusters": 154,
+          "effectiveIndependentQuoteMarkets": 44.55757568932031,
+          "fillOutcomeMarketClusters": 0,
+          "effectiveIndependentFillMarkets": null,
+          "clusteredStandardError": null,
+          "clustered95PercentInterval": null,
+          "uncertaintyStatus": "unavailable_without_confirmed_queue_fill_outcomes"
+        }
+      },
+      {
+        "fold": "development",
+        "action": "sell",
+        "horizonMs": 30000,
+        "family": "byQueueAhead",
+        "bin": "251+",
+        "candidateQuotes": 118967,
+        "touchPriceTradeReportsUnknownSide": 0,
+        "confirmedQueueFills": 0,
+        "markoutSamples": 0,
+        "meanExecutableNet": null,
+        "oneTickEachWayStressMean": null,
+        "marketClusterUncertainty": {
+          "quoteMarketClusters": 237,
+          "effectiveIndependentQuoteMarkets": 231.77659819259367,
+          "fillOutcomeMarketClusters": 0,
+          "effectiveIndependentFillMarkets": null,
+          "clusteredStandardError": null,
+          "clustered95PercentInterval": null,
+          "uncertaintyStatus": "unavailable_without_confirmed_queue_fill_outcomes"
+        }
+      },
+      {
+        "fold": "untouched_held_out",
+        "action": "buy",
+        "horizonMs": 1000,
+        "family": "overall",
+        "bin": "all",
+        "candidateQuotes": 30436,
+        "touchPriceTradeReportsUnknownSide": 0,
+        "confirmedQueueFills": 0,
+        "markoutSamples": 0,
+        "meanExecutableNet": null,
+        "oneTickEachWayStressMean": null,
+        "marketClusterUncertainty": {
+          "quoteMarketClusters": 237,
+          "effectiveIndependentQuoteMarkets": 234.48612422460243,
+          "fillOutcomeMarketClusters": 0,
+          "effectiveIndependentFillMarkets": null,
+          "clusteredStandardError": null,
+          "clustered95PercentInterval": null,
+          "uncertaintyStatus": "unavailable_without_confirmed_queue_fill_outcomes"
+        }
+      },
+      {
+        "fold": "untouched_held_out",
+        "action": "buy",
+        "horizonMs": 1000,
+        "family": "bySpread",
+        "bin": "1 tick",
+        "candidateQuotes": 24182,
+        "touchPriceTradeReportsUnknownSide": 0,
+        "confirmedQueueFills": 0,
+        "markoutSamples": 0,
+        "meanExecutableNet": null,
+        "oneTickEachWayStressMean": null,
+        "marketClusterUncertainty": {
+          "quoteMarketClusters": 228,
+          "effectiveIndependentQuoteMarkets": 199.63277782784792,
+          "fillOutcomeMarketClusters": 0,
+          "effectiveIndependentFillMarkets": null,
+          "clusteredStandardError": null,
+          "clustered95PercentInterval": null,
+          "uncertaintyStatus": "unavailable_without_confirmed_queue_fill_outcomes"
+        }
+      },
+      {
+        "fold": "untouched_held_out",
+        "action": "buy",
+        "horizonMs": 1000,
+        "family": "bySpread",
+        "bin": "2 ticks",
+        "candidateQuotes": 6107,
+        "touchPriceTradeReportsUnknownSide": 0,
+        "confirmedQueueFills": 0,
+        "markoutSamples": 0,
+        "meanExecutableNet": null,
+        "oneTickEachWayStressMean": null,
+        "marketClusterUncertainty": {
+          "quoteMarketClusters": 111,
+          "effectiveIndependentQuoteMarkets": 68.93454300801993,
+          "fillOutcomeMarketClusters": 0,
+          "effectiveIndependentFillMarkets": null,
+          "clusteredStandardError": null,
+          "clustered95PercentInterval": null,
+          "uncertaintyStatus": "unavailable_without_confirmed_queue_fill_outcomes"
+        }
+      },
+      {
+        "fold": "untouched_held_out",
+        "action": "buy",
+        "horizonMs": 1000,
+        "family": "bySpread",
+        "bin": "3+ ticks",
+        "candidateQuotes": 147,
+        "touchPriceTradeReportsUnknownSide": 0,
+        "confirmedQueueFills": 0,
+        "markoutSamples": 0,
+        "meanExecutableNet": null,
+        "oneTickEachWayStressMean": null,
+        "marketClusterUncertainty": {
+          "quoteMarketClusters": 30,
+          "effectiveIndependentQuoteMarkets": 9.037641154328734,
+          "fillOutcomeMarketClusters": 0,
+          "effectiveIndependentFillMarkets": null,
+          "clusteredStandardError": null,
+          "clustered95PercentInterval": null,
+          "uncertaintyStatus": "unavailable_without_confirmed_queue_fill_outcomes"
+        }
+      },
+      {
+        "fold": "untouched_held_out",
+        "action": "buy",
+        "horizonMs": 1000,
+        "family": "byQueueAhead",
+        "bin": "1-10",
+        "candidateQuotes": 209,
+        "touchPriceTradeReportsUnknownSide": 0,
+        "confirmedQueueFills": 0,
+        "markoutSamples": 0,
+        "meanExecutableNet": null,
+        "oneTickEachWayStressMean": null,
+        "marketClusterUncertainty": {
+          "quoteMarketClusters": 14,
+          "effectiveIndependentQuoteMarkets": 6.565609499473921,
+          "fillOutcomeMarketClusters": 0,
+          "effectiveIndependentFillMarkets": null,
+          "clusteredStandardError": null,
+          "clustered95PercentInterval": null,
+          "uncertaintyStatus": "unavailable_without_confirmed_queue_fill_outcomes"
+        }
+      },
+      {
+        "fold": "untouched_held_out",
+        "action": "buy",
+        "horizonMs": 1000,
+        "family": "byQueueAhead",
+        "bin": "11-50",
+        "candidateQuotes": 342,
+        "touchPriceTradeReportsUnknownSide": 0,
+        "confirmedQueueFills": 0,
+        "markoutSamples": 0,
+        "meanExecutableNet": null,
+        "oneTickEachWayStressMean": null,
+        "marketClusterUncertainty": {
+          "quoteMarketClusters": 16,
+          "effectiveIndependentQuoteMarkets": 5.542266868840031,
+          "fillOutcomeMarketClusters": 0,
+          "effectiveIndependentFillMarkets": null,
+          "clusteredStandardError": null,
+          "clustered95PercentInterval": null,
+          "uncertaintyStatus": "unavailable_without_confirmed_queue_fill_outcomes"
+        }
+      },
+      {
+        "fold": "untouched_held_out",
+        "action": "buy",
+        "horizonMs": 1000,
+        "family": "byQueueAhead",
+        "bin": "51-250",
+        "candidateQuotes": 1138,
+        "touchPriceTradeReportsUnknownSide": 0,
+        "confirmedQueueFills": 0,
+        "markoutSamples": 0,
+        "meanExecutableNet": null,
+        "oneTickEachWayStressMean": null,
+        "marketClusterUncertainty": {
+          "quoteMarketClusters": 47,
+          "effectiveIndependentQuoteMarkets": 19.745136305421724,
+          "fillOutcomeMarketClusters": 0,
+          "effectiveIndependentFillMarkets": null,
+          "clusteredStandardError": null,
+          "clustered95PercentInterval": null,
+          "uncertaintyStatus": "unavailable_without_confirmed_queue_fill_outcomes"
+        }
+      },
+      {
+        "fold": "untouched_held_out",
+        "action": "buy",
+        "horizonMs": 1000,
+        "family": "byQueueAhead",
+        "bin": "251+",
+        "candidateQuotes": 28747,
+        "touchPriceTradeReportsUnknownSide": 0,
+        "confirmedQueueFills": 0,
+        "markoutSamples": 0,
+        "meanExecutableNet": null,
+        "oneTickEachWayStressMean": null,
+        "marketClusterUncertainty": {
+          "quoteMarketClusters": 235,
+          "effectiveIndependentQuoteMarkets": 227.36258387604516,
+          "fillOutcomeMarketClusters": 0,
+          "effectiveIndependentFillMarkets": null,
+          "clusteredStandardError": null,
+          "clustered95PercentInterval": null,
+          "uncertaintyStatus": "unavailable_without_confirmed_queue_fill_outcomes"
+        }
+      },
+      {
+        "fold": "untouched_held_out",
+        "action": "buy",
+        "horizonMs": 5000,
+        "family": "overall",
+        "bin": "all",
+        "candidateQuotes": 30436,
+        "touchPriceTradeReportsUnknownSide": 0,
+        "confirmedQueueFills": 0,
+        "markoutSamples": 0,
+        "meanExecutableNet": null,
+        "oneTickEachWayStressMean": null,
+        "marketClusterUncertainty": {
+          "quoteMarketClusters": 237,
+          "effectiveIndependentQuoteMarkets": 234.48612422460243,
+          "fillOutcomeMarketClusters": 0,
+          "effectiveIndependentFillMarkets": null,
+          "clusteredStandardError": null,
+          "clustered95PercentInterval": null,
+          "uncertaintyStatus": "unavailable_without_confirmed_queue_fill_outcomes"
+        }
+      },
+      {
+        "fold": "untouched_held_out",
+        "action": "buy",
+        "horizonMs": 5000,
+        "family": "bySpread",
+        "bin": "1 tick",
+        "candidateQuotes": 24182,
+        "touchPriceTradeReportsUnknownSide": 0,
+        "confirmedQueueFills": 0,
+        "markoutSamples": 0,
+        "meanExecutableNet": null,
+        "oneTickEachWayStressMean": null,
+        "marketClusterUncertainty": {
+          "quoteMarketClusters": 228,
+          "effectiveIndependentQuoteMarkets": 199.63277782784792,
+          "fillOutcomeMarketClusters": 0,
+          "effectiveIndependentFillMarkets": null,
+          "clusteredStandardError": null,
+          "clustered95PercentInterval": null,
+          "uncertaintyStatus": "unavailable_without_confirmed_queue_fill_outcomes"
+        }
+      },
+      {
+        "fold": "untouched_held_out",
+        "action": "buy",
+        "horizonMs": 5000,
+        "family": "bySpread",
+        "bin": "2 ticks",
+        "candidateQuotes": 6107,
+        "touchPriceTradeReportsUnknownSide": 0,
+        "confirmedQueueFills": 0,
+        "markoutSamples": 0,
+        "meanExecutableNet": null,
+        "oneTickEachWayStressMean": null,
+        "marketClusterUncertainty": {
+          "quoteMarketClusters": 111,
+          "effectiveIndependentQuoteMarkets": 68.93454300801993,
+          "fillOutcomeMarketClusters": 0,
+          "effectiveIndependentFillMarkets": null,
+          "clusteredStandardError": null,
+          "clustered95PercentInterval": null,
+          "uncertaintyStatus": "unavailable_without_confirmed_queue_fill_outcomes"
+        }
+      },
+      {
+        "fold": "untouched_held_out",
+        "action": "buy",
+        "horizonMs": 5000,
+        "family": "bySpread",
+        "bin": "3+ ticks",
+        "candidateQuotes": 147,
+        "touchPriceTradeReportsUnknownSide": 0,
+        "confirmedQueueFills": 0,
+        "markoutSamples": 0,
+        "meanExecutableNet": null,
+        "oneTickEachWayStressMean": null,
+        "marketClusterUncertainty": {
+          "quoteMarketClusters": 30,
+          "effectiveIndependentQuoteMarkets": 9.037641154328734,
+          "fillOutcomeMarketClusters": 0,
+          "effectiveIndependentFillMarkets": null,
+          "clusteredStandardError": null,
+          "clustered95PercentInterval": null,
+          "uncertaintyStatus": "unavailable_without_confirmed_queue_fill_outcomes"
+        }
+      },
+      {
+        "fold": "untouched_held_out",
+        "action": "buy",
+        "horizonMs": 5000,
+        "family": "byQueueAhead",
+        "bin": "1-10",
+        "candidateQuotes": 209,
+        "touchPriceTradeReportsUnknownSide": 0,
+        "confirmedQueueFills": 0,
+        "markoutSamples": 0,
+        "meanExecutableNet": null,
+        "oneTickEachWayStressMean": null,
+        "marketClusterUncertainty": {
+          "quoteMarketClusters": 14,
+          "effectiveIndependentQuoteMarkets": 6.565609499473921,
+          "fillOutcomeMarketClusters": 0,
+          "effectiveIndependentFillMarkets": null,
+          "clusteredStandardError": null,
+          "clustered95PercentInterval": null,
+          "uncertaintyStatus": "unavailable_without_confirmed_queue_fill_outcomes"
+        }
+      },
+      {
+        "fold": "untouched_held_out",
+        "action": "buy",
+        "horizonMs": 5000,
+        "family": "byQueueAhead",
+        "bin": "11-50",
+        "candidateQuotes": 342,
+        "touchPriceTradeReportsUnknownSide": 0,
+        "confirmedQueueFills": 0,
+        "markoutSamples": 0,
+        "meanExecutableNet": null,
+        "oneTickEachWayStressMean": null,
+        "marketClusterUncertainty": {
+          "quoteMarketClusters": 16,
+          "effectiveIndependentQuoteMarkets": 5.542266868840031,
+          "fillOutcomeMarketClusters": 0,
+          "effectiveIndependentFillMarkets": null,
+          "clusteredStandardError": null,
+          "clustered95PercentInterval": null,
+          "uncertaintyStatus": "unavailable_without_confirmed_queue_fill_outcomes"
+        }
+      },
+      {
+        "fold": "untouched_held_out",
+        "action": "buy",
+        "horizonMs": 5000,
+        "family": "byQueueAhead",
+        "bin": "51-250",
+        "candidateQuotes": 1138,
+        "touchPriceTradeReportsUnknownSide": 0,
+        "confirmedQueueFills": 0,
+        "markoutSamples": 0,
+        "meanExecutableNet": null,
+        "oneTickEachWayStressMean": null,
+        "marketClusterUncertainty": {
+          "quoteMarketClusters": 47,
+          "effectiveIndependentQuoteMarkets": 19.745136305421724,
+          "fillOutcomeMarketClusters": 0,
+          "effectiveIndependentFillMarkets": null,
+          "clusteredStandardError": null,
+          "clustered95PercentInterval": null,
+          "uncertaintyStatus": "unavailable_without_confirmed_queue_fill_outcomes"
+        }
+      },
+      {
+        "fold": "untouched_held_out",
+        "action": "buy",
+        "horizonMs": 5000,
+        "family": "byQueueAhead",
+        "bin": "251+",
+        "candidateQuotes": 28747,
+        "touchPriceTradeReportsUnknownSide": 0,
+        "confirmedQueueFills": 0,
+        "markoutSamples": 0,
+        "meanExecutableNet": null,
+        "oneTickEachWayStressMean": null,
+        "marketClusterUncertainty": {
+          "quoteMarketClusters": 235,
+          "effectiveIndependentQuoteMarkets": 227.36258387604516,
+          "fillOutcomeMarketClusters": 0,
+          "effectiveIndependentFillMarkets": null,
+          "clusteredStandardError": null,
+          "clustered95PercentInterval": null,
+          "uncertaintyStatus": "unavailable_without_confirmed_queue_fill_outcomes"
+        }
+      },
+      {
+        "fold": "untouched_held_out",
+        "action": "buy",
+        "horizonMs": 30000,
+        "family": "overall",
+        "bin": "all",
+        "candidateQuotes": 30436,
+        "touchPriceTradeReportsUnknownSide": 0,
+        "confirmedQueueFills": 0,
+        "markoutSamples": 0,
+        "meanExecutableNet": null,
+        "oneTickEachWayStressMean": null,
+        "marketClusterUncertainty": {
+          "quoteMarketClusters": 237,
+          "effectiveIndependentQuoteMarkets": 234.48612422460243,
+          "fillOutcomeMarketClusters": 0,
+          "effectiveIndependentFillMarkets": null,
+          "clusteredStandardError": null,
+          "clustered95PercentInterval": null,
+          "uncertaintyStatus": "unavailable_without_confirmed_queue_fill_outcomes"
+        }
+      },
+      {
+        "fold": "untouched_held_out",
+        "action": "buy",
+        "horizonMs": 30000,
+        "family": "bySpread",
+        "bin": "1 tick",
+        "candidateQuotes": 24182,
+        "touchPriceTradeReportsUnknownSide": 0,
+        "confirmedQueueFills": 0,
+        "markoutSamples": 0,
+        "meanExecutableNet": null,
+        "oneTickEachWayStressMean": null,
+        "marketClusterUncertainty": {
+          "quoteMarketClusters": 228,
+          "effectiveIndependentQuoteMarkets": 199.63277782784792,
+          "fillOutcomeMarketClusters": 0,
+          "effectiveIndependentFillMarkets": null,
+          "clusteredStandardError": null,
+          "clustered95PercentInterval": null,
+          "uncertaintyStatus": "unavailable_without_confirmed_queue_fill_outcomes"
+        }
+      },
+      {
+        "fold": "untouched_held_out",
+        "action": "buy",
+        "horizonMs": 30000,
+        "family": "bySpread",
+        "bin": "2 ticks",
+        "candidateQuotes": 6107,
+        "touchPriceTradeReportsUnknownSide": 0,
+        "confirmedQueueFills": 0,
+        "markoutSamples": 0,
+        "meanExecutableNet": null,
+        "oneTickEachWayStressMean": null,
+        "marketClusterUncertainty": {
+          "quoteMarketClusters": 111,
+          "effectiveIndependentQuoteMarkets": 68.93454300801993,
+          "fillOutcomeMarketClusters": 0,
+          "effectiveIndependentFillMarkets": null,
+          "clusteredStandardError": null,
+          "clustered95PercentInterval": null,
+          "uncertaintyStatus": "unavailable_without_confirmed_queue_fill_outcomes"
+        }
+      },
+      {
+        "fold": "untouched_held_out",
+        "action": "buy",
+        "horizonMs": 30000,
+        "family": "bySpread",
+        "bin": "3+ ticks",
+        "candidateQuotes": 147,
+        "touchPriceTradeReportsUnknownSide": 0,
+        "confirmedQueueFills": 0,
+        "markoutSamples": 0,
+        "meanExecutableNet": null,
+        "oneTickEachWayStressMean": null,
+        "marketClusterUncertainty": {
+          "quoteMarketClusters": 30,
+          "effectiveIndependentQuoteMarkets": 9.037641154328734,
+          "fillOutcomeMarketClusters": 0,
+          "effectiveIndependentFillMarkets": null,
+          "clusteredStandardError": null,
+          "clustered95PercentInterval": null,
+          "uncertaintyStatus": "unavailable_without_confirmed_queue_fill_outcomes"
+        }
+      },
+      {
+        "fold": "untouched_held_out",
+        "action": "buy",
+        "horizonMs": 30000,
+        "family": "byQueueAhead",
+        "bin": "1-10",
+        "candidateQuotes": 209,
+        "touchPriceTradeReportsUnknownSide": 0,
+        "confirmedQueueFills": 0,
+        "markoutSamples": 0,
+        "meanExecutableNet": null,
+        "oneTickEachWayStressMean": null,
+        "marketClusterUncertainty": {
+          "quoteMarketClusters": 14,
+          "effectiveIndependentQuoteMarkets": 6.565609499473921,
+          "fillOutcomeMarketClusters": 0,
+          "effectiveIndependentFillMarkets": null,
+          "clusteredStandardError": null,
+          "clustered95PercentInterval": null,
+          "uncertaintyStatus": "unavailable_without_confirmed_queue_fill_outcomes"
+        }
+      },
+      {
+        "fold": "untouched_held_out",
+        "action": "buy",
+        "horizonMs": 30000,
+        "family": "byQueueAhead",
+        "bin": "11-50",
+        "candidateQuotes": 342,
+        "touchPriceTradeReportsUnknownSide": 0,
+        "confirmedQueueFills": 0,
+        "markoutSamples": 0,
+        "meanExecutableNet": null,
+        "oneTickEachWayStressMean": null,
+        "marketClusterUncertainty": {
+          "quoteMarketClusters": 16,
+          "effectiveIndependentQuoteMarkets": 5.542266868840031,
+          "fillOutcomeMarketClusters": 0,
+          "effectiveIndependentFillMarkets": null,
+          "clusteredStandardError": null,
+          "clustered95PercentInterval": null,
+          "uncertaintyStatus": "unavailable_without_confirmed_queue_fill_outcomes"
+        }
+      },
+      {
+        "fold": "untouched_held_out",
+        "action": "buy",
+        "horizonMs": 30000,
+        "family": "byQueueAhead",
+        "bin": "51-250",
+        "candidateQuotes": 1138,
+        "touchPriceTradeReportsUnknownSide": 0,
+        "confirmedQueueFills": 0,
+        "markoutSamples": 0,
+        "meanExecutableNet": null,
+        "oneTickEachWayStressMean": null,
+        "marketClusterUncertainty": {
+          "quoteMarketClusters": 47,
+          "effectiveIndependentQuoteMarkets": 19.745136305421724,
+          "fillOutcomeMarketClusters": 0,
+          "effectiveIndependentFillMarkets": null,
+          "clusteredStandardError": null,
+          "clustered95PercentInterval": null,
+          "uncertaintyStatus": "unavailable_without_confirmed_queue_fill_outcomes"
+        }
+      },
+      {
+        "fold": "untouched_held_out",
+        "action": "buy",
+        "horizonMs": 30000,
+        "family": "byQueueAhead",
+        "bin": "251+",
+        "candidateQuotes": 28747,
+        "touchPriceTradeReportsUnknownSide": 0,
+        "confirmedQueueFills": 0,
+        "markoutSamples": 0,
+        "meanExecutableNet": null,
+        "oneTickEachWayStressMean": null,
+        "marketClusterUncertainty": {
+          "quoteMarketClusters": 235,
+          "effectiveIndependentQuoteMarkets": 227.36258387604516,
+          "fillOutcomeMarketClusters": 0,
+          "effectiveIndependentFillMarkets": null,
+          "clusteredStandardError": null,
+          "clustered95PercentInterval": null,
+          "uncertaintyStatus": "unavailable_without_confirmed_queue_fill_outcomes"
+        }
+      },
+      {
+        "fold": "untouched_held_out",
+        "action": "sell",
+        "horizonMs": 1000,
+        "family": "overall",
+        "bin": "all",
+        "candidateQuotes": 30436,
+        "touchPriceTradeReportsUnknownSide": 0,
+        "confirmedQueueFills": 0,
+        "markoutSamples": 0,
+        "meanExecutableNet": null,
+        "oneTickEachWayStressMean": null,
+        "marketClusterUncertainty": {
+          "quoteMarketClusters": 237,
+          "effectiveIndependentQuoteMarkets": 234.48612422460243,
+          "fillOutcomeMarketClusters": 0,
+          "effectiveIndependentFillMarkets": null,
+          "clusteredStandardError": null,
+          "clustered95PercentInterval": null,
+          "uncertaintyStatus": "unavailable_without_confirmed_queue_fill_outcomes"
+        }
+      },
+      {
+        "fold": "untouched_held_out",
+        "action": "sell",
+        "horizonMs": 1000,
+        "family": "bySpread",
+        "bin": "1 tick",
+        "candidateQuotes": 24182,
+        "touchPriceTradeReportsUnknownSide": 0,
+        "confirmedQueueFills": 0,
+        "markoutSamples": 0,
+        "meanExecutableNet": null,
+        "oneTickEachWayStressMean": null,
+        "marketClusterUncertainty": {
+          "quoteMarketClusters": 228,
+          "effectiveIndependentQuoteMarkets": 199.63277782784792,
+          "fillOutcomeMarketClusters": 0,
+          "effectiveIndependentFillMarkets": null,
+          "clusteredStandardError": null,
+          "clustered95PercentInterval": null,
+          "uncertaintyStatus": "unavailable_without_confirmed_queue_fill_outcomes"
+        }
+      },
+      {
+        "fold": "untouched_held_out",
+        "action": "sell",
+        "horizonMs": 1000,
+        "family": "bySpread",
+        "bin": "2 ticks",
+        "candidateQuotes": 6107,
+        "touchPriceTradeReportsUnknownSide": 0,
+        "confirmedQueueFills": 0,
+        "markoutSamples": 0,
+        "meanExecutableNet": null,
+        "oneTickEachWayStressMean": null,
+        "marketClusterUncertainty": {
+          "quoteMarketClusters": 111,
+          "effectiveIndependentQuoteMarkets": 68.93454300801993,
+          "fillOutcomeMarketClusters": 0,
+          "effectiveIndependentFillMarkets": null,
+          "clusteredStandardError": null,
+          "clustered95PercentInterval": null,
+          "uncertaintyStatus": "unavailable_without_confirmed_queue_fill_outcomes"
+        }
+      },
+      {
+        "fold": "untouched_held_out",
+        "action": "sell",
+        "horizonMs": 1000,
+        "family": "bySpread",
+        "bin": "3+ ticks",
+        "candidateQuotes": 147,
+        "touchPriceTradeReportsUnknownSide": 0,
+        "confirmedQueueFills": 0,
+        "markoutSamples": 0,
+        "meanExecutableNet": null,
+        "oneTickEachWayStressMean": null,
+        "marketClusterUncertainty": {
+          "quoteMarketClusters": 30,
+          "effectiveIndependentQuoteMarkets": 9.037641154328734,
+          "fillOutcomeMarketClusters": 0,
+          "effectiveIndependentFillMarkets": null,
+          "clusteredStandardError": null,
+          "clustered95PercentInterval": null,
+          "uncertaintyStatus": "unavailable_without_confirmed_queue_fill_outcomes"
+        }
+      },
+      {
+        "fold": "untouched_held_out",
+        "action": "sell",
+        "horizonMs": 1000,
+        "family": "byQueueAhead",
+        "bin": "1-10",
+        "candidateQuotes": 420,
+        "touchPriceTradeReportsUnknownSide": 0,
+        "confirmedQueueFills": 0,
+        "markoutSamples": 0,
+        "meanExecutableNet": null,
+        "oneTickEachWayStressMean": null,
+        "marketClusterUncertainty": {
+          "quoteMarketClusters": 14,
+          "effectiveIndependentQuoteMarkets": 4.6501818948700375,
+          "fillOutcomeMarketClusters": 0,
+          "effectiveIndependentFillMarkets": null,
+          "clusteredStandardError": null,
+          "clustered95PercentInterval": null,
+          "uncertaintyStatus": "unavailable_without_confirmed_queue_fill_outcomes"
+        }
+      },
+      {
+        "fold": "untouched_held_out",
+        "action": "sell",
+        "horizonMs": 1000,
+        "family": "byQueueAhead",
+        "bin": "11-50",
+        "candidateQuotes": 618,
+        "touchPriceTradeReportsUnknownSide": 0,
+        "confirmedQueueFills": 0,
+        "markoutSamples": 0,
+        "meanExecutableNet": null,
+        "oneTickEachWayStressMean": null,
+        "marketClusterUncertainty": {
+          "quoteMarketClusters": 19,
+          "effectiveIndependentQuoteMarkets": 8.332402478401256,
+          "fillOutcomeMarketClusters": 0,
+          "effectiveIndependentFillMarkets": null,
+          "clusteredStandardError": null,
+          "clustered95PercentInterval": null,
+          "uncertaintyStatus": "unavailable_without_confirmed_queue_fill_outcomes"
+        }
+      },
+      {
+        "fold": "untouched_held_out",
+        "action": "sell",
+        "horizonMs": 1000,
+        "family": "byQueueAhead",
+        "bin": "51-250",
+        "candidateQuotes": 1694,
+        "touchPriceTradeReportsUnknownSide": 0,
+        "confirmedQueueFills": 0,
+        "markoutSamples": 0,
+        "meanExecutableNet": null,
+        "oneTickEachWayStressMean": null,
+        "marketClusterUncertainty": {
+          "quoteMarketClusters": 50,
+          "effectiveIndependentQuoteMarkets": 21.659264850177372,
+          "fillOutcomeMarketClusters": 0,
+          "effectiveIndependentFillMarkets": null,
+          "clusteredStandardError": null,
+          "clustered95PercentInterval": null,
+          "uncertaintyStatus": "unavailable_without_confirmed_queue_fill_outcomes"
+        }
+      },
+      {
+        "fold": "untouched_held_out",
+        "action": "sell",
+        "horizonMs": 1000,
+        "family": "byQueueAhead",
+        "bin": "251+",
+        "candidateQuotes": 27704,
+        "touchPriceTradeReportsUnknownSide": 0,
+        "confirmedQueueFills": 0,
+        "markoutSamples": 0,
+        "meanExecutableNet": null,
+        "oneTickEachWayStressMean": null,
+        "marketClusterUncertainty": {
+          "quoteMarketClusters": 231,
+          "effectiveIndependentQuoteMarkets": 218.53651825200765,
+          "fillOutcomeMarketClusters": 0,
+          "effectiveIndependentFillMarkets": null,
+          "clusteredStandardError": null,
+          "clustered95PercentInterval": null,
+          "uncertaintyStatus": "unavailable_without_confirmed_queue_fill_outcomes"
+        }
+      },
+      {
+        "fold": "untouched_held_out",
+        "action": "sell",
+        "horizonMs": 5000,
+        "family": "overall",
+        "bin": "all",
+        "candidateQuotes": 30436,
+        "touchPriceTradeReportsUnknownSide": 0,
+        "confirmedQueueFills": 0,
+        "markoutSamples": 0,
+        "meanExecutableNet": null,
+        "oneTickEachWayStressMean": null,
+        "marketClusterUncertainty": {
+          "quoteMarketClusters": 237,
+          "effectiveIndependentQuoteMarkets": 234.48612422460243,
+          "fillOutcomeMarketClusters": 0,
+          "effectiveIndependentFillMarkets": null,
+          "clusteredStandardError": null,
+          "clustered95PercentInterval": null,
+          "uncertaintyStatus": "unavailable_without_confirmed_queue_fill_outcomes"
+        }
+      },
+      {
+        "fold": "untouched_held_out",
+        "action": "sell",
+        "horizonMs": 5000,
+        "family": "bySpread",
+        "bin": "1 tick",
+        "candidateQuotes": 24182,
+        "touchPriceTradeReportsUnknownSide": 0,
+        "confirmedQueueFills": 0,
+        "markoutSamples": 0,
+        "meanExecutableNet": null,
+        "oneTickEachWayStressMean": null,
+        "marketClusterUncertainty": {
+          "quoteMarketClusters": 228,
+          "effectiveIndependentQuoteMarkets": 199.63277782784792,
+          "fillOutcomeMarketClusters": 0,
+          "effectiveIndependentFillMarkets": null,
+          "clusteredStandardError": null,
+          "clustered95PercentInterval": null,
+          "uncertaintyStatus": "unavailable_without_confirmed_queue_fill_outcomes"
+        }
+      },
+      {
+        "fold": "untouched_held_out",
+        "action": "sell",
+        "horizonMs": 5000,
+        "family": "bySpread",
+        "bin": "2 ticks",
+        "candidateQuotes": 6107,
+        "touchPriceTradeReportsUnknownSide": 0,
+        "confirmedQueueFills": 0,
+        "markoutSamples": 0,
+        "meanExecutableNet": null,
+        "oneTickEachWayStressMean": null,
+        "marketClusterUncertainty": {
+          "quoteMarketClusters": 111,
+          "effectiveIndependentQuoteMarkets": 68.93454300801993,
+          "fillOutcomeMarketClusters": 0,
+          "effectiveIndependentFillMarkets": null,
+          "clusteredStandardError": null,
+          "clustered95PercentInterval": null,
+          "uncertaintyStatus": "unavailable_without_confirmed_queue_fill_outcomes"
+        }
+      },
+      {
+        "fold": "untouched_held_out",
+        "action": "sell",
+        "horizonMs": 5000,
+        "family": "bySpread",
+        "bin": "3+ ticks",
+        "candidateQuotes": 147,
+        "touchPriceTradeReportsUnknownSide": 0,
+        "confirmedQueueFills": 0,
+        "markoutSamples": 0,
+        "meanExecutableNet": null,
+        "oneTickEachWayStressMean": null,
+        "marketClusterUncertainty": {
+          "quoteMarketClusters": 30,
+          "effectiveIndependentQuoteMarkets": 9.037641154328734,
+          "fillOutcomeMarketClusters": 0,
+          "effectiveIndependentFillMarkets": null,
+          "clusteredStandardError": null,
+          "clustered95PercentInterval": null,
+          "uncertaintyStatus": "unavailable_without_confirmed_queue_fill_outcomes"
+        }
+      },
+      {
+        "fold": "untouched_held_out",
+        "action": "sell",
+        "horizonMs": 5000,
+        "family": "byQueueAhead",
+        "bin": "1-10",
+        "candidateQuotes": 420,
+        "touchPriceTradeReportsUnknownSide": 0,
+        "confirmedQueueFills": 0,
+        "markoutSamples": 0,
+        "meanExecutableNet": null,
+        "oneTickEachWayStressMean": null,
+        "marketClusterUncertainty": {
+          "quoteMarketClusters": 14,
+          "effectiveIndependentQuoteMarkets": 4.6501818948700375,
+          "fillOutcomeMarketClusters": 0,
+          "effectiveIndependentFillMarkets": null,
+          "clusteredStandardError": null,
+          "clustered95PercentInterval": null,
+          "uncertaintyStatus": "unavailable_without_confirmed_queue_fill_outcomes"
+        }
+      },
+      {
+        "fold": "untouched_held_out",
+        "action": "sell",
+        "horizonMs": 5000,
+        "family": "byQueueAhead",
+        "bin": "11-50",
+        "candidateQuotes": 618,
+        "touchPriceTradeReportsUnknownSide": 0,
+        "confirmedQueueFills": 0,
+        "markoutSamples": 0,
+        "meanExecutableNet": null,
+        "oneTickEachWayStressMean": null,
+        "marketClusterUncertainty": {
+          "quoteMarketClusters": 19,
+          "effectiveIndependentQuoteMarkets": 8.332402478401256,
+          "fillOutcomeMarketClusters": 0,
+          "effectiveIndependentFillMarkets": null,
+          "clusteredStandardError": null,
+          "clustered95PercentInterval": null,
+          "uncertaintyStatus": "unavailable_without_confirmed_queue_fill_outcomes"
+        }
+      },
+      {
+        "fold": "untouched_held_out",
+        "action": "sell",
+        "horizonMs": 5000,
+        "family": "byQueueAhead",
+        "bin": "51-250",
+        "candidateQuotes": 1694,
+        "touchPriceTradeReportsUnknownSide": 0,
+        "confirmedQueueFills": 0,
+        "markoutSamples": 0,
+        "meanExecutableNet": null,
+        "oneTickEachWayStressMean": null,
+        "marketClusterUncertainty": {
+          "quoteMarketClusters": 50,
+          "effectiveIndependentQuoteMarkets": 21.659264850177372,
+          "fillOutcomeMarketClusters": 0,
+          "effectiveIndependentFillMarkets": null,
+          "clusteredStandardError": null,
+          "clustered95PercentInterval": null,
+          "uncertaintyStatus": "unavailable_without_confirmed_queue_fill_outcomes"
+        }
+      },
+      {
+        "fold": "untouched_held_out",
+        "action": "sell",
+        "horizonMs": 5000,
+        "family": "byQueueAhead",
+        "bin": "251+",
+        "candidateQuotes": 27704,
+        "touchPriceTradeReportsUnknownSide": 0,
+        "confirmedQueueFills": 0,
+        "markoutSamples": 0,
+        "meanExecutableNet": null,
+        "oneTickEachWayStressMean": null,
+        "marketClusterUncertainty": {
+          "quoteMarketClusters": 231,
+          "effectiveIndependentQuoteMarkets": 218.53651825200765,
+          "fillOutcomeMarketClusters": 0,
+          "effectiveIndependentFillMarkets": null,
+          "clusteredStandardError": null,
+          "clustered95PercentInterval": null,
+          "uncertaintyStatus": "unavailable_without_confirmed_queue_fill_outcomes"
+        }
+      },
+      {
+        "fold": "untouched_held_out",
+        "action": "sell",
+        "horizonMs": 30000,
+        "family": "overall",
+        "bin": "all",
+        "candidateQuotes": 30436,
+        "touchPriceTradeReportsUnknownSide": 0,
+        "confirmedQueueFills": 0,
+        "markoutSamples": 0,
+        "meanExecutableNet": null,
+        "oneTickEachWayStressMean": null,
+        "marketClusterUncertainty": {
+          "quoteMarketClusters": 237,
+          "effectiveIndependentQuoteMarkets": 234.48612422460243,
+          "fillOutcomeMarketClusters": 0,
+          "effectiveIndependentFillMarkets": null,
+          "clusteredStandardError": null,
+          "clustered95PercentInterval": null,
+          "uncertaintyStatus": "unavailable_without_confirmed_queue_fill_outcomes"
+        }
+      },
+      {
+        "fold": "untouched_held_out",
+        "action": "sell",
+        "horizonMs": 30000,
+        "family": "bySpread",
+        "bin": "1 tick",
+        "candidateQuotes": 24182,
+        "touchPriceTradeReportsUnknownSide": 0,
+        "confirmedQueueFills": 0,
+        "markoutSamples": 0,
+        "meanExecutableNet": null,
+        "oneTickEachWayStressMean": null,
+        "marketClusterUncertainty": {
+          "quoteMarketClusters": 228,
+          "effectiveIndependentQuoteMarkets": 199.63277782784792,
+          "fillOutcomeMarketClusters": 0,
+          "effectiveIndependentFillMarkets": null,
+          "clusteredStandardError": null,
+          "clustered95PercentInterval": null,
+          "uncertaintyStatus": "unavailable_without_confirmed_queue_fill_outcomes"
+        }
+      },
+      {
+        "fold": "untouched_held_out",
+        "action": "sell",
+        "horizonMs": 30000,
+        "family": "bySpread",
+        "bin": "2 ticks",
+        "candidateQuotes": 6107,
+        "touchPriceTradeReportsUnknownSide": 0,
+        "confirmedQueueFills": 0,
+        "markoutSamples": 0,
+        "meanExecutableNet": null,
+        "oneTickEachWayStressMean": null,
+        "marketClusterUncertainty": {
+          "quoteMarketClusters": 111,
+          "effectiveIndependentQuoteMarkets": 68.93454300801993,
+          "fillOutcomeMarketClusters": 0,
+          "effectiveIndependentFillMarkets": null,
+          "clusteredStandardError": null,
+          "clustered95PercentInterval": null,
+          "uncertaintyStatus": "unavailable_without_confirmed_queue_fill_outcomes"
+        }
+      },
+      {
+        "fold": "untouched_held_out",
+        "action": "sell",
+        "horizonMs": 30000,
+        "family": "bySpread",
+        "bin": "3+ ticks",
+        "candidateQuotes": 147,
+        "touchPriceTradeReportsUnknownSide": 0,
+        "confirmedQueueFills": 0,
+        "markoutSamples": 0,
+        "meanExecutableNet": null,
+        "oneTickEachWayStressMean": null,
+        "marketClusterUncertainty": {
+          "quoteMarketClusters": 30,
+          "effectiveIndependentQuoteMarkets": 9.037641154328734,
+          "fillOutcomeMarketClusters": 0,
+          "effectiveIndependentFillMarkets": null,
+          "clusteredStandardError": null,
+          "clustered95PercentInterval": null,
+          "uncertaintyStatus": "unavailable_without_confirmed_queue_fill_outcomes"
+        }
+      },
+      {
+        "fold": "untouched_held_out",
+        "action": "sell",
+        "horizonMs": 30000,
+        "family": "byQueueAhead",
+        "bin": "1-10",
+        "candidateQuotes": 420,
+        "touchPriceTradeReportsUnknownSide": 0,
+        "confirmedQueueFills": 0,
+        "markoutSamples": 0,
+        "meanExecutableNet": null,
+        "oneTickEachWayStressMean": null,
+        "marketClusterUncertainty": {
+          "quoteMarketClusters": 14,
+          "effectiveIndependentQuoteMarkets": 4.6501818948700375,
+          "fillOutcomeMarketClusters": 0,
+          "effectiveIndependentFillMarkets": null,
+          "clusteredStandardError": null,
+          "clustered95PercentInterval": null,
+          "uncertaintyStatus": "unavailable_without_confirmed_queue_fill_outcomes"
+        }
+      },
+      {
+        "fold": "untouched_held_out",
+        "action": "sell",
+        "horizonMs": 30000,
+        "family": "byQueueAhead",
+        "bin": "11-50",
+        "candidateQuotes": 618,
+        "touchPriceTradeReportsUnknownSide": 0,
+        "confirmedQueueFills": 0,
+        "markoutSamples": 0,
+        "meanExecutableNet": null,
+        "oneTickEachWayStressMean": null,
+        "marketClusterUncertainty": {
+          "quoteMarketClusters": 19,
+          "effectiveIndependentQuoteMarkets": 8.332402478401256,
+          "fillOutcomeMarketClusters": 0,
+          "effectiveIndependentFillMarkets": null,
+          "clusteredStandardError": null,
+          "clustered95PercentInterval": null,
+          "uncertaintyStatus": "unavailable_without_confirmed_queue_fill_outcomes"
+        }
+      },
+      {
+        "fold": "untouched_held_out",
+        "action": "sell",
+        "horizonMs": 30000,
+        "family": "byQueueAhead",
+        "bin": "51-250",
+        "candidateQuotes": 1694,
+        "touchPriceTradeReportsUnknownSide": 0,
+        "confirmedQueueFills": 0,
+        "markoutSamples": 0,
+        "meanExecutableNet": null,
+        "oneTickEachWayStressMean": null,
+        "marketClusterUncertainty": {
+          "quoteMarketClusters": 50,
+          "effectiveIndependentQuoteMarkets": 21.659264850177372,
+          "fillOutcomeMarketClusters": 0,
+          "effectiveIndependentFillMarkets": null,
+          "clusteredStandardError": null,
+          "clustered95PercentInterval": null,
+          "uncertaintyStatus": "unavailable_without_confirmed_queue_fill_outcomes"
+        }
+      },
+      {
+        "fold": "untouched_held_out",
+        "action": "sell",
+        "horizonMs": 30000,
+        "family": "byQueueAhead",
+        "bin": "251+",
+        "candidateQuotes": 27704,
+        "touchPriceTradeReportsUnknownSide": 0,
+        "confirmedQueueFills": 0,
+        "markoutSamples": 0,
+        "meanExecutableNet": null,
+        "oneTickEachWayStressMean": null,
+        "marketClusterUncertainty": {
+          "quoteMarketClusters": 231,
+          "effectiveIndependentQuoteMarkets": 218.53651825200765,
+          "fillOutcomeMarketClusters": 0,
+          "effectiveIndependentFillMarkets": null,
+          "clusteredStandardError": null,
+          "clustered95PercentInterval": null,
+          "uncertaintyStatus": "unavailable_without_confirmed_queue_fill_outcomes"
+        }
+      }
+    ],
+    "queueAheadSnapshots": {
+      "schemaVersion": 1,
+      "detailLevel": "aggregated_timestamped_rows_omitted",
+      "rowCount": 317482,
+      "originalColumns": [
+        "sourceDay",
+        "fold",
+        "marketId",
+        "exchangeId",
+        "action",
+        "decisionReceiptAt",
+        "activationAt",
+        "lastBookReceivedAt",
+        "status",
+        "endAt",
+        "spreadTicks",
+        "initialQueueAheadShares",
+        "observedQueueIncreaseSharesAdded",
+        "observedDisplayReductionsIgnored",
+        "finalQueueAheadShares",
+        "touchPriceTradeReportsUnknownSide",
+        "touchPriceTradeQuantityUnknownSide"
+      ],
+      "omittedRowFields": [
+        "decisionReceiptAt",
+        "activationAt",
+        "lastBookReceivedAt",
+        "endAt"
+      ],
+      "aggregateMethod": "exact row and unique-id counts; exact safe-integer sum/min/max for each declared metric",
+      "totals": {
+        "rowCount": 317482,
+        "uniqueMarketCount": 237,
+        "uniqueExchangeCount": 237,
+        "metrics": {
+          "spreadTicks": {
+            "count": 317482,
+            "sum": 374760,
+            "min": 1,
+            "max": 8
+          },
+          "initialQueueAheadShares": {
+            "count": 317482,
+            "sum": 5009942835,
+            "min": 1,
+            "max": 1402019
+          },
+          "observedQueueIncreaseSharesAdded": {
+            "count": 317482,
+            "sum": 0,
+            "min": 0,
+            "max": 0
+          },
+          "observedDisplayReductionsIgnored": {
+            "count": 317482,
+            "sum": 0,
+            "min": 0,
+            "max": 0
+          },
+          "finalQueueAheadShares": {
+            "count": 317482,
+            "sum": 5009942835,
+            "min": 1,
+            "max": 1402019
+          },
+          "touchPriceTradeReportsUnknownSide": {
+            "count": 317482,
+            "sum": 0,
+            "min": 0,
+            "max": 0
+          },
+          "touchPriceTradeQuantityUnknownSide": {
+            "count": 317482,
+            "sum": 0,
+            "min": 0,
+            "max": 0
+          }
+        }
+      },
+      "groupings": {
+        "bySourceDay": [
+          {
+            "sourceDay": "2026-10-05",
+            "rowCount": 83872,
+            "uniqueMarketCount": 237,
+            "uniqueExchangeCount": 237,
+            "metrics": {
+              "spreadTicks": {
+                "count": 83872,
+                "sum": 96460,
+                "min": 1,
+                "max": 7
+              },
+              "initialQueueAheadShares": {
+                "count": 83872,
+                "sum": 1082229979,
+                "min": 1,
+                "max": 799948
+              },
+              "observedQueueIncreaseSharesAdded": {
+                "count": 83872,
+                "sum": 0,
+                "min": 0,
+                "max": 0
+              },
+              "observedDisplayReductionsIgnored": {
+                "count": 83872,
+                "sum": 0,
+                "min": 0,
+                "max": 0
+              },
+              "finalQueueAheadShares": {
+                "count": 83872,
+                "sum": 1082229979,
+                "min": 1,
+                "max": 799948
+              },
+              "touchPriceTradeReportsUnknownSide": {
+                "count": 83872,
+                "sum": 0,
+                "min": 0,
+                "max": 0
+              },
+              "touchPriceTradeQuantityUnknownSide": {
+                "count": 83872,
+                "sum": 0,
+                "min": 0,
+                "max": 0
+              }
+            }
+          },
+          {
+            "sourceDay": "2026-10-06",
+            "rowCount": 172738,
+            "uniqueMarketCount": 237,
+            "uniqueExchangeCount": 237,
+            "metrics": {
+              "spreadTicks": {
+                "count": 172738,
+                "sum": 204614,
+                "min": 1,
+                "max": 8
+              },
+              "initialQueueAheadShares": {
+                "count": 172738,
+                "sum": 3177941025,
+                "min": 1,
+                "max": 1402019
+              },
+              "observedQueueIncreaseSharesAdded": {
+                "count": 172738,
+                "sum": 0,
+                "min": 0,
+                "max": 0
+              },
+              "observedDisplayReductionsIgnored": {
+                "count": 172738,
+                "sum": 0,
+                "min": 0,
+                "max": 0
+              },
+              "finalQueueAheadShares": {
+                "count": 172738,
+                "sum": 3177941025,
+                "min": 1,
+                "max": 1402019
+              },
+              "touchPriceTradeReportsUnknownSide": {
+                "count": 172738,
+                "sum": 0,
+                "min": 0,
+                "max": 0
+              },
+              "touchPriceTradeQuantityUnknownSide": {
+                "count": 172738,
+                "sum": 0,
+                "min": 0,
+                "max": 0
+              }
+            }
+          },
+          {
+            "sourceDay": "2026-10-13",
+            "rowCount": 60872,
+            "uniqueMarketCount": 237,
+            "uniqueExchangeCount": 237,
+            "metrics": {
+              "spreadTicks": {
+                "count": 60872,
+                "sum": 73686,
+                "min": 1,
+                "max": 5
+              },
+              "initialQueueAheadShares": {
+                "count": 60872,
+                "sum": 749771831,
+                "min": 1,
+                "max": 940120
+              },
+              "observedQueueIncreaseSharesAdded": {
+                "count": 60872,
+                "sum": 0,
+                "min": 0,
+                "max": 0
+              },
+              "observedDisplayReductionsIgnored": {
+                "count": 60872,
+                "sum": 0,
+                "min": 0,
+                "max": 0
+              },
+              "finalQueueAheadShares": {
+                "count": 60872,
+                "sum": 749771831,
+                "min": 1,
+                "max": 940120
+              },
+              "touchPriceTradeReportsUnknownSide": {
+                "count": 60872,
+                "sum": 0,
+                "min": 0,
+                "max": 0
+              },
+              "touchPriceTradeQuantityUnknownSide": {
+                "count": 60872,
+                "sum": 0,
+                "min": 0,
+                "max": 0
+              }
+            }
+          }
+        ],
+        "byFold": [
+          {
+            "fold": "development",
+            "rowCount": 256610,
+            "uniqueMarketCount": 237,
+            "uniqueExchangeCount": 237,
+            "metrics": {
+              "spreadTicks": {
+                "count": 256610,
+                "sum": 301074,
+                "min": 1,
+                "max": 8
+              },
+              "initialQueueAheadShares": {
+                "count": 256610,
+                "sum": 4260171004,
+                "min": 1,
+                "max": 1402019
+              },
+              "observedQueueIncreaseSharesAdded": {
+                "count": 256610,
+                "sum": 0,
+                "min": 0,
+                "max": 0
+              },
+              "observedDisplayReductionsIgnored": {
+                "count": 256610,
+                "sum": 0,
+                "min": 0,
+                "max": 0
+              },
+              "finalQueueAheadShares": {
+                "count": 256610,
+                "sum": 4260171004,
+                "min": 1,
+                "max": 1402019
+              },
+              "touchPriceTradeReportsUnknownSide": {
+                "count": 256610,
+                "sum": 0,
+                "min": 0,
+                "max": 0
+              },
+              "touchPriceTradeQuantityUnknownSide": {
+                "count": 256610,
+                "sum": 0,
+                "min": 0,
+                "max": 0
+              }
+            }
+          },
+          {
+            "fold": "untouched_held_out",
+            "rowCount": 60872,
+            "uniqueMarketCount": 237,
+            "uniqueExchangeCount": 237,
+            "metrics": {
+              "spreadTicks": {
+                "count": 60872,
+                "sum": 73686,
+                "min": 1,
+                "max": 5
+              },
+              "initialQueueAheadShares": {
+                "count": 60872,
+                "sum": 749771831,
+                "min": 1,
+                "max": 940120
+              },
+              "observedQueueIncreaseSharesAdded": {
+                "count": 60872,
+                "sum": 0,
+                "min": 0,
+                "max": 0
+              },
+              "observedDisplayReductionsIgnored": {
+                "count": 60872,
+                "sum": 0,
+                "min": 0,
+                "max": 0
+              },
+              "finalQueueAheadShares": {
+                "count": 60872,
+                "sum": 749771831,
+                "min": 1,
+                "max": 940120
+              },
+              "touchPriceTradeReportsUnknownSide": {
+                "count": 60872,
+                "sum": 0,
+                "min": 0,
+                "max": 0
+              },
+              "touchPriceTradeQuantityUnknownSide": {
+                "count": 60872,
+                "sum": 0,
+                "min": 0,
+                "max": 0
+              }
+            }
+          }
+        ],
+        "byAction": [
+          {
+            "action": "buy",
+            "rowCount": 158741,
+            "uniqueMarketCount": 237,
+            "uniqueExchangeCount": 237,
+            "metrics": {
+              "spreadTicks": {
+                "count": 158741,
+                "sum": 187380,
+                "min": 1,
+                "max": 8
+              },
+              "initialQueueAheadShares": {
+                "count": 158741,
+                "sum": 3405712983,
+                "min": 1,
+                "max": 1402019
+              },
+              "observedQueueIncreaseSharesAdded": {
+                "count": 158741,
+                "sum": 0,
+                "min": 0,
+                "max": 0
+              },
+              "observedDisplayReductionsIgnored": {
+                "count": 158741,
+                "sum": 0,
+                "min": 0,
+                "max": 0
+              },
+              "finalQueueAheadShares": {
+                "count": 158741,
+                "sum": 3405712983,
+                "min": 1,
+                "max": 1402019
+              },
+              "touchPriceTradeReportsUnknownSide": {
+                "count": 158741,
+                "sum": 0,
+                "min": 0,
+                "max": 0
+              },
+              "touchPriceTradeQuantityUnknownSide": {
+                "count": 158741,
+                "sum": 0,
+                "min": 0,
+                "max": 0
+              }
+            }
+          },
+          {
+            "action": "sell",
+            "rowCount": 158741,
+            "uniqueMarketCount": 237,
+            "uniqueExchangeCount": 237,
+            "metrics": {
+              "spreadTicks": {
+                "count": 158741,
+                "sum": 187380,
+                "min": 1,
+                "max": 8
+              },
+              "initialQueueAheadShares": {
+                "count": 158741,
+                "sum": 1604229852,
+                "min": 1,
+                "max": 498413
+              },
+              "observedQueueIncreaseSharesAdded": {
+                "count": 158741,
+                "sum": 0,
+                "min": 0,
+                "max": 0
+              },
+              "observedDisplayReductionsIgnored": {
+                "count": 158741,
+                "sum": 0,
+                "min": 0,
+                "max": 0
+              },
+              "finalQueueAheadShares": {
+                "count": 158741,
+                "sum": 1604229852,
+                "min": 1,
+                "max": 498413
+              },
+              "touchPriceTradeReportsUnknownSide": {
+                "count": 158741,
+                "sum": 0,
+                "min": 0,
+                "max": 0
+              },
+              "touchPriceTradeQuantityUnknownSide": {
+                "count": 158741,
+                "sum": 0,
+                "min": 0,
+                "max": 0
+              }
+            }
+          }
+        ],
+        "byStatus": [
+          {
+            "status": "censored_invalidation",
+            "rowCount": 113550,
+            "uniqueMarketCount": 237,
+            "uniqueExchangeCount": 237,
+            "metrics": {
+              "spreadTicks": {
+                "count": 113550,
+                "sum": 135324,
+                "min": 1,
+                "max": 8
+              },
+              "initialQueueAheadShares": {
+                "count": 113550,
+                "sum": 1795793032,
+                "min": 1,
+                "max": 1401019
+              },
+              "observedQueueIncreaseSharesAdded": {
+                "count": 113550,
+                "sum": 0,
+                "min": 0,
+                "max": 0
+              },
+              "observedDisplayReductionsIgnored": {
+                "count": 113550,
+                "sum": 0,
+                "min": 0,
+                "max": 0
+              },
+              "finalQueueAheadShares": {
+                "count": 113550,
+                "sum": 1795793032,
+                "min": 1,
+                "max": 1401019
+              },
+              "touchPriceTradeReportsUnknownSide": {
+                "count": 113550,
+                "sum": 0,
+                "min": 0,
+                "max": 0
+              },
+              "touchPriceTradeQuantityUnknownSide": {
+                "count": 113550,
+                "sum": 0,
+                "min": 0,
+                "max": 0
+              }
+            }
+          },
+          {
+            "status": "censored_stale",
+            "rowCount": 203932,
+            "uniqueMarketCount": 237,
+            "uniqueExchangeCount": 237,
+            "metrics": {
+              "spreadTicks": {
+                "count": 203932,
+                "sum": 239436,
+                "min": 1,
+                "max": 5
+              },
+              "initialQueueAheadShares": {
+                "count": 203932,
+                "sum": 3214149803,
+                "min": 1,
+                "max": 1402019
+              },
+              "observedQueueIncreaseSharesAdded": {
+                "count": 203932,
+                "sum": 0,
+                "min": 0,
+                "max": 0
+              },
+              "observedDisplayReductionsIgnored": {
+                "count": 203932,
+                "sum": 0,
+                "min": 0,
+                "max": 0
+              },
+              "finalQueueAheadShares": {
+                "count": 203932,
+                "sum": 3214149803,
+                "min": 1,
+                "max": 1402019
+              },
+              "touchPriceTradeReportsUnknownSide": {
+                "count": 203932,
+                "sum": 0,
+                "min": 0,
+                "max": 0
+              },
+              "touchPriceTradeQuantityUnknownSide": {
+                "count": 203932,
+                "sum": 0,
+                "min": 0,
+                "max": 0
+              }
+            }
+          }
+        ],
+        "bySourceDayFoldActionStatus": [
+          {
+            "sourceDay": "2026-10-05",
+            "fold": "development",
+            "action": "buy",
+            "status": "censored_invalidation",
+            "rowCount": 16464,
+            "uniqueMarketCount": 237,
+            "uniqueExchangeCount": 237,
+            "metrics": {
+              "spreadTicks": {
+                "count": 16464,
+                "sum": 19338,
+                "min": 1,
+                "max": 7
+              },
+              "initialQueueAheadShares": {
+                "count": 16464,
+                "sum": 266868696,
+                "min": 1,
+                "max": 799948
+              },
+              "observedQueueIncreaseSharesAdded": {
+                "count": 16464,
+                "sum": 0,
+                "min": 0,
+                "max": 0
+              },
+              "observedDisplayReductionsIgnored": {
+                "count": 16464,
+                "sum": 0,
+                "min": 0,
+                "max": 0
+              },
+              "finalQueueAheadShares": {
+                "count": 16464,
+                "sum": 266868696,
+                "min": 1,
+                "max": 799948
+              },
+              "touchPriceTradeReportsUnknownSide": {
+                "count": 16464,
+                "sum": 0,
+                "min": 0,
+                "max": 0
+              },
+              "touchPriceTradeQuantityUnknownSide": {
+                "count": 16464,
+                "sum": 0,
+                "min": 0,
+                "max": 0
+              }
+            }
+          },
+          {
+            "sourceDay": "2026-10-05",
+            "fold": "development",
+            "action": "buy",
+            "status": "censored_stale",
+            "rowCount": 25472,
+            "uniqueMarketCount": 237,
+            "uniqueExchangeCount": 237,
+            "metrics": {
+              "spreadTicks": {
+                "count": 25472,
+                "sum": 28892,
+                "min": 1,
+                "max": 5
+              },
+              "initialQueueAheadShares": {
+                "count": 25472,
+                "sum": 404170020,
+                "min": 1,
+                "max": 799938
+              },
+              "observedQueueIncreaseSharesAdded": {
+                "count": 25472,
+                "sum": 0,
+                "min": 0,
+                "max": 0
+              },
+              "observedDisplayReductionsIgnored": {
+                "count": 25472,
+                "sum": 0,
+                "min": 0,
+                "max": 0
+              },
+              "finalQueueAheadShares": {
+                "count": 25472,
+                "sum": 404170020,
+                "min": 1,
+                "max": 799938
+              },
+              "touchPriceTradeReportsUnknownSide": {
+                "count": 25472,
+                "sum": 0,
+                "min": 0,
+                "max": 0
+              },
+              "touchPriceTradeQuantityUnknownSide": {
+                "count": 25472,
+                "sum": 0,
+                "min": 0,
+                "max": 0
+              }
+            }
+          },
+          {
+            "sourceDay": "2026-10-05",
+            "fold": "development",
+            "action": "sell",
+            "status": "censored_invalidation",
+            "rowCount": 16464,
+            "uniqueMarketCount": 237,
+            "uniqueExchangeCount": 237,
+            "metrics": {
+              "spreadTicks": {
+                "count": 16464,
+                "sum": 19338,
+                "min": 1,
+                "max": 7
+              },
+              "initialQueueAheadShares": {
+                "count": 16464,
+                "sum": 155283083,
+                "min": 1,
+                "max": 498413
+              },
+              "observedQueueIncreaseSharesAdded": {
+                "count": 16464,
+                "sum": 0,
+                "min": 0,
+                "max": 0
+              },
+              "observedDisplayReductionsIgnored": {
+                "count": 16464,
+                "sum": 0,
+                "min": 0,
+                "max": 0
+              },
+              "finalQueueAheadShares": {
+                "count": 16464,
+                "sum": 155283083,
+                "min": 1,
+                "max": 498413
+              },
+              "touchPriceTradeReportsUnknownSide": {
+                "count": 16464,
+                "sum": 0,
+                "min": 0,
+                "max": 0
+              },
+              "touchPriceTradeQuantityUnknownSide": {
+                "count": 16464,
+                "sum": 0,
+                "min": 0,
+                "max": 0
+              }
+            }
+          },
+          {
+            "sourceDay": "2026-10-05",
+            "fold": "development",
+            "action": "sell",
+            "status": "censored_stale",
+            "rowCount": 25472,
+            "uniqueMarketCount": 237,
+            "uniqueExchangeCount": 237,
+            "metrics": {
+              "spreadTicks": {
+                "count": 25472,
+                "sum": 28892,
+                "min": 1,
+                "max": 5
+              },
+              "initialQueueAheadShares": {
+                "count": 25472,
+                "sum": 255908180,
+                "min": 1,
+                "max": 484420
+              },
+              "observedQueueIncreaseSharesAdded": {
+                "count": 25472,
+                "sum": 0,
+                "min": 0,
+                "max": 0
+              },
+              "observedDisplayReductionsIgnored": {
+                "count": 25472,
+                "sum": 0,
+                "min": 0,
+                "max": 0
+              },
+              "finalQueueAheadShares": {
+                "count": 25472,
+                "sum": 255908180,
+                "min": 1,
+                "max": 484420
+              },
+              "touchPriceTradeReportsUnknownSide": {
+                "count": 25472,
+                "sum": 0,
+                "min": 0,
+                "max": 0
+              },
+              "touchPriceTradeQuantityUnknownSide": {
+                "count": 25472,
+                "sum": 0,
+                "min": 0,
+                "max": 0
+              }
+            }
+          },
+          {
+            "sourceDay": "2026-10-06",
+            "fold": "development",
+            "action": "buy",
+            "status": "censored_invalidation",
+            "rowCount": 31873,
+            "uniqueMarketCount": 237,
+            "uniqueExchangeCount": 237,
+            "metrics": {
+              "spreadTicks": {
+                "count": 31873,
+                "sum": 38137,
+                "min": 1,
+                "max": 8
+              },
+              "initialQueueAheadShares": {
+                "count": 31873,
+                "sum": 853484253,
+                "min": 1,
+                "max": 1401019
+              },
+              "observedQueueIncreaseSharesAdded": {
+                "count": 31873,
+                "sum": 0,
+                "min": 0,
+                "max": 0
+              },
+              "observedDisplayReductionsIgnored": {
+                "count": 31873,
+                "sum": 0,
+                "min": 0,
+                "max": 0
+              },
+              "finalQueueAheadShares": {
+                "count": 31873,
+                "sum": 853484253,
+                "min": 1,
+                "max": 1401019
+              },
+              "touchPriceTradeReportsUnknownSide": {
+                "count": 31873,
+                "sum": 0,
+                "min": 0,
+                "max": 0
+              },
+              "touchPriceTradeQuantityUnknownSide": {
+                "count": 31873,
+                "sum": 0,
+                "min": 0,
+                "max": 0
+              }
+            }
+          },
+          {
+            "sourceDay": "2026-10-06",
+            "fold": "development",
+            "action": "buy",
+            "status": "censored_stale",
+            "rowCount": 54496,
+            "uniqueMarketCount": 237,
+            "uniqueExchangeCount": 237,
+            "metrics": {
+              "spreadTicks": {
+                "count": 54496,
+                "sum": 64170,
+                "min": 1,
+                "max": 5
+              },
+              "initialQueueAheadShares": {
+                "count": 54496,
+                "sum": 1477551875,
+                "min": 1,
+                "max": 1402019
+              },
+              "observedQueueIncreaseSharesAdded": {
+                "count": 54496,
+                "sum": 0,
+                "min": 0,
+                "max": 0
+              },
+              "observedDisplayReductionsIgnored": {
+                "count": 54496,
+                "sum": 0,
+                "min": 0,
+                "max": 0
+              },
+              "finalQueueAheadShares": {
+                "count": 54496,
+                "sum": 1477551875,
+                "min": 1,
+                "max": 1402019
+              },
+              "touchPriceTradeReportsUnknownSide": {
+                "count": 54496,
+                "sum": 0,
+                "min": 0,
+                "max": 0
+              },
+              "touchPriceTradeQuantityUnknownSide": {
+                "count": 54496,
+                "sum": 0,
+                "min": 0,
+                "max": 0
+              }
+            }
+          },
+          {
+            "sourceDay": "2026-10-06",
+            "fold": "development",
+            "action": "sell",
+            "status": "censored_invalidation",
+            "rowCount": 31873,
+            "uniqueMarketCount": 237,
+            "uniqueExchangeCount": 237,
+            "metrics": {
+              "spreadTicks": {
+                "count": 31873,
+                "sum": 38137,
+                "min": 1,
+                "max": 8
+              },
+              "initialQueueAheadShares": {
+                "count": 31873,
+                "sum": 305329962,
+                "min": 1,
+                "max": 359898
+              },
+              "observedQueueIncreaseSharesAdded": {
+                "count": 31873,
+                "sum": 0,
+                "min": 0,
+                "max": 0
+              },
+              "observedDisplayReductionsIgnored": {
+                "count": 31873,
+                "sum": 0,
+                "min": 0,
+                "max": 0
+              },
+              "finalQueueAheadShares": {
+                "count": 31873,
+                "sum": 305329962,
+                "min": 1,
+                "max": 359898
+              },
+              "touchPriceTradeReportsUnknownSide": {
+                "count": 31873,
+                "sum": 0,
+                "min": 0,
+                "max": 0
+              },
+              "touchPriceTradeQuantityUnknownSide": {
+                "count": 31873,
+                "sum": 0,
+                "min": 0,
+                "max": 0
+              }
+            }
+          },
+          {
+            "sourceDay": "2026-10-06",
+            "fold": "development",
+            "action": "sell",
+            "status": "censored_stale",
+            "rowCount": 54496,
+            "uniqueMarketCount": 237,
+            "uniqueExchangeCount": 237,
+            "metrics": {
+              "spreadTicks": {
+                "count": 54496,
+                "sum": 64170,
+                "min": 1,
+                "max": 5
+              },
+              "initialQueueAheadShares": {
+                "count": 54496,
+                "sum": 541574935,
+                "min": 1,
+                "max": 295632
+              },
+              "observedQueueIncreaseSharesAdded": {
+                "count": 54496,
+                "sum": 0,
+                "min": 0,
+                "max": 0
+              },
+              "observedDisplayReductionsIgnored": {
+                "count": 54496,
+                "sum": 0,
+                "min": 0,
+                "max": 0
+              },
+              "finalQueueAheadShares": {
+                "count": 54496,
+                "sum": 541574935,
+                "min": 1,
+                "max": 295632
+              },
+              "touchPriceTradeReportsUnknownSide": {
+                "count": 54496,
+                "sum": 0,
+                "min": 0,
+                "max": 0
+              },
+              "touchPriceTradeQuantityUnknownSide": {
+                "count": 54496,
+                "sum": 0,
+                "min": 0,
+                "max": 0
+              }
+            }
+          },
+          {
+            "sourceDay": "2026-10-13",
+            "fold": "untouched_held_out",
+            "action": "buy",
+            "status": "censored_invalidation",
+            "rowCount": 8438,
+            "uniqueMarketCount": 237,
+            "uniqueExchangeCount": 237,
+            "metrics": {
+              "spreadTicks": {
+                "count": 8438,
+                "sum": 10187,
+                "min": 1,
+                "max": 4
+              },
+              "initialQueueAheadShares": {
+                "count": 8438,
+                "sum": 118170575,
+                "min": 1,
+                "max": 940120
+              },
+              "observedQueueIncreaseSharesAdded": {
+                "count": 8438,
+                "sum": 0,
+                "min": 0,
+                "max": 0
+              },
+              "observedDisplayReductionsIgnored": {
+                "count": 8438,
+                "sum": 0,
+                "min": 0,
+                "max": 0
+              },
+              "finalQueueAheadShares": {
+                "count": 8438,
+                "sum": 118170575,
+                "min": 1,
+                "max": 940120
+              },
+              "touchPriceTradeReportsUnknownSide": {
+                "count": 8438,
+                "sum": 0,
+                "min": 0,
+                "max": 0
+              },
+              "touchPriceTradeQuantityUnknownSide": {
+                "count": 8438,
+                "sum": 0,
+                "min": 0,
+                "max": 0
+              }
+            }
+          },
+          {
+            "sourceDay": "2026-10-13",
+            "fold": "untouched_held_out",
+            "action": "buy",
+            "status": "censored_stale",
+            "rowCount": 21998,
+            "uniqueMarketCount": 237,
+            "uniqueExchangeCount": 237,
+            "metrics": {
+              "spreadTicks": {
+                "count": 21998,
+                "sum": 26656,
+                "min": 1,
+                "max": 5
+              },
+              "initialQueueAheadShares": {
+                "count": 21998,
+                "sum": 285467564,
+                "min": 1,
+                "max": 937120
+              },
+              "observedQueueIncreaseSharesAdded": {
+                "count": 21998,
+                "sum": 0,
+                "min": 0,
+                "max": 0
+              },
+              "observedDisplayReductionsIgnored": {
+                "count": 21998,
+                "sum": 0,
+                "min": 0,
+                "max": 0
+              },
+              "finalQueueAheadShares": {
+                "count": 21998,
+                "sum": 285467564,
+                "min": 1,
+                "max": 937120
+              },
+              "touchPriceTradeReportsUnknownSide": {
+                "count": 21998,
+                "sum": 0,
+                "min": 0,
+                "max": 0
+              },
+              "touchPriceTradeQuantityUnknownSide": {
+                "count": 21998,
+                "sum": 0,
+                "min": 0,
+                "max": 0
+              }
+            }
+          },
+          {
+            "sourceDay": "2026-10-13",
+            "fold": "untouched_held_out",
+            "action": "sell",
+            "status": "censored_invalidation",
+            "rowCount": 8438,
+            "uniqueMarketCount": 237,
+            "uniqueExchangeCount": 237,
+            "metrics": {
+              "spreadTicks": {
+                "count": 8438,
+                "sum": 10187,
+                "min": 1,
+                "max": 4
+              },
+              "initialQueueAheadShares": {
+                "count": 8438,
+                "sum": 96656463,
+                "min": 1,
+                "max": 224144
+              },
+              "observedQueueIncreaseSharesAdded": {
+                "count": 8438,
+                "sum": 0,
+                "min": 0,
+                "max": 0
+              },
+              "observedDisplayReductionsIgnored": {
+                "count": 8438,
+                "sum": 0,
+                "min": 0,
+                "max": 0
+              },
+              "finalQueueAheadShares": {
+                "count": 8438,
+                "sum": 96656463,
+                "min": 1,
+                "max": 224144
+              },
+              "touchPriceTradeReportsUnknownSide": {
+                "count": 8438,
+                "sum": 0,
+                "min": 0,
+                "max": 0
+              },
+              "touchPriceTradeQuantityUnknownSide": {
+                "count": 8438,
+                "sum": 0,
+                "min": 0,
+                "max": 0
+              }
+            }
+          },
+          {
+            "sourceDay": "2026-10-13",
+            "fold": "untouched_held_out",
+            "action": "sell",
+            "status": "censored_stale",
+            "rowCount": 21998,
+            "uniqueMarketCount": 237,
+            "uniqueExchangeCount": 237,
+            "metrics": {
+              "spreadTicks": {
+                "count": 21998,
+                "sum": 26656,
+                "min": 1,
+                "max": 5
+              },
+              "initialQueueAheadShares": {
+                "count": 21998,
+                "sum": 249477229,
+                "min": 1,
+                "max": 224144
+              },
+              "observedQueueIncreaseSharesAdded": {
+                "count": 21998,
+                "sum": 0,
+                "min": 0,
+                "max": 0
+              },
+              "observedDisplayReductionsIgnored": {
+                "count": 21998,
+                "sum": 0,
+                "min": 0,
+                "max": 0
+              },
+              "finalQueueAheadShares": {
+                "count": 21998,
+                "sum": 249477229,
+                "min": 1,
+                "max": 224144
+              },
+              "touchPriceTradeReportsUnknownSide": {
+                "count": 21998,
+                "sum": 0,
+                "min": 0,
+                "max": 0
+              },
+              "touchPriceTradeQuantityUnknownSide": {
+                "count": 21998,
+                "sum": 0,
+                "min": 0,
+                "max": 0
+              }
+            }
+          }
+        ]
+      }
+    },
+    "actualFillsProven": false,
+    "profitabilityEstablished": false,
+    "contestOrders": 0,
+    "networkRequests": 0,
+    "limitations": [
+      "Captured trade rows carry price, quantity, execution time and a sequence/id, but no aggressor side; the capture contract does not document a sequence join that proves a trade consumed the displayed bid or ask queue.",
+      "A sequence audit found that no trade in the three frozen prefixes was exactly one sequence after its immediately preceding captured book point; current same-batch book sequence was greater than every trade sequence. This is descriptive only and does not establish a shared ordering domain or aggressor side.",
+      "Book snapshots do not expose order IDs or queue priority, and continuity between snapshots cannot prove that all intervening cancellations, additions, and executions are known.",
+      "Observed same-price size increases are conservatively added, while observed decreases are ignored; unseen intermediate changes mean the displayed queue-ahead proxy is not a full queue history.",
+      "Same-price print reports are shown only as unknown-side observations. They do not reduce queue-ahead shares and are not fill proxies.",
+      "Every 1s/5s/30s outcome cell is empty because no queue fill can be established from these archived fields; fees/stress and P&L are therefore not estimable.",
+      "Quote observations and unknown-side print counts are descriptive, clustered by market for coverage only; no outcome uncertainty interval or profitability claim is available."
+    ]
+  },
+  "interpretation": [
+    "This replay records hypothetical touch quotes and timestamped displayed queue-ahead proxies only. It confirms no passive fills and yields no P&L or profitability estimate.",
+    "Touch-price trade reports are unknown-side observations and do not decrement queue or proxy a fill. Queue reductions are treated as possible cancellations and ignored; observed size increases are added, but missing snapshots can hide intermediate changes.",
+    "All prespecified 1s, 5s and 30s markout cells are reported as empty because no queue fill can be causally confirmed. One-tick stress is declared, but no stressed return can be calculated without fills/outcomes.",
+    "Historical captures are local read-only inputs. This run made no API requests and did not access runtime accounts or orders."
+  ],
+  "persistedDetailLevel": "compact_summary; full timestamped queue rows remain on the in-memory replay result"
+}
+
