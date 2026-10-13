@@ -36,6 +36,12 @@ export function createRealtimeClient({dispatch, createClient, tournamentId, mark
   let credentials = null, sdk = null, sdkTokenSlot = null, channels = new Map(), generation = 0, connectionCounter = 0;
   let stopped = false, state = 'idle', lastCode = null, tail = Promise.resolve(), refreshTimer = null, stopTimer = null;
   let tokenRequests = 0, eventsReceived = 0, rejectedEvents = 0, callbackFailures = 0, ignoredMarkets = 0;
+  let callbackFailureStopStarted = false, firstCallbackFailure = null, lastCallbackFailure = null;
+  const callbackFailureCounts = {onSubscribed: 0, onEvent: 0, onDisconnected: 0, onResyncRequired: 0};
+  const callbackFailureKinds = {sync: 0, async: 0};
+  const callbackCauseCodes = new Set(['ENOSPC', 'EIO', 'EBADF', 'EACCES', 'EPIPE', 'ERR_INVALID_ARG_TYPE', 'ERR_OUT_OF_RANGE',
+    'CAPTURE_CLOSED', 'CLOCK_ROLLBACK', 'INVALID_RECEIPT_CLOCK', 'INVALID_BOOK_CLOCK', 'INVALID_INTEGER_DEPTH', 'CROSSED_BOOK',
+    'UNKNOWN_MARKET', 'INVALID_CONNECTION_ID', 'REUSED_CONNECTION_ID', 'INVALID_SUBSCRIPTION_REASON', 'INVALID_INVALIDATION_REASON']);
   const diagnostics = {socketMessages: 0, sdkErrors: 0, broadcastCallbacks: 0, namedCallbacks: 0,
     knownBroadcasts: {market_batch: 0, markets_batch: 0, book_dirty: 0, market_settled: 0}, unknownBroadcasts: 0,
     droppedCallbacks: {retired: 0, stopped: 0, notJoined: 0},
@@ -50,15 +56,29 @@ export function createRealtimeClient({dispatch, createClient, tournamentId, mark
   const tokenGuard = () => { guard(); requireThat(tokenAllowed(), 'REALTIME_TOKEN_BUDGET_BLOCKED'); };
   const clock = () => { const t = now(); requireThat(Number.isSafeInteger(t) && t >= 0, 'REALTIME_CLOCK_INVALID'); return t; };
   const stamp = () => new Date(clock()).toISOString();
-  const emit = (fn, envelope) => {
-    try { const result = fn(freeze(structuredClone(envelope))); if (result?.then) result.catch(() => failCallback()); }
-    catch { failCallback(); }
+  const failCallback = (handler, kind, cause) => {
+    callbackFailures++;
+    callbackFailureCounts[handler]++;
+    callbackFailureKinds[kind]++;
+    const code = callbackCauseCodes.has(cause?.code) ? cause.code : null;
+    const name = ['Error', 'TypeError', 'RangeError', 'ReferenceError', 'SyntaxError'].includes(cause?.name) ? cause.name : 'Other';
+    const failure = {handler, kind, errorClass: code ?? name};
+    firstCallbackFailure ??= failure;
+    lastCallbackFailure = failure;
+    lastCode = 'REALTIME_CALLBACK_FAILED';
+    if (!callbackFailureStopStarted) { callbackFailureStopStarted = true; void stop(); }
   };
-  const failCallback = () => { callbackFailures++; lastCode = 'REALTIME_CALLBACK_FAILED'; void stop(); };
+  const emit = (handler, fn, envelope) => {
+    try {
+      const result = fn(freeze(structuredClone(envelope)));
+      if (result?.then) result.catch(cause => failCallback(handler, 'async', cause));
+    } catch (cause) { failCallback(handler, 'sync', cause); }
+  };
   const clear = name => { if (name !== null) clearTimer(name); };
   const arm = (fn, ms, unref = true) => { const timer = setTimer(fn, ms); if (unref) timer?.unref?.(); return timer; };
   const status = () => freeze({schemaVersion: 1, mode: 'realtime_market_capture_only', state, lastCode, tournamentId,
-    tokenRequests, eventsReceived, rejectedEvents, callbackFailures, ignoredMarkets, channelMode,
+    tokenRequests, eventsReceived, rejectedEvents, callbackFailures, callbackFailureCounts: {...callbackFailureCounts},
+    callbackFailureKinds: {...callbackFailureKinds}, firstCallbackFailure, lastCallbackFailure, ignoredMarkets, channelMode,
     desiredChannels: channelMode === 'tournament' ? 1 : scopes.length,
     activeChannels: new Set([...channels.values()].filter(c => c.joined).map(c => c.channel)).size,
     diagnostics: {...structuredClone(diagnostics), connectionState: connectionState()},
@@ -66,7 +86,8 @@ export function createRealtimeClient({dispatch, createClient, tournamentId, mark
       subscribed: c?.joined === true, connectionId: c?.connectionId ?? null, revision: c?.revision ?? null}; }),
     accountChannels: 0, orderWrites: 0});
   const authorizes = spec => isRealtimeTokenDispatch(spec) && fences.has(spec.beforeDispatch) && allowed() && tokenAllowed();
-  const resync = (record, reason, receivedAt) => emit(onResyncRequired, {marketId: record.scope.marketId, connectionId: record.connectionId, reason, receivedAt});
+  const resync = (record, reason, receivedAt) => emit('onResyncRequired', onResyncRequired,
+    {marketId: record.scope.marketId, connectionId: record.connectionId, reason, receivedAt});
   async function bounded(promise) {
     let timer, rejectWait;
     try {
@@ -81,7 +102,8 @@ export function createRealtimeClient({dispatch, createClient, tournamentId, mark
     clear(refreshTimer); refreshTimer = null;
     for (const c of oldChannels.values()) {
       clear(c.timer); c.reject?.(error('REALTIME_SUBSCRIPTION_CLOSED')); c.reject = null;
-      if (c.joined) emit(onDisconnected, {marketId: c.scope.marketId, connectionId: c.connectionId, reason, receivedAt: stamp()});
+      if (c.joined) emit('onDisconnected', onDisconnected,
+        {marketId: c.scope.marketId, connectionId: c.connectionId, reason, receivedAt: stamp()});
       c.joined = false;
     }
     if (!oldSdk) return;
@@ -132,7 +154,7 @@ export function createRealtimeClient({dispatch, createClient, tournamentId, mark
       if (payload.marketSettled.length) resync(record, 'SETTLEMENT', receivedAt);
     } else resync(record, event === 'book_dirty' ? 'BOOK_DIRTY' : 'SETTLEMENT', receivedAt);
     // Duplicate revisions still carry independently newer books.
-    emit(onEvent, {marketId: record.scope.marketId, connectionId: record.connectionId, event, payload, receivedAt});
+    emit('onEvent', onEvent, {marketId: record.scope.marketId, connectionId: record.connectionId, event, payload, receivedAt});
   }
   function wire(record, client, localGeneration, reason, members = [record]) {
     let resolve;
@@ -192,7 +214,8 @@ export function createRealtimeClient({dispatch, createClient, tournamentId, mark
           if (!current()) return;
           const why = member.joins++ ? 'RECONNECT' : reason;
           member.joined = true; member.revision = null; member.connectionId = 'realtime-' + (++connectionCounter) + '-' + member.scope.marketId;
-          emit(onSubscribed, {marketId: member.scope.marketId, connectionId: member.connectionId, reason: why, receivedAt});
+          emit('onSubscribed', onSubscribed,
+            {marketId: member.scope.marketId, connectionId: member.connectionId, reason: why, receivedAt});
           if (!current()) return;
           resync(member, why, receivedAt);
         }
@@ -210,7 +233,8 @@ export function createRealtimeClient({dispatch, createClient, tournamentId, mark
         }
         const why = statusCode === 'CLOSED' ? 'DISCONNECTED' : 'SOCKET_ERROR';
         for (const member of members) {
-          if (member.joined) emit(onDisconnected, {marketId: member.scope.marketId, connectionId: member.connectionId, reason: why, receivedAt});
+          if (member.joined) emit('onDisconnected', onDisconnected,
+            {marketId: member.scope.marketId, connectionId: member.connectionId, reason: why, receivedAt});
           member.joined = false; resync(member, why, receivedAt);
         }
         state = 'reconnecting';
@@ -281,3 +305,4 @@ export function createRealtimeClient({dispatch, createClient, tournamentId, mark
   signal?.addEventListener('abort', onAbort, {once: true});
   return Object.freeze({start, refresh, reconnect, stop, status, authorizes});
 }
+
