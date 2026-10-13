@@ -1,8 +1,11 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import os from 'node:os';import path from 'node:path';
+import {createHash} from 'node:crypto';
 import * as original from './book-publication.mjs';import * as fast from './book-publication-v2.mjs';
 const u={tournamentId:'bda92870-621e-47b0-bc3c-3602c5c26f55',exchanges:[{marketId:'381',exchangeId:'1070',option:'YES'},{marketId:'382',exchangeId:'1071',option:'YES'}]};
 const response=(marketId,exchangeId,seq,at)=>({endpoint:'/markets/'+marketId+'/orderbook?tournamentId='+u.tournamentId+'&depth=20',status:200,
  requestStartedAt:new Date(Date.parse(at)-100).toISOString(),receivedAt:at,data:{marketId,contexts:[{type:'tournament',tournament:{id:u.tournamentId},orderbook:{exchanges:[{exchangeId,option:'YES',asOf:{sequence:seq,at},bids:[{price:.4,quantity:1000}],asks:[{price:.42,quantity:500}]}]}}]}});
+const reverseKeys=value=>Array.isArray(value)?value.map(reverseKeys):value&&typeof value==='object'?Object.fromEntries(Object.entries(value).reverse().map(([key,item])=>[key,reverseKeys(item)])):value;
+const legacyCanonical=value=>JSON.stringify(value&&typeof value==='object'?Array.isArray(value)?value.map(item=>JSON.parse(legacyCanonical(item))):Object.fromEntries(Object.keys(value).sort().map(key=>[key,JSON.parse(legacyCanonical(value[key]))])):value);
 test('separate faster publisher emits byte-identical records and immutable states across books/boundaries/restart',()=>{
  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'public-books-v2-'));let time=Date.parse('2026-10-03T22:00:00.000Z');const files=['old','fast'].map(n=>path.join(dir,n));
  const writers=[original,fast].map((m,i)=>m.createBookPublication({file:files[i],universe:u,sessionId:'same-session',now:()=>time}));
@@ -21,6 +24,13 @@ test('caller state and records remain unmodified; rollback/version conflicts and
  try{time+=200;w.publishBook({marketId:'381',response:response('381','1070',1,new Date(time).toISOString())});w.close('STOP');
   const rows=fs.readFileSync(file,'utf8').trim().split('\n').map(JSON.parse);let a=original.createBookPublicationState(u),b=fast.createBookPublicationState(u);
   for(const r of rows){const saved=JSON.stringify(b),input=JSON.stringify(r);a=original.applyBookPublication(a,r);const next=fast.applyBookPublication(b,r);assert.equal(JSON.stringify(b),saved);assert.equal(JSON.stringify(r),input);b=next;assert.deepEqual(b,a);}
+  let reorderedOld=original.createBookPublicationState(u),reorderedFast=fast.createBookPublicationState(u);
+  for(const row of rows){const reordered=reverseKeys(row);reorderedOld=original.applyBookPublication(reorderedOld,reordered);reorderedFast=fast.applyBookPublication(reorderedFast,reordered);assert.deepEqual(reorderedFast,reorderedOld);}
   const bad=structuredClone(rows[1]);bad.hash='a'.repeat(64);for(const m of [original,fast])assert.throws(()=>m.applyBookPublication(m.applyBookPublication(m.createBookPublicationState(u),rows[0]),bad),/CHAIN_INVALID/);
  }finally{w.close('STOP');fs.rmSync(dir,{recursive:true,force:true});}
+});
+
+test('canonical digest preserves numeric property ordering and long Unicode values',()=>{
+ const state=fast.createBookPublicationState(u);const body={schemaVersion:1,kind:'session_start',sequence:1,previousHash:'',sessionId:'numeric-key-order',tournamentId:u.tournamentId,scopeHash:state.scopeHash,at:'2026-10-03T22:00:00.000Z',payload:{scope:{'10':'ten','2':'two',a:'😀'.repeat(5000)}}};
+ const record={...body,hash:createHash('sha256').update(legacyCanonical(body)).digest('hex')};assert.throws(()=>fast.applyBookPublication(state,record),/PUBLIC_BOOK_SESSION_INVALID/);
 });
