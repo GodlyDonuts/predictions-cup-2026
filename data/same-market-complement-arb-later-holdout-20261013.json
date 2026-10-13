@@ -1,0 +1,3393 @@
+{
+  "schemaVersion": 1,
+  "mode": "same_market_exact_complement_later_capture_holdout_v1",
+  "generatedAt": "2026-10-13T23:38:21.639Z",
+  "source": {
+    "kind": "sealed_local_realtime_capture",
+    "file": "realtime-2026-10-13T19-52-33-253Z-9ecf5d7b-070f-4c01-a991-28a67a9f4a29.jsonl",
+    "bytes": 279458961,
+    "sha256": "fd6a9552a5f70365ee78706fa1efff70e2a36e7f3dd55c1a932cc3795e1979e7",
+    "captureRows": 76207,
+    "from": "2026-10-13T19:52:33.254Z",
+    "through": "2026-10-13T20:40:59.415Z",
+    "tournamentId": "bda92870-621e-47b0-bc3c-3602c5c26f55",
+    "scopedMarkets": 237,
+    "scopedExchanges": 237,
+    "scopeSha256": "5aef8c5c47285059e8f0033105c55a7d70ae8e67230bd3c43df3328c250ef9a7",
+    "verification": {
+      "beforeSha256": "fd6a9552a5f70365ee78706fa1efff70e2a36e7f3dd55c1a932cc3795e1979e7",
+      "afterSha256": "fd6a9552a5f70365ee78706fa1efff70e2a36e7f3dd55c1a932cc3795e1979e7",
+      "beforeBytes": 279458961,
+      "afterBytes": 279458961,
+      "identityStable": true
+    }
+  },
+  "frozenPolicy": {
+    "source": "research/same-market-complement-arb-v1.mjs",
+    "unchangedFromIssue22": true,
+    "economics": {
+      "fees": "0.000000",
+      "payoutPerNetPair": "1.000000",
+      "depthFractionBps": 100,
+      "maxBookAgeMs": 5000,
+      "decisionSpacingMs": 60000,
+      "maxFirstBookDelayMs": 10000,
+      "maxHedgeBookDelayMs": 15000,
+      "firstLegLatenciesMs": [
+        0,
+        250,
+        1000,
+        3000
+      ],
+      "hedgeLatenciesMs": [
+        0,
+        250,
+        1000,
+        3000
+      ]
+    },
+    "holdout": "The full sealed later capture is scored as holdout; no fitting, selection, or threshold tuning occurs."
+  },
+  "captureDiagnostics": {
+    "captureRows": 76207,
+    "configRows": 237,
+    "marketBatchRows": 70894,
+    "sourceBookSnapshots": 70894,
+    "tradeObservedRows": 2076,
+    "nonEventRows": 5076,
+    "duplicateRevisions": 0,
+    "revisionGaps": 505,
+    "resyncRequired": 0,
+    "bookDirtyMarkers": 70389,
+    "dirtyWithoutBook": 0,
+    "settlements": 0,
+    "lifecycleInvalidations": 2477,
+    "validRecoveryCompletions": 143,
+    "booksBeforeRecovery": 70126,
+    "scopeRejectedBooks": 3571,
+    "duplicateBookVersions": 0,
+    "rollbackBookVersions": 0,
+    "acceptedBookPoints": 66127,
+    "invalidScreenedBooks": 691
+  },
+  "observations": {
+    "input": 66127,
+    "accepted": 66127,
+    "invalidOrDuplicate": 0,
+    "markets": 237,
+    "contracts": 237,
+    "explicitBreaks": 2982
+  },
+  "atomic": {
+    "bookSnapshots": 66127,
+    "snapshotsWithAtLeastOneDisplayedShareOnBothSides": 66127,
+    "snapshotsWithParticipatingDepthOnBothSides": 66127,
+    "topPairNetPerShare": {
+      "count": 66127,
+      "mean": -0.006196485550528111,
+      "median": -0.005,
+      "p10": -0.01,
+      "p90": -0.005,
+      "min": -0.04,
+      "max": -0.005
+    },
+    "onePercentDepthSweepNetPerPair": {
+      "count": 66127,
+      "mean": -0.014842714440936596,
+      "median": -0.015048264430577224,
+      "p10": -0.021875230372281607,
+      "p90": -0.006691503773950068,
+      "min": -0.0438049612038561,
+      "max": -0.005
+    },
+    "onePercentDepthSweepNetTotalPerSnapshot": {
+      "count": 66127,
+      "mean": -189.38866007833104,
+      "median": -182.54,
+      "p10": -294.065,
+      "p90": -84.355,
+      "min": -444.77,
+      "max": -1.475
+    },
+    "positiveSameTimestampTopPairCount": 0,
+    "positiveSameTimestampOnePercentDepthCount": 0,
+    "maximumObservedOnePercentPairQuantity": "26477",
+    "officialNettingPayoutPerCompletedPair": "1.000000",
+    "interpretation": "At one timestamp, one YES ask plus the complementary NO ask (1 minus YES bid) costs 1 plus the YES spread. Sequential positive outcomes require a favorable later move and are not locked-in arbitrage."
+  },
+  "sameTimestampCandidateAndFillEvidence": {
+    "positiveTopPairs": 0,
+    "positiveOnePercentDepthPairs": 0,
+    "note": "Visible same-time prices are not actual fills; positive sequential pairs retain first-leg directional exposure."
+  },
+  "sequentialScenarios": [
+    {
+      "period": "heldout",
+      "firstSide": "NO",
+      "hedgeSide": "YES",
+      "firstLegLatencyMs": 0,
+      "secondLegLatencyMs": 0,
+      "decisionCount": 9282,
+      "firstLegDepthReady": 5998,
+      "completedPairs": 4642,
+      "profitablePairCount": 0,
+      "losingPairCount": 4642,
+      "completedContracts": 237,
+      "positiveContractMeanCount": 0,
+      "firstLegBookDelayCensored": 3284,
+      "firstLegDepthCensored": 0,
+      "secondLegBookDelayCensored": 1333,
+      "secondLegDepthCensored": 0,
+      "breakCensored": 23,
+      "firstLegCost": {
+        "count": 4642,
+        "mean": 0.5226992675570873,
+        "median": 0.555,
+        "p10": 0.08,
+        "p90": 0.925,
+        "min": 0.035,
+        "max": 0.98
+      },
+      "secondLegCost": {
+        "count": 4642,
+        "mean": 0.4835049547608771,
+        "median": 0.435,
+        "p10": 0.08,
+        "p90": 0.925,
+        "min": 0.035,
+        "max": 0.97
+      },
+      "pairNetPnlPerShare": {
+        "count": 4642,
+        "mean": -0.006204222317965974,
+        "median": -0.005,
+        "p10": -0.01,
+        "p90": -0.005,
+        "min": -0.02,
+        "max": -0.005
+      },
+      "sumOfCorrelatedOneShareOutcomes": -28.80000000000016,
+      "secondLegObservedDelayMs": {
+        "count": 4642,
+        "mean": 5201.347479534684,
+        "median": 4254,
+        "p10": 1125,
+        "p90": 11057,
+        "min": 24,
+        "max": 14979
+      },
+      "firstLegUnhedgedLiquidationPnlAtHedge": {
+        "count": 4642,
+        "mean": -0.006204222317965974,
+        "median": -0.005,
+        "p10": -0.01,
+        "p90": -0.005,
+        "min": -0.02,
+        "max": -0.005
+      },
+      "firstLegWorstObservedLiquidationPnlBeforeHedge": {
+        "count": 4642,
+        "mean": -0.006212839293407589,
+        "median": -0.005,
+        "p10": -0.01,
+        "p90": -0.005,
+        "min": -0.02,
+        "max": -0.005
+      },
+      "notActualOrdersOrFills": true,
+      "independentSamplesEstablished": false
+    },
+    {
+      "period": "heldout",
+      "firstSide": "NO",
+      "hedgeSide": "YES",
+      "firstLegLatencyMs": 0,
+      "secondLegLatencyMs": 250,
+      "decisionCount": 9282,
+      "firstLegDepthReady": 5998,
+      "completedPairs": 4659,
+      "profitablePairCount": 0,
+      "losingPairCount": 4659,
+      "completedContracts": 237,
+      "positiveContractMeanCount": 0,
+      "firstLegBookDelayCensored": 3284,
+      "firstLegDepthCensored": 0,
+      "secondLegBookDelayCensored": 1316,
+      "secondLegDepthCensored": 0,
+      "breakCensored": 23,
+      "firstLegCost": {
+        "count": 4659,
+        "mean": 0.5222579952779564,
+        "median": 0.555,
+        "p10": 0.08,
+        "p90": 0.925,
+        "min": 0.035,
+        "max": 0.98
+      },
+      "secondLegCost": {
+        "count": 4659,
+        "mean": 0.4839482721614063,
+        "median": 0.45,
+        "p10": 0.08,
+        "p90": 0.925,
+        "min": 0.035,
+        "max": 0.97
+      },
+      "pairNetPnlPerShare": {
+        "count": 4659,
+        "mean": -0.006206267439364245,
+        "median": -0.005,
+        "p10": -0.01,
+        "p90": -0.005,
+        "min": -0.02,
+        "max": -0.005
+      },
+      "sumOfCorrelatedOneShareOutcomes": -28.915000000000173,
+      "secondLegObservedDelayMs": {
+        "count": 4659,
+        "mean": 5291.413178793732,
+        "median": 4337,
+        "p10": 1166,
+        "p90": 11241,
+        "min": 251,
+        "max": 15250
+      },
+      "firstLegUnhedgedLiquidationPnlAtHedge": {
+        "count": 4659,
+        "mean": -0.006206267439364245,
+        "median": -0.005,
+        "p10": -0.01,
+        "p90": -0.005,
+        "min": -0.02,
+        "max": -0.005
+      },
+      "firstLegWorstObservedLiquidationPnlBeforeHedge": {
+        "count": 4659,
+        "mean": -0.006214852972740502,
+        "median": -0.005,
+        "p10": -0.01,
+        "p90": -0.005,
+        "min": -0.02,
+        "max": -0.005
+      },
+      "notActualOrdersOrFills": true,
+      "independentSamplesEstablished": false
+    },
+    {
+      "period": "heldout",
+      "firstSide": "NO",
+      "hedgeSide": "YES",
+      "firstLegLatencyMs": 0,
+      "secondLegLatencyMs": 1000,
+      "decisionCount": 9282,
+      "firstLegDepthReady": 5998,
+      "completedPairs": 4668,
+      "profitablePairCount": 0,
+      "losingPairCount": 4668,
+      "completedContracts": 237,
+      "positiveContractMeanCount": 0,
+      "firstLegBookDelayCensored": 3284,
+      "firstLegDepthCensored": 0,
+      "secondLegBookDelayCensored": 1305,
+      "secondLegDepthCensored": 0,
+      "breakCensored": 25,
+      "firstLegCost": {
+        "count": 4668,
+        "mean": 0.5232080119965717,
+        "median": 0.57,
+        "p10": 0.08,
+        "p90": 0.925,
+        "min": 0.035,
+        "max": 0.98
+      },
+      "secondLegCost": {
+        "count": 4668,
+        "mean": 0.4829980719794326,
+        "median": 0.435,
+        "p10": 0.08,
+        "p90": 0.925,
+        "min": 0.035,
+        "max": 0.97
+      },
+      "pairNetPnlPerShare": {
+        "count": 4668,
+        "mean": -0.006206083976006428,
+        "median": -0.005,
+        "p10": -0.01,
+        "p90": -0.005,
+        "min": -0.02,
+        "max": -0.005
+      },
+      "sumOfCorrelatedOneShareOutcomes": -28.970000000000184,
+      "secondLegObservedDelayMs": {
+        "count": 4668,
+        "mean": 5774.970651242502,
+        "median": 4795,
+        "p10": 1562,
+        "p90": 11963,
+        "min": 1002,
+        "max": 15995
+      },
+      "firstLegUnhedgedLiquidationPnlAtHedge": {
+        "count": 4668,
+        "mean": -0.006206083976006428,
+        "median": -0.005,
+        "p10": -0.01,
+        "p90": -0.005,
+        "min": -0.02,
+        "max": -0.005
+      },
+      "firstLegWorstObservedLiquidationPnlBeforeHedge": {
+        "count": 4668,
+        "mean": -0.006214652956297769,
+        "median": -0.005,
+        "p10": -0.01,
+        "p90": -0.005,
+        "min": -0.02,
+        "max": -0.005
+      },
+      "notActualOrdersOrFills": true,
+      "independentSamplesEstablished": false
+    },
+    {
+      "period": "heldout",
+      "firstSide": "NO",
+      "hedgeSide": "YES",
+      "firstLegLatencyMs": 0,
+      "secondLegLatencyMs": 3000,
+      "decisionCount": 9282,
+      "firstLegDepthReady": 5998,
+      "completedPairs": 4557,
+      "profitablePairCount": 0,
+      "losingPairCount": 4557,
+      "completedContracts": 237,
+      "positiveContractMeanCount": 0,
+      "firstLegBookDelayCensored": 3284,
+      "firstLegDepthCensored": 0,
+      "secondLegBookDelayCensored": 1410,
+      "secondLegDepthCensored": 0,
+      "breakCensored": 31,
+      "firstLegCost": {
+        "count": 4557,
+        "mean": 0.5224226464779452,
+        "median": 0.555,
+        "p10": 0.08,
+        "p90": 0.925,
+        "min": 0.035,
+        "max": 0.98
+      },
+      "secondLegCost": {
+        "count": 4557,
+        "mean": 0.48378648233486976,
+        "median": 0.45,
+        "p10": 0.08,
+        "p90": 0.925,
+        "min": 0.035,
+        "max": 0.97
+      },
+      "pairNetPnlPerShare": {
+        "count": 4557,
+        "mean": -0.006209128812815048,
+        "median": -0.005,
+        "p10": -0.01,
+        "p90": -0.005,
+        "min": -0.02,
+        "max": -0.005
+      },
+      "sumOfCorrelatedOneShareOutcomes": -28.29500000000017,
+      "secondLegObservedDelayMs": {
+        "count": 4557,
+        "mean": 7952.622119815668,
+        "median": 6926,
+        "p10": 3658,
+        "p90": 14351,
+        "min": 3001,
+        "max": 17999
+      },
+      "firstLegUnhedgedLiquidationPnlAtHedge": {
+        "count": 4557,
+        "mean": -0.006209128812815048,
+        "median": -0.005,
+        "p10": -0.01,
+        "p90": -0.005,
+        "min": -0.02,
+        "max": -0.005
+      },
+      "firstLegWorstObservedLiquidationPnlBeforeHedge": {
+        "count": 4557,
+        "mean": -0.00622448979591796,
+        "median": -0.005,
+        "p10": -0.01,
+        "p90": -0.005,
+        "min": -0.02,
+        "max": -0.005
+      },
+      "notActualOrdersOrFills": true,
+      "independentSamplesEstablished": false
+    },
+    {
+      "period": "heldout",
+      "firstSide": "NO",
+      "hedgeSide": "YES",
+      "firstLegLatencyMs": 250,
+      "secondLegLatencyMs": 0,
+      "decisionCount": 9282,
+      "firstLegDepthReady": 6059,
+      "completedPairs": 4685,
+      "profitablePairCount": 0,
+      "losingPairCount": 4685,
+      "completedContracts": 237,
+      "positiveContractMeanCount": 0,
+      "firstLegBookDelayCensored": 3223,
+      "firstLegDepthCensored": 0,
+      "secondLegBookDelayCensored": 1351,
+      "secondLegDepthCensored": 0,
+      "breakCensored": 23,
+      "firstLegCost": {
+        "count": 4685,
+        "mean": 0.5237630736392737,
+        "median": 0.57,
+        "p10": 0.08,
+        "p90": 0.925,
+        "min": 0.035,
+        "max": 0.98
+      },
+      "secondLegCost": {
+        "count": 4685,
+        "mean": 0.48244503735325334,
+        "median": 0.435,
+        "p10": 0.08,
+        "p90": 0.925,
+        "min": 0.035,
+        "max": 0.97
+      },
+      "pairNetPnlPerShare": {
+        "count": 4685,
+        "mean": -0.006208110992528916,
+        "median": -0.005,
+        "p10": -0.01,
+        "p90": -0.005,
+        "min": -0.02,
+        "max": -0.005
+      },
+      "sumOfCorrelatedOneShareOutcomes": -29.085000000000164,
+      "secondLegObservedDelayMs": {
+        "count": 4685,
+        "mean": 5206.019850586979,
+        "median": 4250,
+        "p10": 1141,
+        "p90": 11075,
+        "min": 24,
+        "max": 14979
+      },
+      "firstLegUnhedgedLiquidationPnlAtHedge": {
+        "count": 4685,
+        "mean": -0.006208110992528916,
+        "median": -0.005,
+        "p10": -0.01,
+        "p90": -0.005,
+        "min": -0.02,
+        "max": -0.005
+      },
+      "firstLegWorstObservedLiquidationPnlBeforeHedge": {
+        "count": 4685,
+        "mean": -0.006217716115261035,
+        "median": -0.005,
+        "p10": -0.01,
+        "p90": -0.005,
+        "min": -0.02,
+        "max": -0.005
+      },
+      "notActualOrdersOrFills": true,
+      "independentSamplesEstablished": false
+    },
+    {
+      "period": "heldout",
+      "firstSide": "NO",
+      "hedgeSide": "YES",
+      "firstLegLatencyMs": 250,
+      "secondLegLatencyMs": 250,
+      "decisionCount": 9282,
+      "firstLegDepthReady": 6059,
+      "completedPairs": 4703,
+      "profitablePairCount": 0,
+      "losingPairCount": 4703,
+      "completedContracts": 237,
+      "positiveContractMeanCount": 0,
+      "firstLegBookDelayCensored": 3223,
+      "firstLegDepthCensored": 0,
+      "secondLegBookDelayCensored": 1333,
+      "secondLegDepthCensored": 0,
+      "breakCensored": 23,
+      "firstLegCost": {
+        "count": 4703,
+        "mean": 0.5232245375292359,
+        "median": 0.57,
+        "p10": 0.08,
+        "p90": 0.925,
+        "min": 0.035,
+        "max": 0.98
+      },
+      "secondLegCost": {
+        "count": 4703,
+        "mean": 0.4829853285137135,
+        "median": 0.435,
+        "p10": 0.08,
+        "p90": 0.925,
+        "min": 0.035,
+        "max": 0.97
+      },
+      "pairNetPnlPerShare": {
+        "count": 4703,
+        "mean": -0.006209866042950869,
+        "median": -0.005,
+        "p10": -0.01,
+        "p90": -0.005,
+        "min": -0.02,
+        "max": -0.005
+      },
+      "sumOfCorrelatedOneShareOutcomes": -29.205000000000172,
+      "secondLegObservedDelayMs": {
+        "count": 4703,
+        "mean": 5297.169253667872,
+        "median": 4327,
+        "p10": 1187,
+        "p90": 11242,
+        "min": 251,
+        "max": 15250
+      },
+      "firstLegUnhedgedLiquidationPnlAtHedge": {
+        "count": 4703,
+        "mean": -0.006209866042950869,
+        "median": -0.005,
+        "p10": -0.01,
+        "p90": -0.005,
+        "min": -0.02,
+        "max": -0.005
+      },
+      "firstLegWorstObservedLiquidationPnlBeforeHedge": {
+        "count": 4703,
+        "mean": -0.006219434403571745,
+        "median": -0.005,
+        "p10": -0.01,
+        "p90": -0.005,
+        "min": -0.02,
+        "max": -0.005
+      },
+      "notActualOrdersOrFills": true,
+      "independentSamplesEstablished": false
+    },
+    {
+      "period": "heldout",
+      "firstSide": "NO",
+      "hedgeSide": "YES",
+      "firstLegLatencyMs": 250,
+      "secondLegLatencyMs": 1000,
+      "decisionCount": 9282,
+      "firstLegDepthReady": 6059,
+      "completedPairs": 4712,
+      "profitablePairCount": 0,
+      "losingPairCount": 4712,
+      "completedContracts": 237,
+      "positiveContractMeanCount": 0,
+      "firstLegBookDelayCensored": 3223,
+      "firstLegDepthCensored": 0,
+      "secondLegBookDelayCensored": 1322,
+      "secondLegDepthCensored": 0,
+      "breakCensored": 25,
+      "firstLegCost": {
+        "count": 4712,
+        "mean": 0.5241394312393877,
+        "median": 0.57,
+        "p10": 0.08,
+        "p90": 0.925,
+        "min": 0.035,
+        "max": 0.98
+      },
+      "secondLegCost": {
+        "count": 4712,
+        "mean": 0.48207130730050807,
+        "median": 0.435,
+        "p10": 0.08,
+        "p90": 0.925,
+        "min": 0.035,
+        "max": 0.97
+      },
+      "pairNetPnlPerShare": {
+        "count": 4712,
+        "mean": -0.00621073853989769,
+        "median": -0.005,
+        "p10": -0.01,
+        "p90": -0.005,
+        "min": -0.02,
+        "max": -0.005
+      },
+      "sumOfCorrelatedOneShareOutcomes": -29.26500000000017,
+      "secondLegObservedDelayMs": {
+        "count": 4712,
+        "mean": 5775.7120118845505,
+        "median": 4795,
+        "p10": 1558,
+        "p90": 11966,
+        "min": 1002,
+        "max": 15995
+      },
+      "firstLegUnhedgedLiquidationPnlAtHedge": {
+        "count": 4712,
+        "mean": -0.00621073853989769,
+        "median": -0.005,
+        "p10": -0.01,
+        "p90": -0.005,
+        "min": -0.02,
+        "max": -0.005
+      },
+      "firstLegWorstObservedLiquidationPnlBeforeHedge": {
+        "count": 4712,
+        "mean": -0.0062202886247873295,
+        "median": -0.005,
+        "p10": -0.01,
+        "p90": -0.005,
+        "min": -0.02,
+        "max": -0.005
+      },
+      "notActualOrdersOrFills": true,
+      "independentSamplesEstablished": false
+    },
+    {
+      "period": "heldout",
+      "firstSide": "NO",
+      "hedgeSide": "YES",
+      "firstLegLatencyMs": 250,
+      "secondLegLatencyMs": 3000,
+      "decisionCount": 9282,
+      "firstLegDepthReady": 6059,
+      "completedPairs": 4598,
+      "profitablePairCount": 0,
+      "losingPairCount": 4598,
+      "completedContracts": 237,
+      "positiveContractMeanCount": 0,
+      "firstLegBookDelayCensored": 3223,
+      "firstLegDepthCensored": 0,
+      "secondLegBookDelayCensored": 1430,
+      "secondLegDepthCensored": 0,
+      "breakCensored": 31,
+      "firstLegCost": {
+        "count": 4598,
+        "mean": 0.5232612005219657,
+        "median": 0.555,
+        "p10": 0.08,
+        "p90": 0.925,
+        "min": 0.035,
+        "max": 0.98
+      },
+      "secondLegCost": {
+        "count": 4598,
+        "mean": 0.48294910830795956,
+        "median": 0.435,
+        "p10": 0.08,
+        "p90": 0.925,
+        "min": 0.035,
+        "max": 0.97
+      },
+      "pairNetPnlPerShare": {
+        "count": 4598,
+        "mean": -0.006210308829925643,
+        "median": -0.005,
+        "p10": -0.01,
+        "p90": -0.005,
+        "min": -0.02,
+        "max": -0.005
+      },
+      "sumOfCorrelatedOneShareOutcomes": -28.555000000000163,
+      "secondLegObservedDelayMs": {
+        "count": 4598,
+        "mean": 7953.818399304046,
+        "median": 6908,
+        "p10": 3633,
+        "p90": 14378,
+        "min": 3001,
+        "max": 17999
+      },
+      "firstLegUnhedgedLiquidationPnlAtHedge": {
+        "count": 4598,
+        "mean": -0.006210308829925643,
+        "median": -0.005,
+        "p10": -0.01,
+        "p90": -0.005,
+        "min": -0.02,
+        "max": -0.005
+      },
+      "firstLegWorstObservedLiquidationPnlBeforeHedge": {
+        "count": 4598,
+        "mean": -0.0062266202696820505,
+        "median": -0.005,
+        "p10": -0.01,
+        "p90": -0.005,
+        "min": -0.02,
+        "max": -0.005
+      },
+      "notActualOrdersOrFills": true,
+      "independentSamplesEstablished": false
+    },
+    {
+      "period": "heldout",
+      "firstSide": "NO",
+      "hedgeSide": "YES",
+      "firstLegLatencyMs": 1000,
+      "secondLegLatencyMs": 0,
+      "decisionCount": 9282,
+      "firstLegDepthReady": 6118,
+      "completedPairs": 4686,
+      "profitablePairCount": 0,
+      "losingPairCount": 4686,
+      "completedContracts": 237,
+      "positiveContractMeanCount": 0,
+      "firstLegBookDelayCensored": 3164,
+      "firstLegDepthCensored": 0,
+      "secondLegBookDelayCensored": 1405,
+      "secondLegDepthCensored": 0,
+      "breakCensored": 27,
+      "firstLegCost": {
+        "count": 4686,
+        "mean": 0.5229492104139988,
+        "median": 0.555,
+        "p10": 0.08,
+        "p90": 0.925,
+        "min": 0.035,
+        "max": 0.98
+      },
+      "secondLegCost": {
+        "count": 4686,
+        "mean": 0.48325650874946485,
+        "median": 0.435,
+        "p10": 0.08,
+        "p90": 0.925,
+        "min": 0.035,
+        "max": 0.97
+      },
+      "pairNetPnlPerShare": {
+        "count": 4686,
+        "mean": -0.006205719163465211,
+        "median": -0.005,
+        "p10": -0.01,
+        "p90": -0.005,
+        "min": -0.02,
+        "max": -0.005
+      },
+      "sumOfCorrelatedOneShareOutcomes": -29.08000000000018,
+      "secondLegObservedDelayMs": {
+        "count": 4686,
+        "mean": 5212.363849765258,
+        "median": 4261,
+        "p10": 1152,
+        "p90": 11107,
+        "min": 24,
+        "max": 14979
+      },
+      "firstLegUnhedgedLiquidationPnlAtHedge": {
+        "count": 4686,
+        "mean": -0.006205719163465211,
+        "median": -0.005,
+        "p10": -0.01,
+        "p90": -0.005,
+        "min": -0.02,
+        "max": -0.005
+      },
+      "firstLegWorstObservedLiquidationPnlBeforeHedge": {
+        "count": 4686,
+        "mean": -0.006217456252667083,
+        "median": -0.005,
+        "p10": -0.01,
+        "p90": -0.005,
+        "min": -0.02,
+        "max": -0.005
+      },
+      "notActualOrdersOrFills": true,
+      "independentSamplesEstablished": false
+    },
+    {
+      "period": "heldout",
+      "firstSide": "NO",
+      "hedgeSide": "YES",
+      "firstLegLatencyMs": 1000,
+      "secondLegLatencyMs": 250,
+      "decisionCount": 9282,
+      "firstLegDepthReady": 6118,
+      "completedPairs": 4708,
+      "profitablePairCount": 0,
+      "losingPairCount": 4708,
+      "completedContracts": 237,
+      "positiveContractMeanCount": 0,
+      "firstLegBookDelayCensored": 3164,
+      "firstLegDepthCensored": 0,
+      "secondLegBookDelayCensored": 1383,
+      "secondLegDepthCensored": 0,
+      "breakCensored": 27,
+      "firstLegCost": {
+        "count": 4708,
+        "mean": 0.5226975361087504,
+        "median": 0.555,
+        "p10": 0.08,
+        "p90": 0.925,
+        "min": 0.035,
+        "max": 0.98
+      },
+      "secondLegCost": {
+        "count": 4708,
+        "mean": 0.48350892098555537,
+        "median": 0.45,
+        "p10": 0.08,
+        "p90": 0.925,
+        "min": 0.035,
+        "max": 0.97
+      },
+      "pairNetPnlPerShare": {
+        "count": 4708,
+        "mean": -0.006206457094307124,
+        "median": -0.005,
+        "p10": -0.01,
+        "p90": -0.005,
+        "min": -0.02,
+        "max": -0.005
+      },
+      "sumOfCorrelatedOneShareOutcomes": -29.22000000000018,
+      "secondLegObservedDelayMs": {
+        "count": 4708,
+        "mean": 5297.739379779099,
+        "median": 4334,
+        "p10": 1198,
+        "p90": 11268,
+        "min": 251,
+        "max": 15250
+      },
+      "firstLegUnhedgedLiquidationPnlAtHedge": {
+        "count": 4708,
+        "mean": -0.006206457094307124,
+        "median": -0.005,
+        "p10": -0.01,
+        "p90": -0.005,
+        "min": -0.02,
+        "max": -0.005
+      },
+      "firstLegWorstObservedLiquidationPnlBeforeHedge": {
+        "count": 4708,
+        "mean": -0.006218139337297772,
+        "median": -0.005,
+        "p10": -0.01,
+        "p90": -0.005,
+        "min": -0.02,
+        "max": -0.005
+      },
+      "notActualOrdersOrFills": true,
+      "independentSamplesEstablished": false
+    },
+    {
+      "period": "heldout",
+      "firstSide": "NO",
+      "hedgeSide": "YES",
+      "firstLegLatencyMs": 1000,
+      "secondLegLatencyMs": 1000,
+      "decisionCount": 9282,
+      "firstLegDepthReady": 6118,
+      "completedPairs": 4722,
+      "profitablePairCount": 0,
+      "losingPairCount": 4722,
+      "completedContracts": 237,
+      "positiveContractMeanCount": 0,
+      "firstLegBookDelayCensored": 3164,
+      "firstLegDepthCensored": 0,
+      "secondLegBookDelayCensored": 1368,
+      "secondLegDepthCensored": 0,
+      "breakCensored": 28,
+      "firstLegCost": {
+        "count": 4722,
+        "mean": 0.5235588733587456,
+        "median": 0.57,
+        "p10": 0.08,
+        "p90": 0.925,
+        "min": 0.035,
+        "max": 0.98
+      },
+      "secondLegCost": {
+        "count": 4722,
+        "mean": 0.48264718339686474,
+        "median": 0.435,
+        "p10": 0.08,
+        "p90": 0.925,
+        "min": 0.035,
+        "max": 0.97
+      },
+      "pairNetPnlPerShare": {
+        "count": 4722,
+        "mean": -0.006206056755611588,
+        "median": -0.005,
+        "p10": -0.01,
+        "p90": -0.005,
+        "min": -0.02,
+        "max": -0.005
+      },
+      "sumOfCorrelatedOneShareOutcomes": -29.305000000000174,
+      "secondLegObservedDelayMs": {
+        "count": 4722,
+        "mean": 5781.627276577721,
+        "median": 4807,
+        "p10": 1580,
+        "p90": 11965,
+        "min": 1002,
+        "max": 15995
+      },
+      "firstLegUnhedgedLiquidationPnlAtHedge": {
+        "count": 4722,
+        "mean": -0.006206056755611588,
+        "median": -0.005,
+        "p10": -0.01,
+        "p90": -0.005,
+        "min": -0.02,
+        "max": -0.005
+      },
+      "firstLegWorstObservedLiquidationPnlBeforeHedge": {
+        "count": 4722,
+        "mean": -0.006217704362557792,
+        "median": -0.005,
+        "p10": -0.01,
+        "p90": -0.005,
+        "min": -0.02,
+        "max": -0.005
+      },
+      "notActualOrdersOrFills": true,
+      "independentSamplesEstablished": false
+    },
+    {
+      "period": "heldout",
+      "firstSide": "NO",
+      "hedgeSide": "YES",
+      "firstLegLatencyMs": 1000,
+      "secondLegLatencyMs": 3000,
+      "decisionCount": 9282,
+      "firstLegDepthReady": 6118,
+      "completedPairs": 4610,
+      "profitablePairCount": 0,
+      "losingPairCount": 4610,
+      "completedContracts": 237,
+      "positiveContractMeanCount": 0,
+      "firstLegBookDelayCensored": 3164,
+      "firstLegDepthCensored": 0,
+      "secondLegBookDelayCensored": 1474,
+      "secondLegDepthCensored": 0,
+      "breakCensored": 34,
+      "firstLegCost": {
+        "count": 4610,
+        "mean": 0.5225108459869848,
+        "median": 0.555,
+        "p10": 0.08,
+        "p90": 0.925,
+        "min": 0.035,
+        "max": 0.98
+      },
+      "secondLegCost": {
+        "count": 4610,
+        "mean": 0.4836984815618208,
+        "median": 0.45,
+        "p10": 0.08,
+        "p90": 0.925,
+        "min": 0.035,
+        "max": 0.97
+      },
+      "pairNetPnlPerShare": {
+        "count": 4610,
+        "mean": -0.006209327548806528,
+        "median": -0.005,
+        "p10": -0.01,
+        "p90": -0.005,
+        "min": -0.02,
+        "max": -0.005
+      },
+      "sumOfCorrelatedOneShareOutcomes": -28.625000000000185,
+      "secondLegObservedDelayMs": {
+        "count": 4610,
+        "mean": 7915.590455531454,
+        "median": 6822,
+        "p10": 3590,
+        "p90": 14372,
+        "min": 3001,
+        "max": 17996
+      },
+      "firstLegUnhedgedLiquidationPnlAtHedge": {
+        "count": 4610,
+        "mean": -0.006209327548806528,
+        "median": -0.005,
+        "p10": -0.01,
+        "p90": -0.005,
+        "min": -0.02,
+        "max": -0.005
+      },
+      "firstLegWorstObservedLiquidationPnlBeforeHedge": {
+        "count": 4610,
+        "mean": -0.0062255965292837435,
+        "median": -0.005,
+        "p10": -0.01,
+        "p90": -0.005,
+        "min": -0.02,
+        "max": -0.005
+      },
+      "notActualOrdersOrFills": true,
+      "independentSamplesEstablished": false
+    },
+    {
+      "period": "heldout",
+      "firstSide": "NO",
+      "hedgeSide": "YES",
+      "firstLegLatencyMs": 3000,
+      "secondLegLatencyMs": 0,
+      "decisionCount": 9282,
+      "firstLegDepthReady": 5926,
+      "completedPairs": 4533,
+      "profitablePairCount": 0,
+      "losingPairCount": 4532,
+      "completedContracts": 237,
+      "positiveContractMeanCount": 0,
+      "firstLegBookDelayCensored": 3356,
+      "firstLegDepthCensored": 0,
+      "secondLegBookDelayCensored": 1364,
+      "secondLegDepthCensored": 0,
+      "breakCensored": 29,
+      "firstLegCost": {
+        "count": 4533,
+        "mean": 0.5192830355173166,
+        "median": 0.555,
+        "p10": 0.08,
+        "p90": 0.925,
+        "min": 0.035,
+        "max": 0.98
+      },
+      "secondLegCost": {
+        "count": 4533,
+        "mean": 0.48689609530112465,
+        "median": 0.45,
+        "p10": 0.08,
+        "p90": 0.925,
+        "min": 0.035,
+        "max": 0.97
+      },
+      "pairNetPnlPerShare": {
+        "count": 4533,
+        "mean": -0.006179130818442155,
+        "median": -0.005,
+        "p10": -0.01,
+        "p90": -0.005,
+        "min": -0.02,
+        "max": 0
+      },
+      "sumOfCorrelatedOneShareOutcomes": -28.01000000000023,
+      "secondLegObservedDelayMs": {
+        "count": 4533,
+        "mean": 5082.552614162806,
+        "median": 4029,
+        "p10": 1096,
+        "p90": 11075,
+        "min": 24,
+        "max": 14979
+      },
+      "firstLegUnhedgedLiquidationPnlAtHedge": {
+        "count": 4533,
+        "mean": -0.006179130818442155,
+        "median": -0.005,
+        "p10": -0.01,
+        "p90": -0.005,
+        "min": -0.02,
+        "max": 0
+      },
+      "firstLegWorstObservedLiquidationPnlBeforeHedge": {
+        "count": 4533,
+        "mean": -0.0061912640635337,
+        "median": -0.005,
+        "p10": -0.01,
+        "p90": -0.005,
+        "min": -0.02,
+        "max": -0.005
+      },
+      "notActualOrdersOrFills": true,
+      "independentSamplesEstablished": false
+    },
+    {
+      "period": "heldout",
+      "firstSide": "NO",
+      "hedgeSide": "YES",
+      "firstLegLatencyMs": 3000,
+      "secondLegLatencyMs": 250,
+      "decisionCount": 9282,
+      "firstLegDepthReady": 5926,
+      "completedPairs": 4548,
+      "profitablePairCount": 0,
+      "losingPairCount": 4547,
+      "completedContracts": 237,
+      "positiveContractMeanCount": 0,
+      "firstLegBookDelayCensored": 3356,
+      "firstLegDepthCensored": 0,
+      "secondLegBookDelayCensored": 1349,
+      "secondLegDepthCensored": 0,
+      "breakCensored": 29,
+      "firstLegCost": {
+        "count": 4548,
+        "mean": 0.5193029903254169,
+        "median": 0.555,
+        "p10": 0.08,
+        "p90": 0.925,
+        "min": 0.035,
+        "max": 0.98
+      },
+      "secondLegCost": {
+        "count": 4548,
+        "mean": 0.48687554969217206,
+        "median": 0.45,
+        "p10": 0.08,
+        "p90": 0.925,
+        "min": 0.035,
+        "max": 0.97
+      },
+      "pairNetPnlPerShare": {
+        "count": 4548,
+        "mean": -0.006178540017589769,
+        "median": -0.005,
+        "p10": -0.01,
+        "p90": -0.005,
+        "min": -0.02,
+        "max": 0
+      },
+      "sumOfCorrelatedOneShareOutcomes": -28.10000000000021,
+      "secondLegObservedDelayMs": {
+        "count": 4548,
+        "mean": 5162.510554089709,
+        "median": 4091,
+        "p10": 1143,
+        "p90": 11175,
+        "min": 251,
+        "max": 15229
+      },
+      "firstLegUnhedgedLiquidationPnlAtHedge": {
+        "count": 4548,
+        "mean": -0.006178540017589769,
+        "median": -0.005,
+        "p10": -0.01,
+        "p90": -0.005,
+        "min": -0.02,
+        "max": 0
+      },
+      "firstLegWorstObservedLiquidationPnlBeforeHedge": {
+        "count": 4548,
+        "mean": -0.006190633245382199,
+        "median": -0.005,
+        "p10": -0.01,
+        "p90": -0.005,
+        "min": -0.02,
+        "max": -0.005
+      },
+      "notActualOrdersOrFills": true,
+      "independentSamplesEstablished": false
+    },
+    {
+      "period": "heldout",
+      "firstSide": "NO",
+      "hedgeSide": "YES",
+      "firstLegLatencyMs": 3000,
+      "secondLegLatencyMs": 1000,
+      "decisionCount": 9282,
+      "firstLegDepthReady": 5926,
+      "completedPairs": 4559,
+      "profitablePairCount": 0,
+      "losingPairCount": 4558,
+      "completedContracts": 237,
+      "positiveContractMeanCount": 0,
+      "firstLegBookDelayCensored": 3356,
+      "firstLegDepthCensored": 0,
+      "secondLegBookDelayCensored": 1336,
+      "secondLegDepthCensored": 0,
+      "breakCensored": 31,
+      "firstLegCost": {
+        "count": 4559,
+        "mean": 0.51920925641588,
+        "median": 0.555,
+        "p10": 0.08,
+        "p90": 0.925,
+        "min": 0.035,
+        "max": 0.98
+      },
+      "secondLegCost": {
+        "count": 4559,
+        "mean": 0.4869675367405126,
+        "median": 0.45,
+        "p10": 0.08,
+        "p90": 0.925,
+        "min": 0.035,
+        "max": 0.97
+      },
+      "pairNetPnlPerShare": {
+        "count": 4559,
+        "mean": -0.006176793156393563,
+        "median": -0.005,
+        "p10": -0.01,
+        "p90": -0.005,
+        "min": -0.02,
+        "max": 0
+      },
+      "sumOfCorrelatedOneShareOutcomes": -28.160000000000206,
+      "secondLegObservedDelayMs": {
+        "count": 4559,
+        "mean": 5692.41763544637,
+        "median": 4634,
+        "p10": 1544,
+        "p90": 11969,
+        "min": 1002,
+        "max": 15995
+      },
+      "firstLegUnhedgedLiquidationPnlAtHedge": {
+        "count": 4559,
+        "mean": -0.006176793156393563,
+        "median": -0.005,
+        "p10": -0.01,
+        "p90": -0.005,
+        "min": -0.02,
+        "max": 0
+      },
+      "firstLegWorstObservedLiquidationPnlBeforeHedge": {
+        "count": 4559,
+        "mean": -0.0061888572055271394,
+        "median": -0.005,
+        "p10": -0.01,
+        "p90": -0.005,
+        "min": -0.02,
+        "max": -0.005
+      },
+      "notActualOrdersOrFills": true,
+      "independentSamplesEstablished": false
+    },
+    {
+      "period": "heldout",
+      "firstSide": "NO",
+      "hedgeSide": "YES",
+      "firstLegLatencyMs": 3000,
+      "secondLegLatencyMs": 3000,
+      "decisionCount": 9282,
+      "firstLegDepthReady": 5926,
+      "completedPairs": 4437,
+      "profitablePairCount": 0,
+      "losingPairCount": 4436,
+      "completedContracts": 237,
+      "positiveContractMeanCount": 0,
+      "firstLegBookDelayCensored": 3356,
+      "firstLegDepthCensored": 0,
+      "secondLegBookDelayCensored": 1455,
+      "secondLegDepthCensored": 0,
+      "breakCensored": 34,
+      "firstLegCost": {
+        "count": 4437,
+        "mean": 0.5195582600856422,
+        "median": 0.555,
+        "p10": 0.08,
+        "p90": 0.925,
+        "min": 0.035,
+        "max": 0.975
+      },
+      "secondLegCost": {
+        "count": 4437,
+        "mean": 0.4866339869281042,
+        "median": 0.45,
+        "p10": 0.08,
+        "p90": 0.925,
+        "min": 0.035,
+        "max": 0.97
+      },
+      "pairNetPnlPerShare": {
+        "count": 4437,
+        "mean": -0.006192247013747669,
+        "median": -0.005,
+        "p10": -0.01,
+        "p90": -0.005,
+        "min": -0.02,
+        "max": 0
+      },
+      "sumOfCorrelatedOneShareOutcomes": -27.47500000000026,
+      "secondLegObservedDelayMs": {
+        "count": 4437,
+        "mean": 7905.728420103674,
+        "median": 6754,
+        "p10": 3590,
+        "p90": 14392,
+        "min": 3001,
+        "max": 17998
+      },
+      "firstLegUnhedgedLiquidationPnlAtHedge": {
+        "count": 4437,
+        "mean": -0.006192247013747669,
+        "median": -0.005,
+        "p10": -0.01,
+        "p90": -0.005,
+        "min": -0.02,
+        "max": 0
+      },
+      "firstLegWorstObservedLiquidationPnlBeforeHedge": {
+        "count": 4437,
+        "mean": -0.00620576966418715,
+        "median": -0.005,
+        "p10": -0.01,
+        "p90": -0.005,
+        "min": -0.02,
+        "max": -0.005
+      },
+      "notActualOrdersOrFills": true,
+      "independentSamplesEstablished": false
+    },
+    {
+      "period": "heldout",
+      "firstSide": "YES",
+      "hedgeSide": "NO",
+      "firstLegLatencyMs": 0,
+      "secondLegLatencyMs": 0,
+      "decisionCount": 9282,
+      "firstLegDepthReady": 5998,
+      "completedPairs": 4642,
+      "profitablePairCount": 0,
+      "losingPairCount": 4640,
+      "completedContracts": 237,
+      "positiveContractMeanCount": 0,
+      "firstLegBookDelayCensored": 3284,
+      "firstLegDepthCensored": 0,
+      "secondLegBookDelayCensored": 1333,
+      "secondLegDepthCensored": 0,
+      "breakCensored": 23,
+      "firstLegCost": {
+        "count": 4642,
+        "mean": 0.4835006462731563,
+        "median": 0.435,
+        "p10": 0.08,
+        "p90": 0.925,
+        "min": 0.035,
+        "max": 0.98
+      },
+      "secondLegCost": {
+        "count": 4642,
+        "mean": 0.5226949590693665,
+        "median": 0.555,
+        "p10": 0.08,
+        "p90": 0.925,
+        "min": 0.035,
+        "max": 0.98
+      },
+      "pairNetPnlPerShare": {
+        "count": 4642,
+        "mean": -0.006195605342524358,
+        "median": -0.005,
+        "p10": -0.01,
+        "p90": -0.005,
+        "min": -0.02,
+        "max": 0
+      },
+      "sumOfCorrelatedOneShareOutcomes": -28.760000000000158,
+      "secondLegObservedDelayMs": {
+        "count": 4642,
+        "mean": 5201.347479534684,
+        "median": 4254,
+        "p10": 1125,
+        "p90": 11057,
+        "min": 24,
+        "max": 14979
+      },
+      "firstLegUnhedgedLiquidationPnlAtHedge": {
+        "count": 4642,
+        "mean": -0.006195605342524358,
+        "median": -0.005,
+        "p10": -0.01,
+        "p90": -0.005,
+        "min": -0.02,
+        "max": 0
+      },
+      "firstLegWorstObservedLiquidationPnlBeforeHedge": {
+        "count": 4642,
+        "mean": -0.006209607927616984,
+        "median": -0.005,
+        "p10": -0.01,
+        "p90": -0.005,
+        "min": -0.02,
+        "max": -0.005
+      },
+      "notActualOrdersOrFills": true,
+      "independentSamplesEstablished": false
+    },
+    {
+      "period": "heldout",
+      "firstSide": "YES",
+      "hedgeSide": "NO",
+      "firstLegLatencyMs": 0,
+      "secondLegLatencyMs": 250,
+      "decisionCount": 9282,
+      "firstLegDepthReady": 5998,
+      "completedPairs": 4659,
+      "profitablePairCount": 0,
+      "losingPairCount": 4657,
+      "completedContracts": 237,
+      "positiveContractMeanCount": 0,
+      "firstLegBookDelayCensored": 3284,
+      "firstLegDepthCensored": 0,
+      "secondLegBookDelayCensored": 1316,
+      "secondLegDepthCensored": 0,
+      "breakCensored": 23,
+      "firstLegCost": {
+        "count": 4659,
+        "mean": 0.48394290620304603,
+        "median": 0.45,
+        "p10": 0.08,
+        "p90": 0.925,
+        "min": 0.035,
+        "max": 0.98
+      },
+      "secondLegCost": {
+        "count": 4659,
+        "mean": 0.5222537025112682,
+        "median": 0.555,
+        "p10": 0.08,
+        "p90": 0.925,
+        "min": 0.035,
+        "max": 0.98
+      },
+      "pairNetPnlPerShare": {
+        "count": 4659,
+        "mean": -0.006196608714315956,
+        "median": -0.005,
+        "p10": -0.01,
+        "p90": -0.005,
+        "min": -0.02,
+        "max": 0
+      },
+      "sumOfCorrelatedOneShareOutcomes": -28.870000000000168,
+      "secondLegObservedDelayMs": {
+        "count": 4659,
+        "mean": 5291.413178793732,
+        "median": 4337,
+        "p10": 1166,
+        "p90": 11241,
+        "min": 251,
+        "max": 15250
+      },
+      "firstLegUnhedgedLiquidationPnlAtHedge": {
+        "count": 4659,
+        "mean": -0.006196608714315956,
+        "median": -0.005,
+        "p10": -0.01,
+        "p90": -0.005,
+        "min": -0.02,
+        "max": 0
+      },
+      "firstLegWorstObservedLiquidationPnlBeforeHedge": {
+        "count": 4659,
+        "mean": -0.006211633397724406,
+        "median": -0.005,
+        "p10": -0.01,
+        "p90": -0.005,
+        "min": -0.02,
+        "max": -0.005
+      },
+      "notActualOrdersOrFills": true,
+      "independentSamplesEstablished": false
+    },
+    {
+      "period": "heldout",
+      "firstSide": "YES",
+      "hedgeSide": "NO",
+      "firstLegLatencyMs": 0,
+      "secondLegLatencyMs": 1000,
+      "decisionCount": 9282,
+      "firstLegDepthReady": 5998,
+      "completedPairs": 4668,
+      "profitablePairCount": 0,
+      "losingPairCount": 4666,
+      "completedContracts": 237,
+      "positiveContractMeanCount": 0,
+      "firstLegBookDelayCensored": 3284,
+      "firstLegDepthCensored": 0,
+      "secondLegBookDelayCensored": 1305,
+      "secondLegDepthCensored": 0,
+      "breakCensored": 25,
+      "firstLegCost": {
+        "count": 4668,
+        "mean": 0.4829905741216777,
+        "median": 0.435,
+        "p10": 0.08,
+        "p90": 0.925,
+        "min": 0.035,
+        "max": 0.98
+      },
+      "secondLegCost": {
+        "count": 4668,
+        "mean": 0.5232037275064261,
+        "median": 0.57,
+        "p10": 0.08,
+        "p90": 0.925,
+        "min": 0.035,
+        "max": 0.98
+      },
+      "pairNetPnlPerShare": {
+        "count": 4668,
+        "mean": -0.006194301628105833,
+        "median": -0.005,
+        "p10": -0.01,
+        "p90": -0.005,
+        "min": -0.02,
+        "max": 0
+      },
+      "sumOfCorrelatedOneShareOutcomes": -28.91500000000017,
+      "secondLegObservedDelayMs": {
+        "count": 4668,
+        "mean": 5774.970651242502,
+        "median": 4795,
+        "p10": 1562,
+        "p90": 11963,
+        "min": 1002,
+        "max": 15995
+      },
+      "firstLegUnhedgedLiquidationPnlAtHedge": {
+        "count": 4668,
+        "mean": -0.006194301628105833,
+        "median": -0.005,
+        "p10": -0.01,
+        "p90": -0.005,
+        "min": -0.02,
+        "max": 0
+      },
+      "firstLegWorstObservedLiquidationPnlBeforeHedge": {
+        "count": 4668,
+        "mean": -0.006210368466152099,
+        "median": -0.005,
+        "p10": -0.01,
+        "p90": -0.005,
+        "min": -0.02,
+        "max": -0.005
+      },
+      "notActualOrdersOrFills": true,
+      "independentSamplesEstablished": false
+    },
+    {
+      "period": "heldout",
+      "firstSide": "YES",
+      "hedgeSide": "NO",
+      "firstLegLatencyMs": 0,
+      "secondLegLatencyMs": 3000,
+      "decisionCount": 9282,
+      "firstLegDepthReady": 5998,
+      "completedPairs": 4557,
+      "profitablePairCount": 0,
+      "losingPairCount": 4552,
+      "completedContracts": 237,
+      "positiveContractMeanCount": 0,
+      "firstLegBookDelayCensored": 3284,
+      "firstLegDepthCensored": 0,
+      "secondLegBookDelayCensored": 1410,
+      "secondLegDepthCensored": 0,
+      "breakCensored": 31,
+      "firstLegCost": {
+        "count": 4557,
+        "mean": 0.48377989905639696,
+        "median": 0.45,
+        "p10": 0.08,
+        "p90": 0.925,
+        "min": 0.035,
+        "max": 0.98
+      },
+      "secondLegCost": {
+        "count": 4557,
+        "mean": 0.5224127715602365,
+        "median": 0.555,
+        "p10": 0.08,
+        "p90": 0.925,
+        "min": 0.035,
+        "max": 0.985
+      },
+      "pairNetPnlPerShare": {
+        "count": 4557,
+        "mean": -0.006192670616633358,
+        "median": -0.005,
+        "p10": -0.01,
+        "p90": -0.005,
+        "min": -0.025,
+        "max": 0
+      },
+      "sumOfCorrelatedOneShareOutcomes": -28.220000000000162,
+      "secondLegObservedDelayMs": {
+        "count": 4557,
+        "mean": 7952.622119815668,
+        "median": 6926,
+        "p10": 3658,
+        "p90": 14351,
+        "min": 3001,
+        "max": 17999
+      },
+      "firstLegUnhedgedLiquidationPnlAtHedge": {
+        "count": 4557,
+        "mean": -0.006192670616633358,
+        "median": -0.005,
+        "p10": -0.01,
+        "p90": -0.005,
+        "min": -0.025,
+        "max": 0
+      },
+      "firstLegWorstObservedLiquidationPnlBeforeHedge": {
+        "count": 4557,
+        "mean": -0.006217906517445284,
+        "median": -0.005,
+        "p10": -0.01,
+        "p90": -0.005,
+        "min": -0.025,
+        "max": -0.005
+      },
+      "notActualOrdersOrFills": true,
+      "independentSamplesEstablished": false
+    },
+    {
+      "period": "heldout",
+      "firstSide": "YES",
+      "hedgeSide": "NO",
+      "firstLegLatencyMs": 250,
+      "secondLegLatencyMs": 0,
+      "decisionCount": 9282,
+      "firstLegDepthReady": 6059,
+      "completedPairs": 4685,
+      "profitablePairCount": 0,
+      "losingPairCount": 4683,
+      "completedContracts": 237,
+      "positiveContractMeanCount": 0,
+      "firstLegBookDelayCensored": 3223,
+      "firstLegDepthCensored": 0,
+      "secondLegBookDelayCensored": 1351,
+      "secondLegDepthCensored": 0,
+      "breakCensored": 23,
+      "firstLegCost": {
+        "count": 4685,
+        "mean": 0.482441835645676,
+        "median": 0.435,
+        "p10": 0.08,
+        "p90": 0.925,
+        "min": 0.035,
+        "max": 0.98
+      },
+      "secondLegCost": {
+        "count": 4685,
+        "mean": 0.523757737459978,
+        "median": 0.57,
+        "p10": 0.08,
+        "p90": 0.925,
+        "min": 0.035,
+        "max": 0.98
+      },
+      "pairNetPnlPerShare": {
+        "count": 4685,
+        "mean": -0.0061995731056559205,
+        "median": -0.005,
+        "p10": -0.01,
+        "p90": -0.005,
+        "min": -0.02,
+        "max": 0
+      },
+      "sumOfCorrelatedOneShareOutcomes": -29.04500000000016,
+      "secondLegObservedDelayMs": {
+        "count": 4685,
+        "mean": 5206.019850586979,
+        "median": 4250,
+        "p10": 1141,
+        "p90": 11075,
+        "min": 24,
+        "max": 14979
+      },
+      "firstLegUnhedgedLiquidationPnlAtHedge": {
+        "count": 4685,
+        "mean": -0.0061995731056559205,
+        "median": -0.005,
+        "p10": -0.01,
+        "p90": -0.005,
+        "min": -0.02,
+        "max": 0
+      },
+      "firstLegWorstObservedLiquidationPnlBeforeHedge": {
+        "count": 4685,
+        "mean": -0.006214514407683662,
+        "median": -0.005,
+        "p10": -0.01,
+        "p90": -0.005,
+        "min": -0.02,
+        "max": -0.005
+      },
+      "notActualOrdersOrFills": true,
+      "independentSamplesEstablished": false
+    },
+    {
+      "period": "heldout",
+      "firstSide": "YES",
+      "hedgeSide": "NO",
+      "firstLegLatencyMs": 250,
+      "secondLegLatencyMs": 250,
+      "decisionCount": 9282,
+      "firstLegDepthReady": 6059,
+      "completedPairs": 4703,
+      "profitablePairCount": 0,
+      "losingPairCount": 4701,
+      "completedContracts": 237,
+      "positiveContractMeanCount": 0,
+      "firstLegBookDelayCensored": 3223,
+      "firstLegDepthCensored": 0,
+      "secondLegBookDelayCensored": 1333,
+      "secondLegDepthCensored": 0,
+      "breakCensored": 23,
+      "firstLegCost": {
+        "count": 4703,
+        "mean": 0.48298107590899303,
+        "median": 0.435,
+        "p10": 0.08,
+        "p90": 0.925,
+        "min": 0.035,
+        "max": 0.98
+      },
+      "secondLegCost": {
+        "count": 4703,
+        "mean": 0.5232202849245156,
+        "median": 0.57,
+        "p10": 0.08,
+        "p90": 0.925,
+        "min": 0.035,
+        "max": 0.98
+      },
+      "pairNetPnlPerShare": {
+        "count": 4703,
+        "mean": -0.00620136083351009,
+        "median": -0.005,
+        "p10": -0.01,
+        "p90": -0.005,
+        "min": -0.02,
+        "max": 0
+      },
+      "sumOfCorrelatedOneShareOutcomes": -29.16500000000018,
+      "secondLegObservedDelayMs": {
+        "count": 4703,
+        "mean": 5297.169253667872,
+        "median": 4327,
+        "p10": 1187,
+        "p90": 11242,
+        "min": 251,
+        "max": 15250
+      },
+      "firstLegUnhedgedLiquidationPnlAtHedge": {
+        "count": 4703,
+        "mean": -0.00620136083351009,
+        "median": -0.005,
+        "p10": -0.01,
+        "p90": -0.005,
+        "min": -0.02,
+        "max": 0
+      },
+      "firstLegWorstObservedLiquidationPnlBeforeHedge": {
+        "count": 4703,
+        "mean": -0.006216244950031453,
+        "median": -0.005,
+        "p10": -0.01,
+        "p90": -0.005,
+        "min": -0.02,
+        "max": -0.005
+      },
+      "notActualOrdersOrFills": true,
+      "independentSamplesEstablished": false
+    },
+    {
+      "period": "heldout",
+      "firstSide": "YES",
+      "hedgeSide": "NO",
+      "firstLegLatencyMs": 250,
+      "secondLegLatencyMs": 1000,
+      "decisionCount": 9282,
+      "firstLegDepthReady": 6059,
+      "completedPairs": 4712,
+      "profitablePairCount": 0,
+      "losingPairCount": 4710,
+      "completedContracts": 237,
+      "positiveContractMeanCount": 0,
+      "firstLegBookDelayCensored": 3223,
+      "firstLegDepthCensored": 0,
+      "secondLegBookDelayCensored": 1322,
+      "secondLegDepthCensored": 0,
+      "breakCensored": 25,
+      "firstLegCost": {
+        "count": 4712,
+        "mean": 0.4820649405772483,
+        "median": 0.435,
+        "p10": 0.08,
+        "p90": 0.925,
+        "min": 0.035,
+        "max": 0.98
+      },
+      "secondLegCost": {
+        "count": 4712,
+        "mean": 0.5241351867572145,
+        "median": 0.57,
+        "p10": 0.08,
+        "p90": 0.925,
+        "min": 0.035,
+        "max": 0.98
+      },
+      "pairNetPnlPerShare": {
+        "count": 4712,
+        "mean": -0.0062001273344647586,
+        "median": -0.005,
+        "p10": -0.01,
+        "p90": -0.005,
+        "min": -0.02,
+        "max": 0
+      },
+      "sumOfCorrelatedOneShareOutcomes": -29.215000000000188,
+      "secondLegObservedDelayMs": {
+        "count": 4712,
+        "mean": 5775.7120118845505,
+        "median": 4795,
+        "p10": 1558,
+        "p90": 11966,
+        "min": 1002,
+        "max": 15995
+      },
+      "firstLegUnhedgedLiquidationPnlAtHedge": {
+        "count": 4712,
+        "mean": -0.0062001273344647586,
+        "median": -0.005,
+        "p10": -0.01,
+        "p90": -0.005,
+        "min": -0.02,
+        "max": 0
+      },
+      "firstLegWorstObservedLiquidationPnlBeforeHedge": {
+        "count": 4712,
+        "mean": -0.006216044142614157,
+        "median": -0.005,
+        "p10": -0.01,
+        "p90": -0.005,
+        "min": -0.02,
+        "max": -0.005
+      },
+      "notActualOrdersOrFills": true,
+      "independentSamplesEstablished": false
+    },
+    {
+      "period": "heldout",
+      "firstSide": "YES",
+      "hedgeSide": "NO",
+      "firstLegLatencyMs": 250,
+      "secondLegLatencyMs": 3000,
+      "decisionCount": 9282,
+      "firstLegDepthReady": 6059,
+      "completedPairs": 4598,
+      "profitablePairCount": 0,
+      "losingPairCount": 4593,
+      "completedContracts": 237,
+      "positiveContractMeanCount": 0,
+      "firstLegBookDelayCensored": 3223,
+      "firstLegDepthCensored": 0,
+      "secondLegBookDelayCensored": 1430,
+      "secondLegDepthCensored": 0,
+      "breakCensored": 31,
+      "firstLegCost": {
+        "count": 4598,
+        "mean": 0.4829436711613741,
+        "median": 0.435,
+        "p10": 0.08,
+        "p90": 0.925,
+        "min": 0.035,
+        "max": 0.98
+      },
+      "secondLegCost": {
+        "count": 4598,
+        "mean": 0.523250326228795,
+        "median": 0.555,
+        "p10": 0.08,
+        "p90": 0.925,
+        "min": 0.035,
+        "max": 0.985
+      },
+      "pairNetPnlPerShare": {
+        "count": 4598,
+        "mean": -0.006193997390169235,
+        "median": -0.005,
+        "p10": -0.01,
+        "p90": -0.005,
+        "min": -0.025,
+        "max": 0
+      },
+      "sumOfCorrelatedOneShareOutcomes": -28.480000000000153,
+      "secondLegObservedDelayMs": {
+        "count": 4598,
+        "mean": 7953.818399304046,
+        "median": 6908,
+        "p10": 3633,
+        "p90": 14378,
+        "min": 3001,
+        "max": 17999
+      },
+      "firstLegUnhedgedLiquidationPnlAtHedge": {
+        "count": 4598,
+        "mean": -0.006193997390169235,
+        "median": -0.005,
+        "p10": -0.01,
+        "p90": -0.005,
+        "min": -0.025,
+        "max": 0
+      },
+      "firstLegWorstObservedLiquidationPnlBeforeHedge": {
+        "count": 4598,
+        "mean": -0.006220095693779488,
+        "median": -0.005,
+        "p10": -0.01,
+        "p90": -0.005,
+        "min": -0.025,
+        "max": -0.005
+      },
+      "notActualOrdersOrFills": true,
+      "independentSamplesEstablished": false
+    },
+    {
+      "period": "heldout",
+      "firstSide": "YES",
+      "hedgeSide": "NO",
+      "firstLegLatencyMs": 1000,
+      "secondLegLatencyMs": 0,
+      "decisionCount": 9282,
+      "firstLegDepthReady": 6118,
+      "completedPairs": 4686,
+      "profitablePairCount": 0,
+      "losingPairCount": 4684,
+      "completedContracts": 237,
+      "positiveContractMeanCount": 0,
+      "firstLegBookDelayCensored": 3164,
+      "firstLegDepthCensored": 0,
+      "secondLegBookDelayCensored": 1405,
+      "secondLegDepthCensored": 0,
+      "breakCensored": 27,
+      "firstLegCost": {
+        "count": 4686,
+        "mean": 0.48325650874946474,
+        "median": 0.435,
+        "p10": 0.08,
+        "p90": 0.925,
+        "min": 0.035,
+        "max": 0.98
+      },
+      "secondLegCost": {
+        "count": 4686,
+        "mean": 0.5229396073410155,
+        "median": 0.555,
+        "p10": 0.08,
+        "p90": 0.925,
+        "min": 0.035,
+        "max": 0.98
+      },
+      "pairNetPnlPerShare": {
+        "count": 4686,
+        "mean": -0.0061961160904818605,
+        "median": -0.005,
+        "p10": -0.01,
+        "p90": -0.005,
+        "min": -0.02,
+        "max": 0
+      },
+      "sumOfCorrelatedOneShareOutcomes": -29.03500000000018,
+      "secondLegObservedDelayMs": {
+        "count": 4686,
+        "mean": 5212.363849765258,
+        "median": 4261,
+        "p10": 1152,
+        "p90": 11107,
+        "min": 24,
+        "max": 14979
+      },
+      "firstLegUnhedgedLiquidationPnlAtHedge": {
+        "count": 4686,
+        "mean": -0.0061961160904818605,
+        "median": -0.005,
+        "p10": -0.01,
+        "p90": -0.005,
+        "min": -0.02,
+        "max": 0
+      },
+      "firstLegWorstObservedLiquidationPnlBeforeHedge": {
+        "count": 4686,
+        "mean": -0.006211054204011517,
+        "median": -0.005,
+        "p10": -0.01,
+        "p90": -0.005,
+        "min": -0.02,
+        "max": -0.005
+      },
+      "notActualOrdersOrFills": true,
+      "independentSamplesEstablished": false
+    },
+    {
+      "period": "heldout",
+      "firstSide": "YES",
+      "hedgeSide": "NO",
+      "firstLegLatencyMs": 1000,
+      "secondLegLatencyMs": 250,
+      "decisionCount": 9282,
+      "firstLegDepthReady": 6118,
+      "completedPairs": 4708,
+      "profitablePairCount": 0,
+      "losingPairCount": 4706,
+      "completedContracts": 237,
+      "positiveContractMeanCount": 0,
+      "firstLegBookDelayCensored": 3164,
+      "firstLegDepthCensored": 0,
+      "secondLegBookDelayCensored": 1383,
+      "secondLegDepthCensored": 0,
+      "breakCensored": 27,
+      "firstLegCost": {
+        "count": 4708,
+        "mean": 0.4835078589634652,
+        "median": 0.45,
+        "p10": 0.08,
+        "p90": 0.925,
+        "min": 0.035,
+        "max": 0.98
+      },
+      "secondLegCost": {
+        "count": 4708,
+        "mean": 0.5226890399320301,
+        "median": 0.555,
+        "p10": 0.08,
+        "p90": 0.925,
+        "min": 0.035,
+        "max": 0.98
+      },
+      "pairNetPnlPerShare": {
+        "count": 4708,
+        "mean": -0.006196898895496593,
+        "median": -0.005,
+        "p10": -0.01,
+        "p90": -0.005,
+        "min": -0.02,
+        "max": 0
+      },
+      "sumOfCorrelatedOneShareOutcomes": -29.175000000000196,
+      "secondLegObservedDelayMs": {
+        "count": 4708,
+        "mean": 5297.739379779099,
+        "median": 4334,
+        "p10": 1198,
+        "p90": 11268,
+        "min": 251,
+        "max": 15250
+      },
+      "firstLegUnhedgedLiquidationPnlAtHedge": {
+        "count": 4708,
+        "mean": -0.006196898895496593,
+        "median": -0.005,
+        "p10": -0.01,
+        "p90": -0.005,
+        "min": -0.02,
+        "max": 0
+      },
+      "firstLegWorstObservedLiquidationPnlBeforeHedge": {
+        "count": 4708,
+        "mean": -0.0062117672047574185,
+        "median": -0.005,
+        "p10": -0.01,
+        "p90": -0.005,
+        "min": -0.02,
+        "max": -0.005
+      },
+      "notActualOrdersOrFills": true,
+      "independentSamplesEstablished": false
+    },
+    {
+      "period": "heldout",
+      "firstSide": "YES",
+      "hedgeSide": "NO",
+      "firstLegLatencyMs": 1000,
+      "secondLegLatencyMs": 1000,
+      "decisionCount": 9282,
+      "firstLegDepthReady": 6118,
+      "completedPairs": 4722,
+      "profitablePairCount": 0,
+      "losingPairCount": 4720,
+      "completedContracts": 237,
+      "positiveContractMeanCount": 0,
+      "firstLegBookDelayCensored": 3164,
+      "firstLegDepthCensored": 0,
+      "secondLegBookDelayCensored": 1368,
+      "secondLegDepthCensored": 0,
+      "breakCensored": 28,
+      "firstLegCost": {
+        "count": 4722,
+        "mean": 0.48264400677678837,
+        "median": 0.435,
+        "p10": 0.08,
+        "p90": 0.925,
+        "min": 0.035,
+        "max": 0.98
+      },
+      "secondLegCost": {
+        "count": 4722,
+        "mean": 0.5235504023718758,
+        "median": 0.57,
+        "p10": 0.08,
+        "p90": 0.925,
+        "min": 0.035,
+        "max": 0.98
+      },
+      "pairNetPnlPerShare": {
+        "count": 4722,
+        "mean": -0.006194409148665384,
+        "median": -0.005,
+        "p10": -0.01,
+        "p90": -0.005,
+        "min": -0.02,
+        "max": 0
+      },
+      "sumOfCorrelatedOneShareOutcomes": -29.250000000000192,
+      "secondLegObservedDelayMs": {
+        "count": 4722,
+        "mean": 5781.627276577721,
+        "median": 4807,
+        "p10": 1580,
+        "p90": 11965,
+        "min": 1002,
+        "max": 15995
+      },
+      "firstLegUnhedgedLiquidationPnlAtHedge": {
+        "count": 4722,
+        "mean": -0.006194409148665384,
+        "median": -0.005,
+        "p10": -0.01,
+        "p90": -0.005,
+        "min": -0.02,
+        "max": 0
+      },
+      "firstLegWorstObservedLiquidationPnlBeforeHedge": {
+        "count": 4722,
+        "mean": -0.006210292249046571,
+        "median": -0.005,
+        "p10": -0.01,
+        "p90": -0.005,
+        "min": -0.02,
+        "max": -0.005
+      },
+      "notActualOrdersOrFills": true,
+      "independentSamplesEstablished": false
+    },
+    {
+      "period": "heldout",
+      "firstSide": "YES",
+      "hedgeSide": "NO",
+      "firstLegLatencyMs": 1000,
+      "secondLegLatencyMs": 3000,
+      "decisionCount": 9282,
+      "firstLegDepthReady": 6118,
+      "completedPairs": 4610,
+      "profitablePairCount": 0,
+      "losingPairCount": 4605,
+      "completedContracts": 237,
+      "positiveContractMeanCount": 0,
+      "firstLegBookDelayCensored": 3164,
+      "firstLegDepthCensored": 0,
+      "secondLegBookDelayCensored": 1474,
+      "secondLegDepthCensored": 0,
+      "breakCensored": 34,
+      "firstLegCost": {
+        "count": 4610,
+        "mean": 0.4836941431670269,
+        "median": 0.45,
+        "p10": 0.08,
+        "p90": 0.925,
+        "min": 0.035,
+        "max": 0.98
+      },
+      "secondLegCost": {
+        "count": 4610,
+        "mean": 0.5224956616052064,
+        "median": 0.555,
+        "p10": 0.08,
+        "p90": 0.925,
+        "min": 0.035,
+        "max": 0.985
+      },
+      "pairNetPnlPerShare": {
+        "count": 4610,
+        "mean": -0.006189804772233869,
+        "median": -0.005,
+        "p10": -0.01,
+        "p90": -0.005,
+        "min": -0.025,
+        "max": 0
+      },
+      "sumOfCorrelatedOneShareOutcomes": -28.535000000000164,
+      "secondLegObservedDelayMs": {
+        "count": 4610,
+        "mean": 7915.590455531454,
+        "median": 6822,
+        "p10": 3590,
+        "p90": 14372,
+        "min": 3001,
+        "max": 17996
+      },
+      "firstLegUnhedgedLiquidationPnlAtHedge": {
+        "count": 4610,
+        "mean": -0.006189804772233869,
+        "median": -0.005,
+        "p10": -0.01,
+        "p90": -0.005,
+        "min": -0.025,
+        "max": 0
+      },
+      "firstLegWorstObservedLiquidationPnlBeforeHedge": {
+        "count": 4610,
+        "mean": -0.0062158351409974145,
+        "median": -0.005,
+        "p10": -0.01,
+        "p90": -0.005,
+        "min": -0.025,
+        "max": -0.005
+      },
+      "notActualOrdersOrFills": true,
+      "independentSamplesEstablished": false
+    },
+    {
+      "period": "heldout",
+      "firstSide": "YES",
+      "hedgeSide": "NO",
+      "firstLegLatencyMs": 3000,
+      "secondLegLatencyMs": 0,
+      "decisionCount": 9282,
+      "firstLegDepthReady": 5926,
+      "completedPairs": 4533,
+      "profitablePairCount": 0,
+      "losingPairCount": 4532,
+      "completedContracts": 237,
+      "positiveContractMeanCount": 0,
+      "firstLegBookDelayCensored": 3356,
+      "firstLegDepthCensored": 0,
+      "secondLegBookDelayCensored": 1364,
+      "secondLegDepthCensored": 0,
+      "breakCensored": 29,
+      "firstLegCost": {
+        "count": 4533,
+        "mean": 0.4868983013456868,
+        "median": 0.45,
+        "p10": 0.08,
+        "p90": 0.925,
+        "min": 0.035,
+        "max": 0.97
+      },
+      "secondLegCost": {
+        "count": 4533,
+        "mean": 0.5192775204059118,
+        "median": 0.555,
+        "p10": 0.08,
+        "p90": 0.925,
+        "min": 0.035,
+        "max": 0.985
+      },
+      "pairNetPnlPerShare": {
+        "count": 4533,
+        "mean": -0.006175821751599008,
+        "median": -0.005,
+        "p10": -0.01,
+        "p90": -0.005,
+        "min": -0.025,
+        "max": 0
+      },
+      "sumOfCorrelatedOneShareOutcomes": -27.995000000000214,
+      "secondLegObservedDelayMs": {
+        "count": 4533,
+        "mean": 5082.552614162806,
+        "median": 4029,
+        "p10": 1096,
+        "p90": 11075,
+        "min": 24,
+        "max": 14979
+      },
+      "firstLegUnhedgedLiquidationPnlAtHedge": {
+        "count": 4533,
+        "mean": -0.006175821751599008,
+        "median": -0.005,
+        "p10": -0.01,
+        "p90": -0.005,
+        "min": -0.025,
+        "max": 0
+      },
+      "firstLegWorstObservedLiquidationPnlBeforeHedge": {
+        "count": 4533,
+        "mean": -0.00619236708581475,
+        "median": -0.005,
+        "p10": -0.01,
+        "p90": -0.005,
+        "min": -0.025,
+        "max": -0.005
+      },
+      "notActualOrdersOrFills": true,
+      "independentSamplesEstablished": false
+    },
+    {
+      "period": "heldout",
+      "firstSide": "YES",
+      "hedgeSide": "NO",
+      "firstLegLatencyMs": 3000,
+      "secondLegLatencyMs": 250,
+      "decisionCount": 9282,
+      "firstLegDepthReady": 5926,
+      "completedPairs": 4548,
+      "profitablePairCount": 0,
+      "losingPairCount": 4546,
+      "completedContracts": 237,
+      "positiveContractMeanCount": 0,
+      "firstLegBookDelayCensored": 3356,
+      "firstLegDepthCensored": 0,
+      "secondLegBookDelayCensored": 1349,
+      "secondLegDepthCensored": 0,
+      "breakCensored": 29,
+      "firstLegCost": {
+        "count": 4548,
+        "mean": 0.48687664907651684,
+        "median": 0.45,
+        "p10": 0.08,
+        "p90": 0.925,
+        "min": 0.035,
+        "max": 0.97
+      },
+      "secondLegCost": {
+        "count": 4548,
+        "mean": 0.5192974934036935,
+        "median": 0.555,
+        "p10": 0.08,
+        "p90": 0.925,
+        "min": 0.035,
+        "max": 0.985
+      },
+      "pairNetPnlPerShare": {
+        "count": 4548,
+        "mean": -0.006174142480210704,
+        "median": -0.005,
+        "p10": -0.01,
+        "p90": -0.005,
+        "min": -0.025,
+        "max": 0
+      },
+      "sumOfCorrelatedOneShareOutcomes": -28.080000000000197,
+      "secondLegObservedDelayMs": {
+        "count": 4548,
+        "mean": 5162.510554089709,
+        "median": 4091,
+        "p10": 1143,
+        "p90": 11175,
+        "min": 251,
+        "max": 15229
+      },
+      "firstLegUnhedgedLiquidationPnlAtHedge": {
+        "count": 4548,
+        "mean": -0.006174142480210704,
+        "median": -0.005,
+        "p10": -0.01,
+        "p90": -0.005,
+        "min": -0.025,
+        "max": 0
+      },
+      "firstLegWorstObservedLiquidationPnlBeforeHedge": {
+        "count": 4548,
+        "mean": -0.006191732629726966,
+        "median": -0.005,
+        "p10": -0.01,
+        "p90": -0.005,
+        "min": -0.025,
+        "max": -0.005
+      },
+      "notActualOrdersOrFills": true,
+      "independentSamplesEstablished": false
+    },
+    {
+      "period": "heldout",
+      "firstSide": "YES",
+      "hedgeSide": "NO",
+      "firstLegLatencyMs": 3000,
+      "secondLegLatencyMs": 1000,
+      "decisionCount": 9282,
+      "firstLegDepthReady": 5926,
+      "completedPairs": 4559,
+      "profitablePairCount": 0,
+      "losingPairCount": 4557,
+      "completedContracts": 237,
+      "positiveContractMeanCount": 0,
+      "firstLegBookDelayCensored": 3356,
+      "firstLegDepthCensored": 0,
+      "secondLegBookDelayCensored": 1336,
+      "secondLegDepthCensored": 0,
+      "breakCensored": 31,
+      "firstLegCost": {
+        "count": 4559,
+        "mean": 0.486968633472252,
+        "median": 0.45,
+        "p10": 0.08,
+        "p90": 0.925,
+        "min": 0.035,
+        "max": 0.97
+      },
+      "secondLegCost": {
+        "count": 4559,
+        "mean": 0.5192037727571833,
+        "median": 0.555,
+        "p10": 0.08,
+        "p90": 0.925,
+        "min": 0.035,
+        "max": 0.985
+      },
+      "pairNetPnlPerShare": {
+        "count": 4559,
+        "mean": -0.0061724062294359,
+        "median": -0.005,
+        "p10": -0.01,
+        "p90": -0.005,
+        "min": -0.025,
+        "max": 0
+      },
+      "sumOfCorrelatedOneShareOutcomes": -28.140000000000192,
+      "secondLegObservedDelayMs": {
+        "count": 4559,
+        "mean": 5692.41763544637,
+        "median": 4634,
+        "p10": 1544,
+        "p90": 11969,
+        "min": 1002,
+        "max": 15995
+      },
+      "firstLegUnhedgedLiquidationPnlAtHedge": {
+        "count": 4559,
+        "mean": -0.0061724062294359,
+        "median": -0.005,
+        "p10": -0.01,
+        "p90": -0.005,
+        "min": -0.025,
+        "max": 0
+      },
+      "firstLegWorstObservedLiquidationPnlBeforeHedge": {
+        "count": 4559,
+        "mean": -0.006191050669005971,
+        "median": -0.005,
+        "p10": -0.01,
+        "p90": -0.005,
+        "min": -0.025,
+        "max": -0.005
+      },
+      "notActualOrdersOrFills": true,
+      "independentSamplesEstablished": false
+    },
+    {
+      "period": "heldout",
+      "firstSide": "YES",
+      "hedgeSide": "NO",
+      "firstLegLatencyMs": 3000,
+      "secondLegLatencyMs": 3000,
+      "decisionCount": 9282,
+      "firstLegDepthReady": 5926,
+      "completedPairs": 4437,
+      "profitablePairCount": 0,
+      "losingPairCount": 4434,
+      "completedContracts": 237,
+      "positiveContractMeanCount": 0,
+      "firstLegBookDelayCensored": 3356,
+      "firstLegDepthCensored": 0,
+      "secondLegBookDelayCensored": 1455,
+      "secondLegDepthCensored": 0,
+      "breakCensored": 34,
+      "firstLegCost": {
+        "count": 4437,
+        "mean": 0.486631733153031,
+        "median": 0.45,
+        "p10": 0.08,
+        "p90": 0.925,
+        "min": 0.035,
+        "max": 0.97
+      },
+      "secondLegCost": {
+        "count": 4437,
+        "mean": 0.519548118097813,
+        "median": 0.555,
+        "p10": 0.08,
+        "p90": 0.925,
+        "min": 0.035,
+        "max": 0.985
+      },
+      "pairNetPnlPerShare": {
+        "count": 4437,
+        "mean": -0.006179851250844815,
+        "median": -0.005,
+        "p10": -0.01,
+        "p90": -0.005,
+        "min": -0.025,
+        "max": 0
+      },
+      "sumOfCorrelatedOneShareOutcomes": -27.420000000000254,
+      "secondLegObservedDelayMs": {
+        "count": 4437,
+        "mean": 7905.728420103674,
+        "median": 6754,
+        "p10": 3590,
+        "p90": 14392,
+        "min": 3001,
+        "max": 17998
+      },
+      "firstLegUnhedgedLiquidationPnlAtHedge": {
+        "count": 4437,
+        "mean": -0.006179851250844815,
+        "median": -0.005,
+        "p10": -0.01,
+        "p90": -0.005,
+        "min": -0.025,
+        "max": 0
+      },
+      "firstLegWorstObservedLiquidationPnlBeforeHedge": {
+        "count": 4437,
+        "mean": -0.006203515889113904,
+        "median": -0.005,
+        "p10": -0.01,
+        "p90": -0.005,
+        "min": -0.025,
+        "max": -0.005
+      },
+      "notActualOrdersOrFills": true,
+      "independentSamplesEstablished": false
+    }
+  ],
+  "oneTickAdverseStress": {
+    "perLegAdverseExecution": "0.005000",
+    "pairAdverseExecution": "0.010000",
+    "application": "Subtract one official tick from each leg’s per-share P&L; this is a sensitivity, not a new fill model or selector.",
+    "sameTimestampTopPairNetPerShare": {
+      "count": 66127,
+      "mean": -0.016196485550528113,
+      "median": -0.015,
+      "p10": -0.02,
+      "p90": -0.015,
+      "min": -0.05,
+      "max": -0.015
+    },
+    "sameTimestampOnePercentDepthNetPerPair": {
+      "count": 66127,
+      "mean": -0.024842714440936595,
+      "median": -0.025048264430577224,
+      "p10": -0.031875230372281606,
+      "p90": -0.016691503773950067,
+      "min": -0.053804961203856104,
+      "max": -0.015
+    },
+    "sequentialScenarios": [
+      {
+        "period": "heldout",
+        "firstSide": "NO",
+        "firstLegLatencyMs": 0,
+        "secondLegLatencyMs": 0,
+        "completedPairs": 4642,
+        "pairNetPnlPerShare": {
+          "count": 4642,
+          "mean": -0.006204222317965974,
+          "median": -0.005,
+          "p10": -0.01,
+          "p90": -0.005,
+          "min": -0.02,
+          "max": -0.005
+        },
+        "twoLegAdverseStressPnlPerShare": {
+          "count": 4642,
+          "mean": -0.016204222317965974,
+          "median": -0.015,
+          "p10": -0.02,
+          "p90": -0.015,
+          "min": -0.03,
+          "max": -0.015
+        }
+      },
+      {
+        "period": "heldout",
+        "firstSide": "NO",
+        "firstLegLatencyMs": 0,
+        "secondLegLatencyMs": 250,
+        "completedPairs": 4659,
+        "pairNetPnlPerShare": {
+          "count": 4659,
+          "mean": -0.006206267439364245,
+          "median": -0.005,
+          "p10": -0.01,
+          "p90": -0.005,
+          "min": -0.02,
+          "max": -0.005
+        },
+        "twoLegAdverseStressPnlPerShare": {
+          "count": 4659,
+          "mean": -0.016206267439364246,
+          "median": -0.015,
+          "p10": -0.02,
+          "p90": -0.015,
+          "min": -0.03,
+          "max": -0.015
+        }
+      },
+      {
+        "period": "heldout",
+        "firstSide": "NO",
+        "firstLegLatencyMs": 0,
+        "secondLegLatencyMs": 1000,
+        "completedPairs": 4668,
+        "pairNetPnlPerShare": {
+          "count": 4668,
+          "mean": -0.006206083976006428,
+          "median": -0.005,
+          "p10": -0.01,
+          "p90": -0.005,
+          "min": -0.02,
+          "max": -0.005
+        },
+        "twoLegAdverseStressPnlPerShare": {
+          "count": 4668,
+          "mean": -0.016206083976006428,
+          "median": -0.015,
+          "p10": -0.02,
+          "p90": -0.015,
+          "min": -0.03,
+          "max": -0.015
+        }
+      },
+      {
+        "period": "heldout",
+        "firstSide": "NO",
+        "firstLegLatencyMs": 0,
+        "secondLegLatencyMs": 3000,
+        "completedPairs": 4557,
+        "pairNetPnlPerShare": {
+          "count": 4557,
+          "mean": -0.006209128812815048,
+          "median": -0.005,
+          "p10": -0.01,
+          "p90": -0.005,
+          "min": -0.02,
+          "max": -0.005
+        },
+        "twoLegAdverseStressPnlPerShare": {
+          "count": 4557,
+          "mean": -0.016209128812815048,
+          "median": -0.015,
+          "p10": -0.02,
+          "p90": -0.015,
+          "min": -0.03,
+          "max": -0.015
+        }
+      },
+      {
+        "period": "heldout",
+        "firstSide": "NO",
+        "firstLegLatencyMs": 250,
+        "secondLegLatencyMs": 0,
+        "completedPairs": 4685,
+        "pairNetPnlPerShare": {
+          "count": 4685,
+          "mean": -0.006208110992528916,
+          "median": -0.005,
+          "p10": -0.01,
+          "p90": -0.005,
+          "min": -0.02,
+          "max": -0.005
+        },
+        "twoLegAdverseStressPnlPerShare": {
+          "count": 4685,
+          "mean": -0.016208110992528918,
+          "median": -0.015,
+          "p10": -0.02,
+          "p90": -0.015,
+          "min": -0.03,
+          "max": -0.015
+        }
+      },
+      {
+        "period": "heldout",
+        "firstSide": "NO",
+        "firstLegLatencyMs": 250,
+        "secondLegLatencyMs": 250,
+        "completedPairs": 4703,
+        "pairNetPnlPerShare": {
+          "count": 4703,
+          "mean": -0.006209866042950869,
+          "median": -0.005,
+          "p10": -0.01,
+          "p90": -0.005,
+          "min": -0.02,
+          "max": -0.005
+        },
+        "twoLegAdverseStressPnlPerShare": {
+          "count": 4703,
+          "mean": -0.01620986604295087,
+          "median": -0.015,
+          "p10": -0.02,
+          "p90": -0.015,
+          "min": -0.03,
+          "max": -0.015
+        }
+      },
+      {
+        "period": "heldout",
+        "firstSide": "NO",
+        "firstLegLatencyMs": 250,
+        "secondLegLatencyMs": 1000,
+        "completedPairs": 4712,
+        "pairNetPnlPerShare": {
+          "count": 4712,
+          "mean": -0.00621073853989769,
+          "median": -0.005,
+          "p10": -0.01,
+          "p90": -0.005,
+          "min": -0.02,
+          "max": -0.005
+        },
+        "twoLegAdverseStressPnlPerShare": {
+          "count": 4712,
+          "mean": -0.01621073853989769,
+          "median": -0.015,
+          "p10": -0.02,
+          "p90": -0.015,
+          "min": -0.03,
+          "max": -0.015
+        }
+      },
+      {
+        "period": "heldout",
+        "firstSide": "NO",
+        "firstLegLatencyMs": 250,
+        "secondLegLatencyMs": 3000,
+        "completedPairs": 4598,
+        "pairNetPnlPerShare": {
+          "count": 4598,
+          "mean": -0.006210308829925643,
+          "median": -0.005,
+          "p10": -0.01,
+          "p90": -0.005,
+          "min": -0.02,
+          "max": -0.005
+        },
+        "twoLegAdverseStressPnlPerShare": {
+          "count": 4598,
+          "mean": -0.016210308829925642,
+          "median": -0.015,
+          "p10": -0.02,
+          "p90": -0.015,
+          "min": -0.03,
+          "max": -0.015
+        }
+      },
+      {
+        "period": "heldout",
+        "firstSide": "NO",
+        "firstLegLatencyMs": 1000,
+        "secondLegLatencyMs": 0,
+        "completedPairs": 4686,
+        "pairNetPnlPerShare": {
+          "count": 4686,
+          "mean": -0.006205719163465211,
+          "median": -0.005,
+          "p10": -0.01,
+          "p90": -0.005,
+          "min": -0.02,
+          "max": -0.005
+        },
+        "twoLegAdverseStressPnlPerShare": {
+          "count": 4686,
+          "mean": -0.01620571916346521,
+          "median": -0.015,
+          "p10": -0.02,
+          "p90": -0.015,
+          "min": -0.03,
+          "max": -0.015
+        }
+      },
+      {
+        "period": "heldout",
+        "firstSide": "NO",
+        "firstLegLatencyMs": 1000,
+        "secondLegLatencyMs": 250,
+        "completedPairs": 4708,
+        "pairNetPnlPerShare": {
+          "count": 4708,
+          "mean": -0.006206457094307124,
+          "median": -0.005,
+          "p10": -0.01,
+          "p90": -0.005,
+          "min": -0.02,
+          "max": -0.005
+        },
+        "twoLegAdverseStressPnlPerShare": {
+          "count": 4708,
+          "mean": -0.016206457094307125,
+          "median": -0.015,
+          "p10": -0.02,
+          "p90": -0.015,
+          "min": -0.03,
+          "max": -0.015
+        }
+      },
+      {
+        "period": "heldout",
+        "firstSide": "NO",
+        "firstLegLatencyMs": 1000,
+        "secondLegLatencyMs": 1000,
+        "completedPairs": 4722,
+        "pairNetPnlPerShare": {
+          "count": 4722,
+          "mean": -0.006206056755611588,
+          "median": -0.005,
+          "p10": -0.01,
+          "p90": -0.005,
+          "min": -0.02,
+          "max": -0.005
+        },
+        "twoLegAdverseStressPnlPerShare": {
+          "count": 4722,
+          "mean": -0.016206056755611587,
+          "median": -0.015,
+          "p10": -0.02,
+          "p90": -0.015,
+          "min": -0.03,
+          "max": -0.015
+        }
+      },
+      {
+        "period": "heldout",
+        "firstSide": "NO",
+        "firstLegLatencyMs": 1000,
+        "secondLegLatencyMs": 3000,
+        "completedPairs": 4610,
+        "pairNetPnlPerShare": {
+          "count": 4610,
+          "mean": -0.006209327548806528,
+          "median": -0.005,
+          "p10": -0.01,
+          "p90": -0.005,
+          "min": -0.02,
+          "max": -0.005
+        },
+        "twoLegAdverseStressPnlPerShare": {
+          "count": 4610,
+          "mean": -0.016209327548806527,
+          "median": -0.015,
+          "p10": -0.02,
+          "p90": -0.015,
+          "min": -0.03,
+          "max": -0.015
+        }
+      },
+      {
+        "period": "heldout",
+        "firstSide": "NO",
+        "firstLegLatencyMs": 3000,
+        "secondLegLatencyMs": 0,
+        "completedPairs": 4533,
+        "pairNetPnlPerShare": {
+          "count": 4533,
+          "mean": -0.006179130818442155,
+          "median": -0.005,
+          "p10": -0.01,
+          "p90": -0.005,
+          "min": -0.02,
+          "max": 0
+        },
+        "twoLegAdverseStressPnlPerShare": {
+          "count": 4533,
+          "mean": -0.016179130818442154,
+          "median": -0.015,
+          "p10": -0.02,
+          "p90": -0.015,
+          "min": -0.03,
+          "max": -0.01
+        }
+      },
+      {
+        "period": "heldout",
+        "firstSide": "NO",
+        "firstLegLatencyMs": 3000,
+        "secondLegLatencyMs": 250,
+        "completedPairs": 4548,
+        "pairNetPnlPerShare": {
+          "count": 4548,
+          "mean": -0.006178540017589769,
+          "median": -0.005,
+          "p10": -0.01,
+          "p90": -0.005,
+          "min": -0.02,
+          "max": 0
+        },
+        "twoLegAdverseStressPnlPerShare": {
+          "count": 4548,
+          "mean": -0.016178540017589768,
+          "median": -0.015,
+          "p10": -0.02,
+          "p90": -0.015,
+          "min": -0.03,
+          "max": -0.01
+        }
+      },
+      {
+        "period": "heldout",
+        "firstSide": "NO",
+        "firstLegLatencyMs": 3000,
+        "secondLegLatencyMs": 1000,
+        "completedPairs": 4559,
+        "pairNetPnlPerShare": {
+          "count": 4559,
+          "mean": -0.006176793156393563,
+          "median": -0.005,
+          "p10": -0.01,
+          "p90": -0.005,
+          "min": -0.02,
+          "max": 0
+        },
+        "twoLegAdverseStressPnlPerShare": {
+          "count": 4559,
+          "mean": -0.016176793156393563,
+          "median": -0.015,
+          "p10": -0.02,
+          "p90": -0.015,
+          "min": -0.03,
+          "max": -0.01
+        }
+      },
+      {
+        "period": "heldout",
+        "firstSide": "NO",
+        "firstLegLatencyMs": 3000,
+        "secondLegLatencyMs": 3000,
+        "completedPairs": 4437,
+        "pairNetPnlPerShare": {
+          "count": 4437,
+          "mean": -0.006192247013747669,
+          "median": -0.005,
+          "p10": -0.01,
+          "p90": -0.005,
+          "min": -0.02,
+          "max": 0
+        },
+        "twoLegAdverseStressPnlPerShare": {
+          "count": 4437,
+          "mean": -0.01619224701374767,
+          "median": -0.015,
+          "p10": -0.02,
+          "p90": -0.015,
+          "min": -0.03,
+          "max": -0.01
+        }
+      },
+      {
+        "period": "heldout",
+        "firstSide": "YES",
+        "firstLegLatencyMs": 0,
+        "secondLegLatencyMs": 0,
+        "completedPairs": 4642,
+        "pairNetPnlPerShare": {
+          "count": 4642,
+          "mean": -0.006195605342524358,
+          "median": -0.005,
+          "p10": -0.01,
+          "p90": -0.005,
+          "min": -0.02,
+          "max": 0
+        },
+        "twoLegAdverseStressPnlPerShare": {
+          "count": 4642,
+          "mean": -0.016195605342524358,
+          "median": -0.015,
+          "p10": -0.02,
+          "p90": -0.015,
+          "min": -0.03,
+          "max": -0.01
+        }
+      },
+      {
+        "period": "heldout",
+        "firstSide": "YES",
+        "firstLegLatencyMs": 0,
+        "secondLegLatencyMs": 250,
+        "completedPairs": 4659,
+        "pairNetPnlPerShare": {
+          "count": 4659,
+          "mean": -0.006196608714315956,
+          "median": -0.005,
+          "p10": -0.01,
+          "p90": -0.005,
+          "min": -0.02,
+          "max": 0
+        },
+        "twoLegAdverseStressPnlPerShare": {
+          "count": 4659,
+          "mean": -0.016196608714315955,
+          "median": -0.015,
+          "p10": -0.02,
+          "p90": -0.015,
+          "min": -0.03,
+          "max": -0.01
+        }
+      },
+      {
+        "period": "heldout",
+        "firstSide": "YES",
+        "firstLegLatencyMs": 0,
+        "secondLegLatencyMs": 1000,
+        "completedPairs": 4668,
+        "pairNetPnlPerShare": {
+          "count": 4668,
+          "mean": -0.006194301628105833,
+          "median": -0.005,
+          "p10": -0.01,
+          "p90": -0.005,
+          "min": -0.02,
+          "max": 0
+        },
+        "twoLegAdverseStressPnlPerShare": {
+          "count": 4668,
+          "mean": -0.016194301628105832,
+          "median": -0.015,
+          "p10": -0.02,
+          "p90": -0.015,
+          "min": -0.03,
+          "max": -0.01
+        }
+      },
+      {
+        "period": "heldout",
+        "firstSide": "YES",
+        "firstLegLatencyMs": 0,
+        "secondLegLatencyMs": 3000,
+        "completedPairs": 4557,
+        "pairNetPnlPerShare": {
+          "count": 4557,
+          "mean": -0.006192670616633358,
+          "median": -0.005,
+          "p10": -0.01,
+          "p90": -0.005,
+          "min": -0.025,
+          "max": 0
+        },
+        "twoLegAdverseStressPnlPerShare": {
+          "count": 4557,
+          "mean": -0.016192670616633358,
+          "median": -0.015,
+          "p10": -0.02,
+          "p90": -0.015,
+          "min": -0.035,
+          "max": -0.01
+        }
+      },
+      {
+        "period": "heldout",
+        "firstSide": "YES",
+        "firstLegLatencyMs": 250,
+        "secondLegLatencyMs": 0,
+        "completedPairs": 4685,
+        "pairNetPnlPerShare": {
+          "count": 4685,
+          "mean": -0.0061995731056559205,
+          "median": -0.005,
+          "p10": -0.01,
+          "p90": -0.005,
+          "min": -0.02,
+          "max": 0
+        },
+        "twoLegAdverseStressPnlPerShare": {
+          "count": 4685,
+          "mean": -0.01619957310565592,
+          "median": -0.015,
+          "p10": -0.02,
+          "p90": -0.015,
+          "min": -0.03,
+          "max": -0.01
+        }
+      },
+      {
+        "period": "heldout",
+        "firstSide": "YES",
+        "firstLegLatencyMs": 250,
+        "secondLegLatencyMs": 250,
+        "completedPairs": 4703,
+        "pairNetPnlPerShare": {
+          "count": 4703,
+          "mean": -0.00620136083351009,
+          "median": -0.005,
+          "p10": -0.01,
+          "p90": -0.005,
+          "min": -0.02,
+          "max": 0
+        },
+        "twoLegAdverseStressPnlPerShare": {
+          "count": 4703,
+          "mean": -0.016201360833510092,
+          "median": -0.015,
+          "p10": -0.02,
+          "p90": -0.015,
+          "min": -0.03,
+          "max": -0.01
+        }
+      },
+      {
+        "period": "heldout",
+        "firstSide": "YES",
+        "firstLegLatencyMs": 250,
+        "secondLegLatencyMs": 1000,
+        "completedPairs": 4712,
+        "pairNetPnlPerShare": {
+          "count": 4712,
+          "mean": -0.0062001273344647586,
+          "median": -0.005,
+          "p10": -0.01,
+          "p90": -0.005,
+          "min": -0.02,
+          "max": 0
+        },
+        "twoLegAdverseStressPnlPerShare": {
+          "count": 4712,
+          "mean": -0.01620012733446476,
+          "median": -0.015,
+          "p10": -0.02,
+          "p90": -0.015,
+          "min": -0.03,
+          "max": -0.01
+        }
+      },
+      {
+        "period": "heldout",
+        "firstSide": "YES",
+        "firstLegLatencyMs": 250,
+        "secondLegLatencyMs": 3000,
+        "completedPairs": 4598,
+        "pairNetPnlPerShare": {
+          "count": 4598,
+          "mean": -0.006193997390169235,
+          "median": -0.005,
+          "p10": -0.01,
+          "p90": -0.005,
+          "min": -0.025,
+          "max": 0
+        },
+        "twoLegAdverseStressPnlPerShare": {
+          "count": 4598,
+          "mean": -0.016193997390169235,
+          "median": -0.015,
+          "p10": -0.02,
+          "p90": -0.015,
+          "min": -0.035,
+          "max": -0.01
+        }
+      },
+      {
+        "period": "heldout",
+        "firstSide": "YES",
+        "firstLegLatencyMs": 1000,
+        "secondLegLatencyMs": 0,
+        "completedPairs": 4686,
+        "pairNetPnlPerShare": {
+          "count": 4686,
+          "mean": -0.0061961160904818605,
+          "median": -0.005,
+          "p10": -0.01,
+          "p90": -0.005,
+          "min": -0.02,
+          "max": 0
+        },
+        "twoLegAdverseStressPnlPerShare": {
+          "count": 4686,
+          "mean": -0.01619611609048186,
+          "median": -0.015,
+          "p10": -0.02,
+          "p90": -0.015,
+          "min": -0.03,
+          "max": -0.01
+        }
+      },
+      {
+        "period": "heldout",
+        "firstSide": "YES",
+        "firstLegLatencyMs": 1000,
+        "secondLegLatencyMs": 250,
+        "completedPairs": 4708,
+        "pairNetPnlPerShare": {
+          "count": 4708,
+          "mean": -0.006196898895496593,
+          "median": -0.005,
+          "p10": -0.01,
+          "p90": -0.005,
+          "min": -0.02,
+          "max": 0
+        },
+        "twoLegAdverseStressPnlPerShare": {
+          "count": 4708,
+          "mean": -0.016196898895496595,
+          "median": -0.015,
+          "p10": -0.02,
+          "p90": -0.015,
+          "min": -0.03,
+          "max": -0.01
+        }
+      },
+      {
+        "period": "heldout",
+        "firstSide": "YES",
+        "firstLegLatencyMs": 1000,
+        "secondLegLatencyMs": 1000,
+        "completedPairs": 4722,
+        "pairNetPnlPerShare": {
+          "count": 4722,
+          "mean": -0.006194409148665384,
+          "median": -0.005,
+          "p10": -0.01,
+          "p90": -0.005,
+          "min": -0.02,
+          "max": 0
+        },
+        "twoLegAdverseStressPnlPerShare": {
+          "count": 4722,
+          "mean": -0.016194409148665385,
+          "median": -0.015,
+          "p10": -0.02,
+          "p90": -0.015,
+          "min": -0.03,
+          "max": -0.01
+        }
+      },
+      {
+        "period": "heldout",
+        "firstSide": "YES",
+        "firstLegLatencyMs": 1000,
+        "secondLegLatencyMs": 3000,
+        "completedPairs": 4610,
+        "pairNetPnlPerShare": {
+          "count": 4610,
+          "mean": -0.006189804772233869,
+          "median": -0.005,
+          "p10": -0.01,
+          "p90": -0.005,
+          "min": -0.025,
+          "max": 0
+        },
+        "twoLegAdverseStressPnlPerShare": {
+          "count": 4610,
+          "mean": -0.01618980477223387,
+          "median": -0.015,
+          "p10": -0.02,
+          "p90": -0.015,
+          "min": -0.035,
+          "max": -0.01
+        }
+      },
+      {
+        "period": "heldout",
+        "firstSide": "YES",
+        "firstLegLatencyMs": 3000,
+        "secondLegLatencyMs": 0,
+        "completedPairs": 4533,
+        "pairNetPnlPerShare": {
+          "count": 4533,
+          "mean": -0.006175821751599008,
+          "median": -0.005,
+          "p10": -0.01,
+          "p90": -0.005,
+          "min": -0.025,
+          "max": 0
+        },
+        "twoLegAdverseStressPnlPerShare": {
+          "count": 4533,
+          "mean": -0.01617582175159901,
+          "median": -0.015,
+          "p10": -0.02,
+          "p90": -0.015,
+          "min": -0.035,
+          "max": -0.01
+        }
+      },
+      {
+        "period": "heldout",
+        "firstSide": "YES",
+        "firstLegLatencyMs": 3000,
+        "secondLegLatencyMs": 250,
+        "completedPairs": 4548,
+        "pairNetPnlPerShare": {
+          "count": 4548,
+          "mean": -0.006174142480210704,
+          "median": -0.005,
+          "p10": -0.01,
+          "p90": -0.005,
+          "min": -0.025,
+          "max": 0
+        },
+        "twoLegAdverseStressPnlPerShare": {
+          "count": 4548,
+          "mean": -0.016174142480210704,
+          "median": -0.015,
+          "p10": -0.02,
+          "p90": -0.015,
+          "min": -0.035,
+          "max": -0.01
+        }
+      },
+      {
+        "period": "heldout",
+        "firstSide": "YES",
+        "firstLegLatencyMs": 3000,
+        "secondLegLatencyMs": 1000,
+        "completedPairs": 4559,
+        "pairNetPnlPerShare": {
+          "count": 4559,
+          "mean": -0.0061724062294359,
+          "median": -0.005,
+          "p10": -0.01,
+          "p90": -0.005,
+          "min": -0.025,
+          "max": 0
+        },
+        "twoLegAdverseStressPnlPerShare": {
+          "count": 4559,
+          "mean": -0.0161724062294359,
+          "median": -0.015,
+          "p10": -0.02,
+          "p90": -0.015,
+          "min": -0.035,
+          "max": -0.01
+        }
+      },
+      {
+        "period": "heldout",
+        "firstSide": "YES",
+        "firstLegLatencyMs": 3000,
+        "secondLegLatencyMs": 3000,
+        "completedPairs": 4437,
+        "pairNetPnlPerShare": {
+          "count": 4437,
+          "mean": -0.006179851250844815,
+          "median": -0.005,
+          "p10": -0.01,
+          "p90": -0.005,
+          "min": -0.025,
+          "max": 0
+        },
+        "twoLegAdverseStressPnlPerShare": {
+          "count": 4437,
+          "mean": -0.016179851250844816,
+          "median": -0.015,
+          "p10": -0.02,
+          "p90": -0.015,
+          "min": -0.035,
+          "max": -0.01
+        }
+      }
+    ]
+  },
+  "limitations": [
+    "Displayed depth and sequential pairing are counterfactual; no contest orders, accepted orders, actual fills, or account data are included.",
+    "The capture is one later 48-minute window with 237 related election markets; rows and contracts are not independent samples.",
+    "A positive sequential pair reflects directional movement during the unhedged interval, not risk-free arbitrage.",
+    "One-tick adverse stress subtracts one official 0.005 tick on each leg; it is a sensitivity, not an observed execution cost."
+  ],
+  "networkRequests": 0,
+  "accountStateRead": false,
+  "runtimeChanges": 0,
+  "contestOrders": 0,
+  "profitabilityEstablished": false
+}
