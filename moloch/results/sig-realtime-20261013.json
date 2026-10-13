@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "bot": "Moloch",
+  "observedThrough": "2026-10-13T22:24:17.296Z",
+  "probeStatus": "completed",
+  "subscriptionsObserved": {
+    "320": "SUBSCRIBED",
+    "322": "SUBSCRIBED"
+  },
+  "metrics": {
+    "batches": 72,
+    "trades": 0,
+    "duplicateTrades": 0,
+    "duplicateBatches": 0,
+    "gaps": 0,
+    "truncated": 0,
+    "schemaErrors": 0,
+    "restBooks": 12,
+    "restTapes": 12,
+    "pushedBooks": 72,
+    "olderBooks": 0,
+    "latencySamples": 0,
+    "latencySumMs": 0,
+    "latencyMaxMs": 0,
+    "meanTradeLatencyMs": null
+  },
+  "streamEventChainVerified": true,
+  "streamEventCount": 98,
+  "streamFinalHash": "ef2828002d7f34ca92c6d8985a33d1b3d7961db4611c2f16a683d0cc6e6ad59a",
+  "sourceIdentity": {
+    "execution/atomic-rename.mjs": "686aaf75a0da32bd1cc5b17e5ac6b4d00094cae50cefaff69534b3eed817fda7",
+    "execution/ledger.mjs": "b812d54a35e8f30bdab446d9f601c14181b763400d515369ce8e2b86faa1ef58",
+    "feed/contract.mjs": "c695e7dfd6aba3c988a8ac9cdaf29c206fec9890a39533935a7075699df26dc5",
+    "moloch/realtime/capture.mjs": "e10b69a95748ec35aa14f1ea3046f1d125a2482ebd8ac76451118da1de0aef7a",
+    "moloch/sig-source.mjs": "32b5de7ad293c8107404abd5d7ec91a9eede860a91e20a826a92e92ad295d0c1",
+    "moloch/capture-sig.ps1": "a6ef44e305dd8ecfb65a8deaa9591bb0f844e96c544669fb3aba1ccbd0e82164",
+    "moloch/realtime/package.json": "8c836a7565c9aded8843ad68f99e4430a5fe50fc108fcb9a73b379a01fcad8af",
+    "moloch/realtime/pnpm-lock.yaml": "65f2e5c798229c5ac62806c160ec7f620ff6fa3445da67f43733bded49b1f0d9"
+  },
+  "identityRecordedAfterStartup": true,
+  "sourceBytesArchivedAndVerified": true,
+  "firstBroadcast": "2026-10-13T22:19:08.970Z",
+  "lastBroadcast": "2026-10-13T22:24:14.971Z",
+  "bookReceiptLag": {
+    "samples": 72,
+    "medianMs": 161,
+    "p95Ms": 366,
+    "meaning": "Receipt minus pushed book asOf clock; this is not change/trade execution latency."
+  },
+  "tokenWrites": 1,
+  "contestOrders": 0,
+  "paperOrders": 0,
+  "financialIntegration": false,
+  "profitabilityEstablished": false,
+  "tests": {
+    "nodePassed": 34
+  },
+  "limitations": [
+    "No trades occurred in this bounded probe; live trade latency is unmeasured.",
+    "No observed gap in this probe does not prove lossless delivery.",
+    "The probe used the archived source; later startup-manifest and final-drain instrumentation are separately covered by tests."
+  ]
+}

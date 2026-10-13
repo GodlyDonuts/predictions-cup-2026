@@ -9,12 +9,14 @@ param(
   [switch]$HistoryOnly,
   [switch]$DiagnosticBookProbe,
   [switch]$CatalogOnly,
-  [string]$ScreenPairsFile
+  [string]$ScreenPairsFile,
+  [switch]$RealtimeCapture
 )
 $ErrorActionPreference='Stop'
 if(-not $HumanAuthorizedSharedReadCapture){throw 'EXPLICIT_SHARED_READ_AUTHORIZATION_REQUIRED: preserve the prior one-collector policy unless human explicitly authorizes recreating read-only capture.'}
 if($CatalogOnly -and $ScreenPairsFile){throw 'ONE_DISCOVERY_MODE_REQUIRED'}
 if(-not $CatalogOnly -and -not $ScreenPairsFile -and (-not $MarketId -or -not $ExchangeId)){throw 'MARKET_AND_EXCHANGE_REQUIRED'}
+if($RealtimeCapture -and (-not $ScreenPairsFile -or $Cycles -gt 30)){throw 'STREAM_REQUIRES_SCOPED_PAIRS_AND_BOUNDED_CYCLES'}
 $taskOutput=[IO.Path]::GetFullPath($OutputDirectory)
 if(Test-Path -LiteralPath $taskOutput){throw 'OUTPUT_EXISTS: preserve previous capture; choose a new directory.'}
 New-Item -ItemType Directory -Path $taskOutput | Out-Null
@@ -30,6 +32,8 @@ $taskCredential=Join-Path $env:LOCALAPPDATA 'Codex\secrets\sig-predictions-cup-2
 $taskSecure=Get-Content -LiteralPath $taskCredential -Raw | ConvertTo-SecureString
 $taskPointer=[Runtime.InteropServices.Marshal]::SecureStringToBSTR($taskSecure)
 $taskKey=$null
+$taskStream=$null
+$taskTokenWrites=0
 try {
   $taskKey=[Runtime.InteropServices.Marshal]::PtrToStringBSTR($taskPointer)
   if($taskKey -notmatch '^ace_[a-zA-Z0-9]+$'){throw 'APPROVED_CREDENTIAL_FORMAT'}
@@ -67,9 +71,14 @@ try {
     })
     $taskRequests=$taskRecovery+@($taskRequests)
   }
+  if($RealtimeCapture){
+    if($taskPairs.Count -gt 2){throw 'STREAM_MAXIMUM_TWO_MARKETS'}
+    $taskRequests=@(@{kind='realtime';endpoint='/realtime/token';method='Post'})+@($taskRequests)
+  }
   $taskReceipts=0
   for($taskIndex=0;$taskIndex -lt $taskRequests.Count;$taskIndex++){
     $taskRequest=$taskRequests[$taskIndex]
+    if($taskStream -and $taskStream.HasExited){throw 'STREAM_PROCESS_EXITED: stop rather than silently downgrade or refresh credentials.'}
     $taskMarket=if($taskRequest.marketId){$taskRequest.marketId}else{$MarketId}
     $taskExchange=if($taskRequest.exchangeId){$taskRequest.exchangeId}else{$ExchangeId}
     if(Test-Path -LiteralPath (Join-Path $taskOutput 'STOP')){break}
@@ -83,14 +92,17 @@ try {
       $taskNow=[DateTimeOffset]::UtcNow.ToUnixTimeMilliseconds()
       $taskBudget.times=@($taskBudget.times | Where-Object {$_ -gt ($taskNow-60000)})
       $taskWaitUntil=[long]$taskBudget.nextAt
+      if($taskRequest.kind -eq 'realtime' -and $taskBudget.PSObject.Properties.Name -contains 'nextAuthAt'){$taskWaitUntil=[Math]::Max($taskWaitUntil,[long]$taskBudget.nextAuthAt)}
       if($taskBudget.times.Count -ge 5){$taskWaitUntil=[Math]::Max($taskWaitUntil,[long]$taskBudget.times[0]+60001)}
       if($taskNow -ge $taskWaitUntil){break};Start-Sleep -Milliseconds ([int][Math]::Min(250,$taskWaitUntil-$taskNow))
     }
     if(Test-Path -LiteralPath (Join-Path $taskOutput 'STOP')){break}
     $taskBudget.times=@($taskBudget.times)+@([DateTimeOffset]::UtcNow.ToUnixTimeMilliseconds())
+    if($taskRequest.kind -eq 'realtime'){$taskBudget | Add-Member -NotePropertyName nextAuthAt -NotePropertyValue ([DateTimeOffset]::UtcNow.ToUnixTimeMilliseconds()+60000) -Force}
     $taskBudget | ConvertTo-Json -Depth 5 | Set-Content -LiteralPath $taskBudgetFile -Encoding utf8
     $taskStarted=[DateTime]::UtcNow.ToString('yyyy-MM-ddTHH:mm:ss.fffZ')
-    try {$taskResponse=Invoke-WebRequest -Uri ('https://sig.thesuper.market/api/v1'+$taskRequest.endpoint) -Headers $taskHeaders -Method Get -TimeoutSec 30 -UseBasicParsing}
+    $taskMethod=if($taskRequest.method){$taskRequest.method}else{'Get'}
+    try {$taskResponse=Invoke-WebRequest -Uri ('https://sig.thesuper.market/api/v1'+$taskRequest.endpoint) -Headers $taskHeaders -Method $taskMethod -TimeoutSec 30 -UseBasicParsing}
     catch {
       $taskStatus=if($_.Exception.Response){[int]$_.Exception.Response.StatusCode}else{0}
       $taskDelay=60
@@ -104,7 +116,24 @@ try {
     $taskReceived=[DateTime]::UtcNow.ToString('yyyy-MM-ddTHH:mm:ss.fffZ')
     $taskBudget.nextAt=[DateTimeOffset]::UtcNow.ToUnixTimeMilliseconds()+12000
     $taskBudget | ConvertTo-Json -Depth 5 | Set-Content -LiteralPath $taskBudgetFile -Encoding utf8
-    $taskData=$taskResponse.Content | ConvertFrom-Json -DateKind String
+    try{$taskData=$taskResponse.Content | ConvertFrom-Json -DateKind String}catch{throw 'SIG_RESPONSE_JSON_INVALID: raw response omitted from diagnostic output.'}
+    if($taskRequest.kind -eq 'realtime'){
+      $taskTokenWrites++
+      $taskStartInfo=[Diagnostics.ProcessStartInfo]::new()
+      $taskStartInfo.FileName=(Get-Command node).Source
+      $taskStartInfo.ArgumentList.Add((Join-Path $PSScriptRoot 'realtime/capture.mjs'))
+      $taskStartInfo.UseShellExecute=$false;$taskStartInfo.CreateNoWindow=$true
+      $taskStartInfo.RedirectStandardInput=$true;$taskStartInfo.RedirectStandardOutput=$true;$taskStartInfo.RedirectStandardError=$true
+      $taskStream=[Diagnostics.Process]::new();$taskStream.StartInfo=$taskStartInfo
+      if(-not $taskStream.Start()){throw 'STREAM_START_FAILED'}
+      $taskStreamOutput=$taskStream.StandardOutput.ReadToEndAsync();$taskStreamErrors=$taskStream.StandardError.ReadToEndAsync()
+      $taskInit=@{auth=$taskData;outputDirectory=(Join-Path $taskOutput 'stream');tournamentId=$taskTournament;pairs=@($taskPairs | Select-Object marketId,exchangeId)}
+      $taskStream.StandardInput.WriteLine(($taskInit | ConvertTo-Json -Depth 20 -Compress));$taskStream.StandardInput.Flush()
+      # This authentication response is never added to receipts, stdout, files or environment variables.
+      $taskInit=$null;$taskData=$null;$taskResponse=$null
+      Start-Sleep -Seconds 12
+      continue
+    }
     $taskReceipt=[ordered]@{schemaVersion=1;source='official_sig_api_v1';kind=$taskRequest.kind;endpoint=$taskRequest.endpoint;tournamentId=$taskTournament;marketId=$taskMarket;exchangeId=$taskExchange;requestStartedAt=$taskStarted;receivedAt=$taskReceived;status=[int]$taskResponse.StatusCode;data=$taskData}
     $taskReceipt | ConvertTo-Json -Depth 60 -Compress | Add-Content -LiteralPath (Join-Path $taskOutput 'receipts.jsonl') -Encoding utf8
     if($taskRequest.kind -eq 'history'){$taskReceipt | ConvertTo-Json -Depth 60 | Set-Content -LiteralPath (Join-Path $taskOutput 'history.json') -Encoding utf8}
@@ -115,11 +144,19 @@ try {
       if($taskRequests.endpoint -contains $taskNext){throw 'CATALOG_CURSOR_LOOP'}
       $taskRequests+=@{kind='catalog';endpoint=$taskNext}
     }
-    # At most five sequential requests/minute, with completion pacing. No order or token writes.
+    # At most five sequential reads/minute; optional one-shot auth is separately recorded. No orders.
     if($taskReceipts -lt $taskRequests.Count){Start-Sleep -Seconds 12}
   }
-  [pscustomobject]@{Source='official_sig_api_v1';Receipts=$taskReceipts;AccountSharedWithBaal=$true;MaximumLocalReadsPerMinute=5;HumanAuthorizedRecreatedReadCapture=$true;ContestOrders=0;TokenWrites=0;Output=$taskOutput} | ConvertTo-Json
+  if($taskStream){
+    if(-not $taskStream.HasExited){$taskStream.StandardInput.WriteLine('{"stop":true}');$taskStream.StandardInput.Flush();if(-not $taskStream.WaitForExit(5000)){throw 'STREAM_STOP_TIMEOUT'}}
+    if($taskStream.ExitCode -ne 0){throw 'STREAM_CAPTURE_FAILED: inspect sanitized stream status; no automatic token refresh.'}
+  }
+  [pscustomobject]@{Source='official_sig_api_v1';Receipts=$taskReceipts;AccountSharedWithBaal=$true;MaximumLocalReadsPerMinute=5;MaximumLocalAuthWritesPerMinute=1;HumanAuthorizedRecreatedReadCapture=$true;ContestOrders=0;TokenWrites=$taskTokenWrites;RealtimeCapture=[bool]$RealtimeCapture;Output=$taskOutput} | ConvertTo-Json
 } finally {
+  if($taskStream){
+    if(-not $taskStream.HasExited){try{$taskStream.StandardInput.WriteLine('{"stop":true}');$taskStream.StandardInput.Flush()}catch{};if(-not $taskStream.WaitForExit(5000)){$taskStream.Kill();$taskStream.WaitForExit(5000)|Out-Null}}
+    $taskStream.Dispose()
+  }
   if($taskHeaders){$taskHeaders.Clear()};$taskKey=$null
   [Runtime.InteropServices.Marshal]::ZeroFreeBSTR($taskPointer)
   $taskSecure.Dispose()

@@ -213,5 +213,40 @@ The current official realtime documentation supports private tournament market
 topics carrying versioned books and trades in one-second batches. It requires an
 ephemeral three-hour token from `POST /realtime/token` (one account-budget write),
 initial/periodic REST synchronization, and resynchronization on gaps or truncated
-batches. This is the next data-cadence integration target, not a deployed stream
-or a claim of gap-free HFT data. Moloch still uses REST polling at this commit.
+batches. The capture integration below obtains these observations; the financial
+paper runner still uses REST polling. Neither establishes gap-free HFT data.
+
+## Realtime capture
+
+```powershell
+# Install only the pinned isolated realtime client; install scripts are disabled.
+pnpm --dir moloch/realtime install --frozen-lockfile --ignore-scripts
+./moloch/capture-sig.ps1 -ScreenPairsFile runtime/moloch/screen-new/live-pairs.json -OutputDirectory runtime/moloch/stream-new -Cycles 6 -HumanAuthorizedSharedReadCapture -RealtimeCapture
+```
+
+This mode adds a private tournament market subscription for each of at most two
+configured markets, using the documented Supabase client. The existing capture
+process retains its mutex and owns all REST and authentication calls. It admits
+at most five local reads and one authentication write per minute, mints one
+three-hour token for the bounded episode, and never refreshes it automatically.
+The human's real-SIG-feed/recreate instruction supplies authorization for this
+feed authentication; it grants no contest order authority.
+
+The token and server connection keys pass directly to the helper's standard input
+and remain in memory. Authentication responses are omitted from all journals,
+arguments, environment variables and logs. The helper captures only validated
+public book/trade fields, records revisions/gaps/truncations, and cross-checks
+periodic authoritative REST snapshots. Socket/channel failures end the capture;
+they do not trigger credential renewal or a silent fallback. `STOP` in the capture
+directory gracefully ends the bounded parent and its stream helper.
+
+`stream/events.jsonl` is hash chained. `stream/stats.json` reports subscriptions,
+source observations and trade latency when trades actually occur; book arrival
+alone cannot establish execution latency. A startup manifest pins local code and
+the dependency lock. The first live probe recorded its identity after startup,
+before subsequent edits, and archived those exact source bytes separately.
+
+Realtime capture currently places **zero paper or contest orders**. Its financial
+integration is deliberately explicit: deduplication, gap recovery and merged
+REST/push book versions must be proven before feeding it into the carried wallet.
+The REST paper ledger and all previous observations remain preserved.
