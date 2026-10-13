@@ -15,7 +15,51 @@ const plain = value => value !== null && typeof value === 'object' && !Array.isA
 const exact = (value, keys) => plain(value) && Object.keys(value).length === keys.length && keys.every(key => Object.hasOwn(value, key));
 const canonical = value => JSON.stringify(value && typeof value === 'object' ? Array.isArray(value)
   ? value.map(item => JSON.parse(canonical(item))) : Object.fromEntries(Object.keys(value).sort().map(key => [key, JSON.parse(canonical(value[key]))])) : value);
-const hash = value => createHash('sha256').update(canonical(value)).digest('hex');
+function hash(value) {
+  const digest = createHash('sha256');
+  let chunks = [], characters = 0;
+  const flush = () => {
+    if (!characters) return;
+    const text = chunks.join(''), finalCode = text.charCodeAt(text.length - 1);
+    const splitSurrogate = finalCode >= 0xD800 && finalCode <= 0xDBFF;
+    const complete = splitSurrogate ? text.slice(0, -1) : text;
+    if (complete) digest.update(complete);
+    chunks = splitSurrogate ? [text.slice(-1)] : [];
+    characters = splitSurrogate ? 1 : 0;
+  };
+  const write = text => {
+    if (typeof text !== 'string') { digest.update(text); return; }
+    chunks.push(text); characters += text.length;
+    if (characters >= 8192) flush();
+  };
+  const encode = item => {
+    if (item === null || typeof item !== 'object') { write(JSON.stringify(item)); return; }
+    if (Array.isArray(item)) {
+      write('[');
+      for (let index = 0; index < item.length; index++) {
+        if (index) write(',');
+        if (index in item) encode(item[index]); else write('null');
+      }
+      write(']'); return;
+    }
+    write('{');
+    const indexes = [], keys = [];
+    for (const key of Object.keys(item)) {
+      const numeric = Number(key);
+      if (Number.isInteger(numeric) && numeric >= 0 && numeric < 0xFFFFFFFF && String(numeric) === key) indexes.push(key);
+      else keys.push(key);
+    }
+    indexes.sort((a, b) => Number(a) - Number(b)); keys.sort();
+    const orderedKeys = indexes.concat(keys);
+    for (let index = 0; index < orderedKeys.length; index++) {
+      if (index) write(',');
+      write(JSON.stringify(orderedKeys[index])); write(':'); encode(item[orderedKeys[index]]);
+    }
+    write('}');
+  };
+  encode(value); flush();
+  return digest.digest('hex');
+}
 const frozen = new WeakSet(), trustedScopes = new WeakMap();
 const freeze = value => { if (value && typeof value === 'object' && !frozen.has(value)) { Object.values(value).forEach(freeze); Object.freeze(value); frozen.add(value); } return value; };
 const session = value => typeof value === 'string' && /^[A-Za-z0-9][A-Za-z0-9:_.-]{0,127}$/.test(value);
