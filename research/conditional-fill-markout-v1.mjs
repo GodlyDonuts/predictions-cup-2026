@@ -8,11 +8,15 @@ const DEFAULTS = Object.freeze({
   sampleEveryMs: 30000,
   markoutHorizonsMs: [1000, 5000, 30000],
   maximumMarkoutDelayMs: 10000,
+  exitResponseLatencyMs: 3000,
+  maximumExecutableBookAgeMs: 3000,
   purgeMs: 60000,
 });
 
 const ms = value => Number(instantNs(value) / 1000000n);
+const NS_PER_MS = 1000000n;
 const compareNs = (a, b) => a < b ? -1 : a > b ? 1 : 0;
+const elapsedMs = (startNs, endNs) => endNs > startNs ? Number(endNs - startNs) / Number(NS_PER_MS) : 0;
 const quantile = (values, p) => values.length ? values[Math.max(0, Math.ceil(values.length * p) - 1)] : null;
 
 function summarize(rows) {
@@ -24,7 +28,7 @@ function summarize(rows) {
   const median = nets.length % 2 ? nets[(nets.length - 1) / 2] : (nets[nets.length / 2 - 1] + nets[nets.length / 2]) / 2n;
   return {
     samples: rows.length,
-    markets: new Set(rows.map(x => x.marketId)).size,
+    markets: new Set(rows.map(x => x.marketId ?? x.candidate?.marketId).filter(x => typeof x === 'string')).size,
     meanExecutableNet: money(net),
     medianExecutableNet: money(median),
     meanMidMarkout: money(mid),
@@ -43,39 +47,45 @@ function flowBin(value, thresholds) {
   return value <= thresholds[0] ? 'lower tercile' : value <= thresholds[1] ? 'middle tercile' : 'upper tercile';
 }
 
-function grouped({ candidates, fills, horizonMs, feature, bins, thresholds }) {
+function grouped({ candidates, fills, diagnosticFills = fills, horizonMs, feature, bins, thresholds }) {
   return bins.map(bin => {
     const inBin = row => feature === 'flow' ? flowBin(row.alignedFlow, thresholds) === bin : row[feature] === bin;
     const opportunities = candidates.filter(inBin);
     const proxyFills = opportunities.filter(x => x.proxyFilled).length;
-    const marks = fills.filter(x => inBin(x.candidate) && x.marks[horizonMs] !== null).map(x => x.marks[horizonMs]);
+    const markRows = rows => rows.filter(x => inBin(x.candidate))
+      .map(x => ({ ...x, marketId: x.candidate.marketId }));
+    const eventTimeDiagnostic = summarize(markRows(diagnosticFills));
+    const executable = summarize(markRows(fills));
     return {
       bin,
       candidateQuotes: opportunities.length,
       strictThroughProxies: proxyFills,
       proxyFillRate: opportunities.length ? proxyFills / opportunities.length : null,
-      markout: summarize(marks),
+      eventTimeDiagnostic,
+      executable,
+      markout: executable,
     };
   });
 }
 
 export function createConditionalFillMarkoutV1(options = {}) {
   const config = { ...DEFAULTS, ...options };
-  const { latencyMs, quoteTtlMs, sampleEveryMs, maximumMarkoutDelayMs, purgeMs, markoutHorizonsMs } = config;
+  const { latencyMs, quoteTtlMs, sampleEveryMs, maximumMarkoutDelayMs, exitResponseLatencyMs, maximumExecutableBookAgeMs, purgeMs, markoutHorizonsMs } = config;
   if (!Array.isArray(markoutHorizonsMs) || !markoutHorizonsMs.length || !markoutHorizonsMs.every(n => Number.isSafeInteger(n) && n > 0) || new Set(markoutHorizonsMs).size !== markoutHorizonsMs.length || markoutHorizonsMs.some((n, i) => i > 0 && n <= markoutHorizonsMs[i - 1])) throw Error('MARKOUT_HORIZONS');
-  if (![latencyMs, quoteTtlMs, sampleEveryMs, maximumMarkoutDelayMs, purgeMs].every(Number.isSafeInteger) || latencyMs < 0 || quoteTtlMs < 1 || sampleEveryMs < quoteTtlMs + latencyMs || maximumMarkoutDelayMs < 0 || purgeMs < Math.max(...markoutHorizonsMs) + quoteTtlMs + latencyMs) throw Error('MARKOUT_POLICY');
+  const minimumPurgeMs = Math.max(...markoutHorizonsMs) + quoteTtlMs + latencyMs + exitResponseLatencyMs + maximumMarkoutDelayMs;
+  if (![latencyMs, quoteTtlMs, sampleEveryMs, maximumMarkoutDelayMs, exitResponseLatencyMs, maximumExecutableBookAgeMs, purgeMs].every(Number.isSafeInteger) || latencyMs < 0 || quoteTtlMs < 1 || sampleEveryMs < quoteTtlMs + latencyMs || maximumMarkoutDelayMs < 0 || exitResponseLatencyMs < 0 || maximumExecutableBookAgeMs < 0 || purgeMs < minimumPurgeMs) throw Error('MARKOUT_POLICY');
 
   const candidates = [], fills = [], previous = new Map(), lastSlot = new Map(), pending = new Map(), versions = new Map(), tradeSeen = new Map();
   let lastObservedNs = -1n;
   const counts = { records: 0, books: 0, acceptedBookPoints: 0, staleBookPoints: 0, tradesSeen: 0, duplicateTrades: 0, invalidTrades: 0, candidateQuotes: 0, expiredUnfilledQuotes: 0, boundaryCancelledQuotes: 0, strictThroughProxies: 0 };
 
-  function expire(exchangeId, atMs) {
+  function expire(exchangeId, atNs) {
     const orders = pending.get(exchangeId) ?? [];
     const keep = [];
     for (const order of orders) {
-      if (atMs >= order.expiresAt) {
+      if (atNs >= order.expiresAtNs) {
         order.candidate.status = 'expired_unfilled';
-        order.candidate.activeDurationMs = quoteTtlMs;
+        order.candidate.activeDurationMs = elapsedMs(order.activationAtNs, order.expiresAtNs);
         counts.expiredUnfilledQuotes++;
       } else keep.push(order);
     }
@@ -85,11 +95,12 @@ export function createConditionalFillMarkoutV1(options = {}) {
   function boundary(exchangeId, at = null) {
     previous.delete(exchangeId);
     versions.delete(exchangeId);
-    const atMs = at === null ? Number(lastObservedNs / 1000000n) : ms(at);
+    const atNs = at === null ? lastObservedNs : instantNs(at);
     for (const order of pending.get(exchangeId) ?? []) {
-      const activated = atMs >= order.activationAt;
+      const activated = atNs >= order.activationAtNs;
       order.candidate.status = activated ? 'boundary_cancelled_after_activation' : 'boundary_cancelled_before_activation';
-      order.candidate.activeDurationMs = Math.max(0, Math.min(atMs, order.expiresAt) - order.activationAt);
+      const endNs = atNs < order.expiresAtNs ? atNs : order.expiresAtNs;
+      order.candidate.activeDurationMs = elapsedMs(order.activationAtNs, endNs);
       counts.boundaryCancelledQuotes++;
     }
     pending.delete(exchangeId);
@@ -120,18 +131,24 @@ export function createConditionalFillMarkoutV1(options = {}) {
           continue;
         }
         tradeSeen.set(identity, signature);
-        const price = amount(normalized.price), atMs = Number(executedNs / 1000000n);
-        expire(trade.exchangeId, atMs);
+        const price = amount(normalized.price);
+        expire(trade.exchangeId, executedNs);
         const orders = pending.get(trade.exchangeId) ?? [];
-        const index = orders.findIndex(order => order.candidate.marketId === trade.marketId && observedMs > order.candidate.decisionMs && atMs >= order.activationAt && atMs < order.expiresAt && (order.candidate.action === 'buy' ? price <= order.candidate.limit - TICK : price >= order.candidate.limit + TICK));
+        const index = orders.findIndex(order => order.candidate.marketId === trade.marketId && observedNs > order.candidate.decisionNs && executedNs >= order.activationAtNs && executedNs < order.expiresAtNs && (order.candidate.action === 'buy' ? price <= order.candidate.limit - TICK : price >= order.candidate.limit + TICK));
         if (index < 0) continue;
         const [order] = orders.splice(index, 1);
         pending.set(trade.exchangeId, orders);
         order.candidate.status = 'strict_through_proxy';
         order.candidate.proxyFilled = true;
         order.candidate.fillAt = trade.executedAt;
-        order.candidate.activeDurationMs = Math.max(0, Math.min(atMs, order.expiresAt) - order.activationAt);
-        const fill = { candidate: order.candidate, fillAtNs: executedNs, fillKnownAtNs: observedNs, marks: Object.fromEntries(markoutHorizonsMs.map(h => [h, null])) };
+        order.candidate.activeDurationMs = elapsedMs(order.activationAtNs, executedNs);
+        const fill = {
+          candidate: order.candidate,
+          fillAtNs: executedNs,
+          fillKnownAtNs: observedNs,
+          eventTimeDiagnosticMarks: Object.fromEntries(markoutHorizonsMs.map(h => [h, null])),
+          executableMarks: Object.fromEntries(markoutHorizonsMs.map(h => [h, null])),
+        };
         fills.push(fill);
         counts.strictThroughProxies++;
       } catch (error) {
@@ -143,9 +160,9 @@ export function createConditionalFillMarkoutV1(options = {}) {
     for (const book of books) {
       counts.books++;
       const exchangeId = book.exchangeId;
-      expire(exchangeId, observedMs);
-      const seq = BigInt(book.sequence), sourceNs = instantNs(book.sourceAt);
-      if (sourceNs > observedNs || instantNs(book.receivedAt) > observedNs || instantNs(book.requestStartedAt) > instantNs(book.receivedAt)) throw Error('MARKOUT_BOOK_CLOCK');
+      expire(exchangeId, observedNs);
+      const seq = BigInt(book.sequence), sourceNs = instantNs(book.sourceAt), receivedNs = instantNs(book.receivedAt);
+      if (sourceNs > observedNs || receivedNs > observedNs || instantNs(book.requestStartedAt) > receivedNs) throw Error('MARKOUT_BOOK_CLOCK');
       const oldVersion = versions.get(exchangeId);
       if (oldVersion && (seq < oldVersion.sequence || seq === oldVersion.sequence && sourceNs <= oldVersion.sourceNs)) { counts.staleBookPoints++; continue; }
       versions.set(exchangeId, { sequence: seq, sourceNs });
@@ -154,18 +171,39 @@ export function createConditionalFillMarkoutV1(options = {}) {
       counts.acceptedBookPoints++;
 
       for (const fill of fills) {
-        if (fill.candidate.exchangeId !== exchangeId || fill.marks[markoutHorizonsMs.at(-1)] !== null || observedNs <= fill.fillKnownAtNs) continue;
+        if (fill.candidate.exchangeId !== exchangeId || observedNs <= fill.fillKnownAtNs) continue;
         for (const horizon of markoutHorizonsMs) {
-          if (fill.marks[horizon] !== null) continue;
-          const targetNs = fill.fillAtNs + BigInt(horizon) * 1000000n;
-          if (sourceNs < targetNs) continue;
-          const delayNs = sourceNs - targetNs;
-          if (delayNs > BigInt(maximumMarkoutDelayMs) * 1000000n) { fill.marks[horizon] = { censored: true, sourceAt: book.sourceAt }; continue; }
+          const eventMarks = fill.eventTimeDiagnosticMarks;
+          const executableMarks = fill.executableMarks;
+          const eventTargetNs = fill.fillAtNs + BigInt(horizon) * NS_PER_MS;
+          if (eventMarks[horizon] === null && sourceNs >= eventTargetNs) {
+            const eventDelayNs = sourceNs - eventTargetNs;
+            if (eventDelayNs > BigInt(maximumMarkoutDelayMs) * NS_PER_MS) {
+              eventMarks[horizon] = { censored: true, sourceAt: book.sourceAt, availableAt: book.receivedAt };
+            } else {
+              const candidate = fill.candidate, midpoint = (bid + ask) / 2n;
+              const executableExit = candidate.action === 'buy' ? bid : ask;
+              const executableNet = candidate.action === 'buy' ? executableExit - candidate.limit : candidate.limit - executableExit;
+              const midMarkout = candidate.action === 'buy' ? midpoint - candidate.limit : candidate.limit - midpoint;
+              eventMarks[horizon] = { executableNet, midMarkout, sourceAt: book.sourceAt, availableAt: book.receivedAt, observedDelayMs: elapsedMs(eventTargetNs, sourceNs) };
+            }
+          }
+
+          const responseTargetNs = fill.fillKnownAtNs + BigInt(exitResponseLatencyMs) * NS_PER_MS;
+          if (executableMarks[horizon] !== null || sourceNs < eventTargetNs || receivedNs < responseTargetNs) continue;
+          const eventDelayNs = sourceNs - eventTargetNs;
+          const responseDelayNs = receivedNs - responseTargetNs;
+          const exitDelayNs = eventDelayNs > responseDelayNs ? eventDelayNs : responseDelayNs;
+          if (exitDelayNs > BigInt(maximumMarkoutDelayMs) * NS_PER_MS) {
+            executableMarks[horizon] = { censored: true, sourceAt: book.sourceAt, availableAt: book.receivedAt };
+            continue;
+          }
+          if (observedNs - sourceNs > BigInt(maximumExecutableBookAgeMs) * NS_PER_MS) continue;
           const candidate = fill.candidate, midpoint = (bid + ask) / 2n;
           const executableExit = candidate.action === 'buy' ? bid : ask;
           const executableNet = candidate.action === 'buy' ? executableExit - candidate.limit : candidate.limit - executableExit;
           const midMarkout = candidate.action === 'buy' ? midpoint - candidate.limit : candidate.limit - midpoint;
-          fill.marks[horizon] = { executableNet, midMarkout, sourceAt: book.sourceAt, observedDelayMs: Number(delayNs / 1000000n) };
+          executableMarks[horizon] = { executableNet, midMarkout, sourceAt: book.sourceAt, availableAt: book.receivedAt, observedDelayMs: Math.max(elapsedMs(eventTargetNs, sourceNs), elapsedMs(responseTargetNs, receivedNs)) };
         }
       }
 
@@ -180,11 +218,13 @@ export function createConditionalFillMarkoutV1(options = {}) {
       const spreadTicks = Number((ask - bid) / TICK);
       const slot = Math.floor(observedMs / sampleEveryMs), priorSlot = lastSlot.get(exchangeId);
       previous.set(exchangeId, { at: observedMs, bid, ask, bidQty, askQty });
-      expire(exchangeId, observedMs);
+      expire(exchangeId, observedNs);
       if (priorSlot === slot) continue;
       lastSlot.set(exchangeId, slot);
       for (const action of ['buy', 'sell']) {
         const limit = action === 'buy' ? bid : ask, queueAhead = Number(action === 'buy' ? bidQty : askQty);
+        const activationAtNs = observedNs + BigInt(latencyMs) * NS_PER_MS;
+        const expiresAtNs = activationAtNs + BigInt(quoteTtlMs) * NS_PER_MS;
         const candidate = {
           id: candidates.length + 1,
           marketId: book.marketId,
@@ -192,8 +232,9 @@ export function createConditionalFillMarkoutV1(options = {}) {
           action,
           decisionAt: observedAt,
           decisionMs: observedMs,
-          activationAt: observedMs + latencyMs,
-          expiresAt: observedMs + latencyMs + quoteTtlMs,
+          decisionNs: observedNs,
+          activationAtNs,
+          expiresAtNs,
           limit,
           spreadTicks,
           queueAhead,
@@ -204,7 +245,7 @@ export function createConditionalFillMarkoutV1(options = {}) {
         };
         candidates.push(candidate);
         const orders = pending.get(exchangeId) ?? [];
-        orders.push({ candidate, activationAt: observedMs + latencyMs, expiresAt: observedMs + latencyMs + quoteTtlMs });
+        orders.push({ candidate, activationAtNs, expiresAtNs });
         pending.set(exchangeId, orders);
         counts.candidateQuotes++;
       }
@@ -224,35 +265,47 @@ export function createConditionalFillMarkoutV1(options = {}) {
     const tables = [], fillByCandidate = new Map(fills.map(fill => [fill.candidate, fill]));
     for (const fold of ['development', 'heldOut']) for (const action of ['buy', 'sell']) for (const horizon of markoutHorizonsMs) {
       const selectedCandidates = candidates.filter(x => foldFor(x) === fold && x.action === action);
-      const selectedFills = fills.filter(fill => {
-        const label = fill.marks[horizon];
+      const selectFills = marksKey => fills.filter(fill => {
+        const label = fill[marksKey][horizon];
         if (!label || label.censored || foldFor(fill.candidate) !== fold || fill.candidate.action !== action) return false;
-        if (fold === 'development' && ms(label.sourceAt) >= devEnd) return false;
+        if (fold === 'development' && ms(label.availableAt ?? label.sourceAt) >= devEnd) return false;
         return true;
-      }).map(fill => ({ ...fill, executableNet: fill.marks[horizon].executableNet, midMarkout: fill.marks[horizon].midMarkout }));
+      }).map(fill => ({ ...fill, executableNet: fill[marksKey][horizon].executableNet, midMarkout: fill[marksKey][horizon].midMarkout }));
+      const selectedEventTimeFills = selectFills('eventTimeDiagnosticMarks');
+      const selectedExecutableFills = selectFills('executableMarks');
       const allFilledCandidates = selectedCandidates.filter(x => x.proxyFilled);
       const unresolvedMarks = allFilledCandidates.filter(candidate => {
-        const label = fillByCandidate.get(candidate)?.marks[horizon];
-        return !label || label.censored || fold === 'development' && label && !label.censored && ms(label.sourceAt) >= devEnd;
+        const label = fillByCandidate.get(candidate)?.executableMarks[horizon];
+        return !label || label.censored || fold === 'development' && label && !label.censored && ms(label.availableAt ?? label.sourceAt) >= devEnd;
       }).length;
+      const activeDurationMs = candidate => {
+        if (candidate.activeDurationMs !== undefined) return candidate.activeDurationMs;
+        const endNs = lastObservedNs < candidate.expiresAtNs ? lastObservedNs : candidate.expiresAtNs;
+        return elapsedMs(candidate.activationAtNs, endNs);
+      };
       const activeCandidates = selectedCandidates.filter(candidate => {
-        if (candidate.activeDurationMs !== undefined) return candidate.activeDurationMs > 0;
-        return Number(lastObservedNs / 1000000n) > candidate.activationAt;
+        return activeDurationMs(candidate) > 0;
       });
+      const quoteHoursMs = activeCandidates.reduce((sum, candidate) => sum + activeDurationMs(candidate), 0);
+      const eventDiagnosticSummary = summarize(selectedEventTimeFills);
+      const executableSummary = summarize(selectedExecutableFills);
       tables.push({
         fold, action, horizonMs: horizon,
         candidateQuotes: selectedCandidates.length,
         activatedQuotes: activeCandidates.length,
-        quoteHoursAtRisk: activeCandidates.reduce((sum, x) => sum + (x.activeDurationMs ?? Math.max(0, Math.min(Number(lastObservedNs / 1000000n), x.expiresAt) - x.activationAt)) / 3600000, 0),
+        quoteHoursAtRisk: quoteHoursMs / 3600000,
         strictThroughProxies: allFilledCandidates.length,
-        markoutSamples: selectedFills.length,
+        markoutSamples: selectedExecutableFills.length,
+        eventTimeDiagnosticSamples: selectedEventTimeFills.length,
         unresolvedOrPurgedMarkouts: unresolvedMarks,
         proxyFillRate: activeCandidates.length ? allFilledCandidates.length / activeCandidates.length : null,
-        proxiesPer100QuoteHours: activeCandidates.length ? allFilledCandidates.length / (activeCandidates.reduce((sum, x) => sum + (x.activeDurationMs ?? Math.max(0, Math.min(Number(lastObservedNs / 1000000n), x.expiresAt) - x.activationAt)), 0) / 3600000) * 100 : null,
-        overall: summarize(selectedFills),
-        bySpread: grouped({ candidates: selectedCandidates, fills: selectedFills, horizonMs: horizon, feature: 'spreadBin', bins: ['1 tick', '2 ticks', '3+ ticks'], thresholds: flowThresholds }),
-        byQueueAhead: grouped({ candidates: selectedCandidates, fills: selectedFills, horizonMs: horizon, feature: 'depthBin', bins: ['1-10', '11-50', '51-250', '251+'], thresholds: flowThresholds }),
-        byAlignedFlowTercile: grouped({ candidates: selectedCandidates, fills: selectedFills, horizonMs: horizon, feature: 'flow', bins: ['lower tercile', 'middle tercile', 'upper tercile', 'missing'], thresholds: flowThresholds }),
+        proxiesPer100QuoteHours: quoteHoursMs > 0 ? allFilledCandidates.length / (quoteHoursMs / 3600000) * 100 : null,
+        eventTimeDiagnostic: eventDiagnosticSummary,
+        executable: executableSummary,
+        overall: executableSummary,
+        bySpread: grouped({ candidates: selectedCandidates, fills: selectedExecutableFills, diagnosticFills: selectedEventTimeFills, horizonMs: horizon, feature: 'spreadBin', bins: ['1 tick', '2 ticks', '3+ ticks'], thresholds: flowThresholds }),
+        byQueueAhead: grouped({ candidates: selectedCandidates, fills: selectedExecutableFills, diagnosticFills: selectedEventTimeFills, horizonMs: horizon, feature: 'depthBin', bins: ['1-10', '11-50', '51-250', '251+'], thresholds: flowThresholds }),
+        byAlignedFlowTercile: grouped({ candidates: selectedCandidates, fills: selectedExecutableFills, diagnosticFills: selectedEventTimeFills, horizonMs: horizon, feature: 'flow', bins: ['lower tercile', 'middle tercile', 'upper tercile', 'missing'], thresholds: flowThresholds }),
       });
     }
     return {
@@ -264,20 +317,25 @@ export function createConditionalFillMarkoutV1(options = {}) {
         activationLatencyMs: latencyMs,
         quoteTtlAfterActivationMs: quoteTtlMs,
         fillProxy: 'captured scoped trade at least one tick through limit after activation; one unit at limit; no aggressor/queue rank known',
-        markout: 'first eligible captured book source point at or after fill plus horizon; buy exits at future bid, sell exits at future ask',
+        markout: 'legacy event-time diagnostic only: first captured book source point at or after fill plus horizon; not an executable response-time mark',
+        eventTimeDiagnostic: 'first eligible captured book source point at or after fill plus horizon, within maximumMarkoutDelayMs; buy exits at future bid, sell exits at future ask; retrospective diagnostic only',
+        executableExit: 'first fresh captured book with source time at or after fill time plus horizon and local receipt time at or after trade report receipt plus exitResponseLatencyMs; maximumMarkoutDelayMs bounds both event-time horizon delay and local response-time delay; development labels must also have been available before the development cutoff',
         spreadIncluded: 'entry joins the observed best side; liquidation crosses the later spread using its executable contra quote',
         fees: '0.000000',
         stress: 'subtract one tick from entry and one tick from exit (0.010000 total per unit) from executable net; shown separately',
         horizonMs: markoutHorizonsMs,
         maximumMarkoutDelayMs,
-        chronologicalSplit: { splitAt, purgeMs, developmentDecisionBefore: new Date(devEnd).toISOString(), heldOutDecisionFrom: splitAt, purgedCandidateQuotes: candidateCounts.purged },
+        exitResponseLatencyMs,
+        maximumExecutableBookAgeMs,
+        receiptLatencyBoundMs: null,
+        chronologicalSplit: { splitAt, purgeMs, minimumPurgeMs, developmentDecisionBefore: new Date(devEnd).toISOString(), heldOutDecisionFrom: splitAt, purgedCandidateQuotes: candidateCounts.purged, developmentMarkAvailabilityBefore: new Date(devEnd).toISOString() },
         bins: { spreadTicks: ['1', '2', '3+'], queueAheadShares: ['1-10', '11-50', '51-250', '251+'], alignedFlow: 'tercile cutpoints from development quote features only; when both cutpoints tie, split strictly below / equal / strictly above the tied value; no outcome-guided selection' },
       },
       counts: {
         ...counts,
-        expiredUnfilledQuotes: counts.expiredUnfilledQuotes + [...pending.values()].flat().filter(x => x.expiresAt <= Number(lastObservedNs / 1000000n)).length,
+        expiredUnfilledQuotes: counts.expiredUnfilledQuotes + [...pending.values()].flat().filter(x => x.expiresAtNs <= lastObservedNs).length,
         candidateQuotesByFold: candidateCounts,
-        unfilledPendingAtEnd: [...pending.values()].flat().filter(x => x.expiresAt > Number(lastObservedNs / 1000000n)).length,
+        unfilledPendingAtEnd: [...pending.values()].flat().filter(x => x.expiresAtNs > lastObservedNs).length,
         filledProxyCount: fills.length,
         flowCalibrationQuotes: flowCalibration.length,
       },
@@ -286,7 +344,7 @@ export function createConditionalFillMarkoutV1(options = {}) {
       limitations: [
         'Trade-through is a counterfactual fill proxy, not proof an order was accepted or filled; queue priority and aggressor side are unknown.',
         'One unit at the captured limit is assumed; deeper fills, capital, inventory, venue matching rules, cancellations, and latency variation are not simulated.',
-        'Books are sampled from captured source points; markouts use the first source point after each horizon within the declared delay tolerance.',
+        'Event-time markouts are retained as retrospective diagnostics; executable marks require both the event-time horizon and local receipt after the trade report plus modeled exit response, with a fresh source timestamp. Exchange source time and local receipt time are intentionally gated in their own clock domains. Trade-report receipt delay has no assumed upper bound; development marks are excluded unless their captured book receipt/availability is before the development cutoff.',
         'Spread is reflected in executable liquidation; zero platform fees are assumed. One-tick-each-way stress is an additional sensitivity, not an observed fee.',
         'Candidates overlap across markets and outcomes are not independent; small samples and shared market shocks preclude a profitability claim.',
         'Conditional bins are descriptive and prespecified; no strategy selection or actual contest execution is authorized by this analysis.',
@@ -301,3 +359,4 @@ export function createConditionalFillMarkoutV1(options = {}) {
 
   return { observeBatch, boundary, resetFeatures, report };
 }
+
