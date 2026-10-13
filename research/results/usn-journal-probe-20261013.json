@@ -1,0 +1,143 @@
+{
+  "schemaVersion": "usn-journal-probe-v1",
+  "generatedAtUtc": "2026-10-13T14:12:51.4273908Z",
+  "host": {
+    "osVersion": "Microsoft Windows NT 10.0.26100.0",
+    "powerShellVersion": "7.6.5",
+    "elevatedAdministratorToken": false
+  },
+  "scope": "Temporary throwaway files only. The script opens the existing volume journal read-only and never creates, deletes, or resizes it.",
+  "volume": {
+    "driveRoot": "C:\\",
+    "devicePath": "\\\\.\\C:",
+    "fileSystem": "NTFS",
+    "devicePathUsesLocalDriveLetter": true
+  },
+  "capability": {
+    "volumeOpen": true,
+    "volumeOpenAttempts": [
+      {
+        "requestedAccess": "GENERIC_READ",
+        "volumeHandleOpened": false,
+        "queryUsnJournal": false,
+        "readUsnJournal": false,
+        "errorCode": 5,
+        "error": "Access is denied."
+      },
+      {
+        "requestedAccess": "FILE_READ_DATA",
+        "volumeHandleOpened": false,
+        "queryUsnJournal": false,
+        "readUsnJournal": false,
+        "errorCode": 5,
+        "error": "Access is denied."
+      },
+      {
+        "requestedAccess": "FILE_READ_ATTRIBUTES",
+        "volumeHandleOpened": true,
+        "queryUsnJournal": false,
+        "readUsnJournal": false,
+        "errorCode": null,
+        "error": "FSCTL_QUERY_USN_JOURNAL failed (1): Incorrect function."
+      },
+      {
+        "requestedAccess": "none",
+        "volumeHandleOpened": true,
+        "queryUsnJournal": false,
+        "readUsnJournal": false,
+        "errorCode": null,
+        "error": "FSCTL_QUERY_USN_JOURNAL failed (1): Incorrect function."
+      }
+    ],
+    "volumeHandleAccess": null,
+    "queryUsnJournal": false,
+    "readUsnJournal": false,
+    "fsutilQueryJournal": {
+      "attempted": true,
+      "succeeded": true,
+      "elapsedMs": 22.258,
+      "journalId": "0x01d83c2fa35a420d",
+      "firstUsn": "0x000000089a000000",
+      "nextUsn": "0x000000089c677e68",
+      "lowestValidUsn": "0x0000000000000000",
+      "error": null
+    },
+    "fsutilReadJournal": {
+      "attempted": true,
+      "succeeded": false,
+      "startUsn": "0x000000089c677e68",
+      "elapsedMs": 17.157,
+      "outputLineCount": 1,
+      "sample": [
+        "Error 5: Access is denied."
+      ],
+      "error": "Error 5: Access is denied."
+    },
+    "fileIdentityRead": true,
+    "privilegeAssessment": {
+      "currentProcessElevatedAdministrator": false,
+      "fileIdentityReadableWithCurrentToken": true,
+      "fsutilQueryReadableWithCurrentToken": true,
+      "fsutilRecordReadReadableWithCurrentToken": false,
+      "nativeJournalReadReadableWithCurrentToken": false,
+      "assessment": "The current non-elevated token was denied journal-record access. Elevation or an explicit volume permission may be required; this run does not isolate which one is sufficient."
+    },
+    "status": "read_access_denied",
+    "error": "No tested volume-handle access level could query and read the USN journal. GENERIC_READ: Access is denied.; FILE_READ_DATA: Access is denied.; FILE_READ_ATTRIBUTES: FSCTL_QUERY_USN_JOURNAL failed (1): Incorrect function.; none: FSCTL_QUERY_USN_JOURNAL failed (1): Incorrect function."
+  },
+  "journal": {
+    "source": "fsutil queryjournal",
+    "journalId": "0x01d83c2fa35a420d",
+    "firstUsn": "0x000000089a000000",
+    "nextUsnAtStart": "0x000000089c677e68",
+    "lowestValidUsn": "0x0000000000000000",
+    "savedUsnIsReadableAtStart": null
+  },
+  "probe": {
+    "temporaryDirectory": "<temporary probe directory; cleaned by script>",
+    "temporaryFilesCleaned": true,
+    "cases": [],
+    "identitySummary": {
+      "originalAndReplacementDistinct": true,
+      "replacementPathNowHasReplacementIdentity": null
+    }
+  },
+  "latency": {
+    "fsctlReadSampleCount": 0,
+    "fsctlReadMinMs": null,
+    "fsctlReadMedianMs": null,
+    "fsctlReadMaxMs": null,
+    "fsctlQuerySampleCount": 0,
+    "fsctlQueryMinMs": null,
+    "fsctlQueryMedianMs": null,
+    "fsctlQueryMaxMs": null,
+    "fsutilQueryMs": 22.258,
+    "fsutilReadMs": 17.157
+  },
+  "conclusion": {
+    "allRequestedMutationsDistinguished": false,
+    "mutationProbeStatus": "not_run_access_denied",
+    "mutationCasesAttempted": 0,
+    "mutationProbeBlocker": "No tested volume-handle access level could query and read the USN journal. GENERIC_READ: Access is denied.; FILE_READ_DATA: Access is denied.; FILE_READ_ATTRIBUTES: FSCTL_QUERY_USN_JOURNAL failed (1): Incorrect function.; none: FSCTL_QUERY_USN_JOURNAL failed (1): Incorrect function.",
+    "fullHashFallbackMandatory": true,
+    "fallbackConditions": [
+      "The target volume is not local NTFS, has no readable USN journal, or volume/journal access is denied under the process token.",
+      "The journal ID changes, a saved USN falls below the retained FirstUsn/LowestValidUsn boundary, or a read fails or does not advance completely.",
+      "The target file identity cannot be read, the volume identity does not match, or USN record versions/IDs are not fully parsed and supported.",
+      "Any observed mutation has missing, contradictory, or unknown reason flags; replacement/truncation, a rename, or a hard-link change cannot be proved from stable identities and complete records.",
+      "The file changes during verification, a stable end-USN checkpoint cannot be established, or the bytes in the claimed appended suffix cannot be hash-verified against the trusted chain.",
+      "A candidate update is not a pure append to the same file identity. USN reason flags are change evidence and do not validate appended content."
+    ]
+  },
+  "sources": [
+    "https://learn.microsoft.com/windows/win32/api/winioctl/ni-winioctl-fsctl_query_usn_journal",
+    "https://learn.microsoft.com/windows/win32/api/winioctl/ni-winioctl-fsctl_read_usn_journal",
+    "https://learn.microsoft.com/windows/desktop/api/winioctl/ns-winioctl-usn_record_v2"
+  ],
+  "errors": [
+    "No tested volume-handle access level could query and read the USN journal. GENERIC_READ: Access is denied.; FILE_READ_DATA: Access is denied.; FILE_READ_ATTRIBUTES: FSCTL_QUERY_USN_JOURNAL failed (1): Incorrect function.; none: FSCTL_QUERY_USN_JOURNAL failed (1): Incorrect function."
+  ],
+  "completedAtUtc": "2026-10-13T14:12:51.5790208Z",
+  "outputPath": "research/results/usn-journal-probe-20261013.json"
+}
+
