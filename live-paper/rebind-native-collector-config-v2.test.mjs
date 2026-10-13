@@ -6,7 +6,7 @@ import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {createHash} from 'node:crypto';
 import {payloadHash} from '../execution/ledger.mjs';
-import {collectorNativeJournalConfig} from './collector-journal-native.mjs';
+import {collectorNativeJournalConfig,collectorJournalCodeIdentity} from './collector-journal-native.mjs';
 import {journalSourceFiles,journalEngineIdentity} from './native-journal-restore.mjs';
 import {LEGACY_NATIVE_BACKEND} from './rebind-native-collector-config-v1.mjs';
 import {
@@ -20,6 +20,7 @@ const hostRuntime=process.env.LOCALAPPDATA?path.join(process.env.LOCALAPPDATA,'S
 const hostBinary=hostRuntime&&path.join(hostRuntime,'journal-native-builds',LEGACY_NATIVE_BACKEND.binaryHash);
 const hostSource=hostRuntime&&path.join(hostRuntime,'journal-native-sources',LEGACY_NATIVE_BACKEND.engineHash);
 const artifactsAvailable=!!hostRuntime&&['baal-journal-restore.exe','libunwind.dll'].every(f=>fs.existsSync(path.join(hostBinary,f)))&&journalSourceFiles.every(f=>fs.existsSync(path.join(hostSource,f)));
+const sourceGraphCurrent=payloadHash(collectorJournalCodeIdentity())===CURRENT_SOURCE_SNAPSHOT;
 function fixture(t){
  const temp=fs.mkdtempSync(path.join(os.tmpdir(),'native-collector-rebind-v2-'));
  const priorLocalAppData=process.env.LOCALAPPDATA,priorPaperDir=process.env.SIG_PAPER_DIR;
@@ -61,12 +62,21 @@ test('manifest pins one exact predecessor-to-target source graph transition',()=
  assert.equal(PREDECESSOR_SOURCE_SNAPSHOT,'459de45dd5d46df01b629a9241e2d513d16e034eeed5d746a3ee3a46dc3a8bae');
  assert.equal(CURRENT_SOURCE_SNAPSHOT,'bb67d7024b6f6bf5c3e3a68247872a0555da625de1f539c20ef4921f255d0d79');
  assert.equal(NATIVE_RESTORE_CHANGE_COMMIT,'ba63c238c33c94c00b9ab3d4665a44dec235ad02');
- assert.equal(sha(fs.readFileSync(path.join(workspace,'live-paper','native-journal-restore.mjs'))),NATIVE_RESTORE_SHA256);
+ const currentRestoreSha=sha(fs.readFileSync(path.join(workspace,'live-paper','native-journal-restore.mjs')));
+ assert.equal(NATIVE_RESTORE_SHA256,'15d10bfc8c19fdfbbb88f751bded3dc2a5c83178117c83e8cb8c8e108138668c');
+ if(sourceGraphCurrent)assert.equal(currentRestoreSha,NATIVE_RESTORE_SHA256);else assert.notEqual(currentRestoreSha,NATIVE_RESTORE_SHA256);
  assert.equal(NATIVE_RESTORE_SHA256,'15d10bfc8c19fdfbbb88f751bded3dc2a5c83178117c83e8cb8c8e108138668c');
  assert.deepEqual(Object.keys(PREDECESSOR_CODE_IDENTITY).filter(k=>PREDECESSOR_CODE_IDENTITY[k]!==CURRENT_CODE_IDENTITY[k]),['live-paper/native-journal-restore.mjs']);
 });
 
-test('apply changes only the two pinned identity fields and preserves stop, capture, journals, receipts, rate gate and reports',{skip:!artifactsAvailable},t=>{
+test('stale V2 helper refuses check and apply after the reviewed graph advances',{skip:sourceGraphCurrent},t=>{
+ const f=fixture(t),before=fs.readFileSync(f.configFile);
+ assert.throws(()=>rebind(f,false),e=>e.code==='CURRENT_SOURCE_GRAPH_CHANGED');
+ assert.throws(()=>rebind(f,true),e=>e.code==='CURRENT_SOURCE_GRAPH_CHANGED');
+ assert.deepEqual(fs.readFileSync(f.configFile),before);
+});
+
+test('apply changes only the two pinned identity fields and preserves stop, capture, journals, receipts, rate gate and reports',{skip:!artifactsAvailable||!sourceGraphCurrent},t=>{
  const f=fixture(t),before=snapshot(f.preserved),priorConfig=fs.readFileSync(f.configFile);
  const result=rebind(f,true);
  assert.equal(result.status,'rebound');assert.equal(result.executionStopPreserved,true);assert.equal(result.networkRequests,0);assert.equal(result.competitionOrders,0);
@@ -78,7 +88,7 @@ test('apply changes only the two pinned identity fields and preserves stop, capt
  assert.equal(fs.existsSync(path.join(f.control,'bot.lock')),false);
 });
 
-test('dry run validates exact native artifacts and does not mutate any runtime file',{skip:!artifactsAvailable},t=>{
+test('dry run validates exact native artifacts and does not mutate any runtime file',{skip:!artifactsAvailable||!sourceGraphCurrent},t=>{
  const f=fixture(t),beforeConfig=fs.readFileSync(f.configFile),before=snapshot(f.preserved);
  const result=rebind(f);
  assert.equal(result.status,'ready');assert.equal(result.applied,false);assert.equal(result.networkRequests,0);assert.equal(result.competitionOrders,0);
@@ -86,12 +96,12 @@ test('dry run validates exact native artifacts and does not mutate any runtime f
  assert.equal(fs.existsSync(path.join(f.control,'bot.lock')),false);
 });
 
-test('wrong or self-hashed predecessor identity is rejected without mutation',t=>{
+test('wrong or self-hashed predecessor identity is rejected without mutation',{skip:!sourceGraphCurrent},t=>{
  const f=fixture(t),bad={...f.config,codeIdentity:{...f.config.codeIdentity,'live-paper/transport-runtime.mjs':'0'.repeat(64)}};
  bad.sourceSnapshot=payloadHash(bad.codeIdentity);fs.writeFileSync(f.configFile,JSON.stringify(bad));expectUnchangedFailure(f,'RUNTIME_PREDECESSOR_IDENTITY_MISMATCH');
 });
 
-test('requires execution stop and rejects competing runtime stops without changing config',async t=>{
+test('requires execution stop and rejects competing runtime stops without changing config',{skip:!sourceGraphCurrent},async t=>{
  for(const [name,mutate,reason] of [
   ['missing execution stop',f=>fs.unlinkSync(f.stop),'EXECUTION_STOP_REQUIRED'],
   ['workspace stop',f=>{const marker=path.join(workspace,'STOP'),existed=fs.existsSync(marker),before=existed?fs.readFileSync(marker):null;if(!existed)fs.writeFileSync(marker,'temporary test stop');try{expectUnchangedFailure(f,'STOP_MARKER_PRESENT');}finally{if(!existed)fs.unlinkSync(marker);else assert.deepEqual(fs.readFileSync(marker),before);}},'STOP_MARKER_PRESENT'],
@@ -101,7 +111,7 @@ test('requires execution stop and rejects competing runtime stops without changi
  ])await t.test(name,t=>{const f=fixture(t);if(name==='workspace stop')mutate(f);else{mutate(f);expectUnchangedFailure(f,reason);}});
 });
 
-test('capture scope, configured path, apply flag and environment override are strict',t=>{
+test('capture scope, configured path, apply flag and environment override are strict',{skip:!sourceGraphCurrent},t=>{
  const f=fixture(t);fs.writeFileSync(f.captureFile,JSON.stringify({...f.capture,mode:'live'}));expectUnchangedFailure(f,'CAPTURE_SCOPE_CHANGED');
  fs.writeFileSync(f.captureFile,JSON.stringify(f.capture));
  assert.throws(()=>rebind(f,false,{runtimeDir:path.join(f.temp,'other','paper-runtime')}),e=>e.code==='RUNTIME_PATH_INVALID');
@@ -109,7 +119,7 @@ test('capture scope, configured path, apply flag and environment override are st
  process.env.SIG_PAPER_DIR=f.runtimeDir;assert.throws(()=>rebind(f),e=>e.code==='RUNTIME_OVERRIDE_UNSUPPORTED');delete process.env.SIG_PAPER_DIR;
 });
 
-test('missing, malformed, active and unverified runner identities fail closed',t=>{
+test('missing, malformed, active and unverified runner identities fail closed',{skip:!sourceGraphCurrent},t=>{
  const f=fixture(t),pid=path.join(f.runtimeDir,'pid.txt');
  fs.unlinkSync(pid);expectUnchangedFailure(f,'RUNNER_PID_MISSING');
  fs.writeFileSync(pid,'not-a-pid');expectUnchangedFailure(f,'RUNNER_PID_INVALID');
@@ -117,20 +127,20 @@ test('missing, malformed, active and unverified runner identities fail closed',t
  fs.writeFileSync(pid,'2147483647');
 });
 
-test('shared lock prevents rebind and lock-acquisition race rechecks stop state',t=>{
+test('shared lock prevents rebind and lock-acquisition race rechecks stop state',{skip:!sourceGraphCurrent},t=>{
  const f=fixture(t),lockFile=path.join(f.control,'bot.lock');fs.writeFileSync(lockFile,'other');expectUnchangedFailure(f,'COLLECTOR_LOCKED');fs.unlinkSync(lockFile);
  const before=fs.readFileSync(f.configFile),stopFile=path.join(f.runtimeDir,'REALTIME_STOP'),open=fs.openSync;
  t.mock.method(fs,'openSync',function(file,...args){const fd=open.call(fs,file,...args);if(path.resolve(String(file))===path.resolve(lockFile))fs.writeFileSync(stopFile,'raced');return fd;});
  assert.throws(()=>rebind(f,true),e=>e.code==='STOP_MARKER_PRESENT');assert.deepEqual(fs.readFileSync(f.configFile),before);assert.equal(fs.existsSync(lockFile),false);
 });
 
-test('native binary, library and source archive must match existing pinned backend',{skip:!artifactsAvailable},async t=>{
+test('native binary, library and source archive must match existing pinned backend',{skip:!artifactsAvailable||!sourceGraphCurrent},async t=>{
  await t.test('binary',t=>{const f=fixture(t),file=path.join(f.runtimeDir,'journal-native-builds',LEGACY_NATIVE_BACKEND.binaryHash,'baal-journal-restore.exe');fs.writeFileSync(file,'tampered');expectUnchangedFailure(f,'NATIVE_BINDING_INVALID');});
  await t.test('runtime library',t=>{const f=fixture(t),file=path.join(f.runtimeDir,'journal-native-builds',LEGACY_NATIVE_BACKEND.binaryHash,'libunwind.dll');fs.writeFileSync(file,'tampered');expectUnchangedFailure(f,'NATIVE_BINDING_INVALID');});
  await t.test('archived source',t=>{const f=fixture(t),file=path.join(f.runtimeDir,'journal-native-sources',LEGACY_NATIVE_BACKEND.engineHash,journalSourceFiles.at(-1));fs.writeFileSync(file,'tampered');expectUnchangedFailure(f,'NATIVE_SOURCE_CHANGED');});
 });
 
-test('post-write guard restores exact config bytes after a concurrent control change',{skip:!artifactsAvailable},t=>{
+test('post-write guard restores exact config bytes after a concurrent control change',{skip:!artifactsAvailable||!sourceGraphCurrent},t=>{
  const f=fixture(t),before=fs.readFileSync(f.configFile),stopFile=path.join(f.runtimeDir,'REALTIME_STOP'),originalRename=fs.renameSync;let injected=false;
  t.mock.method(fs,'renameSync',function(source,target,...args){const result=originalRename.call(fs,source,target,...args);if(!injected&&path.resolve(String(target))===path.resolve(f.configFile)){injected=true;fs.writeFileSync(stopFile,'post-write race');}return result;});
  assert.throws(()=>rebind(f,true),e=>e.code==='STOP_MARKER_PRESENT');assert.equal(injected,true);assert.deepEqual(fs.readFileSync(f.configFile),before);assert.equal(fs.existsSync(path.join(f.control,'bot.lock')),false);
