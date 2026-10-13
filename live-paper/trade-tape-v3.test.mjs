@@ -106,5 +106,21 @@ test('tail fixedpagination resumes independently and declares missedcurrentgap w
 
 import {payloadHash} from '../execution/ledger.mjs';
 const urgentRequest=(from,to,checkpoint='120')=>{const body={schemaVersion:1,kind:'expired_paper_quote_coverage',marketId:'297',exchangeId:'986',from:at(from),to:at(to),requiredCheckpoint:checkpoint};return {...body,key:payloadHash(body)};};
-test('urgent exact window uses one existing slot in eight while current reads retain six',async t=>{const f=fixture(t),r=urgentRequest(-120000,-1000),calls=[];for(let n=0;n<8;n++){f.setTime(n*4000);await f.host().collect(async s=>{calls.push(s.endpoint);return response(s.endpoint,[],false);},['363','297'],{currentMarketIds:['363'],liveTailWindowMs:180000,urgentRecoveryWindows:[r]});}assert.equal(calls.filter(x=>x.includes('/1052/')).length,6);const u=new URL('https://x.test'+calls[7]);assert.equal(u.pathname,'/exchanges/986/trades');assert.equal(u.searchParams.get('from'),r.from);assert.equal(u.searchParams.get('to'),r.to);const j=new Journal(path.join(f.runtimeDir,'anonymous-trades.jsonl'));assert.equal(j.last.event.queryPurpose,'expired_paper_quote_coverage_recovery');assert.equal(j.last.state.markets['986'].recoveryCompleted.includes(r.key),true);});
-test('urgent lane preserves an older unfinished recovery cursor across restart',async t=>{const f=fixture(t),old=urgentRequest(-120000,-1000),newer=urgentRequest(-60000,-1000);for(let n=0;n<8;n++){f.setTime(n*4000);await f.host().collect(async s=>response(s.endpoint,[],n===7,n===7?'KEPT':null),['363','297'],{currentMarketIds:['363'],liveTailWindowMs:180000,urgentRecoveryWindows:[old]});}for(let n=8;n<16;n++){f.setTime(n*4000);await f.host().collect(async s=>{if(n===15){const u=new URL('https://x.test'+s.endpoint);assert.equal(u.searchParams.get('cursor'),'KEPT');assert.equal(u.searchParams.get('from'),old.from);}return response(s.endpoint,[],false);},['363','297'],{currentMarketIds:['363'],liveTailWindowMs:180000,urgentRecoveryWindows:[newer]});}});
+test('active urgent recovery uses three existing background slots while preserving current and broad discovery',async t=>{
+ const f=fixture(t),recoveries=[urgentRequest(-120000,-1000),urgentRequest(-90000,-1000),urgentRequest(-60000,-1000)];let calls=0;
+ for(let n=0;n<16;n++){f.setTime(n*4000);await f.host().collect(async s=>{calls++;return response(s.endpoint,[],false);},['363','297'],{priorityMarketIds:['363'],currentMarketIds:['363'],liveTailWindowMs:180000,urgentRecoveryWindows:recoveries});}
+ const rows=fs.readFileSync(path.join(f.runtimeDir,'anonymous-trades.jsonl'),'utf8').trim().split('\n').map(x=>JSON.parse(x).event);
+ const urgent=rows.map((event,index)=>({event,index})).filter(x=>x.event.queryPurpose==='expired_paper_quote_coverage_recovery');
+ assert.equal(calls,16,'the scheduler reuses its existing one-read slot');assert.equal(rows.length,16);
+ assert.deepEqual(urgent.map(x=>x.index),[3,7,11]);assert.deepEqual(urgent.map(x=>x.event.recoveryRequest.key),recoveries.map(x=>x.key));
+ assert.equal(rows.filter(x=>x.tapeScheduling.slot==='current'&&x.exchangeId==='1052').length,12,'three protected current reads remain per four calls');
+ assert.equal(rows[15].marketId,'297','the reserved non-recovery slot still reaches the non-priority market');
+ assert.equal(rows[15].queryPurpose,'bounded_current_tape_tail_v2');
+ assert.deepEqual(new Journal(path.join(f.runtimeDir,'anonymous-trades.jsonl')).last.state.markets['986'].recoveryCompleted,recoveries.map(x=>x.key));
+});
+test('urgent lane preserves an older unfinished recovery cursor across restart',async t=>{
+ const f=fixture(t),old=urgentRequest(-120000,-1000),newer=urgentRequest(-60000,-1000);let calls=[];
+ for(let n=0;n<4;n++){f.setTime(n*4000);await f.host().collect(async s=>{calls.push(s.endpoint);return response(s.endpoint,[],n===3,n===3?'KEPT':null);},['363','297'],{currentMarketIds:['363'],liveTailWindowMs:180000,urgentRecoveryWindows:[old]});}
+ for(let n=4;n<8;n++){f.setTime(n*4000);await f.host().collect(async s=>{calls.push(s.endpoint);if(n===7){const u=new URL('https://x.test'+s.endpoint);assert.equal(u.searchParams.get('cursor'),'KEPT');assert.equal(u.searchParams.get('from'),old.from);}return response(s.endpoint,[],false);},['363','297'],{currentMarketIds:['363'],liveTailWindowMs:180000,urgentRecoveryWindows:[newer]});}
+ assert.equal(new URL('https://x.test'+calls[3]).searchParams.get('cursor'),null);assert.equal(new URL('https://x.test'+calls[7]).searchParams.get('cursor'),'KEPT');
+});
