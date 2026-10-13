@@ -11,6 +11,14 @@ test('paired spread ignores uncalibrated imbalance but funds both legs and rejec
   const scarce=createMoloch({maximumCommitted:'0.500000'});advanceMoloch(scarce,e);assert.equal(scarce.orders.length,0);
   const fees=createMoloch({feePerShare:'0.002000'});advanceMoloch(fees,e);assert.equal(fees.orders.length,0);
 });
+test('early renewal requires a fresh unchanged quote and preserves old funding through cancellation',()=>{
+  const s=createMoloch({renewBeforeMs:45000,maximumMarketCost:'20.000000'});advanceMoloch(s,book(0));
+  advanceMoloch(s,tick(59));assert.equal(s.counts.earlyRenewals,undefined);
+  advanceMoloch(s,book(81,'101',2));assert.equal(s.counts.earlyRenewals,1);assert.equal(s.orders[0].retired,false);assert.ok(Number(reportMoloch(s).reservedCash)>=4.975);
+  advanceMoloch(s,tick(84));advanceMoloch(s,tick(88));
+  assert.ok(s.orders.length>2);assert.equal(s.orders[0].retired,false);assertMoloch(s);
+  assert.throws(()=>createMoloch({renewBeforeMs:120000}),/RENEWAL_WINDOW/);
+});
 
 test('paired strict-through fills reconcile exact cash, fees and conditional redemption',()=>{
   const s=createMoloch({quantity:1,feePerShare:'0.000100'});advanceMoloch(s,book(0));

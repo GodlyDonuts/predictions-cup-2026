@@ -1,0 +1,294 @@
+{
+  "schemaVersion": 1,
+  "bot": "Moloch",
+  "sourceEventSha256": "9418e4a78a01569985d61847752f5ccc678d57eaa79a84ebcd501fb97ebc9ff4",
+  "parentSnapshotHash": "8987f1b4196a0d085f8ef8d499cc1a69f3fe4bb5f643ce8a41ef7bd32d15ec5c",
+  "eventCount": 382,
+  "sourceWindow": {
+    "from": "2026-10-13T22:04:10.058Z",
+    "to": "2026-10-13T22:09:09.760Z"
+  },
+  "codeIdentity": {
+    "execution/atomic-rename.mjs": "686aaf75a0da32bd1cc5b17e5ac6b4d00094cae50cefaff69534b3eed817fda7",
+    "execution/ledger.mjs": "b812d54a35e8f30bdab446d9f601c14181b763400d515369ce8e2b86faa1ef58",
+    "feed/contract.mjs": "c695e7dfd6aba3c988a8ac9cdaf29c206fec9890a39533935a7075699df26dc5",
+    "live-paper/frozen-paper-graph.mjs": "8cb0c144c0cdeb3921629c4a051a88e1116780bf3c543765ccecd2939df0839e",
+    "moloch/compare.mjs": "4c9e14dc85bf8e39eadf180f2d3b9914e1cb744fa390f443ba5662d03b0a478a",
+    "moloch/engine.mjs": "781e5eb64ee89a26f35e78796a3134e1d602c3e1aa5a2a9bd9a197bcba6e0025",
+    "paper/fixed.mjs": "057e70d21ac62cc01dae8c98cd93f4869c5f6bb69ef7eab98af7e891b88fd00d"
+  },
+  "baselineFinancialParity": true,
+  "variants": [
+    {
+      "renewBeforeMs": 0,
+      "report": {
+        "bot": "Moloch",
+        "at": "2026-10-13T22:09:09.760Z",
+        "policyHash": "4d6c49a028465047feaff7b141e6fd5cf8d11fbffe43af8a3c3001ee34d9976b",
+        "events": 3725,
+        "cash": "1000.000000",
+        "realized": "0.000000",
+        "fees": "0.000000",
+        "ownedCost": "0.000000",
+        "reservedCash": "9.950000",
+        "netLiquidationPnl": "0.000000",
+        "positions": {},
+        "priceHistory": {},
+        "fills": 0,
+        "orders": 59,
+        "activeOrders": 2,
+        "unresolvedOrders": 4,
+        "profitSignalEligible": false,
+        "counts": {
+          "submissionBatches": 52,
+          "writeBudgetHolds": 195,
+          "cancels": 23,
+          "uniqueTrades": 29,
+          "duplicateTrades": 274
+        },
+        "contestOrders": 0,
+        "networkRequests": 0,
+        "profitabilityEstablished": false,
+        "assumptions": [
+          "Independent simulated capital; no contest-account ownership.",
+          "Flat entries join both sides only when combined spread covers modeled fees and required edge; partial fills remain inventory risk.",
+          "Strict one-tick trade-through and bounded participation are counterfactual, not verified queue fills.",
+          "Cancel acknowledgment does not release unresolved funding; complete window and post-end checkpoint are required.",
+          "YES/NO pair payout is a declared paper accounting assumption."
+        ]
+      },
+      "newFills": [],
+      "lastFreshLiquidation": {
+        "at": "2026-10-13T22:09:09.760Z",
+        "pnl": "0.000000"
+      },
+      "worstFreshLiquidation": {
+        "at": "2026-10-13T22:04:10.085Z",
+        "pnl": "0.000000"
+      }
+    },
+    {
+      "renewBeforeMs": 30000,
+      "report": {
+        "bot": "Moloch",
+        "at": "2026-10-13T22:09:09.760Z",
+        "policyHash": "4a4ec31d30f7a340addf97618f90b76665b381ba9d14d40a218fc78c7c33e2b9",
+        "events": 3725,
+        "cash": "999.370000",
+        "realized": "0.000000",
+        "fees": "0.000000",
+        "ownedCost": "0.630000",
+        "reservedCash": "4.975000",
+        "netLiquidationPnl": null,
+        "positions": {
+          "1009": {
+            "YES": [],
+            "NO": [
+              {
+                "quantity": 1,
+                "price": "0.630000"
+              }
+            ]
+          }
+        },
+        "priceHistory": {},
+        "fills": 1,
+        "orders": 60,
+        "activeOrders": 3,
+        "unresolvedOrders": 3,
+        "profitSignalEligible": false,
+        "counts": {
+          "submissionBatches": 53,
+          "writeBudgetHolds": 210,
+          "cancels": 29,
+          "uniqueTrades": 29,
+          "duplicateTrades": 274,
+          "earlyRenewals": 6
+        },
+        "contestOrders": 0,
+        "networkRequests": 0,
+        "profitabilityEstablished": false,
+        "assumptions": [
+          "Independent simulated capital; no contest-account ownership.",
+          "Flat entries join both sides only when combined spread covers modeled fees and required edge; partial fills remain inventory risk.",
+          "Strict one-tick trade-through and bounded participation are counterfactual, not verified queue fills.",
+          "Cancel acknowledgment does not release unresolved funding; complete window and post-end checkpoint are required.",
+          "YES/NO pair payout is a declared paper accounting assumption."
+        ]
+      },
+      "newFills": [
+        {
+          "orderId": 56,
+          "marketId": "320",
+          "exchangeId": "1009",
+          "side": "NO",
+          "action": "buy",
+          "quantity": 1,
+          "price": "0.630000",
+          "fee": "0.000000",
+          "at": "2026-10-13T22:07:30.394Z",
+          "sourceId": "152168233",
+          "counterfactual": true
+        }
+      ],
+      "lastFreshLiquidation": {
+        "at": "2026-10-13T22:09:06.490Z",
+        "pnl": "-0.005000"
+      },
+      "worstFreshLiquidation": {
+        "at": "2026-10-13T22:08:07.615Z",
+        "pnl": "-0.005000"
+      }
+    },
+    {
+      "renewBeforeMs": 45000,
+      "report": {
+        "bot": "Moloch",
+        "at": "2026-10-13T22:09:09.760Z",
+        "policyHash": "0e6998ad54aa38bd662e334eb38b944c845a603199939e2da5542868bbb66e3f",
+        "events": 3725,
+        "cash": "999.370000",
+        "realized": "0.000000",
+        "fees": "0.000000",
+        "ownedCost": "0.630000",
+        "reservedCash": "4.975000",
+        "netLiquidationPnl": null,
+        "positions": {
+          "1009": {
+            "YES": [],
+            "NO": [
+              {
+                "quantity": 1,
+                "price": "0.630000"
+              }
+            ]
+          }
+        },
+        "priceHistory": {},
+        "fills": 1,
+        "orders": 60,
+        "activeOrders": 3,
+        "unresolvedOrders": 3,
+        "profitSignalEligible": false,
+        "counts": {
+          "submissionBatches": 53,
+          "writeBudgetHolds": 210,
+          "cancels": 29,
+          "uniqueTrades": 29,
+          "duplicateTrades": 274,
+          "earlyRenewals": 6
+        },
+        "contestOrders": 0,
+        "networkRequests": 0,
+        "profitabilityEstablished": false,
+        "assumptions": [
+          "Independent simulated capital; no contest-account ownership.",
+          "Flat entries join both sides only when combined spread covers modeled fees and required edge; partial fills remain inventory risk.",
+          "Strict one-tick trade-through and bounded participation are counterfactual, not verified queue fills.",
+          "Cancel acknowledgment does not release unresolved funding; complete window and post-end checkpoint are required.",
+          "YES/NO pair payout is a declared paper accounting assumption."
+        ]
+      },
+      "newFills": [
+        {
+          "orderId": 56,
+          "marketId": "320",
+          "exchangeId": "1009",
+          "side": "NO",
+          "action": "buy",
+          "quantity": 1,
+          "price": "0.630000",
+          "fee": "0.000000",
+          "at": "2026-10-13T22:07:30.394Z",
+          "sourceId": "152168233",
+          "counterfactual": true
+        }
+      ],
+      "lastFreshLiquidation": {
+        "at": "2026-10-13T22:09:06.490Z",
+        "pnl": "-0.005000"
+      },
+      "worstFreshLiquidation": {
+        "at": "2026-10-13T22:08:07.615Z",
+        "pnl": "-0.005000"
+      }
+    },
+    {
+      "renewBeforeMs": 60000,
+      "report": {
+        "bot": "Moloch",
+        "at": "2026-10-13T22:09:09.760Z",
+        "policyHash": "138d77305cad03b2a06844251f9b4597f92a40dcb435c9940942d1a16b57adea",
+        "events": 3725,
+        "cash": "999.370000",
+        "realized": "0.000000",
+        "fees": "0.000000",
+        "ownedCost": "0.630000",
+        "reservedCash": "4.975000",
+        "netLiquidationPnl": null,
+        "positions": {
+          "1009": {
+            "YES": [],
+            "NO": [
+              {
+                "quantity": 1,
+                "price": "0.630000"
+              }
+            ]
+          }
+        },
+        "priceHistory": {},
+        "fills": 1,
+        "orders": 60,
+        "activeOrders": 3,
+        "unresolvedOrders": 3,
+        "profitSignalEligible": false,
+        "counts": {
+          "submissionBatches": 53,
+          "writeBudgetHolds": 210,
+          "cancels": 29,
+          "uniqueTrades": 29,
+          "duplicateTrades": 274,
+          "earlyRenewals": 6
+        },
+        "contestOrders": 0,
+        "networkRequests": 0,
+        "profitabilityEstablished": false,
+        "assumptions": [
+          "Independent simulated capital; no contest-account ownership.",
+          "Flat entries join both sides only when combined spread covers modeled fees and required edge; partial fills remain inventory risk.",
+          "Strict one-tick trade-through and bounded participation are counterfactual, not verified queue fills.",
+          "Cancel acknowledgment does not release unresolved funding; complete window and post-end checkpoint are required.",
+          "YES/NO pair payout is a declared paper accounting assumption."
+        ]
+      },
+      "newFills": [
+        {
+          "orderId": 56,
+          "marketId": "320",
+          "exchangeId": "1009",
+          "side": "NO",
+          "action": "buy",
+          "quantity": 1,
+          "price": "0.630000",
+          "fee": "0.000000",
+          "at": "2026-10-13T22:07:30.394Z",
+          "sourceId": "152168233",
+          "counterfactual": true
+        }
+      ],
+      "lastFreshLiquidation": {
+        "at": "2026-10-13T22:09:06.490Z",
+        "pnl": "-0.005000"
+      },
+      "worstFreshLiquidation": {
+        "at": "2026-10-13T22:08:07.615Z",
+        "pnl": "-0.005000"
+      }
+    }
+  ],
+  "contestOrders": 0,
+  "newPaperCapital": "0.000000",
+  "profitabilityEstablished": false,
+  "usage": "Development diagnostic only. Recorded processing and execution clocks remain unchanged; faster renewal is a hypothetical policy intervention, not an observed fill or untouched holdout."
+}

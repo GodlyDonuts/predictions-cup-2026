@@ -188,3 +188,30 @@ scoped book checkpoint can release their reservations. A paginated recovery
 response leaves funding unresolved; restarting never releases it by wall time.
 The [October 13 market screen](results/sig-screen-20261013.json) selects FL-07 for
 an unseen prospective test alongside the existing FL-09 control.
+
+## Recorded-clock intervention tests
+
+```powershell
+node moloch/compare.mjs runtime/moloch/live-completed runtime/moloch/live-completed/comparison.json
+```
+
+This requires a completed successor episode, verifies its parent snapshot and
+entire event hash chain, and reproduces the baseline financial state exactly
+before evaluating early quote renewal. It preserves recorded processing clocks,
+execution timestamps and existing liabilities. Variant fills are hypothetical;
+the same observations are development data and cannot serve as a holdout.
+
+The [October 13 renewal comparison](results/sig-renewal-20261013.json) reproduced
+the completed two-market run: 25 official receipts, zero fills and zero realized
+profit. Renewal 30/45/60 seconds before expiry each produced one hypothetical NO
+purchase with a later fresh liquidation mark of -0.005, no realized profit and
+one remaining position. Final executable liquidation was unknown because its book
+had aged past the entry deadline. Faster renewal therefore remains disabled by
+default (`renewBeforeMs: 0`); increased fill count alone is not economic success.
+
+The current official realtime documentation supports private tournament market
+topics carrying versioned books and trades in one-second batches. It requires an
+ephemeral three-hour token from `POST /realtime/token` (one account-budget write),
+initial/periodic REST synchronization, and resynchronization on gaps or truncated
+batches. This is the next data-cadence integration target, not a deployed stream
+or a claim of gap-free HFT data. Moloch still uses REST polling at this commit.

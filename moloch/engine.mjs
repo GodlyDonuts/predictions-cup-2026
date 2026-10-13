@@ -5,7 +5,7 @@ import {payloadHash} from '../execution/ledger.mjs';
 export const DEFAULT_POLICY=Object.freeze({initialCash:'1000.000000',maximumCommitted:'40.000000',
   maximumMarketCost:'10.000000',quantity:5,maximumMarkets:4,latencyMs:3000,lifetimeMs:120000,
   bookAgeMs:10000,maximumSourceSilenceMs:60000,minimumSpreadTicks:1,minimumEdge:'0.001000',participationBps:100,
-  feeBps:0,feePerShare:'0.000000',quoteMode:'pairedSpread',minimumQuoteAgeMs:2500,writeGapMs:2500,writesPerMinute:24});
+  feeBps:0,feePerShare:'0.000000',quoteMode:'pairedSpread',renewBeforeMs:0,minimumQuoteAgeMs:2500,writeGapMs:2500,writesPerMinute:24});
 const ns=x=>instantNs(x), ms=x=>Number(ns(x)/1000000n), iso=x=>new Date(x).toISOString();
 const check=(ok,code)=>{if(!ok)throw Error('MOLOCH_'+code);};
 const position=(s,ex)=>s.positions[ex]??{YES:[],NO:[]};
@@ -26,6 +26,7 @@ function prune(s){for(const p of Object.values(s.positions))for(const side of ['
 export function createMoloch(policy={}){
   const p={...DEFAULT_POLICY,...policy};
   check(['pairedSpread','microprice'].includes(p.quoteMode),'QUOTE_MODE');
+  check(Number.isSafeInteger(p.renewBeforeMs)&&p.renewBeforeMs>=0&&p.renewBeforeMs<p.lifetimeMs-p.latencyMs-p.minimumQuoteAgeMs,'RENEWAL_WINDOW');
   for(const k of ['quantity','maximumMarkets','latencyMs','lifetimeMs','bookAgeMs','maximumSourceSilenceMs','minimumSpreadTicks','participationBps','minimumQuoteAgeMs','writeGapMs','writesPerMinute'])check(Number.isSafeInteger(p[k])&&p[k]>0,'POLICY_'+k);
   check(p.quantity<=100&&p.participationBps<=10000&&p.writesPerMinute<=24&&p.writeGapMs>=2500&&p.lifetimeMs>p.latencyMs+p.minimumQuoteAgeMs,'POLICY_LIMITS');
   check(Number.isSafeInteger(p.feeBps)&&p.feeBps>=0&&amount(p.feePerShare)>=0n&&amount(p.minimumEdge)>0n&&amount(p.initialCash)>0n&&amount(p.maximumCommitted)>0n&&amount(p.maximumMarketCost)>0n,'POLICY_MONEY');
@@ -91,7 +92,8 @@ function reconcile(s,at){
     // quotes until a changed/gapped source or the explicit silence timeout.
     const stillCovered=q.action==='sell'?qty(p[q.side])>=remaining(q):qty(p.YES)+qty(p.NO)===0;
     if(!target&&b&&!b.invalid&&!fresh(s,b,at)&&at-ms(b.receivedAt)<s.policy.maximumSourceSilenceMs&&stillCovered)continue;
-    if((!target||target.price!==q.price)&&at-q.createdAt>=s.policy.minimumQuoteAgeMs){q.cancelEffectiveAt=at+s.policy.latencyMs;s.writes.push(at);count(s,'cancels');return;}}
+    const renew=target&&target.price===q.price&&fresh(s,b,at)&&s.policy.renewBeforeMs>0&&q.expiresAt-at<=s.policy.renewBeforeMs;
+    if((!target||target.price!==q.price||renew)&&at-q.createdAt>=s.policy.minimumQuoteAgeMs){q.cancelEffectiveAt=at+s.policy.latencyMs;s.writes.push(at);count(s,'cancels');if(renew)count(s,'earlyRenewals');return;}}
   const batch=[],markets=new Set([...Object.entries(s.positions).filter(([,p])=>qty(p.YES)+qty(p.NO)>0).map(([ex])=>ex),...unresolved(s).map(q=>q.exchangeId)]);
   let available=amount(s.cash)-reserve(s),headroom=amount(s.policy.maximumCommitted)-owned(s)-reserve(s);
   const marketCosts=new Map();for(const [ex,p]of Object.entries(s.positions))marketCosts.set(ex,basis(p.YES)+basis(p.NO));
