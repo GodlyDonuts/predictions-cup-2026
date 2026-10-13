@@ -16,6 +16,12 @@ test('full canonical numeric/string/key corpus restores exact legacy state and h
 test('computed-hash mode returns the verified source digest without a caller pre-hash',opts,async t=>{
  const f=fixture(t),j=new Journal(f.file);j.commit({cash:'99.985000',basis:'0.000000',fills:2},{type:'paper'});const result=await readNativeJournal({runtimeDir:f.runtimeDir,binding:f.binding,file:f.file,endByte:fs.statSync(f.file).size,receiptDir:f.receiptDir});assert.equal(result.sourceHash,sha(fs.readFileSync(f.file)));assert.equal(result.sourceBytes,fs.statSync(f.file).size);assert.equal(result.records,1);assert.equal(result.hashMode,'computed');assert.equal(result.prefixHashMs,0);
 });
+test('archived sources alone cannot grant computed mode to a different pinned binary or library',opts,t=>{
+ const f=fixture(t);
+ assert.equal(nativeJournalRuntimeHashMode(f.runtimeDir,f.binding),'computed');
+ assert.equal(nativeJournalRuntimeHashMode(f.runtimeDir,{...f.binding,binaryHash:'a'.repeat(64)}),'explicit');
+ assert.equal(nativeJournalRuntimeHashMode(f.runtimeDir,{...f.binding,runtimeLibraryHash:'b'.repeat(64)}),'explicit');
+});
 test('runtime snapshot selects computed mode even when checkout differs; invalid snapshots use explicit fallback',opts,async t=>{
  const f=fixture(t),snapshot=path.join(f.runtimeDir,'journal-native-sources',f.binding.engineHash),checkout=path.join(f.runtimeDir,'different-checkout');
  assert.equal(nativeJournalRuntimeHashMode(f.runtimeDir,f.binding),'computed');assert.equal(nativeJournalHashMode(f.binding,sourceRoot),'computed');
@@ -64,3 +70,4 @@ test('stop arriving while the native restorer runs leaves the source unchanged',
 test('direct native reads reject a concurrent append to their verified prefix',opts,async t=>{
  const f=fixture(t),j=new Journal(f.file);j.commit({payload:'x'.repeat(8000000)},{type:'fixture'});const initial=fs.statSync(f.file).size,opening=f.read({expectedSha:undefined});setTimeout(()=>fs.appendFileSync(f.file,'\n'),0);await assert.rejects(opening,/STOP_OR_SOURCE_CHANGED/);assert.equal(fs.statSync(f.file).size,initial+1);
 });
+
