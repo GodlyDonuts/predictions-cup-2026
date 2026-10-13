@@ -1,0 +1,47 @@
+import {makerAdmissionLifetimeV1} from '../paper/maker-admission-lifetime-v1.mjs';
+import fs from 'node:fs';import path from 'node:path';import {createHash} from 'node:crypto';
+import {Journal} from './transport-runtime.mjs';import {journalLines} from './journal-lines.mjs';import {verifiedJournalEventLineV2} from './verified-journal-event-line-v2.mjs';
+import {applyBookPublication} from './book-publication-v2.mjs';import {atomicJson,payloadHash} from '../execution/ledger.mjs';
+import {createMakerSelectedWalletV4,advanceMakerSelectedWalletV4,makerSelectedWalletReportV4} from '../paper/maker-selected-wallet-v4.mjs';
+import {inventoryAwareQuotesV1} from '../paper/inventory-aware-quote-v1.mjs';import {adaptMakerProposalV1} from '../paper/maker-proposal-adapter-v1.mjs';import {makerJoinControlV1} from '../paper/maker-join-control-v1.mjs';import {amount,money,instant} from '../paper/fixed.mjs';
+const sessions=new Map();const journalStamp=file=>{const s=fs.statSync(file,{bigint:true});return [s.dev,s.ino,s.size,s.mtimeNs,s.ctimeNs].map(String).join(':');};
+const sha=b=>createHash('sha256').update(b).digest('hex');
+function appendedMakerSourceV1(file,cursor,{book=false,publication=null}={}){
+ const stat=fs.statSync(file);if(stat.dev!==cursor.dev||stat.ino!==cursor.ino||stat.size<cursor.bytes)throw Error('MAKER_SOURCE_REPLACED');
+ const fd=fs.openSync(file,'r');let end=stat.size;try{const n=Math.min(stat.size-cursor.bytes,16777216);if(n){const tail=Buffer.alloc(n);fs.readSync(fd,tail,0,n,stat.size-n);const newline=tail.lastIndexOf(10);end=newline<0?cursor.bytes:stat.size-n+newline+1;}}finally{fs.closeSync(fd);}
+ if(end-cursor.bytes>67108864)throw Error('MAKER_SOURCE_BACKLOG');const rows=[],next={...cursor};
+ for(const line of journalLines(file,{startByte:cursor.bytes,endByte:end})){const row=book?JSON.parse(line):verifiedJournalEventLineV2(line);if(row.sequence!==next.sequence+1||(book?row.previousHash:row.previous)!==next.hash)throw Error('MAKER_SOURCE_CHAIN');if(book)publication=applyBookPublication(publication,row);next.sequence=row.sequence;next.hash=row.hash;next.bytes+=Buffer.byteLength(line)+1;rows.push(row);}
+ if(next.bytes!==end)throw Error('MAKER_SOURCE_BYTES');return{rows,cursor:next,publication};
+}
+export function updateMakerProspectiveV6({runtimeDir,workspace=process.cwd(),now=Date.now}){
+ const pointer=path.join(runtimeDir,'maker-prospective-active-v6.json');if(!fs.existsSync(pointer))return{cohorts:0};
+ if(['STOP','PAPER_STOP','PAPER_REPLAY_STOP','COLLECTOR_STOP'].some(f=>fs.existsSync(path.join(runtimeDir,f))))return{status:'stopped',cohorts:0};
+ const active=JSON.parse(fs.readFileSync(pointer));if(!/^[a-z][a-z0-9-]{1,70}$/.test(active.cohort))throw Error('MAKER_COHORT_PATH');const dir=path.join(runtimeDir,'maker-prospective-cohorts',active.cohort),bank=JSON.parse(fs.readFileSync(path.join(dir,'bank.json'))),{bankHash,...bankBody}=bank;
+ if(payloadHash(bankBody)!==bankHash||bankHash!==active.bankHash)throw Error('MAKER_BANK');for(const [file,hash]of Object.entries(bank.codeIdentity))if(sha(fs.readFileSync(path.join(workspace,file)))!==hash)throw Error('MAKER_FROZEN_CODE');
+ const journalFile=path.join(dir,'journal.jsonl');let cached=sessions.get(dir);if(cached&&journalStamp(journalFile)!==cached.stamp)throw Error('MAKER_CACHED_JOURNAL_CHANGED');const journal=cached?.journal??new Journal(journalFile);let state=cached?.state??journal.last?.state??(fs.existsSync(path.join(dir,'initial-state.json'))?JSON.parse(fs.readFileSync(path.join(dir,'initial-state.json'))):{bankHash,books:structuredClone(bank.bookAnchor),publication:structuredClone(bank.publication),tape:structuredClone(bank.tapeAnchor),wallet:createMakerSelectedWalletV4(bank.policy),history:structuredClone(bank.history??{}),targets:{},updates:0,staleBooks:0});
+ try{
+ if(state.bankHash!==bankHash)throw Error('MAKER_JOURNAL_BANK');if(!cached&&!journal.last&&bank.continuation){const {bankHash:seedBank,...seed}=state;if(!fs.existsSync(path.join(dir,'initial-state.json'))||seedBank!==bankHash||payloadHash(seed)!==bank.continuation.seedStateHash)throw Error('MAKER_CONTINUATION_SEED');}
+ const books=appendedMakerSourceV1(path.join(runtimeDir,'public-books.jsonl'),state.books,{book:true,publication:state.publication}),tape=appendedMakerSourceV1(path.join(runtimeDir,'anonymous-trades.jsonl'),state.tape);
+ const at=new Date(now()).toISOString();if(instant(at)<instant(state.wallet.lastAt))throw Error('MAKER_PROCESSING_CLOCK');
+ // Fills update existing decisions only. Later processing never backdates a
+ // new quote to the historical receipt time of a book that arrived earlier.
+ for(const row of tape.rows){const page=row.event;if(page.type!=='anonymous_trade_page'||page.tournamentId!==bank.tournamentId)throw Error('MAKER_TAPE_SCOPE');advanceMakerSelectedWalletV4(state.wallet,{kind:'trades',at,sourceHash:row.hash,page},bank.policy);}
+ const latest=new Map();for(const row of books.rows){if(row.kind==='book')latest.set(row.payload.book.exchangeId,row);else if(row.kind==='invalidation'||row.kind==='session_stop'){state.targets={};advanceMakerSelectedWalletV4(state.wallet,{kind:'quotes',at,sourceHash:row.hash,proposals:[],entriesEnabled:false},bank.policy);}}
+ const recoveredFile=path.join(runtimeDir,'maker-ready-recoveries-v1.json');if(fs.existsSync(recoveredFile)){const r=JSON.parse(fs.readFileSync(recoveredFile)),{publicationHash,...body}=r;if(publicationHash!==payloadHash(body)||r.tournamentId!==bank.tournamentId||r.executionAuthority!==false)throw Error('MAKER_READY_SOURCE');if(instant(at)-instant(r.at)>=0&&instant(at)-instant(r.at)<=2500)for(const b of r.books){if(b.origin!=='separate_realtime_full200_recovery'||!bank.publication.scope.exchanges.some(m=>m.marketId===b.marketId&&m.exchangeId===b.exchangeId))throw Error('MAKER_READY_SCOPE');state.recoverySeen??={};const h=payloadHash(b);if(state.recoverySeen[b.exchangeId]===h)continue;state.recoverySeen[b.exchangeId]=h;latest.set(b.exchangeId,{hash:h,payload:{book:b},separateRecovery:true});state.recoveryBooksConsumed=(state.recoveryBooksConsumed??0)+1;}}
+ for(const row of latest.values()){const b=row.payload.book,ex=b.exchangeId;advanceMakerSelectedWalletV4(state.wallet,{kind:'book',at,sourceHash:row.hash,book:b},bank.policy);if((!row.separateRecovery&&!books.publication.books[ex+':YES'])||instant(at)-instant(b.requestStartedAt)>=10000){state.staleBooks++;continue;}
+  const h=(state.history[ex]??[]).filter(x=>instant(at)-x.at<=3600000),mid=(Number(b.bids[0].price)+Number(b.asks[0].price))/2;let variance=0,seconds=0;for(let i=1;i<h.length;i++){const dt=(h[i].at-h[i-1].at)/1000;if(dt>0){variance+=(h[i].mid-h[i-1].mid)**2;seconds+=dt;}}state.history[ex]=[...h,{at:instant(b.receivedAt),mid}].slice(-120);
+  const coverage=state.wallet.wallet.tradeCoverage[ex];if(h.length<(row.separateRecovery?bank.minimumRecoverySamples:bank.minimumSamples)||(!row.separateRecovery&&(!coverage?.complete||instant(at)-instant(coverage.knownAt)>120000||instant(at)-instant(coverage.to)>120000)))continue;
+  const w=state.wallet.wallet,p=w.positions[ex],reserved=w.quotes.filter(q=>!q.closedAt&&q.action==='buy').reduce((n,q)=>n+amount(q.limit)*BigInt(q.remaining),0n),basis=Object.values(w.positions).reduce((n,p)=>n+amount(p.cost),0n),cash=amount(w.cash)-reserved,capacity=amount(bank.policy.wallet.maximumCommitted)-basis-reserved;
+  let proposal=inventoryAwareQuotesV1({book:b,inventory:{yes:p?.side==='YES'?p.quantity:0,no:p?.side==='NO'?p.quantity:0},cashAvailable:money(cash<capacity?cash:capacity),variancePerSecond:seconds?Math.min(.25,variance/seconds):0,maximumShares:bank.policy.wallet.quantity,inventoryScale:bank.policy.wallet.quantity,maximumOrderCost:bank.policy.wallet.maximumOrderCost,now:at});
+  proposal=makerJoinControlV1({inventoryProposal:proposal,book:b});state.targets[ex]=adaptMakerProposalV1({proposal,book:b,markoutReserve:bank.markoutReserve,at,lifetimeMs:bank.policy.wallet.lifetimeMs}).quotes.map(q=>({...q,admissionValidUntil:q.validUntil,orderExpiresAt:new Date(instant(at)+bank.policy.wallet.lifetimeMs).toISOString()}));
+ }
+ const proposals=makerAdmissionLifetimeV1(Object.values(state.targets).flat(),{at,latencyMs:bank.policy.wallet.latencyMs,minimumActiveMs:bank.policy.scheduler.minimumQuoteAgeMs});advanceMakerSelectedWalletV4(state.wallet,{kind:'quotes',at,sourceHash:books.cursor.hash,proposals,entriesEnabled:true},bank.policy);
+ state.books=books.cursor;state.publication=books.publication;state.tape=tape.cursor;state.updates++;journal.commit(state,{type:'prospective_maker_update',at,bookRows:books.rows.length,tapeRows:tape.rows.length});
+ sessions.set(dir,{journal,state,stamp:journalStamp(journalFile)});
+ const report={at,bankHash,recoveryBooksConsumed:state.recoveryBooksConsumed??0,journalCacheHit:!!cached,cohort:active.cohort,updates:state.updates,staleBooks:state.staleBooks,bookSequence:state.books.sequence,tapeSequence:state.tape.sequence,report:makerSelectedWalletReportV4(state.wallet,bank.policy),processingClockUsedForEntries:true,networkRequests:0,contestOrders:0};atomicJson(path.join(dir,'stats.json'),report);return{cohorts:1,...report};
+ }catch(error){sessions.delete(dir);throw error;}
+}
+
+
+
+
