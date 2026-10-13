@@ -22,6 +22,11 @@ test('archived sources alone cannot grant computed mode to a different pinned bi
  assert.equal(nativeJournalRuntimeHashMode(f.runtimeDir,{...f.binding,binaryHash:'a'.repeat(64)}),'explicit');
  assert.equal(nativeJournalRuntimeHashMode(f.runtimeDir,{...f.binding,runtimeLibraryHash:'b'.repeat(64)}),'explicit');
 });
+test('matching archived legacy source still selects explicit hash mode',opts,t=>{
+ const f=fixture(t),old=path.join(f.runtimeDir,'legacy-engine-source'),archive=path.join(f.runtimeDir,'journal-native-sources');fs.cpSync(sourceRoot,old,{recursive:true});fs.appendFileSync(path.join(old,'src/main.rs'),'\n// legacy restore CLI\n');
+ const engineHash=journalEngineIdentity(old),snapshot=path.join(archive,engineHash);for(const name of journalSourceFiles){const target=path.join(snapshot,name);fs.mkdirSync(path.dirname(target),{recursive:true});fs.copyFileSync(path.join(old,name),target);}
+ const legacyBinding={...f.binding,engineHash};assert.equal(nativeJournalHashMode(legacyBinding,snapshot),'computed');assert.equal(nativeJournalRuntimeHashMode(f.runtimeDir,legacyBinding),'explicit');
+});
 test('runtime snapshot selects computed mode even when checkout differs; invalid snapshots use explicit fallback',opts,async t=>{
  const f=fixture(t),snapshot=path.join(f.runtimeDir,'journal-native-sources',f.binding.engineHash),checkout=path.join(f.runtimeDir,'different-checkout');
  assert.equal(nativeJournalRuntimeHashMode(f.runtimeDir,f.binding),'computed');assert.equal(nativeJournalHashMode(f.binding,sourceRoot),'computed');
@@ -70,4 +75,3 @@ test('stop arriving while the native restorer runs leaves the source unchanged',
 test('direct native reads reject a concurrent append to their verified prefix',opts,async t=>{
  const f=fixture(t),j=new Journal(f.file);j.commit({payload:'x'.repeat(8000000)},{type:'fixture'});const initial=fs.statSync(f.file).size,opening=f.read({expectedSha:undefined});setTimeout(()=>fs.appendFileSync(f.file,'\n'),0);await assert.rejects(opening,/STOP_OR_SOURCE_CHANGED/);assert.equal(fs.statSync(f.file).size,initial+1);
 });
-
