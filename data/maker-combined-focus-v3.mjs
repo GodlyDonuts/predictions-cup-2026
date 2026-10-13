@@ -1,4 +1,4 @@
-import fs from 'node:fs';import path from 'node:path';import {Journal} from '../live-paper/transport-runtime.mjs';import {atomicJson,payloadHash} from '../execution/ledger.mjs';import {makerSelectedWalletReportV2} from '../paper/maker-selected-wallet-v2.mjs';
+import fs from 'node:fs';import path from 'node:path';import {readOnlyMakerJournalV1} from '../live-paper/maker-readonly-journal-cache-v1.mjs';import {atomicJson,payloadHash} from '../execution/ledger.mjs';import {makerSelectedWalletReportV2} from '../paper/maker-selected-wallet-v2.mjs';
 import {payloadHash as legacyHashOf} from '../execution/core.mjs';
 const need=(v,c)=>{if(!v)throw Error('MAKER_COMBINED_FOCUS_'+c);};
 export function combineMakerFocusV3({legacyBank,legacyResult,makerBank,makerState}){
@@ -14,7 +14,7 @@ export function publishMakerCombinedFocusV3({runtimeDir,workspace=process.cwd()}
  const configFile=path.join(runtimeDir,'maker-combined-focus-config-v1.json');if(!fs.existsSync(configFile))return null;const config=JSON.parse(fs.readFileSync(configFile));
  need(/^[a-z][a-z0-9-]{0,79}$/.test(config.legacy.prefix)&&/^\d{8}$/.test(config.legacy.stamp)&&/^[a-z][a-z0-9-]{1,70}$/.test(config.makerCohort),'CONFIG');
  const base=path.join(workspace,'data',config.legacy.prefix),legacyBank=JSON.parse(fs.readFileSync(base+'-bank-'+config.legacy.stamp+'.json')),legacyResult=JSON.parse(fs.readFileSync(base+'-results-'+config.legacy.stamp+'.json'));
- need(legacyBank.bankHash===config.legacy.bankHash,'LEGACY_HASH');const dir=path.join(runtimeDir,'maker-prospective-cohorts',config.makerCohort),makerBank=JSON.parse(fs.readFileSync(path.join(dir,'bank.json'))),journal=new Journal(path.join(dir,'journal.jsonl'));if(!journal.last)return null;need(makerBank.bankHash===config.makerBankHash,'MAKER_HASH');
+ need(legacyBank.bankHash===config.legacy.bankHash,'LEGACY_HASH');const dir=path.join(runtimeDir,'maker-prospective-cohorts',config.makerCohort),makerBank=JSON.parse(fs.readFileSync(path.join(dir,'bank.json'))),journal=readOnlyMakerJournalV1(path.join(dir,'journal.jsonl'));if(!journal.last)return null;need(makerBank.bankHash===config.makerBankHash,'MAKER_HASH');
  const out=combineMakerFocusV3({legacyBank,legacyResult,makerBank,makerState:journal.last.state});atomicJson(path.join(workspace,'data/maker-combined-focus-bank-20261012.json'),out.bank);atomicJson(path.join(workspace,'data/maker-combined-focus-results-20261012.json'),out.result);return{bankHash:out.bank.bankHash,cohorts:out.result.cohorts.length};
 }
 
