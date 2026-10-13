@@ -1,0 +1,13 @@
+[package]
+name = "moloch-replay"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+serde_json = "1"
+chrono = { version = "0.4", default-features = false, features = ["std"] }
+sha2 = "0.10"
+
+[profile.release]
+lto = "thin"
+codegen-units = 1

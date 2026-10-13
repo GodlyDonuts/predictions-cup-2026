@@ -4,7 +4,7 @@ import {payloadHash} from '../execution/ledger.mjs';
 
 export const DEFAULT_POLICY=Object.freeze({initialCash:'1000.000000',maximumCommitted:'40.000000',
   maximumMarketCost:'10.000000',quantity:5,maximumMarkets:4,latencyMs:3000,lifetimeMs:120000,
-  bookAgeMs:10000,minimumSpreadTicks:1,minimumEdge:'0.001000',participationBps:100,
+  bookAgeMs:10000,maximumSourceSilenceMs:60000,minimumSpreadTicks:1,minimumEdge:'0.001000',participationBps:100,
   feeBps:0,feePerShare:'0.000000',minimumQuoteAgeMs:2500,writeGapMs:2500,writesPerMinute:24});
 const ns=x=>instantNs(x), ms=x=>Number(ns(x)/1000000n), iso=x=>new Date(x).toISOString();
 const check=(ok,code)=>{if(!ok)throw Error('MOLOCH_'+code);};
@@ -25,11 +25,11 @@ function prune(s){for(const p of Object.values(s.positions))for(const side of ['
 
 export function createMoloch(policy={}){
   const p={...DEFAULT_POLICY,...policy};
-  for(const k of ['quantity','maximumMarkets','latencyMs','lifetimeMs','bookAgeMs','minimumSpreadTicks','participationBps','minimumQuoteAgeMs','writeGapMs','writesPerMinute'])check(Number.isSafeInteger(p[k])&&p[k]>0,'POLICY_'+k);
+  for(const k of ['quantity','maximumMarkets','latencyMs','lifetimeMs','bookAgeMs','maximumSourceSilenceMs','minimumSpreadTicks','participationBps','minimumQuoteAgeMs','writeGapMs','writesPerMinute'])check(Number.isSafeInteger(p[k])&&p[k]>0,'POLICY_'+k);
   check(p.quantity<=100&&p.participationBps<=10000&&p.writesPerMinute<=24&&p.writeGapMs>=2500&&p.lifetimeMs>p.latencyMs+p.minimumQuoteAgeMs,'POLICY_LIMITS');
   check(Number.isSafeInteger(p.feeBps)&&p.feeBps>=0&&amount(p.feePerShare)>=0n&&amount(p.minimumEdge)>0n&&amount(p.initialCash)>0n&&amount(p.maximumCommitted)>0n&&amount(p.maximumMarketCost)>0n,'POLICY_MONEY');
   return{schemaVersion:1,bot:'Moloch',policy:p,policyHash:payloadHash(p),cash:p.initialCash,realized:'0.000000',fees:'0.000000',
-    positions:{},books:{},orders:[],fills:[],redemptions:[],seen:{},flow:{},writes:[],events:0,lastAt:null,nextOrderId:1,counts:{}};
+    positions:{},books:{},priceHistory:{},orders:[],fills:[],redemptions:[],seen:{},flow:{},writes:[],events:0,lastAt:null,nextOrderId:1,counts:{}};
 }
 const count=(s,k)=>s.counts[k]=(s.counts[k]??0)+1;
 function fresh(s,b,at){return b&&!b.invalid&&at-ms(b.requestStartedAt)<=s.policy.bookAgeMs&&ms(b.receivedAt)<=at;}
@@ -83,6 +83,12 @@ function reconcile(s,at){
   if(s.writes.length>=s.policy.writesPerMinute||(s.writes.length&&at-s.writes.at(-1)<s.policy.writeGapMs)){count(s,'writeBudgetHolds');return;}
   const active=unresolved(s).filter(q=>end(q)>at);
   for(const q of active){const target=byKey.get(key(q));if(q.cancelEffectiveAt!==undefined)continue;
+    const b=s.books[q.exchangeId],p=position(s,q.exchangeId);
+    // An entry deadline does not shorten an already-funded resting order's life.
+    // Do not place replacements from stale data; retain only still-covered old
+    // quotes until a changed/gapped source or the explicit silence timeout.
+    const stillCovered=q.action==='sell'?qty(p[q.side])>=remaining(q):qty(p.YES)+qty(p.NO)===0;
+    if(!target&&b&&!b.invalid&&!fresh(s,b,at)&&at-ms(b.receivedAt)<s.policy.maximumSourceSilenceMs&&stillCovered)continue;
     if((!target||target.price!==q.price)&&at-q.createdAt>=s.policy.minimumQuoteAgeMs){q.cancelEffectiveAt=at+s.policy.latencyMs;s.writes.push(at);count(s,'cancels');return;}}
   const batch=[],markets=new Set([...Object.entries(s.positions).filter(([,p])=>qty(p.YES)+qty(p.NO)>0).map(([ex])=>ex),...unresolved(s).map(q=>q.exchangeId)]);
   let available=amount(s.cash)-reserve(s),headroom=amount(s.policy.maximumCommitted)-owned(s)-reserve(s);
@@ -118,6 +124,8 @@ export function advanceMoloch(s,event){
     const b=s.books[event.exchangeId];if(b)check(b.marketId===event.marketId&&b.tournamentId===event.tournamentId,'TRADE_SCOPE_CHANGED');
     const key=[event.tournamentId,event.exchangeId,event.id].join(':'),hash=payloadHash({marketId:event.marketId,executedAt:event.executedAt,yesPrice:event.yesPrice,quantity:event.quantity});
     if(s.seen[key]){check(s.seen[key]===hash,'TRADE_CONFLICT');duplicate=true;}else s.seen[key]=hash;
+  }else if(event.type==='candle'){
+    check(event.historicalReleaseClockAssumed===true&&ns(event.availableAt)===ns(event.receivedAt)&&ns(event.bucketStartedAt)<ns(event.availableAt)&&Number.isFinite(event.close)&&event.close>=0&&event.close<=1&&typeof event.exchangeId==='string','CANDLE');
   }else if(event.type==='coverage'){
     check(event.complete===true&&ns(event.from)<ns(event.to)&&ns(event.to)<=atNs&&/^\d+$/.test(String(event.projectedThroughSequence)),'COVERAGE');
   }else check(event.type==='gap'||event.type==='tick','EVENT_TYPE');
@@ -140,9 +148,11 @@ export function advanceMoloch(s,event){
       const n=Math.min(event.quantity,remaining(q),Math.floor(q.participationCredit/10000),Math.max(participation,1));
       if(n>0){q.participationCredit-=n*10000;fill(s,q,n,s.lastAt,event.id);participation=Math.max(0,participation-n);break;}
     }
+  }else if(event.type==='candle'){
+    s.priceHistory??={};const prior=s.priceHistory[event.exchangeId];s.priceHistory[event.exchangeId]={close:event.close,at:event.availableAt,observations:(prior?.observations??0)+1,historicalReleaseClockAssumed:true};count(s,'priceOnlyObservations');
   }else if(event.type==='coverage'){
     // Complete original quote window plus a post-end engine barrier, not wall time alone.
-    for(const q of unresolved(s).filter(q=>q.marketId===event.marketId&&q.exchangeId===event.exchangeId&&q.tournamentId===event.tournamentId))if(q.barrier&&q.barrier.endAt===end(q)&&ms(event.from)<=q.activationAt&&ms(event.to)>=end(q)&&BigInt(event.projectedThroughSequence)>=BigInt(q.barrier.sequence))q.retired=true;
+    for(const q of unresolved(s).filter(q=>q.marketId===event.marketId&&q.exchangeId===event.exchangeId&&q.tournamentId===event.tournamentId))if(q.barrier&&q.barrier.endAt===end(q)&&ns(event.from)<=BigInt(q.activationAt)*1000000n&&ns(event.to)>=BigInt(end(q))*1000000n&&BigInt(event.projectedThroughSequence)>=BigInt(q.barrier.sequence))q.retired=true;
   }
   if(duplicate)count(s,'duplicateTrades');reconcile(s,at);assertMoloch(s);return s;
 }
@@ -165,7 +175,7 @@ export function reportMoloch(s){
   }
   return{bot:'Moloch',at:s.lastAt,policyHash:s.policyHash,events:s.events,cash:s.cash,realized:s.realized,fees:s.fees,
     ownedCost:money(owned(s)),reservedCash:money(reserve(s)),netLiquidationPnl:known?money(amount(s.cash)+liquidation-amount(s.policy.initialCash)):null,
-    positions:s.positions,fills:s.fills.length,orders:s.orders.length,activeOrders:at===null?0:unresolved(s).filter(q=>end(q)>at).length,
+    positions:s.positions,priceHistory:s.priceHistory??{},fills:s.fills.length,orders:s.orders.length,activeOrders:at===null?0:unresolved(s).filter(q=>end(q)>at).length,
     unresolvedOrders:unresolved(s).length,profitSignalEligible:unresolved(s).length===0&&known&&amount(s.realized)>0n&&amount(s.cash)+liquidation>amount(s.policy.initialCash),counts:s.counts,contestOrders:0,networkRequests:0,profitabilityEstablished:false,
     assumptions:['Independent simulated capital; no contest-account ownership.','Microprice ranks quotes; it is not calibrated alpha.','Strict one-tick trade-through and bounded participation are counterfactual, not verified queue fills.','Cancel acknowledgment does not release unresolved funding; complete window and post-end checkpoint are required.','YES/NO pair payout is a declared paper accounting assumption.']};
 }

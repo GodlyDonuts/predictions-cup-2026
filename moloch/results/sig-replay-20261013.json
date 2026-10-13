@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "source": "official_sig_api_v1",
+  "endpoint": "/exchanges/1011/price-history?tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55&resolution=1h&from=1970-01-01T00%3A00%3A00.000Z&to=2026-10-13T08%3A00%3A00.000Z&limit=1000",
+  "observedAt": "2026-10-13T08:44:54.740Z",
+  "status": 200,
+  "marketId": "322",
+  "exchangeId": "1011",
+  "history": {
+    "from": "1970-01-01T00:00:00Z",
+    "to": "2026-10-13T08:00:00Z",
+    "first": "2026-10-01T16:00:00Z",
+    "last": "2026-10-13T07:00:00Z",
+    "candles": 219,
+    "coverage": {
+      "complete": true,
+      "projectedThroughSequence": 147108865
+    }
+  },
+  "sourceReceiptSha256": "f6cb4263721b13a15fc20a6ad3949709900de32dc0b0190f3284f50e752380f5",
+  "normalizedEventsSha256": "c52287e73c9302ae9eebe299b8ff0bd2de056f7bef457e345b188515111cc6eb",
+  "rust": {
+    "bot": "Moloch",
+    "clockCompression": 258705955.07933238,
+    "contestOrders": 0,
+    "events": 219,
+    "eventsPerSecond": 56408.407170822175,
+    "financialEngine": "moloch/engine.mjs; run normalized output through same engine",
+    "historicalCandleClockAssumed": true,
+    "mode": "rust_virtual_clock_replay",
+    "models": {
+      "1011": {
+        "evaluatedPredictions": 217,
+        "nextPriceChange": -0.0015012786128609777,
+        "profitabilityEstablished": false,
+        "rmse": 0.0060067035442395575,
+        "zeroChangeRmse": 0.005809970771756389
+      }
+    },
+    "networkRequests": 0,
+    "profitabilityEstablished": false,
+    "sleeps": 0,
+    "sourceSeconds": 1004400,
+    "throughputScope": "Rust source validation, online price forecasting and event emission only; excludes JS wallet",
+    "wallSeconds": 0.0038824
+  },
+  "wallet": {
+    "events": 219,
+    "fills": 0,
+    "realized": "0.000000",
+    "clockModel": "historical candle release assumed at bucket end; not original historical reporting latency"
+  },
+  "measuredWalletWallMilliseconds": 132.0109,
+  "forecastAcceptedForTrading": false,
+  "reason": "Prequential AR(1) RMSE is worse than the zero-change baseline.",
+  "contestOrders": 0,
+  "profitabilityEstablished": false
+}

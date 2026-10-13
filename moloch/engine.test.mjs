@@ -57,3 +57,13 @@ test('funding reserves per-share fee rounding for partial fills',()=>{
   for(let n=4;n<=5;n++)advanceMoloch(s,trade(n,'partial'+n,'0.465000',100));assertMoloch(s);
   assert.ok(Number(s.cash)>=Number(reportMoloch(s).reservedCash));
 });
+test('candle replay is explicitly hypothetical release timing and cannot manufacture book depth or fills',()=>{
+  const s=createMoloch();advanceMoloch(s,{type:'candle',receivedAt:at(3600),availableAt:at(3600),bucketStartedAt:at(0),exchangeId:'101',close:.45,historicalReleaseClockAssumed:true});
+  assert.equal(s.orders.length,0);assert.equal(s.fills.length,0);assert.equal(s.priceHistory['101'].observations,1);assert.equal(s.cash,'1000.000000');
+});
+test('admission freshness does not shorten resting lifetime, but prolonged silence drains quotes',()=>{
+  const s=createMoloch({quantity:1});advanceMoloch(s,book(0));advanceMoloch(s,tick(12));
+  assert.equal(s.orders.length,2);assert.ok(s.orders.every(q=>q.cancelEffectiveAt===undefined));
+  advanceMoloch(s,trade(13,'later-through'));assert.equal(s.fills.length,1);
+  const flat=createMoloch({quantity:1});advanceMoloch(flat,book(0));advanceMoloch(flat,tick(61));assert.ok(flat.orders.some(q=>q.cancelEffectiveAt!==undefined));
+});
