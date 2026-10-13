@@ -6,6 +6,10 @@ const sourceRoot=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'../b
 export const journalSourceFiles=['Cargo.toml','Cargo.lock','build.rs','src/main.rs','src/canonical.rs'];
 export function journalEngineIdentity(sourceRoot){const h=createHash('sha256');for(const name of journalSourceFiles){const bytes=fs.readFileSync(path.join(sourceRoot,name)),n=Buffer.from(name),size=Buffer.alloc(8);size.writeBigUInt64LE(BigInt(n.length));h.update(size);h.update(n);size.writeBigUInt64LE(BigInt(bytes.length));h.update(size);h.update(bytes);}return h.digest('hex');}
 export function nativeJournalHashMode(binding,root=sourceRoot){try{return binding?.engineHash===journalEngineIdentity(root)?'computed':'explicit';}catch{return'explicit';}}
+export function nativeJournalRuntimeHashMode(runtimeDir,binding){
+ if(!path.isAbsolute(runtimeDir)||!/^[a-f0-9]{64}$/.test(binding?.engineHash??''))return'explicit';
+ return nativeJournalHashMode(binding,path.join(runtimeDir,'journal-native-sources',binding.engineHash));
+}
 export function nativeJournalBinding(runtimeDir,binding){
  need(path.isAbsolute(runtimeDir)&&binding?.schemaVersion===1&&binding.mode==='canonical_js_journal_restore_v1'&&['binaryHash','engineHash','runtimeLibraryHash'].every(k=>/^[a-f0-9]{64}$/.test(binding[k])),'BINDING');
  const root=path.join(runtimeDir,'journal-native-builds',binding.binaryHash),exe=path.join(root,'baal-journal-restore.exe');
@@ -22,9 +26,9 @@ async function invoke(exe,args,signal){
  });
 }
 export async function readNativeJournal({runtimeDir,binding,file,endByte,expectedSha,receiptDir,signal}){
- need(path.isAbsolute(file)&&path.isAbsolute(receiptDir)&&Number.isSafeInteger(endByte)&&endByte>=0&&(expectedSha===undefined||/^[a-f0-9]{64}$/.test(expectedSha)),'PREFIX_BINDING');
+ need(path.isAbsolute(runtimeDir)&&path.isAbsolute(file)&&path.isAbsolute(receiptDir)&&Number.isSafeInteger(endByte)&&endByte>=0&&(expectedSha===undefined||/^[a-f0-9]{64}$/.test(expectedSha)),'PREFIX_BINDING');
  const initial=fs.statSync(file,{bigint:true});need(initial.isFile()&&initial.size>=BigInt(endByte),'PREFIX_TRUNCATED');const before=fileStamp(initial);
- let pinnedSha=expectedSha,prefixHashMs=0;const engineHashMode=nativeJournalHashMode(binding);
+ let pinnedSha=expectedSha,prefixHashMs=0;const engineHashMode=nativeJournalRuntimeHashMode(runtimeDir,binding);
  if(pinnedSha===undefined&&engineHashMode==='explicit'){const hashStarted=performance.now();pinnedSha=await sourcePrefixHash(file,endByte,signal);prefixHashMs=performance.now()-hashStarted;}
  const hashMode=pinnedSha===undefined?'computed':expectedSha===undefined?'legacy_explicit':'explicit';
  need(!signal?.aborted&&fileStamp(fs.statSync(file,{bigint:true}))===before,'STOP_OR_SOURCE_CHANGED');
@@ -53,4 +57,3 @@ export async function openNativeJournal({runtimeDir,binding,file,receiptDir,sign
  const journal=Object.create(Journal.prototype);Object.assign(journal,{file,sequence:result.records,previous:result.tailHash,last:result.lastBody});
  Object.defineProperty(journal,'nativeRestore',{value:Object.freeze({mode:result.mode,sourceBytes:bytes,sourceHash:result.sourceHash,sequence:result.records,tailHash:result.tailHash,lastBodyHash:result.lastBody?payloadHash(result.lastBody):null,engineHash:result.engineHash,binaryHash:binding.binaryHash,verifyMs:result.verifyMs,prefixHashMs:result.prefixHashMs,hashMode:result.hashMode,totalMs:performance.now()-started}),enumerable:false});return journal;
 }
-
