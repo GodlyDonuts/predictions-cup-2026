@@ -89,7 +89,16 @@ export function createTradeTapeV3({runtimeDir,universe,now=Date.now,canOperate=(
   const currentSet=new Set(currentMarketIds),current=candidates.filter(x=>currentSet.has(x.marketId)),background=[...candidates].sort((a,b)=>Date.parse(attempts.backgroundMarkets?.[a.exchangeId]??'1970-01-01T00:00:00.000Z')-Date.parse(attempts.backgroundMarkets?.[b.exchangeId]??'1970-01-01T00:00:00.000Z')||Number(a.marketId)-Number(b.marketId)),currentSlot=current.length>0&&ordinal%4!==3;
   const backgroundPriority=background.filter(x=>priority.has(x.marketId)),backgroundDiscovery=background.filter(x=>!priority.has(x.marketId));
   const backgroundGroup=backgroundPriority.length?(ordinal%16===15&&backgroundDiscovery.length?backgroundDiscovery:backgroundPriority):background;
-  let chosen=(currentSlot?current:current.length?(backgroundGroup.length?backgroundGroup:current):(focused.length?(ordinal%4===3&&discovery.length?discovery:focused):candidates))[0];const urgentSlot=ordinal%8===7&&urgentRecoveryWindows.length>0;for(const r of urgentRecoveryWindows)validateQuoteRecoveryRequest(r,scope,now());const urgent=urgentSlot?[...urgentRecoveryWindows].sort((a,b)=>Date.parse(attempts.urgentWindows?.[a.key]??'1970-01-01T00:00:00.000Z')-Date.parse(attempts.urgentWindows?.[b.key]??'1970-01-01T00:00:00.000Z'))[0]:null;if(urgent){chosen=candidates.find(c=>c.marketId===urgent.marketId&&c.exchangeId===urgent.exchangeId);check(chosen,'TRADE_TAPE_URGENT_SCOPE');}const prior=state.markets[chosen.exchangeId],to=new Date(Math.floor(now()/1000)*1000).toISOString();
+  let chosen=(currentSlot?current:current.length?(backgroundGroup.length?backgroundGroup:current):(focused.length?(ordinal%4===3&&discovery.length?discovery:focused):candidates))[0];
+  // Spend three of each four existing background slots on bounded liability
+  // recovery while a queue is active. The fourth (ordinal 15 modulo 16) remains
+  // reserved for broad discovery; the prior 1-in-8 cadence collided with that
+  // slot and silently starved discovery while urgent work was pending.
+  const urgentSlot=urgentRecoveryWindows.length>0&&ordinal%4===3&&ordinal%16!==15;
+  for(const r of urgentRecoveryWindows)validateQuoteRecoveryRequest(r,scope,now());
+  const urgent=urgentSlot?[...urgentRecoveryWindows].sort((a,b)=>Date.parse(attempts.urgentWindows?.[a.key]??'1970-01-01T00:00:00.000Z')-Date.parse(attempts.urgentWindows?.[b.key]??'1970-01-01T00:00:00.000Z'))[0]:null;
+  if(urgent){chosen=candidates.find(c=>c.marketId===urgent.marketId&&c.exchangeId===urgent.exchangeId);check(chosen,'TRADE_TAPE_URGENT_SCOPE');}
+  const prior=state.markets[chosen.exchangeId],to=new Date(Math.floor(now()/1000)*1000).toISOString();
   const recovery=prior?.recovery?.request||urgent||recoveryWindows.find(x=>x.exchangeId===chosen.exchangeId&&!(prior?.recoveryCompleted||[]).includes(x.key));
   if(recovery)validateQuoteRecoveryRequest(recovery,scope,now());
   // Alternate recovery and normal work for each market. Both retain independent
