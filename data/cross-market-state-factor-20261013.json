@@ -1,0 +1,5170 @@
+{
+  "schemaVersion": 1,
+  "mode": "cross_market_state_factor_relative_value_replay_v1",
+  "source": {
+    "kind": "existing_sealed_local_realtime_capture_prefix",
+    "file": "realtime-2026-10-13T02-55-28-953Z-d53812dd-ec75-4852-9267-59c7d5bb7898.jsonl",
+    "bytes": 1747459094,
+    "sha256": "f9a20ef98e8e9c96d1229dbbc6a8eb17dd669e7c6f3f8d6e49337439945f4418",
+    "captureRecords": 467044,
+    "from": "2026-10-13T02:55:28.956Z",
+    "through": "2026-10-13T07:45:51.103Z",
+    "tournamentId": "bda92870-621e-47b0-bc3c-3602c5c26f55",
+    "scopeMarkets": 237,
+    "scopeSha256": "4026596c74087b7559a43cd4c3720d61a94bf1439e87d04ed91c68788761e43a",
+    "metadataFile": "data/markets.json",
+    "metadataBytes": 308497,
+    "metadataSha256": "41dcb6472ab60302aee6656d3cb75e7baba4b4976671b4419e8334c02189e37c"
+  },
+  "protocol": {
+    "splitAt": "2026-10-13T06:18:44.458Z",
+    "purgeMs": 5000,
+    "developmentLabelsMustBeBefore": "2026-10-13T06:18:39.458Z",
+    "holdout": "chronological later segment; all four underlying source/receipt clocks must be on or after the split; no holdout fitting or threshold search",
+    "eligiblePairs": "strict same-state, same-party statewide Senate and Governor contracts from frozen market metadata; no candidate/party substitution",
+    "factor": "fixed equal-share beta=1 across every state/party pair; only the residual center and scale are fitted from development-only synchronized snapshots; development OLS hedge fits are recorded as diagnostics and never select or size trades",
+    "signal": "fixed residual threshold |z| >= 2; long the cheap YES and buy one share of the rich contract NO; only threshold transitions are candidates",
+    "responseLatencyMs": 3000,
+    "freshness": {
+      "maxBookSourceAgeMs": 3000,
+      "maxLocalReceiptAgeMs": 3000,
+      "maxCrossMarketClockSkewMs": 2000,
+      "maxObservationGapMs": 10000
+    },
+    "horizonMs": [
+      1000,
+      5000,
+      30000
+    ],
+    "primaryHoldMs": 5000,
+    "entryAndExit": "both legs priced at their post-latency top-of-book sides; one displayed share must be available on each required level; equal one-share sizing; zero fees; no actual order or fill inference",
+    "adverseStress": "one tick adverse per leg on entry and exit; no tuning or selection on held-out results",
+    "signalOverlap": "one pair position at a time; block new signals until the 5s close mark, and censor the rest of a continuity segment if that close cannot be established"
+  },
+  "universe": {
+    "totalMetadataMarkets": 237,
+    "statewidePartyContracts": 138,
+    "eligibleStatePartyPairs": 50,
+    "eligibleStates": 25,
+    "candidatePairIds": [
+      "Alabama|Democratic",
+      "Alabama|Republican",
+      "Alaska|Democratic",
+      "Alaska|Republican",
+      "Arkansas|Democratic",
+      "Arkansas|Republican",
+      "Colorado|Democratic",
+      "Colorado|Republican",
+      "Florida|Democratic",
+      "Florida|Republican",
+      "Georgia|Democratic",
+      "Georgia|Republican",
+      "Idaho|Democratic",
+      "Idaho|Republican",
+      "Illinois|Democratic",
+      "Illinois|Republican",
+      "Iowa|Democratic",
+      "Iowa|Republican",
+      "Kansas|Democratic",
+      "Kansas|Republican",
+      "Maine|Democratic",
+      "Maine|Republican",
+      "Massachusetts|Democratic",
+      "Massachusetts|Republican",
+      "Michigan|Democratic",
+      "Michigan|Republican",
+      "Minnesota|Democratic",
+      "Minnesota|Republican",
+      "Nebraska|Democratic",
+      "Nebraska|Republican",
+      "New Hampshire|Democratic",
+      "New Hampshire|Republican",
+      "New Mexico|Democratic",
+      "New Mexico|Republican",
+      "Oklahoma|Democratic",
+      "Oklahoma|Republican",
+      "Oregon|Democratic",
+      "Oregon|Republican",
+      "Rhode Island|Democratic",
+      "Rhode Island|Republican",
+      "South Carolina|Democratic",
+      "South Carolina|Republican",
+      "South Dakota|Democratic",
+      "South Dakota|Republican",
+      "Tennessee|Democratic",
+      "Tennessee|Republican",
+      "Texas|Democratic",
+      "Texas|Republican",
+      "Wyoming|Democratic",
+      "Wyoming|Republican"
+    ],
+    "excluded": "House and other nonstatewide contracts, state/party groups missing either office, and any contract not matching exact statewide title grammar"
+  },
+  "coverage": {
+    "candidatePairs": 50,
+    "analyzedPairs": 50,
+    "candidateStateClusters": 25,
+    "analyzedStateClusters": 25,
+    "candidateStates": [
+      "Alabama",
+      "Alaska",
+      "Arkansas",
+      "Colorado",
+      "Florida",
+      "Georgia",
+      "Idaho",
+      "Illinois",
+      "Iowa",
+      "Kansas",
+      "Maine",
+      "Massachusetts",
+      "Michigan",
+      "Minnesota",
+      "Nebraska",
+      "New Hampshire",
+      "New Mexico",
+      "Oklahoma",
+      "Oregon",
+      "Rhode Island",
+      "South Carolina",
+      "South Dakota",
+      "Tennessee",
+      "Texas",
+      "Wyoming"
+    ],
+    "analyzedStates": [
+      "Alabama",
+      "Alaska",
+      "Arkansas",
+      "Colorado",
+      "Florida",
+      "Georgia",
+      "Idaho",
+      "Illinois",
+      "Iowa",
+      "Kansas",
+      "Maine",
+      "Massachusetts",
+      "Michigan",
+      "Minnesota",
+      "Nebraska",
+      "New Hampshire",
+      "New Mexico",
+      "Oklahoma",
+      "Oregon",
+      "Rhode Island",
+      "South Carolina",
+      "South Dakota",
+      "Tennessee",
+      "Texas",
+      "Wyoming"
+    ],
+    "missingPairIds": [],
+    "extraPairIds": [],
+    "missingStates": [],
+    "extraStates": [],
+    "pairStateMismatches": [],
+    "matches": true,
+    "pairRowsReconciled": true
+  },
+  "counts": {
+    "captureRecords": 467044,
+    "marketBatches": 446579,
+    "rawBookPoints": 199376,
+    "acceptedPairBooks": 186690,
+    "duplicateSequences": 0,
+    "sequenceRollbacks": 0,
+    "sourceReceiptSkews": 2943,
+    "staleSources": 72,
+    "observationGaps": 25419,
+    "sourceClockRollbacks": 0,
+    "receiptClockRollbacks": 0,
+    "revisionGaps": 666,
+    "resyncOrSettlementBreaks": 0,
+    "unexpectedOrMalformedPoints": 18951,
+    "outOfSplitPairSnapshots": 12,
+    "topicMarkets": 237,
+    "capturedExchangeMappings": 237,
+    "pairSnapshots": 29211,
+    "developmentJointFitPoints": 18570,
+    "developmentOlsUsablePairs": 0,
+    "developmentEqualShareScalePairs": 50,
+    "heldOutSignalCandidates": 0,
+    "heldOutTwoLegEntryDepthProxies": 0,
+    "heldOutEntryDepthRejects": 0,
+    "boundaryReasons": {
+      "missing_receipt_clock": 9731,
+      "invalid_expired_or_future_book": 12686,
+      "observation_gap": 25419,
+      "delivery_gap": 666,
+      "source_stale": 72,
+      "epoch_change": 400,
+      "source_after_receipt": 2943
+    },
+    "pointRejectionReasons": {
+      "expired_or_future_book": 12686
+    }
+  },
+  "heldOutResidualSummary": {
+    "pairsWithFit": 50,
+    "pairSnapshots": 8010,
+    "rawThresholdExceedanceSnapshots": 0,
+    "pairsWithAnyThresholdExceedance": 0,
+    "maximumAbsoluteZ": {
+      "id": "Oklahoma|Republican",
+      "maxAbsZ": 1.182258
+    },
+    "interpretation": "The fixed |z|>=2 rule produced no signal if the threshold-exceedance count is zero; no trade markout is defined for an empty strategy."
+  },
+  "heldOutSummaryByHorizon": {
+    "1000": {
+      "candidateSignals": 0,
+      "eligibleStateClusters": 25,
+      "completedTopOfBookMarkouts": 0,
+      "positiveMarkouts": 0,
+      "meanGrossPairPnl": null,
+      "meanOneTickEachFillStressPnl": null,
+      "meanInitialPairCost": null,
+      "activeStatePartyPairClusters": 0,
+      "activeStateClusters": 0,
+      "positivePairMeanClusters": 0,
+      "negativePairMeanClusters": 0,
+      "byState": [],
+      "byStateParty": []
+    },
+    "5000": {
+      "candidateSignals": 0,
+      "eligibleStateClusters": 25,
+      "completedTopOfBookMarkouts": 0,
+      "positiveMarkouts": 0,
+      "meanGrossPairPnl": null,
+      "meanOneTickEachFillStressPnl": null,
+      "meanInitialPairCost": null,
+      "activeStatePartyPairClusters": 0,
+      "activeStateClusters": 0,
+      "positivePairMeanClusters": 0,
+      "negativePairMeanClusters": 0,
+      "byState": [],
+      "byStateParty": []
+    },
+    "30000": {
+      "candidateSignals": 0,
+      "eligibleStateClusters": 25,
+      "completedTopOfBookMarkouts": 0,
+      "positiveMarkouts": 0,
+      "meanGrossPairPnl": null,
+      "meanOneTickEachFillStressPnl": null,
+      "meanInitialPairCost": null,
+      "activeStatePartyPairClusters": 0,
+      "activeStateClusters": 0,
+      "positivePairMeanClusters": 0,
+      "negativePairMeanClusters": 0,
+      "byState": [],
+      "byStateParty": []
+    }
+  },
+  "priorOlsDiagnostic": {
+    "mode": "cross_market_state_factor_relative_value_replay_v1",
+    "sourceSha256": "f9a20ef98e8e9c96d1229dbbc6a8eb17dd669e7c6f3f8d6e49337439945f4418",
+    "candidatePairs": 50,
+    "developmentFitPairs": 0,
+    "developmentJointFitPoints": 18570,
+    "heldOutSignalCandidates": 0,
+    "failureReasons": {
+      "insufficient_joint_price_variation": 32,
+      "unstable_or_wrong_sign_hedge": 18
+    },
+    "note": "Preserved initial OLS-only pass; it had no eligible model or trade marks. It was not used to tune the fixed equal-share comparator."
+  },
+  "priorSameSourceReplay": {
+    "generatedAt": "2026-10-13T23:02:51.521Z",
+    "developmentEqualShareScalePairs": 50,
+    "heldOutSignalCandidates": 0,
+    "heldOutSummaryByHorizon": {
+      "1000": {
+        "candidateSignals": 0,
+        "eligibleStateClusters": 25,
+        "completedTopOfBookMarkouts": 0,
+        "positiveMarkouts": 0,
+        "meanGrossPairPnl": null,
+        "meanOneTickEachFillStressPnl": null,
+        "meanInitialPairCost": null,
+        "activeStatePartyPairClusters": 0,
+        "activeStateClusters": 0,
+        "positivePairMeanClusters": 0,
+        "negativePairMeanClusters": 0,
+        "byState": [],
+        "byStateParty": []
+      },
+      "5000": {
+        "candidateSignals": 0,
+        "eligibleStateClusters": 25,
+        "completedTopOfBookMarkouts": 0,
+        "positiveMarkouts": 0,
+        "meanGrossPairPnl": null,
+        "meanOneTickEachFillStressPnl": null,
+        "meanInitialPairCost": null,
+        "activeStatePartyPairClusters": 0,
+        "activeStateClusters": 0,
+        "positivePairMeanClusters": 0,
+        "negativePairMeanClusters": 0,
+        "byState": [],
+        "byStateParty": []
+      },
+      "30000": {
+        "candidateSignals": 0,
+        "eligibleStateClusters": 25,
+        "completedTopOfBookMarkouts": 0,
+        "positiveMarkouts": 0,
+        "meanGrossPairPnl": null,
+        "meanOneTickEachFillStressPnl": null,
+        "meanInitialPairCost": null,
+        "activeStatePartyPairClusters": 0,
+        "activeStateClusters": 0,
+        "positivePairMeanClusters": 0,
+        "negativePairMeanClusters": 0,
+        "byState": [],
+        "byStateParty": []
+      }
+    },
+    "note": "Prior exact-source equal-share replay retained as a regeneration diagnostic; not used for model fitting or selection."
+  },
+  "pairs": [
+    {
+      "id": "Alabama|Democratic",
+      "state": "Alabama",
+      "party": "Democratic",
+      "marketA": "252",
+      "exchangeA": "941",
+      "titleA": "Will the Democratic Party win the Alabama Senate?",
+      "marketB": "155",
+      "exchangeB": "844",
+      "titleB": "Will the Democratic Party win the Alabama Governor?",
+      "developmentSynchronizedSnapshots": 230,
+      "developmentJointFitPoints": 208,
+      "heldOutSynchronizedSnapshots": 88,
+      "developmentOlsFit": {
+        "usable": false,
+        "reason": "insufficient_joint_price_variation",
+        "observations": 208,
+        "increments": 46
+      },
+      "model": {
+        "usable": true,
+        "betaSource": "fixed_equal_share_comparator",
+        "observations": 208,
+        "increments": 0,
+        "beta": 1,
+        "intercept": -0.03889423076923088,
+        "residualMean": 1.270351345484554e-16,
+        "observedSigma": 0.002798095519431084,
+        "sigma": 0.01,
+        "minSigmaApplied": true,
+        "firstAt": "2026-10-13T02:56:46.793Z",
+        "lastAt": "2026-10-13T06:17:54.300Z"
+      },
+      "signal": {
+        "thresholdZ": 2,
+        "candidates": 0,
+        "entries": 0,
+        "depthRejected": 0,
+        "entryCensored": {},
+        "marks": {
+          "1000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          },
+          "5000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          },
+          "30000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          }
+        },
+        "trades": []
+      },
+      "heldOutResidualDiagnostics": {
+        "snapshots": 88,
+        "distinctAMids": 2,
+        "distinctBMids": 2,
+        "adjacentJointSequenceUpdates": 77,
+        "rawThresholdExceedanceSnapshots": 0,
+        "adjacentJointThresholdExceedanceSnapshots": 0,
+        "maxAbsZ": 0.360577,
+        "p95AbsZ": 0.360577,
+        "p99AbsZ": 0.360577,
+        "residualRange": [
+          -0.00360577,
+          -0.00110577
+        ]
+      },
+      "limitations": []
+    },
+    {
+      "id": "Alabama|Republican",
+      "state": "Alabama",
+      "party": "Republican",
+      "marketA": "253",
+      "exchangeA": "942",
+      "titleA": "Will the Republican Party win the Alabama Senate?",
+      "marketB": "156",
+      "exchangeB": "845",
+      "titleB": "Will the Republican Party win the Alabama Governor?",
+      "developmentSynchronizedSnapshots": 181,
+      "developmentJointFitPoints": 173,
+      "heldOutSynchronizedSnapshots": 74,
+      "developmentOlsFit": {
+        "usable": false,
+        "reason": "insufficient_joint_price_variation",
+        "observations": 173,
+        "increments": 31
+      },
+      "model": {
+        "usable": true,
+        "betaSource": "fixed_equal_share_comparator",
+        "observations": 173,
+        "increments": 0,
+        "beta": 1,
+        "intercept": 0.0330491329479774,
+        "residualMean": -6.46239644969672e-16,
+        "observedSigma": 0.0010724682733481686,
+        "sigma": 0.01,
+        "minSigmaApplied": true,
+        "firstAt": "2026-10-13T02:56:15.294Z",
+        "lastAt": "2026-10-13T06:17:02.204Z"
+      },
+      "signal": {
+        "thresholdZ": 2,
+        "candidates": 0,
+        "entries": 0,
+        "depthRejected": 0,
+        "entryCensored": {},
+        "marks": {
+          "1000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          },
+          "5000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          },
+          "30000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          }
+        },
+        "trades": []
+      },
+      "heldOutResidualDiagnostics": {
+        "snapshots": 74,
+        "distinctAMids": 2,
+        "distinctBMids": 3,
+        "adjacentJointSequenceUpdates": 66,
+        "rawThresholdExceedanceSnapshots": 0,
+        "adjacentJointThresholdExceedanceSnapshots": 0,
+        "maxAbsZ": 0.445087,
+        "p95AbsZ": 0.195087,
+        "p99AbsZ": 0.445087,
+        "residualRange": [
+          -0.00054913,
+          0.00445087
+        ]
+      },
+      "limitations": []
+    },
+    {
+      "id": "Alaska|Democratic",
+      "state": "Alaska",
+      "party": "Democratic",
+      "marketA": "377",
+      "exchangeA": "1066",
+      "titleA": "Will the Democratic Party win the Alaska Senate?",
+      "marketB": "368",
+      "exchangeB": "1057",
+      "titleB": "Will the Democratic Party win the Alaska Governor?",
+      "developmentSynchronizedSnapshots": 476,
+      "developmentJointFitPoints": 406,
+      "heldOutSynchronizedSnapshots": 156,
+      "developmentOlsFit": {
+        "usable": false,
+        "reason": "insufficient_joint_price_variation",
+        "observations": 406,
+        "increments": 135
+      },
+      "model": {
+        "usable": true,
+        "betaSource": "fixed_equal_share_comparator",
+        "observations": 406,
+        "increments": 0,
+        "beta": 1,
+        "intercept": -0.06525862068965305,
+        "residualMean": -2.287442266253555e-15,
+        "observedSigma": 0.0011762514508052565,
+        "sigma": 0.01,
+        "minSigmaApplied": true,
+        "firstAt": "2026-10-13T02:57:28.144Z",
+        "lastAt": "2026-10-13T06:18:29.723Z"
+      },
+      "signal": {
+        "thresholdZ": 2,
+        "candidates": 0,
+        "entries": 0,
+        "depthRejected": 0,
+        "entryCensored": {},
+        "marks": {
+          "1000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          },
+          "5000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          },
+          "30000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          }
+        },
+        "trades": []
+      },
+      "heldOutResidualDiagnostics": {
+        "snapshots": 156,
+        "distinctAMids": 1,
+        "distinctBMids": 1,
+        "adjacentJointSequenceUpdates": 142,
+        "rawThresholdExceedanceSnapshots": 0,
+        "adjacentJointThresholdExceedanceSnapshots": 0,
+        "maxAbsZ": 0.025862,
+        "p95AbsZ": 0.025862,
+        "p99AbsZ": 0.025862,
+        "residualRange": [
+          0.00025862,
+          0.00025862
+        ]
+      },
+      "limitations": []
+    },
+    {
+      "id": "Alaska|Republican",
+      "state": "Alaska",
+      "party": "Republican",
+      "marketA": "378",
+      "exchangeA": "1067",
+      "titleA": "Will the Republican Party win the Alaska Senate?",
+      "marketB": "369",
+      "exchangeB": "1058",
+      "titleB": "Will the Republican Party win the Alaska Governor?",
+      "developmentSynchronizedSnapshots": 692,
+      "developmentJointFitPoints": 579,
+      "heldOutSynchronizedSnapshots": 259,
+      "developmentOlsFit": {
+        "usable": false,
+        "reason": "unstable_or_wrong_sign_hedge",
+        "observations": 579,
+        "increments": 254,
+        "beta": 0
+      },
+      "model": {
+        "usable": true,
+        "betaSource": "fixed_equal_share_comparator",
+        "observations": 579,
+        "increments": 0,
+        "beta": 1,
+        "intercept": 0.07875215889464021,
+        "residualMean": 5.743918102618113e-15,
+        "observedSigma": 0.002594972782018072,
+        "sigma": 0.01,
+        "minSigmaApplied": true,
+        "firstAt": "2026-10-13T02:55:44.026Z",
+        "lastAt": "2026-10-13T06:17:46.501Z"
+      },
+      "signal": {
+        "thresholdZ": 2,
+        "candidates": 0,
+        "entries": 0,
+        "depthRejected": 0,
+        "entryCensored": {},
+        "marks": {
+          "1000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          },
+          "5000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          },
+          "30000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          }
+        },
+        "trades": []
+      },
+      "heldOutResidualDiagnostics": {
+        "snapshots": 259,
+        "distinctAMids": 1,
+        "distinctBMids": 1,
+        "adjacentJointSequenceUpdates": 225,
+        "rawThresholdExceedanceSnapshots": 0,
+        "adjacentJointThresholdExceedanceSnapshots": 0,
+        "maxAbsZ": 0.124784,
+        "p95AbsZ": 0.124784,
+        "p99AbsZ": 0.124784,
+        "residualRange": [
+          0.00124784,
+          0.00124784
+        ]
+      },
+      "limitations": []
+    },
+    {
+      "id": "Arkansas|Democratic",
+      "state": "Arkansas",
+      "party": "Democratic",
+      "marketA": "254",
+      "exchangeA": "943",
+      "titleA": "Will the Democratic Party win the Arkansas Senate?",
+      "marketB": "157",
+      "exchangeB": "846",
+      "titleB": "Will the Democratic Party win the Arkansas Governor?",
+      "developmentSynchronizedSnapshots": 448,
+      "developmentJointFitPoints": 399,
+      "heldOutSynchronizedSnapshots": 121,
+      "developmentOlsFit": {
+        "usable": false,
+        "reason": "unstable_or_wrong_sign_hedge",
+        "observations": 399,
+        "increments": 138,
+        "beta": 0
+      },
+      "model": {
+        "usable": true,
+        "betaSource": "fixed_equal_share_comparator",
+        "observations": 399,
+        "increments": 0,
+        "beta": 1,
+        "intercept": 0.02399749373433506,
+        "residualMean": 7.873122927761605e-16,
+        "observedSigma": 0.0018915293151538185,
+        "sigma": 0.01,
+        "minSigmaApplied": true,
+        "firstAt": "2026-10-13T02:55:57.403Z",
+        "lastAt": "2026-10-13T06:15:46.206Z"
+      },
+      "signal": {
+        "thresholdZ": 2,
+        "candidates": 0,
+        "entries": 0,
+        "depthRejected": 0,
+        "entryCensored": {},
+        "marks": {
+          "1000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          },
+          "5000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          },
+          "30000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          }
+        },
+        "trades": []
+      },
+      "heldOutResidualDiagnostics": {
+        "snapshots": 121,
+        "distinctAMids": 1,
+        "distinctBMids": 1,
+        "adjacentJointSequenceUpdates": 111,
+        "rawThresholdExceedanceSnapshots": 0,
+        "adjacentJointThresholdExceedanceSnapshots": 0,
+        "maxAbsZ": 0.399749,
+        "p95AbsZ": 0.399749,
+        "p99AbsZ": 0.399749,
+        "residualRange": [
+          -0.00399749,
+          -0.00399749
+        ]
+      },
+      "limitations": []
+    },
+    {
+      "id": "Arkansas|Republican",
+      "state": "Arkansas",
+      "party": "Republican",
+      "marketA": "255",
+      "exchangeA": "944",
+      "titleA": "Will the Republican Party win the Arkansas Senate?",
+      "marketB": "158",
+      "exchangeB": "847",
+      "titleB": "Will the Republican Party win the Arkansas Governor?",
+      "developmentSynchronizedSnapshots": 171,
+      "developmentJointFitPoints": 160,
+      "heldOutSynchronizedSnapshots": 83,
+      "developmentOlsFit": {
+        "usable": false,
+        "reason": "insufficient_joint_price_variation",
+        "observations": 160,
+        "increments": 30
+      },
+      "model": {
+        "usable": true,
+        "betaSource": "fixed_equal_share_comparator",
+        "observations": 160,
+        "increments": 0,
+        "beta": 1,
+        "intercept": -0.025671875000003785,
+        "residualMean": 3.776839951896704e-15,
+        "observedSigma": 0.0015026673087814508,
+        "sigma": 0.01,
+        "minSigmaApplied": true,
+        "firstAt": "2026-10-13T02:58:17.968Z",
+        "lastAt": "2026-10-13T06:15:57.357Z"
+      },
+      "signal": {
+        "thresholdZ": 2,
+        "candidates": 0,
+        "entries": 0,
+        "depthRejected": 0,
+        "entryCensored": {},
+        "marks": {
+          "1000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          },
+          "5000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          },
+          "30000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          }
+        },
+        "trades": []
+      },
+      "heldOutResidualDiagnostics": {
+        "snapshots": 83,
+        "distinctAMids": 1,
+        "distinctBMids": 1,
+        "adjacentJointSequenceUpdates": 73,
+        "rawThresholdExceedanceSnapshots": 0,
+        "adjacentJointThresholdExceedanceSnapshots": 0,
+        "maxAbsZ": 0.067187,
+        "p95AbsZ": 0.067187,
+        "p99AbsZ": 0.067187,
+        "residualRange": [
+          0.00067187,
+          0.00067187
+        ]
+      },
+      "limitations": []
+    },
+    {
+      "id": "Colorado|Democratic",
+      "state": "Colorado",
+      "party": "Democratic",
+      "marketA": "256",
+      "exchangeA": "945",
+      "titleA": "Will the Democratic Party win the Colorado Senate?",
+      "marketB": "163",
+      "exchangeB": "852",
+      "titleB": "Will the Democratic Party win the Colorado Governor?",
+      "developmentSynchronizedSnapshots": 176,
+      "developmentJointFitPoints": 165,
+      "heldOutSynchronizedSnapshots": 68,
+      "developmentOlsFit": {
+        "usable": false,
+        "reason": "insufficient_joint_price_variation",
+        "observations": 165,
+        "increments": 36
+      },
+      "model": {
+        "usable": true,
+        "betaSource": "fixed_equal_share_comparator",
+        "observations": 165,
+        "increments": 0,
+        "beta": 1,
+        "intercept": -0.0308333333333346,
+        "residualMean": 1.2582527612418441e-15,
+        "observedSigma": 0.001213909896068194,
+        "sigma": 0.01,
+        "minSigmaApplied": true,
+        "firstAt": "2026-10-13T02:55:57.403Z",
+        "lastAt": "2026-10-13T06:15:31.330Z"
+      },
+      "signal": {
+        "thresholdZ": 2,
+        "candidates": 0,
+        "entries": 0,
+        "depthRejected": 0,
+        "entryCensored": {},
+        "marks": {
+          "1000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          },
+          "5000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          },
+          "30000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          }
+        },
+        "trades": []
+      },
+      "heldOutResidualDiagnostics": {
+        "snapshots": 68,
+        "distinctAMids": 2,
+        "distinctBMids": 1,
+        "adjacentJointSequenceUpdates": 62,
+        "rawThresholdExceedanceSnapshots": 0,
+        "adjacentJointThresholdExceedanceSnapshots": 0,
+        "maxAbsZ": 0.166667,
+        "p95AbsZ": 0.166667,
+        "p99AbsZ": 0.166667,
+        "residualRange": [
+          -0.00166667,
+          0.00083333
+        ]
+      },
+      "limitations": []
+    },
+    {
+      "id": "Colorado|Republican",
+      "state": "Colorado",
+      "party": "Republican",
+      "marketA": "257",
+      "exchangeA": "946",
+      "titleA": "Will the Republican Party win the Colorado Senate?",
+      "marketB": "164",
+      "exchangeB": "853",
+      "titleB": "Will the Republican Party win the Colorado Governor?",
+      "developmentSynchronizedSnapshots": 184,
+      "developmentJointFitPoints": 170,
+      "heldOutSynchronizedSnapshots": 83,
+      "developmentOlsFit": {
+        "usable": false,
+        "reason": "insufficient_joint_price_variation",
+        "observations": 170,
+        "increments": 38
+      },
+      "model": {
+        "usable": true,
+        "betaSource": "fixed_equal_share_comparator",
+        "observations": 170,
+        "increments": 0,
+        "beta": 1,
+        "intercept": 0.057970588235293795,
+        "residualMean": 3.3265873715790534e-16,
+        "observedSigma": 0.0009801368735972713,
+        "sigma": 0.01,
+        "minSigmaApplied": true,
+        "firstAt": "2026-10-13T02:56:54.952Z",
+        "lastAt": "2026-10-13T06:16:23.339Z"
+      },
+      "signal": {
+        "thresholdZ": 2,
+        "candidates": 0,
+        "entries": 0,
+        "depthRejected": 0,
+        "entryCensored": {},
+        "marks": {
+          "1000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          },
+          "5000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          },
+          "30000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          }
+        },
+        "trades": []
+      },
+      "heldOutResidualDiagnostics": {
+        "snapshots": 83,
+        "distinctAMids": 1,
+        "distinctBMids": 2,
+        "adjacentJointSequenceUpdates": 77,
+        "rawThresholdExceedanceSnapshots": 0,
+        "adjacentJointThresholdExceedanceSnapshots": 0,
+        "maxAbsZ": 0.297059,
+        "p95AbsZ": 0.297059,
+        "p99AbsZ": 0.297059,
+        "residualRange": [
+          -0.00297059,
+          -0.00047059
+        ]
+      },
+      "limitations": []
+    },
+    {
+      "id": "Florida|Democratic",
+      "state": "Florida",
+      "party": "Democratic",
+      "marketA": "354",
+      "exchangeA": "1043",
+      "titleA": "Will the Democratic Party win the Florida Senate?",
+      "marketB": "299",
+      "exchangeB": "988",
+      "titleB": "Will the Democratic Party win the Florida Governor?",
+      "developmentSynchronizedSnapshots": 542,
+      "developmentJointFitPoints": 495,
+      "heldOutSynchronizedSnapshots": 206,
+      "developmentOlsFit": {
+        "usable": false,
+        "reason": "unstable_or_wrong_sign_hedge",
+        "observations": 495,
+        "increments": 174,
+        "beta": 0
+      },
+      "model": {
+        "usable": true,
+        "betaSource": "fixed_equal_share_comparator",
+        "observations": 495,
+        "increments": 0,
+        "beta": 1,
+        "intercept": -0.04782323232323338,
+        "residualMean": 1.0676084034779283e-15,
+        "observedSigma": 0.0024326069504692536,
+        "sigma": 0.01,
+        "minSigmaApplied": true,
+        "firstAt": "2026-10-13T02:55:46.696Z",
+        "lastAt": "2026-10-13T06:17:20.717Z"
+      },
+      "signal": {
+        "thresholdZ": 2,
+        "candidates": 0,
+        "entries": 0,
+        "depthRejected": 0,
+        "entryCensored": {},
+        "marks": {
+          "1000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          },
+          "5000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          },
+          "30000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          }
+        },
+        "trades": []
+      },
+      "heldOutResidualDiagnostics": {
+        "snapshots": 206,
+        "distinctAMids": 1,
+        "distinctBMids": 2,
+        "adjacentJointSequenceUpdates": 187,
+        "rawThresholdExceedanceSnapshots": 0,
+        "adjacentJointThresholdExceedanceSnapshots": 0,
+        "maxAbsZ": 0.532323,
+        "p95AbsZ": 0.532323,
+        "p99AbsZ": 0.532323,
+        "residualRange": [
+          0.00282323,
+          0.00532323
+        ]
+      },
+      "limitations": []
+    },
+    {
+      "id": "Florida|Republican",
+      "state": "Florida",
+      "party": "Republican",
+      "marketA": "355",
+      "exchangeA": "1044",
+      "titleA": "Will the Republican Party win the Florida Senate?",
+      "marketB": "300",
+      "exchangeB": "989",
+      "titleB": "Will the Republican Party win the Florida Governor?",
+      "developmentSynchronizedSnapshots": 612,
+      "developmentJointFitPoints": 529,
+      "heldOutSynchronizedSnapshots": 164,
+      "developmentOlsFit": {
+        "usable": false,
+        "reason": "unstable_or_wrong_sign_hedge",
+        "observations": 529,
+        "increments": 212,
+        "beta": 0
+      },
+      "model": {
+        "usable": true,
+        "betaSource": "fixed_equal_share_comparator",
+        "observations": 529,
+        "increments": 0,
+        "beta": 1,
+        "intercept": 0.05396030245747241,
+        "residualMean": -5.469474904490776e-15,
+        "observedSigma": 0.005147569732482572,
+        "sigma": 0.01,
+        "minSigmaApplied": true,
+        "firstAt": "2026-10-13T02:55:40.844Z",
+        "lastAt": "2026-10-13T06:18:21.370Z"
+      },
+      "signal": {
+        "thresholdZ": 2,
+        "candidates": 0,
+        "entries": 0,
+        "depthRejected": 0,
+        "entryCensored": {},
+        "marks": {
+          "1000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          },
+          "5000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          },
+          "30000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          }
+        },
+        "trades": []
+      },
+      "heldOutResidualDiagnostics": {
+        "snapshots": 164,
+        "distinctAMids": 1,
+        "distinctBMids": 1,
+        "adjacentJointSequenceUpdates": 149,
+        "rawThresholdExceedanceSnapshots": 0,
+        "adjacentJointThresholdExceedanceSnapshots": 0,
+        "maxAbsZ": 0.39603,
+        "p95AbsZ": 0.39603,
+        "p99AbsZ": 0.39603,
+        "residualRange": [
+          -0.0039603,
+          -0.0039603
+        ]
+      },
+      "limitations": []
+    },
+    {
+      "id": "Georgia|Democratic",
+      "state": "Georgia",
+      "party": "Democratic",
+      "marketA": "258",
+      "exchangeA": "947",
+      "titleA": "Will the Democratic Party win the Georgia Senate?",
+      "marketB": "166",
+      "exchangeB": "855",
+      "titleB": "Will the Democratic Party win the Georgia Governor?",
+      "developmentSynchronizedSnapshots": 401,
+      "developmentJointFitPoints": 346,
+      "heldOutSynchronizedSnapshots": 113,
+      "developmentOlsFit": {
+        "usable": false,
+        "reason": "insufficient_joint_price_variation",
+        "observations": 346,
+        "increments": 113
+      },
+      "model": {
+        "usable": true,
+        "betaSource": "fixed_equal_share_comparator",
+        "observations": 346,
+        "increments": 0,
+        "beta": 1,
+        "intercept": 0.47859104046243023,
+        "residualMean": -2.421954736956844e-15,
+        "observedSigma": 0.0013398920845941777,
+        "sigma": 0.01,
+        "minSigmaApplied": true,
+        "firstAt": "2026-10-13T02:55:43.165Z",
+        "lastAt": "2026-10-13T06:17:20.717Z"
+      },
+      "signal": {
+        "thresholdZ": 2,
+        "candidates": 0,
+        "entries": 0,
+        "depthRejected": 0,
+        "entryCensored": {},
+        "marks": {
+          "1000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          },
+          "5000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          },
+          "30000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          }
+        },
+        "trades": []
+      },
+      "heldOutResidualDiagnostics": {
+        "snapshots": 113,
+        "distinctAMids": 3,
+        "distinctBMids": 1,
+        "adjacentJointSequenceUpdates": 102,
+        "rawThresholdExceedanceSnapshots": 0,
+        "adjacentJointThresholdExceedanceSnapshots": 0,
+        "maxAbsZ": 0.359104,
+        "p95AbsZ": 0.140896,
+        "p99AbsZ": 0.140896,
+        "residualRange": [
+          -0.00359104,
+          0.00140896
+        ]
+      },
+      "limitations": []
+    },
+    {
+      "id": "Georgia|Republican",
+      "state": "Georgia",
+      "party": "Republican",
+      "marketA": "259",
+      "exchangeA": "948",
+      "titleA": "Will the Republican Party win the Georgia Senate?",
+      "marketB": "167",
+      "exchangeB": "856",
+      "titleB": "Will the Republican Party win the Georgia Governor?",
+      "developmentSynchronizedSnapshots": 254,
+      "developmentJointFitPoints": 233,
+      "heldOutSynchronizedSnapshots": 124,
+      "developmentOlsFit": {
+        "usable": false,
+        "reason": "insufficient_joint_price_variation",
+        "observations": 233,
+        "increments": 42
+      },
+      "model": {
+        "usable": true,
+        "betaSource": "fixed_equal_share_comparator",
+        "observations": 233,
+        "increments": 0,
+        "beta": 1,
+        "intercept": -0.47499999999999765,
+        "residualMean": -2.3314683517128287e-15,
+        "observedSigma": 0,
+        "sigma": 0.01,
+        "minSigmaApplied": true,
+        "firstAt": "2026-10-13T02:55:51.665Z",
+        "lastAt": "2026-10-13T06:17:41.675Z"
+      },
+      "signal": {
+        "thresholdZ": 2,
+        "candidates": 0,
+        "entries": 0,
+        "depthRejected": 0,
+        "entryCensored": {},
+        "marks": {
+          "1000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          },
+          "5000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          },
+          "30000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          }
+        },
+        "trades": []
+      },
+      "heldOutResidualDiagnostics": {
+        "snapshots": 124,
+        "distinctAMids": 1,
+        "distinctBMids": 2,
+        "adjacentJointSequenceUpdates": 106,
+        "rawThresholdExceedanceSnapshots": 0,
+        "adjacentJointThresholdExceedanceSnapshots": 0,
+        "maxAbsZ": 0.25,
+        "p95AbsZ": 0.25,
+        "p99AbsZ": 0.25,
+        "residualRange": [
+          0,
+          0.0025
+        ]
+      },
+      "limitations": []
+    },
+    {
+      "id": "Idaho|Democratic",
+      "state": "Idaho",
+      "party": "Democratic",
+      "marketA": "262",
+      "exchangeA": "951",
+      "titleA": "Will the Democratic Party win the Idaho Senate?",
+      "marketB": "170",
+      "exchangeB": "859",
+      "titleB": "Will the Democratic Party win the Idaho Governor?",
+      "developmentSynchronizedSnapshots": 173,
+      "developmentJointFitPoints": 168,
+      "heldOutSynchronizedSnapshots": 66,
+      "developmentOlsFit": {
+        "usable": false,
+        "reason": "insufficient_joint_price_variation",
+        "observations": 168,
+        "increments": 26
+      },
+      "model": {
+        "usable": true,
+        "betaSource": "fixed_equal_share_comparator",
+        "observations": 168,
+        "increments": 0,
+        "beta": 1,
+        "intercept": 0.040699404761904846,
+        "residualMean": -8.05407328132089e-17,
+        "observedSigma": 0.003459837956535844,
+        "sigma": 0.01,
+        "minSigmaApplied": true,
+        "firstAt": "2026-10-13T02:55:52.130Z",
+        "lastAt": "2026-10-13T06:16:37.701Z"
+      },
+      "signal": {
+        "thresholdZ": 2,
+        "candidates": 0,
+        "entries": 0,
+        "depthRejected": 0,
+        "entryCensored": {},
+        "marks": {
+          "1000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          },
+          "5000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          },
+          "30000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          }
+        },
+        "trades": []
+      },
+      "heldOutResidualDiagnostics": {
+        "snapshots": 66,
+        "distinctAMids": 2,
+        "distinctBMids": 4,
+        "adjacentJointSequenceUpdates": 60,
+        "rawThresholdExceedanceSnapshots": 0,
+        "adjacentJointThresholdExceedanceSnapshots": 0,
+        "maxAbsZ": 1.06994,
+        "p95AbsZ": 0.81994,
+        "p99AbsZ": 0.81994,
+        "residualRange": [
+          -0.0106994,
+          -0.0031994
+        ]
+      },
+      "limitations": []
+    },
+    {
+      "id": "Idaho|Republican",
+      "state": "Idaho",
+      "party": "Republican",
+      "marketA": "263",
+      "exchangeA": "952",
+      "titleA": "Will the Republican Party win the Idaho Senate?",
+      "marketB": "171",
+      "exchangeB": "860",
+      "titleB": "Will the Republican Party win the Idaho Governor?",
+      "developmentSynchronizedSnapshots": 219,
+      "developmentJointFitPoints": 200,
+      "heldOutSynchronizedSnapshots": 85,
+      "developmentOlsFit": {
+        "usable": false,
+        "reason": "insufficient_joint_price_variation",
+        "observations": 200,
+        "increments": 45
+      },
+      "model": {
+        "usable": true,
+        "betaSource": "fixed_equal_share_comparator",
+        "observations": 200,
+        "increments": 0,
+        "beta": 1,
+        "intercept": -0.03069999999999795,
+        "residualMean": -1.9234613901630836e-15,
+        "observedSigma": 0.0016465282494940356,
+        "sigma": 0.01,
+        "minSigmaApplied": true,
+        "firstAt": "2026-10-13T02:57:15.231Z",
+        "lastAt": "2026-10-13T06:16:46.767Z"
+      },
+      "signal": {
+        "thresholdZ": 2,
+        "candidates": 0,
+        "entries": 0,
+        "depthRejected": 0,
+        "entryCensored": {},
+        "marks": {
+          "1000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          },
+          "5000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          },
+          "30000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          }
+        },
+        "trades": []
+      },
+      "heldOutResidualDiagnostics": {
+        "snapshots": 85,
+        "distinctAMids": 3,
+        "distinctBMids": 2,
+        "adjacentJointSequenceUpdates": 78,
+        "rawThresholdExceedanceSnapshots": 0,
+        "adjacentJointThresholdExceedanceSnapshots": 0,
+        "maxAbsZ": 0.57,
+        "p95AbsZ": 0.57,
+        "p99AbsZ": 0.57,
+        "residualRange": [
+          0.0007,
+          0.0057
+        ]
+      },
+      "limitations": []
+    },
+    {
+      "id": "Illinois|Democratic",
+      "state": "Illinois",
+      "party": "Democratic",
+      "marketA": "264",
+      "exchangeA": "953",
+      "titleA": "Will the Democratic Party win the Illinois Senate?",
+      "marketB": "172",
+      "exchangeB": "861",
+      "titleB": "Will the Democratic Party win the Illinois Governor?",
+      "developmentSynchronizedSnapshots": 137,
+      "developmentJointFitPoints": 125,
+      "heldOutSynchronizedSnapshots": 71,
+      "developmentOlsFit": {
+        "usable": false,
+        "reason": "insufficient_joint_price_variation",
+        "observations": 125,
+        "increments": 21
+      },
+      "model": {
+        "usable": true,
+        "betaSource": "fixed_equal_share_comparator",
+        "observations": 125,
+        "increments": 0,
+        "beta": 1,
+        "intercept": 0.00578000000000356,
+        "residualMean": -3.648636948128114e-15,
+        "observedSigma": 0.0011629356623815328,
+        "sigma": 0.01,
+        "minSigmaApplied": true,
+        "firstAt": "2026-10-13T02:57:52.477Z",
+        "lastAt": "2026-10-13T06:13:50.413Z"
+      },
+      "signal": {
+        "thresholdZ": 2,
+        "candidates": 0,
+        "entries": 0,
+        "depthRejected": 0,
+        "entryCensored": {},
+        "marks": {
+          "1000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          },
+          "5000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          },
+          "30000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          }
+        },
+        "trades": []
+      },
+      "heldOutResidualDiagnostics": {
+        "snapshots": 71,
+        "distinctAMids": 1,
+        "distinctBMids": 2,
+        "adjacentJointSequenceUpdates": 66,
+        "rawThresholdExceedanceSnapshots": 0,
+        "adjacentJointThresholdExceedanceSnapshots": 0,
+        "maxAbsZ": 0.172,
+        "p95AbsZ": 0.172,
+        "p99AbsZ": 0.172,
+        "residualRange": [
+          -0.00078,
+          0.00172
+        ]
+      },
+      "limitations": []
+    },
+    {
+      "id": "Illinois|Republican",
+      "state": "Illinois",
+      "party": "Republican",
+      "marketA": "265",
+      "exchangeA": "954",
+      "titleA": "Will the Republican Party win the Illinois Senate?",
+      "marketB": "173",
+      "exchangeB": "862",
+      "titleB": "Will the Republican Party win the Illinois Governor?",
+      "developmentSynchronizedSnapshots": 154,
+      "developmentJointFitPoints": 144,
+      "heldOutSynchronizedSnapshots": 53,
+      "developmentOlsFit": {
+        "usable": false,
+        "reason": "insufficient_joint_price_variation",
+        "observations": 144,
+        "increments": 22
+      },
+      "model": {
+        "usable": true,
+        "betaSource": "fixed_equal_share_comparator",
+        "observations": 144,
+        "increments": 0,
+        "beta": 1,
+        "intercept": -0.0020138888888886347,
+        "residualMean": -2.5037842169931917e-16,
+        "observedSigma": 0.0009928845531177,
+        "sigma": 0.01,
+        "minSigmaApplied": true,
+        "firstAt": "2026-10-13T02:56:12.290Z",
+        "lastAt": "2026-10-13T06:17:53.313Z"
+      },
+      "signal": {
+        "thresholdZ": 2,
+        "candidates": 0,
+        "entries": 0,
+        "depthRejected": 0,
+        "entryCensored": {},
+        "marks": {
+          "1000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          },
+          "5000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          },
+          "30000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          }
+        },
+        "trades": []
+      },
+      "heldOutResidualDiagnostics": {
+        "snapshots": 53,
+        "distinctAMids": 1,
+        "distinctBMids": 1,
+        "adjacentJointSequenceUpdates": 49,
+        "rawThresholdExceedanceSnapshots": 0,
+        "adjacentJointThresholdExceedanceSnapshots": 0,
+        "maxAbsZ": 0.048611,
+        "p95AbsZ": 0.048611,
+        "p99AbsZ": 0.048611,
+        "residualRange": [
+          -0.00048611,
+          -0.00048611
+        ]
+      },
+      "limitations": []
+    },
+    {
+      "id": "Iowa|Democratic",
+      "state": "Iowa",
+      "party": "Democratic",
+      "marketA": "260",
+      "exchangeA": "949",
+      "titleA": "Will the Democratic Party win the Iowa Senate?",
+      "marketB": "168",
+      "exchangeB": "857",
+      "titleB": "Will the Democratic Party win the Iowa Governor?",
+      "developmentSynchronizedSnapshots": 540,
+      "developmentJointFitPoints": 479,
+      "heldOutSynchronizedSnapshots": 216,
+      "developmentOlsFit": {
+        "usable": false,
+        "reason": "unstable_or_wrong_sign_hedge",
+        "observations": 479,
+        "increments": 170,
+        "beta": 0
+      },
+      "model": {
+        "usable": true,
+        "betaSource": "fixed_equal_share_comparator",
+        "observations": 479,
+        "increments": 0,
+        "beta": 1,
+        "intercept": -0.4034237995824565,
+        "residualMean": -6.937619117553275e-15,
+        "observedSigma": 0.0036296860304183406,
+        "sigma": 0.01,
+        "minSigmaApplied": true,
+        "firstAt": "2026-10-13T02:56:46.556Z",
+        "lastAt": "2026-10-13T06:18:29.723Z"
+      },
+      "signal": {
+        "thresholdZ": 2,
+        "candidates": 0,
+        "entries": 0,
+        "depthRejected": 0,
+        "entryCensored": {},
+        "marks": {
+          "1000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          },
+          "5000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          },
+          "30000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          }
+        },
+        "trades": []
+      },
+      "heldOutResidualDiagnostics": {
+        "snapshots": 216,
+        "distinctAMids": 1,
+        "distinctBMids": 4,
+        "adjacentJointSequenceUpdates": 201,
+        "rawThresholdExceedanceSnapshots": 0,
+        "adjacentJointThresholdExceedanceSnapshots": 0,
+        "maxAbsZ": 1.09238,
+        "p95AbsZ": 1.09238,
+        "p99AbsZ": 1.09238,
+        "residualRange": [
+          0.0034238,
+          0.0109238
+        ]
+      },
+      "limitations": []
+    },
+    {
+      "id": "Iowa|Republican",
+      "state": "Iowa",
+      "party": "Republican",
+      "marketA": "261",
+      "exchangeA": "950",
+      "titleA": "Will the Republican Party win the Iowa Senate?",
+      "marketB": "169",
+      "exchangeB": "858",
+      "titleB": "Will the Republican Party win the Iowa Governor?",
+      "developmentSynchronizedSnapshots": 479,
+      "developmentJointFitPoints": 418,
+      "heldOutSynchronizedSnapshots": 173,
+      "developmentOlsFit": {
+        "usable": false,
+        "reason": "unstable_or_wrong_sign_hedge",
+        "observations": 418,
+        "increments": 138,
+        "beta": 0
+      },
+      "model": {
+        "usable": true,
+        "betaSource": "fixed_equal_share_comparator",
+        "observations": 418,
+        "increments": 0,
+        "beta": 1,
+        "intercept": 0.40965311004784166,
+        "residualMean": 5.1237589397234195e-15,
+        "observedSigma": 0.0008652649016172586,
+        "sigma": 0.01,
+        "minSigmaApplied": true,
+        "firstAt": "2026-10-13T02:55:57.403Z",
+        "lastAt": "2026-10-13T06:16:51.977Z"
+      },
+      "signal": {
+        "thresholdZ": 2,
+        "candidates": 0,
+        "entries": 0,
+        "depthRejected": 0,
+        "entryCensored": {},
+        "marks": {
+          "1000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          },
+          "5000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          },
+          "30000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          }
+        },
+        "trades": []
+      },
+      "heldOutResidualDiagnostics": {
+        "snapshots": 173,
+        "distinctAMids": 1,
+        "distinctBMids": 3,
+        "adjacentJointSequenceUpdates": 155,
+        "rawThresholdExceedanceSnapshots": 0,
+        "adjacentJointThresholdExceedanceSnapshots": 0,
+        "maxAbsZ": 0.465311,
+        "p95AbsZ": 0.215311,
+        "p99AbsZ": 0.465311,
+        "residualRange": [
+          -0.00465311,
+          0.00034689
+        ]
+      },
+      "limitations": []
+    },
+    {
+      "id": "Kansas|Democratic",
+      "state": "Kansas",
+      "party": "Democratic",
+      "marketA": "356",
+      "exchangeA": "1045",
+      "titleA": "Will the Democratic Party win the Kansas Senate?",
+      "marketB": "303",
+      "exchangeB": "992",
+      "titleB": "Will the Democratic Party win the Kansas Governor?",
+      "developmentSynchronizedSnapshots": 692,
+      "developmentJointFitPoints": 597,
+      "heldOutSynchronizedSnapshots": 232,
+      "developmentOlsFit": {
+        "usable": false,
+        "reason": "unstable_or_wrong_sign_hedge",
+        "observations": 597,
+        "increments": 253,
+        "beta": 0
+      },
+      "model": {
+        "usable": true,
+        "betaSource": "fixed_equal_share_comparator",
+        "observations": 597,
+        "increments": 0,
+        "beta": 1,
+        "intercept": 0.17168341708543478,
+        "residualMean": -7.653565107196085e-15,
+        "observedSigma": 0.001642639587372388,
+        "sigma": 0.01,
+        "minSigmaApplied": true,
+        "firstAt": "2026-10-13T02:55:43.165Z",
+        "lastAt": "2026-10-13T06:16:51.977Z"
+      },
+      "signal": {
+        "thresholdZ": 2,
+        "candidates": 0,
+        "entries": 0,
+        "depthRejected": 0,
+        "entryCensored": {},
+        "marks": {
+          "1000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          },
+          "5000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          },
+          "30000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          }
+        },
+        "trades": []
+      },
+      "heldOutResidualDiagnostics": {
+        "snapshots": 232,
+        "distinctAMids": 3,
+        "distinctBMids": 2,
+        "adjacentJointSequenceUpdates": 213,
+        "rawThresholdExceedanceSnapshots": 0,
+        "adjacentJointThresholdExceedanceSnapshots": 0,
+        "maxAbsZ": 0.418342,
+        "p95AbsZ": 0.168342,
+        "p99AbsZ": 0.331658,
+        "residualRange": [
+          -0.00418342,
+          0.00331658
+        ]
+      },
+      "limitations": []
+    },
+    {
+      "id": "Kansas|Republican",
+      "state": "Kansas",
+      "party": "Republican",
+      "marketA": "357",
+      "exchangeA": "1046",
+      "titleA": "Will the Republican Party win the Kansas Senate?",
+      "marketB": "304",
+      "exchangeB": "993",
+      "titleB": "Will the Republican Party win the Kansas Governor?",
+      "developmentSynchronizedSnapshots": 725,
+      "developmentJointFitPoints": 621,
+      "heldOutSynchronizedSnapshots": 195,
+      "developmentOlsFit": {
+        "usable": false,
+        "reason": "unstable_or_wrong_sign_hedge",
+        "observations": 621,
+        "increments": 304,
+        "beta": 0
+      },
+      "model": {
+        "usable": true,
+        "betaSource": "fixed_equal_share_comparator",
+        "observations": 621,
+        "increments": 0,
+        "beta": 1,
+        "intercept": -0.1443317230273755,
+        "residualMean": 2.803268442209735e-16,
+        "observedSigma": 0.001806201260693292,
+        "sigma": 0.01,
+        "minSigmaApplied": true,
+        "firstAt": "2026-10-13T02:55:46.696Z",
+        "lastAt": "2026-10-13T06:17:26.870Z"
+      },
+      "signal": {
+        "thresholdZ": 2,
+        "candidates": 0,
+        "entries": 0,
+        "depthRejected": 0,
+        "entryCensored": {},
+        "marks": {
+          "1000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          },
+          "5000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          },
+          "30000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          }
+        },
+        "trades": []
+      },
+      "heldOutResidualDiagnostics": {
+        "snapshots": 195,
+        "distinctAMids": 2,
+        "distinctBMids": 2,
+        "adjacentJointSequenceUpdates": 171,
+        "rawThresholdExceedanceSnapshots": 0,
+        "adjacentJointThresholdExceedanceSnapshots": 0,
+        "maxAbsZ": 0.316828,
+        "p95AbsZ": 0.316828,
+        "p99AbsZ": 0.316828,
+        "residualRange": [
+          -0.00316828,
+          0.00183172
+        ]
+      },
+      "limitations": []
+    },
+    {
+      "id": "Maine|Democratic",
+      "state": "Maine",
+      "party": "Democratic",
+      "marketA": "270",
+      "exchangeA": "959",
+      "titleA": "Will the Democratic Party win the Maine Senate?",
+      "marketB": "176",
+      "exchangeB": "865",
+      "titleB": "Will the Democratic Party win the Maine Governor?",
+      "developmentSynchronizedSnapshots": 656,
+      "developmentJointFitPoints": 560,
+      "heldOutSynchronizedSnapshots": 245,
+      "developmentOlsFit": {
+        "usable": false,
+        "reason": "unstable_or_wrong_sign_hedge",
+        "observations": 560,
+        "increments": 246,
+        "beta": 0
+      },
+      "model": {
+        "usable": true,
+        "betaSource": "fixed_equal_share_comparator",
+        "observations": 560,
+        "increments": 0,
+        "beta": 1,
+        "intercept": -0.29703571428572395,
+        "residualMean": 9.581819464849722e-15,
+        "observedSigma": 0.005198094758006262,
+        "sigma": 0.01,
+        "minSigmaApplied": true,
+        "firstAt": "2026-10-13T02:56:12.290Z",
+        "lastAt": "2026-10-13T06:18:38.780Z"
+      },
+      "signal": {
+        "thresholdZ": 2,
+        "candidates": 0,
+        "entries": 0,
+        "depthRejected": 0,
+        "entryCensored": {},
+        "marks": {
+          "1000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          },
+          "5000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          },
+          "30000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          }
+        },
+        "trades": []
+      },
+      "heldOutResidualDiagnostics": {
+        "snapshots": 245,
+        "distinctAMids": 1,
+        "distinctBMids": 3,
+        "adjacentJointSequenceUpdates": 222,
+        "rawThresholdExceedanceSnapshots": 0,
+        "adjacentJointThresholdExceedanceSnapshots": 0,
+        "maxAbsZ": 0.703571,
+        "p95AbsZ": 0.703571,
+        "p99AbsZ": 0.703571,
+        "residualRange": [
+          0.00203571,
+          0.00703571
+        ]
+      },
+      "limitations": []
+    },
+    {
+      "id": "Maine|Republican",
+      "state": "Maine",
+      "party": "Republican",
+      "marketA": "271",
+      "exchangeA": "960",
+      "titleA": "Will the Republican Party win the Maine Senate?",
+      "marketB": "177",
+      "exchangeB": "866",
+      "titleB": "Will the Republican Party win the Maine Governor?",
+      "developmentSynchronizedSnapshots": 494,
+      "developmentJointFitPoints": 442,
+      "heldOutSynchronizedSnapshots": 223,
+      "developmentOlsFit": {
+        "usable": false,
+        "reason": "unstable_or_wrong_sign_hedge",
+        "observations": 442,
+        "increments": 142,
+        "beta": 0
+      },
+      "model": {
+        "usable": true,
+        "betaSource": "fixed_equal_share_comparator",
+        "observations": 442,
+        "increments": 0,
+        "beta": 1,
+        "intercept": 0.3303563348416324,
+        "residualMean": -3.456762277124752e-15,
+        "observedSigma": 0.0017334427375490498,
+        "sigma": 0.01,
+        "minSigmaApplied": true,
+        "firstAt": "2026-10-13T02:56:06.935Z",
+        "lastAt": "2026-10-13T06:17:49.455Z"
+      },
+      "signal": {
+        "thresholdZ": 2,
+        "candidates": 0,
+        "entries": 0,
+        "depthRejected": 0,
+        "entryCensored": {},
+        "marks": {
+          "1000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          },
+          "5000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          },
+          "30000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          }
+        },
+        "trades": []
+      },
+      "heldOutResidualDiagnostics": {
+        "snapshots": 223,
+        "distinctAMids": 1,
+        "distinctBMids": 1,
+        "adjacentJointSequenceUpdates": 197,
+        "rawThresholdExceedanceSnapshots": 0,
+        "adjacentJointThresholdExceedanceSnapshots": 0,
+        "maxAbsZ": 0.464367,
+        "p95AbsZ": 0.464367,
+        "p99AbsZ": 0.464367,
+        "residualRange": [
+          0.00464367,
+          0.00464367
+        ]
+      },
+      "limitations": []
+    },
+    {
+      "id": "Massachusetts|Democratic",
+      "state": "Massachusetts",
+      "party": "Democratic",
+      "marketA": "379",
+      "exchangeA": "1068",
+      "titleA": "Will the Democratic Party win the Massachusetts Senate?",
+      "marketB": "370",
+      "exchangeB": "1059",
+      "titleB": "Will the Democratic Party win the Massachusetts Governor?",
+      "developmentSynchronizedSnapshots": 579,
+      "developmentJointFitPoints": 499,
+      "heldOutSynchronizedSnapshots": 157,
+      "developmentOlsFit": {
+        "usable": false,
+        "reason": "unstable_or_wrong_sign_hedge",
+        "observations": 499,
+        "increments": 223,
+        "beta": 0
+      },
+      "model": {
+        "usable": true,
+        "betaSource": "fixed_equal_share_comparator",
+        "observations": 499,
+        "increments": 0,
+        "beta": 1,
+        "intercept": 0.052995991983969315,
+        "residualMean": -1.53362070315455e-15,
+        "observedSigma": 0.009983268330269014,
+        "sigma": 0.01,
+        "minSigmaApplied": true,
+        "firstAt": "2026-10-13T02:56:15.492Z",
+        "lastAt": "2026-10-13T06:17:41.675Z"
+      },
+      "signal": {
+        "thresholdZ": 2,
+        "candidates": 0,
+        "entries": 0,
+        "depthRejected": 0,
+        "entryCensored": {},
+        "marks": {
+          "1000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          },
+          "5000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          },
+          "30000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          }
+        },
+        "trades": []
+      },
+      "heldOutResidualDiagnostics": {
+        "snapshots": 157,
+        "distinctAMids": 1,
+        "distinctBMids": 1,
+        "adjacentJointSequenceUpdates": 144,
+        "rawThresholdExceedanceSnapshots": 0,
+        "adjacentJointThresholdExceedanceSnapshots": 0,
+        "maxAbsZ": 0.299599,
+        "p95AbsZ": 0.299599,
+        "p99AbsZ": 0.299599,
+        "residualRange": [
+          -0.00299599,
+          -0.00299599
+        ]
+      },
+      "limitations": []
+    },
+    {
+      "id": "Massachusetts|Republican",
+      "state": "Massachusetts",
+      "party": "Republican",
+      "marketA": "380",
+      "exchangeA": "1069",
+      "titleA": "Will the Republican Party win the Massachusetts Senate?",
+      "marketB": "371",
+      "exchangeB": "1060",
+      "titleB": "Will the Republican Party win the Massachusetts Governor?",
+      "developmentSynchronizedSnapshots": 560,
+      "developmentJointFitPoints": 499,
+      "heldOutSynchronizedSnapshots": 193,
+      "developmentOlsFit": {
+        "usable": false,
+        "reason": "unstable_or_wrong_sign_hedge",
+        "observations": 499,
+        "increments": 205,
+        "beta": 0
+      },
+      "model": {
+        "usable": true,
+        "betaSource": "fixed_equal_share_comparator",
+        "observations": 499,
+        "increments": 0,
+        "beta": 1,
+        "intercept": -0.013451903807614213,
+        "residualMean": -1.0087677742786492e-15,
+        "observedSigma": 0.0012457523745432906,
+        "sigma": 0.01,
+        "minSigmaApplied": true,
+        "firstAt": "2026-10-13T02:55:51.665Z",
+        "lastAt": "2026-10-13T06:17:17.489Z"
+      },
+      "signal": {
+        "thresholdZ": 2,
+        "candidates": 0,
+        "entries": 0,
+        "depthRejected": 0,
+        "entryCensored": {},
+        "marks": {
+          "1000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          },
+          "5000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          },
+          "30000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          }
+        },
+        "trades": []
+      },
+      "heldOutResidualDiagnostics": {
+        "snapshots": 193,
+        "distinctAMids": 1,
+        "distinctBMids": 2,
+        "adjacentJointSequenceUpdates": 176,
+        "rawThresholdExceedanceSnapshots": 0,
+        "adjacentJointThresholdExceedanceSnapshots": 0,
+        "maxAbsZ": 0.34519,
+        "p95AbsZ": 0.34519,
+        "p99AbsZ": 0.34519,
+        "residualRange": [
+          0.0009519,
+          0.0034519
+        ]
+      },
+      "limitations": []
+    },
+    {
+      "id": "Michigan|Democratic",
+      "state": "Michigan",
+      "party": "Democratic",
+      "marketA": "358",
+      "exchangeA": "1047",
+      "titleA": "Will the Democratic Party win the Michigan Senate?",
+      "marketB": "305",
+      "exchangeB": "994",
+      "titleB": "Will the Democratic Party win the Michigan Governor?",
+      "developmentSynchronizedSnapshots": 613,
+      "developmentJointFitPoints": 534,
+      "heldOutSynchronizedSnapshots": 208,
+      "developmentOlsFit": {
+        "usable": false,
+        "reason": "insufficient_joint_price_variation",
+        "observations": 534,
+        "increments": 215
+      },
+      "model": {
+        "usable": true,
+        "betaSource": "fixed_equal_share_comparator",
+        "observations": 534,
+        "increments": 0,
+        "beta": 1,
+        "intercept": -0.20498127340822847,
+        "residualMean": -1.107936048357202e-14,
+        "observedSigma": 0.00021576137747984428,
+        "sigma": 0.01,
+        "minSigmaApplied": true,
+        "firstAt": "2026-10-13T02:55:57.403Z",
+        "lastAt": "2026-10-13T06:18:29.723Z"
+      },
+      "signal": {
+        "thresholdZ": 2,
+        "candidates": 0,
+        "entries": 0,
+        "depthRejected": 0,
+        "entryCensored": {},
+        "marks": {
+          "1000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          },
+          "5000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          },
+          "30000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          }
+        },
+        "trades": []
+      },
+      "heldOutResidualDiagnostics": {
+        "snapshots": 208,
+        "distinctAMids": 4,
+        "distinctBMids": 1,
+        "adjacentJointSequenceUpdates": 184,
+        "rawThresholdExceedanceSnapshots": 0,
+        "adjacentJointThresholdExceedanceSnapshots": 0,
+        "maxAbsZ": 0.748127,
+        "p95AbsZ": 0.498127,
+        "p99AbsZ": 0.498127,
+        "residualRange": [
+          -0.00001873,
+          0.00748127
+        ]
+      },
+      "limitations": []
+    },
+    {
+      "id": "Michigan|Republican",
+      "state": "Michigan",
+      "party": "Republican",
+      "marketA": "359",
+      "exchangeA": "1048",
+      "titleA": "Will the Republican Party win the Michigan Senate?",
+      "marketB": "306",
+      "exchangeB": "995",
+      "titleB": "Will the Republican Party win the Michigan Governor?",
+      "developmentSynchronizedSnapshots": 627,
+      "developmentJointFitPoints": 521,
+      "heldOutSynchronizedSnapshots": 203,
+      "developmentOlsFit": {
+        "usable": false,
+        "reason": "insufficient_joint_price_variation",
+        "observations": 521,
+        "increments": 197
+      },
+      "model": {
+        "usable": true,
+        "betaSource": "fixed_equal_share_comparator",
+        "observations": 521,
+        "increments": 0,
+        "beta": 1,
+        "intercept": 0.22253838771593426,
+        "residualMean": -3.3429752887837427e-15,
+        "observedSigma": 0.0025093027861269085,
+        "sigma": 0.01,
+        "minSigmaApplied": true,
+        "firstAt": "2026-10-13T02:55:46.911Z",
+        "lastAt": "2026-10-13T06:18:20.439Z"
+      },
+      "signal": {
+        "thresholdZ": 2,
+        "candidates": 0,
+        "entries": 0,
+        "depthRejected": 0,
+        "entryCensored": {},
+        "marks": {
+          "1000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          },
+          "5000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          },
+          "30000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          }
+        },
+        "trades": []
+      },
+      "heldOutResidualDiagnostics": {
+        "snapshots": 203,
+        "distinctAMids": 1,
+        "distinctBMids": 1,
+        "adjacentJointSequenceUpdates": 181,
+        "rawThresholdExceedanceSnapshots": 0,
+        "adjacentJointThresholdExceedanceSnapshots": 0,
+        "maxAbsZ": 0.253839,
+        "p95AbsZ": 0.253839,
+        "p99AbsZ": 0.253839,
+        "residualRange": [
+          -0.00253839,
+          -0.00253839
+        ]
+      },
+      "limitations": []
+    },
+    {
+      "id": "Minnesota|Democratic",
+      "state": "Minnesota",
+      "party": "Democratic",
+      "marketA": "360",
+      "exchangeA": "1049",
+      "titleA": "Will the Democratic Party win the Minnesota Senate?",
+      "marketB": "307",
+      "exchangeB": "996",
+      "titleB": "Will the Democratic Party win the Minnesota Governor?",
+      "developmentSynchronizedSnapshots": 300,
+      "developmentJointFitPoints": 273,
+      "heldOutSynchronizedSnapshots": 100,
+      "developmentOlsFit": {
+        "usable": false,
+        "reason": "insufficient_joint_price_variation",
+        "observations": 273,
+        "increments": 69
+      },
+      "model": {
+        "usable": true,
+        "betaSource": "fixed_equal_share_comparator",
+        "observations": 273,
+        "increments": 0,
+        "beta": 1,
+        "intercept": -0.04795787545786934,
+        "residualMean": -6.1290004410716974e-15,
+        "observedSigma": 0.0023524592637011858,
+        "sigma": 0.01,
+        "minSigmaApplied": true,
+        "firstAt": "2026-10-13T02:55:42.977Z",
+        "lastAt": "2026-10-13T06:17:17.489Z"
+      },
+      "signal": {
+        "thresholdZ": 2,
+        "candidates": 0,
+        "entries": 0,
+        "depthRejected": 0,
+        "entryCensored": {},
+        "marks": {
+          "1000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          },
+          "5000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          },
+          "30000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          }
+        },
+        "trades": []
+      },
+      "heldOutResidualDiagnostics": {
+        "snapshots": 100,
+        "distinctAMids": 1,
+        "distinctBMids": 2,
+        "adjacentJointSequenceUpdates": 91,
+        "rawThresholdExceedanceSnapshots": 0,
+        "adjacentJointThresholdExceedanceSnapshots": 0,
+        "maxAbsZ": 0.295788,
+        "p95AbsZ": 0.295788,
+        "p99AbsZ": 0.295788,
+        "residualRange": [
+          0.00045788,
+          0.00295788
+        ]
+      },
+      "limitations": []
+    },
+    {
+      "id": "Minnesota|Republican",
+      "state": "Minnesota",
+      "party": "Republican",
+      "marketA": "361",
+      "exchangeA": "1050",
+      "titleA": "Will the Republican Party win the Minnesota Senate?",
+      "marketB": "308",
+      "exchangeB": "997",
+      "titleB": "Will the Republican Party win the Minnesota Governor?",
+      "developmentSynchronizedSnapshots": 287,
+      "developmentJointFitPoints": 258,
+      "heldOutSynchronizedSnapshots": 95,
+      "developmentOlsFit": {
+        "usable": false,
+        "reason": "insufficient_joint_price_variation",
+        "observations": 258,
+        "increments": 64
+      },
+      "model": {
+        "usable": true,
+        "betaSource": "fixed_equal_share_comparator",
+        "observations": 258,
+        "increments": 0,
+        "beta": 1,
+        "intercept": 0.048963178294572696,
+        "residualMean": 9.678950147822222e-16,
+        "observedSigma": 0.0030900242363640093,
+        "sigma": 0.01,
+        "minSigmaApplied": true,
+        "firstAt": "2026-10-13T02:56:07.149Z",
+        "lastAt": "2026-10-13T06:18:32.164Z"
+      },
+      "signal": {
+        "thresholdZ": 2,
+        "candidates": 0,
+        "entries": 0,
+        "depthRejected": 0,
+        "entryCensored": {},
+        "marks": {
+          "1000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          },
+          "5000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          },
+          "30000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          }
+        },
+        "trades": []
+      },
+      "heldOutResidualDiagnostics": {
+        "snapshots": 95,
+        "distinctAMids": 1,
+        "distinctBMids": 1,
+        "adjacentJointSequenceUpdates": 90,
+        "rawThresholdExceedanceSnapshots": 0,
+        "adjacentJointThresholdExceedanceSnapshots": 0,
+        "maxAbsZ": 0.146318,
+        "p95AbsZ": 0.146318,
+        "p99AbsZ": 0.146318,
+        "residualRange": [
+          -0.00146318,
+          -0.00146318
+        ]
+      },
+      "limitations": []
+    },
+    {
+      "id": "Nebraska|Democratic",
+      "state": "Nebraska",
+      "party": "Democratic",
+      "marketA": "279",
+      "exchangeA": "968",
+      "titleA": "Will the Democratic Party win the Nebraska Senate?",
+      "marketB": "178",
+      "exchangeB": "867",
+      "titleB": "Will the Democratic Party win the Nebraska Governor?",
+      "developmentSynchronizedSnapshots": 132,
+      "developmentJointFitPoints": 126,
+      "heldOutSynchronizedSnapshots": 49,
+      "developmentOlsFit": {
+        "usable": false,
+        "reason": "insufficient_joint_price_variation",
+        "observations": 126,
+        "increments": 19
+      },
+      "model": {
+        "usable": true,
+        "betaSource": "fixed_equal_share_comparator",
+        "observations": 126,
+        "increments": 0,
+        "beta": 1,
+        "intercept": -0.10500000000000025,
+        "residualMean": 2.498001805406602e-16,
+        "observedSigma": 0,
+        "sigma": 0.01,
+        "minSigmaApplied": true,
+        "firstAt": "2026-10-13T02:57:05.294Z",
+        "lastAt": "2026-10-13T06:12:16.089Z"
+      },
+      "signal": {
+        "thresholdZ": 2,
+        "candidates": 0,
+        "entries": 0,
+        "depthRejected": 0,
+        "entryCensored": {},
+        "marks": {
+          "1000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          },
+          "5000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          },
+          "30000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          }
+        },
+        "trades": []
+      },
+      "heldOutResidualDiagnostics": {
+        "snapshots": 49,
+        "distinctAMids": 1,
+        "distinctBMids": 1,
+        "adjacentJointSequenceUpdates": 44,
+        "rawThresholdExceedanceSnapshots": 0,
+        "adjacentJointThresholdExceedanceSnapshots": 0,
+        "maxAbsZ": 0,
+        "p95AbsZ": 0,
+        "p99AbsZ": 0,
+        "residualRange": [
+          0,
+          0
+        ]
+      },
+      "limitations": []
+    },
+    {
+      "id": "Nebraska|Republican",
+      "state": "Nebraska",
+      "party": "Republican",
+      "marketA": "281",
+      "exchangeA": "970",
+      "titleA": "Will the Republican Party win the Nebraska Senate?",
+      "marketB": "179",
+      "exchangeB": "868",
+      "titleB": "Will the Republican Party win the Nebraska Governor?",
+      "developmentSynchronizedSnapshots": 966,
+      "developmentJointFitPoints": 792,
+      "heldOutSynchronizedSnapshots": 488,
+      "developmentOlsFit": {
+        "usable": false,
+        "reason": "unstable_or_wrong_sign_hedge",
+        "observations": 792,
+        "increments": 455,
+        "beta": -0.08000000000000156
+      },
+      "model": {
+        "usable": true,
+        "betaSource": "fixed_equal_share_comparator",
+        "observations": 792,
+        "increments": 0,
+        "beta": 1,
+        "intercept": -0.1680018939393969,
+        "residualMean": 2.9817618632325384e-15,
+        "observedSigma": 0.001953714462537012,
+        "sigma": 0.01,
+        "minSigmaApplied": true,
+        "firstAt": "2026-10-13T02:55:40.919Z",
+        "lastAt": "2026-10-13T06:18:38.780Z"
+      },
+      "signal": {
+        "thresholdZ": 2,
+        "candidates": 0,
+        "entries": 0,
+        "depthRejected": 0,
+        "entryCensored": {},
+        "marks": {
+          "1000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          },
+          "5000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          },
+          "30000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          }
+        },
+        "trades": []
+      },
+      "heldOutResidualDiagnostics": {
+        "snapshots": 488,
+        "distinctAMids": 2,
+        "distinctBMids": 4,
+        "adjacentJointSequenceUpdates": 410,
+        "rawThresholdExceedanceSnapshots": 0,
+        "adjacentJointThresholdExceedanceSnapshots": 0,
+        "maxAbsZ": 0.550189,
+        "p95AbsZ": 0.300189,
+        "p99AbsZ": 0.300189,
+        "residualRange": [
+          -0.00449811,
+          0.00550189
+        ]
+      },
+      "limitations": []
+    },
+    {
+      "id": "New Hampshire|Democratic",
+      "state": "New Hampshire",
+      "party": "Democratic",
+      "marketA": "381",
+      "exchangeA": "1070",
+      "titleA": "Will the Democratic Party win the New Hampshire Senate?",
+      "marketB": "372",
+      "exchangeB": "1061",
+      "titleB": "Will the Democratic Party win the New Hampshire Governor?",
+      "developmentSynchronizedSnapshots": 420,
+      "developmentJointFitPoints": 376,
+      "heldOutSynchronizedSnapshots": 160,
+      "developmentOlsFit": {
+        "usable": false,
+        "reason": "insufficient_joint_price_variation",
+        "observations": 376,
+        "increments": 124
+      },
+      "model": {
+        "usable": true,
+        "betaSource": "fixed_equal_share_comparator",
+        "observations": 376,
+        "increments": 0,
+        "beta": 1,
+        "intercept": 0.7418617021276654,
+        "residualMean": -5.822765437661725e-15,
+        "observedSigma": 0.002420362788585379,
+        "sigma": 0.01,
+        "minSigmaApplied": true,
+        "firstAt": "2026-10-13T02:56:02.954Z",
+        "lastAt": "2026-10-13T06:17:19.508Z"
+      },
+      "signal": {
+        "thresholdZ": 2,
+        "candidates": 0,
+        "entries": 0,
+        "depthRejected": 0,
+        "entryCensored": {},
+        "marks": {
+          "1000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          },
+          "5000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          },
+          "30000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          }
+        },
+        "trades": []
+      },
+      "heldOutResidualDiagnostics": {
+        "snapshots": 160,
+        "distinctAMids": 3,
+        "distinctBMids": 1,
+        "adjacentJointSequenceUpdates": 144,
+        "rawThresholdExceedanceSnapshots": 0,
+        "adjacentJointThresholdExceedanceSnapshots": 0,
+        "maxAbsZ": 0.31383,
+        "p95AbsZ": 0.18617,
+        "p99AbsZ": 0.31383,
+        "residualRange": [
+          -0.0018617,
+          0.0031383
+        ]
+      },
+      "limitations": []
+    },
+    {
+      "id": "New Hampshire|Republican",
+      "state": "New Hampshire",
+      "party": "Republican",
+      "marketA": "382",
+      "exchangeA": "1071",
+      "titleA": "Will the Republican Party win the New Hampshire Senate?",
+      "marketB": "373",
+      "exchangeB": "1062",
+      "titleB": "Will the Republican Party win the New Hampshire Governor?",
+      "developmentSynchronizedSnapshots": 469,
+      "developmentJointFitPoints": 408,
+      "heldOutSynchronizedSnapshots": 169,
+      "developmentOlsFit": {
+        "usable": false,
+        "reason": "insufficient_joint_price_variation",
+        "observations": 408,
+        "increments": 155
+      },
+      "model": {
+        "usable": true,
+        "betaSource": "fixed_equal_share_comparator",
+        "observations": 408,
+        "increments": 0,
+        "beta": 1,
+        "intercept": -0.7299999999999942,
+        "residualMean": -5.773159728050814e-15,
+        "observedSigma": 0,
+        "sigma": 0.01,
+        "minSigmaApplied": true,
+        "firstAt": "2026-10-13T02:55:44.026Z",
+        "lastAt": "2026-10-13T06:18:02.589Z"
+      },
+      "signal": {
+        "thresholdZ": 2,
+        "candidates": 0,
+        "entries": 0,
+        "depthRejected": 0,
+        "entryCensored": {},
+        "marks": {
+          "1000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          },
+          "5000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          },
+          "30000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          }
+        },
+        "trades": []
+      },
+      "heldOutResidualDiagnostics": {
+        "snapshots": 169,
+        "distinctAMids": 1,
+        "distinctBMids": 1,
+        "adjacentJointSequenceUpdates": 150,
+        "rawThresholdExceedanceSnapshots": 0,
+        "adjacentJointThresholdExceedanceSnapshots": 0,
+        "maxAbsZ": 0,
+        "p95AbsZ": 0,
+        "p99AbsZ": 0,
+        "residualRange": [
+          0,
+          0
+        ]
+      },
+      "limitations": []
+    },
+    {
+      "id": "New Mexico|Democratic",
+      "state": "New Mexico",
+      "party": "Democratic",
+      "marketA": "284",
+      "exchangeA": "973",
+      "titleA": "Will the Democratic Party win the New Mexico Senate?",
+      "marketB": "180",
+      "exchangeB": "869",
+      "titleB": "Will the Democratic Party win the New Mexico Governor?",
+      "developmentSynchronizedSnapshots": 235,
+      "developmentJointFitPoints": 215,
+      "heldOutSynchronizedSnapshots": 78,
+      "developmentOlsFit": {
+        "usable": false,
+        "reason": "insufficient_joint_price_variation",
+        "observations": 215,
+        "increments": 54
+      },
+      "model": {
+        "usable": true,
+        "betaSource": "fixed_equal_share_comparator",
+        "observations": 215,
+        "increments": 0,
+        "beta": 1,
+        "intercept": 0.07451162790698485,
+        "residualMean": -8.156782742780918e-15,
+        "observedSigma": 0.002133095826451602,
+        "sigma": 0.01,
+        "minSigmaApplied": true,
+        "firstAt": "2026-10-13T02:57:34.327Z",
+        "lastAt": "2026-10-13T06:16:58.999Z"
+      },
+      "signal": {
+        "thresholdZ": 2,
+        "candidates": 0,
+        "entries": 0,
+        "depthRejected": 0,
+        "entryCensored": {},
+        "marks": {
+          "1000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          },
+          "5000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          },
+          "30000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          }
+        },
+        "trades": []
+      },
+      "heldOutResidualDiagnostics": {
+        "snapshots": 78,
+        "distinctAMids": 2,
+        "distinctBMids": 1,
+        "adjacentJointSequenceUpdates": 72,
+        "rawThresholdExceedanceSnapshots": 0,
+        "adjacentJointThresholdExceedanceSnapshots": 0,
+        "maxAbsZ": 0.201163,
+        "p95AbsZ": 0.201163,
+        "p99AbsZ": 0.201163,
+        "residualRange": [
+          -0.00201163,
+          0.00048837
+        ]
+      },
+      "limitations": []
+    },
+    {
+      "id": "New Mexico|Republican",
+      "state": "New Mexico",
+      "party": "Republican",
+      "marketA": "285",
+      "exchangeA": "974",
+      "titleA": "Will the Republican Party win the New Mexico Senate?",
+      "marketB": "181",
+      "exchangeB": "870",
+      "titleB": "Will the Republican Party win the New Mexico Governor?",
+      "developmentSynchronizedSnapshots": 334,
+      "developmentJointFitPoints": 304,
+      "heldOutSynchronizedSnapshots": 119,
+      "developmentOlsFit": {
+        "usable": false,
+        "reason": "insufficient_joint_price_variation",
+        "observations": 304,
+        "increments": 73
+      },
+      "model": {
+        "usable": true,
+        "betaSource": "fixed_equal_share_comparator",
+        "observations": 304,
+        "increments": 0,
+        "beta": 1,
+        "intercept": -0.04553453947368498,
+        "residualMean": 7.69669415920236e-16,
+        "observedSigma": 0.0011226549971656945,
+        "sigma": 0.01,
+        "minSigmaApplied": true,
+        "firstAt": "2026-10-13T02:56:23.651Z",
+        "lastAt": "2026-10-13T06:18:32.164Z"
+      },
+      "signal": {
+        "thresholdZ": 2,
+        "candidates": 0,
+        "entries": 0,
+        "depthRejected": 0,
+        "entryCensored": {},
+        "marks": {
+          "1000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          },
+          "5000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          },
+          "30000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          }
+        },
+        "trades": []
+      },
+      "heldOutResidualDiagnostics": {
+        "snapshots": 119,
+        "distinctAMids": 1,
+        "distinctBMids": 3,
+        "adjacentJointSequenceUpdates": 106,
+        "rawThresholdExceedanceSnapshots": 0,
+        "adjacentJointThresholdExceedanceSnapshots": 0,
+        "maxAbsZ": 0.303454,
+        "p95AbsZ": 0.196546,
+        "p99AbsZ": 0.303454,
+        "residualRange": [
+          -0.00196546,
+          0.00303454
+        ]
+      },
+      "limitations": []
+    },
+    {
+      "id": "Oklahoma|Democratic",
+      "state": "Oklahoma",
+      "party": "Democratic",
+      "marketA": "383",
+      "exchangeA": "1072",
+      "titleA": "Will the Democratic Party win the Oklahoma Senate?",
+      "marketB": "186",
+      "exchangeB": "875",
+      "titleB": "Will the Democratic Party win the Oklahoma Governor?",
+      "developmentSynchronizedSnapshots": 578,
+      "developmentJointFitPoints": 508,
+      "heldOutSynchronizedSnapshots": 272,
+      "developmentOlsFit": {
+        "usable": false,
+        "reason": "insufficient_joint_price_variation",
+        "observations": 508,
+        "increments": 197
+      },
+      "model": {
+        "usable": true,
+        "betaSource": "fixed_equal_share_comparator",
+        "observations": 508,
+        "increments": 0,
+        "beta": 1,
+        "intercept": 0,
+        "residualMean": 0,
+        "observedSigma": 0,
+        "sigma": 0.01,
+        "minSigmaApplied": true,
+        "firstAt": "2026-10-13T02:55:43.165Z",
+        "lastAt": "2026-10-13T06:17:41.675Z"
+      },
+      "signal": {
+        "thresholdZ": 2,
+        "candidates": 0,
+        "entries": 0,
+        "depthRejected": 0,
+        "entryCensored": {},
+        "marks": {
+          "1000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          },
+          "5000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          },
+          "30000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          }
+        },
+        "trades": []
+      },
+      "heldOutResidualDiagnostics": {
+        "snapshots": 272,
+        "distinctAMids": 1,
+        "distinctBMids": 1,
+        "adjacentJointSequenceUpdates": 243,
+        "rawThresholdExceedanceSnapshots": 0,
+        "adjacentJointThresholdExceedanceSnapshots": 0,
+        "maxAbsZ": 0,
+        "p95AbsZ": 0,
+        "p99AbsZ": 0,
+        "residualRange": [
+          0,
+          0
+        ]
+      },
+      "limitations": []
+    },
+    {
+      "id": "Oklahoma|Republican",
+      "state": "Oklahoma",
+      "party": "Republican",
+      "marketA": "286",
+      "exchangeA": "975",
+      "titleA": "Will the Republican Party win the Oklahoma Senate?",
+      "marketB": "374",
+      "exchangeB": "1063",
+      "titleB": "Will the Republican Party win the Oklahoma Governor?",
+      "developmentSynchronizedSnapshots": 347,
+      "developmentJointFitPoints": 310,
+      "heldOutSynchronizedSnapshots": 147,
+      "developmentOlsFit": {
+        "usable": false,
+        "reason": "insufficient_joint_price_variation",
+        "observations": 310,
+        "increments": 79
+      },
+      "model": {
+        "usable": true,
+        "betaSource": "fixed_equal_share_comparator",
+        "observations": 310,
+        "increments": 0,
+        "beta": 1,
+        "intercept": 0.01317741935484551,
+        "residualMean": -6.744425806368048e-15,
+        "observedSigma": 0.004395585434529267,
+        "sigma": 0.01,
+        "minSigmaApplied": true,
+        "firstAt": "2026-10-13T02:56:50.055Z",
+        "lastAt": "2026-10-13T06:16:41.363Z"
+      },
+      "signal": {
+        "thresholdZ": 2,
+        "candidates": 0,
+        "entries": 0,
+        "depthRejected": 0,
+        "entryCensored": {},
+        "marks": {
+          "1000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          },
+          "5000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          },
+          "30000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          }
+        },
+        "trades": []
+      },
+      "heldOutResidualDiagnostics": {
+        "snapshots": 147,
+        "distinctAMids": 3,
+        "distinctBMids": 3,
+        "adjacentJointSequenceUpdates": 132,
+        "rawThresholdExceedanceSnapshots": 0,
+        "adjacentJointThresholdExceedanceSnapshots": 0,
+        "maxAbsZ": 1.182258,
+        "p95AbsZ": 1.182258,
+        "p99AbsZ": 1.182258,
+        "residualRange": [
+          0.00432258,
+          0.01182258
+        ]
+      },
+      "limitations": []
+    },
+    {
+      "id": "Oregon|Democratic",
+      "state": "Oregon",
+      "party": "Democratic",
+      "marketA": "287",
+      "exchangeA": "976",
+      "titleA": "Will the Democratic Party win the Oregon Senate?",
+      "marketB": "187",
+      "exchangeB": "876",
+      "titleB": "Will the Democratic Party win the Oregon Governor?",
+      "developmentSynchronizedSnapshots": 222,
+      "developmentJointFitPoints": 202,
+      "heldOutSynchronizedSnapshots": 68,
+      "developmentOlsFit": {
+        "usable": false,
+        "reason": "insufficient_joint_price_variation",
+        "observations": 202,
+        "increments": 47
+      },
+      "model": {
+        "usable": true,
+        "betaSource": "fixed_equal_share_comparator",
+        "observations": 202,
+        "increments": 0,
+        "beta": 1,
+        "intercept": 0.18500000000000105,
+        "residualMean": -9.992007221626409e-16,
+        "observedSigma": 0,
+        "sigma": 0.01,
+        "minSigmaApplied": true,
+        "firstAt": "2026-10-13T02:56:03.190Z",
+        "lastAt": "2026-10-13T06:16:37.701Z"
+      },
+      "signal": {
+        "thresholdZ": 2,
+        "candidates": 0,
+        "entries": 0,
+        "depthRejected": 0,
+        "entryCensored": {},
+        "marks": {
+          "1000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          },
+          "5000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          },
+          "30000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          }
+        },
+        "trades": []
+      },
+      "heldOutResidualDiagnostics": {
+        "snapshots": 68,
+        "distinctAMids": 1,
+        "distinctBMids": 1,
+        "adjacentJointSequenceUpdates": 63,
+        "rawThresholdExceedanceSnapshots": 0,
+        "adjacentJointThresholdExceedanceSnapshots": 0,
+        "maxAbsZ": 0,
+        "p95AbsZ": 0,
+        "p99AbsZ": 0,
+        "residualRange": [
+          0,
+          0
+        ]
+      },
+      "limitations": []
+    },
+    {
+      "id": "Oregon|Republican",
+      "state": "Oregon",
+      "party": "Republican",
+      "marketA": "288",
+      "exchangeA": "977",
+      "titleA": "Will the Republican Party win the Oregon Senate?",
+      "marketB": "188",
+      "exchangeB": "877",
+      "titleB": "Will the Republican Party win the Oregon Governor?",
+      "developmentSynchronizedSnapshots": 423,
+      "developmentJointFitPoints": 371,
+      "heldOutSynchronizedSnapshots": 133,
+      "developmentOlsFit": {
+        "usable": false,
+        "reason": "insufficient_joint_price_variation",
+        "observations": 371,
+        "increments": 119
+      },
+      "model": {
+        "usable": true,
+        "betaSource": "fixed_equal_share_comparator",
+        "observations": 371,
+        "increments": 0,
+        "beta": 1,
+        "intercept": -0.18328167115902805,
+        "residualMean": -1.598002951886344e-15,
+        "observedSigma": 0.001310885159875637,
+        "sigma": 0.01,
+        "minSigmaApplied": true,
+        "firstAt": "2026-10-13T02:56:26.396Z",
+        "lastAt": "2026-10-13T06:17:13.078Z"
+      },
+      "signal": {
+        "thresholdZ": 2,
+        "candidates": 0,
+        "entries": 0,
+        "depthRejected": 0,
+        "entryCensored": {},
+        "marks": {
+          "1000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          },
+          "5000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          },
+          "30000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          }
+        },
+        "trades": []
+      },
+      "heldOutResidualDiagnostics": {
+        "snapshots": 133,
+        "distinctAMids": 3,
+        "distinctBMids": 2,
+        "adjacentJointSequenceUpdates": 120,
+        "rawThresholdExceedanceSnapshots": 0,
+        "adjacentJointThresholdExceedanceSnapshots": 0,
+        "maxAbsZ": 0.421833,
+        "p95AbsZ": 0.328167,
+        "p99AbsZ": 0.328167,
+        "residualRange": [
+          -0.00421833,
+          0.00328167
+        ]
+      },
+      "limitations": []
+    },
+    {
+      "id": "Rhode Island|Democratic",
+      "state": "Rhode Island",
+      "party": "Democratic",
+      "marketA": "387",
+      "exchangeA": "1076",
+      "titleA": "Will the Democratic Party win the Rhode Island Senate?",
+      "marketB": "384",
+      "exchangeB": "1073",
+      "titleB": "Will the Democratic Party win the Rhode Island Governor?",
+      "developmentSynchronizedSnapshots": 679,
+      "developmentJointFitPoints": 572,
+      "heldOutSynchronizedSnapshots": 161,
+      "developmentOlsFit": {
+        "usable": false,
+        "reason": "unstable_or_wrong_sign_hedge",
+        "observations": 572,
+        "increments": 277,
+        "beta": 0
+      },
+      "model": {
+        "usable": true,
+        "betaSource": "fixed_equal_share_comparator",
+        "observations": 572,
+        "increments": 0,
+        "beta": 1,
+        "intercept": -0.04437062937061431,
+        "residualMean": -1.5195304222352144e-14,
+        "observedSigma": 0.001096025756011206,
+        "sigma": 0.01,
+        "minSigmaApplied": true,
+        "firstAt": "2026-10-13T02:55:48.378Z",
+        "lastAt": "2026-10-13T06:17:41.675Z"
+      },
+      "signal": {
+        "thresholdZ": 2,
+        "candidates": 0,
+        "entries": 0,
+        "depthRejected": 0,
+        "entryCensored": {},
+        "marks": {
+          "1000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          },
+          "5000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          },
+          "30000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          }
+        },
+        "trades": []
+      },
+      "heldOutResidualDiagnostics": {
+        "snapshots": 161,
+        "distinctAMids": 1,
+        "distinctBMids": 2,
+        "adjacentJointSequenceUpdates": 135,
+        "rawThresholdExceedanceSnapshots": 0,
+        "adjacentJointThresholdExceedanceSnapshots": 0,
+        "maxAbsZ": 0.187063,
+        "p95AbsZ": 0.187063,
+        "p99AbsZ": 0.187063,
+        "residualRange": [
+          -0.00062937,
+          0.00187063
+        ]
+      },
+      "limitations": []
+    },
+    {
+      "id": "Rhode Island|Republican",
+      "state": "Rhode Island",
+      "party": "Republican",
+      "marketA": "388",
+      "exchangeA": "1077",
+      "titleA": "Will the Republican Party win the Rhode Island Senate?",
+      "marketB": "385",
+      "exchangeB": "1074",
+      "titleB": "Will the Republican Party win the Rhode Island Governor?",
+      "developmentSynchronizedSnapshots": 1056,
+      "developmentJointFitPoints": 884,
+      "heldOutSynchronizedSnapshots": 394,
+      "developmentOlsFit": {
+        "usable": false,
+        "reason": "unstable_or_wrong_sign_hedge",
+        "observations": 884,
+        "increments": 532,
+        "beta": 0
+      },
+      "model": {
+        "usable": true,
+        "betaSource": "fixed_equal_share_comparator",
+        "observations": 884,
+        "increments": 0,
+        "beta": 1,
+        "intercept": 0.05972567873303024,
+        "residualMean": 1.4964776527060014e-15,
+        "observedSigma": 0.008181285932917287,
+        "sigma": 0.01,
+        "minSigmaApplied": true,
+        "firstAt": "2026-10-13T02:55:43.165Z",
+        "lastAt": "2026-10-13T06:18:02.589Z"
+      },
+      "signal": {
+        "thresholdZ": 2,
+        "candidates": 0,
+        "entries": 0,
+        "depthRejected": 0,
+        "entryCensored": {},
+        "marks": {
+          "1000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          },
+          "5000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          },
+          "30000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          }
+        },
+        "trades": []
+      },
+      "heldOutResidualDiagnostics": {
+        "snapshots": 394,
+        "distinctAMids": 1,
+        "distinctBMids": 1,
+        "adjacentJointSequenceUpdates": 338,
+        "rawThresholdExceedanceSnapshots": 0,
+        "adjacentJointThresholdExceedanceSnapshots": 0,
+        "maxAbsZ": 0.972568,
+        "p95AbsZ": 0.972568,
+        "p99AbsZ": 0.972568,
+        "residualRange": [
+          -0.00972568,
+          -0.00972568
+        ]
+      },
+      "limitations": []
+    },
+    {
+      "id": "South Carolina|Democratic",
+      "state": "South Carolina",
+      "party": "Democratic",
+      "marketA": "289",
+      "exchangeA": "978",
+      "titleA": "Will the Democratic Party win the South Carolina Senate?",
+      "marketB": "192",
+      "exchangeB": "881",
+      "titleB": "Will the Democratic Party win the South Carolina Governor?",
+      "developmentSynchronizedSnapshots": 481,
+      "developmentJointFitPoints": 419,
+      "heldOutSynchronizedSnapshots": 190,
+      "developmentOlsFit": {
+        "usable": false,
+        "reason": "unstable_or_wrong_sign_hedge",
+        "observations": 419,
+        "increments": 135,
+        "beta": 0
+      },
+      "model": {
+        "usable": true,
+        "betaSource": "fixed_equal_share_comparator",
+        "observations": 419,
+        "increments": 0,
+        "beta": 1,
+        "intercept": 0.10700477326969071,
+        "residualMean": -9.7522096470952e-16,
+        "observedSigma": 0.0015781025896305317,
+        "sigma": 0.01,
+        "minSigmaApplied": true,
+        "firstAt": "2026-10-13T02:55:48.378Z",
+        "lastAt": "2026-10-13T06:18:17.410Z"
+      },
+      "signal": {
+        "thresholdZ": 2,
+        "candidates": 0,
+        "entries": 0,
+        "depthRejected": 0,
+        "entryCensored": {},
+        "marks": {
+          "1000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          },
+          "5000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          },
+          "30000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          }
+        },
+        "trades": []
+      },
+      "heldOutResidualDiagnostics": {
+        "snapshots": 190,
+        "distinctAMids": 1,
+        "distinctBMids": 1,
+        "adjacentJointSequenceUpdates": 173,
+        "rawThresholdExceedanceSnapshots": 0,
+        "adjacentJointThresholdExceedanceSnapshots": 0,
+        "maxAbsZ": 0.049523,
+        "p95AbsZ": 0.049523,
+        "p99AbsZ": 0.049523,
+        "residualRange": [
+          0.00049523,
+          0.00049523
+        ]
+      },
+      "limitations": []
+    },
+    {
+      "id": "South Carolina|Republican",
+      "state": "South Carolina",
+      "party": "Republican",
+      "marketA": "290",
+      "exchangeA": "979",
+      "titleA": "Will the Republican Party win the South Carolina Senate?",
+      "marketB": "193",
+      "exchangeB": "882",
+      "titleB": "Will the Republican Party win the South Carolina Governor?",
+      "developmentSynchronizedSnapshots": 614,
+      "developmentJointFitPoints": 533,
+      "heldOutSynchronizedSnapshots": 251,
+      "developmentOlsFit": {
+        "usable": false,
+        "reason": "unstable_or_wrong_sign_hedge",
+        "observations": 533,
+        "increments": 207,
+        "beta": 0
+      },
+      "model": {
+        "usable": true,
+        "betaSource": "fixed_equal_share_comparator",
+        "observations": 533,
+        "increments": 0,
+        "beta": 1,
+        "intercept": -0.12678705440900395,
+        "residualMean": -1.6384642235837675e-15,
+        "observedSigma": 0.0011298085833467296,
+        "sigma": 0.01,
+        "minSigmaApplied": true,
+        "firstAt": "2026-10-13T02:55:42.977Z",
+        "lastAt": "2026-10-13T06:17:58.298Z"
+      },
+      "signal": {
+        "thresholdZ": 2,
+        "candidates": 0,
+        "entries": 0,
+        "depthRejected": 0,
+        "entryCensored": {},
+        "marks": {
+          "1000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          },
+          "5000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          },
+          "30000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          }
+        },
+        "trades": []
+      },
+      "heldOutResidualDiagnostics": {
+        "snapshots": 251,
+        "distinctAMids": 1,
+        "distinctBMids": 2,
+        "adjacentJointSequenceUpdates": 231,
+        "rawThresholdExceedanceSnapshots": 0,
+        "adjacentJointThresholdExceedanceSnapshots": 0,
+        "maxAbsZ": 0.178705,
+        "p95AbsZ": 0.178705,
+        "p99AbsZ": 0.178705,
+        "residualRange": [
+          -0.00071295,
+          0.00178705
+        ]
+      },
+      "limitations": []
+    },
+    {
+      "id": "South Dakota|Democratic",
+      "state": "South Dakota",
+      "party": "Democratic",
+      "marketA": "291",
+      "exchangeA": "980",
+      "titleA": "Will the Democratic Party win the South Dakota Senate?",
+      "marketB": "194",
+      "exchangeB": "883",
+      "titleB": "Will the Democratic Party win the South Dakota Governor?",
+      "developmentSynchronizedSnapshots": 251,
+      "developmentJointFitPoints": 216,
+      "heldOutSynchronizedSnapshots": 252,
+      "developmentOlsFit": {
+        "usable": false,
+        "reason": "insufficient_joint_price_variation",
+        "observations": 216,
+        "increments": 52
+      },
+      "model": {
+        "usable": true,
+        "betaSource": "fixed_equal_share_comparator",
+        "observations": 216,
+        "increments": 0,
+        "beta": 1,
+        "intercept": 0.005127314814814744,
+        "residualMean": 7.054542135639015e-17,
+        "observedSigma": 0.0015667309212179436,
+        "sigma": 0.01,
+        "minSigmaApplied": true,
+        "firstAt": "2026-10-13T02:55:46.696Z",
+        "lastAt": "2026-10-13T06:18:32.164Z"
+      },
+      "signal": {
+        "thresholdZ": 2,
+        "candidates": 0,
+        "entries": 0,
+        "depthRejected": 0,
+        "entryCensored": {},
+        "marks": {
+          "1000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          },
+          "5000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          },
+          "30000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          }
+        },
+        "trades": []
+      },
+      "heldOutResidualDiagnostics": {
+        "snapshots": 252,
+        "distinctAMids": 2,
+        "distinctBMids": 2,
+        "adjacentJointSequenceUpdates": 211,
+        "rawThresholdExceedanceSnapshots": 0,
+        "adjacentJointThresholdExceedanceSnapshots": 0,
+        "maxAbsZ": 0.262731,
+        "p95AbsZ": 0.262731,
+        "p99AbsZ": 0.262731,
+        "residualRange": [
+          -0.00262731,
+          0.00237269
+        ]
+      },
+      "limitations": []
+    },
+    {
+      "id": "South Dakota|Republican",
+      "state": "South Dakota",
+      "party": "Republican",
+      "marketA": "292",
+      "exchangeA": "981",
+      "titleA": "Will the Republican Party win the South Dakota Senate?",
+      "marketB": "309",
+      "exchangeB": "998",
+      "titleB": "Will the Republican Party win the South Dakota Governor?",
+      "developmentSynchronizedSnapshots": 234,
+      "developmentJointFitPoints": 214,
+      "heldOutSynchronizedSnapshots": 144,
+      "developmentOlsFit": {
+        "usable": false,
+        "reason": "insufficient_joint_price_variation",
+        "observations": 214,
+        "increments": 53
+      },
+      "model": {
+        "usable": true,
+        "betaSource": "fixed_equal_share_comparator",
+        "observations": 214,
+        "increments": 0,
+        "beta": 1,
+        "intercept": -0.020000000000003015,
+        "residualMean": 2.9976021664879227e-15,
+        "observedSigma": 0,
+        "sigma": 0.01,
+        "minSigmaApplied": true,
+        "firstAt": "2026-10-13T02:55:42.977Z",
+        "lastAt": "2026-10-13T06:18:21.370Z"
+      },
+      "signal": {
+        "thresholdZ": 2,
+        "candidates": 0,
+        "entries": 0,
+        "depthRejected": 0,
+        "entryCensored": {},
+        "marks": {
+          "1000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          },
+          "5000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          },
+          "30000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          }
+        },
+        "trades": []
+      },
+      "heldOutResidualDiagnostics": {
+        "snapshots": 144,
+        "distinctAMids": 1,
+        "distinctBMids": 1,
+        "adjacentJointSequenceUpdates": 132,
+        "rawThresholdExceedanceSnapshots": 0,
+        "adjacentJointThresholdExceedanceSnapshots": 0,
+        "maxAbsZ": 0,
+        "p95AbsZ": 0,
+        "p99AbsZ": 0,
+        "residualRange": [
+          0,
+          0
+        ]
+      },
+      "limitations": []
+    },
+    {
+      "id": "Tennessee|Democratic",
+      "state": "Tennessee",
+      "party": "Democratic",
+      "marketA": "362",
+      "exchangeA": "1051",
+      "titleA": "Will the Democratic Party win the Tennessee Senate?",
+      "marketB": "310",
+      "exchangeB": "999",
+      "titleB": "Will the Democratic Party win the Tennessee Governor?",
+      "developmentSynchronizedSnapshots": 291,
+      "developmentJointFitPoints": 267,
+      "heldOutSynchronizedSnapshots": 129,
+      "developmentOlsFit": {
+        "usable": false,
+        "reason": "insufficient_joint_price_variation",
+        "observations": 267,
+        "increments": 62
+      },
+      "model": {
+        "usable": true,
+        "betaSource": "fixed_equal_share_comparator",
+        "observations": 267,
+        "increments": 0,
+        "beta": 1,
+        "intercept": 0.04725655430711696,
+        "residualMean": -8.578240074163663e-16,
+        "observedSigma": 0.002478612295142919,
+        "sigma": 0.01,
+        "minSigmaApplied": true,
+        "firstAt": "2026-10-13T02:55:42.977Z",
+        "lastAt": "2026-10-13T06:16:26.865Z"
+      },
+      "signal": {
+        "thresholdZ": 2,
+        "candidates": 0,
+        "entries": 0,
+        "depthRejected": 0,
+        "entryCensored": {},
+        "marks": {
+          "1000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          },
+          "5000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          },
+          "30000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          }
+        },
+        "trades": []
+      },
+      "heldOutResidualDiagnostics": {
+        "snapshots": 129,
+        "distinctAMids": 1,
+        "distinctBMids": 1,
+        "adjacentJointSequenceUpdates": 119,
+        "rawThresholdExceedanceSnapshots": 0,
+        "adjacentJointThresholdExceedanceSnapshots": 0,
+        "maxAbsZ": 0.225655,
+        "p95AbsZ": 0.225655,
+        "p99AbsZ": 0.225655,
+        "residualRange": [
+          -0.00225655,
+          -0.00225655
+        ]
+      },
+      "limitations": []
+    },
+    {
+      "id": "Tennessee|Republican",
+      "state": "Tennessee",
+      "party": "Republican",
+      "marketA": "363",
+      "exchangeA": "1052",
+      "titleA": "Will the Republican Party win the Tennessee Senate?",
+      "marketB": "311",
+      "exchangeB": "1000",
+      "titleB": "Will the Republican Party win the Tennessee Governor?",
+      "developmentSynchronizedSnapshots": 259,
+      "developmentJointFitPoints": 237,
+      "heldOutSynchronizedSnapshots": 121,
+      "developmentOlsFit": {
+        "usable": false,
+        "reason": "insufficient_joint_price_variation",
+        "observations": 237,
+        "increments": 60
+      },
+      "model": {
+        "usable": true,
+        "betaSource": "fixed_equal_share_comparator",
+        "observations": 237,
+        "increments": 0,
+        "beta": 1,
+        "intercept": -0.035316455696200344,
+        "residualMean": -2.1009916731830494e-15,
+        "observedSigma": 0.0009791595816700579,
+        "sigma": 0.01,
+        "minSigmaApplied": true,
+        "firstAt": "2026-10-13T02:56:16.158Z",
+        "lastAt": "2026-10-13T06:18:12.284Z"
+      },
+      "signal": {
+        "thresholdZ": 2,
+        "candidates": 0,
+        "entries": 0,
+        "depthRejected": 0,
+        "entryCensored": {},
+        "marks": {
+          "1000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          },
+          "5000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          },
+          "30000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          }
+        },
+        "trades": []
+      },
+      "heldOutResidualDiagnostics": {
+        "snapshots": 121,
+        "distinctAMids": 2,
+        "distinctBMids": 2,
+        "adjacentJointSequenceUpdates": 116,
+        "rawThresholdExceedanceSnapshots": 0,
+        "adjacentJointThresholdExceedanceSnapshots": 0,
+        "maxAbsZ": 0.281646,
+        "p95AbsZ": 0.281646,
+        "p99AbsZ": 0.281646,
+        "residualRange": [
+          -0.00218354,
+          0.00281646
+        ]
+      },
+      "limitations": []
+    },
+    {
+      "id": "Texas|Democratic",
+      "state": "Texas",
+      "party": "Democratic",
+      "marketA": "293",
+      "exchangeA": "982",
+      "titleA": "Will the Democratic Party win the Texas Senate?",
+      "marketB": "195",
+      "exchangeB": "884",
+      "titleB": "Will the Democratic Party win the Texas Governor?",
+      "developmentSynchronizedSnapshots": 411,
+      "developmentJointFitPoints": 356,
+      "heldOutSynchronizedSnapshots": 141,
+      "developmentOlsFit": {
+        "usable": false,
+        "reason": "insufficient_joint_price_variation",
+        "observations": 356,
+        "increments": 114
+      },
+      "model": {
+        "usable": true,
+        "betaSource": "fixed_equal_share_comparator",
+        "observations": 356,
+        "increments": 0,
+        "beta": 1,
+        "intercept": 0.3650000000000037,
+        "residualMean": -3.6637359812630166e-15,
+        "observedSigma": 0,
+        "sigma": 0.01,
+        "minSigmaApplied": true,
+        "firstAt": "2026-10-13T02:55:51.665Z",
+        "lastAt": "2026-10-13T06:16:56.918Z"
+      },
+      "signal": {
+        "thresholdZ": 2,
+        "candidates": 0,
+        "entries": 0,
+        "depthRejected": 0,
+        "entryCensored": {},
+        "marks": {
+          "1000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          },
+          "5000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          },
+          "30000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          }
+        },
+        "trades": []
+      },
+      "heldOutResidualDiagnostics": {
+        "snapshots": 141,
+        "distinctAMids": 1,
+        "distinctBMids": 1,
+        "adjacentJointSequenceUpdates": 129,
+        "rawThresholdExceedanceSnapshots": 0,
+        "adjacentJointThresholdExceedanceSnapshots": 0,
+        "maxAbsZ": 0,
+        "p95AbsZ": 0,
+        "p99AbsZ": 0,
+        "residualRange": [
+          0,
+          0
+        ]
+      },
+      "limitations": []
+    },
+    {
+      "id": "Texas|Republican",
+      "state": "Texas",
+      "party": "Republican",
+      "marketA": "294",
+      "exchangeA": "983",
+      "titleA": "Will the Republican Party win the Texas Senate?",
+      "marketB": "196",
+      "exchangeB": "885",
+      "titleB": "Will the Republican Party win the Texas Governor?",
+      "developmentSynchronizedSnapshots": 819,
+      "developmentJointFitPoints": 704,
+      "heldOutSynchronizedSnapshots": 340,
+      "developmentOlsFit": {
+        "usable": false,
+        "reason": "unstable_or_wrong_sign_hedge",
+        "observations": 704,
+        "increments": 337,
+        "beta": 0
+      },
+      "model": {
+        "usable": true,
+        "betaSource": "fixed_equal_share_comparator",
+        "observations": 704,
+        "increments": 0,
+        "beta": 1,
+        "intercept": -0.3472940340909133,
+        "residualMean": 4.1440966819744126e-15,
+        "observedSigma": 0.003775366541450936,
+        "sigma": 0.01,
+        "minSigmaApplied": true,
+        "firstAt": "2026-10-13T02:55:44.026Z",
+        "lastAt": "2026-10-13T06:18:21.370Z"
+      },
+      "signal": {
+        "thresholdZ": 2,
+        "candidates": 0,
+        "entries": 0,
+        "depthRejected": 0,
+        "entryCensored": {},
+        "marks": {
+          "1000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          },
+          "5000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          },
+          "30000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          }
+        },
+        "trades": []
+      },
+      "heldOutResidualDiagnostics": {
+        "snapshots": 340,
+        "distinctAMids": 1,
+        "distinctBMids": 1,
+        "adjacentJointSequenceUpdates": 300,
+        "rawThresholdExceedanceSnapshots": 0,
+        "adjacentJointThresholdExceedanceSnapshots": 0,
+        "maxAbsZ": 0.229403,
+        "p95AbsZ": 0.229403,
+        "p99AbsZ": 0.229403,
+        "residualRange": [
+          0.00229403,
+          0.00229403
+        ]
+      },
+      "limitations": []
+    },
+    {
+      "id": "Wyoming|Democratic",
+      "state": "Wyoming",
+      "party": "Democratic",
+      "marketA": "365",
+      "exchangeA": "1054",
+      "titleA": "Will the Democratic Party win the Wyoming Senate?",
+      "marketB": "316",
+      "exchangeB": "1005",
+      "titleB": "Will the Democratic Party win the Wyoming Governor?",
+      "developmentSynchronizedSnapshots": 227,
+      "developmentJointFitPoints": 211,
+      "heldOutSynchronizedSnapshots": 86,
+      "developmentOlsFit": {
+        "usable": false,
+        "reason": "insufficient_joint_price_variation",
+        "observations": 211,
+        "increments": 45
+      },
+      "model": {
+        "usable": true,
+        "betaSource": "fixed_equal_share_comparator",
+        "observations": 211,
+        "increments": 0,
+        "beta": 1,
+        "intercept": 0.005568720379146984,
+        "residualMean": -6.323930320954313e-17,
+        "observedSigma": 0.0015912761493042647,
+        "sigma": 0.01,
+        "minSigmaApplied": true,
+        "firstAt": "2026-10-13T02:56:53.424Z",
+        "lastAt": "2026-10-13T06:17:18.761Z"
+      },
+      "signal": {
+        "thresholdZ": 2,
+        "candidates": 0,
+        "entries": 0,
+        "depthRejected": 0,
+        "entryCensored": {},
+        "marks": {
+          "1000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          },
+          "5000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          },
+          "30000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          }
+        },
+        "trades": []
+      },
+      "heldOutResidualDiagnostics": {
+        "snapshots": 86,
+        "distinctAMids": 1,
+        "distinctBMids": 1,
+        "adjacentJointSequenceUpdates": 79,
+        "rawThresholdExceedanceSnapshots": 0,
+        "adjacentJointThresholdExceedanceSnapshots": 0,
+        "maxAbsZ": 0.443128,
+        "p95AbsZ": 0.443128,
+        "p99AbsZ": 0.443128,
+        "residualRange": [
+          0.00443128,
+          0.00443128
+        ]
+      },
+      "limitations": []
+    },
+    {
+      "id": "Wyoming|Republican",
+      "state": "Wyoming",
+      "party": "Republican",
+      "marketA": "366",
+      "exchangeA": "1055",
+      "titleA": "Will the Republican Party win the Wyoming Senate?",
+      "marketB": "317",
+      "exchangeB": "1006",
+      "titleB": "Will the Republican Party win the Wyoming Governor?",
+      "developmentSynchronizedSnapshots": 151,
+      "developmentJointFitPoints": 144,
+      "heldOutSynchronizedSnapshots": 64,
+      "developmentOlsFit": {
+        "usable": false,
+        "reason": "insufficient_joint_price_variation",
+        "observations": 144,
+        "increments": 22
+      },
+      "model": {
+        "usable": true,
+        "betaSource": "fixed_equal_share_comparator",
+        "observations": 144,
+        "increments": 0,
+        "beta": 1,
+        "intercept": 0.015156249999999427,
+        "residualMean": 6.931184021791776e-16,
+        "observedSigma": 0.0006754142732867173,
+        "sigma": 0.01,
+        "minSigmaApplied": true,
+        "firstAt": "2026-10-13T02:55:46.696Z",
+        "lastAt": "2026-10-13T06:18:17.410Z"
+      },
+      "signal": {
+        "thresholdZ": 2,
+        "candidates": 0,
+        "entries": 0,
+        "depthRejected": 0,
+        "entryCensored": {},
+        "marks": {
+          "1000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          },
+          "5000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          },
+          "30000": {
+            "candidates": 0,
+            "marks": 0,
+            "profitable": 0,
+            "grossPnl": 0,
+            "stressedPnl": 0,
+            "entryCost": 0,
+            "censored": {},
+            "meanGrossPnl": null,
+            "meanOneTickEachFillStressPnl": null,
+            "meanEntryCost": null
+          }
+        },
+        "trades": []
+      },
+      "heldOutResidualDiagnostics": {
+        "snapshots": 64,
+        "distinctAMids": 2,
+        "distinctBMids": 2,
+        "adjacentJointSequenceUpdates": 57,
+        "rawThresholdExceedanceSnapshots": 0,
+        "adjacentJointThresholdExceedanceSnapshots": 0,
+        "maxAbsZ": 0.234375,
+        "p95AbsZ": 0.015625,
+        "p99AbsZ": 0.234375,
+        "residualRange": [
+          -0.00015625,
+          0.00234375
+        ]
+      },
+      "limitations": []
+    }
+  ],
+  "analysisSourceSha256": {
+    "module": "14c023f5f97d318270a44a5ad837b84ce1c67e1373dfe523b9bb12c937c88494",
+    "runner": "95a8090551d7d91569b327fa03a86b9744edda4ffdb6d7d1066bed2f03bd5fa7",
+    "tests": "b059974108515a5cc828912dc7d68d2cccfaf41b7843ae99d050b980040c39c3"
+  },
+  "limitations": [
+    "A same-state party YES contract in two different offices is a correlation hedge, not an arbitrage identity or guaranteed payout relation.",
+    "The continuous regression hedge ratio may not be an accepted live order quantity; reported paired P&L is a normalized counterfactual quote markout, not account return.",
+    "Both legs must be independently marketable; no actual fills, atomic two-market execution, queue position, partial-fill hedging, or synchronized order acceptance are proven.",
+    "There are 25 state-level clusters, grouping party-specific pairs by state, and one captured session. Per-pair and aggregate markouts are diagnostic, serially dependent, and do not establish persistent alpha or profitability; state outcomes can also share nationwide shocks.",
+    "Only top-of-book displayed quantity is used; deeper capacity, portfolio funding, market impact, settlement exceptions, and competition orders are not modeled."
+  ],
+  "actualFillsProven": false,
+  "profitabilityEstablished": false,
+  "contestOrders": 0,
+  "accountApiRequests": 0,
+  "replayRuntimeMs": 32356.132,
+  "generatedAt": "2026-10-13T23:04:48.832Z"
+}
