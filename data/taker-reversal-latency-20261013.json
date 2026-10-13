@@ -1,0 +1,591 @@
+{
+  "schemaVersion": 1,
+  "task": 45,
+  "title": "Latency-aware taker reversal on fresh captured books",
+  "paperCounterfactualOnly": true,
+  "actualOrders": 0,
+  "executionAuthority": false,
+  "profitabilityEstablished": false,
+  "generatedAt": "2026-10-13T14:27:57.738Z",
+  "source": {
+    "basename": "public-books.jsonl",
+    "runtimeRelativePath": "SigTradingCup/paper-runtime/public-books.jsonl",
+    "choiceReason": "Selected before inspecting outcomes because the existing sanitized public-book journal had broader market/time coverage than the narrow realtime topic capture.",
+    "sourceFileSizeObservedBytes": 311958135,
+    "immutableCompleteLinePrefixBytes": 311939460,
+    "sha256": "eab7f22431b26c634bfb9627d3bfb522f99a842e95a4379d62f1c58ac8a14ad8",
+    "prefixFirstBookAt": "2026-10-02T12:04:20.780Z",
+    "prefixLastBookAt": "2026-10-13T14:27:23.327Z",
+    "prefixDurationMs": 958982547,
+    "completeJsonlLines": 135183,
+    "invalidJsonlLines": 0,
+    "validBookRecords": 132366,
+    "uniqueMarketExchangeStreams": 237,
+    "duplicateBookSequencesIgnored": 0,
+    "invalidBookSnapshots": 0,
+    "postTaskCutoffBookPoints": 255
+  },
+  "holdoutCoverage": {
+    "bookPoints": 255,
+    "streamsWithAtLeastOnePoint": 130,
+    "streamsWithAtLeastTwoPoints": 7,
+    "streamsWithAtLeastThreePoints": 4,
+    "maxPointsPerStream": 32,
+    "medianPointsPerActiveStream": 1,
+    "firstBookAt": "2026-10-13T14:14:46.972Z",
+    "lastBookAt": "2026-10-13T14:27:23.327Z"
+  },
+  "runtime": {
+    "elapsedMs": 1790
+  },
+  "evaluation": {
+    "split": {
+      "discoveryEndAt": "2026-10-10T06:32:28.562Z",
+      "discoveryFraction": 0.7,
+      "taskCutoffAt": "2026-10-13T14:14:39Z",
+      "holdoutStartAt": "2026-10-13T14:14:39.000Z",
+      "firstSignalAtOrAfter": "2026-10-13T14:14:49.000Z",
+      "holdoutEndAt": "2026-10-13T14:27:23.327Z",
+      "discoveryLatencySamples": 96555,
+      "discoveryLatencyMs": {
+        "0.5": 223,
+        "0.9": 534,
+        "0.99": 1721
+      },
+      "latencyMethod": "requestStartedAt to receivedAt in discovery capture; used as a conservative measured-delay proxy for entry and exit arrival; write latency is unobserved"
+    },
+    "signalPolicy": {
+      "definition": "first snapshot in each market excursion where current YES midpoint differs from the last observed midpoint at/before 10s lookback by at least 0.02; a new signal requires a later return inside the same 0.02 band",
+      "lookbackMs": 10000,
+      "maxLookbackStalenessMs": 2000,
+      "absoluteMidpointMove": 0.02,
+      "reversalDirection": "move up: buy NO at 1-YES bid; move down: buy YES at ask",
+      "momentumControl": "same signal times, take the move direction instead of reversing",
+      "sizing": "1 share per trigger; one active counterfactual per market until horizon plus both latency proxies and the maximum entry/exit observation-lag allowance",
+      "horizonsMs": [
+        1000,
+        3000,
+        10000
+      ],
+      "feesPerShare": 0,
+      "depthRule": "require displayed top-of-book quantity >= one share on both legs; first book no later than configured observation lag; stale/unknown depth is not filled",
+      "executableCost": "entry and exit use the opposing displayed YES bid/ask; NO is the binary complement; no fees; price impact beyond one share at top level is not modeled",
+      "noTradeBaseline": "zero P&L; does not incur a position",
+      "purge": "only post-cutoff holdout signals with a full 10s held-out lookback; missing later exit observations are censored, not assigned a mark or fill"
+    },
+    "results": [
+      {
+        "horizonMs": 1000,
+        "latencyQuantile": 0.5,
+        "latencyMs": 223,
+        "latencySource": "discovery p-quantile of requestStartedAt-to-receivedAt; used as both entry and exit post-decision delay proxy, not observed order-write latency",
+        "reversal": {
+          "eligibleSignalCount": 0,
+          "nonOverlapSkipped": 0,
+          "attempted": 0,
+          "completeRoundTrips": 0,
+          "marketsWithTrades": 0,
+          "completionRate": null,
+          "statuses": {},
+          "meanNetPnlPerShare": null,
+          "medianNetPnlPerShare": null,
+          "p10NetPnlPerShare": null,
+          "p90NetPnlPerShare": null,
+          "totalNetPnlAcrossIndependentCounterfactuals": 0,
+          "meanEntrySpread": null,
+          "meanExitSpread": null,
+          "marketClusterBootstrap95": {
+            "lower95": null,
+            "upper95": null,
+            "clusterCount": 0
+          },
+          "economicallyInterpretableSample": false
+        },
+        "naiveAlwaysTakeBaseline": {
+          "eligibleSignalCount": 0,
+          "nonOverlapSkipped": 0,
+          "attempted": 0,
+          "completeRoundTrips": 0,
+          "marketsWithTrades": 0,
+          "completionRate": null,
+          "statuses": {},
+          "meanNetPnlPerShare": null,
+          "medianNetPnlPerShare": null,
+          "p10NetPnlPerShare": null,
+          "p90NetPnlPerShare": null,
+          "totalNetPnlAcrossIndependentCounterfactuals": 0,
+          "meanEntrySpread": null,
+          "meanExitSpread": null,
+          "marketClusterBootstrap95": {
+            "lower95": null,
+            "upper95": null,
+            "clusterCount": 0
+          },
+          "economicallyInterpretableSample": false
+        },
+        "noTradeBaseline": {
+          "attempted": 0,
+          "meanNetPnlPerShare": 0,
+          "totalNetPnlAcrossIndependentCounterfactuals": 0
+        },
+        "naiveBaselineDefinition": "at each same trigger, always take the direction of the preceding 10s move; it is an execution benchmark, not a fitted strategy"
+      },
+      {
+        "horizonMs": 1000,
+        "latencyQuantile": 0.9,
+        "latencyMs": 534,
+        "latencySource": "discovery p-quantile of requestStartedAt-to-receivedAt; used as both entry and exit post-decision delay proxy, not observed order-write latency",
+        "reversal": {
+          "eligibleSignalCount": 0,
+          "nonOverlapSkipped": 0,
+          "attempted": 0,
+          "completeRoundTrips": 0,
+          "marketsWithTrades": 0,
+          "completionRate": null,
+          "statuses": {},
+          "meanNetPnlPerShare": null,
+          "medianNetPnlPerShare": null,
+          "p10NetPnlPerShare": null,
+          "p90NetPnlPerShare": null,
+          "totalNetPnlAcrossIndependentCounterfactuals": 0,
+          "meanEntrySpread": null,
+          "meanExitSpread": null,
+          "marketClusterBootstrap95": {
+            "lower95": null,
+            "upper95": null,
+            "clusterCount": 0
+          },
+          "economicallyInterpretableSample": false
+        },
+        "naiveAlwaysTakeBaseline": {
+          "eligibleSignalCount": 0,
+          "nonOverlapSkipped": 0,
+          "attempted": 0,
+          "completeRoundTrips": 0,
+          "marketsWithTrades": 0,
+          "completionRate": null,
+          "statuses": {},
+          "meanNetPnlPerShare": null,
+          "medianNetPnlPerShare": null,
+          "p10NetPnlPerShare": null,
+          "p90NetPnlPerShare": null,
+          "totalNetPnlAcrossIndependentCounterfactuals": 0,
+          "meanEntrySpread": null,
+          "meanExitSpread": null,
+          "marketClusterBootstrap95": {
+            "lower95": null,
+            "upper95": null,
+            "clusterCount": 0
+          },
+          "economicallyInterpretableSample": false
+        },
+        "noTradeBaseline": {
+          "attempted": 0,
+          "meanNetPnlPerShare": 0,
+          "totalNetPnlAcrossIndependentCounterfactuals": 0
+        },
+        "naiveBaselineDefinition": "at each same trigger, always take the direction of the preceding 10s move; it is an execution benchmark, not a fitted strategy"
+      },
+      {
+        "horizonMs": 1000,
+        "latencyQuantile": 0.99,
+        "latencyMs": 1721,
+        "latencySource": "discovery p-quantile of requestStartedAt-to-receivedAt; used as both entry and exit post-decision delay proxy, not observed order-write latency",
+        "reversal": {
+          "eligibleSignalCount": 0,
+          "nonOverlapSkipped": 0,
+          "attempted": 0,
+          "completeRoundTrips": 0,
+          "marketsWithTrades": 0,
+          "completionRate": null,
+          "statuses": {},
+          "meanNetPnlPerShare": null,
+          "medianNetPnlPerShare": null,
+          "p10NetPnlPerShare": null,
+          "p90NetPnlPerShare": null,
+          "totalNetPnlAcrossIndependentCounterfactuals": 0,
+          "meanEntrySpread": null,
+          "meanExitSpread": null,
+          "marketClusterBootstrap95": {
+            "lower95": null,
+            "upper95": null,
+            "clusterCount": 0
+          },
+          "economicallyInterpretableSample": false
+        },
+        "naiveAlwaysTakeBaseline": {
+          "eligibleSignalCount": 0,
+          "nonOverlapSkipped": 0,
+          "attempted": 0,
+          "completeRoundTrips": 0,
+          "marketsWithTrades": 0,
+          "completionRate": null,
+          "statuses": {},
+          "meanNetPnlPerShare": null,
+          "medianNetPnlPerShare": null,
+          "p10NetPnlPerShare": null,
+          "p90NetPnlPerShare": null,
+          "totalNetPnlAcrossIndependentCounterfactuals": 0,
+          "meanEntrySpread": null,
+          "meanExitSpread": null,
+          "marketClusterBootstrap95": {
+            "lower95": null,
+            "upper95": null,
+            "clusterCount": 0
+          },
+          "economicallyInterpretableSample": false
+        },
+        "noTradeBaseline": {
+          "attempted": 0,
+          "meanNetPnlPerShare": 0,
+          "totalNetPnlAcrossIndependentCounterfactuals": 0
+        },
+        "naiveBaselineDefinition": "at each same trigger, always take the direction of the preceding 10s move; it is an execution benchmark, not a fitted strategy"
+      },
+      {
+        "horizonMs": 3000,
+        "latencyQuantile": 0.5,
+        "latencyMs": 223,
+        "latencySource": "discovery p-quantile of requestStartedAt-to-receivedAt; used as both entry and exit post-decision delay proxy, not observed order-write latency",
+        "reversal": {
+          "eligibleSignalCount": 0,
+          "nonOverlapSkipped": 0,
+          "attempted": 0,
+          "completeRoundTrips": 0,
+          "marketsWithTrades": 0,
+          "completionRate": null,
+          "statuses": {},
+          "meanNetPnlPerShare": null,
+          "medianNetPnlPerShare": null,
+          "p10NetPnlPerShare": null,
+          "p90NetPnlPerShare": null,
+          "totalNetPnlAcrossIndependentCounterfactuals": 0,
+          "meanEntrySpread": null,
+          "meanExitSpread": null,
+          "marketClusterBootstrap95": {
+            "lower95": null,
+            "upper95": null,
+            "clusterCount": 0
+          },
+          "economicallyInterpretableSample": false
+        },
+        "naiveAlwaysTakeBaseline": {
+          "eligibleSignalCount": 0,
+          "nonOverlapSkipped": 0,
+          "attempted": 0,
+          "completeRoundTrips": 0,
+          "marketsWithTrades": 0,
+          "completionRate": null,
+          "statuses": {},
+          "meanNetPnlPerShare": null,
+          "medianNetPnlPerShare": null,
+          "p10NetPnlPerShare": null,
+          "p90NetPnlPerShare": null,
+          "totalNetPnlAcrossIndependentCounterfactuals": 0,
+          "meanEntrySpread": null,
+          "meanExitSpread": null,
+          "marketClusterBootstrap95": {
+            "lower95": null,
+            "upper95": null,
+            "clusterCount": 0
+          },
+          "economicallyInterpretableSample": false
+        },
+        "noTradeBaseline": {
+          "attempted": 0,
+          "meanNetPnlPerShare": 0,
+          "totalNetPnlAcrossIndependentCounterfactuals": 0
+        },
+        "naiveBaselineDefinition": "at each same trigger, always take the direction of the preceding 10s move; it is an execution benchmark, not a fitted strategy"
+      },
+      {
+        "horizonMs": 3000,
+        "latencyQuantile": 0.9,
+        "latencyMs": 534,
+        "latencySource": "discovery p-quantile of requestStartedAt-to-receivedAt; used as both entry and exit post-decision delay proxy, not observed order-write latency",
+        "reversal": {
+          "eligibleSignalCount": 0,
+          "nonOverlapSkipped": 0,
+          "attempted": 0,
+          "completeRoundTrips": 0,
+          "marketsWithTrades": 0,
+          "completionRate": null,
+          "statuses": {},
+          "meanNetPnlPerShare": null,
+          "medianNetPnlPerShare": null,
+          "p10NetPnlPerShare": null,
+          "p90NetPnlPerShare": null,
+          "totalNetPnlAcrossIndependentCounterfactuals": 0,
+          "meanEntrySpread": null,
+          "meanExitSpread": null,
+          "marketClusterBootstrap95": {
+            "lower95": null,
+            "upper95": null,
+            "clusterCount": 0
+          },
+          "economicallyInterpretableSample": false
+        },
+        "naiveAlwaysTakeBaseline": {
+          "eligibleSignalCount": 0,
+          "nonOverlapSkipped": 0,
+          "attempted": 0,
+          "completeRoundTrips": 0,
+          "marketsWithTrades": 0,
+          "completionRate": null,
+          "statuses": {},
+          "meanNetPnlPerShare": null,
+          "medianNetPnlPerShare": null,
+          "p10NetPnlPerShare": null,
+          "p90NetPnlPerShare": null,
+          "totalNetPnlAcrossIndependentCounterfactuals": 0,
+          "meanEntrySpread": null,
+          "meanExitSpread": null,
+          "marketClusterBootstrap95": {
+            "lower95": null,
+            "upper95": null,
+            "clusterCount": 0
+          },
+          "economicallyInterpretableSample": false
+        },
+        "noTradeBaseline": {
+          "attempted": 0,
+          "meanNetPnlPerShare": 0,
+          "totalNetPnlAcrossIndependentCounterfactuals": 0
+        },
+        "naiveBaselineDefinition": "at each same trigger, always take the direction of the preceding 10s move; it is an execution benchmark, not a fitted strategy"
+      },
+      {
+        "horizonMs": 3000,
+        "latencyQuantile": 0.99,
+        "latencyMs": 1721,
+        "latencySource": "discovery p-quantile of requestStartedAt-to-receivedAt; used as both entry and exit post-decision delay proxy, not observed order-write latency",
+        "reversal": {
+          "eligibleSignalCount": 0,
+          "nonOverlapSkipped": 0,
+          "attempted": 0,
+          "completeRoundTrips": 0,
+          "marketsWithTrades": 0,
+          "completionRate": null,
+          "statuses": {},
+          "meanNetPnlPerShare": null,
+          "medianNetPnlPerShare": null,
+          "p10NetPnlPerShare": null,
+          "p90NetPnlPerShare": null,
+          "totalNetPnlAcrossIndependentCounterfactuals": 0,
+          "meanEntrySpread": null,
+          "meanExitSpread": null,
+          "marketClusterBootstrap95": {
+            "lower95": null,
+            "upper95": null,
+            "clusterCount": 0
+          },
+          "economicallyInterpretableSample": false
+        },
+        "naiveAlwaysTakeBaseline": {
+          "eligibleSignalCount": 0,
+          "nonOverlapSkipped": 0,
+          "attempted": 0,
+          "completeRoundTrips": 0,
+          "marketsWithTrades": 0,
+          "completionRate": null,
+          "statuses": {},
+          "meanNetPnlPerShare": null,
+          "medianNetPnlPerShare": null,
+          "p10NetPnlPerShare": null,
+          "p90NetPnlPerShare": null,
+          "totalNetPnlAcrossIndependentCounterfactuals": 0,
+          "meanEntrySpread": null,
+          "meanExitSpread": null,
+          "marketClusterBootstrap95": {
+            "lower95": null,
+            "upper95": null,
+            "clusterCount": 0
+          },
+          "economicallyInterpretableSample": false
+        },
+        "noTradeBaseline": {
+          "attempted": 0,
+          "meanNetPnlPerShare": 0,
+          "totalNetPnlAcrossIndependentCounterfactuals": 0
+        },
+        "naiveBaselineDefinition": "at each same trigger, always take the direction of the preceding 10s move; it is an execution benchmark, not a fitted strategy"
+      },
+      {
+        "horizonMs": 10000,
+        "latencyQuantile": 0.5,
+        "latencyMs": 223,
+        "latencySource": "discovery p-quantile of requestStartedAt-to-receivedAt; used as both entry and exit post-decision delay proxy, not observed order-write latency",
+        "reversal": {
+          "eligibleSignalCount": 0,
+          "nonOverlapSkipped": 0,
+          "attempted": 0,
+          "completeRoundTrips": 0,
+          "marketsWithTrades": 0,
+          "completionRate": null,
+          "statuses": {},
+          "meanNetPnlPerShare": null,
+          "medianNetPnlPerShare": null,
+          "p10NetPnlPerShare": null,
+          "p90NetPnlPerShare": null,
+          "totalNetPnlAcrossIndependentCounterfactuals": 0,
+          "meanEntrySpread": null,
+          "meanExitSpread": null,
+          "marketClusterBootstrap95": {
+            "lower95": null,
+            "upper95": null,
+            "clusterCount": 0
+          },
+          "economicallyInterpretableSample": false
+        },
+        "naiveAlwaysTakeBaseline": {
+          "eligibleSignalCount": 0,
+          "nonOverlapSkipped": 0,
+          "attempted": 0,
+          "completeRoundTrips": 0,
+          "marketsWithTrades": 0,
+          "completionRate": null,
+          "statuses": {},
+          "meanNetPnlPerShare": null,
+          "medianNetPnlPerShare": null,
+          "p10NetPnlPerShare": null,
+          "p90NetPnlPerShare": null,
+          "totalNetPnlAcrossIndependentCounterfactuals": 0,
+          "meanEntrySpread": null,
+          "meanExitSpread": null,
+          "marketClusterBootstrap95": {
+            "lower95": null,
+            "upper95": null,
+            "clusterCount": 0
+          },
+          "economicallyInterpretableSample": false
+        },
+        "noTradeBaseline": {
+          "attempted": 0,
+          "meanNetPnlPerShare": 0,
+          "totalNetPnlAcrossIndependentCounterfactuals": 0
+        },
+        "naiveBaselineDefinition": "at each same trigger, always take the direction of the preceding 10s move; it is an execution benchmark, not a fitted strategy"
+      },
+      {
+        "horizonMs": 10000,
+        "latencyQuantile": 0.9,
+        "latencyMs": 534,
+        "latencySource": "discovery p-quantile of requestStartedAt-to-receivedAt; used as both entry and exit post-decision delay proxy, not observed order-write latency",
+        "reversal": {
+          "eligibleSignalCount": 0,
+          "nonOverlapSkipped": 0,
+          "attempted": 0,
+          "completeRoundTrips": 0,
+          "marketsWithTrades": 0,
+          "completionRate": null,
+          "statuses": {},
+          "meanNetPnlPerShare": null,
+          "medianNetPnlPerShare": null,
+          "p10NetPnlPerShare": null,
+          "p90NetPnlPerShare": null,
+          "totalNetPnlAcrossIndependentCounterfactuals": 0,
+          "meanEntrySpread": null,
+          "meanExitSpread": null,
+          "marketClusterBootstrap95": {
+            "lower95": null,
+            "upper95": null,
+            "clusterCount": 0
+          },
+          "economicallyInterpretableSample": false
+        },
+        "naiveAlwaysTakeBaseline": {
+          "eligibleSignalCount": 0,
+          "nonOverlapSkipped": 0,
+          "attempted": 0,
+          "completeRoundTrips": 0,
+          "marketsWithTrades": 0,
+          "completionRate": null,
+          "statuses": {},
+          "meanNetPnlPerShare": null,
+          "medianNetPnlPerShare": null,
+          "p10NetPnlPerShare": null,
+          "p90NetPnlPerShare": null,
+          "totalNetPnlAcrossIndependentCounterfactuals": 0,
+          "meanEntrySpread": null,
+          "meanExitSpread": null,
+          "marketClusterBootstrap95": {
+            "lower95": null,
+            "upper95": null,
+            "clusterCount": 0
+          },
+          "economicallyInterpretableSample": false
+        },
+        "noTradeBaseline": {
+          "attempted": 0,
+          "meanNetPnlPerShare": 0,
+          "totalNetPnlAcrossIndependentCounterfactuals": 0
+        },
+        "naiveBaselineDefinition": "at each same trigger, always take the direction of the preceding 10s move; it is an execution benchmark, not a fitted strategy"
+      },
+      {
+        "horizonMs": 10000,
+        "latencyQuantile": 0.99,
+        "latencyMs": 1721,
+        "latencySource": "discovery p-quantile of requestStartedAt-to-receivedAt; used as both entry and exit post-decision delay proxy, not observed order-write latency",
+        "reversal": {
+          "eligibleSignalCount": 0,
+          "nonOverlapSkipped": 0,
+          "attempted": 0,
+          "completeRoundTrips": 0,
+          "marketsWithTrades": 0,
+          "completionRate": null,
+          "statuses": {},
+          "meanNetPnlPerShare": null,
+          "medianNetPnlPerShare": null,
+          "p10NetPnlPerShare": null,
+          "p90NetPnlPerShare": null,
+          "totalNetPnlAcrossIndependentCounterfactuals": 0,
+          "meanEntrySpread": null,
+          "meanExitSpread": null,
+          "marketClusterBootstrap95": {
+            "lower95": null,
+            "upper95": null,
+            "clusterCount": 0
+          },
+          "economicallyInterpretableSample": false
+        },
+        "naiveAlwaysTakeBaseline": {
+          "eligibleSignalCount": 0,
+          "nonOverlapSkipped": 0,
+          "attempted": 0,
+          "completeRoundTrips": 0,
+          "marketsWithTrades": 0,
+          "completionRate": null,
+          "statuses": {},
+          "meanNetPnlPerShare": null,
+          "medianNetPnlPerShare": null,
+          "p10NetPnlPerShare": null,
+          "p90NetPnlPerShare": null,
+          "totalNetPnlAcrossIndependentCounterfactuals": 0,
+          "meanEntrySpread": null,
+          "meanExitSpread": null,
+          "marketClusterBootstrap95": {
+            "lower95": null,
+            "upper95": null,
+            "clusterCount": 0
+          },
+          "economicallyInterpretableSample": false
+        },
+        "noTradeBaseline": {
+          "attempted": 0,
+          "meanNetPnlPerShare": 0,
+          "totalNetPnlAcrossIndependentCounterfactuals": 0
+        },
+        "naiveBaselineDefinition": "at each same trigger, always take the direction of the preceding 10s move; it is an execution benchmark, not a fitted strategy"
+      }
+    ],
+    "limitations": [
+      "This is a one-share counterfactual markout, not a shared-capital portfolio return; simultaneous markets are not capital-constrained.",
+      "The measured read request round trip is only a proxy for order-write arrival latency; actual write latency and fill acknowledgment are not observed.",
+      "Market orders are modeled at the first later captured top-of-book within a fixed observation window; uncaptured intrainterval changes and market impact are unknown.",
+      "YES/NO complement execution assumes the platform binary book mapping; settlement exceptions and market-level account limits are outside this short-horizon replay.",
+      "A positive tiny-sample mean is not a profitability claim; interpretation requires the preregistered completed-trade and market-cluster minimums and the bootstrap interval.",
+      "No parameter was chosen from holdout outcomes; the 0.02 move threshold is fixed in POLICY before scoring."
+    ]
+  }
+}
