@@ -1,0 +1,299 @@
+{
+  "schemaVersion": 1,
+  "study": "External venue capture freshness and subsequent Cup executable-book coverage audit",
+  "generatedAt": "2026-10-13T10:29:16.640Z",
+  "result": "blocked_contract_semantics_unresolved",
+  "inputs": {
+    "externalJournal": {
+      "pathLabel": "external-venue-history-v1.jsonl",
+      "prefixBytes": 2999255,
+      "observedSizeBytes": 2999255,
+      "mtimeAtFreeze": "2026-10-13T10:15:16.358Z",
+      "sha256": "a542bce026be1a38549e25320b8a68456fbb2697fd5263dedb7da3432b690fdf",
+      "recordsRead": 224,
+      "integrity": "full frozen-prefix SHA-256, sequential journal chain, and embedded response hashes verified"
+    },
+    "cupPublicBooks": {
+      "pathLabel": "public-books.jsonl",
+      "prefixBytes": 304715792,
+      "observedSizeBytes": 304715792,
+      "mtimeAtFreeze": "2026-10-13T10:29:11.094Z",
+      "sha256": "7a5dd9ba3946d1a54d5fd42620ef64c06722c8a1e02340b20906cf003b979c5e",
+      "recordsRead": 132058,
+      "integrity": "full frozen-prefix SHA-256 and canonical sequential public-book chain verified"
+    },
+    "contractReview": {
+      "path": "research/external-venue-value-20261009/contract-basis-review.json",
+      "sha256": "0027bc79ed14f30dd441c6ecf6cce45bafd846f58df97f6e44938b53a8643e48",
+      "contractEquivalenceEstablished": false,
+      "tiePolicyEquivalenceVerified": false,
+      "contestPredicate": "winning candidate affiliated with the specified party",
+      "exceptionExamples": [
+        {
+          "id": "fusion_affiliation_not_republican_nomination",
+          "predicatesAgree": false,
+          "contestNoPayout": 0,
+          "externalNoPayout": 1
+        },
+        {
+          "id": "affiliated_unlisted_winner",
+          "predicatesAgree": false,
+          "contestNoPayout": 0,
+          "externalNoPayout": 1
+        }
+      ]
+    },
+    "staticCupMapping": {
+      "path": "live-paper/price-universe.json",
+      "sha256": "82efdc3dd9dc4f205e05264fd38a6db0cbd3e0d3269c2faabf55f044a652ed24",
+      "marketId": "386",
+      "exchangeId": "1075",
+      "tournamentId": "bda92870-621e-47b0-bc3c-3602c5c26f55"
+    }
+  },
+  "externalVenueIdentity": {
+    "question": "Will the Republican Party candidate win the 2026 Delaware Senate election?",
+    "conditionId": "0x59cf80cebd47a5ce6ae923e6eb5d863fecb3fd70418d4a6d3ea98f806dfe4d03",
+    "conditionMapsToCapturedNoToken": true,
+    "exactCupPayoutPredicateEstablished": false,
+    "semanticEvidence": {
+      "questionAsksCandidateWinnerButDescriptionSpecifiesMarginMarket": true,
+      "differingNoPayoutExceptions": [
+        "fusion_affiliation_not_republican_nomination",
+        "affiliated_unlisted_winner"
+      ],
+      "contestRuleRepresentation": "paraphrased facts extracted from the displayed Info panel; not original HTTP bytes"
+    }
+  },
+  "coverage": {
+    "processingLatencyMs": 3000,
+    "sourceToCupContractFit": "unresolved_blocker",
+    "markout": {
+      "status": "not_run",
+      "observations": 0,
+      "reason": "External and Cup payout predicates are not established as equivalent; outcome markout is suppressed."
+    },
+    "external": {
+      "observations": 224,
+      "question": "Will the Republican Party candidate win the 2026 Delaware Senate election?",
+      "venueDescriptionHashCount": 1,
+      "descriptionSaysMarginWhileQuestionAsksWinner": true,
+      "marginDescriptionReceipts": 224,
+      "stableQuestion": true,
+      "stableConditionId": true,
+      "stableNoTokenId": true,
+      "conditionIdMatchesNoBook": true,
+      "observedNoTokenMatches": true,
+      "twoSidedBookReceipts": 224,
+      "sourceAgeAtReceiptMs": {
+        "min": -1054,
+        "p50": 2981,
+        "p90": 43427,
+        "max": 234440,
+        "clockAhead": 15,
+        "within30s": 172,
+        "within60s": 195,
+        "within120s": 202,
+        "within5m": 209
+      },
+      "pollIntervalMs": {
+        "count": 223,
+        "p50Ms": 496126,
+        "p90Ms": 1026736,
+        "maxMs": 219040075
+      },
+      "firstJournalAt": "2026-10-09T08:49:46.976Z",
+      "lastJournalAt": "2026-10-13T10:15:16.358Z"
+    },
+    "cup": {
+      "verifiedJournalRecords": 132058,
+      "matchingMarketBooks": 485,
+      "firstMatchingBookAt": "2026-10-02T13:38:44.267Z",
+      "lastMatchingBookAt": "2026-10-13T10:20:10.122Z",
+      "targetBookIntervalMs": {
+        "count": 484,
+        "p50Ms": 159798,
+        "p90Ms": 931224,
+        "maxMs": 267167656
+      },
+      "displayedDepthLevels": {
+        "minBids": 5,
+        "minAsks": 20
+      }
+    },
+    "joins": {
+      "externalObservations": 224,
+      "laterBookAfterLatency": 224,
+      "noLaterBook": 0,
+      "delayAfterActionMs": {
+        "p50": 134429,
+        "p90": 856546,
+        "max": 4272425
+      },
+      "sourceAgeAtActionMs": {
+        "clockAhead": 0,
+        "within30s": 182,
+        "within60s": 208,
+        "within120s": 217,
+        "within5m": 224,
+        "p50": 5981,
+        "p90": 46427,
+        "max": 237440
+      },
+      "externalSourceAgeAtObservedCupBookMs": {
+        "min": 5009,
+        "clockAhead": 0,
+        "p50": 158722,
+        "p90": 868794,
+        "max": 4283029
+      },
+      "cupBookSourceAgeAtReceiptMs": {
+        "min": -652,
+        "clockAhead": 132,
+        "p50": -81,
+        "p90": 1087,
+        "max": 4320
+      },
+      "censoringByDelayAfterLatency": [
+        {
+          "horizonMs": 0,
+          "matched": 0,
+          "censored": 224
+        },
+        {
+          "horizonMs": 1000,
+          "matched": 0,
+          "censored": 224
+        },
+        {
+          "horizonMs": 5000,
+          "matched": 14,
+          "censored": 210
+        },
+        {
+          "horizonMs": 30000,
+          "matched": 43,
+          "censored": 181
+        },
+        {
+          "horizonMs": 60000,
+          "matched": 78,
+          "censored": 146
+        },
+        {
+          "horizonMs": 120000,
+          "matched": 101,
+          "censored": 123
+        },
+        {
+          "horizonMs": 300000,
+          "matched": 147,
+          "censored": 77
+        },
+        {
+          "horizonMs": 3600000,
+          "matched": 221,
+          "censored": 3
+        }
+      ],
+      "ageSensitivity": [
+        {
+          "sourceAgeLimitMs": 30000,
+          "cupBookAgeLimitMs": 30000,
+          "within30sAfterAction": 8
+        },
+        {
+          "sourceAgeLimitMs": 30000,
+          "cupBookAgeLimitMs": 60000,
+          "within30sAfterAction": 8
+        },
+        {
+          "sourceAgeLimitMs": 30000,
+          "cupBookAgeLimitMs": 120000,
+          "within30sAfterAction": 8
+        },
+        {
+          "sourceAgeLimitMs": 30000,
+          "cupBookAgeLimitMs": 300000,
+          "within30sAfterAction": 8
+        },
+        {
+          "sourceAgeLimitMs": 60000,
+          "cupBookAgeLimitMs": 30000,
+          "within30sAfterAction": 11
+        },
+        {
+          "sourceAgeLimitMs": 60000,
+          "cupBookAgeLimitMs": 60000,
+          "within30sAfterAction": 11
+        },
+        {
+          "sourceAgeLimitMs": 60000,
+          "cupBookAgeLimitMs": 120000,
+          "within30sAfterAction": 11
+        },
+        {
+          "sourceAgeLimitMs": 60000,
+          "cupBookAgeLimitMs": 300000,
+          "within30sAfterAction": 11
+        },
+        {
+          "sourceAgeLimitMs": 120000,
+          "cupBookAgeLimitMs": 30000,
+          "within30sAfterAction": 11
+        },
+        {
+          "sourceAgeLimitMs": 120000,
+          "cupBookAgeLimitMs": 60000,
+          "within30sAfterAction": 11
+        },
+        {
+          "sourceAgeLimitMs": 120000,
+          "cupBookAgeLimitMs": 120000,
+          "within30sAfterAction": 11
+        },
+        {
+          "sourceAgeLimitMs": 120000,
+          "cupBookAgeLimitMs": 300000,
+          "within30sAfterAction": 11
+        },
+        {
+          "sourceAgeLimitMs": 300000,
+          "cupBookAgeLimitMs": 30000,
+          "within30sAfterAction": 11
+        },
+        {
+          "sourceAgeLimitMs": 300000,
+          "cupBookAgeLimitMs": 60000,
+          "within30sAfterAction": 11
+        },
+        {
+          "sourceAgeLimitMs": 300000,
+          "cupBookAgeLimitMs": 120000,
+          "within30sAfterAction": 11
+        },
+        {
+          "sourceAgeLimitMs": 300000,
+          "cupBookAgeLimitMs": 300000,
+          "within30sAfterAction": 11
+        }
+      ]
+    },
+    "decision": "Blocked: contract/tie equivalence is unverified and documented predicate exceptions change NO payout. Do not treat the venue probability as a Cup outcome price.",
+    "evidenceLimits": [
+      "Local hash chains and response-body hashes establish capture integrity, not venue authenticity or semantic equivalence.",
+      "The captured candidate covers one Delaware Senate condition; it cannot provide independent market-group holdouts.",
+      "Later-book timing is an observation-coverage diagnostic, not an executable fill, forecast, or profit estimate."
+    ]
+  },
+  "controls": {
+    "marketDataNetworkRequests": 0,
+    "contestApiClients": 0,
+    "accountStateRead": false,
+    "contestOrders": 0,
+    "runtimeFilesChanged": false,
+    "feeAssumption": "0; no fee or strategy calculation was run"
+  },
+  "conclusion": "Do not use the external probability as a Cup price or signal: the captured venue condition is internally stable, but payout and tie-rule equivalence to the Cup contract are unverified and the existing review documents NO-payout counterexamples. Coverage and clock metrics are descriptive only; no markout, backtest, fill, or P&L result is produced."
+}
+
