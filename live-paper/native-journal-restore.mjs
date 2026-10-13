@@ -8,7 +8,17 @@ export function journalEngineIdentity(sourceRoot){const h=createHash('sha256');f
 export function nativeJournalHashMode(binding,root=sourceRoot){try{return binding?.engineHash===journalEngineIdentity(root)?'computed':'explicit';}catch{return'explicit';}}
 export function nativeJournalRuntimeHashMode(runtimeDir,binding){
  if(!path.isAbsolute(runtimeDir)||!/^[a-f0-9]{64}$/.test(binding?.engineHash??''))return'explicit';
- return nativeJournalHashMode(binding,path.join(runtimeDir,'journal-native-sources',binding.engineHash));
+ const runtimeSources=path.join(runtimeDir,'journal-native-sources',binding.engineHash);
+ if(nativeJournalHashMode(binding,runtimeSources)!=='computed'||nativeJournalHashMode(binding,sourceRoot)!=='computed')return'explicit';
+ // The archived Rust sources alone do not prove the pinned binary understands
+ // the optional --expected-sha flag. Only skip the pre-hash for the exact
+ // workspace release artifacts whose source and binary hashes both match.
+ try{
+  const release=path.join(sourceRoot,'target','release');
+  if(sha(fs.readFileSync(path.join(release,'baal-journal-restore.exe')))!==binding.binaryHash||
+     sha(fs.readFileSync(path.join(release,'libunwind.dll')))!==binding.runtimeLibraryHash)return'explicit';
+ }catch{return'explicit';}
+ return'computed';
 }
 export function nativeJournalBinding(runtimeDir,binding){
  need(path.isAbsolute(runtimeDir)&&binding?.schemaVersion===1&&binding.mode==='canonical_js_journal_restore_v1'&&['binaryHash','engineHash','runtimeLibraryHash'].every(k=>/^[a-f0-9]{64}$/.test(binding[k])),'BINDING');
@@ -57,3 +67,4 @@ export async function openNativeJournal({runtimeDir,binding,file,receiptDir,sign
  const journal=Object.create(Journal.prototype);Object.assign(journal,{file,sequence:result.records,previous:result.tailHash,last:result.lastBody});
  Object.defineProperty(journal,'nativeRestore',{value:Object.freeze({mode:result.mode,sourceBytes:bytes,sourceHash:result.sourceHash,sequence:result.records,tailHash:result.tailHash,lastBodyHash:result.lastBody?payloadHash(result.lastBody):null,engineHash:result.engineHash,binaryHash:binding.binaryHash,verifyMs:result.verifyMs,prefixHashMs:result.prefixHashMs,hashMode:result.hashMode,totalMs:performance.now()-started}),enumerable:false});return journal;
 }
+
