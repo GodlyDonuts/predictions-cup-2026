@@ -271,3 +271,24 @@ test('refused tournament join tears down SDK and never automatically retries the
   assert.equal(x.writes,1);assert.equal(x.sdkCalls.length,1);assert.equal(JSON.stringify(x.client.status()).includes(TOKEN),false);
   x.autoJoin=true;await x.client.refresh();assert.equal(x.writes,2);assert.equal(x.client.status().state,'subscribed');await x.client.stop();
 });
+
+test('callback failures retain only safe stage, sync/async class and allowlisted filesystem code', async () => {
+  const sync = fixture({clientOptions: {onEvent: () => { throw Object.assign(Error(TOKEN), {code: 'PRIVATE_' + TOKEN}); }}});
+  await sync.client.start(); sync.sdkCalls[0].channels[0].push('market_batch', batch());
+  const syncStatus = sync.client.status();
+  assert.equal(syncStatus.state, 'stopped');
+  assert.deepEqual(syncStatus.firstCallbackFailure, {handler: 'onEvent', kind: 'sync', errorClass: 'Error'});
+  assert.deepEqual(syncStatus.callbackFailureCounts, {onSubscribed: 0, onEvent: 1, onDisconnected: 0, onResyncRequired: 0});
+  assert.deepEqual(syncStatus.callbackFailureKinds, {sync: 1, async: 0});
+  assert.equal(JSON.stringify(syncStatus).includes(TOKEN), false);
+  await sync.client.stop();
+
+  const async = fixture({clientOptions: {onEvent: () => Promise.reject(Object.assign(Error(TOKEN), {code: 'ENOSPC'}))}});
+  await async.client.start(); async.sdkCalls[0].channels[0].push('market_batch', batch()); await settle();
+  const asyncStatus = async.client.status();
+  assert.deepEqual(asyncStatus.firstCallbackFailure, {handler: 'onEvent', kind: 'async', errorClass: 'ENOSPC'});
+  assert.deepEqual(asyncStatus.callbackFailureKinds, {sync: 0, async: 1});
+  assert.equal(JSON.stringify(asyncStatus).includes(TOKEN), false);
+  await async.client.stop();
+});
+
