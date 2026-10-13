@@ -1,0 +1,19 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {ActivityStudy} from './activity.mjs';import {payloadHash} from '../execution/ledger.mjs';
+const at=n=>new Date(Date.parse('2026-10-13T22:00:00Z')+n*1000).toISOString();
+const setup=()=>{const s=new ActivityStudy();let sequence=0,previous='';return{s,send(payload,n,{gap=false}={}){const event={kind:'broadcast',source:'official_sig_realtime',marketId:'1',event:'market_batch',receivedAt:at(n),gap,payload},body={sequence:++sequence,previous,event},row={...body,hash:payloadHash(body)};previous=row.hash;s.row(row);return row;}};};
+const book=(n,seq,bid=.4,ask=.42)=>({exchangeId:'2',asOf:{sequence:seq,at:at(n)},bids:[{price:bid,quantity:100}],asks:[{price:ask,quantity:200}]});
+const batch=(books,trades=[])=>({books,trades,resyncRequired:false});
+const trade=(n,id='trade')=>({id,sequence:10,exchangeId:'2',marketId:'1',tournamentId:'cup',price:.4,quantity:50,executedAt:at(n)});
+test('future book in a trade batch cannot invent a prior quote or a wallet profit',()=>{
+  const {s,send}=setup();send(batch([book(6,11)],[trade(4)]),6);send(batch([book(40,12,.39,.41)]),40);const r=s.report(at(40))[0];assert.equal(r.observedTrades,1);assert.equal(r.conditionalMarkouts,0);assert.equal(r.meanConditionalLiquidationDeltaPerShare,null);
+});
+test('conditional markout uses a prior observable regime and a genuinely later executable book',()=>{
+  const {s,send}=setup();send(batch([book(0,1)]),0);send(batch([book(6,11)],[trade(4)]),6);send(batch([book(20,12,.395,.415)]),20);assert.equal(s.report(at(20))[0].conditionalMarkouts,0);
+  send(batch([book(35,13,.39,.41)]),35);const r=s.report(at(35))[0];assert.equal(r.conditionalMarkouts,1);assert.equal(r.meanConditionalLiquidationDeltaPerShare,-.01);assert.equal(r.gapObserved,false);
+});
+test('a revision gap excludes exploratory admission and prevents uncensored favorable markouts',()=>{
+  const {s,send}=setup();send(batch([book(0,1)]),0);send(batch([book(6,11)],[trade(4)]),6);send(batch([book(35,12,.45,.47)]),35,{gap:true});const r=s.report(at(35))[0];assert.equal(r.gapObserved,true);assert.equal(r.eligibleForFurtherReconciliation,false);assert.equal(r.conditionalMarkouts,0);
+});
+test('study rejects event edits in a preserved hash chain',()=>{
+  const a=setup();const row=a.send(batch([book(0,1)]),0);const s=new ActivityStudy();assert.throws(()=>s.row({...row,event:{}}),/CHAIN/);
+});

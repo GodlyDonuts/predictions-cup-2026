@@ -7,7 +7,7 @@ const check=(ok,code)=>{if(!ok)throw Error('SCREEN_'+code);};
 const read=file=>fs.readFileSync(file,'utf8').replace(/^\uFEFF/,'');
 const receipts=file=>read(file).split(/\r?\n/).filter(x=>x.trim()).map(JSON.parse);
 const sha=file=>createHash('sha256').update(fs.readFileSync(file)).digest('hex');
-export function selectPairs(rows,count=8){
+export function selectPairs(rows,count=8,{all=false}={}){
   check(Number.isInteger(count)&&count>=2&&count<=29,'SAMPLE_COUNT');
   const markets=new Map();let expected=null,cursor=null;
   for(const r of rows){
@@ -25,7 +25,7 @@ export function selectPairs(rows,count=8){
   // Fixed index-stratified exploration; metadata last prices are not liquidity signals.
   const chosen=new Map();for(let i=0;i<count;i++){const p=universe[Math.round(i*(universe.length-1)/(count-1))];chosen.set(p.exchangeId,p);}
   const control=universe.find(p=>p.marketId==='322'&&p.exchangeId==='1011');if(control)chosen.set(control.exchangeId,control);
-  return{universeMarkets:markets.size,universeExchanges:universe.length,selection:'fixed equally spaced exchange-index sample plus prior market control; no price/volume alpha',pairs:[...chosen.values()]};
+  return{universeMarkets:markets.size,universeExchanges:universe.length,selection:all?'complete validated catalog; observational stream scope':'fixed equally spaced exchange-index sample plus prior market control; no price/volume alpha',pairs:all?universe:[...chosen.values()]};
 }
 export function screenRows(rows){
   const pairs=new Map();
@@ -54,8 +54,8 @@ export function screenRows(rows){
   }).sort((a,b)=>(b.explorationScore??-1)-(a.explorationScore??-1));
 }
 if(process.argv[1]&&import.meta.url===pathToFileURL(path.resolve(process.argv[1])).href){
-  const [mode,input,output]=process.argv.slice(2);check(['select','report'].includes(mode),'MODE');
-  const result=mode==='select'?selectPairs(receipts(input)): {sourceSha256:sha(input),candidates:screenRows(receipts(input)),contestOrders:0,profitabilityEstablished:false,
+  const [mode,input,output]=process.argv.slice(2);check(['select','universe','report'].includes(mode),'MODE');
+  const result=mode!=='report'?selectPairs(receipts(input),8,{all:mode==='universe'}): {sourceSha256:sha(input),candidates:screenRows(receipts(input)),contestOrders:0,profitabilityEstablished:false,
     limitations:['Exploration ranking only; sequential snapshots and recent tape are not synchronized execution evidence.','Through-volume compares past prints with current quotes, not quotes resting at execution time.','Queue turnover ignores aggressor direction; it is not a fill probability or expected return.','Incomplete tape is excluded from ranking; selection is a sample, not an exhaustive universe scan.']};
-  fs.writeFileSync(output,JSON.stringify(mode==='select'?result.pairs:result,null,2)+'\n',{flag:'wx'});console.log(JSON.stringify(mode==='select'?result:result.candidates));
+  fs.writeFileSync(output,JSON.stringify(mode!=='report'?result.pairs:result,null,2)+'\n',{flag:'wx'});console.log(JSON.stringify(mode==='universe'?{universeMarkets:result.universeMarkets,universeExchanges:result.universeExchanges,selection:result.selection}:mode==='select'?result:result.candidates));
 }

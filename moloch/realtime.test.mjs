@@ -10,6 +10,11 @@ test('compact oversized batches and mismatched tournament never silently become 
   const rows=[],s=new StreamEvidence([{marketId:'1',exchangeId:'2'}],tid,r=>rows.push(r));s.batch('1','market_batch',{delivery:payload(1,0).delivery,resyncRequired:true});assert.equal(rows[0].requiresRestResync,true);assert.equal(s.metrics.trades,0);
   const bad=payload(2,1);bad.trades[0].tournamentId='aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa';s.batch('1','market_batch',bad);assert.equal(s.metrics.schemaErrors,1);assert.equal(rows.at(-1).code,'INVALID_SCHEMA');
 });
+test('aggregate topic demultiplexes market revisions and records unknown catalog markets without using them',()=>{
+  const rows=[],s=new StreamEvidence([{marketId:1,exchangeId:2},{marketId:3,exchangeId:4}],tid,r=>rows.push(r));const second=payload(1,0);second.books[0].exchangeId=4;second.trades[0].marketId='3';second.trades[0].exchangeId='4';
+  s.aggregate({markets:[{marketId:'1',batch:payload(1,0)},{marketId:'3',batch:second},{marketId:'99',batch:{private:'not saved'}}]},'2026-10-13T22:00:01Z');
+  assert.equal(s.metrics.trades,2);assert.equal(s.revisions.get('1'),1);assert.equal(s.revisions.get('3'),1);assert.equal(s.metrics.unknownMarkets,1);assert.equal(rows.at(-1).kind,'unknown_market');assert.equal(JSON.stringify(rows).includes('not saved'),false);
+});
 test('REST and realtime share documented engine trade IDs in capture deduplication',()=>{
   const rows=[],s=new StreamEvidence([{marketId:'1',exchangeId:'2'}],tid,r=>rows.push(r));
   s.rest({source:'official_sig_api_v1',status:200,kind:'trades',tournamentId:tid,marketId:'1',exchangeId:'2',requestStartedAt:at,receivedAt:'2026-10-13T22:00:01Z',endpoint:'/exchanges/2/trades?tournamentId='+tid,data:{marketId:'1',exchangeId:'2',data:[{id:'1',price:.42,size:10,createdAt:at}],pagination:{hasMore:true,nextCursor:'next'}}});

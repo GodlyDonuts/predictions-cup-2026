@@ -10,13 +10,21 @@ param(
   [switch]$DiagnosticBookProbe,
   [switch]$CatalogOnly,
   [string]$ScreenPairsFile,
-  [switch]$RealtimeCapture
+  [switch]$RealtimeCapture,
+  [string]$UniversePairsFile
 )
 $ErrorActionPreference='Stop'
 if(-not $HumanAuthorizedSharedReadCapture){throw 'EXPLICIT_SHARED_READ_AUTHORIZATION_REQUIRED: preserve the prior one-collector policy unless human explicitly authorizes recreating read-only capture.'}
 if($CatalogOnly -and $ScreenPairsFile){throw 'ONE_DISCOVERY_MODE_REQUIRED'}
 if(-not $CatalogOnly -and -not $ScreenPairsFile -and (-not $MarketId -or -not $ExchangeId)){throw 'MARKET_AND_EXCHANGE_REQUIRED'}
 if($RealtimeCapture -and (-not $ScreenPairsFile -or $Cycles -gt 30)){throw 'STREAM_REQUIRES_SCOPED_PAIRS_AND_BOUNDED_CYCLES'}
+if($UniversePairsFile -and -not $RealtimeCapture){throw 'UNIVERSE_REQUIRES_REALTIME_CAPTURE'}
+if($UniversePairsFile){
+  $taskUniverse=@(Get-Content -LiteralPath $UniversePairsFile -Raw | ConvertFrom-Json -DateKind String)
+  if($taskUniverse.Count -lt 1 -or $taskUniverse.Count -gt 1000){throw 'UNIVERSE_SCOPE_INVALID'}
+  foreach($taskUniversePair in $taskUniverse){if([string]$taskUniversePair.marketId -notmatch '^[1-9][0-9]*$' -or [string]$taskUniversePair.exchangeId -notmatch '^[1-9][0-9]*$'){throw 'UNIVERSE_ID_INVALID'}}
+  if(@($taskUniverse | Select-Object exchangeId -Unique).Count -ne $taskUniverse.Count){throw 'UNIVERSE_DUPLICATE_EXCHANGE'}
+}
 $taskOutput=[IO.Path]::GetFullPath($OutputDirectory)
 if(Test-Path -LiteralPath $taskOutput){throw 'OUTPUT_EXISTS: preserve previous capture; choose a new directory.'}
 New-Item -ItemType Directory -Path $taskOutput | Out-Null
@@ -51,6 +59,7 @@ try {
   if($CatalogOnly){$taskRequests=@(@{kind='catalog';endpoint='/tournaments/midterm-elections/markets?status=open&limit=100'})}
   if($ScreenPairsFile){
     $taskPairs=@(Get-Content -LiteralPath $ScreenPairsFile -Raw | ConvertFrom-Json -DateKind String)
+    if($UniversePairsFile){foreach($taskPair in $taskPairs){if(-not @($taskUniverse | Where-Object {$_.marketId -eq $taskPair.marketId -and $_.exchangeId -eq $taskPair.exchangeId}).Count){throw 'REST_SCOPE_OUTSIDE_UNIVERSE'}}}
     if($taskPairs.Count -lt 1 -or $taskPairs.Count -gt 30){throw 'SCREEN_SCOPE_ONE_TO_THIRTY_PAIRS'}
     $taskRequests=@(foreach($taskPair in $taskPairs){
       if([string]$taskPair.marketId -notmatch '^[1-9][0-9]*$' -or [string]$taskPair.exchangeId -notmatch '^[1-9][0-9]*$'){throw 'SCREEN_SCOPE_INVALID'}
@@ -75,7 +84,8 @@ try {
     $taskRequests=$taskRecovery+@($taskRequests)
   }
   if($RealtimeCapture){
-    if($taskPairs.Count -gt 2){throw 'STREAM_MAXIMUM_TWO_MARKETS'}
+    if($taskPairs.Count -gt 4){throw 'STREAM_MAXIMUM_FOUR_MARKETS'}
+    if($Cycles -gt [Math]::Floor(60/$taskPairs.Count)){throw 'STREAM_DURATION_LIMIT'}
     $taskRequests=@(@{kind='realtime';endpoint='/realtime/token';method='Post'})+@($taskRequests)
   }
   $taskReceipts=0
@@ -131,6 +141,7 @@ try {
       if(-not $taskStream.Start()){throw 'STREAM_START_FAILED'}
       $taskStreamOutput=$taskStream.StandardOutput.ReadToEndAsync();$taskStreamErrors=$taskStream.StandardError.ReadToEndAsync()
       $taskInit=@{auth=$taskData;outputDirectory=(Join-Path $taskOutput 'stream');tournamentId=$taskTournament;pairs=@($taskPairs | Select-Object marketId,exchangeId)}
+      if($UniversePairsFile){$taskInit.pairs=$taskUniverse;$taskInit.aggregate=$true}
       $taskStream.StandardInput.WriteLine(($taskInit | ConvertTo-Json -Depth 20 -Compress));$taskStream.StandardInput.Flush()
       # This authentication response is never added to receipts, stdout, files or environment variables.
       $taskInit=$null;$taskData=$null;$taskResponse=$null

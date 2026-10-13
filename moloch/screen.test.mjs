@@ -21,6 +21,9 @@ test('live expansion retains original source and rejects duplicate exchange or e
   assert.throws(()=>liveScopes('1','2',[{marketId:'1',exchangeId:'2'},{marketId:'3',exchangeId:'2'}]),/MULTI_SCOPE/);
   assert.throws(()=>liveScopes('1','2',[{marketId:'1',exchangeId:'2'},{marketId:'3',exchangeId:'4'},{marketId:'5',exchangeId:'6'}]),/MULTI_SCOPE/);
 });
+test('realtime execution can follow four distinct markets without duplicate market routing',()=>{
+  const scope=[{marketId:'1',exchangeId:'2'},{marketId:'3',exchangeId:'4'},{marketId:'5',exchangeId:'6'},{marketId:'7',exchangeId:'8'}];assert.equal(liveScopes('1','2',scope,4).length,4);assert.throws(()=>liveScopes('1','2',[...scope,{marketId:'9',exchangeId:'10'}],4),/MULTI_SCOPE/);assert.throws(()=>liveScopes('1','2',[scope[0],{marketId:'1',exchangeId:'4'}],4),/MULTI_SCOPE/);
+});
 test('continuation requests original expired quote windows rather than releasing their cash on restart',()=>{
   const orders=[{exchangeId:'2',activationAt:1000,expiresAt:5000,retired:false},{exchangeId:'2',activationAt:2000,expiresAt:9000,cancelEffectiveAt:6000,retired:false},{exchangeId:'2',activationAt:0,expiresAt:99999,retired:false},{exchangeId:'2',activationAt:0,expiresAt:10000,retired:true}];
   const [r,untouched]=captureScopes([{marketId:'1',exchangeId:'2'},{marketId:'3',exchangeId:'4'}],{orders},20000);

@@ -5,7 +5,11 @@ import {payloadHash} from '../../execution/ledger.mjs';
 import {receiptEvents} from '../sig-source.mjs';
 import {createHash} from 'node:crypto';import {collectFrozenPaperFiles} from '../../live-paper/frozen-paper-graph.mjs';
 export class StreamEvidence {
-  constructor(pairs,tournamentId,append){this.scopes=new Map(pairs.map(p=>[p.marketId,config({marketId:p.marketId,exchangeIds:[p.exchangeId],tournamentId})]));this.append=append;this.revisions=new Map();this.books=new Map();this.seen=new Set();this.metrics={batches:0,trades:0,duplicateTrades:0,duplicateBatches:0,gaps:0,truncated:0,schemaErrors:0,restBooks:0,restTapes:0,pushedBooks:0,olderBooks:0,latencySamples:0,latencySumMs:0,latencyMaxMs:0};}
+  constructor(pairs,tournamentId,append){const grouped=new Map();for(const p of pairs){const marketId=String(p.marketId),ids=grouped.get(marketId)??[];ids.push(String(p.exchangeId));grouped.set(marketId,ids);}this.scopes=new Map([...grouped].map(([marketId,exchangeIds])=>[marketId,config({marketId,exchangeIds,tournamentId})]));this.append=append;this.revisions=new Map();this.books=new Map();this.seen=new Set();this.metrics={batches:0,trades:0,duplicateTrades:0,duplicateBatches:0,gaps:0,truncated:0,schemaErrors:0,restBooks:0,restTapes:0,pushedBooks:0,olderBooks:0,unknownMarkets:0,latencySamples:0,latencySumMs:0,latencyMaxMs:0};}
+  aggregate(payload,receivedAt=new Date().toISOString()){
+    if(!Array.isArray(payload?.markets)||payload.markets.length>1000)throw Error('STREAM_AGGREGATE_SCHEMA');
+    for(const entry of payload.markets){const id=String(entry.marketId);if(!/^[1-9]\d*$/.test(id))throw Error('STREAM_AGGREGATE_MARKET');if(!this.scopes.has(id)){this.metrics.unknownMarkets++;this.append({source:'official_sig_realtime',kind:'unknown_market',marketId:id,receivedAt,requiresCatalogRefresh:true});continue;}this.batch(id,'market_batch',entry.batch,receivedAt);}
+  }
   batch(marketId,event,raw,receivedAt=new Date().toISOString()){
     const scope=this.scopes.get(marketId);if(!scope)throw Error('STREAM_SCOPE');
     let normalized;try{normalized=parseEvent(event,raw,scope);}catch{this.metrics.schemaErrors++;this.append({source:'official_sig_realtime',kind:'rejected',marketId,receivedAt,code:'INVALID_SCHEMA'});return;}
@@ -28,12 +32,12 @@ export class StreamEvidence {
 }
 export async function capture(input,clientFactory=createClient){
   const init=await new Promise((resolve,reject)=>{input.once('line',line=>{try{resolve(JSON.parse(line));}catch{reject(Error('STREAM_INIT'));}});input.once('close',()=>reject(Error('STREAM_INIT_EOF')));});
-  const {auth,outputDirectory,tournamentId,pairs}=init;
-  if(!auth?.token||!auth.anonKey||new URL(auth.supabaseUrl).protocol!=='https:'||Date.parse(auth.expiresAt)<=Date.now()+60000||!Array.isArray(pairs)||pairs.length<1||pairs.length>2)throw Error('STREAM_AUTH_OR_SCOPE');
+  const {auth,outputDirectory,tournamentId,pairs,aggregate=false}=init;
+  if(!auth?.token||!auth.anonKey||new URL(auth.supabaseUrl).protocol!=='https:'||Date.parse(auth.expiresAt)<=Date.now()+60000||!Array.isArray(pairs)||pairs.length<1||pairs.length>(aggregate?1000:4))throw Error('STREAM_AUTH_OR_SCOPE');
   const out=path.resolve(outputDirectory);fs.mkdirSync(out);let sequence=0,previous='',closing=false,status='starting',fatal=false;const subscriptions={};
   const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'../..'),codeIdentity=collectFrozenPaperFiles(root,['moloch/realtime/capture.mjs']);
   for(const f of ['moloch/capture-sig.ps1','moloch/realtime/package.json','moloch/realtime/pnpm-lock.yaml'])codeIdentity[f]=createHash('sha256').update(fs.readFileSync(path.join(root,f))).digest('hex');
-  fs.writeFileSync(path.join(out,'manifest.json'),JSON.stringify({mode:'official_sig_realtime_capture',startedAt:new Date().toISOString(),codeIdentity,pairs,tournamentId,tokenWrites:1,contestOrders:0,paperOrders:0,tokenPersistence:false},null,2));
+  fs.writeFileSync(path.join(out,'manifest.json'),JSON.stringify({mode:'official_sig_realtime_capture',startedAt:new Date().toISOString(),codeIdentity,pairs,tournamentId,aggregate,tokenWrites:1,contestOrders:0,paperOrders:0,tokenPersistence:false},null,2));
   const append=event=>{const body={sequence:++sequence,previous,event},row={...body,hash:payloadHash(body)};fs.appendFileSync(path.join(out,'events.jsonl'),JSON.stringify(row)+'\n');previous=row.hash;};
   const evidence=new StreamEvidence(pairs,tournamentId,append);
   const stats=()=>{const m=evidence.metrics;fs.writeFileSync(path.join(out,'stats.tmp'),JSON.stringify({mode:'official_sig_realtime_capture',at:new Date().toISOString(),status,subscriptions,metrics:{...m,meanTradeLatencyMs:m.latencySamples?m.latencySumMs/m.latencySamples:null},sequence,previous,tokenWrites:1,contestOrders:0,paperOrders:0,financialIntegration:false,continuousTapeEstablished:false,automaticTokenRefresh:false},null,2));fs.renameSync(path.join(out,'stats.tmp'),path.join(out,'stats.json'));};
@@ -48,10 +52,16 @@ export async function capture(input,clientFactory=createClient){
   }
   const timer=setInterval(()=>{try{drainRest();stats();}catch{void close(true);}},100);
   const deadline=setTimeout(()=>void close(),Math.min(30*60000,Date.parse(auth.expiresAt)-Date.now()-60000));
-  for(const scope of evidence.scopes.values()){
+  const onStatus=(id,state)=>{if(closing)return;subscriptions[id]=state;if(state==='SUBSCRIBED'){status='subscribed';for(const marketId of aggregate?evidence.scopes.keys():[id])append({kind:'subscribed',source:'official_sig_realtime',marketId,receivedAt:new Date().toISOString(),requiresRestResync:true});}else if(['CHANNEL_ERROR','TIMED_OUT','CLOSED'].includes(state))void close(true);stats();};
+  if(aggregate){
+    const channel=client.channel(`tournament:${tournamentId}:markets`,{config:{private:true}});
+    channel.on('broadcast',{event:'markets_batch'},({payload})=>{if(closing)return;try{evidence.aggregate(payload);stats();}catch{void close(true);}});
+    for(const event of ['book_dirty','market_settled'])channel.on('broadcast',{event},({payload})=>{if(closing)return;try{const id=String(payload.marketId);if(evidence.scopes.has(id))evidence.batch(id,event,payload);else evidence.metrics.unknownMarkets++;stats();}catch{void close(true);}});
+    channel.subscribe(state=>onStatus('tournament',state));
+  }else for(const scope of evidence.scopes.values()){
     const channel=client.channel(scope.topic,{config:{private:true}});
     for(const event of ['market_batch','book_dirty','market_settled'])channel.on('broadcast',{event},({payload})=>{if(closing)return;try{evidence.batch(scope.marketId,event,payload);stats();}catch{void close(true);}});
-    channel.subscribe(state=>{if(closing)return;subscriptions[scope.marketId]=state;if(state==='SUBSCRIBED'){status='subscribed';append({kind:'subscribed',source:'official_sig_realtime',marketId:scope.marketId,receivedAt:new Date().toISOString(),requiresRestResync:true});}else if(['CHANNEL_ERROR','TIMED_OUT','CLOSED'].includes(state))void close(true);stats();});
+    channel.subscribe(state=>onStatus(scope.marketId,state));
   }
   await done;input.close();if(fatal)throw Error('STREAM_CAPTURE_FAILED');
 }

@@ -2,9 +2,9 @@ import fs from 'node:fs';import path from 'node:path';import {spawn} from 'node:
 import {createMoloch,advanceMoloch,reportMoloch,assertMoloch} from './engine.mjs';import {receiptEvents} from './sig-source.mjs';import {payloadHash} from '../execution/ledger.mjs';import {collectFrozenPaperFiles} from '../live-paper/frozen-paper-graph.mjs';import {createHash} from 'node:crypto';
 import {StreamSource,predecessorTradeFacts} from './stream-source.mjs';
 const root=fileURLToPath(new URL('../',import.meta.url));
-export function liveScopes(marketId,exchangeId,pairs=null){
+export function liveScopes(marketId,exchangeId,pairs=null,maximum=2){
   const scope=pairs??[{marketId,exchangeId}];
-  if(!Array.isArray(scope)||scope.length<1||scope.length>2||!scope.some(p=>p.marketId===marketId&&p.exchangeId===exchangeId)||new Set(scope.map(p=>p.exchangeId)).size!==scope.length||scope.some(p=>!(/^[1-9]\d*$/.test(p.marketId)&&/^[1-9]\d*$/.test(p.exchangeId))))throw Error('MOLOCH_LIVE_MULTI_SCOPE');
+  if(!Array.isArray(scope)||scope.length<1||scope.length>maximum||!scope.some(p=>p.marketId===marketId&&p.exchangeId===exchangeId)||new Set(scope.map(p=>p.exchangeId)).size!==scope.length||new Set(scope.map(p=>p.marketId)).size!==scope.length||scope.some(p=>!(/^[1-9]\d*$/.test(p.marketId)&&/^[1-9]\d*$/.test(p.exchangeId))))throw Error('MOLOCH_LIVE_MULTI_SCOPE');
   return scope.map(({marketId,exchangeId})=>({marketId,exchangeId}));
 }
 export function captureScopes(scopes,state,at){
@@ -16,7 +16,8 @@ export function captureScopes(scopes,state,at){
 export async function live({marketId,exchangeId,outputDirectory,cycles=10,resumeDirectory=null,pairsFile=null,realtime=false}){
   if(!/^[1-9]\d*$/.test(marketId)||!/^[1-9]\d*$/.test(exchangeId)||!Number.isSafeInteger(cycles)||cycles<1||cycles>100)throw Error('MOLOCH_LIVE_SCOPE');
   if(realtime&&cycles>30)throw Error('MOLOCH_STREAM_BOUNDED_CYCLES');
-  const scopes=liveScopes(marketId,exchangeId,pairsFile?JSON.parse(fs.readFileSync(pairsFile,'utf8').replace(/^\uFEFF/,'')):null);
+  const scopes=liveScopes(marketId,exchangeId,pairsFile?JSON.parse(fs.readFileSync(pairsFile,'utf8').replace(/^\uFEFF/,'')):null,realtime?4:2);
+  if(realtime&&cycles>Math.floor(60/scopes.length))throw Error('MOLOCH_STREAM_DURATION_LIMIT');
   const out=path.resolve(outputDirectory);if(fs.existsSync(out))throw Error('MOLOCH_LIVE_OUTPUT_EXISTS');fs.mkdirSync(out,{recursive:true});
   const cutoff=new Date().toISOString();let state=createMoloch(),continuation=null;
   if(resumeDirectory){const prior=path.resolve(resumeDirectory),oldStats=JSON.parse(fs.readFileSync(path.join(prior,'stats.json'))),snapshot=JSON.parse(fs.readFileSync(path.join(prior,'state.json'))),{hash,...body}=snapshot;

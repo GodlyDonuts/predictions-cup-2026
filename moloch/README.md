@@ -224,7 +224,7 @@ pnpm --dir moloch/realtime install --frozen-lockfile --ignore-scripts
 ./moloch/capture-sig.ps1 -ScreenPairsFile runtime/moloch/screen-new/live-pairs.json -OutputDirectory runtime/moloch/stream-new -Cycles 6 -HumanAuthorizedSharedReadCapture -RealtimeCapture
 ```
 
-This mode adds a private tournament market subscription for each of at most two
+This mode adds a private tournament market subscription for each of at most four
 configured markets, using the documented Supabase client. The existing capture
 process retains its mutex and owns all REST and authentication calls. It admits
 at most five local reads and one authentication write per minute, mints one
@@ -305,3 +305,36 @@ duplicates reconciled four precision differences without changing cash, realized
 PnL, fills or stored deduplication hashes. The next economic step is selecting
 markets from fresh tournament-wide flow rather than keeping two mostly quiet
 markets solely because an earlier short sample was active.
+
+## Tournament activity discovery
+
+```powershell
+./moloch/capture-sig.ps1 -CatalogOnly -OutputDirectory runtime/moloch/catalog-next -HumanAuthorizedSharedReadCapture
+node moloch/screen.mjs universe runtime/moloch/catalog-next/receipts.jsonl runtime/moloch/catalog-next/universe.json
+./moloch/capture-sig.ps1 -ScreenPairsFile runtime/moloch/selected-rest-pairs.json -UniversePairsFile runtime/moloch/catalog-next/universe.json -OutputDirectory runtime/moloch/universe-next -Cycles 6 -HumanAuthorizedSharedReadCapture -RealtimeCapture
+node moloch/activity.mjs runtime/moloch/universe-next/stream/events.jsonl runtime/moloch/universe-next/activity.json
+```
+
+Universe observation uses one private tournament `markets` topic, never alongside
+per-market topics. The catalog is cursor-verified and validated before auth.
+Unknown catalog markets trigger a refresh notice rather than admission. Only the
+selected REST scopes are synchronized; the other markets are observational, not
+execution-ready. Public normalized fields and per-market revisions are preserved.
+
+Activity analysis verifies the source hash chain, tracks each exchange separately,
+and exposes last-three-minute flow and current spread/queues. Thirty-second
+conditional one-share markouts require a previously observable, stable price
+regime with three seconds of placement lead and a subsequent executable book.
+They are not filled-wallet returns. Gaps exclude direct observation-based ranking,
+and stale books cannot authorize entry. Exploratory candidates are read again over
+official REST before a prospective paper test.
+
+The [October 13 universe probe](results/sig-universe-20261013.json) observed 142
+trades and 262 gaps, affecting 193 markets. Its 6,319 rows passed chain validation;
+no complete-tape or profitability claim follows. Scoped REST then verified
+Nebraska Democratic Senate (279/968) and Republican MN-01 (335/1024) as additional
+paper candidates. Hawaii's larger flow came with much deeper queues. An unchanged
+carried wallet follows the two candidates plus the two historical controls using
+four per-market topics. REST-only mode retains its two-market limit. With four
+stream scopes REST cycles take roughly 96 seconds; the stream remains the timely
+book source, and cycle counts are bounded to the helper's lifetime.
