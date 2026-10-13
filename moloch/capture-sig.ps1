@@ -1,16 +1,20 @@
 param(
-  [Parameter(Mandatory=$true)][ValidatePattern('^[1-9][0-9]*$')][string]$MarketId,
-  [Parameter(Mandatory=$true)][ValidatePattern('^[1-9][0-9]*$')][string]$ExchangeId,
+  [ValidatePattern('^[1-9][0-9]*$')][string]$MarketId,
+  [ValidatePattern('^[1-9][0-9]*$')][string]$ExchangeId,
   [Parameter(Mandatory=$true)][string]$OutputDirectory,
   [switch]$HumanAuthorizedSharedReadCapture,
   [ValidateRange(1,24)][int]$HistoryDays=7,
   [ValidateRange(1,100)][int]$Cycles=1,
   [switch]$AllHistory,
   [switch]$HistoryOnly,
-  [switch]$DiagnosticBookProbe
+  [switch]$DiagnosticBookProbe,
+  [switch]$CatalogOnly,
+  [string]$ScreenPairsFile
 )
 $ErrorActionPreference='Stop'
 if(-not $HumanAuthorizedSharedReadCapture){throw 'EXPLICIT_SHARED_READ_AUTHORIZATION_REQUIRED: preserve the prior one-collector policy unless human explicitly authorizes recreating read-only capture.'}
+if($CatalogOnly -and $ScreenPairsFile){throw 'ONE_DISCOVERY_MODE_REQUIRED'}
+if(-not $CatalogOnly -and -not $ScreenPairsFile -and (-not $MarketId -or -not $ExchangeId)){throw 'MARKET_AND_EXCHANGE_REQUIRED'}
 $taskOutput=[IO.Path]::GetFullPath($OutputDirectory)
 if(Test-Path -LiteralPath $taskOutput){throw 'OUTPUT_EXISTS: preserve previous capture; choose a new directory.'}
 New-Item -ItemType Directory -Path $taskOutput | Out-Null
@@ -40,21 +44,49 @@ try {
     @{kind='history';endpoint="/exchanges/$ExchangeId/price-history?tournamentId=$taskTournament&resolution=1h&from=$([Uri]::EscapeDataString($taskFrom))&to=$([Uri]::EscapeDataString($taskEnd))&limit=1000"}
   )
   if($DiagnosticBookProbe){$taskRequests=@($taskRequests | Where-Object kind -eq 'book')}elseif($HistoryOnly){$taskRequests=@($taskRequests | Where-Object kind -eq 'history')}elseif($Cycles -gt 1){$taskRequests=@($taskRequests)+@(for($taskCycle=1;$taskCycle -lt $Cycles;$taskCycle++){$taskRequests[0];$taskRequests[1]})}
+  if($CatalogOnly){$taskRequests=@(@{kind='catalog';endpoint='/tournaments/midterm-elections/markets?status=open&limit=100'})}
+  if($ScreenPairsFile){
+    $taskPairs=@(Get-Content -LiteralPath $ScreenPairsFile -Raw | ConvertFrom-Json -DateKind String)
+    if($taskPairs.Count -lt 1 -or $taskPairs.Count -gt 30){throw 'SCREEN_SCOPE_ONE_TO_THIRTY_PAIRS'}
+    $taskRequests=@(foreach($taskPair in $taskPairs){
+      if([string]$taskPair.marketId -notmatch '^[1-9][0-9]*$' -or [string]$taskPair.exchangeId -notmatch '^[1-9][0-9]*$'){throw 'SCREEN_SCOPE_INVALID'}
+      @{kind='book';marketId=[string]$taskPair.marketId;exchangeId=[string]$taskPair.exchangeId;endpoint="/markets/$($taskPair.marketId)/orderbook?tournamentId=$taskTournament&depth=200"}
+      @{kind='trades';marketId=[string]$taskPair.marketId;exchangeId=[string]$taskPair.exchangeId;endpoint=''}
+    })
+    $taskScreenCycle=@($taskRequests)
+    if($Cycles -gt 1){$taskRequests=@(for($taskCycle=0;$taskCycle -lt $Cycles;$taskCycle++){$taskScreenCycle})}
+    $taskRecovery=@(foreach($taskPair in $taskPairs){
+      if($taskPair.recoveryFrom -or $taskPair.recoveryTo){
+        $taskRecoveryFrom=[DateTimeOffset]::Parse($taskPair.recoveryFrom)
+        $taskRecoveryTo=[DateTimeOffset]::Parse($taskPair.recoveryTo)
+        if($taskRecoveryFrom -ge $taskRecoveryTo -or $taskRecoveryTo -gt [DateTimeOffset]::UtcNow){throw 'RECOVERY_WINDOW_INVALID'}
+        $taskRecoveryFromText=$taskRecoveryFrom.UtcDateTime.ToString('yyyy-MM-ddTHH:mm:ss.fffZ')
+        $taskRecoveryToText=$taskRecoveryTo.UtcDateTime.ToString('yyyy-MM-ddTHH:mm:ss.fffZ')
+        @{kind='trades';fixedWindow=$true;marketId=[string]$taskPair.marketId;exchangeId=[string]$taskPair.exchangeId;endpoint="/exchanges/$($taskPair.exchangeId)/trades?tournamentId=$taskTournament&from=$([Uri]::EscapeDataString($taskRecoveryFromText))&to=$([Uri]::EscapeDataString($taskRecoveryToText))&limit=200"}
+      }
+    })
+    $taskRequests=$taskRecovery+@($taskRequests)
+  }
   $taskReceipts=0
-  foreach($taskRequest in $taskRequests){
+  for($taskIndex=0;$taskIndex -lt $taskRequests.Count;$taskIndex++){
+    $taskRequest=$taskRequests[$taskIndex]
+    $taskMarket=if($taskRequest.marketId){$taskRequest.marketId}else{$MarketId}
+    $taskExchange=if($taskRequest.exchangeId){$taskRequest.exchangeId}else{$ExchangeId}
     if(Test-Path -LiteralPath (Join-Path $taskOutput 'STOP')){break}
-    if($taskRequest.kind -eq 'trades'){
+    if($taskRequest.kind -eq 'trades' -and -not $taskRequest.fixedWindow){
       $taskTapeFrom=[DateTime]::UtcNow.AddMinutes(-15).ToString('yyyy-MM-ddTHH:mm:ss.fffZ')
       $taskTapeTo=[DateTime]::UtcNow.ToString('yyyy-MM-ddTHH:mm:ss.fffZ')
-      $taskRequest=@{kind='trades';endpoint="/exchanges/$ExchangeId/trades?tournamentId=$taskTournament&from=$([Uri]::EscapeDataString($taskTapeFrom))&to=$([Uri]::EscapeDataString($taskTapeTo))&limit=200"}
+      $taskRequest=@{kind='trades';endpoint="/exchanges/$taskExchange/trades?tournamentId=$taskTournament&from=$([Uri]::EscapeDataString($taskTapeFrom))&to=$([Uri]::EscapeDataString($taskTapeTo))&limit=200"}
     }
     while($true){
+      if(Test-Path -LiteralPath (Join-Path $taskOutput 'STOP')){break}
       $taskNow=[DateTimeOffset]::UtcNow.ToUnixTimeMilliseconds()
       $taskBudget.times=@($taskBudget.times | Where-Object {$_ -gt ($taskNow-60000)})
       $taskWaitUntil=[long]$taskBudget.nextAt
       if($taskBudget.times.Count -ge 5){$taskWaitUntil=[Math]::Max($taskWaitUntil,[long]$taskBudget.times[0]+60001)}
       if($taskNow -ge $taskWaitUntil){break};Start-Sleep -Milliseconds ([int][Math]::Min(250,$taskWaitUntil-$taskNow))
     }
+    if(Test-Path -LiteralPath (Join-Path $taskOutput 'STOP')){break}
     $taskBudget.times=@($taskBudget.times)+@([DateTimeOffset]::UtcNow.ToUnixTimeMilliseconds())
     $taskBudget | ConvertTo-Json -Depth 5 | Set-Content -LiteralPath $taskBudgetFile -Encoding utf8
     $taskStarted=[DateTime]::UtcNow.ToString('yyyy-MM-ddTHH:mm:ss.fffZ')
@@ -72,11 +104,17 @@ try {
     $taskReceived=[DateTime]::UtcNow.ToString('yyyy-MM-ddTHH:mm:ss.fffZ')
     $taskBudget.nextAt=[DateTimeOffset]::UtcNow.ToUnixTimeMilliseconds()+12000
     $taskBudget | ConvertTo-Json -Depth 5 | Set-Content -LiteralPath $taskBudgetFile -Encoding utf8
-    $taskData=$taskResponse.Content | ConvertFrom-Json
-    $taskReceipt=[ordered]@{schemaVersion=1;source='official_sig_api_v1';kind=$taskRequest.kind;endpoint=$taskRequest.endpoint;tournamentId=$taskTournament;marketId=$MarketId;exchangeId=$ExchangeId;requestStartedAt=$taskStarted;receivedAt=$taskReceived;status=[int]$taskResponse.StatusCode;data=$taskData}
+    $taskData=$taskResponse.Content | ConvertFrom-Json -DateKind String
+    $taskReceipt=[ordered]@{schemaVersion=1;source='official_sig_api_v1';kind=$taskRequest.kind;endpoint=$taskRequest.endpoint;tournamentId=$taskTournament;marketId=$taskMarket;exchangeId=$taskExchange;requestStartedAt=$taskStarted;receivedAt=$taskReceived;status=[int]$taskResponse.StatusCode;data=$taskData}
     $taskReceipt | ConvertTo-Json -Depth 60 -Compress | Add-Content -LiteralPath (Join-Path $taskOutput 'receipts.jsonl') -Encoding utf8
     if($taskRequest.kind -eq 'history'){$taskReceipt | ConvertTo-Json -Depth 60 | Set-Content -LiteralPath (Join-Path $taskOutput 'history.json') -Encoding utf8}
     $taskReceipts++
+    if($taskRequest.kind -eq 'catalog' -and $taskData.pagination.hasMore){
+      if(-not $taskData.pagination.nextCursor -or $taskReceipts -ge 10){throw 'CATALOG_PAGINATION_INCOMPLETE'}
+      $taskNext='/tournaments/midterm-elections/markets?status=open&limit=100&cursor='+[Uri]::EscapeDataString($taskData.pagination.nextCursor)
+      if($taskRequests.endpoint -contains $taskNext){throw 'CATALOG_CURSOR_LOOP'}
+      $taskRequests+=@{kind='catalog';endpoint=$taskNext}
+    }
     # At most five sequential requests/minute, with completion pacing. No order or token writes.
     if($taskReceipts -lt $taskRequests.Count){Start-Sleep -Seconds 12}
   }

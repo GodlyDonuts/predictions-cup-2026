@@ -145,3 +145,46 @@ Select parameters only on development data. Profitable prospective observations
 are needed before proposing scale. Contest deployment additionally requires fresh
 human authorization and sole execution authority for Moloch; the earlier Baal
 activation or conditional instruction is not silently transferred to this bot.
+
+## Market exploration
+
+The October 13 prospective control episode completed 201 official receipts with
+zero modeled fills. Its large displayed queues motivate searching other markets;
+touch prints are still not counted as fills. Catalog metadata last prices do not
+describe executable spreads or current activity.
+
+```powershell
+./moloch/capture-sig.ps1 -CatalogOnly -OutputDirectory runtime/moloch/catalog-new -HumanAuthorizedSharedReadCapture
+node moloch/screen.mjs select runtime/moloch/catalog-new/receipts.jsonl runtime/moloch/catalog-new/pairs.json
+./moloch/capture-sig.ps1 -ScreenPairsFile runtime/moloch/catalog-new/pairs.json -OutputDirectory runtime/moloch/screen-new -HumanAuthorizedSharedReadCapture
+node moloch/screen.mjs report runtime/moloch/screen-new/receipts.jsonl runtime/moloch/screen-new/report.json
+```
+
+Catalog cursor completeness is checked before selecting a fixed index sample.
+The screen ranks spread, recent prints and displayed queue turnover for further
+research; sequential book/tape observations cannot establish fill probability or
+profit. Incomplete tape windows are excluded from ranking. Raw captures remain
+private under ignored runtime directories.
+
+Live continuation can add one candidate using a JSON pair file as the seventh
+argument after the parent directory. It must retain the original market and every
+prior declared scope. Both books and tapes use the same serialized five-read
+budget; two markets take roughly 48 seconds per cycle. The scopes are copied into
+the new immutable manifest. Cash, reservations, inventory and historical orders
+carry forward with zero new capital. No additional account client is started.
+Run `node --test moloch/*.test.mjs` for the complete Node checks.
+
+The default flat-entry policy now evaluates the combined spread after both legs'
+modeled fees, rather than using uncalibrated microprice imbalance as directional
+alpha. A new pair must fit cash and market limits together; scarce funding cannot
+create only its first leg. Actual fills can still leave unpaired inventory, which
+uses the existing covered-sale risk control. `quoteMode: microprice` remains an
+explicit comparison policy. A resumed legacy ledger receives the new default
+policy in its successor manifest without rewriting its historical quotes.
+
+Restarted paper episodes request the original windows of expired unresolved
+quotes once, before prospective captures. Only complete tape coverage and a later
+scoped book checkpoint can release their reservations. A paginated recovery
+response leaves funding unresolved; restarting never releases it by wall time.
+The [October 13 market screen](results/sig-screen-20261013.json) selects FL-07 for
+an unseen prospective test alongside the existing FL-09 control.

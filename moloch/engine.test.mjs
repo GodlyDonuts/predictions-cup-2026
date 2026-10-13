@@ -4,6 +4,13 @@ const base=Date.parse('2026-10-13T00:00:00Z'),at=n=>new Date(base+n*1000).toISOS
 const book=(n,ex='101',seq=1)=>({type:'book',receivedAt:at(n),book:{tournamentId:'cup',marketId:ex,exchangeId:ex,sequence:String(seq),requestStartedAt:at(n),receivedAt:at(n),sourceAt:at(n),bids:[{price:'0.450000',quantity:1000}],asks:[{price:'0.455000',quantity:1000}]}});
 const trade=(n,id,p='0.440000',quantity=100,executed=n)=>({type:'trade',receivedAt:at(n),executedAt:at(executed),id,tournamentId:'cup',marketId:'101',exchangeId:'101',yesPrice:p,quantity});
 const tick=n=>({type:'tick',receivedAt:at(n)});
+test('paired spread ignores uncalibrated imbalance but funds both legs and rejects fee-drained packets',()=>{
+  const e=book(0);e.book.bids[0].quantity=1000000;e.book.asks[0].quantity=1;
+  const paired=createMoloch();advanceMoloch(paired,e);assert.equal(paired.orders.length,2);
+  const micro=createMoloch({quoteMode:'microprice'});advanceMoloch(micro,e);assert.equal(micro.orders.length,1);
+  const scarce=createMoloch({maximumCommitted:'0.500000'});advanceMoloch(scarce,e);assert.equal(scarce.orders.length,0);
+  const fees=createMoloch({feePerShare:'0.002000'});advanceMoloch(fees,e);assert.equal(fees.orders.length,0);
+});
 
 test('paired strict-through fills reconcile exact cash, fees and conditional redemption',()=>{
   const s=createMoloch({quantity:1,feePerShare:'0.000100'});advanceMoloch(s,book(0));
@@ -30,7 +37,7 @@ test('delayed pre-cancel match uses reserved capital; only scoped full coverage 
   advanceMoloch(s,{...coverage,receivedAt:at(14),projectedThroughSequence:'20'});assert.equal(pending.retired,true);assertMoloch(s);
 });
 test('funding caps, stale liquidation, receipt causality and immutable policy are enforced',()=>{
-  const s=createMoloch({maximumCommitted:'0.500000',maximumMarketCost:'0.500000',quantity:5});advanceMoloch(s,book(0));assert.ok(Number(reportMoloch(s).reservedCash)<=.5);
+  const s=createMoloch({quoteMode:'microprice',maximumCommitted:'0.500000',maximumMarketCost:'0.500000',quantity:5});advanceMoloch(s,book(0));assert.ok(Number(reportMoloch(s).reservedCash)<=.5);
   advanceMoloch(s,trade(4,'a'));advanceMoloch(s,tick(20));assert.equal(reportMoloch(s).netLiquidationPnl,null);
   assert.throws(()=>advanceMoloch(s,book(2)),/RECEIPT_ORDER/);s.policy.quantity=99;assert.throws(()=>advanceMoloch(s,tick(21)),/POLICY_CHANGED/);
 });
@@ -52,7 +59,7 @@ test('duplicate delivery still advances processing chronology and budget account
   assert.equal(s.lastAt,at(20));assert.throws(()=>advanceMoloch(s,tick(19)),/RECEIPT_ORDER/);
 });
 test('funding reserves per-share fee rounding for partial fills',()=>{
-  const s=createMoloch({initialCash:'1.635164',maximumCommitted:'1.635164',maximumMarketCost:'1.635164',quantity:3,feeBps:1});
+  const s=createMoloch({quoteMode:'microprice',initialCash:'1.635164',maximumCommitted:'1.635164',maximumMarketCost:'1.635164',quantity:3,feeBps:1});
   advanceMoloch(s,book(0));const no=s.orders.find(q=>q.side==='NO');assert.equal(no.quantity,2);
   for(let n=4;n<=5;n++)advanceMoloch(s,trade(n,'partial'+n,'0.465000',100));assertMoloch(s);
   assert.ok(Number(s.cash)>=Number(reportMoloch(s).reservedCash));

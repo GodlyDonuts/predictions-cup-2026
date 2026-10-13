@@ -5,7 +5,7 @@ import {payloadHash} from '../execution/ledger.mjs';
 export const DEFAULT_POLICY=Object.freeze({initialCash:'1000.000000',maximumCommitted:'40.000000',
   maximumMarketCost:'10.000000',quantity:5,maximumMarkets:4,latencyMs:3000,lifetimeMs:120000,
   bookAgeMs:10000,maximumSourceSilenceMs:60000,minimumSpreadTicks:1,minimumEdge:'0.001000',participationBps:100,
-  feeBps:0,feePerShare:'0.000000',minimumQuoteAgeMs:2500,writeGapMs:2500,writesPerMinute:24});
+  feeBps:0,feePerShare:'0.000000',quoteMode:'pairedSpread',minimumQuoteAgeMs:2500,writeGapMs:2500,writesPerMinute:24});
 const ns=x=>instantNs(x), ms=x=>Number(ns(x)/1000000n), iso=x=>new Date(x).toISOString();
 const check=(ok,code)=>{if(!ok)throw Error('MOLOCH_'+code);};
 const position=(s,ex)=>s.positions[ex]??{YES:[],NO:[]};
@@ -25,6 +25,7 @@ function prune(s){for(const p of Object.values(s.positions))for(const side of ['
 
 export function createMoloch(policy={}){
   const p={...DEFAULT_POLICY,...policy};
+  check(['pairedSpread','microprice'].includes(p.quoteMode),'QUOTE_MODE');
   for(const k of ['quantity','maximumMarkets','latencyMs','lifetimeMs','bookAgeMs','maximumSourceSilenceMs','minimumSpreadTicks','participationBps','minimumQuoteAgeMs','writeGapMs','writesPerMinute'])check(Number.isSafeInteger(p[k])&&p[k]>0,'POLICY_'+k);
   check(p.quantity<=100&&p.participationBps<=10000&&p.writesPerMinute<=24&&p.writeGapMs>=2500&&p.lifetimeMs>p.latencyMs+p.minimumQuoteAgeMs,'POLICY_LIMITS');
   check(Number.isSafeInteger(p.feeBps)&&p.feeBps>=0&&amount(p.feePerShare)>=0n&&amount(p.minimumEdge)>0n&&amount(p.initialCash)>0n&&amount(p.maximumCommitted)>0n&&amount(p.maximumMarketCost)>0n,'POLICY_MONEY');
@@ -67,11 +68,12 @@ function desired(s,at){
     }
     if(spread<TICK*BigInt(s.policy.minimumSpreadTicks))continue;
     const micro=(ask*BigInt(b.bids[0].quantity)+bid*BigInt(b.asks[0].quantity))/BigInt(b.bids[0].quantity+b.asks[0].quantity);
+    if(s.policy.quoteMode==='pairedSpread'&&spread-fee(bid,1,s.policy)-fee(SCALE-ask,1,s.policy)<2n*amount(s.policy.minimumEdge))continue;
     const recent=(s.flow[b.exchangeId]??[]).filter(t=>at-t.at<=900000);s.flow[b.exchangeId]=recent;
     const activity=recent.reduce((n,t)=>n+t.quantity,0);
     const rank=Number(spread)*Math.log1p(activity+1)/(1+Number(bid));
     for(const [side,limit,value]of [['YES',bid,micro],['NO',SCALE-ask,SCALE-micro]]){
-      if(value-limit-fee(limit,1,s.policy)<amount(s.policy.minimumEdge))continue;
+      if(s.policy.quoteMode==='microprice'&&value-limit-fee(limit,1,s.policy)<amount(s.policy.minimumEdge))continue;
       candidates.push({marketId:b.marketId,exchangeId:b.exchangeId,side,action:'buy',quantity:s.policy.quantity,price:money(limit),rank,source:b});
     }
   }
@@ -101,7 +103,10 @@ function reconcile(s,at){
     let n=t.quantity;
     if(t.action==='sell')n=Math.min(n,qty(p[t.side])-pledged(s,t.exchangeId,t.side)-oppositeBuys(s,t.exchangeId,t.side));
     else{
-      let cost;while(n>0){cost=buyCost(s,t.price,n);if(cost<=available&&cost<=headroom&&cost+(marketCosts.get(t.exchangeId)??0n)<=amount(s.policy.maximumMarketCost))break;n--;}
+      const mate=batch.find(q=>q.exchangeId===t.exchangeId&&q.action==='buy'&&q.side!==t.side);
+      if(mate)n=Math.min(n,mate.quantity);
+      const opposite=s.policy.quoteMode==='pairedSpread'&&!mate&&!active.some(q=>q.exchangeId===t.exchangeId&&q.action==='buy'&&q.side!==t.side)?targets.find(q=>q.exchangeId===t.exchangeId&&q.action==='buy'&&q.side!==t.side):null;
+      let cost;while(n>0){cost=buyCost(s,t.price,n);const packet=cost+(opposite?buyCost(s,opposite.price,n):0n);if(packet<=available&&packet<=headroom&&packet+(marketCosts.get(t.exchangeId)??0n)<=amount(s.policy.maximumMarketCost))break;n--;}
       if(n>0){available-=cost;headroom-=cost;marketCosts.set(t.exchangeId,(marketCosts.get(t.exchangeId)??0n)+cost);}
     }
     if(n<1)continue;
@@ -177,5 +182,5 @@ export function reportMoloch(s){
     ownedCost:money(owned(s)),reservedCash:money(reserve(s)),netLiquidationPnl:known?money(amount(s.cash)+liquidation-amount(s.policy.initialCash)):null,
     positions:s.positions,priceHistory:s.priceHistory??{},fills:s.fills.length,orders:s.orders.length,activeOrders:at===null?0:unresolved(s).filter(q=>end(q)>at).length,
     unresolvedOrders:unresolved(s).length,profitSignalEligible:unresolved(s).length===0&&known&&amount(s.realized)>0n&&amount(s.cash)+liquidation>amount(s.policy.initialCash),counts:s.counts,contestOrders:0,networkRequests:0,profitabilityEstablished:false,
-    assumptions:['Independent simulated capital; no contest-account ownership.','Microprice ranks quotes; it is not calibrated alpha.','Strict one-tick trade-through and bounded participation are counterfactual, not verified queue fills.','Cancel acknowledgment does not release unresolved funding; complete window and post-end checkpoint are required.','YES/NO pair payout is a declared paper accounting assumption.']};
+    assumptions:['Independent simulated capital; no contest-account ownership.',s.policy.quoteMode==='pairedSpread'?'Flat entries join both sides only when combined spread covers modeled fees and required edge; partial fills remain inventory risk.':'Microprice gates quotes; it is not calibrated alpha.','Strict one-tick trade-through and bounded participation are counterfactual, not verified queue fills.','Cancel acknowledgment does not release unresolved funding; complete window and post-end checkpoint are required.','YES/NO pair payout is a declared paper accounting assumption.']};
 }
