@@ -1,0 +1,3 @@
+import {inventoryAwareQuotesV1} from './inventory-aware-quote-v1.mjs';import {payloadHash} from '../execution/ledger.mjs';
+// Desired prices/sizes only. Shared allocation retains final cash/risk authority.
+export function makerDesiredInventoryQuotesV1({planningOrderCost,...options}){if('cashAvailable'in options)throw Error('DESIRED_PRICE_MUST_NOT_INFER_BALANCE');const {proposalHash,...body}=inventoryAwareQuotesV1({...options,cashAvailable:planningOrderCost,maximumOrderCost:planningOrderCost}),out={...body,mode:'unfunded_desired_inventory_prices_v1',planningOrderCost,capitalBasis:'declared_planning_cap_not_cash_balance',requiresSharedFundingAllocation:true,cashAllocated:false};return{...out,proposalHash:payloadHash(out)};}
