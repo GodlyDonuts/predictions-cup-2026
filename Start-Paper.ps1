@@ -1,10 +1,11 @@
-param([string]$ConfigPath='live-paper/config.json',[switch]$KeepSession)
+param([string]$ConfigPath='live-paper/config.json',[switch]$KeepSession,[switch]$ReadOnlyOnly)
 $ErrorActionPreference='Stop'
 $taskRoot=$PSScriptRoot
 $taskRuntime=if($env:SIG_PAPER_DIR){[IO.Path]::GetFullPath($env:SIG_PAPER_DIR)}else{Join-Path $env:LOCALAPPDATA 'SigTradingCup\paper-runtime'}
 if(Test-Path -LiteralPath (Join-Path $taskRoot 'STOP')){throw 'Workspace STOP exists. Review its reason before restarting.'}
 if(Test-Path -LiteralPath (Join-Path $taskRuntime 'STOP')){throw 'Paper STOP exists. Remove it only for an intended restart.'}
 if(Test-Path -LiteralPath (Join-Path $taskRuntime 'COLLECTOR_STOP')){throw 'Collector STOP exists. Inspect its provenance before restarting.'}
+if($ReadOnlyOnly -and -not (Test-Path -LiteralPath (Join-Path $taskRuntime 'EXECUTION_STOP'))){throw 'Read-only start requires EXECUTION_STOP to remain in force.'}
 if(Test-Path -LiteralPath (Join-Path $env:LOCALAPPDATA 'SigTradingCup\bot.lock')){throw 'Collector lock exists; inspect its process before restarting.'}
 New-Item -ItemType Directory -Path $taskRuntime -Force | Out-Null
 $taskIdentity=[Security.Principal.WindowsIdentity]::GetCurrent().Name

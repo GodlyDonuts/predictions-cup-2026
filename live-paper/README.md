@@ -14,6 +14,8 @@ From the repository root on Windows with Node 22+ and an already approved DPAPI 
 
 `Start-Paper.ps1` restricts the runtime folder ACL to the current Windows user, SYSTEM and Administrators, and starts a hidden background process. Runtime files are under `$env:LOCALAPPDATA/SigTradingCup/paper-runtime`: `stats.json`, hash-chained `journal.jsonl`, `rate.json`, PID and safe stdout/stderr. The dashboard binds only to 127.0.0.1 and refreshes every three seconds. It shows explicit unavailable/stale marks and skipped observations. It is available while the runner process is running; `stats.json` preserves final stats after stop.
 
+For an explicitly read-only collector start, use `./Start-Paper.ps1 -ReadOnlyOnly`. This mode requires the runtime `EXECUTION_STOP` marker at launch and is intended for paper capture/research; it does not authorize contest orders.
+
 Workspace `STOP` and runtime `STOP` abort pending reads. An intended restart requires reviewing/removing the relevant stop marker, then launching again. The local scanner's `bot.lock` excludes another local scanner/runner; do not delete a lock without checking its recorded PID. The journal restores the last committed paper state, pending intents, exact basis, fills and config hash. Changed config requires a separate runtime directory via `SIG_PAPER_DIR`; use the same shared collector lock. A partial or corrupt journal fails closed and needs explicit recovery. A crash may discard an uncommitted cycle; its displayed intermediate values are provisional until the cycle journal commit.
 
 ## Defaults and interpretation
