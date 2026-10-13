@@ -1,0 +1,70 @@
+{
+  "schema": "usn-file-token-probe-v1",
+  "completedAtUtc": "2026-10-13T14:36:46.6396150Z",
+  "host": {
+    "operatingSystem": "Windows",
+    "expectedFileSystem": "NTFS",
+    "sampleCount": 8,
+    "supportedSnapshots": 8,
+    "stableSnapshots": 8,
+    "temporaryFilesOnly": true,
+    "runtimeOrAccountFilesRead": false,
+    "runtimeOrAccountStateChanged": false
+  },
+  "measurement": {
+    "processLaunchBaseline": "cmd.exe immediate-exit child-process wall time; includes process startup and scheduling",
+    "fsutilQuery": "two fsutil usn queryjournal child processes per snapshot; includes launch, query, output capture, and parse",
+    "nativeFileSample": "two same-handle FSCTL_READ_FILE_USN_DATA samples plus one post-sample path-binding check",
+    "processLaunchBaselineMedianMs": 22.635,
+    "processLaunchBaselineP95Ms": 31.392,
+    "twoGenerationQueriesPerSnapshotMedianMs": 44.893,
+    "twoGenerationQueriesPerSnapshotP95Ms": 53.681,
+    "twoNativeFileSamplesMedianMs": 0.227,
+    "twoNativeFileSamplesP95Ms": 3.232,
+    "pathBindingSampleMedianMs": 0.102,
+    "fullSnapshotMedianMs": 47.54,
+    "fullSnapshotP95Ms": 83.189
+  },
+  "result": {
+    "status": "supported_and_stable",
+    "fullHashFallbackOnUnsupportedOrAnyMismatch": true,
+    "changedUsnProvesAppend": false,
+    "suffixOnlyRefreshPermitted": false,
+    "reasons": [
+      {
+        "reason": "stable",
+        "count": 8
+      }
+    ]
+  },
+  "correctnessTests": {
+    "status": "passed",
+    "passed": 16,
+    "failed": 0,
+    "cases": [
+      "unchanged cache",
+      "append",
+      "same-size rewrite",
+      "truncation",
+      "file replacement",
+      "journal-generation change",
+      "denied/unsupported query",
+      "unknown record version",
+      "same-handle token race"
+    ]
+  },
+  "privacy": {
+    "machineNameOmitted": true,
+    "userNameOmitted": true,
+    "fileAndVolumeIdentifiersOmitted": true,
+    "pathsOmitted": true,
+    "rawUsnValuesOmitted": true,
+    "contentAndHashesOmitted": true
+  },
+  "sources": [
+    "https://learn.microsoft.com/en-us/windows/win32/api/winioctl/ni-winioctl-fsctl_read_file_usn_data",
+    "https://learn.microsoft.com/en-us/windows/win32/api/winioctl/ns-winioctl-read_file_usn_data",
+    "https://learn.microsoft.com/en-us/windows/win32/api/winioctl/ns-winioctl-usn_journal_data_v2"
+  ]
+}
+
