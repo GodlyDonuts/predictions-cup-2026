@@ -1,6 +1,6 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import os from 'node:os';import path from 'node:path';import {createHash} from 'node:crypto';
 import {spawnSync} from 'node:child_process';
-import {Journal} from './transport-runtime.mjs';import {openNativeJournal,readNativeJournal,journalEngineIdentity} from './native-journal-restore.mjs';
+import {Journal} from './transport-runtime.mjs';import {openNativeJournal,readNativeJournal,journalEngineIdentity,nativeJournalHashMode} from './native-journal-restore.mjs';
 const sha=b=>createHash('sha256').update(b).digest('hex'),sourceRoot=path.resolve('backend-rust/journal-restore'),binary=path.join(sourceRoot,'target/release/baal-journal-restore.exe'),available=fs.existsSync(binary),opts={skip:!available};
 function fixture(t){const runtimeDir=fs.mkdtempSync(path.join(os.tmpdir(),'journal-native-'));t.after(()=>{assert.equal(path.dirname(path.resolve(runtimeDir)),path.resolve(os.tmpdir()));fs.rmSync(runtimeDir,{recursive:true,force:true});});
  const binding={schemaVersion:1,mode:'canonical_js_journal_restore_v1',binaryHash:sha(fs.readFileSync(binary)),engineHash:journalEngineIdentity(sourceRoot),runtimeLibraryHash:sha(fs.readFileSync(path.join(sourceRoot,'target/release/libunwind.dll')))},dir=path.join(runtimeDir,'journal-native-builds',binding.binaryHash);fs.mkdirSync(dir,{recursive:true});for(const f of ['baal-journal-restore.exe','libunwind.dll'])fs.copyFileSync(path.join(sourceRoot,'target/release',f),path.join(dir,f));
@@ -13,7 +13,10 @@ test('full canonical numeric/string/key corpus restores exact legacy state and h
  j.commit(state,{type:'fixture'});j.commit({...state,last:true,largeObject:Object.fromEntries(Array.from({length:40},(_,i)=>['field'+i,i]))},{type:'fixture2'});const restored=await f.restore(),legacy=new Journal(f.file);assert.deepEqual(restored.last,legacy.last);assert.equal(restored.previous,legacy.previous);assert.equal(restored.sequence,legacy.sequence);assert.ok(restored instanceof Journal);assert.equal(restored.nativeRestore.engineHash,f.binding.engineHash);assert.equal(restored.nativeRestore.sourceHash,sha(fs.readFileSync(f.file)));assert.equal(restored.nativeRestore.prefixHashMs,0);
 });
 test('computed-hash mode returns the verified source digest without a caller pre-hash',opts,async t=>{
- const f=fixture(t),j=new Journal(f.file);j.commit({cash:'99.985000',basis:'0.000000',fills:2},{type:'paper'});const result=await readNativeJournal({runtimeDir:f.runtimeDir,binding:f.binding,file:f.file,endByte:fs.statSync(f.file).size,receiptDir:f.receiptDir});assert.equal(result.sourceHash,sha(fs.readFileSync(f.file)));assert.equal(result.sourceBytes,fs.statSync(f.file).size);assert.equal(result.records,1);
+ const f=fixture(t),j=new Journal(f.file);j.commit({cash:'99.985000',basis:'0.000000',fills:2},{type:'paper'});const result=await readNativeJournal({runtimeDir:f.runtimeDir,binding:f.binding,file:f.file,endByte:fs.statSync(f.file).size,receiptDir:f.receiptDir});assert.equal(result.sourceHash,sha(fs.readFileSync(f.file)));assert.equal(result.sourceBytes,fs.statSync(f.file).size);assert.equal(result.records,1);assert.equal(result.hashMode,'computed');assert.equal(result.prefixHashMs,0);
+});
+test('unknown or prior engine bindings use the backward-compatible explicit digest mode',opts,t=>{
+ const f=fixture(t);assert.equal(nativeJournalHashMode(f.binding,sourceRoot),'computed');assert.equal(nativeJournalHashMode({...f.binding,engineHash:'a'.repeat(64)},sourceRoot),'explicit');assert.equal(nativeJournalHashMode(f.binding,path.join(f.runtimeDir,'missing-source')),'explicit');
 });
 test('legacy append interface emits identical next bytes after native restoration',opts,async t=>{
  const f=fixture(t),j=new Journal(f.file);j.commit({cash:'99.985000',basis:'0.000000',fills:2},{type:'paper'});const copy=path.join(f.runtimeDir,'copy');fs.copyFileSync(f.file,copy);const legacy=new Journal(copy),native=await f.restore(),now=Date.now;
@@ -49,3 +52,7 @@ test('immutable native output cannot be overwritten and same-size source replace
 test('stop arriving while the native restorer runs leaves the source unchanged',opts,async t=>{
  const f=fixture(t),j=new Journal(f.file);j.commit({payload:'x'.repeat(2000000)},{type:'fixture'});const saved=fs.readFileSync(f.file),controller=new AbortController(),opening=f.restore({signal:controller.signal});setTimeout(()=>controller.abort(),5);await assert.rejects(opening,/STOPPED/);assert.deepEqual(fs.readFileSync(f.file),saved);
 });
+test('direct native reads reject a concurrent append to their verified prefix',opts,async t=>{
+ const f=fixture(t),j=new Journal(f.file);j.commit({payload:'x'.repeat(8000000)},{type:'fixture'});const initial=fs.statSync(f.file).size,opening=f.read({expectedSha:undefined});setTimeout(()=>fs.appendFileSync(f.file,'\n'),0);await assert.rejects(opening,/STOP_OR_SOURCE_CHANGED/);assert.equal(fs.statSync(f.file).size,initial+1);
+});
+
