@@ -66,6 +66,9 @@ try {
         if($taskRecoveryFrom -ge $taskRecoveryTo -or $taskRecoveryTo -gt [DateTimeOffset]::UtcNow){throw 'RECOVERY_WINDOW_INVALID'}
         $taskRecoveryFromText=$taskRecoveryFrom.UtcDateTime.ToString('yyyy-MM-ddTHH:mm:ss.fffZ')
         $taskRecoveryToText=$taskRecoveryTo.UtcDateTime.ToString('yyyy-MM-ddTHH:mm:ss.fffZ')
+        # Establish the post-end authoritative book barrier BEFORE its tape
+        # coverage. A newer pushed book must not strand historical reservations.
+        @{kind='book';marketId=[string]$taskPair.marketId;exchangeId=[string]$taskPair.exchangeId;endpoint="/markets/$($taskPair.marketId)/orderbook?tournamentId=$taskTournament&depth=200"}
         @{kind='trades';fixedWindow=$true;marketId=[string]$taskPair.marketId;exchangeId=[string]$taskPair.exchangeId;endpoint="/exchanges/$($taskPair.exchangeId)/trades?tournamentId=$taskTournament&from=$([Uri]::EscapeDataString($taskRecoveryFromText))&to=$([Uri]::EscapeDataString($taskRecoveryToText))&limit=200"}
       }
     })

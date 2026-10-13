@@ -30,6 +30,14 @@ test('pre-activation and at-touch prints never fabricate queue fills; duplicate 
   advanceMoloch(s,trade(5,'through'));advanceMoloch(s,trade(6,'through','0.440000',100,5));assert.equal(s.fills.length,1);assert.equal(s.counts.duplicateTrades,1);
   assert.throws(()=>advanceMoloch(s,trade(7,'through','0.435000',100,5)),/TRADE_CONFLICT/);
 });
+test('REST and stream timestamp precision differences deduplicate without masking changed trade facts',()=>{
+  const s=createMoloch({quantity:1});advanceMoloch(s,book(0));advanceMoloch(s,trade(4,'shared'));
+  const e=trade(5,'shared','0.440000',100,4);e.executedAt=e.executedAt.replace('.000Z','.000000000Z');advanceMoloch(s,e);assert.equal(s.fills.length,1);assert.equal(s.counts.duplicateTrades,1);
+  assert.throws(()=>advanceMoloch(s,{...e,receivedAt:at(6),quantity:101}),/TRADE_CONFLICT/);
+});
+test('delayed pushed book cannot become fresh or clear a quote-end barrier by receipt time',()=>{
+  const s=createMoloch();const e=book(0);e.receivedAt=at(20);e.book.receivedAt=at(20);e.book.requestStartedAt=at(20);e.book.transport='official_sig_realtime';advanceMoloch(s,e);assert.equal(s.orders.length,0);
+});
 test('cancel latency stops active quotes without freeing unresolved funding or globally blocking another market',()=>{
   const s=createMoloch({quantity:1});advanceMoloch(s,book(0));advanceMoloch(s,{type:'gap',exchangeId:'101',receivedAt:at(4)});
   advanceMoloch(s,tick(7));advanceMoloch(s,book(10,'102'));

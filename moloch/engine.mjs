@@ -1,5 +1,5 @@
 import {amount,money,price,SCALE,TICK,fee} from '../paper/fixed.mjs';
-import {instantNs} from '../feed/contract.mjs';
+import {instantNs,timestamp} from '../feed/contract.mjs';
 import {payloadHash} from '../execution/ledger.mjs';
 
 export const DEFAULT_POLICY=Object.freeze({initialCash:'1000.000000',maximumCommitted:'40.000000',
@@ -34,7 +34,7 @@ export function createMoloch(policy={}){
     positions:{},books:{},priceHistory:{},orders:[],fills:[],redemptions:[],seen:{},flow:{},writes:[],events:0,lastAt:null,nextOrderId:1,counts:{}};
 }
 const count=(s,k)=>s.counts[k]=(s.counts[k]??0)+1;
-function fresh(s,b,at){return b&&!b.invalid&&at-ms(b.requestStartedAt)<=s.policy.bookAgeMs&&ms(b.receivedAt)<=at;}
+function fresh(s,b,at){return b&&!b.invalid&&at-ms(b.transport==='official_sig_realtime'?b.sourceAt:b.requestStartedAt)<=s.policy.bookAgeMs&&ms(b.receivedAt)<=at;}
 function validateBook(b){
   check(typeof b.tournamentId==='string'&&b.tournamentId&&/^[1-9]\d*$/.test(b.marketId)&&/^[1-9]\d*$/.test(b.exchangeId),'BOOK_SCOPE');
   check(/^\d+$/.test(String(b.sequence)),'BOOK_SEQUENCE');
@@ -130,7 +130,14 @@ export function advanceMoloch(s,event){
     check(Number.isSafeInteger(event.quantity)&&event.quantity>0&&event.quantity<=2147483647&&ns(event.executedAt)<=ns(event.receivedAt),'TRADE_CLOCK_OR_SIZE');price(event.yesPrice);
     const b=s.books[event.exchangeId];if(b)check(b.marketId===event.marketId&&b.tournamentId===event.tournamentId,'TRADE_SCOPE_CHANGED');
     const key=[event.tournamentId,event.exchangeId,event.id].join(':'),hash=payloadHash({marketId:event.marketId,executedAt:event.executedAt,yesPrice:event.yesPrice,quantity:event.quantity});
-    if(s.seen[key]){check(s.seen[key]===hash,'TRADE_CONFLICT');duplicate=true;}else s.seen[key]=hash;
+    if(s.seen[key]){
+      // REST and realtime serialize the same execution instant with different
+      // fractional precision. Accept only hashes for mathematically identical
+      // instants and unchanged price/quantity, preserving old ledger hashes.
+      const canonical=timestamp(event.executedAt),prefix=canonical.slice(0,19),fraction=canonical.slice(20,29);
+      const equivalents=[hash];for(let digits=0;digits<=9;digits++){const time=prefix+(digits?'.'+fraction.slice(0,digits):'')+'Z';if(ns(time)===ns(event.executedAt))equivalents.push(payloadHash({marketId:event.marketId,executedAt:time,yesPrice:event.yesPrice,quantity:event.quantity}));}
+      check(equivalents.includes(s.seen[key]),'TRADE_CONFLICT');duplicate=true;
+    }else s.seen[key]=hash;
   }else if(event.type==='candle'){
     check(event.historicalReleaseClockAssumed===true&&ns(event.availableAt)===ns(event.receivedAt)&&ns(event.bucketStartedAt)<ns(event.availableAt)&&Number.isFinite(event.close)&&event.close>=0&&event.close<=1&&typeof event.exchangeId==='string','CANDLE');
   }else if(event.type==='coverage'){
@@ -139,7 +146,7 @@ export function advanceMoloch(s,event){
   s.lastAt=event.processedAt??event.receivedAt;s.events++;
   if(event.type==='book'){
     const b=structuredClone(event.book);s.books[b.exchangeId]=b;
-    for(const q of unresolved(s).filter(q=>q.exchangeId===b.exchangeId&&q.marketId===b.marketId&&q.tournamentId===b.tournamentId&&ms(b.requestStartedAt)>=end(q)))if(!q.barrier)q.barrier={sequence:String(b.sequence),endAt:end(q)};
+    for(const q of unresolved(s).filter(q=>q.exchangeId===b.exchangeId&&q.marketId===b.marketId&&q.tournamentId===b.tournamentId&&ms(b.transport==='official_sig_realtime'?b.sourceAt:b.requestStartedAt)>=end(q)))if(!q.barrier)q.barrier={sequence:String(b.sequence),endAt:end(q)};
   }else if(event.type==='gap'){
     check(typeof event.exchangeId==='string','GAP_SCOPE');if(s.books[event.exchangeId])s.books[event.exchangeId].invalid=true;count(s,'gaps');
   }else if(event.type==='trade'&&!duplicate){

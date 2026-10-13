@@ -246,7 +246,62 @@ alone cannot establish execution latency. A startup manifest pins local code and
 the dependency lock. The first live probe recorded its identity after startup,
 before subsequent edits, and archived those exact source bytes separately.
 
-Realtime capture currently places **zero paper or contest orders**. Its financial
-integration is deliberately explicit: deduplication, gap recovery and merged
-REST/push book versions must be proven before feeding it into the carried wallet.
-The REST paper ledger and all previous observations remain preserved.
+The capture helper places **zero paper or contest orders**. Its observations can
+now feed the carried paper wallet through the integration below. All previous
+ledger histories remain preserved; no contest execution path is added.
+
+## Stream paper wallet
+
+```powershell
+node moloch/live.mjs 322 1011 runtime/moloch/live-stream-new 6 runtime/moloch/live-stopped runtime/moloch/screen-new/live-pairs.json --realtime
+```
+
+This keeps the same simulated cash, inventory, reservations, historical orders
+and deduplication state. One collector owns the stream authentication and REST
+queue. Pushed executions are evaluated against existing quotes before their newer
+book is applied. Different fractional timestamp serializations of the same
+execution deduplicate without changing legacy financial hashes; changed price,
+quantity or instant still stops the ledger.
+
+Observed SIG REST tape timestamps can be rounded to milliseconds while pushed
+executions retain sub-millisecond precision. Cross-feed duplicates use the same
+documented engine match ID, exact market/price/quantity and millisecond bucket;
+this tolerance applies only when the REST representation has no sub-millisecond
+component. Both original wire clocks remain in the evidence, and only a duplicate
+reuses its first verified representation. New executions retain their actual wire
+clock. Fine-precision disagreements, changed prices/quantities and different
+millisecond buckets still fail closed.
+
+On continuation the merge reconstructs first-observation facts from verified
+predecessor event chains and exact stored deduplication hashes. No stored financial
+hash or cash balance is rewritten. Preserve these ignored runtime journals: absent
+or altered provenance stops startup before any authentication request.
+
+Initial subscription and gaps block new admission until a scoped authoritative
+book and complete tape window spanning the invalidation arrive. Older REST books
+cannot replace newer pushes. A trade-tape request cannot refresh a book's clock.
+Pushed books age from their engine `asOf` clock, not their arrival time. Their
+quote-end barrier also uses that source clock, so delayed pushes cannot release
+cash merely by arriving later.
+
+Historical recovery now reads a post-end book before requesting its quote-window
+tape. While current continuity remains blocked, this authoritative book can form
+a financial checkpoint with `invalid: true`, which permits no new quote. Only
+matching complete coverage releases old funding. This corrects the first stream
+episode's stranded historical reservations without resetting its wallet.
+
+Local source bytes are archived with each new episode. Stream helper status is
+written atomically; explicit stream failures stop paper admission and drain the
+same collector rather than silently downgrading or refreshing its credential.
+The fill model remains strict one-tick-through with bounded participation; all
+fills are counterfactual, and realtime connectivity is not profitability evidence.
+
+The [October 13 carried-wallet stream test](results/sig-stream-wallet-20261013.json)
+records the initial reservation-ordering finding, the precision-conflict stop,
+and a corrected terminal run with both subscriptions verified, all predecessor
+orders retired, 12 REST reads, one authentication write, unchanged 1000.000000
+cash, four remaining modeled quotes and zero fills/profit. Reapplying 11 captured
+duplicates reconciled four precision differences without changing cash, realized
+PnL, fills or stored deduplication hashes. The next economic step is selecting
+markets from fresh tournament-wide flow rather than keeping two mostly quiet
+markets solely because an earlier short sample was active.
