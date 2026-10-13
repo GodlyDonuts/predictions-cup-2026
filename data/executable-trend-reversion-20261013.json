@@ -1,0 +1,6667 @@
+{
+  "schemaVersion": 1,
+  "id": "executable-trend-reversion-20261013-v1",
+  "generatedAt": "2026-10-13T10:18:35.884Z",
+  "source": {
+    "kind": "append-only validated public depth-20 book journal",
+    "path": "%LOCALAPPDATA%/SigTradingCup/paper-runtime/public-books.jsonl",
+    "sourceBytesObservedAtStart": 304199512,
+    "sealedPrefixBytes": 304199512,
+    "incompleteTailBytesExcluded": 0,
+    "sha256": "6ffdb9573748b44684dd7251c369eb434a2486273d38864c419e8d2ba57bd343",
+    "firstEventAt": "2026-10-02T12:03:36.744Z",
+    "cutoffAt": "2026-10-13T10:17:59.477Z",
+    "firstBookAt": "2026-10-02T12:04:20.362Z",
+    "lastBookAt": "2026-10-13T10:17:59.471Z",
+    "tournamentId": "bda92870-621e-47b0-bc3c-3602c5c26f55",
+    "scopeHash": "dad1ca43b7e5f5a1a130944a6034ea6a19a91f0106862fb1b3e2dbd36dd003c1",
+    "chainVerified": true,
+    "counts": {
+      "records": 131834,
+      "books": 129019,
+      "invalidations": 2402,
+      "sessions": 211,
+      "sessionStops": 202,
+      "duplicateSequence": 0
+    }
+  },
+  "replay": {
+    "splitRule": "first 70% of global captured book-time range for development, final 30% held out",
+    "splitAt": "2026-10-10T03:37:53.738Z",
+    "methodology": {
+      "decisionLatencyMs": 3000,
+      "lookbackMs": [
+        300000,
+        900000
+      ],
+      "holdingMs": [
+        300000,
+        900000,
+        3600000
+      ],
+      "decisionSpacingMs": 60000,
+      "maxLookbackDriftMs": 30000,
+      "maxBookAgeMs": 5000,
+      "maxEntryDelayMs": 30000,
+      "maxExitDelayMs": 30000,
+      "fees": "0.000000",
+      "sharesPerTrade": 1,
+      "entry": "first subsequent executable YES ask after decision latency",
+      "exit": "first executable YES bid at or after entry plus fixed hold",
+      "purgeMs": 4563000,
+      "strategyDefinitions": {
+        "trend": "enter YES only when trailing mid-price change is positive",
+        "reversion": "enter YES only when trailing mid-price change is negative",
+        "unconditional": "enter YES at every eligible decision"
+      },
+      "counterfactualOnly": true,
+      "profitabilityEstablished": false
+    },
+    "observations": {
+      "acceptedUniqueBooks": 129008,
+      "markets": 237,
+      "firstAt": "2026-10-02T12:04:20.362Z",
+      "lastAt": "2026-10-13T10:17:59.471Z",
+      "rejected": {
+        "invalid": 0,
+        "stale": 11,
+        "sourceTooOld": 11,
+        "sourceTooFarFuture": 0,
+        "duplicateSequence": 0
+      },
+      "acceptedSourceAgeMs": {
+        "count": 129008,
+        "p50": -5,
+        "p95": 967,
+        "max": 4699
+      },
+      "topOfBookQuantity": {
+        "unit": "shares at best price; replay trades one share only",
+        "bid": {
+          "count": 129008,
+          "p50": 3499,
+          "p95": 49332,
+          "max": 2517270,
+          "atLeast1": 129008,
+          "atLeast5": 128292,
+          "atLeast10": 127794
+        },
+        "ask": {
+          "count": 129008,
+          "p50": 3506,
+          "p95": 64496,
+          "max": 993889,
+          "atLeast1": 129008,
+          "atLeast5": 128111,
+          "atLeast10": 127477
+        }
+      },
+      "decisionsByPeriod": {
+        "development": 36694,
+        "heldout": 13325,
+        "purged": 0
+      }
+    },
+    "results": [
+      {
+        "period": "development",
+        "lookbackMs": 300000,
+        "holdingMs": 300000,
+        "rule": "reversion",
+        "decisions": 36694,
+        "signals": 2240,
+        "entered": 1550,
+        "completed": 1349,
+        "wins": 13,
+        "losses": 1216,
+        "flats": 120,
+        "winRate": 0.009636767976278725,
+        "totalNetPnlOneShare": -8.975,
+        "totalEntryCost": 687.355,
+        "meanNetPnlPerShare": -0.006653076352853966,
+        "medianNetPnlPerShare": -0.005,
+        "p10NetPnlPerShare": -0.01,
+        "p90NetPnlPerShare": -0.005,
+        "censoring": {
+          "noLookback": 15986,
+          "flatSignal": 16129,
+          "entryNoBook": 0,
+          "entryDelayExceeded": 656,
+          "entryDepthInsufficient": 0,
+          "exitNoBook": 0,
+          "exitDelayExceeded": 34,
+          "exitDepthInsufficient": 0,
+          "invalidation": 201
+        },
+        "byMarket": [
+          {
+            "marketId": "220",
+            "trades": 2,
+            "wins": 2,
+            "losses": 0,
+            "netPnlOneShare": 0.03,
+            "entryCost": 1.81
+          },
+          {
+            "marketId": "201",
+            "trades": 1,
+            "wins": 0,
+            "losses": 1,
+            "netPnlOneShare": -0.005,
+            "entryCost": 0.895
+          },
+          {
+            "marketId": "327",
+            "trades": 3,
+            "wins": 0,
+            "losses": 1,
+            "netPnlOneShare": -0.005,
+            "entryCost": 0.195
+          },
+          {
+            "marketId": "363",
+            "trades": 1,
+            "wins": 0,
+            "losses": 1,
+            "netPnlOneShare": -0.005,
+            "entryCost": 0.92
+          },
+          {
+            "marketId": "375",
+            "trades": 1,
+            "wins": 0,
+            "losses": 1,
+            "netPnlOneShare": -0.005,
+            "entryCost": 0.915
+          },
+          {
+            "marketId": "382",
+            "trades": 3,
+            "wins": 0,
+            "losses": 1,
+            "netPnlOneShare": -0.005,
+            "entryCost": 0.63
+          },
+          {
+            "marketId": "169",
+            "trades": 3,
+            "wins": 0,
+            "losses": 2,
+            "netPnlOneShare": -0.01,
+            "entryCost": 0.475
+          },
+          {
+            "marketId": "297",
+            "trades": 1,
+            "wins": 0,
+            "losses": 1,
+            "netPnlOneShare": -0.01,
+            "entryCost": 0.885
+          },
+          {
+            "marketId": "311",
+            "trades": 2,
+            "wins": 0,
+            "losses": 1,
+            "netPnlOneShare": -0.01,
+            "entryCost": 1.65
+          },
+          {
+            "marketId": "357",
+            "trades": 2,
+            "wins": 0,
+            "losses": 2,
+            "netPnlOneShare": -0.01,
+            "entryCost": 1.36
+          },
+          {
+            "marketId": "366",
+            "trades": 2,
+            "wins": 0,
+            "losses": 2,
+            "netPnlOneShare": -0.015,
+            "entryCost": 1.855
+          },
+          {
+            "marketId": "244",
+            "trades": 3,
+            "wins": 0,
+            "losses": 3,
+            "netPnlOneShare": -0.02,
+            "entryCost": 0.61
+          },
+          {
+            "marketId": "358",
+            "trades": 5,
+            "wins": 0,
+            "losses": 5,
+            "netPnlOneShare": -0.025,
+            "entryCost": 3.625
+          },
+          {
+            "marketId": "370",
+            "trades": 3,
+            "wins": 0,
+            "losses": 3,
+            "netPnlOneShare": -0.025,
+            "entryCost": 2.695
+          },
+          {
+            "marketId": "347",
+            "trades": 6,
+            "wins": 0,
+            "losses": 6,
+            "netPnlOneShare": -0.035,
+            "entryCost": 4.72
+          },
+          {
+            "marketId": "381",
+            "trades": 11,
+            "wins": 0,
+            "losses": 10,
+            "netPnlOneShare": -0.06,
+            "entryCost": 9.31
+          },
+          {
+            "marketId": "181",
+            "trades": 7,
+            "wins": 0,
+            "losses": 6,
+            "netPnlOneShare": -0.075,
+            "entryCost": 0.675
+          },
+          {
+            "marketId": "350",
+            "trades": 10,
+            "wins": 0,
+            "losses": 10,
+            "netPnlOneShare": -0.085,
+            "entryCost": 6.52
+          },
+          {
+            "marketId": "388",
+            "trades": 13,
+            "wins": 0,
+            "losses": 11,
+            "netPnlOneShare": -0.09,
+            "entryCost": 2.095
+          },
+          {
+            "marketId": "354",
+            "trades": 12,
+            "wins": 0,
+            "losses": 11,
+            "netPnlOneShare": -0.1,
+            "entryCost": 1.59
+          },
+          {
+            "marketId": "369",
+            "trades": 20,
+            "wins": 0,
+            "losses": 17,
+            "netPnlOneShare": -0.11,
+            "entryCost": 4.95
+          },
+          {
+            "marketId": "313",
+            "trades": 4,
+            "wins": 0,
+            "losses": 4,
+            "netPnlOneShare": -0.13,
+            "entryCost": 2.95
+          },
+          {
+            "marketId": "353",
+            "trades": 18,
+            "wins": 0,
+            "losses": 17,
+            "netPnlOneShare": -0.15,
+            "entryCost": 16.42
+          },
+          {
+            "marketId": "277",
+            "trades": 33,
+            "wins": 0,
+            "losses": 30,
+            "netPnlOneShare": -0.22,
+            "entryCost": 30.925
+          },
+          {
+            "marketId": "195",
+            "trades": 40,
+            "wins": 0,
+            "losses": 32,
+            "netPnlOneShare": -0.265,
+            "entryCost": 12.25
+          },
+          {
+            "marketId": "384",
+            "trades": 76,
+            "wins": 0,
+            "losses": 73,
+            "netPnlOneShare": -0.52,
+            "entryCost": 69.895
+          },
+          {
+            "marketId": "356",
+            "trades": 101,
+            "wins": 0,
+            "losses": 96,
+            "netPnlOneShare": -0.56,
+            "entryCost": 35.665
+          },
+          {
+            "marketId": "377",
+            "trades": 151,
+            "wins": 0,
+            "losses": 144,
+            "netPnlOneShare": -0.965,
+            "entryCost": 106.045
+          },
+          {
+            "marketId": "305",
+            "trades": 333,
+            "wins": 3,
+            "losses": 304,
+            "netPnlOneShare": -2.46,
+            "entryCost": 293.13
+          },
+          {
+            "marketId": "306",
+            "trades": 482,
+            "wins": 8,
+            "losses": 421,
+            "netPnlOneShare": -3.03,
+            "entryCost": 71.695
+          }
+        ],
+        "byUtcDay": [
+          {
+            "utcDay": "2026-10-02",
+            "trades": 97,
+            "wins": 3,
+            "losses": 78,
+            "netPnlOneShare": -0.855,
+            "entryCost": 58.97
+          },
+          {
+            "utcDay": "2026-10-03",
+            "trades": 21,
+            "wins": 0,
+            "losses": 20,
+            "netPnlOneShare": -0.175,
+            "entryCost": 12.51
+          },
+          {
+            "utcDay": "2026-10-04",
+            "trades": 13,
+            "wins": 0,
+            "losses": 10,
+            "netPnlOneShare": -0.07,
+            "entryCost": 9.305
+          },
+          {
+            "utcDay": "2026-10-05",
+            "trades": 53,
+            "wins": 2,
+            "losses": 48,
+            "netPnlOneShare": -0.26,
+            "entryCost": 16.21
+          },
+          {
+            "utcDay": "2026-10-06",
+            "trades": 395,
+            "wins": 4,
+            "losses": 357,
+            "netPnlOneShare": -2.46,
+            "entryCost": 152.645
+          },
+          {
+            "utcDay": "2026-10-07",
+            "trades": 311,
+            "wins": 0,
+            "losses": 275,
+            "netPnlOneShare": -1.935,
+            "entryCost": 209.89
+          },
+          {
+            "utcDay": "2026-10-08",
+            "trades": 258,
+            "wins": 1,
+            "losses": 244,
+            "netPnlOneShare": -1.825,
+            "entryCost": 123.615
+          },
+          {
+            "utcDay": "2026-10-09",
+            "trades": 201,
+            "wins": 3,
+            "losses": 184,
+            "netPnlOneShare": -1.395,
+            "entryCost": 104.21
+          }
+        ]
+      },
+      {
+        "period": "development",
+        "lookbackMs": 300000,
+        "holdingMs": 300000,
+        "rule": "trend",
+        "decisions": 36694,
+        "signals": 2339,
+        "entered": 1590,
+        "completed": 1339,
+        "wins": 4,
+        "losses": 1286,
+        "flats": 49,
+        "winRate": 0.002987303958177745,
+        "totalNetPnlOneShare": -9.89,
+        "totalEntryCost": 703.675,
+        "meanNetPnlPerShare": -0.007386109036594474,
+        "medianNetPnlPerShare": -0.005,
+        "p10NetPnlPerShare": -0.01,
+        "p90NetPnlPerShare": -0.005,
+        "censoring": {
+          "noLookback": 15986,
+          "flatSignal": 16129,
+          "entryNoBook": 0,
+          "entryDelayExceeded": 695,
+          "entryDepthInsufficient": 0,
+          "exitNoBook": 0,
+          "exitDelayExceeded": 44,
+          "exitDepthInsufficient": 0,
+          "invalidation": 261
+        },
+        "byMarket": [
+          {
+            "marketId": "291",
+            "trades": 1,
+            "wins": 0,
+            "losses": 0,
+            "netPnlOneShare": 0,
+            "entryCost": 0.08
+          },
+          {
+            "marketId": "345",
+            "trades": 1,
+            "wins": 0,
+            "losses": 1,
+            "netPnlOneShare": -0.005,
+            "entryCost": 0.76
+          },
+          {
+            "marketId": "382",
+            "trades": 1,
+            "wins": 0,
+            "losses": 1,
+            "netPnlOneShare": -0.005,
+            "entryCost": 0.235
+          },
+          {
+            "marketId": "244",
+            "trades": 2,
+            "wins": 0,
+            "losses": 2,
+            "netPnlOneShare": -0.01,
+            "entryCost": 0.41
+          },
+          {
+            "marketId": "363",
+            "trades": 1,
+            "wins": 0,
+            "losses": 1,
+            "netPnlOneShare": -0.01,
+            "entryCost": 0.925
+          },
+          {
+            "marketId": "226",
+            "trades": 1,
+            "wins": 0,
+            "losses": 1,
+            "netPnlOneShare": -0.015,
+            "entryCost": 0.095
+          },
+          {
+            "marketId": "224",
+            "trades": 1,
+            "wins": 0,
+            "losses": 1,
+            "netPnlOneShare": -0.02,
+            "entryCost": 0.645
+          },
+          {
+            "marketId": "169",
+            "trades": 5,
+            "wins": 0,
+            "losses": 5,
+            "netPnlOneShare": -0.025,
+            "entryCost": 0.8
+          },
+          {
+            "marketId": "220",
+            "trades": 5,
+            "wins": 0,
+            "losses": 5,
+            "netPnlOneShare": -0.025,
+            "entryCost": 4.625
+          },
+          {
+            "marketId": "381",
+            "trades": 3,
+            "wins": 0,
+            "losses": 3,
+            "netPnlOneShare": -0.025,
+            "entryCost": 2.465
+          },
+          {
+            "marketId": "327",
+            "trades": 10,
+            "wins": 0,
+            "losses": 7,
+            "netPnlOneShare": -0.045,
+            "entryCost": 0.7
+          },
+          {
+            "marketId": "370",
+            "trades": 7,
+            "wins": 0,
+            "losses": 6,
+            "netPnlOneShare": -0.045,
+            "entryCost": 6.305
+          },
+          {
+            "marketId": "347",
+            "trades": 11,
+            "wins": 0,
+            "losses": 10,
+            "netPnlOneShare": -0.05,
+            "entryCost": 8.735
+          },
+          {
+            "marketId": "297",
+            "trades": 9,
+            "wins": 0,
+            "losses": 9,
+            "netPnlOneShare": -0.055,
+            "entryCost": 8.16
+          },
+          {
+            "marketId": "350",
+            "trades": 7,
+            "wins": 0,
+            "losses": 7,
+            "netPnlOneShare": -0.055,
+            "entryCost": 4.575
+          },
+          {
+            "marketId": "313",
+            "trades": 2,
+            "wins": 0,
+            "losses": 2,
+            "netPnlOneShare": -0.07,
+            "entryCost": 1.465
+          },
+          {
+            "marketId": "354",
+            "trades": 11,
+            "wins": 0,
+            "losses": 11,
+            "netPnlOneShare": -0.085,
+            "entryCost": 1.45
+          },
+          {
+            "marketId": "353",
+            "trades": 12,
+            "wins": 0,
+            "losses": 12,
+            "netPnlOneShare": -0.11,
+            "entryCost": 11
+          },
+          {
+            "marketId": "388",
+            "trades": 16,
+            "wins": 0,
+            "losses": 11,
+            "netPnlOneShare": -0.125,
+            "entryCost": 2.6
+          },
+          {
+            "marketId": "369",
+            "trades": 16,
+            "wins": 0,
+            "losses": 15,
+            "netPnlOneShare": -0.13,
+            "entryCost": 4.01
+          },
+          {
+            "marketId": "181",
+            "trades": 16,
+            "wins": 1,
+            "losses": 14,
+            "netPnlOneShare": -0.165,
+            "entryCost": 1.56
+          },
+          {
+            "marketId": "277",
+            "trades": 44,
+            "wins": 0,
+            "losses": 43,
+            "netPnlOneShare": -0.355,
+            "entryCost": 41.4
+          },
+          {
+            "marketId": "195",
+            "trades": 60,
+            "wins": 0,
+            "losses": 60,
+            "netPnlOneShare": -0.39,
+            "entryCost": 18.35
+          },
+          {
+            "marketId": "384",
+            "trades": 86,
+            "wins": 0,
+            "losses": 86,
+            "netPnlOneShare": -0.57,
+            "entryCost": 79.335
+          },
+          {
+            "marketId": "356",
+            "trades": 104,
+            "wins": 0,
+            "losses": 100,
+            "netPnlOneShare": -0.71,
+            "entryCost": 37.17
+          },
+          {
+            "marketId": "377",
+            "trades": 128,
+            "wins": 1,
+            "losses": 119,
+            "netPnlOneShare": -0.825,
+            "entryCost": 90.855
+          },
+          {
+            "marketId": "305",
+            "trades": 351,
+            "wins": 0,
+            "losses": 342,
+            "netPnlOneShare": -2.605,
+            "entryCost": 309.755
+          },
+          {
+            "marketId": "306",
+            "trades": 428,
+            "wins": 2,
+            "losses": 412,
+            "netPnlOneShare": -3.36,
+            "entryCost": 65.21
+          }
+        ],
+        "byUtcDay": [
+          {
+            "utcDay": "2026-10-02",
+            "trades": 91,
+            "wins": 1,
+            "losses": 85,
+            "netPnlOneShare": -0.79,
+            "entryCost": 49.62
+          },
+          {
+            "utcDay": "2026-10-03",
+            "trades": 11,
+            "wins": 0,
+            "losses": 9,
+            "netPnlOneShare": -0.09,
+            "entryCost": 5.76
+          },
+          {
+            "utcDay": "2026-10-04",
+            "trades": 16,
+            "wins": 0,
+            "losses": 15,
+            "netPnlOneShare": -0.09,
+            "entryCost": 12.345
+          },
+          {
+            "utcDay": "2026-10-05",
+            "trades": 88,
+            "wins": 0,
+            "losses": 84,
+            "netPnlOneShare": -0.565,
+            "entryCost": 38.27
+          },
+          {
+            "utcDay": "2026-10-06",
+            "trades": 395,
+            "wins": 2,
+            "losses": 371,
+            "netPnlOneShare": -2.855,
+            "entryCost": 159.48
+          },
+          {
+            "utcDay": "2026-10-07",
+            "trades": 292,
+            "wins": 1,
+            "losses": 285,
+            "netPnlOneShare": -2.095,
+            "entryCost": 192.865
+          },
+          {
+            "utcDay": "2026-10-08",
+            "trades": 273,
+            "wins": 0,
+            "losses": 269,
+            "netPnlOneShare": -2.11,
+            "entryCost": 147.76
+          },
+          {
+            "utcDay": "2026-10-09",
+            "trades": 173,
+            "wins": 0,
+            "losses": 168,
+            "netPnlOneShare": -1.295,
+            "entryCost": 97.575
+          }
+        ]
+      },
+      {
+        "period": "development",
+        "lookbackMs": 300000,
+        "holdingMs": 300000,
+        "rule": "unconditional",
+        "decisions": 36694,
+        "signals": 20708,
+        "entered": 15173,
+        "completed": 13044,
+        "wins": 36,
+        "losses": 12631,
+        "flats": 377,
+        "winRate": 0.0027598896044158236,
+        "totalNetPnlOneShare": -82.05,
+        "totalEntryCost": 7578.045,
+        "meanNetPnlPerShare": -0.0062902483900643975,
+        "medianNetPnlPerShare": -0.005,
+        "p10NetPnlPerShare": -0.01,
+        "p90NetPnlPerShare": -0.005,
+        "censoring": {
+          "noLookback": 15986,
+          "flatSignal": 0,
+          "entryNoBook": 0,
+          "entryDelayExceeded": 5251,
+          "entryDepthInsufficient": 0,
+          "exitNoBook": 0,
+          "exitDelayExceeded": 268,
+          "exitDepthInsufficient": 0,
+          "invalidation": 2145
+        },
+        "byMarket": [
+          {
+            "marketId": "291",
+            "trades": 1,
+            "wins": 0,
+            "losses": 0,
+            "netPnlOneShare": 0,
+            "entryCost": 0.08
+          },
+          {
+            "marketId": "220",
+            "trades": 11,
+            "wins": 3,
+            "losses": 8,
+            "netPnlOneShare": -0.005,
+            "entryCost": 10.125
+          },
+          {
+            "marketId": "268",
+            "trades": 1,
+            "wins": 0,
+            "losses": 1,
+            "netPnlOneShare": -0.005,
+            "entryCost": 0.105
+          },
+          {
+            "marketId": "223",
+            "trades": 1,
+            "wins": 0,
+            "losses": 1,
+            "netPnlOneShare": -0.01,
+            "entryCost": 0.345
+          },
+          {
+            "marketId": "311",
+            "trades": 3,
+            "wins": 0,
+            "losses": 1,
+            "netPnlOneShare": -0.01,
+            "entryCost": 2.47
+          },
+          {
+            "marketId": "176",
+            "trades": 1,
+            "wins": 0,
+            "losses": 1,
+            "netPnlOneShare": -0.015,
+            "entryCost": 0.94
+          },
+          {
+            "marketId": "226",
+            "trades": 1,
+            "wins": 0,
+            "losses": 1,
+            "netPnlOneShare": -0.015,
+            "entryCost": 0.095
+          },
+          {
+            "marketId": "336",
+            "trades": 3,
+            "wins": 0,
+            "losses": 3,
+            "netPnlOneShare": -0.015,
+            "entryCost": 2.58
+          },
+          {
+            "marketId": "221",
+            "trades": 4,
+            "wins": 0,
+            "losses": 4,
+            "netPnlOneShare": -0.02,
+            "entryCost": 1.52
+          },
+          {
+            "marketId": "224",
+            "trades": 2,
+            "wins": 0,
+            "losses": 2,
+            "netPnlOneShare": -0.025,
+            "entryCost": 1.315
+          },
+          {
+            "marketId": "308",
+            "trades": 5,
+            "wins": 0,
+            "losses": 5,
+            "netPnlOneShare": -0.025,
+            "entryCost": 0.425
+          },
+          {
+            "marketId": "310",
+            "trades": 6,
+            "wins": 0,
+            "losses": 6,
+            "netPnlOneShare": -0.03,
+            "entryCost": 0.51
+          },
+          {
+            "marketId": "203",
+            "trades": 3,
+            "wins": 0,
+            "losses": 3,
+            "netPnlOneShare": -0.035,
+            "entryCost": 2.685
+          },
+          {
+            "marketId": "363",
+            "trades": 5,
+            "wins": 0,
+            "losses": 5,
+            "netPnlOneShare": -0.035,
+            "entryCost": 4.61
+          },
+          {
+            "marketId": "219",
+            "trades": 9,
+            "wins": 0,
+            "losses": 9,
+            "netPnlOneShare": -0.045,
+            "entryCost": 0.63
+          },
+          {
+            "marketId": "366",
+            "trades": 8,
+            "wins": 0,
+            "losses": 8,
+            "netPnlOneShare": -0.05,
+            "entryCost": 7.43
+          },
+          {
+            "marketId": "375",
+            "trades": 9,
+            "wins": 0,
+            "losses": 9,
+            "netPnlOneShare": -0.05,
+            "entryCost": 8.235
+          },
+          {
+            "marketId": "357",
+            "trades": 10,
+            "wins": 0,
+            "losses": 10,
+            "netPnlOneShare": -0.065,
+            "entryCost": 6.85
+          },
+          {
+            "marketId": "364",
+            "trades": 9,
+            "wins": 0,
+            "losses": 9,
+            "netPnlOneShare": -0.09,
+            "entryCost": 0.81
+          },
+          {
+            "marketId": "376",
+            "trades": 10,
+            "wins": 0,
+            "losses": 10,
+            "netPnlOneShare": -0.1,
+            "entryCost": 1
+          },
+          {
+            "marketId": "382",
+            "trades": 23,
+            "wins": 0,
+            "losses": 21,
+            "netPnlOneShare": -0.105,
+            "entryCost": 4.705
+          },
+          {
+            "marketId": "347",
+            "trades": 25,
+            "wins": 0,
+            "losses": 21,
+            "netPnlOneShare": -0.115,
+            "entryCost": 19.785
+          },
+          {
+            "marketId": "370",
+            "trades": 15,
+            "wins": 0,
+            "losses": 14,
+            "netPnlOneShare": -0.115,
+            "entryCost": 13.505
+          },
+          {
+            "marketId": "169",
+            "trades": 39,
+            "wins": 0,
+            "losses": 37,
+            "netPnlOneShare": -0.185,
+            "entryCost": 6.175
+          },
+          {
+            "marketId": "313",
+            "trades": 6,
+            "wins": 0,
+            "losses": 6,
+            "netPnlOneShare": -0.2,
+            "entryCost": 4.415
+          },
+          {
+            "marketId": "244",
+            "trades": 46,
+            "wins": 1,
+            "losses": 41,
+            "netPnlOneShare": -0.205,
+            "entryCost": 9.3
+          },
+          {
+            "marketId": "345",
+            "trades": 43,
+            "wins": 0,
+            "losses": 43,
+            "netPnlOneShare": -0.215,
+            "entryCost": 32.68
+          },
+          {
+            "marketId": "201",
+            "trades": 45,
+            "wins": 0,
+            "losses": 45,
+            "netPnlOneShare": -0.23,
+            "entryCost": 40.275
+          },
+          {
+            "marketId": "358",
+            "trades": 42,
+            "wins": 0,
+            "losses": 42,
+            "netPnlOneShare": -0.235,
+            "entryCost": 30.53
+          },
+          {
+            "marketId": "327",
+            "trades": 63,
+            "wins": 0,
+            "losses": 55,
+            "netPnlOneShare": -0.29,
+            "entryCost": 4.44
+          },
+          {
+            "marketId": "350",
+            "trades": 42,
+            "wins": 0,
+            "losses": 40,
+            "netPnlOneShare": -0.325,
+            "entryCost": 27.42
+          },
+          {
+            "marketId": "369",
+            "trades": 52,
+            "wins": 1,
+            "losses": 46,
+            "netPnlOneShare": -0.38,
+            "entryCost": 12.965
+          },
+          {
+            "marketId": "381",
+            "trades": 69,
+            "wins": 0,
+            "losses": 68,
+            "netPnlOneShare": -0.385,
+            "entryCost": 58.885
+          },
+          {
+            "marketId": "353",
+            "trades": 48,
+            "wins": 0,
+            "losses": 47,
+            "netPnlOneShare": -0.44,
+            "entryCost": 43.875
+          },
+          {
+            "marketId": "181",
+            "trades": 53,
+            "wins": 1,
+            "losses": 49,
+            "netPnlOneShare": -0.57,
+            "entryCost": 5.21
+          },
+          {
+            "marketId": "388",
+            "trades": 96,
+            "wins": 0,
+            "losses": 89,
+            "netPnlOneShare": -0.61,
+            "entryCost": 15.93
+          },
+          {
+            "marketId": "297",
+            "trades": 227,
+            "wins": 0,
+            "losses": 223,
+            "netPnlOneShare": -1.195,
+            "entryCost": 206.165
+          },
+          {
+            "marketId": "354",
+            "trades": 603,
+            "wins": 0,
+            "losses": 598,
+            "netPnlOneShare": -3.225,
+            "entryCost": 119.765
+          },
+          {
+            "marketId": "195",
+            "trades": 768,
+            "wins": 0,
+            "losses": 739,
+            "netPnlOneShare": -4.08,
+            "entryCost": 228.61
+          },
+          {
+            "marketId": "277",
+            "trades": 590,
+            "wins": 0,
+            "losses": 585,
+            "netPnlOneShare": -4.335,
+            "entryCost": 560.055
+          },
+          {
+            "marketId": "356",
+            "trades": 931,
+            "wins": 3,
+            "losses": 892,
+            "netPnlOneShare": -5.19,
+            "entryCost": 329.26
+          },
+          {
+            "marketId": "384",
+            "trades": 1458,
+            "wins": 0,
+            "losses": 1449,
+            "netPnlOneShare": -9.38,
+            "entryCost": 1346.135
+          },
+          {
+            "marketId": "377",
+            "trades": 2077,
+            "wins": 8,
+            "losses": 2023,
+            "netPnlOneShare": -11.31,
+            "entryCost": 1478.525
+          },
+          {
+            "marketId": "306",
+            "trades": 2726,
+            "wins": 14,
+            "losses": 2591,
+            "netPnlOneShare": -18.48,
+            "entryCost": 403.54
+          },
+          {
+            "marketId": "305",
+            "trades": 2855,
+            "wins": 5,
+            "losses": 2771,
+            "netPnlOneShare": -19.605,
+            "entryCost": 2523.135
+          }
+        ],
+        "byUtcDay": [
+          {
+            "utcDay": "2026-10-02",
+            "trades": 407,
+            "wins": 6,
+            "losses": 375,
+            "netPnlOneShare": -3.4,
+            "entryCost": 233.45
+          },
+          {
+            "utcDay": "2026-10-03",
+            "trades": 95,
+            "wins": 0,
+            "losses": 88,
+            "netPnlOneShare": -0.825,
+            "entryCost": 51.265
+          },
+          {
+            "utcDay": "2026-10-04",
+            "trades": 71,
+            "wins": 0,
+            "losses": 63,
+            "netPnlOneShare": -0.425,
+            "entryCost": 51.78
+          },
+          {
+            "utcDay": "2026-10-05",
+            "trades": 1028,
+            "wins": 4,
+            "losses": 992,
+            "netPnlOneShare": -5.42,
+            "entryCost": 467.245
+          },
+          {
+            "utcDay": "2026-10-06",
+            "trades": 2725,
+            "wins": 14,
+            "losses": 2595,
+            "netPnlOneShare": -16,
+            "entryCost": 1139.92
+          },
+          {
+            "utcDay": "2026-10-07",
+            "trades": 2801,
+            "wins": 6,
+            "losses": 2677,
+            "netPnlOneShare": -16.405,
+            "entryCost": 1899.475
+          },
+          {
+            "utcDay": "2026-10-08",
+            "trades": 3378,
+            "wins": 3,
+            "losses": 3340,
+            "netPnlOneShare": -22.785,
+            "entryCost": 2258.72
+          },
+          {
+            "utcDay": "2026-10-09",
+            "trades": 2539,
+            "wins": 3,
+            "losses": 2501,
+            "netPnlOneShare": -16.79,
+            "entryCost": 1476.19
+          }
+        ]
+      },
+      {
+        "period": "development",
+        "lookbackMs": 300000,
+        "holdingMs": 900000,
+        "rule": "reversion",
+        "decisions": 36694,
+        "signals": 2240,
+        "entered": 1550,
+        "completed": 1036,
+        "wins": 21,
+        "losses": 870,
+        "flats": 145,
+        "winRate": 0.02027027027027027,
+        "totalNetPnlOneShare": -6.795,
+        "totalEntryCost": 535.785,
+        "meanNetPnlPerShare": -0.006558880308880309,
+        "medianNetPnlPerShare": -0.005,
+        "p10NetPnlPerShare": -0.01,
+        "p90NetPnlPerShare": 0,
+        "censoring": {
+          "noLookback": 15986,
+          "flatSignal": 16129,
+          "entryNoBook": 0,
+          "entryDelayExceeded": 656,
+          "entryDepthInsufficient": 0,
+          "exitNoBook": 0,
+          "exitDelayExceeded": 38,
+          "exitDepthInsufficient": 0,
+          "invalidation": 510
+        },
+        "byMarket": [
+          {
+            "marketId": "220",
+            "trades": 2,
+            "wins": 2,
+            "losses": 0,
+            "netPnlOneShare": 0.03,
+            "entryCost": 1.81
+          },
+          {
+            "marketId": "327",
+            "trades": 1,
+            "wins": 1,
+            "losses": 0,
+            "netPnlOneShare": 0.005,
+            "entryCost": 0.065
+          },
+          {
+            "marketId": "347",
+            "trades": 2,
+            "wins": 1,
+            "losses": 0,
+            "netPnlOneShare": 0.005,
+            "entryCost": 1.58
+          },
+          {
+            "marketId": "169",
+            "trades": 1,
+            "wins": 0,
+            "losses": 0,
+            "netPnlOneShare": 0,
+            "entryCost": 0.155
+          },
+          {
+            "marketId": "382",
+            "trades": 1,
+            "wins": 0,
+            "losses": 0,
+            "netPnlOneShare": 0,
+            "entryCost": 0.22
+          },
+          {
+            "marketId": "201",
+            "trades": 1,
+            "wins": 0,
+            "losses": 1,
+            "netPnlOneShare": -0.005,
+            "entryCost": 0.895
+          },
+          {
+            "marketId": "244",
+            "trades": 1,
+            "wins": 0,
+            "losses": 1,
+            "netPnlOneShare": -0.01,
+            "entryCost": 0.21
+          },
+          {
+            "marketId": "381",
+            "trades": 2,
+            "wins": 0,
+            "losses": 1,
+            "netPnlOneShare": -0.01,
+            "entryCost": 1.615
+          },
+          {
+            "marketId": "311",
+            "trades": 2,
+            "wins": 0,
+            "losses": 2,
+            "netPnlOneShare": -0.02,
+            "entryCost": 1.65
+          },
+          {
+            "marketId": "358",
+            "trades": 5,
+            "wins": 0,
+            "losses": 5,
+            "netPnlOneShare": -0.025,
+            "entryCost": 3.625
+          },
+          {
+            "marketId": "370",
+            "trades": 4,
+            "wins": 0,
+            "losses": 4,
+            "netPnlOneShare": -0.03,
+            "entryCost": 3.59
+          },
+          {
+            "marketId": "181",
+            "trades": 5,
+            "wins": 0,
+            "losses": 3,
+            "netPnlOneShare": -0.04,
+            "entryCost": 0.475
+          },
+          {
+            "marketId": "350",
+            "trades": 7,
+            "wins": 0,
+            "losses": 6,
+            "netPnlOneShare": -0.045,
+            "entryCost": 4.565
+          },
+          {
+            "marketId": "354",
+            "trades": 8,
+            "wins": 0,
+            "losses": 8,
+            "netPnlOneShare": -0.05,
+            "entryCost": 1.05
+          },
+          {
+            "marketId": "353",
+            "trades": 10,
+            "wins": 0,
+            "losses": 7,
+            "netPnlOneShare": -0.075,
+            "entryCost": 9.13
+          },
+          {
+            "marketId": "388",
+            "trades": 9,
+            "wins": 0,
+            "losses": 9,
+            "netPnlOneShare": -0.08,
+            "entryCost": 1.44
+          },
+          {
+            "marketId": "195",
+            "trades": 23,
+            "wins": 0,
+            "losses": 21,
+            "netPnlOneShare": -0.12,
+            "entryCost": 7.075
+          },
+          {
+            "marketId": "313",
+            "trades": 4,
+            "wins": 0,
+            "losses": 4,
+            "netPnlOneShare": -0.13,
+            "entryCost": 2.95
+          },
+          {
+            "marketId": "369",
+            "trades": 18,
+            "wins": 1,
+            "losses": 15,
+            "netPnlOneShare": -0.13,
+            "entryCost": 4.46
+          },
+          {
+            "marketId": "277",
+            "trades": 31,
+            "wins": 0,
+            "losses": 28,
+            "netPnlOneShare": -0.225,
+            "entryCost": 29.115
+          },
+          {
+            "marketId": "356",
+            "trades": 64,
+            "wins": 3,
+            "losses": 44,
+            "netPnlOneShare": -0.245,
+            "entryCost": 22.6
+          },
+          {
+            "marketId": "384",
+            "trades": 70,
+            "wins": 0,
+            "losses": 57,
+            "netPnlOneShare": -0.44,
+            "entryCost": 64.375
+          },
+          {
+            "marketId": "377",
+            "trades": 127,
+            "wins": 1,
+            "losses": 108,
+            "netPnlOneShare": -0.79,
+            "entryCost": 89.525
+          },
+          {
+            "marketId": "305",
+            "trades": 258,
+            "wins": 3,
+            "losses": 232,
+            "netPnlOneShare": -2.04,
+            "entryCost": 227.18
+          },
+          {
+            "marketId": "306",
+            "trades": 380,
+            "wins": 9,
+            "losses": 314,
+            "netPnlOneShare": -2.325,
+            "entryCost": 56.43
+          }
+        ],
+        "byUtcDay": [
+          {
+            "utcDay": "2026-10-02",
+            "trades": 89,
+            "wins": 5,
+            "losses": 64,
+            "netPnlOneShare": -0.79,
+            "entryCost": 54.685
+          },
+          {
+            "utcDay": "2026-10-03",
+            "trades": 9,
+            "wins": 0,
+            "losses": 9,
+            "netPnlOneShare": -0.08,
+            "entryCost": 7.005
+          },
+          {
+            "utcDay": "2026-10-04",
+            "trades": 7,
+            "wins": 1,
+            "losses": 3,
+            "netPnlOneShare": -0.025,
+            "entryCost": 5.065
+          },
+          {
+            "utcDay": "2026-10-05",
+            "trades": 19,
+            "wins": 3,
+            "losses": 15,
+            "netPnlOneShare": -0.065,
+            "entryCost": 7.94
+          },
+          {
+            "utcDay": "2026-10-06",
+            "trades": 289,
+            "wins": 10,
+            "losses": 232,
+            "netPnlOneShare": -1.575,
+            "entryCost": 110.85
+          },
+          {
+            "utcDay": "2026-10-07",
+            "trades": 207,
+            "wins": 0,
+            "losses": 174,
+            "netPnlOneShare": -1.275,
+            "entryCost": 139.945
+          },
+          {
+            "utcDay": "2026-10-08",
+            "trades": 239,
+            "wins": 0,
+            "losses": 219,
+            "netPnlOneShare": -1.72,
+            "entryCost": 117.145
+          },
+          {
+            "utcDay": "2026-10-09",
+            "trades": 177,
+            "wins": 2,
+            "losses": 154,
+            "netPnlOneShare": -1.265,
+            "entryCost": 93.15
+          }
+        ]
+      },
+      {
+        "period": "development",
+        "lookbackMs": 300000,
+        "holdingMs": 900000,
+        "rule": "trend",
+        "decisions": 36694,
+        "signals": 2339,
+        "entered": 1590,
+        "completed": 1036,
+        "wins": 12,
+        "losses": 968,
+        "flats": 56,
+        "winRate": 0.011583011583011582,
+        "totalNetPnlOneShare": -8.03,
+        "totalEntryCost": 541.795,
+        "meanNetPnlPerShare": -0.007750965250965251,
+        "medianNetPnlPerShare": -0.01,
+        "p10NetPnlPerShare": -0.01,
+        "p90NetPnlPerShare": -0.005,
+        "censoring": {
+          "noLookback": 15986,
+          "flatSignal": 16129,
+          "entryNoBook": 0,
+          "entryDelayExceeded": 695,
+          "entryDepthInsufficient": 0,
+          "exitNoBook": 0,
+          "exitDelayExceeded": 31,
+          "exitDepthInsufficient": 0,
+          "invalidation": 577
+        },
+        "byMarket": [
+          {
+            "marketId": "347",
+            "trades": 3,
+            "wins": 0,
+            "losses": 0,
+            "netPnlOneShare": 0,
+            "entryCost": 2.385
+          },
+          {
+            "marketId": "297",
+            "trades": 1,
+            "wins": 0,
+            "losses": 1,
+            "netPnlOneShare": -0.005,
+            "entryCost": 0.91
+          },
+          {
+            "marketId": "327",
+            "trades": 3,
+            "wins": 0,
+            "losses": 1,
+            "netPnlOneShare": -0.005,
+            "entryCost": 0.205
+          },
+          {
+            "marketId": "345",
+            "trades": 1,
+            "wins": 0,
+            "losses": 1,
+            "netPnlOneShare": -0.005,
+            "entryCost": 0.76
+          },
+          {
+            "marketId": "363",
+            "trades": 1,
+            "wins": 0,
+            "losses": 1,
+            "netPnlOneShare": -0.01,
+            "entryCost": 0.925
+          },
+          {
+            "marketId": "203",
+            "trades": 1,
+            "wins": 0,
+            "losses": 1,
+            "netPnlOneShare": -0.015,
+            "entryCost": 0.895
+          },
+          {
+            "marketId": "244",
+            "trades": 3,
+            "wins": 0,
+            "losses": 3,
+            "netPnlOneShare": -0.015,
+            "entryCost": 0.615
+          },
+          {
+            "marketId": "313",
+            "trades": 2,
+            "wins": 1,
+            "losses": 1,
+            "netPnlOneShare": -0.025,
+            "entryCost": 1.44
+          },
+          {
+            "marketId": "350",
+            "trades": 6,
+            "wins": 0,
+            "losses": 5,
+            "netPnlOneShare": -0.045,
+            "entryCost": 3.92
+          },
+          {
+            "marketId": "370",
+            "trades": 7,
+            "wins": 1,
+            "losses": 4,
+            "netPnlOneShare": -0.05,
+            "entryCost": 6.305
+          },
+          {
+            "marketId": "388",
+            "trades": 9,
+            "wins": 0,
+            "losses": 9,
+            "netPnlOneShare": -0.095,
+            "entryCost": 1.465
+          },
+          {
+            "marketId": "353",
+            "trades": 10,
+            "wins": 0,
+            "losses": 10,
+            "netPnlOneShare": -0.105,
+            "entryCost": 9.15
+          },
+          {
+            "marketId": "354",
+            "trades": 11,
+            "wins": 0,
+            "losses": 11,
+            "netPnlOneShare": -0.135,
+            "entryCost": 1.51
+          },
+          {
+            "marketId": "181",
+            "trades": 16,
+            "wins": 0,
+            "losses": 13,
+            "netPnlOneShare": -0.145,
+            "entryCost": 1.56
+          },
+          {
+            "marketId": "369",
+            "trades": 13,
+            "wins": 1,
+            "losses": 11,
+            "netPnlOneShare": -0.145,
+            "entryCost": 3.285
+          },
+          {
+            "marketId": "195",
+            "trades": 43,
+            "wins": 0,
+            "losses": 40,
+            "netPnlOneShare": -0.25,
+            "entryCost": 13.185
+          },
+          {
+            "marketId": "277",
+            "trades": 39,
+            "wins": 0,
+            "losses": 37,
+            "netPnlOneShare": -0.285,
+            "entryCost": 36.815
+          },
+          {
+            "marketId": "384",
+            "trades": 59,
+            "wins": 0,
+            "losses": 57,
+            "netPnlOneShare": -0.43,
+            "entryCost": 54.4
+          },
+          {
+            "marketId": "356",
+            "trades": 83,
+            "wins": 2,
+            "losses": 77,
+            "netPnlOneShare": -0.555,
+            "entryCost": 29.705
+          },
+          {
+            "marketId": "377",
+            "trades": 104,
+            "wins": 1,
+            "losses": 95,
+            "netPnlOneShare": -0.72,
+            "entryCost": 74.15
+          },
+          {
+            "marketId": "305",
+            "trades": 279,
+            "wins": 0,
+            "losses": 274,
+            "netPnlOneShare": -2.195,
+            "entryCost": 246.43
+          },
+          {
+            "marketId": "306",
+            "trades": 342,
+            "wins": 6,
+            "losses": 316,
+            "netPnlOneShare": -2.795,
+            "entryCost": 51.78
+          }
+        ],
+        "byUtcDay": [
+          {
+            "utcDay": "2026-10-02",
+            "trades": 76,
+            "wins": 3,
+            "losses": 65,
+            "netPnlOneShare": -0.77,
+            "entryCost": 39.455
+          },
+          {
+            "utcDay": "2026-10-03",
+            "trades": 6,
+            "wins": 0,
+            "losses": 6,
+            "netPnlOneShare": -0.055,
+            "entryCost": 2.89
+          },
+          {
+            "utcDay": "2026-10-04",
+            "trades": 3,
+            "wins": 0,
+            "losses": 0,
+            "netPnlOneShare": 0,
+            "entryCost": 2.385
+          },
+          {
+            "utcDay": "2026-10-05",
+            "trades": 39,
+            "wins": 0,
+            "losses": 36,
+            "netPnlOneShare": -0.345,
+            "entryCost": 14.77
+          },
+          {
+            "utcDay": "2026-10-06",
+            "trades": 295,
+            "wins": 8,
+            "losses": 267,
+            "netPnlOneShare": -2.045,
+            "entryCost": 113.44
+          },
+          {
+            "utcDay": "2026-10-07",
+            "trades": 237,
+            "wins": 1,
+            "losses": 230,
+            "netPnlOneShare": -1.765,
+            "entryCost": 158.18
+          },
+          {
+            "utcDay": "2026-10-08",
+            "trades": 214,
+            "wins": 0,
+            "losses": 209,
+            "netPnlOneShare": -1.78,
+            "entryCost": 117.66
+          },
+          {
+            "utcDay": "2026-10-09",
+            "trades": 166,
+            "wins": 0,
+            "losses": 155,
+            "netPnlOneShare": -1.27,
+            "entryCost": 93.015
+          }
+        ]
+      },
+      {
+        "period": "development",
+        "lookbackMs": 300000,
+        "holdingMs": 900000,
+        "rule": "unconditional",
+        "decisions": 36694,
+        "signals": 20708,
+        "entered": 15173,
+        "completed": 10269,
+        "wins": 75,
+        "losses": 9643,
+        "flats": 551,
+        "winRate": 0.007303534910896874,
+        "totalNetPnlOneShare": -65.12,
+        "totalEntryCost": 6014.415,
+        "meanNetPnlPerShare": -0.00634141591196806,
+        "medianNetPnlPerShare": -0.005,
+        "p10NetPnlPerShare": -0.01,
+        "p90NetPnlPerShare": -0.005,
+        "censoring": {
+          "noLookback": 15986,
+          "flatSignal": 0,
+          "entryNoBook": 0,
+          "entryDelayExceeded": 5251,
+          "entryDepthInsufficient": 0,
+          "exitNoBook": 0,
+          "exitDelayExceeded": 275,
+          "exitDepthInsufficient": 0,
+          "invalidation": 4913
+        },
+        "byMarket": [
+          {
+            "marketId": "220",
+            "trades": 2,
+            "wins": 2,
+            "losses": 0,
+            "netPnlOneShare": 0.03,
+            "entryCost": 1.81
+          },
+          {
+            "marketId": "347",
+            "trades": 6,
+            "wins": 1,
+            "losses": 1,
+            "netPnlOneShare": 0,
+            "entryCost": 4.76
+          },
+          {
+            "marketId": "366",
+            "trades": 1,
+            "wins": 0,
+            "losses": 1,
+            "netPnlOneShare": -0.01,
+            "entryCost": 0.93
+          },
+          {
+            "marketId": "375",
+            "trades": 2,
+            "wins": 0,
+            "losses": 2,
+            "netPnlOneShare": -0.01,
+            "entryCost": 1.83
+          },
+          {
+            "marketId": "376",
+            "trades": 1,
+            "wins": 0,
+            "losses": 1,
+            "netPnlOneShare": -0.01,
+            "entryCost": 0.1
+          },
+          {
+            "marketId": "311",
+            "trades": 2,
+            "wins": 0,
+            "losses": 2,
+            "netPnlOneShare": -0.02,
+            "entryCost": 1.65
+          },
+          {
+            "marketId": "357",
+            "trades": 2,
+            "wins": 0,
+            "losses": 2,
+            "netPnlOneShare": -0.02,
+            "entryCost": 1.38
+          },
+          {
+            "marketId": "363",
+            "trades": 4,
+            "wins": 0,
+            "losses": 4,
+            "netPnlOneShare": -0.025,
+            "entryCost": 3.685
+          },
+          {
+            "marketId": "169",
+            "trades": 10,
+            "wins": 0,
+            "losses": 8,
+            "netPnlOneShare": -0.045,
+            "entryCost": 1.56
+          },
+          {
+            "marketId": "176",
+            "trades": 3,
+            "wins": 0,
+            "losses": 3,
+            "netPnlOneShare": -0.045,
+            "entryCost": 2.82
+          },
+          {
+            "marketId": "382",
+            "trades": 11,
+            "wins": 0,
+            "losses": 10,
+            "netPnlOneShare": -0.05,
+            "entryCost": 2.22
+          },
+          {
+            "marketId": "203",
+            "trades": 4,
+            "wins": 0,
+            "losses": 4,
+            "netPnlOneShare": -0.06,
+            "entryCost": 3.58
+          },
+          {
+            "marketId": "251",
+            "trades": 4,
+            "wins": 0,
+            "losses": 4,
+            "netPnlOneShare": -0.06,
+            "entryCost": 3.78
+          },
+          {
+            "marketId": "327",
+            "trades": 37,
+            "wins": 3,
+            "losses": 28,
+            "netPnlOneShare": -0.125,
+            "entryCost": 2.615
+          },
+          {
+            "marketId": "370",
+            "trades": 14,
+            "wins": 1,
+            "losses": 11,
+            "netPnlOneShare": -0.125,
+            "entryCost": 12.61
+          },
+          {
+            "marketId": "313",
+            "trades": 6,
+            "wins": 1,
+            "losses": 5,
+            "netPnlOneShare": -0.155,
+            "entryCost": 4.39
+          },
+          {
+            "marketId": "345",
+            "trades": 33,
+            "wins": 0,
+            "losses": 33,
+            "netPnlOneShare": -0.165,
+            "entryCost": 25.08
+          },
+          {
+            "marketId": "244",
+            "trades": 45,
+            "wins": 5,
+            "losses": 40,
+            "netPnlOneShare": -0.18,
+            "entryCost": 9.105
+          },
+          {
+            "marketId": "201",
+            "trades": 44,
+            "wins": 0,
+            "losses": 44,
+            "netPnlOneShare": -0.22,
+            "entryCost": 39.38
+          },
+          {
+            "marketId": "350",
+            "trades": 31,
+            "wins": 0,
+            "losses": 28,
+            "netPnlOneShare": -0.22,
+            "entryCost": 20.225
+          },
+          {
+            "marketId": "381",
+            "trades": 40,
+            "wins": 0,
+            "losses": 39,
+            "netPnlOneShare": -0.23,
+            "entryCost": 34.175
+          },
+          {
+            "marketId": "358",
+            "trades": 33,
+            "wins": 0,
+            "losses": 33,
+            "netPnlOneShare": -0.235,
+            "entryCost": 24.005
+          },
+          {
+            "marketId": "353",
+            "trades": 33,
+            "wins": 0,
+            "losses": 30,
+            "netPnlOneShare": -0.35,
+            "entryCost": 30.175
+          },
+          {
+            "marketId": "369",
+            "trades": 45,
+            "wins": 2,
+            "losses": 38,
+            "netPnlOneShare": -0.39,
+            "entryCost": 11.25
+          },
+          {
+            "marketId": "181",
+            "trades": 45,
+            "wins": 0,
+            "losses": 38,
+            "netPnlOneShare": -0.445,
+            "entryCost": 4.41
+          },
+          {
+            "marketId": "297",
+            "trades": 107,
+            "wins": 0,
+            "losses": 94,
+            "netPnlOneShare": -0.495,
+            "entryCost": 97.275
+          },
+          {
+            "marketId": "388",
+            "trades": 80,
+            "wins": 0,
+            "losses": 78,
+            "netPnlOneShare": -0.535,
+            "entryCost": 13.34
+          },
+          {
+            "marketId": "195",
+            "trades": 557,
+            "wins": 2,
+            "losses": 510,
+            "netPnlOneShare": -2.81,
+            "entryCost": 166.21
+          },
+          {
+            "marketId": "354",
+            "trades": 535,
+            "wins": 0,
+            "losses": 531,
+            "netPnlOneShare": -2.84,
+            "entryCost": 107.65
+          },
+          {
+            "marketId": "356",
+            "trades": 626,
+            "wins": 9,
+            "losses": 552,
+            "netPnlOneShare": -3.36,
+            "entryCost": 221.55
+          },
+          {
+            "marketId": "277",
+            "trades": 517,
+            "wins": 0,
+            "losses": 508,
+            "netPnlOneShare": -3.775,
+            "entryCost": 491.18
+          },
+          {
+            "marketId": "384",
+            "trades": 1179,
+            "wins": 0,
+            "losses": 1148,
+            "netPnlOneShare": -7.66,
+            "entryCost": 1088.71
+          },
+          {
+            "marketId": "377",
+            "trades": 1724,
+            "wins": 7,
+            "losses": 1643,
+            "netPnlOneShare": -9.75,
+            "entryCost": 1229.225
+          },
+          {
+            "marketId": "306",
+            "trades": 2191,
+            "wins": 30,
+            "losses": 2017,
+            "netPnlOneShare": -14.75,
+            "entryCost": 322.765
+          },
+          {
+            "marketId": "305",
+            "trades": 2295,
+            "wins": 12,
+            "losses": 2153,
+            "netPnlOneShare": -15.98,
+            "entryCost": 2028.985
+          }
+        ],
+        "byUtcDay": [
+          {
+            "utcDay": "2026-10-02",
+            "trades": 335,
+            "wins": 9,
+            "losses": 285,
+            "netPnlOneShare": -3.325,
+            "entryCost": 188.11
+          },
+          {
+            "utcDay": "2026-10-03",
+            "trades": 38,
+            "wins": 0,
+            "losses": 38,
+            "netPnlOneShare": -0.39,
+            "entryCost": 23.81
+          },
+          {
+            "utcDay": "2026-10-04",
+            "trades": 18,
+            "wins": 1,
+            "losses": 11,
+            "netPnlOneShare": -0.09,
+            "entryCost": 14.43
+          },
+          {
+            "utcDay": "2026-10-05",
+            "trades": 575,
+            "wins": 6,
+            "losses": 511,
+            "netPnlOneShare": -2.975,
+            "entryCost": 264.445
+          },
+          {
+            "utcDay": "2026-10-06",
+            "trades": 2029,
+            "wins": 44,
+            "losses": 1815,
+            "netPnlOneShare": -11.23,
+            "entryCost": 851.24
+          },
+          {
+            "utcDay": "2026-10-07",
+            "trades": 2126,
+            "wins": 11,
+            "losses": 1979,
+            "netPnlOneShare": -12.615,
+            "entryCost": 1439.465
+          },
+          {
+            "utcDay": "2026-10-08",
+            "trades": 2825,
+            "wins": 2,
+            "losses": 2753,
+            "netPnlOneShare": -19.21,
+            "entryCost": 1887.82
+          },
+          {
+            "utcDay": "2026-10-09",
+            "trades": 2323,
+            "wins": 2,
+            "losses": 2251,
+            "netPnlOneShare": -15.285,
+            "entryCost": 1345.095
+          }
+        ]
+      },
+      {
+        "period": "development",
+        "lookbackMs": 300000,
+        "holdingMs": 3600000,
+        "rule": "reversion",
+        "decisions": 36694,
+        "signals": 2240,
+        "entered": 1550,
+        "completed": 436,
+        "wins": 29,
+        "losses": 308,
+        "flats": 99,
+        "winRate": 0.06651376146788991,
+        "totalNetPnlOneShare": -2.33,
+        "totalEntryCost": 229.065,
+        "meanNetPnlPerShare": -0.0053440366972477065,
+        "medianNetPnlPerShare": -0.005,
+        "p10NetPnlPerShare": -0.01,
+        "p90NetPnlPerShare": 0,
+        "censoring": {
+          "noLookback": 15986,
+          "flatSignal": 16129,
+          "entryNoBook": 0,
+          "entryDelayExceeded": 656,
+          "entryDepthInsufficient": 0,
+          "exitNoBook": 0,
+          "exitDelayExceeded": 15,
+          "exitDepthInsufficient": 0,
+          "invalidation": 1133
+        },
+        "byMarket": [
+          {
+            "marketId": "356",
+            "trades": 5,
+            "wins": 5,
+            "losses": 0,
+            "netPnlOneShare": 0.045,
+            "entryCost": 1.755
+          },
+          {
+            "marketId": "354",
+            "trades": 5,
+            "wins": 1,
+            "losses": 1,
+            "netPnlOneShare": 0.005,
+            "entryCost": 0.65
+          },
+          {
+            "marketId": "369",
+            "trades": 2,
+            "wins": 0,
+            "losses": 0,
+            "netPnlOneShare": 0,
+            "entryCost": 0.5
+          },
+          {
+            "marketId": "382",
+            "trades": 1,
+            "wins": 0,
+            "losses": 0,
+            "netPnlOneShare": 0,
+            "entryCost": 0.195
+          },
+          {
+            "marketId": "195",
+            "trades": 6,
+            "wins": 0,
+            "losses": 5,
+            "netPnlOneShare": -0.025,
+            "entryCost": 1.835
+          },
+          {
+            "marketId": "277",
+            "trades": 15,
+            "wins": 0,
+            "losses": 15,
+            "netPnlOneShare": -0.095,
+            "entryCost": 14.25
+          },
+          {
+            "marketId": "384",
+            "trades": 30,
+            "wins": 0,
+            "losses": 24,
+            "netPnlOneShare": -0.145,
+            "entryCost": 27.61
+          },
+          {
+            "marketId": "377",
+            "trades": 73,
+            "wins": 8,
+            "losses": 48,
+            "netPnlOneShare": -0.4,
+            "entryCost": 51.7
+          },
+          {
+            "marketId": "306",
+            "trades": 181,
+            "wins": 12,
+            "losses": 126,
+            "netPnlOneShare": -0.83,
+            "entryCost": 26.275
+          },
+          {
+            "marketId": "305",
+            "trades": 118,
+            "wins": 3,
+            "losses": 89,
+            "netPnlOneShare": -0.885,
+            "entryCost": 104.295
+          }
+        ],
+        "byUtcDay": [
+          {
+            "utcDay": "2026-10-02",
+            "trades": 25,
+            "wins": 1,
+            "losses": 17,
+            "netPnlOneShare": -0.305,
+            "entryCost": 15.575
+          },
+          {
+            "utcDay": "2026-10-03",
+            "trades": 2,
+            "wins": 0,
+            "losses": 2,
+            "netPnlOneShare": -0.02,
+            "entryCost": 0.82
+          },
+          {
+            "utcDay": "2026-10-06",
+            "trades": 69,
+            "wins": 13,
+            "losses": 38,
+            "netPnlOneShare": -0.155,
+            "entryCost": 27.78
+          },
+          {
+            "utcDay": "2026-10-07",
+            "trades": 67,
+            "wins": 0,
+            "losses": 46,
+            "netPnlOneShare": -0.285,
+            "entryCost": 47.765
+          },
+          {
+            "utcDay": "2026-10-08",
+            "trades": 140,
+            "wins": 1,
+            "losses": 114,
+            "netPnlOneShare": -0.9,
+            "entryCost": 64.84
+          },
+          {
+            "utcDay": "2026-10-09",
+            "trades": 133,
+            "wins": 14,
+            "losses": 91,
+            "netPnlOneShare": -0.665,
+            "entryCost": 72.285
+          }
+        ]
+      },
+      {
+        "period": "development",
+        "lookbackMs": 300000,
+        "holdingMs": 3600000,
+        "rule": "trend",
+        "decisions": 36694,
+        "signals": 2339,
+        "entered": 1590,
+        "completed": 458,
+        "wins": 13,
+        "losses": 396,
+        "flats": 49,
+        "winRate": 0.028384279475982533,
+        "totalNetPnlOneShare": -3.185,
+        "totalEntryCost": 243.56,
+        "meanNetPnlPerShare": -0.006954148471615721,
+        "medianNetPnlPerShare": -0.005,
+        "p10NetPnlPerShare": -0.01,
+        "p90NetPnlPerShare": 0,
+        "censoring": {
+          "noLookback": 15986,
+          "flatSignal": 16129,
+          "entryNoBook": 0,
+          "entryDelayExceeded": 695,
+          "entryDepthInsufficient": 0,
+          "exitNoBook": 0,
+          "exitDelayExceeded": 20,
+          "exitDepthInsufficient": 0,
+          "invalidation": 1166
+        },
+        "byMarket": [
+          {
+            "marketId": "388",
+            "trades": 2,
+            "wins": 0,
+            "losses": 0,
+            "netPnlOneShare": 0,
+            "entryCost": 0.33
+          },
+          {
+            "marketId": "369",
+            "trades": 2,
+            "wins": 1,
+            "losses": 1,
+            "netPnlOneShare": -0.005,
+            "entryCost": 0.505
+          },
+          {
+            "marketId": "181",
+            "trades": 3,
+            "wins": 0,
+            "losses": 1,
+            "netPnlOneShare": -0.015,
+            "entryCost": 0.27
+          },
+          {
+            "marketId": "381",
+            "trades": 1,
+            "wins": 0,
+            "losses": 1,
+            "netPnlOneShare": -0.015,
+            "entryCost": 0.86
+          },
+          {
+            "marketId": "354",
+            "trades": 3,
+            "wins": 0,
+            "losses": 3,
+            "netPnlOneShare": -0.03,
+            "entryCost": 0.39
+          },
+          {
+            "marketId": "195",
+            "trades": 19,
+            "wins": 6,
+            "losses": 13,
+            "netPnlOneShare": -0.055,
+            "entryCost": 5.77
+          },
+          {
+            "marketId": "356",
+            "trades": 13,
+            "wins": 2,
+            "losses": 10,
+            "netPnlOneShare": -0.085,
+            "entryCost": 4.685
+          },
+          {
+            "marketId": "384",
+            "trades": 28,
+            "wins": 0,
+            "losses": 28,
+            "netPnlOneShare": -0.165,
+            "entryCost": 25.845
+          },
+          {
+            "marketId": "277",
+            "trades": 29,
+            "wins": 0,
+            "losses": 29,
+            "netPnlOneShare": -0.2,
+            "entryCost": 27.48
+          },
+          {
+            "marketId": "377",
+            "trades": 54,
+            "wins": 0,
+            "losses": 39,
+            "netPnlOneShare": -0.325,
+            "entryCost": 38.615
+          },
+          {
+            "marketId": "305",
+            "trades": 127,
+            "wins": 3,
+            "losses": 115,
+            "netPnlOneShare": -0.975,
+            "entryCost": 112.5
+          },
+          {
+            "marketId": "306",
+            "trades": 177,
+            "wins": 1,
+            "losses": 156,
+            "netPnlOneShare": -1.315,
+            "entryCost": 26.31
+          }
+        ],
+        "byUtcDay": [
+          {
+            "utcDay": "2026-10-02",
+            "trades": 20,
+            "wins": 1,
+            "losses": 17,
+            "netPnlOneShare": -0.205,
+            "entryCost": 11.62
+          },
+          {
+            "utcDay": "2026-10-03",
+            "trades": 1,
+            "wins": 0,
+            "losses": 1,
+            "netPnlOneShare": -0.005,
+            "entryCost": 0.655
+          },
+          {
+            "utcDay": "2026-10-05",
+            "trades": 3,
+            "wins": 0,
+            "losses": 3,
+            "netPnlOneShare": -0.045,
+            "entryCost": 1.08
+          },
+          {
+            "utcDay": "2026-10-06",
+            "trades": 80,
+            "wins": 9,
+            "losses": 56,
+            "netPnlOneShare": -0.425,
+            "entryCost": 24.65
+          },
+          {
+            "utcDay": "2026-10-07",
+            "trades": 74,
+            "wins": 3,
+            "losses": 63,
+            "netPnlOneShare": -0.415,
+            "entryCost": 47.765
+          },
+          {
+            "utcDay": "2026-10-08",
+            "trades": 143,
+            "wins": 0,
+            "losses": 141,
+            "netPnlOneShare": -1.205,
+            "entryCost": 78.69
+          },
+          {
+            "utcDay": "2026-10-09",
+            "trades": 137,
+            "wins": 0,
+            "losses": 115,
+            "netPnlOneShare": -0.885,
+            "entryCost": 79.1
+          }
+        ]
+      },
+      {
+        "period": "development",
+        "lookbackMs": 300000,
+        "holdingMs": 3600000,
+        "rule": "unconditional",
+        "decisions": 36694,
+        "signals": 20708,
+        "entered": 15173,
+        "completed": 4841,
+        "wins": 94,
+        "losses": 4313,
+        "flats": 434,
+        "winRate": 0.019417475728155338,
+        "totalNetPnlOneShare": -31.3,
+        "totalEntryCost": 2938.725,
+        "meanNetPnlPerShare": -0.006465606279694278,
+        "medianNetPnlPerShare": -0.005,
+        "p10NetPnlPerShare": -0.01,
+        "p90NetPnlPerShare": 0,
+        "censoring": {
+          "noLookback": 15986,
+          "flatSignal": 0,
+          "entryNoBook": 0,
+          "entryDelayExceeded": 5251,
+          "entryDepthInsufficient": 0,
+          "exitNoBook": 0,
+          "exitDelayExceeded": 82,
+          "exitDepthInsufficient": 0,
+          "invalidation": 10534
+        },
+        "byMarket": [
+          {
+            "marketId": "311",
+            "trades": 1,
+            "wins": 1,
+            "losses": 0,
+            "netPnlOneShare": 0.015,
+            "entryCost": 0.82
+          },
+          {
+            "marketId": "382",
+            "trades": 1,
+            "wins": 0,
+            "losses": 0,
+            "netPnlOneShare": 0,
+            "entryCost": 0.195
+          },
+          {
+            "marketId": "369",
+            "trades": 5,
+            "wins": 1,
+            "losses": 2,
+            "netPnlOneShare": -0.015,
+            "entryCost": 1.26
+          },
+          {
+            "marketId": "381",
+            "trades": 1,
+            "wins": 0,
+            "losses": 1,
+            "netPnlOneShare": -0.015,
+            "entryCost": 0.86
+          },
+          {
+            "marketId": "244",
+            "trades": 14,
+            "wins": 5,
+            "losses": 9,
+            "netPnlOneShare": -0.02,
+            "entryCost": 2.82
+          },
+          {
+            "marketId": "181",
+            "trades": 5,
+            "wins": 0,
+            "losses": 2,
+            "netPnlOneShare": -0.03,
+            "entryCost": 0.455
+          },
+          {
+            "marketId": "201",
+            "trades": 15,
+            "wins": 0,
+            "losses": 15,
+            "netPnlOneShare": -0.075,
+            "entryCost": 13.425
+          },
+          {
+            "marketId": "388",
+            "trades": 19,
+            "wins": 1,
+            "losses": 16,
+            "netPnlOneShare": -0.1,
+            "entryCost": 3.205
+          },
+          {
+            "marketId": "195",
+            "trades": 110,
+            "wins": 22,
+            "losses": 81,
+            "netPnlOneShare": -0.45,
+            "entryCost": 33.215
+          },
+          {
+            "marketId": "356",
+            "trades": 108,
+            "wins": 12,
+            "losses": 91,
+            "netPnlOneShare": -0.595,
+            "entryCost": 38.5
+          },
+          {
+            "marketId": "354",
+            "trades": 348,
+            "wins": 1,
+            "losses": 341,
+            "netPnlOneShare": -1.715,
+            "entryCost": 71.72
+          },
+          {
+            "marketId": "277",
+            "trades": 292,
+            "wins": 0,
+            "losses": 292,
+            "netPnlOneShare": -2.19,
+            "entryCost": 278.155
+          },
+          {
+            "marketId": "384",
+            "trades": 641,
+            "wins": 0,
+            "losses": 627,
+            "netPnlOneShare": -4.24,
+            "entryCost": 592.545
+          },
+          {
+            "marketId": "377",
+            "trades": 1015,
+            "wins": 13,
+            "losses": 882,
+            "netPnlOneShare": -6.32,
+            "entryCost": 725.305
+          },
+          {
+            "marketId": "305",
+            "trades": 1143,
+            "wins": 23,
+            "losses": 963,
+            "netPnlOneShare": -7.645,
+            "entryCost": 1012.73
+          },
+          {
+            "marketId": "306",
+            "trades": 1123,
+            "wins": 15,
+            "losses": 991,
+            "netPnlOneShare": -7.905,
+            "entryCost": 163.515
+          }
+        ],
+        "byUtcDay": [
+          {
+            "utcDay": "2026-10-02",
+            "trades": 99,
+            "wins": 2,
+            "losses": 84,
+            "netPnlOneShare": -1.675,
+            "entryCost": 62.51
+          },
+          {
+            "utcDay": "2026-10-03",
+            "trades": 4,
+            "wins": 0,
+            "losses": 4,
+            "netPnlOneShare": -0.03,
+            "entryCost": 2.37
+          },
+          {
+            "utcDay": "2026-10-04",
+            "trades": 1,
+            "wins": 1,
+            "losses": 0,
+            "netPnlOneShare": 0.015,
+            "entryCost": 0.82
+          },
+          {
+            "utcDay": "2026-10-05",
+            "trades": 27,
+            "wins": 0,
+            "losses": 19,
+            "netPnlOneShare": -0.145,
+            "entryCost": 10.52
+          },
+          {
+            "utcDay": "2026-10-06",
+            "trades": 480,
+            "wins": 46,
+            "losses": 349,
+            "netPnlOneShare": -2.215,
+            "entryCost": 204.915
+          },
+          {
+            "utcDay": "2026-10-07",
+            "trades": 690,
+            "wins": 21,
+            "losses": 560,
+            "netPnlOneShare": -3.435,
+            "entryCost": 452.16
+          },
+          {
+            "utcDay": "2026-10-08",
+            "trades": 1944,
+            "wins": 6,
+            "losses": 1870,
+            "netPnlOneShare": -13.77,
+            "entryCost": 1298.47
+          },
+          {
+            "utcDay": "2026-10-09",
+            "trades": 1596,
+            "wins": 18,
+            "losses": 1427,
+            "netPnlOneShare": -10.045,
+            "entryCost": 906.96
+          }
+        ]
+      },
+      {
+        "period": "development",
+        "lookbackMs": 900000,
+        "holdingMs": 300000,
+        "rule": "reversion",
+        "decisions": 36694,
+        "signals": 2616,
+        "entered": 1844,
+        "completed": 1577,
+        "wins": 10,
+        "losses": 1448,
+        "flats": 119,
+        "winRate": 0.0063411540900443885,
+        "totalNetPnlOneShare": -10.75,
+        "totalEntryCost": 834.26,
+        "meanNetPnlPerShare": -0.006816740646797717,
+        "medianNetPnlPerShare": -0.005,
+        "p10NetPnlPerShare": -0.01,
+        "p90NetPnlPerShare": -0.005,
+        "censoring": {
+          "noLookback": 20932,
+          "flatSignal": 10423,
+          "entryNoBook": 0,
+          "entryDelayExceeded": 735,
+          "entryDepthInsufficient": 0,
+          "exitNoBook": 0,
+          "exitDelayExceeded": 63,
+          "exitDepthInsufficient": 0,
+          "invalidation": 241
+        },
+        "byMarket": [
+          {
+            "marketId": "244",
+            "trades": 1,
+            "wins": 0,
+            "losses": 0,
+            "netPnlOneShare": 0,
+            "entryCost": 0.2
+          },
+          {
+            "marketId": "327",
+            "trades": 1,
+            "wins": 0,
+            "losses": 1,
+            "netPnlOneShare": -0.005,
+            "entryCost": 0.065
+          },
+          {
+            "marketId": "347",
+            "trades": 1,
+            "wins": 0,
+            "losses": 1,
+            "netPnlOneShare": -0.005,
+            "entryCost": 0.795
+          },
+          {
+            "marketId": "382",
+            "trades": 1,
+            "wins": 0,
+            "losses": 1,
+            "netPnlOneShare": -0.005,
+            "entryCost": 0.215
+          },
+          {
+            "marketId": "311",
+            "trades": 2,
+            "wins": 0,
+            "losses": 1,
+            "netPnlOneShare": -0.01,
+            "entryCost": 1.65
+          },
+          {
+            "marketId": "357",
+            "trades": 2,
+            "wins": 0,
+            "losses": 2,
+            "netPnlOneShare": -0.01,
+            "entryCost": 1.37
+          },
+          {
+            "marketId": "381",
+            "trades": 3,
+            "wins": 0,
+            "losses": 3,
+            "netPnlOneShare": -0.015,
+            "entryCost": 2.55
+          },
+          {
+            "marketId": "366",
+            "trades": 4,
+            "wins": 0,
+            "losses": 4,
+            "netPnlOneShare": -0.02,
+            "entryCost": 3.7
+          },
+          {
+            "marketId": "370",
+            "trades": 8,
+            "wins": 0,
+            "losses": 7,
+            "netPnlOneShare": -0.045,
+            "entryCost": 7.175
+          },
+          {
+            "marketId": "358",
+            "trades": 14,
+            "wins": 0,
+            "losses": 14,
+            "netPnlOneShare": -0.07,
+            "entryCost": 10.15
+          },
+          {
+            "marketId": "350",
+            "trades": 14,
+            "wins": 0,
+            "losses": 13,
+            "netPnlOneShare": -0.075,
+            "entryCost": 9.11
+          },
+          {
+            "marketId": "354",
+            "trades": 10,
+            "wins": 0,
+            "losses": 10,
+            "netPnlOneShare": -0.085,
+            "entryCost": 1.265
+          },
+          {
+            "marketId": "388",
+            "trades": 14,
+            "wins": 0,
+            "losses": 10,
+            "netPnlOneShare": -0.085,
+            "entryCost": 2.285
+          },
+          {
+            "marketId": "313",
+            "trades": 5,
+            "wins": 0,
+            "losses": 3,
+            "netPnlOneShare": -0.1,
+            "entryCost": 3.6
+          },
+          {
+            "marketId": "353",
+            "trades": 12,
+            "wins": 0,
+            "losses": 12,
+            "netPnlOneShare": -0.135,
+            "entryCost": 10.955
+          },
+          {
+            "marketId": "181",
+            "trades": 12,
+            "wins": 0,
+            "losses": 12,
+            "netPnlOneShare": -0.175,
+            "entryCost": 1.2
+          },
+          {
+            "marketId": "369",
+            "trades": 27,
+            "wins": 0,
+            "losses": 23,
+            "netPnlOneShare": -0.2,
+            "entryCost": 6.685
+          },
+          {
+            "marketId": "195",
+            "trades": 41,
+            "wins": 0,
+            "losses": 35,
+            "netPnlOneShare": -0.26,
+            "entryCost": 12.635
+          },
+          {
+            "marketId": "277",
+            "trades": 39,
+            "wins": 0,
+            "losses": 36,
+            "netPnlOneShare": -0.29,
+            "entryCost": 36.68
+          },
+          {
+            "marketId": "356",
+            "trades": 103,
+            "wins": 2,
+            "losses": 90,
+            "netPnlOneShare": -0.485,
+            "entryCost": 36.33
+          },
+          {
+            "marketId": "384",
+            "trades": 119,
+            "wins": 0,
+            "losses": 112,
+            "netPnlOneShare": -0.77,
+            "entryCost": 109.41
+          },
+          {
+            "marketId": "377",
+            "trades": 247,
+            "wins": 0,
+            "losses": 237,
+            "netPnlOneShare": -1.6,
+            "entryCost": 173.84
+          },
+          {
+            "marketId": "305",
+            "trades": 369,
+            "wins": 3,
+            "losses": 347,
+            "netPnlOneShare": -2.94,
+            "entryCost": 324.94
+          },
+          {
+            "marketId": "306",
+            "trades": 528,
+            "wins": 5,
+            "losses": 474,
+            "netPnlOneShare": -3.365,
+            "entryCost": 77.455
+          }
+        ],
+        "byUtcDay": [
+          {
+            "utcDay": "2026-10-02",
+            "trades": 111,
+            "wins": 3,
+            "losses": 88,
+            "netPnlOneShare": -0.905,
+            "entryCost": 70.665
+          },
+          {
+            "utcDay": "2026-10-03",
+            "trades": 27,
+            "wins": 0,
+            "losses": 26,
+            "netPnlOneShare": -0.3,
+            "entryCost": 9.395
+          },
+          {
+            "utcDay": "2026-10-04",
+            "trades": 4,
+            "wins": 0,
+            "losses": 3,
+            "netPnlOneShare": -0.02,
+            "entryCost": 2.66
+          },
+          {
+            "utcDay": "2026-10-05",
+            "trades": 38,
+            "wins": 0,
+            "losses": 38,
+            "netPnlOneShare": -0.21,
+            "entryCost": 11.68
+          },
+          {
+            "utcDay": "2026-10-06",
+            "trades": 387,
+            "wins": 4,
+            "losses": 342,
+            "netPnlOneShare": -2.27,
+            "entryCost": 156.72
+          },
+          {
+            "utcDay": "2026-10-07",
+            "trades": 333,
+            "wins": 0,
+            "losses": 304,
+            "netPnlOneShare": -2.035,
+            "entryCost": 225.065
+          },
+          {
+            "utcDay": "2026-10-08",
+            "trades": 378,
+            "wins": 1,
+            "losses": 363,
+            "netPnlOneShare": -2.765,
+            "entryCost": 201.075
+          },
+          {
+            "utcDay": "2026-10-09",
+            "trades": 299,
+            "wins": 2,
+            "losses": 284,
+            "netPnlOneShare": -2.245,
+            "entryCost": 157
+          }
+        ]
+      },
+      {
+        "period": "development",
+        "lookbackMs": 900000,
+        "holdingMs": 300000,
+        "rule": "trend",
+        "decisions": 36694,
+        "signals": 2723,
+        "entered": 1895,
+        "completed": 1638,
+        "wins": 4,
+        "losses": 1584,
+        "flats": 50,
+        "winRate": 0.002442002442002442,
+        "totalNetPnlOneShare": -11.795,
+        "totalEntryCost": 858.7,
+        "meanNetPnlPerShare": -0.007200854700854701,
+        "medianNetPnlPerShare": -0.005,
+        "p10NetPnlPerShare": -0.01,
+        "p90NetPnlPerShare": -0.005,
+        "censoring": {
+          "noLookback": 20932,
+          "flatSignal": 10423,
+          "entryNoBook": 0,
+          "entryDelayExceeded": 785,
+          "entryDepthInsufficient": 0,
+          "exitNoBook": 0,
+          "exitDelayExceeded": 43,
+          "exitDepthInsufficient": 0,
+          "invalidation": 257
+        },
+        "byMarket": [
+          {
+            "marketId": "311",
+            "trades": 1,
+            "wins": 0,
+            "losses": 0,
+            "netPnlOneShare": 0,
+            "entryCost": 0.82
+          },
+          {
+            "marketId": "169",
+            "trades": 1,
+            "wins": 0,
+            "losses": 1,
+            "netPnlOneShare": -0.005,
+            "entryCost": 0.16
+          },
+          {
+            "marketId": "220",
+            "trades": 1,
+            "wins": 0,
+            "losses": 1,
+            "netPnlOneShare": -0.005,
+            "entryCost": 0.925
+          },
+          {
+            "marketId": "347",
+            "trades": 4,
+            "wins": 0,
+            "losses": 1,
+            "netPnlOneShare": -0.005,
+            "entryCost": 3.18
+          },
+          {
+            "marketId": "381",
+            "trades": 1,
+            "wins": 0,
+            "losses": 1,
+            "netPnlOneShare": -0.005,
+            "entryCost": 0.8
+          },
+          {
+            "marketId": "345",
+            "trades": 2,
+            "wins": 0,
+            "losses": 2,
+            "netPnlOneShare": -0.01,
+            "entryCost": 1.52
+          },
+          {
+            "marketId": "363",
+            "trades": 1,
+            "wins": 0,
+            "losses": 1,
+            "netPnlOneShare": -0.01,
+            "entryCost": 0.925
+          },
+          {
+            "marketId": "244",
+            "trades": 6,
+            "wins": 0,
+            "losses": 6,
+            "netPnlOneShare": -0.03,
+            "entryCost": 1.23
+          },
+          {
+            "marketId": "327",
+            "trades": 8,
+            "wins": 0,
+            "losses": 5,
+            "netPnlOneShare": -0.03,
+            "entryCost": 0.565
+          },
+          {
+            "marketId": "313",
+            "trades": 1,
+            "wins": 0,
+            "losses": 1,
+            "netPnlOneShare": -0.035,
+            "entryCost": 0.735
+          },
+          {
+            "marketId": "369",
+            "trades": 8,
+            "wins": 0,
+            "losses": 7,
+            "netPnlOneShare": -0.05,
+            "entryCost": 2.01
+          },
+          {
+            "marketId": "370",
+            "trades": 6,
+            "wins": 0,
+            "losses": 6,
+            "netPnlOneShare": -0.05,
+            "entryCost": 5.43
+          },
+          {
+            "marketId": "388",
+            "trades": 12,
+            "wins": 0,
+            "losses": 8,
+            "netPnlOneShare": -0.05,
+            "entryCost": 1.925
+          },
+          {
+            "marketId": "297",
+            "trades": 10,
+            "wins": 0,
+            "losses": 10,
+            "netPnlOneShare": -0.055,
+            "entryCost": 9.12
+          },
+          {
+            "marketId": "353",
+            "trades": 7,
+            "wins": 0,
+            "losses": 7,
+            "netPnlOneShare": -0.065,
+            "entryCost": 6.405
+          },
+          {
+            "marketId": "350",
+            "trades": 13,
+            "wins": 0,
+            "losses": 12,
+            "netPnlOneShare": -0.11,
+            "entryCost": 8.51
+          },
+          {
+            "marketId": "354",
+            "trades": 20,
+            "wins": 0,
+            "losses": 19,
+            "netPnlOneShare": -0.165,
+            "entryCost": 2.655
+          },
+          {
+            "marketId": "181",
+            "trades": 26,
+            "wins": 0,
+            "losses": 25,
+            "netPnlOneShare": -0.29,
+            "entryCost": 2.59
+          },
+          {
+            "marketId": "277",
+            "trades": 61,
+            "wins": 0,
+            "losses": 61,
+            "netPnlOneShare": -0.4,
+            "entryCost": 57.49
+          },
+          {
+            "marketId": "384",
+            "trades": 86,
+            "wins": 0,
+            "losses": 86,
+            "netPnlOneShare": -0.585,
+            "entryCost": 79.335
+          },
+          {
+            "marketId": "195",
+            "trades": 92,
+            "wins": 0,
+            "losses": 88,
+            "netPnlOneShare": -0.6,
+            "entryCost": 28.21
+          },
+          {
+            "marketId": "356",
+            "trades": 127,
+            "wins": 0,
+            "losses": 124,
+            "netPnlOneShare": -0.825,
+            "entryCost": 45.47
+          },
+          {
+            "marketId": "377",
+            "trades": 164,
+            "wins": 1,
+            "losses": 159,
+            "netPnlOneShare": -1.055,
+            "entryCost": 117.08
+          },
+          {
+            "marketId": "305",
+            "trades": 455,
+            "wins": 0,
+            "losses": 449,
+            "netPnlOneShare": -3.42,
+            "entryCost": 402.14
+          },
+          {
+            "marketId": "306",
+            "trades": 525,
+            "wins": 3,
+            "losses": 504,
+            "netPnlOneShare": -3.94,
+            "entryCost": 79.47
+          }
+        ],
+        "byUtcDay": [
+          {
+            "utcDay": "2026-10-02",
+            "trades": 98,
+            "wins": 0,
+            "losses": 96,
+            "netPnlOneShare": -0.915,
+            "entryCost": 47.61
+          },
+          {
+            "utcDay": "2026-10-03",
+            "trades": 9,
+            "wins": 0,
+            "losses": 8,
+            "netPnlOneShare": -0.065,
+            "entryCost": 5.335
+          },
+          {
+            "utcDay": "2026-10-04",
+            "trades": 7,
+            "wins": 0,
+            "losses": 3,
+            "netPnlOneShare": -0.02,
+            "entryCost": 5.685
+          },
+          {
+            "utcDay": "2026-10-05",
+            "trades": 61,
+            "wins": 0,
+            "losses": 58,
+            "netPnlOneShare": -0.415,
+            "entryCost": 25.725
+          },
+          {
+            "utcDay": "2026-10-06",
+            "trades": 471,
+            "wins": 3,
+            "losses": 444,
+            "netPnlOneShare": -3.15,
+            "entryCost": 193.465
+          },
+          {
+            "utcDay": "2026-10-07",
+            "trades": 346,
+            "wins": 1,
+            "losses": 338,
+            "netPnlOneShare": -2.37,
+            "entryCost": 226.24
+          },
+          {
+            "utcDay": "2026-10-08",
+            "trades": 357,
+            "wins": 0,
+            "losses": 351,
+            "netPnlOneShare": -2.82,
+            "entryCost": 203.055
+          },
+          {
+            "utcDay": "2026-10-09",
+            "trades": 289,
+            "wins": 0,
+            "losses": 286,
+            "netPnlOneShare": -2.04,
+            "entryCost": 151.585
+          }
+        ]
+      },
+      {
+        "period": "development",
+        "lookbackMs": 900000,
+        "holdingMs": 300000,
+        "rule": "unconditional",
+        "decisions": 36694,
+        "signals": 15762,
+        "entered": 11855,
+        "completed": 10347,
+        "wins": 27,
+        "losses": 10017,
+        "flats": 303,
+        "winRate": 0.002609452015076834,
+        "totalNetPnlOneShare": -65.5,
+        "totalEntryCost": 6039.605,
+        "meanNetPnlPerShare": -0.006330337295834541,
+        "medianNetPnlPerShare": -0.005,
+        "p10NetPnlPerShare": -0.01,
+        "p90NetPnlPerShare": -0.005,
+        "censoring": {
+          "noLookback": 20932,
+          "flatSignal": 0,
+          "entryNoBook": 0,
+          "entryDelayExceeded": 3725,
+          "entryDepthInsufficient": 0,
+          "exitNoBook": 0,
+          "exitDelayExceeded": 206,
+          "exitDepthInsufficient": 0,
+          "invalidation": 1484
+        },
+        "byMarket": [
+          {
+            "marketId": "220",
+            "trades": 1,
+            "wins": 0,
+            "losses": 1,
+            "netPnlOneShare": -0.005,
+            "entryCost": 0.925
+          },
+          {
+            "marketId": "268",
+            "trades": 1,
+            "wins": 0,
+            "losses": 1,
+            "netPnlOneShare": -0.005,
+            "entryCost": 0.105
+          },
+          {
+            "marketId": "375",
+            "trades": 1,
+            "wins": 0,
+            "losses": 1,
+            "netPnlOneShare": -0.005,
+            "entryCost": 0.915
+          },
+          {
+            "marketId": "311",
+            "trades": 3,
+            "wins": 0,
+            "losses": 1,
+            "netPnlOneShare": -0.01,
+            "entryCost": 2.47
+          },
+          {
+            "marketId": "347",
+            "trades": 6,
+            "wins": 0,
+            "losses": 2,
+            "netPnlOneShare": -0.01,
+            "entryCost": 4.77
+          },
+          {
+            "marketId": "357",
+            "trades": 2,
+            "wins": 0,
+            "losses": 2,
+            "netPnlOneShare": -0.01,
+            "entryCost": 1.37
+          },
+          {
+            "marketId": "364",
+            "trades": 1,
+            "wins": 0,
+            "losses": 1,
+            "netPnlOneShare": -0.01,
+            "entryCost": 0.09
+          },
+          {
+            "marketId": "203",
+            "trades": 1,
+            "wins": 0,
+            "losses": 1,
+            "netPnlOneShare": -0.015,
+            "entryCost": 0.895
+          },
+          {
+            "marketId": "366",
+            "trades": 4,
+            "wins": 0,
+            "losses": 4,
+            "netPnlOneShare": -0.02,
+            "entryCost": 3.7
+          },
+          {
+            "marketId": "363",
+            "trades": 4,
+            "wins": 0,
+            "losses": 4,
+            "netPnlOneShare": -0.03,
+            "entryCost": 3.695
+          },
+          {
+            "marketId": "169",
+            "trades": 10,
+            "wins": 0,
+            "losses": 10,
+            "netPnlOneShare": -0.05,
+            "entryCost": 1.57
+          },
+          {
+            "marketId": "251",
+            "trades": 4,
+            "wins": 0,
+            "losses": 4,
+            "netPnlOneShare": -0.06,
+            "entryCost": 3.78
+          },
+          {
+            "marketId": "382",
+            "trades": 13,
+            "wins": 0,
+            "losses": 13,
+            "netPnlOneShare": -0.065,
+            "entryCost": 2.655
+          },
+          {
+            "marketId": "370",
+            "trades": 15,
+            "wins": 0,
+            "losses": 14,
+            "netPnlOneShare": -0.1,
+            "entryCost": 13.5
+          },
+          {
+            "marketId": "313",
+            "trades": 6,
+            "wins": 0,
+            "losses": 4,
+            "netPnlOneShare": -0.135,
+            "entryCost": 4.335
+          },
+          {
+            "marketId": "244",
+            "trades": 31,
+            "wins": 0,
+            "losses": 28,
+            "netPnlOneShare": -0.14,
+            "entryCost": 6.3
+          },
+          {
+            "marketId": "327",
+            "trades": 36,
+            "wins": 0,
+            "losses": 28,
+            "netPnlOneShare": -0.145,
+            "entryCost": 2.585
+          },
+          {
+            "marketId": "201",
+            "trades": 30,
+            "wins": 0,
+            "losses": 30,
+            "netPnlOneShare": -0.155,
+            "entryCost": 26.85
+          },
+          {
+            "marketId": "345",
+            "trades": 33,
+            "wins": 0,
+            "losses": 33,
+            "netPnlOneShare": -0.165,
+            "entryCost": 25.08
+          },
+          {
+            "marketId": "381",
+            "trades": 36,
+            "wins": 0,
+            "losses": 36,
+            "netPnlOneShare": -0.18,
+            "entryCost": 30.8
+          },
+          {
+            "marketId": "358",
+            "trades": 32,
+            "wins": 0,
+            "losses": 32,
+            "netPnlOneShare": -0.185,
+            "entryCost": 23.235
+          },
+          {
+            "marketId": "350",
+            "trades": 32,
+            "wins": 0,
+            "losses": 30,
+            "netPnlOneShare": -0.23,
+            "entryCost": 20.885
+          },
+          {
+            "marketId": "353",
+            "trades": 32,
+            "wins": 0,
+            "losses": 32,
+            "netPnlOneShare": -0.33,
+            "entryCost": 29.255
+          },
+          {
+            "marketId": "369",
+            "trades": 46,
+            "wins": 1,
+            "losses": 40,
+            "netPnlOneShare": -0.34,
+            "entryCost": 11.455
+          },
+          {
+            "marketId": "388",
+            "trades": 85,
+            "wins": 0,
+            "losses": 75,
+            "netPnlOneShare": -0.48,
+            "entryCost": 14.13
+          },
+          {
+            "marketId": "181",
+            "trades": 44,
+            "wins": 0,
+            "losses": 43,
+            "netPnlOneShare": -0.515,
+            "entryCost": 4.39
+          },
+          {
+            "marketId": "297",
+            "trades": 102,
+            "wins": 0,
+            "losses": 98,
+            "netPnlOneShare": -0.52,
+            "entryCost": 92.805
+          },
+          {
+            "marketId": "354",
+            "trades": 552,
+            "wins": 0,
+            "losses": 547,
+            "netPnlOneShare": -2.895,
+            "entryCost": 110.1
+          },
+          {
+            "marketId": "195",
+            "trades": 560,
+            "wins": 0,
+            "losses": 534,
+            "netPnlOneShare": -2.975,
+            "entryCost": 167.32
+          },
+          {
+            "marketId": "356",
+            "trades": 629,
+            "wins": 2,
+            "losses": 596,
+            "netPnlOneShare": -3.395,
+            "entryCost": 222.6
+          },
+          {
+            "marketId": "277",
+            "trades": 519,
+            "wins": 0,
+            "losses": 516,
+            "netPnlOneShare": -3.8,
+            "entryCost": 493.215
+          },
+          {
+            "marketId": "384",
+            "trades": 1187,
+            "wins": 0,
+            "losses": 1178,
+            "netPnlOneShare": -7.595,
+            "entryCost": 1096.045
+          },
+          {
+            "marketId": "377",
+            "trades": 1760,
+            "wins": 5,
+            "losses": 1722,
+            "netPnlOneShare": -9.67,
+            "entryCost": 1253.915
+          },
+          {
+            "marketId": "306",
+            "trades": 2227,
+            "wins": 14,
+            "losses": 2117,
+            "netPnlOneShare": -15.115,
+            "entryCost": 328.395
+          },
+          {
+            "marketId": "305",
+            "trades": 2302,
+            "wins": 5,
+            "losses": 2239,
+            "netPnlOneShare": -16.14,
+            "entryCost": 2035.47
+          }
+        ],
+        "byUtcDay": [
+          {
+            "utcDay": "2026-10-02",
+            "trades": 337,
+            "wins": 4,
+            "losses": 307,
+            "netPnlOneShare": -2.79,
+            "entryCost": 188.815
+          },
+          {
+            "utcDay": "2026-10-03",
+            "trades": 55,
+            "wins": 0,
+            "losses": 52,
+            "netPnlOneShare": -0.52,
+            "entryCost": 28.005
+          },
+          {
+            "utcDay": "2026-10-04",
+            "trades": 21,
+            "wins": 0,
+            "losses": 15,
+            "netPnlOneShare": -0.11,
+            "entryCost": 15.655
+          },
+          {
+            "utcDay": "2026-10-05",
+            "trades": 531,
+            "wins": 0,
+            "losses": 505,
+            "netPnlOneShare": -2.775,
+            "entryCost": 239.575
+          },
+          {
+            "utcDay": "2026-10-06",
+            "trades": 2045,
+            "wins": 14,
+            "losses": 1925,
+            "netPnlOneShare": -11.745,
+            "entryCost": 847.98
+          },
+          {
+            "utcDay": "2026-10-07",
+            "trades": 2139,
+            "wins": 5,
+            "losses": 2055,
+            "netPnlOneShare": -12.57,
+            "entryCost": 1440.325
+          },
+          {
+            "utcDay": "2026-10-08",
+            "trades": 2902,
+            "wins": 1,
+            "losses": 2871,
+            "netPnlOneShare": -19.72,
+            "entryCost": 1937.56
+          },
+          {
+            "utcDay": "2026-10-09",
+            "trades": 2317,
+            "wins": 3,
+            "losses": 2287,
+            "netPnlOneShare": -15.27,
+            "entryCost": 1341.69
+          }
+        ]
+      },
+      {
+        "period": "development",
+        "lookbackMs": 900000,
+        "holdingMs": 900000,
+        "rule": "reversion",
+        "decisions": 36694,
+        "signals": 2616,
+        "entered": 1844,
+        "completed": 1259,
+        "wins": 18,
+        "losses": 1095,
+        "flats": 146,
+        "winRate": 0.014297061159650517,
+        "totalNetPnlOneShare": -8.235,
+        "totalEntryCost": 671.035,
+        "meanNetPnlPerShare": -0.006540905480540111,
+        "medianNetPnlPerShare": -0.005,
+        "p10NetPnlPerShare": -0.01,
+        "p90NetPnlPerShare": 0,
+        "censoring": {
+          "noLookback": 20932,
+          "flatSignal": 10423,
+          "entryNoBook": 0,
+          "entryDelayExceeded": 735,
+          "entryDepthInsufficient": 0,
+          "exitNoBook": 0,
+          "exitDelayExceeded": 50,
+          "exitDepthInsufficient": 0,
+          "invalidation": 572
+        },
+        "byMarket": [
+          {
+            "marketId": "327",
+            "trades": 1,
+            "wins": 0,
+            "losses": 0,
+            "netPnlOneShare": 0,
+            "entryCost": 0.065
+          },
+          {
+            "marketId": "311",
+            "trades": 2,
+            "wins": 0,
+            "losses": 2,
+            "netPnlOneShare": -0.02,
+            "entryCost": 1.65
+          },
+          {
+            "marketId": "388",
+            "trades": 4,
+            "wins": 0,
+            "losses": 4,
+            "netPnlOneShare": -0.02,
+            "entryCost": 0.64
+          },
+          {
+            "marketId": "370",
+            "trades": 6,
+            "wins": 0,
+            "losses": 4,
+            "netPnlOneShare": -0.03,
+            "entryCost": 5.385
+          },
+          {
+            "marketId": "313",
+            "trades": 3,
+            "wins": 0,
+            "losses": 3,
+            "netPnlOneShare": -0.05,
+            "entryCost": 2.18
+          },
+          {
+            "marketId": "350",
+            "trades": 13,
+            "wins": 0,
+            "losses": 10,
+            "netPnlOneShare": -0.055,
+            "entryCost": 8.455
+          },
+          {
+            "marketId": "181",
+            "trades": 5,
+            "wins": 0,
+            "losses": 5,
+            "netPnlOneShare": -0.07,
+            "entryCost": 0.5
+          },
+          {
+            "marketId": "358",
+            "trades": 14,
+            "wins": 0,
+            "losses": 14,
+            "netPnlOneShare": -0.07,
+            "entryCost": 10.15
+          },
+          {
+            "marketId": "353",
+            "trades": 6,
+            "wins": 0,
+            "losses": 6,
+            "netPnlOneShare": -0.08,
+            "entryCost": 5.49
+          },
+          {
+            "marketId": "354",
+            "trades": 10,
+            "wins": 0,
+            "losses": 10,
+            "netPnlOneShare": -0.11,
+            "entryCost": 1.26
+          },
+          {
+            "marketId": "369",
+            "trades": 23,
+            "wins": 2,
+            "losses": 16,
+            "netPnlOneShare": -0.145,
+            "entryCost": 5.705
+          },
+          {
+            "marketId": "195",
+            "trades": 34,
+            "wins": 0,
+            "losses": 32,
+            "netPnlOneShare": -0.185,
+            "entryCost": 10.47
+          },
+          {
+            "marketId": "356",
+            "trades": 74,
+            "wins": 3,
+            "losses": 55,
+            "netPnlOneShare": -0.285,
+            "entryCost": 26.1
+          },
+          {
+            "marketId": "277",
+            "trades": 36,
+            "wins": 0,
+            "losses": 34,
+            "netPnlOneShare": -0.3,
+            "entryCost": 33.71
+          },
+          {
+            "marketId": "384",
+            "trades": 107,
+            "wins": 0,
+            "losses": 93,
+            "netPnlOneShare": -0.695,
+            "entryCost": 98.41
+          },
+          {
+            "marketId": "377",
+            "trades": 211,
+            "wins": 1,
+            "losses": 189,
+            "netPnlOneShare": -1.43,
+            "entryCost": 149.135
+          },
+          {
+            "marketId": "305",
+            "trades": 283,
+            "wins": 9,
+            "losses": 256,
+            "netPnlOneShare": -2.045,
+            "entryCost": 249.165
+          },
+          {
+            "marketId": "306",
+            "trades": 427,
+            "wins": 3,
+            "losses": 362,
+            "netPnlOneShare": -2.645,
+            "entryCost": 62.565
+          }
+        ],
+        "byUtcDay": [
+          {
+            "utcDay": "2026-10-02",
+            "trades": 104,
+            "wins": 6,
+            "losses": 79,
+            "netPnlOneShare": -0.87,
+            "entryCost": 64.12
+          },
+          {
+            "utcDay": "2026-10-03",
+            "trades": 4,
+            "wins": 0,
+            "losses": 4,
+            "netPnlOneShare": -0.05,
+            "entryCost": 0.43
+          },
+          {
+            "utcDay": "2026-10-04",
+            "trades": 2,
+            "wins": 0,
+            "losses": 2,
+            "netPnlOneShare": -0.02,
+            "entryCost": 1.65
+          },
+          {
+            "utcDay": "2026-10-05",
+            "trades": 17,
+            "wins": 0,
+            "losses": 16,
+            "netPnlOneShare": -0.08,
+            "entryCost": 5.665
+          },
+          {
+            "utcDay": "2026-10-06",
+            "trades": 286,
+            "wins": 11,
+            "losses": 228,
+            "netPnlOneShare": -1.37,
+            "entryCost": 119.125
+          },
+          {
+            "utcDay": "2026-10-07",
+            "trades": 238,
+            "wins": 0,
+            "losses": 206,
+            "netPnlOneShare": -1.48,
+            "entryCost": 158.62
+          },
+          {
+            "utcDay": "2026-10-08",
+            "trades": 335,
+            "wins": 0,
+            "losses": 306,
+            "netPnlOneShare": -2.315,
+            "entryCost": 176.85
+          },
+          {
+            "utcDay": "2026-10-09",
+            "trades": 273,
+            "wins": 1,
+            "losses": 254,
+            "netPnlOneShare": -2.05,
+            "entryCost": 144.575
+          }
+        ]
+      },
+      {
+        "period": "development",
+        "lookbackMs": 900000,
+        "holdingMs": 900000,
+        "rule": "trend",
+        "decisions": 36694,
+        "signals": 2723,
+        "entered": 1895,
+        "completed": 1326,
+        "wins": 9,
+        "losses": 1253,
+        "flats": 64,
+        "winRate": 0.006787330316742082,
+        "totalNetPnlOneShare": -9.765,
+        "totalEntryCost": 698.7,
+        "meanNetPnlPerShare": -0.007364253393665159,
+        "medianNetPnlPerShare": -0.005,
+        "p10NetPnlPerShare": -0.01,
+        "p90NetPnlPerShare": -0.005,
+        "censoring": {
+          "noLookback": 20932,
+          "flatSignal": 10423,
+          "entryNoBook": 0,
+          "entryDelayExceeded": 785,
+          "entryDepthInsufficient": 0,
+          "exitNoBook": 0,
+          "exitDelayExceeded": 40,
+          "exitDepthInsufficient": 0,
+          "invalidation": 572
+        },
+        "byMarket": [
+          {
+            "marketId": "313",
+            "trades": 1,
+            "wins": 1,
+            "losses": 0,
+            "netPnlOneShare": 0.005,
+            "entryCost": 0.71
+          },
+          {
+            "marketId": "327",
+            "trades": 2,
+            "wins": 0,
+            "losses": 0,
+            "netPnlOneShare": 0,
+            "entryCost": 0.135
+          },
+          {
+            "marketId": "345",
+            "trades": 2,
+            "wins": 0,
+            "losses": 2,
+            "netPnlOneShare": -0.01,
+            "entryCost": 1.52
+          },
+          {
+            "marketId": "244",
+            "trades": 8,
+            "wins": 0,
+            "losses": 8,
+            "netPnlOneShare": -0.04,
+            "entryCost": 1.64
+          },
+          {
+            "marketId": "350",
+            "trades": 6,
+            "wins": 0,
+            "losses": 6,
+            "netPnlOneShare": -0.055,
+            "entryCost": 3.925
+          },
+          {
+            "marketId": "388",
+            "trades": 6,
+            "wins": 0,
+            "losses": 6,
+            "netPnlOneShare": -0.06,
+            "entryCost": 0.96
+          },
+          {
+            "marketId": "353",
+            "trades": 7,
+            "wins": 0,
+            "losses": 7,
+            "netPnlOneShare": -0.08,
+            "entryCost": 6.405
+          },
+          {
+            "marketId": "369",
+            "trades": 6,
+            "wins": 0,
+            "losses": 6,
+            "netPnlOneShare": -0.085,
+            "entryCost": 1.525
+          },
+          {
+            "marketId": "370",
+            "trades": 6,
+            "wins": 0,
+            "losses": 6,
+            "netPnlOneShare": -0.09,
+            "entryCost": 5.43
+          },
+          {
+            "marketId": "354",
+            "trades": 15,
+            "wins": 0,
+            "losses": 15,
+            "netPnlOneShare": -0.12,
+            "entryCost": 1.965
+          },
+          {
+            "marketId": "181",
+            "trades": 26,
+            "wins": 0,
+            "losses": 25,
+            "netPnlOneShare": -0.27,
+            "entryCost": 2.59
+          },
+          {
+            "marketId": "384",
+            "trades": 53,
+            "wins": 0,
+            "losses": 49,
+            "netPnlOneShare": -0.375,
+            "entryCost": 48.88
+          },
+          {
+            "marketId": "277",
+            "trades": 57,
+            "wins": 0,
+            "losses": 57,
+            "netPnlOneShare": -0.385,
+            "entryCost": 53.82
+          },
+          {
+            "marketId": "195",
+            "trades": 74,
+            "wins": 0,
+            "losses": 63,
+            "netPnlOneShare": -0.43,
+            "entryCost": 22.73
+          },
+          {
+            "marketId": "356",
+            "trades": 83,
+            "wins": 1,
+            "losses": 75,
+            "netPnlOneShare": -0.5,
+            "entryCost": 29.88
+          },
+          {
+            "marketId": "377",
+            "trades": 143,
+            "wins": 0,
+            "losses": 139,
+            "netPnlOneShare": -0.98,
+            "entryCost": 102.145
+          },
+          {
+            "marketId": "305",
+            "trades": 394,
+            "wins": 1,
+            "losses": 378,
+            "netPnlOneShare": -2.91,
+            "entryCost": 348.71
+          },
+          {
+            "marketId": "306",
+            "trades": 437,
+            "wins": 6,
+            "losses": 411,
+            "netPnlOneShare": -3.38,
+            "entryCost": 65.73
+          }
+        ],
+        "byUtcDay": [
+          {
+            "utcDay": "2026-10-02",
+            "trades": 85,
+            "wins": 2,
+            "losses": 81,
+            "netPnlOneShare": -0.895,
+            "entryCost": 40.605
+          },
+          {
+            "utcDay": "2026-10-03",
+            "trades": 6,
+            "wins": 0,
+            "losses": 6,
+            "netPnlOneShare": -0.06,
+            "entryCost": 3.52
+          },
+          {
+            "utcDay": "2026-10-05",
+            "trades": 25,
+            "wins": 0,
+            "losses": 22,
+            "netPnlOneShare": -0.18,
+            "entryCost": 8.19
+          },
+          {
+            "utcDay": "2026-10-06",
+            "trades": 342,
+            "wins": 7,
+            "losses": 307,
+            "netPnlOneShare": -2.195,
+            "entryCost": 139.1
+          },
+          {
+            "utcDay": "2026-10-07",
+            "trades": 278,
+            "wins": 0,
+            "losses": 261,
+            "netPnlOneShare": -1.84,
+            "entryCost": 184.7
+          },
+          {
+            "utcDay": "2026-10-08",
+            "trades": 301,
+            "wins": 0,
+            "losses": 295,
+            "netPnlOneShare": -2.505,
+            "entryCost": 171
+          },
+          {
+            "utcDay": "2026-10-09",
+            "trades": 289,
+            "wins": 0,
+            "losses": 281,
+            "netPnlOneShare": -2.09,
+            "entryCost": 151.585
+          }
+        ]
+      },
+      {
+        "period": "development",
+        "lookbackMs": 900000,
+        "holdingMs": 900000,
+        "rule": "unconditional",
+        "decisions": 36694,
+        "signals": 15762,
+        "entered": 11855,
+        "completed": 8396,
+        "wins": 60,
+        "losses": 7906,
+        "flats": 430,
+        "winRate": 0.007146260123868509,
+        "totalNetPnlOneShare": -53.27,
+        "totalEntryCost": 4943.935,
+        "meanNetPnlPerShare": -0.006344687946641258,
+        "medianNetPnlPerShare": -0.005,
+        "p10NetPnlPerShare": -0.01,
+        "p90NetPnlPerShare": -0.005,
+        "censoring": {
+          "noLookback": 20932,
+          "flatSignal": 0,
+          "entryNoBook": 0,
+          "entryDelayExceeded": 3725,
+          "entryDepthInsufficient": 0,
+          "exitNoBook": 0,
+          "exitDelayExceeded": 210,
+          "exitDepthInsufficient": 0,
+          "invalidation": 3431
+        },
+        "byMarket": [
+          {
+            "marketId": "311",
+            "trades": 2,
+            "wins": 0,
+            "losses": 2,
+            "netPnlOneShare": -0.02,
+            "entryCost": 1.65
+          },
+          {
+            "marketId": "382",
+            "trades": 6,
+            "wins": 0,
+            "losses": 6,
+            "netPnlOneShare": -0.03,
+            "entryCost": 1.2
+          },
+          {
+            "marketId": "327",
+            "trades": 17,
+            "wins": 3,
+            "losses": 11,
+            "netPnlOneShare": -0.04,
+            "entryCost": 1.22
+          },
+          {
+            "marketId": "251",
+            "trades": 3,
+            "wins": 0,
+            "losses": 3,
+            "netPnlOneShare": -0.045,
+            "entryCost": 2.835
+          },
+          {
+            "marketId": "313",
+            "trades": 4,
+            "wins": 1,
+            "losses": 3,
+            "netPnlOneShare": -0.045,
+            "entryCost": 2.89
+          },
+          {
+            "marketId": "370",
+            "trades": 13,
+            "wins": 1,
+            "losses": 10,
+            "netPnlOneShare": -0.115,
+            "entryCost": 11.71
+          },
+          {
+            "marketId": "244",
+            "trades": 26,
+            "wins": 1,
+            "losses": 25,
+            "netPnlOneShare": -0.12,
+            "entryCost": 5.29
+          },
+          {
+            "marketId": "345",
+            "trades": 25,
+            "wins": 0,
+            "losses": 25,
+            "netPnlOneShare": -0.125,
+            "entryCost": 19
+          },
+          {
+            "marketId": "381",
+            "trades": 25,
+            "wins": 0,
+            "losses": 25,
+            "netPnlOneShare": -0.125,
+            "entryCost": 21.38
+          },
+          {
+            "marketId": "201",
+            "trades": 26,
+            "wins": 0,
+            "losses": 26,
+            "netPnlOneShare": -0.13,
+            "entryCost": 23.27
+          },
+          {
+            "marketId": "350",
+            "trades": 23,
+            "wins": 0,
+            "losses": 20,
+            "netPnlOneShare": -0.14,
+            "entryCost": 14.99
+          },
+          {
+            "marketId": "358",
+            "trades": 24,
+            "wins": 0,
+            "losses": 24,
+            "netPnlOneShare": -0.155,
+            "entryCost": 17.435
+          },
+          {
+            "marketId": "297",
+            "trades": 41,
+            "wins": 0,
+            "losses": 32,
+            "netPnlOneShare": -0.16,
+            "entryCost": 37.345
+          },
+          {
+            "marketId": "353",
+            "trades": 24,
+            "wins": 0,
+            "losses": 24,
+            "netPnlOneShare": -0.3,
+            "entryCost": 21.96
+          },
+          {
+            "marketId": "369",
+            "trades": 39,
+            "wins": 2,
+            "losses": 32,
+            "netPnlOneShare": -0.35,
+            "entryCost": 9.74
+          },
+          {
+            "marketId": "181",
+            "trades": 36,
+            "wins": 0,
+            "losses": 35,
+            "netPnlOneShare": -0.415,
+            "entryCost": 3.59
+          },
+          {
+            "marketId": "388",
+            "trades": 64,
+            "wins": 0,
+            "losses": 64,
+            "netPnlOneShare": -0.415,
+            "entryCost": 10.71
+          },
+          {
+            "marketId": "356",
+            "trades": 414,
+            "wins": 5,
+            "losses": 355,
+            "netPnlOneShare": -2.095,
+            "entryCost": 146.66
+          },
+          {
+            "marketId": "195",
+            "trades": 411,
+            "wins": 2,
+            "losses": 380,
+            "netPnlOneShare": -2.145,
+            "entryCost": 123.065
+          },
+          {
+            "marketId": "354",
+            "trades": 493,
+            "wins": 0,
+            "losses": 488,
+            "netPnlOneShare": -2.6,
+            "entryCost": 99.235
+          },
+          {
+            "marketId": "277",
+            "trades": 460,
+            "wins": 0,
+            "losses": 454,
+            "netPnlOneShare": -3.42,
+            "entryCost": 437.12
+          },
+          {
+            "marketId": "384",
+            "trades": 987,
+            "wins": 0,
+            "losses": 956,
+            "netPnlOneShare": -6.28,
+            "entryCost": 911.455
+          },
+          {
+            "marketId": "377",
+            "trades": 1495,
+            "wins": 5,
+            "losses": 1430,
+            "netPnlOneShare": -8.605,
+            "entryCost": 1066.505
+          },
+          {
+            "marketId": "306",
+            "trades": 1834,
+            "wins": 30,
+            "losses": 1684,
+            "netPnlOneShare": -12.16,
+            "entryCost": 269.25
+          },
+          {
+            "marketId": "305",
+            "trades": 1904,
+            "wins": 10,
+            "losses": 1792,
+            "netPnlOneShare": -13.235,
+            "entryCost": 1684.43
+          }
+        ],
+        "byUtcDay": [
+          {
+            "utcDay": "2026-10-02",
+            "trades": 294,
+            "wins": 9,
+            "losses": 255,
+            "netPnlOneShare": -2.96,
+            "entryCost": 164.825
+          },
+          {
+            "utcDay": "2026-10-03",
+            "trades": 20,
+            "wins": 0,
+            "losses": 19,
+            "netPnlOneShare": -0.2,
+            "entryCost": 11.42
+          },
+          {
+            "utcDay": "2026-10-04",
+            "trades": 2,
+            "wins": 0,
+            "losses": 2,
+            "netPnlOneShare": -0.02,
+            "entryCost": 1.65
+          },
+          {
+            "utcDay": "2026-10-05",
+            "trades": 318,
+            "wins": 3,
+            "losses": 269,
+            "netPnlOneShare": -1.46,
+            "entryCost": 138.73
+          },
+          {
+            "utcDay": "2026-10-06",
+            "trades": 1501,
+            "wins": 41,
+            "losses": 1331,
+            "netPnlOneShare": -8.03,
+            "entryCost": 625.96
+          },
+          {
+            "utcDay": "2026-10-07",
+            "trades": 1659,
+            "wins": 5,
+            "losses": 1555,
+            "netPnlOneShare": -9.74,
+            "entryCost": 1120.95
+          },
+          {
+            "utcDay": "2026-10-08",
+            "trades": 2471,
+            "wins": 0,
+            "losses": 2409,
+            "netPnlOneShare": -16.91,
+            "entryCost": 1650.94
+          },
+          {
+            "utcDay": "2026-10-09",
+            "trades": 2131,
+            "wins": 2,
+            "losses": 2066,
+            "netPnlOneShare": -13.95,
+            "entryCost": 1229.46
+          }
+        ]
+      },
+      {
+        "period": "development",
+        "lookbackMs": 900000,
+        "holdingMs": 3600000,
+        "rule": "reversion",
+        "decisions": 36694,
+        "signals": 2616,
+        "entered": 1844,
+        "completed": 598,
+        "wins": 28,
+        "losses": 426,
+        "flats": 144,
+        "winRate": 0.046822742474916385,
+        "totalNetPnlOneShare": -3.45,
+        "totalEntryCost": 333.545,
+        "meanNetPnlPerShare": -0.0057692307692307696,
+        "medianNetPnlPerShare": -0.005,
+        "p10NetPnlPerShare": -0.015,
+        "p90NetPnlPerShare": 0,
+        "censoring": {
+          "noLookback": 20932,
+          "flatSignal": 10423,
+          "entryNoBook": 0,
+          "entryDelayExceeded": 735,
+          "entryDepthInsufficient": 0,
+          "exitNoBook": 0,
+          "exitDelayExceeded": 22,
+          "exitDepthInsufficient": 0,
+          "invalidation": 1261
+        },
+        "byMarket": [
+          {
+            "marketId": "356",
+            "trades": 3,
+            "wins": 3,
+            "losses": 0,
+            "netPnlOneShare": 0.03,
+            "entryCost": 1.05
+          },
+          {
+            "marketId": "369",
+            "trades": 3,
+            "wins": 0,
+            "losses": 2,
+            "netPnlOneShare": -0.02,
+            "entryCost": 0.76
+          },
+          {
+            "marketId": "354",
+            "trades": 5,
+            "wins": 1,
+            "losses": 4,
+            "netPnlOneShare": -0.035,
+            "entryCost": 0.63
+          },
+          {
+            "marketId": "277",
+            "trades": 15,
+            "wins": 0,
+            "losses": 15,
+            "netPnlOneShare": -0.145,
+            "entryCost": 14.15
+          },
+          {
+            "marketId": "384",
+            "trades": 61,
+            "wins": 0,
+            "losses": 49,
+            "netPnlOneShare": -0.32,
+            "entryCost": 56.15
+          },
+          {
+            "marketId": "305",
+            "trades": 149,
+            "wins": 2,
+            "losses": 101,
+            "netPnlOneShare": -0.915,
+            "entryCost": 131.895
+          },
+          {
+            "marketId": "377",
+            "trades": 136,
+            "wins": 12,
+            "losses": 92,
+            "netPnlOneShare": -0.95,
+            "entryCost": 96.495
+          },
+          {
+            "marketId": "306",
+            "trades": 226,
+            "wins": 10,
+            "losses": 163,
+            "netPnlOneShare": -1.095,
+            "entryCost": 32.415
+          }
+        ],
+        "byUtcDay": [
+          {
+            "utcDay": "2026-10-02",
+            "trades": 34,
+            "wins": 1,
+            "losses": 30,
+            "netPnlOneShare": -0.46,
+            "entryCost": 21.8
+          },
+          {
+            "utcDay": "2026-10-06",
+            "trades": 43,
+            "wins": 8,
+            "losses": 23,
+            "netPnlOneShare": -0.085,
+            "entryCost": 20.385
+          },
+          {
+            "utcDay": "2026-10-07",
+            "trades": 92,
+            "wins": 0,
+            "losses": 56,
+            "netPnlOneShare": -0.325,
+            "entryCost": 61.785
+          },
+          {
+            "utcDay": "2026-10-08",
+            "trades": 238,
+            "wins": 2,
+            "losses": 194,
+            "netPnlOneShare": -1.605,
+            "entryCost": 128.34
+          },
+          {
+            "utcDay": "2026-10-09",
+            "trades": 191,
+            "wins": 17,
+            "losses": 123,
+            "netPnlOneShare": -0.975,
+            "entryCost": 101.235
+          }
+        ]
+      },
+      {
+        "period": "development",
+        "lookbackMs": 900000,
+        "holdingMs": 3600000,
+        "rule": "trend",
+        "decisions": 36694,
+        "signals": 2723,
+        "entered": 1895,
+        "completed": 617,
+        "wins": 16,
+        "losses": 542,
+        "flats": 59,
+        "winRate": 0.02593192868719611,
+        "totalNetPnlOneShare": -4.31,
+        "totalEntryCost": 326.46,
+        "meanNetPnlPerShare": -0.006985413290113452,
+        "medianNetPnlPerShare": -0.005,
+        "p10NetPnlPerShare": -0.01,
+        "p90NetPnlPerShare": 0,
+        "censoring": {
+          "noLookback": 20932,
+          "flatSignal": 10423,
+          "entryNoBook": 0,
+          "entryDelayExceeded": 785,
+          "entryDepthInsufficient": 0,
+          "exitNoBook": 0,
+          "exitDelayExceeded": 18,
+          "exitDepthInsufficient": 0,
+          "invalidation": 1303
+        },
+        "byMarket": [
+          {
+            "marketId": "311",
+            "trades": 1,
+            "wins": 1,
+            "losses": 0,
+            "netPnlOneShare": 0.015,
+            "entryCost": 0.82
+          },
+          {
+            "marketId": "181",
+            "trades": 1,
+            "wins": 0,
+            "losses": 1,
+            "netPnlOneShare": -0.015,
+            "entryCost": 0.1
+          },
+          {
+            "marketId": "195",
+            "trades": 33,
+            "wins": 10,
+            "losses": 22,
+            "netPnlOneShare": -0.08,
+            "entryCost": 10.065
+          },
+          {
+            "marketId": "354",
+            "trades": 8,
+            "wins": 0,
+            "losses": 6,
+            "netPnlOneShare": -0.085,
+            "entryCost": 1.05
+          },
+          {
+            "marketId": "356",
+            "trades": 17,
+            "wins": 0,
+            "losses": 16,
+            "netPnlOneShare": -0.11,
+            "entryCost": 6.18
+          },
+          {
+            "marketId": "384",
+            "trades": 21,
+            "wins": 0,
+            "losses": 21,
+            "netPnlOneShare": -0.15,
+            "entryCost": 19.405
+          },
+          {
+            "marketId": "277",
+            "trades": 34,
+            "wins": 0,
+            "losses": 34,
+            "netPnlOneShare": -0.23,
+            "entryCost": 32.19
+          },
+          {
+            "marketId": "377",
+            "trades": 78,
+            "wins": 0,
+            "losses": 51,
+            "netPnlOneShare": -0.42,
+            "entryCost": 55.85
+          },
+          {
+            "marketId": "305",
+            "trades": 187,
+            "wins": 5,
+            "losses": 169,
+            "netPnlOneShare": -1.34,
+            "entryCost": 165.855
+          },
+          {
+            "marketId": "306",
+            "trades": 237,
+            "wins": 0,
+            "losses": 222,
+            "netPnlOneShare": -1.895,
+            "entryCost": 34.945
+          }
+        ],
+        "byUtcDay": [
+          {
+            "utcDay": "2026-10-02",
+            "trades": 18,
+            "wins": 0,
+            "losses": 16,
+            "netPnlOneShare": -0.21,
+            "entryCost": 8.885
+          },
+          {
+            "utcDay": "2026-10-04",
+            "trades": 1,
+            "wins": 1,
+            "losses": 0,
+            "netPnlOneShare": 0.015,
+            "entryCost": 0.82
+          },
+          {
+            "utcDay": "2026-10-06",
+            "trades": 89,
+            "wins": 10,
+            "losses": 72,
+            "netPnlOneShare": -0.47,
+            "entryCost": 26.08
+          },
+          {
+            "utcDay": "2026-10-07",
+            "trades": 90,
+            "wins": 5,
+            "losses": 76,
+            "netPnlOneShare": -0.49,
+            "entryCost": 58.215
+          },
+          {
+            "utcDay": "2026-10-08",
+            "trades": 209,
+            "wins": 0,
+            "losses": 204,
+            "netPnlOneShare": -1.85,
+            "entryCost": 119.895
+          },
+          {
+            "utcDay": "2026-10-09",
+            "trades": 210,
+            "wins": 0,
+            "losses": 174,
+            "netPnlOneShare": -1.305,
+            "entryCost": 112.565
+          }
+        ]
+      },
+      {
+        "period": "development",
+        "lookbackMs": 900000,
+        "holdingMs": 3600000,
+        "rule": "unconditional",
+        "decisions": 36694,
+        "signals": 15762,
+        "entered": 11855,
+        "completed": 4221,
+        "wins": 62,
+        "losses": 3780,
+        "flats": 379,
+        "winRate": 0.01468846244965648,
+        "totalNetPnlOneShare": -27.44,
+        "totalEntryCost": 2589.55,
+        "meanNetPnlPerShare": -0.0065008291873963515,
+        "medianNetPnlPerShare": -0.005,
+        "p10NetPnlPerShare": -0.01,
+        "p90NetPnlPerShare": 0,
+        "censoring": {
+          "noLookback": 20932,
+          "flatSignal": 0,
+          "entryNoBook": 0,
+          "entryDelayExceeded": 3725,
+          "entryDepthInsufficient": 0,
+          "exitNoBook": 0,
+          "exitDelayExceeded": 69,
+          "exitDepthInsufficient": 0,
+          "invalidation": 7747
+        },
+        "byMarket": [
+          {
+            "marketId": "311",
+            "trades": 1,
+            "wins": 1,
+            "losses": 0,
+            "netPnlOneShare": 0.015,
+            "entryCost": 0.82
+          },
+          {
+            "marketId": "181",
+            "trades": 1,
+            "wins": 0,
+            "losses": 1,
+            "netPnlOneShare": -0.015,
+            "entryCost": 0.1
+          },
+          {
+            "marketId": "244",
+            "trades": 9,
+            "wins": 3,
+            "losses": 6,
+            "netPnlOneShare": -0.015,
+            "entryCost": 1.815
+          },
+          {
+            "marketId": "369",
+            "trades": 3,
+            "wins": 0,
+            "losses": 2,
+            "netPnlOneShare": -0.02,
+            "entryCost": 0.76
+          },
+          {
+            "marketId": "201",
+            "trades": 8,
+            "wins": 0,
+            "losses": 8,
+            "netPnlOneShare": -0.04,
+            "entryCost": 7.16
+          },
+          {
+            "marketId": "388",
+            "trades": 7,
+            "wins": 0,
+            "losses": 7,
+            "netPnlOneShare": -0.05,
+            "entryCost": 1.19
+          },
+          {
+            "marketId": "195",
+            "trades": 65,
+            "wins": 15,
+            "losses": 48,
+            "netPnlOneShare": -0.29,
+            "entryCost": 19.855
+          },
+          {
+            "marketId": "356",
+            "trades": 66,
+            "wins": 4,
+            "losses": 60,
+            "netPnlOneShare": -0.41,
+            "entryCost": 23.7
+          },
+          {
+            "marketId": "354",
+            "trades": 328,
+            "wins": 1,
+            "losses": 320,
+            "netPnlOneShare": -1.685,
+            "entryCost": 67
+          },
+          {
+            "marketId": "277",
+            "trades": 266,
+            "wins": 0,
+            "losses": 265,
+            "netPnlOneShare": -1.99,
+            "entryCost": 253.355
+          },
+          {
+            "marketId": "384",
+            "trades": 581,
+            "wins": 0,
+            "losses": 569,
+            "netPnlOneShare": -3.76,
+            "entryCost": 537.065
+          },
+          {
+            "marketId": "377",
+            "trades": 918,
+            "wins": 13,
+            "losses": 788,
+            "netPnlOneShare": -5.68,
+            "entryCost": 656.16
+          },
+          {
+            "marketId": "305",
+            "trades": 991,
+            "wins": 11,
+            "losses": 837,
+            "netPnlOneShare": -6.52,
+            "entryCost": 878.68
+          },
+          {
+            "marketId": "306",
+            "trades": 977,
+            "wins": 14,
+            "losses": 869,
+            "netPnlOneShare": -6.98,
+            "entryCost": 141.89
+          }
+        ],
+        "byUtcDay": [
+          {
+            "utcDay": "2026-10-02",
+            "trades": 83,
+            "wins": 1,
+            "losses": 73,
+            "netPnlOneShare": -1.33,
+            "entryCost": 49.335
+          },
+          {
+            "utcDay": "2026-10-03",
+            "trades": 6,
+            "wins": 0,
+            "losses": 4,
+            "netPnlOneShare": -0.025,
+            "entryCost": 3.91
+          },
+          {
+            "utcDay": "2026-10-04",
+            "trades": 1,
+            "wins": 1,
+            "losses": 0,
+            "netPnlOneShare": 0.015,
+            "entryCost": 0.82
+          },
+          {
+            "utcDay": "2026-10-06",
+            "trades": 302,
+            "wins": 27,
+            "losses": 208,
+            "netPnlOneShare": -1.385,
+            "entryCost": 130.82
+          },
+          {
+            "utcDay": "2026-10-07",
+            "trades": 532,
+            "wins": 9,
+            "losses": 436,
+            "netPnlOneShare": -2.585,
+            "entryCost": 349.28
+          },
+          {
+            "utcDay": "2026-10-08",
+            "trades": 1833,
+            "wins": 6,
+            "losses": 1758,
+            "netPnlOneShare": -13.07,
+            "entryCost": 1224.365
+          },
+          {
+            "utcDay": "2026-10-09",
+            "trades": 1464,
+            "wins": 18,
+            "losses": 1301,
+            "netPnlOneShare": -9.06,
+            "entryCost": 831.02
+          }
+        ]
+      },
+      {
+        "period": "heldout",
+        "lookbackMs": 300000,
+        "holdingMs": 300000,
+        "rule": "reversion",
+        "decisions": 13325,
+        "signals": 228,
+        "entered": 224,
+        "completed": 212,
+        "wins": 0,
+        "losses": 203,
+        "flats": 9,
+        "winRate": 0,
+        "totalNetPnlOneShare": -1.475,
+        "totalEntryCost": 110.595,
+        "meanNetPnlPerShare": -0.006957547169811321,
+        "medianNetPnlPerShare": -0.005,
+        "p10NetPnlPerShare": -0.01,
+        "p90NetPnlPerShare": -0.005,
+        "censoring": {
+          "noLookback": 7445,
+          "flatSignal": 5495,
+          "entryNoBook": 0,
+          "entryDelayExceeded": 1,
+          "entryDepthInsufficient": 0,
+          "exitNoBook": 0,
+          "exitDelayExceeded": 0,
+          "exitDepthInsufficient": 0,
+          "invalidation": 15
+        },
+        "byMarket": [
+          {
+            "marketId": "306",
+            "trades": 22,
+            "wins": 0,
+            "losses": 21,
+            "netPnlOneShare": -0.135,
+            "entryCost": 2.58
+          },
+          {
+            "marketId": "305",
+            "trades": 27,
+            "wins": 0,
+            "losses": 27,
+            "netPnlOneShare": -0.24,
+            "entryCost": 24.405
+          },
+          {
+            "marketId": "377",
+            "trades": 52,
+            "wins": 0,
+            "losses": 49,
+            "netPnlOneShare": -0.285,
+            "entryCost": 36.06
+          },
+          {
+            "marketId": "277",
+            "trades": 34,
+            "wins": 0,
+            "losses": 34,
+            "netPnlOneShare": -0.34,
+            "entryCost": 31.655
+          },
+          {
+            "marketId": "354",
+            "trades": 77,
+            "wins": 0,
+            "losses": 72,
+            "netPnlOneShare": -0.475,
+            "entryCost": 15.895
+          }
+        ],
+        "byUtcDay": [
+          {
+            "utcDay": "2026-10-12",
+            "trades": 192,
+            "wins": 0,
+            "losses": 183,
+            "netPnlOneShare": -1.36,
+            "entryCost": 106.02
+          },
+          {
+            "utcDay": "2026-10-13",
+            "trades": 20,
+            "wins": 0,
+            "losses": 20,
+            "netPnlOneShare": -0.115,
+            "entryCost": 4.575
+          }
+        ]
+      },
+      {
+        "period": "heldout",
+        "lookbackMs": 300000,
+        "holdingMs": 300000,
+        "rule": "trend",
+        "decisions": 13325,
+        "signals": 157,
+        "entered": 152,
+        "completed": 143,
+        "wins": 0,
+        "losses": 141,
+        "flats": 2,
+        "winRate": 0,
+        "totalNetPnlOneShare": -0.96,
+        "totalEntryCost": 50.07,
+        "meanNetPnlPerShare": -0.006713286713286713,
+        "medianNetPnlPerShare": -0.005,
+        "p10NetPnlPerShare": -0.01,
+        "p90NetPnlPerShare": -0.005,
+        "censoring": {
+          "noLookback": 7445,
+          "flatSignal": 5495,
+          "entryNoBook": 0,
+          "entryDelayExceeded": 4,
+          "entryDepthInsufficient": 0,
+          "exitNoBook": 0,
+          "exitDelayExceeded": 0,
+          "exitDepthInsufficient": 0,
+          "invalidation": 10
+        },
+        "byMarket": [
+          {
+            "marketId": "277",
+            "trades": 3,
+            "wins": 0,
+            "losses": 3,
+            "netPnlOneShare": -0.025,
+            "entryCost": 2.785
+          },
+          {
+            "marketId": "305",
+            "trades": 13,
+            "wins": 0,
+            "losses": 13,
+            "netPnlOneShare": -0.085,
+            "entryCost": 11.83
+          },
+          {
+            "marketId": "377",
+            "trades": 24,
+            "wins": 0,
+            "losses": 24,
+            "netPnlOneShare": -0.145,
+            "entryCost": 16.765
+          },
+          {
+            "marketId": "306",
+            "trades": 32,
+            "wins": 0,
+            "losses": 32,
+            "netPnlOneShare": -0.22,
+            "entryCost": 3.81
+          },
+          {
+            "marketId": "354",
+            "trades": 71,
+            "wins": 0,
+            "losses": 69,
+            "netPnlOneShare": -0.485,
+            "entryCost": 14.88
+          }
+        ],
+        "byUtcDay": [
+          {
+            "utcDay": "2026-10-12",
+            "trades": 130,
+            "wins": 0,
+            "losses": 128,
+            "netPnlOneShare": -0.885,
+            "entryCost": 45.42
+          },
+          {
+            "utcDay": "2026-10-13",
+            "trades": 13,
+            "wins": 0,
+            "losses": 13,
+            "netPnlOneShare": -0.075,
+            "entryCost": 4.65
+          }
+        ]
+      },
+      {
+        "period": "heldout",
+        "lookbackMs": 300000,
+        "holdingMs": 300000,
+        "rule": "unconditional",
+        "decisions": 13325,
+        "signals": 5880,
+        "entered": 5609,
+        "completed": 5337,
+        "wins": 3,
+        "losses": 5289,
+        "flats": 45,
+        "winRate": 0.0005621135469364812,
+        "totalNetPnlOneShare": -30.365,
+        "totalEntryCost": 3233.41,
+        "meanNetPnlPerShare": -0.00568952595090875,
+        "medianNetPnlPerShare": -0.005,
+        "p10NetPnlPerShare": -0.01,
+        "p90NetPnlPerShare": -0.005,
+        "censoring": {
+          "noLookback": 7445,
+          "flatSignal": 0,
+          "entryNoBook": 0,
+          "entryDelayExceeded": 240,
+          "entryDepthInsufficient": 0,
+          "exitNoBook": 19,
+          "exitDelayExceeded": 15,
+          "exitDepthInsufficient": 0,
+          "invalidation": 269
+        },
+        "byMarket": [
+          {
+            "marketId": "306",
+            "trades": 723,
+            "wins": 0,
+            "losses": 716,
+            "netPnlOneShare": -3.975,
+            "entryCost": 82.815
+          },
+          {
+            "marketId": "377",
+            "trades": 1146,
+            "wins": 3,
+            "losses": 1128,
+            "netPnlOneShare": -5.925,
+            "entryCost": 792.9
+          },
+          {
+            "marketId": "305",
+            "trades": 1159,
+            "wins": 0,
+            "losses": 1159,
+            "netPnlOneShare": -6.34,
+            "entryCost": 1044.065
+          },
+          {
+            "marketId": "354",
+            "trades": 1150,
+            "wins": 0,
+            "losses": 1127,
+            "netPnlOneShare": -6.595,
+            "entryCost": 237.53
+          },
+          {
+            "marketId": "277",
+            "trades": 1159,
+            "wins": 0,
+            "losses": 1159,
+            "netPnlOneShare": -7.53,
+            "entryCost": 1076.1
+          }
+        ],
+        "byUtcDay": [
+          {
+            "utcDay": "2026-10-12",
+            "trades": 3826,
+            "wins": 3,
+            "losses": 3784,
+            "netPnlOneShare": -22.765,
+            "entryCost": 2210.565
+          },
+          {
+            "utcDay": "2026-10-13",
+            "trades": 1511,
+            "wins": 0,
+            "losses": 1505,
+            "netPnlOneShare": -7.6,
+            "entryCost": 1022.845
+          }
+        ]
+      },
+      {
+        "period": "heldout",
+        "lookbackMs": 300000,
+        "holdingMs": 900000,
+        "rule": "reversion",
+        "decisions": 13325,
+        "signals": 228,
+        "entered": 224,
+        "completed": 199,
+        "wins": 2,
+        "losses": 190,
+        "flats": 7,
+        "winRate": 0.010050251256281407,
+        "totalNetPnlOneShare": -1.38,
+        "totalEntryCost": 103.45,
+        "meanNetPnlPerShare": -0.00693467336683417,
+        "medianNetPnlPerShare": -0.005,
+        "p10NetPnlPerShare": -0.01,
+        "p90NetPnlPerShare": -0.005,
+        "censoring": {
+          "noLookback": 7445,
+          "flatSignal": 5495,
+          "entryNoBook": 0,
+          "entryDelayExceeded": 1,
+          "entryDepthInsufficient": 0,
+          "exitNoBook": 0,
+          "exitDelayExceeded": 0,
+          "exitDepthInsufficient": 0,
+          "invalidation": 28
+        },
+        "byMarket": [
+          {
+            "marketId": "306",
+            "trades": 22,
+            "wins": 0,
+            "losses": 21,
+            "netPnlOneShare": -0.135,
+            "entryCost": 2.58
+          },
+          {
+            "marketId": "377",
+            "trades": 43,
+            "wins": 2,
+            "losses": 41,
+            "netPnlOneShare": -0.235,
+            "entryCost": 29.745
+          },
+          {
+            "marketId": "305",
+            "trades": 27,
+            "wins": 0,
+            "losses": 27,
+            "netPnlOneShare": -0.24,
+            "entryCost": 24.405
+          },
+          {
+            "marketId": "277",
+            "trades": 34,
+            "wins": 0,
+            "losses": 34,
+            "netPnlOneShare": -0.34,
+            "entryCost": 31.655
+          },
+          {
+            "marketId": "354",
+            "trades": 73,
+            "wins": 0,
+            "losses": 67,
+            "netPnlOneShare": -0.43,
+            "entryCost": 15.065
+          }
+        ],
+        "byUtcDay": [
+          {
+            "utcDay": "2026-10-12",
+            "trades": 182,
+            "wins": 2,
+            "losses": 173,
+            "netPnlOneShare": -1.28,
+            "entryCost": 99.97
+          },
+          {
+            "utcDay": "2026-10-13",
+            "trades": 17,
+            "wins": 0,
+            "losses": 17,
+            "netPnlOneShare": -0.1,
+            "entryCost": 3.48
+          }
+        ]
+      },
+      {
+        "period": "heldout",
+        "lookbackMs": 300000,
+        "holdingMs": 900000,
+        "rule": "trend",
+        "decisions": 13325,
+        "signals": 157,
+        "entered": 152,
+        "completed": 136,
+        "wins": 1,
+        "losses": 131,
+        "flats": 4,
+        "winRate": 0.007352941176470588,
+        "totalNetPnlOneShare": -1.005,
+        "totalEntryCost": 48.175,
+        "meanNetPnlPerShare": -0.007389705882352941,
+        "medianNetPnlPerShare": -0.005,
+        "p10NetPnlPerShare": -0.01,
+        "p90NetPnlPerShare": -0.005,
+        "censoring": {
+          "noLookback": 7445,
+          "flatSignal": 5495,
+          "entryNoBook": 0,
+          "entryDelayExceeded": 4,
+          "entryDepthInsufficient": 0,
+          "exitNoBook": 0,
+          "exitDelayExceeded": 0,
+          "exitDepthInsufficient": 0,
+          "invalidation": 17
+        },
+        "byMarket": [
+          {
+            "marketId": "277",
+            "trades": 3,
+            "wins": 0,
+            "losses": 3,
+            "netPnlOneShare": -0.025,
+            "entryCost": 2.785
+          },
+          {
+            "marketId": "305",
+            "trades": 13,
+            "wins": 0,
+            "losses": 13,
+            "netPnlOneShare": -0.1,
+            "entryCost": 11.83
+          },
+          {
+            "marketId": "377",
+            "trades": 23,
+            "wins": 0,
+            "losses": 23,
+            "netPnlOneShare": -0.22,
+            "entryCost": 16.055
+          },
+          {
+            "marketId": "306",
+            "trades": 31,
+            "wins": 0,
+            "losses": 31,
+            "netPnlOneShare": -0.24,
+            "entryCost": 3.7
+          },
+          {
+            "marketId": "354",
+            "trades": 66,
+            "wins": 1,
+            "losses": 61,
+            "netPnlOneShare": -0.42,
+            "entryCost": 13.805
+          }
+        ],
+        "byUtcDay": [
+          {
+            "utcDay": "2026-10-12",
+            "trades": 123,
+            "wins": 1,
+            "losses": 118,
+            "netPnlOneShare": -0.93,
+            "entryCost": 43.525
+          },
+          {
+            "utcDay": "2026-10-13",
+            "trades": 13,
+            "wins": 0,
+            "losses": 13,
+            "netPnlOneShare": -0.075,
+            "entryCost": 4.65
+          }
+        ]
+      },
+      {
+        "period": "heldout",
+        "lookbackMs": 300000,
+        "holdingMs": 900000,
+        "rule": "unconditional",
+        "decisions": 13325,
+        "signals": 5880,
+        "entered": 5609,
+        "completed": 4875,
+        "wins": 6,
+        "losses": 4756,
+        "flats": 113,
+        "winRate": 0.0012307692307692308,
+        "totalNetPnlOneShare": -28.21,
+        "totalEntryCost": 2952.275,
+        "meanNetPnlPerShare": -0.0057866666666666665,
+        "medianNetPnlPerShare": -0.005,
+        "p10NetPnlPerShare": -0.01,
+        "p90NetPnlPerShare": -0.005,
+        "censoring": {
+          "noLookback": 7445,
+          "flatSignal": 0,
+          "entryNoBook": 0,
+          "entryDelayExceeded": 240,
+          "entryDepthInsufficient": 0,
+          "exitNoBook": 32,
+          "exitDelayExceeded": 19,
+          "exitDepthInsufficient": 0,
+          "invalidation": 714
+        },
+        "byMarket": [
+          {
+            "marketId": "306",
+            "trades": 663,
+            "wins": 0,
+            "losses": 639,
+            "netPnlOneShare": -3.59,
+            "entryCost": 75.92
+          },
+          {
+            "marketId": "377",
+            "trades": 1043,
+            "wins": 3,
+            "losses": 1010,
+            "netPnlOneShare": -5.595,
+            "entryCost": 721.325
+          },
+          {
+            "marketId": "305",
+            "trades": 1063,
+            "wins": 0,
+            "losses": 1063,
+            "netPnlOneShare": -5.905,
+            "entryCost": 957.835
+          },
+          {
+            "marketId": "354",
+            "trades": 1050,
+            "wins": 3,
+            "losses": 988,
+            "netPnlOneShare": -6.03,
+            "entryCost": 216.665
+          },
+          {
+            "marketId": "277",
+            "trades": 1056,
+            "wins": 0,
+            "losses": 1056,
+            "netPnlOneShare": -7.09,
+            "entryCost": 980.53
+          }
+        ],
+        "byUtcDay": [
+          {
+            "utcDay": "2026-10-12",
+            "trades": 3554,
+            "wins": 6,
+            "losses": 3448,
+            "netPnlOneShare": -21.545,
+            "entryCost": 2058.385
+          },
+          {
+            "utcDay": "2026-10-13",
+            "trades": 1321,
+            "wins": 0,
+            "losses": 1308,
+            "netPnlOneShare": -6.665,
+            "entryCost": 893.89
+          }
+        ]
+      },
+      {
+        "period": "heldout",
+        "lookbackMs": 300000,
+        "holdingMs": 3600000,
+        "rule": "reversion",
+        "decisions": 13325,
+        "signals": 228,
+        "entered": 224,
+        "completed": 163,
+        "wins": 4,
+        "losses": 144,
+        "flats": 15,
+        "winRate": 0.024539877300613498,
+        "totalNetPnlOneShare": -1.24,
+        "totalEntryCost": 92.33,
+        "meanNetPnlPerShare": -0.007607361963190184,
+        "medianNetPnlPerShare": -0.005,
+        "p10NetPnlPerShare": -0.015,
+        "p90NetPnlPerShare": 0,
+        "censoring": {
+          "noLookback": 7445,
+          "flatSignal": 5495,
+          "entryNoBook": 0,
+          "entryDelayExceeded": 1,
+          "entryDepthInsufficient": 0,
+          "exitNoBook": 1,
+          "exitDelayExceeded": 1,
+          "exitDepthInsufficient": 0,
+          "invalidation": 62
+        },
+        "byMarket": [
+          {
+            "marketId": "306",
+            "trades": 13,
+            "wins": 0,
+            "losses": 12,
+            "netPnlOneShare": -0.06,
+            "entryCost": 1.54
+          },
+          {
+            "marketId": "305",
+            "trades": 27,
+            "wins": 0,
+            "losses": 27,
+            "netPnlOneShare": -0.225,
+            "entryCost": 24.405
+          },
+          {
+            "marketId": "377",
+            "trades": 34,
+            "wins": 0,
+            "losses": 34,
+            "netPnlOneShare": -0.235,
+            "entryCost": 23.405
+          },
+          {
+            "marketId": "354",
+            "trades": 55,
+            "wins": 4,
+            "losses": 37,
+            "netPnlOneShare": -0.29,
+            "entryCost": 11.325
+          },
+          {
+            "marketId": "277",
+            "trades": 34,
+            "wins": 0,
+            "losses": 34,
+            "netPnlOneShare": -0.43,
+            "entryCost": 31.655
+          }
+        ],
+        "byUtcDay": [
+          {
+            "utcDay": "2026-10-12",
+            "trades": 154,
+            "wins": 4,
+            "losses": 135,
+            "netPnlOneShare": -1.195,
+            "entryCost": 90.505
+          },
+          {
+            "utcDay": "2026-10-13",
+            "trades": 9,
+            "wins": 0,
+            "losses": 9,
+            "netPnlOneShare": -0.045,
+            "entryCost": 1.825
+          }
+        ]
+      },
+      {
+        "period": "heldout",
+        "lookbackMs": 300000,
+        "holdingMs": 3600000,
+        "rule": "trend",
+        "decisions": 13325,
+        "signals": 157,
+        "entered": 152,
+        "completed": 109,
+        "wins": 0,
+        "losses": 105,
+        "flats": 4,
+        "winRate": 0,
+        "totalNetPnlOneShare": -0.835,
+        "totalEntryCost": 33.715,
+        "meanNetPnlPerShare": -0.007660550458715596,
+        "medianNetPnlPerShare": -0.005,
+        "p10NetPnlPerShare": -0.01,
+        "p90NetPnlPerShare": -0.005,
+        "censoring": {
+          "noLookback": 7445,
+          "flatSignal": 5495,
+          "entryNoBook": 0,
+          "entryDelayExceeded": 4,
+          "entryDepthInsufficient": 0,
+          "exitNoBook": 0,
+          "exitDelayExceeded": 0,
+          "exitDepthInsufficient": 0,
+          "invalidation": 44
+        },
+        "byMarket": [
+          {
+            "marketId": "277",
+            "trades": 3,
+            "wins": 0,
+            "losses": 3,
+            "netPnlOneShare": -0.025,
+            "entryCost": 2.785
+          },
+          {
+            "marketId": "377",
+            "trades": 6,
+            "wins": 0,
+            "losses": 6,
+            "netPnlOneShare": -0.065,
+            "entryCost": 4.12
+          },
+          {
+            "marketId": "305",
+            "trades": 12,
+            "wins": 0,
+            "losses": 12,
+            "netPnlOneShare": -0.115,
+            "entryCost": 10.92
+          },
+          {
+            "marketId": "306",
+            "trades": 28,
+            "wins": 0,
+            "losses": 28,
+            "netPnlOneShare": -0.195,
+            "entryCost": 3.345
+          },
+          {
+            "marketId": "354",
+            "trades": 60,
+            "wins": 0,
+            "losses": 56,
+            "netPnlOneShare": -0.435,
+            "entryCost": 12.545
+          }
+        ],
+        "byUtcDay": [
+          {
+            "utcDay": "2026-10-12",
+            "trades": 103,
+            "wins": 0,
+            "losses": 99,
+            "netPnlOneShare": -0.795,
+            "entryCost": 32.475
+          },
+          {
+            "utcDay": "2026-10-13",
+            "trades": 6,
+            "wins": 0,
+            "losses": 6,
+            "netPnlOneShare": -0.04,
+            "entryCost": 1.24
+          }
+        ]
+      },
+      {
+        "period": "heldout",
+        "lookbackMs": 300000,
+        "holdingMs": 3600000,
+        "rule": "unconditional",
+        "decisions": 13325,
+        "signals": 5880,
+        "entered": 5609,
+        "completed": 3280,
+        "wins": 4,
+        "losses": 3053,
+        "flats": 223,
+        "winRate": 0.0012195121951219512,
+        "totalNetPnlOneShare": -21.16,
+        "totalEntryCost": 1972.445,
+        "meanNetPnlPerShare": -0.006451219512195122,
+        "medianNetPnlPerShare": -0.005,
+        "p10NetPnlPerShare": -0.01,
+        "p90NetPnlPerShare": -0.005,
+        "censoring": {
+          "noLookback": 7445,
+          "flatSignal": 0,
+          "entryNoBook": 0,
+          "entryDelayExceeded": 240,
+          "entryDepthInsufficient": 0,
+          "exitNoBook": 141,
+          "exitDelayExceeded": 2,
+          "exitDepthInsufficient": 0,
+          "invalidation": 2217
+        },
+        "byMarket": [
+          {
+            "marketId": "306",
+            "trades": 468,
+            "wins": 0,
+            "losses": 401,
+            "netPnlOneShare": -2.125,
+            "entryCost": 53.345
+          },
+          {
+            "marketId": "354",
+            "trades": 709,
+            "wins": 4,
+            "losses": 549,
+            "netPnlOneShare": -4.15,
+            "entryCost": 145.735
+          },
+          {
+            "marketId": "305",
+            "trades": 711,
+            "wins": 0,
+            "losses": 711,
+            "netPnlOneShare": -4.34,
+            "entryCost": 642.09
+          },
+          {
+            "marketId": "377",
+            "trades": 682,
+            "wins": 0,
+            "losses": 682,
+            "netPnlOneShare": -4.495,
+            "entryCost": 471.045
+          },
+          {
+            "marketId": "277",
+            "trades": 710,
+            "wins": 0,
+            "losses": 710,
+            "netPnlOneShare": -6.05,
+            "entryCost": 660.23
+          }
+        ],
+        "byUtcDay": [
+          {
+            "utcDay": "2026-10-12",
+            "trades": 2547,
+            "wins": 4,
+            "losses": 2351,
+            "netPnlOneShare": -17.385,
+            "entryCost": 1476.565
+          },
+          {
+            "utcDay": "2026-10-13",
+            "trades": 733,
+            "wins": 0,
+            "losses": 702,
+            "netPnlOneShare": -3.775,
+            "entryCost": 495.88
+          }
+        ]
+      },
+      {
+        "period": "heldout",
+        "lookbackMs": 900000,
+        "holdingMs": 300000,
+        "rule": "reversion",
+        "decisions": 13325,
+        "signals": 419,
+        "entered": 411,
+        "completed": 394,
+        "wins": 3,
+        "losses": 382,
+        "flats": 9,
+        "winRate": 0.007614213197969543,
+        "totalNetPnlOneShare": -2.54,
+        "totalEntryCost": 204.9,
+        "meanNetPnlPerShare": -0.006446700507614213,
+        "medianNetPnlPerShare": -0.005,
+        "p10NetPnlPerShare": -0.01,
+        "p90NetPnlPerShare": -0.005,
+        "censoring": {
+          "noLookback": 7947,
+          "flatSignal": 4679,
+          "entryNoBook": 0,
+          "entryDelayExceeded": 6,
+          "entryDepthInsufficient": 0,
+          "exitNoBook": 0,
+          "exitDelayExceeded": 1,
+          "exitDepthInsufficient": 0,
+          "invalidation": 18
+        },
+        "byMarket": [
+          {
+            "marketId": "306",
+            "trades": 35,
+            "wins": 0,
+            "losses": 34,
+            "netPnlOneShare": -0.225,
+            "entryCost": 4.095
+          },
+          {
+            "marketId": "377",
+            "trades": 91,
+            "wins": 3,
+            "losses": 84,
+            "netPnlOneShare": -0.43,
+            "entryCost": 62.95
+          },
+          {
+            "marketId": "305",
+            "trades": 55,
+            "wins": 0,
+            "losses": 55,
+            "netPnlOneShare": -0.445,
+            "entryCost": 49.825
+          },
+          {
+            "marketId": "277",
+            "trades": 61,
+            "wins": 0,
+            "losses": 61,
+            "netPnlOneShare": -0.49,
+            "entryCost": 56.635
+          },
+          {
+            "marketId": "354",
+            "trades": 152,
+            "wins": 0,
+            "losses": 148,
+            "netPnlOneShare": -0.95,
+            "entryCost": 31.395
+          }
+        ],
+        "byUtcDay": [
+          {
+            "utcDay": "2026-10-12",
+            "trades": 367,
+            "wins": 3,
+            "losses": 355,
+            "netPnlOneShare": -2.405,
+            "entryCost": 198.95
+          },
+          {
+            "utcDay": "2026-10-13",
+            "trades": 27,
+            "wins": 0,
+            "losses": 27,
+            "netPnlOneShare": -0.135,
+            "entryCost": 5.95
+          }
+        ]
+      },
+      {
+        "period": "heldout",
+        "lookbackMs": 900000,
+        "holdingMs": 300000,
+        "rule": "trend",
+        "decisions": 13325,
+        "signals": 280,
+        "entered": 268,
+        "completed": 253,
+        "wins": 0,
+        "losses": 251,
+        "flats": 2,
+        "winRate": 0,
+        "totalNetPnlOneShare": -1.66,
+        "totalEntryCost": 84.96,
+        "meanNetPnlPerShare": -0.006561264822134387,
+        "medianNetPnlPerShare": -0.005,
+        "p10NetPnlPerShare": -0.01,
+        "p90NetPnlPerShare": -0.005,
+        "censoring": {
+          "noLookback": 7947,
+          "flatSignal": 4679,
+          "entryNoBook": 0,
+          "entryDelayExceeded": 12,
+          "entryDepthInsufficient": 0,
+          "exitNoBook": 0,
+          "exitDelayExceeded": 3,
+          "exitDepthInsufficient": 0,
+          "invalidation": 12
+        },
+        "byMarket": [
+          {
+            "marketId": "305",
+            "trades": 25,
+            "wins": 0,
+            "losses": 25,
+            "netPnlOneShare": -0.16,
+            "entryCost": 22.75
+          },
+          {
+            "marketId": "377",
+            "trades": 40,
+            "wins": 0,
+            "losses": 40,
+            "netPnlOneShare": -0.28,
+            "entryCost": 28.055
+          },
+          {
+            "marketId": "306",
+            "trades": 58,
+            "wins": 0,
+            "losses": 58,
+            "netPnlOneShare": -0.38,
+            "entryCost": 6.895
+          },
+          {
+            "marketId": "354",
+            "trades": 130,
+            "wins": 0,
+            "losses": 128,
+            "netPnlOneShare": -0.84,
+            "entryCost": 27.26
+          }
+        ],
+        "byUtcDay": [
+          {
+            "utcDay": "2026-10-12",
+            "trades": 227,
+            "wins": 0,
+            "losses": 225,
+            "netPnlOneShare": -1.52,
+            "entryCost": 75.675
+          },
+          {
+            "utcDay": "2026-10-13",
+            "trades": 26,
+            "wins": 0,
+            "losses": 26,
+            "netPnlOneShare": -0.14,
+            "entryCost": 9.285
+          }
+        ]
+      },
+      {
+        "period": "heldout",
+        "lookbackMs": 900000,
+        "holdingMs": 300000,
+        "rule": "unconditional",
+        "decisions": 13325,
+        "signals": 5378,
+        "entered": 5116,
+        "completed": 4865,
+        "wins": 3,
+        "losses": 4822,
+        "flats": 40,
+        "winRate": 0.0006166495375128469,
+        "totalNetPnlOneShare": -27.655,
+        "totalEntryCost": 2943.925,
+        "meanNetPnlPerShare": -0.00568448098663926,
+        "medianNetPnlPerShare": -0.005,
+        "p10NetPnlPerShare": -0.01,
+        "p90NetPnlPerShare": -0.005,
+        "censoring": {
+          "noLookback": 7947,
+          "flatSignal": 0,
+          "entryNoBook": 0,
+          "entryDelayExceeded": 243,
+          "entryDepthInsufficient": 0,
+          "exitNoBook": 0,
+          "exitDelayExceeded": 22,
+          "exitDepthInsufficient": 0,
+          "invalidation": 248
+        },
+        "byMarket": [
+          {
+            "marketId": "306",
+            "trades": 661,
+            "wins": 0,
+            "losses": 654,
+            "netPnlOneShare": -3.64,
+            "entryCost": 75.745
+          },
+          {
+            "marketId": "377",
+            "trades": 1039,
+            "wins": 3,
+            "losses": 1023,
+            "netPnlOneShare": -5.37,
+            "entryCost": 718.335
+          },
+          {
+            "marketId": "305",
+            "trades": 1056,
+            "wins": 0,
+            "losses": 1056,
+            "netPnlOneShare": -5.785,
+            "entryCost": 951.52
+          },
+          {
+            "marketId": "354",
+            "trades": 1052,
+            "wins": 0,
+            "losses": 1032,
+            "netPnlOneShare": -6.015,
+            "entryCost": 217.115
+          },
+          {
+            "marketId": "277",
+            "trades": 1057,
+            "wins": 0,
+            "losses": 1057,
+            "netPnlOneShare": -6.845,
+            "entryCost": 981.21
+          }
+        ],
+        "byUtcDay": [
+          {
+            "utcDay": "2026-10-12",
+            "trades": 3524,
+            "wins": 3,
+            "losses": 3485,
+            "netPnlOneShare": -20.91,
+            "entryCost": 2037.08
+          },
+          {
+            "utcDay": "2026-10-13",
+            "trades": 1341,
+            "wins": 0,
+            "losses": 1337,
+            "netPnlOneShare": -6.745,
+            "entryCost": 906.845
+          }
+        ]
+      },
+      {
+        "period": "heldout",
+        "lookbackMs": 900000,
+        "holdingMs": 900000,
+        "rule": "reversion",
+        "decisions": 13325,
+        "signals": 419,
+        "entered": 411,
+        "completed": 367,
+        "wins": 2,
+        "losses": 355,
+        "flats": 10,
+        "winRate": 0.005449591280653951,
+        "totalNetPnlOneShare": -2.335,
+        "totalEntryCost": 193.105,
+        "meanNetPnlPerShare": -0.006362397820163488,
+        "medianNetPnlPerShare": -0.005,
+        "p10NetPnlPerShare": -0.01,
+        "p90NetPnlPerShare": -0.005,
+        "censoring": {
+          "noLookback": 7947,
+          "flatSignal": 4679,
+          "entryNoBook": 0,
+          "entryDelayExceeded": 6,
+          "entryDepthInsufficient": 0,
+          "exitNoBook": 0,
+          "exitDelayExceeded": 0,
+          "exitDepthInsufficient": 0,
+          "invalidation": 46
+        },
+        "byMarket": [
+          {
+            "marketId": "306",
+            "trades": 33,
+            "wins": 0,
+            "losses": 31,
+            "netPnlOneShare": -0.21,
+            "entryCost": 3.865
+          },
+          {
+            "marketId": "377",
+            "trades": 78,
+            "wins": 2,
+            "losses": 75,
+            "netPnlOneShare": -0.39,
+            "entryCost": 53.935
+          },
+          {
+            "marketId": "305",
+            "trades": 55,
+            "wins": 0,
+            "losses": 55,
+            "netPnlOneShare": -0.415,
+            "entryCost": 49.825
+          },
+          {
+            "marketId": "277",
+            "trades": 61,
+            "wins": 0,
+            "losses": 61,
+            "netPnlOneShare": -0.49,
+            "entryCost": 56.635
+          },
+          {
+            "marketId": "354",
+            "trades": 140,
+            "wins": 0,
+            "losses": 133,
+            "netPnlOneShare": -0.83,
+            "entryCost": 28.845
+          }
+        ],
+        "byUtcDay": [
+          {
+            "utcDay": "2026-10-12",
+            "trades": 343,
+            "wins": 2,
+            "losses": 331,
+            "netPnlOneShare": -2.215,
+            "entryCost": 188.25
+          },
+          {
+            "utcDay": "2026-10-13",
+            "trades": 24,
+            "wins": 0,
+            "losses": 24,
+            "netPnlOneShare": -0.12,
+            "entryCost": 4.855
+          }
+        ]
+      },
+      {
+        "period": "heldout",
+        "lookbackMs": 900000,
+        "holdingMs": 900000,
+        "rule": "trend",
+        "decisions": 13325,
+        "signals": 280,
+        "entered": 268,
+        "completed": 246,
+        "wins": 1,
+        "losses": 241,
+        "flats": 4,
+        "winRate": 0.0040650406504065045,
+        "totalNetPnlOneShare": -1.87,
+        "totalEntryCost": 81.725,
+        "meanNetPnlPerShare": -0.007601626016260163,
+        "medianNetPnlPerShare": -0.005,
+        "p10NetPnlPerShare": -0.01,
+        "p90NetPnlPerShare": -0.005,
+        "censoring": {
+          "noLookback": 7947,
+          "flatSignal": 4679,
+          "entryNoBook": 0,
+          "entryDelayExceeded": 12,
+          "entryDepthInsufficient": 0,
+          "exitNoBook": 0,
+          "exitDelayExceeded": 1,
+          "exitDepthInsufficient": 0,
+          "invalidation": 21
+        },
+        "byMarket": [
+          {
+            "marketId": "288",
+            "trades": 1,
+            "wins": 0,
+            "losses": 1,
+            "netPnlOneShare": -0.005,
+            "entryCost": 0.07
+          },
+          {
+            "marketId": "386",
+            "trades": 1,
+            "wins": 0,
+            "losses": 1,
+            "netPnlOneShare": -0.02,
+            "entryCost": 0.115
+          },
+          {
+            "marketId": "305",
+            "trades": 25,
+            "wins": 0,
+            "losses": 25,
+            "netPnlOneShare": -0.215,
+            "entryCost": 22.75
+          },
+          {
+            "marketId": "377",
+            "trades": 37,
+            "wins": 0,
+            "losses": 37,
+            "netPnlOneShare": -0.395,
+            "entryCost": 25.925
+          },
+          {
+            "marketId": "306",
+            "trades": 58,
+            "wins": 0,
+            "losses": 58,
+            "netPnlOneShare": -0.42,
+            "entryCost": 6.895
+          },
+          {
+            "marketId": "354",
+            "trades": 124,
+            "wins": 1,
+            "losses": 119,
+            "netPnlOneShare": -0.815,
+            "entryCost": 25.97
+          }
+        ],
+        "byUtcDay": [
+          {
+            "utcDay": "2026-10-12",
+            "trades": 220,
+            "wins": 1,
+            "losses": 215,
+            "netPnlOneShare": -1.73,
+            "entryCost": 72.44
+          },
+          {
+            "utcDay": "2026-10-13",
+            "trades": 26,
+            "wins": 0,
+            "losses": 26,
+            "netPnlOneShare": -0.14,
+            "entryCost": 9.285
+          }
+        ]
+      },
+      {
+        "period": "heldout",
+        "lookbackMs": 900000,
+        "holdingMs": 900000,
+        "rule": "unconditional",
+        "decisions": 13325,
+        "signals": 5378,
+        "entered": 5116,
+        "completed": 4480,
+        "wins": 6,
+        "losses": 4379,
+        "flats": 95,
+        "winRate": 0.0013392857142857143,
+        "totalNetPnlOneShare": -26.05,
+        "totalEntryCost": 2706.44,
+        "meanNetPnlPerShare": -0.005814732142857143,
+        "medianNetPnlPerShare": -0.005,
+        "p10NetPnlPerShare": -0.01,
+        "p90NetPnlPerShare": -0.005,
+        "censoring": {
+          "noLookback": 7947,
+          "flatSignal": 0,
+          "entryNoBook": 0,
+          "entryDelayExceeded": 243,
+          "entryDepthInsufficient": 0,
+          "exitNoBook": 8,
+          "exitDelayExceeded": 20,
+          "exitDepthInsufficient": 0,
+          "invalidation": 627
+        },
+        "byMarket": [
+          {
+            "marketId": "288",
+            "trades": 1,
+            "wins": 0,
+            "losses": 1,
+            "netPnlOneShare": -0.005,
+            "entryCost": 0.07
+          },
+          {
+            "marketId": "386",
+            "trades": 5,
+            "wins": 0,
+            "losses": 5,
+            "netPnlOneShare": -0.04,
+            "entryCost": 0.6
+          },
+          {
+            "marketId": "306",
+            "trades": 612,
+            "wins": 0,
+            "losses": 588,
+            "netPnlOneShare": -3.31,
+            "entryCost": 70.09
+          },
+          {
+            "marketId": "377",
+            "trades": 952,
+            "wins": 3,
+            "losses": 930,
+            "netPnlOneShare": -5.18,
+            "entryCost": 658.015
+          },
+          {
+            "marketId": "305",
+            "trades": 974,
+            "wins": 0,
+            "losses": 974,
+            "netPnlOneShare": -5.42,
+            "entryCost": 877.91
+          },
+          {
+            "marketId": "354",
+            "trades": 966,
+            "wins": 3,
+            "losses": 911,
+            "netPnlOneShare": -5.57,
+            "entryCost": 199.155
+          },
+          {
+            "marketId": "277",
+            "trades": 970,
+            "wins": 0,
+            "losses": 970,
+            "netPnlOneShare": -6.525,
+            "entryCost": 900.6
+          }
+        ],
+        "byUtcDay": [
+          {
+            "utcDay": "2026-10-12",
+            "trades": 3300,
+            "wins": 6,
+            "losses": 3210,
+            "netPnlOneShare": -20.095,
+            "entryCost": 1908.89
+          },
+          {
+            "utcDay": "2026-10-13",
+            "trades": 1180,
+            "wins": 0,
+            "losses": 1169,
+            "netPnlOneShare": -5.955,
+            "entryCost": 797.55
+          }
+        ]
+      },
+      {
+        "period": "heldout",
+        "lookbackMs": 900000,
+        "holdingMs": 3600000,
+        "rule": "reversion",
+        "decisions": 13325,
+        "signals": 419,
+        "entered": 411,
+        "completed": 321,
+        "wins": 4,
+        "losses": 283,
+        "flats": 34,
+        "winRate": 0.012461059190031152,
+        "totalNetPnlOneShare": -2.22,
+        "totalEntryCost": 178.485,
+        "meanNetPnlPerShare": -0.00691588785046729,
+        "medianNetPnlPerShare": -0.005,
+        "p10NetPnlPerShare": -0.01,
+        "p90NetPnlPerShare": 0,
+        "censoring": {
+          "noLookback": 7947,
+          "flatSignal": 4679,
+          "entryNoBook": 0,
+          "entryDelayExceeded": 6,
+          "entryDepthInsufficient": 0,
+          "exitNoBook": 1,
+          "exitDelayExceeded": 1,
+          "exitDepthInsufficient": 0,
+          "invalidation": 90
+        },
+        "byMarket": [
+          {
+            "marketId": "306",
+            "trades": 18,
+            "wins": 0,
+            "losses": 17,
+            "netPnlOneShare": -0.085,
+            "entryCost": 2.14
+          },
+          {
+            "marketId": "305",
+            "trades": 55,
+            "wins": 0,
+            "losses": 55,
+            "netPnlOneShare": -0.38,
+            "entryCost": 49.825
+          },
+          {
+            "marketId": "377",
+            "trades": 65,
+            "wins": 0,
+            "losses": 65,
+            "netPnlOneShare": -0.435,
+            "entryCost": 44.765
+          },
+          {
+            "marketId": "277",
+            "trades": 61,
+            "wins": 0,
+            "losses": 61,
+            "netPnlOneShare": -0.64,
+            "entryCost": 56.635
+          },
+          {
+            "marketId": "354",
+            "trades": 122,
+            "wins": 4,
+            "losses": 85,
+            "netPnlOneShare": -0.68,
+            "entryCost": 25.12
+          }
+        ],
+        "byUtcDay": [
+          {
+            "utcDay": "2026-10-12",
+            "trades": 305,
+            "wins": 4,
+            "losses": 267,
+            "netPnlOneShare": -2.14,
+            "entryCost": 175.27
+          },
+          {
+            "utcDay": "2026-10-13",
+            "trades": 16,
+            "wins": 0,
+            "losses": 16,
+            "netPnlOneShare": -0.08,
+            "entryCost": 3.215
+          }
+        ]
+      },
+      {
+        "period": "heldout",
+        "lookbackMs": 900000,
+        "holdingMs": 3600000,
+        "rule": "trend",
+        "decisions": 13325,
+        "signals": 280,
+        "entered": 268,
+        "completed": 199,
+        "wins": 0,
+        "losses": 183,
+        "flats": 16,
+        "winRate": 0,
+        "totalNetPnlOneShare": -1.34,
+        "totalEntryCost": 53.905,
+        "meanNetPnlPerShare": -0.006733668341708543,
+        "medianNetPnlPerShare": -0.005,
+        "p10NetPnlPerShare": -0.01,
+        "p90NetPnlPerShare": -0.005,
+        "censoring": {
+          "noLookback": 7947,
+          "flatSignal": 4679,
+          "entryNoBook": 0,
+          "entryDelayExceeded": 12,
+          "entryDepthInsufficient": 0,
+          "exitNoBook": 0,
+          "exitDelayExceeded": 0,
+          "exitDepthInsufficient": 0,
+          "invalidation": 69
+        },
+        "byMarket": [
+          {
+            "marketId": "377",
+            "trades": 1,
+            "wins": 0,
+            "losses": 1,
+            "netPnlOneShare": -0.015,
+            "entryCost": 0.695
+          },
+          {
+            "marketId": "305",
+            "trades": 24,
+            "wins": 0,
+            "losses": 24,
+            "netPnlOneShare": -0.23,
+            "entryCost": 21.84
+          },
+          {
+            "marketId": "306",
+            "trades": 56,
+            "wins": 0,
+            "losses": 46,
+            "netPnlOneShare": -0.3,
+            "entryCost": 6.66
+          },
+          {
+            "marketId": "354",
+            "trades": 118,
+            "wins": 0,
+            "losses": 112,
+            "netPnlOneShare": -0.795,
+            "entryCost": 24.71
+          }
+        ],
+        "byUtcDay": [
+          {
+            "utcDay": "2026-10-12",
+            "trades": 186,
+            "wins": 0,
+            "losses": 170,
+            "netPnlOneShare": -1.265,
+            "entryCost": 51.23
+          },
+          {
+            "utcDay": "2026-10-13",
+            "trades": 13,
+            "wins": 0,
+            "losses": 13,
+            "netPnlOneShare": -0.075,
+            "entryCost": 2.675
+          }
+        ]
+      },
+      {
+        "period": "heldout",
+        "lookbackMs": 900000,
+        "holdingMs": 3600000,
+        "rule": "unconditional",
+        "decisions": 13325,
+        "signals": 5378,
+        "entered": 5116,
+        "completed": 3126,
+        "wins": 4,
+        "losses": 2912,
+        "flats": 210,
+        "winRate": 0.0012795905310300703,
+        "totalNetPnlOneShare": -20.24,
+        "totalEntryCost": 1876.605,
+        "meanNetPnlPerShare": -0.006474728087012155,
+        "medianNetPnlPerShare": -0.005,
+        "p10NetPnlPerShare": -0.01,
+        "p90NetPnlPerShare": -0.005,
+        "censoring": {
+          "noLookback": 7947,
+          "flatSignal": 0,
+          "entryNoBook": 0,
+          "entryDelayExceeded": 243,
+          "entryDepthInsufficient": 0,
+          "exitNoBook": 85,
+          "exitDelayExceeded": 3,
+          "exitDepthInsufficient": 0,
+          "invalidation": 1921
+        },
+        "byMarket": [
+          {
+            "marketId": "306",
+            "trades": 450,
+            "wins": 0,
+            "losses": 383,
+            "netPnlOneShare": -2.01,
+            "entryCost": 51.295
+          },
+          {
+            "marketId": "354",
+            "trades": 676,
+            "wins": 4,
+            "losses": 529,
+            "netPnlOneShare": -4.005,
+            "entryCost": 138.86
+          },
+          {
+            "marketId": "305",
+            "trades": 674,
+            "wins": 0,
+            "losses": 674,
+            "netPnlOneShare": -4.115,
+            "entryCost": 608.94
+          },
+          {
+            "marketId": "377",
+            "trades": 650,
+            "wins": 0,
+            "losses": 650,
+            "netPnlOneShare": -4.275,
+            "entryCost": 448.83
+          },
+          {
+            "marketId": "277",
+            "trades": 676,
+            "wins": 0,
+            "losses": 676,
+            "netPnlOneShare": -5.835,
+            "entryCost": 628.68
+          }
+        ],
+        "byUtcDay": [
+          {
+            "utcDay": "2026-10-12",
+            "trades": 2425,
+            "wins": 4,
+            "losses": 2236,
+            "netPnlOneShare": -16.595,
+            "entryCost": 1403.45
+          },
+          {
+            "utcDay": "2026-10-13",
+            "trades": 701,
+            "wins": 0,
+            "losses": 676,
+            "netPnlOneShare": -3.645,
+            "entryCost": 473.155
+          }
+        ]
+      }
+    ],
+    "counterfactualOnly": true,
+    "actualFills": false,
+    "profitabilityEstablished": false
+  },
+  "runtime": {
+    "chainAndReadMs": 32411,
+    "analysisMs": 892,
+    "totalMs": 33303,
+    "recordsPerSecond": 4068,
+    "booksPerSecond": 3981
+  },
+  "decision": "paper research only; no API, account, collector, live worker, or contest-order operation"
+}
