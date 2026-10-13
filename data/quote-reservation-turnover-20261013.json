@@ -1,0 +1,263 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-10-13T09:31:28.949Z",
+  "provenance": {
+    "bankHash": "c94425a46b0a9ab4e51f1fa4adc5c0a987365433ab470e8112b1a0a1039a1465",
+    "cohort": "maker-book-point-scoped-20261013-v13",
+    "cutoff": "2026-10-13T06:07:46.366Z",
+    "codeIdentityCount": 56,
+    "codeIdentityDigest": "6c97c86848e29199ec0805094f1ca67beefa97520a8fab3ece40f9f5ad6200fc",
+    "continuationSeedHash": "3039d031aace5a16768a5e349778af0f46e10e039f4dccfe9fc8bb8ce318f10c",
+    "stateJournal": {
+      "sequence": 3141,
+      "at": "2026-10-13T09:31:27.600Z",
+      "previousHash": "296c6dd04100f9b18989eab746f4367948570a77a3b3912b45d0505a79b687a2",
+      "recordHash": "4bcef6c6e6913d0816f8a830643a3ad61f0c7046dc6e5b568bfda38ccc25ac1a",
+      "recordHashVerified": true,
+      "snapshotEndByte": 17836612498,
+      "fileBytesAtRead": 17836612498,
+      "wholeJournalRehashed": false,
+      "walletStateAt": "2026-10-13T09:31:27.582Z"
+    },
+    "initialState": {
+      "lastAt": "2026-10-13T07:58:08.869Z",
+      "updateCount": 4389,
+      "quoteCount": 260,
+      "fillCount": 0,
+      "seedHashVerified": true
+    },
+    "sourceBooks": {
+      "sequence": 131032,
+      "sourceBytes": 302342281,
+      "sourceChainHead": "d18521fdeb0d92e731f5b5113ab6ff6ab7286512333a7c57e8ae0b593c43ebb1",
+      "sourcePrefixHash": "d0915c1949419ac69604375200d097b73236f2ecf60224490c5d95de124e445e",
+      "currentFileBytes": 302342281,
+      "sameDevice": true
+    },
+    "sourceTape": {
+      "sequence": 14319,
+      "sourceBytes": 34858185646,
+      "sourceChainHead": "e9690aa9dc68cd1f0602e5296606bdf8410088d6cca05e23574101e53328f68e",
+      "sourcePrefixHash": "99484b194e44038cf8a50b96ee9e67f59093a4135e7ce2306808891bbf61e003",
+      "currentFileBytes": 34858185646,
+      "sameDevice": true
+    },
+    "sourceCaptureBookStateDigest": "b452e2330ef58528518835abac2676d5c0c40aa2466a5a3050af362b1ec26dbd",
+    "statsCheck": {
+      "sameBank": true,
+      "checkpointAt": "2026-10-13T09:31:27.582Z",
+      "sameWalletCheckpoint": true,
+      "reservedCashMatches": true,
+      "fillCountMatches": true,
+      "realizedMatches": true
+    },
+    "inputReadMode": "read-only local paper files; latest complete frozen journal checkpoint plus its embedded exact quote/fill/source bindings",
+    "ordersSent": 0,
+    "networkRequests": 0
+  },
+  "results": {
+    "schemaVersion": 1,
+    "mode": "offline_frozen_local_paper_quote_reservation_diagnosis",
+    "cohort": {
+      "name": "maker-book-point-scoped-20261013-v13",
+      "bankHash": "c94425a46b0a9ab4e51f1fa4adc5c0a987365433ab470e8112b1a0a1039a1465",
+      "cutoff": "2026-10-13T06:07:46.366Z",
+      "asOf": "2026-10-13T09:31:27.582Z",
+      "windowMs": 12221216,
+      "fillModel": "strict_tape_through",
+      "modeledLatencyMs": 3000,
+      "quoteLifetimeMs": 120000,
+      "tapeParticipationBps": 100,
+      "executionAuthority": false
+    },
+    "wallet": {
+      "initialCash": "1000.000000",
+      "cash": "1000.000000",
+      "reservedCash": "99.965000",
+      "ownedMarkets": 0,
+      "realized": "0.000000",
+      "paperFillEvents": 0,
+      "actualFillEvents": 0,
+      "paperBuyFillNotional": "0.000000",
+      "paperSellFillNotional": "0.000000",
+      "modeledFees": "0.000000",
+      "fillFeeFields": 0,
+      "feeInterpretation": "no explicit fee recorded on paper fill records"
+    },
+    "quoteLifecycle": {
+      "totalQuotes": 338,
+      "buys": 338,
+      "sells": 0,
+      "openBuyReservations": 224,
+      "currentReservedCash": "99.965000",
+      "currentReservedBuyShares": 1054,
+      "unresolvedExpiredBuyQuotes": 221,
+      "reservedCashOnExpiredBuyQuotes": "92.920000",
+      "unresolvedAfterModeledCancel": 217,
+      "reservedCashAfterModeledCancel": "95.730000",
+      "outcomeCounts": {
+        "filled": 0,
+        "partialFill": 0,
+        "closedWithoutFullFill": 114,
+        "unresolved": 224,
+        "unresolvedAfterCancelEffective": 217,
+        "unresolvedAfterExpiry": 221,
+        "censored": 0,
+        "modeledCancelFlag": 331,
+        "modeledCancelAcknowledged": 331
+      },
+      "retirementBlockers": {
+        "caught_up_contiguous_tape_required": 223,
+        "missing_projection": 1
+      },
+      "meanCashReservationUsd": "92.378213",
+      "reservationCapitalDollarHours": "313.604",
+      "reservedShareHours": "3647.868",
+      "cashReservationDollarHoursAfterEffectiveCancelOrExpiry": "312.015",
+      "ageSinceActivationMs": {
+        "n": 338,
+        "min": 14570,
+        "median": 10957456,
+        "p90": 11724279,
+        "max": 11986070
+      },
+      "unresolvedAgeSinceActivationMs": {
+        "n": 224,
+        "min": 14570,
+        "median": 11260327,
+        "p90": 11792441,
+        "max": 11986070
+      }
+    },
+    "priceAndDepth": {
+      "quotesWithHashBoundDecisionBook": 224,
+      "sourceBoundReceipts": 219,
+      "sourceContinuityProven": 0,
+      "decisionBookContinuityNotProven": 219,
+      "sourceCaptureBindingsDigest": "5eee65a5db53127fc9006266b761c6a3fa2689b6e9668153fb04556fe9a77fa3",
+      "bookAgeAtQuoteCreationMs": {
+        "n": 224,
+        "min": 94,
+        "median": 3728,
+        "p90": 8178,
+        "max": 9872
+      },
+      "bookAgeAtActivationMs": {
+        "n": 224,
+        "min": 3094,
+        "median": 6728,
+        "p90": 11178,
+        "max": 12872
+      },
+      "activationBookOlderThan10s": 39,
+      "topOfBookSameOutcomeBidShares": {
+        "n": 224,
+        "min": 469,
+        "median": 11874,
+        "p90": 64650,
+        "max": 204130
+      },
+      "topOfBookSameOutcomeAskShares": {
+        "n": 224,
+        "min": 1,
+        "median": 819,
+        "p90": 4823,
+        "max": 13783
+      },
+      "paperQueueStudyInitialDisplayedAheadShares": {
+        "n": 224,
+        "min": 0,
+        "median": 3598,
+        "p90": 64650,
+        "max": 204130
+      },
+      "sourceObservedBidLevelCounts": {
+        "n": 219,
+        "min": 8,
+        "median": 60,
+        "p90": 69,
+        "max": 71
+      },
+      "sourceObservedAskLevelCounts": {
+        "n": 219,
+        "min": 8,
+        "median": 25,
+        "p90": 65,
+        "max": 70
+      },
+      "quotePricePosition": {
+        "atBestBid": 179,
+        "insideSpread": 45,
+        "betterThanBestBid": 45,
+        "atBestAsk": 0,
+        "belowBestBid": 0
+      },
+      "quotePositionLimitations": "Decision snapshots preserve the top level for each outcome; displayed depth and the queue-study estimate do not prove queue priority or fills."
+    },
+    "fillsAndMarkouts": {
+      "paperFillEvents": 0,
+      "eligiblePrints": 0,
+      "observedTapePrints": 4093,
+      "grantedParticipationShares": 0,
+      "fillSourceAgeMs": {
+        "n": 0,
+        "min": null,
+        "median": null,
+        "p90": null,
+        "max": null
+      },
+      "fillKnowledgeDelayMs": {
+        "n": 0,
+        "min": null,
+        "median": null,
+        "p90": null,
+        "max": null
+      },
+      "queuePositionProvenFillEvents": 0,
+      "markouts": [
+        {
+          "horizonMs": 1000,
+          "n": 0,
+          "censored": 0,
+          "meanPerShare": null,
+          "medianPerShare": null,
+          "depthComplete": 0
+        },
+        {
+          "horizonMs": 5000,
+          "n": 0,
+          "censored": 0,
+          "meanPerShare": null,
+          "medianPerShare": null,
+          "depthComplete": 0
+        },
+        {
+          "horizonMs": 30000,
+          "n": 0,
+          "censored": 0,
+          "meanPerShare": null,
+          "medianPerShare": null,
+          "depthComplete": 0
+        },
+        {
+          "horizonMs": 60000,
+          "n": 0,
+          "censored": 0,
+          "meanPerShare": null,
+          "medianPerShare": null,
+          "depthComplete": 0
+        }
+      ],
+      "associationStatus": "Not identifiable: zero paper fills; age/depth versus fill or post-fill markout cannot be estimated."
+    },
+    "interpretation": {
+      "reservationSemantics": "Buy cash remains reserved while its quote is not closed; modeled cancel-effective time or quote expiry alone does not release it. The simulator retires only after its projection/tape barrier allows closure.",
+      "fillSemantics": "A paper fill requires strict one-tick tape trade-through after modeled activation and applies the configured tape participation fraction. Queue priority and actual contest fills are not established.",
+      "markoutSemantics": "Markouts are counterfactual top/depth liquidation values at later captured books, after the local paper fill is known; they are not realized cash or contest executions.",
+      "profitabilityEstablished": false,
+      "networkRequests": 0,
+      "contestOrders": 0
+    }
+  }
+}
+
