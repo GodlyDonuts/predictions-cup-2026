@@ -1,0 +1,729 @@
+{
+  "schema": "realtime-ofi-diagnostic-v1",
+  "source": {
+    "file": "realtime-2026-10-13T13-28-06-669Z-a7674ae9-ed0e-41c6-90c8-390b1ce0dc8b.jsonl",
+    "prefixBytes": 187899071,
+    "sha256": "49e9dc3f5ce96c95149c5b394c3ae640be339dcc53ac3b752233118bc29c62b8",
+    "captureRecords": 52222,
+    "firstObservedAt": "2026-10-13T13:28:06.671Z",
+    "throughObservedAt": "2026-10-13T14:06:23.779Z",
+    "tournamentId": "bda92870-621e-47b0-bc3c-3602c5c26f55",
+    "sourceSizeAtFirstScanStart": 221656002,
+    "sourceSizeAtFirstScanEnd": 221656002,
+    "sourceSizeAtSecondScanStart": 221656002,
+    "sourceSizeAtSecondScanEnd": 221656002,
+    "appendedBytesExcluded": true
+  },
+  "protocol": {
+    "input": "Only captured public market_batch book rows. Reads capture envelope metadata and whitelisted public book fields; ignores trade, account, and unrelated payload fields.",
+    "split": {
+      "method": "capture-record order; first floor(70% of records) discovery, remaining records holdout",
+      "totalRecords": 52222,
+      "splitIndex": 36555,
+      "discoveryRecords": 36555,
+      "holdoutRecords": 15667,
+      "holdoutFirstObservedAt": "2026-10-13T13:55:00.304Z",
+      "noLabelMayCrossSplit": true
+    },
+    "horizonsMs": [
+      1000,
+      3000,
+      10000
+    ],
+    "labelGraceMs": 1000,
+    "label": "First accepted same-market book update observed at or after signal time plus horizon, no later than the horizon target plus labelGraceMs; mid is the bid/ask midpoint in official 0.005 ticks.",
+    "queueImbalance": "(bestBidQuantity - bestAskQuantity) / (bestBidQuantity + bestAskQuantity)",
+    "orderFlowImbalance": "Cont-style best-quote OFI: bid rise=current bid size, unchanged bid=current minus prior size, bid fall=minus prior size; ask fall=minus current size, unchanged ask=prior minus current size, ask rise=prior size; divide the sum by current plus prior best bid/ask depth.",
+    "thresholdSelection": "For each signal, fit one cutoff from discovery only: nearest-rank 80th percentile of nonzero absolute signal values. No outcome tuning or parameter sweep.",
+    "adverseMarkout": "Negative of sign(signal) times subsequent mid change; positive means the mid moved against the signal. This is a forecast markout, not a fill or P&L.",
+    "uncertainty": "Market-clustered sandwich standard errors with finite-cluster correction and normal 1.96 intervals for markout means, coverage rates, and continuous OLS slope.",
+    "continuity": "Clear pending outcomes and prior BBO across invalidation, reconnect, settlement, resync, epoch/revision gap, invalid book, source-clock rollback, and discovery/holdout boundary.",
+    "depth": "Signal-time top-of-book queue depth and observed first-20-level depth; spread is in official ticks.",
+    "resourceBounds": {
+      "chunkBytes": 1048576,
+      "maxRecordBytes": 16777216,
+      "maxPrefixBytes": 2147483648,
+      "maxRecords": 500000,
+      "maxMarkets": 1000,
+      "maxPendingObservations": 250000
+    }
+  },
+  "thresholds": {
+    "queueImbalanceTop": 0.884331,
+    "normalizedBboOfi": 0.075821
+  },
+  "counts": {
+    "byFold": {
+      "discovery": {
+        "records": 36555,
+        "marketBatchRecords": 33425,
+        "publicBookRows": 33425,
+        "acceptedPublicBooks": 32566,
+        "queueSignals": 32566,
+        "ofiSignals": 30161
+      },
+      "holdout": {
+        "records": 15667,
+        "marketBatchRecords": 13501,
+        "publicBookRows": 13501,
+        "acceptedPublicBooks": 12969,
+        "queueSignals": 12969,
+        "ofiSignals": 11721
+      }
+    },
+    "markets": 237,
+    "marketsWithOneExchange": 237,
+    "exchangeMarketBindings": 237,
+    "rejectedBooks": {
+      "OFI_EXPIRED_BOOK": 1389,
+      "OFI_FUTURE_BOOK": 2
+    },
+    "boundaries": {
+      "source_subscribed": 474,
+      "source_invalidation": 3179,
+      "invalid_public_book": 1391,
+      "source_snapshot": 191,
+      "source_disconnected": 237
+    }
+  },
+  "results": {
+    "queueImbalanceTop": {
+      "1000": {
+        "thresholdTriggered": {
+          "cutoffAbs": 0.884331,
+          "discoveryQuantile": 0.8,
+          "discoveryNonzeroSignals": 32423,
+          "discoverySignals": 32566,
+          "fitRule": "nearest-rank 80th percentile of nonzero absolute discovery features; fixed 20,001-bin [0,1] histogram; applied unchanged to holdout"
+        },
+        "allHoldoutSignals": {
+          "opportunities": 12919,
+          "labeled": 1423,
+          "rate": 0.110148,
+          "markets": 237,
+          "clusterSe": 0.0052,
+          "ci95": [
+            0.099956,
+            0.12034
+          ],
+          "labelDelayMs": {
+            "mean": 488.430077,
+            "p50": 507,
+            "p90": 890
+          },
+          "noBookWithinGrace": 10438,
+          "boundaryCensored": 1058
+        },
+        "thresholdHoldoutSignals": {
+          "opportunities": 2864,
+          "labeled": 330,
+          "rate": 0.115223,
+          "markets": 83,
+          "clusterSe": 0.010372,
+          "ci95": [
+            0.094893,
+            0.135554
+          ],
+          "labelDelayMs": {
+            "mean": 500.433333,
+            "p50": 518,
+            "p90": 890
+          },
+          "noBookWithinGrace": 2304,
+          "boundaryCensored": 230
+        },
+        "allLabeledOutcomes": {
+          "observations": 1423,
+          "markets": 231,
+          "meanMidMoveTicks": 0.001054,
+          "meanMidMoveClusterSe": 0.001259,
+          "meanMidMoveCi95": [
+            -0.001414,
+            0.003522
+          ],
+          "meanDirectionalMarkoutTicks": 0.001054,
+          "meanDirectionalMarkoutClusterSe": 0.001274,
+          "meanDirectionalMarkoutCi95": [
+            -0.001444,
+            0.003552
+          ],
+          "adverseMarkoutTicks": -0.001054,
+          "adverseMarkoutCi95": [
+            -0.003552,
+            0.001444
+          ],
+          "continuousSlopeTicksPerFeatureUnit": 0.003634,
+          "continuousSlopeCi95": [
+            -0.001702,
+            0.008971
+          ],
+          "continuousPearsonCorrelation": 0.046973,
+          "meanSignalSpreadTicks": 1.188335,
+          "meanTopDepthShares": 25264.63598,
+          "meanDepth20Shares": 4674605.873507
+        },
+        "thresholdLabeledOutcomes": {
+          "observations": 330,
+          "markets": 62,
+          "meanMidMoveTicks": 0.001515,
+          "meanMidMoveClusterSe": 0.005017,
+          "meanMidMoveCi95": [
+            -0.008319,
+            0.011349
+          ],
+          "meanDirectionalMarkoutTicks": 0.010606,
+          "meanDirectionalMarkoutClusterSe": 0.005383,
+          "meanDirectionalMarkoutCi95": [
+            0.000055,
+            0.021157
+          ],
+          "adverseMarkoutTicks": -0.010606,
+          "adverseMarkoutCi95": [
+            -0.021157,
+            -0.000055
+          ],
+          "continuousSlopeTicksPerFeatureUnit": 0.011537,
+          "continuousSlopeCi95": [
+            -0.001612,
+            0.024686
+          ],
+          "continuousPearsonCorrelation": 0.129878,
+          "meanSignalSpreadTicks": 1.148485,
+          "meanTopDepthShares": 35532.845455,
+          "meanDepth20Shares": 5189741.042424
+        }
+      },
+      "3000": {
+        "thresholdTriggered": {
+          "cutoffAbs": 0.884331,
+          "discoveryQuantile": 0.8,
+          "discoveryNonzeroSignals": 32423,
+          "discoverySignals": 32566,
+          "fitRule": "nearest-rank 80th percentile of nonzero absolute discovery features; fixed 20,001-bin [0,1] histogram; applied unchanged to holdout"
+        },
+        "allHoldoutSignals": {
+          "opportunities": 12861,
+          "labeled": 1434,
+          "rate": 0.1115,
+          "markets": 237,
+          "clusterSe": 0.005065,
+          "ci95": [
+            0.101573,
+            0.121427
+          ],
+          "labelDelayMs": {
+            "mean": 508.322873,
+            "p50": 511,
+            "p90": 902
+          },
+          "noBookWithinGrace": 10173,
+          "boundaryCensored": 1254
+        },
+        "thresholdHoldoutSignals": {
+          "opportunities": 2854,
+          "labeled": 301,
+          "rate": 0.105466,
+          "markets": 83,
+          "clusterSe": 0.007029,
+          "ci95": [
+            0.091689,
+            0.119243
+          ],
+          "labelDelayMs": {
+            "mean": 521.431894,
+            "p50": 541,
+            "p90": 917
+          },
+          "noBookWithinGrace": 2283,
+          "boundaryCensored": 270
+        },
+        "allLabeledOutcomes": {
+          "observations": 1434,
+          "markets": 226,
+          "meanMidMoveTicks": -0.001046,
+          "meanMidMoveClusterSe": 0.000782,
+          "meanMidMoveCi95": [
+            -0.002579,
+            0.000487
+          ],
+          "meanDirectionalMarkoutTicks": 0.001743,
+          "meanDirectionalMarkoutClusterSe": 0.001439,
+          "meanDirectionalMarkoutCi95": [
+            -0.001077,
+            0.004564
+          ],
+          "adverseMarkoutTicks": -0.001743,
+          "adverseMarkoutCi95": [
+            -0.004564,
+            0.001077
+          ],
+          "continuousSlopeTicksPerFeatureUnit": 0.002438,
+          "continuousSlopeCi95": [
+            -0.00264,
+            0.007517
+          ],
+          "continuousPearsonCorrelation": 0.03953,
+          "meanSignalSpreadTicks": 1.17643,
+          "meanTopDepthShares": 24760.01325,
+          "meanDepth20Shares": 4598608.39749
+        },
+        "thresholdLabeledOutcomes": {
+          "observations": 301,
+          "markets": 61,
+          "meanMidMoveTicks": -0.001661,
+          "meanMidMoveClusterSe": 0.002904,
+          "meanMidMoveCi95": [
+            -0.007353,
+            0.004031
+          ],
+          "meanDirectionalMarkoutTicks": 0.001661,
+          "meanDirectionalMarkoutClusterSe": 0.002917,
+          "meanDirectionalMarkoutCi95": [
+            -0.004056,
+            0.007378
+          ],
+          "adverseMarkoutTicks": -0.001661,
+          "adverseMarkoutCi95": [
+            -0.007378,
+            0.004056
+          ],
+          "continuousSlopeTicksPerFeatureUnit": 0.002542,
+          "continuousSlopeCi95": [
+            -0.004078,
+            0.009161
+          ],
+          "continuousPearsonCorrelation": 0.046287,
+          "meanSignalSpreadTicks": 1.136213,
+          "meanTopDepthShares": 31074.152824,
+          "meanDepth20Shares": 5048061.142857
+        }
+      },
+      "10000": {
+        "thresholdTriggered": {
+          "cutoffAbs": 0.884331,
+          "discoveryQuantile": 0.8,
+          "discoveryNonzeroSignals": 32423,
+          "discoverySignals": 32566,
+          "fitRule": "nearest-rank 80th percentile of nonzero absolute discovery features; fixed 20,001-bin [0,1] histogram; applied unchanged to holdout"
+        },
+        "allHoldoutSignals": {
+          "opportunities": 12757,
+          "labeled": 1211,
+          "rate": 0.094928,
+          "markets": 237,
+          "clusterSe": 0.003713,
+          "ci95": [
+            0.08765,
+            0.102206
+          ],
+          "labelDelayMs": {
+            "mean": 427.438481,
+            "p50": 391,
+            "p90": 840
+          },
+          "noBookWithinGrace": 9790,
+          "boundaryCensored": 1756
+        },
+        "thresholdHoldoutSignals": {
+          "opportunities": 2828,
+          "labeled": 259,
+          "rate": 0.091584,
+          "markets": 83,
+          "clusterSe": 0.006706,
+          "ci95": [
+            0.078439,
+            0.104729
+          ],
+          "labelDelayMs": {
+            "mean": 440.521236,
+            "p50": 426,
+            "p90": 898
+          },
+          "noBookWithinGrace": 2184,
+          "boundaryCensored": 385
+        },
+        "allLabeledOutcomes": {
+          "observations": 1211,
+          "markets": 224,
+          "meanMidMoveTicks": 0.003716,
+          "meanMidMoveClusterSe": 0.001748,
+          "meanMidMoveCi95": [
+            0.00029,
+            0.007141
+          ],
+          "meanDirectionalMarkoutTicks": -0.001239,
+          "meanDirectionalMarkoutClusterSe": 0.002158,
+          "meanDirectionalMarkoutCi95": [
+            -0.005468,
+            0.002991
+          ],
+          "adverseMarkoutTicks": 0.001239,
+          "adverseMarkoutCi95": [
+            -0.002991,
+            0.005468
+          ],
+          "continuousSlopeTicksPerFeatureUnit": 0.000724,
+          "continuousSlopeCi95": [
+            -0.004967,
+            0.006415
+          ],
+          "continuousPearsonCorrelation": 0.006903,
+          "meanSignalSpreadTicks": 1.16763,
+          "meanTopDepthShares": 23201.687861,
+          "meanDepth20Shares": 4625764.898431
+        },
+        "thresholdLabeledOutcomes": {
+          "observations": 259,
+          "markets": 59,
+          "meanMidMoveTicks": 0,
+          "meanMidMoveClusterSe": 0.003894,
+          "meanMidMoveCi95": [
+            -0.007633,
+            0.007633
+          ],
+          "meanDirectionalMarkoutTicks": 0,
+          "meanDirectionalMarkoutClusterSe": 0.003894,
+          "meanDirectionalMarkoutCi95": [
+            -0.007633,
+            0.007633
+          ],
+          "adverseMarkoutTicks": 0,
+          "adverseMarkoutCi95": [
+            -0.007633,
+            0.007633
+          ],
+          "continuousSlopeTicksPerFeatureUnit": 0.000207,
+          "continuousSlopeCi95": [
+            -0.009208,
+            0.009622
+          ],
+          "continuousPearsonCorrelation": 0.003028,
+          "meanSignalSpreadTicks": 1.119691,
+          "meanTopDepthShares": 27133.305019,
+          "meanDepth20Shares": 4963468.401544
+        }
+      }
+    },
+    "normalizedBboOfi": {
+      "1000": {
+        "thresholdTriggered": {
+          "cutoffAbs": 0.075821,
+          "discoveryQuantile": 0.8,
+          "discoveryNonzeroSignals": 3536,
+          "discoverySignals": 30161,
+          "fitRule": "nearest-rank 80th percentile of nonzero absolute discovery features; fixed 20,001-bin [0,1] histogram; applied unchanged to holdout"
+        },
+        "allHoldoutSignals": {
+          "opportunities": 11677,
+          "labeled": 1308,
+          "rate": 0.112015,
+          "markets": 237,
+          "clusterSe": 0.005439,
+          "ci95": [
+            0.101354,
+            0.122676
+          ],
+          "labelDelayMs": {
+            "mean": 491.29052,
+            "p50": 512,
+            "p90": 895
+          },
+          "noBookWithinGrace": 9646,
+          "boundaryCensored": 723
+        },
+        "thresholdHoldoutSignals": {
+          "opportunities": 245,
+          "labeled": 30,
+          "rate": 0.122449,
+          "markets": 97,
+          "clusterSe": 0.02024,
+          "ci95": [
+            0.082778,
+            0.16212
+          ],
+          "labelDelayMs": {
+            "mean": 447.166667,
+            "p50": 450,
+            "p90": 794
+          },
+          "noBookWithinGrace": 205,
+          "boundaryCensored": 10
+        },
+        "allLabeledOutcomes": {
+          "observations": 1308,
+          "markets": 229,
+          "meanMidMoveTicks": 0.001529,
+          "meanMidMoveClusterSe": 0.001314,
+          "meanMidMoveCi95": [
+            -0.001046,
+            0.004104
+          ],
+          "meanDirectionalMarkoutTicks": -0.002294,
+          "meanDirectionalMarkoutClusterSe": 0.001212,
+          "meanDirectionalMarkoutCi95": [
+            -0.004669,
+            0.000082
+          ],
+          "adverseMarkoutTicks": 0.002294,
+          "adverseMarkoutCi95": [
+            -0.000082,
+            0.004669
+          ],
+          "continuousSlopeTicksPerFeatureUnit": -0.079371,
+          "continuousSlopeCi95": [
+            -0.212777,
+            0.054035
+          ],
+          "continuousPearsonCorrelation": -0.077696,
+          "meanSignalSpreadTicks": 1.188073,
+          "meanTopDepthShares": 24776.662844,
+          "meanDepth20Shares": 4674236.528287
+        },
+        "thresholdLabeledOutcomes": {
+          "observations": 30,
+          "markets": 26,
+          "meanMidMoveTicks": -0.016667,
+          "meanMidMoveClusterSe": 0.016807,
+          "meanMidMoveCi95": [
+            -0.049608,
+            0.016275
+          ],
+          "meanDirectionalMarkoutTicks": -0.016667,
+          "meanDirectionalMarkoutClusterSe": 0.016807,
+          "meanDirectionalMarkoutCi95": [
+            -0.049608,
+            0.016275
+          ],
+          "adverseMarkoutTicks": 0.016667,
+          "adverseMarkoutCi95": [
+            -0.016275,
+            0.049608
+          ],
+          "continuousSlopeTicksPerFeatureUnit": -0.063333,
+          "continuousSlopeCi95": [
+            -0.190416,
+            0.06375
+          ],
+          "continuousPearsonCorrelation": -0.232464,
+          "meanSignalSpreadTicks": 1.266667,
+          "meanTopDepthShares": 12806.333333,
+          "meanDepth20Shares": 4673279.166667
+        }
+      },
+      "3000": {
+        "thresholdTriggered": {
+          "cutoffAbs": 0.075821,
+          "discoveryQuantile": 0.8,
+          "discoveryNonzeroSignals": 3536,
+          "discoverySignals": 30161,
+          "fitRule": "nearest-rank 80th percentile of nonzero absolute discovery features; fixed 20,001-bin [0,1] histogram; applied unchanged to holdout"
+        },
+        "allHoldoutSignals": {
+          "opportunities": 11622,
+          "labeled": 1319,
+          "rate": 0.113492,
+          "markets": 237,
+          "clusterSe": 0.005346,
+          "ci95": [
+            0.103014,
+            0.12397
+          ],
+          "labelDelayMs": {
+            "mean": 509.288855,
+            "p50": 515,
+            "p90": 905
+          },
+          "noBookWithinGrace": 9436,
+          "boundaryCensored": 867
+        },
+        "thresholdHoldoutSignals": {
+          "opportunities": 244,
+          "labeled": 32,
+          "rate": 0.131148,
+          "markets": 96,
+          "clusterSe": 0.01954,
+          "ci95": [
+            0.092849,
+            0.169446
+          ],
+          "labelDelayMs": {
+            "mean": 581.6875,
+            "p50": 627,
+            "p90": 917
+          },
+          "noBookWithinGrace": 200,
+          "boundaryCensored": 12
+        },
+        "allLabeledOutcomes": {
+          "observations": 1319,
+          "markets": 222,
+          "meanMidMoveTicks": -0.000758,
+          "meanMidMoveClusterSe": 0.000761,
+          "meanMidMoveCi95": [
+            -0.002249,
+            0.000733
+          ],
+          "meanDirectionalMarkoutTicks": -0.001895,
+          "meanDirectionalMarkoutClusterSe": 0.000846,
+          "meanDirectionalMarkoutCi95": [
+            -0.003554,
+            -0.000236
+          ],
+          "adverseMarkoutTicks": 0.001895,
+          "adverseMarkoutCi95": [
+            0.000236,
+            0.003554
+          ],
+          "continuousSlopeTicksPerFeatureUnit": -0.084955,
+          "continuousSlopeCi95": [
+            -0.23923,
+            0.069319
+          ],
+          "continuousPearsonCorrelation": -0.10033,
+          "meanSignalSpreadTicks": 1.173616,
+          "meanTopDepthShares": 24791.310842,
+          "meanDepth20Shares": 4612710.732373
+        },
+        "thresholdLabeledOutcomes": {
+          "observations": 32,
+          "markets": 29,
+          "meanMidMoveTicks": -0.015625,
+          "meanMidMoveClusterSe": 0.015698,
+          "meanMidMoveCi95": [
+            -0.046394,
+            0.015144
+          ],
+          "meanDirectionalMarkoutTicks": -0.015625,
+          "meanDirectionalMarkoutClusterSe": 0.015698,
+          "meanDirectionalMarkoutCi95": [
+            -0.046394,
+            0.015144
+          ],
+          "adverseMarkoutTicks": 0.015625,
+          "adverseMarkoutCi95": [
+            -0.015144,
+            0.046394
+          ],
+          "continuousSlopeTicksPerFeatureUnit": -0.077546,
+          "continuousSlopeCi95": [
+            -0.232365,
+            0.077272
+          ],
+          "continuousPearsonCorrelation": -0.257734,
+          "meanSignalSpreadTicks": 1.28125,
+          "meanTopDepthShares": 12128.28125,
+          "meanDepth20Shares": 4684936.3125
+        }
+      },
+      "10000": {
+        "thresholdTriggered": {
+          "cutoffAbs": 0.075821,
+          "discoveryQuantile": 0.8,
+          "discoveryNonzeroSignals": 3536,
+          "discoverySignals": 30161,
+          "fitRule": "nearest-rank 80th percentile of nonzero absolute discovery features; fixed 20,001-bin [0,1] histogram; applied unchanged to holdout"
+        },
+        "allHoldoutSignals": {
+          "opportunities": 11521,
+          "labeled": 1134,
+          "rate": 0.098429,
+          "markets": 237,
+          "clusterSe": 0.003989,
+          "ci95": [
+            0.090611,
+            0.106247
+          ],
+          "labelDelayMs": {
+            "mean": 428.293651,
+            "p50": 399,
+            "p90": 842
+          },
+          "noBookWithinGrace": 9075,
+          "boundaryCensored": 1312
+        },
+        "thresholdHoldoutSignals": {
+          "opportunities": 243,
+          "labeled": 26,
+          "rate": 0.106996,
+          "markets": 96,
+          "clusterSe": 0.018228,
+          "ci95": [
+            0.071269,
+            0.142722
+          ],
+          "labelDelayMs": {
+            "mean": 453.769231,
+            "p50": 487,
+            "p90": 715
+          },
+          "noBookWithinGrace": 195,
+          "boundaryCensored": 22
+        },
+        "allLabeledOutcomes": {
+          "observations": 1134,
+          "markets": 220,
+          "meanMidMoveTicks": 0.004409,
+          "meanMidMoveClusterSe": 0.00181,
+          "meanMidMoveCi95": [
+            0.000861,
+            0.007957
+          ],
+          "meanDirectionalMarkoutTicks": -0.003086,
+          "meanDirectionalMarkoutClusterSe": 0.00116,
+          "meanDirectionalMarkoutCi95": [
+            -0.005359,
+            -0.000814
+          ],
+          "adverseMarkoutTicks": 0.003086,
+          "adverseMarkoutCi95": [
+            0.000814,
+            0.005359
+          ],
+          "continuousSlopeTicksPerFeatureUnit": -0.130225,
+          "continuousSlopeCi95": [
+            -0.30593,
+            0.04548
+          ],
+          "continuousPearsonCorrelation": -0.10821,
+          "meanSignalSpreadTicks": 1.159612,
+          "meanTopDepthShares": 23401.402116,
+          "meanDepth20Shares": 4620461.469136
+        },
+        "thresholdLabeledOutcomes": {
+          "observations": 26,
+          "markets": 25,
+          "meanMidMoveTicks": -0.038462,
+          "meanMidMoveClusterSe": 0.026754,
+          "meanMidMoveCi95": [
+            -0.090899,
+            0.013976
+          ],
+          "meanDirectionalMarkoutTicks": -0.038462,
+          "meanDirectionalMarkoutClusterSe": 0.026754,
+          "meanDirectionalMarkoutCi95": [
+            -0.090899,
+            0.013976
+          ],
+          "adverseMarkoutTicks": 0.038462,
+          "adverseMarkoutCi95": [
+            -0.013976,
+            0.090899
+          ],
+          "continuousSlopeTicksPerFeatureUnit": -0.12806,
+          "continuousSlopeCi95": [
+            -0.317315,
+            0.061194
+          ],
+          "continuousPearsonCorrelation": -0.344294,
+          "meanSignalSpreadTicks": 1.153846,
+          "meanTopDepthShares": 8407.730769,
+          "meanDepth20Shares": 4703943.730769
+        }
+      }
+    }
+  },
+  "replayRuntimeMs": 2115.3562,
+  "actualFillsProven": false,
+  "profitabilityEstablished": false
+}
+
