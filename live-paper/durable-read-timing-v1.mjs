@@ -3,8 +3,11 @@ const causes=new Map([['Invalid timing schema','TIMING_SCHEMA'],['Invalid timing
 export function appendReadTimingV1({file,diagnosticFile,event,filesystem=fs,pause=ms=>Atomics.wait(new Int32Array(new SharedArrayBuffer(4)),0,0,ms)}){
  let fd=null,written=0;try{
   validateTiming(event);const bytes=Buffer.from(JSON.stringify(event)+'\n');
-  // Retry OPEN only: a failed/partial write is never appended twice.
-  for(let attempt=0;attempt<4;attempt++){try{fd=filesystem.openSync(file,'a',0o600);break;}catch(e){if(!['EBUSY','EACCES','EPERM'].includes(e.code)||attempt===3)throw e;pause(20);}}
+  // Retry OPEN only: a failed/partial write is never appended twice. Windows
+  // sharing violations can outlast a single short retry burst (for example,
+  // while a scanner has the journal open), so allow a bounded ~1.12s backoff.
+  // Persistent locks still fail closed and stop further reads.
+  for(let attempt=0;attempt<7;attempt++){try{fd=filesystem.openSync(file,'a',0o600);break;}catch(e){if(!['EBUSY','EACCES','EPERM'].includes(e.code)||attempt===6)throw e;pause(Math.min(20*2**attempt,500));}}
   while(written<bytes.length){const n=filesystem.writeSync(fd,bytes,written,bytes.length-written);if(!Number.isInteger(n)||n<1||n>bytes.length-written)throw Error('TIMING_SHORT_WRITE');written+=n;}
   filesystem.fsyncSync(fd);
  }catch(error){
