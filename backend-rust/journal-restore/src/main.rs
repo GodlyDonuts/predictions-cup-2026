@@ -9,8 +9,8 @@ const LIMIT:u64=16*1024*1024;
 #[derive(Serialize)]#[serde(rename_all="camelCase")]struct Projection{after_sequence:u64,after_hash:String,records:u64,bytes:u64,hash:String}
 struct ProjectionRequest<'a>{after_sequence:u64,after_hash:&'a str,out:&'a Path}
 fn need(v:bool,c:&str)->Result<(),String>{if v{Ok(())}else{Err(c.to_owned())}}
-fn restore(file:&Path,end:u64,expected:&str,projection:Option<ProjectionRequest>)->Result<Restore,String>{
- let started=Instant::now();need(expected.len()==64&&expected.bytes().all(|b|b.is_ascii_digit()||(b'a'..=b'f').contains(&b)),"JOURNAL_PREFIX_BINDING")?;
+fn restore(file:&Path,end:u64,expected:Option<&str>,projection:Option<ProjectionRequest>)->Result<Restore,String>{
+ let started=Instant::now();if let Some(expected)=expected{need(expected.len()==64&&expected.bytes().all(|b|b.is_ascii_digit()||(b'a'..=b'f').contains(&b)),"JOURNAL_PREFIX_BINDING")?;}
  let input=File::open(file).map_err(|_|"JOURNAL_OPEN_FAILED")?;need(end<=input.metadata().map_err(|_|"JOURNAL_METADATA_FAILED")?.len(),"JOURNAL_PREFIX_TRUNCATED")?;
  let mut reader=BufReader::with_capacity(1024*1024,input.take(end));let mut prefix=Sha256::new();let mut bytes=0u64;let mut records=0u64;let mut previous=String::new();let mut last_line=Vec::new();let mut line=Vec::new();let mut last_end=0;
  let mut projected=projection.as_ref().map(|p|OpenOptions::new().write(true).create_new(true).open(p.out)).transpose().map_err(|_|"JOURNAL_PROJECTION_OUTPUT_FAILED")?;
@@ -41,7 +41,7 @@ fn restore(file:&Path,end:u64,expected:&str,projection:Option<ProjectionRequest>
   }
   last_end=state_end;std::mem::swap(&mut line,&mut last_line);
  }
- need(bytes==end,"JOURNAL_PREFIX_TRUNCATED")?;let source_hash=format!("{:x}",prefix.finalize());need(source_hash==expected,"JOURNAL_PREFIX_MISMATCH")?;
+ need(bytes==end,"JOURNAL_PREFIX_TRUNCATED")?;let source_hash=format!("{:x}",prefix.finalize());if let Some(expected)=expected{need(source_hash==expected,"JOURNAL_PREFIX_MISMATCH")?;}
  need(frontier_seen,"JOURNAL_PROJECTION_FRONTIER_TRUNCATED")?;
  if let Some(output)=projected.as_mut(){output.sync_all().map_err(|_|"JOURNAL_PROJECTION_SYNC_FAILED")?;}
  let projection=projection.map(|p|Projection{after_sequence:p.after_sequence,after_hash:p.after_hash.to_owned(),records:projected_records,bytes:projected_bytes,hash:format!("{:x}",projected_hash.finalize())});
@@ -51,13 +51,13 @@ fn restore(file:&Path,end:u64,expected:&str,projection:Option<ProjectionRequest>
 fn run()->Result<(),String>{
  let args:Vec<String>=std::env::args().skip(1).collect();let mut options=HashMap::new();
  for pair in args.chunks(2){need(pair.len()==2&&["--journal","--end-byte","--expected-sha","--out","--after-sequence","--after-hash","--suffix-out"].contains(&pair[0].as_str())&&!pair[1].starts_with("--")&&options.insert(pair[0].as_str(),pair[1].as_str()).is_none(),"JOURNAL_ARGUMENTS")?;}
- let get=|k|options.get(k).copied().ok_or("JOURNAL_ARGUMENTS");let out=get("--out")?;need(!Path::new(out).exists(),"JOURNAL_OUTPUT_EXISTS")?;
+ let get=|k|options.get(k).copied().ok_or("JOURNAL_ARGUMENTS");let out=get("--out")?;need(!Path::new(out).exists(),"JOURNAL_OUTPUT_EXISTS")?;let expected=options.get("--expected-sha").copied();
  let projection=if options.keys().any(|k|["--after-sequence","--after-hash","--suffix-out"].contains(k)){
   let sequence=get("--after-sequence")?.parse::<u64>().map_err(|_|"JOURNAL_ARGUMENTS")?;let hash=get("--after-hash")?;
   need(sequence<=9007199254740991&&(sequence==0&&hash=="EMPTY"||sequence>0&&hash.len()==64&&hash.bytes().all(|b|b.is_ascii_digit()||(b'a'..=b'f').contains(&b))),"JOURNAL_PROJECTION_BINDING")?;
   Some(ProjectionRequest{after_sequence:sequence,after_hash:if sequence==0{""}else{hash},out:Path::new(get("--suffix-out")?)})
  }else{None};
- let result=restore(Path::new(get("--journal")?),get("--end-byte")?.parse().map_err(|_|"JOURNAL_ARGUMENTS")?,get("--expected-sha")?,projection)?;
+ let result=restore(Path::new(get("--journal")?),get("--end-byte")?.parse().map_err(|_|"JOURNAL_ARGUMENTS")?,expected,projection)?;
  let mut output=OpenOptions::new().write(true).create_new(true).open(out).map_err(|_|"JOURNAL_OUTPUT_FAILED")?;
  output.write_all(&serde_json::to_vec(&result).map_err(|_|"JOURNAL_OUTPUT_FAILED")?).map_err(|_|"JOURNAL_OUTPUT_FAILED")?;output.sync_all().map_err(|_|"JOURNAL_OUTPUT_FAILED")?;
  println!("{}",serde_json::json!({"sourceVerified":true,"sourceBytes":result.source_bytes,"records":result.records,"verifyMs":result.verify_ms,"engineHash":result.engine_hash}));Ok(())

@@ -19,14 +19,15 @@ async function invoke(exe,args,signal){
  });
 }
 export async function readNativeJournal({runtimeDir,binding,file,endByte,expectedSha,receiptDir,signal}){
- need(path.isAbsolute(file)&&path.isAbsolute(receiptDir)&&Number.isSafeInteger(endByte)&&endByte>=0&&/^[a-f0-9]{64}$/.test(expectedSha),'PREFIX_BINDING');
+ need(path.isAbsolute(file)&&path.isAbsolute(receiptDir)&&Number.isSafeInteger(endByte)&&endByte>=0&&(expectedSha===undefined||/^[a-f0-9]{64}$/.test(expectedSha)),'PREFIX_BINDING');
  const executable=nativeJournalBinding(runtimeDir,binding);fs.mkdirSync(receiptDir,{recursive:true,mode:0o700});const out=path.join(receiptDir,randomUUID()+'.state.json');
- await invoke(executable,['--journal',file,'--end-byte',String(endByte),'--expected-sha',expectedSha,'--out',out],signal);nativeJournalBinding(runtimeDir,binding);
+ const args=['--journal',file,'--end-byte',String(endByte),'--out',out];if(expectedSha!==undefined)args.push('--expected-sha',expectedSha);
+ await invoke(executable,args,signal);nativeJournalBinding(runtimeDir,binding);
  const bytes=fs.readFileSync(out),result=JSON.parse(bytes);
- need(result.schemaVersion===1&&result.mode===binding.mode&&result.engineHash===binding.engineHash&&result.sourceBytes===endByte&&result.sourceHash===expectedSha&&Number.isSafeInteger(result.records)&&result.records>=0&&typeof result.verifyMs==='number'&&result.verifyMs>=0,'RESULT_BINDING');
+ need(result.schemaVersion===1&&result.mode===binding.mode&&result.engineHash===binding.engineHash&&result.sourceBytes===endByte&&/^[a-f0-9]{64}$/.test(result.sourceHash)&&(!expectedSha||result.sourceHash===expectedSha)&&Number.isSafeInteger(result.records)&&result.records>=0&&typeof result.verifyMs==='number'&&result.verifyMs>=0,'RESULT_BINDING');
  if(result.records===0)need(result.lastBody===null&&result.tailHash==='','EMPTY_STATE');
  else need(result.lastBody?.sequence===result.records&&sha(JSON.stringify(result.lastBody))===result.tailHash,'LAST_BODY_PARITY');
- atomicJson(out+'.receipt.json',{schemaVersion:1,at:new Date().toISOString(),mode:result.mode,engineHash:result.engineHash,binaryHash:binding.binaryHash,runtimeLibraryHash:binding.runtimeLibraryHash,sourceHash:expectedSha,sourceBytes:endByte,records:result.records,tailHash:result.tailHash,outputHash:sha(bytes),networkRequests:0,competitionOrders:0});
+ atomicJson(out+'.receipt.json',{schemaVersion:1,at:new Date().toISOString(),mode:result.mode,engineHash:result.engineHash,binaryHash:binding.binaryHash,runtimeLibraryHash:binding.runtimeLibraryHash,sourceHash:result.sourceHash,sourceBytes:endByte,records:result.records,tailHash:result.tailHash,outputHash:sha(bytes),networkRequests:0,competitionOrders:0});
  return{...result,receiptFile:out+'.receipt.json'};
 }
 export async function sourcePrefixHash(file,endByte,signal){
@@ -38,10 +39,9 @@ export async function openNativeJournal({runtimeDir,binding,file,receiptDir,sign
  need(canOperate()===true&&!signal?.aborted,'STOPPED');nativeJournalBinding(runtimeDir,binding);
  if(!fs.existsSync(file))fs.writeFileSync(file,Buffer.alloc(0),{flag:'wx',mode:0o600});
  const stamp=s=>[s.dev,s.ino,s.size,s.mtimeNs,s.ctimeNs].map(String).join(':'),initial=fs.statSync(file,{bigint:true});
- const started=performance.now(),bytes=Number(initial.size),hashStarted=performance.now(),expectedSha=await sourcePrefixHash(file,bytes,signal),hashMs=performance.now()-hashStarted;
- const result=await readNativeJournal({runtimeDir,binding,file,endByte:bytes,expectedSha,receiptDir,signal});
+ const started=performance.now(),bytes=Number(initial.size),result=await readNativeJournal({runtimeDir,binding,file,endByte:bytes,receiptDir,signal});
  need(canOperate()===true&&!signal?.aborted&&stamp(fs.statSync(file,{bigint:true}))===stamp(initial),'STOP_OR_SOURCE_CHANGED');
  // Use the original append/hash interface after exact verified restoration.
  const journal=Object.create(Journal.prototype);Object.assign(journal,{file,sequence:result.records,previous:result.tailHash,last:result.lastBody});
- Object.defineProperty(journal,'nativeRestore',{value:Object.freeze({mode:result.mode,sourceBytes:bytes,sourceHash:expectedSha,sequence:result.records,tailHash:result.tailHash,lastBodyHash:result.lastBody?payloadHash(result.lastBody):null,engineHash:result.engineHash,binaryHash:binding.binaryHash,verifyMs:result.verifyMs,prefixHashMs:hashMs,totalMs:performance.now()-started}),enumerable:false});return journal;
+ Object.defineProperty(journal,'nativeRestore',{value:Object.freeze({mode:result.mode,sourceBytes:bytes,sourceHash:result.sourceHash,sequence:result.records,tailHash:result.tailHash,lastBodyHash:result.lastBody?payloadHash(result.lastBody):null,engineHash:result.engineHash,binaryHash:binding.binaryHash,verifyMs:result.verifyMs,prefixHashMs:0,totalMs:performance.now()-started}),enumerable:false});return journal;
 }
