@@ -8,7 +8,7 @@
   "cycleIntervalMs": 30000,
   "maxDataAgeMs": 20000,
   "latencyMs": 1000,
-  "feeBps": 10,
+  "feeBps": 0,
   "slippageTicks": 1,
   "depthFractionBps": 100,
   "orderShares": 10,
