@@ -28,7 +28,7 @@ export class RealtimeBooks {
       const normalizedCapture = capture === null ? null : {append: record => capture.append(record.kind === 'snapshot' && snapshotReceipt.requestStartedAt !== null
         ? {...record, requestStartedAt: snapshotReceipt.requestStartedAt} : record)};
       const collector = new MarketCollector(scope, {now: () => this.#clock(), staleMs, capture: normalizedCapture});
-      this.#markets.set(scope.marketId, {scope, collector, snapshotReceipt, connectionId: null, connections: new Set(), subscribedNs: null, lastReceiptNs: null, ticket: null, knownExpiry: null});
+      this.#markets.set(scope.marketId, {scope, collector, snapshotReceipt, connectionId: null, connections: new Set(), subscribedNs: null, lastReceiptNs: null, ticket: null, knownExpiry: null, streamBookUpdates: 0});
     }
   }
   #clock() {
@@ -103,8 +103,17 @@ export class RealtimeBooks {
         for (const trade of parsed.payload.trades) requireThat(instantNs(trade.executedAt) <= receivedNs + BigInt(this.#skewMs) * 1000000n, 'INVALID_TRADE_CLOCK');
         for (const hint of [...parsed.payload.bookDirty, ...parsed.payload.marketSettled]) requireThat(instantNs(hint.at) <= receivedNs + BigInt(this.#skewMs) * 1000000n, 'INVALID_HINT_CLOCK');
       } else requireThat(instantNs(parsed.payload.at) <= receivedNs + BigInt(this.#skewMs) * 1000000n, 'INVALID_HINT_CLOCK');
+      const priorVersions = event === 'market_batch'
+        ? new Map(parsed.payload.books.map(book => [book.exchangeId, entry.collector.books.get(book.exchangeId)?.book.asOf ?? null]))
+        : null;
       entry.lastReceiptNs = receivedNs;
       const accepted = collector.ingest(event, payload, {receivedAt: timestamp(receivedAt), epoch: collector.epoch});
+      if (accepted && priorVersions) for (const book of parsed.payload.books) {
+        const held = collector.books.get(book.exchangeId), prior = priorVersions.get(book.exchangeId);
+        if (held?.source === 'websocket' && compareVersion(held.book.asOf, book.asOf) === 0
+          && (prior === null || compareVersion(book.asOf, prior) > 0))
+          entry.streamBookUpdates = Math.min(Number.MAX_SAFE_INTEGER, entry.streamBookUpdates + 1);
+      }
       if (event === 'market_batch') for (const book of parsed.payload.books) {
         const held = collector.books.get(book.exchangeId)?.book;
         if (held && compareVersion(book.asOf, held.asOf) === 0 && (!entry.knownExpiry || compareVersion(book.asOf, entry.knownExpiry.version) > 0))
@@ -158,10 +167,11 @@ export class RealtimeBooks {
   view(marketId) {
     const entry = this.#entry(marketId); this.#expire(entry);
     const status = entry.collector.status(), ready = status.coverage.booksReady;
+    const metrics = {...status.metrics, streamBookUpdates: entry.streamBookUpdates};
     return {mode: 'read_only_market_capture', executionAuthorized: false, marketId: entry.scope.marketId, exchangeId: entry.scope.exchangeIds[0],
       connectionId: entry.connectionId, topic: entry.scope.topic, ready, needsSnapshot: !entry.collector.needsMarketState && ['needs_resync', 'resyncing'].includes(status.state),
       state: status.state, epoch: status.epoch, revision: status.revision, reasons: status.reasons, nextKnownExpiryAt: entry.knownExpiry?.at ?? null,
-      books: ready ? [...entry.collector.books.values()].map(({book, observedMs, source}) => ({...structuredClone(book), receivedAt: new Date(observedMs).toISOString(), source})) : [], metrics: status.metrics};
+      books: ready ? [...entry.collector.books.values()].map(({book, observedMs, source}) => ({...structuredClone(book), receivedAt: new Date(observedMs).toISOString(), source})) : [], metrics};
   }
   status() { return {mode: 'read_only_market_capture', executionAuthorized: false, markets: [...this.#markets.keys()].map(id => this.view(id))}; }
   needsRecovery() { return this.status().markets.filter(market => market.needsSnapshot); }
