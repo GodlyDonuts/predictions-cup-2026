@@ -338,3 +338,33 @@ carried wallet follows the two candidates plus the two historical controls using
 four per-market topics. REST-only mode retains its two-market limit. With four
 stream scopes REST cycles take roughly 96 seconds; the stream remains the timely
 book source, and cycle counts are bounded to the helper's lifetime.
+
+## Competitive quote experiment
+
+`insideTicks` defaults to zero. An explicit prospective paper experiment may pass
+`1` after `--realtime` in the live command. It carries all finances and historical
+quotes into the successor; the new policy applies only to new decisions.
+
+Improvement stays inside the observed spread, leaves at least one tick between
+the bid and ask, preserves combined fee/edge margin and fits both funded legs.
+Depth-weighted microprice ranks which leg can afford improvement; this remains an
+uncalibrated heuristic. Balanced wider books can improve both legs, while a
+two-tick book can improve only the leg with sufficient modeled depth-value edge.
+Covered inventory exits may improve their price only while retaining modeled
+round-trip fee coverage and the minimum edge against the worst owned lot basis.
+If that improvement would erase the edge, the original passive exit remains;
+adverse moves can still lose money. No fill rule or reserve-release rule is relaxed.
+
+The [recorded-clock comparison](results/sig-inside-20261013.json) exactly reproduced
+the four-market baseline. Both join and improved variants produced zero fills on
+those development events, so neither establishes profit. The separate subsequent
+live experiment tests the changed policy on unseen events with zero new capital.
+
+The current official [order contract](https://sig.thesuper.market/api/v1/docs),
+rechecked at 2026-10-13T23:38:20Z, explicitly states that opposite BUYs on
+engine-routed scopes net the existing position at FIFO cost and credit one per
+netted share. The model's internal paired-credit bookkeeping implements that
+same-exchange mechanism, not a cross-market settlement bet. New offset records
+are labeled `engine_opposite_buy_fifo_netting` and counterfactual; the historical
+array name `redemptions` is retained for ledger continuity. Documentation confirms
+the mechanism, not any actual fill, account profit or execution authorization.

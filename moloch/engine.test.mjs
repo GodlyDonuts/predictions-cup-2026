@@ -11,6 +11,25 @@ test('paired spread ignores uncalibrated imbalance but funds both legs and rejec
   const scarce=createMoloch({maximumCommitted:'0.500000'});advanceMoloch(scarce,e);assert.equal(scarce.orders.length,0);
   const fees=createMoloch({feePerShare:'0.002000'});advanceMoloch(fees,e);assert.equal(fees.orders.length,0);
 });
+test('inside quotes improve wide books without crossing, losing fee margin or changing strict fills',()=>{
+  const e=book(0);e.book.asks[0].price='0.465000';const s=createMoloch({insideTicks:1,quantity:1});advanceMoloch(s,e);
+  assert.equal(s.orders.find(q=>q.side==='YES').price,'0.455000');assert.equal(s.orders.find(q=>q.side==='NO').price,'0.540000');
+  advanceMoloch(s,trade(4,'touch-inside','0.455000'));assert.equal(s.fills.length,0);advanceMoloch(s,trade(5,'old-bid','0.450000'));assert.equal(s.fills.length,1);assertMoloch(s);
+  const narrow=createMoloch({insideTicks:3});advanceMoloch(narrow,book(0));assert.equal(narrow.orders.find(q=>q.side==='YES').price,'0.450000');
+  const fees=createMoloch({insideTicks:1,feePerShare:'0.002000'});advanceMoloch(fees,e);assert.equal(fees.orders.find(q=>q.side==='YES').price,'0.450000');
+});
+test('two-tick inside entry leans toward depth value; inventory exit remains covered and noncrossing',()=>{
+  const e=book(0);e.book.asks[0].price='0.460000';e.book.bids[0].quantity=1;e.book.asks[0].quantity=1000000;
+  const s=createMoloch({insideTicks:1});advanceMoloch(s,e);assert.equal(s.orders.find(q=>q.side==='YES').price,'0.450000');assert.equal(s.orders.find(q=>q.side==='NO').price,'0.545000');assertMoloch(s);
+  const owned=createMoloch({insideTicks:1,quantity:1});advanceMoloch(owned,e);advanceMoloch(owned,trade(4,'owned-entry','0.440000'));advanceMoloch(owned,tick(8));
+  const checkpoint=book(9,'101',20);checkpoint.book.asks[0].price='0.460000';advanceMoloch(owned,checkpoint);advanceMoloch(owned,{type:'coverage',receivedAt:at(10),tournamentId:'cup',marketId:'101',exchangeId:'101',from:at(3),to:at(9),complete:true,projectedThroughSequence:'20'});
+  const exit=owned.orders.find(q=>q.action==='sell');assert.equal(exit.price,'0.455000');advanceMoloch(owned,trade(14,'exit-touch-original','0.460000'));assert.equal(owned.realized,'0.005000');assertMoloch(owned);
+});
+test('inventory improvement cannot turn a profitable passive exit into a break-even sale',()=>{
+  const s=createMoloch({insideTicks:1,quantity:1}),entry=book(0);entry.book.asks[0].price='0.465000';advanceMoloch(s,entry);advanceMoloch(s,trade(4,'cost-455','0.450000'));advanceMoloch(s,tick(8));
+  const checkpoint=book(9,'101',20);checkpoint.book.asks[0].price='0.460000';advanceMoloch(s,checkpoint);advanceMoloch(s,{type:'coverage',receivedAt:at(10),tournamentId:'cup',marketId:'101',exchangeId:'101',from:at(3),to:at(9),complete:true,projectedThroughSequence:'20'});
+  assert.equal(s.orders.find(q=>q.action==='sell').price,'0.460000');advanceMoloch(s,trade(14,'exit-not-through','0.460000'));assert.equal(s.fills.length,1);advanceMoloch(s,trade(15,'exit-through','0.465000'));assert.equal(s.realized,'0.005000');assertMoloch(s);
+});
 test('early renewal requires a fresh unchanged quote and preserves old funding through cancellation',()=>{
   const s=createMoloch({renewBeforeMs:45000,maximumMarketCost:'20.000000'});advanceMoloch(s,book(0));
   advanceMoloch(s,tick(59));assert.equal(s.counts.earlyRenewals,undefined);
@@ -20,10 +39,10 @@ test('early renewal requires a fresh unchanged quote and preserves old funding t
   assert.throws(()=>createMoloch({renewBeforeMs:120000}),/RENEWAL_WINDOW/);
 });
 
-test('paired strict-through fills reconcile exact cash, fees and conditional redemption',()=>{
+test('paired strict-through fills reconcile exact cash, fees and engine FIFO netting',()=>{
   const s=createMoloch({quantity:1,feePerShare:'0.000100'});advanceMoloch(s,book(0));
   advanceMoloch(s,trade(4,'a'));advanceMoloch(s,trade(5,'b','0.465000'));
-  const r=reportMoloch(s);assert.equal(r.fills,2);assert.equal(r.cash,'1000.004800');assert.equal(r.realized,'0.004800');assert.equal(r.fees,'0.000200');assert.equal(r.ownedCost,'0.000000');assert.equal(r.profitabilityEstablished,false);assertMoloch(s);
+  const r=reportMoloch(s);assert.equal(r.fills,2);assert.equal(r.cash,'1000.004800');assert.equal(r.realized,'0.004800');assert.equal(r.fees,'0.000200');assert.equal(r.ownedCost,'0.000000');assert.equal(s.redemptions[0].mechanism,'engine_opposite_buy_fifo_netting');assert.equal(s.redemptions[0].counterfactual,true);assert.equal(r.profitabilityEstablished,false);assertMoloch(s);
 });
 test('pre-activation and at-touch prints never fabricate queue fills; duplicate IDs cannot fill twice',()=>{
   const s=createMoloch({quantity:1});advanceMoloch(s,book(0));advanceMoloch(s,trade(1,'early'));advanceMoloch(s,trade(4,'touch','0.450000'));assert.equal(s.fills.length,0);
