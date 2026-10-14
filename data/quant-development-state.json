@@ -58,9 +58,9 @@
     "windowRelaxed": false
   },
   "backlog": [
-    "Develop and validate quoting/inventory policy with chronological source captures, realistic adverse-selection/partial-fill/depth/latency economics; current count and open marks do not prove profitability.",
-    "Measure current paired cheap-first policy: entry gap, liquidation/holding horizon and unpaired inventory exposure; examine whether a funded hedge provides better net economics.",
-    "Keep current owned exits, capture and account-wide limiter healthy; preserve actual journals/activation windows."
+    "After the 21:15 capture writer releases, freeze/hash it once as untouched forward data and score the already-frozen ridge bank without refitting or threshold changes.",
+    "Prepare passive-maker test only with actual attributable fills/queue information; otherwise report unscorable. Do not infer fills from touches.",
+    "Keep chronological cutoffs, source hashes, no-fee scenario as requested, and full spread/latency/depth/inventory costs. No contest orders or production activation."
   ],
   "capitalExpansion": {
     "bootstrapFreshlyVerified": true,
@@ -287,9 +287,9 @@
     "winnerHoldingHours": "1.93-2.69"
   },
   "currentMilestone": {
-    "name": "Prospective sequencing comparison",
-    "next": "Archiveemptyfailedobserverrequest/genesis; installnewnamedcorrectderived-universe request andfuturecutoff, preserveoldcohort+.780; validateactualpostcutoffobservationbeforewalletsimulation.",
-    "stage": "collectorhealthy_observer_identity_failure_reproduced_fixed_pending_named_cutoff"
+    "name": "Find forward executable alpha on sealed market data",
+    "stage": "fixed ridge bank published; expanding test rejected as a winner; next best candidate is passive spread capture with fill-conditioned value",
+    "next": "Keep the growing 21:15 capture sealed. Once released, pin it as a separate untouched future test for the frozen ridge bank. Treat passive maker economics as unscorable until actual fill/queue data exists; no threshold tuning or contest activation from paper marks."
   },
   "delegation": {
     "mode": "solo",
@@ -718,8 +718,8 @@
     "stage": "1000allocation_live_actual29share_fill"
   },
   "nextProfitablePolicyWork": [
-    "For mixed FIFO costs, choose a profitable affordable prefix rather than only full depth-sized exit quantity; uniform current positions unaffected.",
-    "Complete two-leg acquisition machinery only with actual funded/scoped receipts; reserved counterpart cash is not a purchased hedge."
+    "Frozen ridge v1 is not eligible for promotion: first expanding fold selected 0/78 and predicted RMSE exceeded the training-mean control; later fold had no labels.",
+    "Source-backed candidate is inventory-aware passive spread capture, but the one-second feed has no aggressor label or queue position. Historical touch proxies are not fills; require actual fill receipts, matched maker baseline, and latency/depth/inventory accounting before judging economics."
   ],
   "objective": "Build and improve Baal for the official 2026 Susquehanna Predictions Cup",
   "originalPilot": {
@@ -896,7 +896,9 @@
     "next": "Complete reviewed REST pair evidence adapter and bounded single-collector execution integration; preserve current attributed exits.",
     "noProfitableStrategyEstablished": true,
     "officialNetRealized": "0.005000",
-    "runtimeProofAt": "2026-10-06T10:40:42.492Z"
+    "runtimeProofAt": "2026-10-06T10:40:42.492Z",
+    "latestQuantEvidenceCommit": "0497eb111117ddf3518b3b5c5cec286c292ddc8a",
+    "latestQuantEvidence": "data/market-edge-ridge-bank-20261013.json"
   },
   "readLatencyComponent": {
     "activeCodeChanged": false,
@@ -920,7 +922,7 @@
     "realized": "0.000000",
     "verifiedAt": "2026-10-07T06:16:58.422Z"
   },
-  "updatedAt": "2026-10-06T22:07:56.7501171Z",
+  "updatedAt": "2026-10-14T00:43:37Z",
   "foreignCandidateRepair": {
     "commit": "17b544005c7578c95df4dc4f2f30ee8e2cc75a19",
     "collector": 32364,
@@ -935,12 +937,13 @@
       "Issue #78: offline historical range-backfill is on main; 15/15 tests; no API reads.",
       "Issue #79: sealed capture had 66,127 accepted books, no positive same-time complements, and zero profitable sequential pairs in all 32 fixed scenarios; no profitable result.",
       "Issue #80: corrected parser is code/test reviewed, 12/12 tests pass; exact-prefix training-only diagnostics show 3,994 accepted books, 110 labels, and 441,465 not-ready exclusions. The 19:52 model replay is invalid/unscorable and was not rescored; no strategy or profit conclusion. Reviewer disclosed accidental recursive scan across data/, compromising a no-read attestation.",
-      "Issues #81/#84/#85: fail-closed poll screen and independent audit are published on main at 71041526735dcb7ae12c79bbb555372b4e311fe4; zero defensible probability bounds and zero eligible trades."
+      "Issues #81/#84/#85: fail-closed poll screen and independent audit are published on main at 71041526735dcb7ae12c79bbb555372b4e311fe4; zero defensible probability bounds and zero eligible trades.",
+      "Issue #86: recovery-readiness attribution fix published on main at 2a174b025eed4789b0174548574fc9eb48089c44; stale-epoch guard and lifecycle-kind count reconciliation; 8/8 tests; 441,465 not-ready batches in pinned d538 prefix, no provider-root-cause or profit claim.",
+      "Issue #87: fixed three-capture ridge bank reviewed and published on main at 0497eb111117ddf3518b3b5c5cec286c292ddc8a; 140 fit labels, zero selected in both expanding folds, first fold RMSE 0.002198 vs 0.002116 training-mean control; no fills or profitability.",
+      "Issue #89: source-backed passive-spread candidate research completed; feed is 1-second batched and lacks aggressor/queue-position data, so touch marks cannot prove fills; actual-fill test remains no-go/unvalidated."
     ],
     "active": [
-      "#82 review completed; source/test review clear, but reviewer broad-scan disclosure is recorded and no performance result is endorsed.",
-      "#86: bounded-prefix recovery-readiness attribution in progress; exact training prefix only.",
-      "The 21:15 capture remains writer-locked and actively growing; do not hash, parse, or treat as a holdout until released and frozen."
+      "The 21:15 capture remains actively growing; metadata-only probe at 2026-10-14T00:43:16Z showed 1,255,742,452 bytes and a current write. Do not hash, parse, or score until the writer releases it and a new frozen-source scope is established."
     ],
     "guardrails": {
       "contestOrders": 0,
@@ -949,8 +952,9 @@
       "profitabilityEstablished": false,
       "ridgeHoldoutRescoringProhibited": true,
       "laterCapturePinned": false,
-      "oldHoldoutNoReadAttestation": "compromised_disclosed"
+      "oldHoldoutNoReadAttestation": "compromised_disclosed",
+      "latestCheckedCommit": "0497eb111117ddf3518b3b5c5cec286c292ddc8a"
     },
-    "updatedAt": "2026-10-14T00:17:40Z"
+    "updatedAt": "2026-10-14T00:43:37Z"
   }
 }
