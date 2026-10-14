@@ -1,0 +1,1104 @@
+{
+  "schemaVersion": 1,
+  "report": "realtime-book-pressure-holdout-20261014",
+  "at": "2026-10-14T23:54:49.154Z",
+  "mode": "offline_causal_book_pressure_evaluation",
+  "source": {
+    "basename": "realtime-2026-10-14T21-05-11-768Z-178af709-e752-472a-b5ce-a6c897f94e99.jsonl",
+    "bytes": 548145828,
+    "sha256": "9eff03b978426504aa5197002c88a7715c21018745eb6ae264184aefa99da67c",
+    "firstValidBookAt": "2026-10-14T21:05:34.885Z",
+    "lastValidBookAt": "2026-10-14T22:49:08.386Z",
+    "records": 153504,
+    "recordsByKind": {
+      "subscribed": 237,
+      "invalidation": 2684,
+      "recovery_started": 327,
+      "event": 144007,
+      "trade_observed": 5121,
+      "snapshot": 327,
+      "recovery_finished": 327,
+      "stopped": 237
+    },
+    "configuredMarkets": 237,
+    "acceptedBooks": 1743,
+    "rejectedBooks": 0,
+    "rejectedEvents": 0,
+    "invalidationsByReason": {
+      "INITIAL": 474,
+      "EXPIRY": 220,
+      "STALE": 96,
+      "PERIODIC": 2,
+      "GAP": 1892
+    },
+    "sampledObservations": 936,
+    "with5sLabel": 408,
+    "with30sLabel": 166,
+    "targetDirtyBatchesSeen": 144007,
+    "targetDirtyBatchesReconciled": 144007,
+    "targetDirtyBatchesUnreconciled": 0,
+    "firstRecordAt": "2026-10-14T21:05:11.77Z",
+    "lastRecordAt": "2026-10-14T23:52:18.551Z",
+    "markets": 237
+  },
+  "protocol": {
+    "maxBookAgeMs": 20000,
+    "sampleEveryMs": 5000,
+    "trainingFraction": 0.7,
+    "splitAt": "2026-10-14T22:18:04.335Z",
+    "purgeMs": 30000,
+    "horizonsMs": [
+      5000,
+      30000
+    ],
+    "maximumLabelDelayMs": {
+      "5000": 5000,
+      "30000": 10000
+    },
+    "bookDirtyRule": "A target dirty marker is coherent only with a same-batch target book whose asOf is at or after dirty.at, compared at nanosecond precision.",
+    "fees": 0,
+    "executionLatencyMs": 1000,
+    "oneShareDepthRequired": true,
+    "ridgeLambda": 0.1,
+    "features": [
+      "micropricePressure",
+      "topImbalance",
+      "depth5Imbalance",
+      "momentum5s",
+      "momentum30s",
+      "midOffset"
+    ]
+  },
+  "samples": {
+    "all": 936,
+    "training5s": 48,
+    "test5s": 10,
+    "training30s": 29,
+    "test30s": 7,
+    "trainMarkets30s": 9,
+    "testMarkets30s": 2
+  },
+  "fiveSecondFeatureBins": {
+    "micropricePressure": [
+      {
+        "bin": 1,
+        "trainUpperEdges": [
+          -0.40798204527713283,
+          -0.1911385533993613,
+          0.12295777636326377,
+          0.4472851871375856
+        ],
+        "n": 1,
+        "markets": 1,
+        "meanChange": 0,
+        "meanExecutableLongPnl": -0.0050000000000000044,
+        "thresholdEdges": [
+          -0.40798204527713283,
+          -0.1911385533993613,
+          0.12295777636326377,
+          0.4472851871375856
+        ]
+      },
+      {
+        "bin": 2,
+        "trainUpperEdges": [
+          -0.40798204527713283,
+          -0.1911385533993613,
+          0.12295777636326377,
+          0.4472851871375856
+        ],
+        "n": 0,
+        "markets": 0,
+        "meanChange": null,
+        "meanExecutableLongPnl": null,
+        "thresholdEdges": [
+          -0.40798204527713283,
+          -0.1911385533993613,
+          0.12295777636326377,
+          0.4472851871375856
+        ]
+      },
+      {
+        "bin": 3,
+        "trainUpperEdges": [
+          -0.40798204527713283,
+          -0.1911385533993613,
+          0.12295777636326377,
+          0.4472851871375856
+        ],
+        "n": 9,
+        "markets": 2,
+        "meanChange": 0,
+        "meanExecutableLongPnl": -0.0050000000000000044,
+        "thresholdEdges": [
+          -0.40798204527713283,
+          -0.1911385533993613,
+          0.12295777636326377,
+          0.4472851871375856
+        ]
+      },
+      {
+        "bin": 4,
+        "trainUpperEdges": [
+          -0.40798204527713283,
+          -0.1911385533993613,
+          0.12295777636326377,
+          0.4472851871375856
+        ],
+        "n": 0,
+        "markets": 0,
+        "meanChange": null,
+        "meanExecutableLongPnl": null,
+        "thresholdEdges": [
+          -0.40798204527713283,
+          -0.1911385533993613,
+          0.12295777636326377,
+          0.4472851871375856
+        ]
+      },
+      {
+        "bin": 5,
+        "trainUpperEdges": [
+          -0.40798204527713283,
+          -0.1911385533993613,
+          0.12295777636326377,
+          0.4472851871375856
+        ],
+        "n": 0,
+        "markets": 0,
+        "meanChange": null,
+        "meanExecutableLongPnl": null,
+        "thresholdEdges": [
+          -0.40798204527713283,
+          -0.1911385533993613,
+          0.12295777636326377,
+          0.4472851871375856
+        ]
+      }
+    ],
+    "topImbalance": [
+      {
+        "bin": 1,
+        "trainUpperEdges": [
+          -0.8159640905542545,
+          -0.38227710679875154,
+          0.24591555272650117,
+          0.8945703742751713
+        ],
+        "n": 1,
+        "markets": 1,
+        "meanChange": 0,
+        "meanExecutableLongPnl": -0.0050000000000000044,
+        "thresholdEdges": [
+          -0.8159640905542545,
+          -0.38227710679875154,
+          0.24591555272650117,
+          0.8945703742751713
+        ]
+      },
+      {
+        "bin": 2,
+        "trainUpperEdges": [
+          -0.8159640905542545,
+          -0.38227710679875154,
+          0.24591555272650117,
+          0.8945703742751713
+        ],
+        "n": 0,
+        "markets": 0,
+        "meanChange": null,
+        "meanExecutableLongPnl": null,
+        "thresholdEdges": [
+          -0.8159640905542545,
+          -0.38227710679875154,
+          0.24591555272650117,
+          0.8945703742751713
+        ]
+      },
+      {
+        "bin": 3,
+        "trainUpperEdges": [
+          -0.8159640905542545,
+          -0.38227710679875154,
+          0.24591555272650117,
+          0.8945703742751713
+        ],
+        "n": 9,
+        "markets": 2,
+        "meanChange": 0,
+        "meanExecutableLongPnl": -0.0050000000000000044,
+        "thresholdEdges": [
+          -0.8159640905542545,
+          -0.38227710679875154,
+          0.24591555272650117,
+          0.8945703742751713
+        ]
+      },
+      {
+        "bin": 4,
+        "trainUpperEdges": [
+          -0.8159640905542545,
+          -0.38227710679875154,
+          0.24591555272650117,
+          0.8945703742751713
+        ],
+        "n": 0,
+        "markets": 0,
+        "meanChange": null,
+        "meanExecutableLongPnl": null,
+        "thresholdEdges": [
+          -0.8159640905542545,
+          -0.38227710679875154,
+          0.24591555272650117,
+          0.8945703742751713
+        ]
+      },
+      {
+        "bin": 5,
+        "trainUpperEdges": [
+          -0.8159640905542545,
+          -0.38227710679875154,
+          0.24591555272650117,
+          0.8945703742751713
+        ],
+        "n": 0,
+        "markets": 0,
+        "meanChange": null,
+        "meanExecutableLongPnl": null,
+        "thresholdEdges": [
+          -0.8159640905542545,
+          -0.38227710679875154,
+          0.24591555272650117,
+          0.8945703742751713
+        ]
+      }
+    ],
+    "depth5Imbalance": [
+      {
+        "bin": 1,
+        "trainUpperEdges": [
+          -0.6300389538438573,
+          -0.2697496301024109,
+          -0.1959695047182385,
+          0.3163608637252251
+        ],
+        "n": 0,
+        "markets": 0,
+        "meanChange": null,
+        "meanExecutableLongPnl": null,
+        "thresholdEdges": [
+          -0.6300389538438573,
+          -0.2697496301024109,
+          -0.1959695047182385,
+          0.3163608637252251
+        ]
+      },
+      {
+        "bin": 2,
+        "trainUpperEdges": [
+          -0.6300389538438573,
+          -0.2697496301024109,
+          -0.1959695047182385,
+          0.3163608637252251
+        ],
+        "n": 2,
+        "markets": 2,
+        "meanChange": 0,
+        "meanExecutableLongPnl": -0.0050000000000000044,
+        "thresholdEdges": [
+          -0.6300389538438573,
+          -0.2697496301024109,
+          -0.1959695047182385,
+          0.3163608637252251
+        ]
+      },
+      {
+        "bin": 3,
+        "trainUpperEdges": [
+          -0.6300389538438573,
+          -0.2697496301024109,
+          -0.1959695047182385,
+          0.3163608637252251
+        ],
+        "n": 0,
+        "markets": 0,
+        "meanChange": null,
+        "meanExecutableLongPnl": null,
+        "thresholdEdges": [
+          -0.6300389538438573,
+          -0.2697496301024109,
+          -0.1959695047182385,
+          0.3163608637252251
+        ]
+      },
+      {
+        "bin": 4,
+        "trainUpperEdges": [
+          -0.6300389538438573,
+          -0.2697496301024109,
+          -0.1959695047182385,
+          0.3163608637252251
+        ],
+        "n": 6,
+        "markets": 1,
+        "meanChange": 0,
+        "meanExecutableLongPnl": -0.0050000000000000044,
+        "thresholdEdges": [
+          -0.6300389538438573,
+          -0.2697496301024109,
+          -0.1959695047182385,
+          0.3163608637252251
+        ]
+      },
+      {
+        "bin": 5,
+        "trainUpperEdges": [
+          -0.6300389538438573,
+          -0.2697496301024109,
+          -0.1959695047182385,
+          0.3163608637252251
+        ],
+        "n": 2,
+        "markets": 1,
+        "meanChange": 0,
+        "meanExecutableLongPnl": -0.0050000000000000044,
+        "thresholdEdges": [
+          -0.6300389538438573,
+          -0.2697496301024109,
+          -0.1959695047182385,
+          0.3163608637252251
+        ]
+      }
+    ],
+    "momentum5s": [
+      {
+        "bin": 1,
+        "trainUpperEdges": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "n": 10,
+        "markets": 3,
+        "meanChange": 0,
+        "meanExecutableLongPnl": -0.0050000000000000044,
+        "thresholdEdges": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "bin": 2,
+        "trainUpperEdges": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "n": 0,
+        "markets": 0,
+        "meanChange": null,
+        "meanExecutableLongPnl": null,
+        "thresholdEdges": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "bin": 3,
+        "trainUpperEdges": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "n": 0,
+        "markets": 0,
+        "meanChange": null,
+        "meanExecutableLongPnl": null,
+        "thresholdEdges": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "bin": 4,
+        "trainUpperEdges": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "n": 0,
+        "markets": 0,
+        "meanChange": null,
+        "meanExecutableLongPnl": null,
+        "thresholdEdges": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "bin": 5,
+        "trainUpperEdges": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "n": 0,
+        "markets": 0,
+        "meanChange": null,
+        "meanExecutableLongPnl": null,
+        "thresholdEdges": [
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    ],
+    "momentum30s": [
+      {
+        "bin": 1,
+        "trainUpperEdges": [
+          -0.0025000000000000022,
+          0,
+          0,
+          0
+        ],
+        "n": 1,
+        "markets": 1,
+        "meanChange": 0,
+        "meanExecutableLongPnl": -0.0050000000000000044,
+        "thresholdEdges": [
+          -0.0025000000000000022,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "bin": 2,
+        "trainUpperEdges": [
+          -0.0025000000000000022,
+          0,
+          0,
+          0
+        ],
+        "n": 9,
+        "markets": 3,
+        "meanChange": 0,
+        "meanExecutableLongPnl": -0.0050000000000000044,
+        "thresholdEdges": [
+          -0.0025000000000000022,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "bin": 3,
+        "trainUpperEdges": [
+          -0.0025000000000000022,
+          0,
+          0,
+          0
+        ],
+        "n": 0,
+        "markets": 0,
+        "meanChange": null,
+        "meanExecutableLongPnl": null,
+        "thresholdEdges": [
+          -0.0025000000000000022,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "bin": 4,
+        "trainUpperEdges": [
+          -0.0025000000000000022,
+          0,
+          0,
+          0
+        ],
+        "n": 0,
+        "markets": 0,
+        "meanChange": null,
+        "meanExecutableLongPnl": null,
+        "thresholdEdges": [
+          -0.0025000000000000022,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "bin": 5,
+        "trainUpperEdges": [
+          -0.0025000000000000022,
+          0,
+          0,
+          0
+        ],
+        "n": 0,
+        "markets": 0,
+        "meanChange": null,
+        "meanExecutableLongPnl": null,
+        "thresholdEdges": [
+          -0.0025000000000000022,
+          0,
+          0,
+          0
+        ]
+      }
+    ]
+  },
+  "thirtySecondFeatureBins": {
+    "micropricePressure": [
+      {
+        "bin": 1,
+        "trainUpperEdges": [
+          -0.40227841432900446,
+          -0.2404844290657435,
+          0.12295777636326377,
+          0.4472851871375856
+        ],
+        "n": 0,
+        "markets": 0,
+        "meanChange": null,
+        "meanExecutableLongPnl": null,
+        "thresholdEdges": [
+          -0.40227841432900446,
+          -0.2404844290657435,
+          0.12295777636326377,
+          0.4472851871375856
+        ]
+      },
+      {
+        "bin": 2,
+        "trainUpperEdges": [
+          -0.40227841432900446,
+          -0.2404844290657435,
+          0.12295777636326377,
+          0.4472851871375856
+        ],
+        "n": 1,
+        "markets": 1,
+        "meanChange": 0,
+        "meanExecutableLongPnl": -0.0050000000000000044,
+        "thresholdEdges": [
+          -0.40227841432900446,
+          -0.2404844290657435,
+          0.12295777636326377,
+          0.4472851871375856
+        ]
+      },
+      {
+        "bin": 3,
+        "trainUpperEdges": [
+          -0.40227841432900446,
+          -0.2404844290657435,
+          0.12295777636326377,
+          0.4472851871375856
+        ],
+        "n": 6,
+        "markets": 1,
+        "meanChange": 0,
+        "meanExecutableLongPnl": -0.0050000000000000044,
+        "thresholdEdges": [
+          -0.40227841432900446,
+          -0.2404844290657435,
+          0.12295777636326377,
+          0.4472851871375856
+        ]
+      },
+      {
+        "bin": 4,
+        "trainUpperEdges": [
+          -0.40227841432900446,
+          -0.2404844290657435,
+          0.12295777636326377,
+          0.4472851871375856
+        ],
+        "n": 0,
+        "markets": 0,
+        "meanChange": null,
+        "meanExecutableLongPnl": null,
+        "thresholdEdges": [
+          -0.40227841432900446,
+          -0.2404844290657435,
+          0.12295777636326377,
+          0.4472851871375856
+        ]
+      },
+      {
+        "bin": 5,
+        "trainUpperEdges": [
+          -0.40227841432900446,
+          -0.2404844290657435,
+          0.12295777636326377,
+          0.4472851871375856
+        ],
+        "n": 0,
+        "markets": 0,
+        "meanChange": null,
+        "meanExecutableLongPnl": null,
+        "thresholdEdges": [
+          -0.40227841432900446,
+          -0.2404844290657435,
+          0.12295777636326377,
+          0.4472851871375856
+        ]
+      }
+    ],
+    "topImbalance": [
+      {
+        "bin": 1,
+        "trainUpperEdges": [
+          -0.8045568286579744,
+          -0.4809688581314879,
+          0.24591555272650117,
+          0.8945703742751713
+        ],
+        "n": 0,
+        "markets": 0,
+        "meanChange": null,
+        "meanExecutableLongPnl": null,
+        "thresholdEdges": [
+          -0.8045568286579744,
+          -0.4809688581314879,
+          0.24591555272650117,
+          0.8945703742751713
+        ]
+      },
+      {
+        "bin": 2,
+        "trainUpperEdges": [
+          -0.8045568286579744,
+          -0.4809688581314879,
+          0.24591555272650117,
+          0.8945703742751713
+        ],
+        "n": 1,
+        "markets": 1,
+        "meanChange": 0,
+        "meanExecutableLongPnl": -0.0050000000000000044,
+        "thresholdEdges": [
+          -0.8045568286579744,
+          -0.4809688581314879,
+          0.24591555272650117,
+          0.8945703742751713
+        ]
+      },
+      {
+        "bin": 3,
+        "trainUpperEdges": [
+          -0.8045568286579744,
+          -0.4809688581314879,
+          0.24591555272650117,
+          0.8945703742751713
+        ],
+        "n": 6,
+        "markets": 1,
+        "meanChange": 0,
+        "meanExecutableLongPnl": -0.0050000000000000044,
+        "thresholdEdges": [
+          -0.8045568286579744,
+          -0.4809688581314879,
+          0.24591555272650117,
+          0.8945703742751713
+        ]
+      },
+      {
+        "bin": 4,
+        "trainUpperEdges": [
+          -0.8045568286579744,
+          -0.4809688581314879,
+          0.24591555272650117,
+          0.8945703742751713
+        ],
+        "n": 0,
+        "markets": 0,
+        "meanChange": null,
+        "meanExecutableLongPnl": null,
+        "thresholdEdges": [
+          -0.8045568286579744,
+          -0.4809688581314879,
+          0.24591555272650117,
+          0.8945703742751713
+        ]
+      },
+      {
+        "bin": 5,
+        "trainUpperEdges": [
+          -0.8045568286579744,
+          -0.4809688581314879,
+          0.24591555272650117,
+          0.8945703742751713
+        ],
+        "n": 0,
+        "markets": 0,
+        "meanChange": null,
+        "meanExecutableLongPnl": null,
+        "thresholdEdges": [
+          -0.8045568286579744,
+          -0.4809688581314879,
+          0.24591555272650117,
+          0.8945703742751713
+        ]
+      }
+    ],
+    "depth5Imbalance": [
+      {
+        "bin": 1,
+        "trainUpperEdges": [
+          -0.6300389538438573,
+          -0.2644789901233125,
+          -0.1959695047182385,
+          0.3163608637252251
+        ],
+        "n": 0,
+        "markets": 0,
+        "meanChange": null,
+        "meanExecutableLongPnl": null,
+        "thresholdEdges": [
+          -0.6300389538438573,
+          -0.2644789901233125,
+          -0.1959695047182385,
+          0.3163608637252251
+        ]
+      },
+      {
+        "bin": 2,
+        "trainUpperEdges": [
+          -0.6300389538438573,
+          -0.2644789901233125,
+          -0.1959695047182385,
+          0.3163608637252251
+        ],
+        "n": 1,
+        "markets": 1,
+        "meanChange": 0,
+        "meanExecutableLongPnl": -0.0050000000000000044,
+        "thresholdEdges": [
+          -0.6300389538438573,
+          -0.2644789901233125,
+          -0.1959695047182385,
+          0.3163608637252251
+        ]
+      },
+      {
+        "bin": 3,
+        "trainUpperEdges": [
+          -0.6300389538438573,
+          -0.2644789901233125,
+          -0.1959695047182385,
+          0.3163608637252251
+        ],
+        "n": 0,
+        "markets": 0,
+        "meanChange": null,
+        "meanExecutableLongPnl": null,
+        "thresholdEdges": [
+          -0.6300389538438573,
+          -0.2644789901233125,
+          -0.1959695047182385,
+          0.3163608637252251
+        ]
+      },
+      {
+        "bin": 4,
+        "trainUpperEdges": [
+          -0.6300389538438573,
+          -0.2644789901233125,
+          -0.1959695047182385,
+          0.3163608637252251
+        ],
+        "n": 4,
+        "markets": 1,
+        "meanChange": 0,
+        "meanExecutableLongPnl": -0.0050000000000000044,
+        "thresholdEdges": [
+          -0.6300389538438573,
+          -0.2644789901233125,
+          -0.1959695047182385,
+          0.3163608637252251
+        ]
+      },
+      {
+        "bin": 5,
+        "trainUpperEdges": [
+          -0.6300389538438573,
+          -0.2644789901233125,
+          -0.1959695047182385,
+          0.3163608637252251
+        ],
+        "n": 2,
+        "markets": 1,
+        "meanChange": 0,
+        "meanExecutableLongPnl": -0.0050000000000000044,
+        "thresholdEdges": [
+          -0.6300389538438573,
+          -0.2644789901233125,
+          -0.1959695047182385,
+          0.3163608637252251
+        ]
+      }
+    ],
+    "momentum5s": [
+      {
+        "bin": 1,
+        "trainUpperEdges": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "n": 7,
+        "markets": 2,
+        "meanChange": 0,
+        "meanExecutableLongPnl": -0.0050000000000000044,
+        "thresholdEdges": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "bin": 2,
+        "trainUpperEdges": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "n": 0,
+        "markets": 0,
+        "meanChange": null,
+        "meanExecutableLongPnl": null,
+        "thresholdEdges": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "bin": 3,
+        "trainUpperEdges": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "n": 0,
+        "markets": 0,
+        "meanChange": null,
+        "meanExecutableLongPnl": null,
+        "thresholdEdges": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "bin": 4,
+        "trainUpperEdges": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "n": 0,
+        "markets": 0,
+        "meanChange": null,
+        "meanExecutableLongPnl": null,
+        "thresholdEdges": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "bin": 5,
+        "trainUpperEdges": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "n": 0,
+        "markets": 0,
+        "meanChange": null,
+        "meanExecutableLongPnl": null,
+        "thresholdEdges": [
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    ],
+    "momentum30s": [
+      {
+        "bin": 1,
+        "trainUpperEdges": [
+          -0.0024999999999999467,
+          0,
+          0,
+          0
+        ],
+        "n": 1,
+        "markets": 1,
+        "meanChange": 0,
+        "meanExecutableLongPnl": -0.0050000000000000044,
+        "thresholdEdges": [
+          -0.0024999999999999467,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "bin": 2,
+        "trainUpperEdges": [
+          -0.0024999999999999467,
+          0,
+          0,
+          0
+        ],
+        "n": 6,
+        "markets": 2,
+        "meanChange": 0,
+        "meanExecutableLongPnl": -0.0050000000000000044,
+        "thresholdEdges": [
+          -0.0024999999999999467,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "bin": 3,
+        "trainUpperEdges": [
+          -0.0024999999999999467,
+          0,
+          0,
+          0
+        ],
+        "n": 0,
+        "markets": 0,
+        "meanChange": null,
+        "meanExecutableLongPnl": null,
+        "thresholdEdges": [
+          -0.0024999999999999467,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "bin": 4,
+        "trainUpperEdges": [
+          -0.0024999999999999467,
+          0,
+          0,
+          0
+        ],
+        "n": 0,
+        "markets": 0,
+        "meanChange": null,
+        "meanExecutableLongPnl": null,
+        "thresholdEdges": [
+          -0.0024999999999999467,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "bin": 5,
+        "trainUpperEdges": [
+          -0.0024999999999999467,
+          0,
+          0,
+          0
+        ],
+        "n": 0,
+        "markets": 0,
+        "meanChange": null,
+        "meanExecutableLongPnl": null,
+        "thresholdEdges": [
+          -0.0024999999999999467,
+          0,
+          0,
+          0
+        ]
+      }
+    ]
+  },
+  "model30s": null,
+  "counterfactualExecution": null,
+  "limitations": [
+    "The later evaluation rows are highly dependent within a single short capture and across the same market streams; no independent-day or clustered confidence interval was estimated.",
+    "Only 10 five-second and 7 thirty-second test rows were complete; the 30-second ridge was not fitted because the training set had 29 rows, below its fixed minimum of 30.",
+    "The five-second feature bins are descriptive and do not represent a fitted/traded model; their zero moves and -0.005/share executable proxy are too few to establish a persistent edge or loss.",
+    "Public displayed depth and hypothetical ask-to-later-bid marks do not prove queue position, actual fills, portfolio P&L, or contest performance.",
+    "This report uses a frozen complete-line prefix of an append-only public capture. It does not change or stop the collector."
+  ],
+  "reads": {
+    "network": 0,
+    "accountApi": 0
+  },
+  "actualFills": false,
+  "contestOrders": 0,
+  "executionAuthority": false,
+  "profitabilityEstablished": false,
+  "sourceFreeze": {
+    "originalCapture": "realtime-2026-10-14T21-05-11-768Z-178af709-e752-472a-b5ce-a6c897f94e99.jsonl",
+    "sizeAtFreezeBytes": 548145828,
+    "writeTimeAtFreezeUtc": "2026-10-14T23:52:18.5536377Z",
+    "sizeAfterSnapshotBytes": 548145828,
+    "prefixBytes": 548145828,
+    "prefixSha256": "9eff03b978426504aa5197002c88a7715c21018745eb6ae264184aefa99da67c",
+    "frozenAtUtc": "2026-10-14T23:54:46.1146792Z",
+    "endsAtCompleteLine": true
+  },
+  "prospectiveReadout": {
+    "frozenProtocol": "unchanged main runner; 70/30 chronological split; 30s purge; fixed features and ridge lambda 0.1; zero fees",
+    "splitAt": "2026-10-14T22:18:04.335Z",
+    "fiveSecond": {
+      "trainingRows": 48,
+      "testRows": 10,
+      "marketsWithTestRows": 3,
+      "multivariateModelFit": false,
+      "descriptiveResult": "All non-empty feature bins have zero mean mid change and -0.005/share ask-to-later-bid value."
+    },
+    "thirtySecond": {
+      "trainingRows": 29,
+      "requiredMinimumRows": 30,
+      "testRows": 7,
+      "marketsWithTestRows": 2,
+      "modelFit": false,
+      "reasonNoModel": "Only 29 complete training rows; fixed minimum is 30."
+    },
+    "selectedExecutableTrades": null,
+    "uncertainty": "No clustered confidence interval is supportable from 10 five-second rows across 3 markets and 7 thirty-second rows across 2 markets."
+  },
+  "interpretation": "Later-capture replication of a predeclared feature set and evaluation protocol. The 30-second model is withheld below its fixed minimum sample; 5-second results are descriptive bins only. The holdout is too sparse to establish either profitability or a general loss."
+}
