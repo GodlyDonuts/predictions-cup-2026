@@ -9,6 +9,8 @@ param(
   [switch]$HistoryOnly,
   [switch]$DiagnosticBookProbe,
   [switch]$DiagnosticTradesProbe,
+  [string]$DiagnosticTradesFrom,
+  [string]$DiagnosticTradesTo,
   [switch]$CatalogOnly,
   [switch]$LeaderboardOnly,
   [switch]$ExecutionHistoryOnly,
@@ -19,6 +21,11 @@ param(
 $ErrorActionPreference='Stop'
 if(-not $HumanAuthorizedSharedReadCapture){throw 'EXPLICIT_SHARED_READ_AUTHORIZATION_REQUIRED: preserve the prior one-collector policy unless human explicitly authorizes recreating read-only capture.'}
 if($DiagnosticTradesProbe -and ($DiagnosticBookProbe -or $HistoryOnly -or $CatalogOnly -or $LeaderboardOnly -or $ExecutionHistoryOnly -or $ScreenPairsFile -or $RealtimeCapture -or $UniversePairsFile)){throw 'ONE_DIAGNOSTIC_MODE_REQUIRED'}
+if($DiagnosticTradesFrom -or $DiagnosticTradesTo){
+  if(-not $DiagnosticTradesProbe -or -not $DiagnosticTradesFrom -or -not $DiagnosticTradesTo){throw 'DIAGNOSTIC_WINDOW_REQUIRES_ONE_TRADE_PROBE'}
+  $taskDiagnosticFrom=[DateTimeOffset]::Parse($DiagnosticTradesFrom);$taskDiagnosticTo=[DateTimeOffset]::Parse($DiagnosticTradesTo)
+  if($taskDiagnosticFrom -ge $taskDiagnosticTo -or $taskDiagnosticTo -gt [DateTimeOffset]::UtcNow){throw 'DIAGNOSTIC_WINDOW_INVALID'}
+}
 if($ExecutionHistoryOnly -and ($LeaderboardOnly -or $CatalogOnly -or $ScreenPairsFile -or $RealtimeCapture -or $HistoryOnly -or $DiagnosticBookProbe)){throw 'ONE_DISCOVERY_MODE_REQUIRED'}
 if($LeaderboardOnly -and ($CatalogOnly -or $ScreenPairsFile -or $RealtimeCapture)){throw 'ONE_DISCOVERY_MODE_REQUIRED'}
 if($CatalogOnly -and $ScreenPairsFile){throw 'ONE_DISCOVERY_MODE_REQUIRED'}
@@ -56,12 +63,13 @@ try {
   $taskFrom=if($AllHistory){'1970-01-01T00:00:00.000Z'}else{[DateTime]::UtcNow.AddDays(-$HistoryDays).ToString('yyyy-MM-ddTHH:00:00.000Z')}
   $taskTapeFrom=[DateTime]::UtcNow.AddMinutes(-15).ToString('yyyy-MM-ddTHH:mm:ss.fffZ')
   $taskTapeTo=[DateTime]::UtcNow.ToString('yyyy-MM-ddTHH:mm:ss.fffZ')
+  if($DiagnosticTradesFrom){$taskTapeFrom=$taskDiagnosticFrom.UtcDateTime.ToString('yyyy-MM-ddTHH:mm:ss.fffZ');$taskTapeTo=$taskDiagnosticTo.UtcDateTime.ToString('yyyy-MM-ddTHH:mm:ss.fffZ')}
   $taskRequests=@(
     @{kind='book';endpoint="/markets/$MarketId/orderbook?tournamentId=$taskTournament&depth=200"},
     @{kind='trades';endpoint="/exchanges/$ExchangeId/trades?tournamentId=$taskTournament&from=$([Uri]::EscapeDataString($taskTapeFrom))&to=$([Uri]::EscapeDataString($taskTapeTo))&limit=200"},
     @{kind='history';endpoint="/exchanges/$ExchangeId/price-history?tournamentId=$taskTournament&resolution=1h&from=$([Uri]::EscapeDataString($taskFrom))&to=$([Uri]::EscapeDataString($taskEnd))&limit=1000"}
   )
-  if($DiagnosticTradesProbe){$taskRequests=@($taskRequests | Where-Object kind -eq 'trades')}elseif($DiagnosticBookProbe){$taskRequests=@($taskRequests | Where-Object kind -eq 'book')}elseif($HistoryOnly){$taskRequests=@($taskRequests | Where-Object kind -eq 'history')}elseif($Cycles -gt 1){$taskRequests=@($taskRequests)+@(for($taskCycle=1;$taskCycle -lt $Cycles;$taskCycle++){$taskRequests[0];$taskRequests[1]})}
+  if($DiagnosticTradesProbe){$taskRequests=@($taskRequests | Where-Object kind -eq 'trades');if($DiagnosticTradesFrom){$taskRequests[0].fixedWindow=$true}}elseif($DiagnosticBookProbe){$taskRequests=@($taskRequests | Where-Object kind -eq 'book')}elseif($HistoryOnly){$taskRequests=@($taskRequests | Where-Object kind -eq 'history')}elseif($Cycles -gt 1){$taskRequests=@($taskRequests)+@(for($taskCycle=1;$taskCycle -lt $Cycles;$taskCycle++){$taskRequests[0];$taskRequests[1]})}
   if($ExecutionHistoryOnly){$taskRequests=@(@{kind='private_fills';endpoint="/portfolio/fills?tournamentId=$taskTournament&limit=100"})}
   if($LeaderboardOnly){$taskRequests=@(@{kind='leaderboard';endpoint='/tournaments/midterm-elections/leaderboard?period=all&sort=pnl&limit=10'},@{kind='leaderboard';endpoint='/tournaments/midterm-elections/leaderboard?period=1d&sort=pnl&limit=10'})}
   if($CatalogOnly){$taskRequests=@(@{kind='catalog';endpoint='/tournaments/midterm-elections/markets?status=open&limit=100'})}
