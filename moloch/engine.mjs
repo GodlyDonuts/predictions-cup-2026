@@ -31,6 +31,7 @@ export function createMoloch(policy={}){
   check(amount(p.maximumEntryPrice??'0.100000')>0n&&amount(p.maximumEntryPrice??'0.100000')<=SCALE/2n,'CHEAP_PRICE_CAP');
   check(typeof(p.throughFillCapacity??false)==='boolean'&&(!p.throughFillCapacity||p.fillModel==='strictThrough'),'THROUGH_CAPACITY');
   check(p.inventoryTakerAfterMs===undefined||Number.isSafeInteger(p.inventoryTakerAfterMs)&&p.inventoryTakerAfterMs>=0&&p.inventoryTakerAfterMs<=86400000,'INVENTORY_TAKER_AGE');
+  check(p.inventoryMinimumGain===undefined||amount(p.inventoryMinimumGain)>=0n&&amount(p.inventoryMinimumGain)<SCALE,'INVENTORY_MINIMUM_GAIN');
   check(p.maximumInventoryAgeMs===undefined||Number.isSafeInteger(p.maximumInventoryAgeMs)&&p.maximumInventoryAgeMs>=0&&p.maximumInventoryAgeMs<=86400000,'INVENTORY_MAX_AGE');
   check(p.inventoryAgeClock===undefined||['receipt','execution'].includes(p.inventoryAgeClock),'INVENTORY_AGE_CLOCK');
   check(typeof(p.retainProfitableHedge??false)==='boolean','RETAIN_HEDGE');
@@ -97,7 +98,7 @@ function desired(s,at){
       if(lastBuy&&s.policy.inventoryAgeClock==='execution')check(p[side].every(l=>typeof l.executedAt==='string'),'INVENTORY_EXECUTION_CLOCK_MISSING');
       const birth=!lastBuy?null:s.policy.inventoryAgeClock==='execution'?p[side].reduce((oldest,l)=>Math.min(oldest,ms(l.executedAt)),Infinity):ms(lastBuy.at);
       const maximumAge=birth!==null&&s.policy.maximumInventoryAgeMs!==undefined&&at-birth>=s.policy.maximumInventoryAgeMs;
-      const profitableAge=birth!==null&&s.policy.inventoryTakerAfterMs!==undefined&&at-birth>=s.policy.inventoryTakerAfterMs&&executable-worstBasis-fee(worstBasis,1,s.policy)-fee(executable,1,s.policy)>=0n;
+      const profitableAge=birth!==null&&s.policy.inventoryTakerAfterMs!==undefined&&at-birth>=s.policy.inventoryTakerAfterMs&&executable-worstBasis-fee(worstBasis,1,s.policy)-fee(executable,1,s.policy)>=amount(s.policy.inventoryMinimumGain??'0.000000');
       if(quantity>0&&(maximumAge||profitableAge)){candidates.push({marketId:b.marketId,exchangeId:b.exchangeId,side,action:'sell',quantity,price:money(executable),executionStyle:'inventoryAON',...(maximumAge?{inventoryExitReason:'maximumAge'}:{}),rank:1e12,source:b});continue;}
       if(s.policy.repriceProfitableHedge&&!maximumAge&&!profitableAge&&entryAllowed(s,b.exchangeId)){
         const hedgeSide=side==='YES'?'NO':'YES',limit=side==='YES'?SCALE-bestAsk:bestBid,worst=p[side].reduce((n,l)=>amount(l.price)>n?amount(l.price):n,0n),existingHedge=unresolved(s).filter(q=>q.exchangeId===b.exchangeId&&q.side===hedgeSide&&q.action==='buy'&&end(q)>at).reduce((n,q)=>n+remaining(q),0),quantity=Math.min(s.policy.quantity,available+existingHedge);

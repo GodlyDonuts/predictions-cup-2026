@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "sourceSnapshotHash": "dbf445770d177587ca777e5741e65137a3c3346dba5f7d2f4d86e6e8d8d8ba46",
+  "sourceBookHash": "8a02f9ec44967213368c8693e6fa0da3c06baa988cc3244acad65b281105c82f",
+  "sourceBookSequence": "160367940",
+  "sourceBookAt": "2026-10-14T20:55:29.317714700Z",
+  "recordedLimitPrice": "0.910000",
+  "recordedFill": {
+    "orderId": 102,
+    "marketId": "338",
+    "exchangeId": "1027",
+    "side": "YES",
+    "action": "sell",
+    "quantity": 25,
+    "price": "0.910000",
+    "fee": "0.000000",
+    "at": "2026-10-14T20:55:29.736Z",
+    "sourceId": "book:1027:160367940:102",
+    "counterfactual": true,
+    "executedAt": "2026-10-14T20:55:29.736Z",
+    "executionStyle": "inventoryAON"
+  },
+  "depthScenario": {
+    "canFill": true,
+    "eligibleDepth": "404",
+    "filledQuantity": 25,
+    "gross": "22.750000",
+    "fee": "0.000000",
+    "net": "22.750000",
+    "limitGross": "22.750000",
+    "limitNet": "22.750000",
+    "netImprovement": "0.000000",
+    "segments": [
+      {
+        "quantity": 25,
+        "price": "0.910000",
+        "gross": "22.750000",
+        "fee": "0.000000"
+      }
+    ]
+  },
+  "bankWasModified": false,
+  "contestOrders": 0,
+  "profitabilityEstablished": false,
+  "limitations": [
+    "Same exact later book as the conservative simulated exit; no new admission or better timing is assumed.",
+    "Depth-price scenario is not an actual exchange execution receipt or proof that this snapshot persisted.",
+    "Conservative cash and realized history remain unchanged."
+  ]
+}
