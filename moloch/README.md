@@ -582,3 +582,11 @@ coverage metadata does not mean this first page is the entire history. Fill
 prices are outcome-denominated, and signed quantity does not identify buy/sell.
 An order's limit and creation time alone cannot prove passive liquidity or
 queue priority. This mode sends no orders and obtains no realtime token.
+
+[Current-price discovery correction](results/current-price-discovery-20261014.json)
+restricts compatible queue turnover to the current bid/ask regime, the current
+gap generation, and executions after the three-second observation lead.
+Raw recent activity remains visible for research. Moving away from a price and
+returning does not reuse its old executions. In the completed 237-market capture,
+four markets lose obsolete compatible volume and one loses a false two-sided
+priority. This corrects candidate discovery; it does not establish profitable fills.

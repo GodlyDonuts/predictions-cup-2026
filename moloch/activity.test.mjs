@@ -9,7 +9,7 @@ test('future book in a trade batch cannot invent a prior quote or a wallet profi
 });
 test('conditional markout uses a prior observable regime and a genuinely later executable book',()=>{
   const {s,send}=setup();send(batch([book(0,1)]),0);send(batch([book(6,11)],[trade(4)]),6);send(batch([book(20,12,.395,.415)]),20);assert.equal(s.report(at(20))[0].conditionalMarkouts,0);
-  send(batch([book(35,13,.39,.41)]),35);const r=s.report(at(35))[0];assert.equal(r.conditionalMarkouts,1);assert.equal(r.meanConditionalLiquidationDeltaPerShare,-.01);assert.equal(r.gapObserved,false);assert.equal(r.bidCompatibleVolume,50);assert.equal(r.askCompatibleVolume,0);assert.equal(r.bothSideQueueTurnover,0);
+  send(batch([book(35,13,.39,.41)]),35);const r=s.report(at(35))[0];assert.equal(r.conditionalMarkouts,1);assert.equal(r.meanConditionalLiquidationDeltaPerShare,-.01);assert.equal(r.gapObserved,false);assert.equal(r.recentVolume,50);assert.equal(r.bidCompatibleVolume,0);assert.equal(r.askCompatibleVolume,0);assert.equal(r.bothSideQueueTurnover,0);
 });
 test('a revision gap prevents quoted admission but retains activity priority for authoritative recovery',()=>{
   const {s,send}=setup();send(batch([book(0,1)]),0);send(batch([book(6,11)],[trade(4)]),6);send(batch([book(35,12,.45,.47)]),35,{gap:true});const r=s.report(at(35))[0];assert.equal(r.gapObserved,true);assert.equal(r.eligibleForFurtherReconciliation,false);assert.equal(r.conditionalMarkouts,0);assert.equal(r.quoteReadyFromObservation,false);assert.equal(r.authoritativeResyncRequired,true);assert.ok(r.reconciliationPriority>0);
@@ -27,6 +27,25 @@ test('one-tick two-sided joins remain discoverable without crediting one-sided t
 });
 
 test('delayed execution uses the last book observable before its match, never a later receipt',()=>{
- const {s,send}=setup();send(batch([book(0,1)]),0);send(batch([book(6,11,.45,.47)]),6);send(batch([book(7,12,.45,.47)],[trade(5,'late-match')]),7);send(batch([book(40,13,.39,.41)]),40);const r=s.report(at(40))[0];assert.equal(r.bidCompatibleVolume,50);assert.equal(r.conditionalMarkouts,1);assert.equal(r.meanConditionalLiquidationDeltaPerShare,-.01);
+ const {s,send}=setup();send(batch([book(0,1)]),0);send(batch([book(6,11,.45,.47)]),6);send(batch([book(7,12,.45,.47)],[trade(5,'late-match')]),7);send(batch([book(40,13,.39,.41)]),40);const r=s.report(at(40))[0];assert.equal(r.bidCompatibleVolume,0);assert.equal(r.recentVolume,50);assert.equal(r.conditionalMarkouts,1);assert.equal(r.meanConditionalLiquidationDeltaPerShare,-.01);
  const gap=setup();gap.send(batch([book(0,1)]),0);gap.send(batch([book(6,11)]),6,{gap:true});gap.send(batch([book(7,12)],[trade(5,'pre-gap-late')]),7);gap.send(batch([book(40,13)]),40);assert.equal(gap.s.report(at(40))[0].conditionalMarkouts,0);
+});
+
+test('old-price and pre-activation prints cannot inflate current round-trip queue turnover',()=>{
+ const {s,send}=setup();send(batch([book(0,1)]),0);
+ send(batch([book(6,11)],[trade(4,'old-bid'),{...trade(5,'old-ask'),price:.42,sequence:9}]),6);
+ assert.ok(s.report(at(6))[0].roundTripReconciliationPriority>0);
+ send(batch([book(7,12,.45,.47)]),7);
+ let r=s.report(at(7))[0];assert.equal(r.recentVolume,100);assert.equal(r.priceRegimeCompatibleTrades,0);assert.equal(r.roundTripReconciliationPriority,0);
+ send(batch([book(9,15,.45,.47)],[{...trade(8,'too-early'),sequence:14,price:.45}]),9);
+ r=s.report(at(9))[0];assert.equal(r.bidCompatibleVolume,0);
+ send(batch([book(13,18,.45,.47)],[{...trade(11,'new-bid'),sequence:16,price:.45},{...trade(12,'new-ask'),sequence:17,price:.47}]),13);
+ r=s.report(at(13))[0];assert.equal(r.bidCompatibleVolume,50);assert.equal(r.askCompatibleVolume,50);assert.equal(r.priceRegimeCompatibleTrades,2);assert.equal(r.priceRegimeFrom,at(7));assert.ok(r.roundTripReconciliationPriority>0);
+});
+
+test('returning to an old price does not reuse executions from its earlier regime',()=>{
+ const {s,send}=setup();send(batch([book(0,1)]),0);
+ send(batch([book(6,11)],[trade(4,'first-bid'),{...trade(5,'first-ask'),price:.42,sequence:9}]),6);
+ send(batch([book(7,12,.45,.47)]),7);send(batch([book(8,13)]),8);
+ const r=s.report(at(8))[0];assert.equal(r.recentVolume,100);assert.equal(r.priceRegimeFrom,at(8));assert.equal(r.priceRegimeCompatibleTrades,0);assert.equal(r.roundTripReconciliationPriority,0);
 });
