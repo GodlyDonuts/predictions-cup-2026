@@ -1,9 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
+import {readFileSync} from 'node:fs';
 import {verifyScopedRestNoMultishare as verify} from './no-rest-multishare-reconciliation-v1.mjs';
 import {canonicalPayload,payloadHash} from './core.mjs';
-import {amount,money} from '../paper/fixed.mjs';
+import {amount,money,instant} from '../paper/fixed.mjs';
 
 const T='bda92870-621e-47b0-bc3c-3602c5c26f55',N=Date.parse('2026-10-06T16:00:00.000Z');
 const scope={ownerId:'Codex',runId:'multishare-offline-test',tournamentId:T,tournamentSlug:'midterm-elections',marketId:'377',exchangeId:'700'};
@@ -23,6 +24,11 @@ function fixture({action='buy',quantity=5,fills=[{quantity:2,price:'0.100000'},{
  const history=prior?JSON.parse(prior.after.scopedOrdersPages[0].bodyText).data:[],oldQty=prior?.proof.remainingOwnedQuantity??0,priorCash=prior?JSON.parse(prior.after.cash.bodyText).myBalance:1000;
  const b={...scope,orderId:String(orderId),intentId:'intent-'+orderId,idempotencyKey:'key-'+orderId,action,side:'no',quantity,limit,createdAt:iso(created),expirationDate:iso(expiration)};
  const before=account(base,priorCash,-oldQty,history),postQuantity=oldQty+(action==='buy'?total:-total),postCash=Math.round((priorCash+(action==='buy'?-1:1)*Number(cost)/1e6)*100)/100;
+ // OpenAPI Order has no quantityFilled field. Filled size is derived only
+ // from the complete, order-scoped fills endpoint below.
+ // Keep the legacy field in the shared fixture for older policy tests that
+ // consume this helper. The focused schema regression below removes it from
+ // the receipts passed to this verifier.
  const od={id:orderId,exchangeId:'700',tournamentId:T,side:'no',action,quantity,quantityFilled:total,priceLimit:Number(limit),open:false,createdAt:iso(base+1100),expirationDate:iso(expiration)};
  const rows=fills.map((f,i)=>({id:orderId*100+i,side:'no',quantity:-f.quantity,price:Number(f.price),filledAt:iso(base+1500+i*10)}));
  const ackQty=ackFilled??total;let left=ackQty,ackCost=0n,last=null;
@@ -37,12 +43,48 @@ function fixture({action='buy',quantity=5,fills=[{quantity:2,price:'0.100000'},{
  const after=account(base+4000,postCash,-postQuantity,[...history,od]);
  return {binding:b,before,ack,order:raw('GET','/orders/'+orderId,od,base+3000),fillPages:[fillPage],after,dispatchReceipt,readAt:iso(base+5000),reservedFunding:action==='buy'?money(amount(limit)*BigInt(quantity)):'0.000000',reservedElsewhere:'0.000000',priorProof:prior?.proof??null,priorAfter:prior?.after??null,globalRisk:{...scope,complete:true,soleCollector:true,stopped:false,sourceHash:'a'.repeat(64),at:iso(base+4900),unresolvedIntentIds:[b.intentId]}};
 }
+function splitFillPages(a,{firstWatermark=100,secondWatermark=100,secondTotal,secondAverage}={}){
+ const d=JSON.parse(a.fillPages[0].bodyText),at=instant(a.fillPages[0].requestStartedAt);
+ const first={...d,data:[d.data[0]],pagination:{limit:200,hasMore:true,nextCursor:'page 2'},coverage:{complete:true,projectedThroughSequence:firstWatermark}};
+ const second={...d,data:d.data.slice(1),pagination:{limit:200,hasMore:false,nextCursor:null},coverage:{complete:true,projectedThroughSequence:secondWatermark}};
+ if(secondTotal!==undefined)second.totalQuantityFilled=secondTotal;
+ if(secondAverage!==undefined)second.avgFillPrice=secondAverage;
+ a.fillPages=[raw('GET','/orders/'+a.binding.orderId+'/fills?limit=200',first,at),raw('GET','/orders/'+a.binding.orderId+'/fills?limit=200&cursor=page%202',second,at+100)];
+ return a;
+}
 function verifiedBuy(options){const args=fixture(options);return {proof:verify(args),after:args.after,args};}
 
 test('whole-share mixed prices preserve exact principal and a non-tick rational average',()=>{
  const p=verify(fixture());assert.equal(p.filledQuantity,5);assert.equal(p.fillNotional,'0.515000');assert.equal(p.remainingOwnedCost,'0.515000');
  assert.deepEqual(p.averageFillPrice,{numeratorMicros:'515000',denominatorShares:5,reportedDecimal:'0.10300000000000001',basis:'exact_fill_notional_divided_by_filled_shares',reportedAverageUsedForPrincipal:false});
  assert.equal(p.remainingLots.length,2);assert.equal(p.executionAuthority,false);assert.equal(p.globalActivity.status,'unknown');assert.equal(p.globalCashReconciledExactly,false);assert.ok(Object.isFrozen(p.remainingLots[0]));
+});
+test('official schema sources filled size from signed complete order-fill receipts, not Order.quantityFilled',()=>{
+ const openapi=JSON.parse(readFileSync(new URL('../openapi.json',import.meta.url),'utf8'));
+ const order=openapi.components.schemas.Order.properties;
+ assert.equal(Object.hasOwn(order,'quantityFilled'),false);
+ const fills=openapi.paths['/orders/{id}/fills'].get.responses['200'].content['application/json'].schema;
+ for(const field of ['orderId','exchangeId','tournamentId','data','coverage','totalQuantityFilled'])assert.ok(fills.required.includes(field));
+ assert.match(fills.properties.totalQuantityFilled.description,/outcome-signed filled quantity for the whole order/);
+ assert.match(fills.properties.coverage.properties.complete.description,/complete order fill history/);
+ assert.match(fills.properties.data.items.properties.quantity.description,/negative values indicate the NO side/);
+ for(const field of ['orderId','exchangeId','marketId'])assert.equal(Object.hasOwn(fills.properties.data.items.properties,field),false);
+});
+test('documented Order receipts omit quantityFilled; complete signed fill receipts still support buy and continuation sell',()=>{
+ const buyArgs=fixture();
+ edit(buyArgs.order,d=>{delete d.quantityFilled;});
+ edit(buyArgs.after.scopedOrdersPages[0],d=>{delete d.data[0].quantityFilled;});
+ const buy={args:buyArgs,after:buyArgs.after,proof:verify(buyArgs)};
+ assert.equal(Object.hasOwn(JSON.parse(buy.args.order.bodyText),'quantityFilled'),false);
+ assert.equal(Object.hasOwn(JSON.parse(buy.args.after.scopedOrdersPages[0].bodyText).data[0],'quantityFilled'),false);
+ assert.equal(buy.proof.filledQuantity,5);
+ const sell=fixture({action:'sell',quantity:2,fills:[{quantity:2,price:'0.110000'}],prior:buy,base:N+10000,orderId:901});
+ edit(sell.order,d=>{delete d.quantityFilled;});
+ edit(sell.after.scopedOrdersPages[0],d=>{for(const row of d.data)delete row.quantityFilled;});
+ assert.equal(Object.hasOwn(JSON.parse(sell.order.bodyText),'quantityFilled'),false);
+ assert.equal(Object.hasOwn(JSON.parse(sell.before.scopedOrdersPages[0].bodyText).data[0],'quantityFilled'),false);
+ assert.equal(Object.hasOwn(JSON.parse(sell.after.scopedOrdersPages[0].bodyText).data.at(-1),'quantityFilled'),false);
+ assert.equal(verify(sell).realizedPnl,'0.020000');
 });
 test('100 share boundary supports exact cost and rejects quantity101 without rounding',()=>{
  const a=fixture({quantity:100,fills:[{quantity:100,price:'0.250000'}],limit:'0.250000'});assert.equal(verify(a).fillNotional,'25.000000');
@@ -99,12 +141,12 @@ test('old proof costs, owner and raw after history cannot be substituted',()=>{
  }
  const buy=verifiedBuy(),a=fixture({action:'sell',quantity:1,fills:[],prior:buy,base:N+10000,orderId:901});edit(a.before.scopedOrdersPages[0],d=>{d.data[0].priceLimit=.195;});assert.throws(()=>verify(a),/PRIOR_SOURCE_OR_HISTORY/);
 });
-test('raw fraction quantities which Number rounds to integers are rejected',()=>{
+test('raw fraction values for documented quantities which Number rounds to integers are rejected',()=>{
  for(const which of ['fill','ack','terminal','history','position']){const a=fixture();
   if(which==='fill')lex(a.fillPages[0],'"quantity":-2','"quantity":-2.00000000000000001');
   if(which==='ack')lex(a.ack,'"quantity":5','"quantity":5.00000000000000001');
-  if(which==='terminal')lex(a.order,'"quantityFilled":5','"quantityFilled":5.00000000000000001');
-  if(which==='history')lex(a.after.scopedOrdersPages[0],'"quantityFilled":5','"quantityFilled":5.00000000000000001');
+  if(which==='terminal')lex(a.order,'"quantity":5','"quantity":5.00000000000000001');
+  if(which==='history')lex(a.after.scopedOrdersPages[0],'"quantity":5','"quantity":5.00000000000000001');
   if(which==='position')lex(a.after.positions,'"quantity":-5','"quantity":-5.00000000000000001');
   assert.throws(()=>verify(a),/EXACT_INTEGER/);
  }
@@ -143,11 +185,27 @@ test('complete two-page fills preserve exact totals and reject duplicates, missi
  const missing=structuredClone(a);missing.fillPages.pop();assert.throws(()=>verify(missing),/FILL_INCOMPLETE/);
  const cursor=structuredClone(a);cursor.fillPages[1].endpoint+='x';assert.throws(()=>verify(cursor),/RECEIPT_SCOPE/);
 });
+test('fill rows reject contradictory optional order/market/exchange identifiers',()=>{
+ for(const [field,value] of [['orderId',999],['marketId','999'],['exchangeId','999'],['tournamentId','00000000-0000-0000-0000-000000000000']]){
+  const a=fixture();edit(a.fillPages[0],d=>{d.data[0][field]=value;});assert.throws(()=>verify(a),/FILL_ROW_SCOPE/);
+ }
+ const malformed=fixture();edit(malformed.fillPages[0],d=>{d.data[0]=null;});assert.throws(()=>verify(malformed),/FILL_ROW/);
+});
+test('fill completeness, per-page watermarks and summary totals stay fail-closed',()=>{
+ const incomplete=fixture();edit(incomplete.fillPages[0],d=>{d.coverage.complete=false;});assert.throws(()=>verify(incomplete),/FILL_COVERAGE/);
+ const rollback=splitFillPages(fixture(),{firstWatermark:100,secondWatermark:99});assert.throws(()=>verify(rollback),/FILL_PROJECTION_ROLLBACK/);
+ const changedTotal=splitFillPages(fixture(),{secondTotal:-4});assert.throws(()=>verify(changedTotal),/FILL_PROJECTION_CHANGED/);
+ const changedAverage=splitFillPages(fixture(),{secondAverage:0.104});assert.throws(()=>verify(changedAverage),/FILL_PROJECTION_CHANGED/);
+ const rowMismatch=fixture();edit(rowMismatch.fillPages[0],d=>{d.totalQuantityFilled=-4;});assert.throws(()=>verify(rowMismatch),/COMPLETE_FILL_TOTAL/);
+ for(const [field,value] of [['orderId',901],['exchangeId','701'],['tournamentId','00000000-0000-0000-0000-000000000000']]){
+  const a=fixture();edit(a.fillPages[0],d=>{d[field]=value;});assert.throws(()=>verify(a),/FILL_SCOPE/);
+ }
+});
 test('timestamps reject fills before authoritative server creation, future fills and stale/future accounts',()=>{
  for(const change of [a=>edit(a.fillPages[0],d=>{d.data[0].filledAt=iso(N+1000);}),a=>edit(a.fillPages[0],d=>{d.data[0].filledAt=iso(N+3400);}),a=>{a.after.positions.receivedAt=iso(N+6000);},a=>{a.before.cash.requestStartedAt=iso(N-20000);},a=>{a.globalRisk.at=iso(N+4100);}]){const a=fixture();change(a);assert.throws(()=>verify(a));}
 });
 test('incomplete account, unexplained target history and changed external holdings do not reconcile',()=>{
- for(const change of [a=>edit(a.after.positions,d=>{d.pagination={hasMore:true};}),a=>edit(a.after.positions,d=>{delete d.summary;}),a=>edit(a.after.positions,d=>{d.positions[0].quantity=5;}),a=>edit(a.after.scopedOrdersPages[0],d=>{d.data.push({...d.data[0],id:901});}),a=>edit(a.after.scopedOrdersPages[0],d=>{delete d.data[0].quantityFilled;})]){const a=fixture();change(a);assert.throws(()=>verify(a));}
+ for(const change of [a=>edit(a.after.positions,d=>{d.pagination={hasMore:true};}),a=>edit(a.after.positions,d=>{delete d.summary;}),a=>edit(a.after.positions,d=>{d.positions[0].quantity=5;}),a=>edit(a.after.scopedOrdersPages[0],d=>{d.data.push({...d.data[0],id:901});}),a=>edit(a.after.scopedOrdersPages[0],d=>{d.data[0].quantity=0;})]){const a=fixture();change(a);assert.throws(()=>verify(a));}
 });
 test('proof does not turn a caller activity flag into exact global accounting or authority',()=>{
  const a=fixture();a.accountActivity={complete:true,events:[]};assert.throws(()=>verify(a),/GLOBAL_ACTIVITY_UNSUPPORTED/);
