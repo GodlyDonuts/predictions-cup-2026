@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "registeredAt": "2026-10-14T21:11:43.603Z",
+  "sourcePhase": 47,
+  "scope": {
+    "marketId": "338",
+    "exchangeId": "1027"
+  },
+  "exitPolicy": {
+    "inventoryTakerAfterMs": 0,
+    "inventoryMinimumGain": "0.005000",
+    "maximumInventoryAgeMs": 1800000
+  },
+  "parents": [
+    {
+      "name": "competition-scale-20261014-16",
+      "snapshotHash": "672dc00c9b04536131f884a41711f17f9238ca33080e368de5d0048d4d079c25",
+      "cash": "100000.000000",
+      "realized": "0.000000"
+    },
+    {
+      "name": "queue-duration-20261014-12",
+      "snapshotHash": "27c9cde9017fe9371bbfd79a9bd35284a1d1ae4c7953686c1654e888343fde8c",
+      "cash": "100000.060000",
+      "realized": "0.060000"
+    }
+  ],
+  "newPaperCapital": "0.000000",
+  "contestOrders": 0,
+  "profitabilityEstablished": false,
+  "comparison": "Same exit rule across preserved strict-through and conditional-FIFO banks; fill-model differences can affect results",
+  "measurement": "New closed realized profit, completed turnover, losses, inventory and unresolved quote liabilities; inherited 0.060 excluded",
+  "retention": "Keep selected scope until all owned inventory and quote liabilities are reconciled",
+  "limitations": [
+    "Candidate chosen using an already observed single-print development cycle; fresh results are required.",
+    "AON and queue outcomes remain simulated, not exchange execution receipts."
+  ]
+}

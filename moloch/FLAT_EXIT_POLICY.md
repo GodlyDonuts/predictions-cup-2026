@@ -1,0 +1,9 @@
+# Exit policy changes without resetting a bank
+
+`run.mjs --resume TERMINAL_PARENT --resume-entries --exit-policy FILE` accepts only three exit fields: `inventoryTakerAfterMs`, `inventoryMinimumGain` and `maximumInventoryAgeMs`. The exact inherited bank must have no inventory or unresolved quotes. Initial cash, actual cash, realized history, fees, quantities, capital limits, attribution and read/write limits cannot be changed by this option. Constructor validation applies to every new field.
+
+The transition records the selected fields and prior/next policy hashes with zero new capital. Completed-tail reconstruction and fill auditing reapply the transition before reproducing later events. Older transitions omit the new field and retain their original hashes. Unit and terminal-chain tests verify financial preservation, forbidden capital changes, unresolved-quote rejection, CLI policy loading, complete reconstruction and the independent fill auditor. All 126 core tests pass, including sanitized channel-failure classification.
+
+The one-tick candidate was registered at 21:11:43.603 UTC and transitioned both preserved flat banks. Aggregate realtime source47 and direct-market source48 each exited one with CHANNEL_ERROR before any market receipt. The new diagnostic classified source48 as unclassified rather than retaining its raw error or credential-bearing content. No new trade, fresh forward validation or profitability is claimed.
+
+Both candidate ledgers were preserved flat. Explicit REST-only source49 now collects the same scope with entries disabled under the existing mutex and five-read budget. REST observation is available, but the realtime-dependent candidate validation remains pending. Registry and outcomes: `data/moloch-minimum-gain-registration-20261014-47.json` and `data/moloch-minimum-gain-forward-start-20261014.json`. No contest activation or actual order was introduced.

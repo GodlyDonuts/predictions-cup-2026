@@ -7,6 +7,11 @@ import {createHash} from 'node:crypto';import {collectFrozenPaperFiles} from '..
 export function captureFailure(phase,error){
   const allowed=new Set(['command','rest','final_rest','channel','aggregate','broadcast','publication']);const code=/^STREAM_[A-Z0-9_]+$/.test(error?.message??'')?error.message:['EPERM','EACCES','EBUSY','ENOENT','ENOSPC','EIO'].includes(error?.code)?error.code:'UNCLASSIFIED';return{phase:allowed.has(phase)?phase:'unknown',code,...(['rename','open','read','write','stat'].includes(error?.syscall)?{operation:error.syscall}:{}),...(['stats.tmp','stats.json','receipts.jsonl','events.jsonl'].includes(path.basename(error?.path??''))?{file:path.basename(error.path)}:{})};
 }
+export function channelFailure(state,error){
+ const message=typeof error?.message==='string'?error.message.toLowerCase():'';
+ const category=state==='TIMED_OUT'?'join_timeout':/too many.*(channel|connection)|connection.*limit|channel.*limit/.test(message)?'channel_capacity':/unauthorized|not authorized|authorization|invalid.*token|jwt|token.*expired/.test(message)?'channel_authorization':['ECONNRESET','ECONNREFUSED','ENOTFOUND','EAI_AGAIN'].includes(error?.code)?'channel_network':'unclassified';
+ return{phase:'channel',code:['CHANNEL_ERROR','TIMED_OUT','CLOSED'].includes(state)?state:'UNKNOWN',category};
+}
 export function statsPublisher(out,io=fs){
   let retries=0;return report=>{const temp=path.join(out,'stats.tmp');io.writeFileSync(temp,JSON.stringify(report,null,2));try{io.renameSync(temp,path.join(out,'stats.json'));retries=0;return true;}catch(error){if(['EPERM','EACCES','EBUSY'].includes(error.code)&&++retries<=20)return false;throw error;}};
 }
@@ -59,16 +64,16 @@ export async function capture(input,clientFactory=createClient){
   }
   const timer=setInterval(()=>{try{drainRest();}catch(e){void close(true,captureFailure('rest',e));return;}try{stats();}catch(e){void close(true,captureFailure('publication',e));}},100);
   const deadline=setTimeout(()=>void close(),Math.min(30*60000,Date.parse(auth.expiresAt)-Date.now()-60000));
-  const onStatus=(id,state)=>{if(closing)return;subscriptions[id]=state;if(state==='SUBSCRIBED'){status='subscribed';for(const marketId of aggregate?evidence.scopes.keys():[id])append({kind:'subscribed',source:'official_sig_realtime',marketId,receivedAt:new Date().toISOString(),requiresRestResync:true});}else if(['CHANNEL_ERROR','TIMED_OUT','CLOSED'].includes(state))void close(true,{phase:'channel',code:state});stats();};
+  const onStatus=(id,state,error)=>{if(closing)return;subscriptions[id]=state;if(state==='SUBSCRIBED'){status='subscribed';for(const marketId of aggregate?evidence.scopes.keys():[id])append({kind:'subscribed',source:'official_sig_realtime',marketId,receivedAt:new Date().toISOString(),requiresRestResync:true});}else if(['CHANNEL_ERROR','TIMED_OUT','CLOSED'].includes(state))void close(true,channelFailure(state,error));stats();};
   if(aggregate){
     const channel=client.channel(`tournament:${tournamentId}:markets`,{config:{private:true}});
     channel.on('broadcast',{event:'markets_batch'},({payload})=>{if(closing)return;try{evidence.aggregate(payload);stats();}catch(e){void close(true,captureFailure('aggregate',e));}});
     for(const event of ['book_dirty','market_settled'])channel.on('broadcast',{event},({payload})=>{if(closing)return;try{const id=String(payload.marketId);if(evidence.scopes.has(id))evidence.batch(id,event,payload);else evidence.metrics.unknownMarkets++;stats();}catch(e){void close(true,captureFailure('broadcast',e));}});
-    channel.subscribe(state=>onStatus('tournament',state));
+    channel.subscribe((state,error)=>onStatus('tournament',state,error));
   }else for(const scope of evidence.scopes.values()){
     const channel=client.channel(scope.topic,{config:{private:true}});
     for(const event of ['market_batch','book_dirty','market_settled'])channel.on('broadcast',{event},({payload})=>{if(closing)return;try{evidence.batch(scope.marketId,event,payload);stats();}catch(e){void close(true,captureFailure('broadcast',e));}});
-    channel.subscribe(state=>onStatus(scope.marketId,state));
+    channel.subscribe((state,error)=>onStatus(scope.marketId,state,error));
   }
   await done;input.close();if(fatal)throw Error('STREAM_CAPTURE_FAILED');
 }

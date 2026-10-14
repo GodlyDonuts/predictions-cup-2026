@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "attempts": [
+    {
+      "phase": 47,
+      "status": "failed",
+      "captureExit": 1,
+      "receipts": 0,
+      "failure": {
+        "phase": "channel",
+        "code": "CHANNEL_ERROR"
+      }
+    },
+    {
+      "phase": 48,
+      "status": "failed",
+      "captureExit": 1,
+      "receipts": 0,
+      "failure": {
+        "phase": "channel",
+        "code": "CHANNEL_ERROR",
+        "category": "unclassified"
+      }
+    }
+  ],
+  "nextSource": {
+    "phase": 49,
+    "status": "running",
+    "transport": "official_rest_polling",
+    "receipts": 1
+  },
+  "forwardValidationEstablished": false,
+  "entriesEnabled": false,
+  "contestOrders": 0,
+  "profitabilityEstablished": false
+}
