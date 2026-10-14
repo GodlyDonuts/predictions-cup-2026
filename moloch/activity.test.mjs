@@ -25,3 +25,8 @@ test('post-gap observations recover local price compatibility while retaining hi
 test('one-tick two-sided joins remain discoverable without crediting one-sided traffic',()=>{
  const {s,send}=setup();const narrow=(n,seq)=>book(n,seq,.4,.405);send(batch([narrow(0,1)]),0);send(batch([narrow(5,11)],[trade(4,'bid')]),5);assert.equal(s.report(at(5))[0].roundTripReconciliationPriority,0);send(batch([narrow(10,13)],[{...trade(9,'ask'),price:.405,sequence:12}]),10);const r=s.report(at(10))[0];assert.ok(r.roundTripReconciliationPriority>0);assert.equal(r.insideRoomTicks,0);assert.equal(r.quoteReadyFromObservation,false);
 });
+
+test('delayed execution uses the last book observable before its match, never a later receipt',()=>{
+ const {s,send}=setup();send(batch([book(0,1)]),0);send(batch([book(6,11,.45,.47)]),6);send(batch([book(7,12,.45,.47)],[trade(5,'late-match')]),7);send(batch([book(40,13,.39,.41)]),40);const r=s.report(at(40))[0];assert.equal(r.bidCompatibleVolume,50);assert.equal(r.conditionalMarkouts,1);assert.equal(r.meanConditionalLiquidationDeltaPerShare,-.01);
+ const gap=setup();gap.send(batch([book(0,1)]),0);gap.send(batch([book(6,11)]),6,{gap:true});gap.send(batch([book(7,12)],[trade(5,'pre-gap-late')]),7);gap.send(batch([book(40,13)]),40);assert.equal(gap.s.report(at(40))[0].conditionalMarkouts,0);
+});

@@ -1,0 +1,261 @@
+{
+  "bot": "Moloch",
+  "observationCorrection": {
+    "sourceSha256": "01d03acad417994838dd330cedbf34748b2b0926d26f5b50c2ef0e7cda864c38",
+    "sourceEvents": 15182,
+    "beforeConditionalMarkouts": 185,
+    "afterConditionalMarkouts": 224,
+    "beforeTwoSidedCandidates": 1,
+    "afterTwoSidedCandidates": 2,
+    "rule": "Select the latest of at most 64 retained snapshots actually received before execution, preceding its engine sequence and no older than ten source seconds. Preserve local gap generations."
+  },
+  "retainedQuoteWindow": {
+    "sourceEventSha256": "df7af7335e7171d1809a5eee2d8c26e595c76cad092a0d11f62905997f8fe264",
+    "baselineFinancialParity": true,
+    "realized": "0.025000",
+    "finalLiquidationPnl": "0.000000",
+    "ownedCost": "5.020000",
+    "newFills": 1
+  },
+  "selection": {
+    "sourceSha256": "c19aef3f6601409b8e32f3733c1909ccab090284ea7e7286bd9f0eca0305feb3",
+    "sourceFinalHash": "0b7f29500665f511bf9fc97a6a01844cd9c1134524dae4928fce2c50344b0d29",
+    "observedThrough": "2026-10-14T04:50:45.386Z",
+    "chosenMarket": {
+      "marketId": "362",
+      "exchangeId": "1051",
+      "title": "Will the Democratic Party win the Tennessee Senate?",
+      "catalogStatus": "open",
+      "catalogSettlementDate": "2026-11-04T17:00:00.000Z"
+    },
+    "observations": {
+      "marketId": "362",
+      "exchangeId": "1051",
+      "observedTrades": 4,
+      "observedVolume": 6118,
+      "recentTrades": 4,
+      "recentVolume": 6118,
+      "bidCompatibleVolume": 130,
+      "askCompatibleVolume": 5988,
+      "bothSideQueueTurnover": 0.14508928571428573,
+      "bid": 0.16,
+      "ask": 0.165,
+      "spreadTicks": 1,
+      "bidQueue": 896,
+      "askQueue": 4953,
+      "bookAsOf": {
+        "sequence": 154724761,
+        "at": "2026-10-14T04:50:41.851626600Z"
+      },
+      "bookReceivedAt": "2026-10-14T04:50:42.123Z",
+      "bookAgeMs": 3535,
+      "gapObserved": false,
+      "quoteReadyFromObservation": false,
+      "authoritativeResyncRequired": true,
+      "reconciliationPriority": 14.032936953146663,
+      "roundTripReconciliationPriority": 0.21805085344478722,
+      "insideRoomTicks": 0,
+      "eligibleForFurtherReconciliation": true,
+      "explorationScore": 3.311777438015232,
+      "conditionalMarkouts": 2,
+      "meanConditionalLiquidationDeltaPerShare": 0,
+      "censoredMarkouts": 2
+    },
+    "minimumCompatibleSideVolume": 100,
+    "reason": "Both observed sides support at least one assumed share at 1% participation; the higher queue-normalized score from a single opposite-side share was rejected."
+  },
+  "selectiveRetirement": {
+    "status": "completed",
+    "captureExit": 0,
+    "snapshotHash": "1041eaecec02fd81526dcee7d875a72e5fb16ba252956b67aabb00745c26c685",
+    "retiredScopes": [
+      {
+        "marketId": "180",
+        "exchangeId": "869"
+      },
+      {
+        "marketId": "154",
+        "exchangeId": "843"
+      }
+    ],
+    "reservedCash": "0.000000",
+    "ownedCost": "5.020000",
+    "realized": "0.025000",
+    "liquidationPnl": "0.000000"
+  },
+  "successor": {
+    "scopes": [
+      {
+        "marketId": "278",
+        "exchangeId": "967"
+      },
+      {
+        "marketId": "294",
+        "exchangeId": "983"
+      },
+      {
+        "marketId": "362",
+        "exchangeId": "1051"
+      }
+    ],
+    "newPaperCapital": "0.000000",
+    "entryExchangeIds": [
+      "967",
+      "983",
+      "1051"
+    ],
+    "requestedCycles": 12,
+    "terminalResult": "pending"
+  },
+  "packetSensitivity": [
+    {
+      "quantity": 1,
+      "retainProfitableHedge": false,
+      "newFills": 1,
+      "realized": "0.025000",
+      "owned": "4.420000",
+      "reserved": "1.990000",
+      "lastFresh": {
+        "at": "2026-10-14T04:45:59.557Z",
+        "pnl": "0.020000"
+      },
+      "final": "0.020000",
+      "cancels": 57
+    },
+    {
+      "quantity": 1,
+      "retainProfitableHedge": true,
+      "newFills": 1,
+      "realized": "0.025000",
+      "owned": "4.420000",
+      "reserved": "1.990000",
+      "lastFresh": {
+        "at": "2026-10-14T04:45:59.557Z",
+        "pnl": "0.020000"
+      },
+      "final": "0.020000",
+      "cancels": 57
+    },
+    {
+      "quantity": 3,
+      "retainProfitableHedge": false,
+      "newFills": 2,
+      "realized": "0.025000",
+      "owned": "4.720000",
+      "reserved": "5.970000",
+      "lastFresh": {
+        "at": "2026-10-14T04:45:59.557Z",
+        "pnl": "0.010000"
+      },
+      "final": "0.010000",
+      "cancels": 56
+    },
+    {
+      "quantity": 3,
+      "retainProfitableHedge": true,
+      "newFills": 2,
+      "realized": "0.025000",
+      "owned": "4.720000",
+      "reserved": "5.970000",
+      "lastFresh": {
+        "at": "2026-10-14T04:45:59.557Z",
+        "pnl": "0.010000"
+      },
+      "final": "0.010000",
+      "cancels": 56
+    },
+    {
+      "quantity": 5,
+      "retainProfitableHedge": false,
+      "newFills": 1,
+      "realized": "0.025000",
+      "owned": "5.020000",
+      "reserved": "9.950000",
+      "lastFresh": {
+        "at": "2026-10-14T04:45:59.557Z",
+        "pnl": "0.000000"
+      },
+      "final": "0.000000",
+      "cancels": 54
+    },
+    {
+      "quantity": 5,
+      "retainProfitableHedge": true,
+      "newFills": 1,
+      "realized": "0.025000",
+      "owned": "5.020000",
+      "reserved": "14.175000",
+      "lastFresh": {
+        "at": "2026-10-14T04:45:59.557Z",
+        "pnl": "0.000000"
+      },
+      "final": "0.000000",
+      "cancels": 53
+    },
+    {
+      "quantity": 7,
+      "retainProfitableHedge": false,
+      "newFills": 1,
+      "realized": "0.025000",
+      "owned": "5.020000",
+      "reserved": "13.930000",
+      "lastFresh": {
+        "at": "2026-10-14T04:45:59.557Z",
+        "pnl": "0.000000"
+      },
+      "final": "0.000000",
+      "cancels": 55
+    },
+    {
+      "quantity": 7,
+      "retainProfitableHedge": true,
+      "newFills": 1,
+      "realized": "0.025000",
+      "owned": "5.020000",
+      "reserved": "13.930000",
+      "lastFresh": {
+        "at": "2026-10-14T04:45:59.557Z",
+        "pnl": "0.000000"
+      },
+      "final": "0.000000",
+      "cancels": 55
+    },
+    {
+      "quantity": 10,
+      "retainProfitableHedge": false,
+      "newFills": 1,
+      "realized": "0.025000",
+      "owned": "5.020000",
+      "reserved": "19.900000",
+      "lastFresh": {
+        "at": "2026-10-14T04:45:59.557Z",
+        "pnl": "0.000000"
+      },
+      "final": "0.000000",
+      "cancels": 53
+    },
+    {
+      "quantity": 10,
+      "retainProfitableHedge": true,
+      "newFills": 1,
+      "realized": "0.025000",
+      "owned": "5.020000",
+      "reserved": "19.900000",
+      "lastFresh": {
+        "at": "2026-10-14T04:45:59.557Z",
+        "pnl": "0.000000"
+      },
+      "final": "0.000000",
+      "cancels": 53
+    }
+  ],
+  "nodeChecks": 73,
+  "contestOrders": 0,
+  "profitabilityEstablished": false,
+  "limitations": [
+    "Discovery compatibility is a lower bound, not aggressor direction, full tape or queue fills.",
+    "Candidate book and complete tape must reconcile through REST before financial admission.",
+    "Packet sensitivities added no realized profit; smaller inventory reduced the bid-liquidation drag.",
+    "Conditional markouts and replay interventions are diagnostics, not profitable untouched holdouts."
+  ]
+}

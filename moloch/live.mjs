@@ -22,9 +22,10 @@ export function liveUniverse(scopes,value){
   if(!Array.isArray(value)||value.length<1||value.length>1000||value.some(p=>!p||!/^[1-9]\d*$/.test(p.marketId)||!/^[1-9]\d*$/.test(p.exchangeId))||new Set(value.map(p=>p.exchangeId)).size!==value.length||scopes.some(p=>!value.some(q=>q.marketId===p.marketId&&q.exchangeId===p.exchangeId)))throw Error('MOLOCH_UNIVERSE_SCOPE');
   return value.map(({marketId,exchangeId})=>({marketId,exchangeId}));
 }
-export function paperPolicyOverrides(value){
-  if(!value||typeof value!=='object'||Array.isArray(value)||Object.keys(value).some(k=>!['participationBps','lifetimeMs','quantity','retainProfitableHedge','maximumHedgeOvershoot'].includes(k)))throw Error('MOLOCH_POLICY_OVERRIDE_SCOPE');
-  createMoloch(value);return{...value};
+function validateEntryScopes(policy,scopes){if(policy.entryExchangeIds?.some(id=>!scopes.some(p=>p.exchangeId===id)))throw Error('MOLOCH_ENTRY_SCOPE');}
+export function paperPolicyOverrides(value,scopes=null){
+  if(!value||typeof value!=='object'||Array.isArray(value)||Object.keys(value).some(k=>!['participationBps','lifetimeMs','quantity','retainProfitableHedge','maximumHedgeOvershoot','entryExchangeIds'].includes(k)))throw Error('MOLOCH_POLICY_OVERRIDE_SCOPE');
+  createMoloch(value);if(scopes)validateEntryScopes(value,scopes);return{...value};
 }
 export async function live({marketId,exchangeId,outputDirectory,cycles=10,resumeDirectory=null,pairsFile=null,realtime=false,insideTicks=null,drain=false,resumeEntries=false,policyFile=null,universeFile=null}){
   if(!/^[1-9]\d*$/.test(marketId)||!/^[1-9]\d*$/.test(exchangeId)||!Number.isSafeInteger(cycles)||cycles<1||cycles>100)throw Error('MOLOCH_LIVE_SCOPE');
@@ -33,7 +34,7 @@ export async function live({marketId,exchangeId,outputDirectory,cycles=10,resume
   if(realtime&&cycles>Math.floor(60/scopes.length))throw Error('MOLOCH_STREAM_DURATION_LIMIT');
   let universe=null;if(universeFile!==null){if(!realtime||!universeFile||universeFile.startsWith('--'))throw Error('MOLOCH_UNIVERSE_REQUIRES_REALTIME_FILE');let parsed;try{parsed=JSON.parse(fs.readFileSync(universeFile,'utf8').replace(/^\uFEFF/,''));}catch{throw Error('MOLOCH_UNIVERSE_FILE_INVALID');}universe=liveUniverse(scopes,parsed);}
   if(policyFile!==null&&(!policyFile||policyFile.startsWith('--')))throw Error('MOLOCH_POLICY_FILE_REQUIRED');
-  let overrides={};if(policyFile){let parsed;try{parsed=JSON.parse(fs.readFileSync(policyFile,'utf8').replace(/^\uFEFF/,''));}catch{throw Error('MOLOCH_POLICY_FILE_INVALID');}overrides=paperPolicyOverrides(parsed);}
+  let overrides={};if(policyFile){let parsed;try{parsed=JSON.parse(fs.readFileSync(policyFile,'utf8').replace(/^\uFEFF/,''));}catch{throw Error('MOLOCH_POLICY_FILE_INVALID');}overrides=paperPolicyOverrides(parsed,scopes);}
   const out=path.resolve(outputDirectory);if(fs.existsSync(out))throw Error('MOLOCH_LIVE_OUTPUT_EXISTS');fs.mkdirSync(out,{recursive:true});
   const cutoff=new Date().toISOString();let state=createMoloch({...overrides,...((insideTicks===null)?{}:{insideTicks}),...(drain?{entriesEnabled:false}:{})}),continuation=null;
   if(resumeDirectory){const prior=path.resolve(resumeDirectory),oldStats=JSON.parse(fs.readFileSync(path.join(prior,'stats.json'))),snapshot=JSON.parse(fs.readFileSync(path.join(prior,'state.json'))),{hash,...body}=snapshot;
@@ -43,6 +44,7 @@ export async function live({marketId,exchangeId,outputDirectory,cycles=10,resume
     continuation={parentDirectory:prior,parentStatus:oldStats.status,parentCaptureExit:oldStats.captureExit,parentSnapshotHash:hash,parentFinancialHash:payloadHash(financial),newPaperCapital:'0.000000',priorPolicyHash:policyHash,retiredScopes};
     state.policy=nextPolicy;state.policyHash=payloadHash(nextPolicy);const {policy:np,policyHash:nh,...carried}=state;if(payloadHash(carried)!==continuation.parentFinancialHash)throw Error('MOLOCH_FINANCIAL_CONTINUITY');
   }
+  validateEntryScopes(state.policy,scopes);
   const predecessorFacts=realtime?predecessorTradeFacts(resumeDirectory,state,path.join(root,'runtime','moloch')):null;
   const capture=path.join(out,'capture'),receiptFile=path.join(capture,'receipts.jsonl');
   const scopedFile=path.join(out,'scopes.json');const requestedScopes=captureScopes(scopes,state,Date.parse(cutoff));fs.writeFileSync(scopedFile,JSON.stringify(requestedScopes));

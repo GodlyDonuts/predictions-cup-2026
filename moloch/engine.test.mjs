@@ -150,3 +150,11 @@ test('bounded original-quote overshoot can net a partial packet and exits residu
  const marked=book(10,'101',30);marked.book.bids[0].price='0.440000';marked.book.asks[0].price='0.445000';advanceMoloch(s,marked);assert.equal(reportMoloch(s).netLiquidationPnl,'0.005000');advanceMoloch(s,{type:'coverage',receivedAt:at(11),tournamentId:'cup',marketId:'101',exchangeId:'101',from:at(3),to:at(10),complete:true,projectedThroughSequence:'30'});advanceMoloch(s,trade(14,'residual-covered-sale','0.450000',300));assert.equal(s.realized,'0.020000');assert.equal(s.positions['101'].YES.length,0);assertMoloch(s);
  assert.throws(()=>createMoloch({quantity:10,maximumHedgeOvershoot:11}),/HEDGE_OVERSHOOT/);
 });
+
+test('selective entry drain cancels excluded flat quotes without stopping another market',()=>{
+ const s=createMoloch();advanceMoloch(s,book(0));advanceMoloch(s,book(3,'102'));s.policy={...s.policy,entryExchangeIds:['102']};s.policyHash=payloadHash(s.policy);advanceMoloch(s,tick(8));advanceMoloch(s,tick(11));assert.ok(s.orders.filter(q=>q.exchangeId==='101').every(q=>q.cancelEffectiveAt!==undefined));assert.ok(s.orders.filter(q=>q.exchangeId==='102').every(q=>q.cancelEffectiveAt===undefined));assert.ok(Number(reportMoloch(s).reservedCash)>0);assertMoloch(s);
+ assert.throws(()=>createMoloch({entryExchangeIds:['101','101']}),/ENTRY_EXCHANGES/);
+});
+test('excluded inventory retains covered exit capability but cannot retain a buy hedge',()=>{
+ const s=createMoloch({retainProfitableHedge:true});advanceMoloch(s,book(0));advanceMoloch(s,trade(4,'inventory','0.440000',500));s.policy={...s.policy,entryExchangeIds:[]};s.policyHash=payloadHash(s.policy);advanceMoloch(s,tick(8));assert.ok(s.orders.find(q=>q.side==='NO').cancelEffectiveAt);advanceMoloch(s,book(12,'101',30));advanceMoloch(s,{type:'coverage',receivedAt:at(13),tournamentId:'cup',marketId:'101',exchangeId:'101',from:at(3),to:at(12),complete:true,projectedThroughSequence:'30'});assert.equal(s.orders.find(q=>q.action==='sell').quantity,5);assertMoloch(s);
+});

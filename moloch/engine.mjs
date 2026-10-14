@@ -28,6 +28,7 @@ export function createMoloch(policy={}){
   check(['pairedSpread','microprice'].includes(p.quoteMode),'QUOTE_MODE');
   check(typeof p.entriesEnabled==='boolean','ENTRIES_ENABLED');
   check(typeof(p.retainProfitableHedge??false)==='boolean','RETAIN_HEDGE');
+  check(p.entryExchangeIds==null||Array.isArray(p.entryExchangeIds)&&p.entryExchangeIds.length<=p.maximumMarkets&&new Set(p.entryExchangeIds).size===p.entryExchangeIds.length&&p.entryExchangeIds.every(id=>typeof id==='string'&&/^[1-9]\d*$/.test(id)),'ENTRY_EXCHANGES');
   check(Number.isSafeInteger(p.maximumHedgeOvershoot??0)&&(p.maximumHedgeOvershoot??0)>=0&&(p.maximumHedgeOvershoot??0)<=p.quantity,'HEDGE_OVERSHOOT');
   check(['strictThrough','conditionalFifo'].includes(p.fillModel)&&Number.isSafeInteger(p.touchAttributionBps)&&p.touchAttributionBps>=0&&p.touchAttributionBps<=10000,'FILL_MODEL');
   check(Number.isSafeInteger(p.insideTicks)&&p.insideTicks>=0&&p.insideTicks<=3,'INSIDE_TICKS');
@@ -60,8 +61,9 @@ function fill(s,q,n,at,sourceId){
   if(pairs){const costs=take(p.YES,pairs)+take(p.NO,pairs),payout=SCALE*BigInt(pairs);s.cash=money(amount(s.cash)+payout);s.realized=money(amount(s.realized)+payout-costs);s.redemptions.push({exchangeId:q.exchangeId,quantity:pairs,payout:money(payout),cost:money(costs),at,counterfactual:true,mechanism:'engine_opposite_buy_fifo_netting'});}
   prune(s);
 }
+const entryAllowed=(s,exchangeId)=>s.policy.entriesEnabled!==false&&(s.policy.entryExchangeIds==null||s.policy.entryExchangeIds.includes(exchangeId));
 function retainableHedge(s,q){
-  if(s.policy.retainProfitableHedge!==true||s.policy.entriesEnabled===false||q.action!=='buy'||remaining(q)<1||q.cancelEffectiveAt!==undefined)return false;
+  if(s.policy.retainProfitableHedge!==true||!entryAllowed(s,q.exchangeId)||q.action!=='buy'||remaining(q)<1||q.cancelEffectiveAt!==undefined)return false;
   const side=q.side==='YES'?'NO':'YES',lots=position(s,q.exchangeId)[side],held=qty(lots);
   if(!held||oppositeBuys(s,q.exchangeId,side)+pledged(s,q.exchangeId,side)>held+(s.policy.maximumHedgeOvershoot??0))return false;
   const worst=lots.reduce((highest,l)=>amount(l.price)>highest?amount(l.price):highest,0n),limit=amount(q.price);
@@ -86,7 +88,7 @@ function desired(s,at){
       if(quantity>0)candidates.push({marketId:b.marketId,exchangeId:b.exchangeId,side,action:'sell',quantity,price:money(side==='YES'?bestAsk-exitImprove:SCALE-bestBid-exitImprove),rank:1e12,source:b});
       continue;
     }
-    if(s.policy.entriesEnabled===false||spread<TICK*BigInt(s.policy.minimumSpreadTicks))continue;
+    if(!entryAllowed(s,b.exchangeId)||spread<TICK*BigInt(s.policy.minimumSpreadTicks))continue;
     for(let step=0;step<(s.policy.insideTicks??0);step++){
       const sides=micro-bid>=ask-micro?['YES','NO']:['NO','YES'];
       for(const side of sides){const nextBid=bid+(side==='YES'?TICK:0n),nextAsk=ask-(side==='NO'?TICK:0n),limit=side==='YES'?nextBid:SCALE-nextAsk,value=side==='YES'?micro:SCALE-micro;
@@ -116,7 +118,7 @@ function reconcile(s,at){
     // Do not place replacements from stale data; retain only still-covered old
     // quotes until a changed/gapped source or the explicit silence timeout.
     const stillCovered=q.action==='sell'?qty(p[q.side])>=remaining(q):qty(p.YES)+qty(p.NO)===0||retainableHedge(s,q);
-    if(!target&&b&&!b.invalid&&!fresh(s,b,at)&&at-ms(b.receivedAt)<s.policy.maximumSourceSilenceMs&&stillCovered&&(s.policy.entriesEnabled!==false||q.action==='sell'))continue;
+    if(!target&&b&&!b.invalid&&!fresh(s,b,at)&&at-ms(b.receivedAt)<s.policy.maximumSourceSilenceMs&&stillCovered&&(entryAllowed(s,q.exchangeId)||q.action==='sell'))continue;
     const renew=target&&target.price===q.price&&fresh(s,b,at)&&s.policy.renewBeforeMs>0&&q.expiresAt-at<=s.policy.renewBeforeMs;
     if((!target||target.price!==q.price||renew)&&at-q.createdAt>=s.policy.minimumQuoteAgeMs){q.cancelEffectiveAt=at+s.policy.latencyMs;s.writes.push(at);count(s,'cancels');if(renew)count(s,'earlyRenewals');return;}}
   const batch=[],markets=new Set([...Object.entries(s.positions).filter(([,p])=>qty(p.YES)+qty(p.NO)>0).map(([ex])=>ex),...unresolved(s).map(q=>q.exchangeId)]);

@@ -492,3 +492,19 @@ seven owned NO shares costing 4.270000 and no added realized profit. Its existin
 +0.025000 gain is separate. Recorded-clock retention variants changed one cancel
 but produced no added closed profit; all strategies had a stale final liquidation
 mark. The successor carries those shares and reservations without resetting cash.
+
+[Discovery and selective rotation](results/discovery-rotation-20261014.json)
+corrects delayed-trade analysis by selecting the book actually observable before
+execution from a bounded 64-snapshot history. A newer book received after that
+execution cannot hide an earlier valid observation. Source age and local gap
+generation remain mandatory. The same 15182-row archive now produces 224
+conditional markouts instead of 185, without creating any wallet fills.
+
+Optional `entryExchangeIds` restricts fresh entries to a subset of the declared
+financial capture scopes. Excluded buy quotes cancel, reservations wait for
+complete coverage, and owned covered exits stay managed. This retired flat New
+Mexico Governor and U.S. Senate scopes while preserving North Carolina and Texas
+inventory. Their successor adds Tennessee Senate after selecting two-sided
+compatible volume sufficient for at least one assumed share at 1% participation.
+Its initial REST book/tape reconciliation remains mandatory; discovery cannot
+authorize quotes. All cash, positions, intents and trade deduplication carry.
