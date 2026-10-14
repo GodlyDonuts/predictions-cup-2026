@@ -1,0 +1,428 @@
+{
+  "schemaVersion": 1,
+  "report": "realtime-book-pressure-bookstate-cv-20261014",
+  "at": "2026-10-14T20:50:48.739Z",
+  "mode": "offline_training_window_book_only_expanding_cv",
+  "source": {
+    "basename": "realtime-2026-10-14T12-48-27-326Z-58ea4714-2533-43f4-8812-3ff28ff75ab0.jsonl",
+    "bytes": 1805079573,
+    "sha256": "b1970b1a68740f5f6c14885c0272d2a8afa10b554aab918ca20ef3c1e0dbc9ef",
+    "identity": "full SHA-256 recomputed over opaque source bytes after parsing only the development prefix; file metadata stayed stable during both reads",
+    "developmentCutoffAt": "2026-10-14T16:51:01.921Z",
+    "processedThrough": "2026-10-14T16:51:01.786Z",
+    "boundaryLookahead": {
+      "captureIndex": 354429,
+      "kind": "invalidation",
+      "observedAt": "2026-10-14T16:51:02.540Z"
+    },
+    "records": 354430,
+    "recordsByKind": {
+      "subscribed": 1422,
+      "invalidation": 15406,
+      "recovery_started": 750,
+      "event": 327107,
+      "trade_observed": 6828,
+      "snapshot": 747,
+      "recovery_finished": 747,
+      "disconnected": 1185
+    },
+    "configuredMarkets": 237,
+    "acceptedBooks": 2943,
+    "rejectedBooks": 0,
+    "rejectedEvents": 0,
+    "invalidationsByReason": {
+      "INITIAL": 474,
+      "STALE": 222,
+      "EXPIRY": 488,
+      "GAP": 9718,
+      "SOCKET_ERROR": 1896,
+      "RECONNECT": 1896,
+      "PERIODIC": 1,
+      "DISCONNECTED": 237,
+      "REFRESH": 474
+    },
+    "sampledObservations": 1732,
+    "with5sLabel": 651,
+    "with30sLabel": 155,
+    "targetDirtyBatchesSeen": 327107,
+    "targetDirtyBatchesReconciled": 327107,
+    "targetDirtyBatchesUnreconciled": 0,
+    "markets": 237
+  },
+  "protocol": {
+    "windowFractions": [
+      [
+        0.4,
+        0.5
+      ],
+      [
+        0.5,
+        0.6
+      ],
+      [
+        0.6,
+        0.7
+      ]
+    ],
+    "trainingWindowEndsAtFraction": 0.7,
+    "purgeMs": 30000,
+    "horizonMs": 5000,
+    "maximumLabelDelayMs": 5000,
+    "fixedLambda": 0.1,
+    "minimumTrainingRows": 30,
+    "features": [
+      "micropricePressure",
+      "topImbalance",
+      "depth5Imbalance",
+      "midOffset"
+    ],
+    "executionLatencyMs": 1000,
+    "feeRate": 0,
+    "oneShareVisibleTopDepthRequired": true,
+    "entry": "ask after 1s latency, at most 15s late",
+    "exit": "bid at 5s from signal, at most 15s late",
+    "entryGate": "training-only model expected 5s mid change > decision-time full spread"
+  },
+  "samples": {
+    "throughDevelopmentCutoff": 1732,
+    "with5sLabel": 651
+  },
+  "folds": [
+    {
+      "fold": 1,
+      "startAt": "2026-10-14T15:07:14.754Z",
+      "endAt": "2026-10-14T15:41:50.477Z",
+      "purgeMs": 30000,
+      "features": [
+        "micropricePressure",
+        "topImbalance",
+        "depth5Imbalance",
+        "midOffset"
+      ],
+      "horizonMs": 5000,
+      "lambda": 0.1,
+      "trainingRows": 352,
+      "trainingMarkets": 82,
+      "validationRows": 113,
+      "validationMarkets": 28,
+      "latestTrainingLabelAt": "2026-10-14T15:06:36.775Z",
+      "latestValidationLabelAt": "2026-10-14T15:41:09.266Z",
+      "minimumTrainingRows": 30,
+      "status": "scored",
+      "trainScore": {
+        "n": 352,
+        "markets": 82,
+        "correlation": 0.16637513799301715,
+        "mse": 6.043278379086278e-7,
+        "trainingMeanMse": 6.213984213584789e-7,
+        "mseImprovementVsTrainingMean": 0.027471237233805734,
+        "meanChange": 0.0000071022727272729306,
+        "meanPrediction": 0.000007102272727272944
+      },
+      "validationScore": {
+        "n": 113,
+        "markets": 28,
+        "correlation": 0.22941029693922363,
+        "mse": 0.0000014950876082978727,
+        "trainingMeanMse": 0.0000015468374495184222,
+        "mseImprovementVsTrainingMean": 0.03345525493752488,
+        "meanChange": 0.00013274336283185706,
+        "meanPrediction": 0.000007634621693731124
+      },
+      "coefficients": {
+        "micropricePressure": 0.00004473443204813672,
+        "topImbalance": 0.000044734432048142755,
+        "depth5Imbalance": 0.00004332545380654408,
+        "midOffset": 0.00008821190711767694
+      },
+      "trainingMeanBaseline": 0.0000071022727272729306,
+      "decisionDiagnostics": {
+        "validationDecisions": 113,
+        "predictedMoveMedian": 0.0000156975002023783,
+        "predictedMoveMaximum": 0.00027030991328816877,
+        "decisionSpreadMedian": 0.0050000000000000044,
+        "predictionsAboveFullSpread": 0,
+        "maximumForecastMinusSpread": -0.0047296900867118356
+      },
+      "alwaysLongCounterfactual": {
+        "mode": "one-share-counterfactual-taker-markout",
+        "actualFills": false,
+        "fees": 0,
+        "threshold": "all non-overlapping test observations",
+        "eligibleSignals": 113,
+        "trades": 67,
+        "markets": 19,
+        "totalNetPnl": -0.49,
+        "meanNetPnlPerShare": -0.007313432835820895,
+        "medianNetPnlPerShare": -0.0050000000000000044,
+        "positiveShareFraction": 0,
+        "meanEntryDelayMs": 2722,
+        "meanExitHorizonMs": 6793.731343283582,
+        "clusterMean95": {
+          "clusters": 19,
+          "lower95": -0.00832416267942584,
+          "upper95": -0.00559409888357257
+        },
+        "exclusions": {
+          "noEntryBook": 0,
+          "noExitBook": 46,
+          "insufficientTopDepth": 0
+        }
+      },
+      "modelGatedCounterfactual": {
+        "mode": "one-share-counterfactual-taker-markout",
+        "actualFills": false,
+        "fees": 0,
+        "threshold": "trained expected 5s mid move > decision-time full spread",
+        "eligibleSignals": 0,
+        "trades": 0,
+        "markets": 0,
+        "totalNetPnl": 0,
+        "meanNetPnlPerShare": null,
+        "medianNetPnlPerShare": null,
+        "positiveShareFraction": null,
+        "meanEntryDelayMs": null,
+        "meanExitHorizonMs": null,
+        "clusterMean95": {
+          "clusters": 0,
+          "lower95": null,
+          "upper95": null
+        },
+        "exclusions": {
+          "noEntryBook": 0,
+          "noExitBook": 0,
+          "insufficientTopDepth": 0
+        }
+      }
+    },
+    {
+      "fold": 2,
+      "startAt": "2026-10-14T15:41:50.477Z",
+      "endAt": "2026-10-14T16:16:26.199Z",
+      "purgeMs": 30000,
+      "features": [
+        "micropricePressure",
+        "topImbalance",
+        "depth5Imbalance",
+        "midOffset"
+      ],
+      "horizonMs": 5000,
+      "lambda": 0.1,
+      "trainingRows": 466,
+      "trainingMarkets": 95,
+      "validationRows": 88,
+      "validationMarkets": 25,
+      "latestTrainingLabelAt": "2026-10-14T15:41:09.266Z",
+      "latestValidationLabelAt": "2026-10-14T16:15:28.281Z",
+      "minimumTrainingRows": 30,
+      "status": "scored",
+      "trainScore": {
+        "n": 466,
+        "markets": 95,
+        "correlation": 0.18196288548549966,
+        "mse": 8.158475073592801e-7,
+        "trainingMeanMse": 8.435468050617988e-7,
+        "mseImprovementVsTrainingMean": 0.03283670513160142,
+        "meanChange": 0.00003755364806866935,
+        "meanPrediction": 0.000037553648068669365
+      },
+      "validationScore": {
+        "n": 88,
+        "markets": 25,
+        "correlation": 0.10037018818284185,
+        "mse": 7.060180004798952e-7,
+        "trainingMeanMse": 7.073700892027628e-7,
+        "mseImprovementVsTrainingMean": 0.0019114304428555773,
+        "meanChange": 0.000056818181818181866,
+        "meanPrediction": 0.00009853904242213014
+      },
+      "coefficients": {
+        "micropricePressure": 0.00005844986645316534,
+        "topImbalance": 0.00005844986645316976,
+        "depth5Imbalance": 0.00006490822033972246,
+        "midOffset": 0.0001097385360952564
+      },
+      "trainingMeanBaseline": 0.00003755364806866935,
+      "decisionDiagnostics": {
+        "validationDecisions": 88,
+        "predictedMoveMedian": 0.0000681587936817086,
+        "predictedMoveMaximum": 0.00046719783793828336,
+        "decisionSpreadMedian": 0.0050000000000000044,
+        "predictionsAboveFullSpread": 0,
+        "maximumForecastMinusSpread": -0.004532802162061721
+      },
+      "alwaysLongCounterfactual": {
+        "mode": "one-share-counterfactual-taker-markout",
+        "actualFills": false,
+        "fees": 0,
+        "threshold": "all non-overlapping test observations",
+        "eligibleSignals": 88,
+        "trades": 47,
+        "markets": 15,
+        "totalNetPnl": -0.265,
+        "meanNetPnlPerShare": -0.005638297872340426,
+        "medianNetPnlPerShare": -0.0050000000000000044,
+        "positiveShareFraction": 0,
+        "meanEntryDelayMs": 2596.2127659574467,
+        "meanExitHorizonMs": 7056.914893617021,
+        "clusterMean95": {
+          "clusters": 15,
+          "lower95": -0.006538888888888885,
+          "upper95": -0.00506666666666666
+        },
+        "exclusions": {
+          "noEntryBook": 0,
+          "noExitBook": 41,
+          "insufficientTopDepth": 0
+        }
+      },
+      "modelGatedCounterfactual": {
+        "mode": "one-share-counterfactual-taker-markout",
+        "actualFills": false,
+        "fees": 0,
+        "threshold": "trained expected 5s mid move > decision-time full spread",
+        "eligibleSignals": 0,
+        "trades": 0,
+        "markets": 0,
+        "totalNetPnl": 0,
+        "meanNetPnlPerShare": null,
+        "medianNetPnlPerShare": null,
+        "positiveShareFraction": null,
+        "meanEntryDelayMs": null,
+        "meanExitHorizonMs": null,
+        "clusterMean95": {
+          "clusters": 0,
+          "lower95": null,
+          "upper95": null
+        },
+        "exclusions": {
+          "noEntryBook": 0,
+          "noExitBook": 0,
+          "insufficientTopDepth": 0
+        }
+      }
+    },
+    {
+      "fold": 3,
+      "startAt": "2026-10-14T16:16:26.199Z",
+      "endAt": "2026-10-14T16:51:01.921Z",
+      "purgeMs": 30000,
+      "features": [
+        "micropricePressure",
+        "topImbalance",
+        "depth5Imbalance",
+        "midOffset"
+      ],
+      "horizonMs": 5000,
+      "lambda": 0.1,
+      "trainingRows": 556,
+      "trainingMarkets": 111,
+      "validationRows": 94,
+      "validationMarkets": 30,
+      "latestTrainingLabelAt": "2026-10-14T16:15:28.281Z",
+      "latestValidationLabelAt": "2026-10-14T16:49:42.793Z",
+      "minimumTrainingRows": 30,
+      "status": "scored",
+      "trainScore": {
+        "n": 556,
+        "markets": 111,
+        "correlation": 0.1611297604932745,
+        "mse": 8.09107997354493e-7,
+        "trainingMeanMse": 8.305406034884438e-7,
+        "mseImprovementVsTrainingMean": 0.025805609074293745,
+        "meanChange": 0.00003597122302158259,
+        "meanPrediction": 0.00003597122302158262
+      },
+      "validationScore": {
+        "n": 94,
+        "markets": 30,
+        "correlation": -0.07981515607634795,
+        "mse": 0.000001449490133103863,
+        "trainingMeanMse": 0.0000013994838875570286,
+        "mseImprovementVsTrainingMean": -0.035731919453625416,
+        "meanChange": -0.000026595744680851677,
+        "meanPrediction": 0.000049927050118205455
+      },
+      "coefficients": {
+        "micropricePressure": 0.00005728494221329566,
+        "topImbalance": 0.000057284942213299856,
+        "depth5Imbalance": 0.00004746371992754064,
+        "midOffset": 0.00008158990130454835
+      },
+      "trainingMeanBaseline": 0.00003597122302158259,
+      "decisionDiagnostics": {
+        "validationDecisions": 94,
+        "predictedMoveMedian": 0.00004998562019487185,
+        "predictedMoveMaximum": 0.0003474778635086383,
+        "decisionSpreadMedian": 0.0050000000000000044,
+        "predictionsAboveFullSpread": 0,
+        "maximumForecastMinusSpread": -0.004652522136491366
+      },
+      "alwaysLongCounterfactual": {
+        "mode": "one-share-counterfactual-taker-markout",
+        "actualFills": false,
+        "fees": 0,
+        "threshold": "all non-overlapping test observations",
+        "eligibleSignals": 94,
+        "trades": 53,
+        "markets": 20,
+        "totalNetPnl": -0.31999999999999995,
+        "meanNetPnlPerShare": -0.006037735849056603,
+        "medianNetPnlPerShare": -0.0050000000000000044,
+        "positiveShareFraction": 0,
+        "meanEntryDelayMs": 2652.867924528302,
+        "meanExitHorizonMs": 6846.528301886792,
+        "clusterMean95": {
+          "clusters": 20,
+          "lower95": -0.0069166666666666664,
+          "upper95": -0.0053749999999999935
+        },
+        "exclusions": {
+          "noEntryBook": 0,
+          "noExitBook": 41,
+          "insufficientTopDepth": 0
+        }
+      },
+      "modelGatedCounterfactual": {
+        "mode": "one-share-counterfactual-taker-markout",
+        "actualFills": false,
+        "fees": 0,
+        "threshold": "trained expected 5s mid move > decision-time full spread",
+        "eligibleSignals": 0,
+        "trades": 0,
+        "markets": 0,
+        "totalNetPnl": 0,
+        "meanNetPnlPerShare": null,
+        "medianNetPnlPerShare": null,
+        "positiveShareFraction": null,
+        "meanEntryDelayMs": null,
+        "meanExitHorizonMs": null,
+        "clusterMean95": {
+          "clusters": 0,
+          "lower95": null,
+          "upper95": null
+        },
+        "exclusions": {
+          "noEntryBook": 0,
+          "noExitBook": 0,
+          "insufficientTopDepth": 0
+        }
+      }
+    }
+  ],
+  "interpretation": "Chronological development-only diagnostics; not an independent holdout, realized contest performance, or evidence of profitability.",
+  "actualFills": false,
+  "contestOrders": 0,
+  "reads": {
+    "network": 0,
+    "accountApi": 0
+  },
+  "executionAuthority": false,
+  "profitabilityEstablished": false,
+  "limitations": [
+    "The experiment was formulated after this capture was observed; its folds are diagnostics only.",
+    "Book observations within markets and across markets are dependent; folds and market counts are not independent-day confidence bounds.",
+    "Visible top depth, queue priority, adverse selection, and actual fills are not reconstructed. Counterfactual marks do not prove profitability.",
+    "The final 30% is never parsed or scored in this report."
+  ]
+}

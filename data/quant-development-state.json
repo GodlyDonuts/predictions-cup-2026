@@ -924,7 +924,7 @@
     "realized": "0.000000",
     "verifiedAt": "2026-10-07T06:16:58.422Z"
   },
-  "updatedAt": "2026-10-14 20:35:36 UTC",
+  "updatedAt": "2026-10-14T20:50:48.739Z",
   "foreignCandidateRepair": {
     "commit": "17b544005c7578c95df4dc4f2f30ee8e2cc75a19",
     "collector": 32364,
@@ -1012,7 +1012,7 @@
     "actualFillsProven": false,
     "contestOrders": 0
   },
-  "nextProfitabilityWork": "2026-10-14 microprice replay now parses coherent same-batch dirty-book replacements (4,171 books); the 30s model is unfit at 15 training rows and only seven holdout rows. Keep it exploratory and gather a new untouched capture before selecting a simpler feature set.",
+  "nextProfitabilityWork": "Reject the book-only five-second ridge: it generated zero spread-clearing signals on all three fixed development folds; unconditional one-share taker markouts lost in each. Do not force entries or promote it. Seek a later untouched, sufficiently dense capture to test a distinct causal mechanism; keep EXECUTION_STOP and all active banks/journals unchanged.",
   "oracle3Transfer20261014": {
     "issue": 113,
     "implementedAt": "2026-10-14 20:23:03 UTC",
@@ -1090,5 +1090,106 @@
     ],
     "executionStopPreserved": true,
     "next": "Keep this opened capture exploratory; future model selection requires a new untouched capture and enough feature-complete continuous rows."
+  },
+  "bookOnlyFiveSecondRidge20261014": {
+    "at": "2026-10-14T20:50:48.739Z",
+    "source": {
+      "basename": "realtime-2026-10-14T12-48-27-326Z-58ea4714-2533-43f4-8812-3ff28ff75ab0.jsonl",
+      "bytes": 1805079573,
+      "sha256": "b1970b1a68740f5f6c14885c0272d2a8afa10b554aab918ca20ef3c1e0dbc9ef",
+      "developmentCutoffAt": "2026-10-14T16:51:01.921Z",
+      "processedThrough": "2026-10-14T16:51:01.786Z",
+      "boundaryLookaheadIndex": 354429,
+      "fullSha256Recomputed": true
+    },
+    "fixedCandidate": {
+      "model": "standardized ridge",
+      "lambda": 0.1,
+      "features": [
+        "micropricePressure",
+        "topImbalance",
+        "depth5Imbalance",
+        "midOffset"
+      ],
+      "horizonMs": 5000,
+      "folds": [
+        [
+          0.4,
+          0.5
+        ],
+        [
+          0.5,
+          0.6
+        ],
+        [
+          0.6,
+          0.7
+        ]
+      ],
+      "purgeMs": 30000,
+      "minimumTrainingRows": 30
+    },
+    "folds": [
+      {
+        "fold": 1,
+        "trainingRows": 352,
+        "trainingMarkets": 82,
+        "validationRows": 113,
+        "validationMarkets": 28,
+        "mseImprovementVsTrainingMean": 0.03345525493752488,
+        "medianPredictedMove": 0.0000156975002023783,
+        "maximumPredictedMove": 0.00027030991328816877,
+        "medianSpread": 0.0050000000000000044,
+        "predictionsAboveSpread": 0,
+        "modelGatedCounterfactualTrades": 0,
+        "alwaysLongCounterfactualTrades": 67,
+        "alwaysLongCounterfactualPnl": -0.49,
+        "alwaysLongMeanPnlPerShare": -0.007313432835820895
+      },
+      {
+        "fold": 2,
+        "trainingRows": 466,
+        "trainingMarkets": 95,
+        "validationRows": 88,
+        "validationMarkets": 25,
+        "mseImprovementVsTrainingMean": 0.0019114304428555773,
+        "medianPredictedMove": 0.0000681587936817086,
+        "maximumPredictedMove": 0.00046719783793828336,
+        "medianSpread": 0.0050000000000000044,
+        "predictionsAboveSpread": 0,
+        "modelGatedCounterfactualTrades": 0,
+        "alwaysLongCounterfactualTrades": 47,
+        "alwaysLongCounterfactualPnl": -0.265,
+        "alwaysLongMeanPnlPerShare": -0.005638297872340426
+      },
+      {
+        "fold": 3,
+        "trainingRows": 556,
+        "trainingMarkets": 111,
+        "validationRows": 94,
+        "validationMarkets": 30,
+        "mseImprovementVsTrainingMean": -0.035731919453625416,
+        "medianPredictedMove": 0.00004998562019487185,
+        "maximumPredictedMove": 0.0003474778635086383,
+        "medianSpread": 0.0050000000000000044,
+        "predictionsAboveSpread": 0,
+        "modelGatedCounterfactualTrades": 0,
+        "alwaysLongCounterfactualTrades": 53,
+        "alwaysLongCounterfactualPnl": -0.31999999999999995,
+        "alwaysLongMeanPnlPerShare": -0.006037735849056603
+      }
+    ],
+    "decision": "rejected_for_entry",
+    "conclusion": "The fixed model produced zero predictions above the full spread in all three development folds and selected zero counterfactual buys. MSE improvement over the train-mean baseline was small and inconsistent (+3.35%, +0.19%, -3.57%). The no-fee unconditional one-share ask-after-1s/bid-at-5s counterfactual lost in each fold. This candidate supplies no profitability evidence and must not be promoted.",
+    "actualFills": false,
+    "contestOrders": 0,
+    "reads": {
+      "network": 0,
+      "accountApi": 0
+    },
+    "executionAuthority": false,
+    "profitabilityEstablished": false,
+    "executionStopPreserved": true,
+    "report": "data/realtime-book-pressure-bookstate-cv-20261014.json"
   }
 }

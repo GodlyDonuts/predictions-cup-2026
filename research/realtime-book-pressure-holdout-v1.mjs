@@ -26,6 +26,10 @@ const FEATURES = Object.freeze([
   'micropricePressure', 'topImbalance', 'depth5Imbalance',
   'momentum5s', 'momentum30s', 'midOffset',
 ]);
+const BOOK_ONLY_FEATURES = Object.freeze([
+  'micropricePressure', 'topImbalance', 'depth5Imbalance', 'midOffset',
+]);
+const BOOK_ONLY_FOLDS = Object.freeze([[0.4, 0.5], [0.5, 0.6], [0.6, 0.7]]);
 const timestampMs = value => {
   const n = Date.parse(value);
   return Number.isFinite(n) ? n : null;
@@ -121,14 +125,27 @@ function labelSamples(samples, booksByMarket) {
   return samples;
 }
 
-function completeRows(samples, horizon, cutoff, side, purgeMs = POLICY.splitPurgeMs) {
+function completeRows(samples, horizon, cutoff, side, purgeMs = POLICY.splitPurgeMs, features = FEATURES) {
   return samples.filter(sample => {
     const label = sample.labels[horizon];
-    if (!label || FEATURES.some(name => !finite(sample[name]))) return false;
+    if (!label || features.some(name => !finite(sample[name]))) return false;
     return side === 'train'
       ? label.futureAt < cutoff - purgeMs
       : sample.at >= cutoff + purgeMs;
   });
+}
+
+export function trainingOnlyFoldBounds(firstAt, lastAt, purgeMs = POLICY.splitPurgeMs) {
+  if (!finite(firstAt) || !finite(lastAt) || lastAt <= firstAt || !Number.isSafeInteger(purgeMs) || purgeMs < 0) {
+    throw Error('CAPTURE_WINDOW_INVALID');
+  }
+  const span = lastAt - firstAt;
+  return BOOK_ONLY_FOLDS.map(([startFraction, endFraction], index) => ({
+    fold: index + 1,
+    startAt: firstAt + span * startFraction,
+    endAt: firstAt + span * endFraction,
+    purgeMs,
+  }));
 }
 
 function solve(matrix, vector) {
@@ -149,34 +166,40 @@ function solve(matrix, vector) {
   return a.map(row => row[n]);
 }
 
-export function fitRidge(trainRows, lambda = POLICY.ridgeLambda) {
-  if (!Array.isArray(trainRows) || trainRows.length < FEATURES.length * 5 || !finite(lambda) || lambda <= 0) throw Error('RIDGE_TRAINING_SAMPLE');
-  const means = FEATURES.map(name => trainRows.reduce((sum, row) => sum + row[name], 0) / trainRows.length);
-  const scales = FEATURES.map((name, i) => {
+export function fitRidge(trainRows, lambda = POLICY.ridgeLambda, {features = FEATURES, horizonMs = 30_000, minRows = features.length * 5} = {}) {
+  if (!Array.isArray(features) || features.length === 0 || new Set(features).size !== features.length
+      || !Number.isSafeInteger(horizonMs) || horizonMs <= 0
+      || !Array.isArray(trainRows) || trainRows.length < minRows || !Number.isSafeInteger(minRows) || minRows <= 0
+      || !finite(lambda) || lambda <= 0
+      || trainRows.some(row => features.some(name => !finite(row?.[name]) || !finite(row?.labels?.[horizonMs]?.midChange)))) {
+    throw Error('RIDGE_TRAINING_SAMPLE');
+  }
+  const means = features.map(name => trainRows.reduce((sum, row) => sum + row[name], 0) / trainRows.length);
+  const scales = features.map((name, i) => {
     const variance = trainRows.reduce((sum, row) => sum + (row[name] - means[i]) ** 2, 0) / trainRows.length;
     return Math.sqrt(variance) || 1;
   });
-  const yMean = trainRows.reduce((sum, row) => sum + row.labels[30_000].midChange, 0) / trainRows.length;
-  const gram = FEATURES.map(() => Array(FEATURES.length).fill(0));
-  const cross = Array(FEATURES.length).fill(0);
+  const yMean = trainRows.reduce((sum, row) => sum + row.labels[horizonMs].midChange, 0) / trainRows.length;
+  const gram = features.map(() => Array(features.length).fill(0));
+  const cross = Array(features.length).fill(0);
   for (const row of trainRows) {
-    const x = FEATURES.map((name, i) => (row[name] - means[i]) / scales[i]);
-    const y = row.labels[30_000].midChange - yMean;
+    const x = features.map((name, i) => (row[name] - means[i]) / scales[i]);
+    const y = row.labels[horizonMs].midChange - yMean;
     for (let i = 0; i < x.length; i++) {
       cross[i] += x[i] * y;
       for (let j = 0; j < x.length; j++) gram[i][j] += x[i] * x[j];
     }
   }
-  for (let i = 0; i < FEATURES.length; i++) {
+  for (let i = 0; i < features.length; i++) {
     cross[i] /= trainRows.length;
-    for (let j = 0; j < FEATURES.length; j++) gram[i][j] /= trainRows.length;
+    for (let j = 0; j < features.length; j++) gram[i][j] /= trainRows.length;
     gram[i][i] += lambda;
   }
   const coefficients = solve(gram, cross);
   return {
-    features: [...FEATURES], means, scales, yMean, coefficients, lambda,
+    features: [...features], means, scales, yMean, coefficients, lambda, horizonMs,
     predict(row) { return yMean + coefficients.reduce((sum, coefficient, i) =>
-      sum + coefficient * (row[FEATURES[i]] - means[i]) / scales[i], 0); },
+      sum + coefficient * (row[features[i]] - means[i]) / scales[i], 0); },
   };
 }
 
@@ -214,6 +237,12 @@ function quantileBins(trainRows, testRows, feature, horizon) {
 }
 
 function percentile(sorted, p) { return sorted[Math.min(sorted.length - 1, Math.floor(p * sorted.length))]; }
+async function hashFile(path) {
+  const hash = createHash('sha256');
+  for await (const chunk of createReadStream(path)) hash.update(chunk);
+  return hash.digest('hex');
+}
+
 function marketClusterInterval(trades, seed = 0xbaa1) {
   const groups = new Map();
   for (const trade of trades) {
@@ -256,7 +285,7 @@ export function simulateLongOnly(testRows, booksByMarket, model, {threshold = ro
   const sorted = trades.map(row => row.pnl).sort((a, b) => a - b);
   return {
     mode: 'one-share-counterfactual-taker-markout', actualFills: false, fees: 0,
-    threshold: model ? 'trained expected 30s mid move > decision-time full spread' : 'all non-overlapping test observations',
+    threshold: model ? `trained expected ${model.horizonMs / 1000}s mid move > decision-time full spread` : 'all non-overlapping test observations',
     eligibleSignals, trades: trades.length, markets: new Set(trades.map(row => row.marketId)).size,
     totalNetPnl: trades.reduce((sum, row) => sum + row.pnl, 0),
     meanNetPnlPerShare: trades.length ? trades.reduce((sum, row) => sum + row.pnl, 0) / trades.length : null,
@@ -267,6 +296,43 @@ export function simulateLongOnly(testRows, booksByMarket, model, {threshold = ro
     clusterMean95: marketClusterInterval(trades),
     exclusions: {noEntryBook, noExitBook, insufficientTopDepth},
   };
+}
+
+export function evaluateBookOnlyDevelopment(samples, booksByMarket, {firstAt, lastAt, minTrainRows = 30} = {}) {
+  if (!Number.isSafeInteger(minTrainRows) || minTrainRows < BOOK_ONLY_FEATURES.length * 5) throw Error('RIDGE_MINIMUM_INVALID');
+  const folds = trainingOnlyFoldBounds(firstAt, lastAt);
+  return folds.map(fold => {
+    const usable = samples.filter(row => row.labels?.[5_000]
+      && BOOK_ONLY_FEATURES.every(name => finite(row[name])));
+    const train = usable.filter(row => row.labels[5_000].futureAt < fold.startAt - fold.purgeMs);
+    const validation = usable.filter(row => row.at >= fold.startAt && row.at < fold.endAt
+      && row.labels[5_000].futureAt < fold.endAt - fold.purgeMs);
+    const base = {fold: fold.fold, startAt: new Date(fold.startAt).toISOString(), endAt: new Date(fold.endAt).toISOString(),
+      purgeMs: fold.purgeMs, features: [...BOOK_ONLY_FEATURES], horizonMs: 5_000, lambda: POLICY.ridgeLambda,
+      trainingRows: train.length, trainingMarkets: new Set(train.map(row => row.marketId)).size,
+      validationRows: validation.length, validationMarkets: new Set(validation.map(row => row.marketId)).size,
+      latestTrainingLabelAt: train.length ? new Date(Math.max(...train.map(row => row.labels[5_000].futureAt))).toISOString() : null,
+      latestValidationLabelAt: validation.length ? new Date(Math.max(...validation.map(row => row.labels[5_000].futureAt))).toISOString() : null,
+      minimumTrainingRows: minTrainRows};
+    if (train.length < minTrainRows || validation.length === 0) {
+      return {...base, status: train.length < minTrainRows ? 'insufficient_training_rows' : 'no_validation_rows',
+        model: null, alwaysLongCounterfactual: null, modelGatedCounterfactual: null};
+    }
+    const model = fitRidge(train, POLICY.ridgeLambda, {features: BOOK_ONLY_FEATURES, horizonMs: 5_000, minRows: minTrainRows});
+    const forecastMargins = validation.map(row => model.predict(row) - row.spread).sort((a, b) => a - b);
+    const forecastMoves = validation.map(row => model.predict(row)).sort((a, b) => a - b);
+    const spreads = validation.map(row => row.spread).sort((a, b) => a - b);
+    return {...base, status: 'scored', trainScore: score(train, model, 5_000), validationScore: score(validation, model, 5_000),
+      coefficients: Object.fromEntries(BOOK_ONLY_FEATURES.map((name, i) => [name, model.coefficients[i]])),
+      trainingMeanBaseline: model.yMean,
+      decisionDiagnostics: {validationDecisions: validation.length,
+        predictedMoveMedian: percentile(forecastMoves, 0.5), predictedMoveMaximum: forecastMoves.at(-1),
+        decisionSpreadMedian: percentile(spreads, 0.5),
+        predictionsAboveFullSpread: forecastMargins.filter(value => value > 0).length,
+        maximumForecastMinusSpread: forecastMargins.at(-1)},
+      alwaysLongCounterfactual: simulateLongOnly(validation, booksByMarket, null, {horizonMs: 5_000}),
+      modelGatedCounterfactual: simulateLongOnly(validation, booksByMarket, model, {horizonMs: 5_000})};
+  });
 }
 
 function freshState(scope, staleMs) {
@@ -488,6 +554,80 @@ export async function analyzeCapture(inputPath) {
   return result;
 }
 
+export async function analyzeBookOnlyDevelopmentPrefix(inputPath, reference) {
+  const source = reference?.source;
+  const firstAt = timestampMs(source?.firstValidBookAt), lastAt = timestampMs(source?.lastValidBookAt);
+  if (reference?.report !== 'realtime-book-pressure-holdout-20261014' || !source
+      || typeof source.basename !== 'string' || !Number.isSafeInteger(source.bytes) || source.bytes <= 0
+      || !/^[a-f0-9]{64}$/.test(source.sha256 ?? '') || firstAt === null || lastAt === null || lastAt <= firstAt) {
+    throw Error('REFERENCE_REPORT_INVALID');
+  }
+  const absolute = resolve(inputPath);
+  if (basename(absolute) !== source.basename) throw Error('CAPTURE_SOURCE_NAME_MISMATCH');
+  const before = statSync(absolute);
+  if (before.size !== source.bytes) throw Error('CAPTURE_SOURCE_SIZE_MISMATCH');
+  const cutoff = firstAt + (lastAt - firstAt) * POLICY.trainingFraction;
+  const input = createReadStream(absolute);
+  const lines = createInterface({input, crlfDelay: Infinity});
+  const states = new Map();
+  const counters = {records: 0, recordsByKind: {}, configuredMarkets: 0, acceptedBooks: 0,
+    rejectedBooks: 0, rejectedEvents: 0, invalidationsByReason: {}, sampledObservations: 0,
+    with5sLabel: 0, with30sLabel: 0, targetDirtyBatchesSeen: 0,
+    targetDirtyBatchesReconciled: 0, targetDirtyBatchesUnreconciled: 0};
+  let lastRecordAt = null, boundaryLookahead = null;
+  try {
+    for await (const line of lines) {
+      if (!line) continue;
+      const captureIndex = counters.records++;
+      let row;
+      try { row = JSON.parse(line); } catch { throw Error(`CAPTURE_JSON_INVALID_AT_${counters.records}`); }
+      if (!validCaptureEnvelope(row)) throw Error('CAPTURE_SCHEMA_INVALID');
+      if (row.format === 'sig-feed-capture'
+          && (!Number.isSafeInteger(row.captureIndex) || row.captureIndex !== captureIndex)) throw Error('CAPTURE_INDEX_GAP');
+      const at = timestampMs(row.observedAt);
+      if (at === null || lastRecordAt !== null && at < lastRecordAt) throw Error('CAPTURE_TIME_ORDER_INVALID');
+      if (at > cutoff) {
+        boundaryLookahead = {captureIndex, kind: row.kind, observedAt: row.observedAt};
+        break;
+      }
+      lastRecordAt = at;
+      processCaptureRecord(row, states, counters);
+    }
+  } finally {
+    lines.close();
+    input.destroy();
+  }
+  const sourceSha256 = await hashFile(absolute);
+  const after = statSync(absolute);
+  if (before.size !== after.size || before.mtimeMs !== after.mtimeMs || before.ino !== after.ino) throw Error('CAPTURE_CHANGED_DURING_READ');
+  if (sourceSha256 !== source.sha256) throw Error('CAPTURE_SOURCE_HASH_MISMATCH');
+  if (!boundaryLookahead || lastRecordAt === null) throw Error('CAPTURE_PREFIX_BOUNDARY_NOT_FOUND');
+  const {samples, booksByMarket} = attachTargets(states, counters);
+  const folds = evaluateBookOnlyDevelopment(samples, booksByMarket, {firstAt, lastAt});
+  return {
+    schemaVersion: 1, report: 'realtime-book-pressure-bookstate-cv-20261014', at: new Date().toISOString(),
+    mode: 'offline_training_window_book_only_expanding_cv',
+    source: {basename: source.basename, bytes: source.bytes, sha256: source.sha256,
+      identity: 'full SHA-256 recomputed over opaque source bytes after parsing only the development prefix; file metadata stayed stable during both reads',
+      developmentCutoffAt: new Date(cutoff).toISOString(), processedThrough: new Date(lastRecordAt).toISOString(),
+      boundaryLookahead, ...counters, markets: states.size},
+    protocol: {windowFractions: BOOK_ONLY_FOLDS, trainingWindowEndsAtFraction: POLICY.trainingFraction,
+      purgeMs: POLICY.splitPurgeMs, horizonMs: 5_000, maximumLabelDelayMs: POLICY.maximumLabelDelayMs[5_000],
+      fixedLambda: POLICY.ridgeLambda, minimumTrainingRows: 30, features: [...BOOK_ONLY_FEATURES],
+      executionLatencyMs: POLICY.executionLatencyMs, feeRate: 0, oneShareVisibleTopDepthRequired: true,
+      entry: 'ask after 1s latency, at most 15s late', exit: 'bid at 5s from signal, at most 15s late',
+      entryGate: 'training-only model expected 5s mid change > decision-time full spread'},
+    samples: {throughDevelopmentCutoff: samples.length, with5sLabel: counters.with5sLabel}, folds,
+    interpretation: 'Chronological development-only diagnostics; not an independent holdout, realized contest performance, or evidence of profitability.',
+    actualFills: false, contestOrders: 0, reads: {network: 0, accountApi: 0}, executionAuthority: false,
+    profitabilityEstablished: false,
+    limitations: ['The experiment was formulated after this capture was observed; its folds are diagnostics only.',
+      'Book observations within markets and across markets are dependent; folds and market counts are not independent-day confidence bounds.',
+      'Visible top depth, queue priority, adverse selection, and actual fills are not reconstructed. Counterfactual marks do not prove profitability.',
+      'The final 30% is never parsed or scored in this report.']
+  };
+}
+
 function cliValue(name, args = process.argv.slice(2)) {
   const index = args.indexOf(name);
   return index >= 0 ? args[index + 1] : null;
@@ -495,15 +635,24 @@ function cliValue(name, args = process.argv.slice(2)) {
 
 async function main(args) {
   if (args.length === 1 && args[0] === '--help') {
-    process.stdout.write('Offline only: node research/realtime-book-pressure-holdout-v1.mjs --input <stopped-capture.jsonl> --out <new-report.json>\n');
+    process.stdout.write('Offline only: node research/realtime-book-pressure-holdout-v1.mjs --input <stopped-capture.jsonl> --out <new-report.json> [--training-only --reference <full-replay-report.json>]\n');
     return 0;
   }
   const input = cliValue('--input', args), output = cliValue('--out', args);
-  if (!input || !output || args.length !== 4 || existsSync(output)) throw Error('INPUT_OUTPUT_REQUIRED_OR_EXISTS');
-  const report = await analyzeCapture(input);
+  const trainingOnly = args.includes('--training-only'), referencePath = cliValue('--reference', args);
+  if (!input || !output || existsSync(output)
+      || trainingOnly && (!referencePath || args.length !== 7)
+      || !trainingOnly && (referencePath || args.length !== 4)) throw Error('INPUT_OUTPUT_REQUIRED_OR_EXISTS');
+  const report = trainingOnly
+    ? await analyzeBookOnlyDevelopmentPrefix(input, JSON.parse(readFileSync(referencePath, 'utf8')))
+    : await analyzeCapture(input);
   writeFileSync(output, `${JSON.stringify(report, null, 2)}\n`, {flag: 'wx', mode: 0o600});
   process.stdout.write(JSON.stringify({output: basename(output), sourceBytes: report.source.bytes, sourceSha256: report.source.sha256,
     records: report.source.records, acceptedBooks: report.source.acceptedBooks, samples: report.samples,
+    folds: report.folds?.map(fold => ({fold: fold.fold, status: fold.status,
+      trainingRows: fold.trainingRows, validationRows: fold.validationRows,
+      validationMseImprovementVsTrainingMean: fold.validationScore?.mseImprovementVsTrainingMean ?? null,
+      counterfactualPnl: fold.modelGatedCounterfactual?.totalNetPnl ?? null})) ?? null,
     model30s: report.model30s?.test ?? null, counterfactualExecution: report.counterfactualExecution,
     profitabilityEstablished: false}) + '\n');
   return 0;

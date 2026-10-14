@@ -1,9 +1,12 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import {createHash} from 'node:crypto';
 import {mkdtempSync, rmSync, writeFileSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
-import {analyzeCapture, bookFeatures, firstAtOrAfter, fitRidge, simulateLongOnly, targetDirtyHasFreshBook, validCaptureEnvelope} from './realtime-book-pressure-holdout-v1.mjs';
+import {analyzeBookOnlyDevelopmentPrefix, analyzeCapture, bookFeatures, evaluateBookOnlyDevelopment,
+  firstAtOrAfter, fitRidge, simulateLongOnly, targetDirtyHasFreshBook, trainingOnlyFoldBounds,
+  validCaptureEnvelope} from './realtime-book-pressure-holdout-v1.mjs';
 
 const book = ({bid = 0.4, ask = 0.5, bidQuantity = 3, askQuantity = 1, at = '2026-10-14T12:48:50.000Z'} = {}) => ({
   asOf: {sequence: 1, at},
@@ -103,6 +106,87 @@ test('ridge fit learns a fixed linear markout without using test rows', () => {
   const model = fitRidge(train, 1e-6);
   const errors = train.map(row => Math.abs(model.predict(row) - row.labels[30000].midChange));
   assert(Math.max(...errors) < 0.0001);
+});
+
+test('four-feature five-second ridge uses only chronological purged development folds', () => {
+  const features = ['micropricePressure', 'topImbalance', 'depth5Imbalance', 'midOffset'];
+  const samples = Array.from({length: 1_000}, (_, i) => {
+    const at = i * 1_000;
+    const values = [Math.sin(i * 0.13), Math.cos(i * 0.07), Math.sin(i * 0.031 + 0.2), Math.cos(i * 0.017)];
+    const row = {at, marketId: String(i % 4), continuity: 1, spread: 0.01,
+      ...Object.fromEntries(features.map((name, index) => [name, values[index]]))};
+    row.labels = {5000: {midChange: 0.004 * values[0] - 0.003 * values[1] + 0.002 * values[2] + 0.001 * values[3],
+      executableLongPnl: 0, futureAt: at + 5_000, effectiveHorizonMs: 5_000}};
+    return row;
+  });
+  const model = fitRidge(samples.slice(0, 100), 0.1, {features, horizonMs: 5_000, minRows: 30});
+  assert.equal(model.horizonMs, 5_000);
+  assert.deepEqual(model.features, features);
+  const folds = trainingOnlyFoldBounds(0, 1_000_000);
+  assert.deepEqual(folds.map(fold => [fold.startAt, fold.endAt]), [[400_000, 500_000], [500_000, 600_000], [600_000, 700_000]]);
+  const result = evaluateBookOnlyDevelopment(samples, new Map(), {firstAt: 0, lastAt: 1_000_000});
+  assert.equal(result.length, 3);
+  for (const fold of result) {
+    assert.equal(fold.status, 'scored');
+    assert.ok(Date.parse(fold.latestTrainingLabelAt) < Date.parse(fold.startAt) - fold.purgeMs);
+    assert.ok(Date.parse(fold.latestValidationLabelAt) < Date.parse(fold.endAt) - fold.purgeMs);
+    assert.ok(Number.isFinite(fold.validationScore.mse));
+    assert.equal(fold.decisionDiagnostics.validationDecisions, fold.validationRows);
+    assert.equal(fold.decisionDiagnostics.predictionsAboveFullSpread, fold.modelGatedCounterfactual.eligibleSignals);
+  }
+});
+
+test('training-only prefix stops before semantic processing of its one boundary lookahead', async () => {
+  const folder = mkdtempSync(join(tmpdir(), 'baal-book-only-prefix-'));
+  const input = join(folder, 'capture.jsonl');
+  const topic = 'tournament:123e4567-e89b-12d3-a456-426614174000:market:17';
+  const baseAt = Date.parse('2026-10-14T12:00:00.000Z');
+  const iso = ms => new Date(baseAt + ms).toISOString();
+  let index = 0;
+  const row = (kind, offset, extra = {}) => ({format: 'sig-feed-capture', schemaVersion: 1,
+    captureIndex: index++, kind, observedAt: iso(offset), topic, epoch: 1, ...extra});
+  const captureBook = (sequence, offset) => ({exchangeId: '840', asOf: {sequence, at: iso(offset)}, nextExpiryAt: null,
+    bids: [{price: 0.4, quantity: 3}, {price: 0.39, quantity: 1}],
+    asks: [{price: 0.5, quantity: 2}, {price: 0.51, quantity: 1}]});
+  const rows = [
+    row('config', 0, {scope: {marketId: '17', exchangeIds: ['840']}, staleMs: 20_000}),
+    row('subscribed', 1), row('recovery_started', 2),
+    row('snapshot', 3, {receivedAt: iso(3), books: [captureBook(1, 3)]}),
+    row('recovery_finished', 4, {booksReady: true}),
+  ];
+  let revision = 1, sequence = 1;
+  for (let offset = 5_000; offset <= 70_000; offset += 5_000) {
+    rows.push(row('event', offset, {receivedAt: iso(offset), event: 'market_batch', payload: {
+      delivery: {revision: ++revision, previousRevision: revision - 1}, resyncRequired: false,
+      books: [captureBook(++sequence, offset)], bookDirty: [], marketSettled: [],
+    }}));
+  }
+  rows.push(row('config', 75_000, {scope: {marketId: '17', exchangeIds: ['840']}, staleMs: 20_000}));
+  for (let offset = 80_000; offset <= 100_000; offset += 5_000) {
+    rows.push(row('event', offset, {receivedAt: iso(offset), event: 'market_batch', payload: {
+      delivery: {revision: ++revision, previousRevision: revision - 1}, resyncRequired: false,
+      books: [captureBook(++sequence, offset)], bookDirty: [], marketSettled: [],
+    }}));
+  }
+  try {
+    const content = `${rows.map(item => JSON.stringify(item)).join('\n')}\n`;
+    writeFileSync(input, content, {flag: 'wx'});
+    const reference = {report: 'realtime-book-pressure-holdout-20261014', source: {
+      basename: 'capture.jsonl', bytes: Buffer.byteLength(content), sha256: createHash('sha256').update(content).digest('hex'),
+      firstValidBookAt: iso(0), lastValidBookAt: iso(100_000),
+    }};
+    const result = await analyzeBookOnlyDevelopmentPrefix(input, reference);
+    assert.equal(result.source.configuredMarkets, 1);
+    assert.equal(result.source.boundaryLookahead.kind, 'config');
+    assert.equal(result.source.boundaryLookahead.observedAt, iso(75_000));
+    assert.equal(result.source.processedThrough, iso(70_000));
+    assert.equal(result.actualFills, false);
+    assert.equal(result.profitabilityEstablished, false);
+    await assert.rejects(analyzeBookOnlyDevelopmentPrefix(input, {...reference,
+      source: {...reference.source, sha256: 'a'.repeat(64)}}), /CAPTURE_SOURCE_HASH_MISMATCH/);
+  } finally {
+    rmSync(folder, {recursive: true, force: true});
+  }
 });
 
 test('one-share taker proxy observes latency, requires visible top depth, and prevents overlap', () => {
