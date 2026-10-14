@@ -1,0 +1,200 @@
+{
+  "schemaVersion": 1,
+  "at": "2026-10-14T14:31:57.842Z",
+  "mode": "frozen_book_alpha_later_chronological_holdout",
+  "policy": {
+    "horizonsMs": [
+      30000,
+      120000,
+      300000
+    ],
+    "ridge": 200,
+    "trainFraction": 0.6,
+    "latencyMs": 1000,
+    "maximumLatenessMs": 30000,
+    "minimumNet": 0.005,
+    "tick": 0.005,
+    "depthFractionBps": 100,
+    "fees": 0
+  },
+  "cutoff": "2026-10-09T00:00:00.000Z",
+  "source": {
+    "kind": "sealed_public_books_prefix",
+    "file": "public-books.jsonl",
+    "bytes": 324959709,
+    "sha256": "a3ca539c7d8d2c53ddf457772092dcbdd739ed044144836261cb7c63ce119aa3",
+    "rows": 140791,
+    "bookRows": 137966,
+    "streams": 9138,
+    "first": "2026-10-02T12:04:20.364Z",
+    "last": "2026-10-14T14:31:30.475Z",
+    "hours": 290.4528086111111,
+    "sequence": 140791
+  },
+  "sourceVerification": {
+    "prefixBytes": 324959709,
+    "prefixSha256": "a3ca539c7d8d2c53ddf457772092dcbdd739ed044144836261cb7c63ce119aa3",
+    "identityStable": true,
+    "prefixHashStable": true,
+    "bytesAtStart": 324959709,
+    "bytesAtEnd": 324969161
+  },
+  "results": [
+    {
+      "horizonMs": 30000,
+      "labels": 85989,
+      "trainingLabels": 47420,
+      "purgedTrainingLabels": 0,
+      "heldOutLabels": 38569,
+      "holdoutMarkets": 6,
+      "laterDecisionObservations": 56551,
+      "modelRmse": 0.0006699844340198109,
+      "unchangedBidRmse": 0.0006682830189907893,
+      "rmseImprovement": -0.0025459498156799043,
+      "selectedQuoteSignals": 0,
+      "censoredSelectedSignals": 0,
+      "measuredSelectedSignals": 0,
+      "selectedSignalMarkets": 0,
+      "positiveRawMargins": 0,
+      "positiveAfterOneTickPerSide": 0,
+      "meanRawMargin": null,
+      "medianRawMargin": null,
+      "meanOneTickPerSideMargin": null,
+      "medianOneTickPerSideMargin": null,
+      "model": {
+        "mean": [
+          0.006250843525934773,
+          -0.1897361101286237,
+          -0.0005896617631065917,
+          0.000003901307465204576,
+          0.14102747008114888
+        ],
+        "scale": [
+          0.002468405230784802,
+          0.45145514791567254,
+          0.0015862079623519608,
+          0.0007723443399018606,
+          0.055081371921700706
+        ],
+        "coefficients": [
+          -0.00001637967240693544,
+          0.00024338537392745382,
+          0.000007882775132858924,
+          0.00003212451524401901,
+          -0.0001853129118190631,
+          0.000041481382052327523
+        ]
+      }
+    },
+    {
+      "horizonMs": 120000,
+      "labels": 83637,
+      "trainingLabels": 45472,
+      "purgedTrainingLabels": 0,
+      "heldOutLabels": 38165,
+      "holdoutMarkets": 9,
+      "laterDecisionObservations": 56551,
+      "modelRmse": 0.0010295551323563188,
+      "unchangedBidRmse": 0.0010386857430626421,
+      "rmseImprovement": 0.008790542055002182,
+      "selectedQuoteSignals": 0,
+      "censoredSelectedSignals": 0,
+      "measuredSelectedSignals": 0,
+      "selectedSignalMarkets": 0,
+      "positiveRawMargins": 0,
+      "positiveAfterOneTickPerSide": 0,
+      "meanRawMargin": null,
+      "medianRawMargin": null,
+      "meanOneTickPerSideMargin": null,
+      "medianOneTickPerSideMargin": null,
+      "model": {
+        "mean": [
+          0.006225589373677094,
+          -0.19287709931649885,
+          -0.000594681466157859,
+          0.000005607846586910669,
+          0.14106246948667606
+        ],
+        "scale": [
+          0.0024197531885711454,
+          0.4501590448759018,
+          0.0015597695081238554,
+          0.0007758784549327208,
+          0.054927920347764767
+        ],
+        "coefficients": [
+          -0.000024632159748369613,
+          0.0003884597305617568,
+          -3.669838539780501e-7,
+          0.00009253291752918742,
+          -0.000183155023968017,
+          0.000048104222343228294
+        ]
+      }
+    },
+    {
+      "horizonMs": 300000,
+      "labels": 78151,
+      "trainingLabels": 40991,
+      "purgedTrainingLabels": 1,
+      "heldOutLabels": 37159,
+      "holdoutMarkets": 8,
+      "laterDecisionObservations": 56551,
+      "modelRmse": 0.0014027659554543951,
+      "unchangedBidRmse": 0.0014256514429036393,
+      "rmseImprovement": 0.01605265267549061,
+      "selectedQuoteSignals": 0,
+      "censoredSelectedSignals": 0,
+      "measuredSelectedSignals": 0,
+      "selectedSignalMarkets": 0,
+      "positiveRawMargins": 0,
+      "positiveAfterOneTickPerSide": 0,
+      "meanRawMargin": null,
+      "medianRawMargin": null,
+      "meanOneTickPerSideMargin": null,
+      "medianOneTickPerSideMargin": null,
+      "model": {
+        "mean": [
+          0.0062017272084084075,
+          -0.19442950539550935,
+          -0.0005897435863930515,
+          0.000009148349637725393,
+          0.14143446808442794
+        ],
+        "scale": [
+          0.002338710003994007,
+          0.4477506534548511,
+          0.0015202591517287573,
+          0.0007732486204433531,
+          0.05482256702551227
+        ],
+        "coefficients": [
+          -0.000013959360055066387,
+          0.0004746976894399296,
+          0.0000631936476570475,
+          0.00010747654117652898,
+          -0.00017446407512592817,
+          0.00005228721248390688
+        ]
+      }
+    }
+  ],
+  "runtimeChanges": 0,
+  "accountReads": 0,
+  "apiRequests": 0,
+  "contestOrders": 0,
+  "actualFillsProven": false,
+  "realizedPnl": null,
+  "profitabilityEstablished": false,
+  "wallMs": 26775.572900000003,
+  "code": {
+    "runnerGitBlobSha1": "0d59354abef982f4b80fbf0e424b5a8699a7e589",
+    "modelGitBlobSha1": "f7ba38923432396f71ffd2c8ddd1d9299793f030"
+  },
+  "limitations": [
+    "This is a frozen offline model validation, not an actual-fill or portfolio-P&L test.",
+    "Book observations and overlapping horizons are correlated across related election markets.",
+    "Missing depth, invalidation, stale receipts and incomplete future horizons are censored by the frozen labeler; censored selected signals are counted separately.",
+    "The 1-second latency, one-tick threshold and zero-fee assumption are inherited unchanged from the development policy."
+  ]
+}
