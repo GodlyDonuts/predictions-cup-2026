@@ -1,0 +1,127 @@
+{
+  "schemaVersion": 1,
+  "models": [
+    {
+      "schemaVersion": 1,
+      "snapshotHash": "a9d462fbe5d0d5f65414a11bc9c836a92b4ddaf27039774e8bbc0f0dd043975e",
+      "at": "2026-10-14T20:31:31.801Z",
+      "policy": {
+        "initialCash": "100000.000000",
+        "maximumCommitted": "40000.000000",
+        "maximumMarketCost": "10000.000000",
+        "quantity": 10000,
+        "maximumMarkets": 4,
+        "latencyMs": 3000,
+        "lifetimeMs": 600000,
+        "bookAgeMs": 10000,
+        "maximumSourceSilenceMs": 60000,
+        "minimumSpreadTicks": 1,
+        "minimumEdge": "0.001000",
+        "participationBps": 100,
+        "feeBps": 0,
+        "feePerShare": "0.000000",
+        "quoteMode": "pairedSpread",
+        "entriesEnabled": true,
+        "fillModel": "strictThrough",
+        "touchAttributionBps": 10000,
+        "insideTicks": 0,
+        "renewBeforeMs": 0,
+        "minimumQuoteAgeMs": 2500,
+        "writeGapMs": 2500,
+        "writesPerMinute": 24,
+        "inventoryTakerAfterMs": 600000,
+        "entryExchangeIds": [
+          "1027"
+        ],
+        "maximumInventoryAgeMs": 1800000,
+        "retainProfitableHedge": false,
+        "maximumHedgeOvershoot": 0,
+        "entryDepthBps": 10000,
+        "inventoryAgeClock": "execution"
+      },
+      "events": 495,
+      "uniqueTrades": 3,
+      "duplicateTrades": 33,
+      "quotePrintPairs": {},
+      "byExchange": {
+        "1027": {
+          "uniqueTrades": 3,
+          "shares": 1100,
+          "quotePrintPairs": {}
+        }
+      },
+      "newFills": [],
+      "contestOrders": 0,
+      "networkRequests": 0,
+      "profitabilityEstablished": false,
+      "limitations": [
+        "Each count is an order/print pair; overlapping orders can count the same print more than once.",
+        "Touch volume does not prove aggressor direction, queue priority or executable fill.",
+        "Quotes are the actual simulated quotes known before each event, with original execution clocks and cancel deadlines.",
+        "A concurrent journal suffix is ignored beyond the pinned snapshot sequence; the checked prefix is reproduced exactly."
+      ]
+    },
+    {
+      "schemaVersion": 1,
+      "snapshotHash": "7d9ea065463e7e59d225a6e51a63f6b217599c5987eeec4f640bbd9739262753",
+      "at": "2026-10-14T20:31:42.003Z",
+      "policy": {
+        "initialCash": "100000.000000",
+        "maximumCommitted": "40000.000000",
+        "maximumMarketCost": "10000.000000",
+        "quantity": 10000,
+        "maximumMarkets": 4,
+        "latencyMs": 3000,
+        "lifetimeMs": 1800000,
+        "bookAgeMs": 10000,
+        "maximumSourceSilenceMs": 60000,
+        "minimumSpreadTicks": 1,
+        "minimumEdge": "0.001000",
+        "participationBps": 100,
+        "feeBps": 0,
+        "feePerShare": "0.000000",
+        "quoteMode": "pairedSpread",
+        "entriesEnabled": true,
+        "fillModel": "conditionalFifo",
+        "touchAttributionBps": 5000,
+        "insideTicks": 0,
+        "renewBeforeMs": 0,
+        "minimumQuoteAgeMs": 2500,
+        "writeGapMs": 2500,
+        "writesPerMinute": 24,
+        "inventoryTakerAfterMs": 600000,
+        "entryExchangeIds": [
+          "1027"
+        ],
+        "maximumInventoryAgeMs": 1800000,
+        "retainProfitableHedge": false,
+        "maximumHedgeOvershoot": 0,
+        "entryDepthBps": 10000,
+        "inventoryAgeClock": "execution"
+      },
+      "events": 511,
+      "uniqueTrades": 3,
+      "duplicateTrades": 33,
+      "quotePrintPairs": {},
+      "byExchange": {
+        "1027": {
+          "uniqueTrades": 3,
+          "shares": 1100,
+          "quotePrintPairs": {}
+        }
+      },
+      "newFills": [],
+      "contestOrders": 0,
+      "networkRequests": 0,
+      "profitabilityEstablished": false,
+      "limitations": [
+        "Each count is an order/print pair; overlapping orders can count the same print more than once.",
+        "Touch volume does not prove aggressor direction, queue priority or executable fill.",
+        "Quotes are the actual simulated quotes known before each event, with original execution clocks and cancel deadlines.",
+        "A concurrent journal suffix is ignored beyond the pinned snapshot sequence; the checked prefix is reproduced exactly."
+      ]
+    }
+  ],
+  "contestOrders": 0,
+  "profitabilityEstablished": false
+}
