@@ -49,3 +49,19 @@ test('returning to an old price does not reuse executions from its earlier regim
  send(batch([book(7,12,.45,.47)]),7);send(batch([book(8,13)]),8);
  const r=s.report(at(8))[0];assert.equal(r.recentVolume,100);assert.equal(r.priceRegimeFrom,at(8));assert.equal(r.priceRegimeCompatibleTrades,0);assert.equal(r.roundTripReconciliationPriority,0);
 });
+
+test('each side retains its own activation lead when only the opposite price changes',()=>{
+ const {s,send}=setup();send(batch([book(0,1)]),0);send(batch([book(4,2,.4,.425)]),4);
+ send(batch([book(6,12,.4,.425)],[{...trade(5,'persistent-bid'),sequence:10},{...trade(5,'new-ask-too-early'),sequence:11,price:.425}]),6);
+ let r=s.report(at(6))[0];assert.equal(r.bidCompatibleVolume,50);assert.equal(r.askCompatibleVolume,0);assert.equal(r.bidRegimeFrom,at(0));assert.equal(r.askRegimeFrom,at(4));
+ send(batch([book(7,13,.405,.425)]),7);
+ send(batch([book(9,15,.405,.425)],[{...trade(8,'persistent-ask'),sequence:14,price:.425}]),9);
+ r=s.report(at(9))[0];assert.equal(r.bidCompatibleVolume,0);assert.equal(r.askCompatibleVolume,50);assert.equal(r.bidRegimeFrom,at(7));assert.equal(r.askRegimeFrom,at(4));
+ send(batch([book(40,16,.405,.425)]),40);r=s.report(at(40))[0];assert.equal(r.conditionalMarkouts,2);
+});
+
+test('a gap resets both side regimes even when the displayed prices are unchanged',()=>{
+ const {s,send}=setup();send(batch([book(0,1)]),0);send(batch([book(4,2)]),4,{gap:true});
+ send(batch([book(6,11)],[trade(5,'after-gap-too-early')]),6);
+ const r=s.report(at(6))[0];assert.equal(r.bidRegimeFrom,at(4));assert.equal(r.askRegimeFrom,at(4));assert.equal(r.bidCompatibleVolume,0);assert.equal(r.conditionalMarkouts,0);
+});

@@ -590,3 +590,11 @@ Raw recent activity remains visible for research. Moving away from a price and
 returning does not reuse its old executions. In the completed 237-market capture,
 four markets lose obsolete compatible volume and one loses a false two-sided
 priority. This corrects candidate discovery; it does not establish profitable fills.
+
+The subsequent [per-side observation check](results/per-side-discovery-20261014.json)
+tracks bid and ask activation histories separately. A changed ask cannot erase
+activity at a persistent bid, and a changed bid cannot erase persistent ask flow.
+Changing that side's price or observing a gap still resets its history. On the
+same frozen eight-minute prefix this recovered compatible activity in three
+markets and one conditional markout, but no two-sided opportunity. Conditional
+price marks remain research evidence, not paper-wallet earnings.
