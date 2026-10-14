@@ -58,9 +58,10 @@
     "windowRelaxed": false
   },
   "backlog": [
-    "After the 21:15 capture writer releases, freeze/hash it once as untouched forward data and score the already-frozen ridge bank without refitting or threshold changes.",
-    "Prepare passive-maker test only with actual attributable fills/queue information; otherwise report unscorable. Do not infer fills from touches.",
-    "Keep chronological cutoffs, source hashes, no-fee scenario as requested, and full spread/latency/depth/inventory costs. No contest orders or production activation."
+    "Finish #90: map official own-order/fill receipts to existing bot journals; determine whether fill-conditioned economics are observable without a live order.",
+    "Finish #91: identify one fixed market-making policy that fits binary-book semantics and the one-second feed; specify a clean falsification test.",
+    "When the 21:15 source is writer-released, freeze/hash once and score the already-frozen ridge bank without refit or threshold change.",
+    "Do not claim profitability from counterfactual marks, feed touches, or zero-trade scores; no contest orders or production activation."
   ],
   "capitalExpansion": {
     "bootstrapFreshlyVerified": true,
@@ -288,8 +289,8 @@
   },
   "currentMilestone": {
     "name": "Find forward executable alpha on sealed market data",
-    "stage": "fixed ridge bank published; expanding test rejected as a winner; next best candidate is passive spread capture with fill-conditioned value",
-    "next": "Keep the growing 21:15 capture sealed. Once released, pin it as a separate untouched future test for the frozen ridge bank. Treat passive maker economics as unscorable until actual fill/queue data exists; no threshold tuning or contest activation from paper marks."
+    "stage": "fixed ridge bank reviewed/published and rejected as a winner; passive-spread candidate under source/API evidence review",
+    "next": "Determine whether authoritative own-fill receipts exist, and design an inventory-aware passive test that cannot infer fills from quote touches. Keep the 21:15 capture sealed until its writer releases it; then use as one untouched fixed-model test."
   },
   "delegation": {
     "mode": "solo",
@@ -922,7 +923,7 @@
     "realized": "0.000000",
     "verifiedAt": "2026-10-07T06:16:58.422Z"
   },
-  "updatedAt": "2026-10-14T00:43:37Z",
+  "updatedAt": "2026-10-14T00:45:09Z",
   "foreignCandidateRepair": {
     "commit": "17b544005c7578c95df4dc4f2f30ee8e2cc75a19",
     "collector": 32364,
@@ -943,7 +944,9 @@
       "Issue #89: source-backed passive-spread candidate research completed; feed is 1-second batched and lacks aggressor/queue-position data, so touch marks cannot prove fills; actual-fill test remains no-go/unvalidated."
     ],
     "active": [
-      "The 21:15 capture remains actively growing; metadata-only probe at 2026-10-14T00:43:16Z showed 1,255,742,452 bytes and a current write. Do not hash, parse, or score until the writer releases it and a new frozen-source scope is established."
+      "The 21:15 capture remains actively growing; metadata-only probe at 2026-10-14T00:43:16Z showed 1,255,742,452 bytes and a current write. Do not hash, parse, or score until the writer releases it and a new frozen-source scope is established.",
+      "Issue #90 active: verify official own-order/fill receipts and whether queue data exists; docs/schema only, no live API/account/runtime/capture access.",
+      "Issue #91 active: primary-source audit of transferable binary market-making methods under the one-second feed; no code/data/replay/runtime/orders."
     ],
     "guardrails": {
       "contestOrders": 0,
@@ -955,6 +958,6 @@
       "oldHoldoutNoReadAttestation": "compromised_disclosed",
       "latestCheckedCommit": "0497eb111117ddf3518b3b5c5cec286c292ddc8a"
     },
-    "updatedAt": "2026-10-14T00:43:37Z"
+    "updatedAt": "2026-10-14T00:45:09Z"
   }
 }
