@@ -18,10 +18,13 @@ param(
   [string]$RecoveryWindowsFile,
   [switch]$RealtimeCapture,
   [switch]$AllowOneDnsReadRecovery,
+  [switch]$ExitPriorityBooks,
   [string]$UniversePairsFile
 )
 $ErrorActionPreference='Stop'
 Import-Module (Join-Path $PSScriptRoot 'read-failure.psm1') -Force
+Import-Module (Join-Path $PSScriptRoot 'exit-book-priority.psm1') -Force
+if($ExitPriorityBooks -and (-not $ScreenPairsFile -or -not $RecoveryWindowsFile -or $RealtimeCapture)){throw 'EXIT_BOOK_PRIORITY_REQUIRES_SCOPED_REST'}
 if(-not $HumanAuthorizedSharedReadCapture){throw 'EXPLICIT_SHARED_READ_AUTHORIZATION_REQUIRED: preserve the prior one-collector policy unless human explicitly authorizes recreating read-only capture.'}
 if($DiagnosticTradesProbe -and ($DiagnosticBookProbe -or $HistoryOnly -or $CatalogOnly -or $LeaderboardOnly -or $ExecutionHistoryOnly -or $ScreenPairsFile -or $RealtimeCapture -or $UniversePairsFile)){throw 'ONE_DIAGNOSTIC_MODE_REQUIRED'}
 if($DiagnosticTradesFrom -or $DiagnosticTradesTo){
@@ -110,8 +113,22 @@ try {
   }
   $taskReceipts=0
   $taskDnsRecoveryUsed=$false
+  $taskExitAttempts=[Collections.Generic.HashSet[string]]::new()
   for($taskIndex=0;$taskIndex -lt $taskRequests.Count;$taskIndex++){
     if($ScreenPairsFile -and $taskReceipts -ge 120){break}
+    if($ExitPriorityBooks){
+      $taskPriorityNow=[DateTimeOffset]::UtcNow.ToUnixTimeMilliseconds()
+      $taskPriorityAdmission=[Math]::Max($taskPriorityNow,[long]$taskBudget.nextAt)
+      $taskPriorityTimes=@($taskBudget.times | Where-Object {$_ -gt ($taskPriorityNow-60000)})
+      if($taskPriorityTimes.Count -ge 5){$taskPriorityAdmission=[Math]::Max($taskPriorityAdmission,[long]$taskPriorityTimes[0]+60001)}
+      $taskPriorityDocument=Get-Content -LiteralPath $RecoveryWindowsFile -Raw | ConvertFrom-Json -DateKind String
+      $taskPriority=Select-MolochExitBook $taskPriorityDocument ([IO.Path]::GetDirectoryName($taskOutput)) $taskPairs $taskRequests $taskIndex $taskPriorityNow $taskPriorityAdmission $taskExitAttempts
+      if($taskPriority){
+        $taskDeferred=$taskRequests[$taskIndex];$taskRequests[$taskIndex]=$taskRequests[$taskPriority.Index];$taskRequests[$taskPriority.Index]=$taskDeferred
+        $taskExitAttempts.Add($taskPriority.Key)|Out-Null
+        [pscustomobject]@{at=[DateTimeOffset]::UtcNow.ToString('o');action='promoted_existing_book';marketId=$taskPriority.MarketId;exchangeId=$taskPriority.ExchangeId;intentKey=$taskPriority.Key;additionalAdmissions=0} | ConvertTo-Json -Compress | Add-Content -LiteralPath (Join-Path $taskOutput 'exit-book-priority.jsonl') -Encoding utf8
+      }
+    }
     $taskRequest=$taskRequests[$taskIndex]
     if($taskStream -and $taskStream.HasExited){throw 'STREAM_PROCESS_EXITED: stop rather than silently downgrade or refresh credentials.'}
     $taskMarket=if($taskRequest.marketId){$taskRequest.marketId}else{$MarketId}
