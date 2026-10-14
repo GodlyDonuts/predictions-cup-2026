@@ -532,7 +532,7 @@ try{
       const supplementalDepth=[],samplingReservations=[],samplingReceipts=[];
       for(const spec of planned.reads){
         if(stopping||api.cooldown>Date.now())break;
-        const marketId=spec.marketId,target=spec.path==='sourceSnapshots'?events:supplementalDepth;let receivedBook=false;
+        const marketId=spec.marketId,target=spec.path==='sourceSnapshots'?events:supplementalDepth;let receivedBook=false,publicationAttempted=false;
         const samplingMember=planned.comparisonSampling?.reservationMarketIds?.includes(marketId);
         recordAttempt('book',marketId,samplingMember?planned.comparisonSampling.planId:null,spec.nativeDiscovery===true);
         if(samplingMember)samplingReservations.push({marketId,at:new Date().toISOString()});
@@ -550,7 +550,7 @@ try{
           const validatedReceipt=normalizeBook(r.data,marketId,c.tournamentId,r.receivedAt,r.requestStartedAt,c.maxDataAgeMs,new Set(),'authoritative_receipt_v1');
           if(validatedReceipt.exchangeId!==universe.exchanges.find(x=>x.marketId===marketId)?.exchangeId)throw Error('Book exchange identity mismatch');
           if(competition)try{await competition.onBook(r);}catch(e){competition.failure(e);}
-          const sharedPublished=publishBookEvent('publishBook',{marketId,response:r});
+          publicationAttempted=true;const sharedPublished=publishBookEvent('publishBook',{marketId,response:r});
           if(sharedPublished!==false)successful++;
           if(noMaker)try{noMaker.onBook(bookPublication.status(),marketId,probabilityAccountEligibility(accountCache));runtime.noMaker=noMaker.status();}catch{runtime.noMaker={status:'failed',executionAuthority:false};noMaker=null;}
           for(const[key,host]of stableHosts())try{if((coupledBulk&&key!=='coupledBulk'||key==='stableMaker'&&(coupledMaker||stableMakerBroad))&&!host.status().riskMarketIds.includes(marketId))continue;host.onBook(bookPublication.status(),marketId,probabilityAccountEligibility(accountCache));runtime[key]=host.status();}catch{stableHostFailed(key);}
@@ -563,7 +563,7 @@ try{
           const b=normalizeBook(r.data,marketId,c.tournamentId,r.receivedAt,r.requestStartedAt,c.maxDataAgeMs,excluded,spec.path==='sourceSnapshots'?'event_age_v1':dipBank?'authoritative_receipt_v1':'event_age_v1');
           if(b.exchangeId!==universe.exchanges.find(x=>x.marketId===marketId).exchangeId)throw Error('Book exchange identity mismatch');
           if(spec.path==='sourceSnapshots'&&!retireNativePrices){try{state=observe(state,b,c);}catch(e){e.fatal=true;throw e;}}
-        }catch(e){if(e.durableRecordingFailed)throw e;if(stopping)break;if(!receivedBook)publishBookEvent('invalidate',{marketId,reason:'BOOK_READ_FAILED'});if(e.fatal||api.manualReview||e.status===401||e.status===403)throw e;const reason=e.status?'http_'+e.status:e.message,at=new Date().toISOString();if(spec.path==='sourceSnapshots'){state.skips[marketId]={at,reason};invalidate(state,marketId,at,reason);}target.push({marketId,skipped:reason,at});if(e.status===429||e.status===503)break;}
+        }catch(e){if(e.durableRecordingFailed)throw e;if(stopping)break;if(!receivedBook)publishBookEvent('invalidate',{marketId,reason:'BOOK_READ_FAILED'});else if(!publicationAttempted)publishBookEvent('invalidate',{marketId,reason:'INVALID_BOOK'});if(e.fatal||api.manualReview||e.status===401||e.status===403)throw e;const reason=e.status?'http_'+e.status:e.message,at=new Date().toISOString();if(spec.path==='sourceSnapshots'){state.skips[marketId]={at,reason};invalidate(state,marketId,at,reason);}target.push({marketId,skipped:reason,at});if(e.status===429||e.status===503)break;}
       }
       runtime.scheduling={managedMarketIds:planned.managedMarketIds,entryMarketIds:planned.entryMarketIds,overCapacity:planned.overCapacity,reads:planned.reads,nativeDiscovery:planned.nativeDiscovery||null};
       if(settlementPortfolio)try{await settlementPortfolio.consume({availableAt:new Date().toISOString(),accountEligibility:probabilityAccountEligibility(accountCache)});runtime.settlementPortfolio=settlementPortfolio.status();}catch{let retained=runtime.settlementPortfolio;try{retained=settlementPortfolio.status();}catch{}runtime.settlementPortfolio={...retained,failed:true,accountingRetained:true,executionAuthority:false};const e=Error('Settlement portfolio recording failed');e.durableRecordingFailed=true;e.fatal=true;throw e;}
