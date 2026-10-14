@@ -44,7 +44,8 @@ export function completedTail(directory,visited=new Set()){
  return{directory:dir,snapshot};
 }
 function options(args){const o={format:'ndjson',follow:false};for(let i=0;i<args.length;i++){const k=args[i];if(k==='--follow')o.follow=true;else if(k==='--drain')o.drain=true;else if(k==='--resume-entries')o.resumeEntries=true;else if(k==='--execution-age')o.executionAge=true;else if(['--input','--output','--format','--policy','--seconds','--resume','--entry-exchanges','--exit-policy'].includes(k)){if(!args[i+1])throw Error('Missing '+k);o[k.slice(2)]=args[++i];}else throw Error('Unknown option '+k);}if(!o.input||!o.output)throw Error('Usage: node moloch/run.mjs --input FILE --output NEW_DIRECTORY [--format book-export] [--policy FILE] [--follow --seconds 60]');return o;}
-export async function run(args){
+export async function run(args,{processingClock=null}={}){
+  if(processingClock!==null&&typeof processingClock!=='function')throw Error('MOLOCH_PROCESSING_CLOCK');
   const o=options(args),input=path.resolve(o.input),out=path.resolve(o.output);
   if(fs.existsSync(out))throw Error('MOLOCH_OUTPUT_EXISTS: preserve previous run; use a new directory');
   if(!['ndjson','journal','book-export'].includes(o.format)||(o.follow&&!['ndjson','journal'].includes(o.format)))throw Error('MOLOCH_FORMAT');
@@ -79,7 +80,7 @@ export async function run(args){
       try{while(Date.now()<deadline&&!fs.existsSync(path.join(out,'STOP'))){
         const st=fs.statSync(input);if(st.dev!==source.dev||st.ino!==source.ino||st.size<offset)throw Error('MOLOCH_SOURCE_REPLACED');
         if(st.size>offset){const n=Math.min(st.size-offset,1024*1024),chunk=Buffer.alloc(n),read=fs.readSync(fd,chunk,0,n,offset);if(read!==n)throw Error('MOLOCH_SOURCE_SHORT_READ');offset+=n;sourceHash.update(chunk);bytes+=n;pending=Buffer.concat([pending,chunk]);
-          let newline;while((newline=pending.indexOf(10))>=0){parsedBytes+=newline+1;const line=pending.subarray(0,newline).toString('utf8');pending=Buffer.from(pending.subarray(newline+1));if(line.trim()){const event=decode(JSON.parse(line));const alreadyConsumed=parent&&input===parent.snapshot.source.path&&parsedBytes<=parent.snapshot.source.consumedBytes;if(alreadyConsumed||!parent&&Date.parse(event.receivedAt)<Date.parse(startedAt)){preCutoffEventsSkipped++;continue;}accept({...event,processedAt:new Date().toISOString()});}}
+          let newline;while((newline=pending.indexOf(10))>=0){parsedBytes+=newline+1;const line=pending.subarray(0,newline).toString('utf8');pending=Buffer.from(pending.subarray(newline+1));if(line.trim()){const event=decode(JSON.parse(line));const alreadyConsumed=parent&&input===parent.snapshot.source.path&&parsedBytes<=parent.snapshot.source.consumedBytes;if(alreadyConsumed||!parent&&Date.parse(event.receivedAt)<Date.parse(startedAt)){preCutoffEventsSkipped++;continue;}const processedAt=processingClock?await processingClock(event,count+1):new Date().toISOString();accept({...event,processedAt});}}
           if(pending.length>1024*1024)throw Error('MOLOCH_EVENT_TOO_LARGE');save();
         }else await new Promise(resolve=>setTimeout(resolve,250));
       }}finally{fs.closeSync(fd);}
