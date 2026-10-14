@@ -1,0 +1,103 @@
+{
+  "schemaVersion": 1,
+  "observedAt": "2026-10-14T20:53:42.728Z",
+  "snapshotHash": "426a7552bcd9bfe7ccf1053bf13323b08da65f1225733d5d4585da31e60addcb",
+  "bookReceipts": 19,
+  "meanBookIntervalMs": 25021.055555555555,
+  "aonValidityMs": 10000,
+  "attempts": [
+    {
+      "id": 78,
+      "price": "0.595000",
+      "activationAt": "2026-10-14T19:39:02.925Z",
+      "expiresAt": "2026-10-14T19:39:12.925Z",
+      "retired": true,
+      "hasEvaluationEvidence": true,
+      "filled": 8
+    },
+    {
+      "id": 92,
+      "price": "0.920000",
+      "activationAt": "2026-10-14T20:46:17.314Z",
+      "expiresAt": "2026-10-14T20:46:27.314Z",
+      "retired": true,
+      "hasEvaluationEvidence": false,
+      "filled": 0
+    },
+    {
+      "id": 93,
+      "price": "0.920000",
+      "activationAt": "2026-10-14T20:47:07.079Z",
+      "expiresAt": "2026-10-14T20:47:17.079Z",
+      "retired": true,
+      "hasEvaluationEvidence": false,
+      "filled": 0
+    },
+    {
+      "id": 94,
+      "price": "0.910000",
+      "activationAt": "2026-10-14T20:47:56.979Z",
+      "expiresAt": "2026-10-14T20:48:06.979Z",
+      "retired": true,
+      "hasEvaluationEvidence": false,
+      "filled": 0
+    },
+    {
+      "id": 95,
+      "price": "0.910000",
+      "activationAt": "2026-10-14T20:48:46.827Z",
+      "expiresAt": "2026-10-14T20:48:56.827Z",
+      "retired": true,
+      "hasEvaluationEvidence": false,
+      "filled": 0
+    },
+    {
+      "id": 96,
+      "price": "0.910000",
+      "activationAt": "2026-10-14T20:49:36.691Z",
+      "expiresAt": "2026-10-14T20:49:46.691Z",
+      "retired": true,
+      "hasEvaluationEvidence": false,
+      "filled": 0
+    },
+    {
+      "id": 97,
+      "price": "0.915000",
+      "activationAt": "2026-10-14T20:50:26.384Z",
+      "expiresAt": "2026-10-14T20:50:36.384Z",
+      "retired": true,
+      "hasEvaluationEvidence": false,
+      "filled": 0
+    },
+    {
+      "id": 98,
+      "price": "0.915000",
+      "activationAt": "2026-10-14T20:51:18.076Z",
+      "expiresAt": "2026-10-14T20:51:28.076Z",
+      "retired": true,
+      "hasEvaluationEvidence": false,
+      "filled": 0
+    },
+    {
+      "id": 99,
+      "price": "0.915000",
+      "activationAt": "2026-10-14T20:52:07.948Z",
+      "expiresAt": "2026-10-14T20:52:17.948Z",
+      "retired": true,
+      "hasEvaluationEvidence": false,
+      "filled": 0
+    },
+    {
+      "id": 100,
+      "price": "0.915000",
+      "activationAt": "2026-10-14T20:52:58.089Z",
+      "expiresAt": "2026-10-14T20:53:08.089Z",
+      "retired": true,
+      "hasEvaluationEvidence": false,
+      "filled": 0
+    }
+  ],
+  "contestOrders": 0,
+  "profitabilityEstablished": false,
+  "conclusion": "REST cadence can miss the bounded post-activation AON observation window; missing evaluations are not rejected executable depth."
+}
