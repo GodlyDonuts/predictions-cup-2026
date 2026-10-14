@@ -3,6 +3,8 @@ import path from 'node:path';
 import {pathToFileURL} from 'node:url';
 import {createHash} from 'node:crypto';
 import {receiptEvents} from './sig-source.mjs';
+import {TapeCoverage} from './tape-coverage.mjs';
+import {instantNs} from '../feed/contract.mjs';
 const check=(ok,code)=>{if(!ok)throw Error('SCREEN_'+code);};
 const read=file=>fs.readFileSync(file,'utf8').replace(/^\uFEFF/,'');
 const receipts=file=>read(file).split(/\r?\n/).filter(x=>x.trim()).map(JSON.parse);
@@ -28,15 +30,18 @@ export function selectPairs(rows,count=8,{all=false}={}){
   return{universeMarkets:markets.size,universeExchanges:universe.length,selection:all?'complete validated catalog; observational stream scope':'fixed equally spaced exchange-index sample plus prior market control; no price/volume alpha',pairs:all?universe:[...chosen.values()]};
 }
 export function screenRows(rows){
-  const pairs=new Map();
+  const pairs=new Map(),coverage=new TapeCoverage();
+  const referenceAt=rows.reduce((latest,r)=>latest===null||instantNs(r.receivedAt)>instantNs(latest)?r.receivedAt:latest,null);
   for(const r of rows){
-    const events=receiptEvents(r),key=r.exchangeId;
+    const events=receiptEvents(r),extra=coverage.row(r),key=r.exchangeId;
     let p=pairs.get(key);if(!p){p={marketId:r.marketId,exchangeId:key,book:null,tape:null};pairs.set(key,p);}
     check(p.marketId===r.marketId,'SCOPE_CONFLICT');
     if(r.kind==='book'){p.book=events.find(e=>e.type==='book')?.book??null;p.bookReceivedAt=r.receivedAt;}
     if(r.kind==='trades'){
-      const unique=new Map();for(const e of events.filter(e=>e.type==='trade')){const prior=unique.get(e.id);check(!prior||prior.yesPrice===e.yesPrice&&prior.quantity===e.quantity,'TRADE_CONFLICT');unique.set(e.id,e);}
-      p.tape=[...unique.values()];p.tapeReceivedAt=r.receivedAt;p.windowFrom=r.data.from;p.windowTo=r.data.to;p.complete=events.some(e=>e.type==='coverage');
+      const cursor=new URL(r.endpoint,'https://sig.thesuper.market/api/v1').searchParams.has('cursor');
+      if(!cursor||p.windowFrom!==r.data.from||p.windowTo!==r.data.to){p.tape=[];p.complete=false;}
+      const unique=new Map((p.tape??[]).map(e=>[e.id,e]));for(const e of events.filter(e=>e.type==='trade')){check(Number.isSafeInteger(e.quantity)&&e.quantity>0&&instantNs(e.executedAt)<=instantNs(e.receivedAt),'TRADE_FACT');const prior=unique.get(e.id);check(!prior||prior.yesPrice===e.yesPrice&&prior.quantity===e.quantity&&instantNs(prior.executedAt)===instantNs(e.executedAt),'TRADE_CONFLICT');unique.set(e.id,e);}
+      p.tape=[...unique.values()];p.tapeReceivedAt=r.receivedAt;p.windowFrom=r.data.from;p.windowTo=r.data.to;p.complete=[...events,...extra].some(e=>e.type==='coverage');
     }
   }
   return [...pairs.values()].map(p=>{
@@ -48,8 +53,11 @@ export function screenRows(rows){
     const seconds=(Date.parse(p.windowTo)-Date.parse(p.windowFrom))/1000;
     check(seconds>0&&Number.isSafeInteger(volume)&&Number(bid.quantity)>0&&Number(ask.quantity)>0,'VOLUME_OR_DEPTH');
     const turnover=volume/Math.min(Number(bid.quantity),Number(ask.quantity));
+    const recent=p.tape.filter(t=>instantNs(referenceAt)-instantNs(t.executedAt)<=180000000000n),recentVolume=recent.reduce((n,t)=>n+t.quantity,0),latest=p.tape.reduce((latest,t)=>latest===null||instantNs(t.executedAt)>instantNs(latest)?t.executedAt:latest,null);
     return{marketId:p.marketId,exchangeId:p.exchangeId,eligible:p.complete&&spreadTicks>0,trades:p.tape.length,volume,spreadTicks,bid:bid.price,ask:ask.price,bidQueue:Number(bid.quantity),askQueue:Number(ask.quantity),queueTurnover:turnover,
       bidThroughVolume,askThroughVolume,completeTapeWindow:p.complete,windowFrom:p.windowFrom,windowTo:p.windowTo,bookReceivedAt:p.bookReceivedAt,tapeReceivedAt:p.tapeReceivedAt,
+      referenceAt,latestExecutionAt:latest,latestExecutionLagSeconds:latest?Number(instantNs(referenceAt)-instantNs(latest))/1e9:null,recentTrades:recent.length,recentVolume,bookObservationAgeSeconds:Number(instantNs(referenceAt)-instantNs(p.bookReceivedAt))/1e9,
+      recentActivityScore:p.complete&&spreadTicks>0?spreadTicks*Math.log1p(recentVolume/Math.min(Number(bid.quantity),Number(ask.quantity)))*Math.log1p(recent.length):null,
       explorationScore:p.complete&&spreadTicks>0?spreadTicks*Math.log1p(turnover)*Math.log1p(p.tape.length):null};
   }).sort((a,b)=>(b.explorationScore??-1)-(a.explorationScore??-1));
 }

@@ -14,6 +14,22 @@ test('incomplete tape cannot rank; current queue turnover never creates fills',(
   const r=screenRows([book,tape(true)])[0];assert.equal(r.spreadTicks,4);assert.equal(r.queueTurnover,3);assert.equal(r.askThroughVolume,300);assert.equal(r.eligible,true);assert.equal(r.fills,undefined);
   const partial=screenRows([book,tape(false)])[0];assert.equal(partial.explorationScore,null);assert.equal(partial.eligible,false);
 });
+test('complete paginated tape is merged and deduplicated for discovery without inventing fills',()=>{
+ const first=structuredClone(tape(true));first.data.pagination={hasMore:true,nextCursor:'next'};
+ const last=structuredClone(tape(true));last.endpoint+='&cursor=next';last.data.data.push({id:'engine:2',createdAt:'2026-10-13T09:59:01Z',price:.39,size:200});
+ const r=screenRows([book,first,last])[0];assert.equal(r.eligible,true);assert.equal(r.trades,2);assert.equal(r.volume,500);assert.equal(r.askThroughVolume,300);assert.equal(r.bidThroughVolume,200);assert.equal(r.fills,undefined);
+ assert.equal(screenRows([book,last])[0].eligible,false);
+});
+test('screen refuses broken cursor chains and conflicting repeated execution facts',()=>{
+ const first=structuredClone(tape(true));first.data.pagination={hasMore:true,nextCursor:'next'};
+ const last=structuredClone(tape(true));last.endpoint+='&cursor=wrong';assert.throws(()=>screenRows([book,first,last]),/CURSOR_CHAIN/);
+ last.endpoint=last.endpoint.replace('wrong','next');last.data.data[0].price=.44;assert.throws(()=>screenRows([book,first,last]),/TRADE_CONFLICT/);
+});
+test('screen recency uses a common final observation clock rather than old large volume',()=>{
+ const later=structuredClone(book);later.marketId='3';later.exchangeId='4';later.endpoint='/markets/3/orderbook?tournamentId=t';later.receivedAt='2026-10-13T10:05:00Z';later.data.contexts[0].orderbook.exchanges[0].exchangeId='4';
+ const r=screenRows([book,tape(true),later]).find(r=>r.exchangeId==='2');assert.equal(r.volume,300);assert.equal(r.recentVolume,0);assert.equal(r.recentActivityScore,0);assert.equal(r.latestExecutionLagSeconds,360);assert.equal(r.bookObservationAgeSeconds,299);
+ const invalid=structuredClone(tape(true));invalid.data.data[0].createdAt='2026-10-13T10:00:02Z';assert.throws(()=>screenRows([book,invalid]),/TRADE_FACT/);
+});
 test('screen refuses wrong endpoint exchange scope',()=>{assert.throws(()=>screenRows([book,{...tape(true),exchangeId:'3'}]),/TAPE_SCOPE/);});
 test('live expansion retains original source and rejects duplicate exchange or excessive polling scope',()=>{
   assert.equal(liveScopes('1','2',[{marketId:'1',exchangeId:'2'},{marketId:'3',exchangeId:'4'}]).length,2);

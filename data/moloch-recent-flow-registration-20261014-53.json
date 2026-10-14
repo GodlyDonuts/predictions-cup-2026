@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "registeredAt": "2026-10-14T22:03:04.384Z",
+  "phase": 53,
+  "scope": {
+    "marketId": "388",
+    "exchangeId": "1077"
+  },
+  "selectionSourceSha256": "ce7b2b2545ad30936a008decf853a0fa421bcb2c0e20996ad2b6ed673b9eacfd",
+  "selection": {
+    "referenceAt": "2026-10-14T21:59:20.824Z",
+    "recentTrades": 4,
+    "recentVolume": 1312,
+    "latestExecutionLagSeconds": 158.625,
+    "spreadTicks": 1,
+    "bidQueue": 4331,
+    "askQueue": 1635
+  },
+  "parents": [
+    {
+      "name": "competition-scale-20261014-21",
+      "snapshotHash": "942e2e85116ee3a7ad722892843c8fbb9b3c70f76c35b609e959e76f435cd7e5",
+      "cash": "100000.000000",
+      "realized": "0.000000"
+    },
+    {
+      "name": "queue-duration-20261014-17",
+      "snapshotHash": "7bfad13afb3ef7c607683f8d43c1364c93412a910be58705d3e747fcd0091428",
+      "cash": "100000.060000",
+      "realized": "0.060000"
+    }
+  ],
+  "inventoryMinimumGain": "0.005000",
+  "inventoryTakerAfterMs": 0,
+  "exitPriorityBooks": true,
+  "maximumLocalReadsPerMinute": 5,
+  "newPaperCapital": "0.000000",
+  "contestOrders": 0,
+  "profitabilityEstablished": false,
+  "limitations": [
+    "Recent activity is sparse discovery evidence, not causal quote fills or an estimated positive edge.",
+    "Old screen books are not execution quotes; fresh collector receipts control admission.",
+    "Banks remain independent simulations and inherited 0.060 is excluded."
+  ]
+}
