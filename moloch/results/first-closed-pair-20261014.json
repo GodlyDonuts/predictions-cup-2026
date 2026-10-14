@@ -1,0 +1,123 @@
+{
+  "bot": "Moloch",
+  "evidenceMode": "Verified financial journal prefix, not a terminal run result",
+  "observedAt": "2026-10-14T04:18:15.677Z",
+  "sequence": 413,
+  "sourcePrefixSha256": "324310a51bdc422eea804a59997928199b67284bcc116cd4f1bf489d00139147",
+  "sourceFinalHash": "80f03b27eca73b11d26982d19b5d2d007db80a1ab50b10b4b26f912d3437f0b1",
+  "parentSnapshotHash": "77d2eef541352bfc8e17a0234fea430f1b9bbcc4bded9d51e7b1d629626f80db",
+  "baselineFinancialParity": true,
+  "cohort": {
+    "exchangeId": "967",
+    "marketId": "278",
+    "quantity": 5,
+    "cost": "4.975000",
+    "nettingCredit": "5.000000",
+    "realized": "0.025000",
+    "ownedShares": 0,
+    "fills": [
+      {
+        "orderId": 137,
+        "marketId": "278",
+        "exchangeId": "967",
+        "side": "YES",
+        "action": "buy",
+        "quantity": 5,
+        "price": "0.145000",
+        "fee": "0.000000",
+        "at": "2026-10-14T04:15:07.016Z",
+        "sourceId": "154462180",
+        "counterfactual": true,
+        "quoteCreatedAt": "2026-10-14T04:07:41.533Z",
+        "quoteActivationAt": "2026-10-14T04:07:44.533Z",
+        "quoteEndAt": "2026-10-14T04:12:02.834Z",
+        "executedAt": "2026-10-14T04:10:17.615Z",
+        "matchYesPrice": "0.140000",
+        "matchQuantity": 1000,
+        "participationBps": 1000,
+        "strictTradeThrough": true,
+        "sourceEventHash": "30b36c2d61153eeff19550350fc3197e54323cfd010e7eea4aab37b08d88cb24"
+      },
+      {
+        "orderId": 136,
+        "marketId": "278",
+        "exchangeId": "967",
+        "side": "NO",
+        "action": "buy",
+        "quantity": 5,
+        "price": "0.850000",
+        "fee": "0.000000",
+        "at": "2026-10-14T04:15:07.031Z",
+        "sourceId": "154468896",
+        "counterfactual": true,
+        "quoteCreatedAt": "2026-10-14T04:07:41.533Z",
+        "quoteActivationAt": "2026-10-14T04:07:44.533Z",
+        "quoteEndAt": "2026-10-14T04:11:59.542Z",
+        "executedAt": "2026-10-14T04:11:08.843Z",
+        "matchYesPrice": "0.155000",
+        "matchQuantity": 1009,
+        "participationBps": 1000,
+        "strictTradeThrough": true,
+        "sourceEventHash": "c9c116ba8e16f4b421dd9a26c984a0287d4e1f19a8c41089a8734726e7d7a6ca"
+      }
+    ],
+    "executionGapSeconds": 51.228
+  },
+  "wallet": {
+    "cash": "1000.025000",
+    "realized": "0.025000",
+    "ownedCost": "0.000000",
+    "reservedCash": "0.000000"
+  },
+  "participationSensitivity": {
+    "assumption": "Offline reinterpretation of carried quotes at 1% participation; original quotes and ledger remain unchanged.",
+    "fills": 2,
+    "realized": "0.025000",
+    "ownedCost": "0.000000"
+  },
+  "limitations": [
+    "Simulated fills, not official order executions.",
+    "Both executions occurred after the prior collector failed and before modeled cancellation; this measures carried resting-quote exposure, not continuously connected quoting.",
+    "Intermediate executable drawdown during that outage is unobserved.",
+    "One closed five-share pair cannot establish scalable or statistically reliable profit.",
+    "Zero modeled fees; break-even flat fee is .0025 per acquired share across both legs."
+  ],
+  "contestOrders": 0,
+  "newPaperCapital": "0.000000",
+  "profitabilityEstablished": false,
+  "parentSnapshotVerified": true,
+  "terminalCapture": {
+    "status": "failed",
+    "captureExit": 1,
+    "sourceFailure": {
+      "at": "2026-10-14T04:18:15.2102061Z",
+      "status": 503,
+      "endpoint": "/markets/278/orderbook?tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55&depth=200",
+      "minimumBackoffSeconds": 60,
+      "orderWrites": 0
+    },
+    "financialCash": "1000.025000",
+    "realized": "0.025000",
+    "ownedCost": "0.000000",
+    "reservedCash": "0.000000"
+  },
+  "serviceRecovery": {
+    "observedAt": "2026-10-14T04:20:54.099Z",
+    "status": 200,
+    "endpoint": "/markets/278/orderbook?tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55&depth=200",
+    "oneDiagnosticRead": true,
+    "tokenWrites": 0,
+    "priorBackoffExpired": true,
+    "budgetAdmissionsPreserved": true
+  },
+  "nextExperiment": {
+    "episode": 18,
+    "participationBps": 100,
+    "quantity": 10,
+    "lifetimeMs": 600000,
+    "maximumCommitted": "40.000000",
+    "maximumMarketCost": "10.000000",
+    "newPaperCapital": "0.000000",
+    "description": "Fresh smaller-participation holdout with larger packets inside unchanged fully funded caps; result pending."
+  }
+}

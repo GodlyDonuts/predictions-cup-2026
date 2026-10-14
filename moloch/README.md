@@ -456,3 +456,19 @@ segments after a fresh observable book; it retains every historical gap warning.
 A live aggregate attempt stopped on a filesystem EPERM before new quotes. Only
 status-file rename sharing conflicts get bounded retries; data/journal failures
 remain fatal, and allowlisted failure phases now identify the filesystem operation.
+
+The [first closed paper pair](results/first-closed-pair-20261014.json) netted five
+North Carolina Senate YES/NO shares costing 4.975000 for a modeled 5.000000 credit,
+realizing +0.025000. Both later official tape prints traded one tick through the
+earlier quotes, after activation and before modeled cancellation. A 1%
+participation sensitivity produces the same result. These are counterfactual
+resting-quote fills during a feed outage, with unknown intermediate drawdown;
+they are not contest fills or proof of scalable profit.
+
+The aggregate run ended on HTTP503 with its paper wallet flat and no remaining
+reservation. A single HTTP200 diagnostic book read after the preserved backoff
+verified service recovery before clearing the blocked flag without resetting
+admissions. Its successor tests 1% participation and ten-share paired packets
+inside the unchanged 40 total/10 per-market funding caps, with zero added capital.
+Discovery includes one-tick joins and ranks the weaker side's compatible queue
+turnover; inside-quote room is reported separately.

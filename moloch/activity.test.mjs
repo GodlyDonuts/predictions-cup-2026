@@ -21,3 +21,7 @@ test('study rejects event edits in a preserved hash chain',()=>{
 test('post-gap observations recover local price compatibility while retaining historical warnings',()=>{
  const {s,send}=setup();send(batch([book(0,1)]),0);send(batch([book(5,3)]),5,{gap:true});send(batch([book(10,11)],[trade(9,'post-gap-buy')]),10);const sell={...trade(12,'post-gap-sell'),sequence:12,price:.42};send(batch([book(13,13)],[sell]),13);send(batch([book(45,14)]),45);const r=s.report(at(45))[0];assert.equal(r.gapObserved,true);assert.equal(r.quoteReadyFromObservation,false);assert.equal(r.eligibleForFurtherReconciliation,false);assert.equal(r.bidCompatibleVolume,50);assert.equal(r.askCompatibleVolume,50);assert.equal(r.conditionalMarkouts,2);assert.ok(r.roundTripReconciliationPriority>0);
 });
+
+test('one-tick two-sided joins remain discoverable without crediting one-sided traffic',()=>{
+ const {s,send}=setup();const narrow=(n,seq)=>book(n,seq,.4,.405);send(batch([narrow(0,1)]),0);send(batch([narrow(5,11)],[trade(4,'bid')]),5);assert.equal(s.report(at(5))[0].roundTripReconciliationPriority,0);send(batch([narrow(10,13)],[{...trade(9,'ask'),price:.405,sequence:12}]),10);const r=s.report(at(10))[0];assert.ok(r.roundTripReconciliationPriority>0);assert.equal(r.insideRoomTicks,0);assert.equal(r.quoteReadyFromObservation,false);
+});
