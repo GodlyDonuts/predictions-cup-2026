@@ -73,6 +73,7 @@ export function verifyOrderAckReceiptChain(rows) {
       exchangeId: String(receipt.exchangeId),
       side: receipt.canonicalSide,
       action: receipt.canonicalAction,
+      ackAtMs: instant(receipt.receivedAt),
     };
     const prior = orders.get(orderId);
     if (prior && (prior.tournamentId !== identity.tournamentId || prior.exchangeId !== identity.exchangeId
@@ -83,6 +84,8 @@ export function verifyOrderAckReceiptChain(rows) {
       continue;
     }
     if (!conflicted.has(orderId)) {
+      if (prior && prior.ackAtMs !== null) identity.ackAtMs = identity.ackAtMs === null
+        ? prior.ackAtMs : Math.min(prior.ackAtMs, identity.ackAtMs);
       orders.set(orderId, identity);
       acknowledged += 1;
     }
@@ -108,6 +111,14 @@ function median(values) {
   const sorted = [...values].sort((a, b) => a < b ? -1 : a > b ? 1 : 0);
   const middle = Math.floor(sorted.length / 2);
   return sorted.length % 2 ? sorted[middle] : (sorted[middle - 1] + sorted[middle]) / 2n;
+}
+
+function summarizeLags(values) {
+  if (!values.length) return {count: 0, medianMs: null, p90Ms: null, maxMs: null};
+  const sorted = [...values].sort((a, b) => a - b);
+  const mid = Math.floor(sorted.length / 2);
+  return {count: sorted.length, medianMs: sorted.length % 2 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2,
+    p90Ms: sorted[Math.floor((sorted.length - 1) * 0.9)], maxMs: sorted.at(-1)};
 }
 
 function formatRatio(numerator, denominator) {
@@ -240,7 +251,10 @@ export function createOfficialFillBookTracker({fillRows, fillPageHasMore, orderA
       quantity: fill.quantity,
       fillPrice,
       fillMs: atMs,
+      ackAtMs: ack.ackAtMs,
       pre: null,
+      nextCausal: null,
+      nearbyBookReceipts: {sameMarketBefore: 0, sameMarketAfter: 0, otherMarketBefore: 0, otherMarketAfter: 0},
       post: new Map(HORIZONS.map(horizon => [horizon, null])),
     };
     const key = keyOf(marketId, exchangeId);
@@ -250,20 +264,29 @@ export function createOfficialFillBookTracker({fillRows, fillPageHasMore, orderA
     matchedOrders.add(orderId);
     matchedMarkets.add(marketId);
   }
+  const allFills = [...rowsByMarketExchange.values()].flat();
 
   function observeBook(book) {
     if (!book || typeof book !== 'object' || book.instrument !== String(book.exchangeId) + ':YES') return;
-    const key = keyOf(book.marketId, book.exchangeId);
-    const rows = rowsByMarketExchange.get(key);
-    if (!rows) return;
     const receivedMs = instant(book.receivedAt);
     const sourceMs = instant(book.sourceAt);
     if (receivedMs === null || sourceMs === null || sourceMs > receivedMs + 2_000) return;
     const normalized = {book, receivedMs, sourceMs};
+    for (const fill of allFills) {
+      if (book.tournamentId !== fill.tournamentId || Math.abs(receivedMs - fill.fillMs) > 30_000) continue;
+      const sameMarket = String(book.marketId) === fill.marketId;
+      const side = receivedMs <= fill.fillMs ? 'Before' : 'After';
+      const category = (sameMarket ? 'sameMarket' : 'otherMarket') + side;
+      fill.nearbyBookReceipts[category] += 1;
+    }
+    const rows = rowsByMarketExchange.get(keyOf(book.marketId, book.exchangeId));
+    if (!rows) return;
     for (const fill of rows) {
       if (book.tournamentId !== fill.tournamentId) continue;
       if (receivedMs <= fill.fillMs && sourceMs <= fill.fillMs
         && (!fill.pre || receivedMs > fill.pre.receivedMs)) fill.pre = normalized;
+      if (receivedMs > fill.fillMs && sourceMs > fill.fillMs
+        && (!fill.nextCausal || receivedMs < fill.nextCausal.receivedMs)) fill.nextCausal = normalized;
       for (const horizon of HORIZONS) {
         const target = fill.fillMs + horizon;
         if (receivedMs < target || sourceMs < target || sourceMs > target + 5_000 || receivedMs > target + 10_000) continue;
@@ -278,7 +301,6 @@ export function createOfficialFillBookTracker({fillRows, fillPageHasMore, orderA
     let freshContext = 0;
     let preTouchImprovementMicros = 0n;
     let preTouchShares = 0n;
-    const allFills = [...rowsByMarketExchange.values()].flat();
     for (const fill of allFills) {
       if (!fill.pre) { buckets.missing += 1; continue; }
       const age = fill.fillMs - fill.pre.receivedMs;
@@ -295,6 +317,64 @@ export function createOfficialFillBookTracker({fillRows, fillPageHasMore, orderA
         freshContext += 1;
       }
     }
+
+    const laterLags = allFills.flatMap(fill => fill.nextCausal ? [fill.nextCausal.receivedMs - fill.fillMs] : []);
+    const laterSourceLags = allFills.flatMap(fill => fill.nextCausal ? [fill.nextCausal.sourceMs - fill.fillMs] : []);
+    const ackResponseLags = allFills.flatMap(fill => fill.ackAtMs === null ? [] : [fill.fillMs - fill.ackAtMs]);
+    const positiveAckLags = ackResponseLags.filter(lag => lag > 0);
+    const negativeAckLags = ackResponseLags.filter(lag => lag < 0).map(lag => -lag);
+    const ackResponseBuckets = {missingAckTimestamp: allFills.filter(fill => fill.ackAtMs === null).length,
+      fillBeforeOrAtAckReceipt: ackResponseLags.filter(lag => lag <= 0).length,
+      fillAfterAckReceiptAtMost1s: 0, fillAfterAckReceiptOneToThirtySeconds: 0,
+      fillAfterAckReceiptThirtySecondsToFiveMinutes: 0, fillAfterAckReceiptFiveMinutesToOneHour: 0,
+      fillAfterAckReceiptOverOneHour: 0};
+    for (const lag of positiveAckLags) {
+      if (lag <= 1_000) ackResponseBuckets.fillAfterAckReceiptAtMost1s++;
+      else if (lag <= 30_000) ackResponseBuckets.fillAfterAckReceiptOneToThirtySeconds++;
+      else if (lag <= 300_000) ackResponseBuckets.fillAfterAckReceiptThirtySecondsToFiveMinutes++;
+      else if (lag <= 3_600_000) ackResponseBuckets.fillAfterAckReceiptFiveMinutesToOneHour++;
+      else ackResponseBuckets.fillAfterAckReceiptOverOneHour++;
+    }
+    const continuityBuckets = {missing: 0, atMost30Seconds: 0, thirtySecondsToFiveMinutes: 0,
+      fiveToSixtyMinutes: 0, oneToTwentyFourHours: 0, olderThanTwentyFourHours: 0};
+    for (const fill of allFills) {
+      if (!fill.nextCausal) { continuityBuckets.missing++; continue; }
+      const delay = fill.nextCausal.receivedMs - fill.fillMs;
+      if (delay <= 30_000) continuityBuckets.atMost30Seconds++;
+      else if (delay <= 300_000) continuityBuckets.thirtySecondsToFiveMinutes++;
+      else if (delay <= 3_600_000) continuityBuckets.fiveToSixtyMinutes++;
+      else if (delay <= 86_400_000) continuityBuckets.oneToTwentyFourHours++;
+      else continuityBuckets.olderThanTwentyFourHours++;
+    }
+    const sameMarketWindows = allFills.filter(fill => fill.nearbyBookReceipts.sameMarketBefore
+      + fill.nearbyBookReceipts.sameMarketAfter > 0).length;
+    const otherMarketWindows = allFills.filter(fill => fill.nearbyBookReceipts.otherMarketBefore
+      + fill.nearbyBookReceipts.otherMarketAfter > 0).length;
+    const bookCoverageNearFill = {
+      windowMsEachSide: 30_000,
+      observationUnit: 'Validated book receipt events counted per matched fill window; overlapping windows count the same event more than once.',
+      matchedFillRows: allFills.length,
+      fillsWithSameMarketBookReceipt: sameMarketWindows,
+      fillsWithOtherMarketBookReceipt: otherMarketWindows,
+      fillsWithOtherMarketButNoSameMarketBookReceipt: allFills.filter(fill => fill.nearbyBookReceipts.sameMarketBefore
+        + fill.nearbyBookReceipts.sameMarketAfter === 0 && fill.nearbyBookReceipts.otherMarketBefore
+        + fill.nearbyBookReceipts.otherMarketAfter > 0).length,
+      fillsWithNoBookReceiptInWindow: allFills.filter(fill => fill.nearbyBookReceipts.sameMarketBefore
+        + fill.nearbyBookReceipts.sameMarketAfter + fill.nearbyBookReceipts.otherMarketBefore
+        + fill.nearbyBookReceipts.otherMarketAfter === 0).length,
+      receiptsPerFillWindow: {
+        sameMarket: allFills.reduce((sum, fill) => sum + fill.nearbyBookReceipts.sameMarketBefore
+          + fill.nearbyBookReceipts.sameMarketAfter, 0),
+        otherMarket: allFills.reduce((sum, fill) => sum + fill.nearbyBookReceipts.otherMarketBefore
+          + fill.nearbyBookReceipts.otherMarketAfter, 0),
+      },
+      receiptDirectionCounts: {
+        sameMarketBeforeFill: allFills.reduce((sum, fill) => sum + fill.nearbyBookReceipts.sameMarketBefore, 0),
+        sameMarketAfterFill: allFills.reduce((sum, fill) => sum + fill.nearbyBookReceipts.sameMarketAfter, 0),
+        otherMarketBeforeFill: allFills.reduce((sum, fill) => sum + fill.nearbyBookReceipts.otherMarketBefore, 0),
+        otherMarketAfterFill: allFills.reduce((sum, fill) => sum + fill.nearbyBookReceipts.otherMarketAfter, 0),
+      },
+    };
 
     const horizonResults = {};
     for (const horizon of HORIZONS) {
@@ -338,7 +418,7 @@ export function createOfficialFillBookTracker({fillRows, fillPageHasMore, orderA
         const signedMidTwice = (fill.action === 'buy' ? 1n : -1n)
           * (midTwice - 2n * fill.fillPrice) * covered;
         midTwiceMicros += signedMidTwice;
-        perFillMidTwice.push(signedMidTwice / BigInt(fill.quantity));
+        perFillMidTwice.push(signedMidTwice / covered);
         orders.add(fill.orderId);
         markets.add(fill.marketId);
       }
@@ -377,6 +457,22 @@ export function createOfficialFillBookTracker({fillRows, fillPageHasMore, orderA
         preFillBookReceiptAgeBuckets: buckets,
         preFillContextAtMostFiveSeconds: freshContext,
         preFillPriceImprovementPerShare: formatRatio(preTouchImprovementMicros, preTouchShares),
+      },
+      bookContinuity: {
+        definition: 'First same-contract book with both source time and receipt time strictly after each matched official fill.',
+        fillsWithAnyLaterCausalBook: laterLags.length,
+        fillsWithNoLaterCausalBook: allFills.length - laterLags.length,
+        firstLaterBookReceiptLagMs: summarizeLags(laterLags),
+        firstLaterBookSourceLagMs: summarizeLags(laterSourceLags),
+        laterBookReceiptLagBuckets: continuityBuckets,
+      },
+      bookCoverageNearFill,
+      fillVsAckResponse: {
+        definition: 'Official fill timestamp minus the local acknowledged-order response receipt timestamp; this is not time since request submission.',
+        fillsWithAckReceiptTimestamp: ackResponseLags.length,
+        lagMs: {negativeMeansFillPrecededAckResponse: summarizeLags(negativeAckLags),
+          positiveMeansFillFollowedAckResponse: summarizeLags(positiveAckLags)},
+        buckets: ackResponseBuckets,
       },
       horizons: horizonResults,
       assumptions: {
