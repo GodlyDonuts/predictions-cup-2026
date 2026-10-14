@@ -68,13 +68,12 @@ function averageCheck(raw,principal,quantity){
 }
 function account(raw,b,at,requiredFunding='0.000000',reservedElsewhere='0.000000'){
  const a=inspectScopedRestNoAccount({account:raw,binding:b,readAt:at,requiredFunding,reservedElsewhere});
- // Strengthen the shared account parser's historical order quantities using
- // original number lexemes, including closed-order quantityFilled.
+ // Strengthen documented historical order quantities using their original
+ // number lexemes. Filled amounts come from bound per-order fill receipts.
  for(const page of raw.scopedOrdersPages){const r=read(page,'GET',page.endpoint,instant(at));
   for(const [i,row] of r.data.data.entries()){
    integerAt(r,['data',i,'id'],row.id,1,Number.MAX_SAFE_INTEGER);
    integerAt(r,['data',i,'quantity'],row.quantity,1,Number.MAX_SAFE_INTEGER);
-   integerAt(r,['data',i,'quantityFilled'],row.quantityFilled,0,row.quantity);
    need(row.open===false,'PRIOR_OPEN_ORDER');
   }
  }
@@ -107,7 +106,7 @@ function priorInventory(proof,rawAfter,pre,b){
   const p=price(lot.entryPrice),at=instant(lot.openedAt),original=proof.attributedBuyFills.find(f=>f.lotId===lot.lotId);
   need(original&&same({...lot,quantity:lot.originalQuantity,principalCost:money(p*BigInt(lot.originalQuantity))},original),'PRIOR_LOT_ORIGIN');
   const order=old.scopedOrders.find(o=>String(o.id)===lot.orderId);
-  need(order?.side==='no'&&order.action==='buy'&&order.quantityFilled>=lot.originalQuantity&&order.open===false&&at>=instant(order.createdAt),'PRIOR_BUY_ORDER');
+  need(order?.side==='no'&&order.action==='buy'&&order.quantity>=lot.originalQuantity&&order.open===false&&at>=instant(order.createdAt),'PRIOR_BUY_ORDER');
   need(last===null||at>last.at||at===last.at&&lot.fillId>last.fillId,'FIFO_ORDER');last={at,fillId:lot.fillId};
   need(lot.principalCost===money(p*BigInt(lot.quantity)),'PRIOR_LOT_COST');quantity+=lot.quantity;cost+=p*BigInt(lot.quantity);
  }
@@ -164,7 +163,7 @@ export function verifyScopedRestNoMultishare({binding:b,before,ack,order,fillPag
  need(terminal.start>=a.end&&String(od?.id)===b.orderId&&od.exchangeId===b.exchangeId&&od.tournamentId===b.tournamentId&&od.side==='no'&&od.action===b.action&&od.open===false&&tickAt(terminal,['priceLimit'],od.priceLimit)===limit&&od.expirationDate===b.expirationDate,'TERMINAL_SCOPE');
  // The documented terminal quantity may shrink when unfilled remainder is
  // discarded. It never changes the original request, key or funding bound.
- integerAt(terminal,['id'],od.id,1,Number.MAX_SAFE_INTEGER);integerAt(terminal,['quantity'],od.quantity,1,d.quantity);integerAt(terminal,['quantityFilled'],od.quantityFilled,0,od.quantity);
+ integerAt(terminal,['id'],od.id,1,Number.MAX_SAFE_INTEGER);integerAt(terminal,['quantity'],od.quantity,1,d.quantity);
  const serverCreated=instant(od.createdAt);need(serverCreated>=created-2000&&serverCreated<=Math.min(a.end,expires)+2000,'SERVER_ORDER_CLOCK');
  need(Array.isArray(fillPages)&&fillPages.length>0&&fillPages.length<=10,'FILL_PAGES');
  let cursor=null,lastEnd=terminal.end,checkpoint=null,total=null,reportedAverage;const cursors=new Set(),ids=new Set(),fills=[],fillSources=[];
@@ -177,7 +176,14 @@ export function verifyScopedRestNoMultishare({binding:b,before,ack,order,fillPag
   const av=v.avgFillPrice===null?null:r.numbers.get(JSON.stringify(['avgFillPrice']));
   if(total!==null)need(total===v.totalQuantityFilled&&av===reportedAverage,'FILL_PROJECTION_CHANGED');total=v.totalQuantityFilled;reportedAverage=av;
   for(const [i,f] of v.data.entries()){
+   need(f&&typeof f==='object'&&!Array.isArray(f),'FILL_ROW');
    integerAt(r,['data',i,'id'],f.id,1,Number.MAX_SAFE_INTEGER);integerAt(r,['data',i,'quantity'],f.quantity,-100,-1);
+   // The order-fills endpoint scopes identifiers on its envelope; its
+   // documented row shape omits orderId/marketId/exchangeId. If a provider
+   // adds those fields, reject contradictions rather than relabeling them.
+   if(Object.hasOwn(f,'orderId')){integerAt(r,['data',i,'orderId'],f.orderId,1,Number.MAX_SAFE_INTEGER);need(String(f.orderId)===b.orderId,'FILL_ROW_SCOPE');}
+   for(const [field,expected] of [['marketId',b.marketId],['exchangeId',b.exchangeId],['tournamentId',b.tournamentId]])
+    if(Object.hasOwn(f,field))need(typeof f[field]==='string'&&f[field]===expected,'FILL_ROW_SCOPE');
    need(!ids.has(f.id)&&f.side==='no','FILL_IDENTITY');ids.add(f.id);const qty=-f.quantity,px=tickAt(r,['data',i,'price'],f.price),at=instant(f.filledAt);
    need(at>=serverCreated&&at<=r.end&&(b.action==='buy'?px<=limit:px>=limit),'FILL_PRICE_OR_TIME');
    fills.push({id:f.id,orderId:b.orderId,marketId:b.marketId,exchangeId:b.exchangeId,tournamentId:b.tournamentId,side:'no',action:b.action,signedQuantity:-qty,quantity:qty,price:money(px),principal:money(px*BigInt(qty)),filledAt:f.filledAt,source:'rest_order_fills',priceBasis:'side_relative'});
@@ -188,7 +194,7 @@ export function verifyScopedRestNoMultishare({binding:b,before,ack,order,fillPag
  fills.sort((x,y)=>instant(x.filledAt)-instant(y.filledAt)||x.id-y.id);
  if(priorProof?.lastObservedFill&&fills.length){const last=priorProof.lastObservedFill,first=fills[0];need(instant(first.filledAt)>instant(last.filledAt)||first.filledAt===last.filledAt&&first.id>last.fillId,'CONTINUATION_FILL_CLOCK');}
  const quantity=fills.reduce((n,f)=>n+f.quantity,0),principal=fills.reduce((n,f)=>n+amount(f.principal),0n);
- need(quantity<=od.quantity&&total===-quantity&&od.quantityFilled===quantity&&d.quantityTraded<=quantity&&(d.open||d.quantityTraded===quantity),'COMPLETE_FILL_TOTAL');
+ need(quantity<=od.quantity&&total===-quantity&&d.quantityTraded<=quantity&&(d.open||d.quantityTraded===quantity),'COMPLETE_FILL_TOTAL');
  const average=averageCheck(reportedAverage,principal,quantity);
  let ackQuantity=d.quantityTraded,ackPrincipal=0n,lastAckPrice=null;
  for(const f of fills){const q=Math.min(ackQuantity,f.quantity);if(q){need(instant(f.filledAt)<=a.end,'ACK_FILL_CLOCK');ackPrincipal+=amount(f.price)*BigInt(q);lastAckPrice=amount(f.price);ackQuantity-=q;}}
@@ -205,7 +211,7 @@ export function verifyScopedRestNoMultishare({binding:b,before,ack,order,fillPag
  const priorHistory=history(pre),afterHistory=history(post),oid=Number(b.orderId);
  need(!priorHistory.some(o=>o.id===oid)&&same(priorHistory,afterHistory.filter(o=>o.id!==oid)),'EXTERNAL_SCOPED_ACTIVITY');
  const final=afterHistory.find(o=>o.id===oid);need(final,'SCOPED_ORDER_MISSING');
- for(const k of ['id','exchangeId','tournamentId','side','action','quantity','quantityFilled','priceLimit','open','createdAt','expirationDate'])need(same(final[k],od[k]),'SCOPED_ORDER_MISMATCH');
+ for(const k of ['id','exchangeId','tournamentId','side','action','quantity','priceLimit','open','createdAt','expirationDate'])need(same(final[k],od[k]),'SCOPED_ORDER_MISMATCH');
  const signedDelta=b.action==='buy'?-quantity:quantity,remainingQuantity=prior.quantity+(b.action==='buy'?quantity:-quantity);
  need(target(post,b)===-remainingQuantity&&target(post,b)-target(pre,b)===signedDelta&&same(otherPositions(pre,b),otherPositions(post,b)),'POSITION_DELTA_OR_EXTERNAL_ACTIVITY');
  const cashDelta=b.action==='buy'?-principal:principal,deltaLow=amount(post.cashLower)-amount(pre.cashUpper),deltaHigh=amount(post.cashUpper)-amount(pre.cashLower);
