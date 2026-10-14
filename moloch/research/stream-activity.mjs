@@ -2,6 +2,10 @@ import fs from 'node:fs';import path from 'node:path';import {pathToFileURL} fro
 import {payloadHash} from '../../execution/ledger.mjs';import {amount,money} from '../../paper/fixed.mjs';
 import {instantNs} from '../../feed/contract.mjs';
 
+export function selectActivePairs(candidates,count=1){
+ if(!Number.isInteger(count)||count<1||count>4)throw Error('ACTIVITY_SELECTION_COUNT');
+ return candidates.filter(c=>c.eligible&&c.recentTrades>=2).sort((a,b)=>b.recentTrades-a.recentTrades||a.exchangeId.localeCompare(b.exchangeId)).slice(0,count);
+}
 export function streamActivity(rows,referenceAt,pairs){
  const known=new Map(pairs.map(p=>[p.exchangeId,p.marketId])),markets=new Map(),seen=new Map(),brokenMarkets=new Set(),at=instantNs(referenceAt);
  for(const row of rows){const e=row.event;if(e.kind!=='broadcast'||e.event!=='market_batch')continue;
