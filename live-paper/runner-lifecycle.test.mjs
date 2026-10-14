@@ -62,7 +62,7 @@ const source=fs.readFileSync(path.join(root,'runner.mjs'),'utf8');
 
 // Only module wiring is replaced. The real runner body executes with an in-memory
 // journal/filesystem, synthetic API/key, fake clock/server/process and no network.
-async function run(stopAt,{dipEnabled=false,officialSync=false,invalidBasket=false,basketEnabled=false,contractEvidenceEnabled=false,samplingEnabled=false,riskUnavailable=false,comparisonHeld=[],comparisonPending=[],maxCycles=2,requestMs=6000,officialRiskSchedule=null,marketSweepEnabled=false,historyCandidates=[],paperPackageFocus=false,retiredComparison=false,edgeObservation=false,nativeHeld=[],nativeCache=false,probabilityHeld=[],probabilityCompanion=[],probabilityBreadth=[],screenStartupFailure=false,nativeIntent=false,nativePending=[],quoteHeld=[],quotePending=[],retiredNativePrices=false,stablePaper=false,stableBroadPaper=false,stableBroadRecovery=false,coupledPaper=false,coupledBulkPaper=false,realtimeShared=false,settlementInCollector=false,profitSprint=false,coupledRust=false,coupledRustInvalid=false,dualNoInCollector=false,dualNoFailure=false,dualNoV2InCollector=false,dualNoV2Failure=false,retiredFlatLegacy=false,settlementConsumeFailure=false,settlementStatusFailure=false,portfolioInCollector=false,portfolioConsumeFailure=false,realHoldingMarketIds=[],discoveryProbe=false,staleEngineMarketIds=[],matchedTape=false}={}){
+async function run(stopAt,{dipEnabled=false,officialSync=false,invalidBasket=false,basketEnabled=false,contractEvidenceEnabled=false,samplingEnabled=false,riskUnavailable=false,comparisonHeld=[],comparisonPending=[],maxCycles=2,requestMs=6000,officialRiskSchedule=null,marketSweepEnabled=false,historyCandidates=[],paperPackageFocus=false,retiredComparison=false,edgeObservation=false,nativeHeld=[],nativeCache=false,probabilityHeld=[],probabilityCompanion=[],probabilityBreadth=[],screenStartupFailure=false,nativeIntent=false,nativePending=[],quoteHeld=[],quotePending=[],retiredNativePrices=false,stablePaper=false,stableBroadPaper=false,stableBroadRecovery=false,coupledPaper=false,coupledBulkPaper=false,realtimeShared=false,settlementInCollector=false,profitSprint=false,coupledRust=false,coupledRustInvalid=false,dualNoInCollector=false,dualNoFailure=false,dualNoV2InCollector=false,dualNoV2Failure=false,retiredFlatLegacy=false,settlementConsumeFailure=false,settlementStatusFailure=false,portfolioInCollector=false,portfolioConsumeFailure=false,realHoldingMarketIds=[],discoveryProbe=false,staleEngineMarketIds=[],matchedTape=false,invalidBookResponse=false}={}){
   let startupFailures=0;
   let now=Date.parse('2026-10-02T02:00:00Z'),cycle=0,stopped=false,triggered=false;
   const tapeRequests=[],commits=[],memory=new Map(),listeners={},requests=[],publications=[],claimWrites=[],pairReadClaims=[];
@@ -156,7 +156,7 @@ async function run(stopAt,{dipEnabled=false,officialSync=false,invalidBasket=fal
         return {endpoint,requestStartedAt:iso(),receivedAt:iso(),data:{data:ids.map(id=>({...universe.exchanges.find(x=>x.exchangeId===id),latestPrice:.405,bestBid:.4,bestAsk:.41,spread:.01})),missingIds:[]}};
       }
       const spec=universe.exchanges.find(x=>x.marketId===market);
-      return {endpoint,requestStartedAt:iso(),receivedAt:iso(),data:{contexts:[{type:'tournament',tournament:{id:config.tournamentId},orderbook:{exchanges:[{exchangeId:spec.exchangeId,option:'YES',asOf:{at:staleEngineMarketIds.includes(market)?new Date(now-60000).toISOString():iso(),sequence:this.requests},bids:[{price:.4,quantity:10000}],asks:[{price:.41,quantity:10000}]}]}}]}};
+      return {endpoint,requestStartedAt:iso(),receivedAt:iso(),data:{contexts:[{type:'tournament',tournament:{id:config.tournamentId},orderbook:{exchanges:[{exchangeId:invalidBookResponse&&market?'999999':spec.exchangeId,option:'YES',asOf:{at:staleEngineMarketIds.includes(market)?new Date(now-60000).toISOString():iso(),sequence:this.requests},bids:[{price:.4,quantity:10000}],asks:[{price:.41,quantity:10000}]}]}}]}};
     }
   }
   const mockfs={existsSync:p=>memory.has(p),mkdirSync(){},readFileSync(p){
@@ -297,6 +297,14 @@ test('later scheduler replacement failure preserves the claim and fails before a
 test('damaged optional followup source preserves original collector book budget and candidates',async()=>{
  const base=await run(null,{dipEnabled:true}),r=await run('followup-source-failure',{dipEnabled:true,basketEnabled:true});assert.equal(r.process.exitCode,0);assert.equal(r.claimWrites.length,0);
  assert.deepEqual(r.requests.filter(p=>p.includes('/orderbook?')),base.requests.filter(p=>p.includes('/orderbook?')));
+});
+
+test('returned but rejected book reads invalidate their market receipt',async()=>{
+ const r=await run(null,{invalidBookResponse:true}),bookReads=r.requests.filter(p=>p.includes('/orderbook?'));
+ const invalidations=r.publications.filter(p=>p.kind==='invalidation'&&p.reason==='INVALID_BOOK');
+ assert.equal(r.process.exitCode,0);assert(bookReads.length>0);
+ assert.deepEqual(invalidations.map(p=>p.marketId),bookReads.map(p=>p.split('/')[2]));
+ assert.equal(r.publications.filter(p=>p.kind==='book').length,0);
 });
 
 test('public depth is published at receipt before the later cycle journal, without extra reads',async()=>{
