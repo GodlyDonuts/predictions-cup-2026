@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "at": "2026-10-14T23:31:41.625Z",
+  "banks": [
+    {
+      "side": "control",
+      "snapshotHash": "3609fc1dad9e48357b66ac28fe3cdef42b0c619821bf27ac2742ee44ff9e52a8",
+      "newFills": 0,
+      "cash": "100000.000000",
+      "realized": "0.000000",
+      "ownedCost": "0.000000",
+      "unresolved": 0
+    },
+    {
+      "side": "candidate",
+      "snapshotHash": "f4200340f841e6bbae23b585a95ce3c7683f5659cc05b3829c3d6a03d3ea209d",
+      "newFills": 0,
+      "cash": "100000.000000",
+      "realized": "0.000000",
+      "ownedCost": "0.000000",
+      "unresolved": 0
+    }
+  ],
+  "contestOrders": 0,
+  "profitabilityEstablished": false,
+  "conclusion": "One-tick entry improvement changed actual modeled quotes; the truncated trial and complete drain produced zero new fills and no economic evidence of edge."
+}

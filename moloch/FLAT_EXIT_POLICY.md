@@ -6,6 +6,8 @@
 
 Phase62 is preregistered on exchanges922 and880, selected from the verified broad push capture. Both100,000-point banks retain the exact flat parent history and use fixed one-tick net gain exits with a30-minute maximum inventory age. Candidate entry improvement is the only policy difference. All147 core tests pass. This is a fresh forward experiment, not a profitability claim. Registry: `data/moloch-inside-registration-20261014-62.json`.
 
+Phase62 failed on typed socket DNS resolution before data. Its replacement phase63 verified a one-tick improved NO quote on880 with matched clocks, but was truncated after27 REST receipts by a later exhausted REST DNS recovery. Neither strategy obtained new fills. Phase64 subsequently consumed later tape, retired all unresolved funding and verified both original banks flat at100,000 with zero new realized gain. Evidence: `data/moloch-inside-entry-result-20261014-63.json`, `data/moloch-inside-capture-failure-20261014-63.json`, and `data/moloch-inside-closed-20261014-64.json`. The improved quote was exercised; its economics were not established. Historical losses and all experiment ledgers remain intact.
+
 ## Earlier exit experiments
 
 `run.mjs --resume TERMINAL_PARENT --resume-entries --exit-policy FILE` accepts only four exit fields: `inventoryTakerAfterMs`, `inventoryMinimumGain`, `maximumInventoryAgeMs` and `inventoryExitMode`. The exact inherited bank must have no inventory or unresolved quotes. Initial cash, actual cash, realized history, fees, quantities, capital limits, attribution and read/write limits cannot be changed by this option. Constructor validation applies to every new field. Fixed-gain mode requires a positive bounded maximum inventory age.
