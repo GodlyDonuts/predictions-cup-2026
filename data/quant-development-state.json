@@ -924,7 +924,7 @@
     "realized": "0.000000",
     "verifiedAt": "2026-10-07T06:16:58.422Z"
   },
-  "updatedAt": "2026-10-14T16:21:57.143Z",
+  "updatedAt": "2026-10-14 20:23:03 UTC",
   "foreignCandidateRepair": {
     "commit": "17b544005c7578c95df4dc4f2f30ee8e2cc75a19",
     "collector": 32364,
@@ -1012,5 +1012,25 @@
     "actualFillsProven": false,
     "contestOrders": 0
   },
-  "nextProfitabilityWork": "The direct arrival-ask to later-bid ridge selected zero trades on the later slice; move to exact cross-market settlement constraints or source-backed value dislocations, and require positive net outcomes on a new untouched window."
+  "nextProfitabilityWork": "The direct arrival-ask to later-bid ridge selected zero trades on the later slice; move to exact cross-market settlement constraints or source-backed value dislocations, and require positive net outcomes on a new untouched window.",
+  "oracle3Transfer20261014": {
+    "issue": 113,
+    "implementedAt": "2026-10-14 20:23:03 UTC",
+    "codeCommits": [
+      "d97cf2e2da0da44cd3180cf6cdf287c0425feb04",
+      "20750b09599670aafb59f7224844780fdeb11fc5"
+    ],
+    "source": {
+      "repository": "YichengYang-Ethan/oracle3-prediction-market-agent",
+      "file": "oracle3/pricing/fair_value.py",
+      "blobSha": "24aa19f7b65abfa6dc117baabf7279c4ded2fdcf",
+      "calibrationVenue": "Polymarket"
+    },
+    "implementation": "Clean-room Table 3 static and Table 5 time-varying Wang lambda sensitivity; requires independent physical probability; no expected payout, order, fill, or execution path.",
+    "tests": "37/37 focused suites passed, including 4 new tests; module syntax check passed.",
+    "sigCalibrated": false,
+    "actualFills": false,
+    "profitabilityEstablished": false,
+    "productionChanged": false
+  }
 }
