@@ -8,7 +8,7 @@ This follow-up corrects the index and consolidates source evidence. It adds no n
 
 ## Most useful transfer already present: Wang probability pricing
 
-Oracle3 maps an independently estimated physical event probability (p) to a risk-adjusted price benchmark (q = \\Phi(\\Phi^{-1}(p)+\\lambda)). Its project describes calibration on resolved contracts from several other venues; that estimate is not a SIG estimate. See the [Oracle3 project](https://github.com/YichengYang-Ethan/oracle3-prediction-market-agent) and its [working paper](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=6468338). The paper's interpretation is a selected pricing measure in incomplete markets, so the price/outcome wedge alone does not prove exploitable mispricing.
+Oracle3 maps an independently estimated physical event probability (p) to a risk-adjusted price benchmark (q = `Phi(Phi^-1(p) + lambda)`. Its project describes calibration on resolved contracts from several other venues; that estimate is not a SIG estimate. See the [Oracle3 project](https://github.com/YichengYang-Ethan/oracle3-prediction-market-agent) and its [working paper](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=6468338). The paper's interpretation is a selected pricing measure in incomplete markets, so the price/outcome wedge alone does not prove exploitable mispricing.
 
 Baal already reproduces the transform in `research/open-source-adaptation-v1/wang-value.mjs`. It requires an explicit `lambda`, reports the benchmark residual separately from independent-forecast expected value at observed asks, and fails closed on stale or insufficient depth. It remains read-only: no order or fill is produced.
 
