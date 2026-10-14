@@ -1,11 +1,12 @@
 import WebSocket from 'ws';
+import {boundedLookup} from './dns-lookup.mjs';
 
 // Supported Supabase transport hook. Record only protocol status and typed
 // errors; never copy request URLs, headers, response bodies or close reasons.
 export function diagnosticTransport(record,classify) {
  return class DiagnosticWebSocket extends WebSocket {
   constructor(address,protocols) {
-   super(address,protocols,{followRedirects:false});
+   super(address,protocols,{followRedirects:false,lookup:boundedLookup(record)});
    this.on('upgrade',()=>record({handshakeStatus:101}));
    this.on('unexpected-response',(request,response)=>{
     const status=response.statusCode;
