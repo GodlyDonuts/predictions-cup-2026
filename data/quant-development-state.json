@@ -923,7 +923,7 @@
     "realized": "0.000000",
     "verifiedAt": "2026-10-07T06:16:58.422Z"
   },
-  "updatedAt": "2026-10-14T00:45:09Z",
+  "updatedAt": "2026-10-14T10:14:00Z",
   "foreignCandidateRepair": {
     "commit": "17b544005c7578c95df4dc4f2f30ee8e2cc75a19",
     "collector": 32364,
@@ -959,5 +959,27 @@
       "latestCheckedCommit": "0497eb111117ddf3518b3b5c5cec286c292ddc8a"
     },
     "updatedAt": "2026-10-14T00:45:09Z"
+  },
+  "latestBaalQuant20261014": {
+    "updatedAt": "2026-10-14T10:14:00Z",
+    "taskIssue": 97,
+    "codeCommit": "a4a9d1981a1ff25e07544eb2afa8461a91c5063a",
+    "implementation": "Research-only finite-horizon binary maker value surface feeding the inventory-aware quote selector; transition and own-fill models require validated external evidence and strict earlier cutoffs.",
+    "tests": "16/16 combined selector and solver tests; syntax check passed.",
+    "profitabilityEstablished": false,
+    "latestLocalPaperSnapshot": {
+      "reportedAt": "2026-10-14T00:46:00.401Z",
+      "mode": "live_data_paper_only",
+      "competitionOrders": 0,
+      "meanReversionRealizedSUSQies": "-0.494635",
+      "meanReversionClosedTrades": 2,
+      "retiredBaalPairRealizedSUSQies": "-0.030000",
+      "retiredBaalPairFillCount": 4,
+      "paperReplayWorkerStatus": "stopped",
+      "paperReplayWorkerUpdatedAt": "2026-10-13T20:40:56.923Z",
+      "staleAtUpdate": true
+    },
+    "executionStopObserved": true,
+    "next": "No profitable policy or current live run verified. Do not infer fills from touches; new calibrated own-fill and chronological transition evidence are still absent. Keep the growing/unreleased capture unscored and preserve the execution stop."
   }
 }
