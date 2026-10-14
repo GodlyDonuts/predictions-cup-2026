@@ -924,7 +924,7 @@
     "realized": "0.000000",
     "verifiedAt": "2026-10-07T06:16:58.422Z"
   },
-  "updatedAt": "2026-10-14 20:23:03 UTC",
+  "updatedAt": "2026-10-14 20:24:23 UTC",
   "foreignCandidateRepair": {
     "commit": "17b544005c7578c95df4dc4f2f30ee8e2cc75a19",
     "collector": 32364,
@@ -1031,6 +1031,15 @@
     "sigCalibrated": false,
     "actualFills": false,
     "profitabilityEstablished": false,
-    "productionChanged": false
+    "productionChanged": false,
+    "documentationCommits": [
+      "080c0140896f004c67a88119969220c7d5ac6329",
+      "50d6403fef79cd5aefc285d0bcc2dcc826f7ad50",
+      "ec6960381d9153f9cce21c3213d7bfe29b2e13ea",
+      "1a65bfa2b162d269ff2cca893994b12f5ffcb576",
+      "bbfcbd7b9879dc1fa0f60ae66d177e24f21dc5ec",
+      "6e6e2f7e3b33df675b81d1950388fc3bc0f7d2c5"
+    ],
+    "updatedAt": "2026-10-14 20:24:23 UTC"
   }
 }
