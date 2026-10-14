@@ -10,7 +10,9 @@ https://github.com/PredictionXBT/PredictOS
 
 The strongest quantitative idea found through these links is Oracle3's Wang/probit probability-pricing transform, discovered via the Awesome directory. It is already implemented in Baal as a research-only diagnostic in [research/open-source-adaptation-v1/README.md](research/open-source-adaptation-v1/README.md) and [wang-value.mjs](research/open-source-adaptation-v1/wang-value.mjs). The transform maps an independent physical probability (p) to a price benchmark (q = `Phi(Phi^-1(p) + lambda)`. Baal requires an explicit `lambda`; it has no imported venue default, emits no order, and keeps the transformed market-price residual separate from expected payout value at executable ask depth.
 
-Baal also exposes Oracle3's Table 3 feature-conditioned and Table 5 lifecycle-conditioned `lambda` estimates through a separate opt-in research diagnostic; they are cross-venue Polymarket sensitivities, not SIG parameters or trade signals.\n\nThat separation is useful: a market-price distortion is not automatically a forecast edge. Oracle3's reported calibration comes from other venues and contract populations. Baal's available local inventory has 237 open market metadata rows, no settled labels, and no timestamped price history, so there is not enough SIG-specific evidence to fit or validate `lambda`. We should not turn a borrowed coefficient into a buy signal.
+Baal also exposes Oracle3's Table 3 feature-conditioned and Table 5 lifecycle-conditioned `lambda` estimates through a separate opt-in research diagnostic; they are cross-venue Polymarket sensitivities, not SIG parameters or trade signals.
+
+That separation is useful: a market-price distortion is not automatically a forecast edge. Oracle3's reported calibration comes from other venues and contract populations. Baal's available local inventory has 237 open market metadata rows, no settled labels, and no timestamped price history, so there is not enough SIG-specific evidence to fit or validate `lambda`. We should not turn a borrowed coefficient into a buy signal.
 
 | Link | Baal transfer |
 |---|---|
