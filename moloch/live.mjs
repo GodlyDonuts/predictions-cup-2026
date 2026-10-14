@@ -13,19 +13,23 @@ export function captureScopes(scopes,state,at){
     return{...p,recoveryFrom:new Date(Math.min(...expired.map(q=>q.activationAt))).toISOString(),recoveryTo:new Date(Math.max(...expired.map(q=>Math.min(q.expiresAt,q.cancelEffectiveAt??Infinity)))+1).toISOString()};
   });
 }
-export async function live({marketId,exchangeId,outputDirectory,cycles=10,resumeDirectory=null,pairsFile=null,realtime=false,insideTicks=null}){
+export function retiredPaperScopes(oldScopes,newScopes,state){
+  const retired=oldScopes.filter(old=>!newScopes.some(p=>p.marketId===old.marketId&&p.exchangeId===old.exchangeId));
+  for(const p of retired){const lots=state.positions[p.exchangeId];if(state.orders.some(q=>q.exchangeId===p.exchangeId&&!q.retired)||lots&&[...lots.YES,...lots.NO].some(l=>l.quantity>0))throw Error('MOLOCH_SCOPE_RETIREMENT_HAS_LIABILITIES');}
+  return retired;
+}
+export async function live({marketId,exchangeId,outputDirectory,cycles=10,resumeDirectory=null,pairsFile=null,realtime=false,insideTicks=null,drain=false,resumeEntries=false}){
   if(!/^[1-9]\d*$/.test(marketId)||!/^[1-9]\d*$/.test(exchangeId)||!Number.isSafeInteger(cycles)||cycles<1||cycles>100)throw Error('MOLOCH_LIVE_SCOPE');
   if(realtime&&cycles>30)throw Error('MOLOCH_STREAM_BOUNDED_CYCLES');
   const scopes=liveScopes(marketId,exchangeId,pairsFile?JSON.parse(fs.readFileSync(pairsFile,'utf8').replace(/^\uFEFF/,'')):null,realtime?4:2);
   if(realtime&&cycles>Math.floor(60/scopes.length))throw Error('MOLOCH_STREAM_DURATION_LIMIT');
   const out=path.resolve(outputDirectory);if(fs.existsSync(out))throw Error('MOLOCH_LIVE_OUTPUT_EXISTS');fs.mkdirSync(out,{recursive:true});
-  const cutoff=new Date().toISOString();let state=createMoloch(insideTicks===null?{}:{insideTicks}),continuation=null;
+  const cutoff=new Date().toISOString();let state=createMoloch({...((insideTicks===null)?{}:{insideTicks}),...(drain?{entriesEnabled:false}:{})}),continuation=null;
   if(resumeDirectory){const prior=path.resolve(resumeDirectory),oldStats=JSON.parse(fs.readFileSync(path.join(prior,'stats.json'))),snapshot=JSON.parse(fs.readFileSync(path.join(prior,'state.json'))),{hash,...body}=snapshot;
     if(!['completed','failed'].includes(oldStats.status)||oldStats.captureExit===null||hash!==payloadHash(body))throw Error('MOLOCH_CONTINUATION_REQUIRES_VERIFIED_STOPPED_PARENT');
-    if(oldStats.marketId!==marketId||oldStats.exchangeId!==exchangeId)throw Error('MOLOCH_CONTINUATION_SCOPE');
-    for(const oldScope of oldStats.scopes??[{marketId:oldStats.marketId,exchangeId:oldStats.exchangeId}])if(!scopes.some(p=>p.marketId===oldScope.marketId&&p.exchangeId===oldScope.exchangeId))throw Error('MOLOCH_CONTINUATION_DROPS_SOURCE_SCOPE');
-    const silence=state.policy.maximumSourceSilenceMs;state=body.state;assertMoloch(state);const nextPolicy=createMoloch({...state.policy,maximumSourceSilenceMs:silence,...(insideTicks===null?{}:{insideTicks})}).policy;const {policy,policyHash,...financial}=state;
-    continuation={parentDirectory:prior,parentStatus:oldStats.status,parentCaptureExit:oldStats.captureExit,parentSnapshotHash:hash,parentFinancialHash:payloadHash(financial),newPaperCapital:'0.000000',priorPolicyHash:policyHash};
+    const retiredScopes=retiredPaperScopes(oldStats.scopes??[{marketId:oldStats.marketId,exchangeId:oldStats.exchangeId}],scopes,body.state);
+    const silence=state.policy.maximumSourceSilenceMs;state=body.state;assertMoloch(state);const nextPolicy=createMoloch({...state.policy,maximumSourceSilenceMs:silence,...(insideTicks===null?{}:{insideTicks}),...(drain?{entriesEnabled:false}:resumeEntries?{entriesEnabled:true}:{})}).policy;const {policy,policyHash,...financial}=state;
+    continuation={parentDirectory:prior,parentStatus:oldStats.status,parentCaptureExit:oldStats.captureExit,parentSnapshotHash:hash,parentFinancialHash:payloadHash(financial),newPaperCapital:'0.000000',priorPolicyHash:policyHash,retiredScopes};
     state.policy=nextPolicy;state.policyHash=payloadHash(nextPolicy);const {policy:np,policyHash:nh,...carried}=state;if(payloadHash(carried)!==continuation.parentFinancialHash)throw Error('MOLOCH_FINANCIAL_CONTINUITY');
   }
   const predecessorFacts=realtime?predecessorTradeFacts(resumeDirectory,state,path.join(root,'runtime','moloch')):null;
@@ -48,6 +52,7 @@ export async function live({marketId,exchangeId,outputDirectory,cycles=10,resume
     report.scopes=scopes;if(realtime){report.transport='official_realtime_with_serialized_rest_resync';report.financialStreamIntegration=true;report.streamConnectionVerified=mux.metrics.initialResyncs===scopes.length;report.streamMetrics=mux.metrics;report.streamResync=[...mux.status].map(([marketId,s])=>({marketId,...s}));report.authenticationWrites=fs.existsSync(path.join(capture,'stream','stats.json'))?JSON.parse(fs.readFileSync(path.join(capture,'stream','stats.json'))).tokenWrites:0;report.networkRequests+=report.authenticationWrites;report.networkRequestCountScope='successful REST receipts and authentication only; streaming broadcasts are not counted as API requests';}
     fs.writeFileSync(path.join(out,'stats.tmp'),JSON.stringify(report,null,2));fs.renameSync(path.join(out,'stats.tmp'),path.join(out,'stats.json'));return report;}
   try{while(true){
+    if(sequence===0&&continuation?.retiredScopes?.length)apply({type:'gap',exchangeIds:continuation.retiredScopes.map(p=>p.exchangeId),receivedAt:cutoff,processedAt:new Date().toISOString()});
     if(fs.existsSync(path.join(out,'STOP'))){stopping();if(ended)break;}
     if(realtime&&fs.existsSync(path.join(capture,'stream','stats.json'))&&JSON.parse(fs.readFileSync(path.join(capture,'stream','stats.json'))).status==='failed')throw Error('MOLOCH_STREAM_FAILED: stop paper admission; no token refresh or silent fallback');
     if(realtime&&fs.existsSync(streamFile)){
@@ -72,4 +77,4 @@ export async function live({marketId,exchangeId,outputDirectory,cycles=10,resume
   }return persist('completed');
   }catch(error){stopping();if(!ended)await new Promise(resolve=>{const timer=setTimeout(()=>{captureProcess.kill();resolve();},40000);captureProcess.once('exit',()=>{clearTimeout(timer);resolve();});});persist('failed');throw error;}finally{process.removeListener('SIGINT',stopping);process.removeListener('SIGTERM',stopping);}
 }
-if(process.argv[1]&&import.meta.url===pathToFileURL(path.resolve(process.argv[1])).href){live({marketId:process.argv[2],exchangeId:process.argv[3],outputDirectory:process.argv[4],cycles:Number(process.argv[5]??10),resumeDirectory:process.argv[6]??null,pairsFile:process.argv[7]??null,realtime:process.argv[8]==='--realtime',insideTicks:process.argv[9]===undefined?null:Number(process.argv[9])}).then(r=>console.log(JSON.stringify(r,null,2))).catch(e=>{console.error(e.message);process.exitCode=1;});}
+if(process.argv[1]&&import.meta.url===pathToFileURL(path.resolve(process.argv[1])).href){live({marketId:process.argv[2],exchangeId:process.argv[3],outputDirectory:process.argv[4],cycles:Number(process.argv[5]??10),resumeDirectory:process.argv[6]??null,pairsFile:process.argv[7]??null,realtime:process.argv[8]==='--realtime',insideTicks:process.argv[9]===undefined?null:Number(process.argv[9]),drain:process.argv.includes('--drain'),resumeEntries:process.argv.includes('--resume-entries')}).then(r=>console.log(JSON.stringify(r,null,2))).catch(e=>{console.error(e.message);process.exitCode=1;});}

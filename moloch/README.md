@@ -368,3 +368,33 @@ same-exchange mechanism, not a cross-market settlement bet. New offset records
 are labeled `engine_opposite_buy_fifo_netting` and counterfactual; the historical
 array name `redemptions` is retained for ledger continuity. Documentation confirms
 the mechanism, not any actual fill, account profit or execution authorization.
+
+## Queue sensitivity and market rotation
+
+The default fill model remains `strictThrough`. An offline `conditionalFifo`
+scenario starts behind visible equal/better-priced depth. Equal-price additions
+before activation can go ahead; later additions go behind under the assumed FIFO
+priority. Cancellation reductions are not credited. Better-priced depth remains
+ahead until a conditional print reaches or passes the quote level. Touch volume
+must first exhaust same-price queue, and residual volume still obeys the one-percent
+participation cap. `touchAttributionBps` tests uncertain trade direction, not an
+observed maker fill. Conditional scenarios cannot trigger `profitSignalEligible`.
+
+The [queue replay](results/sig-queue-20261014.json) verified baseline financial
+parity in three recorded episodes. Both 50% and 100% touch attribution still
+produced zero fills. This implicates queue size and selected-market flow rather
+than proving that a more permissive fill assumption would make money.
+
+`--drain` after the live command's numeric inside-tick argument disables new buys
+and cancels old buys without freeing their reservations. Covered inventory exits
+remain available. The completed drain carried 1000.000000 cash, zero new capital,
+zero inventory and zero unresolved/reserved funds. It did not pause the mission.
+New paper scopes may replace old scopes only after all their orders are retired
+and owned shares are zero. Historical books, fills and deduplication remain; all
+retired books are invalidated together before any new admission. `--resume-entries`
+is required to re-enable a drained successor. No contest owner is transferred.
+
+Activity reports now expose `reconciliationPriority` from observed flow even for
+markets with historical gaps, together with `quoteReadyFromObservation: false`
+and mandatory authoritative recovery. These are exploration priorities, not
+permission to quote from stale or incomplete data.

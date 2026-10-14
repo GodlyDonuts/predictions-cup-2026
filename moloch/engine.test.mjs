@@ -1,5 +1,6 @@
 import test from 'node:test';import assert from 'node:assert/strict';
 import {createMoloch,advanceMoloch,reportMoloch,assertMoloch} from './engine.mjs';
+import {payloadHash} from '../execution/ledger.mjs';
 const base=Date.parse('2026-10-13T00:00:00Z'),at=n=>new Date(base+n*1000).toISOString();
 const book=(n,ex='101',seq=1)=>({type:'book',receivedAt:at(n),book:{tournamentId:'cup',marketId:ex,exchangeId:ex,sequence:String(seq),requestStartedAt:at(n),receivedAt:at(n),sourceAt:at(n),bids:[{price:'0.450000',quantity:1000}],asks:[{price:'0.455000',quantity:1000}]}});
 const trade=(n,id,p='0.440000',quantity=100,executed=n)=>({type:'trade',receivedAt:at(n),executedAt:at(executed),id,tournamentId:'cup',marketId:'101',exchangeId:'101',yesPrice:p,quantity});
@@ -48,6 +49,23 @@ test('pre-activation and at-touch prints never fabricate queue fills; duplicate 
   const s=createMoloch({quantity:1});advanceMoloch(s,book(0));advanceMoloch(s,trade(1,'early'));advanceMoloch(s,trade(4,'touch','0.450000'));assert.equal(s.fills.length,0);
   advanceMoloch(s,trade(5,'through'));advanceMoloch(s,trade(6,'through','0.440000',100,5));assert.equal(s.fills.length,1);assert.equal(s.counts.duplicateTrades,1);
   assert.throws(()=>advanceMoloch(s,trade(7,'through','0.435000',100,5)),/TRADE_CONFLICT/);
+});
+test('conditional FIFO touch volume must exhaust visible queue before bounded fill credit',()=>{
+  const s=createMoloch({fillModel:'conditionalFifo',quantity:1});advanceMoloch(s,book(0));advanceMoloch(s,trade(4,'queue-first','0.450000',999));const q=s.orders.find(q=>q.side==='YES');assert.equal(q.queueAhead,'1');assert.equal(s.fills.length,0);
+  advanceMoloch(s,trade(5,'queue-first','0.450000',999,4));assert.equal(q.queueAhead,'1');advanceMoloch(s,trade(6,'queue-cleared','0.450000',101));assert.equal(s.fills.length,1);assert.equal(s.fills[0].conditionalQueueFill,true);assert.equal(reportMoloch(s).profitabilityEstablished,false);assertMoloch(s);
+  const half=createMoloch({fillModel:'conditionalFifo',touchAttributionBps:5000,quantity:1});advanceMoloch(half,book(0));advanceMoloch(half,trade(4,'half-first','0.450000',999));advanceMoloch(half,trade(6,'half-next','0.450000',101));assert.equal(half.fills.length,0);
+});
+test('drain disables new buys but retains exact funds until delayed fills and full coverage resolve',()=>{
+  const s=createMoloch({quantity:1});advanceMoloch(s,book(0));const next=createMoloch({...s.policy,entriesEnabled:false}).policy;s.policy=next;s.policyHash=payloadHash(next);advanceMoloch(s,tick(20));assert.equal(s.orders[0].cancelEffectiveAt,base+23000);assert.equal(s.orders[0].retired,false);
+  advanceMoloch(s,tick(23));advanceMoloch(s,book(30,'101',20));advanceMoloch(s,{type:'coverage',receivedAt:at(31),tournamentId:'cup',marketId:'101',exchangeId:'101',from:at(3),to:at(30),complete:true,projectedThroughSequence:'20'});assert.equal(s.orders.length,2);assert.ok(s.orders.every(q=>q.retired));assert.equal(s.cash,'1000.000000');assertMoloch(s);
+});
+test('atomic scope invalidation cannot admit another retiring market between gap events',()=>{
+  const s=createMoloch({entriesEnabled:false});advanceMoloch(s,book(0,'101'));advanceMoloch(s,book(1,'102'));s.policy=createMoloch({...s.policy,entriesEnabled:true}).policy;s.policyHash=payloadHash(s.policy);advanceMoloch(s,{type:'gap',exchangeIds:['101','102'],receivedAt:at(2)});assert.equal(s.orders.length,0);assert.equal(s.books['101'].invalid,true);assert.equal(s.books['102'].invalid,true);
+});
+test('conditional FIFO ignores cancellation credit and places new equal-price depth behind an active quote',()=>{
+  const s=createMoloch({fillModel:'conditionalFifo',quantity:1});advanceMoloch(s,book(0));const lower=book(4,'101',2);lower.book.bids[0].quantity=1;advanceMoloch(s,lower);const q=s.orders.find(q=>q.side==='YES');assert.equal(q.queueAhead,'1000');const higher=book(5,'101',3);higher.book.bids[0].quantity=100;advanceMoloch(s,higher);assert.equal(q.queueAhead,'1000');
+  advanceMoloch(s,trade(6,'residual-hundred','0.450000',1100));assert.equal(s.fills.length,1);assertMoloch(s);
+  const before=createMoloch({fillModel:'conditionalFifo'});advanceMoloch(before,book(0));const early=book(2,'101',2);early.book.bids[0].quantity=1500;advanceMoloch(before,early);assert.equal(before.orders.find(q=>q.side==='YES').queueAhead,'1500');
 });
 test('REST and stream timestamp precision differences deduplicate without masking changed trade facts',()=>{
   const s=createMoloch({quantity:1});advanceMoloch(s,book(0));advanceMoloch(s,trade(4,'shared'));

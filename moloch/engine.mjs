@@ -5,7 +5,7 @@ import {payloadHash} from '../execution/ledger.mjs';
 export const DEFAULT_POLICY=Object.freeze({initialCash:'1000.000000',maximumCommitted:'40.000000',
   maximumMarketCost:'10.000000',quantity:5,maximumMarkets:4,latencyMs:3000,lifetimeMs:120000,
   bookAgeMs:10000,maximumSourceSilenceMs:60000,minimumSpreadTicks:1,minimumEdge:'0.001000',participationBps:100,
-  feeBps:0,feePerShare:'0.000000',quoteMode:'pairedSpread',insideTicks:0,renewBeforeMs:0,minimumQuoteAgeMs:2500,writeGapMs:2500,writesPerMinute:24});
+  feeBps:0,feePerShare:'0.000000',quoteMode:'pairedSpread',entriesEnabled:true,fillModel:'strictThrough',touchAttributionBps:10000,insideTicks:0,renewBeforeMs:0,minimumQuoteAgeMs:2500,writeGapMs:2500,writesPerMinute:24});
 const ns=x=>instantNs(x), ms=x=>Number(ns(x)/1000000n), iso=x=>new Date(x).toISOString();
 const check=(ok,code)=>{if(!ok)throw Error('MOLOCH_'+code);};
 const position=(s,ex)=>s.positions[ex]??{YES:[],NO:[]};
@@ -26,6 +26,8 @@ function prune(s){for(const p of Object.values(s.positions))for(const side of ['
 export function createMoloch(policy={}){
   const p={...DEFAULT_POLICY,...policy};
   check(['pairedSpread','microprice'].includes(p.quoteMode),'QUOTE_MODE');
+  check(typeof p.entriesEnabled==='boolean','ENTRIES_ENABLED');
+  check(['strictThrough','conditionalFifo'].includes(p.fillModel)&&Number.isSafeInteger(p.touchAttributionBps)&&p.touchAttributionBps>=0&&p.touchAttributionBps<=10000,'FILL_MODEL');
   check(Number.isSafeInteger(p.insideTicks)&&p.insideTicks>=0&&p.insideTicks<=3,'INSIDE_TICKS');
   check(Number.isSafeInteger(p.renewBeforeMs)&&p.renewBeforeMs>=0&&p.renewBeforeMs<p.lifetimeMs-p.latencyMs-p.minimumQuoteAgeMs,'RENEWAL_WINDOW');
   for(const k of ['quantity','maximumMarkets','latencyMs','lifetimeMs','bookAgeMs','maximumSourceSilenceMs','minimumSpreadTicks','participationBps','minimumQuoteAgeMs','writeGapMs','writesPerMinute'])check(Number.isSafeInteger(p[k])&&p[k]>0,'POLICY_'+k);
@@ -35,6 +37,7 @@ export function createMoloch(policy={}){
     positions:{},books:{},priceHistory:{},orders:[],fills:[],redemptions:[],seen:{},flow:{},writes:[],events:0,lastAt:null,nextOrderId:1,counts:{}};
 }
 const count=(s,k)=>s.counts[k]=(s.counts[k]??0)+1;
+function visibleQueue(q,b){const limit=q.side==='YES'?amount(q.price):SCALE-amount(q.price),bid=(q.side==='YES')===(q.action==='buy');let same=0n,better=0n;for(const l of bid?b.bids:b.asks){const p=price(l.price);if(p===limit)same+=BigInt(l.quantity);else if(bid?p>limit:p<limit)better+=BigInt(l.quantity);}return{same,better};}
 function fresh(s,b,at){return b&&!b.invalid&&at-ms(b.transport==='official_sig_realtime'?b.sourceAt:b.requestStartedAt)<=s.policy.bookAgeMs&&ms(b.receivedAt)<=at;}
 function validateBook(b){
   check(typeof b.tournamentId==='string'&&b.tournamentId&&/^[1-9]\d*$/.test(b.marketId)&&/^[1-9]\d*$/.test(b.exchangeId),'BOOK_SCOPE');
@@ -73,7 +76,7 @@ function desired(s,at){
       if(quantity>0)candidates.push({marketId:b.marketId,exchangeId:b.exchangeId,side,action:'sell',quantity,price:money(side==='YES'?bestAsk-exitImprove:SCALE-bestBid-exitImprove),rank:1e12,source:b});
       continue;
     }
-    if(spread<TICK*BigInt(s.policy.minimumSpreadTicks))continue;
+    if(s.policy.entriesEnabled===false||spread<TICK*BigInt(s.policy.minimumSpreadTicks))continue;
     for(let step=0;step<(s.policy.insideTicks??0);step++){
       const sides=micro-bid>=ask-micro?['YES','NO']:['NO','YES'];
       for(const side of sides){const nextBid=bid+(side==='YES'?TICK:0n),nextAsk=ask-(side==='NO'?TICK:0n),limit=side==='YES'?nextBid:SCALE-nextAsk,value=side==='YES'?micro:SCALE-micro;
@@ -103,7 +106,7 @@ function reconcile(s,at){
     // Do not place replacements from stale data; retain only still-covered old
     // quotes until a changed/gapped source or the explicit silence timeout.
     const stillCovered=q.action==='sell'?qty(p[q.side])>=remaining(q):qty(p.YES)+qty(p.NO)===0;
-    if(!target&&b&&!b.invalid&&!fresh(s,b,at)&&at-ms(b.receivedAt)<s.policy.maximumSourceSilenceMs&&stillCovered)continue;
+    if(!target&&b&&!b.invalid&&!fresh(s,b,at)&&at-ms(b.receivedAt)<s.policy.maximumSourceSilenceMs&&stillCovered&&(s.policy.entriesEnabled!==false||q.action==='sell'))continue;
     const renew=target&&target.price===q.price&&fresh(s,b,at)&&s.policy.renewBeforeMs>0&&q.expiresAt-at<=s.policy.renewBeforeMs;
     if((!target||target.price!==q.price||renew)&&at-q.createdAt>=s.policy.minimumQuoteAgeMs){q.cancelEffectiveAt=at+s.policy.latencyMs;s.writes.push(at);count(s,'cancels');if(renew)count(s,'earlyRenewals');return;}}
   const batch=[],markets=new Set([...Object.entries(s.positions).filter(([,p])=>qty(p.YES)+qty(p.NO)>0).map(([ex])=>ex),...unresolved(s).map(q=>q.exchangeId)]);
@@ -128,7 +131,7 @@ function reconcile(s,at){
     if(t.action==='buy'&&[...active,...batch].some(q=>q.exchangeId===t.exchangeId&&q.action==='buy'&&q.side!==t.side&&amount(q.price)+amount(t.price)>=SCALE))continue;
     markets.add(t.exchangeId);batch.push({...t,quantity:n});
   }
-  if(batch.length){s.writes.push(at);for(const t of batch){s.orders.push({id:s.nextOrderId++,marketId:t.marketId,exchangeId:t.exchangeId,side:t.side,action:t.action,quantity:t.quantity,filled:0,price:t.price,createdAt:at,activationAt:at+s.policy.latencyMs,expiresAt:at+s.policy.lifetimeMs,sourceHash:payloadHash(t.source),sourceSequence:String(t.source.sequence),tournamentId:t.source.tournamentId,retired:false,participationCredit:0,barrier:null});}count(s,'submissionBatches');}
+  if(batch.length){s.writes.push(at);for(const t of batch){const queue=visibleQueue(t,t.source),fifo=s.policy.fillModel==='conditionalFifo'?{fillModel:'conditionalFifo',touchAttributionBps:s.policy.touchAttributionBps,queueAhead:String(queue.same+queue.better),queueSame:String(queue.same),queueBetter:String(queue.better),queueVisibleSame:String(queue.same),queueVisibleBetter:String(queue.better),touchRemainder:0}:{};s.orders.push({id:s.nextOrderId++,marketId:t.marketId,exchangeId:t.exchangeId,side:t.side,action:t.action,quantity:t.quantity,filled:0,price:t.price,createdAt:at,activationAt:at+s.policy.latencyMs,expiresAt:at+s.policy.lifetimeMs,sourceHash:payloadHash(t.source),sourceSequence:String(t.source.sequence),tournamentId:t.source.tournamentId,retired:false,participationCredit:0,barrier:null,...fifo});}count(s,'submissionBatches');}
 }
 export function advanceMoloch(s,event){
   check(payloadHash(s.policy)===s.policyHash,'POLICY_CHANGED');
@@ -154,13 +157,14 @@ export function advanceMoloch(s,event){
     check(event.historicalReleaseClockAssumed===true&&ns(event.availableAt)===ns(event.receivedAt)&&ns(event.bucketStartedAt)<ns(event.availableAt)&&Number.isFinite(event.close)&&event.close>=0&&event.close<=1&&typeof event.exchangeId==='string','CANDLE');
   }else if(event.type==='coverage'){
     check(event.complete===true&&ns(event.from)<ns(event.to)&&ns(event.to)<=atNs&&/^\d+$/.test(String(event.projectedThroughSequence)),'COVERAGE');
-  }else check(event.type==='gap'||event.type==='tick','EVENT_TYPE');
+  }else{check(event.type==='gap'||event.type==='tick','EVENT_TYPE');if(event.type==='gap'){const ids=event.exchangeIds??[event.exchangeId];check(Array.isArray(ids)&&ids.length>0&&ids.length<=1000&&new Set(ids).size===ids.length&&ids.every(id=>typeof id==='string'&&/^[1-9]\d*$/.test(id)),'GAP_SCOPE');}}
   s.lastAt=event.processedAt??event.receivedAt;s.events++;
   if(event.type==='book'){
     const b=structuredClone(event.book);s.books[b.exchangeId]=b;
+    for(const q of unresolved(s).filter(q=>q.exchangeId===b.exchangeId&&q.fillModel==='conditionalFifo')){const visible=visibleQueue(q,b),oldSame=BigInt(q.queueVisibleSame),oldBetter=BigInt(q.queueVisibleBetter);if(visible.same>oldSame&&ns(b.sourceAt)<=BigInt(q.activationAt)*1000000n)q.queueSame=String(BigInt(q.queueSame)+visible.same-oldSame);if(visible.better>oldBetter)q.queueBetter=String(BigInt(q.queueBetter)+visible.better-oldBetter);q.queueVisibleSame=String(visible.same);q.queueVisibleBetter=String(visible.better);q.queueAhead=String(BigInt(q.queueSame)+BigInt(q.queueBetter));}
     for(const q of unresolved(s).filter(q=>q.exchangeId===b.exchangeId&&q.marketId===b.marketId&&q.tournamentId===b.tournamentId&&ms(b.transport==='official_sig_realtime'?b.sourceAt:b.requestStartedAt)>=end(q)))if(!q.barrier)q.barrier={sequence:String(b.sequence),endAt:end(q)};
   }else if(event.type==='gap'){
-    check(typeof event.exchangeId==='string','GAP_SCOPE');if(s.books[event.exchangeId])s.books[event.exchangeId].invalid=true;count(s,'gaps');
+    for(const id of event.exchangeIds??[event.exchangeId]){if(s.books[id])s.books[id].invalid=true;count(s,'gaps');}
   }else if(event.type==='trade'&&!duplicate){
     s.flow[event.exchangeId]??=[];s.flow[event.exchangeId].push({at:ms(event.executedAt),quantity:event.quantity});count(s,'uniqueTrades');
     let participation=Math.floor(event.quantity*s.policy.participationBps/10000);
@@ -168,11 +172,15 @@ export function advanceMoloch(s,event){
     for(const q of unresolved(s).filter(q=>q.marketId===event.marketId&&q.exchangeId===event.exchangeId&&q.tournamentId===event.tournamentId).sort((a,b)=>a.createdAt-b.createdAt||a.id-b.id)){
       if(executed<BigInt(q.activationAt)*1000000n||executed>=BigInt(end(q))*1000000n)continue;
       const yesLimit=q.side==='YES'?amount(q.price):SCALE-amount(q.price),bid=(q.side==='YES')===(q.action==='buy');
-      if(!(bid?tradePrice<=yesLimit-TICK:tradePrice>=yesLimit+TICK))continue;
-      q.participationCredit+=event.quantity*s.policy.participationBps;
+      const through=bid?tradePrice<=yesLimit-TICK:tradePrice>=yesLimit+TICK,touch=q.fillModel==='conditionalFifo'&&tradePrice===yesLimit;
+      if(!through&&!touch)continue;
+      let eligibleVolume=event.quantity;
+      if(through&&q.fillModel==='conditionalFifo'){q.queueAhead='0';q.queueSame='0';q.queueBetter='0';}
+      if(touch){const numerator=event.quantity*q.touchAttributionBps+q.touchRemainder,attributed=Math.floor(numerator/10000);q.touchRemainder=numerator%10000;if(attributed)q.queueBetter='0';const ahead=BigInt(q.queueSame),consumed=BigInt(attributed)<ahead?BigInt(attributed):ahead;q.queueSame=String(ahead-consumed);q.queueAhead=String(BigInt(q.queueSame)+BigInt(q.queueBetter));eligibleVolume=attributed-Number(consumed);count(s,'conditionalTouches');if(!eligibleVolume)break;}
+      q.participationCredit+=eligibleVolume*s.policy.participationBps;
       // Fractional prints accumulate, but a print's total allocated shares is capped.
       const n=Math.min(event.quantity,remaining(q),Math.floor(q.participationCredit/10000),Math.max(participation,1));
-      if(n>0){q.participationCredit-=n*10000;fill(s,q,n,s.lastAt,event.id);participation=Math.max(0,participation-n);break;}
+      if(n>0){q.participationCredit-=n*10000;fill(s,q,n,s.lastAt,event.id);if(touch){s.fills.at(-1).conditionalQueueFill=true;s.fills.at(-1).touchAttributionBps=q.touchAttributionBps;}participation=Math.max(0,participation-n);break;}if(touch)break;
     }
   }else if(event.type==='candle'){
     s.priceHistory??={};const prior=s.priceHistory[event.exchangeId];s.priceHistory[event.exchangeId]={close:event.close,at:event.availableAt,observations:(prior?.observations??0)+1,historicalReleaseClockAssumed:true};count(s,'priceOnlyObservations');
@@ -202,6 +210,6 @@ export function reportMoloch(s){
   return{bot:'Moloch',at:s.lastAt,policyHash:s.policyHash,events:s.events,cash:s.cash,realized:s.realized,fees:s.fees,
     ownedCost:money(owned(s)),reservedCash:money(reserve(s)),netLiquidationPnl:known?money(amount(s.cash)+liquidation-amount(s.policy.initialCash)):null,
     positions:s.positions,priceHistory:s.priceHistory??{},fills:s.fills.length,orders:s.orders.length,activeOrders:at===null?0:unresolved(s).filter(q=>end(q)>at).length,
-    unresolvedOrders:unresolved(s).length,profitSignalEligible:unresolved(s).length===0&&known&&amount(s.realized)>0n&&amount(s.cash)+liquidation>amount(s.policy.initialCash),counts:s.counts,contestOrders:0,networkRequests:0,profitabilityEstablished:false,
-    assumptions:['Independent simulated capital; no contest-account ownership.',s.policy.quoteMode==='pairedSpread'?'Flat entries quote both sides only when combined spread covers modeled fees and required edge; partial fills remain inventory risk.':'Microprice gates quotes; it is not calibrated alpha.','Strict one-tick trade-through and bounded participation are counterfactual, not verified queue fills.','Cancel acknowledgment does not release unresolved funding; complete window and post-end checkpoint are required.','Opposite BUY FIFO netting models the documented engine credit of one per netted share; all modeled fills remain counterfactual.']};
+    unresolvedOrders:unresolved(s).length,fillModel:s.policy.fillModel??'strictThrough',conditionalQueueFills:s.fills.filter(f=>f.conditionalQueueFill).length,profitSignalEligible:s.policy.fillModel!=='conditionalFifo'&&!s.fills.some(f=>f.conditionalQueueFill)&&unresolved(s).length===0&&known&&amount(s.realized)>0n&&amount(s.cash)+liquidation>amount(s.policy.initialCash),counts:s.counts,contestOrders:0,networkRequests:0,profitabilityEstablished:false,
+    assumptions:['Independent simulated capital; no contest-account ownership.',s.policy.quoteMode==='pairedSpread'?'Flat entries quote both sides only when combined spread covers modeled fees and required edge; partial fills remain inventory risk.':'Microprice gates quotes; it is not calibrated alpha.',s.policy.fillModel==='conditionalFifo'?'Touch fills conditionally attribute observed volume to our side after visible queue exhaustion; aggressor direction and true FIFO priority are unverified.':'Strict one-tick trade-through and bounded participation are counterfactual, not verified queue fills.','Cancel acknowledgment does not release unresolved funding; complete window and post-end checkpoint are required.','Opposite BUY FIFO netting models the documented engine credit of one per netted share; all modeled fills remain counterfactual.']};
 }

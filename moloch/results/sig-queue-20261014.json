@@ -1,0 +1,217 @@
+{
+  "bot": "Moloch",
+  "observedThrough": "2026-10-14T00:01:32.028Z",
+  "comparisons": [
+    {
+      "episode": 8,
+      "status": "failed",
+      "sourceFinalHash": "634845fde021066e3f9bdf91d2c51c8475b787ca687461866efd4f9f5c1dbe2e",
+      "baselineFinancialParity": true,
+      "variants": [
+        {
+          "fillModel": "strictThrough",
+          "touchAttributionBps": 0,
+          "fills": [],
+          "realized": "0.000000",
+          "cash": "1000.000000",
+          "ownedCost": "0.000000",
+          "finalLiquidation": "0.000000",
+          "lastFresh": {
+            "at": "2026-10-13T22:40:31.475Z",
+            "pnl": "0.000000"
+          },
+          "worstFresh": {
+            "at": "2026-10-13T22:38:26.164Z",
+            "pnl": "0.000000"
+          },
+          "conditionalTouches": 0
+        },
+        {
+          "fillModel": "conditionalFifo",
+          "touchAttributionBps": 5000,
+          "fills": [],
+          "realized": "0.000000",
+          "cash": "1000.000000",
+          "ownedCost": "0.000000",
+          "finalLiquidation": "0.000000",
+          "lastFresh": {
+            "at": "2026-10-13T22:40:31.475Z",
+            "pnl": "0.000000"
+          },
+          "worstFresh": {
+            "at": "2026-10-13T22:38:26.164Z",
+            "pnl": "0.000000"
+          },
+          "conditionalTouches": 4
+        },
+        {
+          "fillModel": "conditionalFifo",
+          "touchAttributionBps": 10000,
+          "fills": [],
+          "realized": "0.000000",
+          "cash": "1000.000000",
+          "ownedCost": "0.000000",
+          "finalLiquidation": "0.000000",
+          "lastFresh": {
+            "at": "2026-10-13T22:40:31.475Z",
+            "pnl": "0.000000"
+          },
+          "worstFresh": {
+            "at": "2026-10-13T22:38:26.164Z",
+            "pnl": "0.000000"
+          },
+          "conditionalTouches": 4
+        }
+      ]
+    },
+    {
+      "episode": 10,
+      "status": "completed",
+      "sourceFinalHash": "e43d25430a33787c0a9f8686075045514f5830aecc5f878ef778ddcac4ea4434",
+      "baselineFinancialParity": true,
+      "variants": [
+        {
+          "fillModel": "strictThrough",
+          "touchAttributionBps": 0,
+          "fills": [],
+          "realized": "0.000000",
+          "cash": "1000.000000",
+          "ownedCost": "0.000000",
+          "finalLiquidation": "0.000000",
+          "lastFresh": {
+            "at": "2026-10-13T23:15:56.698Z",
+            "pnl": "0.000000"
+          },
+          "worstFresh": {
+            "at": "2026-10-13T23:09:54.939Z",
+            "pnl": "0.000000"
+          },
+          "conditionalTouches": 0
+        },
+        {
+          "fillModel": "conditionalFifo",
+          "touchAttributionBps": 5000,
+          "fills": [],
+          "realized": "0.000000",
+          "cash": "1000.000000",
+          "ownedCost": "0.000000",
+          "finalLiquidation": "0.000000",
+          "lastFresh": {
+            "at": "2026-10-13T23:15:56.698Z",
+            "pnl": "0.000000"
+          },
+          "worstFresh": {
+            "at": "2026-10-13T23:09:54.939Z",
+            "pnl": "0.000000"
+          },
+          "conditionalTouches": 3
+        },
+        {
+          "fillModel": "conditionalFifo",
+          "touchAttributionBps": 10000,
+          "fills": [],
+          "realized": "0.000000",
+          "cash": "1000.000000",
+          "ownedCost": "0.000000",
+          "finalLiquidation": "0.000000",
+          "lastFresh": {
+            "at": "2026-10-13T23:15:56.698Z",
+            "pnl": "0.000000"
+          },
+          "worstFresh": {
+            "at": "2026-10-13T23:09:54.939Z",
+            "pnl": "0.000000"
+          },
+          "conditionalTouches": 3
+        }
+      ]
+    },
+    {
+      "episode": 11,
+      "status": "completed",
+      "sourceFinalHash": "ea83031199024ef14c998ea47cefaaf07c675583a786a518cbe6b283b31d6579",
+      "baselineFinancialParity": true,
+      "variants": [
+        {
+          "fillModel": "strictThrough",
+          "touchAttributionBps": 0,
+          "fills": [],
+          "realized": "0.000000",
+          "cash": "1000.000000",
+          "ownedCost": "0.000000",
+          "finalLiquidation": "0.000000",
+          "lastFresh": {
+            "at": "2026-10-13T23:33:00.333Z",
+            "pnl": "0.000000"
+          },
+          "worstFresh": {
+            "at": "2026-10-13T23:27:48.655Z",
+            "pnl": "0.000000"
+          },
+          "conditionalTouches": 0
+        },
+        {
+          "fillModel": "conditionalFifo",
+          "touchAttributionBps": 5000,
+          "fills": [],
+          "realized": "0.000000",
+          "cash": "1000.000000",
+          "ownedCost": "0.000000",
+          "finalLiquidation": "0.000000",
+          "lastFresh": {
+            "at": "2026-10-13T23:33:00.333Z",
+            "pnl": "0.000000"
+          },
+          "worstFresh": {
+            "at": "2026-10-13T23:27:48.655Z",
+            "pnl": "0.000000"
+          },
+          "conditionalTouches": 0
+        },
+        {
+          "fillModel": "conditionalFifo",
+          "touchAttributionBps": 10000,
+          "fills": [],
+          "realized": "0.000000",
+          "cash": "1000.000000",
+          "ownedCost": "0.000000",
+          "finalLiquidation": "0.000000",
+          "lastFresh": {
+            "at": "2026-10-13T23:33:00.333Z",
+            "pnl": "0.000000"
+          },
+          "worstFresh": {
+            "at": "2026-10-13T23:27:48.655Z",
+            "pnl": "0.000000"
+          },
+          "conditionalTouches": 0
+        }
+      ]
+    }
+  ],
+  "scenarioAssumptions": [
+    "Visible initial queue is ahead. Equal-price additions before activation can enter ahead; later additions are behind under the FIFO assumption.",
+    "Cancellation reductions never create same-price priority credit. Better prices outrank the quote until a conditional touch or through print reaches its level.",
+    "50% and 100% touch-flow attribution are sensitivity assumptions, not verified aggressor direction.",
+    "Only newly admitted scenario quotes use this model; historical strict quotes retain their original fill model."
+  ],
+  "drain": {
+    "status": "completed",
+    "captureExit": 0,
+    "cash": "1000.000000",
+    "realized": "0.000000",
+    "ownedCost": "0.000000",
+    "reservedCash": "0.000000",
+    "activeOrders": 0,
+    "unresolvedOrders": 0,
+    "newPaperCapital": "0.000000",
+    "successfulRESTReads": 16,
+    "authenticationWrites": 1
+  },
+  "tests": {
+    "nodePassed": 57
+  },
+  "contestOrders": 0,
+  "profitabilityEstablished": false,
+  "nextAction": "Reconcile and rotate to the most active observed markets; historical feed gaps require fresh authoritative recovery rather than permanent exclusion."
+}

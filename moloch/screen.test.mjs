@@ -1,6 +1,6 @@
 import test from 'node:test';import assert from 'node:assert/strict';
 import {selectPairs,screenRows} from './screen.mjs';
-import {liveScopes,captureScopes} from './live.mjs';
+import {liveScopes,captureScopes,retiredPaperScopes} from './live.mjs';
 const catalog=(ids,cursor=null)=>({source:'official_sig_api_v1',status:200,kind:'catalog',endpoint:'/tournaments/midterm-elections/markets?status=open&limit=100',data:{data:ids.map(id=>({id:String(id),status:'open',title:'test',exchanges:[{id:String(id+100)}]})),pagination:{total:ids.length,hasMore:!!cursor,nextCursor:cursor}}});
 test('catalog requires complete cursor chain and deterministic exploration',()=>{
   assert.deepEqual(selectPairs([catalog([1,2,3,4])],2).pairs.map(p=>p.marketId),['1','4']);
@@ -23,6 +23,11 @@ test('live expansion retains original source and rejects duplicate exchange or e
 });
 test('realtime execution can follow four distinct markets without duplicate market routing',()=>{
   const scope=[{marketId:'1',exchangeId:'2'},{marketId:'3',exchangeId:'4'},{marketId:'5',exchangeId:'6'},{marketId:'7',exchangeId:'8'}];assert.equal(liveScopes('1','2',scope,4).length,4);assert.throws(()=>liveScopes('1','2',[...scope,{marketId:'9',exchangeId:'10'}],4),/MULTI_SCOPE/);assert.throws(()=>liveScopes('1','2',[scope[0],{marketId:'1',exchangeId:'4'}],4),/MULTI_SCOPE/);
+});
+test('paper scope rotation requires zero unresolved orders and zero owned shares',()=>{
+  const old=[{marketId:'1',exchangeId:'2'}],next=[{marketId:'3',exchangeId:'4'}];assert.equal(retiredPaperScopes(old,next,{orders:[{exchangeId:'2',retired:true}],positions:{}}).length,1);
+  assert.throws(()=>retiredPaperScopes(old,next,{orders:[{exchangeId:'2',retired:false}],positions:{}}),/LIABILITIES/);
+  assert.throws(()=>retiredPaperScopes(old,next,{orders:[],positions:{'2':{YES:[{quantity:1}],NO:[]}}}),/LIABILITIES/);
 });
 test('continuation requests original expired quote windows rather than releasing their cash on restart',()=>{
   const orders=[{exchangeId:'2',activationAt:1000,expiresAt:5000,retired:false},{exchangeId:'2',activationAt:2000,expiresAt:9000,cancelEffectiveAt:6000,retired:false},{exchangeId:'2',activationAt:0,expiresAt:99999,retired:false},{exchangeId:'2',activationAt:0,expiresAt:10000,retired:true}];
