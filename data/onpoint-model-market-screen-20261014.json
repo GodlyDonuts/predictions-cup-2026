@@ -1,0 +1,486 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-10-14T17:05:46.455Z",
+  "method": "read_only_onpoint_governor_model_vs_captured_SIG_book_v1",
+  "metadata": {
+    "path": "markets.json",
+    "fileMtimeUtc": "2026-10-01T18:55:08.719Z",
+    "sha256": "ddabf67671c5f03c62fa22f43191bc9fae006782a8929624e3df3fc3041421ad",
+    "metadataPageSize": 100,
+    "totalMarkets": 237,
+    "hasMoreMetadata": true,
+    "metadataCoverageComplete": false
+  },
+  "source": {
+    "publisher": "OnPoint Politics / Public Sentiment Institute",
+    "forecastCount": 16,
+    "forecasts": [
+      {
+        "state": "AK",
+        "url": "https://www.tpsielections.com/forecast/ak/governor",
+        "fetchedAt": "2026-10-14T17:05:41.030Z",
+        "contentHash": "1bd0a27128a02e373f16c7a888731904af26244449a4d5ee9b105ed59901ad16",
+        "modelUpdateDate": "October 14, 2026",
+        "modelFavoriteParty": "D",
+        "modelFavoriteCandidate": "Kreiss-Tomkins",
+        "displayedFavoriteWinPct": 100,
+        "simulationCount": 2000,
+        "modelMarginForDPoints": 15.1,
+        "pollingMarginForDPoints": 3.5,
+        "modelMinusPollPoints": 11.6,
+        "displayRoundingOnly": {
+          "low": 99.5,
+          "high": 100
+        },
+        "probabilityCalibratedForSIG": false
+      },
+      {
+        "state": "CT",
+        "url": "https://www.tpsielections.com/forecast/ct/governor",
+        "fetchedAt": "2026-10-14T17:05:41.229Z",
+        "contentHash": "e374d0286ba17de21d88f9c31b599c5edf9022652ffb6d03ae4718152e685630",
+        "modelUpdateDate": "October 14, 2026",
+        "modelFavoriteParty": "D",
+        "modelFavoriteCandidate": "Lamont",
+        "displayedFavoriteWinPct": 98,
+        "simulationCount": 2000,
+        "modelMarginForDPoints": 15,
+        "pollingMarginForDPoints": 15.8,
+        "modelMinusPollPoints": -0.8000000000000007,
+        "displayRoundingOnly": {
+          "low": 97.5,
+          "high": 98.5
+        },
+        "probabilityCalibratedForSIG": false
+      },
+      {
+        "state": "FL",
+        "url": "https://www.tpsielections.com/forecast/fl/governor",
+        "fetchedAt": "2026-10-14T17:05:41.408Z",
+        "contentHash": "5bd11ba2d7f552f6bca1f4ba6e6b29b601ebae8bf990333dce085d63f9ac26d1",
+        "modelUpdateDate": "October 14, 2026",
+        "modelFavoriteParty": "R",
+        "modelFavoriteCandidate": "Donalds",
+        "displayedFavoriteWinPct": 77,
+        "simulationCount": 2000,
+        "modelMarginForDPoints": -4.3,
+        "pollingMarginForDPoints": -4.9,
+        "modelMinusPollPoints": 0.6000000000000005,
+        "displayRoundingOnly": {
+          "low": 76.5,
+          "high": 77.5
+        },
+        "probabilityCalibratedForSIG": false
+      },
+      {
+        "state": "HI",
+        "url": "https://www.tpsielections.com/forecast/hi/governor",
+        "fetchedAt": "2026-10-14T17:05:41.586Z",
+        "contentHash": "4142c9a1d65d1361492208bce76f94b550d898d979c07d6c9d576db08e840d95",
+        "modelUpdateDate": "October 14, 2026",
+        "modelFavoriteParty": "D",
+        "modelFavoriteCandidate": "Green",
+        "displayedFavoriteWinPct": 100,
+        "simulationCount": 2000,
+        "modelMarginForDPoints": 36.8,
+        "pollingMarginForDPoints": null,
+        "modelMinusPollPoints": null,
+        "displayRoundingOnly": {
+          "low": 99.5,
+          "high": 100
+        },
+        "probabilityCalibratedForSIG": false
+      },
+      {
+        "state": "KS",
+        "url": "https://www.tpsielections.com/forecast/ks/governor",
+        "fetchedAt": "2026-10-14T17:05:41.806Z",
+        "contentHash": "93bbd1fff11b5575c6e4cbfd6d3dc6810c3cf0d86cad9675b905427f3f46cf97",
+        "modelUpdateDate": "October 14, 2026",
+        "modelFavoriteParty": "R",
+        "modelFavoriteCandidate": "Masterson",
+        "displayedFavoriteWinPct": 56,
+        "simulationCount": 2000,
+        "modelMarginForDPoints": -1.1,
+        "pollingMarginForDPoints": -3,
+        "modelMinusPollPoints": 1.9,
+        "displayRoundingOnly": {
+          "low": 55.5,
+          "high": 56.5
+        },
+        "probabilityCalibratedForSIG": false
+      },
+      {
+        "state": "MA",
+        "url": "https://www.tpsielections.com/forecast/ma/governor",
+        "fetchedAt": "2026-10-14T17:05:42.004Z",
+        "contentHash": "62826285c25d905e0f1586ac00301ab4ea2823555e90cc1a0566905681a9ca93",
+        "modelUpdateDate": "October 14, 2026",
+        "modelFavoriteParty": "D",
+        "modelFavoriteCandidate": "Healey",
+        "displayedFavoriteWinPct": 100,
+        "simulationCount": 2000,
+        "modelMarginForDPoints": 24.4,
+        "pollingMarginForDPoints": 24.5,
+        "modelMinusPollPoints": -0.10000000000000142,
+        "displayRoundingOnly": {
+          "low": 99.5,
+          "high": 100
+        },
+        "probabilityCalibratedForSIG": false
+      },
+      {
+        "state": "MI",
+        "url": "https://www.tpsielections.com/forecast/mi/governor",
+        "fetchedAt": "2026-10-14T17:05:42.184Z",
+        "contentHash": "c8884abf302478e66586bd3f7a12fca4c85990744412fae157a2f4fd28129f24",
+        "modelUpdateDate": "October 14, 2026",
+        "modelFavoriteParty": "D",
+        "modelFavoriteCandidate": "Benson",
+        "displayedFavoriteWinPct": 97,
+        "simulationCount": 2000,
+        "modelMarginForDPoints": 11,
+        "pollingMarginForDPoints": 9.5,
+        "modelMinusPollPoints": 1.5,
+        "displayRoundingOnly": {
+          "low": 96.5,
+          "high": 97.5
+        },
+        "probabilityCalibratedForSIG": false
+      },
+      {
+        "state": "MN",
+        "url": "https://www.tpsielections.com/forecast/mn/governor",
+        "fetchedAt": "2026-10-14T17:05:42.380Z",
+        "contentHash": "26aa04da2a5a9b46d31cb0cc9b1dc2abc0b89edc890bf18b071e00b8a51ad616",
+        "modelUpdateDate": "October 14, 2026",
+        "modelFavoriteParty": "D",
+        "modelFavoriteCandidate": "Klobuchar",
+        "displayedFavoriteWinPct": 98,
+        "simulationCount": 2000,
+        "modelMarginForDPoints": 11.5,
+        "pollingMarginForDPoints": 8.5,
+        "modelMinusPollPoints": 3,
+        "displayRoundingOnly": {
+          "low": 97.5,
+          "high": 98.5
+        },
+        "probabilityCalibratedForSIG": false
+      },
+      {
+        "state": "NH",
+        "url": "https://www.tpsielections.com/forecast/nh/governor",
+        "fetchedAt": "2026-10-14T17:05:42.556Z",
+        "contentHash": "94174c3df13b7ce538361e8280be649e2f08a45ba684492d29fcfcb4c95face5",
+        "modelUpdateDate": "October 14, 2026",
+        "modelFavoriteParty": "R",
+        "modelFavoriteCandidate": "Ayotte",
+        "displayedFavoriteWinPct": 91,
+        "simulationCount": 2000,
+        "modelMarginForDPoints": -8.4,
+        "pollingMarginForDPoints": -9.7,
+        "modelMinusPollPoints": 1.299999999999999,
+        "displayRoundingOnly": {
+          "low": 90.5,
+          "high": 91.5
+        },
+        "probabilityCalibratedForSIG": false
+      },
+      {
+        "state": "OK",
+        "url": "https://www.tpsielections.com/forecast/ok/governor",
+        "fetchedAt": "2026-10-14T17:05:42.766Z",
+        "contentHash": "0aadd5e306280a37deb09e5ed8e61c14022d29a50a816191c946cf60ef720190",
+        "modelUpdateDate": "October 14, 2026",
+        "modelFavoriteParty": "R",
+        "modelFavoriteCandidate": "Mazzei",
+        "displayedFavoriteWinPct": 96,
+        "simulationCount": 2000,
+        "modelMarginForDPoints": -14,
+        "pollingMarginForDPoints": null,
+        "modelMinusPollPoints": null,
+        "displayRoundingOnly": {
+          "low": 95.5,
+          "high": 96.5
+        },
+        "probabilityCalibratedForSIG": false
+      },
+      {
+        "state": "RI",
+        "url": "https://www.tpsielections.com/forecast/ri/governor",
+        "fetchedAt": "2026-10-14T17:05:42.952Z",
+        "contentHash": "177f46e7ba1da6678fcbcc4021e842926740a9c1695e024d284b6ac89cfe6b85",
+        "modelUpdateDate": "October 14, 2026",
+        "modelFavoriteParty": "D",
+        "modelFavoriteCandidate": "Foulkes",
+        "displayedFavoriteWinPct": 99,
+        "simulationCount": 2000,
+        "modelMarginForDPoints": 14.6,
+        "pollingMarginForDPoints": 15.3,
+        "modelMinusPollPoints": -0.7000000000000011,
+        "displayRoundingOnly": {
+          "low": 98.5,
+          "high": 99.5
+        },
+        "probabilityCalibratedForSIG": false
+      },
+      {
+        "state": "SD",
+        "url": "https://www.tpsielections.com/forecast/sd/governor",
+        "fetchedAt": "2026-10-14T17:05:43.165Z",
+        "contentHash": "42ae29052d47179455a233726647fcc985aca0bcb286dfc34885418a15bb5e9e",
+        "modelUpdateDate": "October 14, 2026",
+        "modelFavoriteParty": "R",
+        "modelFavoriteCandidate": "Rhoden",
+        "displayedFavoriteWinPct": 89,
+        "simulationCount": 2000,
+        "modelMarginForDPoints": -9.2,
+        "pollingMarginForDPoints": -10.7,
+        "modelMinusPollPoints": 1.5,
+        "displayRoundingOnly": {
+          "low": 88.5,
+          "high": 89.5
+        },
+        "probabilityCalibratedForSIG": false
+      },
+      {
+        "state": "TN",
+        "url": "https://www.tpsielections.com/forecast/tn/governor",
+        "fetchedAt": "2026-10-14T17:05:43.360Z",
+        "contentHash": "479d3d103a6565078487742bb724dd333edb63deb54ae0678b83de9f3e750ea3",
+        "modelUpdateDate": "October 14, 2026",
+        "modelFavoriteParty": "R",
+        "modelFavoriteCandidate": "Blackburn",
+        "displayedFavoriteWinPct": 99,
+        "simulationCount": 2000,
+        "modelMarginForDPoints": -15.3,
+        "pollingMarginForDPoints": -14.2,
+        "modelMinusPollPoints": -1.1000000000000014,
+        "displayRoundingOnly": {
+          "low": 98.5,
+          "high": 99.5
+        },
+        "probabilityCalibratedForSIG": false
+      },
+      {
+        "state": "VT",
+        "url": "https://www.tpsielections.com/forecast/vt/governor",
+        "fetchedAt": "2026-10-14T17:05:43.541Z",
+        "contentHash": "79b538b1593c96ce2b0b35a4f9ccc4a4315a853f4f56f4943cb7d54bad9cecf2",
+        "modelUpdateDate": "October 14, 2026",
+        "modelFavoriteParty": "R",
+        "modelFavoriteCandidate": "Scott",
+        "displayedFavoriteWinPct": 95,
+        "simulationCount": 2000,
+        "modelMarginForDPoints": -10.9,
+        "pollingMarginForDPoints": -5.1,
+        "modelMinusPollPoints": -5.800000000000001,
+        "displayRoundingOnly": {
+          "low": 94.5,
+          "high": 95.5
+        },
+        "probabilityCalibratedForSIG": false
+      },
+      {
+        "state": "WI",
+        "url": "https://www.tpsielections.com/forecast/wi/governor",
+        "fetchedAt": "2026-10-14T17:05:43.729Z",
+        "contentHash": "2732832c067c94b283153a549eaa4f4f9dc6e751c8f3be6e23ded2b93aa19fc6",
+        "modelUpdateDate": "October 14, 2026",
+        "modelFavoriteParty": "D",
+        "modelFavoriteCandidate": "Crowley",
+        "displayedFavoriteWinPct": 66,
+        "simulationCount": 2000,
+        "modelMarginForDPoints": 2.6,
+        "pollingMarginForDPoints": 3.6,
+        "modelMinusPollPoints": -1,
+        "displayRoundingOnly": {
+          "low": 65.5,
+          "high": 66.5
+        },
+        "probabilityCalibratedForSIG": false
+      },
+      {
+        "state": "WY",
+        "url": "https://www.tpsielections.com/forecast/wy/governor",
+        "fetchedAt": "2026-10-14T17:05:43.917Z",
+        "contentHash": "497bc6d927b92267a03d4190fbbe4aff1f7cc884349573946b451060d7b7eb04",
+        "modelUpdateDate": "October 14, 2026",
+        "modelFavoriteParty": "R",
+        "modelFavoriteCandidate": "Barlow",
+        "displayedFavoriteWinPct": 100,
+        "simulationCount": 2000,
+        "modelMarginForDPoints": -34.4,
+        "pollingMarginForDPoints": null,
+        "modelMinusPollPoints": null,
+        "displayRoundingOnly": {
+          "low": 99.5,
+          "high": 100
+        },
+        "probabilityCalibratedForSIG": false
+      }
+    ]
+  },
+  "independentModelCrossCheck": {
+    "forecast": {
+      "publisher": "Call the Map",
+      "state": "MI",
+      "favoriteParty": "D",
+      "favoriteCandidate": "Jocelyn Benson",
+      "displayedWinPct": 84,
+      "displayRoundingOnly": {
+        "low": 83.5,
+        "high": 84.5
+      },
+      "marginForDPoints": 6.4,
+      "pollAverageForDPoints": 7.5,
+      "pollCount": 41,
+      "forecastAsOf": "2026-10-14",
+      "sourceModifiedAt": "2026-10-14T13:18:16.000Z",
+      "url": "https://www.callthemap.com/governors/michigan",
+      "fetchedAt": "2026-10-14T17:05:44.264Z",
+      "contentHash": "b7c3be92cc6230a28cc7d1e84e093e3696de2ceb6216f4f0d940cb4d66e37dc3",
+      "probabilityCalibratedForSIG": false
+    },
+    "comparisons": [
+      {
+        "marketId": "305",
+        "party": "D",
+        "side": "YES",
+        "topAsk": 0.9,
+        "oneTickAdverseAsk": 0.905,
+        "externalModelProbability": 0.84,
+        "externalModelDisplayRoundingLow": 0.835,
+        "externalModelRoundingFloorMinusOneTickAsk": -0.07,
+        "publishedProbabilityDifferenceVsOnPoint": -0.13,
+        "label": "independent-model-sensitivity_only_not_trade_or_profit"
+      },
+      {
+        "marketId": "305",
+        "party": "D",
+        "side": "NO",
+        "topAsk": 0.105,
+        "oneTickAdverseAsk": 0.11,
+        "externalModelProbability": 0.16,
+        "externalModelDisplayRoundingLow": 0.155,
+        "externalModelRoundingFloorMinusOneTickAsk": 0.045,
+        "publishedProbabilityDifferenceVsOnPoint": 0.13,
+        "label": "independent-model-sensitivity_only_not_trade_or_profit"
+      }
+    ]
+  },
+  "marketData": {
+    "file": "public-books.jsonl",
+    "byteLengthAtRead": 330078708,
+    "offset": 262969844,
+    "windowBytes": 67108864,
+    "rawWindowSha256": "dc4ef1f5d583a91b232c00fc3193d1d1346e7b5676c94149682b2972b5c6f8a0",
+    "first": {
+      "sequence": 114071,
+      "at": "2026-10-12T17:32:38.087Z"
+    },
+    "last": {
+      "sequence": 142987,
+      "at": "2026-10-14T17:05:38.914Z",
+      "hash": "d00430b0fa4a902e120eef737906bdff4ed734745c8ff6390840907c86323462"
+    },
+    "lineCount": 28917,
+    "recordCounts": {
+      "book": 28861,
+      "session_start": 11,
+      "session_stop": 11,
+      "invalidation": 34
+    },
+    "booksAvailableAtWindowEnd": 237,
+    "chainIntegrity": "every analyzed complete row hash-verified; adjacent rows in window sequence/hash-verified; prefix anchor outside window",
+    "malformedCompleteLines": 0
+  },
+  "screen": {
+    "asOf": "2026-10-14T17:05:46.455Z",
+    "maxBookAgeMs": 60000,
+    "tick": 0.005,
+    "fees": 0,
+    "contractCount": 29,
+    "forecastCount": 16,
+    "screenCount": 2,
+    "excluded": {
+      "missingForecast": 0,
+      "missingBook": 0,
+      "staleOrInvalidBook": 28,
+      "forecastAfterQuote": 0,
+      "noTopDepth": 0,
+      "tickOutOfRange": 0
+    },
+    "screens": [
+      {
+        "marketId": "305",
+        "exchangeId": "994",
+        "state": "MI",
+        "stateName": "Michigan",
+        "party": "D",
+        "marketTitle": "Will the Democratic Party win the Michigan Governor?",
+        "side": "YES",
+        "quoteReceivedAt": "2026-10-14T17:05:35.882Z",
+        "sourceAt": "2026-10-14T17:05:35.994439200Z",
+        "sourceEventAgeMs": -112,
+        "bookPublishedAt": "2026-10-14T17:05:35.890Z",
+        "quoteAgeMs": 10573,
+        "topAsk": 0.9,
+        "topAskQuantity": 21638,
+        "zeroFees": true,
+        "oneTickAdverseAsk": 0.905,
+        "modelProbability": 0.97,
+        "displayRoundingProbabilityRange": [
+          0.965,
+          0.975
+        ],
+        "rawProbabilityMinusAsk": 0.07,
+        "roundingFloorMinusOneTickAsk": 0.06,
+        "modelMinusPollPointsForD": 1.5,
+        "modelUpdateDate": "October 14, 2026",
+        "forecastUrl": "https://www.tpsielections.com/forecast/mi/governor",
+        "forecastContentHash": "c8884abf302478e66586bd3f7a12fca4c85990744412fae157a2f4fd28129f24",
+        "forecastProbabilityCalibratedForSIG": false,
+        "classification": "descriptive_external_forecast_gap_not_trade_or_profit"
+      },
+      {
+        "marketId": "305",
+        "exchangeId": "994",
+        "state": "MI",
+        "stateName": "Michigan",
+        "party": "D",
+        "marketTitle": "Will the Democratic Party win the Michigan Governor?",
+        "side": "NO",
+        "quoteReceivedAt": "2026-10-14T17:05:35.882Z",
+        "sourceAt": "2026-10-14T17:05:35.994439200Z",
+        "sourceEventAgeMs": -112,
+        "bookPublishedAt": "2026-10-14T17:05:35.890Z",
+        "quoteAgeMs": 10573,
+        "topAsk": 0.105,
+        "topAskQuantity": 3478,
+        "zeroFees": true,
+        "oneTickAdverseAsk": 0.11,
+        "modelProbability": 0.03,
+        "displayRoundingProbabilityRange": [
+          0.025,
+          0.035
+        ],
+        "rawProbabilityMinusAsk": -0.075,
+        "roundingFloorMinusOneTickAsk": -0.085,
+        "modelMinusPollPointsForD": 1.5,
+        "modelUpdateDate": "October 14, 2026",
+        "forecastUrl": "https://www.tpsielections.com/forecast/mi/governor",
+        "forecastContentHash": "c8884abf302478e66586bd3f7a12fca4c85990744412fae157a2f4fd28129f24",
+        "forecastProbabilityCalibratedForSIG": false,
+        "classification": "descriptive_external_forecast_gap_not_trade_or_profit"
+      }
+    ],
+    "executionAuthority": false,
+    "orderCandidates": 0,
+    "profitabilityEstablished": false,
+    "note": "External rounded forecast probabilities are uncalibrated for SIG. Rounding bounds are display precision only, not forecast uncertainty. Screens do not account for settlement error, correlated positions, capital limits, fill probability, or competition fills."
+  },
+  "freshnessMeaning": "up-to-60s observation for research only; quotes are not revalidated for execution",
+  "accountOrRuntimeReads": false,
+  "contestOrders": 0
+}
