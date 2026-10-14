@@ -1,0 +1,7 @@
+# Forward re-entry without bankroll reset
+
+`run.mjs --resume PARENT --resume-entries --execution-age` permits new paper entries only after the exact inherited ledger is flat: no owned shares and no unresolved orders. It preserves cash, realized gains/losses, fills, fees, original initial capital, IDs and all historical events. The optional clock changes only the age of future acquisitions; no inherited inventory receives an invented execution time.
+
+The transition records prior/next policy hashes and zero new capital. Completed-tail reconstruction and the fill auditor reproduce it before later event replay. Entry changes, draining and re-entry are applied in a defined order; re-entry cannot be combined with draining. Tests reject a funded unresolved quote and reproduce a drained-parent-to-forward-child chain with unchanged funds. All 118 Node tests pass.
+
+The next prospectively registered phase retains the strict bank's 100,000.000 cash and queue bank's 100,000.060 cash. Prior +0.060 includes conditional recovered historical fills and is not credited as new forward performance. Both existing fill models, capital limits and exchange-922 scope remain fixed; new holding periods use original execution timestamps. The one collector still owns all actual network traffic and submits no contest orders. Any forward result must be assessed with inventory, unresolved liabilities, depth and conditional-fill limits.

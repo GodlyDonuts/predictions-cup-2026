@@ -1,5 +1,5 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import os from 'node:os';import path from 'node:path';
-import {run,completedTail,entryPolicyTransition,drainPolicyTransition} from './run.mjs';import {payloadHash} from '../execution/ledger.mjs';import {createMoloch,advanceMoloch} from './engine.mjs';
+import {run,completedTail,entryPolicyTransition,drainPolicyTransition,flatEntryTransition} from './run.mjs';import {payloadHash} from '../execution/ledger.mjs';import {createMoloch,advanceMoloch} from './engine.mjs';
 import {captureScopes,assertTailRecoveryScopes,recoveryTailDirectories} from './live.mjs';
 test('multiple independent recovery tails are bounded, distinct and merged without financial adoption',()=>{
  assert.deepEqual(recoveryTailDirectories(null),[]);assert.deepEqual(recoveryTailDirectories('a'),['a']);assert.deepEqual(recoveryTailDirectories(['a','b']),['a','b']);for(const value of [[],['a','a'],['--policy'],Array.from({length:9},(_,i)=>String(i))])assert.throws(()=>recoveryTailDirectories(value),/RECOVERY_INPUT/);
@@ -19,8 +19,13 @@ test('completed tail continuation reproduces original bank and consumes an unsee
  assert.equal(next.snapshot.state.cash,parent.snapshot.state.cash);assert.equal(next.snapshot.state.events,2);assert.equal(next.snapshot.sequence,1);assert.equal(next.snapshot.continuation.parentSnapshotHash,parent.snapshot.hash);assert.equal(next.snapshot.continuation.newPaperCapital,'0.000000');
  assert.deepEqual(next.snapshot.state.policy.entryExchangeIds,['2']);assert.equal(next.snapshot.continuation.entryPolicyTransition.priorPolicyHash,parent.snapshot.state.policyHash);
  assert.equal(next.snapshot.state.policy.entriesEnabled,false);assert.equal(next.snapshot.continuation.drainPolicyTransition.entriesEnabled,false);
+ const third=path.join(root,'third');append();await run(['--input',input,'--output',third,'--format','journal','--resume',second,'--resume-entries','--execution-age','--follow','--seconds','0.25']);const fresh=completedTail(third);assert.equal(fresh.snapshot.state.cash,parent.snapshot.state.cash);assert.equal(fresh.snapshot.state.events,3);assert.equal(fresh.snapshot.state.policy.entriesEnabled,true);assert.equal(fresh.snapshot.state.policy.inventoryAgeClock,'execution');assert.equal(fresh.snapshot.continuation.newPaperCapital,'0.000000');
  const snapshot=JSON.parse(fs.readFileSync(path.join(second,'state.json')));snapshot.state.cash='100001.000000';fs.writeFileSync(path.join(second,'state.json'),JSON.stringify(snapshot));assert.throws(()=>completedTail(second),/TERMINAL_PROOF/);
  fs.writeFileSync(input,fs.readFileSync(input,'utf8').replace('tick','gap '));assert.throws(()=>completedTail(first),/SOURCE_CHANGED/);
+});
+test('re-entry preserves a flat bank but refuses any unresolved funded quote',()=>{
+ const s=createMoloch({initialCash:'100000.060000',entriesEnabled:false}),before=structuredClone(s),strip=x=>{const{policy,policyHash,...b}=x;return b;};const t=flatEntryTransition(s,true);assert.equal(payloadHash(strip(s)),payloadHash(strip(before)));assert.equal(s.policy.inventoryAgeClock,'execution');assert.equal(t.entriesEnabled,true);
+ const active=createMoloch(),at='2026-10-14T00:00:00Z';advanceMoloch(active,{type:'book',receivedAt:at,book:{tournamentId:'cup',marketId:'1',exchangeId:'2',sequence:'1',requestStartedAt:at,receivedAt:at,sourceAt:at,bids:[{price:'0.450000',quantity:1000}],asks:[{price:'0.455000',quantity:1000}]}});assert.throws(()=>flatEntryTransition(active,true),/REQUIRES_FLAT/);
 });
 test('entry scope transition preserves funded quotes, limits and every financial field',()=>{
  const s=createMoloch({initialCash:'100000.000000'}),at='2026-10-14T00:00:00Z';advanceMoloch(s,{type:'book',receivedAt:at,book:{tournamentId:'cup',marketId:'1',exchangeId:'2',sequence:'1',requestStartedAt:at,receivedAt:at,sourceAt:at,bids:[{price:'0.450000',quantity:1000}],asks:[{price:'0.455000',quantity:1000}]}});

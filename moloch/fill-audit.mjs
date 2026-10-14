@@ -1,5 +1,5 @@
 import fs from 'node:fs';import path from 'node:path';import {pathToFileURL} from 'node:url';
-import {payloadHash} from '../execution/ledger.mjs';import {createMoloch,advanceMoloch} from './engine.mjs';import {completedTail,entryPolicyTransition,drainPolicyTransition} from './run.mjs';import {amount,SCALE,TICK} from '../paper/fixed.mjs';import {instantNs} from '../feed/contract.mjs';
+import {payloadHash} from '../execution/ledger.mjs';import {createMoloch,advanceMoloch} from './engine.mjs';import {completedTail,entryPolicyTransition,drainPolicyTransition,flatEntryTransition} from './run.mjs';import {amount,SCALE,TICK} from '../paper/fixed.mjs';import {instantNs} from '../feed/contract.mjs';
 export function classifyQuotePrint(q,event){
  if(q.retired||q.executionStyle==='inventoryAON'||q.marketId!==event.marketId||q.exchangeId!==event.exchangeId||q.tournamentId!==event.tournamentId)return null;
  const executed=instantNs(event.executedAt),end=Math.min(q.expiresAt,q.cancelEffectiveAt??Infinity);
@@ -12,6 +12,7 @@ export function auditTail(directory){
  const state=snapshot.continuation?structuredClone(completedTail(snapshot.continuation.parentDirectory).snapshot.state):createMoloch(snapshot.state.policy);
  if(snapshot.continuation?.entryPolicyTransition){const expected=snapshot.continuation.entryPolicyTransition,actual=entryPolicyTransition(state,expected.entryExchangeIds);if(payloadHash(actual)!==payloadHash(expected))throw Error('FILL_AUDIT_POLICY_TRANSITION');}
  if(snapshot.continuation?.drainPolicyTransition){const actual=drainPolicyTransition(state);if(payloadHash(actual)!==payloadHash(snapshot.continuation.drainPolicyTransition))throw Error('FILL_AUDIT_DRAIN_TRANSITION');}
+ if(snapshot.continuation?.flatEntryTransition){const expected=snapshot.continuation.flatEntryTransition,actual=flatEntryTransition(state,expected.inventoryAgeClock==='execution');if(payloadHash(actual)!==payloadHash(expected))throw Error('FILL_AUDIT_REENTRY_TRANSITION');}
  const rows=fs.existsSync(path.join(dir,'events.jsonl'))?fs.readFileSync(path.join(dir,'events.jsonl'),'utf8').split('\n').slice(0,snapshot.sequence).map(JSON.parse):[];
  let previous='',sequence=0,uniqueTrades=0,duplicateTrades=0;const counts={},byExchange={};const initialFills=state.fills.length;
  for(const row of rows){const{hash:h,...b}=row;if(h!==payloadHash(b)||b.sequence!==sequence+1||b.previous!==previous)throw Error('FILL_AUDIT_CHAIN');const e=b.event;
