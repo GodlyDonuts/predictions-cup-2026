@@ -1,0 +1,949 @@
+{
+  "schemaVersion": 1,
+  "experimentId": "market-edge-ridge-fixed-multicapture-bank-20261013-v1",
+  "modelIdentityHash": "0720ec4d7202c84acca7ea4446b6884c0c45263ba5faec343a257513d14fcb03",
+  "policy": {
+    "features": [
+      "sidePrice",
+      "lagReturn1s",
+      "lagReturn5s",
+      "lagReturn15s",
+      "spread",
+      "imbalanceTop1",
+      "imbalanceTop5",
+      "imbalanceTop20",
+      "logDepthTop1",
+      "logDepthTop5",
+      "logDepthTop20"
+    ],
+    "ridgeAlpha": 0.01,
+    "decisionLatencyMs": 3000,
+    "holdingHorizonMs": 5000,
+    "feesPerShare": 0,
+    "fixedPositiveThreshold": 0
+  },
+  "trainingSources": [
+    {
+      "id": "train-d53812dd",
+      "file": "realtime-2026-10-13T02-55-28-953Z-d53812dd-ec75-4852-9267-59c7d5bb7898.jsonl",
+      "frozenBytes": 1747459094,
+      "sha256": "f9a20ef98e8e9c96d1229dbbc6a8eb17dd669e7c6f3f8d6e49337439945f4418",
+      "captureRows": 467044,
+      "from": "2026-10-13T02:55:28.956Z",
+      "through": "2026-10-13T07:45:51.103Z",
+      "candidateCount": 220,
+      "labeledCount": 110
+    },
+    {
+      "id": "train-0942-14ef0be1",
+      "file": "realtime-2026-10-13T09-42-07-994Z-14ef0be1-8e8b-43a2-87ca-66e30c9cde01.jsonl",
+      "frozenBytes": 819582161,
+      "sha256": "6129d28da84e08934b7f0ba18c87635b2592491257f6404bc06635de3670ed3c",
+      "captureRows": 218512,
+      "from": "2026-10-13T09:42:07.995Z",
+      "through": "2026-10-13T12:05:10.510Z",
+      "candidateCount": 78,
+      "labeledCount": 30
+    },
+    {
+      "id": "train-1328-a7674ae9",
+      "file": "realtime-2026-10-13T13-28-06-669Z-a7674ae9-ed0e-41c6-90c8-390b1ce0dc8b.jsonl",
+      "frozenBytes": 364603159,
+      "sha256": "83dd7cc069ce221617425c533a6d1938c3056fcac20254c4938cddb7d4c96f61",
+      "captureRows": 104446,
+      "from": "2026-10-13T13:28:06.671Z",
+      "through": "2026-10-13T14:44:08.976Z",
+      "candidateCount": 12,
+      "labeledCount": 0
+    }
+  ],
+  "perCaptureReadiness": [
+    {
+      "id": "train-d53812dd",
+      "readiness": {
+        "acceptedBookPoints": 3994,
+        "validRecoveryCompletions": 1276,
+        "booksBeforeRecovery": 441465,
+        "lifecycleInvalidations": 10778,
+        "revisionGaps": 891,
+        "explicitBreakEvents": 11670,
+        "candidateCount": 220,
+        "labeledCount": 110,
+        "censoredCount": 110,
+        "sameCaptureAndSegmentLabelCount": 110
+      },
+      "captureRows": 467044,
+      "configRows": 237,
+      "from": "2026-10-13T02:55:28.956Z",
+      "through": "2026-10-13T07:45:51.103Z"
+    },
+    {
+      "id": "train-0942-14ef0be1",
+      "readiness": {
+        "acceptedBookPoints": 1881,
+        "validRecoveryCompletions": 712,
+        "booksBeforeRecovery": 204032,
+        "lifecycleInvalidations": 5861,
+        "revisionGaps": 920,
+        "explicitBreakEvents": 6781,
+        "candidateCount": 78,
+        "labeledCount": 30,
+        "censoredCount": 48,
+        "sameCaptureAndSegmentLabelCount": 30
+      },
+      "captureRows": 218512,
+      "configRows": 237,
+      "from": "2026-10-13T09:42:07.995Z",
+      "through": "2026-10-13T12:05:10.510Z"
+    },
+    {
+      "id": "train-1328-a7674ae9",
+      "readiness": {
+        "acceptedBookPoints": 785,
+        "validRecoveryCompletions": 373,
+        "booksBeforeRecovery": 88320,
+        "lifecycleInvalidations": 10339,
+        "revisionGaps": 2087,
+        "explicitBreakEvents": 12426,
+        "candidateCount": 12,
+        "labeledCount": 0,
+        "censoredCount": 12,
+        "sameCaptureAndSegmentLabelCount": 0
+      },
+      "captureRows": 104446,
+      "configRows": 237,
+      "from": "2026-10-13T13:28:06.671Z",
+      "through": "2026-10-13T14:44:08.976Z"
+    }
+  ],
+  "expandingWalkForward": [
+    {
+      "trainingCaptureIds": [
+        "train-d53812dd"
+      ],
+      "trainingRows": 110,
+      "trainingTargetMeanPerShare": -0.006090909090909094,
+      "trainingRmsePerShare": 0.0020604869807931553,
+      "scoredCaptureId": "train-0942-14ef0be1",
+      "scoredSourceSha256": "6129d28da84e08934b7f0ba18c87635b2592491257f6404bc06635de3670ed3c",
+      "scoredCandidateCount": 78,
+      "scoredLabeledCount": 30,
+      "diagnosticsOnly": true,
+      "score": {
+        "candidatePredictions": 78,
+        "labeledCandidates": 30,
+        "positivePredictions": 0,
+        "selectedCandidateCount": 0,
+        "selectedWithOutcomeCount": 0,
+        "selectedCensoredOutcomeCount": 0,
+        "selected": {
+          "n": 0,
+          "meanPerShare": null,
+          "medianPerShare": null,
+          "positiveFraction": null,
+          "oneTickPerLegMeanPerShare": null,
+          "oneTickPerLegPositiveFraction": null,
+          "marketClusters": 0,
+          "equalWeightedMarketMean": null,
+          "marketClusterStandardError": null,
+          "positiveMarketClusterCount": 0
+        },
+        "unconditionalAllLabeledCandidateControl": {
+          "n": 30,
+          "meanPerShare": -0.006166666666666668,
+          "medianPerShare": -0.0050000000000000044,
+          "positiveFraction": 0,
+          "oneTickPerLegMeanPerShare": -0.01616666666666667,
+          "oneTickPerLegPositiveFraction": 0,
+          "marketClusters": 5,
+          "equalWeightedMarketMean": -0.006500000000000003,
+          "marketClusterStandardError": 0.001000000000000002,
+          "positiveMarketClusterCount": 0
+        },
+        "bySide": {
+          "YES": {
+            "candidateCount": 39,
+            "selectedCandidateCount": 0,
+            "selectedCensoredOutcomeCount": 0,
+            "labeled": {
+              "n": 15,
+              "meanPerShare": -0.006333333333333335,
+              "medianPerShare": -0.0050000000000000044,
+              "positiveFraction": 0,
+              "oneTickPerLegMeanPerShare": -0.016333333333333335,
+              "oneTickPerLegPositiveFraction": 0,
+              "marketClusters": 5,
+              "equalWeightedMarketMean": -0.007000000000000004,
+              "marketClusterStandardError": 0.0012247448713915913,
+              "positiveMarketClusterCount": 0
+            },
+            "selected": {
+              "n": 0,
+              "meanPerShare": null,
+              "medianPerShare": null,
+              "positiveFraction": null,
+              "oneTickPerLegMeanPerShare": null,
+              "oneTickPerLegPositiveFraction": null,
+              "marketClusters": 0,
+              "equalWeightedMarketMean": null,
+              "marketClusterStandardError": null,
+              "positiveMarketClusterCount": 0
+            }
+          },
+          "NO": {
+            "candidateCount": 39,
+            "selectedCandidateCount": 0,
+            "selectedCensoredOutcomeCount": 0,
+            "labeled": {
+              "n": 15,
+              "meanPerShare": -0.006000000000000002,
+              "medianPerShare": -0.0050000000000000044,
+              "positiveFraction": 0,
+              "oneTickPerLegMeanPerShare": -0.016,
+              "oneTickPerLegPositiveFraction": 0,
+              "marketClusters": 5,
+              "equalWeightedMarketMean": -0.006000000000000003,
+              "marketClusterStandardError": 0.0010000000000000018,
+              "positiveMarketClusterCount": 0
+            },
+            "selected": {
+              "n": 0,
+              "meanPerShare": null,
+              "medianPerShare": null,
+              "positiveFraction": null,
+              "oneTickPerLegMeanPerShare": null,
+              "oneTickPerLegPositiveFraction": null,
+              "marketClusters": 0,
+              "equalWeightedMarketMean": null,
+              "marketClusterStandardError": null,
+              "positiveMarketClusterCount": 0
+            }
+          }
+        },
+        "predictionRmse": 0.002198245099137217,
+        "trainingMeanControlRmse": 0.0021161194277513973,
+        "actualFillsProven": false,
+        "realizedAccountPnl": null,
+        "profitabilityEstablished": false
+      }
+    },
+    {
+      "trainingCaptureIds": [
+        "train-d53812dd",
+        "train-0942-14ef0be1"
+      ],
+      "trainingRows": 140,
+      "trainingTargetMeanPerShare": -0.006107142857142861,
+      "trainingRmsePerShare": 0.0020260018825754844,
+      "scoredCaptureId": "train-1328-a7674ae9",
+      "scoredSourceSha256": "83dd7cc069ce221617425c533a6d1938c3056fcac20254c4938cddb7d4c96f61",
+      "scoredCandidateCount": 12,
+      "scoredLabeledCount": 0,
+      "diagnosticsOnly": true,
+      "score": {
+        "candidatePredictions": 12,
+        "labeledCandidates": 0,
+        "positivePredictions": 0,
+        "selectedCandidateCount": 0,
+        "selectedWithOutcomeCount": 0,
+        "selectedCensoredOutcomeCount": 0,
+        "selected": {
+          "n": 0,
+          "meanPerShare": null,
+          "medianPerShare": null,
+          "positiveFraction": null,
+          "oneTickPerLegMeanPerShare": null,
+          "oneTickPerLegPositiveFraction": null,
+          "marketClusters": 0,
+          "equalWeightedMarketMean": null,
+          "marketClusterStandardError": null,
+          "positiveMarketClusterCount": 0
+        },
+        "unconditionalAllLabeledCandidateControl": {
+          "n": 0,
+          "meanPerShare": null,
+          "medianPerShare": null,
+          "positiveFraction": null,
+          "oneTickPerLegMeanPerShare": null,
+          "oneTickPerLegPositiveFraction": null,
+          "marketClusters": 0,
+          "equalWeightedMarketMean": null,
+          "marketClusterStandardError": null,
+          "positiveMarketClusterCount": 0
+        },
+        "bySide": {
+          "YES": {
+            "candidateCount": 6,
+            "selectedCandidateCount": 0,
+            "selectedCensoredOutcomeCount": 0,
+            "labeled": {
+              "n": 0,
+              "meanPerShare": null,
+              "medianPerShare": null,
+              "positiveFraction": null,
+              "oneTickPerLegMeanPerShare": null,
+              "oneTickPerLegPositiveFraction": null,
+              "marketClusters": 0,
+              "equalWeightedMarketMean": null,
+              "marketClusterStandardError": null,
+              "positiveMarketClusterCount": 0
+            },
+            "selected": {
+              "n": 0,
+              "meanPerShare": null,
+              "medianPerShare": null,
+              "positiveFraction": null,
+              "oneTickPerLegMeanPerShare": null,
+              "oneTickPerLegPositiveFraction": null,
+              "marketClusters": 0,
+              "equalWeightedMarketMean": null,
+              "marketClusterStandardError": null,
+              "positiveMarketClusterCount": 0
+            }
+          },
+          "NO": {
+            "candidateCount": 6,
+            "selectedCandidateCount": 0,
+            "selectedCensoredOutcomeCount": 0,
+            "labeled": {
+              "n": 0,
+              "meanPerShare": null,
+              "medianPerShare": null,
+              "positiveFraction": null,
+              "oneTickPerLegMeanPerShare": null,
+              "oneTickPerLegPositiveFraction": null,
+              "marketClusters": 0,
+              "equalWeightedMarketMean": null,
+              "marketClusterStandardError": null,
+              "positiveMarketClusterCount": 0
+            },
+            "selected": {
+              "n": 0,
+              "meanPerShare": null,
+              "medianPerShare": null,
+              "positiveFraction": null,
+              "oneTickPerLegMeanPerShare": null,
+              "oneTickPerLegPositiveFraction": null,
+              "marketClusters": 0,
+              "equalWeightedMarketMean": null,
+              "marketClusterStandardError": null,
+              "positiveMarketClusterCount": 0
+            }
+          }
+        },
+        "predictionRmse": null,
+        "trainingMeanControlRmse": null,
+        "actualFillsProven": false,
+        "realizedAccountPnl": null,
+        "profitabilityEstablished": false
+      }
+    }
+  ],
+  "finalModel": {
+    "featureNames": [
+      "sidePrice",
+      "lagReturn1s",
+      "lagReturn5s",
+      "lagReturn15s",
+      "spread",
+      "imbalanceTop1",
+      "imbalanceTop5",
+      "imbalanceTop20",
+      "logDepthTop1",
+      "logDepthTop5",
+      "logDepthTop20"
+    ],
+    "mean": [
+      0.49999999999999994,
+      5.227403331626539e-21,
+      -6.00183345483047e-21,
+      3.354250471127029e-20,
+      0.006571428571428574,
+      0,
+      -8.673617379884035e-19,
+      0,
+      9.616531712626509,
+      13.240464369980431,
+      15.321172201237403
+    ],
+    "scale": [
+      0.33879935064872835,
+      0.0015526475085203052,
+      0.0017677669529663827,
+      0.0021339098923270966,
+      0.002610809554642435,
+      0.673988964050657,
+      0.4954690378278151,
+      0.4574590363944909,
+      1.0615589633618134,
+      0.4619474623632503,
+      0.2912545539449497
+    ],
+    "coefficients": [
+      -0.006107142857142863,
+      -0.0013469030239180201,
+      0.00035723694019616846,
+      0.00046571190193327335,
+      -0.0007183112630543303,
+      -0.0007363963794851081,
+      -0.00004986291067722779,
+      0.0007585828601872363,
+      -0.0018721103454692868,
+      -0.00004366074824291709,
+      0.0002040418282680173,
+      0.00017630807864477339
+    ],
+    "trainingRows": 140,
+    "trainingMean": -0.006107142857142861,
+    "trainingRmse": 0.0020260018825754844,
+    "alpha": 0.01,
+    "frozenModelSha256": "0720ec4d7202c84acca7ea4446b6884c0c45263ba5faec343a257513d14fcb03"
+  },
+  "futureTest": {
+    "status": "pending_separately_frozen_future_capture",
+    "frozenCutoffObservedAt": "2026-10-13T14:44:08.976Z",
+    "minimumFutureObservedAtExclusive": "2026-10-13T14:44:08.976Z",
+    "requiresSeparateFrozenSourceIdentity": true,
+    "noFutureCaptureRowsUsedForFitOrScaling": true,
+    "performanceConclusion": "none"
+  },
+  "limitations": [
+    "Walk-forward values are overlapping one-share displayed-book counterfactual labels, not portfolio returns or actual fills.",
+    "These development captures and prior fixed-policy research are not confirmatory evidence.",
+    "Displayed size does not establish queue priority, achievable fills, market impact, or scalable capacity.",
+    "Zero fees are modeled; one tick per leg is shown as stress and may not bound real execution costs.",
+    "No profitability, contest execution, production readiness, or scale conclusion is established."
+  ],
+  "noNetworkRequests": true,
+  "noAccountOrRuntimeServiceAccess": true,
+  "contestOrders": 0,
+  "actualFillsProven": false,
+  "profitabilityEstablished": false,
+  "frozenBankSha256": "ef20d39694a6b7a89e926b255de8ef1f0eb4bc27f588a627f038a48dc4983d6b",
+  "generatedAt": "2026-10-14T00:39:37.802Z",
+  "method": "fixed ridge model; three independently segmented chronological training captures; expanding walk-forward diagnostics; final bank fit on all three; no later capture read",
+  "sourceIntegrity": [
+    {
+      "id": "train-d53812dd",
+      "file": "realtime-2026-10-13T02-55-28-953Z-d53812dd-ec75-4852-9267-59c7d5bb7898.jsonl",
+      "frozenBytes": 1747459094,
+      "frozenSha256": "f9a20ef98e8e9c96d1229dbbc6a8eb17dd669e7c6f3f8d6e49337439945f4418",
+      "backingBytes": 1747507916,
+      "backingSha256": "d321ad760750e0ba6cdbc85afade4fdd7c1874b74aa080df9881810942cfca6e",
+      "excludedTailBytes": 48822,
+      "identityStable": true
+    },
+    {
+      "id": "train-0942-14ef0be1",
+      "file": "realtime-2026-10-13T09-42-07-994Z-14ef0be1-8e8b-43a2-87ca-66e30c9cde01.jsonl",
+      "frozenBytes": 819582161,
+      "frozenSha256": "6129d28da84e08934b7f0ba18c87635b2592491257f6404bc06635de3670ed3c",
+      "backingBytes": 819582161,
+      "backingSha256": "6129d28da84e08934b7f0ba18c87635b2592491257f6404bc06635de3670ed3c",
+      "excludedTailBytes": 0,
+      "identityStable": true
+    },
+    {
+      "id": "train-1328-a7674ae9",
+      "file": "realtime-2026-10-13T13-28-06-669Z-a7674ae9-ed0e-41c6-90c8-390b1ce0dc8b.jsonl",
+      "frozenBytes": 364603159,
+      "frozenSha256": "83dd7cc069ce221617425c533a6d1938c3056fcac20254c4938cddb7d4c96f61",
+      "backingBytes": 364603159,
+      "backingSha256": "83dd7cc069ce221617425c533a6d1938c3056fcac20254c4938cddb7d4c96f61",
+      "excludedTailBytes": 0,
+      "identityStable": true
+    }
+  ],
+  "captureDiagnostics": [
+    {
+      "id": "train-d53812dd",
+      "capture": {
+        "id": "train-d53812dd",
+        "role": "training_only",
+        "file": "realtime-2026-10-13T02-55-28-953Z-d53812dd-ec75-4852-9267-59c7d5bb7898.jsonl",
+        "bytes": 1747459094,
+        "sha256": "f9a20ef98e8e9c96d1229dbbc6a8eb17dd669e7c6f3f8d6e49337439945f4418",
+        "captureRows": 467044,
+        "configRows": 237,
+        "markets": 237,
+        "exchanges": 237,
+        "from": "2026-10-13T02:55:28.956Z",
+        "through": "2026-10-13T07:45:51.103Z"
+      },
+      "diagnostics": {
+        "captureRows": 467044,
+        "configRows": 237,
+        "eventRows": 446579,
+        "marketBatchRows": 446579,
+        "nonEventRows": 28638,
+        "duplicateRevisions": 0,
+        "revisionGaps": 891,
+        "resyncRequired": 0,
+        "bookDirtyMarkers": 445688,
+        "dirtyWithoutBook": 0,
+        "settlements": 0,
+        "lifecycleInvalidations": 10778,
+        "validRecoveryCompletions": 1276,
+        "staleRecoveryCompletions": 0,
+        "malformedRecoveryCompletions": 0,
+        "staleRecoveryStarts": 0,
+        "malformedRecoveryStarts": 0,
+        "booksBeforeRecovery": 441465,
+        "scopeRejectedBooks": 229,
+        "duplicateBookVersions": 0,
+        "rollbackBookVersions": 0,
+        "acceptedBookPoints": 3994,
+        "explicitBreakEvents": 11670,
+        "explicitSegmentIncrements": 11670,
+        "explicitBreakReasons": {
+          "subscribed": 1185,
+          "lifecycle": 9593,
+          "revision_gap": 891,
+          "recovery_not_ready": 1
+        },
+        "interBookGapBreaks": 1177,
+        "observationGapBreaks": 1145,
+        "sourceGapBreaks": 1155,
+        "sourceRollbackBreaks": 0,
+        "invalidRows": 0,
+        "staleForFeatures": 0,
+        "missingStateRows": 0,
+        "epochMismatchRows": 0,
+        "malformedEpochRows": 0,
+        "stateMismatchExamples": [],
+        "epochMismatchExamples": []
+      },
+      "labelProvenance": {
+        "labeledCandidateCount": 110,
+        "decisionEntryExitSameSegmentCount": 110,
+        "crossSegmentLabelCount": 0,
+        "missingCaptureProvenanceCount": 0,
+        "captureId": "train-d53812dd",
+        "uniqueCaptureIds": [
+          "train-d53812dd"
+        ],
+        "decisionEntryObservedDelayMs": {
+          "min": null,
+          "max": null
+        },
+        "observedHoldingMs": {
+          "min": 5422,
+          "max": 12766
+        },
+        "sourceHoldingMs": {
+          "min": 5681,
+          "max": 12733
+        },
+        "observedMinusSourceHoldingMs": {
+          "min": -1102,
+          "max": 1391
+        },
+        "provenanceExamples": [
+          {
+            "decision": {
+              "captureId": "train-d53812dd",
+              "captureIndex": 459072,
+              "epoch": 5,
+              "topic": "tournament:bda92870-621e-47b0-bc3c-3602c5c26f55:market:267",
+              "observedAt": "2026-10-13T07:41:08.871Z",
+              "receivedAt": "2026-10-13T07:41:08.856Z",
+              "sourceAt": "2026-10-13T07:41:08.702075700Z",
+              "rawBookHash": "eb5a589c6452817a8032e0e56d42d6d0c6a38cd3b6bd4ff86eb13c3e87882141",
+              "recordHash": "fbd2f84ae75dcfc20ef1769a564a5714c2353cf1e6600581ca0fd6a0871d760d"
+            },
+            "entry": {
+              "captureId": "train-d53812dd",
+              "captureIndex": 459321,
+              "epoch": 5,
+              "topic": "tournament:bda92870-621e-47b0-bc3c-3602c5c26f55:market:267",
+              "observedAt": "2026-10-13T07:41:21.351Z",
+              "receivedAt": "2026-10-13T07:41:21.312Z",
+              "sourceAt": "2026-10-13T07:41:20.915126200Z",
+              "rawBookHash": "7cbfe3059dafea0e8cf7fa73f045f2a73929e8184a1c03200bd934a6c94cded4",
+              "recordHash": "5e3878103dd3972b0176a27a1fc58d0df4920b5463a2753b2b0ba4f5407d3d8c"
+            },
+            "exit": {
+              "captureId": "train-d53812dd",
+              "captureIndex": 459579,
+              "epoch": 5,
+              "topic": "tournament:bda92870-621e-47b0-bc3c-3602c5c26f55:market:267",
+              "observedAt": "2026-10-13T07:41:32.414Z",
+              "receivedAt": "2026-10-13T07:41:32.413Z",
+              "sourceAt": "2026-10-13T07:41:31.916794700Z",
+              "rawBookHash": "6ddcc484e4b02239fb8c75e6191937c8250ca2cb3a0a93cd0e87b1349e134169",
+              "recordHash": "d30f916fe46fe35df18981a77be4d059932712001c08e7e83c23d1b2197c5550"
+            },
+            "decisionSegment": 52,
+            "entrySegment": 52,
+            "exitSegment": 52
+          },
+          {
+            "decision": {
+              "captureId": "train-d53812dd",
+              "captureIndex": 459072,
+              "epoch": 5,
+              "topic": "tournament:bda92870-621e-47b0-bc3c-3602c5c26f55:market:267",
+              "observedAt": "2026-10-13T07:41:08.871Z",
+              "receivedAt": "2026-10-13T07:41:08.856Z",
+              "sourceAt": "2026-10-13T07:41:08.702075700Z",
+              "rawBookHash": "eb5a589c6452817a8032e0e56d42d6d0c6a38cd3b6bd4ff86eb13c3e87882141",
+              "recordHash": "fbd2f84ae75dcfc20ef1769a564a5714c2353cf1e6600581ca0fd6a0871d760d"
+            },
+            "entry": {
+              "captureId": "train-d53812dd",
+              "captureIndex": 459321,
+              "epoch": 5,
+              "topic": "tournament:bda92870-621e-47b0-bc3c-3602c5c26f55:market:267",
+              "observedAt": "2026-10-13T07:41:21.351Z",
+              "receivedAt": "2026-10-13T07:41:21.312Z",
+              "sourceAt": "2026-10-13T07:41:20.915126200Z",
+              "rawBookHash": "7cbfe3059dafea0e8cf7fa73f045f2a73929e8184a1c03200bd934a6c94cded4",
+              "recordHash": "5e3878103dd3972b0176a27a1fc58d0df4920b5463a2753b2b0ba4f5407d3d8c"
+            },
+            "exit": {
+              "captureId": "train-d53812dd",
+              "captureIndex": 459579,
+              "epoch": 5,
+              "topic": "tournament:bda92870-621e-47b0-bc3c-3602c5c26f55:market:267",
+              "observedAt": "2026-10-13T07:41:32.414Z",
+              "receivedAt": "2026-10-13T07:41:32.413Z",
+              "sourceAt": "2026-10-13T07:41:31.916794700Z",
+              "rawBookHash": "6ddcc484e4b02239fb8c75e6191937c8250ca2cb3a0a93cd0e87b1349e134169",
+              "recordHash": "d30f916fe46fe35df18981a77be4d059932712001c08e7e83c23d1b2197c5550"
+            },
+            "decisionSegment": 52,
+            "entrySegment": 52,
+            "exitSegment": 52
+          },
+          {
+            "decision": {
+              "captureId": "train-d53812dd",
+              "captureIndex": 459090,
+              "epoch": 5,
+              "topic": "tournament:bda92870-621e-47b0-bc3c-3602c5c26f55:market:267",
+              "observedAt": "2026-10-13T07:41:09.829Z",
+              "receivedAt": "2026-10-13T07:41:09.808Z",
+              "sourceAt": "2026-10-13T07:41:09.702376900Z",
+              "rawBookHash": "f8ed551b792d95f96f9a6c6ef39af089bb2415ce22cc5c853131ea75cb3b640a",
+              "recordHash": "926216fdc302ecada577fc7be3ee0aa178bd5bff8ca6ad9d3bb856bd5bc8f4ce"
+            },
+            "entry": {
+              "captureId": "train-d53812dd",
+              "captureIndex": 459321,
+              "epoch": 5,
+              "topic": "tournament:bda92870-621e-47b0-bc3c-3602c5c26f55:market:267",
+              "observedAt": "2026-10-13T07:41:21.351Z",
+              "receivedAt": "2026-10-13T07:41:21.312Z",
+              "sourceAt": "2026-10-13T07:41:20.915126200Z",
+              "rawBookHash": "7cbfe3059dafea0e8cf7fa73f045f2a73929e8184a1c03200bd934a6c94cded4",
+              "recordHash": "5e3878103dd3972b0176a27a1fc58d0df4920b5463a2753b2b0ba4f5407d3d8c"
+            },
+            "exit": {
+              "captureId": "train-d53812dd",
+              "captureIndex": 459579,
+              "epoch": 5,
+              "topic": "tournament:bda92870-621e-47b0-bc3c-3602c5c26f55:market:267",
+              "observedAt": "2026-10-13T07:41:32.414Z",
+              "receivedAt": "2026-10-13T07:41:32.413Z",
+              "sourceAt": "2026-10-13T07:41:31.916794700Z",
+              "rawBookHash": "6ddcc484e4b02239fb8c75e6191937c8250ca2cb3a0a93cd0e87b1349e134169",
+              "recordHash": "d30f916fe46fe35df18981a77be4d059932712001c08e7e83c23d1b2197c5550"
+            },
+            "decisionSegment": 52,
+            "entrySegment": 52,
+            "exitSegment": 52
+          }
+        ]
+      },
+      "candidateCount": 220,
+      "labeledCount": 110
+    },
+    {
+      "id": "train-0942-14ef0be1",
+      "capture": {
+        "id": "train-0942-14ef0be1",
+        "role": "training_only",
+        "file": "realtime-2026-10-13T09-42-07-994Z-14ef0be1-8e8b-43a2-87ca-66e30c9cde01.jsonl",
+        "bytes": 819582161,
+        "sha256": "6129d28da84e08934b7f0ba18c87635b2592491257f6404bc06635de3670ed3c",
+        "captureRows": 218512,
+        "configRows": 237,
+        "markets": 237,
+        "exchanges": 237,
+        "from": "2026-10-13T09:42:07.995Z",
+        "through": "2026-10-13T12:05:10.510Z"
+      },
+      "diagnostics": {
+        "captureRows": 218512,
+        "configRows": 237,
+        "eventRows": 206871,
+        "marketBatchRows": 206871,
+        "nonEventRows": 16472,
+        "duplicateRevisions": 0,
+        "revisionGaps": 920,
+        "resyncRequired": 0,
+        "bookDirtyMarkers": 205951,
+        "dirtyWithoutBook": 0,
+        "settlements": 0,
+        "lifecycleInvalidations": 5861,
+        "validRecoveryCompletions": 712,
+        "staleRecoveryCompletions": 0,
+        "malformedRecoveryCompletions": 0,
+        "staleRecoveryStarts": 0,
+        "malformedRecoveryStarts": 0,
+        "booksBeforeRecovery": 204032,
+        "scopeRejectedBooks": 38,
+        "duplicateBookVersions": 0,
+        "rollbackBookVersions": 0,
+        "acceptedBookPoints": 1881,
+        "explicitBreakEvents": 6781,
+        "explicitSegmentIncrements": 6781,
+        "explicitBreakReasons": {
+          "subscribed": 474,
+          "lifecycle": 5387,
+          "revision_gap": 920
+        },
+        "interBookGapBreaks": 544,
+        "observationGapBreaks": 535,
+        "sourceGapBreaks": 532,
+        "sourceRollbackBreaks": 0,
+        "invalidRows": 0,
+        "staleForFeatures": 0,
+        "missingStateRows": 0,
+        "epochMismatchRows": 0,
+        "malformedEpochRows": 0,
+        "stateMismatchExamples": [],
+        "epochMismatchExamples": []
+      },
+      "labelProvenance": {
+        "labeledCandidateCount": 30,
+        "decisionEntryExitSameSegmentCount": 30,
+        "crossSegmentLabelCount": 0,
+        "missingCaptureProvenanceCount": 0,
+        "captureId": "train-0942-14ef0be1",
+        "uniqueCaptureIds": [
+          "train-0942-14ef0be1"
+        ],
+        "decisionEntryObservedDelayMs": {
+          "min": null,
+          "max": null
+        },
+        "observedHoldingMs": {
+          "min": 5966,
+          "max": 9856
+        },
+        "sourceHoldingMs": {
+          "min": 5311,
+          "max": 9422
+        },
+        "observedMinusSourceHoldingMs": {
+          "min": -257,
+          "max": 1010
+        },
+        "provenanceExamples": [
+          {
+            "decision": {
+              "captureId": "train-0942-14ef0be1",
+              "captureIndex": 156700,
+              "epoch": 2,
+              "topic": "tournament:bda92870-621e-47b0-bc3c-3602c5c26f55:market:251",
+              "observedAt": "2026-10-13T11:25:27.851Z",
+              "receivedAt": "2026-10-13T11:25:27.784Z",
+              "sourceAt": "2026-10-13T11:25:27.480957400Z",
+              "rawBookHash": "793cd855aec9f2a81de3260f194fb9728c7cc923bbd36f65ef4fd0cac8382ce0",
+              "recordHash": "3c620236e4f2fd43c8d1f443f732dc428e1f502c328606ec068a1e8900eb24c3"
+            },
+            "entry": {
+              "captureId": "train-0942-14ef0be1",
+              "captureIndex": 156807,
+              "epoch": 2,
+              "topic": "tournament:bda92870-621e-47b0-bc3c-3602c5c26f55:market:251",
+              "observedAt": "2026-10-13T11:25:31.873Z",
+              "receivedAt": "2026-10-13T11:25:31.823Z",
+              "sourceAt": "2026-10-13T11:25:31.484441300Z",
+              "rawBookHash": "656fc8f7f644c709161b7dcefdac63cc6c43b12b7d16de21addad79799972d83",
+              "recordHash": "2c637c222310c79a693e366d0a5a17bada571f2d757ec3410d638de1353165fc"
+            },
+            "exit": {
+              "captureId": "train-0942-14ef0be1",
+              "captureIndex": 157090,
+              "epoch": 2,
+              "topic": "tournament:bda92870-621e-47b0-bc3c-3602c5c26f55:market:251",
+              "observedAt": "2026-10-13T11:25:40.527Z",
+              "receivedAt": "2026-10-13T11:25:40.481Z",
+              "sourceAt": "2026-10-13T11:25:40.194399600Z",
+              "rawBookHash": "5a297ffbac9596b25b6b42deac410d81bfaa27412c3515a671348cd6aeb8a09f",
+              "recordHash": "99d0ac126b260a3cd3cf424ff4a451719d5d9aa8a0327c36c062fcc258404b33"
+            },
+            "decisionSegment": 39,
+            "entrySegment": 39,
+            "exitSegment": 39
+          },
+          {
+            "decision": {
+              "captureId": "train-0942-14ef0be1",
+              "captureIndex": 156700,
+              "epoch": 2,
+              "topic": "tournament:bda92870-621e-47b0-bc3c-3602c5c26f55:market:251",
+              "observedAt": "2026-10-13T11:25:27.851Z",
+              "receivedAt": "2026-10-13T11:25:27.784Z",
+              "sourceAt": "2026-10-13T11:25:27.480957400Z",
+              "rawBookHash": "793cd855aec9f2a81de3260f194fb9728c7cc923bbd36f65ef4fd0cac8382ce0",
+              "recordHash": "3c620236e4f2fd43c8d1f443f732dc428e1f502c328606ec068a1e8900eb24c3"
+            },
+            "entry": {
+              "captureId": "train-0942-14ef0be1",
+              "captureIndex": 156807,
+              "epoch": 2,
+              "topic": "tournament:bda92870-621e-47b0-bc3c-3602c5c26f55:market:251",
+              "observedAt": "2026-10-13T11:25:31.873Z",
+              "receivedAt": "2026-10-13T11:25:31.823Z",
+              "sourceAt": "2026-10-13T11:25:31.484441300Z",
+              "rawBookHash": "656fc8f7f644c709161b7dcefdac63cc6c43b12b7d16de21addad79799972d83",
+              "recordHash": "2c637c222310c79a693e366d0a5a17bada571f2d757ec3410d638de1353165fc"
+            },
+            "exit": {
+              "captureId": "train-0942-14ef0be1",
+              "captureIndex": 157090,
+              "epoch": 2,
+              "topic": "tournament:bda92870-621e-47b0-bc3c-3602c5c26f55:market:251",
+              "observedAt": "2026-10-13T11:25:40.527Z",
+              "receivedAt": "2026-10-13T11:25:40.481Z",
+              "sourceAt": "2026-10-13T11:25:40.194399600Z",
+              "rawBookHash": "5a297ffbac9596b25b6b42deac410d81bfaa27412c3515a671348cd6aeb8a09f",
+              "recordHash": "99d0ac126b260a3cd3cf424ff4a451719d5d9aa8a0327c36c062fcc258404b33"
+            },
+            "decisionSegment": 39,
+            "entrySegment": 39,
+            "exitSegment": 39
+          },
+          {
+            "decision": {
+              "captureId": "train-0942-14ef0be1",
+              "captureIndex": 156807,
+              "epoch": 2,
+              "topic": "tournament:bda92870-621e-47b0-bc3c-3602c5c26f55:market:251",
+              "observedAt": "2026-10-13T11:25:31.873Z",
+              "receivedAt": "2026-10-13T11:25:31.823Z",
+              "sourceAt": "2026-10-13T11:25:31.484441300Z",
+              "rawBookHash": "656fc8f7f644c709161b7dcefdac63cc6c43b12b7d16de21addad79799972d83",
+              "recordHash": "2c637c222310c79a693e366d0a5a17bada571f2d757ec3410d638de1353165fc"
+            },
+            "entry": {
+              "captureId": "train-0942-14ef0be1",
+              "captureIndex": 157090,
+              "epoch": 2,
+              "topic": "tournament:bda92870-621e-47b0-bc3c-3602c5c26f55:market:251",
+              "observedAt": "2026-10-13T11:25:40.527Z",
+              "receivedAt": "2026-10-13T11:25:40.481Z",
+              "sourceAt": "2026-10-13T11:25:40.194399600Z",
+              "rawBookHash": "5a297ffbac9596b25b6b42deac410d81bfaa27412c3515a671348cd6aeb8a09f",
+              "recordHash": "99d0ac126b260a3cd3cf424ff4a451719d5d9aa8a0327c36c062fcc258404b33"
+            },
+            "exit": {
+              "captureId": "train-0942-14ef0be1",
+              "captureIndex": 157294,
+              "epoch": 2,
+              "topic": "tournament:bda92870-621e-47b0-bc3c-3602c5c26f55:market:251",
+              "observedAt": "2026-10-13T11:25:48.835Z",
+              "receivedAt": "2026-10-13T11:25:48.803Z",
+              "sourceAt": "2026-10-13T11:25:48.186863100Z",
+              "rawBookHash": "61a74e5a086e7f4f91b350b9e3e22d99450edbab4e496abdd717c00db7a71ba8",
+              "recordHash": "66f28a6415d51ead68ef27d266f83a0f50e3ee0695939560aa9d266beefb54a1"
+            },
+            "decisionSegment": 39,
+            "entrySegment": 39,
+            "exitSegment": 39
+          }
+        ]
+      },
+      "candidateCount": 78,
+      "labeledCount": 30
+    },
+    {
+      "id": "train-1328-a7674ae9",
+      "capture": {
+        "id": "train-1328-a7674ae9",
+        "role": "training_only",
+        "file": "realtime-2026-10-13T13-28-06-669Z-a7674ae9-ed0e-41c6-90c8-390b1ce0dc8b.jsonl",
+        "bytes": 364603159,
+        "sha256": "83dd7cc069ce221617425c533a6d1938c3056fcac20254c4938cddb7d4c96f61",
+        "captureRows": 104446,
+        "configRows": 237,
+        "markets": 237,
+        "exchanges": 237,
+        "from": "2026-10-13T13:28:06.671Z",
+        "through": "2026-10-13T14:44:08.976Z"
+      },
+      "diagnostics": {
+        "captureRows": 104446,
+        "configRows": 237,
+        "eventRows": 91271,
+        "marketBatchRows": 91271,
+        "nonEventRows": 15401,
+        "duplicateRevisions": 55,
+        "revisionGaps": 2087,
+        "resyncRequired": 0,
+        "bookDirtyMarkers": 89129,
+        "dirtyWithoutBook": 0,
+        "settlements": 0,
+        "lifecycleInvalidations": 10339,
+        "validRecoveryCompletions": 373,
+        "staleRecoveryCompletions": 0,
+        "malformedRecoveryCompletions": 0,
+        "staleRecoveryStarts": 0,
+        "malformedRecoveryStarts": 0,
+        "booksBeforeRecovery": 88320,
+        "scopeRejectedBooks": 24,
+        "duplicateBookVersions": 0,
+        "rollbackBookVersions": 0,
+        "acceptedBookPoints": 785,
+        "explicitBreakEvents": 12426,
+        "explicitSegmentIncrements": 12426,
+        "explicitBreakReasons": {
+          "subscribed": 948,
+          "lifecycle": 9391,
+          "revision_gap": 2087
+        },
+        "interBookGapBreaks": 251,
+        "observationGapBreaks": 248,
+        "sourceGapBreaks": 248,
+        "sourceRollbackBreaks": 0,
+        "invalidRows": 0,
+        "staleForFeatures": 8,
+        "missingStateRows": 0,
+        "epochMismatchRows": 0,
+        "malformedEpochRows": 0,
+        "stateMismatchExamples": [],
+        "epochMismatchExamples": []
+      },
+      "labelProvenance": {
+        "labeledCandidateCount": 0,
+        "decisionEntryExitSameSegmentCount": 0,
+        "crossSegmentLabelCount": 0,
+        "missingCaptureProvenanceCount": 0,
+        "captureId": "train-1328-a7674ae9",
+        "uniqueCaptureIds": [],
+        "decisionEntryObservedDelayMs": {
+          "min": null,
+          "max": null
+        },
+        "observedHoldingMs": {
+          "min": null,
+          "max": null
+        },
+        "sourceHoldingMs": {
+          "min": null,
+          "max": null
+        },
+        "observedMinusSourceHoldingMs": {
+          "min": null,
+          "max": null
+        },
+        "provenanceExamples": []
+      },
+      "candidateCount": 12,
+      "labeledCount": 0
+    }
+  ]
+}
