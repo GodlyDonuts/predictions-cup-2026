@@ -36,7 +36,7 @@ test('continuation requests original expired quote windows rather than releasing
 });
 
 test('paper override files cannot alter capital, funding caps or transport budgets',async()=>{
-  const policy={participationBps:1000,lifetimeMs:600000,quantity:5};assert.deepEqual(paperPolicyOverrides(policy),policy);
+  const policy={participationBps:1000,lifetimeMs:600000,quantity:5};assert.deepEqual(paperPolicyOverrides(policy),policy);const retained={...policy,retainProfitableHedge:true,maximumHedgeOvershoot:3};assert.deepEqual(paperPolicyOverrides(retained),retained);assert.throws(()=>paperPolicyOverrides({...retained,maximumHedgeOvershoot:6}),/HEDGE_OVERSHOOT/);
   for(const p of [{initialCash:'9999'},{maximumCommitted:'9999'},{writesPerMinute:100},{fillModel:'conditionalFifo'},[],null])assert.throws(()=>paperPolicyOverrides(p),/POLICY_OVERRIDE_SCOPE/);
   assert.throws(()=>paperPolicyOverrides({participationBps:10001}),/POLICY_LIMITS/);
   await assert.rejects(live({marketId:'1',exchangeId:'2',outputDirectory:'unused-policy-validation',policyFile:''}),/POLICY_FILE_REQUIRED/);

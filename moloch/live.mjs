@@ -23,7 +23,7 @@ export function liveUniverse(scopes,value){
   return value.map(({marketId,exchangeId})=>({marketId,exchangeId}));
 }
 export function paperPolicyOverrides(value){
-  if(!value||typeof value!=='object'||Array.isArray(value)||Object.keys(value).some(k=>!['participationBps','lifetimeMs','quantity'].includes(k)))throw Error('MOLOCH_POLICY_OVERRIDE_SCOPE');
+  if(!value||typeof value!=='object'||Array.isArray(value)||Object.keys(value).some(k=>!['participationBps','lifetimeMs','quantity','retainProfitableHedge','maximumHedgeOvershoot'].includes(k)))throw Error('MOLOCH_POLICY_OVERRIDE_SCOPE');
   createMoloch(value);return{...value};
 }
 export async function live({marketId,exchangeId,outputDirectory,cycles=10,resumeDirectory=null,pairsFile=null,realtime=false,insideTicks=null,drain=false,resumeEntries=false,policyFile=null,universeFile=null}){

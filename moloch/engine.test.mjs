@@ -132,3 +132,21 @@ test('participation experiments preserve legacy quote assumptions and tag new qu
   const legacy=createMoloch();advanceMoloch(legacy,book(0));legacy.policy={...legacy.policy,participationBps:1000};legacy.policyHash=payloadHash(legacy.policy);advanceMoloch(legacy,trade(4,'legacy-credit','0.440000',20));assert.equal(legacy.fills.length,0);assert.equal(legacy.orders.find(q=>q.side==='YES').participationCredit,2000);
   const next=createMoloch({participationBps:1000});advanceMoloch(next,book(0));assert.equal(next.orders[0].participationBps,1000);advanceMoloch(next,trade(4,'new-credit','0.440000',20));assert.equal(next.fills[0].quantity,2);assertMoloch(next);
 });
+
+test('funded opposite quote survives a full entry and closes the spread without a cancel barrier',()=>{
+ const s=createMoloch({retainProfitableHedge:true});advanceMoloch(s,book(0));advanceMoloch(s,trade(4,'first-leg','0.440000',500));const hedge=s.orders.find(q=>q.side==='NO');assert.equal(hedge.cancelEffectiveAt,undefined);assert.equal(s.orders.length,2);advanceMoloch(s,trade(8,'second-leg','0.460000',500));assert.equal(s.redemptions[0].quantity,5);assert.equal(s.realized,'0.025000');assertMoloch(s);
+ const prior=createMoloch();advanceMoloch(prior,book(0));advanceMoloch(prior,trade(4,'prior-first','0.440000',500));assert.ok(prior.orders.find(q=>q.side==='NO').cancelEffectiveAt);advanceMoloch(prior,trade(8,'prior-second','0.460000',500));assert.equal(prior.fills.length,1);
+});
+test('oversized opposite quote cancels after a partial entry and never gains a second share pledge',()=>{
+ const s=createMoloch({retainProfitableHedge:true});advanceMoloch(s,book(0));advanceMoloch(s,trade(4,'partial-entry','0.440000',100));assert.equal(s.fills[0].quantity,1);assert.equal(s.orders.find(q=>q.side==='NO').cancelEffectiveAt,base+7000);advanceMoloch(s,book(8,'101',20));assert.equal(s.orders.some(q=>q.action==='sell'),false);advanceMoloch(s,{type:'coverage',receivedAt:at(9),tournamentId:'cup',marketId:'101',exchangeId:'101',from:at(3),to:at(8),complete:true,projectedThroughSequence:'20'});advanceMoloch(s,tick(12));assert.equal(s.orders.find(q=>q.action==='sell').quantity,1);assertMoloch(s);
+});
+test('gaps and explicit drains still cancel retained inventory hedges',()=>{
+ for(const drain of [false,true]){const s=createMoloch({retainProfitableHedge:true});advanceMoloch(s,book(0));advanceMoloch(s,trade(4,'owned','0.440000',500));if(drain){s.policy={...s.policy,entriesEnabled:false};s.policyHash=payloadHash(s.policy);advanceMoloch(s,tick(8));}else advanceMoloch(s,{type:'gap',exchangeId:'101',receivedAt:at(8)});assert.ok(s.orders.find(q=>q.side==='NO').cancelEffectiveAt);assert.ok(Number(reportMoloch(s).reservedCash)>0);assertMoloch(s);}
+ assert.throws(()=>createMoloch({retainProfitableHedge:'yes'}),/RETAIN_HEDGE/);
+});
+
+test('bounded original-quote overshoot can net a partial packet and exits residual inventory without new hedge buys',()=>{
+ const s=createMoloch({quantity:10,retainProfitableHedge:true,maximumHedgeOvershoot:3});advanceMoloch(s,book(0));advanceMoloch(s,trade(4,'partial-no-1','0.460000',100));advanceMoloch(s,{...trade(4.1,'partial-no-6','0.460000',600)});advanceMoloch(s,tick(8));const yes=s.orders.find(q=>q.side==='YES');assert.equal(yes.cancelEffectiveAt,undefined);assert.equal(s.orders.length,2);advanceMoloch(s,trade(9,'hedge-and-residual','0.440000',1000));assert.equal(s.redemptions[0].quantity,7);assert.equal(s.realized,'0.035000');assert.equal(s.positions['101'].YES.reduce((n,l)=>n+l.quantity,0),3);assertMoloch(s);
+ const marked=book(10,'101',30);marked.book.bids[0].price='0.440000';marked.book.asks[0].price='0.445000';advanceMoloch(s,marked);assert.equal(reportMoloch(s).netLiquidationPnl,'0.005000');advanceMoloch(s,{type:'coverage',receivedAt:at(11),tournamentId:'cup',marketId:'101',exchangeId:'101',from:at(3),to:at(10),complete:true,projectedThroughSequence:'30'});advanceMoloch(s,trade(14,'residual-covered-sale','0.450000',300));assert.equal(s.realized,'0.020000');assert.equal(s.positions['101'].YES.length,0);assertMoloch(s);
+ assert.throws(()=>createMoloch({quantity:10,maximumHedgeOvershoot:11}),/HEDGE_OVERSHOOT/);
+});

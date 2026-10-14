@@ -421,7 +421,8 @@ The entry's negative bid-liquidation mark reflects the spread; it does not alone
 show adverse price movement. Default settings remain unchanged.
 
 A prospective successor may use `--policy FILE` after the positional arguments.
-Only `participationBps`, `lifetimeMs` and `quantity` are accepted. The first longer
+Only `participationBps`, `lifetimeMs`, `quantity`, `retainProfitableHedge` and
+`maximumHedgeOvershoot` are accepted. The first longer
 window tests 10% hypothetical participation, ten-minute quotes and five-share
 size under strict trade-through fills. Existing quotes retain their own
 participation assumptions and expiration times; no carried capital is reset.
@@ -472,3 +473,22 @@ admissions. Its successor tests 1% participation and ten-share paired packets
 inside the unchanged 40 total/10 per-market funding caps, with zero added capital.
 Discovery includes one-tick joins and ranks the weaker side's compatible queue
 turnover; inside-quote room is reported separately.
+
+The optional [retained-hedge study](results/retained-hedge-study-20261014.json)
+keeps an already funded opposite quote after an entry, provided its worst owned
+basis, quote price and modeled fees leave the required edge. It creates no new
+hedge-buy orders. The default retains no such quotes. With the residual limit
+absent or zero, all remaining opposite quantity must be owned and unpledged.
+
+An explicit `maximumHedgeOvershoot` can permit a bounded remainder from that
+original quote, without enlarging capital caps. The next prospective experiment
+uses three residual shares for a ten-share packet, 1% participation and ten-minute
+quotes. If ten opposite shares fill against seven owned shares, seven net and
+three remain directional inventory. Their loss can erase the paired gain. Gaps,
+source silence, canceled quotes and explicit drains remain controlling.
+
+The ten-share predecessor completed with two new partial Texas Senate fills,
+seven owned NO shares costing 4.270000 and no added realized profit. Its existing
++0.025000 gain is separate. Recorded-clock retention variants changed one cancel
+but produced no added closed profit; all strategies had a stale final liquidation
+mark. The successor carries those shares and reservations without resetting cash.
