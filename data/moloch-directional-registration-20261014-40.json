@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "registeredAt": "2026-10-14T19:54:30.110Z",
+  "sourcePhase": 40,
+  "developmentFinalHash": "741a24f448c9e867ea003c85a6d107b35f3f78288362b16a38e683598b43f52d",
+  "developmentSourceSha256": "77d3f51c16fdf68b63918c9a4425e665ff20e39621bd2f028c0d0f1184bc72b9",
+  "marketId": "342",
+  "exchangeId": "1031",
+  "side": "NO",
+  "quote": "join",
+  "minimumPriorObservableLeadMs": 3000,
+  "markoutMs": 30000,
+  "eligibility": "Future executions strictly after registeredAt; gap-free causal books only; all qualifying samples including losses",
+  "fundedWallet": false,
+  "contestOrders": 0,
+  "profitabilityEstablished": false
+}
