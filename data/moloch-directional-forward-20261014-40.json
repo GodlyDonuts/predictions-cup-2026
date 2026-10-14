@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "registrationHash": "e3ddd016566b413c776ec12c700e879174cd84658e0f66faa4a4244800d1a399",
+  "registeredAt": "2026-10-14T19:54:30.110Z",
+  "sourceEventCount": 7557,
+  "sourceFinalHash": "721761ca905179cbb9c2cf3c6477c89d0034545596e12939ef9f524c2610677a",
+  "window": {
+    "from": "2026-10-14T19:51:04.837Z",
+    "to": "2026-10-14T19:56:02.898Z"
+  },
+  "marketId": "342",
+  "exchangeId": "1031",
+  "side": "NO",
+  "completedSamples": 3,
+  "censoredSamples": 0,
+  "distinctThirtySecondBuckets": 1,
+  "meanConditionalDelta": "0.000000",
+  "volumeWeightedConditionalDelta": "0.000000",
+  "completed": [
+    {
+      "generation": 0,
+      "tradeId": "160033201",
+      "exchangeId": "1031",
+      "side": "NO",
+      "quantity": 193,
+      "executedAt": "2026-10-14T19:54:47.084352000Z",
+      "dueAt": 1792007717084,
+      "sequence": 160033201,
+      "quoteTicks": 111,
+      "touch": true,
+      "markedAt": "2026-10-14T19:55:19.794Z",
+      "liquidationDeltaPerShare": "0.000000",
+      "assumption": "Conditional prior-observable join quote, not a verified fill; future executable one-share mark, zero fees."
+    },
+    {
+      "generation": 0,
+      "tradeId": "160033206",
+      "exchangeId": "1031",
+      "side": "NO",
+      "quantity": 3219,
+      "executedAt": "2026-10-14T19:54:47.084352000Z",
+      "dueAt": 1792007717084,
+      "sequence": 160033206,
+      "quoteTicks": 111,
+      "touch": true,
+      "markedAt": "2026-10-14T19:55:19.794Z",
+      "liquidationDeltaPerShare": "0.000000",
+      "assumption": "Conditional prior-observable join quote, not a verified fill; future executable one-share mark, zero fees."
+    },
+    {
+      "generation": 0,
+      "tradeId": "160033211",
+      "exchangeId": "1031",
+      "side": "NO",
+      "quantity": 1905,
+      "executedAt": "2026-10-14T19:54:47.084352000Z",
+      "dueAt": 1792007717084,
+      "sequence": 160033211,
+      "quoteTicks": 111,
+      "touch": true,
+      "markedAt": "2026-10-14T19:55:19.794Z",
+      "liquidationDeltaPerShare": "0.000000",
+      "assumption": "Conditional prior-observable join quote, not a verified fill; future executable one-share mark, zero fees."
+    }
+  ],
+  "censored": [],
+  "fundedWallet": false,
+  "contestOrders": 0,
+  "profitabilityEstablished": false,
+  "limitations": [
+    "Only executions after registration plus three-second activation are included.",
+    "Conditional quotes and overlapping marks are not actual fills or independent return observations.",
+    "Missing later marks remain censored; favorable marks do not establish funded wallet profit."
+  ],
+  "sourceSha256": "d6c4706d269c2b69dc2c81791409279bcde4709c691e910c6ce59495f1be9f99"
+}
