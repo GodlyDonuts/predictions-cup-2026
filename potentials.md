@@ -1,20 +1,25 @@
-https://github.com/HarrierOnChain/Prediction-Markets-Trading-Bot-Toolkits
-https://github.com/yllvar/Kalshi-Quant-TeleBot
-https://github.com/aarora4/Awesome-Prediction-Market-Tools
-https://github.com/semrincaballero/Polymarket-Prediction-Bot
+# Open-source quant ideas for Baal
+
+https://github.com/HarrierOnChain/Prediction-Markets-Trading-Bot-Toolkits  
+https://github.com/yllvar/Kalshi-Quant-TeleBot  
+https://github.com/aarora4/Awesome-Prediction-Market-Tools  
+https://github.com/semrincaballero/Polymarket-Prediction-Bot  
 https://github.com/PredictionXBT/PredictOS
 
+## What is worth carrying over
 
-## Audited transfer status — 2026-10-14
+The strongest quantitative idea found through these links is Oracle3's Wang/probit probability-pricing transform, discovered via the Awesome directory. It is already implemented in Baal as a research-only diagnostic in [research/open-source-adaptation-v1/README.md](research/open-source-adaptation-v1/README.md) and [wang-value.mjs](research/open-source-adaptation-v1/wang-value.mjs). The transform maps an independent physical probability (p) to a price benchmark (q = \Phi(\Phi^{-1}(p)+\lambda)). Baal requires an explicit `lambda`; it has no imported venue default, emits no order, and keeps the transformed market-price residual separate from expected payout value at executable ask depth.
 
-These links were checked against their source trees and Baal's existing tests. No profitable strategy was copied or promoted; the closest methods already have negative or unscorable Cup-specific evidence. Baal keeps the transferable architecture patterns (separate signal, risk and execution layers) already in place.
+That separation is useful: a market-price distortion is not automatically a forecast edge. Oracle3's reported calibration comes from other venues and contract populations. Baal's available local inventory has 237 open market metadata rows, no settled labels, and no timestamped price history, so there is not enough SIG-specific evidence to fit or validate `lambda`. We should not turn a borrowed coefficient into a buy signal.
 
-| Project | Baal transfer |
+| Link | Baal transfer |
 |---|---|
-| [HarrierOnChain toolkits](https://github.com/HarrierOnChain/Prediction-Markets-Trading-Bot-Toolkits) | Only copy trading is implemented; the maker, imbalance and cross-venue entries are stubs. Shared risk/execution architecture already matches Baal. |
-| [Kalshi-Quant-TeleBot](https://github.com/yllvar/Kalshi-Quant-TeleBot) | No code reused: no root license, non-causal spread normalization, invalid Kelly sizing, fabricated default metrics. |
-| [Awesome Prediction Market Tools](https://github.com/aarora4/Awesome-Prediction-Market-Tools) | Directory only; discovery reference, no strategy implementation. |
-| [Polymarket Prediction Bot](https://github.com/semrincaballero/Polymarket-Prediction-Bot) | Demo heuristics; no new edge over Baal's already-tested probability, book-pressure and spread candidates. |
-| [PredictOS](https://github.com/PredictionXBT/PredictOS) | Research/execution separation is useful; fixed paired limits and title-matched cross-venue “arb” do not prove fills or equivalent payouts. |
+| [HarrierOnChain toolkits](https://github.com/HarrierOnChain/Prediction-Markets-Trading-Bot-Toolkits) | Its listed maker, imbalance, and cross-venue strategy modules are stubs; copy trading is venue-specific. Baal already separates signal, risk, and execution. |
+| [Kalshi-Quant-TeleBot](https://github.com/yllvar/Kalshi-Quant-TeleBot) | No code reused: no root license was present in the checked branch; the inspected spread normalization leaks later data, Kelly sizing is incorrect, and empty metrics use hard-coded returns. |
+| [Awesome Prediction Market Tools](https://github.com/aarora4/Awesome-Prediction-Market-Tools) | Discovery index only. It led to Oracle3's Wang pricing method, already represented in Baal as the read-only diagnostic above. |
+| [Polymarket Prediction Bot](https://github.com/semrincaballero/Polymarket-Prediction-Bot) | Demo probability, imbalance, and liquidity heuristics add no validated edge over Baal's existing tested candidates. |
+| [PredictOS](https://github.com/PredictionXBT/PredictOS) | Its two-leg crypto examples assume both legs fill; text-matched contracts do not prove equivalent settlement. Baal's pair tests have not established a profitable completed pair. |
 
-See the [full source-by-source transfer audit](docs/OPEN_SOURCE_BOT_TRANSFER_20261014.md), including the Baal holdout results and exact no-go reasons.
+## Result
+
+These projects yielded useful architecture and a probability-pricing research diagnostic, but no source-backed SIG-market strategy that has demonstrated net profit. Baal already has the substantive transferable method; the missing piece is a contest-specific independent forecast and enough matched, settled and executable data to validate it. The detailed source audit and rejection evidence are in [docs/OPEN_SOURCE_BOT_TRANSFER_20261014.md](docs/OPEN_SOURCE_BOT_TRANSFER_20261014.md).

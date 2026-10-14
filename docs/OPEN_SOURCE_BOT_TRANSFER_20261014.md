@@ -2,9 +2,17 @@
 
 ## Decision
 
-No strategy implementation from the five links in [potentials.md](../potentials.md) is a defensible Baal production import. Several attractive README claims are placeholders or conditional on fills, and the closest live candidates have already failed Baal-specific tests. The useful transfer is an evidence map: retain sound separation of signal, risk and execution; do not mistake an open-source label, a demo, or a quoted gross payoff for net edge.
+The five direct links do not provide a defensible profitable strategy to import. The Awesome directory led to Oracle3, whose Wang/probit probability-pricing method is the most substantive quantitative idea discovered here. Baal already has a clean-room, read-only implementation from completed issue #98; this audit should surface that transfer rather than claim it as new work. The method is a pricing sensitivity, not validated SIG alpha.
 
-This review is source-level and reuses existing Baal results. It adds no strategy, data collection, service, account client, order or runtime change.
+This follow-up corrects the index and consolidates source evidence. It adds no new strategy, data collection, service, account client, order or runtime change.
+
+## Most useful transfer already present: Wang probability pricing
+
+Oracle3 maps an independently estimated physical event probability (p) to a risk-adjusted price benchmark (q = \\Phi(\\Phi^{-1}(p)+\\lambda)). Its project describes calibration on resolved contracts from several other venues; that estimate is not a SIG estimate. See the [Oracle3 project](https://github.com/YichengYang-Ethan/oracle3-prediction-market-agent) and its [working paper](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=6468338). The paper's interpretation is a selected pricing measure in incomplete markets, so the price/outcome wedge alone does not prove exploitable mispricing.
+
+Baal already reproduces the transform in `research/open-source-adaptation-v1/wang-value.mjs`. It requires an explicit `lambda`, reports the benchmark residual separately from independent-forecast expected value at observed asks, and fails closed on stale or insufficient depth. It remains read-only: no order or fill is produced.
+
+The local inventory check reports 237 open metadata rows, zero settlement labels, and no timestamped price history. That cannot estimate a SIG-specific `lambda`; importing Oracle3's cross-venue coefficient would be an unvalidated assumption. The eight focused local tests pass, but they verify the math and gates only, not profitability. This is the genuine algorithmic transfer from the links, completed earlier in issue #98.
 
 ## Source-by-source findings
 
