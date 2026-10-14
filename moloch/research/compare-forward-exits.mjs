@@ -52,7 +52,7 @@ const document = {schemaVersion:1, at:new Date().toISOString(), registrationHash
   sourceHash, sourceBytes:sourceBytes.length, identicalEventsVerified:true, maximumProcessingSkewMs,
   banks:result, contestOrders:0, profitabilityEstablished:false,
   limitations:['Separate simulations cannot be summed or treated as actual exchange fills.',
-    'Consumers have separate processing clocks; runtime latency can differ despite the shared source.',
+    maximumProcessingSkewMs===0 ? 'Matching processing timestamps verified for every event in this source.' : 'Processing timestamps differ; consumer latency can confound the result.',
     'This finite selected-market trial alone cannot establish scalable profitability.']};
 fs.writeFileSync(output, JSON.stringify(document,null,2)+'\n', {flag:'wx'});
 console.log(JSON.stringify(document,null,2));

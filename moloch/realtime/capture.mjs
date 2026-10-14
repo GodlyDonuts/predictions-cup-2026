@@ -9,17 +9,19 @@ export function captureFailure(phase,error){
 }
 export function channelFailure(state,error){
  const network=new Set(['ECONNRESET','ECONNREFUSED','ENOTFOUND','EAI_AGAIN','ETIMEDOUT','EHOSTUNREACH','ENETUNREACH','UND_ERR_CONNECT_TIMEOUT','UND_ERR_SOCKET']);
- const queue=[error],seen=new Set(),codes=new Set(),messages=[];let inspected=0;
+ const queue=[error],seen=new Set(),codes=new Set(),closeCodes=new Set(),transportEvents=new Set(),messages=[];let inspected=0;
  while(queue.length&&inspected<12){const item=queue.shift();if(item===null||item===undefined||seen.has(item))continue;seen.add(item);inspected++;
   if(typeof item==='string'){messages.push(item.slice(0,512).toLowerCase());continue;}
   if(typeof item!=='object')continue;
   if(network.has(item.code))codes.add(item.code);
+  if(Number.isInteger(item.code)&&item.code>=1000&&item.code<=4999)closeCodes.add(item.code);
+  if(['error','close'].includes(item.type))transportEvents.add(item.type);
   if(typeof item.message==='string')messages.push(item.message.slice(0,512).toLowerCase());
   for(const value of [item.cause,item.error,item.reason,...(Array.isArray(item.errors)?item.errors.slice(0,4):[])])if(value!==undefined)queue.push(value);
  }
  const message=messages.join(' '),category=state==='TIMED_OUT'?'join_timeout':/too many.*(channel|connection)|connection.*limit|channel.*limit/.test(message)?'channel_capacity':/unauthorized|not authorized|authorization|invalid.*token|jwt|token.*expired/.test(message)?'channel_authorization':codes.size?'channel_network':'unclassified';
  const shape=error===undefined?'absent':typeof error==='string'?'string':['Error','ErrorEvent','CloseEvent','AggregateError'].includes(error?.name)?error.name:'other';
- return{phase:'channel',code:['CHANNEL_ERROR','TIMED_OUT','CLOSED'].includes(state)?state:'UNKNOWN',category,errorShape:shape,inspectedErrorNodes:inspected,...(codes.size?{networkCodes:[...codes].sort()}: {})};
+ return{phase:'channel',code:['CHANNEL_ERROR','TIMED_OUT','CLOSED'].includes(state)?state:'UNKNOWN',category,errorShape:shape,inspectedErrorNodes:inspected,...(codes.size?{networkCodes:[...codes].sort()}: {}),...(closeCodes.size?{socketCloseCodes:[...closeCodes].sort((a,b)=>a-b)}:{}),...(transportEvents.size?{transportEvents:[...transportEvents].sort()}: {})};
 }
 export function statsPublisher(out,io=fs){
   let retries=0;return report=>{const temp=path.join(out,'stats.tmp');io.writeFileSync(temp,JSON.stringify(report,null,2));try{io.renameSync(temp,path.join(out,'stats.json'));retries=0;return true;}catch(error){if(['EPERM','EACCES','EBUSY'].includes(error.code)&&++retries<=20)return false;throw error;}};
