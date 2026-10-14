@@ -21,5 +21,5 @@ const strip=s=>{const p={...s.policy};delete p[entryPolicy?'insideTicks':'invent
 if(payloadHash(strip(states[0]))!==payloadHash(strip(states[1])))throw Error('PAIRED_POLICY_CONFOUND');
 const source=path.join(registration.source,'events.jsonl'),barrier=pairedClock();
 const common=['--input',source,'--format','journal','--follow','--seconds','1800','--resume',registration.parent,'--entry-exchanges',ids.join(','),'--resume-entries','--execution-age'];
-const jobs=[controlOutput,candidateOutput].map((out,i)=>run([...common,'--output',out,...(entryPolicy||i?['--exit-policy',exitPolicyFile]:[]),...(i&&entryPolicy?['--entry-policy',entryPolicyFile]:[])],{processingClock:barrier.clock(i)}).catch(error=>{barrier.abort(error);throw error;}));
+const jobs=[controlOutput,candidateOutput].map((out,i)=>run([...common,'--output',out,...(entryPolicy||i?['--exit-policy',exitPolicyFile]:[]),...(i&&entryPolicy?['--entry-policy',entryPolicyFile]:[])],{processingClock:barrier.clock(i),verifiedParent:parent}).catch(error=>{barrier.abort(error);throw error;}));
 await Promise.all(jobs);

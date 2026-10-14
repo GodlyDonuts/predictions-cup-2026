@@ -2,6 +2,18 @@ import fs from 'node:fs';import path from 'node:path';import readline from 'node
 import {createHash} from 'node:crypto';import {pathToFileURL} from 'node:url';
 import {createMoloch,advanceMoloch,reportMoloch,assertMoloch} from './engine.mjs';
 import {payloadHash} from '../execution/ledger.mjs';
+const verifiedTails=new WeakMap();
+const byteHash=bytes=>createHash('sha256').update(bytes).digest('hex');
+function prefixHash(file,bytes){const fd=fs.openSync(file,'r'),hash=createHash('sha256');try{let offset=0;while(offset<bytes){const chunk=Buffer.alloc(Math.min(bytes-offset,1048576)),n=fs.readSync(fd,chunk,0,chunk.length,offset);if(n!==chunk.length)throw Error('MOLOCH_VERIFIED_PARENT_SOURCE_SHORT');hash.update(chunk);offset+=n;}return hash.digest('hex');}finally{fs.closeSync(fd);}}
+export function reuseCompletedTail(parent){
+ const proof=verifiedTails.get(parent);if(!proof||parent.directory!==proof.directory||payloadHash(parent.snapshot)!==proof.snapshotHash)throw Error('MOLOCH_UNVERIFIED_PARENT');
+ for(const file of proof.files){
+  if(file.absent){if(fs.existsSync(file.path))throw Error('MOLOCH_VERIFIED_PARENT_CHANGED');continue;}
+  const hash=file.prefix?prefixHash(file.path,file.bytes):byteHash(fs.readFileSync(file.path));
+  if(hash!==file.hash)throw Error('MOLOCH_VERIFIED_PARENT_CHANGED');
+ }
+ return parent;
+}
 
 export function bookExportEvents(document){
   const {exportHash,...body}=document;
@@ -28,30 +40,39 @@ export function drainPolicyTransition(state){const {policy,policyHash,...before}
 export function flatEntryTransition(state,executionAge=false,exitPolicy=null,entryPolicy=null){assertMoloch(state);if(state.orders.some(q=>!q.retired)||Object.values(state.positions).some(p=>[...p.YES,...p.NO].some(l=>l.quantity>0)))throw Error('MOLOCH_TAIL_REENTRY_REQUIRES_FLAT');if(exitPolicy!==null&&(!exitPolicy||typeof exitPolicy!=='object'||Array.isArray(exitPolicy)||!Object.keys(exitPolicy).length||Object.keys(exitPolicy).some(k=>!['inventoryTakerAfterMs','inventoryMinimumGain','maximumInventoryAgeMs','inventoryExitMode'].includes(k))))throw Error('MOLOCH_TAIL_EXIT_POLICY_SCOPE');if(entryPolicy!==null&&(!entryPolicy||typeof entryPolicy!=='object'||Array.isArray(entryPolicy)||Object.keys(entryPolicy).length!==1||!Object.hasOwn(entryPolicy,'insideTicks')||![0,1].includes(entryPolicy.insideTicks)))throw Error('MOLOCH_TAIL_ENTRY_POLICY_SCOPE');const {policy,policyHash,...before}=state;state.policy=createMoloch({...policy,...exitPolicy,...entryPolicy,entriesEnabled:true,...(executionAge?{inventoryAgeClock:'execution'}:{})}).policy;state.policyHash=payloadHash(state.policy);const {policy:p,policyHash:h,...after}=state;if(payloadHash(before)!==payloadHash(after))throw Error('MOLOCH_TAIL_REENTRY_FINANCIAL');return{priorPolicyHash:policyHash,nextPolicyHash:state.policyHash,entriesEnabled:true,inventoryAgeClock:state.policy.inventoryAgeClock??null,...(exitPolicy?{exitPolicy:structuredClone(exitPolicy)}:{}),...(entryPolicy?{entryPolicy:structuredClone(entryPolicy)}:{})};}
 export function completedTail(directory,visited=new Set()){
  const dir=fs.realpathSync(directory);if(visited.has(dir)||visited.size>=64)throw Error('MOLOCH_TAIL_CONTINUATION_CYCLE');visited.add(dir);
- const snapshot=JSON.parse(fs.readFileSync(path.join(dir,'state.json'),'utf8')),{hash,...body}=snapshot,report=JSON.parse(fs.readFileSync(path.join(dir,'report.json'),'utf8'));
+ const snapshotBytes=fs.readFileSync(path.join(dir,'state.json')),reportBytes=fs.readFileSync(path.join(dir,'report.json'));
+ const snapshot=JSON.parse(snapshotBytes),{hash,...body}=snapshot,report=JSON.parse(reportBytes);
  if(hash!==payloadHash(body)||report.mode!=='local_paper_tail'||report.eventJournalHash!==body.lastHash||report.source.bytes!==body.source.consumedBytes||report.source.sha256!==body.source.consumedSha256)throw Error('MOLOCH_TAIL_TERMINAL_PROOF');
- let state;
- if(body.continuation){const parent=completedTail(body.continuation.parentDirectory,visited);if(parent.snapshot.hash!==body.continuation.parentSnapshotHash)throw Error('MOLOCH_TAIL_PARENT_HASH');state=structuredClone(parent.snapshot.state);if(body.continuation.entryPolicyTransition){const expected=body.continuation.entryPolicyTransition,actual=entryPolicyTransition(state,expected.entryExchangeIds);if(payloadHash(actual)!==payloadHash(expected))throw Error('MOLOCH_TAIL_ENTRY_TRANSITION_PROOF');}if(body.continuation.drainPolicyTransition){const actual=drainPolicyTransition(state);if(payloadHash(actual)!==payloadHash(body.continuation.drainPolicyTransition))throw Error('MOLOCH_TAIL_DRAIN_TRANSITION_PROOF');}}
+ if(!Number.isSafeInteger(body.source.consumedBytes)||body.source.consumedBytes<0)throw Error('MOLOCH_TAIL_SOURCE_LENGTH');
+ let state,ancestorFiles=[];
+ if(body.continuation){const parent=completedTail(body.continuation.parentDirectory,visited);ancestorFiles=verifiedTails.get(parent).files;if(parent.snapshot.hash!==body.continuation.parentSnapshotHash)throw Error('MOLOCH_TAIL_PARENT_HASH');state=structuredClone(parent.snapshot.state);if(body.continuation.entryPolicyTransition){const expected=body.continuation.entryPolicyTransition,actual=entryPolicyTransition(state,expected.entryExchangeIds);if(payloadHash(actual)!==payloadHash(expected))throw Error('MOLOCH_TAIL_ENTRY_TRANSITION_PROOF');}if(body.continuation.drainPolicyTransition){const actual=drainPolicyTransition(state);if(payloadHash(actual)!==payloadHash(body.continuation.drainPolicyTransition))throw Error('MOLOCH_TAIL_DRAIN_TRANSITION_PROOF');}}
  else state=createMoloch(snapshot.state.policy);
  if(body.continuation?.flatEntryTransition){const expected=body.continuation.flatEntryTransition,actual=flatEntryTransition(state,expected.inventoryAgeClock==='execution',expected.exitPolicy??null,expected.entryPolicy??null);if(payloadHash(actual)!==payloadHash(expected))throw Error('MOLOCH_TAIL_REENTRY_PROOF');}
  const source=fs.openSync(body.source.path,'r'),digest=createHash('sha256');let remaining=body.source.consumedBytes,offset=0;
  try{while(remaining){const b=Buffer.alloc(Math.min(remaining,1024*1024)),n=fs.readSync(source,b,0,b.length,offset);if(n!==b.length)throw Error('MOLOCH_TAIL_SOURCE_SHORT');digest.update(b);remaining-=n;offset+=n;}}finally{fs.closeSync(source);}
  if(digest.digest('hex')!==body.source.consumedSha256)throw Error('MOLOCH_TAIL_SOURCE_CHANGED');
- let previous='',sequence=0;const raw=fs.existsSync(path.join(dir,'events.jsonl'))?fs.readFileSync(path.join(dir,'events.jsonl'),'utf8'):'';
+ let previous='',sequence=0;const journalExists=fs.existsSync(path.join(dir,'events.jsonl')),journalBytes=journalExists?fs.readFileSync(path.join(dir,'events.jsonl')):Buffer.alloc(0),raw=journalBytes.toString('utf8');
  if(raw&&!raw.endsWith('\n'))throw Error('MOLOCH_TAIL_PARTIAL_JOURNAL');
  for(const line of raw.trim().split(/\r?\n/).filter(Boolean)){const row=JSON.parse(line),{hash:h,...b}=row;if(h!==payloadHash(b)||b.previous!==previous||b.sequence!==sequence+1)throw Error('MOLOCH_TAIL_JOURNAL_CHAIN');advanceMoloch(state,b.event);if(payloadHash(state)!==b.stateHash)throw Error('MOLOCH_TAIL_REPLAY_STATE');previous=h;sequence++;}
  if(sequence!==body.sequence||previous!==body.lastHash||payloadHash(state)!==payloadHash(snapshot.state))throw Error('MOLOCH_TAIL_REPLAY_TERMINAL');assertMoloch(state);
- return{directory:dir,snapshot};
+ const result={directory:dir,snapshot};
+ verifiedTails.set(result,{directory:dir,snapshotHash:payloadHash(snapshot),files:[...ancestorFiles,
+  {path:path.join(dir,'state.json'),hash:byteHash(snapshotBytes)},
+  {path:path.join(dir,'report.json'),hash:byteHash(reportBytes)},
+  journalExists?{path:path.join(dir,'events.jsonl'),hash:byteHash(journalBytes)}:{path:path.join(dir,'events.jsonl'),absent:true},
+  {path:body.source.path,prefix:true,bytes:body.source.consumedBytes,hash:body.source.consumedSha256}]});
+ return result;
 }
 function options(args){const o={format:'ndjson',follow:false};for(let i=0;i<args.length;i++){const k=args[i];if(k==='--follow')o.follow=true;else if(k==='--drain')o.drain=true;else if(k==='--resume-entries')o.resumeEntries=true;else if(k==='--execution-age')o.executionAge=true;else if(['--input','--output','--format','--policy','--seconds','--resume','--entry-exchanges','--exit-policy','--entry-policy'].includes(k)){if(!args[i+1])throw Error('Missing '+k);o[k.slice(2)]=args[++i];}else throw Error('Unknown option '+k);}if(!o.input||!o.output)throw Error('Usage: node moloch/run.mjs --input FILE --output NEW_DIRECTORY [--format book-export] [--policy FILE] [--follow --seconds 60]');return o;}
-export async function run(args,{processingClock=null}={}){
+export async function run(args,{processingClock=null,verifiedParent=null}={}){
   if(processingClock!==null&&typeof processingClock!=='function')throw Error('MOLOCH_PROCESSING_CLOCK');
   const o=options(args),input=path.resolve(o.input),out=path.resolve(o.output);
   if(fs.existsSync(out))throw Error('MOLOCH_OUTPUT_EXISTS: preserve previous run; use a new directory');
   if(!['ndjson','journal','book-export'].includes(o.format)||(o.follow&&!['ndjson','journal'].includes(o.format)))throw Error('MOLOCH_FORMAT');
   const seconds=o.seconds===undefined?null:Number(o.seconds);if(seconds!==null&&(!Number.isFinite(seconds)||seconds<=0))throw Error('MOLOCH_DURATION');
   if(o.resume&&(!o.follow||o.format!=='journal'||o.policy))throw Error('MOLOCH_TAIL_RESUME_SCOPE');
-  const parent=o.resume?completedTail(o.resume):null,continuation=parent?{parentDirectory:parent.directory,parentSnapshotHash:parent.snapshot.hash,newPaperCapital:'0.000000'}:null;
+  if(verifiedParent&&(!o.resume||fs.realpathSync(o.resume)!==verifiedParent.directory))throw Error('MOLOCH_VERIFIED_PARENT_SCOPE');
+  const parent=o.resume?(verifiedParent?reuseCompletedTail(verifiedParent):completedTail(o.resume)):null,continuation=parent?{parentDirectory:parent.directory,parentSnapshotHash:parent.snapshot.hash,newPaperCapital:'0.000000'}:null;
   const policy=o.policy?JSON.parse(fs.readFileSync(o.policy,'utf8')):{},state=parent?structuredClone(parent.snapshot.state):createMoloch(policy);
   if(o['entry-exchanges']){if(!parent)throw Error('MOLOCH_TAIL_ENTRY_REQUIRES_RESUME');continuation.entryPolicyTransition=entryPolicyTransition(state,o['entry-exchanges'].split(','));}
   if(o.drain){if(!parent)throw Error('MOLOCH_TAIL_DRAIN_REQUIRES_RESUME');continuation.drainPolicyTransition=drainPolicyTransition(state);}

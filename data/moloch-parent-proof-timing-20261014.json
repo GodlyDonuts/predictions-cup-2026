@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "at": "2026-10-14T23:20:48.709Z",
+  "parentSnapshotHash": "a70cc5748ce4b32397fdd7c2f90137a26884206338888aab4cc21c3e6738e36e",
+  "fullReplayMs": 18319.9811,
+  "exactByteRecheckMs": 37.985099999998056,
+  "verifiedSameParent": true,
+  "contestOrders": 0,
+  "networkRequests": 0,
+  "profitabilityEstablished": false
+}
