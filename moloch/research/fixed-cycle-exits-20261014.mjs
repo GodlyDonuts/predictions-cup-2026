@@ -12,7 +12,7 @@ for(let i=42;i<=46;i++){
  if(payloadHash(clean(r.state))!==payloadHash(clean(snap.state)))throw Error('BASELINE_PARITY');episodes.push({i,m,snap,events});
 }
 const base={...json('runtime/moloch/policy-competition-scale-20261014-1.json'),entryExchangeIds:['1027'],inventoryAgeClock:'execution'},results=[];
-for(const [name,overrides]of [['tenMinuteControl',{}],['immediateBreakEven',{inventoryTakerAfterMs:0}],['oneTickGain',{inventoryTakerAfterMs:0,inventoryMinimumGain:'0.005000'}],['oneTickThreeMinuteRisk',{inventoryTakerAfterMs:0,inventoryMinimumGain:'0.005000',maximumInventoryAgeMs:180000}]]){
+for(const [name,overrides]of [['tenMinuteControl',{}],['immediateBreakEven',{inventoryTakerAfterMs:0}],['oneTickGain',{inventoryTakerAfterMs:0,inventoryMinimumGain:'0.005000'}],['oneTickThreeMinuteRisk',{inventoryTakerAfterMs:0,inventoryMinimumGain:'0.005000',maximumInventoryAgeMs:180000}],['fixedOneTickOffer',{inventoryTakerAfterMs:0,inventoryMinimumGain:'0.005000',inventoryExitMode:'fixedGain'}]]){
  let state=createMoloch({...base,...overrides});const stages=[];
  for(const e of episodes){const r=replayVariant(state,e.events,{...overrides,entriesEnabled:e.i===42});state=r.state;stages.push({phase:e.i,realized:r.report.realized,ownedCost:r.report.ownedCost,unresolved:r.report.unresolvedOrders,lastFresh:r.lastFreshLiquidation});}
  const r=replayVariant(state,[]);results.push({name,overrides,report:r.report,coverageAudit:scopeCoverage(r.report,episodes.at(-1).m.scopes),fills:state.fills,stages});console.log(JSON.stringify({name,realized:r.report.realized,cash:r.report.cash,owned:r.report.ownedCost,unresolved:r.report.unresolvedOrders}));

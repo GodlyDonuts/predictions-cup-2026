@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "phase": 53,
+  "officialReceipts": 60,
+  "captureExit": 0,
+  "banks": [
+    {
+      "name": "competition-scale-20261014-22",
+      "cash": "100000.000000",
+      "realized": "0.000000",
+      "ownedCost": "0.000000",
+      "unresolved": 2,
+      "fills": 5
+    },
+    {
+      "name": "queue-duration-20261014-18",
+      "cash": "100000.060000",
+      "realized": "0.060000",
+      "ownedCost": "0.000000",
+      "unresolved": 2,
+      "fills": 20
+    }
+  ],
+  "newFills": 0,
+  "nextPhase": 54,
+  "entriesEnabled": false,
+  "contestOrders": 0,
+  "profitabilityEstablished": false
+}

@@ -32,6 +32,7 @@ export function createMoloch(policy={}){
   check(typeof(p.throughFillCapacity??false)==='boolean'&&(!p.throughFillCapacity||p.fillModel==='strictThrough'),'THROUGH_CAPACITY');
   check(p.inventoryTakerAfterMs===undefined||Number.isSafeInteger(p.inventoryTakerAfterMs)&&p.inventoryTakerAfterMs>=0&&p.inventoryTakerAfterMs<=86400000,'INVENTORY_TAKER_AGE');
   check(p.inventoryMinimumGain===undefined||amount(p.inventoryMinimumGain)>=0n&&amount(p.inventoryMinimumGain)<SCALE,'INVENTORY_MINIMUM_GAIN');
+  check(p.inventoryExitMode===undefined||p.inventoryExitMode==='join'||p.inventoryExitMode==='fixedGain'&&Number.isSafeInteger(p.maximumInventoryAgeMs)&&p.maximumInventoryAgeMs>0,'INVENTORY_EXIT_MODE');
   check(p.maximumInventoryAgeMs===undefined||Number.isSafeInteger(p.maximumInventoryAgeMs)&&p.maximumInventoryAgeMs>=0&&p.maximumInventoryAgeMs<=86400000,'INVENTORY_MAX_AGE');
   check(p.inventoryAgeClock===undefined||['receipt','execution'].includes(p.inventoryAgeClock),'INVENTORY_AGE_CLOCK');
   check(typeof(p.retainProfitableHedge??false)==='boolean','RETAIN_HEDGE');
@@ -105,7 +106,13 @@ function desired(s,at){
         if(quantity>0&&SCALE-worst-limit-fee(worst,1,s.policy)-fee(limit,1,s.policy)>=amount(s.policy.minimumEdge)){candidates.push({marketId:b.marketId,exchangeId:b.exchangeId,side:hedgeSide,action:'buy',quantity,price:money(limit),hedgeForSide:side,rank:1e12,source:b});continue;}
       }
       while(exitImprove>0n&&baseExit-exitImprove-worstBasis-fee(worstBasis,1,s.policy)-fee(baseExit-exitImprove,1,s.policy)<amount(s.policy.minimumEdge))exitImprove-=TICK;
-      if(quantity>0)candidates.push({marketId:b.marketId,exchangeId:b.exchangeId,side,action:'sell',quantity,price:money(side==='YES'?bestAsk-exitImprove:SCALE-bestBid-exitImprove),rank:1e12,source:b});
+      let exitPrice=side==='YES'?bestAsk-exitImprove:SCALE-bestBid-exitImprove;
+      if(s.policy.inventoryExitMode==='fixedGain'){
+        const gain=amount(s.policy.inventoryMinimumGain??s.policy.minimumEdge);exitPrice=(worstBasis+gain+TICK-1n)/TICK*TICK;
+        while(exitPrice<SCALE&&exitPrice-worstBasis-fee(worstBasis,1,s.policy)-fee(exitPrice,1,s.policy)<gain)exitPrice+=TICK;
+        if(exitPrice>=SCALE)continue;
+      }
+      if(quantity>0)candidates.push({marketId:b.marketId,exchangeId:b.exchangeId,side,action:'sell',quantity,price:money(exitPrice),rank:1e12,source:b});
       continue;
     }
     if(!entryAllowed(s,b.exchangeId)||spread<TICK*BigInt(s.policy.minimumSpreadTicks))continue;
