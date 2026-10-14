@@ -929,5 +929,28 @@
     "actualLoopTests": 3,
     "runnerChecks": 82,
     "coreJournalBudgetActivationUnchanged": true
+  },
+  "latestAcceleration20261013": {
+    "completed": [
+      "Issue #78: offline historical range-backfill is on main; 15/15 tests; no API reads.",
+      "Issue #79: sealed capture had 66,127 accepted books, no positive same-time complements, and zero profitable sequential pairs in all 32 fixed scenarios; no profitable result.",
+      "Issue #80: corrected parser is code/test reviewed, 12/12 tests pass; exact-prefix training-only diagnostics show 3,994 accepted books, 110 labels, and 441,465 not-ready exclusions. The 19:52 model replay is invalid/unscorable and was not rescored; no strategy or profit conclusion. Reviewer disclosed accidental recursive scan across data/, compromising a no-read attestation.",
+      "Issues #81/#84/#85: fail-closed poll screen and independent audit are published on main at 71041526735dcb7ae12c79bbb555372b4e311fe4; zero defensible probability bounds and zero eligible trades."
+    ],
+    "active": [
+      "#82 review completed; source/test review clear, but reviewer broad-scan disclosure is recorded and no performance result is endorsed.",
+      "#86: bounded-prefix recovery-readiness attribution in progress; exact training prefix only.",
+      "The 21:15 capture remains writer-locked and actively growing; do not hash, parse, or treat as a holdout until released and frozen."
+    ],
+    "guardrails": {
+      "contestOrders": 0,
+      "apiReads": 0,
+      "runtimeChanges": 0,
+      "profitabilityEstablished": false,
+      "ridgeHoldoutRescoringProhibited": true,
+      "laterCapturePinned": false,
+      "oldHoldoutNoReadAttestation": "compromised_disclosed"
+    },
+    "updatedAt": "2026-10-14T00:17:40Z"
   }
 }
