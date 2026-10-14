@@ -1,0 +1,91 @@
+{
+  "schemaVersion": 1,
+  "at": "2026-10-14T22:30:48.308Z",
+  "banks": [
+    {
+      "name": "fixed-offer-control-20261014-55",
+      "snapshotHash": "7f7d238c3da1160e753c48042bb62255d10da5dfdf9baa8173644b97263e886c",
+      "sourceBytes": 236312,
+      "firstNewOrders": [
+        {
+          "exchangeId": "1042",
+          "side": "NO",
+          "createdAt": "2026-10-14T22:27:23.198Z",
+          "activationAt": "2026-10-14T22:27:26.198Z",
+          "quantity": 5753,
+          "price": "0.105000"
+        },
+        {
+          "exchangeId": "1042",
+          "side": "YES",
+          "createdAt": "2026-10-14T22:27:23.198Z",
+          "activationAt": "2026-10-14T22:27:26.198Z",
+          "quantity": 5753,
+          "price": "0.890000"
+        },
+        {
+          "exchangeId": "1077",
+          "side": "NO",
+          "createdAt": "2026-10-14T22:27:40.197Z",
+          "activationAt": "2026-10-14T22:27:43.197Z",
+          "quantity": 4779,
+          "price": "0.860000"
+        },
+        {
+          "exchangeId": "1077",
+          "side": "YES",
+          "createdAt": "2026-10-14T22:27:40.197Z",
+          "activationAt": "2026-10-14T22:27:43.197Z",
+          "quantity": 4779,
+          "price": "0.135000"
+        }
+      ],
+      "newFills": []
+    },
+    {
+      "name": "fixed-offer-candidate-20261014-55",
+      "snapshotHash": "35814eb3d5612276b69ca3049f49e1d219675dadbfeab24bcfdd3dcdf77c3c4d",
+      "sourceBytes": 236312,
+      "firstNewOrders": [
+        {
+          "exchangeId": "1077",
+          "side": "NO",
+          "createdAt": "2026-10-14T22:27:40.243Z",
+          "activationAt": "2026-10-14T22:27:43.243Z",
+          "quantity": 4779,
+          "price": "0.860000"
+        },
+        {
+          "exchangeId": "1077",
+          "side": "YES",
+          "createdAt": "2026-10-14T22:27:40.243Z",
+          "activationAt": "2026-10-14T22:27:43.243Z",
+          "quantity": 4779,
+          "price": "0.135000"
+        },
+        {
+          "exchangeId": "1042",
+          "side": "NO",
+          "createdAt": "2026-10-14T22:28:05.117Z",
+          "activationAt": "2026-10-14T22:28:08.117Z",
+          "quantity": 5830,
+          "price": "0.105000"
+        },
+        {
+          "exchangeId": "1042",
+          "side": "YES",
+          "createdAt": "2026-10-14T22:28:05.117Z",
+          "activationAt": "2026-10-14T22:28:08.117Z",
+          "quantity": 5830,
+          "price": "0.890000"
+        }
+      ],
+      "newFills": []
+    }
+  ],
+  "validIsolatedExitComparison": false,
+  "reason": "Separate consumer startup caused different entry clocks, ordering and sizes; the planned policy-only comparison is confounded.",
+  "nextAction": "Use a single paired consumer with common processing timestamps and matched initial policies except exit mode.",
+  "contestOrders": 0,
+  "profitabilityEstablished": false
+}
