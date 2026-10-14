@@ -1,0 +1,159 @@
+{
+  "bot": "Moloch",
+  "sourceEventSha256": "b7028bcb0337e3a038c306e0c2cad0d9e2ee0e93f9112d426debe0e767576eef",
+  "parentSnapshotHash": "1041eaecec02fd81526dcee7d875a72e5fb16ba252956b67aabb00745c26c685",
+  "eventCount": 1611,
+  "window": {
+    "from": "2026-10-14T04:52:42.514Z",
+    "to": "2026-10-14T05:07:50.889Z"
+  },
+  "baselineFinancialParity": true,
+  "variants": [
+    {
+      "inventoryTakerAfterMs": null,
+      "newFills": 0,
+      "bookBasedFills": 0,
+      "realized": "0.025000",
+      "cash": "995.005000",
+      "owned": "5.020000",
+      "reserved": "9.950000",
+      "finalLiquidation": "0.025000",
+      "lastFresh": {
+        "at": "2026-10-14T05:07:50.889Z",
+        "pnl": "0.025000"
+      },
+      "assumptions": [
+        "Independent simulated capital; no contest-account ownership.",
+        "Flat entries quote both sides only when combined spread covers modeled fees and required edge; partial fills remain inventory risk.",
+        "Strict one-tick trade-through and bounded participation are counterfactual, not verified queue fills.",
+        "Cancel acknowledgment does not release unresolved funding; complete window and post-end checkpoint are required.",
+        "Opposite BUY FIFO netting models the documented engine credit of one per netted share; all modeled fills remain counterfactual."
+      ]
+    },
+    {
+      "inventoryTakerAfterMs": 0,
+      "newFills": 2,
+      "bookBasedFills": 2,
+      "realized": "0.025000",
+      "cash": "1000.025000",
+      "owned": "0.000000",
+      "reserved": "29.850000",
+      "finalLiquidation": "0.025000",
+      "lastFresh": {
+        "at": "2026-10-14T05:07:50.889Z",
+        "pnl": "0.025000"
+      },
+      "assumptions": [
+        "Independent simulated capital; no contest-account ownership.",
+        "Flat entries quote both sides only when combined spread covers modeled fees and required edge; partial fills remain inventory risk.",
+        "Strict one-tick trade-through and bounded participation are counterfactual, not verified queue fills.",
+        "Cancel acknowledgment does not release unresolved funding; complete window and post-end checkpoint are required.",
+        "Opposite BUY FIFO netting models the documented engine credit of one per netted share; all modeled fills remain counterfactual.",
+        "Aged inventory all-or-none simulations require later fresh depth after modeled latency; payout uses the limit-price lower bound and no capacity is reused at the same side/engine sequence."
+      ]
+    },
+    {
+      "inventoryTakerAfterMs": 180000,
+      "newFills": 2,
+      "bookBasedFills": 2,
+      "realized": "0.025000",
+      "cash": "1000.025000",
+      "owned": "0.000000",
+      "reserved": "29.850000",
+      "finalLiquidation": "0.025000",
+      "lastFresh": {
+        "at": "2026-10-14T05:07:50.889Z",
+        "pnl": "0.025000"
+      },
+      "assumptions": [
+        "Independent simulated capital; no contest-account ownership.",
+        "Flat entries quote both sides only when combined spread covers modeled fees and required edge; partial fills remain inventory risk.",
+        "Strict one-tick trade-through and bounded participation are counterfactual, not verified queue fills.",
+        "Cancel acknowledgment does not release unresolved funding; complete window and post-end checkpoint are required.",
+        "Opposite BUY FIFO netting models the documented engine credit of one per netted share; all modeled fills remain counterfactual.",
+        "Aged inventory all-or-none simulations require later fresh depth after modeled latency; payout uses the limit-price lower bound and no capacity is reused at the same side/engine sequence."
+      ]
+    },
+    {
+      "inventoryTakerAfterMs": 600000,
+      "newFills": 2,
+      "bookBasedFills": 2,
+      "realized": "0.025000",
+      "cash": "1000.025000",
+      "owned": "0.000000",
+      "reserved": "29.850000",
+      "finalLiquidation": "0.025000",
+      "lastFresh": {
+        "at": "2026-10-14T05:07:50.889Z",
+        "pnl": "0.025000"
+      },
+      "assumptions": [
+        "Independent simulated capital; no contest-account ownership.",
+        "Flat entries quote both sides only when combined spread covers modeled fees and required edge; partial fills remain inventory risk.",
+        "Strict one-tick trade-through and bounded participation are counterfactual, not verified queue fills.",
+        "Cancel acknowledgment does not release unresolved funding; complete window and post-end checkpoint are required.",
+        "Opposite BUY FIFO netting models the documented engine credit of one per netted share; all modeled fills remain counterfactual.",
+        "Aged inventory all-or-none simulations require later fresh depth after modeled latency; payout uses the limit-price lower bound and no capacity is reused at the same side/engine sequence."
+      ]
+    },
+    {
+      "inventoryTakerAfterMs": 1200000,
+      "newFills": 2,
+      "bookBasedFills": 2,
+      "realized": "0.025000",
+      "cash": "1000.025000",
+      "owned": "0.000000",
+      "reserved": "29.850000",
+      "finalLiquidation": "0.025000",
+      "lastFresh": {
+        "at": "2026-10-14T05:07:50.889Z",
+        "pnl": "0.025000"
+      },
+      "assumptions": [
+        "Independent simulated capital; no contest-account ownership.",
+        "Flat entries quote both sides only when combined spread covers modeled fees and required edge; partial fills remain inventory risk.",
+        "Strict one-tick trade-through and bounded participation are counterfactual, not verified queue fills.",
+        "Cancel acknowledgment does not release unresolved funding; complete window and post-end checkpoint are required.",
+        "Opposite BUY FIFO netting models the documented engine credit of one per netted share; all modeled fills remain counterfactual.",
+        "Aged inventory all-or-none simulations require later fresh depth after modeled latency; payout uses the limit-price lower bound and no capacity is reused at the same side/engine sequence."
+      ]
+    }
+  ],
+  "nodeChecks": 78,
+  "contestOrders": 0,
+  "profitabilityEstablished": false,
+  "usage": "Recorded-clock sensitivity only; later independent capture still required.",
+  "officialContract": {
+    "url": "https://sig.thesuper.market/api/v1/docs",
+    "observedAt": "2026-10-14T05:09:08.0377043Z",
+    "httpStatus": 200,
+    "htmlSha256": "b092a9a27870c1fc41df5925bd2d60f824a32eafaed5efa35c0ebe9653d1484b",
+    "endpoint": "/orders/multi-leg",
+    "minimumLegs": 1,
+    "executionMode": "allOrNone",
+    "singleOrderTimeInForceFieldPresent": false,
+    "semantics": "Engine-routed allOrNone fills every requested leg fully within its limit or rejects the request without executions or resting remainders."
+  },
+  "controls": [
+    "Optional age threshold uses the latest owned-side buy receipt clock; the default stays passive.",
+    "Only already owned, unpledged shares are eligible. Unknown old maker sales require cancellation-window coverage before replacement.",
+    "Bid-side sale must cover worst owned basis and both modeled unit fees; no forced loss.",
+    "A later fresh book must follow modeled latency and arrive within the ten-source-second confirmation window.",
+    "The entire requested quantity must fit eligible depth; same-side/engine-sequence capacity cannot be reused.",
+    "Each one-leg AON gets a separately paced simulated write; maker and AON intents never share an assumed request.",
+    "Execution value is the limit-price lower bound, not an asserted actual match price.",
+    "AON simulations are excluded from the original strict-print profit signal."
+  ],
+  "limitations": [
+    "Book-based fills are counterfactual, not official exchange acknowledgments.",
+    "Public depth does not establish account self-trade exclusions or actual writer authority.",
+    "Zero modeled fees remain an assumption for this experiment.",
+    "The replay freed principal but added no realized profit."
+  ],
+  "successor": {
+    "episode": 22,
+    "inventoryTakerAfterMs": 600000,
+    "newPaperCapital": "0.000000",
+    "outcome": "pending"
+  }
+}

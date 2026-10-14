@@ -508,3 +508,23 @@ inventory. Their successor adds Tennessee Senate after selecting two-sided
 compatible volume sufficient for at least one assumed share at 1% participation.
 Its initial REST book/tape reconciliation remains mandatory; discovery cannot
 authorize quotes. All cash, positions, intents and trade deduplication carry.
+
+[Optional aged inventory exits](results/aged-aon-exits-20261014.json) add
+`inventoryTakerAfterMs`. After that age from the latest owned-side acquisition
+receipt, a covered exit may use a marketable limit only when its bid-side price
+covers worst owned basis and both modeled fees. Unknown passive-sale pledges must
+reconcile first. The default stays passive.
+
+The current official contract supports a single leg through `/orders/multi-leg`
+with `executionMode: allOrNone`. This simulation requires the whole requested
+quantity in a later fresh book after modeled latency, within a ten-second source
+confirmation window. Insufficient depth models no execution and no resting
+remainder. Consumed depth cannot be reused at the same side/engine sequence.
+Each intent consumes its own paced write admission; no mixed maker/AON request
+is assumed. Payout uses the limit-price lower bound and is never a claim of an
+official fill. Original strict-print profit eligibility excludes these simulations.
+
+The completed three-market replay freed 5.020000 principal through two hypothetical
+break-even exits and added no realized profit. A fresh successor tests the ten-minute
+age threshold with unchanged cash, holdings, attribution and funding caps. Public
+depth cannot establish actual account self-trade exclusions or execution ownership.

@@ -27,6 +27,7 @@ export function createMoloch(policy={}){
   const p={...DEFAULT_POLICY,...policy};
   check(['pairedSpread','microprice'].includes(p.quoteMode),'QUOTE_MODE');
   check(typeof p.entriesEnabled==='boolean','ENTRIES_ENABLED');
+  check(p.inventoryTakerAfterMs===undefined||Number.isSafeInteger(p.inventoryTakerAfterMs)&&p.inventoryTakerAfterMs>=0&&p.inventoryTakerAfterMs<=86400000,'INVENTORY_TAKER_AGE');
   check(typeof(p.retainProfitableHedge??false)==='boolean','RETAIN_HEDGE');
   check(p.entryExchangeIds==null||Array.isArray(p.entryExchangeIds)&&p.entryExchangeIds.length<=p.maximumMarkets&&new Set(p.entryExchangeIds).size===p.entryExchangeIds.length&&p.entryExchangeIds.every(id=>typeof id==='string'&&/^[1-9]\d*$/.test(id)),'ENTRY_EXCHANGES');
   check(Number.isSafeInteger(p.maximumHedgeOvershoot??0)&&(p.maximumHedgeOvershoot??0)>=0&&(p.maximumHedgeOvershoot??0)<=p.quantity,'HEDGE_OVERSHOOT');
@@ -84,6 +85,8 @@ function desired(s,at){
       const quantity=Math.min(s.policy.quantity,available+existing);
       let exitImprove=TICK*BigInt(Math.min(s.policy.insideTicks??0,Math.max(0,Number(spread/TICK-1n))));
       const baseExit=side==='YES'?bestAsk:SCALE-bestBid,worstBasis=p[side].reduce((highest,lot)=>amount(lot.price)>highest?amount(lot.price):highest,0n);
+      const lastBuy=s.policy.inventoryTakerAfterMs===undefined?null:s.fills.filter(f=>f.exchangeId===b.exchangeId&&f.side===side&&f.action==='buy').at(-1),executable=side==='YES'?bestBid:SCALE-bestAsk;
+      if(quantity>0&&lastBuy&&at-ms(lastBuy.at)>=s.policy.inventoryTakerAfterMs&&executable-worstBasis-fee(worstBasis,1,s.policy)-fee(executable,1,s.policy)>=0n){candidates.push({marketId:b.marketId,exchangeId:b.exchangeId,side,action:'sell',quantity,price:money(executable),executionStyle:'inventoryAON',rank:1e12,source:b});continue;}
       while(exitImprove>0n&&baseExit-exitImprove-worstBasis-fee(worstBasis,1,s.policy)-fee(baseExit-exitImprove,1,s.policy)<amount(s.policy.minimumEdge))exitImprove-=TICK;
       if(quantity>0)candidates.push({marketId:b.marketId,exchangeId:b.exchangeId,side,action:'sell',quantity,price:money(side==='YES'?bestAsk-exitImprove:SCALE-bestBid-exitImprove),rank:1e12,source:b});
       continue;
@@ -120,13 +123,13 @@ function reconcile(s,at){
     const stillCovered=q.action==='sell'?qty(p[q.side])>=remaining(q):qty(p.YES)+qty(p.NO)===0||retainableHedge(s,q);
     if(!target&&b&&!b.invalid&&!fresh(s,b,at)&&at-ms(b.receivedAt)<s.policy.maximumSourceSilenceMs&&stillCovered&&(entryAllowed(s,q.exchangeId)||q.action==='sell'))continue;
     const renew=target&&target.price===q.price&&fresh(s,b,at)&&s.policy.renewBeforeMs>0&&q.expiresAt-at<=s.policy.renewBeforeMs;
-    if((!target||target.price!==q.price||renew)&&at-q.createdAt>=s.policy.minimumQuoteAgeMs){q.cancelEffectiveAt=at+s.policy.latencyMs;s.writes.push(at);count(s,'cancels');if(renew)count(s,'earlyRenewals');return;}}
+    if((!target||target.price!==q.price||target.executionStyle!==q.executionStyle||renew)&&at-q.createdAt>=s.policy.minimumQuoteAgeMs){q.cancelEffectiveAt=at+s.policy.latencyMs;s.writes.push(at);count(s,'cancels');if(renew)count(s,'earlyRenewals');return;}}
   const batch=[],markets=new Set([...Object.entries(s.positions).filter(([,p])=>qty(p.YES)+qty(p.NO)>0).map(([ex])=>ex),...unresolved(s).map(q=>q.exchangeId)]);
   let available=amount(s.cash)-reserve(s),headroom=amount(s.policy.maximumCommitted)-owned(s)-reserve(s);
   const marketCosts=new Map();for(const [ex,p]of Object.entries(s.positions))marketCosts.set(ex,basis(p.YES)+basis(p.NO));
   for(const q of unresolved(s).filter(q=>q.action==='buy'))marketCosts.set(q.exchangeId,(marketCosts.get(q.exchangeId)??0n)+buyCost(s,q.price,remaining(q)));
   for(const t of targets){
-    if(active.some(q=>key(q)===key(t))||batch.length>=8)continue;
+    if(active.some(q=>key(q)===key(t))||batch.length>=8||t.executionStyle==='inventoryAON'&&batch.length)continue;
     if(!markets.has(t.exchangeId)&&markets.size>=s.policy.maximumMarkets)continue;
     const p=position(s,t.exchangeId);
     let n=t.quantity;
@@ -141,9 +144,9 @@ function reconcile(s,at){
     if(n<1)continue;
     // Never place crossing YES/NO acquisitions against our own quotes.
     if(t.action==='buy'&&[...active,...batch].some(q=>q.exchangeId===t.exchangeId&&q.action==='buy'&&q.side!==t.side&&amount(q.price)+amount(t.price)>=SCALE))continue;
-    markets.add(t.exchangeId);batch.push({...t,quantity:n});
+    markets.add(t.exchangeId);batch.push({...t,quantity:n});if(t.executionStyle==='inventoryAON')break;
   }
-  if(batch.length){s.writes.push(at);for(const t of batch){const queue=visibleQueue(t,t.source),fifo=s.policy.fillModel==='conditionalFifo'?{fillModel:'conditionalFifo',touchAttributionBps:s.policy.touchAttributionBps,queueAhead:String(queue.same+queue.better),queueSame:String(queue.same),queueBetter:String(queue.better),queueVisibleSame:String(queue.same),queueVisibleBetter:String(queue.better),touchRemainder:0}:{};s.orders.push({id:s.nextOrderId++,marketId:t.marketId,exchangeId:t.exchangeId,side:t.side,action:t.action,quantity:t.quantity,filled:0,price:t.price,createdAt:at,activationAt:at+s.policy.latencyMs,expiresAt:at+s.policy.lifetimeMs,sourceHash:payloadHash(t.source),sourceSequence:String(t.source.sequence),tournamentId:t.source.tournamentId,retired:false,participationCredit:0,barrier:null,...(s.policy.participationBps===100?{}:{participationBps:s.policy.participationBps}),...fifo});}count(s,'submissionBatches');}
+  if(batch.length){s.writes.push(at);for(const t of batch){const queue=visibleQueue(t,t.source),fifo=s.policy.fillModel==='conditionalFifo'?{fillModel:'conditionalFifo',touchAttributionBps:s.policy.touchAttributionBps,queueAhead:String(queue.same+queue.better),queueSame:String(queue.same),queueBetter:String(queue.better),queueVisibleSame:String(queue.same),queueVisibleBetter:String(queue.better),touchRemainder:0}:{};s.orders.push({id:s.nextOrderId++,marketId:t.marketId,exchangeId:t.exchangeId,side:t.side,action:t.action,quantity:t.quantity,filled:0,price:t.price,createdAt:at,activationAt:at+s.policy.latencyMs,expiresAt:t.executionStyle==='inventoryAON'?at+s.policy.latencyMs+s.policy.bookAgeMs:at+s.policy.lifetimeMs,sourceHash:payloadHash(t.source),sourceSequence:String(t.source.sequence),tournamentId:t.source.tournamentId,retired:false,participationCredit:0,barrier:null,...(t.executionStyle?{executionStyle:t.executionStyle}:{}),...(s.policy.participationBps===100?{}:{participationBps:s.policy.participationBps}),...fifo});}count(s,'submissionBatches');}
 }
 export function advanceMoloch(s,event){
   check(payloadHash(s.policy)===s.policyHash,'POLICY_CHANGED');
@@ -173,6 +176,10 @@ export function advanceMoloch(s,event){
   s.lastAt=event.processedAt??event.receivedAt;s.events++;
   if(event.type==='book'){
     const b=structuredClone(event.book);s.books[b.exchangeId]=b;
+    for(const q of unresolved(s).filter(q=>q.exchangeId===b.exchangeId&&q.executionStyle==='inventoryAON'&&fresh(s,b,at)&&ms(b.transport==='official_sig_realtime'?b.sourceAt:b.requestStartedAt)>=q.activationAt&&ms(b.transport==='official_sig_realtime'?b.sourceAt:b.requestStartedAt)<end(q))){
+      const capacity=(q.side==='YES'?b.bids:b.asks).filter(l=>q.side==='YES'?amount(l.price)>=amount(q.price):SCALE-amount(l.price)>=amount(q.price)).reduce((n,l)=>n+BigInt(l.quantity),0n),key=[q.tournamentId,q.exchangeId,q.side,b.sequence].join(':'),consumed=BigInt(s.aonConsumed?.[key]??0),eligible=capacity>consumed?capacity-consumed:0n,n=eligible>=BigInt(remaining(q))?remaining(q):0;
+      q.aonEvidence={bookHash:payloadHash(b),sourceAt:b.sourceAt,requestStartedAt:b.requestStartedAt,sequence:String(b.sequence),eligibleDepth:String(eligible),filledQuantity:n,priceLowerBound:q.price,priorConsumedDepth:String(consumed)};if(n){s.aonConsumed??={};s.aonConsumed[key]=String(consumed+BigInt(n));fill(s,q,n,s.lastAt,'book:'+b.exchangeId+':'+b.sequence+':'+q.id);s.fills.at(-1).executionStyle='inventoryAON';}q.retired=true;count(s,'inventoryAonEvaluations');
+    }
     for(const q of unresolved(s).filter(q=>q.exchangeId===b.exchangeId&&q.fillModel==='conditionalFifo')){const visible=visibleQueue(q,b),oldSame=BigInt(q.queueVisibleSame),oldBetter=BigInt(q.queueVisibleBetter);if(visible.same>oldSame&&ns(b.sourceAt)<=BigInt(q.activationAt)*1000000n)q.queueSame=String(BigInt(q.queueSame)+visible.same-oldSame);if(visible.better>oldBetter)q.queueBetter=String(BigInt(q.queueBetter)+visible.better-oldBetter);q.queueVisibleSame=String(visible.same);q.queueVisibleBetter=String(visible.better);q.queueAhead=String(BigInt(q.queueSame)+BigInt(q.queueBetter));}
     for(const q of unresolved(s).filter(q=>q.exchangeId===b.exchangeId&&q.marketId===b.marketId&&q.tournamentId===b.tournamentId&&ms(b.transport==='official_sig_realtime'?b.sourceAt:b.requestStartedAt)>=end(q)))if(!q.barrier)q.barrier={sequence:String(b.sequence),endAt:end(q)};
   }else if(event.type==='gap'){
@@ -181,6 +188,7 @@ export function advanceMoloch(s,event){
     s.flow[event.exchangeId]??=[];s.flow[event.exchangeId].push({at:ms(event.executedAt),quantity:event.quantity});count(s,'uniqueTrades');
     const executed=ns(event.executedAt),tradePrice=price(event.yesPrice);
     for(const q of unresolved(s).filter(q=>q.marketId===event.marketId&&q.exchangeId===event.exchangeId&&q.tournamentId===event.tournamentId).sort((a,b)=>a.createdAt-b.createdAt||a.id-b.id)){
+      if(q.executionStyle==='inventoryAON')continue;
       if(executed<BigInt(q.activationAt)*1000000n||executed>=BigInt(end(q))*1000000n)continue;
       const yesLimit=q.side==='YES'?amount(q.price):SCALE-amount(q.price),bid=(q.side==='YES')===(q.action==='buy');
       const through=bid?tradePrice<=yesLimit-TICK:tradePrice>=yesLimit+TICK,touch=q.fillModel==='conditionalFifo'&&tradePrice===yesLimit;
@@ -221,6 +229,6 @@ export function reportMoloch(s){
   return{bot:'Moloch',at:s.lastAt,policyHash:s.policyHash,events:s.events,cash:s.cash,realized:s.realized,fees:s.fees,
     ownedCost:money(owned(s)),reservedCash:money(reserve(s)),netLiquidationPnl:known?money(amount(s.cash)+liquidation-amount(s.policy.initialCash)):null,
     positions:s.positions,priceHistory:s.priceHistory??{},fills:s.fills.length,orders:s.orders.length,activeOrders:at===null?0:unresolved(s).filter(q=>end(q)>at).length,
-    unresolvedOrders:unresolved(s).length,fillModel:s.policy.fillModel??'strictThrough',conditionalQueueFills:s.fills.filter(f=>f.conditionalQueueFill).length,profitSignalEligible:s.policy.fillModel!=='conditionalFifo'&&!s.fills.some(f=>f.conditionalQueueFill)&&unresolved(s).length===0&&known&&amount(s.realized)>0n&&amount(s.cash)+liquidation>amount(s.policy.initialCash),counts:s.counts,contestOrders:0,networkRequests:0,profitabilityEstablished:false,
-    assumptions:['Independent simulated capital; no contest-account ownership.',s.policy.quoteMode==='pairedSpread'?'Flat entries quote both sides only when combined spread covers modeled fees and required edge; partial fills remain inventory risk.':'Microprice gates quotes; it is not calibrated alpha.',s.policy.fillModel==='conditionalFifo'?'Touch fills conditionally attribute observed volume to our side after visible queue exhaustion; aggressor direction and true FIFO priority are unverified.':'Strict one-tick trade-through and bounded participation are counterfactual, not verified queue fills.','Cancel acknowledgment does not release unresolved funding; complete window and post-end checkpoint are required.','Opposite BUY FIFO netting models the documented engine credit of one per netted share; all modeled fills remain counterfactual.']};
+    unresolvedOrders:unresolved(s).length,fillModel:s.policy.fillModel??'strictThrough',conditionalQueueFills:s.fills.filter(f=>f.conditionalQueueFill).length,profitSignalEligible:s.policy.fillModel!=='conditionalFifo'&&!s.fills.some(f=>f.conditionalQueueFill||f.executionStyle==='inventoryAON')&&unresolved(s).length===0&&known&&amount(s.realized)>0n&&amount(s.cash)+liquidation>amount(s.policy.initialCash),counts:s.counts,contestOrders:0,networkRequests:0,profitabilityEstablished:false,
+    assumptions:['Independent simulated capital; no contest-account ownership.',s.policy.quoteMode==='pairedSpread'?'Flat entries quote both sides only when combined spread covers modeled fees and required edge; partial fills remain inventory risk.':'Microprice gates quotes; it is not calibrated alpha.',s.policy.fillModel==='conditionalFifo'?'Touch fills conditionally attribute observed volume to our side after visible queue exhaustion; aggressor direction and true FIFO priority are unverified.':'Strict one-tick trade-through and bounded participation are counterfactual, not verified queue fills.','Cancel acknowledgment does not release unresolved funding; complete window and post-end checkpoint are required.','Opposite BUY FIFO netting models the documented engine credit of one per netted share; all modeled fills remain counterfactual.',...(s.policy.inventoryTakerAfterMs===undefined?[]:['Aged inventory all-or-none simulations require later fresh depth after modeled latency; payout uses the limit-price lower bound and no capacity is reused at the same side/engine sequence.'])]};
 }
