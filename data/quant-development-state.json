@@ -924,7 +924,7 @@
     "realized": "0.000000",
     "verifiedAt": "2026-10-07T06:16:58.422Z"
   },
-  "updatedAt": "2026-10-14 20:24:23 UTC",
+  "updatedAt": "2026-10-14 20:35:36 UTC",
   "foreignCandidateRepair": {
     "commit": "17b544005c7578c95df4dc4f2f30ee8e2cc75a19",
     "collector": 32364,
@@ -1012,7 +1012,7 @@
     "actualFillsProven": false,
     "contestOrders": 0
   },
-  "nextProfitabilityWork": "The direct arrival-ask to later-bid ridge selected zero trades on the later slice; move to exact cross-market settlement constraints or source-backed value dislocations, and require positive net outcomes on a new untouched window.",
+  "nextProfitabilityWork": "2026-10-14 microprice replay now parses coherent same-batch dirty-book replacements (4,171 books); the 30s model is unfit at 15 training rows and only seven holdout rows. Keep it exploratory and gather a new untouched capture before selecting a simpler feature set.",
   "oracle3Transfer20261014": {
     "issue": 113,
     "implementedAt": "2026-10-14 20:23:03 UTC",
@@ -1041,5 +1041,54 @@
       "6e6e2f7e3b33df675b81d1950388fc3bc0f7d2c5"
     ],
     "updatedAt": "2026-10-14 20:24:23 UTC"
+  },
+  "latestMicropriceHoldout20261014": {
+    "taskIssue": 112,
+    "updatedAt": "2026-10-14T20:35:36.272Z",
+    "codeCommit": "539f93a6ef65ebff594ddca9e0afc36b5e1fdcdb",
+    "testCommit": "ce3fa90651626b5d1d9ee1ddf955402d2ea6e2ab",
+    "reportCommit": "a693274212611802862a1892e9a087ca98a9af87",
+    "report": "data/realtime-book-pressure-holdout-20261014.json",
+    "source": {
+      "basename": "realtime-2026-10-14T12-48-27-326Z-58ea4714-2533-43f4-8812-3ff28ff75ab0.jsonl",
+      "sha256": "b1970b1a68740f5f6c14885c0272d2a8afa10b554aab918ca20ef3c1e0dbc9ef",
+      "bytes": 1805079573,
+      "records": 498515
+    },
+    "parserFix": {
+      "finding": "The feed accepts a market_batch dirty marker when the same batch includes the authoritative book for that exchange; replay had rejected every dirty marker.",
+      "acceptedBooksBefore": 1057,
+      "acceptedBooksAfter": 4171,
+      "targetDirtyBatchesSeen": 453894,
+      "targetDirtyBatchesReconciled": 453894,
+      "targetDirtyBatchesUnreconciled": 0,
+      "rejectedEvents": 0
+    },
+    "evaluation": {
+      "splitAt": "2026-10-14T16:51:01.921Z",
+      "purgeMs": 30000,
+      "with5sLabels": 951,
+      "with30sLabels": 245,
+      "completeTraining5s": 42,
+      "completeHoldout5s": 24,
+      "completeTraining30s": 15,
+      "completeHoldout30s": 7,
+      "holdoutMarkets30s": 4,
+      "ridge30sFitted": false,
+      "holdout5sMeanExecutableLongMarkoutPerShare": -0.009375000000000003,
+      "holdout5sN": 24,
+      "holdout30sMeanExecutableLongMarkoutPerShare": -0.010000000000000005,
+      "holdout30sN": 7,
+      "actualFills": false,
+      "contestOrders": 0,
+      "profitabilityEstablished": false
+    },
+    "limitations": [
+      "Single post-capture-designed exploratory split; not a pristine preregistered holdout.",
+      "30s ridge not fitted: 15 complete training rows, below the fixed 30-row minimum; seven evaluation rows in four markets are insufficient.",
+      "One-capture markouts are counterfactual and correlated; no actual fills or profitability claim."
+    ],
+    "executionStopPreserved": true,
+    "next": "Keep this opened capture exploratory; future model selection requires a new untouched capture and enough feature-complete continuous rows."
   }
 }
