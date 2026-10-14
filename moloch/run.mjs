@@ -1,6 +1,6 @@
 import fs from 'node:fs';import path from 'node:path';import readline from 'node:readline';
 import {createHash} from 'node:crypto';import {pathToFileURL} from 'node:url';
-import {createMoloch,advanceMoloch,reportMoloch} from './engine.mjs';
+import {createMoloch,advanceMoloch,reportMoloch,assertMoloch} from './engine.mjs';
 import {payloadHash} from '../execution/ledger.mjs';
 
 export function bookExportEvents(document){
@@ -18,17 +18,35 @@ export function replayEvents(events,policy={}){
   return{state,report:reportMoloch(state)};
 }
 export function journalDecoder(){let previous='',sequence=0;return row=>{const {hash,...body}=row;if(hash!==payloadHash(body)||body.sequence!==sequence+1||body.previous!==previous)throw Error('MOLOCH_SOURCE_JOURNAL_CHAIN');sequence++;previous=hash;return row.event;};}
-function options(args){const o={format:'ndjson',follow:false};for(let i=0;i<args.length;i++){const k=args[i];if(k==='--follow')o.follow=true;else if(['--input','--output','--format','--policy','--seconds'].includes(k)){if(!args[i+1])throw Error('Missing '+k);o[k.slice(2)]=args[++i];}else throw Error('Unknown option '+k);}if(!o.input||!o.output)throw Error('Usage: node moloch/run.mjs --input FILE --output NEW_DIRECTORY [--format book-export] [--policy FILE] [--follow --seconds 60]');return o;}
+export function completedTail(directory,visited=new Set()){
+ const dir=fs.realpathSync(directory);if(visited.has(dir)||visited.size>=64)throw Error('MOLOCH_TAIL_CONTINUATION_CYCLE');visited.add(dir);
+ const snapshot=JSON.parse(fs.readFileSync(path.join(dir,'state.json'),'utf8')),{hash,...body}=snapshot,report=JSON.parse(fs.readFileSync(path.join(dir,'report.json'),'utf8'));
+ if(hash!==payloadHash(body)||report.mode!=='local_paper_tail'||report.eventJournalHash!==body.lastHash||report.source.bytes!==body.source.consumedBytes||report.source.sha256!==body.source.consumedSha256)throw Error('MOLOCH_TAIL_TERMINAL_PROOF');
+ let state;
+ if(body.continuation){const parent=completedTail(body.continuation.parentDirectory,visited);if(parent.snapshot.hash!==body.continuation.parentSnapshotHash)throw Error('MOLOCH_TAIL_PARENT_HASH');state=structuredClone(parent.snapshot.state);}
+ else state=createMoloch(snapshot.state.policy);
+ const source=fs.openSync(body.source.path,'r'),digest=createHash('sha256');let remaining=body.source.consumedBytes,offset=0;
+ try{while(remaining){const b=Buffer.alloc(Math.min(remaining,1024*1024)),n=fs.readSync(source,b,0,b.length,offset);if(n!==b.length)throw Error('MOLOCH_TAIL_SOURCE_SHORT');digest.update(b);remaining-=n;offset+=n;}}finally{fs.closeSync(source);}
+ if(digest.digest('hex')!==body.source.consumedSha256)throw Error('MOLOCH_TAIL_SOURCE_CHANGED');
+ let previous='',sequence=0;const raw=fs.existsSync(path.join(dir,'events.jsonl'))?fs.readFileSync(path.join(dir,'events.jsonl'),'utf8'):'';
+ if(raw&&!raw.endsWith('\n'))throw Error('MOLOCH_TAIL_PARTIAL_JOURNAL');
+ for(const line of raw.trim().split(/\r?\n/).filter(Boolean)){const row=JSON.parse(line),{hash:h,...b}=row;if(h!==payloadHash(b)||b.previous!==previous||b.sequence!==sequence+1)throw Error('MOLOCH_TAIL_JOURNAL_CHAIN');advanceMoloch(state,b.event);if(payloadHash(state)!==b.stateHash)throw Error('MOLOCH_TAIL_REPLAY_STATE');previous=h;sequence++;}
+ if(sequence!==body.sequence||previous!==body.lastHash||payloadHash(state)!==payloadHash(snapshot.state))throw Error('MOLOCH_TAIL_REPLAY_TERMINAL');assertMoloch(state);
+ return{directory:dir,snapshot};
+}
+function options(args){const o={format:'ndjson',follow:false};for(let i=0;i<args.length;i++){const k=args[i];if(k==='--follow')o.follow=true;else if(['--input','--output','--format','--policy','--seconds','--resume'].includes(k)){if(!args[i+1])throw Error('Missing '+k);o[k.slice(2)]=args[++i];}else throw Error('Unknown option '+k);}if(!o.input||!o.output)throw Error('Usage: node moloch/run.mjs --input FILE --output NEW_DIRECTORY [--format book-export] [--policy FILE] [--follow --seconds 60]');return o;}
 export async function run(args){
   const o=options(args),input=path.resolve(o.input),out=path.resolve(o.output);
   if(fs.existsSync(out))throw Error('MOLOCH_OUTPUT_EXISTS: preserve previous run; use a new directory');
   if(!['ndjson','journal','book-export'].includes(o.format)||(o.follow&&!['ndjson','journal'].includes(o.format)))throw Error('MOLOCH_FORMAT');
   const seconds=o.seconds===undefined?null:Number(o.seconds);if(seconds!==null&&(!Number.isFinite(seconds)||seconds<=0))throw Error('MOLOCH_DURATION');
-  const policy=o.policy?JSON.parse(fs.readFileSync(o.policy,'utf8')):{},state=createMoloch(policy);
+  if(o.resume&&(!o.follow||o.format!=='journal'||o.policy))throw Error('MOLOCH_TAIL_RESUME_SCOPE');
+  const parent=o.resume?completedTail(o.resume):null,continuation=parent?{parentDirectory:parent.directory,parentSnapshotHash:parent.snapshot.hash,newPaperCapital:'0.000000'}:null;
+  const policy=o.policy?JSON.parse(fs.readFileSync(o.policy,'utf8')):{},state=parent?structuredClone(parent.snapshot.state):createMoloch(policy);
   fs.mkdirSync(out,{recursive:true});const startedAt=new Date().toISOString(),source=fs.statSync(input),sourceHash=createHash('sha256');
   const journal=path.join(out,'events.jsonl');let previous='',count=0,bytes=0,preCutoffEventsSkipped=0;
   const decode=o.format==='journal'?journalDecoder():row=>row;
-  const save=()=>{const body={state,source:{path:input,dev:source.dev,ino:source.ino,consumedBytes:bytes,consumedSha256:sourceHash.copy().digest('hex')},sequence:count,lastHash:previous};const temp=path.join(out,'state.tmp');fs.writeFileSync(temp,JSON.stringify({...body,hash:payloadHash(body)}));fs.renameSync(temp,path.join(out,'state.json'));};
+  const save=()=>{const body={state,source:{path:input,dev:source.dev,ino:source.ino,consumedBytes:bytes,consumedSha256:sourceHash.copy().digest('hex')},sequence:count,lastHash:previous,...(continuation?{continuation}:{})};const temp=path.join(out,'state.tmp');fs.writeFileSync(temp,JSON.stringify({...body,hash:payloadHash(body)}));fs.renameSync(temp,path.join(out,'state.json'));};
   const accept=event=>{
     // Validate on a copy, so a failed event cannot partially alter the durable wallet.
     const candidate=structuredClone(state);advanceMoloch(candidate,event);
@@ -43,12 +61,12 @@ export async function run(args){
       const stream=fs.createReadStream(input);stream.on('data',b=>{sourceHash.update(b);bytes+=b.length;});
       for await(const line of readline.createInterface({input:stream,crlfDelay:Infinity}))if(line.trim())accept(decode(JSON.parse(line)));
     }else{
-      let offset=0,pending=Buffer.alloc(0);const deadline=seconds===null?Infinity:Date.now()+seconds*1000;
+      let offset=0,parsedBytes=0,pending=Buffer.alloc(0);const deadline=seconds===null?Infinity:Date.now()+seconds*1000;
       const fd=fs.openSync(input,'r');
       try{while(Date.now()<deadline&&!fs.existsSync(path.join(out,'STOP'))){
         const st=fs.statSync(input);if(st.dev!==source.dev||st.ino!==source.ino||st.size<offset)throw Error('MOLOCH_SOURCE_REPLACED');
         if(st.size>offset){const n=Math.min(st.size-offset,1024*1024),chunk=Buffer.alloc(n),read=fs.readSync(fd,chunk,0,n,offset);if(read!==n)throw Error('MOLOCH_SOURCE_SHORT_READ');offset+=n;sourceHash.update(chunk);bytes+=n;pending=Buffer.concat([pending,chunk]);
-          let newline;while((newline=pending.indexOf(10))>=0){const line=pending.subarray(0,newline).toString('utf8');pending=Buffer.from(pending.subarray(newline+1));if(line.trim()){const event=decode(JSON.parse(line));if(Date.parse(event.receivedAt)<Date.parse(startedAt)){preCutoffEventsSkipped++;continue;}accept({...event,processedAt:new Date().toISOString()});}}
+          let newline;while((newline=pending.indexOf(10))>=0){parsedBytes+=newline+1;const line=pending.subarray(0,newline).toString('utf8');pending=Buffer.from(pending.subarray(newline+1));if(line.trim()){const event=decode(JSON.parse(line));const alreadyConsumed=parent&&input===parent.snapshot.source.path&&parsedBytes<=parent.snapshot.source.consumedBytes;if(alreadyConsumed||!parent&&Date.parse(event.receivedAt)<Date.parse(startedAt)){preCutoffEventsSkipped++;continue;}accept({...event,processedAt:new Date().toISOString()});}}
           if(pending.length>1024*1024)throw Error('MOLOCH_EVENT_TOO_LARGE');save();
         }else await new Promise(resolve=>setTimeout(resolve,250));
       }}finally{fs.closeSync(fd);}
@@ -57,7 +75,7 @@ export async function run(args){
     save();const report={...reportMoloch(state),mode:o.follow?'local_paper_tail':'historical_paper_replay',startedAt,
       source:{path:input,sha256:sourceHash.digest('hex'),bytes,format:o.format},eventJournalHash:previous,
       externalSourceProvenanceVerified:o.format==='book-export'?'bounded_export_hash_and_record_chain_only':o.format==='journal'?'source_journal_hash_chain_only':false,
-      prospectiveCutoff:o.follow?startedAt:null,preCutoffEventsSkipped,
+      prospectiveCutoff:o.follow?startedAt:null,preCutoffEventsSkipped,continuation,
       sourcePrefixNotIndependentlyReproduced:true,liveConnectionVerified:false};
     fs.writeFileSync(path.join(out,'report.json'),JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify(report,null,2));return report;
   }catch(error){save();fs.writeFileSync(path.join(out,'failure.json'),JSON.stringify({at:new Date().toISOString(),error:error.message,events:count}));throw error;}
