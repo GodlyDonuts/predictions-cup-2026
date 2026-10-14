@@ -616,3 +616,26 @@ The retrospective replay closed both old positions for 2.275000 proceeds,
 leaving cash 999.950000 and realized loss .050000. This released inventory risk
 without increasing liquidation value or demonstrating alpha. The prospective
 drain policy uses thirty minutes and carries the actual paper wallet unchanged.
+
+## First ML experiment
+
+`adverse-model.mjs` fits a regularized logistic model from verified completed
+stream journals. Six inputs describe spread, side-relative imbalance, entry
+price, own/opposite queue size and receipt lag. Their book must have been received
+at least three seconds before the compatible execution. The later trade's size,
+price and touch status are not inputs. Labels use fresh executable one-share
+marks 30–40 seconds later, conditional on the print rather than a proven fill.
+Training labels must be available by the cutoff; normalization uses training only.
+
+[The first evaluation](results/adverse-model-20261014.json) used 1,107 training
+samples and 546 later samples. Its later Brier score was .246545 versus .213051
+for constant training-period risk; lower is better. Its fixed predicted-risk
+gate selected samples with 32.42% adverse outcomes versus 30.77% overall, and
+their mean conditional price change was -.001781 per share. The model is rejected
+for quote control. Better training fit did not transfer to the later period.
+
+These periods had already been inspected, so this is retrospective research.
+Overlapping samples are correlated, and neither classification scores nor
+conditional price changes are wallet earnings. The original extraction with an
+unbounded later label horizon is retained locally as a superseded diagnostic;
+the published result uses the bounded horizon. The current paper policy is unchanged.
