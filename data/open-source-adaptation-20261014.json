@@ -1,0 +1,123 @@
+{
+  "schemaVersion": 1,
+  "report": "open-source-adaptation-20261014",
+  "generatedAtUtc": "2026-10-14T09:43:13Z",
+  "task": "https://github.com/GodlyDonuts/predictions-cup-2026/issues/95",
+  "baseMainSha": "f21c4ac726b2fd184947d0bedffa70a7a4e6f9a8",
+  "potentialsMarkdown": {
+    "url": "https://github.com/GodlyDonuts/predictions-cup-2026/blob/main/potentials.md",
+    "blobSha": "4882e6dd69ca80fc2db41d8e5d6def27006931c4",
+    "links": [
+      "https://github.com/HarrierOnChain/Prediction-Markets-Trading-Bot-Toolkits",
+      "https://github.com/yllvar/Kalshi-Quant-TeleBot",
+      "https://github.com/aarora4/Awesome-Prediction-Market-Tools",
+      "https://github.com/semrincaballero/Polymarket-Prediction-Bot",
+      "https://github.com/PredictionXBT/PredictOS"
+    ]
+  },
+  "sourceAudit": [
+    {
+      "project": "Harrier prediction-market toolkits",
+      "license": "MIT",
+      "licenseBlobSha": "ba609116a40941e8b9d2b177a823c1cd4687d5a0",
+      "inspected": [
+        {"path": "src/bot/market_maker.rs", "blobSha": "07a33a660251c0c125cc3f809f4b0a5d344e26b4"},
+        {"path": "src/bot/cross_market_arb.rs", "blobSha": "bea199c0c96e00ce614c0d141db497d57120a023"},
+        {"path": "src/bot/orderbook_imbalance.rs", "blobSha": "34ba862711173cd11167ae17a0cfee43b575a12d"}
+      ],
+      "finding": "These entry points only log that the strategies are in development and return. The README strategy list is not evidence that these implementations execute or earn alpha.",
+      "decision": "Do not copy or import as a working strategy. Inventory-aware quoting remains a design idea, not a result from this source."
+    },
+    {
+      "project": "Kalshi Quant TeleBot",
+      "license": "README claims MIT; root LICENSE path returned 404",
+      "readmeBlobSha": "d300dc037120341c3795caf60bc614ce1c836b2e",
+      "inspected": [
+        {"path": "src/arbitrage_analyzer.py", "blobSha": "51aaac1b91c212aa23d4db549bd465a6de2db331"},
+        {"path": "src/volatility_analyzer.py", "blobSha": "9477ce81cb76450ef3def30bdd7584ba23074574"},
+        {"path": "src/news_analyzer.py", "blobSha": "79d40483a5cb20d5e9975d0c579355f94e727b45"}
+      ],
+      "finding": "The analyzer runs a cointegration test, but its later spread is formed by independently standardizing each series and subtracting them rather than fitting a cointegrating hedge residual. The generic GARCH and sentiment helpers do not supply SIG-specific resolved-outcome calibration or evidence of executable returns.",
+      "decision": "No source copied. Verify licensing before any reuse. No strategy claim accepted without causal labels, fills, and net economics."
+    },
+    {
+      "project": "Awesome Prediction Market Tools",
+      "license": "No root LICENSE file found",
+      "readmeBlobSha": "e0d8b25c4e3aa9dad00bf90d01236a3bc11dc35c",
+      "finding": "This is a link directory, not a strategy implementation. It identifies Oracle3 as a potentially useful pricing-model source.",
+      "decision": "Use for discovery only; no directory content copied."
+    },
+    {
+      "project": "Polymarket Prediction Bot",
+      "license": "MIT",
+      "licenseBlobSha": "d5c6a7a8dcf86013edc8d3d8171203a75f59c1e8",
+      "inspected": [
+        {"path": "polymarket_bot/core/strategy.py", "blobSha": "6d15cab96859ebd9d1fd1a0720c3f5b549870bbc"}
+      ],
+      "finding": "The probability-edge heuristic compares supplied fair probability with midpoint, not depth-weighted executable asks. Imbalance is a threshold rule; wide-spread logic chooses YES without inventory-based side selection.",
+      "decision": "Transfer the conceptual separation of forecast from market price only. Baal's value-policy candidate already compares independent forecast bounds with executable depth and freshness. The linked heuristics add no validated alpha."
+    },
+    {
+      "project": "PredictOS",
+      "license": "MIT",
+      "licenseBlobSha": "d767cc66d9b59e2f36b484c6f3bf41eecacb6ab7",
+      "inspected": [
+        {"path": "docs/features/betting-bots.md", "blobSha": "cb1a328c06d04f08b087a24666aacccd5d7dff1d"},
+        {"path": "supabase/functions/polymarket-up-down-15-markets-limit-order-bot/index.ts", "ref": "34c7de8b63c9988dce43a11cff672d7ea94300b8", "blobSha": "cdda00799b4c64a00f8561b4b9f85a76c6584556"}
+      ],
+      "finding": "The actual Edge Function places straddle or ladder limit orders on short-horizon crypto markets. Its claimed 48-cent YES plus 48-cent NO payout requires both legs to fill; the documentation does not establish fill probability, queue priority, or one-leg adverse-selection economics.",
+      "decision": "Do not port the advertised return. Baal's distinct paired-contract paper tests already have no verified profitable completed pair."
+    },
+    {
+      "project": "Oracle3, found through the Awesome directory",
+      "license": "Apache-2.0",
+      "licenseBlobSha": "0a1f3263b67e7fbc96d62f30563f2ef61bb57661",
+      "inspected": [
+        {"path": "oracle3/pricing/fair_value.py", "blobSha": "24aa19f7b65abfa6dc117baabf7279c4ded2fdcf"},
+        {"path": "oracle3/pricing/distortion.py", "blobSha": "1edc767c20ea79858568c6b56fa74b41346776e1"},
+        {"path": "oracle3/pricing/calibrator.py", "blobSha": "97342b09312bf5d26d09afc1bff84cc165c6a0f8"},
+        {"path": "paper/paper.md", "blobSha": "5b304095381780c8754b59bf1dc36a1e215feeff"}
+      ],
+      "finding": "The transferable math is q=Phi(Phi^-1(p)+lambda), with lambda explicitly calibrated. The agent's README/paper describe a 291,309-contract multi-platform sample and pooled lambda 0.183; its current fair_value.py describes a different 13,274-contract Polymarket fit. These are not one reproducible parameter set. The companion working paper says the price/outcome relationship alone cannot identify risk premium separately from beliefs.",
+      "decision": "Implement only an explicit-lambda sensitivity diagnostic. No cross-venue lambda, prior, or coefficient is assumed valid for SIG."
+    },
+    {
+      "project": "Companion paper and replication repository",
+      "url": "https://github.com/YichengYang-Ethan/prediction-market-pricing",
+      "license": "MIT",
+      "licenseBlobSha": "bb8f8b9b53fa53281849e9e457eeebd7b14a4939",
+      "readmeBlobSha": "355d8fed7dafc24771e95a8236f2e0c866065036",
+      "paper": "https://papers.ssrn.com/sol3/papers.cfm?abstract_id=6468338",
+      "status": "Working paper; descriptive estimates do not establish a tradable SIG edge or a causal risk-premium mechanism."
+    }
+  ],
+  "baalTransfer": {
+    "candidate": "research/open-source-adaptation-v1/wang-value.mjs",
+    "purpose": "Research-only descriptive price-benchmark and executable-payout-value screen.",
+    "runtimeImported": false,
+    "modelDistortionResidual": "observed market midpoint minus Phi(Phi^-1(reference physical probability) + explicit lambda)",
+    "independentPayoutEdge": "independent physical probability times requested shares minus the cost of walking observed ask depth",
+    "separation": "The distortion residual is never used as expected return. Missing independent forecast, missing depth, insufficient size, stale quote, and future receipt all fail closed.",
+    "execution": {"ordersCreated": 0, "fillsRecorded": 0, "feesAssumedPerShare": 0}
+  },
+  "availableSigMetadata": {
+    "path": "data/markets.json",
+    "sha256": "41dcb6472ab60302aee6656d3cb75e7baba4b4976671b4419e8334c02189e37c",
+    "rows": 237,
+    "statuses": {"open": 237},
+    "rowsWithSettlementLabels": 0,
+    "containsTimestampedPriceHistory": false,
+    "sigLambdaFitted": false,
+    "scopeNote": "This result describes the inspected metadata snapshot; it is not a claim that no other local historical capture exists."
+  },
+  "validation": {
+    "command": "node --test research/open-source-adaptation-v1/wang-value.test.mjs",
+    "testsPassed": 8,
+    "testsFailed": 0,
+    "syntaxCheck": "node --check research/open-source-adaptation-v1/wang-value.mjs passed",
+    "inventoryCommand": "node research/open-source-adaptation-v1/wang-value.mjs --inventory",
+    "profitabilityEvidence": false,
+    "interpretation": "Unit tests establish math, input gates, and separation of quantities only. There is no SIG-specific lambda estimate, chronological settlement backtest, fill evidence, or profitability result."
+  }
+}
+
