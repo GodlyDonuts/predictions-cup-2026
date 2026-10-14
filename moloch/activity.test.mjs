@@ -5,11 +5,11 @@ const book=(n,seq,bid=.4,ask=.42)=>({exchangeId:'2',asOf:{sequence:seq,at:at(n)}
 const batch=(books,trades=[])=>({books,trades,resyncRequired:false});
 const trade=(n,id='trade')=>({id,sequence:10,exchangeId:'2',marketId:'1',tournamentId:'cup',price:.4,quantity:50,executedAt:at(n)});
 test('future book in a trade batch cannot invent a prior quote or a wallet profit',()=>{
-  const {s,send}=setup();send(batch([book(6,11)],[trade(4)]),6);send(batch([book(40,12,.39,.41)]),40);const r=s.report(at(40))[0];assert.equal(r.observedTrades,1);assert.equal(r.conditionalMarkouts,0);assert.equal(r.meanConditionalLiquidationDeltaPerShare,null);
+  const {s,send}=setup();send(batch([book(6,11)],[trade(4)]),6);send(batch([book(40,12,.39,.41)]),40);const r=s.report(at(40))[0];assert.equal(r.observedTrades,1);assert.equal(r.conditionalMarkouts,0);assert.equal(r.meanConditionalLiquidationDeltaPerShare,null);assert.equal(r.bidCompatibleVolume,0);assert.equal(r.askCompatibleVolume,0);
 });
 test('conditional markout uses a prior observable regime and a genuinely later executable book',()=>{
   const {s,send}=setup();send(batch([book(0,1)]),0);send(batch([book(6,11)],[trade(4)]),6);send(batch([book(20,12,.395,.415)]),20);assert.equal(s.report(at(20))[0].conditionalMarkouts,0);
-  send(batch([book(35,13,.39,.41)]),35);const r=s.report(at(35))[0];assert.equal(r.conditionalMarkouts,1);assert.equal(r.meanConditionalLiquidationDeltaPerShare,-.01);assert.equal(r.gapObserved,false);
+  send(batch([book(35,13,.39,.41)]),35);const r=s.report(at(35))[0];assert.equal(r.conditionalMarkouts,1);assert.equal(r.meanConditionalLiquidationDeltaPerShare,-.01);assert.equal(r.gapObserved,false);assert.equal(r.bidCompatibleVolume,50);assert.equal(r.askCompatibleVolume,0);assert.equal(r.bothSideQueueTurnover,0);
 });
 test('a revision gap prevents quoted admission but retains activity priority for authoritative recovery',()=>{
   const {s,send}=setup();send(batch([book(0,1)]),0);send(batch([book(6,11)],[trade(4)]),6);send(batch([book(35,12,.45,.47)]),35,{gap:true});const r=s.report(at(35))[0];assert.equal(r.gapObserved,true);assert.equal(r.eligibleForFurtherReconciliation,false);assert.equal(r.conditionalMarkouts,0);assert.equal(r.quoteReadyFromObservation,false);assert.equal(r.authoritativeResyncRequired,true);assert.ok(r.reconciliationPriority>0);

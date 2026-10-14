@@ -398,3 +398,16 @@ Activity reports now expose `reconciliationPriority` from observed flow even for
 markets with historical gaps, together with `quoteReadyFromObservation: false`
 and mandatory authoritative recovery. These are exploration priorities, not
 permission to quote from stale or incomplete data.
+
+The [October 14 rotation](results/sig-rotation-20261014.json) recovered four
+high-activity candidates with historical gap warnings through complete scoped
+REST windows, then replaced the flat old scopes atomically. North Carolina Senate,
+Texas Senate, New Mexico Governor and U.S. Senate ran on their per-market topics
+with unchanged 1000.000000 cash and zero new capital. The run completed with zero
+fills/profit; 34.825000 remained reserved for unresolved modeled quotes.
+
+Activity diagnostics separate volume compatible with a prior observable bid from
+volume compatible with its ask, and show the weaker side's queue turnover. This
+requires the book to predate the execution and be received before it; a post-trade
+book cannot invent earlier liquidity. Compatibility is not aggressor attribution.
+High print counts with little share volume do not imply adequate maker turnover.
