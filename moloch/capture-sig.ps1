@@ -17,6 +17,7 @@ param(
   [string]$ScreenPairsFile,
   [string]$RecoveryWindowsFile,
   [switch]$RealtimeCapture,
+  [switch]$AllowOneDnsReadRecovery,
   [string]$UniversePairsFile
 )
 $ErrorActionPreference='Stop'
@@ -108,6 +109,7 @@ try {
     $taskRequests=@(@{kind='realtime';endpoint='/realtime/token';method='Post'})+@($taskRequests)
   }
   $taskReceipts=0
+  $taskDnsRecoveryUsed=$false
   for($taskIndex=0;$taskIndex -lt $taskRequests.Count;$taskIndex++){
     if($ScreenPairsFile -and $taskReceipts -ge 120){break}
     $taskRequest=$taskRequests[$taskIndex]
@@ -152,16 +154,32 @@ try {
       $taskStatus=if($_.Exception.Response){[int]$_.Exception.Response.StatusCode}else{0}
       $taskDelay=60
       if($_.Exception.Response.Headers.RetryAfter.Delta){$taskDelay=[Math]::Max(60,$_.Exception.Response.Headers.RetryAfter.Delta.TotalSeconds)}
+      if($_.Exception.Response.Headers.RetryAfter.Date){$taskDelay=[Math]::Max($taskDelay,($_.Exception.Response.Headers.RetryAfter.Date-[DateTimeOffset]::UtcNow).TotalSeconds)}
       $taskBudget.blocked=$true;$taskBudget.nextAt=[DateTimeOffset]::UtcNow.ToUnixTimeMilliseconds()+[long]($taskDelay*1000)
-      $taskFailure=[ordered]@{at=[DateTime]::UtcNow.ToString('o');status=$taskStatus;endpoint=$taskRequest.endpoint;method=$taskMethod;minimumBackoffSeconds=$taskDelay;orderWrites=0;transport=Get-MolochReadFailure -Exception $_.Exception}
+      $taskFailure=[ordered]@{at=[DateTime]::UtcNow.ToString('o');status=$taskStatus;endpoint=$taskRequest.endpoint;method=$taskMethod;marketId=$taskMarket;exchangeId=$taskExchange;minimumBackoffSeconds=$taskDelay;orderWrites=0;transport=Get-MolochReadFailure -Exception $_.Exception}
       $taskFailure | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $taskOutput 'failure.json') -Encoding utf8
+      $taskFailure | ConvertTo-Json -Depth 8 -Compress | Add-Content -LiteralPath (Join-Path $taskOutput 'read-failures.jsonl') -Encoding utf8
       $taskBudget | ConvertTo-Json -Depth 5 | Set-Content -LiteralPath $taskBudgetFile -Encoding utf8
+      if(Test-MolochDnsReadRecovery -Enabled ([bool]$AllowOneDnsReadRecovery) -Used $taskDnsRecoveryUsed -Method $taskMethod -Status $taskStatus -Transport $taskFailure.transport){
+        $taskDnsRecoveryUsed=$true
+        [ordered]@{phase='waiting_backoff';failure=$taskFailure;retryCount=1;sameEndpoint=$true} | ConvertTo-Json -Depth 10 | Set-Content -LiteralPath (Join-Path $taskOutput 'read-recovery.json') -Encoding utf8
+        $taskRetry=$taskRequest.Clone();$taskRetry.fixedWindow=$true;$taskRetry.dnsRetry=$true;$taskRetry.marketId=$taskMarket;$taskRetry.exchangeId=$taskExchange
+        $taskRemaining=if($taskIndex+1 -lt $taskRequests.Count){@($taskRequests[($taskIndex+1)..($taskRequests.Count-1)])}else{@()}
+        $taskRequests=@($taskRequests[0..$taskIndex])+@($taskRetry)+$taskRemaining
+        continue
+      }
+      if($taskDnsRecoveryUsed){[ordered]@{phase='failed';failure=$taskFailure;retryCount=1} | ConvertTo-Json -Depth 10 | Set-Content -LiteralPath (Join-Path $taskOutput 'read-recovery.json') -Encoding utf8}
       throw "SIG_GET_FAILED_$taskStatus : capture stopped; no blind retry or credential logging."
     }
     $taskReceived=[DateTime]::UtcNow.ToString('yyyy-MM-ddTHH:mm:ss.fffZ')
     $taskBudget.nextAt=[DateTimeOffset]::UtcNow.ToUnixTimeMilliseconds()+12000
     $taskBudget | ConvertTo-Json -Depth 5 | Set-Content -LiteralPath $taskBudgetFile -Encoding utf8
     try{$taskData=$taskResponse.Content | ConvertFrom-Json -DateKind String}catch{throw 'SIG_RESPONSE_JSON_INVALID: raw response omitted from diagnostic output.'}
+    if($taskRequest.dnsRetry){
+      if([int]$taskResponse.StatusCode -ne 200){throw 'DNS_READ_RECOVERY_REQUIRES_HTTP200'}
+      $taskBudget.blocked=$false;$taskBudget | ConvertTo-Json -Depth 5 | Set-Content -LiteralPath $taskBudgetFile -Encoding utf8
+      [ordered]@{phase='recovered';endpoint=$taskRequest.endpoint;receivedAt=$taskReceived;status=200;retryCount=1;orderWrites=0} | ConvertTo-Json -Depth 5 | Set-Content -LiteralPath (Join-Path $taskOutput 'read-recovery.json') -Encoding utf8
+    }
     if($taskRequest.kind -eq 'realtime'){
       $taskTokenWrites++
       $taskStartInfo=[Diagnostics.ProcessStartInfo]::new()

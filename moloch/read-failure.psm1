@@ -23,4 +23,8 @@ function Get-MolochReadFailure {
   }
   [ordered]@{category=$taskCategory;exceptionType=if($taskRootType -match '^(System|Microsoft\.PowerShell)\.[A-Za-z0-9_.]+$'){$taskRootType}else{'Other'};transportCode=$taskCode;typedTransportFailure=($taskCategory -ne 'unclassified')}
 }
-Export-ModuleMember -Function Get-MolochReadFailure
+function Test-MolochDnsReadRecovery {
+  param([bool]$Enabled,[bool]$Used,[string]$Method,[int]$Status,$Transport)
+  $Enabled -and -not $Used -and $Method -eq 'Get' -and $Status -eq 0 -and $Transport.category -eq 'transport_dns' -and $Transport.typedTransportFailure
+}
+Export-ModuleMember -Function Get-MolochReadFailure,Test-MolochDnsReadRecovery
