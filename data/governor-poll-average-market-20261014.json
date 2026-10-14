@@ -1,0 +1,475 @@
+{
+  "schemaVersion": 1,
+  "id": "governor-poll-average-market-20261014-v1",
+  "generatedAt": "2026-10-14T17:22:20.461Z",
+  "method": "governor_poll_average_error_vs_captured_SIG_market_v1",
+  "sourceHashes": {
+    "historicalPollArchive": "9f0b185506e59117c150fb988e73b612346effe8e3a8f0d90fdafcad07f54756",
+    "governorOutcomeArchive": "22ff0589b8ccc4c1c6f6f8c20ea5099d20fa044c696db9392823d59ead1364dc",
+    "priorGovernorModelReport": "ac6874a3b51d7a057f0ed47b92dbfc1e4df789d0df6e26568634a15d231805d1",
+    "priorOnPointScreen": "981e93448d308c72fca76abdd39e8fd3f390cdde2f6942a99825b21230463eef",
+    "onPointMichiganPage": "c8884abf302478e66586bd3f7a12fca4c85990744412fae157a2f4fd28129f24",
+    "callTheMapMichiganPage": "b7c3be92cc6230a28cc7d1e84e093e3696de2ceb6216f4f0d940cb4d66e37dc3",
+    "calibrationCode": "c27a01a4865edc01d105c2003710ad0617a4b6ece5682496dc9844346be3797d"
+  },
+  "historicalSource": {
+    "pollUrl": "https://raw.githubusercontent.com/fivethirtyeight/data/master/pollster-ratings/raw_polls.csv",
+    "outcomeUrl": "https://raw.githubusercontent.com/fivethirtyeight/election-results/d7a7cff101da28f4ff77114450a964874800ca54/election_results_gubernatorial.csv",
+    "verifiedOutcomeRaces": 348,
+    "acceptedPollQuestions": 2657,
+    "exclusions": {
+      "partisan_or_internal": 288,
+      "regular_final_outcome_unavailable": 161,
+      "separate_outcome_archive_disagrees": 395,
+      "final_candidate_identity_unmatched": 34,
+      "invalid_vote_shares": 2
+    },
+    "sourcePublisherIndependentlyCertified": false
+  },
+  "calibration": {
+    "fixedDesign": {
+      "horizonDays": 21,
+      "maximumPollAgeDays": 14,
+      "recencyHalfLifeDays": 21,
+      "cutoffYear": 2022,
+      "family": "poll_centered",
+      "distribution": "fixed_t4",
+      "minimumSdPoints": 3
+    },
+    "sample": {
+      "sourcePollObservations": 566,
+      "uniqueGovernorRaces": 206,
+      "independentCalendarYearClusters": 25,
+      "trainedThroughYear": 2022,
+      "raceYears": [
+        1998,
+        1999,
+        2000,
+        2001,
+        2002,
+        2003,
+        2004,
+        2005,
+        2006,
+        2007,
+        2008,
+        2009,
+        2010,
+        2011,
+        2012,
+        2013,
+        2014,
+        2015,
+        2016,
+        2017,
+        2018,
+        2019,
+        2020,
+        2021,
+        2022
+      ]
+    },
+    "model": {
+      "family": "poll_centered",
+      "races": 206,
+      "cycles": [
+        1998,
+        1999,
+        2000,
+        2001,
+        2002,
+        2003,
+        2004,
+        2005,
+        2006,
+        2007,
+        2008,
+        2009,
+        2010,
+        2011,
+        2012,
+        2013,
+        2014,
+        2015,
+        2016,
+        2017,
+        2018,
+        2019,
+        2020,
+        2021,
+        2022
+      ],
+      "trainedThroughYear": 2022,
+      "biasPoints": 0,
+      "standardDeviationPoints": 7.372674215691149,
+      "distribution": "fixed_t4",
+      "effectiveUnit": "one_state_race",
+      "historicalPopulationTransportMeasured": false
+    },
+    "chronological": {
+      "predictionCount": 155,
+      "metrics": {
+        "races": 155,
+        "cycles": [
+          2003,
+          2004,
+          2005,
+          2006,
+          2007,
+          2008,
+          2009,
+          2010,
+          2011,
+          2012,
+          2013,
+          2014,
+          2015,
+          2016,
+          2017,
+          2018,
+          2019,
+          2020,
+          2021,
+          2022
+        ],
+        "brier": 0.08495444120601832,
+        "logLoss": 0.2684613540054003,
+        "correctDirections": 133,
+        "bins": [
+          {
+            "low": 0,
+            "high": 0.2,
+            "n": 55,
+            "meanForecast": 0.04905864911056873,
+            "observedFrequency": 0
+          },
+          {
+            "low": 0.2,
+            "high": 0.4,
+            "n": 15,
+            "meanForecast": 0.2851186081304018,
+            "observedFrequency": 0.26666666666666666
+          },
+          {
+            "low": 0.4,
+            "high": 0.6,
+            "n": 13,
+            "meanForecast": 0.4866070643768775,
+            "observedFrequency": 0.46153846153846156
+          },
+          {
+            "low": 0.6,
+            "high": 0.8,
+            "n": 19,
+            "meanForecast": 0.7052839113690497,
+            "observedFrequency": 0.47368421052631576
+          },
+          {
+            "low": 0.8,
+            "high": 1.000001,
+            "n": 53,
+            "meanForecast": 0.9226906073215018,
+            "observedFrequency": 0.9622641509433962
+          }
+        ],
+        "independentElectionCycles": 20,
+        "untouchedOriginalForecastVintage": false,
+        "historicalMarketPnlAvailable": false,
+        "profitabilityEstablished": false
+      },
+      "midtermCycleMetrics": {
+        "races": 105,
+        "cycles": [
+          2006,
+          2010,
+          2014,
+          2018,
+          2022
+        ],
+        "brier": 0.07833066931135893,
+        "logLoss": 0.25344560352143236,
+        "correctDirections": 91,
+        "bins": [
+          {
+            "low": 0,
+            "high": 0.2,
+            "n": 40,
+            "meanForecast": 0.04993458147076771,
+            "observedFrequency": 0
+          },
+          {
+            "low": 0.2,
+            "high": 0.4,
+            "n": 12,
+            "meanForecast": 0.2751388575472837,
+            "observedFrequency": 0.25
+          },
+          {
+            "low": 0.4,
+            "high": 0.6,
+            "n": 8,
+            "meanForecast": 0.49235405657278436,
+            "observedFrequency": 0.375
+          },
+          {
+            "low": 0.6,
+            "high": 0.8,
+            "n": 12,
+            "meanForecast": 0.69580961350051,
+            "observedFrequency": 0.5
+          },
+          {
+            "low": 0.8,
+            "high": 1.000001,
+            "n": 33,
+            "meanForecast": 0.9177946218824424,
+            "observedFrequency": 0.9696969696969697
+          }
+        ],
+        "independentElectionCycles": 5,
+        "untouchedOriginalForecastVintage": false,
+        "historicalMarketPnlAvailable": false,
+        "profitabilityEstablished": false
+      },
+      "byYear": [
+        {
+          "year": 2003,
+          "races": 1,
+          "trainedThroughYear": 2002,
+          "brier": 0.04670697256509034,
+          "logLoss": 0.24349672893048344,
+          "correctDirections": 1
+        },
+        {
+          "year": 2004,
+          "races": 7,
+          "trainedThroughYear": 2003,
+          "brier": 0.06393619482074663,
+          "logLoss": 0.24486176331922718,
+          "correctDirections": 7
+        },
+        {
+          "year": 2005,
+          "races": 1,
+          "trainedThroughYear": 2004,
+          "brier": 0.031937342554563514,
+          "logLoss": 0.19687927139426478,
+          "correctDirections": 1
+        },
+        {
+          "year": 2006,
+          "races": 26,
+          "trainedThroughYear": 2005,
+          "brier": 0.033482597438740325,
+          "logLoss": 0.14495441872517806,
+          "correctDirections": 25
+        },
+        {
+          "year": 2007,
+          "races": 1,
+          "trainedThroughYear": 2006,
+          "brier": 0.0006494068127605732,
+          "logLoss": 0.02581378896635312,
+          "correctDirections": 1
+        },
+        {
+          "year": 2008,
+          "races": 8,
+          "trainedThroughYear": 2007,
+          "brier": 0.06119627207081581,
+          "logLoss": 0.1843681736794922,
+          "correctDirections": 7
+        },
+        {
+          "year": 2009,
+          "races": 2,
+          "trainedThroughYear": 2008,
+          "brier": 0.09471674154012188,
+          "logLoss": 0.3232148362580305,
+          "correctDirections": 2
+        },
+        {
+          "year": 2010,
+          "races": 24,
+          "trainedThroughYear": 2009,
+          "brier": 0.053845827803944306,
+          "logLoss": 0.19115346480330564,
+          "correctDirections": 22
+        },
+        {
+          "year": 2011,
+          "races": 1,
+          "trainedThroughYear": 2010,
+          "brier": 0.00010000000000000018,
+          "logLoss": 0.01005033585350145,
+          "correctDirections": 1
+        },
+        {
+          "year": 2012,
+          "races": 6,
+          "trainedThroughYear": 2011,
+          "brier": 0.07938642252361405,
+          "logLoss": 0.23629575876795483,
+          "correctDirections": 5
+        },
+        {
+          "year": 2013,
+          "races": 2,
+          "trainedThroughYear": 2012,
+          "brier": 0.0057676331589320735,
+          "logLoss": 0.06157357463094233,
+          "correctDirections": 2
+        },
+        {
+          "year": 2014,
+          "races": 18,
+          "trainedThroughYear": 2013,
+          "brier": 0.14898125645373225,
+          "logLoss": 0.44281957846179654,
+          "correctDirections": 13
+        },
+        {
+          "year": 2015,
+          "races": 1,
+          "trainedThroughYear": 2014,
+          "brier": 0.4058685510436862,
+          "logLoss": 1.0135677178717346,
+          "correctDirections": 0
+        },
+        {
+          "year": 2016,
+          "races": 7,
+          "trainedThroughYear": 2015,
+          "brier": 0.28147948770513875,
+          "logLoss": 0.7669712149516522,
+          "correctDirections": 4
+        },
+        {
+          "year": 2017,
+          "races": 2,
+          "trainedThroughYear": 2016,
+          "brier": 0.013689725052785897,
+          "logLoss": 0.1005170678638407,
+          "correctDirections": 2
+        },
+        {
+          "year": 2018,
+          "races": 18,
+          "trainedThroughYear": 2017,
+          "brier": 0.08593607805010542,
+          "logLoss": 0.25831957501709363,
+          "correctDirections": 15
+        },
+        {
+          "year": 2019,
+          "races": 2,
+          "trainedThroughYear": 2018,
+          "brier": 0.1327131441625153,
+          "logLoss": 0.41288384264255007,
+          "correctDirections": 1
+        },
+        {
+          "year": 2020,
+          "races": 7,
+          "trainedThroughYear": 2019,
+          "brier": 0.0035844680067795695,
+          "logLoss": 0.04372640284122255,
+          "correctDirections": 7
+        },
+        {
+          "year": 2021,
+          "races": 2,
+          "trainedThroughYear": 2020,
+          "brier": 0.27764579149923957,
+          "logLoss": 0.7159497027255969,
+          "correctDirections": 1
+        },
+        {
+          "year": 2022,
+          "races": 19,
+          "trainedThroughYear": 2021,
+          "brier": 0.09649267662745768,
+          "logLoss": 0.2965676613156007,
+          "correctDirections": 16
+        }
+      ]
+    },
+    "currentPollingInput": {
+      "publisher": "Call the Map",
+      "state": "MI",
+      "favoriteCandidate": "Jocelyn Benson",
+      "pollAverageForDemocraticMarginPoints": 7.5,
+      "displayedPollCount": 41,
+      "publisherMethodMatchesHistoricalAggregation": false,
+      "sourceDate": "2026-10-14",
+      "sourceModifiedAt": "2026-10-14T13:18:16.000Z",
+      "sourceUrl": "https://www.callthemap.com/governors/michigan",
+      "displayedWinProbability": 0.84,
+      "probabilityCalibratedForSIG": false
+    },
+    "sensitivity": {
+      "inputPollMarginPoints": 7.5,
+      "democraticWinProbability": 0.8881763196872845,
+      "bootstrap": {
+        "method": "calendar_year_cluster_bootstrap_v1",
+        "independentClusters": 25,
+        "bootstrapReplicates": 4000,
+        "validReplicates": 4000,
+        "seed": 1805918246,
+        "probabilityPercentiles": {
+          "p025": 0.849997694623553,
+          "p50": 0.8909154040647788,
+          "p975": 0.9256214554745886
+        },
+        "interpretation": "historical_parameter_sensitivity_not_a_2026_confidence_interval"
+      },
+      "yesFairValueSensitivity": 0.8881763196872845,
+      "noFairValueSensitivity": 0.1118236803127155,
+      "marketCalibrationEstablished": false,
+      "classification": "external_polling_sensitivity_not_SIG_fair_value_or_trade"
+    }
+  },
+  "marketComparison": {
+    "state": "MI",
+    "marketId": "305",
+    "exchangeId": "994",
+    "screenSnapshotAsOf": "2026-10-14T17:05:46.455Z",
+    "screenSnapshotAgeAtAnalysisMs": 994006,
+    "snapshotFreshAtAnalysis": false,
+    "sourceQuoteReceivedAt": "2026-10-14T17:05:35.882Z",
+    "sourceBookPublishedAt": "2026-10-14T17:05:35.890Z",
+    "sourceQuoteAgeMs": 10573,
+    "tick": 0.005,
+    "fees": 0,
+    "oneTickAdverseStress": 0.005,
+    "democraticYes": {
+      "ask": 0.9,
+      "stressedAsk": 0.905,
+      "pointEdge": -0.016823680312715528,
+      "historicalBootstrapLowerEdge": -0.055002305376447014,
+      "externalPollModelProbability": 0.8881763196872845
+    },
+    "democraticNo": {
+      "ask": 0.105,
+      "stressedAsk": 0.11,
+      "pointEdge": 0.0018236803127155005,
+      "historicalBootstrapLowerEdge": -0.03562145547458863,
+      "externalPollModelProbability": 0.1118236803127155
+    },
+    "onPointDisplayedDemocraticProbability": 0.97,
+    "independentPublisherDisplayedDemocraticProbability": 0.84,
+    "pollAverageCalibratedDemocraticProbability": 0.8881763196872845,
+    "noRobustEdgeAcrossHistoricalCycleBootstrap": true,
+    "classification": "historical_external_poll_sensitivity_not_SIG_fair_value_or_trade"
+  },
+  "limitations": [
+    "Historical source rows are grouped into one recency-weighted poll average per governor race; this empirically preserves shared race-level error instead of dividing single-poll dispersion by sqrt(n).",
+    "The historical archive does not identify likely-voter population, original publication time, or the exact publisher aggregation for the current 41-poll average.",
+    "Election-year clusters are few and outcomes within a cycle are correlated; the bootstrap interval is historical parameter sensitivity, not a 2026 confidence interval.",
+    "The archive ends in 2022. Model transport to the 2026 Michigan race is unvalidated.",
+    "No historical market prices, fills, market calibration, or trading P&L are used."
+  ],
+  "profitabilityEstablished": false,
+  "executionAuthority": false,
+  "ordersGenerated": 0
+}
