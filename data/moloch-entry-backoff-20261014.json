@@ -1,0 +1,581 @@
+{
+  "schemaVersion": 1,
+  "baselineFinancialParity": true,
+  "sourceSnapshots": [
+    {
+      "episode": 18,
+      "hash": "2752f9b8efdd28bf4816882cf97197c269a851462cd89425b49fc034efdbe3c9"
+    },
+    {
+      "episode": 19,
+      "hash": "031a004e89226b067f09c6cfc0fb496e2cacad3a69fa0ae020a5da6ad9a0bdf5"
+    },
+    {
+      "episode": 20,
+      "hash": "1041eaecec02fd81526dcee7d875a72e5fb16ba252956b67aabb00745c26c685"
+    },
+    {
+      "episode": 21,
+      "hash": "77fda50845415d5e211f16e345f74dbd916f425f5d4d7d59ba5a30bda948493b"
+    },
+    {
+      "episode": 22,
+      "hash": "b0ac0abb50b61f4eeb80c4ecdf68fb63b26a8e92f1047e3725160d2275c3e078"
+    },
+    {
+      "episode": 23,
+      "hash": "ce53447ec0af5c1fb9d080e2480666e4b79b60126a345f38e54580e837a173c7"
+    },
+    {
+      "episode": 24,
+      "hash": "7cd10c70b691b7094d53ee8eea80943c3a68a3265c95f70093e54368cff38314"
+    },
+    {
+      "episode": 25,
+      "hash": "30aecf2b2f581f49b57ce0d452abfa97391921d63dea86690f80dc28bc997380"
+    }
+  ],
+  "results": [
+    {
+      "entryBackoffTicks": null,
+      "marks": [
+        {
+          "episode": 18,
+          "newFills": 2,
+          "realized": "0.025000",
+          "cash": "995.755000",
+          "ownedCost": "4.270000",
+          "unresolved": 7,
+          "lastFresh": {
+            "at": "2026-10-14T04:32:10.119Z",
+            "pnl": "0.025000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T04:29:06.945Z",
+            "pnl": "-0.010000"
+          }
+        },
+        {
+          "episode": 19,
+          "newFills": 1,
+          "realized": "0.025000",
+          "cash": "995.005000",
+          "ownedCost": "5.020000",
+          "unresolved": 6,
+          "lastFresh": {
+            "at": "2026-10-14T04:45:59.557Z",
+            "pnl": "0.000000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T04:38:34.423Z",
+            "pnl": "0.000000"
+          }
+        },
+        {
+          "episode": 20,
+          "newFills": 0,
+          "realized": "0.025000",
+          "cash": "995.005000",
+          "ownedCost": "5.020000",
+          "unresolved": 2,
+          "lastFresh": {
+            "at": "2026-10-14T04:50:57.758Z",
+            "pnl": "0.000000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T04:48:15.999Z",
+            "pnl": "0.000000"
+          }
+        },
+        {
+          "episode": 21,
+          "newFills": 0,
+          "realized": "0.025000",
+          "cash": "995.005000",
+          "ownedCost": "5.020000",
+          "unresolved": 4,
+          "lastFresh": {
+            "at": "2026-10-14T05:07:50.889Z",
+            "pnl": "0.025000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T04:53:33.547Z",
+            "pnl": "0.000000"
+          }
+        },
+        {
+          "episode": 22,
+          "newFills": 1,
+          "realized": "0.025000",
+          "cash": "999.275000",
+          "ownedCost": "0.750000",
+          "unresolved": 5,
+          "lastFresh": {
+            "at": "2026-10-14T05:41:42.275Z",
+            "pnl": "0.000000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T05:27:36.304Z",
+            "pnl": "0.000000"
+          }
+        },
+        {
+          "episode": 23,
+          "newFills": 0,
+          "realized": "0.025000",
+          "cash": "999.275000",
+          "ownedCost": "0.750000",
+          "unresolved": 5,
+          "lastFresh": {
+            "at": "2026-10-14T06:06:26.086Z",
+            "pnl": "0.000000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T05:52:44.517Z",
+            "pnl": "0.000000"
+          }
+        },
+        {
+          "episode": 24,
+          "newFills": 1,
+          "realized": "0.025000",
+          "cash": "997.675000",
+          "ownedCost": "2.350000",
+          "unresolved": 2,
+          "lastFresh": {
+            "at": "2026-10-14T06:56:32.735Z",
+            "pnl": "-0.050000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T06:55:11.008Z",
+            "pnl": "-0.050000"
+          }
+        },
+        {
+          "episode": 25,
+          "newFills": 0,
+          "realized": "0.025000",
+          "cash": "997.675000",
+          "ownedCost": "2.350000",
+          "unresolved": 4,
+          "lastFresh": {
+            "at": "2026-10-14T07:26:48.556Z",
+            "pnl": "-0.050000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T07:12:11.070Z",
+            "pnl": "-0.050000"
+          }
+        }
+      ]
+    },
+    {
+      "entryBackoffTicks": 1,
+      "marks": [
+        {
+          "episode": 18,
+          "newFills": 0,
+          "realized": "0.025000",
+          "cash": "1000.025000",
+          "ownedCost": "0.000000",
+          "unresolved": 8,
+          "lastFresh": {
+            "at": "2026-10-14T04:32:11.214Z",
+            "pnl": "0.025000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T04:22:01.106Z",
+            "pnl": "0.025000"
+          }
+        },
+        {
+          "episode": 19,
+          "newFills": 0,
+          "realized": "0.025000",
+          "cash": "1000.025000",
+          "ownedCost": "0.000000",
+          "unresolved": 8,
+          "lastFresh": {
+            "at": "2026-10-14T04:45:59.557Z",
+            "pnl": "0.025000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T04:34:34.154Z",
+            "pnl": "0.025000"
+          }
+        },
+        {
+          "episode": 20,
+          "newFills": 0,
+          "realized": "0.025000",
+          "cash": "1000.025000",
+          "ownedCost": "0.000000",
+          "unresolved": 4,
+          "lastFresh": {
+            "at": "2026-10-14T04:50:57.758Z",
+            "pnl": "0.025000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T04:46:58.373Z",
+            "pnl": "0.025000"
+          }
+        },
+        {
+          "episode": 21,
+          "newFills": 0,
+          "realized": "0.025000",
+          "cash": "1000.025000",
+          "ownedCost": "0.000000",
+          "unresolved": 6,
+          "lastFresh": {
+            "at": "2026-10-14T05:07:50.889Z",
+            "pnl": "0.025000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T04:52:42.790Z",
+            "pnl": "0.025000"
+          }
+        },
+        {
+          "episode": 22,
+          "newFills": 0,
+          "realized": "0.025000",
+          "cash": "1000.025000",
+          "ownedCost": "0.000000",
+          "unresolved": 9,
+          "lastFresh": {
+            "at": "2026-10-14T05:41:51.006Z",
+            "pnl": "0.025000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T05:25:27.336Z",
+            "pnl": "0.025000"
+          }
+        },
+        {
+          "episode": 23,
+          "newFills": 0,
+          "realized": "0.025000",
+          "cash": "1000.025000",
+          "ownedCost": "0.000000",
+          "unresolved": 8,
+          "lastFresh": {
+            "at": "2026-10-14T06:06:26.086Z",
+            "pnl": "0.025000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T05:50:01.657Z",
+            "pnl": "0.025000"
+          }
+        },
+        {
+          "episode": 24,
+          "newFills": 0,
+          "realized": "0.025000",
+          "cash": "1000.025000",
+          "ownedCost": "0.000000",
+          "unresolved": 3,
+          "lastFresh": {
+            "at": "2026-10-14T06:56:32.735Z",
+            "pnl": "0.025000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T06:52:35.709Z",
+            "pnl": "0.025000"
+          }
+        },
+        {
+          "episode": 25,
+          "newFills": 0,
+          "realized": "0.025000",
+          "cash": "1000.025000",
+          "ownedCost": "0.000000",
+          "unresolved": 5,
+          "lastFresh": {
+            "at": "2026-10-14T07:26:52.934Z",
+            "pnl": "0.025000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T07:09:16.034Z",
+            "pnl": "0.025000"
+          }
+        }
+      ]
+    },
+    {
+      "entryBackoffTicks": 2,
+      "marks": [
+        {
+          "episode": 18,
+          "newFills": 0,
+          "realized": "0.025000",
+          "cash": "1000.025000",
+          "ownedCost": "0.000000",
+          "unresolved": 8,
+          "lastFresh": {
+            "at": "2026-10-14T04:32:11.214Z",
+            "pnl": "0.025000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T04:22:01.106Z",
+            "pnl": "0.025000"
+          }
+        },
+        {
+          "episode": 19,
+          "newFills": 0,
+          "realized": "0.025000",
+          "cash": "1000.025000",
+          "ownedCost": "0.000000",
+          "unresolved": 8,
+          "lastFresh": {
+            "at": "2026-10-14T04:45:59.557Z",
+            "pnl": "0.025000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T04:34:34.154Z",
+            "pnl": "0.025000"
+          }
+        },
+        {
+          "episode": 20,
+          "newFills": 0,
+          "realized": "0.025000",
+          "cash": "1000.025000",
+          "ownedCost": "0.000000",
+          "unresolved": 4,
+          "lastFresh": {
+            "at": "2026-10-14T04:50:57.758Z",
+            "pnl": "0.025000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T04:46:58.373Z",
+            "pnl": "0.025000"
+          }
+        },
+        {
+          "episode": 21,
+          "newFills": 0,
+          "realized": "0.025000",
+          "cash": "1000.025000",
+          "ownedCost": "0.000000",
+          "unresolved": 6,
+          "lastFresh": {
+            "at": "2026-10-14T05:07:50.889Z",
+            "pnl": "0.025000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T04:52:42.790Z",
+            "pnl": "0.025000"
+          }
+        },
+        {
+          "episode": 22,
+          "newFills": 0,
+          "realized": "0.025000",
+          "cash": "1000.025000",
+          "ownedCost": "0.000000",
+          "unresolved": 9,
+          "lastFresh": {
+            "at": "2026-10-14T05:41:51.006Z",
+            "pnl": "0.025000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T05:25:27.336Z",
+            "pnl": "0.025000"
+          }
+        },
+        {
+          "episode": 23,
+          "newFills": 0,
+          "realized": "0.025000",
+          "cash": "1000.025000",
+          "ownedCost": "0.000000",
+          "unresolved": 8,
+          "lastFresh": {
+            "at": "2026-10-14T06:06:26.086Z",
+            "pnl": "0.025000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T05:50:01.657Z",
+            "pnl": "0.025000"
+          }
+        },
+        {
+          "episode": 24,
+          "newFills": 0,
+          "realized": "0.025000",
+          "cash": "1000.025000",
+          "ownedCost": "0.000000",
+          "unresolved": 3,
+          "lastFresh": {
+            "at": "2026-10-14T06:56:32.735Z",
+            "pnl": "0.025000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T06:52:35.709Z",
+            "pnl": "0.025000"
+          }
+        },
+        {
+          "episode": 25,
+          "newFills": 0,
+          "realized": "0.025000",
+          "cash": "1000.025000",
+          "ownedCost": "0.000000",
+          "unresolved": 5,
+          "lastFresh": {
+            "at": "2026-10-14T07:26:52.934Z",
+            "pnl": "0.025000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T07:09:16.034Z",
+            "pnl": "0.025000"
+          }
+        }
+      ]
+    },
+    {
+      "entryBackoffTicks": 4,
+      "marks": [
+        {
+          "episode": 18,
+          "newFills": 0,
+          "realized": "0.025000",
+          "cash": "1000.025000",
+          "ownedCost": "0.000000",
+          "unresolved": 8,
+          "lastFresh": {
+            "at": "2026-10-14T04:32:11.214Z",
+            "pnl": "0.025000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T04:22:01.106Z",
+            "pnl": "0.025000"
+          }
+        },
+        {
+          "episode": 19,
+          "newFills": 0,
+          "realized": "0.025000",
+          "cash": "1000.025000",
+          "ownedCost": "0.000000",
+          "unresolved": 8,
+          "lastFresh": {
+            "at": "2026-10-14T04:45:59.557Z",
+            "pnl": "0.025000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T04:34:34.154Z",
+            "pnl": "0.025000"
+          }
+        },
+        {
+          "episode": 20,
+          "newFills": 0,
+          "realized": "0.025000",
+          "cash": "1000.025000",
+          "ownedCost": "0.000000",
+          "unresolved": 4,
+          "lastFresh": {
+            "at": "2026-10-14T04:50:57.758Z",
+            "pnl": "0.025000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T04:46:58.373Z",
+            "pnl": "0.025000"
+          }
+        },
+        {
+          "episode": 21,
+          "newFills": 0,
+          "realized": "0.025000",
+          "cash": "1000.025000",
+          "ownedCost": "0.000000",
+          "unresolved": 6,
+          "lastFresh": {
+            "at": "2026-10-14T05:07:50.889Z",
+            "pnl": "0.025000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T04:52:42.790Z",
+            "pnl": "0.025000"
+          }
+        },
+        {
+          "episode": 22,
+          "newFills": 0,
+          "realized": "0.025000",
+          "cash": "1000.025000",
+          "ownedCost": "0.000000",
+          "unresolved": 9,
+          "lastFresh": {
+            "at": "2026-10-14T05:41:51.006Z",
+            "pnl": "0.025000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T05:25:27.336Z",
+            "pnl": "0.025000"
+          }
+        },
+        {
+          "episode": 23,
+          "newFills": 0,
+          "realized": "0.025000",
+          "cash": "1000.025000",
+          "ownedCost": "0.000000",
+          "unresolved": 8,
+          "lastFresh": {
+            "at": "2026-10-14T06:06:26.086Z",
+            "pnl": "0.025000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T05:50:01.657Z",
+            "pnl": "0.025000"
+          }
+        },
+        {
+          "episode": 24,
+          "newFills": 0,
+          "realized": "0.025000",
+          "cash": "1000.025000",
+          "ownedCost": "0.000000",
+          "unresolved": 3,
+          "lastFresh": {
+            "at": "2026-10-14T06:56:32.735Z",
+            "pnl": "0.025000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T06:52:35.709Z",
+            "pnl": "0.025000"
+          }
+        },
+        {
+          "episode": 25,
+          "newFills": 0,
+          "realized": "0.025000",
+          "cash": "1000.025000",
+          "ownedCost": "0.000000",
+          "unresolved": 5,
+          "lastFresh": {
+            "at": "2026-10-14T07:26:52.934Z",
+            "pnl": "0.025000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T07:09:16.034Z",
+            "pnl": "0.025000"
+          }
+        }
+      ]
+    }
+  ],
+  "newPaperCapital": "0.000000",
+  "contestOrders": 0,
+  "profitabilityEstablished": false,
+  "limitations": [
+    "Previously inspected historical episodes; diagnostic, not untouched holdout.",
+    "Inherited orders keep their original limits; new entry protection changes only future purchases.",
+    "Continuous wallets retain all fills, losses, inventory and unresolved quote liabilities.",
+    "Improved marked performance without completed trades does not establish profitable turnover."
+  ]
+}

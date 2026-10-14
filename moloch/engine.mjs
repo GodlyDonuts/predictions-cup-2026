@@ -39,6 +39,7 @@ export function createMoloch(policy={}){
   check(Number.isSafeInteger(p.maximumHedgeOvershoot??0)&&(p.maximumHedgeOvershoot??0)>=0&&(p.maximumHedgeOvershoot??0)<=p.quantity,'HEDGE_OVERSHOOT');
   check(['strictThrough','conditionalFifo'].includes(p.fillModel)&&Number.isSafeInteger(p.touchAttributionBps)&&p.touchAttributionBps>=0&&p.touchAttributionBps<=10000,'FILL_MODEL');
   check(Number.isSafeInteger(p.insideTicks)&&p.insideTicks>=0&&p.insideTicks<=3,'INSIDE_TICKS');
+  check(p.entryBackoffTicks===undefined||Number.isSafeInteger(p.entryBackoffTicks)&&p.entryBackoffTicks>=0&&p.entryBackoffTicks<=10&&p.insideTicks===0,'ENTRY_BACKOFF');
   check(Number.isSafeInteger(p.renewBeforeMs)&&p.renewBeforeMs>=0&&p.renewBeforeMs<p.lifetimeMs-p.latencyMs-p.minimumQuoteAgeMs,'RENEWAL_WINDOW');
   for(const k of ['quantity','maximumMarkets','latencyMs','lifetimeMs','bookAgeMs','maximumSourceSilenceMs','minimumSpreadTicks','participationBps','minimumQuoteAgeMs','writeGapMs','writesPerMinute'])check(Number.isSafeInteger(p[k])&&p[k]>0,'POLICY_'+k);
   check(p.quantity<=2147483647&&p.participationBps<=10000&&p.writesPerMinute<=24&&p.writeGapMs>=2500&&p.lifetimeMs>p.latencyMs+p.minimumQuoteAgeMs,'POLICY_LIMITS');
@@ -113,6 +114,11 @@ function desired(s,at){
         if(nextAsk-nextBid<TICK||nextAsk-nextBid-fee(nextBid,1,s.policy)-fee(SCALE-nextAsk,1,s.policy)<2n*amount(s.policy.minimumEdge)||value-limit-fee(limit,1,s.policy)<amount(s.policy.minimumEdge))continue;bid=nextBid;ask=nextAsk;
       }
     }
+    // Entry protection changes purchase limits only. Covered inventory exits
+    // retain their existing fresh-depth and age rules above.
+    const backoff=TICK*BigInt(s.policy.entryBackoffTicks??0);
+    bid-=backoff;ask+=backoff;
+    if(bid<TICK||ask>SCALE-TICK)continue;
     const quotedSpread=ask-bid;
     if(s.policy.quoteMode==='pairedSpread'&&quotedSpread-fee(bid,1,s.policy)-fee(SCALE-ask,1,s.policy)<2n*amount(s.policy.minimumEdge))continue;
     const recent=(s.flow[b.exchangeId]??[]).filter(t=>at-t.at<=900000);s.flow[b.exchangeId]=recent;
