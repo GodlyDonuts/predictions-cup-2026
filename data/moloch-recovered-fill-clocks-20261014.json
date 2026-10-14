@@ -1,0 +1,163 @@
+{
+  "at": "2026-10-14T19:16:06.054Z",
+  "snapshotHash": "4caff79b3cabde552f0796ed9d9cd0b8f65a5f2e486b512c468bec76b769856d",
+  "realized": "0.070000",
+  "cash": "99996.020000",
+  "fills": [
+    {
+      "exchangeId": "922",
+      "quantity": 8,
+      "action": "buy",
+      "side": "YES",
+      "price": "0.405000",
+      "processedAt": "2026-10-14T19:08:21.327Z",
+      "executedAt": "2026-10-14T12:06:47.378Z",
+      "conditional": false
+    },
+    {
+      "exchangeId": "922",
+      "quantity": 1,
+      "action": "buy",
+      "side": "YES",
+      "price": "0.405000",
+      "processedAt": "2026-10-14T19:08:21.332Z",
+      "executedAt": "2026-10-14T12:08:03.949Z",
+      "conditional": false
+    },
+    {
+      "exchangeId": "922",
+      "quantity": 7,
+      "action": "buy",
+      "side": "YES",
+      "price": "0.405000",
+      "processedAt": "2026-10-14T19:08:21.333Z",
+      "executedAt": "2026-10-14T12:08:03.949Z",
+      "conditional": false
+    },
+    {
+      "exchangeId": "922",
+      "quantity": 1,
+      "action": "buy",
+      "side": "YES",
+      "price": "0.405000",
+      "processedAt": "2026-10-14T19:08:21.337Z",
+      "executedAt": "2026-10-14T12:09:08.376Z",
+      "conditional": true
+    },
+    {
+      "exchangeId": "922",
+      "quantity": 4,
+      "action": "buy",
+      "side": "YES",
+      "price": "0.405000",
+      "processedAt": "2026-10-14T19:08:21.339Z",
+      "executedAt": "2026-10-14T12:09:08.376Z",
+      "conditional": true
+    },
+    {
+      "exchangeId": "922",
+      "quantity": 1,
+      "action": "buy",
+      "side": "NO",
+      "price": "0.590000",
+      "processedAt": "2026-10-14T19:08:21.341Z",
+      "executedAt": "2026-10-14T12:09:11.702Z",
+      "conditional": true
+    },
+    {
+      "exchangeId": "922",
+      "quantity": 1,
+      "action": "buy",
+      "side": "NO",
+      "price": "0.590000",
+      "processedAt": "2026-10-14T19:08:21.342Z",
+      "executedAt": "2026-10-14T12:09:11.702Z",
+      "conditional": true
+    },
+    {
+      "exchangeId": "922",
+      "quantity": 1,
+      "action": "buy",
+      "side": "YES",
+      "price": "0.405000",
+      "processedAt": "2026-10-14T19:08:21.345Z",
+      "executedAt": "2026-10-14T12:10:15.739Z",
+      "conditional": true
+    },
+    {
+      "exchangeId": "922",
+      "quantity": 2,
+      "action": "buy",
+      "side": "YES",
+      "price": "0.405000",
+      "processedAt": "2026-10-14T19:08:21.346Z",
+      "executedAt": "2026-10-14T12:10:15.739Z",
+      "conditional": true
+    },
+    {
+      "exchangeId": "922",
+      "quantity": 2,
+      "action": "buy",
+      "side": "NO",
+      "price": "0.590000",
+      "processedAt": "2026-10-14T19:08:21.348Z",
+      "executedAt": "2026-10-14T12:10:20.310Z",
+      "conditional": true
+    },
+    {
+      "exchangeId": "922",
+      "quantity": 2,
+      "action": "buy",
+      "side": "NO",
+      "price": "0.590000",
+      "processedAt": "2026-10-14T19:08:21.350Z",
+      "executedAt": "2026-10-14T12:10:20.310Z",
+      "conditional": true
+    },
+    {
+      "exchangeId": "922",
+      "quantity": 4,
+      "action": "buy",
+      "side": "NO",
+      "price": "0.590000",
+      "processedAt": "2026-10-14T19:08:21.353Z",
+      "executedAt": "2026-10-14T12:11:16.149Z",
+      "conditional": true
+    },
+    {
+      "exchangeId": "922",
+      "quantity": 1,
+      "action": "buy",
+      "side": "NO",
+      "price": "0.590000",
+      "processedAt": "2026-10-14T19:08:21.355Z",
+      "executedAt": "2026-10-14T12:11:22.161Z",
+      "conditional": true
+    },
+    {
+      "exchangeId": "922",
+      "quantity": 2,
+      "action": "buy",
+      "side": "NO",
+      "price": "0.590000",
+      "processedAt": "2026-10-14T19:08:21.357Z",
+      "executedAt": "2026-10-14T12:11:22.161Z",
+      "conditional": true
+    },
+    {
+      "exchangeId": "922",
+      "quantity": 1,
+      "action": "buy",
+      "side": "NO",
+      "price": "0.590000",
+      "processedAt": "2026-10-14T19:08:21.358Z",
+      "executedAt": "2026-10-14T12:11:22.161Z",
+      "conditional": true
+    }
+  ],
+  "allFillExecutionTimesRecovered": true,
+  "conditionalFillShares": 22,
+  "ownedShares": 10,
+  "contestOrders": 0,
+  "profitabilityEstablished": false
+}
