@@ -9,6 +9,7 @@
   "maxDataAgeMs": 20000,
   "latencyMs": 1000,
   "feeBps": 0,
+  "journalFileName": "fee-free-baseline-v1.jsonl",
   "slippageTicks": 1,
   "depthFractionBps": 100,
   "orderShares": 10,
