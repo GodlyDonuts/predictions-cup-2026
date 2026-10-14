@@ -1,5 +1,5 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import os from 'node:os';import path from 'node:path';
-import {run,completedTail,entryPolicyTransition} from './run.mjs';import {payloadHash} from '../execution/ledger.mjs';import {createMoloch,advanceMoloch} from './engine.mjs';
+import {run,completedTail,entryPolicyTransition,drainPolicyTransition} from './run.mjs';import {payloadHash} from '../execution/ledger.mjs';import {createMoloch,advanceMoloch} from './engine.mjs';
 import {captureScopes,assertTailRecoveryScopes,recoveryTailDirectories} from './live.mjs';
 test('multiple independent recovery tails are bounded, distinct and merged without financial adoption',()=>{
  assert.deepEqual(recoveryTailDirectories(null),[]);assert.deepEqual(recoveryTailDirectories('a'),['a']);assert.deepEqual(recoveryTailDirectories(['a','b']),['a','b']);for(const value of [[],['a','a'],['--policy'],Array.from({length:9},(_,i)=>String(i))])assert.throws(()=>recoveryTailDirectories(value),/RECOVERY_INPUT/);
@@ -15,15 +15,17 @@ test('completed tail continuation reproduces original bank and consumes an unsee
  let sequence=0,previous='';const append=()=>{const b={sequence:++sequence,previous,event:{type:'tick',receivedAt:new Date().toISOString()}},row={...b,hash:payloadHash(b)};previous=row.hash;fs.appendFileSync(input,JSON.stringify(row)+'\n');};
  const timer=setTimeout(append,30);await run(['--input',input,'--output',first,'--format','journal','--policy',policy,'--follow','--seconds','0.5']);clearTimeout(timer);
  const parent=completedTail(first);assert.equal(parent.snapshot.state.cash,'100000.000000');assert.equal(parent.snapshot.sequence,1);
- append();await run(['--input',input,'--output',second,'--format','journal','--resume',first,'--entry-exchanges','2','--follow','--seconds','0.25']);const next=completedTail(second);
+ append();await run(['--input',input,'--output',second,'--format','journal','--resume',first,'--entry-exchanges','2','--drain','--follow','--seconds','0.25']);const next=completedTail(second);
  assert.equal(next.snapshot.state.cash,parent.snapshot.state.cash);assert.equal(next.snapshot.state.events,2);assert.equal(next.snapshot.sequence,1);assert.equal(next.snapshot.continuation.parentSnapshotHash,parent.snapshot.hash);assert.equal(next.snapshot.continuation.newPaperCapital,'0.000000');
  assert.deepEqual(next.snapshot.state.policy.entryExchangeIds,['2']);assert.equal(next.snapshot.continuation.entryPolicyTransition.priorPolicyHash,parent.snapshot.state.policyHash);
+ assert.equal(next.snapshot.state.policy.entriesEnabled,false);assert.equal(next.snapshot.continuation.drainPolicyTransition.entriesEnabled,false);
  const snapshot=JSON.parse(fs.readFileSync(path.join(second,'state.json')));snapshot.state.cash='100001.000000';fs.writeFileSync(path.join(second,'state.json'),JSON.stringify(snapshot));assert.throws(()=>completedTail(second),/TERMINAL_PROOF/);
  fs.writeFileSync(input,fs.readFileSync(input,'utf8').replace('tick','gap '));assert.throws(()=>completedTail(first),/SOURCE_CHANGED/);
 });
 test('entry scope transition preserves funded quotes, limits and every financial field',()=>{
  const s=createMoloch({initialCash:'100000.000000'}),at='2026-10-14T00:00:00Z';advanceMoloch(s,{type:'book',receivedAt:at,book:{tournamentId:'cup',marketId:'1',exchangeId:'2',sequence:'1',requestStartedAt:at,receivedAt:at,sourceAt:at,bids:[{price:'0.450000',quantity:1000}],asks:[{price:'0.455000',quantity:1000}]}});
  const before=structuredClone(s);const transition=entryPolicyTransition(s,['3']);const strip=x=>{const {policy,policyHash,...rest}=x;return rest;};assert.equal(payloadHash(strip(s)),payloadHash(strip(before)));assert.equal(s.policy.maximumCommitted,before.policy.maximumCommitted);assert.equal(s.policy.quantity,before.policy.quantity);assert.equal(transition.priorPolicyHash,before.policyHash);assert.throws(()=>entryPolicyTransition(s,[]),/ENTRY_TRANSITION/);assert.throws(()=>entryPolicyTransition(s,['3','3']),/ENTRY_EXCHANGES/);
+ const drained=drainPolicyTransition(s);assert.equal(s.policy.entriesEnabled,false);assert.equal(payloadHash(strip(s)),payloadHash(strip(before)));assert.equal(drained.entriesEnabled,false);
 });
 test('resume never accepts a running snapshot without a terminal report or a new policy',async t=>{
  const root=fs.mkdtempSync(path.join(os.tmpdir(),'moloch-resume-deny-'));t.after(()=>fs.rmSync(root,{recursive:true,force:true}));assert.throws(()=>completedTail(root));await assert.rejects(run(['--input','absent','--output',path.join(root,'out'),'--format','journal','--follow','--resume',root,'--policy','absent']),/RESUME_SCOPE/);
