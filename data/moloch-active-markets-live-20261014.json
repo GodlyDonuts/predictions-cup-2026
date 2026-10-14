@@ -1,0 +1,188 @@
+{
+  "schemaVersion": 1,
+  "at": "2026-10-14T10:24:31.585Z",
+  "source": 35,
+  "status": "running",
+  "streamStatus": "subscribed",
+  "officialReceipts": 27,
+  "resync": [
+    {
+      "marketId": "152",
+      "invalidatedAt": "2026-10-14T10:18:55.008Z",
+      "blocked": false,
+      "restBook": true,
+      "tape": true
+    },
+    {
+      "marketId": "231",
+      "invalidatedAt": "2026-10-14T10:18:55.024Z",
+      "blocked": false,
+      "restBook": true,
+      "tape": true
+    },
+    {
+      "marketId": "207",
+      "invalidatedAt": "2026-10-14T10:18:55.020Z",
+      "blocked": false,
+      "restBook": true,
+      "tape": true
+    }
+  ],
+  "streamMetrics": {
+    "batches": 7902,
+    "trades": 451,
+    "duplicateTrades": 0,
+    "duplicateBatches": 0,
+    "gaps": 0,
+    "truncated": 0,
+    "schemaErrors": 0,
+    "restBooks": 14,
+    "restTapes": 13,
+    "pushedBooks": 7899,
+    "olderBooks": 3,
+    "unknownMarkets": 0,
+    "latencySamples": 451,
+    "latencySumMs": 1369621,
+    "latencyMaxMs": 21534,
+    "meanTradeLatencyMs": 3036.8536585365855
+  },
+  "selection": {
+    "selectedAt": "2026-10-14T10:13:42.035Z",
+    "sourceWindow": {
+      "from": "2026-10-14T10:02:35.517Z",
+      "to": "2026-10-14T10:07:40.782Z"
+    },
+    "sourceSha256": "6d28675aaa3e5435b026b585e8b81b1d267286ef9dcb6b3d035ebb0f01e9b078",
+    "sourceFinalHash": "5aa26ee40e19831e6eaa73051dc0c02dfe7d8a0ac278155cf068ac29184654b1",
+    "selected": [
+      {
+        "marketId": "231",
+        "exchangeId": "920",
+        "observedTrades": 15,
+        "observedVolume": 3012,
+        "recentTrades": 9,
+        "recentVolume": 2010,
+        "priceRegimeFrom": "2026-10-14T10:03:07.576Z",
+        "bidRegimeFrom": "2026-10-14T10:02:47.196Z",
+        "askRegimeFrom": "2026-10-14T10:03:07.576Z",
+        "priceRegimeCompatibleTrades": 8,
+        "bidCompatibleVolume": 795,
+        "askCompatibleVolume": 805,
+        "bothSideQueueTurnover": 0.22574312955692652,
+        "bid": 0.625,
+        "ask": 0.63,
+        "spreadTicks": 1,
+        "bidQueue": 2321,
+        "askQueue": 3566,
+        "bookAsOf": {
+          "sequence": 156483073,
+          "at": "2026-10-14T10:07:33.328936800Z"
+        },
+        "bookReceivedAt": "2026-10-14T10:07:33.639Z",
+        "bookAgeMs": 7454,
+        "gapObserved": false,
+        "quoteReadyFromObservation": false,
+        "authoritativeResyncRequired": true,
+        "reconciliationPriority": 17.5143542152284,
+        "roundTripReconciliationPriority": 0.44723912238881186,
+        "insideRoomTicks": 0,
+        "eligibleForFurtherReconciliation": true,
+        "explorationScore": 1.4363533522379734,
+        "conditionalMarkouts": 12,
+        "meanConditionalLiquidationDeltaPerShare": 0,
+        "censoredMarkouts": 2
+      },
+      {
+        "marketId": "207",
+        "exchangeId": "896",
+        "observedTrades": 7,
+        "observedVolume": 700,
+        "recentTrades": 5,
+        "recentVolume": 627,
+        "priceRegimeFrom": "2026-10-14T10:02:47.196Z",
+        "bidRegimeFrom": "2026-10-14T10:02:47.196Z",
+        "askRegimeFrom": "2026-10-14T10:02:47.196Z",
+        "priceRegimeCompatibleTrades": 3,
+        "bidCompatibleVolume": 144,
+        "askCompatibleVolume": 283,
+        "bothSideQueueTurnover": 0.04267931238885596,
+        "bid": 0.335,
+        "ask": 0.34,
+        "spreadTicks": 1,
+        "bidQueue": 3374,
+        "askQueue": 1555,
+        "bookAsOf": {
+          "sequence": 156482985,
+          "at": "2026-10-14T10:07:31.330903500Z"
+        },
+        "bookReceivedAt": "2026-10-14T10:07:31.954Z",
+        "bookAgeMs": 9452,
+        "gapObserved": false,
+        "quoteReadyFromObservation": false,
+        "authoritativeResyncRequired": true,
+        "reconciliationPriority": 11.543482349151484,
+        "roundTripReconciliationPriority": 0.05793831822675061,
+        "insideRoomTicks": 0,
+        "eligibleForFurtherReconciliation": true,
+        "explorationScore": 0.6069878007394922,
+        "conditionalMarkouts": 4,
+        "meanConditionalLiquidationDeltaPerShare": 0,
+        "censoredMarkouts": 1
+      }
+    ],
+    "reason": "persistent both-side current-regime flow; flat sparse conditional marks; exploratory paper only"
+  },
+  "scaleSnapshotHash": "03fb5be381bbd69154f059d26c35d78c412902b9b7d4fb91d8a77d8b7a641000",
+  "scaleParentHash": "346d10cdca9502a3f806bead5ce51887365f0cf1a8376bf0939ab332c29f33e8",
+  "entryExchangeIds": [
+    "920",
+    "896"
+  ],
+  "newPaperCapital": "0.000000",
+  "scale": {
+    "cash": "100000.000000",
+    "realized": "0.000000",
+    "ownedCost": "0.000000",
+    "reservedCash": "2157.160000",
+    "fills": 0,
+    "orders": 28
+  },
+  "lastPaperQuotes": [
+    {
+      "exchangeId": "920",
+      "side": "NO",
+      "price": "0.370000",
+      "quantity": 1833,
+      "filled": 0
+    },
+    {
+      "exchangeId": "920",
+      "side": "YES",
+      "price": "0.625000",
+      "quantity": 1833,
+      "filled": 0
+    },
+    {
+      "exchangeId": "896",
+      "side": "NO",
+      "price": "0.660000",
+      "quantity": 335,
+      "filled": 0
+    },
+    {
+      "exchangeId": "896",
+      "side": "YES",
+      "price": "0.335000",
+      "quantity": 335,
+      "filled": 0
+    }
+  ],
+  "recovery": {
+    "failedAt": "2026-10-14T10:15:23.7048051Z",
+    "probeReceivedAt": "2026-10-14T10:18:29.729Z",
+    "exactEndpointMatched": true,
+    "status": 200
+  },
+  "contestOrders": 0,
+  "profitabilityEstablished": false
+}
