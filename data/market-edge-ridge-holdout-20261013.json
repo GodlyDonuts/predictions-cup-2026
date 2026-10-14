@@ -1,0 +1,613 @@
+{
+  "schemaVersion": 1,
+  "experimentId": "market-edge-ridge-fixed-executable-return-20261013-v1",
+  "generatedAt": "2026-10-14T00:03:49.911Z",
+  "method": "one frozen pooled ridge model; training capture only for fit/scaling; later capture read after fit only for chronological scoring",
+  "sources": [
+    {
+      "id": "train-d53812dd",
+      "role": "training_only",
+      "file": "realtime-2026-10-13T02-55-28-953Z-d53812dd-ec75-4852-9267-59c7d5bb7898.jsonl",
+      "bytes": 1747459094,
+      "sha256": "f9a20ef98e8e9c96d1229dbbc6a8eb17dd669e7c6f3f8d6e49337439945f4418",
+      "backingBytes": 1747507916,
+      "backingSha256": "d321ad760750e0ba6cdbc85afade4fdd7c1874b74aa080df9881810942cfca6e",
+      "captureRows": 467044,
+      "from": "2026-10-13T02:55:28.956Z",
+      "through": "2026-10-13T07:45:51.103Z",
+      "frozenBytes": 1747459094,
+      "excludedTailBytes": 48822,
+      "beforeFrozenSha256": "f9a20ef98e8e9c96d1229dbbc6a8eb17dd669e7c6f3f8d6e49337439945f4418",
+      "afterFrozenSha256": "f9a20ef98e8e9c96d1229dbbc6a8eb17dd669e7c6f3f8d6e49337439945f4418",
+      "beforeBackingSha256": "d321ad760750e0ba6cdbc85afade4fdd7c1874b74aa080df9881810942cfca6e",
+      "afterBackingSha256": "d321ad760750e0ba6cdbc85afade4fdd7c1874b74aa080df9881810942cfca6e",
+      "beforeBackingBytes": 1747507916,
+      "afterBackingBytes": 1747507916,
+      "identityStable": true
+    },
+    {
+      "id": "test-9ecf5d7b",
+      "role": "chronological_test_only",
+      "file": "realtime-2026-10-13T19-52-33-253Z-9ecf5d7b-070f-4c01-a991-28a67a9f4a29.jsonl",
+      "bytes": 279458961,
+      "sha256": "fd6a9552a5f70365ee78706fa1efff70e2a36e7f3dd55c1a932cc3795e1979e7",
+      "backingBytes": 279458961,
+      "backingSha256": "fd6a9552a5f70365ee78706fa1efff70e2a36e7f3dd55c1a932cc3795e1979e7",
+      "captureRows": 76207,
+      "from": "2026-10-13T19:52:33.254Z",
+      "through": "2026-10-13T20:40:59.415Z",
+      "frozenBytes": 279458961,
+      "excludedTailBytes": 0,
+      "beforeFrozenSha256": "fd6a9552a5f70365ee78706fa1efff70e2a36e7f3dd55c1a932cc3795e1979e7",
+      "afterFrozenSha256": "fd6a9552a5f70365ee78706fa1efff70e2a36e7f3dd55c1a932cc3795e1979e7",
+      "beforeBackingSha256": "fd6a9552a5f70365ee78706fa1efff70e2a36e7f3dd55c1a932cc3795e1979e7",
+      "afterBackingSha256": "fd6a9552a5f70365ee78706fa1efff70e2a36e7f3dd55c1a932cc3795e1979e7",
+      "beforeBackingBytes": 279458961,
+      "afterBackingBytes": 279458961,
+      "identityStable": true
+    }
+  ],
+  "sourceScope": {
+    "trainingFrozenPrefixBytes": 1747459094,
+    "trainingBackingFileBytes": 1747507916,
+    "excludedAppendedTrainingTailBytes": 48822,
+    "tailRowsParsed": false,
+    "frozenPrefixesHashVerifiedBeforeAndAfter": true,
+    "backingFileSha256VerifiedBeforeAndAfter": true,
+    "completeFinalJsonlNewlineRequired": true
+  },
+  "marketScope": {
+    "tournamentId": "bda92870-621e-47b0-bc3c-3602c5c26f55",
+    "trainingMarkets": 237,
+    "holdoutMarkets": 237,
+    "trainingExchanges": 237,
+    "holdoutExchanges": 237,
+    "contractIdentifiersUsedAsFeatures": false
+  },
+  "protocol": {
+    "model": "ordinary squared-error linear regression with fixed ridge slope penalty; no model-family or alpha selection",
+    "featureNames": [
+      "sidePrice",
+      "lagReturn1s",
+      "lagReturn5s",
+      "lagReturn15s",
+      "spread",
+      "imbalanceTop1",
+      "imbalanceTop5",
+      "imbalanceTop20",
+      "logDepthTop1",
+      "logDepthTop5",
+      "logDepthTop20"
+    ],
+    "featureDefinitions": {
+      "sidePrice": "YES mid; NO 1−YES mid",
+      "lagReturns": "side-oriented mid-price change from the last prior same-segment point at/before 1s, 5s, and 15s lag targets; maximum lag-point distance 2s",
+      "spread": "current YES best ask minus best bid",
+      "imbalance": "side-oriented (bid quantity−ask quantity)/(bid quantity+ask quantity), cumulative top 1, 5, and 20 levels",
+      "displayedDepth": "log1p(cumulative bid+ask quantity) at top 1, 5, and 20 levels"
+    },
+    "scaler": {
+      "fitCapture": "train-d53812dd",
+      "rows": 110,
+      "mean": [
+        0.49999999999999994,
+        6.653058785706505e-21,
+        -3.2649269966893035e-21,
+        4.404571325722362e-20,
+        0.00672727272727273,
+        -1.734723475976807e-18,
+        -4.336808689942018e-19,
+        1.3010426069826053e-18,
+        9.35380258093806,
+        13.22926803141048,
+        15.282777384009776
+      ],
+      "scale": [
+        0.33347618151280856,
+        0.001751622624363436,
+        0.001965613482767257,
+        0.0023596995186213514,
+        0.0027333266142496155,
+        0.6697723054914898,
+        0.4377372842877889,
+        0.4335899478881233,
+        0.9364514970235616,
+        0.4996416573899397,
+        0.2727170005417418
+      ],
+      "constantFeatureScale": 1,
+      "holdoutUsedForScaling": false
+    },
+    "ridge": {
+      "alpha": 0.01,
+      "objective": "mean((target−prediction)^2) + alpha*sum(standardized slopes^2)",
+      "interceptPenalized": false
+    },
+    "training": {
+      "sourceCapture": "train-d53812dd",
+      "rows": 110,
+      "targetMeanPerShare": -0.006090909090909094,
+      "residualRmsePerShareUnpenalized": 0.0020604869807931553,
+      "fitUsesOnlyTrainingCapture": true
+    },
+    "timing": {
+      "decisionAvailability": "capture observedAt is the actionable observation clock; sourceAt is the exchange book as-of/event clock; receivedAt is the engine packet receipt",
+      "decisionLatencyMs": 3000,
+      "entry": "first same-segment point with both observedAt and sourceAt >= decision observedAt + 3000ms, within 10000ms additional observed-time wait",
+      "holdingHorizonMs": 5000,
+      "holdingClock": "entry observedAt + 5000ms; both exit observedAt and sourceAt must be >= that target, within 10000ms additional observed-time wait",
+      "sourceAgeMaximumMs": 5000,
+      "zeroFeesPerShare": 0
+    },
+    "labels": {
+      "yes": "exit YES bid − entry YES ask",
+      "no": "entry YES bid − exit YES ask",
+      "minimumDisplayedQuantityAtEntryAndExitPerRelevantSide": 1,
+      "missingOrBoundaryCrossing": "censored; decision, entry, and exit must have the same per-market segment; capture files are processed independently",
+      "trainingBoundary": "no training labels use any holdout row; labels require in-capture future observations"
+    },
+    "action": {
+      "threshold": "predicted executable net return strictly > 0 SUSQies/share",
+      "thresholdTunedOnHoldout": false,
+      "allHoldoutCandidatesScoredOnce": true,
+      "rowLevelOutput": "predictionsAndOutcomes.predictionRows contains one row per holdout candidate in deterministic market-id, observed-time, YES-then-NO order; rowIndex is contiguous and each outcome is labeled or censored",
+      "oneTickPerLegStress": {
+        "tick": 0.005,
+        "deductionPerShare": 0.01
+      }
+    },
+    "segmentation": {
+      "perMarketInputMustBeChronological": true,
+      "explicitLifecycleRevisionSettlementBoundaries": "increment per-market segment before accepting post-boundary observations",
+      "inferredBreak": "new segment after >10s observed-time or source-time gap, or source-clock rollback; propagated through all later rows until another boundary",
+      "noSortingOrReordering": true
+    }
+  },
+  "training": {
+    "capture": {
+      "id": "train-d53812dd",
+      "role": "training_only",
+      "file": "realtime-2026-10-13T02-55-28-953Z-d53812dd-ec75-4852-9267-59c7d5bb7898.jsonl",
+      "bytes": 1747459094,
+      "sha256": "f9a20ef98e8e9c96d1229dbbc6a8eb17dd669e7c6f3f8d6e49337439945f4418",
+      "captureRows": 467044,
+      "configRows": 237,
+      "markets": 237,
+      "exchanges": 237,
+      "from": "2026-10-13T02:55:28.956Z",
+      "through": "2026-10-13T07:45:51.103Z"
+    },
+    "diagnostics": {
+      "captureRows": 467044,
+      "configRows": 237,
+      "eventRows": 446579,
+      "marketBatchRows": 446579,
+      "nonEventRows": 28638,
+      "duplicateRevisions": 0,
+      "revisionGaps": 794,
+      "resyncRequired": 0,
+      "bookDirtyMarkers": 345104,
+      "dirtyWithoutBook": 0,
+      "settlements": 0,
+      "lifecycleInvalidations": 10066,
+      "validRecoveryCompletions": 1276,
+      "booksBeforeRecovery": 340881,
+      "scopeRejectedBooks": 229,
+      "duplicateBookVersions": 0,
+      "rollbackBookVersions": 0,
+      "acceptedBookPoints": 3994,
+      "explicitBreakEvents": 111542,
+      "explicitSegmentIncrements": 111542,
+      "explicitBreakReasons": {
+        "epoch_or_state": 100681,
+        "lifecycle": 9118,
+        "revision_gap": 794,
+        "recovery_not_ready": 1,
+        "subscribed": 948
+      },
+      "interBookGapBreaks": 1177,
+      "observationGapBreaks": 1145,
+      "sourceGapBreaks": 1155,
+      "sourceRollbackBreaks": 0,
+      "invalidRows": 0,
+      "staleForFeatures": 0
+    },
+    "candidates": {
+      "candidateCount": 220,
+      "labeledCount": 110,
+      "censoredCount": 110
+    },
+    "labelProvenance": {
+      "labeledCandidateCount": 110,
+      "decisionEntryExitSameSegmentCount": 110,
+      "crossSegmentLabelCount": 0,
+      "missingCaptureProvenanceCount": 0,
+      "captureId": "train-d53812dd",
+      "uniqueCaptureIds": [
+        "train-d53812dd"
+      ],
+      "decisionEntryObservedDelayMs": {
+        "min": null,
+        "max": null
+      },
+      "observedHoldingMs": {
+        "min": 5422,
+        "max": 12766
+      },
+      "sourceHoldingMs": {
+        "min": 5681,
+        "max": 12733
+      },
+      "observedMinusSourceHoldingMs": {
+        "min": -1102,
+        "max": 1391
+      },
+      "provenanceExamples": [
+        {
+          "decision": {
+            "captureId": "train-d53812dd",
+            "captureIndex": 459072,
+            "epoch": 5,
+            "topic": "tournament:bda92870-621e-47b0-bc3c-3602c5c26f55:market:267",
+            "observedAt": "2026-10-13T07:41:08.871Z",
+            "receivedAt": "2026-10-13T07:41:08.856Z",
+            "sourceAt": "2026-10-13T07:41:08.702075700Z",
+            "rawBookHash": "eb5a589c6452817a8032e0e56d42d6d0c6a38cd3b6bd4ff86eb13c3e87882141",
+            "recordHash": "fbd2f84ae75dcfc20ef1769a564a5714c2353cf1e6600581ca0fd6a0871d760d"
+          },
+          "entry": {
+            "captureId": "train-d53812dd",
+            "captureIndex": 459321,
+            "epoch": 5,
+            "topic": "tournament:bda92870-621e-47b0-bc3c-3602c5c26f55:market:267",
+            "observedAt": "2026-10-13T07:41:21.351Z",
+            "receivedAt": "2026-10-13T07:41:21.312Z",
+            "sourceAt": "2026-10-13T07:41:20.915126200Z",
+            "rawBookHash": "7cbfe3059dafea0e8cf7fa73f045f2a73929e8184a1c03200bd934a6c94cded4",
+            "recordHash": "5e3878103dd3972b0176a27a1fc58d0df4920b5463a2753b2b0ba4f5407d3d8c"
+          },
+          "exit": {
+            "captureId": "train-d53812dd",
+            "captureIndex": 459579,
+            "epoch": 5,
+            "topic": "tournament:bda92870-621e-47b0-bc3c-3602c5c26f55:market:267",
+            "observedAt": "2026-10-13T07:41:32.414Z",
+            "receivedAt": "2026-10-13T07:41:32.413Z",
+            "sourceAt": "2026-10-13T07:41:31.916794700Z",
+            "rawBookHash": "6ddcc484e4b02239fb8c75e6191937c8250ca2cb3a0a93cd0e87b1349e134169",
+            "recordHash": "d30f916fe46fe35df18981a77be4d059932712001c08e7e83c23d1b2197c5550"
+          },
+          "decisionSegment": 355,
+          "entrySegment": 355,
+          "exitSegment": 355
+        },
+        {
+          "decision": {
+            "captureId": "train-d53812dd",
+            "captureIndex": 459072,
+            "epoch": 5,
+            "topic": "tournament:bda92870-621e-47b0-bc3c-3602c5c26f55:market:267",
+            "observedAt": "2026-10-13T07:41:08.871Z",
+            "receivedAt": "2026-10-13T07:41:08.856Z",
+            "sourceAt": "2026-10-13T07:41:08.702075700Z",
+            "rawBookHash": "eb5a589c6452817a8032e0e56d42d6d0c6a38cd3b6bd4ff86eb13c3e87882141",
+            "recordHash": "fbd2f84ae75dcfc20ef1769a564a5714c2353cf1e6600581ca0fd6a0871d760d"
+          },
+          "entry": {
+            "captureId": "train-d53812dd",
+            "captureIndex": 459321,
+            "epoch": 5,
+            "topic": "tournament:bda92870-621e-47b0-bc3c-3602c5c26f55:market:267",
+            "observedAt": "2026-10-13T07:41:21.351Z",
+            "receivedAt": "2026-10-13T07:41:21.312Z",
+            "sourceAt": "2026-10-13T07:41:20.915126200Z",
+            "rawBookHash": "7cbfe3059dafea0e8cf7fa73f045f2a73929e8184a1c03200bd934a6c94cded4",
+            "recordHash": "5e3878103dd3972b0176a27a1fc58d0df4920b5463a2753b2b0ba4f5407d3d8c"
+          },
+          "exit": {
+            "captureId": "train-d53812dd",
+            "captureIndex": 459579,
+            "epoch": 5,
+            "topic": "tournament:bda92870-621e-47b0-bc3c-3602c5c26f55:market:267",
+            "observedAt": "2026-10-13T07:41:32.414Z",
+            "receivedAt": "2026-10-13T07:41:32.413Z",
+            "sourceAt": "2026-10-13T07:41:31.916794700Z",
+            "rawBookHash": "6ddcc484e4b02239fb8c75e6191937c8250ca2cb3a0a93cd0e87b1349e134169",
+            "recordHash": "d30f916fe46fe35df18981a77be4d059932712001c08e7e83c23d1b2197c5550"
+          },
+          "decisionSegment": 355,
+          "entrySegment": 355,
+          "exitSegment": 355
+        },
+        {
+          "decision": {
+            "captureId": "train-d53812dd",
+            "captureIndex": 459090,
+            "epoch": 5,
+            "topic": "tournament:bda92870-621e-47b0-bc3c-3602c5c26f55:market:267",
+            "observedAt": "2026-10-13T07:41:09.829Z",
+            "receivedAt": "2026-10-13T07:41:09.808Z",
+            "sourceAt": "2026-10-13T07:41:09.702376900Z",
+            "rawBookHash": "f8ed551b792d95f96f9a6c6ef39af089bb2415ce22cc5c853131ea75cb3b640a",
+            "recordHash": "926216fdc302ecada577fc7be3ee0aa178bd5bff8ca6ad9d3bb856bd5bc8f4ce"
+          },
+          "entry": {
+            "captureId": "train-d53812dd",
+            "captureIndex": 459321,
+            "epoch": 5,
+            "topic": "tournament:bda92870-621e-47b0-bc3c-3602c5c26f55:market:267",
+            "observedAt": "2026-10-13T07:41:21.351Z",
+            "receivedAt": "2026-10-13T07:41:21.312Z",
+            "sourceAt": "2026-10-13T07:41:20.915126200Z",
+            "rawBookHash": "7cbfe3059dafea0e8cf7fa73f045f2a73929e8184a1c03200bd934a6c94cded4",
+            "recordHash": "5e3878103dd3972b0176a27a1fc58d0df4920b5463a2753b2b0ba4f5407d3d8c"
+          },
+          "exit": {
+            "captureId": "train-d53812dd",
+            "captureIndex": 459579,
+            "epoch": 5,
+            "topic": "tournament:bda92870-621e-47b0-bc3c-3602c5c26f55:market:267",
+            "observedAt": "2026-10-13T07:41:32.414Z",
+            "receivedAt": "2026-10-13T07:41:32.413Z",
+            "sourceAt": "2026-10-13T07:41:31.916794700Z",
+            "rawBookHash": "6ddcc484e4b02239fb8c75e6191937c8250ca2cb3a0a93cd0e87b1349e134169",
+            "recordHash": "d30f916fe46fe35df18981a77be4d059932712001c08e7e83c23d1b2197c5550"
+          },
+          "decisionSegment": 355,
+          "entrySegment": 355,
+          "exitSegment": 355
+        }
+      ]
+    }
+  },
+  "holdout": {
+    "status": "invalid diagnostic only: parser defect yielded zero candidates; scorer was not rerun; reviewer broad-scan disclosure means the holdout cannot be represented as unread or confirmatory. No forecasts/outcome metrics or performance conclusion.",
+    "capture": {
+      "id": "test-9ecf5d7b",
+      "role": "chronological_test_only",
+      "file": "realtime-2026-10-13T19-52-33-253Z-9ecf5d7b-070f-4c01-a991-28a67a9f4a29.jsonl",
+      "bytes": 279458961,
+      "sha256": "fd6a9552a5f70365ee78706fa1efff70e2a36e7f3dd55c1a932cc3795e1979e7",
+      "captureRows": 76207,
+      "configRows": 237,
+      "markets": 237,
+      "exchanges": 237,
+      "from": "2026-10-13T19:52:33.254Z",
+      "through": "2026-10-13T20:40:59.415Z"
+    },
+    "diagnostics": {
+      "captureRows": 76207,
+      "configRows": 237,
+      "eventRows": 70894,
+      "marketBatchRows": 70894,
+      "nonEventRows": 7769,
+      "duplicateRevisions": 0,
+      "revisionGaps": 138,
+      "resyncRequired": 0,
+      "bookDirtyMarkers": 25749,
+      "dirtyWithoutBook": 0,
+      "settlements": 0,
+      "lifecycleInvalidations": 1765,
+      "validRecoveryCompletions": 143,
+      "booksBeforeRecovery": 25486,
+      "scopeRejectedBooks": 5,
+      "duplicateBookVersions": 0,
+      "rollbackBookVersions": 0,
+      "acceptedBookPoints": 258,
+      "explicitBreakEvents": 46910,
+      "explicitSegmentIncrements": 46910,
+      "explicitBreakReasons": {
+        "epoch_or_state": 45007,
+        "lifecycle": 1765,
+        "revision_gap": 138
+      },
+      "interBookGapBreaks": 28,
+      "observationGapBreaks": 26,
+      "sourceGapBreaks": 27,
+      "sourceRollbackBreaks": 0,
+      "invalidRows": 0,
+      "staleForFeatures": 4
+    },
+    "candidateCoverage": {
+      "candidateCount": 0,
+      "labeledCount": 0,
+      "censoredCount": 0
+    },
+    "labelProvenance": {
+      "labeledCandidateCount": 0,
+      "decisionEntryExitSameSegmentCount": 0,
+      "crossSegmentLabelCount": 0,
+      "missingCaptureProvenanceCount": 0,
+      "captureId": "test-9ecf5d7b",
+      "uniqueCaptureIds": [],
+      "decisionEntryObservedDelayMs": {
+        "min": null,
+        "max": null
+      },
+      "observedHoldingMs": {
+        "min": null,
+        "max": null
+      },
+      "sourceHoldingMs": {
+        "min": null,
+        "max": null
+      },
+      "observedMinusSourceHoldingMs": {
+        "min": null,
+        "max": null
+      },
+      "provenanceExamples": []
+    },
+    "predictionsAndOutcomes": {
+      "candidatePredictions": 0,
+      "predictionRows": [],
+      "predictions": {
+        "positive": 0,
+        "negativeOrZero": 0,
+        "mean": null,
+        "median": null,
+        "p90": null,
+        "p99": null
+      },
+      "fixedPositiveThreshold": 0,
+      "selectedCandidateCount": 0,
+      "selectedWithOutcomeCount": 0,
+      "selectedCensoredOutcomeCount": 0,
+      "selected": {
+        "n": 0,
+        "meanPerShare": null,
+        "medianPerShare": null,
+        "positiveFraction": null,
+        "oneTickPerLegMeanPerShare": null,
+        "oneTickPerLegPositiveFraction": null,
+        "marketClusters": 0,
+        "equalWeightedMarketMean": null,
+        "marketClusterStandardError": null,
+        "positiveMarketClusterCount": 0,
+        "marketClusterMeans": []
+      },
+      "unconditionalAllLabeledCandidateControl": {
+        "n": 0,
+        "meanPerShare": null,
+        "medianPerShare": null,
+        "positiveFraction": null,
+        "oneTickPerLegMeanPerShare": null,
+        "oneTickPerLegPositiveFraction": null,
+        "marketClusters": 0,
+        "equalWeightedMarketMean": null,
+        "marketClusterStandardError": null,
+        "positiveMarketClusterCount": 0,
+        "marketClusterMeans": []
+      },
+      "bySide": {
+        "YES": {
+          "candidateCount": 0,
+          "labeled": {
+            "n": 0,
+            "meanPerShare": null,
+            "medianPerShare": null,
+            "positiveFraction": null,
+            "oneTickPerLegMeanPerShare": null,
+            "oneTickPerLegPositiveFraction": null,
+            "marketClusters": 0,
+            "equalWeightedMarketMean": null,
+            "marketClusterStandardError": null,
+            "positiveMarketClusterCount": 0,
+            "marketClusterMeans": []
+          },
+          "selected": {
+            "n": 0,
+            "meanPerShare": null,
+            "medianPerShare": null,
+            "positiveFraction": null,
+            "oneTickPerLegMeanPerShare": null,
+            "oneTickPerLegPositiveFraction": null,
+            "marketClusters": 0,
+            "equalWeightedMarketMean": null,
+            "marketClusterStandardError": null,
+            "positiveMarketClusterCount": 0,
+            "marketClusterMeans": []
+          },
+          "selectedCandidateCount": 0,
+          "selectedCensoredOutcomeCount": 0
+        },
+        "NO": {
+          "candidateCount": 0,
+          "labeled": {
+            "n": 0,
+            "meanPerShare": null,
+            "medianPerShare": null,
+            "positiveFraction": null,
+            "oneTickPerLegMeanPerShare": null,
+            "oneTickPerLegPositiveFraction": null,
+            "marketClusters": 0,
+            "equalWeightedMarketMean": null,
+            "marketClusterStandardError": null,
+            "positiveMarketClusterCount": 0,
+            "marketClusterMeans": []
+          },
+          "selected": {
+            "n": 0,
+            "meanPerShare": null,
+            "medianPerShare": null,
+            "positiveFraction": null,
+            "oneTickPerLegMeanPerShare": null,
+            "oneTickPerLegPositiveFraction": null,
+            "marketClusters": 0,
+            "equalWeightedMarketMean": null,
+            "marketClusterStandardError": null,
+            "positiveMarketClusterCount": 0,
+            "marketClusterMeans": []
+          },
+          "selectedCandidateCount": 0,
+          "selectedCensoredOutcomeCount": 0
+        }
+      },
+      "labeledCandidates": 0,
+      "predictionRmse": null,
+      "trainingMeanControlRmse": null,
+      "actualFillsProven": false,
+      "realizedAccountPnl": null,
+      "profitabilityEstablished": false
+    },
+    "validEvaluation": false,
+    "invalidReason": "Pre-first-market_batch lifecycle rows were not applied in the initial full replay; no eligible holdout candidates were produced. The holdout was not reopened after the bug was found."
+  },
+  "limitations": [
+    "This is one model-specific chronological later-capture test, not a globally untouched sample and not proof of persistent profitability.",
+    "Labels are overlapping one-share displayed-quote counterfactuals; market-cluster summaries address grouping but do not establish independent trials or portfolio returns.",
+    "Public depth does not prove order acceptance, queue priority, achievable fills, or size beyond one displayed share; no fees are modeled and a one-tick-per-leg stress is reported separately.",
+    "No actual orders, fills, account state, P&L, market impact, or production policy are tested.",
+    "The zero predicted-return threshold was fixed before holdout scoring; no threshold or feature tuning was performed on the later capture.",
+    "A reviewer disclosed an accidental recursive search across data/ whose truncated output contained simulation/outcome-shaped records. The review cannot certify that holdout-derived rows were not traversed, so this capture is not described as unread or confirmatory; it was not rescored or used by the corrected training-only diagnostic."
+  ],
+  "noNetworkRequests": true,
+  "noAccountOrRuntimeServiceAccess": true,
+  "contestOrders": 0,
+  "actualFillsProven": false,
+  "profitabilityEstablished": false,
+  "evaluationStatus": {
+    "valid": false,
+    "status": "invalid_diagnostic_only",
+    "reason": "The initial replay dropped lifecycle rows before the first market_batch, so its zero-candidate result is a parser failure, not model performance. A later reviewer disclosed an accidental recursive scan of data/ that may have traversed outcome-shaped holdout records; strict no-read attestation is compromised. The capture was not rescored or used in the corrected training-only diagnostic.",
+    "holdoutReopenedAfterDiscovery": false,
+    "noProfitabilityClaim": true
+  },
+  "trainingOnlyCorrectedParserCheck": {
+    "diagnosticMode": "training-only; no model fit and no holdout read",
+    "sourceId": "train-d53812dd",
+    "frozenPrefixBytes": 1747459094,
+    "frozenPrefixSha256": "f9a20ef98e8e9c96d1229dbbc6a8eb17dd669e7c6f3f8d6e49337439945f4418",
+    "backingFileBytes": 1747507916,
+    "backingFileSha256": "d321ad760750e0ba6cdbc85afade4fdd7c1874b74aa080df9881810942cfca6e",
+    "excludedAppendedTailBytes": 48822,
+    "prefixHashVerifiedBeforeAndAfter": true,
+    "backingIdentityStable": true,
+    "lifecycleRowsBeforeFirstMarketBatch": {
+      "subscribed": 237,
+      "initialInvalidations": 474,
+      "recoveryStarted": 1
+    },
+    "missingStateRows": 0,
+    "epochMismatchRows": 0,
+    "recoveryReadyCompletions": 1276,
+    "batchesExcludedWhileNotReady": 441465,
+    "acceptedBookPoints": 3994,
+    "candidateCoverage": {
+      "candidates": 220,
+      "labeled": 110,
+      "censored": 110
+    },
+    "revisionGaps": 891,
+    "lifecycleInvalidations": 10778,
+    "note": "The earlier 100445 epoch_or_state diagnostic was caused by the runner dropping initial lifecycle rows. Corrected ingestion removes those mismatches. The large not-ready count remains in the corrected training-only replay and should be treated as source availability/continuity limitation until independently explained."
+  },
+  "reviewIntegrity": {
+    "codeAndTestReview": "completed; corrected parser regression covered; focused tests 12/12; runner syntax passes",
+    "holdoutReadAttestation": "compromised: reviewer disclosed an accidental recursive scan across data/ with outcome-shaped output; no certification that the old holdout was not traversed",
+    "correctedReplayUse": "training-only exact frozen prefix; no model fit and no holdout read",
+    "holdoutRescoredAfterDiscovery": false,
+    "profitabilityConclusion": "none"
+  }
+}
+
