@@ -32,6 +32,7 @@ export function createMoloch(policy={}){
   check(typeof(p.throughFillCapacity??false)==='boolean'&&(!p.throughFillCapacity||p.fillModel==='strictThrough'),'THROUGH_CAPACITY');
   check(p.inventoryTakerAfterMs===undefined||Number.isSafeInteger(p.inventoryTakerAfterMs)&&p.inventoryTakerAfterMs>=0&&p.inventoryTakerAfterMs<=86400000,'INVENTORY_TAKER_AGE');
   check(p.maximumInventoryAgeMs===undefined||Number.isSafeInteger(p.maximumInventoryAgeMs)&&p.maximumInventoryAgeMs>=0&&p.maximumInventoryAgeMs<=86400000,'INVENTORY_MAX_AGE');
+  check(p.inventoryAgeClock===undefined||['receipt','execution'].includes(p.inventoryAgeClock),'INVENTORY_AGE_CLOCK');
   check(typeof(p.retainProfitableHedge??false)==='boolean','RETAIN_HEDGE');
   check(typeof(p.repriceProfitableHedge??false)==='boolean'&&(!p.repriceProfitableHedge||p.retainProfitableHedge===true),'REPRICE_HEDGE');
   check(p.entryExchangeIds==null||Array.isArray(p.entryExchangeIds)&&p.entryExchangeIds.length<=p.maximumMarkets&&new Set(p.entryExchangeIds).size===p.entryExchangeIds.length&&p.entryExchangeIds.every(id=>typeof id==='string'&&/^[1-9]\d*$/.test(id)),'ENTRY_EXCHANGES');
@@ -56,14 +57,14 @@ function validateBook(b){
   for(const [side,sign]of [['bids',-1],['asks',1]]){check(Array.isArray(b[side])&&b[side].length>0,'BOOK_DEPTH');let prev=null;for(const l of b[side]){const v=price(l.price);check(Number.isSafeInteger(l.quantity)&&l.quantity>0&&(prev===null||(sign===-1?v<prev:v>prev)),'BOOK_LEVEL');prev=v;}}
   check(price(b.bids[0].price)<price(b.asks[0].price),'BOOK_CROSSED');
 }
-function fill(s,q,n,at,sourceId){
+function fill(s,q,n,at,sourceId,executedAt=at){
   const value=amount(q.price)*BigInt(n),costFee=fee(value,n,s.policy),p=s.positions[q.exchangeId]??={YES:[],NO:[]};
   let realized=0n;
   if(q.action==='sell'){const removed=take(p[q.side],n);s.cash=money(amount(s.cash)+value-costFee);realized=value-removed-costFee;}
-  else{check(amount(s.cash)>=value+costFee,'CASH');s.cash=money(amount(s.cash)-value-costFee);p[q.side].push({quantity:n,price:q.price});realized=-costFee;}
+  else{check(amount(s.cash)>=value+costFee,'CASH');s.cash=money(amount(s.cash)-value-costFee);p[q.side].push({quantity:n,price:q.price,...(s.policy.inventoryAgeClock==='execution'?{executedAt}:{})});realized=-costFee;}
   q.filled+=n;if(!remaining(q))q.retired=true;
   s.fees=money(amount(s.fees)+costFee);s.realized=money(amount(s.realized)+realized);
-  s.fills.push({orderId:q.id,marketId:q.marketId,exchangeId:q.exchangeId,side:q.side,action:q.action,quantity:n,price:q.price,fee:money(costFee),at,sourceId,counterfactual:true});
+  s.fills.push({orderId:q.id,marketId:q.marketId,exchangeId:q.exchangeId,side:q.side,action:q.action,quantity:n,price:q.price,fee:money(costFee),at,sourceId,counterfactual:true,...(s.policy.inventoryAgeClock==='execution'?{executedAt}:{})});
   const pairs=Math.min(qty(p.YES),qty(p.NO));
   if(pairs){const costs=take(p.YES,pairs)+take(p.NO,pairs),payout=SCALE*BigInt(pairs);s.cash=money(amount(s.cash)+payout);s.realized=money(amount(s.realized)+payout-costs);s.redemptions.push({exchangeId:q.exchangeId,quantity:pairs,payout:money(payout),cost:money(costs),at,counterfactual:true,mechanism:'engine_opposite_buy_fifo_netting'});}
   prune(s);
@@ -92,8 +93,10 @@ function desired(s,at){
       let exitImprove=TICK*BigInt(Math.min(s.policy.insideTicks??0,Math.max(0,Number(spread/TICK-1n))));
       const baseExit=side==='YES'?bestAsk:SCALE-bestBid,worstBasis=p[side].reduce((highest,lot)=>amount(lot.price)>highest?amount(lot.price):highest,0n);
       const lastBuy=s.policy.inventoryTakerAfterMs===undefined&&s.policy.maximumInventoryAgeMs===undefined?null:s.fills.filter(f=>f.exchangeId===b.exchangeId&&f.side===side&&f.action==='buy').at(-1),executable=side==='YES'?bestBid:SCALE-bestAsk;
-      const maximumAge=lastBuy&&s.policy.maximumInventoryAgeMs!==undefined&&at-ms(lastBuy.at)>=s.policy.maximumInventoryAgeMs;
-      const profitableAge=lastBuy&&s.policy.inventoryTakerAfterMs!==undefined&&at-ms(lastBuy.at)>=s.policy.inventoryTakerAfterMs&&executable-worstBasis-fee(worstBasis,1,s.policy)-fee(executable,1,s.policy)>=0n;
+      if(lastBuy&&s.policy.inventoryAgeClock==='execution')check(p[side].every(l=>typeof l.executedAt==='string'),'INVENTORY_EXECUTION_CLOCK_MISSING');
+      const birth=!lastBuy?null:s.policy.inventoryAgeClock==='execution'?p[side].reduce((oldest,l)=>Math.min(oldest,ms(l.executedAt)),Infinity):ms(lastBuy.at);
+      const maximumAge=birth!==null&&s.policy.maximumInventoryAgeMs!==undefined&&at-birth>=s.policy.maximumInventoryAgeMs;
+      const profitableAge=birth!==null&&s.policy.inventoryTakerAfterMs!==undefined&&at-birth>=s.policy.inventoryTakerAfterMs&&executable-worstBasis-fee(worstBasis,1,s.policy)-fee(executable,1,s.policy)>=0n;
       if(quantity>0&&(maximumAge||profitableAge)){candidates.push({marketId:b.marketId,exchangeId:b.exchangeId,side,action:'sell',quantity,price:money(executable),executionStyle:'inventoryAON',...(maximumAge?{inventoryExitReason:'maximumAge'}:{}),rank:1e12,source:b});continue;}
       if(s.policy.repriceProfitableHedge&&!maximumAge&&!profitableAge&&entryAllowed(s,b.exchangeId)){
         const hedgeSide=side==='YES'?'NO':'YES',limit=side==='YES'?SCALE-bestAsk:bestBid,worst=p[side].reduce((n,l)=>amount(l.price)>n?amount(l.price):n,0n),existingHedge=unresolved(s).filter(q=>q.exchangeId===b.exchangeId&&q.side===hedgeSide&&q.action==='buy'&&end(q)>at).reduce((n,q)=>n+remaining(q),0),quantity=Math.min(s.policy.quantity,available+existingHedge);
@@ -213,11 +216,11 @@ export function advanceMoloch(s,event){
       let eligibleVolume=event.quantity;
       if(through&&q.fillModel==='conditionalFifo'){q.queueAhead='0';q.queueSame='0';q.queueBetter='0';}
       if(touch){const numerator=event.quantity*q.touchAttributionBps+q.touchRemainder,attributed=Math.floor(numerator/10000);q.touchRemainder=numerator%10000;if(attributed)q.queueBetter='0';const ahead=BigInt(q.queueSame),consumed=BigInt(attributed)<ahead?BigInt(attributed):ahead;q.queueSame=String(ahead-consumed);q.queueAhead=String(BigInt(q.queueSame)+BigInt(q.queueBetter));eligibleVolume=attributed-Number(consumed);count(s,'conditionalTouches');if(!eligibleVolume)break;}
-      if(through&&q.throughFillCapacity===true){const n=Math.min(event.quantity,remaining(q));if(n){fill(s,q,n,s.lastAt,event.id);s.fills.at(-1).throughCapacityFill=true;count(s,'throughCapacityFills');break;}}
+      if(through&&q.throughFillCapacity===true){const n=Math.min(event.quantity,remaining(q));if(n){fill(s,q,n,s.lastAt,event.id,event.executedAt);s.fills.at(-1).throughCapacityFill=true;count(s,'throughCapacityFills');break;}}
       const participationBps=q.participationBps??100,participation=Math.floor(event.quantity*participationBps/10000);q.participationCredit+=eligibleVolume*participationBps;
       // Fractional prints accumulate, but a print's total allocated shares is capped.
       const n=Math.min(event.quantity,remaining(q),Math.floor(q.participationCredit/10000),Math.max(participation,1));
-      if(n>0){q.participationCredit-=n*10000;fill(s,q,n,s.lastAt,event.id);if(touch){s.fills.at(-1).conditionalQueueFill=true;s.fills.at(-1).touchAttributionBps=q.touchAttributionBps;}break;}if(touch)break;
+      if(n>0){q.participationCredit-=n*10000;fill(s,q,n,s.lastAt,event.id,event.executedAt);if(touch){s.fills.at(-1).conditionalQueueFill=true;s.fills.at(-1).touchAttributionBps=q.touchAttributionBps;}break;}if(touch)break;
     }
   }else if(event.type==='candle'){
     s.priceHistory??={};const prior=s.priceHistory[event.exchangeId];s.priceHistory[event.exchangeId]={close:event.close,at:event.availableAt,observations:(prior?.observations??0)+1,historicalReleaseClockAssumed:true};count(s,'priceOnlyObservations');
