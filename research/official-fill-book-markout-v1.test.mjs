@@ -70,6 +70,8 @@ test('causal horizons walk executable depth, leave partial shares unmarked, and 
   const one = result.horizons['1000'];
   assert.equal(result.coverage.matchedBaalFillRows, 1);
   assert.equal(result.coverage.preFillContextAtMostFiveSeconds, 1);
+  assert.equal(result.fillVsAckResponse.buckets.fillAfterAckReceiptOneToThirtySeconds, 1);
+  assert.equal(result.fillVsAckResponse.lagMs.positiveMeansFillFollowedAckResponse.medianMs, 10_000);
   assert.equal(one.observedLaterBooks, 1);
   assert.equal(one.partialDepthFillRows, 1);
   assert.equal(one.markedShares, 5);
@@ -90,6 +92,74 @@ test('a book with source time before the horizon cannot leak forward into the ma
   tracker.observeBook(validBook({receivedMs: base + 11_000, sourceMs: base + 10_999, bid: '0.800000', ask: '0.820000'}));
   tracker.observeBook(validBook({receivedMs: base + 12_000, sourceMs: base + 10_999, bid: '0.800000', ask: '0.820000', seq: 2}));
   assert.equal(tracker.finish().horizons['1000'].observedLaterBooks, 0);
+});
+
+test('continuity audit finds a causal next book beyond 30 seconds without calling it a 30s mark', () => {
+  const tracker = trackerFor();
+  tracker.observeBook(validBook({receivedMs: base + 55_000, sourceMs: base + 52_000,
+    bid: '0.500000', ask: '0.510000'}));
+  const result = tracker.finish();
+  assert.deepEqual(result.bookContinuity.firstLaterBookReceiptLagMs,
+    {count: 1, medianMs: 45_000, p90Ms: 45_000, maxMs: 45_000});
+  assert.deepEqual(result.bookContinuity.firstLaterBookSourceLagMs,
+    {count: 1, medianMs: 42_000, p90Ms: 42_000, maxMs: 42_000});
+  assert.equal(result.bookContinuity.laterBookReceiptLagBuckets.thirtySecondsToFiveMinutes, 1);
+  assert.equal(result.bookCoverageNearFill.fillsWithNoBookReceiptInWindow, 1);
+  assert.equal(result.horizons['30000'].observedLaterBooks, 0);
+  assert.equal(result.horizons['30000'].weightedExecutableMarkoutPerShare, null);
+});
+
+test('near-fill coverage separates same-market and other-market receipt activity', () => {
+  const tracker = trackerFor();
+  tracker.observeBook(validBook({receivedMs: base - 20_000, sourceMs: base - 20_050}));
+  tracker.observeBook(validBook({receivedMs: base + 10_100, sourceMs: base + 10_050}));
+  tracker.observeBook(validBook({marketId: '390', exchangeId: '1081', receivedMs: base - 20_000,
+    sourceMs: base - 20_050}));
+  tracker.observeBook(validBook({marketId: '390', exchangeId: '1081', receivedMs: base + 40_000,
+    sourceMs: base + 39_950}));
+  tracker.observeBook(validBook({marketId: '390', exchangeId: '1081', receivedMs: base + 40_001,
+    sourceMs: base + 39_950}));
+  const result = tracker.finish();
+  assert.equal(result.bookCoverageNearFill.windowMsEachSide, 30_000);
+  assert.equal(result.bookCoverageNearFill.fillsWithSameMarketBookReceipt, 1);
+  assert.equal(result.bookCoverageNearFill.fillsWithOtherMarketBookReceipt, 1);
+  assert.equal(result.bookCoverageNearFill.fillsWithOtherMarketButNoSameMarketBookReceipt, 0);
+  assert.deepEqual(result.bookCoverageNearFill.receiptsPerFillWindow, {sameMarket: 2, otherMarket: 2});
+  assert.deepEqual(result.bookCoverageNearFill.receiptDirectionCounts, {
+    sameMarketBeforeFill: 1, sameMarketAfterFill: 1, otherMarketBeforeFill: 1, otherMarketAfterFill: 1,
+  });
+  assert.equal(JSON.stringify(result).includes('7001'), false);
+  assert.doesNotMatch(JSON.stringify(result), /"(?:orderId|marketId|fillId|accountId)"/);
+});
+
+test('other-market capture in the window is not mistaken for same-market fill coverage', () => {
+  const tracker = trackerFor();
+  tracker.observeBook(validBook({marketId: '390', exchangeId: '1081', receivedMs: base + 10_000,
+    sourceMs: base + 9_950}));
+  const coverage = tracker.finish().bookCoverageNearFill;
+  assert.equal(coverage.fillsWithSameMarketBookReceipt, 0);
+  assert.equal(coverage.fillsWithOtherMarketBookReceipt, 1);
+  assert.equal(coverage.fillsWithOtherMarketButNoSameMarketBookReceipt, 1);
+  assert.deepEqual(coverage.receiptsPerFillWindow, {sameMarket: 0, otherMarket: 1});
+});
+
+test('book received after fill but sourced at or before the fill is not a later causal quote', () => {
+  const tracker = trackerFor();
+  tracker.observeBook(validBook({receivedMs: base + 11_000, sourceMs: base + 10_000,
+    bid: '0.800000', ask: '0.820000'}));
+  const result = tracker.finish();
+  assert.equal(result.bookContinuity.fillsWithAnyLaterCausalBook, 0);
+  assert.equal(result.bookContinuity.fillsWithNoLaterCausalBook, 1);
+  assert.equal(result.bookContinuity.laterBookReceiptLagBuckets.missing, 1);
+});
+
+test('ACK response timing labels fills completed before the HTTP response without calling them stale orders', () => {
+  const acks = verifiedAcks([{...ackRow('7001'), receivedAt: iso(base + 11_000)}]);
+  const result = trackerFor({acknowledgements: acks}).finish();
+  assert.equal(result.fillVsAckResponse.fillsWithAckReceiptTimestamp, 1);
+  assert.equal(result.fillVsAckResponse.buckets.fillBeforeOrAtAckReceipt, 1);
+  assert.equal(result.fillVsAckResponse.lagMs.negativeMeansFillPrecededAckResponse.medianMs, 1_000);
+  assert.equal(result.fillVsAckResponse.lagMs.positiveMeansFillFollowedAckResponse.count, 0);
 });
 
 test('public-book journal verifies session scope, every hash link, timestamp and depth constraints', () => {
