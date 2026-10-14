@@ -4,6 +4,7 @@ import {config,parseEvent,parseSnapshot,compareVersion} from '../../feed/contrac
 import {payloadHash} from '../../execution/ledger.mjs';
 import {receiptEvents} from '../sig-source.mjs';
 import {createHash} from 'node:crypto';import {collectFrozenPaperFiles} from '../../live-paper/frozen-paper-graph.mjs';
+import {diagnosticTransport} from './diagnostic-transport.mjs';
 export function captureFailure(phase,error){
   const allowed=new Set(['command','rest','final_rest','channel','aggregate','broadcast','publication']);const code=/^STREAM_[A-Z0-9_]+$/.test(error?.message??'')?error.message:['EPERM','EACCES','EBUSY','ENOENT','ENOSPC','EIO'].includes(error?.code)?error.code:'UNCLASSIFIED';return{phase:allowed.has(phase)?phase:'unknown',code,...(['rename','open','read','write','stat'].includes(error?.syscall)?{operation:error.syscall}:{}),...(['stats.tmp','stats.json','receipts.jsonl','events.jsonl'].includes(path.basename(error?.path??''))?{file:path.basename(error.path)}:{})};
 }
@@ -63,8 +64,10 @@ export async function capture(input,clientFactory=createClient){
   const append=event=>{const body={sequence:++sequence,previous,event},row={...body,hash:payloadHash(body)};fs.appendFileSync(path.join(out,'events.jsonl'),JSON.stringify(row)+'\n');previous=row.hash;};
   const evidence=new StreamEvidence(pairs,tournamentId,append);
   const publishStats=statsPublisher(out);
-  const stats=()=>{const m=evidence.metrics;publishStats({mode:'official_sig_realtime_capture',at:new Date().toISOString(),status,failure,subscriptions,metrics:{...m,meanTradeLatencyMs:m.latencySamples?m.latencySumMs/m.latencySamples:null},sequence,previous,tokenWrites:1,contestOrders:0,paperOrders:0,financialIntegration:false,continuousTapeEstablished:false,automaticTokenRefresh:false});};
-  const client=clientFactory(auth.supabaseUrl,auth.anonKey,{auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false},realtime:{logger:()=>{}}});
+  const transportEvidence={};
+  const stats=()=>{const m=evidence.metrics;publishStats({mode:'official_sig_realtime_capture',at:new Date().toISOString(),status,failure,subscriptions,transportEvidence,metrics:{...m,meanTradeLatencyMs:m.latencySamples?m.latencySumMs/m.latencySamples:null},sequence,previous,tokenWrites:1,contestOrders:0,paperOrders:0,financialIntegration:false,continuousTapeEstablished:false,automaticTokenRefresh:false});};
+  const transport=diagnosticTransport(value=>Object.assign(transportEvidence,value),error=>channelFailure('CHANNEL_ERROR',error));
+  const client=clientFactory(auth.supabaseUrl,auth.anonKey,{auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false},realtime:{logger:()=>{},transport}});
   await client.realtime.setAuth(auth.token);auth.token=null;auth.anonKey=null;init.auth=null;
   let finish;const done=new Promise(resolve=>{finish=resolve;});
   const close=async(failed=false,reason=null)=>{if(closing)return;closing=true;fatal=failed;failure=reason;status=failed?'failed':'completed';clearInterval(timer);clearTimeout(deadline);try{drainRest();}catch(e){fatal=true;failure??=captureFailure('final_rest',e);status='failed';}try{await client.removeAllChannels();}catch{}try{client.realtime.disconnect();}catch{}stats();finish();};

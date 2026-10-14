@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "at": "2026-10-14T22:56:04.764Z",
+  "phase": 60,
+  "captureExit": 0,
+  "officialReceipts": 4,
+  "streamStatsHash": "bb1b7dbb2f693f55e497ad388b8bd8142f20af9e707b9e3ec6c5efb7124ed3a9",
+  "transportEvidence": {
+    "handshakeStatus": 101,
+    "socketCloseCode": 1005
+  },
+  "metrics": {
+    "batches": 9,
+    "trades": 0,
+    "duplicateTrades": 0,
+    "duplicateBatches": 0,
+    "gaps": 0,
+    "truncated": 0,
+    "schemaErrors": 0,
+    "restBooks": 2,
+    "restTapes": 2,
+    "pushedBooks": 9,
+    "olderBooks": 0,
+    "unknownMarkets": 0,
+    "latencySamples": 0,
+    "latencySumMs": 0,
+    "latencyMaxMs": 0,
+    "meanTradeLatencyMs": null
+  },
+  "tokenWrites": 1,
+  "contestOrders": 0,
+  "profitabilityEstablished": false,
+  "limitation": "New transport delivered books, but comparison does not prove the exact cause of prior native socket failure; no new trades or profit established."
+}

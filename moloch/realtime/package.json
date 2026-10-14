@@ -1,1 +1,1 @@
-{"name":"moloch-sig-realtime","private":true,"type":"module","dependencies":{"@supabase/supabase-js":"2.117.2"}}
+{"name":"moloch-sig-realtime","private":true,"type":"module","dependencies":{"@supabase/supabase-js":"2.117.2","ws":"8.22.0"}}

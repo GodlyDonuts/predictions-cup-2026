@@ -11,6 +11,9 @@ importers:
       '@supabase/supabase-js':
         specifier: 2.117.2
         version: 2.117.2
+      ws:
+        specifier: 8.22.0
+        version: 8.22.0
 
 packages:
 
@@ -53,6 +56,18 @@ packages:
   tslib@2.8.1:
     resolution: {integrity: sha512-oJFu94HQb+KVduSUQL7wnpmqnfmLsOA/nAh6b6EH0wCEoK0/mPeXU6c3wKDV83MkOuHPRHtSXKKU99IBazS/2w==}
 
+  ws@8.22.0:
+    resolution: {integrity: sha512-Ydggc987+RO0AnWtZ/7Wq9FtNvcrL1b/RO0ud9mWjUPgDrsAAwQSF51sm2hm1XofbU/4jkpGEsLFsZZxU+1DOg==}
+    engines: {node: '>=10.0.0'}
+    peerDependencies:
+      bufferutil: ^4.0.1
+      utf-8-validate: '>=5.0.2'
+    peerDependenciesMeta:
+      bufferutil:
+        optional: true
+      utf-8-validate:
+        optional: true
+
 snapshots:
 
   '@supabase/auth-js@2.117.2':
@@ -90,3 +105,5 @@ snapshots:
   iceberg-js@0.8.1: {}
 
   tslib@2.8.1: {}
+
+  ws@8.22.0: {}
