@@ -1,0 +1,79 @@
+{
+  "bot": "Moloch",
+  "window": {
+    "from": "2026-10-14T04:00:37.177Z",
+    "to": "2026-10-14T04:08:10.147Z"
+  },
+  "sourceEventSha256": "5b3d94992b1c5e6db323ef94b299dd581b4c1b26a7101459024ab04cb0a801c2",
+  "sourceFinalHash": "0273f256e4395dc7ed446adb4c569c34dabc7887fcc7cd14149cde03a1c6c4bd",
+  "parentSnapshotHash": "0cb7b98b169027ec72877a0f5beacf46e69a198b93ea3efd671f317a7e9e60fd",
+  "baselineFinancialParity": true,
+  "status": "failed",
+  "captureExit": 1,
+  "stopReason": "SDK status failed; old collector recorded no phase detail. All 36 REST receipts parse offline. Cause unresolved, no automatic refresh.",
+  "cash": "1000.000000",
+  "realized": "0.000000",
+  "fills": 0,
+  "reservedCash": "24.875000",
+  "pushedBooks": 215,
+  "newOrders": 16,
+  "futureObservedFlow": [
+    {
+      "exchangeId": "843",
+      "trades": 36,
+      "volume": 71,
+      "eligibleThroughTrades": 0,
+      "eligibleThroughVolume": 0,
+      "touchTrades": 17
+    },
+    {
+      "exchangeId": "967",
+      "trades": 5,
+      "volume": 2883,
+      "eligibleThroughTrades": 0,
+      "eligibleThroughVolume": 0,
+      "touchTrades": 4
+    }
+  ],
+  "variants": [
+    {
+      "fillModel": "strictThrough",
+      "participationBps": 100,
+      "newFills": 0,
+      "realized": "0.000000",
+      "ownedCost": "0.000000",
+      "lastFresh": {
+        "at": "2026-10-14T04:08:10.147Z",
+        "pnl": "0.000000"
+      },
+      "finalLiquidation": "0.000000"
+    },
+    {
+      "fillModel": "strictThrough",
+      "participationBps": 1000,
+      "newFills": 0,
+      "realized": "0.000000",
+      "ownedCost": "0.000000",
+      "lastFresh": {
+        "at": "2026-10-14T04:08:10.147Z",
+        "pnl": "0.000000"
+      },
+      "finalLiquidation": "0.000000"
+    },
+    {
+      "fillModel": "conditionalFifo",
+      "participationBps": 1000,
+      "newFills": 0,
+      "realized": "0.000000",
+      "ownedCost": "0.000000",
+      "lastFresh": {
+        "at": "2026-10-14T04:08:10.147Z",
+        "pnl": "0.000000"
+      },
+      "finalLiquidation": "0.000000"
+    }
+  ],
+  "newPaperCapital": "0.000000",
+  "contestOrders": 0,
+  "profitabilityEstablished": false
+}

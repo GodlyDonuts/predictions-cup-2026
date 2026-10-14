@@ -1,4 +1,4 @@
-import test from 'node:test';import assert from 'node:assert/strict';import {StreamEvidence,capture} from './realtime/capture.mjs';
+import test from 'node:test';import assert from 'node:assert/strict';import {StreamEvidence,capture,captureFailure,statsPublisher} from './realtime/capture.mjs';
 import fs from 'node:fs';import os from 'node:os';import path from 'node:path';import {EventEmitter} from 'node:events';
 const tid='bda92870-621e-47b0-bc3c-3602c5c26f55',at='2026-10-13T22:00:00Z';
 const payload=(revision,previousRevision)=>({secretField:'not persisted',delivery:{model:'best-effort-authoritative-resync',correlationId:'not persisted',revision,previousRevision,sourceSequenceFrom:1,sourceSequenceThrough:1},books:[{exchangeId:2,asOf:{sequence:1,at},nextExpiryAt:null,bids:[{price:.4,quantity:100}],asks:[{price:.42,quantity:100}]}],trades:[{id:'1',sequence:1,marketId:'1',exchangeId:'2',tournamentId:tid,price:.42,quantity:10,executedAt:at}],bookDirty:[],marketSettled:[]});
@@ -29,4 +29,13 @@ test('capture drains final REST receipt on shutdown and never persists its auth 
   setImmediate(()=>input.emit('line',JSON.stringify({auth:{token:'DO_NOT_PERSIST_AUTH',anonKey:'DO_NOT_PERSIST_ANON',supabaseUrl:'https://example.invalid',expiresAt:new Date(Date.now()+3600000).toISOString()},outputDirectory:out,tournamentId:tid,pairs:[{marketId:'1',exchangeId:'2'}]})));
   try{await work;const stats=JSON.parse(fs.readFileSync(path.join(out,'stats.json')));assert.equal(stats.status,'completed');assert.equal(stats.metrics.restBooks,1);for(const name of fs.readdirSync(out)){const data=fs.readFileSync(path.join(out,name),'utf8');assert.equal(data.includes('DO_NOT_PERSIST_'),false);}}
   finally{const resolved=fs.realpathSync(dir),relative=path.relative(fs.realpathSync(os.tmpdir()),resolved);assert.match(relative,/^moloch-stream-test-[^\\/]+$/);fs.rmSync(resolved,{recursive:true,force:true});}
+});
+
+test('capture failures identify phase without retaining secrets or raw exception details',()=>{
+ assert.deepEqual(captureFailure('aggregate',Error('STREAM_AGGREGATE_SCHEMA')),{phase:'aggregate',code:'STREAM_AGGREGATE_SCHEMA'});assert.deepEqual(captureFailure('rest',{code:'EPERM',message:'private path and DO_NOT_PERSIST_TOKEN'}),{phase:'rest',code:'EPERM'});assert.equal(JSON.stringify(captureFailure('private phase',Error('DO_NOT_PERSIST_TOKEN'))).includes('DO_NOT_PERSIST'),false);assert.equal(captureFailure('rest',Error('unknown detail')).code,'UNCLASSIFIED');
+});
+
+test('Windows sharing conflicts defer status publication without masking durable failures',()=>{
+ let writes=0,renames=0;const transient={code:'EPERM',syscall:'rename',path:'stats.tmp'},io={writeFileSync(){writes++;},renameSync(){renames++;if(renames<=2)throw transient;}},publish=statsPublisher('unused',io);assert.equal(publish({status:'one'}),false);assert.equal(publish({status:'two'}),false);assert.equal(publish({status:'latest'}),true);assert.equal(writes,3);
+ const denied=statsPublisher('unused',{writeFileSync(){},renameSync(){throw transient;}});for(let n=0;n<20;n++)assert.equal(denied({}),false);assert.throws(()=>denied({}),e=>e===transient);assert.throws(()=>statsPublisher('unused',{writeFileSync(){throw {code:'ENOSPC'};}})({}),e=>e.code==='ENOSPC');assert.deepEqual(captureFailure('publication',transient),{phase:'publication',code:'EPERM',operation:'rename',file:'stats.tmp'});
 });

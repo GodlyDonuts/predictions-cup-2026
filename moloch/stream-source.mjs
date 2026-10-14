@@ -17,7 +17,7 @@ export function predecessorTradeFacts(directory,state,runtimeRoot){
   check(facts.size===Object.keys(state.seen).length&&[...facts.values()].every(t=>!t.originalExecutedAt),'MISSING_TRADE_PROVENANCE');return facts;
 }
 export class StreamSource {
-  constructor(scopes,tournamentId,startedAt,facts=new Map()){this.scopes=new Map(scopes.map(p=>[p.marketId,p]));this.tournamentId=tournamentId;this.facts=new Map(facts);this.status=new Map(scopes.map(p=>[p.marketId,{invalidatedAt:startedAt,blocked:true,restBook:false,tape:false}]));this.books=new Map();this.revisions=new Map();this.sequence=0;this.previous='';this.metrics={rows:0,pushedBooks:0,olderBooks:0,initialResyncs:0,gaps:0,duplicates:0,unblocks:0,precisionReconciliations:0};}
+  constructor(scopes,tournamentId,startedAt,facts=new Map(),universe=[]){this.scopes=new Map(scopes.map(p=>[p.marketId,p]));this.tournamentId=tournamentId;this.facts=new Map(facts);this.observationMarkets=new Set(universe.map(p=>p.marketId));this.status=new Map(scopes.map(p=>[p.marketId,{invalidatedAt:startedAt,blocked:true,restBook:false,tape:false}]));this.books=new Map();this.revisions=new Map();this.sequence=0;this.previous='';this.metrics={rows:0,pushedBooks:0,olderBooks:0,initialResyncs:0,gaps:0,duplicates:0,unblocks:0,precisionReconciliations:0};}
   trade(t){const key=tradeKey(t),known=this.facts.get(key);if(!known){this.facts.set(key,t);return t;}
     check(known.marketId===t.marketId&&known.yesPrice===t.yesPrice&&known.quantity===t.quantity,'TRADE_FACT_CONFLICT');
     const a=instantNs(known.executedAt),b=instantNs(t.executedAt),official=new Set(['sig_engine_match','sig_reporting_tape_only']);
@@ -45,7 +45,9 @@ export class StreamSource {
   }
   row(row){
     const {hash,...body}=row;check(hash===payloadHash(body)&&body.sequence===this.sequence+1&&body.previous===this.previous,'CHAIN');this.sequence++;this.previous=hash;this.metrics.rows++;
-    const e=body.event,p=this.scopes.get(e.marketId);check(p,'SCOPE');
+    const e=body.event,p=this.scopes.get(e.marketId);
+    if(!p){if(e.kind==='rest_reference'){check(this.observationMarkets.has(e.marketId)&&e.source==='official_sig_api_v1','OBSERVATION_SOURCE');this.metrics.observationRows=(this.metrics.observationRows??0)+1;return[];}check(e.source==='official_sig_realtime','OBSERVATION_SOURCE');if(e.kind==='unknown_market'){check(/^[1-9]\d*$/.test(e.marketId)&&e.requiresCatalogRefresh===true,'UNKNOWN_MARKET');this.metrics.unknownObservationMarkets=(this.metrics.unknownObservationMarkets??0)+1;return[];}
+      check(this.observationMarkets.has(e.marketId)&&['subscribed','rejected','broadcast'].includes(e.kind),'SCOPE');if(e.kind==='broadcast')check(e.tournamentId===this.tournamentId,'OBSERVATION_TOURNAMENT');this.metrics.observationRows=(this.metrics.observationRows??0)+1;return[];}
     if(e.kind==='rest_reference')return[];
     if(e.kind==='subscribed'){this.metrics.initialResyncs++;return this.invalidate(e.marketId,e.receivedAt);}
     if(e.kind==='rejected')return this.invalidate(e.marketId,e.receivedAt);

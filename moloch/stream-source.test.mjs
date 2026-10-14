@@ -50,3 +50,10 @@ test('resume restores original trade provenance rather than normalized reporting
   const facts=predecessorTradeFacts(dir,state,root);assert.equal(facts.get(key).idNamespace,'sig_engine_match');const mux=new StreamSource([],tid,at(0),facts);assert.equal(mux.trade({...wire,idNamespace:'sig_reporting_tape_only',executedAt:normalized.originalExecutedAt}).executedAt,wire.executedAt);assert.throws(()=>mux.trade({...wire,executedAt:'2026-10-13T22:00:04.604Z'}),/CLOCK_CONFLICT/);
   }finally{if(!path.resolve(root).startsWith(path.resolve(os.tmpdir())+path.sep+'moloch-provenance-'))throw Error('TEMP_SCOPE');fs.rmSync(root,{recursive:true});}
 });
+
+test('global observation rows advance verified chain without reaching financial state',()=>{
+ const mux=new StreamSource([{marketId:'1',exchangeId:'2'}],tid,at(0),new Map(),[{marketId:'1',exchangeId:'2'},{marketId:'3',exchangeId:'4'}]);let sequence=0,previous='';const row=event=>{const body={sequence:++sequence,previous,event},r={...body,hash:payloadHash(body)};previous=r.hash;return r;};
+ const other=batch(1,0,1,1,[{id:'other',quantity:100,price:.39}]);other.marketId='3';assert.deepEqual(mux.row(row(other)),[]);assert.equal(mux.facts.size,0);assert.equal(mux.books.size,0);assert.equal(mux.status.has('3'),false);assert.equal(mux.metrics.observationRows,1);
+ assert.equal(mux.row(row({kind:'subscribed',source:'official_sig_realtime',marketId:'1',receivedAt:at(2)}))[0].type,'gap');assert.equal(mux.sequence,2);assert.deepEqual(mux.row(row({kind:'rest_reference',source:'official_sig_api_v1',marketId:'3',receivedAt:at(3)})),[]);assert.equal(mux.facts.size,0);
+ const bad=row({...other,tournamentId:'wrong'});assert.throws(()=>mux.row(bad),/OBSERVATION_TOURNAMENT/);
+});

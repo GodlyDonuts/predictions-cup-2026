@@ -1,6 +1,6 @@
 import test from 'node:test';import assert from 'node:assert/strict';
 import {selectPairs,screenRows} from './screen.mjs';
-import {liveScopes,captureScopes,retiredPaperScopes,paperPolicyOverrides,live} from './live.mjs';
+import {liveScopes,captureScopes,retiredPaperScopes,paperPolicyOverrides,live,liveUniverse} from './live.mjs';
 const catalog=(ids,cursor=null)=>({source:'official_sig_api_v1',status:200,kind:'catalog',endpoint:'/tournaments/midterm-elections/markets?status=open&limit=100',data:{data:ids.map(id=>({id:String(id),status:'open',title:'test',exchanges:[{id:String(id+100)}]})),pagination:{total:ids.length,hasMore:!!cursor,nextCursor:cursor}}});
 test('catalog requires complete cursor chain and deterministic exploration',()=>{
   assert.deepEqual(selectPairs([catalog([1,2,3,4])],2).pairs.map(p=>p.marketId),['1','4']);
@@ -40,4 +40,10 @@ test('paper override files cannot alter capital, funding caps or transport budge
   for(const p of [{initialCash:'9999'},{maximumCommitted:'9999'},{writesPerMinute:100},{fillModel:'conditionalFifo'},[],null])assert.throws(()=>paperPolicyOverrides(p),/POLICY_OVERRIDE_SCOPE/);
   assert.throws(()=>paperPolicyOverrides({participationBps:10001}),/POLICY_LIMITS/);
   await assert.rejects(live({marketId:'1',exchangeId:'2',outputDirectory:'unused-policy-validation',policyFile:''}),/POLICY_FILE_REQUIRED/);
+});
+
+test('observation universe includes funded scopes without expanding financial admission',async()=>{
+ const scopes=[{marketId:'1',exchangeId:'2'}],universe=[...scopes,{marketId:'3',exchangeId:'4',ignored:'metadata'}];assert.deepEqual(liveUniverse(scopes,universe),[...scopes,{marketId:'3',exchangeId:'4'}]);
+ for(const bad of [[],[{marketId:'3',exchangeId:'4'}],[...scopes,{marketId:'3',exchangeId:'2'}],[...scopes,{marketId:'bad',exchangeId:'4'}]])assert.throws(()=>liveUniverse(scopes,bad),/UNIVERSE_SCOPE/);
+ await assert.rejects(live({marketId:'1',exchangeId:'2',outputDirectory:'unused-universe-validation',universeFile:'catalog.json'}),/UNIVERSE_REQUIRES_REALTIME_FILE/);
 });

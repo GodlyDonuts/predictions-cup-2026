@@ -81,7 +81,9 @@ The human confirmed the key shares Baal's account and then explicitly instructed
 Moloch to recreate the feed if necessary. This authorizes this bounded read-only
 capture as an exception to the old one-collector collaboration workflow. It does
 not transfer contest execution ownership. One local mutex and persistent admission
-record limit Moloch to five completed-paced reads/minute, no token/order writes.
+record limit Moloch to five completed-paced reads/minute. Realtime capture uses
+one ephemeral token request per bounded run, at most one per minute; it sends no
+contest orders.
 The shared server account limit still applies; a request failure stops capture
 and persists a blocked state. HTTP status and minimum backoff are saved in
 `capture/failure.json`. A bounded diagnostic probe can establish recovered service
@@ -431,3 +433,26 @@ records the cause: normalized reporting duplicates had replaced canonical stream
 provenance during predecessor scanning. Resume now selects original verified
 records and rejects missing originals. The stopped episode remains archived,
 and its wallet carries into a separate successor without added capital.
+
+Future live successors support `--universe FILE` alongside `--policy FILE`. The
+universe must contain every financial scope and unique valid exchange IDs. Its
+normalized contents and hash are frozen in the episode before capture starts.
+The collector uses the single aggregate tournament channel, while serialized
+REST reconciliation and financial admission remain limited to the declared four
+markets. Other broadcasts stay in the observation journal for activity research;
+they cannot create quotes, inventory or financial trade facts. This lets discovery
+continue during position management without a separate collector or token.
+
+The [forward maker window](results/forward-maker-20261014.json) observed 41 unique
+future prints totaling 2954 shares across two active markets, but none traded
+strictly through an eligible paper quote. Even the conditional FIFO sensitivity
+produced no fills. Raising participation therefore did not create turnover.
+
+[Aggregate discovery validation](results/aggregate-discovery-20261014.json) replays
+8230 verified rows across 237 markets while keeping four financial scopes. The
+prior capture had no two-sided compatible-flow candidate. Discovery now ranks
+two-sided volume with room for inside quotes and can evaluate locally gap-free
+segments after a fresh observable book; it retains every historical gap warning.
+A live aggregate attempt stopped on a filesystem EPERM before new quotes. Only
+status-file rename sharing conflicts get bounded retries; data/journal failures
+remain fatal, and allowlisted failure phases now identify the filesystem operation.

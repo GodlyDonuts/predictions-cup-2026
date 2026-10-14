@@ -17,3 +17,7 @@ test('a revision gap prevents quoted admission but retains activity priority for
 test('study rejects event edits in a preserved hash chain',()=>{
   const a=setup();const row=a.send(batch([book(0,1)]),0);const s=new ActivityStudy();assert.throws(()=>s.row({...row,event:{}}),/CHAIN/);
 });
+
+test('post-gap observations recover local price compatibility while retaining historical warnings',()=>{
+ const {s,send}=setup();send(batch([book(0,1)]),0);send(batch([book(5,3)]),5,{gap:true});send(batch([book(10,11)],[trade(9,'post-gap-buy')]),10);const sell={...trade(12,'post-gap-sell'),sequence:12,price:.42};send(batch([book(13,13)],[sell]),13);send(batch([book(45,14)]),45);const r=s.report(at(45))[0];assert.equal(r.gapObserved,true);assert.equal(r.quoteReadyFromObservation,false);assert.equal(r.eligibleForFurtherReconciliation,false);assert.equal(r.bidCompatibleVolume,50);assert.equal(r.askCompatibleVolume,50);assert.equal(r.conditionalMarkouts,2);assert.ok(r.roundTripReconciliationPriority>0);
+});
