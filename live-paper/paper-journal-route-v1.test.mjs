@@ -8,7 +8,8 @@ import {initialState, restoreState} from './model.mjs';
 import {resolvePaperJournalRoute} from './paper-journal-route-v1.mjs';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
-const baseConfig = JSON.parse(fs.readFileSync(path.join(here, 'config.json'), 'utf8'));
+const configOnDisk = JSON.parse(fs.readFileSync(path.join(here, 'config.json'), 'utf8'));
+const {journalFileName: _configuredJournal, ...baseConfig} = configOnDisk;
 
 test('missing journal name preserves the native legacy journal route', () => {
   const runtimeDir = path.join(os.tmpdir(), 'paper-journal-route-default');
