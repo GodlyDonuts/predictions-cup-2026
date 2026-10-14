@@ -58,6 +58,7 @@
     "windowRelaxed": false
   },
   "backlog": [
+    "Issue #105: direct executable-return model corrected favorable-arrival label conditioning; later 14:31Z–16:19Z slice produced 22 outcomes in one market cluster, all averaging -0.005/share, zero selected trades; 7/7 tests; no profitability.",
     "Finish #90: map official own-order/fill receipts to existing bot journals; determine whether fill-conditioned economics are observable without a live order.",
     "Finish #91: identify one fixed market-making policy that fits binary-book semantics and the one-second feed; specify a clean falsification test.",
     "When the 21:15 source is writer-released, freeze/hash once and score the already-frozen ridge bank without refit or threshold change.",
@@ -288,9 +289,9 @@
     "winnerHoldingHours": "1.93-2.69"
   },
   "currentMilestone": {
-    "name": "Find forward executable alpha on sealed market data",
-    "stage": "fixed ridge bank reviewed/published and rejected as a winner; passive-spread candidate under source/API evidence review",
-    "next": "Determine whether authoritative own-fill receipts exist, and design an inventory-aware passive test that cannot infer fills from quote touches. Keep the 21:15 capture sealed until its writer releases it; then use as one untouched fixed-model test."
+    "name": "Falsify short-horizon executable-return alpha on a later book slice",
+    "stage": "completed; no strategy selected",
+    "next": "Test exact cross-market settlement constraints with a frozen contract map and fresh later prices; do not promote midpoint or same-market pair signals."
   },
   "delegation": {
     "mode": "solo",
@@ -719,8 +720,8 @@
     "stage": "1000allocation_live_actual29share_fill"
   },
   "nextProfitablePolicyWork": [
-    "Frozen ridge v1 is not eligible for promotion: first expanding fold selected 0/78 and predicted RMSE exceeded the training-mean control; later fold had no labels.",
-    "Source-backed candidate is inventory-aware passive spread capture, but the one-second feed has no aggressor label or queue position. Historical touch proxies are not fills; require actual fill receipts, matched maker baseline, and latency/depth/inventory accounting before judging economics."
+    "Do not promote this five-minute model: zero trades and only 22 completed outcomes in one market cluster.",
+    "Test cross-market logical settlement constraints using exact contract rules; any candidate must be executable at displayed depth and beat one-tick-per-leg stress."
   ],
   "objective": "Build and improve Baal for the official 2026 Susquehanna Predictions Cup",
   "originalPilot": {
@@ -923,7 +924,7 @@
     "realized": "0.000000",
     "verifiedAt": "2026-10-07T06:16:58.422Z"
   },
-  "updatedAt": "2026-10-14T10:14:00Z",
+  "updatedAt": "2026-10-14T16:21:57.143Z",
   "foreignCandidateRepair": {
     "commit": "17b544005c7578c95df4dc4f2f30ee8e2cc75a19",
     "collector": 32364,
@@ -981,5 +982,35 @@
     },
     "executionStopObserved": true,
     "next": "No profitable policy or current live run verified. Do not infer fills from touches; new calibrated own-fill and chronological transition evidence are still absent. Keep the growing/unreleased capture unscored and preserve the execution stop."
-  }
+  },
+  "executableReturnAlpha20261014": {
+    "issue": 105,
+    "at": "2026-10-14T16:21:57.143Z",
+    "report": "data/executable-return-alpha-20261014.json",
+    "module": "research/executable-return-alpha-v1.mjs",
+    "runner": "data/run-executable-return-alpha-20261014.mjs",
+    "testResult": "7/7 focused tests pass; runner completes against a sealed 328568080-byte public-books prefix in 27.3 seconds",
+    "source": {
+      "sha256": "a6628a435a71f99fc702d887614059ea5da48be279b940b20450407108ea5b70",
+      "bytes": 328568080,
+      "cutoff": "2026-10-14T14:31:30.476Z",
+      "through": "2026-10-14T16:19:21.972Z"
+    },
+    "training": {
+      "labels": 55609,
+      "meanNetPerShare": -0.006100091711766271
+    },
+    "heldout": {
+      "executableLabels": 22,
+      "marketClusters": 1,
+      "unconditionalMeanNetPerShare": -0.0050000000000000044,
+      "selectedTrades": 0,
+      "selectedWithOutcome": 0
+    },
+    "outcome": "No executable-return alpha qualified: zero selected trades; the 22 heldout outcomes came from one market cluster and averaged -0.005 per share before the fixed two-tick stress.",
+    "profitabilityEstablished": false,
+    "actualFillsProven": false,
+    "contestOrders": 0
+  },
+  "nextProfitabilityWork": "The direct arrival-ask to later-bid ridge selected zero trades on the later slice; move to exact cross-market settlement constraints or source-backed value dislocations, and require positive net outcomes on a new untouched window."
 }

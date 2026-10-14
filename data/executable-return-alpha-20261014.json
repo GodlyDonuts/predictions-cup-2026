@@ -1,0 +1,131 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-10-14T16:19:50.332Z",
+  "mode": "fixed executable-return ridge; later chronological capture slice",
+  "policy": {
+    "horizonMs": 300000,
+    "latencyMs": 3000,
+    "maximumArrivalWaitMs": 10000,
+    "maximumExitWaitMs": 30000,
+    "ridgeAlpha": 0.01,
+    "adverseTicksPerLeg": 1,
+    "tick": 0.005,
+    "feesPerShare": 0,
+    "oneShareCapacity": 1
+  },
+  "cutoff": "2026-10-14T14:31:30.476Z",
+  "source": {
+    "kind": "sealed public-book prefix",
+    "file": "public-books.jsonl",
+    "bytes": 328568080,
+    "sha256": "a6628a435a71f99fc702d887614059ea5da48be279b940b20450407108ea5b70",
+    "rows": 142338,
+    "acceptedBookRows": 139513,
+    "streams": 9138,
+    "firstAt": "2026-10-02T12:04:20.364Z",
+    "lastAt": "2026-10-14T16:19:21.972Z",
+    "prefixIdentityStable": true,
+    "prefixHashStable": true
+  },
+  "model": {
+    "trainingRows": 55609,
+    "trainingMean": -0.006100091711766271,
+    "trainingRmse": 0.001657835529675657,
+    "coefficients": [
+      -0.006100091711762102,
+      -0.000010556850086296647,
+      -0.0017543192135515556,
+      0.00010915961386012318,
+      -0.000025418527876073527,
+      -0.0000640392106204489,
+      0.00006435465221920898
+    ],
+    "featureMean": [
+      0.4999759930946438,
+      0.006060349943354547,
+      -0.0007042651076571684,
+      -0.0000010557867122965621,
+      0.0000027423618479023565,
+      0.12183798688161972
+    ],
+    "featureScale": [
+      0.35799722420997654,
+      0.002142034645861244,
+      0.48989253655857634,
+      0.0016144124296278454,
+      0.0004663376087562177,
+      0.048621603072309436
+    ]
+  },
+  "code": [
+    {
+      "path": "data/run-executable-return-alpha-20261014.mjs",
+      "sha256": "b004a7a458169b6d77d1cfe84abe2437ec2407a4b2a7db5e7af1f6dcab3f2c3d"
+    },
+    {
+      "path": "research/executable-return-alpha-v1.mjs",
+      "sha256": "642cd7e279a58455c98c769ba7f83ef18e92391474a49a9d3134baba6fb845d2"
+    },
+    {
+      "path": "research/book-alpha-v1.mjs",
+      "sha256": "c683583b756da572226d6df6226a55da679ea80cd786110d5d472fb0b2e4f585"
+    },
+    {
+      "path": "live-paper/journal-lines.mjs",
+      "sha256": "f8adff2bddc36b4e3d305dec9395fae9f51dff957e35313994b6147502cc6823"
+    },
+    {
+      "path": "live-paper/book-publication-v2.mjs",
+      "sha256": "4414a64652714a555a41a9fdde4a509686ba4f39e3896ae5707731fd17146948"
+    }
+  ],
+  "heldout": {
+    "decisionBookRows": 1547,
+    "labeledExecutableOutcomes": 22,
+    "unconditional": {
+      "n": 22,
+      "meanNet": -0.0050000000000000044,
+      "positiveFraction": 0,
+      "marketClusters": 1,
+      "equalWeightedMarketMean": -0.0050000000000000044
+    },
+    "selectedCounterfactual": {
+      "n": 0,
+      "meanNet": null,
+      "medianNet": null,
+      "positiveFraction": null,
+      "stressedMeanNet": null,
+      "positiveMarketClusters": 0,
+      "marketClusters": 0,
+      "equalWeightedMarketMean": null,
+      "marketClusterStandardError": null
+    },
+    "selectedDecisions": 0,
+    "selectedWithOutcome": 0,
+    "selectedCensored": 0,
+    "censoredRate": null
+  },
+  "exclusions": {
+    "invalidDecision": 0,
+    "noArrival": 9138,
+    "lateArrival": 98128,
+    "noEntryDepth": 1561,
+    "noExit": 2872,
+    "lateExit": 49,
+    "noExitDepth": 1458,
+    "invalidNet": 0
+  },
+  "accountReads": 0,
+  "networkRequests": 0,
+  "runtimeChanges": 0,
+  "contestOrders": 0,
+  "actualFillsProven": false,
+  "profitabilityEstablished": false,
+  "wallMs": 27306.0428,
+  "limitations": [
+    "Counterfactual marketable one-share outcomes use displayed best-price depth; they are not confirmed fills.",
+    "The test window is short and observations share markets and time regimes; cluster summaries are descriptive, not an iid significance test.",
+    "The candidate features were informed by prior research; this one later source slice is a falsification check, not a production qualification.",
+    "One tick of adverse execution is charged on both entry and exit; fees are zero per the contest specification."
+  ]
+}
