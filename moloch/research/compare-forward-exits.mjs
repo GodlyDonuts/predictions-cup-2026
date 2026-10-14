@@ -42,7 +42,7 @@ const result = banks.map((bank, i) => {
   const state = bank.snapshot.state;
   const report = read(path.join(bank.directory, 'report.json'));
   const closed = report.ownedCost === '0.000000' && report.unresolvedOrders === 0 && report.reservedCash === '0.000000';
-  return {name:i ? 'fixedOffer' : 'control', snapshotHash:bank.snapshot.hash,
+  return {name:i ? registration.comparisonMode==='entryInside'?'insideEntry':'fixedOffer' : 'control', snapshotHash:bank.snapshot.hash,
     newFills:state.fills.length-parent.fills.length, closed,
     realizedChange:decimal(amount(report.realized)-amount(parent.realized)),
     cash:report.cash, ownedCost:report.ownedCost, unresolved:report.unresolvedOrders,
