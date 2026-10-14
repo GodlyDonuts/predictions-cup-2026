@@ -400,12 +400,53 @@
     "frozenModelSha256": "0720ec4d7202c84acca7ea4446b6884c0c45263ba5faec343a257513d14fcb03"
   },
   "futureTest": {
-    "status": "pending_separately_frozen_future_capture",
+    "status": "scored_on_single_frozen_process_terminated_prefix_no_trade",
     "frozenCutoffObservedAt": "2026-10-13T14:44:08.976Z",
     "minimumFutureObservedAtExclusive": "2026-10-13T14:44:08.976Z",
     "requiresSeparateFrozenSourceIdentity": true,
     "noFutureCaptureRowsUsedForFitOrScaling": true,
-    "performanceConclusion": "none"
+    "performanceConclusion": "none",
+    "scoredAt": "2026-10-14T10:48:27Z",
+    "separateFrozenSourceIdentityVerified": true,
+    "source": {
+      "id": "forward-20261013-2115-d02873df",
+      "role": "untouched_forward_test",
+      "file": "realtime-2026-10-13T21-15-52-245Z-d02873df-952c-4bca-96b2-d52dbef272ba.jsonl",
+      "bytes": 1273590508,
+      "sha256": "aff1227c7cec65644edb813a07da7f45b21e5365287585969f1489485cbb07d2",
+      "from": "2026-10-13T21:15:52.247Z",
+      "through": "2026-10-14T00:46:01.180Z",
+      "captureRows": 342713,
+      "acceptedBookPoints": 2119,
+      "markets": 237,
+      "termination": "collector_failed_status_publication_failed_CLOCK_ROLLBACK",
+      "frozenPrefixNotCleanSessionEnd": true
+    },
+    "model": {
+      "modelIdentityHash": "0720ec4d7202c84acca7ea4446b6884c0c45263ba5faec343a257513d14fcb03",
+      "trainingRows": 140,
+      "frozenCutoffObservedAt": "2026-10-13T14:44:08.976Z",
+      "refitOrThresholdChange": false
+    },
+    "score": {
+      "candidateCount": 88,
+      "labeledCount": 50,
+      "selectedCount": 0,
+      "selectedWithOutcome": 0,
+      "censoredSelected": 0,
+      "selectedMeanPerShare": null,
+      "allLabeledCandidateMeanPerShare": -0.008499999999999988,
+      "modelRmse": 0.004154794615391199,
+      "trainingMeanControlRmse": 0.005193819914679605,
+      "actualFillsProven": false,
+      "profitabilityEstablished": false
+    },
+    "limitations": [
+      "This is one process-terminated forward prefix, not a clean full-session close.",
+      "Candidate markouts are overlapping counterfactual outcomes, not portfolio returns or actual fills.",
+      "The frozen policy selected zero candidates; the negative all-candidate mean is not realized account P&L.",
+      "One short capture does not establish persistent alpha or scalable capacity."
+    ]
   },
   "limitations": [
     "Walk-forward values are overlapping one-share displayed-book counterfactual labels, not portfolio returns or actual fills.",
