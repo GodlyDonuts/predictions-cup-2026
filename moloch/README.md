@@ -620,7 +620,7 @@ drain policy uses thirty minutes and carries the actual paper wallet unchanged.
 ## First ML experiment
 
 `adverse-model.mjs` fits a regularized logistic model from verified completed
-stream journals. Six inputs describe spread, side-relative imbalance, entry
+stream journals. The first fit's six inputs describe spread, side-relative imbalance, entry
 price, own/opposite queue size and receipt lag. Their book must have been received
 at least three seconds before the compatible execution. The later trade's size,
 price and touch status are not inputs. Labels use fresh executable one-share
@@ -639,3 +639,13 @@ Overlapping samples are correlated, and neither classification scores nor
 conditional price changes are wallet earnings. The original extraction with an
 unbounded later label horizon is retained locally as a superseded diagnostic;
 the published result uses the bounded horizon. The current paper policy is unchanged.
+
+[The momentum ablation](results/adverse-momentum-20261014.json) adds two current
+default inputs: side-relative midpoint movement and average absolute midpoint
+changes over the prior thirty seconds. Only same-generation, same-exchange books
+received by the feature cutoff contribute. Neither future receipts nor gap-era
+books can enter these features. The same split and fixed fitting settings produced
+a later Brier score of .246327, still worse than the .213051 constant-risk baseline.
+Its gate selected the same adverse sample group. This version is also rejected
+for quote control; the model's declared feature list prevents mixing six-input
+and eight-input predictions.

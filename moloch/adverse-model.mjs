@@ -7,11 +7,14 @@ import {payloadHash} from '../execution/ledger.mjs';
 import {verifyJournal} from './compare.mjs';
 
 const check=(ok,code)=>{if(!ok)throw Error('ADVERSE_'+code);};
-export const FEATURE_NAMES=['spreadTicks','sideImbalance','entryPrice','logOwnQueue','logOppositeQueue','receiptLagSeconds'];
-export function quoteFeatures(snapshot,side){
+export const FEATURE_NAMES=['spreadTicks','sideImbalance','entryPrice','logOwnQueue','logOppositeQueue','receiptLagSeconds','sideMomentumTicks','volatilityTicks'];
+export function quoteFeatures(snapshot,side,history=[]){
   check(side==='YES'||side==='NO','SIDE');
   const b=snapshot.book,bid=b.bids[0],ask=b.asks[0],sign=side==='YES'?1:-1;
   const values=[Math.round((ask.price-bid.price)*200),sign*(bid.quantity-ask.quantity)/(bid.quantity+ask.quantity),side==='YES'?bid.price:1-ask.price,Math.log1p(side==='YES'?bid.quantity:ask.quantity),Math.log1p(side==='YES'?ask.quantity:bid.quantity),(Date.parse(snapshot.receivedAt)-Date.parse(b.asOf.at))/1000];
+  const cutoff=Date.parse(snapshot.receivedAt),past=history.filter(h=>h.generation===snapshot.generation&&h.book.exchangeId===b.exchangeId&&Date.parse(h.receivedAt)>=cutoff-30000&&Date.parse(h.receivedAt)<=cutoff&&h.book.asOf.sequence<=b.asOf.sequence).sort((a,b)=>Date.parse(a.receivedAt)-Date.parse(b.receivedAt));
+  const mid=h=>(h.book.bids[0].price+h.book.asks[0].price)*100,current=mid(snapshot);
+  values.push(past.length?sign*(current-mid(past[0])):0,past.length>1?past.slice(1).reduce((n,h,i)=>n+Math.abs(mid(h)-mid(past[i])),0)/(past.length-1):0);
   check(values.every(Number.isFinite)&&bid.quantity>0&&ask.quantity>0&&values[5]>=0,'FEATURES');return values;
 }
 
@@ -29,7 +32,7 @@ export function extractRows(rows){
         const side=t.price<=prior.book.bids[0].price?'YES':t.price>=prior.book.asks[0].price?'NO':null;
         if(!side)continue;
         const key=[t.exchangeId,t.id].join(':');
-        if(!features.has(key))features.set(key,{side,quoteAt:prior.receivedAt,bookHash:payloadHash(prior.book),quoteTicks:Math.round((side==='YES'?prior.book.bids[0].price:prior.book.asks[0].price)*200),features:quoteFeatures(prior,side)});
+        if(!features.has(key))features.set(key,{side,quoteAt:prior.receivedAt,bookHash:payloadHash(prior.book),quoteTicks:Math.round((side==='YES'?prior.book.bids[0].price:prior.book.asks[0].price)*200),features:quoteFeatures(prior,side,history)});
       }
     }
     study.row(row); // Reject edited chains before returning any sample.
@@ -54,7 +57,7 @@ export function chronologicalSplit(samples,trainThrough,testFrom){
 }
 const sigmoid=z=>1/(1+Math.exp(-Math.max(-40,Math.min(40,z))));
 export function predictAdverse(model,features){
-  check(features.length===FEATURE_NAMES.length&&features.every(Number.isFinite),'PREDICTION');
+  check(features.length===model.featureNames.length&&features.every(Number.isFinite)&&model.weights.length===features.length+1&&model.mean.length===features.length&&model.scale.length===features.length,'PREDICTION');
   return sigmoid(model.weights[0]+features.reduce((n,x,j)=>n+model.weights[j+1]*(x-model.mean[j])/model.scale[j],0));
 }
 export function fitAdverse(samples){
