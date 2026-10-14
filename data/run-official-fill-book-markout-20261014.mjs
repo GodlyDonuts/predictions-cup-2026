@@ -78,5 +78,8 @@ const stamp = new Date().toISOString().replace(/[:.]/g, '-');
 const outFile = path.join(outDir, `official-fill-book-markout-v1-${stamp}.json`);
 fs.writeFileSync(outFile, JSON.stringify(report, null, 2) + '\n', {flag: 'wx', mode: 0o600});
 console.log(JSON.stringify({reportFile: outFile, coverage: report.coverage,
-  horizons: report.horizons, inputIntegrity: report.inputIntegrity, assumptions: report.assumptions}, null, 2));
+  bookContinuity: report.bookContinuity, fillVsAckResponse: report.fillVsAckResponse,
+  bookCoverageNearFill: report.bookCoverageNearFill,
+  horizons: report.horizons,
+  inputIntegrity: report.inputIntegrity, assumptions: report.assumptions}, null, 2));
 
