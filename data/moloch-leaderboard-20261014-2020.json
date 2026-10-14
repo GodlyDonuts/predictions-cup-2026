@@ -1,0 +1,191 @@
+{
+  "schemaVersion": 1,
+  "observations": [
+    {
+      "observedAt": "2026-10-14T20:19:58.422Z",
+      "period": "all",
+      "sort": "pnl",
+      "total": 1584,
+      "myRank": 1302,
+      "leaders": [
+        {
+          "rank": 1,
+          "pnl": 947820.97,
+          "tradesCount": 3773,
+          "volume": 12928214.755,
+          "winRate": null,
+          "roi": 7.33
+        },
+        {
+          "rank": 2,
+          "pnl": 869762.69,
+          "tradesCount": 16402,
+          "volume": 20854135.44,
+          "winRate": null,
+          "roi": 4.17
+        },
+        {
+          "rank": 3,
+          "pnl": 789183.98,
+          "tradesCount": 13110,
+          "volume": 18075146.105,
+          "winRate": null,
+          "roi": 4.37
+        },
+        {
+          "rank": 4,
+          "pnl": 741607.88,
+          "tradesCount": 3596,
+          "volume": 9941902.37000001,
+          "winRate": null,
+          "roi": 7.46
+        },
+        {
+          "rank": 5,
+          "pnl": 609636.21,
+          "tradesCount": 916,
+          "volume": 4986428.355,
+          "winRate": null,
+          "roi": 12.23
+        },
+        {
+          "rank": 6,
+          "pnl": 563855.95,
+          "tradesCount": 2399,
+          "volume": 5626475.915,
+          "winRate": null,
+          "roi": 10.02
+        },
+        {
+          "rank": 7,
+          "pnl": 523120.63,
+          "tradesCount": 28148,
+          "volume": 13049773.45,
+          "winRate": null,
+          "roi": 4.01
+        },
+        {
+          "rank": 8,
+          "pnl": 455419.67,
+          "tradesCount": 5129,
+          "volume": 21556589.685,
+          "winRate": null,
+          "roi": 2.11
+        },
+        {
+          "rank": 9,
+          "pnl": 290938.73,
+          "tradesCount": 3118,
+          "volume": 5983108.08499999,
+          "winRate": null,
+          "roi": 4.86
+        },
+        {
+          "rank": 10,
+          "pnl": 265646.02,
+          "tradesCount": 2901,
+          "volume": 10860774.58,
+          "winRate": null,
+          "roi": 2.45
+        }
+      ],
+      "originalResponseSha256": "28f1967dd82f59991083beda0eaf48b290930e5b546936d1002af61688206ddd"
+    },
+    {
+      "observedAt": "2026-10-14T20:20:11.013Z",
+      "period": "1d",
+      "sort": "pnl",
+      "total": 398,
+      "myRank": null,
+      "leaders": [
+        {
+          "rank": 1,
+          "pnl": 14097.59,
+          "tradesCount": 48,
+          "volume": 199317.32,
+          "winRate": null,
+          "roi": 7.07
+        },
+        {
+          "rank": 2,
+          "pnl": 13161.23,
+          "tradesCount": 42,
+          "volume": 355191.19,
+          "winRate": null,
+          "roi": 3.71
+        },
+        {
+          "rank": 3,
+          "pnl": 12765.06,
+          "tradesCount": 2,
+          "volume": 79050.14,
+          "winRate": null,
+          "roi": 16.15
+        },
+        {
+          "rank": 4,
+          "pnl": 11560.32,
+          "tradesCount": 933,
+          "volume": 1000667.87,
+          "winRate": null,
+          "roi": 1.16
+        },
+        {
+          "rank": 5,
+          "pnl": 9287.88,
+          "tradesCount": 134,
+          "volume": 889745.055,
+          "winRate": null,
+          "roi": 1.04
+        },
+        {
+          "rank": 6,
+          "pnl": 8862.93,
+          "tradesCount": 1,
+          "volume": 5997.86,
+          "winRate": null,
+          "roi": 147.77
+        },
+        {
+          "rank": 7,
+          "pnl": 8588.87,
+          "tradesCount": 1,
+          "volume": 99999.85,
+          "winRate": null,
+          "roi": 8.59
+        },
+        {
+          "rank": 8,
+          "pnl": 7696.38,
+          "tradesCount": 57,
+          "volume": 696211.855,
+          "winRate": null,
+          "roi": 1.11
+        },
+        {
+          "rank": 9,
+          "pnl": 4452.8,
+          "tradesCount": 1,
+          "volume": 9594.9,
+          "winRate": null,
+          "roi": 46.41
+        },
+        {
+          "rank": 10,
+          "pnl": 4428.2,
+          "tradesCount": 42,
+          "volume": 362272.435,
+          "winRate": null,
+          "roi": 1.22
+        }
+      ],
+      "originalResponseSha256": "73a131a2ed8c2f2b1fa627ed068056641eb103a5b361822be731beb73f19d721"
+    }
+  ],
+  "contestOrders": 0,
+  "limitations": [
+    "Reported P&L may include valuation; realized cash profit and strategy are not independently verified.",
+    "Leaderboard rank snapshots do not identify the same participant across observations; identities are omitted.",
+    "Final winning balance follows market settlement and is unknown."
+  ]
+}

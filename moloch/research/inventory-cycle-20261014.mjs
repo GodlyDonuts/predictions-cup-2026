@@ -14,9 +14,11 @@ for(let i=18;i<=28;i++){
  if(payloadHash(clean(baseline.state))!==payloadHash(clean(snapshot.state)))throw Error('BASELINE_PARITY');
  episodes.push({i,manifest,snapshot,events});
 }
-const results=[];
-for(const participationBps of [100,1000,10000])for(const maximumInventoryAgeMs of [60000,180000,600000,1800000]){
- const policy={initialCash:'100000.000000',maximumCommitted:'40000.000000',maximumMarketCost:'10000.000000',quantity:10000,entryDepthBps:10000,participationBps,insideTicks:0,retainProfitableHedge:false,maximumHedgeOvershoot:0,inventoryTakerAfterMs:0,maximumInventoryAgeMs,inventoryAgeClock:'execution',lifetimeMs:600000};
+const results=[],packetMode=process.argv.includes('--packets'),cases=[];
+if(packetMode){for(const quantity of [5,50,500])for(const participationBps of [100,10000])for(const retainProfitableHedge of [false,true])cases.push({quantity,participationBps,retainProfitableHedge,maximumInventoryAgeMs:600000});}
+else{for(const participationBps of [100,1000,10000])for(const maximumInventoryAgeMs of [60000,180000,600000,1800000])cases.push({quantity:10000,participationBps,retainProfitableHedge:false,maximumInventoryAgeMs});}
+for(const {quantity,participationBps,retainProfitableHedge,maximumInventoryAgeMs} of cases){
+ const policy={initialCash:'100000.000000',maximumCommitted:'40000.000000',maximumMarketCost:'10000.000000',quantity,entryDepthBps:10000,participationBps,insideTicks:0,retainProfitableHedge,maximumHedgeOvershoot:0,inventoryTakerAfterMs:0,maximumInventoryAgeMs,inventoryAgeClock:'execution',lifetimeMs:600000};
  let state=createMoloch({...episodes[0].manifest.policy,...policy}),buyNotional=0n,sellNotional=0n,worstFresh=null;const marks=[];
  for(const e of episodes){
   const r=replayVariant(state,e.events,{...e.manifest.policy,...policy});state=r.state;
@@ -25,6 +27,6 @@ for(const participationBps of [100,1000,10000])for(const maximumInventoryAgeMs o
   marks.push({episode:e.i,realized:r.report.realized,ownedCost:r.report.ownedCost,reservedCash:r.report.reservedCash,unresolved:r.report.unresolvedOrders,newFills:r.newFills.length,lastFresh:r.lastFreshLiquidation});
  }
  const report=reportMoloch(state),result={participationBps,maximumInventoryAgeMs,policy,report,buyNotional:money(buyNotional),sellNotional:money(sellNotional),aonExitFills:state.fills.filter(f=>f.executionStyle==='inventoryAON').length,worstFresh,marks,coverageAudit:scopeCoverage(report,episodes.at(-1).manifest.scopes)};results.push(result);
- console.log(JSON.stringify({participationBps,maximumInventoryAgeMs,realized:report.realized,ownedCost:report.ownedCost,buyNotional:result.buyNotional,sellNotional:result.sellNotional,lastFresh:marks.at(-1).lastFresh,worstFresh}));
+ console.log(JSON.stringify({quantity,retainProfitableHedge,participationBps,maximumInventoryAgeMs,realized:report.realized,ownedCost:report.ownedCost,buyNotional:result.buyNotional,sellNotional:result.sellNotional,lastFresh:marks.at(-1).lastFresh,worstFresh,rankingEligible:result.coverageAudit.policyRankingEligible}));
 }
 fs.writeFileSync(output,JSON.stringify({schemaVersion:1,baselineFinancialParity:true,sourceSnapshots:episodes.map(e=>({episode:e.i,hash:e.snapshot.hash})),results,contestOrders:0,networkRequests:0,profitabilityEstablished:false,limitations:['Previously inspected original captures; this is retrospective sensitivity, not untouched validation.','Twelve independent funded 100,000 paper comparisons; original wallets are unchanged and profits cannot be added.','All cases use original acquisition execution time and allow a later depth-dependent break-even exit without waiting ten minutes.','Forced exits include losses; maximum age does not guarantee liquidation when fresh executable depth or liability release is missing.','Original capture scopes, processing clocks, source gaps, full quote-window reconciliation, fee rules and write budget remain enforced.','Full participation is a hypothetical fill assumption, not demonstrated queue priority or market impact.']},null,2)+'\n',{flag:'wx'});
