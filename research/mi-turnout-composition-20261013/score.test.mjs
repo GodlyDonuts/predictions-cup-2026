@@ -152,6 +152,24 @@ test('rejects duplicate, missing, unknown, or invalid county rows', () => {
   assert.throws(() => scoreTurnoutComposition(validEdit), /ROWS_HASH_MISMATCH/);
 });
 
+test('rejects privacy-suppressed county counts instead of imputing them', () => {
+  const currentSuppressed = fixture();
+  currentSuppressed.currentRevision = reseal(currentSuppressed.currentRevision, {
+    rows: currentSuppressed.currentRevision.rows.map((row, index) => index === 0
+      ? { ...row, returnedMail: '<10' }
+      : row),
+  });
+  assert.throws(() => scoreTurnoutComposition(currentSuppressed), /RETURNS/);
+
+  const historicalSuppressed = fixture();
+  historicalSuppressed.historicalRevision = reseal(historicalSuppressed.historicalRevision, {
+    rows: historicalSuppressed.historicalRevision.rows.map((row, index) => index === 0
+      ? { ...row, returnedMail: 'Less than 10' }
+      : row),
+  });
+  assert.throws(() => scoreTurnoutComposition(historicalSuppressed), /RETURNS/);
+});
+
 test('rejects non-mail, early-in-person, and post-cutoff observations', () => {
   const nonMail = fixture();
   nonMail.currentRevision = reseal(nonMail.currentRevision, {
