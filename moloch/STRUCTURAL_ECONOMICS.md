@@ -1,0 +1,9 @@
+# Related-contract economics
+
+`research/structural-screen.mjs` verifies the captured official open-market catalog and the complete frozen broadcast prefix. Exact Democratic/Republican race-title matching produces 117 pairs. Discovery requires both source books no more than ten seconds old, source clocks within one second, and no observed gap. Integer ticks distinguish purchase costs, immediate liquidation and conditional settlement payouts.
+
+The source-40 prefix from 19:51:04.837 through 20:00:51.485 UTC contains 14,147 verified rows. There are 1,550 distinct paired-book observations with dual-NO purchase cost below one, spanning 61 races. The cheapest observed package costs 0.955 in MN-05; its later quoted package costs 0.960. No observation offers a positive immediate round-trip return. Existing wallets were not changed and no order or additional network request was made.
+
+The discount is conditional settlement economics rather than realized market-making profit. The two contracts do not immediately net inside one exchange. Separate execution creates leg risk; title matching does not validate mutually exclusive resolution, fusion candidates, refunds or inconsistent settlements. Source clocks and displayed quantities are not atomic order guarantees. Settlement-dependent capital is a different use of the bank from the requested repeated spread capture, so this screen is not promoted to the current live policy.
+
+Reproduce using `node moloch/research/structural-screen.mjs CATALOG_RECEIPTS FROZEN_STREAM NEW_OUTPUT`. Checked evidence is `data/moloch-structural-economics-20261014-40.json`; it records original source hashes and the first, latest and largest-discount observations for every candidate race, with immediate liquidation prices kept separate. No claim of profitable trading is established.
