@@ -19,6 +19,7 @@ param(
   [string]$UniversePairsFile
 )
 $ErrorActionPreference='Stop'
+Import-Module (Join-Path $PSScriptRoot 'read-failure.psm1') -Force
 if(-not $HumanAuthorizedSharedReadCapture){throw 'EXPLICIT_SHARED_READ_AUTHORIZATION_REQUIRED: preserve the prior one-collector policy unless human explicitly authorizes recreating read-only capture.'}
 if($DiagnosticTradesProbe -and ($DiagnosticBookProbe -or $HistoryOnly -or $CatalogOnly -or $LeaderboardOnly -or $ExecutionHistoryOnly -or $ScreenPairsFile -or $RealtimeCapture -or $UniversePairsFile)){throw 'ONE_DIAGNOSTIC_MODE_REQUIRED'}
 if($DiagnosticTradesFrom -or $DiagnosticTradesTo){
@@ -138,7 +139,7 @@ try {
       $taskDelay=60
       if($_.Exception.Response.Headers.RetryAfter.Delta){$taskDelay=[Math]::Max(60,$_.Exception.Response.Headers.RetryAfter.Delta.TotalSeconds)}
       $taskBudget.blocked=$true;$taskBudget.nextAt=[DateTimeOffset]::UtcNow.ToUnixTimeMilliseconds()+[long]($taskDelay*1000)
-      $taskFailure=[ordered]@{at=[DateTime]::UtcNow.ToString('o');status=$taskStatus;endpoint=$taskRequest.endpoint;minimumBackoffSeconds=$taskDelay;orderWrites=0}
+      $taskFailure=[ordered]@{at=[DateTime]::UtcNow.ToString('o');status=$taskStatus;endpoint=$taskRequest.endpoint;method=$taskMethod;minimumBackoffSeconds=$taskDelay;orderWrites=0;transport=Get-MolochReadFailure -Exception $_.Exception}
       $taskFailure | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $taskOutput 'failure.json') -Encoding utf8
       $taskBudget | ConvertTo-Json -Depth 5 | Set-Content -LiteralPath $taskBudgetFile -Encoding utf8
       throw "SIG_GET_FAILED_$taskStatus : capture stopped; no blind retry or credential logging."

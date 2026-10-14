@@ -42,7 +42,7 @@ export async function capture(input,clientFactory=createClient){
   if(!auth?.token||!auth.anonKey||new URL(auth.supabaseUrl).protocol!=='https:'||Date.parse(auth.expiresAt)<=Date.now()+60000||!Array.isArray(pairs)||pairs.length<1||pairs.length>(aggregate?1000:4))throw Error('STREAM_AUTH_OR_SCOPE');
   const out=path.resolve(outputDirectory);fs.mkdirSync(out);let sequence=0,previous='',closing=false,status='starting',fatal=false,failure=null;const subscriptions={};
   const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'../..'),codeIdentity=collectFrozenPaperFiles(root,['moloch/realtime/capture.mjs']);
-  for(const f of ['moloch/capture-sig.ps1','moloch/realtime/package.json','moloch/realtime/pnpm-lock.yaml'])codeIdentity[f]=createHash('sha256').update(fs.readFileSync(path.join(root,f))).digest('hex');
+  for(const f of ['moloch/capture-sig.ps1','moloch/read-failure.psm1','moloch/realtime/package.json','moloch/realtime/pnpm-lock.yaml'])codeIdentity[f]=createHash('sha256').update(fs.readFileSync(path.join(root,f))).digest('hex');
   fs.writeFileSync(path.join(out,'manifest.json'),JSON.stringify({mode:'official_sig_realtime_capture',startedAt:new Date().toISOString(),codeIdentity,pairs,tournamentId,aggregate,tokenWrites:1,contestOrders:0,paperOrders:0,tokenPersistence:false},null,2));
   const append=event=>{const body={sequence:++sequence,previous,event},row={...body,hash:payloadHash(body)};fs.appendFileSync(path.join(out,'events.jsonl'),JSON.stringify(row)+'\n');previous=row.hash;};
   const evidence=new StreamEvidence(pairs,tournamentId,append);

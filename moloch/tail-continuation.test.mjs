@@ -1,6 +1,10 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import os from 'node:os';import path from 'node:path';
 import {run,completedTail,entryPolicyTransition} from './run.mjs';import {payloadHash} from '../execution/ledger.mjs';import {createMoloch,advanceMoloch} from './engine.mjs';
-import {captureScopes,assertTailRecoveryScopes} from './live.mjs';
+import {captureScopes,assertTailRecoveryScopes,recoveryTailDirectories} from './live.mjs';
+test('multiple independent recovery tails are bounded, distinct and merged without financial adoption',()=>{
+ assert.deepEqual(recoveryTailDirectories(null),[]);assert.deepEqual(recoveryTailDirectories('a'),['a']);assert.deepEqual(recoveryTailDirectories(['a','b']),['a','b']);for(const value of [[],['a','a'],['--policy'],Array.from({length:9},(_,i)=>String(i))])assert.throws(()=>recoveryTailDirectories(value),/RECOVERY_INPUT/);
+ const scopes=[{marketId:'1',exchangeId:'2'}],main={orders:[]},a=[{exchangeId:'2',activationAt:500,expiresAt:2000,retired:false}],b=[{exchangeId:'2',activationAt:1000,expiresAt:4000,retired:false}];const [p]=captureScopes(scopes,main,5000,[...a,...b]);assert.equal(Date.parse(p.recoveryFrom),500);assert.equal(Date.parse(p.recoveryTo),4001);assert.deepEqual(main,{orders:[]});
+});
 test('feed recovery merges independent expired quote windows and refuses omitted liabilities',()=>{
  const scopes=[{marketId:'1',exchangeId:'2'}],orders=[{marketId:'1',exchangeId:'2',activationAt:1000,expiresAt:3000,retired:false}],additional=[{marketId:'1',exchangeId:'2',activationAt:500,expiresAt:4000,retired:false}];
  const result=captureScopes(scopes,{orders},5000,additional);assert.equal(Date.parse(result[0].recoveryFrom),500);assert.equal(Date.parse(result[0].recoveryTo),4001);assertTailRecoveryScopes(scopes,{orders:additional,positions:{}});
