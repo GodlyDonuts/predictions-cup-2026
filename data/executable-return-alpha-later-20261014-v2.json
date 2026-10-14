@@ -1,0 +1,150 @@
+{
+  "schemaVersion": 1,
+  "id": "executable-return-alpha-later-20261014-v2",
+  "generatedAt": "2026-10-14T18:56:21.735Z",
+  "mode": "frozen_executable_return_model_forward_suffix_v1",
+  "model": {
+    "sourceReport": "executable-return-alpha-20261014.json",
+    "sourceReportSha256": "8e5b605f5be384eb9eec0d405e164805a5afa91858ee099550e359726708d37d",
+    "frozenCutoff": "2026-10-14T14:31:30.476Z",
+    "trainingRows": 55609,
+    "fixedCoefficientSetSha256": "add846c83e6faafc1bda26deda9dcbb99e1ad67d4b9cd8b687ddeee210aefa61",
+    "refit": false
+  },
+  "source": {
+    "kind": "sealed append-only public-book journal",
+    "file": "public-books.jsonl",
+    "bytes": 332979030,
+    "sha256": "fe07beb46b4041bab10875f3c3d00a66738b480e3760336b9c199b770b5647d6",
+    "rows": 144230,
+    "acceptedBookRows": 141404,
+    "firstAcceptedAt": "2026-10-02T12:04:20.364Z",
+    "lastAcceptedAt": "2026-10-14T18:34:41.126Z",
+    "identityStable": true,
+    "fullHashStable": true,
+    "previousReportBoundary": {
+      "byteEndExclusive": 328568080,
+      "prefixSha256": "a6628a435a71f99fc702d887614059ea5da48be279b940b20450407108ea5b70",
+      "previousLastAcceptedAt": "2026-10-14T16:19:21.972Z",
+      "firstLaterDecision": {
+        "byteStart": 328568080,
+        "byteEnd": 328570455,
+        "at": "2026-10-14T16:19:23.300Z",
+        "marketId": "234",
+        "exchangeId": "923",
+        "sequence": 142339
+      },
+      "lastLaterDecision": {
+        "byteStart": 332976640,
+        "byteEnd": 332978557,
+        "at": "2026-10-14T18:34:41.126Z",
+        "marketId": "282",
+        "exchangeId": "971",
+        "sequence": 144229
+      }
+    },
+    "laterDecisionBookRows": 1891,
+    "laterUniqueDecisionEvents": 6,
+    "laterUniqueMarkets": 1
+  },
+  "policy": {
+    "horizonMs": 300000,
+    "latencyMs": 3000,
+    "maximumArrivalWaitMs": 10000,
+    "maximumExitWaitMs": 30000,
+    "ridgeAlpha": 0.01,
+    "adverseTicksPerLeg": 1,
+    "tick": 0.005,
+    "feesPerShare": 0,
+    "oneShareCapacity": 1
+  },
+  "heldout": {
+    "counterfactualOutcomes": {
+      "n": 12,
+      "meanNet": -0.0050000000000000044,
+      "medianNet": -0.0050000000000000044,
+      "positiveFraction": 0,
+      "stressedMeanNet": -0.015000000000000006,
+      "marketClusters": 1,
+      "positiveMarketClusters": 0,
+      "equalWeightedMarketMean": -0.0050000000000000044,
+      "marketClusterStandardError": null
+    },
+    "selectedCounterfactual": {
+      "n": 0,
+      "meanNet": null,
+      "medianNet": null,
+      "positiveFraction": null,
+      "stressedMeanNet": null,
+      "positiveMarketClusters": 0,
+      "marketClusters": 0,
+      "equalWeightedMarketMean": null,
+      "marketClusterStandardError": null
+    },
+    "selectedDecisions": 0,
+    "selectedWithOutcome": 0,
+    "selectedCensored": 0,
+    "selectedRecords": [],
+    "priorDecisionLabelsExcluded": 55633,
+    "labelExclusions": {
+      "invalidDecision": 0,
+      "noArrival": 9138,
+      "lateArrival": 100012,
+      "noEntryDepth": 1561,
+      "noExit": 2872,
+      "lateExit": 50,
+      "noExitDepth": 1458,
+      "invalidNet": 0
+    }
+  },
+  "code": [
+    {
+      "path": "data/run-executable-return-alpha-later-20261014.mjs",
+      "sha256": "5dcb6a759cc467dbcf768d02491fda5e70e0752bc0587427202d4639a7e5b1f1"
+    },
+    {
+      "path": "data/run-executable-return-alpha-later-20261014.test.mjs",
+      "sha256": "61cba19aca5c41660db2d6292871c375fe8d49b4434f097162535cc25bc00048"
+    },
+    {
+      "path": "data/run-executable-return-alpha-20261014.mjs",
+      "sha256": "b004a7a458169b6d77d1cfe84abe2437ec2407a4b2a7db5e7af1f6dcab3f2c3d"
+    },
+    {
+      "path": "research/executable-return-alpha-v1.mjs",
+      "sha256": "642cd7e279a58455c98c769ba7f83ef18e92391474a49a9d3134baba6fb845d2"
+    },
+    {
+      "path": "research/book-alpha-v1.mjs",
+      "sha256": "c683583b756da572226d6df6226a55da679ea80cd786110d5d472fb0b2e4f585"
+    },
+    {
+      "path": "live-paper/journal-lines.mjs",
+      "sha256": "f8adff2bddc36b4e3d305dec9395fae9f51dff957e35313994b6147502cc6823"
+    },
+    {
+      "path": "live-paper/book-publication-v2.mjs",
+      "sha256": "4414a64652714a555a41a9fdde4a509686ba4f39e3896ae5707731fd17146948"
+    },
+    {
+      "path": "live-paper/price-universe.json",
+      "gitBlobSha": "c621ca2fb7a77646ab91d0de0cdfd66248461411"
+    }
+  ],
+  "claims": {
+    "accountReads": 0,
+    "networkRequests": 0,
+    "runtimeChanges": 0,
+    "contestOrders": 0,
+    "actualFillsProven": false,
+    "profitabilityEstablished": false
+  },
+  "durationMs": 29236.314499999997,
+  "limitations": [
+    "The frozen model and two-tick selection hurdle were not refit or changed; all decisions are scored only after the exact previous report byte boundary.",
+    "Outcomes use displayed best-price depth and strict chronological receipts; they are counterfactual, not exchange-confirmed fills.",
+    "The later suffix is from the same 237-market capture and was read by other descriptive screens, so this is a fixed-policy forward test, not a pristine independent tournament sample.",
+    "Market/time clusters are correlated; a short suffix and any small count cannot establish durable profitability.",
+    "Fees are zero as specified; the model retains one adverse tick on both entry and exit."
+  ]
+}
