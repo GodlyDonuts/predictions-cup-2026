@@ -8,6 +8,7 @@ param(
   [switch]$AllHistory,
   [switch]$HistoryOnly,
   [switch]$DiagnosticBookProbe,
+  [switch]$DiagnosticTradesProbe,
   [switch]$CatalogOnly,
   [switch]$LeaderboardOnly,
   [switch]$ExecutionHistoryOnly,
@@ -17,6 +18,7 @@ param(
 )
 $ErrorActionPreference='Stop'
 if(-not $HumanAuthorizedSharedReadCapture){throw 'EXPLICIT_SHARED_READ_AUTHORIZATION_REQUIRED: preserve the prior one-collector policy unless human explicitly authorizes recreating read-only capture.'}
+if($DiagnosticTradesProbe -and ($DiagnosticBookProbe -or $HistoryOnly -or $CatalogOnly -or $LeaderboardOnly -or $ExecutionHistoryOnly -or $ScreenPairsFile -or $RealtimeCapture -or $UniversePairsFile)){throw 'ONE_DIAGNOSTIC_MODE_REQUIRED'}
 if($ExecutionHistoryOnly -and ($LeaderboardOnly -or $CatalogOnly -or $ScreenPairsFile -or $RealtimeCapture -or $HistoryOnly -or $DiagnosticBookProbe)){throw 'ONE_DISCOVERY_MODE_REQUIRED'}
 if($LeaderboardOnly -and ($CatalogOnly -or $ScreenPairsFile -or $RealtimeCapture)){throw 'ONE_DISCOVERY_MODE_REQUIRED'}
 if($CatalogOnly -and $ScreenPairsFile){throw 'ONE_DISCOVERY_MODE_REQUIRED'}
@@ -38,7 +40,7 @@ $taskBudgetDirectory=Join-Path $env:LOCALAPPDATA 'Moloch'
 New-Item -ItemType Directory -Path $taskBudgetDirectory -Force | Out-Null
 $taskBudgetFile=Join-Path $taskBudgetDirectory 'sig-read-budget.json'
 $taskBudget=if(Test-Path -LiteralPath $taskBudgetFile){Get-Content -LiteralPath $taskBudgetFile -Raw | ConvertFrom-Json}else{[pscustomobject]@{times=@();nextAt=0;blocked=$false}}
-if($taskBudget.blocked -and -not $DiagnosticBookProbe){$taskMutex.ReleaseMutex();$taskMutex.Dispose();throw 'SIG_LOCAL_BUDGET_BLOCKED: previous request failed; inspect evidence before another run.'}
+if($taskBudget.blocked -and -not ($DiagnosticBookProbe -or $DiagnosticTradesProbe)){$taskMutex.ReleaseMutex();$taskMutex.Dispose();throw 'SIG_LOCAL_BUDGET_BLOCKED: previous request failed; inspect evidence before another run.'}
 $taskTournament='bda92870-621e-47b0-bc3c-3602c5c26f55'
 $taskCredential=Join-Path $env:LOCALAPPDATA 'Codex\secrets\sig-predictions-cup-2026.dpapi'
 $taskSecure=Get-Content -LiteralPath $taskCredential -Raw | ConvertTo-SecureString
@@ -59,7 +61,7 @@ try {
     @{kind='trades';endpoint="/exchanges/$ExchangeId/trades?tournamentId=$taskTournament&from=$([Uri]::EscapeDataString($taskTapeFrom))&to=$([Uri]::EscapeDataString($taskTapeTo))&limit=200"},
     @{kind='history';endpoint="/exchanges/$ExchangeId/price-history?tournamentId=$taskTournament&resolution=1h&from=$([Uri]::EscapeDataString($taskFrom))&to=$([Uri]::EscapeDataString($taskEnd))&limit=1000"}
   )
-  if($DiagnosticBookProbe){$taskRequests=@($taskRequests | Where-Object kind -eq 'book')}elseif($HistoryOnly){$taskRequests=@($taskRequests | Where-Object kind -eq 'history')}elseif($Cycles -gt 1){$taskRequests=@($taskRequests)+@(for($taskCycle=1;$taskCycle -lt $Cycles;$taskCycle++){$taskRequests[0];$taskRequests[1]})}
+  if($DiagnosticTradesProbe){$taskRequests=@($taskRequests | Where-Object kind -eq 'trades')}elseif($DiagnosticBookProbe){$taskRequests=@($taskRequests | Where-Object kind -eq 'book')}elseif($HistoryOnly){$taskRequests=@($taskRequests | Where-Object kind -eq 'history')}elseif($Cycles -gt 1){$taskRequests=@($taskRequests)+@(for($taskCycle=1;$taskCycle -lt $Cycles;$taskCycle++){$taskRequests[0];$taskRequests[1]})}
   if($ExecutionHistoryOnly){$taskRequests=@(@{kind='private_fills';endpoint="/portfolio/fills?tournamentId=$taskTournament&limit=100"})}
   if($LeaderboardOnly){$taskRequests=@(@{kind='leaderboard';endpoint='/tournaments/midterm-elections/leaderboard?period=all&sort=pnl&limit=10'},@{kind='leaderboard';endpoint='/tournaments/midterm-elections/leaderboard?period=1d&sort=pnl&limit=10'})}
   if($CatalogOnly){$taskRequests=@(@{kind='catalog';endpoint='/tournaments/midterm-elections/markets?status=open&limit=100'})}

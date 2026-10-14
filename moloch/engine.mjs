@@ -26,6 +26,7 @@ function prune(s){for(const p of Object.values(s.positions))for(const side of ['
 export function createMoloch(policy={}){
   const p={...DEFAULT_POLICY,...policy};
   check(['pairedSpread','microprice','cheapSpread'].includes(p.quoteMode),'QUOTE_MODE');
+  check(p.minimumDepthImbalanceBps===undefined||p.quoteMode==='microprice'&&Number.isSafeInteger(p.minimumDepthImbalanceBps)&&p.minimumDepthImbalanceBps>0&&p.minimumDepthImbalanceBps<=10000,'DEPTH_IMBALANCE_POLICY');
   check(typeof p.entriesEnabled==='boolean','ENTRIES_ENABLED');
   check(amount(p.maximumEntryPrice??'0.100000')>0n&&amount(p.maximumEntryPrice??'0.100000')<=SCALE/2n,'CHEAP_PRICE_CAP');
   check(typeof(p.throughFillCapacity??false)==='boolean'&&(!p.throughFillCapacity||p.fillModel==='strictThrough'),'THROUGH_CAPACITY');
@@ -38,7 +39,8 @@ export function createMoloch(policy={}){
   check(Number.isSafeInteger(p.insideTicks)&&p.insideTicks>=0&&p.insideTicks<=3,'INSIDE_TICKS');
   check(Number.isSafeInteger(p.renewBeforeMs)&&p.renewBeforeMs>=0&&p.renewBeforeMs<p.lifetimeMs-p.latencyMs-p.minimumQuoteAgeMs,'RENEWAL_WINDOW');
   for(const k of ['quantity','maximumMarkets','latencyMs','lifetimeMs','bookAgeMs','maximumSourceSilenceMs','minimumSpreadTicks','participationBps','minimumQuoteAgeMs','writeGapMs','writesPerMinute'])check(Number.isSafeInteger(p[k])&&p[k]>0,'POLICY_'+k);
-  check(p.quantity<=100&&p.participationBps<=10000&&p.writesPerMinute<=24&&p.writeGapMs>=2500&&p.lifetimeMs>p.latencyMs+p.minimumQuoteAgeMs,'POLICY_LIMITS');
+  check(p.quantity<=2147483647&&p.participationBps<=10000&&p.writesPerMinute<=24&&p.writeGapMs>=2500&&p.lifetimeMs>p.latencyMs+p.minimumQuoteAgeMs,'POLICY_LIMITS');
+  check(p.entryDepthBps===undefined||Number.isSafeInteger(p.entryDepthBps)&&p.entryDepthBps>0&&p.entryDepthBps<=10000,'ENTRY_DEPTH_LIMIT');
   check(Number.isSafeInteger(p.feeBps)&&p.feeBps>=0&&amount(p.feePerShare)>=0n&&amount(p.minimumEdge)>0n&&amount(p.initialCash)>0n&&amount(p.maximumCommitted)>0n&&amount(p.maximumMarketCost)>0n,'POLICY_MONEY');
   return{schemaVersion:1,bot:'Moloch',policy:p,policyHash:payloadHash(p),cash:p.initialCash,realized:'0.000000',fees:'0.000000',
     positions:{},books:{},priceHistory:{},orders:[],fills:[],redemptions:[],seen:{},flow:{},writes:[],events:0,lastAt:null,nextOrderId:1,counts:{}};
@@ -109,6 +111,7 @@ function desired(s,at){
     const activity=recent.reduce((n,t)=>n+t.quantity,0);
     const rank=Number(spread)*Math.log1p(activity+1)/(1+Number(bid));
     for(const [side,limit,value]of [['YES',bid,micro],['NO',SCALE-ask,SCALE-micro]]){
+      if(s.policy.minimumDepthImbalanceBps!==undefined){const bids=b.bids.reduce((n,l)=>n+BigInt(l.quantity),0n),asks=b.asks.reduce((n,l)=>n+BigInt(l.quantity),0n),signed=(bids-asks)*(side==='YES'?1n:-1n);if(signed*10000n<BigInt(s.policy.minimumDepthImbalanceBps)*(bids+asks))continue;}
       if(s.policy.quoteMode==='cheapSpread'&&(side!==(bid<=SCALE-ask?'YES':'NO')||limit>amount(s.policy.maximumEntryPrice??'0.100000')||quotedSpread-fee(limit,1,s.policy)-fee(limit+quotedSpread,1,s.policy)<amount(s.policy.minimumEdge)))continue;
       if(s.policy.quoteMode==='microprice'&&value-limit-fee(limit,1,s.policy)<amount(s.policy.minimumEdge))continue;
       candidates.push({marketId:b.marketId,exchangeId:b.exchangeId,side,action:'buy',quantity:s.policy.quantity,price:money(limit),rank:s.policy.quoteMode==='cheapSpread'?Number(quotedSpread-fee(limit,1,s.policy)-fee(limit+quotedSpread,1,s.policy))/Number(2n*limit+quotedSpread)*Math.log1p(activity+1):rank,source:b});
@@ -144,7 +147,9 @@ function reconcile(s,at){
       const mate=batch.find(q=>q.exchangeId===t.exchangeId&&q.action==='buy'&&q.side!==t.side);
       if(mate)n=Math.min(n,mate.quantity);
       const opposite=s.policy.quoteMode==='pairedSpread'&&!mate&&!active.some(q=>q.exchangeId===t.exchangeId&&q.action==='buy'&&q.side!==t.side)?targets.find(q=>q.exchangeId===t.exchangeId&&q.action==='buy'&&q.side!==t.side):null;
-      let cost;while(n>0){cost=buyCost(s,t.price,n);const packet=cost+(opposite?buyCost(s,opposite.price,n):0n);if(packet<=available&&packet<=headroom&&packet+(marketCosts.get(t.exchangeId)??0n)<=amount(s.policy.maximumMarketCost))break;n--;}
+      if(s.policy.entryDepthBps!==undefined){const depth=q=>BigInt(q.side==='YES'?q.source.bids[0].quantity:q.source.asks[0].quantity)*BigInt(s.policy.entryDepthBps)/10000n;n=Math.min(n,Number(depth(t)),...(opposite?[Number(depth(opposite))]:[]));}
+      const unit=buyCost(s,t.price,1)+(opposite?buyCost(s,opposite.price,1):0n),marketRoom=amount(s.policy.maximumMarketCost)-(marketCosts.get(t.exchangeId)??0n);
+      const room=[available,headroom,marketRoom].reduce((a,b)=>a<b?a:b);n=Math.min(n,room>0n?Number(room/unit):0);const cost=buyCost(s,t.price,n);
       if(n>0){available-=cost;headroom-=cost;marketCosts.set(t.exchangeId,(marketCosts.get(t.exchangeId)??0n)+cost);}
     }
     if(n<1)continue;
