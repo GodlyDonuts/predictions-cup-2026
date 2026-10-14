@@ -25,8 +25,10 @@ function prune(s){for(const p of Object.values(s.positions))for(const side of ['
 
 export function createMoloch(policy={}){
   const p={...DEFAULT_POLICY,...policy};
-  check(['pairedSpread','microprice'].includes(p.quoteMode),'QUOTE_MODE');
+  check(['pairedSpread','microprice','cheapSpread'].includes(p.quoteMode),'QUOTE_MODE');
   check(typeof p.entriesEnabled==='boolean','ENTRIES_ENABLED');
+  check(amount(p.maximumEntryPrice??'0.100000')>0n&&amount(p.maximumEntryPrice??'0.100000')<=SCALE/2n,'CHEAP_PRICE_CAP');
+  check(typeof(p.throughFillCapacity??false)==='boolean'&&(!p.throughFillCapacity||p.fillModel==='strictThrough'),'THROUGH_CAPACITY');
   check(p.inventoryTakerAfterMs===undefined||Number.isSafeInteger(p.inventoryTakerAfterMs)&&p.inventoryTakerAfterMs>=0&&p.inventoryTakerAfterMs<=86400000,'INVENTORY_TAKER_AGE');
   check(typeof(p.retainProfitableHedge??false)==='boolean','RETAIN_HEDGE');
   check(p.entryExchangeIds==null||Array.isArray(p.entryExchangeIds)&&p.entryExchangeIds.length<=p.maximumMarkets&&new Set(p.entryExchangeIds).size===p.entryExchangeIds.length&&p.entryExchangeIds.every(id=>typeof id==='string'&&/^[1-9]\d*$/.test(id)),'ENTRY_EXCHANGES');
@@ -104,8 +106,9 @@ function desired(s,at){
     const activity=recent.reduce((n,t)=>n+t.quantity,0);
     const rank=Number(spread)*Math.log1p(activity+1)/(1+Number(bid));
     for(const [side,limit,value]of [['YES',bid,micro],['NO',SCALE-ask,SCALE-micro]]){
+      if(s.policy.quoteMode==='cheapSpread'&&(side!==(bid<=SCALE-ask?'YES':'NO')||limit>amount(s.policy.maximumEntryPrice??'0.100000')||quotedSpread-fee(limit,1,s.policy)-fee(limit+quotedSpread,1,s.policy)<amount(s.policy.minimumEdge)))continue;
       if(s.policy.quoteMode==='microprice'&&value-limit-fee(limit,1,s.policy)<amount(s.policy.minimumEdge))continue;
-      candidates.push({marketId:b.marketId,exchangeId:b.exchangeId,side,action:'buy',quantity:s.policy.quantity,price:money(limit),rank,source:b});
+      candidates.push({marketId:b.marketId,exchangeId:b.exchangeId,side,action:'buy',quantity:s.policy.quantity,price:money(limit),rank:s.policy.quoteMode==='cheapSpread'?Number(quotedSpread-fee(limit,1,s.policy)-fee(limit+quotedSpread,1,s.policy))/Number(2n*limit+quotedSpread)*Math.log1p(activity+1):rank,source:b});
     }
   }
   return candidates.sort((a,b)=>b.rank-a.rank||a.exchangeId.localeCompare(b.exchangeId)||a.side.localeCompare(b.side));
@@ -146,7 +149,7 @@ function reconcile(s,at){
     if(t.action==='buy'&&[...active,...batch].some(q=>q.exchangeId===t.exchangeId&&q.action==='buy'&&q.side!==t.side&&amount(q.price)+amount(t.price)>=SCALE))continue;
     markets.add(t.exchangeId);batch.push({...t,quantity:n});if(t.executionStyle==='inventoryAON')break;
   }
-  if(batch.length){s.writes.push(at);for(const t of batch){const queue=visibleQueue(t,t.source),fifo=s.policy.fillModel==='conditionalFifo'?{fillModel:'conditionalFifo',touchAttributionBps:s.policy.touchAttributionBps,queueAhead:String(queue.same+queue.better),queueSame:String(queue.same),queueBetter:String(queue.better),queueVisibleSame:String(queue.same),queueVisibleBetter:String(queue.better),touchRemainder:0}:{};s.orders.push({id:s.nextOrderId++,marketId:t.marketId,exchangeId:t.exchangeId,side:t.side,action:t.action,quantity:t.quantity,filled:0,price:t.price,createdAt:at,activationAt:at+s.policy.latencyMs,expiresAt:t.executionStyle==='inventoryAON'?at+s.policy.latencyMs+s.policy.bookAgeMs:at+s.policy.lifetimeMs,sourceHash:payloadHash(t.source),sourceSequence:String(t.source.sequence),tournamentId:t.source.tournamentId,retired:false,participationCredit:0,barrier:null,...(t.executionStyle?{executionStyle:t.executionStyle}:{}),...(s.policy.participationBps===100?{}:{participationBps:s.policy.participationBps}),...fifo});}count(s,'submissionBatches');}
+  if(batch.length){s.writes.push(at);for(const t of batch){const queue=visibleQueue(t,t.source),fifo=s.policy.fillModel==='conditionalFifo'?{fillModel:'conditionalFifo',touchAttributionBps:s.policy.touchAttributionBps,queueAhead:String(queue.same+queue.better),queueSame:String(queue.same),queueBetter:String(queue.better),queueVisibleSame:String(queue.same),queueVisibleBetter:String(queue.better),touchRemainder:0}:{};s.orders.push({id:s.nextOrderId++,marketId:t.marketId,exchangeId:t.exchangeId,side:t.side,action:t.action,quantity:t.quantity,filled:0,price:t.price,createdAt:at,activationAt:at+s.policy.latencyMs,expiresAt:t.executionStyle==='inventoryAON'?at+s.policy.latencyMs+s.policy.bookAgeMs:at+s.policy.lifetimeMs,sourceHash:payloadHash(t.source),sourceSequence:String(t.source.sequence),tournamentId:t.source.tournamentId,retired:false,participationCredit:0,barrier:null,...(s.policy.throughFillCapacity?{throughFillCapacity:true}:{}),...(t.executionStyle?{executionStyle:t.executionStyle}:{}),...(s.policy.participationBps===100?{}:{participationBps:s.policy.participationBps}),...fifo});}count(s,'submissionBatches');}
 }
 export function advanceMoloch(s,event){
   check(payloadHash(s.policy)===s.policyHash,'POLICY_CHANGED');
@@ -196,6 +199,7 @@ export function advanceMoloch(s,event){
       let eligibleVolume=event.quantity;
       if(through&&q.fillModel==='conditionalFifo'){q.queueAhead='0';q.queueSame='0';q.queueBetter='0';}
       if(touch){const numerator=event.quantity*q.touchAttributionBps+q.touchRemainder,attributed=Math.floor(numerator/10000);q.touchRemainder=numerator%10000;if(attributed)q.queueBetter='0';const ahead=BigInt(q.queueSame),consumed=BigInt(attributed)<ahead?BigInt(attributed):ahead;q.queueSame=String(ahead-consumed);q.queueAhead=String(BigInt(q.queueSame)+BigInt(q.queueBetter));eligibleVolume=attributed-Number(consumed);count(s,'conditionalTouches');if(!eligibleVolume)break;}
+      if(through&&q.throughFillCapacity===true){const n=Math.min(event.quantity,remaining(q));if(n){fill(s,q,n,s.lastAt,event.id);s.fills.at(-1).throughCapacityFill=true;count(s,'throughCapacityFills');break;}}
       const participationBps=q.participationBps??100,participation=Math.floor(event.quantity*participationBps/10000);q.participationCredit+=eligibleVolume*participationBps;
       // Fractional prints accumulate, but a print's total allocated shares is capped.
       const n=Math.min(event.quantity,remaining(q),Math.floor(q.participationCredit/10000),Math.max(participation,1));
@@ -229,6 +233,6 @@ export function reportMoloch(s){
   return{bot:'Moloch',at:s.lastAt,policyHash:s.policyHash,events:s.events,cash:s.cash,realized:s.realized,fees:s.fees,
     ownedCost:money(owned(s)),reservedCash:money(reserve(s)),netLiquidationPnl:known?money(amount(s.cash)+liquidation-amount(s.policy.initialCash)):null,
     positions:s.positions,priceHistory:s.priceHistory??{},fills:s.fills.length,orders:s.orders.length,activeOrders:at===null?0:unresolved(s).filter(q=>end(q)>at).length,
-    unresolvedOrders:unresolved(s).length,fillModel:s.policy.fillModel??'strictThrough',conditionalQueueFills:s.fills.filter(f=>f.conditionalQueueFill).length,profitSignalEligible:s.policy.fillModel!=='conditionalFifo'&&!s.fills.some(f=>f.conditionalQueueFill||f.executionStyle==='inventoryAON')&&unresolved(s).length===0&&known&&amount(s.realized)>0n&&amount(s.cash)+liquidation>amount(s.policy.initialCash),counts:s.counts,contestOrders:0,networkRequests:0,profitabilityEstablished:false,
+    unresolvedOrders:unresolved(s).length,fillModel:s.policy.fillModel??'strictThrough',conditionalQueueFills:s.fills.filter(f=>f.conditionalQueueFill).length,profitSignalEligible:s.policy.fillModel!=='conditionalFifo'&&!s.fills.some(f=>f.conditionalQueueFill||f.throughCapacityFill||f.executionStyle==='inventoryAON')&&unresolved(s).length===0&&known&&amount(s.realized)>0n&&amount(s.cash)+liquidation>amount(s.policy.initialCash),counts:s.counts,contestOrders:0,networkRequests:0,profitabilityEstablished:false,
     assumptions:['Independent simulated capital; no contest-account ownership.',s.policy.quoteMode==='pairedSpread'?'Flat entries quote both sides only when combined spread covers modeled fees and required edge; partial fills remain inventory risk.':'Microprice gates quotes; it is not calibrated alpha.',s.policy.fillModel==='conditionalFifo'?'Touch fills conditionally attribute observed volume to our side after visible queue exhaustion; aggressor direction and true FIFO priority are unverified.':'Strict one-tick trade-through and bounded participation are counterfactual, not verified queue fills.','Cancel acknowledgment does not release unresolved funding; complete window and post-end checkpoint are required.','Opposite BUY FIFO netting models the documented engine credit of one per netted share; all modeled fills remain counterfactual.',...(s.policy.inventoryTakerAfterMs===undefined?[]:['Aged inventory all-or-none simulations require later fresh depth after modeled latency; payout uses the limit-price lower bound and no capacity is reused at the same side/engine sequence.'])]};
 }

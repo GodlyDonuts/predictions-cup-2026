@@ -528,3 +528,39 @@ The completed three-market replay freed 5.020000 principal through two hypotheti
 break-even exits and added no realized profit. A fresh successor tests the ten-minute
 age threshold with unchanged cash, holdings, attribution and funding caps. Public
 depth cannot establish actual account self-trade exclusions or execution ownership.
+
+[Strict-through source-volume sensitivity](results/through-capacity-sensitivity-20261014.json)
+adds optional `throughFillCapacity` for diagnostics. New flagged quotes can
+allocate up to the observed matched quantity after a one-tick trade-through,
+activation and expiry checks. Touches do not qualify; only one quote receives
+a fill per print. Legacy quote assumptions stay unchanged. This is not proof
+of actual priority, impact or self-trade eligibility and is excluded from
+strict-print profit certification. The field stays off in prospective runs.
+
+The recorded inside-entry cohort took on more unclosed inventory. Full source
+capacity worsened its liquidation loss, and neither variant added realized
+profit. The next independent capture therefore joins the existing best prices.
+
+`capture-sig.ps1 -LeaderboardOnly` makes two serialized, budgeted official
+reads for all-time and current UTC-day P&L rankings. It retains only ranking and
+financial metrics, omitting profile identities. Caller rank belongs to the shared
+SIG account and cannot be attributed to Moloch's independent paper bank.
+
+[Leaderboard benchmark](results/leaderboard-benchmark-20261014.json) captures
+all-time and current UTC-day P&L rankings without participant identities. P&L
+and volume are reported metrics, not proof of realized cash. The documented ROI
+denominator is period volume, not starting capital. These account rankings do
+not measure Moloch's independent paper wallet.
+
+Optional `quoteMode: cheapSpread` quotes only the cheaper outcome below
+`maximumEntryPrice` (default .100000), then manages fully owned inventory through
+covered sales. Round-trip modeled fees must leave the required edge. It does not
+reserve an expensive complementary entry and does not treat low price as evidence
+of undervaluation. A controlled .045/.050 test quotes 100 cheaper shares using
+4.500000 reservation and closes 50 for .250000 simulated gain; this is a behavior
+test, not observed market profitability. Funding caps remain 40 total/10 per market.
+
+The first prospective cheap-spread experiment carries the existing North Carolina
+and Tennessee holdings and adds two lower-price observation candidates, after
+retiring flat Texas. Their recent flow was one-sided, so this is exploratory
+market research with mandatory REST recovery, not a validated positive signal.

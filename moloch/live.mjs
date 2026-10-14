@@ -24,7 +24,7 @@ export function liveUniverse(scopes,value){
 }
 function validateEntryScopes(policy,scopes){if(policy.entryExchangeIds?.some(id=>!scopes.some(p=>p.exchangeId===id)))throw Error('MOLOCH_ENTRY_SCOPE');}
 export function paperPolicyOverrides(value,scopes=null){
-  if(!value||typeof value!=='object'||Array.isArray(value)||Object.keys(value).some(k=>!['participationBps','lifetimeMs','quantity','retainProfitableHedge','maximumHedgeOvershoot','entryExchangeIds','inventoryTakerAfterMs'].includes(k)))throw Error('MOLOCH_POLICY_OVERRIDE_SCOPE');
+  if(!value||typeof value!=='object'||Array.isArray(value)||Object.keys(value).some(k=>!['participationBps','lifetimeMs','quantity','retainProfitableHedge','maximumHedgeOvershoot','entryExchangeIds','inventoryTakerAfterMs','throughFillCapacity','quoteMode','maximumEntryPrice'].includes(k)))throw Error('MOLOCH_POLICY_OVERRIDE_SCOPE');
   createMoloch(value);if(scopes)validateEntryScopes(value,scopes);return{...value};
 }
 export async function live({marketId,exchangeId,outputDirectory,cycles=10,resumeDirectory=null,pairsFile=null,realtime=false,insideTicks=null,drain=false,resumeEntries=false,policyFile=null,universeFile=null}){
