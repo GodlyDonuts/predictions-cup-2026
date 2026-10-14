@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "at": "2026-10-14T22:40:50.614Z",
+  "phase": 57,
+  "checkedIdenticalEventPrefix": 99,
+  "eventPrefixHash": "89c789102046a0e0cdae5575ea1efdb33032349010ba45a2d1deb740ddbda9ff",
+  "maximumProcessingSkewMs": 0,
+  "initialOrdersMatched": true,
+  "initialOrders": [
+    {
+      "id": 115,
+      "marketId": "388",
+      "exchangeId": "1077",
+      "side": "NO",
+      "action": "buy",
+      "quantity": 3779,
+      "filled": 0,
+      "price": "0.860000",
+      "createdAt": 1792017622036,
+      "activationAt": 1792017625036,
+      "expiresAt": 1792018222036,
+      "sourceHash": "0d82bd8e33fb1ec23784d2f11e1088e6b1e6635583831789d1c22b5d1e09cc1d",
+      "sourceSequence": "161068932",
+      "tournamentId": "bda92870-621e-47b0-bc3c-3602c5c26f55",
+      "retired": false,
+      "participationCredit": 0,
+      "barrier": null
+    },
+    {
+      "id": 116,
+      "marketId": "388",
+      "exchangeId": "1077",
+      "side": "YES",
+      "action": "buy",
+      "quantity": 3779,
+      "filled": 0,
+      "price": "0.135000",
+      "createdAt": 1792017622036,
+      "activationAt": 1792017625036,
+      "expiresAt": 1792018222036,
+      "sourceHash": "0d82bd8e33fb1ec23784d2f11e1088e6b1e6635583831789d1c22b5d1e09cc1d",
+      "sourceSequence": "161068932",
+      "tournamentId": "bda92870-621e-47b0-bc3c-3602c5c26f55",
+      "retired": false,
+      "participationCredit": 0,
+      "barrier": null
+    }
+  ],
+  "newFills": [
+    0,
+    0
+  ],
+  "terminal": false,
+  "contestOrders": 0,
+  "profitabilityEstablished": false
+}
