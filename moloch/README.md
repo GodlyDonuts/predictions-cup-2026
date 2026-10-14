@@ -598,3 +598,21 @@ Changing that side's price or observing a gap still resets its history. On the
 same frozen eight-minute prefix this recovered compatible activity in three
 markets and one conditional markout, but no two-sided opportunity. Conditional
 price marks remain research evidence, not paper-wallet earnings.
+
+The [official competition rules](https://predictionscup.com/rules/), checked
+October 14, rank final prizes by SUSQie balance after all markets resolve.
+Participants start with 100,000 SUSQies; Moloch's separate 1,000-unit research
+wallet is not a contest-account allocation. Trade count alone is not the objective.
+
+[Optional maximum inventory age](results/maximum-inventory-age-20261014.json)
+adds `maximumInventoryAgeMs`, measured from the latest owned-side acquisition
+receipt. Once reached, a covered all-or-none sale may accept a loss at the
+executable bid-side limit. The existing break-even age option is unchanged.
+Neither age guarantees an exit: unresolved pledges, missing fresh depth, or
+insufficient whole-order depth can delay it. New maximum-age intents and fills
+record their reason, and each uses the existing paced modeled write budget.
+
+The retrospective replay closed both old positions for 2.275000 proceeds,
+leaving cash 999.950000 and realized loss .050000. This released inventory risk
+without increasing liquidation value or demonstrating alpha. The prospective
+drain policy uses thirty minutes and carries the actual paper wallet unchanged.

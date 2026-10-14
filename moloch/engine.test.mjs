@@ -178,6 +178,28 @@ test('inventory remains passive before its configured age and the old pledge rec
  const s=createMoloch({inventoryTakerAfterMs:10000});advanceMoloch(s,book(0));advanceMoloch(s,trade(4,'age-threshold-entry','0.440000',500));advanceMoloch(s,book(9,'101',20));advanceMoloch(s,{type:'coverage',receivedAt:at(10),tournamentId:'cup',marketId:'101',exchangeId:'101',from:at(3),to:at(9),complete:true,projectedThroughSequence:'20'});advanceMoloch(s,tick(13));assert.equal(s.orders.some(q=>q.executionStyle==='inventoryAON'),false);advanceMoloch(s,book(15,'101',21));assert.ok(s.orders.find(q=>q.action==='sell').cancelEffectiveAt);assert.equal(s.orders.some(q=>q.executionStyle==='inventoryAON'),false);advanceMoloch(s,book(19,'101',30));advanceMoloch(s,{type:'coverage',receivedAt:at(20),tournamentId:'cup',marketId:'101',exchangeId:'101',from:at(13),to:at(19),complete:true,projectedThroughSequence:'30'});assert.equal(s.orders.find(q=>q.executionStyle==='inventoryAON').quantity,5);advanceMoloch(s,book(23,'101',31));assert.equal(s.positions['101'].YES.length,0);assertMoloch(s);
 });
 
+test('maximum inventory age permits a loss exit only after the old sale pledge reconciles and later depth confirms',()=>{
+ const s=createMoloch({maximumInventoryAgeMs:10000});const down=(n,seq)=>{const b=book(n,'101',seq);b.book.bids[0].price='0.430000';b.book.asks[0].price='0.435000';return b;};
+ advanceMoloch(s,book(0));advanceMoloch(s,trade(4,'age-loss-entry','0.440000',500));
+ s.policy={...s.policy,entriesEnabled:false};s.policyHash=payloadHash(s.policy);
+ advanceMoloch(s,down(9,20));advanceMoloch(s,{type:'coverage',receivedAt:at(10),tournamentId:'cup',marketId:'101',exchangeId:'101',from:at(3),to:at(9),complete:true,projectedThroughSequence:'20'});
+ assert.equal(s.orders.some(q=>q.executionStyle==='inventoryAON'),false);
+ advanceMoloch(s,down(15,21));assert.ok(s.orders.find(q=>q.action==='sell').cancelEffectiveAt);assert.equal(s.orders.some(q=>q.executionStyle==='inventoryAON'),false);
+ advanceMoloch(s,down(19,30));advanceMoloch(s,{type:'coverage',receivedAt:at(20),tournamentId:'cup',marketId:'101',exchangeId:'101',from:at(13),to:at(19),complete:true,projectedThroughSequence:'30'});
+ const q=s.orders.find(q=>q.executionStyle==='inventoryAON');assert.equal(q.inventoryExitReason,'maximumAge');assert.equal(q.price,'0.430000');assert.equal(q.quantity,5);
+ advanceMoloch(s,down(22,31));assert.equal(s.fills.length,1);advanceMoloch(s,down(23,32));
+ assert.equal(s.positions['101'].YES.length,0);assert.equal(s.realized,'-0.100000');assert.equal(s.cash,'999.900000');assert.equal(s.fills.at(-1).inventoryExitReason,'maximumAge');assert.equal(reportMoloch(s).profitSignalEligible,false);assertMoloch(s);
+ assert.throws(()=>createMoloch({maximumInventoryAgeMs:-1}),/INVENTORY_MAX_AGE/);assert.throws(()=>createMoloch({maximumInventoryAgeMs:1.5}),/INVENTORY_MAX_AGE/);
+});
+
+test('maximum-age NO liquidation remains fully backed and requires whole-quantity ask depth',()=>{
+ const s=createMoloch({maximumInventoryAgeMs:0});const up=(n,seq,depth=1000)=>{const b=book(n,'101',seq);b.book.bids[0].price='0.475000';b.book.asks[0].price='0.480000';b.book.asks[0].quantity=depth;return b;};
+ advanceMoloch(s,book(0));advanceMoloch(s,trade(4,'no-age-entry','0.460000',500));s.policy={...s.policy,entriesEnabled:false};s.policyHash=payloadHash(s.policy);
+ advanceMoloch(s,up(9,20));advanceMoloch(s,{type:'coverage',receivedAt:at(10),tournamentId:'cup',marketId:'101',exchangeId:'101',from:at(3),to:at(9),complete:true,projectedThroughSequence:'20'});
+ assert.equal(s.orders.find(q=>q.executionStyle==='inventoryAON').price,'0.520000');advanceMoloch(s,up(13,21,4));assert.equal(s.fills.length,1);assert.equal(s.positions['101'].NO.reduce((n,l)=>n+l.quantity,0),5);
+ advanceMoloch(s,up(16,22));assert.equal(s.positions['101'].NO.length,0);assert.equal(s.realized,'-0.125000');assert.equal(s.cash,'999.875000');assert.equal(s.fills.at(-1).quantity,5);assertMoloch(s);
+});
+
 test('strict-through capacity sensitivity uses at most a print volume and never upgrades legacy quotes',()=>{
  const s=createMoloch();advanceMoloch(s,book(0));s.policy={...s.policy,throughFillCapacity:true};s.policyHash=payloadHash(s.policy);advanceMoloch(s,trade(4,'legacy-small','0.440000',22));assert.equal(s.fills.length,0);advanceMoloch(s,book(7,'102'));advanceMoloch(s,{...trade(11,'new-capacity','0.440000',3),marketId:'102',exchangeId:'102'});assert.equal(s.fills[0].quantity,3);assert.equal(s.fills[0].throughCapacityFill,true);assertMoloch(s);
  const touch=createMoloch({throughFillCapacity:true});advanceMoloch(touch,book(0));advanceMoloch(touch,trade(4,'touch-not-proof','0.450000',1000));assert.equal(touch.fills.length,0);assert.throws(()=>createMoloch({throughFillCapacity:true,fillModel:'conditionalFifo'}),/THROUGH_CAPACITY/);

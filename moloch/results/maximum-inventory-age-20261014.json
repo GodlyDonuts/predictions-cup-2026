@@ -1,0 +1,190 @@
+{
+  "schemaVersion": 1,
+  "sourceEventSha256": "fd2c6e3e6868321f786589a16fa6b17a53bb11c24440de384fedd6bca8a4d3d9",
+  "parentSnapshotHash": "7cd10c70b691b7094d53ee8eea80943c3a68a3265c95f70093e54368cff38314",
+  "sourceWindow": {
+    "from": "2026-10-14T07:09:15.657Z",
+    "to": "2026-10-14T07:26:52.934Z"
+  },
+  "baselineFinancialParity": true,
+  "policyChange": {
+    "maximumInventoryAgeMs": 1800000
+  },
+  "baseline": {
+    "bot": "Moloch",
+    "at": "2026-10-14T07:26:52.934Z",
+    "policyHash": "1e66b8961e315373b601b43678f8d97d41b506d924410cdea4c6b6d3e355fd8a",
+    "events": 18921,
+    "cash": "997.675000",
+    "realized": "0.025000",
+    "fees": "0.000000",
+    "ownedCost": "2.350000",
+    "reservedCash": "3.990000",
+    "netLiquidationPnl": null,
+    "positions": {
+      "967": {
+        "YES": [
+          {
+            "quantity": 5,
+            "price": "0.150000"
+          }
+        ],
+        "NO": []
+      },
+      "983": {
+        "YES": [],
+        "NO": []
+      },
+      "1051": {
+        "YES": [
+          {
+            "quantity": 10,
+            "price": "0.160000"
+          }
+        ],
+        "NO": []
+      }
+    },
+    "priceHistory": {},
+    "fills": 7,
+    "orders": 215,
+    "activeOrders": 3,
+    "unresolvedOrders": 4,
+    "fillModel": "strictThrough",
+    "conditionalQueueFills": 0,
+    "profitSignalEligible": false,
+    "counts": {
+      "submissionBatches": 149,
+      "writeBudgetHolds": 820,
+      "cancels": 84,
+      "uniqueTrades": 749,
+      "duplicateTrades": 2834,
+      "gaps": 85,
+      "inventoryAonEvaluations": 1
+    },
+    "contestOrders": 0,
+    "networkRequests": 0,
+    "profitabilityEstablished": false,
+    "assumptions": [
+      "Independent simulated capital; no contest-account ownership.",
+      "Microprice gates quotes; it is not calibrated alpha.",
+      "Strict one-tick trade-through and bounded participation are counterfactual, not verified queue fills.",
+      "Cancel acknowledgment does not release unresolved funding; complete window and post-end checkpoint are required.",
+      "Opposite BUY FIFO netting models the documented engine credit of one per netted share; all modeled fills remain counterfactual.",
+      "Aged inventory all-or-none simulations require later fresh depth after modeled latency; payout uses the limit-price lower bound and no capacity is reused at the same side/engine sequence."
+    ]
+  },
+  "variant": {
+    "bot": "Moloch",
+    "at": "2026-10-14T07:26:52.934Z",
+    "policyHash": "44a85aced1dce6c7dbd896696ab8d1db6a8605dee51da293edc6ae55e8efe210",
+    "events": 18921,
+    "cash": "999.950000",
+    "realized": "-0.050000",
+    "fees": "0.000000",
+    "ownedCost": "0.000000",
+    "reservedCash": "3.990000",
+    "netLiquidationPnl": "-0.050000",
+    "positions": {
+      "967": {
+        "YES": [],
+        "NO": []
+      },
+      "983": {
+        "YES": [],
+        "NO": []
+      },
+      "1051": {
+        "YES": [],
+        "NO": []
+      }
+    },
+    "priceHistory": {},
+    "fills": 9,
+    "orders": 212,
+    "activeOrders": 2,
+    "unresolvedOrders": 2,
+    "fillModel": "strictThrough",
+    "conditionalQueueFills": 0,
+    "profitSignalEligible": false,
+    "counts": {
+      "submissionBatches": 146,
+      "writeBudgetHolds": 792,
+      "cancels": 81,
+      "uniqueTrades": 749,
+      "duplicateTrades": 2834,
+      "gaps": 85,
+      "inventoryAonEvaluations": 3
+    },
+    "contestOrders": 0,
+    "networkRequests": 0,
+    "profitabilityEstablished": false,
+    "assumptions": [
+      "Independent simulated capital; no contest-account ownership.",
+      "Microprice gates quotes; it is not calibrated alpha.",
+      "Strict one-tick trade-through and bounded participation are counterfactual, not verified queue fills.",
+      "Cancel acknowledgment does not release unresolved funding; complete window and post-end checkpoint are required.",
+      "Opposite BUY FIFO netting models the documented engine credit of one per netted share; all modeled fills remain counterfactual.",
+      "Aged inventory all-or-none simulations require later fresh depth after modeled latency; payout uses the limit-price lower bound and no capacity is reused at the same side/engine sequence."
+    ]
+  },
+  "newFills": [
+    {
+      "orderId": 200,
+      "marketId": "278",
+      "exchangeId": "967",
+      "side": "YES",
+      "action": "sell",
+      "quantity": 5,
+      "price": "0.145000",
+      "fee": "0.000000",
+      "at": "2026-10-14T07:12:16.525Z",
+      "sourceId": "book:967:155522143:200",
+      "counterfactual": true,
+      "executionStyle": "inventoryAON",
+      "inventoryExitReason": "maximumAge"
+    },
+    {
+      "orderId": 211,
+      "marketId": "362",
+      "exchangeId": "1051",
+      "side": "YES",
+      "action": "sell",
+      "quantity": 10,
+      "price": "0.155000",
+      "fee": "0.000000",
+      "at": "2026-10-14T07:24:19.459Z",
+      "sourceId": "book:1051:155587915:211",
+      "counterfactual": true,
+      "executionStyle": "inventoryAON",
+      "inventoryExitReason": "maximumAge"
+    }
+  ],
+  "contestOrders": 0,
+  "newPaperCapital": "0.000000",
+  "profitabilityEstablished": false,
+  "limitations": [
+    "Retrospective risk-exit diagnostic, not a fresh profitability validation.",
+    "Maximum-age exits can realize losses and still require later full depth; absent depth or unresolved pledges can delay an exit.",
+    "All-or-none fills are counterfactual and remain excluded from strict profit eligibility."
+  ],
+  "codeIdentity": {
+    "execution/atomic-rename.mjs": "686aaf75a0da32bd1cc5b17e5ac6b4d00094cae50cefaff69534b3eed817fda7",
+    "execution/ledger.mjs": "b812d54a35e8f30bdab446d9f601c14181b763400d515369ce8e2b86faa1ef58",
+    "feed/contract.mjs": "c695e7dfd6aba3c988a8ac9cdaf29c206fec9890a39533935a7075699df26dc5",
+    "live-paper/frozen-paper-graph.mjs": "8cb0c144c0cdeb3921629c4a051a88e1116780bf3c543765ccecd2939df0839e",
+    "moloch/compare.mjs": "4c9e14dc85bf8e39eadf180f2d3b9914e1cb744fa390f443ba5662d03b0a478a",
+    "moloch/engine.mjs": "27114b2533f7b8218cc91d118a801390e4538734862796a8596f1b383bc67700",
+    "moloch/live.mjs": "2e2944abcc9c735c211f191aadcffe5f050b9c683a64fabeb21e6942d3138740",
+    "moloch/sig-source.mjs": "32b5de7ad293c8107404abd5d7ec91a9eede860a91e20a826a92e92ad295d0c1",
+    "moloch/stream-source.mjs": "5e767cc5ae8c1e00abeaca8297c9a12d95f8c25c0937f65eaba9d05f04b6b6a2",
+    "paper/fixed.mjs": "057e70d21ac62cc01dae8c98cd93f4869c5f6bb69ef7eab98af7e891b88fd00d"
+  },
+  "checks": 87,
+  "rulesSource": {
+    "url": "https://predictionscup.com/rules/",
+    "initialContestAllocation": "100000.000000",
+    "prizeRanking": "Final SUSQie balance following resolution of all markets; trade count is not a prize metric.",
+    "observedDate": "2026-10-14"
+  }
+}
