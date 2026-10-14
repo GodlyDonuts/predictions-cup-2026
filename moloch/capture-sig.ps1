@@ -15,6 +15,7 @@ param(
   [switch]$LeaderboardOnly,
   [switch]$ExecutionHistoryOnly,
   [string]$ScreenPairsFile,
+  [string]$RecoveryWindowsFile,
   [switch]$RealtimeCapture,
   [string]$UniversePairsFile
 )
@@ -33,6 +34,7 @@ if($CatalogOnly -and $ScreenPairsFile){throw 'ONE_DISCOVERY_MODE_REQUIRED'}
 if(-not $CatalogOnly -and -not $LeaderboardOnly -and -not $ExecutionHistoryOnly -and -not $ScreenPairsFile -and (-not $MarketId -or -not $ExchangeId)){throw 'MARKET_AND_EXCHANGE_REQUIRED'}
 if($RealtimeCapture -and (-not $ScreenPairsFile -or $Cycles -gt 30)){throw 'STREAM_REQUIRES_SCOPED_PAIRS_AND_BOUNDED_CYCLES'}
 if($UniversePairsFile -and -not $RealtimeCapture){throw 'UNIVERSE_REQUIRES_REALTIME_CAPTURE'}
+if($RecoveryWindowsFile -and -not $ScreenPairsFile){throw 'DYNAMIC_RECOVERY_REQUIRES_SCOPED_CAPTURE'}
 if($UniversePairsFile){
   $taskUniverse=@(Get-Content -LiteralPath $UniversePairsFile -Raw | ConvertFrom-Json -DateKind String)
   if($taskUniverse.Count -lt 1 -or $taskUniverse.Count -gt 1000){throw 'UNIVERSE_SCOPE_INVALID'}
@@ -116,6 +118,18 @@ try {
     if($taskRequest.kind -eq 'trades' -and -not $taskRequest.fixedWindow){
       $taskTapeFrom=[DateTime]::UtcNow.AddMinutes(-15).ToString('yyyy-MM-ddTHH:mm:ss.fffZ')
       $taskTapeTo=[DateTime]::UtcNow.ToString('yyyy-MM-ddTHH:mm:ss.fffZ')
+      if($RecoveryWindowsFile){
+        $taskDynamic=Get-Content -LiteralPath $RecoveryWindowsFile -Raw | ConvertFrom-Json -DateKind String
+        $taskGenerated=[DateTimeOffset]::Parse($taskDynamic.generatedAt)
+        if($taskDynamic.schemaVersion -ne 1 -or [IO.Path]::GetFullPath($taskDynamic.sourceDirectory) -ne [IO.Path]::GetDirectoryName($taskOutput) -or ([DateTimeOffset]::UtcNow-$taskGenerated).TotalSeconds -gt 30 -or ($taskGenerated-[DateTimeOffset]::UtcNow).TotalSeconds -gt 1){throw 'DYNAMIC_RECOVERY_PROOF_INVALID'}
+        $taskDynamicPairs=@($taskDynamic.scopes | Where-Object {$_.marketId -eq $taskMarket -and $_.exchangeId -eq $taskExchange})
+        if($taskDynamicPairs.Count -ne 1){throw 'DYNAMIC_RECOVERY_SCOPE_INVALID'}
+        if($taskDynamicPairs[0].recoveryFrom){
+          $taskDynamicFrom=[DateTimeOffset]::Parse($taskDynamicPairs[0].recoveryFrom);$taskDynamicTo=[DateTimeOffset]::Parse($taskDynamicPairs[0].recoveryTo)
+          if($taskDynamicFrom -ge $taskDynamicTo -or $taskDynamicTo -gt [DateTimeOffset]::UtcNow){throw 'DYNAMIC_RECOVERY_WINDOW_INVALID'}
+          if($taskDynamicFrom -lt [DateTimeOffset]::Parse($taskTapeFrom)){$taskTapeFrom=$taskDynamicFrom.UtcDateTime.ToString('yyyy-MM-ddTHH:mm:ss.fffZ')}
+        }
+      }
       $taskRequest=@{kind='trades';endpoint="/exchanges/$taskExchange/trades?tournamentId=$taskTournament&from=$([Uri]::EscapeDataString($taskTapeFrom))&to=$([Uri]::EscapeDataString($taskTapeTo))&limit=200"}
     }
     while($true){
