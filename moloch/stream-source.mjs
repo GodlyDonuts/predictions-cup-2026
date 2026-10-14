@@ -28,9 +28,9 @@ export class StreamSource {
   invalidate(marketId,at){const s=this.status.get(marketId);check(s,'SCOPE');s.invalidatedAt=at;s.blocked=true;s.restBook=false;s.tape=false;return[{type:'gap',exchangeId:this.scopes.get(marketId).exchangeId,receivedAt:at}];}
   remember(book){const old=this.books.get(book.exchangeId);if(old){const order=compareVersion(version(book),version(old));if(order<0){this.metrics.olderBooks++;return false;}if(order===0)check(payloadHash([book.bids,book.asks])===payloadHash([old.bids,old.asks]),'VERSION_CONFLICT');}
     this.books.set(book.exchangeId,book);return true;}
-  rest(r){
+  rest(r,extraCoverage=[]){
     const p=this.scopes.get(r.marketId);check(p&&p.exchangeId===r.exchangeId&&r.tournamentId===this.tournamentId,'REST_SCOPE');
-    const events=receiptEvents(r),s=this.status.get(r.marketId),out=[];
+    const events=[...receiptEvents(r),...extraCoverage],s=this.status.get(r.marketId),out=[];
     for(const e of events){
       if(e.type==='book'){const accepted=this.remember(e.book);if(s.blocked&&accepted)out.push({type:'book',receivedAt:e.receivedAt,book:{...e.book,invalid:true}});if(instantNs(r.requestStartedAt)>=instantNs(s.invalidatedAt))s.restBook=true;}
       else if(e.type==='coverage'){

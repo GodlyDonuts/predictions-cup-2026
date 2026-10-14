@@ -2,6 +2,7 @@ import fs from 'node:fs';import path from 'node:path';import {spawn} from 'node:
 import {createMoloch,advanceMoloch,reportMoloch,assertMoloch} from './engine.mjs';import {receiptEvents} from './sig-source.mjs';import {payloadHash} from '../execution/ledger.mjs';import {collectFrozenPaperFiles} from '../live-paper/frozen-paper-graph.mjs';import {createHash} from 'node:crypto';
 import {StreamSource,predecessorTradeFacts} from './stream-source.mjs';
 import {completedTail} from './run.mjs';
+import {TapeCoverage} from './tape-coverage.mjs';
 const root=fileURLToPath(new URL('../',import.meta.url));
 export function liveScopes(marketId,exchangeId,pairs=null,maximum=2){
   const scope=pairs??[{marketId,exchangeId}];
@@ -63,7 +64,7 @@ export async function live({marketId,exchangeId,outputDirectory,cycles=10,resume
   fs.writeFileSync(path.join(out,'manifest.json'),JSON.stringify({bot:'Moloch',cutoff,scopes,requestedScopes,realtime,restRecovery,independentPaperRecovery:recovery?{directory:recovery.directory,snapshotHash:recovery.snapshot.hash,financialStateImported:false}:null,observationUniverse:universe?{markets:new Set(universe.map(p=>p.marketId)).size,exchanges:universe.length,hash:payloadHash(universe),financialScopesOnly:scopes}:null,initialPaperCash:state.policy.initialCash,policy:state.policy,codeIdentity,continuation,accountSharedWithBaal:true,humanAuthorizedRecreatedReadCapture:true,contestOrders:0},null,2));
   let ended=false,code=null,offset=0,pending=Buffer.alloc(0),sequence=0,previous='',lastTick=0,officialReceipts=0;
   let captureFailed=false,captureHttpStatus=null;captureProcess.stderr.on('data',b=>{captureFailed=true;const match=/SIG_GET_FAILED_(\d+)/.exec(b.toString());if(match)captureHttpStatus=Number(match[1]);});captureProcess.on('error',()=>{ended=true;code=-1;captureFailed=true;});captureProcess.on('exit',n=>{ended=true;code=n;});
-  const mux=realtime?new StreamSource(scopes,'bda92870-621e-47b0-bc3c-3602c5c26f55',cutoff,predecessorFacts,universe??[]):null,streamFile=path.join(capture,'stream','events.jsonl');let streamOffset=0,streamPending=Buffer.alloc(0);
+  const tapeCoverage=new TapeCoverage(),mux=realtime?new StreamSource(scopes,'bda92870-621e-47b0-bc3c-3602c5c26f55',cutoff,predecessorFacts,universe??[]):null,streamFile=path.join(capture,'stream','events.jsonl');let streamOffset=0,streamPending=Buffer.alloc(0);
   const stopping=()=>{fs.writeFileSync(path.join(out,'STOP'),'human/runtime stop\n');if(fs.existsSync(capture))fs.writeFileSync(path.join(capture,'STOP'),'stop\n');};
   process.once('SIGINT',stopping);process.once('SIGTERM',stopping);
   function apply(event){const candidate=structuredClone(state);advanceMoloch(candidate,event);const body={sequence:sequence+1,previous,event,stateHash:payloadHash(candidate)},row={...body,hash:payloadHash(body)};
@@ -87,7 +88,7 @@ export async function live({marketId,exchangeId,outputDirectory,cycles=10,resume
       const st=fs.statSync(receiptFile);if(st.size<offset)throw Error('MOLOCH_CAPTURE_TRUNCATED');
       if(st.size>offset){const fd=fs.openSync(receiptFile,'r');try{const b=Buffer.alloc(Math.min(st.size-offset,1048576));const n=fs.readSync(fd,b,0,b.length,offset);offset+=n;pending=Buffer.concat([pending,b.subarray(0,n)]);}finally{fs.closeSync(fd);}
         let n;while((n=pending.indexOf(10))>=0){const line=pending.subarray(0,n).toString('utf8').replace(/^\uFEFF/,'');pending=Buffer.from(pending.subarray(n+1));if(!line.trim())continue;
-          const r=JSON.parse(line);if(!scopes.some(p=>p.marketId===r.marketId&&p.exchangeId===r.exchangeId))throw Error('MOLOCH_UNDECLARED_RECEIPT_SCOPE');const events=mux?mux.rest(r):projectRestReceipt(r,restIdentity);officialReceipts++;for(const e of events)apply({...e,processedAt:new Date().toISOString()});
+          const r=JSON.parse(line);if(!scopes.some(p=>p.marketId===r.marketId&&p.exchangeId===r.exchangeId))throw Error('MOLOCH_UNDECLARED_RECEIPT_SCOPE');const extra=tapeCoverage.row(r),events=mux?mux.rest(r,extra):[...projectRestReceipt(r,restIdentity),...extra];officialReceipts++;for(const e of events)apply({...e,processedAt:new Date().toISOString()});
         }
         if(pending.length>1048576)throw Error('MOLOCH_CAPTURE_EVENT_TOO_LARGE');
       }

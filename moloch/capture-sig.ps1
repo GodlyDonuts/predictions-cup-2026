@@ -98,6 +98,7 @@ try {
   }
   $taskReceipts=0
   for($taskIndex=0;$taskIndex -lt $taskRequests.Count;$taskIndex++){
+    if($ScreenPairsFile -and $taskReceipts -ge 120){break}
     $taskRequest=$taskRequests[$taskIndex]
     if($taskStream -and $taskStream.HasExited){throw 'STREAM_PROCESS_EXITED: stop rather than silently downgrade or refresh credentials.'}
     $taskMarket=if($taskRequest.marketId){$taskRequest.marketId}else{$MarketId}
@@ -169,6 +170,16 @@ try {
     $taskReceipt | ConvertTo-Json -Depth 60 -Compress | Add-Content -LiteralPath (Join-Path $taskOutput 'receipts.jsonl') -Encoding utf8
     if($taskRequest.kind -eq 'history'){$taskReceipt | ConvertTo-Json -Depth 60 | Set-Content -LiteralPath (Join-Path $taskOutput 'history.json') -Encoding utf8}
     $taskReceipts++
+    if($taskRequest.kind -eq 'trades' -and $taskData.pagination.hasMore -and [int]$taskRequest.pageCount -lt 5){
+      if(-not $taskData.pagination.nextCursor){throw 'TAPE_PAGINATION_CURSOR_MISSING'}
+      $taskTapeBase=$taskRequest.endpoint.Split('&cursor=')[0]
+      $taskNext=$taskTapeBase+'&cursor='+[Uri]::EscapeDataString($taskData.pagination.nextCursor)
+      if($taskRequests.endpoint -contains $taskNext){throw 'TAPE_CURSOR_LOOP'}
+      $taskPageCount=if($taskRequest.pageCount){[int]$taskRequest.pageCount+1}else{2}
+      $taskNextRequest=@{kind='trades';fixedWindow=$true;pageCount=$taskPageCount;marketId=$taskMarket;exchangeId=$taskExchange;endpoint=$taskNext}
+      $taskRemaining=if($taskIndex+1 -lt $taskRequests.Count){@($taskRequests[($taskIndex+1)..($taskRequests.Count-1)])}else{@()}
+      $taskRequests=@($taskRequests[0..$taskIndex])+@($taskNextRequest)+$taskRemaining
+    }
     if($taskRequest.kind -eq 'catalog' -and $taskData.pagination.hasMore){
       if(-not $taskData.pagination.nextCursor -or $taskReceipts -ge 10){throw 'CATALOG_PAGINATION_INCOMPLETE'}
       $taskNext='/tournaments/midterm-elections/markets?status=open&limit=100&cursor='+[Uri]::EscapeDataString($taskData.pagination.nextCursor)

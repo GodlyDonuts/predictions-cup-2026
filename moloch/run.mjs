@@ -18,12 +18,18 @@ export function replayEvents(events,policy={}){
   return{state,report:reportMoloch(state)};
 }
 export function journalDecoder(){let previous='',sequence=0;return row=>{const {hash,...body}=row;if(hash!==payloadHash(body)||body.sequence!==sequence+1||body.previous!==previous)throw Error('MOLOCH_SOURCE_JOURNAL_CHAIN');sequence++;previous=hash;return row.event;};}
+export function entryPolicyTransition(state,ids){
+ if(!Array.isArray(ids)||!ids.length)throw Error('MOLOCH_TAIL_ENTRY_TRANSITION');
+ const {policy,policyHash,...financial}=state,next=createMoloch({...policy,entryExchangeIds:ids}).policy;
+ state.policy=next;state.policyHash=payloadHash(next);const {policy:p,policyHash:h,...after}=state;if(payloadHash(financial)!==payloadHash(after))throw Error('MOLOCH_TAIL_FINANCIAL_TRANSITION');
+ return{entryExchangeIds:ids,priorPolicyHash:policyHash,nextPolicyHash:state.policyHash};
+}
 export function completedTail(directory,visited=new Set()){
  const dir=fs.realpathSync(directory);if(visited.has(dir)||visited.size>=64)throw Error('MOLOCH_TAIL_CONTINUATION_CYCLE');visited.add(dir);
  const snapshot=JSON.parse(fs.readFileSync(path.join(dir,'state.json'),'utf8')),{hash,...body}=snapshot,report=JSON.parse(fs.readFileSync(path.join(dir,'report.json'),'utf8'));
  if(hash!==payloadHash(body)||report.mode!=='local_paper_tail'||report.eventJournalHash!==body.lastHash||report.source.bytes!==body.source.consumedBytes||report.source.sha256!==body.source.consumedSha256)throw Error('MOLOCH_TAIL_TERMINAL_PROOF');
  let state;
- if(body.continuation){const parent=completedTail(body.continuation.parentDirectory,visited);if(parent.snapshot.hash!==body.continuation.parentSnapshotHash)throw Error('MOLOCH_TAIL_PARENT_HASH');state=structuredClone(parent.snapshot.state);}
+ if(body.continuation){const parent=completedTail(body.continuation.parentDirectory,visited);if(parent.snapshot.hash!==body.continuation.parentSnapshotHash)throw Error('MOLOCH_TAIL_PARENT_HASH');state=structuredClone(parent.snapshot.state);if(body.continuation.entryPolicyTransition){const expected=body.continuation.entryPolicyTransition,actual=entryPolicyTransition(state,expected.entryExchangeIds);if(payloadHash(actual)!==payloadHash(expected))throw Error('MOLOCH_TAIL_ENTRY_TRANSITION_PROOF');}}
  else state=createMoloch(snapshot.state.policy);
  const source=fs.openSync(body.source.path,'r'),digest=createHash('sha256');let remaining=body.source.consumedBytes,offset=0;
  try{while(remaining){const b=Buffer.alloc(Math.min(remaining,1024*1024)),n=fs.readSync(source,b,0,b.length,offset);if(n!==b.length)throw Error('MOLOCH_TAIL_SOURCE_SHORT');digest.update(b);remaining-=n;offset+=n;}}finally{fs.closeSync(source);}
@@ -34,7 +40,7 @@ export function completedTail(directory,visited=new Set()){
  if(sequence!==body.sequence||previous!==body.lastHash||payloadHash(state)!==payloadHash(snapshot.state))throw Error('MOLOCH_TAIL_REPLAY_TERMINAL');assertMoloch(state);
  return{directory:dir,snapshot};
 }
-function options(args){const o={format:'ndjson',follow:false};for(let i=0;i<args.length;i++){const k=args[i];if(k==='--follow')o.follow=true;else if(['--input','--output','--format','--policy','--seconds','--resume'].includes(k)){if(!args[i+1])throw Error('Missing '+k);o[k.slice(2)]=args[++i];}else throw Error('Unknown option '+k);}if(!o.input||!o.output)throw Error('Usage: node moloch/run.mjs --input FILE --output NEW_DIRECTORY [--format book-export] [--policy FILE] [--follow --seconds 60]');return o;}
+function options(args){const o={format:'ndjson',follow:false};for(let i=0;i<args.length;i++){const k=args[i];if(k==='--follow')o.follow=true;else if(['--input','--output','--format','--policy','--seconds','--resume','--entry-exchanges'].includes(k)){if(!args[i+1])throw Error('Missing '+k);o[k.slice(2)]=args[++i];}else throw Error('Unknown option '+k);}if(!o.input||!o.output)throw Error('Usage: node moloch/run.mjs --input FILE --output NEW_DIRECTORY [--format book-export] [--policy FILE] [--follow --seconds 60]');return o;}
 export async function run(args){
   const o=options(args),input=path.resolve(o.input),out=path.resolve(o.output);
   if(fs.existsSync(out))throw Error('MOLOCH_OUTPUT_EXISTS: preserve previous run; use a new directory');
@@ -43,6 +49,7 @@ export async function run(args){
   if(o.resume&&(!o.follow||o.format!=='journal'||o.policy))throw Error('MOLOCH_TAIL_RESUME_SCOPE');
   const parent=o.resume?completedTail(o.resume):null,continuation=parent?{parentDirectory:parent.directory,parentSnapshotHash:parent.snapshot.hash,newPaperCapital:'0.000000'}:null;
   const policy=o.policy?JSON.parse(fs.readFileSync(o.policy,'utf8')):{},state=parent?structuredClone(parent.snapshot.state):createMoloch(policy);
+  if(o['entry-exchanges']){if(!parent)throw Error('MOLOCH_TAIL_ENTRY_REQUIRES_RESUME');continuation.entryPolicyTransition=entryPolicyTransition(state,o['entry-exchanges'].split(','));}
   fs.mkdirSync(out,{recursive:true});const startedAt=new Date().toISOString(),source=fs.statSync(input),sourceHash=createHash('sha256');
   const journal=path.join(out,'events.jsonl');let previous='',count=0,bytes=0,preCutoffEventsSkipped=0;
   const decode=o.format==='journal'?journalDecoder():row=>row;
