@@ -424,3 +424,10 @@ window tests 10% hypothetical participation, ten-minute quotes and five-share
 size under strict trade-through fills. Existing quotes retain their own
 participation assumptions and expiration times; no carried capital is reset.
 This setting is an experiment, not a measured fill probability or deployment gate.
+
+The first longer successor stopped during historical recovery before new
+quotes or fills. [Resume provenance evidence](results/resume-provenance-20261014.json)
+records the cause: normalized reporting duplicates had replaced canonical stream
+provenance during predecessor scanning. Resume now selects original verified
+records and rejects missing originals. The stopped episode remains archived,
+and its wallet carries into a separate successor without added capital.

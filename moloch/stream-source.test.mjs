@@ -1,4 +1,5 @@
-import test from 'node:test';import assert from 'node:assert/strict';import {StreamSource} from './stream-source.mjs';import {payloadHash} from '../execution/ledger.mjs';import {createMoloch,advanceMoloch,assertMoloch} from './engine.mjs';
+import fs from 'node:fs';import os from 'node:os';import path from 'node:path';
+import test from 'node:test';import assert from 'node:assert/strict';import {StreamSource,predecessorTradeFacts} from './stream-source.mjs';import {payloadHash} from '../execution/ledger.mjs';import {createMoloch,advanceMoloch,assertMoloch} from './engine.mjs';
 const tid='bda92870-621e-47b0-bc3c-3602c5c26f55',at=n=>new Date(Date.parse('2026-10-13T22:00:00Z')+n*1000).toISOString();
 const rawBook=(seq,n)=>({exchangeId:'2',asOf:{sequence:seq,at:at(n)},nextExpiryAt:null,bids:[{price:.4,quantity:100}],asks:[{price:.42,quantity:100}]});
 const restBook=(seq,n)=>({source:'official_sig_api_v1',status:200,kind:'book',marketId:'1',exchangeId:'2',tournamentId:tid,requestStartedAt:at(n),receivedAt:at(n+.1),endpoint:'/markets/1/orderbook?tournamentId='+tid,data:{contexts:[{type:'tournament',tournament:{id:tid},orderbook:{exchanges:[rawBook(seq,n)]}}]}});
@@ -41,4 +42,11 @@ test('official REST millisecond rounding deduplicates while both original wire c
   assert.throws(()=>mux.trade({...rest,executedAt:'2026-10-13T22:00:04.604Z'}),/TRADE_CLOCK_CONFLICT/);
   assert.throws(()=>mux.trade({...rest,executedAt:'2026-10-13T22:00:04.603600Z'}),/TRADE_CLOCK_CONFLICT/);
   assert.throws(()=>mux.trade({...rest,idNamespace:'unknown'}),/TRADE_CLOCK_CONFLICT/);
+});
+
+test('resume restores original trade provenance rather than normalized reporting duplicates',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'moloch-provenance-')),dir=path.join(root,'episode');fs.mkdirSync(dir);
+  try{const wire={type:'trade',marketId:'1',exchangeId:'2',tournamentId:tid,id:'shared',idNamespace:'sig_engine_match',executedAt:'2026-10-13T22:00:04.603535900Z',yesPrice:'0.655000',quantity:22},normalized={...wire,idNamespace:'sig_reporting_tape_only',originalExecutedAt:'2026-10-13T22:00:04.603Z'},key=[tid,'2','shared'].join(':'),state={seen:{[key]:payloadHash({marketId:wire.marketId,executedAt:wire.executedAt,yesPrice:wire.yesPrice,quantity:wire.quantity})}};let previous='';const rows=[wire,normalized].map((event,i)=>{const body={sequence:i+1,previous,event},row={...body,hash:payloadHash(body)};previous=row.hash;return row;});const snapshot={state,sequence:2,previous};fs.writeFileSync(path.join(dir,'events.jsonl'),rows.map(JSON.stringify).join('\n')+'\n');fs.writeFileSync(path.join(dir,'state.json'),JSON.stringify({...snapshot,hash:payloadHash(snapshot)}));fs.writeFileSync(path.join(dir,'manifest.json'),'{}');
+  const facts=predecessorTradeFacts(dir,state,root);assert.equal(facts.get(key).idNamespace,'sig_engine_match');const mux=new StreamSource([],tid,at(0),facts);assert.equal(mux.trade({...wire,idNamespace:'sig_reporting_tape_only',executedAt:normalized.originalExecutedAt}).executedAt,wire.executedAt);assert.throws(()=>mux.trade({...wire,executedAt:'2026-10-13T22:00:04.604Z'}),/CLOCK_CONFLICT/);
+  }finally{if(!path.resolve(root).startsWith(path.resolve(os.tmpdir())+path.sep+'moloch-provenance-'))throw Error('TEMP_SCOPE');fs.rmSync(root,{recursive:true});}
 });

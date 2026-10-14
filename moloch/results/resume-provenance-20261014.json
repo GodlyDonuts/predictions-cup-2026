@@ -1,0 +1,26 @@
+{
+  "bot": "Moloch",
+  "failedEpisode": {
+    "directory": "runtime/moloch/live-sig-20261014-14",
+    "status": "failed",
+    "captureExit": 0,
+    "sourceEventSha256": "8bd2c4950e444b6640c24afcca1a1570a4f627e3ed45695ef4e16a914b2eb57b",
+    "snapshotHash": "0cb7b98b169027ec72877a0f5beacf46e69a198b93ea3efd671f317a7e9e60fd",
+    "cash": "1000.000000",
+    "realized": "0.000000",
+    "fills": 0,
+    "reservedCash": "34.825000",
+    "orders": 121
+  },
+  "cause": "Predecessor scan overwrote canonical stream provenance with a normalized reporting duplicate that retained stream execution precision.",
+  "fix": "Choose an original non-normalized verified record for the stored financial trade hash; reject provenance if no original exists. Existing financial hashes and original wire clocks remain unchanged.",
+  "verification": {
+    "nodeChecks": 60,
+    "priorTradeFacts": 192,
+    "failedTapeTradesReconciled": 3,
+    "precisionDuplicates": 2
+  },
+  "next": "Prospective successor 15 continues the carried wallet with no added capital; results pending.",
+  "contestOrders": 0,
+  "profitabilityEstablished": false
+}

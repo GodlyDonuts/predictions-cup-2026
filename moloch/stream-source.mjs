@@ -10,11 +10,11 @@ export function predecessorTradeFacts(directory,state,runtimeRoot){
   let current=directory?path.resolve(directory):null;
   while(current){check(current.startsWith(boundary)&&!visited.has(current)&&visited.size<100,'PARENT_SCOPE');visited.add(current);
     const manifest=JSON.parse(fs.readFileSync(path.join(current,'manifest.json'))),snapshot=JSON.parse(fs.readFileSync(path.join(current,'state.json'))),{hash,...body}=snapshot;check(hash===payloadHash(body),'PARENT_SNAPSHOT');
-    let sequence=0,previous='';for(const line of fs.readFileSync(path.join(current,'events.jsonl'),'utf8').split(/\r?\n/).filter(Boolean)){const row=JSON.parse(line),{hash,...body}=row;check(hash===payloadHash(body)&&body.sequence===++sequence&&body.previous===previous,'PARENT_CHAIN');previous=hash;const t=body.event;if(t.type==='trade'&&state.seen[tradeKey(t)]===tradeHash(t))facts.set(tradeKey(t),t);}
+    let sequence=0,previous='';for(const line of fs.readFileSync(path.join(current,'events.jsonl'),'utf8').split(/\r?\n/).filter(Boolean)){const row=JSON.parse(line),{hash,...body}=row;check(hash===payloadHash(body)&&body.sequence===++sequence&&body.previous===previous,'PARENT_CHAIN');previous=hash;const t=body.event;if(t.type==='trade'&&state.seen[tradeKey(t)]===tradeHash(t)){const prior=facts.get(tradeKey(t));if(!prior||prior.originalExecutedAt&&!t.originalExecutedAt)facts.set(tradeKey(t),t);}}
     check(sequence===snapshot.sequence&&previous===snapshot.previous,'PARENT_TERMINAL');
     const next=manifest.continuation?.parentDirectory;if(next){check(path.resolve(next).startsWith(boundary),'PARENT_SCOPE');const parent=JSON.parse(fs.readFileSync(path.join(next,'state.json')));check(parent.hash===manifest.continuation.parentSnapshotHash,'PARENT_LINK');}current=next?path.resolve(next):null;
   }
-  check(facts.size===Object.keys(state.seen).length,'MISSING_TRADE_PROVENANCE');return facts;
+  check(facts.size===Object.keys(state.seen).length&&[...facts.values()].every(t=>!t.originalExecutedAt),'MISSING_TRADE_PROVENANCE');return facts;
 }
 export class StreamSource {
   constructor(scopes,tournamentId,startedAt,facts=new Map()){this.scopes=new Map(scopes.map(p=>[p.marketId,p]));this.tournamentId=tournamentId;this.facts=new Map(facts);this.status=new Map(scopes.map(p=>[p.marketId,{invalidatedAt:startedAt,blocked:true,restBook:false,tape:false}]));this.books=new Map();this.revisions=new Map();this.sequence=0;this.previous='';this.metrics={rows:0,pushedBooks:0,olderBooks:0,initialResyncs:0,gaps:0,duplicates:0,unblocks:0,precisionReconciliations:0};}
