@@ -18,17 +18,23 @@ export function retiredPaperScopes(oldScopes,newScopes,state){
   for(const p of retired){const lots=state.positions[p.exchangeId];if(state.orders.some(q=>q.exchangeId===p.exchangeId&&!q.retired)||lots&&[...lots.YES,...lots.NO].some(l=>l.quantity>0))throw Error('MOLOCH_SCOPE_RETIREMENT_HAS_LIABILITIES');}
   return retired;
 }
-export async function live({marketId,exchangeId,outputDirectory,cycles=10,resumeDirectory=null,pairsFile=null,realtime=false,insideTicks=null,drain=false,resumeEntries=false}){
+export function paperPolicyOverrides(value){
+  if(!value||typeof value!=='object'||Array.isArray(value)||Object.keys(value).some(k=>!['participationBps','lifetimeMs','quantity'].includes(k)))throw Error('MOLOCH_POLICY_OVERRIDE_SCOPE');
+  createMoloch(value);return{...value};
+}
+export async function live({marketId,exchangeId,outputDirectory,cycles=10,resumeDirectory=null,pairsFile=null,realtime=false,insideTicks=null,drain=false,resumeEntries=false,policyFile=null}){
   if(!/^[1-9]\d*$/.test(marketId)||!/^[1-9]\d*$/.test(exchangeId)||!Number.isSafeInteger(cycles)||cycles<1||cycles>100)throw Error('MOLOCH_LIVE_SCOPE');
   if(realtime&&cycles>30)throw Error('MOLOCH_STREAM_BOUNDED_CYCLES');
   const scopes=liveScopes(marketId,exchangeId,pairsFile?JSON.parse(fs.readFileSync(pairsFile,'utf8').replace(/^\uFEFF/,'')):null,realtime?4:2);
   if(realtime&&cycles>Math.floor(60/scopes.length))throw Error('MOLOCH_STREAM_DURATION_LIMIT');
+  if(policyFile!==null&&(!policyFile||policyFile.startsWith('--')))throw Error('MOLOCH_POLICY_FILE_REQUIRED');
+  let overrides={};if(policyFile){let parsed;try{parsed=JSON.parse(fs.readFileSync(policyFile,'utf8').replace(/^\uFEFF/,''));}catch{throw Error('MOLOCH_POLICY_FILE_INVALID');}overrides=paperPolicyOverrides(parsed);}
   const out=path.resolve(outputDirectory);if(fs.existsSync(out))throw Error('MOLOCH_LIVE_OUTPUT_EXISTS');fs.mkdirSync(out,{recursive:true});
-  const cutoff=new Date().toISOString();let state=createMoloch({...((insideTicks===null)?{}:{insideTicks}),...(drain?{entriesEnabled:false}:{})}),continuation=null;
+  const cutoff=new Date().toISOString();let state=createMoloch({...overrides,...((insideTicks===null)?{}:{insideTicks}),...(drain?{entriesEnabled:false}:{})}),continuation=null;
   if(resumeDirectory){const prior=path.resolve(resumeDirectory),oldStats=JSON.parse(fs.readFileSync(path.join(prior,'stats.json'))),snapshot=JSON.parse(fs.readFileSync(path.join(prior,'state.json'))),{hash,...body}=snapshot;
     if(!['completed','failed'].includes(oldStats.status)||oldStats.captureExit===null||hash!==payloadHash(body))throw Error('MOLOCH_CONTINUATION_REQUIRES_VERIFIED_STOPPED_PARENT');
     const retiredScopes=retiredPaperScopes(oldStats.scopes??[{marketId:oldStats.marketId,exchangeId:oldStats.exchangeId}],scopes,body.state);
-    const silence=state.policy.maximumSourceSilenceMs;state=body.state;assertMoloch(state);const nextPolicy=createMoloch({...state.policy,maximumSourceSilenceMs:silence,...(insideTicks===null?{}:{insideTicks}),...(drain?{entriesEnabled:false}:resumeEntries?{entriesEnabled:true}:{})}).policy;const {policy,policyHash,...financial}=state;
+    const silence=state.policy.maximumSourceSilenceMs;state=body.state;assertMoloch(state);const nextPolicy=createMoloch({...state.policy,...overrides,maximumSourceSilenceMs:silence,...(insideTicks===null?{}:{insideTicks}),...(drain?{entriesEnabled:false}:resumeEntries?{entriesEnabled:true}:{})}).policy;const {policy,policyHash,...financial}=state;
     continuation={parentDirectory:prior,parentStatus:oldStats.status,parentCaptureExit:oldStats.captureExit,parentSnapshotHash:hash,parentFinancialHash:payloadHash(financial),newPaperCapital:'0.000000',priorPolicyHash:policyHash,retiredScopes};
     state.policy=nextPolicy;state.policyHash=payloadHash(nextPolicy);const {policy:np,policyHash:nh,...carried}=state;if(payloadHash(carried)!==continuation.parentFinancialHash)throw Error('MOLOCH_FINANCIAL_CONTINUITY');
   }
@@ -77,4 +83,4 @@ export async function live({marketId,exchangeId,outputDirectory,cycles=10,resume
   }return persist('completed');
   }catch(error){stopping();if(!ended)await new Promise(resolve=>{const timer=setTimeout(()=>{captureProcess.kill();resolve();},40000);captureProcess.once('exit',()=>{clearTimeout(timer);resolve();});});persist('failed');throw error;}finally{process.removeListener('SIGINT',stopping);process.removeListener('SIGTERM',stopping);}
 }
-if(process.argv[1]&&import.meta.url===pathToFileURL(path.resolve(process.argv[1])).href){live({marketId:process.argv[2],exchangeId:process.argv[3],outputDirectory:process.argv[4],cycles:Number(process.argv[5]??10),resumeDirectory:process.argv[6]??null,pairsFile:process.argv[7]??null,realtime:process.argv[8]==='--realtime',insideTicks:process.argv[9]===undefined?null:Number(process.argv[9]),drain:process.argv.includes('--drain'),resumeEntries:process.argv.includes('--resume-entries')}).then(r=>console.log(JSON.stringify(r,null,2))).catch(e=>{console.error(e.message);process.exitCode=1;});}
+if(process.argv[1]&&import.meta.url===pathToFileURL(path.resolve(process.argv[1])).href){const policyIndex=process.argv.indexOf('--policy');live({marketId:process.argv[2],exchangeId:process.argv[3],outputDirectory:process.argv[4],cycles:Number(process.argv[5]??10),resumeDirectory:process.argv[6]??null,pairsFile:process.argv[7]??null,realtime:process.argv[8]==='--realtime',insideTicks:process.argv[9]===undefined?null:Number(process.argv[9]),drain:process.argv.includes('--drain'),resumeEntries:process.argv.includes('--resume-entries'),policyFile:policyIndex<0?null:process.argv[policyIndex+1]??''}).then(r=>console.log(JSON.stringify(r,null,2))).catch(e=>{console.error(e.message);process.exitCode=1;});}

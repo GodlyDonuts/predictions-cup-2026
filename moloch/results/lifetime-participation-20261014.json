@@ -1,0 +1,1020 @@
+{
+  "bot": "Moloch",
+  "experiment": "Recorded-clock sensitivity, not profitability evidence",
+  "sources": [
+    {
+      "episode": 8,
+      "directory": "runtime/moloch/live-sig-20261013-8",
+      "eventCount": 150,
+      "sha256": "22be3c4dcbfb28e4bc396b70bd8489d92837665d7edb9b08eda2cdc9d0841ff8",
+      "finalHash": "634845fde021066e3f9bdf91d2c51c8475b787ca687461866efd4f9f5c1dbe2e"
+    },
+    {
+      "episode": 10,
+      "directory": "runtime/moloch/live-sig-20261013-10",
+      "eventCount": 486,
+      "sha256": "0eb65b4b160b9a26f84c8fd8c46919c3d5e362e2fb88afe1ad1cbc2844148f97",
+      "finalHash": "e43d25430a33787c0a9f8686075045514f5830aecc5f878ef778ddcac4ea4434"
+    },
+    {
+      "episode": 11,
+      "directory": "runtime/moloch/live-sig-20261013-11",
+      "eventCount": 369,
+      "sha256": "b6d0caad92be8954ec294d81a47b3ac4cd33ec17d2e5d833a6d122330b1b8c12",
+      "finalHash": "ea83031199024ef14c998ea47cefaaf07c675583a786a518cbe6b283b31d6579"
+    },
+    {
+      "episode": 13,
+      "directory": "runtime/moloch/live-sig-20261014-13",
+      "eventCount": 600,
+      "sha256": "c041732b3ea271fe1a79847b3b10ff7acee107db91c40aa578dd2dba351067ac",
+      "finalHash": "c6ee62025a68b592e1826e62364ca600bcb6d37baf1240a234dc7fb7956bf4a3"
+    }
+  ],
+  "variants": [
+    {
+      "episode": 8,
+      "fillModel": "strictThrough",
+      "lifetimeMs": 120000,
+      "participationBps": 100,
+      "fills": 0,
+      "realized": "0.000000",
+      "owned": "0.000000",
+      "final": "0.000000",
+      "lastFresh": {
+        "at": "2026-10-13T22:40:31.475Z",
+        "pnl": "0.000000"
+      },
+      "worst": {
+        "at": "2026-10-13T22:38:26.164Z",
+        "pnl": "0.000000"
+      },
+      "orders": 73,
+      "unresolved": 6
+    },
+    {
+      "episode": 8,
+      "fillModel": "strictThrough",
+      "lifetimeMs": 120000,
+      "participationBps": 1000,
+      "fills": 0,
+      "realized": "0.000000",
+      "owned": "0.000000",
+      "final": "0.000000",
+      "lastFresh": {
+        "at": "2026-10-13T22:40:31.475Z",
+        "pnl": "0.000000"
+      },
+      "worst": {
+        "at": "2026-10-13T22:38:26.164Z",
+        "pnl": "0.000000"
+      },
+      "orders": 73,
+      "unresolved": 6
+    },
+    {
+      "episode": 8,
+      "fillModel": "strictThrough",
+      "lifetimeMs": 120000,
+      "participationBps": 10000,
+      "fills": 0,
+      "realized": "0.000000",
+      "owned": "0.000000",
+      "final": "0.000000",
+      "lastFresh": {
+        "at": "2026-10-13T22:40:31.475Z",
+        "pnl": "0.000000"
+      },
+      "worst": {
+        "at": "2026-10-13T22:38:26.164Z",
+        "pnl": "0.000000"
+      },
+      "orders": 73,
+      "unresolved": 6
+    },
+    {
+      "episode": 8,
+      "fillModel": "strictThrough",
+      "lifetimeMs": 600000,
+      "participationBps": 100,
+      "fills": 0,
+      "realized": "0.000000",
+      "owned": "0.000000",
+      "final": "0.000000",
+      "lastFresh": {
+        "at": "2026-10-13T22:40:31.475Z",
+        "pnl": "0.000000"
+      },
+      "worst": {
+        "at": "2026-10-13T22:38:26.164Z",
+        "pnl": "0.000000"
+      },
+      "orders": 73,
+      "unresolved": 6
+    },
+    {
+      "episode": 8,
+      "fillModel": "strictThrough",
+      "lifetimeMs": 600000,
+      "participationBps": 1000,
+      "fills": 0,
+      "realized": "0.000000",
+      "owned": "0.000000",
+      "final": "0.000000",
+      "lastFresh": {
+        "at": "2026-10-13T22:40:31.475Z",
+        "pnl": "0.000000"
+      },
+      "worst": {
+        "at": "2026-10-13T22:38:26.164Z",
+        "pnl": "0.000000"
+      },
+      "orders": 73,
+      "unresolved": 6
+    },
+    {
+      "episode": 8,
+      "fillModel": "strictThrough",
+      "lifetimeMs": 600000,
+      "participationBps": 10000,
+      "fills": 0,
+      "realized": "0.000000",
+      "owned": "0.000000",
+      "final": "0.000000",
+      "lastFresh": {
+        "at": "2026-10-13T22:40:31.475Z",
+        "pnl": "0.000000"
+      },
+      "worst": {
+        "at": "2026-10-13T22:38:26.164Z",
+        "pnl": "0.000000"
+      },
+      "orders": 73,
+      "unresolved": 6
+    },
+    {
+      "episode": 8,
+      "fillModel": "conditionalFifo",
+      "lifetimeMs": 120000,
+      "participationBps": 100,
+      "fills": 0,
+      "realized": "0.000000",
+      "owned": "0.000000",
+      "final": "0.000000",
+      "lastFresh": {
+        "at": "2026-10-13T22:40:31.475Z",
+        "pnl": "0.000000"
+      },
+      "worst": {
+        "at": "2026-10-13T22:38:26.164Z",
+        "pnl": "0.000000"
+      },
+      "orders": 73,
+      "unresolved": 6
+    },
+    {
+      "episode": 8,
+      "fillModel": "conditionalFifo",
+      "lifetimeMs": 120000,
+      "participationBps": 1000,
+      "fills": 0,
+      "realized": "0.000000",
+      "owned": "0.000000",
+      "final": "0.000000",
+      "lastFresh": {
+        "at": "2026-10-13T22:40:31.475Z",
+        "pnl": "0.000000"
+      },
+      "worst": {
+        "at": "2026-10-13T22:38:26.164Z",
+        "pnl": "0.000000"
+      },
+      "orders": 73,
+      "unresolved": 6
+    },
+    {
+      "episode": 8,
+      "fillModel": "conditionalFifo",
+      "lifetimeMs": 120000,
+      "participationBps": 10000,
+      "fills": 0,
+      "realized": "0.000000",
+      "owned": "0.000000",
+      "final": "0.000000",
+      "lastFresh": {
+        "at": "2026-10-13T22:40:31.475Z",
+        "pnl": "0.000000"
+      },
+      "worst": {
+        "at": "2026-10-13T22:38:26.164Z",
+        "pnl": "0.000000"
+      },
+      "orders": 73,
+      "unresolved": 6
+    },
+    {
+      "episode": 8,
+      "fillModel": "conditionalFifo",
+      "lifetimeMs": 600000,
+      "participationBps": 100,
+      "fills": 0,
+      "realized": "0.000000",
+      "owned": "0.000000",
+      "final": "0.000000",
+      "lastFresh": {
+        "at": "2026-10-13T22:40:31.475Z",
+        "pnl": "0.000000"
+      },
+      "worst": {
+        "at": "2026-10-13T22:38:26.164Z",
+        "pnl": "0.000000"
+      },
+      "orders": 73,
+      "unresolved": 6
+    },
+    {
+      "episode": 8,
+      "fillModel": "conditionalFifo",
+      "lifetimeMs": 600000,
+      "participationBps": 1000,
+      "fills": 0,
+      "realized": "0.000000",
+      "owned": "0.000000",
+      "final": "0.000000",
+      "lastFresh": {
+        "at": "2026-10-13T22:40:31.475Z",
+        "pnl": "0.000000"
+      },
+      "worst": {
+        "at": "2026-10-13T22:38:26.164Z",
+        "pnl": "0.000000"
+      },
+      "orders": 73,
+      "unresolved": 6
+    },
+    {
+      "episode": 8,
+      "fillModel": "conditionalFifo",
+      "lifetimeMs": 600000,
+      "participationBps": 10000,
+      "fills": 0,
+      "realized": "0.000000",
+      "owned": "0.000000",
+      "final": "0.000000",
+      "lastFresh": {
+        "at": "2026-10-13T22:40:31.475Z",
+        "pnl": "0.000000"
+      },
+      "worst": {
+        "at": "2026-10-13T22:38:26.164Z",
+        "pnl": "0.000000"
+      },
+      "orders": 73,
+      "unresolved": 6
+    },
+    {
+      "episode": 10,
+      "fillModel": "strictThrough",
+      "lifetimeMs": 120000,
+      "participationBps": 100,
+      "fills": 0,
+      "realized": "0.000000",
+      "owned": "0.000000",
+      "final": "0.000000",
+      "lastFresh": {
+        "at": "2026-10-13T23:15:56.698Z",
+        "pnl": "0.000000"
+      },
+      "worst": {
+        "at": "2026-10-13T23:09:54.939Z",
+        "pnl": "0.000000"
+      },
+      "orders": 95,
+      "unresolved": 14
+    },
+    {
+      "episode": 10,
+      "fillModel": "strictThrough",
+      "lifetimeMs": 120000,
+      "participationBps": 1000,
+      "fills": 0,
+      "realized": "0.000000",
+      "owned": "0.000000",
+      "final": "0.000000",
+      "lastFresh": {
+        "at": "2026-10-13T23:15:56.698Z",
+        "pnl": "0.000000"
+      },
+      "worst": {
+        "at": "2026-10-13T23:09:54.939Z",
+        "pnl": "0.000000"
+      },
+      "orders": 95,
+      "unresolved": 14
+    },
+    {
+      "episode": 10,
+      "fillModel": "strictThrough",
+      "lifetimeMs": 120000,
+      "participationBps": 10000,
+      "fills": 0,
+      "realized": "0.000000",
+      "owned": "0.000000",
+      "final": "0.000000",
+      "lastFresh": {
+        "at": "2026-10-13T23:15:56.698Z",
+        "pnl": "0.000000"
+      },
+      "worst": {
+        "at": "2026-10-13T23:09:54.939Z",
+        "pnl": "0.000000"
+      },
+      "orders": 95,
+      "unresolved": 14
+    },
+    {
+      "episode": 10,
+      "fillModel": "strictThrough",
+      "lifetimeMs": 600000,
+      "participationBps": 100,
+      "fills": 0,
+      "realized": "0.000000",
+      "owned": "0.000000",
+      "final": "0.000000",
+      "lastFresh": {
+        "at": "2026-10-13T23:15:56.698Z",
+        "pnl": "0.000000"
+      },
+      "worst": {
+        "at": "2026-10-13T23:09:54.939Z",
+        "pnl": "0.000000"
+      },
+      "orders": 85,
+      "unresolved": 8
+    },
+    {
+      "episode": 10,
+      "fillModel": "strictThrough",
+      "lifetimeMs": 600000,
+      "participationBps": 1000,
+      "fills": 0,
+      "realized": "0.000000",
+      "owned": "0.000000",
+      "final": "0.000000",
+      "lastFresh": {
+        "at": "2026-10-13T23:15:56.698Z",
+        "pnl": "0.000000"
+      },
+      "worst": {
+        "at": "2026-10-13T23:09:54.939Z",
+        "pnl": "0.000000"
+      },
+      "orders": 85,
+      "unresolved": 8
+    },
+    {
+      "episode": 10,
+      "fillModel": "strictThrough",
+      "lifetimeMs": 600000,
+      "participationBps": 10000,
+      "fills": 0,
+      "realized": "0.000000",
+      "owned": "0.000000",
+      "final": "0.000000",
+      "lastFresh": {
+        "at": "2026-10-13T23:15:56.698Z",
+        "pnl": "0.000000"
+      },
+      "worst": {
+        "at": "2026-10-13T23:09:54.939Z",
+        "pnl": "0.000000"
+      },
+      "orders": 85,
+      "unresolved": 8
+    },
+    {
+      "episode": 10,
+      "fillModel": "conditionalFifo",
+      "lifetimeMs": 120000,
+      "participationBps": 100,
+      "fills": 0,
+      "realized": "0.000000",
+      "owned": "0.000000",
+      "final": "0.000000",
+      "lastFresh": {
+        "at": "2026-10-13T23:15:56.698Z",
+        "pnl": "0.000000"
+      },
+      "worst": {
+        "at": "2026-10-13T23:09:54.939Z",
+        "pnl": "0.000000"
+      },
+      "orders": 95,
+      "unresolved": 14
+    },
+    {
+      "episode": 10,
+      "fillModel": "conditionalFifo",
+      "lifetimeMs": 120000,
+      "participationBps": 1000,
+      "fills": 0,
+      "realized": "0.000000",
+      "owned": "0.000000",
+      "final": "0.000000",
+      "lastFresh": {
+        "at": "2026-10-13T23:15:56.698Z",
+        "pnl": "0.000000"
+      },
+      "worst": {
+        "at": "2026-10-13T23:09:54.939Z",
+        "pnl": "0.000000"
+      },
+      "orders": 95,
+      "unresolved": 14
+    },
+    {
+      "episode": 10,
+      "fillModel": "conditionalFifo",
+      "lifetimeMs": 120000,
+      "participationBps": 10000,
+      "fills": 0,
+      "realized": "0.000000",
+      "owned": "0.000000",
+      "final": "0.000000",
+      "lastFresh": {
+        "at": "2026-10-13T23:15:56.698Z",
+        "pnl": "0.000000"
+      },
+      "worst": {
+        "at": "2026-10-13T23:09:54.939Z",
+        "pnl": "0.000000"
+      },
+      "orders": 95,
+      "unresolved": 14
+    },
+    {
+      "episode": 10,
+      "fillModel": "conditionalFifo",
+      "lifetimeMs": 600000,
+      "participationBps": 100,
+      "fills": 0,
+      "realized": "0.000000",
+      "owned": "0.000000",
+      "final": "0.000000",
+      "lastFresh": {
+        "at": "2026-10-13T23:15:56.698Z",
+        "pnl": "0.000000"
+      },
+      "worst": {
+        "at": "2026-10-13T23:09:54.939Z",
+        "pnl": "0.000000"
+      },
+      "orders": 85,
+      "unresolved": 8
+    },
+    {
+      "episode": 10,
+      "fillModel": "conditionalFifo",
+      "lifetimeMs": 600000,
+      "participationBps": 1000,
+      "fills": 0,
+      "realized": "0.000000",
+      "owned": "0.000000",
+      "final": "0.000000",
+      "lastFresh": {
+        "at": "2026-10-13T23:15:56.698Z",
+        "pnl": "0.000000"
+      },
+      "worst": {
+        "at": "2026-10-13T23:09:54.939Z",
+        "pnl": "0.000000"
+      },
+      "orders": 85,
+      "unresolved": 8
+    },
+    {
+      "episode": 10,
+      "fillModel": "conditionalFifo",
+      "lifetimeMs": 600000,
+      "participationBps": 10000,
+      "fills": 0,
+      "realized": "0.000000",
+      "owned": "0.000000",
+      "final": "0.000000",
+      "lastFresh": {
+        "at": "2026-10-13T23:15:56.698Z",
+        "pnl": "0.000000"
+      },
+      "worst": {
+        "at": "2026-10-13T23:09:54.939Z",
+        "pnl": "0.000000"
+      },
+      "orders": 85,
+      "unresolved": 8
+    },
+    {
+      "episode": 11,
+      "fillModel": "strictThrough",
+      "lifetimeMs": 120000,
+      "participationBps": 100,
+      "fills": 0,
+      "realized": "0.000000",
+      "owned": "0.000000",
+      "final": "0.000000",
+      "lastFresh": {
+        "at": "2026-10-13T23:33:00.333Z",
+        "pnl": "0.000000"
+      },
+      "worst": {
+        "at": "2026-10-13T23:27:48.655Z",
+        "pnl": "0.000000"
+      },
+      "orders": 107,
+      "unresolved": 12
+    },
+    {
+      "episode": 11,
+      "fillModel": "strictThrough",
+      "lifetimeMs": 120000,
+      "participationBps": 1000,
+      "fills": 0,
+      "realized": "0.000000",
+      "owned": "0.000000",
+      "final": "0.000000",
+      "lastFresh": {
+        "at": "2026-10-13T23:33:00.333Z",
+        "pnl": "0.000000"
+      },
+      "worst": {
+        "at": "2026-10-13T23:27:48.655Z",
+        "pnl": "0.000000"
+      },
+      "orders": 107,
+      "unresolved": 12
+    },
+    {
+      "episode": 11,
+      "fillModel": "strictThrough",
+      "lifetimeMs": 120000,
+      "participationBps": 10000,
+      "fills": 0,
+      "realized": "0.000000",
+      "owned": "0.000000",
+      "final": "0.000000",
+      "lastFresh": {
+        "at": "2026-10-13T23:33:00.333Z",
+        "pnl": "0.000000"
+      },
+      "worst": {
+        "at": "2026-10-13T23:27:48.655Z",
+        "pnl": "0.000000"
+      },
+      "orders": 107,
+      "unresolved": 12
+    },
+    {
+      "episode": 11,
+      "fillModel": "strictThrough",
+      "lifetimeMs": 600000,
+      "participationBps": 100,
+      "fills": 0,
+      "realized": "0.000000",
+      "owned": "0.000000",
+      "final": "0.000000",
+      "lastFresh": {
+        "at": "2026-10-13T23:33:00.333Z",
+        "pnl": "0.000000"
+      },
+      "worst": {
+        "at": "2026-10-13T23:27:48.655Z",
+        "pnl": "0.000000"
+      },
+      "orders": 103,
+      "unresolved": 8
+    },
+    {
+      "episode": 11,
+      "fillModel": "strictThrough",
+      "lifetimeMs": 600000,
+      "participationBps": 1000,
+      "fills": 0,
+      "realized": "0.000000",
+      "owned": "0.000000",
+      "final": "0.000000",
+      "lastFresh": {
+        "at": "2026-10-13T23:33:00.333Z",
+        "pnl": "0.000000"
+      },
+      "worst": {
+        "at": "2026-10-13T23:27:48.655Z",
+        "pnl": "0.000000"
+      },
+      "orders": 103,
+      "unresolved": 8
+    },
+    {
+      "episode": 11,
+      "fillModel": "strictThrough",
+      "lifetimeMs": 600000,
+      "participationBps": 10000,
+      "fills": 0,
+      "realized": "0.000000",
+      "owned": "0.000000",
+      "final": "0.000000",
+      "lastFresh": {
+        "at": "2026-10-13T23:33:00.333Z",
+        "pnl": "0.000000"
+      },
+      "worst": {
+        "at": "2026-10-13T23:27:48.655Z",
+        "pnl": "0.000000"
+      },
+      "orders": 103,
+      "unresolved": 8
+    },
+    {
+      "episode": 11,
+      "fillModel": "conditionalFifo",
+      "lifetimeMs": 120000,
+      "participationBps": 100,
+      "fills": 0,
+      "realized": "0.000000",
+      "owned": "0.000000",
+      "final": "0.000000",
+      "lastFresh": {
+        "at": "2026-10-13T23:33:00.333Z",
+        "pnl": "0.000000"
+      },
+      "worst": {
+        "at": "2026-10-13T23:27:48.655Z",
+        "pnl": "0.000000"
+      },
+      "orders": 107,
+      "unresolved": 12
+    },
+    {
+      "episode": 11,
+      "fillModel": "conditionalFifo",
+      "lifetimeMs": 120000,
+      "participationBps": 1000,
+      "fills": 0,
+      "realized": "0.000000",
+      "owned": "0.000000",
+      "final": "0.000000",
+      "lastFresh": {
+        "at": "2026-10-13T23:33:00.333Z",
+        "pnl": "0.000000"
+      },
+      "worst": {
+        "at": "2026-10-13T23:27:48.655Z",
+        "pnl": "0.000000"
+      },
+      "orders": 107,
+      "unresolved": 12
+    },
+    {
+      "episode": 11,
+      "fillModel": "conditionalFifo",
+      "lifetimeMs": 120000,
+      "participationBps": 10000,
+      "fills": 0,
+      "realized": "0.000000",
+      "owned": "0.000000",
+      "final": "0.000000",
+      "lastFresh": {
+        "at": "2026-10-13T23:33:00.333Z",
+        "pnl": "0.000000"
+      },
+      "worst": {
+        "at": "2026-10-13T23:27:48.655Z",
+        "pnl": "0.000000"
+      },
+      "orders": 107,
+      "unresolved": 12
+    },
+    {
+      "episode": 11,
+      "fillModel": "conditionalFifo",
+      "lifetimeMs": 600000,
+      "participationBps": 100,
+      "fills": 0,
+      "realized": "0.000000",
+      "owned": "0.000000",
+      "final": "0.000000",
+      "lastFresh": {
+        "at": "2026-10-13T23:33:00.333Z",
+        "pnl": "0.000000"
+      },
+      "worst": {
+        "at": "2026-10-13T23:27:48.655Z",
+        "pnl": "0.000000"
+      },
+      "orders": 103,
+      "unresolved": 8
+    },
+    {
+      "episode": 11,
+      "fillModel": "conditionalFifo",
+      "lifetimeMs": 600000,
+      "participationBps": 1000,
+      "fills": 0,
+      "realized": "0.000000",
+      "owned": "0.000000",
+      "final": "0.000000",
+      "lastFresh": {
+        "at": "2026-10-13T23:33:00.333Z",
+        "pnl": "0.000000"
+      },
+      "worst": {
+        "at": "2026-10-13T23:27:48.655Z",
+        "pnl": "0.000000"
+      },
+      "orders": 103,
+      "unresolved": 8
+    },
+    {
+      "episode": 11,
+      "fillModel": "conditionalFifo",
+      "lifetimeMs": 600000,
+      "participationBps": 10000,
+      "fills": 0,
+      "realized": "0.000000",
+      "owned": "0.000000",
+      "final": "0.000000",
+      "lastFresh": {
+        "at": "2026-10-13T23:33:00.333Z",
+        "pnl": "0.000000"
+      },
+      "worst": {
+        "at": "2026-10-13T23:27:48.655Z",
+        "pnl": "0.000000"
+      },
+      "orders": 103,
+      "unresolved": 8
+    },
+    {
+      "episode": 13,
+      "fillModel": "strictThrough",
+      "lifetimeMs": 120000,
+      "participationBps": 100,
+      "fills": 0,
+      "realized": "0.000000",
+      "owned": "0.000000",
+      "final": "0.000000",
+      "lastFresh": {
+        "at": "2026-10-14T03:34:26.055Z",
+        "pnl": "0.000000"
+      },
+      "worst": {
+        "at": "2026-10-14T03:30:51.571Z",
+        "pnl": "0.000000"
+      },
+      "orders": 121,
+      "unresolved": 14
+    },
+    {
+      "episode": 13,
+      "fillModel": "strictThrough",
+      "lifetimeMs": 120000,
+      "participationBps": 1000,
+      "fills": 1,
+      "realized": "0.000000",
+      "owned": "0.300000",
+      "final": "-0.010000",
+      "lastFresh": {
+        "at": "2026-10-14T03:34:26.055Z",
+        "pnl": "-0.010000"
+      },
+      "worst": {
+        "at": "2026-10-14T03:31:54.437Z",
+        "pnl": "-0.010000"
+      },
+      "orders": 120,
+      "unresolved": 11
+    },
+    {
+      "episode": 13,
+      "fillModel": "strictThrough",
+      "lifetimeMs": 120000,
+      "participationBps": 10000,
+      "fills": 1,
+      "realized": "0.000000",
+      "owned": "0.750000",
+      "final": "-0.025000",
+      "lastFresh": {
+        "at": "2026-10-14T03:34:26.055Z",
+        "pnl": "-0.025000"
+      },
+      "worst": {
+        "at": "2026-10-14T03:31:54.437Z",
+        "pnl": "-0.025000"
+      },
+      "orders": 120,
+      "unresolved": 11
+    },
+    {
+      "episode": 13,
+      "fillModel": "strictThrough",
+      "lifetimeMs": 600000,
+      "participationBps": 100,
+      "fills": 0,
+      "realized": "0.000000",
+      "owned": "0.000000",
+      "final": "0.000000",
+      "lastFresh": {
+        "at": "2026-10-14T03:34:26.055Z",
+        "pnl": "0.000000"
+      },
+      "worst": {
+        "at": "2026-10-14T03:30:51.571Z",
+        "pnl": "0.000000"
+      },
+      "orders": 115,
+      "unresolved": 8
+    },
+    {
+      "episode": 13,
+      "fillModel": "strictThrough",
+      "lifetimeMs": 600000,
+      "participationBps": 1000,
+      "fills": 1,
+      "realized": "0.000000",
+      "owned": "0.300000",
+      "final": "-0.010000",
+      "lastFresh": {
+        "at": "2026-10-14T03:34:26.055Z",
+        "pnl": "-0.010000"
+      },
+      "worst": {
+        "at": "2026-10-14T03:31:54.437Z",
+        "pnl": "-0.010000"
+      },
+      "orders": 116,
+      "unresolved": 7
+    },
+    {
+      "episode": 13,
+      "fillModel": "strictThrough",
+      "lifetimeMs": 600000,
+      "participationBps": 10000,
+      "fills": 1,
+      "realized": "0.000000",
+      "owned": "0.750000",
+      "final": "-0.025000",
+      "lastFresh": {
+        "at": "2026-10-14T03:34:26.055Z",
+        "pnl": "-0.025000"
+      },
+      "worst": {
+        "at": "2026-10-14T03:31:54.437Z",
+        "pnl": "-0.025000"
+      },
+      "orders": 116,
+      "unresolved": 7
+    },
+    {
+      "episode": 13,
+      "fillModel": "conditionalFifo",
+      "lifetimeMs": 120000,
+      "participationBps": 100,
+      "fills": 0,
+      "realized": "0.000000",
+      "owned": "0.000000",
+      "final": "0.000000",
+      "lastFresh": {
+        "at": "2026-10-14T03:34:26.055Z",
+        "pnl": "0.000000"
+      },
+      "worst": {
+        "at": "2026-10-14T03:30:51.571Z",
+        "pnl": "0.000000"
+      },
+      "orders": 121,
+      "unresolved": 14
+    },
+    {
+      "episode": 13,
+      "fillModel": "conditionalFifo",
+      "lifetimeMs": 120000,
+      "participationBps": 1000,
+      "fills": 1,
+      "realized": "0.000000",
+      "owned": "0.300000",
+      "final": "-0.010000",
+      "lastFresh": {
+        "at": "2026-10-14T03:34:26.055Z",
+        "pnl": "-0.010000"
+      },
+      "worst": {
+        "at": "2026-10-14T03:31:54.437Z",
+        "pnl": "-0.010000"
+      },
+      "orders": 120,
+      "unresolved": 11
+    },
+    {
+      "episode": 13,
+      "fillModel": "conditionalFifo",
+      "lifetimeMs": 120000,
+      "participationBps": 10000,
+      "fills": 1,
+      "realized": "0.000000",
+      "owned": "0.750000",
+      "final": "-0.025000",
+      "lastFresh": {
+        "at": "2026-10-14T03:34:26.055Z",
+        "pnl": "-0.025000"
+      },
+      "worst": {
+        "at": "2026-10-14T03:31:54.437Z",
+        "pnl": "-0.025000"
+      },
+      "orders": 120,
+      "unresolved": 11
+    },
+    {
+      "episode": 13,
+      "fillModel": "conditionalFifo",
+      "lifetimeMs": 600000,
+      "participationBps": 100,
+      "fills": 0,
+      "realized": "0.000000",
+      "owned": "0.000000",
+      "final": "0.000000",
+      "lastFresh": {
+        "at": "2026-10-14T03:34:26.055Z",
+        "pnl": "0.000000"
+      },
+      "worst": {
+        "at": "2026-10-14T03:30:51.571Z",
+        "pnl": "0.000000"
+      },
+      "orders": 115,
+      "unresolved": 8
+    },
+    {
+      "episode": 13,
+      "fillModel": "conditionalFifo",
+      "lifetimeMs": 600000,
+      "participationBps": 1000,
+      "fills": 1,
+      "realized": "0.000000",
+      "owned": "0.300000",
+      "final": "-0.010000",
+      "lastFresh": {
+        "at": "2026-10-14T03:34:26.055Z",
+        "pnl": "-0.010000"
+      },
+      "worst": {
+        "at": "2026-10-14T03:31:54.437Z",
+        "pnl": "-0.010000"
+      },
+      "orders": 116,
+      "unresolved": 7
+    },
+    {
+      "episode": 13,
+      "fillModel": "conditionalFifo",
+      "lifetimeMs": 600000,
+      "participationBps": 10000,
+      "fills": 1,
+      "realized": "0.000000",
+      "owned": "0.750000",
+      "final": "-0.025000",
+      "lastFresh": {
+        "at": "2026-10-14T03:34:26.055Z",
+        "pnl": "-0.025000"
+      },
+      "worst": {
+        "at": "2026-10-14T03:31:54.437Z",
+        "pnl": "-0.025000"
+      },
+      "orders": 116,
+      "unresolved": 7
+    }
+  ],
+  "conclusions": [
+    "48 variants: two fill models, two lifetimes and three participation assumptions across four episodes.",
+    "Only episode 13 produces entries at higher participation; none completes a profitable exit.",
+    "Negative executable liquidation after buying inside the spread does not by itself establish adverse price movement.",
+    "Default participation and lifetime unchanged; forward experiment separately frozen."
+  ],
+  "forwardPolicy": {
+    "participationBps": 1000,
+    "lifetimeMs": 600000,
+    "quantity": 5,
+    "fillModel": "strictThrough",
+    "newPaperCapital": "0.000000",
+    "contestOrders": 0
+  },
+  "limitations": [
+    "Participation is hypothetical, not measured queue allocation.",
+    "Short captures cannot establish steady turnover or profit.",
+    "Conditional FIFO variants are diagnostic only."
+  ],
+  "codeIdentity": {
+    "moloch/engine.mjs": "d413fdc735420119aa21ad2f1d7c878e749287e686efe450e8c4a6de65bcc547",
+    "moloch/compare.mjs": "4c9e14dc85bf8e39eadf180f2d3b9914e1cb744fa390f443ba5662d03b0a478a"
+  },
+  "legacyParticipationPreserved": true
+}

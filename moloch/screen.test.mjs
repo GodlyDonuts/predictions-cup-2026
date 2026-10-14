@@ -1,6 +1,6 @@
 import test from 'node:test';import assert from 'node:assert/strict';
 import {selectPairs,screenRows} from './screen.mjs';
-import {liveScopes,captureScopes,retiredPaperScopes} from './live.mjs';
+import {liveScopes,captureScopes,retiredPaperScopes,paperPolicyOverrides,live} from './live.mjs';
 const catalog=(ids,cursor=null)=>({source:'official_sig_api_v1',status:200,kind:'catalog',endpoint:'/tournaments/midterm-elections/markets?status=open&limit=100',data:{data:ids.map(id=>({id:String(id),status:'open',title:'test',exchanges:[{id:String(id+100)}]})),pagination:{total:ids.length,hasMore:!!cursor,nextCursor:cursor}}});
 test('catalog requires complete cursor chain and deterministic exploration',()=>{
   assert.deepEqual(selectPairs([catalog([1,2,3,4])],2).pairs.map(p=>p.marketId),['1','4']);
@@ -33,4 +33,11 @@ test('continuation requests original expired quote windows rather than releasing
   const orders=[{exchangeId:'2',activationAt:1000,expiresAt:5000,retired:false},{exchangeId:'2',activationAt:2000,expiresAt:9000,cancelEffectiveAt:6000,retired:false},{exchangeId:'2',activationAt:0,expiresAt:99999,retired:false},{exchangeId:'2',activationAt:0,expiresAt:10000,retired:true}];
   const [r,untouched]=captureScopes([{marketId:'1',exchangeId:'2'},{marketId:'3',exchangeId:'4'}],{orders},20000);
   assert.equal(Date.parse(r.recoveryFrom),1000);assert.equal(Date.parse(r.recoveryTo),6001);assert.equal(untouched.recoveryFrom,undefined);assert.equal(orders[0].retired,false);
+});
+
+test('paper override files cannot alter capital, funding caps or transport budgets',async()=>{
+  const policy={participationBps:1000,lifetimeMs:600000,quantity:5};assert.deepEqual(paperPolicyOverrides(policy),policy);
+  for(const p of [{initialCash:'9999'},{maximumCommitted:'9999'},{writesPerMinute:100},{fillModel:'conditionalFifo'},[],null])assert.throws(()=>paperPolicyOverrides(p),/POLICY_OVERRIDE_SCOPE/);
+  assert.throws(()=>paperPolicyOverrides({participationBps:10001}),/POLICY_LIMITS/);
+  await assert.rejects(live({marketId:'1',exchangeId:'2',outputDirectory:'unused-policy-validation',policyFile:''}),/POLICY_FILE_REQUIRED/);
 });

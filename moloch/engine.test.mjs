@@ -127,3 +127,8 @@ test('admission freshness does not shorten resting lifetime, but prolonged silen
   advanceMoloch(s,trade(13,'later-through'));assert.equal(s.fills.length,1);
   const flat=createMoloch({quantity:1});advanceMoloch(flat,book(0));advanceMoloch(flat,tick(61));assert.ok(flat.orders.some(q=>q.cancelEffectiveAt!==undefined));
 });
+
+test('participation experiments preserve legacy quote assumptions and tag new quotes',()=>{
+  const legacy=createMoloch();advanceMoloch(legacy,book(0));legacy.policy={...legacy.policy,participationBps:1000};legacy.policyHash=payloadHash(legacy.policy);advanceMoloch(legacy,trade(4,'legacy-credit','0.440000',20));assert.equal(legacy.fills.length,0);assert.equal(legacy.orders.find(q=>q.side==='YES').participationCredit,2000);
+  const next=createMoloch({participationBps:1000});advanceMoloch(next,book(0));assert.equal(next.orders[0].participationBps,1000);advanceMoloch(next,trade(4,'new-credit','0.440000',20));assert.equal(next.fills[0].quantity,2);assertMoloch(next);
+});

@@ -411,3 +411,16 @@ volume compatible with its ask, and show the weaker side's queue turnover. This
 requires the book to predate the execution and be received before it; a post-trade
 book cannot invent earlier liquidity. Compatibility is not aggressor attribution.
 High print counts with little share volume do not imply adequate maker turnover.
+
+The [lifetime/participation sensitivity](results/lifetime-participation-20261014.json)
+compares 48 recorded-clock variants across four episodes. Higher assumed
+participation produced one entry in the last episode, but no profitable exit.
+The entry's negative bid-liquidation mark reflects the spread; it does not alone
+show adverse price movement. Default settings remain unchanged.
+
+A prospective successor may use `--policy FILE` after the positional arguments.
+Only `participationBps`, `lifetimeMs` and `quantity` are accepted. The first longer
+window tests 10% hypothetical participation, ten-minute quotes and five-share
+size under strict trade-through fills. Existing quotes retain their own
+participation assumptions and expiration times; no carried capital is reset.
+This setting is an experiment, not a measured fill probability or deployment gate.
