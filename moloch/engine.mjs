@@ -33,6 +33,7 @@ export function createMoloch(policy={}){
   check(p.inventoryTakerAfterMs===undefined||Number.isSafeInteger(p.inventoryTakerAfterMs)&&p.inventoryTakerAfterMs>=0&&p.inventoryTakerAfterMs<=86400000,'INVENTORY_TAKER_AGE');
   check(p.maximumInventoryAgeMs===undefined||Number.isSafeInteger(p.maximumInventoryAgeMs)&&p.maximumInventoryAgeMs>=0&&p.maximumInventoryAgeMs<=86400000,'INVENTORY_MAX_AGE');
   check(typeof(p.retainProfitableHedge??false)==='boolean','RETAIN_HEDGE');
+  check(typeof(p.repriceProfitableHedge??false)==='boolean'&&(!p.repriceProfitableHedge||p.retainProfitableHedge===true),'REPRICE_HEDGE');
   check(p.entryExchangeIds==null||Array.isArray(p.entryExchangeIds)&&p.entryExchangeIds.length<=p.maximumMarkets&&new Set(p.entryExchangeIds).size===p.entryExchangeIds.length&&p.entryExchangeIds.every(id=>typeof id==='string'&&/^[1-9]\d*$/.test(id)),'ENTRY_EXCHANGES');
   check(Number.isSafeInteger(p.maximumHedgeOvershoot??0)&&(p.maximumHedgeOvershoot??0)>=0&&(p.maximumHedgeOvershoot??0)<=p.quantity,'HEDGE_OVERSHOOT');
   check(['strictThrough','conditionalFifo'].includes(p.fillModel)&&Number.isSafeInteger(p.touchAttributionBps)&&p.touchAttributionBps>=0&&p.touchAttributionBps<=10000,'FILL_MODEL');
@@ -83,7 +84,7 @@ function desired(s,at){
     let bid=bestBid,ask=bestAsk;
     const micro=(bestAsk*BigInt(b.bids[0].quantity)+bestBid*BigInt(b.asks[0].quantity))/BigInt(b.bids[0].quantity+b.asks[0].quantity);
     const p=position(s,b.exchangeId),yes=qty(p.YES),no=qty(p.NO);
-    if(yes||no){for(const q of unresolved(s).filter(q=>q.exchangeId===b.exchangeId&&end(q)>at&&retainableHedge(s,q)))candidates.push({marketId:b.marketId,exchangeId:b.exchangeId,side:q.side,action:'buy',quantity:remaining(q),price:q.price,rank:1e12,source:b});
+    if(yes||no){if(!s.policy.repriceProfitableHedge)for(const q of unresolved(s).filter(q=>q.exchangeId===b.exchangeId&&end(q)>at&&retainableHedge(s,q)))candidates.push({marketId:b.marketId,exchangeId:b.exchangeId,side:q.side,action:'buy',quantity:remaining(q),price:q.price,rank:1e12,source:b});
       const side=yes?'YES':'NO',available=qty(p[side])-pledged(s,b.exchangeId,side)-oppositeBuys(s,b.exchangeId,side);
       // Retain current covered sale in desired, without spending its pledge twice.
       const existing=unresolved(s).filter(q=>q.exchangeId===b.exchangeId&&q.side===side&&q.action==='sell'&&end(q)>at).reduce((n,q)=>n+remaining(q),0);
@@ -94,6 +95,10 @@ function desired(s,at){
       const maximumAge=lastBuy&&s.policy.maximumInventoryAgeMs!==undefined&&at-ms(lastBuy.at)>=s.policy.maximumInventoryAgeMs;
       const profitableAge=lastBuy&&s.policy.inventoryTakerAfterMs!==undefined&&at-ms(lastBuy.at)>=s.policy.inventoryTakerAfterMs&&executable-worstBasis-fee(worstBasis,1,s.policy)-fee(executable,1,s.policy)>=0n;
       if(quantity>0&&(maximumAge||profitableAge)){candidates.push({marketId:b.marketId,exchangeId:b.exchangeId,side,action:'sell',quantity,price:money(executable),executionStyle:'inventoryAON',...(maximumAge?{inventoryExitReason:'maximumAge'}:{}),rank:1e12,source:b});continue;}
+      if(s.policy.repriceProfitableHedge&&!maximumAge&&!profitableAge&&entryAllowed(s,b.exchangeId)){
+        const hedgeSide=side==='YES'?'NO':'YES',limit=side==='YES'?SCALE-bestAsk:bestBid,worst=p[side].reduce((n,l)=>amount(l.price)>n?amount(l.price):n,0n),existingHedge=unresolved(s).filter(q=>q.exchangeId===b.exchangeId&&q.side===hedgeSide&&q.action==='buy'&&end(q)>at).reduce((n,q)=>n+remaining(q),0),quantity=Math.min(s.policy.quantity,available+existingHedge);
+        if(quantity>0&&SCALE-worst-limit-fee(worst,1,s.policy)-fee(limit,1,s.policy)>=amount(s.policy.minimumEdge)){candidates.push({marketId:b.marketId,exchangeId:b.exchangeId,side:hedgeSide,action:'buy',quantity,price:money(limit),hedgeForSide:side,rank:1e12,source:b});continue;}
+      }
       while(exitImprove>0n&&baseExit-exitImprove-worstBasis-fee(worstBasis,1,s.policy)-fee(baseExit-exitImprove,1,s.policy)<amount(s.policy.minimumEdge))exitImprove-=TICK;
       if(quantity>0)candidates.push({marketId:b.marketId,exchangeId:b.exchangeId,side,action:'sell',quantity,price:money(side==='YES'?bestAsk-exitImprove:SCALE-bestBid-exitImprove),rank:1e12,source:b});
       continue;
@@ -144,6 +149,7 @@ function reconcile(s,at){
     let n=t.quantity;
     if(t.action==='sell')n=Math.min(n,qty(p[t.side])-pledged(s,t.exchangeId,t.side)-oppositeBuys(s,t.exchangeId,t.side));
     else{
+      if(t.hedgeForSide)n=Math.min(n,qty(p[t.hedgeForSide])-pledged(s,t.exchangeId,t.hedgeForSide)-oppositeBuys(s,t.exchangeId,t.hedgeForSide));
       const mate=batch.find(q=>q.exchangeId===t.exchangeId&&q.action==='buy'&&q.side!==t.side);
       if(mate)n=Math.min(n,mate.quantity);
       const opposite=s.policy.quoteMode==='pairedSpread'&&!mate&&!active.some(q=>q.exchangeId===t.exchangeId&&q.action==='buy'&&q.side!==t.side)?targets.find(q=>q.exchangeId===t.exchangeId&&q.action==='buy'&&q.side!==t.side):null;
