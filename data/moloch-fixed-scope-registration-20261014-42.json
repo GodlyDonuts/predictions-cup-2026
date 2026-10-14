@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "registeredAt": "2026-10-14T20:24:43.864Z",
+  "sourcePhase": 42,
+  "sourceSelectionFinalHash": "7289901c150efb20d8c1d31b30b1a506975ffe5e5ead744c024bd869df51fcc4",
+  "selectedScope": {
+    "marketId": "338",
+    "exchangeId": "1027"
+  },
+  "selection": {
+    "recentVolume": 500,
+    "recentTrades": 2,
+    "spreadTicks": 2,
+    "bidQueue": 483,
+    "askQueue": 149,
+    "conditionalMarkouts": 0
+  },
+  "parents": [
+    {
+      "name": "competition-scale-20261014-11",
+      "snapshotHash": "d0f4bd07e064fafe862db2b5ece56642dc945ff7c4f7e5c95ca74801f8ca6fb8",
+      "cash": "100000.000000",
+      "realized": "0.000000"
+    },
+    {
+      "name": "queue-duration-20261014-7",
+      "snapshotHash": "0563245f9962659401f6da96452e163e0b460f6f5b052b10447e9d869c65701d",
+      "cash": "100000.060000",
+      "realized": "0.060000"
+    }
+  ],
+  "comparison": [
+    "strictThrough",
+    "conditionalFifo50"
+  ],
+  "inventoryAgeClock": "execution",
+  "newPaperCapital": "0.000000",
+  "contestOrders": 0,
+  "profitabilityEstablished": false,
+  "scopeRetention": "Keep execution coverage through closure of all alternative-wallet inventory and quote liabilities",
+  "successMetric": "New closed net profit and capital turnover; inherited 0.060 is excluded"
+}

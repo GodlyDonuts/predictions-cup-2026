@@ -1,0 +1,9 @@
+# Fixed-scope funded forward comparison
+
+Phase 42 was registered at 20:24:43.864 UTC before collector startup and new paper entries. The completed source-41 stream selected market 338/exchange 1027 for further reconciliation: 500 observed shares in two recent trades, a two-tick spread and displayed queues of 483/149. There are no completed conditional markouts supporting this selection. It is an exploration hypothesis, not a proven profitable market.
+
+Both preserved flat banks change only allowed entry exchange, entries enabled and the already-established execution-time inventory clock. Their funding, limits, prior gains/losses, fills and all journal history remain intact. Initial cash is 100,000.000 for strict-through and 100,000.060 for conditional FIFO. The prior conditional 0.060 gain is excluded from new phase performance. Prior/next policy hashes, terminal parent snapshot hashes and zero new capital are recorded in each continuation.
+
+The single collector captures the selected scope and observes the existing 237-market tournament stream. Its published five-read local budget, completion pacing, persistent backoff, scoped REST reconciliation and long-quote recovery watcher remain unchanged. Retired 922/1031 scopes had zero owned shares or unresolved orders before retirement. No contest order, cancellation or activation was submitted.
+
+The selected scope must remain covered until both alternative banks have closed inventory and reconciled all quote liabilities. Early unrealized marks or source completion alone do not finish the comparison. Assess incremental realized return together with unfinished inventory, depth, reservations, attribution assumptions and completed capital turnover. Source connection and both ledger continuations were checked after startup. Registry: `data/moloch-fixed-scope-registration-20261014-42.json`.
