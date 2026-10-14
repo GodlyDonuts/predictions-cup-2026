@@ -12,9 +12,10 @@ for(let i=18;i<=28;i++){
  if(payloadHash(clean(baseline.state))!==payloadHash(clean(snapshot.state)))throw Error('baseline financial parity '+i);
  episodes.push({i,manifest,snapshot,events});
 }
-const results=[],repriceProfitableHedge=process.argv.includes('--reprice-hedge');
+const results=[],repriceProfitableHedge=process.argv.includes('--reprice-hedge'),queue=process.argv.includes('--queue');
 for(const participationBps of [100,1000,10000])for(const insideTicks of [0,1]){
  const overrides={initialCash:'100000.000000',maximumCommitted:'40000.000000',maximumMarketCost:'10000.000000',quantity:10000,entryDepthBps:10000,participationBps,insideTicks,retainProfitableHedge:repriceProfitableHedge,repriceProfitableHedge,maximumHedgeOvershoot:0,inventoryTakerAfterMs:600000,maximumInventoryAgeMs:1800000,lifetimeMs:600000};
+ if(queue)Object.assign(overrides,{fillModel:'conditionalFifo',touchAttributionBps:5000});
  let state=createMoloch({...episodes[0].manifest.policy,...overrides}),buyNotional=0n,sellNotional=0n,shares=0,peakCommitted=0n;const marks=[];
  for(const e of episodes){const r=replayVariant(state,e.events,{...e.manifest.policy,...overrides});state=r.state;
   for(const fill of r.newFills){const cost=amount(fill.price)*BigInt(fill.quantity);if(fill.action==='buy')buyNotional+=cost;else sellNotional+=cost;shares+=fill.quantity;}
@@ -24,4 +25,4 @@ for(const participationBps of [100,1000,10000])for(const insideTicks of [0,1]){
  const result={overrides,report:reportMoloch(state),buyNotional:money(buyNotional),sellNotional:money(sellNotional),filledShares:shares,buyTurnoverEstimate:Number(buyNotional)/Number(amount('100000.000000')),peakEpisodeEndCommitted:money(peakCommitted),marks};results.push(result);console.log(JSON.stringify({participationBps,insideTicks,realized:result.report.realized,ownedCost:result.report.ownedCost,fills:result.report.fills,buyNotional:result.buyNotional,lastFresh:marks.at(-1).lastFresh}));
 }
 const out={schemaVersion:1,bot:'Moloch',source:'verified original SIG episode journals',baselineFinancialParity:true,independentInitialPaperCash:'100000.000000',episodes:episodes.map(e=>({episode:e.i,snapshotHash:e.snapshot.hash,eventCount:e.events.length})),results,contestOrders:0,networkRequests:0,profitabilityEstablished:false,limitations:['Retrospective sensitivity analysis, not untouched holdout or observed exchange fills.','Six independent paper banks; gains are not summed and original bank is unchanged.','Participation scenarios are assumptions; full participation cannot certify queue priority or market impact.','All original receipt/processing/execution clocks, coverage gaps, observed depth, write pacing and exact funded accounting are preserved.','Same captured entry scopes as original episodes; no hindsight universe selection.','Peak committed metric samples episode ends, not every intermediate event.','Fresh liquidation marks must be read with their timestamps; missing terminal depth remains null.']};
-fs.writeFileSync(`runtime/moloch/capital-turnover${repriceProfitableHedge?'-hedge':''}-20261014.json`,JSON.stringify(out,null,2)+'\n');
+fs.writeFileSync(`runtime/moloch/capital-turnover${repriceProfitableHedge?'-hedge':''}${queue?'-queue50':''}-20261014.json`,JSON.stringify(out,null,2)+'\n');

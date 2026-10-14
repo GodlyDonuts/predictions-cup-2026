@@ -39,7 +39,7 @@ export async function live({marketId,exchangeId,outputDirectory,cycles=10,resume
   let universe=null;if(universeFile!==null){if(!realtime||!universeFile||universeFile.startsWith('--'))throw Error('MOLOCH_UNIVERSE_REQUIRES_REALTIME_FILE');let parsed;try{parsed=JSON.parse(fs.readFileSync(universeFile,'utf8').replace(/^\uFEFF/,''));}catch{throw Error('MOLOCH_UNIVERSE_FILE_INVALID');}universe=liveUniverse(scopes,parsed);}
   if(policyFile!==null&&(!policyFile||policyFile.startsWith('--')))throw Error('MOLOCH_POLICY_FILE_REQUIRED');
   let overrides={};if(policyFile){let parsed;try{parsed=JSON.parse(fs.readFileSync(policyFile,'utf8').replace(/^\uFEFF/,''));}catch{throw Error('MOLOCH_POLICY_FILE_INVALID');}overrides=paperPolicyOverrides(parsed,scopes);}
-  if(recoveryTail&&(!restRecovery||!resumeDirectory))throw Error('MOLOCH_TAIL_RECOVERY_MODE');
+  if(recoveryTail&&(!(restRecovery||realtime)||!resumeDirectory))throw Error('MOLOCH_TAIL_RECOVERY_MODE');
   const recovery=recoveryTail?completedTail(recoveryTail):null;if(recovery)assertTailRecoveryScopes(scopes,recovery.snapshot.state);
   const out=path.resolve(outputDirectory);if(fs.existsSync(out))throw Error('MOLOCH_LIVE_OUTPUT_EXISTS');fs.mkdirSync(out,{recursive:true});
   const cutoff=new Date().toISOString();let state=createMoloch({...overrides,...((insideTicks===null)?{}:{insideTicks}),...(drain?{entriesEnabled:false}:{})}),continuation=null;

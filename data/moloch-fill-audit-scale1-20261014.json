@@ -1,0 +1,86 @@
+{
+  "schemaVersion": 1,
+  "snapshotHash": "135859487ab9af0e065054d8b600c22058cc8e7be41a5c896b0572a16a5b10ca",
+  "at": "2026-10-14T09:50:48.512Z",
+  "policy": {
+    "initialCash": "100000.000000",
+    "maximumCommitted": "40000.000000",
+    "maximumMarketCost": "10000.000000",
+    "quantity": 10000,
+    "maximumMarkets": 4,
+    "latencyMs": 3000,
+    "lifetimeMs": 600000,
+    "bookAgeMs": 10000,
+    "maximumSourceSilenceMs": 60000,
+    "minimumSpreadTicks": 1,
+    "minimumEdge": "0.001000",
+    "participationBps": 100,
+    "feeBps": 0,
+    "feePerShare": "0.000000",
+    "quoteMode": "pairedSpread",
+    "entriesEnabled": true,
+    "fillModel": "strictThrough",
+    "touchAttributionBps": 10000,
+    "insideTicks": 0,
+    "renewBeforeMs": 0,
+    "minimumQuoteAgeMs": 2500,
+    "writeGapMs": 2500,
+    "writesPerMinute": 24,
+    "inventoryTakerAfterMs": 600000,
+    "entryExchangeIds": [
+      "841"
+    ],
+    "maximumInventoryAgeMs": 1800000,
+    "retainProfitableHedge": false,
+    "maximumHedgeOvershoot": 0,
+    "entryDepthBps": 10000
+  },
+  "events": 1201,
+  "uniqueTrades": 52,
+  "duplicateTrades": 167,
+  "quotePrintPairs": {
+    "beforeActivation": 12,
+    "afterWindow": 2
+  },
+  "byExchange": {
+    "841": {
+      "uniqueTrades": 6,
+      "shares": 328,
+      "quotePrintPairs": {
+        "beforeActivation": {
+          "pairs": 12,
+          "shares": 656
+        },
+        "afterWindow": {
+          "pairs": 2,
+          "shares": 2
+        }
+      }
+    },
+    "884": {
+      "uniqueTrades": 8,
+      "shares": 625,
+      "quotePrintPairs": {}
+    },
+    "970": {
+      "uniqueTrades": 25,
+      "shares": 7174,
+      "quotePrintPairs": {}
+    },
+    "1038": {
+      "uniqueTrades": 13,
+      "shares": 691,
+      "quotePrintPairs": {}
+    }
+  },
+  "newFills": [],
+  "contestOrders": 0,
+  "networkRequests": 0,
+  "profitabilityEstablished": false,
+  "limitations": [
+    "Each count is an order/print pair; overlapping orders can count the same print more than once.",
+    "Touch volume does not prove aggressor direction, queue priority or executable fill.",
+    "Quotes are the actual simulated quotes known before each event, with original execution clocks and cancel deadlines.",
+    "A concurrent journal suffix is ignored beyond the pinned snapshot sequence; the checked prefix is reproduced exactly."
+  ]
+}
