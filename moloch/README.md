@@ -564,3 +564,21 @@ The first prospective cheap-spread experiment carries the existing North Carolin
 and Tennessee holdings and adds two lower-price observation candidates, after
 retiring flat Texas. Their recent flow was one-sided, so this is exploratory
 market research with mandatory REST recovery, not a validated positive signal.
+
+[Chronological policy comparison](results/chronological-policy-20261014.json)
+carries each hypothetical wallet across eight verified episodes without resets.
+Replaying the recorded policy reproduces every terminal financial snapshot.
+Joining rather than improving prices reduced the last fresh modeled loss from
+.050000 to .025000. Cheaper entries preserved the inherited .025000 gain but
+added no realized profit. Neither conditional queue assumption established an
+edge. These previously inspected periods are retrospective diagnostics, not
+pristine holdouts; training-only ranking cannot make them prospective evidence.
+
+`capture-sig.ps1 -ExecutionHistoryOnly` reads one page of at most 100 own fills
+and up to three associated orders through the same serialized read budget.
+Use an ignored local output directory. This private account evidence must never
+be published or imported as Moloch holdings. Pagination may remain incomplete;
+coverage metadata does not mean this first page is the entire history. Fill
+prices are outcome-denominated, and signed quantity does not identify buy/sell.
+An order's limit and creation time alone cannot prove passive liquidity or
+queue priority. This mode sends no orders and obtains no realtime token.

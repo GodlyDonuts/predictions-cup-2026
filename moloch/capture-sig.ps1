@@ -10,15 +10,17 @@ param(
   [switch]$DiagnosticBookProbe,
   [switch]$CatalogOnly,
   [switch]$LeaderboardOnly,
+  [switch]$ExecutionHistoryOnly,
   [string]$ScreenPairsFile,
   [switch]$RealtimeCapture,
   [string]$UniversePairsFile
 )
 $ErrorActionPreference='Stop'
 if(-not $HumanAuthorizedSharedReadCapture){throw 'EXPLICIT_SHARED_READ_AUTHORIZATION_REQUIRED: preserve the prior one-collector policy unless human explicitly authorizes recreating read-only capture.'}
+if($ExecutionHistoryOnly -and ($LeaderboardOnly -or $CatalogOnly -or $ScreenPairsFile -or $RealtimeCapture -or $HistoryOnly -or $DiagnosticBookProbe)){throw 'ONE_DISCOVERY_MODE_REQUIRED'}
 if($LeaderboardOnly -and ($CatalogOnly -or $ScreenPairsFile -or $RealtimeCapture)){throw 'ONE_DISCOVERY_MODE_REQUIRED'}
 if($CatalogOnly -and $ScreenPairsFile){throw 'ONE_DISCOVERY_MODE_REQUIRED'}
-if(-not $CatalogOnly -and -not $LeaderboardOnly -and -not $ScreenPairsFile -and (-not $MarketId -or -not $ExchangeId)){throw 'MARKET_AND_EXCHANGE_REQUIRED'}
+if(-not $CatalogOnly -and -not $LeaderboardOnly -and -not $ExecutionHistoryOnly -and -not $ScreenPairsFile -and (-not $MarketId -or -not $ExchangeId)){throw 'MARKET_AND_EXCHANGE_REQUIRED'}
 if($RealtimeCapture -and (-not $ScreenPairsFile -or $Cycles -gt 30)){throw 'STREAM_REQUIRES_SCOPED_PAIRS_AND_BOUNDED_CYCLES'}
 if($UniversePairsFile -and -not $RealtimeCapture){throw 'UNIVERSE_REQUIRES_REALTIME_CAPTURE'}
 if($UniversePairsFile){
@@ -58,6 +60,7 @@ try {
     @{kind='history';endpoint="/exchanges/$ExchangeId/price-history?tournamentId=$taskTournament&resolution=1h&from=$([Uri]::EscapeDataString($taskFrom))&to=$([Uri]::EscapeDataString($taskEnd))&limit=1000"}
   )
   if($DiagnosticBookProbe){$taskRequests=@($taskRequests | Where-Object kind -eq 'book')}elseif($HistoryOnly){$taskRequests=@($taskRequests | Where-Object kind -eq 'history')}elseif($Cycles -gt 1){$taskRequests=@($taskRequests)+@(for($taskCycle=1;$taskCycle -lt $Cycles;$taskCycle++){$taskRequests[0];$taskRequests[1]})}
+  if($ExecutionHistoryOnly){$taskRequests=@(@{kind='private_fills';endpoint="/portfolio/fills?tournamentId=$taskTournament&limit=100"})}
   if($LeaderboardOnly){$taskRequests=@(@{kind='leaderboard';endpoint='/tournaments/midterm-elections/leaderboard?period=all&sort=pnl&limit=10'},@{kind='leaderboard';endpoint='/tournaments/midterm-elections/leaderboard?period=1d&sort=pnl&limit=10'})}
   if($CatalogOnly){$taskRequests=@(@{kind='catalog';endpoint='/tournaments/midterm-elections/markets?status=open&limit=100'})}
   if($ScreenPairsFile){
@@ -151,6 +154,11 @@ try {
       Start-Sleep -Seconds 12
       continue
     }
+    if($taskRequest.kind -eq 'private_fills'){
+      $taskFillOrders=@($taskData.data | Where-Object {$null -ne $_.orderId} | Select-Object orderId -Unique | Select-Object -First 3)
+      foreach($taskFillOrder in $taskFillOrders){if([string]$taskFillOrder.orderId -match '^[1-9][0-9]*$'){$taskRequests+=@{kind='private_order';endpoint="/orders/$($taskFillOrder.orderId)"}}}
+      $taskData=[ordered]@{data=@($taskData.data | Select-Object id,orderId,exchangeId,marketId,price,quantity,side,filledAt);pagination=$taskData.pagination;coverage=$taskData.coverage;identitiesOmitted=$true;singlePageOnly=$true}
+    }elseif($taskRequest.kind -eq 'private_order'){$taskData=$taskData | Select-Object id,exchangeId,marketId,tournamentId,side,action,price,quantity,filledQuantity,remainingQuantity,createdAt,expirationDate,open,status}
     if($taskRequest.kind -eq 'leaderboard'){
       $taskBoard=if($taskData.PSObject.Properties.Name -contains 'leaderboard'){$taskData}elseif($taskData.data -and $taskData.data.PSObject.Properties.Name -contains 'leaderboard'){$taskData.data}else{throw 'LEADERBOARD_SCHEMA_INVALID'}
       $taskData=[ordered]@{period=$taskBoard.period;sort=$taskBoard.sort;total=$taskBoard.total;myRank=$taskBoard.myRank;limit=$taskBoard.limit;offset=$taskBoard.offset;leaderboard=@($taskBoard.leaderboard | Select-Object rank,pnl,tradesCount,volume,winRate,roi);identitiesOmitted=$true;originalResponseSha256=[Convert]::ToHexString([Security.Cryptography.SHA256]::HashData([Text.Encoding]::UTF8.GetBytes($taskResponse.Content))).ToLowerInvariant()}
