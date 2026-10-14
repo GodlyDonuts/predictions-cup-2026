@@ -73,6 +73,7 @@ import {createBookPublication} from './book-publication-v2.mjs';
 import {createNativeBookPublication} from './book-publication-v3.mjs';
 import {collectorNativePublicationConfig} from './collector-publication-native.mjs';
 import {collectorNativeJournalConfig} from './collector-journal-native.mjs';
+import {resolvePaperJournalRoute} from './paper-journal-route-v1.mjs';
 import {openNativeJournal} from './native-journal-restore.mjs';
 import {createBasketFollowupSource} from './basket-followup-source.mjs';
 import {createComparisonRiskSource} from './comparison-risk-source.mjs';
@@ -309,7 +310,7 @@ async function collectHistory(limit=2){
 }
 async function pauseUntilNextRead(ms){try{await api.pause(ms);}catch(e){if(!stopping)throw e;}}
 try{
-  const journalStarted=performance.now(),nativeJournal=collectorNativeJournalConfig(runtimeDir),journalFile=path.join(runtimeDir,'journal.jsonl');
+  const journalStarted=performance.now(),journalRoute=resolvePaperJournalRoute(runtimeDir,c.journalFileName),nativeJournal=journalRoute.nativeJournal?collectorNativeJournalConfig(runtimeDir):null,journalFile=journalRoute.file;
   journal=nativeJournal?await openNativeJournal({runtimeDir,binding:nativeJournal.nativeBackend,file:journalFile,receiptDir:path.join(runtimeDir,'collector-native-journal-receipts'),signal:control.signal,canOperate:()=>!stopping&&!fs.existsSync(stopFile)&&!fs.existsSync(paperStop)&&!fs.existsSync(collectorStop)}):new Journal(journalFile);
   state=journal.last?restoreState(journal.last.state,c):initialState(c,randomUUID(),new Date().toISOString());assertState(state,c);
   runtime.originalJournal={revision:nativeJournal?2:1,startupReplayMs:performance.now()-journalStarted,...(nativeJournal?{native:journal.nativeRestore}:{})};
