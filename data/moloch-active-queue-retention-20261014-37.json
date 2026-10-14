@@ -1,5 +1,6 @@
 {
   "schemaVersion": 1,
+  "episode": 37,
   "sourceSnapshotHash": "20c6a3d2a6bcf31feb064aee053d2b6b7cf9a1c914c88794274388177345e8d3",
   "sourceFinalHash": "be91d64fb41c5e0b9af70b3f0eef7d1a06bd44764cc62c3ca66e0baa1d3df6aa",
   "events": 1010,
@@ -477,6 +478,7 @@
     "Original source clocks, gaps, complete tape coverage, funded reserves, latency and captured depth are preserved.",
     "50% and 100% touch attribution are hypotheses about aggressor direction and queue position.",
     "Concurrent source suffix beyond the snapshot is excluded.",
-    "The entry scopes were registered before source 35 began; fill assumptions are compared after observing the period."
+    "Entry scopes come from the original frozen capture manifest; fill assumptions are compared after observing the period.",
+    "Retained-hedge variants allow up to one originally funded order quantity beyond owned shares; this is bounded inventory risk, not a guaranteed hedge."
   ]
 }
