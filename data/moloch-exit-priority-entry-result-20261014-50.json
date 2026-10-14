@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "phase": 50,
+  "source": {
+    "status": "completed",
+    "exit": 0,
+    "receipts": 60
+  },
+  "banks": [
+    {
+      "name": "competition-scale-20261014-20",
+      "cash": "100000.000000",
+      "realized": "0.000000",
+      "ownedCost": "0.000000",
+      "unresolved": 2,
+      "fills": 5
+    },
+    {
+      "name": "queue-duration-20261014-16",
+      "cash": "100000.060000",
+      "realized": "0.060000",
+      "ownedCost": "0.000000",
+      "unresolved": 2,
+      "fills": 20
+    }
+  ],
+  "newPhaseFills": 0,
+  "livePriorityPromotions": 0,
+  "nextPhase": 51,
+  "entriesEnabled": false,
+  "newPaperCapital": "0.000000",
+  "contestOrders": 0,
+  "profitabilityEstablished": false,
+  "limitations": [
+    "No new fills or exit intents occurred; live prioritization has not yet been exercised.",
+    "Remaining funded quotes require full-window reconciliation; entry phase completion is not full financial closure.",
+    "Timing fixture is synthetic engineering evidence, not market profit."
+  ]
+}
