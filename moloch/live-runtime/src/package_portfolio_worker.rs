@@ -36,7 +36,7 @@ impl Backend for Live<'_>{
 #[derive(Clone,Copy)]pub enum RiskPolicy{StatewiseOnly,AllowReviewedFloorHedgeAgainstLiquidation}
 /// Capability for this in-process, never-yet-sent package only.
 pub struct Staged{admission:Plan,basket:Basket,permit:Permit,scope:Scope,queue_scope:String}
-impl Staged{pub fn package_id(&self)->&str{self.admission.package_id()}}
+impl Staged{pub fn package_id(&self)->&str{self.admission.package_id()}pub fn plan(&self)->&Plan{&self.admission}pub fn basket(&self)->&Basket{&self.basket}}
 #[derive(Debug,PartialEq,Eq)]pub enum SendResult{Acknowledged,DefinitiveZero,LocalNotSent,NeverAttempted,Unknown}
 #[derive(Debug,Default)]pub struct Recovery{pub acknowledged_packages:usize,pub fill_events:usize,pub completed_packages:usize,pub abandoned_unattempted:usize,pub blocks_new_submissions:bool}
 /// Journal intent BEFORE native reservation. No network or activation wait.

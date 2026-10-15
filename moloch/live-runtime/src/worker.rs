@@ -124,7 +124,7 @@ fn snapshots(t:&mut Transport,c:&Control,q:&Value)->Result<SnapshotSet>{
 fn recover_packages(t:&mut Transport,c:&Control,bank:&mut Session,ordinary:&DispatchLog,authority:&ProductionAuthority,packages:&mut moloch_live_runtime::package_dispatch::PackageDispatchLog)->Result<bool>{
  for p in bank.engine().package_records().as_array().ok_or("LIVE_PACKAGE_RECORDS")?{let id=p["packageId"].as_str().ok_or("LIVE_PACKAGE_ID")?;if packages.record(id).is_none(){return Err("LIVE_PACKAGE_ORIGINAL_JOURNAL_MISSING".into())}}
  let receipts=c.root.join("package-receipts");let mut backend=moloch_live_runtime::package_worker::Live{transport:t,authority,ordinary_dispatch:ordinary,receipts:&receipts};
- let result=moloch_live_runtime::package_worker::recover(bank,packages,&mut backend)?;Ok(result.blocks_new_submissions)
+ let legacy=moloch_live_runtime::package_worker::recover(bank,packages,&mut backend)?;let portfolio=moloch_live_runtime::package_portfolio_worker::recover(bank,packages,&mut backend)?;Ok(legacy.blocks_new_submissions||portfolio.blocks_new_submissions)
 }
 fn canonical_package_receipt(census:&moloch_live_runtime::relationship_census::Census)->Result<Receipt>{
  let source=census.report.relationships.source.as_ref().ok_or("LIVE_PACKAGE_CANONICAL_UNAVAILABLE")?;
@@ -150,13 +150,13 @@ fn ordinary_liability_due(bank:&Session,log:&DispatchLog,at:u64)->Result<bool>{
 /// account worker. Every price still passes the ordinary source adapter and the
 /// complete physical package authority; indicative selection is not authority.
 fn package_opportunity(t:&mut Transport,c:&Control,bank:&mut Session,ordinary:&mut DispatchLog,authority:&ProductionAuthority,packages:&mut moloch_live_runtime::package_dispatch::PackageDispatchLog,census:&mut Option<moloch_live_runtime::relationship_census::Census>,source_state:&mut RestSource,stream:&Realtime,breadth:&mut Option<Recorder>,universe:&mut Option<Universe>,windows:&mut std::collections::BTreeMap<String,u64>,last_scan:&mut u64,cursor:&mut usize)->Result<()>{
- use moloch_live_runtime::{package_worker,package_admission,relationship_strategy::Certificates};
- let Some(settings)=&c.packages else{return Ok(())};let at=now();
+ use moloch_live_runtime::{package_worker,package_admission,package_portfolio,package_portfolio_worker,relationship_strategy::{self,Certificates}};
+ let Some(settings)=&c.packages else{return Ok(())};let at=now();if !authority.can_read(&c.scope){return Err("LIVE_PACKAGE_OWNER_LOST".into())}require_stream(stream)?;
  // Existing due cancellations and covered inventory exits retain priority over
  // this optional, expensive new-entry source cohort on every pass.
  if ordinary_liability_due(bank,ordinary,at)?{return Ok(())}
  if *last_scan>at{return Err("LIVE_PACKAGE_SCAN_CLOCK".into())}if *last_scan>0&&at-*last_scan<settings.refresh_ms{return Ok(())}*last_scan=at;
- if packages.unresolved()||bank.engine().package_blocks_submissions()||at>=authority.entry_until_ms(){return Ok(())}
+ if packages.unresolved()||bank.engine().package_blocks_submissions(){return Ok(())}
  let bundle=settings.load(&c.scope)?;
  let approved=settings.approved(&bundle,now())?;
  if approved.is_empty(){atomic_json(&c.root.join("package-status.json"),&json!({"at":iso(now()),"state":"no_current_independently_approved_certificate","ordersSubmitted":0}))?;return Ok(())}
@@ -168,25 +168,60 @@ fn package_opportunity(t:&mut Transport,c:&Control,bank:&mut Session,ordinary:&m
  }
  let chosen=approved[*cursor%approved.len()];*cursor=(*cursor).wrapping_add(1);
  let exchanges:std::collections::BTreeSet<_>=chosen.contracts.iter().map(|r|r.exchange_id.clone()).collect();
- if chosen.contracts.iter().any(|r|bank.engine().wallet.quantity(&r.exchange_id,moloch_replay::Side::Yes)>0||bank.engine().wallet.quantity(&r.exchange_id,moloch_replay::Side::No)>0)||bank.engine().order_records().iter().any(|q|q["retired"]==false&&q["exchangeId"].as_str().is_some_and(|e|exchanges.contains(e))&&!ordinary.never_attempted(q["id"].as_u64().unwrap_or(0))){return Ok(())}
+ let held=chosen.contracts.iter().any(|r|bank.engine().wallet.quantity(&r.exchange_id,moloch_replay::Side::Yes)>0||bank.engine().wallet.quantity(&r.exchange_id,moloch_replay::Side::No)>0);
+ let records=bank.engine().order_records();
+ // ACKed orders remain liabilities until authoritative closure even when native
+ // expiry or a full native fill has already retired the quote.
+ if records.iter().any(|q|q["exchangeId"].as_str().is_some_and(|e|exchanges.contains(e))&&(ordinary.acknowledgments.contains_key(&q["id"].as_u64().unwrap_or(0))&&!ordinary.closed.contains(&q["id"].as_u64().unwrap_or(0))||q["retired"]==false&&!bank.engine().is_package_order(q["id"].as_u64().unwrap_or(0))&&!ordinary.never_attempted(q["id"].as_u64().unwrap_or(0)))){return Ok(())}
+ if !held&&now()>=authority.entry_until_ms(){return Ok(())}
  let Some(current)=census.as_ref() else{return Ok(())};if current.cache.relationships.is_none()||current.report.active_relationship_count==0{return Ok(())}
  let canonical=canonical_package_receipt(current)?;let mut rules=bundle.original_receipts.clone();
  for contract in &chosen.contracts{
   rules.push(request(t,&c.root,Endpoint::Nodes{market_id:contract.market_id.clone()})?);
+  if !authority.can_read(&c.scope){return Err("LIVE_PACKAGE_OWNER_LOST".into())}require_stream(stream)?;
   drain_stream(stream,bank,source_state,breadth,universe)?;
   let from=*windows.get(&contract.exchange_id).ok_or("LIVE_PACKAGE_SOURCE_WINDOW")?;
-  let next=source(t,c,bank,source_state,&contract.exchange_id,&contract.market_id,from)?;windows.insert(contract.exchange_id.clone(),next);
-  drain_stream(stream,bank,source_state,breadth,universe)?;
+  let from=source_state.recovery_start_ms(&contract.market_id).map_or(from,|r|from.min(r));let to=now();
+  for(kind,endpoint)in [("trades",Endpoint::Trades{exchange_id:contract.exchange_id.clone(),from:iso(from),to:iso(to)}),("book",Endpoint::OrderBook{market_id:contract.market_id.clone(),depth:20})]{
+   let r=request(t,&c.root,endpoint)?;if !authority.can_read(&c.scope){return Err("LIVE_PACKAGE_OWNER_LOST".into())}require_stream(stream)?;
+   let wrap=json!({"source":"official_sig_api_v1","kind":kind,"tournamentId":c.scope.tournament_id,"marketId":contract.market_id,"exchangeId":contract.exchange_id,"endpoint":r.endpoint,"status":r.status,"requestStartedAt":r.request_started_at,"receivedAt":r.received_at,"data":r.data});accept_source_events(bank,&source_state.accept(&wrap)?)?;
+   drain_stream(stream,bank,source_state,breadth,universe)?;
+  }windows.insert(contract.exchange_id.clone(),to.saturating_sub(2000));
  }
  // Do not clear a resting/unknown account order to make a package fit. Only
  // original dispatcher-proven, never-physical native quotes can yield priority.
- let quotes:Vec<_>=bank.engine().order_records().into_iter().filter(|q|q["retired"]==false&&q["exchangeId"].as_str().is_some_and(|e|exchanges.contains(e))).collect();
+ let quotes:Vec<_>=bank.engine().order_records().into_iter().filter(|q|q["retired"]==false&&!bank.engine().is_package_order(q["id"].as_u64().unwrap_or(0))&&q["exchangeId"].as_str().is_some_and(|e|exchanges.contains(e))).collect();
  if quotes.iter().any(|q|!ordinary.never_attempted(q["id"].as_u64().unwrap_or(0))){return Ok(())}
  for q in &quotes{retire_for_package(bank,ordinary,q)?;}
  // No source/tick occurs between retirement and the durable package reserve.
  let at=now();let policy=settings.policy(&c.activation,at,chosen.contracts.len())?;
  let cash=census.as_ref().and_then(|v|v.cache.buying_power.as_ref()).and_then(|p|p.gross_cash_units).ok_or("LIVE_PACKAGE_GROSS_CASH_UNAVAILABLE")?;
  let certs=Certificates{values:std::slice::from_ref(chosen),trusted_sha256:&settings.trusted_certificate_sha256,rule_receipts:&rules};
+ if held{
+  let component=relationship_strategy::certified_component(census.as_ref().unwrap(),&canonical,&certs,&chosen.relationship_id,&policy)?;
+  let native_packages=bank.engine().package_records();let parent=native_packages.as_array().ok_or("LIVE_PACKAGE_RECORDS")?.iter().find(|p|p["phase"]=="complete"&&p.get("protectionReleased")!=Some(&json!(true))&&p["legs"].as_array().is_some_and(|legs|!legs.is_empty()&&legs.iter().all(|l|l["exchangeId"].as_str().is_some_and(|e|exchanges.contains(e))))).and_then(|p|p["packageId"].as_str());
+  // A covered whole-package SELL remains eligible after the BUY deadline.
+  // Acquisition defaults to a positive STATEWISE delta; reviewed floor hedges
+  // never gain automatic execution authority from a floor difference.
+  let mut plan=if let Some(id)=parent{package_portfolio::whole_unwind(bank,&c.activation,&component,id,&policy,authority.entry_until_ms())?}else{None};
+  if plan.is_none()&&now()<authority.entry_until_ms(){plan=package_portfolio::acquire(bank,&c.activation,&component,cash,&policy,authority.entry_until_ms())?;}
+  let Some(plan)=plan else{atomic_json(&c.root.join("package-status.json"),&json!({"at":iso(now()),"state":"no_current_portfolio_executable_edge","ordersSubmitted":0}))?;return Ok(())};
+  if plan.minimum_statewise_delta()<=0{atomic_json(&c.root.join("package-status.json"),&json!({"at":iso(now()),"state":"portfolio_floor_hedge_requires_explicit_risk_policy","ordersSubmitted":0}))?;return Ok(())}
+  let permit=Permit{run_id:c.activation.run_id.clone(),intent_id:plan.package_id().into(),owner:"Codex".into(),expires_at_ms:plan.expires_at_ms(),maximum_quantity:c.activation.maximum_quantity,maximum_cost:money(plan.gross_funding())};
+  let activation=plan.proof()["atMs"].as_u64().ok_or("LIVE_PACKAGE_ACTIVATION")?.checked_add(bank.engine().policy()["latencyMs"].as_u64().ok_or("LIVE_PACKAGE_ACTIVATION")?).ok_or("LIVE_PACKAGE_ACTIVATION")?;
+  let receipts=c.root.join("package-receipts");let mut backend=package_worker::Live{transport:t,authority,ordinary_dispatch:ordinary,receipts:&receipts};
+  let staged=package_portfolio_worker::stage(bank,packages,&backend,plan,permit,package_portfolio_worker::RiskPolicy::StatewiseOnly)?;
+  while now()<activation{if !authority.can_read(&c.scope){return Err("LIVE_PACKAGE_OWNER_LOST".into())}require_stream(stream)?;drain_stream(stream,bank,source_state,breadth,universe)?;std::thread::sleep(Duration::from_millis(activation.saturating_sub(now()).min(100)));}
+  let facts=moloch_live_runtime::package_preflight::collect_portfolio_plan(&mut backend,&c.scope,staged.plan(),staged.basket(),|r|{
+   record_receipt(&c.root,r)?;if !authority.can_read(&c.scope){return Err("LIVE_PACKAGE_OWNER_LOST".into())}require_stream(stream)?;
+   for contract in &chosen.contracts{if r.endpoint==format!("/markets/{}/orderbook?tournamentId={}&depth=20",contract.market_id,c.scope.tournament_id){let wrap=json!({"source":"official_sig_api_v1","kind":"book","tournamentId":c.scope.tournament_id,"marketId":contract.market_id,"exchangeId":contract.exchange_id,"endpoint":r.endpoint,"status":r.status,"requestStartedAt":r.request_started_at,"receivedAt":r.received_at,"data":r.data});accept_source_events(bank,&source_state.accept(&wrap)?)?;}}
+   drain_stream(stream,bank,source_state,breadth,universe)
+  });
+  let facts=match facts{Ok(f)=>f,Err(error)=>{package_portfolio_worker::recover(bank,packages,&mut backend)?;return Err(error)}};
+  let result=package_portfolio_worker::submit_once(bank,packages,&mut backend,staged,facts)?;let recovered=package_portfolio_worker::recover(bank,packages,&mut backend)?;
+  atomic_json(&c.root.join("package-status.json"),&json!({"at":iso(now()),"state":format!("{result:?}"),"mode":"portfolio","blocksNewSubmissions":recovered.blocks_new_submissions,"actualFillEvents":recovered.fill_events,"completedPackages":recovered.completed_packages,"profitabilityEstablished":false}))?;return Ok(())
+ }
+ if now()>=authority.entry_until_ms(){return Ok(())}
  let admission=package_admission::admit(bank,&c.activation,census.as_ref().unwrap(),&canonical,&certs,cash,&policy,authority.entry_until_ms())?;
  let Some(admission)=admission else{atomic_json(&c.root.join("package-status.json"),&json!({"at":iso(now()),"state":"no_current_certified_executable_surplus","ordersSubmitted":0}))?;return Ok(())};
  let permit=Permit{run_id:c.activation.run_id.clone(),intent_id:admission.package_id().into(),owner:"Codex".into(),expires_at_ms:admission.expires_at_ms(),maximum_quantity:c.activation.maximum_quantity,maximum_cost:admission.basket().maximum_cost.clone()};
