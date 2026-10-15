@@ -293,7 +293,7 @@ fn drain_stream(stream:&Realtime,bank:&mut Session,source:&mut RestSource,breadt
 fn recovery_budget(path:&Path,at:u64)->Result<RecoveryBudget>{
  let budget:RecoveryBudget=match fs::symlink_metadata(path){
   Ok(m)=>{if !m.is_file()||m.file_type().is_symlink()||m.len()>4096{return Err("LIVE_RECOVERY_BUDGET_FILE".into())}let bytes=fs::read(path)?;if bytes.len()>4096{return Err("LIVE_RECOVERY_BUDGET_FILE".into())}serde_json::from_slice(&bytes)?},
-  Err(e)if e.kind()==std::io::ErrorKind::NotFound=>RecoveryBudget::new(at)?,Err(e)=>return Err(e.into()),
+  Err(e)if e.kind()==std::io::ErrorKind::NotFound=>{if path.with_file_name("stream-recovery.json").exists(){return Err("LIVE_RECOVERY_BUDGET_MISSING_AFTER_USE".into())}RecoveryBudget::new(at)?},Err(e)=>return Err(e.into()),
  };budget.validate(at)?;Ok(budget)
 }
 fn recovery_queue_clear(state:&Value)->Result<()>{
@@ -375,7 +375,8 @@ pub fn main()->Result<()>{
   // Previously owned holdings are filtered from the financial feed as well as discovery.
   let pairs:Value=if let Some(u)=&universe{u.pairs(&c.scope.exchanges)}else{c.scope.exchanges.iter().map(|(e,m)|json!({"exchangeId":e,"marketId":m})).collect::<Vec<_>>().into()};
   let start=now();let mut source_state=RestSource::new(&pairs,&c.scope.tournament_id,&iso(start))?;source_state.seed_trade_facts(bank.source_facts())?;
-  let mut recovery_budget=recovery_budget(&c.root.join("stream-recovery-budget.json"),now())?;
+  let recovery_budget_path=c.root.join("stream-recovery-budget.json");let mut recovery_budget=recovery_budget(&recovery_budget_path,now())?;
+  if !recovery_budget_path.exists(){atomic_json(&recovery_budget_path,&serde_json::to_value(&recovery_budget)?)?;}
   let (connected,joined_at)=connect_stream(&mut t,&c,&mut bank,&mut source_state)?;require_stream(&connected)?;let mut stream=Some(connected);
   authority.bind_stream(stream.as_ref().unwrap().failure_signal(),stream.as_ref().unwrap().deadline_ms);
   let mut relationship_census=None;let mut preflight_cursor=None;
@@ -440,6 +441,7 @@ pub fn main()->Result<()>{
  #[test]fn durable_stream_budget_corruption_or_regressed_restart_never_reseeds(){
   let temp=BankTemp::new();fs::create_dir(&temp.0).unwrap();let path=temp.0.join("budget.json");assert!(recovery_budget(&path,1000).unwrap().attempts().is_empty());let mut budget=RecoveryBudget::new(1000).unwrap();budget.record_attempt(1000).unwrap();atomic_json(&path,&serde_json::to_value(&budget).unwrap()).unwrap();let before=fs::read(&path).unwrap();assert!(recovery_budget(&path,999).is_err());assert_eq!(fs::read(&path).unwrap(),before);assert_eq!(recovery_budget(&path,2000).unwrap().attempts(),&[1000]);
   for bytes in [b"{}".to_vec(),vec![b' ';4097]]{fs::write(&path,&bytes).unwrap();assert!(recovery_budget(&path,2000).is_err());assert_eq!(fs::read(&path).unwrap(),bytes);}
+  fs::remove_file(&path).unwrap();fs::write(temp.0.join("stream-recovery.json"),b"{}").unwrap();assert!(recovery_budget(&path,2000).is_err());assert!(!path.exists());
  }
  #[test]fn source_chunks_preserve_restart_cursor_and_stop_at_invalid_batch_without_replaying_prefix(){
   for bad in [false,true]{let temp=BankTemp::new();let policy=json!({});let mut bank=Session::open(&temp.0,None,&policy).unwrap();let mut events=source_ticks(65);if bad{events[40]["type"]=json!("unsupported");}
