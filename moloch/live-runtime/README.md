@@ -22,6 +22,9 @@ Network latency lowers the observed request rate. A token mint consumes a read
 admission, is restricted to at most one per minute, and uses the headroom below
 the published 30-write limit if classified as a write by the server. Normal
 refreshes occur every 30 minutes. Tokens remain in memory.
+The Realtime origin comes only from the authenticated official token response.
+Custom HTTPS origins and path prefixes are supported; credentials in URLs,
+insecure schemes and private resolved network destinations are rejected.
 
 Stream joins and refreshes invalidate coverage. Complete REST tape windows and
 fresh books restore it. Revision gaps, compact batches and dropped connections

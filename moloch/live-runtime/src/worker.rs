@@ -104,7 +104,7 @@ fn connect_stream(t:&mut Transport,c:&Control,bank:&mut Session,source:&mut Rest
  let marker=c.root.join("stream-auth-admission.json");let at=now();
  if marker.exists()&&load(&marker)?["atMs"].as_u64().is_none_or(|old|at<old+60000){return Err("LIVE_AUTH_MINT_BACKOFF".into())}
  atomic_json(&marker,&json!({"atMs":at}))?;
- let material=t.realtime_token()?;let stream=Realtime::connect(Auth::parse(material)?,&c.scope.tournament_id)?;
+ let material=t.realtime_token()?;let stream=Realtime::connect(Auth::from_official_response(material)?,&c.scope.tournament_id)?;
  match stream.incoming.recv_timeout(Duration::from_secs(12)){
   Ok(Incoming::Joined{received_at})=>{for e in source.subscribed(&received_at)?{accept(bank,&e)?}}
   _=>return Err("LIVE_STREAM_JOIN_FAILED".into())
