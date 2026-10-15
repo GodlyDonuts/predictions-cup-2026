@@ -460,7 +460,9 @@ fn dispatch(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,a
  // At most one new physical order per pass; subsequent fills change funding.
  let quotes=bank.engine().order_records();
  let keys:Vec<String>=quotes.iter().map(|q|format!("{}:{}:{}",q["exchangeId"].as_str().unwrap_or(""),q["side"].as_str().unwrap_or(""),q["action"].as_str().unwrap_or(""))).collect();
- for index in moloch_live_runtime::scheduling::preflight_rotation(&keys,preflight_cursor.as_deref()){let q=quotes[index].clone();
+ let selection=moloch_live_runtime::quote_priority::from_native(bank,&c.scope,&quotes,now(),preflight_cursor.as_deref())?;
+ let _=atomic_json(&c.root.join("quote-priority.json"),&json!({"at":iso(now()),"selection":selection,"pricesChanged":false,"profitabilityEstablished":false}));
+ for index in selection.ordered_indices{let q=quotes[index].clone();
   let qid=q["id"].as_u64().ok_or("LIVE_QUOTE_ID")?;if bank.engine().is_package_order(qid){continue}
   let prefetch_started=now();
   let early_exit_prefetch=moloch_live_runtime::dispatch_window::may_prefetch(&q,log.never_attempted(qid),log.intents.contains_key(&qid),prefetch_started);
@@ -478,6 +480,8 @@ fn dispatch(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,a
   // A fast preflight never authorizes an early order. The final production
   // authority independently checks activation again at the physical boundary.
   if !native_active{continue}
+  let refreshed=moloch_live_runtime::quote_priority::from_native(bank,&c.scope,std::slice::from_ref(&current),now(),None)?;
+  if refreshed.ordered_indices.is_empty(){authority.clear_ready();let _=atomic_json(&c.root.join("quote-priority-deferred.json"),&json!({"at":iso(now()),"qid":qid,"assessment":refreshed,"physicalAttempted":false,"priceChanged":false}));return Ok(())}
   submit_order(t,c,bank,log,authority,&current,facts)?;return Ok(())
  }Ok(())
 }
@@ -610,7 +614,7 @@ pub fn main()->Result<()>{
   let mut universe=if c.all_markets{Some(Universe::new(&c.scope.exchanges,if fully_managed{&empty_positions}else{seed.get("excludedPositionsAtTransfer").ok_or("LIVE_UNIVERSE_SEED")?},managed_market_limit)?.with_discovery_limit(discovery_read_limit)?.with_tournament(&c.scope.tournament_id)?)}else{None};
   // Previously owned holdings are filtered from the financial feed as well as discovery.
   let pairs:Value=if let Some(u)=&universe{u.pairs(&c.scope.exchanges)}else{c.scope.exchanges.iter().map(|(e,m)|json!({"exchangeId":e,"marketId":m})).collect::<Vec<_>>().into()};
-  moloch_live_runtime::execution_edge::initialize_observer(&bank,c.execution_model.clone())?;
+  if let Err(error)=moloch_live_runtime::execution_edge::initialize_observer(&bank,c.execution_model.clone()){let _=atomic_json(&c.root.join("execution-model.json"),&json!({"at":iso(now()),"state":"unavailable","reason":error,"executionAuthority":false}));}
   let start=now();let mut source_state=RestSource::new(&pairs,&c.scope.tournament_id,&iso(start))?;source_state.seed_trade_facts(bank.source_facts())?;
   let recovery_budget_path=c.root.join("stream-recovery-budget.json");let mut recovery_budget=recovery_budget(&recovery_budget_path,now())?;
   if !recovery_budget_path.exists(){atomic_json(&recovery_budget_path,&serde_json::to_value(&recovery_budget)?)?;}

@@ -69,3 +69,5 @@ impl F{
  let result=prepare(&f.bank,&b,Operation::Settlement{before:Snapshot{account:&a,collateral:&c},after:Snapshot{account:&aa,collateral:&ac},settlements:&settlements,settlement_ids:&ids},&iso(9100)).unwrap().commit(&mut f.bank,&b).unwrap();
  assert_eq!(result.report["ownedCost"],"0.000000");assert_eq!(result.report["cash"],"1000.400000");assert_eq!(result.report["collateralAccounting"]["officialDebt"],"0.000000");assert_eq!(result.report["collateralAccounting"]["actualSettlements"],2);assert_eq!(f.bank.engine().fills().len(),2);
 }
+#[test]fn baseline_cannot_rebase_unexplained_account_cash(){let f=F::new();let(a,c)=snapshot(json!(999),json!(0),json!(0.5),json!(999.5),1);let(a,c)=(retain(&f.root,&a),retain(&f.root,&c));let head=f.bank.durable_head();let result=prepare(&f.bank,&boundary!(f),Operation::Baseline{after:Snapshot{account:&a,collateral:&c}},&iso(3000));assert!(result.is_err());assert_eq!(result.err().unwrap().to_string(),"COLLATERAL_BASELINE_CASH_MISMATCH");assert_eq!(f.bank.durable_head(),head);assert!(f.bank.engine().collateral_snapshot_receipts().is_none());}
+use moloch_live_runtime::authority;
