@@ -6,11 +6,12 @@ import {createHash} from 'node:crypto';import {fileURLToPath} from 'node:url';
 
 // One explicitly started, finite continuation. No capital reset, policy fitting,
 // auth refresh, competing collector, or automatic retry of a failed capture.
-const [sourceParent,controlParent,candidateParent,pairsFile,number,cycleArg='100']=process.argv.slice(2);
-if(!/^\d+$/.test(number??'')||!/^\d+$/.test(cycleArg)||Number(cycleArg)<1||Number(cycleArg)>100)throw Error('Usage: source-parent control-parent candidate-parent pairs phase [cycles<=100]');
+const [sourceParent,controlParent,candidateParent,pairsFile,number,cycleArg='60']=process.argv.slice(2);
+if(!/^\d+$/.test(number??'')||!/^\d+$/.test(cycleArg)||Number(cycleArg)<1||Number(cycleArg)>60)throw Error('Usage: source-parent control-parent candidate-parent pairs phase [cycles<=60]');
 if(path.resolve(controlParent)===path.resolve(candidateParent))throw Error('DRAIN_DISTINCT_PARENTS');
-const parents=[controlParent,candidateParent].map(dir=>completedTail(dir));
 const pairs=JSON.parse(fs.readFileSync(pairsFile,'utf8'));
+if(!Array.isArray(pairs)||pairs.length<1||pairs.length>4||Number(cycleArg)>Math.floor(60/pairs.length))throw Error('DRAIN_CAPTURE_DURATION_LIMIT');
+const parents=[controlParent,candidateParent].map(dir=>completedTail(dir));
 const source=path.resolve(`runtime/moloch/live-sig-20261014-${number}`),dirs=['control','candidate'].map(side=>path.resolve(`runtime/moloch/fast-${side}-20261014-${number}`));
 for(const dir of [source,...dirs])if(fs.existsSync(dir))throw Error('DRAIN_OUTPUT_EXISTS');
 const registration={schemaVersion:1,registeredAt:new Date().toISOString(),driverSha256:createHash('sha256').update(fs.readFileSync(fileURLToPath(import.meta.url))).digest('hex'),sourceParent:path.resolve(sourceParent),source,parents:parents.map(p=>({directory:p.directory,snapshotHash:p.snapshot.hash,cash:p.snapshot.state.cash,realized:p.snapshot.state.realized})),pairs,maximumCycles:Number(cycleArg),entriesEnabled:false,newAccountCapital:'0',contestOrders:0,profitabilityEstablished:false};
