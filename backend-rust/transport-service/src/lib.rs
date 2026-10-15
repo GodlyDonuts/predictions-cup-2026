@@ -3,6 +3,7 @@ pub mod credentials;
 pub mod prices;
 pub mod relationships;
 pub mod multi_leg;
+pub mod multi_leg_first_call;
 
 use std::{collections::{BTreeMap,BTreeSet}, path::PathBuf, time::{Duration,SystemTime,UNIX_EPOCH}, io::Read};
 use chrono::{DateTime,Utc,SecondsFormat};
@@ -77,10 +78,10 @@ pub struct Receipt {pub endpoint:String,pub request_started_at:String,pub receiv
 #[serde(rename_all="camelCase")]
 pub struct AccountReconciliation {pub tournament:Receipt,pub positions:Receipt,pub orders:Receipt,pub exact_cash:String,pub started_at:String,pub completed_at:String,pub adopts_holdings:bool}
 struct LocalNotSentCapability {request:String,binding:admission::ImmutableBinding,minimum_clock:u64,sequence:u64,previous:String}
-pub struct Transport {config:Config,credentials:Box<dyn CredentialProvider>,clock:Box<dyn Clock>,authority:Box<dyn Authority>,client:Client,base:String,queue:admission::AccountAdmission,request_sequence:u64,poisoned:bool,full_account_observation:bool,last_basket_response:Option<multi_leg::ResponseEvidence>,local_not_sent:Option<LocalNotSentCapability>}
+pub struct Transport {config:Config,credentials:Box<dyn CredentialProvider>,clock:Box<dyn Clock>,authority:Box<dyn Authority>,client:Client,base:String,queue:admission::AccountAdmission,request_sequence:u64,poisoned:bool,full_account_observation:bool,last_basket_response:Option<multi_leg::ResponseEvidence>,local_not_sent:Option<LocalNotSentCapability>,first_call_active:Option<multi_leg_first_call::Ticket>,first_call_proof:Option<(multi_leg_first_call::Proof,u64,String)>}
 impl Transport {
  /// Observation never expands order placement or owned-order permissions.
- pub fn with_full_account_observation(mut self)->Self{self.local_not_sent=None;self.full_account_observation=true;self}
+ pub fn with_full_account_observation(mut self)->Self{self.local_not_sent=None;self.first_call_proof=None;self.full_account_observation=true;self}
  pub fn new_with_read_budget(config:Config,credentials:Box<dyn CredentialProvider>,clock:Box<dyn Clock>,authority:Box<dyn Authority>,cap:usize,gap_ms:u64)->Result<Self>{let mut t=Self::build(config,credentials,clock,authority,OFFICIAL_API.into())?;t.queue.configure_reads(cap,gap_ms).map_err(|e|fail(&e))?;Ok(t)}
  pub fn new(config:Config,credentials:Box<dyn CredentialProvider>,clock:Box<dyn Clock>,authority:Box<dyn Authority>)->Result<Self>{Self::build(config,credentials,clock,authority,OFFICIAL_API.into())}
  #[cfg(any(test,feature="offline-fixtures"))]
@@ -90,9 +91,9 @@ impl Transport {
   let scope=&config.scope;need(scope.tournament_id.len()==36&&scope.tournament_id.bytes().all(|b|b.is_ascii_hexdigit()||b==b'-')&&!scope.tournament_slug.is_empty()&&scope.tournament_slug.bytes().all(|b|b.is_ascii_lowercase()||b.is_ascii_digit()||b==b'-')&&!scope.exchanges.is_empty()&&scope.exchanges.iter().all(|(e,m)|numeric(e)&&numeric(m)),"INVALID_SCOPE")?;
   let token=format!("{}-{}",std::process::id(),clock.now_ms());let queue=admission::AccountAdmission::open(&config.queue_dir,&config.account_scope,&token).map_err(|e|fail(&e))?;
   let client=Client::builder().no_proxy().redirect(Policy::none()).timeout(Duration::from_secs(20)).connect_timeout(Duration::from_secs(10)).build().map_err(|_|fail("HTTP_CLIENT_UNAVAILABLE"))?;
-  Ok(Self{config,credentials,clock,authority,client,base,queue,request_sequence:0,poisoned:false,full_account_observation:false,last_basket_response:None,local_not_sent:None})
+  Ok(Self{config,credentials,clock,authority,client,base,queue,request_sequence:0,poisoned:false,full_account_observation:false,last_basket_response:None,local_not_sent:None,first_call_active:None,first_call_proof:None})
  }
- fn command(&mut self,mut c:Value)->Result<Value>{self.local_not_sent=None;c["scope"]=json!(self.config.account_scope);c["now"]=json!(self.clock.now_ms());self.queue.command_with_maintenance(c).map_err(|e|fail(&e))}
+ fn command(&mut self,mut c:Value)->Result<Value>{self.local_not_sent=None;self.first_call_proof=None;if c["op"]=="admit"{if let Some(t)=self.first_call_active.as_mut(){t.disqualify();}}c["scope"]=json!(self.config.account_scope);c["now"]=json!(self.clock.now_ms());self.queue.command_with_maintenance(c).map_err(|e|fail(&e))}
  fn guard(&self,spec:&RequestSpec,permit:Option<&Permit>,network:bool)->Result<()> {
   need(!self.poisoned&&self.authority.can_read(&self.config.scope),"STOPPED_OR_OWNER_LOST")?;
   if spec.method!="GET"&&!(spec.method=="POST"&&spec.endpoint=="/realtime/token"&&spec.body.is_none()&&spec.body_json.is_none()){need(self.config.writes_enabled,"WRITES_DISABLED")?;let p=permit.ok_or_else(||fail("PERMIT_REQUIRED"))?;need(p.owner=="Codex"&&p.expires_at_ms>self.clock.now_ms()&&!p.run_id.is_empty()&&!p.intent_id.is_empty(),"PERMIT_EXPIRED_OR_INVALID")?;self.authority.authorize(&self.config.scope,spec,p,network,self.clock.now_ms())?;need(self.authority.can_read(&self.config.scope),"STOPPED_OR_OWNER_LOST")?;}
@@ -100,7 +101,7 @@ impl Transport {
  }
  fn wait(&mut self,until:u64,spec:&RequestSpec,p:Option<&Permit>)->Result<()> {while self.clock.now_ms()<until{self.guard(spec,p,false)?;let remaining=until-self.clock.now_ms();self.clock.sleep_ms(remaining.min(200))?;}self.guard(spec,p,false)}
  fn perform(&mut self,spec:RequestSpec,permit:Option<&Permit>,validator:impl Fn(&Self,&Value)->Result<()>)->Result<Receipt>{
-  self.local_not_sent=None;let minimum_clock=self.clock.now_ms();
+  self.local_not_sent=None;self.first_call_proof=None;let minimum_clock=self.clock.now_ms();
   self.guard(&spec,permit,false)?;self.request_sequence+=1;let request=format!("request-{}-{}",self.clock.now_ms(),self.request_sequence);let write=spec.method!="GET"&&spec.endpoint!="/realtime/token";
   let binding=if write{let p=permit.unwrap();let key=spec.body.as_ref().and_then(|b|b.get("idempotencyKey")).and_then(Value::as_str).map(str::to_string).unwrap_or_else(||format!("{}:{}:cancel",p.run_id,p.intent_id));Some(json!({"intent":format!("{}:{}",p.run_id,p.intent_id),"key":key,"payload_hash":digest(serde_json::to_string(&json!({"scope":self.config.scope,"spec":spec})).unwrap().as_bytes())}))}else{None};
   // The bounded summary is authoritative for GLOBAL uncertainty. An exact
@@ -146,7 +147,7 @@ impl Transport {
   if !completed.as_ref().is_ok_and(|v|v["completed"]==true&&v["manual_review"]==false){self.poisoned=true;return TransportError{code:"LOCAL_NOT_SENT_DURABILITY_UNCERTAIN".into(),..error}}
   if spec.method=="POST"&&spec.endpoint=="/orders/multi-leg"&&!error.may_have_executed&&error.status.is_none()&&error.order_id.is_none()&&error.api_code.is_none(){
    let capture=(||->Result<LocalNotSentCapability>{let summary=self.package_queue_quiet()?;need(summary.schema_version==1,"LOCAL_NOT_SENT_V1_REQUIRED")?;let binding:admission::ImmutableBinding=serde_json::from_value(binding.cloned().ok_or_else(||fail("LOCAL_NOT_SENT_BINDING"))?).map_err(|_|fail("LOCAL_NOT_SENT_BINDING"))?;Ok(LocalNotSentCapability{request:request.into(),binding,minimum_clock,sequence:summary.sequence,previous:summary.previous})})();
-   match capture{Ok(capability)=>self.local_not_sent=Some(capability),Err(_)=>{self.local_not_sent=None;}}
+   match capture{Ok(capability)=>self.local_not_sent=Some(capability),Err(_)=>{self.local_not_sent=None;self.first_call_proof=None;}}
   }
   error
  }
@@ -190,7 +191,7 @@ impl Transport {
   let result=(||->std::io::Result<()>{let mut file=options.open(self.config.queue_dir.join(format!("write-response-{request}.json")))?;let value=json!({"endpoint":spec.endpoint,"requestStartedAt":utc(started).map_err(std::io::Error::other)?,"receivedAt":utc(self.clock.now_ms()).map_err(std::io::Error::other)?,"status":status,"data":data});file.write_all(&serde_json::to_vec(&value)?)?;file.sync_all()?;#[cfg(unix)]std::fs::File::open(&self.config.queue_dir)?.sync_all()?;Ok(())})();
   result.map_err(|_|fail("WRITE_RESPONSE_EVIDENCE_DURABILITY"))
  }
- pub fn compact(&mut self)->Result<Value>{self.local_not_sent=None;need(self.authority.can_read(&self.config.scope),"STOPPED_OR_OWNER_LOST")?;self.command(json!({"op":"compact"}))}
+ pub fn compact(&mut self)->Result<Value>{self.local_not_sent=None;self.first_call_proof=None;need(self.authority.can_read(&self.config.scope),"STOPPED_OR_OWNER_LOST")?;self.command(json!({"op":"compact"}))}
  /// Short-lived authentication material stays in memory; callers must not log it.
  /// Charged to account reads; 24 order writes leave headroom for token issuance.
  pub fn realtime_token(&mut self)->Result<Value>{
@@ -201,7 +202,7 @@ impl Transport {
  }
  /// Legacy full-state diagnostic. Explicitly migrated v2 queues require typed
  /// consumers; returning a summary in this shape would fail old unknown guards.
- pub fn admission_state(&mut self)->Result<Value>{self.local_not_sent=None;need(!self.queue.is_v2(),"V2_TYPED_SUMMARY_REQUIRED")?;self.command(json!({"op":"status"}))}
+ pub fn admission_state(&mut self)->Result<Value>{self.local_not_sent=None;self.first_call_proof=None;need(!self.queue.is_v2(),"V2_TYPED_SUMMARY_REQUIRED")?;self.command(json!({"op":"status"}))}
  /// Bounded snapshot of the last durable operation; querying does not advance
  /// its clock, prune rate samples or append another queue transition.
  pub fn admission_summary(&self)->Result<admission::AdmissionSummary>{self.queue.summary().map_err(|e|fail(&e))}
@@ -209,7 +210,7 @@ impl Transport {
  /// Explicit O(N) full-state diagnostic on either selected queue version.
  pub fn admission_diagnostic_state(&mut self)->Result<Value>{self.command(json!({"op":"diagnostic_status"}))}
  pub fn reserve_legacy_migration_boundary(&mut self,legacy_next:u64,manual_review:bool)->Result<()> {
-  self.local_not_sent=None;
+  self.local_not_sent=None;self.first_call_proof=None;
   // Parent must first prove the old account owner/requests are stopped. This
   // conservative quiet minute prevents an empty Rust history from forgetting
   // the old rolling budget. It does not authorize any HTTP or order activation.
@@ -287,7 +288,7 @@ impl Transport {
   }Ok(())
  }
  pub fn request(&mut self,endpoint:Endpoint)->Result<Receipt>{
-  self.local_not_sent=None;
+  self.local_not_sent=None;self.first_call_proof=None;
   if !matches!(endpoint,Endpoint::Orders{..}|Endpoint::OwnedFills{..}|Endpoint::PortfolioFills|Endpoint::Trades{..}|Endpoint::Relationships{..}){let p=self.path(&endpoint,None)?;return self.perform(RequestSpec{method:"GET".into(),endpoint:p,body:None,body_json:None},None,|s,v|s.validate(&endpoint,v));}
   let mut cursor=None;let mut cursors=BTreeSet::new();let mut identities=BTreeSet::new();let mut merged=vec![];let mut first_time=None;let mut first_totals=None;let mut minimum_projection=Some(u64::MAX);
   for _ in 0..self.config.maximum_pages{let path=self.path(&endpoint,cursor.as_deref())?;let mut receipt=self.perform(RequestSpec{method:"GET".into(),endpoint:path,body:None,body_json:None},None,|s,v|s.validate(&endpoint,v))?;
@@ -300,7 +301,7 @@ impl Transport {
   }Err(fail("PAGINATION_LIMIT_EXCEEDED"))
  }
  pub fn place(&mut self,order:Order,permit:Permit)->Result<Receipt>{
-  self.local_not_sent=None;
+  self.local_not_sent=None;self.first_call_proof=None;
   need(order.tournament_id==self.config.scope.tournament_id&&self.config.scope.exchanges.contains_key(&order.exchange_id),"ORDER_SCOPE_MISMATCH")?;need(["yes","no"].contains(&order.side.as_str())&&["buy","sell"].contains(&order.action.as_str())&&order.quantity>0&&order.quantity<=2_147_483_647&&order.quantity<=permit.maximum_quantity&&!order.idempotency_key.is_empty()&&order.idempotency_key.len()<=255&&!order.idempotency_key.chars().any(char::is_control),"INVALID_ORDER")?;
   let price=decimal_units(&order.price)?;need((5000..=995000).contains(&price)&&price%5000==0&&price.checked_mul(order.quantity as i128).is_some_and(|c|c<=decimal_units(&permit.maximum_cost).unwrap_or(-1)),"ORDER_TICK_OR_COST")?;
   let expiry=DateTime::parse_from_rfc3339(&order.expiration_date).map_err(|_|fail("ORDER_EXPIRY"))?.timestamp_millis();need(expiry>0&&expiry as u64>self.clock.now_ms(),"ORDER_EXPIRY")?;
@@ -320,9 +321,31 @@ impl Transport {
  }
  /// Full-fill atomic BUY baskets only. The current live Authority rejects this
  /// endpoint until a separately checked package reservation/dispatch exists.
+ /// A first-call ticket is permanent, even after local failure. This method
+ /// never retries an existing ticket/key. Original pre-admission errors are
+ /// eligible only after legacy intent/key checks independently succeeded.
  pub fn place_all_or_none(&mut self,basket:multi_leg::Basket,permit:Permit)->Result<multi_leg::Outcome>{
-  self.local_not_sent=None;self.last_basket_response=None;
+  self.local_not_sent=None;self.first_call_proof=None;self.first_call_active=None;self.last_basket_response=None;
   let spec=multi_leg::request(&basket,&self.config.scope,&permit)?;
+  let ticket=match multi_leg_first_call::Ticket::begin(&self.config.queue_dir,&self.config.account_scope,&self.config.scope,&basket,&permit,&spec,self.clock.now_ms()){
+   Ok(ticket)=>ticket,Err(error)=>{self.poisoned=true;return Err(error)}
+  };
+  self.first_call_active=Some(ticket);
+  let eligibility=(||->Result<(u64,String)>{
+   need(!self.poisoned,"STOPPED_OR_OWNER_LOST")?;
+   let before=self.queue.summary().map_err(|e|fail(&e))?;need(before.schema_version==1,"FIRST_CALL_V1_REQUIRED")?;
+   need(!before.has_unknown&&before.state.active.is_none()&&!before.state.manual_review,"PACKAGE_QUEUE_NOT_QUIET")?;
+   let binding=multi_leg_first_call::binding(&self.config.scope,&spec,&basket,&permit)?;
+   let intent=self.queue.lookup_intent(&binding.intent).map_err(|e|fail(&e))?;
+   let key=self.queue.lookup_key(&binding.key).map_err(|e|fail(&e))?;
+   need(intent.binding.is_none()&&intent.unknown_binding.is_none()&&!intent.has_unknown&&intent.global_unknown_count==0&&key.is_none(),"FIRST_CALL_PRIOR_BINDING")?;
+   let legacy=multi_leg_first_call::legacy_request_path(&self.config.queue_dir,&spec,&basket,&permit)?;
+   match std::fs::symlink_metadata(legacy){Err(e)if e.kind()==std::io::ErrorKind::NotFound=>{},_=>return Err(fail("FIRST_CALL_PRIOR_REQUEST_ARTIFACT"))}
+   let after=self.queue.summary().map_err(|e|fail(&e))?;need(!after.has_unknown&&after.state.active.is_none()&&!after.state.manual_review&&before.sequence==after.sequence&&before.previous==after.previous,"FIRST_CALL_CONTROLLER_CHANGED")?;Ok((after.sequence,after.previous))
+  })();
+  let first_call_head=match eligibility{Ok(head)=>head,Err(error)=>{self.first_call_active=None;return Err(error)}};
+  self.first_call_active.as_mut().expect("private active ticket").qualify();
+  let result=(||->Result<multi_leg::Outcome>{
   self.guard(&spec,Some(&permit),false)?;
   let request_evidence=multi_leg::record_request(&self.config.queue_dir,&spec,&basket,&permit)?;
   let acknowledgment=std::cell::RefCell::new(None);
@@ -337,12 +360,45 @@ impl Transport {
     Ok(multi_leg::Outcome::Unknown{error,evidence:self.last_basket_response.clone(),request_evidence})
    }
   }
+  })();
+  if let Some(ticket)=self.first_call_active.take(){
+   if ticket.can_seal(){if let Err(error)=&result{
+    match ticket.finish(error,self.clock.now_ms()){
+     Ok(proof)=>self.first_call_proof=Some((proof,first_call_head.0,first_call_head.1)),
+     Err(_)=>{self.poisoned=true;return Err(TransportError{code:"FIRST_CALL_PROOF_DURABILITY_UNCERTAIN".into(),..error.clone()})}
+    }
+   }}
+  }
+  result
+ }
+ /// Consume the latest original first-call failure's local no-HTTP proof.
+ /// No caller paths, synthetic responses, retries or health claims are accepted.
+ pub fn take_first_call_no_http_proof(&mut self)->Result<multi_leg_first_call::Proof>{
+  let (original,sequence,previous)=self.first_call_proof.take().ok_or_else(||fail("FIRST_CALL_PROOF_UNAVAILABLE"))?;
+  let current=self.package_queue_quiet()?;need(current.sequence==sequence&&current.previous==previous,"FIRST_CALL_CAPABILITY_STALE")?;
+  let evidence=original.evidence();
+  let binding:admission::ImmutableBinding=serde_json::from_value(evidence["ticket"]["binding"].clone()).map_err(|_|fail("FIRST_CALL_BINDING"))?;
+  let request=evidence["ticket"]["requestSha256"].as_str().ok_or_else(||fail("FIRST_CALL_REQUEST"))?;
+  let recovered=self.verify_retained_first_call_no_http(&binding,request)?;
+  need(recovered.evidence()==evidence,"FIRST_CALL_SOURCE_CHANGED")?;Ok(recovered)
+ }
+ /// Read-only crash recovery for a separately verified durable dispatch record.
+ /// The source ticket, key index and terminal must all remain retained. No
+ /// attempt token is created, and current controller health is checked apart.
+ pub fn verify_retained_first_call_no_http(&self,binding:&admission::ImmutableBinding,request_sha256:&str)->Result<multi_leg_first_call::Proof>{
+  let before=self.package_queue_quiet()?;need(before.schema_version==1,"FIRST_CALL_V1_REQUIRED")?;
+  let intent=self.queue.lookup_intent(&binding.intent).map_err(|e|fail(&e))?;
+  let key=self.queue.lookup_key(&binding.key).map_err(|e|fail(&e))?;
+  need(intent.binding.is_none()&&intent.unknown_binding.is_none()&&!intent.has_unknown&&key.is_none(),"FIRST_CALL_PRIOR_BINDING")?;
+  let proof=multi_leg_first_call::recover(&self.config.queue_dir,&self.config.account_scope,&self.config.scope,binding,request_sha256)?;
+  need(proof.evidence()["terminal"]["completedAtMs"].as_u64().is_some_and(|at|at<=self.clock.now_ms()),"FIRST_CALL_CLOCK")?;
+  let after=self.package_queue_quiet()?;need(before.sequence==after.sequence&&before.previous==after.previous,"FIRST_CALL_CONTROLLER_CHANGED")?;Ok(proof)
  }
  pub fn last_basket_response_evidence(&self)->Option<&multi_leg::ResponseEvidence>{self.last_basket_response.as_ref()}
- pub fn cancel(&mut self,order_id:String,permit:Permit)->Result<Receipt>{self.local_not_sent=None;self.owned(&order_id)?;self.perform(RequestSpec{method:"DELETE".into(),endpoint:format!("/orders/{order_id}"),body:None,body_json:None},Some(&permit),|s,v|need(id_value(&v["orderId"]).as_ref()==Some(&order_id)&&v["tournamentId"]==s.config.scope.tournament_id,"CANCEL_ACK_SCOPE"))}
- pub fn reconcile(&mut self)->Result<AccountReconciliation>{self.local_not_sent=None;let started=utc(self.clock.now_ms())?;let tournament=self.request(Endpoint::Tournament)?;let positions=self.request(Endpoint::Positions)?;let orders=self.request(Endpoint::Orders{status:"all".into()})?;let cash=tournament.data["myBalance"].to_string();decimal_units(&cash)?;Ok(AccountReconciliation{tournament,positions,orders,exact_cash:cash,started_at:started,completed_at:utc(self.clock.now_ms())?,adopts_holdings:false})}
+ pub fn cancel(&mut self,order_id:String,permit:Permit)->Result<Receipt>{self.local_not_sent=None;self.first_call_proof=None;self.owned(&order_id)?;self.perform(RequestSpec{method:"DELETE".into(),endpoint:format!("/orders/{order_id}"),body:None,body_json:None},Some(&permit),|s,v|need(id_value(&v["orderId"]).as_ref()==Some(&order_id)&&v["tournamentId"]==s.config.scope.tournament_id,"CANCEL_ACK_SCOPE"))}
+ pub fn reconcile(&mut self)->Result<AccountReconciliation>{self.local_not_sent=None;self.first_call_proof=None;let started=utc(self.clock.now_ms())?;let tournament=self.request(Endpoint::Tournament)?;let positions=self.request(Endpoint::Positions)?;let orders=self.request(Endpoint::Orders{status:"all".into()})?;let cash=tournament.data["myBalance"].to_string();decimal_units(&cash)?;Ok(AccountReconciliation{tournament,positions,orders,exact_cash:cash,started_at:started,completed_at:utc(self.clock.now_ms())?,adopts_holdings:false})}
  pub fn reconcile_unknown(&mut self,binding:Value)->Result<()> {
-  self.local_not_sent=None;
+  self.local_not_sent=None;self.first_call_proof=None;
   let expected:admission::ImmutableBinding=serde_json::from_value(binding.clone()).map_err(|_|fail("INVALID_BINDING"))?;
   let summary=self.admission_summary()?;let exact=self.admission_lookup_intent(&expected.intent)?;
   need(summary.has_unknown&&summary.global_unknown_count==exact.global_unknown_count&&exact.has_unknown&&exact.unknown_binding.as_ref()==Some(&expected),"UNKNOWN_BINDING_MISMATCH")?;
@@ -356,3 +412,5 @@ fn pagination(v:&Value)->Result<()> {let p=&v["pagination"];need(p.is_object()&&
 fn safe_api_code(code:&str)->Option<String>{["MISSING_API_KEY","INVALID_API_KEY","API_KEY_REVOKED","API_KEY_EXPIRED","UNAUTHORIZED","INSUFFICIENT_SCOPES","ACCOUNT_BANNED","RESIDENCE_UPDATE_REQUIRED","FORBIDDEN","TERMS_NOT_ACKNOWLEDGED","RATE_LIMITED","INVALID_JSON","INVALID_ID","INVALID_CURSOR","VALIDATION_ERROR","ORDER_CONFLICT","NOT_FOUND","CONFLICT","REQUEST_IN_FLIGHT","TERMINAL_ENGINE_SCOPE","RELATIONSHIP_VIOLATION","DATABASE_ERROR","INTERNAL_ERROR","ORDER_STATUS_UNKNOWN","TX_CONFLICT","SERVICE_UNAVAILABLE","IDEMPOTENCY_KEY_REUSED","IDEMPOTENCY_CONFLICT"].contains(&code).then(||code.into())}
 #[cfg(test)]mod tests;
 #[cfg(test)]#[path="transport_not_sent_tests.rs"]mod transport_not_sent_tests;
+
+#[cfg(test)]#[path="multi_leg_first_call_tests.rs"]mod multi_leg_first_call_tests;

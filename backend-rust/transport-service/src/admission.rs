@@ -100,6 +100,17 @@ impl AccountAdmission {
         let raw=match &self.store{Backend::V1(s)=>{s.owned()?;json!({"lookupSchemaVersion":1,"intent":intent,"binding":s.state.intents.get(intent),"unknownBinding":s.state.unknown.get(intent),"globalUnknownCount":s.state.unknown.len(),"hasUnknown":!s.state.unknown.is_empty()})},Backend::V2(s)=>s.lookup_intent(intent)?};
         BindingLookup::parse(raw,intent)
     }
+    /// Read-only V1 key binding, under the actual controller lease. No
+    /// diagnostic command or V2 absence inference is permitted.
+    pub fn lookup_key(&self,key:&str)->std::result::Result<Option<ImmutableBinding>,String>{
+        need(!key.is_empty(),"IDEMPOTENCY_KEY_REQUIRED")?;
+        match &self.store{
+            Backend::V1(s)=>{s.owned()?;need(s.state.active.is_none()&&!s.state.manual_review&&s.state.unknown.is_empty(),"PACKAGE_QUEUE_NOT_QUIET")?;
+                let result=s.state.keys.get(key).map(|b|ImmutableBinding{intent:b.intent.clone(),key:b.key.clone(),payload_hash:b.payload_hash.clone()});
+                if let Some(b)=&result{valid_binding(b)?;need(b.key==key,"QUEUE_KEY_LOOKUP_BINDING")?;}Ok(result)},
+            Backend::V2(_)=>Err("FIRST_CALL_V1_KEY_LOOKUP_REQUIRED".into()),
+        }
+    }
     fn poison(&mut self){match &mut self.store{Backend::V1(s)=>s.poisoned=true,Backend::V2(s)=>s.poisoned=true}}
     /// Retry only a rejected local append after explicit preserving compaction.
     /// This never sends or repeats an HTTP request; all active/unknown bindings,
