@@ -50,7 +50,7 @@ fn snapshot(v:&Value,s:&Value,at:i64)->Result<Snapshot>{
 }
 impl Engine{
  pub fn collateral_report(&self)->Result<Value>{let l=self.collateral.as_ref().ok_or("COLLATERAL_NOT_INITIALIZED")?;let cash=add(l.snapshot.cash,self.wallet.cash-l.wallet_cash)?;let adjustment=cash-l.opening_cash-(self.wallet.cash-l.opening_wallet);
-  Ok(json!({"version":1,"officialCash":money(cash),"officialDebt":money(l.snapshot.debt),"netCashAfterDebt":money(cash-l.snapshot.debt),"collateralCashAdjustment":money(adjustment),"availableAdvanceObserved":money(l.snapshot.available),"availableAdvanceAdmittedForSizing":"0.000000","cumulativeBorrowed":money(l.drawn),"cumulativeRepaid":money(l.repaid),"settlementPayout":money(l.settled),"componentStates":l.snapshot.components,"events":l.events.len(),"actualSettlements":l.settlements.len(),"snapshotAtMs":l.snapshot.end,"cashViewIncludesLaterNativeFills":true,"officialAccountProfit":Value::Null}))
+  Ok(json!({"version":1,"officialCash":money(cash),"observedOfficialCash":money(l.snapshot.cash),"pendingNativeFillEconomics":self.fills.len()!=l.fill_count||self.wallet.cash!=l.wallet_cash,"officialDebt":money(l.snapshot.debt),"netCashAfterDebt":money(cash-l.snapshot.debt),"collateralCashAdjustment":money(adjustment),"availableAdvanceObserved":money(l.snapshot.available),"availableAdvanceAdmittedForSizing":"0.000000","cumulativeBorrowed":money(l.drawn),"cumulativeRepaid":money(l.repaid),"settlementPayout":money(l.settled),"componentStates":l.snapshot.components,"events":l.events.len(),"actualSettlements":l.settlements.len(),"snapshotAtMs":l.snapshot.end,"cashViewIncludesLaterNativeFills":true,"officialAccountProfit":Value::Null}))
  }
  pub(super) fn audit_collateral(&self)->Result<()>{if let Some(l)=&self.collateral{need(l.snapshot.debt==l.drawn-l.repaid&&l.snapshot.debt>=0&&l.snapshot.cash-l.opening_cash-(l.wallet_cash-l.opening_wallet)==l.snapshot.debt&&l.fill_count<=self.fills.len(),"COLLATERAL_ACCOUNTING_IDENTITY")?;}Ok(())}
  pub(super) fn apply_collateral(&mut self,e:&Value,at:i64)->Result<()>{
@@ -66,14 +66,14 @@ impl Engine{
   let unsubmitted:BTreeSet<u64>=b["unsubmittedOrderIds"].as_array().ok_or("COLLATERAL_UNSUBMITTED_PROOF")?.iter().map(|v|v.as_u64().ok_or("COLLATERAL_UNSUBMITTED_PROOF")).collect::<Result<_>>()?;
   let pending:BTreeSet<u64>=self.orders.iter().filter(|q|!q.retired).map(|q|q.id).collect();need(unsubmitted==pending&&pending.iter().all(|id|!self.live_orders.contains_key(id)&&!self.is_package_order(*id)),"COLLATERAL_PENDING_PHYSICAL_ORDER")?;
   need(!self.package_blocks_submissions(),"COLLATERAL_UNRESOLVED_PACKAGE")?;
-  let after=snapshot(&e["after"],scope,at)?;
+  let after=snapshot(&e["after"],scope,at)?;need(at-after.end<=20_000,"COLLATERAL_AFTER_STALE")?;
   if e["type"]=="actual_collateral_baseline"{
    need(self.collateral.is_none()&&after.debt==0,"COLLATERAL_BASELINE_DEBT_OR_REPEAT")?;
    self.collateral=Some(Ledger{scope:scope.clone(),snapshot:after,wallet_cash:self.wallet.cash,opening_cash:money_value(&e["after"]["account"]["data"]["balance"])?,opening_wallet:self.wallet.cash,drawn:0,repaid:0,settled:0,fill_count:self.fills.len(),events:[(event_id.into(),digest)].into(),orders:BTreeSet::new(),settlements:BTreeMap::new()});return Ok(())
   }
   let mut l=self.collateral.clone().ok_or("COLLATERAL_BASELINE_REQUIRED")?;need(l.scope==*scope,"COLLATERAL_SCOPE_CHANGED")?;
   let before=snapshot(&e["before"],scope,at)?;
-  need(before.cash==l.snapshot.cash&&before.debt==l.snapshot.debt&&before.power==l.snapshot.power&&before.components==l.snapshot.components&&before.end<=after.start&&after.end-before.start<=120_000,"COLLATERAL_WINDOW_OR_BEFORE")?;
+  need(before.cash==l.snapshot.cash&&before.debt==l.snapshot.debt&&before.power==l.snapshot.power&&before.components==l.snapshot.components&&before.start>=l.snapshot.start&&before.end>=l.snapshot.end&&before.end<=after.start&&after.end-before.start<=120_000,"COLLATERAL_WINDOW_OR_BEFORE")?;
   for(key,old)in before.components.as_object().ok_or("COLLATERAL_COMPONENTS")?{if let Some(new)=after.components.get(key){for field in ["profileId","tournamentId","coveredExchangeIds","relationshipIds"]{need(old[field]==new[field],"COLLATERAL_COMPONENT_IDENTITY_CHANGED")?;}}}
   let(mut drawn,mut repaid)=(0,0);
   if e["type"]=="actual_collateral_execution"{
