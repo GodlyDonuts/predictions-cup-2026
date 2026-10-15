@@ -1,6 +1,6 @@
 # Bounded durable session batch candidate
 
-Task [#139](https://github.com/GodlyDonuts/predictions-cup-2026/issues/139), Viserion/session-batch-20261015. This offline candidate adds `Session::accept_batch`, focused tests and a synthetic benchmark. Existing `accept`, open, replay, journal format and upgrade rules are unchanged. There is no worker wiring, account client, production bank access or deployment. The execution owner remains [#120](https://github.com/GodlyDonuts/predictions-cup-2026/issues/120).
+Task [#139](https://github.com/GodlyDonuts/predictions-cup-2026/issues/139), Viserion/session-batch-20261015. This adds `Session::accept_batch`, focused tests and a synthetic benchmark. Existing `accept`, open, replay, journal format and upgrade rules are unchanged. The parent subsequently wired normalized public-source events into the worker; actual financial acknowledgments/fills/terminal events retain serial admission. The execution owner remains [#120](https://github.com/GodlyDonuts/predictions-cup-2026/issues/120).
 
 ## Intended improvement and exact boundaries
 
@@ -62,6 +62,14 @@ The binary creates a fresh private0700 directory under the OS temporary director
 There are237 fixed-clock synthetic book scopes per round, with identical ordered events/source IDs across serial and batch paths, quantity1 and three possible strategy markets. Default two rounds are474 events, not an observation of a live237-market broadcast. Both paths verify restart parity and exact journal/head/report/cursor equality. Output includes input/source identity, timings, burst timings, durable commit counts and hashes. Timers exclude fixture construction, initial open and restart verification. Both mode runs serial first, so cache/order/filesystem bias remains; this is not a production latency forecast or a calibrated own-fill benchmark.
 
 `syncCallModel` reports **source-derived** counts, not instrumented syscalls: each accepted commit calls one journal sync and two atomic projection file syncs, plus two directory syncs on Unix. A measured Linux `strace -f -c -e trace=fsync,fdatasync` run in separate `serial` and `batch` modes can check actual whole-process syscall counts; initialization, fixture files and restart add extra syncs outside ingest timers. Do not label modeled counts as measured ones. No speed result is published until the parent runs and verifies the benchmark.
+
+## Checked parent integration and measurements
+
+On the ARM64 VPS, all103 native checks and locked native release passed. The fixed474-event synthetic fixture took3,552,963 microseconds through serial acceptance and301,495 microseconds through batches of at most32. Journal, head and report bytes match exactly; both restart checks pass. There were474 versus16 durable commits. This is approximately11.8 times faster for this fixture, with serial-first/cache bias and no production latency claim. Sync counts in the artifact are modeled from source, not traced syscalls. [Benchmark](../research/moloch-session-batch-20261015/benchmark.json).
+
+The read-only original16,535-event/45,816,161-byte live prefix replayed in14,016ms with identical financial report, orders, fills and source-cursor hashes. No account request or source mutation occurred. Candidate native identity is0321e7458ed45da08bca7b030369d4e86ae2a9c0127b39fa7d4d49d33d5d0562. [Prefix proof](../research/moloch-session-batch-20261015/prefix-parity.json), [check-log hashes](../research/moloch-session-batch-20261015/checks.json).
+
+Parent worker integration also limits each websocket drain to eight complete frames before returning to the shared REST/reconciliation path. This bounds frames, not wall time or derived events within one frame. Full/incomplete frame errors still stop; nothing is dropped to make a fresh-looking book. A private per-scope progress snapshot supplements the complete-cycle status and is never trading authority. Runtime173 checks pass, including65-event chunk/restart recovery with a deliberately invalid second chunk. The first32 events remain a valid durable prefix; the rejected second chunk adds no rows. This does not claim whole-input crash atomicity.
 
 ## Production promotion remains separate
 

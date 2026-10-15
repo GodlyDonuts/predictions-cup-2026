@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "architecture": "aarch64",
+  "offlineOnly": true,
+  "logs": {
+    "v20-runtime-release.log": {
+      "sha256": "395c14dce92e2b9f212b0f52667abdbad77d403f19a9674c204ec4b669b30f03",
+      "releaseSucceeded": true,
+      "binarySha256": "ff286193026880b255a6734c76feb88e17451082e82d026f435229c40b2bc57f"
+    },
+    "session-batch-native-tests.log": {
+      "sha256": "cb68322393c9e9b44e2ae85f604b8e1b2564030263bb91a6398c10148cab1863",
+      "passed": 103,
+      "failed": false
+    },
+    "session-batch-native-release.log": {
+      "sha256": "dd37bc4f6d71cadba005f60f68b71758d1d1e01e3176fb0c857cc6cb74eff3aa",
+      "passed": 0,
+      "failed": false
+    },
+    "v20-runtime-tests.log": {
+      "sha256": "476b9834336f3835877f32d2b7b028159361c5e0840c4fb307f1a75a30072cb4",
+      "passed": 173,
+      "failed": false
+    },
+    "v20-sdk-tests.log": {
+      "sha256": "5d1f6669bafd2f0f5d13971afad591d9840dc9fbae15d7f697891d2c6a557b42",
+      "passed": 150,
+      "failed": false
+    }
+  }
+}

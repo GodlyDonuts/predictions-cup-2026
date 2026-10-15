@@ -1,5 +1,11 @@
 # Moloch current production ownership — October 15
 
+## V20 checked and staged; production restart verified separately
+
+Candidate sourcef1f5160f passes103 native,173 runtime and150 SDK checks plus locked ARM64 releases. It batches public-source durability, bounds each websocket drain to eight complete frames, adds per-scope private progress, and refreshes expired never-submitted maximum-age exits into distinct new native quotes with original activation/expiry. Production queue remains v1. A474-event synthetic fixture improves3.553s to0.3015s with exact journal/restart parity;16,535 original financial events replay unchanged. This is not measured live speed or profitability. [Rollout, limits and evidence](MOLOCH_V20_ROLLOUT_20261015.md).
+
+V19 PID151390 stopped11:45:17Z onLIVE_STREAM_FAILED. After verifying all129 submission attempts had ACK/recoveredACK and the manifest-selected queue was clear of unknown/active/manual-review state, the parent restarted the unchanged release12:01:51Z as PID165813. By12:06:08Z its native journal had resumed advancing. Complete-cycle health remained pending at this checkpoint. Original risk, attributed lots, history and14:44:34.413Z entry cutoff remain unchanged. V20 is staged, not yet deployed at this documentation checkpoint.
+
 ## V19: exact-cash repair deployed; fresh official orders verified
 
 Latest complete-cycle observation11:28:30.338Z: PID151390,114officialACK/108dispatch-terminal bindings,28actualfills, realtimehealthy andSTOPfalse. Selected26RESTscopes; managedcapacity31/discovery3 and237observedexchanges verified. First full cycle took about14.5minutes including startup; this is a live latency limitation. A new525NO BUY at0.685 executed11:18:59.839Z, source-bound by [complete official fill evidence](../data/moloch-v19-first-owned-fill-20261015.json). Realized remains17.825000, comprising inherited17.935000 and newTrading−0.110000. This new holding is not realized profit. The checked urgent-exit follow-up remains separate from this running binary.

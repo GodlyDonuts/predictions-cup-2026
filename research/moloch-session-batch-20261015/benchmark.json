@@ -1,0 +1,68 @@
+{
+  "architecture": "aarch64",
+  "engineIdentity": "0321e7458ed45da08bca7b030369d4e86ae2a9c0127b39fa7d4d49d33d5d0562",
+  "inputSha256": "2d95c7fa095b9015862ba30a462861f44d5ce87b40ccb7752f94e4e3fffa8d93",
+  "limitations": [
+    "Synthetic fixed-clock data and fresh banks; no production latency/financial speed claim.",
+    "Both mode runs serial first; filesystem cache/order bias remains.",
+    "syncCallModel is source-derived, not a measured syscall count; use separate serial/batch syscall traces for verification.",
+    "Initialization, input creation and restart checks are excluded from ingest timers.",
+    "Fixture is retained privately; no account, service, credentials or live bank are accessed."
+  ],
+  "marketsPerRound": 237,
+  "os": "linux",
+  "results": [
+    {
+      "durableCommits": 474,
+      "events": 474,
+      "headSha256": "2f385dfd15de96b63d390ff01d4db9ae4ac2c542e48bcb066d65f1e20f38f4b1",
+      "ingestWallMicros": 3552963,
+      "journalBytes": 354746,
+      "journalSha256": "4137eb4b5e78b9b886318de45df4fdf25aa596040e5ac4cd2356036fc79dbfaf",
+      "maximumEventsPerCall": 1,
+      "mode": "serial_accept",
+      "reportSha256": "bf339fe1340ef7bb1ec1579389202ae66bf7752c00df88b493311e54fb8a5e23",
+      "restartParity": true,
+      "roundWallMicros": [
+        1651039,
+        1901920
+      ],
+      "sourceCursor": 474,
+      "syncCallModel": {
+        "atomicProjectionFileSyncAll": 948,
+        "excludesInitializationRestartAndFixtureWrites": true,
+        "journalSyncAll": 474,
+        "measuredBySyscallTrace": false,
+        "unixDirectorySyncAll": 948
+      }
+    },
+    {
+      "durableCommits": 16,
+      "events": 474,
+      "headSha256": "2f385dfd15de96b63d390ff01d4db9ae4ac2c542e48bcb066d65f1e20f38f4b1",
+      "ingestWallMicros": 301495,
+      "journalBytes": 354746,
+      "journalSha256": "4137eb4b5e78b9b886318de45df4fdf25aa596040e5ac4cd2356036fc79dbfaf",
+      "maximumEventsPerCall": 32,
+      "mode": "accept_batch",
+      "reportSha256": "bf339fe1340ef7bb1ec1579389202ae66bf7752c00df88b493311e54fb8a5e23",
+      "restartParity": true,
+      "roundWallMicros": [
+        137189,
+        164303
+      ],
+      "sourceCursor": 474,
+      "syncCallModel": {
+        "atomicProjectionFileSyncAll": 32,
+        "excludesInitializationRestartAndFixtureWrites": true,
+        "journalSyncAll": 16,
+        "measuredBySyscallTrace": false,
+        "unixDirectorySyncAll": 32
+      }
+    }
+  ],
+  "rounds": 2,
+  "schemaVersion": 1,
+  "serialVersusBatchByteParity": true,
+  "syntheticOnly": true
+}
