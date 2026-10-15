@@ -112,12 +112,23 @@ fn dispatch(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,a
  // At most one new physical order per pass; subsequent fills change funding.
  for q in bank.engine().order_records(){
   let qid=q["id"].as_u64().ok_or("LIVE_QUOTE_ID")?;
-  if q["retired"]==true||!log.never_attempted(qid)||q["activationAt"].as_u64().is_none_or(|t|t>now())||q["expiresAt"].as_u64().is_none_or(|t|t<=now()+5000)||q["cancelEffectiveAt"].as_u64().is_some(){continue}
+  let prefetch_started=now();
+  let early_exit_prefetch=moloch_live_runtime::dispatch_window::may_prefetch(&q,log.never_attempted(qid),log.intents.contains_key(&qid),prefetch_started);
+  if q["retired"]==true||!log.never_attempted(qid)||(!early_exit_prefetch&&q["activationAt"].as_u64().is_none_or(|t|t>prefetch_started))||q["expiresAt"].as_u64().is_none_or(|t|t<=prefetch_started+5000)||q["cancelEffectiveAt"].as_u64().is_some(){continue}
   if q["action"]=="buy"&&now()>=c.activation.entry_until_ms{retire_never_sent(bank,log,&q)?;continue}
   let order=Order{idempotency_key:format!("{}:{qid}",c.activation.run_id),exchange_id:q["exchangeId"].as_str().ok_or("LIVE_SCOPE")?.into(),side:if q["side"]=="YES"{"yes"}else{"no"}.into(),action:q["action"].as_str().ok_or("LIVE_ACTION")?.into(),quantity:u32::try_from(q["quantity"].as_u64().ok_or("LIVE_SIZE")?)?,price:q["price"].as_str().ok_or("LIVE_PRICE")?.into(),expiration_date:iso(q["expiresAt"].as_u64().ok_or("LIVE_EXPIRY")?),tournament_id:c.scope.tournament_id.clone()};
   let request_spec=spec(&order)?;let p=Permit{run_id:c.activation.run_id.clone(),intent_id:qid.to_string(),owner:"Codex".into(),expires_at_ms:now()+15000,maximum_quantity:order.quantity,maximum_cost:money(decimal_units(&order.price)?*order.quantity as i128)};
+  // Covered maximum-age exits may spend their activation delay fetching these
+  // same read-only facts. No intent/attempt or HTTP write exists at this stage.
+  if early_exit_prefetch{let _=atomic_json(&c.root.join("exit-prefetch.json"),&json!({"at":iso(prefetch_started),"qid":qid,"stage":"started","createdAtMs":q["createdAt"],"activationAtMs":q["activationAt"],"expiresAtMs":q["expiresAt"],"prefetchStartedAtMs":prefetch_started,"expiryExtended":false}));}
   let facts=snapshots(t,c,&q)?;accept_fresh_book(bank,c,&q,&facts.book,source)?;
-  let current=quote(bank,qid)?;if current["retired"]==true||current["cancelEffectiveAt"].is_u64()||current["expiresAt"].as_u64().is_none_or(|v|v<=now()+3000){if current["retired"]==false{retire_never_sent(bank,log,&current)?}continue}
+  let current=quote(bank,qid)?;let final_at=now();
+  let native_active=current["activationAt"].as_u64().is_some_and(|t|t<=final_at);
+  if early_exit_prefetch{let _=atomic_json(&c.root.join("exit-prefetch.json"),&json!({"at":iso(final_at),"qid":qid,"stage":"facts_complete","createdAtMs":q["createdAt"],"activationAtMs":q["activationAt"],"expiresAtMs":q["expiresAt"],"prefetchStartedAtMs":prefetch_started,"prefetchElapsedMs":final_at.saturating_sub(prefetch_started),"remainingLifetimeMs":current["expiresAt"].as_u64().map(|t|t.saturating_sub(final_at)),"nativeActive":native_active,"retired":current["retired"],"cancelPending":current["cancelEffectiveAt"].is_u64(),"expiryExtended":false}));}
+  if current["retired"]==true||current["cancelEffectiveAt"].is_u64()||current["expiresAt"].as_u64().is_none_or(|v|v<=final_at+3000){if current["retired"]==false{retire_never_sent(bank,log,&current)?}continue}
+  // A fast preflight never authorizes an early order. The final production
+  // authority independently checks activation again at the physical boundary.
+  if !native_active{continue}
   authority.prepare(bank,qid,request_spec.clone(),p.clone(),facts)?;
   if let Err(e)=authority.authorize(&c.scope,&request_spec,&p,false,now()){authority.clear_ready();atomic_json(&c.root.join("deferred.json"),&json!({"at":iso(now()),"qid":qid,"code":e.code}))?;continue}
   if log.intents.contains_key(&qid){return Err("LIVE_EXISTING_UNRESOLVED_INTENT".into())}
