@@ -1,0 +1,288 @@
+{
+  "schemaVersion": 1,
+  "at": "2026-10-15T00:13:13.797Z",
+  "banks": [
+    {
+      "side": "control",
+      "snapshotHash": "1d5d191781bbe679919bc4a761b636596628916a85ae5d5c9156a86b18c18aa7",
+      "cash": "99915.000000",
+      "realized": "0.000000",
+      "ownedCost": "85.000000",
+      "unresolved": 0,
+      "newFills": [
+        {
+          "orderId": 129,
+          "marketId": "366",
+          "exchangeId": "1055",
+          "side": "YES",
+          "action": "buy",
+          "quantity": 31,
+          "price": "0.850000",
+          "fee": "0.000000",
+          "at": "2026-10-15T00:02:24.571Z",
+          "sourceId": "161603435",
+          "counterfactual": true,
+          "executedAt": "2026-10-14T23:56:02.981Z"
+        },
+        {
+          "orderId": 129,
+          "marketId": "366",
+          "exchangeId": "1055",
+          "side": "YES",
+          "action": "buy",
+          "quantity": 3,
+          "price": "0.850000",
+          "fee": "0.000000",
+          "at": "2026-10-15T00:02:24.578Z",
+          "sourceId": "161603441",
+          "counterfactual": true,
+          "executedAt": "2026-10-14T23:56:02.981Z"
+        },
+        {
+          "orderId": 129,
+          "marketId": "366",
+          "exchangeId": "1055",
+          "side": "YES",
+          "action": "buy",
+          "quantity": 1,
+          "price": "0.850000",
+          "fee": "0.000000",
+          "at": "2026-10-15T00:02:24.584Z",
+          "sourceId": "161603447",
+          "counterfactual": true,
+          "executedAt": "2026-10-14T23:56:02.981Z"
+        },
+        {
+          "orderId": 129,
+          "marketId": "366",
+          "exchangeId": "1055",
+          "side": "YES",
+          "action": "buy",
+          "quantity": 1,
+          "price": "0.850000",
+          "fee": "0.000000",
+          "at": "2026-10-15T00:02:24.591Z",
+          "sourceId": "161603507",
+          "counterfactual": true,
+          "executedAt": "2026-10-14T23:56:04.072Z"
+        },
+        {
+          "orderId": 129,
+          "marketId": "366",
+          "exchangeId": "1055",
+          "side": "YES",
+          "action": "buy",
+          "quantity": 35,
+          "price": "0.850000",
+          "fee": "0.000000",
+          "at": "2026-10-15T00:02:24.597Z",
+          "sourceId": "161603516",
+          "counterfactual": true,
+          "executedAt": "2026-10-14T23:56:04.095Z"
+        },
+        {
+          "orderId": 129,
+          "marketId": "366",
+          "exchangeId": "1055",
+          "side": "YES",
+          "action": "buy",
+          "quantity": 29,
+          "price": "0.850000",
+          "fee": "0.000000",
+          "at": "2026-10-15T00:02:24.603Z",
+          "sourceId": "161605300",
+          "counterfactual": true,
+          "executedAt": "2026-10-14T23:56:12.997Z"
+        }
+      ],
+      "positions": {
+        "922": {
+          "YES": [],
+          "NO": []
+        },
+        "1027": {
+          "YES": [],
+          "NO": []
+        },
+        "1055": {
+          "YES": [
+            {
+              "quantity": 31,
+              "price": "0.850000",
+              "executedAt": "2026-10-14T23:56:02.981Z"
+            },
+            {
+              "quantity": 3,
+              "price": "0.850000",
+              "executedAt": "2026-10-14T23:56:02.981Z"
+            },
+            {
+              "quantity": 1,
+              "price": "0.850000",
+              "executedAt": "2026-10-14T23:56:02.981Z"
+            },
+            {
+              "quantity": 1,
+              "price": "0.850000",
+              "executedAt": "2026-10-14T23:56:04.072Z"
+            },
+            {
+              "quantity": 35,
+              "price": "0.850000",
+              "executedAt": "2026-10-14T23:56:04.095Z"
+            },
+            {
+              "quantity": 29,
+              "price": "0.850000",
+              "executedAt": "2026-10-14T23:56:12.997Z"
+            }
+          ],
+          "NO": []
+        }
+      }
+    },
+    {
+      "side": "candidate",
+      "snapshotHash": "47b334652c8cf39f82d473ae9a4557a8002f667532782bee9a989107e19f5b81",
+      "cash": "99915.000000",
+      "realized": "0.000000",
+      "ownedCost": "85.000000",
+      "unresolved": 0,
+      "newFills": [
+        {
+          "orderId": 129,
+          "marketId": "366",
+          "exchangeId": "1055",
+          "side": "YES",
+          "action": "buy",
+          "quantity": 31,
+          "price": "0.850000",
+          "fee": "0.000000",
+          "at": "2026-10-15T00:02:24.571Z",
+          "sourceId": "161603435",
+          "counterfactual": true,
+          "executedAt": "2026-10-14T23:56:02.981Z"
+        },
+        {
+          "orderId": 129,
+          "marketId": "366",
+          "exchangeId": "1055",
+          "side": "YES",
+          "action": "buy",
+          "quantity": 3,
+          "price": "0.850000",
+          "fee": "0.000000",
+          "at": "2026-10-15T00:02:24.578Z",
+          "sourceId": "161603441",
+          "counterfactual": true,
+          "executedAt": "2026-10-14T23:56:02.981Z"
+        },
+        {
+          "orderId": 129,
+          "marketId": "366",
+          "exchangeId": "1055",
+          "side": "YES",
+          "action": "buy",
+          "quantity": 1,
+          "price": "0.850000",
+          "fee": "0.000000",
+          "at": "2026-10-15T00:02:24.584Z",
+          "sourceId": "161603447",
+          "counterfactual": true,
+          "executedAt": "2026-10-14T23:56:02.981Z"
+        },
+        {
+          "orderId": 129,
+          "marketId": "366",
+          "exchangeId": "1055",
+          "side": "YES",
+          "action": "buy",
+          "quantity": 1,
+          "price": "0.850000",
+          "fee": "0.000000",
+          "at": "2026-10-15T00:02:24.591Z",
+          "sourceId": "161603507",
+          "counterfactual": true,
+          "executedAt": "2026-10-14T23:56:04.072Z"
+        },
+        {
+          "orderId": 129,
+          "marketId": "366",
+          "exchangeId": "1055",
+          "side": "YES",
+          "action": "buy",
+          "quantity": 35,
+          "price": "0.850000",
+          "fee": "0.000000",
+          "at": "2026-10-15T00:02:24.597Z",
+          "sourceId": "161603516",
+          "counterfactual": true,
+          "executedAt": "2026-10-14T23:56:04.095Z"
+        },
+        {
+          "orderId": 129,
+          "marketId": "366",
+          "exchangeId": "1055",
+          "side": "YES",
+          "action": "buy",
+          "quantity": 29,
+          "price": "0.850000",
+          "fee": "0.000000",
+          "at": "2026-10-15T00:02:24.603Z",
+          "sourceId": "161605300",
+          "counterfactual": true,
+          "executedAt": "2026-10-14T23:56:12.997Z"
+        }
+      ],
+      "positions": {
+        "922": {
+          "YES": [],
+          "NO": []
+        },
+        "1027": {
+          "YES": [],
+          "NO": []
+        },
+        "1055": {
+          "YES": [
+            {
+              "quantity": 31,
+              "price": "0.850000",
+              "executedAt": "2026-10-14T23:56:02.981Z"
+            },
+            {
+              "quantity": 3,
+              "price": "0.850000",
+              "executedAt": "2026-10-14T23:56:02.981Z"
+            },
+            {
+              "quantity": 1,
+              "price": "0.850000",
+              "executedAt": "2026-10-14T23:56:02.981Z"
+            },
+            {
+              "quantity": 1,
+              "price": "0.850000",
+              "executedAt": "2026-10-14T23:56:04.072Z"
+            },
+            {
+              "quantity": 35,
+              "price": "0.850000",
+              "executedAt": "2026-10-14T23:56:04.095Z"
+            },
+            {
+              "quantity": 29,
+              "price": "0.850000",
+              "executedAt": "2026-10-14T23:56:12.997Z"
+            }
+          ],
+          "NO": []
+        }
+      }
+    }
+  ],
+  "contestOrders": 0,
+  "profitabilityEstablished": false,
+  "nextPhase": 69,
+  "conclusion": "Each independent scenario recovered 100 modeled YES shares at .850 after the entry capture ended; preserve cost and execution age, do not reset or sum the scenarios."
+}
