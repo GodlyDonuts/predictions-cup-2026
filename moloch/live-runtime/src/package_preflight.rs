@@ -1,0 +1,39 @@
+//! Bounded actual-receipt plumbing over the sole worker's existing backend.
+//! Reading and callback execution create no package or financial authority.
+//! Rules remain opaque, unchanged bodies; Admission/Prepared and the caller's
+//! actual RestSource admission must independently verify proof and continuity.
+use crate::{feedback::Result,package_authority::{PackageSnapshotSet,ComponentSnapshots},package_worker::Backend,daily_windows};
+use baal_transport_service::{Endpoint,Scope,Receipt,decimal_units,multi_leg::Basket};
+use serde_json::Value;
+use std::collections::{BTreeMap,BTreeSet};
+fn need(ok:bool,why:&'static str)->Result<()>{if ok{Ok(())}else{Err(why.into())}}
+fn numeric(s:&str)->bool{!s.is_empty()&&s.bytes().all(|b|b.is_ascii_digit())}
+fn clock(s:&str)->Result<u64>{daily_windows::clock(s)}
+fn fresh(r:&Receipt,now:u64,age:u64)->Result<()>{let start=clock(&r.request_started_at)?;let end=clock(&r.received_at)?;need(r.status==200&&start<=end&&end<=now&&now-start<=age,"PACKAGE_PREFLIGHT_RECEIPT_CLOCK_OR_STATUS")}
+fn context<'a>(v:&'a Value,s:&Scope)->Result<&'a Value>{let rows=v["contexts"].as_array().filter(|a|a.len()==1).ok_or("PACKAGE_PREFLIGHT_CONTEXT")?;need(rows[0]["type"]=="tournament"&&rows[0]["tournament"]["id"]==s.tournament_id,"PACKAGE_PREFLIGHT_CONTEXT")?;Ok(&rows[0])}
+fn same_scope<B:Backend>(b:&B,s:&Scope)->Result<()>{need(serde_json::to_value(b.scope())?==serde_json::to_value(s)?,"PACKAGE_PREFLIGHT_BACKEND_SCOPE")}
+fn read<B:Backend,F:FnMut(&Receipt)->Result<()>>(b:&mut B,s:&Scope,e:Endpoint,path:String,age:u64,last:&mut u64,after:&mut F)->Result<Receipt>{
+ same_scope(b,s)?;let r=b.read(e)?;after(&r)?;same_scope(b,s)?;
+ let now=b.now_ms();fresh(&r,now,age)?;need(r.endpoint==path&&clock(&r.request_started_at)?>=*last,"PACKAGE_PREFLIGHT_ENDPOINT_OR_ORDER")?;*last=clock(&r.received_at)?;Ok(r)
+}
+fn check_book(r:&Receipt,s:&Scope,market:&str,now:u64)->Result<()>{let c=context(&r.data,s)?;let rows=c["orderbook"]["exchanges"].as_array().ok_or("PACKAGE_PREFLIGHT_BOOK")?;let expected:BTreeSet<_>=s.exchanges.iter().filter(|(_,m)|m.as_str()==market).map(|(ex,_)|ex.as_str()).collect();let mut found=BTreeSet::new();for row in rows{let ex=row["exchangeId"].as_str().ok_or("PACKAGE_PREFLIGHT_BOOK_EXCHANGE")?;need(expected.contains(ex)&&found.insert(ex),"PACKAGE_PREFLIGHT_BOOK_EXCHANGE")?;let at=clock(row["asOf"]["at"].as_str().ok_or("PACKAGE_PREFLIGHT_BOOK_CLOCK")?)?;need(row["asOf"]["sequence"].as_u64().is_some()&&at<=now&&now-at<=10000,"PACKAGE_PREFLIGHT_BOOK_CLOCK")?;for key in ["bids","asks"]{let levels=row[key].as_array().filter(|a|!a.is_empty()&&a.len()<=200).ok_or("PACKAGE_PREFLIGHT_BOOK_LEVELS")?;let mut previous=None;for l in levels{let p=baal_transport_service::prices::official_tick_units(&l["price"])?;let n=decimal_units(&l["quantity"].to_string())?;need((5000..=995000).contains(&p)&&n>0&&previous.is_none_or(|old|if key=="bids"{p<old}else{p>old}),"PACKAGE_PREFLIGHT_BOOK_LEVELS")?;previous=Some(p);}}}need(found==expected,"PACKAGE_PREFLIGHT_INCOMPLETE_BOOK")}
+/// Exactly four global reads followed by three reads per ordered component.
+/// Callback runs once immediately after EVERY successful Backend::read return,
+/// including non-200/malformed receipts; an abort prevents all later reads.
+/// Backend errors propagate without a fabricated receipt or callback.
+pub fn collect<B:Backend,F:FnMut(&Receipt)->Result<()>>(b:&mut B,s:&Scope,basket:&Basket,mut after:F)->Result<PackageSnapshotSet>{
+ same_scope(b,s)?;need(!s.tournament_id.is_empty()&&s.tournament_id.bytes().all(|c|c.is_ascii_alphanumeric()||c==b'-')&&!s.tournament_slug.is_empty()&&s.tournament_slug.bytes().all(|c|c.is_ascii_alphanumeric()||c==b'-')&&basket.tournament_id==s.tournament_id&&(2..=3).contains(&basket.legs.len()),"PACKAGE_PREFLIGHT_CONFIG")?;
+ let mut exchanges=BTreeSet::new();for leg in &basket.legs{let market=s.exchanges.get(&leg.exchange_id).ok_or("PACKAGE_PREFLIGHT_FOREIGN_EXCHANGE")?;let price=decimal_units(&leg.limit_price)?;need(numeric(&leg.exchange_id)&&numeric(market)&&exchanges.insert(&leg.exchange_id)&&leg.quantity>0&&(5000..=995000).contains(&price)&&price%5000==0,"PACKAGE_PREFLIGHT_LEG")?;}
+ need(decimal_units(&basket.maximum_cost)?>0&&!basket.idempotency_key.is_empty(),"PACKAGE_PREFLIGHT_CONFIG")?;
+ let mut last=b.now_ms();let account=read(b,s,Endpoint::Tournament,format!("/tournaments/{}",s.tournament_slug),20000,&mut last,&mut after)?;
+ need(account.data["id"]==s.tournament_id&&account.data["slug"]==s.tournament_slug&&account.data["status"]=="active"&&clock(account.data["endDate"].as_str().ok_or("PACKAGE_PREFLIGHT_TOURNAMENT")?)?>b.now_ms(),"PACKAGE_PREFLIGHT_TOURNAMENT")?;
+ let cash_balance=read(b,s,Endpoint::Account,format!("/account?tournamentId={}",s.tournament_id),20000,&mut last,&mut after)?;need(baal_transport_service::relationships::parse_buying_power(&cash_balance.data,s)?.gross_cash_units.is_some(),"PACKAGE_PREFLIGHT_CASH")?;
+ let positions=read(b,s,Endpoint::Positions,format!("/tournaments/{}/portfolio/positions",s.tournament_slug),20000,&mut last,&mut after)?;need(positions.data["positions"].is_array()&&positions.data.get("pagination").is_none(),"PACKAGE_PREFLIGHT_POSITIONS")?;
+for p in positions.data["positions"].as_array().unwrap(){let ex=p["exchangeId"].as_str().ok_or("PACKAGE_PREFLIGHT_POSITION_SCOPE")?;need(s.exchanges.get(ex).is_some_and(|m|p["marketId"]==*m)&&p["quantity"].as_i64().is_some(),"PACKAGE_PREFLIGHT_POSITION_SCOPE")?;}
+ let open_orders=read(b,s,Endpoint::Orders{status:"open".into()},format!("/orders?status=open&limit=200&tournamentId={}",s.tournament_id),20000,&mut last,&mut after)?;need(open_orders.data["data"].is_array()&&open_orders.data["coverage"]["complete"]==true&&open_orders.data["pagination"]["hasMore"]==false&&open_orders.data["pagination"].get("nextCursor").is_none_or(Value::is_null),"PACKAGE_PREFLIGHT_INCOMPLETE_ORDERS")?;
+ for o in open_orders.data["data"].as_array().unwrap(){let ex=o["exchangeId"].as_str().ok_or("PACKAGE_PREFLIGHT_ORDER_SCOPE")?;need(s.exchanges.get(ex).is_some_and(|m|o["marketId"]==*m)&&o["tournamentId"]==s.tournament_id,"PACKAGE_PREFLIGHT_ORDER_SCOPE")?;}
+ let mut components=BTreeMap::new();for leg in &basket.legs{let m=&s.exchanges[&leg.exchange_id];let market=read(b,s,Endpoint::Market{market_id:m.clone()},format!("/markets/{m}?tournamentId={}",s.tournament_id),10000,&mut last,&mut after)?;need(market.data["id"]==*m&&market.data["status"]=="open"&&market.data["isComposite"]==false&&market.data["isMultiOutcome"]==false&&context(&market.data,s)?["status"]=="open","PACKAGE_PREFLIGHT_MARKET")?;
+ let contract=read(b,s,Endpoint::Nodes{market_id:m.clone()},format!("/markets/{m}/nodes?tournamentId={}",s.tournament_id),10000,&mut last,&mut after)?;context(&contract.data,s)?;need(contract.data["market_id"]==*m&&contract.data["root"]["node_type"]=="contract"&&(contract.data["root"]["id"].as_str().is_some_and(|id|!id.is_empty())||contract.data["root"]["id"].as_u64().is_some()),"PACKAGE_PREFLIGHT_CONTRACT")?;
+ let book=read(b,s,Endpoint::OrderBook{market_id:m.clone(),depth:20},format!("/markets/{m}/orderbook?tournamentId={}&depth=20",s.tournament_id),10000,&mut last,&mut after)?;check_book(&book,s,m,b.now_ms())?;components.insert(leg.exchange_id.clone(),ComponentSnapshots{market,contract,book});}
+ let out=PackageSnapshotSet{account,cash_balance,positions,open_orders,components};let now=b.now_ms();need(clock(out.account.data["endDate"].as_str().ok_or("PACKAGE_PREFLIGHT_TOURNAMENT")?)?>now,"PACKAGE_PREFLIGHT_TOURNAMENT_ENDED")?;need(now>=last,"PACKAGE_PREFLIGHT_CLOCK_REGRESSION")?;for r in [&out.account,&out.cash_balance,&out.positions,&out.open_orders]{fresh(r,now,20000)?;}for(ex,c)in &out.components{for r in [&c.market,&c.contract,&c.book]{fresh(r,now,10000)?;}check_book(&c.book,s,&s.exchanges[ex],now)?;}Ok(out)
+}
