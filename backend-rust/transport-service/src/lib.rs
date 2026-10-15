@@ -2,6 +2,7 @@ pub mod admission;
 pub mod credentials;
 pub mod prices;
 pub mod relationships;
+pub mod multi_leg;
 
 use std::{collections::{BTreeMap,BTreeSet}, path::PathBuf, time::{Duration,SystemTime,UNIX_EPOCH}, io::Read};
 use chrono::{DateTime,Utc,SecondsFormat};
@@ -75,7 +76,7 @@ pub struct Receipt {pub endpoint:String,pub request_started_at:String,pub receiv
 #[derive(Serialize)]
 #[serde(rename_all="camelCase")]
 pub struct AccountReconciliation {pub tournament:Receipt,pub positions:Receipt,pub orders:Receipt,pub exact_cash:String,pub started_at:String,pub completed_at:String,pub adopts_holdings:bool}
-pub struct Transport {config:Config,credentials:Box<dyn CredentialProvider>,clock:Box<dyn Clock>,authority:Box<dyn Authority>,client:Client,base:String,queue:admission::AccountAdmission,request_sequence:u64,poisoned:bool,full_account_observation:bool}
+pub struct Transport {config:Config,credentials:Box<dyn CredentialProvider>,clock:Box<dyn Clock>,authority:Box<dyn Authority>,client:Client,base:String,queue:admission::AccountAdmission,request_sequence:u64,poisoned:bool,full_account_observation:bool,last_basket_response:Option<multi_leg::ResponseEvidence>}
 impl Transport {
  /// Observation never expands order placement or owned-order permissions.
  pub fn with_full_account_observation(mut self)->Self{self.full_account_observation=true;self}
@@ -88,7 +89,7 @@ impl Transport {
   let scope=&config.scope;need(scope.tournament_id.len()==36&&scope.tournament_id.bytes().all(|b|b.is_ascii_hexdigit()||b==b'-')&&!scope.tournament_slug.is_empty()&&scope.tournament_slug.bytes().all(|b|b.is_ascii_lowercase()||b.is_ascii_digit()||b==b'-')&&!scope.exchanges.is_empty()&&scope.exchanges.iter().all(|(e,m)|numeric(e)&&numeric(m)),"INVALID_SCOPE")?;
   let token=format!("{}-{}",std::process::id(),clock.now_ms());let queue=admission::AccountAdmission::open(&config.queue_dir,&config.account_scope,&token).map_err(|e|fail(&e))?;
   let client=Client::builder().no_proxy().redirect(Policy::none()).timeout(Duration::from_secs(20)).connect_timeout(Duration::from_secs(10)).build().map_err(|_|fail("HTTP_CLIENT_UNAVAILABLE"))?;
-  Ok(Self{config,credentials,clock,authority,client,base,queue,request_sequence:0,poisoned:false,full_account_observation:false})
+  Ok(Self{config,credentials,clock,authority,client,base,queue,request_sequence:0,poisoned:false,full_account_observation:false,last_basket_response:None})
  }
  fn command(&mut self,mut c:Value)->Result<Value>{c["scope"]=json!(self.config.account_scope);c["now"]=json!(self.clock.now_ms());self.queue.command(c).map_err(|e|fail(&e))}
  fn guard(&self,spec:&RequestSpec,permit:Option<&Permit>,network:bool)->Result<()> {
@@ -111,9 +112,12 @@ impl Transport {
   let call=final_guard.and_then(|_|{
    let method=Method::from_bytes(spec.method.as_bytes()).map_err(|_|fail("HTTP_METHOD"))?;let mut builder=self.client.request(method,self.base.clone()+&spec.endpoint).header(AUTHORIZATION,header);
    if let Some(body)=&spec.body_json{builder=builder.header("Content-Type","application/json").body(body.clone());}
-   let mut response=builder.send().map_err(|_|fail("CONNECTION_UNCONFIRMED"))?;let status=response.status().as_u16();let retry=response.headers().get("Retry-After").and_then(|v|v.to_str().ok()).unwrap_or("").to_string();observed_status=status;observed_retry=retry.clone();let mut bytes=Vec::new();response.by_ref().take(MAX_RESPONSE+1).read_to_end(&mut bytes).map_err(|_|fail("BODY_UNCONFIRMED"))?;need(bytes.len() as u64<=MAX_RESPONSE,"RESPONSE_TOO_LARGE")?;let data:Value=serde_json::from_slice(&bytes).map_err(|_|fail("INVALID_RESPONSE_JSON"))?;Ok((status,retry,data))
+   let mut response=builder.send().map_err(|_|fail("CONNECTION_UNCONFIRMED"))?;let status=response.status().as_u16();let retry=response.headers().get("Retry-After").and_then(|v|v.to_str().ok()).unwrap_or("").to_string();observed_status=status;observed_retry=retry.clone();let mut bytes=Vec::new();
+   let body_read=response.by_ref().take(MAX_RESPONSE+1).read_to_end(&mut bytes);
+   if write&&spec.endpoint=="/orders/multi-leg" {self.last_basket_response=Some(multi_leg::record_response(&self.config.queue_dir,&request,&spec,status,&utc(started)?,&utc(self.clock.now_ms())?,&bytes,body_read.is_ok()&&bytes.len() as u64<=MAX_RESPONSE)?);}
+   body_read.map_err(|_|fail("BODY_UNCONFIRMED"))?;need(bytes.len() as u64<=MAX_RESPONSE,"RESPONSE_TOO_LARGE")?;let data:Value=serde_json::from_slice(&bytes).map_err(|_|fail("INVALID_RESPONSE_JSON"))?;Ok((status,retry,data))
   });
-  let (outcome,status,retry,api_code)=match &call{Ok((status,retry,data))=>{let code=data.pointer("/error/code").and_then(Value::as_str).unwrap_or("");let unknown=write&&(*status>=500||*status==409&&["REQUEST_IN_FLIGHT","ORDER_STATUS_UNKNOWN"].contains(&code));(if unknown{"unknown"}else if (200..300).contains(status){"success"}else{"rejected"},*status,retry.clone(),code.to_string())},Err(_)=>(if write{"unknown"}else{"rejected"},observed_status,observed_retry,String::new())};
+  let (outcome,status,retry,api_code)=match &call{Ok((status,retry,data))=>{let code=data.pointer("/error/code").and_then(Value::as_str).unwrap_or("");let basket_unknown=spec.endpoint=="/orders/multi-leg"&&!(200..300).contains(status)&&multi_leg::zero_execution(*status,data,spec.body.as_ref().and_then(|b|b["legs"].as_array()).map_or(0,Vec::len)).is_none();let unknown=write&&(basket_unknown||*status>=500||*status==409&&["REQUEST_IN_FLIGHT","ORDER_STATUS_UNKNOWN"].contains(&code));(if unknown{"unknown"}else if (200..300).contains(status){"success"}else{"rejected"},*status,retry.clone(),code.to_string())},Err(_)=>(if write{"unknown"}else{"rejected"},observed_status,observed_retry,String::new())};
   let returned_order_id=call.as_ref().ok().and_then(|(_,_,d)|id_value(&d["orderId"]));
   let validated=call.and_then(|(status,retry,data)|{if !(200..300).contains(&status){let mut e=fail("OFFICIAL_REQUEST_REJECTED");e.status=Some(status);e.may_have_executed=outcome=="unknown";let _=retry;return Err(e);}if write{self.record_write_response(&request,&spec,status,started,&data)?;}validator(self,&data)?;Ok((status,data))});
   let final_outcome=if write&&validated.is_err()&&status<300{"unknown"}else{outcome};
@@ -246,6 +250,27 @@ impl Transport {
    need(v["totalCost"].as_f64().is_some_and(|n|n.is_finite()&&n>=0.0),"INVALID_ACK_REPORTED_NOTIONAL")?;Ok(())
   })
  }
+ /// Full-fill atomic BUY baskets only. The current live Authority rejects this
+ /// endpoint until a separately checked package reservation/dispatch exists.
+ pub fn place_all_or_none(&mut self,basket:multi_leg::Basket,permit:Permit)->Result<multi_leg::Outcome>{
+  self.last_basket_response=None;
+  let spec=multi_leg::request(&basket,&self.config.scope,&permit)?;
+  self.guard(&spec,Some(&permit),false)?;
+  let request_evidence=multi_leg::record_request(&self.config.queue_dir,&spec,&basket,&permit)?;
+  let acknowledgment=std::cell::RefCell::new(None);
+  let result=self.perform(spec,Some(&permit),|_,value|{*acknowledgment.borrow_mut()=Some(multi_leg::validate_ack(value,&basket)?);Ok(())});
+  match result {
+   Ok(receipt)=>match (acknowledgment.into_inner(),self.last_basket_response.clone()){
+    (Some(acknowledgment),Some(evidence))=>Ok(multi_leg::Outcome::FullFillReported{receipt,acknowledgment,evidence,request_evidence}),
+    _=>{self.poisoned=true;let mut error=fail("BASKET_VALIDATED_EVIDENCE_MISSING");error.may_have_executed=true;Ok(multi_leg::Outcome::Unknown{error,evidence:self.last_basket_response.clone(),request_evidence})},
+   },
+   Err(error)=>{
+    if !error.may_have_executed {if let Some(evidence)=self.last_basket_response.clone(){if let Ok(body)=multi_leg::read_evidenced_error(&evidence){if let Some(reason)=multi_leg::zero_execution(evidence.status,&body,basket.legs.len()){return Ok(multi_leg::Outcome::NoExecution{error,reason,evidence,request_evidence});}}}return Err(error);}
+    Ok(multi_leg::Outcome::Unknown{error,evidence:self.last_basket_response.clone(),request_evidence})
+   }
+  }
+ }
+ pub fn last_basket_response_evidence(&self)->Option<&multi_leg::ResponseEvidence>{self.last_basket_response.as_ref()}
  pub fn cancel(&mut self,order_id:String,permit:Permit)->Result<Receipt>{self.owned(&order_id)?;self.perform(RequestSpec{method:"DELETE".into(),endpoint:format!("/orders/{order_id}"),body:None,body_json:None},Some(&permit),|s,v|need(id_value(&v["orderId"]).as_ref()==Some(&order_id)&&v["tournamentId"]==s.config.scope.tournament_id,"CANCEL_ACK_SCOPE"))}
  pub fn reconcile(&mut self)->Result<AccountReconciliation>{let started=utc(self.clock.now_ms())?;let tournament=self.request(Endpoint::Tournament)?;let positions=self.request(Endpoint::Positions)?;let orders=self.request(Endpoint::Orders{status:"all".into()})?;let cash=tournament.data["myBalance"].to_string();decimal_units(&cash)?;Ok(AccountReconciliation{tournament,positions,orders,exact_cash:cash,started_at:started,completed_at:utc(self.clock.now_ms())?,adopts_holdings:false})}
  pub fn reconcile_unknown(&mut self,binding:Value)->Result<()> {self.authority.reconcile_unknown(&self.config.scope,&binding,self.clock.now_ms())?;self.command(json!({"op":"reconcile","binding":binding,"reconciled":true,"lease_valid":true,"permit_valid":true}))?;Ok(())}
