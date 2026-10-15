@@ -61,6 +61,7 @@ pub fn no_execution(bank:&Session,p:&Value,b:&Basket,s:&Scope,permit:&Permit,err
 fn component(bank:&Session,p:&Value,s:&Scope,index:usize)->Result<(Value,String)>{
  current(bank,p,s)?;let l=p["legs"].get(index).ok_or("PACKAGE_LEG_INDEX")?;
  let id=l["qid"].as_u64().ok_or("PACKAGE_QID")?;let actual=l["actualOrderId"].as_str().ok_or("PACKAGE_NOT_ACKNOWLEDGED")?;
+ need(l["exchangeId"].as_str().and_then(|ex|s.exchanges.get(ex)).map(|market|l["marketId"]==*market)==Some(true))?;
  need(bank.engine().live_order_bindings().get(&id).map(String::as_str)==Some(actual))?;
  let q=bank.engine().order_records().into_iter().find(|q|q["id"]==id).ok_or("PACKAGE_QUOTE_MISSING")?;
  need(q["exchangeId"]==l["exchangeId"]&&q["marketId"]==l["marketId"]&&q["side"]==l["side"]&&q["action"]=="buy"&&q["quantity"]==l["quantity"]&&q["price"]==l["limitPrice"])?;Ok((q,actual.to_owned()))
