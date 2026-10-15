@@ -415,7 +415,7 @@ pub fn main()->Result<()>{
   // the original fresh-entry limit. REST coverage must use that replayed limit.
   let managed_market_limit=bank.engine().policy()["maximumMarkets"].as_u64().ok_or("LIVE_MARKET_CAP")? as usize;
   let discovery_read_limit=c.policy["maximumMarkets"].as_u64().ok_or("LIVE_MARKET_CAP")? as usize;
-  let mut universe=if c.all_markets{Some(Universe::new(&c.scope.exchanges,if fully_managed{&empty_positions}else{seed.get("excludedPositionsAtTransfer").ok_or("LIVE_UNIVERSE_SEED")?},managed_market_limit)?.with_discovery_limit(discovery_read_limit)?)}else{None};
+  let mut universe=if c.all_markets{Some(Universe::new(&c.scope.exchanges,if fully_managed{&empty_positions}else{seed.get("excludedPositionsAtTransfer").ok_or("LIVE_UNIVERSE_SEED")?},managed_market_limit)?.with_discovery_limit(discovery_read_limit)?.with_tournament(&c.scope.tournament_id)?)}else{None};
   // Previously owned holdings are filtered from the financial feed as well as discovery.
   let pairs:Value=if let Some(u)=&universe{u.pairs(&c.scope.exchanges)}else{c.scope.exchanges.iter().map(|(e,m)|json!({"exchangeId":e,"marketId":m})).collect::<Vec<_>>().into()};
   let start=now();let mut source_state=RestSource::new(&pairs,&c.scope.tournament_id,&iso(start))?;source_state.seed_trade_facts(bank.source_facts())?;
@@ -440,7 +440,7 @@ pub fn main()->Result<()>{
    let mut reconciled=reconcile(&mut t,&c,&mut bank,&mut log,&mut reconciliation_cache)?;
    reconciliation_schedule.completed(now(),pending_version(&log),reconciled.blocks_new_submissions)?;
    accept(&mut bank,&json!({"type":"tick","receivedAt":iso(now())}))?;
-   let selected=if let Some(u)=&mut universe{u.select(&bank.engine().required_exchanges())?}else{c.scope.exchanges.keys().cloned().collect()};
+   let selected=if let Some(u)=&mut universe{u.select_at(&bank.engine().required_exchanges(),now())?}else{c.scope.exchanges.keys().cloned().collect()};
    for (selected_index,ex) in selected.iter().enumerate(){require_stream(stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?)?;let market=&c.scope.exchanges[ex];let from=windows[ex];let next=source(&mut t,&c,&mut bank,&mut source_state,ex,market,from)?;windows.insert(ex.clone(),next);drain_stream(stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?,&mut bank,&mut source_state,&mut breadth,&mut universe)?;
     if reconciliation_schedule.due(now(),pending_version(&log))?.is_some(){
      reconciled=reconcile(&mut t,&c,&mut bank,&mut log,&mut reconciliation_cache)?;
