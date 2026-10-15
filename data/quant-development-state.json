@@ -292,8 +292,8 @@
   "currentMilestone": {
     "name": "Find a measurable positive Baal edge",
     "stage": "no profitable policy selected",
-    "latestFinding": "The frozen taker-reversal successor generated zero signals in 9,763 later books across 221 streams; the saved paper runner is stale with zero observations and no process is active. Only historical tracked contest realization is +0.005 across six orders.",
-    "next": "Do not claim profit or loosen the tested trigger on the same suffix; continue only with a separately frozen, truly subsequent market sample and a predeclared candidate."
+    "latestFinding": "A 24-hour historical-value dip rule calibrated only on the older discovery slice produced 27 later signals, but zero had a timely post-latency same-market quote; no entry or P&L can be validated.",
+    "next": "Use a new subsequent capture with verified same-market executable receipts; keep execution stopped and do not manufacture signal-time fills."
   },
   "delegation": {
     "mode": "solo",
@@ -926,7 +926,7 @@
     "realized": "0.000000",
     "verifiedAt": "2026-10-07T06:16:58.422Z"
   },
-  "updatedAt": "2026-10-15T01:06:30Z",
+  "updatedAt": "2026-10-15T01:15:56Z",
   "foreignCandidateRepair": {
     "commit": "17b544005c7578c95df4dc4f2f30ee8e2cc75a19",
     "collector": 32364,
@@ -1014,7 +1014,7 @@
     "actualFillsProven": false,
     "contestOrders": 0
   },
-  "nextProfitabilityWork": "No profitable policy or live paper process is verified. Move the strategy research to a longer horizon with real executable depth and a truly subsequent capture; do not mistake this journal's sparse, bursty per-market observations for a platform-wide API ceiling. Fresh capture cannot resume while C: has zero free bytes; EXECUTION_STOP remains set.",
+  "nextProfitabilityWork": "No profitable policy or active paper run is verified. The historical dip candidate had 27 signals but zero timely entry books. Fresh evidence requires a renewed data capture; C: still had zero free bytes at the last check and EXECUTION_STOP remains set.",
   "oracle3Transfer20261014": {
     "issue": 113,
     "implementedAt": "2026-10-14 20:23:03 UTC",
@@ -1339,5 +1339,37 @@
       "streamsWith50OrMorePoints": 7,
       "interpretation": "Recorded observations in this saved journal are sparse and bursty: median same-market interval is 2.83 minutes, p90 40.1 minutes, and only 2/9,542 intervals are <=10 seconds. This limits what this capture can test for HFT; it does not establish a platform-wide feed/API ceiling."
     }
+  },
+  "longHorizonDip20261015": {
+    "taskIssue": 23,
+    "report": "data/long-horizon-dip-20261015.json",
+    "updatedAt": "2026-10-15T01:15:56Z",
+    "sourceSha256": "72dcf4adc449971e2f418f66ae39fb9bb068ccf9f8d120c740541a0751725f1a",
+    "training": {
+      "cutoff": "2026-10-10T06:32:28.562Z",
+      "eligiblePositiveDiscounts": 14652,
+      "p95HistoricalMidMinusAsk": 0.0125
+    },
+    "holdout": {
+      "cutoffExclusive": "2026-10-13T14:27:23.327Z",
+      "books": 9763,
+      "streams": 221,
+      "excludedGovernorContracts": 16,
+      "eligibleFeatureRows": 6470,
+      "signals": 27
+    },
+    "execution": {
+      "latencyProxyMs": 1721,
+      "postLatencyWindowMs": 2000,
+      "timelyBooks": 0,
+      "entryFillProxies": 0,
+      "roundTrips": 0
+    },
+    "conclusion": "No actionable entry could be validated: 0/27 signals had a same-market book within the fixed post-latency entry window. Signal-time-ask fills would be invented. No P&L or profitability conclusion.",
+    "actualOrders": 0,
+    "actualFills": false,
+    "profitabilityEstablished": false,
+    "apiReads": 0,
+    "runtimeChanges": 0
   }
 }
