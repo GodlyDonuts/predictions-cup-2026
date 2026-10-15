@@ -4,7 +4,7 @@ Human authority: the execution owner may manage inherited holdings and buy or se
 
 ## Native event
 
-`actual_position_adoption` is an official-receipt event, accepted only by a live engine. `inventory::adoption(receipt, engine, tournament_id, tournament_slug, exchange_market_map, processed_at)` normalizes an already obtained complete positions receipt. Add `pub mod inventory;` to the live-runtime module registry when integrating the helper. The helper performs no network call.
+`actual_position_adoption` is an official-receipt event, accepted only by a live engine. `inventory::adoption(receipt, engine, tournament_id, tournament_slug, exchange_market_map, processed_at)` normalizes an already obtained complete positions receipt. The live-runtime module registry exposes the helper as `inventory`. The helper performs no network call.
 
 The event carries `source: official_sig_api_v1`, `authority: human_moloch_inherited_management_20261015`, `complete: true`, the exact receipt hash, original request/receipt clocks, processing time, tournament, all normalized position rows, `openingCost` and `effectiveMaximumMarkets`. Lot IDs, positive quantities, outcome side, entry prices and original openedAt values remain source evidence. Signed row quantities must equal the lot sum and outcome. RFC3339 timestamps preserve up to nanoseconds, including the observed seven fractional digits.
 
@@ -36,4 +36,4 @@ The bridge boundary stays at the historical prefix. Later suffix events, includi
 4. Add openingInventoryCost to the account-cash expectation, compare all physical holdings to attributed quantities, include adopted markets in the discovery/required scope, and size REST selection using the effective policy maximumMarkets. Keep three fresh-market slots in addition to inherited obligations, without another account worker.
 5. Resume the existing worker with an immutable checked binary. Verify actual order/fill receipts, accounting and fresh process health. Do not call the lot-basis inherited gain official account profit or count old fills as new Moloch fills.
 
-Candidate source/tests require Linux Rust validation before publication or production integration. Main takeover and production profit are separate claims.
+Final checked integration source is `572034cbb723360fd34b9ecc47759be00b6104b3`. Linux suites pass81 native checks and33 live checks (30 unit plus3 normalization helper checks); locked release builds of the upgrade helper and live runtime/reconciler also pass. The merged native/live/SDK/account-queue source trees match that checked integration exactly. The parent still must verify the exact production prefix bridge, adoption event and new live service before deployment/health is claimed. Actual profitable production remains unproven.
