@@ -6,6 +6,7 @@ impl Engine {
  pub fn live_order_bindings(&self)->&BTreeMap<u64,String>{&self.live_orders}
  pub(super) fn apply_live(&mut self,e:&Value,_at:i64)->Result<()> {
   if !self.live_mode {return Err("ACTUAL_EVENT_SOURCE")}
+  if e["type"].as_str().is_some_and(|s|s.starts_with("actual_collateral_")){return self.apply_collateral(e,_at)}
   if e["type"]=="live_entry_window" {return self.apply_entry_window(e,_at)}
   if e["type"]=="actual_position_adoption" {return self.adopt_positions(e,_at)}
   if e["type"]=="unsubmitted_intent_retired" {
@@ -88,7 +89,7 @@ impl Engine {
  }
  /// Constant attribution principal, independent of later sales and account cash.
  pub fn opening_inventory_cost(&self)->i128{self.inherited.as_ref().map_or(0,|i|i.opening_cost)}
- fn consume_inherited(&mut self,exchange:&str,side:Side,mut quantity:u64,proceeds_per_share:i128)->Result<()>{
+ pub(super) fn consume_inherited(&mut self,exchange:&str,side:Side,mut quantity:u64,proceeds_per_share:i128)->Result<()>{
   let Some(inherited)=self.inherited.as_mut() else{return Ok(())};
   let Some(lots)=inherited.remaining.get_mut(&(exchange.into(),side)) else{return Ok(())};
   while quantity>0&&!lots.is_empty(){let lot=lots.front_mut().ok_or("ADOPTION_LOTS")?;let n=quantity.min(lot.quantity);inherited.realized_gross=inherited.realized_gross.checked_add((proceeds_per_share-lot.price).checked_mul(n as i128).ok_or("ADOPTION_RANGE")?).ok_or("ADOPTION_RANGE")?;quantity-=n;lot.quantity-=n;if lot.quantity==0{lots.pop_front();}}

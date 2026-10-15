@@ -4,6 +4,8 @@
 mod live;
 #[path = "engine_packages.rs"]
 mod packages;
+#[path = "engine_collateral.rs"]
+mod collateral;
 use crate::{Reservation, Result, SCALE, Side, TICK, Wallet, amount, fee, money, price};
 use serde_json::{Value, json};
 use sha2::{Digest, Sha256};
@@ -439,6 +441,7 @@ pub struct Engine {
     live_orders: BTreeMap<u64,String>,
     live_fill_ids: BTreeMap<String,String>,
     inherited: Option<InheritedInventory>,
+    collateral: Option<collateral::Ledger>,
     daily_entry_windows: Option<Value>,
     live_packages: BTreeMap<String, packages::LivePackage>,
     package_orders: BTreeMap<u64,String>,
@@ -537,6 +540,7 @@ impl Engine {
     fn audit(&self) -> Result<()> {
         self.wallet.audit()?;
         self.audit_packages()?;
+        self.audit_collateral()?;
         for (ex, side) in self.wallet.lots.keys() {
             let held = self.wallet.quantity(ex, *side);
             if held < self.pledge(ex, *side) + held.min(self.opposite_buys(ex, *side)) {
@@ -691,6 +695,7 @@ impl Engine {
             live_orders: BTreeMap::new(),
             live_fill_ids: BTreeMap::new(),
             inherited: None,
+            collateral: None,
             daily_entry_windows: None,
             live_packages: BTreeMap::new(),
             package_orders: BTreeMap::new(),
@@ -1433,7 +1438,7 @@ impl Engine {
         let kind = e["type"].as_str().ok_or("EVENT_TYPE")?;
         let mut duplicate = false;
         match kind {
-            "actual_order_ack" | "actual_fill" | "actual_order_terminal" | "unsubmitted_intent_retired" | "actual_position_adoption" | "live_entry_window" => self.apply_live(e,at)?,
+            "actual_order_ack" | "actual_fill" | "actual_order_terminal" | "unsubmitted_intent_retired" | "actual_position_adoption" | "live_entry_window" | "actual_collateral_baseline" | "actual_collateral_execution" | "actual_collateral_settlement" => self.apply_live(e,at)?,
             "live_package_reserve" | "live_package_attempt" | "live_package_no_execution" | "live_package_ack" | "live_package_unknown" | "live_package_complete" => self.apply_package(e,at)?,
             "book" => {
                 let b = Book::parse(&e["book"], &e["receivedAt"])?;
@@ -1756,7 +1761,7 @@ impl Engine {
         // No persistent state is set: a subsequent tick/book plans normally.
         if kind!="unsubmitted_intent_retired"&&e.get("deferPlanningForPackage").is_some(){return Err("PACKAGE_PLANNING_FLAG_EVENT")}
         let defer_package_plan=kind=="unsubmitted_intent_retired"&&e["deferPlanningForPackage"]==true;
-        if kind!="live_entry_window"&&!kind.starts_with("live_package_")&&!defer_package_plan{self.reconcile(at)?;}
+        if kind!="live_entry_window"&&!kind.starts_with("live_package_")&&!kind.starts_with("actual_collateral_")&&!defer_package_plan{self.reconcile(at)?;}
         Ok(())
     }
     pub fn report(&self) -> Result<Value> {
@@ -1800,6 +1805,7 @@ impl Engine {
         if let Some(mandate)=&self.daily_entry_windows {
             report["dailyEntryWindows"]=json!({"mandate":mandate,"entryStopAt":self.policy.raw["entryStopAt"]});
         }
+        if self.collateral.is_some(){report["collateralAccounting"]=self.collateral_report()?;report["profitSignalEligible"]=json!(false);}
         if !self.live_packages.is_empty(){report["livePackages"]=json!({"records":self.package_records(),"blocksNewSubmissions":self.package_blocks_new_submissions()});}
         Ok(report)
     }

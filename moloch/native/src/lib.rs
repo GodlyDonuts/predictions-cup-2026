@@ -305,6 +305,15 @@ impl Wallet {
         *self = next;
         Ok(())
     }
+    /// Exact official settlement, not an exchange sale or a fabricated fill.
+    /// Supports zero/full payouts; keeps the unlevered accounting identity.
+    pub fn settle_owned_exact(&mut self, exchange:&str, side:Side, n:u64, payout:i128)->Result<i128> {
+        if n==0||payout<0||payout> (n as i128).checked_mul(SCALE).ok_or("SETTLEMENT_RANGE")? {return Err("SETTLEMENT_PAYOUT")}
+        let mut next=self.clone();let cost=next.take(exchange,side,n)?;
+        next.cash=next.cash.checked_add(payout).ok_or("SETTLEMENT_RANGE")?;
+        next.realized=next.realized.checked_add(payout-cost).ok_or("SETTLEMENT_RANGE")?;
+        next.audit()?;*self=next;Ok(cost)
+    }
     pub fn audit(&self) -> Result<()> {
         let reserved = self.reserved()?;
         let owned = self.owned_cost();

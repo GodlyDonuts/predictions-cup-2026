@@ -97,6 +97,7 @@ pub fn engine_identity() -> String {
         include_bytes!("engine.rs").as_slice(),
         include_bytes!("engine_live.rs").as_slice(),
         include_bytes!("engine_packages.rs").as_slice(),
+        include_bytes!("engine_collateral.rs").as_slice(),
         include_bytes!("lib.rs").as_slice(),
         include_bytes!("legacy.rs").as_slice(),
         include_bytes!("journal.rs").as_slice(),
@@ -387,6 +388,23 @@ impl Session {
             ),
         )
     }
+    /// Exact original prepared-event digest from committed retained references.
+    pub fn committed_source_hash(&self,source_id:&str,sequence:u64)->Option<&str>{self.refs.get(&(source_id.to_owned(),sequence)).map(String::as_str)}
+    /// Actual sealed current head, not a path-selected or cached projection.
+    pub fn durable_head(&self)->Value {sealed(json!({"manifestHash":self.manifest["hash"],"sequence":self.chain.sequence,"previous":self.chain.previous}))}
+    fn collateral_scope(&self,event:&Value,sequence:u64,previous:&str,engine:&Engine)->Result<()> {
+        if event["type"].as_str().is_some_and(|s|s.starts_with("actual_collateral_")) {
+            let seed=self.live_account_seed().ok_or("COLLATERAL_SESSION_NOT_LIVE")?;
+            if event["bankScope"]["runId"]!=seed["runId"]||event["bankScope"]["bankManifestHash"]!=self.manifest["hash"]||event["boundary"]["nativeHead"]!=sealed(json!({"manifestHash":self.manifest["hash"],"sequence":sequence,"previous":previous})) {return Err("COLLATERAL_SESSION_BINDING".into())}
+            if event["type"]=="actual_collateral_baseline" {
+                let seed_cash=crate::amount(seed["availableCash"].as_str().ok_or("COLLATERAL_SESSION_CASH")?)?;
+                let expected=seed_cash.checked_add(engine.wallet.cash).and_then(|n|n.checked_sub(engine.wallet.initial)).and_then(|n|n.checked_add(engine.opening_inventory_cost())).ok_or("COLLATERAL_SESSION_CASH")?;
+                let raw=&event["after"]["account"]["data"]["balance"];
+                let actual=crate::amount(&raw.as_str().map(str::to_owned).unwrap_or_else(||raw.to_string()))?;
+                if actual!=expected{return Err("COLLATERAL_SESSION_OPENING_CASH".into())}
+            }
+        }Ok(())
+    }
     pub fn accept(&mut self, source_id: &str, sequence: u64, event: &Value) -> Result<bool> {
         if self.poisoned {
             return Err("PAPER_SESSION_POISONED".into());
@@ -411,6 +429,7 @@ impl Session {
         if sequence != self.cursors.get(source_id).copied().unwrap_or(0) + 1 {
             return Err("PAPER_SOURCE_SEQUENCE_GAP".into());
         }
+        self.collateral_scope(event,self.chain.sequence,&self.chain.previous,&self.engine)?;
         let mut event = event.clone();
         event["sourceRef"] = json!({"id":source_id,"sequence":sequence,"hash":digest});
         let mut next = self.engine.clone();
@@ -467,6 +486,7 @@ impl Session {
             }
             let previous=staged_cursors.get(source_id).or_else(||self.cursors.get(source_id)).copied().unwrap_or(0);
             if previous.checked_add(1)!=Some(sequence){return Err("PAPER_SOURCE_SEQUENCE_GAP".into())}
+            self.collateral_scope(event,chain.sequence,&chain.previous,next.as_ref().unwrap_or(&self.engine))?;
             let mut event=event.clone();event["sourceRef"]=json!({"id":source_id,"sequence":sequence,"hash":digest});
             next.get_or_insert_with(||self.engine.clone()).advance(&event)?;
             let number=chain.sequence.checked_add(1).ok_or("PAPER_BATCH_SEQUENCE_RANGE")?;
