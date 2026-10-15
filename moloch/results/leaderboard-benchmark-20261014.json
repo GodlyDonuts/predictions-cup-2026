@@ -1,0 +1,216 @@
+{
+  "bot": "Moloch",
+  "source": "Official SIG API v1, explicit midterm-elections tournament",
+  "snapshots": [
+    {
+      "observedAt": "2026-10-14T06:06:46.615Z",
+      "status": 200,
+      "endpoint": "/tournaments/midterm-elections/leaderboard?period=all&sort=pnl&limit=10",
+      "sourceResponseHash": "ff0fb3e1f367f4b9fa3a5ff44bcb0a0c940cd2849ae1d85a2c0754b977513e44",
+      "period": "all",
+      "total": 1538,
+      "callerRank": 1264,
+      "top": [
+        {
+          "rank": 1,
+          "pnl": 952904.16,
+          "tradesCount": 3631,
+          "volume": 12363769.47,
+          "winRate": null,
+          "roi": 7.71
+        },
+        {
+          "rank": 2,
+          "pnl": 873457.01,
+          "tradesCount": 16372,
+          "volume": 20559956.77,
+          "winRate": null,
+          "roi": 4.25
+        },
+        {
+          "rank": 3,
+          "pnl": 786104.26,
+          "tradesCount": 12483,
+          "volume": 17390347.21,
+          "winRate": null,
+          "roi": 4.52
+        },
+        {
+          "rank": 4,
+          "pnl": 741827.09,
+          "tradesCount": 3473,
+          "volume": 9556883.82000001,
+          "winRate": null,
+          "roi": 7.76
+        },
+        {
+          "rank": 5,
+          "pnl": 601231.23,
+          "tradesCount": 916,
+          "volume": 4986428.355,
+          "winRate": null,
+          "roi": 12.06
+        },
+        {
+          "rank": 6,
+          "pnl": 567232.81,
+          "tradesCount": 2387,
+          "volume": 5578726.775,
+          "winRate": null,
+          "roi": 10.17
+        },
+        {
+          "rank": 7,
+          "pnl": 524977.67,
+          "tradesCount": 27480,
+          "volume": 12717121.33,
+          "winRate": null,
+          "roi": 4.13
+        },
+        {
+          "rank": 8,
+          "pnl": 453875.5,
+          "tradesCount": 5094,
+          "volume": 21161203.82,
+          "winRate": null,
+          "roi": 2.14
+        },
+        {
+          "rank": 9,
+          "pnl": 278191.62,
+          "tradesCount": 3118,
+          "volume": 5983108.08499999,
+          "winRate": null,
+          "roi": 4.65
+        },
+        {
+          "rank": 10,
+          "pnl": 263521.33,
+          "tradesCount": 2877,
+          "volume": 10735736.315,
+          "winRate": null,
+          "roi": 2.45
+        }
+      ]
+    },
+    {
+      "observedAt": "2026-10-14T06:06:59.190Z",
+      "status": 200,
+      "endpoint": "/tournaments/midterm-elections/leaderboard?period=1d&sort=pnl&limit=10",
+      "sourceResponseHash": "885204e4825eeb3505ca832d241b814c57de77afbac28c1bcb312a231f34ce5b",
+      "period": "1d",
+      "total": 270,
+      "callerRank": null,
+      "top": [
+        {
+          "rank": 1,
+          "pnl": 11036.54,
+          "tradesCount": 18,
+          "volume": 230152.925,
+          "winRate": null,
+          "roi": 4.8
+        },
+        {
+          "rank": 2,
+          "pnl": 8480.15,
+          "tradesCount": 306,
+          "volume": 315868.975,
+          "winRate": null,
+          "roi": 2.68
+        },
+        {
+          "rank": 3,
+          "pnl": 6152.21,
+          "tradesCount": 22,
+          "volume": 300825.99,
+          "winRate": null,
+          "roi": 2.05
+        },
+        {
+          "rank": 4,
+          "pnl": 5986.51,
+          "tradesCount": 1,
+          "volume": 493.57,
+          "winRate": null,
+          "roi": 500
+        },
+        {
+          "rank": 5,
+          "pnl": 5262.63,
+          "tradesCount": 29,
+          "volume": 258961.735,
+          "winRate": null,
+          "roi": 2.03
+        },
+        {
+          "rank": 6,
+          "pnl": 5036.61,
+          "tradesCount": 14,
+          "volume": 108965.145,
+          "winRate": null,
+          "roi": 4.62
+        },
+        {
+          "rank": 7,
+          "pnl": 4417,
+          "tradesCount": 84,
+          "volume": 366942.925,
+          "winRate": null,
+          "roi": 1.2
+        },
+        {
+          "rank": 8,
+          "pnl": 4292.62,
+          "tradesCount": 38,
+          "volume": 364313.205,
+          "winRate": null,
+          "roi": 1.18
+        },
+        {
+          "rank": 9,
+          "pnl": 4000.11,
+          "tradesCount": 101,
+          "volume": 63309.805,
+          "winRate": null,
+          "roi": 6.32
+        },
+        {
+          "rank": 10,
+          "pnl": 3299.25,
+          "tradesCount": 6,
+          "volume": 22584.79,
+          "winRate": null,
+          "roi": 14.61
+        }
+      ]
+    }
+  ],
+  "identitiesOmitted": true,
+  "accountRankingIsNotMolochPaperRanking": true,
+  "interpretation": [
+    "Rankings are the API-reported P&L view, not evidence of realized cash profit.",
+    "The leading all-time P&L row has fewer trades than second place; trade count alone is not the objective.",
+    "Documented ROI divides period P&L by period volume, not starting capital.",
+    "Cheaper inventory-backed spreads are a capital-efficiency hypothesis, not a conclusion about leader strategies."
+  ],
+  "strategyExperiment": {
+    "mode": "cheapSpread",
+    "maximumEntryPrice": "0.100000",
+    "quantity": 100,
+    "maximumCommitted": "40.000000",
+    "maximumMarketCost": "10.000000",
+    "example": {
+      "buyPrice": "0.045000",
+      "sellPrice": "0.050000",
+      "pairedPacketSharesUnderTenCap": 10,
+      "cheapEntrySharesUnderTenCap": 100,
+      "syntheticClosedShares": 50,
+      "syntheticProfit": "0.250000",
+      "actualMarketProfitEstablished": false
+    },
+    "successor": 25
+  },
+  "contestOrders": 0,
+  "profitabilityEstablished": false,
+  "nodeChecks": 81
+}

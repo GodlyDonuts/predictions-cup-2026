@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "target": "personal ARM64 VPS",
+  "releaseDirectory": "/home/archon/apps/moloch/releases/47507353",
+  "currentDirectory": "/home/archon/apps/moloch/current",
+  "sourceCommit": "47507353b3fae9a0754d062ce95010af7971b037",
+  "archiveSha256": "7a4495b48312c7e34ac04169fbe26810a022d467b1a2b8a5e88a328bbee47f1f",
+  "verifiedReleaseFiles": 151,
+  "platform": "linux",
+  "architecture": "arm64",
+  "nodeVersion": "v24.22.0",
+  "cargoVersion": "1.99.0",
+  "nativeRustReleaseBuilt": true,
+  "nativeReplayFinancialParityPassed": true,
+  "linuxTests": {"total": 189, "passed": 188, "failed": 0, "skipped": 1, "skipReason": "Windows PowerShell adapter timing test"},
+  "configuredReadAdmissionsPerMinute": 100,
+  "loopbackBenchmark": {
+    "requests": 100,
+    "elapsedMs": 59470,
+    "minimumStartSpacingMs": 600,
+    "cpuMilliseconds": 303.688,
+    "sigRequests": 0
+  },
+  "service": {"name": "moloch-capture.service", "unitFileState": "disabled", "activeState": "inactive", "mainPid": 0},
+  "networkEnabled": false,
+  "tradingEnabled": false,
+  "networkStopMarker": true,
+  "executionStopMarker": true,
+  "networkEnableMarkerPresent": false,
+  "credentialTransferred": false,
+  "financialStateMigrated": false,
+  "historicalClosedWalletSummaryIncluded": true,
+  "limitations": [
+    "No SIG API requests or bot activation were performed on the VPS.",
+    "Loopback pacing measures collection overhead, not end-to-end strategy execution or remote API latency.",
+    "The 100-read account budget is shared across hosts and keys; existing collectors must be stopped and reconciled before allocating the whole budget here.",
+    "Active Windows journals and credentials were not copied. Infrastructure installation does not reset or transfer the paper wallet.",
+    "Profitability remains unproven."
+  ]
+}

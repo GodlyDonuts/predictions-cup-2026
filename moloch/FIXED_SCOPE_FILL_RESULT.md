@@ -1,0 +1,7 @@
+# Fixed-scope fill eligibility and quote competitiveness
+
+Both phase-42 live tails were reconstructed from their exact terminal parent snapshots and their pinned current journal prefixes. Each event and financial state hash was checked. At 20:31:31/42 UTC each had three unique historical exchange-1027 prints totaling 1,100 shares, zero new fills and no active quote/print pairs. Old executions delivered during initial reconciliation do not count as fills of newly submitted quotes. Original banks and attribution assumptions remain unchanged.
+
+The scoped comparison now optionally includes one-tick-inside paired quotes, inside quotes with retained hedge and inside conditional-FIFO quotes: `research/scoped-policy.mjs SOURCE EXCHANGE NEW_OUTPUT --inside`. It also applies the execution-scope coverage audit to every alternative. The source prefix through 20:32:05.534 has zero fills across all nine variants. Inside variants reserve 148.255 versus the join baseline's 147.510, not purchase cost or return. No variant qualifies for ranking while its quotes remain unresolved.
+
+The live fixed-scope experiment continues under its registered policy. Entry and exit coverage remain active for both actual alternative ledgers. No latency, attribution, capital limit or policy was changed in the running banks. Evidence: `data/moloch-fixed-scope-fill-audit-20261014-42.json` and `data/moloch-inside-quote-20261014-42.json`. These observations cannot establish profitable turnover or justify production activation.

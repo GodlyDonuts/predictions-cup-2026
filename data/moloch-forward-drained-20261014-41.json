@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "banks": [
+    {
+      "name": "competition-scale-20261014-11",
+      "snapshotHash": "c8641c0e4860127d753744e6913d4cf0967253d83c834b2efaa6623ab421c40f",
+      "at": "2026-10-14T20:09:24.323Z",
+      "cash": "100000.000000",
+      "realized": "0.000000",
+      "ownedCost": "0.000000",
+      "reservedCash": "0.000000",
+      "unresolved": 0,
+      "entriesEnabled": false
+    },
+    {
+      "name": "queue-duration-20261014-7",
+      "snapshotHash": "0cd6bf730303f142511bb8d3ae0a41bf1f91fbc87b724c030de034da9be4f86f",
+      "at": "2026-10-14T20:09:24.121Z",
+      "cash": "100000.060000",
+      "realized": "0.060000",
+      "ownedCost": "0.000000",
+      "reservedCash": "0.000000",
+      "unresolved": 0,
+      "entriesEnabled": false
+    }
+  ],
+  "newPaperCapital": "0.000000",
+  "contestOrders": 0,
+  "profitabilityEstablished": false
+}

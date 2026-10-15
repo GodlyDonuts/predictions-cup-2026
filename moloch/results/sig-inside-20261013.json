@@ -1,0 +1,91 @@
+{
+  "bot": "Moloch",
+  "sourceEpisode": "live-sig-20261013-10",
+  "sourceFinalHash": "e43d25430a33787c0a9f8686075045514f5830aecc5f878ef778ddcac4ea4434",
+  "baselineFinancialParity": true,
+  "variants": [
+    {
+      "insideTicks": 0,
+      "newFills": [],
+      "realized": "0.000000",
+      "lastFresh": {
+        "at": "2026-10-13T23:15:56.698Z",
+        "pnl": "0.000000"
+      },
+      "worst": {
+        "at": "2026-10-13T23:09:54.939Z",
+        "pnl": "0.000000"
+      },
+      "orders": 95,
+      "reserved": "34.725000"
+    },
+    {
+      "insideTicks": 1,
+      "newFills": [],
+      "realized": "0.000000",
+      "lastFresh": {
+        "at": "2026-10-13T23:15:56.698Z",
+        "pnl": "0.000000"
+      },
+      "worst": {
+        "at": "2026-10-13T23:09:54.939Z",
+        "pnl": "0.000000"
+      },
+      "orders": 95,
+      "reserved": "34.800000"
+    }
+  ],
+  "selection": "insideTicks=1 explicit prospective paper experiment; default remains 0",
+  "tests": {
+    "nodePassed": 52
+  },
+  "newPaperCapital": "0.000000",
+  "contestOrders": 0,
+  "profitabilityEstablished": false,
+  "limitations": [
+    "This development replay produced no fills in either variant and does not establish profitability.",
+    "Depth microprice guides price improvement only; it is an uncalibrated heuristic.",
+    "Strict fills, full funding, fees and unresolved liabilities are unchanged.",
+    "The prospective episode used its archived startup source; the later profit-preserving exit-improvement guard is separately tested."
+  ],
+  "prospective": {
+    "observedThrough": "2026-10-13T23:33:00.333Z",
+    "status": "completed",
+    "captureExit": 0,
+    "insideTicks": 1,
+    "newPaperCapital": "0.000000",
+    "cash": "1000.000000",
+    "realized": "0.000000",
+    "fills": 0,
+    "ownedCost": "0.000000",
+    "reservedCash": "29.850000",
+    "newModeledOrders": 12,
+    "successfulRESTReads": 24,
+    "authenticationWrites": 1,
+    "streamMetrics": {
+      "rows": 118,
+      "pushedBooks": 36,
+      "olderBooks": 0,
+      "initialResyncs": 4,
+      "gaps": 0,
+      "duplicates": 0,
+      "unblocks": 4,
+      "precisionReconciliations": 6
+    },
+    "sourceIdentity": {
+      "execution/atomic-rename.mjs": "686aaf75a0da32bd1cc5b17e5ac6b4d00094cae50cefaff69534b3eed817fda7",
+      "execution/ledger.mjs": "b812d54a35e8f30bdab446d9f601c14181b763400d515369ce8e2b86faa1ef58",
+      "feed/contract.mjs": "c695e7dfd6aba3c988a8ac9cdaf29c206fec9890a39533935a7075699df26dc5",
+      "live-paper/frozen-paper-graph.mjs": "8cb0c144c0cdeb3921629c4a051a88e1116780bf3c543765ccecd2939df0839e",
+      "moloch/engine.mjs": "e824d8a3deec9b065c22c85380015bcfc278a4e959ffaf3bf0d96f96c0318762",
+      "moloch/live.mjs": "3297402e75f23a8957eb26fc8dc941d8503fbde967a5317d4ba7cad935420c52",
+      "moloch/sig-source.mjs": "32b5de7ad293c8107404abd5d7ec91a9eede860a91e20a826a92e92ad295d0c1",
+      "moloch/stream-source.mjs": "50043c3650c65f9ed468503d5fa29289e1518df9869b9b750271fc85be8b2eb0",
+      "paper/fixed.mjs": "057e70d21ac62cc01dae8c98cd93f4869c5f6bb69ef7eab98af7e891b88fd00d",
+      "moloch/capture-sig.ps1": "6515f1d5984cbbbd6c9ba549bf176ced38a7ef50a5aca7c0d42f93484150fec6",
+      "moloch/realtime/capture.mjs": "8d837281bdc393a253df5f92fb9b2edb53f090534ccca4e2cf3ab151ed48e843",
+      "moloch/realtime/package.json": "8c836a7565c9aded8843ad68f99e4430a5fe50fc108fcb9a73b379a01fcad8af",
+      "moloch/realtime/pnpm-lock.yaml": "65f2e5c798229c5ac62806c160ec7f620ff6fa3445da67f43733bded49b1f0d9"
+    }
+  }
+}

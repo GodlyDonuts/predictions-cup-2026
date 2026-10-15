@@ -1,0 +1,76 @@
+{
+  "basePolicy": {
+    "initialCash": "100000.000000",
+    "maximumCommitted": "40000.000000",
+    "maximumMarketCost": "10000.000000",
+    "quantity": 10000,
+    "maximumMarkets": 4,
+    "latencyMs": 3000,
+    "lifetimeMs": 600000,
+    "bookAgeMs": 10000,
+    "maximumSourceSilenceMs": 60000,
+    "minimumSpreadTicks": 1,
+    "minimumEdge": "0.001000",
+    "participationBps": 100,
+    "feeBps": 0,
+    "feePerShare": "0.000000",
+    "quoteMode": "pairedSpread",
+    "entriesEnabled": true,
+    "fillModel": "strictThrough",
+    "touchAttributionBps": 10000,
+    "insideTicks": 0,
+    "renewBeforeMs": 0,
+    "minimumQuoteAgeMs": 2500,
+    "writeGapMs": 2500,
+    "writesPerMinute": 24,
+    "inventoryTakerAfterMs": 0,
+    "entryExchangeIds": [
+      "1073"
+    ],
+    "maximumInventoryAgeMs": 1800000,
+    "retainProfitableHedge": false,
+    "maximumHedgeOvershoot": 0,
+    "entryDepthBps": 10000,
+    "inventoryAgeClock": "execution",
+    "inventoryMinimumGain": "0.005000",
+    "inventoryExitMode": "fixedGain",
+    "entryStopAt": "2026-10-15T01:24:01.769Z"
+  },
+  "variants": [
+    {
+      "name": "paired",
+      "overrides": {}
+    },
+    {
+      "name": "microprice",
+      "overrides": {
+        "quoteMode": "microprice"
+      }
+    },
+    {
+      "name": "paired-retained-hedge",
+      "overrides": {
+        "retainProfitableHedge": true
+      }
+    },
+    {
+      "name": "paired-one-tick-backoff",
+      "overrides": {
+        "entryBackoffTicks": 1
+      }
+    },
+    {
+      "name": "paired-without-flow-gate",
+      "overrides": {
+        "requireCurrentFlow": false
+      }
+    },
+    {
+      "name": "microprice-without-flow-gate",
+      "overrides": {
+        "quoteMode": "microprice",
+        "requireCurrentFlow": false
+      }
+    }
+  ]
+}

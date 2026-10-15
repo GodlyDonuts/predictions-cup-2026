@@ -1,3 +1,11 @@
+# Current Moloch execution ownership — October 15
+
+The human directly selected Moloch as the primary production bot, authorized the execution owner to improve it in production, and directed Moloch to take over `main` and the primary directory. [Task #120](https://github.com/GodlyDonuts/predictions-cup-2026/issues/120) owns live execution and reconciliation; [task #121](https://github.com/GodlyDonuts/predictions-cup-2026/issues/121) integrates source and documentation. This is direct human reassignment, without an invented Rhaegal RELEASE/ACK.
+
+Use one account worker and one persistent account queue. The existing VPS service, immutable binary/control binding, bank, actual dispatch journal and verified physical account state determine operation. Source publication does not start a second service, release an execution stop, renew an entry deadline, clear an unknown order, or adopt a position.
+
+The human also authorized management of inherited holdings when an advantage exists. This authority is separate from exact inventory/cost-basis reconciliation; mark unknown basis explicitly and preserve historical ownership and cash flows. All-market feed observation is distinct from concurrent funded market count. Follow [CURRENT_STATE](CURRENT_STATE.md) and the current task for dated evidence. Older ownership and runtime notes below remain historical.
+
 # October5: accelerated paired-contract paper and Rust transport
 
 Baal now runs two separately frozen Michigan Governor dual-NO paper policies inside the single collector. Full two-leg funding, later receipts, observed depth, zero fees and failed-hedge accounting are enforced. The original cohort holds a0.975 package with zero realized profit; its0.025 ordinary settlement surplus is conditional and not cash profit. Virtual-clock replay processes81.5 captured hours in about9.7seconds while preserving coverage gaps and exact original journal parity.125 correctness checks pass. Contrary Texas polls now block new fundamental entries, and two expired flat hosts are retired with accounting preserved. No contest activation was renewed. See [the measured sprint results](PROFIT_SPRINT_RESULTS.md) for results and limitations.

@@ -1,0 +1,85 @@
+{
+  "schemaVersion": 1,
+  "sourceEventSha256": "a8c6e796b58b8438065eaf9d046b7bc199a0ee0fc86559c19f22a092b748bcae",
+  "sourceEventCount": 24706,
+  "sourceFinalHash": "8bfc7091e1b4142f0704d0ab36d982e738a567c1bf3fd25e7613378a6b8186a1",
+  "window": {
+    "from": "2026-10-14T07:09:17.591Z",
+    "to": "2026-10-14T07:26:52.935Z"
+  },
+  "observedMarkets": 237,
+  "changes": [
+    {
+      "marketId": "281",
+      "exchangeId": "970",
+      "priceRegimeFrom": "2026-10-14T07:26:21.777Z",
+      "before": {
+        "bidCompatibleVolume": 1398,
+        "askCompatibleVolume": 1844,
+        "roundTripPriority": 0.5049839293629186
+      },
+      "after": {
+        "bidCompatibleVolume": 0,
+        "askCompatibleVolume": 0,
+        "roundTripPriority": 0
+      }
+    },
+    {
+      "marketId": "362",
+      "exchangeId": "1051",
+      "priceRegimeFrom": "2026-10-14T07:26:25.707Z",
+      "before": {
+        "bidCompatibleVolume": 0,
+        "askCompatibleVolume": 16,
+        "roundTripPriority": 0
+      },
+      "after": {
+        "bidCompatibleVolume": 0,
+        "askCompatibleVolume": 0,
+        "roundTripPriority": 0
+      }
+    },
+    {
+      "marketId": "380",
+      "exchangeId": "1069",
+      "priceRegimeFrom": "2026-10-14T07:26:52.935Z",
+      "before": {
+        "bidCompatibleVolume": 0,
+        "askCompatibleVolume": 398,
+        "roundTripPriority": 0
+      },
+      "after": {
+        "bidCompatibleVolume": 0,
+        "askCompatibleVolume": 0,
+        "roundTripPriority": 0
+      }
+    },
+    {
+      "marketId": "315",
+      "exchangeId": "1004",
+      "priceRegimeFrom": "2026-10-14T07:26:22.666Z",
+      "before": {
+        "bidCompatibleVolume": 0,
+        "askCompatibleVolume": 32,
+        "roundTripPriority": 0
+      },
+      "after": {
+        "bidCompatibleVolume": 0,
+        "askCompatibleVolume": 0,
+        "roundTripPriority": 0
+      }
+    }
+  ],
+  "codeIdentity": {
+    "moloch/activity.mjs": "a300e3450c68881ad8be593339fca9d9a0c9397f8c6d0976ea077946f64c7837",
+    "moloch/activity.test.mjs": "92dccce0a5bfdbffa3e0290eedcf8b0389328d319a48f4f105a79b2225ea7ddd"
+  },
+  "checks": 9,
+  "contestOrders": 0,
+  "profitabilityEstablished": false,
+  "limits": [
+    "Current-price compatible volume remains conditional and does not establish aggressor side, true queue priority or actual fills.",
+    "Gap warnings and mandatory REST resync remain.",
+    "Raw recent volume is unchanged; conditional markout accounting is unchanged."
+  ]
+}

@@ -1,0 +1,206 @@
+{
+  "bot": "Moloch",
+  "mode": "Source-volume sensitivity, not verified exchange fills",
+  "episodes": [
+    {
+      "episode": 19,
+      "sourceSha256": "df7af7335e7171d1809a5eee2d8c26e595c76cad092a0d11f62905997f8fe264",
+      "parentSnapshotHash": "2752f9b8efdd28bf4816882cf97197c269a851462cd89425b49fc034efdbe3c9",
+      "baselineFinancialParity": true,
+      "variants": [
+        {
+          "insideTicks": 0,
+          "throughFillCapacity": false,
+          "newFills": 0,
+          "capacityFills": 0,
+          "realized": "0.025000",
+          "owned": "4.270000",
+          "lastFresh": {
+            "at": "2026-10-14T04:45:59.557Z",
+            "pnl": "0.025000"
+          },
+          "finalLiquidation": "0.025000"
+        },
+        {
+          "insideTicks": 0,
+          "throughFillCapacity": true,
+          "newFills": 0,
+          "capacityFills": 0,
+          "realized": "0.025000",
+          "owned": "4.270000",
+          "lastFresh": {
+            "at": "2026-10-14T04:45:59.557Z",
+            "pnl": "0.025000"
+          },
+          "finalLiquidation": "0.025000"
+        },
+        {
+          "insideTicks": 1,
+          "throughFillCapacity": false,
+          "newFills": 1,
+          "capacityFills": 0,
+          "realized": "0.025000",
+          "owned": "5.020000",
+          "lastFresh": {
+            "at": "2026-10-14T04:45:59.557Z",
+            "pnl": "0.000000"
+          },
+          "finalLiquidation": "0.000000"
+        },
+        {
+          "insideTicks": 1,
+          "throughFillCapacity": true,
+          "newFills": 1,
+          "capacityFills": 1,
+          "realized": "0.025000",
+          "owned": "5.770000",
+          "lastFresh": {
+            "at": "2026-10-14T04:45:59.557Z",
+            "pnl": "-0.025000"
+          },
+          "finalLiquidation": "-0.025000"
+        }
+      ]
+    },
+    {
+      "episode": 21,
+      "sourceSha256": "b7028bcb0337e3a038c306e0c2cad0d9e2ee0e93f9112d426debe0e767576eef",
+      "parentSnapshotHash": "1041eaecec02fd81526dcee7d875a72e5fb16ba252956b67aabb00745c26c685",
+      "baselineFinancialParity": true,
+      "variants": [
+        {
+          "insideTicks": 0,
+          "throughFillCapacity": false,
+          "newFills": 0,
+          "capacityFills": 0,
+          "realized": "0.025000",
+          "owned": "5.020000",
+          "lastFresh": {
+            "at": "2026-10-14T05:07:50.889Z",
+            "pnl": "0.025000"
+          },
+          "finalLiquidation": "0.025000"
+        },
+        {
+          "insideTicks": 0,
+          "throughFillCapacity": true,
+          "newFills": 0,
+          "capacityFills": 0,
+          "realized": "0.025000",
+          "owned": "5.020000",
+          "lastFresh": {
+            "at": "2026-10-14T05:07:50.889Z",
+            "pnl": "0.025000"
+          },
+          "finalLiquidation": "0.025000"
+        },
+        {
+          "insideTicks": 1,
+          "throughFillCapacity": false,
+          "newFills": 0,
+          "capacityFills": 0,
+          "realized": "0.025000",
+          "owned": "5.020000",
+          "lastFresh": {
+            "at": "2026-10-14T05:07:50.889Z",
+            "pnl": "0.025000"
+          },
+          "finalLiquidation": "0.025000"
+        },
+        {
+          "insideTicks": 1,
+          "throughFillCapacity": true,
+          "newFills": 0,
+          "capacityFills": 0,
+          "realized": "0.025000",
+          "owned": "5.020000",
+          "lastFresh": {
+            "at": "2026-10-14T05:07:50.889Z",
+            "pnl": "0.025000"
+          },
+          "finalLiquidation": "0.025000"
+        }
+      ]
+    },
+    {
+      "episode": 22,
+      "sourceSha256": "3fc277232c3ac87e3303521699ee8df4e6f87c82bf785dc2b8ec1c75208bae5c",
+      "parentSnapshotHash": "77fda50845415d5e211f16e345f74dbd916f425f5d4d7d59ba5a30bda948493b",
+      "baselineFinancialParity": true,
+      "variants": [
+        {
+          "insideTicks": 0,
+          "throughFillCapacity": false,
+          "newFills": 1,
+          "capacityFills": 0,
+          "realized": "0.025000",
+          "owned": "0.750000",
+          "lastFresh": {
+            "at": "2026-10-14T05:41:42.275Z",
+            "pnl": "0.000000"
+          },
+          "finalLiquidation": null
+        },
+        {
+          "insideTicks": 0,
+          "throughFillCapacity": true,
+          "newFills": 1,
+          "capacityFills": 0,
+          "realized": "0.025000",
+          "owned": "0.750000",
+          "lastFresh": {
+            "at": "2026-10-14T05:41:42.275Z",
+            "pnl": "0.000000"
+          },
+          "finalLiquidation": null
+        },
+        {
+          "insideTicks": 1,
+          "throughFillCapacity": false,
+          "newFills": 1,
+          "capacityFills": 0,
+          "realized": "0.025000",
+          "owned": "0.750000",
+          "lastFresh": {
+            "at": "2026-10-14T05:41:42.275Z",
+            "pnl": "0.000000"
+          },
+          "finalLiquidation": null
+        },
+        {
+          "insideTicks": 1,
+          "throughFillCapacity": true,
+          "newFills": 1,
+          "capacityFills": 0,
+          "realized": "0.025000",
+          "owned": "0.750000",
+          "lastFresh": {
+            "at": "2026-10-14T05:41:42.275Z",
+            "pnl": "0.000000"
+          },
+          "finalLiquidation": null
+        }
+      ]
+    }
+  ],
+  "contestOrders": 0,
+  "profitabilityEstablished": false,
+  "controls": [
+    "Only new quotes receive the capacity flag; old participation assumptions remain unchanged.",
+    "Activation, cancellation window and one-tick trade-through still apply; touches never qualify.",
+    "Allocated shares are capped by observed matched quantity and quote remainder; only one quote receives a fill per print.",
+    "The alternative is diagnostic and excluded from strict-print profit eligibility."
+  ],
+  "conclusion": "Inside improvements added unclosed inventory in episode19. The less conservative capacity assumption increased its liquidation loss; neither produced added realized profit.",
+  "nodeChecks": 79,
+  "nextExperiment": {
+    "episode": 23,
+    "insideTicks": 0,
+    "throughFillCapacity": false,
+    "description": "Unseen join-price paper window; results independently recorded."
+  },
+  "limitations": [
+    "Matched volume is not proof of actual queue priority, market impact or account self-trade eligibility.",
+    "Episodes use their own carried actual parent snapshots; results must not be summed as one alternative wallet."
+  ]
+}

@@ -1,0 +1,11 @@
+# Execution-age inventory experiment
+
+Recovered exchange-922 fills executed around 12:06–12:11Z but were first processed around 19:08Z. The existing receipt-age timer therefore regarded six-hour-old positions as new. This matters for a policy described as holding inventory for at most thirty minutes.
+
+Optional `inventoryAgeClock: "execution"` records original trade execution time on modeled fills and owned FIFO lots. Maximum age uses the oldest remaining lot, so a later purchase cannot restart the holding period of earlier shares. Sell/hedge pledges still must reconcile before an exit can be created; an all-or-none exit still requires later fresh depth after modeled latency. Missing execution provenance on inherited inventory is rejected rather than silently using receipt time. Default receipt-age behavior and original live histories are preserved.
+
+Two dedicated tests cover a fill received 96 seconds late, original pledge recovery before a loss-taking exit, and a newer acquisition that cannot defer the oldest lot's exit. All 117 Node tests pass. Eight archived episodes reproduce their original financial states with the default mode.
+
+The inherited-bank diagnostic forks the exact parent of queue-duration segment 4 with zero new capital, drains new entries and compares receipt versus execution clocks on the same verified source prefix. The recorded live baseline reproduces exactly. The execution-clock variant completes the recovered cohort with 100,000.020 cash, +0.020 realized, no owned inventory and no unresolved orders. The receipt-clock variant at that cutoff has 99,999.260 cash, +0.070 realized and 0.810 remaining owned cost. Its last fresh liquidation estimate is also +0.020. The realized number alone overstates completed progress in the receipt-clock case.
+
+This is retrospective sensitivity evidence. Maker queue attribution and depth-dependent exits are simulated; no actual order was submitted, no profitable live strategy is established, and this variant has not been installed in an existing wallet with unknown execution clocks. Results: `data/moloch-recovered-age-20261014.json`; reproduce with `node moloch/research/recovered-age-20261014.mjs NEW_OUTPUT_FILE`.

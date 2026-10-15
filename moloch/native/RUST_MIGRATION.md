@@ -1,0 +1,284 @@
+# Rust runtime migration
+
+The deployed service now points to the native Rust serialized collector. It has
+no order endpoints. Its paper bank preserves the audited historical wallet,
+and network access and trading remain disabled. The dedicated Node runtime
+has been removed. Earlier checks below record migration milestones.
+
+Verified on the Linux ARM64 VPS during this migration:
+
+- `cargo test --locked`: thirty tests passed on ARM64, including source cursor,
+  initial-resync, Retry-After, and source-parity tests. The resolved dependency
+  lock is included.
+- Event-engine parity compares 668 intermediate reports in 20 scenarios against
+  the existing implementation, including strict/conditional fills, delayed
+  executions, fee rounding, unresolved reservations, cancellation coverage,
+  seeded changing books, and the causal current-flow entry gate.
+- `cargo run --bin moloch-collector -- check`: Rust runtime, configured 100 reads
+  per minute, network/trading disabled, both stop markers present.
+- Disabled capture invocation exited 1 before creating output.
+- `moloch-capture.service` remained inactive.
+
+Collector budget tests exercise 1,000 admissions, strict rolling 100/minute
+capacity, 600ms spacing, and clock reversal rejection. This is a simulated-clock
+test, not proof of current SIG traffic. No SIG requests were made.
+
+The accounting library now implements integer decimal parsing, tick validation,
+upward fee rounding, per-share reservation headroom, partial fills, FIFO inventory,
+opposite-side netting, and atomic rejection of invalid wallet mutations. Tests
+preserve realized losses and enforce cash + owned cost - initial = realized.
+The library is connected to the Rust event engine and both replay executables.
+`moloch-paper EVENTS_JSONL POLICY_JSON NEW_REPORT_JSON` replays original events
+without waiting or networking. `moloch-replay` now includes the financial engine
+directly; its report no longer asks the user to run a JavaScript wallet.
+
+Both release executables successfully replayed the twenty-book public archive
+with an empty environment and `/usr/bin:/bin` PATH. They agree with the original
+engine on eight quotes, 19.900000 reserved, no fills, and zero P&L. The integrated
+replay took 0.010904 seconds for 50.859 source seconds. This small fixture is not
+a sustained-throughput benchmark or evidence of profitable trading.
+
+Unknown policy fields fail explicitly with `POLICY_NOT_PORTED`; they are never
+silently ignored. The existing engine's inventory age, execution clocks,
+minimum-gain/fixed-gain exits, depth sizing, delayed AON execution, retained and
+repriced hedges, depth imbalance, and explicit fill-capacity sensitivity are now
+ported. AON depth cannot be reused at the same side/engine sequence, and old
+quotes preserve their original fill and participation assumptions.
+
+An additional corpus traces successful paths from nine existing test files:
+85 paths and 291 checkpoints compare complete fill and order records as well as
+the financial report. This includes large covered exits, maximum-age losses,
+oldest remaining FIFO execution age, fees, late fills and paced replacements.
+
+`moloch-source RECEIPTS_JSONL CONFIG_JSON NEW_EVENTS_JSONL NEW_STATS_JSON` performs
+offline receipt conversion through the same adapter as collection. Configuration
+contains `pairs`, `tournamentId`, and `startedAt`. Initial book events stay invalid
+until a subsequent authoritative book and complete tape window cover startup.
+Cursor coverage requires the complete original window and up to five correctly
+ordered pages, taking the minimum projection checkpoint. Source events are also
+compared exactly against four scenarios from the existing source adapter.
+
+A sanitized pre-existing SIG capture (48 receipts, four markets) produced 454
+events in Rust. Its paper result matched all 17 checked financial report fields:
+998.200000 cash, 1.800000 inventory cost, 4.975000 reserved, zero realized P&L,
+and two unresolved orders. This is an independent default-policy migration
+fixture, not the historical Moloch wallet and not realized profit. It made no
+new SIG market-data requests.
+
+`moloch-paper --journal` also verifies sequence, previous hash and full event hash
+before applying each row. Replaying a 454-event hash chain reproduced the raw
+event replay exactly. Changed, skipped and repeated journal rows are rejected.
+
+The Rust collector now appends raw receipts, normalized events, and a hash-chained
+source journal. Persistent failures retain numeric or dated Retry-After delays
+with a 60-second minimum. It does not automatically reset a blocked budget.
+
+`moloch-collector benchmark NEW_REPORT` is a credential-free loopback benchmark.
+On the ARM64 VPS it completed 100 HTTP requests in 59,407ms, minimum 600ms start
+spacing and maximum 100 requests in a rolling minute. It makes zero SIG requests.
+
+## Realtime transport
+
+`moloch-collector capture PAIRS NEW_OUTPUT CYCLES --realtime` uses a native TLS
+WebSocket and the private tournament aggregate channel. One serialized REST
+client obtains a short-lived token; no token is logged, persisted, automatically
+retried or renewed. Authentication has a separate persistent 60-second interval.
+The worker waits for the channel acknowledgment, checks heartbeat references,
+caps incoming frames and the queue, and stops on disconnect or expiry. Channel
+gaps invalidate the affected scope until both REST book and tape recover it.
+Live normalized events preserve receipt/execution clocks and record processing
+time separately, including when REST response latency delays queue draining.
+
+The implementation follows the [Supabase v1 protocol](https://supabase.com/docs/guides/realtime/protocol).
+Native socket tests exchange actual local WebSocket frames, without SIG access.
+Twelve reference checkpoints cover mixed REST/realtime precision, revisions,
+duplicates, compact resyncs, dirty books and recovery.
+
+A second offline migration fixture verifies the full original 14,754-row captured
+stream chain before deriving 431 relevant mixed records. Rust converts them into
+786 events and matches all 17 financial fields of the existing engine: 998.200000
+cash, zero realized P&L, 1.800000 inventory cost, 14.925000 reserved and seven
+unresolved orders. The +0.015000 liquidation mark is not closed profit. This is
+an independent default-policy test, not a replacement for the original wallet.
+No live SIG authentication or connection was attempted. The `--realtime`
+disabled probe exited before creating output, and the service stayed inactive.
+
+## Financial continuation
+
+`moloch-seed LEGACY_SNAPSHOT NEW_AUDIT_REPORT` verifies the original snapshot hash,
+including legacy numeric-key ordering and ECMAScript number serialization. It
+then rebuilds cash, fees, FIFO lots and opposite-side netting from all historical
+fills and compares all declared redemptions and remaining positions. Unresolved
+legacy quotes are rejected, and changing initial capital cannot erase losses.
+
+The actual closed strict wallet snapshot passed this audit on the VPS: 60 fills,
+151 retired orders, 99,849.720000 cash, -150.280000 realized P&L, zero inventory and
+zero reserved funds. The immutable 587,415-byte snapshot is stored privately on
+the VPS under its content-addressed filename. No credentials were copied.
+
+`moloch-paper --seed LEGACY_SNAPSHOT [--journal] EVENTS POLICY NEW_REPORT` resumes
+from verified finance and requires fresh source resynchronization. Retired order
+IDs remain reserved, historical fills and counters remain attributed, and old
+books are not reused for new quotes. Plain and restarted replay of a subsequent
+tick produced identical reports, including the full cumulative loss. The release
+ELF binaries also passed this comparison with Node absent from their environment.
+This is checkpoint/replay verification, not proof of an active daemon or profits.
+
+Remaining before replacing the deployment: integrated live paper lifecycle and
+restart recovery, combined strategy selection, Rust readiness/service wrappers,
+Rust-only release installation, and removal of the dedicated Node installation
+after the replacement passes verification.
+
+Baal and Moloch must be evaluated under the same fill, fee, capital, and timing
+assumptions before choosing the combined strategy. Keep existing losses and
+wallet histories; no reset or transfer is implied by a new executable. One bot,
+one collector and one account-wide budget is the requested final deployment.
+
+## Durable paper session verification
+
+The Rust collector now feeds one authoritative disk-backed financial session.
+Its journal is synced before the committed head, rejects changed or truncated
+source prefixes, and rebuilds derived reports on restart. Kernel-backed account
+and session locks survive process death without admitting competing workers.
+Startup invalidates cached books atomically; pending exposure remains inside
+capture scope, with original quote recovery windows and persisted trade clocks.
+
+On the ARM VPS, all 42 tests passed, including a killed-process lock recovery
+check and REST/realtime-source-to-session parity. The release build succeeded.
+A captured 786-event input committed 786 events on first ingestion and zero on
+restart, with identical complete reports. Restart took 0.529 seconds; this is
+recovery timing, not fresh-ingestion or exchange latency. A separate session
+seeded from the audited historical wallet retained 60 fills, 151 orders and
+-150.280000 realized P&L through both ingestions. All probes used zero network
+requests and zero contest orders.
+
+The collector's bounded `run` supervisor requires an explicit paperSession
+configuration and existing network guards. This code is staged and verified;
+the VPS deployment still uses the previous disabled service until the Rust-only
+release, readiness wrapper and strategy comparison are complete. No winner or
+profitability claim follows from migration parity.
+
+## Rust VPS replacement
+
+The VPS current symlink now targets `releases/rust-session-ca5a37da`, containing
+seven Rust ELF executables and a verified SHA256SUMS file. The service executes
+`current/bin/moloch-collector run`; its environment has no Node PATH. The dedicated
+Node installation and symlink were removed after the Rust readiness check passed.
+`command -v node` then found no executable, and readiness still passed.
+
+`~/apps/moloch/check` invokes Rust readiness, recovers and audits the existing
+paper session, and reports its actual cumulative financial state. The session was
+initialized from the verified closed historical wallet without renewing its
+expired entry deadline. The network and execution stop markers remain present;
+no SIG credentials were transferred. The disabled collector probe rejected run,
+and systemd reported inactive, disabled and MainPID=0. Historical source releases
+and financial evidence remain preserved; they are not runtime dependencies.
+
+The initial installation script encountered a trailing CRLF syntax error at its
+final checksum command after switching the service. The script was normalized,
+syntax-checked, and all seven checksums plus readiness were verified explicitly.
+This receipt does not claim a live feed, active strategy or profitable deployment.
+Strategy comparison and independent forward paper evidence remain outstanding.
+
+## Equal-condition Rust strategy diagnostics
+
+`moloch-compare LEGACY_JOURNAL TERMINAL_SNAPSHOT CONFIG NEW_REPORT` verifies
+canonical legacy event hashes, the complete journal chain and the sealed terminal
+snapshot. It advances independent strategy variants over identical recorded
+processing clocks. Overrides cannot change capital, quantity, fees, latency,
+fill assumptions or the entry deadline. Its two tests cover these confounds and
+variant-name ambiguity. The release comparator is installed on the VPS; all
+eight executable hashes and disabled readiness were checked afterward.
+
+The phase-85 diagnostic contains 1,373 events. Four current-flow-gated variants
+had no fills and zero return. Paired entries without the gate made two modeled
+fills and +0.015000 realized; microprice without the gate made three and +0.010000.
+These tiny retrospective outcomes do not establish profitability. The separate
+phase-76 diagnostic uses its original 1073 scope and entry deadline: 4,204 events,
+47 fills and 746.400000 owned cost for the paired variant, with -116.815000 marked
+liquidation P&L and one unresolved quote. One-tick backoff reduced fills to 43 and
+the marked loss to -90.555000, still with an unresolved quote. These are independent
+per-window banks; their cash and gains must not be summed as a continuous wallet.
+
+Results and exact policies are in `moloch/results/rust-strategy-comparison-*.json`.
+An exploratory phase-76 run using phase-85 scope produced no orders and is excluded
+from strategy evidence. No winner was selected, no deployed policy changed, and
+no actual order or SIG request was made. These are Rust policy variants rather
+than a verified reproduction of the entire historical Baal runtime.
+
+## Continuous comparison through closing observations
+
+The comparator now accepts optional continuationEpisodes (journal/snapshot pairs)
+in its configuration. It verifies each complete sealed source before advancing
+any variant, then keeps every variant's existing cash, fees, inventory, pending
+quotes and policy. Recorded event clocks remain unchanged. A golden-fixture test
+carries a filled lot between two separately sealed episodes and checks its later
+netting, fees and exact realized P&L; a corrupt terminal snapshot is rejected
+without advancing state. All three comparator tests pass on the VPS.
+
+Across phases 76, 78, 79 and 85, 7,342 events closed the paired variant at
+-149.280000 realized after 48 modeled fills, with no inventory or unresolved
+orders. One-tick backoff closed at -122.675000 after 44 fills. The current-flow
+variants made no fills and retained zero return across this same sequence.
+The deployed current-flow policy was left unchanged: avoiding these losses is
+useful evidence, but inactivity does not demonstrate profitable market making.
+The earlier +0.015000 diagnostic on a different scope is not added to this bank.
+
+The continuous comparator was installed on the Rust VPS and all eight binary
+checksums plus financial readiness passed. Node remained absent; the service
+remained disabled/inactive with MainPID=0. The repository service template and
+VPS instructions now match that Rust deployment instead of the historical Node
+setup. Exact continuous results and policies are checked in separately.
+
+## Capture-scope deployment correction
+
+At 2026-10-15T04:38:56Z the current release was verified as `rust-scope-v1`.
+A deployment audit found that shared/pairs.json still contained the historical
+922 example while the frozen entry policy selected 998, 1044, 1048 and 846.
+The shared scope validator now rejects missing entry markets and uncovered
+inventory or unresolved quotes, malformed IDs and duplicate/oversized scopes.
+It is used by both readiness and collection before credential loading.
+
+The old example failed readiness (exit 1); the corrected four historical scopes
+passed (exit 0). The standalone `moloch-ready scope-check PAIRS POLICY` likewise
+rejected the old file and accepted the aligned file. Nine collector tests and
+three readiness tests passed, including the scope checks compiled in both bins.
+The rebuilt release passed all eight executable checksums and session readiness.
+The installer now performs scope preflight before creating or switching a release.
+
+This correction preserves the same historical wallet and expired deadline. It
+establishes configuration agreement, not fresh live-market verification. The
+Rust service still reported disabled/inactive/MainPID=0, Node was absent, and
+the disabled collector invocation exited 1. No SIG calls or orders were made.
+
+## Final Rust infrastructure audit
+
+The explicit installer was exercised successfully on the VPS with release
+`rust-final-v1`, the frozen policy, verified seed and aligned pairs supplied as
+arguments. It verified the existing bank before switching current, without
+resetting cash, changing policy or enabling the service. `cargo test --locked`
+passed all 51 test cases across the Rust binaries, library and integration tests.
+This includes exact financial parity, source clocks and coverage, persisted rate
+limits, durable restart and killed-process lock recovery.
+
+The earlier pre-replacement checklist is historical: Rust session integration,
+recovery, readiness, service replacement, installation and Node removal are now
+implemented and verified. Strategy comparisons are implemented too, but their
+losses and zero-fill outcomes do not establish a superior profitable strategy.
+Profit research and any future authorized activation remain separate work; this
+infrastructure audit does not claim those outcomes or fresh SIG connectivity.
+
+The final deployed-binary loopback test completed 100 requests in 59,414ms,
+with 600ms minimum spacing and rolling maximum 100. It loaded no credentials
+and made no SIG calls. Systemd unit verification returned zero, current pointed
+to rust-final-v1, all eight binary checksums passed, readiness recovered the
+unchanged wallet, and the service remained disabled/inactive with MainPID=0.
+The final receipt is `moloch/results/rust-vps-final-audit.json`.
+
+The requested Rust VPS infrastructure migration is complete under the human's
+existing no-activation instruction. It supplies a single Rust paper stack,
+collector, source adapters, exact financial engine, durable session and replay
+and comparison tools without a Node runtime dependency. This completion does
+not assert a profitable strategy, superiority over the entire Baal runtime,
+or a tested live authenticated SIG connection. Those remain explicitly
+unproven; the bot was not activated and its entry deadline was not renewed.

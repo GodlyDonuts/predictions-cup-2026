@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "at": "2026-10-14T09:53:40.447Z",
+  "sourceCapture": 32,
+  "sourceStatus": "running",
+  "officialReceipts": 12,
+  "retiredEmptyScopes": [
+    884,
+    1038
+  ],
+  "remainingScopes": [
+    {
+      "marketId": "281",
+      "exchangeId": "970"
+    },
+    {
+      "marketId": "152",
+      "exchangeId": "841"
+    }
+  ],
+  "independentRecoverySnapshotHash": "135859487ab9af0e065054d8b600c22058cc8e7be41a5c896b0572a16a5b10ca",
+  "scaleParentHash": "135859487ab9af0e065054d8b600c22058cc8e7be41a5c896b0572a16a5b10ca",
+  "newPaperCapital": "0.000000",
+  "scaleSnapshotHash": "aed5fc3ac938c08e14c64ea8efd13ee1f044194b887f7fc80f1bb9df7f25a0b6",
+  "scale": {
+    "cash": "100000.000000",
+    "realized": "0.000000",
+    "ownedCost": "0.000000",
+    "reservedCash": "121.770000",
+    "fills": 0,
+    "orders": 20
+  },
+  "bookReceiptIntervalsSeconds": {
+    "prior": [
+      101.587,
+      99.548,
+      99.33,
+      103.496
+    ],
+    "current": [
+      49.671,
+      49.731
+    ]
+  },
+  "maximumLocalReadsPerMinute": 5,
+  "contestOrders": 0,
+  "profitabilityEstablished": false
+}

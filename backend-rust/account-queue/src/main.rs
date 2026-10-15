@@ -19,13 +19,18 @@ struct Binding { intent: String, key: String, payload_hash: String }
 struct Flight { request: String, write: bool, binding: Option<Binding>, network_started: bool }
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
 #[serde(deny_unknown_fields)]
+struct ReadProfile { cap:usize, gap_ms:u64 }
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
+#[serde(deny_unknown_fields)]
 struct State {
     schema_version: u32, scope: String, last_clock: u64, next: u64, cooldown: u64,
     manual_review: bool, reads: Vec<u64>, writes: Vec<u64>, active: Option<Flight>,
     unknown: BTreeMap<String, Binding>, intents: BTreeMap<String, Binding>, keys: BTreeMap<String, Binding>,
+    #[serde(default,skip_serializing_if="Option::is_none")]
+    read_profile:Option<ReadProfile>,
 }
 impl State {
-    fn new(scope: String) -> Self { Self { schema_version:1, scope, last_clock:0, next:0, cooldown:0, manual_review:false, reads:vec![], writes:vec![], active:None, unknown:BTreeMap::new(), intents:BTreeMap::new(), keys:BTreeMap::new() } }
+    fn new(scope: String) -> Self { Self { schema_version:1, scope, last_clock:0, next:0, cooldown:0, manual_review:false, reads:vec![], writes:vec![], active:None, unknown:BTreeMap::new(), intents:BTreeMap::new(), keys:BTreeMap::new(),read_profile:None } }
     fn clock(&mut self, now: u64) -> Result<()> {
         need(now <= MAX_TIME, "INVALID_CLOCK")?;
         if now < self.last_clock { self.manual_review=true; return Err("CLOCK_REGRESSION".into()); }
@@ -36,7 +41,7 @@ impl State {
     }
     fn time(&self, write: bool) -> u64 {
         let samples=if write { &self.writes } else { &self.reads };
-        let cap=if write {24} else {60};
+        let cap=if write {24} else {self.read_profile.as_ref().map_or(60,|p|p.cap)};
         let rolling=if samples.len()>=cap {samples[0].saturating_add(60_001)} else {0};
         self.next.max(self.cooldown).max(rolling)
     }
@@ -60,7 +65,7 @@ impl State {
                 }
                 let at=self.time(c.write);
                 if c.now<at {return Ok(json!({"admitted":false,"wait_until":at}));}
-                let interval=if c.write {2500} else {1000};
+                let interval=if c.write {2500} else {self.read_profile.as_ref().map_or(1000,|p|p.gap_ms)};
                 self.next=c.now.checked_add(interval).filter(|x|*x<=MAX_TIME).ok_or("CLOCK_OVERFLOW")?;
                 (if c.write {&mut self.writes} else {&mut self.reads}).push(c.now);
                 if let Some(b)=c.binding.as_ref().filter(|_|c.write) {self.intents.insert(b.intent.clone(),b.clone()); self.keys.insert(b.key.clone(),b.clone());}
@@ -88,7 +93,7 @@ impl State {
                 }
                 if c.api_code=="REQUEST_IN_FLIGHT" {self.cooldown=self.cooldown.max(c.now.checked_add(90_000).filter(|x|*x<=MAX_TIME).ok_or("CLOCK_OVERFLOW")?);}
                 if f.write && c.outcome=="unknown" {let b=f.binding.clone().unwrap();self.unknown.insert(b.intent.clone(),b);}
-                let interval=if f.write {2500} else {1000};
+                let interval=if f.write {2500} else {self.read_profile.as_ref().map_or(1000,|p|p.gap_ms)};
                 self.next=self.next.max(c.now.checked_add(interval).filter(|x|*x<=MAX_TIME).ok_or("CLOCK_OVERFLOW")?).max(self.cooldown);
                 self.active=None;
                 Ok(json!({"completed":true,"next":self.next,"manual_review":self.manual_review}))

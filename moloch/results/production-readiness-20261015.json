@@ -1,0 +1,45 @@
+{
+  "requestedMode": "actual_contest_trading",
+  "activationPerformed": false,
+  "accountObservation": {
+    "observedAtUtc": "2026-10-15T05:29:39.4116565Z",
+    "openOrders": 0,
+    "openOrdersCoverageComplete": true,
+    "openOrdersHasMore": false,
+    "latestReturnedFillAtUtc": "2026-10-09T06:00:43.666Z",
+    "latestFillUnchangedAcrossTwoReads": true,
+    "otherHostsTechnicallyVerifiedStopped": false
+  },
+  "deploymentObservation": {
+    "service": "moloch-capture.service",
+    "activeState": "inactive",
+    "unitFileState": "disabled",
+    "mainPid": 0,
+    "liveOrderExecutorDeployed": false,
+    "sigCredentialPresentOnVps": false,
+    "paperEntryDeadlineExpired": true
+  },
+  "implementationWork": [
+    "Reuse existing Rust order transport with durable intent and unknown-acknowledgment fences",
+    "Add explicitly provisioned Unix credential provider and Rustls Linux build",
+    "Keep CLI writes disabled until live policy, actual-fill accounting and execution authority are integrated"
+  ],
+  "limits": {
+    "standardAccountReadsPerMinute": 100,
+    "standardAccountWritesPerMinute": 30
+  },
+  "remainingBeforeLiveDispatch": [
+    "Integrate live order lifecycle, actual fills and attributed inventory rather than paper fills",
+    "Fresh exact account, contract and executable book reconciliation",
+    "One account owner and enforced shared runtime budget",
+    "Provision approved restricted VPS credential storage",
+    "Create explicit current activation with capital, order and duration limits"
+  ],
+  "linuxTransportValidation": {
+    "testsPassed": 52,
+    "serviceActivated": false,
+    "releaseBuildSucceeded": true,
+    "realCredentialProvisioned": false,
+    "target": "aarch64-linux"
+  }
+}

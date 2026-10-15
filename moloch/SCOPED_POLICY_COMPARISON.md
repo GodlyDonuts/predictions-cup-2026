@@ -1,0 +1,9 @@
+# Funded policy comparison on newly reconciled scope
+
+`research/scoped-policy.mjs SOURCE_DIRECTORY EXCHANGE_ID NEW_OUTPUT` pins a source snapshot, verifies its hash, parent hash and event chain, and reconstructs the recorded baseline exactly. The selected exchange must be an actual financial read scope. Independent 100,000-SUSQie comparison banks use original processing/execution clocks, full tape coverage, funded reservations, three-second latency, observed depth, fees and execution-time inventory aging. They are diagnostic alternatives rather than capital added to the live wallets.
+
+Source 41 now captures full books and tape for exchange 1031 alongside liability recovery on 922. The prefix through 20:07:40.594 UTC compares paired entries, microprice entries, the 30% signed-depth filter, one-tick entry backoff, paired conditional FIFO and microprice conditional FIFO. All six have zero new fills, zero realized return and no owned inventory. Four reserve 893.510, backoff reserves 884.530 and the depth filter places no quotes. These are reservations, not deployed purchase cost or returns.
+
+The three inspected complete tape receipts for 1031, ending at 20:07:49.544 UTC, contain no executions after the capture began at 20:05:16 UTC. Their newest execution is 20:04:33.726. Thus the current prefix has no new fill opportunity with which to compare policy profitability. Earlier heavy volume is not credited to newly placed quotes. Further original-source observations, including losses and unfunded/unfinished outcomes, are required before selecting a live policy.
+
+The two original forward banks have separately drained their quotes with original funding/history intact. No actual order, extra collector or account write was added by the comparison. Checked evidence is `data/moloch-scoped-policy-20261014-41.json`.

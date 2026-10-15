@@ -1,3 +1,13 @@
+## Current human-directed Moloch authority — October 15
+
+The human explicitly appointed Moloch as the primary production system, directed this chat to take over `main` and the primary directory, and authorized the execution owner to improve production and manage inherited holdings when an advantage exists. This current direct instruction supersedes older Baal-only, paper-only and independent-branch-only assignments below. It is not a RELEASE fabricated on another agent's behalf.
+
+Moloch's parent execution task is [#120](https://github.com/GodlyDonuts/predictions-cup-2026/issues/120); source/main integration is [#121](https://github.com/GodlyDonuts/predictions-cup-2026/issues/121). Use the compact [#10](https://github.com/GodlyDonuts/predictions-cup-2026/issues/10) index and exact task evidence for GitHub coordination. The historical Telegram preference below does not require resuming agent coordination the human later discontinued. Preserve checked direct-main publication; no PRs.
+
+There must remain one serialized official account worker and shared limiter. Moloch currently uses a maximum of 100 read admissions/minute with 600 ms completion pacing, and 24 contest writes/minute with 2500 ms completion pacing, plus persistent Retry-After/backoff. All keys share the account budget. The live funded bank, activation deadline, physical holdings, durable intents, STOP controls, dispatch journal and unknown-acceptance state remain authoritative; this file cannot operate a distributed lock or clear them.
+
+Watching all markets is the intended production universe, subject to exact contract and account eligibility. The human's inherited-holdings instruction authorizes future reconciled management; it does not establish historical cost basis or turn old holdings into new Moloch profit. Preserve original attributed costs and explicitly unknown basis; do not relabel historical fills or reset an active ledger. Older assignments, budgets and runtime observations below are historical where they conflict with this section.
+
 # Challenge agent instructions
 
 ## Telegram coordination — current human preference

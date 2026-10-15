@@ -1,0 +1,40 @@
+{
+  "bot": "Moloch",
+  "purpose": "Observe broad market activity during a carried-wallet run through one aggregate channel; reconcile only funded scopes.",
+  "offlineValidation": {
+    "sourceSha256": "31b73e969b296b6b5d44ece721c92aa821a35d932beff359cd69ec7133ebafb4",
+    "sourceFinalHash": "48e63c300a4a3c701d653e3ef5e7d1cc0104676a6591e8a6fb594f3f2ac56cc9",
+    "verifiedRows": 8230,
+    "observationRowsExcludedFromFinancialMux": 7962,
+    "universeMarkets": 237,
+    "financialScopes": 4,
+    "financialReadyWithoutREST": 0,
+    "nodeChecks": 65
+  },
+  "localGapStudy": {
+    "conditionalMarkouts": 16,
+    "twoSidedCandidates": 0,
+    "roundTripPriorityCandidates": 0,
+    "limitations": "Post-gap samples use only a new locally observable segment. Historical warnings and mandatory REST reconciliation remain; these are not fills or trading permission."
+  },
+  "firstLiveAggregate": {
+    "sourceEventSha256": "32930ec99a5b6d4cfd4b208045df8bf66a3ee5e755d108402da568705dd3680c",
+    "status": "failed",
+    "captureExit": 1,
+    "observationRows": 824,
+    "financialReady": 0,
+    "newOrders": 0,
+    "newFills": 0,
+    "cash": "1000.000000",
+    "reservedCash": "24.875000",
+    "failure": {
+      "phase": "rest",
+      "code": "EPERM"
+    },
+    "failureUncertainty": "The old rest phase includes both receipt reads and status publication; exact filesystem operation was not recorded."
+  },
+  "repair": "Bounded retries only for EPERM/EACCES/EBUSY when renaming the SDK status file. Journal and data failures remain fatal. New diagnostics include allowlisted operation/file names without paths or raw errors.",
+  "successor": "Episode17 bounded aggregate drain/observation; result pending.",
+  "contestOrders": 0,
+  "profitabilityEstablished": false
+}

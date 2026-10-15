@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "source40": {
+    "status": "completed",
+    "captureExit": 0,
+    "officialReceipts": 60
+  },
+  "closedForwardPhase": [
+    {
+      "name": "competition-scale-20261014-10",
+      "at": "2026-10-14T20:03:45.410Z",
+      "cash": "100000.000000",
+      "realized": "0.000000",
+      "ownedCost": "0.000000",
+      "unresolved": 2,
+      "fills": 3,
+      "newRealized": "0.000000"
+    },
+    {
+      "name": "queue-duration-20261014-6",
+      "at": "2026-10-14T20:03:45.285Z",
+      "cash": "100000.060000",
+      "realized": "0.060000",
+      "ownedCost": "0.000000",
+      "unresolved": 2,
+      "fills": 18,
+      "newRealized": "0.000000"
+    }
+  ],
+  "nextPhase": {
+    "source": 41,
+    "scopes": [
+      {
+        "marketId": "233",
+        "exchangeId": "922"
+      },
+      {
+        "marketId": "342",
+        "exchangeId": "1031"
+      }
+    ],
+    "entriesEnabled": false,
+    "reason": "Drain and reconcile prior quote liabilities while collecting authoritative exchange1031 books and tape",
+    "newPaperCapital": "0.000000",
+    "contestOrders": 0
+  },
+  "profitabilityEstablished": false
+}

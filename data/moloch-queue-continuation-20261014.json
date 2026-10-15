@@ -1,0 +1,51 @@
+{
+  "at": "2026-10-14T10:57:41.165Z",
+  "source": 36,
+  "status": "running",
+  "streamStatus": "subscribed",
+  "officialReceipts": 19,
+  "recoveryRoots": [
+    {
+      "snapshotHash": "34a5d77315def6ced858c442adec76d7b1621a6e03a692744dac1367ae3d50cd",
+      "financialStateImported": false
+    },
+    {
+      "snapshotHash": "ad8fa7291cb560671c326503af7e5fb1b1817b878c243f2161eff878ae0aded8",
+      "financialStateImported": false
+    }
+  ],
+  "wallets": [
+    {
+      "name": "competition-scale-20261014-6",
+      "snapshotHash": "d2d5cd488c2f3e11c4f5b4e9881c510d538f7b28830e6209656c8815412c4b67",
+      "parentSnapshotHash": "34a5d77315def6ced858c442adec76d7b1621a6e03a692744dac1367ae3d50cd",
+      "newPaperCapital": "0.000000",
+      "at": "2026-10-14T10:57:41.192Z",
+      "cash": "100000.000000",
+      "realized": "0.000000",
+      "ownedCost": "0.000000",
+      "reservedCash": "5879.780000",
+      "fills": 0,
+      "orders": 41,
+      "fillModel": "strictThrough",
+      "lifetimeMs": 600000
+    },
+    {
+      "name": "queue-duration-20261014-2",
+      "snapshotHash": "54b88a332fe64d27a63af8b9934ff9f68048c61818852ea49a4b96b918bc110a",
+      "parentSnapshotHash": "ad8fa7291cb560671c326503af7e5fb1b1817b878c243f2161eff878ae0aded8",
+      "newPaperCapital": "0.000000",
+      "at": "2026-10-14T10:57:41.176Z",
+      "cash": "100000.000000",
+      "realized": "0.000000",
+      "ownedCost": "0.000000",
+      "reservedCash": "6063.765000",
+      "fills": 0,
+      "orders": 6,
+      "fillModel": "conditionalFifo",
+      "lifetimeMs": 1800000
+    }
+  ],
+  "contestOrders": 0,
+  "profitabilityEstablished": false
+}

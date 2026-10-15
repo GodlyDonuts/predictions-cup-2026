@@ -1,0 +1,16 @@
+[Unit]
+Description=Moloch Rust paper collector (disabled deployment)
+ConditionPathExists=%h/apps/moloch/shared/NETWORK_ENABLED
+
+[Service]
+Type=simple
+WorkingDirectory=%h/apps/moloch/current
+EnvironmentFile=%h/apps/moloch/shared/runtime.env
+ExecStart=%h/apps/moloch/current/bin/moloch-collector run
+Restart=no
+UMask=0077
+NoNewPrivileges=yes
+PrivateTmp=yes
+
+[Install]
+WantedBy=default.target

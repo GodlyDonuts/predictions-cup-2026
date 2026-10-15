@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "at": "2026-10-14T23:27:16.482Z",
+  "captureExit": 1,
+  "officialReceipts": 27,
+  "streamStatus": "completed",
+  "streamMetrics": {
+    "batches": 11233,
+    "trades": 350,
+    "duplicateTrades": 0,
+    "duplicateBatches": 0,
+    "gaps": 189,
+    "truncated": 0,
+    "schemaErrors": 0,
+    "restBooks": 14,
+    "restTapes": 13,
+    "pushedBooks": 11233,
+    "olderBooks": 0,
+    "unknownMarkets": 0,
+    "latencySamples": 350,
+    "latencySumMs": 865155,
+    "latencyMaxMs": 16799,
+    "meanTradeLatencyMs": 2471.8714285714286
+  },
+  "readFailure": {
+    "phase": "failed",
+    "status": 0,
+    "method": "Get",
+    "exchangeId": "880",
+    "transport": {
+      "category": "transport_dns",
+      "exceptionType": "System.Net.Http.HttpRequestException",
+      "transportCode": "NameResolutionError",
+      "typedTransportFailure": true
+    },
+    "retryCount": 1
+  },
+  "freshReadDiagnostic": {
+    "receiptHash": "031f31eb27b7328f39cd976463d8bac3b8f750601b7ba2857b9cadc0def3f04c",
+    "receivedAt": "2026-10-14T23:22:39.030Z",
+    "status": 200,
+    "coverage": {
+      "complete": true,
+      "projectedThroughSequence": 161388376
+    }
+  },
+  "contestOrders": 0,
+  "profitabilityEstablished": false,
+  "conclusion": "Capture truncated by exhausted bounded REST DNS recovery; no new paper fills. Outstanding funding continues into phase64 drain."
+}

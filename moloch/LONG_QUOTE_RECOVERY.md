@@ -1,0 +1,13 @@
+# Full quote-window recovery during an active run
+
+A concrete source-36 failure of the prior recovery design: queue-cohort order 1 on exchange 896 activated at 10:38:46.811Z and cancelled at 10:55:50.489Z. It was still unretired at 11:03:06Z. The latest normal tape started at 10:46:57.188Z, excluding the original activation. Complete quote-window reconciliation could not release its funding. Thirty-minute quotes can outlive the fixed fifteen-minute tape horizon even without a transport failure.
+
+The one collector now publishes current recovery windows from its own orders and hashed, scoped snapshots of explicitly watched local paper wallets. `--watch-paper` directories may be registered before the resumed tail starts. Missing initial snapshots are skipped; changed hashes, different source files, invalid funding/ledger state, invalid clocks and omitted liability scopes stop the operation. This input authorizes source-window selection only: financial state is never imported into another bank.
+
+Before each normal tape request, PowerShell checks the generated document's source directory, schema, age (at most thirty seconds), exact scope and nonfuture range. It widens `from` to the earliest unresolved expired/cancelled activation and keeps `to` at the normal current boundary. The same request schedule, five-read budget, completion pacing, cursor-chain verification and 120-receipt capture bound apply. Long windows can still exceed the five-page bound; those remain unresolved and funded. Fresh post-end engine barriers and complete coverage remain necessary.
+
+113 Node tests pass, including a real funded thirty-minute quote cancelled after twenty minutes, source/market/hash tampering and not-yet-created watched wallets. PowerShell parser passes. No additional account client, order, token refresh or automatic network retry was added.
+
+## Prospectively selected queue-capacity candidate
+
+The completed source-36 stream prefix ended at 11:18:50.560Z. Market 233/exchange 922 had 261 bid-compatible and 257 ask-compatible shares over the recent three-minute window, versus current queues of 1,158/1,289. Assuming stationary flow and 50% attribution gives an estimated 30.09 minutes to clear the slower queue. Its 41 conditional one-share liquidation marks averaged +0.00012195. These are weak estimates, not execution evidence or proven alpha. They are substantially more usable than the other observed candidates' estimated waits of hundreds of minutes. The next entry scope is registered before new quotes; prior scopes remain captured until liabilities resolve. Existing cash and all loss history remain unchanged.

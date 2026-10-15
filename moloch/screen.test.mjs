@@ -1,0 +1,65 @@
+import test from 'node:test';import assert from 'node:assert/strict';
+import {selectPairs,screenRows} from './screen.mjs';
+import {liveScopes,captureScopes,retiredPaperScopes,paperPolicyOverrides,live,liveUniverse} from './live.mjs';
+const catalog=(ids,cursor=null)=>({source:'official_sig_api_v1',status:200,kind:'catalog',endpoint:'/tournaments/midterm-elections/markets?status=open&limit=100',data:{data:ids.map(id=>({id:String(id),status:'open',title:'test',exchanges:[{id:String(id+100)}]})),pagination:{total:ids.length,hasMore:!!cursor,nextCursor:cursor}}});
+test('catalog requires complete cursor chain and deterministic exploration',()=>{
+  assert.deepEqual(selectPairs([catalog([1,2,3,4])],2).pairs.map(p=>p.marketId),['1','4']);
+  assert.throws(()=>selectPairs([catalog([1,2,3],'next')],2),/INCOMPLETE/);
+  assert.throws(()=>selectPairs([catalog([1,1])],2),/DUPLICATE/);
+});
+const scope={source:'official_sig_api_v1',status:200,tournamentId:'t',marketId:'1',exchangeId:'2',requestStartedAt:'2026-10-13T10:00:00Z',receivedAt:'2026-10-13T10:00:01Z'};
+const book={...scope,kind:'book',endpoint:'/markets/1/orderbook?tournamentId=t',data:{contexts:[{type:'tournament',tournament:{id:'t'},orderbook:{exchanges:[{exchangeId:'2',asOf:{at:scope.receivedAt,sequence:1},bids:[{price:.4,quantity:100}],asks:[{price:.42,quantity:200}]}]}}]}};
+const tape=complete=>({...scope,kind:'trades',endpoint:'/exchanges/2/trades?tournamentId=t&from=2026-10-13T09:45:00Z&to=2026-10-13T10:00:00Z',data:{marketId:'1',exchangeId:'2',from:'2026-10-13T09:45:00Z',to:'2026-10-13T10:00:00Z',pagination:{hasMore:!complete,nextCursor:complete?null:'next'},coverage:{complete,projectedThroughSequence:1},data:[{id:'engine:1',createdAt:'2026-10-13T09:59:00Z',price:.43,size:300}]}});
+test('incomplete tape cannot rank; current queue turnover never creates fills',()=>{
+  const r=screenRows([book,tape(true)])[0];assert.equal(r.spreadTicks,4);assert.equal(r.queueTurnover,3);assert.equal(r.askThroughVolume,300);assert.equal(r.eligible,true);assert.equal(r.fills,undefined);
+  const partial=screenRows([book,tape(false)])[0];assert.equal(partial.explorationScore,null);assert.equal(partial.eligible,false);
+});
+test('complete paginated tape is merged and deduplicated for discovery without inventing fills',()=>{
+ const first=structuredClone(tape(true));first.data.pagination={hasMore:true,nextCursor:'next'};
+ const last=structuredClone(tape(true));last.endpoint+='&cursor=next';last.data.data.push({id:'engine:2',createdAt:'2026-10-13T09:59:01Z',price:.39,size:200});
+ const r=screenRows([book,first,last])[0];assert.equal(r.eligible,true);assert.equal(r.trades,2);assert.equal(r.volume,500);assert.equal(r.askThroughVolume,300);assert.equal(r.bidThroughVolume,200);assert.equal(r.fills,undefined);
+ assert.equal(screenRows([book,last])[0].eligible,false);
+});
+test('screen refuses broken cursor chains and conflicting repeated execution facts',()=>{
+ const first=structuredClone(tape(true));first.data.pagination={hasMore:true,nextCursor:'next'};
+ const last=structuredClone(tape(true));last.endpoint+='&cursor=wrong';assert.throws(()=>screenRows([book,first,last]),/CURSOR_CHAIN/);
+ last.endpoint=last.endpoint.replace('wrong','next');last.data.data[0].price=.44;assert.throws(()=>screenRows([book,first,last]),/TRADE_CONFLICT/);
+});
+test('screen recency uses a common final observation clock rather than old large volume',()=>{
+ const later=structuredClone(book);later.marketId='3';later.exchangeId='4';later.endpoint='/markets/3/orderbook?tournamentId=t';later.receivedAt='2026-10-13T10:05:00Z';later.data.contexts[0].orderbook.exchanges[0].exchangeId='4';
+ const r=screenRows([book,tape(true),later]).find(r=>r.exchangeId==='2');assert.equal(r.volume,300);assert.equal(r.recentVolume,0);assert.equal(r.recentActivityScore,0);assert.equal(r.latestExecutionLagSeconds,360);assert.equal(r.bookObservationAgeSeconds,299);
+ const invalid=structuredClone(tape(true));invalid.data.data[0].createdAt='2026-10-13T10:00:02Z';assert.throws(()=>screenRows([book,invalid]),/TRADE_FACT/);
+});
+test('screen refuses wrong endpoint exchange scope',()=>{assert.throws(()=>screenRows([book,{...tape(true),exchangeId:'3'}]),/TAPE_SCOPE/);});
+test('live expansion retains original source and rejects duplicate exchange or excessive polling scope',()=>{
+  assert.equal(liveScopes('1','2',[{marketId:'1',exchangeId:'2'},{marketId:'3',exchangeId:'4'}]).length,2);
+  assert.throws(()=>liveScopes('1','2',[{marketId:'3',exchangeId:'4'}]),/MULTI_SCOPE/);
+  assert.throws(()=>liveScopes('1','2',[{marketId:'1',exchangeId:'2'},{marketId:'3',exchangeId:'2'}]),/MULTI_SCOPE/);
+  assert.throws(()=>liveScopes('1','2',[{marketId:'1',exchangeId:'2'},{marketId:'3',exchangeId:'4'},{marketId:'5',exchangeId:'6'}]),/MULTI_SCOPE/);
+});
+test('realtime execution can follow four distinct markets without duplicate market routing',()=>{
+  const scope=[{marketId:'1',exchangeId:'2'},{marketId:'3',exchangeId:'4'},{marketId:'5',exchangeId:'6'},{marketId:'7',exchangeId:'8'}];assert.equal(liveScopes('1','2',scope,4).length,4);assert.throws(()=>liveScopes('1','2',[...scope,{marketId:'9',exchangeId:'10'}],4),/MULTI_SCOPE/);assert.throws(()=>liveScopes('1','2',[scope[0],{marketId:'1',exchangeId:'4'}],4),/MULTI_SCOPE/);
+});
+test('paper scope rotation requires zero unresolved orders and zero owned shares',()=>{
+  const old=[{marketId:'1',exchangeId:'2'}],next=[{marketId:'3',exchangeId:'4'}];assert.equal(retiredPaperScopes(old,next,{orders:[{exchangeId:'2',retired:true}],positions:{}}).length,1);
+  assert.throws(()=>retiredPaperScopes(old,next,{orders:[{exchangeId:'2',retired:false}],positions:{}}),/LIABILITIES/);
+  assert.throws(()=>retiredPaperScopes(old,next,{orders:[],positions:{'2':{YES:[{quantity:1}],NO:[]}}}),/LIABILITIES/);
+});
+test('continuation requests original expired quote windows rather than releasing their cash on restart',()=>{
+  const orders=[{exchangeId:'2',activationAt:1000,expiresAt:5000,retired:false},{exchangeId:'2',activationAt:2000,expiresAt:9000,cancelEffectiveAt:6000,retired:false},{exchangeId:'2',activationAt:0,expiresAt:99999,retired:false},{exchangeId:'2',activationAt:0,expiresAt:10000,retired:true}];
+  const [r,untouched]=captureScopes([{marketId:'1',exchangeId:'2'},{marketId:'3',exchangeId:'4'}],{orders},20000);
+  assert.equal(Date.parse(r.recoveryFrom),1000);assert.equal(Date.parse(r.recoveryTo),6001);assert.equal(untouched.recoveryFrom,undefined);assert.equal(orders[0].retired,false);
+});
+
+test('paper override files cannot alter capital, funding caps or transport budgets',async()=>{
+  assert.deepEqual(paperPolicyOverrides({entryExchangeIds:['2']},[{marketId:'1',exchangeId:'2'}]),{entryExchangeIds:['2']});assert.throws(()=>paperPolicyOverrides({entryExchangeIds:['3']},[{marketId:'1',exchangeId:'2'}]),/ENTRY_SCOPE/);assert.deepEqual(paperPolicyOverrides({inventoryTakerAfterMs:600000}),{inventoryTakerAfterMs:600000});const policy={participationBps:1000,lifetimeMs:600000,quantity:5};assert.deepEqual(paperPolicyOverrides(policy),policy);const retained={...policy,retainProfitableHedge:true,maximumHedgeOvershoot:3};assert.deepEqual(paperPolicyOverrides(retained),retained);assert.throws(()=>paperPolicyOverrides({...retained,maximumHedgeOvershoot:6}),/HEDGE_OVERSHOOT/);
+  for(const p of [{initialCash:'9999'},{maximumCommitted:'9999'},{writesPerMinute:100},{fillModel:'conditionalFifo'},[],null])assert.throws(()=>paperPolicyOverrides(p),/POLICY_OVERRIDE_SCOPE/);
+  assert.throws(()=>paperPolicyOverrides({participationBps:10001}),/POLICY_LIMITS/);
+  await assert.rejects(live({marketId:'1',exchangeId:'2',outputDirectory:'unused-policy-validation',policyFile:''}),/POLICY_FILE_REQUIRED/);
+});
+
+test('observation universe includes funded scopes without expanding financial admission',async()=>{
+ const scopes=[{marketId:'1',exchangeId:'2'}],universe=[...scopes,{marketId:'3',exchangeId:'4',ignored:'metadata'}];assert.deepEqual(liveUniverse(scopes,universe),[...scopes,{marketId:'3',exchangeId:'4'}]);
+ for(const bad of [[],[{marketId:'3',exchangeId:'4'}],[...scopes,{marketId:'3',exchangeId:'2'}],[...scopes,{marketId:'bad',exchangeId:'4'}]])assert.throws(()=>liveUniverse(scopes,bad),/UNIVERSE_SCOPE/);
+ await assert.rejects(live({marketId:'1',exchangeId:'2',outputDirectory:'unused-universe-validation',universeFile:'catalog.json'}),/UNIVERSE_REQUIRES_REALTIME_FILE/);
+});

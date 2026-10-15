@@ -1,0 +1,90 @@
+{
+  "bot": "Moloch",
+  "mode": "Terminal recorded-clock policy comparison; no untouched holdout claim",
+  "sourceDirectory": "runtime/moloch/live-sig-20261014-18",
+  "sequence": 1864,
+  "sourceFinalHash": "c586043b0484bf291ef702753194c5a56d0071313428faaf0455143c303cbcd9",
+  "observedThrough": "2026-10-14T04:32:11.214Z",
+  "baselineFinancialParity": true,
+  "variants": [
+    {
+      "policy": "original",
+      "newFills": 2,
+      "realized": "0.025000",
+      "ownedCost": "4.270000",
+      "cancels": 45,
+      "finalLiquidation": null,
+      "lastFresh": {
+        "at": "2026-10-14T04:32:10.119Z",
+        "pnl": "0.025000"
+      }
+    },
+    {
+      "policy": "retain + 0 residual",
+      "newFills": 2,
+      "realized": "0.025000",
+      "ownedCost": "4.270000",
+      "cancels": 45,
+      "finalLiquidation": null,
+      "lastFresh": {
+        "at": "2026-10-14T04:32:10.119Z",
+        "pnl": "0.025000"
+      }
+    },
+    {
+      "policy": "retain + 3 residual",
+      "newFills": 2,
+      "realized": "0.025000",
+      "ownedCost": "4.270000",
+      "cancels": 44,
+      "finalLiquidation": null,
+      "lastFresh": {
+        "at": "2026-10-14T04:32:10.119Z",
+        "pnl": "0.025000"
+      }
+    }
+  ],
+  "syntheticCheck": {
+    "oldPolicyFills": 1,
+    "retainedPolicyFills": 2,
+    "retainedClosedProfit": "0.025000",
+    "description": "Controlled five-share two-leg scenario with later trade-throughs; establishes behavior, not market profitability."
+  },
+  "constraints": [
+    "No new hedge-buy submission; only existing funded opposite quotes can be retained.",
+    "Total original opposite buys plus covered-sale pledges must not exceed owned shares plus the optional declared residual-share cap.",
+    "Worst owned basis plus both per-share fees and opposite quote price must leave minimumEdge.",
+    "Partial-entry hedges beyond the declared residual cap, gaps, silence and explicit drains still cancel. Already canceled quotes are never reinstated.",
+    "Fully filled quotes are excluded from active cancellation only when the optional policy is enabled."
+  ],
+  "nodeChecks": 70,
+  "defaultPolicyUnchanged": true,
+  "contestOrders": 0,
+  "profitabilityEstablished": false,
+  "sourceEventSha256": "438b0d2ed06d406138b0a7edef4aa3df88ff8c854905781e39203002568a1c2b",
+  "partialPacketScenario": {
+    "sharesOwnedBeforeHedge": 7,
+    "originalOppositeQuoteShares": 10,
+    "residualCap": 3,
+    "modeledPairGain": "0.035000",
+    "residualShares": 3,
+    "intermediateLiquidationPnl": "0.005000",
+    "finalClosedGain": "0.020000",
+    "basis": "Controlled test only; residual covered sale incurs a loss and no profitability is inferred."
+  },
+  "prospectiveSuccessor": {
+    "episode": 19,
+    "retentionEnabled": true,
+    "maximumHedgeOvershoot": 3,
+    "quantity": 10,
+    "participationBps": 100,
+    "newPaperCapital": "0.000000",
+    "outcome": "pending"
+  },
+  "limitations": [
+    "Replay changed one cancellation but no realized profit in the completed ten-share episode.",
+    "Residual exposure is directional and its loss can erase the paired gain.",
+    "Synthetic scenarios establish controlled behavior only.",
+    "Prospective outcome remains pending."
+  ]
+}

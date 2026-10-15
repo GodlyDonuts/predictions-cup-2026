@@ -1,0 +1,11 @@
+# Minimum net-gain exit candidate
+
+Optional `inventoryMinimumGain` specifies a nonnegative per-share net-gain threshold for the existing aged taker exit. Entry and exit fee estimates are subtracted before qualification. The maximum inventory-age rule still permits a forced losing exit. When the option is absent, its effective value is zero and all historical/default behavior remains unchanged. This feature is not enabled in the original live banks.
+
+The exact book for their completed exchange-1027 exit has a best executable bid of 0.910, equal to the conservative recorded limit. Walking its verified eligible depth produces no additional proceeds: there is no hidden price-improvement profit in that event. `research/aon-depth-proceeds.mjs` separately computes a diagnostic multi-level proceeds scenario with integer accounting, consumed-depth exclusion and NO complements. It never rewrites cash. Three tests check both sides, multi-level depth, consumed shares and insufficient AON depth. Evidence: `data/moloch-aon-depth-price-20261014.json`.
+
+The full five-capture replay (42–46) carries each alternative funded wallet continuously through the channel failure, REST recovery and restored realtime stream. New entries drain after capture42. Original source/parent hashes and every recorded baseline financial state match. The one-tick net-gain rule with immediate qualification closes the 25-share purchase for +0.125 and ends flat with zero unresolved quotes. The ten-minute control, immediate break-even alternative and three-minute forced-risk variant each close at zero. Evidence: `data/moloch-fixed-cycle-exits-20261014.json`.
+
+This is retrospective development on one already inspected entry print. The AON exit remains a later-book conditional simulation, not a venue fill. It is not untouched validation, a scalable turnover result or a production authorization. The original strict bank still has 100,000.000 cash and the other retains its inherited 100,000.060; neither receives this hypothetical gain.
+
+All 123 core Node tests pass. New feature tests cover minimum-gain qualification, fee reduction, forced-age loss handling and invalid thresholds. A prospectively registered funded test is required before promoting the candidate.

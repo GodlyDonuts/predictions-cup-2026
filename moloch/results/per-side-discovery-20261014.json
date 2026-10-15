@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "sourceEventSha256": "d933f0a107d6e5dfd63fbd3f52109d7c80d70acc833c68f770e972c86106c085",
+  "sourceEventCount": 10453,
+  "sourceFinalHash": "1306001884413e4b9a5c910cd4b4b1d61e60e5d37cc91ea6d85a545bd0ccb847",
+  "window": {
+    "from": "2026-10-14T07:49:34.575Z",
+    "to": "2026-10-14T07:57:32.760Z"
+  },
+  "observedMarkets": 237,
+  "conditionalMarkoutsBefore": 125,
+  "conditionalMarkoutsAfter": 126,
+  "changes": [
+    {
+      "marketId": "331",
+      "exchangeId": "1020",
+      "bidRegimeFrom": "2026-10-14T07:56:53.787Z",
+      "askRegimeFrom": "2026-10-14T07:55:45.971Z",
+      "before": {
+        "bid": 0,
+        "ask": 0
+      },
+      "after": {
+        "bid": 0,
+        "ask": 1
+      },
+      "roundTripPriority": 0
+    },
+    {
+      "marketId": "160",
+      "exchangeId": "849",
+      "bidRegimeFrom": "2026-10-14T07:49:35.531Z",
+      "askRegimeFrom": "2026-10-14T07:55:18.894Z",
+      "before": {
+        "bid": 0,
+        "ask": 0
+      },
+      "after": {
+        "bid": 1,
+        "ask": 0
+      },
+      "roundTripPriority": 0
+    },
+    {
+      "marketId": "180",
+      "exchangeId": "869",
+      "bidRegimeFrom": "2026-10-14T07:57:09.554Z",
+      "askRegimeFrom": "2026-10-14T07:49:36.532Z",
+      "before": {
+        "bid": 0,
+        "ask": 13
+      },
+      "after": {
+        "bid": 0,
+        "ask": 64
+      },
+      "roundTripPriority": 0
+    }
+  ],
+  "currentTwoSidedCandidates": 0,
+  "codeIdentity": {
+    "moloch/activity.mjs": "9468f03fc1a813f4bc2ebbf45297aafae01184ac559ba9278ed2b015d5d62b34",
+    "moloch/activity.test.mjs": "82ebfea7794c671bae900d7c7351b269672564c5a401afc7379b4b2a71024773"
+  },
+  "checks": 11,
+  "contestOrders": 0,
+  "profitabilityEstablished": false,
+  "limitations": [
+    "Frozen original stream prefix from an ongoing episode; not a terminal wallet result.",
+    "No observation after the prefix boundary is used.",
+    "Directional compatibility is conditional, not proven aggressor side or queue priority.",
+    "Three-second observation lead and per-side price/gap resets remain."
+  ]
+}

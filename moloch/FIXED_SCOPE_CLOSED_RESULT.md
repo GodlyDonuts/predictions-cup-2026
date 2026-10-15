@@ -1,0 +1,7 @@
+# Complete fixed-scope cycle
+
+Both original funded forward banks closed their exchange-1027 holding on October 14 at 20:55:29 UTC. Each bought 25 YES at 0.910, original execution 20:35:42.122, and modeled a later depth-supported all-or-none sale at 0.910. New realized profit is zero. Strict cash is 100,000.000 and conditional-bank cash 100,000.060; the latter gain is inherited from the earlier cohort and excluded. Both have zero owned inventory, reserved cash and unresolved orders. Snapshot hashes and exact fills are in `data/moloch-fixed-scope-closed-20261014.json`.
+
+REST recovery kept the account budget and liabilities safe, but its approximately 25-second book cadence can miss the ten-second post-activation observation window of these simulated AON intents. The cadence diagnostic contains historical AON orders as well as the current cycle; its total evaluation count must not be attributed solely to exchange 1027. Realtime observation was explicitly restored only after the REST collector exited and the preserved paper tails stopped. Initial REST book/tape resynchronization completed before the fresh pushed book supported the exit. No execution-window or fill-model rule was relaxed.
+
+The earlier +0.125/+0.250 depth marks did not become new realized profit. They cannot justify increasing live participation or production activation. The collector remains connected for market observation with entries disabled in the closed banks. This completes one experiment, not the objective of building a competitively profitable bot.

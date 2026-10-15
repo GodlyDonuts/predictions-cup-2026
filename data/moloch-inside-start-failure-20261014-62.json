@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "at": "2026-10-14T23:09:24.055Z",
+  "captureExit": 1,
+  "officialReceipts": 0,
+  "failure": {
+    "phase": "channel",
+    "code": "CHANNEL_ERROR",
+    "category": "channel_network",
+    "errorShape": "Error",
+    "inspectedErrorNodes": 3,
+    "networkCodes": [
+      "EAI_AGAIN"
+    ],
+    "transportEvents": [
+      "error"
+    ]
+  },
+  "transportEvidence": {
+    "socketError": {
+      "phase": "channel",
+      "code": "CHANNEL_ERROR",
+      "category": "channel_network",
+      "errorShape": "Error",
+      "inspectedErrorNodes": 1,
+      "networkCodes": [
+        "EAI_AGAIN"
+      ]
+    },
+    "socketCloseCode": 1006
+  },
+  "contestOrders": 0,
+  "profitabilityEstablished": false,
+  "newFills": 0,
+  "ownedCost": "0",
+  "unresolved": 0,
+  "conclusion": "Typed transient DNS failure before market data; no forward economics exercised."
+}

@@ -1,0 +1,184 @@
+{
+  "schemaVersion": 1,
+  "bot": "Moloch",
+  "target": "Adverse 30–40-second executable one-share mark conditional on an observed compatible print; not actual fill probability.",
+  "sources": [
+    {
+      "episode": "live-sig-20261014-18",
+      "sha256": "01d03acad417994838dd330cedbf34748b2b0926d26f5b50c2ef0e7cda864c38",
+      "eventCount": 15182,
+      "finalHash": "37b9a70823d9306106f67c529e8aa9edeb9993e60f78271608b48a98e13b054c",
+      "censored": 9,
+      "excludedMarks": 69
+    },
+    {
+      "episode": "live-sig-20261014-19",
+      "sha256": "0d3fa9b81f5d2f8b3748397b9e3c9b5d4fc32a6c789cab0ed61d9670be1e7680",
+      "eventCount": 20605,
+      "finalHash": "483496962ac668495ec8030cc2b6b8cb7ec8aa77c56a97e90b1f4a86b139d33d",
+      "censored": 7,
+      "excludedMarks": 170
+    },
+    {
+      "episode": "live-sig-20261014-20",
+      "sha256": "fba0cdb2cc00aac8dde7b91666f49c011a948af2f4c17f8b98f11717d1fa2926",
+      "eventCount": 6765,
+      "finalHash": "8a122b7af147b1f0069e19ea74e605ba20848dd0afde86f76052c1478d1fdc69",
+      "censored": 17,
+      "excludedMarks": 13
+    },
+    {
+      "episode": "live-sig-20261014-21",
+      "sha256": "e575d33d42b9f34a697287c26710f8ac41cc782ea23aba06c86c6957f5e8017d",
+      "eventCount": 24988,
+      "finalHash": "326c7c93ed85b116da9ce72e06fe227856819c235d0b0239096ac7de0565ed59",
+      "censored": 20,
+      "excludedMarks": 86
+    },
+    {
+      "episode": "live-sig-20261014-22",
+      "sha256": "8bbcd319198689a83a39dea91dc9234864a7b9ec03bcee7a2e4754f1419f77b1",
+      "eventCount": 25582,
+      "finalHash": "454f6feca8b02dafb1a2f4493bfc2d0017ef04f3de207e6aeb5f89ca079f037c",
+      "censored": 5,
+      "excludedMarks": 67
+    },
+    {
+      "episode": "live-sig-20261014-23",
+      "sha256": "7a26f5e26216bf0e5fd921fbc45b982caabcf733f2f48a100197fe74d1617732",
+      "eventCount": 21680,
+      "finalHash": "17ac6d17318eb674087b8dc2b149ce9a7bf9bb5c51cc6bbae48fc541f51eb084",
+      "censored": 3,
+      "excludedMarks": 83
+    },
+    {
+      "episode": "live-sig-20261014-24",
+      "sha256": "0412ef796bd60d520245516ca58c50edf2783a8b7002bc49706912946ecc8347",
+      "eventCount": 6108,
+      "finalHash": "6bf6280af8077b259969c6091d91be468e2f2058714b65ea43c95e59fe402f95",
+      "censored": 0,
+      "excludedMarks": 20
+    },
+    {
+      "episode": "live-sig-20261014-25",
+      "sha256": "a8c6e796b58b8438065eaf9d046b7bc199a0ee0fc86559c19f22a092b748bcae",
+      "eventCount": 24706,
+      "finalHash": "8bfc7091e1b4142f0704d0ab36d982e738a567c1bf3fd25e7613378a6b8186a1",
+      "censored": 2,
+      "excludedMarks": 25
+    },
+    {
+      "episode": "live-sig-20261014-26",
+      "sha256": "d98d88c649133cd663effd75badb0f0bcbc8ab87b201a394f608b1750fb08e1b",
+      "eventCount": 36521,
+      "finalHash": "d5aae43802eb4202cb95af4a882fbcc9712e5d78deba9a06f1e826cfcf13eb35",
+      "censored": 18,
+      "excludedMarks": 151
+    }
+  ],
+  "split": {
+    "trainThrough": "2026-10-14T05:41:51.006Z",
+    "testFrom": "2026-10-14T05:50:01.311Z",
+    "train": 1107,
+    "test": 546
+  },
+  "model": {
+    "schemaVersion": 1,
+    "featureNames": [
+      "spreadTicks",
+      "sideImbalance",
+      "entryPrice",
+      "logOwnQueue",
+      "logOppositeQueue",
+      "receiptLagSeconds"
+    ],
+    "mean": [
+      1.0975609756097562,
+      0.10286385742874041,
+      0.49883017163505045,
+      8.416952021285145,
+      8.31909049415509,
+      0.5383884372177039
+    ],
+    "scale": [
+      0.31445657895632007,
+      0.7003417601351016,
+      0.27108935794865685,
+      2.4650146577312144,
+      1.662248108941619,
+      0.29160328226795645
+    ],
+    "weights": [
+      -1.012069963882445,
+      -0.18923228287467483,
+      0.35412961303725077,
+      1.0749169213579393,
+      0.14926077681643074,
+      0.47881588394005337,
+      0.026829742693569403
+    ],
+    "trainingRate": 0.3134598012646793,
+    "epochs": 400,
+    "learningRate": 0.1,
+    "ridge": 0.01
+  },
+  "modelHash": "4404505b1067910caad02d3f4b5e700b16b42d026c92450c17f23f63a4aaf6fc",
+  "training": {
+    "samples": 1107,
+    "adverseRate": 0.3134598012646793,
+    "brier": 0.16418272747114138,
+    "baselineBrier": 0.2152027542557895,
+    "fixedGate": {
+      "maximumPredictedAdverse": 0.1,
+      "samples": 217,
+      "adverseRate": 0.08755760368663594,
+      "meanConditionalDelta": -0.00023041474654377877
+    },
+    "profitabilityEstablished": false
+  },
+  "evaluation": {
+    "samples": 546,
+    "adverseRate": 0.3076923076923077,
+    "brier": 0.24654473931332235,
+    "baselineBrier": 0.21305101546139482,
+    "fixedGate": {
+      "maximumPredictedAdverse": 0.1,
+      "samples": 219,
+      "adverseRate": 0.3242009132420091,
+      "meanConditionalDelta": -0.0017808219178082202
+    },
+    "profitabilityEstablished": false
+  },
+  "contestOrders": 0,
+  "profitabilityEstablished": false,
+  "limitations": [
+    "Features are from a prior received book at least three seconds before execution, with source age at most ten seconds. No later print quantity, price or touch status is a model input.",
+    "Label books must have source times 30–40 seconds after execution and receipt lag at most ten seconds. Stale and later-horizon marks are excluded.",
+    "Training includes only labels available by its cutoff; normalization and coefficients use training only. Hyperparameters and the .10 gate are fixed.",
+    "Historical evaluation periods were previously inspected; this is retrospective and is not pristine prospective evidence.",
+    "Overlapping labels and markets are correlated. Sample count is not an independent-trial count.",
+    "Missing future marks remain censored; stream gaps and incomplete observation can bias the sample.",
+    "A favorable prediction score or conditional price mark does not establish queue fills, wallet profit or deployment authority."
+  ],
+  "labelWindowMs": {
+    "from": 30000,
+    "to": 40000
+  },
+  "decision": {
+    "quoteControl": "rejected",
+    "reason": "Later Brier score is worse than constant-risk baseline and the fixed low-risk gate does not reduce observed adverse frequency.",
+    "currentPaperPolicyUnchanged": true
+  },
+  "codeIdentity": {
+    "execution/atomic-rename.mjs": "686aaf75a0da32bd1cc5b17e5ac6b4d00094cae50cefaff69534b3eed817fda7",
+    "execution/ledger.mjs": "b812d54a35e8f30bdab446d9f601c14181b763400d515369ce8e2b86faa1ef58",
+    "feed/contract.mjs": "c695e7dfd6aba3c988a8ac9cdaf29c206fec9890a39533935a7075699df26dc5",
+    "live-paper/frozen-paper-graph.mjs": "8cb0c144c0cdeb3921629c4a051a88e1116780bf3c543765ccecd2939df0839e",
+    "moloch/activity.mjs": "9468f03fc1a813f4bc2ebbf45297aafae01184ac559ba9278ed2b015d5d62b34",
+    "moloch/adverse-model.mjs": "d93e7f48f7e8b1c85c865d4e9a83dae8e995319c37bd949450a5411d6b320473",
+    "moloch/compare.mjs": "4c9e14dc85bf8e39eadf180f2d3b9914e1cb744fa390f443ba5662d03b0a478a",
+    "moloch/engine.mjs": "27114b2533f7b8218cc91d118a801390e4538734862796a8596f1b383bc67700",
+    "paper/fixed.mjs": "057e70d21ac62cc01dae8c98cd93f4869c5f6bb69ef7eab98af7e891b88fd00d"
+  },
+  "checks": 6
+}

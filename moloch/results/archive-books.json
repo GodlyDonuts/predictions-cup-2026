@@ -1,0 +1,47 @@
+{
+  "bot": "Moloch",
+  "at": "2026-10-12T22:41:08.011Z",
+  "policyHash": "548e0c69d1024b1f68cece37ddb558599e2fd9e4bd420ea700a9017d79ab29f7",
+  "events": 20,
+  "cash": "1000.000000",
+  "realized": "0.000000",
+  "fees": "0.000000",
+  "ownedCost": "0.000000",
+  "reservedCash": "24.950000",
+  "netLiquidationPnl": "0.000000",
+  "positions": {},
+  "fills": 0,
+  "orders": 11,
+  "activeOrders": 7,
+  "unresolvedOrders": 11,
+  "profitSignalEligible": false,
+  "counts": {
+    "submissionBatches": 5,
+    "writeBudgetHolds": 8,
+    "cancels": 5
+  },
+  "contestOrders": 0,
+  "networkRequests": 0,
+  "profitabilityEstablished": false,
+  "assumptions": [
+    "Independent simulated capital; no contest-account ownership.",
+    "Microprice ranks quotes; it is not calibrated alpha.",
+    "Strict one-tick trade-through and bounded participation are counterfactual, not verified queue fills.",
+    "Cancel acknowledgment does not release unresolved funding; complete window and post-end checkpoint are required.",
+    "YES/NO pair payout is a declared paper accounting assumption."
+  ],
+  "mode": "historical_paper_replay",
+  "startedAt": "2026-10-13T07:52:18.745Z",
+  "source": {
+    "path": "data/maker-public-book-export-20261012.json",
+    "sha256": "f63e1e3ff36b759f87ed2e5882bc42051fae18633d4c8ff11da92bc27434c8a4",
+    "bytes": 60521,
+    "format": "book-export"
+  },
+  "eventJournalHash": "6b6c0b236f4d979502e098184385ff53f40c13efd88298a375f9355f60e10a48",
+  "externalSourceProvenanceVerified": "bounded_export_hash_and_record_chain_only",
+  "prospectiveCutoff": null,
+  "preCutoffEventsSkipped": 0,
+  "sourcePrefixNotIndependentlyReproduced": true,
+  "liveConnectionVerified": false
+}

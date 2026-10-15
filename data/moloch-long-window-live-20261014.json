@@ -1,0 +1,121 @@
+{
+  "at": "2026-10-14T11:47:49.382Z",
+  "source": 37,
+  "status": "running",
+  "dynamicRecovery": true,
+  "watchedWallets": 2,
+  "selection": {
+    "registeredAt": "2026-10-14T11:38:22.854Z",
+    "sourceWindow": {
+      "from": "2026-10-14T10:53:38.389Z",
+      "to": "2026-10-14T11:18:50.560Z"
+    },
+    "sourceSha256": "d670413c947dc86c309a3f55b565aac60b71d92cbfbf4f9551fdda14dad13f2f",
+    "sourceFinalHash": "3ee9a6dc416da6dc6d0d7777d5d2b8230f477bc89670f8c8523a1559e1bf3de6",
+    "selected": [
+      {
+        "marketId": "233",
+        "exchangeId": "922",
+        "observedTrades": 55,
+        "observedVolume": 7560,
+        "recentTrades": 6,
+        "recentVolume": 518,
+        "priceRegimeFrom": "2026-10-14T11:13:54.993Z",
+        "bidRegimeFrom": "2026-10-14T11:13:54.993Z",
+        "askRegimeFrom": "2026-10-14T10:53:45.761Z",
+        "priceRegimeCompatibleTrades": 6,
+        "bidCompatibleVolume": 261,
+        "askCompatibleVolume": 257,
+        "bothSideQueueTurnover": 0.19937936384794414,
+        "bid": 0.405,
+        "ask": 0.41,
+        "spreadTicks": 1,
+        "bidQueue": 1158,
+        "askQueue": 1289,
+        "bookAsOf": {
+          "sequence": 156856420,
+          "at": "2026-10-14T11:18:31.132498100Z"
+        },
+        "bookReceivedAt": "2026-10-14T11:18:31.411Z",
+        "bookAgeMs": 19428,
+        "gapObserved": false,
+        "quoteReadyFromObservation": false,
+        "authoritativeResyncRequired": true,
+        "reconciliationPriority": 12.165643217170825,
+        "roundTripReconciliationPriority": 0.3537746889196452,
+        "insideRoomTicks": 0,
+        "eligibleForFurtherReconciliation": false,
+        "explorationScore": null,
+        "conditionalMarkouts": 41,
+        "meanConditionalLiquidationDeltaPerShare": 0.00012195121951219512,
+        "censoredMarkouts": 0
+      }
+    ],
+    "reason": "highest observed two-sided queue turnover; exploratory paper candidate with weak conditional marks",
+    "contestOrders": 0
+  },
+  "wallets": [
+    {
+      "name": "competition-scale-20261014-7",
+      "at": "2026-10-14T11:47:49.474Z",
+      "snapshotHash": "2494c626b41f7d5c078800d69089e340a8190e2f46fbbc4fd1e9b2ae6a7f8db4",
+      "parentSnapshotHash": "12674a0d4b0f92c4da27e23dc3c1f12529914180d90bb702e9a9c8f0b389049f",
+      "newPaperCapital": "0.000000",
+      "cash": "100000.000000",
+      "realized": "0.000000",
+      "reservedCash": "1272.605000",
+      "fills": 0,
+      "unresolved": 2,
+      "entryExchangeIds": [
+        "922"
+      ],
+      "quotes": [
+        {
+          "exchangeId": "922",
+          "side": "NO",
+          "quantity": 1279,
+          "price": "0.590000"
+        },
+        {
+          "exchangeId": "922",
+          "side": "YES",
+          "quantity": 1279,
+          "price": "0.405000"
+        }
+      ]
+    },
+    {
+      "name": "queue-duration-20261014-3",
+      "at": "2026-10-14T11:47:49.474Z",
+      "snapshotHash": "7104b55439f1f50050c090e862a6a2b21153450c7b24279bbedba4860b45b4af",
+      "parentSnapshotHash": "a3fb91d02974bd11631efd95b6faec8ce3689b730a584c29d8c4b700c6523b60",
+      "newPaperCapital": "0.000000",
+      "cash": "100000.000000",
+      "realized": "0.000000",
+      "reservedCash": "1272.605000",
+      "fills": 0,
+      "unresolved": 2,
+      "entryExchangeIds": [
+        "922"
+      ],
+      "quotes": [
+        {
+          "exchangeId": "922",
+          "side": "NO",
+          "quantity": 1279,
+          "price": "0.590000",
+          "queueAhead": "1833"
+        },
+        {
+          "exchangeId": "922",
+          "side": "YES",
+          "quantity": 1279,
+          "price": "0.405000",
+          "queueAhead": "1279"
+        }
+      ]
+    }
+  ],
+  "contestOrders": 0,
+  "profitabilityEstablished": false
+}

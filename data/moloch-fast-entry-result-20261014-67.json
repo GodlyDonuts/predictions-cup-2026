@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "at": "2026-10-15T00:00:53.155Z",
+  "registrationHash": "833b9781db4c8f8ce49d41ec582137ec12a1c35b6dbf81f8f5e8452b3dd20b22",
+  "sourceHash": "c8ecb2c8fc0bfdadda5cbc7201268b765c784152f5a37e8edc06e1ca3eae6404",
+  "sourceBytes": 1494762,
+  "identicalEventsVerified": true,
+  "maximumProcessingSkewMs": 0,
+  "banks": [
+    {
+      "name": "control",
+      "snapshotHash": "77acebf4eaa415bc4185890e691d88144d21d008aa625bf43ce2b067a26e5726",
+      "newFills": 0,
+      "closed": false,
+      "realizedChange": "0.000000",
+      "cash": "100000.000000",
+      "ownedCost": "0.000000",
+      "unresolved": 2,
+      "classified": "censored; inventory or unresolved quotes remain"
+    },
+    {
+      "name": "insideEntry",
+      "snapshotHash": "25161094f17eea8010f8010cda54db271ed2971c1f432387690243ee9fc6d9c0",
+      "newFills": 0,
+      "closed": false,
+      "realizedChange": "0.000000",
+      "cash": "100000.000000",
+      "ownedCost": "0.000000",
+      "unresolved": 2,
+      "classified": "censored; inventory or unresolved quotes remain"
+    }
+  ],
+  "contestOrders": 0,
+  "profitabilityEstablished": false,
+  "limitations": [
+    "Separate simulations cannot be summed or treated as actual exchange fills.",
+    "Matching processing timestamps verified for every event in this source.",
+    "This finite selected-market trial alone cannot establish scalable profitability."
+  ]
+}

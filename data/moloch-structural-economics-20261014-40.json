@@ -1,0 +1,6492 @@
+{
+  "schemaVersion": 1,
+  "catalogSha256": "1812d9e5d2bbe736f98428826072e1210287f2fcadd98142f84bcdf2c70a3b13",
+  "catalogObservedAt": "2026-10-13T22:53:34.275Z",
+  "sourceSha256": "ad50d86f47b377d91d58e06f5d35cf14409ae33e468b5c52b908ff741a0db2e2",
+  "sourceFinalHash": "ef9c90b2fcdf30130e42b7a7df2a57cd39c31e7c7b1a9ae69aeadec296bd8583",
+  "sourceEventCount": 14147,
+  "window": {
+    "from": "2026-10-14T19:51:04.837Z",
+    "to": "2026-10-14T20:00:51.485Z"
+  },
+  "matchedPairs": 117,
+  "maximumBookSourceSkewMs": 1000,
+  "maximumBookAgeMs": 10000,
+  "races": [
+    {
+      "race": "Arizona Governor",
+      "observations": 34,
+      "first": {
+        "race": "Arizona Governor",
+        "receivedAt": "2026-10-14T19:51:05.876Z",
+        "legs": [
+          {
+            "marketId": "159",
+            "exchangeId": "848"
+          },
+          {
+            "marketId": "160",
+            "exchangeId": "849"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T19:51:05.539868000Z",
+          "2026-10-14T19:51:05.539868000Z"
+        ],
+        "sequences": [
+          160003972,
+          160003972
+        ],
+        "noPurchaseLimits": [
+          "0.195000",
+          "0.785000"
+        ],
+        "packageCost": "0.980000",
+        "immediateOnePackageLiquidation": "0.965000",
+        "immediateRoundTripPnl": "-0.015000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.020000",
+        "maximumDisplayedPackages": 555,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "last": {
+        "race": "Arizona Governor",
+        "receivedAt": "2026-10-14T20:00:34.189Z",
+        "legs": [
+          {
+            "marketId": "159",
+            "exchangeId": "848"
+          },
+          {
+            "marketId": "160",
+            "exchangeId": "849"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T20:00:32.036687800Z",
+          "2026-10-14T20:00:32.036687800Z"
+        ],
+        "sequences": [
+          160067662,
+          160067662
+        ],
+        "noPurchaseLimits": [
+          "0.195000",
+          "0.785000"
+        ],
+        "packageCost": "0.980000",
+        "immediateOnePackageLiquidation": "0.960000",
+        "immediateRoundTripPnl": "-0.020000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.020000",
+        "maximumDisplayedPackages": 841,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "largestConditionalSurplus": {
+        "race": "Arizona Governor",
+        "receivedAt": "2026-10-14T19:59:09.135Z",
+        "legs": [
+          {
+            "marketId": "159",
+            "exchangeId": "848"
+          },
+          {
+            "marketId": "160",
+            "exchangeId": "849"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T19:59:07.561863200Z",
+          "2026-10-14T19:59:07.561863200Z"
+        ],
+        "sequences": [
+          160059917,
+          160059917
+        ],
+        "noPurchaseLimits": [
+          "0.190000",
+          "0.785000"
+        ],
+        "packageCost": "0.975000",
+        "immediateOnePackageLiquidation": "0.965000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.025000",
+        "maximumDisplayedPackages": 300,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      }
+    },
+    {
+      "race": "California Governor",
+      "observations": 32,
+      "first": {
+        "race": "California Governor",
+        "receivedAt": "2026-10-14T19:51:05.876Z",
+        "legs": [
+          {
+            "marketId": "161",
+            "exchangeId": "850"
+          },
+          {
+            "marketId": "162",
+            "exchangeId": "851"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T19:51:05.539868000Z",
+          "2026-10-14T19:51:05.539868000Z"
+        ],
+        "sequences": [
+          160003972,
+          160003972
+        ],
+        "noPurchaseLimits": [
+          "0.095000",
+          "0.870000"
+        ],
+        "packageCost": "0.965000",
+        "immediateOnePackageLiquidation": "0.955000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.035000",
+        "maximumDisplayedPackages": 488,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "last": {
+        "race": "California Governor",
+        "receivedAt": "2026-10-14T20:00:34.189Z",
+        "legs": [
+          {
+            "marketId": "161",
+            "exchangeId": "850"
+          },
+          {
+            "marketId": "162",
+            "exchangeId": "851"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T20:00:32.036687800Z",
+          "2026-10-14T20:00:32.036687800Z"
+        ],
+        "sequences": [
+          160067662,
+          160067662
+        ],
+        "noPurchaseLimits": [
+          "0.100000",
+          "0.870000"
+        ],
+        "packageCost": "0.970000",
+        "immediateOnePackageLiquidation": "0.950000",
+        "immediateRoundTripPnl": "-0.020000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.030000",
+        "maximumDisplayedPackages": 2917,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "largestConditionalSurplus": {
+        "race": "California Governor",
+        "receivedAt": "2026-10-14T19:59:30.790Z",
+        "legs": [
+          {
+            "marketId": "161",
+            "exchangeId": "850"
+          },
+          {
+            "marketId": "162",
+            "exchangeId": "851"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T19:59:30.068917500Z",
+          "2026-10-14T19:59:30.068917500Z"
+        ],
+        "sequences": [
+          160061884,
+          160061884
+        ],
+        "noPurchaseLimits": [
+          "0.095000",
+          "0.870000"
+        ],
+        "packageCost": "0.965000",
+        "immediateOnePackageLiquidation": "0.950000",
+        "immediateRoundTripPnl": "-0.015000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.035000",
+        "maximumDisplayedPackages": 98,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      }
+    },
+    {
+      "race": "Alaska Senate",
+      "observations": 29,
+      "first": {
+        "race": "Alaska Senate",
+        "receivedAt": "2026-10-14T19:51:05.876Z",
+        "legs": [
+          {
+            "marketId": "377",
+            "exchangeId": "1066"
+          },
+          {
+            "marketId": "378",
+            "exchangeId": "1067"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T19:51:05.539868000Z",
+          "2026-10-14T19:51:05.539868000Z"
+        ],
+        "sequences": [
+          160003972,
+          160003972
+        ],
+        "noPurchaseLimits": [
+          "0.300000",
+          "0.690000"
+        ],
+        "packageCost": "0.990000",
+        "immediateOnePackageLiquidation": "0.980000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.010000",
+        "maximumDisplayedPackages": 1932,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "last": {
+        "race": "Alaska Senate",
+        "receivedAt": "2026-10-14T20:00:34.189Z",
+        "legs": [
+          {
+            "marketId": "377",
+            "exchangeId": "1066"
+          },
+          {
+            "marketId": "378",
+            "exchangeId": "1067"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T20:00:32.117384300Z",
+          "2026-10-14T20:00:32.117384300Z"
+        ],
+        "sequences": [
+          160067671,
+          160067671
+        ],
+        "noPurchaseLimits": [
+          "0.300000",
+          "0.690000"
+        ],
+        "packageCost": "0.990000",
+        "immediateOnePackageLiquidation": "0.980000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.010000",
+        "maximumDisplayedPackages": 1932,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "largestConditionalSurplus": {
+        "race": "Alaska Senate",
+        "receivedAt": "2026-10-14T20:00:34.189Z",
+        "legs": [
+          {
+            "marketId": "377",
+            "exchangeId": "1066"
+          },
+          {
+            "marketId": "378",
+            "exchangeId": "1067"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T20:00:32.117384300Z",
+          "2026-10-14T20:00:32.117384300Z"
+        ],
+        "sequences": [
+          160067671,
+          160067671
+        ],
+        "noPurchaseLimits": [
+          "0.300000",
+          "0.690000"
+        ],
+        "packageCost": "0.990000",
+        "immediateOnePackageLiquidation": "0.980000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.010000",
+        "maximumDisplayedPackages": 1932,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      }
+    },
+    {
+      "race": "Illinois Governor",
+      "observations": 25,
+      "first": {
+        "race": "Illinois Governor",
+        "receivedAt": "2026-10-14T19:51:10.442Z",
+        "legs": [
+          {
+            "marketId": "172",
+            "exchangeId": "861"
+          },
+          {
+            "marketId": "173",
+            "exchangeId": "862"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T19:51:09.440198000Z",
+          "2026-10-14T19:51:09.440198000Z"
+        ],
+        "sequences": [
+          160004398,
+          160004398
+        ],
+        "noPurchaseLimits": [
+          "0.050000",
+          "0.945000"
+        ],
+        "packageCost": "0.995000",
+        "immediateOnePackageLiquidation": "0.980000",
+        "immediateRoundTripPnl": "-0.015000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.005000",
+        "maximumDisplayedPackages": 2,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "last": {
+        "race": "Illinois Governor",
+        "receivedAt": "2026-10-14T20:00:44.808Z",
+        "legs": [
+          {
+            "marketId": "172",
+            "exchangeId": "861"
+          },
+          {
+            "marketId": "173",
+            "exchangeId": "862"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T20:00:44.203872800Z",
+          "2026-10-14T20:00:44.203872800Z"
+        ],
+        "sequences": [
+          160069109,
+          160069109
+        ],
+        "noPurchaseLimits": [
+          "0.050000",
+          "0.945000"
+        ],
+        "packageCost": "0.995000",
+        "immediateOnePackageLiquidation": "0.980000",
+        "immediateRoundTripPnl": "-0.015000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.005000",
+        "maximumDisplayedPackages": 2,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "largestConditionalSurplus": {
+        "race": "Illinois Governor",
+        "receivedAt": "2026-10-14T20:00:44.808Z",
+        "legs": [
+          {
+            "marketId": "172",
+            "exchangeId": "861"
+          },
+          {
+            "marketId": "173",
+            "exchangeId": "862"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T20:00:44.203872800Z",
+          "2026-10-14T20:00:44.203872800Z"
+        ],
+        "sequences": [
+          160069109,
+          160069109
+        ],
+        "noPurchaseLimits": [
+          "0.050000",
+          "0.945000"
+        ],
+        "packageCost": "0.995000",
+        "immediateOnePackageLiquidation": "0.980000",
+        "immediateRoundTripPnl": "-0.015000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.005000",
+        "maximumDisplayedPackages": 2,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      }
+    },
+    {
+      "race": "Idaho Governor",
+      "observations": 17,
+      "first": {
+        "race": "Idaho Governor",
+        "receivedAt": "2026-10-14T19:51:10.442Z",
+        "legs": [
+          {
+            "marketId": "170",
+            "exchangeId": "859"
+          },
+          {
+            "marketId": "171",
+            "exchangeId": "860"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T19:51:09.440198000Z",
+          "2026-10-14T19:51:09.440198000Z"
+        ],
+        "sequences": [
+          160004398,
+          160004398
+        ],
+        "noPurchaseLimits": [
+          "0.950000",
+          "0.045000"
+        ],
+        "packageCost": "0.995000",
+        "immediateOnePackageLiquidation": "0.975000",
+        "immediateRoundTripPnl": "-0.020000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.005000",
+        "maximumDisplayedPackages": 1254,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "last": {
+        "race": "Idaho Governor",
+        "receivedAt": "2026-10-14T20:00:34.189Z",
+        "legs": [
+          {
+            "marketId": "170",
+            "exchangeId": "859"
+          },
+          {
+            "marketId": "171",
+            "exchangeId": "860"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T20:00:32.036687800Z",
+          "2026-10-14T20:00:32.036687800Z"
+        ],
+        "sequences": [
+          160067662,
+          160067662
+        ],
+        "noPurchaseLimits": [
+          "0.950000",
+          "0.045000"
+        ],
+        "packageCost": "0.995000",
+        "immediateOnePackageLiquidation": "0.975000",
+        "immediateRoundTripPnl": "-0.020000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.005000",
+        "maximumDisplayedPackages": 1230,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "largestConditionalSurplus": {
+        "race": "Idaho Governor",
+        "receivedAt": "2026-10-14T20:00:34.189Z",
+        "legs": [
+          {
+            "marketId": "170",
+            "exchangeId": "859"
+          },
+          {
+            "marketId": "171",
+            "exchangeId": "860"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T20:00:32.036687800Z",
+          "2026-10-14T20:00:32.036687800Z"
+        ],
+        "sequences": [
+          160067662,
+          160067662
+        ],
+        "noPurchaseLimits": [
+          "0.950000",
+          "0.045000"
+        ],
+        "packageCost": "0.995000",
+        "immediateOnePackageLiquidation": "0.975000",
+        "immediateRoundTripPnl": "-0.020000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.005000",
+        "maximumDisplayedPackages": 1230,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      }
+    },
+    {
+      "race": "Mississippi Senate",
+      "observations": 28,
+      "first": {
+        "race": "Mississippi Senate",
+        "receivedAt": "2026-10-14T19:51:10.442Z",
+        "legs": [
+          {
+            "marketId": "272",
+            "exchangeId": "961"
+          },
+          {
+            "marketId": "273",
+            "exchangeId": "962"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T19:51:09.440198000Z",
+          "2026-10-14T19:51:09.440198000Z"
+        ],
+        "sequences": [
+          160004398,
+          160004398
+        ],
+        "noPurchaseLimits": [
+          "0.870000",
+          "0.115000"
+        ],
+        "packageCost": "0.985000",
+        "immediateOnePackageLiquidation": "0.965000",
+        "immediateRoundTripPnl": "-0.020000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.015000",
+        "maximumDisplayedPackages": 1170,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "last": {
+        "race": "Mississippi Senate",
+        "receivedAt": "2026-10-14T20:00:34.189Z",
+        "legs": [
+          {
+            "marketId": "272",
+            "exchangeId": "961"
+          },
+          {
+            "marketId": "273",
+            "exchangeId": "962"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T20:00:32.036687800Z",
+          "2026-10-14T20:00:32.036687800Z"
+        ],
+        "sequences": [
+          160067662,
+          160067662
+        ],
+        "noPurchaseLimits": [
+          "0.870000",
+          "0.115000"
+        ],
+        "packageCost": "0.985000",
+        "immediateOnePackageLiquidation": "0.965000",
+        "immediateRoundTripPnl": "-0.020000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.015000",
+        "maximumDisplayedPackages": 578,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "largestConditionalSurplus": {
+        "race": "Mississippi Senate",
+        "receivedAt": "2026-10-14T20:00:34.189Z",
+        "legs": [
+          {
+            "marketId": "272",
+            "exchangeId": "961"
+          },
+          {
+            "marketId": "273",
+            "exchangeId": "962"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T20:00:32.036687800Z",
+          "2026-10-14T20:00:32.036687800Z"
+        ],
+        "sequences": [
+          160067662,
+          160067662
+        ],
+        "noPurchaseLimits": [
+          "0.870000",
+          "0.115000"
+        ],
+        "packageCost": "0.985000",
+        "immediateOnePackageLiquidation": "0.965000",
+        "immediateRoundTripPnl": "-0.020000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.015000",
+        "maximumDisplayedPackages": 578,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      }
+    },
+    {
+      "race": "FL-22 House race",
+      "observations": 33,
+      "first": {
+        "race": "FL-22 House race",
+        "receivedAt": "2026-10-14T19:51:10.442Z",
+        "legs": [
+          {
+            "marketId": "328",
+            "exchangeId": "1017"
+          },
+          {
+            "marketId": "329",
+            "exchangeId": "1018"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T19:51:09.440198000Z",
+          "2026-10-14T19:51:09.440198000Z"
+        ],
+        "sequences": [
+          160004398,
+          160004398
+        ],
+        "noPurchaseLimits": [
+          "0.425000",
+          "0.570000"
+        ],
+        "packageCost": "0.995000",
+        "immediateOnePackageLiquidation": "0.985000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.005000",
+        "maximumDisplayedPackages": 1551,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "last": {
+        "race": "FL-22 House race",
+        "receivedAt": "2026-10-14T20:00:50.452Z",
+        "legs": [
+          {
+            "marketId": "328",
+            "exchangeId": "1017"
+          },
+          {
+            "marketId": "329",
+            "exchangeId": "1018"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T20:00:49.203427600Z",
+          "2026-10-14T20:00:50.202643200Z"
+        ],
+        "sequences": [
+          160069466,
+          160069536
+        ],
+        "noPurchaseLimits": [
+          "0.425000",
+          "0.570000"
+        ],
+        "packageCost": "0.995000",
+        "immediateOnePackageLiquidation": "0.985000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.005000",
+        "maximumDisplayedPackages": 1499,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "largestConditionalSurplus": {
+        "race": "FL-22 House race",
+        "receivedAt": "2026-10-14T20:00:50.452Z",
+        "legs": [
+          {
+            "marketId": "328",
+            "exchangeId": "1017"
+          },
+          {
+            "marketId": "329",
+            "exchangeId": "1018"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T20:00:49.203427600Z",
+          "2026-10-14T20:00:50.202643200Z"
+        ],
+        "sequences": [
+          160069466,
+          160069536
+        ],
+        "noPurchaseLimits": [
+          "0.425000",
+          "0.570000"
+        ],
+        "packageCost": "0.995000",
+        "immediateOnePackageLiquidation": "0.985000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.005000",
+        "maximumDisplayedPackages": 1499,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      }
+    },
+    {
+      "race": "Virginia Senate",
+      "observations": 11,
+      "first": {
+        "race": "Virginia Senate",
+        "receivedAt": "2026-10-14T19:51:10.442Z",
+        "legs": [
+          {
+            "marketId": "295",
+            "exchangeId": "984"
+          },
+          {
+            "marketId": "364",
+            "exchangeId": "1053"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T19:51:09.440198000Z",
+          "2026-10-14T19:51:09.440198000Z"
+        ],
+        "sequences": [
+          160004398,
+          160004398
+        ],
+        "noPurchaseLimits": [
+          "0.075000",
+          "0.920000"
+        ],
+        "packageCost": "0.995000",
+        "immediateOnePackageLiquidation": "0.980000",
+        "immediateRoundTripPnl": "-0.015000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.005000",
+        "maximumDisplayedPackages": 1756,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "last": {
+        "race": "Virginia Senate",
+        "receivedAt": "2026-10-14T19:59:45.659Z",
+        "legs": [
+          {
+            "marketId": "295",
+            "exchangeId": "984"
+          },
+          {
+            "marketId": "364",
+            "exchangeId": "1053"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T19:59:45.451263300Z",
+          "2026-10-14T19:59:44.461450100Z"
+        ],
+        "sequences": [
+          160063276,
+          160063207
+        ],
+        "noPurchaseLimits": [
+          "0.075000",
+          "0.920000"
+        ],
+        "packageCost": "0.995000",
+        "immediateOnePackageLiquidation": "0.980000",
+        "immediateRoundTripPnl": "-0.015000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.005000",
+        "maximumDisplayedPackages": 1756,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "largestConditionalSurplus": {
+        "race": "Virginia Senate",
+        "receivedAt": "2026-10-14T19:59:45.659Z",
+        "legs": [
+          {
+            "marketId": "295",
+            "exchangeId": "984"
+          },
+          {
+            "marketId": "364",
+            "exchangeId": "1053"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T19:59:45.451263300Z",
+          "2026-10-14T19:59:44.461450100Z"
+        ],
+        "sequences": [
+          160063276,
+          160063207
+        ],
+        "noPurchaseLimits": [
+          "0.075000",
+          "0.920000"
+        ],
+        "packageCost": "0.995000",
+        "immediateOnePackageLiquidation": "0.980000",
+        "immediateRoundTripPnl": "-0.015000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.005000",
+        "maximumDisplayedPackages": 1756,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      }
+    },
+    {
+      "race": "South Dakota Governor",
+      "observations": 19,
+      "first": {
+        "race": "South Dakota Governor",
+        "receivedAt": "2026-10-14T19:51:10.442Z",
+        "legs": [
+          {
+            "marketId": "194",
+            "exchangeId": "883"
+          },
+          {
+            "marketId": "309",
+            "exchangeId": "998"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T19:51:09.440198000Z",
+          "2026-10-14T19:51:09.440198000Z"
+        ],
+        "sequences": [
+          160004398,
+          160004398
+        ],
+        "noPurchaseLimits": [
+          "0.935000",
+          "0.050000"
+        ],
+        "packageCost": "0.985000",
+        "immediateOnePackageLiquidation": "0.970000",
+        "immediateRoundTripPnl": "-0.015000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.015000",
+        "maximumDisplayedPackages": 2285,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "last": {
+        "race": "South Dakota Governor",
+        "receivedAt": "2026-10-14T20:00:34.189Z",
+        "legs": [
+          {
+            "marketId": "194",
+            "exchangeId": "883"
+          },
+          {
+            "marketId": "309",
+            "exchangeId": "998"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T20:00:32.036687800Z",
+          "2026-10-14T20:00:32.036687800Z"
+        ],
+        "sequences": [
+          160067662,
+          160067662
+        ],
+        "noPurchaseLimits": [
+          "0.930000",
+          "0.050000"
+        ],
+        "packageCost": "0.980000",
+        "immediateOnePackageLiquidation": "0.970000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.020000",
+        "maximumDisplayedPackages": 100,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "largestConditionalSurplus": {
+        "race": "South Dakota Governor",
+        "receivedAt": "2026-10-14T20:00:34.189Z",
+        "legs": [
+          {
+            "marketId": "194",
+            "exchangeId": "883"
+          },
+          {
+            "marketId": "309",
+            "exchangeId": "998"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T20:00:32.036687800Z",
+          "2026-10-14T20:00:32.036687800Z"
+        ],
+        "sequences": [
+          160067662,
+          160067662
+        ],
+        "noPurchaseLimits": [
+          "0.930000",
+          "0.050000"
+        ],
+        "packageCost": "0.980000",
+        "immediateOnePackageLiquidation": "0.970000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.020000",
+        "maximumDisplayedPackages": 100,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      }
+    },
+    {
+      "race": "Rhode Island Governor",
+      "observations": 26,
+      "first": {
+        "race": "Rhode Island Governor",
+        "receivedAt": "2026-10-14T19:51:10.442Z",
+        "legs": [
+          {
+            "marketId": "384",
+            "exchangeId": "1073"
+          },
+          {
+            "marketId": "385",
+            "exchangeId": "1074"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T19:51:09.440198000Z",
+          "2026-10-14T19:51:09.440198000Z"
+        ],
+        "sequences": [
+          160004398,
+          160004398
+        ],
+        "noPurchaseLimits": [
+          "0.100000",
+          "0.885000"
+        ],
+        "packageCost": "0.985000",
+        "immediateOnePackageLiquidation": "0.975000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.015000",
+        "maximumDisplayedPackages": 3428,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "last": {
+        "race": "Rhode Island Governor",
+        "receivedAt": "2026-10-14T20:00:46.428Z",
+        "legs": [
+          {
+            "marketId": "384",
+            "exchangeId": "1073"
+          },
+          {
+            "marketId": "385",
+            "exchangeId": "1074"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T20:00:45.203953800Z",
+          "2026-10-14T20:00:46.203255100Z"
+        ],
+        "sequences": [
+          160069184,
+          160069242
+        ],
+        "noPurchaseLimits": [
+          "0.100000",
+          "0.885000"
+        ],
+        "packageCost": "0.985000",
+        "immediateOnePackageLiquidation": "0.970000",
+        "immediateRoundTripPnl": "-0.015000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.015000",
+        "maximumDisplayedPackages": 2873,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "largestConditionalSurplus": {
+        "race": "Rhode Island Governor",
+        "receivedAt": "2026-10-14T20:00:46.428Z",
+        "legs": [
+          {
+            "marketId": "384",
+            "exchangeId": "1073"
+          },
+          {
+            "marketId": "385",
+            "exchangeId": "1074"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T20:00:45.203953800Z",
+          "2026-10-14T20:00:46.203255100Z"
+        ],
+        "sequences": [
+          160069184,
+          160069242
+        ],
+        "noPurchaseLimits": [
+          "0.100000",
+          "0.885000"
+        ],
+        "packageCost": "0.985000",
+        "immediateOnePackageLiquidation": "0.970000",
+        "immediateRoundTripPnl": "-0.015000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.015000",
+        "maximumDisplayedPackages": 2873,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      }
+    },
+    {
+      "race": "PA-10 House race",
+      "observations": 29,
+      "first": {
+        "race": "PA-10 House race",
+        "receivedAt": "2026-10-14T19:51:10.442Z",
+        "legs": [
+          {
+            "marketId": "239",
+            "exchangeId": "928"
+          },
+          {
+            "marketId": "240",
+            "exchangeId": "929"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T19:51:09.440198000Z",
+          "2026-10-14T19:51:09.440198000Z"
+        ],
+        "sequences": [
+          160004398,
+          160004398
+        ],
+        "noPurchaseLimits": [
+          "0.215000",
+          "0.775000"
+        ],
+        "packageCost": "0.990000",
+        "immediateOnePackageLiquidation": "0.975000",
+        "immediateRoundTripPnl": "-0.015000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.010000",
+        "maximumDisplayedPackages": 473,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "last": {
+        "race": "PA-10 House race",
+        "receivedAt": "2026-10-14T20:00:40.098Z",
+        "legs": [
+          {
+            "marketId": "239",
+            "exchangeId": "928"
+          },
+          {
+            "marketId": "240",
+            "exchangeId": "929"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T20:00:39.200677500Z",
+          "2026-10-14T20:00:39.200677500Z"
+        ],
+        "sequences": [
+          160068544,
+          160068544
+        ],
+        "noPurchaseLimits": [
+          "0.215000",
+          "0.775000"
+        ],
+        "packageCost": "0.990000",
+        "immediateOnePackageLiquidation": "0.975000",
+        "immediateRoundTripPnl": "-0.015000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.010000",
+        "maximumDisplayedPackages": 473,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "largestConditionalSurplus": {
+        "race": "PA-10 House race",
+        "receivedAt": "2026-10-14T20:00:40.098Z",
+        "legs": [
+          {
+            "marketId": "239",
+            "exchangeId": "928"
+          },
+          {
+            "marketId": "240",
+            "exchangeId": "929"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T20:00:39.200677500Z",
+          "2026-10-14T20:00:39.200677500Z"
+        ],
+        "sequences": [
+          160068544,
+          160068544
+        ],
+        "noPurchaseLimits": [
+          "0.215000",
+          "0.775000"
+        ],
+        "packageCost": "0.990000",
+        "immediateOnePackageLiquidation": "0.975000",
+        "immediateRoundTripPnl": "-0.015000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.010000",
+        "maximumDisplayedPackages": 473,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      }
+    },
+    {
+      "race": "NY-17 House race",
+      "observations": 32,
+      "first": {
+        "race": "NY-17 House race",
+        "receivedAt": "2026-10-14T19:51:10.442Z",
+        "legs": [
+          {
+            "marketId": "231",
+            "exchangeId": "920"
+          },
+          {
+            "marketId": "232",
+            "exchangeId": "921"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T19:51:09.440198000Z",
+          "2026-10-14T19:51:09.440198000Z"
+        ],
+        "sequences": [
+          160004398,
+          160004398
+        ],
+        "noPurchaseLimits": [
+          "0.375000",
+          "0.615000"
+        ],
+        "packageCost": "0.990000",
+        "immediateOnePackageLiquidation": "0.980000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.010000",
+        "maximumDisplayedPackages": 637,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "last": {
+        "race": "NY-17 House race",
+        "receivedAt": "2026-10-14T20:00:43.596Z",
+        "legs": [
+          {
+            "marketId": "231",
+            "exchangeId": "920"
+          },
+          {
+            "marketId": "232",
+            "exchangeId": "921"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T20:00:43.201265800Z",
+          "2026-10-14T20:00:43.201265800Z"
+        ],
+        "sequences": [
+          160068976,
+          160068976
+        ],
+        "noPurchaseLimits": [
+          "0.375000",
+          "0.615000"
+        ],
+        "packageCost": "0.990000",
+        "immediateOnePackageLiquidation": "0.980000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.010000",
+        "maximumDisplayedPackages": 937,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "largestConditionalSurplus": {
+        "race": "NY-17 House race",
+        "receivedAt": "2026-10-14T20:00:43.596Z",
+        "legs": [
+          {
+            "marketId": "231",
+            "exchangeId": "920"
+          },
+          {
+            "marketId": "232",
+            "exchangeId": "921"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T20:00:43.201265800Z",
+          "2026-10-14T20:00:43.201265800Z"
+        ],
+        "sequences": [
+          160068976,
+          160068976
+        ],
+        "noPurchaseLimits": [
+          "0.375000",
+          "0.615000"
+        ],
+        "packageCost": "0.990000",
+        "immediateOnePackageLiquidation": "0.980000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.010000",
+        "maximumDisplayedPackages": 937,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      }
+    },
+    {
+      "race": "VA-05 House race",
+      "observations": 40,
+      "first": {
+        "race": "VA-05 House race",
+        "receivedAt": "2026-10-14T19:51:10.442Z",
+        "legs": [
+          {
+            "marketId": "344",
+            "exchangeId": "1033"
+          },
+          {
+            "marketId": "345",
+            "exchangeId": "1034"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T19:51:09.440198000Z",
+          "2026-10-14T19:51:09.440198000Z"
+        ],
+        "sequences": [
+          160004398,
+          160004398
+        ],
+        "noPurchaseLimits": [
+          "0.715000",
+          "0.250000"
+        ],
+        "packageCost": "0.965000",
+        "immediateOnePackageLiquidation": "0.955000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.035000",
+        "maximumDisplayedPackages": 672,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "last": {
+        "race": "VA-05 House race",
+        "receivedAt": "2026-10-14T20:00:34.189Z",
+        "legs": [
+          {
+            "marketId": "344",
+            "exchangeId": "1033"
+          },
+          {
+            "marketId": "345",
+            "exchangeId": "1034"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T20:00:32.036687800Z",
+          "2026-10-14T20:00:32.036687800Z"
+        ],
+        "sequences": [
+          160067662,
+          160067662
+        ],
+        "noPurchaseLimits": [
+          "0.720000",
+          "0.250000"
+        ],
+        "packageCost": "0.970000",
+        "immediateOnePackageLiquidation": "0.955000",
+        "immediateRoundTripPnl": "-0.015000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.030000",
+        "maximumDisplayedPackages": 782,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "largestConditionalSurplus": {
+        "race": "VA-05 House race",
+        "receivedAt": "2026-10-14T19:55:09.555Z",
+        "legs": [
+          {
+            "marketId": "344",
+            "exchangeId": "1033"
+          },
+          {
+            "marketId": "345",
+            "exchangeId": "1034"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T19:55:08.915406100Z",
+          "2026-10-14T19:55:08.915406100Z"
+        ],
+        "sequences": [
+          160035568,
+          160035568
+        ],
+        "noPurchaseLimits": [
+          "0.715000",
+          "0.250000"
+        ],
+        "packageCost": "0.965000",
+        "immediateOnePackageLiquidation": "0.955000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.035000",
+        "maximumDisplayedPackages": 135,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      }
+    },
+    {
+      "race": "MN-01 House race",
+      "observations": 13,
+      "first": {
+        "race": "MN-01 House race",
+        "receivedAt": "2026-10-14T19:51:10.442Z",
+        "legs": [
+          {
+            "marketId": "334",
+            "exchangeId": "1023"
+          },
+          {
+            "marketId": "335",
+            "exchangeId": "1024"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T19:51:09.440198000Z",
+          "2026-10-14T19:51:09.440198000Z"
+        ],
+        "sequences": [
+          160004398,
+          160004398
+        ],
+        "noPurchaseLimits": [
+          "0.735000",
+          "0.245000"
+        ],
+        "packageCost": "0.980000",
+        "immediateOnePackageLiquidation": "0.970000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.020000",
+        "maximumDisplayedPackages": 1200,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "last": {
+        "race": "MN-01 House race",
+        "receivedAt": "2026-10-14T20:00:05.880Z",
+        "legs": [
+          {
+            "marketId": "334",
+            "exchangeId": "1023"
+          },
+          {
+            "marketId": "335",
+            "exchangeId": "1024"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T20:00:05.725023700Z",
+          "2026-10-14T20:00:04.737268700Z"
+        ],
+        "sequences": [
+          160065109,
+          160065038
+        ],
+        "noPurchaseLimits": [
+          "0.735000",
+          "0.245000"
+        ],
+        "packageCost": "0.980000",
+        "immediateOnePackageLiquidation": "0.970000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.020000",
+        "maximumDisplayedPackages": 1200,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "largestConditionalSurplus": {
+        "race": "MN-01 House race",
+        "receivedAt": "2026-10-14T20:00:05.880Z",
+        "legs": [
+          {
+            "marketId": "334",
+            "exchangeId": "1023"
+          },
+          {
+            "marketId": "335",
+            "exchangeId": "1024"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T20:00:05.725023700Z",
+          "2026-10-14T20:00:04.737268700Z"
+        ],
+        "sequences": [
+          160065109,
+          160065038
+        ],
+        "noPurchaseLimits": [
+          "0.735000",
+          "0.245000"
+        ],
+        "packageCost": "0.980000",
+        "immediateOnePackageLiquidation": "0.970000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.020000",
+        "maximumDisplayedPackages": 1200,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      }
+    },
+    {
+      "race": "South Carolina Governor",
+      "observations": 33,
+      "first": {
+        "race": "South Carolina Governor",
+        "receivedAt": "2026-10-14T19:51:10.564Z",
+        "legs": [
+          {
+            "marketId": "192",
+            "exchangeId": "881"
+          },
+          {
+            "marketId": "193",
+            "exchangeId": "882"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T19:51:10.401435300Z",
+          "2026-10-14T19:51:09.440198000Z"
+        ],
+        "sequences": [
+          160004504,
+          160004398
+        ],
+        "noPurchaseLimits": [
+          "0.905000",
+          "0.080000"
+        ],
+        "packageCost": "0.985000",
+        "immediateOnePackageLiquidation": "0.975000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.015000",
+        "maximumDisplayedPackages": 4953,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "last": {
+        "race": "South Carolina Governor",
+        "receivedAt": "2026-10-14T20:00:43.596Z",
+        "legs": [
+          {
+            "marketId": "192",
+            "exchangeId": "881"
+          },
+          {
+            "marketId": "193",
+            "exchangeId": "882"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T20:00:43.201265800Z",
+          "2026-10-14T20:00:43.201265800Z"
+        ],
+        "sequences": [
+          160068976,
+          160068976
+        ],
+        "noPurchaseLimits": [
+          "0.905000",
+          "0.080000"
+        ],
+        "packageCost": "0.985000",
+        "immediateOnePackageLiquidation": "0.975000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.015000",
+        "maximumDisplayedPackages": 4953,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "largestConditionalSurplus": {
+        "race": "South Carolina Governor",
+        "receivedAt": "2026-10-14T20:00:43.596Z",
+        "legs": [
+          {
+            "marketId": "192",
+            "exchangeId": "881"
+          },
+          {
+            "marketId": "193",
+            "exchangeId": "882"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T20:00:43.201265800Z",
+          "2026-10-14T20:00:43.201265800Z"
+        ],
+        "sequences": [
+          160068976,
+          160068976
+        ],
+        "noPurchaseLimits": [
+          "0.905000",
+          "0.080000"
+        ],
+        "packageCost": "0.985000",
+        "immediateOnePackageLiquidation": "0.975000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.015000",
+        "maximumDisplayedPackages": 4953,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      }
+    },
+    {
+      "race": "Iowa Governor",
+      "observations": 24,
+      "first": {
+        "race": "Iowa Governor",
+        "receivedAt": "2026-10-14T19:51:10.564Z",
+        "legs": [
+          {
+            "marketId": "168",
+            "exchangeId": "857"
+          },
+          {
+            "marketId": "169",
+            "exchangeId": "858"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T19:51:09.440198000Z",
+          "2026-10-14T19:51:10.401435300Z"
+        ],
+        "sequences": [
+          160004398,
+          160004504
+        ],
+        "noPurchaseLimits": [
+          "0.140000",
+          "0.845000"
+        ],
+        "packageCost": "0.985000",
+        "immediateOnePackageLiquidation": "0.975000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.015000",
+        "maximumDisplayedPackages": 1213,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "last": {
+        "race": "Iowa Governor",
+        "receivedAt": "2026-10-14T20:00:40.098Z",
+        "legs": [
+          {
+            "marketId": "168",
+            "exchangeId": "857"
+          },
+          {
+            "marketId": "169",
+            "exchangeId": "858"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T20:00:39.200677500Z",
+          "2026-10-14T20:00:39.200677500Z"
+        ],
+        "sequences": [
+          160068544,
+          160068544
+        ],
+        "noPurchaseLimits": [
+          "0.140000",
+          "0.845000"
+        ],
+        "packageCost": "0.985000",
+        "immediateOnePackageLiquidation": "0.975000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.015000",
+        "maximumDisplayedPackages": 1213,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "largestConditionalSurplus": {
+        "race": "Iowa Governor",
+        "receivedAt": "2026-10-14T20:00:40.098Z",
+        "legs": [
+          {
+            "marketId": "168",
+            "exchangeId": "857"
+          },
+          {
+            "marketId": "169",
+            "exchangeId": "858"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T20:00:39.200677500Z",
+          "2026-10-14T20:00:39.200677500Z"
+        ],
+        "sequences": [
+          160068544,
+          160068544
+        ],
+        "noPurchaseLimits": [
+          "0.140000",
+          "0.845000"
+        ],
+        "packageCost": "0.985000",
+        "immediateOnePackageLiquidation": "0.975000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.015000",
+        "maximumDisplayedPackages": 1213,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      }
+    },
+    {
+      "race": "PA-01 House race",
+      "observations": 34,
+      "first": {
+        "race": "PA-01 House race",
+        "receivedAt": "2026-10-14T19:51:10.564Z",
+        "legs": [
+          {
+            "marketId": "233",
+            "exchangeId": "922"
+          },
+          {
+            "marketId": "234",
+            "exchangeId": "923"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T19:51:10.401435300Z",
+          "2026-10-14T19:51:09.440198000Z"
+        ],
+        "sequences": [
+          160004504,
+          160004398
+        ],
+        "noPurchaseLimits": [
+          "0.600000",
+          "0.380000"
+        ],
+        "packageCost": "0.980000",
+        "immediateOnePackageLiquidation": "0.970000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.020000",
+        "maximumDisplayedPackages": 367,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "last": {
+        "race": "PA-01 House race",
+        "receivedAt": "2026-10-14T20:00:40.325Z",
+        "legs": [
+          {
+            "marketId": "233",
+            "exchangeId": "922"
+          },
+          {
+            "marketId": "234",
+            "exchangeId": "923"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T20:00:40.200117400Z",
+          "2026-10-14T20:00:40.200117400Z"
+        ],
+        "sequences": [
+          160068638,
+          160068638
+        ],
+        "noPurchaseLimits": [
+          "0.600000",
+          "0.380000"
+        ],
+        "packageCost": "0.980000",
+        "immediateOnePackageLiquidation": "0.970000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.020000",
+        "maximumDisplayedPackages": 367,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "largestConditionalSurplus": {
+        "race": "PA-01 House race",
+        "receivedAt": "2026-10-14T20:00:40.325Z",
+        "legs": [
+          {
+            "marketId": "233",
+            "exchangeId": "922"
+          },
+          {
+            "marketId": "234",
+            "exchangeId": "923"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T20:00:40.200117400Z",
+          "2026-10-14T20:00:40.200117400Z"
+        ],
+        "sequences": [
+          160068638,
+          160068638
+        ],
+        "noPurchaseLimits": [
+          "0.600000",
+          "0.380000"
+        ],
+        "packageCost": "0.980000",
+        "immediateOnePackageLiquidation": "0.970000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.020000",
+        "maximumDisplayedPackages": 367,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      }
+    },
+    {
+      "race": "New Mexico Senate",
+      "observations": 27,
+      "first": {
+        "race": "New Mexico Senate",
+        "receivedAt": "2026-10-14T19:51:10.564Z",
+        "legs": [
+          {
+            "marketId": "284",
+            "exchangeId": "973"
+          },
+          {
+            "marketId": "285",
+            "exchangeId": "974"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T19:51:09.440198000Z",
+          "2026-10-14T19:51:10.401435300Z"
+        ],
+        "sequences": [
+          160004398,
+          160004504
+        ],
+        "noPurchaseLimits": [
+          "0.050000",
+          "0.930000"
+        ],
+        "packageCost": "0.980000",
+        "immediateOnePackageLiquidation": "0.965000",
+        "immediateRoundTripPnl": "-0.015000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.020000",
+        "maximumDisplayedPackages": 9849,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "last": {
+        "race": "New Mexico Senate",
+        "receivedAt": "2026-10-14T20:00:37.578Z",
+        "legs": [
+          {
+            "marketId": "284",
+            "exchangeId": "973"
+          },
+          {
+            "marketId": "285",
+            "exchangeId": "974"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T20:00:37.201629300Z",
+          "2026-10-14T20:00:37.201629300Z"
+        ],
+        "sequences": [
+          160068247,
+          160068247
+        ],
+        "noPurchaseLimits": [
+          "0.050000",
+          "0.930000"
+        ],
+        "packageCost": "0.980000",
+        "immediateOnePackageLiquidation": "0.965000",
+        "immediateRoundTripPnl": "-0.015000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.020000",
+        "maximumDisplayedPackages": 9849,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "largestConditionalSurplus": {
+        "race": "New Mexico Senate",
+        "receivedAt": "2026-10-14T20:00:37.578Z",
+        "legs": [
+          {
+            "marketId": "284",
+            "exchangeId": "973"
+          },
+          {
+            "marketId": "285",
+            "exchangeId": "974"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T20:00:37.201629300Z",
+          "2026-10-14T20:00:37.201629300Z"
+        ],
+        "sequences": [
+          160068247,
+          160068247
+        ],
+        "noPurchaseLimits": [
+          "0.050000",
+          "0.930000"
+        ],
+        "packageCost": "0.980000",
+        "immediateOnePackageLiquidation": "0.965000",
+        "immediateRoundTripPnl": "-0.015000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.020000",
+        "maximumDisplayedPackages": 9849,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      }
+    },
+    {
+      "race": "FL-13 House race",
+      "observations": 20,
+      "first": {
+        "race": "FL-13 House race",
+        "receivedAt": "2026-10-14T19:51:12.969Z",
+        "legs": [
+          {
+            "marketId": "323",
+            "exchangeId": "1012"
+          },
+          {
+            "marketId": "212",
+            "exchangeId": "901"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T19:51:12.399518100Z",
+          "2026-10-14T19:51:12.399518100Z"
+        ],
+        "sequences": [
+          160004713,
+          160004713
+        ],
+        "noPurchaseLimits": [
+          "0.720000",
+          "0.275000"
+        ],
+        "packageCost": "0.995000",
+        "immediateOnePackageLiquidation": "0.985000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.005000",
+        "maximumDisplayedPackages": 398,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "last": {
+        "race": "FL-13 House race",
+        "receivedAt": "2026-10-14T20:00:34.189Z",
+        "legs": [
+          {
+            "marketId": "323",
+            "exchangeId": "1012"
+          },
+          {
+            "marketId": "212",
+            "exchangeId": "901"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T20:00:32.036687800Z",
+          "2026-10-14T20:00:32.036687800Z"
+        ],
+        "sequences": [
+          160067662,
+          160067662
+        ],
+        "noPurchaseLimits": [
+          "0.720000",
+          "0.275000"
+        ],
+        "packageCost": "0.995000",
+        "immediateOnePackageLiquidation": "0.985000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.005000",
+        "maximumDisplayedPackages": 398,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "largestConditionalSurplus": {
+        "race": "FL-13 House race",
+        "receivedAt": "2026-10-14T20:00:34.189Z",
+        "legs": [
+          {
+            "marketId": "323",
+            "exchangeId": "1012"
+          },
+          {
+            "marketId": "212",
+            "exchangeId": "901"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T20:00:32.036687800Z",
+          "2026-10-14T20:00:32.036687800Z"
+        ],
+        "sequences": [
+          160067662,
+          160067662
+        ],
+        "noPurchaseLimits": [
+          "0.720000",
+          "0.275000"
+        ],
+        "packageCost": "0.995000",
+        "immediateOnePackageLiquidation": "0.985000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.005000",
+        "maximumDisplayedPackages": 398,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      }
+    },
+    {
+      "race": "Nebraska Governor",
+      "observations": 27,
+      "first": {
+        "race": "Nebraska Governor",
+        "receivedAt": "2026-10-14T19:51:13.675Z",
+        "legs": [
+          {
+            "marketId": "178",
+            "exchangeId": "867"
+          },
+          {
+            "marketId": "179",
+            "exchangeId": "868"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T19:51:12.399518100Z",
+          "2026-10-14T19:51:13.398522200Z"
+        ],
+        "sequences": [
+          160004713,
+          160004837
+        ],
+        "noPurchaseLimits": [
+          "0.855000",
+          "0.130000"
+        ],
+        "packageCost": "0.985000",
+        "immediateOnePackageLiquidation": "0.965000",
+        "immediateRoundTripPnl": "-0.020000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.015000",
+        "maximumDisplayedPackages": 600,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "last": {
+        "race": "Nebraska Governor",
+        "receivedAt": "2026-10-14T20:00:44.808Z",
+        "legs": [
+          {
+            "marketId": "178",
+            "exchangeId": "867"
+          },
+          {
+            "marketId": "179",
+            "exchangeId": "868"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T20:00:44.203872800Z",
+          "2026-10-14T20:00:44.203872800Z"
+        ],
+        "sequences": [
+          160069109,
+          160069109
+        ],
+        "noPurchaseLimits": [
+          "0.855000",
+          "0.125000"
+        ],
+        "packageCost": "0.980000",
+        "immediateOnePackageLiquidation": "0.970000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.020000",
+        "maximumDisplayedPackages": 5,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "largestConditionalSurplus": {
+        "race": "Nebraska Governor",
+        "receivedAt": "2026-10-14T20:00:44.808Z",
+        "legs": [
+          {
+            "marketId": "178",
+            "exchangeId": "867"
+          },
+          {
+            "marketId": "179",
+            "exchangeId": "868"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T20:00:44.203872800Z",
+          "2026-10-14T20:00:44.203872800Z"
+        ],
+        "sequences": [
+          160069109,
+          160069109
+        ],
+        "noPurchaseLimits": [
+          "0.855000",
+          "0.125000"
+        ],
+        "packageCost": "0.980000",
+        "immediateOnePackageLiquidation": "0.970000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.020000",
+        "maximumDisplayedPackages": 5,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      }
+    },
+    {
+      "race": "WI-01 House race",
+      "observations": 31,
+      "first": {
+        "race": "WI-01 House race",
+        "receivedAt": "2026-10-14T19:51:13.675Z",
+        "legs": [
+          {
+            "marketId": "349",
+            "exchangeId": "1038"
+          },
+          {
+            "marketId": "350",
+            "exchangeId": "1039"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T19:51:13.398522200Z",
+          "2026-10-14T19:51:12.399518100Z"
+        ],
+        "sequences": [
+          160004837,
+          160004713
+        ],
+        "noPurchaseLimits": [
+          "0.595000",
+          "0.390000"
+        ],
+        "packageCost": "0.985000",
+        "immediateOnePackageLiquidation": "0.975000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.015000",
+        "maximumDisplayedPackages": 14261,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "last": {
+        "race": "WI-01 House race",
+        "receivedAt": "2026-10-14T20:00:42.406Z",
+        "legs": [
+          {
+            "marketId": "349",
+            "exchangeId": "1038"
+          },
+          {
+            "marketId": "350",
+            "exchangeId": "1039"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T20:00:42.201771600Z",
+          "2026-10-14T20:00:42.201771600Z"
+        ],
+        "sequences": [
+          160068810,
+          160068810
+        ],
+        "noPurchaseLimits": [
+          "0.595000",
+          "0.390000"
+        ],
+        "packageCost": "0.985000",
+        "immediateOnePackageLiquidation": "0.975000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.015000",
+        "maximumDisplayedPackages": 14986,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "largestConditionalSurplus": {
+        "race": "WI-01 House race",
+        "receivedAt": "2026-10-14T20:00:42.406Z",
+        "legs": [
+          {
+            "marketId": "349",
+            "exchangeId": "1038"
+          },
+          {
+            "marketId": "350",
+            "exchangeId": "1039"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T20:00:42.201771600Z",
+          "2026-10-14T20:00:42.201771600Z"
+        ],
+        "sequences": [
+          160068810,
+          160068810
+        ],
+        "noPurchaseLimits": [
+          "0.595000",
+          "0.390000"
+        ],
+        "packageCost": "0.985000",
+        "immediateOnePackageLiquidation": "0.975000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.015000",
+        "maximumDisplayedPackages": 14986,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      }
+    },
+    {
+      "race": "New Hampshire Senate",
+      "observations": 51,
+      "first": {
+        "race": "New Hampshire Senate",
+        "receivedAt": "2026-10-14T19:51:15.682Z",
+        "legs": [
+          {
+            "marketId": "381",
+            "exchangeId": "1070"
+          },
+          {
+            "marketId": "382",
+            "exchangeId": "1071"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T19:51:15.405190700Z",
+          "2026-10-14T19:51:15.405190700Z"
+        ],
+        "sequences": [
+          160005055,
+          160005055
+        ],
+        "noPurchaseLimits": [
+          "0.150000",
+          "0.815000"
+        ],
+        "packageCost": "0.965000",
+        "immediateOnePackageLiquidation": "0.950000",
+        "immediateRoundTripPnl": "-0.015000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.035000",
+        "maximumDisplayedPackages": 5435,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "last": {
+        "race": "New Hampshire Senate",
+        "receivedAt": "2026-10-14T20:00:34.189Z",
+        "legs": [
+          {
+            "marketId": "381",
+            "exchangeId": "1070"
+          },
+          {
+            "marketId": "382",
+            "exchangeId": "1071"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T20:00:32.117384300Z",
+          "2026-10-14T20:00:32.117384300Z"
+        ],
+        "sequences": [
+          160067671,
+          160067671
+        ],
+        "noPurchaseLimits": [
+          "0.150000",
+          "0.815000"
+        ],
+        "packageCost": "0.965000",
+        "immediateOnePackageLiquidation": "0.955000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.035000",
+        "maximumDisplayedPackages": 4914,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "largestConditionalSurplus": {
+        "race": "New Hampshire Senate",
+        "receivedAt": "2026-10-14T20:00:34.189Z",
+        "legs": [
+          {
+            "marketId": "381",
+            "exchangeId": "1070"
+          },
+          {
+            "marketId": "382",
+            "exchangeId": "1071"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T20:00:32.117384300Z",
+          "2026-10-14T20:00:32.117384300Z"
+        ],
+        "sequences": [
+          160067671,
+          160067671
+        ],
+        "noPurchaseLimits": [
+          "0.150000",
+          "0.815000"
+        ],
+        "packageCost": "0.965000",
+        "immediateOnePackageLiquidation": "0.955000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.035000",
+        "maximumDisplayedPackages": 4914,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      }
+    },
+    {
+      "race": "VA-01 House race",
+      "observations": 69,
+      "first": {
+        "race": "VA-01 House race",
+        "receivedAt": "2026-10-14T19:51:17.927Z",
+        "legs": [
+          {
+            "marketId": "342",
+            "exchangeId": "1031"
+          },
+          {
+            "marketId": "249",
+            "exchangeId": "938"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T19:51:17.403253800Z",
+          "2026-10-14T19:51:17.403253800Z"
+        ],
+        "sequences": [
+          160005221,
+          160005221
+        ],
+        "noPurchaseLimits": [
+          "0.425000",
+          "0.555000"
+        ],
+        "packageCost": "0.980000",
+        "immediateOnePackageLiquidation": "0.960000",
+        "immediateRoundTripPnl": "-0.020000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.020000",
+        "maximumDisplayedPackages": 945,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "last": {
+        "race": "VA-01 House race",
+        "receivedAt": "2026-10-14T19:54:48.930Z",
+        "legs": [
+          {
+            "marketId": "342",
+            "exchangeId": "1031"
+          },
+          {
+            "marketId": "249",
+            "exchangeId": "938"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T19:54:48.771384200Z",
+          "2026-10-14T19:54:48.771384200Z"
+        ],
+        "sequences": [
+          160033345,
+          160033345
+        ],
+        "noPurchaseLimits": [
+          "0.450000",
+          "0.545000"
+        ],
+        "packageCost": "0.995000",
+        "immediateOnePackageLiquidation": "0.985000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.005000",
+        "maximumDisplayedPackages": 771,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "largestConditionalSurplus": {
+        "race": "VA-01 House race",
+        "receivedAt": "2026-10-14T19:51:29.433Z",
+        "legs": [
+          {
+            "marketId": "342",
+            "exchangeId": "1031"
+          },
+          {
+            "marketId": "249",
+            "exchangeId": "938"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T19:51:29.179814600Z",
+          "2026-10-14T19:51:28.179464000Z"
+        ],
+        "sequences": [
+          160006346,
+          160006250
+        ],
+        "noPurchaseLimits": [
+          "0.420000",
+          "0.555000"
+        ],
+        "packageCost": "0.975000",
+        "immediateOnePackageLiquidation": "0.965000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.025000",
+        "maximumDisplayedPackages": 945,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      }
+    },
+    {
+      "race": "IA-01 House race",
+      "observations": 29,
+      "first": {
+        "race": "IA-01 House race",
+        "receivedAt": "2026-10-14T19:51:18.658Z",
+        "legs": [
+          {
+            "marketId": "213",
+            "exchangeId": "902"
+          },
+          {
+            "marketId": "214",
+            "exchangeId": "903"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T19:51:18.393832700Z",
+          "2026-10-14T19:51:17.403253800Z"
+        ],
+        "sequences": [
+          160005323,
+          160005221
+        ],
+        "noPurchaseLimits": [
+          "0.150000",
+          "0.845000"
+        ],
+        "packageCost": "0.995000",
+        "immediateOnePackageLiquidation": "0.980000",
+        "immediateRoundTripPnl": "-0.015000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.005000",
+        "maximumDisplayedPackages": 1697,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "last": {
+        "race": "IA-01 House race",
+        "receivedAt": "2026-10-14T20:00:50.452Z",
+        "legs": [
+          {
+            "marketId": "213",
+            "exchangeId": "902"
+          },
+          {
+            "marketId": "214",
+            "exchangeId": "903"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T20:00:49.203427600Z",
+          "2026-10-14T20:00:50.202643200Z"
+        ],
+        "sequences": [
+          160069466,
+          160069536
+        ],
+        "noPurchaseLimits": [
+          "0.150000",
+          "0.845000"
+        ],
+        "packageCost": "0.995000",
+        "immediateOnePackageLiquidation": "0.985000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.005000",
+        "maximumDisplayedPackages": 1697,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "largestConditionalSurplus": {
+        "race": "IA-01 House race",
+        "receivedAt": "2026-10-14T20:00:50.452Z",
+        "legs": [
+          {
+            "marketId": "213",
+            "exchangeId": "902"
+          },
+          {
+            "marketId": "214",
+            "exchangeId": "903"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T20:00:49.203427600Z",
+          "2026-10-14T20:00:50.202643200Z"
+        ],
+        "sequences": [
+          160069466,
+          160069536
+        ],
+        "noPurchaseLimits": [
+          "0.150000",
+          "0.845000"
+        ],
+        "packageCost": "0.995000",
+        "immediateOnePackageLiquidation": "0.985000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.005000",
+        "maximumDisplayedPackages": 1697,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      }
+    },
+    {
+      "race": "Oklahoma Senate",
+      "observations": 19,
+      "first": {
+        "race": "Oklahoma Senate",
+        "receivedAt": "2026-10-14T19:51:18.658Z",
+        "legs": [
+          {
+            "marketId": "383",
+            "exchangeId": "1072"
+          },
+          {
+            "marketId": "286",
+            "exchangeId": "975"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T19:51:17.403253800Z",
+          "2026-10-14T19:51:18.393832700Z"
+        ],
+        "sequences": [
+          160005221,
+          160005323
+        ],
+        "noPurchaseLimits": [
+          "0.900000",
+          "0.080000"
+        ],
+        "packageCost": "0.980000",
+        "immediateOnePackageLiquidation": "0.965000",
+        "immediateRoundTripPnl": "-0.015000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.020000",
+        "maximumDisplayedPackages": 67,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "last": {
+        "race": "Oklahoma Senate",
+        "receivedAt": "2026-10-14T20:00:34.189Z",
+        "legs": [
+          {
+            "marketId": "383",
+            "exchangeId": "1072"
+          },
+          {
+            "marketId": "286",
+            "exchangeId": "975"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T20:00:32.117384300Z",
+          "2026-10-14T20:00:32.036687800Z"
+        ],
+        "sequences": [
+          160067671,
+          160067662
+        ],
+        "noPurchaseLimits": [
+          "0.900000",
+          "0.080000"
+        ],
+        "packageCost": "0.980000",
+        "immediateOnePackageLiquidation": "0.970000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.020000",
+        "maximumDisplayedPackages": 67,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "largestConditionalSurplus": {
+        "race": "Oklahoma Senate",
+        "receivedAt": "2026-10-14T20:00:34.189Z",
+        "legs": [
+          {
+            "marketId": "383",
+            "exchangeId": "1072"
+          },
+          {
+            "marketId": "286",
+            "exchangeId": "975"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T20:00:32.117384300Z",
+          "2026-10-14T20:00:32.036687800Z"
+        ],
+        "sequences": [
+          160067671,
+          160067662
+        ],
+        "noPurchaseLimits": [
+          "0.900000",
+          "0.080000"
+        ],
+        "packageCost": "0.980000",
+        "immediateOnePackageLiquidation": "0.970000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.020000",
+        "maximumDisplayedPackages": 67,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      }
+    },
+    {
+      "race": "Oklahoma Governor",
+      "observations": 35,
+      "first": {
+        "race": "Oklahoma Governor",
+        "receivedAt": "2026-10-14T19:51:19.952Z",
+        "legs": [
+          {
+            "marketId": "186",
+            "exchangeId": "875"
+          },
+          {
+            "marketId": "374",
+            "exchangeId": "1063"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T19:51:19.397237900Z",
+          "2026-10-14T19:51:19.397237900Z"
+        ],
+        "sequences": [
+          160005392,
+          160005392
+        ],
+        "noPurchaseLimits": [
+          "0.890000",
+          "0.105000"
+        ],
+        "packageCost": "0.995000",
+        "immediateOnePackageLiquidation": "0.985000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.005000",
+        "maximumDisplayedPackages": 9255,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "last": {
+        "race": "Oklahoma Governor",
+        "receivedAt": "2026-10-14T20:00:34.189Z",
+        "legs": [
+          {
+            "marketId": "186",
+            "exchangeId": "875"
+          },
+          {
+            "marketId": "374",
+            "exchangeId": "1063"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T20:00:32.036687800Z",
+          "2026-10-14T20:00:32.117384300Z"
+        ],
+        "sequences": [
+          160067662,
+          160067671
+        ],
+        "noPurchaseLimits": [
+          "0.890000",
+          "0.105000"
+        ],
+        "packageCost": "0.995000",
+        "immediateOnePackageLiquidation": "0.985000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.005000",
+        "maximumDisplayedPackages": 9255,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "largestConditionalSurplus": {
+        "race": "Oklahoma Governor",
+        "receivedAt": "2026-10-14T20:00:34.189Z",
+        "legs": [
+          {
+            "marketId": "186",
+            "exchangeId": "875"
+          },
+          {
+            "marketId": "374",
+            "exchangeId": "1063"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T20:00:32.036687800Z",
+          "2026-10-14T20:00:32.117384300Z"
+        ],
+        "sequences": [
+          160067662,
+          160067671
+        ],
+        "noPurchaseLimits": [
+          "0.890000",
+          "0.105000"
+        ],
+        "packageCost": "0.995000",
+        "immediateOnePackageLiquidation": "0.985000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.005000",
+        "maximumDisplayedPackages": 9255,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      }
+    },
+    {
+      "race": "Michigan Governor",
+      "observations": 30,
+      "first": {
+        "race": "Michigan Governor",
+        "receivedAt": "2026-10-14T19:51:19.952Z",
+        "legs": [
+          {
+            "marketId": "305",
+            "exchangeId": "994"
+          },
+          {
+            "marketId": "306",
+            "exchangeId": "995"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T19:51:19.397237900Z",
+          "2026-10-14T19:51:19.397237900Z"
+        ],
+        "sequences": [
+          160005392,
+          160005392
+        ],
+        "noPurchaseLimits": [
+          "0.105000",
+          "0.885000"
+        ],
+        "packageCost": "0.990000",
+        "immediateOnePackageLiquidation": "0.980000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.010000",
+        "maximumDisplayedPackages": 2854,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "last": {
+        "race": "Michigan Governor",
+        "receivedAt": "2026-10-14T20:00:40.325Z",
+        "legs": [
+          {
+            "marketId": "305",
+            "exchangeId": "994"
+          },
+          {
+            "marketId": "306",
+            "exchangeId": "995"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T20:00:40.200117400Z",
+          "2026-10-14T20:00:40.200117400Z"
+        ],
+        "sequences": [
+          160068638,
+          160068638
+        ],
+        "noPurchaseLimits": [
+          "0.105000",
+          "0.885000"
+        ],
+        "packageCost": "0.990000",
+        "immediateOnePackageLiquidation": "0.980000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.010000",
+        "maximumDisplayedPackages": 4681,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "largestConditionalSurplus": {
+        "race": "Michigan Governor",
+        "receivedAt": "2026-10-14T20:00:40.325Z",
+        "legs": [
+          {
+            "marketId": "305",
+            "exchangeId": "994"
+          },
+          {
+            "marketId": "306",
+            "exchangeId": "995"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T20:00:40.200117400Z",
+          "2026-10-14T20:00:40.200117400Z"
+        ],
+        "sequences": [
+          160068638,
+          160068638
+        ],
+        "noPurchaseLimits": [
+          "0.105000",
+          "0.885000"
+        ],
+        "packageCost": "0.990000",
+        "immediateOnePackageLiquidation": "0.980000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.010000",
+        "maximumDisplayedPackages": 4681,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      }
+    },
+    {
+      "race": "CO-04 House race",
+      "observations": 15,
+      "first": {
+        "race": "CO-04 House race",
+        "receivedAt": "2026-10-14T19:51:20.672Z",
+        "legs": [
+          {
+            "marketId": "207",
+            "exchangeId": "896"
+          },
+          {
+            "marketId": "208",
+            "exchangeId": "897"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T19:51:20.408615300Z",
+          "2026-10-14T19:51:20.408615300Z"
+        ],
+        "sequences": [
+          160005485,
+          160005485
+        ],
+        "noPurchaseLimits": [
+          "0.665000",
+          "0.315000"
+        ],
+        "packageCost": "0.980000",
+        "immediateOnePackageLiquidation": "0.965000",
+        "immediateRoundTripPnl": "-0.015000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.020000",
+        "maximumDisplayedPackages": 2462,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "last": {
+        "race": "CO-04 House race",
+        "receivedAt": "2026-10-14T20:00:34.189Z",
+        "legs": [
+          {
+            "marketId": "207",
+            "exchangeId": "896"
+          },
+          {
+            "marketId": "208",
+            "exchangeId": "897"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T20:00:32.036687800Z",
+          "2026-10-14T20:00:32.036687800Z"
+        ],
+        "sequences": [
+          160067662,
+          160067662
+        ],
+        "noPurchaseLimits": [
+          "0.665000",
+          "0.315000"
+        ],
+        "packageCost": "0.980000",
+        "immediateOnePackageLiquidation": "0.965000",
+        "immediateRoundTripPnl": "-0.015000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.020000",
+        "maximumDisplayedPackages": 1417,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "largestConditionalSurplus": {
+        "race": "CO-04 House race",
+        "receivedAt": "2026-10-14T20:00:34.189Z",
+        "legs": [
+          {
+            "marketId": "207",
+            "exchangeId": "896"
+          },
+          {
+            "marketId": "208",
+            "exchangeId": "897"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T20:00:32.036687800Z",
+          "2026-10-14T20:00:32.036687800Z"
+        ],
+        "sequences": [
+          160067662,
+          160067662
+        ],
+        "noPurchaseLimits": [
+          "0.665000",
+          "0.315000"
+        ],
+        "packageCost": "0.980000",
+        "immediateOnePackageLiquidation": "0.965000",
+        "immediateRoundTripPnl": "-0.015000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.020000",
+        "maximumDisplayedPackages": 1417,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      }
+    },
+    {
+      "race": "ME-02 House race",
+      "observations": 18,
+      "first": {
+        "race": "ME-02 House race",
+        "receivedAt": "2026-10-14T19:51:23.349Z",
+        "legs": [
+          {
+            "marketId": "221",
+            "exchangeId": "910"
+          },
+          {
+            "marketId": "222",
+            "exchangeId": "911"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T19:51:22.757225100Z",
+          "2026-10-14T19:51:21.769733100Z"
+        ],
+        "sequences": [
+          160005648,
+          160005593
+        ],
+        "noPurchaseLimits": [
+          "0.610000",
+          "0.370000"
+        ],
+        "packageCost": "0.980000",
+        "immediateOnePackageLiquidation": "0.965000",
+        "immediateRoundTripPnl": "-0.015000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.020000",
+        "maximumDisplayedPackages": 322,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "last": {
+        "race": "ME-02 House race",
+        "receivedAt": "2026-10-14T20:00:34.189Z",
+        "legs": [
+          {
+            "marketId": "221",
+            "exchangeId": "910"
+          },
+          {
+            "marketId": "222",
+            "exchangeId": "911"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T20:00:32.036687800Z",
+          "2026-10-14T20:00:32.036687800Z"
+        ],
+        "sequences": [
+          160067662,
+          160067662
+        ],
+        "noPurchaseLimits": [
+          "0.610000",
+          "0.370000"
+        ],
+        "packageCost": "0.980000",
+        "immediateOnePackageLiquidation": "0.965000",
+        "immediateRoundTripPnl": "-0.015000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.020000",
+        "maximumDisplayedPackages": 322,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "largestConditionalSurplus": {
+        "race": "ME-02 House race",
+        "receivedAt": "2026-10-14T20:00:34.189Z",
+        "legs": [
+          {
+            "marketId": "221",
+            "exchangeId": "910"
+          },
+          {
+            "marketId": "222",
+            "exchangeId": "911"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T20:00:32.036687800Z",
+          "2026-10-14T20:00:32.036687800Z"
+        ],
+        "sequences": [
+          160067662,
+          160067662
+        ],
+        "noPurchaseLimits": [
+          "0.610000",
+          "0.370000"
+        ],
+        "packageCost": "0.980000",
+        "immediateOnePackageLiquidation": "0.965000",
+        "immediateRoundTripPnl": "-0.015000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.020000",
+        "maximumDisplayedPackages": 322,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      }
+    },
+    {
+      "race": "CA-22 House race",
+      "observations": 14,
+      "first": {
+        "race": "CA-22 House race",
+        "receivedAt": "2026-10-14T19:51:23.349Z",
+        "legs": [
+          {
+            "marketId": "201",
+            "exchangeId": "890"
+          },
+          {
+            "marketId": "202",
+            "exchangeId": "891"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T19:51:22.757225100Z",
+          "2026-10-14T19:51:22.757225100Z"
+        ],
+        "sequences": [
+          160005648,
+          160005648
+        ],
+        "noPurchaseLimits": [
+          "0.100000",
+          "0.880000"
+        ],
+        "packageCost": "0.980000",
+        "immediateOnePackageLiquidation": "0.965000",
+        "immediateRoundTripPnl": "-0.015000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.020000",
+        "maximumDisplayedPackages": 94,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "last": {
+        "race": "CA-22 House race",
+        "receivedAt": "2026-10-14T20:00:34.189Z",
+        "legs": [
+          {
+            "marketId": "201",
+            "exchangeId": "890"
+          },
+          {
+            "marketId": "202",
+            "exchangeId": "891"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T20:00:32.036687800Z",
+          "2026-10-14T20:00:32.036687800Z"
+        ],
+        "sequences": [
+          160067662,
+          160067662
+        ],
+        "noPurchaseLimits": [
+          "0.110000",
+          "0.880000"
+        ],
+        "packageCost": "0.990000",
+        "immediateOnePackageLiquidation": "0.965000",
+        "immediateRoundTripPnl": "-0.025000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.010000",
+        "maximumDisplayedPackages": 457,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "largestConditionalSurplus": {
+        "race": "CA-22 House race",
+        "receivedAt": "2026-10-14T19:56:10.075Z",
+        "legs": [
+          {
+            "marketId": "201",
+            "exchangeId": "890"
+          },
+          {
+            "marketId": "202",
+            "exchangeId": "891"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T19:56:07.973611200Z",
+          "2026-10-14T19:56:07.973611200Z"
+        ],
+        "sequences": [
+          160041961,
+          160041961
+        ],
+        "noPurchaseLimits": [
+          "0.100000",
+          "0.880000"
+        ],
+        "packageCost": "0.980000",
+        "immediateOnePackageLiquidation": "0.965000",
+        "immediateRoundTripPnl": "-0.015000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.020000",
+        "maximumDisplayedPackages": 94,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      }
+    },
+    {
+      "race": "New Hampshire Governor",
+      "observations": 25,
+      "first": {
+        "race": "New Hampshire Governor",
+        "receivedAt": "2026-10-14T19:51:23.349Z",
+        "legs": [
+          {
+            "marketId": "372",
+            "exchangeId": "1061"
+          },
+          {
+            "marketId": "373",
+            "exchangeId": "1062"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T19:51:22.757225100Z",
+          "2026-10-14T19:51:22.757225100Z"
+        ],
+        "sequences": [
+          160005648,
+          160005648
+        ],
+        "noPurchaseLimits": [
+          "0.855000",
+          "0.130000"
+        ],
+        "packageCost": "0.985000",
+        "immediateOnePackageLiquidation": "0.975000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.015000",
+        "maximumDisplayedPackages": 2589,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "last": {
+        "race": "New Hampshire Governor",
+        "receivedAt": "2026-10-14T20:00:43.596Z",
+        "legs": [
+          {
+            "marketId": "372",
+            "exchangeId": "1061"
+          },
+          {
+            "marketId": "373",
+            "exchangeId": "1062"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T20:00:43.201265800Z",
+          "2026-10-14T20:00:42.201771600Z"
+        ],
+        "sequences": [
+          160068976,
+          160068810
+        ],
+        "noPurchaseLimits": [
+          "0.855000",
+          "0.130000"
+        ],
+        "packageCost": "0.985000",
+        "immediateOnePackageLiquidation": "0.975000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.015000",
+        "maximumDisplayedPackages": 2589,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "largestConditionalSurplus": {
+        "race": "New Hampshire Governor",
+        "receivedAt": "2026-10-14T20:00:43.596Z",
+        "legs": [
+          {
+            "marketId": "372",
+            "exchangeId": "1061"
+          },
+          {
+            "marketId": "373",
+            "exchangeId": "1062"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T20:00:43.201265800Z",
+          "2026-10-14T20:00:42.201771600Z"
+        ],
+        "sequences": [
+          160068976,
+          160068810
+        ],
+        "noPurchaseLimits": [
+          "0.855000",
+          "0.130000"
+        ],
+        "packageCost": "0.985000",
+        "immediateOnePackageLiquidation": "0.975000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.015000",
+        "maximumDisplayedPackages": 2589,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      }
+    },
+    {
+      "race": "Alaska Governor",
+      "observations": 60,
+      "first": {
+        "race": "Alaska Governor",
+        "receivedAt": "2026-10-14T19:51:26.744Z",
+        "legs": [
+          {
+            "marketId": "368",
+            "exchangeId": "1057"
+          },
+          {
+            "marketId": "369",
+            "exchangeId": "1058"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T19:51:26.186554800Z",
+          "2026-10-14T19:51:26.186554800Z"
+        ],
+        "sequences": [
+          160006059,
+          160006059
+        ],
+        "noPurchaseLimits": [
+          "0.220000",
+          "0.750000"
+        ],
+        "packageCost": "0.970000",
+        "immediateOnePackageLiquidation": "0.960000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.030000",
+        "maximumDisplayedPackages": 15516,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "last": {
+        "race": "Alaska Governor",
+        "receivedAt": "2026-10-14T20:00:44.808Z",
+        "legs": [
+          {
+            "marketId": "368",
+            "exchangeId": "1057"
+          },
+          {
+            "marketId": "369",
+            "exchangeId": "1058"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T20:00:44.203872800Z",
+          "2026-10-14T20:00:44.203872800Z"
+        ],
+        "sequences": [
+          160069109,
+          160069109
+        ],
+        "noPurchaseLimits": [
+          "0.220000",
+          "0.750000"
+        ],
+        "packageCost": "0.970000",
+        "immediateOnePackageLiquidation": "0.960000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.030000",
+        "maximumDisplayedPackages": 21023,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "largestConditionalSurplus": {
+        "race": "Alaska Governor",
+        "receivedAt": "2026-10-14T20:00:44.808Z",
+        "legs": [
+          {
+            "marketId": "368",
+            "exchangeId": "1057"
+          },
+          {
+            "marketId": "369",
+            "exchangeId": "1058"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T20:00:44.203872800Z",
+          "2026-10-14T20:00:44.203872800Z"
+        ],
+        "sequences": [
+          160069109,
+          160069109
+        ],
+        "noPurchaseLimits": [
+          "0.220000",
+          "0.750000"
+        ],
+        "packageCost": "0.970000",
+        "immediateOnePackageLiquidation": "0.960000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.030000",
+        "maximumDisplayedPackages": 21023,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      }
+    },
+    {
+      "race": "Georgia Governor",
+      "observations": 24,
+      "first": {
+        "race": "Georgia Governor",
+        "receivedAt": "2026-10-14T19:51:27.872Z",
+        "legs": [
+          {
+            "marketId": "166",
+            "exchangeId": "855"
+          },
+          {
+            "marketId": "167",
+            "exchangeId": "856"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T19:51:27.180687700Z",
+          "2026-10-14T19:51:27.180687700Z"
+        ],
+        "sequences": [
+          160006154,
+          160006154
+        ],
+        "noPurchaseLimits": [
+          "0.505000",
+          "0.485000"
+        ],
+        "packageCost": "0.990000",
+        "immediateOnePackageLiquidation": "0.975000",
+        "immediateRoundTripPnl": "-0.015000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.010000",
+        "maximumDisplayedPackages": 3594,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "last": {
+        "race": "Georgia Governor",
+        "receivedAt": "2026-10-14T20:00:44.808Z",
+        "legs": [
+          {
+            "marketId": "166",
+            "exchangeId": "855"
+          },
+          {
+            "marketId": "167",
+            "exchangeId": "856"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T20:00:44.203872800Z",
+          "2026-10-14T20:00:44.203872800Z"
+        ],
+        "sequences": [
+          160069109,
+          160069109
+        ],
+        "noPurchaseLimits": [
+          "0.505000",
+          "0.485000"
+        ],
+        "packageCost": "0.990000",
+        "immediateOnePackageLiquidation": "0.975000",
+        "immediateRoundTripPnl": "-0.015000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.010000",
+        "maximumDisplayedPackages": 3393,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "largestConditionalSurplus": {
+        "race": "Georgia Governor",
+        "receivedAt": "2026-10-14T20:00:44.808Z",
+        "legs": [
+          {
+            "marketId": "166",
+            "exchangeId": "855"
+          },
+          {
+            "marketId": "167",
+            "exchangeId": "856"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T20:00:44.203872800Z",
+          "2026-10-14T20:00:44.203872800Z"
+        ],
+        "sequences": [
+          160069109,
+          160069109
+        ],
+        "noPurchaseLimits": [
+          "0.505000",
+          "0.485000"
+        ],
+        "packageCost": "0.990000",
+        "immediateOnePackageLiquidation": "0.975000",
+        "immediateRoundTripPnl": "-0.015000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.010000",
+        "maximumDisplayedPackages": 3393,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      }
+    },
+    {
+      "race": "MI-07 House race",
+      "observations": 46,
+      "first": {
+        "race": "MI-07 House race",
+        "receivedAt": "2026-10-14T19:51:27.872Z",
+        "legs": [
+          {
+            "marketId": "330",
+            "exchangeId": "1019"
+          },
+          {
+            "marketId": "331",
+            "exchangeId": "1020"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T19:51:27.180687700Z",
+          "2026-10-14T19:51:26.186554800Z"
+        ],
+        "sequences": [
+          160006154,
+          160006059
+        ],
+        "noPurchaseLimits": [
+          "0.425000",
+          "0.570000"
+        ],
+        "packageCost": "0.995000",
+        "immediateOnePackageLiquidation": "0.985000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.005000",
+        "maximumDisplayedPackages": 474,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "last": {
+        "race": "MI-07 House race",
+        "receivedAt": "2026-10-14T20:00:34.189Z",
+        "legs": [
+          {
+            "marketId": "330",
+            "exchangeId": "1019"
+          },
+          {
+            "marketId": "331",
+            "exchangeId": "1020"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T20:00:32.036687800Z",
+          "2026-10-14T20:00:32.036687800Z"
+        ],
+        "sequences": [
+          160067662,
+          160067662
+        ],
+        "noPurchaseLimits": [
+          "0.425000",
+          "0.570000"
+        ],
+        "packageCost": "0.995000",
+        "immediateOnePackageLiquidation": "0.985000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.005000",
+        "maximumDisplayedPackages": 474,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "largestConditionalSurplus": {
+        "race": "MI-07 House race",
+        "receivedAt": "2026-10-14T20:00:34.189Z",
+        "legs": [
+          {
+            "marketId": "330",
+            "exchangeId": "1019"
+          },
+          {
+            "marketId": "331",
+            "exchangeId": "1020"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T20:00:32.036687800Z",
+          "2026-10-14T20:00:32.036687800Z"
+        ],
+        "sequences": [
+          160067662,
+          160067662
+        ],
+        "noPurchaseLimits": [
+          "0.425000",
+          "0.570000"
+        ],
+        "packageCost": "0.995000",
+        "immediateOnePackageLiquidation": "0.985000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.005000",
+        "maximumDisplayedPackages": 474,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      }
+    },
+    {
+      "race": "Delaware Senate",
+      "observations": 18,
+      "first": {
+        "race": "Delaware Senate",
+        "receivedAt": "2026-10-14T19:51:27.872Z",
+        "legs": [
+          {
+            "marketId": "353",
+            "exchangeId": "1042"
+          },
+          {
+            "marketId": "386",
+            "exchangeId": "1075"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T19:51:27.180687700Z",
+          "2026-10-14T19:51:27.180687700Z"
+        ],
+        "sequences": [
+          160006154,
+          160006154
+        ],
+        "noPurchaseLimits": [
+          "0.075000",
+          "0.885000"
+        ],
+        "packageCost": "0.960000",
+        "immediateOnePackageLiquidation": "0.945000",
+        "immediateRoundTripPnl": "-0.015000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.040000",
+        "maximumDisplayedPackages": 805,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "last": {
+        "race": "Delaware Senate",
+        "receivedAt": "2026-10-14T20:00:34.189Z",
+        "legs": [
+          {
+            "marketId": "353",
+            "exchangeId": "1042"
+          },
+          {
+            "marketId": "386",
+            "exchangeId": "1075"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T20:00:32.036687800Z",
+          "2026-10-14T20:00:32.117384300Z"
+        ],
+        "sequences": [
+          160067662,
+          160067671
+        ],
+        "noPurchaseLimits": [
+          "0.075000",
+          "0.885000"
+        ],
+        "packageCost": "0.960000",
+        "immediateOnePackageLiquidation": "0.945000",
+        "immediateRoundTripPnl": "-0.015000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.040000",
+        "maximumDisplayedPackages": 925,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "largestConditionalSurplus": {
+        "race": "Delaware Senate",
+        "receivedAt": "2026-10-14T20:00:34.189Z",
+        "legs": [
+          {
+            "marketId": "353",
+            "exchangeId": "1042"
+          },
+          {
+            "marketId": "386",
+            "exchangeId": "1075"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T20:00:32.036687800Z",
+          "2026-10-14T20:00:32.117384300Z"
+        ],
+        "sequences": [
+          160067662,
+          160067671
+        ],
+        "noPurchaseLimits": [
+          "0.075000",
+          "0.885000"
+        ],
+        "packageCost": "0.960000",
+        "immediateOnePackageLiquidation": "0.945000",
+        "immediateRoundTripPnl": "-0.015000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.040000",
+        "maximumDisplayedPackages": 925,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      }
+    },
+    {
+      "race": "Iowa Senate",
+      "observations": 41,
+      "first": {
+        "race": "Iowa Senate",
+        "receivedAt": "2026-10-14T19:51:27.872Z",
+        "legs": [
+          {
+            "marketId": "260",
+            "exchangeId": "949"
+          },
+          {
+            "marketId": "261",
+            "exchangeId": "950"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T19:51:27.180687700Z",
+          "2026-10-14T19:51:27.180687700Z"
+        ],
+        "sequences": [
+          160006154,
+          160006154
+        ],
+        "noPurchaseLimits": [
+          "0.550000",
+          "0.435000"
+        ],
+        "packageCost": "0.985000",
+        "immediateOnePackageLiquidation": "0.975000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.015000",
+        "maximumDisplayedPackages": 3,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "last": {
+        "race": "Iowa Senate",
+        "receivedAt": "2026-10-14T20:00:34.189Z",
+        "legs": [
+          {
+            "marketId": "260",
+            "exchangeId": "949"
+          },
+          {
+            "marketId": "261",
+            "exchangeId": "950"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T20:00:32.036687800Z",
+          "2026-10-14T20:00:32.036687800Z"
+        ],
+        "sequences": [
+          160067662,
+          160067662
+        ],
+        "noPurchaseLimits": [
+          "0.550000",
+          "0.435000"
+        ],
+        "packageCost": "0.985000",
+        "immediateOnePackageLiquidation": "0.975000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.015000",
+        "maximumDisplayedPackages": 3,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "largestConditionalSurplus": {
+        "race": "Iowa Senate",
+        "receivedAt": "2026-10-14T20:00:34.189Z",
+        "legs": [
+          {
+            "marketId": "260",
+            "exchangeId": "949"
+          },
+          {
+            "marketId": "261",
+            "exchangeId": "950"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T20:00:32.036687800Z",
+          "2026-10-14T20:00:32.036687800Z"
+        ],
+        "sequences": [
+          160067662,
+          160067662
+        ],
+        "noPurchaseLimits": [
+          "0.550000",
+          "0.435000"
+        ],
+        "packageCost": "0.985000",
+        "immediateOnePackageLiquidation": "0.975000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.015000",
+        "maximumDisplayedPackages": 3,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      }
+    },
+    {
+      "race": "TN-05 House race",
+      "observations": 11,
+      "first": {
+        "race": "TN-05 House race",
+        "receivedAt": "2026-10-14T19:51:27.872Z",
+        "legs": [
+          {
+            "marketId": "340",
+            "exchangeId": "1029"
+          },
+          {
+            "marketId": "341",
+            "exchangeId": "1030"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T19:51:27.180687700Z",
+          "2026-10-14T19:51:27.180687700Z"
+        ],
+        "sequences": [
+          160006154,
+          160006154
+        ],
+        "noPurchaseLimits": [
+          "0.910000",
+          "0.070000"
+        ],
+        "packageCost": "0.980000",
+        "immediateOnePackageLiquidation": "0.970000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.020000",
+        "maximumDisplayedPackages": 321,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "last": {
+        "race": "TN-05 House race",
+        "receivedAt": "2026-10-14T20:00:34.189Z",
+        "legs": [
+          {
+            "marketId": "340",
+            "exchangeId": "1029"
+          },
+          {
+            "marketId": "341",
+            "exchangeId": "1030"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T20:00:32.036687800Z",
+          "2026-10-14T20:00:32.036687800Z"
+        ],
+        "sequences": [
+          160067662,
+          160067662
+        ],
+        "noPurchaseLimits": [
+          "0.910000",
+          "0.070000"
+        ],
+        "packageCost": "0.980000",
+        "immediateOnePackageLiquidation": "0.970000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.020000",
+        "maximumDisplayedPackages": 321,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "largestConditionalSurplus": {
+        "race": "TN-05 House race",
+        "receivedAt": "2026-10-14T20:00:34.189Z",
+        "legs": [
+          {
+            "marketId": "340",
+            "exchangeId": "1029"
+          },
+          {
+            "marketId": "341",
+            "exchangeId": "1030"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T20:00:32.036687800Z",
+          "2026-10-14T20:00:32.036687800Z"
+        ],
+        "sequences": [
+          160067662,
+          160067662
+        ],
+        "noPurchaseLimits": [
+          "0.910000",
+          "0.070000"
+        ],
+        "packageCost": "0.980000",
+        "immediateOnePackageLiquidation": "0.970000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.020000",
+        "maximumDisplayedPackages": 321,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      }
+    },
+    {
+      "race": "PA-07 House race",
+      "observations": 25,
+      "first": {
+        "race": "PA-07 House race",
+        "receivedAt": "2026-10-14T19:51:36.046Z",
+        "legs": [
+          {
+            "marketId": "235",
+            "exchangeId": "924"
+          },
+          {
+            "marketId": "236",
+            "exchangeId": "925"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T19:51:34.446566400Z",
+          "2026-10-14T19:51:34.446566400Z"
+        ],
+        "sequences": [
+          160006980,
+          160006980
+        ],
+        "noPurchaseLimits": [
+          "0.150000",
+          "0.830000"
+        ],
+        "packageCost": "0.980000",
+        "immediateOnePackageLiquidation": "0.970000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.020000",
+        "maximumDisplayedPackages": 301,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "last": {
+        "race": "PA-07 House race",
+        "receivedAt": "2026-10-14T20:00:34.189Z",
+        "legs": [
+          {
+            "marketId": "235",
+            "exchangeId": "924"
+          },
+          {
+            "marketId": "236",
+            "exchangeId": "925"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T20:00:32.036687800Z",
+          "2026-10-14T20:00:32.036687800Z"
+        ],
+        "sequences": [
+          160067662,
+          160067662
+        ],
+        "noPurchaseLimits": [
+          "0.155000",
+          "0.830000"
+        ],
+        "packageCost": "0.985000",
+        "immediateOnePackageLiquidation": "0.970000",
+        "immediateRoundTripPnl": "-0.015000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.015000",
+        "maximumDisplayedPackages": 1052,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "largestConditionalSurplus": {
+        "race": "PA-07 House race",
+        "receivedAt": "2026-10-14T19:56:10.075Z",
+        "legs": [
+          {
+            "marketId": "235",
+            "exchangeId": "924"
+          },
+          {
+            "marketId": "236",
+            "exchangeId": "925"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T19:56:07.973611200Z",
+          "2026-10-14T19:56:07.973611200Z"
+        ],
+        "sequences": [
+          160041961,
+          160041961
+        ],
+        "noPurchaseLimits": [
+          "0.150000",
+          "0.830000"
+        ],
+        "packageCost": "0.980000",
+        "immediateOnePackageLiquidation": "0.970000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.020000",
+        "maximumDisplayedPackages": 301,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      }
+    },
+    {
+      "race": "NH-01 House race",
+      "observations": 29,
+      "first": {
+        "race": "NH-01 House race",
+        "receivedAt": "2026-10-14T19:51:36.046Z",
+        "legs": [
+          {
+            "marketId": "375",
+            "exchangeId": "1064"
+          },
+          {
+            "marketId": "376",
+            "exchangeId": "1065"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T19:51:34.446566400Z",
+          "2026-10-14T19:51:34.446566400Z"
+        ],
+        "sequences": [
+          160006980,
+          160006980
+        ],
+        "noPurchaseLimits": [
+          "0.070000",
+          "0.905000"
+        ],
+        "packageCost": "0.975000",
+        "immediateOnePackageLiquidation": "0.965000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.025000",
+        "maximumDisplayedPackages": 71,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "last": {
+        "race": "NH-01 House race",
+        "receivedAt": "2026-10-14T20:00:34.189Z",
+        "legs": [
+          {
+            "marketId": "375",
+            "exchangeId": "1064"
+          },
+          {
+            "marketId": "376",
+            "exchangeId": "1065"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T20:00:32.117384300Z",
+          "2026-10-14T20:00:32.117384300Z"
+        ],
+        "sequences": [
+          160067671,
+          160067671
+        ],
+        "noPurchaseLimits": [
+          "0.070000",
+          "0.905000"
+        ],
+        "packageCost": "0.975000",
+        "immediateOnePackageLiquidation": "0.965000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.025000",
+        "maximumDisplayedPackages": 71,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "largestConditionalSurplus": {
+        "race": "NH-01 House race",
+        "receivedAt": "2026-10-14T20:00:34.189Z",
+        "legs": [
+          {
+            "marketId": "375",
+            "exchangeId": "1064"
+          },
+          {
+            "marketId": "376",
+            "exchangeId": "1065"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T20:00:32.117384300Z",
+          "2026-10-14T20:00:32.117384300Z"
+        ],
+        "sequences": [
+          160067671,
+          160067671
+        ],
+        "noPurchaseLimits": [
+          "0.070000",
+          "0.905000"
+        ],
+        "packageCost": "0.975000",
+        "immediateOnePackageLiquidation": "0.965000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.025000",
+        "maximumDisplayedPackages": 71,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      }
+    },
+    {
+      "race": "Vermont Governor",
+      "observations": 17,
+      "first": {
+        "race": "Vermont Governor",
+        "receivedAt": "2026-10-14T19:51:36.046Z",
+        "legs": [
+          {
+            "marketId": "312",
+            "exchangeId": "1001"
+          },
+          {
+            "marketId": "313",
+            "exchangeId": "1002"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T19:51:34.446566400Z",
+          "2026-10-14T19:51:34.446566400Z"
+        ],
+        "sequences": [
+          160006980,
+          160006980
+        ],
+        "noPurchaseLimits": [
+          "0.730000",
+          "0.265000"
+        ],
+        "packageCost": "0.995000",
+        "immediateOnePackageLiquidation": "0.985000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.005000",
+        "maximumDisplayedPackages": 406,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "last": {
+        "race": "Vermont Governor",
+        "receivedAt": "2026-10-14T20:00:36.571Z",
+        "legs": [
+          {
+            "marketId": "312",
+            "exchangeId": "1001"
+          },
+          {
+            "marketId": "313",
+            "exchangeId": "1002"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T20:00:36.200694800Z",
+          "2026-10-14T20:00:35.201431500Z"
+        ],
+        "sequences": [
+          160068136,
+          160068000
+        ],
+        "noPurchaseLimits": [
+          "0.730000",
+          "0.265000"
+        ],
+        "packageCost": "0.995000",
+        "immediateOnePackageLiquidation": "0.985000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.005000",
+        "maximumDisplayedPackages": 406,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "largestConditionalSurplus": {
+        "race": "Vermont Governor",
+        "receivedAt": "2026-10-14T20:00:36.571Z",
+        "legs": [
+          {
+            "marketId": "312",
+            "exchangeId": "1001"
+          },
+          {
+            "marketId": "313",
+            "exchangeId": "1002"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T20:00:36.200694800Z",
+          "2026-10-14T20:00:35.201431500Z"
+        ],
+        "sequences": [
+          160068136,
+          160068000
+        ],
+        "noPurchaseLimits": [
+          "0.730000",
+          "0.265000"
+        ],
+        "packageCost": "0.995000",
+        "immediateOnePackageLiquidation": "0.985000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.005000",
+        "maximumDisplayedPackages": 406,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      }
+    },
+    {
+      "race": "FL-16 House race",
+      "observations": 21,
+      "first": {
+        "race": "FL-16 House race",
+        "receivedAt": "2026-10-14T19:51:36.046Z",
+        "legs": [
+          {
+            "marketId": "324",
+            "exchangeId": "1013"
+          },
+          {
+            "marketId": "325",
+            "exchangeId": "1014"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T19:51:34.446566400Z",
+          "2026-10-14T19:51:34.446566400Z"
+        ],
+        "sequences": [
+          160006980,
+          160006980
+        ],
+        "noPurchaseLimits": [
+          "0.820000",
+          "0.165000"
+        ],
+        "packageCost": "0.985000",
+        "immediateOnePackageLiquidation": "0.975000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.015000",
+        "maximumDisplayedPackages": 1161,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "last": {
+        "race": "FL-16 House race",
+        "receivedAt": "2026-10-14T20:00:38.459Z",
+        "legs": [
+          {
+            "marketId": "324",
+            "exchangeId": "1013"
+          },
+          {
+            "marketId": "325",
+            "exchangeId": "1014"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T20:00:38.200893700Z",
+          "2026-10-14T20:00:37.201629300Z"
+        ],
+        "sequences": [
+          160068408,
+          160068247
+        ],
+        "noPurchaseLimits": [
+          "0.820000",
+          "0.165000"
+        ],
+        "packageCost": "0.985000",
+        "immediateOnePackageLiquidation": "0.975000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.015000",
+        "maximumDisplayedPackages": 622,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "largestConditionalSurplus": {
+        "race": "FL-16 House race",
+        "receivedAt": "2026-10-14T20:00:38.459Z",
+        "legs": [
+          {
+            "marketId": "324",
+            "exchangeId": "1013"
+          },
+          {
+            "marketId": "325",
+            "exchangeId": "1014"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T20:00:38.200893700Z",
+          "2026-10-14T20:00:37.201629300Z"
+        ],
+        "sequences": [
+          160068408,
+          160068247
+        ],
+        "noPurchaseLimits": [
+          "0.820000",
+          "0.165000"
+        ],
+        "packageCost": "0.985000",
+        "immediateOnePackageLiquidation": "0.975000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.015000",
+        "maximumDisplayedPackages": 622,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      }
+    },
+    {
+      "race": "Michigan Senate",
+      "observations": 1,
+      "first": {
+        "race": "Michigan Senate",
+        "receivedAt": "2026-10-14T19:51:36.046Z",
+        "legs": [
+          {
+            "marketId": "358",
+            "exchangeId": "1047"
+          },
+          {
+            "marketId": "359",
+            "exchangeId": "1048"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T19:51:34.446566400Z",
+          "2026-10-14T19:51:34.446566400Z"
+        ],
+        "sequences": [
+          160006980,
+          160006980
+        ],
+        "noPurchaseLimits": [
+          "0.355000",
+          "0.640000"
+        ],
+        "packageCost": "0.995000",
+        "immediateOnePackageLiquidation": "0.985000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.005000",
+        "maximumDisplayedPackages": 1111,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "last": {
+        "race": "Michigan Senate",
+        "receivedAt": "2026-10-14T19:51:36.046Z",
+        "legs": [
+          {
+            "marketId": "358",
+            "exchangeId": "1047"
+          },
+          {
+            "marketId": "359",
+            "exchangeId": "1048"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T19:51:34.446566400Z",
+          "2026-10-14T19:51:34.446566400Z"
+        ],
+        "sequences": [
+          160006980,
+          160006980
+        ],
+        "noPurchaseLimits": [
+          "0.355000",
+          "0.640000"
+        ],
+        "packageCost": "0.995000",
+        "immediateOnePackageLiquidation": "0.985000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.005000",
+        "maximumDisplayedPackages": 1111,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "largestConditionalSurplus": {
+        "race": "Michigan Senate",
+        "receivedAt": "2026-10-14T19:51:36.046Z",
+        "legs": [
+          {
+            "marketId": "358",
+            "exchangeId": "1047"
+          },
+          {
+            "marketId": "359",
+            "exchangeId": "1048"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T19:51:34.446566400Z",
+          "2026-10-14T19:51:34.446566400Z"
+        ],
+        "sequences": [
+          160006980,
+          160006980
+        ],
+        "noPurchaseLimits": [
+          "0.355000",
+          "0.640000"
+        ],
+        "packageCost": "0.995000",
+        "immediateOnePackageLiquidation": "0.985000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.005000",
+        "maximumDisplayedPackages": 1111,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      }
+    },
+    {
+      "race": "Massachusetts Senate",
+      "observations": 14,
+      "first": {
+        "race": "Massachusetts Senate",
+        "receivedAt": "2026-10-14T19:51:38.472Z",
+        "legs": [
+          {
+            "marketId": "379",
+            "exchangeId": "1068"
+          },
+          {
+            "marketId": "380",
+            "exchangeId": "1069"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T19:51:37.828767000Z",
+          "2026-10-14T19:51:37.828767000Z"
+        ],
+        "sequences": [
+          160008394,
+          160008394
+        ],
+        "noPurchaseLimits": [
+          "0.055000",
+          "0.930000"
+        ],
+        "packageCost": "0.985000",
+        "immediateOnePackageLiquidation": "0.970000",
+        "immediateRoundTripPnl": "-0.015000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.015000",
+        "maximumDisplayedPackages": 226,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "last": {
+        "race": "Massachusetts Senate",
+        "receivedAt": "2026-10-14T20:00:01.002Z",
+        "legs": [
+          {
+            "marketId": "379",
+            "exchangeId": "1068"
+          },
+          {
+            "marketId": "380",
+            "exchangeId": "1069"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T20:00:00.727711500Z",
+          "2026-10-14T20:00:00.727711500Z"
+        ],
+        "sequences": [
+          160064682,
+          160064682
+        ],
+        "noPurchaseLimits": [
+          "0.050000",
+          "0.930000"
+        ],
+        "packageCost": "0.980000",
+        "immediateOnePackageLiquidation": "0.970000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.020000",
+        "maximumDisplayedPackages": 6112,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "largestConditionalSurplus": {
+        "race": "Massachusetts Senate",
+        "receivedAt": "2026-10-14T20:00:01.002Z",
+        "legs": [
+          {
+            "marketId": "379",
+            "exchangeId": "1068"
+          },
+          {
+            "marketId": "380",
+            "exchangeId": "1069"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T20:00:00.727711500Z",
+          "2026-10-14T20:00:00.727711500Z"
+        ],
+        "sequences": [
+          160064682,
+          160064682
+        ],
+        "noPurchaseLimits": [
+          "0.050000",
+          "0.930000"
+        ],
+        "packageCost": "0.980000",
+        "immediateOnePackageLiquidation": "0.970000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.020000",
+        "maximumDisplayedPackages": 6112,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      }
+    },
+    {
+      "race": "Maryland Governor",
+      "observations": 9,
+      "first": {
+        "race": "Maryland Governor",
+        "receivedAt": "2026-10-14T19:51:43.277Z",
+        "legs": [
+          {
+            "marketId": "174",
+            "exchangeId": "863"
+          },
+          {
+            "marketId": "175",
+            "exchangeId": "864"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T19:51:40.857163900Z",
+          "2026-10-14T19:51:40.857163900Z"
+        ],
+        "sequences": [
+          160008799,
+          160008799
+        ],
+        "noPurchaseLimits": [
+          "0.035000",
+          "0.950000"
+        ],
+        "packageCost": "0.985000",
+        "immediateOnePackageLiquidation": "0.970000",
+        "immediateRoundTripPnl": "-0.015000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.015000",
+        "maximumDisplayedPackages": 600,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "last": {
+        "race": "Maryland Governor",
+        "receivedAt": "2026-10-14T20:00:34.189Z",
+        "legs": [
+          {
+            "marketId": "174",
+            "exchangeId": "863"
+          },
+          {
+            "marketId": "175",
+            "exchangeId": "864"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T20:00:32.036687800Z",
+          "2026-10-14T20:00:32.036687800Z"
+        ],
+        "sequences": [
+          160067662,
+          160067662
+        ],
+        "noPurchaseLimits": [
+          "0.035000",
+          "0.950000"
+        ],
+        "packageCost": "0.985000",
+        "immediateOnePackageLiquidation": "0.970000",
+        "immediateRoundTripPnl": "-0.015000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.015000",
+        "maximumDisplayedPackages": 600,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "largestConditionalSurplus": {
+        "race": "Maryland Governor",
+        "receivedAt": "2026-10-14T20:00:34.189Z",
+        "legs": [
+          {
+            "marketId": "174",
+            "exchangeId": "863"
+          },
+          {
+            "marketId": "175",
+            "exchangeId": "864"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T20:00:32.036687800Z",
+          "2026-10-14T20:00:32.036687800Z"
+        ],
+        "sequences": [
+          160067662,
+          160067662
+        ],
+        "noPurchaseLimits": [
+          "0.035000",
+          "0.950000"
+        ],
+        "packageCost": "0.985000",
+        "immediateOnePackageLiquidation": "0.970000",
+        "immediateRoundTripPnl": "-0.015000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.015000",
+        "maximumDisplayedPackages": 600,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      }
+    },
+    {
+      "race": "Nevada Governor",
+      "observations": 28,
+      "first": {
+        "race": "Nevada Governor",
+        "receivedAt": "2026-10-14T19:51:43.277Z",
+        "legs": [
+          {
+            "marketId": "182",
+            "exchangeId": "871"
+          },
+          {
+            "marketId": "183",
+            "exchangeId": "872"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T19:51:40.857163900Z",
+          "2026-10-14T19:51:40.857163900Z"
+        ],
+        "sequences": [
+          160008799,
+          160008799
+        ],
+        "noPurchaseLimits": [
+          "0.470000",
+          "0.520000"
+        ],
+        "packageCost": "0.990000",
+        "immediateOnePackageLiquidation": "0.980000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.010000",
+        "maximumDisplayedPackages": 6467,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "last": {
+        "race": "Nevada Governor",
+        "receivedAt": "2026-10-14T20:00:34.189Z",
+        "legs": [
+          {
+            "marketId": "182",
+            "exchangeId": "871"
+          },
+          {
+            "marketId": "183",
+            "exchangeId": "872"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T20:00:32.036687800Z",
+          "2026-10-14T20:00:32.036687800Z"
+        ],
+        "sequences": [
+          160067662,
+          160067662
+        ],
+        "noPurchaseLimits": [
+          "0.470000",
+          "0.520000"
+        ],
+        "packageCost": "0.990000",
+        "immediateOnePackageLiquidation": "0.975000",
+        "immediateRoundTripPnl": "-0.015000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.010000",
+        "maximumDisplayedPackages": 6087,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "largestConditionalSurplus": {
+        "race": "Nevada Governor",
+        "receivedAt": "2026-10-14T20:00:34.189Z",
+        "legs": [
+          {
+            "marketId": "182",
+            "exchangeId": "871"
+          },
+          {
+            "marketId": "183",
+            "exchangeId": "872"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T20:00:32.036687800Z",
+          "2026-10-14T20:00:32.036687800Z"
+        ],
+        "sequences": [
+          160067662,
+          160067662
+        ],
+        "noPurchaseLimits": [
+          "0.470000",
+          "0.520000"
+        ],
+        "packageCost": "0.990000",
+        "immediateOnePackageLiquidation": "0.975000",
+        "immediateRoundTripPnl": "-0.015000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.010000",
+        "maximumDisplayedPackages": 6087,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      }
+    },
+    {
+      "race": "Pennsylvania Governor",
+      "observations": 11,
+      "first": {
+        "race": "Pennsylvania Governor",
+        "receivedAt": "2026-10-14T19:51:43.277Z",
+        "legs": [
+          {
+            "marketId": "189",
+            "exchangeId": "878"
+          },
+          {
+            "marketId": "190",
+            "exchangeId": "879"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T19:51:40.857163900Z",
+          "2026-10-14T19:51:40.857163900Z"
+        ],
+        "sequences": [
+          160008799,
+          160008799
+        ],
+        "noPurchaseLimits": [
+          "0.055000",
+          "0.935000"
+        ],
+        "packageCost": "0.990000",
+        "immediateOnePackageLiquidation": "0.975000",
+        "immediateRoundTripPnl": "-0.015000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.010000",
+        "maximumDisplayedPackages": 1195,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "last": {
+        "race": "Pennsylvania Governor",
+        "receivedAt": "2026-10-14T19:58:36.716Z",
+        "legs": [
+          {
+            "marketId": "189",
+            "exchangeId": "878"
+          },
+          {
+            "marketId": "190",
+            "exchangeId": "879"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T19:58:35.092695300Z",
+          "2026-10-14T19:58:35.092695300Z"
+        ],
+        "sequences": [
+          160057118,
+          160057118
+        ],
+        "noPurchaseLimits": [
+          "0.050000",
+          "0.935000"
+        ],
+        "packageCost": "0.985000",
+        "immediateOnePackageLiquidation": "0.975000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.015000",
+        "maximumDisplayedPackages": 153,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "largestConditionalSurplus": {
+        "race": "Pennsylvania Governor",
+        "receivedAt": "2026-10-14T19:58:36.716Z",
+        "legs": [
+          {
+            "marketId": "189",
+            "exchangeId": "878"
+          },
+          {
+            "marketId": "190",
+            "exchangeId": "879"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T19:58:35.092695300Z",
+          "2026-10-14T19:58:35.092695300Z"
+        ],
+        "sequences": [
+          160057118,
+          160057118
+        ],
+        "noPurchaseLimits": [
+          "0.050000",
+          "0.935000"
+        ],
+        "packageCost": "0.985000",
+        "immediateOnePackageLiquidation": "0.975000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.015000",
+        "maximumDisplayedPackages": 153,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      }
+    },
+    {
+      "race": "North Carolina Senate",
+      "observations": 32,
+      "first": {
+        "race": "North Carolina Senate",
+        "receivedAt": "2026-10-14T19:51:43.277Z",
+        "legs": [
+          {
+            "marketId": "277",
+            "exchangeId": "966"
+          },
+          {
+            "marketId": "278",
+            "exchangeId": "967"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T19:51:40.857163900Z",
+          "2026-10-14T19:51:40.857163900Z"
+        ],
+        "sequences": [
+          160008799,
+          160008799
+        ],
+        "noPurchaseLimits": [
+          "0.110000",
+          "0.865000"
+        ],
+        "packageCost": "0.975000",
+        "immediateOnePackageLiquidation": "0.960000",
+        "immediateRoundTripPnl": "-0.015000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.025000",
+        "maximumDisplayedPackages": 1658,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "last": {
+        "race": "North Carolina Senate",
+        "receivedAt": "2026-10-14T20:00:40.098Z",
+        "legs": [
+          {
+            "marketId": "277",
+            "exchangeId": "966"
+          },
+          {
+            "marketId": "278",
+            "exchangeId": "967"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T20:00:39.200677500Z",
+          "2026-10-14T20:00:39.200677500Z"
+        ],
+        "sequences": [
+          160068544,
+          160068544
+        ],
+        "noPurchaseLimits": [
+          "0.110000",
+          "0.865000"
+        ],
+        "packageCost": "0.975000",
+        "immediateOnePackageLiquidation": "0.960000",
+        "immediateRoundTripPnl": "-0.015000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.025000",
+        "maximumDisplayedPackages": 1658,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "largestConditionalSurplus": {
+        "race": "North Carolina Senate",
+        "receivedAt": "2026-10-14T20:00:40.098Z",
+        "legs": [
+          {
+            "marketId": "277",
+            "exchangeId": "966"
+          },
+          {
+            "marketId": "278",
+            "exchangeId": "967"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T20:00:39.200677500Z",
+          "2026-10-14T20:00:39.200677500Z"
+        ],
+        "sequences": [
+          160068544,
+          160068544
+        ],
+        "noPurchaseLimits": [
+          "0.110000",
+          "0.865000"
+        ],
+        "packageCost": "0.975000",
+        "immediateOnePackageLiquidation": "0.960000",
+        "immediateRoundTripPnl": "-0.015000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.025000",
+        "maximumDisplayedPackages": 1658,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      }
+    },
+    {
+      "race": "Idaho Senate",
+      "observations": 19,
+      "first": {
+        "race": "Idaho Senate",
+        "receivedAt": "2026-10-14T19:51:43.277Z",
+        "legs": [
+          {
+            "marketId": "262",
+            "exchangeId": "951"
+          },
+          {
+            "marketId": "263",
+            "exchangeId": "952"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T19:51:40.857163900Z",
+          "2026-10-14T19:51:40.857163900Z"
+        ],
+        "sequences": [
+          160008799,
+          160008799
+        ],
+        "noPurchaseLimits": [
+          "0.915000",
+          "0.060000"
+        ],
+        "packageCost": "0.975000",
+        "immediateOnePackageLiquidation": "0.965000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.025000",
+        "maximumDisplayedPackages": 600,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "last": {
+        "race": "Idaho Senate",
+        "receivedAt": "2026-10-14T20:00:34.189Z",
+        "legs": [
+          {
+            "marketId": "262",
+            "exchangeId": "951"
+          },
+          {
+            "marketId": "263",
+            "exchangeId": "952"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T20:00:32.036687800Z",
+          "2026-10-14T20:00:32.036687800Z"
+        ],
+        "sequences": [
+          160067662,
+          160067662
+        ],
+        "noPurchaseLimits": [
+          "0.915000",
+          "0.060000"
+        ],
+        "packageCost": "0.975000",
+        "immediateOnePackageLiquidation": "0.965000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.025000",
+        "maximumDisplayedPackages": 54,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "largestConditionalSurplus": {
+        "race": "Idaho Senate",
+        "receivedAt": "2026-10-14T20:00:34.189Z",
+        "legs": [
+          {
+            "marketId": "262",
+            "exchangeId": "951"
+          },
+          {
+            "marketId": "263",
+            "exchangeId": "952"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T20:00:32.036687800Z",
+          "2026-10-14T20:00:32.036687800Z"
+        ],
+        "sequences": [
+          160067662,
+          160067662
+        ],
+        "noPurchaseLimits": [
+          "0.915000",
+          "0.060000"
+        ],
+        "packageCost": "0.975000",
+        "immediateOnePackageLiquidation": "0.965000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.025000",
+        "maximumDisplayedPackages": 54,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      }
+    },
+    {
+      "race": "Illinois Senate",
+      "observations": 12,
+      "first": {
+        "race": "Illinois Senate",
+        "receivedAt": "2026-10-14T19:51:43.277Z",
+        "legs": [
+          {
+            "marketId": "264",
+            "exchangeId": "953"
+          },
+          {
+            "marketId": "265",
+            "exchangeId": "954"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T19:51:40.857163900Z",
+          "2026-10-14T19:51:40.857163900Z"
+        ],
+        "sequences": [
+          160008799,
+          160008799
+        ],
+        "noPurchaseLimits": [
+          "0.040000",
+          "0.950000"
+        ],
+        "packageCost": "0.990000",
+        "immediateOnePackageLiquidation": "0.980000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.010000",
+        "maximumDisplayedPackages": 39128,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "last": {
+        "race": "Illinois Senate",
+        "receivedAt": "2026-10-14T20:00:35.310Z",
+        "legs": [
+          {
+            "marketId": "264",
+            "exchangeId": "953"
+          },
+          {
+            "marketId": "265",
+            "exchangeId": "954"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T20:00:34.202625400Z",
+          "2026-10-14T20:00:35.201431500Z"
+        ],
+        "sequences": [
+          160067894,
+          160068000
+        ],
+        "noPurchaseLimits": [
+          "0.040000",
+          "0.950000"
+        ],
+        "packageCost": "0.990000",
+        "immediateOnePackageLiquidation": "0.980000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.010000",
+        "maximumDisplayedPackages": 39248,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "largestConditionalSurplus": {
+        "race": "Illinois Senate",
+        "receivedAt": "2026-10-14T20:00:35.310Z",
+        "legs": [
+          {
+            "marketId": "264",
+            "exchangeId": "953"
+          },
+          {
+            "marketId": "265",
+            "exchangeId": "954"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T20:00:34.202625400Z",
+          "2026-10-14T20:00:35.201431500Z"
+        ],
+        "sequences": [
+          160067894,
+          160068000
+        ],
+        "noPurchaseLimits": [
+          "0.040000",
+          "0.950000"
+        ],
+        "packageCost": "0.990000",
+        "immediateOnePackageLiquidation": "0.980000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.010000",
+        "maximumDisplayedPackages": 39248,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      }
+    },
+    {
+      "race": "VA-07 House race",
+      "observations": 23,
+      "first": {
+        "race": "VA-07 House race",
+        "receivedAt": "2026-10-14T19:51:43.277Z",
+        "legs": [
+          {
+            "marketId": "251",
+            "exchangeId": "940"
+          },
+          {
+            "marketId": "346",
+            "exchangeId": "1035"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T19:51:40.857163900Z",
+          "2026-10-14T19:51:40.857163900Z"
+        ],
+        "sequences": [
+          160008799,
+          160008799
+        ],
+        "noPurchaseLimits": [
+          "0.080000",
+          "0.895000"
+        ],
+        "packageCost": "0.975000",
+        "immediateOnePackageLiquidation": "0.965000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.025000",
+        "maximumDisplayedPackages": 852,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "last": {
+        "race": "VA-07 House race",
+        "receivedAt": "2026-10-14T20:00:46.428Z",
+        "legs": [
+          {
+            "marketId": "251",
+            "exchangeId": "940"
+          },
+          {
+            "marketId": "346",
+            "exchangeId": "1035"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T20:00:45.203953800Z",
+          "2026-10-14T20:00:46.203255100Z"
+        ],
+        "sequences": [
+          160069184,
+          160069242
+        ],
+        "noPurchaseLimits": [
+          "0.080000",
+          "0.895000"
+        ],
+        "packageCost": "0.975000",
+        "immediateOnePackageLiquidation": "0.965000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.025000",
+        "maximumDisplayedPackages": 1294,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "largestConditionalSurplus": {
+        "race": "VA-07 House race",
+        "receivedAt": "2026-10-14T20:00:46.428Z",
+        "legs": [
+          {
+            "marketId": "251",
+            "exchangeId": "940"
+          },
+          {
+            "marketId": "346",
+            "exchangeId": "1035"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T20:00:45.203953800Z",
+          "2026-10-14T20:00:46.203255100Z"
+        ],
+        "sequences": [
+          160069184,
+          160069242
+        ],
+        "noPurchaseLimits": [
+          "0.080000",
+          "0.895000"
+        ],
+        "packageCost": "0.975000",
+        "immediateOnePackageLiquidation": "0.965000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.025000",
+        "maximumDisplayedPackages": 1294,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      }
+    },
+    {
+      "race": "Kansas Senate",
+      "observations": 37,
+      "first": {
+        "race": "Kansas Senate",
+        "receivedAt": "2026-10-14T19:51:43.277Z",
+        "legs": [
+          {
+            "marketId": "356",
+            "exchangeId": "1045"
+          },
+          {
+            "marketId": "357",
+            "exchangeId": "1046"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T19:51:40.857163900Z",
+          "2026-10-14T19:51:40.857163900Z"
+        ],
+        "sequences": [
+          160008799,
+          160008799
+        ],
+        "noPurchaseLimits": [
+          "0.580000",
+          "0.395000"
+        ],
+        "packageCost": "0.975000",
+        "immediateOnePackageLiquidation": "0.965000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.025000",
+        "maximumDisplayedPackages": 13248,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "last": {
+        "race": "Kansas Senate",
+        "receivedAt": "2026-10-14T20:00:34.189Z",
+        "legs": [
+          {
+            "marketId": "356",
+            "exchangeId": "1045"
+          },
+          {
+            "marketId": "357",
+            "exchangeId": "1046"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T20:00:32.036687800Z",
+          "2026-10-14T20:00:32.036687800Z"
+        ],
+        "sequences": [
+          160067662,
+          160067662
+        ],
+        "noPurchaseLimits": [
+          "0.580000",
+          "0.395000"
+        ],
+        "packageCost": "0.975000",
+        "immediateOnePackageLiquidation": "0.965000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.025000",
+        "maximumDisplayedPackages": 4910,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "largestConditionalSurplus": {
+        "race": "Kansas Senate",
+        "receivedAt": "2026-10-14T20:00:34.189Z",
+        "legs": [
+          {
+            "marketId": "356",
+            "exchangeId": "1045"
+          },
+          {
+            "marketId": "357",
+            "exchangeId": "1046"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T20:00:32.036687800Z",
+          "2026-10-14T20:00:32.036687800Z"
+        ],
+        "sequences": [
+          160067662,
+          160067662
+        ],
+        "noPurchaseLimits": [
+          "0.580000",
+          "0.395000"
+        ],
+        "packageCost": "0.975000",
+        "immediateOnePackageLiquidation": "0.965000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.025000",
+        "maximumDisplayedPackages": 4910,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      }
+    },
+    {
+      "race": "Wyoming Senate",
+      "observations": 19,
+      "first": {
+        "race": "Wyoming Senate",
+        "receivedAt": "2026-10-14T19:51:43.277Z",
+        "legs": [
+          {
+            "marketId": "365",
+            "exchangeId": "1054"
+          },
+          {
+            "marketId": "366",
+            "exchangeId": "1055"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T19:51:40.857163900Z",
+          "2026-10-14T19:51:40.857163900Z"
+        ],
+        "sequences": [
+          160008799,
+          160008799
+        ],
+        "noPurchaseLimits": [
+          "0.945000",
+          "0.035000"
+        ],
+        "packageCost": "0.980000",
+        "immediateOnePackageLiquidation": "0.960000",
+        "immediateRoundTripPnl": "-0.020000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.020000",
+        "maximumDisplayedPackages": 2275,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "last": {
+        "race": "Wyoming Senate",
+        "receivedAt": "2026-10-14T20:00:34.189Z",
+        "legs": [
+          {
+            "marketId": "365",
+            "exchangeId": "1054"
+          },
+          {
+            "marketId": "366",
+            "exchangeId": "1055"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T20:00:32.036687800Z",
+          "2026-10-14T20:00:32.036687800Z"
+        ],
+        "sequences": [
+          160067662,
+          160067662
+        ],
+        "noPurchaseLimits": [
+          "0.945000",
+          "0.035000"
+        ],
+        "packageCost": "0.980000",
+        "immediateOnePackageLiquidation": "0.960000",
+        "immediateRoundTripPnl": "-0.020000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.020000",
+        "maximumDisplayedPackages": 2202,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "largestConditionalSurplus": {
+        "race": "Wyoming Senate",
+        "receivedAt": "2026-10-14T20:00:34.189Z",
+        "legs": [
+          {
+            "marketId": "365",
+            "exchangeId": "1054"
+          },
+          {
+            "marketId": "366",
+            "exchangeId": "1055"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T20:00:32.036687800Z",
+          "2026-10-14T20:00:32.036687800Z"
+        ],
+        "sequences": [
+          160067662,
+          160067662
+        ],
+        "noPurchaseLimits": [
+          "0.945000",
+          "0.035000"
+        ],
+        "packageCost": "0.980000",
+        "immediateOnePackageLiquidation": "0.960000",
+        "immediateRoundTripPnl": "-0.020000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.020000",
+        "maximumDisplayedPackages": 2202,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      }
+    },
+    {
+      "race": "Massachusetts Governor",
+      "observations": 36,
+      "first": {
+        "race": "Massachusetts Governor",
+        "receivedAt": "2026-10-14T19:51:43.277Z",
+        "legs": [
+          {
+            "marketId": "370",
+            "exchangeId": "1059"
+          },
+          {
+            "marketId": "371",
+            "exchangeId": "1060"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T19:51:40.857163900Z",
+          "2026-10-14T19:51:40.857163900Z"
+        ],
+        "sequences": [
+          160008799,
+          160008799
+        ],
+        "noPurchaseLimits": [
+          "0.085000",
+          "0.910000"
+        ],
+        "packageCost": "0.995000",
+        "immediateOnePackageLiquidation": "0.985000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.005000",
+        "maximumDisplayedPackages": 12866,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "last": {
+        "race": "Massachusetts Governor",
+        "receivedAt": "2026-10-14T20:00:40.098Z",
+        "legs": [
+          {
+            "marketId": "370",
+            "exchangeId": "1059"
+          },
+          {
+            "marketId": "371",
+            "exchangeId": "1060"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T20:00:39.200677500Z",
+          "2026-10-14T20:00:38.200893700Z"
+        ],
+        "sequences": [
+          160068544,
+          160068408
+        ],
+        "noPurchaseLimits": [
+          "0.085000",
+          "0.910000"
+        ],
+        "packageCost": "0.995000",
+        "immediateOnePackageLiquidation": "0.985000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.005000",
+        "maximumDisplayedPackages": 14703,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "largestConditionalSurplus": {
+        "race": "Massachusetts Governor",
+        "receivedAt": "2026-10-14T20:00:40.098Z",
+        "legs": [
+          {
+            "marketId": "370",
+            "exchangeId": "1059"
+          },
+          {
+            "marketId": "371",
+            "exchangeId": "1060"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T20:00:39.200677500Z",
+          "2026-10-14T20:00:38.200893700Z"
+        ],
+        "sequences": [
+          160068544,
+          160068408
+        ],
+        "noPurchaseLimits": [
+          "0.085000",
+          "0.910000"
+        ],
+        "packageCost": "0.995000",
+        "immediateOnePackageLiquidation": "0.985000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.005000",
+        "maximumDisplayedPackages": 14703,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      }
+    },
+    {
+      "race": "MN-05 House race",
+      "observations": 22,
+      "first": {
+        "race": "MN-05 House race",
+        "receivedAt": "2026-10-14T19:51:43.277Z",
+        "legs": [
+          {
+            "marketId": "338",
+            "exchangeId": "1027"
+          },
+          {
+            "marketId": "339",
+            "exchangeId": "1028"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T19:51:40.857163900Z",
+          "2026-10-14T19:51:40.857163900Z"
+        ],
+        "sequences": [
+          160008799,
+          160008799
+        ],
+        "noPurchaseLimits": [
+          "0.080000",
+          "0.875000"
+        ],
+        "packageCost": "0.955000",
+        "immediateOnePackageLiquidation": "0.945000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.045000",
+        "maximumDisplayedPackages": 526,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "last": {
+        "race": "MN-05 House race",
+        "receivedAt": "2026-10-14T20:00:45.376Z",
+        "legs": [
+          {
+            "marketId": "338",
+            "exchangeId": "1027"
+          },
+          {
+            "marketId": "339",
+            "exchangeId": "1028"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T20:00:44.203872800Z",
+          "2026-10-14T20:00:45.203953800Z"
+        ],
+        "sequences": [
+          160069109,
+          160069184
+        ],
+        "noPurchaseLimits": [
+          "0.085000",
+          "0.875000"
+        ],
+        "packageCost": "0.960000",
+        "immediateOnePackageLiquidation": "0.945000",
+        "immediateRoundTripPnl": "-0.015000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.040000",
+        "maximumDisplayedPackages": 600,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "largestConditionalSurplus": {
+        "race": "MN-05 House race",
+        "receivedAt": "2026-10-14T19:54:45.015Z",
+        "legs": [
+          {
+            "marketId": "338",
+            "exchangeId": "1027"
+          },
+          {
+            "marketId": "339",
+            "exchangeId": "1028"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T19:54:43.784457300Z",
+          "2026-10-14T19:54:44.767625200Z"
+        ],
+        "sequences": [
+          160032769,
+          160032880
+        ],
+        "noPurchaseLimits": [
+          "0.080000",
+          "0.875000"
+        ],
+        "packageCost": "0.955000",
+        "immediateOnePackageLiquidation": "0.945000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.045000",
+        "maximumDisplayedPackages": 106,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      }
+    },
+    {
+      "race": "Oregon Governor",
+      "observations": 13,
+      "first": {
+        "race": "Oregon Governor",
+        "receivedAt": "2026-10-14T19:51:43.763Z",
+        "legs": [
+          {
+            "marketId": "187",
+            "exchangeId": "876"
+          },
+          {
+            "marketId": "188",
+            "exchangeId": "877"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T19:51:43.223663200Z",
+          "2026-10-14T19:51:43.223663200Z"
+        ],
+        "sequences": [
+          160009152,
+          160009152
+        ],
+        "noPurchaseLimits": [
+          "0.265000",
+          "0.730000"
+        ],
+        "packageCost": "0.995000",
+        "immediateOnePackageLiquidation": "0.985000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.005000",
+        "maximumDisplayedPackages": 1069,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "last": {
+        "race": "Oregon Governor",
+        "receivedAt": "2026-10-14T20:00:44.808Z",
+        "legs": [
+          {
+            "marketId": "187",
+            "exchangeId": "876"
+          },
+          {
+            "marketId": "188",
+            "exchangeId": "877"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T20:00:44.203872800Z",
+          "2026-10-14T20:00:44.203872800Z"
+        ],
+        "sequences": [
+          160069109,
+          160069109
+        ],
+        "noPurchaseLimits": [
+          "0.265000",
+          "0.730000"
+        ],
+        "packageCost": "0.995000",
+        "immediateOnePackageLiquidation": "0.985000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.005000",
+        "maximumDisplayedPackages": 1069,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "largestConditionalSurplus": {
+        "race": "Oregon Governor",
+        "receivedAt": "2026-10-14T20:00:44.808Z",
+        "legs": [
+          {
+            "marketId": "187",
+            "exchangeId": "876"
+          },
+          {
+            "marketId": "188",
+            "exchangeId": "877"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T20:00:44.203872800Z",
+          "2026-10-14T20:00:44.203872800Z"
+        ],
+        "sequences": [
+          160069109,
+          160069109
+        ],
+        "noPurchaseLimits": [
+          "0.265000",
+          "0.730000"
+        ],
+        "packageCost": "0.995000",
+        "immediateOnePackageLiquidation": "0.985000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.005000",
+        "maximumDisplayedPackages": 1069,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      }
+    },
+    {
+      "race": "TX-23 House race",
+      "observations": 12,
+      "first": {
+        "race": "TX-23 House race",
+        "receivedAt": "2026-10-14T19:51:52.805Z",
+        "legs": [
+          {
+            "marketId": "245",
+            "exchangeId": "934"
+          },
+          {
+            "marketId": "246",
+            "exchangeId": "935"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T19:51:51.226174900Z",
+          "2026-10-14T19:51:52.225655200Z"
+        ],
+        "sequences": [
+          160010172,
+          160010270
+        ],
+        "noPurchaseLimits": [
+          "0.640000",
+          "0.350000"
+        ],
+        "packageCost": "0.990000",
+        "immediateOnePackageLiquidation": "0.980000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.010000",
+        "maximumDisplayedPackages": 2354,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "last": {
+        "race": "TX-23 House race",
+        "receivedAt": "2026-10-14T20:00:34.189Z",
+        "legs": [
+          {
+            "marketId": "245",
+            "exchangeId": "934"
+          },
+          {
+            "marketId": "246",
+            "exchangeId": "935"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T20:00:32.036687800Z",
+          "2026-10-14T20:00:32.036687800Z"
+        ],
+        "sequences": [
+          160067662,
+          160067662
+        ],
+        "noPurchaseLimits": [
+          "0.640000",
+          "0.350000"
+        ],
+        "packageCost": "0.990000",
+        "immediateOnePackageLiquidation": "0.980000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.010000",
+        "maximumDisplayedPackages": 2354,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "largestConditionalSurplus": {
+        "race": "TX-23 House race",
+        "receivedAt": "2026-10-14T20:00:34.189Z",
+        "legs": [
+          {
+            "marketId": "245",
+            "exchangeId": "934"
+          },
+          {
+            "marketId": "246",
+            "exchangeId": "935"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T20:00:32.036687800Z",
+          "2026-10-14T20:00:32.036687800Z"
+        ],
+        "sequences": [
+          160067662,
+          160067662
+        ],
+        "noPurchaseLimits": [
+          "0.640000",
+          "0.350000"
+        ],
+        "packageCost": "0.990000",
+        "immediateOnePackageLiquidation": "0.980000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.010000",
+        "maximumDisplayedPackages": 2354,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      }
+    },
+    {
+      "race": "CO-03 House race",
+      "observations": 21,
+      "first": {
+        "race": "CO-03 House race",
+        "receivedAt": "2026-10-14T19:51:54.556Z",
+        "legs": [
+          {
+            "marketId": "205",
+            "exchangeId": "894"
+          },
+          {
+            "marketId": "206",
+            "exchangeId": "895"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T19:51:53.228071900Z",
+          "2026-10-14T19:51:54.225344600Z"
+        ],
+        "sequences": [
+          160010353,
+          160010493
+        ],
+        "noPurchaseLimits": [
+          "0.675000",
+          "0.320000"
+        ],
+        "packageCost": "0.995000",
+        "immediateOnePackageLiquidation": "0.985000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.005000",
+        "maximumDisplayedPackages": 1,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "last": {
+        "race": "CO-03 House race",
+        "receivedAt": "2026-10-14T20:00:41.547Z",
+        "legs": [
+          {
+            "marketId": "205",
+            "exchangeId": "894"
+          },
+          {
+            "marketId": "206",
+            "exchangeId": "895"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T20:00:41.200289100Z",
+          "2026-10-14T20:00:41.200289100Z"
+        ],
+        "sequences": [
+          160068692,
+          160068692
+        ],
+        "noPurchaseLimits": [
+          "0.675000",
+          "0.320000"
+        ],
+        "packageCost": "0.995000",
+        "immediateOnePackageLiquidation": "0.985000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.005000",
+        "maximumDisplayedPackages": 1,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "largestConditionalSurplus": {
+        "race": "CO-03 House race",
+        "receivedAt": "2026-10-14T20:00:41.547Z",
+        "legs": [
+          {
+            "marketId": "205",
+            "exchangeId": "894"
+          },
+          {
+            "marketId": "206",
+            "exchangeId": "895"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T20:00:41.200289100Z",
+          "2026-10-14T20:00:41.200289100Z"
+        ],
+        "sequences": [
+          160068692,
+          160068692
+        ],
+        "noPurchaseLimits": [
+          "0.675000",
+          "0.320000"
+        ],
+        "packageCost": "0.995000",
+        "immediateOnePackageLiquidation": "0.985000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.005000",
+        "maximumDisplayedPackages": 1,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      }
+    },
+    {
+      "race": "FL-07 House race",
+      "observations": 23,
+      "first": {
+        "race": "FL-07 House race",
+        "receivedAt": "2026-10-14T19:51:57.328Z",
+        "legs": [
+          {
+            "marketId": "320",
+            "exchangeId": "1009"
+          },
+          {
+            "marketId": "321",
+            "exchangeId": "1010"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T19:51:56.572188900Z",
+          "2026-10-14T19:51:56.572188900Z"
+        ],
+        "sequences": [
+          160010931,
+          160010931
+        ],
+        "noPurchaseLimits": [
+          "0.630000",
+          "0.360000"
+        ],
+        "packageCost": "0.990000",
+        "immediateOnePackageLiquidation": "0.980000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.010000",
+        "maximumDisplayedPackages": 6790,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "last": {
+        "race": "FL-07 House race",
+        "receivedAt": "2026-10-14T20:00:44.808Z",
+        "legs": [
+          {
+            "marketId": "320",
+            "exchangeId": "1009"
+          },
+          {
+            "marketId": "321",
+            "exchangeId": "1010"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T20:00:44.203872800Z",
+          "2026-10-14T20:00:44.203872800Z"
+        ],
+        "sequences": [
+          160069109,
+          160069109
+        ],
+        "noPurchaseLimits": [
+          "0.630000",
+          "0.360000"
+        ],
+        "packageCost": "0.990000",
+        "immediateOnePackageLiquidation": "0.980000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.010000",
+        "maximumDisplayedPackages": 6790,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "largestConditionalSurplus": {
+        "race": "FL-07 House race",
+        "receivedAt": "2026-10-14T20:00:44.808Z",
+        "legs": [
+          {
+            "marketId": "320",
+            "exchangeId": "1009"
+          },
+          {
+            "marketId": "321",
+            "exchangeId": "1010"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T20:00:44.203872800Z",
+          "2026-10-14T20:00:44.203872800Z"
+        ],
+        "sequences": [
+          160069109,
+          160069109
+        ],
+        "noPurchaseLimits": [
+          "0.630000",
+          "0.360000"
+        ],
+        "packageCost": "0.990000",
+        "immediateOnePackageLiquidation": "0.980000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.010000",
+        "maximumDisplayedPackages": 6790,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      }
+    },
+    {
+      "race": "Florida Governor",
+      "observations": 24,
+      "first": {
+        "race": "Florida Governor",
+        "receivedAt": "2026-10-14T19:52:13.102Z",
+        "legs": [
+          {
+            "marketId": "299",
+            "exchangeId": "988"
+          },
+          {
+            "marketId": "300",
+            "exchangeId": "989"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T19:52:11.545274000Z",
+          "2026-10-14T19:52:12.543987700Z"
+        ],
+        "sequences": [
+          160012841,
+          160012993
+        ],
+        "noPurchaseLimits": [
+          "0.755000",
+          "0.240000"
+        ],
+        "packageCost": "0.995000",
+        "immediateOnePackageLiquidation": "0.985000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.005000",
+        "maximumDisplayedPackages": 700,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "last": {
+        "race": "Florida Governor",
+        "receivedAt": "2026-10-14T20:00:45.376Z",
+        "legs": [
+          {
+            "marketId": "299",
+            "exchangeId": "988"
+          },
+          {
+            "marketId": "300",
+            "exchangeId": "989"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T20:00:45.203953800Z",
+          "2026-10-14T20:00:44.203872800Z"
+        ],
+        "sequences": [
+          160069184,
+          160069109
+        ],
+        "noPurchaseLimits": [
+          "0.755000",
+          "0.240000"
+        ],
+        "packageCost": "0.995000",
+        "immediateOnePackageLiquidation": "0.985000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.005000",
+        "maximumDisplayedPackages": 700,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "largestConditionalSurplus": {
+        "race": "Florida Governor",
+        "receivedAt": "2026-10-14T20:00:45.376Z",
+        "legs": [
+          {
+            "marketId": "299",
+            "exchangeId": "988"
+          },
+          {
+            "marketId": "300",
+            "exchangeId": "989"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T20:00:45.203953800Z",
+          "2026-10-14T20:00:44.203872800Z"
+        ],
+        "sequences": [
+          160069184,
+          160069109
+        ],
+        "noPurchaseLimits": [
+          "0.755000",
+          "0.240000"
+        ],
+        "packageCost": "0.995000",
+        "immediateOnePackageLiquidation": "0.985000",
+        "immediateRoundTripPnl": "-0.010000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.005000",
+        "maximumDisplayedPackages": 700,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      }
+    },
+    {
+      "race": "Tennessee Senate",
+      "observations": 23,
+      "first": {
+        "race": "Tennessee Senate",
+        "receivedAt": "2026-10-14T19:52:50.677Z",
+        "legs": [
+          {
+            "marketId": "362",
+            "exchangeId": "1051"
+          },
+          {
+            "marketId": "363",
+            "exchangeId": "1052"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T19:52:48.997451000Z",
+          "2026-10-14T19:52:48.997451000Z"
+        ],
+        "sequences": [
+          160017882,
+          160017882
+        ],
+        "noPurchaseLimits": [
+          "0.855000",
+          "0.140000"
+        ],
+        "packageCost": "0.995000",
+        "immediateOnePackageLiquidation": "0.980000",
+        "immediateRoundTripPnl": "-0.015000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.005000",
+        "maximumDisplayedPackages": 1021,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "last": {
+        "race": "Tennessee Senate",
+        "receivedAt": "2026-10-14T20:00:34.189Z",
+        "legs": [
+          {
+            "marketId": "362",
+            "exchangeId": "1051"
+          },
+          {
+            "marketId": "363",
+            "exchangeId": "1052"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T20:00:32.036687800Z",
+          "2026-10-14T20:00:32.036687800Z"
+        ],
+        "sequences": [
+          160067662,
+          160067662
+        ],
+        "noPurchaseLimits": [
+          "0.855000",
+          "0.140000"
+        ],
+        "packageCost": "0.995000",
+        "immediateOnePackageLiquidation": "0.980000",
+        "immediateRoundTripPnl": "-0.015000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.005000",
+        "maximumDisplayedPackages": 465,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "largestConditionalSurplus": {
+        "race": "Tennessee Senate",
+        "receivedAt": "2026-10-14T20:00:34.189Z",
+        "legs": [
+          {
+            "marketId": "362",
+            "exchangeId": "1051"
+          },
+          {
+            "marketId": "363",
+            "exchangeId": "1052"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T20:00:32.036687800Z",
+          "2026-10-14T20:00:32.036687800Z"
+        ],
+        "sequences": [
+          160067662,
+          160067662
+        ],
+        "noPurchaseLimits": [
+          "0.855000",
+          "0.140000"
+        ],
+        "packageCost": "0.995000",
+        "immediateOnePackageLiquidation": "0.980000",
+        "immediateRoundTripPnl": "-0.015000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.005000",
+        "maximumDisplayedPackages": 465,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      }
+    },
+    {
+      "race": "Colorado Senate",
+      "observations": 10,
+      "first": {
+        "race": "Colorado Senate",
+        "receivedAt": "2026-10-14T19:53:28.621Z",
+        "legs": [
+          {
+            "marketId": "256",
+            "exchangeId": "945"
+          },
+          {
+            "marketId": "257",
+            "exchangeId": "946"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T19:53:27.666202700Z",
+          "2026-10-14T19:53:26.669204100Z"
+        ],
+        "sequences": [
+          160023091,
+          160022970
+        ],
+        "noPurchaseLimits": [
+          "0.085000",
+          "0.900000"
+        ],
+        "packageCost": "0.985000",
+        "immediateOnePackageLiquidation": "0.965000",
+        "immediateRoundTripPnl": "-0.020000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.015000",
+        "maximumDisplayedPackages": 205,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "last": {
+        "race": "Colorado Senate",
+        "receivedAt": "2026-10-14T20:00:46.428Z",
+        "legs": [
+          {
+            "marketId": "256",
+            "exchangeId": "945"
+          },
+          {
+            "marketId": "257",
+            "exchangeId": "946"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T20:00:46.203255100Z",
+          "2026-10-14T20:00:46.203255100Z"
+        ],
+        "sequences": [
+          160069242,
+          160069242
+        ],
+        "noPurchaseLimits": [
+          "0.085000",
+          "0.900000"
+        ],
+        "packageCost": "0.985000",
+        "immediateOnePackageLiquidation": "0.965000",
+        "immediateRoundTripPnl": "-0.020000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.015000",
+        "maximumDisplayedPackages": 205,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      },
+      "largestConditionalSurplus": {
+        "race": "Colorado Senate",
+        "receivedAt": "2026-10-14T20:00:46.428Z",
+        "legs": [
+          {
+            "marketId": "256",
+            "exchangeId": "945"
+          },
+          {
+            "marketId": "257",
+            "exchangeId": "946"
+          }
+        ],
+        "sourceTimes": [
+          "2026-10-14T20:00:46.203255100Z",
+          "2026-10-14T20:00:46.203255100Z"
+        ],
+        "sequences": [
+          160069242,
+          160069242
+        ],
+        "noPurchaseLimits": [
+          "0.085000",
+          "0.900000"
+        ],
+        "packageCost": "0.985000",
+        "immediateOnePackageLiquidation": "0.965000",
+        "immediateRoundTripPnl": "-0.020000",
+        "ordinaryMinimumPayoutAssumption": "1.000000",
+        "conditionalSurplus": "0.015000",
+        "maximumDisplayedPackages": 205,
+        "settlementRulesVerified": false,
+        "atomicExecution": false
+      }
+    }
+  ],
+  "contestOrders": 0,
+  "profitabilityEstablished": false,
+  "limitations": [
+    "Exact title matching is a discovery heuristic, not verified mutually exclusive settlement rules.",
+    "Two separate NO contracts pay at least one only under the ordinary mutually exclusive party-winner assumption; fusion, inconsistent resolution and refunds require explicit scenarios.",
+    "Packages are two non-atomic orders; displayed depth does not guarantee both fills or persistent availability.",
+    "These are conditional settlement surpluses, not immediate engine netting or market-making cash profits.",
+    "No catalog refresh or additional account request was made."
+  ]
+}

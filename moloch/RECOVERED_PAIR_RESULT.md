@@ -1,0 +1,9 @@
+# Recovered paired quote result — October 14
+
+The queue-duration wallet's restored source-38 tape produced 15 modeled fills: 24 YES shares at 0.405 and 14 NO shares at 0.590 on exchange 922. Opposite BUY FIFO netted fourteen pairs at total unit cost 0.995 and credited 14.000, realizing +0.070 SUSQies. Ten YES shares remain at cost 4.050. Cash is 99,996.020. At the checked fresh book, estimated whole-bank liquidation P&L is +0.020; that mark is not a completed sale.
+
+All fills were processed during recovery around 19:08Z, but their original execution clocks span 12:06:47.378–12:11:22.161Z. They belong to already registered quotes and occurred while the collector was offline. Twenty-two of the 38 acquired shares rely on 50% conditional at-touch attribution after modeled queue exhaustion; sixteen use strict trade-through. No real account order or fill occurred. The realized gain does not establish a live trading edge, scalable profit, actual queue priority or competition readiness. The unfilled strict control still has zero realized P&L.
+
+This recovery benefited from both original quotes remaining represented in the interrupted paper ledger. A continuously running policy might have cancelled the opposite quote after the first fill. The completed episode-37 retention comparison has no fills in any of its five scenarios, so it cannot distinguish retention performance. A fresh forward comparison is still required before promoting that choice.
+
+Original source clocks, quotes, funding, fees and all prior wallets/loss history remain intact. The execution-clock audit is `data/moloch-recovered-fill-clocks-20261014.json`. Inventory age currently follows acquisition receipt time in the existing policy; the six-hour delay makes that limit material and must be accounted for when assessing the remaining exposure. No execution activation was renewed.

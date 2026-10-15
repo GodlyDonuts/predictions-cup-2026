@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 1,
+  "observedAt": "2026-10-14T19:51:42.984Z",
+  "phase": "fresh_forward_40",
+  "sourceStatus": "running",
+  "officialReceipts": 3,
+  "streamConnectionVerified": true,
+  "wallets": [
+    {
+      "name": "competition-scale-20261014-10",
+      "snapshotHash": "44fb2b71a7d71435a7a32b4ee5e10225e5852e55bf206ccaf1ea14bbfe6dc9b7",
+      "at": "2026-10-14T19:51:42.868Z",
+      "cash": "100000.000000",
+      "realized": "0.000000",
+      "ownedCost": "0.000000",
+      "unresolved": 2,
+      "fills": 3,
+      "entriesEnabled": true,
+      "inventoryAgeClock": "execution",
+      "continuation": {
+        "parentDirectory": "C:\\Users\\csram\\.codex\\worktrees\\viserion-capital-stress\\predictions-cup-2026\\runtime\\moloch\\competition-scale-20261014-9",
+        "parentSnapshotHash": "40a525e56acb58395376b5dfe6b4dcb306a99cc620a7cb23b09c2af8d948aa10",
+        "newPaperCapital": "0.000000",
+        "flatEntryTransition": {
+          "priorPolicyHash": "d6d298c6f135558059647243a95f113e00e46fb0fafb3111be8ac24ae84ff927",
+          "nextPolicyHash": "e67c9e5d323eb2bc3d741e92373d6a4141f4b2cf66f159ce9d887e15846cfa69",
+          "entriesEnabled": true,
+          "inventoryAgeClock": "execution"
+        }
+      }
+    },
+    {
+      "name": "queue-duration-20261014-6",
+      "snapshotHash": "579ca0e63955aef48d606b993244b4ac951c97cd4512866beec00f95982f7985",
+      "at": "2026-10-14T19:51:42.868Z",
+      "cash": "100000.060000",
+      "realized": "0.060000",
+      "ownedCost": "0.000000",
+      "unresolved": 2,
+      "fills": 18,
+      "entriesEnabled": true,
+      "inventoryAgeClock": "execution",
+      "continuation": {
+        "parentDirectory": "C:\\Users\\csram\\.codex\\worktrees\\viserion-capital-stress\\predictions-cup-2026\\runtime\\moloch\\queue-duration-20261014-5",
+        "parentSnapshotHash": "fe67d19b843f22726118bbcace9e88189b090fc35d1749af123a67ff0f3f1b02",
+        "newPaperCapital": "0.000000",
+        "flatEntryTransition": {
+          "priorPolicyHash": "59409d7180216558d212db5299e13293b95521dc6a14bf9eb3910e38206308ea",
+          "nextPolicyHash": "7099af9ec6f0227a53b3a8ccf5173442629aeec252982f4596a3c94ce2228fce",
+          "entriesEnabled": true,
+          "inventoryAgeClock": "execution"
+        }
+      }
+    }
+  ],
+  "contestOrders": 0,
+  "profitabilityEstablished": false,
+  "limitations": [
+    "Prior queue gain 0.060 is inherited and excluded from new forward performance.",
+    "Conditional queue attribution is modeled, not an actual venue fill."
+  ]
+}

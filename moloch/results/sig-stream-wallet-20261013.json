@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "bot": "Moloch",
+  "observedThrough": "2026-10-13T22:47:16.966Z",
+  "tests": {
+    "nodePassed": 43
+  },
+  "probe7": {
+    "status": "completed",
+    "pushedPaperBooks": 81,
+    "successfulRESTReceipts": 26,
+    "fills": 0,
+    "historicalReservationIssue": "Recovery tape preceded its later book barrier; fixed in subsequent source."
+  },
+  "probe8": {
+    "status": "failed",
+    "captureExit": 0,
+    "knownStop": "REST milliseconds and stream sub-milliseconds represented the same documented engine trade ID differently; duplicate guard stopped, zero duplicate fills.",
+    "streamTrades": 4,
+    "observedTradeLatencyMs": 2195
+  },
+  "probe9": {
+    "status": "completed",
+    "captureExit": 0,
+    "newPaperCapital": "0.000000",
+    "cash": "1000.000000",
+    "realized": "0.000000",
+    "ownedCost": "0.000000",
+    "reservedCash": "9.950000",
+    "fills": 0,
+    "orders": 77,
+    "successfulRESTReceipts": 12,
+    "authenticationWrites": 1,
+    "streamMetrics": {
+      "rows": 40,
+      "pushedBooks": 11,
+      "olderBooks": 0,
+      "initialResyncs": 2,
+      "gaps": 0,
+      "duplicates": 0,
+      "unblocks": 2,
+      "precisionReconciliations": 12
+    },
+    "allPredecessorOrdersRetired": true,
+    "financialChainVerified": true,
+    "sourceBytesVerified": true,
+    "parentFinancialHash": "9f914e4dc905fca05158ebb864c1024ccf19cb0652936b0a7a45d68e34964030",
+    "terminalSnapshotHash": "a67a0f2e147babeba056367e68255dd9653394fb090e2a9884dfed2119046597",
+    "financialStreamIntegration": true
+  },
+  "capturedDuplicateReplay": {
+    "verifiedDuplicateObservations": 11,
+    "precisionReconciliations": 4,
+    "cashRealizedFillAndSeenHashesUnchanged": true
+  },
+  "contestOrders": 0,
+  "profitabilityEstablished": false,
+  "nextAction": "Observe broader tournament activity and select markets from fresh streaming flow; these two markets remained mostly quiet, and connectivity alone created no profit."
+}

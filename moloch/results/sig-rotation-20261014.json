@@ -1,0 +1,219 @@
+{
+  "bot": "Moloch",
+  "observedThrough": "2026-10-14T03:34:26.055Z",
+  "discovery": {
+    "observedTrades": 61,
+    "gaps": 176,
+    "eventCount": 8230,
+    "sourceSha256": "31b73e969b296b6b5d44ece721c92aa821a35d932beff359cd69ec7133ebafb4",
+    "sourceFinalHash": "48e63c300a4a3c701d653e3ef5e7d1cc0104676a6591e8a6fb594f3f2ac56cc9"
+  },
+  "reconciledCandidates": [
+    {
+      "marketId": "278",
+      "exchangeId": "967",
+      "eligible": true,
+      "trades": 15,
+      "volume": 12882,
+      "spreadTicks": 2,
+      "bid": "0.145000",
+      "ask": "0.155000",
+      "bidQueue": 18930,
+      "askQueue": 69,
+      "queueTurnover": 186.69565217391303,
+      "bidThroughVolume": 0,
+      "askThroughVolume": 1329,
+      "completeTapeWindow": true,
+      "windowFrom": "2026-10-14T03:12:05.394Z",
+      "windowTo": "2026-10-14T03:27:05.394Z",
+      "bookReceivedAt": "2026-10-14T03:26:53.354Z",
+      "tapeReceivedAt": "2026-10-14T03:27:05.782Z",
+      "explorationScore": 29.028015658254276
+    },
+    {
+      "marketId": "294",
+      "exchangeId": "983",
+      "eligible": true,
+      "trades": 16,
+      "volume": 2329,
+      "spreadTicks": 1,
+      "bid": "0.385000",
+      "ask": "0.390000",
+      "bidQueue": 19979,
+      "askQueue": 1,
+      "queueTurnover": 2329,
+      "bidThroughVolume": 0,
+      "askThroughVolume": 123,
+      "completeTapeWindow": true,
+      "windowFrom": "2026-10-14T03:13:19.976Z",
+      "windowTo": "2026-10-14T03:28:19.976Z",
+      "bookReceivedAt": "2026-10-14T03:28:07.971Z",
+      "tapeReceivedAt": "2026-10-14T03:28:20.357Z",
+      "explorationScore": 21.967669696901556
+    },
+    {
+      "marketId": "180",
+      "exchangeId": "869",
+      "eligible": true,
+      "trades": 12,
+      "volume": 3073,
+      "spreadTicks": 2,
+      "bid": "0.880000",
+      "ask": "0.890000",
+      "bidQueue": 28145,
+      "askQueue": 2239,
+      "queueTurnover": 1.3724877177311299,
+      "bidThroughVolume": 0,
+      "askThroughVolume": 0,
+      "completeTapeWindow": true,
+      "windowFrom": "2026-10-14T03:12:30.276Z",
+      "windowTo": "2026-10-14T03:27:30.276Z",
+      "bookReceivedAt": "2026-10-14T03:27:18.261Z",
+      "tapeReceivedAt": "2026-10-14T03:27:30.679Z",
+      "explorationScore": 4.431919948344425
+    },
+    {
+      "marketId": "154",
+      "exchangeId": "843",
+      "eligible": true,
+      "trades": 88,
+      "volume": 88,
+      "spreadTicks": 1,
+      "bid": "0.445000",
+      "ask": "0.450000",
+      "bidQueue": 23218,
+      "askQueue": 3015,
+      "queueTurnover": 0.029187396351575457,
+      "bidThroughVolume": 0,
+      "askThroughVolume": 0,
+      "completeTapeWindow": true,
+      "windowFrom": "2026-10-14T03:12:55.138Z",
+      "windowTo": "2026-10-14T03:27:55.138Z",
+      "bookReceivedAt": "2026-10-14T03:27:43.126Z",
+      "tapeReceivedAt": "2026-10-14T03:27:55.532Z",
+      "explorationScore": 0.12913607220267143
+    }
+  ],
+  "rotation": {
+    "status": "completed",
+    "captureExit": 0,
+    "newPaperCapital": "0.000000",
+    "retiredScopes": [
+      {
+        "marketId": "322",
+        "exchangeId": "1011"
+      },
+      {
+        "marketId": "320",
+        "exchangeId": "1009"
+      },
+      {
+        "marketId": "279",
+        "exchangeId": "968"
+      },
+      {
+        "marketId": "335",
+        "exchangeId": "1024"
+      }
+    ],
+    "scopes": [
+      {
+        "marketId": "278",
+        "exchangeId": "967"
+      },
+      {
+        "marketId": "294",
+        "exchangeId": "983"
+      },
+      {
+        "marketId": "180",
+        "exchangeId": "869"
+      },
+      {
+        "marketId": "154",
+        "exchangeId": "843"
+      }
+    ],
+    "cash": "1000.000000",
+    "realized": "0.000000",
+    "ownedCost": "0.000000",
+    "reservedCash": "34.825000",
+    "unresolvedOrders": 14,
+    "fills": 0,
+    "streamMetrics": {
+      "rows": 216,
+      "pushedBooks": 124,
+      "olderBooks": 0,
+      "initialResyncs": 4,
+      "gaps": 0,
+      "duplicates": 0,
+      "unblocks": 4,
+      "precisionReconciliations": 9
+    },
+    "successfulRESTReads": 16,
+    "authenticationWrites": 1
+  },
+  "queueScenarios": [
+    {
+      "fillModel": "strictThrough",
+      "touchAttributionBps": 0,
+      "fills": [],
+      "realized": "0.000000",
+      "cash": "1000.000000",
+      "owned": "0.000000",
+      "lastFresh": {
+        "at": "2026-10-14T03:34:26.055Z",
+        "pnl": "0.000000"
+      },
+      "worst": {
+        "at": "2026-10-14T03:30:51.571Z",
+        "pnl": "0.000000"
+      },
+      "touches": 0
+    },
+    {
+      "fillModel": "conditionalFifo",
+      "touchAttributionBps": 5000,
+      "fills": [],
+      "realized": "0.000000",
+      "cash": "1000.000000",
+      "owned": "0.000000",
+      "lastFresh": {
+        "at": "2026-10-14T03:34:26.055Z",
+        "pnl": "0.000000"
+      },
+      "worst": {
+        "at": "2026-10-14T03:30:51.571Z",
+        "pnl": "0.000000"
+      },
+      "touches": 7
+    },
+    {
+      "fillModel": "conditionalFifo",
+      "touchAttributionBps": 10000,
+      "fills": [],
+      "realized": "0.000000",
+      "cash": "1000.000000",
+      "owned": "0.000000",
+      "lastFresh": {
+        "at": "2026-10-14T03:34:26.055Z",
+        "pnl": "0.000000"
+      },
+      "worst": {
+        "at": "2026-10-14T03:30:51.571Z",
+        "pnl": "0.000000"
+      },
+      "touches": 7
+    }
+  ],
+  "tests": {
+    "nodePassed": 57
+  },
+  "contestOrders": 0,
+  "profitabilityEstablished": false,
+  "limitations": [
+    "Historical gap warnings remained in discovery; scoped complete REST tape and current books preceded quoting.",
+    "Price-compatible volume relative to a prior observable book is not verified aggressor direction.",
+    "Strict and conditional FIFO replays all produced zero fills in this episode; no profitable strategy or deployment signal is established."
+  ]
+}

@@ -1,0 +1,696 @@
+{
+  "schemaVersion": 1,
+  "window": {
+    "from": "2026-10-14T19:51:04.837Z",
+    "to": "2026-10-14T19:53:06.053Z"
+  },
+  "sourceSha256": "77d3f51c16fdf68b63918c9a4425e665ff20e39621bd2f028c0d0f1184bc72b9",
+  "sourceEventCount": 3600,
+  "sourceFinalHash": "741a24f448c9e867ea003c85a6d107b35f3f78288362b16a38e683598b43f52d",
+  "observedMarkets": 237,
+  "markets": [
+    {
+      "marketId": "342",
+      "exchangeId": "1031",
+      "recentVolume": 416206,
+      "bidCompatibleVolume": 132,
+      "askCompatibleVolume": 1781,
+      "bothSideQueueTurnover": 0.0055996266915538965,
+      "spreadTicks": 1,
+      "sides": [
+        {
+          "side": "YES",
+          "observations": 55,
+          "quantity": 391294,
+          "mean": -0.01927272727272728,
+          "volumeWeightedMean": -0.019802092544225058,
+          "distinctThirtySecondBuckets": 2
+        },
+        {
+          "side": "NO",
+          "observations": 5,
+          "quantity": 10255,
+          "mean": 0.007000000000000001,
+          "volumeWeightedMean": 0.0059751340809361285,
+          "distinctThirtySecondBuckets": 2
+        }
+      ]
+    },
+    {
+      "marketId": "359",
+      "exchangeId": "1048",
+      "recentVolume": 6796,
+      "bidCompatibleVolume": 0,
+      "askCompatibleVolume": 0,
+      "bothSideQueueTurnover": 0,
+      "spreadTicks": 1,
+      "sides": [
+        {
+          "side": "YES",
+          "observations": 3,
+          "quantity": 2198,
+          "mean": -0.005,
+          "volumeWeightedMean": -0.004999999999999999,
+          "distinctThirtySecondBuckets": 1
+        },
+        {
+          "side": "NO",
+          "observations": 1,
+          "quantity": 2082,
+          "mean": 0,
+          "volumeWeightedMean": 0,
+          "distinctThirtySecondBuckets": 1
+        }
+      ]
+    },
+    {
+      "marketId": "356",
+      "exchangeId": "1045",
+      "recentVolume": 6218,
+      "bidCompatibleVolume": 3653,
+      "askCompatibleVolume": 0,
+      "bothSideQueueTurnover": 0,
+      "spreadTicks": 1,
+      "sides": [
+        {
+          "side": "YES",
+          "observations": 3,
+          "quantity": 64,
+          "mean": 0,
+          "volumeWeightedMean": 0,
+          "distinctThirtySecondBuckets": 1
+        },
+        {
+          "side": "NO",
+          "observations": 2,
+          "quantity": 2505,
+          "mean": 0,
+          "volumeWeightedMean": 0,
+          "distinctThirtySecondBuckets": 1
+        }
+      ]
+    },
+    {
+      "marketId": "249",
+      "exchangeId": "938",
+      "recentVolume": 4866,
+      "bidCompatibleVolume": 0,
+      "askCompatibleVolume": 1173,
+      "bothSideQueueTurnover": 0,
+      "spreadTicks": 2,
+      "sides": [
+        {
+          "side": "YES",
+          "observations": 2,
+          "quantity": 265,
+          "mean": 0,
+          "volumeWeightedMean": -0.000018867924528301905,
+          "distinctThirtySecondBuckets": 1
+        },
+        {
+          "side": "NO",
+          "observations": 8,
+          "quantity": 1138,
+          "mean": -0.0025,
+          "volumeWeightedMean": -0.0025746924428822495,
+          "distinctThirtySecondBuckets": 2
+        }
+      ]
+    },
+    {
+      "marketId": "382",
+      "exchangeId": "1071",
+      "recentVolume": 2063,
+      "bidCompatibleVolume": 0,
+      "askCompatibleVolume": 333,
+      "bothSideQueueTurnover": 0,
+      "spreadTicks": 1,
+      "sides": [
+        {
+          "side": "YES",
+          "observations": 0,
+          "quantity": 0,
+          "mean": null,
+          "volumeWeightedMean": null,
+          "distinctThirtySecondBuckets": 0
+        },
+        {
+          "side": "NO",
+          "observations": 0,
+          "quantity": 0,
+          "mean": null,
+          "volumeWeightedMean": null,
+          "distinctThirtySecondBuckets": 0
+        }
+      ]
+    },
+    {
+      "marketId": "354",
+      "exchangeId": "1043",
+      "recentVolume": 2037,
+      "bidCompatibleVolume": 0,
+      "askCompatibleVolume": 0,
+      "bothSideQueueTurnover": 0,
+      "spreadTicks": 1,
+      "sides": [
+        {
+          "side": "YES",
+          "observations": 1,
+          "quantity": 250,
+          "mean": -0.005,
+          "volumeWeightedMean": -0.005,
+          "distinctThirtySecondBuckets": 1
+        },
+        {
+          "side": "NO",
+          "observations": 0,
+          "quantity": 0,
+          "mean": null,
+          "volumeWeightedMean": null,
+          "distinctThirtySecondBuckets": 0
+        }
+      ]
+    },
+    {
+      "marketId": "160",
+      "exchangeId": "849",
+      "recentVolume": 1153,
+      "bidCompatibleVolume": 190,
+      "askCompatibleVolume": 0,
+      "bothSideQueueTurnover": 0,
+      "spreadTicks": 1,
+      "sides": [
+        {
+          "side": "YES",
+          "observations": 1,
+          "quantity": 190,
+          "mean": 0,
+          "volumeWeightedMean": 0,
+          "distinctThirtySecondBuckets": 1
+        },
+        {
+          "side": "NO",
+          "observations": 0,
+          "quantity": 0,
+          "mean": null,
+          "volumeWeightedMean": null,
+          "distinctThirtySecondBuckets": 0
+        }
+      ]
+    },
+    {
+      "marketId": "363",
+      "exchangeId": "1052",
+      "recentVolume": 935,
+      "bidCompatibleVolume": 0,
+      "askCompatibleVolume": 0,
+      "bothSideQueueTurnover": 0,
+      "spreadTicks": 1,
+      "sides": [
+        {
+          "side": "YES",
+          "observations": 0,
+          "quantity": 0,
+          "mean": null,
+          "volumeWeightedMean": null,
+          "distinctThirtySecondBuckets": 0
+        },
+        {
+          "side": "NO",
+          "observations": 1,
+          "quantity": 5,
+          "mean": -0.005,
+          "volumeWeightedMean": -0.005,
+          "distinctThirtySecondBuckets": 1
+        }
+      ]
+    },
+    {
+      "marketId": "355",
+      "exchangeId": "1044",
+      "recentVolume": 925,
+      "bidCompatibleVolume": 0,
+      "askCompatibleVolume": 0,
+      "bothSideQueueTurnover": 0,
+      "spreadTicks": 1,
+      "sides": [
+        {
+          "side": "YES",
+          "observations": 1,
+          "quantity": 43,
+          "mean": 0.005,
+          "volumeWeightedMean": 0.005,
+          "distinctThirtySecondBuckets": 1
+        },
+        {
+          "side": "NO",
+          "observations": 3,
+          "quantity": 882,
+          "mean": -0.005,
+          "volumeWeightedMean": -0.005,
+          "distinctThirtySecondBuckets": 1
+        }
+      ]
+    },
+    {
+      "marketId": "357",
+      "exchangeId": "1046",
+      "recentVolume": 862,
+      "bidCompatibleVolume": 0,
+      "askCompatibleVolume": 0,
+      "bothSideQueueTurnover": 0,
+      "spreadTicks": 1,
+      "sides": [
+        {
+          "side": "YES",
+          "observations": 0,
+          "quantity": 0,
+          "mean": null,
+          "volumeWeightedMean": null,
+          "distinctThirtySecondBuckets": 0
+        },
+        {
+          "side": "NO",
+          "observations": 0,
+          "quantity": 0,
+          "mean": null,
+          "volumeWeightedMean": null,
+          "distinctThirtySecondBuckets": 0
+        }
+      ]
+    },
+    {
+      "marketId": "346",
+      "exchangeId": "1035",
+      "recentVolume": 558,
+      "bidCompatibleVolume": 0,
+      "askCompatibleVolume": 0,
+      "bothSideQueueTurnover": 0,
+      "spreadTicks": 1,
+      "sides": [
+        {
+          "side": "YES",
+          "observations": 2,
+          "quantity": 558,
+          "mean": 0,
+          "volumeWeightedMean": 0,
+          "distinctThirtySecondBuckets": 1
+        },
+        {
+          "side": "NO",
+          "observations": 0,
+          "quantity": 0,
+          "mean": null,
+          "volumeWeightedMean": null,
+          "distinctThirtySecondBuckets": 0
+        }
+      ]
+    },
+    {
+      "marketId": "251",
+      "exchangeId": "940",
+      "recentVolume": 558,
+      "bidCompatibleVolume": 0,
+      "askCompatibleVolume": 0,
+      "bothSideQueueTurnover": 0,
+      "spreadTicks": 1,
+      "sides": [
+        {
+          "side": "YES",
+          "observations": 0,
+          "quantity": 0,
+          "mean": null,
+          "volumeWeightedMean": null,
+          "distinctThirtySecondBuckets": 0
+        },
+        {
+          "side": "NO",
+          "observations": 0,
+          "quantity": 0,
+          "mean": null,
+          "volumeWeightedMean": null,
+          "distinctThirtySecondBuckets": 0
+        }
+      ]
+    },
+    {
+      "marketId": "263",
+      "exchangeId": "952",
+      "recentVolume": 546,
+      "bidCompatibleVolume": 0,
+      "askCompatibleVolume": 0,
+      "bothSideQueueTurnover": 0,
+      "spreadTicks": 1,
+      "sides": [
+        {
+          "side": "YES",
+          "observations": 0,
+          "quantity": 0,
+          "mean": null,
+          "volumeWeightedMean": null,
+          "distinctThirtySecondBuckets": 0
+        },
+        {
+          "side": "NO",
+          "observations": 0,
+          "quantity": 0,
+          "mean": null,
+          "volumeWeightedMean": null,
+          "distinctThirtySecondBuckets": 0
+        }
+      ]
+    },
+    {
+      "marketId": "262",
+      "exchangeId": "951",
+      "recentVolume": 546,
+      "bidCompatibleVolume": 546,
+      "askCompatibleVolume": 0,
+      "bothSideQueueTurnover": 0,
+      "spreadTicks": 1,
+      "sides": [
+        {
+          "side": "YES",
+          "observations": 0,
+          "quantity": 0,
+          "mean": null,
+          "volumeWeightedMean": null,
+          "distinctThirtySecondBuckets": 0
+        },
+        {
+          "side": "NO",
+          "observations": 0,
+          "quantity": 0,
+          "mean": null,
+          "volumeWeightedMean": null,
+          "distinctThirtySecondBuckets": 0
+        }
+      ]
+    },
+    {
+      "marketId": "288",
+      "exchangeId": "977",
+      "recentVolume": 406,
+      "bidCompatibleVolume": 0,
+      "askCompatibleVolume": 272,
+      "bothSideQueueTurnover": 0,
+      "spreadTicks": 2,
+      "sides": [
+        {
+          "side": "YES",
+          "observations": 0,
+          "quantity": 0,
+          "mean": null,
+          "volumeWeightedMean": null,
+          "distinctThirtySecondBuckets": 0
+        },
+        {
+          "side": "NO",
+          "observations": 1,
+          "quantity": 160,
+          "mean": 0,
+          "volumeWeightedMean": 0,
+          "distinctThirtySecondBuckets": 1
+        }
+      ]
+    },
+    {
+      "marketId": "287",
+      "exchangeId": "976",
+      "recentVolume": 332,
+      "bidCompatibleVolume": 0,
+      "askCompatibleVolume": 0,
+      "bothSideQueueTurnover": 0,
+      "spreadTicks": 1,
+      "sides": [
+        {
+          "side": "YES",
+          "observations": 0,
+          "quantity": 0,
+          "mean": null,
+          "volumeWeightedMean": null,
+          "distinctThirtySecondBuckets": 0
+        },
+        {
+          "side": "NO",
+          "observations": 0,
+          "quantity": 0,
+          "mean": null,
+          "volumeWeightedMean": null,
+          "distinctThirtySecondBuckets": 0
+        }
+      ]
+    },
+    {
+      "marketId": "369",
+      "exchangeId": "1058",
+      "recentVolume": 331,
+      "bidCompatibleVolume": 0,
+      "askCompatibleVolume": 0,
+      "bothSideQueueTurnover": 0,
+      "spreadTicks": 1,
+      "sides": [
+        {
+          "side": "YES",
+          "observations": 0,
+          "quantity": 0,
+          "mean": null,
+          "volumeWeightedMean": null,
+          "distinctThirtySecondBuckets": 0
+        },
+        {
+          "side": "NO",
+          "observations": 0,
+          "quantity": 0,
+          "mean": null,
+          "volumeWeightedMean": null,
+          "distinctThirtySecondBuckets": 0
+        }
+      ]
+    },
+    {
+      "marketId": "368",
+      "exchangeId": "1057",
+      "recentVolume": 331,
+      "bidCompatibleVolume": 331,
+      "askCompatibleVolume": 0,
+      "bothSideQueueTurnover": 0,
+      "spreadTicks": 1,
+      "sides": [
+        {
+          "side": "YES",
+          "observations": 1,
+          "quantity": 331,
+          "mean": 0,
+          "volumeWeightedMean": 0,
+          "distinctThirtySecondBuckets": 1
+        },
+        {
+          "side": "NO",
+          "observations": 0,
+          "quantity": 0,
+          "mean": null,
+          "volumeWeightedMean": null,
+          "distinctThirtySecondBuckets": 0
+        }
+      ]
+    },
+    {
+      "marketId": "184",
+      "exchangeId": "873",
+      "recentVolume": 241,
+      "bidCompatibleVolume": 0,
+      "askCompatibleVolume": 201,
+      "bothSideQueueTurnover": 0,
+      "spreadTicks": 1,
+      "sides": [
+        {
+          "side": "YES",
+          "observations": 0,
+          "quantity": 0,
+          "mean": null,
+          "volumeWeightedMean": null,
+          "distinctThirtySecondBuckets": 0
+        },
+        {
+          "side": "NO",
+          "observations": 3,
+          "quantity": 201,
+          "mean": 0,
+          "volumeWeightedMean": 0,
+          "distinctThirtySecondBuckets": 1
+        }
+      ]
+    },
+    {
+      "marketId": "383",
+      "exchangeId": "1072",
+      "recentVolume": 227,
+      "bidCompatibleVolume": 0,
+      "askCompatibleVolume": 27,
+      "bothSideQueueTurnover": 0,
+      "spreadTicks": 2,
+      "sides": [
+        {
+          "side": "YES",
+          "observations": 0,
+          "quantity": 0,
+          "mean": null,
+          "volumeWeightedMean": null,
+          "distinctThirtySecondBuckets": 0
+        },
+        {
+          "side": "NO",
+          "observations": 1,
+          "quantity": 27,
+          "mean": 0,
+          "volumeWeightedMean": 0,
+          "distinctThirtySecondBuckets": 1
+        }
+      ]
+    },
+    {
+      "marketId": "365",
+      "exchangeId": "1054",
+      "recentVolume": 200,
+      "bidCompatibleVolume": 0,
+      "askCompatibleVolume": 0,
+      "bothSideQueueTurnover": 0,
+      "spreadTicks": 2,
+      "sides": [
+        {
+          "side": "YES",
+          "observations": 0,
+          "quantity": 0,
+          "mean": null,
+          "volumeWeightedMean": null,
+          "distinctThirtySecondBuckets": 0
+        },
+        {
+          "side": "NO",
+          "observations": 0,
+          "quantity": 0,
+          "mean": null,
+          "volumeWeightedMean": null,
+          "distinctThirtySecondBuckets": 0
+        }
+      ]
+    },
+    {
+      "marketId": "366",
+      "exchangeId": "1055",
+      "recentVolume": 193,
+      "bidCompatibleVolume": 0,
+      "askCompatibleVolume": 0,
+      "bothSideQueueTurnover": 0,
+      "spreadTicks": 1,
+      "sides": [
+        {
+          "side": "YES",
+          "observations": 0,
+          "quantity": 0,
+          "mean": null,
+          "volumeWeightedMean": null,
+          "distinctThirtySecondBuckets": 0
+        },
+        {
+          "side": "NO",
+          "observations": 0,
+          "quantity": 0,
+          "mean": null,
+          "volumeWeightedMean": null,
+          "distinctThirtySecondBuckets": 0
+        }
+      ]
+    },
+    {
+      "marketId": "218",
+      "exchangeId": "907",
+      "recentVolume": 131,
+      "bidCompatibleVolume": 0,
+      "askCompatibleVolume": 131,
+      "bothSideQueueTurnover": 0,
+      "spreadTicks": 3,
+      "sides": [
+        {
+          "side": "YES",
+          "observations": 0,
+          "quantity": 0,
+          "mean": null,
+          "volumeWeightedMean": null,
+          "distinctThirtySecondBuckets": 0
+        },
+        {
+          "side": "NO",
+          "observations": 1,
+          "quantity": 131,
+          "mean": 0,
+          "volumeWeightedMean": 0,
+          "distinctThirtySecondBuckets": 1
+        }
+      ]
+    },
+    {
+      "marketId": "196",
+      "exchangeId": "885",
+      "recentVolume": 11,
+      "bidCompatibleVolume": 0,
+      "askCompatibleVolume": 11,
+      "bothSideQueueTurnover": 0,
+      "spreadTicks": 1,
+      "sides": [
+        {
+          "side": "YES",
+          "observations": 0,
+          "quantity": 0,
+          "mean": null,
+          "volumeWeightedMean": null,
+          "distinctThirtySecondBuckets": 0
+        },
+        {
+          "side": "NO",
+          "observations": 2,
+          "quantity": 11,
+          "mean": 0,
+          "volumeWeightedMean": 0,
+          "distinctThirtySecondBuckets": 2
+        }
+      ]
+    },
+    {
+      "marketId": "362",
+      "exchangeId": "1051",
+      "recentVolume": 5,
+      "bidCompatibleVolume": 0,
+      "askCompatibleVolume": 0,
+      "bothSideQueueTurnover": 0,
+      "spreadTicks": 2,
+      "sides": [
+        {
+          "side": "YES",
+          "observations": 0,
+          "quantity": 0,
+          "mean": null,
+          "volumeWeightedMean": null,
+          "distinctThirtySecondBuckets": 0
+        },
+        {
+          "side": "NO",
+          "observations": 0,
+          "quantity": 0,
+          "mean": null,
+          "volumeWeightedMean": null,
+          "distinctThirtySecondBuckets": 0
+        }
+      ]
+    }
+  ],
+  "contestOrders": 0,
+  "profitabilityEstablished": false,
+  "limitations": [
+    "Conditional prior-observable quotes are not verified fills.",
+    "Prints and 30-second buckets are correlated; these means are diagnostics, not statistical proof.",
+    "Weighted marks are not executable profit for the full reported volume.",
+    "Current-window flow may change; no scope or live policy was changed."
+  ]
+}

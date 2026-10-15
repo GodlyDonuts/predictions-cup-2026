@@ -33,3 +33,29 @@ For a fresh migration queue, the parent must prove the old account owner and in-
 The optional `offline-fixtures` feature exposes `new_for_mock` exclusively for loopback HTTP test servers. Tests cover actual HTTP routes, exact decimal bodies, canonical acknowledgment mismatch, pagination, complete account observations, network-time authority loss, read/write backoff after restart, uncertain-write replacement fencing, missing credentials, redirect refusal and migration pacing. The sibling durable-core correctness/fault tests are compiled into the same suite. Synthetic HTTP fixtures establish correctness, not trading profit or live API speed. Publish source/Cargo.lock/build script/README only; exclude target binaries, journals, locks, configs with private data and all credential storage.
 
 API contract sources are the repository's official `openapi.json`, `api-guide.txt`, existing checked scope validators in `execution/transport.mjs`, and the official [automation/API policy](https://sig.thesuper.market/docs/markets-and-trading). Platform account limits apply to all keys and clients together; a faster language does not increase those limits.
+
+Unix production-integration prerequisite: `UnixFileCredentials::approved_file`
+can read an explicitly provisioned absolute runtime-key path. It never creates
+or transfers credentials. It requires private current-user-owned directory and
+file permissions, rejects symlinks and changed inode/device bindings, bounds
+reads and zeroizes key buffers. Linux uses Rustls; Windows retains native TLS
+and the existing DPAPI provider. The optional `--approved-file-reads ABS_FILE`
+CLI path is read-only and does not grant execution authority or enable writes.
+No real key was provisioned on the VPS during these fixture tests.
+
+Per-share API price validation now reuses Baal's enumerated canonical-tick and
+IEEE complement representations. The observed NO-price representation
+0.06000000000000005 is accepted as the official 0.060000 tick; arbitrary near-tick
+values are rejected. This conversion does not apply to cash or realized P&L.
+Reported position summaries and placement `totalCost` remain raw diagnostic
+numbers; they do not fund the live bank or replace individual executed fills.
+
+The new_with_read_budget constructor configures a fresh queue's immutable read
+profile. Existing queues retain their original 60/1000 defaults unless they
+were initialized with an explicit profile; a profile cannot be silently changed.
+The initial migration boundary preserves a quiet account minute.
+Full-account observation permits well-formed foreign holdings/orders to be
+observed without expanding placement scope or owned-order permissions.
+The typed realtime_token method mints short-lived authentication material
+through read admission; callers must keep it in memory, bound mint frequency,
+and reserve token headroom beneath the exchange write limit.

@@ -1,3 +1,11 @@
+# Moloch — official production bot
+
+Moloch is the human-selected production system for the 2026 Susquehanna Predictions Cup. Its Rust runtime is in [moloch/live-runtime](moloch/live-runtime/README.md), with the exact financial ledger and replay engine in [moloch/native](moloch/native/RUST_MIGRATION.md). The existing VPS service is `moloch-live.service`; deployment and actual fill/profit observations are recorded in [CURRENT_STATE](docs/CURRENT_STATE.md) and [execution task #120](https://github.com/GodlyDonuts/predictions-cup-2026/issues/120).
+
+The human directed Moloch to take over `main` and the primary checkout. Useful Baal transport, account reconciliation, risk utilities and research remain in the repository; there is one production account worker. All-market observation does not imply simultaneous exposure in every market. Actual fills and realized profit must come from official receipts and the attributed ledger, not public prints or simulations.
+
+See [the source integration and retained components](docs/MOLOCH_MAIN_TAKEOVER_20261015.md). The dated Baal sections below are historical and do not select the current runtime.
+
 # Baal current status — October7
 
 Baal's capital allocation is now10,000 SUSQies, with100/order,1,000/market and2,000/race limits. The first larger official trade bought100NOshares for9.000SUSQies and is fully reconciled; new realized profit is0.000 while the position remains open. The previous complete scaled cohort closed at+.780, including its losses. Current deployment and source-bound evidence are in [CURRENT_STATE](docs/CURRENT_STATE.md). Older dated sections below are historical.

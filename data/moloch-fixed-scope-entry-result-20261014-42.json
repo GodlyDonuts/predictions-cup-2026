@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "source": {
+    "status": "completed",
+    "captureExit": 0,
+    "officialReceipts": 60,
+    "at": "2026-10-14T20:37:41.197Z"
+  },
+  "banks": [
+    {
+      "name": "competition-scale-20261014-12",
+      "snapshotHash": "de9fd7ba32148f395e6cf82e6a15d3d395b01da47887a3262a3746e91ce82586",
+      "at": "2026-10-14T20:37:41.413Z",
+      "cash": "99977.250000",
+      "realized": "0.000000",
+      "ownedCost": "22.750000",
+      "netLiquidationPnl": "0.125000",
+      "unresolved": 1,
+      "newFills": [
+        {
+          "orderId": 86,
+          "marketId": "338",
+          "exchangeId": "1027",
+          "side": "YES",
+          "action": "buy",
+          "quantity": 25,
+          "price": "0.910000",
+          "fee": "0.000000",
+          "at": "2026-10-14T20:35:50.003Z",
+          "sourceId": "160262322",
+          "counterfactual": true,
+          "executedAt": "2026-10-14T20:35:42.122Z"
+        }
+      ]
+    },
+    {
+      "name": "queue-duration-20261014-8",
+      "snapshotHash": "c2bd786db4c85c7ea679e49cb95a89b1e7de81dd04b437db535dc8d4a8892991",
+      "at": "2026-10-14T20:37:41.413Z",
+      "cash": "99977.310000",
+      "realized": "0.060000",
+      "ownedCost": "22.750000",
+      "netLiquidationPnl": "0.185000",
+      "unresolved": 1,
+      "newFills": [
+        {
+          "orderId": 38,
+          "marketId": "338",
+          "exchangeId": "1027",
+          "side": "YES",
+          "action": "buy",
+          "quantity": 25,
+          "price": "0.910000",
+          "fee": "0.000000",
+          "at": "2026-10-14T20:35:49.941Z",
+          "sourceId": "160262322",
+          "counterfactual": true,
+          "executedAt": "2026-10-14T20:35:42.122Z"
+        }
+      ]
+    }
+  ],
+  "nextSource": 43,
+  "entriesEnabled": false,
+  "newPaperCapital": "0.000000",
+  "contestOrders": 0,
+  "profitabilityEstablished": false,
+  "limitations": [
+    "Independent banks have correlated fills; gains cannot be added.",
+    "Unrealized depth-based marks are not closed profit.",
+    "Prior queue bank 0.060 gain is inherited, not phase42 performance.",
+    "The source ended with inventory and unresolved covered exits; test remains incomplete."
+  ]
+}

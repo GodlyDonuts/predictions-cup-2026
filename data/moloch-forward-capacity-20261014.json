@@ -1,0 +1,648 @@
+{
+  "sourceSnapshotHash": "b4b59c42848a175ffab92d2a728d4145578f03c9abfcd99a93edf46e4c083dab",
+  "parentSnapshotHash": "27e7490a352026df9384f2b3135363ff337b204773eb1dd5842a989cd3fe8544",
+  "at": "2026-10-14T19:32:47.555Z",
+  "sourceEvents": 2282,
+  "baselineFinancialParity": true,
+  "newPaperCapital": "0.000000",
+  "results": [
+    {
+      "name": "recorded",
+      "overrides": {},
+      "report": {
+        "bot": "Moloch",
+        "at": "2026-10-14T19:32:47.555Z",
+        "policyHash": "95a7df240fe195bd28859e5249362c1b8d32832fca42559a59944f55081120b3",
+        "events": 11289,
+        "cash": "99995.240000",
+        "realized": "0.000000",
+        "fees": "0.000000",
+        "ownedCost": "4.760000",
+        "reservedCash": "0.000000",
+        "netLiquidationPnl": "-0.040000",
+        "positions": {
+          "922": {
+            "YES": [],
+            "NO": [
+              {
+                "quantity": 1,
+                "price": "0.595000"
+              },
+              {
+                "quantity": 7,
+                "price": "0.595000"
+              }
+            ]
+          }
+        },
+        "priceHistory": {},
+        "fills": 2,
+        "orders": 77,
+        "activeOrders": 1,
+        "unresolvedOrders": 1,
+        "fillModel": "strictThrough",
+        "conditionalQueueFills": 0,
+        "profitSignalEligible": false,
+        "counts": {
+          "uniqueTrades": 315,
+          "submissionBatches": 48,
+          "writeBudgetHolds": 583,
+          "duplicateTrades": 1780,
+          "cancels": 55,
+          "gaps": 38
+        },
+        "contestOrders": 0,
+        "networkRequests": 0,
+        "profitabilityEstablished": false,
+        "assumptions": [
+          "Independent simulated capital; no contest-account ownership.",
+          "Flat entries quote both sides only when combined spread covers modeled fees and required edge; partial fills remain inventory risk.",
+          "Strict one-tick trade-through and bounded participation are counterfactual, not verified queue fills.",
+          "Cancel acknowledgment does not release unresolved funding; complete window and post-end checkpoint are required.",
+          "Opposite BUY FIFO netting models the documented engine credit of one per netted share; all modeled fills remain counterfactual.",
+          "Aged inventory all-or-none simulations require later fresh depth after modeled latency; payout uses the limit-price lower bound and no capacity is reused at the same side/engine sequence."
+        ]
+      },
+      "newFills": [
+        {
+          "orderId": 74,
+          "marketId": "233",
+          "exchangeId": "922",
+          "side": "NO",
+          "action": "buy",
+          "quantity": 1,
+          "price": "0.595000",
+          "fee": "0.000000",
+          "at": "2026-10-14T19:22:09.206Z",
+          "sourceId": "159792301",
+          "counterfactual": true
+        },
+        {
+          "orderId": 74,
+          "marketId": "233",
+          "exchangeId": "922",
+          "side": "NO",
+          "action": "buy",
+          "quantity": 7,
+          "price": "0.595000",
+          "fee": "0.000000",
+          "at": "2026-10-14T19:22:09.209Z",
+          "sourceId": "159792307",
+          "counterfactual": true
+        }
+      ],
+      "lastFresh": {
+        "at": "2026-10-14T19:32:47.555Z",
+        "pnl": "-0.040000"
+      },
+      "worstFresh": {
+        "at": "2026-10-14T19:23:24.469Z",
+        "pnl": "-0.040000"
+      }
+    },
+    {
+      "name": "retainedPacket",
+      "overrides": {
+        "retainProfitableHedge": true,
+        "maximumHedgeOvershoot": 10000
+      },
+      "report": {
+        "bot": "Moloch",
+        "at": "2026-10-14T19:32:47.555Z",
+        "policyHash": "0f0caf8ba876fe951491092288e4d01e9d68fc2ad70a53f2e5dbdecfb482bdb2",
+        "events": 11289,
+        "cash": "99995.240000",
+        "realized": "0.000000",
+        "fees": "0.000000",
+        "ownedCost": "4.760000",
+        "reservedCash": "0.000000",
+        "netLiquidationPnl": "-0.040000",
+        "positions": {
+          "922": {
+            "YES": [],
+            "NO": [
+              {
+                "quantity": 1,
+                "price": "0.595000"
+              },
+              {
+                "quantity": 7,
+                "price": "0.595000"
+              }
+            ]
+          }
+        },
+        "priceHistory": {},
+        "fills": 2,
+        "orders": 77,
+        "activeOrders": 1,
+        "unresolvedOrders": 1,
+        "fillModel": "strictThrough",
+        "conditionalQueueFills": 0,
+        "profitSignalEligible": false,
+        "counts": {
+          "uniqueTrades": 315,
+          "submissionBatches": 48,
+          "writeBudgetHolds": 583,
+          "duplicateTrades": 1780,
+          "cancels": 55,
+          "gaps": 38
+        },
+        "contestOrders": 0,
+        "networkRequests": 0,
+        "profitabilityEstablished": false,
+        "assumptions": [
+          "Independent simulated capital; no contest-account ownership.",
+          "Flat entries quote both sides only when combined spread covers modeled fees and required edge; partial fills remain inventory risk.",
+          "Strict one-tick trade-through and bounded participation are counterfactual, not verified queue fills.",
+          "Cancel acknowledgment does not release unresolved funding; complete window and post-end checkpoint are required.",
+          "Opposite BUY FIFO netting models the documented engine credit of one per netted share; all modeled fills remain counterfactual.",
+          "Aged inventory all-or-none simulations require later fresh depth after modeled latency; payout uses the limit-price lower bound and no capacity is reused at the same side/engine sequence."
+        ]
+      },
+      "newFills": [
+        {
+          "orderId": 74,
+          "marketId": "233",
+          "exchangeId": "922",
+          "side": "NO",
+          "action": "buy",
+          "quantity": 1,
+          "price": "0.595000",
+          "fee": "0.000000",
+          "at": "2026-10-14T19:22:09.206Z",
+          "sourceId": "159792301",
+          "counterfactual": true
+        },
+        {
+          "orderId": 74,
+          "marketId": "233",
+          "exchangeId": "922",
+          "side": "NO",
+          "action": "buy",
+          "quantity": 7,
+          "price": "0.595000",
+          "fee": "0.000000",
+          "at": "2026-10-14T19:22:09.209Z",
+          "sourceId": "159792307",
+          "counterfactual": true
+        }
+      ],
+      "lastFresh": {
+        "at": "2026-10-14T19:32:47.555Z",
+        "pnl": "-0.040000"
+      },
+      "worstFresh": {
+        "at": "2026-10-14T19:23:24.469Z",
+        "pnl": "-0.040000"
+      }
+    },
+    {
+      "name": "executionAge",
+      "overrides": {
+        "inventoryAgeClock": "execution"
+      },
+      "report": {
+        "bot": "Moloch",
+        "at": "2026-10-14T19:32:47.555Z",
+        "policyHash": "e67c9e5d323eb2bc3d741e92373d6a4141f4b2cf66f159ce9d887e15846cfa69",
+        "events": 11289,
+        "cash": "99995.240000",
+        "realized": "0.000000",
+        "fees": "0.000000",
+        "ownedCost": "4.760000",
+        "reservedCash": "0.000000",
+        "netLiquidationPnl": "-0.040000",
+        "positions": {
+          "922": {
+            "YES": [],
+            "NO": [
+              {
+                "quantity": 1,
+                "price": "0.595000",
+                "executedAt": "2026-10-14T19:21:43.157Z"
+              },
+              {
+                "quantity": 7,
+                "price": "0.595000",
+                "executedAt": "2026-10-14T19:21:43.157Z"
+              }
+            ]
+          }
+        },
+        "priceHistory": {},
+        "fills": 2,
+        "orders": 77,
+        "activeOrders": 1,
+        "unresolvedOrders": 1,
+        "fillModel": "strictThrough",
+        "conditionalQueueFills": 0,
+        "profitSignalEligible": false,
+        "counts": {
+          "uniqueTrades": 315,
+          "submissionBatches": 48,
+          "writeBudgetHolds": 583,
+          "duplicateTrades": 1780,
+          "cancels": 55,
+          "gaps": 38
+        },
+        "contestOrders": 0,
+        "networkRequests": 0,
+        "profitabilityEstablished": false,
+        "assumptions": [
+          "Independent simulated capital; no contest-account ownership.",
+          "Flat entries quote both sides only when combined spread covers modeled fees and required edge; partial fills remain inventory risk.",
+          "Strict one-tick trade-through and bounded participation are counterfactual, not verified queue fills.",
+          "Cancel acknowledgment does not release unresolved funding; complete window and post-end checkpoint are required.",
+          "Opposite BUY FIFO netting models the documented engine credit of one per netted share; all modeled fills remain counterfactual.",
+          "Aged inventory all-or-none simulations require later fresh depth after modeled latency; payout uses the limit-price lower bound and no capacity is reused at the same side/engine sequence."
+        ]
+      },
+      "newFills": [
+        {
+          "orderId": 74,
+          "marketId": "233",
+          "exchangeId": "922",
+          "side": "NO",
+          "action": "buy",
+          "quantity": 1,
+          "price": "0.595000",
+          "fee": "0.000000",
+          "at": "2026-10-14T19:22:09.206Z",
+          "sourceId": "159792301",
+          "counterfactual": true,
+          "executedAt": "2026-10-14T19:21:43.157Z"
+        },
+        {
+          "orderId": 74,
+          "marketId": "233",
+          "exchangeId": "922",
+          "side": "NO",
+          "action": "buy",
+          "quantity": 7,
+          "price": "0.595000",
+          "fee": "0.000000",
+          "at": "2026-10-14T19:22:09.209Z",
+          "sourceId": "159792307",
+          "counterfactual": true,
+          "executedAt": "2026-10-14T19:21:43.157Z"
+        }
+      ],
+      "lastFresh": {
+        "at": "2026-10-14T19:32:47.555Z",
+        "pnl": "-0.040000"
+      },
+      "worstFresh": {
+        "at": "2026-10-14T19:23:24.469Z",
+        "pnl": "-0.040000"
+      }
+    },
+    {
+      "name": "retainedExecutionAge",
+      "overrides": {
+        "retainProfitableHedge": true,
+        "maximumHedgeOvershoot": 10000,
+        "inventoryAgeClock": "execution"
+      },
+      "report": {
+        "bot": "Moloch",
+        "at": "2026-10-14T19:32:47.555Z",
+        "policyHash": "e40986efc03471c808588d3d4e44ce380c08b641305f8bd13f796f34c80c8e1d",
+        "events": 11289,
+        "cash": "99995.240000",
+        "realized": "0.000000",
+        "fees": "0.000000",
+        "ownedCost": "4.760000",
+        "reservedCash": "0.000000",
+        "netLiquidationPnl": "-0.040000",
+        "positions": {
+          "922": {
+            "YES": [],
+            "NO": [
+              {
+                "quantity": 1,
+                "price": "0.595000",
+                "executedAt": "2026-10-14T19:21:43.157Z"
+              },
+              {
+                "quantity": 7,
+                "price": "0.595000",
+                "executedAt": "2026-10-14T19:21:43.157Z"
+              }
+            ]
+          }
+        },
+        "priceHistory": {},
+        "fills": 2,
+        "orders": 77,
+        "activeOrders": 1,
+        "unresolvedOrders": 1,
+        "fillModel": "strictThrough",
+        "conditionalQueueFills": 0,
+        "profitSignalEligible": false,
+        "counts": {
+          "uniqueTrades": 315,
+          "submissionBatches": 48,
+          "writeBudgetHolds": 583,
+          "duplicateTrades": 1780,
+          "cancels": 55,
+          "gaps": 38
+        },
+        "contestOrders": 0,
+        "networkRequests": 0,
+        "profitabilityEstablished": false,
+        "assumptions": [
+          "Independent simulated capital; no contest-account ownership.",
+          "Flat entries quote both sides only when combined spread covers modeled fees and required edge; partial fills remain inventory risk.",
+          "Strict one-tick trade-through and bounded participation are counterfactual, not verified queue fills.",
+          "Cancel acknowledgment does not release unresolved funding; complete window and post-end checkpoint are required.",
+          "Opposite BUY FIFO netting models the documented engine credit of one per netted share; all modeled fills remain counterfactual.",
+          "Aged inventory all-or-none simulations require later fresh depth after modeled latency; payout uses the limit-price lower bound and no capacity is reused at the same side/engine sequence."
+        ]
+      },
+      "newFills": [
+        {
+          "orderId": 74,
+          "marketId": "233",
+          "exchangeId": "922",
+          "side": "NO",
+          "action": "buy",
+          "quantity": 1,
+          "price": "0.595000",
+          "fee": "0.000000",
+          "at": "2026-10-14T19:22:09.206Z",
+          "sourceId": "159792301",
+          "counterfactual": true,
+          "executedAt": "2026-10-14T19:21:43.157Z"
+        },
+        {
+          "orderId": 74,
+          "marketId": "233",
+          "exchangeId": "922",
+          "side": "NO",
+          "action": "buy",
+          "quantity": 7,
+          "price": "0.595000",
+          "fee": "0.000000",
+          "at": "2026-10-14T19:22:09.209Z",
+          "sourceId": "159792307",
+          "counterfactual": true,
+          "executedAt": "2026-10-14T19:21:43.157Z"
+        }
+      ],
+      "lastFresh": {
+        "at": "2026-10-14T19:32:47.555Z",
+        "pnl": "-0.040000"
+      },
+      "worstFresh": {
+        "at": "2026-10-14T19:23:24.469Z",
+        "pnl": "-0.040000"
+      }
+    },
+    {
+      "name": "throughCapacity",
+      "overrides": {
+        "throughFillCapacity": true
+      },
+      "report": {
+        "bot": "Moloch",
+        "at": "2026-10-14T19:32:47.555Z",
+        "policyHash": "90d3d206a6e95edf3fa9cdf9361020d8139e755ef34186c5a9d05e4820fe7115",
+        "events": 11289,
+        "cash": "99841.730000",
+        "realized": "0.000000",
+        "fees": "0.000000",
+        "ownedCost": "158.270000",
+        "reservedCash": "0.000000",
+        "netLiquidationPnl": "-1.330000",
+        "positions": {
+          "922": {
+            "YES": [],
+            "NO": [
+              {
+                "quantity": 25,
+                "price": "0.595000"
+              },
+              {
+                "quantity": 171,
+                "price": "0.595000"
+              },
+              {
+                "quantity": 70,
+                "price": "0.595000"
+              }
+            ]
+          }
+        },
+        "priceHistory": {},
+        "fills": 3,
+        "orders": 77,
+        "activeOrders": 1,
+        "unresolvedOrders": 1,
+        "fillModel": "strictThrough",
+        "conditionalQueueFills": 0,
+        "profitSignalEligible": false,
+        "counts": {
+          "uniqueTrades": 315,
+          "submissionBatches": 48,
+          "writeBudgetHolds": 584,
+          "duplicateTrades": 1780,
+          "cancels": 55,
+          "gaps": 38,
+          "throughCapacityFills": 3
+        },
+        "contestOrders": 0,
+        "networkRequests": 0,
+        "profitabilityEstablished": false,
+        "assumptions": [
+          "Independent simulated capital; no contest-account ownership.",
+          "Flat entries quote both sides only when combined spread covers modeled fees and required edge; partial fills remain inventory risk.",
+          "Strict one-tick trade-through and bounded participation are counterfactual, not verified queue fills.",
+          "Cancel acknowledgment does not release unresolved funding; complete window and post-end checkpoint are required.",
+          "Opposite BUY FIFO netting models the documented engine credit of one per netted share; all modeled fills remain counterfactual.",
+          "Aged inventory all-or-none simulations require later fresh depth after modeled latency; payout uses the limit-price lower bound and no capacity is reused at the same side/engine sequence."
+        ]
+      },
+      "newFills": [
+        {
+          "orderId": 74,
+          "marketId": "233",
+          "exchangeId": "922",
+          "side": "NO",
+          "action": "buy",
+          "quantity": 25,
+          "price": "0.595000",
+          "fee": "0.000000",
+          "at": "2026-10-14T19:22:09.204Z",
+          "sourceId": "159792294",
+          "counterfactual": true,
+          "throughCapacityFill": true
+        },
+        {
+          "orderId": 74,
+          "marketId": "233",
+          "exchangeId": "922",
+          "side": "NO",
+          "action": "buy",
+          "quantity": 171,
+          "price": "0.595000",
+          "fee": "0.000000",
+          "at": "2026-10-14T19:22:09.206Z",
+          "sourceId": "159792301",
+          "counterfactual": true,
+          "throughCapacityFill": true
+        },
+        {
+          "orderId": 74,
+          "marketId": "233",
+          "exchangeId": "922",
+          "side": "NO",
+          "action": "buy",
+          "quantity": 70,
+          "price": "0.595000",
+          "fee": "0.000000",
+          "at": "2026-10-14T19:22:09.209Z",
+          "sourceId": "159792307",
+          "counterfactual": true,
+          "throughCapacityFill": true
+        }
+      ],
+      "lastFresh": {
+        "at": "2026-10-14T19:32:47.555Z",
+        "pnl": "-1.330000"
+      },
+      "worstFresh": {
+        "at": "2026-10-14T19:23:24.469Z",
+        "pnl": "-1.330000"
+      }
+    },
+    {
+      "name": "retainedThroughCapacity",
+      "overrides": {
+        "throughFillCapacity": true,
+        "retainProfitableHedge": true,
+        "maximumHedgeOvershoot": 10000
+      },
+      "report": {
+        "bot": "Moloch",
+        "at": "2026-10-14T19:32:47.555Z",
+        "policyHash": "0b4359bf6a05cce69d20873ae6a4d5fe85606a45e6d3ce75b0568fa7166721ca",
+        "events": 11289,
+        "cash": "99841.730000",
+        "realized": "0.000000",
+        "fees": "0.000000",
+        "ownedCost": "158.270000",
+        "reservedCash": "0.000000",
+        "netLiquidationPnl": "-1.330000",
+        "positions": {
+          "922": {
+            "YES": [],
+            "NO": [
+              {
+                "quantity": 25,
+                "price": "0.595000"
+              },
+              {
+                "quantity": 171,
+                "price": "0.595000"
+              },
+              {
+                "quantity": 70,
+                "price": "0.595000"
+              }
+            ]
+          }
+        },
+        "priceHistory": {},
+        "fills": 3,
+        "orders": 77,
+        "activeOrders": 1,
+        "unresolvedOrders": 1,
+        "fillModel": "strictThrough",
+        "conditionalQueueFills": 0,
+        "profitSignalEligible": false,
+        "counts": {
+          "uniqueTrades": 315,
+          "submissionBatches": 48,
+          "writeBudgetHolds": 584,
+          "duplicateTrades": 1780,
+          "cancels": 55,
+          "gaps": 38,
+          "throughCapacityFills": 3
+        },
+        "contestOrders": 0,
+        "networkRequests": 0,
+        "profitabilityEstablished": false,
+        "assumptions": [
+          "Independent simulated capital; no contest-account ownership.",
+          "Flat entries quote both sides only when combined spread covers modeled fees and required edge; partial fills remain inventory risk.",
+          "Strict one-tick trade-through and bounded participation are counterfactual, not verified queue fills.",
+          "Cancel acknowledgment does not release unresolved funding; complete window and post-end checkpoint are required.",
+          "Opposite BUY FIFO netting models the documented engine credit of one per netted share; all modeled fills remain counterfactual.",
+          "Aged inventory all-or-none simulations require later fresh depth after modeled latency; payout uses the limit-price lower bound and no capacity is reused at the same side/engine sequence."
+        ]
+      },
+      "newFills": [
+        {
+          "orderId": 74,
+          "marketId": "233",
+          "exchangeId": "922",
+          "side": "NO",
+          "action": "buy",
+          "quantity": 25,
+          "price": "0.595000",
+          "fee": "0.000000",
+          "at": "2026-10-14T19:22:09.204Z",
+          "sourceId": "159792294",
+          "counterfactual": true,
+          "throughCapacityFill": true
+        },
+        {
+          "orderId": 74,
+          "marketId": "233",
+          "exchangeId": "922",
+          "side": "NO",
+          "action": "buy",
+          "quantity": 171,
+          "price": "0.595000",
+          "fee": "0.000000",
+          "at": "2026-10-14T19:22:09.206Z",
+          "sourceId": "159792301",
+          "counterfactual": true,
+          "throughCapacityFill": true
+        },
+        {
+          "orderId": 74,
+          "marketId": "233",
+          "exchangeId": "922",
+          "side": "NO",
+          "action": "buy",
+          "quantity": 70,
+          "price": "0.595000",
+          "fee": "0.000000",
+          "at": "2026-10-14T19:22:09.209Z",
+          "sourceId": "159792307",
+          "counterfactual": true,
+          "throughCapacityFill": true
+        }
+      ],
+      "lastFresh": {
+        "at": "2026-10-14T19:32:47.555Z",
+        "pnl": "-1.330000"
+      },
+      "worstFresh": {
+        "at": "2026-10-14T19:23:24.469Z",
+        "pnl": "-1.330000"
+      }
+    }
+  ],
+  "contestOrders": 0,
+  "profitabilityEstablished": false,
+  "limitations": [
+    "Retrospective inherited-wallet diagnostic, not untouched holdout or verified exchange fills.",
+    "Exact captured processing/execution clocks, source gaps, fees, depth and funded liabilities are preserved.",
+    "Retaining a full opposite quote permits bounded over-hedging and directional inventory; it does not guarantee both fills.",
+    "Original live banks and losses remain unchanged.",
+    "Fresh liquidation timestamps must be read with their marks; missing final marks remain null."
+  ]
+}

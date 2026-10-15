@@ -1,0 +1,1686 @@
+{
+  "schemaVersion": 1,
+  "baselineFinancialParity": true,
+  "fixedExchangeId": "1051",
+  "sourceSnapshots": [
+    {
+      "episode": 21,
+      "hash": "77fda50845415d5e211f16e345f74dbd916f425f5d4d7d59ba5a30bda948493b"
+    },
+    {
+      "episode": 22,
+      "hash": "b0ac0abb50b61f4eeb80c4ecdf68fb63b26a8e92f1047e3725160d2275c3e078"
+    },
+    {
+      "episode": 23,
+      "hash": "ce53447ec0af5c1fb9d080e2480666e4b79b60126a345f38e54580e837a173c7"
+    },
+    {
+      "episode": 24,
+      "hash": "7cd10c70b691b7094d53ee8eea80943c3a68a3265c95f70093e54368cff38314"
+    },
+    {
+      "episode": 25,
+      "hash": "30aecf2b2f581f49b57ce0d452abfa97391921d63dea86690f80dc28bc997380"
+    },
+    {
+      "episode": 26,
+      "hash": "573a8db6917d72d3888573c7c77f161ac444eccd4e6230394944e0344bff8fc7"
+    },
+    {
+      "episode": 27,
+      "hash": "e3100a6864c8eb6cc17171f53edce7f2b16b624dc10216f6c78cacb2270bb6f6"
+    }
+  ],
+  "results": [
+    {
+      "latencyMs": 3000,
+      "participationBps": 100,
+      "policy": {
+        "initialCash": "100000.000000",
+        "maximumCommitted": "40000.000000",
+        "maximumMarketCost": "10000.000000",
+        "quantity": 500,
+        "maximumMarkets": 1,
+        "entryExchangeIds": [
+          "1051"
+        ],
+        "entryDepthBps": 10000,
+        "participationBps": 100,
+        "latencyMs": 3000,
+        "retainProfitableHedge": true,
+        "maximumHedgeOvershoot": 0,
+        "inventoryTakerAfterMs": 0,
+        "maximumInventoryAgeMs": 600000,
+        "inventoryAgeClock": "execution",
+        "lifetimeMs": 600000,
+        "insideTicks": 0
+      },
+      "report": {
+        "bot": "Moloch",
+        "at": "2026-10-14T08:23:00.991Z",
+        "policyHash": "7621e5c6178fe65edaa44271e043c19ad47697ad6785b83a99ed63ded02a7ddf",
+        "events": 10349,
+        "cash": "99995.680000",
+        "realized": "0.000000",
+        "fees": "0.000000",
+        "ownedCost": "4.320000",
+        "reservedCash": "497.500000",
+        "netLiquidationPnl": null,
+        "positions": {
+          "1051": {
+            "YES": [
+              {
+                "quantity": 27,
+                "price": "0.160000",
+                "executedAt": "2026-10-14T06:09:16.237Z"
+              }
+            ],
+            "NO": []
+          }
+        },
+        "priceHistory": {},
+        "fills": 1,
+        "orders": 14,
+        "activeOrders": 0,
+        "unresolvedOrders": 2,
+        "fillModel": "strictThrough",
+        "conditionalQueueFills": 0,
+        "profitSignalEligible": false,
+        "counts": {
+          "gaps": 44,
+          "uniqueTrades": 243,
+          "submissionBatches": 7,
+          "writeBudgetHolds": 29,
+          "duplicateTrades": 1182,
+          "cancels": 4
+        },
+        "contestOrders": 0,
+        "networkRequests": 0,
+        "profitabilityEstablished": false,
+        "assumptions": [
+          "Independent simulated capital; no contest-account ownership.",
+          "Flat entries quote both sides only when combined spread covers modeled fees and required edge; partial fills remain inventory risk.",
+          "Strict one-tick trade-through and bounded participation are counterfactual, not verified queue fills.",
+          "Cancel acknowledgment does not release unresolved funding; complete window and post-end checkpoint are required.",
+          "Opposite BUY FIFO netting models the documented engine credit of one per netted share; all modeled fills remain counterfactual.",
+          "Aged inventory all-or-none simulations require later fresh depth after modeled latency; payout uses the limit-price lower bound and no capacity is reused at the same side/engine sequence."
+        ]
+      },
+      "coverageAudit": {
+        "uncoveredInventory": [],
+        "terminalLiquidationKnown": false,
+        "completeTerminalExecutionCoverage": false,
+        "policyRankingEligible": false,
+        "limitation": "Final covered scopes and a complete liquidation mark are necessary for ranking; this audit does not prove earlier continuity, queue fills or profitability."
+      },
+      "marks": [
+        {
+          "episode": 21,
+          "newFills": 0,
+          "realized": "0.000000",
+          "ownedCost": "0.000000",
+          "lastFresh": {
+            "at": "2026-10-14T05:07:50.889Z",
+            "pnl": "0.000000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T04:52:42.790Z",
+            "pnl": "0.000000"
+          }
+        },
+        {
+          "episode": 22,
+          "newFills": 0,
+          "realized": "0.000000",
+          "ownedCost": "0.000000",
+          "lastFresh": {
+            "at": "2026-10-14T05:41:51.006Z",
+            "pnl": "0.000000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T05:25:27.336Z",
+            "pnl": "0.000000"
+          }
+        },
+        {
+          "episode": 23,
+          "newFills": 0,
+          "realized": "0.000000",
+          "ownedCost": "0.000000",
+          "lastFresh": {
+            "at": "2026-10-14T06:06:26.086Z",
+            "pnl": "0.000000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T05:50:01.657Z",
+            "pnl": "0.000000"
+          }
+        },
+        {
+          "episode": 24,
+          "newFills": 1,
+          "realized": "0.000000",
+          "ownedCost": "4.320000",
+          "lastFresh": {
+            "at": "2026-10-14T06:56:32.735Z",
+            "pnl": "-0.135000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T06:55:11.008Z",
+            "pnl": "-0.135000"
+          }
+        },
+        {
+          "episode": 25,
+          "newFills": 0,
+          "realized": "0.000000",
+          "ownedCost": "4.320000",
+          "lastFresh": {
+            "at": "2026-10-14T07:26:52.934Z",
+            "pnl": "-0.135000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T07:10:56.581Z",
+            "pnl": "-0.135000"
+          }
+        },
+        {
+          "episode": 26,
+          "newFills": 0,
+          "realized": "0.000000",
+          "ownedCost": "4.320000",
+          "lastFresh": {
+            "at": "2026-10-14T08:16:19.096Z",
+            "pnl": "-0.270000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T08:02:35.560Z",
+            "pnl": "-0.270000"
+          }
+        },
+        {
+          "episode": 27,
+          "newFills": 0,
+          "realized": "0.000000",
+          "ownedCost": "4.320000",
+          "lastFresh": {
+            "at": "2026-10-14T08:22:18.686Z",
+            "pnl": "-0.270000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T08:19:53.388Z",
+            "pnl": "-0.270000"
+          }
+        }
+      ]
+    },
+    {
+      "latencyMs": 3000,
+      "participationBps": 1000,
+      "policy": {
+        "initialCash": "100000.000000",
+        "maximumCommitted": "40000.000000",
+        "maximumMarketCost": "10000.000000",
+        "quantity": 500,
+        "maximumMarkets": 1,
+        "entryExchangeIds": [
+          "1051"
+        ],
+        "entryDepthBps": 10000,
+        "participationBps": 1000,
+        "latencyMs": 3000,
+        "retainProfitableHedge": true,
+        "maximumHedgeOvershoot": 0,
+        "inventoryTakerAfterMs": 0,
+        "maximumInventoryAgeMs": 600000,
+        "inventoryAgeClock": "execution",
+        "lifetimeMs": 600000,
+        "insideTicks": 0
+      },
+      "report": {
+        "bot": "Moloch",
+        "at": "2026-10-14T08:23:00.991Z",
+        "policyHash": "b345303bee4e6d82b50ab673b7a5988122d4f48d67f0503916097ea483ba14d1",
+        "events": 10349,
+        "cash": "99955.360000",
+        "realized": "0.000000",
+        "fees": "0.000000",
+        "ownedCost": "44.640000",
+        "reservedCash": "497.500000",
+        "netLiquidationPnl": null,
+        "positions": {
+          "1051": {
+            "YES": [
+              {
+                "quantity": 279,
+                "price": "0.160000",
+                "executedAt": "2026-10-14T06:09:16.237Z"
+              }
+            ],
+            "NO": []
+          }
+        },
+        "priceHistory": {},
+        "fills": 1,
+        "orders": 14,
+        "activeOrders": 0,
+        "unresolvedOrders": 2,
+        "fillModel": "strictThrough",
+        "conditionalQueueFills": 0,
+        "profitSignalEligible": false,
+        "counts": {
+          "gaps": 44,
+          "uniqueTrades": 243,
+          "submissionBatches": 7,
+          "writeBudgetHolds": 29,
+          "duplicateTrades": 1182,
+          "cancels": 4
+        },
+        "contestOrders": 0,
+        "networkRequests": 0,
+        "profitabilityEstablished": false,
+        "assumptions": [
+          "Independent simulated capital; no contest-account ownership.",
+          "Flat entries quote both sides only when combined spread covers modeled fees and required edge; partial fills remain inventory risk.",
+          "Strict one-tick trade-through and bounded participation are counterfactual, not verified queue fills.",
+          "Cancel acknowledgment does not release unresolved funding; complete window and post-end checkpoint are required.",
+          "Opposite BUY FIFO netting models the documented engine credit of one per netted share; all modeled fills remain counterfactual.",
+          "Aged inventory all-or-none simulations require later fresh depth after modeled latency; payout uses the limit-price lower bound and no capacity is reused at the same side/engine sequence."
+        ]
+      },
+      "coverageAudit": {
+        "uncoveredInventory": [],
+        "terminalLiquidationKnown": false,
+        "completeTerminalExecutionCoverage": false,
+        "policyRankingEligible": false,
+        "limitation": "Final covered scopes and a complete liquidation mark are necessary for ranking; this audit does not prove earlier continuity, queue fills or profitability."
+      },
+      "marks": [
+        {
+          "episode": 21,
+          "newFills": 0,
+          "realized": "0.000000",
+          "ownedCost": "0.000000",
+          "lastFresh": {
+            "at": "2026-10-14T05:07:50.889Z",
+            "pnl": "0.000000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T04:52:42.790Z",
+            "pnl": "0.000000"
+          }
+        },
+        {
+          "episode": 22,
+          "newFills": 0,
+          "realized": "0.000000",
+          "ownedCost": "0.000000",
+          "lastFresh": {
+            "at": "2026-10-14T05:41:51.006Z",
+            "pnl": "0.000000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T05:25:27.336Z",
+            "pnl": "0.000000"
+          }
+        },
+        {
+          "episode": 23,
+          "newFills": 0,
+          "realized": "0.000000",
+          "ownedCost": "0.000000",
+          "lastFresh": {
+            "at": "2026-10-14T06:06:26.086Z",
+            "pnl": "0.000000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T05:50:01.657Z",
+            "pnl": "0.000000"
+          }
+        },
+        {
+          "episode": 24,
+          "newFills": 1,
+          "realized": "0.000000",
+          "ownedCost": "44.640000",
+          "lastFresh": {
+            "at": "2026-10-14T06:56:32.735Z",
+            "pnl": "-1.395000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T06:55:11.008Z",
+            "pnl": "-1.395000"
+          }
+        },
+        {
+          "episode": 25,
+          "newFills": 0,
+          "realized": "0.000000",
+          "ownedCost": "44.640000",
+          "lastFresh": {
+            "at": "2026-10-14T07:26:52.934Z",
+            "pnl": "-1.395000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T07:10:56.581Z",
+            "pnl": "-1.395000"
+          }
+        },
+        {
+          "episode": 26,
+          "newFills": 0,
+          "realized": "0.000000",
+          "ownedCost": "44.640000",
+          "lastFresh": {
+            "at": "2026-10-14T08:16:19.096Z",
+            "pnl": "-2.790000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T08:02:35.560Z",
+            "pnl": "-2.790000"
+          }
+        },
+        {
+          "episode": 27,
+          "newFills": 0,
+          "realized": "0.000000",
+          "ownedCost": "44.640000",
+          "lastFresh": {
+            "at": "2026-10-14T08:22:18.686Z",
+            "pnl": "-2.790000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T08:19:53.388Z",
+            "pnl": "-2.790000"
+          }
+        }
+      ]
+    },
+    {
+      "latencyMs": 3000,
+      "participationBps": 10000,
+      "policy": {
+        "initialCash": "100000.000000",
+        "maximumCommitted": "40000.000000",
+        "maximumMarketCost": "10000.000000",
+        "quantity": 500,
+        "maximumMarkets": 1,
+        "entryExchangeIds": [
+          "1051"
+        ],
+        "entryDepthBps": 10000,
+        "participationBps": 10000,
+        "latencyMs": 3000,
+        "retainProfitableHedge": true,
+        "maximumHedgeOvershoot": 0,
+        "inventoryTakerAfterMs": 0,
+        "maximumInventoryAgeMs": 600000,
+        "inventoryAgeClock": "execution",
+        "lifetimeMs": 600000,
+        "insideTicks": 0
+      },
+      "report": {
+        "bot": "Moloch",
+        "at": "2026-10-14T08:23:00.991Z",
+        "policyHash": "8e3bedbfac792d5377dddc55b06d73afe3cba2dc6d1520374556d264a85e1a69",
+        "events": 10349,
+        "cash": "99920.000000",
+        "realized": "0.000000",
+        "fees": "0.000000",
+        "ownedCost": "80.000000",
+        "reservedCash": "497.500000",
+        "netLiquidationPnl": null,
+        "positions": {
+          "1051": {
+            "YES": [
+              {
+                "quantity": 500,
+                "price": "0.160000",
+                "executedAt": "2026-10-14T06:09:16.237Z"
+              }
+            ],
+            "NO": []
+          }
+        },
+        "priceHistory": {},
+        "fills": 1,
+        "orders": 14,
+        "activeOrders": 0,
+        "unresolvedOrders": 2,
+        "fillModel": "strictThrough",
+        "conditionalQueueFills": 0,
+        "profitSignalEligible": false,
+        "counts": {
+          "gaps": 44,
+          "uniqueTrades": 243,
+          "submissionBatches": 7,
+          "writeBudgetHolds": 29,
+          "duplicateTrades": 1182,
+          "cancels": 4
+        },
+        "contestOrders": 0,
+        "networkRequests": 0,
+        "profitabilityEstablished": false,
+        "assumptions": [
+          "Independent simulated capital; no contest-account ownership.",
+          "Flat entries quote both sides only when combined spread covers modeled fees and required edge; partial fills remain inventory risk.",
+          "Strict one-tick trade-through and bounded participation are counterfactual, not verified queue fills.",
+          "Cancel acknowledgment does not release unresolved funding; complete window and post-end checkpoint are required.",
+          "Opposite BUY FIFO netting models the documented engine credit of one per netted share; all modeled fills remain counterfactual.",
+          "Aged inventory all-or-none simulations require later fresh depth after modeled latency; payout uses the limit-price lower bound and no capacity is reused at the same side/engine sequence."
+        ]
+      },
+      "coverageAudit": {
+        "uncoveredInventory": [],
+        "terminalLiquidationKnown": false,
+        "completeTerminalExecutionCoverage": false,
+        "policyRankingEligible": false,
+        "limitation": "Final covered scopes and a complete liquidation mark are necessary for ranking; this audit does not prove earlier continuity, queue fills or profitability."
+      },
+      "marks": [
+        {
+          "episode": 21,
+          "newFills": 0,
+          "realized": "0.000000",
+          "ownedCost": "0.000000",
+          "lastFresh": {
+            "at": "2026-10-14T05:07:50.889Z",
+            "pnl": "0.000000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T04:52:42.790Z",
+            "pnl": "0.000000"
+          }
+        },
+        {
+          "episode": 22,
+          "newFills": 0,
+          "realized": "0.000000",
+          "ownedCost": "0.000000",
+          "lastFresh": {
+            "at": "2026-10-14T05:41:51.006Z",
+            "pnl": "0.000000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T05:25:27.336Z",
+            "pnl": "0.000000"
+          }
+        },
+        {
+          "episode": 23,
+          "newFills": 0,
+          "realized": "0.000000",
+          "ownedCost": "0.000000",
+          "lastFresh": {
+            "at": "2026-10-14T06:06:26.086Z",
+            "pnl": "0.000000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T05:50:01.657Z",
+            "pnl": "0.000000"
+          }
+        },
+        {
+          "episode": 24,
+          "newFills": 1,
+          "realized": "0.000000",
+          "ownedCost": "80.000000",
+          "lastFresh": {
+            "at": "2026-10-14T06:56:32.735Z",
+            "pnl": "-2.500000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T06:55:11.008Z",
+            "pnl": "-2.500000"
+          }
+        },
+        {
+          "episode": 25,
+          "newFills": 0,
+          "realized": "0.000000",
+          "ownedCost": "80.000000",
+          "lastFresh": {
+            "at": "2026-10-14T07:26:52.934Z",
+            "pnl": "-2.500000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T07:10:56.581Z",
+            "pnl": "-2.500000"
+          }
+        },
+        {
+          "episode": 26,
+          "newFills": 0,
+          "realized": "0.000000",
+          "ownedCost": "80.000000",
+          "lastFresh": {
+            "at": "2026-10-14T08:16:19.096Z",
+            "pnl": "-5.000000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T08:02:35.560Z",
+            "pnl": "-5.000000"
+          }
+        },
+        {
+          "episode": 27,
+          "newFills": 0,
+          "realized": "0.000000",
+          "ownedCost": "80.000000",
+          "lastFresh": {
+            "at": "2026-10-14T08:22:18.686Z",
+            "pnl": "-5.000000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T08:19:53.388Z",
+            "pnl": "-5.000000"
+          }
+        }
+      ]
+    },
+    {
+      "latencyMs": 1500,
+      "participationBps": 100,
+      "policy": {
+        "initialCash": "100000.000000",
+        "maximumCommitted": "40000.000000",
+        "maximumMarketCost": "10000.000000",
+        "quantity": 500,
+        "maximumMarkets": 1,
+        "entryExchangeIds": [
+          "1051"
+        ],
+        "entryDepthBps": 10000,
+        "participationBps": 100,
+        "latencyMs": 1500,
+        "retainProfitableHedge": true,
+        "maximumHedgeOvershoot": 0,
+        "inventoryTakerAfterMs": 0,
+        "maximumInventoryAgeMs": 600000,
+        "inventoryAgeClock": "execution",
+        "lifetimeMs": 600000,
+        "insideTicks": 0
+      },
+      "report": {
+        "bot": "Moloch",
+        "at": "2026-10-14T08:23:00.991Z",
+        "policyHash": "5b0075ff73dec44f1da6b59ef0cd42374b4dfba53db8e6b17a9b8dae5fb87983",
+        "events": 10349,
+        "cash": "99995.680000",
+        "realized": "0.000000",
+        "fees": "0.000000",
+        "ownedCost": "4.320000",
+        "reservedCash": "990.680000",
+        "netLiquidationPnl": null,
+        "positions": {
+          "1051": {
+            "YES": [
+              {
+                "quantity": 27,
+                "price": "0.160000",
+                "executedAt": "2026-10-14T06:09:16.237Z"
+              }
+            ],
+            "NO": []
+          }
+        },
+        "priceHistory": {},
+        "fills": 1,
+        "orders": 14,
+        "activeOrders": 0,
+        "unresolvedOrders": 4,
+        "fillModel": "strictThrough",
+        "conditionalQueueFills": 0,
+        "profitSignalEligible": false,
+        "counts": {
+          "gaps": 44,
+          "uniqueTrades": 243,
+          "submissionBatches": 7,
+          "writeBudgetHolds": 29,
+          "duplicateTrades": 1182,
+          "cancels": 4
+        },
+        "contestOrders": 0,
+        "networkRequests": 0,
+        "profitabilityEstablished": false,
+        "assumptions": [
+          "Independent simulated capital; no contest-account ownership.",
+          "Flat entries quote both sides only when combined spread covers modeled fees and required edge; partial fills remain inventory risk.",
+          "Strict one-tick trade-through and bounded participation are counterfactual, not verified queue fills.",
+          "Cancel acknowledgment does not release unresolved funding; complete window and post-end checkpoint are required.",
+          "Opposite BUY FIFO netting models the documented engine credit of one per netted share; all modeled fills remain counterfactual.",
+          "Aged inventory all-or-none simulations require later fresh depth after modeled latency; payout uses the limit-price lower bound and no capacity is reused at the same side/engine sequence."
+        ]
+      },
+      "coverageAudit": {
+        "uncoveredInventory": [],
+        "terminalLiquidationKnown": false,
+        "completeTerminalExecutionCoverage": false,
+        "policyRankingEligible": false,
+        "limitation": "Final covered scopes and a complete liquidation mark are necessary for ranking; this audit does not prove earlier continuity, queue fills or profitability."
+      },
+      "marks": [
+        {
+          "episode": 21,
+          "newFills": 0,
+          "realized": "0.000000",
+          "ownedCost": "0.000000",
+          "lastFresh": {
+            "at": "2026-10-14T05:07:50.889Z",
+            "pnl": "0.000000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T04:52:42.790Z",
+            "pnl": "0.000000"
+          }
+        },
+        {
+          "episode": 22,
+          "newFills": 0,
+          "realized": "0.000000",
+          "ownedCost": "0.000000",
+          "lastFresh": {
+            "at": "2026-10-14T05:41:51.006Z",
+            "pnl": "0.000000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T05:25:27.336Z",
+            "pnl": "0.000000"
+          }
+        },
+        {
+          "episode": 23,
+          "newFills": 0,
+          "realized": "0.000000",
+          "ownedCost": "0.000000",
+          "lastFresh": {
+            "at": "2026-10-14T06:06:26.086Z",
+            "pnl": "0.000000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T05:50:01.657Z",
+            "pnl": "0.000000"
+          }
+        },
+        {
+          "episode": 24,
+          "newFills": 1,
+          "realized": "0.000000",
+          "ownedCost": "4.320000",
+          "lastFresh": {
+            "at": "2026-10-14T06:56:32.735Z",
+            "pnl": "-0.135000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T06:55:11.008Z",
+            "pnl": "-0.135000"
+          }
+        },
+        {
+          "episode": 25,
+          "newFills": 0,
+          "realized": "0.000000",
+          "ownedCost": "4.320000",
+          "lastFresh": {
+            "at": "2026-10-14T07:26:52.934Z",
+            "pnl": "-0.135000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T07:10:56.581Z",
+            "pnl": "-0.135000"
+          }
+        },
+        {
+          "episode": 26,
+          "newFills": 0,
+          "realized": "0.000000",
+          "ownedCost": "4.320000",
+          "lastFresh": {
+            "at": "2026-10-14T08:16:19.096Z",
+            "pnl": "-0.270000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T08:02:35.560Z",
+            "pnl": "-0.270000"
+          }
+        },
+        {
+          "episode": 27,
+          "newFills": 0,
+          "realized": "0.000000",
+          "ownedCost": "4.320000",
+          "lastFresh": {
+            "at": "2026-10-14T08:22:18.686Z",
+            "pnl": "-0.270000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T08:19:53.388Z",
+            "pnl": "-0.270000"
+          }
+        }
+      ]
+    },
+    {
+      "latencyMs": 1500,
+      "participationBps": 1000,
+      "policy": {
+        "initialCash": "100000.000000",
+        "maximumCommitted": "40000.000000",
+        "maximumMarketCost": "10000.000000",
+        "quantity": 500,
+        "maximumMarkets": 1,
+        "entryExchangeIds": [
+          "1051"
+        ],
+        "entryDepthBps": 10000,
+        "participationBps": 1000,
+        "latencyMs": 1500,
+        "retainProfitableHedge": true,
+        "maximumHedgeOvershoot": 0,
+        "inventoryTakerAfterMs": 0,
+        "maximumInventoryAgeMs": 600000,
+        "inventoryAgeClock": "execution",
+        "lifetimeMs": 600000,
+        "insideTicks": 0
+      },
+      "report": {
+        "bot": "Moloch",
+        "at": "2026-10-14T08:23:00.991Z",
+        "policyHash": "4d6004ae52e8b422adece1fe48bede8668ed8878b219ea1e5024e61be0a448ff",
+        "events": 10349,
+        "cash": "99955.360000",
+        "realized": "0.000000",
+        "fees": "0.000000",
+        "ownedCost": "44.640000",
+        "reservedCash": "950.360000",
+        "netLiquidationPnl": null,
+        "positions": {
+          "1051": {
+            "YES": [
+              {
+                "quantity": 279,
+                "price": "0.160000",
+                "executedAt": "2026-10-14T06:09:16.237Z"
+              }
+            ],
+            "NO": []
+          }
+        },
+        "priceHistory": {},
+        "fills": 1,
+        "orders": 14,
+        "activeOrders": 0,
+        "unresolvedOrders": 4,
+        "fillModel": "strictThrough",
+        "conditionalQueueFills": 0,
+        "profitSignalEligible": false,
+        "counts": {
+          "gaps": 44,
+          "uniqueTrades": 243,
+          "submissionBatches": 7,
+          "writeBudgetHolds": 29,
+          "duplicateTrades": 1182,
+          "cancels": 4
+        },
+        "contestOrders": 0,
+        "networkRequests": 0,
+        "profitabilityEstablished": false,
+        "assumptions": [
+          "Independent simulated capital; no contest-account ownership.",
+          "Flat entries quote both sides only when combined spread covers modeled fees and required edge; partial fills remain inventory risk.",
+          "Strict one-tick trade-through and bounded participation are counterfactual, not verified queue fills.",
+          "Cancel acknowledgment does not release unresolved funding; complete window and post-end checkpoint are required.",
+          "Opposite BUY FIFO netting models the documented engine credit of one per netted share; all modeled fills remain counterfactual.",
+          "Aged inventory all-or-none simulations require later fresh depth after modeled latency; payout uses the limit-price lower bound and no capacity is reused at the same side/engine sequence."
+        ]
+      },
+      "coverageAudit": {
+        "uncoveredInventory": [],
+        "terminalLiquidationKnown": false,
+        "completeTerminalExecutionCoverage": false,
+        "policyRankingEligible": false,
+        "limitation": "Final covered scopes and a complete liquidation mark are necessary for ranking; this audit does not prove earlier continuity, queue fills or profitability."
+      },
+      "marks": [
+        {
+          "episode": 21,
+          "newFills": 0,
+          "realized": "0.000000",
+          "ownedCost": "0.000000",
+          "lastFresh": {
+            "at": "2026-10-14T05:07:50.889Z",
+            "pnl": "0.000000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T04:52:42.790Z",
+            "pnl": "0.000000"
+          }
+        },
+        {
+          "episode": 22,
+          "newFills": 0,
+          "realized": "0.000000",
+          "ownedCost": "0.000000",
+          "lastFresh": {
+            "at": "2026-10-14T05:41:51.006Z",
+            "pnl": "0.000000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T05:25:27.336Z",
+            "pnl": "0.000000"
+          }
+        },
+        {
+          "episode": 23,
+          "newFills": 0,
+          "realized": "0.000000",
+          "ownedCost": "0.000000",
+          "lastFresh": {
+            "at": "2026-10-14T06:06:26.086Z",
+            "pnl": "0.000000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T05:50:01.657Z",
+            "pnl": "0.000000"
+          }
+        },
+        {
+          "episode": 24,
+          "newFills": 1,
+          "realized": "0.000000",
+          "ownedCost": "44.640000",
+          "lastFresh": {
+            "at": "2026-10-14T06:56:32.735Z",
+            "pnl": "-1.395000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T06:55:11.008Z",
+            "pnl": "-1.395000"
+          }
+        },
+        {
+          "episode": 25,
+          "newFills": 0,
+          "realized": "0.000000",
+          "ownedCost": "44.640000",
+          "lastFresh": {
+            "at": "2026-10-14T07:26:52.934Z",
+            "pnl": "-1.395000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T07:10:56.581Z",
+            "pnl": "-1.395000"
+          }
+        },
+        {
+          "episode": 26,
+          "newFills": 0,
+          "realized": "0.000000",
+          "ownedCost": "44.640000",
+          "lastFresh": {
+            "at": "2026-10-14T08:16:19.096Z",
+            "pnl": "-2.790000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T08:02:35.560Z",
+            "pnl": "-2.790000"
+          }
+        },
+        {
+          "episode": 27,
+          "newFills": 0,
+          "realized": "0.000000",
+          "ownedCost": "44.640000",
+          "lastFresh": {
+            "at": "2026-10-14T08:22:18.686Z",
+            "pnl": "-2.790000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T08:19:53.388Z",
+            "pnl": "-2.790000"
+          }
+        }
+      ]
+    },
+    {
+      "latencyMs": 1500,
+      "participationBps": 10000,
+      "policy": {
+        "initialCash": "100000.000000",
+        "maximumCommitted": "40000.000000",
+        "maximumMarketCost": "10000.000000",
+        "quantity": 500,
+        "maximumMarkets": 1,
+        "entryExchangeIds": [
+          "1051"
+        ],
+        "entryDepthBps": 10000,
+        "participationBps": 10000,
+        "latencyMs": 1500,
+        "retainProfitableHedge": true,
+        "maximumHedgeOvershoot": 0,
+        "inventoryTakerAfterMs": 0,
+        "maximumInventoryAgeMs": 600000,
+        "inventoryAgeClock": "execution",
+        "lifetimeMs": 600000,
+        "insideTicks": 0
+      },
+      "report": {
+        "bot": "Moloch",
+        "at": "2026-10-14T08:23:00.991Z",
+        "policyHash": "7c91b6a25c7eb96be41b44edbcecce4525211fe46bb04e0ff51e3859f18e7ee1",
+        "events": 10349,
+        "cash": "99920.000000",
+        "realized": "0.000000",
+        "fees": "0.000000",
+        "ownedCost": "80.000000",
+        "reservedCash": "915.000000",
+        "netLiquidationPnl": null,
+        "positions": {
+          "1051": {
+            "YES": [
+              {
+                "quantity": 500,
+                "price": "0.160000",
+                "executedAt": "2026-10-14T06:09:16.237Z"
+              }
+            ],
+            "NO": []
+          }
+        },
+        "priceHistory": {},
+        "fills": 1,
+        "orders": 14,
+        "activeOrders": 0,
+        "unresolvedOrders": 3,
+        "fillModel": "strictThrough",
+        "conditionalQueueFills": 0,
+        "profitSignalEligible": false,
+        "counts": {
+          "gaps": 44,
+          "uniqueTrades": 243,
+          "submissionBatches": 7,
+          "writeBudgetHolds": 29,
+          "duplicateTrades": 1182,
+          "cancels": 4
+        },
+        "contestOrders": 0,
+        "networkRequests": 0,
+        "profitabilityEstablished": false,
+        "assumptions": [
+          "Independent simulated capital; no contest-account ownership.",
+          "Flat entries quote both sides only when combined spread covers modeled fees and required edge; partial fills remain inventory risk.",
+          "Strict one-tick trade-through and bounded participation are counterfactual, not verified queue fills.",
+          "Cancel acknowledgment does not release unresolved funding; complete window and post-end checkpoint are required.",
+          "Opposite BUY FIFO netting models the documented engine credit of one per netted share; all modeled fills remain counterfactual.",
+          "Aged inventory all-or-none simulations require later fresh depth after modeled latency; payout uses the limit-price lower bound and no capacity is reused at the same side/engine sequence."
+        ]
+      },
+      "coverageAudit": {
+        "uncoveredInventory": [],
+        "terminalLiquidationKnown": false,
+        "completeTerminalExecutionCoverage": false,
+        "policyRankingEligible": false,
+        "limitation": "Final covered scopes and a complete liquidation mark are necessary for ranking; this audit does not prove earlier continuity, queue fills or profitability."
+      },
+      "marks": [
+        {
+          "episode": 21,
+          "newFills": 0,
+          "realized": "0.000000",
+          "ownedCost": "0.000000",
+          "lastFresh": {
+            "at": "2026-10-14T05:07:50.889Z",
+            "pnl": "0.000000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T04:52:42.790Z",
+            "pnl": "0.000000"
+          }
+        },
+        {
+          "episode": 22,
+          "newFills": 0,
+          "realized": "0.000000",
+          "ownedCost": "0.000000",
+          "lastFresh": {
+            "at": "2026-10-14T05:41:51.006Z",
+            "pnl": "0.000000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T05:25:27.336Z",
+            "pnl": "0.000000"
+          }
+        },
+        {
+          "episode": 23,
+          "newFills": 0,
+          "realized": "0.000000",
+          "ownedCost": "0.000000",
+          "lastFresh": {
+            "at": "2026-10-14T06:06:26.086Z",
+            "pnl": "0.000000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T05:50:01.657Z",
+            "pnl": "0.000000"
+          }
+        },
+        {
+          "episode": 24,
+          "newFills": 1,
+          "realized": "0.000000",
+          "ownedCost": "80.000000",
+          "lastFresh": {
+            "at": "2026-10-14T06:56:32.735Z",
+            "pnl": "-2.500000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T06:55:11.008Z",
+            "pnl": "-2.500000"
+          }
+        },
+        {
+          "episode": 25,
+          "newFills": 0,
+          "realized": "0.000000",
+          "ownedCost": "80.000000",
+          "lastFresh": {
+            "at": "2026-10-14T07:26:52.934Z",
+            "pnl": "-2.500000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T07:10:56.581Z",
+            "pnl": "-2.500000"
+          }
+        },
+        {
+          "episode": 26,
+          "newFills": 0,
+          "realized": "0.000000",
+          "ownedCost": "80.000000",
+          "lastFresh": {
+            "at": "2026-10-14T08:16:19.096Z",
+            "pnl": "-5.000000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T08:02:35.560Z",
+            "pnl": "-5.000000"
+          }
+        },
+        {
+          "episode": 27,
+          "newFills": 0,
+          "realized": "0.000000",
+          "ownedCost": "80.000000",
+          "lastFresh": {
+            "at": "2026-10-14T08:22:18.686Z",
+            "pnl": "-5.000000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T08:19:53.388Z",
+            "pnl": "-5.000000"
+          }
+        }
+      ]
+    },
+    {
+      "latencyMs": 500,
+      "participationBps": 100,
+      "policy": {
+        "initialCash": "100000.000000",
+        "maximumCommitted": "40000.000000",
+        "maximumMarketCost": "10000.000000",
+        "quantity": 500,
+        "maximumMarkets": 1,
+        "entryExchangeIds": [
+          "1051"
+        ],
+        "entryDepthBps": 10000,
+        "participationBps": 100,
+        "latencyMs": 500,
+        "retainProfitableHedge": true,
+        "maximumHedgeOvershoot": 0,
+        "inventoryTakerAfterMs": 0,
+        "maximumInventoryAgeMs": 600000,
+        "inventoryAgeClock": "execution",
+        "lifetimeMs": 600000,
+        "insideTicks": 0
+      },
+      "report": {
+        "bot": "Moloch",
+        "at": "2026-10-14T08:23:00.991Z",
+        "policyHash": "9ff1409747ab315fd54226faaedf0cea938dd46f623e7f3260c7cf8766798ae2",
+        "events": 10349,
+        "cash": "99995.680000",
+        "realized": "0.000000",
+        "fees": "0.000000",
+        "ownedCost": "4.320000",
+        "reservedCash": "990.680000",
+        "netLiquidationPnl": null,
+        "positions": {
+          "1051": {
+            "YES": [
+              {
+                "quantity": 27,
+                "price": "0.160000",
+                "executedAt": "2026-10-14T06:09:16.237Z"
+              }
+            ],
+            "NO": []
+          }
+        },
+        "priceHistory": {},
+        "fills": 1,
+        "orders": 14,
+        "activeOrders": 0,
+        "unresolvedOrders": 4,
+        "fillModel": "strictThrough",
+        "conditionalQueueFills": 0,
+        "profitSignalEligible": false,
+        "counts": {
+          "gaps": 44,
+          "uniqueTrades": 243,
+          "submissionBatches": 7,
+          "writeBudgetHolds": 29,
+          "duplicateTrades": 1182,
+          "cancels": 4
+        },
+        "contestOrders": 0,
+        "networkRequests": 0,
+        "profitabilityEstablished": false,
+        "assumptions": [
+          "Independent simulated capital; no contest-account ownership.",
+          "Flat entries quote both sides only when combined spread covers modeled fees and required edge; partial fills remain inventory risk.",
+          "Strict one-tick trade-through and bounded participation are counterfactual, not verified queue fills.",
+          "Cancel acknowledgment does not release unresolved funding; complete window and post-end checkpoint are required.",
+          "Opposite BUY FIFO netting models the documented engine credit of one per netted share; all modeled fills remain counterfactual.",
+          "Aged inventory all-or-none simulations require later fresh depth after modeled latency; payout uses the limit-price lower bound and no capacity is reused at the same side/engine sequence."
+        ]
+      },
+      "coverageAudit": {
+        "uncoveredInventory": [],
+        "terminalLiquidationKnown": false,
+        "completeTerminalExecutionCoverage": false,
+        "policyRankingEligible": false,
+        "limitation": "Final covered scopes and a complete liquidation mark are necessary for ranking; this audit does not prove earlier continuity, queue fills or profitability."
+      },
+      "marks": [
+        {
+          "episode": 21,
+          "newFills": 0,
+          "realized": "0.000000",
+          "ownedCost": "0.000000",
+          "lastFresh": {
+            "at": "2026-10-14T05:07:50.889Z",
+            "pnl": "0.000000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T04:52:42.790Z",
+            "pnl": "0.000000"
+          }
+        },
+        {
+          "episode": 22,
+          "newFills": 0,
+          "realized": "0.000000",
+          "ownedCost": "0.000000",
+          "lastFresh": {
+            "at": "2026-10-14T05:41:51.006Z",
+            "pnl": "0.000000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T05:25:27.336Z",
+            "pnl": "0.000000"
+          }
+        },
+        {
+          "episode": 23,
+          "newFills": 0,
+          "realized": "0.000000",
+          "ownedCost": "0.000000",
+          "lastFresh": {
+            "at": "2026-10-14T06:06:26.086Z",
+            "pnl": "0.000000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T05:50:01.657Z",
+            "pnl": "0.000000"
+          }
+        },
+        {
+          "episode": 24,
+          "newFills": 1,
+          "realized": "0.000000",
+          "ownedCost": "4.320000",
+          "lastFresh": {
+            "at": "2026-10-14T06:56:32.735Z",
+            "pnl": "-0.135000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T06:55:11.008Z",
+            "pnl": "-0.135000"
+          }
+        },
+        {
+          "episode": 25,
+          "newFills": 0,
+          "realized": "0.000000",
+          "ownedCost": "4.320000",
+          "lastFresh": {
+            "at": "2026-10-14T07:26:52.934Z",
+            "pnl": "-0.135000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T07:10:56.581Z",
+            "pnl": "-0.135000"
+          }
+        },
+        {
+          "episode": 26,
+          "newFills": 0,
+          "realized": "0.000000",
+          "ownedCost": "4.320000",
+          "lastFresh": {
+            "at": "2026-10-14T08:16:19.096Z",
+            "pnl": "-0.270000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T08:02:35.560Z",
+            "pnl": "-0.270000"
+          }
+        },
+        {
+          "episode": 27,
+          "newFills": 0,
+          "realized": "0.000000",
+          "ownedCost": "4.320000",
+          "lastFresh": {
+            "at": "2026-10-14T08:22:18.686Z",
+            "pnl": "-0.270000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T08:19:53.388Z",
+            "pnl": "-0.270000"
+          }
+        }
+      ]
+    },
+    {
+      "latencyMs": 500,
+      "participationBps": 1000,
+      "policy": {
+        "initialCash": "100000.000000",
+        "maximumCommitted": "40000.000000",
+        "maximumMarketCost": "10000.000000",
+        "quantity": 500,
+        "maximumMarkets": 1,
+        "entryExchangeIds": [
+          "1051"
+        ],
+        "entryDepthBps": 10000,
+        "participationBps": 1000,
+        "latencyMs": 500,
+        "retainProfitableHedge": true,
+        "maximumHedgeOvershoot": 0,
+        "inventoryTakerAfterMs": 0,
+        "maximumInventoryAgeMs": 600000,
+        "inventoryAgeClock": "execution",
+        "lifetimeMs": 600000,
+        "insideTicks": 0
+      },
+      "report": {
+        "bot": "Moloch",
+        "at": "2026-10-14T08:23:00.991Z",
+        "policyHash": "97d1ff18f4d6aa1869d764a43aa05d22b6894cd1c70a9049751eb0db451a7149",
+        "events": 10349,
+        "cash": "99955.360000",
+        "realized": "0.000000",
+        "fees": "0.000000",
+        "ownedCost": "44.640000",
+        "reservedCash": "950.360000",
+        "netLiquidationPnl": null,
+        "positions": {
+          "1051": {
+            "YES": [
+              {
+                "quantity": 279,
+                "price": "0.160000",
+                "executedAt": "2026-10-14T06:09:16.237Z"
+              }
+            ],
+            "NO": []
+          }
+        },
+        "priceHistory": {},
+        "fills": 1,
+        "orders": 14,
+        "activeOrders": 0,
+        "unresolvedOrders": 4,
+        "fillModel": "strictThrough",
+        "conditionalQueueFills": 0,
+        "profitSignalEligible": false,
+        "counts": {
+          "gaps": 44,
+          "uniqueTrades": 243,
+          "submissionBatches": 7,
+          "writeBudgetHolds": 29,
+          "duplicateTrades": 1182,
+          "cancels": 4
+        },
+        "contestOrders": 0,
+        "networkRequests": 0,
+        "profitabilityEstablished": false,
+        "assumptions": [
+          "Independent simulated capital; no contest-account ownership.",
+          "Flat entries quote both sides only when combined spread covers modeled fees and required edge; partial fills remain inventory risk.",
+          "Strict one-tick trade-through and bounded participation are counterfactual, not verified queue fills.",
+          "Cancel acknowledgment does not release unresolved funding; complete window and post-end checkpoint are required.",
+          "Opposite BUY FIFO netting models the documented engine credit of one per netted share; all modeled fills remain counterfactual.",
+          "Aged inventory all-or-none simulations require later fresh depth after modeled latency; payout uses the limit-price lower bound and no capacity is reused at the same side/engine sequence."
+        ]
+      },
+      "coverageAudit": {
+        "uncoveredInventory": [],
+        "terminalLiquidationKnown": false,
+        "completeTerminalExecutionCoverage": false,
+        "policyRankingEligible": false,
+        "limitation": "Final covered scopes and a complete liquidation mark are necessary for ranking; this audit does not prove earlier continuity, queue fills or profitability."
+      },
+      "marks": [
+        {
+          "episode": 21,
+          "newFills": 0,
+          "realized": "0.000000",
+          "ownedCost": "0.000000",
+          "lastFresh": {
+            "at": "2026-10-14T05:07:50.889Z",
+            "pnl": "0.000000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T04:52:42.790Z",
+            "pnl": "0.000000"
+          }
+        },
+        {
+          "episode": 22,
+          "newFills": 0,
+          "realized": "0.000000",
+          "ownedCost": "0.000000",
+          "lastFresh": {
+            "at": "2026-10-14T05:41:51.006Z",
+            "pnl": "0.000000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T05:25:27.336Z",
+            "pnl": "0.000000"
+          }
+        },
+        {
+          "episode": 23,
+          "newFills": 0,
+          "realized": "0.000000",
+          "ownedCost": "0.000000",
+          "lastFresh": {
+            "at": "2026-10-14T06:06:26.086Z",
+            "pnl": "0.000000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T05:50:01.657Z",
+            "pnl": "0.000000"
+          }
+        },
+        {
+          "episode": 24,
+          "newFills": 1,
+          "realized": "0.000000",
+          "ownedCost": "44.640000",
+          "lastFresh": {
+            "at": "2026-10-14T06:56:32.735Z",
+            "pnl": "-1.395000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T06:55:11.008Z",
+            "pnl": "-1.395000"
+          }
+        },
+        {
+          "episode": 25,
+          "newFills": 0,
+          "realized": "0.000000",
+          "ownedCost": "44.640000",
+          "lastFresh": {
+            "at": "2026-10-14T07:26:52.934Z",
+            "pnl": "-1.395000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T07:10:56.581Z",
+            "pnl": "-1.395000"
+          }
+        },
+        {
+          "episode": 26,
+          "newFills": 0,
+          "realized": "0.000000",
+          "ownedCost": "44.640000",
+          "lastFresh": {
+            "at": "2026-10-14T08:16:19.096Z",
+            "pnl": "-2.790000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T08:02:35.560Z",
+            "pnl": "-2.790000"
+          }
+        },
+        {
+          "episode": 27,
+          "newFills": 0,
+          "realized": "0.000000",
+          "ownedCost": "44.640000",
+          "lastFresh": {
+            "at": "2026-10-14T08:22:18.686Z",
+            "pnl": "-2.790000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T08:19:53.388Z",
+            "pnl": "-2.790000"
+          }
+        }
+      ]
+    },
+    {
+      "latencyMs": 500,
+      "participationBps": 10000,
+      "policy": {
+        "initialCash": "100000.000000",
+        "maximumCommitted": "40000.000000",
+        "maximumMarketCost": "10000.000000",
+        "quantity": 500,
+        "maximumMarkets": 1,
+        "entryExchangeIds": [
+          "1051"
+        ],
+        "entryDepthBps": 10000,
+        "participationBps": 10000,
+        "latencyMs": 500,
+        "retainProfitableHedge": true,
+        "maximumHedgeOvershoot": 0,
+        "inventoryTakerAfterMs": 0,
+        "maximumInventoryAgeMs": 600000,
+        "inventoryAgeClock": "execution",
+        "lifetimeMs": 600000,
+        "insideTicks": 0
+      },
+      "report": {
+        "bot": "Moloch",
+        "at": "2026-10-14T08:23:00.991Z",
+        "policyHash": "e79047b7396d9396c3a8feab21000d286370f6b889b19e4021fd7cf18f74f881",
+        "events": 10349,
+        "cash": "99920.000000",
+        "realized": "0.000000",
+        "fees": "0.000000",
+        "ownedCost": "80.000000",
+        "reservedCash": "915.000000",
+        "netLiquidationPnl": null,
+        "positions": {
+          "1051": {
+            "YES": [
+              {
+                "quantity": 500,
+                "price": "0.160000",
+                "executedAt": "2026-10-14T06:09:16.237Z"
+              }
+            ],
+            "NO": []
+          }
+        },
+        "priceHistory": {},
+        "fills": 1,
+        "orders": 14,
+        "activeOrders": 0,
+        "unresolvedOrders": 3,
+        "fillModel": "strictThrough",
+        "conditionalQueueFills": 0,
+        "profitSignalEligible": false,
+        "counts": {
+          "gaps": 44,
+          "uniqueTrades": 243,
+          "submissionBatches": 7,
+          "writeBudgetHolds": 29,
+          "duplicateTrades": 1182,
+          "cancels": 4
+        },
+        "contestOrders": 0,
+        "networkRequests": 0,
+        "profitabilityEstablished": false,
+        "assumptions": [
+          "Independent simulated capital; no contest-account ownership.",
+          "Flat entries quote both sides only when combined spread covers modeled fees and required edge; partial fills remain inventory risk.",
+          "Strict one-tick trade-through and bounded participation are counterfactual, not verified queue fills.",
+          "Cancel acknowledgment does not release unresolved funding; complete window and post-end checkpoint are required.",
+          "Opposite BUY FIFO netting models the documented engine credit of one per netted share; all modeled fills remain counterfactual.",
+          "Aged inventory all-or-none simulations require later fresh depth after modeled latency; payout uses the limit-price lower bound and no capacity is reused at the same side/engine sequence."
+        ]
+      },
+      "coverageAudit": {
+        "uncoveredInventory": [],
+        "terminalLiquidationKnown": false,
+        "completeTerminalExecutionCoverage": false,
+        "policyRankingEligible": false,
+        "limitation": "Final covered scopes and a complete liquidation mark are necessary for ranking; this audit does not prove earlier continuity, queue fills or profitability."
+      },
+      "marks": [
+        {
+          "episode": 21,
+          "newFills": 0,
+          "realized": "0.000000",
+          "ownedCost": "0.000000",
+          "lastFresh": {
+            "at": "2026-10-14T05:07:50.889Z",
+            "pnl": "0.000000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T04:52:42.790Z",
+            "pnl": "0.000000"
+          }
+        },
+        {
+          "episode": 22,
+          "newFills": 0,
+          "realized": "0.000000",
+          "ownedCost": "0.000000",
+          "lastFresh": {
+            "at": "2026-10-14T05:41:51.006Z",
+            "pnl": "0.000000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T05:25:27.336Z",
+            "pnl": "0.000000"
+          }
+        },
+        {
+          "episode": 23,
+          "newFills": 0,
+          "realized": "0.000000",
+          "ownedCost": "0.000000",
+          "lastFresh": {
+            "at": "2026-10-14T06:06:26.086Z",
+            "pnl": "0.000000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T05:50:01.657Z",
+            "pnl": "0.000000"
+          }
+        },
+        {
+          "episode": 24,
+          "newFills": 1,
+          "realized": "0.000000",
+          "ownedCost": "80.000000",
+          "lastFresh": {
+            "at": "2026-10-14T06:56:32.735Z",
+            "pnl": "-2.500000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T06:55:11.008Z",
+            "pnl": "-2.500000"
+          }
+        },
+        {
+          "episode": 25,
+          "newFills": 0,
+          "realized": "0.000000",
+          "ownedCost": "80.000000",
+          "lastFresh": {
+            "at": "2026-10-14T07:26:52.934Z",
+            "pnl": "-2.500000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T07:10:56.581Z",
+            "pnl": "-2.500000"
+          }
+        },
+        {
+          "episode": 26,
+          "newFills": 0,
+          "realized": "0.000000",
+          "ownedCost": "80.000000",
+          "lastFresh": {
+            "at": "2026-10-14T08:16:19.096Z",
+            "pnl": "-5.000000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T08:02:35.560Z",
+            "pnl": "-5.000000"
+          }
+        },
+        {
+          "episode": 27,
+          "newFills": 0,
+          "realized": "0.000000",
+          "ownedCost": "80.000000",
+          "lastFresh": {
+            "at": "2026-10-14T08:22:18.686Z",
+            "pnl": "-5.000000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T08:19:53.388Z",
+            "pnl": "-5.000000"
+          }
+        }
+      ]
+    }
+  ],
+  "contestOrders": 0,
+  "networkRequests": 0,
+  "profitabilityEstablished": false,
+  "limitations": [
+    "Previously inspected archived prices; diagnostic, not untouched forward validation.",
+    "Selected scope remains in all seven source manifests; temporal outages, stale books and missing tape coverage are still enforced.",
+    "500/1500ms are unverified hypothetical exchange activation delays, not measured production latency.",
+    "Read and write budgets, minimum quote age, depth and fees remain unchanged.",
+    "Independent 100,000 paper comparisons are not account capital or additive profits.",
+    "Unfinished positions and quote liabilities remain in the ledger; missing final marks are not fabricated."
+  ]
+}

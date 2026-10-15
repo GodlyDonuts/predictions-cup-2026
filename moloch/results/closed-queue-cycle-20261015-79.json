@@ -1,0 +1,157 @@
+{
+  "schemaVersion": 1,
+  "registeredAt": "2026-10-15T01:52:12.684Z",
+  "driverSha256": "8c16f85300f2e199a2c33e4d763b0502fc1e47bb50394426cf87f8b77353fd1f",
+  "sourceParent": "C:\\Users\\csram\\.codex\\worktrees\\viserion-capital-stress\\predictions-cup-2026\\runtime\\moloch\\live-sig-20261014-78",
+  "source": "C:\\Users\\csram\\.codex\\worktrees\\viserion-capital-stress\\predictions-cup-2026\\runtime\\moloch\\live-sig-20261014-79",
+  "parents": [
+    {
+      "directory": "C:\\Users\\csram\\.codex\\worktrees\\viserion-capital-stress\\predictions-cup-2026\\runtime\\moloch\\fast-control-20261014-78",
+      "snapshotHash": "ff5ea22f288d0f8c12926b2d67dce41fee5103787c0d7fa59877ec079701289e",
+      "cash": "99252.600000",
+      "realized": "-1.000000"
+    },
+    {
+      "directory": "C:\\Users\\csram\\.codex\\worktrees\\viserion-capital-stress\\predictions-cup-2026\\runtime\\moloch\\fast-candidate-20261014-78",
+      "snapshotHash": "91efc1387508ab60450aebf70c4d243e84cf6dccec014c620b11daaefa82bef6",
+      "cash": "99252.000000",
+      "realized": "-1.000000"
+    }
+  ],
+  "pairs": [
+    {
+      "marketId": "384",
+      "exchangeId": "1073"
+    }
+  ],
+  "maximumCycles": 30,
+  "entriesEnabled": false,
+  "newAccountCapital": "0",
+  "contestOrders": 0,
+  "profitabilityEstablished": false,
+  "finishedAt": "2026-10-15T01:57:41.042Z",
+  "banks": [
+    {
+      "directory": "C:\\Users\\csram\\.codex\\worktrees\\viserion-capital-stress\\predictions-cup-2026\\runtime\\moloch\\fast-control-20261014-79",
+      "snapshotHash": "c4f32f703fc77211a8503da6692f89506a9ac14ff2bc1132bcaa7b2124d42fce",
+      "bot": "Moloch",
+      "at": "2026-10-15T01:56:12.712Z",
+      "policyHash": "a897305987d27f20c05d8c46c37662b5313f271d21c13b0997942ef99f9b68e4",
+      "events": 34023,
+      "cash": "99849.720000",
+      "realized": "-150.280000",
+      "fees": "0.000000",
+      "ownedCost": "0.000000",
+      "reservedCash": "0.000000",
+      "netLiquidationPnl": "-150.280000",
+      "positions": {
+        "922": {
+          "YES": [],
+          "NO": []
+        },
+        "1027": {
+          "YES": [],
+          "NO": []
+        },
+        "1055": {
+          "YES": [],
+          "NO": []
+        },
+        "1073": {
+          "YES": [],
+          "NO": []
+        }
+      },
+      "priceHistory": {},
+      "fills": 60,
+      "orders": 151,
+      "activeOrders": 0,
+      "unresolvedOrders": 0,
+      "fillModel": "strictThrough",
+      "conditionalQueueFills": 0,
+      "profitSignalEligible": false,
+      "counts": {
+        "uniqueTrades": 1002,
+        "submissionBatches": 104,
+        "writeBudgetHolds": 1171,
+        "duplicateTrades": 10945,
+        "cancels": 86,
+        "gaps": 70,
+        "inventoryAonEvaluations": 17
+      },
+      "contestOrders": 0,
+      "networkRequests": 0,
+      "profitabilityEstablished": false,
+      "assumptions": [
+        "Independent simulated capital; no contest-account ownership.",
+        "Flat entries quote both sides only when combined spread covers modeled fees and required edge; partial fills remain inventory risk.",
+        "Strict one-tick trade-through and bounded participation are counterfactual, not verified queue fills.",
+        "Cancel acknowledgment does not release unresolved funding; complete window and post-end checkpoint are required.",
+        "Opposite BUY FIFO netting models the documented engine credit of one per netted share; all modeled fills remain counterfactual.",
+        "Aged inventory all-or-none simulations require later fresh depth after modeled latency; payout uses the limit-price lower bound and no capacity is reused at the same side/engine sequence."
+      ]
+    },
+    {
+      "directory": "C:\\Users\\csram\\.codex\\worktrees\\viserion-capital-stress\\predictions-cup-2026\\runtime\\moloch\\fast-candidate-20261014-79",
+      "snapshotHash": "a47ca18b851d515db199b1d6aba8361c5a3c0aca2a0d719cc31e2fff7784c8fa",
+      "bot": "Moloch",
+      "at": "2026-10-15T01:56:12.712Z",
+      "policyHash": "814c0091adfd783c8710bc2071e7dd95c3df542c9aa363eba4cd9914f53a73e7",
+      "events": 34023,
+      "cash": "99849.600000",
+      "realized": "-150.400000",
+      "fees": "0.000000",
+      "ownedCost": "0.000000",
+      "reservedCash": "0.000000",
+      "netLiquidationPnl": "-150.400000",
+      "positions": {
+        "922": {
+          "YES": [],
+          "NO": []
+        },
+        "1027": {
+          "YES": [],
+          "NO": []
+        },
+        "1055": {
+          "YES": [],
+          "NO": []
+        },
+        "1073": {
+          "YES": [],
+          "NO": []
+        }
+      },
+      "priceHistory": {},
+      "fills": 61,
+      "orders": 151,
+      "activeOrders": 0,
+      "unresolvedOrders": 0,
+      "fillModel": "conditionalFifo",
+      "conditionalQueueFills": 1,
+      "profitSignalEligible": false,
+      "counts": {
+        "uniqueTrades": 1002,
+        "submissionBatches": 104,
+        "writeBudgetHolds": 1171,
+        "duplicateTrades": 10945,
+        "cancels": 86,
+        "gaps": 70,
+        "inventoryAonEvaluations": 17,
+        "conditionalTouches": 15
+      },
+      "contestOrders": 0,
+      "networkRequests": 0,
+      "profitabilityEstablished": false,
+      "assumptions": [
+        "Independent simulated capital; no contest-account ownership.",
+        "Flat entries quote both sides only when combined spread covers modeled fees and required edge; partial fills remain inventory risk.",
+        "Touch fills conditionally attribute observed volume to our side after visible queue exhaustion; aggressor direction and true FIFO priority are unverified.",
+        "Cancel acknowledgment does not release unresolved funding; complete window and post-end checkpoint are required.",
+        "Opposite BUY FIFO netting models the documented engine credit of one per netted share; all modeled fills remain counterfactual.",
+        "Aged inventory all-or-none simulations require later fresh depth after modeled latency; payout uses the limit-price lower bound and no capacity is reused at the same side/engine sequence."
+      ]
+    }
+  ],
+  "fullyClosed": true
+}

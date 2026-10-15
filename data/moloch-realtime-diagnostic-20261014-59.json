@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "at": "2026-10-14T22:52:11.323Z",
+  "phase": 59,
+  "captureStatus": "failed",
+  "captureExit": 1,
+  "officialReceipts": 0,
+  "streamFailure": {
+    "phase": "channel",
+    "code": "CHANNEL_ERROR",
+    "category": "unclassified",
+    "errorShape": "Error",
+    "inspectedErrorNodes": 3,
+    "transportEvents": [
+      "error"
+    ]
+  },
+  "streamMetrics": {
+    "batches": 0,
+    "trades": 0,
+    "duplicateTrades": 0,
+    "duplicateBatches": 0,
+    "gaps": 0,
+    "truncated": 0,
+    "schemaErrors": 0,
+    "restBooks": 0,
+    "restTapes": 0,
+    "pushedBooks": 0,
+    "olderBooks": 0,
+    "unknownMarkets": 0,
+    "latencySamples": 0,
+    "latencySumMs": 0,
+    "latencyMaxMs": 0,
+    "meanTradeLatencyMs": null
+  },
+  "streamStatsHash": "221cbb1fe4285e95aaf460ae74b9d1061a98bed4a224226e40040d546566b549",
+  "tokenWrites": 1,
+  "automaticTokenRefresh": false,
+  "contestOrders": 0,
+  "profitabilityEstablished": false,
+  "nextAction": "Diagnose WebSocket handshake through a transport exposing typed network/HTTP status; do not repeat unchanged connection attempts."
+}

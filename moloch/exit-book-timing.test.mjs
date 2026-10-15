@@ -1,0 +1,13 @@
+import test from 'node:test';import assert from 'node:assert/strict';import path from 'node:path';import {fileURLToPath} from 'node:url';import {spawnSync} from 'node:child_process';
+import {createMoloch,advanceMoloch,reportMoloch} from './engine.mjs';
+const base=Date.parse('2026-10-14T00:00:00Z'),at=s=>new Date(base+s*1000).toISOString();
+const book=s=>({type:'book',receivedAt:at(s),book:{tournamentId:'cup',marketId:'101',exchangeId:'101',sequence:String(s+1),requestStartedAt:at(s),receivedAt:at(s),sourceAt:at(s),bids:[{price:'0.915000',quantity:100}],asks:[{price:'0.920000',quantity:100}]}});
+function fixture(){const s=createMoloch({entriesEnabled:false,quantity:25,maximumMarketCost:'30.000000',inventoryTakerAfterMs:0,inventoryMinimumGain:'0.005000'});s.cash='977.250000';s.positions={'101':{YES:[{quantity:25,price:'0.910000'}],NO:[]}};s.fills=[{orderId:0,exchangeId:'101',side:'YES',action:'buy',quantity:25,price:'0.910000',fee:'0.000000',at:at(-60)}];advanceMoloch(s,book(0));return s;}
+test('planned book promotion supports the unchanged AON window while ordinary cadence misses it',{skip:process.platform!=='win32'},()=>{
+ const s=fixture(),q=s.orders[0],directory=path.dirname(fileURLToPath(import.meta.url)),module=path.join(directory,'exit-book-priority.psm1').replace(/'/g,"''");
+ const document={schemaVersion:1,sourceDirectory:directory,generatedAt:at(12),exitBooks:[{marketId:'101',exchangeId:'101',activationAt:q.activationAt,expiresAt:q.expiresAt}]},pairs=[{marketId:'101',exchangeId:'101'}],requests=[{kind:'trades',marketId:'101',exchangeId:'101'},{kind:'book',marketId:'101',exchangeId:'101'}];
+ const script=`Import-Module '${module}' -Force; $b=[Console]::In.ReadToEnd()|ConvertFrom-Json -DateKind String; $a=[Collections.Generic.HashSet[string]]::new(); $r=Select-MolochExitBook $b.document $b.directory $b.pairs $b.requests 0 $b.now $b.now $a; [pscustomobject]@{index=$r.Index;requestCount=$b.requests.Count}|ConvertTo-Json -Compress`;
+ const result=spawnSync('pwsh',['-NoProfile','-Command',script],{input:JSON.stringify({document,directory,pairs,requests,now:base+12000}),encoding:'utf8',windowsHide:true,timeout:10000});assert.equal(result.status,0,result.stderr);const plan=JSON.parse(result.stdout);assert.equal(plan.index,1);assert.equal(plan.requestCount,2);
+ const ordinary=structuredClone(s);advanceMoloch(ordinary,{type:'tick',receivedAt:at(12)});advanceMoloch(ordinary,book(24));assert.equal(reportMoloch(ordinary).ownedCost,'22.750000');assert.equal(reportMoloch(ordinary).realized,'0.000000');
+ advanceMoloch(s,book(12));assert.equal(reportMoloch(s).ownedCost,'0.000000');assert.equal(reportMoloch(s).realized,'0.125000');assert.equal(s.orders[0].expiresAt,base+13000);
+});

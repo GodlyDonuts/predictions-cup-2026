@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "registeredAt": "2026-10-14T21:33:09.861Z",
+  "phase": 50,
+  "scope": {
+    "marketId": "338",
+    "exchangeId": "1027"
+  },
+  "parents": [
+    {
+      "name": "competition-scale-20261014-19",
+      "snapshotHash": "8c8d7df41327090eafa9339341eb3b959723a88d5f39c050ca96f4ecce707812",
+      "cash": "100000.000000",
+      "realized": "0.000000"
+    },
+    {
+      "name": "queue-duration-20261014-15",
+      "snapshotHash": "14db51ba13eac4a3bb68ea94f5dde68bd77485b97982d10aa0d70b720f26865f",
+      "cash": "100000.060000",
+      "realized": "0.060000"
+    }
+  ],
+  "transport": "official_rest_polling",
+  "exitPriorityBooks": true,
+  "reordersExistingReadsOnly": true,
+  "maximumLocalReadsPerMinute": 5,
+  "minimumCompletionPacingMs": 12000,
+  "aonWindowUnchanged": true,
+  "inventoryMinimumGain": "0.005000",
+  "inventoryTakerAfterMs": 0,
+  "newPaperCapital": "0.000000",
+  "contestOrders": 0,
+  "profitabilityEstablished": false,
+  "measurement": "Incremental closed net profit and turnover, original quote deadlines and depth evidence; inherited 0.060 excluded",
+  "limitations": [
+    "Priority cannot guarantee a sample inside the deadline under backoff or slow responses.",
+    "Multiple candidate banks are independent simulations; correlated results cannot be added."
+  ]
+}

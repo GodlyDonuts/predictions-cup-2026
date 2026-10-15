@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "banks": [
+    {
+      "name": "competition-scale-20261014-21",
+      "snapshotHash": "942e2e85116ee3a7ad722892843c8fbb9b3c70f76c35b609e959e76f435cd7e5",
+      "cash": "100000.000000",
+      "realized": "0.000000"
+    },
+    {
+      "name": "queue-duration-20261014-17",
+      "snapshotHash": "7bfad13afb3ef7c607683f8d43c1364c93412a910be58705d3e747fcd0091428",
+      "cash": "100000.060000",
+      "realized": "0.060000"
+    }
+  ],
+  "newPhaseRealized": "0.000000",
+  "newPaperCapital": "0.000000",
+  "contestOrders": 0,
+  "profitabilityEstablished": false
+}

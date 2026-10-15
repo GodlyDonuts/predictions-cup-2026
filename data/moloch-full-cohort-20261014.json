@@ -1,0 +1,73 @@
+{
+  "schemaVersion": 1,
+  "sourceStatus": "running",
+  "at": "2026-10-14T19:43:30.647Z",
+  "wallets": [
+    {
+      "name": "competition-scale-20261014-9",
+      "at": "2026-10-14T19:43:30.801Z",
+      "snapshotHash": "b9d8bd6fbbb46b03db97877ddcb2dd2baf5b5f57396338a9c60d39751a435832",
+      "parentSnapshotHash": "c4cea21527aeb98a5da8aedbe1ccb6bcd252fb77c8c85f495d4cb0a1ed695f8e",
+      "newPaperCapital": "0.000000",
+      "cash": "100000.000000",
+      "realized": "0.000000",
+      "fees": "0.000000",
+      "ownedCost": "0.000000",
+      "unresolved": 0,
+      "fills": 3,
+      "entriesEnabled": false,
+      "conditionalQueueFills": 0,
+      "exitFills": [
+        {
+          "price": "0.595000",
+          "quantity": 8,
+          "style": "inventoryAON",
+          "reason": null
+        }
+      ]
+    },
+    {
+      "name": "queue-duration-20261014-5",
+      "at": "2026-10-14T19:43:30.754Z",
+      "snapshotHash": "91267cb0840bde4f74e728163c58142fe3977d86e2dbb977b63603fe2e4c7f20",
+      "parentSnapshotHash": "8fb976ca0ba343cd42c7ddf4629a4b795a216c70ab46c60a0dbd248a8c411bbf",
+      "newPaperCapital": "0.000000",
+      "cash": "100000.060000",
+      "realized": "0.060000",
+      "fees": "0.000000",
+      "ownedCost": "0.000000",
+      "unresolved": 0,
+      "fills": 18,
+      "entriesEnabled": false,
+      "conditionalQueueFills": 12,
+      "exitFills": [
+        {
+          "price": "0.405000",
+          "quantity": 1,
+          "style": "maker",
+          "reason": null
+        },
+        {
+          "price": "0.405000",
+          "quantity": 7,
+          "style": "maker",
+          "reason": null
+        },
+        {
+          "price": "0.400000",
+          "quantity": 2,
+          "style": "inventoryAON",
+          "reason": "maximumAge"
+        }
+      ]
+    }
+  ],
+  "contestOrders": 0,
+  "profitabilityEstablished": false,
+  "limitations": [
+    "Independent simulated banks; balances and gains must not be added.",
+    "Queue cohort includes recovered historical fills and assumed touch attribution.",
+    "Depth-dependent all-or-none exits are simulated; no actual exchange profit or winning strategy is established.",
+    "Original 1000 bank and all losses remain separately preserved."
+  ]
+}

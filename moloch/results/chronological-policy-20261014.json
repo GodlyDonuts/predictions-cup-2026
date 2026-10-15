@@ -1,0 +1,876 @@
+{
+  "schemaVersion": 1,
+  "source": "verified original paper episode journals",
+  "episodes": [
+    {
+      "episode": 18,
+      "parentHash": "45b9bc790e5a2ba48b307fac0c37b6c2c152357d393d90d9ac9bdd54a0b919e5",
+      "snapshotHash": "2752f9b8efdd28bf4816882cf97197c269a851462cd89425b49fc034efdbe3c9",
+      "from": "2026-10-14T04:22:00.933Z",
+      "to": "2026-10-14T04:32:11.214Z",
+      "eventCount": 1864
+    },
+    {
+      "episode": 19,
+      "parentHash": "2752f9b8efdd28bf4816882cf97197c269a851462cd89425b49fc034efdbe3c9",
+      "snapshotHash": "031a004e89226b067f09c6cfc0fb496e2cacad3a69fa0ae020a5da6ad9a0bdf5",
+      "from": "2026-10-14T04:34:33.942Z",
+      "to": "2026-10-14T04:45:59.557Z",
+      "eventCount": 1859
+    },
+    {
+      "episode": 20,
+      "parentHash": "031a004e89226b067f09c6cfc0fb496e2cacad3a69fa0ae020a5da6ad9a0bdf5",
+      "snapshotHash": "1041eaecec02fd81526dcee7d875a72e5fb16ba252956b67aabb00745c26c685",
+      "from": "2026-10-14T04:46:58.124Z",
+      "to": "2026-10-14T04:50:57.758Z",
+      "eventCount": 595
+    },
+    {
+      "episode": 21,
+      "parentHash": "1041eaecec02fd81526dcee7d875a72e5fb16ba252956b67aabb00745c26c685",
+      "snapshotHash": "77fda50845415d5e211f16e345f74dbd916f425f5d4d7d59ba5a30bda948493b",
+      "from": "2026-10-14T04:52:42.514Z",
+      "to": "2026-10-14T05:07:50.889Z",
+      "eventCount": 1611
+    },
+    {
+      "episode": 22,
+      "parentHash": "77fda50845415d5e211f16e345f74dbd916f425f5d4d7d59ba5a30bda948493b",
+      "snapshotHash": "b0ac0abb50b61f4eeb80c4ecdf68fb63b26a8e92f1047e3725160d2275c3e078",
+      "from": "2026-10-14T05:25:27.020Z",
+      "to": "2026-10-14T05:41:51.006Z",
+      "eventCount": 1518
+    },
+    {
+      "episode": 23,
+      "parentHash": "b0ac0abb50b61f4eeb80c4ecdf68fb63b26a8e92f1047e3725160d2275c3e078",
+      "snapshotHash": "ce53447ec0af5c1fb9d080e2480666e4b79b60126a345f38e54580e837a173c7",
+      "from": "2026-10-14T05:50:01.311Z",
+      "to": "2026-10-14T06:06:26.086Z",
+      "eventCount": 1412
+    },
+    {
+      "episode": 24,
+      "parentHash": "ce53447ec0af5c1fb9d080e2480666e4b79b60126a345f38e54580e837a173c7",
+      "snapshotHash": "7cd10c70b691b7094d53ee8eea80943c3a68a3265c95f70093e54368cff38314",
+      "from": "2026-10-14T06:52:35.312Z",
+      "to": "2026-10-14T06:56:32.735Z",
+      "eventCount": 303
+    },
+    {
+      "episode": 25,
+      "parentHash": "7cd10c70b691b7094d53ee8eea80943c3a68a3265c95f70093e54368cff38314",
+      "snapshotHash": "30aecf2b2f581f49b57ce0d452abfa97391921d63dea86690f80dc28bc997380",
+      "from": "2026-10-14T07:09:15.657Z",
+      "to": "2026-10-14T07:26:52.934Z",
+      "eventCount": 2146
+    }
+  ],
+  "baselineFinancialParity": true,
+  "newPaperCapital": "0.000000",
+  "trainingEpisodes": [
+    18,
+    19,
+    20
+  ],
+  "laterEpisodes": [
+    21,
+    22,
+    23,
+    24,
+    25
+  ],
+  "trainRanking": [
+    {
+      "name": "cheapJoin",
+      "mark": {
+        "at": "2026-10-14T04:50:57.758Z",
+        "pnl": "0.025000"
+      }
+    },
+    {
+      "name": "join",
+      "mark": {
+        "at": "2026-10-14T04:50:57.758Z",
+        "pnl": "0.025000"
+      }
+    },
+    {
+      "name": "recorded",
+      "mark": {
+        "at": "2026-10-14T04:50:57.758Z",
+        "pnl": "0.000000"
+      }
+    }
+  ],
+  "results": [
+    {
+      "name": "recorded",
+      "overrides": {},
+      "marks": [
+        {
+          "episode": 18,
+          "realized": "0.025000",
+          "cash": "995.755000",
+          "ownedCost": "4.270000",
+          "unresolvedOrders": 7,
+          "newFills": 2,
+          "lastFresh": {
+            "at": "2026-10-14T04:32:10.119Z",
+            "pnl": "0.025000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T04:29:06.945Z",
+            "pnl": "-0.010000"
+          },
+          "final": null
+        },
+        {
+          "episode": 19,
+          "realized": "0.025000",
+          "cash": "995.005000",
+          "ownedCost": "5.020000",
+          "unresolvedOrders": 6,
+          "newFills": 1,
+          "lastFresh": {
+            "at": "2026-10-14T04:45:59.557Z",
+            "pnl": "0.000000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T04:38:34.423Z",
+            "pnl": "0.000000"
+          },
+          "final": "0.000000"
+        },
+        {
+          "episode": 20,
+          "realized": "0.025000",
+          "cash": "995.005000",
+          "ownedCost": "5.020000",
+          "unresolvedOrders": 2,
+          "newFills": 0,
+          "lastFresh": {
+            "at": "2026-10-14T04:50:57.758Z",
+            "pnl": "0.000000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T04:48:15.999Z",
+            "pnl": "0.000000"
+          },
+          "final": "0.000000"
+        },
+        {
+          "episode": 21,
+          "realized": "0.025000",
+          "cash": "995.005000",
+          "ownedCost": "5.020000",
+          "unresolvedOrders": 4,
+          "newFills": 0,
+          "lastFresh": {
+            "at": "2026-10-14T05:07:50.889Z",
+            "pnl": "0.025000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T04:53:33.547Z",
+            "pnl": "0.000000"
+          },
+          "final": "0.025000"
+        },
+        {
+          "episode": 22,
+          "realized": "0.025000",
+          "cash": "999.275000",
+          "ownedCost": "0.750000",
+          "unresolvedOrders": 5,
+          "newFills": 1,
+          "lastFresh": {
+            "at": "2026-10-14T05:41:42.275Z",
+            "pnl": "0.000000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T05:27:36.304Z",
+            "pnl": "0.000000"
+          },
+          "final": null
+        },
+        {
+          "episode": 23,
+          "realized": "0.025000",
+          "cash": "999.275000",
+          "ownedCost": "0.750000",
+          "unresolvedOrders": 5,
+          "newFills": 0,
+          "lastFresh": {
+            "at": "2026-10-14T06:06:26.086Z",
+            "pnl": "0.000000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T05:52:44.517Z",
+            "pnl": "0.000000"
+          },
+          "final": "0.000000"
+        },
+        {
+          "episode": 24,
+          "realized": "0.025000",
+          "cash": "997.675000",
+          "ownedCost": "2.350000",
+          "unresolvedOrders": 2,
+          "newFills": 1,
+          "lastFresh": {
+            "at": "2026-10-14T06:56:32.735Z",
+            "pnl": "-0.050000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T06:55:11.008Z",
+            "pnl": "-0.050000"
+          },
+          "final": "-0.050000"
+        },
+        {
+          "episode": 25,
+          "realized": "0.025000",
+          "cash": "997.675000",
+          "ownedCost": "2.350000",
+          "unresolvedOrders": 4,
+          "newFills": 0,
+          "lastFresh": {
+            "at": "2026-10-14T07:26:48.556Z",
+            "pnl": "-0.050000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T07:12:11.070Z",
+            "pnl": "-0.050000"
+          },
+          "final": null
+        }
+      ]
+    },
+    {
+      "name": "join",
+      "overrides": {
+        "insideTicks": 0,
+        "retainProfitableHedge": false,
+        "maximumHedgeOvershoot": 0
+      },
+      "marks": [
+        {
+          "episode": 18,
+          "realized": "0.025000",
+          "cash": "995.755000",
+          "ownedCost": "4.270000",
+          "unresolvedOrders": 7,
+          "newFills": 2,
+          "lastFresh": {
+            "at": "2026-10-14T04:32:10.119Z",
+            "pnl": "0.025000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T04:29:06.945Z",
+            "pnl": "-0.010000"
+          },
+          "final": null
+        },
+        {
+          "episode": 19,
+          "realized": "0.025000",
+          "cash": "995.755000",
+          "ownedCost": "4.270000",
+          "unresolvedOrders": 7,
+          "newFills": 0,
+          "lastFresh": {
+            "at": "2026-10-14T04:45:59.557Z",
+            "pnl": "0.025000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T04:36:39.512Z",
+            "pnl": "0.025000"
+          },
+          "final": "0.025000"
+        },
+        {
+          "episode": 20,
+          "realized": "0.025000",
+          "cash": "995.755000",
+          "ownedCost": "4.270000",
+          "unresolvedOrders": 3,
+          "newFills": 0,
+          "lastFresh": {
+            "at": "2026-10-14T04:50:57.758Z",
+            "pnl": "0.025000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T04:48:15.999Z",
+            "pnl": "0.025000"
+          },
+          "final": "0.025000"
+        },
+        {
+          "episode": 21,
+          "realized": "0.025000",
+          "cash": "995.755000",
+          "ownedCost": "4.270000",
+          "unresolvedOrders": 5,
+          "newFills": 0,
+          "lastFresh": {
+            "at": "2026-10-14T05:07:50.889Z",
+            "pnl": "0.025000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T04:53:33.547Z",
+            "pnl": "0.025000"
+          },
+          "final": "0.025000"
+        },
+        {
+          "episode": 22,
+          "realized": "0.025000",
+          "cash": "1000.025000",
+          "ownedCost": "0.000000",
+          "unresolvedOrders": 8,
+          "newFills": 1,
+          "lastFresh": {
+            "at": "2026-10-14T05:41:51.006Z",
+            "pnl": "0.025000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T05:27:36.304Z",
+            "pnl": "0.025000"
+          },
+          "final": "0.025000"
+        },
+        {
+          "episode": 23,
+          "realized": "0.025000",
+          "cash": "1000.025000",
+          "ownedCost": "0.000000",
+          "unresolvedOrders": 7,
+          "newFills": 0,
+          "lastFresh": {
+            "at": "2026-10-14T06:06:26.086Z",
+            "pnl": "0.025000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T05:50:01.657Z",
+            "pnl": "0.025000"
+          },
+          "final": "0.025000"
+        },
+        {
+          "episode": 24,
+          "realized": "0.025000",
+          "cash": "998.425000",
+          "ownedCost": "1.600000",
+          "unresolvedOrders": 3,
+          "newFills": 1,
+          "lastFresh": {
+            "at": "2026-10-14T06:56:32.735Z",
+            "pnl": "-0.025000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T06:55:11.008Z",
+            "pnl": "-0.025000"
+          },
+          "final": "-0.025000"
+        },
+        {
+          "episode": 25,
+          "realized": "0.025000",
+          "cash": "998.425000",
+          "ownedCost": "1.600000",
+          "unresolvedOrders": 5,
+          "newFills": 0,
+          "lastFresh": {
+            "at": "2026-10-14T07:26:52.934Z",
+            "pnl": "-0.025000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T07:10:56.581Z",
+            "pnl": "-0.025000"
+          },
+          "final": "-0.025000"
+        }
+      ]
+    },
+    {
+      "name": "cheapJoin",
+      "overrides": {
+        "insideTicks": 0,
+        "quoteMode": "cheapSpread",
+        "maximumEntryPrice": "0.100000",
+        "quantity": 100,
+        "retainProfitableHedge": false,
+        "maximumHedgeOvershoot": 0
+      },
+      "marks": [
+        {
+          "episode": 18,
+          "realized": "0.025000",
+          "cash": "1000.025000",
+          "ownedCost": "0.000000",
+          "unresolvedOrders": 0,
+          "newFills": 0,
+          "lastFresh": {
+            "at": "2026-10-14T04:32:11.214Z",
+            "pnl": "0.025000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T04:22:01.106Z",
+            "pnl": "0.025000"
+          },
+          "final": "0.025000"
+        },
+        {
+          "episode": 19,
+          "realized": "0.025000",
+          "cash": "1000.025000",
+          "ownedCost": "0.000000",
+          "unresolvedOrders": 0,
+          "newFills": 0,
+          "lastFresh": {
+            "at": "2026-10-14T04:45:59.557Z",
+            "pnl": "0.025000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T04:34:34.154Z",
+            "pnl": "0.025000"
+          },
+          "final": "0.025000"
+        },
+        {
+          "episode": 20,
+          "realized": "0.025000",
+          "cash": "1000.025000",
+          "ownedCost": "0.000000",
+          "unresolvedOrders": 0,
+          "newFills": 0,
+          "lastFresh": {
+            "at": "2026-10-14T04:50:57.758Z",
+            "pnl": "0.025000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T04:46:58.373Z",
+            "pnl": "0.025000"
+          },
+          "final": "0.025000"
+        },
+        {
+          "episode": 21,
+          "realized": "0.025000",
+          "cash": "1000.025000",
+          "ownedCost": "0.000000",
+          "unresolvedOrders": 0,
+          "newFills": 0,
+          "lastFresh": {
+            "at": "2026-10-14T05:07:50.889Z",
+            "pnl": "0.025000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T04:52:42.790Z",
+            "pnl": "0.025000"
+          },
+          "final": "0.025000"
+        },
+        {
+          "episode": 22,
+          "realized": "0.025000",
+          "cash": "1000.025000",
+          "ownedCost": "0.000000",
+          "unresolvedOrders": 0,
+          "newFills": 0,
+          "lastFresh": {
+            "at": "2026-10-14T05:41:51.006Z",
+            "pnl": "0.025000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T05:25:27.336Z",
+            "pnl": "0.025000"
+          },
+          "final": "0.025000"
+        },
+        {
+          "episode": 23,
+          "realized": "0.025000",
+          "cash": "1000.025000",
+          "ownedCost": "0.000000",
+          "unresolvedOrders": 0,
+          "newFills": 0,
+          "lastFresh": {
+            "at": "2026-10-14T06:06:26.086Z",
+            "pnl": "0.025000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T05:50:01.657Z",
+            "pnl": "0.025000"
+          },
+          "final": "0.025000"
+        },
+        {
+          "episode": 24,
+          "realized": "0.025000",
+          "cash": "1000.025000",
+          "ownedCost": "0.000000",
+          "unresolvedOrders": 0,
+          "newFills": 0,
+          "lastFresh": {
+            "at": "2026-10-14T06:56:32.735Z",
+            "pnl": "0.025000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T06:52:35.709Z",
+            "pnl": "0.025000"
+          },
+          "final": "0.025000"
+        },
+        {
+          "episode": 25,
+          "realized": "0.025000",
+          "cash": "1000.025000",
+          "ownedCost": "0.000000",
+          "unresolvedOrders": 2,
+          "newFills": 0,
+          "lastFresh": {
+            "at": "2026-10-14T07:26:52.934Z",
+            "pnl": "0.025000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T07:09:16.034Z",
+            "pnl": "0.025000"
+          },
+          "final": "0.025000"
+        }
+      ]
+    },
+    {
+      "name": "queue50Join",
+      "overrides": {
+        "insideTicks": 0,
+        "fillModel": "conditionalFifo",
+        "touchAttributionBps": 5000
+      },
+      "marks": [
+        {
+          "episode": 18,
+          "realized": "0.025000",
+          "cash": "995.755000",
+          "ownedCost": "4.270000",
+          "unresolvedOrders": 7,
+          "newFills": 2,
+          "lastFresh": {
+            "at": "2026-10-14T04:32:10.119Z",
+            "pnl": "0.025000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T04:29:06.945Z",
+            "pnl": "-0.010000"
+          },
+          "final": null
+        },
+        {
+          "episode": 19,
+          "realized": "0.025000",
+          "cash": "995.755000",
+          "ownedCost": "4.270000",
+          "unresolvedOrders": 7,
+          "newFills": 0,
+          "lastFresh": {
+            "at": "2026-10-14T04:45:59.557Z",
+            "pnl": "0.025000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T04:36:39.512Z",
+            "pnl": "0.025000"
+          },
+          "final": "0.025000"
+        },
+        {
+          "episode": 20,
+          "realized": "0.025000",
+          "cash": "995.755000",
+          "ownedCost": "4.270000",
+          "unresolvedOrders": 3,
+          "newFills": 0,
+          "lastFresh": {
+            "at": "2026-10-14T04:50:57.758Z",
+            "pnl": "0.025000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T04:48:15.999Z",
+            "pnl": "0.025000"
+          },
+          "final": "0.025000"
+        },
+        {
+          "episode": 21,
+          "realized": "0.025000",
+          "cash": "995.755000",
+          "ownedCost": "4.270000",
+          "unresolvedOrders": 5,
+          "newFills": 0,
+          "lastFresh": {
+            "at": "2026-10-14T05:07:50.889Z",
+            "pnl": "0.025000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T04:53:33.547Z",
+            "pnl": "0.025000"
+          },
+          "final": "0.025000"
+        },
+        {
+          "episode": 22,
+          "realized": "0.025000",
+          "cash": "1000.025000",
+          "ownedCost": "0.000000",
+          "unresolvedOrders": 8,
+          "newFills": 3,
+          "lastFresh": {
+            "at": "2026-10-14T05:41:51.006Z",
+            "pnl": "0.025000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T05:27:57.879Z",
+            "pnl": "0.025000"
+          },
+          "final": "0.025000"
+        },
+        {
+          "episode": 23,
+          "realized": "0.025000",
+          "cash": "1000.025000",
+          "ownedCost": "0.000000",
+          "unresolvedOrders": 7,
+          "newFills": 0,
+          "lastFresh": {
+            "at": "2026-10-14T06:06:26.086Z",
+            "pnl": "0.025000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T05:50:01.657Z",
+            "pnl": "0.025000"
+          },
+          "final": "0.025000"
+        },
+        {
+          "episode": 24,
+          "realized": "0.025000",
+          "cash": "998.425000",
+          "ownedCost": "1.600000",
+          "unresolvedOrders": 3,
+          "newFills": 1,
+          "lastFresh": {
+            "at": "2026-10-14T06:56:32.735Z",
+            "pnl": "-0.025000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T06:55:11.008Z",
+            "pnl": "-0.025000"
+          },
+          "final": "-0.025000"
+        },
+        {
+          "episode": 25,
+          "realized": "0.025000",
+          "cash": "998.425000",
+          "ownedCost": "1.600000",
+          "unresolvedOrders": 5,
+          "newFills": 0,
+          "lastFresh": {
+            "at": "2026-10-14T07:26:52.934Z",
+            "pnl": "-0.025000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T07:10:56.581Z",
+            "pnl": "-0.025000"
+          },
+          "final": "-0.025000"
+        }
+      ]
+    },
+    {
+      "name": "queue100Join",
+      "overrides": {
+        "insideTicks": 0,
+        "fillModel": "conditionalFifo",
+        "touchAttributionBps": 10000
+      },
+      "marks": [
+        {
+          "episode": 18,
+          "realized": "0.025000",
+          "cash": "995.755000",
+          "ownedCost": "4.270000",
+          "unresolvedOrders": 7,
+          "newFills": 2,
+          "lastFresh": {
+            "at": "2026-10-14T04:32:10.119Z",
+            "pnl": "0.025000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T04:29:06.945Z",
+            "pnl": "-0.010000"
+          },
+          "final": null
+        },
+        {
+          "episode": 19,
+          "realized": "0.025000",
+          "cash": "991.505000",
+          "ownedCost": "8.520000",
+          "unresolvedOrders": 6,
+          "newFills": 1,
+          "lastFresh": {
+            "at": "2026-10-14T04:45:59.557Z",
+            "pnl": "0.000000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T04:36:51.337Z",
+            "pnl": "-0.025000"
+          },
+          "final": "0.000000"
+        },
+        {
+          "episode": 20,
+          "realized": "0.025000",
+          "cash": "991.505000",
+          "ownedCost": "8.520000",
+          "unresolvedOrders": 2,
+          "newFills": 0,
+          "lastFresh": {
+            "at": "2026-10-14T04:50:57.758Z",
+            "pnl": "0.000000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T04:48:15.999Z",
+            "pnl": "0.000000"
+          },
+          "final": "0.000000"
+        },
+        {
+          "episode": 21,
+          "realized": "0.025000",
+          "cash": "991.505000",
+          "ownedCost": "8.520000",
+          "unresolvedOrders": 4,
+          "newFills": 0,
+          "lastFresh": {
+            "at": "2026-10-14T05:07:50.889Z",
+            "pnl": "0.000000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T04:53:33.547Z",
+            "pnl": "0.000000"
+          },
+          "final": "0.000000"
+        },
+        {
+          "episode": 22,
+          "realized": "0.025000",
+          "cash": "995.775000",
+          "ownedCost": "4.250000",
+          "unresolvedOrders": 5,
+          "newFills": 3,
+          "lastFresh": {
+            "at": "2026-10-14T05:41:42.275Z",
+            "pnl": "0.000000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T05:27:57.879Z",
+            "pnl": "0.000000"
+          },
+          "final": null
+        },
+        {
+          "episode": 23,
+          "realized": "0.025000",
+          "cash": "995.775000",
+          "ownedCost": "4.250000",
+          "unresolvedOrders": 5,
+          "newFills": 0,
+          "lastFresh": {
+            "at": "2026-10-14T06:06:26.086Z",
+            "pnl": "0.000000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T05:52:44.517Z",
+            "pnl": "0.000000"
+          },
+          "final": "0.000000"
+        },
+        {
+          "episode": 24,
+          "realized": "0.025000",
+          "cash": "994.175000",
+          "ownedCost": "5.850000",
+          "unresolvedOrders": 2,
+          "newFills": 1,
+          "lastFresh": {
+            "at": "2026-10-14T06:56:32.735Z",
+            "pnl": "-0.050000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T06:55:11.008Z",
+            "pnl": "-0.050000"
+          },
+          "final": "-0.050000"
+        },
+        {
+          "episode": 25,
+          "realized": "0.025000",
+          "cash": "994.175000",
+          "ownedCost": "5.850000",
+          "unresolvedOrders": 4,
+          "newFills": 0,
+          "lastFresh": {
+            "at": "2026-10-14T07:26:48.556Z",
+            "pnl": "-0.025000"
+          },
+          "worstFresh": {
+            "at": "2026-10-14T07:13:21.104Z",
+            "pnl": "-0.050000"
+          },
+          "final": null
+        }
+      ]
+    }
+  ],
+  "contestOrders": 0,
+  "profitabilityEstablished": false,
+  "limitations": [
+    "Retrospective chronological diagnostic; these periods were previously inspected and are not pristine holdouts.",
+    "Policies carry their own unchanged cash, orders and inventory across every episode. Historical captured markets do not adapt to hypothetical inventory.",
+    "Conditional queue variants are assumptions, not observed maker fills.",
+    "Last-fresh marks are timestamped and may precede episode end; no stale terminal liquidation is fabricated.",
+    "Selection ranking is training-only; no parameter is selected using later episode returns."
+  ],
+  "initialRealized": "0.025000",
+  "initialCash": "1000.025000",
+  "additionalRealizedByCandidate": [
+    {
+      "name": "recorded",
+      "additionalRealized": "0.000000"
+    },
+    {
+      "name": "join",
+      "additionalRealized": "0.000000"
+    },
+    {
+      "name": "cheapJoin",
+      "additionalRealized": "0.000000"
+    },
+    {
+      "name": "queue50Join",
+      "additionalRealized": "0.000000"
+    },
+    {
+      "name": "queue100Join",
+      "additionalRealized": "0.000000"
+    }
+  ],
+  "codeIdentity": {
+    "moloch/engine.mjs": "dd576a4961bce30386a36f6ea35499106c4a0187cd4f2bb287c5b2b64b36f252",
+    "moloch/compare.mjs": "4c9e14dc85bf8e39eadf180f2d3b9914e1cb744fa390f443ba5662d03b0a478a",
+    "moloch/research/chronological-policy-20261014.mjs": "538debad0b87eb4c39b2428b2edb23d1b9ee8d750761e7b35428eca79bffc7ee"
+  }
+}

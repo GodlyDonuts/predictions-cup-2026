@@ -1,0 +1,168 @@
+{
+  "schemaVersion": 1,
+  "observedAt": "2026-10-14T20:12:58.081Z",
+  "deadlineUtc": "2026-11-04T17:00:00.000Z",
+  "rulesSource": "https://predictionscup.com/rules/",
+  "settlementSource": "https://sig.thesuper.market/docs/settlement-and-payouts",
+  "referenceLeaderboardObservedAt": "2026-10-14T06:06:46.615Z",
+  "referenceReportedLeaderPnl": "952904.160000",
+  "referenceIsVerifiedFinalWinningThreshold": false,
+  "remainingDays": 20.86599443287037,
+  "referenceRequiredProfitPerDay": 45667.804765579844,
+  "referenceRequiredDailyCompoundedReturnFrom100000": 0.11943233870548142,
+  "sourceSha256": "d0b53feb3b0db1d54255a3cc5d0be87df2fa8d277e5f583fba51bb66a625e735",
+  "sourceFinalHash": "63f824e5ab4e8975828f7b3a34e5cb15c2d8c21a1ce07e26309e8036b663dd72",
+  "sourceEvents": 17158,
+  "window": {
+    "from": "2026-10-14T19:51:04.837Z",
+    "to": "2026-10-14T20:03:44.451Z",
+    "seconds": 759.614
+  },
+  "observedVolume": 545783,
+  "compatiblePairs": 29294,
+  "exchanges": [
+    {
+      "exchangeId": "1031",
+      "bid": 414161,
+      "ask": 23139,
+      "compatiblePairs": 23139
+    },
+    {
+      "exchangeId": "1045",
+      "bid": 3653,
+      "ask": 2505,
+      "compatiblePairs": 2505
+    },
+    {
+      "exchangeId": "1048",
+      "bid": 2198,
+      "ask": 4598,
+      "compatiblePairs": 2198
+    },
+    {
+      "exchangeId": "1071",
+      "bid": 5227,
+      "ask": 493,
+      "compatiblePairs": 493
+    },
+    {
+      "exchangeId": "933",
+      "bid": 560,
+      "ask": 297,
+      "compatiblePairs": 297
+    },
+    {
+      "exchangeId": "1057",
+      "bid": 794,
+      "ask": 280,
+      "compatiblePairs": 280
+    },
+    {
+      "exchangeId": "938",
+      "bid": 265,
+      "ask": 2032,
+      "compatiblePairs": 265
+    },
+    {
+      "exchangeId": "1043",
+      "bid": 1452,
+      "ask": 61,
+      "compatiblePairs": 61
+    },
+    {
+      "exchangeId": "1044",
+      "bid": 43,
+      "ask": 1022,
+      "compatiblePairs": 43
+    },
+    {
+      "exchangeId": "1033",
+      "bid": 537,
+      "ask": 13,
+      "compatiblePairs": 13
+    }
+  ],
+  "scenarios": [
+    {
+      "participationBps": 100,
+      "edgeTicks": 1,
+      "assumedCompletedPackages": 287,
+      "hypotheticalWindowProfit": "1.435000",
+      "hypotheticalProfitPerDay": 163.21974055243848,
+      "referenceRequiredRateMultiple": 279.7933914795551
+    },
+    {
+      "participationBps": 100,
+      "edgeTicks": 2,
+      "assumedCompletedPackages": 287,
+      "hypotheticalWindowProfit": "2.870000",
+      "hypotheticalProfitPerDay": 326.43948110487696,
+      "referenceRequiredRateMultiple": 139.89669573977756
+    },
+    {
+      "participationBps": 100,
+      "edgeTicks": 3,
+      "assumedCompletedPackages": 287,
+      "hypotheticalWindowProfit": "4.305000",
+      "hypotheticalProfitPerDay": 489.65922165731536,
+      "referenceRequiredRateMultiple": 93.2644638265184
+    },
+    {
+      "participationBps": 1000,
+      "edgeTicks": 1,
+      "assumedCompletedPackages": 2925,
+      "hypotheticalWindowProfit": "14.625000",
+      "hypotheticalProfitPerDay": 1663.476449881124,
+      "referenceRequiredRateMultiple": 27.453231916113616
+    },
+    {
+      "participationBps": 1000,
+      "edgeTicks": 2,
+      "assumedCompletedPackages": 2925,
+      "hypotheticalWindowProfit": "29.250000",
+      "hypotheticalProfitPerDay": 3326.952899762248,
+      "referenceRequiredRateMultiple": 13.726615958056808
+    },
+    {
+      "participationBps": 1000,
+      "edgeTicks": 3,
+      "assumedCompletedPackages": 2925,
+      "hypotheticalWindowProfit": "43.875000",
+      "hypotheticalProfitPerDay": 4990.429349643371,
+      "referenceRequiredRateMultiple": 9.151077305371205
+    },
+    {
+      "participationBps": 10000,
+      "edgeTicks": 1,
+      "assumedCompletedPackages": 29294,
+      "hypotheticalWindowProfit": "146.470000",
+      "hypotheticalProfitPerDay": 16659.787734296628,
+      "referenceRequiredRateMultiple": 2.7411996775664758
+    },
+    {
+      "participationBps": 10000,
+      "edgeTicks": 2,
+      "assumedCompletedPackages": 29294,
+      "hypotheticalWindowProfit": "292.940000",
+      "hypotheticalProfitPerDay": 33319.575468593255,
+      "referenceRequiredRateMultiple": 1.3705998387832379
+    },
+    {
+      "participationBps": 10000,
+      "edgeTicks": 3,
+      "assumedCompletedPackages": 29294,
+      "hypotheticalWindowProfit": "439.410000",
+      "hypotheticalProfitPerDay": 49979.36320288989,
+      "referenceRequiredRateMultiple": 0.9137332258554918
+    }
+  ],
+  "contestOrders": 0,
+  "profitabilityEstablished": false,
+  "limitations": [
+    "Older provisional leaderboard P&L is a reference, not current realized profit or the eventual winning balance.",
+    "Observed broadcasts are best-effort, incomplete and span a short window; activity is not a future-volume forecast.",
+    "Compatible bid/ask prints need not occur at matching prices or after the same quote activation.",
+    "Scenario assumes all attributed pairs complete at a fixed net spread; ignores queue obstruction, adverse selection, capital occupancy and market impact. Actual achievable profit can be negative.",
+    "The scenario is not a mathematical bound on future profits and does not authorize increasing live participation."
+  ]
+}

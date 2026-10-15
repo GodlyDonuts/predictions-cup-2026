@@ -1,0 +1,107 @@
+{
+  "schemaVersion": 1,
+  "observedAt": "2026-10-14T20:58:16.064Z",
+  "banks": [
+    {
+      "name": "competition-scale-20261014-16",
+      "snapshotHash": "027333a20b40c0f0d46aa78ce07ea454eb9c975ef97a744263ebc323c978f3b3",
+      "at": "2026-10-14T20:58:15.471Z",
+      "cash": "100000.000000",
+      "totalRealized": "0.000000",
+      "phaseRealized": "0.000000",
+      "ownedCost": "0.000000",
+      "reservedCash": "0.000000",
+      "unresolved": 0,
+      "entriesEnabled": false,
+      "fills": [
+        {
+          "orderId": 86,
+          "marketId": "338",
+          "exchangeId": "1027",
+          "side": "YES",
+          "action": "buy",
+          "quantity": 25,
+          "price": "0.910000",
+          "fee": "0.000000",
+          "at": "2026-10-14T20:35:50.003Z",
+          "sourceId": "160262322",
+          "counterfactual": true,
+          "executedAt": "2026-10-14T20:35:42.122Z"
+        },
+        {
+          "orderId": 102,
+          "marketId": "338",
+          "exchangeId": "1027",
+          "side": "YES",
+          "action": "sell",
+          "quantity": 25,
+          "price": "0.910000",
+          "fee": "0.000000",
+          "at": "2026-10-14T20:55:29.736Z",
+          "sourceId": "book:1027:160367940:102",
+          "counterfactual": true,
+          "executedAt": "2026-10-14T20:55:29.736Z",
+          "executionStyle": "inventoryAON"
+        }
+      ]
+    },
+    {
+      "name": "queue-duration-20261014-12",
+      "snapshotHash": "7dd604823b8c9ac9b43b1fc75b50128370ad546b75214d8253c388abafe7af63",
+      "at": "2026-10-14T20:58:15.471Z",
+      "cash": "100000.060000",
+      "totalRealized": "0.060000",
+      "phaseRealized": "0.000000",
+      "ownedCost": "0.000000",
+      "reservedCash": "0.000000",
+      "unresolved": 0,
+      "entriesEnabled": false,
+      "fills": [
+        {
+          "orderId": 38,
+          "marketId": "338",
+          "exchangeId": "1027",
+          "side": "YES",
+          "action": "buy",
+          "quantity": 25,
+          "price": "0.910000",
+          "fee": "0.000000",
+          "at": "2026-10-14T20:35:49.941Z",
+          "sourceId": "160262322",
+          "counterfactual": true,
+          "executedAt": "2026-10-14T20:35:42.122Z"
+        },
+        {
+          "orderId": 54,
+          "marketId": "338",
+          "exchangeId": "1027",
+          "side": "YES",
+          "action": "sell",
+          "quantity": 25,
+          "price": "0.910000",
+          "fee": "0.000000",
+          "at": "2026-10-14T20:55:29.752Z",
+          "sourceId": "book:1027:160367940:54",
+          "counterfactual": true,
+          "executedAt": "2026-10-14T20:55:29.752Z",
+          "executionStyle": "inventoryAON"
+        }
+      ]
+    }
+  ],
+  "source": {
+    "phase": 46,
+    "status": "running",
+    "streamConnectionVerified": true,
+    "officialReceipts": 10
+  },
+  "newPaperCapital": "0.000000",
+  "contestOrders": 0,
+  "profitabilityEstablished": false,
+  "limitations": [
+    "Independent banks have correlated fills; results must not be summed.",
+    "Exit is modeled all-or-none against later fresh executable depth, not an actual exchange fill.",
+    "Inherited queue gain 0.060 is excluded from phase profit.",
+    "The completed cycle has zero return and does not establish competitive profitable turnover."
+  ]
+}

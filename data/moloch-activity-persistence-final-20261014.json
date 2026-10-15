@@ -1,0 +1,1005 @@
+{
+  "schemaVersion": 1,
+  "at": "2026-10-14T23:50:27.914Z",
+  "sources": [
+    {
+      "directory": "runtime/moloch/live-sig-20261014-61/capture/stream",
+      "sequence": 5300,
+      "previous": "f11ddbacd80cd162ac98a25e6cdd01c86a6ca23e5bf40ba84a1908bab18a9249"
+    },
+    {
+      "directory": "runtime/moloch/live-sig-20261014-63/capture/stream",
+      "sequence": 11497,
+      "previous": "110b66b3474ddde9ae3f17128ab7ba5f6a9ef3990f9be66208592e1043e57f32"
+    }
+  ],
+  "summary": [
+    {
+      "method": "queueTurnover",
+      "startupDelayMs": 0,
+      "cases": 9,
+      "gapExcluded": 2,
+      "evaluable": 7,
+      "withFutureTrades": 4,
+      "totalObservedFutureTrades": 24,
+      "totalObservedFutureShares": "9228"
+    },
+    {
+      "method": "queueTurnover",
+      "startupDelayMs": 30000,
+      "cases": 7,
+      "gapExcluded": 3,
+      "evaluable": 4,
+      "withFutureTrades": 2,
+      "totalObservedFutureTrades": 14,
+      "totalObservedFutureShares": "6092"
+    },
+    {
+      "method": "queueTurnover",
+      "startupDelayMs": 120000,
+      "cases": 4,
+      "gapExcluded": 1,
+      "evaluable": 3,
+      "withFutureTrades": 3,
+      "totalObservedFutureTrades": 54,
+      "totalObservedFutureShares": "61291"
+    },
+    {
+      "method": "recentShares",
+      "startupDelayMs": 0,
+      "cases": 9,
+      "gapExcluded": 2,
+      "evaluable": 7,
+      "withFutureTrades": 3,
+      "totalObservedFutureTrades": 33,
+      "totalObservedFutureShares": "14375"
+    },
+    {
+      "method": "recentShares",
+      "startupDelayMs": 30000,
+      "cases": 7,
+      "gapExcluded": 3,
+      "evaluable": 4,
+      "withFutureTrades": 2,
+      "totalObservedFutureTrades": 20,
+      "totalObservedFutureShares": "8798"
+    },
+    {
+      "method": "recentShares",
+      "startupDelayMs": 120000,
+      "cases": 4,
+      "gapExcluded": 1,
+      "evaluable": 3,
+      "withFutureTrades": 2,
+      "totalObservedFutureTrades": 72,
+      "totalObservedFutureShares": "101400"
+    },
+    {
+      "method": "recentTrades",
+      "startupDelayMs": 0,
+      "cases": 9,
+      "gapExcluded": 2,
+      "evaluable": 7,
+      "withFutureTrades": 4,
+      "totalObservedFutureTrades": 45,
+      "totalObservedFutureShares": "21876"
+    },
+    {
+      "method": "recentTrades",
+      "startupDelayMs": 30000,
+      "cases": 7,
+      "gapExcluded": 3,
+      "evaluable": 4,
+      "withFutureTrades": 2,
+      "totalObservedFutureTrades": 26,
+      "totalObservedFutureShares": "13414"
+    },
+    {
+      "method": "recentTrades",
+      "startupDelayMs": 120000,
+      "cases": 4,
+      "gapExcluded": 1,
+      "evaluable": 3,
+      "withFutureTrades": 3,
+      "totalObservedFutureTrades": 91,
+      "totalObservedFutureShares": "116065"
+    }
+  ],
+  "cases": [
+    {
+      "source": "runtime/moloch/live-sig-20261014-61/capture/stream",
+      "cutoff": "2026-10-14T22:58:33.858Z",
+      "method": "queueTurnover",
+      "startupDelayMs": 0,
+      "selected": [
+        "1068",
+        "1069"
+      ],
+      "activationAt": "2026-10-14T22:58:36.858Z",
+      "horizonEnd": "2026-10-14T22:59:36.858Z",
+      "observedFutureTrades": 12,
+      "observedFutureShares": "5486",
+      "futureGapDetected": false
+    },
+    {
+      "source": "runtime/moloch/live-sig-20261014-61/capture/stream",
+      "cutoff": "2026-10-14T22:58:33.858Z",
+      "method": "queueTurnover",
+      "startupDelayMs": 30000,
+      "selected": [
+        "1068",
+        "1069"
+      ],
+      "activationAt": "2026-10-14T22:59:06.858Z",
+      "horizonEnd": "2026-10-14T23:00:06.858Z",
+      "observedFutureTrades": 11,
+      "observedFutureShares": "5406",
+      "futureGapDetected": false
+    },
+    {
+      "source": "runtime/moloch/live-sig-20261014-61/capture/stream",
+      "cutoff": "2026-10-14T22:58:33.858Z",
+      "method": "recentShares",
+      "startupDelayMs": 0,
+      "selected": [
+        "1068",
+        "1069"
+      ],
+      "activationAt": "2026-10-14T22:58:36.858Z",
+      "horizonEnd": "2026-10-14T22:59:36.858Z",
+      "observedFutureTrades": 12,
+      "observedFutureShares": "5486",
+      "futureGapDetected": false
+    },
+    {
+      "source": "runtime/moloch/live-sig-20261014-61/capture/stream",
+      "cutoff": "2026-10-14T22:58:33.858Z",
+      "method": "recentShares",
+      "startupDelayMs": 30000,
+      "selected": [
+        "1068",
+        "1069"
+      ],
+      "activationAt": "2026-10-14T22:59:06.858Z",
+      "horizonEnd": "2026-10-14T23:00:06.858Z",
+      "observedFutureTrades": 11,
+      "observedFutureShares": "5406",
+      "futureGapDetected": false
+    },
+    {
+      "source": "runtime/moloch/live-sig-20261014-61/capture/stream",
+      "cutoff": "2026-10-14T22:58:33.858Z",
+      "method": "recentTrades",
+      "startupDelayMs": 0,
+      "selected": [
+        "1068",
+        "1069"
+      ],
+      "activationAt": "2026-10-14T22:58:36.858Z",
+      "horizonEnd": "2026-10-14T22:59:36.858Z",
+      "observedFutureTrades": 12,
+      "observedFutureShares": "5486",
+      "futureGapDetected": false
+    },
+    {
+      "source": "runtime/moloch/live-sig-20261014-61/capture/stream",
+      "cutoff": "2026-10-14T22:58:33.858Z",
+      "method": "recentTrades",
+      "startupDelayMs": 30000,
+      "selected": [
+        "1068",
+        "1069"
+      ],
+      "activationAt": "2026-10-14T22:59:06.858Z",
+      "horizonEnd": "2026-10-14T23:00:06.858Z",
+      "observedFutureTrades": 11,
+      "observedFutureShares": "5406",
+      "futureGapDetected": false
+    },
+    {
+      "source": "runtime/moloch/live-sig-20261014-61/capture/stream",
+      "cutoff": "2026-10-14T22:59:03.858Z",
+      "method": "queueTurnover",
+      "startupDelayMs": 0,
+      "selected": [
+        "1073",
+        "1068"
+      ],
+      "activationAt": "2026-10-14T22:59:06.858Z",
+      "horizonEnd": "2026-10-14T23:00:06.858Z",
+      "observedFutureTrades": 2,
+      "observedFutureShares": "135",
+      "futureGapDetected": false
+    },
+    {
+      "source": "runtime/moloch/live-sig-20261014-61/capture/stream",
+      "cutoff": "2026-10-14T22:59:03.858Z",
+      "method": "recentShares",
+      "startupDelayMs": 0,
+      "selected": [
+        "1073",
+        "1074"
+      ],
+      "activationAt": "2026-10-14T22:59:06.858Z",
+      "horizonEnd": "2026-10-14T23:00:06.858Z",
+      "observedFutureTrades": 0,
+      "observedFutureShares": "0",
+      "futureGapDetected": false
+    },
+    {
+      "source": "runtime/moloch/live-sig-20261014-61/capture/stream",
+      "cutoff": "2026-10-14T22:59:03.858Z",
+      "method": "recentTrades",
+      "startupDelayMs": 0,
+      "selected": [
+        "1006",
+        "1068"
+      ],
+      "activationAt": "2026-10-14T22:59:06.858Z",
+      "horizonEnd": "2026-10-14T23:00:06.858Z",
+      "observedFutureTrades": 3,
+      "observedFutureShares": "1055",
+      "futureGapDetected": false
+    },
+    {
+      "source": "runtime/moloch/live-sig-20261014-63/capture/stream",
+      "cutoff": "2026-10-14T23:12:23.252Z",
+      "method": "queueTurnover",
+      "startupDelayMs": 0,
+      "selected": [
+        "1068",
+        "897"
+      ],
+      "activationAt": "2026-10-14T23:12:26.252Z",
+      "horizonEnd": "2026-10-14T23:13:26.252Z",
+      "observedFutureTrades": 7,
+      "observedFutureShares": "2921",
+      "futureGapDetected": false
+    },
+    {
+      "source": "runtime/moloch/live-sig-20261014-63/capture/stream",
+      "cutoff": "2026-10-14T23:12:23.252Z",
+      "method": "queueTurnover",
+      "startupDelayMs": 30000,
+      "selected": [
+        "1068",
+        "897"
+      ],
+      "activationAt": "2026-10-14T23:12:56.252Z",
+      "horizonEnd": "2026-10-14T23:13:56.252Z",
+      "observedFutureTrades": 3,
+      "observedFutureShares": "686",
+      "futureGapDetected": false
+    },
+    {
+      "source": "runtime/moloch/live-sig-20261014-63/capture/stream",
+      "cutoff": "2026-10-14T23:12:23.252Z",
+      "method": "queueTurnover",
+      "startupDelayMs": 120000,
+      "selected": [
+        "1068",
+        "897"
+      ],
+      "activationAt": "2026-10-14T23:14:26.252Z",
+      "horizonEnd": "2026-10-14T23:15:26.252Z",
+      "observedFutureTrades": 1,
+      "observedFutureShares": "74",
+      "futureGapDetected": true
+    },
+    {
+      "source": "runtime/moloch/live-sig-20261014-63/capture/stream",
+      "cutoff": "2026-10-14T23:12:23.252Z",
+      "method": "recentShares",
+      "startupDelayMs": 0,
+      "selected": [
+        "1068",
+        "866"
+      ],
+      "activationAt": "2026-10-14T23:12:26.252Z",
+      "horizonEnd": "2026-10-14T23:13:26.252Z",
+      "observedFutureTrades": 12,
+      "observedFutureShares": "5497",
+      "futureGapDetected": false
+    },
+    {
+      "source": "runtime/moloch/live-sig-20261014-63/capture/stream",
+      "cutoff": "2026-10-14T23:12:23.252Z",
+      "method": "recentShares",
+      "startupDelayMs": 30000,
+      "selected": [
+        "1068",
+        "866"
+      ],
+      "activationAt": "2026-10-14T23:12:56.252Z",
+      "horizonEnd": "2026-10-14T23:13:56.252Z",
+      "observedFutureTrades": 9,
+      "observedFutureShares": "3392",
+      "futureGapDetected": false
+    },
+    {
+      "source": "runtime/moloch/live-sig-20261014-63/capture/stream",
+      "cutoff": "2026-10-14T23:12:23.252Z",
+      "method": "recentShares",
+      "startupDelayMs": 120000,
+      "selected": [
+        "1068",
+        "866"
+      ],
+      "activationAt": "2026-10-14T23:14:26.252Z",
+      "horizonEnd": "2026-10-14T23:15:26.252Z",
+      "observedFutureTrades": 4,
+      "observedFutureShares": "1133",
+      "futureGapDetected": true
+    },
+    {
+      "source": "runtime/moloch/live-sig-20261014-63/capture/stream",
+      "cutoff": "2026-10-14T23:12:23.252Z",
+      "method": "recentTrades",
+      "startupDelayMs": 0,
+      "selected": [
+        "1055",
+        "1068"
+      ],
+      "activationAt": "2026-10-14T23:12:26.252Z",
+      "horizonEnd": "2026-10-14T23:13:26.252Z",
+      "observedFutureTrades": 15,
+      "observedFutureShares": "7327",
+      "futureGapDetected": false
+    },
+    {
+      "source": "runtime/moloch/live-sig-20261014-63/capture/stream",
+      "cutoff": "2026-10-14T23:12:23.252Z",
+      "method": "recentTrades",
+      "startupDelayMs": 30000,
+      "selected": [
+        "1055",
+        "1068"
+      ],
+      "activationAt": "2026-10-14T23:12:56.252Z",
+      "horizonEnd": "2026-10-14T23:13:56.252Z",
+      "observedFutureTrades": 15,
+      "observedFutureShares": "8008",
+      "futureGapDetected": false
+    },
+    {
+      "source": "runtime/moloch/live-sig-20261014-63/capture/stream",
+      "cutoff": "2026-10-14T23:12:23.252Z",
+      "method": "recentTrades",
+      "startupDelayMs": 120000,
+      "selected": [
+        "1055",
+        "1068"
+      ],
+      "activationAt": "2026-10-14T23:14:26.252Z",
+      "horizonEnd": "2026-10-14T23:15:26.252Z",
+      "observedFutureTrades": 1,
+      "observedFutureShares": "74",
+      "futureGapDetected": true
+    },
+    {
+      "source": "runtime/moloch/live-sig-20261014-63/capture/stream",
+      "cutoff": "2026-10-14T23:12:53.252Z",
+      "method": "queueTurnover",
+      "startupDelayMs": 0,
+      "selected": [
+        "1044",
+        "1068"
+      ],
+      "activationAt": "2026-10-14T23:12:56.252Z",
+      "horizonEnd": "2026-10-14T23:13:56.252Z",
+      "observedFutureTrades": 3,
+      "observedFutureShares": "686",
+      "futureGapDetected": false
+    },
+    {
+      "source": "runtime/moloch/live-sig-20261014-63/capture/stream",
+      "cutoff": "2026-10-14T23:12:53.252Z",
+      "method": "queueTurnover",
+      "startupDelayMs": 30000,
+      "selected": [
+        "1044",
+        "1068"
+      ],
+      "activationAt": "2026-10-14T23:13:26.252Z",
+      "horizonEnd": "2026-10-14T23:14:26.252Z",
+      "observedFutureTrades": 2,
+      "observedFutureShares": "430",
+      "futureGapDetected": true
+    },
+    {
+      "source": "runtime/moloch/live-sig-20261014-63/capture/stream",
+      "cutoff": "2026-10-14T23:12:53.252Z",
+      "method": "queueTurnover",
+      "startupDelayMs": 120000,
+      "selected": [
+        "1044",
+        "1068"
+      ],
+      "activationAt": "2026-10-14T23:14:56.252Z",
+      "horizonEnd": "2026-10-14T23:15:56.252Z",
+      "observedFutureTrades": 30,
+      "observedFutureShares": "45313",
+      "futureGapDetected": false
+    },
+    {
+      "source": "runtime/moloch/live-sig-20261014-63/capture/stream",
+      "cutoff": "2026-10-14T23:12:53.252Z",
+      "method": "recentShares",
+      "startupDelayMs": 0,
+      "selected": [
+        "866",
+        "1068"
+      ],
+      "activationAt": "2026-10-14T23:12:56.252Z",
+      "horizonEnd": "2026-10-14T23:13:56.252Z",
+      "observedFutureTrades": 9,
+      "observedFutureShares": "3392",
+      "futureGapDetected": false
+    },
+    {
+      "source": "runtime/moloch/live-sig-20261014-63/capture/stream",
+      "cutoff": "2026-10-14T23:12:53.252Z",
+      "method": "recentShares",
+      "startupDelayMs": 30000,
+      "selected": [
+        "866",
+        "1068"
+      ],
+      "activationAt": "2026-10-14T23:13:26.252Z",
+      "horizonEnd": "2026-10-14T23:14:26.252Z",
+      "observedFutureTrades": 3,
+      "observedFutureShares": "560",
+      "futureGapDetected": true
+    },
+    {
+      "source": "runtime/moloch/live-sig-20261014-63/capture/stream",
+      "cutoff": "2026-10-14T23:12:53.252Z",
+      "method": "recentShares",
+      "startupDelayMs": 120000,
+      "selected": [
+        "866",
+        "1068"
+      ],
+      "activationAt": "2026-10-14T23:14:56.252Z",
+      "horizonEnd": "2026-10-14T23:15:56.252Z",
+      "observedFutureTrades": 30,
+      "observedFutureShares": "45313",
+      "futureGapDetected": false
+    },
+    {
+      "source": "runtime/moloch/live-sig-20261014-63/capture/stream",
+      "cutoff": "2026-10-14T23:12:53.252Z",
+      "method": "recentTrades",
+      "startupDelayMs": 0,
+      "selected": [
+        "1055",
+        "1068"
+      ],
+      "activationAt": "2026-10-14T23:12:56.252Z",
+      "horizonEnd": "2026-10-14T23:13:56.252Z",
+      "observedFutureTrades": 15,
+      "observedFutureShares": "8008",
+      "futureGapDetected": false
+    },
+    {
+      "source": "runtime/moloch/live-sig-20261014-63/capture/stream",
+      "cutoff": "2026-10-14T23:12:53.252Z",
+      "method": "recentTrades",
+      "startupDelayMs": 30000,
+      "selected": [
+        "1055",
+        "1068"
+      ],
+      "activationAt": "2026-10-14T23:13:26.252Z",
+      "horizonEnd": "2026-10-14T23:14:26.252Z",
+      "observedFutureTrades": 7,
+      "observedFutureShares": "3355",
+      "futureGapDetected": true
+    },
+    {
+      "source": "runtime/moloch/live-sig-20261014-63/capture/stream",
+      "cutoff": "2026-10-14T23:12:53.252Z",
+      "method": "recentTrades",
+      "startupDelayMs": 120000,
+      "selected": [
+        "1055",
+        "1068"
+      ],
+      "activationAt": "2026-10-14T23:14:56.252Z",
+      "horizonEnd": "2026-10-14T23:15:56.252Z",
+      "observedFutureTrades": 32,
+      "observedFutureShares": "46134",
+      "futureGapDetected": false
+    },
+    {
+      "source": "runtime/moloch/live-sig-20261014-63/capture/stream",
+      "cutoff": "2026-10-14T23:13:23.252Z",
+      "method": "queueTurnover",
+      "startupDelayMs": 0,
+      "selected": [
+        "866",
+        "1055"
+      ],
+      "activationAt": "2026-10-14T23:13:26.252Z",
+      "horizonEnd": "2026-10-14T23:14:26.252Z",
+      "observedFutureTrades": 6,
+      "observedFutureShares": "3055",
+      "futureGapDetected": true
+    },
+    {
+      "source": "runtime/moloch/live-sig-20261014-63/capture/stream",
+      "cutoff": "2026-10-14T23:13:23.252Z",
+      "method": "queueTurnover",
+      "startupDelayMs": 30000,
+      "selected": [
+        "866",
+        "1055"
+      ],
+      "activationAt": "2026-10-14T23:13:56.252Z",
+      "horizonEnd": "2026-10-14T23:14:56.252Z",
+      "observedFutureTrades": 3,
+      "observedFutureShares": "1059",
+      "futureGapDetected": true
+    },
+    {
+      "source": "runtime/moloch/live-sig-20261014-63/capture/stream",
+      "cutoff": "2026-10-14T23:13:23.252Z",
+      "method": "queueTurnover",
+      "startupDelayMs": 120000,
+      "selected": [
+        "866",
+        "1055"
+      ],
+      "activationAt": "2026-10-14T23:15:26.252Z",
+      "horizonEnd": "2026-10-14T23:16:26.252Z",
+      "observedFutureTrades": 2,
+      "observedFutureShares": "821",
+      "futureGapDetected": false
+    },
+    {
+      "source": "runtime/moloch/live-sig-20261014-63/capture/stream",
+      "cutoff": "2026-10-14T23:13:23.252Z",
+      "method": "recentShares",
+      "startupDelayMs": 0,
+      "selected": [
+        "866",
+        "1068"
+      ],
+      "activationAt": "2026-10-14T23:13:26.252Z",
+      "horizonEnd": "2026-10-14T23:14:26.252Z",
+      "observedFutureTrades": 3,
+      "observedFutureShares": "560",
+      "futureGapDetected": true
+    },
+    {
+      "source": "runtime/moloch/live-sig-20261014-63/capture/stream",
+      "cutoff": "2026-10-14T23:13:23.252Z",
+      "method": "recentShares",
+      "startupDelayMs": 30000,
+      "selected": [
+        "866",
+        "1068"
+      ],
+      "activationAt": "2026-10-14T23:13:56.252Z",
+      "horizonEnd": "2026-10-14T23:14:56.252Z",
+      "observedFutureTrades": 4,
+      "observedFutureShares": "1133",
+      "futureGapDetected": true
+    },
+    {
+      "source": "runtime/moloch/live-sig-20261014-63/capture/stream",
+      "cutoff": "2026-10-14T23:13:23.252Z",
+      "method": "recentShares",
+      "startupDelayMs": 120000,
+      "selected": [
+        "866",
+        "1068"
+      ],
+      "activationAt": "2026-10-14T23:15:26.252Z",
+      "horizonEnd": "2026-10-14T23:16:26.252Z",
+      "observedFutureTrades": 42,
+      "observedFutureShares": "56087",
+      "futureGapDetected": false
+    },
+    {
+      "source": "runtime/moloch/live-sig-20261014-63/capture/stream",
+      "cutoff": "2026-10-14T23:13:23.252Z",
+      "method": "recentTrades",
+      "startupDelayMs": 0,
+      "selected": [
+        "1055",
+        "1068"
+      ],
+      "activationAt": "2026-10-14T23:13:26.252Z",
+      "horizonEnd": "2026-10-14T23:14:26.252Z",
+      "observedFutureTrades": 7,
+      "observedFutureShares": "3355",
+      "futureGapDetected": true
+    },
+    {
+      "source": "runtime/moloch/live-sig-20261014-63/capture/stream",
+      "cutoff": "2026-10-14T23:13:23.252Z",
+      "method": "recentTrades",
+      "startupDelayMs": 30000,
+      "selected": [
+        "1055",
+        "1068"
+      ],
+      "activationAt": "2026-10-14T23:13:56.252Z",
+      "horizonEnd": "2026-10-14T23:14:56.252Z",
+      "observedFutureTrades": 1,
+      "observedFutureShares": "74",
+      "futureGapDetected": true
+    },
+    {
+      "source": "runtime/moloch/live-sig-20261014-63/capture/stream",
+      "cutoff": "2026-10-14T23:13:23.252Z",
+      "method": "recentTrades",
+      "startupDelayMs": 120000,
+      "selected": [
+        "1055",
+        "1068"
+      ],
+      "activationAt": "2026-10-14T23:15:26.252Z",
+      "horizonEnd": "2026-10-14T23:16:26.252Z",
+      "observedFutureTrades": 44,
+      "observedFutureShares": "56908",
+      "futureGapDetected": false
+    },
+    {
+      "source": "runtime/moloch/live-sig-20261014-63/capture/stream",
+      "cutoff": "2026-10-14T23:13:53.252Z",
+      "method": "queueTurnover",
+      "startupDelayMs": 0,
+      "selected": [
+        "1068",
+        "1044"
+      ],
+      "activationAt": "2026-10-14T23:13:56.252Z",
+      "horizonEnd": "2026-10-14T23:14:56.252Z",
+      "observedFutureTrades": 1,
+      "observedFutureShares": "74",
+      "futureGapDetected": true
+    },
+    {
+      "source": "runtime/moloch/live-sig-20261014-63/capture/stream",
+      "cutoff": "2026-10-14T23:13:53.252Z",
+      "method": "queueTurnover",
+      "startupDelayMs": 30000,
+      "selected": [
+        "1068",
+        "1044"
+      ],
+      "activationAt": "2026-10-14T23:14:26.252Z",
+      "horizonEnd": "2026-10-14T23:15:26.252Z",
+      "observedFutureTrades": 1,
+      "observedFutureShares": "74",
+      "futureGapDetected": true
+    },
+    {
+      "source": "runtime/moloch/live-sig-20261014-63/capture/stream",
+      "cutoff": "2026-10-14T23:13:53.252Z",
+      "method": "queueTurnover",
+      "startupDelayMs": 120000,
+      "selected": [
+        "1068",
+        "1044"
+      ],
+      "activationAt": "2026-10-14T23:15:56.252Z",
+      "horizonEnd": "2026-10-14T23:16:56.252Z",
+      "observedFutureTrades": 22,
+      "observedFutureShares": "15157",
+      "futureGapDetected": false
+    },
+    {
+      "source": "runtime/moloch/live-sig-20261014-63/capture/stream",
+      "cutoff": "2026-10-14T23:13:53.252Z",
+      "method": "recentShares",
+      "startupDelayMs": 0,
+      "selected": [
+        "866",
+        "1055"
+      ],
+      "activationAt": "2026-10-14T23:13:56.252Z",
+      "horizonEnd": "2026-10-14T23:14:56.252Z",
+      "observedFutureTrades": 3,
+      "observedFutureShares": "1059",
+      "futureGapDetected": true
+    },
+    {
+      "source": "runtime/moloch/live-sig-20261014-63/capture/stream",
+      "cutoff": "2026-10-14T23:13:53.252Z",
+      "method": "recentShares",
+      "startupDelayMs": 30000,
+      "selected": [
+        "866",
+        "1055"
+      ],
+      "activationAt": "2026-10-14T23:14:26.252Z",
+      "horizonEnd": "2026-10-14T23:15:26.252Z",
+      "observedFutureTrades": 3,
+      "observedFutureShares": "1059",
+      "futureGapDetected": true
+    },
+    {
+      "source": "runtime/moloch/live-sig-20261014-63/capture/stream",
+      "cutoff": "2026-10-14T23:13:53.252Z",
+      "method": "recentShares",
+      "startupDelayMs": 120000,
+      "selected": [
+        "866",
+        "1055"
+      ],
+      "activationAt": "2026-10-14T23:15:56.252Z",
+      "horizonEnd": "2026-10-14T23:16:56.252Z",
+      "observedFutureTrades": 0,
+      "observedFutureShares": "0",
+      "futureGapDetected": false
+    },
+    {
+      "source": "runtime/moloch/live-sig-20261014-63/capture/stream",
+      "cutoff": "2026-10-14T23:13:53.252Z",
+      "method": "recentTrades",
+      "startupDelayMs": 0,
+      "selected": [
+        "1055",
+        "1068"
+      ],
+      "activationAt": "2026-10-14T23:13:56.252Z",
+      "horizonEnd": "2026-10-14T23:14:56.252Z",
+      "observedFutureTrades": 1,
+      "observedFutureShares": "74",
+      "futureGapDetected": true
+    },
+    {
+      "source": "runtime/moloch/live-sig-20261014-63/capture/stream",
+      "cutoff": "2026-10-14T23:13:53.252Z",
+      "method": "recentTrades",
+      "startupDelayMs": 30000,
+      "selected": [
+        "1055",
+        "1068"
+      ],
+      "activationAt": "2026-10-14T23:14:26.252Z",
+      "horizonEnd": "2026-10-14T23:15:26.252Z",
+      "observedFutureTrades": 1,
+      "observedFutureShares": "74",
+      "futureGapDetected": true
+    },
+    {
+      "source": "runtime/moloch/live-sig-20261014-63/capture/stream",
+      "cutoff": "2026-10-14T23:13:53.252Z",
+      "method": "recentTrades",
+      "startupDelayMs": 120000,
+      "selected": [
+        "1055",
+        "1068"
+      ],
+      "activationAt": "2026-10-14T23:15:56.252Z",
+      "horizonEnd": "2026-10-14T23:16:56.252Z",
+      "observedFutureTrades": 15,
+      "observedFutureShares": "13023",
+      "futureGapDetected": false
+    },
+    {
+      "source": "runtime/moloch/live-sig-20261014-63/capture/stream",
+      "cutoff": "2026-10-14T23:14:53.252Z",
+      "method": "queueTurnover",
+      "startupDelayMs": 0,
+      "selected": [
+        "981"
+      ],
+      "activationAt": "2026-10-14T23:14:56.252Z",
+      "horizonEnd": "2026-10-14T23:15:56.252Z",
+      "observedFutureTrades": 0,
+      "observedFutureShares": "0",
+      "futureGapDetected": false
+    },
+    {
+      "source": "runtime/moloch/live-sig-20261014-63/capture/stream",
+      "cutoff": "2026-10-14T23:14:53.252Z",
+      "method": "queueTurnover",
+      "startupDelayMs": 30000,
+      "selected": [
+        "981"
+      ],
+      "activationAt": "2026-10-14T23:15:26.252Z",
+      "horizonEnd": "2026-10-14T23:16:26.252Z",
+      "observedFutureTrades": 0,
+      "observedFutureShares": "0",
+      "futureGapDetected": false
+    },
+    {
+      "source": "runtime/moloch/live-sig-20261014-63/capture/stream",
+      "cutoff": "2026-10-14T23:14:53.252Z",
+      "method": "recentShares",
+      "startupDelayMs": 0,
+      "selected": [
+        "981"
+      ],
+      "activationAt": "2026-10-14T23:14:56.252Z",
+      "horizonEnd": "2026-10-14T23:15:56.252Z",
+      "observedFutureTrades": 0,
+      "observedFutureShares": "0",
+      "futureGapDetected": false
+    },
+    {
+      "source": "runtime/moloch/live-sig-20261014-63/capture/stream",
+      "cutoff": "2026-10-14T23:14:53.252Z",
+      "method": "recentShares",
+      "startupDelayMs": 30000,
+      "selected": [
+        "981"
+      ],
+      "activationAt": "2026-10-14T23:15:26.252Z",
+      "horizonEnd": "2026-10-14T23:16:26.252Z",
+      "observedFutureTrades": 0,
+      "observedFutureShares": "0",
+      "futureGapDetected": false
+    },
+    {
+      "source": "runtime/moloch/live-sig-20261014-63/capture/stream",
+      "cutoff": "2026-10-14T23:14:53.252Z",
+      "method": "recentTrades",
+      "startupDelayMs": 0,
+      "selected": [
+        "981"
+      ],
+      "activationAt": "2026-10-14T23:14:56.252Z",
+      "horizonEnd": "2026-10-14T23:15:56.252Z",
+      "observedFutureTrades": 0,
+      "observedFutureShares": "0",
+      "futureGapDetected": false
+    },
+    {
+      "source": "runtime/moloch/live-sig-20261014-63/capture/stream",
+      "cutoff": "2026-10-14T23:14:53.252Z",
+      "method": "recentTrades",
+      "startupDelayMs": 30000,
+      "selected": [
+        "981"
+      ],
+      "activationAt": "2026-10-14T23:15:26.252Z",
+      "horizonEnd": "2026-10-14T23:16:26.252Z",
+      "observedFutureTrades": 0,
+      "observedFutureShares": "0",
+      "futureGapDetected": false
+    },
+    {
+      "source": "runtime/moloch/live-sig-20261014-63/capture/stream",
+      "cutoff": "2026-10-14T23:15:23.252Z",
+      "method": "queueTurnover",
+      "startupDelayMs": 0,
+      "selected": [
+        "981"
+      ],
+      "activationAt": "2026-10-14T23:15:26.252Z",
+      "horizonEnd": "2026-10-14T23:16:26.252Z",
+      "observedFutureTrades": 0,
+      "observedFutureShares": "0",
+      "futureGapDetected": false
+    },
+    {
+      "source": "runtime/moloch/live-sig-20261014-63/capture/stream",
+      "cutoff": "2026-10-14T23:15:23.252Z",
+      "method": "queueTurnover",
+      "startupDelayMs": 30000,
+      "selected": [
+        "981"
+      ],
+      "activationAt": "2026-10-14T23:15:56.252Z",
+      "horizonEnd": "2026-10-14T23:16:56.252Z",
+      "observedFutureTrades": 0,
+      "observedFutureShares": "0",
+      "futureGapDetected": false
+    },
+    {
+      "source": "runtime/moloch/live-sig-20261014-63/capture/stream",
+      "cutoff": "2026-10-14T23:15:23.252Z",
+      "method": "recentShares",
+      "startupDelayMs": 0,
+      "selected": [
+        "981"
+      ],
+      "activationAt": "2026-10-14T23:15:26.252Z",
+      "horizonEnd": "2026-10-14T23:16:26.252Z",
+      "observedFutureTrades": 0,
+      "observedFutureShares": "0",
+      "futureGapDetected": false
+    },
+    {
+      "source": "runtime/moloch/live-sig-20261014-63/capture/stream",
+      "cutoff": "2026-10-14T23:15:23.252Z",
+      "method": "recentShares",
+      "startupDelayMs": 30000,
+      "selected": [
+        "981"
+      ],
+      "activationAt": "2026-10-14T23:15:56.252Z",
+      "horizonEnd": "2026-10-14T23:16:56.252Z",
+      "observedFutureTrades": 0,
+      "observedFutureShares": "0",
+      "futureGapDetected": false
+    },
+    {
+      "source": "runtime/moloch/live-sig-20261014-63/capture/stream",
+      "cutoff": "2026-10-14T23:15:23.252Z",
+      "method": "recentTrades",
+      "startupDelayMs": 0,
+      "selected": [
+        "981"
+      ],
+      "activationAt": "2026-10-14T23:15:26.252Z",
+      "horizonEnd": "2026-10-14T23:16:26.252Z",
+      "observedFutureTrades": 0,
+      "observedFutureShares": "0",
+      "futureGapDetected": false
+    },
+    {
+      "source": "runtime/moloch/live-sig-20261014-63/capture/stream",
+      "cutoff": "2026-10-14T23:15:23.252Z",
+      "method": "recentTrades",
+      "startupDelayMs": 30000,
+      "selected": [
+        "981"
+      ],
+      "activationAt": "2026-10-14T23:15:56.252Z",
+      "horizonEnd": "2026-10-14T23:16:56.252Z",
+      "observedFutureTrades": 0,
+      "observedFutureShares": "0",
+      "futureGapDetected": false
+    },
+    {
+      "source": "runtime/moloch/live-sig-20261014-63/capture/stream",
+      "cutoff": "2026-10-14T23:16:23.252Z",
+      "method": "queueTurnover",
+      "startupDelayMs": 0,
+      "selected": [
+        "910"
+      ],
+      "activationAt": "2026-10-14T23:16:26.252Z",
+      "horizonEnd": "2026-10-14T23:17:26.252Z",
+      "observedFutureTrades": 0,
+      "observedFutureShares": "0",
+      "futureGapDetected": false
+    },
+    {
+      "source": "runtime/moloch/live-sig-20261014-63/capture/stream",
+      "cutoff": "2026-10-14T23:16:23.252Z",
+      "method": "recentShares",
+      "startupDelayMs": 0,
+      "selected": [
+        "910"
+      ],
+      "activationAt": "2026-10-14T23:16:26.252Z",
+      "horizonEnd": "2026-10-14T23:17:26.252Z",
+      "observedFutureTrades": 0,
+      "observedFutureShares": "0",
+      "futureGapDetected": false
+    },
+    {
+      "source": "runtime/moloch/live-sig-20261014-63/capture/stream",
+      "cutoff": "2026-10-14T23:16:23.252Z",
+      "method": "recentTrades",
+      "startupDelayMs": 0,
+      "selected": [
+        "910"
+      ],
+      "activationAt": "2026-10-14T23:16:26.252Z",
+      "horizonEnd": "2026-10-14T23:17:26.252Z",
+      "observedFutureTrades": 0,
+      "observedFutureShares": "0",
+      "futureGapDetected": false
+    }
+  ],
+  "contestOrders": 0,
+  "networkRequests": 0,
+  "profitabilityEstablished": false,
+  "limitations": [
+    "Retrospective diagnostic on previously inspected captures, not untouched strategy validation.",
+    "Overlapping cutoffs are dependent; totals are repeated opportunity measurements and must not be treated as unique traded volume.",
+    "Future observed activity is not a fill, a profit, or a complete tape guarantee.",
+    "Only facts received by each cutoff enter its ranking; pre-activation executions never count as future opportunity.",
+    "Selected-market future gaps exclude scoring; there is no synthetic gap repair."
+  ]
+}

@@ -1,0 +1,9 @@
+# Stop entries before observation ends
+
+Phase67 ended its finite capture while two modeled entry quotes remained within their lifetimes. Later tape recovered100 YES shares at0.850 after the capture ended. The accounting preserved those liabilities correctly, but the finite experiment left quotes exposed during its observation gap.
+
+An optional predeclared `entryStopAt` policy now prevents new entry targets after that processing-clock timestamp. The normal reconciler cancels old entry quotes with the existing three-second latency, minimum quote age and write limits. Cancellation does not release funding until complete original-window coverage and a post-end checkpoint; executions before effective cancellation can still fill. Covered exits remain allowed. Invalid timestamps and attempts to change financial limits through the flat-only entry transition are rejected.
+
+Future fast-selection studies register the same cutoff for both banks, four minutes after registration, while their longer finite collector remains active. Control and candidate entry files carry identical cutoffs; only the candidate's inside tick differs. The reproducible paired runner verifies the registered policy hashes and equal other fields. An expired cutoff is not silently renewed on resume. Earlier histories without this optional field retain their behavior and hashes, and the already running phase69 does not change policy retroactively.
+
+All160 core tests pass. Tests check normal paced cancellation, a later trade outside both effective cancellation windows, preserved funding, continued covered exits and unchanged wealth. This reduces a shutdown exposure mechanism; it does not prove profit, exact callback timing, guaranteed cancellation, or production readiness. Network failures and existing inventory still require explicit continuation and reconciliation.

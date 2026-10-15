@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "at": "2026-10-14T22:50:47.106Z",
+  "banks": [
+    {
+      "side": "control",
+      "snapshotHash": "825e8f884d1059faff358edf4c760438fcf1b105ac9458c21909add55149c5e3",
+      "cash": "100000.000000",
+      "realized": "0.000000",
+      "newFills": 0,
+      "unresolved": 0,
+      "ownedCost": "0.000000"
+    },
+    {
+      "side": "candidate",
+      "snapshotHash": "a0183b44a95fa7b144b022af97f5bd3e7867884a54a28a63e521d5b324c6f6b5",
+      "cash": "100000.000000",
+      "realized": "0.000000",
+      "newFills": 0,
+      "unresolved": 0,
+      "ownedCost": "0.000000"
+    }
+  ],
+  "contestOrders": 0,
+  "profitabilityEstablished": false,
+  "conclusion": "Matched-clock trial closed with zero new fills; fixed offers were not economically exercised."
+}
