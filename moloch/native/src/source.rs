@@ -364,7 +364,8 @@ impl RestSource {
                 },
             );
         }
-        if scopes.is_empty() || scopes.len() > 4 || tournament.is_empty() {
+        // Registry size is independent of the number of concurrently polled books.
+        if scopes.is_empty() || scopes.len() > 1000 || tournament.is_empty() {
             return Err("SOURCE_SCOPES");
         }
         Ok(Self {
@@ -792,6 +793,14 @@ impl RestSource {
 }
 #[cfg(test)]
 mod tests {
+    #[test]
+    fn market_registry_can_watch_the_venue_without_expanding_read_concurrency() {
+        let pairs: serde_json::Value = (1..=237u64).map(|id| serde_json::json!({"marketId":id.to_string(),"exchangeId":(id+1000).to_string()})).collect::<Vec<_>>().into();
+        let source = super::RestSource::new(&pairs,"cup","2026-10-15T00:00:00Z").unwrap();
+        assert_eq!(source.scopes().as_array().unwrap().len(),237);
+        let too_many: serde_json::Value = (1..=1001u64).map(|id| serde_json::json!({"marketId":id.to_string(),"exchangeId":(id+2000).to_string()})).collect::<Vec<_>>().into();
+        assert!(super::RestSource::new(&too_many,"cup","2026-10-15T00:00:00Z").is_err());
+    }
     use super::*;
     #[test]
     fn late_socket_gap_retains_the_actual_recovery_start(){
