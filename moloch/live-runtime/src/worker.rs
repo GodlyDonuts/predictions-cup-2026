@@ -43,7 +43,11 @@ fn ensure_entry_window(c:&Control,bank:&mut Session,authority:&ProductionAuthori
  if current>end{return Err("DAILY_POLICY_AHEAD".into())}
  if end>current{
   let stamp=iso(at);let event=json!({"type":"live_entry_window","source":"moloch_live_dispatcher","receivedAt":stamp,"processedAt":stamp,"previousEntryStopAt":iso(current),"entryStopAt":iso(end),"mandate":cfg.mandate(&c.activation)});
-  bank.accept("moloch-live",bank.last_source_sequence("moloch-live")+1,&event)?;
+  if bank.accept("moloch-live",bank.last_source_sequence("moloch-live")+1,&event)?{
+   // Policy identity changed durably. Lose model confidence and cold-start at
+   // this actual prefix; never reinterpret past samples under the new policy.
+   if let Some(cfg)=&c.execution_model{let _=moloch_live_runtime::execution_edge::initialize_observer(bank,Some(cfg.clone()));}
+  }
  }
  if authority.entry_until_ms()!=end||end==cfg.anchor_ms{authority.bind_entry_window(bank,cfg,at)?;}Ok(())
 }

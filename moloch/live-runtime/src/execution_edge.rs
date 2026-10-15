@@ -125,6 +125,7 @@ impl Model{
  let q=bank.engine().order_records().into_iter().find(|q|q["id"]==qid).ok_or("EDGE_QUOTE")?;
  need(q["retired"]==false&&q["filled"]==0&&log.intents.get(&qid).is_some_and(|i|i["quote"]==q),"EDGE_ORIGINAL_QUOTE")?;
  need(!bank.engine().is_package_order(qid),"EDGE_PACKAGE_NOT_ORDINARY")?;
+ if q["action"]!="buy"||q["executionStyle"]=="inventoryAON"{self.diagnostics.ignored_nonentry+=1;return Ok(false)}
  let key=self.key(bank,&q,now)?;need(self.pending.len()<self.config.maximum_pending,"EDGE_PENDING_BOUND")?;
  if !self.buckets.contains_key(&key){need(self.buckets.len()<self.config.maximum_keys,"EDGE_KEY_BOUND")?;self.buckets.insert(key.clone(),Bucket::default());}
  if self.cluster_until.get(&key.exchange).is_some_and(|end|now<*end){self.diagnostics.overlapping_attempts+=1;return Ok(false)}
