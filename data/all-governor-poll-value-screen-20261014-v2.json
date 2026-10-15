@@ -1,0 +1,1221 @@
+{
+  "schemaVersion": 1,
+  "id": "all-governor-poll-value-screen-20261014-v2",
+  "generatedAt": "2026-10-15T00:50:27.991Z",
+  "analysisMode": "offline_historical_poll_value_and_later_executable_quote_screen",
+  "design": {
+    "forecastSet": "all 16 saved OnPoint Governor poll margins fetched October 14, 2026",
+    "marginUsed": "pollingMarginForDPoints; the OnPoint model margin and displayed win probability are not substituted",
+    "pollModel": "equal-race-weighted individual-poll errors; fixed Student-t4; no SIG market calibration",
+    "historicalCutoffYear": 2022,
+    "forecastHorizonDays": 21,
+    "maximumPollAgeDays": 14,
+    "sharedCycleBootstrapReplicates": 4000,
+    "sharedCycleBootstrapValidReplicates": 4000,
+    "independentHistoricalCalendarYearClusters": 25,
+    "bootstrapInterpretation": "historical_parameter_sensitivity_not_a_2026_confidence_interval",
+    "marketMapping": "exact saved state, party D, and current Governor market title; no fuzzy contract match",
+    "entryBookRule": "first valid depth-20 book with requestStartedAt at least 3000ms after forecast fetchedAt and no more than 3600000ms after that threshold; quote lag is explicitly reported",
+    "bookRequirements": {
+      "fullDepthLevelsPerSide": 20,
+      "sourceClockLeadAtReceiptMaximumMs": 2000,
+      "maximumSourceAgeAtReceiptMs": 5000,
+      "maximumRequestMs": 20000,
+      "maximumPublicationLagMs": 20000,
+      "oneShareTopDepth": true
+    },
+    "feesPerShare": 0,
+    "entryAdverseTicks": 1,
+    "exitAdverseTicks": 1,
+    "exitDecisionLatencyMs": 3000,
+    "exitHorizonsMs": [
+      60000,
+      300000,
+      1800000,
+      3600000
+    ],
+    "maximumExitLatenessMs": 60000,
+    "parameterTuning": false,
+    "productionOrPaperWalletChanges": false
+  },
+  "inputs": {
+    "forecastSnapshot": {
+      "path": "data/onpoint-model-market-screen-20261014.json",
+      "sha256": "981e93448d308c72fca76abdd39e8fd3f390cdde2f6942a99825b21230463eef",
+      "forecastCount": 16
+    },
+    "marketMetadata": {
+      "path": "data/markets.json",
+      "sha256": "41dcb6472ab60302aee6656d3cb75e7baba4b4976671b4419e8334c02189e37c",
+      "rows": 237
+    },
+    "historicalPollArchive": {
+      "sha256": "9f0b185506e59117c150fb988e73b612346effe8e3a8f0d90fdafcad07f54756",
+      "url": "https://raw.githubusercontent.com/fivethirtyeight/data/master/pollster-ratings/raw_polls.csv"
+    },
+    "gubernatorialOutcomeArchive": {
+      "sha256": "22ff0589b8ccc4c1c6f6f8c20ea5099d20fa044c696db9392823d59ead1364dc",
+      "url": "https://raw.githubusercontent.com/fivethirtyeight/election-results/d7a7cff101da28f4ff77114450a964874800ca54/election_results_gubernatorial.csv"
+    },
+    "priorGovernorModelReport": {
+      "path": "research/governor-error-v1/results-20261005-v1.json",
+      "sha256": "ac6874a3b51d7a057f0ed47b92dbfc1e4df789d0df6e26568634a15d231805d1"
+    },
+    "marketCapture": {
+      "file": "public-books.jsonl",
+      "sealedPrefixBytes": 338959383,
+      "sha256": "72dcf4adc449971e2f418f66ae39fb9bb068ccf9f8d120c740541a0751725f1a",
+      "captureStartAt": "2026-10-02T12:03:36.744Z",
+      "captureEndAt": "2026-10-14T23:52:17.841Z",
+      "chainRecords": 146792,
+      "bookRecords": 143962,
+      "mappedExchangeBookRecords": 34735,
+      "finalSequence": 146792,
+      "finalRecordHash": "517acd7ad75dbbc878c198b1774fe5d6f342b358ef27fbbf0575caeec73c8ef0",
+      "stablePrefixVerifiedAfterReplay": true,
+      "fileBytesAtReadStart": 338959383,
+      "fileBytesAtReadEnd": 338959383
+    }
+  },
+  "calibration": {
+    "historicalVerifiedOutcomeRaces": 348,
+    "acceptedHistoricalPollQuestions": 2657,
+    "historicalExclusions": {
+      "partisan_or_internal": 288,
+      "regular_final_outcome_unavailable": 161,
+      "separate_outcome_archive_disagrees": 395,
+      "final_candidate_identity_unmatched": 34,
+      "invalid_vote_shares": 2
+    },
+    "raceRowsAtForecastHorizon": 206,
+    "cyclesAtForecastHorizon": [
+      1998,
+      1999,
+      2000,
+      2001,
+      2002,
+      2003,
+      2004,
+      2005,
+      2006,
+      2007,
+      2008,
+      2009,
+      2010,
+      2011,
+      2012,
+      2013,
+      2014,
+      2015,
+      2016,
+      2017,
+      2018,
+      2019,
+      2020,
+      2021,
+      2022
+    ],
+    "model": {
+      "family": "poll_centered",
+      "races": 206,
+      "cycles": [
+        1998,
+        1999,
+        2000,
+        2001,
+        2002,
+        2003,
+        2004,
+        2005,
+        2006,
+        2007,
+        2008,
+        2009,
+        2010,
+        2011,
+        2012,
+        2013,
+        2014,
+        2015,
+        2016,
+        2017,
+        2018,
+        2019,
+        2020,
+        2021,
+        2022
+      ],
+      "trainedThroughYear": 2022,
+      "biasPoints": 0,
+      "standardDeviationPoints": 7.372674215691149,
+      "distribution": "fixed_t4",
+      "effectiveUnit": "one_state_race",
+      "historicalPopulationTransportMeasured": false
+    },
+    "sharedCycleBootstrap": {
+      "method": "shared_calendar_year_cluster_bootstrap_v1",
+      "replicates": 4000,
+      "validReplicates": 4000,
+      "independentCalendarYearClusters": 25,
+      "years": [
+        1998,
+        1999,
+        2000,
+        2001,
+        2002,
+        2003,
+        2004,
+        2005,
+        2006,
+        2007,
+        2008,
+        2009,
+        2010,
+        2011,
+        2012,
+        2013,
+        2014,
+        2015,
+        2016,
+        2017,
+        2018,
+        2019,
+        2020,
+        2021,
+        2022
+      ],
+      "seed": 1805918246,
+      "interpretation": "historical_parameter_sensitivity_not_a_2026_confidence_interval"
+    },
+    "marketCalibrationEstablished": false
+  },
+  "summary": {
+    "forecasts": 16,
+    "withEntryBook": 8,
+    "withoutEntryBook": 8,
+    "sideValues": 16,
+    "positivePointSettlementEdges": 8,
+    "positiveHistoricalSensitivityLowerEdges": 3,
+    "counterfactualMarkouts": 8,
+    "positiveCounterfactualMarkouts": 0,
+    "realizedPnl": 0,
+    "actualFills": 0,
+    "contestOrders": 0,
+    "profitabilityEstablished": false
+  },
+  "forecasts": [
+    {
+      "state": "AK",
+      "forecastFetchedAt": "2026-10-14T17:05:41.030Z",
+      "sourceForecastHash": "1bd0a27128a02e373f16c7a888731904af26244449a4d5ee9b105ed59901ad16",
+      "pollingMarginForDPoints": 3.5,
+      "modelMarginForDPointsNotUsed": 15.1,
+      "contract": {
+        "marketId": "368",
+        "exchangeId": "1057",
+        "title": "Will the Democratic Party win the Alaska Governor?"
+      },
+      "classification": "offline_poll_value_sensitivity_not_SIG_fair_value_or_trade",
+      "status": "SCREENED",
+      "entryLatencyMs": 3000,
+      "entryBook": {
+        "requestStartedAt": "2026-10-14T17:14:53.000Z",
+        "receivedAt": "2026-10-14T17:14:53.314Z",
+        "publishedAt": "2026-10-14T17:14:53.323Z",
+        "sourceAt": "2026-10-14T17:14:53.440718600Z",
+        "sourceAgeAtReceiptMs": -126,
+        "sourceClockLeadAtReceiptMs": 126,
+        "sourceAgeAtPublicationMs": -117,
+        "sequence": 143112,
+        "recordHash": "0afb8260e9609fa752f2f130711da7f311dbd0d1a581f1b639b4adb949cc173f",
+        "sourceVersion": "158988826:2026-10-14T17:14:53.440718600Z",
+        "topYesBid": 0.775,
+        "topYesBidQuantity": 18674,
+        "topYesAsk": 0.78,
+        "topYesAskQuantity": 25879,
+        "fullDepthLevelsPerSide": 20
+      },
+      "sideValues": [
+        {
+          "side": "YES",
+          "physicalProbabilityPoint": 0.7306163171590694,
+          "historicalSensitivityLowerProbability": 0.6955243789521746,
+          "rawAsk": 0.78,
+          "topAskQuantity": 25879,
+          "oneTickStressedAsk": 0.785,
+          "fees": 0,
+          "pointSettlementEdgePerShare": -0.05438368284093065,
+          "historicalSensitivityLowerEdgePerShare": -0.08947562104782547,
+          "eligibleForOneShareDepthScreen": true,
+          "markouts": [
+            {
+              "horizonMs": 60000,
+              "status": "NO_LATER_FRESH_FULL_DEPTH_BOOK"
+            },
+            {
+              "horizonMs": 300000,
+              "status": "NO_LATER_FRESH_FULL_DEPTH_BOOK"
+            },
+            {
+              "horizonMs": 1800000,
+              "status": "NO_LATER_FRESH_FULL_DEPTH_BOOK"
+            },
+            {
+              "horizonMs": 3600000,
+              "status": "NO_LATER_FRESH_FULL_DEPTH_BOOK"
+            }
+          ],
+          "actualFill": false,
+          "ordersGenerated": 0
+        },
+        {
+          "side": "NO",
+          "physicalProbabilityPoint": 0.2693836828409306,
+          "historicalSensitivityLowerProbability": 0.22646068590043333,
+          "rawAsk": 0.22499999999999998,
+          "topAskQuantity": 18674,
+          "oneTickStressedAsk": 0.22999999999999998,
+          "fees": 0,
+          "pointSettlementEdgePerShare": 0.039383682840930634,
+          "historicalSensitivityLowerEdgePerShare": -0.0035393140995666483,
+          "eligibleForOneShareDepthScreen": true,
+          "markouts": [
+            {
+              "horizonMs": 60000,
+              "status": "NO_LATER_FRESH_FULL_DEPTH_BOOK"
+            },
+            {
+              "horizonMs": 300000,
+              "status": "NO_LATER_FRESH_FULL_DEPTH_BOOK"
+            },
+            {
+              "horizonMs": 1800000,
+              "status": "NO_LATER_FRESH_FULL_DEPTH_BOOK"
+            },
+            {
+              "horizonMs": 3600000,
+              "status": "NO_LATER_FRESH_FULL_DEPTH_BOOK"
+            }
+          ],
+          "actualFill": false,
+          "ordersGenerated": 0
+        }
+      ]
+    },
+    {
+      "state": "CT",
+      "forecastFetchedAt": "2026-10-14T17:05:41.229Z",
+      "sourceForecastHash": "e374d0286ba17de21d88f9c31b599c5edf9022652ffb6d03ae4718152e685630",
+      "pollingMarginForDPoints": 15.8,
+      "modelMarginForDPointsNotUsed": 15,
+      "contract": {
+        "marketId": "298",
+        "exchangeId": "987",
+        "title": "Will the Democratic Party win the Connecticut Governor?"
+      },
+      "classification": "offline_poll_value_sensitivity_not_SIG_fair_value_or_trade",
+      "status": "SCREENED",
+      "entryLatencyMs": 3000,
+      "entryBook": {
+        "requestStartedAt": "2026-10-14T17:35:48.478Z",
+        "receivedAt": "2026-10-14T17:35:48.911Z",
+        "publishedAt": "2026-10-14T17:35:48.919Z",
+        "sourceAt": "2026-10-14T17:35:49.051825000Z",
+        "sourceAgeAtReceiptMs": -140,
+        "sourceClockLeadAtReceiptMs": 140,
+        "sourceAgeAtPublicationMs": -132,
+        "sequence": 143407,
+        "recordHash": "de9253a06332c0391797b9f79756b0af38803fd63904800812adb614a2e22219",
+        "sourceVersion": "159131970:2026-10-14T17:35:49.051825000Z",
+        "topYesBid": 0.89,
+        "topYesBidQuantity": 1102,
+        "topYesAsk": 0.895,
+        "topYesAskQuantity": 361,
+        "fullDepthLevelsPerSide": 20
+      },
+      "sideValues": [
+        {
+          "side": "YES",
+          "physicalProbabilityPoint": 0.9806235800064894,
+          "historicalSensitivityLowerProbability": 0.9666850128523277,
+          "rawAsk": 0.895,
+          "topAskQuantity": 361,
+          "oneTickStressedAsk": 0.9,
+          "fees": 0,
+          "pointSettlementEdgePerShare": 0.08062358000648939,
+          "historicalSensitivityLowerEdgePerShare": 0.06668501285232764,
+          "eligibleForOneShareDepthScreen": true,
+          "markouts": [
+            {
+              "horizonMs": 60000,
+              "status": "NO_LATER_FRESH_FULL_DEPTH_BOOK"
+            },
+            {
+              "horizonMs": 300000,
+              "status": "NO_LATER_FRESH_FULL_DEPTH_BOOK"
+            },
+            {
+              "horizonMs": 1800000,
+              "status": "NO_LATER_FRESH_FULL_DEPTH_BOOK"
+            },
+            {
+              "horizonMs": 3600000,
+              "status": "NO_LATER_FRESH_FULL_DEPTH_BOOK"
+            }
+          ],
+          "actualFill": false,
+          "ordersGenerated": 0
+        },
+        {
+          "side": "NO",
+          "physicalProbabilityPoint": 0.019376419993510585,
+          "historicalSensitivityLowerProbability": 0.010000000000000009,
+          "rawAsk": 0.10999999999999999,
+          "topAskQuantity": 1102,
+          "oneTickStressedAsk": 0.11499999999999999,
+          "fees": 0,
+          "pointSettlementEdgePerShare": -0.0956235800064894,
+          "historicalSensitivityLowerEdgePerShare": -0.10499999999999998,
+          "eligibleForOneShareDepthScreen": true,
+          "markouts": [
+            {
+              "horizonMs": 60000,
+              "status": "NO_LATER_FRESH_FULL_DEPTH_BOOK"
+            },
+            {
+              "horizonMs": 300000,
+              "status": "NO_LATER_FRESH_FULL_DEPTH_BOOK"
+            },
+            {
+              "horizonMs": 1800000,
+              "status": "NO_LATER_FRESH_FULL_DEPTH_BOOK"
+            },
+            {
+              "horizonMs": 3600000,
+              "status": "NO_LATER_FRESH_FULL_DEPTH_BOOK"
+            }
+          ],
+          "actualFill": false,
+          "ordersGenerated": 0
+        }
+      ]
+    },
+    {
+      "state": "FL",
+      "forecastFetchedAt": "2026-10-14T17:05:41.408Z",
+      "sourceForecastHash": "5bd11ba2d7f552f6bca1f4ba6e6b29b601ebae8bf990333dce085d63f9ac26d1",
+      "pollingMarginForDPoints": -4.9,
+      "modelMarginForDPointsNotUsed": -4.3,
+      "contract": {
+        "marketId": "299",
+        "exchangeId": "988",
+        "title": "Will the Democratic Party win the Florida Governor?"
+      },
+      "classification": "offline_poll_value_sensitivity_not_SIG_fair_value_or_trade",
+      "status": "SCREENED",
+      "entryLatencyMs": 3000,
+      "entryBook": {
+        "requestStartedAt": "2026-10-14T17:15:44.307Z",
+        "receivedAt": "2026-10-14T17:15:44.603Z",
+        "publishedAt": "2026-10-14T17:15:44.610Z",
+        "sourceAt": "2026-10-14T17:15:44.732767700Z",
+        "sourceAgeAtReceiptMs": -129,
+        "sourceClockLeadAtReceiptMs": 129,
+        "sourceAgeAtPublicationMs": -122,
+        "sequence": 143123,
+        "recordHash": "df65e86b89e1262f0a921eb8123570fdf7dfe1f96c0f6f7ed3ea70f99e1839c0",
+        "sourceVersion": "158994440:2026-10-14T17:15:44.732767700Z",
+        "topYesBid": 0.245,
+        "topYesBidQuantity": 9953,
+        "topYesAsk": 0.25,
+        "topYesAskQuantity": 323,
+        "fullDepthLevelsPerSide": 20
+      },
+      "sideValues": [
+        {
+          "side": "YES",
+          "physicalProbabilityPoint": 0.20024012483046655,
+          "historicalSensitivityLowerProbability": 0.15478022865668348,
+          "rawAsk": 0.25,
+          "topAskQuantity": 323,
+          "oneTickStressedAsk": 0.255,
+          "fees": 0,
+          "pointSettlementEdgePerShare": -0.054759875169533456,
+          "historicalSensitivityLowerEdgePerShare": -0.10021977134331653,
+          "eligibleForOneShareDepthScreen": true,
+          "markouts": [
+            {
+              "horizonMs": 60000,
+              "status": "NO_LATER_FRESH_FULL_DEPTH_BOOK"
+            },
+            {
+              "horizonMs": 300000,
+              "status": "NO_LATER_FRESH_FULL_DEPTH_BOOK"
+            },
+            {
+              "horizonMs": 1800000,
+              "status": "NO_LATER_FRESH_FULL_DEPTH_BOOK"
+            },
+            {
+              "horizonMs": 3600000,
+              "status": "NO_LATER_FRESH_FULL_DEPTH_BOOK"
+            }
+          ],
+          "actualFill": false,
+          "ordersGenerated": 0
+        },
+        {
+          "side": "NO",
+          "physicalProbabilityPoint": 0.7997598751695334,
+          "historicalSensitivityLowerProbability": 0.759438563559884,
+          "rawAsk": 0.755,
+          "topAskQuantity": 9953,
+          "oneTickStressedAsk": 0.76,
+          "fees": 0,
+          "pointSettlementEdgePerShare": 0.03975987516953339,
+          "historicalSensitivityLowerEdgePerShare": -0.0005614364401159699,
+          "eligibleForOneShareDepthScreen": true,
+          "markouts": [
+            {
+              "horizonMs": 60000,
+              "status": "NO_LATER_FRESH_FULL_DEPTH_BOOK"
+            },
+            {
+              "horizonMs": 300000,
+              "status": "NO_LATER_FRESH_FULL_DEPTH_BOOK"
+            },
+            {
+              "horizonMs": 1800000,
+              "status": "NO_LATER_FRESH_FULL_DEPTH_BOOK"
+            },
+            {
+              "horizonMs": 3600000,
+              "status": "NO_LATER_FRESH_FULL_DEPTH_BOOK"
+            }
+          ],
+          "actualFill": false,
+          "ordersGenerated": 0
+        }
+      ]
+    },
+    {
+      "state": "HI",
+      "status": "NO_HISTORICAL_POLL_CALIBRATION_INPUT",
+      "pollingMarginForDPoints": null,
+      "contract": {
+        "marketId": "301",
+        "exchangeId": "990",
+        "title": "Will the Democratic Party win the Hawaii Governor?"
+      },
+      "ordersGenerated": 0
+    },
+    {
+      "state": "KS",
+      "forecastFetchedAt": "2026-10-14T17:05:41.806Z",
+      "sourceForecastHash": "93bbd1fff11b5575c6e4cbfd6d3dc6810c3cf0d86cad9675b905427f3f46cf97",
+      "pollingMarginForDPoints": -3,
+      "modelMarginForDPointsNotUsed": -1.1,
+      "contract": {
+        "marketId": "303",
+        "exchangeId": "992",
+        "title": "Will the Democratic Party win the Kansas Governor?"
+      },
+      "classification": "offline_poll_value_sensitivity_not_SIG_fair_value_or_trade",
+      "status": "SCREENED",
+      "entryLatencyMs": 3000,
+      "entryBook": {
+        "requestStartedAt": "2026-10-14T17:15:20.722Z",
+        "receivedAt": "2026-10-14T17:15:21.078Z",
+        "publishedAt": "2026-10-14T17:15:21.089Z",
+        "sourceAt": "2026-10-14T17:15:21.209186600Z",
+        "sourceAgeAtReceiptMs": -131,
+        "sourceClockLeadAtReceiptMs": 131,
+        "sourceAgeAtPublicationMs": -120,
+        "sequence": 143118,
+        "recordHash": "290bcce14c4ee350380b6dec7eb41cd9cac6db357cdf70f1862185db70b753e6",
+        "sourceVersion": "158991980:2026-10-14T17:15:21.209186600Z",
+        "topYesBid": 0.26,
+        "topYesBidQuantity": 1914,
+        "topYesAsk": 0.265,
+        "topYesAskQuantity": 636,
+        "fullDepthLevelsPerSide": 20
+      },
+      "sideValues": [
+        {
+          "side": "YES",
+          "physicalProbabilityPoint": 0.29790334510527106,
+          "historicalSensitivityLowerProbability": 0.2579208240455781,
+          "rawAsk": 0.265,
+          "topAskQuantity": 636,
+          "oneTickStressedAsk": 0.27,
+          "fees": 0,
+          "pointSettlementEdgePerShare": 0.027903345105271038,
+          "historicalSensitivityLowerEdgePerShare": -0.012079175954421928,
+          "eligibleForOneShareDepthScreen": true,
+          "markouts": [
+            {
+              "horizonMs": 60000,
+              "status": "NO_LATER_FRESH_FULL_DEPTH_BOOK"
+            },
+            {
+              "horizonMs": 300000,
+              "status": "NO_LATER_FRESH_FULL_DEPTH_BOOK"
+            },
+            {
+              "horizonMs": 1800000,
+              "status": "NO_LATER_FRESH_FULL_DEPTH_BOOK"
+            },
+            {
+              "horizonMs": 3600000,
+              "status": "NO_LATER_FRESH_FULL_DEPTH_BOOK"
+            }
+          ],
+          "actualFill": false,
+          "ordersGenerated": 0
+        },
+        {
+          "side": "NO",
+          "physicalProbabilityPoint": 0.7020966548947289,
+          "historicalSensitivityLowerProbability": 0.6702353214031525,
+          "rawAsk": 0.74,
+          "topAskQuantity": 1914,
+          "oneTickStressedAsk": 0.745,
+          "fees": 0,
+          "pointSettlementEdgePerShare": -0.04290334510527105,
+          "historicalSensitivityLowerEdgePerShare": -0.07476467859684754,
+          "eligibleForOneShareDepthScreen": true,
+          "markouts": [
+            {
+              "horizonMs": 60000,
+              "status": "NO_LATER_FRESH_FULL_DEPTH_BOOK"
+            },
+            {
+              "horizonMs": 300000,
+              "status": "NO_LATER_FRESH_FULL_DEPTH_BOOK"
+            },
+            {
+              "horizonMs": 1800000,
+              "status": "NO_LATER_FRESH_FULL_DEPTH_BOOK"
+            },
+            {
+              "horizonMs": 3600000,
+              "status": "NO_LATER_FRESH_FULL_DEPTH_BOOK"
+            }
+          ],
+          "actualFill": false,
+          "ordersGenerated": 0
+        }
+      ]
+    },
+    {
+      "state": "MA",
+      "forecastFetchedAt": "2026-10-14T17:05:42.004Z",
+      "sourceForecastHash": "62826285c25d905e0f1586ac00301ab4ea2823555e90cc1a0566905681a9ca93",
+      "pollingMarginForDPoints": 24.5,
+      "modelMarginForDPointsNotUsed": 24.4,
+      "contract": {
+        "marketId": "370",
+        "exchangeId": "1059",
+        "title": "Will the Democratic Party win the Massachusetts Governor?"
+      },
+      "classification": "offline_poll_value_sensitivity_not_SIG_fair_value_or_trade",
+      "status": "NO_FRESH_FULL_DEPTH_ENTRY_BOOK",
+      "entryLatencyMs": 3000,
+      "sideValues": []
+    },
+    {
+      "state": "MI",
+      "forecastFetchedAt": "2026-10-14T17:05:42.184Z",
+      "sourceForecastHash": "c8884abf302478e66586bd3f7a12fca4c85990744412fae157a2f4fd28129f24",
+      "pollingMarginForDPoints": 9.5,
+      "modelMarginForDPointsNotUsed": 11,
+      "contract": {
+        "marketId": "305",
+        "exchangeId": "994",
+        "title": "Will the Democratic Party win the Michigan Governor?"
+      },
+      "classification": "offline_poll_value_sensitivity_not_SIG_fair_value_or_trade",
+      "status": "SCREENED",
+      "entryLatencyMs": 3000,
+      "entryBook": {
+        "requestStartedAt": "2026-10-14T17:06:18.182Z",
+        "receivedAt": "2026-10-14T17:06:18.479Z",
+        "publishedAt": "2026-10-14T17:06:18.489Z",
+        "sourceAt": "2026-10-14T17:06:18.604909500Z",
+        "sourceAgeAtReceiptMs": -125,
+        "sourceClockLeadAtReceiptMs": 125,
+        "sourceAgeAtPublicationMs": -115,
+        "sequence": 142995,
+        "recordHash": "6d7a8dd777939dc574686b9fabc4b6ad487a604c703a87296dfc71a70d6340f4",
+        "sourceVersion": "158925701:2026-10-14T17:06:18.604909500Z",
+        "topYesBid": 0.895,
+        "topYesBidQuantity": 3375,
+        "topYesAsk": 0.9,
+        "topYesAskQuantity": 21758,
+        "fullDepthLevelsPerSide": 20
+      },
+      "sideValues": [
+        {
+          "side": "YES",
+          "physicalProbabilityPoint": 0.9287498652137021,
+          "historicalSensitivityLowerProbability": 0.8965290717078468,
+          "rawAsk": 0.9,
+          "topAskQuantity": 21758,
+          "oneTickStressedAsk": 0.905,
+          "fees": 0,
+          "pointSettlementEdgePerShare": 0.023749865213702037,
+          "historicalSensitivityLowerEdgePerShare": -0.008470928292153235,
+          "eligibleForOneShareDepthScreen": true,
+          "markouts": [
+            {
+              "horizonMs": 60000,
+              "status": "COUNTERFACTUAL_TOP_DEPTH_MARKOUT",
+              "exitRequestStartedAt": "2026-10-14T17:07:40.949Z",
+              "exitReceivedAt": "2026-10-14T17:07:41.263Z",
+              "exitPublishedAt": "2026-10-14T17:07:41.271Z",
+              "exitSequence": 143013,
+              "exitRecordHash": "9b8c97de067788364d938cb60c2155f1204277ab50df12ff66d3e2a5535779d7",
+              "rawEntryAsk": 0.9,
+              "rawExitBid": 0.895,
+              "stressedEntryCost": 0.905,
+              "stressedExitBid": 0.89,
+              "shares": 1,
+              "fees": 0,
+              "netPerShare": -0.015000000000000013,
+              "actualFill": false
+            },
+            {
+              "horizonMs": 300000,
+              "status": "COUNTERFACTUAL_TOP_DEPTH_MARKOUT",
+              "exitRequestStartedAt": "2026-10-14T17:11:46.975Z",
+              "exitReceivedAt": "2026-10-14T17:11:47.304Z",
+              "exitPublishedAt": "2026-10-14T17:11:47.312Z",
+              "exitSequence": 143069,
+              "exitRecordHash": "1a9120e66a900cce54358d015e9eeda046598c1844dd2f8c84a66be739ee942c",
+              "rawEntryAsk": 0.9,
+              "rawExitBid": 0.895,
+              "stressedEntryCost": 0.905,
+              "stressedExitBid": 0.89,
+              "shares": 1,
+              "fees": 0,
+              "netPerShare": -0.015000000000000013,
+              "actualFill": false
+            },
+            {
+              "horizonMs": 1800000,
+              "status": "COUNTERFACTUAL_TOP_DEPTH_MARKOUT",
+              "exitRequestStartedAt": "2026-10-14T17:36:25.989Z",
+              "exitReceivedAt": "2026-10-14T17:36:26.283Z",
+              "exitPublishedAt": "2026-10-14T17:36:26.294Z",
+              "exitSequence": 143415,
+              "exitRecordHash": "8a627eede824055071394965d384708e8abf6a7254e455329c3ac668ae758a6e",
+              "rawEntryAsk": 0.9,
+              "rawExitBid": 0.895,
+              "stressedEntryCost": 0.905,
+              "stressedExitBid": 0.89,
+              "shares": 1,
+              "fees": 0,
+              "netPerShare": -0.015000000000000013,
+              "actualFill": false
+            },
+            {
+              "horizonMs": 3600000,
+              "status": "COUNTERFACTUAL_TOP_DEPTH_MARKOUT",
+              "exitRequestStartedAt": "2026-10-14T18:06:41.237Z",
+              "exitReceivedAt": "2026-10-14T18:06:41.770Z",
+              "exitPublishedAt": "2026-10-14T18:06:41.778Z",
+              "exitSequence": 143853,
+              "exitRecordHash": "1bb2a25c10b3b78ac26e18f8eb184df4f117205064850a3ca10cbbb5dd746ecf",
+              "rawEntryAsk": 0.9,
+              "rawExitBid": 0.895,
+              "stressedEntryCost": 0.905,
+              "stressedExitBid": 0.89,
+              "shares": 1,
+              "fees": 0,
+              "netPerShare": -0.015000000000000013,
+              "actualFill": false
+            }
+          ],
+          "actualFill": false,
+          "ordersGenerated": 0
+        },
+        {
+          "side": "NO",
+          "physicalProbabilityPoint": 0.07125013478629794,
+          "historicalSensitivityLowerProbability": 0.04361094598346715,
+          "rawAsk": 0.10499999999999998,
+          "topAskQuantity": 3375,
+          "oneTickStressedAsk": 0.10999999999999999,
+          "fees": 0,
+          "pointSettlementEdgePerShare": -0.03874986521370205,
+          "historicalSensitivityLowerEdgePerShare": -0.06638905401653283,
+          "eligibleForOneShareDepthScreen": true,
+          "markouts": [
+            {
+              "horizonMs": 60000,
+              "status": "COUNTERFACTUAL_TOP_DEPTH_MARKOUT",
+              "exitRequestStartedAt": "2026-10-14T17:07:40.949Z",
+              "exitReceivedAt": "2026-10-14T17:07:41.263Z",
+              "exitPublishedAt": "2026-10-14T17:07:41.271Z",
+              "exitSequence": 143013,
+              "exitRecordHash": "9b8c97de067788364d938cb60c2155f1204277ab50df12ff66d3e2a5535779d7",
+              "rawEntryAsk": 0.10499999999999998,
+              "rawExitBid": 0.09999999999999998,
+              "stressedEntryCost": 0.10999999999999999,
+              "stressedExitBid": 0.09499999999999997,
+              "shares": 1,
+              "fees": 0,
+              "netPerShare": -0.015000000000000013,
+              "actualFill": false
+            },
+            {
+              "horizonMs": 300000,
+              "status": "COUNTERFACTUAL_TOP_DEPTH_MARKOUT",
+              "exitRequestStartedAt": "2026-10-14T17:11:46.975Z",
+              "exitReceivedAt": "2026-10-14T17:11:47.304Z",
+              "exitPublishedAt": "2026-10-14T17:11:47.312Z",
+              "exitSequence": 143069,
+              "exitRecordHash": "1a9120e66a900cce54358d015e9eeda046598c1844dd2f8c84a66be739ee942c",
+              "rawEntryAsk": 0.10499999999999998,
+              "rawExitBid": 0.09999999999999998,
+              "stressedEntryCost": 0.10999999999999999,
+              "stressedExitBid": 0.09499999999999997,
+              "shares": 1,
+              "fees": 0,
+              "netPerShare": -0.015000000000000013,
+              "actualFill": false
+            },
+            {
+              "horizonMs": 1800000,
+              "status": "COUNTERFACTUAL_TOP_DEPTH_MARKOUT",
+              "exitRequestStartedAt": "2026-10-14T17:36:25.989Z",
+              "exitReceivedAt": "2026-10-14T17:36:26.283Z",
+              "exitPublishedAt": "2026-10-14T17:36:26.294Z",
+              "exitSequence": 143415,
+              "exitRecordHash": "8a627eede824055071394965d384708e8abf6a7254e455329c3ac668ae758a6e",
+              "rawEntryAsk": 0.10499999999999998,
+              "rawExitBid": 0.09999999999999998,
+              "stressedEntryCost": 0.10999999999999999,
+              "stressedExitBid": 0.09499999999999997,
+              "shares": 1,
+              "fees": 0,
+              "netPerShare": -0.015000000000000013,
+              "actualFill": false
+            },
+            {
+              "horizonMs": 3600000,
+              "status": "COUNTERFACTUAL_TOP_DEPTH_MARKOUT",
+              "exitRequestStartedAt": "2026-10-14T18:06:41.237Z",
+              "exitReceivedAt": "2026-10-14T18:06:41.770Z",
+              "exitPublishedAt": "2026-10-14T18:06:41.778Z",
+              "exitSequence": 143853,
+              "exitRecordHash": "1bb2a25c10b3b78ac26e18f8eb184df4f117205064850a3ca10cbbb5dd746ecf",
+              "rawEntryAsk": 0.10499999999999998,
+              "rawExitBid": 0.09999999999999998,
+              "stressedEntryCost": 0.10999999999999999,
+              "stressedExitBid": 0.09499999999999997,
+              "shares": 1,
+              "fees": 0,
+              "netPerShare": -0.015000000000000013,
+              "actualFill": false
+            }
+          ],
+          "actualFill": false,
+          "ordersGenerated": 0
+        }
+      ]
+    },
+    {
+      "state": "MN",
+      "forecastFetchedAt": "2026-10-14T17:05:42.380Z",
+      "sourceForecastHash": "26aa04da2a5a9b46d31cb0cc9b1dc2abc0b89edc890bf18b071e00b8a51ad616",
+      "pollingMarginForDPoints": 8.5,
+      "modelMarginForDPointsNotUsed": 11.5,
+      "contract": {
+        "marketId": "307",
+        "exchangeId": "996",
+        "title": "Will the Democratic Party win the Minnesota Governor?"
+      },
+      "classification": "offline_poll_value_sensitivity_not_SIG_fair_value_or_trade",
+      "status": "NO_FRESH_FULL_DEPTH_ENTRY_BOOK",
+      "entryLatencyMs": 3000,
+      "sideValues": []
+    },
+    {
+      "state": "NH",
+      "forecastFetchedAt": "2026-10-14T17:05:42.556Z",
+      "sourceForecastHash": "94174c3df13b7ce538361e8280be649e2f08a45ba684492d29fcfcb4c95face5",
+      "pollingMarginForDPoints": -9.7,
+      "modelMarginForDPointsNotUsed": -8.4,
+      "contract": {
+        "marketId": "372",
+        "exchangeId": "1061",
+        "title": "Will the Democratic Party win the New Hampshire Governor?"
+      },
+      "classification": "offline_poll_value_sensitivity_not_SIG_fair_value_or_trade",
+      "status": "SCREENED",
+      "entryLatencyMs": 3000,
+      "entryBook": {
+        "requestStartedAt": "2026-10-14T17:22:54.107Z",
+        "receivedAt": "2026-10-14T17:22:54.499Z",
+        "publishedAt": "2026-10-14T17:22:54.507Z",
+        "sourceAt": "2026-10-14T17:22:54.565034000Z",
+        "sourceAgeAtReceiptMs": -66,
+        "sourceClockLeadAtReceiptMs": 66,
+        "sourceAgeAtPublicationMs": -58,
+        "sequence": 143221,
+        "recordHash": "0df7a9bb7fc646c48d90fec198f0cd5b6adf772982bd4e8f71dcd72aea2787b7",
+        "sourceVersion": "159050303:2026-10-14T17:22:54.565034000Z",
+        "topYesBid": 0.13,
+        "topYesBidQuantity": 16155,
+        "topYesAsk": 0.14,
+        "topYesAskQuantity": 7928,
+        "fullDepthLevelsPerSide": 20
+      },
+      "sideValues": [
+        {
+          "side": "YES",
+          "physicalProbabilityPoint": 0.06814993811479421,
+          "historicalSensitivityLowerProbability": 0.0413860006115424,
+          "rawAsk": 0.14,
+          "topAskQuantity": 7928,
+          "oneTickStressedAsk": 0.14500000000000002,
+          "fees": 0,
+          "pointSettlementEdgePerShare": -0.07685006188520581,
+          "historicalSensitivityLowerEdgePerShare": -0.10361399938845761,
+          "eligibleForOneShareDepthScreen": true,
+          "markouts": [
+            {
+              "horizonMs": 60000,
+              "status": "NO_LATER_FRESH_FULL_DEPTH_BOOK"
+            },
+            {
+              "horizonMs": 300000,
+              "status": "NO_LATER_FRESH_FULL_DEPTH_BOOK"
+            },
+            {
+              "horizonMs": 1800000,
+              "status": "NO_LATER_FRESH_FULL_DEPTH_BOOK"
+            },
+            {
+              "horizonMs": 3600000,
+              "status": "NO_LATER_FRESH_FULL_DEPTH_BOOK"
+            }
+          ],
+          "actualFill": false,
+          "ordersGenerated": 0
+        },
+        {
+          "side": "NO",
+          "physicalProbabilityPoint": 0.9318500618852058,
+          "historicalSensitivityLowerProbability": 0.9003277092087864,
+          "rawAsk": 0.87,
+          "topAskQuantity": 16155,
+          "oneTickStressedAsk": 0.875,
+          "fees": 0,
+          "pointSettlementEdgePerShare": 0.056850061885205805,
+          "historicalSensitivityLowerEdgePerShare": 0.025327709208786353,
+          "eligibleForOneShareDepthScreen": true,
+          "markouts": [
+            {
+              "horizonMs": 60000,
+              "status": "NO_LATER_FRESH_FULL_DEPTH_BOOK"
+            },
+            {
+              "horizonMs": 300000,
+              "status": "NO_LATER_FRESH_FULL_DEPTH_BOOK"
+            },
+            {
+              "horizonMs": 1800000,
+              "status": "NO_LATER_FRESH_FULL_DEPTH_BOOK"
+            },
+            {
+              "horizonMs": 3600000,
+              "status": "NO_LATER_FRESH_FULL_DEPTH_BOOK"
+            }
+          ],
+          "actualFill": false,
+          "ordersGenerated": 0
+        }
+      ]
+    },
+    {
+      "state": "OK",
+      "status": "NO_HISTORICAL_POLL_CALIBRATION_INPUT",
+      "pollingMarginForDPoints": null,
+      "contract": {
+        "marketId": "186",
+        "exchangeId": "875",
+        "title": "Will the Democratic Party win the Oklahoma Governor?"
+      },
+      "ordersGenerated": 0
+    },
+    {
+      "state": "RI",
+      "forecastFetchedAt": "2026-10-14T17:05:42.952Z",
+      "sourceForecastHash": "177f46e7ba1da6678fcbcc4021e842926740a9c1695e024d284b6ac89cfe6b85",
+      "pollingMarginForDPoints": 15.3,
+      "modelMarginForDPointsNotUsed": 14.6,
+      "contract": {
+        "marketId": "384",
+        "exchangeId": "1073",
+        "title": "Will the Democratic Party win the Rhode Island Governor?"
+      },
+      "classification": "offline_poll_value_sensitivity_not_SIG_fair_value_or_trade",
+      "status": "NO_FRESH_FULL_DEPTH_ENTRY_BOOK",
+      "entryLatencyMs": 3000,
+      "sideValues": []
+    },
+    {
+      "state": "SD",
+      "forecastFetchedAt": "2026-10-14T17:05:43.165Z",
+      "sourceForecastHash": "42ae29052d47179455a233726647fcc985aca0bcb286dfc34885418a15bb5e9e",
+      "pollingMarginForDPoints": -10.7,
+      "modelMarginForDPointsNotUsed": -9.2,
+      "contract": {
+        "marketId": "194",
+        "exchangeId": "883",
+        "title": "Will the Democratic Party win the South Dakota Governor?"
+      },
+      "classification": "offline_poll_value_sensitivity_not_SIG_fair_value_or_trade",
+      "status": "NO_FRESH_FULL_DEPTH_ENTRY_BOOK",
+      "entryLatencyMs": 3000,
+      "sideValues": []
+    },
+    {
+      "state": "TN",
+      "forecastFetchedAt": "2026-10-14T17:05:43.360Z",
+      "sourceForecastHash": "479d3d103a6565078487742bb724dd333edb63deb54ae0678b83de9f3e750ea3",
+      "pollingMarginForDPoints": -14.2,
+      "modelMarginForDPointsNotUsed": -15.3,
+      "contract": {
+        "marketId": "310",
+        "exchangeId": "999",
+        "title": "Will the Democratic Party win the Tennessee Governor?"
+      },
+      "classification": "offline_poll_value_sensitivity_not_SIG_fair_value_or_trade",
+      "status": "NO_FRESH_FULL_DEPTH_ENTRY_BOOK",
+      "entryLatencyMs": 3000,
+      "sideValues": []
+    },
+    {
+      "state": "VT",
+      "forecastFetchedAt": "2026-10-14T17:05:43.541Z",
+      "sourceForecastHash": "79b538b1593c96ce2b0b35a4f9ccc4a4315a853f4f56f4943cb7d54bad9cecf2",
+      "pollingMarginForDPoints": -5.1,
+      "modelMarginForDPointsNotUsed": -10.9,
+      "contract": {
+        "marketId": "312",
+        "exchangeId": "1001",
+        "title": "Will the Democratic Party win the Vermont Governor?"
+      },
+      "classification": "offline_poll_value_sensitivity_not_SIG_fair_value_or_trade",
+      "status": "SCREENED",
+      "entryLatencyMs": 3000,
+      "entryBook": {
+        "requestStartedAt": "2026-10-14T17:38:22.222Z",
+        "receivedAt": "2026-10-14T17:38:22.537Z",
+        "publishedAt": "2026-10-14T17:38:22.545Z",
+        "sourceAt": "2026-10-14T17:38:22.684890600Z",
+        "sourceAgeAtReceiptMs": -147,
+        "sourceClockLeadAtReceiptMs": 147,
+        "sourceAgeAtPublicationMs": -139,
+        "sequence": 143444,
+        "recordHash": "b2c433740e8fd6797a8cf376ce1021093271d06eca1802b5d738d1bb74ea52ea",
+        "sourceVersion": "159145877:2026-10-14T17:38:22.684890600Z",
+        "topYesBid": 0.27,
+        "topYesBidQuantity": 975,
+        "topYesAsk": 0.275,
+        "topYesAskQuantity": 1055,
+        "fullDepthLevelsPerSide": 20
+      },
+      "sideValues": [
+        {
+          "side": "YES",
+          "physicalProbabilityPoint": 0.1916652352074134,
+          "historicalSensitivityLowerProbability": 0.14640511573721646,
+          "rawAsk": 0.275,
+          "topAskQuantity": 1055,
+          "oneTickStressedAsk": 0.28,
+          "fees": 0,
+          "pointSettlementEdgePerShare": -0.08833476479258662,
+          "historicalSensitivityLowerEdgePerShare": -0.13359488426278357,
+          "eligibleForOneShareDepthScreen": true,
+          "markouts": [
+            {
+              "horizonMs": 60000,
+              "status": "NO_LATER_FRESH_FULL_DEPTH_BOOK"
+            },
+            {
+              "horizonMs": 300000,
+              "status": "NO_LATER_FRESH_FULL_DEPTH_BOOK"
+            },
+            {
+              "horizonMs": 1800000,
+              "status": "NO_LATER_FRESH_FULL_DEPTH_BOOK"
+            },
+            {
+              "horizonMs": 3600000,
+              "status": "NO_LATER_FRESH_FULL_DEPTH_BOOK"
+            }
+          ],
+          "actualFill": false,
+          "ordersGenerated": 0
+        },
+        {
+          "side": "NO",
+          "physicalProbabilityPoint": 0.8083347647925866,
+          "historicalSensitivityLowerProbability": 0.7676915235531852,
+          "rawAsk": 0.73,
+          "topAskQuantity": 975,
+          "oneTickStressedAsk": 0.735,
+          "fees": 0,
+          "pointSettlementEdgePerShare": 0.0733347647925866,
+          "historicalSensitivityLowerEdgePerShare": 0.032691523553185164,
+          "eligibleForOneShareDepthScreen": true,
+          "markouts": [
+            {
+              "horizonMs": 60000,
+              "status": "NO_LATER_FRESH_FULL_DEPTH_BOOK"
+            },
+            {
+              "horizonMs": 300000,
+              "status": "NO_LATER_FRESH_FULL_DEPTH_BOOK"
+            },
+            {
+              "horizonMs": 1800000,
+              "status": "NO_LATER_FRESH_FULL_DEPTH_BOOK"
+            },
+            {
+              "horizonMs": 3600000,
+              "status": "NO_LATER_FRESH_FULL_DEPTH_BOOK"
+            }
+          ],
+          "actualFill": false,
+          "ordersGenerated": 0
+        }
+      ]
+    },
+    {
+      "state": "WI",
+      "forecastFetchedAt": "2026-10-14T17:05:43.729Z",
+      "sourceForecastHash": "2732832c067c94b283153a549eaa4f4f9dc6e751c8f3be6e23ded2b93aa19fc6",
+      "pollingMarginForDPoints": 3.6,
+      "modelMarginForDPointsNotUsed": 2.6,
+      "contract": {
+        "marketId": "314",
+        "exchangeId": "1003",
+        "title": "Will the Democratic Party win the Wisconsin Governor?"
+      },
+      "classification": "offline_poll_value_sensitivity_not_SIG_fair_value_or_trade",
+      "status": "SCREENED",
+      "entryLatencyMs": 3000,
+      "entryBook": {
+        "requestStartedAt": "2026-10-14T17:13:12.628Z",
+        "receivedAt": "2026-10-14T17:13:12.929Z",
+        "publishedAt": "2026-10-14T17:13:12.937Z",
+        "sourceAt": "2026-10-14T17:13:13.059009500Z",
+        "sourceAgeAtReceiptMs": -130,
+        "sourceClockLeadAtReceiptMs": 130,
+        "sourceAgeAtPublicationMs": -122,
+        "sequence": 143090,
+        "recordHash": "fa52d6153cf3650143f0b93ca4aad4ee86876c4c27fbfc902cc2334a5926761b",
+        "sourceVersion": "158978147:2026-10-14T17:13:13.059009500Z",
+        "topYesBid": 0.77,
+        "topYesBidQuantity": 775,
+        "topYesAsk": 0.775,
+        "topYesAskQuantity": 10194,
+        "fullDepthLevelsPerSide": 20
+      },
+      "sideValues": [
+        {
+          "side": "YES",
+          "physicalProbabilityPoint": 0.7360843585604434,
+          "historicalSensitivityLowerProbability": 0.7004344819164461,
+          "rawAsk": 0.775,
+          "topAskQuantity": 10194,
+          "oneTickStressedAsk": 0.78,
+          "fees": 0,
+          "pointSettlementEdgePerShare": -0.04391564143955662,
+          "historicalSensitivityLowerEdgePerShare": -0.07956551808355394,
+          "eligibleForOneShareDepthScreen": true,
+          "markouts": [
+            {
+              "horizonMs": 60000,
+              "status": "NO_LATER_FRESH_FULL_DEPTH_BOOK"
+            },
+            {
+              "horizonMs": 300000,
+              "status": "NO_LATER_FRESH_FULL_DEPTH_BOOK"
+            },
+            {
+              "horizonMs": 1800000,
+              "status": "NO_LATER_FRESH_FULL_DEPTH_BOOK"
+            },
+            {
+              "horizonMs": 3600000,
+              "status": "NO_LATER_FRESH_FULL_DEPTH_BOOK"
+            }
+          ],
+          "actualFill": false,
+          "ordersGenerated": 0
+        },
+        {
+          "side": "NO",
+          "physicalProbabilityPoint": 0.2639156414395566,
+          "historicalSensitivityLowerProbability": 0.22054498711928827,
+          "rawAsk": 0.22999999999999998,
+          "topAskQuantity": 775,
+          "oneTickStressedAsk": 0.235,
+          "fees": 0,
+          "pointSettlementEdgePerShare": 0.028915641439556605,
+          "historicalSensitivityLowerEdgePerShare": -0.014455012880711715,
+          "eligibleForOneShareDepthScreen": true,
+          "markouts": [
+            {
+              "horizonMs": 60000,
+              "status": "NO_LATER_FRESH_FULL_DEPTH_BOOK"
+            },
+            {
+              "horizonMs": 300000,
+              "status": "NO_LATER_FRESH_FULL_DEPTH_BOOK"
+            },
+            {
+              "horizonMs": 1800000,
+              "status": "NO_LATER_FRESH_FULL_DEPTH_BOOK"
+            },
+            {
+              "horizonMs": 3600000,
+              "status": "NO_LATER_FRESH_FULL_DEPTH_BOOK"
+            }
+          ],
+          "actualFill": false,
+          "ordersGenerated": 0
+        }
+      ]
+    },
+    {
+      "state": "WY",
+      "status": "NO_HISTORICAL_POLL_CALIBRATION_INPUT",
+      "pollingMarginForDPoints": null,
+      "contract": {
+        "marketId": "316",
+        "exchangeId": "1005",
+        "title": "Will the Democratic Party win the Wyoming Governor?"
+      },
+      "ordersGenerated": 0
+    }
+  ],
+  "limitations": [
+    "The historical outcome archive ends in 2022 and does not identify the current publisher aggregation, likely-voter population, or source publication timestamps.",
+    "The bootstrap resamples election-year clusters, but its range is historical parameter sensitivity, not a calibrated 2026 confidence interval; the 16 races also share election-cycle shocks.",
+    "A positive polling-value point estimate is settlement-value sensitivity, not a forecast of short-horizon price reversion.",
+    "Top-depth markouts are counterfactual quotes, not attributable fills. They do not model own queue position, order acceptance, or capital competition.",
+    "No settlement outcomes for these 2026 contracts are present in the input set; this cannot establish realized P&L or profitability."
+  ],
+  "profitabilityEstablished": false,
+  "executionAuthority": false,
+  "accountApiRequests": 0,
+  "contestOrders": 0,
+  "actualFills": 0
+}
