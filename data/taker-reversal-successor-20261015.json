@@ -154,5 +154,25 @@
     "The file records roughly one public-book record every 12.3 seconds in aggregate across the entire sampled universe, not a per-market high-frequency feed.",
     "One-share top-of-book counterfactuals do not model queue position, market impact, or actual order-write latency.",
     "The explored suffix cannot be reused to tune a lower threshold and then call that result out-of-sample."
-  ]
+  ],
+  "captureCadenceDiagnostic": {
+    "scope": "successor suffix after 2026-10-13T14:27:23.327Z, after excluding the 16 Governor contracts used in task #118",
+    "sourcePrefixSha256": "72dcf4adc449971e2f418f66ae39fb9bb068ccf9f8d120c740541a0751725f1a",
+    "sameMarketIntervals": 9542,
+    "intervalsMs": {
+      "p50": 169712,
+      "p90": 2408410,
+      "p99": 45571009
+    },
+    "intervalsAtOrBelowMs": {
+      "1000": 0,
+      "10000": 2,
+      "60000": 3775,
+      "300000": 5117,
+      "3600000": 8735
+    },
+    "streamsWith20OrMorePoints": 221,
+    "streamsWith50OrMorePoints": 7,
+    "interpretation": "Recorded observations in this saved journal are sparse and bursty: median same-market interval is 2.83 minutes, p90 40.1 minutes, and only 2/9,542 intervals are <=10 seconds. This limits what this capture can test for HFT; it does not establish a platform-wide feed/API ceiling."
+  }
 }
