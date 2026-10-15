@@ -1,0 +1,8 @@
+{
+  "runtimeChecks": 229,
+  "lockedArm64Release": true,
+  "compiledIdentityVerified": true,
+  "nativeIdentity": "8520add404082af22ae484409cfcb972a895ffe612dec014c9d668c70b7ca282",
+  "binarySha256": "38d35f3a28a925ba995148311d6d6d670496c94d2880353136ea9d97298c73ec",
+  "sourceCommit": "e960eb39"
+}

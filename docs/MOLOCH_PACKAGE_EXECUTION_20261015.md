@@ -4,6 +4,8 @@ Paper 2 is **not complete**. This checkpoint distinguishes reviewed code, deploy
 
 ## Exact package accounting
 
+October 15 follow-up: the merged source passes292 runtime/157 SDK/142 native checks. Positive local-not-sent feedback now verifies the original retained V1 queue generation and an adjacent transition using the actual queue State implementation, exact request/binding, unchanged global uncertainty, and the re-read durable dispatch head. It releases only Attempted packages without ACK/fills; Unknown remains blocked. Compacted-away evidence, V2 generations and mere queue emptiness cannot prove no-send. This is integrity evidence from the trusted sole worker, not a cryptographic authenticity claim. Complete Transport-bound call evidence, startup recovery and production worker wiring remain required; see task143.
+
 The native engine now supports two/three-leg, distinct-exchange BUY packages. Reservation checks the unchanged bank, run, manifest, original funding limits, current books, complete executable depth, entry window and aggregate share cap. It reserves the **sum of quantity times each fixed wire limit**, rather than optimistic weighted-depth costs or future collateral. Runtime admission recomputes a source-certified payoff candidate and rejects it when conservative wire limits remove its minimum surplus after buffer.
 
 Package phases are reserved, attempted, acknowledged, unknown, no execution and complete. A physical attempt binds the immutable SDK request hash and idempotency key and rechecks current depth after the native activation delay. Changed source observations can still qualify at the same fixed limits; worse prices, insufficient depth, gaps or expiration cannot.
@@ -52,3 +54,8 @@ The available empty relationship registry and independent refund exceptions are 
 ## Cancellation read reduction
 
 A checked follow-up uses a disjoint cancellation fact type containing only the four actual account observations needed by DELETE authorization. Ordinary BUY/SELL preparation keeps all seven receipts. The worker removes the three unused market, node and book operations before a cancel; it does not fabricate placeholder receipts or reuse stale reconciliation facts. SDK pagination and bounded read recovery may still require additional physical HTTP requests. Native order ownership, exact request/permit, fresh scoped account data, control, binary and STOP remain enforced. All 275 Linux runtime checks, including eight new cancellation checks, and the locked ARM64 release pass. [Check record](../research/moloch-package-execution-20261015/cancellation-checks.json). This follow-up is not deployed; current V25 stays the verified production release.
+
+Deployment update: cancellation reduction is included in runtime-only V26, launched20:24:28 UTC after393/393 acknowledged attempts and a quiet queue. Its financial identity and existing bridge are unchanged. Fresh trading verification follows restoration; the older V25 verification above remains dated history. [Discovery/release evidence](../research/moloch-discovery-recovery-20261015/README.md).
+
+The merged no-send checkpoint also passes a locked ARM64 release; [aggregate check evidence](../research/moloch-package-execution-20261015/local-nosend-checks.json) pins counts and logs. At20:34:55 UTC V26 has fresh healthy trading progress and395ACK/86fills (two newACK, no newfills); full cycle pending. No financial-package deployment is inferred.
+

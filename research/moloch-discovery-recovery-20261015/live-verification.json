@@ -1,0 +1,18 @@
+{
+  "observedAt": "2026-10-15T20:35:04.533401+00:00",
+  "progressAt": "2026-10-15T20:34:55.201Z",
+  "pid": 227437,
+  "phase": "trading",
+  "realtimeHealthy": true,
+  "binarySha256": "38d35f3a28a925ba995148311d6d6d670496c94d2880353136ea9d97298c73ec",
+  "selectedReadScopes": 21,
+  "completedReadScopes": 3,
+  "actualOrders": 395,
+  "actualFills": 86,
+  "terminalOrders": 393,
+  "stopPresent": false,
+  "freshTradingProgressVerified": true,
+  "fullCycleVerified": false,
+  "newFillsVerified": false,
+  "profitabilityEstablished": false
+}

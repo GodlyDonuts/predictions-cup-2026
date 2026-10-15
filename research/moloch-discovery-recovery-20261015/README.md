@@ -15,3 +15,8 @@ Source commit `e960eb39` on `codex/moloch-v26-discovery` contains the runtime-on
 ## Reproduce
 
 Build the matching runtime and compile `replay.rs` with its emitted `moloch_live_runtime`, `moloch_replay`, `serde_json`, and `sha2` rlibs and dependency directory, using the same Rust toolchain. `legacy-universe.rs` freezes the previous selector from main `c9fa5571`. Run the comparator with the private scoped input and sealed capture paths. It makes zero account requests and never opens a bank. It verifies row chain, prefix SHA/bytes/frame count, clocks, owned coverage, read caps and expired activity before emitting aggregate JSON. The original input/capture remain private on the VPS; no synthetic profitable result is substituted.
+
+## Production verification
+
+V26 launched20:24:28 UTC as PID227437. At20:34:55 UTC its exact running binary published healthy fresh trading progress with395 acknowledged orders,393 terminals and86 actual fills; two acknowledgments are new after launch, not fills. STOP is absent, full first cycle pending. The stopped boundary was393/393 acknowledged attempts, unknown0/activefalse/manualReviewfalse. See release-checks.json, rollout.json and live-verification.json. Existing financial identity, four-entry bridge, caps and daily mandate are preserved.
+
