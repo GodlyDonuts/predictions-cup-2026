@@ -4,6 +4,12 @@ This Rust executable joins the native strategy and ledger to the official SIG
 API. It is separate from the read-only collector and from every paper wallet.
 Public trades and order books never credit actual fills.
 
+Typed GET observations have at most three attempts for temporary connection,
+body parsing, 429 and server failures. The shared queue enforces any existing
+Retry-After delay between attempts. Observed HTTP status and Retry-After
+survive even a non-JSON response. Schema/scope, ownership, durability and client
+errors remain terminal. Placement and cancellation never use this read retry.
+
 Run "moloch-live-runtime preflight /absolute/control.json" for authenticated
 account observation without order submission. The "run" command requires the
 explicitly funded live allocation, pinned activation/binary, exclusive OS
