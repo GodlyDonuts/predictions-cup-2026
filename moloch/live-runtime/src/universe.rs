@@ -2,7 +2,7 @@
 use crate::{breadth::Study,feedback::Result};
 use serde_json::{Value,json};
 use std::collections::{BTreeMap,BTreeSet};
-pub struct Universe{study:Study,allowed:BTreeSet<String>,excluded:BTreeSet<String>,maximum:usize}
+pub struct Universe{study:Study,allowed:BTreeSet<String>,excluded:BTreeSet<String>,maximum:usize,last_error:Option<String>}
 impl Universe{
  pub fn new(exchanges:&BTreeMap<String,String>,positions:&Value,maximum:usize)->Result<Self>{
   if maximum==0||maximum>exchanges.len(){return Err("UNIVERSE_CAPACITY".into())}
@@ -13,9 +13,15 @@ impl Universe{
    if quantity!=0{excluded.insert(id.to_owned());}
   }
   let allowed=exchanges.keys().filter(|e|!excluded.contains(*e)).cloned().collect();
-  Ok(Self{study:Study::default(),allowed,excluded,maximum})
+  Ok(Self{study:Study::default(),allowed,excluded,maximum,last_error:None})
  }
- pub fn observe(&mut self,event:&str,payload:&Value,received:&str)->Result<()>{self.study.accept(&json!({"source":"official_sig_realtime","event":event,"payload":payload,"receivedAt":received}))}
+ pub fn observe(&mut self,event:&str,payload:&Value,received:&str)->Result<()>{
+  if let Err(e)=self.study.accept(&json!({"source":"official_sig_realtime","event":event,"payload":payload,"receivedAt":received})){
+   // Discovery cannot stop reconciliation of actual owned orders. A failed
+   // observation discards all candidate state; the financial parser stays strict.
+   self.last_error=Some(e.to_string());self.study=Study::default();
+  }Ok(())
+ }
  pub fn pairs(&self,exchanges:&BTreeMap<String,String>)->Value{json!(self.allowed.iter().map(|e|json!({"exchangeId":e,"marketId":exchanges[e]})).collect::<Vec<_>>())}
  pub fn select(&self,required:&BTreeSet<String>)->Result<Vec<String>>{
   if required.iter().any(|e|!self.allowed.contains(e)){return Err("UNIVERSE_UNOWNED_SCOPE".into())}
@@ -26,7 +32,7 @@ impl Universe{
   for c in candidates{if out.len()>=self.maximum.max(required.len()){break}let e=c["exchangeId"].as_str().ok_or("UNIVERSE_ID")?.to_owned();if !out.contains(&e){out.push(e);}}
   Ok(out)
  }
- pub fn status(&self)->Value{let report=self.study.report();json!({"venueExchanges":self.allowed.len()+self.excluded.len(),"eligibleExchanges":self.allowed.len(),"foreignHeldExcluded":self.excluded.len(),"observedExchanges":report["marketsObserved"],"frames":report["frames"],"maximumConcurrentMarkets":self.maximum,"selection":"owned obligations, then fresh recent market activity; all-market websocket discovery"})}
+ pub fn status(&self)->Value{let report=self.study.report();json!({"venueExchanges":self.allowed.len()+self.excluded.len(),"eligibleExchanges":self.allowed.len(),"foreignHeldExcluded":self.excluded.len(),"observedExchanges":report["marketsObserved"],"frames":report["frames"],"lastDiagnosticError":self.last_error,"maximumConcurrentMarkets":self.maximum,"selection":"owned obligations, then fresh recent market activity; all-market websocket discovery"})}
 }
 #[cfg(test)]mod tests{
  use super::*;
@@ -35,4 +41,5 @@ impl Universe{
  #[test]fn discovers_outside_original_three_and_excludes_foreign_inventory(){let mut u=Universe::new(&exchanges(),&json!({"positions":[{"exchangeId":"2","quantity":-5}]}),1).unwrap();let at="2026-10-15T00:00:00Z";u.observe("markets_batch",&frame("1","2",at),at).unwrap();u.observe("markets_batch",&frame("3","4",at),at).unwrap();assert_eq!(u.select(&BTreeSet::new()).unwrap(),vec!["4"]);assert_eq!(u.pairs(&exchanges()).as_array().unwrap().len(),2);}
  #[test]fn owned_work_takes_priority_over_discovery(){let mut u=Universe::new(&exchanges(),&json!({"positions":[]}),1).unwrap();let at="2026-10-15T00:00:00Z";u.observe("markets_batch",&frame("3","4",at),at).unwrap();assert_eq!(u.select(&["6".into()].into()).unwrap(),vec!["6"]);}
  #[test]fn reconnect_drops_candidate_until_new_market_evidence(){let mut u=Universe::new(&exchanges(),&json!({"positions":[]}),1).unwrap();let at="2026-10-15T00:00:00Z";u.observe("markets_batch",&frame("3","4",at),at).unwrap();u.observe("stream_reset",&json!({"localBoundary":true}),"2026-10-15T00:00:01Z").unwrap();assert!(u.select(&BTreeSet::new()).unwrap().is_empty());}
+ #[test]fn failed_discovery_clears_candidates_but_preserves_owned_reconciliation(){let mut u=Universe::new(&exchanges(),&json!({"positions":[]}),1).unwrap();let at="2026-10-15T00:00:01Z";u.observe("markets_batch",&frame("3","4",at),at).unwrap();u.observe("markets_batch",&frame("3","4",at),"2026-10-15T00:00:00Z").unwrap();assert!(u.select(&BTreeSet::new()).unwrap().is_empty());assert_eq!(u.select(&["6".into()].into()).unwrap(),vec!["6"]);assert_eq!(u.status()["lastDiagnosticError"],"BREADTH_RECEIPT_ORDER");}
 }
