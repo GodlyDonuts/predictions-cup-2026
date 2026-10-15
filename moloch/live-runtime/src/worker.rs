@@ -81,12 +81,107 @@ fn snapshots(t:&mut Transport,c:&Control,q:&Value)->Result<SnapshotSet>{
  let book=request(t,&c.root,Endpoint::OrderBook{market_id,depth:20})?;
  Ok(SnapshotSet{account,cash_balance,positions,open_orders,market,contract,book})
 }
-fn accept_fresh_book(bank:&mut Session,c:&Control,q:&Value,r:&Receipt,source:&mut RestSource)->Result<()>{
+fn accept_fresh_book(bank:&mut Session,c:&Control,q:&Value,r:&Receipt,source:&mut RestSource)->Result<Vec<Value>>{
  let wrapped=json!({"source":"official_sig_api_v1","kind":"book","tournamentId":c.scope.tournament_id,"marketId":q["marketId"],"exchangeId":q["exchangeId"],"endpoint":r.endpoint,"status":r.status,"requestStartedAt":r.request_started_at,"receivedAt":r.received_at,"data":r.data});
- for e in source.accept(&wrapped)?{accept(bank,&e)?}Ok(())
+ let events=source.accept(&wrapped)?;for e in &events{accept(bank,e)?}Ok(events)
 }
-fn dispatch(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,authority:&Arc<ProductionAuthority>,source:&mut RestSource,allow_new_submissions:bool,preflight_cursor:&mut Option<String>)->Result<()>{
+fn physical_order(c:&Control,q:&Value)->Result<(Order,RequestSpec,Permit)>{
+ let qid=q["id"].as_u64().ok_or("LIVE_QUOTE_ID")?;
+ let order=Order{idempotency_key:format!("{}:{qid}",c.activation.run_id),exchange_id:q["exchangeId"].as_str().ok_or("LIVE_SCOPE")?.into(),side:match q["side"].as_str(){Some("YES")=>"yes",Some("NO")=>"no",_=>return Err("LIVE_SIDE".into())}.into(),action:q["action"].as_str().ok_or("LIVE_ACTION")?.into(),quantity:u32::try_from(q["quantity"].as_u64().ok_or("LIVE_SIZE")?)?,price:q["price"].as_str().ok_or("LIVE_PRICE")?.into(),expiration_date:iso(q["expiresAt"].as_u64().ok_or("LIVE_EXPIRY")?),tournament_id:c.scope.tournament_id.clone()};
+ let request_spec=spec(&order)?;let p=Permit{run_id:c.activation.run_id.clone(),intent_id:qid.to_string(),owner:"Codex".into(),expires_at_ms:now()+15000,maximum_quantity:order.quantity,maximum_cost:money(decimal_units(&order.price)?.checked_mul(order.quantity as i128).ok_or("LIVE_COST_OVERFLOW")?)};
+ Ok((order,request_spec,p))
+}
+fn submit_order(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,authority:&Arc<ProductionAuthority>,q:&Value,facts:SnapshotSet)->Result<()>{
+ let qid=q["id"].as_u64().ok_or("LIVE_QUOTE_ID")?;let(order,request_spec,p)=physical_order(c,q)?;
+ authority.prepare(bank,qid,request_spec.clone(),p.clone(),facts)?;
+ if let Err(e)=authority.authorize(&c.scope,&request_spec,&p,false,now()){authority.clear_ready();atomic_json(&c.root.join("deferred.json"),&json!({"at":iso(now()),"qid":qid,"code":e.code}))?;return Ok(())}
+ if log.intents.contains_key(&qid)||!log.never_attempted(qid){return Err("LIVE_EXISTING_UNRESOLVED_INTENT".into())}
+ log.append(json!({"kind":"intent","qid":qid,"quote":q,"spec":request_spec,"permit":p,"at":iso(now())}))?;
+ log.append(json!({"kind":"attempt","qid":qid,"at":iso(now())}))?;
+ let ack=match t.place(order,p){Ok(r)=>r,Err(e)=>{log.append(json!({"kind":"error","qid":qid,"error":e,"at":iso(now())}))?;return Err("LIVE_WRITE_NOT_CONFIRMED_NO_RETRY".into())}};
+ record_receipt(&c.root,&ack)?;log.append(json!({"kind":"ack","qid":qid,"receipt":ack}))?;
+ let event=feedback::acknowledgment(q,&ack,&iso(now()))?;authority.bind_owned(event["actualOrderId"].as_str().ok_or("LIVE_ACTUAL_ID")?.into());accept(bank,&event)?;authority.clear_ready();Ok(())
+}
+fn queue_has_unknown(t:&mut Transport)->Result<bool>{
+ queue_unknown_from_state(&t.admission_state()?)
+}
+fn queue_unknown_from_state(state:&Value)->Result<bool>{
+ Ok(!state["state"]["unknown"].as_object().ok_or("LIVE_QUEUE_UNKNOWN_SHAPE")?.is_empty())
+}
+fn native_head(c:&Control)->Result<[u8;32]>{Ok(Sha256::digest(fs::read(c.root.join(&c.bank_name).join("head.json"))?).into())}
+fn refresh_controls(c:&Control,authority:&ProductionAuthority,stream:&Realtime)->Result<()>{
+ if !stream.healthy()||now()>=stream.deadline_ms{return Err("LIVE_EXIT_REFRESH_STREAM_FAILED".into())}
+ if !authority.can_read(&c.scope){return Err("LIVE_EXIT_REFRESH_CONTROL_OR_STOP".into())}Ok(())
+}
+fn refresh_safety(c:&Control,bank:&Session,log:&DispatchLog,authority:&ProductionAuthority,stream:&Realtime,q:&Value,global_unknown:bool)->Result<moloch_live_runtime::exit_refresh::Safety>{
+ refresh_controls(c,authority,stream)?;log.require_resolved_attempts()?;
+ let qid=q["id"].as_u64().ok_or("LIVE_QUOTE_ID")?;let ex=q["exchangeId"].as_str().ok_or("LIVE_SCOPE")?;
+ let side=match q["side"].as_str(){Some("YES")=>moloch_replay::Side::Yes,Some("NO")=>moloch_replay::Side::No,_=>return Err("LIVE_SIDE".into())};
+ let records=bank.engine().order_records();let mut physical=false;let mut reserved=0u64;
+ for old in &records{let id=old["id"].as_u64().ok_or("LIVE_QUOTE_ID")?;if old["exchangeId"]!=ex||id==qid{continue}
+  if (log.attempted.contains(&id)||log.acknowledgments.contains_key(&id))&&!log.closed.contains(&id){physical=true;}
+  if old["side"]==q["side"]&&old["action"]=="sell"&&old["retired"]==false&&old["expiresAt"].as_u64().ok_or("LIVE_EXPIRY")?>now(){
+   reserved=reserved.checked_add(old["quantity"].as_u64().ok_or("LIVE_SIZE")?.checked_sub(old["filled"].as_u64().ok_or("LIVE_FILLED")?).ok_or("LIVE_FILLED")?).ok_or("LIVE_SIZE_OVERFLOW")?;
+  }
+ }
+ // A missing native record for an ACK is integrity failure, never absent liability.
+ for id in log.acknowledgments.keys().filter(|id|!log.closed.contains(id)){if !records.iter().any(|q|q["id"].as_u64()==Some(*id)){return Err("LIVE_ACK_QUOTE_MISSING".into())}}
+ let lifecycle=json!({"manifest":bank.manifest_hash(),"policy":bank.engine().policy(),"economics":bank.engine().report()?,"fills":bank.engine().fills(),"dispatch":log.proof(0)});
+ Ok(moloch_live_runtime::exit_refresh::Safety{never_attempted:log.never_attempted(qid),has_intent:log.intents.contains_key(&qid),unresolved_attempts:false,global_unknown,stop:false,stream_healthy:true,owned_quantity:bank.engine().wallet.quantity(ex,side),reserved_sell_quantity:reserved,same_exchange_pending_physical_order:physical,lifecycle_fingerprint:Sha256::digest(serde_json::to_vec(&lifecycle)?).into(),native_head_fingerprint:native_head(c)?})
+}
+fn refresh_deferred(c:&Control,stage:&str,error:&dyn std::fmt::Display)->Result<()>{atomic_json(&c.root.join("exit-refresh.json"),&json!({"at":iso(now()),"stage":stage,"code":error.to_string(),"expiryExtended":false,"writeAttempted":false}))}
+fn refresh_exit(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,authority:&Arc<ProductionAuthority>,source:&mut RestSource,stream:&Realtime,old:&Value,hint:&moloch_live_runtime::exit_refresh::ReadHint,flow_started:u64,maximum_qid_before:u64,unknown:bool)->Result<()>{
+ use moloch_live_runtime::exit_refresh::{RefreshFacts,BookAcceptance,RefreshPlan,RefreshStage};
+ refresh_controls(c,authority,stream)?;
+ let facts=snapshots(t,c,old)?;
+ let bound=match RefreshFacts::new(&c.scope,hint,[facts.account.clone(),facts.positions.clone(),facts.open_orders.clone(),facts.cash_balance.clone(),facts.market.clone(),facts.contract.clone(),facts.book.clone()],now()){
+  Ok(v)=>v,Err(e) if matches!(e.to_string().as_str(),"EXIT_REFRESH_FACTS_STALE"|"EXIT_REFRESH_BOOK_STALE")=>{refresh_deferred(c,"facts_ineligible",e.as_ref())?;return Ok(())},Err(e)=>return Err(e)
+ };
+ let started=now();let events=accept_fresh_book(bank,c,old,&facts.book,source)?;let completed=now();let head=native_head(c)?;
+ let mut acceptance=None;
+ for event in &events{if event["type"]!="book"{continue}
+  match BookAcceptance::new(&bound,event,true,head,started,completed){Ok(proof)=>{if acceptance.is_some(){refresh_deferred(c,"book_ineligible",&"AMBIGUOUS_ADMITTED_BOOK")?;return Ok(())}acceptance=Some(proof)},Err(e)=>{refresh_deferred(c,"book_ineligible",e.as_ref())?;return Ok(())}}
+ }
+ let Some(acceptance)=acceptance else{refresh_deferred(c,"book_ineligible",&"NO_ACTUAL_ADMITTED_BOOK")?;return Ok(())};
+ // Every I/O/control failure is propagated; only pure helper denials defer.
+ let candidates=bank.engine().order_records();
+ let mut safety=std::collections::BTreeMap::new();
+ for q in &candidates{if q["exchangeId"]==old["exchangeId"]&&q["side"]==old["side"]&&q["action"]=="sell"{safety.insert(q["id"].as_u64().ok_or("LIVE_QUOTE_ID")?,refresh_safety(c,bank,log,authority,stream,q,unknown)?);}}
+ let plan=match RefreshPlan::select(&bound,&acceptance,&candidates,maximum_qid_before,flow_started,completed,now(),|id|*safety.get(&id).expect("validated native candidate safety")){
+  Ok(v)=>v,Err(e)=>{refresh_deferred(c,"candidate_ineligible",e.as_ref())?;return Ok(())}
+ };
+ let qid=plan.quote()["id"].as_u64().ok_or("LIVE_QUOTE_ID")?;
+ loop{
+  let current=quote(bank,qid)?;let current_safety=refresh_safety(c,bank,log,authority,stream,&current,unknown)?;
+  match plan.stage(&current,&bound,&c.scope,current_safety,now()){
+   Ok(RefreshStage::WaitUntil(at))=>{std::thread::sleep(Duration::from_millis(at.saturating_sub(now()).clamp(1,100)));}
+   Ok(RefreshStage::Ready)=>break,
+   Err(e)=>{refresh_deferred(c,"wait_ineligible",e.as_ref())?;return Ok(())}
+  }
+ }
+ // Query the real shared queue once after waiting, never synthesize empty unknowns.
+ let unknown=queue_has_unknown(t)?;let current=quote(bank,qid)?;
+ match plan.stage(&current,&bound,&c.scope,refresh_safety(c,bank,log,authority,stream,&current,unknown)?,now()){
+  Ok(RefreshStage::Ready)=>{},Ok(_)=>{refresh_deferred(c,"final_ineligible",&"ACTIVATION_NOT_READY")?;return Ok(())},Err(e)=>{refresh_deferred(c,"final_ineligible",e.as_ref())?;return Ok(())}
+ }
+ // Rebuild complete physical identity from this NEW frozen quote only after wait.
+ submit_order(t,c,bank,log,authority,plan.quote(),facts)
+}
+fn dispatch(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,authority:&Arc<ProductionAuthority>,source:&mut RestSource,allow_new_submissions:bool,preflight_cursor:&mut Option<String>,stream:&Realtime)->Result<()>{
  let orders=bank.engine().order_records();
+ let flow_started=now();let maximum_qid_before=orders.iter().filter_map(|q|q["id"].as_u64()).max().unwrap_or(0);
+ let mut hints=std::collections::BTreeMap::<String,(Value,moloch_live_runtime::exit_refresh::ReadHint)>::new();
+ let mut refresh_unknown=false;
+ if allow_new_submissions&&orders.iter().any(|q|q["action"]=="sell"&&q["inventoryExitReason"]=="maximumAge"&&q["expiresAt"].as_u64().is_some_and(|t|t<=flow_started)&&q["id"].as_u64().is_some_and(|id|log.never_attempted(id)&&!log.intents.contains_key(&id))){
+  let unknown=queue_has_unknown(t)?;refresh_unknown=unknown;
+  for old in &orders{if old["action"]!="sell"||old["inventoryExitReason"]!="maximumAge"||old["expiresAt"].as_u64().is_none_or(|t|t>flow_started){continue}
+   // A valid successor predating this flow belongs to the ordinary preflight;
+   // historical hints must not continually steal its only snapshot packet.
+   if orders.iter().any(|q|q["exchangeId"]==old["exchangeId"]&&q["side"]==old["side"]&&q["action"]=="sell"&&q["retired"]==false&&q["expiresAt"].as_u64().is_some_and(|t|t>flow_started)){continue}
+   let safety=refresh_safety(c,bank,log,authority,stream,old,unknown)?;
+   if let Ok(hint)=moloch_live_runtime::exit_refresh::ReadHint::from_expired(old,safety,flow_started){let key=format!("{}:{}:sell",hint.exchange(),old["side"].as_str().ok_or("LIVE_SIDE")?);hints.insert(key,(old.clone(),hint));}
+  }
+ }
  // Cancellations and reconciliation take priority over new purchases.
  for old in &orders {
   let qid=old["id"].as_u64().ok_or("LIVE_QUOTE_ID")?;if old["retired"]==true{continue}
@@ -110,18 +205,23 @@ fn dispatch(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,a
   }};record_receipt(&c.root,&ack)?;log.append(json!({"kind":"cancel_ack","qid":qid,"receipt":ack}))?;authority.clear_ready();return Ok(())
  }
  if !allow_new_submissions{return Ok(())}
+ let mut preflight_budget=moloch_live_runtime::scheduling::PreflightBudget::default();
+ if !hints.is_empty(){
+  let keys:Vec<_>=hints.keys().cloned().collect();let index=moloch_live_runtime::scheduling::preflight_rotation(&keys,preflight_cursor.as_deref())[0];let key=&keys[index];
+  let(old,hint)=hints.get(key).ok_or("LIVE_EXIT_REFRESH_HINT")?;
+  if !preflight_budget.try_start(){return Ok(())}*preflight_cursor=Some(key.clone());
+  refresh_exit(t,c,bank,log,authority,source,stream,old,hint,flow_started,maximum_qid_before,refresh_unknown)?;
+  return Ok(()) // Ineligible refresh still consumes this pass; never another packet.
+ }
  // At most one new physical order per pass; subsequent fills change funding.
  let quotes=bank.engine().order_records();
  let keys:Vec<String>=quotes.iter().map(|q|format!("{}:{}:{}",q["exchangeId"].as_str().unwrap_or(""),q["side"].as_str().unwrap_or(""),q["action"].as_str().unwrap_or(""))).collect();
- let mut preflight_budget=moloch_live_runtime::scheduling::PreflightBudget::default();
  for index in moloch_live_runtime::scheduling::preflight_rotation(&keys,preflight_cursor.as_deref()){let q=quotes[index].clone();
   let qid=q["id"].as_u64().ok_or("LIVE_QUOTE_ID")?;
   let prefetch_started=now();
   let early_exit_prefetch=moloch_live_runtime::dispatch_window::may_prefetch(&q,log.never_attempted(qid),log.intents.contains_key(&qid),prefetch_started);
   if q["retired"]==true||!log.never_attempted(qid)||(!early_exit_prefetch&&q["activationAt"].as_u64().is_none_or(|t|t>prefetch_started))||q["expiresAt"].as_u64().is_none_or(|t|t<=prefetch_started+5000)||q["cancelEffectiveAt"].as_u64().is_some(){continue}
   if q["action"]=="buy"&&now()>=c.activation.entry_until_ms{retire_never_sent(bank,log,&q)?;continue}
-  let order=Order{idempotency_key:format!("{}:{qid}",c.activation.run_id),exchange_id:q["exchangeId"].as_str().ok_or("LIVE_SCOPE")?.into(),side:if q["side"]=="YES"{"yes"}else{"no"}.into(),action:q["action"].as_str().ok_or("LIVE_ACTION")?.into(),quantity:u32::try_from(q["quantity"].as_u64().ok_or("LIVE_SIZE")?)?,price:q["price"].as_str().ok_or("LIVE_PRICE")?.into(),expiration_date:iso(q["expiresAt"].as_u64().ok_or("LIVE_EXPIRY")?),tournament_id:c.scope.tournament_id.clone()};
-  let request_spec=spec(&order)?;let p=Permit{run_id:c.activation.run_id.clone(),intent_id:qid.to_string(),owner:"Codex".into(),expires_at_ms:now()+15000,maximum_quantity:order.quantity,maximum_cost:money(decimal_units(&order.price)?*order.quantity as i128)};
   // Covered maximum-age exits may spend their activation delay fetching these
   // same read-only facts. No intent/attempt or HTTP write exists at this stage.
   if !preflight_budget.try_start(){return Ok(())}*preflight_cursor=Some(keys[index].clone());
@@ -134,14 +234,7 @@ fn dispatch(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,a
   // A fast preflight never authorizes an early order. The final production
   // authority independently checks activation again at the physical boundary.
   if !native_active{continue}
-  authority.prepare(bank,qid,request_spec.clone(),p.clone(),facts)?;
-  if let Err(e)=authority.authorize(&c.scope,&request_spec,&p,false,now()){authority.clear_ready();atomic_json(&c.root.join("deferred.json"),&json!({"at":iso(now()),"qid":qid,"code":e.code}))?;continue}
-  if log.intents.contains_key(&qid){return Err("LIVE_EXISTING_UNRESOLVED_INTENT".into())}
-  log.append(json!({"kind":"intent","qid":qid,"quote":q,"spec":request_spec,"permit":p,"at":iso(now())}))?;
-  log.append(json!({"kind":"attempt","qid":qid,"at":iso(now())}))?;
-  let ack=match t.place(order,p){Ok(r)=>r,Err(e)=>{log.append(json!({"kind":"error","qid":qid,"error":e,"at":iso(now())}))?;return Err("LIVE_WRITE_NOT_CONFIRMED_NO_RETRY".into())}};
-  record_receipt(&c.root,&ack)?;log.append(json!({"kind":"ack","qid":qid,"receipt":ack}))?;
-  let event=feedback::acknowledgment(&q,&ack,&iso(now()))?;authority.bind_owned(event["actualOrderId"].as_str().ok_or("LIVE_ACTUAL_ID")?.into());accept(bank,&event)?;authority.clear_ready();return Ok(())
+  submit_order(t,c,bank,log,authority,&current,facts)?;return Ok(())
  }Ok(())
 }
 fn connect_stream(t:&mut Transport,c:&Control,bank:&mut Session,source:&mut RestSource)->Result<(Realtime,String)>{
@@ -240,7 +333,7 @@ pub fn main()->Result<()>{
      reconciliation_schedule.completed(now(),pending_version(&log),reconciled.blocks_new_submissions)?;
     }
     let permit_new=reconciliation_schedule.permits_submission(now(),pending_version(&log))?;
-    dispatch(&mut t,&c,&mut bank,&mut log,&authority,&mut source_state,permit_new,&mut preflight_cursor)?;}
+    dispatch(&mut t,&c,&mut bank,&mut log,&authority,&mut source_state,permit_new,&mut preflight_cursor,stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?)?;}
    cycles+=1;
    atomic_json(&c.root.join("status.json"),&json!({"at":iso(now()),"pid":std::process::id(),"mode":"actual-contest-trading","runId":c.activation.run_id,"bank":c.bank_name,"cycles":cycles,"realtimeHealthy":stream.as_ref().is_some_and(|s|s.healthy()),"universe":universe.as_ref().map(Universe::status),"selectedReadScopes":selected,"ownedReconciliation":reconciled,"sourceScopes":source_state.scopes(),"breadthCapture":{"path":breadth_path,"state":breadth.as_ref().map(Recorder::status)},"report":bank.engine().report()?,"queue":t.admission_state()?,"actualOrders":log.acknowledgments.len(),"terminalOrders":log.closed.len(),"entryUntil":iso(c.activation.entry_until_ms),"profitabilityEstablished":false}))?;
    // Existing orders and the first trading cycle precede optional research reads.
@@ -252,4 +345,21 @@ pub fn main()->Result<()>{
  })();
  if let Err(e)=&result{atomic_json(&stop,&json!({"at":iso(now()),"reason":e.to_string(),"action":"no automatic write retry or activation renewal"}))?;atomic_json(&c.root.join("status.json"),&json!({"at":iso(now()),"pid":std::process::id(),"mode":"stopped","reason":e.to_string(),"profitabilityEstablished":false}))?;}
  result
+}
+
+#[cfg(test)]mod refresh_worker_tests{
+ use super::*;
+ fn control()->Control{serde_json::from_value(json!({"activation":{"runId":"new-run","entryUntilMs":9_000_000,"maximumCommitted":"800.000000","maximumMarketCost":"100.000000","maximumQuantity":300,"tournamentId":"cup","tournamentSlug":"cup","binarySha256":"a".repeat(64)},"scope":{"tournamentId":"cup","tournamentSlug":"cup","exchanges":{"1012":"525"}},"policy":{},"root":"/fixture","credentials":"/unused","ownerLock":"/unused.lock","accountScope":"fixture"})).unwrap()}
+ #[test]fn rebuilt_physical_binding_uses_new_qid_quantity_price_and_original_expiry(){
+  let c=control();let new=json!({"id":466,"exchangeId":"1012","marketId":"525","side":"NO","action":"sell","quantity":169,"price":"0.650000","expiresAt":1_000_000});
+  let(order,spec,permit)=physical_order(&c,&new).unwrap();let body=spec.body.unwrap();
+  assert_eq!(order.idempotency_key,"new-run:466");assert_eq!(permit.intent_id,"466");assert_eq!(permit.maximum_quantity,169);assert_eq!(permit.maximum_cost,"109.850000");
+  assert_eq!(body["quantity"],169);assert_eq!(decimal_units(&body["price"].to_string()).unwrap(),650_000);assert_eq!(body["expirationDate"],iso(1_000_000));assert_eq!(body["side"],"no");assert_eq!(body["action"],"sell");
+  assert!(body.get("allOrNone").is_none()); // Native style is not venue atomicity.
+ }
+ #[test]fn exact_unknown_shape_is_required_and_nonempty_global_state_blocks(){
+  assert!(!queue_unknown_from_state(&json!({"state":{"unknown":{}}})).unwrap());
+  assert!(queue_unknown_from_state(&json!({"state":{"unknown":{"other":{"intent":"other"}}}})).unwrap());
+  for malformed in [json!({}),json!({"state":{}}),json!({"state":{"unknown":[]}}),json!({"hasUnknown":false})]{assert!(queue_unknown_from_state(&malformed).is_err());}
+ }
 }
