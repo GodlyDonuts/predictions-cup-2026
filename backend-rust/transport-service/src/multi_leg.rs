@@ -156,4 +156,18 @@ pub(crate) fn read_evidenced_error(evidence:&ResponseEvidence)->Result<Value>{
     serde_json::from_slice(&bytes).map_err(|_|fail("INVALID_RESPONSE_JSON"))
 }
 
+/// Reconstruct the exact existing wire request without sending or authorizing it.
+pub fn request_spec(basket:&Basket,scope:&Scope,permit:&Permit)->Result<RequestSpec>{request(basket,scope,permit)}
+/// A reported all-filled response remains distinct from official fill evidence.
+pub fn reported_fill(receipt:&Receipt,basket:&Basket)->Result<FullFillAcknowledgment>{
+    need(receipt.endpoint=="/orders/multi-leg"&&receipt.status==200&&(2..=3).contains(&basket.legs.len()),"BASKET_RECEIPT_SCOPE")?;
+    let start=chrono::DateTime::parse_from_rfc3339(&receipt.request_started_at).map_err(|_|fail("BASKET_RECEIPT_CLOCK"))?;
+    let end=chrono::DateTime::parse_from_rfc3339(&receipt.received_at).map_err(|_|fail("BASKET_RECEIPT_CLOCK"))?;
+    need(start<=end,"BASKET_RECEIPT_CLOCK")?;validate_ack(&receipt.data,basket)
+}
+/// Verify retained original response bytes; callers must additionally bind metadata.
+pub fn evidenced_response(evidence:&ResponseEvidence)->Result<Value>{read_evidenced_error(evidence)}
+/// Use the same documented zero-execution allowlist as the physical SDK.
+pub fn zero_execution_reason(status:u16,data:&Value,leg_count:usize)->Option<ZeroExecutionReason>{zero_execution(status,data,leg_count)}
+
 #[cfg(test)]mod tests;
