@@ -1,0 +1,318 @@
+{
+  "schemaVersion": 1,
+  "observedAt": "2026-10-15T10:01:10.493Z",
+  "source": {
+    "bankPrefixBytes": 25749909,
+    "bankPrefixSha256": "a4e0e7a07551c610d67b0fefb4e1ecbea44d6947614fa85d3f10b304b4a580b9",
+    "bankSequence": 10176,
+    "bankTailHash": "8f59fb10e14416d12b01305fc3a9e80ee28d86a8e00ba963aa25c53e1c9045be",
+    "dispatchPrefixBytes": 344385,
+    "dispatchPrefixSha256": "1b562d6782201c08e883d5b9673149843ede6f69c728c03576bfa48ff6addb3e",
+    "manifestSha256": "d74b52eb107ea97388c106505d36fce14700b082723c9f7bfa229f2aedafef9e",
+    "reportSha256": "f06feb4885b3cc8e2755a82224b6beba9b8cfc593ad3090be6d3ad0042745d73",
+    "retainedEvents": 627,
+    "retainedEventsSha256": "f1d222cc7856883350ad44ff28caf4be6c1b4dba0731d9cbe2bfa021f8bcca46",
+    "sourceTypeCounts": {
+      "actual_fill": 27,
+      "actual_order_ack": 346,
+      "actual_order_terminal": 80,
+      "actual_position_adoption": 1,
+      "book": 5634,
+      "coverage": 169,
+      "gap": 2951,
+      "tick": 78,
+      "trade": 703,
+      "unsubmitted_intent_retired": 187
+    },
+    "privateExportSha256": "3e9511a4ada4a1fe7dca25e747f3c00bf0188aead7f26d1de7d1e199aef69c96",
+    "sourceFiles": [
+      {
+        "path": "moloch/native/src/engine.rs",
+        "sha256": "ec41bbcfa469426ebe4706c58c7c9d4ade621fc7d953c1d73d9baffbb220a8ec"
+      },
+      {
+        "path": "moloch/live-runtime/src/worker.rs",
+        "sha256": "1ff539349b753c6ce433b477b835bf92e4f74ede5d2bea96032b53572f3ee887"
+      },
+      {
+        "path": "moloch/native/src/source.rs",
+        "sha256": "1e9f417acae14921d59da13abbbfb62ca3f71a0f6478dcc5c302a7ed6a08fa04"
+      }
+    ]
+  },
+  "policy": {
+    "quoteMode": "pairedSpread",
+    "requireCurrentFlow": false,
+    "minimumGain": "0.005000",
+    "maximumInventoryAgeMs": 60000,
+    "bookAgeMs": 10000,
+    "latencyMs": 3000
+  },
+  "newTrading": {
+    "boughtQuantity": 385,
+    "soldQuantity": 22,
+    "grossEntryPrincipal": "369.200000",
+    "realized": "-0.110000",
+    "fees": "0.000000",
+    "openQuantity": 363,
+    "openBasis": "348.300000",
+    "closed": [
+      {
+        "quantity": 22,
+        "net": "-0.110000",
+        "heldMs": 282479
+      }
+    ]
+  },
+  "reportedNewTradingRealized": "-0.110000",
+  "reportedInheritedRealizedGross": "11.220000",
+  "newOrderClusters": 3,
+  "clusters": [
+    {
+      "cluster": 1,
+      "chronologicalPartition": "development",
+      "buyFillRows": 1,
+      "boughtQuantity": 22,
+      "allEntrySide": "YES",
+      "executionToKnownMs": {
+        "count": 1,
+        "min": 11429,
+        "median": 11429,
+        "p95": 11429,
+        "max": 11429
+      },
+      "newLotsFifo": {
+        "boughtQuantity": 22,
+        "soldQuantity": 22,
+        "grossEntryPrincipal": "20.900000",
+        "realized": "-0.110000",
+        "fees": "0.000000",
+        "openQuantity": 0,
+        "openBasis": "0.000000",
+        "closed": [
+          {
+            "quantity": 22,
+            "net": "-0.110000",
+            "heldMs": 282479
+          }
+        ]
+      },
+      "maximumAgeExitProposals": 5,
+      "maximumAgePhysicalIntents": 1,
+      "maximumAgeNeverSent": 4,
+      "afterFirstFillValidBooks": 133,
+      "afterFirstFillFreshAtProcessing": 89,
+      "initialPhysicalQuoteQuantities": [
+        {
+          "side": "YES",
+          "quantity": 855
+        },
+        {
+          "side": "NO",
+          "quantity": 1
+        }
+      ],
+      "firstExecution": "2026-10-15T08:58:25.574Z",
+      "firstKnown": "2026-10-15T08:58:37.003Z"
+    },
+    {
+      "cluster": 2,
+      "chronologicalPartition": "later_labels",
+      "buyFillRows": 3,
+      "boughtQuantity": 12,
+      "allEntrySide": "YES",
+      "executionToKnownMs": {
+        "count": 3,
+        "min": 33084,
+        "median": 578723,
+        "p95": 578723,
+        "max": 579292
+      },
+      "newLotsFifo": {
+        "boughtQuantity": 12,
+        "soldQuantity": 0,
+        "grossEntryPrincipal": "11.340000",
+        "realized": "0.000000",
+        "fees": "0.000000",
+        "openQuantity": 12,
+        "openBasis": "11.340000",
+        "closed": []
+      },
+      "maximumAgeExitProposals": 6,
+      "maximumAgePhysicalIntents": 0,
+      "maximumAgeNeverSent": 6,
+      "afterFirstFillValidBooks": 66,
+      "afterFirstFillFreshAtProcessing": 44,
+      "initialPhysicalQuoteQuantities": [
+        {
+          "side": "NO",
+          "quantity": 12
+        },
+        {
+          "side": "YES",
+          "quantity": 12
+        }
+      ],
+      "firstExecution": "2026-10-15T09:13:39.133Z",
+      "firstKnown": "2026-10-15T09:14:12.217Z"
+    },
+    {
+      "cluster": 3,
+      "chronologicalPartition": "later_labels",
+      "buyFillRows": 12,
+      "boughtQuantity": 351,
+      "allEntrySide": "YES",
+      "executionToKnownMs": {
+        "count": 12,
+        "min": 59905,
+        "median": 183619,
+        "p95": 305092,
+        "max": 318178
+      },
+      "newLotsFifo": {
+        "boughtQuantity": 351,
+        "soldQuantity": 0,
+        "grossEntryPrincipal": "336.960000",
+        "realized": "0.000000",
+        "fees": "0.000000",
+        "openQuantity": 351,
+        "openBasis": "336.960000",
+        "closed": []
+      },
+      "maximumAgeExitProposals": 11,
+      "maximumAgePhysicalIntents": 0,
+      "maximumAgeNeverSent": 11,
+      "afterFirstFillValidBooks": 103,
+      "afterFirstFillFreshAtProcessing": 68,
+      "initialPhysicalQuoteQuantities": [
+        {
+          "side": "NO",
+          "quantity": 351
+        },
+        {
+          "side": "YES",
+          "quantity": 351
+        }
+      ],
+      "firstExecution": "2026-10-15T09:26:12.295Z",
+      "firstKnown": "2026-10-15T09:31:30.473Z"
+    }
+  ],
+  "booksByTransport": {
+    "REST": {
+      "books": 34,
+      "notInvalid": 25,
+      "freshAtProcessing": 25,
+      "freshAtReceiptButStaleAtProcessing": 0,
+      "receiptToProcessingMs": {
+        "count": 34,
+        "min": 28,
+        "median": 34,
+        "p95": 119,
+        "max": 119
+      },
+      "engineReadToReceiptMs": {
+        "count": 34,
+        "min": 81.2718,
+        "median": 85.5148,
+        "p95": 99.5888,
+        "max": 157.9781
+      }
+    },
+    "WebSocket": {
+      "books": 490,
+      "notInvalid": 490,
+      "freshAtProcessing": 320,
+      "freshAtReceiptButStaleAtProcessing": 165,
+      "receiptToProcessingMs": {
+        "count": 490,
+        "min": 122,
+        "median": 6832,
+        "p95": 18952,
+        "max": 24422
+      },
+      "engineReadToReceiptMs": {
+        "count": 490,
+        "min": 165.0826,
+        "median": 552.3129,
+        "p95": 1202.9233,
+        "max": 32730.0855
+      }
+    }
+  },
+  "maximumAgeDrafts": {
+    "count": 22,
+    "physicalIntents": 1,
+    "neverSent": 21,
+    "lifetimeMs": {
+      "count": 22,
+      "min": 13000,
+      "median": 13000,
+      "p95": 13000,
+      "max": 13000
+    },
+    "activationDelayMs": {
+      "count": 22,
+      "min": 3000,
+      "median": 3000,
+      "p95": 3000,
+      "max": 3000
+    }
+  },
+  "prefetchCounterexample": {
+    "oldStart": 3000,
+    "oldFinish": 10500,
+    "oldCanSubmit": false,
+    "newStart": 0,
+    "newFinish": 7500,
+    "newCanSubmit": true
+  },
+  "markouts": [
+    {
+      "horizonAfterKnowledgeSeconds": 0,
+      "eligibleFillRows": 1,
+      "censoredFillRows": 15,
+      "orderClusters": 1,
+      "quantity": 22,
+      "independentLiquidationMarkoutSum": "0.000000",
+      "portfolioOrRealizedReturn": false
+    },
+    {
+      "horizonAfterKnowledgeSeconds": 30,
+      "eligibleFillRows": 1,
+      "censoredFillRows": 15,
+      "orderClusters": 1,
+      "quantity": 22,
+      "independentLiquidationMarkoutSum": "0.000000",
+      "portfolioOrRealizedReturn": false
+    },
+    {
+      "horizonAfterKnowledgeSeconds": 60,
+      "eligibleFillRows": 1,
+      "censoredFillRows": 15,
+      "orderClusters": 1,
+      "quantity": 22,
+      "independentLiquidationMarkoutSum": "-0.110000",
+      "portfolioOrRealizedReturn": false
+    },
+    {
+      "horizonAfterKnowledgeSeconds": 300,
+      "eligibleFillRows": 0,
+      "censoredFillRows": 16,
+      "orderClusters": 0,
+      "quantity": 0,
+      "independentLiquidationMarkoutSum": "0.000000",
+      "portfolioOrRealizedReturn": false
+    }
+  ],
+  "modelFitted": false,
+  "newPolicyProfitabilityEstablished": false,
+  "executionAuthority": false,
+  "limitations": [
+    "Three order/exchange clusters, not independent fill-row samples; no calibrated HJB/fill model.",
+    "Later labels are a chronological diagnostic, not an untouched production-policy holdout.",
+    "Liquidation labels are independent observations and must not be summed as funded alternative portfolio profit.",
+    "Source bank full prefix/chain and sealed report/manifest were checked by export.py; local audit verifies filtered hash and exact native fill links, not raw API completeness anew.",
+    "No native policy, account requests or runtime changes."
+  ]
+}
