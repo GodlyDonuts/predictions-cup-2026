@@ -234,7 +234,7 @@ impl Session {
             }
             m
         } else {
-            let m = sealed(expected);
+            let m = sealed(expected.clone());
             let mut f = options()
                 .write(true)
                 .create_new(true)
