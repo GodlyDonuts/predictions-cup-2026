@@ -8,7 +8,11 @@ use std::{
     io::{BufRead, BufReader, Write},
 };
 fn run() -> Result<(), Box<dyn std::error::Error>> {
-    let a = env::args().skip(1).collect::<Vec<_>>();
+    let mut a = env::args().skip(1).collect::<Vec<_>>();
+    let mixed = a.first().is_some_and(|s| s == "--mixed");
+    if mixed {
+        a.remove(0);
+    }
     if a.len() != 4 {
         return Err(
             "USAGE: moloch-source RECEIPTS_JSONL CONFIG_JSON NEW_EVENTS_JSONL NEW_STATS_JSON"
@@ -37,7 +41,24 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
         digest.update(&line);
         if !line.iter().all(|b| b.is_ascii_whitespace()) {
             let r: Value = serde_json::from_slice(&line)?;
-            for event in source.accept(&r)? {
+            let converted = if mixed {
+                match r["kind"].as_str() {
+                    Some("rest") => source.accept(&r["receipt"]),
+                    Some("subscribed") => source.subscribed_market(
+                        r["marketId"].as_str().ok_or("MARKET_ID")?,
+                        r["receivedAt"].as_str().ok_or("RECEIVED_AT")?,
+                    ),
+                    Some("broadcast") => source.broadcast(
+                        r["event"].as_str().ok_or("STREAM_EVENT")?,
+                        &r["payload"],
+                        r["receivedAt"].as_str().ok_or("RECEIVED_AT")?,
+                    ),
+                    _ => return Err("MIXED_SOURCE_KIND".into()),
+                }
+            } else {
+                source.accept(&r)
+            }?;
+            for event in converted {
                 writeln!(output, "{}", event)?;
                 events += 1;
             }

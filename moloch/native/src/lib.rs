@@ -3,6 +3,7 @@
 use std::collections::{BTreeMap, VecDeque};
 pub mod engine;
 pub mod journal;
+pub mod realtime;
 pub mod source;
 pub const SCALE: i128 = 1_000_000;
 pub const TICK: i128 = 5_000;

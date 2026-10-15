@@ -317,11 +317,22 @@ struct Scope {
     book: Option<Value>,
 }
 #[derive(Clone)]
+struct TradeFact {
+    market: Value,
+    price: Value,
+    quantity: Value,
+    executed: i64,
+    stamp: Value,
+    namespace: Value,
+}
+#[derive(Clone)]
 pub struct RestSource {
     tournament: String,
     scopes: BTreeMap<String, Scope>,
     tape: TapeCoverage,
     last: Option<i64>,
+    revisions: BTreeMap<String, u64>,
+    facts: BTreeMap<String, TradeFact>,
 }
 impl RestSource {
     pub fn new(pairs: &Value, tournament: &str, started: &str) -> Result<Self> {
@@ -355,6 +366,8 @@ impl RestSource {
             scopes,
             tape: TapeCoverage::default(),
             last: None,
+            revisions: BTreeMap::new(),
+            facts: BTreeMap::new(),
         })
     }
     pub fn accept(&mut self, r: &Value) -> Result<Vec<Value>> {
@@ -437,11 +450,329 @@ impl RestSource {
         {
             if let Some(b) = &s.book {
                 let mut b = b.clone();
-                b["receivedAt"] = r["receivedAt"].clone();
-                out.push(json!({"type":"book","receivedAt":r["receivedAt"],"book":b}));
+                let at = if time(&b["receivedAt"])? > time(&r["receivedAt"])? {
+                    b["receivedAt"].clone()
+                } else {
+                    r["receivedAt"].clone()
+                };
+                b["receivedAt"] = at.clone();
+                out.push(json!({"type":"book","receivedAt":at,"book":b}));
             }
         }
+        self.normalize_facts(&mut out)?;
         self.last = Some(received);
+        Ok(out)
+    }
+    fn normalize_facts(&mut self, events: &mut [Value]) -> Result<()> {
+        for e in events.iter_mut().filter(|e| e["type"] == "trade") {
+            let key = format!("{}:{}", text(&e["exchangeId"])?, text(&e["id"])?);
+            let executed = time(&e["executedAt"])?;
+            if let Some(old) = self.facts.get(&key) {
+                if old.market != e["marketId"]
+                    || old.price != e["yesPrice"]
+                    || old.quantity != e["quantity"]
+                {
+                    return Err("SOURCE_TRADE_FACT_CONFLICT");
+                }
+                let reporting = if old.namespace == "sig_reporting_tape_only" {
+                    Some(old.executed)
+                } else if e["idNamespace"] == "sig_reporting_tape_only" {
+                    Some(executed)
+                } else {
+                    None
+                };
+                if old.executed != executed
+                    && !(old.executed / 1_000_000 == executed / 1_000_000
+                        && reporting.is_some_and(|n| n % 1_000_000 == 0)
+                        && old.namespace != e["idNamespace"])
+                {
+                    return Err("SOURCE_TRADE_CLOCK_CONFLICT");
+                }
+                if old.stamp != e["executedAt"] {
+                    e["originalExecutedAt"] = e["executedAt"].clone();
+                    e["executedAt"] = old.stamp.clone();
+                    e["executionClockUse"] = json!(
+                        "first verified representation for duplicate only; original wire clock retained"
+                    );
+                }
+            } else {
+                self.facts.insert(
+                    key,
+                    TradeFact {
+                        market: e["marketId"].clone(),
+                        price: e["yesPrice"].clone(),
+                        quantity: e["quantity"].clone(),
+                        executed,
+                        stamp: e["executedAt"].clone(),
+                        namespace: e["idNamespace"].clone(),
+                    },
+                );
+            }
+        }
+        Ok(())
+    }
+    fn invalidate(&mut self, market: &str, received: &Value) -> Result<Vec<Value>> {
+        let s = self.scopes.get_mut(market).ok_or("SOURCE_STREAM_SCOPE")?;
+        s.invalidated = time(received)?;
+        s.blocked = true;
+        s.book_ready = false;
+        s.tape_ready = false;
+        Ok(vec![
+            json!({"type":"gap","exchangeId":s.exchange,"receivedAt":received}),
+        ])
+    }
+    pub fn subscribed(&mut self, received: &str) -> Result<Vec<Value>> {
+        let mut next = self.clone();
+        let mut events = Vec::new();
+        for market in self.scopes.keys() {
+            events.extend(next.invalidate(market, &json!(received))?);
+        }
+        *self = next;
+        Ok(events)
+    }
+    pub fn subscribed_market(&mut self, market: &str, received: &str) -> Result<Vec<Value>> {
+        let mut next = self.clone();
+        let out = next.invalidate(market, &json!(received))?;
+        *self = next;
+        Ok(out)
+    }
+    pub fn broadcast(
+        &mut self,
+        event: &str,
+        payload: &Value,
+        received: &str,
+    ) -> Result<Vec<Value>> {
+        let mut next = self.clone();
+        let received = json!(received);
+        time(&received)?;
+        let mut events = Vec::new();
+        if event == "markets_batch" {
+            let markets = payload["markets"]
+                .as_array()
+                .filter(|xs| xs.len() <= 1000)
+                .ok_or("SOURCE_STREAM_AGGREGATE")?;
+            let mut seen = BTreeSet::new();
+            for m in markets {
+                let market = numeric_id(&m["marketId"])?;
+                if !seen.insert(market.clone()) {
+                    return Err("SOURCE_STREAM_DUPLICATE_MARKET");
+                }
+                if next.scopes.contains_key(&market) {
+                    events.extend(next.batch(&market, &m["batch"], &received)?);
+                }
+            }
+        } else if ["book_dirty", "market_settled"].contains(&event) {
+            let market = numeric_id(&payload["marketId"])?;
+            if next.scopes.contains_key(&market) {
+                next.check_scope(payload, &market)?;
+                if event == "book_dirty" {
+                    if numeric_id(&payload["exchangeId"])? != next.scopes[&market].exchange {
+                        return Err("SOURCE_STREAM_SCOPE");
+                    }
+                }
+                time(&payload["at"])?;
+                events.extend(next.invalidate(&market, &received)?);
+            }
+        } else {
+            return Err("SOURCE_STREAM_EVENT");
+        }
+        next.normalize_facts(&mut events)?;
+        *self = next;
+        Ok(events)
+    }
+    fn check_scope(&self, v: &Value, market: &str) -> Result<()> {
+        if numeric_id(&v["marketId"])? != market || v["tournamentId"] != self.tournament {
+            return Err("SOURCE_STREAM_SCOPE");
+        }
+        Ok(())
+    }
+    fn batch(&mut self, market: &str, b: &Value, received: &Value) -> Result<Vec<Value>> {
+        let d = &b["delivery"];
+        let revision = integer(&d["revision"])?;
+        let previous = integer(&d["previousRevision"])?;
+        if d["model"] != "best-effort-authoritative-resync" || revision == 0 || revision <= previous
+        {
+            return Err("SOURCE_STREAM_REVISION");
+        }
+        match (
+            d["sourceSequenceFrom"].is_null(),
+            d["sourceSequenceThrough"].is_null(),
+        ) {
+            (true, true) => {}
+            (false, false) => {
+                if integer(&d["sourceSequenceFrom"])? > integer(&d["sourceSequenceThrough"])? {
+                    return Err("SOURCE_STREAM_SEQUENCE");
+                }
+            }
+            _ => return Err("SOURCE_STREAM_SEQUENCE"),
+        }
+        if !d["correlationId"].as_str().is_some_and(|s| s.len() <= 256)
+            || b.get("resyncRequired").is_some_and(|v| !v.is_boolean())
+        {
+            return Err("SOURCE_STREAM_DELIVERY");
+        }
+        let compact = b["resyncRequired"] == true;
+        let empty = Vec::new();
+        let array = |k: &str| -> Result<&Vec<Value>> {
+            if let Some(v) = b.get(k) {
+                v.as_array()
+                    .filter(|v| v.len() <= 100000)
+                    .ok_or("SOURCE_STREAM_ARRAY")
+            } else if compact || k == "books" {
+                Ok(&empty)
+            } else {
+                Err("SOURCE_STREAM_ARRAY")
+            }
+        };
+        let books = array("books")?;
+        let trades = array("trades")?;
+        let dirty = array("bookDirty")?;
+        let settled = array("marketSettled")?;
+        let exchange = self.scopes[market].exchange.clone();
+        let mut normalized_books = Vec::new();
+        let mut normalized_trades = Vec::new();
+        let mut seen = BTreeSet::new();
+        let stamp = |v: &Value| -> Result<String> {
+            Ok(chrono::DateTime::from_timestamp_nanos(time(v)?)
+                .to_rfc3339_opts(chrono::SecondsFormat::Nanos, true))
+        };
+        for book in books {
+            let ex = numeric_id(&book["exchangeId"])?;
+            if ex != exchange || !seen.insert(ex) {
+                return Err("SOURCE_STREAM_BOOK_SCOPE");
+            }
+            if book.get("nextExpiryAt").is_none() {
+                return Err("SOURCE_STREAM_EXPIRY");
+            }
+            if !book["nextExpiryAt"].is_null() {
+                time(&book["nextExpiryAt"])?;
+            }
+            let sequence = integer(&book["asOf"]["sequence"])?;
+            let source = stamp(&book["asOf"]["at"])?;
+            if time(&json!(source))? > time(received)? {
+                return Err("SOURCE_STREAM_FUTURE_BOOK");
+            }
+            let levels = |key: &str, bid: bool| -> Result<Value> {
+                let mut rows = Vec::new();
+                let mut last = None;
+                for l in book[key]
+                    .as_array()
+                    .filter(|v| v.len() <= 100000)
+                    .ok_or("SOURCE_STREAM_LEVELS")?
+                {
+                    let value = decimal(&l["price"])?;
+                    let p = amount(&value)?;
+                    let n = integer(&l["quantity"])?;
+                    if n == 0 || last.is_some_and(|old| if bid { old <= p } else { old >= p }) {
+                        return Err("SOURCE_STREAM_LEVELS");
+                    }
+                    last = Some(p);
+                    rows.push(json!({"price":value,"quantity":n}));
+                }
+                Ok(json!(rows))
+            };
+            normalized_books.push(json!({"tournamentId":self.tournament,"marketId":market,"exchangeId":exchange,"sequence":sequence.to_string(),"sourceAt":source,"requestStartedAt":received,"receivedAt":received,"transport":"official_sig_realtime","bids":levels("bids",true)?,"asks":levels("asks",false)?}));
+        }
+        let mut unsequenced = false;
+        for t in trades {
+            self.check_scope(t, market)?;
+            if numeric_id(&t["exchangeId"])? != exchange {
+                return Err("SOURCE_STREAM_TRADE_SCOPE");
+            }
+            if t["id"].is_null() != t["sequence"].is_null() {
+                return Err("SOURCE_STREAM_TRADE_SEQUENCE");
+            }
+            let size = integer(&t["quantity"])?;
+            if size == 0 || size > 2_147_483_647 {
+                return Err("SOURCE_STREAM_TRADE_SIZE");
+            }
+            let executed = stamp(&t["executedAt"])?;
+            if time(&json!(executed))? > time(received)? {
+                return Err("SOURCE_STREAM_FUTURE_TRADE");
+            }
+            let yes = decimal(&t["price"])?;
+            if t["sequence"].is_null() {
+                unsequenced = true;
+                continue;
+            }
+            integer(&t["sequence"])?;
+            let id = text(&t["id"])?;
+            if id.len() > 128
+                || !id
+                    .bytes()
+                    .all(|c| c.is_ascii_alphanumeric() || c == b'_' || c == b'-')
+            {
+                return Err("SOURCE_STREAM_TRADE_ID");
+            }
+            normalized_trades.push(json!({"type":"trade","tournamentId":self.tournament,"marketId":market,"exchangeId":exchange,"id":id,"idNamespace":"sig_engine_match","executedAt":executed,"receivedAt":received,"yesPrice":yes,"quantity":size}));
+        }
+        for v in dirty {
+            self.check_scope(v, market)?;
+            if numeric_id(&v["exchangeId"])? != exchange {
+                return Err("SOURCE_STREAM_DIRTY_SCOPE");
+            }
+            time(&v["at"])?;
+        }
+        for v in settled {
+            self.check_scope(v, market)?;
+            if !v["settledWith"].as_str().is_some_and(|s| s.len() <= 256) {
+                return Err("SOURCE_STREAM_SETTLEMENT");
+            }
+            time(&v["at"])?;
+        }
+        let last = self.revisions.get(market).copied();
+        let duplicate = last.is_some_and(|n| revision <= n);
+        let gap = last.is_some_and(|n| previous > n);
+        if !duplicate {
+            self.revisions.insert(market.into(), revision);
+        }
+        let bad = gap || compact || unsequenced || !settled.is_empty();
+        let mut out = if bad {
+            self.invalidate(market, received)?
+        } else {
+            Vec::new()
+        };
+        let s = self.scopes.get_mut(market).unwrap();
+        if !duplicate && !bad && !s.blocked {
+            out.extend(normalized_trades)
+        }
+        for book in normalized_books {
+            if book["bids"].as_array().unwrap().is_empty()
+                || book["asks"].as_array().unwrap().is_empty()
+            {
+                s.invalidated = time(received)?;
+                s.blocked = true;
+                s.book_ready = false;
+                s.tape_ready = false;
+                out.push(json!({"type":"gap","exchangeId":exchange,"receivedAt":received}));
+                continue;
+            }
+            let sequence = text(&book["sequence"])?
+                .parse::<u128>()
+                .map_err(|_| "SOURCE_SEQUENCE")?;
+            let accepted = if let Some(old) = &s.book {
+                let old_sequence = text(&old["sequence"])?
+                    .parse::<u128>()
+                    .map_err(|_| "SOURCE_SEQUENCE")?;
+                if sequence == old_sequence
+                    && time(&book["sourceAt"])? == time(&old["sourceAt"])?
+                    && (book["bids"] != old["bids"] || book["asks"] != old["asks"])
+                {
+                    return Err("SOURCE_BOOK_CONFLICT");
+                }
+                sequence > old_sequence
+                    || sequence == old_sequence
+                        && time(&book["sourceAt"])? >= time(&old["sourceAt"])?
+            } else {
+                true
+            };
+            if accepted {
+                s.book = Some(book.clone());
+                if !s.blocked {
+                    out.push(json!({"type":"book","receivedAt":received,"book":book}));
+                }
+            }
+        }
         Ok(out)
     }
     pub fn scopes(&self) -> Value {

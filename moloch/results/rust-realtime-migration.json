@@ -1,0 +1,31 @@
+{
+  "mode": "offline_rust_realtime_migration_verification",
+  "platform": "linux-aarch64",
+  "rustTestsPassed": 25,
+  "releaseBuildPassed": true,
+  "localWebsocketJoinAndBroadcastPassed": true,
+  "realtimeSourceReferenceCheckpoints": 12,
+  "capturedMixedReplay": {
+    "originalStreamRowsVerified": 14754,
+    "originalStreamSha256": "23e8b001b0321f4421e7676bae7abe47f779af40837371f98109985456668dbe",
+    "derivedMixedRecords": 431,
+    "derivedInputSha256": "05c606281d8159ff717201410c3f08461eb19b3b9d1e5a75a25e82b4f1ddcb8a2",
+    "normalizedEvents": 786,
+    "matchingFinancialFields": 17,
+    "cash": "998.200000",
+    "realized": "0.000000",
+    "ownedCost": "1.800000",
+    "reservedCash": "14.925000",
+    "netLiquidationPnl": "0.015000",
+    "unresolvedOrders": 7,
+    "scope": "independent default-policy migration fixture, not the historical Moloch wallet"
+  },
+  "disabledRealtimeCaptureProbe": {"exitCode": 1, "createdOutput": false},
+  "serviceActive": false,
+  "liveSigAuthenticationAttempted": false,
+  "sigMarketDataRequests": 0,
+  "contestOrders": 0,
+  "migrationComplete": false,
+  "profitabilityEstablished": false,
+  "remaining": ["Inventory policy extensions and original-wallet continuation", "Combined strategy selection", "Integrated live paper loop and restart verification", "Rust service installation and removal of the dedicated Node runtime"]
+}

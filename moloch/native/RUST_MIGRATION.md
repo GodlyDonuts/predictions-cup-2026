@@ -7,7 +7,7 @@ verified.
 
 Verified on the Linux ARM64 VPS during this migration:
 
-- `cargo test --locked`: twenty tests passed on ARM64, including source cursor,
+- `cargo test --locked`: twenty-five tests passed on ARM64, including source cursor,
   initial-resync, Retry-After, and source-parity tests. The resolved dependency
   lock is included.
 - Event-engine parity compares 668 intermediate reports in 20 scenarios against
@@ -39,8 +39,8 @@ replay took 0.010904 seconds for 50.859 source seconds. This small fixture is no
 a sustained-throughput benchmark or evidence of profitable trading.
 
 Unsupported optional policy fields fail explicitly with `POLICY_NOT_PORTED`;
-they are never silently ignored. Inventory AON/age/hedge extensions, complete
-historical wallet continuation, and realtime source integration are still pending.
+they are never silently ignored. Inventory AON/age/hedge extensions and complete
+historical wallet continuation are still pending.
 
 `moloch-source RECEIPTS_JSONL CONFIG_JSON NEW_EVENTS_JSONL NEW_STATS_JSON` performs
 offline receipt conversion through the same adapter as collection. Configuration
@@ -69,7 +69,33 @@ with a 60-second minimum. It does not automatically reset a blocked budget.
 On the ARM64 VPS it completed 100 HTTP requests in 59,407ms, minimum 600ms start
 spacing and maximum 100 requests in a rolling minute. It makes zero SIG requests.
 
-Remaining before replacing the deployment: realtime transport, remaining
+## Realtime transport
+
+`moloch-collector capture PAIRS NEW_OUTPUT CYCLES --realtime` uses a native TLS
+WebSocket and the private tournament aggregate channel. One serialized REST
+client obtains a short-lived token; no token is logged, persisted, automatically
+retried or renewed. Authentication has a separate persistent 60-second interval.
+The worker waits for the channel acknowledgment, checks heartbeat references,
+caps incoming frames and the queue, and stops on disconnect or expiry. Channel
+gaps invalidate the affected scope until both REST book and tape recover it.
+Live normalized events preserve receipt/execution clocks and record processing
+time separately, including when REST response latency delays queue draining.
+
+The implementation follows the [Supabase v1 protocol](https://supabase.com/docs/guides/realtime/protocol).
+Native socket tests exchange actual local WebSocket frames, without SIG access.
+Twelve reference checkpoints cover mixed REST/realtime precision, revisions,
+duplicates, compact resyncs, dirty books and recovery.
+
+A second offline migration fixture verifies the full original 14,754-row captured
+stream chain before deriving 431 relevant mixed records. Rust converts them into
+786 events and matches all 17 financial fields of the existing engine: 998.200000
+cash, zero realized P&L, 1.800000 inventory cost, 14.925000 reserved and seven
+unresolved orders. The +0.015000 liquidation mark is not closed profit. This is
+an independent default-policy test, not a replacement for the original wallet.
+No live SIG authentication or connection was attempted. The `--realtime`
+disabled probe exited before creating output, and the service stayed inactive.
+
+Remaining before replacing the deployment: remaining
 inventory strategies and full journal parity, restart/source-journal verification,
 Rust readiness/service wrappers, Rust-only release installation, and removal of
 the dedicated Node installation after the replacement passes verification.

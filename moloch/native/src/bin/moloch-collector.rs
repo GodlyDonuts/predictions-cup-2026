@@ -1,4 +1,5 @@
 //! Serialized, read-only SIG transport. No order submission routes exist here.
+use moloch_replay::realtime::{Auth, Incoming, Realtime};
 use moloch_replay::source::RestSource;
 use serde_json::{Value, json};
 use std::{
@@ -43,6 +44,104 @@ struct Packet {
     data: Option<Value>,
     status: u16,
     delay: u64,
+}
+fn auth_packet(client: &reqwest::blocking::Client, credential: &str) -> Packet {
+    let Ok(r) = client
+        .post("https://sig.thesuper.market/api/v1/realtime/token")
+        .bearer_auth(credential)
+        .send()
+    else {
+        return Packet {
+            data: None,
+            status: 0,
+            delay: 60000,
+        };
+    };
+    let status = r.status().as_u16();
+    let delay = retry_delay(
+        r.headers().get("retry-after").and_then(|h| h.to_str().ok()),
+        now(),
+    );
+    if status != 200 {
+        return Packet {
+            data: None,
+            status,
+            delay,
+        };
+    }
+    let mut bytes = Vec::new();
+    let data = if r.take(65537).read_to_end(&mut bytes).is_ok() && bytes.len() <= 65536 {
+        serde_json::from_slice(&bytes).ok()
+    } else {
+        None
+    };
+    Packet {
+        data,
+        status,
+        delay,
+    }
+}
+struct EventLog {
+    events: std::fs::File,
+    journal: std::fs::File,
+    sequence: u64,
+    previous: String,
+    last_processed: u64,
+}
+impl EventLog {
+    fn append(&mut self, events: Vec<Value>) -> Result<()> {
+        use sha2::{Digest, Sha256};
+        for mut event in events {
+            let at = now();
+            let received = chrono::DateTime::parse_from_rfc3339(
+                event["receivedAt"].as_str().ok_or("EVENT_RECEIPT")?,
+            )?
+            .timestamp_millis();
+            if at < self.last_processed || received < 0 || at < (received as u64) {
+                return Err("CAPTURE_PROCESSING_CLOCK".into());
+            }
+            event["processedAt"] = json!(iso(at));
+            self.sequence += 1;
+            let body = json!({"sequence":self.sequence,"previous":self.previous,"event":event});
+            let hash = format!("{:x}", Sha256::digest(serde_json::to_vec(&body)?));
+            let mut row = body;
+            row["hash"] = json!(hash);
+            writeln!(self.journal, "{}", row)?;
+            self.journal.sync_data()?;
+            writeln!(self.events, "{}", row["event"])?;
+            self.events.sync_data()?;
+            self.previous = hash;
+            self.last_processed = at;
+        }
+        Ok(())
+    }
+}
+fn drain_stream(
+    stream: &Option<Realtime>,
+    source: &mut RestSource,
+    log: &mut EventLog,
+) -> Result<()> {
+    if let Some(stream) = stream {
+        while let Ok(event) = stream.incoming.try_recv() {
+            match event {
+                Incoming::Joined { received_at } => log.append(source.subscribed(&received_at)?)?,
+                Incoming::Broadcast {
+                    event,
+                    payload,
+                    received_at,
+                } => log.append(source.broadcast(&event, &payload, &received_at)?)?,
+                Incoming::Failed(code) => {
+                    log.append(source.subscribed(&iso(now()))?)?;
+                    return Err(code.into());
+                }
+            }
+        }
+        if !stream.healthy() {
+            log.append(source.subscribed(&iso(now()))?)?;
+            return Err("CAPTURE_STREAM_STOPPED".into());
+        }
+    }
+    Ok(())
 }
 fn get(client: &reqwest::blocking::Client, url: &reqwest::Url, credential: &str) -> Packet {
     let Ok(r) = client.get(url.clone()).bearer_auth(credential).send() else {
@@ -142,7 +241,13 @@ impl Drop for Lock {
         let _ = fs::remove_file(&self.0);
     }
 }
-fn capture(state: &Path, pairs_file: &Path, out: &Path, cycles: usize) -> Result<()> {
+fn capture(
+    state: &Path,
+    pairs_file: &Path,
+    out: &Path,
+    cycles: usize,
+    realtime: bool,
+) -> Result<()> {
     guard(state)?;
     let pairs = read(pairs_file)?;
     let pairs = pairs.as_array().ok_or("SCOPES")?;
@@ -193,26 +298,67 @@ fn capture(state: &Path, pairs_file: &Path, out: &Path, cycles: usize) -> Result
         .build()?;
     let started_at = iso(now());
     let mut source = RestSource::new(&json!(pairs), TOURNAMENT, &started_at)?;
-    let mut events = OpenOptions::new()
+    let events = OpenOptions::new()
         .append(true)
         .create_new(true)
         .open(out.join("events.jsonl"))?;
-    let mut sequence = 0u64;
-    let mut previous = String::new();
-    let mut journal = OpenOptions::new()
+    let journal = OpenOptions::new()
         .append(true)
         .create_new(true)
         .open(out.join("source-journal.jsonl"))?;
+    let mut event_log = EventLog {
+        events,
+        journal,
+        sequence: 0,
+        previous: String::new(),
+        last_processed: 0,
+    };
     save(
         &out.join("manifest.json"),
-        &json!({"runtime":"rust","mode":"official_sig_rest_capture","startedAt":started_at,"pairs":pairs,"tournamentId":TOURNAMENT,"readLimitPerMinute":100,"contestOrders":0,"financialIntegration":false}),
+        &json!({"runtime":"rust","mode":"official_sig_capture","realtime":realtime,"startedAt":started_at,"pairs":pairs,"tournamentId":TOURNAMENT,"readLimitPerMinute":100,"contestOrders":0,"financialIntegration":false,"tokenPersistence":false}),
     )?;
-    let deadline = now() + cycles as u64 * pairs.len() as u64 * 24000;
+    let mut stream = None;
+    if realtime {
+        loop {
+            let t = now();
+            let at = admission(&b, t)?.max(b["nextAuthAt"].as_u64().unwrap_or(0));
+            if at <= t {
+                break;
+            }
+            guard(state)?;
+            if out.join("STOP").exists() {
+                return Ok(());
+            }
+            thread::sleep(Duration::from_millis((at - t).min(250)));
+        }
+        b["nextAuthAt"] = json!(now() + 60000);
+        b["nextAt"] = json!(now() + 600);
+        save(&bp, &b)?;
+        let packet = auth_packet(&client, &credential);
+        let Some(auth) = packet.data else {
+            b["blocked"] = json!(true);
+            b["nextAt"] = json!(now().saturating_add(packet.delay));
+            save(&bp, &b)?;
+            return Err("CAPTURE_AUTH_FAILED_LATCHED".into());
+        };
+        let connected = Realtime::connect(Auth::parse(auth)?, TOURNAMENT)?;
+        match connected.incoming.recv_timeout(Duration::from_secs(12)) {
+            Ok(Incoming::Joined { received_at }) => {
+                event_log.append(source.subscribed(&received_at)?)?
+            }
+            _ => return Err("CAPTURE_STREAM_JOIN_FAILED".into()),
+        }
+        stream = Some(connected);
+    }
+    let deadline = (now() + cycles as u64 * pairs.len() as u64 * 24000)
+        .min(stream.as_ref().map_or(u64::MAX, |s| s.deadline_ms));
     let mut cursor_page: Option<(usize, reqwest::Url, usize)> = None;
     for i in 0..cycles * 20 * pairs.len() * 2 {
         if now() >= deadline || out.join("STOP").exists() {
             break;
         }
+        guard(state)?;
+        drain_stream(&stream, &mut source, &mut event_log)?;
         let continuation = cursor_page.take();
         let pair_index = continuation.as_ref().map_or((i / 2) % pairs.len(), |c| c.0);
         let p = &pairs[pair_index];
@@ -223,6 +369,8 @@ fn capture(state: &Path, pairs_file: &Path, out: &Path, cycles: usize) -> Result
             format!("/exchanges/{}/trades", p["exchangeId"].as_str().unwrap())
         };
         loop {
+            guard(state)?;
+            drain_stream(&stream, &mut source, &mut event_log)?;
             let t = now();
             let at = admission(&b, t)?.max(b["endpointNextAt"][&route].as_u64().unwrap_or(0));
             if at <= t {
@@ -231,7 +379,7 @@ fn capture(state: &Path, pairs_file: &Path, out: &Path, cycles: usize) -> Result
             if out.join("STOP").exists() {
                 return Ok(());
             }
-            thread::sleep(Duration::from_millis((at - t).min(250)))
+            thread::sleep(Duration::from_millis((at - t).min(100)))
         }
         let started = now();
         let mut times = b["times"]
@@ -268,22 +416,11 @@ fn capture(state: &Path, pairs_file: &Path, out: &Path, cycles: usize) -> Result
                 let receipt = json!({"schemaVersion":1,"source":"official_sig_api_v1","kind":if book{"book"}else{"trades"},"endpoint":format!("{}?{}",route,url.query().unwrap()),"tournamentId":TOURNAMENT,"marketId":p["marketId"],"exchangeId":p["exchangeId"],"requestStartedAt":iso(started),"receivedAt":iso(now()),"status":200,"data":data});
                 writeln!(log, "{}", receipt)?;
                 log.sync_data()?;
-                for event in source.accept(&receipt)? {
-                    use sha2::{Digest, Sha256};
-                    sequence += 1;
-                    let body = json!({"sequence":sequence,"previous":previous,"event":event});
-                    let hash = format!("{:x}", Sha256::digest(serde_json::to_vec(&body)?));
-                    let mut row = body;
-                    row["hash"] = json!(hash);
-                    writeln!(journal, "{}", row)?;
-                    journal.sync_data()?;
-                    writeln!(events, "{}", row["event"])?;
-                    events.sync_data()?;
-                    previous = hash;
-                }
+                drain_stream(&stream, &mut source, &mut event_log)?;
+                event_log.append(source.accept(&receipt)?)?;
                 save(
                     &out.join("stats.json"),
-                    &json!({"runtime":"rust","phase":"capturing","at":iso(now()),"sequence":sequence,"previous":previous,"scopes":source.scopes(),"contestOrders":0}),
+                    &json!({"runtime":"rust","phase":"capturing","at":iso(now()),"sequence":event_log.sequence,"previous":event_log.previous,"scopes":source.scopes(),"realtime":realtime,"contestOrders":0}),
                 )?;
                 if !book && receipt["data"]["pagination"]["hasMore"] == true {
                     let page = continuation.as_ref().map_or(1, |c| c.2);
@@ -322,7 +459,7 @@ fn capture(state: &Path, pairs_file: &Path, out: &Path, cycles: usize) -> Result
     }
     save(
         &out.join("stats.json"),
-        &json!({"runtime":"rust","phase":"completed","at":iso(now()),"sequence":sequence,"previous":previous,"scopes":source.scopes(),"contestOrders":0}),
+        &json!({"runtime":"rust","phase":"completed","at":iso(now()),"sequence":event_log.sequence,"previous":event_log.previous,"scopes":source.scopes(),"realtime":realtime,"contestOrders":0}),
     )?;
     Ok(())
 }
@@ -419,12 +556,15 @@ fn run() -> Result<()> {
             );
             Ok(())
         }
-        Some("capture") if args.len() == 4 => capture(
-            &state,
-            Path::new(&args[1]),
-            Path::new(&args[2]),
-            args[3].parse()?,
-        ),
+        Some("capture") if args.len() == 4 || args.len() == 5 && args[4] == "--realtime" => {
+            capture(
+                &state,
+                Path::new(&args[1]),
+                Path::new(&args[2]),
+                args[3].parse()?,
+                args.len() == 5,
+            )
+        }
         _ => Err("USAGE: moloch-collector check | capture PAIRS NEW_OUTPUT CYCLES".into()),
     }
 }
