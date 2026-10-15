@@ -26,13 +26,14 @@ fn mul(a:i128,b:i128)->Result<i128>{a.checked_mul(b).ok_or("EDGE_OVERFLOW")}
 #[serde(deny_unknown_fields)]
 pub struct Config{
  pub fill_window_ms:u64,pub markout_ms:u64,pub post_window_ms:u64,pub embargo_ms:u64,
- pub maximum_book_age_ms:u64,pub maximum_delivery_ms:u64,pub minimum_samples:usize,
+ pub maximum_book_age_ms:u64,pub maximum_delivery_ms:u64,pub maximum_training_age_ms:u64,pub minimum_samples:usize,
  pub minimum_coverage_bps:u32,pub probability_haircut_bps:u32,pub uncertainty_per_share:i128,
  pub exit_fee_per_share:i128,pub fee_policy_source_sha256:String,
  pub maximum_keys:usize,pub maximum_pending:usize,pub retained_samples:usize,
 }
 impl Config{pub fn validate(&self)->Result<()>{
  need((1..=120_000).contains(&self.fill_window_ms)&&(1..=120_000).contains(&self.markout_ms)&&(1..=10_000).contains(&self.post_window_ms)&&self.embargo_ms<=120_000,"EDGE_WINDOWS")?;
+ need(self.maximum_training_age_ms>=self.markout_ms&&self.maximum_training_age_ms<=7*86_400_000,"EDGE_TRAINING_AGE")?;
  need((1..=10_000).contains(&self.maximum_book_age_ms)&&(1..=20_000).contains(&self.maximum_delivery_ms),"EDGE_FRESHNESS")?;
  need(self.minimum_samples>=2&&self.minimum_samples<=self.retained_samples&&self.retained_samples<=256&&(1..=1024).contains(&self.maximum_keys)&&(1..=4096).contains(&self.maximum_pending),"EDGE_BOUNDS")?;
  need((1..=10_000).contains(&self.minimum_coverage_bps)&&self.probability_haircut_bps<=10_000&&self.uncertainty_per_share>=0&&self.uncertainty_per_share<=UNIT&&self.exit_fee_per_share>=0&&self.exit_fee_per_share<=UNIT&&hex(&self.fee_policy_source_sha256),"EDGE_COST_POLICY")
@@ -43,7 +44,8 @@ pub struct Key{pub exchange:String,pub market:String,pub side:String,pub action:
 #[derive(Clone)]struct Own{market:String,exchange:String,yes_bid:bool,price:i128,quantity:u64}
 #[derive(Clone)]struct Coverage{from:u64,to:u64,sequence:u128}
 #[derive(Clone)]struct Mark{value:Option<i128>,available:u64,reason:&'static str,source_sha:String}
-#[derive(Default)]struct Bucket{marks:VecDeque<Mark>,probability:VecDeque<Option<bool>>}
+#[derive(Clone)]struct Prob{value:Option<bool>,available:u64}
+#[derive(Default)]struct Bucket{marks:VecDeque<Mark>,probability:VecDeque<Prob>}
 struct PendingMark{target:u64,until:u64,executed:u64,quantity:u64,principal:i128,fee:i128,side:String,action:String}
 struct Exposure{key:Key,attempt:u64,deadline:u64,quote_hash:String,filled:bool,first_fill:bool,filled_quantity:u64,principal:i128,fee:i128,first_executed:Option<u64>,fill_ids:BTreeSet<String>,mark:Option<PendingMark>,mark_done:bool,terminal:bool,probability_done:bool}
 
@@ -182,11 +184,11 @@ impl Model{
  fn expire(&mut self,at:u64)->Result<()>{
  let expired:Vec<_>=self.pending.iter().filter(|(_,p)|p.mark.as_ref().is_some_and(|m|at>m.until.saturating_add(self.config.maximum_delivery_ms))).map(|(id,_)|*id).collect();for id in expired{self.finish_mark(id,None,at,"no_book_in_window",String::new())?;}
  let ready:Vec<_>=self.pending.iter().filter(|(_,p)|p.terminal&&!p.probability_done).map(|(id,_)|*id).collect();
- for id in ready{let p=self.pending.get_mut(&id).unwrap();let value=if p.filled{Some(true)}else if at>=p.deadline{Some(false)}else{None};let b=self.buckets.get_mut(&p.key).unwrap();b.probability.push_back(value);while b.probability.len()>self.config.retained_samples{b.probability.pop_front();}p.probability_done=true;}
+ for id in ready{let p=self.pending.get_mut(&id).unwrap();let value=if p.filled{Some(true)}else if at>=p.deadline{Some(false)}else{None};let b=self.buckets.get_mut(&p.key).unwrap();b.probability.push_back(Prob{value,available:at});while b.probability.len()>self.config.retained_samples{b.probability.pop_front();}p.probability_done=true;}
  self.pending.retain(|_,p|!(p.probability_done&&(p.mark_done||!p.first_fill)));Ok(())
  }
  pub fn estimate(&self,key:&Key,now:u64)->Estimate{
- let bucket=self.buckets.get(key);let values:Vec<_>=bucket.map(|b|b.marks.iter().filter_map(|m|m.value).collect()).unwrap_or_default();let marks=bucket.map_or(0,|b|b.marks.len());let probs:Vec<_>=bucket.map(|b|b.probability.iter().filter_map(|p|*p).collect()).unwrap_or_default();let censored=bucket.map_or(0,|b|b.probability.iter().filter(|p|p.is_none()).count());let open=self.pending.values().filter(|p|p.key==*key&&now>=p.deadline&&!p.probability_done).count();
+ let bucket=self.buckets.get(key);let since=now.saturating_sub(self.config.maximum_training_age_ms);let values:Vec<_>=bucket.map(|b|b.marks.iter().filter(|m|m.available>=since).filter_map(|m|m.value).collect()).unwrap_or_default();let marks=bucket.map_or(0,|b|b.marks.iter().filter(|m|m.available>=since).count());let probs:Vec<_>=bucket.map(|b|b.probability.iter().filter(|p|p.available>=since).filter_map(|p|p.value).collect()).unwrap_or_default();let censored=bucket.map_or(0,|b|b.probability.iter().filter(|p|p.available>=since&&p.value.is_none()).count());let open=self.pending.values().filter(|p|p.key==*key&&now>=p.deadline&&!p.probability_done).count();
  let mean=if values.is_empty(){None}else{values.iter().try_fold(0i128,|a,v|a.checked_add(*v)).map(|s|s/values.len() as i128)};let worst=values.iter().min().copied();let stressed=worst.and_then(|w|w.checked_sub(self.config.uncertainty_per_share));let prob=if probs.is_empty(){None}else{Some((probs.iter().filter(|p|**p).count()*10_000/probs.len()) as u32)};
  let reason=if self.disabled.is_some(){"model_disabled"}else if now<self.last{"future_state_not_queryable"}else if !values.is_empty()&&(mean.is_none()||stressed.is_none()){"arithmetic_unavailable"}else if values.len()<self.config.minimum_samples||probs.len()<self.config.minimum_samples{"insufficient_independent_samples"}else if values.len()*10_000<marks*self.config.minimum_coverage_bps as usize||probs.len()*10_000<(probs.len()+censored)*self.config.minimum_coverage_bps as usize||open>0{"incomplete_or_open_coverage"}else{"empirical_coverage_qualified"};
  Estimate{available:reason=="empirical_coverage_qualified",reason:reason.into(),valid_marks:values.len(),matured_marks:marks,complete_exposures:probs.len(),censored_exposures:censored,unresolved_mature_exposures:open,mean_conditional_per_share:mean,worst_conditional_per_share:worst,stressed_conditional_per_share:stressed,fill_probability_bps:prob,conservative_fill_probability_bps:prob.map(|p|p.saturating_sub(self.config.probability_haircut_bps)),last_label_available_at_ms:bucket.and_then(|b|b.marks.back().map(|m|m.available)),statistical_confidence_claimed:false}
@@ -194,9 +196,10 @@ impl Model{
  /// Returns a planning score only. Existing physical authority, cash, book,
  /// unknown/STOP, portfolio risk and durable intent checks remain mandatory.
  pub fn maker_candidate(&self,bank:&Session,qid:u64,costs:Option<&ExecutionCosts>,now:u64)->Result<MakerEvaluation>{
- self.bind(bank)?;let q=bank.engine().order_records().into_iter().find(|q|q["id"]==qid).ok_or("EDGE_QUOTE")?;let key=self.key(bank,&q,now)?;let estimate=self.estimate(&key,now);let costs=costs.ok_or("EDGE_INVENTORY_COST_OR_TURNOVER_UNKNOWN")?;need(costs.inventory_and_partial_risk_units>=0&&costs.horizon.milliseconds>0&&hex(&costs.source_sha256)&&hex(&costs.horizon.source_sha256),"EDGE_COST_OR_TURNOVER_SOURCE")?;let cost=costs.inventory_and_partial_risk_units;
+ self.bind(bank)?;let q=bank.engine().order_records().into_iter().find(|q|q["id"]==qid).ok_or("EDGE_QUOTE")?;need(q["retired"]==false&&q["filled"]==0&&q["expiresAt"].as_u64().is_some_and(|end|now<end),"EDGE_QUOTE_NO_LONGER_ELIGIBLE")?;
+ let key=self.key(bank,&q,now)?;let estimate=self.estimate(&key,now);let costs=costs.ok_or("EDGE_INVENTORY_COST_OR_TURNOVER_UNKNOWN")?;need(costs.inventory_and_partial_risk_units>=0&&costs.horizon.milliseconds>0&&hex(&costs.source_sha256)&&hex(&costs.horizon.source_sha256),"EDGE_COST_OR_TURNOVER_SOURCE")?;let cost=costs.inventory_and_partial_risk_units;
  let gain=if estimate.available{let conditional=estimate.stressed_conditional_per_share.ok_or("EDGE_NO_MARK")?;let p=estimate.conservative_fill_probability_bps.ok_or("EDGE_NO_EXPOSURE")?;Some((mul(mul(conditional,key.quantity as i128)?,p as i128)?/10_000).checked_sub(cost).ok_or("EDGE_OVERFLOW")?)}else{None};
- let gross=mul(key.limit_units,key.quantity as i128)?;let candidate=gain.filter(|n|*n>0).map(|n|Candidate{id:format!("ordinary:{qid}"),basis:Basis::OwnFillConditionalEstimate,net_gain_units:n,gross_funding_units:gross,capital_locked_units:gross,holding_horizon_ms:costs.horizon.milliseconds,valid_until_ms:now.saturating_add(self.config.maximum_book_age_ms).min(self.books[&key.exchange].source.saturating_add(self.config.maximum_book_age_ms)),risk_groups:vec![key.exchange.clone()],source_sha256:self.policy_sha.clone(),horizon_source_sha256:costs.horizon.source_sha256.clone(),write_admissions:1});
+ let gross=mul(key.limit_units,key.quantity as i128)?;let candidate=gain.filter(|n|*n>0).map(|n|Candidate{id:format!("ordinary:{qid}"),basis:Basis::OwnFillConditionalEstimate,net_gain_units:n,gross_funding_units:gross,capital_locked_units:gross,holding_horizon_ms:costs.horizon.milliseconds,valid_until_ms:[self.books[&key.exchange].source,self.books[&key.exchange].request,self.books[&key.exchange].received,self.books[&key.exchange].observed].into_iter().min().unwrap().saturating_add(self.config.maximum_book_age_ms).min(q["expiresAt"].as_u64().unwrap()),risk_groups:vec![key.exchange.clone()],source_sha256:self.policy_sha.clone(),horizon_source_sha256:costs.horizon.source_sha256.clone(),write_admissions:1});
  Ok(MakerEvaluation{key,estimate,estimated_net_gain_units:gain,candidate})
  }
  pub fn diagnostic_json(&self)->Value{let reasons=self.buckets.values().flat_map(|b|b.marks.iter()).fold(BTreeMap::<String,u64>::new(),|mut map,m|{*map.entry(m.reason.into()).or_default()+=1;map});let mut labels=Sha256::new();for m in self.buckets.values().flat_map(|b|b.marks.iter()){labels.update(m.source_sha.as_bytes());}let mut attempts=Sha256::new();for p in self.pending.values(){attempts.update(p.quote_hash.as_bytes());}json!({"disabled":self.disabled,"lastObservedAtMs":self.last,"keys":self.buckets.len(),"pending":self.pending.len(),"diagnostics":self.diagnostics,"markReasons":reasons,"labelSourceDigest":format!("{:x}",labels.finalize()),"activeAttemptQuoteDigest":format!("{:x}",attempts.finalize()),"confidenceKind":"empirical_worst_sample_stress_not_statistical","executionAuthority":false})}

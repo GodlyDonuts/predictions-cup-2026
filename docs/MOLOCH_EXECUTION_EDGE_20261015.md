@@ -109,7 +109,7 @@ per-share result minus an explicit stress buffer**, multiplied by empirical full
 fill probability after a probability haircut, less supplied inventory/partial
 risk cost. This is an empirical stress rule, not a statistical confidence bound,
 stationarity proof, calibrated ML model or guaranteed expected value. The API
-explicitly reports `statistical_confidence_claimed: false`. Minimum independent
+explicitly reports `statistical_confidence_claimed: false`. Calendar-expired marks and exposure labels cannot supply confidence. Minimum independent
 sample counts and coverage thresholds must pass before a positive estimate can
 become a planning candidate. Asking a fitted model about an earlier clock is
 unavailable; no future labels can enter a past decision.
@@ -139,7 +139,7 @@ settlement horizon and validity deadline.
 
 ## Bounds, restart and verification
 
-Configuration validates windows, source ages, known fee provenance, key/pending
+Configuration validates windows, source ages, an explicit maximum training age, known fee provenance, key/pending
 limits and retained samples. Defaults are intentionally supplied by the owner;
 this module does not silently select a profitable-looking horizon or policy.
 At most 1,024 keys, 4,096 pending attempts, 256 retained samples per bucket,
