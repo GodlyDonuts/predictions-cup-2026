@@ -186,7 +186,7 @@ fn local_queue_state(row:&Value,raw:&Value)->Result<Value>{
  if digest(&row["hash"])?!=format!("{:x}",Sha256::digest(bytes.as_bytes())){return Err("PACKAGE_LOCAL_QUEUE_ROW_HASH")};Ok(state)
 }
 fn local_not_sent(p:&LivePackage,proof:&Value,at:i64)->Result<()>{
- if p.phase!=Phase::Attempted||proof["kind"]!="local_queue_not_sent_v1"||proof["requestHash"].as_str()!=p.request.as_deref(){return Err("PACKAGE_LOCAL_NOT_SENT_PHASE")}
+ if at<0||p.phase!=Phase::Attempted||proof["kind"]!="local_queue_not_sent_v1"||proof["requestHash"].as_str()!=p.request.as_deref(){return Err("PACKAGE_LOCAL_NOT_SENT_PHASE")}
  let error=&proof["sdkError"];
  if error["mayHaveExecuted"]!=false||error.get("status")!=Some(&Value::Null)||error.get("orderId")!=Some(&Value::Null)||error.get("apiCode")!=Some(&Value::Null)||!error["code"].as_str().is_some_and(|s|!s.is_empty()){return Err("PACKAGE_LOCAL_NOT_SENT_ERROR")}
  let dispatch=&proof["dispatchRecord"];if digest(&proof["dispatchRecordHash"])?!=hash(dispatch)||dispatch["phase"]!="not_sent"||dispatch["outcome"]["kind"]!="not_sent"||dispatch["outcome"]["error"]!=*error||proof["dispatchHead"]["poisoned"]!=false||proof["dispatchHead"]["sequence"].as_u64().is_none_or(|n|n==0)||digest(&proof["dispatchHead"]["hash"]).is_err(){return Err("PACKAGE_LOCAL_DISPATCH_PROOF")}

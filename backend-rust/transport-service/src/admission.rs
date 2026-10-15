@@ -160,6 +160,7 @@ mod adapter_v2_tests;
 /// original sole-worker files while that worker prevents further admissions.
 pub struct VerifiedLocalNotSentV1 { evidence:Value }
 impl VerifiedLocalNotSentV1 { pub fn evidence(&self)->&Value{&self.evidence} }
+fn not_sent_exists(path:&Path)->std::result::Result<bool,String>{match fs::symlink_metadata(path){Ok(_)=>Ok(true),Err(e)if e.kind()==std::io::ErrorKind::NotFound=>Ok(false),Err(_)=>Err("NOT_SENT_SELECTION_UNAVAILABLE".into())}}
 struct NotSentPinnedFile { path:PathBuf,file:File,bytes:Vec<u8>,metadata:fs::Metadata }
 impl NotSentPinnedFile {
  fn read(path:&Path,maximum:u64)->std::result::Result<Self,String>{
@@ -202,7 +203,7 @@ pub fn verify_local_not_sent_v1(directory:&Path,scope:&str,binding:&ImmutableBin
  let actual=Binding{intent:binding.intent.clone(),key:binding.key.clone(),payload_hash:binding.payload_hash.clone()};
  let mut pins=Vec::new();let mut journal="account-queue.jsonl".to_owned();let mut sequence=0u64;let mut previous=String::new();let mut manifest_hash:Option<String>=None;let mut checkpoint_digest:Option<String>=None;
  let manifest_path=directory.join("account-queue-manifest.json");let guard_path=directory.join("account-queue-generation.guard");
- if manifest_path.exists(){
+ if not_sent_exists(&manifest_path)?{
   let manifest_pin=NotSentPinnedFile::read(&manifest_path,4096)?;let manifest:Manifest=serde_json::from_slice(&manifest_pin.bytes).map_err(|_|"NOT_SENT_MANIFEST")?;
   need(manifest.schema_version==1&&manifest.scope==scope&&local_name(&manifest.journal)&&local_name(&manifest.checkpoint),"NOT_SENT_V1_SCOPE_OR_PATH_REQUIRED")?;
   manifest_hash=Some(format!("{:x}",Sha256::digest(&manifest_pin.bytes)));pins.push(manifest_pin);
@@ -210,7 +211,7 @@ pub fn verify_local_not_sent_v1(directory:&Path,scope:&str,binding:&ImmutableBin
   let checkpoint_pin=NotSentPinnedFile::read(&directory.join(&manifest.checkpoint),MAX_CHECKPOINT_BYTES)?;let checkpoint:Checkpoint=serde_json::from_slice(&checkpoint_pin.bytes).map_err(|_|"NOT_SENT_CHECKPOINT")?;
   need(checkpoint.schema_version==1&&checkpoint.state.schema_version==1&&checkpoint.state.scope==scope&&checkpoint.hash==manifest.checkpoint_hash&&checkpoint.hash==checkpoint_hash(&checkpoint.anchor,&checkpoint.state)&&local_name(&checkpoint.anchor.source_journal),"NOT_SENT_CHECKPOINT_HASH")?;
   sequence=checkpoint.anchor.sequence;previous=checkpoint.anchor.previous;checkpoint_digest=Some(checkpoint.hash);pins.push(checkpoint_pin);journal=manifest.journal;
- }else{need(!guard_path.exists(),"NOT_SENT_MANIFEST_REQUIRED")?;}
+ }else{need(!not_sent_exists(&guard_path)?,"NOT_SENT_MANIFEST_REQUIRED")?;}
  let journal_pin=NotSentPinnedFile::read(&directory.join(journal),MAX_ACTIVE_JOURNAL_BYTES)?;
  need(journal_pin.bytes.last()==Some(&b'\n'),"NOT_SENT_TORN_OR_EMPTY_JOURNAL")?;
  let mut last:Option<Record>=None;let mut witness:Option<Value>=None;
@@ -233,7 +234,7 @@ pub fn verify_local_not_sent_v1(directory:&Path,scope:&str,binding:&ImmutableBin
  evidence["tailRecord"]=serde_json::to_value(&tail).map_err(|_|"NOT_SENT_SERIALIZE")?;evidence["tailStateJson"]=json!(serde_json::to_string(&tail.state).map_err(|_|"NOT_SENT_SERIALIZE")?);
  evidence["journalSha256"]=json!(format!("{:x}",Sha256::digest(&journal_pin.bytes)));evidence["journalBytes"]=json!(journal_pin.bytes.len());evidence["manifestSha256"]=json!(manifest_hash);evidence["checkpointHash"]=json!(checkpoint_digest);pins.push(journal_pin);
  for source in &mut pins{source.unchanged()?;}
- if manifest_hash.is_none(){need(!manifest_path.exists()&&!guard_path.exists(),"NOT_SENT_GENERATION_CHANGED")?;}
+ if manifest_hash.is_none(){need(!not_sent_exists(&manifest_path)?&&!not_sent_exists(&guard_path)?,"NOT_SENT_GENERATION_CHANGED")?;}
  let final_dir=fs::symlink_metadata(directory).map_err(|_|"NOT_SENT_DIRECTORY_CHANGED")?;need(final_dir.is_dir()&&!final_dir.file_type().is_symlink(),"NOT_SENT_DIRECTORY_CHANGED")?;
  #[cfg(unix)]{use std::os::unix::fs::MetadataExt;need(final_dir.dev()==dir_meta.dev()&&final_dir.ino()==dir_meta.ino(),"NOT_SENT_DIRECTORY_CHANGED")?;}
  Ok(VerifiedLocalNotSentV1{evidence})
