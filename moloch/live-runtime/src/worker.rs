@@ -18,7 +18,18 @@ fn private_dir(p:&Path)->Result<()>{use std::os::unix::fs::PermissionsExt;fs::cr
 fn transport(c:&Control,auth:Box<dyn Authority>,writes:bool)->Result<Transport>{Ok(Transport::new_with_read_budget(Config{queue_dir:c.root.join("account-queue"),account_scope:c.account_scope.clone(),scope:c.scope.clone(),maximum_pages:20,writes_enabled:writes},Box::new(UnixFileCredentials::approved_file(c.credentials.clone())?),Box::new(SystemClock),auth,100,600)?.with_full_account_observation())}
 fn accept(bank:&mut Session,event:&Value)->Result<()>{let mut e=event.clone();e["processedAt"]=json!(iso(now()));bank.accept("moloch-live",bank.last_source_sequence("moloch-live")+1,&e)?;Ok(())}
 fn record_receipt(root:&Path,r:&Receipt)->Result<()> {let p=root.join("receipts").join(format!("{}.json",feedback::digest(r)?));if !p.exists(){atomic_json(&p,&serde_json::to_value(r)?)?}Ok(())}
-fn request(t:&mut Transport,root:&Path,ep:Endpoint)->Result<Receipt>{let r=t.request(ep)?;record_receipt(root,&r)?;Ok(r)}
+fn request(t:&mut Transport,root:&Path,ep:Endpoint)->Result<Receipt>{
+ for attempt in 0..3u64{
+  match t.request(ep.clone()){
+   Ok(r)=>{record_receipt(root,&r)?;return Ok(r)},
+   Err(error)=>{
+    if attempt==2||!moloch_live_runtime::read_recovery::retryable_read(&error){return Err(error.into())}
+    atomic_json(&root.join("read-recovery.json"),&json!({"at":iso(now()),"endpoint":ep,"attempt":attempt+1,"code":error.code,"status":error.status,"retryAfterMs":error.retry_after_ms,"ordersRetried":false}))?;
+    std::thread::sleep(Duration::from_millis(2000*(attempt+1)));
+   }
+  }
+ }Err("LIVE_READ_RETRY_EXHAUSTED".into())
+}
 fn account(t:&mut Transport,root:&Path)->Result<(Receipt,Receipt,Receipt)>{
  let a=request(t,root,Endpoint::Tournament)?;let p=request(t,root,Endpoint::Positions)?;let o=request(t,root,Endpoint::Orders{status:"open".into()})?;
  if a.data["status"]!="active"||o.data["coverage"]["complete"]!=true||o.data["pagination"]["hasMore"]!=false{return Err("LIVE_ACCOUNT_INCOMPLETE_OR_INACTIVE".into())}Ok((a,p,o))

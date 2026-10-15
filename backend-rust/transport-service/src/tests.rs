@@ -79,3 +79,13 @@ fn ack()->String{json!({"orderId":42,"exchangeId":"994","open":true,"remainingQu
  let observed=server.requests.lock().unwrap();assert_eq!(observed[0].line,"POST /api/v1/realtime/token HTTP/1.1");assert_eq!(observed[0].body,Value::Null);
  }for f in fs::read_dir(&dir).unwrap(){let p=f.unwrap().path();if p.is_file(){assert!(!String::from_utf8_lossy(&fs::read(p).unwrap()).contains(secret))}}fs::remove_dir_all(dir).unwrap();
 }
+#[test]fn malformed_read_success_preserves_status_without_poisoning_account(){
+ let server=Server::new(vec![(200,vec![],"<html>temporary gateway body</html>".into()),(200,vec![],tournament())]);let dir=temp();{
+ let mut t=transport(&dir,&server,false,Arc::new(AtomicU64::new(1000)));let e=t.request(Endpoint::Tournament).err().unwrap();assert_eq!(e.code,"INVALID_RESPONSE_JSON");assert_eq!(e.status,Some(200));assert!(!e.may_have_executed);assert!(t.admission_state().unwrap()["state"]["unknown"].as_object().unwrap().is_empty());t.request(Endpoint::Tournament).unwrap();
+ }fs::remove_dir_all(dir).unwrap();
+}
+#[test]fn non_json_throttling_preserves_retry_after_and_unknown_writes(){
+ for write in [false,true]{let server=Server::new(vec![(429,vec![("Retry-After","90")],"<html>slow down</html>".into())]);let dir=temp();{
+ let mut t=transport(&dir,&server,write,Arc::new(AtomicU64::new(1000)));let e=if write{t.place(order(),permit("one")).err().unwrap()}else{t.request(Endpoint::Tournament).err().unwrap()};assert_eq!(e.status,Some(429));assert_eq!(e.code,"INVALID_RESPONSE_JSON");assert!(e.retry_after_ms>=90000);assert_eq!(e.may_have_executed,write);assert_eq!(t.admission_state().unwrap()["state"]["unknown"].as_object().unwrap().len(),if write{1}else{0});
+ }fs::remove_dir_all(dir).unwrap();}
+}
