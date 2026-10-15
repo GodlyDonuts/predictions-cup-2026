@@ -1,5 +1,11 @@
 # Paper 2 package execution: implementation and remaining work
 
+## October 15 V27 fresh trading verification
+
+V27 completed history restoration and produced fresh healthy trading progress at22:00:32UTC. At22:00:39UTC its immutable binary hash and absent STOP were verified, with485 total acknowledged orders/90 actual fills. Five retained official HTTP200 acknowledgments are new since launch; they do not establish new fills. The bank's derived report seal verifies at sequence104040. Total realized remains−77.945000SUSQies and profitability is unestablished. The scanner reports `no_current_independently_approved_certificate` and zero package submissions. [Sanitized source-bound verification](../research/moloch-package-execution-20261015/live-verification.json).
+
+The following launch/restoration observations are dated history. Collateral integration, signed portfolio acquisition/unwind and causal model/allocation integration remain under development; this verification does not complete Paper2.
+
 ## October 15 V27 production launch
 
 V27 PID265648 started at21:46:42UTC with immutable binary88176e888205647e4bbe74ae9019059b5e23fbff8038981ddeb36d06d5f396e7 and financial identity93d508192627e5cb5524984bd4c08d5fbda5e6904493aea7e50f3a9490c2df87. The actual stopped bank's103,127 events/283,910,439 bytes reproduced exact financial report, orders, fills and source cursors in281,140ms with the checker linked against the exact runtime compiler-artifact libraries. Zero account requests and no source mutation occurred during verification. [Launch and complete stopped-prefix evidence](../research/moloch-package-execution-20261015/production-rollout.json).

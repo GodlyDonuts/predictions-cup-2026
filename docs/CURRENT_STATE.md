@@ -1,3 +1,9 @@
+# October 15: V27 fresh production trading verified
+
+At22:00:39UTC, V27 PID265648 was running the exact checked immutable binary with no STOP. Fresh healthy trading progress at22:00:32UTC reports485 acknowledged orders/90 actual fills; five original official HTTP200 acknowledgments occurred after launch. The derived bank report seal verifies at sequence104040. Acknowledgments are not fills: no new fill is claimed by this verification. Total realized remains−77.945000SUSQies; the previously verified new-trading contribution is−116.020000, separate from inherited gross+38.075000. Profitability remains unestablished. [Sanitized verification](../research/moloch-package-execution-20261015/live-verification.json).
+
+The package scanner reports `no_current_independently_approved_certificate`, with zero package submissions. The sole production worker continues ordinary trading while collateral, portfolio execution and causal model/allocation integration are tested separately. Paper2 remains incomplete.
+
 # October 15: V27 package hook launched; history restoration pending
 
 V27 started at21:46:42UTC asPID265648 from immutable release`package-88176e888205`. The stopped103,127-event/283,910,439-byte bank reproduced exact financial report, orders, fills and source cursors in281,140ms using the exact runtime-linked checker, with zero account requests or source mutation. All480 physical submission attempts were acknowledged; the actual shared queue retained731 bindings with no unknown/active/manual-review state. The fifth explicit identity bridge preserves the four prior approvals, bank/seed/history, queuev1, daily mandate and40,000 total/10,000-per-market caps. The running binary hash matches88176e… and STOP is absent. History restoration is active; fresh trading is not yet verified. [Rollout and full stopped-prefix proof](../research/moloch-package-execution-20261015/production-rollout.json).

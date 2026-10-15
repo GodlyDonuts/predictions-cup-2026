@@ -1,0 +1,48 @@
+{
+  "at": "2026-10-15T22:00:39.928630+00:00",
+  "pid": 265648,
+  "binarySha256": "88176e888205647e4bbe74ae9019059b5e23fbff8038981ddeb36d06d5f396e7",
+  "freshTradingVerified": true,
+  "progress": {
+    "actualFills": 90,
+    "actualOrders": 485,
+    "at": "2026-10-15T22:00:32.487Z",
+    "completedReadScopes": 6,
+    "maximumRealtimeFramesPerDrain": 64,
+    "phase": "trading",
+    "pid": 265648,
+    "profitabilityEstablished": false,
+    "realtimeHealthy": true,
+    "selectedReadScopes": 22,
+    "terminalOrders": 480
+  },
+  "newOfficialAcknowledgments": 5,
+  "newAcknowledgmentClocks": [
+    "2026-10-15T21:59:07.564Z",
+    "2026-10-15T21:59:23.334Z",
+    "2026-10-15T21:59:39.720Z",
+    "2026-10-15T21:59:58.024Z",
+    "2026-10-15T22:00:17.581Z"
+  ],
+  "bankSequence": 104040,
+  "derivedReportSealVerified": true,
+  "report": {
+    "at": "2026-10-15T22:00:38.993Z",
+    "cash": "17149.540000",
+    "ownedCost": "22772.515000",
+    "reservedCash": "0.000000",
+    "realized": "-77.945000",
+    "fills": 90,
+    "newTradingRealized": "-116.020000",
+    "inheritedGrossRealized": "38.075000",
+    "realizedBreakdownSource": "Previously verified 2026-10-15T20:53:59Z cohort report; no new fills by 22:00:39Z verification"
+  },
+  "packageStatus": {
+    "at": "2026-10-15T22:00:09.895Z",
+    "ordersSubmitted": 0,
+    "state": "no_current_independently_approved_certificate"
+  },
+  "executionStopPresent": false,
+  "paper2Complete": false,
+  "profitabilityEstablished": false
+}
