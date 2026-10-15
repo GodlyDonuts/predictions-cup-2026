@@ -925,7 +925,7 @@
     "realized": "0.000000",
     "verifiedAt": "2026-10-07T06:16:58.422Z"
   },
-  "updatedAt": "2026-10-15T00:52:15Z",
+  "updatedAt": "2026-10-15T00:55:51Z",
   "foreignCandidateRepair": {
     "commit": "17b544005c7578c95df4dc4f2f30ee8e2cc75a19",
     "collector": 32364,
@@ -1013,7 +1013,7 @@
     "actualFillsProven": false,
     "contestOrders": 0
   },
-  "nextProfitabilityWork": "The poll-value screen did not validate short-horizon profitability: only one market had subsequent markouts and all were -0.015/share under fixed one-tick entry/exit stress. Do not promote the poll-only signal. Preserve EXECUTION_STOP and current paper accounting.",
+  "nextProfitabilityWork": "No active paper process is verified; the latest saved paper report is stale, with zero observations/fills and no demonstrated P&L. C: has zero free bytes, so do not start a writer that could fail mid-journal. Continue only after local disk space is available; preserve EXECUTION_STOP.",
   "oracle3Transfer20261014": {
     "issue": 113,
     "implementedAt": "2026-10-14 20:23:03 UTC",
@@ -1229,5 +1229,35 @@
     "tests": "7/7 focused tests pass; source and runner syntax checks pass.",
     "executionStopPreserved": true,
     "runtimeApiOrOrderChanges": false
+  },
+  "latestPaperRuntimeAudit20261015": {
+    "checkedAt": "2026-10-15T00:55:51Z",
+    "runtimeDirectory": "LOCALAPPDATA/SigTradingCup/paper-runtime",
+    "savedPaperStats": {
+      "reportedAt": "2026-10-14T23:52:15.787Z",
+      "lastObservationAt": "2026-10-14T12:43:46.980Z",
+      "mode": "live_data_paper_only",
+      "observations": 0,
+      "coveredExchanges": 0,
+      "fills": 0,
+      "intents": 0,
+      "realizedPnl": "0.000000",
+      "estimatedLiquidationEquity": "100000.000000",
+      "reportedRuntimeStatus": "running",
+      "reportedPid": 10828,
+      "errorsCount": 1
+    },
+    "liveVerification": {
+      "reportedPidStillExists": false,
+      "processCommandLinesMatchingRuntimePath": 0,
+      "executionStopPresent": true,
+      "collectorStopPresent": false,
+      "captureLastWriteAt": "2026-10-14T23:52:17.8489554Z",
+      "captureBytes": 338959383,
+      "cDriveFreeBytes": 0
+    },
+    "conclusion": "No active Baal paper process is verified. The saved status is stale and had zero observations/fills, so it is not current performance evidence. Keep contest execution stopped; local capture/replay needs disk space before safely resuming.",
+    "accountReads": 0,
+    "orderWrites": 0
   }
 }
