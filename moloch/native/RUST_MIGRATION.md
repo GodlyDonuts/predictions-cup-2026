@@ -250,3 +250,35 @@ This correction preserves the same historical wallet and expired deadline. It
 establishes configuration agreement, not fresh live-market verification. The
 Rust service still reported disabled/inactive/MainPID=0, Node was absent, and
 the disabled collector invocation exited 1. No SIG calls or orders were made.
+
+## Final Rust infrastructure audit
+
+The explicit installer was exercised successfully on the VPS with release
+`rust-final-v1`, the frozen policy, verified seed and aligned pairs supplied as
+arguments. It verified the existing bank before switching current, without
+resetting cash, changing policy or enabling the service. `cargo test --locked`
+passed all 51 test cases across the Rust binaries, library and integration tests.
+This includes exact financial parity, source clocks and coverage, persisted rate
+limits, durable restart and killed-process lock recovery.
+
+The earlier pre-replacement checklist is historical: Rust session integration,
+recovery, readiness, service replacement, installation and Node removal are now
+implemented and verified. Strategy comparisons are implemented too, but their
+losses and zero-fill outcomes do not establish a superior profitable strategy.
+Profit research and any future authorized activation remain separate work; this
+infrastructure audit does not claim those outcomes or fresh SIG connectivity.
+
+The final deployed-binary loopback test completed 100 requests in 59,414ms,
+with 600ms minimum spacing and rolling maximum 100. It loaded no credentials
+and made no SIG calls. Systemd unit verification returned zero, current pointed
+to rust-final-v1, all eight binary checksums passed, readiness recovered the
+unchanged wallet, and the service remained disabled/inactive with MainPID=0.
+The final receipt is `moloch/results/rust-vps-final-audit.json`.
+
+The requested Rust VPS infrastructure migration is complete under the human's
+existing no-activation instruction. It supplies a single Rust paper stack,
+collector, source adapters, exact financial engine, durable session and replay
+and comparison tools without a Node runtime dependency. This completion does
+not assert a profitable strategy, superiority over the entire Baal runtime,
+or a tested live authenticated SIG connection. Those remain explicitly
+unproven; the bot was not activated and its entry deadline was not renewed.

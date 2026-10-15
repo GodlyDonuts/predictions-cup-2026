@@ -1,29 +1,42 @@
 #!/bin/bash
+# Install only an explicitly supplied, audited paper wallet and frozen policy.
 set -euo pipefail
+if [ "$#" != 4 ]; then echo 'Usage: install-rust-disabled.sh RELEASE_ID POLICY SEED PAIRS' >&2; exit 2; fi
+case "$1" in ''|*[!a-zA-Z0-9_-]*) echo 'Invalid release ID' >&2; exit 2;; esac
 base="$HOME/apps/moloch"
-release="$base/releases/rust-session-ca5a37da"
-pairs_source="${1:-$base/shared/pairs.json}"
-policy_source=("$base/shared"/rust-continuation-*/policy.json)
-test "${#policy_source[@]}" = 1
-"$base/rust-build/target/release/moloch-ready" scope-check "$pairs_source" "${policy_source[0]}"
+release="$base/releases/$1"
+policy_source=$(readlink -f "$2")
+seed_source=$(readlink -f "$3")
+pairs_source=$(readlink -f "$4")
 test ! -e "$release"
-test -f "$base/shared/NETWORK_DISABLED"
-test -f "$base/shared/EXECUTION_STOP"
+test -f "$policy_source" && test -f "$seed_source" && test -f "$pairs_source"
+test -f "$base/shared/NETWORK_DISABLED" && test -f "$base/shared/EXECUTION_STOP"
 test ! -e "$base/shared/NETWORK_ENABLED"
 ! systemctl --user is-active --quiet moloch-capture.service
+python3 - <<'PY'
+import json
+from pathlib import Path
+p=Path.home()/'apps/moloch/shared'
+c=json.loads((p/'deployment.json').read_text())
+assert c['networkEnabled'] is False and c['tradingEnabled'] is False and c['readsPerMinute']==100
+assert not (p/'credentials/sig-api.key').exists()
+PY
+"$base/rust-build/target/release/moloch-ready" scope-check "$pairs_source" "$policy_source"
 mkdir -m 700 "$release"
 mkdir -m 700 "$release/bin"
 for name in moloch-collector moloch-paper moloch-replay moloch-seed moloch-session moloch-source moloch-ready moloch-compare; do
  install -m 700 "$base/rust-build/target/release/$name" "$release/bin/$name"
 done
-(cd "$release"; sha256sum bin/* > SHA256SUMS)
-install -m 600 "${policy_source[0]}" "$base/shared/policy.json"
-if [ "$(readlink -f "$pairs_source")" != "$(readlink -f "$base/shared/pairs.json")" ]; then install -m 600 "$pairs_source" "$base/shared/pairs.json"; fi
-install -m 600 "$base/legacy-wallet-993fd7ba2700.json" "$base/shared/legacy-wallet.json"
-: > "$base/shared/empty-events.jsonl"
-"$release/bin/moloch-session" ingest "$base/shared/paper-bank" "$base/shared/legacy-wallet.json" "$base/shared/policy.json" deployment-init "$base/shared/empty-events.jsonl" > "$base/shared/session-initialization.json"
+(cd "$release"; sha256sum bin/* > SHA256SUMS; sha256sum -c SHA256SUMS)
+: > "$release/empty-events.jsonl"
+# Existing banks must match the sealed seed, policy and engine identity. No reset.
+"$release/bin/moloch-session" ingest "$base/shared/paper-bank" "$seed_source" "$policy_source" deployment-init "$release/empty-events.jsonl" > "$release/session-audit.json"
+for spec in "$policy_source:policy.json" "$seed_source:legacy-wallet.json" "$pairs_source:pairs.json"; do
+ source_file=${spec%:*}; target_file="$base/shared/${spec##*:}"
+ if [ "$source_file" != "$(readlink -f "$target_file")" ]; then install -m 600 "$source_file" "$target_file"; fi
+done
 python3 - <<'PY'
-import json,os
+import json
 from pathlib import Path
 p=Path.home()/'apps/moloch/shared'
 c=json.loads((p/'deployment.json').read_text())
@@ -31,6 +44,7 @@ c.update(runtime='rust',continuousPaper=False,captureCycles=15,pairsFile=str(p/'
 (p/'deployment.json').write_text(json.dumps(c,indent=2)+'\n')
 (p/'runtime.env').write_text('MOLOCH_NETWORK_ENABLED=0\nMOLOCH_STATE_DIR='+str(p)+'\nPATH=/usr/bin:/bin\n')
 PY
+MOLOCH_STATE_DIR="$base/shared" "$release/bin/moloch-ready" > "$release/readiness-audit.json"
 cat > "$base/check" <<'CHECK'
 #!/bin/sh
 export MOLOCH_STATE_DIR="$HOME/apps/moloch/shared"
@@ -57,4 +71,3 @@ ln -s "$release" "$base/current-rust-next"
 mv -Tf "$base/current-rust-next" "$base/current"
 systemctl --user daemon-reload
 "$base/check"
-(cd "$release"; sha256sum -c SHA256SUMS)

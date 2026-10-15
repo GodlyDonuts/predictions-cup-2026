@@ -1,9 +1,9 @@
 {
   "runtime": "rust",
-  "release": "rust-scope-v1",
+  "release": "rust-final-v1",
   "host": "archon@100.80.176.110",
   "verification": {
-    "nativeTestsPassed": 42,
+    "nativeTestsPassed": 51,
     "releaseBuildSucceeded": true,
     "releaseBinaryHashesVerified": 8,
     "nodeInstallationRemoved": true,
@@ -28,9 +28,10 @@
     "unresolvedOrders": 0,
     "entryDeadlineRenewed": false
   },
-  "remaining": [
+  "latestDeploymentAuditUtc": "2026-10-15T04:42:55Z",
+  "migrationComplete": true,
+  "futureResearch": [
     "Equal-condition strategy selection and useful-component consolidation",
     "New independent forward paper profitability evidence"
-  ],
-  "latestDeploymentAuditUtc": "2026-10-15T04:38:56Z"
+  ]
 }

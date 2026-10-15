@@ -1,0 +1,113 @@
+{
+  "observedAtUtc": "2026-10-15T04:42:55Z",
+  "release": "/home/archon/apps/moloch/releases/rust-final-v1",
+  "readiness": {
+    "architecture": "aarch64",
+    "capturePairs": [
+      {
+        "exchangeId": "998",
+        "marketId": "309"
+      },
+      {
+        "exchangeId": "1044",
+        "marketId": "355"
+      },
+      {
+        "exchangeId": "1048",
+        "marketId": "359"
+      },
+      {
+        "exchangeId": "846",
+        "marketId": "157"
+      }
+    ],
+    "captureScopesVerified": true,
+    "configuredReadsPerMinute": 100,
+    "contestOrders": 0,
+    "credentialPresent": false,
+    "disabledDeploymentReady": true,
+    "executionStopMarker": true,
+    "financialReport": {
+      "activeOrders": 0,
+      "at": "2026-10-15T02:24:30.900Z",
+      "bot": "Moloch",
+      "cash": "99849.720000",
+      "conditionalQueueFills": 0,
+      "contestOrders": 0,
+      "continuation": {
+        "at": "2026-10-15T02:24:30.900Z",
+        "booksRequireFreshResync": true,
+        "cash": "99849.720000",
+        "fees": "0.000000",
+        "mode": "verified_financial_continuation",
+        "priorFills": 60,
+        "priorRetiredOrders": 151,
+        "realized": "-150.280000",
+        "sourcePolicyHash": "cbebed8f577751023a5d56aeee19efbb3906206fbec1be2476abe8a3a0c84a25"
+      },
+      "counts": {
+        "cancels": 86,
+        "duplicateTrades": 11271,
+        "gaps": 79,
+        "inventoryAonEvaluations": 17,
+        "submissionBatches": 104,
+        "uniqueTrades": 1094,
+        "writeBudgetHolds": 1171
+      },
+      "events": 35396,
+      "fees": "0.000000",
+      "fillModel": "strictThrough",
+      "fills": 60,
+      "netLiquidationPnl": "-150.280000",
+      "networkRequests": 0,
+      "orders": 151,
+      "ownedCost": "0.000000",
+      "policyHash": "cbebed8f577751023a5d56aeee19efbb3906206fbec1be2476abe8a3a0c84a25",
+      "positions": {
+        "1027": {
+          "NO": [],
+          "YES": []
+        },
+        "1055": {
+          "NO": [],
+          "YES": []
+        },
+        "1073": {
+          "NO": [],
+          "YES": []
+        },
+        "922": {
+          "NO": [],
+          "YES": []
+        }
+      },
+      "profitSignalEligible": false,
+      "profitabilityEstablished": false,
+      "realized": "-150.280000",
+      "reservedCash": "0.000000",
+      "runtime": "rust",
+      "unresolvedOrders": 0
+    },
+    "networkEnabled": false,
+    "networkRequests": 0,
+    "networkStopMarker": true,
+    "paperSessionPresent": true,
+    "platform": "linux",
+    "runtime": "rust",
+    "rustBinariesPresent": true,
+    "tradingEnabled": false
+  },
+  "loopback": {
+    "contestOrders": 0,
+    "credentialsLoaded": false,
+    "elapsedMs": 59414,
+    "maximumRequestsInRollingMinute": 100,
+    "minimumStartSpacingMs": 600,
+    "mode": "loopback_only",
+    "requests": 100,
+    "runtime": "rust",
+    "sigRequests": 0
+  },
+  "liveSigConnectionTested": false,
+  "activationPerformed": false
+}
