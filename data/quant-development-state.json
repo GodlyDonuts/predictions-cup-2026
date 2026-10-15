@@ -926,7 +926,7 @@
     "realized": "0.000000",
     "verifiedAt": "2026-10-07T06:16:58.422Z"
   },
-  "updatedAt": "2026-10-15T01:15:56Z",
+  "updatedAt": "2026-10-15T02:08:30 UTC",
   "foreignCandidateRepair": {
     "commit": "17b544005c7578c95df4dc4f2f30ee8e2cc75a19",
     "collector": 32364,
@@ -1371,5 +1371,31 @@
     "profitabilityEstablished": false,
     "apiReads": 0,
     "runtimeChanges": 0
+  },
+  "binaryPriceVolatility20261015": {
+    "taskIssue": 119,
+    "at": "2026-10-15T02:08:30 UTC",
+    "status": "rejected_for_trading_transfer",
+    "report": "data/binary-price-volatility-20261015.json",
+    "reportCommit": "e96d0ac1a404ff0e5b4653eb0b33558204224e01",
+    "sourceFilesSeen": 206,
+    "capturesWithValidBooks": 74,
+    "trainingCutoff": "2026-10-13T06:18:47.509Z",
+    "trainingPurgeMs": 30000,
+    "trainingManifestSha256": "0ce2219ea2620bc0d3b6d18ec93de7706ee9577d4569bddf2b2d870d683b1829",
+    "trainingReturns": 7322,
+    "trainingMarkets": 237,
+    "marketsWith30Train": 51,
+    "heldoutScoredMarkets": 20,
+    "garchWinsVsEwma": 6,
+    "garchBetterMeanQlikeWindows": 1,
+    "conclusion": "GARCH beat constant variance, but had no consistent advantage over EWMA across three small windows. Volatility loss is not directional alpha; do not integrate or tune.",
+    "actualFills": false,
+    "profitabilityEstablished": false,
+    "apiReads": 0,
+    "runtimeChanges": 0,
+    "contestOrders": 0,
+    "executionStopPreserved": true,
+    "next": "Discard GARCH as an alpha transfer; pursue fresh causal executable-return evidence only after collector storage is available."
   }
 }
