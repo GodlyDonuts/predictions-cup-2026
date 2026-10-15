@@ -126,7 +126,7 @@ impl Transport {
   use std::io::Write;
   let mut options=std::fs::OpenOptions::new();options.write(true).create_new(true);
   #[cfg(unix)]{use std::os::unix::fs::OpenOptionsExt;options.mode(0o600);}
-  let result=(||->std::io::Result<()>{let mut file=options.open(self.config.queue_dir.join(format!("write-response-{request}.json")))?;let value=json!({"endpoint":spec.endpoint,"requestStartedAt":utc(started).map_err(std::io::Error::other)?,"receivedAt":utc(self.clock.now_ms()).map_err(std::io::Error::other)?,"status":status,"data":data});file.write_all(&serde_json::to_vec(&value)?)?;file.sync_all()?;std::fs::File::open(&self.config.queue_dir)?.sync_all()})();
+  let result=(||->std::io::Result<()>{let mut file=options.open(self.config.queue_dir.join(format!("write-response-{request}.json")))?;let value=json!({"endpoint":spec.endpoint,"requestStartedAt":utc(started).map_err(std::io::Error::other)?,"receivedAt":utc(self.clock.now_ms()).map_err(std::io::Error::other)?,"status":status,"data":data});file.write_all(&serde_json::to_vec(&value)?)?;file.sync_all()?;#[cfg(unix)]std::fs::File::open(&self.config.queue_dir)?.sync_all()?;Ok(())})();
   result.map_err(|_|fail("WRITE_RESPONSE_EVIDENCE_DURABILITY"))
  }
  pub fn compact(&mut self)->Result<Value>{need(self.authority.can_read(&self.config.scope),"STOPPED_OR_OWNER_LOST")?;self.command(json!({"op":"compact"}))}
@@ -235,7 +235,7 @@ impl Transport {
   let wire_price=format!("{}.{:06}",price/1_000_000,price%1_000_000);
   let body=json!({"idempotencyKey":order.idempotency_key,"exchangeId":order.exchange_id,"side":order.side,"action":order.action,"quantity":order.quantity,"price":serde_json::Number::from_string_unchecked(wire_price),"expirationDate":order.expiration_date,"tournamentId":order.tournament_id});let body_json=serde_json::to_string(&body).unwrap();
   self.perform(RequestSpec{method:"POST".into(),endpoint:"/orders".into(),body:Some(body),body_json:Some(body_json)},Some(&permit),|_,v|{
-   need(v["exchangeId"]==order.exchange_id&&v["side"]==order.side&&v["action"]==order.action&&v["open"].is_boolean()&&(v["orderId"].is_null()||id_value(&v["orderId"]).is_some()),"ORDER_ACK_SCOPE_OR_CANONICAL_CHANGE")?;
+   need(v["exchangeId"]==order.exchange_id&&v["side"]==order.side&&v["action"]==order.action&&v["open"].is_boolean()&&id_value(&v["orderId"]).is_some(),"ORDER_ACK_SCOPE_OR_CANONICAL_CHANGE")?;
    let quantity=v["quantity"].as_u64().ok_or_else(||fail("ORDER_ACK_QUANTITY"))?;need(quantity>0&&quantity<=order.quantity as u64&&prices::official_tick_units(&v["price"])?==price,"ORDER_ACK_ECONOMICS")?;
    // This receipt binds identity and admission size only. Accounting consumes the
    // independently fetched complete order-fill tape, never these advisory totals.
