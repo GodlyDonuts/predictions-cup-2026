@@ -1,10 +1,21 @@
 import fs from 'node:fs';import path from 'node:path';import {pathToFileURL} from 'node:url';
 import {payloadHash} from '../../execution/ledger.mjs';import {amount,money} from '../../paper/fixed.mjs';
 import {instantNs} from '../../feed/contract.mjs';
+const wireAmount=value=>{const n=Number(value);if(!Number.isFinite(n)||n<=0||n>=1||Math.abs(n*200-Math.round(n*200))>=1e-7)throw Error('ACTIVITY_PRICE_TICK');return BigInt(Math.round(n*200))*5000n;};
 
-export function selectActivePairs(candidates,count=1){
+export function selectActivePairs(candidates,count=1,method='recentTrades'){
  if(!Number.isInteger(count)||count<1||count>4)throw Error('ACTIVITY_SELECTION_COUNT');
- return candidates.filter(c=>c.eligible&&c.recentTrades>=2).sort((a,b)=>b.recentTrades-a.recentTrades||a.exchangeId.localeCompare(b.exchangeId)).slice(0,count);
+ if(!['recentTrades','balancedFlow'].includes(method))throw Error('ACTIVITY_SELECTION_METHOD');
+ const score=c=>method==='balancedFlow'?c.balancedFlowScore:c.recentTrades;
+ return candidates.filter(c=>c.eligible&&c.recentTrades>=2&&(method!=='balancedFlow'||c.balancedFlowScore>0)).sort((a,b)=>score(b)-score(a)||a.exchangeId.localeCompare(b.exchangeId)).slice(0,count);
+}
+export function relativeFlowSide(trade,history){
+ const executed=instantNs(trade.executedAt),book=[...history].reverse().find(h=>instantNs(h.book.asOf.at)<=executed&&Number.isSafeInteger(trade.sequence)&&h.book.asOf.sequence<trade.sequence)?.book;
+ if(!book||executed-instantNs(book.asOf.at)>5000000000n||!book.bids.length||!book.asks.length)return 'unknown';
+ const value=wireAmount(trade.price);
+ if(value<=wireAmount(book.bids[0].price))return 'bid';
+ if(value>=wireAmount(book.asks[0].price))return 'ask';
+ return 'unknown';
 }
 export function streamActivity(rows,referenceAt,pairs){
  const known=new Map(pairs.map(p=>[p.exchangeId,p.marketId])),markets=new Map(),seen=new Map(),brokenMarkets=new Set(),at=instantNs(referenceAt);
@@ -13,8 +24,8 @@ export function streamActivity(rows,referenceAt,pairs){
   if(e.gap||e.payload.resyncRequired)brokenMarkets.add(e.marketId);
   for(const book of e.payload.books){
    const id=String(book.exchangeId);if(known.get(id)!==e.marketId)throw Error('ACTIVITY_SCOPE');
-   let m=markets.get(id);if(!m){m={marketId:e.marketId,exchangeId:id,trades:[],book:null,gaps:0};markets.set(id,m);}
-   if(!m.book||instantNs(book.asOf.at)>instantNs(m.book.asOf.at))m.book=book;
+   let m=markets.get(id);if(!m){m={marketId:e.marketId,exchangeId:id,trades:[],book:null,history:[],gaps:0};markets.set(id,m);}
+   if(!m.book||instantNs(book.asOf.at)>instantNs(m.book.asOf.at)){m.book=book;m.history.push({book});m.history=m.history.filter(h=>instantNs(e.receivedAt)-instantNs(h.book.asOf.at)<=180000000000n);}
   }
   if(e.duplicate||e.gap||e.payload.resyncRequired)continue;
   for(const trade of e.payload.trades){
@@ -22,8 +33,8 @@ export function streamActivity(rows,referenceAt,pairs){
    if(trade.id===null||trade.sequence===null)continue;
    const t=instantNs(trade.executedAt);if(t>instantNs(e.receivedAt)||t>at||!Number.isSafeInteger(trade.quantity)||trade.quantity<=0)throw Error('ACTIVITY_TRADE_FACT');
    const key=id+':'+trade.id,hash=payloadHash(trade);if(seen.has(key)){if(seen.get(key)!==hash)throw Error('ACTIVITY_TRADE_CONFLICT');continue;}seen.set(key,hash);
-   let m=markets.get(id);if(!m){m={marketId:e.marketId,exchangeId:id,trades:[],book:null,gaps:0};markets.set(id,m);}
-   m.trades.push({...trade,receivedAt:e.receivedAt});
+   let m=markets.get(id);if(!m){m={marketId:e.marketId,exchangeId:id,trades:[],book:null,history:[],gaps:0};markets.set(id,m);}
+   m.trades.push({...trade,receivedAt:e.receivedAt,relativeSide:relativeFlowSide(trade,m.history)});
   }
  }
  return [...markets.values()].map(m=>{
@@ -35,9 +46,12 @@ export function streamActivity(rows,referenceAt,pairs){
   const gaps=brokenMarkets.has(m.marketId)?1:0;
   const eligible=age!==null&&age>=0&&age<=10&&spread!==null&&spread>0n&&gaps===0;
   const lag=recent.map(t=>Number(instantNs(t.receivedAt)-instantNs(t.executedAt))/1e9);
+  const bidFlow=recent.filter(t=>t.relativeSide==='bid'),askFlow=recent.filter(t=>t.relativeSide==='ask'),sum=trades=>trades.reduce((n,t)=>n+BigInt(t.quantity),0n);
+  const bidShares=sum(bidFlow),askShares=sum(askFlow),balancedFlowScore=eligible&&bid&&ask?Math.min(Number(bidShares)/bid.quantity,Number(askShares)/ask.quantity):null;
   return{marketId:m.marketId,exchangeId:m.exchangeId,observedTrades:m.trades.length,recentTrades:recent.length,recentShares:volume.toString(),bookSourceAgeSeconds:age,
    bid:bid?.price??null,ask:ask?.price??null,spread:spread===null?null:money(spread),bidQueue:bid?.quantity??null,askQueue:ask?.quantity??null,gaps,eligible,
    meanObservedTradeLagSeconds:lag.length?lag.reduce((a,b)=>a+b,0)/lag.length:null,
+   bidRelativeTrades:bidFlow.length,askRelativeTrades:askFlow.length,unclassifiedTrades:recent.length-bidFlow.length-askFlow.length,bidRelativeShares:bidShares.toString(),askRelativeShares:askShares.toString(),balancedFlowScore,
    activityScore:eligible&&recent.length?Number(volume)/(Number(bid.quantity)+Number(ask.quantity)):null};
  }).sort((a,b)=>(b.activityScore??-1)-(a.activityScore??-1)||a.exchangeId.localeCompare(b.exchangeId));
 }

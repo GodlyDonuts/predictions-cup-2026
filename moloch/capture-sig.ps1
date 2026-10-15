@@ -24,6 +24,26 @@ param(
 $ErrorActionPreference='Stop'
 Import-Module (Join-Path $PSScriptRoot 'read-failure.psm1') -Force
 Import-Module (Join-Path $PSScriptRoot 'exit-book-priority.psm1') -Force
+function Invoke-MolochNodeRead {
+  param([string]$Endpoint,$Headers)
+  $taskReadInfo=[Diagnostics.ProcessStartInfo]::new()
+  $taskReadInfo.FileName=(Get-Command node).Source
+  $taskReadInfo.ArgumentList.Add((Join-Path $PSScriptRoot 'realtime/read-get.mjs'))
+  $taskReadInfo.UseShellExecute=$false;$taskReadInfo.CreateNoWindow=$true
+  $taskReadInfo.RedirectStandardInput=$true;$taskReadInfo.RedirectStandardOutput=$true;$taskReadInfo.RedirectStandardError=$true
+  $taskReader=[Diagnostics.Process]::new();$taskReader.StartInfo=$taskReadInfo
+  try {
+    if(-not $taskReader.Start()){throw 'NODE_READ_START_FAILED'}
+    $taskReadOut=$taskReader.StandardOutput.ReadToEndAsync();$taskReadErr=$taskReader.StandardError.ReadToEndAsync()
+    $taskReader.StandardInput.WriteLine((@{endpoint=$Endpoint;headers=$Headers;method='GET'} | ConvertTo-Json -Compress))
+    $taskReader.StandardInput.Close()
+    if(-not $taskReader.WaitForExit(35000)){$taskReader.Kill();$taskReader.WaitForExit();throw 'NODE_READ_TIMEOUT'}
+    if($taskReader.ExitCode -ne 0){throw 'NODE_READ_FAILED'}
+    $taskPacket=$taskReadOut.GetAwaiter().GetResult() | ConvertFrom-Json -DateKind String
+    if($null -eq $taskPacket.status -or $taskPacket.status -lt 0 -or $taskPacket.status -gt 599){throw 'NODE_READ_PACKET_INVALID'}
+    return $taskPacket
+  } finally {$taskReader.Dispose()}
+}
 if($ExitPriorityBooks -and (-not $ScreenPairsFile -or -not $RecoveryWindowsFile -or $RealtimeCapture)){throw 'EXIT_BOOK_PRIORITY_REQUIRES_SCOPED_REST'}
 if(-not $HumanAuthorizedSharedReadCapture){throw 'EXPLICIT_SHARED_READ_AUTHORIZATION_REQUIRED: preserve the prior one-collector policy unless human explicitly authorizes recreating read-only capture.'}
 if($DiagnosticTradesProbe -and ($DiagnosticBookProbe -or $HistoryOnly -or $CatalogOnly -or $LeaderboardOnly -or $ExecutionHistoryOnly -or $ScreenPairsFile -or $RealtimeCapture -or $UniversePairsFile)){throw 'ONE_DIAGNOSTIC_MODE_REQUIRED'}
@@ -166,14 +186,24 @@ try {
     $taskBudget | ConvertTo-Json -Depth 5 | Set-Content -LiteralPath $taskBudgetFile -Encoding utf8
     $taskStarted=[DateTime]::UtcNow.ToString('yyyy-MM-ddTHH:mm:ss.fffZ')
     $taskMethod=if($taskRequest.method){$taskRequest.method}else{'Get'}
-    try {$taskResponse=Invoke-WebRequest -Uri ('https://sig.thesuper.market/api/v1'+$taskRequest.endpoint) -Headers $taskHeaders -Method $taskMethod -TimeoutSec 30 -UseBasicParsing}
+    $taskNodePacket=$null
+    try {
+      if($taskRequest.dnsRetry){
+        if($taskMethod -ne 'Get'){throw 'NODE_RECOVERY_GET_ONLY'}
+        $taskNodePacket=Invoke-MolochNodeRead -Endpoint $taskRequest.endpoint -Headers $taskHeaders
+        if($taskNodePacket.status -ne 200){throw 'NODE_RECOVERY_REQUEST_FAILED'}
+        $taskResponse=[pscustomobject]@{StatusCode=200;Content=$taskNodePacket.content}
+      }else{$taskResponse=Invoke-WebRequest -Uri ('https://sig.thesuper.market/api/v1'+$taskRequest.endpoint) -Headers $taskHeaders -Method $taskMethod -TimeoutSec 30 -UseBasicParsing}
+    }
     catch {
-      $taskStatus=if($_.Exception.Response){[int]$_.Exception.Response.StatusCode}else{0}
+      $taskStatus=if($taskNodePacket){[int]$taskNodePacket.status}elseif($_.Exception.Response){[int]$_.Exception.Response.StatusCode}else{0}
       $taskDelay=60
+      if($taskNodePacket){$taskDelay=[Math]::Max(60,[double]$taskNodePacket.retryAfterSeconds)}
       if($_.Exception.Response.Headers.RetryAfter.Delta){$taskDelay=[Math]::Max(60,$_.Exception.Response.Headers.RetryAfter.Delta.TotalSeconds)}
       if($_.Exception.Response.Headers.RetryAfter.Date){$taskDelay=[Math]::Max($taskDelay,($_.Exception.Response.Headers.RetryAfter.Date-[DateTimeOffset]::UtcNow).TotalSeconds)}
       $taskBudget.blocked=$true;$taskBudget.nextAt=[DateTimeOffset]::UtcNow.ToUnixTimeMilliseconds()+[long]($taskDelay*1000)
-      $taskFailure=[ordered]@{at=[DateTime]::UtcNow.ToString('o');status=$taskStatus;endpoint=$taskRequest.endpoint;method=$taskMethod;marketId=$taskMarket;exchangeId=$taskExchange;minimumBackoffSeconds=$taskDelay;orderWrites=0;transport=Get-MolochReadFailure -Exception $_.Exception}
+      $taskTransport=if($taskNodePacket){$taskNodePacket.transport}else{Get-MolochReadFailure -Exception $_.Exception}
+      $taskFailure=[ordered]@{at=[DateTime]::UtcNow.ToString('o');status=$taskStatus;endpoint=$taskRequest.endpoint;method=$taskMethod;marketId=$taskMarket;exchangeId=$taskExchange;minimumBackoffSeconds=$taskDelay;orderWrites=0;transport=$taskTransport}
       $taskFailure | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $taskOutput 'failure.json') -Encoding utf8
       $taskFailure | ConvertTo-Json -Depth 8 -Compress | Add-Content -LiteralPath (Join-Path $taskOutput 'read-failures.jsonl') -Encoding utf8
       $taskBudget | ConvertTo-Json -Depth 5 | Set-Content -LiteralPath $taskBudgetFile -Encoding utf8

@@ -1,4 +1,4 @@
-import test from 'node:test';import assert from 'node:assert/strict';import {streamActivity,selectActivePairs} from './research/stream-activity.mjs';
+import test from 'node:test';import assert from 'node:assert/strict';import {streamActivity,selectActivePairs,relativeFlowSide} from './research/stream-activity.mjs';
 const at=n=>new Date(Date.parse('2026-10-14T00:00:00Z')+n*1000).toISOString(),pairs=[{marketId:'101',exchangeId:'101'}];
 const row=(n,options={})=>({event:{kind:'broadcast',source:'official_sig_realtime',event:'market_batch',marketId:'101',receivedAt:at(n),duplicate:false,gap:false,payload:{resyncRequired:false,books:[{exchangeId:'101',asOf:{at:at(n),sequence:n},bids:[{price:0.45,quantity:100}],asks:[{price:0.46,quantity:100}]}],trades:[],...options}}});
 const trade={id:'trade',sequence:1,exchangeId:'101',marketId:'101',quantity:100,price:0.455,executedAt:at(1)};
@@ -16,4 +16,12 @@ test('stale books, gaps and conflicting native trade facts cannot produce an eli
 test('trade-count selection rejects stale candidates and does not let queue turnover override frequency',()=>{
  const candidates=[{exchangeId:'1',eligible:true,recentTrades:2,activityScore:100},{exchangeId:'2',eligible:true,recentTrades:8,activityScore:1},{exchangeId:'3',eligible:false,recentTrades:100,activityScore:1000}];
  assert.equal(selectActivePairs(candidates)[0].exchangeId,'2');assert.throws(()=>selectActivePairs(candidates,5),/SELECTION_COUNT/);assert.deepEqual(selectActivePairs([{exchangeId:'4',eligible:true,recentTrades:1}]),[]);
+});
+test('price-relative flow never classifies with a future, stale or post-match book',()=>{
+ const b=row(0).event.payload.books[0],t={...trade,price:0.45,sequence:2};assert.equal(relativeFlowSide(t,[{book:b}]),'bid');assert.equal(relativeFlowSide({...t,price:0.46},[{book:b}]),'ask');
+ assert.equal(relativeFlowSide(t,[{book:row(2).event.payload.books[0]}]),'unknown');assert.equal(relativeFlowSide({...t,sequence:0},[{book:b}]),'unknown');assert.equal(relativeFlowSide({...t,executedAt:at(10)},[{book:b}]),'unknown');
+ const floating={...b,bids:[{price:0.545,quantity:100}],asks:[{price:0.55,quantity:100}]};assert.equal(relativeFlowSide({...t,price:0.5449999999999999},[{book:floating}]),'bid');assert.throws(()=>relativeFlowSide({...t,price:0.547},[{book:floating}]),/PRICE_TICK/);
+});
+test('balanced-flow selection rejects one-sided high activity',()=>{
+ const c=[{exchangeId:'1',eligible:true,recentTrades:100,balancedFlowScore:0},{exchangeId:'2',eligible:true,recentTrades:4,balancedFlowScore:1}];assert.equal(selectActivePairs(c,1,'balancedFlow')[0].exchangeId,'2');
 });

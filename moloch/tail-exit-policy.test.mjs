@@ -15,3 +15,7 @@ test('exit policy cannot change capital or alter a funded unresolved quote',()=>
  const s=createMoloch();assert.throws(()=>flatEntryTransition(s,false,{initialCash:'100000.000000'}),/EXIT_POLICY_SCOPE/);assert.throws(()=>flatEntryTransition(s,false,{}),/EXIT_POLICY_SCOPE/);
  s.orders.push({retired:false,action:'sell',exchangeId:'1',side:'YES',quantity:0,filled:0});assert.throws(()=>flatEntryTransition(s,false,{inventoryMinimumGain:'0.005000'}),/REENTRY_REQUIRES_FLAT/);
 });
+test('fill-assumption experiment requires a flat bank and preserves participation and cash',()=>{
+ const s=createMoloch({entriesEnabled:false}),cash=s.cash,participation=s.policy.participationBps;flatEntryTransition(s,true,null,{fillModel:'conditionalFifo',touchAttributionBps:5000});assert.equal(s.cash,cash);assert.equal(s.policy.participationBps,participation);assert.equal(s.policy.fillModel,'conditionalFifo');assert.equal(s.policy.touchAttributionBps,5000);
+ assert.throws(()=>flatEntryTransition(s,true,null,{fillModel:'invented'}));assert.throws(()=>flatEntryTransition(s,true,null,{participationBps:10000}),/ENTRY_POLICY_SCOPE/);
+});
