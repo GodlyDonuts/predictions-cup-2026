@@ -1,0 +1,96 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-10-15T00:13:34.595Z",
+  "source": {
+    "file": "realtime-2026-10-14T21-05-11-768Z-178af709-e752-472a-b5ce-a6c897f94e99.jsonl",
+    "bytes": 548145828,
+    "sha256": "9eff03b978426504aa5197002c88a7715c21018745eb6ae264184aefa99da67c",
+    "records": 153504,
+    "through": "2026-10-14T23:52:18.551Z",
+    "baselineDatasetCodeBlob": "e206b678e3786dbae656ac45ca10add3e94f5382"
+  },
+  "method": {
+    "runner": "live-paper/realtime-microprice-dataset.mjs",
+    "policy": {
+      "sampleMs": 30000,
+      "latencyMs": 3000,
+      "horizonMs": 300000,
+      "labelToleranceMs": 20000,
+      "historyMs": 300000,
+      "minimumWarmupMs": 60000,
+      "depthFractionBps": 100,
+      "quantity": 1,
+      "entrySlippageTicks": 1,
+      "exitSlippageTicks": 1,
+      "feeTicks": 0
+    },
+    "features": [
+      "midProbability",
+      "spreadTicks",
+      "imbalance1",
+      "imbalance3",
+      "imbalance10",
+      "imbalance20",
+      "logBidDepth",
+      "logAskDepth",
+      "micropriceDeviationTicks",
+      "return60sTicks",
+      "return300sTicks",
+      "range60sTicks",
+      "range300sTicks",
+      "aggressorFlow30sUnavailable",
+      "aggressorFlow120sUnavailable",
+      "logVolume30s",
+      "logVolume120s",
+      "tradeCount30s",
+      "lastTradeAgeSeconds",
+      "imbalanceProbabilityInteraction"
+    ],
+    "feesApplied": 0,
+    "apiRequests": 0,
+    "modelRefit": false
+  },
+  "results": {
+    "datasetCounts": {
+      "books": 141347,
+      "trades": 5121,
+      "labels": 14143,
+      "samples": 30043,
+      "censored": 15900,
+      "gaps": 0,
+      "retainedEndpointGapEvents": 0,
+      "labelsAcrossGaps": 0
+    },
+    "unresolved": 0,
+    "tradeObservedRows": 5121,
+    "continuousTradeRows": 260,
+    "tradeReceiptAgeMs": {
+      "n": 5121,
+      "p50": 2093,
+      "p90": 10398,
+      "p99": 23975,
+      "max": 31753
+    },
+    "futureDatedAtReceipt": 0,
+    "labelledDecisionRows": 14143,
+    "labelledRowsWithExecutedTradeIn30s": 687,
+    "neutralUnavailableSideFeatureRows": 0
+  },
+  "conclusions": {
+    "aggressorSideAvailable": false,
+    "sideInferred": false,
+    "legacyMicropriceBankRejectedByFeatureBinding": true,
+    "legacyQuoteSelectorReportRejectedByFeatureBinding": true,
+    "profitabilityEstablished": false,
+    "actualFills": false,
+    "executionAuthority": false,
+    "competitionOrders": 0,
+    "runtimeChanged": false,
+    "notes": [
+      "Receipt age is capture observedAt minus trade executedAt; it is not network RTT.",
+      "Trade volume/count windows and last-trade age now use executedAt; future-dated prints are excluded.",
+      "Aggressor flow is unavailable from this feed; neutral replacement names invalidate legacy quote-inferred banks.",
+      "This replay validates feature semantics and coverage only; it does not evaluate alpha or economic P&L."
+    ]
+  }
+}
