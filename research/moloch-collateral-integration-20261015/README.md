@@ -60,9 +60,14 @@ become accounting authority.
   inventory and inconsistent attribution stay blocked. No synthetic sale or
   historical fill is created.
 - Checkpoint advances only observation receipts with no unaccounted fills or
-  cash/debt/component/power/available-advance changes. It preserves the original
-  120-second before/after transaction-window bound. Baseline age is not authority
-  to manufacture a fresh causal before snapshot for an old execution.
+  cash/debt/component/power/available-advance changes. The original interval up
+  to 120 seconds preserves its prior report shape. The separate native extension
+  admits an unchanged idle interval up to 24 hours only with the exact retained
+  before receipts; gross borrowing/repayment during a longer unobserved interval
+  becomes unknown. Ordinary cash sync uses the same bounded 24-hour original
+  interval. Typed ALL execution/settlement retain their 120-second window.
+  Baseline age is never authority to manufacture a fresh causal before snapshot
+  for an old execution.
 
 `authority::reconciled_expected_cash` adds the explicit collateral cash adjustment
 only when `pendingNativeFillEconomics` is false. Wallet cash remains unlevered
@@ -83,9 +88,10 @@ reconciliation confirmation clock.
 Missing/ambiguous evidence postpones the transition without changing the bank
 and defers new submissions. Actual cancellation and known fill reconciliation
 continue. Mixed fills and settlement without an original intermediate cash
-snapshot are not split into invented transitions. Long causal gaps, still-open
-partial orders, nonnull ALL reports outside their supported window, missing
-original POSTs and incomplete settlement coverage remain explicit limits.
+snapshot are not split into invented transitions. Intervals beyond the admitted
+bounds, still-open partial orders, nonnull ALL reports outside their supported
+window, ordinary pair redemptions without the required typed ALL evidence,
+missing original POSTs and incomplete settlement coverage remain explicit limits.
 
 Runtime fixtures use actual native Sessions, account queues, original dispatch
 journals and retained receipts, with a loopback-only Transport and disabled
