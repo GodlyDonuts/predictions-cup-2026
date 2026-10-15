@@ -157,3 +157,25 @@ configuration and existing network guards. This code is staged and verified;
 the VPS deployment still uses the previous disabled service until the Rust-only
 release, readiness wrapper and strategy comparison are complete. No winner or
 profitability claim follows from migration parity.
+
+## Rust VPS replacement
+
+The VPS current symlink now targets `releases/rust-session-ca5a37da`, containing
+seven Rust ELF executables and a verified SHA256SUMS file. The service executes
+`current/bin/moloch-collector run`; its environment has no Node PATH. The dedicated
+Node installation and symlink were removed after the Rust readiness check passed.
+`command -v node` then found no executable, and readiness still passed.
+
+`~/apps/moloch/check` invokes Rust readiness, recovers and audits the existing
+paper session, and reports its actual cumulative financial state. The session was
+initialized from the verified closed historical wallet without renewing its
+expired entry deadline. The network and execution stop markers remain present;
+no SIG credentials were transferred. The disabled collector probe rejected run,
+and systemd reported inactive, disabled and MainPID=0. Historical source releases
+and financial evidence remain preserved; they are not runtime dependencies.
+
+The initial installation script encountered a trailing CRLF syntax error at its
+final checksum command after switching the service. The script was normalized,
+syntax-checked, and all seven checksums plus readiness were verified explicitly.
+This receipt does not claim a live feed, active strategy or profitable deployment.
+Strategy comparison and independent forward paper evidence remain outstanding.

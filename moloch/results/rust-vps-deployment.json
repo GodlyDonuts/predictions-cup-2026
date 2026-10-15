@@ -1,0 +1,34 @@
+{
+  "runtime": "rust",
+  "release": "rust-session-ca5a37da",
+  "host": "archon@100.80.176.110",
+  "verification": {
+    "nativeTestsPassed": 42,
+    "releaseBuildSucceeded": true,
+    "releaseBinaryHashesVerified": 7,
+    "nodeInstallationRemoved": true,
+    "nodeCommandUnavailable": true,
+    "readinessPassedAfterNodeRemoval": true,
+    "disabledCollectorRejectedRun": true,
+    "serviceActiveState": "inactive",
+    "serviceUnitFileState": "disabled",
+    "serviceMainPid": 0,
+    "serviceExecutable": "current/bin/moloch-collector run",
+    "configuredReadBudgetPerMinute": 100,
+    "credentialsTransferred": false,
+    "sigRequests": 0,
+    "contestOrders": 0
+  },
+  "financialContinuation": {
+    "cash": "99849.720000",
+    "realizedPnl": "-150.280000",
+    "fills": 60,
+    "retiredOrders": 151,
+    "unresolvedOrders": 0,
+    "entryDeadlineRenewed": false
+  },
+  "remaining": [
+    "Equal-condition strategy selection and useful-component consolidation",
+    "New independent forward paper profitability evidence"
+  ]
+}
