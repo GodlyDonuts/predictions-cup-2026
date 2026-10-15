@@ -26,13 +26,14 @@ fn mul(a:i128,b:i128)->Result<i128>{a.checked_mul(b).ok_or("EDGE_OVERFLOW")}
 #[serde(deny_unknown_fields)]
 pub struct Config{
  pub fill_window_ms:u64,pub markout_ms:u64,pub post_window_ms:u64,pub embargo_ms:u64,
+ #[serde(default)]pub continuity_proof_grace_ms:u64,
  pub maximum_book_age_ms:u64,pub maximum_delivery_ms:u64,pub maximum_training_age_ms:u64,pub minimum_samples:usize,
  pub minimum_coverage_bps:u32,pub probability_haircut_bps:u32,pub uncertainty_per_share:i128,
  pub exit_fee_per_share:i128,pub fee_policy_source_sha256:String,
  pub maximum_keys:usize,pub maximum_pending:usize,pub retained_samples:usize,
 }
 impl Config{pub fn validate(&self)->Result<()>{
- need((1..=120_000).contains(&self.fill_window_ms)&&(1..=120_000).contains(&self.markout_ms)&&(1..=10_000).contains(&self.post_window_ms)&&self.embargo_ms<=120_000,"EDGE_WINDOWS")?;
+ need((1..=120_000).contains(&self.fill_window_ms)&&(1..=120_000).contains(&self.markout_ms)&&(1..=10_000).contains(&self.post_window_ms)&&self.embargo_ms<=120_000&&self.continuity_proof_grace_ms<=120_000,"EDGE_WINDOWS")?;
  need(self.maximum_training_age_ms>=self.markout_ms&&self.maximum_training_age_ms<=7*86_400_000,"EDGE_TRAINING_AGE")?;
  need((1..=10_000).contains(&self.maximum_book_age_ms)&&(1..=20_000).contains(&self.maximum_delivery_ms),"EDGE_FRESHNESS")?;
  need(self.minimum_samples>=2&&self.minimum_samples<=self.retained_samples&&self.retained_samples<=256&&(1..=1024).contains(&self.maximum_keys)&&(1..=4096).contains(&self.maximum_pending),"EDGE_BOUNDS")?;
@@ -42,11 +43,12 @@ impl Config{pub fn validate(&self)->Result<()>{
 pub struct Key{pub exchange:String,pub market:String,pub side:String,pub action:String,pub quantity:u64,pub limit_units:i128,pub spread_ticks:i128,pub distance_ticks:i128}
 #[derive(Clone)]struct Book{market:String,exchange:String,sequence:u128,source:u64,request:u64,received:u64,observed:u64,realtime:bool,invalid:bool,bids:Vec<(i128,u64)>,asks:Vec<(i128,u64)>,sha:String}
 #[derive(Clone)]struct Own{market:String,exchange:String,yes_bid:bool,price:i128,quantity:u64}
-#[derive(Clone)]struct Coverage{from:u64,to:u64,sequence:u128}
+#[derive(Clone)]struct Coverage{from:u64,to:u64,sequence:u128,sha:String}
 #[derive(Clone)]struct Mark{value:Option<i128>,available:u64,reason:&'static str,source_sha:String}
 #[derive(Clone)]struct Prob{value:Option<bool>,available:u64}
 #[derive(Default)]struct Bucket{marks:VecDeque<Mark>,probability:VecDeque<Prob>}
-struct PendingMark{target:u64,until:u64,executed:u64,quantity:u64,principal:i128,fee:i128,side:String,action:String}
+struct FrozenMark{book:Book,value:i128,evidence_sha:String}
+struct PendingMark{frozen:Option<FrozenMark>,target:u64,until:u64,executed:u64,quantity:u64,principal:i128,fee:i128,side:String,action:String}
 struct Exposure{key:Key,attempt:u64,deadline:u64,quote_hash:String,filled:bool,first_fill:bool,filled_quantity:u64,principal:i128,fee:i128,first_executed:Option<u64>,fill_ids:BTreeSet<String>,mark:Option<PendingMark>,mark_done:bool,terminal:bool,probability_done:bool}
 
 #[derive(Debug,Serialize)]
@@ -198,7 +200,7 @@ impl Model{
  },
  Some("coverage")=>{let exchange=e["exchangeId"].as_str().ok_or("EDGE_EXCHANGE")?.to_owned();let from=time(&e["from"])?;let to=time(&e["to"])?;let seq=e["projectedThroughSequence"].as_str().ok_or("EDGE_COVERAGE_SEQUENCE")?.parse().map_err(|_|"EDGE_COVERAGE_SEQUENCE")?;
   need(e["complete"]==true&&from<=to&&to<=at&&(self.coverage.contains_key(&exchange)||self.coverage.len()<self.config.maximum_keys),"EDGE_INCOMPLETE_COVERAGE")?;
-  let next=if let Some(old)=self.coverage.get(&exchange){if from<=old.to&&to>=old.from&&seq>=old.sequence{Coverage{from:from.min(old.from),to:to.max(old.to),sequence:seq}}else{Coverage{from,to,sequence:seq}}}else{Coverage{from,to,sequence:seq}};self.coverage.insert(exchange,next);
+  let next=if let Some(old)=self.coverage.get(&exchange){if from<=old.to&&to>=old.from&&seq>=old.sequence{Coverage{from:from.min(old.from),to:to.max(old.to),sequence:seq,sha:hash(&json!([old.sha,hash(e)?]))?}}else{Coverage{from,to,sequence:seq,sha:hash(e)?}}}else{Coverage{from,to,sequence:seq,sha:hash(e)?}};self.coverage.insert(exchange.clone(),next);self.resolve_frozen(&exchange,at)?;
  },
  Some("gap")=>{let exchange=e["exchangeId"].as_str().ok_or("EDGE_EXCHANGE")?;self.coverage.remove(exchange);self.books.remove(exchange);let ids:Vec<_>=self.pending.iter().filter(|(_,p)|p.key.exchange==exchange&&p.mark.is_some()).map(|(id,_)|*id).collect();for id in ids{self.finish_mark(id,None,at,"gap",hash(e)?)?;}},
  Some("actual_order_ack")=>self.observe_ack(e)?,
@@ -229,21 +231,28 @@ impl Model{
  let target=executed.checked_add(self.config.markout_ms).ok_or("EDGE_CLOCK_OVERFLOW")?;let until=target.checked_add(self.config.post_window_ms).ok_or("EDGE_CLOCK_OVERFLOW")?;
  // Normalize to original full limit funding for allocation: never assume a
  // future quote repeats historical price improvement on its actual fills.
- p.mark=Some(PendingMark{target,until,executed:p.first_executed.unwrap(),quantity:p.key.quantity,principal:mul(p.key.limit_units,p.key.quantity as i128)?.max(p.principal),fee:p.fee,side:p.key.side.clone(),action:p.key.action.clone()});
+ p.mark=Some(PendingMark{frozen:None,target,until,executed:p.first_executed.unwrap(),quantity:p.key.quantity,principal:mul(p.key.limit_units,p.key.quantity as i128)?.max(p.principal),fee:p.fee,side:p.key.side.clone(),action:p.key.action.clone()});
  if at>=target{self.diagnostics.censored_late_fills+=1;self.finish_mark(id,None,at,"fill_observed_after_target",hash(e)?)?;}Ok(())
  }
  fn mark_book(&mut self,bank:&Session,exchange:&str,b:&Book,at:u64)->Result<()>{
  let adjusted=self.external_depth(bank,b)?;let b=&adjusted;
- let ids:Vec<_>=self.pending.iter().filter(|(_,p)|p.key.exchange==exchange&&p.mark.as_ref().is_some_and(|m|b.source>=m.target)).map(|(id,_)|*id).collect();
- for id in ids{let p=&self.pending[&id];let m=p.mark.as_ref().unwrap();let reason=if b.source>m.until{"book_after_window"}else if !self.fresh(b,at)||at>m.until.saturating_add(self.config.maximum_delivery_ms){"stale_or_late_book"}else if !self.continuous(exchange,m.executed,b){"missing_trade_continuity"}else{"priced"};
+ let ids:Vec<_>=self.pending.iter().filter(|(_,p)|p.key.exchange==exchange&&p.mark.as_ref().is_some_and(|m|m.frozen.is_none()&&b.source>=m.target)).map(|(id,_)|*id).collect();
+ for id in ids{let p=&self.pending[&id];let m=p.mark.as_ref().unwrap();let reason=if b.source>m.until{"book_after_window"}else if !self.fresh(b,at)||at>m.until.saturating_add(self.config.maximum_delivery_ms){"stale_or_late_book"}else{"priced"};
   let value=if reason=="priced"{match depth(b,&m.side,m.action=="sell",m.quantity)?{Some(v)=>{let gross=if m.action=="buy"{v.checked_sub(m.principal)}else{m.principal.checked_sub(v)}.ok_or("EDGE_OVERFLOW")?;Some(gross.checked_sub(m.fee).ok_or("EDGE_OVERFLOW")?.div_euclid(m.quantity as i128).checked_sub(self.config.exit_fee_per_share).ok_or("EDGE_OVERFLOW")?)},None=>None}}else{None};
+  if reason=="priced"&&value.is_some()&&!self.continuous(exchange,m.executed,b){if self.config.continuity_proof_grace_ms>0{self.pending.get_mut(&id).unwrap().mark.as_mut().unwrap().frozen=Some(FrozenMark{book:b.clone(),value:value.unwrap(),evidence_sha:hash(&json!({"book":b.sha,"bids":b.bids,"asks":b.asks,"bankHead":bank.durable_head(),"value":value}))?});}else{self.finish_mark(id,None,at,"missing_trade_continuity",b.sha.clone())?;}continue;}
   self.finish_mark(id,value,at,if reason=="priced"&&value.is_none(){"insufficient_full_depth"}else{reason},b.sha.clone())?;
+ }Ok(())
+ }
+ fn resolve_frozen(&mut self,exchange:&str,at:u64)->Result<()>{
+ let ids:Vec<_>=self.pending.iter().filter(|(_,p)|p.key.exchange==exchange&&p.mark.as_ref().is_some_and(|m|m.frozen.is_some())).map(|(id,_)|*id).collect();
+ for id in ids{let m=self.pending[&id].mark.as_ref().unwrap();let frozen=m.frozen.as_ref().unwrap();let deadline=m.until.saturating_add(self.config.maximum_delivery_ms).saturating_add(self.config.continuity_proof_grace_ms);
+  if at>deadline{self.finish_mark(id,None,at,"continuity_proof_timeout",frozen.book.sha.clone())?;}else if self.continuous(exchange,m.executed,&frozen.book){let value=frozen.value;let proof=hash(&json!({"frozenBookEvidence":frozen.evidence_sha,"coverage":self.coverage[exchange].sha,"availableAt":at}))?;self.finish_mark(id,Some(value),at,"priced_after_continuity_proof",proof)?;}
  }Ok(())
  }
  fn finish_mark(&mut self,id:u64,value:Option<i128>,at:u64,reason:&'static str,source_sha:String)->Result<()>{let p=self.pending.get_mut(&id).ok_or("EDGE_PENDING")?;p.mark=None;p.mark_done=true;let b=self.buckets.get_mut(&p.key).ok_or("EDGE_BUCKET")?;b.marks.push_back(Mark{value,available:at,reason,source_sha});while b.marks.len()>self.config.retained_samples{b.marks.pop_front();}if value.is_some(){self.diagnostics.completed_marks+=1}else{self.diagnostics.unavailable_marks+=1}Ok(())}
  fn expire(&mut self,at:u64)->Result<()>{
  self.unavailable.retain(|_,p|at.saturating_sub(p.at)<=self.config.maximum_training_age_ms);
- let expired:Vec<_>=self.pending.iter().filter(|(_,p)|p.mark.as_ref().is_some_and(|m|at>m.until.saturating_add(self.config.maximum_delivery_ms))).map(|(id,_)|*id).collect();for id in expired{self.finish_mark(id,None,at,"no_book_in_window",String::new())?;}
+ let expired:Vec<_>=self.pending.iter().filter(|(_,p)|p.mark.as_ref().is_some_and(|m|at>m.until.saturating_add(self.config.maximum_delivery_ms).saturating_add(if m.frozen.is_some(){self.config.continuity_proof_grace_ms}else{0}))).map(|(id,_)|*id).collect();for id in expired{let frozen=self.pending[&id].mark.as_ref().unwrap().frozen.as_ref();let reason=if frozen.is_some(){"continuity_proof_timeout"}else{"no_book_in_window"};let sha=frozen.map(|f|f.book.sha.clone()).unwrap_or_default();self.finish_mark(id,None,at,reason,sha)?;}
  let ready:Vec<_>=self.pending.iter().filter(|(_,p)|p.terminal&&!p.probability_done).map(|(id,_)|*id).collect();
  for id in ready{let p=self.pending.get_mut(&id).unwrap();let value=if p.filled{Some(true)}else if at>=p.deadline{Some(false)}else{None};let b=self.buckets.get_mut(&p.key).unwrap();b.probability.push_back(Prob{value,available:at});while b.probability.len()>self.config.retained_samples{b.probability.pop_front();}p.probability_done=true;}
  self.pending.retain(|_,p|!(p.probability_done&&(p.mark_done||!p.first_fill)));Ok(())

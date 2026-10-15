@@ -6,7 +6,7 @@ use serde_json::{Value,json};
 use std::path::PathBuf;
 const BASE:u64=1_792_022_400_000;
 fn stamp(ms:u64)->String{chrono::DateTime::from_timestamp_millis((BASE+ms)as i64).unwrap().to_rfc3339_opts(chrono::SecondsFormat::Millis,true)}
-fn config()->Config{Config{fill_window_ms:1000,markout_ms:1000,post_window_ms:500,embargo_ms:500,maximum_book_age_ms:10_000,maximum_delivery_ms:1000,maximum_training_age_ms:60_000,minimum_samples:2,minimum_coverage_bps:9000,probability_haircut_bps:1000,uncertainty_per_share:5000,exit_fee_per_share:0,fee_policy_source_sha256:"a".repeat(64),maximum_keys:16,maximum_pending:16,retained_samples:8}}
+fn config()->Config{Config{continuity_proof_grace_ms:0,fill_window_ms:1000,markout_ms:1000,post_window_ms:500,embargo_ms:500,maximum_book_age_ms:10_000,maximum_delivery_ms:1000,maximum_training_age_ms:60_000,minimum_samples:2,minimum_coverage_bps:9000,probability_haircut_bps:1000,uncertainty_per_share:5000,exit_fee_per_share:0,fee_policy_source_sha256:"a".repeat(64),maximum_keys:16,maximum_pending:16,retained_samples:8}}
 struct F{bank:Session,model:Model,log:dispatch::DispatchLog,path:PathBuf,seq:u64,bookseq:u64}
 impl Drop for F{fn drop(&mut self){let _=std::fs::remove_dir_all(&self.path);}}
 impl F{
