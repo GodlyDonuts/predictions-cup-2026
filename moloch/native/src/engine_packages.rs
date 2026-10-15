@@ -141,7 +141,7 @@ impl Engine {
   if scope["runId"].as_str().is_none_or(|s|s.is_empty()||s.len()>128)||scope["tournamentId"].as_str().is_none_or(|s|s.is_empty())||digest(&scope["bankManifestHash"]).is_err(){return Err("PACKAGE_SCOPE")}
   if self.live_packages.values().any(|p|p.scope!=scope){return Err("PACKAGE_BANK_SCOPE_CHANGED")}
   let expires=ms(&e["expiresAt"])?;
-  if expires<=at.checked_add(self.policy.latency).ok_or("PACKAGE_CLOCK")?||self.policy.stop.is_none_or(|stop|at>=stop||expires>stop)||expires-at>self.policy.book_age{return Err("PACKAGE_ENTRY_OR_EXPIRY")}
+  if expires<=at.checked_add(self.policy.latency).ok_or("PACKAGE_CLOCK")?||self.policy.stop.is_none_or(|stop|at>=stop||expires>stop)||expires-at>self.policy.lifetime{return Err("PACKAGE_ENTRY_OR_EXPIRY")}
   let rows=e["legs"].as_array().filter(|xs|(2..=3).contains(&xs.len())).ok_or("PACKAGE_LEG_COUNT")?;
   let mut legs=vec![];let mut exchanges=BTreeSet::new();let mut total=0i128;
   let mut markets:BTreeSet<String>=self.wallet.lots.iter().filter(|(_,lots)|!lots.is_empty()).map(|((ex,_),_)|ex.clone()).collect();
