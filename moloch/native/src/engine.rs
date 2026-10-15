@@ -421,10 +421,21 @@ struct EntryFlow {
     prints: Vec<(i64, bool, i128)>,
 }
 #[derive(Clone)]
+struct InheritedInventory {
+    receipt_hash: String,
+    adopted_at: Value,
+    opening_cost: i128,
+    fresh_market_limit: usize,
+    source_positions: Value,
+    remaining: BTreeMap<(String, Side), std::collections::VecDeque<crate::Lot>>,
+    realized_gross: i128,
+}
+#[derive(Clone)]
 pub struct Engine {
     live_mode: bool,
     live_orders: BTreeMap<u64,String>,
     live_fill_ids: BTreeMap<String,String>,
+    inherited: Option<InheritedInventory>,
     policy: Policy,
     pub wallet: Wallet,
     books: BTreeMap<String, Book>,
@@ -664,6 +675,7 @@ impl Engine {
             live_mode: false,
             live_orders: BTreeMap::new(),
             live_fill_ids: BTreeMap::new(),
+            inherited: None,
         })
     }
     fn count(&mut self, k: &str) {
@@ -854,6 +866,7 @@ impl Engine {
                 } else {
                     None
                 };
+                let inherited_birth = self.inherited.as_ref().filter(|i| i.remaining.get(&(b.exchange.clone(), side)).is_some_and(|lots| !lots.is_empty())).map(|i| ms(&i.adopted_at)).transpose()?;
                 let birth = if let Some(fill) = last_buy {
                     if p.raw["inventoryAgeClock"] == "execution" {
                         let mut oldest = None;
@@ -864,18 +877,15 @@ impl Engine {
                             .into_iter()
                             .flatten()
                         {
-                            let t = ms(lot
-                                .executed_at
-                                .as_ref()
-                                .ok_or("INVENTORY_EXECUTION_CLOCK_MISSING")?)?;
+                            let t = if let Some(executed) = &lot.executed_at { ms(executed)? } else { inherited_birth.ok_or("INVENTORY_EXECUTION_CLOCK_MISSING")? };
                             oldest = Some(oldest.map_or(t, |old: i64| old.min(t)));
                         }
                         oldest
                     } else {
-                        Some(ms(&fill["at"])?)
+                        {let receipt_birth=ms(&fill["at"])?;Some(inherited_birth.map_or(receipt_birth, |birth| birth.min(receipt_birth)))}
                     }
                 } else {
-                    None
+                    inherited_birth
                 };
                 let maximum_age = birth.is_some_and(|t| {
                     p.raw["maximumInventoryAgeMs"]
@@ -1211,6 +1221,12 @@ impl Engine {
             if !markets.contains(&t.book.exchange) && markets.len() >= self.policy.markets {
                 continue;
             }
+            if !markets.contains(&t.book.exchange) && self.inherited.as_ref().is_some_and(|opening| {
+                let inherited_market = |exchange: &String| opening.remaining.iter().any(|((ex, _), lots)| ex == exchange && !lots.is_empty());
+                !inherited_market(&t.book.exchange) && markets.iter().filter(|ex| !inherited_market(ex)).count() >= opening.fresh_market_limit
+            }) {
+                continue;
+            }
             let mut n = t.quantity;
             if !t.buy {
                 n = n.min(
@@ -1380,7 +1396,7 @@ impl Engine {
         let kind = e["type"].as_str().ok_or("EVENT_TYPE")?;
         let mut duplicate = false;
         match kind {
-            "actual_order_ack" | "actual_fill" | "actual_order_terminal" | "unsubmitted_intent_retired" => self.apply_live(e,at)?,
+            "actual_order_ack" | "actual_fill" | "actual_order_terminal" | "unsubmitted_intent_retired" | "actual_position_adoption" => self.apply_live(e,at)?,
             "book" => {
                 let b = Book::parse(&e["book"], &e["receivedAt"])?;
                 if let Some(old) = self.books.get(&b.exchange) {
@@ -1725,9 +1741,15 @@ impl Engine {
         }
         let unresolved = self.orders.iter().filter(|q| !q.retired).count();
         let pnl = self.wallet.cash + liquidation - self.wallet.initial;
-        Ok(
-            json!({"bot":"Moloch","runtime":"rust","at":self.last_string,"policyHash":hash(&self.policy.raw),"events":self.events,"cash":money(self.wallet.cash),"realized":money(self.wallet.realized),"fees":money(self.wallet.fees),"ownedCost":money(self.wallet.owned_cost()),"reservedCash":money(self.wallet.reserved()?),"netLiquidationPnl":if known{json!(money(pnl))}else{Value::Null},"positions":self.wallet.positions(),"fills":self.fills.len(),"orders":self.prior_orders+self.orders.len() as u64,"activeOrders":self.orders.iter().filter(|q|!q.retired&&self.last.is_some_and(|t|q.end()>t/1_000_000)).count(),"unresolvedOrders":unresolved,"executionMode":if self.live_mode{"live"}else{"paper"},"fillModel":if self.live_mode{"actualAccountFills"}else if self.policy.conditional{"conditionalFifo"}else{"strictThrough"},"conditionalQueueFills":self.fills.iter().filter(|f|f["conditionalQueueFill"]==true).count(),"profitSignalEligible":!self.policy.conditional&&!self.fills.iter().any(|f|f["conditionalQueueFill"]==true||f["throughCapacityFill"]==true||f["executionStyle"]=="inventoryAON")&&unresolved==0&&known&&self.wallet.realized>0&&pnl>0,"counts":self.counts,"continuation":self.baseline,"contestOrders":if self.live_mode{self.live_orders.len()}else{0},"networkRequests":0,"profitabilityEstablished":false}),
-        )
+        let mut report = json!({"bot":"Moloch","runtime":"rust","at":self.last_string,"policyHash":hash(&self.policy.raw),"events":self.events,"cash":money(self.wallet.cash),"realized":money(self.wallet.realized),"fees":money(self.wallet.fees),"ownedCost":money(self.wallet.owned_cost()),"reservedCash":money(self.wallet.reserved()?),"netLiquidationPnl":if known{json!(money(pnl))}else{Value::Null},"positions":self.wallet.positions(),"fills":self.fills.len(),"orders":self.prior_orders+self.orders.len() as u64,"activeOrders":self.orders.iter().filter(|q|!q.retired&&self.last.is_some_and(|t|q.end()>t/1_000_000)).count(),"unresolvedOrders":unresolved,"executionMode":if self.live_mode{"live"}else{"paper"},"fillModel":if self.live_mode{"actualAccountFills"}else if self.policy.conditional{"conditionalFifo"}else{"strictThrough"},"conditionalQueueFills":self.fills.iter().filter(|f|f["conditionalQueueFill"]==true).count(),"profitSignalEligible":!self.policy.conditional&&!self.fills.iter().any(|f|f["conditionalQueueFill"]==true||f["throughCapacityFill"]==true||f["executionStyle"]=="inventoryAON")&&unresolved==0&&known&&self.wallet.realized>0&&pnl>0,"counts":self.counts,"continuation":self.baseline,"contestOrders":if self.live_mode{self.live_orders.len()}else{0},"networkRequests":0,"profitabilityEstablished":false});
+        if let Some(inherited) = &self.inherited {
+            report["openingInventoryCost"] = json!(money(inherited.opening_cost));
+            if self.wallet.realized - inherited.realized_gross <= 0 { report["profitSignalEligible"] = json!(false); }
+            report["inheritedRealizedGross"] = json!(money(inherited.realized_gross));
+            report["newTradingRealized"] = json!(money(self.wallet.realized - inherited.realized_gross));
+            report["inheritedInventory"] = json!({"receiptHash":inherited.receipt_hash,"managementStartedAt":inherited.adopted_at,"sourcePositions":inherited.source_positions,"adoptedExchangeIds":inherited.remaining.keys().map(|(ex,_)|ex.clone()).collect::<BTreeSet<_>>(),"historicalFillsImported":false,"openingCost":money(inherited.opening_cost),"freshMarketLimit":inherited.fresh_market_limit,"feesRemainInNewTradingRealized":true,"basis":"verified_open_lot_principal_fifo","officialAccountRealizedPnl":Value::Null});
+        }
+        Ok(report)
     }
     pub fn fills(&self) -> &[Value] {
         &self.fills
