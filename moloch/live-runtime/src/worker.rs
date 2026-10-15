@@ -20,6 +20,16 @@ fn load(p:&Path)->Result<Value>{Ok(serde_json::from_slice(&fs::read(p)?)?)}
 fn private_dir(p:&Path)->Result<()>{use std::os::unix::fs::PermissionsExt;fs::create_dir_all(p)?;let m=fs::symlink_metadata(p)?;if m.file_type().is_symlink()||!m.is_dir(){return Err("LIVE_DIRECTORY".into())}fs::set_permissions(p,fs::Permissions::from_mode(0o700))?;Ok(())}
 fn transport(c:&Control,auth:Box<dyn Authority>,writes:bool)->Result<Transport>{Ok(Transport::new_with_read_budget(Config{queue_dir:c.root.join("account-queue"),account_scope:c.account_scope.clone(),scope:c.scope.clone(),maximum_pages:20,writes_enabled:writes},Box::new(UnixFileCredentials::approved_file(c.credentials.clone())?),Box::new(SystemClock),auth,100,600)?.with_full_account_observation())}
 fn accept(bank:&mut Session,event:&Value)->Result<()>{let mut e=event.clone();e["processedAt"]=json!(iso(now()));bank.accept("moloch-live",bank.last_source_sequence("moloch-live")+1,&e)?;Ok(())}
+fn accept_source_events(bank:&mut Session,events:&[Value])->Result<()>{
+ use moloch_replay::session::{BatchEntry,SESSION_BATCH_MAX_EVENTS};
+ for chunk in events.chunks(SESSION_BATCH_MAX_EVENTS){
+  let first=bank.last_source_sequence("moloch-live").checked_add(1).ok_or("LIVE_SOURCE_SEQUENCE_RANGE")?;
+  let prepared:Vec<_>=chunk.iter().map(|event|{let mut e=event.clone();e["processedAt"]=json!(iso(now()));e}).collect();
+  let entries:Vec<_>=prepared.iter().enumerate().map(|(index,event)|Ok(BatchEntry{source_id:"moloch-live",sequence:first.checked_add(index as u64).ok_or("LIVE_SOURCE_SEQUENCE_RANGE")?,event})).collect::<Result<_>>()?;
+  let outcome=bank.accept_batch(&entries)?;
+  if outcome.appended_rows!=entries.len()||outcome.accepted.len()!=entries.len()||outcome.accepted.iter().any(|accepted|!*accepted){return Err("LIVE_SOURCE_BATCH_PREFIX".into())}
+ }Ok(())
+}
 fn record_receipt(root:&Path,r:&Receipt)->Result<()> {let p=root.join("receipts").join(format!("{}.json",feedback::digest(r)?));if !p.exists(){atomic_json(&p,&serde_json::to_value(r)?)?}Ok(())}
 fn request(t:&mut Transport,root:&Path,ep:Endpoint)->Result<Receipt>{
  for attempt in 0..3u64{
@@ -68,9 +78,9 @@ fn reconcile(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,
 fn source(t:&mut Transport,c:&Control,bank:&mut Session,s:&mut RestSource,ex:&str,market:&str,from:u64)->Result<u64>{
  let from=s.recovery_start_ms(market).map_or(from,|recovery|from.min(recovery));let to=now();let tape=request(t,&c.root,Endpoint::Trades{exchange_id:ex.into(),from:iso(from),to:iso(to)})?;
  let wrap=|r:&Receipt,kind:&str|json!({"source":"official_sig_api_v1","kind":kind,"tournamentId":c.scope.tournament_id,"marketId":market,"exchangeId":ex,"endpoint":r.endpoint,"status":r.status,"requestStartedAt":r.request_started_at,"receivedAt":r.received_at,"data":r.data});
- for e in s.accept(&wrap(&tape,"trades"))?{accept(bank,&e)?}
+ accept_source_events(bank,&s.accept(&wrap(&tape,"trades"))?)?;
  let book=request(t,&c.root,Endpoint::OrderBook{market_id:market.into(),depth:20})?;
- for e in s.accept(&wrap(&book,"book"))?{accept(bank,&e)?}Ok(to.saturating_sub(2000))
+ accept_source_events(bank,&s.accept(&wrap(&book,"book"))?)?;Ok(to.saturating_sub(2000))
 }
 fn snapshots(t:&mut Transport,c:&Control,q:&Value)->Result<SnapshotSet>{
  let (account,positions,open_orders)=account(t,&c.root)?;
@@ -83,7 +93,7 @@ fn snapshots(t:&mut Transport,c:&Control,q:&Value)->Result<SnapshotSet>{
 }
 fn accept_fresh_book(bank:&mut Session,c:&Control,q:&Value,r:&Receipt,source:&mut RestSource)->Result<Vec<Value>>{
  let wrapped=json!({"source":"official_sig_api_v1","kind":"book","tournamentId":c.scope.tournament_id,"marketId":q["marketId"],"exchangeId":q["exchangeId"],"endpoint":r.endpoint,"status":r.status,"requestStartedAt":r.request_started_at,"receivedAt":r.received_at,"data":r.data});
- let events=source.accept(&wrapped)?;for e in &events{accept(bank,e)?}Ok(events)
+ let events=source.accept(&wrapped)?;accept_source_events(bank,&events)?;Ok(events)
 }
 fn physical_order(c:&Control,q:&Value)->Result<(Order,RequestSpec,Permit)>{
  let qid=q["id"].as_u64().ok_or("LIVE_QUOTE_ID")?;
@@ -138,13 +148,11 @@ fn refresh_exit(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchL
   Ok(v)=>v,Err(e) if matches!(e.to_string().as_str(),"EXIT_REFRESH_FACTS_STALE"|"EXIT_REFRESH_BOOK_STALE")=>{refresh_deferred(c,"facts_ineligible",e.as_ref())?;return Ok(())},Err(e)=>return Err(e)
  };
  let started=now();let events=accept_fresh_book(bank,c,old,&facts.book,source)?;let completed=now();let head=native_head(c)?;
- let mut acceptance=None;
- for event in &events{if event["type"]!="book"{continue}
-  match BookAcceptance::new(&bound,event,true,head,started,completed){Ok(proof)=>{if acceptance.is_some(){refresh_deferred(c,"book_ineligible",&"AMBIGUOUS_ADMITTED_BOOK")?;return Ok(())}acceptance=Some(proof)},Err(e)=>{refresh_deferred(c,"book_ineligible",e.as_ref())?;return Ok(())}}
- }
- let Some(acceptance)=acceptance else{refresh_deferred(c,"book_ineligible",&"NO_ACTUAL_ADMITTED_BOOK")?;return Ok(())};
+ let acceptance=match BookAcceptance::from_events(&bound,&events,true,head,started,completed){
+  Ok(v)=>v,Err(e)=>{refresh_deferred(c,"book_ineligible",e.as_ref())?;return Ok(())}
+ };
  // Every I/O/control failure is propagated; only pure helper denials defer.
- let candidates=bank.engine().order_records();
+ let candidates:Vec<_>=bank.engine().order_records().into_iter().filter(|q|q["id"].as_u64().is_some_and(|id|id>maximum_qid_before&&id!=hint.old_qid())&&q["retired"]==false&&q["marketId"]==old["marketId"]&&q["exchangeId"]==old["exchangeId"]&&q["side"]==old["side"]&&q["action"]=="sell"&&q["executionStyle"]=="inventoryAON"&&q["inventoryExitReason"]=="maximumAge"&&q["filled"].as_u64()==Some(0)&&q.get("cancelEffectiveAt").is_none_or(Value::is_null)).collect();
  let mut safety=std::collections::BTreeMap::new();
  for q in &candidates{if q["exchangeId"]==old["exchangeId"]&&q["side"]==old["side"]&&q["action"]=="sell"{safety.insert(q["id"].as_u64().ok_or("LIVE_QUOTE_ID")?,refresh_safety(c,bank,log,authority,stream,q,unknown)?);}}
  let plan=match RefreshPlan::select(&bound,&acceptance,&candidates,maximum_qid_before,flow_started,completed,now(),|id|*safety.get(&id).expect("validated native candidate safety")){
@@ -167,6 +175,15 @@ fn refresh_exit(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchL
  // Rebuild complete physical identity from this NEW frozen quote only after wait.
  submit_order(t,c,bank,log,authority,plan.quote(),facts)
 }
+fn latest_refresh_hints(orders:&[Value],at:u64,eligible:impl Fn(u64)->bool)->Result<std::collections::BTreeMap<String,Value>>{
+ let mut latest=std::collections::BTreeMap::<String,Value>::new();
+ for q in orders{
+  if q["action"]!="sell"||q["inventoryExitReason"]!="maximumAge"||q["executionStyle"]!="inventoryAON"||q["filled"].as_u64()!=Some(0)||q.get("cancelEffectiveAt").is_some_and(|v|!v.is_null())||q["expiresAt"].as_u64().is_none_or(|t|t>at){continue}
+  let id=q["id"].as_u64().ok_or("LIVE_QUOTE_ID")?;if !eligible(id){continue}
+  let key=format!("{}:{}:sell",q["exchangeId"].as_str().ok_or("LIVE_SCOPE")?,q["side"].as_str().ok_or("LIVE_SIDE")?);
+  if latest.get(&key).is_none_or(|old|old["id"].as_u64().unwrap()<id){latest.insert(key,q.clone());}
+ }Ok(latest)
+}
 fn dispatch(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,authority:&Arc<ProductionAuthority>,source:&mut RestSource,allow_new_submissions:bool,preflight_cursor:&mut Option<String>,stream:&Realtime)->Result<()>{
  let orders=bank.engine().order_records();
  let flow_started=now();let maximum_qid_before=orders.iter().filter_map(|q|q["id"].as_u64()).max().unwrap_or(0);
@@ -174,9 +191,7 @@ fn dispatch(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,a
  let mut refresh_unknown=false;
  if allow_new_submissions&&orders.iter().any(|q|q["action"]=="sell"&&q["inventoryExitReason"]=="maximumAge"&&q["expiresAt"].as_u64().is_some_and(|t|t<=flow_started)&&q["id"].as_u64().is_some_and(|id|log.never_attempted(id)&&!log.intents.contains_key(&id))){
   let unknown=queue_has_unknown(t)?;refresh_unknown=unknown;
-  for old in &orders{if old["action"]!="sell"||old["inventoryExitReason"]!="maximumAge"||old["expiresAt"].as_u64().is_none_or(|t|t>flow_started){continue}
-   // A valid successor predating this flow belongs to the ordinary preflight;
-   // historical hints must not continually steal its only snapshot packet.
+  for old in latest_refresh_hints(&orders,flow_started,|id|log.never_attempted(id)&&!log.intents.contains_key(&id))?.values(){
    if orders.iter().any(|q|q["exchangeId"]==old["exchangeId"]&&q["side"]==old["side"]&&q["action"]=="sell"&&q["retired"]==false&&q["expiresAt"].as_u64().is_some_and(|t|t>flow_started)){continue}
    let safety=refresh_safety(c,bank,log,authority,stream,old,unknown)?;
    if let Ok(hint)=moloch_live_runtime::exit_refresh::ReadHint::from_expired(old,safety,flow_started){let key=format!("{}:{}:sell",hint.exchange(),old["side"].as_str().ok_or("LIVE_SIDE")?);hints.insert(key,(old.clone(),hint));}
@@ -243,14 +258,14 @@ fn connect_stream(t:&mut Transport,c:&Control,bank:&mut Session,source:&mut Rest
  atomic_json(&marker,&json!({"atMs":at}))?;
  let material=t.realtime_token()?;let stream=Realtime::connect(Auth::from_official_response(material)?,&c.scope.tournament_id)?;
  let joined_at=match stream.incoming.recv_timeout(Duration::from_secs(12)){
-  Ok(Incoming::Joined{received_at})=>{for e in source.subscribed(&received_at)?{accept(bank,&e)?}received_at}
+  Ok(Incoming::Joined{received_at})=>{accept_source_events(bank,&source.subscribed(&received_at)?)?;received_at}
   _=>return Err("LIVE_STREAM_JOIN_FAILED".into())
  };Ok((stream,joined_at))
 }
 fn drain_stream(stream:&Realtime,bank:&mut Session,source:&mut RestSource,breadth:&mut Option<Recorder>,universe:&mut Option<Universe>)->Result<()>{
  if !stream.healthy(){return Err("LIVE_STREAM_FAILED".into())}
- while let Ok(input)=stream.incoming.try_recv(){match input{
-  Incoming::Broadcast{event,payload,received_at}=>{if let Some(recorder)=breadth{recorder.observe(&event,&payload,&received_at)}if let Some(u)=universe{u.observe(&event,&payload,&received_at)?}for e in source.broadcast(&event,&payload,&received_at)?{accept(bank,&e)?}},
+ for _ in 0..8{if !stream.healthy(){return Err("LIVE_STREAM_FAILED".into())}let Ok(input)=stream.incoming.try_recv()else{break};match input{
+  Incoming::Broadcast{event,payload,received_at}=>{if let Some(recorder)=breadth{recorder.observe(&event,&payload,&received_at)}if let Some(u)=universe{u.observe(&event,&payload,&received_at)?}accept_source_events(bank,&source.broadcast(&event,&payload,&received_at)?)?;},
   Incoming::Failed(code)=>return Err(code.into()),
   Incoming::Joined{..}=>return Err("LIVE_STREAM_UNEXPECTED_REJOIN".into())
  }}
@@ -327,13 +342,15 @@ pub fn main()->Result<()>{
    reconciliation_schedule.completed(now(),pending_version(&log),reconciled.blocks_new_submissions)?;
    accept(&mut bank,&json!({"type":"tick","receivedAt":iso(now())}))?;
    let selected=if let Some(u)=&mut universe{u.select(&bank.engine().required_exchanges())?}else{c.scope.exchanges.keys().cloned().collect()};
-   for ex in &selected{let market=&c.scope.exchanges[ex];let from=windows[ex];let next=source(&mut t,&c,&mut bank,&mut source_state,ex,market,from)?;windows.insert(ex.clone(),next);drain_stream(stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?,&mut bank,&mut source_state,&mut breadth,&mut universe)?;
+   for (selected_index,ex) in selected.iter().enumerate(){let market=&c.scope.exchanges[ex];let from=windows[ex];let next=source(&mut t,&c,&mut bank,&mut source_state,ex,market,from)?;windows.insert(ex.clone(),next);drain_stream(stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?,&mut bank,&mut source_state,&mut breadth,&mut universe)?;
     if reconciliation_schedule.due(now(),pending_version(&log))?.is_some(){
      reconciled=reconcile(&mut t,&c,&mut bank,&mut log,&mut reconciliation_cache)?;
      reconciliation_schedule.completed(now(),pending_version(&log),reconciled.blocks_new_submissions)?;
     }
     let permit_new=reconciliation_schedule.permits_submission(now(),pending_version(&log))?;
-    dispatch(&mut t,&c,&mut bank,&mut log,&authority,&mut source_state,permit_new,&mut preflight_cursor,stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?)?;}
+    dispatch(&mut t,&c,&mut bank,&mut log,&authority,&mut source_state,permit_new,&mut preflight_cursor,stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?)?;
+    let _=atomic_json(&c.root.join("progress.json"),&json!({"at":iso(now()),"pid":std::process::id(),"phase":"trading","completedReadScopes":selected_index+1,"selectedReadScopes":selected.len(),"maximumRealtimeFramesPerDrain":8,"realtimeHealthy":stream.as_ref().is_some_and(|s|s.healthy()),"actualOrders":log.acknowledgments.len(),"terminalOrders":log.closed.len(),"actualFills":bank.engine().fills().len(),"profitabilityEstablished":false}));
+   }
    cycles+=1;
    atomic_json(&c.root.join("status.json"),&json!({"at":iso(now()),"pid":std::process::id(),"mode":"actual-contest-trading","runId":c.activation.run_id,"bank":c.bank_name,"cycles":cycles,"realtimeHealthy":stream.as_ref().is_some_and(|s|s.healthy()),"universe":universe.as_ref().map(Universe::status),"selectedReadScopes":selected,"ownedReconciliation":reconciled,"sourceScopes":source_state.scopes(),"breadthCapture":{"path":breadth_path,"state":breadth.as_ref().map(Recorder::status)},"report":bank.engine().report()?,"queue":t.admission_state()?,"actualOrders":log.acknowledgments.len(),"terminalOrders":log.closed.len(),"entryUntil":iso(c.activation.entry_until_ms),"profitabilityEstablished":false}))?;
    // Existing orders and the first trading cycle precede optional research reads.

@@ -69,6 +69,19 @@ impl ReadHint {
 /// caller evidence; this helper cannot inspect another component's private state.
 pub struct BookAcceptance { started_ms:u64, completed_ms:u64, native_head_fingerprint:[u8;32], facts_hash:String }
 impl BookAcceptance {
+    /// Recovery may commit an invalid book followed by its valid replacement.
+    /// Check the complete committed emission, including any final invalidation.
+    pub fn from_events(facts:&RefreshFacts, events:&[Value], source_committed:bool, native_head_fingerprint:[u8;32], started_ms:u64, completed_ms:u64)->Result<Self>{
+        let mut candidate=None;let mut final_valid=false;
+        for event in events{
+            if event["type"]=="gap"&&event["exchangeId"]==facts.hint.exchange{final_valid=false;}
+            if event["type"]!="book"||event["book"]["exchangeId"]!=facts.hint.exchange||event["book"]["marketId"]!=facts.hint.market{continue}
+            final_valid=event["book"]["invalid"]!=true;
+            if final_valid{need(candidate.is_none(),"EXIT_REFRESH_AMBIGUOUS_ADMITTED_BOOK")?;candidate=Some(event);}
+        }
+        need(final_valid,"EXIT_REFRESH_FINAL_BOOK_INVALID")?;
+        Self::new(facts,candidate.ok_or("EXIT_REFRESH_NO_VALID_BOOK")?,source_committed,native_head_fingerprint,started_ms,completed_ms)
+    }
     pub fn new(facts:&RefreshFacts, admitted_event:&Value, source_committed:bool, native_head_fingerprint:[u8;32], started_ms:u64, completed_ms:u64)->Result<Self> {
         need(source_committed && native_head_fingerprint.iter().any(|b|*b!=0) && started_ms<=completed_ms
             && clock(&facts.book().received_at)?<=started_ms,"EXIT_REFRESH_BOOK_NOT_COMMITTED")?;
