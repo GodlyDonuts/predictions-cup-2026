@@ -1,0 +1,244 @@
+{
+  "schemaVersion": 1,
+  "researchObservedAt": "2026-10-15T23:48:39Z",
+  "task": "143",
+  "scope": "Public-source research; no account HTTP, SSH, runtime mutation or activation",
+  "candidate": {
+    "marketId": "386",
+    "contractId": "387",
+    "nodeId": "387",
+    "exchangeId": "1075",
+    "raceId": "62957",
+    "stageId": "98087",
+    "resolutionType": "Party Winner",
+    "winnerName": "Republican Party",
+    "electionDate": "2026-11-03",
+    "displayedSettlementDate": "2026-11-04T17:00:00Z",
+    "nodeReceiptReceivedAt": "2026-10-15T23:34:04.457Z",
+    "nodeReceiptSha256": "e072e7b4a8a9e3e1a8d198759e6eef0c1931ddb6f98188ef06828355ce71bcc6",
+    "digestProvenance": "Execution owner supplied original-receipt digest; selected attributes inspected locally, original transport not independently reacquired",
+    "exactResolverVerified": false,
+    "coonsVictoryImpliesNo": "Conditional on unchanged ordinary affiliation/resolver semantics",
+    "productionActivation": false
+  },
+  "sources": {
+    "ballot": "https://elections.delaware.gov/elections/general/sampleballots/GE2026/02-27.html",
+    "callTheMapRace": "https://www.callthemap.com/senate/delaware",
+    "callTheMapMethods": "https://www.callthemap.com/methodology",
+    "whoShowsUpRace": "https://whoshowsup.net/race/senate-de",
+    "whoShowsUpMethods": "https://whoshowsup.net/methodology",
+    "whoShowsUpCode": "https://github.com/kurtawirth/whoshowsup",
+    "cookCurrent": "https://www.cookpolitical.com/senate/race/488551",
+    "cookAudit": "https://www.cookpolitical.com/analysis/national/cpr-archives/how-accurate-are-cook-political-reports-race-ratings",
+    "cookCohort": "https://www.cookpolitical.com/sites/default/files/2024-06/2024%20Senate%20AAG%20%2006.27.2024.pdf",
+    "officialOutcomes": "https://clerk.house.gov/member_info/electionInfo/2024/statistics2024.pdf"
+  },
+  "publishedForecasts": [
+    {
+      "publisher": "Call the Map",
+      "asOf": "2026-10-15",
+      "coonsWinProbability": "0.995",
+      "probabilityKind": "publisher point output",
+      "independentlyReproduced": false,
+      "raceExplanationMatchesMethods": "unresolved"
+    },
+    {
+      "publisher": "Who Shows Up",
+      "asOf": "2026-10-15",
+      "coonsWinProbability": ">0.99",
+      "probabilityKind": "publisher inequality in public HTML/noscript",
+      "independentlyReproduced": false
+    },
+    {
+      "publisher": "Cook Political Report",
+      "rating": "Solid D",
+      "ratingUpdated": "2025-02-11",
+      "numericProbability": null
+    }
+  ],
+  "cookFiniteCohort": {
+    "ratingDate": "2024-06-27",
+    "outcomeDate": "2024-11-05",
+    "pageNumberConvention": "one-based physical PDF page; not printed page",
+    "allSolidDLabels": 14,
+    "excludedIndependentStates": [
+      "ME",
+      "VT"
+    ],
+    "independentWinners": [
+      {
+        "state": "ME",
+        "winner": "King",
+        "officialPage": 31
+      },
+      {
+        "state": "VT",
+        "winner": "Sanders",
+        "officialPage": 72
+      }
+    ],
+    "nonRepublicanCohort": {
+      "successes": 14,
+      "trials": 14,
+      "iidLowerBound": "0.8073638243498646",
+      "notAnIndependentCohort": true
+    },
+    "literalDemocratStates": [
+      {
+        "state": "CA",
+        "winner": "Schiff",
+        "cookPage": 1,
+        "officialPage": 8
+      },
+      {
+        "state": "CT",
+        "winner": "Murphy",
+        "cookPage": 1,
+        "officialPage": 15
+      },
+      {
+        "state": "DE",
+        "winner": "Blunt Rochester",
+        "cookPage": 1,
+        "officialPage": 16
+      },
+      {
+        "state": "HI",
+        "winner": "Hirono",
+        "cookPage": 2,
+        "officialPage": 21
+      },
+      {
+        "state": "MA",
+        "winner": "Warren",
+        "cookPage": 3,
+        "officialPage": 35
+      },
+      {
+        "state": "MN",
+        "winner": "Klobuchar",
+        "cookPage": 3,
+        "officialPage": 39
+      },
+      {
+        "state": "NJ",
+        "winner": "Kim",
+        "cookPage": 5,
+        "officialPage": 45
+      },
+      {
+        "state": "NM",
+        "winner": "Heinrich",
+        "cookPage": 5,
+        "officialPage": 48
+      },
+      {
+        "state": "NY",
+        "winner": "Gillibrand",
+        "cookPage": 5,
+        "officialPage": 48
+      },
+      {
+        "state": "RI",
+        "winner": "Whitehouse",
+        "cookPage": 6,
+        "officialPage": 62
+      },
+      {
+        "state": "VA",
+        "winner": "Kaine",
+        "cookPage": 7,
+        "officialPage": 74
+      },
+      {
+        "state": "WA",
+        "winner": "Cantwell",
+        "cookPage": 7,
+        "officialPage": 75
+      }
+    ],
+    "successes": 12,
+    "trials": 12,
+    "independentCaliforniaSpecialTrialAdded": false,
+    "oneSidedAlpha": "0.05",
+    "iidLowerBoundFormula": "alpha^(1/trials)",
+    "iidLowerBound": "0.7790778080544442",
+    "iidEstablished": false,
+    "transferLimitations": [
+      "one cycle",
+      "shared shocks",
+      "June instead of nineteen-day origin",
+      "accessible-year selection",
+      "rating changes",
+      "candidate and office-specific population"
+    ]
+  },
+  "economicSensitivity": {
+    "empiricalConservativeProbabilityAvailable": false,
+    "formula": "cMax=(1-e)*pL+e*r-b",
+    "assumptionsAreEstimates": false,
+    "exceptionProbabilityBoundEstablished": false,
+    "illustrativeExceptionAllowance": "0.01",
+    "illustrativeMinimumExceptionPayoff": "0",
+    "illustrativePerShareAllowance": "0.01",
+    "illustrativeEntryPrice": "0.900",
+    "scenarios": [
+      {
+        "pL": "0.995",
+        "cMax": "0.97505",
+        "bufferedEdge": "0.07505"
+      },
+      {
+        "pL": "0.950",
+        "cMax": "0.93050",
+        "bufferedEdge": "0.03050"
+      },
+      {
+        "pL": "0.900",
+        "cMax": "0.88100",
+        "bufferedEdge": "-0.01900"
+      }
+    ],
+    "breakEvenExceptionAtP095Price090Allowance001": "0.0421052631578947",
+    "terminalHoldingThesisProves60SecondAlpha": false,
+    "freshExecutableDepthObservedByResearch": false
+  },
+  "sourceObservations": [
+    {
+      "source": "ballot",
+      "retrievedAt": "2026-10-15T23:51:50.166Z",
+      "httpStatus": 200,
+      "normalizedUtf8BodyBytes": 38441,
+      "normalizedUtf8BodySha256": "30c1189ae8ebb7f346ec14e74515d999b25eed18dd76fcd95eedce3396adc14a"
+    },
+    {
+      "source": "callTheMapRace",
+      "retrievedAt": "2026-10-15T23:51:50.490Z",
+      "httpStatus": 200,
+      "normalizedUtf8BodyBytes": 155588,
+      "normalizedUtf8BodySha256": "f45d33e0c3f55884fbbe32f608d87566cb5b786d57e928f146dbb8dc7dda5a54"
+    },
+    {
+      "source": "callTheMapMethods",
+      "retrievedAt": "2026-10-15T23:51:50.816Z",
+      "httpStatus": 200,
+      "normalizedUtf8BodyBytes": 507622,
+      "normalizedUtf8BodySha256": "9e19d83b0b4d3cbdf4b34908a721dfa3313da58a6d1540d115e9cbb3098929c6"
+    },
+    {
+      "source": "whoShowsUpRace",
+      "retrievedAt": "2026-10-15T23:51:50.865Z",
+      "httpStatus": 200,
+      "normalizedUtf8BodyBytes": 47581,
+      "normalizedUtf8BodySha256": "fe27efe93184b3b9e06db6460c5df4fcb9dda196b26a9ad3f6cec8a7eb556f55"
+    },
+    {
+      "source": "whoShowsUpMethods",
+      "retrievedAt": "2026-10-15T23:51:50.995Z",
+      "httpStatus": 200,
+      "normalizedUtf8BodyBytes": 43914,
+      "normalizedUtf8BodySha256": "8bdbc27f9ed94cfab65b8895ae37a4933753603b32a87d4483b997d0b3514381"
+    }
+  ],
+  "snapshotHashConvention": "SHA256 of UTF-8 reencoding of public HTTPS response text; provenance fingerprint, not an authenticated transport receipt. Raw response bodies are not republished."
+}
