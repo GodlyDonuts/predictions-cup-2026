@@ -39,6 +39,12 @@ pub fn preflight_stage(q:&Value,never_attempted:bool,has_durable_intent:bool,now
  }else{PreflightStage::DeferredUntilActivation}
 }
 
+/// Frozen worker integration API: true ONLY for an eligible future maximum-age
+/// SELL. Ordinary already-activated eligibility remains the worker's own guard.
+pub fn may_prefetch(q:&Value,never_attempted:bool,has_intent:bool,now_ms:u64)->bool{
+ preflight_stage(q,never_attempted,has_intent,now_ms).may_start_pre_activation_snapshots()
+}
+
 /// Necessary final timing/intent gate on the REREAD current native quote after
 /// fresh-book acceptance. ProductionAuthority still checks every live condition
 /// again. `true` does not authorize a write, create an intent or bypass funding.
