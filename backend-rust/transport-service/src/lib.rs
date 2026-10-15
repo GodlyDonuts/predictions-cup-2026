@@ -113,12 +113,19 @@ impl Transport {
   });
   let (outcome,status,retry,api_code)=match &call{Ok((status,retry,data))=>{let code=data.pointer("/error/code").and_then(Value::as_str).unwrap_or("");let unknown=write&&(*status>=500||*status==409&&["REQUEST_IN_FLIGHT","ORDER_STATUS_UNKNOWN"].contains(&code));(if unknown{"unknown"}else if (200..300).contains(status){"success"}else{"rejected"},*status,retry.clone(),code.to_string())},Err(_)=>(if write{"unknown"}else{"rejected"},observed_status,observed_retry,String::new())};
   let returned_order_id=call.as_ref().ok().and_then(|(_,_,d)|id_value(&d["orderId"]));
-  let validated=call.and_then(|(status,retry,data)|{if !(200..300).contains(&status){let mut e=fail("OFFICIAL_REQUEST_REJECTED");e.status=Some(status);e.may_have_executed=outcome=="unknown";let _=retry;return Err(e);}validator(self,&data)?;Ok((status,data))});
+  let validated=call.and_then(|(status,retry,data)|{if !(200..300).contains(&status){let mut e=fail("OFFICIAL_REQUEST_REJECTED");e.status=Some(status);e.may_have_executed=outcome=="unknown";let _=retry;return Err(e);}if write{self.record_write_response(&request,&spec,status,started,&data)?;}validator(self,&data)?;Ok((status,data))});
   let final_outcome=if write&&validated.is_err()&&status<300{"unknown"}else{outcome};
   let completion=self.command(json!({"op":"complete","request":request,"outcome":final_outcome,"status":status,"retry_after":retry,"api_code":if api_code=="REQUEST_IN_FLIGHT"{"REQUEST_IN_FLIGHT"}else{""}}));
   if completion.is_err(){self.poisoned=true;let mut e=fail("COMPLETION_DURABILITY_UNCERTAIN");e.may_have_executed=write;return Err(e);}
   let retry_ms=completion.as_ref().ok().and_then(|v|v["next"].as_u64()).unwrap_or(0).saturating_sub(self.clock.now_ms());
   match validated{Ok((status,data))=>Ok(Receipt{endpoint:spec.endpoint,request_started_at:utc(started)?,received_at:utc(self.clock.now_ms())?,status,data}),Err(mut e)=>{if status!=0{e.status=Some(status)}e.may_have_executed|=write&&final_outcome=="unknown";e.order_id=returned_order_id;e.retry_after_ms=retry_ms;e.api_code=safe_api_code(&api_code);Err(e)}}
+ }
+ fn record_write_response(&self,request:&str,spec:&RequestSpec,status:u16,started:u64,data:&Value)->Result<()> {
+  use std::io::Write;
+  let mut options=std::fs::OpenOptions::new();options.write(true).create_new(true);
+  #[cfg(unix)]{use std::os::unix::fs::OpenOptionsExt;options.mode(0o600);}
+  let result=(||->std::io::Result<()>{let mut file=options.open(self.config.queue_dir.join(format!("write-response-{request}.json")))?;let value=json!({"endpoint":spec.endpoint,"requestStartedAt":utc(started).map_err(std::io::Error::other)?,"receivedAt":utc(self.clock.now_ms()).map_err(std::io::Error::other)?,"status":status,"data":data});file.write_all(&serde_json::to_vec(&value)?)?;file.sync_all()?;std::fs::File::open(&self.config.queue_dir)?.sync_all()})();
+  result.map_err(|_|fail("WRITE_RESPONSE_EVIDENCE_DURABILITY"))
  }
  pub fn compact(&mut self)->Result<Value>{need(self.authority.can_read(&self.config.scope),"STOPPED_OR_OWNER_LOST")?;self.command(json!({"op":"compact"}))}
  /// Short-lived authentication material stays in memory; callers must not log it.
@@ -203,7 +210,14 @@ impl Transport {
   let body=json!({"idempotencyKey":order.idempotency_key,"exchangeId":order.exchange_id,"side":order.side,"action":order.action,"quantity":order.quantity,"price":serde_json::Number::from_string_unchecked(wire_price),"expirationDate":order.expiration_date,"tournamentId":order.tournament_id});let body_json=serde_json::to_string(&body).unwrap();
   self.perform(RequestSpec{method:"POST".into(),endpoint:"/orders".into(),body:Some(body),body_json:Some(body_json)},Some(&permit),|_,v|{
    need(v["exchangeId"]==order.exchange_id&&v["side"]==order.side&&v["action"]==order.action&&v["open"].is_boolean()&&(v["orderId"].is_null()||id_value(&v["orderId"]).is_some()),"ORDER_ACK_SCOPE_OR_CANONICAL_CHANGE")?;
-   let quantity=v["quantity"].as_u64().ok_or_else(||fail("ORDER_ACK_QUANTITY"))?;need(quantity>0&&quantity<=order.quantity as u64&&prices::official_tick_units(&v["price"])?==price&&money_value(&v["quantityTraded"])? >=0&&money_value(&v["quantityTraded"])? <=quantity as i128*1_000_000&&money_value(&v["remainingQuantity"])? >=0&&money_value(&v["quantityTraded"])?+money_value(&v["remainingQuantity"])?==quantity as i128*1_000_000&&v.get("all").is_some_and(|a|a.is_object()||a.is_null()),"ORDER_ACK_ECONOMICS")?;need(v["totalCost"].as_f64().is_some_and(|n|n.is_finite()&&n>=0.0),"INVALID_ACK_REPORTED_NOTIONAL")?;Ok(())
+   let quantity=v["quantity"].as_u64().ok_or_else(||fail("ORDER_ACK_QUANTITY"))?;need(quantity>0&&quantity<=order.quantity as u64&&prices::official_tick_units(&v["price"])?==price,"ORDER_ACK_ECONOMICS")?;
+   // This receipt binds identity and admission size only. Accounting consumes the
+   // independently fetched complete order-fill tape, never these advisory totals.
+   // NO quantities may be signed; canonical remaining-size conventions differ.
+   need(money_value(&v["quantityTraded"])?.unsigned_abs()<=quantity as u128*1_000_000,"ORDER_ACK_TRADED_BOUND")?;
+   if let Some(n)=v.get("remainingQuantity"){need(money_value(n)?.unsigned_abs()<=quantity as u128*1_000_000,"ORDER_ACK_REMAINDER_BOUND")?;}
+   if let Some(a)=v.get("all"){need(a.is_object()||a.is_null(),"ORDER_ACK_COLLATERAL_METADATA")?;}
+   need(v["totalCost"].as_f64().is_some_and(|n|n.is_finite()&&n>=0.0),"INVALID_ACK_REPORTED_NOTIONAL")?;Ok(())
   })
  }
  pub fn cancel(&mut self,order_id:String,permit:Permit)->Result<Receipt>{self.owned(&order_id)?;self.perform(RequestSpec{method:"DELETE".into(),endpoint:format!("/orders/{order_id}"),body:None,body_json:None},Some(&permit),|s,v|need(id_value(&v["orderId"]).as_ref()==Some(&order_id)&&v["tournamentId"]==s.config.scope.tournament_id,"CANCEL_ACK_SCOPE"))}
