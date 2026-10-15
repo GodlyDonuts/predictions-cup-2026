@@ -1,5 +1,7 @@
 //! Causal paper execution. A trade-through is a counterfactual fill, never an
 //! actual exchange acknowledgment. Cancellation alone never frees cash.
+#[path = "engine_live.rs"]
+mod live;
 use crate::{Reservation, Result, SCALE, Side, TICK, Wallet, amount, fee, money, price};
 use serde_json::{Value, json};
 use sha2::{Digest, Sha256};
@@ -420,6 +422,9 @@ struct EntryFlow {
 }
 #[derive(Clone)]
 pub struct Engine {
+    live_mode: bool,
+    live_orders: BTreeMap<u64,String>,
+    live_fill_ids: BTreeMap<String,String>,
     policy: Policy,
     pub wallet: Wallet,
     books: BTreeMap<String, Book>,
@@ -489,6 +494,9 @@ impl Engine {
     }
     pub fn update_policy(&mut self, overrides: &Value) -> Result<()> {
         let policy = Policy::new(overrides)?;
+        if self.live_mode && (policy.conditional || policy.raw["throughFillCapacity"]==true) {
+            return Err("LIVE_COUNTERFACTUAL_FILL_MODEL");
+        }
         if policy.initial != self.policy.initial {
             return Err("INITIAL_CAPITAL_CHANGED");
         }
@@ -653,6 +661,9 @@ impl Engine {
             prior_orders: 0,
             legacy_seen: std::sync::Arc::new(BTreeMap::new()),
             baseline: None,
+            live_mode: false,
+            live_orders: BTreeMap::new(),
+            live_fill_ids: BTreeMap::new(),
         })
     }
     fn count(&mut self, k: &str) {
@@ -1369,6 +1380,7 @@ impl Engine {
         let kind = e["type"].as_str().ok_or("EVENT_TYPE")?;
         let mut duplicate = false;
         match kind {
+            "actual_order_ack" | "actual_fill" | "actual_order_terminal" | "unsubmitted_intent_retired" => self.apply_live(e,at)?,
             "book" => {
                 let b = Book::parse(&e["book"], &e["receivedAt"])?;
                 if let Some(old) = self.books.get(&b.exchange) {
@@ -1389,7 +1401,7 @@ impl Engine {
                 }
                 for i in 0..self.orders.len() {
                     let q = &self.orders[i];
-                    if q.retired
+                    if self.live_mode || q.retired
                         || !q.aon
                         || q.exchange != b.exchange
                         || !b.fresh(&self.policy, at)
@@ -1524,6 +1536,7 @@ impl Engine {
                         .push((executed / 1_000_000, quantity));
                     self.count("uniqueTrades");
                     for i in 0..self.orders.len() {
+                        if self.live_mode { break; }
                         let q = &mut self.orders[i];
                         if q.retired
                             || q.aon
@@ -1639,7 +1652,7 @@ impl Engine {
                     return Err("COVERAGE");
                 }
                 for q in &mut self.orders {
-                    if !q.retired
+                    if !self.live_mode && !q.retired
                         && e["marketId"] == q.market
                         && e["exchangeId"] == q.exchange
                         && e["tournamentId"] == q.tournament
@@ -1713,7 +1726,7 @@ impl Engine {
         let unresolved = self.orders.iter().filter(|q| !q.retired).count();
         let pnl = self.wallet.cash + liquidation - self.wallet.initial;
         Ok(
-            json!({"bot":"Moloch","runtime":"rust","at":self.last_string,"policyHash":hash(&self.policy.raw),"events":self.events,"cash":money(self.wallet.cash),"realized":money(self.wallet.realized),"fees":money(self.wallet.fees),"ownedCost":money(self.wallet.owned_cost()),"reservedCash":money(self.wallet.reserved()?),"netLiquidationPnl":if known{json!(money(pnl))}else{Value::Null},"positions":self.wallet.positions(),"fills":self.fills.len(),"orders":self.prior_orders+self.orders.len() as u64,"activeOrders":self.orders.iter().filter(|q|!q.retired&&self.last.is_some_and(|t|q.end()>t/1_000_000)).count(),"unresolvedOrders":unresolved,"fillModel":if self.policy.conditional{"conditionalFifo"}else{"strictThrough"},"conditionalQueueFills":self.fills.iter().filter(|f|f["conditionalQueueFill"]==true).count(),"profitSignalEligible":!self.policy.conditional&&!self.fills.iter().any(|f|f["conditionalQueueFill"]==true||f["throughCapacityFill"]==true||f["executionStyle"]=="inventoryAON")&&unresolved==0&&known&&self.wallet.realized>0&&pnl>0,"counts":self.counts,"continuation":self.baseline,"contestOrders":0,"networkRequests":0,"profitabilityEstablished":false}),
+            json!({"bot":"Moloch","runtime":"rust","at":self.last_string,"policyHash":hash(&self.policy.raw),"events":self.events,"cash":money(self.wallet.cash),"realized":money(self.wallet.realized),"fees":money(self.wallet.fees),"ownedCost":money(self.wallet.owned_cost()),"reservedCash":money(self.wallet.reserved()?),"netLiquidationPnl":if known{json!(money(pnl))}else{Value::Null},"positions":self.wallet.positions(),"fills":self.fills.len(),"orders":self.prior_orders+self.orders.len() as u64,"activeOrders":self.orders.iter().filter(|q|!q.retired&&self.last.is_some_and(|t|q.end()>t/1_000_000)).count(),"unresolvedOrders":unresolved,"executionMode":if self.live_mode{"live"}else{"paper"},"fillModel":if self.live_mode{"actualAccountFills"}else if self.policy.conditional{"conditionalFifo"}else{"strictThrough"},"conditionalQueueFills":self.fills.iter().filter(|f|f["conditionalQueueFill"]==true).count(),"profitSignalEligible":!self.policy.conditional&&!self.fills.iter().any(|f|f["conditionalQueueFill"]==true||f["throughCapacityFill"]==true||f["executionStyle"]=="inventoryAON")&&unresolved==0&&known&&self.wallet.realized>0&&pnl>0,"counts":self.counts,"continuation":self.baseline,"contestOrders":if self.live_mode{self.live_orders.len()}else{0},"networkRequests":0,"profitabilityEstablished":false}),
         )
     }
     pub fn fills(&self) -> &[Value] {

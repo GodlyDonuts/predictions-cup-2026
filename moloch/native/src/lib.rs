@@ -234,17 +234,23 @@ impl Wallet {
         Ok(cost)
     }
     pub fn buy_fill(&mut self, id: &str, n: u64) -> Result<()> {
+        let r = self.reservations.get(id).ok_or("RESERVATION_UNKNOWN")?;
+        let value = r.limit.checked_mul(n as i128).ok_or("FILL_RANGE")?;
+        self.buy_fill_exact(id, n, r.limit, fee(value,n,self.fee_bps,self.fee_per_share)?)
+    }
+    /// Account fills use verified execution prices and explicit fees.
+    pub fn buy_fill_exact(&mut self,id:&str,n:u64,executed_price:i128,charge:i128)->Result<()> {
         let r = self
             .reservations
             .get(id)
             .ok_or("RESERVATION_UNKNOWN")?
             .clone();
-        if n == 0 || n > r.quantity {
+        price(executed_price)?;
+        if n == 0 || n > r.quantity || executed_price > r.limit || charge < 0 || charge > fee(r.limit,1,self.fee_bps,self.fee_per_share)?.checked_mul(n as i128).ok_or("FILL_RANGE")? {
             return Err("FILL_QUANTITY");
         }
         let mut next = self.clone();
-        let value = r.limit.checked_mul(n as i128).ok_or("FILL_RANGE")?;
-        let charge = fee(value, n, self.fee_bps, self.fee_per_share)?;
+        let value = executed_price.checked_mul(n as i128).ok_or("FILL_RANGE")?;
         next.cash = next
             .cash
             .checked_sub(value)
@@ -257,7 +263,7 @@ impl Wallet {
             .or_default()
             .push_back(Lot {
                 quantity: n,
-                price: r.limit,
+                price: executed_price,
                 executed_at: None,
             });
         if n == r.quantity {
@@ -280,14 +286,18 @@ impl Wallet {
         Ok(())
     }
     pub fn sell_fill(&mut self, exchange: &str, side: Side, n: u64, limit: i128) -> Result<()> {
+        let charge=fee(limit.checked_mul(n as i128).ok_or("FILL_RANGE")?,n,self.fee_bps,self.fee_per_share)?;
+        self.sell_fill_exact(exchange,side,n,limit,charge)
+    }
+    pub fn sell_fill_exact(&mut self,exchange:&str,side:Side,n:u64,limit:i128,charge:i128)->Result<()> {
         price(limit)?;
+        if charge < 0 || charge > fee(limit,1,self.fee_bps,self.fee_per_share)?.checked_mul(n as i128).ok_or("FILL_RANGE")? { return Err("ACTUAL_SELL_FEE_BOUNDS") }
         if n == 0 {
             return Err("FILL_QUANTITY");
         }
         let mut next = self.clone();
         let cost = next.take(exchange, side, n)?;
         let value = limit.checked_mul(n as i128).ok_or("FILL_RANGE")?;
-        let charge = fee(value, n, self.fee_bps, self.fee_per_share)?;
         next.cash += value - charge;
         next.realized += value - cost - charge;
         next.fees += charge;

@@ -240,6 +240,7 @@ impl Realtime {
                 worker_failed.store(true, Ordering::SeqCst);
                 let _ = tx.try_send(Incoming::Failed(code));
             }
+            worker_failed.store(true, Ordering::SeqCst);
             let _ = socket.close(None);
         });
         Ok(Self {
@@ -254,6 +255,7 @@ impl Realtime {
         !self.failed.load(Ordering::SeqCst)
             && self.worker.as_ref().is_some_and(|t| !t.is_finished())
     }
+    pub fn failure_signal(&self)->Arc<AtomicBool>{self.failed.clone()}
 }
 impl Drop for Realtime {
     fn drop(&mut self) {

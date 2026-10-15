@@ -784,10 +784,25 @@ impl RestSource {
     pub fn scopes(&self) -> Value {
         json!(self.scopes.values().map(|s|json!({"marketId":s.market,"exchangeId":s.exchange,"blocked":s.blocked,"bookReady":s.book_ready,"tapeReady":s.tape_ready})).collect::<Vec<_>>())
     }
+    /// A late socket gap must not fall behind the next rolling REST window.
+    pub fn recovery_start_ms(&self,market:&str)->Option<u64>{
+        let scope=self.scopes.get(market)?;
+        if scope.blocked {u64::try_from(scope.invalidated/1_000_000).ok().map(|t|t.saturating_sub(1))}else{None}
+    }
 }
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn late_socket_gap_retains_the_actual_recovery_start(){
+        let mut source=RestSource::new(&json!([{"marketId":"1","exchangeId":"2"}]),"cup","2026-10-14T00:00:00Z").unwrap();
+        let at=chrono::DateTime::parse_from_rfc3339("2026-10-14T00:00:10Z").unwrap().timestamp_millis() as u64;
+        source.subscribed_market("1","2026-10-14T00:00:10Z").unwrap();
+        assert_eq!(source.recovery_start_ms("1"),Some(at-1));
+        assert_eq!(source.recovery_start_ms("missing"),None);
+        // A rolling window already beyond this instant must be extended backwards.
+        assert!(source.recovery_start_ms("1").unwrap()<at+120000);
+    }
     fn page(cursor: Option<&str>, next: Option<&str>, seq: Value) -> Value {
         json!({"kind":"trades","source":"official_sig_api_v1","status":200,"marketId":"1","exchangeId":"2","tournamentId":"cup","requestStartedAt":"2026-10-14T00:01:00Z","receivedAt":"2026-10-14T00:01:01Z","endpoint":format!("/exchanges/2/trades?tournamentId=cup&from=2026-10-14T00:00:00Z&to=2026-10-14T00:01:00Z{}",cursor.map(|c|format!("&cursor={c}")).unwrap_or_default()),"data":{"marketId":"1","exchangeId":"2","from":"2026-10-14T00:00:00Z","to":"2026-10-14T00:01:00Z","data":[],"pagination":{"hasMore":next.is_some(),"nextCursor":next},"coverage":{"complete":true,"projectedThroughSequence":seq}}})
     }

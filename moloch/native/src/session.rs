@@ -95,6 +95,7 @@ pub fn engine_identity() -> String {
     let mut h = Sha256::new();
     for bytes in [
         include_bytes!("engine.rs").as_slice(),
+        include_bytes!("engine_live.rs").as_slice(),
         include_bytes!("lib.rs").as_slice(),
         include_bytes!("legacy.rs").as_slice(),
         include_bytes!("journal.rs").as_slice(),
@@ -120,6 +121,17 @@ pub struct Session {
 }
 impl Session {
     pub fn open(root: &Path, seed: Option<&Path>, policy: &Value) -> Result<Self> {
+        Self::open_mode(root,seed,policy,None)
+    }
+    /// A live bank starts from an actual-account allocation, never a paper seed.
+    pub fn open_live(root:&Path,policy:&Value,account_seed:&Value)->Result<Self>{
+        let engine=Engine::new_live(policy)?;
+        let available=crate::amount(account_seed["availableCash"].as_str().ok_or("LIVE_SEED_CASH")?)?;
+        if available<engine.wallet.initial || account_seed["runId"].as_str().is_none_or(|s|s.is_empty()||s.len()>128) || account_seed["accountSnapshotHash"].as_str().is_none_or(|s|s.len()!=64||!s.bytes().all(|b|b.is_ascii_hexdigit())) {return Err("LIVE_SEED_EVIDENCE".into())}
+        chrono::DateTime::parse_from_rfc3339(account_seed["observedAt"].as_str().ok_or("LIVE_SEED_CLOCK")?)?;
+        Self::open_mode(root,None,policy,Some(account_seed))
+    }
+    fn open_mode(root:&Path,seed:Option<&Path>,policy:&Value,live_seed:Option<&Value>)->Result<Self>{
         let existed = root.exists();
         if !existed {
             fs::create_dir(root)?;
@@ -134,7 +146,9 @@ impl Session {
             return Err("PAPER_DIRECTORY_SYMLINK".into());
         }
         let lock = ExclusiveLock::acquire(&root.join("writer.lock"))?;
-        let (mut engine, seed_identity) = if let Some(path) = seed {
+        let (mut engine, seed_identity) = if let Some(account_seed)=live_seed {
+            (Engine::new_live(policy)?,json!({"kind":"actual_account_allocation","evidence":account_seed}))
+        } else if let Some(path) = seed {
             let (engine, snapshot, digest) = crate::legacy::load_snapshot(path)?;
             (
                 engine,
@@ -144,7 +158,7 @@ impl Session {
             (Engine::new(policy)?, json!({"kind":"independent_paper"}))
         };
         engine.update_policy(policy)?;
-        let expected = json!({"schemaVersion":1,"mode":"rust_paper_session","seed":seed_identity,"policy":engine.policy(),"engineIdentity":engine_identity()});
+        let expected = json!({"schemaVersion":1,"mode":if live_seed.is_some(){"rust_live_session"}else{"rust_paper_session"},"seed":seed_identity,"policy":engine.policy(),"engineIdentity":engine_identity()});
         let manifest_path = root.join("manifest.json");
         let journal_path = root.join("events.jsonl");
         let head_path = root.join("head.json");
@@ -269,7 +283,7 @@ impl Session {
         atomic_json(
             &self.root.join("report.json"),
             &sealed(
-                json!({"manifestHash":self.manifest["hash"],"sequence":self.chain.sequence,"previous":self.chain.previous,"report":self.engine.report()?,"orders":self.engine.order_records(),"fills":self.engine.fills(),"sourceCursors":self.cursors,"contestOrders":0}),
+                json!({"manifestHash":self.manifest["hash"],"sequence":self.chain.sequence,"previous":self.chain.previous,"report":self.engine.report()?,"orders":self.engine.order_records(),"fills":self.engine.fills(),"sourceCursors":self.cursors,"contestOrders":self.engine.live_order_bindings().len()}),
             ),
         )
     }
@@ -328,6 +342,9 @@ impl Session {
     }
     pub fn engine(&self) -> &Engine {
         &self.engine
+    }
+    pub fn live_account_seed(&self)->Option<&Value>{
+        if self.manifest["mode"]=="rust_live_session"{Some(&self.manifest["seed"]["evidence"])}else{None}
     }
     pub fn manifest_hash(&self) -> &Value {
         &self.manifest["hash"]

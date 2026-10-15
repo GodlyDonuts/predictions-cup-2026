@@ -45,3 +45,37 @@ fn ack()->String{json!({"orderId":42,"exchangeId":"994","open":true,"remainingQu
 #[test]fn stable_api_errors_are_sanitized_and_keep_persistent_wait(){let server=Server::new(vec![(429,vec![("Retry-After","90")],r#"{"error":{"code":"RATE_LIMITED","message":"private response detail"}}"#.into())]);let dir=temp();{let mut t=transport(&dir,&server,false,Arc::new(AtomicU64::new(1000)));let e=t.request(Endpoint::Tournament).err().unwrap();assert_eq!(e.api_code.as_deref(),Some("RATE_LIMITED"));assert_eq!(e.retry_after_ms,90000);assert!(!serde_json::to_string(&e).unwrap().contains("private response"));}fs::remove_dir_all(dir).unwrap();}
 #[test]fn bulk_prices_validate_actual_latest_price_and_missing_scope(){let good=json!({"data":[{"exchangeId":"994","marketId":"305","option":"YES","latestPrice":0.12,"bestBid":0.115,"bestAsk":0.12,"spread":0.005}],"missingIds":[]});let mut bad=good.clone();bad["data"][0]["latestPrice"]=json!(1.005);let server=Server::new(vec![(200,vec![],good.to_string()),(200,vec![],bad.to_string()),(200,vec![],json!({"data":[],"missingIds":["888"]}).to_string())]);let dir=temp();{let mut t=transport(&dir,&server,false,Arc::new(AtomicU64::new(1000)));let e=Endpoint::Prices{exchange_ids:vec!["994".into()]};assert!(t.request(e.clone()).is_ok());assert!(t.request(e.clone()).is_err());assert!(t.request(e).is_err());}fs::remove_dir_all(dir).unwrap();}
 #[test]fn portfolio_fills_paginate_without_adopting_other_account_orders(){let fill=|id|json!({"id":id,"orderId":null,"exchangeId":"994","marketId":"305","price":0.12,"quantity":-1,"side":"no","filledAt":"1970-01-01T00:00:00Z"});let server=Server::new(vec![(200,vec![],page(vec![fill(1)],Some("next"))),(200,vec![],page(vec![fill(2)],None))]);let dir=temp();{let mut t=transport(&dir,&server,false,Arc::new(AtomicU64::new(1000)));let r=t.request(Endpoint::PortfolioFills).unwrap();assert_eq!(r.data["data"].as_array().unwrap().len(),2);assert!(server.requests.lock().unwrap()[1].line.contains("portfolio/fills?limit=100&cursor=next"));assert!(t.cancel("1".into(),permit("not-owned")).is_err());}fs::remove_dir_all(dir).unwrap();}
+
+#[test]fn complete_trade_pages_preserve_earliest_projection_checkpoint(){
+ let server=Server::new(vec![(200,vec![],json!({"exchangeId":"994","marketId":"305","from":"1970-01-01T00:00:00Z","to":"1970-01-01T00:00:00.500Z","coverage":{"complete":true,"projectedThroughSequence":10},"pagination":{"limit":200,"hasMore":true,"nextCursor":"next"},"data":[{"id":"1","createdAt":"1970-01-01T00:00:00.100Z","price":0.06000000000000005,"size":1,"side":"NO"}]}).to_string()),(200,vec![],json!({"exchangeId":"994","marketId":"305","from":"1970-01-01T00:00:00Z","to":"1970-01-01T00:00:00.500Z","coverage":{"complete":true,"projectedThroughSequence":20},"pagination":{"limit":200,"hasMore":false,"nextCursor":null},"data":[]}).to_string())]);
+ let dir=temp();{let mut t=transport(&dir,&server,false,Arc::new(AtomicU64::new(1000)));let r=t.request(Endpoint::Trades{exchange_id:"994".into(),from:"1970-01-01T00:00:00Z".into(),to:"1970-01-01T00:00:00.500Z".into()}).unwrap();assert_eq!(r.data["data"].as_array().unwrap().len(),1);assert_eq!(r.data["coverage"]["projectedThroughSequence"],10);}fs::remove_dir_all(dir).unwrap();
+}
+
+#[test]fn explicit_hundred_read_budget_is_persisted_and_cannot_be_silently_changed(){
+ let dir=temp();{
+ let mut q=admission::AccountAdmission::open(&dir,"fixture-rate-profile","token").unwrap();q.configure_reads(100,600).unwrap();
+ for i in 0..100u64{let now=1+i*600;let request=format!("read-{i}");let base=json!({"scope":"fixture-rate-profile","now":now,"request":request,"write":false});let mut c=base.clone();c["op"]=json!("admit");assert_eq!(q.command(c).unwrap()["admitted"],true);let mut c=base.clone();c["op"]=json!("network");q.command(c).unwrap();let mut c=base;c["op"]=json!("complete");c["outcome"]=json!("success");q.command(c).unwrap();}
+ let c=json!({"op":"admit","scope":"fixture-rate-profile","now":60001,"request":"read-overflow","write":false});assert_eq!(q.command(c).unwrap()["admitted"],false);
+ assert!(q.configure_reads(100,599).is_err());assert!(q.configure_reads(101,600).is_err());assert!(q.configure_reads(60,1000).is_err());}
+ {let mut q=admission::AccountAdmission::open(&dir,"fixture-rate-profile","token2").unwrap();q.configure_reads(100,600).unwrap();let s=q.command(json!({"op":"status","scope":"fixture-rate-profile","now":60001})).unwrap();assert_eq!(s["state"]["read_profile"]["cap"],100);assert!(q.configure_reads(60,1000).is_err());}
+ fs::remove_dir_all(dir).unwrap();
+}
+#[test]fn new_profile_can_seed_exactly_one_quiet_migration_boundary(){
+ let dir=temp();{let mut q=admission::AccountAdmission::open(&dir,"fresh-profile","token").unwrap();q.configure_reads(100,600).unwrap();q.seed_legacy_headroom(1000,61001,false).unwrap();assert!(q.seed_legacy_headroom(1000,61001,false).is_err());let r=q.command(json!({"op":"admit","scope":"fresh-profile","now":1001,"request":"early","write":false})).unwrap();assert_eq!(r["admitted"],false);assert_eq!(r["wait_until"],61001);}fs::remove_dir_all(dir).unwrap();
+}
+#[test]fn full_account_observation_does_not_expand_order_or_ownership_scope(){
+ let server=Server::new(vec![]);let dir=temp();{
+ let t=transport(&dir,&server,true,Arc::new(AtomicU64::new(1000)));
+ let positions=json!({"positions":[{"exchangeId":"999","marketId":"310","quantity":-10,"lots":[]}],"summary":{"totalMarketValue":1.33333333333,"totalCostBasis":1,"totalUnrealizedPnl":0.33333333333}});
+ assert!(t.validate(&Endpoint::Positions,&positions).is_err());let mut t=t.with_full_account_observation();t.validate(&Endpoint::Positions,&positions).unwrap();
+ let mut other=row(99);other["exchangeId"]=json!("999");t.validate(&Endpoint::Orders{status:"open".into()},&serde_json::from_str::<Value>(&page(vec![other],None)).unwrap()).unwrap();
+ let mut o=order();o.exchange_id="999".into();assert_eq!(t.place(o,permit("foreign")).err().unwrap().code,"ORDER_SCOPE_MISMATCH");assert_eq!(t.request(Endpoint::OwnedOrder{order_id:"99".into()}).err().unwrap().code,"ORDER_NOT_OWNED");assert!(server.requests.lock().unwrap().is_empty());
+ }fs::remove_dir_all(dir).unwrap();
+}
+#[test]fn realtime_auth_is_scoped_budgeted_and_never_persisted_as_receipt(){
+ let secret="INVENTED_SHORT_LIVED_TOKEN_FIXTURE_ONLY";
+ let server=Server::new(vec![(200,vec![],json!({"token":secret,"anonKey":"invented_anon_fixture","supabaseUrl":"https://fixture.supabase.co","expiresAt":"1970-01-01T03:00:00Z"}).to_string())]);let dir=temp();{
+ let mut t=transport(&dir,&server,false,Arc::new(AtomicU64::new(1000)));assert_eq!(t.realtime_token().unwrap()["token"],secret);let state=t.admission_state().unwrap();assert_eq!(state["state"]["reads"].as_array().unwrap().len(),1);assert!(state["state"]["writes"].as_array().unwrap().is_empty());assert!(state["state"]["unknown"].as_object().unwrap().is_empty());
+ let observed=server.requests.lock().unwrap();assert_eq!(observed[0].line,"POST /api/v1/realtime/token HTTP/1.1");assert_eq!(observed[0].body,Value::Null);
+ }for f in fs::read_dir(&dir).unwrap(){let p=f.unwrap().path();if p.is_file(){assert!(!String::from_utf8_lossy(&fs::read(p).unwrap()).contains(secret))}}fs::remove_dir_all(dir).unwrap();
+}
