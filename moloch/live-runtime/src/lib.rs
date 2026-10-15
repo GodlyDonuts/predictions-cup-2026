@@ -6,3 +6,4 @@ pub mod breadth;
 pub mod read_recovery;
 pub mod universe;
 pub mod handoff;
+pub mod inventory;

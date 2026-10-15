@@ -13,6 +13,16 @@ pub fn acknowledgment(q:&Value,r:&Receipt,processed_at:&str)->Result<Value>{
  if v["exchangeId"]!=q["exchangeId"]||v["side"].as_str()!=q["side"].as_str().map(|s|if s=="YES"{"yes"}else{"no"})||v["action"]!=q["action"]||n>q["quantity"].as_u64().ok_or("INTENT_QUANTITY")?||money(official_tick_units(&v["price"])?)!=q["price"].as_str().ok_or("INTENT_PRICE")?{return Err("ACCOUNT_ACK_INTENT_MISMATCH".into())}
  let mut e=base("actual_order_ack",q,&actual,r,processed_at)?;e["quantity"]=json!(n);e["price"]=q["price"].clone();Ok(e)
 }
+/// Bind an exact already-attempted order from an official GET, never a synthetic POST.
+pub fn recovered_acknowledgment(q:&Value,actual:&str,tournament:&str,r:&Receipt,filled:&Receipt,processed_at:&str)->Result<Value>{
+ let v=&r.data;let quantity=v["quantity"].as_u64().filter(|n|*n>0&&*n<=q["quantity"].as_u64().unwrap_or(0)).ok_or("RECOVERED_ORDER_QUANTITY")?;
+ let side=if q["side"]=="NO"{"no"}else{"yes"};
+ if r.endpoint!=format!("/orders/{actual}")||id(&v["id"])?!=actual||v["exchangeId"]!=q["exchangeId"]||v["tournamentId"]!=tournament||v["side"]!=side||v["action"]!=q["action"]||money(official_tick_units(&v["priceLimit"])?)!=q["price"]||!v["open"].is_boolean(){return Err("RECOVERED_ORDER_MISMATCH".into())}
+ let created=chrono::DateTime::parse_from_rfc3339(v["createdAt"].as_str().ok_or("RECOVERED_ORDER_CLOCK")?)?.timestamp_millis();let expires=chrono::DateTime::parse_from_rfc3339(v["expirationDate"].as_str().ok_or("RECOVERED_ORDER_EXPIRY")?)?.timestamp_millis();
+ if created<q["createdAt"].as_i64().ok_or("RECOVERED_INTENT_CLOCK")?||Some(expires)!=q["expiresAt"].as_i64(){return Err("RECOVERED_ORDER_CLOCK".into())}
+ if fills(q,actual,tournament,filled,processed_at)?.iter().map(|f|f["quantity"].as_u64().unwrap()).sum::<u64>()>quantity{return Err("RECOVERED_ORDER_FILL_TOTAL".into())}
+ let mut e=base("actual_order_ack",q,actual,r,processed_at)?;e["quantity"]=json!(quantity);e["price"]=q["price"].clone();e["recoveredFromKnownOrder"]=json!(true);e["fillReceiptHash"]=json!(digest(filled)?);Ok(e)
+}
 /// Fill quantity is outcome-signed. Its action comes from the owned order.
 pub fn fills(q:&Value,actual:&str,tournament:&str,r:&Receipt,processed_at:&str)->Result<Vec<Value>>{
  let v=&r.data;if id(&v["orderId"])?!=actual||v["exchangeId"]!=q["exchangeId"]||v["tournamentId"]!=tournament||v["coverage"]["complete"]!=true||v["pagination"]["hasMore"]!=false||!v["pagination"]["nextCursor"].is_null(){return Err("ACCOUNT_FILL_SCOPE_OR_COVERAGE".into())}
@@ -37,6 +47,12 @@ pub fn terminal(q:&Value,actual:&str,tournament:&str,order:&Receipt,filled:&Rece
 
 #[cfg(test)]mod tests{
  use super::*;
+ #[test]fn known_order_recovery_preserves_original_get_and_requires_exact_intent(){
+  let mut q=q();q["createdAt"]=json!(1760000000000i64);q["expiresAt"]=json!(1760000600000i64);
+  let mut order=order();order.endpoint="/orders/201".into();order.data["createdAt"]=json!(chrono::DateTime::from_timestamp_millis(1760000001000).unwrap().to_rfc3339());order.data["expirationDate"]=json!(chrono::DateTime::from_timestamp_millis(1760000600000).unwrap().to_rfc3339());
+  let e=recovered_acknowledgment(&q,"201","cup",&order,&tape(),"2026-10-15T00:00:06Z").unwrap();assert_eq!(e["recoveredFromKnownOrder"],true);assert_eq!(e["receiptHash"],digest(&order).unwrap());
+  let mut changed=order.clone();changed.data["priceLimit"]=json!(0.06);assert!(recovered_acknowledgment(&q,"201","cup",&changed,&tape(),"2026-10-15T00:00:06Z").is_err());assert!(recovered_acknowledgment(&q,"202","cup",&order,&tape(),"2026-10-15T00:00:06Z").is_err());
+ }
  fn q()->Value{json!({"id":1,"marketId":"101","exchangeId":"994","side":"NO","action":"sell","quantity":2,"price":"0.055000"})}
  fn r(data:Value,start:&str,end:&str)->Receipt{Receipt{endpoint:"/fixture".into(),status:200,request_started_at:start.into(),received_at:end.into(),data}}
  fn tape()->Receipt{r(json!({"orderId":201,"exchangeId":"994","tournamentId":"cup","coverage":{"complete":true,"projectedThroughSequence":100},"pagination":{"hasMore":false,"nextCursor":null},"totalQuantityFilled":-2,"data":[{"id":301,"price":0.06000000000000005,"quantity":-1,"side":"no","filledAt":"2026-10-15T00:00:01Z"},{"id":302,"price":0.055,"quantity":-1,"side":"no","filledAt":"2026-10-15T00:00:02Z"}]}),"2026-10-15T00:00:04Z","2026-10-15T00:00:05Z")}
