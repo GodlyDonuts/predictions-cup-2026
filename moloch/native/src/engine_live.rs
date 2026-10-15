@@ -9,6 +9,7 @@ impl Engine {
   if e["type"]=="live_entry_window" {return self.apply_entry_window(e,_at)}
   if e["type"]=="actual_position_adoption" {return self.adopt_positions(e,_at)}
   if e["type"]=="unsubmitted_intent_retired" {
+   if e.get("deferPlanningForPackage").is_some_and(|v|!v.is_boolean()){return Err("UNSUBMITTED_INTENT_PLANNING_FLAG")}
    if e["source"]!="moloch_live_dispatcher"||e["confirmedNetworkAttempts"].as_u64()!=Some(0)||e["receiptHash"].as_str().is_none_or(|s|s.len()!=64||!s.bytes().all(|b|b.is_ascii_hexdigit())){return Err("UNSUBMITTED_INTENT_PROOF")}
    let qid=e["orderId"].as_u64().ok_or("ACTUAL_INTENT_ID")?;if self.is_package_order(qid){return Err("PACKAGE_CANNOT_BE_ABANDONED_AS_ORDINARY_INTENT")};let index=self.orders.iter().position(|q|q.id==qid).ok_or("ACTUAL_UNOWNED_ORDER")?;
    if self.live_orders.contains_key(&qid)||self.orders[index].filled!=0||self.orders[index].retired{return Err("DISPATCHED_INTENT_CANNOT_BE_ABANDONED")}

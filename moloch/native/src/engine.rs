@@ -1751,7 +1751,12 @@ impl Engine {
         self.observe_entry_flow(e, duplicate)?;
         // This durable authorization transition changes only the entry cutoff;
         // an ordinary subsequent tick/book performs normal quote planning.
-        if kind!="live_entry_window"&&!kind.starts_with("live_package_"){self.reconcile(at)?;}
+        // Only a proved ordinary unsubmitted-intent retirement may defer this
+        // event's plan, so the sole owner can immediately reserve a package.
+        // No persistent state is set: a subsequent tick/book plans normally.
+        if kind!="unsubmitted_intent_retired"&&e.get("deferPlanningForPackage").is_some(){return Err("PACKAGE_PLANNING_FLAG_EVENT")}
+        let defer_package_plan=kind=="unsubmitted_intent_retired"&&e["deferPlanningForPackage"]==true;
+        if kind!="live_entry_window"&&!kind.starts_with("live_package_")&&!defer_package_plan{self.reconcile(at)?;}
         Ok(())
     }
     pub fn report(&self) -> Result<Value> {
