@@ -25,6 +25,17 @@ impl ReviewedCosts{
  pub fn digest(input:&ReviewInput)->Result<String>{sha(input)}
  fn for_certificate(&self,certificate:&str,now:u64)->Result<()>{need(self.input.certificate_sha256==certificate&&now<self.input.expires_at_ms,"ALLOCATION_REVIEW_BINDING")}
 }
+/// Pinned by the root's immutable Control, never populated by a discovery
+/// result. Missing or expired review withholds a candidate rather than inventing
+/// zero costs, a horizon or an approval. No serde defaults hide missing fields.
+#[derive(Clone,Serialize,Deserialize)]#[serde(rename_all="camelCase",deny_unknown_fields)]
+pub struct Settings{pub reviews:Vec<ReviewInput>,pub trusted_review_sha256:BTreeSet<String>,pub maximum_wait:u32}
+impl Settings{
+ pub fn validate(&self)->Result<()>{need(self.reviews.len()<=32&&self.trusted_review_sha256.len()<=32&&(1..=32).contains(&self.maximum_wait),"ALLOCATION_SETTINGS_BOUND")?;let mut certificates=BTreeSet::new();let mut digests=BTreeSet::new();for review in &self.reviews{need(certificates.insert(review.certificate_sha256.clone()),"ALLOCATION_DUPLICATE_CERTIFICATE_REVIEW")?;let digest=ReviewedCosts::digest(review)?;need(digests.insert(digest.clone())&&self.trusted_review_sha256.contains(&digest),"ALLOCATION_CONFIGURED_REVIEW_NOT_APPROVED")?;ReviewedCosts::verify(review.clone(),&self.trusted_review_sha256,0)?;}need(digests==self.trusted_review_sha256,"ALLOCATION_UNUSED_TRUSTED_REVIEW")}
+ /// Invalid overall settings cannot partially approve another configured row.
+ /// Root validates configuration separately for a diagnostic; lookup withholds.
+ pub fn costs_for(&self,certificate:&str,now:u64)->Option<ReviewedCosts>{self.validate().ok()?;let review=self.reviews.iter().find(|r|r.certificate_sha256==certificate)?;ReviewedCosts::verify(review.clone(),&self.trusted_review_sha256,now).ok()}
+}
 /// Original account cash and ACTUAL existing reservations. availableAdvance and
 /// anticipated SELL proceeds never increase gross_cash or committed_capacity.
 pub struct Budget{head:Value,run:Value,manifest:Value,gross_cash:i128,committed_capacity:i128,writes:u32,at:u64,valid_until:u64,cash_source:String}

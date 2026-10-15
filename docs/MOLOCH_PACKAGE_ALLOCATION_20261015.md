@@ -107,3 +107,24 @@ budget, nullable/stale/wrong-scope cash, actual reservations and zero-funding
 covered unwind economics. Source is handed to root for combined ARM64 checks;
 no account/VPS requests, credentials, production changes or local test success are
 claimed by this source-only subtask.
+
+## Immutable allocator configuration
+
+Root may pin `Option<package_allocation::Settings>` as `packageAllocation` in the
+existing immutable Control. Fields are explicit `reviews: Vec<ReviewInput>`,
+`trustedReviewSha256: Set<String>` and `maximumWait` in1..32. At most32 reviews are
+accepted; certificate bindings must be unique. Every configured review's exact
+canonical digest must appear in the trusted set, and that set must equal the
+configured digests (unused approvals are rejected). Every row's cost/source and
+horizon/group shape is validated, including rows not selected this pass.
+
+Call `settings.validate()` for configuration diagnostics before using it.
+`settings.costs_for(certificate_sha256, now) -> Option<ReviewedCosts>` returns None
+for missing/expired reviews or any invalid overall settings. Invalid rows never
+partially approve another row. Past expiry is a lookup withholding condition;
+configuration validation does not extend or renew it. No discovery result adds
+a trusted hash, no absent review supplies zero costs, and missing required costs
+or settings fields fail serde parsing. Optional unknown horizons remain None.
+An empty review vector plus empty trusted set is valid and selects no candidate.
+Root supplies these approvals from reviewed immutable configuration, rather than
+calling `digest` to approve an arbitrary dynamically observed proposal.
