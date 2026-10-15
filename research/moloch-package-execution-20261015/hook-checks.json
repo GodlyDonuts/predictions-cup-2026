@@ -1,0 +1,48 @@
+{
+  "at": "2026-10-15T21:33:21.2070790Z",
+  "sourceCommit": "b9d81a9859552bd43e89f802aecf12668d2a08a6",
+  "deployed": false,
+  "soleWorkerMainLoopWired": true,
+  "paper2Complete": false,
+  "lockedArm64Release": true,
+  "checks": {
+    "runtime": {
+      "passed": 356,
+      "logSha256": "5fd199029348922df247db98df193e0a0a1223156251b0268a79fdecae837189"
+    },
+    "native": {
+      "passed": 159,
+      "logSha256": "779bca4b3b48893700044eaeb8b86c73f719d6f2b51713ff8f80696c56e8d252"
+    },
+    "sdk": {
+      "passed": 183,
+      "logSha256": "c5298bab190156ec706a332816e078853be0f9c50f5ec64be3d92e76586f325b"
+    },
+    "release": {
+      "logSha256": "4a3c86e7170932ebd20be68d019b9eed38627fcabd4065555c4cb49744b0831f",
+      "exitCode": 0
+    }
+  },
+  "binarySha256": "88176e888205647e4bbe74ae9019059b5e23fbff8038981ddeb36d06d5f396e7",
+  "historicalPrefix": {
+    "accountRequests": 0,
+    "elapsedMs": 92306,
+    "engineIdentity": "93d508192627e5cb5524984bd4c08d5fbda5e6904493aea7e50f3a9490c2df87",
+    "executionAuthorized": false,
+    "fillsSha256": "4ab64bc48380c7097cdd70e5c69366c41cc29acb9196bc415196d6a6a4966276",
+    "financialParity": true,
+    "financialReportSha256": "ba7a41c2a4be518d250e8153697e35c21da798c27ae363f77ff4fe1a7ba29393",
+    "mode": "read_only_live_prefix_equivalence",
+    "orderRecordsSha256": "09e3fe7d9639a0ef5e176b393ea29b22ee7254b9b314dcacbf4c6ae6a6f7588b",
+    "prefixBytes": 45816161,
+    "prefixSha256": "14ae0cfe783785f82dd71d156c56ecd4a0aa774e36b1d53cf1c45f34b1d9d85d",
+    "previous": "3217c4ab41443fceaa0d5f7b6c9f278b79fcab3a990de80ecb522ed26e841f30",
+    "schemaVersion": 1,
+    "sequence": 16535,
+    "sourceCursorsSha256": "e6ddd63a1fb92f9632e5a21cf651b9e8a8861ebd874ad4d75d573c6b97f637a5",
+    "sourceMutated": false
+  },
+  "releaseFinancialIdentity": "93d508192627e5cb5524984bd4c08d5fbda5e6904493aea7e50f3a9490c2df87",
+  "releaseFinancialIdentityIndependentlyExecuted": true,
+  "immutableCandidateRelease": "package-88176e888205"
+}
