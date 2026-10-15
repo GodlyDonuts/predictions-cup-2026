@@ -1,0 +1,14 @@
+{
+  "at": "2026-10-15T12:44:56.495947+00:00",
+  "sourceCommit": "8902b8c5",
+  "binarySha256": "4fe304b0f4e515f1c89551aaaa8d1016d7223a02a8a5e357cfcaeb38927e6b9e",
+  "mainPid": "179819",
+  "originalAttemptsBound": 162,
+  "retainedQueueIntents": 242,
+  "financialBridgeUnchanged": true,
+  "memoryMaxBytes": 1073741824,
+  "queueMigrated": false,
+  "fundingReset": false,
+  "entryUntilMs": 1792075474413,
+  "healthyCyclePending": true
+}

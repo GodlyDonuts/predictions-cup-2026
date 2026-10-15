@@ -1,5 +1,13 @@
 # Moloch current production ownership — October 15
 
+## Latest: V22 healthy with fresh official orders and fills
+
+At12:49:51 UTC, V22 PID179819 had no execution STOP, a healthy stream, nine new official HTTP200 order acknowledgments and five actual fills on those new physical orders. Totals were171 acknowledged orders and41 fills. New trading realized is−17.925000 SUSQies, separate from17.990000 inherited gross; profitability is not established. All189 runtime checks and the locked ARM64 release pass; native111/SDK150 unchanged checks apply. Existing risk, bank, account queue v1 and14:44:34.413 UTC entry cutoff remain. Automatic recovery is implemented with a durable bounded budget but had not yet been naturally exercised. [Canonical production evidence and limits](MOLOCH_V22_RECOVERY_20261015.md#fresh-verified-production-activity).
+
+## Latest: V22 launched after a verified socket-read stop
+
+V21 stopped12:37:59.170 UTC with the precise `STREAM_READ_FAILED` cause. All162 prior physical attempts were acknowledged; the shared queue had242 retained intents and no unknown/active/manual-review state. V22 started12:44:56.495947 UTC as PID179819, with the same financial bridge, attributed bank, queue v1, risk and14:44:34.413 UTC entry cutoff. Its189 runtime checks and locked ARM64 release pass; native111/SDK150 unchanged checks still apply. At12:46:16 UTC it was active and replaying history; fresh trading-cycle verification remained pending. [Production launch and recovery limits](MOLOCH_V22_RECOVERY_20261015.md#production-launch).
+
 ## Latest: V21 trading; V22 checked for controlled promotion
 
 At 12:37:05 UTC, V21 PID172804 had a healthy stream, no execution STOP, 162 acknowledged orders and 35 actual fills: 23 new acknowledgments and four new fills since its 12:22:27 launch. Its first complete cycle finished12:28:40 UTC. New trading realized is −3.320000 SUSQies, kept separate from17.990000 inherited gross. Higher activity has not established a profitable strategy.
