@@ -1,0 +1,54 @@
+{
+  "observedAt": "2026-10-15T08:59:02.219590+00:00",
+  "service": "moloch-live.service",
+  "release": "rust-live-v12",
+  "sourceCommit": "b30da5b0",
+  "cohortActualOrderId": "39633229",
+  "fillCount": 2,
+  "actualFilledQuantity": 78,
+  "grossProceeds": "57.330000",
+  "fifoInheritedCost": "54.990000",
+  "inheritedCohortRealizedGross": "2.340000",
+  "fees": "0.000000",
+  "profitabilityEstablished": false,
+  "fillProofs": [
+    {
+      "action": "sell",
+      "actualOrderId": "39633229",
+      "at": "2026-10-15T08:55:43.899Z",
+      "counterfactual": false,
+      "exchangeId": "1001",
+      "executedAt": "2026-10-15T08:55:39.901Z",
+      "fee": "0.000000",
+      "marketId": "312",
+      "orderId": 13,
+      "price": "0.735000",
+      "quantity": 77,
+      "receiptHash": "24fd95f5fc9ef193b539f452e40271b8377bc4fb1da86356f2916c3c33202859",
+      "side": "NO",
+      "sourceId": "165391262"
+    },
+    {
+      "action": "sell",
+      "actualOrderId": "39633229",
+      "at": "2026-10-15T08:55:43.930Z",
+      "counterfactual": false,
+      "exchangeId": "1001",
+      "executedAt": "2026-10-15T08:55:39.901Z",
+      "fee": "0.000000",
+      "marketId": "312",
+      "orderId": 13,
+      "price": "0.735000",
+      "quantity": 1,
+      "receiptHash": "24fd95f5fc9ef193b539f452e40271b8377bc4fb1da86356f2916c3c33202859",
+      "side": "NO",
+      "sourceId": "165391257"
+    }
+  ],
+  "journalSnapshot": {
+    "sequence": 1911,
+    "hash": "7a9b0b6bc4c17927af107444b23a7ec9c5451905cc2ea298675c6799cc5cf6fe",
+    "manifestHash": "78acaef952ed95b9bff24a3349ece669ccbe88ef7294b27dd9c2aa7d09cae325"
+  },
+  "scopeNote": "This inherited closing cohort only; FIFO gross gain, not new-strategy alpha or whole-account realized PnL. Later fills and open marks excluded."
+}
