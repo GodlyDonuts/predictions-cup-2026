@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 1,
+  "at": "2026-10-15T01:20:01.349Z",
+  "sourceDirectory": "C:\\Users\\csram\\.codex\\worktrees\\viserion-capital-stress\\predictions-cup-2026\\runtime\\moloch\\live-sig-20261014-75\\capture\\stream",
+  "sourceSequence": 3082,
+  "sourcePrevious": "f5412d5797b3ef870f96d73370766023f2bb99edf19dea91624547b1556e6b46",
+  "candidates": [
+    {
+      "marketId": "384",
+      "exchangeId": "1073",
+      "observedTrades": 129,
+      "recentTrades": 129,
+      "recentShares": "782009",
+      "bookSourceAgeSeconds": 1.2923017,
+      "bid": 0.85,
+      "ask": 0.86,
+      "spread": "0.010000",
+      "bidQueue": 3043,
+      "askQueue": 155916,
+      "gaps": 0,
+      "eligible": true,
+      "meanObservedTradeLagSeconds": 9.76376523100775,
+      "bidRelativeTrades": 87,
+      "askRelativeTrades": 35,
+      "unclassifiedTrades": 7,
+      "bidRelativeShares": "657319",
+      "askRelativeShares": "122683",
+      "balancedFlowScore": 0.7868531773519074,
+      "activityScore": 4.919564164344265,
+      "observedShares": "782009",
+      "largestSecondShares": "634291",
+      "largestSecondFraction": 0.8111044757796905,
+      "activeThirtySecondBins": 4,
+      "effectiveActiveSeconds": 1.5043078520511959
+    }
+  ],
+  "contestOrders": 0,
+  "profitabilityEstablished": false,
+  "limitations": [
+    "Retrospective warmup diagnostic; no threshold is validated or automatically applied.",
+    "A burst can be legitimate trading; lower concentration does not establish positive expected maker return.",
+    "Observed volume and price-relative direction do not prove our queue priority or fills."
+  ]
+}
