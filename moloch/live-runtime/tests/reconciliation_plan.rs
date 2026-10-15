@@ -55,6 +55,28 @@ fn reason(p: &ReadPlan) -> Reason { match &p.decisions[0] { OrderDecision::Exact
     let p=planned(&q,&aggregate(vec![v],base()+200,100));assert_eq!(open(&p).observed_executable_remainder,5);
     assert_eq!(p.full_fill_tapes_required,1);assert_eq!(q.admitted_quantity,10);assert_eq!(q.credited_filled_quantity,2);
 }
+#[test] fn simulated_worker_after_sixty_seconds_really_requests_all_twenty_fill_tapes() {
+    let mut orders=Vec::new();for i in 0..20 {let mut q=owned("yes","buy",0);q.logical_id=i+1;q.actual_order_id=(201+i).to_string();orders.push(q);}
+    let r=aggregate(orders.iter().map(row).collect(),base()+60_000,200);
+    let p=plan(&scope(),&orders,&[],None,Some(&r),false,base()+60_100,Limits::default()).unwrap();
+    let mut at=base()+60_100;let mut operations=vec!["open-list"];let mut tapes=0;
+    for decision in &p.decisions {match decision {
+        OrderDecision::OpenMemberNeedsFillTape(member) if member_is_fresh(member,at)=>{operations.push("full-fills");tapes+=1;at+=600;},
+        _=>{operations.push("exact-order");operations.push("full-fills");tapes+=1;at+=1200;}
+    }}
+    assert_eq!(tapes,20);assert_eq!(operations.len(),21);assert_eq!(operations.iter().filter(|op|**op=="exact-order").count(),0);
+}
+#[test] fn slow_cohort_simulation_rechecks_age_and_falls_back_instead_of_skipping_fills() {
+    let mut orders=Vec::new();for i in 0..20 {let mut q=owned("yes","buy",0);q.logical_id=i+1;q.actual_order_id=(201+i).to_string();orders.push(q);}
+    let r=aggregate(orders.iter().map(row).collect(),base()+60_000,200);
+    let p=plan(&scope(),&orders,&[],None,Some(&r),false,base()+60_100,Limits::default()).unwrap();
+    let mut at=base()+60_100;let mut operations=1;let mut tapes=0;let mut fallbacks=0;
+    for decision in &p.decisions {match decision {
+        OrderDecision::OpenMemberNeedsFillTape(member) if member_is_fresh(member,at)=>{operations+=1;tapes+=1;at+=2000;},
+        _=>{operations+=2;tapes+=1;fallbacks+=1;at+=4000;}
+    }}
+    assert_eq!(tapes,20);assert_eq!(fallbacks,10);assert_eq!(operations,31);assert!(operations<p.baseline_endpoint_operations);
+}
 #[test] fn zero_negative_larger_or_nonintegral_remainder_falls_back() {
     let q=owned("no","buy",2);
     for n in [json!(0),json!(-8),json!(9),json!(8.5)] {let mut v=row(&q);v["quantity"]=n;
