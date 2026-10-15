@@ -1,5 +1,9 @@
 # Moloch current production ownership — October 15
 
+## Latest: V23 daily windows verified in live trading
+
+At18:47:21 UTC, V23 PID196635 was healthy with no STOP, a durable entry cutoff of2026-10-16T14:44:34.413Z, and three fresh officially acknowledged SELL orders. Daily UTC windows continue through2026-11-04T17:00Z under the human mandate;40,000 total/10,000-per-market caps, bank/history and queue v1 remain. Totals317 acknowledged orders/86 actual fills; the three new acknowledgments are not claimed new fills. New-trading realized is−115.405000 SUSQies, separate from+38.075000 inherited gross; liquidation PnL is unavailable and profitability is not established. Native121/runtime194/locked ARM64 releases pass; all78,640 stopped historical events replay with exact financial parity. [Fresh proof and limitations](MOLOCH_DAILY_ENTRY_WINDOWS_20261015.md#fresh-production-verification).
+
 ## Latest: V23 daily windows launched; replay in progress
 
 The human-authorized daily schedule is installed in V23, started18:39:28 UTC asPID196635 with no STOP. Native121/runtime194 checks and locked releases pass. The fresh78,640-event stopped history has exact financial replay parity, and the fourth bridge preserves all three prior approvals. Same bank, seed, holdings, queue v1 and40,000 total/10,000-per-market caps. Original entry cutoff stays the immutable anchor; daily windows end at the official2026-11-04T17:00 UTC tournament end. Fresh durable-window and physical-activity verification remain pending replay. [Rollout and proofs](MOLOCH_DAILY_ENTRY_WINDOWS_20261015.md#v23-production-launch).
