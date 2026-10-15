@@ -114,15 +114,15 @@ fn dispatch(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,a
   let event=feedback::acknowledgment(&q,&ack,&iso(now()))?;authority.bind_owned(event["actualOrderId"].as_str().ok_or("LIVE_ACTUAL_ID")?.into());accept(bank,&event)?;authority.clear_ready();return Ok(())
  }Ok(())
 }
-fn connect_stream(t:&mut Transport,c:&Control,bank:&mut Session,source:&mut RestSource)->Result<Realtime>{
+fn connect_stream(t:&mut Transport,c:&Control,bank:&mut Session,source:&mut RestSource)->Result<(Realtime,String)>{
  let marker=c.root.join("stream-auth-admission.json");let at=now();
  if marker.exists()&&load(&marker)?["atMs"].as_u64().is_none_or(|old|at<old+60000){return Err("LIVE_AUTH_MINT_BACKOFF".into())}
  atomic_json(&marker,&json!({"atMs":at}))?;
  let material=t.realtime_token()?;let stream=Realtime::connect(Auth::from_official_response(material)?,&c.scope.tournament_id)?;
- match stream.incoming.recv_timeout(Duration::from_secs(12)){
-  Ok(Incoming::Joined{received_at})=>{for e in source.subscribed(&received_at)?{accept(bank,&e)?}}
+ let joined_at=match stream.incoming.recv_timeout(Duration::from_secs(12)){
+  Ok(Incoming::Joined{received_at})=>{for e in source.subscribed(&received_at)?{accept(bank,&e)?}received_at}
   _=>return Err("LIVE_STREAM_JOIN_FAILED".into())
- }Ok(stream)
+ };Ok((stream,joined_at))
 }
 fn drain_stream(stream:&Realtime,bank:&mut Session,source:&mut RestSource,breadth:&mut Option<Recorder>,universe:&mut Option<Universe>)->Result<()>{
  if !stream.healthy(){return Err("LIVE_STREAM_FAILED".into())}
@@ -168,21 +168,21 @@ pub fn main()->Result<()>{
   // Previously owned holdings are filtered from the financial feed as well as discovery.
   let pairs:Value=if let Some(u)=&universe{u.pairs(&c.scope.exchanges)}else{c.scope.exchanges.iter().map(|(e,m)|json!({"exchangeId":e,"marketId":m})).collect::<Vec<_>>().into()};
   let start=now();let mut source_state=RestSource::new(&pairs,&c.scope.tournament_id,&iso(start))?;source_state.seed_trade_facts(bank.source_facts())?;
-  let mut stream=Some(connect_stream(&mut t,&c,&mut bank,&mut source_state)?);
+  let (connected,joined_at)=connect_stream(&mut t,&c,&mut bank,&mut source_state)?;let mut stream=Some(connected);
   authority.bind_stream(stream.as_ref().unwrap().failure_signal(),stream.as_ref().unwrap().deadline_ms);
   let breadth_path=c.root.join(format!("breadth-{}-{}.jsonl",std::process::id(),now()));
   let mut breadth=Recorder::new(&breadth_path).ok();
-  if let Some(r)=&mut breadth{r.observe("stream_reset",&json!({"localBoundary":true,"reason":"confirmed_subscription"}),&iso(now()))}
-  if let Some(u)=&mut universe{u.observe("stream_reset",&json!({"localBoundary":true}),&iso(now()))?;}
+  if let Some(r)=&mut breadth{r.observe("stream_reset",&json!({"localBoundary":true,"reason":"confirmed_subscription"}),&joined_at)}
+  if let Some(u)=&mut universe{u.observe("stream_reset",&json!({"localBoundary":true}),&joined_at)?;}
   let mut windows:std::collections::BTreeMap<String,u64>=c.scope.exchanges.keys().map(|e|(e.clone(),start.saturating_sub(60000))).collect();
   let mut cycles=0u64;
   loop{
    if stop.exists()||global_stop.exists(){return Err("LIVE_EXECUTION_STOP".into())}
    if now()>=stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?.deadline_ms{
-    drop(stream.take());stream=Some(connect_stream(&mut t,&c,&mut bank,&mut source_state)?);
+    drop(stream.take());let (connected,joined_at)=connect_stream(&mut t,&c,&mut bank,&mut source_state)?;stream=Some(connected);
     authority.bind_stream(stream.as_ref().unwrap().failure_signal(),stream.as_ref().unwrap().deadline_ms);
-    if let Some(r)=&mut breadth{r.observe("stream_reset",&json!({"localBoundary":true,"reason":"confirmed_resubscription"}),&iso(now()))}
-    if let Some(u)=&mut universe{u.observe("stream_reset",&json!({"localBoundary":true}),&iso(now()))?;}
+    if let Some(r)=&mut breadth{r.observe("stream_reset",&json!({"localBoundary":true,"reason":"confirmed_resubscription"}),&joined_at)}
+    if let Some(u)=&mut universe{u.observe("stream_reset",&json!({"localBoundary":true}),&joined_at)?;}
     for from in windows.values_mut(){*from=now().saturating_sub(60000)}
    }
    drain_stream(stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?,&mut bank,&mut source_state,&mut breadth,&mut universe)?;
