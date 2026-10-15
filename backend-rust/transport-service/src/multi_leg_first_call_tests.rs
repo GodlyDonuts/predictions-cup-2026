@@ -129,3 +129,11 @@ impl Authority for ArtifactFailure{fn can_read(&self,_:&Scope)->bool{true}fn own
   let(mut t,_)=transport(&p,&server,false,0);assert!(matches!(t.place_all_or_none(basket(),permit()).unwrap(),multi_leg::Outcome::FullFillReported{..}));assert!(t.take_first_call_no_http_proof().is_err());assert!(t.place_all_or_none(basket(),permit()).is_err());assert!(t.take_first_call_no_http_proof().is_err());assert_eq!(server.count.load(Ordering::SeqCst),1);
  }fs::remove_dir_all(p).unwrap();
 }
+
+#[test]fn actual_config_scope_change_or_clock_regression_cannot_recover_original_proof(){
+ for mode in 0..2{let p=temp();let server=Server::new(200,json!({}));{
+  let(mut t,_)=transport(&p,&server,false,0);front_failure(&mut t);let(b,r)=binding_and_request();
+  if mode==0{t.config.scope.tournament_slug="another-cup".into();}else{t.clock=Box::new(FakeClock(Arc::new(AtomicU64::new(999))));}
+  assert!(t.verify_retained_first_call_no_http(&b,&r).is_err());assert_eq!(server.count.load(Ordering::SeqCst),0);
+ }fs::remove_dir_all(p).unwrap();}
+}
