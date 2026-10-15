@@ -1,6 +1,14 @@
 # Moloch current production ownership — October 15
 
-## Current verified runtime: V13 and the Paper 2 census
+## Current verified runtime: V15; trading continues during development
+
+At 2026-10-15T09:50:18.188Z the sole V15 production worker PID127281 was healthy after seven cycles, with77 official order acknowledgments and25 actual fills. The durable dispatch view recorded65 terminal bindings; the native financial journal separately counted55 actual terminal events, so these counters must not be treated as interchangeable. Queue unknown acceptance was empty. Realized lot-basis gain was11.110000 SUSQies: inherited holdings contributed11.220000, while new trading contributed−0.110000. These observations do not establish whole-account, net-liquidation or scalable strategy profitability.
+
+V15 started at09:43:33.835126Z. Immutable binary SHA256 is `cacd8b51f8326a32c090a2be67143baf9aad0a1e4ea5d5b8961485a851aec0006`. Checked source is on main throughc5af240b. The native financial identity, funded bank, original entry cutoff, account limits and inherited lot history remain unchanged. V15 automatically rotates a full queue generation while preserving all idempotency bindings, uncertainty, active work, rate history and backoff. Only the identical local admission command is retried once; HTTP requests are never replayed by maintenance. Unix directory synchronization pins the new manifest before admission resumes. SDK102 checks, live runtime78 checks and locked release build passed before deployment.
+
+The prior V14 queue cap stopped admissions before HTTP, rather than losing or blindly retrying an order. V15 has already performed a preserving automatic rotation in production and continued trading. A separate offline scalability audit measures retained-state journal amplification; compaction alone does not prove that long-run storage growth is solved. Read-reconciliation improvements are tested in a separate build while this immutable worker continues running. See [queue review](MOLOCH_QUEUE_MAINTENANCE_REVIEW_20261015.md), [read integration](MOLOCH_RECONCILIATION_INTEGRATION_20261015.md), and [paper intake](PAPER_INTAKE.md).
+
+## Earlier V13 observation and the Paper 2 census
 
 At 2026-10-15T09:05:08.406Z, the sole V13 worker PID110197 completed its first healthy trading cycle with22 official order acknowledgments, eight terminal orders and no execution STOP. Its immutable binary SHA256 is `6feda93284d9a760fd9c326f226d80b6b1f8bf59166fe58fff9269bddbaf2d62`, built from checked source3bc4eb82. The preceding V12 worker drained at09:03:33 with every attempted order bound to an acknowledgment; V13 started at09:03:50. Existing account queue, bank, inherited basis, open orders and original activation cutoff were preserved. The brief maintenance interval did not create another account worker or renew trading authority.
 
