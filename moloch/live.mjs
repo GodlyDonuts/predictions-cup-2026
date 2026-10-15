@@ -1,7 +1,7 @@
 import fs from 'node:fs';import path from 'node:path';import {spawn} from 'node:child_process';import {fileURLToPath,pathToFileURL} from 'node:url';
 import {createMoloch,advanceMoloch,reportMoloch,assertMoloch} from './engine.mjs';import {receiptEvents} from './sig-source.mjs';import {payloadHash} from '../execution/ledger.mjs';import {collectFrozenPaperFiles} from '../live-paper/frozen-paper-graph.mjs';import {createHash} from 'node:crypto';
 import {StreamSource,predecessorTradeFacts} from './stream-source.mjs';
-import {completedTail} from './run.mjs';
+import {completedTail,reuseCompletedTail} from './run.mjs';
 import {TapeCoverage} from './tape-coverage.mjs';
 import {watchedPaperOrders} from './paper-watch.mjs';
 const root=fileURLToPath(new URL('../',import.meta.url));
@@ -41,9 +41,15 @@ export function paperPolicyOverrides(value,scopes=null){
 export function captureScopeMaximum(realtime,restRecovery){if(realtime&&restRecovery)throw Error('MOLOCH_REST_RECOVERY_MODE');return realtime||restRecovery?4:2;}
 export function projectRestReceipt(receipt,identity=null){return receiptEvents(receipt).map(e=>identity&&e.type==='trade'?identity.trade(e):e);}
 export function recoveryTailDirectories(value){if(value===null||value===undefined)return[];const dirs=Array.isArray(value)?value:[value];if(dirs.length<1||dirs.length>8||new Set(dirs).size!==dirs.length||dirs.some(p=>typeof p!=='string'||!p||p.startsWith('--')))throw Error('MOLOCH_TAIL_RECOVERY_INPUT');return dirs;}
+export function verifiedRecoveryTails(value,prepared=null){
+ const dirs=recoveryTailDirectories(value);
+ if(prepared===null)return dirs.map(dir=>completedTail(dir));
+ if(!Array.isArray(prepared)||prepared.length!==dirs.length)throw Error('MOLOCH_RECOVERY_PROOF_COUNT');
+ return prepared.map((proof,i)=>{const verified=reuseCompletedTail(proof);if(verified.directory!==fs.realpathSync(dirs[i]))throw Error('MOLOCH_RECOVERY_PROOF_SCOPE');return verified;});
+}
 export function readRecoveryEvents(mux,scopes,r,at){if(r.phase!=='waiting_backoff')return[];const f=r.failure,p=scopes.find(p=>p.marketId===f?.marketId&&p.exchangeId===f?.exchangeId);if(!p||f.method.toLowerCase()!=='get'||f.transport?.category!=='transport_dns'||f.status!==0||r.retryCount!==1||r.sameEndpoint!==true)throw Error('MOLOCH_READ_RECOVERY_SCOPE');return mux?mux.invalidate(p.marketId,at):[{type:'gap',exchangeId:p.exchangeId,receivedAt:at}];}
 export function assertTailRecoveryScopes(scopes,state){const ids=new Set(scopes.map(p=>p.exchangeId));if(state.orders.some(q=>!q.retired&&!ids.has(q.exchangeId))||Object.entries(state.positions).some(([id,p])=>!ids.has(id)&&[...p.YES,...p.NO].some(l=>l.quantity>0)))throw Error('MOLOCH_TAIL_RECOVERY_LIABILITY_SCOPE');}
-export async function live({marketId,exchangeId,outputDirectory,cycles=10,resumeDirectory=null,pairsFile=null,realtime=false,restRecovery=false,insideTicks=null,drain=false,resumeEntries=false,policyFile=null,universeFile=null,recoveryTail=null,watchPaper=null,dnsReadRecovery=false,exitPriorityBooks=false}){
+export async function live({marketId,exchangeId,outputDirectory,cycles=10,resumeDirectory=null,pairsFile=null,realtime=false,restRecovery=false,insideTicks=null,drain=false,resumeEntries=false,policyFile=null,universeFile=null,recoveryTail=null,preparedRecoveryTails=null,watchPaper=null,dnsReadRecovery=false,exitPriorityBooks=false}){
   if(!/^[1-9]\d*$/.test(marketId)||!/^[1-9]\d*$/.test(exchangeId)||!Number.isSafeInteger(cycles)||cycles<1||cycles>100)throw Error('MOLOCH_LIVE_SCOPE');
   if(realtime&&cycles>30)throw Error('MOLOCH_STREAM_BOUNDED_CYCLES');
   const scopes=liveScopes(marketId,exchangeId,pairsFile?JSON.parse(fs.readFileSync(pairsFile,'utf8').replace(/^\uFEFF/,'')):null,captureScopeMaximum(realtime,restRecovery));
@@ -52,7 +58,7 @@ export async function live({marketId,exchangeId,outputDirectory,cycles=10,resume
   if(policyFile!==null&&(!policyFile||policyFile.startsWith('--')))throw Error('MOLOCH_POLICY_FILE_REQUIRED');
   let overrides={};if(policyFile){let parsed;try{parsed=JSON.parse(fs.readFileSync(policyFile,'utf8').replace(/^\uFEFF/,''));}catch{throw Error('MOLOCH_POLICY_FILE_INVALID');}overrides=paperPolicyOverrides(parsed,scopes);}
   if(recoveryTail&&(!(restRecovery||realtime)||!resumeDirectory))throw Error('MOLOCH_TAIL_RECOVERY_MODE');
-  const recoveries=recoveryTailDirectories(recoveryTail).map(dir=>completedTail(dir)),recovery=recoveries[0]??null;for(const item of recoveries)assertTailRecoveryScopes(scopes,item.snapshot.state);
+  const recoveries=verifiedRecoveryTails(recoveryTail,preparedRecoveryTails),recovery=recoveries[0]??null;for(const item of recoveries)assertTailRecoveryScopes(scopes,item.snapshot.state);
   const watches=recoveryTailDirectories(watchPaper);
   if(exitPriorityBooks&&(realtime||!restRecovery||!watches.length))throw Error('MOLOCH_EXIT_PRIORITY_REQUIRES_REST_WATCH');
   const out=path.resolve(outputDirectory);if(fs.existsSync(out))throw Error('MOLOCH_LIVE_OUTPUT_EXISTS');fs.mkdirSync(out,{recursive:true});

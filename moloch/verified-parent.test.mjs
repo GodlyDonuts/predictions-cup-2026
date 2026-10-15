@@ -1,5 +1,6 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import os from 'node:os';import path from 'node:path';import {createHash} from 'node:crypto';
 import {completedTail,reuseCompletedTail} from './run.mjs';import {createMoloch,advanceMoloch,reportMoloch} from './engine.mjs';import {payloadHash} from '../execution/ledger.mjs';
+import {verifiedRecoveryTails} from './live.mjs';
 const hash=b=>createHash('sha256').update(b).digest('hex');
 function fixture(parentDirectory=null){
  const parent=parentDirectory?JSON.parse(fs.readFileSync(path.join(parentDirectory,'state.json'))):null;
@@ -18,4 +19,13 @@ test('changed source prefix, snapshot, report or journal invalidates the prepare
 });
 test('reuse checks ancestor evidence rather than trusting only the last bank',()=>{
  const parent=fixture(),child=fixture(parent.dir);try{const proof=completedTail(child.dir);assert.equal(reuseCompletedTail(proof),proof);fs.appendFileSync(path.join(parent.dir,'report.json'),' ');assert.throws(()=>reuseCompletedTail(proof),/VERIFIED_PARENT_CHANGED/);}finally{child.cleanup();parent.cleanup();}
+});
+test('collector reuses only original prepared proofs matched to the requested recovery paths',()=>{
+ const a=fixture(),b=fixture();try{const pa=completedTail(a.dir),pb=completedTail(b.dir);
+  assert.deepEqual(verifiedRecoveryTails([a.dir,b.dir],[pa,pb]),[pa,pb]);
+  assert.throws(()=>verifiedRecoveryTails([a.dir],[structuredClone(pa)]),/UNVERIFIED_PARENT/);
+  assert.throws(()=>verifiedRecoveryTails([a.dir],[pb]),/PROOF_SCOPE/);
+  assert.throws(()=>verifiedRecoveryTails([a.dir,b.dir],[pa]),/PROOF_COUNT/);
+  fs.appendFileSync(path.join(a.dir,'report.json'),' ');assert.throws(()=>verifiedRecoveryTails([a.dir],[pa]),/VERIFIED_PARENT_CHANGED/);
+ }finally{a.cleanup();b.cleanup();}
 });

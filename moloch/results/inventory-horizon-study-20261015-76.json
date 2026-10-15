@@ -1,0 +1,112 @@
+{
+  "schemaVersion": 1,
+  "at": "2026-10-15T01:37:46.636Z",
+  "parentSnapshotHash": "1ec4de396a7ad7fdcf9e6ba287f856c5b70da176c6add18ee63490fa681a7a59",
+  "recordedSnapshotHash": "31c5ba500718ac658e27c9055ca93770a94bd4492031ece933877b0eb73b859f",
+  "sourceSha256": "4cd253f83e1080ce30c4ac6a93571fe0d1607ab3418ef31980af907bae1183a4",
+  "eventCount": 4204,
+  "baselineFullStateParity": true,
+  "inheritedRealized": "-1.000000",
+  "initialCash": "99999.000000",
+  "results": [
+    {
+      "maximumInventoryAgeMs": 1800000,
+      "cash": "99252.600000",
+      "realized": "-1.000000",
+      "ownedCost": "746.400000",
+      "unresolved": 1,
+      "newFills": 47,
+      "closed": false,
+      "lastFresh": {
+        "at": "2026-10-15T01:29:15.915Z",
+        "pnl": "-117.815000"
+      },
+      "worstFresh": {
+        "at": "2026-10-15T01:21:01.889Z",
+        "pnl": "-299.560000"
+      },
+      "maximumAgeExits": 0
+    },
+    {
+      "maximumInventoryAgeMs": 30000,
+      "cash": "99899.480000",
+      "realized": "-100.520000",
+      "ownedCost": "0.000000",
+      "unresolved": 0,
+      "newFills": 48,
+      "closed": true,
+      "lastFresh": {
+        "at": "2026-10-15T01:29:15.915Z",
+        "pnl": "-100.520000"
+      },
+      "worstFresh": {
+        "at": "2026-10-15T01:21:01.889Z",
+        "pnl": "-299.560000"
+      },
+      "maximumAgeExits": 1
+    },
+    {
+      "maximumInventoryAgeMs": 60000,
+      "cash": "99899.480000",
+      "realized": "-100.520000",
+      "ownedCost": "0.000000",
+      "unresolved": 0,
+      "newFills": 48,
+      "closed": true,
+      "lastFresh": {
+        "at": "2026-10-15T01:29:15.915Z",
+        "pnl": "-100.520000"
+      },
+      "worstFresh": {
+        "at": "2026-10-15T01:21:01.889Z",
+        "pnl": "-299.560000"
+      },
+      "maximumAgeExits": 1
+    },
+    {
+      "maximumInventoryAgeMs": 120000,
+      "cash": "99252.600000",
+      "realized": "-1.000000",
+      "ownedCost": "746.400000",
+      "unresolved": 1,
+      "newFills": 47,
+      "closed": false,
+      "lastFresh": {
+        "at": "2026-10-15T01:29:15.915Z",
+        "pnl": "-117.815000"
+      },
+      "worstFresh": {
+        "at": "2026-10-15T01:21:01.889Z",
+        "pnl": "-299.560000"
+      },
+      "maximumAgeExits": 0
+    },
+    {
+      "maximumInventoryAgeMs": 300000,
+      "cash": "99252.600000",
+      "realized": "-1.000000",
+      "ownedCost": "746.400000",
+      "unresolved": 1,
+      "newFills": 47,
+      "closed": false,
+      "lastFresh": {
+        "at": "2026-10-15T01:29:15.915Z",
+        "pnl": "-117.815000"
+      },
+      "worstFresh": {
+        "at": "2026-10-15T01:21:01.889Z",
+        "pnl": "-299.560000"
+      },
+      "maximumAgeExits": 0
+    }
+  ],
+  "newAccountCapital": "0",
+  "contestOrders": 0,
+  "profitabilityEstablished": false,
+  "limitations": [
+    "Retrospective policy intervention on an already inspected period, not a new independent holdout.",
+    "Same initial wallet, execution clocks, participation, entry deadline, funding, latency and cancel coverage retained for every case.",
+    "Public depth and trade-through fills are counterfactual; an exit remains conditional on later full quantity depth.",
+    "Open results remain censored; reducing inventory age does not by itself establish positive expected return."
+  ]
+}
