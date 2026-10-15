@@ -465,6 +465,7 @@ pub struct Engine {
 }
 impl Engine {
     pub fn from_seed_state(state: &Value) -> Result<Self> {
+        if state.get("collateralAccounting").is_some_and(|v|!v.is_null()){return Err("SEED_ACTUAL_COLLATERAL_REQUIRE_REPLAY")}
         if state.get("livePackages").is_some_and(|v|!v.is_null()) {
             return Err("SEED_LIVE_PACKAGES_REQUIRE_REPLAY");
         }

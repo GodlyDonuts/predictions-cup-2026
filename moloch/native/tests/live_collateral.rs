@@ -52,3 +52,5 @@ fn settlement(f:&F)->Value{let after=snapshot(json!(1000.4),json!(0),json!(0),js
  let mut ack=f.ack(&qs,true,5000,6500);for row in ack["data"]["results"].as_array_mut().unwrap(){row["data"]["all"]["componentId"]=Value::Null;row["data"]["all"]["relationshipIds"]=json!([]);row["data"]["all"]["guaranteedPayoutFloorAfter"]=json!(0);row["data"]["all"]["outstandingAdvanceAfter"]=json!(0);}
  let mut e=f.event("actual_collateral_execution","cross-group",after,7100);e["receipts"]=json!([ack]);f.accept(&e);let c=f.bank.engine().collateral_report().unwrap();assert_eq!(c["officialDebt"],"0.400000");assert_eq!(c["componentStates"]["own-101"]["outstandingAdvance"],json!(0.2));assert_eq!(f.bank.engine().report().unwrap()["realized"],"0.000000");
 }
+
+#[test]fn standalone_seed_cannot_silently_erase_actual_debt_or_collateral_history(){let mut f=F::new();assert!(f.bank.engine().report().unwrap().get("collateralAccounting").is_none());f.borrowed();let r=f.bank.engine().report().unwrap();assert_eq!(moloch_replay::engine::Engine::from_seed_state(&r).err(),Some("SEED_ACTUAL_COLLATERAL_REQUIRE_REPLAY"));}
