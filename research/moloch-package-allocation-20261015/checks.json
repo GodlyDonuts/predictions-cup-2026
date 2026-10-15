@@ -1,0 +1,34 @@
+{
+  "at": "2026-10-15T23:32:39.903275+00:00",
+  "sourceCommit": "8e421e5adbe955b59569ebb0bc29b6a3aad3a234",
+  "runtimeChecks": 460,
+  "allocatorChecks": 17,
+  "nativeChecksCarriedFromUnchangedV28Source": 187,
+  "sdkChecksCarriedFromUnchangedV28Source": 204,
+  "lockedOfflineArm64Release": true,
+  "binarySha256": "caa933b0f036bace10abfed457196d0e0a092d336c7cff5a76e3c815dd9ed463",
+  "release": "/home/archon/apps/moloch/releases/allocator-caa933b0f036/bin/moloch-live-runtime",
+  "control": "/home/archon/apps/moloch/shared/moloch-live-allocator-20261015.json",
+  "engineIdentity": "b3c975d3ac37138035728e28aeb6ffe7e99b9b525394f72b3be55e9b01ddf4d2",
+  "nativeReleaseArtifactUnchangedAndFresh": true,
+  "sourceSha256": {
+    "moloch/live-runtime/src/worker.rs": "80ebea64568b8f761d5a07c05a199dcad85a492b2a8946125d0ad0b23065d904",
+    "moloch/live-runtime/src/package_allocation.rs": "1e45d30627d10c1d24f45b15dc3cecbb975c2947864264972b59c3fef06aad25",
+    "moloch/live-runtime/src/lib.rs": "879c9e12d442644d296c039126c3ef420e1be7bd4f6088b4abf34801d38adf9e",
+    "moloch/live-runtime/tests/package_allocation.rs": "33c5c867b0ee37ccdc97370e125a2287aa29abe9bf873c81cfddea038b51f2e5"
+  },
+  "logs": {
+    "moloch-allocator-worker-final-tests.log": {
+      "sha256": "9ac233ab1718872d779e49c85239803c924a4bd8c40dbb56eb5e5f453cb0c496"
+    },
+    "moloch-allocator-runtime-release.log": {
+      "sha256": "15e06840b1be97294f5dcdbb326c3fd36263c814f92f8e0dd1163ed2a83f95f1"
+    }
+  },
+  "packageAllocationConfigured": true,
+  "approvedCostReviews": 0,
+  "physicalActivation": false,
+  "productionServiceUnchanged": true,
+  "productionPid": 292646,
+  "profitabilityEstablished": false
+}

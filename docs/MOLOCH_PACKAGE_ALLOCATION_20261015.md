@@ -1,5 +1,14 @@
 # Bounded source-bound package allocation
 
+The complete worker-hook source passes460 runtime checks, including17 allocator
+cases, and a locked offline ARM64 release. Native187/SDK204 checks are carried
+from unchanged V28 source; the same compiled native artifact and financial
+identity are retained. [Exact build inputs and staged artifact](../research/moloch-package-allocation-20261015/checks.json).
+The candidate is staged only. Current production remains V28; no live allocation
+or profitable package is claimed. The first combined run exposed a temporary
+fixture path collision; an atomic sequence now disambiguates concurrent fixture
+directories, and the final complete suite passes.
+
 This module ranks **minimum statewise incremental value**, after the existing
 scanner buffer and explicit reviewed write/inventory-risk costs. It is not a
 calibrated expected-value model or proof of real profitability. No ranking result
