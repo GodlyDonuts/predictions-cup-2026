@@ -4,7 +4,7 @@
 
 ## Finding
 
-The bounded maintenance wrapper is sound on the reviewed path: only `EXPLICIT_COMPACTION_REQUIRED` and `RECOVERY_COMPACTION_REQUIRED` trigger one preserving compaction and one replay of the identical **local queue command**. It does not repeat HTTP, recreate an intent, change an idempotency key, clear unknown acceptance or reset the rate budget. Compilation/tests and a healthy deployed cycle are separate evidence, owned by #120; reading the source does not establish those outcomes.
+The bounded local retry logic is sound: only `EXPLICIT_COMPACTION_REQUIRED` and `RECOVERY_COMPACTION_REQUIRED` trigger one preserving compaction and one replay of the identical **local queue command**. It does not repeat HTTP, recreate an intent, change an idempotency key, clear unknown acceptance or reset the rate budget. The directory-durability qualification below must also be addressed before claiming power-loss safety. Compilation/tests and a healthy deployed cycle are separate evidence, owned by #120; reading the source does not establish those outcomes.
 
 V14's reported09:25:31UTC failure occurred before cancellation HTTP with queue activeNone/unknown{} and an active journal of67,104,068 bytes near the64MiB cap. The existing every20cycles compaction policy can be missed across restarts. That observation motivates local storage maintenance; it does not prove that a cancellation happened or eliminate later reconciliation.
 
@@ -24,6 +24,12 @@ The physical transport still rechecks authority/permit/STOP after the local netw
 An ordinary clock-regression command sets manual review on its candidate and tries to persist that poison. If the cap rejects that append, the caller sees the capacity error before the clock error. Compaction using the regressed timestamp would itself fail its clock check, leaving the poison unrecorded.
 
 Follow-up `bee51224` uses `max(original_command.now, store.state.last_clock)` for the maintenance command only. The original command is retried unchanged, fails again as a clock regression, and now durably preserves manual review. Maintenance itself does not advance the queue's state clock. The reviewed regression checks the error, in-memory poison and restart persistence.
+
+## Directory-durability qualification
+
+The reused queue core synchronizes checkpoint, journal and manifest file data, but the reviewed `compact_with_hook` does not synchronize the containing directory after the manifest rename. File synchronization alone does not guarantee durable directory entries; Linux documents the separate directory operation in [fsync(2)](https://man7.org/linux/man-pages/man2/fsync.2.html). Process-crash fault tests do not test this power-loss boundary. Inference from that source and the current implementation: a rolled-back existing manifest could select an older generation even after an intent was durably appended to the new generation.
+
+A narrow SDK fix can retain the unchanged core: immediately after raw compaction succeeds, synchronize the queue directory on Unix BEFORE retrying any original command. Failure must poison the Store, return a durability error and prevent local replay/HTTP dispatch. The SDK's explicit-compaction path should also pin the directory if it can be followed by new-generation commands. A hook/injected failure test should establish that directory-sync failure cannot append or replay the pending command. Parent was notified; this review does not claim the candidate already contains that fix.
 
 ## Test review and remaining verification
 
