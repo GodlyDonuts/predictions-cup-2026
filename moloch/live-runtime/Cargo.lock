@@ -656,11 +656,16 @@ version = "0.1.0"
 dependencies = [
  "baal-transport-service",
  "chrono",
+ "moloch-relationship-arbitrage",
  "moloch-replay",
  "serde",
  "serde_json",
  "sha2",
 ]
+
+[[package]]
+name = "moloch-relationship-arbitrage"
+version = "0.1.0"
 
 [[package]]
 name = "moloch-replay"
