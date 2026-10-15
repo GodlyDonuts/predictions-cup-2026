@@ -21,7 +21,7 @@
 //!
 //! Ordinary cash sync is limited to original-ACK-owned TERMINAL orders and
 //! exact complete original fill tapes; passive fills may occur after the ACK.
-//! Only that event permits a 24h ORIGINAL before/after interval. It cannot
+//! Ordinary sync and an unchanged idle checkpoint permit a 24h ORIGINAL interval. It cannot
 //! refresh the before snapshot, admit still-open liabilities, infer ALL or
 //! explain redemption/corrections with an unexplained Wallet cash delta.
 //! Net-flat debt never proves zero gross flows: ordinary sync permanently
@@ -87,7 +87,7 @@ impl Engine{
   }
   let mut l=self.collateral.clone().ok_or("COLLATERAL_BASELINE_REQUIRED")?;need(l.scope==*scope,"COLLATERAL_SCOPE_CHANGED")?;
   let before=snapshot(&e["before"],scope,at)?;
-  need(before.cash==l.snapshot.cash&&before.debt==l.snapshot.debt&&before.power==l.snapshot.power&&before.components==l.snapshot.components&&before.start>=l.snapshot.start&&before.end>=l.snapshot.end&&before.end<=after.start&&after.end-before.start<=if e["type"]=="actual_collateral_ordinary_cash_sync"{86_400_000}else{120_000},"COLLATERAL_WINDOW_OR_BEFORE")?;
+  need(before.cash==l.snapshot.cash&&before.debt==l.snapshot.debt&&before.power==l.snapshot.power&&before.components==l.snapshot.components&&before.start>=l.snapshot.start&&before.end>=l.snapshot.end&&before.end<=after.start&&after.end-before.start<=if (e["type"]=="actual_collateral_ordinary_cash_sync"||e["type"]=="actual_collateral_checkpoint"){86_400_000}else{120_000},"COLLATERAL_WINDOW_OR_BEFORE")?;
   for(key,old)in before.components.as_object().ok_or("COLLATERAL_COMPONENTS")?{if let Some(new)=after.components.get(key){for field in ["profileId","tournamentId","coveredExchangeIds","relationshipIds"]{need(old[field]==new[field],"COLLATERAL_COMPONENT_IDENTITY_CHANGED")?;}}}
   let(mut drawn,mut repaid)=(0,0);
   if e["type"]=="actual_collateral_execution"{
@@ -151,8 +151,11 @@ impl Engine{
    l.gross_unknown=true;
   }else if e["type"]=="actual_collateral_checkpoint"{
    // Observation only. Nothing about an elapsed interval creates money or
-   // excuses an unaccounted execution/settlement. Keep the same120s window.
+   // excuses an unaccounted execution/settlement. A 24h idle window
+   // only preserves original unchanged cash; it grants no credit or sizing.
+   need(e["before"]==l.snapshot_receipts,"COLLATERAL_CHECKPOINT_ORIGINAL_BEFORE_REQUIRED")?;
    need(self.fills.len()==l.fill_count&&self.wallet.cash==l.wallet_cash&&after.cash==before.cash&&after.debt==before.debt&&after.power==before.power&&after.available==before.available&&after.components==before.components,"COLLATERAL_CHECKPOINT_ECONOMICS_CHANGED")?;
+   if after.end-before.start>120_000{l.gross_unknown=true;}
   }else if e["type"]=="actual_collateral_settlement"{
    need(self.fills.len()==l.fill_count&&self.wallet.cash==l.wallet_cash,"COLLATERAL_UNACCOUNTED_FILLS")?;
    let r=&e["settlements"];let endpoint=format!("/tournaments/{}/portfolio/settlements?limit=200",scope["tournamentSlug"].as_str().ok_or("COLLATERAL_SLUG")?);let(start,end)=receipt(r,&endpoint,at)?;
