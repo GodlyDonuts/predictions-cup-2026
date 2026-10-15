@@ -6,6 +6,9 @@ use serde_json::{Value,json};
 use std::path::Path;
 pub struct VerifiedNotSent{original:VerifiedLocalNotSentV1}
 impl VerifiedNotSent{
+ /// Transfer a witness already bound by the existing Transport to its own
+ /// most recent failed call. No alternate directory or queue read is allowed.
+ pub fn from_sdk(original:VerifiedLocalNotSentV1)->Self{Self{original}}
  pub fn read(directory:&Path,scope:&str,binding:&ImmutableBinding,request:&str,minimum_clock:u64)->Result<Self>{Ok(Self{original:admission::verify_local_not_sent_v1(directory,scope,binding,request,minimum_clock).map_err(|_|"PACKAGE_LOCAL_QUEUE_PROOF_UNAVAILABLE")?})}
  pub fn evidence(&self)->&Value{self.original.evidence()}
  /// Construct the existing durable dispatch attestation ONLY from the positive
