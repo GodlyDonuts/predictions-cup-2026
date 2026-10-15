@@ -82,12 +82,13 @@ impl Projection{
    need(at>=clock(i.reserve["receivedAt"].as_str().ok_or("PACKAGE_INTENT_CLOCK")?)?,"PACKAGE_LOG_CLOCK")?;
    self.records.insert(id.into(),Record{intent:i,phase:"intent".into(),attempted_at:None,outcome:None});return Ok(())
   }
+  let unresolved=self.unresolved();
   let r=self.records.get_mut(id).ok_or("PACKAGE_LOG_UNKNOWN_ID")?;
   need(e["requestHash"]==r.intent.request_hash,"PACKAGE_LOG_REQUEST_CHANGED")?;
   let started=r.attempted_at.as_deref().map(clock).transpose()?;
   if let Some(t)=started{need(at>=t,"PACKAGE_LOG_CLOCK")?;}
   match kind{
-   "attempt"=>{need(r.phase=="intent"&&at<r.intent.permit.expires_at_ms as i64,"PACKAGE_LOG_REPEAT_OR_EXPIRED")?;r.phase="attempt".into();r.attempted_at=Some(e["at"].as_str().unwrap().into());},
+   "attempt"=>{need(!unresolved&&r.phase=="intent"&&at<r.intent.permit.expires_at_ms as i64,"PACKAGE_LOG_REPEAT_EXPIRED_OR_UNRESOLVED")?;r.phase="attempt".into();r.attempted_at=Some(e["at"].as_str().unwrap().into());},
    "unknown"=>{need(matches!(r.phase.as_str(),"attempt"|"unknown"),"PACKAGE_LOG_UNKNOWN_PHASE")?;need(e["error"]["mayHaveExecuted"]==true,"PACKAGE_LOG_UNKNOWN_ERROR")?;r.phase="unknown".into();r.outcome=Some(e.clone());},
    "ack"=>{need(matches!(r.phase.as_str(),"attempt"|"unknown"),"PACKAGE_LOG_ACK_PHASE")?;let receipt:Receipt=serde_json::from_value(e["receipt"].clone())?;multi_leg::reported_fill(&receipt,&r.intent.basket)?;need(clock(&receipt.request_started_at)? >= started.ok_or("PACKAGE_LOG_NO_ATTEMPT")?&&clock(&receipt.received_at)?<=at,"PACKAGE_LOG_ACK_CLOCK")?;r.phase="ack".into();r.outcome=Some(e.clone());},
    "definitive_zero"=>{need(matches!(r.phase.as_str(),"attempt"|"unknown"),"PACKAGE_LOG_ZERO_PHASE")?;let evidence=response_evidence(&e["evidence"])?;let response=validate_zero(&r.intent,&evidence)?;need(e["response"]==response&&clock(&evidence.request_started_at)? >= started.ok_or("PACKAGE_LOG_NO_ATTEMPT")?&&clock(&evidence.request_started_at)?<=clock(&evidence.received_at)?&&clock(&evidence.received_at)?<=at,"PACKAGE_LOG_ZERO_CLOCK_OR_CHANGED")?;r.phase="definitive_zero".into();r.outcome=Some(e.clone());},
