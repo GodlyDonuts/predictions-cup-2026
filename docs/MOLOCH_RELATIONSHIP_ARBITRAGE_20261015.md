@@ -79,7 +79,35 @@ This incremental floor is suitable as one structural term in a portfolio reserva
 
 The focused suite covers ordinary and exceptional payoff states, exclusion versus exhaustiveness, implication direction, AND/OR/NOT, three-leg packages, within-market complements, missing rule certificates, unknown enums, duplicate/out-of-scope/inconsistent declarations, exact full-depth consumption, malformed unused levels, insufficient depth, fees/buffer, capital and orphan caps, evaporated bids, receipt age/skew/scope, deterministic scan order and marginal portfolio value. A dedicated regression preserves exception-state identity when its payout equals an ordinary binary state.
 
-At initial source delivery, local Windows has no `cargo`; Linux validation is delegated to the parent execution task before publication or integration. Test source being present is not a claim of a passing run. No account request, live order, collateral experiment or runtime change was made by this task. A subsequent evidence update records the exact checked commit and test output.
+The parent execution task reproduced all 31 scanner checks on Linux for the source through `db6dc2d2`. This is mathematical and input-validation evidence, not a live profit result. The subsequent runtime adapter tests are a separate suite and require their own Linux validation. No account request, live order, collateral experiment or runtime change was made by this task.
+
+## Runtime adapter and explicit certificates
+
+`moloch/live-runtime/src/relationship_strategy.rs` now connects the already received official census to the payoff library. It performs no file access or account request. The parent integrates its Cargo path dependency and module separately, leaving ordinary production running during offline development. The adapter receives the `Census`, its original official relationship `Receipt`, fresh normalized books, exact attributed positions, current cash/reservations and a bounded quantity grid.
+
+The original relationship receipt must hash to the census evidence, explicitly identify the tournament in its endpoint, be fresh and parse under the exact SDK scope. Its normalized rows must equal the current cache. A partial first page is insufficient. Mutating a cached relationship cannot reuse the original receipt hash. No price-band or collateral surface is consulted to create a payout.
+
+A `SettlementCertificate` is a reviewed interpretation supplied by an independent rule verifier or the execution owner. This adapter does not read freeform rules and assert that it understands every outcome. A certificate's exact serialized SHA-256 must already appear in a separate trusted allowlist. Merely receiving or loading a certificate must never add its own hash to that allowlist. This is the explicit trust boundary, not a cryptographic signature proving that an API endorsed the interpretation.
+
+Each certificate binds the tournament, canonical relationship ID/version and complete normalized-row digest, original relationship receipt digest, a named verifier and validity window, exact ordered exchange/market/contract IDs and outcome labels, and original official rule receipt hashes. Each raw rule receipt is rehashed, checked against the precise `/markets/{id}` or `/markets/{id}/nodes` path and market echo, and checked for freshness. The certificate must state ordinary binary payouts, complete exceptional payouts and whether the relationship is exhaustive. Missing, unapproved, ambiguous, expired, mismatched or incomplete certificates yield explicit blocked reasons. A changed canonical receipt requires a freshly bound certificate; no silent certificate rebinding occurs.
+
+The first adapter supports ordinary symmetric mutually exclusive and complementary declarations with two or three members. Exclusion exhaustiveness must match both the canonical row and the reviewed certificate. Other relationship types remain visible as blocked unsupported inputs; the adapter does not guess their semantics. A new verified interpretation can be added through checked code and tests.
+
+Gross account cash and attributed bank cash are separate inputs. Available funding is the smaller balance less existing reservations, bounded again by remaining committed capital and package/orphan caps. Collateral advances are absent from the funding input. Physical netting and cross-component holdings remain future execution responsibilities. Current component holdings are used only to report the existing floor and each candidate leg's marginal portfolio floor.
+
+The output deliberately separates privacy surfaces:
+
+* `Analysis.public` contains categorical feed availability, counts, constant blocked-reason codes and `executionAuthority:false`. It contains no account balance, profile, market title, exchange ID, candidate price, private filename or receipt hash.
+* `Analysis.candidates` is deliberately not serializable by default. `PrivateCandidate::private_json()` explicitly emits exact amounts as decimal strings, leg identities, certificate and source references, full-depth cost, payout floor, hard orphan bound and marginal portfolio values for private evidence storage.
+* Every private candidate retains `PACKAGE_AUTHORITY_AND_DURABLE_EXECUTOR_NOT_INTEGRATED`. A mathematically qualifying completed package is not an instruction to bypass the ordinary passive-entry guard, place a taker hedge or submit an order.
+
+Candidate retention is bounded to a configured maximum of 256, while public counts distinguish total positive candidates from the retained best candidates. Ranking is deterministic. This is not a multi-package allocator: plans may share liquidity, cash and contracts and must not be submitted concurrently as if each had independent funding.
+
+## October 15 live census result
+
+The parent execution task reported the first production census at **2026-10-15 09:05:13 UTC**: all requested participant endpoints returned HTTP 200; the official relationship list, constraint list and collateral component list were all empty, with zero active/exhaustive relationships and zero known payout-floor components. The existing ordinary production worker continued. This is an empirically available but empty feature, not a 403 permission failure and not proof that every potentially related contract is unrelated in terminal reality.
+
+The adapter therefore exposes `canonicalFeedState: "available_empty"` with zero candidates for that baseline. Forbidden and unavailable evidence produce different categorical states and blocked reasons. It does not manufacture party pairs to replace missing canonical declarations. Independent authoritative contract-rule verification is a separate research path, and any later support requires exact source-bound logic and exception proof.
 
 ## Continuing the research
 
