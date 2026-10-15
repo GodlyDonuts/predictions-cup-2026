@@ -1,0 +1,2889 @@
+{
+  "all": {
+    "fillObservationDelayMs": {
+      "max": "579292.000000",
+      "min": "3998.000000",
+      "quantityWeightedMean": "26265.553389"
+    },
+    "fills": 86,
+    "historicalBookUpdatesExcludedFromPreExecution": 70,
+    "horizons": {
+      "1000": {
+        "changeComparisonShares": 8958,
+        "changeFromPreExecutionCloseValue": "0.760000",
+        "coverageFills": {
+          "no_book_in_completed_window": 25,
+          "priced": 49,
+          "stale_clock": 12
+        },
+        "coverageShares": {
+          "no_book_in_completed_window": 5119,
+          "priced": 10534,
+          "stale_clock": 5681
+        },
+        "fullQuantityCoveredShares": 10534,
+        "hypotheticalMarkout": "-61.065000",
+        "markMinusPreDecisionQuotedGap": "-68.945000",
+        "negativeFillMarks": 45,
+        "positiveFillMarks": 0,
+        "postBookObservedBeforeFillObservation": 47,
+        "quantityWeightedBookObservationLatenessMs": "7071.802639",
+        "quantityWeightedBookSourceLatenessMs": "667.138283",
+        "quantityWeightedMarkoutPerShare": "-0.005797",
+        "quotedGapComparisonShares": 10534,
+        "zeroFillMarks": 4
+      },
+      "30000": {
+        "changeComparisonShares": 2229,
+        "changeFromPreExecutionCloseValue": "0.725000",
+        "coverageFills": {
+          "no_book_in_completed_window": 41,
+          "priced": 27,
+          "stale_clock": 18
+        },
+        "coverageShares": {
+          "no_book_in_completed_window": 11183,
+          "priced": 2945,
+          "stale_clock": 7206
+        },
+        "fullQuantityCoveredShares": 2945,
+        "hypotheticalMarkout": "-18.325000",
+        "markMinusPreDecisionQuotedGap": "-21.905000",
+        "negativeFillMarks": 25,
+        "positiveFillMarks": 0,
+        "postBookObservedBeforeFillObservation": 0,
+        "quantityWeightedBookObservationLatenessMs": "6165.608149",
+        "quantityWeightedBookSourceLatenessMs": "1330.135940",
+        "quantityWeightedMarkoutPerShare": "-0.006222",
+        "quotedGapComparisonShares": 2945,
+        "zeroFillMarks": 2
+      },
+      "5000": {
+        "changeComparisonShares": 6549,
+        "changeFromPreExecutionCloseValue": "-4.770000",
+        "coverageFills": {
+          "no_book_in_completed_window": 34,
+          "priced": 35,
+          "stale_clock": 17
+        },
+        "coverageShares": {
+          "no_book_in_completed_window": 3969,
+          "priced": 8084,
+          "stale_clock": 9281
+        },
+        "fullQuantityCoveredShares": 8084,
+        "hypotheticalMarkout": "-50.120000",
+        "markMinusPreDecisionQuotedGap": "-58.570000",
+        "negativeFillMarks": 32,
+        "positiveFillMarks": 0,
+        "postBookObservedBeforeFillObservation": 33,
+        "quantityWeightedBookObservationLatenessMs": "4642.321252",
+        "quantityWeightedBookSourceLatenessMs": "1310.209195",
+        "quantityWeightedMarkoutPerShare": "-0.006200",
+        "quotedGapComparisonShares": 8084,
+        "zeroFillMarks": 3
+      },
+      "60000": {
+        "changeComparisonShares": 2772,
+        "changeFromPreExecutionCloseValue": "-3.735000",
+        "coverageFills": {
+          "no_book_in_completed_window": 47,
+          "priced": 22,
+          "stale_clock": 17
+        },
+        "coverageShares": {
+          "no_book_in_completed_window": 14314,
+          "priced": 2783,
+          "stale_clock": 4237
+        },
+        "fullQuantityCoveredShares": 2783,
+        "hypotheticalMarkout": "-21.460000",
+        "markMinusPreDecisionQuotedGap": "-21.515000",
+        "negativeFillMarks": 21,
+        "positiveFillMarks": 0,
+        "postBookObservedBeforeFillObservation": 0,
+        "quantityWeightedBookObservationLatenessMs": "8443.225296",
+        "quantityWeightedBookSourceLatenessMs": "2737.125950",
+        "quantityWeightedMarkoutPerShare": "-0.007711",
+        "quotedGapComparisonShares": 2783,
+        "zeroFillMarks": 1
+      }
+    },
+    "orderDecisionToFillExecutionDelayMs": {
+      "max": "599171.000000",
+      "min": "3272.000000",
+      "quantityWeightedMean": "223004.218243"
+    },
+    "preDecisionCoverage": {
+      "priced": 86
+    },
+    "preExecutionCoverage": {
+      "invalidated_by_gap": 3,
+      "priced": 62,
+      "stale_clock": 21
+    },
+    "preExecutionImmediateClose": {
+      "fullQuantityCoveredShares": 12539,
+      "hypotheticalMarkout": "-85.690000"
+    },
+    "quantity": 21334,
+    "quotedGap": {
+      "earnedSpread": false,
+      "fullQuantityCoveredShares": 21334,
+      "oppositeSideGapValue": "47.895000",
+      "quantityWeightedGapPerShare": "0.002245"
+    },
+    "relativeToPriorBook": {
+      "buy:at_or_below_prior_bid": 4,
+      "sell:at_or_below_prior_bid": 58
+    }
+  },
+  "analysis": "owned_fill_conditional_depth_markouts",
+  "byActionSide": {
+    "buy_NO": {
+      "fillObservationDelayMs": {
+        "max": "41338.000000",
+        "min": "6107.000000",
+        "quantityWeightedMean": "33125.172812"
+      },
+      "fills": 6,
+      "historicalBookUpdatesExcludedFromPreExecution": 22,
+      "horizons": {
+        "1000": {
+          "changeComparisonShares": 0,
+          "changeFromPreExecutionCloseValue": "0.000000",
+          "coverageFills": {
+            "no_book_in_completed_window": 1,
+            "stale_clock": 5
+          },
+          "coverageShares": {
+            "no_book_in_completed_window": 155,
+            "stale_clock": 5215
+          },
+          "fullQuantityCoveredShares": 0,
+          "hypotheticalMarkout": "0.000000",
+          "markMinusPreDecisionQuotedGap": "0.000000",
+          "negativeFillMarks": 0,
+          "positiveFillMarks": 0,
+          "postBookObservedBeforeFillObservation": 0,
+          "quantityWeightedBookObservationLatenessMs": null,
+          "quantityWeightedBookSourceLatenessMs": null,
+          "quantityWeightedMarkoutPerShare": null,
+          "quotedGapComparisonShares": 0,
+          "zeroFillMarks": 0
+        },
+        "30000": {
+          "changeComparisonShares": 0,
+          "changeFromPreExecutionCloseValue": "0.000000",
+          "coverageFills": {
+            "no_book_in_completed_window": 1,
+            "priced": 1,
+            "stale_clock": 4
+          },
+          "coverageShares": {
+            "no_book_in_completed_window": 525,
+            "priced": 716,
+            "stale_clock": 4129
+          },
+          "fullQuantityCoveredShares": 716,
+          "hypotheticalMarkout": "-3.580000",
+          "markMinusPreDecisionQuotedGap": "-7.160000",
+          "negativeFillMarks": 1,
+          "positiveFillMarks": 0,
+          "postBookObservedBeforeFillObservation": 0,
+          "quantityWeightedBookObservationLatenessMs": "3908.000000",
+          "quantityWeightedBookSourceLatenessMs": "735.237200",
+          "quantityWeightedMarkoutPerShare": "-0.005000",
+          "quotedGapComparisonShares": 716,
+          "zeroFillMarks": 0
+        },
+        "5000": {
+          "changeComparisonShares": 155,
+          "changeFromPreExecutionCloseValue": "0.000000",
+          "coverageFills": {
+            "priced": 1,
+            "stale_clock": 5
+          },
+          "coverageShares": {
+            "priced": 155,
+            "stale_clock": 5215
+          },
+          "fullQuantityCoveredShares": 155,
+          "hypotheticalMarkout": "0.000000",
+          "markMinusPreDecisionQuotedGap": "-0.775000",
+          "negativeFillMarks": 0,
+          "positiveFillMarks": 0,
+          "postBookObservedBeforeFillObservation": 1,
+          "quantityWeightedBookObservationLatenessMs": "2307.000000",
+          "quantityWeightedBookSourceLatenessMs": "2166.528000",
+          "quantityWeightedMarkoutPerShare": "0.000000",
+          "quotedGapComparisonShares": 155,
+          "zeroFillMarks": 1
+        },
+        "60000": {
+          "changeComparisonShares": 0,
+          "changeFromPreExecutionCloseValue": "0.000000",
+          "coverageFills": {
+            "no_book_in_completed_window": 3,
+            "stale_clock": 3
+          },
+          "coverageShares": {
+            "no_book_in_completed_window": 3974,
+            "stale_clock": 1396
+          },
+          "fullQuantityCoveredShares": 0,
+          "hypotheticalMarkout": "0.000000",
+          "markMinusPreDecisionQuotedGap": "0.000000",
+          "negativeFillMarks": 0,
+          "positiveFillMarks": 0,
+          "postBookObservedBeforeFillObservation": 0,
+          "quantityWeightedBookObservationLatenessMs": null,
+          "quantityWeightedBookSourceLatenessMs": null,
+          "quantityWeightedMarkoutPerShare": null,
+          "quotedGapComparisonShares": 0,
+          "zeroFillMarks": 0
+        }
+      },
+      "orderDecisionToFillExecutionDelayMs": {
+        "max": "599171.000000",
+        "min": "200418.000000",
+        "quantityWeightedMean": "484746.321415"
+      },
+      "preDecisionCoverage": {
+        "priced": 6
+      },
+      "preExecutionCoverage": {
+        "priced": 2,
+        "stale_clock": 4
+      },
+      "preExecutionImmediateClose": {
+        "fullQuantityCoveredShares": 680,
+        "hypotheticalMarkout": "0.000000"
+      },
+      "quantity": 5370,
+      "quotedGap": {
+        "earnedSpread": false,
+        "fullQuantityCoveredShares": 5370,
+        "oppositeSideGapValue": "26.850000",
+        "quantityWeightedGapPerShare": "0.005000"
+      },
+      "relativeToPriorBook": {
+        "buy:at_or_below_prior_bid": 2
+      }
+    },
+    "buy_YES": {
+      "fillObservationDelayMs": {
+        "max": "579292.000000",
+        "min": "6981.000000",
+        "quantityWeightedMean": "36033.662642"
+      },
+      "fills": 19,
+      "historicalBookUpdatesExcludedFromPreExecution": 9,
+      "horizons": {
+        "1000": {
+          "changeComparisonShares": 0,
+          "changeFromPreExecutionCloseValue": "0.000000",
+          "coverageFills": {
+            "no_book_in_completed_window": 16,
+            "priced": 1,
+            "stale_clock": 2
+          },
+          "coverageShares": {
+            "no_book_in_completed_window": 2482,
+            "priced": 1524,
+            "stale_clock": 52
+          },
+          "fullQuantityCoveredShares": 1524,
+          "hypotheticalMarkout": "0.000000",
+          "markMinusPreDecisionQuotedGap": "-7.620000",
+          "negativeFillMarks": 0,
+          "positiveFillMarks": 0,
+          "postBookObservedBeforeFillObservation": 1,
+          "quantityWeightedBookObservationLatenessMs": "7470.000000",
+          "quantityWeightedBookSourceLatenessMs": "1238.410600",
+          "quantityWeightedMarkoutPerShare": "0.000000",
+          "quotedGapComparisonShares": 1524,
+          "zeroFillMarks": 1
+        },
+        "30000": {
+          "changeComparisonShares": 0,
+          "changeFromPreExecutionCloseValue": "0.000000",
+          "coverageFills": {
+            "no_book_in_completed_window": 17,
+            "stale_clock": 2
+          },
+          "coverageShares": {
+            "no_book_in_completed_window": 4006,
+            "stale_clock": 52
+          },
+          "fullQuantityCoveredShares": 0,
+          "hypotheticalMarkout": "0.000000",
+          "markMinusPreDecisionQuotedGap": "0.000000",
+          "negativeFillMarks": 0,
+          "positiveFillMarks": 0,
+          "postBookObservedBeforeFillObservation": 0,
+          "quantityWeightedBookObservationLatenessMs": null,
+          "quantityWeightedBookSourceLatenessMs": null,
+          "quantityWeightedMarkoutPerShare": null,
+          "quotedGapComparisonShares": 0,
+          "zeroFillMarks": 0
+        },
+        "5000": {
+          "changeComparisonShares": 0,
+          "changeFromPreExecutionCloseValue": "0.000000",
+          "coverageFills": {
+            "no_book_in_completed_window": 16,
+            "priced": 1,
+            "stale_clock": 2
+          },
+          "coverageShares": {
+            "no_book_in_completed_window": 385,
+            "priced": 1524,
+            "stale_clock": 2149
+          },
+          "fullQuantityCoveredShares": 1524,
+          "hypotheticalMarkout": "0.000000",
+          "markMinusPreDecisionQuotedGap": "-7.620000",
+          "negativeFillMarks": 0,
+          "positiveFillMarks": 0,
+          "postBookObservedBeforeFillObservation": 1,
+          "quantityWeightedBookObservationLatenessMs": "3965.000000",
+          "quantityWeightedBookSourceLatenessMs": "1249.655700",
+          "quantityWeightedMarkoutPerShare": "0.000000",
+          "quotedGapComparisonShares": 1524,
+          "zeroFillMarks": 1
+        },
+        "60000": {
+          "changeComparisonShares": 0,
+          "changeFromPreExecutionCloseValue": "0.000000",
+          "coverageFills": {
+            "no_book_in_completed_window": 17,
+            "stale_clock": 2
+          },
+          "coverageShares": {
+            "no_book_in_completed_window": 4006,
+            "stale_clock": 52
+          },
+          "fullQuantityCoveredShares": 0,
+          "hypotheticalMarkout": "0.000000",
+          "markMinusPreDecisionQuotedGap": "0.000000",
+          "negativeFillMarks": 0,
+          "positiveFillMarks": 0,
+          "postBookObservedBeforeFillObservation": 0,
+          "quantityWeightedBookObservationLatenessMs": null,
+          "quantityWeightedBookSourceLatenessMs": null,
+          "quantityWeightedMarkoutPerShare": null,
+          "quotedGapComparisonShares": 0,
+          "zeroFillMarks": 0
+        }
+      },
+      "orderDecisionToFillExecutionDelayMs": {
+        "max": "561176.000000",
+        "min": "81372.000000",
+        "quantityWeightedMean": "510208.266880"
+      },
+      "preDecisionCoverage": {
+        "priced": 19
+      },
+      "preExecutionCoverage": {
+        "invalidated_by_gap": 3,
+        "priced": 2,
+        "stale_clock": 14
+      },
+      "preExecutionImmediateClose": {
+        "fullQuantityCoveredShares": 52,
+        "hypotheticalMarkout": "0.000000"
+      },
+      "quantity": 4058,
+      "quotedGap": {
+        "earnedSpread": false,
+        "fullQuantityCoveredShares": 4058,
+        "oppositeSideGapValue": "20.550000",
+        "quantityWeightedGapPerShare": "0.005064"
+      },
+      "relativeToPriorBook": {
+        "buy:at_or_below_prior_bid": 2
+      }
+    },
+    "sell_NO": {
+      "fillObservationDelayMs": {
+        "max": "246220.000000",
+        "min": "3998.000000",
+        "quantityWeightedMean": "22421.646279"
+      },
+      "fills": 44,
+      "historicalBookUpdatesExcludedFromPreExecution": 26,
+      "horizons": {
+        "1000": {
+          "changeComparisonShares": 4922,
+          "changeFromPreExecutionCloseValue": "0.000000",
+          "coverageFills": {
+            "no_book_in_completed_window": 8,
+            "priced": 32,
+            "stale_clock": 4
+          },
+          "coverageShares": {
+            "no_book_in_completed_window": 2482,
+            "priced": 4974,
+            "stale_clock": 392
+          },
+          "fullQuantityCoveredShares": 4974,
+          "hypotheticalMarkout": "-32.775000",
+          "markMinusPreDecisionQuotedGap": "-33.035000",
+          "negativeFillMarks": 31,
+          "positiveFillMarks": 0,
+          "postBookObservedBeforeFillObservation": 30,
+          "quantityWeightedBookObservationLatenessMs": "7137.677121",
+          "quantityWeightedBookSourceLatenessMs": "615.473528",
+          "quantityWeightedMarkoutPerShare": "-0.006589",
+          "quotedGapComparisonShares": 4974,
+          "zeroFillMarks": 1
+        },
+        "30000": {
+          "changeComparisonShares": 1314,
+          "changeFromPreExecutionCloseValue": "0.000000",
+          "coverageFills": {
+            "no_book_in_completed_window": 16,
+            "priced": 19,
+            "stale_clock": 9
+          },
+          "coverageShares": {
+            "no_book_in_completed_window": 4484,
+            "priced": 1314,
+            "stale_clock": 2050
+          },
+          "fullQuantityCoveredShares": 1314,
+          "hypotheticalMarkout": "-6.570000",
+          "markMinusPreDecisionQuotedGap": "-6.570000",
+          "negativeFillMarks": 19,
+          "positiveFillMarks": 0,
+          "postBookObservedBeforeFillObservation": 0,
+          "quantityWeightedBookObservationLatenessMs": "7016.270167",
+          "quantityWeightedBookSourceLatenessMs": "1595.078117",
+          "quantityWeightedMarkoutPerShare": "-0.005000",
+          "quotedGapComparisonShares": 1314,
+          "zeroFillMarks": 0
+        },
+        "5000": {
+          "changeComparisonShares": 3504,
+          "changeFromPreExecutionCloseValue": "-0.300000",
+          "coverageFills": {
+            "no_book_in_completed_window": 13,
+            "priced": 23,
+            "stale_clock": 8
+          },
+          "coverageShares": {
+            "no_book_in_completed_window": 2936,
+            "priced": 3515,
+            "stale_clock": 1397
+          },
+          "fullQuantityCoveredShares": 3515,
+          "hypotheticalMarkout": "-25.985000",
+          "markMinusPreDecisionQuotedGap": "-26.040000",
+          "negativeFillMarks": 23,
+          "positiveFillMarks": 0,
+          "postBookObservedBeforeFillObservation": 21,
+          "quantityWeightedBookObservationLatenessMs": "5634.576671",
+          "quantityWeightedBookSourceLatenessMs": "1440.337222",
+          "quantityWeightedMarkoutPerShare": "-0.007393",
+          "quotedGapComparisonShares": 3515,
+          "zeroFillMarks": 0
+        },
+        "60000": {
+          "changeComparisonShares": 1091,
+          "changeFromPreExecutionCloseValue": "0.000000",
+          "coverageFills": {
+            "no_book_in_completed_window": 22,
+            "priced": 15,
+            "stale_clock": 7
+          },
+          "coverageShares": {
+            "no_book_in_completed_window": 4947,
+            "priced": 1102,
+            "stale_clock": 1799
+          },
+          "fullQuantityCoveredShares": 1102,
+          "hypotheticalMarkout": "-5.510000",
+          "markMinusPreDecisionQuotedGap": "-5.565000",
+          "negativeFillMarks": 15,
+          "positiveFillMarks": 0,
+          "postBookObservedBeforeFillObservation": 0,
+          "quantityWeightedBookObservationLatenessMs": "6655.853902",
+          "quantityWeightedBookSourceLatenessMs": "2067.238543",
+          "quantityWeightedMarkoutPerShare": "-0.005000",
+          "quotedGapComparisonShares": 1102,
+          "zeroFillMarks": 0
+        }
+      },
+      "orderDecisionToFillExecutionDelayMs": {
+        "max": "267586.000000",
+        "min": "3306.000000",
+        "quantityWeightedMean": "8135.315622"
+      },
+      "preDecisionCoverage": {
+        "priced": 44
+      },
+      "preExecutionCoverage": {
+        "priced": 41,
+        "stale_clock": 3
+      },
+      "preExecutionImmediateClose": {
+        "fullQuantityCoveredShares": 7749,
+        "hypotheticalMarkout": "-56.530000"
+      },
+      "quantity": 7848,
+      "quotedGap": {
+        "earnedSpread": false,
+        "fullQuantityCoveredShares": 7848,
+        "oppositeSideGapValue": "0.495000",
+        "quantityWeightedGapPerShare": "0.000063"
+      },
+      "relativeToPriorBook": {
+        "sell:at_or_below_prior_bid": 41
+      }
+    },
+    "sell_YES": {
+      "fillObservationDelayMs": {
+        "max": "89260.000000",
+        "min": "6935.000000",
+        "quantityWeightedMean": "14853.981025"
+      },
+      "fills": 17,
+      "historicalBookUpdatesExcludedFromPreExecution": 13,
+      "horizons": {
+        "1000": {
+          "changeComparisonShares": 4036,
+          "changeFromPreExecutionCloseValue": "0.760000",
+          "coverageFills": {
+            "priced": 16,
+            "stale_clock": 1
+          },
+          "coverageShares": {
+            "priced": 4036,
+            "stale_clock": 22
+          },
+          "fullQuantityCoveredShares": 4036,
+          "hypotheticalMarkout": "-28.290000",
+          "markMinusPreDecisionQuotedGap": "-28.290000",
+          "negativeFillMarks": 14,
+          "positiveFillMarks": 0,
+          "postBookObservedBeforeFillObservation": 16,
+          "quantityWeightedBookObservationLatenessMs": "6840.258424",
+          "quantityWeightedBookSourceLatenessMs": "515.097025",
+          "quantityWeightedMarkoutPerShare": "-0.007009",
+          "quotedGapComparisonShares": 4036,
+          "zeroFillMarks": 2
+        },
+        "30000": {
+          "changeComparisonShares": 915,
+          "changeFromPreExecutionCloseValue": "0.725000",
+          "coverageFills": {
+            "no_book_in_completed_window": 7,
+            "priced": 7,
+            "stale_clock": 3
+          },
+          "coverageShares": {
+            "no_book_in_completed_window": 2168,
+            "priced": 915,
+            "stale_clock": 975
+          },
+          "fullQuantityCoveredShares": 915,
+          "hypotheticalMarkout": "-8.175000",
+          "markMinusPreDecisionQuotedGap": "-8.175000",
+          "negativeFillMarks": 5,
+          "positiveFillMarks": 0,
+          "postBookObservedBeforeFillObservation": 0,
+          "quantityWeightedBookObservationLatenessMs": "6710.610929",
+          "quantityWeightedBookSourceLatenessMs": "1415.177991",
+          "quantityWeightedMarkoutPerShare": "-0.008934",
+          "quotedGapComparisonShares": 915,
+          "zeroFillMarks": 2
+        },
+        "5000": {
+          "changeComparisonShares": 2890,
+          "changeFromPreExecutionCloseValue": "-4.470000",
+          "coverageFills": {
+            "no_book_in_completed_window": 5,
+            "priced": 10,
+            "stale_clock": 2
+          },
+          "coverageShares": {
+            "no_book_in_completed_window": 648,
+            "priced": 2890,
+            "stale_clock": 520
+          },
+          "fullQuantityCoveredShares": 2890,
+          "hypotheticalMarkout": "-24.135000",
+          "markMinusPreDecisionQuotedGap": "-24.135000",
+          "negativeFillMarks": 9,
+          "positiveFillMarks": 0,
+          "postBookObservedBeforeFillObservation": 10,
+          "quantityWeightedBookObservationLatenessMs": "3917.904152",
+          "quantityWeightedBookSourceLatenessMs": "1137.944177",
+          "quantityWeightedMarkoutPerShare": "-0.008351",
+          "quotedGapComparisonShares": 2890,
+          "zeroFillMarks": 1
+        },
+        "60000": {
+          "changeComparisonShares": 1681,
+          "changeFromPreExecutionCloseValue": "-3.735000",
+          "coverageFills": {
+            "no_book_in_completed_window": 5,
+            "priced": 7,
+            "stale_clock": 5
+          },
+          "coverageShares": {
+            "no_book_in_completed_window": 1387,
+            "priced": 1681,
+            "stale_clock": 990
+          },
+          "fullQuantityCoveredShares": 1681,
+          "hypotheticalMarkout": "-15.950000",
+          "markMinusPreDecisionQuotedGap": "-15.950000",
+          "negativeFillMarks": 6,
+          "positiveFillMarks": 0,
+          "postBookObservedBeforeFillObservation": 0,
+          "quantityWeightedBookObservationLatenessMs": "9614.958358",
+          "quantityWeightedBookSourceLatenessMs": "3176.278788",
+          "quantityWeightedMarkoutPerShare": "-0.009488",
+          "quotedGapComparisonShares": 1681,
+          "zeroFillMarks": 1
+        }
+      },
+      "orderDecisionToFillExecutionDelayMs": {
+        "max": "9652.000000",
+        "min": "3272.000000",
+        "quantityWeightedMean": "4981.060128"
+      },
+      "preDecisionCoverage": {
+        "priced": 17
+      },
+      "preExecutionCoverage": {
+        "priced": 17
+      },
+      "preExecutionImmediateClose": {
+        "fullQuantityCoveredShares": 4058,
+        "hypotheticalMarkout": "-29.160000"
+      },
+      "quantity": 4058,
+      "quotedGap": {
+        "earnedSpread": false,
+        "fullQuantityCoveredShares": 4058,
+        "oppositeSideGapValue": "0.000000",
+        "quantityWeightedGapPerShare": "0.000000"
+      },
+      "relativeToPriorBook": {
+        "sell:at_or_below_prior_bid": 17
+      }
+    }
+  },
+  "clocks": {
+    "fillExecutionClock": "actual official executedAt",
+    "fillObservationClock": "first actual-fill processedAt matching report fill.at",
+    "observerDecisionClock": "order.createdAt millisecond lower bound",
+    "postHorizonClock": "book sourceAt relative to actual fill executedAt",
+    "preBookAvailabilityClock": "book processedAt with source/request/receipt clocks bounded"
+  },
+  "journalEventCounts": {
+    "actual_fill": 97,
+    "book": 56083,
+    "duplicateActualFillEvents": 11,
+    "gap": 15974,
+    "otherEvents": 13300
+  },
+  "limitations": [
+    "Owned fills alone are a selected sample; these are conditional diagnostics, not an unconditional strategy estimate.",
+    "Hypothetical full-depth closes do not establish future execution or actual realized P&L; horizons are separate, never additive trades.",
+    "Resting own liquidity and intervening traders are not removed; displayed depth can change before any actual order arrives.",
+    "Prior-book price relation does not identify maker/taker status or aggressor; public trades never create owned fills.",
+    "Order decision clock uses the conservative millisecond lower bound in order.createdAt; submillisecond same-event books may be excluded.",
+    "REST provenance comes from recorded native normalized sourceRef/clocks; raw receipt files and fresh account state are not independently authenticated.",
+    "Raw native row-body SHA256 links and the supplied report head are verified without number reencoding; this is not native engine replay or manifest authentication."
+  ],
+  "observedBookQualityCounts": {
+    "invalidated_book": 743,
+    "stale_clock": 20888,
+    "valid": 34452
+  },
+  "parameters": {
+    "boundsProvenance": "explicit_diagnostic_bounds_not_inferred_runtime_policy",
+    "fees": "0.000000",
+    "horizonsAfterExecutionMs": [
+      1000,
+      5000,
+      30000,
+      60000
+    ],
+    "maxBookAgeMs": 10000,
+    "postWindowMs": 5000
+  },
+  "perMarket": [
+    {
+      "exchangeId": "863",
+      "fillObservationDelayMs": {
+        "max": "89260.000000",
+        "min": "11429.000000",
+        "quantityWeightedMean": "50344.500000"
+      },
+      "fills": 2,
+      "historicalBookUpdatesExcludedFromPreExecution": 1,
+      "horizons": {
+        "1000": {
+          "changeComparisonShares": 0,
+          "changeFromPreExecutionCloseValue": "0.000000",
+          "coverageFills": {
+            "stale_clock": 2
+          },
+          "coverageShares": {
+            "stale_clock": 44
+          },
+          "fullQuantityCoveredShares": 0,
+          "hypotheticalMarkout": "0.000000",
+          "markMinusPreDecisionQuotedGap": "0.000000",
+          "negativeFillMarks": 0,
+          "positiveFillMarks": 0,
+          "postBookObservedBeforeFillObservation": 0,
+          "quantityWeightedBookObservationLatenessMs": null,
+          "quantityWeightedBookSourceLatenessMs": null,
+          "quantityWeightedMarkoutPerShare": null,
+          "quotedGapComparisonShares": 0,
+          "zeroFillMarks": 0
+        },
+        "30000": {
+          "changeComparisonShares": 0,
+          "changeFromPreExecutionCloseValue": "0.000000",
+          "coverageFills": {
+            "no_book_in_completed_window": 1,
+            "stale_clock": 1
+          },
+          "coverageShares": {
+            "no_book_in_completed_window": 22,
+            "stale_clock": 22
+          },
+          "fullQuantityCoveredShares": 0,
+          "hypotheticalMarkout": "0.000000",
+          "markMinusPreDecisionQuotedGap": "0.000000",
+          "negativeFillMarks": 0,
+          "positiveFillMarks": 0,
+          "postBookObservedBeforeFillObservation": 0,
+          "quantityWeightedBookObservationLatenessMs": null,
+          "quantityWeightedBookSourceLatenessMs": null,
+          "quantityWeightedMarkoutPerShare": null,
+          "quotedGapComparisonShares": 0,
+          "zeroFillMarks": 0
+        },
+        "5000": {
+          "changeComparisonShares": 22,
+          "changeFromPreExecutionCloseValue": "0.000000",
+          "coverageFills": {
+            "no_book_in_completed_window": 1,
+            "priced": 1
+          },
+          "coverageShares": {
+            "no_book_in_completed_window": 22,
+            "priced": 22
+          },
+          "fullQuantityCoveredShares": 22,
+          "hypotheticalMarkout": "-0.110000",
+          "markMinusPreDecisionQuotedGap": "-0.110000",
+          "negativeFillMarks": 1,
+          "positiveFillMarks": 0,
+          "postBookObservedBeforeFillObservation": 1,
+          "quantityWeightedBookObservationLatenessMs": "9075.000000",
+          "quantityWeightedBookSourceLatenessMs": "1370.855300",
+          "quantityWeightedMarkoutPerShare": "-0.005000",
+          "quotedGapComparisonShares": 22,
+          "zeroFillMarks": 0
+        },
+        "60000": {
+          "changeComparisonShares": 0,
+          "changeFromPreExecutionCloseValue": "0.000000",
+          "coverageFills": {
+            "no_book_in_completed_window": 1,
+            "stale_clock": 1
+          },
+          "coverageShares": {
+            "no_book_in_completed_window": 22,
+            "stale_clock": 22
+          },
+          "fullQuantityCoveredShares": 0,
+          "hypotheticalMarkout": "0.000000",
+          "markMinusPreDecisionQuotedGap": "0.000000",
+          "negativeFillMarks": 0,
+          "positiveFillMarks": 0,
+          "postBookObservedBeforeFillObservation": 0,
+          "quantityWeightedBookObservationLatenessMs": null,
+          "quantityWeightedBookSourceLatenessMs": null,
+          "quantityWeightedMarkoutPerShare": null,
+          "quotedGapComparisonShares": 0,
+          "zeroFillMarks": 0
+        }
+      },
+      "marketId": "174",
+      "orderDecisionToFillExecutionDelayMs": {
+        "max": "81372.000000",
+        "min": "9652.000000",
+        "quantityWeightedMean": "45512.000000"
+      },
+      "preDecisionCoverage": {
+        "priced": 2
+      },
+      "preExecutionCoverage": {
+        "priced": 2
+      },
+      "preExecutionImmediateClose": {
+        "fullQuantityCoveredShares": 44,
+        "hypotheticalMarkout": "-0.110000"
+      },
+      "quantity": 44,
+      "quotedGap": {
+        "earnedSpread": false,
+        "fullQuantityCoveredShares": 44,
+        "oppositeSideGapValue": "0.220000",
+        "quantityWeightedGapPerShare": "0.005000"
+      },
+      "relativeToPriorBook": {
+        "buy:at_or_below_prior_bid": 1,
+        "sell:at_or_below_prior_bid": 1
+      }
+    },
+    {
+      "exchangeId": "885",
+      "fillObservationDelayMs": {
+        "max": "41338.000000",
+        "min": "7343.000000",
+        "quantityWeightedMean": "27231.193214"
+      },
+      "fills": 25,
+      "historicalBookUpdatesExcludedFromPreExecution": 30,
+      "horizons": {
+        "1000": {
+          "changeComparisonShares": 3087,
+          "changeFromPreExecutionCloseValue": "0.000000",
+          "coverageFills": {
+            "no_book_in_completed_window": 4,
+            "priced": 20,
+            "stale_clock": 1
+          },
+          "coverageShares": {
+            "no_book_in_completed_window": 435,
+            "priced": 3087,
+            "stale_clock": 3522
+          },
+          "fullQuantityCoveredShares": 3087,
+          "hypotheticalMarkout": "-21.120000",
+          "markMinusPreDecisionQuotedGap": "-21.120000",
+          "negativeFillMarks": 20,
+          "positiveFillMarks": 0,
+          "postBookObservedBeforeFillObservation": 20,
+          "quantityWeightedBookObservationLatenessMs": "7046.352122",
+          "quantityWeightedBookSourceLatenessMs": "437.024845",
+          "quantityWeightedMarkoutPerShare": "-0.006842",
+          "quotedGapComparisonShares": 3087,
+          "zeroFillMarks": 0
+        },
+        "30000": {
+          "changeComparisonShares": 300,
+          "changeFromPreExecutionCloseValue": "0.000000",
+          "coverageFills": {
+            "no_book_in_completed_window": 8,
+            "priced": 13,
+            "stale_clock": 4
+          },
+          "coverageShares": {
+            "no_book_in_completed_window": 2040,
+            "priced": 300,
+            "stale_clock": 4704
+          },
+          "fullQuantityCoveredShares": 300,
+          "hypotheticalMarkout": "-1.500000",
+          "markMinusPreDecisionQuotedGap": "-1.500000",
+          "negativeFillMarks": 13,
+          "positiveFillMarks": 0,
+          "postBookObservedBeforeFillObservation": 0,
+          "quantityWeightedBookObservationLatenessMs": "4677.583333",
+          "quantityWeightedBookSourceLatenessMs": "1333.327682",
+          "quantityWeightedMarkoutPerShare": "-0.005000",
+          "quotedGapComparisonShares": 300,
+          "zeroFillMarks": 0
+        },
+        "5000": {
+          "changeComparisonShares": 1923,
+          "changeFromPreExecutionCloseValue": "-0.300000",
+          "coverageFills": {
+            "no_book_in_completed_window": 7,
+            "priced": 15,
+            "stale_clock": 3
+          },
+          "coverageShares": {
+            "no_book_in_completed_window": 565,
+            "priced": 1923,
+            "stale_clock": 4556
+          },
+          "fullQuantityCoveredShares": 1923,
+          "hypotheticalMarkout": "-15.600000",
+          "markMinusPreDecisionQuotedGap": "-15.600000",
+          "negativeFillMarks": 15,
+          "positiveFillMarks": 0,
+          "postBookObservedBeforeFillObservation": 15,
+          "quantityWeightedBookObservationLatenessMs": "4920.708788",
+          "quantityWeightedBookSourceLatenessMs": "1126.684594",
+          "quantityWeightedMarkoutPerShare": "-0.008112",
+          "quotedGapComparisonShares": 1923,
+          "zeroFillMarks": 0
+        },
+        "60000": {
+          "changeComparisonShares": 347,
+          "changeFromPreExecutionCloseValue": "0.000000",
+          "coverageFills": {
+            "no_book_in_completed_window": 14,
+            "priced": 6,
+            "stale_clock": 5
+          },
+          "coverageShares": {
+            "no_book_in_completed_window": 5614,
+            "priced": 347,
+            "stale_clock": 1083
+          },
+          "fullQuantityCoveredShares": 347,
+          "hypotheticalMarkout": "-1.735000",
+          "markMinusPreDecisionQuotedGap": "-1.735000",
+          "negativeFillMarks": 6,
+          "positiveFillMarks": 0,
+          "postBookObservedBeforeFillObservation": 0,
+          "quantityWeightedBookObservationLatenessMs": "6255.677233",
+          "quantityWeightedBookSourceLatenessMs": "2750.907802",
+          "quantityWeightedMarkoutPerShare": "-0.005000",
+          "quotedGapComparisonShares": 347,
+          "zeroFillMarks": 0
+        }
+      },
+      "marketId": "196",
+      "orderDecisionToFillExecutionDelayMs": {
+        "max": "599171.000000",
+        "min": "3327.000000",
+        "quantityWeightedMean": "301896.974730"
+      },
+      "preDecisionCoverage": {
+        "priced": 25
+      },
+      "preExecutionCoverage": {
+        "priced": 24,
+        "stale_clock": 1
+      },
+      "preExecutionImmediateClose": {
+        "fullQuantityCoveredShares": 3522,
+        "hypotheticalMarkout": "-23.295000"
+      },
+      "quantity": 7044,
+      "quotedGap": {
+        "earnedSpread": false,
+        "fullQuantityCoveredShares": 7044,
+        "oppositeSideGapValue": "17.610000",
+        "quantityWeightedGapPerShare": "0.002500"
+      },
+      "relativeToPriorBook": {
+        "sell:at_or_below_prior_bid": 24
+      }
+    },
+    {
+      "exchangeId": "942",
+      "fillObservationDelayMs": {
+        "max": "318178.000000",
+        "min": "8530.000000",
+        "quantityWeightedMean": "118034.360399"
+      },
+      "fills": 13,
+      "historicalBookUpdatesExcludedFromPreExecution": 0,
+      "horizons": {
+        "1000": {
+          "changeComparisonShares": 351,
+          "changeFromPreExecutionCloseValue": "0.000000",
+          "coverageFills": {
+            "no_book_in_completed_window": 12,
+            "priced": 1
+          },
+          "coverageShares": {
+            "no_book_in_completed_window": 351,
+            "priced": 351
+          },
+          "fullQuantityCoveredShares": 351,
+          "hypotheticalMarkout": "-1.755000",
+          "markMinusPreDecisionQuotedGap": "-1.755000",
+          "negativeFillMarks": 1,
+          "positiveFillMarks": 0,
+          "postBookObservedBeforeFillObservation": 1,
+          "quantityWeightedBookObservationLatenessMs": "5386.000000",
+          "quantityWeightedBookSourceLatenessMs": "513.585500",
+          "quantityWeightedMarkoutPerShare": "-0.005000",
+          "quotedGapComparisonShares": 351,
+          "zeroFillMarks": 0
+        },
+        "30000": {
+          "changeComparisonShares": 0,
+          "changeFromPreExecutionCloseValue": "0.000000",
+          "coverageFills": {
+            "no_book_in_completed_window": 13
+          },
+          "coverageShares": {
+            "no_book_in_completed_window": 702
+          },
+          "fullQuantityCoveredShares": 0,
+          "hypotheticalMarkout": "0.000000",
+          "markMinusPreDecisionQuotedGap": "0.000000",
+          "negativeFillMarks": 0,
+          "positiveFillMarks": 0,
+          "postBookObservedBeforeFillObservation": 0,
+          "quantityWeightedBookObservationLatenessMs": null,
+          "quantityWeightedBookSourceLatenessMs": null,
+          "quantityWeightedMarkoutPerShare": null,
+          "quotedGapComparisonShares": 0,
+          "zeroFillMarks": 0
+        },
+        "5000": {
+          "changeComparisonShares": 0,
+          "changeFromPreExecutionCloseValue": "0.000000",
+          "coverageFills": {
+            "no_book_in_completed_window": 13
+          },
+          "coverageShares": {
+            "no_book_in_completed_window": 702
+          },
+          "fullQuantityCoveredShares": 0,
+          "hypotheticalMarkout": "0.000000",
+          "markMinusPreDecisionQuotedGap": "0.000000",
+          "negativeFillMarks": 0,
+          "positiveFillMarks": 0,
+          "postBookObservedBeforeFillObservation": 0,
+          "quantityWeightedBookObservationLatenessMs": null,
+          "quantityWeightedBookSourceLatenessMs": null,
+          "quantityWeightedMarkoutPerShare": null,
+          "quotedGapComparisonShares": 0,
+          "zeroFillMarks": 0
+        },
+        "60000": {
+          "changeComparisonShares": 0,
+          "changeFromPreExecutionCloseValue": "0.000000",
+          "coverageFills": {
+            "no_book_in_completed_window": 13
+          },
+          "coverageShares": {
+            "no_book_in_completed_window": 702
+          },
+          "fullQuantityCoveredShares": 0,
+          "hypotheticalMarkout": "0.000000",
+          "markMinusPreDecisionQuotedGap": "0.000000",
+          "negativeFillMarks": 0,
+          "positiveFillMarks": 0,
+          "postBookObservedBeforeFillObservation": 0,
+          "quantityWeightedBookObservationLatenessMs": null,
+          "quantityWeightedBookSourceLatenessMs": null,
+          "quantityWeightedMarkoutPerShare": null,
+          "quotedGapComparisonShares": 0,
+          "zeroFillMarks": 0
+        }
+      },
+      "marketId": "253",
+      "orderDecisionToFillExecutionDelayMs": {
+        "max": "349799.000000",
+        "min": "3331.000000",
+        "quantityWeightedMean": "92933.643875"
+      },
+      "preDecisionCoverage": {
+        "priced": 13
+      },
+      "preExecutionCoverage": {
+        "priced": 1,
+        "stale_clock": 12
+      },
+      "preExecutionImmediateClose": {
+        "fullQuantityCoveredShares": 351,
+        "hypotheticalMarkout": "-1.755000"
+      },
+      "quantity": 702,
+      "quotedGap": {
+        "earnedSpread": false,
+        "fullQuantityCoveredShares": 702,
+        "oppositeSideGapValue": "1.755000",
+        "quantityWeightedGapPerShare": "0.002500"
+      },
+      "relativeToPriorBook": {
+        "sell:at_or_below_prior_bid": 1
+      }
+    },
+    {
+      "exchangeId": "948",
+      "fillObservationDelayMs": {
+        "max": "246220.000000",
+        "min": "14162.000000",
+        "quantityWeightedMean": "40709.528349"
+      },
+      "fills": 2,
+      "historicalBookUpdatesExcludedFromPreExecution": 0,
+      "horizons": {
+        "1000": {
+          "changeComparisonShares": 0,
+          "changeFromPreExecutionCloseValue": "0.000000",
+          "coverageFills": {
+            "no_book_in_completed_window": 2
+          },
+          "coverageShares": {
+            "no_book_in_completed_window": 1993
+          },
+          "fullQuantityCoveredShares": 0,
+          "hypotheticalMarkout": "0.000000",
+          "markMinusPreDecisionQuotedGap": "0.000000",
+          "negativeFillMarks": 0,
+          "positiveFillMarks": 0,
+          "postBookObservedBeforeFillObservation": 0,
+          "quantityWeightedBookObservationLatenessMs": null,
+          "quantityWeightedBookSourceLatenessMs": null,
+          "quantityWeightedMarkoutPerShare": null,
+          "quotedGapComparisonShares": 0,
+          "zeroFillMarks": 0
+        },
+        "30000": {
+          "changeComparisonShares": 0,
+          "changeFromPreExecutionCloseValue": "0.000000",
+          "coverageFills": {
+            "no_book_in_completed_window": 2
+          },
+          "coverageShares": {
+            "no_book_in_completed_window": 1993
+          },
+          "fullQuantityCoveredShares": 0,
+          "hypotheticalMarkout": "0.000000",
+          "markMinusPreDecisionQuotedGap": "0.000000",
+          "negativeFillMarks": 0,
+          "positiveFillMarks": 0,
+          "postBookObservedBeforeFillObservation": 0,
+          "quantityWeightedBookObservationLatenessMs": null,
+          "quantityWeightedBookSourceLatenessMs": null,
+          "quantityWeightedMarkoutPerShare": null,
+          "quotedGapComparisonShares": 0,
+          "zeroFillMarks": 0
+        },
+        "5000": {
+          "changeComparisonShares": 0,
+          "changeFromPreExecutionCloseValue": "0.000000",
+          "coverageFills": {
+            "no_book_in_completed_window": 2
+          },
+          "coverageShares": {
+            "no_book_in_completed_window": 1993
+          },
+          "fullQuantityCoveredShares": 0,
+          "hypotheticalMarkout": "0.000000",
+          "markMinusPreDecisionQuotedGap": "0.000000",
+          "negativeFillMarks": 0,
+          "positiveFillMarks": 0,
+          "postBookObservedBeforeFillObservation": 0,
+          "quantityWeightedBookObservationLatenessMs": null,
+          "quantityWeightedBookSourceLatenessMs": null,
+          "quantityWeightedMarkoutPerShare": null,
+          "quotedGapComparisonShares": 0,
+          "zeroFillMarks": 0
+        },
+        "60000": {
+          "changeComparisonShares": 0,
+          "changeFromPreExecutionCloseValue": "0.000000",
+          "coverageFills": {
+            "no_book_in_completed_window": 2
+          },
+          "coverageShares": {
+            "no_book_in_completed_window": 1993
+          },
+          "fullQuantityCoveredShares": 0,
+          "hypotheticalMarkout": "0.000000",
+          "markMinusPreDecisionQuotedGap": "0.000000",
+          "negativeFillMarks": 0,
+          "positiveFillMarks": 0,
+          "postBookObservedBeforeFillObservation": 0,
+          "quantityWeightedBookObservationLatenessMs": null,
+          "quantityWeightedBookSourceLatenessMs": null,
+          "quantityWeightedMarkoutPerShare": null,
+          "quotedGapComparisonShares": 0,
+          "zeroFillMarks": 0
+        }
+      },
+      "marketId": "259",
+      "orderDecisionToFillExecutionDelayMs": {
+        "max": "9765.000000",
+        "min": "9658.000000",
+        "quantityWeightedMean": "9752.759157"
+      },
+      "preDecisionCoverage": {
+        "priced": 2
+      },
+      "preExecutionCoverage": {
+        "priced": 2
+      },
+      "preExecutionImmediateClose": {
+        "fullQuantityCoveredShares": 1993,
+        "hypotheticalMarkout": "-19.640000"
+      },
+      "quantity": 1993,
+      "quotedGap": {
+        "earnedSpread": false,
+        "fullQuantityCoveredShares": 1993,
+        "oppositeSideGapValue": "0.000000",
+        "quantityWeightedGapPerShare": "0.000000"
+      },
+      "relativeToPriorBook": {
+        "sell:at_or_below_prior_bid": 2
+      }
+    },
+    {
+      "exchangeId": "949",
+      "fillObservationDelayMs": {
+        "max": "73455.000000",
+        "min": "10784.000000",
+        "quantityWeightedMean": "14215.840462"
+      },
+      "fills": 5,
+      "historicalBookUpdatesExcludedFromPreExecution": 6,
+      "horizons": {
+        "1000": {
+          "changeComparisonShares": 716,
+          "changeFromPreExecutionCloseValue": "0.000000",
+          "coverageFills": {
+            "priced": 4,
+            "stale_clock": 1
+          },
+          "coverageShares": {
+            "priced": 757,
+            "stale_clock": 716
+          },
+          "fullQuantityCoveredShares": 757,
+          "hypotheticalMarkout": "-6.005000",
+          "markMinusPreDecisionQuotedGap": "-6.210000",
+          "negativeFillMarks": 3,
+          "positiveFillMarks": 0,
+          "postBookObservedBeforeFillObservation": 4,
+          "quantityWeightedBookObservationLatenessMs": "6742.104359",
+          "quantityWeightedBookSourceLatenessMs": "692.701774",
+          "quantityWeightedMarkoutPerShare": "-0.007933",
+          "quotedGapComparisonShares": 757,
+          "zeroFillMarks": 1
+        },
+        "30000": {
+          "changeComparisonShares": 0,
+          "changeFromPreExecutionCloseValue": "0.000000",
+          "coverageFills": {
+            "no_book_in_completed_window": 1,
+            "priced": 1,
+            "stale_clock": 3
+          },
+          "coverageShares": {
+            "no_book_in_completed_window": 41,
+            "priced": 716,
+            "stale_clock": 716
+          },
+          "fullQuantityCoveredShares": 716,
+          "hypotheticalMarkout": "-3.580000",
+          "markMinusPreDecisionQuotedGap": "-7.160000",
+          "negativeFillMarks": 1,
+          "positiveFillMarks": 0,
+          "postBookObservedBeforeFillObservation": 0,
+          "quantityWeightedBookObservationLatenessMs": "3908.000000",
+          "quantityWeightedBookSourceLatenessMs": "735.237200",
+          "quantityWeightedMarkoutPerShare": "-0.005000",
+          "quotedGapComparisonShares": 716,
+          "zeroFillMarks": 0
+        },
+        "5000": {
+          "changeComparisonShares": 602,
+          "changeFromPreExecutionCloseValue": "0.000000",
+          "coverageFills": {
+            "priced": 2,
+            "stale_clock": 3
+          },
+          "coverageShares": {
+            "priced": 602,
+            "stale_clock": 871
+          },
+          "fullQuantityCoveredShares": 602,
+          "hypotheticalMarkout": "-5.435000",
+          "markMinusPreDecisionQuotedGap": "-5.435000",
+          "negativeFillMarks": 2,
+          "positiveFillMarks": 0,
+          "postBookObservedBeforeFillObservation": 2,
+          "quantityWeightedBookObservationLatenessMs": "4118.196013",
+          "quantityWeightedBookSourceLatenessMs": "1297.001491",
+          "quantityWeightedMarkoutPerShare": "-0.009028",
+          "quotedGapComparisonShares": 602,
+          "zeroFillMarks": 0
+        },
+        "60000": {
+          "changeComparisonShares": 231,
+          "changeFromPreExecutionCloseValue": "0.000000",
+          "coverageFills": {
+            "no_book_in_completed_window": 1,
+            "priced": 2,
+            "stale_clock": 2
+          },
+          "coverageShares": {
+            "no_book_in_completed_window": 41,
+            "priced": 231,
+            "stale_clock": 1201
+          },
+          "fullQuantityCoveredShares": 231,
+          "hypotheticalMarkout": "-1.155000",
+          "markMinusPreDecisionQuotedGap": "-1.155000",
+          "negativeFillMarks": 2,
+          "positiveFillMarks": 0,
+          "postBookObservedBeforeFillObservation": 0,
+          "quantityWeightedBookObservationLatenessMs": "2556.935065",
+          "quantityWeightedBookSourceLatenessMs": "1676.843095",
+          "quantityWeightedMarkoutPerShare": "-0.005000",
+          "quotedGapComparisonShares": 231,
+          "zeroFillMarks": 0
+        }
+      },
+      "marketId": "260",
+      "orderDecisionToFillExecutionDelayMs": {
+        "max": "327140.000000",
+        "min": "3316.000000",
+        "quantityWeightedMean": "162816.070604"
+      },
+      "preDecisionCoverage": {
+        "priced": 5
+      },
+      "preExecutionCoverage": {
+        "priced": 3,
+        "stale_clock": 2
+      },
+      "preExecutionImmediateClose": {
+        "fullQuantityCoveredShares": 716,
+        "hypotheticalMarkout": "-6.005000"
+      },
+      "quantity": 1473,
+      "quotedGap": {
+        "earnedSpread": false,
+        "fullQuantityCoveredShares": 1473,
+        "oppositeSideGapValue": "3.785000",
+        "quantityWeightedGapPerShare": "0.002570"
+      },
+      "relativeToPriorBook": {
+        "sell:at_or_below_prior_bid": 3
+      }
+    },
+    {
+      "exchangeId": "953",
+      "fillObservationDelayMs": {
+        "max": "579292.000000",
+        "min": "6935.000000",
+        "quantityWeightedMean": "16475.818046"
+      },
+      "fills": 21,
+      "historicalBookUpdatesExcludedFromPreExecution": 21,
+      "horizons": {
+        "1000": {
+          "changeComparisonShares": 3685,
+          "changeFromPreExecutionCloseValue": "0.760000",
+          "coverageFills": {
+            "no_book_in_completed_window": 4,
+            "priced": 16,
+            "stale_clock": 1
+          },
+          "coverageShares": {
+            "no_book_in_completed_window": 2131,
+            "priced": 5209,
+            "stale_clock": 30
+          },
+          "fullQuantityCoveredShares": 5209,
+          "hypotheticalMarkout": "-26.535000",
+          "markMinusPreDecisionQuotedGap": "-34.155000",
+          "negativeFillMarks": 13,
+          "positiveFillMarks": 0,
+          "postBookObservedBeforeFillObservation": 16,
+          "quantityWeightedBookObservationLatenessMs": "7122.495105",
+          "quantityWeightedBookSourceLatenessMs": "726.819128",
+          "quantityWeightedMarkoutPerShare": "-0.005094",
+          "quotedGapComparisonShares": 5209,
+          "zeroFillMarks": 3
+        },
+        "30000": {
+          "changeComparisonShares": 915,
+          "changeFromPreExecutionCloseValue": "0.725000",
+          "coverageFills": {
+            "no_book_in_completed_window": 10,
+            "priced": 7,
+            "stale_clock": 4
+          },
+          "coverageShares": {
+            "no_book_in_completed_window": 5450,
+            "priced": 915,
+            "stale_clock": 1005
+          },
+          "fullQuantityCoveredShares": 915,
+          "hypotheticalMarkout": "-8.175000",
+          "markMinusPreDecisionQuotedGap": "-8.175000",
+          "negativeFillMarks": 5,
+          "positiveFillMarks": 0,
+          "postBookObservedBeforeFillObservation": 0,
+          "quantityWeightedBookObservationLatenessMs": "6710.610929",
+          "quantityWeightedBookSourceLatenessMs": "1415.177991",
+          "quantityWeightedMarkoutPerShare": "-0.008934",
+          "quotedGapComparisonShares": 915,
+          "zeroFillMarks": 2
+        },
+        "5000": {
+          "changeComparisonShares": 2868,
+          "changeFromPreExecutionCloseValue": "-4.470000",
+          "coverageFills": {
+            "no_book_in_completed_window": 7,
+            "priced": 10,
+            "stale_clock": 4
+          },
+          "coverageShares": {
+            "no_book_in_completed_window": 309,
+            "priced": 4392,
+            "stale_clock": 2669
+          },
+          "fullQuantityCoveredShares": 4392,
+          "hypotheticalMarkout": "-24.025000",
+          "markMinusPreDecisionQuotedGap": "-31.645000",
+          "negativeFillMarks": 8,
+          "positiveFillMarks": 0,
+          "postBookObservedBeforeFillObservation": 10,
+          "quantityWeightedBookObservationLatenessMs": "3908.413707",
+          "quantityWeightedBookSourceLatenessMs": "1175.540788",
+          "quantityWeightedMarkoutPerShare": "-0.005470",
+          "quotedGapComparisonShares": 4392,
+          "zeroFillMarks": 2
+        },
+        "60000": {
+          "changeComparisonShares": 1681,
+          "changeFromPreExecutionCloseValue": "-3.735000",
+          "coverageFills": {
+            "no_book_in_completed_window": 8,
+            "priced": 7,
+            "stale_clock": 6
+          },
+          "coverageShares": {
+            "no_book_in_completed_window": 4669,
+            "priced": 1681,
+            "stale_clock": 1020
+          },
+          "fullQuantityCoveredShares": 1681,
+          "hypotheticalMarkout": "-15.950000",
+          "markMinusPreDecisionQuotedGap": "-15.950000",
+          "negativeFillMarks": 6,
+          "positiveFillMarks": 0,
+          "postBookObservedBeforeFillObservation": 0,
+          "quantityWeightedBookObservationLatenessMs": "9614.958358",
+          "quantityWeightedBookSourceLatenessMs": "3176.278788",
+          "quantityWeightedMarkoutPerShare": "-0.009488",
+          "quotedGapComparisonShares": 1681,
+          "zeroFillMarks": 1
+        }
+      },
+      "marketId": "264",
+      "orderDecisionToFillExecutionDelayMs": {
+        "max": "561176.000000",
+        "min": "3272.000000",
+        "quantityWeightedMean": "274544.958345"
+      },
+      "preDecisionCoverage": {
+        "priced": 21
+      },
+      "preExecutionCoverage": {
+        "invalidated_by_gap": 3,
+        "priced": 16,
+        "stale_clock": 2
+      },
+      "preExecutionImmediateClose": {
+        "fullQuantityCoveredShares": 3715,
+        "hypotheticalMarkout": "-27.295000"
+      },
+      "quantity": 7370,
+      "quotedGap": {
+        "earnedSpread": false,
+        "fullQuantityCoveredShares": 7370,
+        "oppositeSideGapValue": "18.575000",
+        "quantityWeightedGapPerShare": "0.002520"
+      },
+      "relativeToPriorBook": {
+        "buy:at_or_below_prior_bid": 1,
+        "sell:at_or_below_prior_bid": 15
+      }
+    },
+    {
+      "exchangeId": "977",
+      "fillObservationDelayMs": {
+        "max": "17646.000000",
+        "min": "17646.000000",
+        "quantityWeightedMean": "17646.000000"
+      },
+      "fills": 1,
+      "historicalBookUpdatesExcludedFromPreExecution": 0,
+      "horizons": {
+        "1000": {
+          "changeComparisonShares": 0,
+          "changeFromPreExecutionCloseValue": "0.000000",
+          "coverageFills": {
+            "priced": 1
+          },
+          "coverageShares": {
+            "priced": 11
+          },
+          "fullQuantityCoveredShares": 11,
+          "hypotheticalMarkout": "-0.055000",
+          "markMinusPreDecisionQuotedGap": "-0.110000",
+          "negativeFillMarks": 1,
+          "positiveFillMarks": 0,
+          "postBookObservedBeforeFillObservation": 1,
+          "quantityWeightedBookObservationLatenessMs": "10816.000000",
+          "quantityWeightedBookSourceLatenessMs": "1448.718200",
+          "quantityWeightedMarkoutPerShare": "-0.005000",
+          "quotedGapComparisonShares": 11,
+          "zeroFillMarks": 0
+        },
+        "30000": {
+          "changeComparisonShares": 0,
+          "changeFromPreExecutionCloseValue": "0.000000",
+          "coverageFills": {
+            "stale_clock": 1
+          },
+          "coverageShares": {
+            "stale_clock": 11
+          },
+          "fullQuantityCoveredShares": 0,
+          "hypotheticalMarkout": "0.000000",
+          "markMinusPreDecisionQuotedGap": "0.000000",
+          "negativeFillMarks": 0,
+          "positiveFillMarks": 0,
+          "postBookObservedBeforeFillObservation": 0,
+          "quantityWeightedBookObservationLatenessMs": null,
+          "quantityWeightedBookSourceLatenessMs": null,
+          "quantityWeightedMarkoutPerShare": null,
+          "quotedGapComparisonShares": 0,
+          "zeroFillMarks": 0
+        },
+        "5000": {
+          "changeComparisonShares": 0,
+          "changeFromPreExecutionCloseValue": "0.000000",
+          "coverageFills": {
+            "priced": 1
+          },
+          "coverageShares": {
+            "priced": 11
+          },
+          "fullQuantityCoveredShares": 11,
+          "hypotheticalMarkout": "-0.055000",
+          "markMinusPreDecisionQuotedGap": "-0.110000",
+          "negativeFillMarks": 1,
+          "positiveFillMarks": 0,
+          "postBookObservedBeforeFillObservation": 1,
+          "quantityWeightedBookObservationLatenessMs": "8376.000000",
+          "quantityWeightedBookSourceLatenessMs": "4953.524900",
+          "quantityWeightedMarkoutPerShare": "-0.005000",
+          "quotedGapComparisonShares": 11,
+          "zeroFillMarks": 0
+        },
+        "60000": {
+          "changeComparisonShares": 0,
+          "changeFromPreExecutionCloseValue": "0.000000",
+          "coverageFills": {
+            "priced": 1
+          },
+          "coverageShares": {
+            "priced": 11
+          },
+          "fullQuantityCoveredShares": 11,
+          "hypotheticalMarkout": "-0.055000",
+          "markMinusPreDecisionQuotedGap": "-0.110000",
+          "negativeFillMarks": 1,
+          "positiveFillMarks": 0,
+          "postBookObservedBeforeFillObservation": 0,
+          "quantityWeightedBookObservationLatenessMs": "9474.000000",
+          "quantityWeightedBookSourceLatenessMs": "1257.439400",
+          "quantityWeightedMarkoutPerShare": "-0.005000",
+          "quotedGapComparisonShares": 11,
+          "zeroFillMarks": 0
+        }
+      },
+      "marketId": "288",
+      "orderDecisionToFillExecutionDelayMs": {
+        "max": "47681.000000",
+        "min": "47681.000000",
+        "quantityWeightedMean": "47681.000000"
+      },
+      "preDecisionCoverage": {
+        "priced": 1
+      },
+      "preExecutionCoverage": {
+        "stale_clock": 1
+      },
+      "preExecutionImmediateClose": {
+        "fullQuantityCoveredShares": 0,
+        "hypotheticalMarkout": "0.000000"
+      },
+      "quantity": 11,
+      "quotedGap": {
+        "earnedSpread": false,
+        "fullQuantityCoveredShares": 11,
+        "oppositeSideGapValue": "0.055000",
+        "quantityWeightedGapPerShare": "0.005000"
+      },
+      "relativeToPriorBook": {}
+    },
+    {
+      "exchangeId": "978",
+      "fillObservationDelayMs": {
+        "max": "11152.000000",
+        "min": "11152.000000",
+        "quantityWeightedMean": "11152.000000"
+      },
+      "fills": 1,
+      "historicalBookUpdatesExcludedFromPreExecution": 0,
+      "horizons": {
+        "1000": {
+          "changeComparisonShares": 0,
+          "changeFromPreExecutionCloseValue": "0.000000",
+          "coverageFills": {
+            "no_book_in_completed_window": 1
+          },
+          "coverageShares": {
+            "no_book_in_completed_window": 47
+          },
+          "fullQuantityCoveredShares": 0,
+          "hypotheticalMarkout": "0.000000",
+          "markMinusPreDecisionQuotedGap": "0.000000",
+          "negativeFillMarks": 0,
+          "positiveFillMarks": 0,
+          "postBookObservedBeforeFillObservation": 0,
+          "quantityWeightedBookObservationLatenessMs": null,
+          "quantityWeightedBookSourceLatenessMs": null,
+          "quantityWeightedMarkoutPerShare": null,
+          "quotedGapComparisonShares": 0,
+          "zeroFillMarks": 0
+        },
+        "30000": {
+          "changeComparisonShares": 0,
+          "changeFromPreExecutionCloseValue": "0.000000",
+          "coverageFills": {
+            "no_book_in_completed_window": 1
+          },
+          "coverageShares": {
+            "no_book_in_completed_window": 47
+          },
+          "fullQuantityCoveredShares": 0,
+          "hypotheticalMarkout": "0.000000",
+          "markMinusPreDecisionQuotedGap": "0.000000",
+          "negativeFillMarks": 0,
+          "positiveFillMarks": 0,
+          "postBookObservedBeforeFillObservation": 0,
+          "quantityWeightedBookObservationLatenessMs": null,
+          "quantityWeightedBookSourceLatenessMs": null,
+          "quantityWeightedMarkoutPerShare": null,
+          "quotedGapComparisonShares": 0,
+          "zeroFillMarks": 0
+        },
+        "5000": {
+          "changeComparisonShares": 0,
+          "changeFromPreExecutionCloseValue": "0.000000",
+          "coverageFills": {
+            "no_book_in_completed_window": 1
+          },
+          "coverageShares": {
+            "no_book_in_completed_window": 47
+          },
+          "fullQuantityCoveredShares": 0,
+          "hypotheticalMarkout": "0.000000",
+          "markMinusPreDecisionQuotedGap": "0.000000",
+          "negativeFillMarks": 0,
+          "positiveFillMarks": 0,
+          "postBookObservedBeforeFillObservation": 0,
+          "quantityWeightedBookObservationLatenessMs": null,
+          "quantityWeightedBookSourceLatenessMs": null,
+          "quantityWeightedMarkoutPerShare": null,
+          "quotedGapComparisonShares": 0,
+          "zeroFillMarks": 0
+        },
+        "60000": {
+          "changeComparisonShares": 0,
+          "changeFromPreExecutionCloseValue": "0.000000",
+          "coverageFills": {
+            "no_book_in_completed_window": 1
+          },
+          "coverageShares": {
+            "no_book_in_completed_window": 47
+          },
+          "fullQuantityCoveredShares": 0,
+          "hypotheticalMarkout": "0.000000",
+          "markMinusPreDecisionQuotedGap": "0.000000",
+          "negativeFillMarks": 0,
+          "positiveFillMarks": 0,
+          "postBookObservedBeforeFillObservation": 0,
+          "quantityWeightedBookObservationLatenessMs": null,
+          "quantityWeightedBookSourceLatenessMs": null,
+          "quantityWeightedMarkoutPerShare": null,
+          "quotedGapComparisonShares": 0,
+          "zeroFillMarks": 0
+        }
+      },
+      "marketId": "289",
+      "orderDecisionToFillExecutionDelayMs": {
+        "max": "267586.000000",
+        "min": "267586.000000",
+        "quantityWeightedMean": "267586.000000"
+      },
+      "preDecisionCoverage": {
+        "priced": 1
+      },
+      "preExecutionCoverage": {
+        "stale_clock": 1
+      },
+      "preExecutionImmediateClose": {
+        "fullQuantityCoveredShares": 0,
+        "hypotheticalMarkout": "0.000000"
+      },
+      "quantity": 47,
+      "quotedGap": {
+        "earnedSpread": false,
+        "fullQuantityCoveredShares": 47,
+        "oppositeSideGapValue": "0.235000",
+        "quantityWeightedGapPerShare": "0.005000"
+      },
+      "relativeToPriorBook": {}
+    },
+    {
+      "exchangeId": "1001",
+      "fillObservationDelayMs": {
+        "max": "4029.000000",
+        "min": "3998.000000",
+        "quantityWeightedMean": "3998.397436"
+      },
+      "fills": 2,
+      "historicalBookUpdatesExcludedFromPreExecution": 0,
+      "horizons": {
+        "1000": {
+          "changeComparisonShares": 78,
+          "changeFromPreExecutionCloseValue": "0.000000",
+          "coverageFills": {
+            "priced": 2
+          },
+          "coverageShares": {
+            "priced": 78
+          },
+          "fullQuantityCoveredShares": 78,
+          "hypotheticalMarkout": "-0.390000",
+          "markMinusPreDecisionQuotedGap": "-0.390000",
+          "negativeFillMarks": 2,
+          "positiveFillMarks": 0,
+          "postBookObservedBeforeFillObservation": 0,
+          "quantityWeightedBookObservationLatenessMs": "5191.000000",
+          "quantityWeightedBookSourceLatenessMs": "388.137800",
+          "quantityWeightedMarkoutPerShare": "-0.005000",
+          "quotedGapComparisonShares": 78,
+          "zeroFillMarks": 0
+        },
+        "30000": {
+          "changeComparisonShares": 78,
+          "changeFromPreExecutionCloseValue": "0.000000",
+          "coverageFills": {
+            "priced": 2
+          },
+          "coverageShares": {
+            "priced": 78
+          },
+          "fullQuantityCoveredShares": 78,
+          "hypotheticalMarkout": "-0.390000",
+          "markMinusPreDecisionQuotedGap": "-0.390000",
+          "negativeFillMarks": 2,
+          "positiveFillMarks": 0,
+          "postBookObservedBeforeFillObservation": 0,
+          "quantityWeightedBookObservationLatenessMs": "4656.000000",
+          "quantityWeightedBookSourceLatenessMs": "948.585000",
+          "quantityWeightedMarkoutPerShare": "-0.005000",
+          "quotedGapComparisonShares": 78,
+          "zeroFillMarks": 0
+        },
+        "5000": {
+          "changeComparisonShares": 78,
+          "changeFromPreExecutionCloseValue": "0.000000",
+          "coverageFills": {
+            "priced": 2
+          },
+          "coverageShares": {
+            "priced": 78
+          },
+          "fullQuantityCoveredShares": 78,
+          "hypotheticalMarkout": "-0.390000",
+          "markMinusPreDecisionQuotedGap": "-0.390000",
+          "negativeFillMarks": 2,
+          "positiveFillMarks": 0,
+          "postBookObservedBeforeFillObservation": 0,
+          "quantityWeightedBookObservationLatenessMs": "1422.000000",
+          "quantityWeightedBookSourceLatenessMs": "594.181200",
+          "quantityWeightedMarkoutPerShare": "-0.005000",
+          "quotedGapComparisonShares": 78,
+          "zeroFillMarks": 0
+        },
+        "60000": {
+          "changeComparisonShares": 78,
+          "changeFromPreExecutionCloseValue": "0.000000",
+          "coverageFills": {
+            "priced": 2
+          },
+          "coverageShares": {
+            "priced": 78
+          },
+          "fullQuantityCoveredShares": 78,
+          "hypotheticalMarkout": "-0.390000",
+          "markMinusPreDecisionQuotedGap": "-0.390000",
+          "negativeFillMarks": 2,
+          "positiveFillMarks": 0,
+          "postBookObservedBeforeFillObservation": 0,
+          "quantityWeightedBookObservationLatenessMs": "3885.000000",
+          "quantityWeightedBookSourceLatenessMs": "529.871600",
+          "quantityWeightedMarkoutPerShare": "-0.005000",
+          "quotedGapComparisonShares": 78,
+          "zeroFillMarks": 0
+        }
+      },
+      "marketId": "312",
+      "orderDecisionToFillExecutionDelayMs": {
+        "max": "9595.000000",
+        "min": "9595.000000",
+        "quantityWeightedMean": "9595.000000"
+      },
+      "preDecisionCoverage": {
+        "priced": 2
+      },
+      "preExecutionCoverage": {
+        "priced": 2
+      },
+      "preExecutionImmediateClose": {
+        "fullQuantityCoveredShares": 78,
+        "hypotheticalMarkout": "-0.390000"
+      },
+      "quantity": 78,
+      "quotedGap": {
+        "earnedSpread": false,
+        "fullQuantityCoveredShares": 78,
+        "oppositeSideGapValue": "0.000000",
+        "quantityWeightedGapPerShare": "0.000000"
+      },
+      "relativeToPriorBook": {
+        "sell:at_or_below_prior_bid": 2
+      }
+    },
+    {
+      "exchangeId": "1011",
+      "fillObservationDelayMs": {
+        "max": "19833.000000",
+        "min": "19833.000000",
+        "quantityWeightedMean": "19833.000000"
+      },
+      "fills": 1,
+      "historicalBookUpdatesExcludedFromPreExecution": 0,
+      "horizons": {
+        "1000": {
+          "changeComparisonShares": 0,
+          "changeFromPreExecutionCloseValue": "0.000000",
+          "coverageFills": {
+            "stale_clock": 1
+          },
+          "coverageShares": {
+            "stale_clock": 5
+          },
+          "fullQuantityCoveredShares": 0,
+          "hypotheticalMarkout": "0.000000",
+          "markMinusPreDecisionQuotedGap": "0.000000",
+          "negativeFillMarks": 0,
+          "positiveFillMarks": 0,
+          "postBookObservedBeforeFillObservation": 0,
+          "quantityWeightedBookObservationLatenessMs": null,
+          "quantityWeightedBookSourceLatenessMs": null,
+          "quantityWeightedMarkoutPerShare": null,
+          "quotedGapComparisonShares": 0,
+          "zeroFillMarks": 0
+        },
+        "30000": {
+          "changeComparisonShares": 5,
+          "changeFromPreExecutionCloseValue": "0.000000",
+          "coverageFills": {
+            "priced": 1
+          },
+          "coverageShares": {
+            "priced": 5
+          },
+          "fullQuantityCoveredShares": 5,
+          "hypotheticalMarkout": "-0.025000",
+          "markMinusPreDecisionQuotedGap": "-0.025000",
+          "negativeFillMarks": 1,
+          "positiveFillMarks": 0,
+          "postBookObservedBeforeFillObservation": 0,
+          "quantityWeightedBookObservationLatenessMs": "7102.000000",
+          "quantityWeightedBookSourceLatenessMs": "1485.995300",
+          "quantityWeightedMarkoutPerShare": "-0.005000",
+          "quotedGapComparisonShares": 5,
+          "zeroFillMarks": 0
+        },
+        "5000": {
+          "changeComparisonShares": 0,
+          "changeFromPreExecutionCloseValue": "0.000000",
+          "coverageFills": {
+            "stale_clock": 1
+          },
+          "coverageShares": {
+            "stale_clock": 5
+          },
+          "fullQuantityCoveredShares": 0,
+          "hypotheticalMarkout": "0.000000",
+          "markMinusPreDecisionQuotedGap": "0.000000",
+          "negativeFillMarks": 0,
+          "positiveFillMarks": 0,
+          "postBookObservedBeforeFillObservation": 0,
+          "quantityWeightedBookObservationLatenessMs": null,
+          "quantityWeightedBookSourceLatenessMs": null,
+          "quantityWeightedMarkoutPerShare": null,
+          "quotedGapComparisonShares": 0,
+          "zeroFillMarks": 0
+        },
+        "60000": {
+          "changeComparisonShares": 0,
+          "changeFromPreExecutionCloseValue": "0.000000",
+          "coverageFills": {
+            "no_book_in_completed_window": 1
+          },
+          "coverageShares": {
+            "no_book_in_completed_window": 5
+          },
+          "fullQuantityCoveredShares": 0,
+          "hypotheticalMarkout": "0.000000",
+          "markMinusPreDecisionQuotedGap": "0.000000",
+          "negativeFillMarks": 0,
+          "positiveFillMarks": 0,
+          "postBookObservedBeforeFillObservation": 0,
+          "quantityWeightedBookObservationLatenessMs": null,
+          "quantityWeightedBookSourceLatenessMs": null,
+          "quantityWeightedMarkoutPerShare": null,
+          "quotedGapComparisonShares": 0,
+          "zeroFillMarks": 0
+        }
+      },
+      "marketId": "322",
+      "orderDecisionToFillExecutionDelayMs": {
+        "max": "9021.000000",
+        "min": "9021.000000",
+        "quantityWeightedMean": "9021.000000"
+      },
+      "preDecisionCoverage": {
+        "priced": 1
+      },
+      "preExecutionCoverage": {
+        "priced": 1
+      },
+      "preExecutionImmediateClose": {
+        "fullQuantityCoveredShares": 5,
+        "hypotheticalMarkout": "-0.025000"
+      },
+      "quantity": 5,
+      "quotedGap": {
+        "earnedSpread": false,
+        "fullQuantityCoveredShares": 5,
+        "oppositeSideGapValue": "0.000000",
+        "quantityWeightedGapPerShare": "0.000000"
+      },
+      "relativeToPriorBook": {
+        "sell:at_or_below_prior_bid": 1
+      }
+    },
+    {
+      "exchangeId": "1012",
+      "fillObservationDelayMs": {
+        "max": "38151.000000",
+        "min": "10849.000000",
+        "quantityWeightedMean": "24009.837143"
+      },
+      "fills": 4,
+      "historicalBookUpdatesExcludedFromPreExecution": 4,
+      "horizons": {
+        "1000": {
+          "changeComparisonShares": 231,
+          "changeFromPreExecutionCloseValue": "0.000000",
+          "coverageFills": {
+            "priced": 1,
+            "stale_clock": 3
+          },
+          "coverageShares": {
+            "priced": 231,
+            "stale_clock": 819
+          },
+          "fullQuantityCoveredShares": 231,
+          "hypotheticalMarkout": "-1.155000",
+          "markMinusPreDecisionQuotedGap": "-1.155000",
+          "negativeFillMarks": 1,
+          "positiveFillMarks": 0,
+          "postBookObservedBeforeFillObservation": 1,
+          "quantityWeightedBookObservationLatenessMs": "4988.000000",
+          "quantityWeightedBookSourceLatenessMs": "1981.169500",
+          "quantityWeightedMarkoutPerShare": "-0.005000",
+          "quotedGapComparisonShares": 231,
+          "zeroFillMarks": 0
+        },
+        "30000": {
+          "changeComparisonShares": 231,
+          "changeFromPreExecutionCloseValue": "0.000000",
+          "coverageFills": {
+            "no_book_in_completed_window": 3,
+            "priced": 1
+          },
+          "coverageShares": {
+            "no_book_in_completed_window": 819,
+            "priced": 231
+          },
+          "fullQuantityCoveredShares": 231,
+          "hypotheticalMarkout": "-1.155000",
+          "markMinusPreDecisionQuotedGap": "-1.155000",
+          "negativeFillMarks": 1,
+          "positiveFillMarks": 0,
+          "postBookObservedBeforeFillObservation": 0,
+          "quantityWeightedBookObservationLatenessMs": "11559.000000",
+          "quantityWeightedBookSourceLatenessMs": "2072.825800",
+          "quantityWeightedMarkoutPerShare": "-0.005000",
+          "quotedGapComparisonShares": 231,
+          "zeroFillMarks": 0
+        },
+        "5000": {
+          "changeComparisonShares": 294,
+          "changeFromPreExecutionCloseValue": "0.000000",
+          "coverageFills": {
+            "no_book_in_completed_window": 1,
+            "priced": 2,
+            "stale_clock": 1
+          },
+          "coverageShares": {
+            "no_book_in_completed_window": 231,
+            "priced": 294,
+            "stale_clock": 525
+          },
+          "fullQuantityCoveredShares": 294,
+          "hypotheticalMarkout": "-1.470000",
+          "markMinusPreDecisionQuotedGap": "-1.470000",
+          "negativeFillMarks": 2,
+          "positiveFillMarks": 0,
+          "postBookObservedBeforeFillObservation": 2,
+          "quantityWeightedBookObservationLatenessMs": "10717.000000",
+          "quantityWeightedBookSourceLatenessMs": "1580.654900",
+          "quantityWeightedMarkoutPerShare": "-0.005000",
+          "quotedGapComparisonShares": 294,
+          "zeroFillMarks": 0
+        },
+        "60000": {
+          "changeComparisonShares": 294,
+          "changeFromPreExecutionCloseValue": "0.000000",
+          "coverageFills": {
+            "priced": 2,
+            "stale_clock": 2
+          },
+          "coverageShares": {
+            "priced": 294,
+            "stale_clock": 756
+          },
+          "fullQuantityCoveredShares": 294,
+          "hypotheticalMarkout": "-1.470000",
+          "markMinusPreDecisionQuotedGap": "-1.470000",
+          "negativeFillMarks": 2,
+          "positiveFillMarks": 0,
+          "postBookObservedBeforeFillObservation": 0,
+          "quantityWeightedBookObservationLatenessMs": "10855.000000",
+          "quantityWeightedBookSourceLatenessMs": "2370.399300",
+          "quantityWeightedMarkoutPerShare": "-0.005000",
+          "quotedGapComparisonShares": 294,
+          "zeroFillMarks": 0
+        }
+      },
+      "marketId": "323",
+      "orderDecisionToFillExecutionDelayMs": {
+        "max": "208948.000000",
+        "min": "6891.000000",
+        "quantityWeightedMean": "108002.660000"
+      },
+      "preDecisionCoverage": {
+        "priced": 4
+      },
+      "preExecutionCoverage": {
+        "priced": 4
+      },
+      "preExecutionImmediateClose": {
+        "fullQuantityCoveredShares": 1050,
+        "hypotheticalMarkout": "-2.625000"
+      },
+      "quantity": 1050,
+      "quotedGap": {
+        "earnedSpread": false,
+        "fullQuantityCoveredShares": 1050,
+        "oppositeSideGapValue": "2.625000",
+        "quantityWeightedGapPerShare": "0.002500"
+      },
+      "relativeToPriorBook": {
+        "buy:at_or_below_prior_bid": 1,
+        "sell:at_or_below_prior_bid": 3
+      }
+    },
+    {
+      "exchangeId": "1031",
+      "fillObservationDelayMs": {
+        "max": "25953.000000",
+        "min": "25953.000000",
+        "quantityWeightedMean": "25953.000000"
+      },
+      "fills": 1,
+      "historicalBookUpdatesExcludedFromPreExecution": 0,
+      "horizons": {
+        "1000": {
+          "changeComparisonShares": 0,
+          "changeFromPreExecutionCloseValue": "0.000000",
+          "coverageFills": {
+            "no_book_in_completed_window": 1
+          },
+          "coverageShares": {
+            "no_book_in_completed_window": 7
+          },
+          "fullQuantityCoveredShares": 0,
+          "hypotheticalMarkout": "0.000000",
+          "markMinusPreDecisionQuotedGap": "0.000000",
+          "negativeFillMarks": 0,
+          "positiveFillMarks": 0,
+          "postBookObservedBeforeFillObservation": 0,
+          "quantityWeightedBookObservationLatenessMs": null,
+          "quantityWeightedBookSourceLatenessMs": null,
+          "quantityWeightedMarkoutPerShare": null,
+          "quotedGapComparisonShares": 0,
+          "zeroFillMarks": 0
+        },
+        "30000": {
+          "changeComparisonShares": 0,
+          "changeFromPreExecutionCloseValue": "0.000000",
+          "coverageFills": {
+            "no_book_in_completed_window": 1
+          },
+          "coverageShares": {
+            "no_book_in_completed_window": 7
+          },
+          "fullQuantityCoveredShares": 0,
+          "hypotheticalMarkout": "0.000000",
+          "markMinusPreDecisionQuotedGap": "0.000000",
+          "negativeFillMarks": 0,
+          "positiveFillMarks": 0,
+          "postBookObservedBeforeFillObservation": 0,
+          "quantityWeightedBookObservationLatenessMs": null,
+          "quantityWeightedBookSourceLatenessMs": null,
+          "quantityWeightedMarkoutPerShare": null,
+          "quotedGapComparisonShares": 0,
+          "zeroFillMarks": 0
+        },
+        "5000": {
+          "changeComparisonShares": 0,
+          "changeFromPreExecutionCloseValue": "0.000000",
+          "coverageFills": {
+            "no_book_in_completed_window": 1
+          },
+          "coverageShares": {
+            "no_book_in_completed_window": 7
+          },
+          "fullQuantityCoveredShares": 0,
+          "hypotheticalMarkout": "0.000000",
+          "markMinusPreDecisionQuotedGap": "0.000000",
+          "negativeFillMarks": 0,
+          "positiveFillMarks": 0,
+          "postBookObservedBeforeFillObservation": 0,
+          "quantityWeightedBookObservationLatenessMs": null,
+          "quantityWeightedBookSourceLatenessMs": null,
+          "quantityWeightedMarkoutPerShare": null,
+          "quotedGapComparisonShares": 0,
+          "zeroFillMarks": 0
+        },
+        "60000": {
+          "changeComparisonShares": 0,
+          "changeFromPreExecutionCloseValue": "0.000000",
+          "coverageFills": {
+            "no_book_in_completed_window": 1
+          },
+          "coverageShares": {
+            "no_book_in_completed_window": 7
+          },
+          "fullQuantityCoveredShares": 0,
+          "hypotheticalMarkout": "0.000000",
+          "markMinusPreDecisionQuotedGap": "0.000000",
+          "negativeFillMarks": 0,
+          "positiveFillMarks": 0,
+          "postBookObservedBeforeFillObservation": 0,
+          "quantityWeightedBookObservationLatenessMs": null,
+          "quantityWeightedBookSourceLatenessMs": null,
+          "quantityWeightedMarkoutPerShare": null,
+          "quotedGapComparisonShares": 0,
+          "zeroFillMarks": 0
+        }
+      },
+      "marketId": "342",
+      "orderDecisionToFillExecutionDelayMs": {
+        "max": "10211.000000",
+        "min": "10211.000000",
+        "quantityWeightedMean": "10211.000000"
+      },
+      "preDecisionCoverage": {
+        "priced": 1
+      },
+      "preExecutionCoverage": {
+        "priced": 1
+      },
+      "preExecutionImmediateClose": {
+        "fullQuantityCoveredShares": 7,
+        "hypotheticalMarkout": "-0.035000"
+      },
+      "quantity": 7,
+      "quotedGap": {
+        "earnedSpread": false,
+        "fullQuantityCoveredShares": 7,
+        "oppositeSideGapValue": "0.000000",
+        "quantityWeightedGapPerShare": "0.000000"
+      },
+      "relativeToPriorBook": {
+        "sell:at_or_below_prior_bid": 1
+      }
+    },
+    {
+      "exchangeId": "1042",
+      "fillObservationDelayMs": {
+        "max": "16581.000000",
+        "min": "16581.000000",
+        "quantityWeightedMean": "16581.000000"
+      },
+      "fills": 1,
+      "historicalBookUpdatesExcludedFromPreExecution": 0,
+      "horizons": {
+        "1000": {
+          "changeComparisonShares": 62,
+          "changeFromPreExecutionCloseValue": "0.000000",
+          "coverageFills": {
+            "priced": 1
+          },
+          "coverageShares": {
+            "priced": 62
+          },
+          "fullQuantityCoveredShares": 62,
+          "hypotheticalMarkout": "-0.310000",
+          "markMinusPreDecisionQuotedGap": "-0.310000",
+          "negativeFillMarks": 1,
+          "positiveFillMarks": 0,
+          "postBookObservedBeforeFillObservation": 1,
+          "quantityWeightedBookObservationLatenessMs": "1729.000000",
+          "quantityWeightedBookSourceLatenessMs": "693.154800",
+          "quantityWeightedMarkoutPerShare": "-0.005000",
+          "quotedGapComparisonShares": 62,
+          "zeroFillMarks": 0
+        },
+        "30000": {
+          "changeComparisonShares": 0,
+          "changeFromPreExecutionCloseValue": "0.000000",
+          "coverageFills": {
+            "no_book_in_completed_window": 1
+          },
+          "coverageShares": {
+            "no_book_in_completed_window": 62
+          },
+          "fullQuantityCoveredShares": 0,
+          "hypotheticalMarkout": "0.000000",
+          "markMinusPreDecisionQuotedGap": "0.000000",
+          "negativeFillMarks": 0,
+          "positiveFillMarks": 0,
+          "postBookObservedBeforeFillObservation": 0,
+          "quantityWeightedBookObservationLatenessMs": null,
+          "quantityWeightedBookSourceLatenessMs": null,
+          "quantityWeightedMarkoutPerShare": null,
+          "quotedGapComparisonShares": 0,
+          "zeroFillMarks": 0
+        },
+        "5000": {
+          "changeComparisonShares": 0,
+          "changeFromPreExecutionCloseValue": "0.000000",
+          "coverageFills": {
+            "stale_clock": 1
+          },
+          "coverageShares": {
+            "stale_clock": 62
+          },
+          "fullQuantityCoveredShares": 0,
+          "hypotheticalMarkout": "0.000000",
+          "markMinusPreDecisionQuotedGap": "0.000000",
+          "negativeFillMarks": 0,
+          "positiveFillMarks": 0,
+          "postBookObservedBeforeFillObservation": 0,
+          "quantityWeightedBookObservationLatenessMs": null,
+          "quantityWeightedBookSourceLatenessMs": null,
+          "quantityWeightedMarkoutPerShare": null,
+          "quotedGapComparisonShares": 0,
+          "zeroFillMarks": 0
+        },
+        "60000": {
+          "changeComparisonShares": 0,
+          "changeFromPreExecutionCloseValue": "0.000000",
+          "coverageFills": {
+            "no_book_in_completed_window": 1
+          },
+          "coverageShares": {
+            "no_book_in_completed_window": 62
+          },
+          "fullQuantityCoveredShares": 0,
+          "hypotheticalMarkout": "0.000000",
+          "markMinusPreDecisionQuotedGap": "0.000000",
+          "negativeFillMarks": 0,
+          "positiveFillMarks": 0,
+          "postBookObservedBeforeFillObservation": 0,
+          "quantityWeightedBookObservationLatenessMs": null,
+          "quantityWeightedBookSourceLatenessMs": null,
+          "quantityWeightedMarkoutPerShare": null,
+          "quotedGapComparisonShares": 0,
+          "zeroFillMarks": 0
+        }
+      },
+      "marketId": "353",
+      "orderDecisionToFillExecutionDelayMs": {
+        "max": "10694.000000",
+        "min": "10694.000000",
+        "quantityWeightedMean": "10694.000000"
+      },
+      "preDecisionCoverage": {
+        "priced": 1
+      },
+      "preExecutionCoverage": {
+        "priced": 1
+      },
+      "preExecutionImmediateClose": {
+        "fullQuantityCoveredShares": 62,
+        "hypotheticalMarkout": "-0.310000"
+      },
+      "quantity": 62,
+      "quotedGap": {
+        "earnedSpread": false,
+        "fullQuantityCoveredShares": 62,
+        "oppositeSideGapValue": "0.000000",
+        "quantityWeightedGapPerShare": "0.000000"
+      },
+      "relativeToPriorBook": {
+        "sell:at_or_below_prior_bid": 1
+      }
+    },
+    {
+      "exchangeId": "1045",
+      "fillObservationDelayMs": {
+        "max": "33361.000000",
+        "min": "6107.000000",
+        "quantityWeightedMean": "21096.314662"
+      },
+      "fills": 4,
+      "historicalBookUpdatesExcludedFromPreExecution": 8,
+      "horizons": {
+        "1000": {
+          "changeComparisonShares": 607,
+          "changeFromPreExecutionCloseValue": "0.000000",
+          "coverageFills": {
+            "no_book_in_completed_window": 1,
+            "priced": 1,
+            "stale_clock": 2
+          },
+          "coverageShares": {
+            "no_book_in_completed_window": 155,
+            "priced": 607,
+            "stale_clock": 452
+          },
+          "fullQuantityCoveredShares": 607,
+          "hypotheticalMarkout": "-3.035000",
+          "markMinusPreDecisionQuotedGap": "-3.035000",
+          "negativeFillMarks": 1,
+          "positiveFillMarks": 0,
+          "postBookObservedBeforeFillObservation": 1,
+          "quantityWeightedBookObservationLatenessMs": "10160.000000",
+          "quantityWeightedBookSourceLatenessMs": "921.467300",
+          "quantityWeightedMarkoutPerShare": "-0.005000",
+          "quotedGapComparisonShares": 607,
+          "zeroFillMarks": 0
+        },
+        "30000": {
+          "changeComparisonShares": 607,
+          "changeFromPreExecutionCloseValue": "0.000000",
+          "coverageFills": {
+            "priced": 1,
+            "stale_clock": 3
+          },
+          "coverageShares": {
+            "priced": 607,
+            "stale_clock": 607
+          },
+          "fullQuantityCoveredShares": 607,
+          "hypotheticalMarkout": "-3.035000",
+          "markMinusPreDecisionQuotedGap": "-3.035000",
+          "negativeFillMarks": 1,
+          "positiveFillMarks": 0,
+          "postBookObservedBeforeFillObservation": 0,
+          "quantityWeightedBookObservationLatenessMs": "6592.000000",
+          "quantityWeightedBookSourceLatenessMs": "1206.615900",
+          "quantityWeightedMarkoutPerShare": "-0.005000",
+          "quotedGapComparisonShares": 607,
+          "zeroFillMarks": 0
+        },
+        "5000": {
+          "changeComparisonShares": 762,
+          "changeFromPreExecutionCloseValue": "0.000000",
+          "coverageFills": {
+            "priced": 2,
+            "stale_clock": 2
+          },
+          "coverageShares": {
+            "priced": 762,
+            "stale_clock": 452
+          },
+          "fullQuantityCoveredShares": 762,
+          "hypotheticalMarkout": "-3.035000",
+          "markMinusPreDecisionQuotedGap": "-3.810000",
+          "negativeFillMarks": 1,
+          "positiveFillMarks": 0,
+          "postBookObservedBeforeFillObservation": 2,
+          "quantityWeightedBookObservationLatenessMs": "6387.919948",
+          "quantityWeightedBookSourceLatenessMs": "2474.593644",
+          "quantityWeightedMarkoutPerShare": "-0.003983",
+          "quotedGapComparisonShares": 762,
+          "zeroFillMarks": 1
+        },
+        "60000": {
+          "changeComparisonShares": 0,
+          "changeFromPreExecutionCloseValue": "0.000000",
+          "coverageFills": {
+            "no_book_in_completed_window": 3,
+            "stale_clock": 1
+          },
+          "coverageShares": {
+            "no_book_in_completed_window": 1059,
+            "stale_clock": 155
+          },
+          "fullQuantityCoveredShares": 0,
+          "hypotheticalMarkout": "0.000000",
+          "markMinusPreDecisionQuotedGap": "0.000000",
+          "negativeFillMarks": 0,
+          "positiveFillMarks": 0,
+          "postBookObservedBeforeFillObservation": 0,
+          "quantityWeightedBookObservationLatenessMs": null,
+          "quantityWeightedBookSourceLatenessMs": null,
+          "quantityWeightedMarkoutPerShare": null,
+          "quotedGapComparisonShares": 0,
+          "zeroFillMarks": 0
+        }
+      },
+      "marketId": "356",
+      "orderDecisionToFillExecutionDelayMs": {
+        "max": "262702.000000",
+        "min": "3306.000000",
+        "quantityWeightedMean": "124286.891269"
+      },
+      "preDecisionCoverage": {
+        "priced": 4
+      },
+      "preExecutionCoverage": {
+        "priced": 2,
+        "stale_clock": 2
+      },
+      "preExecutionImmediateClose": {
+        "fullQuantityCoveredShares": 762,
+        "hypotheticalMarkout": "-3.035000"
+      },
+      "quantity": 1214,
+      "quotedGap": {
+        "earnedSpread": false,
+        "fullQuantityCoveredShares": 1214,
+        "oppositeSideGapValue": "3.035000",
+        "quantityWeightedGapPerShare": "0.002500"
+      },
+      "relativeToPriorBook": {
+        "buy:at_or_below_prior_bid": 1,
+        "sell:at_or_below_prior_bid": 1
+      }
+    },
+    {
+      "exchangeId": "1047",
+      "fillObservationDelayMs": {
+        "max": "13497.000000",
+        "min": "13497.000000",
+        "quantityWeightedMean": "13497.000000"
+      },
+      "fills": 1,
+      "historicalBookUpdatesExcludedFromPreExecution": 0,
+      "horizons": {
+        "1000": {
+          "changeComparisonShares": 0,
+          "changeFromPreExecutionCloseValue": "0.000000",
+          "coverageFills": {
+            "stale_clock": 1
+          },
+          "coverageShares": {
+            "stale_clock": 93
+          },
+          "fullQuantityCoveredShares": 0,
+          "hypotheticalMarkout": "0.000000",
+          "markMinusPreDecisionQuotedGap": "0.000000",
+          "negativeFillMarks": 0,
+          "positiveFillMarks": 0,
+          "postBookObservedBeforeFillObservation": 0,
+          "quantityWeightedBookObservationLatenessMs": null,
+          "quantityWeightedBookSourceLatenessMs": null,
+          "quantityWeightedMarkoutPerShare": null,
+          "quotedGapComparisonShares": 0,
+          "zeroFillMarks": 0
+        },
+        "30000": {
+          "changeComparisonShares": 93,
+          "changeFromPreExecutionCloseValue": "0.000000",
+          "coverageFills": {
+            "priced": 1
+          },
+          "coverageShares": {
+            "priced": 93
+          },
+          "fullQuantityCoveredShares": 93,
+          "hypotheticalMarkout": "-0.465000",
+          "markMinusPreDecisionQuotedGap": "-0.465000",
+          "negativeFillMarks": 1,
+          "positiveFillMarks": 0,
+          "postBookObservedBeforeFillObservation": 0,
+          "quantityWeightedBookObservationLatenessMs": "8021.000000",
+          "quantityWeightedBookSourceLatenessMs": "4336.302400",
+          "quantityWeightedMarkoutPerShare": "-0.005000",
+          "quotedGapComparisonShares": 93,
+          "zeroFillMarks": 0
+        },
+        "5000": {
+          "changeComparisonShares": 0,
+          "changeFromPreExecutionCloseValue": "0.000000",
+          "coverageFills": {
+            "no_book_in_completed_window": 1
+          },
+          "coverageShares": {
+            "no_book_in_completed_window": 93
+          },
+          "fullQuantityCoveredShares": 0,
+          "hypotheticalMarkout": "0.000000",
+          "markMinusPreDecisionQuotedGap": "0.000000",
+          "negativeFillMarks": 0,
+          "positiveFillMarks": 0,
+          "postBookObservedBeforeFillObservation": 0,
+          "quantityWeightedBookObservationLatenessMs": null,
+          "quantityWeightedBookSourceLatenessMs": null,
+          "quantityWeightedMarkoutPerShare": null,
+          "quotedGapComparisonShares": 0,
+          "zeroFillMarks": 0
+        },
+        "60000": {
+          "changeComparisonShares": 0,
+          "changeFromPreExecutionCloseValue": "0.000000",
+          "coverageFills": {
+            "no_book_in_completed_window": 1
+          },
+          "coverageShares": {
+            "no_book_in_completed_window": 93
+          },
+          "fullQuantityCoveredShares": 0,
+          "hypotheticalMarkout": "0.000000",
+          "markMinusPreDecisionQuotedGap": "0.000000",
+          "negativeFillMarks": 0,
+          "positiveFillMarks": 0,
+          "postBookObservedBeforeFillObservation": 0,
+          "quantityWeightedBookObservationLatenessMs": null,
+          "quantityWeightedBookSourceLatenessMs": null,
+          "quantityWeightedMarkoutPerShare": null,
+          "quotedGapComparisonShares": 0,
+          "zeroFillMarks": 0
+        }
+      },
+      "marketId": "358",
+      "orderDecisionToFillExecutionDelayMs": {
+        "max": "10106.000000",
+        "min": "10106.000000",
+        "quantityWeightedMean": "10106.000000"
+      },
+      "preDecisionCoverage": {
+        "priced": 1
+      },
+      "preExecutionCoverage": {
+        "priced": 1
+      },
+      "preExecutionImmediateClose": {
+        "fullQuantityCoveredShares": 93,
+        "hypotheticalMarkout": "-0.465000"
+      },
+      "quantity": 93,
+      "quotedGap": {
+        "earnedSpread": false,
+        "fullQuantityCoveredShares": 93,
+        "oppositeSideGapValue": "0.000000",
+        "quantityWeightedGapPerShare": "0.000000"
+      },
+      "relativeToPriorBook": {
+        "sell:at_or_below_prior_bid": 1
+      }
+    },
+    {
+      "exchangeId": "1070",
+      "fillObservationDelayMs": {
+        "max": "42611.000000",
+        "min": "42611.000000",
+        "quantityWeightedMean": "42611.000000"
+      },
+      "fills": 1,
+      "historicalBookUpdatesExcludedFromPreExecution": 0,
+      "horizons": {
+        "1000": {
+          "changeComparisonShares": 41,
+          "changeFromPreExecutionCloseValue": "0.000000",
+          "coverageFills": {
+            "priced": 1
+          },
+          "coverageShares": {
+            "priced": 41
+          },
+          "fullQuantityCoveredShares": 41,
+          "hypotheticalMarkout": "-0.205000",
+          "markMinusPreDecisionQuotedGap": "-0.205000",
+          "negativeFillMarks": 1,
+          "positiveFillMarks": 0,
+          "postBookObservedBeforeFillObservation": 1,
+          "quantityWeightedBookObservationLatenessMs": "5064.000000",
+          "quantityWeightedBookSourceLatenessMs": "103.564500",
+          "quantityWeightedMarkoutPerShare": "-0.005000",
+          "quotedGapComparisonShares": 41,
+          "zeroFillMarks": 0
+        },
+        "30000": {
+          "changeComparisonShares": 0,
+          "changeFromPreExecutionCloseValue": "0.000000",
+          "coverageFills": {
+            "stale_clock": 1
+          },
+          "coverageShares": {
+            "stale_clock": 41
+          },
+          "fullQuantityCoveredShares": 0,
+          "hypotheticalMarkout": "0.000000",
+          "markMinusPreDecisionQuotedGap": "0.000000",
+          "negativeFillMarks": 0,
+          "positiveFillMarks": 0,
+          "postBookObservedBeforeFillObservation": 0,
+          "quantityWeightedBookObservationLatenessMs": null,
+          "quantityWeightedBookSourceLatenessMs": null,
+          "quantityWeightedMarkoutPerShare": null,
+          "quotedGapComparisonShares": 0,
+          "zeroFillMarks": 0
+        },
+        "5000": {
+          "changeComparisonShares": 0,
+          "changeFromPreExecutionCloseValue": "0.000000",
+          "coverageFills": {
+            "stale_clock": 1
+          },
+          "coverageShares": {
+            "stale_clock": 41
+          },
+          "fullQuantityCoveredShares": 0,
+          "hypotheticalMarkout": "0.000000",
+          "markMinusPreDecisionQuotedGap": "0.000000",
+          "negativeFillMarks": 0,
+          "positiveFillMarks": 0,
+          "postBookObservedBeforeFillObservation": 0,
+          "quantityWeightedBookObservationLatenessMs": null,
+          "quantityWeightedBookSourceLatenessMs": null,
+          "quantityWeightedMarkoutPerShare": null,
+          "quotedGapComparisonShares": 0,
+          "zeroFillMarks": 0
+        },
+        "60000": {
+          "changeComparisonShares": 41,
+          "changeFromPreExecutionCloseValue": "0.000000",
+          "coverageFills": {
+            "priced": 1
+          },
+          "coverageShares": {
+            "priced": 41
+          },
+          "fullQuantityCoveredShares": 41,
+          "hypotheticalMarkout": "-0.205000",
+          "markMinusPreDecisionQuotedGap": "-0.205000",
+          "negativeFillMarks": 1,
+          "positiveFillMarks": 0,
+          "postBookObservedBeforeFillObservation": 0,
+          "quantityWeightedBookObservationLatenessMs": "3365.000000",
+          "quantityWeightedBookSourceLatenessMs": "474.986100",
+          "quantityWeightedMarkoutPerShare": "-0.005000",
+          "quotedGapComparisonShares": 41,
+          "zeroFillMarks": 0
+        }
+      },
+      "marketId": "381",
+      "orderDecisionToFillExecutionDelayMs": {
+        "max": "9022.000000",
+        "min": "9022.000000",
+        "quantityWeightedMean": "9022.000000"
+      },
+      "preDecisionCoverage": {
+        "priced": 1
+      },
+      "preExecutionCoverage": {
+        "priced": 1
+      },
+      "preExecutionImmediateClose": {
+        "fullQuantityCoveredShares": 41,
+        "hypotheticalMarkout": "-0.205000"
+      },
+      "quantity": 41,
+      "quotedGap": {
+        "earnedSpread": false,
+        "fullQuantityCoveredShares": 41,
+        "oppositeSideGapValue": "0.000000",
+        "quantityWeightedGapPerShare": "0.000000"
+      },
+      "relativeToPriorBook": {
+        "sell:at_or_below_prior_bid": 1
+      }
+    },
+    {
+      "exchangeId": "1073",
+      "fillObservationDelayMs": {
+        "max": "37942.000000",
+        "min": "37942.000000",
+        "quantityWeightedMean": "37942.000000"
+      },
+      "fills": 1,
+      "historicalBookUpdatesExcludedFromPreExecution": 0,
+      "horizons": {
+        "1000": {
+          "changeComparisonShares": 100,
+          "changeFromPreExecutionCloseValue": "0.000000",
+          "coverageFills": {
+            "priced": 1
+          },
+          "coverageShares": {
+            "priced": 100
+          },
+          "fullQuantityCoveredShares": 100,
+          "hypotheticalMarkout": "-0.500000",
+          "markMinusPreDecisionQuotedGap": "-0.500000",
+          "negativeFillMarks": 1,
+          "positiveFillMarks": 0,
+          "postBookObservedBeforeFillObservation": 1,
+          "quantityWeightedBookObservationLatenessMs": "4889.000000",
+          "quantityWeightedBookSourceLatenessMs": "774.811900",
+          "quantityWeightedMarkoutPerShare": "-0.005000",
+          "quotedGapComparisonShares": 100,
+          "zeroFillMarks": 0
+        },
+        "30000": {
+          "changeComparisonShares": 0,
+          "changeFromPreExecutionCloseValue": "0.000000",
+          "coverageFills": {
+            "stale_clock": 1
+          },
+          "coverageShares": {
+            "stale_clock": 100
+          },
+          "fullQuantityCoveredShares": 0,
+          "hypotheticalMarkout": "0.000000",
+          "markMinusPreDecisionQuotedGap": "0.000000",
+          "negativeFillMarks": 0,
+          "positiveFillMarks": 0,
+          "postBookObservedBeforeFillObservation": 0,
+          "quantityWeightedBookObservationLatenessMs": null,
+          "quantityWeightedBookSourceLatenessMs": null,
+          "quantityWeightedMarkoutPerShare": null,
+          "quotedGapComparisonShares": 0,
+          "zeroFillMarks": 0
+        },
+        "5000": {
+          "changeComparisonShares": 0,
+          "changeFromPreExecutionCloseValue": "0.000000",
+          "coverageFills": {
+            "stale_clock": 1
+          },
+          "coverageShares": {
+            "stale_clock": 100
+          },
+          "fullQuantityCoveredShares": 0,
+          "hypotheticalMarkout": "0.000000",
+          "markMinusPreDecisionQuotedGap": "0.000000",
+          "negativeFillMarks": 0,
+          "positiveFillMarks": 0,
+          "postBookObservedBeforeFillObservation": 0,
+          "quantityWeightedBookObservationLatenessMs": null,
+          "quantityWeightedBookSourceLatenessMs": null,
+          "quantityWeightedMarkoutPerShare": null,
+          "quotedGapComparisonShares": 0,
+          "zeroFillMarks": 0
+        },
+        "60000": {
+          "changeComparisonShares": 100,
+          "changeFromPreExecutionCloseValue": "0.000000",
+          "coverageFills": {
+            "priced": 1
+          },
+          "coverageShares": {
+            "priced": 100
+          },
+          "fullQuantityCoveredShares": 100,
+          "hypotheticalMarkout": "-0.500000",
+          "markMinusPreDecisionQuotedGap": "-0.500000",
+          "negativeFillMarks": 1,
+          "positiveFillMarks": 0,
+          "postBookObservedBeforeFillObservation": 0,
+          "quantityWeightedBookObservationLatenessMs": "8368.000000",
+          "quantityWeightedBookSourceLatenessMs": "1646.474700",
+          "quantityWeightedMarkoutPerShare": "-0.005000",
+          "quotedGapComparisonShares": 100,
+          "zeroFillMarks": 0
+        }
+      },
+      "marketId": "384",
+      "orderDecisionToFillExecutionDelayMs": {
+        "max": "8802.000000",
+        "min": "8802.000000",
+        "quantityWeightedMean": "8802.000000"
+      },
+      "preDecisionCoverage": {
+        "priced": 1
+      },
+      "preExecutionCoverage": {
+        "priced": 1
+      },
+      "preExecutionImmediateClose": {
+        "fullQuantityCoveredShares": 100,
+        "hypotheticalMarkout": "-0.500000"
+      },
+      "quantity": 100,
+      "quotedGap": {
+        "earnedSpread": false,
+        "fullQuantityCoveredShares": 100,
+        "oppositeSideGapValue": "0.000000",
+        "quantityWeightedGapPerShare": "0.000000"
+      },
+      "relativeToPriorBook": {
+        "sell:at_or_below_prior_bid": 1
+      }
+    }
+  ],
+  "profitabilityEstablished": false,
+  "schemaVersion": 1,
+  "source": {
+    "financialReplayVerified": false,
+    "journalHeadHash": "67a4200690bf90c26a3a4f3658b0ea5e8ca70bffdf6c04de8bc88b6d63d37414",
+    "journalPrefixBytes": 250063865,
+    "journalPrefixSequence": 85454,
+    "journalPrefixSha256": "38ad7b80f035d578054df1c1d1887f1c171a201588f5fd91a91bb2696494b8d7",
+    "nativeHelperRun": false,
+    "rawNativeBodyHashChainVerified": true,
+    "reportRawBodySealVerified": true,
+    "reportSnapshotSha256": "ac190ed69ad01e3c1a80a0603de77c5fa21737d6766d3fdc5a0e2447e5cc81b4",
+    "serdeCanonicalReserializationVerified": false,
+    "snapshotHeadMatched": true
+  }
+}

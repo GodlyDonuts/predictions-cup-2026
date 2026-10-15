@@ -1,0 +1,1 @@
+{"at":"2026-10-15T19:41:58.005Z","rejectedVersion":24,"reason":"UPGRADE_TARGET_IDENTITY","restoredVersion":23,"pid":215346,"bridgeUnchanged":true,"controlRestoredExactly":true,"preRestartQueue":{"physicalAttempts":366,"acknowledged":366,"queueIntents":539,"unknown":0,"active":false,"manualReview":false},"freshCycleVerified":false}

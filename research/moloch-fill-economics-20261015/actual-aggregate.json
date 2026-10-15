@@ -1,0 +1,1188 @@
+{
+  "accounting": {
+    "cash": "17150.155000",
+    "cashImmediatelyAfterAdoption": "15270.515000",
+    "cashProvenance": "derived_bank_wallet_not_fresh_official_account_cash",
+    "fees": "0.000000",
+    "inheritedBasis": "opening_lot_principal_not_official_account_realized_pnl",
+    "inheritedRealizedGross": "38.075000",
+    "initialCashDerivedFromBankIdentity": "40000.000000",
+    "newTradingRealized": "-115.405000",
+    "openingInventoryCost": "24729.485000",
+    "realized": "-77.330000",
+    "remainingUnmarkedCost": "22772.515000"
+  },
+  "analysis": "actual_fill_fifo_economics",
+  "bankSequence": 79563,
+  "fills": {
+    "adjacentExecutionClockReversals": 12,
+    "adjacentExecutionClockTies": 6,
+    "executedBeforePreviouslyRecordedFill": 12,
+    "observationLagDiagnosticThresholdMs": 600000,
+    "observationLagMsMax": "579292.000000",
+    "observationLagMsMin": "3998.000000",
+    "observedAtLeast600000msAfterExecution": 0,
+    "ordering": "recorded_bank_order_never_resorted",
+    "recordedActualFills": 86
+  },
+  "holdingAgeThresholdMs": 60000,
+  "holdingAgeThresholdProvenance": "explicit_operator_supplied_policy_value_not_inferred_from_fills",
+  "limitations": [
+    "No mark or liquidation value is assigned to remaining inventory.",
+    "Every fee is expensed to new trading, including fees on still-open lots.",
+    "Cohort wins/losses and exit mix are gross; opposite-buy incoming paired lots have zero gross attribution.",
+    "Ending cash parity is conditional on the seed derived from the same source bank identity; it is not an independent cash audit.",
+    "Exact source hashes and internal parity do not verify the full bank hash chain or fresh account state."
+  ],
+  "marketRealizedSigns": {
+    "flat": 19,
+    "loss": 5,
+    "win": 10
+  },
+  "newBuyLotCohorts": {
+    "closedFragments": {
+      "entryObservedAfterExitExecutedShares": 0,
+      "executionClockReversalShares": 0,
+      "fragments": 64,
+      "freshUnderThresholdShares": 0,
+      "grossRealized": "-115.405000",
+      "holdingAgeThresholdMs": 60000,
+      "maturedAtThresholdShares": 9428,
+      "nonnegativeHoldingAgeMsMax": "11591930.000000",
+      "nonnegativeHoldingAgeMsMin": "78061.000000",
+      "shares": 9428
+    },
+    "feesAllocatedToCohorts": false,
+    "fullyClosed": 25,
+    "fullyClosedGrossFlat": 4,
+    "fullyClosedGrossLosses": 18,
+    "fullyClosedGrossWins": 3,
+    "maximumAgeExitFragments": {
+      "entryObservedAfterExitExecutedShares": 0,
+      "executionClockReversalShares": 0,
+      "fragments": 64,
+      "freshUnderThresholdShares": 0,
+      "grossRealized": "-115.405000",
+      "holdingAgeThresholdMs": 60000,
+      "maturedAtThresholdShares": 9428,
+      "nonnegativeHoldingAgeMsMax": "11591930.000000",
+      "nonnegativeHoldingAgeMsMin": "78061.000000",
+      "shares": 9428
+    },
+    "partiallyClosed": 0,
+    "total": 25,
+    "unclosed": 0
+  },
+  "parity": "exact_fifo_quantities_cost_cash_realized_inherited_fees",
+  "perMarket": [
+    {
+      "actualFills": 2,
+      "basisClassifications": {},
+      "buyShares": 22,
+      "exchangeId": "863",
+      "exitMix": [
+        {
+          "actualHoldingAge": "maturedAtThreshold",
+          "closeFragments": 1,
+          "closedShares": 22,
+          "cohort": "new",
+          "executionStyle": "inventoryAON",
+          "grossRealized": "-0.110000",
+          "inventoryExitReason": "maximumAge",
+          "mechanism": "sell"
+        }
+      ],
+      "fees": "0.000000",
+      "fullyClosedNewBuyLotsGross": {
+        "flat": 0,
+        "losses": 1,
+        "wins": 0
+      },
+      "inheritedRealizedGross": "0.000000",
+      "marketId": "174",
+      "newTradingRealized": "-0.110000",
+      "pairRedeemedShares": 0,
+      "realized": "-0.110000",
+      "realizedSign": "loss",
+      "reentriesAfterFlat": 0,
+      "remainingUnmarkedCost": {
+        "inherited": "0.000000",
+        "new": "0.000000"
+      },
+      "sellShares": 22
+    },
+    {
+      "actualFills": 25,
+      "basisClassifications": {},
+      "buyShares": 3522,
+      "exchangeId": "885",
+      "exitMix": [
+        {
+          "actualHoldingAge": "maturedAtThreshold",
+          "closeFragments": 24,
+          "closedShares": 3522,
+          "cohort": "new",
+          "executionStyle": "inventoryAON",
+          "grossRealized": "-41.805000",
+          "inventoryExitReason": "maximumAge",
+          "mechanism": "sell"
+        }
+      ],
+      "fees": "0.000000",
+      "fullyClosedNewBuyLotsGross": {
+        "flat": 0,
+        "losses": 1,
+        "wins": 0
+      },
+      "inheritedRealizedGross": "0.000000",
+      "marketId": "196",
+      "newTradingRealized": "-41.805000",
+      "pairRedeemedShares": 0,
+      "realized": "-41.805000",
+      "realizedSign": "loss",
+      "reentriesAfterFlat": 0,
+      "remainingUnmarkedCost": {
+        "inherited": "0.000000",
+        "new": "0.000000"
+      },
+      "sellShares": 3522
+    },
+    {
+      "actualFills": 0,
+      "basisClassifications": {
+        "exact": 1
+      },
+      "buyShares": 0,
+      "exchangeId": "900",
+      "exitMix": [],
+      "fees": "0.000000",
+      "fullyClosedNewBuyLotsGross": {
+        "flat": 0,
+        "losses": 0,
+        "wins": 0
+      },
+      "inheritedRealizedGross": "0.000000",
+      "marketId": "211",
+      "newTradingRealized": "0.000000",
+      "pairRedeemedShares": 0,
+      "realized": "0.000000",
+      "realizedSign": "flat",
+      "reentriesAfterFlat": 0,
+      "remainingUnmarkedCost": {
+        "inherited": "3.450000",
+        "new": "0.000000"
+      },
+      "sellShares": 0
+    },
+    {
+      "actualFills": 0,
+      "basisClassifications": {
+        "cent_rounding": 1
+      },
+      "buyShares": 0,
+      "exchangeId": "938",
+      "exitMix": [],
+      "fees": "0.000000",
+      "fullyClosedNewBuyLotsGross": {
+        "flat": 0,
+        "losses": 0,
+        "wins": 0
+      },
+      "inheritedRealizedGross": "0.000000",
+      "marketId": "249",
+      "newTradingRealized": "0.000000",
+      "pairRedeemedShares": 0,
+      "realized": "0.000000",
+      "realizedSign": "flat",
+      "reentriesAfterFlat": 0,
+      "remainingUnmarkedCost": {
+        "inherited": "3.745000",
+        "new": "0.000000"
+      },
+      "sellShares": 0
+    },
+    {
+      "actualFills": 13,
+      "basisClassifications": {},
+      "buyShares": 351,
+      "exchangeId": "942",
+      "exitMix": [
+        {
+          "actualHoldingAge": "maturedAtThreshold",
+          "closeFragments": 12,
+          "closedShares": 351,
+          "cohort": "new",
+          "executionStyle": "inventoryAON",
+          "grossRealized": "-3.510000",
+          "inventoryExitReason": "maximumAge",
+          "mechanism": "sell"
+        }
+      ],
+      "fees": "0.000000",
+      "fullyClosedNewBuyLotsGross": {
+        "flat": 0,
+        "losses": 12,
+        "wins": 0
+      },
+      "inheritedRealizedGross": "0.000000",
+      "marketId": "253",
+      "newTradingRealized": "-3.510000",
+      "pairRedeemedShares": 0,
+      "realized": "-3.510000",
+      "realizedSign": "loss",
+      "reentriesAfterFlat": 0,
+      "remainingUnmarkedCost": {
+        "inherited": "0.000000",
+        "new": "0.000000"
+      },
+      "sellShares": 351
+    },
+    {
+      "actualFills": 2,
+      "basisClassifications": {
+        "exact": 1
+      },
+      "buyShares": 0,
+      "exchangeId": "948",
+      "exitMix": [
+        {
+          "actualHoldingAge": "inherited",
+          "closeFragments": 5,
+          "closedShares": 1993,
+          "cohort": "inherited",
+          "executionStyle": "inventoryAON",
+          "grossRealized": "24.510000",
+          "inventoryExitReason": "unspecified",
+          "mechanism": "sell"
+        }
+      ],
+      "fees": "0.000000",
+      "fullyClosedNewBuyLotsGross": {
+        "flat": 0,
+        "losses": 0,
+        "wins": 0
+      },
+      "inheritedRealizedGross": "24.510000",
+      "marketId": "259",
+      "newTradingRealized": "0.000000",
+      "pairRedeemedShares": 0,
+      "realized": "24.510000",
+      "realizedSign": "win",
+      "reentriesAfterFlat": 0,
+      "remainingUnmarkedCost": {
+        "inherited": "7166.265000",
+        "new": "0.000000"
+      },
+      "sellShares": 1993
+    },
+    {
+      "actualFills": 5,
+      "basisClassifications": {
+        "exact": 1
+      },
+      "buyShares": 716,
+      "exchangeId": "949",
+      "exitMix": [
+        {
+          "actualHoldingAge": "inherited",
+          "closeFragments": 1,
+          "closedShares": 41,
+          "cohort": "inherited",
+          "executionStyle": "unspecified",
+          "grossRealized": "0.205000",
+          "inventoryExitReason": "unspecified",
+          "mechanism": "sell"
+        },
+        {
+          "actualHoldingAge": "maturedAtThreshold",
+          "closeFragments": 3,
+          "closedShares": 716,
+          "cohort": "new",
+          "executionStyle": "inventoryAON",
+          "grossRealized": "-2.425000",
+          "inventoryExitReason": "maximumAge",
+          "mechanism": "sell"
+        }
+      ],
+      "fees": "0.000000",
+      "fullyClosedNewBuyLotsGross": {
+        "flat": 0,
+        "losses": 1,
+        "wins": 0
+      },
+      "inheritedRealizedGross": "0.205000",
+      "marketId": "260",
+      "newTradingRealized": "-2.425000",
+      "pairRedeemedShares": 0,
+      "realized": "-2.220000",
+      "realizedSign": "loss",
+      "reentriesAfterFlat": 0,
+      "remainingUnmarkedCost": {
+        "inherited": "0.000000",
+        "new": "0.000000"
+      },
+      "sellShares": 757
+    },
+    {
+      "actualFills": 0,
+      "basisClassifications": {
+        "exact": 1
+      },
+      "buyShares": 0,
+      "exchangeId": "950",
+      "exitMix": [],
+      "fees": "0.000000",
+      "fullyClosedNewBuyLotsGross": {
+        "flat": 0,
+        "losses": 0,
+        "wins": 0
+      },
+      "inheritedRealizedGross": "0.000000",
+      "marketId": "261",
+      "newTradingRealized": "0.000000",
+      "pairRedeemedShares": 0,
+      "realized": "0.000000",
+      "realizedSign": "flat",
+      "reentriesAfterFlat": 0,
+      "remainingUnmarkedCost": {
+        "inherited": "18.040000",
+        "new": "0.000000"
+      },
+      "sellShares": 0
+    },
+    {
+      "actualFills": 21,
+      "basisClassifications": {},
+      "buyShares": 3685,
+      "exchangeId": "953",
+      "exitMix": [
+        {
+          "actualHoldingAge": "maturedAtThreshold",
+          "closeFragments": 18,
+          "closedShares": 3685,
+          "cohort": "new",
+          "executionStyle": "inventoryAON",
+          "grossRealized": "-67.555000",
+          "inventoryExitReason": "maximumAge",
+          "mechanism": "sell"
+        }
+      ],
+      "fees": "0.000000",
+      "fullyClosedNewBuyLotsGross": {
+        "flat": 0,
+        "losses": 3,
+        "wins": 3
+      },
+      "inheritedRealizedGross": "0.000000",
+      "marketId": "264",
+      "newTradingRealized": "-67.555000",
+      "pairRedeemedShares": 0,
+      "realized": "-67.555000",
+      "realizedSign": "loss",
+      "reentriesAfterFlat": 2,
+      "remainingUnmarkedCost": {
+        "inherited": "0.000000",
+        "new": "0.000000"
+      },
+      "sellShares": 3685
+    },
+    {
+      "actualFills": 0,
+      "basisClassifications": {
+        "exact": 1
+      },
+      "buyShares": 0,
+      "exchangeId": "966",
+      "exitMix": [],
+      "fees": "0.000000",
+      "fullyClosedNewBuyLotsGross": {
+        "flat": 0,
+        "losses": 0,
+        "wins": 0
+      },
+      "inheritedRealizedGross": "0.000000",
+      "marketId": "277",
+      "newTradingRealized": "0.000000",
+      "pairRedeemedShares": 0,
+      "realized": "0.000000",
+      "realizedSign": "flat",
+      "reentriesAfterFlat": 0,
+      "remainingUnmarkedCost": {
+        "inherited": "2.400000",
+        "new": "0.000000"
+      },
+      "sellShares": 0
+    },
+    {
+      "actualFills": 0,
+      "basisClassifications": {
+        "exact": 1
+      },
+      "buyShares": 0,
+      "exchangeId": "967",
+      "exitMix": [],
+      "fees": "0.000000",
+      "fullyClosedNewBuyLotsGross": {
+        "flat": 0,
+        "losses": 0,
+        "wins": 0
+      },
+      "inheritedRealizedGross": "0.000000",
+      "marketId": "278",
+      "newTradingRealized": "0.000000",
+      "pairRedeemedShares": 0,
+      "realized": "0.000000",
+      "realizedSign": "flat",
+      "reentriesAfterFlat": 0,
+      "remainingUnmarkedCost": {
+        "inherited": "44.880000",
+        "new": "0.000000"
+      },
+      "sellShares": 0
+    },
+    {
+      "actualFills": 0,
+      "basisClassifications": {
+        "exact": 1
+      },
+      "buyShares": 0,
+      "exchangeId": "976",
+      "exitMix": [],
+      "fees": "0.000000",
+      "fullyClosedNewBuyLotsGross": {
+        "flat": 0,
+        "losses": 0,
+        "wins": 0
+      },
+      "inheritedRealizedGross": "0.000000",
+      "marketId": "287",
+      "newTradingRealized": "0.000000",
+      "pairRedeemedShares": 0,
+      "realized": "0.000000",
+      "realizedSign": "flat",
+      "reentriesAfterFlat": 0,
+      "remainingUnmarkedCost": {
+        "inherited": "0.880000",
+        "new": "0.000000"
+      },
+      "sellShares": 0
+    },
+    {
+      "actualFills": 1,
+      "basisClassifications": {
+        "exact": 1
+      },
+      "buyShares": 0,
+      "exchangeId": "977",
+      "exitMix": [
+        {
+          "actualHoldingAge": "inherited",
+          "closeFragments": 1,
+          "closedShares": 11,
+          "cohort": "inherited",
+          "executionStyle": "unspecified",
+          "grossRealized": "0.055000",
+          "inventoryExitReason": "unspecified",
+          "mechanism": "sell"
+        }
+      ],
+      "fees": "0.000000",
+      "fullyClosedNewBuyLotsGross": {
+        "flat": 0,
+        "losses": 0,
+        "wins": 0
+      },
+      "inheritedRealizedGross": "0.055000",
+      "marketId": "288",
+      "newTradingRealized": "0.000000",
+      "pairRedeemedShares": 0,
+      "realized": "0.055000",
+      "realizedSign": "win",
+      "reentriesAfterFlat": 0,
+      "remainingUnmarkedCost": {
+        "inherited": "0.000000",
+        "new": "0.000000"
+      },
+      "sellShares": 11
+    },
+    {
+      "actualFills": 1,
+      "basisClassifications": {
+        "cent_rounding": 1
+      },
+      "buyShares": 0,
+      "exchangeId": "978",
+      "exitMix": [
+        {
+          "actualHoldingAge": "inherited",
+          "closeFragments": 1,
+          "closedShares": 47,
+          "cohort": "inherited",
+          "executionStyle": "unspecified",
+          "grossRealized": "0.235000",
+          "inventoryExitReason": "unspecified",
+          "mechanism": "sell"
+        }
+      ],
+      "fees": "0.000000",
+      "fullyClosedNewBuyLotsGross": {
+        "flat": 0,
+        "losses": 0,
+        "wins": 0
+      },
+      "inheritedRealizedGross": "0.235000",
+      "marketId": "289",
+      "newTradingRealized": "0.000000",
+      "pairRedeemedShares": 0,
+      "realized": "0.235000",
+      "realizedSign": "win",
+      "reentriesAfterFlat": 0,
+      "remainingUnmarkedCost": {
+        "inherited": "0.000000",
+        "new": "0.000000"
+      },
+      "sellShares": 47
+    },
+    {
+      "actualFills": 0,
+      "basisClassifications": {
+        "cent_rounding": 1
+      },
+      "buyShares": 0,
+      "exchangeId": "979",
+      "exitMix": [],
+      "fees": "0.000000",
+      "fullyClosedNewBuyLotsGross": {
+        "flat": 0,
+        "losses": 0,
+        "wins": 0
+      },
+      "inheritedRealizedGross": "0.000000",
+      "marketId": "290",
+      "newTradingRealized": "0.000000",
+      "pairRedeemedShares": 0,
+      "realized": "0.000000",
+      "realizedSign": "flat",
+      "reentriesAfterFlat": 0,
+      "remainingUnmarkedCost": {
+        "inherited": "8.225000",
+        "new": "0.000000"
+      },
+      "sellShares": 0
+    },
+    {
+      "actualFills": 0,
+      "basisClassifications": {
+        "reported_discrepancy": 1
+      },
+      "buyShares": 0,
+      "exchangeId": "986",
+      "exitMix": [],
+      "fees": "0.000000",
+      "fullyClosedNewBuyLotsGross": {
+        "flat": 0,
+        "losses": 0,
+        "wins": 0
+      },
+      "inheritedRealizedGross": "0.000000",
+      "marketId": "297",
+      "newTradingRealized": "0.000000",
+      "pairRedeemedShares": 0,
+      "realized": "0.000000",
+      "realizedSign": "flat",
+      "reentriesAfterFlat": 0,
+      "remainingUnmarkedCost": {
+        "inherited": "1890.370000",
+        "new": "0.000000"
+      },
+      "sellShares": 0
+    },
+    {
+      "actualFills": 2,
+      "basisClassifications": {
+        "exact": 1
+      },
+      "buyShares": 0,
+      "exchangeId": "1001",
+      "exitMix": [
+        {
+          "actualHoldingAge": "inherited",
+          "closeFragments": 2,
+          "closedShares": 78,
+          "cohort": "inherited",
+          "executionStyle": "inventoryAON",
+          "grossRealized": "2.340000",
+          "inventoryExitReason": "unspecified",
+          "mechanism": "sell"
+        }
+      ],
+      "fees": "0.000000",
+      "fullyClosedNewBuyLotsGross": {
+        "flat": 0,
+        "losses": 0,
+        "wins": 0
+      },
+      "inheritedRealizedGross": "2.340000",
+      "marketId": "312",
+      "newTradingRealized": "0.000000",
+      "pairRedeemedShares": 0,
+      "realized": "2.340000",
+      "realizedSign": "win",
+      "reentriesAfterFlat": 0,
+      "remainingUnmarkedCost": {
+        "inherited": "0.000000",
+        "new": "0.000000"
+      },
+      "sellShares": 78
+    },
+    {
+      "actualFills": 0,
+      "basisClassifications": {
+        "exact": 1
+      },
+      "buyShares": 0,
+      "exchangeId": "1002",
+      "exitMix": [],
+      "fees": "0.000000",
+      "fullyClosedNewBuyLotsGross": {
+        "flat": 0,
+        "losses": 0,
+        "wins": 0
+      },
+      "inheritedRealizedGross": "0.000000",
+      "marketId": "313",
+      "newTradingRealized": "0.000000",
+      "pairRedeemedShares": 0,
+      "realized": "0.000000",
+      "realizedSign": "flat",
+      "reentriesAfterFlat": 0,
+      "remainingUnmarkedCost": {
+        "inherited": "21.840000",
+        "new": "0.000000"
+      },
+      "sellShares": 0
+    },
+    {
+      "actualFills": 0,
+      "basisClassifications": {
+        "exact": 1
+      },
+      "buyShares": 0,
+      "exchangeId": "1004",
+      "exitMix": [],
+      "fees": "0.000000",
+      "fullyClosedNewBuyLotsGross": {
+        "flat": 0,
+        "losses": 0,
+        "wins": 0
+      },
+      "inheritedRealizedGross": "0.000000",
+      "marketId": "315",
+      "newTradingRealized": "0.000000",
+      "pairRedeemedShares": 0,
+      "realized": "0.000000",
+      "realizedSign": "flat",
+      "reentriesAfterFlat": 0,
+      "remainingUnmarkedCost": {
+        "inherited": "240.000000",
+        "new": "0.000000"
+      },
+      "sellShares": 0
+    },
+    {
+      "actualFills": 1,
+      "basisClassifications": {
+        "cent_rounding": 1
+      },
+      "buyShares": 0,
+      "exchangeId": "1011",
+      "exitMix": [
+        {
+          "actualHoldingAge": "inherited",
+          "closeFragments": 1,
+          "closedShares": 5,
+          "cohort": "inherited",
+          "executionStyle": "inventoryAON",
+          "grossRealized": "0.325000",
+          "inventoryExitReason": "unspecified",
+          "mechanism": "sell"
+        }
+      ],
+      "fees": "0.000000",
+      "fullyClosedNewBuyLotsGross": {
+        "flat": 0,
+        "losses": 0,
+        "wins": 0
+      },
+      "inheritedRealizedGross": "0.325000",
+      "marketId": "322",
+      "newTradingRealized": "0.000000",
+      "pairRedeemedShares": 0,
+      "realized": "0.325000",
+      "realizedSign": "win",
+      "reentriesAfterFlat": 0,
+      "remainingUnmarkedCost": {
+        "inherited": "0.000000",
+        "new": "0.000000"
+      },
+      "sellShares": 5
+    },
+    {
+      "actualFills": 4,
+      "basisClassifications": {},
+      "buyShares": 525,
+      "exchangeId": "1012",
+      "exitMix": [
+        {
+          "actualHoldingAge": "maturedAtThreshold",
+          "closeFragments": 3,
+          "closedShares": 525,
+          "cohort": "new",
+          "executionStyle": "inventoryAON",
+          "grossRealized": "0.000000",
+          "inventoryExitReason": "maximumAge",
+          "mechanism": "sell"
+        }
+      ],
+      "fees": "0.000000",
+      "fullyClosedNewBuyLotsGross": {
+        "flat": 1,
+        "losses": 0,
+        "wins": 0
+      },
+      "inheritedRealizedGross": "0.000000",
+      "marketId": "323",
+      "newTradingRealized": "0.000000",
+      "pairRedeemedShares": 0,
+      "realized": "0.000000",
+      "realizedSign": "flat",
+      "reentriesAfterFlat": 0,
+      "remainingUnmarkedCost": {
+        "inherited": "0.000000",
+        "new": "0.000000"
+      },
+      "sellShares": 525
+    },
+    {
+      "actualFills": 1,
+      "basisClassifications": {
+        "exact": 1
+      },
+      "buyShares": 0,
+      "exchangeId": "1031",
+      "exitMix": [
+        {
+          "actualHoldingAge": "inherited",
+          "closeFragments": 1,
+          "closedShares": 7,
+          "cohort": "inherited",
+          "executionStyle": "inventoryAON",
+          "grossRealized": "0.140000",
+          "inventoryExitReason": "unspecified",
+          "mechanism": "sell"
+        }
+      ],
+      "fees": "0.000000",
+      "fullyClosedNewBuyLotsGross": {
+        "flat": 0,
+        "losses": 0,
+        "wins": 0
+      },
+      "inheritedRealizedGross": "0.140000",
+      "marketId": "342",
+      "newTradingRealized": "0.000000",
+      "pairRedeemedShares": 0,
+      "realized": "0.140000",
+      "realizedSign": "win",
+      "reentriesAfterFlat": 0,
+      "remainingUnmarkedCost": {
+        "inherited": "0.000000",
+        "new": "0.000000"
+      },
+      "sellShares": 7
+    },
+    {
+      "actualFills": 1,
+      "basisClassifications": {
+        "exact": 1
+      },
+      "buyShares": 0,
+      "exchangeId": "1042",
+      "exitMix": [
+        {
+          "actualHoldingAge": "inherited",
+          "closeFragments": 1,
+          "closedShares": 62,
+          "cohort": "inherited",
+          "executionStyle": "inventoryAON",
+          "grossRealized": "1.550000",
+          "inventoryExitReason": "unspecified",
+          "mechanism": "sell"
+        }
+      ],
+      "fees": "0.000000",
+      "fullyClosedNewBuyLotsGross": {
+        "flat": 0,
+        "losses": 0,
+        "wins": 0
+      },
+      "inheritedRealizedGross": "1.550000",
+      "marketId": "353",
+      "newTradingRealized": "0.000000",
+      "pairRedeemedShares": 0,
+      "realized": "1.550000",
+      "realizedSign": "win",
+      "reentriesAfterFlat": 0,
+      "remainingUnmarkedCost": {
+        "inherited": "0.000000",
+        "new": "0.000000"
+      },
+      "sellShares": 62
+    },
+    {
+      "actualFills": 4,
+      "basisClassifications": {},
+      "buyShares": 607,
+      "exchangeId": "1045",
+      "exitMix": [
+        {
+          "actualHoldingAge": "maturedAtThreshold",
+          "closeFragments": 3,
+          "closedShares": 607,
+          "cohort": "new",
+          "executionStyle": "inventoryAON",
+          "grossRealized": "0.000000",
+          "inventoryExitReason": "maximumAge",
+          "mechanism": "sell"
+        }
+      ],
+      "fees": "0.000000",
+      "fullyClosedNewBuyLotsGross": {
+        "flat": 3,
+        "losses": 0,
+        "wins": 0
+      },
+      "inheritedRealizedGross": "0.000000",
+      "marketId": "356",
+      "newTradingRealized": "0.000000",
+      "pairRedeemedShares": 0,
+      "realized": "0.000000",
+      "realizedSign": "flat",
+      "reentriesAfterFlat": 0,
+      "remainingUnmarkedCost": {
+        "inherited": "0.000000",
+        "new": "0.000000"
+      },
+      "sellShares": 607
+    },
+    {
+      "actualFills": 1,
+      "basisClassifications": {
+        "exact": 1
+      },
+      "buyShares": 0,
+      "exchangeId": "1047",
+      "exitMix": [
+        {
+          "actualHoldingAge": "inherited",
+          "closeFragments": 1,
+          "closedShares": 93,
+          "cohort": "inherited",
+          "executionStyle": "inventoryAON",
+          "grossRealized": "6.510000",
+          "inventoryExitReason": "unspecified",
+          "mechanism": "sell"
+        }
+      ],
+      "fees": "0.000000",
+      "fullyClosedNewBuyLotsGross": {
+        "flat": 0,
+        "losses": 0,
+        "wins": 0
+      },
+      "inheritedRealizedGross": "6.510000",
+      "marketId": "358",
+      "newTradingRealized": "0.000000",
+      "pairRedeemedShares": 0,
+      "realized": "6.510000",
+      "realizedSign": "win",
+      "reentriesAfterFlat": 0,
+      "remainingUnmarkedCost": {
+        "inherited": "0.000000",
+        "new": "0.000000"
+      },
+      "sellShares": 93
+    },
+    {
+      "actualFills": 0,
+      "basisClassifications": {
+        "cent_rounding": 1
+      },
+      "buyShares": 0,
+      "exchangeId": "1048",
+      "exitMix": [],
+      "fees": "0.000000",
+      "fullyClosedNewBuyLotsGross": {
+        "flat": 0,
+        "losses": 0,
+        "wins": 0
+      },
+      "inheritedRealizedGross": "0.000000",
+      "marketId": "359",
+      "newTradingRealized": "0.000000",
+      "pairRedeemedShares": 0,
+      "realized": "0.000000",
+      "realizedSign": "flat",
+      "reentriesAfterFlat": 0,
+      "remainingUnmarkedCost": {
+        "inherited": "63.705000",
+        "new": "0.000000"
+      },
+      "sellShares": 0
+    },
+    {
+      "actualFills": 0,
+      "basisClassifications": {
+        "reported_discrepancy": 1
+      },
+      "buyShares": 0,
+      "exchangeId": "1058",
+      "exitMix": [],
+      "fees": "0.000000",
+      "fullyClosedNewBuyLotsGross": {
+        "flat": 0,
+        "losses": 0,
+        "wins": 0
+      },
+      "inheritedRealizedGross": "0.000000",
+      "marketId": "369",
+      "newTradingRealized": "0.000000",
+      "pairRedeemedShares": 0,
+      "realized": "0.000000",
+      "realizedSign": "flat",
+      "reentriesAfterFlat": 0,
+      "remainingUnmarkedCost": {
+        "inherited": "1019.225000",
+        "new": "0.000000"
+      },
+      "sellShares": 0
+    },
+    {
+      "actualFills": 0,
+      "basisClassifications": {
+        "exact": 1
+      },
+      "buyShares": 0,
+      "exchangeId": "1066",
+      "exitMix": [],
+      "fees": "0.000000",
+      "fullyClosedNewBuyLotsGross": {
+        "flat": 0,
+        "losses": 0,
+        "wins": 0
+      },
+      "inheritedRealizedGross": "0.000000",
+      "marketId": "377",
+      "newTradingRealized": "0.000000",
+      "pairRedeemedShares": 0,
+      "realized": "0.000000",
+      "realizedSign": "flat",
+      "reentriesAfterFlat": 0,
+      "remainingUnmarkedCost": {
+        "inherited": "30.900000",
+        "new": "0.000000"
+      },
+      "sellShares": 0
+    },
+    {
+      "actualFills": 0,
+      "basisClassifications": {
+        "exact": 1
+      },
+      "buyShares": 0,
+      "exchangeId": "1068",
+      "exitMix": [],
+      "fees": "0.000000",
+      "fullyClosedNewBuyLotsGross": {
+        "flat": 0,
+        "losses": 0,
+        "wins": 0
+      },
+      "inheritedRealizedGross": "0.000000",
+      "marketId": "379",
+      "newTradingRealized": "0.000000",
+      "pairRedeemedShares": 0,
+      "realized": "0.000000",
+      "realizedSign": "flat",
+      "reentriesAfterFlat": 0,
+      "remainingUnmarkedCost": {
+        "inherited": "6624.170000",
+        "new": "0.000000"
+      },
+      "sellShares": 0
+    },
+    {
+      "actualFills": 1,
+      "basisClassifications": {
+        "cent_rounding": 1
+      },
+      "buyShares": 0,
+      "exchangeId": "1070",
+      "exitMix": [
+        {
+          "actualHoldingAge": "inherited",
+          "closeFragments": 1,
+          "closedShares": 41,
+          "cohort": "inherited",
+          "executionStyle": "inventoryAON",
+          "grossRealized": "0.205000",
+          "inventoryExitReason": "unspecified",
+          "mechanism": "sell"
+        }
+      ],
+      "fees": "0.000000",
+      "fullyClosedNewBuyLotsGross": {
+        "flat": 0,
+        "losses": 0,
+        "wins": 0
+      },
+      "inheritedRealizedGross": "0.205000",
+      "marketId": "381",
+      "newTradingRealized": "0.000000",
+      "pairRedeemedShares": 0,
+      "realized": "0.205000",
+      "realizedSign": "win",
+      "reentriesAfterFlat": 0,
+      "remainingUnmarkedCost": {
+        "inherited": "0.000000",
+        "new": "0.000000"
+      },
+      "sellShares": 41
+    },
+    {
+      "actualFills": 0,
+      "basisClassifications": {
+        "exact": 1
+      },
+      "buyShares": 0,
+      "exchangeId": "1071",
+      "exitMix": [],
+      "fees": "0.000000",
+      "fullyClosedNewBuyLotsGross": {
+        "flat": 0,
+        "losses": 0,
+        "wins": 0
+      },
+      "inheritedRealizedGross": "0.000000",
+      "marketId": "382",
+      "newTradingRealized": "0.000000",
+      "pairRedeemedShares": 0,
+      "realized": "0.000000",
+      "realizedSign": "flat",
+      "reentriesAfterFlat": 0,
+      "remainingUnmarkedCost": {
+        "inherited": "34.030000",
+        "new": "0.000000"
+      },
+      "sellShares": 0
+    },
+    {
+      "actualFills": 1,
+      "basisClassifications": {
+        "exact": 1
+      },
+      "buyShares": 0,
+      "exchangeId": "1073",
+      "exitMix": [
+        {
+          "actualHoldingAge": "inherited",
+          "closeFragments": 1,
+          "closedShares": 100,
+          "cohort": "inherited",
+          "executionStyle": "inventoryAON",
+          "grossRealized": "2.000000",
+          "inventoryExitReason": "unspecified",
+          "mechanism": "sell"
+        }
+      ],
+      "fees": "0.000000",
+      "fullyClosedNewBuyLotsGross": {
+        "flat": 0,
+        "losses": 0,
+        "wins": 0
+      },
+      "inheritedRealizedGross": "2.000000",
+      "marketId": "384",
+      "newTradingRealized": "0.000000",
+      "pairRedeemedShares": 0,
+      "realized": "2.000000",
+      "realizedSign": "win",
+      "reentriesAfterFlat": 0,
+      "remainingUnmarkedCost": {
+        "inherited": "0.000000",
+        "new": "0.000000"
+      },
+      "sellShares": 100
+    },
+    {
+      "actualFills": 0,
+      "basisClassifications": {
+        "exact": 1
+      },
+      "buyShares": 0,
+      "exchangeId": "1075",
+      "exitMix": [],
+      "fees": "0.000000",
+      "fullyClosedNewBuyLotsGross": {
+        "flat": 0,
+        "losses": 0,
+        "wins": 0
+      },
+      "inheritedRealizedGross": "0.000000",
+      "marketId": "386",
+      "newTradingRealized": "0.000000",
+      "pairRedeemedShares": 0,
+      "realized": "0.000000",
+      "realizedSign": "flat",
+      "reentriesAfterFlat": 0,
+      "remainingUnmarkedCost": {
+        "inherited": "55.490000",
+        "new": "0.000000"
+      },
+      "sellShares": 0
+    },
+    {
+      "actualFills": 0,
+      "basisClassifications": {
+        "reported_discrepancy": 1
+      },
+      "buyShares": 0,
+      "exchangeId": "1076",
+      "exitMix": [],
+      "fees": "0.000000",
+      "fullyClosedNewBuyLotsGross": {
+        "flat": 0,
+        "losses": 0,
+        "wins": 0
+      },
+      "inheritedRealizedGross": "0.000000",
+      "marketId": "387",
+      "newTradingRealized": "0.000000",
+      "pairRedeemedShares": 0,
+      "realized": "0.000000",
+      "realizedSign": "flat",
+      "reentriesAfterFlat": 0,
+      "remainingUnmarkedCost": {
+        "inherited": "5544.900000",
+        "new": "0.000000"
+      },
+      "sellShares": 0
+    }
+  ],
+  "profitabilityEstablished": false,
+  "schemaVersion": 2,
+  "sourceSha256": {
+    "adoption": "294875c4f8b4b76eac64a96e9b1b515c8f5cad4bfd57e5fa3ac8fcd954caba35",
+    "report": "0f02dd408cdb470ccd36bf38df4861e9129a5961547b92943785958d11bf7a0b"
+  }
+}
