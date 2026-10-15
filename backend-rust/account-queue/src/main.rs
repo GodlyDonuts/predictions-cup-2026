@@ -3,6 +3,8 @@ use serde_json::{Value, json};
 use sha2::{Digest, Sha256};
 use std::{collections::BTreeMap, fs::{self, File, OpenOptions}, io::{BufRead, BufReader, Read, Seek, SeekFrom, Write}, path::{Path, PathBuf}};
 
+mod v2;
+
 const MAX_TIME: u64 = 8_640_000_000_000_000;
 const MAX_SAFE: u64 = 9_007_199_254_740_991;
 const MAX_ACTIVE_JOURNAL_BYTES: u64 = 64 * 1024 * 1024;
@@ -118,7 +120,7 @@ impl State {
         }
     }
 }
-#[derive(Debug, Default, Deserialize)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 #[serde(default, deny_unknown_fields)]
 struct Command {
     op:String, scope:String, now:u64, request:String, write:bool,
@@ -246,7 +248,9 @@ impl Store {
 }
 impl Drop for Store {fn drop(&mut self){if fs::read(&self.lock_path).ok().as_deref()==Some(&self.identity){let _=fs::remove_file(&self.lock_path);}}}
 fn run()->Result<()> {
-    let args:Vec<String>=std::env::args().collect();need(args.len()==5 && args[1]=="--offline-jsonl","USAGE: --offline-jsonl DIRECTORY SCOPE TOKEN")?;
+    let args:Vec<String>=std::env::args().collect();
+    if args.get(1).is_some_and(|a| matches!(a.as_str(),"--offline-jsonl-v2"|"--offline-v1-proof"|"--offline-migrate-v2")){return v2::run(&args);}
+    need(args.len()==5 && args[1]=="--offline-jsonl","USAGE: --offline-jsonl DIRECTORY SCOPE TOKEN")?;
     let mut store=Store::open(Path::new(&args[2]),&args[3],&args[4])?;
     let stdin=std::io::stdin();let mut stdout=std::io::stdout().lock();
     for line in stdin.lock().lines(){let line=line.map_err(|_|"INPUT_FAILURE")?;
