@@ -134,6 +134,14 @@ impl PackageDispatchLog{
  /// package reservation separately blocks until actual fills/terminal/complete.
  pub fn unresolved(&self)->bool{self.poisoned||self.state.unresolved()}
  pub fn record(&self,id:&str)->Option<Value>{self.state.records.get(id).map(|r|json!({"admission":r.intent,"phase":r.phase,"attemptedAt":r.attempted_at,"outcome":r.outcome}))}
+ /// Reverify the original retained journal before constructing source-bound
+ /// financial feedback. This is read-only and never repairs a damaged prefix.
+ pub fn verified_record(&self,id:&str)->Result<Value>{
+  need(!self.poisoned,"PACKAGE_LOG_POISONED")?;let disk=load(&self.path)?;
+  need(disk.sequence==self.state.sequence&&disk.previous==self.state.previous,"PACKAGE_LOG_CHANGED")?;
+  let r=disk.records.get(id).ok_or("PACKAGE_LOG_UNKNOWN_ID")?;
+  Ok(json!({"admission":r.intent,"phase":r.phase,"attemptedAt":r.attempted_at,"outcome":r.outcome}))
+ }
  pub fn records(&self)->Vec<Value>{self.state.records.keys().filter_map(|id|self.record(id)).collect()}
  pub fn head(&self)->Value{json!({"sequence":self.state.sequence,"hash":self.state.previous,"poisoned":self.poisoned})}
  /// Test-only durability fault after complete write but before sync/commit.

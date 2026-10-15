@@ -93,7 +93,7 @@ pub fn complete(bank:&Session,p:&Value,s:&Scope,processed:&str)->Result<Value>{
 /// Original private files must remain retained; this returns an event only.
 pub fn local_not_sent(bank:&Session,p:&Value,b:&Basket,s:&Scope,permit:&Permit,dispatch:&crate::package_dispatch::PackageDispatchLog,original:&crate::package_not_sent_evidence::VerifiedNotSent,error:&TransportError,processed:&str)->Result<Value>{
  let spec=bound(bank,p,b,s,permit)?;need(p["phase"]=="attempted"&&!dispatch.unresolved()&&!error.may_have_executed&&error.status.is_none()&&error.order_id.is_none()&&error.api_code.is_none())?;
- let id=p["packageId"].as_str().ok_or("PACKAGE_ID")?;let record=dispatch.record(id).ok_or("PACKAGE_DISPATCH_MISSING")?;
+ let id=p["packageId"].as_str().ok_or("PACKAGE_ID")?;let record=dispatch.verified_record(id)?;
  let q=original.evidence();let attestation=serde_json::to_value(original.attestation()?)?;
  need(record["phase"]=="not_sent"&&record["outcome"]["error"]==serde_json::to_value(error)?&&record["outcome"]["queueEvidence"]==attestation&&record["admission"]["spec"]==serde_json::to_value(&spec)?&&record["admission"]["queue_binding"]==q["binding"]&&record["admission"]["queue_scope"]==q["queueScope"]&&record["admission"]["reserve"]["proofHash"]==p["proofHash"]&&record["admission"]["reserve"]["bankScope"]==p["bankScope"])?;
  let start=q["beforeRecord"]["state"]["last_clock"].as_i64().ok_or("PACKAGE_QUEUE_CLOCK")?;let received=q["tailRecord"]["state"]["last_clock"].as_i64().ok_or("PACKAGE_QUEUE_CLOCK")?;
