@@ -21,9 +21,8 @@ fn hash(v:&Value)->String{format!("{:x}",Sha256::digest(serde_json::to_vec(v).un
 fn load(p:&Path)->Result<Value>{Ok(serde_json::from_slice(&fs::read(p)?)?)}
 fn private_dir(p:&Path)->Result<()>{use std::os::unix::fs::PermissionsExt;fs::create_dir_all(p)?;let m=fs::symlink_metadata(p)?;if m.file_type().is_symlink()||!m.is_dir(){return Err("LIVE_DIRECTORY".into())}fs::set_permissions(p,fs::Permissions::from_mode(0o700))?;Ok(())}
 fn transport(c:&Control,auth:Box<dyn Authority>,writes:bool)->Result<Transport>{Ok(Transport::new_with_read_budget(Config{queue_dir:c.root.join("account-queue"),account_scope:c.account_scope.clone(),scope:c.scope.clone(),maximum_pages:20,writes_enabled:writes},Box::new(UnixFileCredentials::approved_file(c.credentials.clone())?),Box::new(SystemClock),auth,100,600)?.with_full_account_observation())}
-thread_local!{static EXECUTION_MODEL:std::cell::RefCell<Option<moloch_live_runtime::execution_edge::Model>>=const{std::cell::RefCell::new(None)};}
-fn observe_execution(bank:&Session,sequence:u64,event:&Value){EXECUTION_MODEL.with(|slot|{if let Some(model)=slot.borrow_mut().as_mut(){let _=model.observe_committed(bank,"moloch-live",sequence,event);}});}
-fn accept(bank:&mut Session,event:&Value)->Result<()>{let mut e=event.clone();e["processedAt"]=json!(iso(now()));let seq=bank.last_source_sequence("moloch-live")+1;bank.accept("moloch-live",seq,&e)?;observe_execution(bank,seq,&e);Ok(())}
+fn observe_execution(bank:&Session,sequence:u64,event:&Value){moloch_live_runtime::execution_edge::observe_runtime_committed(bank,"moloch-live",sequence,event);}
+fn accept(bank:&mut Session,event:&Value)->Result<()>{let mut e=event.clone();e["processedAt"]=json!(iso(now()));let seq=bank.last_source_sequence("moloch-live")+1;if bank.accept("moloch-live",seq,&e)?{observe_execution(bank,seq,&e);}Ok(())}
 /// The original dispatch receipt is still fully validated before this call.
 /// Recheck a previously committed ACK against the real native validator without
 /// writing the same acknowledgement and every derived report again on restart.
@@ -316,7 +315,7 @@ fn submit_order(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchL
  if let Err(e)=authority.authorize(&c.scope,&request_spec,&p,false,now()){authority.clear_ready();atomic_json(&c.root.join("deferred.json"),&json!({"at":iso(now()),"qid":qid,"code":e.code}))?;return Ok(())}
  if log.intents.contains_key(&qid)||!log.never_attempted(qid){return Err("LIVE_EXISTING_UNRESOLVED_INTENT".into())}
  log.append(json!({"kind":"intent","qid":qid,"quote":q,"spec":request_spec,"permit":p,"at":iso(now())}))?;
- log.append(json!({"kind":"attempt","qid":qid,"at":iso(now())}))?; EXECUTION_MODEL.with(|slot|{if let Some(model)=slot.borrow_mut().as_mut(){let _=model.track_attempt(bank,log,qid,now());}});
+ log.append(json!({"kind":"attempt","qid":qid,"at":iso(now())}))?; moloch_live_runtime::execution_edge::track_runtime_attempt(bank,log,qid,now());
  let ack=match t.place(order,p){Ok(r)=>r,Err(e)=>{log.append(json!({"kind":"error","qid":qid,"error":e,"at":iso(now())}))?;return Err("LIVE_WRITE_NOT_CONFIRMED_NO_RETRY".into())}};
  record_receipt(&c.root,&ack)?;log.append(json!({"kind":"ack","qid":qid,"receipt":ack}))?;
  let event=feedback::acknowledgment(q,&ack,&iso(now()))?;authority.bind_owned(event["actualOrderId"].as_str().ok_or("LIVE_ACTUAL_ID")?.into());accept(bank,&event)?;authority.clear_ready();Ok(())
@@ -607,7 +606,7 @@ pub fn main()->Result<()>{
   let mut universe=if c.all_markets{Some(Universe::new(&c.scope.exchanges,if fully_managed{&empty_positions}else{seed.get("excludedPositionsAtTransfer").ok_or("LIVE_UNIVERSE_SEED")?},managed_market_limit)?.with_discovery_limit(discovery_read_limit)?.with_tournament(&c.scope.tournament_id)?)}else{None};
   // Previously owned holdings are filtered from the financial feed as well as discovery.
   let pairs:Value=if let Some(u)=&universe{u.pairs(&c.scope.exchanges)}else{c.scope.exchanges.iter().map(|(e,m)|json!({"exchangeId":e,"marketId":m})).collect::<Vec<_>>().into()};
-  EXECUTION_MODEL.with(|slot|->Result<()>{*slot.borrow_mut()=c.execution_model.clone().map(|cfg|moloch_live_runtime::execution_edge::Model::new(&bank,cfg)).transpose()?;Ok(())})?;
+  moloch_live_runtime::execution_edge::initialize_observer(&bank,c.execution_model.clone())?;
   let start=now();let mut source_state=RestSource::new(&pairs,&c.scope.tournament_id,&iso(start))?;source_state.seed_trade_facts(bank.source_facts())?;
   let recovery_budget_path=c.root.join("stream-recovery-budget.json");let mut recovery_budget=recovery_budget(&recovery_budget_path,now())?;
   if !recovery_budget_path.exists(){atomic_json(&recovery_budget_path,&serde_json::to_value(&recovery_budget)?)?;}
@@ -651,7 +650,7 @@ pub fn main()->Result<()>{
     dispatch(&mut t,&c,&mut bank,&mut log,&authority,&mut source_state,permit_new,&mut preflight_cursor,stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?,&windows)?;
     let _=atomic_json(&c.root.join("progress.json"),&json!({"at":iso(now()),"pid":std::process::id(),"phase":"trading","completedReadScopes":selected_index+1,"selectedReadScopes":selected.len(),"maximumRealtimeFramesPerDrain":MAX_REALTIME_FRAMES_PER_DRAIN,"realtimeHealthy":stream.as_ref().is_some_and(|s|s.healthy()),"actualOrders":log.acknowledgments.len(),"terminalOrders":log.closed.len(),"actualFills":bank.engine().fills().len(),"profitabilityEstablished":false}));
    }
-   cycles+=1; EXECUTION_MODEL.with(|slot|{if let Some(model)=slot.borrow().as_ref(){let _=atomic_json(&c.root.join("execution-model.json"),&json!({"at":iso(now()),"model":model.diagnostic_json(),"executionAuthority":false}));}});
+   cycles+=1; if let Some(model)=moloch_live_runtime::execution_edge::observer_diagnostic(){let _=atomic_json(&c.root.join("execution-model.json"),&json!({"at":iso(now()),"model":model,"executionAuthority":false}));}
    atomic_json(&c.root.join("status.json"),&json!({"at":iso(now()),"pid":std::process::id(),"mode":"actual-contest-trading","runId":c.activation.run_id,"bank":c.bank_name,"cycles":cycles,"realtimeHealthy":stream.as_ref().is_some_and(|s|s.healthy()),"universe":universe.as_ref().map(Universe::status),"selectedReadScopes":selected,"ownedReconciliation":reconciled,"sourceScopes":source_state.scopes(),"breadthCapture":{"path":breadth_path,"state":breadth.as_ref().map(Recorder::status)},"report":bank.engine().report()?,"queue":t.admission_state()?,"actualOrders":log.acknowledgments.len(),"terminalOrders":log.closed.len(),"entryAnchor":iso(c.activation.entry_until_ms),"entryUntil":iso(authority.entry_until_ms()),"profitabilityEstablished":false}))?;
    // Existing orders and the first trading cycle precede optional research reads.
    // Diagnostic persistence never blocks the financial journal or ordinary trading.
@@ -740,14 +739,14 @@ pub fn main()->Result<()>{
   (bank,DispatchLog::open(&path.join("dispatch.ndjson")).unwrap(),policy,seed)
  }
  #[test]fn execution_observer_sees_only_exact_successfully_committed_prepared_bytes(){
-  use moloch_live_runtime::execution_edge::{Config,Model};
+  use moloch_live_runtime::execution_edge::{self,Config};
   let temp=Temp::new();let(mut bank,_,_,_)=setup(&temp.0,1);let cfg=Config{fill_window_ms:1000,markout_ms:1000,post_window_ms:500,embargo_ms:500,maximum_book_age_ms:10_000,maximum_delivery_ms:1000,maximum_training_age_ms:60_000,minimum_samples:2,minimum_coverage_bps:9000,probability_haircut_bps:1000,uncertainty_per_share:5000,exit_fee_per_share:0,fee_policy_source_sha256:"a".repeat(64),maximum_keys:16,maximum_pending:16,retained_samples:8};
-  EXECUTION_MODEL.with(|slot|*slot.borrow_mut()=Some(Model::new(&bank,cfg).unwrap()));
+  execution_edge::initialize_observer(&bank,Some(cfg)).unwrap();
   let at=iso(now());let e=json!({"type":"book","receivedAt":at,"book":{"tournamentId":"cup","marketId":"101","exchangeId":"101","sequence":"2","sourceAt":at,"requestStartedAt":at,"receivedAt":at,"bids":[{"price":"0.400000","quantity":100}],"asks":[{"price":"0.450000","quantity":100}]}});
   accept_source_events(&mut bank,&[e]).unwrap();let seq=bank.last_source_sequence("moloch-live");
-  let before=EXECUTION_MODEL.with(|slot|slot.borrow().as_ref().unwrap().diagnostic_json());assert_eq!(before["disabled"],Value::Null);assert!(before["lastObservedAtMs"].as_u64().unwrap()>0);
+  let before=execution_edge::observer_diagnostic().unwrap();assert_eq!(before["disabled"],Value::Null);assert!(before["lastObservedAtMs"].as_u64().unwrap()>0);
   assert!(accept(&mut bank,&json!({"type":"not_a_native_event","receivedAt":at})).is_err());assert_eq!(bank.last_source_sequence("moloch-live"),seq);
-  EXECUTION_MODEL.with(|slot|{assert_eq!(slot.borrow().as_ref().unwrap().diagnostic_json(),before);*slot.borrow_mut()=None;});
+  assert_eq!(execution_edge::observer_diagnostic().unwrap(),before);execution_edge::clear_observer();
  }
  #[test]fn original_dispatch_proved_retirement_does_not_recreate_component_quotes_and_replays(){
   for n in [2,3]{let temp=Temp::new();let(mut bank,mut log,policy,seed)=setup(&temp.0,n);let original=bank.engine().order_records();assert_eq!(original.len(),n*2);assert!(!ordinary_liability_due(&bank,&log,now()).unwrap());

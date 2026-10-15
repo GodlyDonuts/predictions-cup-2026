@@ -13,7 +13,7 @@ fn need(ok:bool,why:&'static str)->Result<()>{if ok{Ok(())}else{Err(why.into())}
 fn hash<T:Serialize>(v:&T)->Result<String>{Ok(format!("{:x}",Sha256::digest(serde_json::to_vec(v)?)))}
 fn iso(at:u64)->Result<String>{crate::daily_windows::iso(at)}
 fn clock(s:&str)->Result<u64>{crate::daily_windows::clock(s)}
-fn accept(bank:&mut Session,e:&Value)->Result<()>{let next=bank.last_source_sequence("moloch-package").checked_add(1).ok_or("PORTFOLIO_WORKER_SEQUENCE")?;need(bank.accept("moloch-package",next,e)?,"PORTFOLIO_WORKER_DUPLICATE_EVENT")}
+fn accept(bank:&mut Session,e:&Value)->Result<()>{let next=bank.last_source_sequence("moloch-package").checked_add(1).ok_or("PORTFOLIO_WORKER_SEQUENCE")?;need(bank.accept("moloch-package",next,e)?,"PORTFOLIO_WORKER_DUPLICATE_EVENT")?;crate::execution_edge::observe_runtime_committed(bank,"moloch-package",next,e);Ok(())}
 fn current(bank:&Session,id:&str)->Result<Value>{bank.engine().package_records().as_array().ok_or("PORTFOLIO_WORKER_NATIVE_RECORDS")?.iter().find(|p|p["packageId"]==id).cloned().ok_or_else(||"PORTFOLIO_WORKER_NATIVE_MISSING".into())}
 fn envelope(kind:&str,p:&Value,at:u64)->Result<Value>{let at=iso(at)?;Ok(json!({"type":kind,"source":"moloch_live_dispatcher","packageId":p["packageId"],"proofHash":p["proofHash"],"bankScope":p["bankScope"],"requestHash":p["requestHash"],"receivedAt":at,"processedAt":at}))}
 fn read_json(path:&Path)->Result<Value>{let m=fs::symlink_metadata(path)?;need(m.is_file()&&!m.file_type().is_symlink()&&m.len()<=8*1024*1024,"PORTFOLIO_WORKER_EVIDENCE_FILE")?;let bytes=fs::read(path)?;need(bytes.len()<=8*1024*1024,"PORTFOLIO_WORKER_EVIDENCE_FILE")?;Ok(serde_json::from_slice(&bytes)?)}

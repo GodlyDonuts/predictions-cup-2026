@@ -76,6 +76,19 @@ fn depth(b:&Book,side:&str,buy:bool,quantity:u64)->Result<Option<i128>>{
  let mut n=quantity;let mut total=0;
  for (p,q) in rows{let take=n.min(*q);let price=if side=="NO"{UNIT-*p}else{*p};total=add(total,mul(price,take as i128)?)?;n-=take;if n==0{return Ok(Some(total))}}Ok(None)
 }
+// One observer for the sole serialized worker thread, shared by ordinary and
+// package source paths. No caller can deserialize a model or obtain financial
+// authority from this slot. Cold initialization starts at the current bank.
+thread_local!{static RUNTIME_OBSERVER:std::cell::RefCell<Option<Model>>=const{std::cell::RefCell::new(None)};}
+pub fn clear_observer(){RUNTIME_OBSERVER.with(|slot|*slot.borrow_mut()=None);}
+pub fn initialize_observer(bank:&Session,config:Option<Config>)->Result<()>{clear_observer();let model=config.map(|c|Model::new(bank,c)).transpose()?;RUNTIME_OBSERVER.with(|slot|*slot.borrow_mut()=model);Ok(())}
+/// Call only AFTER actual successful Session acceptance, with EXACT prepared
+/// event bytes. This never propagates model errors into official accounting.
+pub fn observe_runtime_committed(bank:&Session,source:&str,sequence:u64,event:&Value){RUNTIME_OBSERVER.with(|slot|{if let Some(model)=slot.borrow_mut().as_mut(){if model.disabled.is_none(){let _=model.observe_committed(bank,source,sequence,event);}}});}
+/// The original durable ordinary attempt must already exist. Unsupported or
+/// malformed model input withholds confidence; it cannot undo a durable attempt.
+pub fn track_runtime_attempt(bank:&Session,log:&DispatchLog,qid:u64,now:u64){RUNTIME_OBSERVER.with(|slot|{if let Some(model)=slot.borrow_mut().as_mut(){if model.disabled.is_none(){if let Err(error)=model.track_attempt(bank,log,qid,now){model.disabled=Some(error);}}}});}
+pub fn observer_diagnostic()->Option<Value>{RUNTIME_OBSERVER.with(|slot|slot.borrow().as_ref().map(Model::diagnostic_json))}
 impl Model{
  pub fn new(bank:&Session,config:Config)->Result<Self>{config.validate()?;let seed=bank.live_account_seed().ok_or("EDGE_LIVE_BANK_REQUIRED")?;
  let mut own=BTreeMap::new();for q in bank.engine().order_records(){let id=q["id"].as_u64().ok_or("EDGE_QID")?;if bank.engine().live_order_bindings().contains_key(&id){let quantity=q["quantity"].as_u64().ok_or("EDGE_QUANTITY")?.checked_sub(q["filled"].as_u64().ok_or("EDGE_QUANTITY")?).ok_or("EDGE_QUANTITY")?;if quantity>0{own.insert(id,Self::own_order(&q,quantity)?);}}}need(own.len()<=4096,"EDGE_OWN_ORDER_BOUND")?;
@@ -111,7 +124,7 @@ impl Model{
  if self.pending.contains_key(&qid){return Ok(false)}
  let q=bank.engine().order_records().into_iter().find(|q|q["id"]==qid).ok_or("EDGE_QUOTE")?;
  need(q["retired"]==false&&q["filled"]==0&&log.intents.get(&qid).is_some_and(|i|i["quote"]==q),"EDGE_ORIGINAL_QUOTE")?;
- need(!bank.engine().package_records().as_array().is_some_and(|ps|ps.iter().any(|p|p["legs"].as_array().is_some_and(|ls|ls.iter().any(|l|l["orderId"]==qid)))),"EDGE_PACKAGE_NOT_ORDINARY")?;
+ need(!bank.engine().is_package_order(qid),"EDGE_PACKAGE_NOT_ORDINARY")?;
  let key=self.key(bank,&q,now)?;need(self.pending.len()<self.config.maximum_pending,"EDGE_PENDING_BOUND")?;
  if !self.buckets.contains_key(&key){need(self.buckets.len()<self.config.maximum_keys,"EDGE_KEY_BOUND")?;self.buckets.insert(key.clone(),Bucket::default());}
  if self.cluster_until.get(&key.exchange).is_some_and(|end|now<*end){self.diagnostics.overlapping_attempts+=1;return Ok(false)}
@@ -146,7 +159,11 @@ impl Model{
   let next=if let Some(old)=self.coverage.get(&exchange){if from<=old.to&&to>=old.from&&seq>=old.sequence{Coverage{from:from.min(old.from),to:to.max(old.to),sequence:seq}}else{Coverage{from,to,sequence:seq}}}else{Coverage{from,to,sequence:seq}};self.coverage.insert(exchange,next);
  },
  Some("gap")=>{let exchange=e["exchangeId"].as_str().ok_or("EDGE_EXCHANGE")?;self.coverage.remove(exchange);self.books.remove(exchange);let ids:Vec<_>=self.pending.iter().filter(|(_,p)|p.key.exchange==exchange&&p.mark.is_some()).map(|(id,_)|*id).collect();for id in ids{self.finish_mark(id,None,at,"gap",hash(e)?)?;}},
- Some("actual_order_ack")=>{let id=e["orderId"].as_u64().ok_or("EDGE_QID")?;let quantity=e["quantity"].as_u64().ok_or("EDGE_QUANTITY")?;need(self.own.contains_key(&id)||self.own.len()<4096,"EDGE_OWN_ORDER_BOUND")?;self.own.entry(id).or_insert(Self::own_order(e,quantity)?);},
+ Some("actual_order_ack")=>self.observe_ack(e)?,
+ // The exact durable parent envelope above proves these rows were validated
+ // together by the native bank. ACKs affect only conservative own liquidity;
+ // actual independently committed fill events remain the only fill labels.
+ Some("live_package_ack")=>{let rows=e["acknowledgments"].as_array().filter(|r|(1..=6).contains(&r.len())).ok_or("EDGE_PACKAGE_ACK_ROWS")?;for row in rows{need(row["type"]=="actual_order_ack"&&row["source"]=="official_sig_api_v1","EDGE_PACKAGE_ACK_ROW")?;self.observe_ack(row)?;}},
  Some("actual_fill")=>self.actual_fill(bank,e,at)?,
  Some("actual_order_terminal")=>{need(e["source"]=="official_sig_api_v1"&&e["fillsComplete"]==true,"EDGE_TERMINAL_COMPLETE")?;let id=e["orderId"].as_u64().ok_or("EDGE_QID")?;self.own.remove(&id);
   if let Some(p)=self.pending.get_mut(&id){let q=bank.engine().order_records().into_iter().find(|q|q["id"]==id).ok_or("EDGE_QUOTE")?;need(q["retired"]==true&&q["filled"]==e["filledQuantity"],"EDGE_TERMINAL_NATIVE")?;p.terminal=true;}
@@ -154,6 +171,7 @@ impl Model{
  }
  self.last=at;self.cursors.insert(source.into(),(sequence,digest));self.expire(at)?;Ok(())
  }
+ fn observe_ack(&mut self,e:&Value)->Result<()>{let id=e["orderId"].as_u64().ok_or("EDGE_QID")?;let quantity=e["quantity"].as_u64().ok_or("EDGE_QUANTITY")?;need(self.own.contains_key(&id)||self.own.len()<4096,"EDGE_OWN_ORDER_BOUND")?;self.own.entry(id).or_insert(Self::own_order(e,quantity)?);Ok(())}
  fn actual_fill(&mut self,bank:&Session,e:&Value,at:u64)->Result<()>{
  need(e["source"]=="official_sig_api_v1"&&e["receiptHash"].as_str().is_some_and(hex),"EDGE_OFFICIAL_FILL")?;
  need(bank.engine().fills().iter().any(|f|f["counterfactual"]==false&&f["sourceId"]==e["fillId"]&&f["orderId"]==e["orderId"]&&f["actualOrderId"]==e["actualOrderId"]&&f["price"]==e["price"]&&f["fee"]==e["fee"]&&f["quantity"]==e["quantity"]&&f["executedAt"]==e["executedAt"]),"EDGE_FILL_NOT_IN_BANK")?;
@@ -202,7 +220,7 @@ impl Model{
  let gross=mul(key.limit_units,key.quantity as i128)?;let candidate=gain.filter(|n|*n>0).map(|n|Candidate{id:format!("ordinary:{qid}"),basis:Basis::OwnFillConditionalEstimate,net_gain_units:n,gross_funding_units:gross,capital_locked_units:gross,holding_horizon_ms:costs.horizon.milliseconds,valid_until_ms:[self.books[&key.exchange].source,self.books[&key.exchange].request,self.books[&key.exchange].received,self.books[&key.exchange].observed].into_iter().min().unwrap().saturating_add(self.config.maximum_book_age_ms).min(q["expiresAt"].as_u64().unwrap()),risk_groups:vec![key.exchange.clone()],source_sha256:self.policy_sha.clone(),horizon_source_sha256:costs.horizon.source_sha256.clone(),write_admissions:1});
  Ok(MakerEvaluation{key,estimate,estimated_net_gain_units:gain,candidate})
  }
- pub fn diagnostic_json(&self)->Value{let reasons=self.buckets.values().flat_map(|b|b.marks.iter()).fold(BTreeMap::<String,u64>::new(),|mut map,m|{*map.entry(m.reason.into()).or_default()+=1;map});let mut labels=Sha256::new();for m in self.buckets.values().flat_map(|b|b.marks.iter()){labels.update(m.source_sha.as_bytes());}let mut attempts=Sha256::new();for p in self.pending.values(){attempts.update(p.quote_hash.as_bytes());}json!({"disabled":self.disabled,"lastObservedAtMs":self.last,"keys":self.buckets.len(),"pending":self.pending.len(),"diagnostics":self.diagnostics,"markReasons":reasons,"labelSourceDigest":format!("{:x}",labels.finalize()),"activeAttemptQuoteDigest":format!("{:x}",attempts.finalize()),"confidenceKind":"empirical_worst_sample_stress_not_statistical","executionAuthority":false})}
+ pub fn diagnostic_json(&self)->Value{let reasons=self.buckets.values().flat_map(|b|b.marks.iter()).fold(BTreeMap::<String,u64>::new(),|mut map,m|{*map.entry(m.reason.into()).or_default()+=1;map});let mut labels=Sha256::new();for m in self.buckets.values().flat_map(|b|b.marks.iter()){labels.update(m.source_sha.as_bytes());}let mut attempts=Sha256::new();for p in self.pending.values(){attempts.update(p.quote_hash.as_bytes());}json!({"disabled":self.disabled,"lastObservedAtMs":self.last,"committedSourceSequences":self.cursors.iter().map(|(source,(sequence,_))|(source.clone(),json!(sequence))).collect::<BTreeMap<_,_>>(),"keys":self.buckets.len(),"pending":self.pending.len(),"diagnostics":self.diagnostics,"markReasons":reasons,"labelSourceDigest":format!("{:x}",labels.finalize()),"activeAttemptQuoteDigest":format!("{:x}",attempts.finalize()),"confidenceKind":"empirical_worst_sample_stress_not_statistical","executionAuthority":false})}
 
 }
 #[derive(Clone,Debug,Serialize)]pub struct CapitalHorizon{pub milliseconds:u64,pub source_sha256:String}
