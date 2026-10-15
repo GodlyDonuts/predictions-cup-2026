@@ -219,3 +219,9 @@ original ACK actual ID/native binding, immutable intent identity and retired
 native quote permits terminal tombstoning/removal. No future batch-end lookup or
 invented terminal receipt is used. Tombstones retain their4096 bound. This repairs
 historical closed-order shadows while ambiguous/unknown physical orders remain.
+
+### Integrity follow-up and private runtime maker evidence
+
+Censored actual fills retain exact market/exchange/side/BUY, original-attempt <= execution <= processing, positive quantity and known fee checks. Realtime candidate expiry now uses the same source/receipt/processing clocks as freshness; REST retains request age too. These changes do not reinterpret the retained V28 failure, whose clocks were fresh but tape lagged.
+
+`evaluate_runtime_maker` returns a non-deserializable `RuntimeMakerEvaluation` from the actual thread-local observer. Read-only evaluation/config/digest/head/quote/clock accessors include unqualified and negative estimates for conservative gating. `validate_current` binds the exact original bank head, quote bytes, observer state, config, key and original validity deadline; any committed intervening event or cold reset invalidates it. It is planning evidence, with no order permission or invented calibrated confidence. Explicit cost/horizon input remains required. Regression sources cover real Session mutation, cold reset, expiry, quote identity and untrained access; parent must run the new tests. The earlier 11 observer tests passed on parent ARM64.

@@ -90,6 +90,27 @@ pub fn observe_runtime_committed(bank:&Session,source:&str,sequence:u64,event:&V
 /// malformed model input withholds confidence; it cannot undo a durable attempt.
 pub fn track_runtime_attempt(bank:&Session,log:&DispatchLog,qid:u64,now:u64){RUNTIME_OBSERVER.with(|slot|{if let Some(model)=slot.borrow_mut().as_mut(){if model.disabled.is_none(){if let Err(error)=model.track_attempt(bank,log,qid,now){model.disabled=Some(error);}}}});}
 pub fn observer_diagnostic()->Option<Value>{RUNTIME_OBSERVER.with(|slot|slot.borrow().as_ref().map(Model::diagnostic_json))}
+/// Private observer-derived evidence only; never financial execution authority.
+/// This type cannot be deserialized or constructed from caller-supplied weights.
+pub struct RuntimeMakerEvaluation{evaluation:MakerEvaluation,config:Config,config_sha:String,bank_head:Value,quote_sha:String,observer_sha:String,qid:u64,evaluated_at:u64,valid_until:u64}
+impl RuntimeMakerEvaluation{
+ pub fn evaluation(&self)->&MakerEvaluation{&self.evaluation}
+ pub fn config(&self)->&Config{&self.config}
+ pub fn config_sha256(&self)->&str{&self.config_sha}
+ pub fn bank_head(&self)->&Value{&self.bank_head}
+ pub fn quote_sha256(&self)->&str{&self.quote_sha}
+ pub fn qid(&self)->u64{self.qid}
+ pub fn evaluated_at_ms(&self)->u64{self.evaluated_at}
+ pub fn valid_until_ms(&self)->u64{self.valid_until}
+ pub fn validate_current(&self,bank:&Session,qid:u64,now:u64)->Result<()>{
+  need(qid==self.qid&&now>=self.evaluated_at&&now<self.valid_until&&bank.durable_head()==self.bank_head,"EDGE_RUNTIME_EVALUATION_CHANGED_OR_EXPIRED")?;
+  let q=bank.engine().order_records().into_iter().find(|q|q["id"]==qid).ok_or("EDGE_QUOTE")?;need(hash(&q)?==self.quote_sha,"EDGE_RUNTIME_QUOTE_CHANGED")?;
+  RUNTIME_OBSERVER.with(|slot|{let slot=slot.borrow();let model=slot.as_ref().ok_or("EDGE_RUNTIME_OBSERVER_UNAVAILABLE")?;model.bind(bank)?;need(model.disabled.is_none()&&hash(&model.config)?==self.config_sha&&hash(&model.diagnostic_json())?==self.observer_sha,"EDGE_RUNTIME_OBSERVER_CHANGED")?;need(model.key(bank,&q,now)?==self.evaluation.key,"EDGE_RUNTIME_KEY_CHANGED")})
+ }
+}
+/// Evaluate the actual private worker-thread observer, including unqualified or
+/// negative estimates. Missing original features still return an error.
+pub fn evaluate_runtime_maker(bank:&Session,qid:u64,costs:Option<&ExecutionCosts>,now:u64)->Result<RuntimeMakerEvaluation>{RUNTIME_OBSERVER.with(|slot|{let slot=slot.borrow();let model=slot.as_ref().ok_or("EDGE_RUNTIME_OBSERVER_UNAVAILABLE")?;need(model.disabled.is_none(),"EDGE_RUNTIME_OBSERVER_DISABLED")?;let evaluation=model.maker_candidate(bank,qid,costs,now)?;let q=bank.engine().order_records().into_iter().find(|q|q["id"]==qid).ok_or("EDGE_QUOTE")?;let valid_until=model.book_valid_until(model.books.get(&evaluation.key.exchange).ok_or("EDGE_NO_BOOK")?).min(q["expiresAt"].as_u64().ok_or("EDGE_CLOCK")?);need(now<valid_until,"EDGE_RUNTIME_EVALUATION_EXPIRED")?;Ok(RuntimeMakerEvaluation{evaluation,config:model.config.clone(),config_sha:hash(&model.config)?,bank_head:bank.durable_head(),quote_sha:hash(&q)?,observer_sha:hash(&model.diagnostic_json())?,qid,evaluated_at:now,valid_until})})}
 impl Model{
  pub fn new(bank:&Session,config:Config)->Result<Self>{config.validate()?;let seed=bank.live_account_seed().ok_or("EDGE_LIVE_BANK_REQUIRED")?;
  let mut own=BTreeMap::new();for q in bank.engine().order_records(){let id=q["id"].as_u64().ok_or("EDGE_QID")?;if bank.engine().live_order_bindings().contains_key(&id){let quantity=q["quantity"].as_u64().ok_or("EDGE_QUANTITY")?.checked_sub(q["filled"].as_u64().ok_or("EDGE_QUANTITY")?).ok_or("EDGE_QUANTITY")?;if quantity>0{own.insert(id,Self::own_order(&q,quantity)?);}}}need(own.len()<=4096,"EDGE_OWN_ORDER_BOUND")?;
