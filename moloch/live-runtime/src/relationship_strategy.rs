@@ -266,3 +266,20 @@ pub fn analyze(census:&Census,canonical_receipt:&Receipt,certificates:&Certifica
  a.public.retained_candidates=a.candidates.len();a
 }
 fn rank(plans:&mut [PrivateCandidate]){plans.sort_by(|a,b|b.plan.guaranteed_surplus.cmp(&a.plan.guaranteed_surplus).then(a.relationship_id.cmp(&b.relationship_id)).then(a.plan.instruments.cmp(&b.plan.instruments)).then(a.plan.quantity.cmp(&b.plan.quantity)));}
+/// Verified relationship component for portfolio acquisition/unwind planning.
+/// Its constructor revalidates canonical and independently approved complete
+/// settlement evidence; a serialized component cannot grant planning authority.
+pub struct CertifiedComponent{compiled:arb::Compiled,scope:Scope,relationship_id:String,relationship_version:u64,certificate_sha256:String,canonical_sha256:String,validated_at_ms:u64,expires_at_ms:u64,rule_bindings:BTreeMap<String,Value>}
+impl CertifiedComponent{
+ pub fn compiled(&self)->&arb::Compiled{&self.compiled}
+ pub fn scope(&self)->&Scope{&self.scope}
+ pub fn relationship_id(&self)->&str{&self.relationship_id}
+ pub fn certificate_sha256(&self)->&str{&self.certificate_sha256}
+ pub fn validated_at_ms(&self)->u64{self.validated_at_ms}
+ pub fn expires_at_ms(&self)->u64{self.expires_at_ms}
+ pub fn source_binding(&self)->Value{json!({"relationshipId":self.relationship_id,"relationshipVersion":self.relationship_version,"certificateSha256":self.certificate_sha256,"canonicalReceiptSha256":self.canonical_sha256,"scope":self.scope,"validatedAtMs":self.validated_at_ms,"expiresAtMs":self.expires_at_ms,"statesSha256":hash(&self.compiled.states()).expect("serializable payoff states"),"contracts":self.compiled.contracts().iter().map(|c|json!({"exchangeId":c.exchange_id,"marketId":c.market_id,"contractId":c.contract_id})).collect::<Vec<_>>(),"ruleBindings":self.rule_bindings})}
+}
+pub fn certified_component(census:&Census,canonical:&Receipt,certificates:&Certificates<'_>,relationship_id:&str,p:&Policy)->Result<CertifiedComponent>{
+ let source=canonical_source(census,canonical,p)?;let rows=&census.cache.relationships.as_ref().ok_or("STRATEGY_CANONICAL_CACHE_MISSING")?.data;let matching:Vec<_>=rows.iter().filter(|r|r.id==relationship_id).collect();need(matching.len()==1,"STRATEGY_RELATIONSHIP_MISSING_OR_AMBIGUOUS")?;let row=matching[0];let(compiled,digest)=compile_row(row,census,&source,certificates,p)?;let cert=certificates.values.iter().find(|c|certificate_sha256(c).ok().as_deref()==Some(&digest)).ok_or("STRATEGY_CERTIFICATE_MISSING_OR_AMBIGUOUS")?;
+ let mut rule_bindings=BTreeMap::new();let mut expires=cert.expires_at_ms.min(source.received_ms.checked_add(p.max_relationship_age_ms).ok_or("STRATEGY_CLOCK")?).min(compiled.source_expiry_ms());for c in &cert.contracts{let r=validated_rule_receipt(cert,c,certificates,&census.cache.scope,p)?;let(kind,digest)=if cert.version==1{("exact_receipt_v1",hash(r)?)}else{("complete_rule_body_v2",rule_data_sha256(r)?)};need(rule_bindings.insert(c.exchange_id.clone(),json!({"kind":kind,"endpoint":r.endpoint,"sha256":digest})).is_none(),"STRATEGY_DUPLICATE_RULE_BINDING")?;expires=expires.min(clock(&r.received_at)?.checked_add(p.max_rule_age_ms).ok_or("STRATEGY_CLOCK")?);}need(p.now_ms<expires,"STRATEGY_CERTIFICATE_CLOCK_OR_VERIFIER")?;Ok(CertifiedComponent{compiled,scope:census.cache.scope.clone(),relationship_id:row.id.clone(),relationship_version:row.version,certificate_sha256:digest,canonical_sha256:source.sha256,validated_at_ms:p.now_ms,expires_at_ms:expires,rule_bindings})
+}
