@@ -198,6 +198,15 @@ fn not_sent_transition(before:&State,after:&State,binding:&Binding,request:&str)
 /// if compaction removed the witness, this function refuses absence inference.
 /// No locks, queue commands, recovery, HTTP calls, compaction or writes occur.
 pub fn verify_local_not_sent_v1(directory:&Path,scope:&str,binding:&ImmutableBinding,request:&str,minimum_clock:u64)->std::result::Result<VerifiedLocalNotSentV1,String>{
+ verify_local_not_sent_v1_mode(directory,scope,binding,request,minimum_clock,false)
+}
+/// Historical source proof at its original complete boundary. The FULL current
+/// generation and global tail are still verified; only the retained witness's
+/// original byte prefix is emitted. No caller JSON rewriting is accepted.
+pub fn verify_retained_local_not_sent_v1(directory:&Path,scope:&str,binding:&ImmutableBinding,request:&str,minimum_clock:u64)->std::result::Result<VerifiedLocalNotSentV1,String>{
+ verify_local_not_sent_v1_mode(directory,scope,binding,request,minimum_clock,true)
+}
+fn verify_local_not_sent_v1_mode(directory:&Path,scope:&str,binding:&ImmutableBinding,request:&str,minimum_clock:u64,original_completion:bool)->std::result::Result<VerifiedLocalNotSentV1,String>{
  need(!scope.is_empty()&&!request.is_empty()&&minimum_clock<=MAX_TIME,"NOT_SENT_ARGUMENT")?;valid_binding(binding)?;
  let dir_meta=fs::symlink_metadata(directory).map_err(|_|"NOT_SENT_DIRECTORY")?;need(dir_meta.is_dir()&&!dir_meta.file_type().is_symlink(),"NOT_SENT_DIRECTORY")?;
  let actual=Binding{intent:binding.intent.clone(),key:binding.key.clone(),payload_hash:binding.payload_hash.clone()};
@@ -214,8 +223,9 @@ pub fn verify_local_not_sent_v1(directory:&Path,scope:&str,binding:&ImmutableBin
  }else{need(!not_sent_exists(&guard_path)?,"NOT_SENT_MANIFEST_REQUIRED")?;}
  let journal_pin=NotSentPinnedFile::read(&directory.join(journal),MAX_ACTIVE_JOURNAL_BYTES)?;
  need(journal_pin.bytes.last()==Some(&b'\n'),"NOT_SENT_TORN_OR_EMPTY_JOURNAL")?;
- let mut last:Option<Record>=None;let mut witness:Option<Value>=None;
+ let mut last:Option<Record>=None;let mut witness:Option<Value>=None;let mut observed_bytes=0usize;let mut completion_prefix=0usize;
  for line in journal_pin.bytes.split_inclusive(|b|*b==b'\n'){
+  observed_bytes+=line.len();
   let row:Record=serde_json::from_slice(line).map_err(|_|"NOT_SENT_JOURNAL_INVALID")?;
   need(row.sequence==sequence+1&&row.previous==previous&&row.state.schema_version==1&&row.state.scope==scope&&row.hash==record_hash(row.sequence,&row.previous,&row.state),"NOT_SENT_JOURNAL_CHAIN")?;
   need(row.state.last_clock<=MAX_TIME,"NOT_SENT_CLOCK")?;
@@ -223,6 +233,7 @@ pub fn verify_local_not_sent_v1(directory:&Path,scope:&str,binding:&ImmutableBin
    need(row.state.last_clock>=before.state.last_clock,"NOT_SENT_CLOCK_REGRESSION")?;
    if not_sent_transition(&before.state,&row.state,&actual,request){
     need(witness.is_none()&&before.state.last_clock>=minimum_clock,"NOT_SENT_REPEAT_OR_PREMATURE")?;
+    completion_prefix=observed_bytes;
     witness=Some(json!({"schemaVersion":1,"queueScope":scope,"request":request,"binding":binding,"beforeRecord":before,"completionRecord":row,"beforeStateJson":serde_json::to_string(&before.state).map_err(|_|"NOT_SENT_SERIALIZE")?,"completionStateJson":serde_json::to_string(&row.state).map_err(|_|"NOT_SENT_SERIALIZE")?}));
    }
   }
@@ -231,8 +242,12 @@ pub fn verify_local_not_sent_v1(directory:&Path,scope:&str,binding:&ImmutableBin
  let tail=last.ok_or("NOT_SENT_POSITIVE_TRANSITION_REQUIRED")?;
  need(tail.state.active.is_none()&&tail.state.unknown.is_empty()&&!tail.state.manual_review&&tail.state.intents.get(&actual.intent)==Some(&actual)&&tail.state.keys.get(&actual.key)==Some(&actual),"NOT_SENT_CURRENT_GLOBAL_STATE")?;
  let mut evidence=witness.ok_or("NOT_SENT_POSITIVE_TRANSITION_REQUIRED")?;
- evidence["tailRecord"]=serde_json::to_value(&tail).map_err(|_|"NOT_SENT_SERIALIZE")?;evidence["tailStateJson"]=json!(serde_json::to_string(&tail.state).map_err(|_|"NOT_SENT_SERIALIZE")?);
- evidence["journalSha256"]=json!(format!("{:x}",Sha256::digest(&journal_pin.bytes)));evidence["journalBytes"]=json!(journal_pin.bytes.len());evidence["manifestSha256"]=json!(manifest_hash);evidence["checkpointHash"]=json!(checkpoint_digest);pins.push(journal_pin);
+ if original_completion{
+  evidence["tailRecord"]=evidence["completionRecord"].clone();evidence["tailStateJson"]=evidence["completionStateJson"].clone();
+  evidence["currentTailRecord"]=serde_json::to_value(&tail).map_err(|_|"NOT_SENT_SERIALIZE")?;evidence["currentTailStateJson"]=json!(serde_json::to_string(&tail.state).map_err(|_|"NOT_SENT_SERIALIZE")?);
+ }else{evidence["tailRecord"]=serde_json::to_value(&tail).map_err(|_|"NOT_SENT_SERIALIZE")?;evidence["tailStateJson"]=json!(serde_json::to_string(&tail.state).map_err(|_|"NOT_SENT_SERIALIZE")?);}
+ let prefix=if original_completion{completion_prefix}else{journal_pin.bytes.len()};
+ evidence["journalSha256"]=json!(format!("{:x}",Sha256::digest(&journal_pin.bytes[..prefix])));evidence["journalBytes"]=json!(prefix);evidence["manifestSha256"]=json!(manifest_hash);evidence["checkpointHash"]=json!(checkpoint_digest);pins.push(journal_pin);
  for source in &mut pins{source.unchanged()?;}
  if manifest_hash.is_none(){need(!not_sent_exists(&manifest_path)?&&!not_sent_exists(&guard_path)?,"NOT_SENT_GENERATION_CHANGED")?;}
  let final_dir=fs::symlink_metadata(directory).map_err(|_|"NOT_SENT_DIRECTORY_CHANGED")?;need(final_dir.is_dir()&&!final_dir.file_type().is_symlink(),"NOT_SENT_DIRECTORY_CHANGED")?;

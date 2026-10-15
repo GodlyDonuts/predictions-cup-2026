@@ -76,10 +76,11 @@ pub struct Receipt {pub endpoint:String,pub request_started_at:String,pub receiv
 #[derive(Serialize)]
 #[serde(rename_all="camelCase")]
 pub struct AccountReconciliation {pub tournament:Receipt,pub positions:Receipt,pub orders:Receipt,pub exact_cash:String,pub started_at:String,pub completed_at:String,pub adopts_holdings:bool}
-pub struct Transport {config:Config,credentials:Box<dyn CredentialProvider>,clock:Box<dyn Clock>,authority:Box<dyn Authority>,client:Client,base:String,queue:admission::AccountAdmission,request_sequence:u64,poisoned:bool,full_account_observation:bool,last_basket_response:Option<multi_leg::ResponseEvidence>}
+struct LocalNotSentCapability {request:String,binding:admission::ImmutableBinding,minimum_clock:u64,sequence:u64,previous:String}
+pub struct Transport {config:Config,credentials:Box<dyn CredentialProvider>,clock:Box<dyn Clock>,authority:Box<dyn Authority>,client:Client,base:String,queue:admission::AccountAdmission,request_sequence:u64,poisoned:bool,full_account_observation:bool,last_basket_response:Option<multi_leg::ResponseEvidence>,local_not_sent:Option<LocalNotSentCapability>}
 impl Transport {
  /// Observation never expands order placement or owned-order permissions.
- pub fn with_full_account_observation(mut self)->Self{self.full_account_observation=true;self}
+ pub fn with_full_account_observation(mut self)->Self{self.local_not_sent=None;self.full_account_observation=true;self}
  pub fn new_with_read_budget(config:Config,credentials:Box<dyn CredentialProvider>,clock:Box<dyn Clock>,authority:Box<dyn Authority>,cap:usize,gap_ms:u64)->Result<Self>{let mut t=Self::build(config,credentials,clock,authority,OFFICIAL_API.into())?;t.queue.configure_reads(cap,gap_ms).map_err(|e|fail(&e))?;Ok(t)}
  pub fn new(config:Config,credentials:Box<dyn CredentialProvider>,clock:Box<dyn Clock>,authority:Box<dyn Authority>)->Result<Self>{Self::build(config,credentials,clock,authority,OFFICIAL_API.into())}
  #[cfg(any(test,feature="offline-fixtures"))]
@@ -89,9 +90,9 @@ impl Transport {
   let scope=&config.scope;need(scope.tournament_id.len()==36&&scope.tournament_id.bytes().all(|b|b.is_ascii_hexdigit()||b==b'-')&&!scope.tournament_slug.is_empty()&&scope.tournament_slug.bytes().all(|b|b.is_ascii_lowercase()||b.is_ascii_digit()||b==b'-')&&!scope.exchanges.is_empty()&&scope.exchanges.iter().all(|(e,m)|numeric(e)&&numeric(m)),"INVALID_SCOPE")?;
   let token=format!("{}-{}",std::process::id(),clock.now_ms());let queue=admission::AccountAdmission::open(&config.queue_dir,&config.account_scope,&token).map_err(|e|fail(&e))?;
   let client=Client::builder().no_proxy().redirect(Policy::none()).timeout(Duration::from_secs(20)).connect_timeout(Duration::from_secs(10)).build().map_err(|_|fail("HTTP_CLIENT_UNAVAILABLE"))?;
-  Ok(Self{config,credentials,clock,authority,client,base,queue,request_sequence:0,poisoned:false,full_account_observation:false,last_basket_response:None})
+  Ok(Self{config,credentials,clock,authority,client,base,queue,request_sequence:0,poisoned:false,full_account_observation:false,last_basket_response:None,local_not_sent:None})
  }
- fn command(&mut self,mut c:Value)->Result<Value>{c["scope"]=json!(self.config.account_scope);c["now"]=json!(self.clock.now_ms());self.queue.command_with_maintenance(c).map_err(|e|fail(&e))}
+ fn command(&mut self,mut c:Value)->Result<Value>{self.local_not_sent=None;c["scope"]=json!(self.config.account_scope);c["now"]=json!(self.clock.now_ms());self.queue.command_with_maintenance(c).map_err(|e|fail(&e))}
  fn guard(&self,spec:&RequestSpec,permit:Option<&Permit>,network:bool)->Result<()> {
   need(!self.poisoned&&self.authority.can_read(&self.config.scope),"STOPPED_OR_OWNER_LOST")?;
   if spec.method!="GET"&&!(spec.method=="POST"&&spec.endpoint=="/realtime/token"&&spec.body.is_none()&&spec.body_json.is_none()){need(self.config.writes_enabled,"WRITES_DISABLED")?;let p=permit.ok_or_else(||fail("PERMIT_REQUIRED"))?;need(p.owner=="Codex"&&p.expires_at_ms>self.clock.now_ms()&&!p.run_id.is_empty()&&!p.intent_id.is_empty(),"PERMIT_EXPIRED_OR_INVALID")?;self.authority.authorize(&self.config.scope,spec,p,network,self.clock.now_ms())?;need(self.authority.can_read(&self.config.scope),"STOPPED_OR_OWNER_LOST")?;}
@@ -99,6 +100,7 @@ impl Transport {
  }
  fn wait(&mut self,until:u64,spec:&RequestSpec,p:Option<&Permit>)->Result<()> {while self.clock.now_ms()<until{self.guard(spec,p,false)?;let remaining=until-self.clock.now_ms();self.clock.sleep_ms(remaining.min(200))?;}self.guard(spec,p,false)}
  fn perform(&mut self,spec:RequestSpec,permit:Option<&Permit>,validator:impl Fn(&Self,&Value)->Result<()>)->Result<Receipt>{
+  self.local_not_sent=None;let minimum_clock=self.clock.now_ms();
   self.guard(&spec,permit,false)?;self.request_sequence+=1;let request=format!("request-{}-{}",self.clock.now_ms(),self.request_sequence);let write=spec.method!="GET"&&spec.endpoint!="/realtime/token";
   let binding=if write{let p=permit.unwrap();let key=spec.body.as_ref().and_then(|b|b.get("idempotencyKey")).and_then(Value::as_str).map(str::to_string).unwrap_or_else(||format!("{}:{}:cancel",p.run_id,p.intent_id));Some(json!({"intent":format!("{}:{}",p.run_id,p.intent_id),"key":key,"payload_hash":digest(serde_json::to_string(&json!({"scope":self.config.scope,"spec":spec})).unwrap().as_bytes())}))}else{None};
   // The bounded summary is authoritative for GLOBAL uncertainty. An exact
@@ -113,10 +115,10 @@ impl Transport {
   // Let core admission evaluate clock/manual/active/immutable errors in their
   // original order. An SDK precheck must not hide durable clock regression.
   loop{self.guard(&spec,permit,false)?;let c=json!({"op":"admit","request":request,"write":write,"binding":binding,"authorized":write,"lease_valid":write,"permit_valid":write});let r=self.command(c)?;if r["admitted"]==true{if write&&queue.has_unknown{self.poisoned=true;return Err(fail("UNKNOWN_ACCEPTANCE_RECONCILE_FIRST"));}break;}let until=r["wait_until"].as_u64().ok_or_else(||fail("QUEUE_RESPONSE"))?;self.wait(until,&spec,permit)?;}
-  let network_guard=self.guard(&spec,permit,true);if let Err(error)=network_guard{let _=self.command(json!({"op":"complete","request":request,"outcome":"not_sent"}));return Err(error);}
+  let network_guard=self.guard(&spec,permit,true);if let Err(error)=network_guard{return Err(self.complete_pre_network(&spec,&request,binding.as_ref(),minimum_clock,error));}
   // Authentication is loaded only after scoped admission, never at process startup.
-  let key=match self.credentials.load(){Ok(k)=>k,Err(e)=>{let _=self.command(json!({"op":"complete","request":request,"outcome":"not_sent"}));return Err(e)}};
-  let encoded=Zeroizing::new(format!("Bearer {}",key.as_str()));let mut header=match HeaderValue::from_str(encoded.as_str()){Ok(h)=>h,Err(_)=>{let _=self.command(json!({"op":"complete","request":request,"outcome":"not_sent"}));return Err(fail("CREDENTIAL_FORMAT"));}};header.set_sensitive(true);
+  let key=match self.credentials.load(){Ok(k)=>k,Err(e)=>return Err(self.complete_pre_network(&spec,&request,binding.as_ref(),minimum_clock,e))};
+  let encoded=Zeroizing::new(format!("Bearer {}",key.as_str()));let mut header=match HeaderValue::from_str(encoded.as_str()){Ok(h)=>h,Err(_)=>return Err(self.complete_pre_network(&spec,&request,binding.as_ref(),minimum_clock,fail("CREDENTIAL_FORMAT")))};header.set_sensitive(true);
   self.command(json!({"op":"network","request":request,"write":write,"binding":binding,"authorized":write,"lease_valid":write,"permit_valid":write}))?;
   let started=self.clock.now_ms();let final_guard=self.guard(&spec,permit,true);
   let mut observed_status=0u16;let mut observed_retry=String::new();
@@ -137,6 +139,50 @@ impl Transport {
   let retry_ms=completion.as_ref().ok().and_then(|v|v["next"].as_u64()).unwrap_or(0).saturating_sub(self.clock.now_ms());
   match validated{Ok((status,data))=>Ok(Receipt{endpoint:spec.endpoint,request_started_at:utc(started)?,received_at:utc(self.clock.now_ms())?,status,data}),Err(mut e)=>{if status!=0{e.status=Some(status)}e.may_have_executed|=write&&final_outcome=="unknown";e.order_id=returned_order_id;e.retry_after_ms=retry_ms;e.api_code=safe_api_code(&api_code);Err(e)}}
  }
+ /// Finish a known pre-network failure durably. Failure to record completion
+ /// poisons this controller; the original error cannot hide queue uncertainty.
+ fn complete_pre_network(&mut self,spec:&RequestSpec,request:&str,binding:Option<&Value>,minimum_clock:u64,error:TransportError)->TransportError{
+  let completed=self.command(json!({"op":"complete","request":request,"outcome":"not_sent"}));
+  if !completed.as_ref().is_ok_and(|v|v["completed"]==true&&v["manual_review"]==false){self.poisoned=true;return TransportError{code:"LOCAL_NOT_SENT_DURABILITY_UNCERTAIN".into(),..error}}
+  if spec.method=="POST"&&spec.endpoint=="/orders/multi-leg"&&!error.may_have_executed&&error.status.is_none()&&error.order_id.is_none()&&error.api_code.is_none(){
+   let capture=(||->Result<LocalNotSentCapability>{let summary=self.package_queue_quiet()?;need(summary.schema_version==1,"LOCAL_NOT_SENT_V1_REQUIRED")?;let binding:admission::ImmutableBinding=serde_json::from_value(binding.cloned().ok_or_else(||fail("LOCAL_NOT_SENT_BINDING"))?).map_err(|_|fail("LOCAL_NOT_SENT_BINDING"))?;Ok(LocalNotSentCapability{request:request.into(),binding,minimum_clock,sequence:summary.sequence,previous:summary.previous})})();
+   match capture{Ok(capability)=>self.local_not_sent=Some(capability),Err(_)=>{self.local_not_sent=None;}}
+  }
+  error
+ }
+ /// Read-only context: no account paths or credentials are exposed.
+ pub fn account_scope(&self)->&str{&self.config.account_scope}
+ pub fn scope(&self)->&Scope{&self.config.scope}
+ /// Actual live controller lease/poison and global uncertainty fences. This
+ /// neither advances clocks nor appends a status transition.
+ pub fn package_queue_quiet(&self)->Result<admission::AdmissionSummary>{
+  need(!self.poisoned&&self.authority.can_read(&self.config.scope),"STOPPED_OR_OWNER_LOST")?;
+  let summary=self.queue.summary().map_err(|e|fail(&e))?;
+  need(!summary.has_unknown&&summary.global_unknown_count==0&&summary.state.active.is_none()&&!summary.state.manual_review,"PACKAGE_QUEUE_NOT_QUIET")?;Ok(summary)
+ }
+ fn verify_bound_local_not_sent(&self,binding:&admission::ImmutableBinding,request:&str,minimum_clock:u64,expected:Option<(u64,&str)>)->Result<admission::VerifiedLocalNotSentV1>{
+  let before=self.package_queue_quiet()?;need(before.schema_version==1,"LOCAL_NOT_SENT_V1_REQUIRED")?;
+  if let Some((sequence,previous))=expected{need(before.sequence==sequence&&before.previous==previous,"LOCAL_NOT_SENT_CAPABILITY_STALE")?;}
+  let known=self.queue.lookup_intent(&binding.intent).map_err(|e|fail(&e))?;
+  need(known.binding.as_ref()==Some(binding)&&known.unknown_binding.is_none()&&!known.has_unknown&&known.global_unknown_count==0,"LOCAL_NOT_SENT_BINDING")?;
+  let proof=if expected.is_some(){admission::verify_local_not_sent_v1(&self.config.queue_dir,&self.config.account_scope,binding,request,minimum_clock)}else{admission::verify_retained_local_not_sent_v1(&self.config.queue_dir,&self.config.account_scope,binding,request,minimum_clock)}.map_err(|e|fail(&e))?;
+  let source=proof.evidence();let current=source.get("currentTailRecord").unwrap_or(&source["tailRecord"]);need(current["sequence"]==before.sequence&&current["hash"]==before.previous,"LOCAL_NOT_SENT_SOURCE_CONTROLLER_CHANGED")?;
+  let after=self.package_queue_quiet()?;need(after.sequence==before.sequence&&after.previous==before.previous,"LOCAL_NOT_SENT_SOURCE_CONTROLLER_CHANGED")?;Ok(proof)
+ }
+ /// Consume only the most recent failed multi-leg call's durable pre-network
+ /// completion. Any intervening operation/queue mutation invalidates it. No
+ /// caller path, request identifier, fabricated response or retry is accepted.
+ pub fn take_local_not_sent_proof(&mut self)->Result<admission::VerifiedLocalNotSentV1>{
+  let cap=self.local_not_sent.take().ok_or_else(||fail("LOCAL_NOT_SENT_CAPABILITY_UNAVAILABLE"))?;
+  self.verify_bound_local_not_sent(&cap.binding,&cap.request,cap.minimum_clock,Some((cap.sequence,&cap.previous)))
+ }
+ /// Read-only crash recovery ONLY for an independently verified durable
+ /// package-dispatch not_sent record. This validates the retained original
+ /// transition through this live controller's own path/scope; it grants no
+ /// attempt token or retry. A missing/compacted witness stays unresolved.
+ pub fn verify_retained_local_not_sent(&self,binding:&admission::ImmutableBinding,request:&str,minimum_clock:u64)->Result<admission::VerifiedLocalNotSentV1>{
+  self.verify_bound_local_not_sent(binding,request,minimum_clock,None)
+ }
  fn record_write_response(&self,request:&str,spec:&RequestSpec,status:u16,started:u64,data:&Value)->Result<()> {
   use std::io::Write;
   let mut options=std::fs::OpenOptions::new();options.write(true).create_new(true);
@@ -144,7 +190,7 @@ impl Transport {
   let result=(||->std::io::Result<()>{let mut file=options.open(self.config.queue_dir.join(format!("write-response-{request}.json")))?;let value=json!({"endpoint":spec.endpoint,"requestStartedAt":utc(started).map_err(std::io::Error::other)?,"receivedAt":utc(self.clock.now_ms()).map_err(std::io::Error::other)?,"status":status,"data":data});file.write_all(&serde_json::to_vec(&value)?)?;file.sync_all()?;#[cfg(unix)]std::fs::File::open(&self.config.queue_dir)?.sync_all()?;Ok(())})();
   result.map_err(|_|fail("WRITE_RESPONSE_EVIDENCE_DURABILITY"))
  }
- pub fn compact(&mut self)->Result<Value>{need(self.authority.can_read(&self.config.scope),"STOPPED_OR_OWNER_LOST")?;self.command(json!({"op":"compact"}))}
+ pub fn compact(&mut self)->Result<Value>{self.local_not_sent=None;need(self.authority.can_read(&self.config.scope),"STOPPED_OR_OWNER_LOST")?;self.command(json!({"op":"compact"}))}
  /// Short-lived authentication material stays in memory; callers must not log it.
  /// Charged to account reads; 24 order writes leave headroom for token issuance.
  pub fn realtime_token(&mut self)->Result<Value>{
@@ -155,7 +201,7 @@ impl Transport {
  }
  /// Legacy full-state diagnostic. Explicitly migrated v2 queues require typed
  /// consumers; returning a summary in this shape would fail old unknown guards.
- pub fn admission_state(&mut self)->Result<Value>{need(!self.queue.is_v2(),"V2_TYPED_SUMMARY_REQUIRED")?;self.command(json!({"op":"status"}))}
+ pub fn admission_state(&mut self)->Result<Value>{self.local_not_sent=None;need(!self.queue.is_v2(),"V2_TYPED_SUMMARY_REQUIRED")?;self.command(json!({"op":"status"}))}
  /// Bounded snapshot of the last durable operation; querying does not advance
  /// its clock, prune rate samples or append another queue transition.
  pub fn admission_summary(&self)->Result<admission::AdmissionSummary>{self.queue.summary().map_err(|e|fail(&e))}
@@ -163,6 +209,7 @@ impl Transport {
  /// Explicit O(N) full-state diagnostic on either selected queue version.
  pub fn admission_diagnostic_state(&mut self)->Result<Value>{self.command(json!({"op":"diagnostic_status"}))}
  pub fn reserve_legacy_migration_boundary(&mut self,legacy_next:u64,manual_review:bool)->Result<()> {
+  self.local_not_sent=None;
   // Parent must first prove the old account owner/requests are stopped. This
   // conservative quiet minute prevents an empty Rust history from forgetting
   // the old rolling budget. It does not authorize any HTTP or order activation.
@@ -240,6 +287,7 @@ impl Transport {
   }Ok(())
  }
  pub fn request(&mut self,endpoint:Endpoint)->Result<Receipt>{
+  self.local_not_sent=None;
   if !matches!(endpoint,Endpoint::Orders{..}|Endpoint::OwnedFills{..}|Endpoint::PortfolioFills|Endpoint::Trades{..}|Endpoint::Relationships{..}){let p=self.path(&endpoint,None)?;return self.perform(RequestSpec{method:"GET".into(),endpoint:p,body:None,body_json:None},None,|s,v|s.validate(&endpoint,v));}
   let mut cursor=None;let mut cursors=BTreeSet::new();let mut identities=BTreeSet::new();let mut merged=vec![];let mut first_time=None;let mut first_totals=None;let mut minimum_projection=Some(u64::MAX);
   for _ in 0..self.config.maximum_pages{let path=self.path(&endpoint,cursor.as_deref())?;let mut receipt=self.perform(RequestSpec{method:"GET".into(),endpoint:path,body:None,body_json:None},None,|s,v|s.validate(&endpoint,v))?;
@@ -252,6 +300,7 @@ impl Transport {
   }Err(fail("PAGINATION_LIMIT_EXCEEDED"))
  }
  pub fn place(&mut self,order:Order,permit:Permit)->Result<Receipt>{
+  self.local_not_sent=None;
   need(order.tournament_id==self.config.scope.tournament_id&&self.config.scope.exchanges.contains_key(&order.exchange_id),"ORDER_SCOPE_MISMATCH")?;need(["yes","no"].contains(&order.side.as_str())&&["buy","sell"].contains(&order.action.as_str())&&order.quantity>0&&order.quantity<=2_147_483_647&&order.quantity<=permit.maximum_quantity&&!order.idempotency_key.is_empty()&&order.idempotency_key.len()<=255&&!order.idempotency_key.chars().any(char::is_control),"INVALID_ORDER")?;
   let price=decimal_units(&order.price)?;need((5000..=995000).contains(&price)&&price%5000==0&&price.checked_mul(order.quantity as i128).is_some_and(|c|c<=decimal_units(&permit.maximum_cost).unwrap_or(-1)),"ORDER_TICK_OR_COST")?;
   let expiry=DateTime::parse_from_rfc3339(&order.expiration_date).map_err(|_|fail("ORDER_EXPIRY"))?.timestamp_millis();need(expiry>0&&expiry as u64>self.clock.now_ms(),"ORDER_EXPIRY")?;
@@ -272,7 +321,7 @@ impl Transport {
  /// Full-fill atomic BUY baskets only. The current live Authority rejects this
  /// endpoint until a separately checked package reservation/dispatch exists.
  pub fn place_all_or_none(&mut self,basket:multi_leg::Basket,permit:Permit)->Result<multi_leg::Outcome>{
-  self.last_basket_response=None;
+  self.local_not_sent=None;self.last_basket_response=None;
   let spec=multi_leg::request(&basket,&self.config.scope,&permit)?;
   self.guard(&spec,Some(&permit),false)?;
   let request_evidence=multi_leg::record_request(&self.config.queue_dir,&spec,&basket,&permit)?;
@@ -290,9 +339,10 @@ impl Transport {
   }
  }
  pub fn last_basket_response_evidence(&self)->Option<&multi_leg::ResponseEvidence>{self.last_basket_response.as_ref()}
- pub fn cancel(&mut self,order_id:String,permit:Permit)->Result<Receipt>{self.owned(&order_id)?;self.perform(RequestSpec{method:"DELETE".into(),endpoint:format!("/orders/{order_id}"),body:None,body_json:None},Some(&permit),|s,v|need(id_value(&v["orderId"]).as_ref()==Some(&order_id)&&v["tournamentId"]==s.config.scope.tournament_id,"CANCEL_ACK_SCOPE"))}
- pub fn reconcile(&mut self)->Result<AccountReconciliation>{let started=utc(self.clock.now_ms())?;let tournament=self.request(Endpoint::Tournament)?;let positions=self.request(Endpoint::Positions)?;let orders=self.request(Endpoint::Orders{status:"all".into()})?;let cash=tournament.data["myBalance"].to_string();decimal_units(&cash)?;Ok(AccountReconciliation{tournament,positions,orders,exact_cash:cash,started_at:started,completed_at:utc(self.clock.now_ms())?,adopts_holdings:false})}
+ pub fn cancel(&mut self,order_id:String,permit:Permit)->Result<Receipt>{self.local_not_sent=None;self.owned(&order_id)?;self.perform(RequestSpec{method:"DELETE".into(),endpoint:format!("/orders/{order_id}"),body:None,body_json:None},Some(&permit),|s,v|need(id_value(&v["orderId"]).as_ref()==Some(&order_id)&&v["tournamentId"]==s.config.scope.tournament_id,"CANCEL_ACK_SCOPE"))}
+ pub fn reconcile(&mut self)->Result<AccountReconciliation>{self.local_not_sent=None;let started=utc(self.clock.now_ms())?;let tournament=self.request(Endpoint::Tournament)?;let positions=self.request(Endpoint::Positions)?;let orders=self.request(Endpoint::Orders{status:"all".into()})?;let cash=tournament.data["myBalance"].to_string();decimal_units(&cash)?;Ok(AccountReconciliation{tournament,positions,orders,exact_cash:cash,started_at:started,completed_at:utc(self.clock.now_ms())?,adopts_holdings:false})}
  pub fn reconcile_unknown(&mut self,binding:Value)->Result<()> {
+  self.local_not_sent=None;
   let expected:admission::ImmutableBinding=serde_json::from_value(binding.clone()).map_err(|_|fail("INVALID_BINDING"))?;
   let summary=self.admission_summary()?;let exact=self.admission_lookup_intent(&expected.intent)?;
   need(summary.has_unknown&&summary.global_unknown_count==exact.global_unknown_count&&exact.has_unknown&&exact.unknown_binding.as_ref()==Some(&expected),"UNKNOWN_BINDING_MISMATCH")?;
@@ -305,3 +355,4 @@ fn id_value(v:&Value)->Option<String>{v.as_str().filter(|s|numeric(s)).map(str::
 fn pagination(v:&Value)->Result<()> {let p=&v["pagination"];need(p.is_object()&&p["hasMore"].is_boolean()&&p["limit"].as_u64().is_some_and(|n|(1..=200).contains(&n))&&(p["nextCursor"].is_null()||p["nextCursor"].is_string()),"INCOMPLETE_PAGINATION")}
 fn safe_api_code(code:&str)->Option<String>{["MISSING_API_KEY","INVALID_API_KEY","API_KEY_REVOKED","API_KEY_EXPIRED","UNAUTHORIZED","INSUFFICIENT_SCOPES","ACCOUNT_BANNED","RESIDENCE_UPDATE_REQUIRED","FORBIDDEN","TERMS_NOT_ACKNOWLEDGED","RATE_LIMITED","INVALID_JSON","INVALID_ID","INVALID_CURSOR","VALIDATION_ERROR","ORDER_CONFLICT","NOT_FOUND","CONFLICT","REQUEST_IN_FLIGHT","TERMINAL_ENGINE_SCOPE","RELATIONSHIP_VIOLATION","DATABASE_ERROR","INTERNAL_ERROR","ORDER_STATUS_UNKNOWN","TX_CONFLICT","SERVICE_UNAVAILABLE","IDEMPOTENCY_KEY_REUSED","IDEMPOTENCY_CONFLICT"].contains(&code).then(||code.into())}
 #[cfg(test)]mod tests;
+#[cfg(test)]#[path="transport_not_sent_tests.rs"]mod transport_not_sent_tests;
