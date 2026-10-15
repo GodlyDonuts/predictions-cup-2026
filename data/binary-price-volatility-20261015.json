@@ -1,0 +1,130 @@
+{
+  "schemaVersion": 1,
+  "task": 119,
+  "generatedAt": "2026-10-15T02:07:53Z",
+  "mode": "offline_sealed_capture_volatility_comparison",
+  "decision": "rejected_for_trading_transfer",
+  "model": "fixed GARCH(1,1), alpha=0.05, beta=0.94, omega=0.01*training variance",
+  "baselines": [
+    "per-market constant training variance",
+    "EWMA lambda=0.94"
+  ],
+  "methodology": {
+    "parser": "research/realtime-book-pressure-holdout-v1.mjs lifecycle-aware analyzeCapture; parser output instrumented in memory only",
+    "filesSeen": 206,
+    "capturesWithValidBooks": 74,
+    "capturesWithoutValidBooks": 132,
+    "trainingCutoff": "2026-10-13T06:18:47.509Z",
+    "purgeMs": 30000,
+    "trainingManifestSha256": "0ce2219ea2620bc0d3b6d18ec93de7706ee9577d4569bddf2b2d870d683b1829",
+    "trainingCaptureCount": 47,
+    "trainingReturns": 7322,
+    "trainingMarkets": 237,
+    "marketsWithAtLeast30TrainingReturns": 51,
+    "targetReturnHorizonMs": 5000,
+    "sampling": "next same-market/same-continuity sampled midpoint at or after 5s, accepted up to 5s late; logit-mid return scaled by sqrt(5s/observed interval)",
+    "score": "equal-weight per-market mean relative QLIKE and training-variance-normalized MSE; require >=30 training returns and >=10 holdout returns per scored market; no holdout parameter tuning"
+  },
+  "sources": [
+    {
+      "window": "internal",
+      "file": "realtime-2026-10-13T02-55-28-953Z-d53812dd-ec75-4852-9267-59c7d5bb7898.jsonl",
+      "bytes": 1747507916,
+      "sha256": "d321ad760750e0ba6cdbc85afade4fdd7c1874b74aa080df9881810942cfca6e",
+      "records": 467281,
+      "acceptedBooks": 5499,
+      "sampledObservations": 3162,
+      "valid5sReturns": 1294
+    },
+    {
+      "window": "external1",
+      "file": "realtime-2026-10-14T12-48-27-326Z-58ea4714-2533-43f4-8812-3ff28ff75ab0.jsonl",
+      "bytes": 1805079573,
+      "sha256": "b1970b1a68740f5f6c14885c0272d2a8afa10b554aab918ca20ef3c1e0dbc9ef",
+      "records": 498515,
+      "acceptedBooks": 4171,
+      "sampledObservations": 2486,
+      "valid5sReturns": 951
+    },
+    {
+      "window": "external2",
+      "file": "realtime-2026-10-14T21-05-11-768Z-178af709-e752-472a-b5ce-a6c897f94e99.jsonl",
+      "bytes": 548145828,
+      "sha256": "9eff03b978426504aa5197002c88a7715c21018745eb6ae264184aefa99da67c",
+      "records": 153504,
+      "acceptedBooks": 1743,
+      "sampledObservations": 936,
+      "valid5sReturns": 408
+    }
+  ],
+  "holdouts": {
+    "internal": {
+      "scoredMarkets": 3,
+      "rows": 171,
+      "marketWinsVsConstant": 2,
+      "marketWinsVsEwma": 2,
+      "meanRelativeQlike": {
+        "constant": 5.572121,
+        "garch": 3.514375,
+        "ewma": 3.472813
+      },
+      "meanNormalizedMse": {
+        "constant": 455.817063,
+        "garch": 423.759367,
+        "ewma": 418.623859
+      }
+    },
+    "external1": {
+      "scoredMarkets": 12,
+      "rows": 256,
+      "marketWinsVsConstant": 10,
+      "marketWinsVsEwma": 2,
+      "meanRelativeQlike": {
+        "constant": 3.648351,
+        "garch": 3.600393,
+        "ewma": 3.595455
+      },
+      "meanNormalizedMse": {
+        "constant": 533.223627,
+        "garch": 536.240627,
+        "ewma": 537.588821
+      }
+    },
+    "external2": {
+      "scoredMarkets": 5,
+      "rows": 148,
+      "marketWinsVsConstant": 4,
+      "marketWinsVsEwma": 2,
+      "meanRelativeQlike": {
+        "constant": 33.475573,
+        "garch": 15.773688,
+        "ewma": 15.915382
+      },
+      "meanNormalizedMse": {
+        "constant": 41585.3344,
+        "garch": 40313.6336,
+        "ewma": 40148.7549
+      }
+    }
+  },
+  "conclusion": {
+    "garchBeatsEwmaMarketClusters": 6,
+    "scoredMarketClusters": 20,
+    "garchHasConsistentHoldoutAdvantage": false,
+    "directionalAlpha": false,
+    "pnlAvailable": false,
+    "actualFills": false,
+    "profitabilityEstablished": false,
+    "reason": "GARCH beats the constant-variance baseline, but its advantage over EWMA is inconsistent across the three small, correlated windows. Volatility forecast loss is not a directional signal or executable trading edge.",
+    "action": "Do not integrate into Baal or tune parameters on these holdouts. Preserve this no-go to avoid repeating the transfer test."
+  },
+  "sideEffects": {
+    "apiReads": 0,
+    "accountReads": 0,
+    "runtimeChanges": 0,
+    "contestOrders": 0,
+    "feesAssumedPerShare": 0,
+    "executionStopPreserved": true
+  },
+  "reproducibility": "The strict parser and all source seals were rechecked in this read-only run. A standalone module/runner was not added because the fixed transfer criterion failed; calculations used the fixed formulas and protocol recorded above."
+}
