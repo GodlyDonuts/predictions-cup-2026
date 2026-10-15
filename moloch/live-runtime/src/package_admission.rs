@@ -95,7 +95,11 @@ pub fn admit(bank:&Session,a:&Activation,census:&Census,canonical:&Receipt,certi
   let proof=json!({"version":1,"runId":a.run_id,"bankManifestHash":bank.manifest_hash(),"tournamentId":a.tournament_id,"atMs":p.now_ms,"entryUntilMs":entry_until,"expiresAtMs":expires,"candidate":candidate.private_json(),"wireLegs":native,"maximumCost":money(wire_cost),"minimumPayout":money(plan.terminal_floor),"buffer":money(plan.buffer),"minimumSurplus":money(p.minimum_surplus),"maximumCommitted":a.maximum_committed,"maximumMarketCost":a.maximum_market_cost,"maximumQuantity":a.maximum_quantity,"usesFutureCollateral":false});
   let mut proof=proof;proof["ruleBindings"]=json!(rule_bindings);
   let digest=hash(&proof)?;let id=format!("pkg-{digest}");let wire_key=format!("{}:{id}",a.run_id);need(wire_key.len()<=255,"PACKAGE_ID_LENGTH")?;
-  let basket=multi_leg::Basket{idempotency_key:wire_key,tournament_id:a.tournament_id.clone(),legs,maximum_cost:money(wire_cost),relationship_constraint:Some(candidate.relationship_id.clone())};
+  // The optional API guard constrains quoted YES prices, not terminal payouts.
+  // In particular, profitable dual-NO limits imply YES complements summing
+  // above one. Keep the independently certified relationship in the proof;
+  // adding its ID to this unrelated wire guard would reject that opportunity.
+  let basket=multi_leg::Basket{idempotency_key:wire_key,tournament_id:a.tournament_id.clone(),legs,maximum_cost:money(wire_cost),relationship_constraint:None};
   let stamp=daily_windows::iso(p.now_ms)?;let reserve=json!({"type":"live_package_reserve","source":"moloch_live_dispatcher","receivedAt":stamp,"processedAt":stamp,"packageId":id,"proofHash":digest,"bankScope":{"runId":a.run_id,"bankManifestHash":bank.manifest_hash(),"tournamentId":a.tournament_id},"expiresAt":daily_windows::iso(expires)?,"economics":{"maximumCost":money(wire_cost),"minimumPayout":money(plan.terminal_floor),"minimumSurplus":money(plan.terminal_floor-wire_cost),"feeTotal":"0.000000"},"legs":native});
   let admitted=Admission{proof,proof_hash:digest,package_id:id,basket,reserve,expires,certificate:candidate.certificate_sha256,rule_bindings};
   if selected.as_ref().is_none_or(|(best,_)|surplus>*best){selected=Some((surplus,admitted));}

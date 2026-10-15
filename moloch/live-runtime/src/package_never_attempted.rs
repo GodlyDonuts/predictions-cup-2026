@@ -25,12 +25,12 @@ pub fn release(bank:&Session,p:&Value,dispatch:&PackageDispatchLog,processed:&st
  need(admission["reserve"]["packageId"]==p["packageId"]&&admission["reserve"]["proofHash"]==p["proofHash"]&&hash(&admission["proof"])?==p["proofHash"]&&admission["reserve"]["bankScope"]==p["bankScope"]&&admission["reserve"]["economics"]==p["economics"]&&admission["reserve"]["expiresAt"].as_str().map(clock).transpose()?==p["expiresAt"].as_i64(),"PACKAGE_NEVER_ADMISSION_CHANGED")?;
  need(admission["proof"]["wireLegs"]==admission["reserve"]["legs"]&&admission["spec"]["method"]=="POST"&&admission["spec"]["endpoint"]=="/orders/multi-leg"&&admission["spec"]["body"]["executionMode"]=="allOrNone","PACKAGE_NEVER_REQUEST")?;
  let legs=p["legs"].as_array().ok_or("PACKAGE_NEVER_LEGS")?;let reserved=admission["reserve"]["legs"].as_array().ok_or("PACKAGE_NEVER_LEGS")?;
- need(legs.len()==reserved.len()&&(2..=3).contains(&legs.len()),"PACKAGE_NEVER_LEGS")?;
+ need(legs.len()==reserved.len()&&if p.get("portfolio").is_some_and(|v|!v.is_null()){(1..=6).contains(&legs.len())}else{(2..=3).contains(&legs.len())},"PACKAGE_NEVER_LEGS")?;
  let orders=bank.engine().order_records();
  for(l,r)in legs.iter().zip(reserved){
   let qid=l["qid"].as_u64().ok_or("PACKAGE_NEVER_QID")?;let q=orders.iter().find(|q|q["id"]==qid).ok_or("PACKAGE_NEVER_ORDER")?;
   for key in ["marketId","exchangeId","side","quantity","limitPrice","bookHash"]{need(l[key]==r[key],"PACKAGE_NEVER_LEG_CHANGED")?;}
-  need(l.get("actualOrderId")==Some(&Value::Null)&&l["filled"]==0&&l["terminalReconciled"]==false&&!bank.engine().live_order_bindings().contains_key(&qid)&&q["retired"]==false&&q["filled"]==0&&q["action"]=="buy"&&q["marketId"]==l["marketId"]&&q["exchangeId"]==l["exchangeId"]&&q["side"]==l["side"]&&q["quantity"]==l["quantity"]&&q["price"]==l["limitPrice"],"PACKAGE_NEVER_AFTER_ACK_OR_FILL")?;
+  need(l.get("actualOrderId")==Some(&Value::Null)&&l["filled"]==0&&l["terminalReconciled"]==false&&!bank.engine().live_order_bindings().contains_key(&qid)&&q["retired"]==false&&q["filled"]==0&&q["action"]==r.get("action").cloned().unwrap_or_else(||json!("buy"))&&l.get("action").cloned().unwrap_or_else(||json!("buy"))==q["action"]&&q["marketId"]==l["marketId"]&&q["exchangeId"]==l["exchangeId"]&&q["side"]==l["side"]&&q["quantity"]==l["quantity"]&&q["price"]==l["limitPrice"],"PACKAGE_NEVER_AFTER_ACK_OR_FILL")?;
  }
  let at=clock(processed)?;let fence_at=clock(record["outcome"]["at"].as_str().ok_or("PACKAGE_NEVER_CLOCK")?)?;
  need(at>=proof["journalLastClockMs"].as_i64().ok_or("PACKAGE_NEVER_CLOCK")?&&at>=fence_at,"PACKAGE_NEVER_CLOCK")?;

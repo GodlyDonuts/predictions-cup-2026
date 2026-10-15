@@ -12,7 +12,7 @@ use sha2::{Digest,Sha256};
 use std::{fs,path::{Path,PathBuf},sync::Arc,time::{SystemTime,UNIX_EPOCH,Duration}};
 #[derive(Clone,Serialize,Deserialize)]
 #[serde(rename_all="camelCase",deny_unknown_fields)]
-struct Control{#[serde(default)]packages:Option<moloch_live_runtime::package_settings::Settings>,#[serde(default)]daily_entry_windows:Option<moloch_live_runtime::daily_windows::DailyEntryWindows>,activation:Activation,scope:Scope,policy:Value,root:PathBuf,credentials:PathBuf,owner_lock:PathBuf,account_scope:String,#[serde(default)]all_markets:bool,#[serde(default="default_bank")]bank_name:String,#[serde(default)]predecessor_bank:Option<String>,#[serde(default)]manage_existing_positions:bool}
+struct Control{#[serde(default)]execution_model:Option<moloch_live_runtime::execution_edge::Config>,#[serde(default)]packages:Option<moloch_live_runtime::package_settings::Settings>,#[serde(default)]daily_entry_windows:Option<moloch_live_runtime::daily_windows::DailyEntryWindows>,activation:Activation,scope:Scope,policy:Value,root:PathBuf,credentials:PathBuf,owner_lock:PathBuf,account_scope:String,#[serde(default)]all_markets:bool,#[serde(default="default_bank")]bank_name:String,#[serde(default)]predecessor_bank:Option<String>,#[serde(default)]manage_existing_positions:bool}
 fn default_bank()->String{"bank".into()}
 const MAX_REALTIME_FRAMES_PER_DRAIN:usize=64;
 fn now()->u64{SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_millis() as u64}
@@ -21,7 +21,21 @@ fn hash(v:&Value)->String{format!("{:x}",Sha256::digest(serde_json::to_vec(v).un
 fn load(p:&Path)->Result<Value>{Ok(serde_json::from_slice(&fs::read(p)?)?)}
 fn private_dir(p:&Path)->Result<()>{use std::os::unix::fs::PermissionsExt;fs::create_dir_all(p)?;let m=fs::symlink_metadata(p)?;if m.file_type().is_symlink()||!m.is_dir(){return Err("LIVE_DIRECTORY".into())}fs::set_permissions(p,fs::Permissions::from_mode(0o700))?;Ok(())}
 fn transport(c:&Control,auth:Box<dyn Authority>,writes:bool)->Result<Transport>{Ok(Transport::new_with_read_budget(Config{queue_dir:c.root.join("account-queue"),account_scope:c.account_scope.clone(),scope:c.scope.clone(),maximum_pages:20,writes_enabled:writes},Box::new(UnixFileCredentials::approved_file(c.credentials.clone())?),Box::new(SystemClock),auth,100,600)?.with_full_account_observation())}
-fn accept(bank:&mut Session,event:&Value)->Result<()>{let mut e=event.clone();e["processedAt"]=json!(iso(now()));bank.accept("moloch-live",bank.last_source_sequence("moloch-live")+1,&e)?;Ok(())}
+thread_local!{static EXECUTION_MODEL:std::cell::RefCell<Option<moloch_live_runtime::execution_edge::Model>>=const{std::cell::RefCell::new(None)};}
+fn observe_execution(bank:&Session,sequence:u64,event:&Value){EXECUTION_MODEL.with(|slot|{if let Some(model)=slot.borrow_mut().as_mut(){let _=model.observe_committed(bank,"moloch-live",sequence,event);}});}
+fn accept(bank:&mut Session,event:&Value)->Result<()>{let mut e=event.clone();e["processedAt"]=json!(iso(now()));let seq=bank.last_source_sequence("moloch-live")+1;bank.accept("moloch-live",seq,&e)?;observe_execution(bank,seq,&e);Ok(())}
+/// The original dispatch receipt is still fully validated before this call.
+/// Recheck a previously committed ACK against the real native validator without
+/// writing the same acknowledgement and every derived report again on restart.
+/// A crash before the original native ACK retains the ordinary durable path.
+fn restore_ack(bank:&mut Session,event:&Value)->Result<bool>{
+ if event["type"]!="actual_order_ack"{return Err("LIVE_RESTORE_ACK_KIND".into())}
+ let id=event["orderId"].as_u64().ok_or("LIVE_RESTORE_ACK_ID")?;
+ if bank.engine().live_order_bindings().contains_key(&id){
+  let mut checked=bank.engine().clone();let mut e=event.clone();e["processedAt"]=json!(iso(now()));checked.advance(&e)?;return Ok(false)
+ }
+ accept(bank,event)?;Ok(true)
+}
 fn ensure_entry_window(c:&Control,bank:&mut Session,authority:&ProductionAuthority)->Result<()>{
  let Some(cfg)=&c.daily_entry_windows else{return Ok(())};let at=now();cfg.validate(&c.activation,at)?;
  let current=moloch_live_runtime::daily_windows::clock(bank.engine().policy()["entryStopAt"].as_str().ok_or("DAILY_POLICY_STOP")?)?;
@@ -41,7 +55,7 @@ fn accept_source_events(bank:&mut Session,events:&[Value])->Result<()>{
   let prepared:Vec<_>=chunk.iter().map(|event|{let mut e=event.clone();e["processedAt"]=json!(iso(now()));e}).collect();
   let entries:Vec<_>=prepared.iter().enumerate().map(|(index,event)|Ok(BatchEntry{source_id:"moloch-live",sequence:first.checked_add(index as u64).ok_or("LIVE_SOURCE_SEQUENCE_RANGE")?,event})).collect::<Result<_>>()?;
   let outcome=bank.accept_batch(&entries)?;
-  if outcome.appended_rows!=entries.len()||outcome.accepted.len()!=entries.len()||outcome.accepted.iter().any(|accepted|!*accepted){return Err("LIVE_SOURCE_BATCH_PREFIX".into())}
+  if outcome.appended_rows!=entries.len()||outcome.accepted.len()!=entries.len()||outcome.accepted.iter().any(|accepted|!*accepted){return Err("LIVE_SOURCE_BATCH_PREFIX".into())} for entry in &entries{observe_execution(bank,entry.sequence,entry.event);}
  }Ok(())
 }
 fn record_receipt(root:&Path,r:&Receipt)->Result<()> {let p=root.join("receipts").join(format!("{}.json",feedback::digest(r)?));if !p.exists(){atomic_json(&p,&serde_json::to_value(r)?)?}Ok(())}
@@ -219,7 +233,7 @@ fn submit_order(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchL
  if let Err(e)=authority.authorize(&c.scope,&request_spec,&p,false,now()){authority.clear_ready();atomic_json(&c.root.join("deferred.json"),&json!({"at":iso(now()),"qid":qid,"code":e.code}))?;return Ok(())}
  if log.intents.contains_key(&qid)||!log.never_attempted(qid){return Err("LIVE_EXISTING_UNRESOLVED_INTENT".into())}
  log.append(json!({"kind":"intent","qid":qid,"quote":q,"spec":request_spec,"permit":p,"at":iso(now())}))?;
- log.append(json!({"kind":"attempt","qid":qid,"at":iso(now())}))?;
+ log.append(json!({"kind":"attempt","qid":qid,"at":iso(now())}))?; EXECUTION_MODEL.with(|slot|{if let Some(model)=slot.borrow_mut().as_mut(){let _=model.track_attempt(bank,log,qid,now());}});
  let ack=match t.place(order,p){Ok(r)=>r,Err(e)=>{log.append(json!({"kind":"error","qid":qid,"error":e,"at":iso(now())}))?;return Err("LIVE_WRITE_NOT_CONFIRMED_NO_RETRY".into())}};
  record_receipt(&c.root,&ack)?;log.append(json!({"kind":"ack","qid":qid,"receipt":ack}))?;
  let event=feedback::acknowledgment(q,&ack,&iso(now()))?;authority.bind_owned(event["actualOrderId"].as_str().ok_or("LIVE_ACTUAL_ID")?.into());accept(bank,&event)?;authority.clear_ready();Ok(())
@@ -462,7 +476,7 @@ pub fn main()->Result<()>{
  let path=PathBuf::from(&args[2]);if !path.is_absolute(){return Err("LIVE_CONTROL_ABSOLUTE".into())}let c:Control=serde_json::from_value(load(&path)?)?;
  if !c.bank_name.starts_with("bank")||c.bank_name.contains(['/', '\\'])||c.predecessor_bank.as_ref().is_some_and(|p|p==&c.bank_name){return Err("LIVE_BANK_NAME".into())}
  if !c.root.is_absolute()||!c.credentials.is_absolute()||!c.owner_lock.is_absolute()||c.activation.maximum_committed!=c.policy["maximumCommitted"].as_str().unwrap_or("")||c.activation.maximum_market_cost!=c.policy["maximumMarketCost"].as_str().unwrap_or("")||c.policy["quantity"].as_u64()!=Some(c.activation.maximum_quantity as u64)||c.policy["entryStopAt"]!=iso(c.activation.entry_until_ms){return Err("LIVE_CONTROL_POLICY_BINDING".into())}
- if let Some(settings)=&c.packages{settings.load(&c.scope)?;}
+ if let Some(settings)=&c.packages{settings.load(&c.scope)?;} if let Some(cfg)=&c.execution_model{cfg.validate()?;}
  private_dir(&c.root)?;private_dir(&c.root.join("receipts"))?;private_dir(&c.root.join("package-receipts"))?;
  let lease=Arc::new(ExclusiveLock::acquire(&c.owner_lock)?);
  let mut read=transport(&c,Box::new(ReadOnlyAuthority),false)?;
@@ -492,7 +506,7 @@ pub fn main()->Result<()>{
   let authority=Arc::new(ProductionAuthority::new(c.activation.clone(),c.scope.clone(),vec![stop.clone(),global_stop.clone()],path.clone(),std::env::current_exe()?,lease.clone())?);
   let mut log=DispatchLog::open(&c.root.join("dispatch.ndjson"))?;log.require_resolved_attempts()?;
   // A durable official acknowledgment can be replayed after a crash before ledger commit.
-  for (qid,v) in log.acknowledgments.clone(){let r:Receipt=serde_json::from_value(v)?;let q=quote(&bank,qid)?;let e=if let Some(recovery)=log.recovered.get(&qid){feedback::recovered_acknowledgment(&q,recovery["actualOrderId"].as_str().ok_or("LIVE_RECOVERY_ACTUAL_ID")?,&c.scope.tournament_id,&r,&serde_json::from_value(recovery["fills"].clone())?,&iso(now()))?}else{feedback::acknowledgment(&q,&r,&iso(now()))?};authority.bind_owned(e["actualOrderId"].as_str().ok_or("LIVE_ACTUAL_ID")?.into());accept(&mut bank,&e)?;}
+  for (qid,v) in log.acknowledgments.clone(){let r:Receipt=serde_json::from_value(v)?;let q=quote(&bank,qid)?;let e=if let Some(recovery)=log.recovered.get(&qid){feedback::recovered_acknowledgment(&q,recovery["actualOrderId"].as_str().ok_or("LIVE_RECOVERY_ACTUAL_ID")?,&c.scope.tournament_id,&r,&serde_json::from_value(recovery["fills"].clone())?,&iso(now()))?}else{feedback::acknowledgment(&q,&r,&iso(now()))?};authority.bind_owned(e["actualOrderId"].as_str().ok_or("LIVE_ACTUAL_ID")?.into());restore_ack(&mut bank,&e)?;}
   drop(read);let mut t=transport(&c,Box::new(SharedAuthority(authority.clone())),true)?;
   // Always recover original liabilities even when new package scanning is off.
   // Recovery never recreates a Staged capability or retries a physical send.
@@ -509,6 +523,7 @@ pub fn main()->Result<()>{
   let mut universe=if c.all_markets{Some(Universe::new(&c.scope.exchanges,if fully_managed{&empty_positions}else{seed.get("excludedPositionsAtTransfer").ok_or("LIVE_UNIVERSE_SEED")?},managed_market_limit)?.with_discovery_limit(discovery_read_limit)?.with_tournament(&c.scope.tournament_id)?)}else{None};
   // Previously owned holdings are filtered from the financial feed as well as discovery.
   let pairs:Value=if let Some(u)=&universe{u.pairs(&c.scope.exchanges)}else{c.scope.exchanges.iter().map(|(e,m)|json!({"exchangeId":e,"marketId":m})).collect::<Vec<_>>().into()};
+  EXECUTION_MODEL.with(|slot|->Result<()>{*slot.borrow_mut()=c.execution_model.clone().map(|cfg|moloch_live_runtime::execution_edge::Model::new(&bank,cfg)).transpose()?;Ok(())})?;
   let start=now();let mut source_state=RestSource::new(&pairs,&c.scope.tournament_id,&iso(start))?;source_state.seed_trade_facts(bank.source_facts())?;
   let recovery_budget_path=c.root.join("stream-recovery-budget.json");let mut recovery_budget=recovery_budget(&recovery_budget_path,now())?;
   if !recovery_budget_path.exists(){atomic_json(&recovery_budget_path,&serde_json::to_value(&recovery_budget)?)?;}
@@ -549,7 +564,7 @@ pub fn main()->Result<()>{
     dispatch(&mut t,&c,&mut bank,&mut log,&authority,&mut source_state,permit_new,&mut preflight_cursor,stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?,&windows)?;
     let _=atomic_json(&c.root.join("progress.json"),&json!({"at":iso(now()),"pid":std::process::id(),"phase":"trading","completedReadScopes":selected_index+1,"selectedReadScopes":selected.len(),"maximumRealtimeFramesPerDrain":MAX_REALTIME_FRAMES_PER_DRAIN,"realtimeHealthy":stream.as_ref().is_some_and(|s|s.healthy()),"actualOrders":log.acknowledgments.len(),"terminalOrders":log.closed.len(),"actualFills":bank.engine().fills().len(),"profitabilityEstablished":false}));
    }
-   cycles+=1;
+   cycles+=1; EXECUTION_MODEL.with(|slot|{if let Some(model)=slot.borrow().as_ref(){let _=atomic_json(&c.root.join("execution-model.json"),&json!({"at":iso(now()),"model":model.diagnostic_json(),"executionAuthority":false}));}});
    atomic_json(&c.root.join("status.json"),&json!({"at":iso(now()),"pid":std::process::id(),"mode":"actual-contest-trading","runId":c.activation.run_id,"bank":c.bank_name,"cycles":cycles,"realtimeHealthy":stream.as_ref().is_some_and(|s|s.healthy()),"universe":universe.as_ref().map(Universe::status),"selectedReadScopes":selected,"ownedReconciliation":reconciled,"sourceScopes":source_state.scopes(),"breadthCapture":{"path":breadth_path,"state":breadth.as_ref().map(Recorder::status)},"report":bank.engine().report()?,"queue":t.admission_state()?,"actualOrders":log.acknowledgments.len(),"terminalOrders":log.closed.len(),"entryAnchor":iso(c.activation.entry_until_ms),"entryUntil":iso(authority.entry_until_ms()),"profitabilityEstablished":false}))?;
    // Existing orders and the first trading cycle precede optional research reads.
    // Diagnostic persistence never blocks the financial journal or ordinary trading.
@@ -641,5 +656,14 @@ pub fn main()->Result<()>{
  }
  #[test]fn physical_attempt_in_original_dispatch_journal_cannot_yield_to_a_package(){
   let temp=Temp::new();let(mut bank,mut log,_,_)=setup(&temp.0,2);let q=bank.engine().order_records()[0].clone();let id=q["id"].as_u64().unwrap();log.append(json!({"kind":"intent","qid":id})).unwrap();log.append(json!({"kind":"attempt","qid":id})).unwrap();let report=bank.engine().report().unwrap();let rows=fs::read(temp.0.join("dispatch.ndjson")).unwrap();assert!(retire_for_package(&mut bank,&mut log,&q).is_err());assert_eq!(bank.engine().report().unwrap(),report);assert_eq!(fs::read(temp.0.join("dispatch.ndjson")).unwrap(),rows);assert!(log.require_resolved_attempts().is_err());
+ }
+ fn ack(q:&Value)->Value{json!({"type":"actual_order_ack","source":"official_sig_api_v1","receiptHash":"d".repeat(64),"orderId":q["id"],"actualOrderId":format!("9{}",q["id"].as_u64().unwrap()),"exchangeId":q["exchangeId"],"marketId":q["marketId"],"side":q["side"],"action":q["action"],"quantity":q["quantity"],"price":q["price"],"receivedAt":iso(now())})}
+ #[test]fn recovered_ack_is_durable_once_then_restart_revalidation_writes_no_duplicate_history(){
+  let temp=Temp::new();let(mut bank,_,policy,seed)=setup(&temp.0,1);let e=ack(&bank.engine().order_records()[0]);assert!(restore_ack(&mut bank,&e).unwrap());let report=bank.engine().report().unwrap();let original=fs::read(temp.0.join("bank/events.jsonl")).unwrap();assert!(!restore_ack(&mut bank,&e).unwrap());assert_eq!(bank.engine().report().unwrap(),report);assert_eq!(fs::read(temp.0.join("bank/events.jsonl")).unwrap(),original);drop(bank);
+  let mut bank=Session::open_live(&temp.0.join("bank"),&policy,&seed).unwrap();assert!(!restore_ack(&mut bank,&e).unwrap());assert_eq!(bank.engine().report().unwrap(),report);assert_eq!(fs::read(temp.0.join("bank/events.jsonl")).unwrap(),original);assert_eq!(bank.engine().live_order_bindings().len(),1);assert!(bank.engine().fills().is_empty());
+ }
+ #[test]fn known_binding_never_skips_native_validation_of_changed_ack_identity_and_terms(){
+  let temp=Temp::new();let(mut bank,_,_,_)=setup(&temp.0,1);let e=ack(&bank.engine().order_records()[0]);restore_ack(&mut bank,&e).unwrap();let report=bank.engine().report().unwrap();let original=fs::read(temp.0.join("bank/events.jsonl")).unwrap();
+  for(field,value)in [("actualOrderId",json!("other")),("quantity",json!(1)),("side",json!("other")),("price",json!("0.995000")),("receiptHash",json!("invalid")),("type",json!("actual_order_terminal"))]{let mut bad=e.clone();bad[field]=value;assert!(restore_ack(&mut bank,&bad).is_err(),"accepted {field}");assert_eq!(bank.engine().report().unwrap(),report);assert_eq!(fs::read(temp.0.join("bank/events.jsonl")).unwrap(),original);}
  }
 }

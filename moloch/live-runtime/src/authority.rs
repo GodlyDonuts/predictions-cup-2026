@@ -72,14 +72,22 @@ impl ProductionAuthority {
   let prepared=crate::package_authority::Prepared::new(bank,&self.activation,&self.scope,admission,permit,facts,at,self.entry_until_ms())?;
   *self.package_ready.lock().unwrap()=Some(prepared);Ok(())
  }
+ pub fn prepare_portfolio(&self,bank:&Session,plan:&crate::package_portfolio::Plan,permit:Permit,facts:crate::package_authority::PackageSnapshotSet,log:&crate::dispatch::DispatchLog,at:u64)->Result<()> {
+  use baal_transport_service::{multi_leg,multi_leg_portfolio as wire};
+  self.clear_ready();log.require_resolved_attempts()?;
+  let orders=bank.engine().order_records();let component=plan.proof()["portfolio"]["componentExchanges"].as_array().ok_or("PORTFOLIO_COMPONENTS")?;
+  for qid in log.acknowledgments.keys().filter(|id|!log.closed.contains(id)){let q=orders.iter().find(|q|q["id"]==*qid).ok_or("PORTFOLIO_PRIOR_QUOTE")?;if component.iter().any(|ex|*ex==q["exchangeId"]){return Err("PORTFOLIO_PRIOR_ACK_UNRECONCILED".into())}}
+  let basket=wire::Basket{idempotency_key:format!("{}:{}",self.activation.run_id,plan.package_id()),tournament_id:self.scope.tournament_id.clone(),maximum_gross_buy_cost:plan.proof()["grossFunding"].as_str().ok_or("PORTFOLIO_FUNDING")?.into(),minimum_gross_sell_proceeds:plan.proof()["minimumCashProceeds"].as_str().ok_or("PORTFOLIO_PROCEEDS")?.into(),relationship_constraint:None,legs:plan.legs().iter().map(|l|Ok(wire::Leg{exchange_id:l.exchange_id.clone(),side:if l.side=="YES"{multi_leg::Side::Yes}else{multi_leg::Side::No},action:if l.action=="buy"{wire::Action::Buy}else{wire::Action::Sell},quantity:u32::try_from(l.quantity)?,limit_price:l.limit_price.clone()})).collect::<Result<_>>()?};
+  let prepared=crate::package_authority::Prepared::new_portfolio(bank,&self.activation,&self.scope,plan,&basket,permit,facts,at,self.entry_until_ms())?;*self.package_ready.lock().unwrap()=Some(prepared);Ok(())
+ }
  fn check(&self,scope:&Scope,spec:&RequestSpec,p:&Permit,network:bool,now:u64)->Result<()> {
   if !self.can_read(scope)||p.owner!="Codex"||p.run_id!=self.activation.run_id||p.expires_at_ms<=now{return Err("LIVE_OWNER_OR_ACTIVATION".into())}
   if network&&hash_bytes(&fs::read(&self.binary)?)!=self.activation.binary_sha256{return Err("LIVE_BINARY_CHANGED".into())}
   if spec.endpoint=="/orders/multi-leg"{
    if self.stream.lock().unwrap().as_ref().is_none_or(|(failed,deadline)|*deadline<=now||failed.load(std::sync::atomic::Ordering::SeqCst)){return Err("LIVE_VERIFIED_STREAM_REQUIRED".into())}
    let end=self.entry_until_ms();
-   if now>=end||self.daily.lock().unwrap().as_ref().is_some_and(|(cfg,bound)|cfg.end_at(now).ok()!=Some(*bound)){return Err("LIVE_ENTRY_OR_ACCOUNT_CASH".into())}
-   let locked=self.package_ready.lock().unwrap();let prepared=locked.as_ref().ok_or("PACKAGE_FRESH_FACTS_REQUIRED")?;
+   if self.daily.lock().unwrap().as_ref().is_some_and(|(cfg,bound)|cfg.end_at(now).ok()!=Some(*bound)){return Err("LIVE_ENTRY_OR_ACCOUNT_CASH".into())}
+   let locked=self.package_ready.lock().unwrap();let prepared=locked.as_ref().ok_or("PACKAGE_FRESH_FACTS_REQUIRED")?;if prepared.requires_entry()&&now>=end{return Err("LIVE_ENTRY_OR_ACCOUNT_CASH".into())}
    return prepared.authorize(spec,p,now,&self.owned.lock().unwrap(),end);
   }
   let locked=self.ready.lock().unwrap();let prepared=locked.as_ref().ok_or("LIVE_FRESH_FACTS_REQUIRED")?;

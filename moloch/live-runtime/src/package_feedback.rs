@@ -64,7 +64,7 @@ fn component(bank:&Session,p:&Value,s:&Scope,index:usize)->Result<(Value,String)
  need(l["exchangeId"].as_str().and_then(|ex|s.exchanges.get(ex)).map(|market|l["marketId"]==*market)==Some(true))?;
  need(bank.engine().live_order_bindings().get(&id).map(String::as_str)==Some(actual))?;
  let q=bank.engine().order_records().into_iter().find(|q|q["id"]==id).ok_or("PACKAGE_QUOTE_MISSING")?;
- need(q["exchangeId"]==l["exchangeId"]&&q["marketId"]==l["marketId"]&&q["side"]==l["side"]&&q["action"]=="buy"&&q["quantity"]==l["quantity"]&&q["price"]==l["limitPrice"])?;Ok((q,actual.to_owned()))
+ need(q["exchangeId"]==l["exchangeId"]&&q["marketId"]==l["marketId"]&&q["side"]==l["side"]&&q["action"]==l.get("action").cloned().unwrap_or_else(||json!("buy"))&&q["quantity"]==l["quantity"]&&q["price"]==l["limitPrice"])?;Ok((q,actual.to_owned()))
 }
 fn tape_endpoint(actual:&str,s:&Scope,r:&Receipt)->Result<()>{need(r.endpoint==format!("/orders/{actual}/fills?limit=200&tournamentId={}",s.tournament_id))}
 /// Only independently received, complete official component fill tapes move cash.

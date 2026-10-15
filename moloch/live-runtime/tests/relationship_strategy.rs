@@ -57,7 +57,7 @@ fn admit_fixture(f:&Fixture,b:&AdmissionBank)->moloch_live_runtime::feedback::Re
 }
 #[test]fn live_package_admission_recomputes_certified_floor_and_binds_exact_bank(){
  let f=fixture(2,false);let b=admission_bank(&f);let before=b.bank.engine().report().unwrap();let a=admit_fixture(&f,&b).unwrap().unwrap();
- assert_eq!(a.basket().maximum_cost,"9.550000");assert_eq!(a.reserve_event()["economics"]["minimumPayout"],"10.000000");assert_eq!(a.reserve_event()["economics"]["minimumSurplus"],"0.450000");assert_eq!(a.reserve_event()["bankScope"]["bankManifestHash"],*b.bank.manifest_hash());assert_eq!(a.proof_hash().len(),64);assert_eq!(b.bank.engine().report().unwrap(),before);
+ assert_eq!(a.basket().maximum_cost,"9.550000");assert!(a.basket().relationship_constraint.is_none());assert_eq!(a.proof()["candidate"]["relationshipId"],R);assert_eq!(a.reserve_event()["economics"]["minimumPayout"],"10.000000");assert_eq!(a.reserve_event()["economics"]["minimumSurplus"],"0.450000");assert_eq!(a.reserve_event()["bankScope"]["bankManifestHash"],*b.bank.manifest_hash());assert_eq!(a.proof_hash().len(),64);assert_eq!(b.bank.engine().report().unwrap(),before);
 }
 #[test]fn live_package_unapproved_rules_and_old_book_produce_no_admission(){
  let mut f=fixture(2,false);let b=admission_bank(&f);f.trusted.clear();assert!(admit_fixture(&f,&b).unwrap().is_none());f.approve();f.policy.now_ms+=3001;assert!(admit_fixture(&f,&b).unwrap().is_none());
