@@ -73,9 +73,14 @@ pub(crate) fn request(basket:&Basket,scope:&Scope,permit:&Permit)->Result<Reques
     need((2..=3).contains(&basket.legs.len())&&!basket.idempotency_key.is_empty()&&basket.idempotency_key.len()<=255&&!basket.idempotency_key.chars().any(char::is_control),"BASKET_SHAPE")?;
     let maximum=decimal_units(&basket.maximum_cost)?;let permit_cost=decimal_units(&permit.maximum_cost)?;
     need(maximum>0&&maximum<=permit_cost,"BASKET_MAXIMUM_COST")?;
-    let mut seen=BTreeSet::new();let mut gross=0i128;let mut quantity=0u64;let mut legs=vec![];
+    let mut seen_exchanges=BTreeSet::new();let mut seen_sides=BTreeSet::new();let mut gross=0i128;let mut quantity=0u64;let mut legs=vec![];
     for leg in &basket.legs {
-        need(scope.exchanges.contains_key(&leg.exchange_id)&&seen.insert(&leg.exchange_id),"BASKET_EXCHANGE_SCOPE_OR_DUPLICATE")?;
+        need(scope.exchanges.contains_key(&leg.exchange_id),"BASKET_EXCHANGE_SCOPE_OR_DUPLICATE")?;
+        // Official multi-leg duplicate-exchange rejection applies only when a
+        // relationshipConstraint is supplied. Unconstrained complementary BUYs
+        // may share an exchange; still reject repeated same-side BUY legs.
+        need(seen_sides.insert((&leg.exchange_id,leg.side.wire())),"BASKET_EXCHANGE_SCOPE_OR_DUPLICATE")?;
+        need(basket.relationship_constraint.is_none()||seen_exchanges.insert(&leg.exchange_id),"BASKET_CONSTRAINED_DUPLICATE_EXCHANGE")?;
         need(leg.quantity>0&&leg.quantity<=2_147_483_647,"BASKET_QUANTITY")?;
         quantity=quantity.checked_add(leg.quantity as u64).ok_or_else(||fail("BASKET_QUANTITY_OVERFLOW"))?;
         let price=decimal_units(&leg.limit_price)?;

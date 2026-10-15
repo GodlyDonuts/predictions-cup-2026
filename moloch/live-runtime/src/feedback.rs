@@ -32,9 +32,16 @@ pub fn fills(q:&Value,actual:&str,tournament:&str,r:&Receipt,processed_at:&str)-
   let fill_id=id(&row["id"])?;let signed=row["quantity"].as_i64().filter(|n|*n!=0).ok_or("ACCOUNT_FILL_QUANTITY")?;
   if (signed<0)!=no||row["side"]!=if no{"no"}else{"yes"}||!seen.insert(fill_id.clone()){return Err("ACCOUNT_FILL_SIDE_OR_DUPLICATE".into())}
   let n=signed.checked_abs().ok_or("ACCOUNT_FILL_QUANTITY")? as u64;sum=sum.checked_add(n).ok_or("ACCOUNT_FILL_QUANTITY")?;
-  let mut e=base("actual_fill",q,actual,r,processed_at)?;e["fillId"]=json!(fill_id);e["quantity"]=json!(n);e["price"]=json!(money(official_tick_units(&row["price"])?));e["fee"]=json!("0.000000");e["executedAt"]=row["filledAt"].clone();events.push(e);
+  let mut e=base("actual_fill",q,actual,r,processed_at)?;e["fillId"]=json!(fill_id);e["quantity"]=json!(n);e["price"]=json!(money(official_tick_units(&row["price"])?));e["fee"]=json!("0.000000");e["executedAt"]=row["filledAt"].clone();
+  let executed=chrono::DateTime::parse_from_rfc3339(row["filledAt"].as_str().ok_or("ACCOUNT_FILL_CLOCK")?)?;events.push((executed,e));
  }
- if sum!=total.checked_abs().ok_or("ACCOUNT_FILL_TOTAL")? as u64||sum>q["quantity"].as_u64().ok_or("INTENT_QUANTITY")?{return Err("ACCOUNT_FILL_TOTAL_MISMATCH".into())}Ok(events)
+ if sum!=total.checked_abs().ok_or("ACCOUNT_FILL_TOTAL")? as u64||sum>q["quantity"].as_u64().ok_or("INTENT_QUANTITY")?{return Err("ACCOUNT_FILL_TOTAL_MISMATCH".into())}
+ // Official order tapes are newest first; FIFO requires oldest first. Preserve
+ // the original receipt and its hash. This orders one complete tape only, not
+ // late observations across separately reconciled orders or historical events.
+ events.sort_by(|a,b|a.0.cmp(&b.0));
+ for pair in events.windows(2){if pair[0].0==pair[1].0&&pair[0].1["price"]!=pair[1].1["price"]{return Err("ACCOUNT_FILL_ORDER_AMBIGUOUS".into())}}
+ Ok(events.into_iter().map(|(_,event)|event).collect())
 }
 /// A closed-order quantity is interpreted separately from a resting remainder.
 pub fn terminal(q:&Value,actual:&str,tournament:&str,order:&Receipt,filled:&Receipt,processed_at:&str)->Result<Option<Value>>{
@@ -62,4 +69,30 @@ pub fn terminal(q:&Value,actual:&str,tournament:&str,order:&Receipt,filled:&Rece
  #[test]fn partial_pages_duplicates_and_foreign_fills_are_rejected(){for key in ["pagination","totalQuantityFilled","orderId","duplicate"]{let mut v=tape();match key{"pagination"=>v.data["pagination"]["hasMore"]=json!(true),"totalQuantityFilled"=>v.data[key]=json!(-3),"orderId"=>v.data[key]=json!(999),_=>v.data["data"][1]["id"]=json!(301)}assert!(fills(&q(),"201","cup",&v,"2026-10-15T00:00:06Z").is_err());}}
  #[test]fn open_quantity_is_remainder_and_never_a_terminal_fill_count(){let mut o=order();o.data["open"]=json!(true);o.data["quantity"]=json!(0);o.data["quantityFilled"]=Value::Null;assert!(terminal(&q(),"201","cup",&o,&tape(),"2026-10-15T00:00:06Z").unwrap().is_none());o=order();assert_eq!(terminal(&q(),"201","cup",&o,&tape(),"2026-10-15T00:00:06Z").unwrap().unwrap()["status"],"filled");o.data["quantityFilled"]=json!(1);assert!(terminal(&q(),"201","cup",&o,&tape(),"2026-10-15T00:00:06Z").is_err());}
  #[test]fn terminal_releases_wait_for_an_independent_later_fill_observation(){let mut old=tape();old.request_started_at="2026-10-15T00:00:01Z".into();assert!(terminal(&q(),"201","cup",&order(),&old,"2026-10-15T00:00:06Z").is_err());assert!(fills(&q(),"201","cup",&tape(),"2026-10-15T00:00:04Z").is_err());}
+ fn varied_buy()->(Value,Receipt){
+  let mut quote=q();quote["side"]=json!("YES");quote["action"]=json!("buy");quote["price"]=json!("0.400000");
+  let mut receipt=tape();receipt.data["totalQuantityFilled"]=json!(2);receipt.data["data"]=json!([
+   {"id":302,"price":0.40,"quantity":1,"side":"yes","filledAt":"2026-10-15T00:00:02.0000002Z"},
+   {"id":301,"price":0.20,"quantity":1,"side":"yes","filledAt":"2026-10-15T00:00:02.0000001Z"}]);(quote,receipt)
+ }
+ #[test]fn newest_first_complete_tape_preserves_receipt_and_actual_fifo_redemption(){
+  use moloch_replay::{Wallet,Reservation,Side,amount};
+  let(quote,receipt)=varied_buy();let original=digest(&receipt).unwrap();let events=fills(&quote,"201","cup",&receipt,"2026-10-15T00:00:06Z").unwrap();
+  assert_eq!(digest(&receipt).unwrap(),original);assert_eq!(receipt.data["data"][0]["id"],302);assert_eq!(events[0]["fillId"],"301");assert_eq!(events[1]["fillId"],"302");assert_eq!(events[0]["receiptHash"],original);
+  let mut wallet=Wallet::new(amount("100").unwrap(),amount("100").unwrap(),0,0).unwrap();
+  wallet.reserve("yes",Reservation{exchange:"994".into(),side:Side::Yes,quantity:2,limit:amount("0.40").unwrap()}).unwrap();
+  for event in events{wallet.buy_fill_exact("yes",1,amount(event["price"].as_str().unwrap()).unwrap(),0).unwrap();}
+  wallet.reserve("no",Reservation{exchange:"994".into(),side:Side::No,quantity:1,limit:amount("0.50").unwrap()}).unwrap();wallet.buy_fill_exact("no",1,amount("0.50").unwrap(),0).unwrap();
+  assert_eq!(money(wallet.cash),"99.900000");assert_eq!(money(wallet.realized),"0.300000");assert_eq!(money(wallet.owned_cost()),"0.400000");assert_eq!(wallet.quantity("994",Side::Yes),1);assert_eq!(wallet.quantity("994",Side::No),0);wallet.audit().unwrap();
+ }
+ #[test]fn unequal_price_timestamp_ties_fail_without_inventing_trade_id_order(){let(quote,mut receipt)=varied_buy();receipt.data["data"][1]["filledAt"]=receipt.data["data"][0]["filledAt"].clone();assert!(fills(&quote,"201","cup",&receipt,"2026-10-15T00:00:06Z").is_err());receipt.data["data"][1]["price"]=json!(0.40);assert_eq!(fills(&quote,"201","cup",&receipt,"2026-10-15T00:00:06Z").unwrap().len(),2);}
+ #[test]fn sorting_one_tape_does_not_prove_cross_order_late_observation_fifo(){
+  let(mut quote,mut receipt)=varied_buy();quote["quantity"]=json!(1);receipt.data["totalQuantityFilled"]=json!(1);
+  let older=receipt.data["data"][1].clone();receipt.data["data"]=json!([receipt.data["data"][0].clone()]);
+  let mut admitted=fills(&quote,"201","cup",&receipt,"2026-10-15T00:00:06Z").unwrap();
+  quote["id"]=json!(2);receipt.data["orderId"]=json!(202);receipt.data["data"]=json!([older]);
+  admitted.extend(fills(&quote,"202","cup",&receipt,"2026-10-15T00:00:07Z").unwrap());
+  let clocks=admitted.iter().map(|e|chrono::DateTime::parse_from_rfc3339(e["executedAt"].as_str().unwrap()).unwrap()).collect::<Vec<_>>();
+  assert!(clocks[0]>clocks[1],"a future global staging barrier is still required");
+ }
 }
