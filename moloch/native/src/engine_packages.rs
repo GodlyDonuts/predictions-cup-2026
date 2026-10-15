@@ -1,5 +1,25 @@
 //! Native funding/lifecycle only. A proof hash or claimed floor is NOT settlement
 //! certification, human authority, an HTTP acknowledgment, or a fill.
+//!
+//! Reserve is one transactional event for 2--3 distinct, flat BUY components.
+//! The bank reserves sum(quantity * frozen limit), not a weighted-depth estimate.
+//! Only zero-fee policies are supported. The runtime must independently certify
+//! settlement/refund states, source/account/bank scope and physical AON semantics.
+//! Native code validates source hashes, freshness, full executable depth and caps;
+//! it does not interpret proofHash as a certificate of any claimed payout.
+//!
+//! Attempt consumes a single stable request/key binding. Its bookHashes map pins
+//! current raw books while preserving the original limits, quantities and expiry.
+//! Unknown retains every unexecuted reservation. An attempt can release funding
+//! only through typed, complete, allowlisted zero-execution response evidence, or
+//! ordinary verified actual terminal/fill feedback. ACK alone never credits cash.
+//!
+//! Complete requires every original quantity actually filled and every actual
+//! binding terminal-reconciled. Component positions remain protected from all
+//! ordinary strategy exits after completion: this version holds to settlement.
+//! Partial/canceled packages require manual resolution; no automatic repair or
+//! component liquidation is implemented. Restart must replay these events; seed
+//! import of package state is explicitly rejected rather than silently dropping it.
 use super::*;
 
 #[derive(Clone,Copy,PartialEq,Eq)]
@@ -13,7 +33,7 @@ struct Leg {qid:u64,market:String,exchange:String,side:Side,quantity:u64,limit:i
 #[derive(Clone)]
 pub(super) struct LivePackage {
  id:String,proof:String,scope:Value,economics:Value,created:i64,expires:i64,phase:Phase,
- legs:Vec<Leg>,request:Option<String>,key:Option<String>,zero_evidence:Option<Value>,
+ legs:Vec<Leg>,request:Option<String>,key:Option<String>,attempted_at:Option<i64>,zero_evidence:Option<Value>,
 }
 fn digest(v:&Value)->Result<String>{Ok(v.as_str().filter(|s|s.len()==64&&s.bytes().all(|b|b.is_ascii_hexdigit()&&!b.is_ascii_uppercase())).ok_or("PACKAGE_HASH")?.to_owned())}
 fn package_id(v:&Value)->Result<String>{Ok(v.as_str().filter(|s|!s.is_empty()&&s.len()<=128&&s.bytes().all(|b|b.is_ascii_alphanumeric()||b==b'-'||b==b'_')).ok_or("PACKAGE_ID")?.to_owned())}
@@ -32,13 +52,13 @@ impl Engine {
  pub fn is_package_order(&self,id:u64)->bool{self.package_orders.contains_key(&id)}
  pub fn package_blocks_new_submissions(&self)->bool{self.live_packages.values().any(|p|!p.phase.closed())}
  pub fn package_blocks_submissions(&self)->bool{self.package_blocks_new_submissions()}
- pub fn package_records(&self)->Value{json!(self.live_packages.values().map(|p|json!({"packageId":p.id,"proofHash":p.proof,"bankScope":p.scope,"economics":p.economics,"createdAt":p.created,"expiresAt":p.expires,"phase":p.phase.label(),"requestHash":p.request,"idempotencyKey":p.key,"zeroExecutionEvidence":p.zero_evidence,"legs":p.legs.iter().map(|l|json!({"qid":l.qid,"marketId":l.market,"exchangeId":l.exchange,"side":label(l.side),"quantity":l.quantity,"limitPrice":money(l.limit),"bookHash":l.book_hash,"actualOrderId":self.live_orders.get(&l.qid),"filled":self.orders.iter().find(|q|q.id==l.qid).map(|q|q.filled),"terminalReconciled":l.terminal})).collect::<Vec<_>>()})).collect::<Vec<_>>())}
+ pub fn package_records(&self)->Value{json!(self.live_packages.values().map(|p|json!({"packageId":p.id,"proofHash":p.proof,"bankScope":p.scope,"economics":p.economics,"createdAt":p.created,"expiresAt":p.expires,"phase":p.phase.label(),"requestHash":p.request,"idempotencyKey":p.key,"attemptedAt":p.attempted_at,"zeroExecutionEvidence":p.zero_evidence,"legs":p.legs.iter().map(|l|json!({"qid":l.qid,"marketId":l.market,"exchangeId":l.exchange,"side":label(l.side),"quantity":l.quantity,"limitPrice":money(l.limit),"bookHash":l.book_hash,"actualOrderId":self.live_orders.get(&l.qid),"filled":self.orders.iter().find(|q|q.id==l.qid).map(|q|q.filled),"terminalReconciled":l.terminal})).collect::<Vec<_>>()})).collect::<Vec<_>>())}
  pub(super) fn package_protects_exchange(&self,exchange:&str)->bool{
   self.live_packages.values().any(|p|p.phase!=Phase::NoExecution&&p.legs.iter().any(|l|l.exchange==exchange))
  }
  pub(super) fn package_ack_guard(&self,qid:u64,quantity:u64)->Result<()>{
   if let Some(id)=self.package_orders.get(&qid){let p=self.live_packages.get(id).ok_or("PACKAGE_INDEX")?;let l=p.legs.iter().find(|l|l.qid==qid).ok_or("PACKAGE_LEG")?;
-   if !matches!(p.phase,Phase::Attempted|Phase::Acknowledged|Phase::Unknown)||quantity!=l.quantity{return Err("PACKAGE_ACK_OUTSIDE_ATTEMPT_OR_QUANTITY")}
+   if (!matches!(p.phase,Phase::Attempted|Phase::Acknowledged|Phase::Unknown)&&!(p.phase==Phase::Complete&&self.live_orders.contains_key(&qid)))||quantity!=l.quantity{return Err("PACKAGE_ACK_OUTSIDE_ATTEMPT_OR_QUANTITY")}
   }Ok(())
  }
  pub(super) fn package_acknowledged(&mut self,qid:u64){
@@ -73,7 +93,7 @@ impl Engine {
     let current=e["bookHashes"].as_object().filter(|m|m.len()==snapshot.legs.len()).ok_or("PACKAGE_ATTEMPT_BOOK_HASHES")?;
     for l in &snapshot.legs{if !self.policy.entry(&l.exchange,at){return Err("PACKAGE_ENTRY_DISABLED")};let mut fresh=l.clone();fresh.book_hash=digest(current.get(&l.exchange).ok_or("PACKAGE_ATTEMPT_BOOK_HASHES")?)?;self.package_book(&fresh,at,&snapshot.scope)?;}
     let request=digest(&e["requestHash"])?;let key=e["idempotencyKey"].as_str().filter(|s|!s.is_empty()&&s.len()<=256).ok_or("PACKAGE_IDEMPOTENCY_KEY")?.to_owned();
-    let p=self.live_packages.get_mut(&id).unwrap();p.request=Some(request);p.key=Some(key);p.phase=Phase::Attempted;
+    let p=self.live_packages.get_mut(&id).unwrap();p.request=Some(request);p.key=Some(key);p.attempted_at=Some(at);p.phase=Phase::Attempted;
    },
    Some("live_package_unknown")=>{
     if !matches!(snapshot.phase,Phase::Attempted|Phase::Acknowledged|Phase::Unknown)||e["requestHash"].as_str()!=snapshot.request.as_deref(){return Err("PACKAGE_UNKNOWN_OUTSIDE_ATTEMPT")}
@@ -88,7 +108,7 @@ impl Engine {
     }else{
      if proof["kind"]!="official_multi_leg_zero_execution"||proof["completeBody"]!=true||proof["requestHash"].as_str()!=snapshot.request.as_deref()||digest(&proof["receiptHash"]).is_err()||digest(&proof["responseHash"])?!=hash(&proof["response"])||!zero_execution(proof["status"].as_u64().ok_or("PACKAGE_ZERO_STATUS")?,&proof["response"],snapshot.legs.len()){return Err("PACKAGE_TYPED_ZERO_EXECUTION_REQUIRED")}
      let started=ms(&proof["requestStartedAt"])?;let received=ms(&proof["receivedAt"])?;
-     if started<snapshot.created||started>received||received>at{return Err("PACKAGE_ZERO_EXECUTION_CLOCK")}
+     if snapshot.attempted_at.is_none_or(|attempt|started<attempt)||started>received||received>at{return Err("PACKAGE_ZERO_EXECUTION_CLOCK")}
     }
     for l in &snapshot.legs{self.wallet.release(&l.qid.to_string())?;self.orders.iter_mut().find(|q|q.id==l.qid).ok_or("PACKAGE_ORDER_MISSING")?.retired=true;}
     let p=self.live_packages.get_mut(&id).unwrap();p.phase=Phase::NoExecution;p.zero_evidence=Some(proof.clone());
@@ -146,6 +166,7 @@ impl Engine {
    self.orders.push(Order{id:l.qid,market:l.market.clone(),exchange:l.exchange.clone(),tournament:scope["tournamentId"].as_str().unwrap().into(),side:l.side,buy:true,quantity:l.quantity,filled:0,limit:l.limit,created:at,activation:at+self.policy.latency,expires,cancel:None,retired:false,credit:0,barrier:None,same:0,better:0,visible_same:0,visible_better:0,touch_remainder:0,aon:false,age_reason:false,through:false,participation:10000,conditional:false,touch_bps:0});
    self.package_orders.insert(l.qid,package_name.clone());
   }
-  self.live_packages.insert(package_name.clone(),LivePackage{id:package_name,proof,scope,economics,created:at,expires,phase:Phase::Reserved,legs,request:None,key:None,zero_evidence:None});Ok(())
+  self.live_packages.insert(package_name.clone(),LivePackage{id:package_name,proof,scope,economics,created:at,expires,phase:Phase::Reserved,legs,request:None,key:None,attempted_at:None,zero_evidence:None});Ok(())
  }
 }
+
