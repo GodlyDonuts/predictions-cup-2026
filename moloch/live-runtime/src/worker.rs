@@ -681,6 +681,16 @@ pub fn main()->Result<()>{
   for i in 0..n{let ex=(101+i).to_string();let stamp=iso(at+i as u64*2500);bank.accept("official-book",i as u64+1,&json!({"type":"book","receivedAt":stamp,"book":{"tournamentId":"cup","marketId":ex,"exchangeId":ex,"sequence":"1","sourceAt":stamp,"requestStartedAt":stamp,"receivedAt":stamp,"bids":[{"price":"0.400000","quantity":100}],"asks":[{"price":"0.450000","quantity":100}]}})).unwrap();}
   (bank,DispatchLog::open(&path.join("dispatch.ndjson")).unwrap(),policy,seed)
  }
+ #[test]fn execution_observer_sees_only_exact_successfully_committed_prepared_bytes(){
+  use moloch_live_runtime::execution_edge::{Config,Model};
+  let temp=Temp::new();let(mut bank,_,_,_)=setup(&temp.0,1);let cfg=Config{fill_window_ms:1000,markout_ms:1000,post_window_ms:500,embargo_ms:500,maximum_book_age_ms:10_000,maximum_delivery_ms:1000,maximum_training_age_ms:60_000,minimum_samples:2,minimum_coverage_bps:9000,probability_haircut_bps:1000,uncertainty_per_share:5000,exit_fee_per_share:0,fee_policy_source_sha256:"a".repeat(64),maximum_keys:16,maximum_pending:16,retained_samples:8};
+  EXECUTION_MODEL.with(|slot|*slot.borrow_mut()=Some(Model::new(&bank,cfg).unwrap()));
+  let at=iso(now());let e=json!({"type":"book","receivedAt":at,"book":{"tournamentId":"cup","marketId":"101","exchangeId":"101","sequence":"2","sourceAt":at,"requestStartedAt":at,"receivedAt":at,"bids":[{"price":"0.400000","quantity":100}],"asks":[{"price":"0.450000","quantity":100}]}});
+  accept_source_events(&mut bank,&[e]).unwrap();let seq=bank.last_source_sequence("moloch-live");
+  let before=EXECUTION_MODEL.with(|slot|slot.borrow().as_ref().unwrap().diagnostic_json());assert_eq!(before["disabled"],Value::Null);assert!(before["lastObservedAtMs"].as_u64().unwrap()>0);
+  assert!(accept(&mut bank,&json!({"type":"not_a_native_event","receivedAt":at})).is_err());assert_eq!(bank.last_source_sequence("moloch-live"),seq);
+  EXECUTION_MODEL.with(|slot|{assert_eq!(slot.borrow().as_ref().unwrap().diagnostic_json(),before);*slot.borrow_mut()=None;});
+ }
  #[test]fn original_dispatch_proved_retirement_does_not_recreate_component_quotes_and_replays(){
   for n in [2,3]{let temp=Temp::new();let(mut bank,mut log,policy,seed)=setup(&temp.0,n);let original=bank.engine().order_records();assert_eq!(original.len(),n*2);assert!(!ordinary_liability_due(&bank,&log,now()).unwrap());
    for q in &original{retire_for_package(&mut bank,&mut log,q).unwrap();assert_eq!(bank.engine().order_records().len(),original.len());}

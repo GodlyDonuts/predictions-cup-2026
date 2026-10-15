@@ -65,7 +65,7 @@ impl Prepared{
   need(!orders.iter().any(|q|q["retired"]==false&&q["exchangeId"].as_str().is_some_and(|ex|expected_positions.contains_key(ex))&&!qids.contains(&q["id"].as_u64().unwrap_or(0))),"PORTFOLIO_AUTH_COMPETING_ORDER")?;
   need(quantity<=a.maximum_quantity as u64&&quantity<=permit.maximum_quantity as u64&&total==plan.gross_funding()&&total==decimal_units(&basket.maximum_gross_buy_cost)?&&proceeds==decimal_units(&basket.minimum_gross_sell_proceeds)?&&total<=decimal_units(&permit.maximum_cost)?&&total==dec(&reserve["economics"]["maximumCost"])?&&proceeds==dec(&proof["minimumCashProceeds"])? ,"PORTFOLIO_AUTH_FUNDING")?;
   let report=e.report()?;let reserved_total=dec(&report["reservedCash"])?;need(reserved_total>=total&&reserved_total<=e.wallet.cash&&dec(&report["ownedCost"] )?.checked_add(reserved_total).is_some_and(|n|n<=decimal_units(&a.maximum_committed).unwrap_or(-1)),"PORTFOLIO_AUTH_CAPITAL")?;
-  let expected_cash=dec(&bank.live_account_seed().ok_or("PORTFOLIO_AUTH_SEED")?["availableCash"] )?.checked_add(e.wallet.cash).and_then(|n|n.checked_sub(e.wallet.initial)).and_then(|n|n.checked_add(e.opening_inventory_cost())).ok_or("PORTFOLIO_AUTH_RANGE")?;
+  let expected_cash=crate::authority::reconciled_expected_cash(bank)?;
   let p=Self{spec,permit,scope:scope.clone(),legs,facts,prepared:now,expires:plan.expires_at_ms(),entry_cutoff:effective_entry_cutoff,expected_cash,maximum_cost:total,reserved_total,rule_sources,expected_positions,requires_entry:buy};p.validate_facts(now,None)?;Ok(p)
  }
  pub fn new(bank:&Session,a:&Activation,scope:&Scope,admission:&Admission,permit:Permit,facts:PackageSnapshotSet,now:u64,effective_entry_cutoff:u64)->Result<Self>{
@@ -99,8 +99,8 @@ impl Prepared{
   need(dec(&proof["minimumPayout"])?==dec(&reserve["economics"]["minimumPayout"])?&&dec(&proof["minimumPayout"])?-total>=dec(&proof["buffer"])?+dec(&proof["minimumSurplus"])?&&dec(&proof["minimumSurplus"])? >0&&dec(&proof["buffer"])? >=0&&dec(&reserve["economics"]["feeTotal"])?==0,"PACKAGE_AUTH_SURPLUS")?;
   let ledger=e.report()?;let reserve_total=dec(&ledger["reservedCash"])?;let owned=dec(&ledger["ownedCost"])?;let cash=dec(&ledger["cash"])?;
   need(reserve_total>=total&&reserve_total<=cash&&owned.checked_add(reserve_total).is_some_and(|n|n<=decimal_units(&a.maximum_committed).unwrap_or(-1)),"PACKAGE_AUTH_FULL_FUNDING")?;
-  let seed=dec(&bank.live_account_seed().ok_or("PACKAGE_AUTH_SEED")?["availableCash"])?;
-  let expected_cash=seed.checked_add(e.wallet.cash).and_then(|n|n.checked_sub(e.wallet.initial)).and_then(|n|n.checked_add(e.opening_inventory_cost())).ok_or("PACKAGE_AUTH_RANGE")?;
+
+  let expected_cash=crate::authority::reconciled_expected_cash(bank)?;
   // Admission owns the independently reviewed rule bindings. Fresh transport
   // timestamps may differ only for a V2 full-body certificate; V1 stays exact.
   let mut rule_sources=BTreeSet::new();
