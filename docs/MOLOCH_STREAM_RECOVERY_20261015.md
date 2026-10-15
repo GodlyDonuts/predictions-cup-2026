@@ -1,0 +1,35 @@
+# Typed and bounded stream recovery policy — October 15
+
+[Task #141](https://github.com/GodlyDonuts/predictions-cup-2026/issues/141), Viserion/stream-recovery-20261015. NEW pure `moloch/live-runtime/src/stream_recovery.rs`, in-module tests and this document only, isolated from checked main `d866fc19`. Root owns library/worker wiring, files, account authority, Linux checks and runtime. This module never reconnects, sleeps, creates a client, reads/writes a file or changes a bank.
+
+## Typed failure boundary
+
+`StreamFailure` contains only a private allowlisted `&'static str`. It implements `std::error::Error`/Display and supports future `Box<dyn Error>::downcast_ref::<StreamFailure>()`. Unknown codes are replaced by fixed `STREAM_WORKER_EXIT_UNEXPLAINED`; arbitrary URL/token/server/panic payloads cannot become its diagnostic reason.
+
+Exactly these codes are recoverable: `STREAM_DEADLINE_REACHED`, `STREAM_SOCKET_CLOSED`, `STREAM_READ_FAILED`, `STREAM_FLUSH`, `STREAM_HEARTBEAT_SEND`, `STREAM_HEARTBEAT_TIMEOUT`, `STREAM_QUEUE_FULL`. Classification is permission to consider a bounded recovery, never proof of source coverage or write authority. Queue-full means delivery was lost; it is not merely a harmless reconnect. The prior source gap/recovery requirements still apply.
+
+Protocol/JSON/topic/join rejection or timeout, heartbeat rejection/pending protocol state, channel close/error, consumer disconnection, requested stop, panic and unexplained exits remain fatal. Only a deliberately emitted typed stream failure may enter the future recovery branch. Never classify an arbitrary string-matching error or wrap uncertain POST/cancel/acknowledgment/durability errors into this type. The same text inside an unrelated I/O error does not downcast and cannot request recovery.
+
+## Persistent token-mint attempt budget
+
+`RecoveryBudget` has mandatory `schemaVersion:1`, `lastClockMs` and ordered `attempts` timestamps, with serde unknown-field rejection and no defaults. `new(now)` is for a genuinely absent budget only, not a repair/reset of missing fields, bad JSON, unsupported schema, corrupt timestamps or an existing state that refuses recovery. The caller must preserve the file across restarts and bind its path to the same account/worker runtime. A missing file after previous use is not independent proof that the budget is new.
+
+`validate(now)` rejects bad schema; out-of-range clocks; `now < lastClockMs`; attempt timestamps after the durable clock; more than three stored attempts (even if old); unordered/duplicate attempts; or recorded attempts spaced less than60s. Queries and failed admissions do not mutate or discard evidence. `next_allowed(now)` validates first and returns the earliest allowed time, or `now` if immediately eligible. It counts timestamps with age at most600,000ms; therefore a fourth attempt is not allowed at the exact10-minute boundary, but can be allowed at oldest+600,001ms if the60s gap also holds. Arithmetic overflow fails closed.
+
+`record_attempt(now)` refuses early attempts without mutation, then prunes only truly expired timestamps, appends this attempt, updates `lastClockMs` and validates the result. It records ATTEMPTS, not successful joins. A token mint, connect or join failure never refunds an attempt. The caller MUST atomically persist/fsync the resulting budget BEFORE attempting the mint/connect. A persistence failure aborts that recovery; no connection operation follows uncertain durability. The module does not itself guarantee a durable file, cross-host lock or account serialization.
+
+`lastClockMs` is the last persisted attempt/initialization clock. `next_allowed` is a pure query and does not claim to persist every observed wall-clock tick. Existing account queue clock/backoff gates remain independent. Root should bound the small budget file before serde decoding (for example4KiB), reject decode/duplicate/unknown/missing fields, then validate against the current clock. Never read arbitrary-size untrusted history into this three-entry structure or overwrite malformed state with `new`.
+
+## Root integration requirements, not implemented here
+
+1. Preserve STOP/control and existing stream failure authority. At a safe worker boundary downcast only the typed stream error and require `is_recoverable`. Uncertain writes, source/protocol/Session/durability failures remain fatal/untyped. Failed replacement mint/connect/JOIN is fatal, not an automatic retry loop. Recurring successfully recovered outages still consume at most three attempts in each rolling10min.
+2. Check every actual attempt is resolved and the real shared queue global-unknown state is explicitly empty. Drop/join the old socket before a replacement; keep exactly one account Transport/limiter and one realtime worker. Reconciliation/account unknowns are not cleared by reconnecting.
+3. Load/validate the existing budget. Wait STOP-responsively until both `next_allowed` and the existing durable auth mint marker's at-least60s boundary. Record and durably persist this attempt BEFORE calling the existing `connect_stream` through the same Transport/read budget. A long Retry-After/activation expiry still applies; this helper does not extend it.
+4. Only confirmed JOIN may apply the actual `source.subscribed` gap events, all through normal durable Session acceptance. Reset breadth/universe via the existing subscription boundary; preserve RestSource, dedup/trade facts, bank, dispatch history, queue limiter and backoff. Keep the earliest existing per-market REST window start instead of replacing it with now-minus60s after a longer outage.
+5. JOIN alone is insufficient to resume quotes. Normal complete tape/fresh valid book recovery, current owned full fills and terminal evidence, STOP, exact new native intent, original activation/expiry, funding, account/contract authority and physical queue/network checks remain required. Do not clear an existing EXECUTION_STOP or retry an attempted order under this recovery policy.
+
+## Authored checks and delivery status
+
+Ten deterministic tests cover the exact recovery allowlist/fatal classes; typed downcast versus unrelated matching text; secret-like reason sanitization; three-attempt limit and60s gap; restart persistence including failed mints; exact rolling boundary and pruning; regressed clock nonmutation; bad persisted schema/future/unordered/duplicate/spacing/overfull state; mandatory/unknown/negative/wrong-type JSON fields; pure nonmutating queries; and clock-range/overflow refusal. No account or socket is contacted by these tests.
+
+At initial source handoff these tests are authored, not reported passing on this Windows device (Rust unavailable). Root owns serialized Linux/full-runtime/release checks and independent worker integration review. No reconnect, deployment, account call, SSH/job, credential or financial action was performed by this child. Source publication alone does not recover production or establish any profit.
