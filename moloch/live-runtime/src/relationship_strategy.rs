@@ -150,7 +150,7 @@ fn relationship_endpoint(endpoint:&str,scope:&Scope)->bool{
  ids.len()==1&&ids[0]==scope.tournament_id
 }
 fn rule_scope(r:&Receipt,c:&ContractCertificate,scope:&Scope,v2:bool)->Result<()>{
- let market=r.data.get("market_id").or_else(||r.data.get("id")).and_then(|v|v.as_str().map(str::to_owned).or_else(||v|v.as_u64().map(|n|n.to_string())));
+ let market=r.data.get("market_id").or_else(||r.data.get("id")).and_then(|v|v.as_str().map(str::to_owned).or_else(||v.as_u64().map(|n|n.to_string())));
  need(market.as_ref()==Some(&c.market_id),"STRATEGY_RULE_MARKET_SCOPE")?;
  if !v2{return need(r.endpoint==c.rule_endpoint&&(r.endpoint==format!("/markets/{}/nodes",c.market_id)||r.endpoint==format!("/markets/{}",c.market_id)),"STRATEGY_RULE_ENDPOINT")}
  need(scope.exchanges.get(&c.exchange_id)==Some(&c.market_id),"STRATEGY_RULE_MARKET_SCOPE")?;

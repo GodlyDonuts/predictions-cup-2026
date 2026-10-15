@@ -11,7 +11,7 @@ use crate::daily_windows::DailyEntryWindows;
 pub struct Activation {pub run_id:String,pub entry_until_ms:u64,pub maximum_committed:String,pub maximum_market_cost:String,pub maximum_quantity:u32,pub tournament_id:String,pub tournament_slug:String,pub binary_sha256:String}
 #[derive(Clone)]pub struct SnapshotSet {pub account:Receipt,pub cash_balance:Receipt,pub positions:Receipt,pub open_orders:Receipt,pub market:Receipt,pub contract:Receipt,pub book:Receipt}
 #[derive(Clone)]struct Ready {spec:RequestSpec,permit:Permit,quote:Value,ledger:Value,snapshots:SnapshotSet,owned:u64,expected_signed:i128,market_cost:i128,expected_cash:i128,entry_until:u64}
-pub struct ProductionAuthority {daily:Mutex<Option<(DailyEntryWindows,u64)>>,activation:Activation,scope:Scope,stops:Vec<PathBuf>,control:PathBuf,control_hash:String,binary:PathBuf,_lease:Arc<ExclusiveLock>,ready:Mutex<Option<Ready>>,owned:Mutex<std::collections::BTreeSet<String>>,recovery:Mutex<Option<String>>,stream:Mutex<Option<(Arc<std::sync::atomic::AtomicBool>,u64)>>}
+pub struct ProductionAuthority {package_ready:Mutex<Option<crate::package_authority::Prepared>>,daily:Mutex<Option<(DailyEntryWindows,u64)>>,activation:Activation,scope:Scope,stops:Vec<PathBuf>,control:PathBuf,control_hash:String,binary:PathBuf,_lease:Arc<ExclusiveLock>,ready:Mutex<Option<Ready>>,owned:Mutex<std::collections::BTreeSet<String>>,recovery:Mutex<Option<String>>,stream:Mutex<Option<(Arc<std::sync::atomic::AtomicBool>,u64)>>}
 fn hash_bytes(bytes:&[u8])->String{format!("{:x}",Sha256::digest(bytes))}
 fn clock(s:&str)->Option<u64>{chrono::DateTime::parse_from_rfc3339(s).ok().and_then(|d|u64::try_from(d.timestamp_millis()).ok())}
 fn denied(code:&str)->TransportError{TransportError{code:code.into(),status:None,may_have_executed:false,retry_after_ms:0,order_id:None,api_code:None}}
@@ -19,7 +19,7 @@ fn fresh(r:&Receipt,now:u64,max_age:u64)->bool{r.status==200&&clock(&r.request_s
 impl ProductionAuthority {
  pub fn new(activation:Activation,scope:Scope,stops:Vec<PathBuf>,control:PathBuf,binary:PathBuf,lease:Arc<ExclusiveLock>)->Result<Self>{
   if activation.run_id.is_empty()||activation.maximum_quantity==0||activation.maximum_quantity>10000||decimal_units(&activation.maximum_committed)?<=0||decimal_units(&activation.maximum_market_cost)?<=0||scope.tournament_id!=activation.tournament_id||scope.tournament_slug!=activation.tournament_slug||hash_bytes(&fs::read(&binary)?)!=activation.binary_sha256{return Err("LIVE_ACTIVATION_BINDING".into())}
-  let control_hash=hash_bytes(&fs::read(&control)?);Ok(Self{daily:Mutex::new(None),activation,scope,stops,control,control_hash,binary,_lease:lease,ready:Mutex::new(None),owned:Mutex::new(Default::default()),recovery:Mutex::new(None),stream:Mutex::new(None)})
+  let control_hash=hash_bytes(&fs::read(&control)?);Ok(Self{package_ready:Mutex::new(None),daily:Mutex::new(None),activation,scope,stops,control,control_hash,binary,_lease:lease,ready:Mutex::new(None),owned:Mutex::new(Default::default()),recovery:Mutex::new(None),stream:Mutex::new(None)})
  }
  pub fn entry_until_ms(&self)->u64{self.daily.lock().unwrap().as_ref().map_or(self.activation.entry_until_ms,|(_,end)|*end)}
  pub fn bind_entry_window(&self,bank:&Session,cfg:&DailyEntryWindows,at:u64)->Result<()>{
@@ -33,10 +33,13 @@ impl ProductionAuthority {
   *bound=Some((cfg.clone(),end));Ok(())
  }
  pub fn bind_owned(&self,id:String){self.owned.lock().unwrap().insert(id);}
- pub fn clear_ready(&self){*self.ready.lock().unwrap()=None;}
+ pub fn clear_ready(&self){*self.ready.lock().unwrap()=None;*self.package_ready.lock().unwrap()=None;}
  pub fn bind_stream(&self,failed:Arc<std::sync::atomic::AtomicBool>,deadline:u64){*self.stream.lock().unwrap()=Some((failed,deadline));}
  pub fn prepare(&self,bank:&Session,qid:u64,spec:RequestSpec,permit:Permit,snapshots:SnapshotSet)->Result<()> {
+  self.clear_ready();
   if !bank.engine().is_live(){return Err("PAPER_BANK_CANNOT_AUTHORIZE_WRITES".into())}
+  if bank.engine().is_package_order(qid){return Err("PACKAGE_REQUIRES_BASKET_AUTHORITY".into())}
+  if spec.method=="POST"&&bank.engine().package_blocks_submissions(){return Err("PACKAGE_UNRESOLVED".into())}
   let quote=bank.engine().order_records().into_iter().find(|q|q["id"].as_u64()==Some(qid)&&q["retired"]==false).ok_or("LIVE_INTENT_NOT_FUNDED")?;
   let owned=bank.engine().wallet.quantity(quote["exchangeId"].as_str().ok_or("LIVE_INTENT_SCOPE")?,if quote["side"]=="YES"{moloch_replay::Side::Yes}else{moloch_replay::Side::No});
   let ex=quote["exchangeId"].as_str().ok_or("LIVE_INTENT_SCOPE")?;
@@ -45,9 +48,26 @@ impl ProductionAuthority {
   let expected_cash=decimal_units(bank.live_account_seed().ok_or("LIVE_ACCOUNT_SEED")?["availableCash"].as_str().ok_or("LIVE_ACCOUNT_SEED")?)?+bank.engine().wallet.cash-bank.engine().wallet.initial+bank.engine().opening_inventory_cost();
   *self.ready.lock().unwrap()=Some(Ready{spec,permit,quote,ledger:bank.engine().report()?,snapshots,owned,expected_signed,market_cost,expected_cash,entry_until:self.entry_until_ms()});Ok(())
  }
+ pub fn prepare_package(&self,bank:&Session,admission:&crate::package_admission::Admission,permit:Permit,facts:crate::package_authority::PackageSnapshotSet,log:&crate::dispatch::DispatchLog,at:u64)->Result<()> {
+  self.clear_ready();log.require_resolved_attempts()?;
+  let orders=bank.engine().order_records();
+  for qid in log.acknowledgments.keys().filter(|qid|!log.closed.contains(qid)){
+   let q=orders.iter().find(|q|q["id"].as_u64()==Some(*qid)).ok_or("PACKAGE_PRIOR_ACK_QUOTE_MISSING")?;
+   if admission.basket().legs.iter().any(|l|q["exchangeId"]==l.exchange_id){return Err("PACKAGE_PRIOR_COMPONENT_ACK_UNRECONCILED".into())}
+  }
+  let prepared=crate::package_authority::Prepared::new(bank,&self.activation,&self.scope,admission,permit,facts,at,self.entry_until_ms())?;
+  *self.package_ready.lock().unwrap()=Some(prepared);Ok(())
+ }
  fn check(&self,scope:&Scope,spec:&RequestSpec,p:&Permit,network:bool,now:u64)->Result<()> {
   if !self.can_read(scope)||p.owner!="Codex"||p.run_id!=self.activation.run_id||p.expires_at_ms<=now{return Err("LIVE_OWNER_OR_ACTIVATION".into())}
   if network&&hash_bytes(&fs::read(&self.binary)?)!=self.activation.binary_sha256{return Err("LIVE_BINARY_CHANGED".into())}
+  if spec.endpoint=="/orders/multi-leg"{
+   if self.stream.lock().unwrap().as_ref().is_none_or(|(failed,deadline)|*deadline<=now||failed.load(std::sync::atomic::Ordering::SeqCst)){return Err("LIVE_VERIFIED_STREAM_REQUIRED".into())}
+   let end=self.entry_until_ms();
+   if now>=end||self.daily.lock().unwrap().as_ref().is_some_and(|(cfg,bound)|cfg.end_at(now).ok()!=Some(*bound)){return Err("LIVE_ENTRY_OR_ACCOUNT_CASH".into())}
+   let locked=self.package_ready.lock().unwrap();let prepared=locked.as_ref().ok_or("PACKAGE_FRESH_FACTS_REQUIRED")?;
+   return prepared.authorize(spec,p,now,&self.owned.lock().unwrap(),end);
+  }
   let locked=self.ready.lock().unwrap();let f=locked.as_ref().ok_or("LIVE_FRESH_FACTS_REQUIRED")?;
   if serde_json::to_value(spec)?!=serde_json::to_value(&f.spec)?||serde_json::to_value(p)?!=serde_json::to_value(&f.permit)?{return Err("LIVE_REQUEST_CHANGED".into())}
   for r in [&f.snapshots.account,&f.snapshots.cash_balance,&f.snapshots.positions,&f.snapshots.open_orders]{if !fresh(r,now,20000){return Err("LIVE_ACCOUNT_STALE".into())}}

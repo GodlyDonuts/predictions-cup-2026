@@ -230,7 +230,7 @@ fn dispatch(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,a
  }
  // Cancellations and reconciliation take priority over new purchases.
  for old in &orders {
-  let qid=old["id"].as_u64().ok_or("LIVE_QUOTE_ID")?;if old["retired"]==true{continue}
+  let qid=old["id"].as_u64().ok_or("LIVE_QUOTE_ID")?;if bank.engine().is_package_order(qid)||old["retired"]==true{continue}
   let expired=old["expiresAt"].as_u64().is_none_or(|t|t<=now());let canceled=old["cancelEffectiveAt"].as_u64().is_some_and(|t|t<=now());
   if !expired&&!canceled{continue}
   if log.never_attempted(qid){retire_never_sent(bank,log,old)?;continue}
@@ -250,7 +250,7 @@ fn dispatch(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,a
    }return Err("LIVE_CANCEL_REJECTED_RECONCILIATION_REQUIRED".into())
   }};record_receipt(&c.root,&ack)?;log.append(json!({"kind":"cancel_ack","qid":qid,"receipt":ack}))?;authority.clear_ready();return Ok(())
  }
- if !allow_new_submissions{return Ok(())}
+ if !allow_new_submissions||bank.engine().package_blocks_submissions(){return Ok(())}
  let mut preflight_budget=moloch_live_runtime::scheduling::PreflightBudget::default();
  if !hints.is_empty(){
   let keys:Vec<_>=hints.keys().cloned().collect();let index=moloch_live_runtime::scheduling::preflight_rotation(&keys,preflight_cursor.as_deref())[0];let key=&keys[index];
@@ -263,7 +263,7 @@ fn dispatch(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,a
  let quotes=bank.engine().order_records();
  let keys:Vec<String>=quotes.iter().map(|q|format!("{}:{}:{}",q["exchangeId"].as_str().unwrap_or(""),q["side"].as_str().unwrap_or(""),q["action"].as_str().unwrap_or(""))).collect();
  for index in moloch_live_runtime::scheduling::preflight_rotation(&keys,preflight_cursor.as_deref()){let q=quotes[index].clone();
-  let qid=q["id"].as_u64().ok_or("LIVE_QUOTE_ID")?;
+  let qid=q["id"].as_u64().ok_or("LIVE_QUOTE_ID")?;if bank.engine().is_package_order(qid){continue}
   let prefetch_started=now();
   let early_exit_prefetch=moloch_live_runtime::dispatch_window::may_prefetch(&q,log.never_attempted(qid),log.intents.contains_key(&qid),prefetch_started);
   if q["retired"]==true||!log.never_attempted(qid)||(!early_exit_prefetch&&q["activationAt"].as_u64().is_none_or(|t|t>prefetch_started))||q["expiresAt"].as_u64().is_none_or(|t|t<=prefetch_started+5000)||q["cancelEffectiveAt"].as_u64().is_some(){continue}

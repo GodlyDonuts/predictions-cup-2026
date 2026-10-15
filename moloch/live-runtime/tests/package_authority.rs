@@ -34,14 +34,39 @@ fn fixture(n:usize,exhaustive:bool)->Fixture{
  let mut f=Fixture{census,canonical,certs:vec![cert],trusted:BTreeSet::new(),rules,books,policy,capital};f.approve();f
 }
 use moloch_live_runtime::{authority,feedback,daily_windows,package_admission};
-#[path="../src/package_authority.rs"]mod package_authority;
-use package_authority::{Prepared,PackageSnapshotSet,ComponentSnapshots};
+use moloch_live_runtime::package_authority::{Prepared,PackageSnapshotSet,ComponentSnapshots};
 use baal_transport_service::{Permit,RequestSpec,multi_leg};
 use moloch_replay::session::Session;
 fn stamp(at:u64)->String{daily_windows::iso(at).unwrap()}
 fn sha<T:serde::Serialize>(v:&T)->String{format!("{:x}",Sha256::digest(serde_json::to_vec(v).unwrap()))}
 struct F{bank:Session,path:PathBuf,scope:Scope,a:authority::Activation,admission:package_admission::Admission,permit:Permit,spec:RequestSpec,facts:PackageSnapshotSet,at:u64}
 impl Drop for F{fn drop(&mut self){let _=std::fs::remove_dir_all(&self.path);}}
+fn production_authority(f:&F)->authority::ProductionAuthority{
+ use moloch_replay::session::ExclusiveLock;
+ let binary=f.path.join("test-binary");let control=f.path.join("test-control");
+ std::fs::write(&binary,b"checked-package-test-binary").unwrap();std::fs::write(&control,b"unchanged-control").unwrap();
+ let mut a=f.a.clone();a.binary_sha256=format!("{:x}",Sha256::digest(std::fs::read(&binary).unwrap()));
+ let lease=std::sync::Arc::new(ExclusiveLock::acquire(&f.path.join("physical-owner.lock")).unwrap());
+ let auth=authority::ProductionAuthority::new(a,f.scope.clone(),vec![f.path.join("STOP")],control,binary,lease).unwrap();
+ auth.bind_stream(std::sync::Arc::new(std::sync::atomic::AtomicBool::new(false)),f.at+60_000);auth
+}
+#[test]fn production_boundary_authorizes_only_staged_package_and_clears_it(){
+ use baal_transport_service::Authority;
+ let f=F::new();let a=production_authority(&f);let log=moloch_live_runtime::dispatch::DispatchLog::open(&f.path.join("ordinary-dispatch.ndjson")).unwrap();
+ assert!(a.authorize(&f.scope,&f.spec,&f.permit,true,f.at).is_err());
+ a.prepare_package(&f.bank,&f.admission,f.permit.clone(),f.facts.clone(),&log,f.at).unwrap();
+ a.authorize(&f.scope,&f.spec,&f.permit,false,f.at).unwrap();a.authorize(&f.scope,&f.spec,&f.permit,true,f.at).unwrap();
+ a.clear_ready();assert!(a.authorize(&f.scope,&f.spec,&f.permit,true,f.at).is_err());
+}
+#[test]fn production_package_boundary_preserves_stop_binary_control_and_stream_fences(){
+ use baal_transport_service::Authority;
+ for case in ["stop","binary","control","stream"]{
+  let f=F::new();let a=production_authority(&f);let log=moloch_live_runtime::dispatch::DispatchLog::open(&f.path.join("ordinary-dispatch.ndjson")).unwrap();
+  a.prepare_package(&f.bank,&f.admission,f.permit.clone(),f.facts.clone(),&log,f.at).unwrap();
+  match case{"stop"=>std::fs::write(f.path.join("STOP"),b"stop").unwrap(),"binary"=>std::fs::write(f.path.join("test-binary"),b"changed").unwrap(),"control"=>std::fs::write(f.path.join("test-control"),b"changed").unwrap(),_=>a.bind_stream(std::sync::Arc::new(std::sync::atomic::AtomicBool::new(true)),f.at+60_000)}
+  assert!(a.authorize(&f.scope,&f.spec,&f.permit,true,f.at).is_err(),"{case}");
+ }
+}
 impl F{
  fn make(attempt:bool)->Self{let mut f=fixture(2,false);f.certs[0].version=2;f.certs[0].canonical_relationship_sha256=relationship_semantics_sha256(&f.census.cache.relationships.as_ref().unwrap().data[0]).unwrap();for(i,r)in f.rules.iter_mut().enumerate(){r.endpoint=format!("/markets/{}/nodes?tournamentId={T}",201+i);r.data["contexts"]=json!([{"type":"tournament","tournament":{"id":T}}]);f.certs[0].contracts[i].rule_endpoint=r.endpoint.clone();f.certs[0].contracts[i].rule_receipt_sha256=receipt_sha256(r).unwrap();f.certs[0].contracts[i].rule_data_sha256=Some(rule_data_sha256(r).unwrap());}f.rules.push(f.canonical.clone());f.approve();
  let path=std::env::temp_dir().join(format!("package-authority-{}-{}",std::process::id(),std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_nanos()));let end=now()+60000;

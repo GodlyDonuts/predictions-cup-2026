@@ -1,5 +1,5 @@
 use moloch_live_runtime::relationship_census::{self,Availability,Census,CensusCache,CensusReport,SourceEvidence,Surface};
-#[path="../src/relationship_strategy.rs"] mod strategy;
+use moloch_live_runtime::relationship_strategy as strategy;
 use strategy::*;
 use baal_transport_service::{Receipt,Scope,relationships};
 use moloch_relationship_arbitrage::{Book,Level,Side,Source,UNIT};
@@ -25,7 +25,7 @@ fn fixture(n:usize,exhaustive:bool)->Fixture{
  let canonical=receipt(format!("/relationships?tournamentId={T}&depth=4"),json!({"data":[{"id":R,"type":"mutually_exclusive","source":"admin_tagged","status":"active","label":null,"reason":null,"isExhaustive":exhaustive,"expression":null,"nodes":nodes,"direction":{"kind":"symmetric","fromExchangeIds":[],"toExchangeIds":[],"description":"price metadata"},"constraint":{"description":"not a settlement certificate","priceRule":"sum <= 1","boundSemantics":"price","evaluationEndpoint":"/relationships/constraints"},"createdAt":AT,"updatedAt":AT,"version":2}],"pagination":{"limit":200,"hasMore":false,"nextCursor":null}}));
  let list=relationships::parse_list(&canonical.data,&scope).unwrap();
  let rules:Vec<_>=(0..n).map(|i|receipt(format!("/markets/{}/nodes",201+i),json!({"market_id":(201+i).to_string(),"root":{"node_type":"contract","id":format!("contract-{}",101+i)}}))).collect();
- let cert=SettlementCertificate{version:1,tournament_id:T.into(),relationship_id:R.into(),relationship_version:2,canonical_relationship_sha256:canonical_relationship_sha256(&list.data[0]).unwrap(),relationship_receipt_sha256:receipt_sha256(&canonical).unwrap(),issued_at_ms:now(),expires_at_ms:now()+60_000,verifier_id:"fixture-only-reviewed-rules".into(),logic:CertifiedLogic::MutuallyExclusive{exhaustive},contracts:(0..n).map(|i|ContractCertificate{exchange_id:(101+i).to_string(),market_id:(201+i).to_string(),contract_id:format!("contract-{}",101+i),canonical_outcome:"YES".into(),rule_receipt_sha256:receipt_sha256(&rules[i]).unwrap(),rule_endpoint:rules[i].endpoint.clone(),ordinary_yes_payout:"1".into(),ordinary_no_payout:"0".into(),ordinary_no_yes_payout:"0".into(),ordinary_no_no_payout:"1".into(),terminal_rules_complete:true,exceptions:vec![]}).collect()};
+ let cert=SettlementCertificate{version:1,tournament_id:T.into(),relationship_id:R.into(),relationship_version:2,canonical_relationship_sha256:canonical_relationship_sha256(&list.data[0]).unwrap(),relationship_receipt_sha256:receipt_sha256(&canonical).unwrap(),issued_at_ms:now(),expires_at_ms:now()+60_000,verifier_id:"fixture-only-reviewed-rules".into(),logic:CertifiedLogic::MutuallyExclusive{exhaustive},contracts:(0..n).map(|i|ContractCertificate{exchange_id:(101+i).to_string(),market_id:(201+i).to_string(),contract_id:format!("contract-{}",101+i),canonical_outcome:"YES".into(),rule_receipt_sha256:receipt_sha256(&rules[i]).unwrap(),rule_endpoint:rules[i].endpoint.clone(),rule_data_sha256:None,ordinary_yes_payout:"1".into(),ordinary_no_payout:"0".into(),ordinary_no_yes_payout:"0".into(),ordinary_no_no_payout:"1".into(),terminal_rules_complete:true,exceptions:vec![]}).collect()};
  let scope_sha256=format!("{:x}",Sha256::digest(serde_json::to_vec(&scope).unwrap()));
  let census=Census{report:CensusReport{version:1,started_at_ms:now(),completed_at_ms:now(),tournament_id:T.into(),scope_sha256,relationships:Surface{availability:Availability::Available,row_count:Some(1),source:Some(SourceEvidence{receipt_sha256:receipt_sha256(&canonical).unwrap(),private_file:"fixture-private.json".into(),request_started_at:AT.into(),received_at:AT.into(),status:200}),error_code:None,http_status:Some(200),retry_after_ms:None},constraints:surface(),collateral:surface(),account:surface(),graphs:BTreeMap::new(),active_relationship_count:1,exhaustive_relationship_count:usize::from(exhaustive),known_floor_component_count:0,unknown_floor_component_count:0,feed_complete:false,transport_guard_observed:false,execution_authority:false},cache:CensusCache{scope,relationships:Some(list),constraints:None,collateral:None,buying_power:None,graphs:BTreeMap::new(),private_evidence_directory:PathBuf::from("fixture-unused")}};
  let books=(0..n).map(|i|{let e=(101+i).to_string();(e.clone(),Book{exchange_id:e,source:Source{sha256:"b".repeat(64),received_ms:now()},observed_ms:now(),yes_asks:level(if n==3{300_000}else{600_000}),no_asks:level(if n==3{800_000}else if i==0{450_000}else{505_000}),yes_bids:level(290_000),no_bids:level(400_000)})}).collect();
@@ -34,6 +34,60 @@ fn fixture(n:usize,exhaustive:bool)->Fixture{
  let mut f=Fixture{census,canonical,certs:vec![cert],trusted:BTreeSet::new(),rules,books,policy,capital};f.approve();f
 }
 fn blocked(a:&Analysis,code:&str){assert_eq!(a.public.blocked_reason_counts.get(code),Some(&1));assert!(a.candidates.is_empty());assert!(!a.public.execution_authority);}
+
+struct AdmissionBank{bank:moloch_replay::session::Session,activation:moloch_live_runtime::authority::Activation,path:PathBuf}
+impl Drop for AdmissionBank{fn drop(&mut self){let _=std::fs::remove_dir_all(&self.path);}}
+fn admission_bank(f:&Fixture)->AdmissionBank{
+ let path=std::env::temp_dir().join(format!("package-admission-{}-{}",std::process::id(),std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_nanos()));
+ let end=now()+60_000;let until=chrono::DateTime::from_timestamp_millis(end as i64).unwrap().to_rfc3339_opts(chrono::SecondsFormat::Millis,true);
+ let policy=json!({"initialCash":"1000.000000","maximumCommitted":"1000.000000","maximumMarketCost":"100.000000","quantity":100,"maximumMarkets":3,"minimumSpreadTicks":200,"entryStopAt":until});
+ let seed=json!({"runId":"package-fixture","availableCash":"1000.000000","accountSnapshotHash":"a".repeat(64),"observedAt":AT});
+ let mut bank=moloch_replay::session::Session::open_live(&path,&policy,&seed).unwrap();
+ for(index,(ex,b))in f.books.iter().enumerate(){
+  let bids:Vec<_>=b.no_asks.iter().map(|l|json!({"price":moloch_replay::money(UNIT-l.price),"quantity":l.quantity})).collect();
+  let asks:Vec<_>=b.yes_asks.iter().map(|l|json!({"price":moloch_replay::money(l.price),"quantity":l.quantity})).collect();
+  let event=json!({"type":"book","receivedAt":AT,"book":{"tournamentId":T,"marketId":f.census.cache.scope.exchanges[ex],"exchangeId":ex,"sequence":"1","requestStartedAt":AT,"sourceAt":AT,"receivedAt":AT,"bids":bids,"asks":asks}});
+  bank.accept("fixture-book",index as u64+1,&event).unwrap();
+ }
+ let activation=moloch_live_runtime::authority::Activation{run_id:"package-fixture".into(),entry_until_ms:end,maximum_committed:"1000.000000".into(),maximum_market_cost:"100.000000".into(),maximum_quantity:100,tournament_id:T.into(),tournament_slug:"midterm-elections".into(),binary_sha256:"b".repeat(64)};
+ AdmissionBank{bank,activation,path}
+}
+fn admit_fixture(f:&Fixture,b:&AdmissionBank)->moloch_live_runtime::feedback::Result<Option<moloch_live_runtime::package_admission::Admission>>{
+ moloch_live_runtime::package_admission::admit(&b.bank,&b.activation,&f.census,&f.canonical,&moloch_live_runtime::relationship_strategy::Certificates{values:&f.certs,trusted_sha256:&f.trusted,rule_receipts:&f.rules},1000*UNIT,&f.policy,b.activation.entry_until_ms)
+}
+#[test]fn live_package_admission_recomputes_certified_floor_and_binds_exact_bank(){
+ let f=fixture(2,false);let b=admission_bank(&f);let before=b.bank.engine().report().unwrap();let a=admit_fixture(&f,&b).unwrap().unwrap();
+ assert_eq!(a.basket().maximum_cost,"9.550000");assert_eq!(a.reserve_event()["economics"]["minimumPayout"],"10.000000");assert_eq!(a.reserve_event()["economics"]["minimumSurplus"],"0.450000");assert_eq!(a.reserve_event()["bankScope"]["bankManifestHash"],*b.bank.manifest_hash());assert_eq!(a.proof_hash().len(),64);assert_eq!(b.bank.engine().report().unwrap(),before);
+}
+#[test]fn live_package_unapproved_rules_and_old_book_produce_no_admission(){
+ let mut f=fixture(2,false);let b=admission_bank(&f);f.trusted.clear();assert!(admit_fixture(&f,&b).unwrap().is_none());f.approve();f.policy.now_ms+=3001;assert!(admit_fixture(&f,&b).unwrap().is_none());
+}
+#[test]fn live_package_conservative_limit_cost_can_reject_positive_weighted_depth(){
+ let mut f=fixture(2,false);f.books.get_mut("102").unwrap().no_asks=vec![Level{price:505000,quantity:9},Level{price:550000,quantity:91}];
+ // Ten shares cost9.595 at quoted depth, but the required0.55 wire limit reserves
+ // ten shares at that limit. With the first0.45 leg, no all-state margin remains.
+ let b=admission_bank(&f);assert!(admit_fixture(&f,&b).unwrap().is_none());
+}
+#[test]fn live_package_aggregate_quantity_and_native_scope_cannot_be_relaxed(){
+ let f=fixture(2,false);let mut b=admission_bank(&f);b.activation.maximum_quantity=10;assert!(admit_fixture(&f,&b).is_err());b.activation.maximum_quantity=100;let mut f=f;f.policy.quantities=vec![60];assert!(admit_fixture(&f,&b).unwrap().is_none());b.activation.run_id="another-run".into();assert!(admit_fixture(&f,&b).is_err());
+}
+#[test]fn live_package_expiration_is_clipped_by_reviewed_certificate(){
+ let mut f=fixture(2,false);f.certs[0].expires_at_ms=now()+5000;f.approve();let b=admission_bank(&f);assert_eq!(admit_fixture(&f,&b).unwrap().unwrap().expires_at_ms(),now()+5000);f.certs[0].expires_at_ms=now()+1000;f.approve();assert!(admit_fixture(&f,&b).unwrap().is_none());
+}
+#[test]fn native_reservation_cannot_be_sent_through_ordinary_order_authority(){
+ use moloch_live_runtime::authority::{ProductionAuthority,SnapshotSet};
+ use baal_transport_service::{Permit,RequestSpec};
+ use std::sync::Arc;
+ let f=fixture(2,false);let mut b=admission_bank(&f);let a=admit_fixture(&f,&b).unwrap().unwrap();
+ b.bank.accept("package",1,a.reserve_event()).unwrap();let qid=b.bank.engine().order_records()[0]["id"].as_u64().unwrap();
+ let binary=b.path.join("binary");std::fs::write(&binary,b"fixture").unwrap();b.activation.binary_sha256=format!("{:x}",Sha256::digest(b"fixture"));let control=b.path.join("control");std::fs::write(&control,b"immutable").unwrap();
+ let lease=Arc::new(moloch_replay::session::ExclusiveLock::acquire(&b.path.join("owner.lock")).unwrap());
+ let authority=ProductionAuthority::new(b.activation.clone(),f.census.cache.scope.clone(),vec![],control,binary,lease).unwrap();
+ let r=receipt("/fixture".into(),json!({}));let facts=SnapshotSet{account:r.clone(),cash_balance:r.clone(),positions:r.clone(),open_orders:r.clone(),market:r.clone(),contract:r.clone(),book:r};
+ let permit=Permit{run_id:b.activation.run_id.clone(),intent_id:qid.to_string(),owner:"Codex".into(),expires_at_ms:now()+5000,maximum_quantity:100,maximum_cost:"10.000000".into()};
+ let spec=RequestSpec{method:"POST".into(),endpoint:"/orders".into(),body:None,body_json:None};
+ assert_eq!(authority.prepare(&b.bank,qid,spec,permit,facts).unwrap_err().to_string(),"PACKAGE_REQUIRES_BASKET_AUTHORITY");
+}
 
 #[test]fn missing_certificate_blocks_despite_active_canonical_relationship(){let mut f=fixture(2,false);f.certs.clear();blocked(&f.analyze(&[]),"STRATEGY_CERTIFICATE_MISSING_OR_AMBIGUOUS");}
 #[test]fn certificate_cannot_self_approve(){let mut f=fixture(2,false);f.trusted.clear();blocked(&f.analyze(&[]),"STRATEGY_CERTIFICATE_NOT_APPROVED");}
