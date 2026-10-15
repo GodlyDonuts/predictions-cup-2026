@@ -207,5 +207,7 @@ fn local_not_sent(p:&LivePackage,proof:&Value,at:i64)->Result<()>{
  for field in ["reads","writes"]{let history=before[field].as_array().ok_or("PACKAGE_LOCAL_QUEUE_HISTORY")?.iter().map(Value::as_u64).collect::<Option<Vec<_>>>().ok_or("PACKAGE_LOCAL_QUEUE_HISTORY")?;expected[field]=json!(history.into_iter().filter(|n|completion_clock.saturating_sub(*n)<=60_000).collect::<Vec<_>>());}
  let next=before["next"].as_u64().ok_or("PACKAGE_LOCAL_QUEUE_NEXT")?.max(completion_clock.checked_add(2500).ok_or("PACKAGE_LOCAL_QUEUE_NEXT")?).max(before["cooldown"].as_u64().ok_or("PACKAGE_LOCAL_QUEUE_NEXT")?);expected["next"]=json!(next);
  if expected!=after||digest(&q["journalSha256"]).is_err()||q["journalBytes"].as_u64().is_none_or(|n|n==0||n>64*1024*1024)||dispatch["outcome"]["queueEvidence"]["request"]!=request_id||dispatch["outcome"]["queueEvidence"]["binding"]!=*binding{return Err("PACKAGE_LOCAL_QUEUE_TRANSITION")};
- if ms(&dispatch["outcome"]["at"])? > at{return Err("PACKAGE_LOCAL_DISPATCH_CLOCK")};Ok(())
+ if dispatch["outcome"]["packageId"]!=p.id||dispatch["outcome"]["requestHash"].as_str()!=p.request.as_deref()||(ms(&dispatch["attemptedAt"])? as u64)>before_clock||(ms(&dispatch["outcome"]["at"])? as u64)<tail_clock||ms(&dispatch["outcome"]["at"])? > at{return Err("PACKAGE_LOCAL_DISPATCH_CLOCK")};
+ for field in ["manifestSha256","checkpointHash"]{if q.get(field).is_none()||(!q[field].is_null()&&digest(&q[field]).is_err()){return Err("PACKAGE_LOCAL_GENERATION_HASH")}}
+ if q["manifestSha256"].is_null()!=q["checkpointHash"].is_null(){return Err("PACKAGE_LOCAL_GENERATION_HASH")};Ok(())
 }
