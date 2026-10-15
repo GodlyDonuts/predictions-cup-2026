@@ -58,4 +58,3 @@ A checked follow-up uses a disjoint cancellation fact type containing only the f
 Deployment update: cancellation reduction is included in runtime-only V26, launched20:24:28 UTC after393/393 acknowledged attempts and a quiet queue. Its financial identity and existing bridge are unchanged. Fresh trading verification follows restoration; the older V25 verification above remains dated history. [Discovery/release evidence](../research/moloch-discovery-recovery-20261015/README.md).
 
 The merged no-send checkpoint also passes a locked ARM64 release; [aggregate check evidence](../research/moloch-package-execution-20261015/local-nosend-checks.json) pins counts and logs. At20:34:55 UTC V26 has fresh healthy trading progress and395ACK/86fills (two newACK, no newfills); full cycle pending. No financial-package deployment is inferred.
-

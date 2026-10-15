@@ -19,4 +19,3 @@ Build the matching runtime and compile `replay.rs` with its emitted `moloch_live
 ## Production verification
 
 V26 launched20:24:28 UTC as PID227437. At20:34:55 UTC its exact running binary published healthy fresh trading progress with395 acknowledged orders,393 terminals and86 actual fills; two acknowledgments are new after launch, not fills. STOP is absent, full first cycle pending. The stopped boundary was393/393 acknowledged attempts, unknown0/activefalse/manualReviewfalse. See release-checks.json, rollout.json and live-verification.json. Existing financial identity, four-entry bridge, caps and daily mandate are preserved.
-
