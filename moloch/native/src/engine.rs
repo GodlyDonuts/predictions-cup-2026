@@ -887,7 +887,24 @@ impl Engine {
                 } else {
                     inherited_birth
                 };
-                let maximum_age = birth.is_some_and(|t| {
+                // Opening holdings have no new-entry loss timer. Only an
+                // actually owned post-adoption BUY lot can start that timer.
+                let maximum_age_birth = if let Some(adopted_at) = inherited_birth {
+                    if p.raw["inventoryAgeClock"] == "execution" {
+                        let mut oldest_new = None;
+                        for lot in self.wallet.lots.get(&(b.exchange.clone(),side)).into_iter().flatten() {
+                            if let Some(executed) = &lot.executed_at {
+                                let t = ms(executed)?;
+                                if t >= adopted_at { oldest_new = Some(oldest_new.map_or(t,|old:i64|old.min(t))); }
+                            }
+                        }
+                        oldest_new
+                    } else if let Some(fill) = last_buy {
+                        let t = ms(&fill["at"])?;
+                        if t >= adopted_at {Some(t)} else {None}
+                    } else {None}
+                } else {birth};
+                let maximum_age = maximum_age_birth.is_some_and(|t| {
                     p.raw["maximumInventoryAgeMs"]
                         .as_u64()
                         .is_some_and(|age| at - t >= age as i64)
