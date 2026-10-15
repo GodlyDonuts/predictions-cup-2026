@@ -1,6 +1,7 @@
 pub mod admission;
 pub mod credentials;
 pub mod prices;
+pub mod relationships;
 
 use std::{collections::{BTreeMap,BTreeSet}, path::PathBuf, time::{Duration,SystemTime,UNIX_EPOCH}, io::Read};
 use chrono::{DateTime,Utc,SecondsFormat};
@@ -62,6 +63,7 @@ impl Authority for ReadOnlyAuthority {fn can_read(&self,_:&Scope)->bool{true}fn 
 #[derive(Clone,Serialize,Deserialize)]
 #[serde(tag="kind",rename_all="snake_case",deny_unknown_fields)]
 pub enum Endpoint {
+ Account,Collateral,Relationships{market_id:Option<String>,exchange_id:Option<String>,relationship_type:Option<relationships::RelationshipType>,depth:u8},RelationshipGraph{market_id:String,depth:u8},RelationshipConstraints{market_id:Option<String>,relationship_id:Option<String>,violations_only:bool,min_violation:Option<String>},
  Tournament,Positions,Orders{status:String},OrderBook{market_id:String,depth:u16},Market{market_id:String},Nodes{market_id:String},Prices{exchange_ids:Vec<String>},OwnedOrder{order_id:String},OwnedFills{order_id:String},History{exchange_id:String,to:String},PortfolioFills,Pnl,Trades{exchange_id:String,from:String,to:String},
 }
 #[derive(Clone,Serialize,Deserialize)]
@@ -150,6 +152,22 @@ impl Transport {
   let tid=&self.config.scope.tournament_id;let slug=&self.config.scope.tournament_slug;
   let suffix=if let Some(c)=cursor{need(!c.is_empty()&&c.len()<=4096&&!c.chars().any(char::is_control),"INVALID_CURSOR")?;format!("&cursor={}",percent(c))}else{String::new()};
   Ok(match endpoint {
+   Endpoint::Account=>format!("/account?tournamentId={tid}"),
+   Endpoint::Collateral=>format!("/portfolio/collateral?tournamentId={tid}"),
+   Endpoint::Relationships{market_id,exchange_id,relationship_type,depth}=>{
+    need(market_id.is_none()||exchange_id.is_none(),"RELATIONSHIP_FILTER_CONFLICT")?;need((1..=4).contains(depth),"RELATIONSHIP_DEPTH")?;
+    let mut path=format!("/relationships?tournamentId={tid}&limit=200&depth={depth}{suffix}");
+    if let Some(m)=market_id {self.scoped_market(m)?;path.push_str(&format!("&marketId={m}"));}
+    if let Some(e)=exchange_id {need(self.config.scope.exchanges.contains_key(e),"RELATIONSHIP_EXCHANGE_SCOPE")?;path.push_str(&format!("&exchangeId={e}"));}
+    if let Some(kind)=relationship_type {path.push_str(&format!("&type={}",kind.wire()));}path
+   },
+   Endpoint::RelationshipGraph{market_id,depth}=>{self.scoped_market(market_id)?;need((1..=4).contains(depth),"RELATIONSHIP_DEPTH")?;format!("/relationships/graph?marketId={market_id}&depth={depth}&tournamentId={tid}")},
+   Endpoint::RelationshipConstraints{market_id,relationship_id,violations_only,min_violation}=>{
+    let mut path=format!("/relationships/constraints?tournamentId={tid}&violationsOnly={violations_only}");
+    if let Some(m)=market_id {self.scoped_market(m)?;path.push_str(&format!("&marketId={m}"));}
+    if let Some(id)=relationship_id {need(relationships::uuid(id),"RELATIONSHIP_ID")?;path.push_str(&format!("&relationshipId={id}"));}
+    if let Some(min)=min_violation {let n=decimal_units(min)?;need((0..=1_000_000).contains(&n),"RELATIONSHIP_MIN_VIOLATION")?;path.push_str(&format!("&minViolation={}",percent(min)));}path
+   },
    Endpoint::Tournament=>format!("/tournaments/{slug}"),Endpoint::Positions=>format!("/tournaments/{slug}/portfolio/positions"),
    Endpoint::Orders{status}=>{need(["all","open","closed","expired"].contains(&status.as_str()),"ORDER_STATUS")?;format!("/orders?status={status}&limit=200&tournamentId={tid}{suffix}")},
    Endpoint::OrderBook{market_id,depth}=>{self.scoped_market(market_id)?;need(*depth==20||*depth==200,"BOOK_DEPTH")?;format!("/markets/{market_id}/orderbook?tournamentId={tid}&depth={depth}")},
@@ -171,6 +189,14 @@ impl Transport {
  }
  fn validate(&self,endpoint:&Endpoint,v:&Value)->Result<()> {
   need(v.is_object(),"INVALID_RESPONSE_OBJECT")?;match endpoint {
+   Endpoint::Account=>{relationships::parse_buying_power(v,&self.config.scope)?;},
+   Endpoint::Collateral=>{relationships::parse_collateral(v,&self.config.scope)?;},
+   Endpoint::Relationships{market_id,exchange_id,relationship_type,..}=>{
+    let list=relationships::parse_list(v,&self.config.scope)?;need(list.data.len()<=200,"RELATIONSHIP_PAGE_LIMIT")?;
+    for row in &list.data {need(market_id.as_ref().is_none_or(|m|row.nodes.iter().any(|n|n.market_id.as_ref()==Some(m)))&&exchange_id.as_ref().is_none_or(|e|row.nodes.iter().any(|n|&n.exchange_id==e))&&relationship_type.is_none_or(|t|row.r#type==t),"RELATIONSHIP_FILTER_RESPONSE")?;}
+   },
+   Endpoint::RelationshipGraph{market_id,..}=>{let graph=relationships::parse_graph(v,&self.config.scope)?;need(graph.relationships.is_empty()||graph.nodes.iter().any(|n|n.market_id.as_ref()==Some(market_id)),"RELATIONSHIP_GRAPH_SEED")?;},
+   Endpoint::RelationshipConstraints{relationship_id,..}=>{relationships::validate_constraints(v,&self.config.scope)?;if let Some(id)=relationship_id {need(v["data"].as_array().unwrap().iter().all(|r|r["relationshipId"]==*id),"RELATIONSHIP_CONSTRAINT_FILTER")?;}},
    Endpoint::Tournament=>{need(v["id"]==self.config.scope.tournament_id&&v["slug"]==self.config.scope.tournament_slug&&v["isPendingEnrolment"].is_boolean()&&v["status"].is_string()&&money_value(&v["myBalance"])? >=0,"TOURNAMENT_SCOPE_MISMATCH")?;},
    Endpoint::Positions=>{let rows=v["positions"].as_array().ok_or_else(||fail("INCOMPLETE_POSITIONS"))?;need(v.get("pagination").is_none(),"POSITION_PAGINATION_UNDOCUMENTED")?;for field in ["totalMarketValue","totalCostBasis","totalUnrealizedPnl"]{need(v["summary"][field].as_f64().is_some_and(|n|n.is_finite()),"INVALID_REPORTED_POSITION_SUMMARY")?;}let mut seen=BTreeSet::new();for row in rows{let e=row["exchangeId"].as_str().ok_or_else(||fail("POSITION_SCOPE"))?;need((self.config.scope.exchanges.get(e).is_some_and(|m|row["marketId"]==*m)||self.full_account_observation&&!self.config.scope.exchanges.contains_key(e)&&numeric(e)&&row["marketId"].as_str().is_some_and(numeric))&&seen.insert(e)&&row["quantity"].as_i64().is_some()&&row["lots"].is_array(),"POSITION_SCOPE")?;}},
    Endpoint::Orders{..}=>{self.coverage(&v["coverage"],false)?;for row in v["data"].as_array().ok_or_else(||fail("INCOMPLETE_ORDERS"))?{self.validate_order(row)?;}pagination(v)?;},
@@ -191,13 +217,13 @@ impl Transport {
   }Ok(())
  }
  pub fn request(&mut self,endpoint:Endpoint)->Result<Receipt>{
-  if !matches!(endpoint,Endpoint::Orders{..}|Endpoint::OwnedFills{..}|Endpoint::PortfolioFills|Endpoint::Trades{..}){let p=self.path(&endpoint,None)?;return self.perform(RequestSpec{method:"GET".into(),endpoint:p,body:None,body_json:None},None,|s,v|s.validate(&endpoint,v));}
+  if !matches!(endpoint,Endpoint::Orders{..}|Endpoint::OwnedFills{..}|Endpoint::PortfolioFills|Endpoint::Trades{..}|Endpoint::Relationships{..}){let p=self.path(&endpoint,None)?;return self.perform(RequestSpec{method:"GET".into(),endpoint:p,body:None,body_json:None},None,|s,v|s.validate(&endpoint,v));}
   let mut cursor=None;let mut cursors=BTreeSet::new();let mut identities=BTreeSet::new();let mut merged=vec![];let mut first_time=None;let mut first_totals=None;let mut minimum_projection=Some(u64::MAX);
   for _ in 0..self.config.maximum_pages{let path=self.path(&endpoint,cursor.as_deref())?;let mut receipt=self.perform(RequestSpec{method:"GET".into(),endpoint:path,body:None,body_json:None},None,|s,v|s.validate(&endpoint,v))?;
    minimum_projection=minimum_projection.zip(receipt.data["coverage"]["projectedThroughSequence"].as_u64()).map(|(a,b)|a.min(b));
    if first_time.is_none(){first_time=Some(receipt.request_started_at.clone());first_totals=Some((receipt.data["totalQuantityFilled"].clone(),receipt.data["avgFillPrice"].clone()));}
    if matches!(endpoint,Endpoint::OwnedFills{..}){need(first_totals.as_ref()==Some(&(receipt.data["totalQuantityFilled"].clone(),receipt.data["avgFillPrice"].clone())),"INCONSISTENT_FILL_TOTALS")?;}
-   let rows=receipt.data["data"].as_array().unwrap();for row in rows{let key=if matches!(endpoint,Endpoint::Orders{..}){id_value(&row["id"]).unwrap()}else{serde_json::to_string(&json!([row["id"],row["filledAt"],row["side"],row["quantity"],row["price"]])).unwrap()};need(identities.insert(key),"DUPLICATE_PAGINATED_ROW")?;merged.push(row.clone());}
+   let rows=receipt.data["data"].as_array().unwrap();for row in rows{let key=if matches!(endpoint,Endpoint::Relationships{..}){row["id"].as_str().unwrap().to_string()}else if matches!(endpoint,Endpoint::Orders{..}){id_value(&row["id"]).unwrap()}else{serde_json::to_string(&json!([row["id"],row["filledAt"],row["side"],row["quantity"],row["price"]])).unwrap()};need(identities.insert(key),"DUPLICATE_PAGINATED_ROW")?;merged.push(row.clone());}
    let pg=&receipt.data["pagination"];if pg["hasMore"]==false{need(pg["nextCursor"].is_null(),"INVALID_FINAL_CURSOR")?;if receipt.data["coverage"].is_object(){receipt.data["coverage"]["projectedThroughSequence"]=minimum_projection.map_or(Value::Null,|n|json!(n));}receipt.data["data"]=Value::Array(merged);receipt.data["pagination"]=json!({"limit":receipt.data["pagination"]["limit"],"hasMore":false,"nextCursor":null});receipt.request_started_at=first_time.unwrap();receipt.endpoint=self.path(&endpoint,None)?;return Ok(receipt);}
    let next=pg["nextCursor"].as_str().ok_or_else(||fail("MISSING_CURSOR"))?;need(!rows.is_empty()&&cursors.insert(next.to_string()),"REPEATED_CURSOR")?;cursor=Some(next.to_string());
   }Err(fail("PAGINATION_LIMIT_EXCEEDED"))

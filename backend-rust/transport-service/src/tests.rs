@@ -24,6 +24,31 @@ fn row(id:u64)->Value{json!({"id":id,"tournamentId":"bda92870-621e-47b0-bc3c-360
 fn page(rows:Vec<Value>,next:Option<&str>)->String{json!({"data":rows,"coverage":{"complete":true,"projectedThroughSequence":10},"pagination":{"limit":200,"hasMore":next.is_some(),"nextCursor":next}}).to_string()}
 fn order()->Order{Order{idempotency_key:"fixture-one".into(),exchange_id:"994".into(),side:"no".into(),action:"buy".into(),quantity:1,price:"0.120000".into(),expiration_date:"2030-01-01T00:00:00Z".into(),tournament_id:"bda92870-621e-47b0-bc3c-3602c5c26f55".into()}}
 fn permit(id:&str)->Permit{Permit{run_id:"fixture".into(),intent_id:id.into(),owner:"Codex".into(),expires_at_ms:10_000_000,maximum_quantity:1,maximum_cost:"1.000000".into()}}
+fn relationship_row(id:&str)->Value {json!({"id":id,"type":"mutually_exclusive","source":"admin_tagged","status":"active","label":null,"reason":null,"isExhaustive":false,"expression":null,"nodes":[{"exchangeId":"994","marketId":"305","marketTitle":null,"outcome":"YES","currentPrice":null,"role":"member","contractId":"market:305"}],"direction":{"kind":"symmetric","fromExchangeIds":["994"],"toExchangeIds":[],"description":"test only"},"constraint":{"description":"test","priceRule":"test","boundSemantics":"test","evaluationEndpoint":"https://malicious.example"},"createdAt":null,"updatedAt":null,"version":1})}
+fn relationships_endpoint()->Endpoint {Endpoint::Relationships{market_id:None,exchange_id:None,relationship_type:None,depth:4}}
+#[test]fn relationship_paths_force_tournament_and_validate_filters_before_network(){
+ let server=Server::new(vec![]);let dir=temp();{let t=transport(&dir,&server,false,Arc::new(AtomicU64::new(1000)));
+ for endpoint in [Endpoint::Account,Endpoint::Collateral,relationships_endpoint(),Endpoint::RelationshipGraph{market_id:"305".into(),depth:4},Endpoint::RelationshipConstraints{market_id:None,relationship_id:None,violations_only:false,min_violation:Some("0.000000".into())}] {let path=t.path(&endpoint,None).unwrap();assert!(path.contains("tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55"));}
+ assert!(t.path(&Endpoint::Relationships{market_id:Some("305".into()),exchange_id:Some("994".into()),relationship_type:None,depth:1},None).is_err());
+ assert!(t.path(&Endpoint::RelationshipGraph{market_id:"305?x=evil".into(),depth:1},None).is_err());
+ assert!(t.path(&Endpoint::RelationshipGraph{market_id:"305".into(),depth:5},None).is_err());
+ assert!(t.path(&Endpoint::RelationshipConstraints{market_id:None,relationship_id:Some("../../orders".into()),violations_only:false,min_violation:None},None).is_err());
+ assert_eq!(server.requests.lock().unwrap().len(),0);
+ }fs::remove_dir_all(dir).unwrap();
+}
+#[test]fn relationship_list_paginates_through_same_queue_and_ignores_supplied_urls(){
+ let ids=["550e8400-e29b-41d4-a716-446655440000","550e8400-e29b-41d4-a716-446655440001"];
+ let server=Server::new(vec![(200,vec![],page(vec![relationship_row(ids[0])],Some("a/b?next"))),(200,vec![],page(vec![relationship_row(ids[1])],None))]);let dir=temp();{
+ let clock=Arc::new(AtomicU64::new(1000));let mut t=transport(&dir,&server,false,clock.clone());let receipt=t.request(relationships_endpoint()).unwrap();assert_eq!(receipt.data["data"].as_array().unwrap().len(),2);assert_eq!(receipt.data["pagination"]["hasMore"],false);assert_eq!(relationships::parse_list(&receipt.data,&t.config.scope).unwrap().data.len(),2);
+ let reqs=server.requests.lock().unwrap();assert_eq!(reqs.len(),2);assert!(reqs[1].line.contains("cursor=a%2Fb%3Fnext"));assert!(reqs.iter().all(|r|r.line.starts_with("GET /api/v1/relationships?")));assert!(clock.load(Ordering::SeqCst)>=2000);
+ }fs::remove_dir_all(dir).unwrap();
+}
+#[test]fn duplicate_relationship_page_rejected_instead_of_double_counting_payoff(){
+ let row=relationship_row("550e8400-e29b-41d4-a716-446655440000");let server=Server::new(vec![(200,vec![],page(vec![row.clone()],Some("next"))),(200,vec![],page(vec![row],None))]);let dir=temp();{let mut t=transport(&dir,&server,false,Arc::new(AtomicU64::new(1000)));assert_eq!(t.request(relationships_endpoint()).err().unwrap().code,"DUPLICATE_PAGINATED_ROW");}fs::remove_dir_all(dir).unwrap();
+}
+#[test]fn empty_relationship_census_is_valid_not_an_invented_relationship(){
+ let server=Server::new(vec![(200,vec![],page(vec![],None)),(200,vec![],json!({"relationships":[],"nodes":[]}).to_string()),(200,vec![],json!({"data":[],"violationsCount":0,"computedAt":"1970-01-01T00:00:01Z"}).to_string()),(200,vec![],json!({"data":[],"availableAdvance":0}).to_string())]);let dir=temp();{let mut t=transport(&dir,&server,false,Arc::new(AtomicU64::new(1000)));for endpoint in [relationships_endpoint(),Endpoint::RelationshipGraph{market_id:"305".into(),depth:4},Endpoint::RelationshipConstraints{market_id:None,relationship_id:None,violations_only:false,min_violation:Some("0".into())},Endpoint::Collateral]{assert!(t.request(endpoint).is_ok());}}fs::remove_dir_all(dir).unwrap();
+}
 #[test]fn node_scope_accepts_documented_contract_types_without_dropping_context_or_leaf_checks(){
  let server=Server::new(vec![]);let dir=temp();{
  let t=transport(&dir,&server,false,Arc::new(AtomicU64::new(1000)));
