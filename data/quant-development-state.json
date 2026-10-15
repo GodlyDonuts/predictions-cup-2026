@@ -62,7 +62,8 @@
     "Finish #90: map official own-order/fill receipts to existing bot journals; determine whether fill-conditioned economics are observable without a live order.",
     "Finish #91: identify one fixed market-making policy that fits binary-book semantics and the one-second feed; specify a clean falsification test.",
     "When the 21:15 source is writer-released, freeze/hash once and score the already-frozen ridge bank without refit or threshold change.",
-    "Do not claim profitability from counterfactual marks, feed touches, or zero-trade scores; no contest orders or production activation."
+    "Do not claim profitability from counterfactual marks, feed touches, or zero-trade scores; no contest orders or production activation.",
+    "Issue #118 completed: corrected source-clock handling and screened 16 frozen Governor poll forecasts on a one-hour delayed-book window; 8/13 quotes, 8 point edges but only 3 historical sensitivity lower-bound edges. Sole marked market lost $0.015/share under fixed stress; no profitability. Preserve execution stop."
   ],
   "capitalExpansion": {
     "bootstrapFreshlyVerified": true,
@@ -289,9 +290,9 @@
     "winnerHoldingHours": "1.93-2.69"
   },
   "currentMilestone": {
-    "name": "Falsify short-horizon executable-return alpha on a later book slice",
-    "stage": "completed; no strategy selected",
-    "next": "Test exact cross-market settlement constraints with a frozen contract map and fresh later prices; do not promote midpoint or same-market pair signals."
+    "name": "Falsify poll-value as a short-horizon Baal signal",
+    "stage": "completed; no profitable policy selected",
+    "next": "Do not turn settlement-value point edges into price-reversion entries without independent SIG calibration and fill evidence. Focus the next replay on a distinct signal with attributable entry and exit evidence."
   },
   "delegation": {
     "mode": "solo",
@@ -924,7 +925,7 @@
     "realized": "0.000000",
     "verifiedAt": "2026-10-07T06:16:58.422Z"
   },
-  "updatedAt": "2026-10-14T20:50:48.739Z",
+  "updatedAt": "2026-10-15 00:52:15 UTC",
   "foreignCandidateRepair": {
     "commit": "17b544005c7578c95df4dc4f2f30ee8e2cc75a19",
     "collector": 32364,
@@ -1012,7 +1013,7 @@
     "actualFillsProven": false,
     "contestOrders": 0
   },
-  "nextProfitabilityWork": "Reject the book-only five-second ridge: it generated zero spread-clearing signals on all three fixed development folds; unconditional one-share taker markouts lost in each. Do not force entries or promote it. Seek a later untouched, sufficiently dense capture to test a distinct causal mechanism; keep EXECUTION_STOP and all active banks/journals unchanged.",
+  "nextProfitabilityWork": "The poll-value screen did not validate short-horizon profitability: only one market had subsequent markouts and all were -0.015/share under fixed one-tick entry/exit stress. Do not promote the poll-only signal. Preserve EXECUTION_STOP and current paper accounting.",
   "oracle3Transfer20261014": {
     "issue": 113,
     "implementedAt": "2026-10-14 20:23:03 UTC",
@@ -1191,5 +1192,42 @@
     "profitabilityEstablished": false,
     "executionStopPreserved": true,
     "report": "data/realtime-book-pressure-bookstate-cv-20261014.json"
+  },
+  "latestGovernorPollDepthScreen20261015": {
+    "updatedAt": "2026-10-15 00:52:15 UTC",
+    "taskIssue": 118,
+    "commits": {
+      "screen": "64650614f2b066afdef6ff3a8569c65f53f226e4",
+      "tests": "2edc6275b7e2983d8cc771c53030d3ebcb24a618",
+      "replay": "e4d69e4385f106be0109b011492b345f0a84e74c",
+      "report": "f9b4e3210b4fcb7773ce3e3acf1cb2e3236de8af"
+    },
+    "report": "data/all-governor-poll-value-screen-20261014-v2.json",
+    "frozenBookPrefixSha256": "72dcf4adc449971e2f418f66ae39fb9bb068ccf9f8d120c740541a0751725f1a",
+    "outcome": {
+      "forecasts": 16,
+      "withHistoricalPollInput": 13,
+      "laterDepth20QuotesWithin60Minutes": 8,
+      "quoteLagMinutes": [
+        0.6,
+        32.6
+      ],
+      "positivePointSettlementEdges": 8,
+      "positiveHistoricalSensitivityLowerEdges": 3,
+      "markouts": 8,
+      "markoutMarkets": 1,
+      "positiveMarkouts": 0,
+      "netMarkoutPerShare": -0.015,
+      "feesPerShare": 0,
+      "realizedPnl": 0,
+      "actualFills": 0,
+      "contestOrders": 0,
+      "profitabilityEstablished": false
+    },
+    "sourceClockFix": "Use request/receipt/publication chronology; permit and report source clock lead up to the publication validator's 2000ms bound.",
+    "limitations": "Counterfactual depth marks, delayed quote availability, 25 historical election-year clusters; not SIG-calibrated and not proof of actual/scalable profitability.",
+    "tests": "7/7 focused tests pass; source and runner syntax checks pass.",
+    "executionStopPreserved": true,
+    "runtimeApiOrOrderChanges": false
   }
 }
