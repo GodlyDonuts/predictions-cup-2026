@@ -13,6 +13,7 @@ use std::{fs,path::{Path,PathBuf},sync::Arc,time::{SystemTime,UNIX_EPOCH,Duratio
 #[serde(rename_all="camelCase",deny_unknown_fields)]
 struct Control{activation:Activation,scope:Scope,policy:Value,root:PathBuf,credentials:PathBuf,owner_lock:PathBuf,account_scope:String,#[serde(default)]all_markets:bool,#[serde(default="default_bank")]bank_name:String,#[serde(default)]predecessor_bank:Option<String>,#[serde(default)]manage_existing_positions:bool}
 fn default_bank()->String{"bank".into()}
+const MAX_REALTIME_FRAMES_PER_DRAIN:usize=64;
 fn now()->u64{SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_millis() as u64}
 fn iso(t:u64)->String{chrono::DateTime::from_timestamp_millis(t as i64).unwrap().to_rfc3339_opts(chrono::SecondsFormat::Millis,true)}
 fn hash(v:&Value)->String{format!("{:x}",Sha256::digest(serde_json::to_vec(v).unwrap()))}
@@ -120,7 +121,8 @@ fn queue_unknown_from_state(state:&Value)->Result<bool>{
 }
 fn native_head(c:&Control)->Result<[u8;32]>{Ok(Sha256::digest(fs::read(c.root.join(&c.bank_name).join("head.json"))?).into())}
 fn refresh_controls(c:&Control,authority:&ProductionAuthority,stream:&Realtime)->Result<()>{
- if !stream.healthy()||now()>=stream.deadline_ms{return Err("LIVE_EXIT_REFRESH_STREAM_FAILED".into())}
+ if !stream.healthy(){return Err(format!("LIVE_EXIT_REFRESH_STREAM_FAILED:{}",stream.exit_reason().unwrap_or("STREAM_WORKER_EXIT_UNEXPLAINED")).into())}
+ if now()>=stream.deadline_ms{return Err("LIVE_EXIT_REFRESH_STREAM_FAILED:STREAM_DEADLINE_REACHED".into())}
  if !authority.can_read(&c.scope){return Err("LIVE_EXIT_REFRESH_CONTROL_OR_STOP".into())}Ok(())
 }
 fn refresh_safety(c:&Control,bank:&Session,log:&DispatchLog,authority:&ProductionAuthority,stream:&Realtime,q:&Value,global_unknown:bool)->Result<moloch_live_runtime::exit_refresh::Safety>{
@@ -263,8 +265,8 @@ fn connect_stream(t:&mut Transport,c:&Control,bank:&mut Session,source:&mut Rest
  };Ok((stream,joined_at))
 }
 fn drain_stream(stream:&Realtime,bank:&mut Session,source:&mut RestSource,breadth:&mut Option<Recorder>,universe:&mut Option<Universe>)->Result<()>{
- if !stream.healthy(){return Err("LIVE_STREAM_FAILED".into())}
- for _ in 0..8{if !stream.healthy(){return Err("LIVE_STREAM_FAILED".into())}let Ok(input)=stream.incoming.try_recv()else{break};match input{
+ if !stream.healthy(){return Err(format!("LIVE_STREAM_FAILED:{}",stream.exit_reason().unwrap_or("STREAM_WORKER_EXIT_UNEXPLAINED")).into())}
+ for _ in 0..MAX_REALTIME_FRAMES_PER_DRAIN{if !stream.healthy(){return Err(format!("LIVE_STREAM_FAILED:{}",stream.exit_reason().unwrap_or("STREAM_WORKER_EXIT_UNEXPLAINED")).into())}let Ok(input)=stream.incoming.try_recv()else{break};match input{
   Incoming::Broadcast{event,payload,received_at}=>{if let Some(recorder)=breadth{recorder.observe(&event,&payload,&received_at)}if let Some(u)=universe{u.observe(&event,&payload,&received_at)?}accept_source_events(bank,&source.broadcast(&event,&payload,&received_at)?)?;},
   Incoming::Failed(code)=>return Err(code.into()),
   Incoming::Joined{..}=>return Err("LIVE_STREAM_UNEXPECTED_REJOIN".into())
@@ -349,7 +351,7 @@ pub fn main()->Result<()>{
     }
     let permit_new=reconciliation_schedule.permits_submission(now(),pending_version(&log))?;
     dispatch(&mut t,&c,&mut bank,&mut log,&authority,&mut source_state,permit_new,&mut preflight_cursor,stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?)?;
-    let _=atomic_json(&c.root.join("progress.json"),&json!({"at":iso(now()),"pid":std::process::id(),"phase":"trading","completedReadScopes":selected_index+1,"selectedReadScopes":selected.len(),"maximumRealtimeFramesPerDrain":8,"realtimeHealthy":stream.as_ref().is_some_and(|s|s.healthy()),"actualOrders":log.acknowledgments.len(),"terminalOrders":log.closed.len(),"actualFills":bank.engine().fills().len(),"profitabilityEstablished":false}));
+    let _=atomic_json(&c.root.join("progress.json"),&json!({"at":iso(now()),"pid":std::process::id(),"phase":"trading","completedReadScopes":selected_index+1,"selectedReadScopes":selected.len(),"maximumRealtimeFramesPerDrain":MAX_REALTIME_FRAMES_PER_DRAIN,"realtimeHealthy":stream.as_ref().is_some_and(|s|s.healthy()),"actualOrders":log.acknowledgments.len(),"terminalOrders":log.closed.len(),"actualFills":bank.engine().fills().len(),"profitabilityEstablished":false}));
    }
    cycles+=1;
    atomic_json(&c.root.join("status.json"),&json!({"at":iso(now()),"pid":std::process::id(),"mode":"actual-contest-trading","runId":c.activation.run_id,"bank":c.bank_name,"cycles":cycles,"realtimeHealthy":stream.as_ref().is_some_and(|s|s.healthy()),"universe":universe.as_ref().map(Universe::status),"selectedReadScopes":selected,"ownedReconciliation":reconciled,"sourceScopes":source_state.scopes(),"breadthCapture":{"path":breadth_path,"state":breadth.as_ref().map(Recorder::status)},"report":bank.engine().report()?,"queue":t.admission_state()?,"actualOrders":log.acknowledgments.len(),"terminalOrders":log.closed.len(),"entryUntil":iso(c.activation.entry_until_ms),"profitabilityEstablished":false}))?;
