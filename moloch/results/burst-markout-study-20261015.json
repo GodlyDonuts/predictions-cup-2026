@@ -1,0 +1,147 @@
+{
+  "schemaVersion": 1,
+  "at": "2026-10-15T01:35:02.674Z",
+  "sources": [
+    {
+      "phase": 61,
+      "sequence": 5300,
+      "previous": "f11ddbacd80cd162ac98a25e6cdd01c86a6ca23e5bf40ba84a1908bab18a9249",
+      "sha256": "da7997f5e0ee1c0abb77d2e4a4631a855327d561f97c98d8dee1a02c8b28b6f8",
+      "labeled": 67,
+      "censored": 4
+    },
+    {
+      "phase": 65,
+      "sequence": 5621,
+      "previous": "d6d5b01fc090aaa68f0116b30e590cf76d690da4bf87929dd6daf516fd3c23f8",
+      "sha256": "e1e15ed7918bf34c91e6a14e03e4326f34b997674f05d21cb9acc427c7852ce7",
+      "labeled": 41,
+      "censored": 32
+    },
+    {
+      "phase": 66,
+      "sequence": 3119,
+      "previous": "f5deb437a41206333525d7ce392ec0a29325742760ed8c72dffc8ffa076849ae",
+      "sha256": "efdaca325bf65f9cc6e089b8534a734abb17067849e7677a5a27f6fb2b0ac6b3",
+      "labeled": 49,
+      "censored": 51
+    },
+    {
+      "phase": 67,
+      "sequence": 12255,
+      "previous": "95ff20c59dca31b8e285ec5bd89b1e8f82ec49b40d9a744ffb0a5b709ecb4857",
+      "sha256": "f1f8f8526736ad9755e7523b3948b43f880a549e3cb44380150987c7c240b997",
+      "labeled": 297,
+      "censored": 47
+    },
+    {
+      "phase": 71,
+      "sequence": 2967,
+      "previous": "2adea5f3a150bbbfead8dfe865edb2c2bb7bad8fccaaa1a8b3ceca009ef585b3",
+      "sha256": "b96aea195d08b9b3fbc37896e13f6cd617decf6a635a50399e490751c56d9772",
+      "labeled": 1,
+      "censored": 5
+    },
+    {
+      "phase": 75,
+      "sequence": 3082,
+      "previous": "f5412d5797b3ef870f96d73370766023f2bb99edf19dea91624547b1556e6b46",
+      "sha256": "3ecc546a3f9e143f0e307784b8d9fad35bc768fa95f24afd825d1679e963a4f6",
+      "labeled": 114,
+      "censored": 36
+    },
+    {
+      "phase": 76,
+      "sequence": 13297,
+      "previous": "415d31630aa62f3d69b65ebacb759b54147256d1f3e2df05ba5dc4c78f6b4574",
+      "sha256": "8a3203da4ced579920ac6a2fb5bc9a13acabae87e7f5c63ec1417f2760168448",
+      "labeled": 269,
+      "censored": 18
+    }
+  ],
+  "fixedDiagnostic": {
+    "windowMs": 180000,
+    "minimumPriorTrades": 10,
+    "maximumLargestSecondFraction": 0.5
+  },
+  "groups": [
+    {
+      "name": "earlier",
+      "all": {
+        "samples": 157,
+        "markets": 47,
+        "minuteSideClusters": 86,
+        "adverseRate": 0.2802547770700637,
+        "meanOneShareDelta": -0.0011146496815286628,
+        "equalClusterMeanDelta": -0.0008540974529346624
+      },
+      "enoughHistory": {
+        "samples": 4,
+        "markets": 2,
+        "minuteSideClusters": 2,
+        "adverseRate": 0.75,
+        "meanOneShareDelta": -0.0075,
+        "equalClusterMeanDelta": -0.005
+      },
+      "retained": {
+        "samples": 3,
+        "markets": 1,
+        "minuteSideClusters": 1,
+        "adverseRate": 1,
+        "meanOneShareDelta": -0.01,
+        "equalClusterMeanDelta": -0.01
+      },
+      "rejected": {
+        "samples": 1,
+        "markets": 1,
+        "minuteSideClusters": 1,
+        "adverseRate": 0,
+        "meanOneShareDelta": 0,
+        "equalClusterMeanDelta": 0
+      }
+    },
+    {
+      "name": "later",
+      "all": {
+        "samples": 681,
+        "markets": 54,
+        "minuteSideClusters": 207,
+        "adverseRate": 0.46255506607929514,
+        "meanOneShareDelta": -0.010954478707782626,
+        "equalClusterMeanDelta": -0.0016344345077067427
+      },
+      "enoughHistory": {
+        "samples": 174,
+        "markets": 15,
+        "minuteSideClusters": 48,
+        "adverseRate": 0.2413793103448276,
+        "meanOneShareDelta": -0.0011781609195402297,
+        "equalClusterMeanDelta": -0.001228749549062049
+      },
+      "retained": {
+        "samples": 59,
+        "markets": 9,
+        "minuteSideClusters": 18,
+        "adverseRate": 0.288135593220339,
+        "meanOneShareDelta": -0.0011864406779661016,
+        "equalClusterMeanDelta": -0.0009469696969696969
+      },
+      "rejected": {
+        "samples": 115,
+        "markets": 13,
+        "minuteSideClusters": 36,
+        "adverseRate": 0.21739130434782608,
+        "meanOneShareDelta": -0.0011739130434782604,
+        "equalClusterMeanDelta": -0.0013368055555555555
+      }
+    }
+  ],
+  "contestOrders": 0,
+  "profitabilityEstablished": false,
+  "limitations": [
+    "Previously inspected captures; chronological grouping is retrospective, not a pristine holdout.",
+    "Labels are later executable one-share marks conditional on public prints, not attributed maker fills or funded trading returns.",
+    "Equal minute/market/side cluster averages reduce print-batch dominance but do not supply independent observations.",
+    "Fixed concentration gate is not fitted or automatically enabled."
+  ]
+}
