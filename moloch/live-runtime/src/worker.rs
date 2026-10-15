@@ -1,5 +1,5 @@
 use baal_transport_service::{self as api,Authority,Config,Endpoint,Order,Permit,Receipt,RequestSpec,Scope,SystemClock,Transport,ReadOnlyAuthority,credentials::UnixFileCredentials,decimal_units};
-use moloch_live_runtime::{authority::{Activation,ProductionAuthority,SharedAuthority,SnapshotSet},dispatch::DispatchLog,feedback::{self,Result}};
+use moloch_live_runtime::{authority::{Activation,ProductionAuthority,SharedAuthority,SnapshotSet,CancelSnapshotSet},dispatch::DispatchLog,feedback::{self,Result}};
 use moloch_replay::{session::{Session,ExclusiveLock,atomic_json},source::RestSource,money};
 use moloch_replay::realtime::{Auth,Incoming,Realtime};
 use moloch_live_runtime::breadth::Recorder;
@@ -104,6 +104,18 @@ fn snapshots(t:&mut Transport,c:&Control,q:&Value)->Result<SnapshotSet>{
  let contract=request(t,&c.root,Endpoint::Nodes{market_id:market_id.clone()})?;
  let book=request(t,&c.root,Endpoint::OrderBook{market_id,depth:20})?;
  Ok(SnapshotSet{account,cash_balance,positions,open_orders,market,contract,book})
+}
+fn cancel_snapshots(t:&mut Transport,c:&Control)->Result<CancelSnapshotSet>{
+ // Four real reads through the existing sole transport/limiter; no unused
+ // market/nodes/book GETs, invented receipts or reuse across causal boundaries.
+ cancel_snapshots_with(|endpoint|request(t,&c.root,endpoint))
+}
+fn cancel_snapshots_with(mut read:impl FnMut(Endpoint)->Result<Receipt>)->Result<CancelSnapshotSet>{
+ let account=read(Endpoint::Tournament)?;let positions=read(Endpoint::Positions)?;
+ let open_orders=read(Endpoint::Orders{status:"open".into()})?;
+ if account.data["status"]!="active"||open_orders.data["coverage"]["complete"]!=true||open_orders.data["pagination"]["hasMore"]!=false{return Err("LIVE_ACCOUNT_INCOMPLETE_OR_INACTIVE".into())}
+ let cash_balance=read(Endpoint::Account)?;
+ Ok(CancelSnapshotSet{account,cash_balance,positions,open_orders})
 }
 fn accept_fresh_book(bank:&mut Session,c:&Control,q:&Value,r:&Receipt,source:&mut RestSource)->Result<Vec<Value>>{
  let wrapped=json!({"source":"official_sig_api_v1","kind":"book","tournamentId":c.scope.tournament_id,"marketId":q["marketId"],"exchangeId":q["exchangeId"],"endpoint":r.endpoint,"status":r.status,"requestStartedAt":r.request_started_at,"receivedAt":r.received_at,"data":r.data});
@@ -238,7 +250,7 @@ fn dispatch(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,a
   let actual=bank.engine().live_order_bindings().get(&qid).ok_or("LIVE_CANCEL_BINDING")?.clone();
   let p=Permit{run_id:c.activation.run_id.clone(),intent_id:format!("{qid}-cancel"),owner:"Codex".into(),expires_at_ms:now()+10000,maximum_quantity:c.activation.maximum_quantity,maximum_cost:c.activation.maximum_committed.clone()};
   let spec=RequestSpec{method:"DELETE".into(),endpoint:format!("/orders/{actual}"),body:None,body_json:None};
-  let facts=snapshots(t,c,old)?;authority.prepare(bank,qid,spec.clone(),p.clone(),facts)?;
+  let facts=cancel_snapshots(t,c)?;authority.prepare_cancel(bank,qid,spec.clone(),p.clone(),facts)?;
   if let Err(e)=authority.authorize(&c.scope,&spec,&p,false,now()){authority.clear_ready();atomic_json(&c.root.join("deferred.json"),&json!({"at":iso(now()),"qid":qid,"code":e.code}))?;return Ok(())}
   log.append(json!({"kind":"cancel_attempt","qid":qid,"spec":spec,"permit":p,"at":iso(now())}))?;
   let ack=match t.cancel(actual.clone(),p){Ok(r)=>r,Err(e)=>{
@@ -504,4 +516,10 @@ pub fn main()->Result<()>{
   assert!(queue_unknown_from_state(&json!({"state":{"unknown":{"other":{"intent":"other"}}}})).unwrap());
   for malformed in [json!({}),json!({"state":{}}),json!({"state":{"unknown":[]}}),json!({"hasUnknown":false})]{assert!(queue_unknown_from_state(&malformed).is_err());}
  }
+}
+
+#[cfg(test)]mod cancel_snapshot_tests{
+ use super::*;
+ #[test]fn cancellation_read_path_consumes_exactly_four_account_operations(){let mut endpoints=vec![];let f=cancel_snapshots_with(|ep|{endpoints.push(serde_json::to_value(&ep).unwrap());Ok(Receipt{endpoint:format!("read-{}",endpoints.len()),request_started_at:"2026-10-15T00:00:00Z".into(),received_at:"2026-10-15T00:00:00Z".into(),status:200,data:match ep{Endpoint::Tournament=>json!({"status":"active"}),Endpoint::Positions=>json!({"positions":[]}),Endpoint::Orders{..}=>json!({"coverage":{"complete":true},"pagination":{"hasMore":false},"data":[]}),Endpoint::Account=>json!({"balance":1000}),_=>panic!("irrelevant contract/book GET")}})}).unwrap();let expected=[Endpoint::Tournament,Endpoint::Positions,Endpoint::Orders{status:"open".into()},Endpoint::Account].iter().map(|e|serde_json::to_value(e).unwrap()).collect::<Vec<_>>();assert_eq!(endpoints,expected);assert_eq!(f.cash_balance.endpoint,"read-4");}
+ #[test]fn incomplete_account_cancellation_reads_fail_before_cash_without_fabricated_receipts(){let mut count=0;let r=cancel_snapshots_with(|ep|{count+=1;Ok(Receipt{endpoint:"fixture".into(),request_started_at:"2026-10-15T00:00:00Z".into(),received_at:"2026-10-15T00:00:00Z".into(),status:200,data:match ep{Endpoint::Tournament=>json!({"status":"active"}),Endpoint::Orders{..}=>json!({"coverage":{"complete":false},"pagination":{"hasMore":false}}),_=>json!({})}})});assert!(r.is_err());assert_eq!(count,3);}
 }
