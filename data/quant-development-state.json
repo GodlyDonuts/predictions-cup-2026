@@ -925,7 +925,7 @@
     "realized": "0.000000",
     "verifiedAt": "2026-10-07T06:16:58.422Z"
   },
-  "updatedAt": "2026-10-15 00:52:15 UTC",
+  "updatedAt": "2026-10-15T00:52:15Z",
   "foreignCandidateRepair": {
     "commit": "17b544005c7578c95df4dc4f2f30ee8e2cc75a19",
     "collector": 32364,
@@ -1194,7 +1194,7 @@
     "report": "data/realtime-book-pressure-bookstate-cv-20261014.json"
   },
   "latestGovernorPollDepthScreen20261015": {
-    "updatedAt": "2026-10-15 00:52:15 UTC",
+    "updatedAt": "2026-10-15T00:52:15Z",
     "taskIssue": 118,
     "commits": {
       "screen": "64650614f2b066afdef6ff3a8569c65f53f226e4",
