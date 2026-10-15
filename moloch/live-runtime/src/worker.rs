@@ -12,7 +12,7 @@ use sha2::{Digest,Sha256};
 use std::{fs,path::{Path,PathBuf},sync::Arc,time::{SystemTime,UNIX_EPOCH,Duration}};
 #[derive(Clone,Serialize,Deserialize)]
 #[serde(rename_all="camelCase",deny_unknown_fields)]
-struct Control{#[serde(default)]execution_model:Option<moloch_live_runtime::execution_edge::Config>,#[serde(default)]packages:Option<moloch_live_runtime::package_settings::Settings>,#[serde(default)]daily_entry_windows:Option<moloch_live_runtime::daily_windows::DailyEntryWindows>,activation:Activation,scope:Scope,policy:Value,root:PathBuf,credentials:PathBuf,owner_lock:PathBuf,account_scope:String,#[serde(default)]all_markets:bool,#[serde(default="default_bank")]bank_name:String,#[serde(default)]predecessor_bank:Option<String>,#[serde(default)]manage_existing_positions:bool}
+struct Control{#[serde(default)]collateral_accounting:bool,#[serde(default)]execution_model:Option<moloch_live_runtime::execution_edge::Config>,#[serde(default)]packages:Option<moloch_live_runtime::package_settings::Settings>,#[serde(default)]daily_entry_windows:Option<moloch_live_runtime::daily_windows::DailyEntryWindows>,activation:Activation,scope:Scope,policy:Value,root:PathBuf,credentials:PathBuf,owner_lock:PathBuf,account_scope:String,#[serde(default)]all_markets:bool,#[serde(default="default_bank")]bank_name:String,#[serde(default)]predecessor_bank:Option<String>,#[serde(default)]manage_existing_positions:bool}
 fn default_bank()->String{"bank".into()}
 const MAX_REALTIME_FRAMES_PER_DRAIN:usize=64;
 fn now()->u64{SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_millis() as u64}
@@ -59,6 +59,54 @@ fn accept_source_events(bank:&mut Session,events:&[Value])->Result<()>{
  }Ok(())
 }
 fn record_receipt(root:&Path,r:&Receipt)->Result<()> {let p=root.join("receipts").join(format!("{}.json",feedback::digest(r)?));if !p.exists(){atomic_json(&p,&serde_json::to_value(r)?)?}Ok(())}
+fn validate_collateral_accounting(c:&Control)->Result<()>{
+ // Ordinary passive partial/late fills require a separately verified native
+ // continuation before this mixed worker may enable ALL accounting.
+ if c.collateral_accounting{return Err("LIVE_COLLATERAL_ORDINARY_FLOW_UNSUPPORTED".into())}Ok(())
+}
+/// Original-evidence financial continuation, inactive in the current mixed
+/// worker until partial/late ordinary-fill accounting passes integration. True
+/// defers NEW orders; existing cancellation and reconciliation remain available.
+fn collateral_accounting(t:&mut Transport,c:&Control,bank:&mut Session,ordinary:&DispatchLog,packages:&moloch_live_runtime::package_dispatch::PackageDispatchLog,lease:&ExclusiveLock,last_check:&mut u64)->Result<bool>{
+ use moloch_live_runtime::collateral_feedback::{self as cf,RetainedReceipt,ReceiptStore,Snapshot,Operation,Boundary};
+ let initialized=bank.engine().collateral_snapshot_receipts().is_some();let pending=if initialized{bank.engine().collateral_report()?["pendingNativeFillEconomics"]!=false}else{false};
+ if !c.collateral_accounting{return Ok(pending)}
+ let at=now();if *last_check!=0&&at<last_check.saturating_add(30_000){return Ok(pending)}
+ if ordinary.require_resolved_attempts().is_err()||ordinary.acknowledgments.keys().any(|id|!ordinary.closed.contains(id))||packages.unresolved()||bank.engine().package_blocks_new_submissions(){return Ok(pending)}
+ match t.package_queue_quiet(){Ok(_)=>{},Err(e)if e.code=="PACKAGE_QUEUE_NOT_QUIET"=>return Ok(pending),Err(e)=>return Err(e.into())}
+ *last_check=at;
+ let evidence=(||->Result<_>{
+  let before=bank.engine().collateral_snapshot_receipts().cloned();let mut acks=Vec::new();let mut tapes=Vec::new();
+  if pending{
+   let count=bank.engine().collateral_accounted_fill_count().ok_or("LIVE_COLLATERAL_FILL_CURSOR")?;let fresh=bank.engine().fills().get(count..).ok_or("LIVE_COLLATERAL_FILL_CURSOR")?;
+   let ids:std::collections::BTreeSet<_>=fresh.iter().map(|f|f["actualOrderId"].as_str().map(str::to_owned).ok_or("LIVE_COLLATERAL_ACTUAL_ID")).collect::<std::result::Result<_,_>>()?;let mut ack_hashes=std::collections::BTreeSet::new();
+   for actual in ids{let qid=*bank.engine().live_order_bindings().iter().find(|(_,id)|**id==actual).ok_or("LIVE_COLLATERAL_BINDING")?.0;
+    if let Some(raw)=ordinary.acknowledgments.get(&qid){let r:Receipt=serde_json::from_value(raw.clone())?;if r.endpoint!="/orders"{return Err("LIVE_COLLATERAL_ORIGINAL_POST_UNAVAILABLE".into())}let digest=feedback::digest(&r)?;if ack_hashes.insert(digest){acks.push(RetainedReceipt::open(&c.root,&r,ReceiptStore::Ordinary)?);}}
+    else{let mut found=false;for p in packages.records(){let Some(raw)=p["outcome"].get("receipt")else{continue};let r:Receipt=serde_json::from_value(raw.clone())?;if r.data["results"].as_array().is_some_and(|rs|rs.iter().any(|v|v["data"]["orderId"].as_str().map(str::to_owned).or_else(||v["data"]["orderId"].as_u64().map(|n|n.to_string())).as_deref()==Some(actual.as_str()))){found=true;let digest=feedback::digest(&r)?;if ack_hashes.insert(digest){acks.push(RetainedReceipt::open(&c.root,&r,ReceiptStore::Package)?);}}}if !found{return Err("LIVE_COLLATERAL_ORIGINAL_ACK_UNAVAILABLE".into())}}
+   }
+   let digests:std::collections::BTreeSet<_>=fresh.iter().map(|f|f["receiptHash"].as_str().map(str::to_owned).ok_or("LIVE_COLLATERAL_FILL_SOURCE")).collect::<std::result::Result<_,_>>()?;
+   for digest in digests{let store=if c.root.join("receipts").join(format!("{digest}.json")).exists(){ReceiptStore::Ordinary}else{ReceiptStore::Package};tapes.push(RetainedReceipt::from_recorded_digest(&c.root,&digest,store)?);}
+  }
+  let before=if let Some(raw)=before{let a:Receipt=serde_json::from_value(raw["account"].clone())?;let k:Receipt=serde_json::from_value(raw["collateral"].clone())?;Some((RetainedReceipt::open(&c.root,&a,ReceiptStore::Ordinary)?,RetainedReceipt::open(&c.root,&k,ReceiptStore::Ordinary)?))}else{None};
+  // Observe settlement BEFORE the after-cash pair; shares never imply side.
+  let settlements=if initialized&&!pending&&bank.engine().wallet.positions().as_array().is_some_and(|p|!p.is_empty()){let r=request(t,&c.root,Endpoint::Settlements)?;Some(RetainedReceipt::open(&c.root,&r,ReceiptStore::Ordinary)?)}else{None};
+  let account=request(t,&c.root,Endpoint::Account)?;let collateral=request(t,&c.root,Endpoint::Collateral)?;let after=(RetainedReceipt::open(&c.root,&account,ReceiptStore::Ordinary)?,RetainedReceipt::open(&c.root,&collateral,ReceiptStore::Ordinary)?);
+  let mut ids=Vec::<String>::new();if let(Some(s),Some((a,k)))=(&settlements,&before){let earliest=moloch_live_runtime::daily_windows::clock(&a.receipt().received_at)?.max(moloch_live_runtime::daily_windows::clock(&k.receipt().received_at)?);
+   for row in s.receipt().data["data"].as_array().ok_or("LIVE_COLLATERAL_SETTLEMENT_ROWS")?{
+    let Some(id)=row["id"].as_str()else{continue};if bank.engine().collateral_settlement_recorded(id)||!["win","loss","refund"].iter().any(|v|row["type"]==*v){continue}let Some(created)=row["createdAt"].as_str()else{continue};if moloch_live_runtime::daily_windows::clock(created)?<earliest{continue}
+    let ex=row["exchangeId"].as_str().map(str::to_owned).or_else(||row["exchangeId"].as_u64().map(|n|n.to_string()));let market=row["marketId"].as_str().map(str::to_owned).or_else(||row["marketId"].as_u64().map(|n|n.to_string()));let(Some(ex),Some(market))=(ex,market)else{continue};if c.scope.exchanges.get(&ex)!=Some(&market){continue}
+    let side=match row["settlementOption"].as_str(){Some("YES")=>moloch_replay::Side::Yes,Some("NO")=>moloch_replay::Side::No,_=>continue};let other=if side==moloch_replay::Side::Yes{moloch_replay::Side::No}else{moloch_replay::Side::Yes};let Ok(shares)=decimal_units(&row["shares"].to_string())else{continue};
+    if shares<=0||shares%1_000_000!=0||u64::try_from(shares/1_000_000).ok()!=Some(bank.engine().wallet.quantity(&ex,side))||bank.engine().wallet.quantity(&ex,other)!=0{continue}ids.push(id.into());
+   }
+  }Ok((before,after,acks,tapes,settlements,ids))
+ })();
+ let(before,after,acks,tapes,settlements,ids)=match evidence{Ok(v)=>v,Err(e)=>{atomic_json(&c.root.join("collateral-accounting-status.json"),&json!({"at":iso(now()),"state":"postponed","reason":e.to_string(),"bankChanged":false,"newOrdersDeferred":true}))?;return Ok(true)}};
+ let ar:Vec<_>=acks.iter().collect();let tr:Vec<_>=tapes.iter().collect();let after_view=Snapshot{account:&after.0,collateral:&after.1};let b=Boundary{root:&c.root,owner_lock_path:&c.owner_lock,owner_lease:lease,transport:t,ordinary,packages};
+ let operation=if let Some((a,k))=&before{let before=Snapshot{account:a,collateral:k};if pending{Operation::Execution{before,after:after_view,acknowledgments:&ar,fill_tapes:&tr}}else if let Some(s)=settlements.as_ref().filter(|_|!ids.is_empty()){Operation::Settlement{before,after:after_view,settlements:s,settlement_ids:&ids}}else{Operation::Checkpoint{before,after:after_view}}}else{Operation::Baseline{after:after_view}};
+ let stamp=iso(now());let tx=match cf::prepare(bank,&b,operation,&stamp){Ok(v)=>v,Err(e)=>{atomic_json(&c.root.join("collateral-accounting-status.json"),&json!({"at":stamp,"state":"postponed","reason":e.to_string(),"bankChanged":false,"newOrdersDeferred":true}))?;return Ok(true)}};
+ // A failed durable commit is fatal, never downgraded to postponement.
+ let committed=tx.commit(bank,&b)?;atomic_json(&c.root.join("collateral-accounting-status.json"),&json!({"at":stamp,"state":"committed","sourceSequence":committed.source_sequence,"eventSha256":committed.event_sha256,"nativeHead":committed.durable_head,"snapshotIsolation":"not_documented","futureAdvanceFundsSizing":false}))?;Ok(false)
+}
 fn request(t:&mut Transport,root:&Path,ep:Endpoint)->Result<Receipt>{
  for attempt in 0..3u64{
   match t.request(ep.clone()){
@@ -509,6 +557,7 @@ fn recover_stream(t:&mut Transport,c:&Control,bank:&mut Session,log:&DispatchLog
 pub fn main()->Result<()>{
  let args:Vec<_>=std::env::args().collect();if args.len()!=3||!["preflight","run"].contains(&args[1].as_str()){return Err("usage: moloch-live-runtime preflight|run /absolute/control.json".into())}
  let path=PathBuf::from(&args[2]);if !path.is_absolute(){return Err("LIVE_CONTROL_ABSOLUTE".into())}let c:Control=serde_json::from_value(load(&path)?)?;
+ validate_collateral_accounting(&c)?;
  if !c.bank_name.starts_with("bank")||c.bank_name.contains(['/', '\\'])||c.predecessor_bank.as_ref().is_some_and(|p|p==&c.bank_name){return Err("LIVE_BANK_NAME".into())}
  if !c.root.is_absolute()||!c.credentials.is_absolute()||!c.owner_lock.is_absolute()||c.activation.maximum_committed!=c.policy["maximumCommitted"].as_str().unwrap_or("")||c.activation.maximum_market_cost!=c.policy["maximumMarketCost"].as_str().unwrap_or("")||c.policy["quantity"].as_u64()!=Some(c.activation.maximum_quantity as u64)||c.policy["entryStopAt"]!=iso(c.activation.entry_until_ms){return Err("LIVE_CONTROL_POLICY_BINDING".into())}
  if let Some(settings)=&c.packages{settings.load(&c.scope)?;} if let Some(cfg)=&c.execution_model{cfg.validate()?;}
@@ -572,7 +621,7 @@ pub fn main()->Result<()>{
   if let Some(r)=&mut breadth{r.observe("stream_reset",&json!({"localBoundary":true,"reason":"confirmed_subscription"}),&joined_at)}
   if let Some(u)=&mut universe{u.observe("stream_reset",&json!({"localBoundary":true}),&joined_at)?;}
   let mut windows:std::collections::BTreeMap<String,u64>=c.scope.exchanges.keys().map(|e|(e.clone(),start.saturating_sub(60000))).collect();
-  let mut cycles=0u64;let mut reconciliation_cache=Reconciler::default();
+  let mut cycles=0u64;let mut reconciliation_cache=Reconciler::default();let mut collateral_last_check=0u64;
   loop{
    let cycle_result=(||->Result<()>{
    if stop.exists()||global_stop.exists(){return Err("LIVE_EXECUTION_STOP".into())}
@@ -581,21 +630,24 @@ pub fn main()->Result<()>{
    let mut package_blocked=recover_packages(&mut t,&c,&mut bank,&log,&authority,&mut packages)?;
    let mut reconciled=reconcile(&mut t,&c,&mut bank,&mut log,&mut reconciliation_cache)?;
    reconciliation_schedule.completed(now(),pending_version(&log),reconciled.blocks_new_submissions)?;
+   let mut collateral_blocked=collateral_accounting(&mut t,&c,&mut bank,&log,&packages,lease.as_ref(),&mut collateral_last_check)?;
    accept(&mut bank,&json!({"type":"tick","receivedAt":iso(now())}))?;
    let selected=if let Some(u)=&mut universe{u.select_at(&bank.engine().required_exchanges(),now())?}else{c.scope.exchanges.keys().cloned().collect()};
    for (selected_index,ex) in selected.iter().enumerate(){require_stream(stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?)?;let market=&c.scope.exchanges[ex];let from=windows[ex];let next=source(&mut t,&c,&mut bank,&mut source_state,ex,market,from)?;windows.insert(ex.clone(),next);drain_stream(stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?,&mut bank,&mut source_state,&mut breadth,&mut universe)?;
     if reconciliation_schedule.due(now(),pending_version(&log))?.is_some(){
      reconciled=reconcile(&mut t,&c,&mut bank,&mut log,&mut reconciliation_cache)?;
      reconciliation_schedule.completed(now(),pending_version(&log),reconciled.blocks_new_submissions)?;
+     collateral_blocked=collateral_accounting(&mut t,&c,&mut bank,&log,&packages,lease.as_ref(),&mut collateral_last_check)?;
     }
     ensure_entry_window(&c,&mut bank,&authority)?;
-    if !package_blocked&&reconciliation_schedule.permits_submission(now(),pending_version(&log))?{
+    if !package_blocked&&!collateral_blocked&&reconciliation_schedule.permits_submission(now(),pending_version(&log))?{
      package_opportunity(&mut t,&c,&mut bank,&mut log,&authority,&mut packages,&mut relationship_census,&mut source_state,stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?,&mut breadth,&mut universe,&mut windows,&mut package_last_scan,&mut package_certificate_cursor)?;
     }
     package_blocked=recover_packages(&mut t,&c,&mut bank,&log,&authority,&mut packages)?;
+    collateral_blocked=collateral_accounting(&mut t,&c,&mut bank,&log,&packages,lease.as_ref(),&mut collateral_last_check)?;
     // Package preflight consumes real account time; never reuse an expired
     // ordinary reconciliation permission after those paced reads.
-    let permit_new=!package_blocked&&reconciliation_schedule.permits_submission(now(),pending_version(&log))?;
+    let permit_new=!package_blocked&&!collateral_blocked&&reconciliation_schedule.permits_submission(now(),pending_version(&log))?;
     dispatch(&mut t,&c,&mut bank,&mut log,&authority,&mut source_state,permit_new,&mut preflight_cursor,stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?,&windows)?;
     let _=atomic_json(&c.root.join("progress.json"),&json!({"at":iso(now()),"pid":std::process::id(),"phase":"trading","completedReadScopes":selected_index+1,"selectedReadScopes":selected.len(),"maximumRealtimeFramesPerDrain":MAX_REALTIME_FRAMES_PER_DRAIN,"realtimeHealthy":stream.as_ref().is_some_and(|s|s.healthy()),"actualOrders":log.acknowledgments.len(),"terminalOrders":log.closed.len(),"actualFills":bank.engine().fills().len(),"profitabilityEstablished":false}));
    }
@@ -614,6 +666,12 @@ pub fn main()->Result<()>{
  })();
  if let Err(e)=&result{atomic_json(&stop,&json!({"at":iso(now()),"reason":e.to_string(),"action":"no automatic write retry or activation renewal"}))?;atomic_json(&c.root.join("status.json"),&json!({"at":iso(now()),"pid":std::process::id(),"mode":"stopped","reason":e.to_string(),"profitabilityEstablished":false}))?;}
  result
+}
+#[cfg(test)]mod collateral_accounting_config_tests{
+ use super::*;
+ fn control()->Control{serde_json::from_value(json!({"activation":{"runId":"test","entryUntilMs":9000000,"maximumCommitted":"1000.000000","maximumMarketCost":"100.000000","maximumQuantity":2,"tournamentId":"cup","tournamentSlug":"cup","binarySha256":"a".repeat(64)},"scope":{"tournamentId":"cup","tournamentSlug":"cup","exchanges":{}},"policy":{},"root":"/fixture","credentials":"/unused","ownerLock":"/unused.lock","accountScope":"fixture"})).unwrap()}
+ #[test]fn old_controls_keep_accounting_disabled(){let c=control();assert!(!c.collateral_accounting);assert!(validate_collateral_accounting(&c).is_ok());}
+ #[test]fn explicit_enable_cannot_activate_unsupported_passive_flow(){let mut c=control();c.collateral_accounting=true;assert_eq!(validate_collateral_accounting(&c).unwrap_err().to_string(),"LIVE_COLLATERAL_ORDINARY_FLOW_UNSUPPORTED");}
 }
 
 #[cfg(test)]mod refresh_worker_tests{
