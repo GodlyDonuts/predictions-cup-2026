@@ -102,3 +102,10 @@ pub fn local_not_sent(bank:&Session,p:&Value,b:&Basket,s:&Scope,permit:&Permit,d
  let mut event=envelope("live_package_no_execution",p,&stamp,processed)?;
  event["evidence"]=json!({"kind":"local_queue_not_sent_v1","requestHash":p["requestHash"],"sdkError":error,"requestJson":serde_json::to_string(&spec)?,"dispatchRecordHash":hash(&record)?,"dispatchRecord":record,"dispatchHead":dispatch.head(),"queueProof":q});Ok(event)
 }
+
+/// SDK-local pre-first-admission proof, distinct from queue completion and an
+/// official response. No ACK/unknown/fill can be released through this path.
+pub fn first_call_not_sent(bank:&Session,p:&Value,b:&Basket,s:&Scope,permit:&Permit,dispatch:&crate::package_dispatch::PackageDispatchLog,proof:&baal_transport_service::multi_leg_first_call::Proof,error:&TransportError,processed:&str)->Result<Value>{
+ let spec=bound(bank,p,b,s,permit)?;
+ crate::package_first_call::release(bank,p,&spec,dispatch,proof,error,processed)
+}

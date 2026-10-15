@@ -35,6 +35,8 @@ pub trait Backend{
  fn send(&mut self,b:Basket,p:Permit)->baal_transport_service::Result<Outcome>;
  fn take_not_sent(&mut self)->Result<VerifiedNotSent>;
  fn retained_not_sent(&mut self,binding:&ImmutableBinding,request:&str,minimum:u64)->Result<VerifiedNotSent>;
+ fn take_first_call_not_sent(&mut self)->Result<baal_transport_service::multi_leg_first_call::Proof>{Err("PACKAGE_FIRST_CALL_PROOF_UNAVAILABLE".into())}
+ fn retained_first_call_not_sent(&mut self,_binding:&ImmutableBinding,_request_sha256:&str)->Result<baal_transport_service::multi_leg_first_call::Proof>{Err("PACKAGE_FIRST_CALL_PROOF_UNAVAILABLE".into())}
  fn bind_owned(&mut self,actual:&str);
  fn read(&mut self,ep:Endpoint)->Result<Receipt>;
 }
@@ -51,6 +53,8 @@ impl Backend for Live<'_>{
  fn send(&mut self,b:Basket,p:Permit)->baal_transport_service::Result<Outcome>{self.transport.place_all_or_none(b,p)}
  fn take_not_sent(&mut self)->Result<VerifiedNotSent>{Ok(VerifiedNotSent::from_sdk(self.transport.take_local_not_sent_proof()?))}
  fn retained_not_sent(&mut self,b:&ImmutableBinding,r:&str,min:u64)->Result<VerifiedNotSent>{Ok(VerifiedNotSent::from_sdk(self.transport.verify_retained_local_not_sent(b,r,min)?))}
+ fn take_first_call_not_sent(&mut self)->Result<baal_transport_service::multi_leg_first_call::Proof>{Ok(self.transport.take_first_call_no_http_proof()?)}
+ fn retained_first_call_not_sent(&mut self,b:&ImmutableBinding,request_sha256:&str)->Result<baal_transport_service::multi_leg_first_call::Proof>{Ok(self.transport.verify_retained_first_call_no_http(b,request_sha256)?)}
  fn bind_owned(&mut self,id:&str){self.authority.bind_owned(id.into());}
  fn read(&mut self,ep:Endpoint)->Result<Receipt>{Ok(self.transport.request(ep)?)}
 }
@@ -93,7 +97,14 @@ pub fn submit_once<B:Backend>(bank:&mut Session,log:&mut PackageDispatchLog,b:&m
    // Take BEFORE summary/status/read/clear-ready operations. A false SDK flag,
    // empty queue or missing capability alone NEVER releases native funding.
    let proof=if !error.may_have_executed&&error.status.is_none()&&error.order_id.is_none()&&error.api_code.is_none(){b.take_not_sent().ok()}else{None};
-   if let Some(proof)=proof{let raw=proof.evidence();need(raw["tailRecord"]==raw["completionRecord"],"PACKAGE_WORKER_INTERVENING_QUEUE_OPERATION")?;store(&b.evidence_directory().join(format!("not-sent-{}.json",hash(&spec)?)),raw)?;let attestation=proof.attestation()?;log.not_sent(token,&error,&attestation,&iso(b.now_ms())?)?;let event=events::local_not_sent(bank,&current(bank,id)?,a.basket(),&staged.scope,&staged.permit,log,&proof,&error,&iso(b.now_ms())?)?;accept(bank,&event)?;Ok(SendResult::LocalNotSent)}else if error.may_have_executed{unknown(bank,log,b,id,error)}else{Err("PACKAGE_WORKER_NO_POSITIVE_NOT_SENT_PROOF".into())}
+   if let Some(proof)=proof{let raw=proof.evidence();need(raw["tailRecord"]==raw["completionRecord"],"PACKAGE_WORKER_INTERVENING_QUEUE_OPERATION")?;store(&b.evidence_directory().join(format!("not-sent-{}.json",hash(&spec)?)),raw)?;let attestation=proof.attestation()?;log.not_sent(token,&error,&attestation,&iso(b.now_ms())?)?;let event=events::local_not_sent(bank,&current(bank,id)?,a.basket(),&staged.scope,&staged.permit,log,&proof,&error,&iso(b.now_ms())?)?;accept(bank,&event)?;Ok(SendResult::LocalNotSent)}else if error.may_have_executed{unknown(bank,log,b,id,error)}else if error.status.is_none()&&error.order_id.is_none()&&error.api_code.is_none(){
+    // The queue capability miss is read-only. Take the SDK first-call proof
+    // immediately; no read/status/prepare/queue mutation may intervene.
+    let proof=b.take_first_call_not_sent().map_err(|_|"PACKAGE_WORKER_NO_POSITIVE_NOT_SENT_PROOF")?;
+    store(&b.evidence_directory().join(format!("first-call-not-sent-{}.json",hash(&spec)?)),proof.evidence())?;
+    log.first_call_not_sent(token,&error,&proof,&iso(b.now_ms())?)?;
+    let event=events::first_call_not_sent(bank,&current(bank,id)?,a.basket(),&staged.scope,&staged.permit,log,&proof,&error,&iso(b.now_ms())?)?;accept(bank,&event)?;Ok(SendResult::LocalNotSent)
+   }else{Err("PACKAGE_WORKER_NO_POSITIVE_NOT_SENT_PROOF".into())}
   }
  }})();b.clear_ready();result
 }
@@ -120,11 +131,23 @@ pub fn recover<B:Backend>(bank:&mut Session,log:&mut PackageDispatchLog,b:&mut B
   let p=p.ok_or("PACKAGE_WORKER_MISSING_ATTEMPTED_NATIVE")?;
   need(p["proofHash"]==f.row["admission"]["reserve"]["proofHash"]&&p["bankScope"]==f.row["admission"]["reserve"]["bankScope"],"PACKAGE_WORKER_NATIVE_RESTART_BINDING")?;
   bind(bank,&id,b)?;
-  if p["phase"]=="complete"{need(f.row["phase"]=="ack","PACKAGE_WORKER_COMPLETE_DISPATCH_CONTRADICTION")?;continue}if p["phase"]=="no_execution"{need(matches!(f.row["phase"].as_str(),Some("not_sent"|"definitive_zero")),"PACKAGE_WORKER_ZERO_DISPATCH_CONTRADICTION")?;continue}
+  if p["phase"]=="complete"{need(f.row["phase"]=="ack","PACKAGE_WORKER_COMPLETE_DISPATCH_CONTRADICTION")?;continue}if p["phase"]=="no_execution"{need(matches!(f.row["phase"].as_str(),Some("not_sent"|"first_call_not_sent"|"definitive_zero")),"PACKAGE_WORKER_ZERO_DISPATCH_CONTRADICTION")?;continue}
   let unresolved_acceptance=matches!(f.row["phase"].as_str(),Some("attempt"|"unknown"));
   match f.row["phase"].as_str(){
    Some("ack")=>{let receipt:Receipt=serde_json::from_value(f.row["outcome"]["receipt"].clone())?;let event=events::acknowledgment(bank,&current(bank,&id)?,&f.basket,&f.scope,&f.permit,&receipt,&iso(b.now_ms())?)?;accept(bank,&event)?;bind(bank,&id,b)?;report.acknowledged_packages+=1;},
    Some("definitive_zero")=>{let e=response_from(&f.row["outcome"]["evidence"])?;let response=multi_leg::evidenced_response(&e)?;let reason=multi_leg::zero_execution_reason(e.status,&response,f.basket.legs.len()).ok_or("PACKAGE_WORKER_ZERO_UNVERIFIED")?;let error=TransportError{code:"OFFICIAL_REQUEST_REJECTED".into(),status:Some(e.status),may_have_executed:false,retry_after_ms:0,order_id:None,api_code:response["error"]["code"].as_str().map(str::to_owned)};let event=events::no_execution(bank,&current(bank,&id)?,&f.basket,&f.scope,&f.permit,&error,&reason,&e,&iso(b.now_ms())?)?;accept(bank,&event)?;continue},
+   Some("first_call_not_sent")=>{
+    // Original durable outcome AND saved original SDK evidence are required.
+    // Attempt/unknown plus an on-disk terminal file alone never enters here.
+    let binding:ImmutableBinding=serde_json::from_value(f.row["admission"]["queue_binding"].clone())?;
+    let request=f.row["admission"]["request_hash"].as_str().ok_or("PACKAGE_WORKER_REQUEST_HASH")?;
+    let original=read_json(&b.evidence_directory().join(format!("first-call-not-sent-{request}.json")))?;
+    need(original==f.row["outcome"]["firstCallEvidence"],"PACKAGE_WORKER_ORIGINAL_FIRST_CALL_PROOF_CHANGED")?;
+    let proof=b.retained_first_call_not_sent(&binding,request)?;
+    need(proof.evidence()==&original,"PACKAGE_WORKER_ORIGINAL_FIRST_CALL_PROOF_CHANGED")?;
+    let error=error_from(&f.row["outcome"]["error"])?;
+    let event=events::first_call_not_sent(bank,&current(bank,&id)?,&f.basket,&f.scope,&f.permit,log,&proof,&error,&iso(b.now_ms())?)?;accept(bank,&event)?;continue
+   },
    Some("not_sent")=>{let binding:ImmutableBinding=serde_json::from_value(f.row["admission"]["queue_binding"].clone())?;let request=f.row["outcome"]["queueEvidence"]["request"].as_str().ok_or("PACKAGE_WORKER_NOT_SENT_REQUEST")?;let minimum=clock(f.row["attemptedAt"].as_str().ok_or("PACKAGE_WORKER_ATTEMPT_CLOCK")?)?;
     let proof=b.retained_not_sent(&binding,request,minimum)?;let original=read_json(&b.evidence_directory().join(format!("not-sent-{}.json",f.row["admission"]["request_hash"].as_str().ok_or("PACKAGE_WORKER_REQUEST_HASH")?)))?;let mut checked=proof.evidence().clone();checked.as_object_mut().ok_or("PACKAGE_WORKER_NOT_SENT_PROOF")?.remove("currentTailRecord");checked.as_object_mut().unwrap().remove("currentTailStateJson");need(checked==original,"PACKAGE_WORKER_ORIGINAL_NOT_SENT_PROOF_CHANGED")?;let error=error_from(&f.row["outcome"]["error"])?;let event=events::local_not_sent(bank,&current(bank,&id)?,&f.basket,&f.scope,&f.permit,log,&proof,&error,&iso(b.now_ms())?)?;accept(bank,&event)?;continue},
    Some("attempt"|"unknown")=>{report.blocks_new_submissions=true;},

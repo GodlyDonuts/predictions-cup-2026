@@ -73,6 +73,19 @@ fn validate_zero(intent:&DurableIntent,e:&ResponseEvidence)->Result<Value>{
  let response=multi_leg::evidenced_response(e)?;
  need(multi_leg::zero_execution_reason(e.status,&response,intent.basket.legs.len()).is_some(),"PACKAGE_ZERO_UNKNOWN")?;Ok(response)
 }
+// Replay validates binding/integrity only. Original authenticity is supplied
+// at append by the SDK-owned opaque Proof; restart must reverify that source.
+pub(crate) fn validate_first_call(admission:&Value,error:&Value,proof:&Value,attempted:i64,at:i64)->Result<()>{
+ need(attempted>=0&&at>=attempted&&proof["kind"]=="sdk_before_first_admit_no_http","PACKAGE_FIRST_CALL_KIND_OR_CLOCK")?;
+ let t=&proof["ticket"];let k=&proof["keyIndex"];let end=&proof["terminal"];
+ for v in [t,k,end]{let mut body=v.clone();let claimed=body.as_object_mut().ok_or("PACKAGE_FIRST_CALL_OBJECT")?.remove("sha256").ok_or("PACKAGE_FIRST_CALL_HASH")?;need(claimed==hash(&body)?,"PACKAGE_FIRST_CALL_HASH")?;}
+ need(t["schemaVersion"]==1&&t["kind"]=="sdk_first_logical_invocation"&&t["accountScope"]==admission["queue_scope"]&&t["binding"]==admission["queue_binding"]&&t["scope"]==admission["scope"]&&t["basket"]==admission["basket"]&&t["permit"]==admission["permit"]&&t["request"]==admission["spec"]&&t["requestSha256"]==admission["request_hash"],"PACKAGE_FIRST_CALL_BINDING")?;
+ need(k["schemaVersion"]==1&&k["kind"]=="sdk_first_logical_key"&&k["accountScope"]==t["accountScope"]&&k["key"]==t["binding"]["key"]&&k["intent"]==t["binding"]["intent"]&&k["ticketSha256"]==t["sha256"],"PACKAGE_FIRST_CALL_KEY")?;
+ need(end["schemaVersion"]==1&&end["kind"]=="sdk_before_first_admit_no_http"&&end["accountScope"]==t["accountScope"]&&end["binding"]==t["binding"]&&end["requestSha256"]==t["requestSha256"]&&end["ticketSha256"]==t["sha256"]&&end["keyIndexSha256"]==k["sha256"]&&end["invocationId"]==t["invocationId"]&&end["startedAtMs"]==t["createdAtMs"]&&end["stage"]=="before_first_admit_invocation"&&end["admitInvocations"]==0&&end["httpInvocations"]==0&&end["queueHealth"]=="not_established"&&end["originalError"]==*error,"PACKAGE_FIRST_CALL_TERMINAL")?;
+ need(error["mayHaveExecuted"]==false&&error.get("status")==Some(&Value::Null)&&error.get("orderId")==Some(&Value::Null)&&error.get("apiCode")==Some(&Value::Null)&&error["code"].as_str().is_some_and(|s|!s.is_empty())&&error["retryAfterMs"].as_u64().is_some(),"PACKAGE_FIRST_CALL_ERROR")?;
+ let start=t["createdAtMs"].as_i64().ok_or("PACKAGE_FIRST_CALL_CLOCK")?;let complete=end["completedAtMs"].as_i64().ok_or("PACKAGE_FIRST_CALL_CLOCK")?;
+ need(start>=attempted&&complete>=start&&complete<=at,"PACKAGE_FIRST_CALL_CLOCK")
+}
 impl Projection{
  fn initial()->Self{Self{previous:"0".repeat(64),..Self::default()}}
  fn unresolved(&self)->bool{self.records.values().any(|r|matches!(r.phase.as_str(),"attempt"|"unknown"))}
@@ -103,6 +116,11 @@ impl Projection{
    "unknown"=>{need(matches!(r.phase.as_str(),"attempt"|"unknown"),"PACKAGE_LOG_UNKNOWN_PHASE")?;need(e["error"]["mayHaveExecuted"]==true,"PACKAGE_LOG_UNKNOWN_ERROR")?;r.phase="unknown".into();r.outcome=Some(e.clone());},
    "ack"=>{need(matches!(r.phase.as_str(),"attempt"|"unknown"),"PACKAGE_LOG_ACK_PHASE")?;let receipt:Receipt=serde_json::from_value(e["receipt"].clone())?;multi_leg::reported_fill(&receipt,&r.intent.basket)?;need(clock(&receipt.request_started_at)? >= started.ok_or("PACKAGE_LOG_NO_ATTEMPT")?&&clock(&receipt.received_at)?<=at,"PACKAGE_LOG_ACK_CLOCK")?;r.phase="ack".into();r.outcome=Some(e.clone());},
    "definitive_zero"=>{need(matches!(r.phase.as_str(),"attempt"|"unknown"),"PACKAGE_LOG_ZERO_PHASE")?;let evidence=response_evidence(&e["evidence"])?;let response=validate_zero(&r.intent,&evidence)?;need(e["response"]==response&&clock(&evidence.request_started_at)? >= started.ok_or("PACKAGE_LOG_NO_ATTEMPT")?&&clock(&evidence.request_started_at)?<=clock(&evidence.received_at)?&&clock(&evidence.received_at)?<=at,"PACKAGE_LOG_ZERO_CLOCK_OR_CHANGED")?;r.phase="definitive_zero".into();r.outcome=Some(e.clone());},
+   "first_call_not_sent"=>{
+    need(r.phase=="attempt","PACKAGE_LOG_FIRST_CALL_PHASE")?;
+    validate_first_call(&serde_json::to_value(&r.intent)?,&e["error"],&e["firstCallEvidence"],started.ok_or("PACKAGE_LOG_NO_ATTEMPT")?,at)?;
+    r.phase="first_call_not_sent".into();r.outcome=Some(e.clone());
+   },
    "not_sent"=>{need(r.phase=="attempt"&&e["error"]["mayHaveExecuted"]==false&&e["error"].get("status")==Some(&Value::Null)&&e["error"].get("orderId")==Some(&Value::Null)&&e["error"]["code"].as_str().is_some_and(|s|!s.is_empty()),"PACKAGE_LOG_NOT_SENT_ERROR")?;
     let q:QueueNotSentAttestation=serde_json::from_value(e["queueEvidence"].clone())?;
     need(q.queue_scope==r.intent.queue_scope&&q.binding==r.intent.queue_binding&&!q.request.is_empty()&&clock(&q.observed_at)? >= started.ok_or("PACKAGE_LOG_NO_ATTEMPT")?&&clock(&q.observed_at)?<=at,"PACKAGE_LOG_QUEUE_BINDING")?;
@@ -181,6 +199,13 @@ impl PackageDispatchLog{
  pub fn definitive_zero(&mut self,id:&str,e:&ResponseEvidence,at:&str)->Result<()>{let intent=&self.state.records.get(id).ok_or("PACKAGE_LOG_UNKNOWN_ID")?.intent;let data=validate_zero(intent,e)?;self.outcome(id,"definitive_zero",at,json!({"evidence":e,"response":data}))}
  pub fn unknown(&mut self,id:&str,error:&TransportError,at:&str)->Result<()>{self.outcome(id,"unknown",at,json!({"error":error}))}
  pub fn not_sent(&mut self,token:AttemptToken,error:&TransportError,queue:&QueueNotSentAttestation,at:&str)->Result<()>{need(token.nonce==self.nonce&&token.attempt_head==self.state.previous,"PACKAGE_LOG_LOCAL_TOKEN")?;self.outcome(&token.package_id,"not_sent",at,json!({"error":error,"queueEvidence":queue}))}
+ /// Distinct SDK pre-first-admission outcome. Only the original in-process
+ /// single-use attempt token plus genuine SDK opaque proof can append this.
+ pub fn first_call_not_sent(&mut self,token:AttemptToken,error:&TransportError,proof:&baal_transport_service::multi_leg_first_call::Proof,at:&str)->Result<()>{
+  self.pin_original_descriptor()?;
+  need(token.nonce==self.nonce&&token.attempt_head==self.state.previous,"PACKAGE_LOG_LOCAL_TOKEN")?;
+  self.outcome(&token.package_id,"first_call_not_sent",at,json!({"error":error,"firstCallEvidence":proof.evidence()}))
+ }
  /// Physical acceptance only: an ACK resolves this journal, while the native
  /// package reservation separately blocks until actual fills/terminal/complete.
  pub fn unresolved(&self)->bool{self.poisoned||self.state.unresolved()}
@@ -192,6 +217,10 @@ impl PackageDispatchLog{
   need(disk.sequence==self.state.sequence&&disk.previous==self.state.previous,"PACKAGE_LOG_CHANGED")?;
   let r=disk.records.get(id).ok_or("PACKAGE_LOG_UNKNOWN_ID")?;
   Ok(json!({"admission":r.intent,"phase":r.phase,"attemptedAt":r.attempted_at,"outcome":r.outcome}))
+ }
+ pub(crate) fn verified_first_call_record(&self,id:&str)->Result<Value>{
+  self.pin_original_descriptor()?;let record=self.verified_record(id)?;self.pin_original_descriptor()?;
+  need(record["phase"]=="first_call_not_sent","PACKAGE_LOG_FIRST_CALL_PHASE")?;Ok(record)
  }
  pub fn records(&self)->Vec<Value>{self.state.records.keys().filter_map(|id|self.record(id)).collect()}
  pub fn head(&self)->Value{json!({"sequence":self.state.sequence,"hash":self.state.previous,"poisoned":self.poisoned})}

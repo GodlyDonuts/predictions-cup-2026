@@ -110,6 +110,8 @@ impl Engine {
      if proof["kind"]!="never_attempted"||proof["confirmedNetworkAttempts"].as_u64()!=Some(0){return Err("PACKAGE_NEVER_ATTEMPTED_PROOF")}
     }else if proof["kind"]=="dispatch_never_attempted_v1"{
      dispatch_never_attempted(&snapshot,proof,at)?;
+    }else if proof["kind"]=="sdk_before_first_admit_no_http"{
+     first_call_not_sent(&snapshot,proof,at)?;
     }else if proof["kind"]=="local_queue_not_sent_v1"{
      local_not_sent(&snapshot,proof,at)?;
     }else{
@@ -247,4 +249,30 @@ fn local_not_sent(p:&LivePackage,proof:&Value,at:i64)->Result<()>{
  if dispatch["outcome"]["packageId"]!=p.id||dispatch["outcome"]["requestHash"].as_str()!=p.request.as_deref()||(ms(&dispatch["attemptedAt"])? as u64)>before_clock||(ms(&dispatch["outcome"]["at"])? as u64)<tail_clock||ms(&dispatch["outcome"]["at"])? > at{return Err("PACKAGE_LOCAL_DISPATCH_CLOCK")};
  for field in ["manifestSha256","checkpointHash"]{if q.get(field).is_none()||(!q[field].is_null()&&digest(&q[field]).is_err()){return Err("PACKAGE_LOCAL_GENERATION_HASH")}}
  if q["manifestSha256"].is_null()!=q["checkpointHash"].is_null(){return Err("PACKAGE_LOCAL_GENERATION_HASH")};Ok(())
+}
+
+// Replay verifies exact bindings, not source authenticity. Runtime must have
+// the SDK-owned opaque capability and reverified original dispatch journal.
+fn first_call_not_sent(p:&LivePackage,proof:&Value,at:i64)->Result<()>{
+ exact_keys(proof,&["kind","requestHash","requestJson","sdkError","dispatchRecordHash","dispatchRecord","dispatchHead","firstCallProof"])?;
+ if p.phase!=Phase::Attempted||at<0||proof["requestHash"].as_str()!=p.request.as_deref(){return Err("PACKAGE_FIRST_CALL_PHASE")}
+ let error=&proof["sdkError"];let record=&proof["dispatchRecord"];let admission=&record["admission"];let outcome=&record["outcome"];
+ if error["mayHaveExecuted"]!=false||error.get("status")!=Some(&Value::Null)||error.get("orderId")!=Some(&Value::Null)||error.get("apiCode")!=Some(&Value::Null)||error["code"].as_str().is_none_or(|s|s.is_empty())||error["retryAfterMs"].as_u64().is_none(){return Err("PACKAGE_FIRST_CALL_ERROR")}
+ if digest(&proof["dispatchRecordHash"])?!=hash(record)||record["phase"]!="first_call_not_sent"||outcome["kind"]!="first_call_not_sent"||outcome["error"]!=*error||outcome["packageId"]!=p.id||outcome["requestHash"].as_str()!=p.request.as_deref()||proof["dispatchHead"]["poisoned"]!=false||proof["dispatchHead"]["sequence"].as_u64().is_none_or(|n|n==0)||digest(&proof["dispatchHead"]["hash"]).is_err(){return Err("PACKAGE_FIRST_CALL_DISPATCH")}
+ let text=proof["requestJson"].as_str().filter(|s|s.len()<=8*1024*1024).ok_or("PACKAGE_FIRST_CALL_REQUEST")?;
+ let request:Value=serde_json::from_str(text).map_err(|_|"PACKAGE_FIRST_CALL_REQUEST")?;
+ if format!("{:x}",Sha256::digest(text.as_bytes()))!=p.request.as_deref().ok_or("PACKAGE_FIRST_CALL_REQUEST")?||request!=admission["spec"]||admission["request_hash"].as_str()!=p.request.as_deref()||request["method"]!="POST"||request["endpoint"]!="/orders/multi-leg"||request["body"]["executionMode"]!="allOrNone"||request["body"]["idempotencyKey"].as_str()!=p.key.as_deref(){return Err("PACKAGE_FIRST_CALL_REQUEST")}
+ let reserve=&admission["reserve"];let scope=&admission["scope"];let permit=&admission["permit"];let binding=&admission["queue_binding"];
+ if reserve["packageId"]!=p.id||reserve["proofHash"]!=p.proof||hash(&admission["proof"])!=p.proof||reserve["bankScope"]!=p.scope||reserve["economics"]!=p.economics||scope["tournamentId"]!=p.scope["tournamentId"]||permit["runId"]!=p.scope["runId"]||permit["intentId"]!=p.id||admission["basket"]["idempotencyKey"].as_str()!=p.key.as_deref()||binding["intent"]!=format!("{}:{}",p.scope["runId"].as_str().ok_or("PACKAGE_FIRST_CALL_RUN")?,p.id)||binding["key"].as_str()!=p.key.as_deref()||binding["payload_hash"]!=hash(&json!({"scope":scope,"spec":request})){return Err("PACKAGE_FIRST_CALL_ADMISSION")}
+ let legs=request["body"]["legs"].as_array().filter(|xs|xs.len()==p.legs.len()).ok_or("PACKAGE_FIRST_CALL_LEGS")?;
+ for(l,w)in p.legs.iter().zip(legs){if w["exchangeId"]!=l.exchange||w["side"]!=(if l.side==Side::Yes{"yes"}else{"no"})||w["action"]!="buy"||w["quantity"]!=l.quantity||w["tournamentId"]!=p.scope["tournamentId"]||amount(&w["price"].to_string())?!=l.limit||scope["exchanges"][&l.exchange]!=l.market{return Err("PACKAGE_FIRST_CALL_LEGS")}}
+ let original=&proof["firstCallProof"];if original["kind"]!="sdk_before_first_admit_no_http"||outcome["firstCallEvidence"]!=*original{return Err("PACKAGE_FIRST_CALL_SOURCE")}
+ let t=&original["ticket"];let k=&original["keyIndex"];let end=&original["terminal"];
+ for v in [t,k,end]{let mut body=v.clone();let claimed=body.as_object_mut().ok_or("PACKAGE_FIRST_CALL_SOURCE")?.remove("sha256").ok_or("PACKAGE_FIRST_CALL_HASH")?;if digest(&claimed)?!=hash(&body){return Err("PACKAGE_FIRST_CALL_HASH")}}
+ if t["schemaVersion"]!=1||t["kind"]!="sdk_first_logical_invocation"||t["accountScope"]!=admission["queue_scope"]||t["accountScope"].as_str().is_none_or(|s|s.is_empty())||t["binding"]!=*binding||t["scope"]!=*scope||t["basket"]!=admission["basket"]||t["permit"]!=*permit||t["request"]!=request||t["requestSha256"].as_str()!=p.request.as_deref()||t["invocationId"].as_str().is_none_or(|s|s.is_empty()){return Err("PACKAGE_FIRST_CALL_TICKET")}
+ if k["schemaVersion"]!=1||k["kind"]!="sdk_first_logical_key"||k["accountScope"]!=t["accountScope"]||k["key"]!=binding["key"]||k["intent"]!=binding["intent"]||k["ticketSha256"]!=t["sha256"]{return Err("PACKAGE_FIRST_CALL_KEY")}
+ if end["schemaVersion"]!=1||end["kind"]!="sdk_before_first_admit_no_http"||end["accountScope"]!=t["accountScope"]||end["binding"]!=*binding||end["requestSha256"]!=t["requestSha256"]||end["ticketSha256"]!=t["sha256"]||end["keyIndexSha256"]!=k["sha256"]||end["invocationId"]!=t["invocationId"]||end["startedAtMs"]!=t["createdAtMs"]||end["stage"]!="before_first_admit_invocation"||end["admitInvocations"]!=0||end["httpInvocations"]!=0||end["queueHealth"]!="not_established"||end["originalError"]!=*error{return Err("PACKAGE_FIRST_CALL_TERMINAL")}
+ let started=t["createdAtMs"].as_i64().ok_or("PACKAGE_FIRST_CALL_CLOCK")?;let completed=end["completedAtMs"].as_i64().ok_or("PACKAGE_FIRST_CALL_CLOCK")?;let attempted=ms(&record["attemptedAt"])?;let durable=ms(&outcome["at"])?;
+ if p.attempted_at.is_none_or(|n|attempted<n)||started<attempted||completed<started||durable<completed||durable>at{return Err("PACKAGE_FIRST_CALL_CLOCK")}
+ Ok(())
 }
