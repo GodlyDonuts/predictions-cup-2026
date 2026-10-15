@@ -169,7 +169,18 @@ fn staged(f:&mut F,l:&mut package_dispatch::PackageDispatchLog,w:&Wire,risk:Risk
  for(index,ex)in ["101","102"].into_iter().enumerate(){let at=stamp(fresh);let raw=json!({"tournamentId":T,"marketId":f.scope.exchanges[ex],"exchangeId":ex,"sequence":"2","requestStartedAt":at,"sourceAt":at,"receivedAt":at,"bids":[{"price":"0.350000","quantity":100}],"asks":[{"price":"0.400000","quantity":100}]});f.bank.accept("unwind-book",index as u64+1,&json!({"type":"book","receivedAt":at,"book":raw})).unwrap();let book=&mut f.facts.components.get_mut(ex).unwrap().book;book.request_started_at=at.clone();book.received_at=at.clone();book.data["contexts"][0]["orderbook"]["exchanges"][0]=json!({"exchangeId":ex,"asOf":{"sequence":2,"at":at},"bids":[{"price":0.35,"quantity":100}],"asks":[{"price":0.4,"quantity":100}]});}
  let c=certified(&f.source);let plan=package_portfolio::whole_unwind(&f.bank,&f.a,&c,&parent,&f.source.policy,f.a.entry_until_ms).unwrap().unwrap();assert_eq!(plan.gross_funding(),0);assert!(plan.legs().iter().all(|l|l.action=="sell"));f.permit.intent_id=plan.package_id().into();f.permit.expires_at_ms=plan.expires_at_ms();f.permit.maximum_cost="0.000000".into();f.plan=Some(plan);w.at=fresh;
  f.facts.positions.data["positions"]=json!([{"exchangeId":"101","marketId":"201","quantity":-5},{"exchangeId":"102","marketId":"202","quantity":-5}]);f.facts.cash_balance.data["balance"]=serde_json::from_str::<Value>(&moloch_replay::money(f.bank.engine().wallet.cash)).unwrap();
+ // The first actual BUY tapes consumed cash. This zero-advance fixture must
+ // refresh BOTH official fields; keeping old buyingPower=1000 contradicts the
+ // original SDK parser and correctly denies the subsequent physical SELL.
+ assert_eq!(relationships::parse_buying_power(&f.facts.cash_balance.data,&f.scope).err().unwrap().code,"ACCOUNT_BUYING_POWER_MISMATCH");
+ f.facts.cash_balance.data["buyingPower"]=f.facts.cash_balance.data["balance"].clone();
+ relationships::parse_buying_power(&f.facts.cash_balance.data,&f.scope).unwrap();
  let s=staged(&mut f,&mut l,&w,RiskPolicy::StatewiseOnly);let before=f.bank.engine().wallet.cash;assert_eq!(f.bank.engine().wallet.reserved().unwrap(),0);w.at=fresh+3000;
- assert_eq!(portfolio_worker::submit_once(&mut f.bank,&mut l,&mut w,s,f.facts.clone()).unwrap(),SendResult::Acknowledged);assert_eq!(f.bank.engine().wallet.cash,before);assert!(f.bank.engine().package_records().as_array().unwrap().iter().any(|p|p["protectionReleased"]==false));
+ let outcome=portfolio_worker::submit_once(&mut f.bank,&mut l,&mut w,s,f.facts.clone()).unwrap();
+ // Load original private denial evidence BEFORE asserting, while the temporary
+ // fixture still exists. Do not turn a future guard regression into an opaque
+ // NeverAttempted-vs-Acknowledged message after Drop removes its evidence.
+ let denials:Vec<Value>=std::fs::read_dir(&w.dir).unwrap().filter_map(|entry|{let path=entry.unwrap().path();path.file_name().unwrap().to_string_lossy().starts_with("prepare-denied-").then(||serde_json::from_slice(&std::fs::read(path).unwrap()).unwrap())}).collect();
+ assert_eq!(outcome,SendResult::Acknowledged,"original prepare denial receipts: {denials:?}");assert_eq!(f.bank.engine().wallet.cash,before);assert!(f.bank.engine().package_records().as_array().unwrap().iter().any(|p|p["protectionReleased"]==false));
  assert_eq!(portfolio_worker::recover(&mut f.bank,&mut l,&mut w).unwrap().completed_packages,1);assert_eq!(f.bank.engine().wallet.cash,before+6*UNIT);assert_eq!(f.bank.engine().wallet.quantity("101",moloch_replay::Side::No),0);assert_eq!(f.bank.engine().wallet.quantity("102",moloch_replay::Side::No),0);assert!(f.bank.engine().package_records().as_array().unwrap().iter().all(|p|p["protectionReleased"]==true));assert_eq!(w.calls,2);
 }
