@@ -74,17 +74,18 @@ fn source(t:&mut Transport,c:&Control,bank:&mut Session,s:&mut RestSource,ex:&st
 }
 fn snapshots(t:&mut Transport,c:&Control,q:&Value)->Result<SnapshotSet>{
  let (account,positions,open_orders)=account(t,&c.root)?;
+ let cash_balance=request(t,&c.root,Endpoint::Account)?;
  let market_id=q["marketId"].as_str().ok_or("LIVE_MARKET_ID")?.to_owned();
  let market=request(t,&c.root,Endpoint::Market{market_id:market_id.clone()})?;
  let contract=request(t,&c.root,Endpoint::Nodes{market_id:market_id.clone()})?;
  let book=request(t,&c.root,Endpoint::OrderBook{market_id,depth:20})?;
- Ok(SnapshotSet{account,positions,open_orders,market,contract,book})
+ Ok(SnapshotSet{account,cash_balance,positions,open_orders,market,contract,book})
 }
 fn accept_fresh_book(bank:&mut Session,c:&Control,q:&Value,r:&Receipt,source:&mut RestSource)->Result<()>{
  let wrapped=json!({"source":"official_sig_api_v1","kind":"book","tournamentId":c.scope.tournament_id,"marketId":q["marketId"],"exchangeId":q["exchangeId"],"endpoint":r.endpoint,"status":r.status,"requestStartedAt":r.request_started_at,"receivedAt":r.received_at,"data":r.data});
  for e in source.accept(&wrapped)?{accept(bank,&e)?}Ok(())
 }
-fn dispatch(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,authority:&Arc<ProductionAuthority>,source:&mut RestSource,allow_new_submissions:bool)->Result<()>{
+fn dispatch(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,authority:&Arc<ProductionAuthority>,source:&mut RestSource,allow_new_submissions:bool,preflight_cursor:&mut Option<String>)->Result<()>{
  let orders=bank.engine().order_records();
  // Cancellations and reconciliation take priority over new purchases.
  for old in &orders {
@@ -110,7 +111,10 @@ fn dispatch(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,a
  }
  if !allow_new_submissions{return Ok(())}
  // At most one new physical order per pass; subsequent fills change funding.
- for q in bank.engine().order_records(){
+ let quotes=bank.engine().order_records();
+ let keys:Vec<String>=quotes.iter().map(|q|format!("{}:{}:{}",q["exchangeId"].as_str().unwrap_or(""),q["side"].as_str().unwrap_or(""),q["action"].as_str().unwrap_or(""))).collect();
+ let mut preflight_budget=moloch_live_runtime::scheduling::PreflightBudget::default();
+ for index in moloch_live_runtime::scheduling::preflight_rotation(&keys,preflight_cursor.as_deref()){let q=quotes[index].clone();
   let qid=q["id"].as_u64().ok_or("LIVE_QUOTE_ID")?;
   let prefetch_started=now();
   let early_exit_prefetch=moloch_live_runtime::dispatch_window::may_prefetch(&q,log.never_attempted(qid),log.intents.contains_key(&qid),prefetch_started);
@@ -120,6 +124,7 @@ fn dispatch(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,a
   let request_spec=spec(&order)?;let p=Permit{run_id:c.activation.run_id.clone(),intent_id:qid.to_string(),owner:"Codex".into(),expires_at_ms:now()+15000,maximum_quantity:order.quantity,maximum_cost:money(decimal_units(&order.price)?*order.quantity as i128)};
   // Covered maximum-age exits may spend their activation delay fetching these
   // same read-only facts. No intent/attempt or HTTP write exists at this stage.
+  if !preflight_budget.try_start(){return Ok(())}*preflight_cursor=Some(keys[index].clone());
   if early_exit_prefetch{let _=atomic_json(&c.root.join("exit-prefetch.json"),&json!({"at":iso(prefetch_started),"qid":qid,"stage":"started","createdAtMs":q["createdAt"],"activationAtMs":q["activationAt"],"expiresAtMs":q["expiresAt"],"prefetchStartedAtMs":prefetch_started,"expiryExtended":false}));}
   let facts=snapshots(t,c,&q)?;accept_fresh_book(bank,c,&q,&facts.book,source)?;
   let current=quote(bank,qid)?;let final_at=now();
@@ -168,8 +173,9 @@ pub fn main()->Result<()>{
  let mut read=transport(&c,Box::new(ReadOnlyAuthority),false)?;
  let marker=c.root.join("quiet-boundary.json");if !marker.exists(){read.reserve_legacy_migration_boundary(0,false)?;atomic_json(&marker,&json!({"at":iso(now()),"reason":"single-owner account budget migration"}))?;}
  let (a,p,o)=account(&mut read,&c.root)?;
+ let exact_cash=request(&mut read,&c.root,Endpoint::Account)?;
  let recent=request(&mut read,&c.root,Endpoint::PortfolioFills)?;
- atomic_json(&c.root.join("preflight.json"),&json!({"at":iso(now()),"account":a,"positions":p,"openOrders":o,"recentFills":recent,"adoptsHoldings":false}))?;
+ atomic_json(&c.root.join("preflight.json"),&json!({"at":iso(now()),"account":a,"cashBalance":exact_cash,"positions":p,"openOrders":o,"recentFills":recent,"adoptsHoldings":false}))?;
  if args[1]=="preflight"{println!("Read-only preflight complete; no orders submitted");return Ok(())}
  let stop=c.root.join("EXECUTION_STOP");let global_stop=c.owner_lock.parent().ok_or("LIVE_LOCK_PARENT")?.join("EXECUTION_STOP");if stop.exists()||global_stop.exists(){return Err("LIVE_EXECUTION_STOP".into())}
  let result=(||->Result<()>{
@@ -177,7 +183,7 @@ pub fn main()->Result<()>{
   let seed_path=c.root.join(if c.bank_name=="bank"{"account-seed.json".into()}else{format!("{}-account-seed.json",c.bank_name)});let seed=if seed_path.exists(){load(&seed_path)?}else{
    if !o.data["data"].as_array().ok_or("LIVE_OPEN_ORDERS")?.is_empty(){return Err("LIVE_FOREIGN_OPEN_ORDER".into())}
    if !c.all_markets{for row in p.data["positions"].as_array().ok_or("LIVE_POSITIONS")?{if row["quantity"].as_i64()!=Some(0)&&row["exchangeId"].as_str().is_some_and(|e|c.scope.exchanges.contains_key(e)){return Err("LIVE_INITIAL_SCOPE_ALREADY_HELD".into())}}}
-   let mut v=json!({"runId":c.activation.run_id,"accountSnapshotHash":feedback::digest(&a)?,"availableCash":money(decimal_units(&a.data["myBalance"].to_string())?),"observedAt":a.received_at});
+   let mut v=json!({"runId":c.activation.run_id,"accountSnapshotHash":feedback::digest(&exact_cash)?,"availableCash":money(decimal_units(&exact_cash.data["balance"].to_string())?),"observedAt":exact_cash.received_at});
    if let Some(previous)=&c.predecessor_bank{v["continuation"]=moloch_live_runtime::handoff::verify_flat_predecessor(&c.root,previous,&c.policy)?;}
    if c.all_markets{v["excludedPositionsAtTransfer"]=p.data.clone();}
    atomic_json(&seed_path,&v)?;v
@@ -205,7 +211,9 @@ pub fn main()->Result<()>{
   let start=now();let mut source_state=RestSource::new(&pairs,&c.scope.tournament_id,&iso(start))?;source_state.seed_trade_facts(bank.source_facts())?;
   let (connected,joined_at)=connect_stream(&mut t,&c,&mut bank,&mut source_state)?;let mut stream=Some(connected);
   authority.bind_stream(stream.as_ref().unwrap().failure_signal(),stream.as_ref().unwrap().deadline_ms);
-  let mut relationship_census=None;
+  let mut relationship_census=None;let mut preflight_cursor=None;
+  let mut reconciliation_schedule=moloch_live_runtime::scheduling::ReconciliationSchedule::new(10_000)?;
+  let pending_version=|log:&DispatchLog|moloch_live_runtime::scheduling::PendingVersion{acknowledged:log.acknowledgments.len() as u64,terminal:log.closed.len() as u64};
   let breadth_path=c.root.join(format!("breadth-{}-{}.jsonl",std::process::id(),now()));
   let mut breadth=Recorder::new(&breadth_path).ok();
   if let Some(r)=&mut breadth{r.observe("stream_reset",&json!({"localBoundary":true,"reason":"confirmed_subscription"}),&joined_at)}
@@ -222,10 +230,17 @@ pub fn main()->Result<()>{
     for from in windows.values_mut(){*from=now().saturating_sub(60000)}
    }
    drain_stream(stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?,&mut bank,&mut source_state,&mut breadth,&mut universe)?;
-   let reconciled=reconcile(&mut t,&c,&mut bank,&mut log,&mut reconciliation_cache)?;
+   let mut reconciled=reconcile(&mut t,&c,&mut bank,&mut log,&mut reconciliation_cache)?;
+   reconciliation_schedule.completed(now(),pending_version(&log),reconciled.blocks_new_submissions)?;
    accept(&mut bank,&json!({"type":"tick","receivedAt":iso(now())}))?;
    let selected=if let Some(u)=&mut universe{u.select(&bank.engine().required_exchanges())?}else{c.scope.exchanges.keys().cloned().collect()};
-   for ex in &selected{let market=&c.scope.exchanges[ex];let from=windows[ex];let next=source(&mut t,&c,&mut bank,&mut source_state,ex,market,from)?;windows.insert(ex.clone(),next);drain_stream(stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?,&mut bank,&mut source_state,&mut breadth,&mut universe)?;dispatch(&mut t,&c,&mut bank,&mut log,&authority,&mut source_state,!reconciled.blocks_new_submissions)?;}
+   for ex in &selected{let market=&c.scope.exchanges[ex];let from=windows[ex];let next=source(&mut t,&c,&mut bank,&mut source_state,ex,market,from)?;windows.insert(ex.clone(),next);drain_stream(stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?,&mut bank,&mut source_state,&mut breadth,&mut universe)?;
+    if reconciliation_schedule.due(now(),pending_version(&log))?.is_some(){
+     reconciled=reconcile(&mut t,&c,&mut bank,&mut log,&mut reconciliation_cache)?;
+     reconciliation_schedule.completed(now(),pending_version(&log),reconciled.blocks_new_submissions)?;
+    }
+    let permit_new=reconciliation_schedule.permits_submission(now(),pending_version(&log))?;
+    dispatch(&mut t,&c,&mut bank,&mut log,&authority,&mut source_state,permit_new,&mut preflight_cursor)?;}
    cycles+=1;
    atomic_json(&c.root.join("status.json"),&json!({"at":iso(now()),"pid":std::process::id(),"mode":"actual-contest-trading","runId":c.activation.run_id,"bank":c.bank_name,"cycles":cycles,"realtimeHealthy":stream.as_ref().is_some_and(|s|s.healthy()),"universe":universe.as_ref().map(Universe::status),"selectedReadScopes":selected,"ownedReconciliation":reconciled,"sourceScopes":source_state.scopes(),"breadthCapture":{"path":breadth_path,"state":breadth.as_ref().map(Recorder::status)},"report":bank.engine().report()?,"queue":t.admission_state()?,"actualOrders":log.acknowledgments.len(),"terminalOrders":log.closed.len(),"entryUntil":iso(c.activation.entry_until_ms),"profitabilityEstablished":false}))?;
    // Existing orders and the first trading cycle precede optional research reads.

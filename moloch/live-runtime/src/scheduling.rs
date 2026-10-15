@@ -287,3 +287,12 @@ mod tests {
         assert_eq!(cursor,2); assert_eq!(expensive,2);
     }
 }
+
+/// Stable market/side/action keys retain fairness when quote IDs are refreshed.
+pub fn preflight_rotation(keys:&[String],last:Option<&str>)->Vec<usize>{
+ let mut order:Vec<usize>=(0..keys.len()).collect();order.sort_by_key(|i|(last.is_some_and(|at|keys[*i].as_str()<=at),keys[*i].clone(),*i));order
+}
+#[cfg(test)]mod rotation_tests{use super::*;
+ #[test]fn changing_quote_ids_does_not_reset_market_rotation(){let keys=vec!["B:YES:sell".into(),"A:YES:buy".into(),"C:NO:sell".into()];assert_eq!(preflight_rotation(&keys,None),vec![1,0,2]);assert_eq!(preflight_rotation(&keys,Some("B:YES:sell")),vec![2,1,0]);assert_eq!(preflight_rotation(&keys,Some("C:NO:sell")),vec![1,0,2]);}
+ #[test]fn absent_cursor_scope_and_multiple_quotes_keep_stable_order(){let keys=vec!["A".into(),"C".into(),"C".into(),"D".into()];assert_eq!(preflight_rotation(&keys,Some("B")),vec![1,2,3,0]);assert!(preflight_rotation(&[],Some("B")).is_empty());}
+}

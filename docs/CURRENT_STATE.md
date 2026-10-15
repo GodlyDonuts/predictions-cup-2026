@@ -1,6 +1,15 @@
 # Moloch current production ownership — October 15
 
-## Current verified runtime: V16; trading continues during development
+## V18 is live; exact-cash repair in verification
+
+At 2026-10-15T11:11Z, sole VPS worker PID145818 was processing fresh journal events and official account/contract/book reads, with no execution STOP. V18 started10:58:35Z after a clean maintenance drain; source a8d33913, binary SHA256022f3fd1c671dbc930240069aea9ed3cc550bdc455a7e82e0d9b2a546cea4512. The first broad-read cycle had not completed, and status still contained the prior stopped PID; live process and source advancement were verified independently. Submission deferrals report LIVE_ACCOUNT_CASH_RECONCILIATION_REQUIRED.
+
+The cause is an exact ledger cash value70851.605 versus the tournament summary rounded to70851.61; the independent official scoped account receipt confirms70851.605. [Exact cash repair](MOLOCH_EXACT_CASH_RECONCILIATION_20261015.md) and [bounded preflight/reconciliation scheduling](MOLOCH_BOUNDED_SCHEDULING_20261015.md) are being checked before a controlled rollout. No tolerance, bank reset or fabricated fill is used. Production has27 actual fills and realized17.825000: inherited17.935000 and new trading−0.110000, unchanged. This is a verified trading blocker, not evidence of profitable new execution.
+
+V18 shares immutable books across transactional engine clones and restores managed31/discovery3 read coverage.94 native/115 runtime/104SDK checks passed. Exact frozen16,535-event production replay improved48.163→14.125s with identical financial report/orders/fills/cursors/hash chain. The exact stopped-prefix identity bridge preserves all existing financial history. [Measurements and deployment](MOLOCH_ENGINE_CLONE_BASELINE_20261015.md), [coverage tradeoff](MOLOCH_MANAGED_READ_CAPACITY_20261015.md). Original risk allocation and14:44:34.413Z entry cutoff remain unchanged. These performance changes do not demonstrate fills or strategy profitability.
+
+
+## Historical V16 observation
 
 At2026-10-15T09:59:25.639Z V16 PID130984 completed a healthy actual-trading cycle, with81 official order acknowledgments,78 dispatch-terminal bindings,25 actual fills and no execution STOP. Realized lot-basis gain remained11.110000: inherited11.220000, new trading−0.110000. V16 started09:57:27 after a planned V15 drain09:55:43. Every one of79 preceding submission attempts had an original or historically recovered acknowledgment; queue unknown acceptance was empty, active work was absent and all132 idempotency bindings were retained. The maintenance interval included independent queue/dispatch verification and native history replay.
 
