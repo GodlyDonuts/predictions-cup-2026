@@ -3,6 +3,7 @@ import {createHash} from 'node:crypto';import {pathToFileURL} from 'node:url';
 import {createMoloch,advanceMoloch,reportMoloch,assertMoloch} from './engine.mjs';
 import {payloadHash} from '../execution/ledger.mjs';
 const verifiedTails=new WeakMap();
+import {atomicPaperJson} from '../live-paper/paper-persistence.mjs';
 const byteHash=bytes=>createHash('sha256').update(bytes).digest('hex');
 function prefixHash(file,bytes){const fd=fs.openSync(file,'r'),hash=createHash('sha256');try{let offset=0;while(offset<bytes){const chunk=Buffer.alloc(Math.min(bytes-offset,1048576)),n=fs.readSync(fd,chunk,0,chunk.length,offset);if(n!==chunk.length)throw Error('MOLOCH_VERIFIED_PARENT_SOURCE_SHORT');hash.update(chunk);offset+=n;}return hash.digest('hex');}finally{fs.closeSync(fd);}}
 export function reuseCompletedTail(parent){
@@ -81,7 +82,7 @@ export async function run(args,{processingClock=null,verifiedParent=null}={}){
   fs.mkdirSync(out,{recursive:true});const startedAt=new Date().toISOString(),source=fs.statSync(input),sourceHash=createHash('sha256');
   const journal=path.join(out,'events.jsonl');let previous='',count=0,bytes=0,preCutoffEventsSkipped=0;
   const decode=o.format==='journal'?journalDecoder():row=>row;
-  const save=()=>{const body={state,source:{path:input,dev:source.dev,ino:source.ino,consumedBytes:bytes,consumedSha256:sourceHash.copy().digest('hex')},sequence:count,lastHash:previous,...(continuation?{continuation}:{})};const temp=path.join(out,'state.tmp');fs.writeFileSync(temp,JSON.stringify({...body,hash:payloadHash(body)}));fs.renameSync(temp,path.join(out,'state.json'));};
+  const save=async()=>{const body={state,source:{path:input,dev:source.dev,ino:source.ino,consumedBytes:bytes,consumedSha256:sourceHash.copy().digest('hex')},sequence:count,lastHash:previous,...(continuation?{continuation}:{})};await atomicPaperJson(path.join(out,'state.json'),{...body,hash:payloadHash(body)});};
   const accept=event=>{
     // Validate on a copy, so a failed event cannot partially alter the durable wallet.
     const candidate=structuredClone(state);advanceMoloch(candidate,event);
@@ -102,17 +103,17 @@ export async function run(args,{processingClock=null,verifiedParent=null}={}){
         const st=fs.statSync(input);if(st.dev!==source.dev||st.ino!==source.ino||st.size<offset)throw Error('MOLOCH_SOURCE_REPLACED');
         if(st.size>offset){const n=Math.min(st.size-offset,1024*1024),chunk=Buffer.alloc(n),read=fs.readSync(fd,chunk,0,n,offset);if(read!==n)throw Error('MOLOCH_SOURCE_SHORT_READ');offset+=n;sourceHash.update(chunk);bytes+=n;pending=Buffer.concat([pending,chunk]);
           let newline;while((newline=pending.indexOf(10))>=0){parsedBytes+=newline+1;const line=pending.subarray(0,newline).toString('utf8');pending=Buffer.from(pending.subarray(newline+1));if(line.trim()){const event=decode(JSON.parse(line));const alreadyConsumed=parent&&input===parent.snapshot.source.path&&parsedBytes<=parent.snapshot.source.consumedBytes;if(alreadyConsumed||!parent&&Date.parse(event.receivedAt)<Date.parse(startedAt)){preCutoffEventsSkipped++;continue;}const processedAt=processingClock?await processingClock(event,count+1):new Date().toISOString();accept({...event,processedAt});}}
-          if(pending.length>1024*1024)throw Error('MOLOCH_EVENT_TOO_LARGE');save();
+          if(pending.length>1024*1024)throw Error('MOLOCH_EVENT_TOO_LARGE');await save();
         }else await new Promise(resolve=>setTimeout(resolve,250));
       }}finally{fs.closeSync(fd);}
       if(pending.length)throw Error('MOLOCH_PARTIAL_FINAL_EVENT');
     }
-    save();const report={...reportMoloch(state),mode:o.follow?'local_paper_tail':'historical_paper_replay',startedAt,
+    await save();const report={...reportMoloch(state),mode:o.follow?'local_paper_tail':'historical_paper_replay',startedAt,
       source:{path:input,sha256:sourceHash.digest('hex'),bytes,format:o.format},eventJournalHash:previous,
       externalSourceProvenanceVerified:o.format==='book-export'?'bounded_export_hash_and_record_chain_only':o.format==='journal'?'source_journal_hash_chain_only':false,
       prospectiveCutoff:o.follow?startedAt:null,preCutoffEventsSkipped,continuation,
       sourcePrefixNotIndependentlyReproduced:true,liveConnectionVerified:false};
     fs.writeFileSync(path.join(out,'report.json'),JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify(report,null,2));return report;
-  }catch(error){save();fs.writeFileSync(path.join(out,'failure.json'),JSON.stringify({at:new Date().toISOString(),error:error.message,events:count}));throw error;}
+  }catch(error){await save();fs.writeFileSync(path.join(out,'failure.json'),JSON.stringify({at:new Date().toISOString(),error:error.message,events:count}));throw error;}
 }
 if(process.argv[1]&&import.meta.url===pathToFileURL(path.resolve(process.argv[1])).href)run(process.argv.slice(2)).catch(e=>{console.error(e.message);process.exitCode=1;});
