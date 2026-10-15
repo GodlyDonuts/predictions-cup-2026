@@ -25,7 +25,7 @@ use super::*;
 #[derive(Clone)]
 struct Snapshot{cash:i128,power:i128,available:i128,debt:i128,components:Value,start:i64,end:i64}
 #[derive(Clone)]
-pub(super) struct Ledger{scope:Value,snapshot:Snapshot,wallet_cash:i128,opening_cash:i128,opening_wallet:i128,drawn:i128,repaid:i128,settled:i128,fill_count:usize,events:BTreeMap<String,String>,orders:BTreeSet<String>,settlements:BTreeMap<String,String>}
+pub(super) struct Ledger{scope:Value,snapshot:Snapshot,snapshot_receipts:Value,wallet_cash:i128,opening_cash:i128,opening_wallet:i128,drawn:i128,repaid:i128,settled:i128,fill_count:usize,events:BTreeMap<String,String>,orders:BTreeSet<String>,settlements:BTreeMap<String,String>}
 fn need(ok:bool,why:&'static str)->Result<()>{if ok{Ok(())}else{Err(why)}}
 fn money_value(v:&Value)->Result<i128>{let n=if let Some(s)=v.as_str(){amount(s)?}else{amount(&v.to_string())?};need(n>=0,"COLLATERAL_NEGATIVE")?;Ok(n)}
 fn signed_money(v:&Value)->Result<i128>{if let Some(s)=v.as_str(){amount(s)}else{amount(&v.to_string())}}
@@ -49,6 +49,11 @@ fn snapshot(v:&Value,s:&Value,at:i64)->Result<Snapshot>{
  Ok(Snapshot{cash,power,available,debt,components:components.into(),start:sa.min(sc),end:ea.max(ec)})
 }
 impl Engine{
+ /// Original admitted receipts, recovered only by replaying the actual bank.
+ /// These are private evidence, not an account-wide snapshot-isolation claim.
+ pub fn collateral_snapshot_receipts(&self)->Option<&Value>{self.collateral.as_ref().map(|l|&l.snapshot_receipts)}
+ pub fn collateral_accounted_fill_count(&self)->Option<usize>{self.collateral.as_ref().map(|l|l.fill_count)}
+ pub fn collateral_settlement_recorded(&self,id:&str)->bool{self.collateral.as_ref().is_some_and(|l|l.settlements.contains_key(id))}
  pub fn collateral_report(&self)->Result<Value>{let l=self.collateral.as_ref().ok_or("COLLATERAL_NOT_INITIALIZED")?;let cash=add(l.snapshot.cash,self.wallet.cash-l.wallet_cash)?;let adjustment=cash-l.opening_cash-(self.wallet.cash-l.opening_wallet);
   Ok(json!({"version":1,"officialCash":money(cash),"observedOfficialCash":money(l.snapshot.cash),"pendingNativeFillEconomics":self.fills.len()!=l.fill_count||self.wallet.cash!=l.wallet_cash,"officialDebt":money(l.snapshot.debt),"netCashAfterDebt":money(cash-l.snapshot.debt),"collateralCashAdjustment":money(adjustment),"availableAdvanceObserved":money(l.snapshot.available),"availableAdvanceAdmittedForSizing":"0.000000","cumulativeBorrowed":money(l.drawn),"cumulativeRepaid":money(l.repaid),"settlementPayout":money(l.settled),"componentStates":l.snapshot.components,"events":l.events.len(),"actualSettlements":l.settlements.len(),"snapshotAtMs":l.snapshot.end,"cashViewIncludesLaterNativeFills":true,"officialAccountProfit":Value::Null}))
  }
@@ -69,7 +74,7 @@ impl Engine{
   let after=snapshot(&e["after"],scope,at)?;need(at-after.end<=20_000,"COLLATERAL_AFTER_STALE")?;
   if e["type"]=="actual_collateral_baseline"{
    need(self.collateral.is_none()&&after.debt==0,"COLLATERAL_BASELINE_DEBT_OR_REPEAT")?;
-   self.collateral=Some(Ledger{scope:scope.clone(),snapshot:after,wallet_cash:self.wallet.cash,opening_cash:money_value(&e["after"]["account"]["data"]["balance"])?,opening_wallet:self.wallet.cash,drawn:0,repaid:0,settled:0,fill_count:self.fills.len(),events:[(event_id.into(),digest)].into(),orders:BTreeSet::new(),settlements:BTreeMap::new()});return Ok(())
+   self.collateral=Some(Ledger{scope:scope.clone(),snapshot:after,snapshot_receipts:e["after"].clone(),wallet_cash:self.wallet.cash,opening_cash:money_value(&e["after"]["account"]["data"]["balance"])?,opening_wallet:self.wallet.cash,drawn:0,repaid:0,settled:0,fill_count:self.fills.len(),events:[(event_id.into(),digest)].into(),orders:BTreeSet::new(),settlements:BTreeMap::new()});return Ok(())
   }
   let mut l=self.collateral.clone().ok_or("COLLATERAL_BASELINE_REQUIRED")?;need(l.scope==*scope,"COLLATERAL_SCOPE_CHANGED")?;
   let before=snapshot(&e["before"],scope,at)?;
@@ -96,6 +101,10 @@ impl Engine{
     if a["componentId"].is_null(){need(own_floor==0&&own_debt==0&&relationships.is_empty(),"COLLATERAL_UNLINKED_AFTER")?;}else{let k=a["componentId"].as_str().ok_or("COLLATERAL_COMPONENT_ID")?;let component=after.components.get(k).ok_or("COLLATERAL_OWN_COMPONENT_AFTER")?;need(component["coveredExchangeIds"].as_array().is_some_and(|ids|ids.iter().any(|id|id.as_u64().map(|n|n.to_string()).as_deref()==Some(q.exchange.as_str()))),"COLLATERAL_OWN_COMPONENT_MEMBERSHIP")?;need(money_value(&component["outstandingAdvance"])?==money_value(&a["outstandingAdvanceAfter"])?&&!component["guaranteedPayoutFloor"].is_null()&&money_value(&component["guaranteedPayoutFloor"])?==money_value(&a["guaranteedPayoutFloorAfter"])?,"COLLATERAL_OWN_COMPONENT_AFTER")?;}
    }
    need(self.wallet.cash-l.wallet_cash==trade_cash&&before.power-after.power==impact,"COLLATERAL_NATIVE_CASH_OR_POWER")?;
+  }else if e["type"]=="actual_collateral_checkpoint"{
+   // Observation only. Nothing about an elapsed interval creates money or
+   // excuses an unaccounted execution/settlement. Keep the same120s window.
+   need(self.fills.len()==l.fill_count&&self.wallet.cash==l.wallet_cash&&after.cash==before.cash&&after.debt==before.debt&&after.power==before.power&&after.available==before.available&&after.components==before.components,"COLLATERAL_CHECKPOINT_ECONOMICS_CHANGED")?;
   }else if e["type"]=="actual_collateral_settlement"{
    need(self.fills.len()==l.fill_count&&self.wallet.cash==l.wallet_cash,"COLLATERAL_UNACCOUNTED_FILLS")?;
    let r=&e["settlements"];let endpoint=format!("/tournaments/{}/portfolio/settlements?limit=200",scope["tournamentSlug"].as_str().ok_or("COLLATERAL_SLUG")?);let(start,end)=receipt(r,&endpoint,at)?;
@@ -109,7 +118,7 @@ impl Engine{
    need(after.debt<=before.debt,"COLLATERAL_SETTLEMENT_NEW_BORROW")?;repaid=before.debt-after.debt;
   }else{return Err("COLLATERAL_EVENT_TYPE")}
   need(after.debt-before.debt==drawn-repaid&&after.cash-before.cash==self.wallet.cash-l.wallet_cash+drawn-repaid,"COLLATERAL_CASH_DEBT_EQUATION")?;
-  l.drawn=add(l.drawn,drawn)?;l.repaid=add(l.repaid,repaid)?;l.snapshot=after;l.wallet_cash=self.wallet.cash;l.fill_count=self.fills.len();l.events.insert(event_id.into(),digest);self.collateral=Some(l);Ok(())
+  l.drawn=add(l.drawn,drawn)?;l.repaid=add(l.repaid,repaid)?;l.snapshot=after;l.snapshot_receipts=e["after"].clone();l.wallet_cash=self.wallet.cash;l.fill_count=self.fills.len();l.events.insert(event_id.into(),digest);self.collateral=Some(l);Ok(())
  }
 }
 fn id_value(v:&Value)->Result<String>{id(v)}

@@ -17,6 +17,17 @@ pub struct Activation {pub run_id:String,pub entry_until_ms:u64,pub maximum_comm
 #[derive(Clone)]struct CancelReady {spec:RequestSpec,permit:Permit,snapshots:CancelSnapshotSet}
 #[derive(Clone)]enum Ready {Order(OrderReady),Cancel(CancelReady)}
 pub struct ProductionAuthority {package_ready:Mutex<Option<crate::package_authority::Prepared>>,daily:Mutex<Option<(DailyEntryWindows,u64)>>,activation:Activation,scope:Scope,stops:Vec<PathBuf>,control:PathBuf,control_hash:String,binary:PathBuf,_lease:Arc<ExclusiveLock>,ready:Mutex<Option<Ready>>,owned:Mutex<std::collections::BTreeSet<String>>,recovery:Mutex<Option<String>>,stream:Mutex<Option<(Arc<std::sync::atomic::AtomicBool>,u64)>>}
+/// Actual attributed cash only. Borrowed principal remains outside unlevered
+/// Wallet sizing; until original fill economics reconcile it cannot authorize
+/// a replacement physical order. Cancellation keeps its separate authority.
+pub fn reconciled_expected_cash(bank:&Session)->Result<i128>{
+ let base=decimal_units(bank.live_account_seed().ok_or_else(||denied("LIVE_ACCOUNT_SEED"))?["availableCash"].as_str().ok_or_else(||denied("LIVE_ACCOUNT_SEED"))?)?.checked_add(bank.engine().wallet.cash).and_then(|n|n.checked_sub(bank.engine().wallet.initial)).and_then(|n|n.checked_add(bank.engine().opening_inventory_cost())).ok_or_else(||denied("LIVE_ACCOUNT_CASH_RANGE"))?;
+ if bank.engine().collateral_snapshot_receipts().is_none(){return Ok(base)}
+ let c=bank.engine().collateral_report().map_err(|_|denied("LIVE_COLLATERAL_LEDGER"))?;
+ if c["pendingNativeFillEconomics"]!=false{return Err("LIVE_COLLATERAL_FILL_RECONCILIATION_REQUIRED".into())}
+ let adjustment=decimal_units(c["collateralCashAdjustment"].as_str().ok_or_else(||denied("LIVE_COLLATERAL_LEDGER"))?)?;
+ Ok(base.checked_add(adjustment).ok_or("LIVE_ACCOUNT_CASH_RANGE")?)
+}
 fn hash_bytes(bytes:&[u8])->String{format!("{:x}",Sha256::digest(bytes))}
 fn clock(s:&str)->Option<u64>{chrono::DateTime::parse_from_rfc3339(s).ok().and_then(|d|u64::try_from(d.timestamp_millis()).ok())}
 fn denied(code:&str)->TransportError{TransportError{code:code.into(),status:None,may_have_executed:false,retry_after_ms:0,order_id:None,api_code:None}}
@@ -51,7 +62,7 @@ impl ProductionAuthority {
   let ex=quote["exchangeId"].as_str().ok_or("LIVE_INTENT_SCOPE")?;
   let expected_signed=bank.engine().wallet.quantity(ex,moloch_replay::Side::Yes) as i128-bank.engine().wallet.quantity(ex,moloch_replay::Side::No) as i128;
   let market_cost=bank.engine().wallet.market_cost(ex)+bank.engine().order_records().iter().filter(|q|q["exchangeId"]==ex&&q["action"]=="buy"&&q["retired"]==false).map(|q|decimal_units(q["price"].as_str().unwrap_or("invalid")).map(|p|p*(q["quantity"].as_u64().unwrap_or(0)-q["filled"].as_u64().unwrap_or(0)) as i128)).collect::<std::result::Result<Vec<_>,_>>()?.iter().sum::<i128>();
-  let expected_cash=decimal_units(bank.live_account_seed().ok_or("LIVE_ACCOUNT_SEED")?["availableCash"].as_str().ok_or("LIVE_ACCOUNT_SEED")?)?+bank.engine().wallet.cash-bank.engine().wallet.initial+bank.engine().opening_inventory_cost();
+  let expected_cash=reconciled_expected_cash(bank)?;
   *self.ready.lock().unwrap()=Some(Ready::Order(OrderReady{spec,permit,quote,ledger:bank.engine().report()?,snapshots,owned,expected_signed,market_cost,expected_cash,entry_until:self.entry_until_ms()}));Ok(())
  }
  pub fn prepare_cancel(&self,bank:&Session,qid:u64,spec:RequestSpec,permit:Permit,snapshots:CancelSnapshotSet)->Result<()> {

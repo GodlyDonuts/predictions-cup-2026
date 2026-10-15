@@ -33,6 +33,15 @@ fn bounded(file:&File,maximum:u64)->Result<Vec<u8>>{let mut f=file.try_clone()?;
 pub enum ReceiptStore { Ordinary, Package }
 pub struct RetainedReceipt {file:File,path:PathBuf,root:PathBuf,identity:Value,raw_sha256:String,receipt:Receipt}
 impl RetainedReceipt {
+ /// Digest must come from an already admitted bank fill or the original held
+ /// dispatch record, never an API-selected file path. The filename and decoded
+ /// original Receipt must agree exactly.
+ pub fn from_recorded_digest(root:&Path,digest:&str,store:ReceiptStore)->Result<Self>{
+  need(digest.len()==64&&digest.bytes().all(|b|b.is_ascii_digit()||(b'a'..=b'f').contains(&b)),"COLLATERAL_SOURCE_DIGEST")?;
+  let path=match &store{ReceiptStore::Ordinary=>root.join("receipts").join(format!("{digest}.json")),ReceiptStore::Package=>root.join("package-receipts").join(format!("receipt-{digest}.json"))};no_links(&path)?;let file=File::open(&path)?;let raw=bounded(&file,MAX_RECEIPT)?;let receipt:Receipt=serde_json::from_slice(&raw)?;
+  need(feedback::digest(&receipt)?==digest,"COLLATERAL_SOURCE_DIGEST")?;Self::open(root,&receipt,store)
+ }
+ pub fn receipt(&self)->&Receipt{&self.receipt}
  pub fn open(root:&Path,receipt:&Receipt,store:ReceiptStore)->Result<Self>{
   no_links(root)?;let root=root.canonicalize()?;let digest=feedback::digest(receipt)?;
   let path=match store{ReceiptStore::Ordinary=>root.join("receipts").join(format!("{digest}.json")),ReceiptStore::Package=>root.join("package-receipts").join(format!("receipt-{digest}.json"))};
@@ -48,6 +57,7 @@ impl RetainedReceipt {
 impl Snapshot<'_>{fn value(&self)->Value{json!({"account":self.account.receipt,"collateral":self.collateral.receipt})}}
 pub enum Operation<'a>{
  Baseline{after:Snapshot<'a>},
+ Checkpoint{before:Snapshot<'a>,after:Snapshot<'a>},
  Execution{before:Snapshot<'a>,after:Snapshot<'a>,acknowledgments:&'a [&'a RetainedReceipt],fill_tapes:&'a [&'a RetainedReceipt]},
  Settlement{before:Snapshot<'a>,after:Snapshot<'a>,settlements:&'a RetainedReceipt,settlement_ids:&'a [String]},
 }
@@ -87,7 +97,7 @@ fn capture(bank:&Session,b:&Boundary<'_>,at:i64)->Result<Value>{
  Ok(json!({"root":root,"scope":b.transport.scope(),"accountScope":b.transport.account_scope(),"runId":seed["runId"],"manifestHash":bank.manifest_hash(),"reportHash":hash(&bank.engine().report()?)?,"nativeHead":bank.durable_head(),"ordinaryDescriptor":ordinary,"packageDescriptor":packages,"ordinarySha256":o.sha256,"packageSha256":p.sha256,"originalAckReceiptHashes":o.acks.union(&p.acks).collect::<Vec<_>>(),"queue":queue,"leaseDescriptor":lease,"ownerLeaseSha256":raw_hash(&lease_bytes),"unsubmitted":pending}))
 }
 fn receipt_clocks(r:&Receipt,at:i64)->Result<()> {let start=clock(&r.request_started_at)?;let end=clock(&r.received_at)?;need(r.status==200&&start>=0&&start<=end&&end<=at,"COLLATERAL_RECEIPT_CLOCK_OR_STATUS")}
-fn sources<'a>(op:&Operation<'a>)->Vec<&'a RetainedReceipt>{let mut v=Vec::new();match op{Operation::Baseline{after}=>v.extend([after.account,after.collateral]),Operation::Execution{before,after,acknowledgments,fill_tapes}=>{v.extend([before.account,before.collateral,after.account,after.collateral]);v.extend_from_slice(acknowledgments);v.extend_from_slice(fill_tapes);},Operation::Settlement{before,after,settlements,..}=>v.extend([before.account,before.collateral,after.account,after.collateral,*settlements])}v}
+fn sources<'a>(op:&Operation<'a>)->Vec<&'a RetainedReceipt>{let mut v=Vec::new();match op{Operation::Baseline{after}=>v.extend([after.account,after.collateral]),Operation::Checkpoint{before,after}=>v.extend([before.account,before.collateral,after.account,after.collateral]),Operation::Execution{before,after,acknowledgments,fill_tapes}=>{v.extend([before.account,before.collateral,after.account,after.collateral]);v.extend_from_slice(acknowledgments);v.extend_from_slice(fill_tapes);},Operation::Settlement{before,after,settlements,..}=>v.extend([before.account,before.collateral,after.account,after.collateral,*settlements])}v}
 fn same_fill(native:&Value,event:&Value)->Result<bool>{
  for(n,e)in [("orderId","orderId"),("actualOrderId","actualOrderId"),("sourceId","fillId"),("exchangeId","exchangeId"),("marketId","marketId"),("side","side"),("action","action"),("quantity","quantity"),("price","price"),("fee","fee")]{if native[n]!=event[e]{return Ok(false)}}
  Ok(chrono::DateTime::parse_from_rfc3339(native["executedAt"].as_str().ok_or("COLLATERAL_FILL_CLOCK")?)?==chrono::DateTime::parse_from_rfc3339(event["executedAt"].as_str().ok_or("COLLATERAL_FILL_CLOCK")?)?)
@@ -112,10 +122,10 @@ pub struct Committed {pub source_sequence:u64,pub event_sha256:String,pub durabl
 pub fn prepare<'a>(bank:&Session,b:&Boundary<'_>,op:Operation<'a>,processed:&str)->Result<Transition<'a>>{
  let at=clock(processed)?;let captured=capture(bank,b,at)?;let receipts=sources(&op);let root=b.root.canonicalize()?;
  for r in &receipts{need(r.root==root,"COLLATERAL_RECEIPT_OTHER_ROOT")?;r.verify()?;receipt_clocks(&r.receipt,at)?;}
- let(kind,before,after)=match &op{Operation::Baseline{after}=>("actual_collateral_baseline",None,*after),Operation::Execution{before,after,..}=>("actual_collateral_execution",Some(*before),*after),Operation::Settlement{before,after,..}=>("actual_collateral_settlement",Some(*before),*after)};
+ let(kind,before,after)=match &op{Operation::Baseline{after}=>("actual_collateral_baseline",None,*after),Operation::Checkpoint{before,after}=>("actual_collateral_checkpoint",Some(*before),*after),Operation::Execution{before,after,..}=>("actual_collateral_execution",Some(*before),*after),Operation::Settlement{before,after,..}=>("actual_collateral_settlement",Some(*before),*after)};
  let scope=b.transport.scope();let mut event=json!({"type":kind,"source":"official_sig_api_v1","receivedAt":processed,"processedAt":processed,"bankScope":{"runId":captured["runId"],"bankManifestHash":bank.manifest_hash(),"tournamentId":scope.tournament_id,"tournamentSlug":scope.tournament_slug,"profileId":after.account.receipt.data["id"]},"expectedReportHash":captured["reportHash"],"boundary":{"nativeHead":captured["nativeHead"],"ordinaryDispatchHash":captured["ordinarySha256"],"packageDispatchHash":captured["packageSha256"],"queueHeadHash":hash(&captured["queue"])?,"ownerLeaseHash":captured["ownerLeaseSha256"],"unknownCount":0,"activeRequest":null,"unsubmittedOrderIds":captured["unsubmitted"]},"after":after.value()});
  if let Some(before)=before{event["before"]=before.value();}
- match &op{Operation::Baseline{..}=>{},Operation::Execution{acknowledgments,fill_tapes,after,..}=>{verify_execution(bank,b,acknowledgments,fill_tapes,*after,&captured,processed)?;event["receipts"]=json!(acknowledgments.iter().map(|r|&r.receipt).collect::<Vec<_>>());},Operation::Settlement{settlements,settlement_ids,..}=>{event["settlements"]=serde_json::to_value(&settlements.receipt)?;event["settlementIds"]=json!(settlement_ids);}}
+ match &op{Operation::Baseline{..}|Operation::Checkpoint{..}=>{},Operation::Execution{acknowledgments,fill_tapes,after,..}=>{verify_execution(bank,b,acknowledgments,fill_tapes,*after,&captured,processed)?;event["receipts"]=json!(acknowledgments.iter().map(|r|&r.receipt).collect::<Vec<_>>());},Operation::Settlement{settlements,settlement_ids,..}=>{event["settlements"]=serde_json::to_value(&settlements.receipt)?;event["settlementIds"]=json!(settlement_ids);}}
  event["originalSourceEvidence"]=json!(receipts.iter().map(|r|r.evidence()).collect::<Result<Vec<_>>>()?);event["eventId"]=json!(format!("collateral:{}",hash(&event)?));
  let mut preview=bank.engine().clone();preview.advance(&event).map_err(|s|->Box<dyn std::error::Error>{s.into()})?;
  need(capture(bank,b,at)?==captured,"COLLATERAL_BOUNDARY_CHANGED")?;for r in &receipts{r.verify()?;}
