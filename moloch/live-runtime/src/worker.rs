@@ -161,7 +161,7 @@ pub fn main()->Result<()>{
   let authority=Arc::new(ProductionAuthority::new(c.activation.clone(),c.scope.clone(),vec![stop.clone(),global_stop.clone()],path.clone(),std::env::current_exe()?,lease.clone())?);
   let mut log=DispatchLog::open(&c.root.join("dispatch.ndjson"))?;log.require_resolved_attempts()?;
   // A durable official acknowledgment can be replayed after a crash before ledger commit.
-  for (qid,v) in log.acknowledgments.clone(){let r:Receipt=serde_json::from_value(v)?;let q=quote(&bank,qid)?;let e=feedback::acknowledgment(&q,&r,&iso(now()))?;authority.bind_owned(e["actualOrderId"].as_str().ok_or("LIVE_ACTUAL_ID")?.into());accept(&mut bank,&e)?;}
+  for (qid,v) in log.acknowledgments.clone(){let r:Receipt=serde_json::from_value(v)?;let q=quote(&bank,qid)?;let e=if let Some(recovery)=log.recovered.get(&qid){feedback::recovered_acknowledgment(&q,recovery["actualOrderId"].as_str().ok_or("LIVE_RECOVERY_ACTUAL_ID")?,&c.scope.tournament_id,&r,&serde_json::from_value(recovery["fills"].clone())?,&iso(now()))?}else{feedback::acknowledgment(&q,&r,&iso(now()))?};authority.bind_owned(e["actualOrderId"].as_str().ok_or("LIVE_ACTUAL_ID")?.into());accept(&mut bank,&e)?;}
   drop(read);let mut t=transport(&c,Box::new(SharedAuthority(authority.clone())),true)?;
   let state=t.admission_state()?;if state["state"]["unknown"].as_object().is_some_and(|m|!m.is_empty()){return Err("LIVE_QUEUE_UNKNOWN_ACCEPTANCE".into())}
   let mut universe=if c.all_markets{Some(Universe::new(&c.scope.exchanges,seed.get("excludedPositionsAtTransfer").ok_or("LIVE_UNIVERSE_SEED")?,c.policy["maximumMarkets"].as_u64().ok_or("LIVE_MARKET_CAP")? as usize)?)}else{None};
