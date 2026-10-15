@@ -1,5 +1,9 @@
 # Moloch current production ownership — October 15
 
+## Latest: V23 daily windows launched; replay in progress
+
+The human-authorized daily schedule is installed in V23, started18:39:28 UTC asPID196635 with no STOP. Native121/runtime194 checks and locked releases pass. The fresh78,640-event stopped history has exact financial replay parity, and the fourth bridge preserves all three prior approvals. Same bank, seed, holdings, queue v1 and40,000 total/10,000-per-market caps. Original entry cutoff stays the immutable anchor; daily windows end at the official2026-11-04T17:00 UTC tournament end. Fresh durable-window and physical-activity verification remain pending replay. [Rollout and proofs](MOLOCH_DAILY_ENTRY_WINDOWS_20261015.md#v23-production-launch).
+
 ## Daily entry windows authorized; V23 validation in progress
 
 The human authorized daily entry windows at the unchanged40,000 total/10,000-per-market limits. V22 was found stopped onSTREAM_DNS at15:14:19UTC, then restored unchanged asPID182582 after resolved-attempt/shared-queue verification. Fresh healthy progress at18:28:48UTC has307 acknowledged orders/86 actual fills/301 terminals. Existing inventory management continues; new entries still observe the original expired cutoff until the checked daily-window release is promoted. All 121 native and 194 runtime checks and locked ARM64 releases pass. The original 16,535-event prefix has exact financial replay parity. Fresh stopped-prefix and launch verification remain pending. [Daily authorization, exact window formula and rollout evidence](MOLOCH_DAILY_ENTRY_WINDOWS_20261015.md).

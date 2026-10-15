@@ -25,3 +25,11 @@ Tests cover exact UTC boundaries, skipped offline days, final partial window, ca
 All **121 native** and **194 runtime** checks pass on ARM64 with locked release builds. The unchanged SDK retains its prior150 passing checks. Seven changed source hashes match the build host exactly. The immutable V23 binary SHA256 is `3e1e010c57e74ecada3608cecec00dbf58151a4cbe20b86586d352d50d3886dd`; native financial identity is `8520add404082af22ae484409cfcb972a895ffe612dec014c9d668c70b7ca282`. The saved16,535-event original prefix replays with exact report, order, fill and cursor parity, zero account requests and no source mutation. [Build evidence](../research/moloch-daily-windows-20261015/checks.json) and [frozen-prefix proof](../research/moloch-daily-windows-20261015/frozen-prefix-parity.json).
 
 Fresh stopped-prefix proof and actual V23 deployment are not yet claimed at this source checkpoint.
+
+## V23 production launch
+
+V23 started **2026-10-15T18:39:28.258Z** as PID196635 with no execution STOP. The fresh stopped journal had **78,640 events /233,572,115 bytes**; the new engine reproduced every report, order, fill and source cursor in172,555ms with zero account requests and no mutation. All314 physical attempts were acknowledged,459 queue intents remained, and the queue had no unknown acceptance, active admission or manual review. A normal worker stop rewrote the planned STOP to STOPPED_OR_OWNER_LOST; promotion verified its stopped PID and timestamp against the planned boundary before archiving it.
+
+The fourth bridge preserves all three prior approvals. Bridge hash: `45447fe80f0307c65ef1a91435af02524da0100c514b7ef561f3886e88162669`. Only the immutable release, matching binary binding, explicit daily mandate and checked identity bridge changed. Bank manifest, original policy/activation anchor, capital caps, holdings, seed, dispatch keys, queue v1 and recovery budget were retained. Approval timestamp2026-10-15T18:39:27.755Z records owner application of the already-given human authorization.
+
+[Stopped-prefix proof](../research/moloch-daily-windows-20261015/stopped-prefix-parity.json) · [Launch receipt](../research/moloch-daily-windows-20261015/rollout.json). Startup is verified; the first durable daily-window event and fresh physical activity remain pending history replay at this checkpoint.
