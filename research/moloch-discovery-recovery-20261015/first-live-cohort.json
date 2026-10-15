@@ -1,0 +1,64 @@
+{
+  "observedAt": "2026-10-15T20:55:21.003514+00:00",
+  "runtimeVersion": 26,
+  "reportAt": "2026-10-15T20:55:19.237Z",
+  "reportFileSha256": "1630fe16bc2b398b34ad8998b7bd0a63fdf6be83f53a6ef9e0d526749acd10b7",
+  "derivedReportSealVerified": true,
+  "fullBankChainVerified": false,
+  "officialTapeReceiptHashesVerified": true,
+  "actualTapeRowsMatched": true,
+  "quantityBought": 123,
+  "quantitySold": 123,
+  "cost": "43.050000",
+  "proceeds": "42.435000",
+  "fees": "0.000000",
+  "realizedCohortPnl": "-0.615000",
+  "cohortClosed": true,
+  "actualFillRows": [
+    {
+      "action": "buy",
+      "side": "NO",
+      "quantity": 5,
+      "price": "0.350000",
+      "fee": "0.000000",
+      "executedAt": "2026-10-15T20:46:52.964Z",
+      "receiptHash": "469b8ac7c778a0de69cd2f1c03b7d1af5818885e283b73a68732800573ee4921"
+    },
+    {
+      "action": "buy",
+      "side": "NO",
+      "quantity": 118,
+      "price": "0.350000",
+      "fee": "0.000000",
+      "executedAt": "2026-10-15T20:47:57.341Z",
+      "receiptHash": "087734081dfe29129acb15e2f05675148c85c8454ba8176fe0738e476e1a2f56"
+    },
+    {
+      "action": "sell",
+      "side": "NO",
+      "quantity": 7,
+      "price": "0.345000",
+      "fee": "0.000000",
+      "executedAt": "2026-10-15T20:52:51.959Z",
+      "receiptHash": "10dfe332e508bc1c6547c2009e73367c1dfe87533b83ebd4a579f408330ecff8"
+    },
+    {
+      "action": "sell",
+      "side": "NO",
+      "quantity": 116,
+      "price": "0.345000",
+      "fee": "0.000000",
+      "executedAt": "2026-10-15T20:52:51.959Z",
+      "receiptHash": "10dfe332e508bc1c6547c2009e73367c1dfe87533b83ebd4a579f408330ecff8"
+    }
+  ],
+  "reportEconomics": {
+    "cash": "17149.540000",
+    "ownedCost": "22772.515000",
+    "realized": "-77.945000",
+    "newTradingRealized": "-116.020000",
+    "inheritedRealizedGross": "38.075000",
+    "fills": 90
+  },
+  "profitabilityEstablished": false
+}

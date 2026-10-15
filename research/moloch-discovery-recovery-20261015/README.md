@@ -18,4 +18,6 @@ Build the matching runtime and compile `replay.rs` with its emitted `moloch_live
 
 ## Production verification
 
+The first full healthy cycle completed20:44:34 UTC with410ACK/86fills. Four subsequent official fill rows bought and sold123NO, respectively at0.350 and0.345, realizing−0.615000 with zero fees. The private original tape Receipt digests, matched IDs, signed quantities, prices and execution clocks verify; the derived report seal verifies but is not a full bank-chain replay. At20:53:59 UTC new-trading realized is−116.020000, inherited gross+38.075000 and actual fills90. [Cohort proof](first-live-cohort.json). This confirms trading resumed; it does not establish profitability.
+
 V26 launched20:24:28 UTC as PID227437. At20:34:55 UTC its exact running binary published healthy fresh trading progress with395 acknowledged orders,393 terminals and86 actual fills; two acknowledgments are new after launch, not fills. STOP is absent, full first cycle pending. The stopped boundary was393/393 acknowledged attempts, unknown0/activefalse/manualReviewfalse. See release-checks.json, rollout.json and live-verification.json. Existing financial identity, four-entry bridge, caps and daily mandate are preserved.
