@@ -366,6 +366,24 @@ pub fn main()->Result<()>{
 
 #[cfg(test)]mod refresh_worker_tests{
  use super::*;
+ struct BankTemp(PathBuf);
+ impl BankTemp{fn new()->Self{static NEXT:std::sync::atomic::AtomicU64=std::sync::atomic::AtomicU64::new(0);Self(std::env::temp_dir().join(format!("moloch-worker-batch-{}-{}-{}",std::process::id(),now(),NEXT.fetch_add(1,std::sync::atomic::Ordering::SeqCst))))}}
+ impl Drop for BankTemp{fn drop(&mut self){let _=fs::remove_dir_all(&self.0);}}
+ fn source_ticks(n:usize)->Vec<Value>{(0..n).map(|i|json!({"type":"tick","receivedAt":iso(1_760_000_000_000+i as u64)})).collect()}
+ #[test]fn source_chunks_preserve_restart_cursor_and_stop_at_invalid_batch_without_replaying_prefix(){
+  for bad in [false,true]{let temp=BankTemp::new();let policy=json!({});let mut bank=Session::open(&temp.0,None,&policy).unwrap();let mut events=source_ticks(65);if bad{events[40]["type"]=json!("unsupported");}
+   let result=accept_source_events(&mut bank,&events);assert_eq!(result.is_err(),bad);let expected=if bad{32}else{65};assert_eq!(bank.last_source_sequence("moloch-live"),expected);
+   let report=bank.engine().report().unwrap();let bytes=fs::read(temp.0.join("events.jsonl")).unwrap();assert_eq!(bytes.iter().filter(|b|**b==b'\n').count(),expected as usize);drop(bank);
+   let mut restored=Session::open(&temp.0,None,&policy).unwrap();assert_eq!(restored.last_source_sequence("moloch-live"),expected);assert_eq!(restored.engine().report().unwrap(),report);
+   if bad{events[40]["type"]=json!("tick");accept_source_events(&mut restored,&events[32..]).unwrap();assert_eq!(restored.last_source_sequence("moloch-live"),65);}
+  }
+ }
+ #[test]fn long_expired_history_coalesces_by_scope_without_reviving_attempted_or_cancelled_hints(){
+  let mut orders=(1..=10_002u64).map(|id|json!({"id":id,"action":"sell","inventoryExitReason":"maximumAge","executionStyle":"inventoryAON","filled":0,"expiresAt":100,"exchangeId":format!("ex{}",id%3),"side":"NO","retired":true})).collect::<Vec<_>>();
+  let mut cancelled=orders.last().unwrap().clone();cancelled["id"]=json!(10_003);cancelled["cancelEffectiveAt"]=json!(101);orders.push(cancelled);
+  let hints=latest_refresh_hints(&orders,200,|id|id!=10_002).unwrap();assert_eq!(hints.len(),3);let mut ids=hints.values().map(|q|q["id"].as_u64().unwrap()).collect::<Vec<_>>();ids.sort();assert_eq!(ids,vec![9_999,10_000,10_001]);
+  assert!(latest_refresh_hints(&orders,99,|_|true).unwrap().is_empty());
+ }
  fn control()->Control{serde_json::from_value(json!({"activation":{"runId":"new-run","entryUntilMs":9_000_000,"maximumCommitted":"800.000000","maximumMarketCost":"100.000000","maximumQuantity":300,"tournamentId":"cup","tournamentSlug":"cup","binarySha256":"a".repeat(64)},"scope":{"tournamentId":"cup","tournamentSlug":"cup","exchanges":{"1012":"525"}},"policy":{},"root":"/fixture","credentials":"/unused","ownerLock":"/unused.lock","accountScope":"fixture"})).unwrap()}
  #[test]fn rebuilt_physical_binding_uses_new_qid_quantity_price_and_original_expiry(){
   let c=control();let new=json!({"id":466,"exchangeId":"1012","marketId":"525","side":"NO","action":"sell","quantity":169,"price":"0.650000","expiresAt":1_000_000});
