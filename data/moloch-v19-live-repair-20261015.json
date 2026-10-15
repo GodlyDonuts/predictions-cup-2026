@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "observedAt": "2026-10-15T11:17:50.155248+00:00",
+  "sourceCommit": "1470d38a",
+  "release": "rust-live-v19",
+  "pid": 151390,
+  "binarySha256": "cf5821a7feb2b1d242a8c574728e76daf717a05985c159dce01ef719c86a4dcd",
+  "firstAcknowledgedCohort": {
+    "attempts": 5,
+    "http200Acknowledgments": 5,
+    "firstAt": "2026-10-15T11:15:32.009Z",
+    "lastAt": "2026-10-15T11:16:34.275Z",
+    "fillsNotInferred": true
+  },
+  "dispatchPrefix": {
+    "bytes": 458658,
+    "sha256": "eb266f22b19769d54866531355ed45f4fc8cd308f1b09fa707bb073ad5f581d0"
+  },
+  "startupAccount": {
+    "receivedAt": "2026-10-15T11:14:09.391Z",
+    "exactCash": "70851.605",
+    "roundedTournamentCash": "70851.61",
+    "privatePreflightSha256": "c9823daf614f403f7fa8dcaa4a42f5e68f36b6e48157f3a64df51fb84905dd70"
+  },
+  "ledger": {
+    "at": "2026-10-15T11:17:47.806Z",
+    "sequence": 21222,
+    "actualFills": 27,
+    "realized": "17.825000",
+    "inheritedRealizedGross": "17.935000",
+    "newTradingRealized": "-0.110000",
+    "expectedAccountCash": "70851.605000",
+    "privateReportSha256": "031278017b95131ecf9748232083b7beb8b109b46182a880a1cafec903d1cf13"
+  },
+  "executionStop": false,
+  "accountRequestsByExport": 0,
+  "profitabilityEstablished": false
+}
