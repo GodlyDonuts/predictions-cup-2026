@@ -1,4 +1,4 @@
-//! Actual ALL continuation ledger. Primary saved OpenAPI SHA256
+//! Actual ALL and source-bound ordinary cash continuation ledger. Primary saved OpenAPI SHA256
 //! 6b5ff9a661c06f1a2d1dda131bf870a70f4f79699ac9937375a278861e1f81bf:
 //! AllExecutionEconomics, PortfolioCollateral, TournamentSettlementEntry.
 //!
@@ -19,13 +19,21 @@
 //! Settlement has original complete scoped `settlements` receipt plus explicit
 //! `settlementIds`; nullable/ambiguous attribution and corrections fail closed.
 //!
+//! Ordinary cash sync is limited to original-ACK-owned TERMINAL orders and
+//! exact complete original fill tapes; passive fills may occur after the ACK.
+//! Only that event permits a 24h ORIGINAL before/after interval. It cannot
+//! refresh the before snapshot, admit still-open liabilities, infer ALL or
+//! explain redemption/corrections with an unexplained Wallet cash delta.
+//! Net-flat debt never proves zero gross flows: ordinary sync permanently
+//! makes cumulative gross totals unknown and retains verified-only subtotals.
+//!
 //! Borrowed principal stays OUTSIDE Wallet sizing cash and realized profit.
 //! Official cash, debt, available advance and component floors remain separate.
 use super::*;
 #[derive(Clone)]
 struct Snapshot{cash:i128,power:i128,available:i128,debt:i128,components:Value,start:i64,end:i64}
 #[derive(Clone)]
-pub(super) struct Ledger{scope:Value,snapshot:Snapshot,snapshot_receipts:Value,wallet_cash:i128,opening_cash:i128,opening_wallet:i128,drawn:i128,repaid:i128,settled:i128,fill_count:usize,events:BTreeMap<String,String>,orders:BTreeSet<String>,settlements:BTreeMap<String,String>}
+pub(super) struct Ledger{scope:Value,snapshot:Snapshot,snapshot_receipts:Value,wallet_cash:i128,opening_cash:i128,opening_wallet:i128,drawn:i128,repaid:i128,settled:i128,gross_unknown:bool,fill_count:usize,events:BTreeMap<String,String>,orders:BTreeSet<String>,settlements:BTreeMap<String,String>}
 fn need(ok:bool,why:&'static str)->Result<()>{if ok{Ok(())}else{Err(why)}}
 fn money_value(v:&Value)->Result<i128>{let n=if let Some(s)=v.as_str(){amount(s)?}else{amount(&v.to_string())?};need(n>=0,"COLLATERAL_NEGATIVE")?;Ok(n)}
 fn signed_money(v:&Value)->Result<i128>{if let Some(s)=v.as_str(){amount(s)}else{amount(&v.to_string())}}
@@ -55,7 +63,8 @@ impl Engine{
  pub fn collateral_accounted_fill_count(&self)->Option<usize>{self.collateral.as_ref().map(|l|l.fill_count)}
  pub fn collateral_settlement_recorded(&self,id:&str)->bool{self.collateral.as_ref().is_some_and(|l|l.settlements.contains_key(id))}
  pub fn collateral_report(&self)->Result<Value>{let l=self.collateral.as_ref().ok_or("COLLATERAL_NOT_INITIALIZED")?;let cash=add(l.snapshot.cash,self.wallet.cash-l.wallet_cash)?;let adjustment=cash-l.opening_cash-(self.wallet.cash-l.opening_wallet);
-  Ok(json!({"version":1,"officialCash":money(cash),"observedOfficialCash":money(l.snapshot.cash),"pendingNativeFillEconomics":self.fills.len()!=l.fill_count||self.wallet.cash!=l.wallet_cash,"officialDebt":money(l.snapshot.debt),"netCashAfterDebt":money(cash-l.snapshot.debt),"collateralCashAdjustment":money(adjustment),"availableAdvanceObserved":money(l.snapshot.available),"availableAdvanceAdmittedForSizing":"0.000000","cumulativeBorrowed":money(l.drawn),"cumulativeRepaid":money(l.repaid),"settlementPayout":money(l.settled),"componentStates":l.snapshot.components,"events":l.events.len(),"actualSettlements":l.settlements.len(),"snapshotAtMs":l.snapshot.end,"cashViewIncludesLaterNativeFills":true,"officialAccountProfit":Value::Null}))
+  let mut value=json!({"version":1,"officialCash":money(cash),"observedOfficialCash":money(l.snapshot.cash),"pendingNativeFillEconomics":self.fills.len()!=l.fill_count||self.wallet.cash!=l.wallet_cash,"officialDebt":money(l.snapshot.debt),"netCashAfterDebt":money(cash-l.snapshot.debt),"collateralCashAdjustment":money(adjustment),"availableAdvanceObserved":money(l.snapshot.available),"availableAdvanceAdmittedForSizing":"0.000000","cumulativeBorrowed":money(l.drawn),"cumulativeRepaid":money(l.repaid),"settlementPayout":money(l.settled),"componentStates":l.snapshot.components,"events":l.events.len(),"actualSettlements":l.settlements.len(),"snapshotAtMs":l.snapshot.end,"cashViewIncludesLaterNativeFills":true,"officialAccountProfit":Value::Null});
+  if l.gross_unknown{value["cumulativeBorrowed"]=Value::Null;value["cumulativeRepaid"]=Value::Null;value["grossFlowCoverage"]=json!("unknown_intra_interval");value["verifiedBorrowed"]=json!(money(l.drawn));value["verifiedRepaid"]=json!(money(l.repaid));}Ok(value)
  }
  pub(super) fn audit_collateral(&self)->Result<()>{if let Some(l)=&self.collateral{need(l.snapshot.debt==l.drawn-l.repaid&&l.snapshot.debt>=0&&l.snapshot.cash-l.opening_cash-(l.wallet_cash-l.opening_wallet)==l.snapshot.debt&&l.fill_count<=self.fills.len(),"COLLATERAL_ACCOUNTING_IDENTITY")?;}Ok(())}
  pub(super) fn apply_collateral(&mut self,e:&Value,at:i64)->Result<()>{
@@ -74,11 +83,11 @@ impl Engine{
   let after=snapshot(&e["after"],scope,at)?;need(at-after.end<=20_000,"COLLATERAL_AFTER_STALE")?;
   if e["type"]=="actual_collateral_baseline"{
    need(self.collateral.is_none()&&after.debt==0,"COLLATERAL_BASELINE_DEBT_OR_REPEAT")?;
-   self.collateral=Some(Ledger{scope:scope.clone(),snapshot:after,snapshot_receipts:e["after"].clone(),wallet_cash:self.wallet.cash,opening_cash:money_value(&e["after"]["account"]["data"]["balance"])?,opening_wallet:self.wallet.cash,drawn:0,repaid:0,settled:0,fill_count:self.fills.len(),events:[(event_id.into(),digest)].into(),orders:BTreeSet::new(),settlements:BTreeMap::new()});return Ok(())
+   self.collateral=Some(Ledger{scope:scope.clone(),snapshot:after,snapshot_receipts:e["after"].clone(),wallet_cash:self.wallet.cash,opening_cash:money_value(&e["after"]["account"]["data"]["balance"])?,opening_wallet:self.wallet.cash,drawn:0,repaid:0,settled:0,gross_unknown:false,fill_count:self.fills.len(),events:[(event_id.into(),digest)].into(),orders:BTreeSet::new(),settlements:BTreeMap::new()});return Ok(())
   }
   let mut l=self.collateral.clone().ok_or("COLLATERAL_BASELINE_REQUIRED")?;need(l.scope==*scope,"COLLATERAL_SCOPE_CHANGED")?;
   let before=snapshot(&e["before"],scope,at)?;
-  need(before.cash==l.snapshot.cash&&before.debt==l.snapshot.debt&&before.power==l.snapshot.power&&before.components==l.snapshot.components&&before.start>=l.snapshot.start&&before.end>=l.snapshot.end&&before.end<=after.start&&after.end-before.start<=120_000,"COLLATERAL_WINDOW_OR_BEFORE")?;
+  need(before.cash==l.snapshot.cash&&before.debt==l.snapshot.debt&&before.power==l.snapshot.power&&before.components==l.snapshot.components&&before.start>=l.snapshot.start&&before.end>=l.snapshot.end&&before.end<=after.start&&after.end-before.start<=if e["type"]=="actual_collateral_ordinary_cash_sync"{86_400_000}else{120_000},"COLLATERAL_WINDOW_OR_BEFORE")?;
   for(key,old)in before.components.as_object().ok_or("COLLATERAL_COMPONENTS")?{if let Some(new)=after.components.get(key){for field in ["profileId","tournamentId","coveredExchangeIds","relationshipIds"]{need(old[field]==new[field],"COLLATERAL_COMPONENT_IDENTITY_CHANGED")?;}}}
   let(mut drawn,mut repaid)=(0,0);
   if e["type"]=="actual_collateral_execution"{
@@ -101,6 +110,45 @@ impl Engine{
     if a["componentId"].is_null(){need(own_floor==0&&own_debt==0&&relationships.is_empty(),"COLLATERAL_UNLINKED_AFTER")?;}else{let k=a["componentId"].as_str().ok_or("COLLATERAL_COMPONENT_ID")?;let component=after.components.get(k).ok_or("COLLATERAL_OWN_COMPONENT_AFTER")?;need(component["coveredExchangeIds"].as_array().is_some_and(|ids|ids.iter().any(|id|id.as_u64().map(|n|n.to_string()).as_deref()==Some(q.exchange.as_str()))),"COLLATERAL_OWN_COMPONENT_MEMBERSHIP")?;need(money_value(&component["outstandingAdvance"])?==money_value(&a["outstandingAdvanceAfter"])?&&!component["guaranteedPayoutFloor"].is_null()&&money_value(&component["guaranteedPayoutFloor"])?==money_value(&a["guaranteedPayoutFloorAfter"])?,"COLLATERAL_OWN_COMPONENT_AFTER")?;}
    }
    need(self.wallet.cash-l.wallet_cash==trade_cash&&before.power-after.power==impact,"COLLATERAL_NATIVE_CASH_OR_POWER")?;
+  }else if e["type"]=="actual_collateral_ordinary_cash_sync"{
+   // A cash observation proves NET continuation only. Unchanged debt endpoints
+   // cannot prove zero gross borrowing/repayment during the interval.
+   need(e["before"]==l.snapshot_receipts,"COLLATERAL_ORDINARY_ORIGINAL_BEFORE_REQUIRED")?;
+   need(after.debt==before.debt&&after.available==before.available&&after.components==before.components,"COLLATERAL_ORDINARY_COMPONENTS_CHANGED")?;
+   let new=&self.fills[l.fill_count..];need(!new.is_empty()&&new.len()<=100_000&&new.iter().all(|f|f["counterfactual"]==false),"COLLATERAL_ACTUAL_FILLS_REQUIRED")?;
+   let ids:BTreeSet<String>=new.iter().map(|f|f["actualOrderId"].as_str().map(str::to_owned).ok_or("COLLATERAL_FILL_ID")).collect::<Result<_>>()?;
+   let mut acks=BTreeMap::new();for r in e["acknowledgments"].as_array().filter(|r|!r.is_empty()&&r.len()<=4096).ok_or("COLLATERAL_ORDINARY_ACKS")?{
+    let(_,end)=receipt(r,"/orders",at)?;need(end<=after.start,"COLLATERAL_ORDINARY_ACK_CLOCK")?;let raw=&r["data"];let id=source_id(&raw["orderId"])?;
+    need(raw.get("all")==Some(&Value::Null)&&acks.insert(id,(raw,end)).is_none(),"COLLATERAL_ORDINARY_ACK_OR_ALL")?;
+   }need(acks.keys().cloned().collect::<BTreeSet<_>>()==ids,"COLLATERAL_ORDER_COVERAGE")?;
+   let mut tapes=BTreeMap::new();for r in e["fillTapes"].as_array().filter(|r|!r.is_empty()&&r.len()<=4096).ok_or("COLLATERAL_ORDINARY_TAPES")?{
+    let d=&r["data"];let actual=source_id(&d["orderId"])?;let(start,end)=receipt(r,&format!("/orders/{actual}/fills?limit=200&tournamentId={}",scope["tournamentId"].as_str().unwrap()),at)?;
+    need(ids.contains(&actual)&&end<=after.start&&d["tournamentId"]==scope["tournamentId"]&&d["coverage"]["complete"]==true&&d["pagination"]["hasMore"]==false&&d["pagination"].get("nextCursor")==Some(&Value::Null),"COLLATERAL_ORDINARY_TAPE_SCOPE")?;
+    let qid=*self.live_orders.iter().find(|(_,v)|**v==actual).ok_or("COLLATERAL_UNOWNED_ORDER")?.0;let q=self.orders.iter().find(|q|q.id==qid).ok_or("COLLATERAL_UNOWNED_ORDER")?;
+    need(q.retired&&!self.is_package_order(qid)&&d["exchangeId"]==q.exchange,"COLLATERAL_ORDINARY_ORDER_NOT_CLOSED")?;
+    let(raw,ack_end)=acks.get(&actual).ok_or("COLLATERAL_ORDER_COVERAGE")?;let no=q.side==Side::No;need(raw["exchangeId"]==q.exchange&&raw["action"]==if q.buy{"buy"}else{"sell"}&&raw["side"]==if no{"no"}else{"yes"}&&raw["quantity"].as_u64()==Some(q.quantity)&&ordinary_tick(&raw["price"])?==q.limit&&*ack_end<=start,"COLLATERAL_ORDER_BINDING")?;
+    let mut seen=BTreeSet::new();let mut sum=0u64;for row in d["data"].as_array().filter(|r|r.len()<=100_000).ok_or("COLLATERAL_ORDINARY_FILL_ROWS")?{
+     let id=source_id(&row["id"])?;let signed=row["quantity"].as_i64().filter(|n|*n!=0).ok_or("COLLATERAL_FILL_QUANTITY")?;need((signed<0)==no&&row["side"]==if no{"no"}else{"yes"}&&seen.insert(id.clone()),"COLLATERAL_ORDINARY_FILL_SIDE_OR_DUPLICATE")?;
+     let n=signed.checked_abs().ok_or("COLLATERAL_FILL_QUANTITY")? as u64;sum=sum.checked_add(n).ok_or("COLLATERAL_RANGE")?;
+     let matches:Vec<_>=self.fills.iter().filter(|f|f["actualOrderId"]==actual&&f["sourceId"]==id).collect();need(matches.len()==1,"COLLATERAL_ORDINARY_TAPE_UNKNOWN_FILL")?;let f=matches[0];
+     need(f["counterfactual"]==false&&f["quantity"].as_u64()==Some(n)&&dec(&f["price"])?==ordinary_tick(&row["price"])?&&ns(&f["executedAt"])?==ns(&row["filledAt"])?&&ns(&row["filledAt"])?<=start*1_000_000,"COLLATERAL_ORDINARY_TAPE_FILL_CHANGED")?;
+     let fee=if let Some(v)=row.get("fee"){money_value(v)?}else{0};need(dec(&f["fee"])?==fee,"COLLATERAL_ORDINARY_FILL_FEE")?;
+    }
+    let total=d["totalQuantityFilled"].as_i64().ok_or("COLLATERAL_FILL_QUANTITY")?;need((total==0||(total<0)==no)&&total.checked_abs().map(|n|n as u64)==Some(sum)&&sum<=q.filled,"COLLATERAL_ORDINARY_TAPE_TOTAL")?;
+    let digest=ordered_receipt_hash(r)?;need(tapes.insert(digest,(r,actual,seen)).is_none(),"COLLATERAL_ORDINARY_DUPLICATE_TAPE")?;
+   }
+   for actual in &ids{
+    let mut latest:Option<(&Value,&BTreeSet<String>)>=None;for(r,id,rows)in tapes.values(){if id!=actual{continue}if let Some((old,_))=latest{need(ms(&r["receivedAt"])?!=ms(&old["receivedAt"])? ,"COLLATERAL_ORDINARY_TAPE_CLOCK_AMBIGUOUS")?;if ms(&r["receivedAt"])?<ms(&old["receivedAt"])?{continue}}latest=Some((r,rows));}
+    let(r,rows)=latest.ok_or("COLLATERAL_ORDER_COVERAGE")?;let known:BTreeSet<String>=self.fills.iter().filter(|f|f["actualOrderId"]==*actual).map(|f|f["sourceId"].as_str().map(str::to_owned).ok_or("COLLATERAL_FILL_ID")).collect::<Result<_>>()?;
+    let total=r["data"]["totalQuantityFilled"].as_i64().ok_or("COLLATERAL_FILL_QUANTITY")?.checked_abs().ok_or("COLLATERAL_FILL_QUANTITY")? as u64;
+    let qid=*self.live_orders.iter().find(|(_,id)|*id==actual).ok_or("COLLATERAL_UNOWNED_ORDER")?.0;let q=self.orders.iter().find(|q|q.id==qid).ok_or("COLLATERAL_UNOWNED_ORDER")?;need(*rows==known&&total==q.filled,"COLLATERAL_ORDINARY_LATEST_TAPE_INCOMPLETE")?;
+   }
+   let mut used=BTreeSet::new();let mut trade_cash=0;let account_start=ms(&e["after"]["account"]["requestStartedAt"])?;
+   for f in new{let executed=ns(&f["executedAt"])?;need(executed>=before.end*1_000_000&&executed<=account_start*1_000_000,"COLLATERAL_ORDINARY_FILL_WINDOW")?;
+    let digest=f["receiptHash"].as_str().ok_or("COLLATERAL_ORDINARY_FILL_SOURCE")?;let(_,actual,seen)=tapes.get(digest).ok_or("COLLATERAL_ORDINARY_FILL_SOURCE")?;need(f["actualOrderId"]==*actual&&seen.contains(f["sourceId"].as_str().ok_or("COLLATERAL_FILL_ID")?),"COLLATERAL_ORDINARY_FILL_SOURCE")?;used.insert(digest);
+    let n=f["quantity"].as_u64().ok_or("COLLATERAL_FILL_QUANTITY")?;let cost=dec(&f["price"])?.checked_mul(n as i128).ok_or("COLLATERAL_RANGE")?;let fee=dec(&f["fee"])?;trade_cash=add(trade_cash,if f["action"]=="buy"{-cost-fee}else if f["action"]=="sell"{cost-fee}else{return Err("COLLATERAL_ORDINARY_FILL_ACTION")})?;
+   }need(used.len()==tapes.len()&&self.wallet.cash-l.wallet_cash==trade_cash,"COLLATERAL_ORDINARY_UNEXPLAINED_NATIVE_CASH")?;
+   l.gross_unknown=true;
   }else if e["type"]=="actual_collateral_checkpoint"{
    // Observation only. Nothing about an elapsed interval creates money or
    // excuses an unaccounted execution/settlement. Keep the same120s window.
@@ -122,3 +170,15 @@ impl Engine{
  }
 }
 fn id_value(v:&Value)->Result<String>{id(v)}
+
+fn ordered_receipt_hash(r:&Value)->Result<String>{
+ #[derive(serde::Serialize)]#[serde(rename_all="camelCase")]struct Original<'a>{endpoint:&'a Value,request_started_at:&'a Value,received_at:&'a Value,status:&'a Value,data:&'a Value}
+ need(r.as_object().is_some_and(|o|o.len()==5)&&["endpoint","requestStartedAt","receivedAt","status","data"].iter().all(|k|r.get(k).is_some()),"COLLATERAL_ORIGINAL_RECEIPT_SHAPE")?;
+ let original=Original{endpoint:&r["endpoint"],request_started_at:&r["requestStartedAt"],received_at:&r["receivedAt"],status:&r["status"],data:&r["data"]};Ok(format!("{:x}",Sha256::digest(serde_json::to_vec(&original).map_err(|_|"COLLATERAL_ORIGINAL_RECEIPT_SHAPE")?)))
+}
+
+fn source_id(v:&Value)->Result<String>{let s=v.as_str().map(str::to_owned).or_else(||v.as_u64().map(|n|n.to_string())).ok_or("COLLATERAL_ORDINARY_SOURCE_ID")?;need(!s.is_empty()&&!s.starts_with('0')&&s.bytes().all(|c|c.is_ascii_digit()),"COLLATERAL_ORDINARY_SOURCE_ID")?;Ok(s)}
+// Same exact IEEE canonical/complement representations as SDK prices.rs. This
+// is a per-share tick protocol, NEVER a cash/debt rounding tolerance.
+fn ordinary_tick(v:&Value)->Result<i128>{if v.is_string(){return price(money_value(v)?)}let n=v.as_f64().filter(|n|n.is_finite()&&n.to_bits()!=(-0.0f64).to_bits()).ok_or("COLLATERAL_ORDINARY_PRICE")?;
+ for tick in 1..200{let units=tick*TICK;let canonical=money(units).parse::<f64>().map_err(|_|"COLLATERAL_ORDINARY_PRICE")?;let opposite=money(SCALE-units).parse::<f64>().map_err(|_|"COLLATERAL_ORDINARY_PRICE")?;if [canonical,1.0-opposite,1.0-(1.0-canonical)].iter().any(|p|p.to_bits()==n.to_bits()){return Ok(units)}}Err("COLLATERAL_ORDINARY_PRICE")}
