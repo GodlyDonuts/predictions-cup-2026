@@ -82,8 +82,11 @@ mod unix {
     impl Drop for Server{fn drop(&mut self){self.running.store(false,Ordering::SeqCst);if let Some(w)=self.worker.take(){w.join().unwrap();}}}
     const TID:&str="bda92870-621e-47b0-bc3c-3602c5c26f55";
     fn transport(dir:&Path,server:&Server,loads:Arc<AtomicU64>)->crate::Transport{
+        transport_at(dir,server,loads,1000)
+    }
+    fn transport_at(dir:&Path,server:&Server,loads:Arc<AtomicU64>,now:u64)->crate::Transport{
         let config=crate::Config{queue_dir:dir.into(),account_scope:"adapter".into(),scope:crate::Scope{tournament_id:TID.into(),tournament_slug:"midterm-elections".into(),exchanges:BTreeMap::from([("994".into(),"305".into())])},maximum_pages:5,writes_enabled:true};
-        crate::Transport::new_for_mock(config,Box::new(Credentials(loads)),Box::new(FakeClock(Arc::new(AtomicU64::new(1000)))),Box::new(Authority),server.base.clone()).unwrap()
+        crate::Transport::new_for_mock(config,Box::new(Credentials(loads)),Box::new(FakeClock(Arc::new(AtomicU64::new(now)))),Box::new(Authority),server.base.clone()).unwrap()
     }
     fn order()->crate::Order{crate::Order{idempotency_key:"fixture-key".into(),exchange_id:"994".into(),side:"no".into(),action:"buy".into(),quantity:1,price:"0.120000".into(),expiration_date:"2030-01-01T00:00:00Z".into(),tournament_id:TID.into()}}
     fn permit()->crate::Permit{crate::Permit{run_id:"fixture".into(),intent_id:"new".into(),owner:"Codex".into(),expires_at_ms:10000000,maximum_quantity:1,maximum_cost:"1.000000".into()}}
@@ -97,5 +100,10 @@ mod unix {
         let lookup=t.admission_lookup_intent("fixture:new").unwrap();assert!(lookup.binding.is_none()&&lookup.has_unknown);assert_eq!(t.place(order(),permit()).err().unwrap().code,"UNKNOWN_ACCEPTANCE_RECONCILE_FIRST");assert_eq!(server.count.load(Ordering::SeqCst),0);assert_eq!(loads.load(Ordering::SeqCst),0);
         t.reconcile_unknown(serde_json::to_value(binding(0)).unwrap()).unwrap();let lookup=t.admission_lookup_intent("intent-0").unwrap();assert!(lookup.binding.is_some()&&lookup.unknown_binding.is_none());assert!(!t.admission_summary().unwrap().has_unknown);
         assert!(t.place(order(),permit()).is_ok());assert_eq!(t.place(order(),permit()).err().unwrap().code,"KNOWN_INTENT_RECONCILE_FIRST");assert_eq!(server.count.load(Ordering::SeqCst),1);assert_eq!(loads.load(Ordering::SeqCst),1);drop(t);fs::remove_dir_all(dir).unwrap();
+    }
+    #[test]fn transport_unrelated_unknown_cannot_hide_durable_regressed_clock(){
+        let dir=migrated(|a|{unknowns(a,1);let mut s=a.v1().state.clone();s.last_clock=2000;a.v1_mut().persist(s).unwrap();});let server=Server::new(vec![]);let loads=Arc::new(AtomicU64::new(0));
+        {let mut t=transport_at(&dir,&server,loads.clone(),1000);assert!(t.admission_lookup_intent("fixture:new").unwrap().has_unknown);assert_eq!(t.place(order(),permit()).err().unwrap().code,"CLOCK_REGRESSION");assert!(t.admission_summary().unwrap().state.manual_review);assert_eq!(loads.load(Ordering::SeqCst),0);assert_eq!(server.count.load(Ordering::SeqCst),0);}
+        let mut t=transport_at(&dir,&server,loads.clone(),3000);let summary=t.admission_summary().unwrap();assert!(summary.state.manual_review);assert_eq!(summary.global_unknown_count,1);assert_eq!(t.place(order(),permit()).err().unwrap().code,"MANUAL_REVIEW_REQUIRED");assert_eq!(server.count.load(Ordering::SeqCst),0);assert_eq!(loads.load(Ordering::SeqCst),0);drop(t);fs::remove_dir_all(dir).unwrap();
     }
 }
