@@ -437,6 +437,7 @@ pub struct Engine {
     live_orders: BTreeMap<u64,String>,
     live_fill_ids: BTreeMap<String,String>,
     inherited: Option<InheritedInventory>,
+    daily_entry_windows: Option<Value>,
     policy: Policy,
     pub wallet: Wallet,
     books: BTreeMap<String, Arc<Book>>,
@@ -457,6 +458,11 @@ pub struct Engine {
 }
 impl Engine {
     pub fn from_seed_state(state: &Value) -> Result<Self> {
+        // A standalone continuation cannot silently discard a live mandate.
+        // Durable live windows are restored by replaying their original events.
+        if state.get("dailyEntryWindows").is_some_and(|v|!v.is_null()) {
+            return Err("SEED_LIVE_ENTRY_WINDOWS_REQUIRE_REPLAY");
+        }
         if state["policyHash"].as_str() != Some(hash(&state["policy"]).as_str()) {
             return Err("SEED_POLICY_HASH");
         }
@@ -677,6 +683,7 @@ impl Engine {
             live_orders: BTreeMap::new(),
             live_fill_ids: BTreeMap::new(),
             inherited: None,
+            daily_entry_windows: None,
         })
     }
     fn count(&mut self, k: &str) {
@@ -1414,7 +1421,7 @@ impl Engine {
         let kind = e["type"].as_str().ok_or("EVENT_TYPE")?;
         let mut duplicate = false;
         match kind {
-            "actual_order_ack" | "actual_fill" | "actual_order_terminal" | "unsubmitted_intent_retired" | "actual_position_adoption" => self.apply_live(e,at)?,
+            "actual_order_ack" | "actual_fill" | "actual_order_terminal" | "unsubmitted_intent_retired" | "actual_position_adoption" | "live_entry_window" => self.apply_live(e,at)?,
             "book" => {
                 let b = Book::parse(&e["book"], &e["receivedAt"])?;
                 if let Some(old) = self.books.get(&b.exchange) {
@@ -1729,7 +1736,9 @@ impl Engine {
             self.count("duplicateTrades")
         }
         self.observe_entry_flow(e, duplicate)?;
-        self.reconcile(at)?;
+        // This durable authorization transition changes only the entry cutoff;
+        // an ordinary subsequent tick/book performs normal quote planning.
+        if kind!="live_entry_window"{self.reconcile(at)?;}
         Ok(())
     }
     pub fn report(&self) -> Result<Value> {
@@ -1769,6 +1778,9 @@ impl Engine {
             report["inheritedRealizedGross"] = json!(money(inherited.realized_gross));
             report["newTradingRealized"] = json!(money(self.wallet.realized - inherited.realized_gross));
             report["inheritedInventory"] = json!({"receiptHash":inherited.receipt_hash,"managementStartedAt":inherited.adopted_at,"sourcePositions":inherited.source_positions,"adoptedExchangeIds":inherited.remaining.keys().map(|(ex,_)|ex.clone()).collect::<BTreeSet<_>>(),"historicalFillsImported":false,"openingCost":money(inherited.opening_cost),"freshMarketLimit":inherited.fresh_market_limit,"feesRemainInNewTradingRealized":true,"basis":"verified_open_lot_principal_fifo","officialAccountRealizedPnl":Value::Null});
+        }
+        if let Some(mandate)=&self.daily_entry_windows {
+            report["dailyEntryWindows"]=json!({"mandate":mandate,"entryStopAt":self.policy.raw["entryStopAt"]});
         }
         Ok(report)
     }

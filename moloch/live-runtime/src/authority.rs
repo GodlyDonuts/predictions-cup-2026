@@ -5,12 +5,13 @@ use serde_json::{Value,json};
 use sha2::{Digest,Sha256};
 use std::{fs,path::PathBuf,sync::{Arc,Mutex}};
 use crate::feedback::Result;
+use crate::daily_windows::DailyEntryWindows;
 #[derive(Clone,Serialize,Deserialize)]
 #[serde(rename_all="camelCase",deny_unknown_fields)]
 pub struct Activation {pub run_id:String,pub entry_until_ms:u64,pub maximum_committed:String,pub maximum_market_cost:String,pub maximum_quantity:u32,pub tournament_id:String,pub tournament_slug:String,pub binary_sha256:String}
 #[derive(Clone)]pub struct SnapshotSet {pub account:Receipt,pub cash_balance:Receipt,pub positions:Receipt,pub open_orders:Receipt,pub market:Receipt,pub contract:Receipt,pub book:Receipt}
-#[derive(Clone)]struct Ready {spec:RequestSpec,permit:Permit,quote:Value,ledger:Value,snapshots:SnapshotSet,owned:u64,expected_signed:i128,market_cost:i128,expected_cash:i128}
-pub struct ProductionAuthority {activation:Activation,scope:Scope,stops:Vec<PathBuf>,control:PathBuf,control_hash:String,binary:PathBuf,_lease:Arc<ExclusiveLock>,ready:Mutex<Option<Ready>>,owned:Mutex<std::collections::BTreeSet<String>>,recovery:Mutex<Option<String>>,stream:Mutex<Option<(Arc<std::sync::atomic::AtomicBool>,u64)>>}
+#[derive(Clone)]struct Ready {spec:RequestSpec,permit:Permit,quote:Value,ledger:Value,snapshots:SnapshotSet,owned:u64,expected_signed:i128,market_cost:i128,expected_cash:i128,entry_until:u64}
+pub struct ProductionAuthority {daily:Mutex<Option<(DailyEntryWindows,u64)>>,activation:Activation,scope:Scope,stops:Vec<PathBuf>,control:PathBuf,control_hash:String,binary:PathBuf,_lease:Arc<ExclusiveLock>,ready:Mutex<Option<Ready>>,owned:Mutex<std::collections::BTreeSet<String>>,recovery:Mutex<Option<String>>,stream:Mutex<Option<(Arc<std::sync::atomic::AtomicBool>,u64)>>}
 fn hash_bytes(bytes:&[u8])->String{format!("{:x}",Sha256::digest(bytes))}
 fn clock(s:&str)->Option<u64>{chrono::DateTime::parse_from_rfc3339(s).ok().and_then(|d|u64::try_from(d.timestamp_millis()).ok())}
 fn denied(code:&str)->TransportError{TransportError{code:code.into(),status:None,may_have_executed:false,retry_after_ms:0,order_id:None,api_code:None}}
@@ -18,7 +19,18 @@ fn fresh(r:&Receipt,now:u64,max_age:u64)->bool{r.status==200&&clock(&r.request_s
 impl ProductionAuthority {
  pub fn new(activation:Activation,scope:Scope,stops:Vec<PathBuf>,control:PathBuf,binary:PathBuf,lease:Arc<ExclusiveLock>)->Result<Self>{
   if activation.run_id.is_empty()||activation.maximum_quantity==0||activation.maximum_quantity>10000||decimal_units(&activation.maximum_committed)?<=0||decimal_units(&activation.maximum_market_cost)?<=0||scope.tournament_id!=activation.tournament_id||scope.tournament_slug!=activation.tournament_slug||hash_bytes(&fs::read(&binary)?)!=activation.binary_sha256{return Err("LIVE_ACTIVATION_BINDING".into())}
-  let control_hash=hash_bytes(&fs::read(&control)?);Ok(Self{activation,scope,stops,control,control_hash,binary,_lease:lease,ready:Mutex::new(None),owned:Mutex::new(Default::default()),recovery:Mutex::new(None),stream:Mutex::new(None)})
+  let control_hash=hash_bytes(&fs::read(&control)?);Ok(Self{daily:Mutex::new(None),activation,scope,stops,control,control_hash,binary,_lease:lease,ready:Mutex::new(None),owned:Mutex::new(Default::default()),recovery:Mutex::new(None),stream:Mutex::new(None)})
+ }
+ pub fn entry_until_ms(&self)->u64{self.daily.lock().unwrap().as_ref().map_or(self.activation.entry_until_ms,|(_,end)|*end)}
+ pub fn bind_entry_window(&self,bank:&Session,cfg:&DailyEntryWindows,at:u64)->Result<()>{
+  cfg.validate(&self.activation,at)?;
+  let end=cfg.end_at(at)?;
+  if bank.engine().policy()["maximumCommitted"]!=self.activation.maximum_committed||bank.engine().policy()["maximumMarketCost"]!=self.activation.maximum_market_cost||bank.engine().policy()["quantity"].as_u64()!=Some(self.activation.maximum_quantity as u64)||!bank.engine().is_live()||bank.live_account_seed().is_none_or(|s|s["runId"]!=self.activation.run_id)||bank.engine().policy()["entryStopAt"]!=crate::daily_windows::iso(end)? {return Err("DAILY_DURABLE_BANK_BINDING".into())}
+  if end>cfg.anchor_ms&&bank.engine().report()?["dailyEntryWindows"]!=json!({"mandate":cfg.mandate(&self.activation),"entryStopAt":crate::daily_windows::iso(end)?}){return Err("DAILY_DURABLE_MANDATE_REQUIRED".into())}
+  self.clear_ready();
+  let mut bound=self.daily.lock().unwrap();
+  if let Some((old,old_end))=&*bound{if old.mandate(&self.activation)!=cfg.mandate(&self.activation)||end<*old_end{return Err("DAILY_MANDATE_CHANGED".into())}}
+  *bound=Some((cfg.clone(),end));Ok(())
  }
  pub fn bind_owned(&self,id:String){self.owned.lock().unwrap().insert(id);}
  pub fn clear_ready(&self){*self.ready.lock().unwrap()=None;}
@@ -31,7 +43,7 @@ impl ProductionAuthority {
   let expected_signed=bank.engine().wallet.quantity(ex,moloch_replay::Side::Yes) as i128-bank.engine().wallet.quantity(ex,moloch_replay::Side::No) as i128;
   let market_cost=bank.engine().wallet.market_cost(ex)+bank.engine().order_records().iter().filter(|q|q["exchangeId"]==ex&&q["action"]=="buy"&&q["retired"]==false).map(|q|decimal_units(q["price"].as_str().unwrap_or("invalid")).map(|p|p*(q["quantity"].as_u64().unwrap_or(0)-q["filled"].as_u64().unwrap_or(0)) as i128)).collect::<std::result::Result<Vec<_>,_>>()?.iter().sum::<i128>();
   let expected_cash=decimal_units(bank.live_account_seed().ok_or("LIVE_ACCOUNT_SEED")?["availableCash"].as_str().ok_or("LIVE_ACCOUNT_SEED")?)?+bank.engine().wallet.cash-bank.engine().wallet.initial+bank.engine().opening_inventory_cost();
-  *self.ready.lock().unwrap()=Some(Ready{spec,permit,quote,ledger:bank.engine().report()?,snapshots,owned,expected_signed,market_cost,expected_cash});Ok(())
+  *self.ready.lock().unwrap()=Some(Ready{spec,permit,quote,ledger:bank.engine().report()?,snapshots,owned,expected_signed,market_cost,expected_cash,entry_until:self.entry_until_ms()});Ok(())
  }
  fn check(&self,scope:&Scope,spec:&RequestSpec,p:&Permit,network:bool,now:u64)->Result<()> {
   if !self.can_read(scope)||p.owner!="Codex"||p.run_id!=self.activation.run_id||p.expires_at_ms<=now{return Err("LIVE_OWNER_OR_ACTIVATION".into())}
@@ -63,7 +75,7 @@ impl ProductionAuthority {
   if !b["asOf"]["sequence"].is_u64()||clock(b["asOf"]["at"].as_str().ok_or("LIVE_BOOK_CLOCK")?).is_none_or(|t|t>now||now-t>10000){return Err("LIVE_BOOK_STALE".into())}
   if body["action"]=="buy"{let opposite=if body["side"]=="yes"{&b["asks"]}else{&b["bids"]};let level=opposite.as_array().and_then(|a|a.first()).ok_or("LIVE_EMPTY_BOOK")?;let yes=baal_transport_service::prices::official_tick_units(&level["price"])?;let ask=if body["side"]=="yes"{yes}else{1_000_000-yes};if price>=ask{return Err("LIVE_ENTRY_MUST_BE_PASSIVE".into())}}
   if body["tournamentId"]!=scope.tournament_id||body["exchangeId"]!=ex||body["side"].as_str()!=f.quote["side"].as_str().map(|s|if s=="YES"{"yes"}else{"no"})||body["action"]!=f.quote["action"]||n!=f.quote["quantity"].as_u64().unwrap_or(0)||price!=decimal_units(f.quote["price"].as_str().ok_or("LIVE_ORDER_PRICE")?)?||n>p.maximum_quantity as u64||price*n as i128>decimal_units(&p.maximum_cost)?{return Err("LIVE_ORDER_INTENT_MISMATCH".into())}
-  if body["action"]=="buy" {if now>=self.activation.entry_until_ms||cash_economics.gross_cash_units.ok_or("LIVE_ACCOUNT_CASH_REQUIRED")?<price*n as i128{return Err("LIVE_ENTRY_OR_ACCOUNT_CASH".into())}}
+  if body["action"]=="buy" {if now>=self.entry_until_ms()||f.entry_until!=self.entry_until_ms()||self.daily.lock().unwrap().as_ref().is_some_and(|(cfg,end)|cfg.end_at(now).ok()!=Some(*end)||f.snapshots.account.data["endDate"].as_str().and_then(clock).is_none_or(|t|t<*end))||cash_economics.gross_cash_units.ok_or("LIVE_ACCOUNT_CASH_REQUIRED")?<price*n as i128{return Err("LIVE_ENTRY_OR_ACCOUNT_CASH".into())}}
   else if body["action"]!="sell"||n>f.owned{return Err("LIVE_SELL_NOT_COVERED".into())}
   Ok(())
  }
@@ -84,6 +96,29 @@ impl Authority for SharedAuthority {
 }
 #[cfg(test)]mod tests{
  use super::*;
+ #[test]fn daily_binding_requires_durable_event_and_replay_keeps_original_manifest(){
+  let(root,a,original,_,spec,permit,facts,n)=fixture();
+  let anchor=a.activation.entry_until_ms;let at=anchor+1;
+  let cfg=DailyEntryWindows{authorization_id:"human-daily-test".into(),approved_at:crate::daily_windows::iso(n).unwrap(),anchor_ms:anchor,campaign_end_ms:anchor+2*crate::daily_windows::DAY_MS};
+  let policy=json!({"quantity":a.activation.maximum_quantity,"maximumCommitted":a.activation.maximum_committed,"maximumMarketCost":a.activation.maximum_market_cost,"entryStopAt":crate::daily_windows::iso(anchor).unwrap()});
+  let seed=json!({"runId":"fixture","availableCash":"1000.000000","accountSnapshotHash":"a".repeat(64),"observedAt":"2026-10-13T00:00:00Z"});
+  let path=root.join("daily-bank");let mut bank=Session::open_live(&path,&policy,&seed).unwrap();
+  assert!(a.bind_entry_window(&bank,&cfg,at).is_err());assert_eq!(a.entry_until_ms(),anchor);
+  let end=cfg.end_at(at).unwrap();let e=json!({"type":"live_entry_window","source":"moloch_live_dispatcher","receivedAt":crate::daily_windows::iso(at).unwrap(),"processedAt":crate::daily_windows::iso(at).unwrap(),"previousEntryStopAt":crate::daily_windows::iso(anchor).unwrap(),"entryStopAt":crate::daily_windows::iso(end).unwrap(),"mandate":cfg.mandate(&a.activation)});
+  bank.accept("daily",1,&e).unwrap();a.prepare(&original,permit.intent_id.parse().unwrap(),spec,permit,facts).unwrap();assert!(a.ready.lock().unwrap().is_some());a.bind_entry_window(&bank,&cfg,at).unwrap();assert!(a.ready.lock().unwrap().is_none());assert_eq!(a.entry_until_ms(),end);
+  drop(bank);let bank=Session::open_live(&path,&policy,&seed).unwrap();a.bind_entry_window(&bank,&cfg,at).unwrap();assert_eq!(bank.engine().policy()["entryStopAt"],crate::daily_windows::iso(end).unwrap());assert!(a.bind_entry_window(&bank,&cfg,end).is_err());
+  drop(bank);drop(original);drop(a);fs::remove_dir_all(root).unwrap();
+ }
+ #[test]fn queued_buy_is_denied_at_exact_cutoff_and_without_official_campaign_end(){
+  for daily in [false,true]{let(root,mut a,b,s,r,p,f,n)=fixture();
+   a.activation.entry_until_ms=if daily{n-1}else{n+1};
+   if daily{let cfg=DailyEntryWindows{authorization_id:"test-daily".into(),approved_at:crate::daily_windows::iso(n-1).unwrap(),anchor_ms:n-1,campaign_end_ms:n+86400000};let end=cfg.end_at(n).unwrap();*a.daily.lock().unwrap()=Some((cfg,end));}
+   a.prepare(&b,p.intent_id.parse().unwrap(),r.clone(),p.clone(),f).unwrap();
+   if !daily{a.authorize(&s,&r,&p,true,n).unwrap();}
+   let error=a.authorize(&s,&r,&p,true,if daily{n}else{n+1}).unwrap_err();assert_eq!(error.code,"LIVE_ENTRY_OR_ACCOUNT_CASH");
+   drop(b);drop(a);fs::remove_dir_all(root).unwrap();
+  }
+ }
  fn fixture()->(PathBuf,ProductionAuthority,Session,Scope,RequestSpec,Permit,SnapshotSet,u64){fixture_with_cash("1000.000000")}
  fn fixture_with_cash(exact:&str)->(PathBuf,ProductionAuthority,Session,Scope,RequestSpec,Permit,SnapshotSet,u64){
   let root=std::env::temp_dir().join(format!("live-authority-{}-{}",std::process::id(),std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_nanos()));fs::create_dir(&root).unwrap();

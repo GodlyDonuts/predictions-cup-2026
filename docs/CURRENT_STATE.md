@@ -1,5 +1,9 @@
 # Moloch current production ownership — October 15
 
+## Daily entry windows authorized; V23 validation in progress
+
+The human authorized daily entry windows at the unchanged40,000 total/10,000-per-market limits. V22 was found stopped onSTREAM_DNS at15:14:19UTC, then restored unchanged asPID182582 after resolved-attempt/shared-queue verification. Fresh healthy progress at18:28:48UTC has307 acknowledged orders/86 actual fills/301 terminals. Existing inventory management continues; new entries still observe the original expired cutoff until the checked daily-window release is promoted. All 121 native and 194 runtime checks and locked ARM64 releases pass. The original 16,535-event prefix has exact financial replay parity. Fresh stopped-prefix and launch verification remain pending. [Daily authorization, exact window formula and rollout evidence](MOLOCH_DAILY_ENTRY_WINDOWS_20261015.md).
+
 ## Latest: V22 healthy with fresh official orders and fills
 
 At12:49:51 UTC, V22 PID179819 had no execution STOP, a healthy stream, nine new official HTTP200 order acknowledgments and five actual fills on those new physical orders. Totals were171 acknowledged orders and41 fills. New trading realized is−17.925000 SUSQies, separate from17.990000 inherited gross; profitability is not established. All189 runtime checks and the locked ARM64 release pass; native111/SDK150 unchanged checks apply. Existing risk, bank, account queue v1 and14:44:34.413 UTC entry cutoff remain. Automatic recovery is implemented with a durable bounded budget but had not yet been naturally exercised. [Canonical production evidence and limits](MOLOCH_V22_RECOVERY_20261015.md#fresh-verified-production-activity).

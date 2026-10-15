@@ -6,6 +6,7 @@ impl Engine {
  pub fn live_order_bindings(&self)->&BTreeMap<u64,String>{&self.live_orders}
  pub(super) fn apply_live(&mut self,e:&Value,_at:i64)->Result<()> {
   if !self.live_mode {return Err("ACTUAL_EVENT_SOURCE")}
+  if e["type"]=="live_entry_window" {return self.apply_entry_window(e,_at)}
   if e["type"]=="actual_position_adoption" {return self.adopt_positions(e,_at)}
   if e["type"]=="unsubmitted_intent_retired" {
    if e["source"]!="moloch_live_dispatcher"||e["confirmedNetworkAttempts"].as_u64()!=Some(0)||e["receiptHash"].as_str().is_none_or(|s|s.len()!=64||!s.bytes().all(|b|b.is_ascii_hexdigit())){return Err("UNSUBMITTED_INTENT_PROOF")}
@@ -49,6 +50,39 @@ impl Engine {
   else {self.wallet.sell_fill_exact(&q.exchange,q.side,n,p,charge)?}
   self.fills.push(json!({"orderId":qid,"actualOrderId":actual,"sourceId":fill_id,"marketId":q.market,"exchangeId":q.exchange,"side":label(q.side),"action":if q.buy{"buy"}else{"sell"},"quantity":n,"price":money(p),"fee":money(charge),"at":e.get("processedAt").unwrap_or(&e["receivedAt"]),"executedAt":e["executedAt"],"counterfactual":false,"receiptHash":receipt}));
   self.live_fill_ids.insert(fill_id,facts);let q=&mut self.orders[index];q.filled+=n;if q.remaining()==0{q.retired=true};self.count("actualFills");self.consume_inherited(&inherited_close.0,inherited_close.1,inherited_close.2,inherited_close.3)?;Ok(())
+ }
+ /// A local, durable mandate transition. The runtime binds human provenance and
+ /// account/bank identity; no API payload or source label alone grants authority.
+ fn apply_entry_window(&mut self,e:&Value,at:i64)->Result<()> {
+  const DAY:i64=86_400_000;
+  if e["source"]!="moloch_live_dispatcher"{return Err("LIVE_ENTRY_WINDOW_SOURCE")}
+  let processed=ns(&e["processedAt"])?;
+  if processed/1_000_000!=at{return Err("LIVE_ENTRY_WINDOW_CLOCK")}
+  let mandate=e["mandate"].as_object().ok_or("LIVE_ENTRY_WINDOW_MANDATE")?;
+  let keys=["authorizationId","approvedAt","anchorMs","campaignEndMs","intervalMs","maximumCommitted","maximumMarketCost","maximumQuantity"];
+  if mandate.len()!=keys.len()||keys.iter().any(|key|!mandate.contains_key(*key)){return Err("LIVE_ENTRY_WINDOW_MANDATE_KEYS")}
+  let authorization=mandate["authorizationId"].as_str().filter(|s|!s.trim().is_empty()&&s.len()<=256&&!s.chars().any(char::is_control)).ok_or("LIVE_ENTRY_WINDOW_AUTHORIZATION")?;
+  let _=authorization;
+  if ns(&mandate["approvedAt"])? > processed{return Err("LIVE_ENTRY_WINDOW_APPROVED_IN_FUTURE")}
+  let anchor=mandate["anchorMs"].as_i64().filter(|n|*n>=0).ok_or("LIVE_ENTRY_WINDOW_ANCHOR")?;
+  let campaign=mandate["campaignEndMs"].as_i64().filter(|n|*n>=0).ok_or("LIVE_ENTRY_WINDOW_CAMPAIGN")?;
+  let duration=campaign.checked_sub(anchor).filter(|n|*n>0&&*n<=31*DAY).ok_or("LIVE_ENTRY_WINDOW_CAMPAIGN")?;
+  let _=duration;
+  if mandate["intervalMs"].as_i64()!=Some(DAY){return Err("LIVE_ENTRY_WINDOW_INTERVAL")}
+  if mandate["maximumCommitted"]!=self.policy.raw["maximumCommitted"]||mandate["maximumMarketCost"]!=self.policy.raw["maximumMarketCost"]||mandate["maximumQuantity"]!=self.policy.raw["quantity"]{return Err("LIVE_ENTRY_WINDOW_CAPS_CHANGED")}
+  let previous=self.policy.stop.ok_or("LIVE_ENTRY_WINDOW_PREVIOUS_STOP")?;
+  if ns(&e["previousEntryStopAt"])?!=previous.checked_mul(1_000_000).ok_or("LIVE_ENTRY_WINDOW_CLOCK")?{return Err("LIVE_ENTRY_WINDOW_PREVIOUS_STOP")}
+  if let Some(existing)=&self.daily_entry_windows {
+   if existing!=&e["mandate"]{return Err("LIVE_ENTRY_WINDOW_MANDATE_CHANGED")}
+  }else if anchor!=previous{return Err("LIVE_ENTRY_WINDOW_ANCHOR")}
+  if at<anchor||at>=campaign{return Err("LIVE_ENTRY_WINDOW_OUTSIDE_CAMPAIGN")}
+  let periods=(at-anchor)/DAY+1;
+  let expected=anchor.checked_add(periods.checked_mul(DAY).ok_or("LIVE_ENTRY_WINDOW_CLOCK")?).ok_or("LIVE_ENTRY_WINDOW_CLOCK")?.min(campaign);
+  if expected<=previous||ns(&e["entryStopAt"])?!=expected.checked_mul(1_000_000).ok_or("LIVE_ENTRY_WINDOW_CLOCK")?{return Err("LIVE_ENTRY_WINDOW_NOT_CURRENT_END")}
+  let mut raw=self.policy.raw.clone();raw["entryStopAt"]=e["entryStopAt"].clone();
+  // Do not route through general update_policy: only this one field may change.
+  let policy=Policy::new(&raw)?;
+  self.policy=policy;self.daily_entry_windows=Some(e["mandate"].clone());Ok(())
  }
  /// Constant attribution principal, independent of later sales and account cash.
  pub fn opening_inventory_cost(&self)->i128{self.inherited.as_ref().map_or(0,|i|i.opening_cost)}

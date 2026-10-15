@@ -12,7 +12,7 @@ use sha2::{Digest,Sha256};
 use std::{fs,path::{Path,PathBuf},sync::Arc,time::{SystemTime,UNIX_EPOCH,Duration}};
 #[derive(Clone,Serialize,Deserialize)]
 #[serde(rename_all="camelCase",deny_unknown_fields)]
-struct Control{activation:Activation,scope:Scope,policy:Value,root:PathBuf,credentials:PathBuf,owner_lock:PathBuf,account_scope:String,#[serde(default)]all_markets:bool,#[serde(default="default_bank")]bank_name:String,#[serde(default)]predecessor_bank:Option<String>,#[serde(default)]manage_existing_positions:bool}
+struct Control{#[serde(default)]daily_entry_windows:Option<moloch_live_runtime::daily_windows::DailyEntryWindows>,activation:Activation,scope:Scope,policy:Value,root:PathBuf,credentials:PathBuf,owner_lock:PathBuf,account_scope:String,#[serde(default)]all_markets:bool,#[serde(default="default_bank")]bank_name:String,#[serde(default)]predecessor_bank:Option<String>,#[serde(default)]manage_existing_positions:bool}
 fn default_bank()->String{"bank".into()}
 const MAX_REALTIME_FRAMES_PER_DRAIN:usize=64;
 fn now()->u64{SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_millis() as u64}
@@ -22,6 +22,18 @@ fn load(p:&Path)->Result<Value>{Ok(serde_json::from_slice(&fs::read(p)?)?)}
 fn private_dir(p:&Path)->Result<()>{use std::os::unix::fs::PermissionsExt;fs::create_dir_all(p)?;let m=fs::symlink_metadata(p)?;if m.file_type().is_symlink()||!m.is_dir(){return Err("LIVE_DIRECTORY".into())}fs::set_permissions(p,fs::Permissions::from_mode(0o700))?;Ok(())}
 fn transport(c:&Control,auth:Box<dyn Authority>,writes:bool)->Result<Transport>{Ok(Transport::new_with_read_budget(Config{queue_dir:c.root.join("account-queue"),account_scope:c.account_scope.clone(),scope:c.scope.clone(),maximum_pages:20,writes_enabled:writes},Box::new(UnixFileCredentials::approved_file(c.credentials.clone())?),Box::new(SystemClock),auth,100,600)?.with_full_account_observation())}
 fn accept(bank:&mut Session,event:&Value)->Result<()>{let mut e=event.clone();e["processedAt"]=json!(iso(now()));bank.accept("moloch-live",bank.last_source_sequence("moloch-live")+1,&e)?;Ok(())}
+fn ensure_entry_window(c:&Control,bank:&mut Session,authority:&ProductionAuthority)->Result<()>{
+ let Some(cfg)=&c.daily_entry_windows else{return Ok(())};let at=now();cfg.validate(&c.activation,at)?;
+ let current=moloch_live_runtime::daily_windows::clock(bank.engine().policy()["entryStopAt"].as_str().ok_or("DAILY_POLICY_STOP")?)?;
+ let end=cfg.end_at(at)?;
+ if at>=cfg.campaign_end_ms{return Ok(())}
+ if current>end{return Err("DAILY_POLICY_AHEAD".into())}
+ if end>current{
+  let stamp=iso(at);let event=json!({"type":"live_entry_window","source":"moloch_live_dispatcher","receivedAt":stamp,"processedAt":stamp,"previousEntryStopAt":iso(current),"entryStopAt":iso(end),"mandate":cfg.mandate(&c.activation)});
+  bank.accept("moloch-live",bank.last_source_sequence("moloch-live")+1,&event)?;
+ }
+ if authority.entry_until_ms()!=end||end==cfg.anchor_ms{authority.bind_entry_window(bank,cfg,at)?;}Ok(())
+}
 fn accept_source_events(bank:&mut Session,events:&[Value])->Result<()>{
  use moloch_replay::session::{BatchEntry,SESSION_BATCH_MAX_EVENTS};
  for chunk in events.chunks(SESSION_BATCH_MAX_EVENTS){
@@ -255,7 +267,7 @@ fn dispatch(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,a
   let prefetch_started=now();
   let early_exit_prefetch=moloch_live_runtime::dispatch_window::may_prefetch(&q,log.never_attempted(qid),log.intents.contains_key(&qid),prefetch_started);
   if q["retired"]==true||!log.never_attempted(qid)||(!early_exit_prefetch&&q["activationAt"].as_u64().is_none_or(|t|t>prefetch_started))||q["expiresAt"].as_u64().is_none_or(|t|t<=prefetch_started+5000)||q["cancelEffectiveAt"].as_u64().is_some(){continue}
-  if q["action"]=="buy"&&now()>=c.activation.entry_until_ms{retire_never_sent(bank,log,&q)?;continue}
+  if q["action"]=="buy"&&now()>=authority.entry_until_ms(){retire_never_sent(bank,log,&q)?;continue}
   // Covered maximum-age exits may spend their activation delay fetching these
   // same read-only facts. No intent/attempt or HTTP write exists at this stage.
   if !preflight_budget.try_start(){return Ok(())}*preflight_cursor=Some(keys[index].clone());
@@ -342,6 +354,7 @@ pub fn main()->Result<()>{
  let exact_cash=request(&mut read,&c.root,Endpoint::Account)?;
  let recent=request(&mut read,&c.root,Endpoint::PortfolioFills)?;
  atomic_json(&c.root.join("preflight.json"),&json!({"at":iso(now()),"account":a,"cashBalance":exact_cash,"positions":p,"openOrders":o,"recentFills":recent,"adoptsHoldings":false}))?;
+ if let Some(cfg)=&c.daily_entry_windows{cfg.validate(&c.activation,now())?;if a.data["endDate"].as_str().map(moloch_live_runtime::daily_windows::clock).transpose()?.is_none_or(|end|cfg.campaign_end_ms>end){return Err("DAILY_OFFICIAL_CAMPAIGN_END".into())}}
  if args[1]=="preflight"{println!("Read-only preflight complete; no orders submitted");return Ok(())}
  let stop=c.root.join("EXECUTION_STOP");let global_stop=c.owner_lock.parent().ok_or("LIVE_LOCK_PARENT")?.join("EXECUTION_STOP");if stop.exists()||global_stop.exists(){return Err("LIVE_EXECUTION_STOP".into())}
  let result=(||->Result<()>{
@@ -365,6 +378,7 @@ pub fn main()->Result<()>{
   for (qid,v) in log.acknowledgments.clone(){let r:Receipt=serde_json::from_value(v)?;let q=quote(&bank,qid)?;let e=if let Some(recovery)=log.recovered.get(&qid){feedback::recovered_acknowledgment(&q,recovery["actualOrderId"].as_str().ok_or("LIVE_RECOVERY_ACTUAL_ID")?,&c.scope.tournament_id,&r,&serde_json::from_value(recovery["fills"].clone())?,&iso(now()))?}else{feedback::acknowledgment(&q,&r,&iso(now()))?};authority.bind_owned(e["actualOrderId"].as_str().ok_or("LIVE_ACTUAL_ID")?.into());accept(&mut bank,&e)?;}
   drop(read);let mut t=transport(&c,Box::new(SharedAuthority(authority.clone())),true)?;
   let state=t.admission_state()?;if state["state"]["unknown"].as_object().is_some_and(|m|!m.is_empty()){return Err("LIVE_QUEUE_UNKNOWN_ACCEPTANCE".into())}
+  ensure_entry_window(&c,&mut bank,&authority)?;
   let fully_managed=bank.engine().report()?.get("inheritedInventory").is_some();
   let empty_positions=json!({"positions":[]});
   // Verified adoption updates the native managed-market limit while preserving
@@ -391,6 +405,7 @@ pub fn main()->Result<()>{
   loop{
    let cycle_result=(||->Result<()>{
    if stop.exists()||global_stop.exists(){return Err("LIVE_EXECUTION_STOP".into())}
+   ensure_entry_window(&c,&mut bank,&authority)?;
    drain_stream(stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?,&mut bank,&mut source_state,&mut breadth,&mut universe)?;
    let mut reconciled=reconcile(&mut t,&c,&mut bank,&mut log,&mut reconciliation_cache)?;
    reconciliation_schedule.completed(now(),pending_version(&log),reconciled.blocks_new_submissions)?;
@@ -402,11 +417,12 @@ pub fn main()->Result<()>{
      reconciliation_schedule.completed(now(),pending_version(&log),reconciled.blocks_new_submissions)?;
     }
     let permit_new=reconciliation_schedule.permits_submission(now(),pending_version(&log))?;
+    ensure_entry_window(&c,&mut bank,&authority)?;
     dispatch(&mut t,&c,&mut bank,&mut log,&authority,&mut source_state,permit_new,&mut preflight_cursor,stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?,&windows)?;
     let _=atomic_json(&c.root.join("progress.json"),&json!({"at":iso(now()),"pid":std::process::id(),"phase":"trading","completedReadScopes":selected_index+1,"selectedReadScopes":selected.len(),"maximumRealtimeFramesPerDrain":MAX_REALTIME_FRAMES_PER_DRAIN,"realtimeHealthy":stream.as_ref().is_some_and(|s|s.healthy()),"actualOrders":log.acknowledgments.len(),"terminalOrders":log.closed.len(),"actualFills":bank.engine().fills().len(),"profitabilityEstablished":false}));
    }
    cycles+=1;
-   atomic_json(&c.root.join("status.json"),&json!({"at":iso(now()),"pid":std::process::id(),"mode":"actual-contest-trading","runId":c.activation.run_id,"bank":c.bank_name,"cycles":cycles,"realtimeHealthy":stream.as_ref().is_some_and(|s|s.healthy()),"universe":universe.as_ref().map(Universe::status),"selectedReadScopes":selected,"ownedReconciliation":reconciled,"sourceScopes":source_state.scopes(),"breadthCapture":{"path":breadth_path,"state":breadth.as_ref().map(Recorder::status)},"report":bank.engine().report()?,"queue":t.admission_state()?,"actualOrders":log.acknowledgments.len(),"terminalOrders":log.closed.len(),"entryUntil":iso(c.activation.entry_until_ms),"profitabilityEstablished":false}))?;
+   atomic_json(&c.root.join("status.json"),&json!({"at":iso(now()),"pid":std::process::id(),"mode":"actual-contest-trading","runId":c.activation.run_id,"bank":c.bank_name,"cycles":cycles,"realtimeHealthy":stream.as_ref().is_some_and(|s|s.healthy()),"universe":universe.as_ref().map(Universe::status),"selectedReadScopes":selected,"ownedReconciliation":reconciled,"sourceScopes":source_state.scopes(),"breadthCapture":{"path":breadth_path,"state":breadth.as_ref().map(Recorder::status)},"report":bank.engine().report()?,"queue":t.admission_state()?,"actualOrders":log.acknowledgments.len(),"terminalOrders":log.closed.len(),"entryAnchor":iso(c.activation.entry_until_ms),"entryUntil":iso(authority.entry_until_ms()),"profitabilityEstablished":false}))?;
    // Existing orders and the first trading cycle precede optional research reads.
    // Diagnostic persistence never blocks the financial journal or ordinary trading.
    if relationship_census.is_none(){let census=moloch_live_runtime::relationship_census::capture(&mut t,&c.scope,&c.root.join("relationship-receipts"),&[]);if let Ok(report)=serde_json::to_value(&census.report){let _=atomic_json(&c.root.join("relationship-census.json"),&report);}relationship_census=Some(census);}
