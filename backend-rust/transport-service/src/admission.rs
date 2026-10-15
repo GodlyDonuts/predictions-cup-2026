@@ -17,12 +17,21 @@ impl AccountAdmission {
     /// This never sends or repeats an HTTP request; all active/unknown bindings,
     /// rate history and backoff survive the checked checkpoint transition.
     pub fn command_with_maintenance(&mut self,command:Value)->std::result::Result<Value,String>{
+        self.command_with_maintenance_sync(command,|dir|{
+            #[cfg(unix)]File::open(dir).and_then(|f|f.sync_all()).map_err(|_|"COMPACTION_DURABILITY_FAILURE".to_string())?;
+            #[cfg(not(unix))]let _=dir;
+            Ok(())
+        })
+    }
+    fn command_with_maintenance_sync(&mut self,command:Value,mut pin:impl FnMut(&Path)->std::result::Result<(),String>)->std::result::Result<Value,String>{
         let c:Command=serde_json::from_value(command.clone()).map_err(|_|"INVALID_COMMAND".to_string())?;
         let scope=c.scope.clone();let now=c.now;let compact=c.op=="compact";
+        if compact{let result=self.store.command(c)?;if pin(&self.store.dir).is_err(){self.store.poisoned=true;return Err("COMPACTION_DURABILITY_FAILURE".into())}return Ok(result)}
         match self.store.command(c){Err(code) if !compact&&matches!(code.as_str(),"EXPLICIT_COMPACTION_REQUIRED"|"RECOVERY_COMPACTION_REQUIRED")=>{
             // Preserve a regressed command unchanged so its manual-review poison
             // can still be durably recorded after making local storage space.
             self.command(serde_json::json!({"op":"compact","scope":scope,"now":now.max(self.store.state.last_clock)}))?;
+            if pin(&self.store.dir).is_err(){self.store.poisoned=true;return Err("COMPACTION_DURABILITY_FAILURE".into())}
             self.command(command)
         },result=>result}
     }
@@ -44,4 +53,6 @@ impl AccountAdmission {
  #[test]fn lease_and_durability_failures_never_trigger_maintenance(){for poisoned in [true,false]{let dir=fixture();let mut a=opened(&dir);if poisoned{a.store.poisoned=true;}else{fs::write(&a.store.lock_path,b"other-owner").unwrap();}assert_eq!(a.command_with_maintenance(command("status",2000)).unwrap_err(),if poisoned{"DURABILITY_FAILURE"}else{"SCOPED_LEASE_LOST"});assert!(!dir.join("account-queue-manifest.json").exists());drop(a);fs::remove_dir_all(dir).unwrap();}}
  #[test]fn cap_cannot_hide_regressed_clock_manual_review(){let dir=fixture();{let mut a=opened(&dir);a.store.maximum_bytes=a.store.active_bytes+10;assert_eq!(a.command_with_maintenance(command("status",1)).unwrap_err(),"CLOCK_REGRESSION");assert!(a.store.state.manual_review);assert_eq!(a.store.state.last_clock,9);assert_eq!(a.command_with_maintenance(command("admit",2000)).unwrap_err(),"MANUAL_REVIEW_REQUIRED");}let a=AccountAdmission{store:Store::open(&dir,"maintenance","second").unwrap()};assert!(a.store.state.manual_review);drop(a);fs::remove_dir_all(dir).unwrap();}
  #[test]fn oversized_single_record_rotates_once_then_fails_without_looping(){let dir=fixture();{let mut a=opened(&dir);a.store.maximum_bytes=1;let sequence=a.store.sequence;let previous=a.store.state.clone();assert_eq!(a.command_with_maintenance(command("admit",2000)).unwrap_err(),"EXPLICIT_COMPACTION_REQUIRED");assert_eq!(a.store.sequence,sequence);assert_eq!(a.store.state,previous);assert_eq!(a.store.active_bytes,0);assert_eq!(fs::read_dir(&dir).unwrap().filter(|p|p.as_ref().unwrap().file_name().to_string_lossy().starts_with("checkpoint-")).count(),1);}fs::remove_dir_all(dir).unwrap();}
+ #[test]fn failed_directory_pin_stops_before_original_admission_is_replayed(){let dir=fixture();{let mut a=opened(&dir);a.store.maximum_bytes=a.store.active_bytes+10;let previous=a.store.state.clone();let mut pins=0;assert_eq!(a.command_with_maintenance_sync(command("admit",2000),|_|{pins+=1;Err("injected".into())}).unwrap_err(),"COMPACTION_DURABILITY_FAILURE");assert_eq!(pins,1);assert_eq!(a.store.state,previous);assert!(a.store.poisoned);assert!(a.store.state.intents.is_empty());assert_eq!(a.command_with_maintenance(command("admit",2000)).unwrap_err(),"DURABILITY_FAILURE");}fs::remove_dir_all(dir).unwrap();}
+ #[test]fn explicit_compaction_also_requires_directory_pin(){let dir=fixture();{let mut a=opened(&dir);assert_eq!(a.command_with_maintenance_sync(command("compact",2000),|_|Err("injected".into())).unwrap_err(),"COMPACTION_DURABILITY_FAILURE");assert!(a.store.poisoned);}fs::remove_dir_all(dir).unwrap();}
 }
