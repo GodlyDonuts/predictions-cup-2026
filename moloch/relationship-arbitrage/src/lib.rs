@@ -246,6 +246,7 @@ pub struct Plan {
     pub observed_orphan_unwind_loss: Option<i128>,
     pub relationship_versions: Vec<(String,u64)>,
     pub book_sources: Vec<Source>,
+    pub book_observed_ms: Vec<u64>,
     pub proof_sources: Vec<Source>,
 }
 impl Compiled {
@@ -309,7 +310,7 @@ impl Compiled {
             observed = match (observed,received) { (Some(a),Some(b))=>Some(a.max(paid.saturating_sub(b).max(0))),_=>None };
         }
         need(orphan <= l.max_orphan_cash_loss, "ORPHAN_CASH_BOUND")?;
-        Ok(Plan { instruments:instruments.to_vec(),quantity,leg_costs,acquisition_cost:cost,fees,buffer,terminal_floor:floor,guaranteed_surplus:surplus,worst_orphan_cash_loss:orphan,observed_orphan_unwind_loss:observed,relationship_versions:self.relationships.clone(),book_sources:sources,proof_sources:self.proof_sources.clone() })
+        Ok(Plan { instruments:instruments.to_vec(),quantity,leg_costs,acquisition_cost:cost,fees,buffer,terminal_floor:floor,guaranteed_surplus:surplus,worst_orphan_cash_loss:orphan,observed_orphan_unwind_loss:observed,relationship_versions:self.relationships.clone(),book_sources:sources,book_observed_ms:snapshot_clocks,proof_sources:self.proof_sources.clone() })
     }
 
     pub fn portfolio_floor(&self, positions: &[(Instrument,u64)]) -> Result<i128> {

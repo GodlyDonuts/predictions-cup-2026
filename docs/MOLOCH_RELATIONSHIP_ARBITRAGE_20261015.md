@@ -34,7 +34,7 @@ floor   = min over every feasible state (sum of all instrument payouts × q)
 surplus = floor - full-depth acquisition cost - entry fees - buffer
 ```
 
-Surplus must be positive and satisfy the configured minimum. All amounts use checked integer arithmetic in millionths of a SUSQie; no floating-point marks or top-price extrapolation enter the result. Every requested share must fit observed full ask depth. Fees and buffer are explicit inputs, not silently assumed zero. Real cash and the gross package cap must cover the full acquisition plus entry fees; possible future collateral advances do not increase either input here.
+Surplus must be positive and satisfy the configured minimum. All amounts use checked integer arithmetic in millionths of a SUSQie; no floating-point marks or top-price extrapolation enter the result. Every requested share must fit observed full ask depth. Receipt freshness and underlying snapshot freshness are checked separately. `Book.observed_ms` is the verified venue snapshot clock, or a conservative original request-start clock if the venue omits one; reading a cached book cannot refresh it. Cross-leg skew is measured on these snapshot clocks, not newly received response times. Fees and buffer are explicit inputs, not silently assumed zero. Real cash and the gross package cap must cover the full acquisition plus entry fees; possible future collateral advances do not increase either input here.
 
 Examples:
 
