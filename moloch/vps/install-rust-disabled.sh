@@ -2,6 +2,10 @@
 set -euo pipefail
 base="$HOME/apps/moloch"
 release="$base/releases/rust-session-ca5a37da"
+pairs_source="${1:-$base/shared/pairs.json}"
+policy_source=("$base/shared"/rust-continuation-*/policy.json)
+test "${#policy_source[@]}" = 1
+"$base/rust-build/target/release/moloch-ready" scope-check "$pairs_source" "${policy_source[0]}"
 test ! -e "$release"
 test -f "$base/shared/NETWORK_DISABLED"
 test -f "$base/shared/EXECUTION_STOP"
@@ -13,7 +17,8 @@ for name in moloch-collector moloch-paper moloch-replay moloch-seed moloch-sessi
  install -m 700 "$base/rust-build/target/release/$name" "$release/bin/$name"
 done
 (cd "$release"; sha256sum bin/* > SHA256SUMS)
-install -m 600 "$base/shared"/rust-continuation-*/policy.json "$base/shared/policy.json"
+install -m 600 "${policy_source[0]}" "$base/shared/policy.json"
+if [ "$(readlink -f "$pairs_source")" != "$(readlink -f "$base/shared/pairs.json")" ]; then install -m 600 "$pairs_source" "$base/shared/pairs.json"; fi
 install -m 600 "$base/legacy-wallet-993fd7ba2700.json" "$base/shared/legacy-wallet.json"
 : > "$base/shared/empty-events.jsonl"
 "$release/bin/moloch-session" ingest "$base/shared/paper-bank" "$base/shared/legacy-wallet.json" "$base/shared/policy.json" deployment-init "$base/shared/empty-events.jsonl" > "$base/shared/session-initialization.json"

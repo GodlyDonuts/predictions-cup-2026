@@ -229,3 +229,24 @@ checksums plus financial readiness passed. Node remained absent; the service
 remained disabled/inactive with MainPID=0. The repository service template and
 VPS instructions now match that Rust deployment instead of the historical Node
 setup. Exact continuous results and policies are checked in separately.
+
+## Capture-scope deployment correction
+
+At 2026-10-15T04:38:56Z the current release was verified as `rust-scope-v1`.
+A deployment audit found that shared/pairs.json still contained the historical
+922 example while the frozen entry policy selected 998, 1044, 1048 and 846.
+The shared scope validator now rejects missing entry markets and uncovered
+inventory or unresolved quotes, malformed IDs and duplicate/oversized scopes.
+It is used by both readiness and collection before credential loading.
+
+The old example failed readiness (exit 1); the corrected four historical scopes
+passed (exit 0). The standalone `moloch-ready scope-check PAIRS POLICY` likewise
+rejected the old file and accepted the aligned file. Nine collector tests and
+three readiness tests passed, including the scope checks compiled in both bins.
+The rebuilt release passed all eight executable checksums and session readiness.
+The installer now performs scope preflight before creating or switching a release.
+
+This correction preserves the same historical wallet and expired deadline. It
+establishes configuration agreement, not fresh live-market verification. The
+Rust service still reported disabled/inactive/MainPID=0, Node was absent, and
+the disabled collector invocation exited 1. No SIG calls or orders were made.

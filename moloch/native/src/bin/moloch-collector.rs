@@ -1,4 +1,6 @@
 //! Serialized, read-only SIG transport. No order submission routes exist here.
+#[path = "../capture_scope.rs"]
+mod capture_scope;
 use moloch_replay::realtime::{Auth, Incoming, Realtime};
 use moloch_replay::session::{ExclusiveLock, Session};
 use moloch_replay::source::RestSource;
@@ -369,11 +371,11 @@ fn capture(
         None
     };
     if let Some(paper) = &paper {
-        for exchange in paper.engine().required_exchanges() {
-            if !pairs.iter().any(|p| p["exchangeId"] == exchange) {
-                return Err("PAPER_EXPOSURE_OUTSIDE_CAPTURE_SCOPE".into());
-            }
-        }
+        capture_scope::validate(
+            &Value::Array(pairs.clone()),
+            paper.engine().policy(),
+            &paper.engine().required_exchanges(),
+        )?;
     }
     let credential = key(&state.join("credentials/sig-api.key"))?;
     fs::create_dir(out)?;

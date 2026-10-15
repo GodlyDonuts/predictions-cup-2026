@@ -1,11 +1,11 @@
 {
   "runtime": "rust",
-  "release": "rust-session-ca5a37da",
+  "release": "rust-scope-v1",
   "host": "archon@100.80.176.110",
   "verification": {
     "nativeTestsPassed": 42,
     "releaseBuildSucceeded": true,
-    "releaseBinaryHashesVerified": 7,
+    "releaseBinaryHashesVerified": 8,
     "nodeInstallationRemoved": true,
     "nodeCommandUnavailable": true,
     "readinessPassedAfterNodeRemoval": true,
@@ -17,7 +17,8 @@
     "configuredReadBudgetPerMinute": 100,
     "credentialsTransferred": false,
     "sigRequests": 0,
-    "contestOrders": 0
+    "contestOrders": 0,
+    "captureScopesVerified": true
   },
   "financialContinuation": {
     "cash": "99849.720000",
@@ -30,5 +31,6 @@
   "remaining": [
     "Equal-condition strategy selection and useful-component consolidation",
     "New independent forward paper profitability evidence"
-  ]
+  ],
+  "latestDeploymentAuditUtc": "2026-10-15T04:38:56Z"
 }

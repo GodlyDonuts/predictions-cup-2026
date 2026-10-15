@@ -44,3 +44,11 @@ See `moloch/native/RUST_MIGRATION.md` and `moloch/results/rust-*.json` for check
 source hashes, test evidence and limitations. Strategy diagnostics are
 retrospective and do not establish production profitability. No automatic
 activation or entry-deadline renewal follows from a positive paper result.
+
+Readiness also verifies that every explicitly selected entry exchange and every
+outstanding exposure is in the capture pairs. To check a proposed market list
+without opening a session, use `current/bin/moloch-ready scope-check PAIRS POLICY`.
+The installer runs this check before creating or switching a release; its optional
+first argument supplies the verified pairs file. The current four pairs are the
+historically captured scopes of the frozen policy, not a claim of fresh live
+market reconciliation or permission to renew the expired entry deadline.
