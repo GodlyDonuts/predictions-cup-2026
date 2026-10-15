@@ -4,6 +4,7 @@ use moloch_replay::{session::{Session,ExclusiveLock,atomic_json},source::RestSou
 use moloch_replay::realtime::{Auth,Incoming,Realtime};
 use moloch_live_runtime::breadth::Recorder;
 use moloch_live_runtime::universe::Universe;
+use moloch_live_runtime::reconciliation::{self,Reconciler};
 use serde::{Serialize,Deserialize};
 use serde_json::{Value,json};
 use sha2::{Digest,Sha256};
@@ -47,17 +48,22 @@ fn retire_never_sent(bank:&mut Session,log:&mut DispatchLog,q:&Value)->Result<()
  let proof=log.proof(id);log.append(json!({"kind":"not_sent","qid":id,"proof":proof}))?;
  accept(bank,&json!({"type":"unsubmitted_intent_retired","source":"moloch_live_dispatcher","orderId":id,"confirmedNetworkAttempts":0,"receiptHash":hash(&proof),"receivedAt":iso(now())}))
 }
-fn reconcile(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog)->Result<()>{
+fn reconcile(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,cache:&mut Reconciler)->Result<reconciliation::Cycle>{
+ log.require_resolved_attempts()?;
  let pending:Vec<_>=log.acknowledgments.iter().filter(|(q,_)|!log.closed.contains(q)).map(|(q,_)|*q).collect();
- for qid in pending{
-  let q=quote(bank,qid)?;let actual=bank.engine().live_order_bindings().get(&qid).ok_or("LIVE_ACK_BINDING_MISSING")?.clone();
-  // Read the order first. The later complete fill observation determines retirement.
-  let order=request(t,&c.root,Endpoint::OwnedOrder{order_id:actual.clone()})?;
-  let filled=request(t,&c.root,Endpoint::OwnedFills{order_id:actual.clone()})?;
-  for e in feedback::fills(&q,&actual,&c.scope.tournament_id,&filled,&iso(now()))?{accept(bank,&e)?}
-  if let Some(e)=feedback::terminal(&q,&actual,&c.scope.tournament_id,&order,&filled,&iso(now()))?{accept(bank,&e)?;log.append(json!({"kind":"closed","qid":qid,"orderReceiptHash":feedback::digest(&order)?,"fillReceiptHash":feedback::digest(&filled)?}))?;}
+ let mut owned=vec![];
+ for qid in pending{let q=quote(bank,qid)?;let actual=bank.engine().live_order_bindings().get(&qid).ok_or("LIVE_ACK_BINDING_MISSING")?;
+  owned.push(reconciliation::owned_from_quote(&q,actual,log.cancel_acknowledged.contains(&qid),false)?);
  }
- Ok(())
+ struct Live<'a>{t:&'a mut Transport,c:&'a Control,bank:&'a mut Session,log:&'a mut DispatchLog}
+ impl reconciliation::Backend for Live<'_>{
+  fn now_ms(&self)->u64{now()}
+  fn read(&mut self,ep:Endpoint)->Result<Receipt>{request(self.t,&self.c.root,ep)}
+  fn quote(&self,id:u64)->Result<Value>{quote(self.bank,id)}
+  fn apply(&mut self,e:&Value)->Result<()>{accept(self.bank,e)}
+  fn close(&mut self,id:u64,e:&Value,order:&Receipt,fills:&Receipt)->Result<()>{accept(self.bank,e)?;self.log.append(json!({"kind":"closed","qid":id,"orderReceiptHash":feedback::digest(order)?,"fillReceiptHash":feedback::digest(fills)?}))}
+ }
+ cache.cycle(&c.scope,&owned,false,&mut Live{t,c,bank,log})
 }
 fn source(t:&mut Transport,c:&Control,bank:&mut Session,s:&mut RestSource,ex:&str,market:&str,from:u64)->Result<u64>{
  let from=s.recovery_start_ms(market).map_or(from,|recovery|from.min(recovery));let to=now();let tape=request(t,&c.root,Endpoint::Trades{exchange_id:ex.into(),from:iso(from),to:iso(to)})?;
@@ -78,7 +84,7 @@ fn accept_fresh_book(bank:&mut Session,c:&Control,q:&Value,r:&Receipt,source:&mu
  let wrapped=json!({"source":"official_sig_api_v1","kind":"book","tournamentId":c.scope.tournament_id,"marketId":q["marketId"],"exchangeId":q["exchangeId"],"endpoint":r.endpoint,"status":r.status,"requestStartedAt":r.request_started_at,"receivedAt":r.received_at,"data":r.data});
  for e in source.accept(&wrapped)?{accept(bank,&e)?}Ok(())
 }
-fn dispatch(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,authority:&Arc<ProductionAuthority>,source:&mut RestSource)->Result<()>{
+fn dispatch(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,authority:&Arc<ProductionAuthority>,source:&mut RestSource,allow_new_submissions:bool)->Result<()>{
  let orders=bank.engine().order_records();
  // Cancellations and reconciliation take priority over new purchases.
  for old in &orders {
@@ -102,6 +108,7 @@ fn dispatch(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,a
    }return Err("LIVE_CANCEL_REJECTED_RECONCILIATION_REQUIRED".into())
   }};record_receipt(&c.root,&ack)?;log.append(json!({"kind":"cancel_ack","qid":qid,"receipt":ack}))?;authority.clear_ready();return Ok(())
  }
+ if !allow_new_submissions{return Ok(())}
  // At most one new physical order per pass; subsequent fills change funding.
  for q in bank.engine().order_records(){
   let qid=q["id"].as_u64().ok_or("LIVE_QUOTE_ID")?;
@@ -189,7 +196,7 @@ pub fn main()->Result<()>{
   if let Some(r)=&mut breadth{r.observe("stream_reset",&json!({"localBoundary":true,"reason":"confirmed_subscription"}),&joined_at)}
   if let Some(u)=&mut universe{u.observe("stream_reset",&json!({"localBoundary":true}),&joined_at)?;}
   let mut windows:std::collections::BTreeMap<String,u64>=c.scope.exchanges.keys().map(|e|(e.clone(),start.saturating_sub(60000))).collect();
-  let mut cycles=0u64;
+  let mut cycles=0u64;let mut reconciliation_cache=Reconciler::default();
   loop{
    if stop.exists()||global_stop.exists(){return Err("LIVE_EXECUTION_STOP".into())}
    if now()>=stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?.deadline_ms{
@@ -200,10 +207,10 @@ pub fn main()->Result<()>{
     for from in windows.values_mut(){*from=now().saturating_sub(60000)}
    }
    drain_stream(stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?,&mut bank,&mut source_state,&mut breadth,&mut universe)?;
-   reconcile(&mut t,&c,&mut bank,&mut log)?;
+   let reconciled=reconcile(&mut t,&c,&mut bank,&mut log,&mut reconciliation_cache)?;
    accept(&mut bank,&json!({"type":"tick","receivedAt":iso(now())}))?;
    let selected=if let Some(u)=&mut universe{u.select(&bank.engine().required_exchanges())?}else{c.scope.exchanges.keys().cloned().collect()};
-   for ex in &selected{let market=&c.scope.exchanges[ex];let from=windows[ex];let next=source(&mut t,&c,&mut bank,&mut source_state,ex,market,from)?;windows.insert(ex.clone(),next);drain_stream(stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?,&mut bank,&mut source_state,&mut breadth,&mut universe)?;dispatch(&mut t,&c,&mut bank,&mut log,&authority,&mut source_state)?;}
+   for ex in &selected{let market=&c.scope.exchanges[ex];let from=windows[ex];let next=source(&mut t,&c,&mut bank,&mut source_state,ex,market,from)?;windows.insert(ex.clone(),next);drain_stream(stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?,&mut bank,&mut source_state,&mut breadth,&mut universe)?;dispatch(&mut t,&c,&mut bank,&mut log,&authority,&mut source_state,!reconciled.blocks_new_submissions)?;}
    cycles+=1;
    atomic_json(&c.root.join("status.json"),&json!({"at":iso(now()),"pid":std::process::id(),"mode":"actual-contest-trading","runId":c.activation.run_id,"bank":c.bank_name,"cycles":cycles,"realtimeHealthy":stream.as_ref().is_some_and(|s|s.healthy()),"universe":universe.as_ref().map(Universe::status),"selectedReadScopes":selected,"sourceScopes":source_state.scopes(),"breadthCapture":{"path":breadth_path,"state":breadth.as_ref().map(Recorder::status)},"report":bank.engine().report()?,"queue":t.admission_state()?,"actualOrders":log.acknowledgments.len(),"terminalOrders":log.closed.len(),"entryUntil":iso(c.activation.entry_until_ms),"profitabilityEstablished":false}))?;
    // Existing orders and the first trading cycle precede optional research reads.
