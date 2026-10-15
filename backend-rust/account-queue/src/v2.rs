@@ -3,6 +3,7 @@
 use super::*;
 
 const MAX_ROW_BYTES: u64 = 64 * 1024;
+const MAX_POISON_BYTES:u64 = 4096;
 const MAX_V2_CHECKPOINT_BYTES: u64 = 1024 * 1024 * 1024;
 const MAX_BINDINGS: usize = 2_000_000;
 
@@ -31,6 +32,52 @@ enum Transition { Command(Command), Recovery }
 #[serde(deny_unknown_fields)]
 struct DeltaRecord {schema_version:u32,sequence:u64,previous:String,transition:Transition,delta:Delta,hash:String}
 fn delta_hash(sequence:u64,previous:&str,t:&Transition,d:&Delta)->String{hash(&(2u32,sequence,previous,t,d))}
+
+// Manual review must remain persistable even when an otherwise legal input
+// expands past the delta-row cap. Resolve scope/active identity from the prior
+// durable state rather than repeating padded command fields or full State.
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(tag="cause",rename_all="snake_case",deny_unknown_fields)]
+enum PoisonWitness {
+    ClockRegression{now:u64},
+    CompletionOverflow{now:u64,status:u16,outcome:String,request_in_flight:bool},
+    UnrepresentableCommand,
+}
+#[derive(Serialize,Deserialize)]
+#[serde(deny_unknown_fields)]
+struct PoisonRecord {schema_version:u32,sequence:u64,previous:String,poison:PoisonWitness,command_sha256:String,hash:String}
+#[derive(Serialize,Deserialize)]
+#[serde(untagged)]
+enum StoredRecord {Delta(DeltaRecord),Poison(PoisonRecord)}
+fn poison_hash(sequence:u64,previous:&str,w:&PoisonWitness,command_sha256:&str)->String{hash(&(2u32,sequence,previous,"manual_review",w,command_sha256))}
+fn prepare_poison(s:&State,w:&PoisonWitness)->Result<Delta>{
+    need(!s.manual_review,"V2_POISON_ALREADY_DURABLE")?;
+    let c=match w{
+        PoisonWitness::ClockRegression{now}=>Command{op:"status".into(),scope:s.scope.clone(),now:*now,..Default::default()},
+        PoisonWitness::CompletionOverflow{now,status,outcome,request_in_flight}=>{
+            need(matches!(status,429|503),"V2_POISON_WITNESS")?;
+            let request=s.active.as_ref().ok_or("V2_POISON_ACTIVE_REQUIRED")?.request.clone();
+            // Every Retry-After overflow takes the same manual-review branch;
+            // the raw header's padding has no subsequent economic effect.
+            Command{op:"complete".into(),scope:s.scope.clone(),now:*now,request,status:*status,outcome:outcome.clone(),retry_after:"99999999999999999999999".into(),api_code:if *request_in_flight{"REQUEST_IN_FLIGHT".into()}else{String::new()},..Default::default()}
+        },
+        PoisonWitness::UnrepresentableCommand=>{
+            let mut operational=Operational::capture(s);operational.manual_review=true;
+            return Ok(Delta{operational,bindings:vec![],unknown_put:vec![],unknown_remove:vec![]});
+        },
+    };
+    let (delta,_)=prepare(s,&Transition::Command(c));
+    let delta=delta.ok_or("V2_POISON_WITNESS")?;
+    need(delta.operational.manual_review,"V2_POISON_WITNESS")?;Ok(delta)
+}
+fn manual_review_witness(s:&State,c:&Command,d:&Delta)->Result<PoisonWitness>{
+    let witness=if c.scope==s.scope && c.now<=MAX_TIME && c.now<s.last_clock{
+        PoisonWitness::ClockRegression{now:c.now}
+    }else if c.op=="complete" && matches!(c.status,429|503){
+        PoisonWitness::CompletionOverflow{now:c.now,status:c.status,outcome:c.outcome.clone(),request_in_flight:c.api_code=="REQUEST_IN_FLIGHT"}
+    }else{return Err("V2_POISON_WITNESS".into());};
+    need(prepare_poison(s,&witness)?==*d,"V2_POISON_ORACLE_MISMATCH")?;Ok(witness)
+}
 
 // A sparse State is an exact projection for State::apply's current access set.
 // Unknown has a global-empty gate, so include a sentinel actual binding even
@@ -214,28 +261,60 @@ impl V2Store {
             need(active_bytes<=MAX_ACTIVE_JOURNAL_BYTES,"ACTIVE_JOURNAL_TOO_LARGE")?;
             let mut reader=BufReader::new(File::open(&path).map_err(|_|"JOURNAL_READ_FAILED")?);
             while let Some(bytes)=bounded_line(&mut reader)?{
-                let r:DeltaRecord=serde_json::from_slice(&bytes).map_err(|_|"JOURNAL_INVALID")?;
-                need(r.schema_version==2 && r.sequence==sequence.checked_add(1).ok_or("V2_SEQUENCE_OVERFLOW")? && r.previous==previous && r.hash==delta_hash(r.sequence,&r.previous,&r.transition,&r.delta),"JOURNAL_INTEGRITY_OR_SCOPE_FAILURE")?;
-                let (expected,_)=prepare(&state,&r.transition);
-                need(expected.as_ref()==Some(&r.delta),"V2_TRANSITION_MISMATCH")?;validate_delta(&state,&r.delta)?;
-                install(&mut state,&r.delta);sequence=r.sequence;previous=r.hash;
+                let record:StoredRecord=serde_json::from_slice(&bytes).map_err(|_|"JOURNAL_INVALID")?;
+                match record{
+                    StoredRecord::Delta(r)=>{
+                        need(r.schema_version==2 && r.sequence==sequence.checked_add(1).ok_or("V2_SEQUENCE_OVERFLOW")? && r.previous==previous && r.hash==delta_hash(r.sequence,&r.previous,&r.transition,&r.delta),"JOURNAL_INTEGRITY_OR_SCOPE_FAILURE")?;
+                        let (expected,_)=prepare(&state,&r.transition);
+                        need(expected.as_ref()==Some(&r.delta),"V2_TRANSITION_MISMATCH")?;validate_delta(&state,&r.delta)?;
+                        install(&mut state,&r.delta);sequence=r.sequence;previous=r.hash;
+                    },
+                    StoredRecord::Poison(r)=>{
+                        need(bytes.len() as u64<=MAX_POISON_BYTES && r.schema_version==2 && r.sequence==sequence.checked_add(1).ok_or("V2_SEQUENCE_OVERFLOW")? && r.previous==previous && r.command_sha256.len()==64 && r.command_sha256.bytes().all(|b|b.is_ascii_hexdigit()&&!b.is_ascii_uppercase()) && r.hash==poison_hash(r.sequence,&r.previous,&r.poison,&r.command_sha256),"JOURNAL_INTEGRITY_OR_SCOPE_FAILURE")?;
+                        let delta=prepare_poison(&state,&r.poison)?;validate_delta(&state,&delta)?;install(&mut state,&delta);sequence=r.sequence;previous=r.hash;
+                    },
+                }
             }
+            // Older, unpromoted prototype tails might not leave the new compact
+            // poison reserve. Refuse them before exposing a command interface;
+            // never erase a clock poison merely because compaction is needed.
+            need(state.manual_review || active_bytes.saturating_add(MAX_POISON_BYTES)<=MAX_ACTIVE_JOURNAL_BYTES,"V2_POISON_RESERVE_REQUIRED")?;
             let file=OpenOptions::new().append(true).open(path).map_err(|_|"JOURNAL_OPEN_FAILED")?;
             Ok(Self{file,state,sequence,previous,lock_path:lock_path.clone(),identity:identity.clone(),poisoned:false,dir:dir.into(),journal_name:m.journal,checkpoint_hash:m.checkpoint_hash,migration:h.migration,active_bytes,maximum_bytes:MAX_ACTIVE_JOURNAL_BYTES})
         };
         match load(){Ok(mut s)=>{let t=Transition::Recovery;let (d,_)=prepare(&s.state,&t);if let Some(d)=d{s.persist(t,d)?;}Ok(s)},Err(e)=>{if fs::read(&lock_path).ok().as_deref()==Some(&identity){let _=fs::remove_file(lock_path);}Err(e)}}
     }
     fn persist(&mut self,t:Transition,d:Delta)->Result<()>{self.persist_with_hook(t,d,|_|Ok(()))}
+    fn persist_poison(&mut self,witness:PoisonWitness,command_sha256:String)->Result<()>{
+        self.owned()?;let delta=prepare_poison(&self.state,&witness)?;validate_delta(&self.state,&delta)?;
+        let sequence=self.sequence.checked_add(1).ok_or("V2_SEQUENCE_OVERFLOW")?;
+        let digest=poison_hash(sequence,&self.previous,&witness,&command_sha256);
+        let record=PoisonRecord{schema_version:2,sequence,previous:self.previous.clone(),poison:witness,command_sha256,hash:digest.clone()};
+        let mut bytes=serde_json::to_vec(&record).map_err(|_|"V2_SERIALIZATION_FAILED")?;bytes.push(b'\n');
+        need(bytes.len() as u64<=MAX_POISON_BYTES,"V2_POISON_TOO_LARGE")?;
+        if self.active_bytes.saturating_add(bytes.len() as u64)>self.maximum_bytes{self.poisoned=true;return Err("V2_POISON_RESERVE_EXHAUSTED".into());}
+        self.poisoned=true;
+        self.file.write_all(&bytes).and_then(|_|self.file.sync_all()).map_err(|_|"DURABILITY_FAILURE")?;
+        need(fs::read(&self.lock_path).ok().as_deref()==Some(&self.identity),"SCOPED_LEASE_LOST")?;
+        install(&mut self.state,&delta);self.sequence=sequence;self.previous=digest;self.active_bytes+=bytes.len() as u64;self.poisoned=false;Ok(())
+    }
     fn persist_with_hook(&mut self,t:Transition,d:Delta,mut hook:impl FnMut(&str)->Result<()>)->Result<()>{
         self.owned()?;validate_delta(&self.state,&d)?;
         let sequence=self.sequence.checked_add(1).ok_or("V2_SEQUENCE_OVERFLOW")?;
         let digest=delta_hash(sequence,&self.previous,&t,&d);
         let record=DeltaRecord{schema_version:2,sequence,previous:self.previous.clone(),transition:t,delta:d,hash:digest.clone()};
         let mut bytes=serde_json::to_vec(&record).map_err(|_|"V2_SERIALIZATION_FAILED")?;bytes.push(b'\n');
-        need(bytes.len() as u64<=MAX_ROW_BYTES,"V2_ROW_TOO_LARGE")?;
-        // Reserve one maximum-size recovery record before accepting a command.
-        // Recovery itself can consume the reserve. No admission is retried here.
-        let reserve=if matches!(record.transition,Transition::Recovery){0}else{MAX_ROW_BYTES};
+        if bytes.len() as u64>MAX_ROW_BYTES{
+            // The attempted operation is never installed. Preserve the previous
+            // active/unknown state and durably require review before returning
+            // a format error; restart can still recover an existing flight.
+            if !self.state.manual_review{self.persist_poison(PoisonWitness::UnrepresentableCommand,hash(&record.transition))?;}
+            return Err("V2_ROW_TOO_LARGE".into());
+        }
+        // A normal transition reserves both a recovery row and a compact poison
+        // row. Recovery preserves the poison reserve unless review is already
+        // durable. Poison can consume its reserve without a normal cap refusal.
+        let reserve=if matches!(record.transition,Transition::Recovery){if self.state.manual_review{0}else{MAX_POISON_BYTES}}else{MAX_ROW_BYTES+MAX_POISON_BYTES};
         need(self.active_bytes.saturating_add(bytes.len() as u64).saturating_add(reserve)<=self.maximum_bytes,"EXPLICIT_COMPACTION_REQUIRED")?;
         self.poisoned=true;
         hook("before_append")?;
@@ -248,8 +327,15 @@ impl V2Store {
         self.owned()?;
         if c.op=="compact"{need(c.scope==self.state.scope,"SCOPE_MISMATCH")?;need(c.now>=self.state.last_clock && c.now<=MAX_TIME,"COMPACTION_CLOCK_INVALID")?;return self.compact_with_hook(|_|Ok(()),pin_directory);}
         let full=c.op=="status";let summary=c.op=="summary";let lookup=if c.op=="lookup_intent"{Some(c.request.clone())}else{None};
-        let t=Transition::Command(c);let (d,result)=prepare(&self.state,&t);
-        if let Some(d)=d{self.persist(t,d)?;}
+        let t=Transition::Command(c.clone());let (d,result)=prepare(&self.state,&t);
+        if let Some(d)=d{
+            if d.operational.manual_review && !self.state.manual_review{
+                match manual_review_witness(&self.state,&c,&d){
+                    Ok(witness)=>self.persist_poison(witness,hash(&c))?,
+                    Err(e)=>{self.persist_poison(PoisonWitness::UnrepresentableCommand,hash(&c))?;return Err(e);},
+                }
+            }else{self.persist(t,d)?;}
+        }
         self.owned()?;
         match result{Ok(_) if full=>Ok(json!({"state":self.state})),Ok(_) if summary=>Ok(self.summary()),Ok(_) if lookup.is_some()=>self.lookup_intent(lookup.as_deref().unwrap()),r=>r}
     }

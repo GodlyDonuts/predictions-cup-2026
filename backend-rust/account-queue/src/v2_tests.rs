@@ -100,6 +100,22 @@ fn finish(s:&mut State,c:&Command,now:u64,outcome:&str,status:u16){
 fn fixture()->PathBuf{let p=std::env::temp_dir().join(format!("moloch-queue-v2-test-{}-{}",std::process::id(),std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_nanos()));fs::create_dir_all(&p).unwrap();p}
 fn header(s:&State)->Header{Header{schema_version:2,anchor:Anchor{sequence:0,previous:String::new(),source_journal:"account-queue.jsonl".into(),source_bytes:0,source_sha256:hash(&0u64),prior_checkpoint_hash:None},operational:Operational::capture(s),migration:MigrationProof{schema_version:1,scope:s.scope.clone(),sequence:0,previous:String::new(),state_sha256:hash(s),source_journal:"account-queue.jsonl".into(),source_bytes:0,source_sha256:hash(&0u64),checkpoint_hash:None,manifest_sha256:None},bindings:s.intents.len(),unknowns:s.unknown.len()}}
 
+fn padded(mut c:Command,field:&str)->Command{
+    match field{"request"=>c.request.clear(),"retry_after"=>c.retry_after.clear(),"api_code"=>c.api_code.clear(),"outcome"=>c.outcome.clear(),_=>panic!("field")};
+    let n=MAX_ROW_BYTES as usize-1-serde_json::to_vec(&c).unwrap().len();
+    let text=if field=="retry_after"{"9".repeat(n)}else{"x".repeat(n)};
+    match field{"request"=>c.request=text,"retry_after"=>c.retry_after=text,"api_code"=>c.api_code=text,"outcome"=>c.outcome=text,_=>unreachable!()};
+    assert_eq!(serde_json::to_vec(&c).unwrap().len()+1,MAX_ROW_BYTES as usize);c
+}
+
+#[test] fn compact_poison_witness_exactly_reproduces_manual_review_branches(){
+    for at in [1002,MAX_TIME-1,MAX_TIME]{for in_flight in [false,true]{for outcome in ["success","rejected","unknown"]{
+        let mut s=populated(5);let c=command("admit",1000,true);s.apply(&c).unwrap();let mut n=command("network",1001,true);n.request=c.request.clone();n.binding=c.binding;s.apply(&n).unwrap();
+        let mut c=command("complete",at,true);c.request=s.active.as_ref().unwrap().request.clone();c.status=503;c.outcome=outcome.into();c.retry_after="99999999999999999999999".into();c.api_code=if in_flight{"REQUEST_IN_FLIGHT".into()}else{String::new()};
+        let (delta,_)=prepare(&s,&Transition::Command(c.clone()));let delta=delta.unwrap();assert!(delta.operational.manual_review);let w=manual_review_witness(&s,&c,&delta).unwrap();assert_eq!(prepare_poison(&s,&w).unwrap(),delta);
+    }}}
+}
+
 #[cfg(unix)]
 mod durable {
     use super::*;
@@ -179,5 +195,34 @@ mod durable {
     }
     #[test] fn lost_lease_and_lease_change_mid_checkpoint_never_continue(){
         let (dir,mut s)=migrated();let lock=s.lock_path.clone();assert_eq!(s.compact_with_hook(|p|{if p=="checkpoint_synced"{fs::write(&lock,b"replacement").unwrap();}Ok(())},pin_directory).unwrap_err(),"SCOPED_LEASE_LOST");assert!(s.poisoned);drop(s);assert_eq!(fs::read(&lock).unwrap(),b"replacement");fs::remove_dir_all(dir).unwrap();
+    }
+    #[test] fn legal_padded_clock_regression_is_durable_and_blocks_after_restart(){
+        let (dir,mut s)=migrated();s.command(command("status",1000,false)).unwrap();let c=padded(command("status",999,false),"request");let mut oracle=s.state.clone();assert_eq!(oracle.apply(&c).unwrap_err(),"CLOCK_REGRESSION");
+        assert_eq!(s.command(c).unwrap_err(),"CLOCK_REGRESSION");assert_eq!(s.state,oracle);assert!(s.state.manual_review);
+        let rows=fs::read_to_string(dir.join(&s.journal_name)).unwrap();let last=rows.lines().last().unwrap();assert!((last.len() as u64)<MAX_POISON_BYTES);assert!(matches!(serde_json::from_str::<StoredRecord>(last).unwrap(),StoredRecord::Poison(_)));drop(s);
+        let mut s=V2Store::open(&dir,"fixture-scope","new").unwrap();assert_eq!(s.state,oracle);assert_eq!(s.command(command("admit",3000,true)).unwrap_err(),"MANUAL_REVIEW_REQUIRED");drop(s);fs::remove_dir_all(dir).unwrap();
+    }
+    #[test] fn poison_consumes_reserved_space_and_restart_keeps_active_write_unknown(){
+        let (dir,mut s)=migrated();let c=command("admit",1000,true);s.command(c.clone()).unwrap();let mut n=command("network",1001,true);n.request=c.request;n.binding=c.binding.clone();s.command(n).unwrap();
+        let reserve=MAX_ROW_BYTES+MAX_POISON_BYTES;let tail=s.active_bytes;let next=command("status",2000,false);let t=Transition::Command(next.clone());let d=prepare(&s.state,&t).0.unwrap();let sequence=s.sequence+1;let digest=delta_hash(sequence,&s.previous,&t,&d);let bytes=serde_json::to_vec(&DeltaRecord{schema_version:2,sequence,previous:s.previous.clone(),transition:t,delta:d,hash:digest}).unwrap().len() as u64+1;
+        s.maximum_bytes=tail+bytes+reserve;s.command(next).unwrap();assert_eq!(s.maximum_bytes-s.active_bytes,reserve);
+        let c=padded(command("status",1999,false),"request");assert_eq!(s.command(c).unwrap_err(),"CLOCK_REGRESSION");assert!(s.maximum_bytes-s.active_bytes>=MAX_ROW_BYTES);assert!(s.state.active.is_some());drop(s);
+        let mut s=V2Store::open(&dir,"fixture-scope","new").unwrap();assert!(s.state.manual_review);assert!(s.state.active.is_none());assert_eq!(s.state.unknown.len(),1);assert_eq!(s.command(command("admit",5000,true)).unwrap_err(),"MANUAL_REVIEW_REQUIRED");drop(s);fs::remove_dir_all(dir).unwrap();
+    }
+    #[test] fn padded_retry_after_overflow_preserves_exact_completion_and_unknowns(){
+        for field in ["retry_after","api_code"]{
+            let (dir,mut s)=migrated();let c=command("admit",1000,true);s.command(c.clone()).unwrap();let mut n=command("network",1001,true);n.request=c.request.clone();n.binding=c.binding.clone();s.command(n).unwrap();
+            let mut done=command("complete",1002,true);done.request=c.request;done.outcome="unknown".into();done.status=503;done.retry_after="99999999999999999999999".into();done=padded(done,field);let mut oracle=s.state.clone();let expected=oracle.apply(&done);assert!(oracle.manual_review);assert_eq!(s.command(done),expected);assert_eq!(s.state,oracle);assert!(s.state.active.is_none());assert_eq!(s.state.unknown.len(),1);drop(s);
+            let mut s=V2Store::open(&dir,"fixture-scope","new").unwrap();assert_eq!(s.state,oracle);assert_eq!(s.command(command("admit",5000,true)).unwrap_err(),"MANUAL_REVIEW_REQUIRED");drop(s);fs::remove_dir_all(dir).unwrap();
+        }
+    }
+    #[test] fn unrepresentable_completion_quarantines_without_losing_inflight_write(){
+        let (dir,mut s)=migrated();let c=command("admit",1000,true);s.command(c.clone()).unwrap();let mut n=command("network",1001,true);n.request=c.request.clone();n.binding=c.binding.clone();s.command(n).unwrap();let before=s.state.clone();
+        let mut done=command("complete",1002,true);done.request=c.request;done.outcome="success".into();let done=padded(done,"api_code");assert_eq!(s.command(done).unwrap_err(),"V2_ROW_TOO_LARGE");assert!(s.state.manual_review);assert_eq!(s.state.active,before.active);assert_eq!(s.state.intents,before.intents);assert_eq!(s.state.last_clock,before.last_clock);drop(s);
+        let mut s=V2Store::open(&dir,"fixture-scope","new").unwrap();assert!(s.state.manual_review);assert_eq!(s.state.unknown.get(&c.binding.as_ref().unwrap().intent),c.binding.as_ref());assert_eq!(s.command(command("admit",5000,true)).unwrap_err(),"MANUAL_REVIEW_REQUIRED");drop(s);fs::remove_dir_all(dir).unwrap();
+    }
+    #[test] fn unrepresentable_new_admission_quarantines_without_creating_binding(){
+        let (dir,mut s)=migrated();let c=padded(command("admit",1000,true),"request");assert_eq!(s.command(c).unwrap_err(),"V2_ROW_TOO_LARGE");assert!(s.state.manual_review);assert!(s.state.active.is_none());assert!(s.state.intents.is_empty());drop(s);
+        let mut s=V2Store::open(&dir,"fixture-scope","new").unwrap();assert!(s.state.manual_review);assert!(s.state.intents.is_empty());assert_eq!(s.command(command("admit",3000,true)).unwrap_err(),"MANUAL_REVIEW_REQUIRED");drop(s);fs::remove_dir_all(dir).unwrap();
     }
 }
