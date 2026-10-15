@@ -31,7 +31,9 @@ The execution owner registers the module in the runtime library and calls:
    removes only `sourceRef` and checks its canonical hash against
    `Session::committed_source_hash(source_id, sequence)`, which reads the
    financial session's existing retained source-reference map. Batch-end bank
-   state does not substitute a later book for an earlier event.
+   state does not substitute a later book or later ownership state for an earlier event.
+   The standard `moloch-live`/`moloch-package` cursors are pinned at construction;
+   unknown writer streams must begin at a fresh first commit, not a historical suffix.
 2. `track_attempt(&bank, &ordinary_dispatch, qid, now_ms)` immediately after the
    original durable ordinary physical-attempt record and before the SDK call.
    This snapshots features only. The exact current original quote must match
@@ -90,7 +92,11 @@ coverage must include the first component fill through the selected source
 book, with sufficient projected sequence. Missing coverage does not become zero.
 
 YES liquidation walks YES bids. NO liquidation walks `1 − YES ask` with the
-original level quantities. Every modeled close covers the entire actual cohort.
+original level quantities. Every modeled close covers the entire actual cohort. Known owned resting quantities are removed from displayed
+depth. The model maintains its own committed ACK/terminal shadow: it does not
+read a later batch-end fill/terminal state to improve an earlier label. At cold
+start, historical bound orders without a known complete terminal are removed
+conservatively, which can reduce coverage rather than create alpha.
 Conservative execution surplus subtracts the greater of actual principal and
 the original full limit notional, actual fees, and the independently specified
 future close fee. Historical price improvement is not assumed to repeat.
@@ -137,7 +143,7 @@ Configuration validates windows, source ages, known fee provenance, key/pending
 limits and retained samples. Defaults are intentionally supplied by the owner;
 this module does not silently select a profitable-looking horizon or policy.
 At most 1,024 keys, 4,096 pending attempts, 256 retained samples per bucket,
-64 levels per side and 128 actual fill rows per cohort are allowed. Source
+64 levels per side, 4,096 own-order shadow records and 128 actual fill rows per cohort are allowed. Source
 identity is limited to eight existing writer streams. Exceeding source/model
 integrity bounds withholds confidence rather than expanding memory or creating
 another collector. Source cursor conflicts or changed policies disable the model.
