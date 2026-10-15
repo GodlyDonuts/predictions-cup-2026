@@ -56,6 +56,14 @@ fn never_dispatch_fixture()->(Engine,Value){
 #[test]fn never_dispatch_rejects_missing_changed_or_inconsistent_fence_source(){let(e,v)=never_dispatch_fixture();for case in ["phase","attempted","request","admission","fence","head","clock","source","extra"]{let mut bad=v.clone();match case{"phase"=>bad["evidence"]["dispatchRecord"]["phase"]=json!("intent"),"attempted"=>bad["evidence"]["dispatchRecord"]["attemptedAt"]=json!(iso(3001)),"request"=>bad["evidence"]["requestJson"]=json!("{}"),"admission"=>bad["evidence"]["dispatchRecord"]["admission"]["reserve"]["bankScope"]["runId"]=json!("another"),"fence"=>bad["evidence"]["dispatchFenceRow"]["event"]["kind"]=json!("attempt"),"head"=>bad["evidence"]["dispatchHead"]["sequence"]=json!(1),"clock"=>bad["evidence"]["journalLastClockMs"]=json!(1_792_022_403_004i64),"source"=>bad["evidence"]["journalSha256"]=Value::Null,_=>bad["evidence"]["queueAbsence"]=json!(true)}let mut candidate=e.clone();deny(&mut candidate,&bad);}}
 #[test]fn never_dispatch_unknown_ack_and_partial_fill_never_release(){let(e,v)=never_dispatch_fixture();for case in ["unknown","ack","fill"]{let mut candidate=e.clone();if case=="unknown"{let mut u=v.clone();u["type"]=json!("live_package_unknown");u["requestHash"]=v["evidence"]["requestHash"].clone();u["receivedAt"]=json!(iso(3002));u["processedAt"]=json!(iso(3002));candidate.advance(&u).unwrap();}else{let q=candidate.order_records()[0].clone();candidate.advance(&actual("actual_order_ack",&q,3002)).unwrap();if case=="fill"{candidate.advance(&fill(&q,1,3002)).unwrap();}}let before=candidate.report().unwrap()["reservedCash"].clone();deny(&mut candidate,&v);assert_eq!(candidate.report().unwrap()["reservedCash"],before);}}
 #[test]fn typed_dispatch_witness_is_not_a_reserved_or_absence_alias(){let(_,v)=never_dispatch_fixture();let r=v["evidence"]["dispatchRecord"]["admission"]["reserve"].clone();let mut e=engine();e.advance(&r).unwrap();deny(&mut e,&v);let(mut e,mut v)=never_dispatch_fixture();v["evidence"]=json!({"kind":"dispatch_never_attempted_v1","confirmedNetworkAttempts":0,"queueEmpty":true});deny(&mut e,&v);}
+#[test]fn consistently_rehashed_unrelated_bank_or_queue_binding_is_still_not_native_authority(){
+ let(e,v)=never_dispatch_fixture();for case in ["bank","queue","time"]{let mut bad=v.clone();let proof=&mut bad["evidence"];
+  match case{"bank"=>proof["dispatchRecord"]["admission"]["reserve"]["bankScope"]["bankManifestHash"]=json!("f".repeat(64)),"queue"=>proof["dispatchRecord"]["admission"]["queue_binding"]["payload_hash"]=json!("f".repeat(64)),_=>proof["dispatchRecord"]["outcome"]["at"]=json!(iso(3000))}
+  proof["dispatchRecord"]["outcome"]["admissionHash"]=json!(hash(&proof["dispatchRecord"]["admission"]));proof["dispatchFenceRow"]["event"]=proof["dispatchRecord"]["outcome"].clone();
+  let mut body=proof["dispatchFenceRow"].clone();body.as_object_mut().unwrap().remove("hash");proof["dispatchFenceRow"]["hash"]=json!(hash(&body));proof["dispatchHead"]["hash"]=proof["dispatchFenceRow"]["hash"].clone();proof["dispatchRecordHash"]=json!(hash(&proof["dispatchRecord"]));
+  let mut candidate=e.clone();deny(&mut candidate,&bad);
+ }
+}
 
 #[test]fn thirty_second_intent_does_not_turn_ten_second_books_into_fresh_attempt_facts(){
  let mut e=engine();let mut r=reserve(2);r["expiresAt"]=json!(iso(30001));e.advance(&r).unwrap();assert_eq!(e.package_records()[0]["expiresAt"],1_792_022_430_001i64);
@@ -70,7 +78,7 @@ fn never_dispatch_fixture()->(Engine,Value){
  }
 }
 #[test]fn package_expiry_still_obeys_lifetime_entry_cutoff_and_original_attempt_deadline(){
- for case in ["lifetime","entry"]{let mut p=policy();p["lifetimeMs"]=json!(30000);let mut e=engine_with(&p);let mut r=reserve(2);r["expiresAt"]=json!(if case=="lifetime"{iso(30002)}else{iso(100001)});deny(&mut e,&r);}
+ for case in ["lifetime","entry"]{let mut p=policy();p["lifetimeMs"]=json!(if case=="lifetime"{30000}else{200000});let mut e=engine_with(&p);let mut r=reserve(2);r["expiresAt"]=json!(if case=="lifetime"{iso(30002)}else{iso(100001)});deny(&mut e,&r);}
  let mut e=engine();let mut r=reserve(2);r["expiresAt"]=json!(iso(30001));e.advance(&r).unwrap();
  let mut a=event("live_package_attempt",30001);a["expiresAt"]=json!(iso(60000));deny(&mut e,&a);assert_eq!(e.package_records()[0]["phase"],"reserved");assert_eq!(e.package_records()[0]["expiresAt"],1_792_022_430_001i64);
 }
