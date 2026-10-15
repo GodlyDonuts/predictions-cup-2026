@@ -1,0 +1,8 @@
+{
+  "mode": "paper-infrastructure-only",
+  "networkEnabled": false,
+  "tradingEnabled": false,
+  "readsPerMinute": 100,
+  "accountBudgetIsSharedAcrossAllKeys": true,
+  "requiresExistingCollectorsStoppedBeforeNetworkEnablement": true
+}
