@@ -176,8 +176,7 @@ pub fn main()->Result<()>{
   let start=now();let mut source_state=RestSource::new(&pairs,&c.scope.tournament_id,&iso(start))?;source_state.seed_trade_facts(bank.source_facts())?;
   let (connected,joined_at)=connect_stream(&mut t,&c,&mut bank,&mut source_state)?;let mut stream=Some(connected);
   authority.bind_stream(stream.as_ref().unwrap().failure_signal(),stream.as_ref().unwrap().deadline_ms);
-  let relationship_census=moloch_live_runtime::relationship_census::capture(&mut t,&c.scope,&c.root.join("relationship-receipts"),&[]);
-  atomic_json(&c.root.join("relationship-census.json"),&serde_json::to_value(&relationship_census.report)?)?;
+  let mut relationship_census=None;
   let breadth_path=c.root.join(format!("breadth-{}-{}.jsonl",std::process::id(),now()));
   let mut breadth=Recorder::new(&breadth_path).ok();
   if let Some(r)=&mut breadth{r.observe("stream_reset",&json!({"localBoundary":true,"reason":"confirmed_subscription"}),&joined_at)}
@@ -200,6 +199,9 @@ pub fn main()->Result<()>{
    for ex in &selected{let market=&c.scope.exchanges[ex];let from=windows[ex];let next=source(&mut t,&c,&mut bank,&mut source_state,ex,market,from)?;windows.insert(ex.clone(),next);drain_stream(stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?,&mut bank,&mut source_state,&mut breadth,&mut universe)?;dispatch(&mut t,&c,&mut bank,&mut log,&authority,&mut source_state)?;}
    cycles+=1;
    atomic_json(&c.root.join("status.json"),&json!({"at":iso(now()),"pid":std::process::id(),"mode":"actual-contest-trading","runId":c.activation.run_id,"bank":c.bank_name,"cycles":cycles,"realtimeHealthy":stream.as_ref().is_some_and(|s|s.healthy()),"universe":universe.as_ref().map(Universe::status),"selectedReadScopes":selected,"sourceScopes":source_state.scopes(),"breadthCapture":{"path":breadth_path,"state":breadth.as_ref().map(Recorder::status)},"report":bank.engine().report()?,"queue":t.admission_state()?,"actualOrders":log.acknowledgments.len(),"terminalOrders":log.closed.len(),"entryUntil":iso(c.activation.entry_until_ms),"profitabilityEstablished":false}))?;
+   // Existing orders and the first trading cycle precede optional research reads.
+   // Diagnostic persistence never blocks the financial journal or ordinary trading.
+   if relationship_census.is_none(){let census=moloch_live_runtime::relationship_census::capture(&mut t,&c.scope,&c.root.join("relationship-receipts"),&[]);if let Ok(report)=serde_json::to_value(&census.report){let _=atomic_json(&c.root.join("relationship-census.json"),&report);}relationship_census=Some(census);}
    if cycles%20==0{t.compact()?;}
    std::thread::sleep(Duration::from_millis(if selected.is_empty(){600}else{100}));
   }
