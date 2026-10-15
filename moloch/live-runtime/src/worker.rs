@@ -287,7 +287,10 @@ fn connect_stream(t:&mut Transport,c:&Control,bank:&mut Session,source:&mut Rest
  let marker=c.root.join("stream-auth-admission.json");let at=now();
  if marker.exists()&&load(&marker)?["atMs"].as_u64().is_none_or(|old|at<old+60000){return Err("LIVE_AUTH_MINT_BACKOFF".into())}
  atomic_json(&marker,&json!({"atMs":at}))?;
- let material=t.realtime_token()?;let stream=Realtime::connect(Auth::from_official_response(material)?,&c.scope.tournament_id)?;
+ let material=t.realtime_token()?;let auth=Auth::from_official_response(material)?;
+ // Only the native connection boundary produces this retryable type. HTTP,
+ // credentials, JOIN and durable source errors retain their original types.
+ let stream=Realtime::connect(auth,&c.scope.tournament_id).map_err(moloch_live_runtime::stream_connect_retry::ConnectionFailure::from_connect_error)?;
  let joined_at=match stream.incoming.recv_timeout(Duration::from_secs(12)){
   Ok(Incoming::Joined{received_at})=>{accept_source_events(bank,&source.subscribed(&received_at)?)?;received_at}
   _=>return Err("LIVE_STREAM_JOIN_FAILED".into())
@@ -318,23 +321,38 @@ fn recovery_not_before(budget:&RecoveryBudget,at:u64,auth:u64)->Result<u64>{
  if auth>at{return Err("LIVE_AUTH_MINT_CLOCK_REGRESSION".into())}
  Ok(budget.next_allowed(at)?.max(auth.checked_add(60_000).ok_or("LIVE_AUTH_MINT_CLOCK_RANGE")?))
 }
+fn connect_with_budget(t:&mut Transport,c:&Control,bank:&mut Session,log:&DispatchLog,authority:&Arc<ProductionAuthority>,source:&mut RestSource,budget:&mut RecoveryBudget)->Result<(Realtime,String)>{
+ use moloch_live_runtime::stream_connect_retry::{self,ConnectionFailure};
+ loop{
+  log.require_resolved_attempts()?;recovery_queue_clear(&t.admission_state()?)?;
+  if !authority.can_read(&c.scope){return Err("LIVE_STREAM_RECOVERY_CONTROL_OR_STOP".into())}
+  let marker=c.root.join("stream-auth-admission.json");
+  let auth=if marker.exists(){Some(load(&marker)?["atMs"].as_u64().ok_or("LIVE_AUTH_MINT_MARKER")?)}else{None};
+  let at=now();let until=stream_connect_retry::next_attempt(budget,at,auth)?;
+  while now()<until{budget.validate(now())?;if !authority.can_read(&c.scope){return Err("LIVE_STREAM_RECOVERY_CONTROL_OR_STOP".into())}std::thread::sleep(Duration::from_millis(until.saturating_sub(now()).min(200)));}
+  if !authority.can_read(&c.scope){return Err("LIVE_STREAM_RECOVERY_CONTROL_OR_STOP".into())}
+  log.require_resolved_attempts()?;recovery_queue_clear(&t.admission_state()?)?;
+  let next=stream_connect_retry::prepare_attempt(budget,now(),auth)?;
+  atomic_json(&c.root.join("stream-recovery-budget.json"),&serde_json::to_value(&next)?)?;*budget=next;
+  match connect_stream(t,c,bank,source){
+   Ok(joined)=>return Ok(joined),
+   Err(error)=>{
+    let Some(failure)=error.downcast_ref::<ConnectionFailure>()else{return Err(error)};
+    // Failed setup never updates source coverage or binds a healthy stream.
+    let auth=load(&marker)?["atMs"].as_u64().ok_or("LIVE_AUTH_MINT_MARKER")?;
+    let until=stream_connect_retry::after_connect_failure(budget,now(),Some(auth),*failure)?;
+    atomic_json(&c.root.join("stream-recovery.json"),&json!({"at":iso(now()),"stage":"connection_retry_wait","reason":failure.reason(),"notBefore":iso(until),"attempts":budget.attempts(),"orderRetried":false,"coverageResetToHealthy":false}))?;
+   }
+  }
+ }
+}
 fn recover_stream(t:&mut Transport,c:&Control,bank:&mut Session,log:&DispatchLog,authority:&Arc<ProductionAuthority>,source:&mut RestSource,stream:&mut Option<Realtime>,budget:&mut RecoveryBudget,failure:StreamFailure,breadth:&mut Option<Recorder>,universe:&mut Option<Universe>,windows:&mut std::collections::BTreeMap<String,u64>)->Result<()>{
  if !failure.is_recoverable(){return Err(failure.into())}
  log.require_resolved_attempts()?;recovery_queue_clear(&t.admission_state()?)?;
  if !authority.can_read(&c.scope){return Err("LIVE_STREAM_RECOVERY_CONTROL_OR_STOP".into())}
- let at=now();
- let auth=load(&c.root.join("stream-auth-admission.json"))?["atMs"].as_u64().ok_or("LIVE_AUTH_MINT_MARKER")?;
- let until=recovery_not_before(budget,at,auth)?;
  // Drop joins the sole old socket before any replacement token or connection.
  drop(stream.take());authority.clear_ready();
- atomic_json(&c.root.join("stream-recovery.json"),&json!({"at":iso(at),"stage":"waiting","reason":failure.reason(),"notBefore":iso(until),"orderRetried":false}))?;
- while now()<until{budget.validate(now())?;if !authority.can_read(&c.scope){return Err("LIVE_STREAM_RECOVERY_CONTROL_OR_STOP".into())}std::thread::sleep(Duration::from_millis(until.saturating_sub(now()).min(200)));}
- if !authority.can_read(&c.scope){return Err("LIVE_STREAM_RECOVERY_CONTROL_OR_STOP".into())}
- log.require_resolved_attempts()?;recovery_queue_clear(&t.admission_state()?)?;
- budget.record_attempt(now())?;atomic_json(&c.root.join("stream-recovery-budget.json"),&serde_json::to_value(&*budget)?)?;
- // One replacement attempt only. Auth/join/source/durability failures propagate
- // to STOP, never become a generic retry or erase this durable attempt.
- let(connected,joined_at)=connect_stream(t,c,bank,source)?;
+ let(connected,joined_at)=connect_with_budget(t,c,bank,log,authority,source,budget)?;
  if let Some(r)=breadth{r.observe("stream_reset",&json!({"localBoundary":true,"reason":"confirmed_recovery"}),&joined_at)}
  if let Some(u)=universe{u.observe("stream_reset",&json!({"localBoundary":true}),&joined_at)?;}
  let from=now().saturating_sub(60_000);for old in windows.values_mut(){*old=(*old).min(from);}
@@ -391,7 +409,7 @@ pub fn main()->Result<()>{
   let start=now();let mut source_state=RestSource::new(&pairs,&c.scope.tournament_id,&iso(start))?;source_state.seed_trade_facts(bank.source_facts())?;
   let recovery_budget_path=c.root.join("stream-recovery-budget.json");let mut recovery_budget=recovery_budget(&recovery_budget_path,now())?;
   if !recovery_budget_path.exists(){atomic_json(&recovery_budget_path,&serde_json::to_value(&recovery_budget)?)?;}
-  let (connected,joined_at)=connect_stream(&mut t,&c,&mut bank,&mut source_state)?;require_stream(&connected)?;let mut stream=Some(connected);
+  let (connected,joined_at)=connect_with_budget(&mut t,&c,&mut bank,&log,&authority,&mut source_state,&mut recovery_budget)?;require_stream(&connected)?;let mut stream=Some(connected);
   authority.bind_stream(stream.as_ref().unwrap().failure_signal(),stream.as_ref().unwrap().deadline_ms);
   let mut relationship_census=None;let mut preflight_cursor=None;
   let mut reconciliation_schedule=moloch_live_runtime::scheduling::ReconciliationSchedule::new(10_000)?;

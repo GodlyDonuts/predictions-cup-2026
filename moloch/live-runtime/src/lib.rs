@@ -17,3 +17,4 @@ pub mod dispatch_window;
 pub mod scheduling;
 pub mod exit_refresh;
 pub mod stream_recovery;
+pub mod stream_connect_retry;
