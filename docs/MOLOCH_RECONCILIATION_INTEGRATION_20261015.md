@@ -38,4 +38,6 @@ The injected-backend integration suite executes the real planner, real feedback 
 * Failed native commit preventing fill-watermark advancement, and invalid cache metadata not starving other owned reconciliations.
 * Propagation of injected aggregate durability failure without subsequent network calls, and unchanged two-read behavior for a single pending order.
 
-This suite is an orchestration regression, not a live HTTP benchmark or profitability test. Linux test and release-build evidence must be recorded by the parent before deployment. Existing production continues while this source is checked; this document does not restart a runtime or clear a stop.
+On October15 the parent reproduced all96 live-runtime checks on the ARM64 VPS, including18 integration cases,23 pure planner cases and16 relationship-adapter cases. The locked release build also passed. SDK102 checks and the unchanged native81-check baseline remain separate validation. The exact-terminal mismatch regression preserves already validated durable actual fills before stopping; rejected aggregate-hint tapes remain uncredited.
+
+This suite is an orchestration regression, not a live HTTP benchmark or profitability test. Existing production continues while this source is checked; deployment and measured live operation counts must be recorded separately by the execution owner.
