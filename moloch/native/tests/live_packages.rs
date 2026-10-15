@@ -3,7 +3,7 @@ use serde_json::{Value,json};
 use sha2::{Digest,Sha256};
 fn iso(n:i64)->String{chrono::DateTime::from_timestamp_millis(1_792_022_400_000+n).unwrap().to_rfc3339_opts(chrono::SecondsFormat::Millis,true)}
 fn hash(v:&Value)->String{format!("{:x}",Sha256::digest(serde_json::to_vec(v).unwrap()))}
-fn policy()->Value{json!({"initialCash":"100.000000","maximumCommitted":"40.000000","maximumMarketCost":"10.000000","quantity":5,"maximumMarkets":3,"minimumSpreadTicks":1000,"entryStopAt":iso(100000)})}
+fn policy()->Value{json!({"initialCash":"100.000000","maximumCommitted":"40.000000","maximumMarketCost":"10.000000","quantity":15,"maximumMarkets":3,"minimumSpreadTicks":1000,"entryStopAt":iso(100000)})}
 fn book(ex:&str)->Value{json!({"type":"book","receivedAt":iso(0),"book":{"tournamentId":"cup","marketId":ex,"exchangeId":ex,"sequence":"1","sourceAt":iso(0),"requestStartedAt":iso(0),"receivedAt":iso(0),"bids":[{"price":"0.400000","quantity":20}],"asks":[{"price":"0.450000","quantity":20}]}})}
 fn engine_with(p:&Value)->Engine{let mut e=Engine::new_live(p).unwrap();for ex in ["101","102","103"]{e.advance(&book(ex)).unwrap();}assert!(e.order_records().is_empty());e}
 fn engine()->Engine{engine_with(&policy())}
@@ -35,3 +35,4 @@ fn zero(status:u64,code:&str)->Value{let mut z=event("live_package_no_execution"
 #[test]fn zero_execution_receipt_cannot_predate_the_attempt(){let mut e=attempted();let mut z=zero(429,"RATE_LIMITED");z["evidence"]["requestStartedAt"]=json!(iso(1000));deny(&mut e,&z);}
 #[test]fn current_worse_or_insufficient_book_cannot_attempt_frozen_economics(){for case in ["worse","depth","gap"]{let mut e=engine();e.advance(&reserve(2)).unwrap();let mut b=book("101");b["receivedAt"]=json!(iso(3001));for k in ["receivedAt","sourceAt","requestStartedAt"]{b["book"][k]=json!(iso(3001));}b["book"]["sequence"]=json!("2");match case{"worse"=>b["book"]["asks"][0]["price"]=json!("0.460000"),"depth"=>b["book"]["asks"][0]["quantity"]=json!(4),_=>b["book"]["invalid"]=json!(true)};e.advance(&b).unwrap();let mut a=event("live_package_attempt",3001);a["bookHashes"]["101"]=json!(hash(&b["book"]));deny(&mut e,&a);assert_eq!(e.report().unwrap()["reservedCash"],"4.500000");}}
 #[test]fn no_side_uses_complementary_bid_depth_at_full_wire_limit(){let mut e=engine();let mut r=reserve(2);r["legs"][0]["side"]=json!("NO");r["legs"][0]["limitPrice"]=json!("0.600000");r["economics"]=json!({"maximumCost":"5.250000","minimumPayout":"6.000000","minimumSurplus":"0.750000","feeTotal":"0.000000"});e.advance(&r).unwrap();assert_eq!(e.report().unwrap()["reservedCash"],"5.250000");}
+#[test]fn aggregate_quantity_cap_applies_to_all_package_legs_together(){let mut p=policy();p["quantity"]=json!(9);let mut e=engine_with(&p);deny(&mut e,&reserve(2));}

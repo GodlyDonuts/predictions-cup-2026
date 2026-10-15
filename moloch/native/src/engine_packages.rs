@@ -154,6 +154,7 @@ impl Engine {
    let qid=self.prior_orders.checked_add(self.orders.len() as u64).and_then(|n|n.checked_add(legs.len() as u64+1)).ok_or("PACKAGE_QID_RANGE")?;
    let leg=Leg{qid,market,exchange:exchange.clone(),side:leg_side,quantity,limit,book_hash:digest(&row["bookHash"])?,terminal:false};self.package_book(&leg,at,&scope)?;markets.insert(exchange);legs.push(leg);
   }
+  if legs.iter().try_fold(0u64,|n,l|n.checked_add(l.quantity)).is_none_or(|n|n>self.policy.quantity){return Err("PACKAGE_AGGREGATE_QUANTITY_CAP")}
   let inherited_market=|exchange:&String|self.inherited.as_ref().is_some_and(|i|i.remaining.iter().any(|((ex,_),lots)|ex==exchange&&!lots.is_empty()));
   let fresh_limit=self.inherited.as_ref().map_or(self.policy.markets,|i|i.fresh_market_limit).min(3);
   if markets.len()>self.policy.markets||markets.iter().filter(|ex|!inherited_market(ex)).count()>fresh_limit{return Err("PACKAGE_MARKET_COUNT_CAP")}
@@ -169,4 +170,3 @@ impl Engine {
   self.live_packages.insert(package_name.clone(),LivePackage{id:package_name,proof,scope,economics,created:at,expires,phase:Phase::Reserved,legs,request:None,key:None,attempted_at:None,zero_evidence:None});Ok(())
  }
 }
-
