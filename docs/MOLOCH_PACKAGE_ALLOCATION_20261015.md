@@ -128,3 +128,13 @@ or settings fields fail serde parsing. Optional unknown horizons remain None.
 An empty review vector plus empty trusted set is valid and selects no candidate.
 Root supplies these approvals from reviewed immutable configuration, rather than
 calling `digest` to approve an arbitrary dynamically observed proposal.
+
+For an already-quiet held component, `ReadHint::portfolio(bank, &actual_plan,
+&budget, &reviewed_costs, now)` first runs the same genuine opaque
+`Eligible::portfolio` validation and retains its exact metric/head plus component
+relationship/certificate. A covered unwind therefore participates in
+`select_hints` with zero BUY funding and its positive universal incremental cash
+delta, rather than a fabricated denominator or full proceeds-as-profit score.
+Constructing/selecting this hint does not reserve positions or alter cash. A later
+source/quote mutation invalidates its budget/head; root must discard it and
+recompute the chosen actual Plan before staging.
