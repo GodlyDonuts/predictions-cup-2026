@@ -29,3 +29,13 @@ At12:07:25.680Z the previous worker exited after the planned upgrade STOP. The p
 The parent preserved both prior upgrade approvals and installed the third exact-prefix bridge, hash09273dbad792c2449b5c8e6432e460c188c6b4fcec23161b342b111190e9d5630. V20 started12:09:21.859251Z asPID167865. Existing bank, queue v1, risk, original14:44:34.413Z entry cutoff and idempotency bindings remain unchanged; only the immutable release and binary-control binding changed. Old control/unit/bridge/STOP files were archived privately and directory-synchronized. [Dated rollout receipt](../research/moloch-session-batch-20261015/rollout.json).
 
 This launch receipt establishes process startup, not a complete healthy trading cycle. Source replay and subsequent actual feed/physical-order verification remain pending at this checkpoint.
+
+## Subsequent live failure and V21 candidate
+
+At 12:11:22.306 UTC, V20 had resumed actual trading-loop progress: the stream was healthy, 31 actual fills and 139 acknowledged orders were preserved, and reconciliation had closed 130 dispatch bindings. The next observed minute contained 53 shared read admissions. Four further cancel acknowledgments managed stale physical orders; these are cancellations, not new purchases or profit.
+
+V20 stopped at 12:12:52.206 UTC with `LIVE_EXIT_REFRESH_STREAM_FAILED`. The selected account queue had no unknown acceptance, active admission or manual review. The original stream code was lost by the old error path, so disconnect, heartbeat failure and receiver overflow cannot be distinguished from that message. V20 did not establish stable operation.
+
+The V21 candidate retains the first sanitized exit reason outside the receiver queue, including when a full queue cannot deliver a failure message. Its worker preserves the reason in the existing fail-closed STOP. It also consumes up to64 complete frames per drain, within the unchanged64-slot receiver, instead of eight. No automatic reconnect, increased queue capacity, altered financial source, activation renewal or write retry is added. The candidate's native identity is unchanged because realtime transport source is outside the financial identity inputs. [Diagnostic design and tests](MOLOCH_STREAM_DIAGNOSTICS_20261015.md).
+
+V21 source `6af4e5bd` passed111 native and173 runtime checks plus a locked ARM64 release. The unchanged SDK's150 passing checks still apply. Immutable staged binary SHA256 is `160126b4fbe23ff2ecef7761dbc4598dce647ec763fbee219eb64bca8c75608c0`. Financial identity remains `0321e7458ed45da08bca7b030369d4e86ae2a9c0127b39fa7d4d49d33d5d0562`; no fourth financial upgrade approval is required or generated. Deployment remains pending at this source checkpoint.

@@ -1,5 +1,9 @@
 # Moloch current production ownership — October 15
 
+## Latest: V20 stream stop; V21 repair being checked
+
+V20 reached fresh live progress at 12:11:22 UTC with a healthy stream, 31 actual fills and 139 acknowledged orders. It reconciled and cancelled stale orders, then stopped at 12:12:52 UTC with `LIVE_EXIT_REFRESH_STREAM_FAILED`. The manifest-selected queue has no unknown acceptance, active admission or manual review. The generic error does not establish the exact stream failure cause. V21 adds sanitized out-of-band failure reasons and a bounded64-frame drain within the existing64-slot receiver. All111 native and173 runtime checks plus the locked ARM64 release pass; restart is pending at this checkpoint. [Failure evidence and candidate scope](MOLOCH_V20_ROLLOUT_20261015.md#subsequent-live-failure-and-v21-candidate).
+
 ## V20 checked and staged; production restart verified separately
 
 V20 subsequently started12:09:21.859251Z asPID167865 after a graceful stopped-owner boundary and exact fresh31,161-event financial-prefix parity check. Three chained native identity approvals preserve all historical financial projections; account queue stays v1. The same risk limits, attributed holdings,212 retained queue intents and14:44:34.413Z entry cutoff remain. Source replay/first healthy trading cycle is pending at this launch checkpoint. [Rollout and exact proof](MOLOCH_V20_ROLLOUT_20261015.md#checked-production-promotion).
