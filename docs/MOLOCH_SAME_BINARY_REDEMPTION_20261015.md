@@ -67,3 +67,7 @@ Proposed follow-up, requiring parent approval before edits:
 4. Preserve the historical live journal prefix, manifest, receipts, attribution and sealed report. Do not sort or rewrite admitted past events or silently change their replay semantics. First run an offline discrepancy audit; any required repair needs a separately authorized source-bound successor/migration with old/new reconciliation. The current SDK fix alone requires no ledger migration.
 
 No native/worker changes, account requests, production tests or orders were performed for this task. Rust verification of the candidate is handed to the parent Linux toolchain; local Windows has no `cargo` command.
+
+## Parent verification
+
+The integrated candidate passed 104 SDK and 115 runtime checks on ARM64, followed by a locked release build. ProductionAuthority still refuses basket dispatch. The within-order prospective fill correction is checked; global cross-order FIFO staging remains unresolved. No basket orders or profitability evidence are claimed.

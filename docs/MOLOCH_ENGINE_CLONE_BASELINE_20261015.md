@@ -31,3 +31,11 @@ The harness measures in-memory work only. It does not measure session fsync, com
 ## Evidence status
 
 The harness and four regressions are source candidates. Local Windows has no Rust compiler; ARM64 Linux results are pending. No speedup, dominant bottleneck or production behavior change is claimed until those measurements exist.
+
+## Verified ARM64 candidate results
+
+The Arc candidate passed 94 native and 115 runtime checks, including clone rollback and immutable prefix validation. The identical 237-market, 20-level, 100-iteration synthetic fixture measured mean clone time 4.927630 to 0.042951 ms and tick advance 17.820968 to 0.248175 ms. All 15 financial prefix fingerprints and rollback results matched. These timings exclude network and filesystem synchronization.
+
+An actual frozen production prefix of 16,535 events / 45,816,161 bytes replayed in 48,163 ms before and 14,125 ms after. Both verified the exact original hash chain and identical financial report, orders, fills, source cursors and actual-order bindings. Neither checker modified the source, authorized migration or contacted the account. The three checker regressions cover valid immutable input, partial-tail refusal and financial-report mismatch refusal.
+
+Sanitized evidence is in research/moloch-engine-book-cow-20261015: engine-clone-baseline.json, engine-clone-arc.json, engine-clone-baseline-resources.json, live-prefix-baseline.json and live-prefix-arc.json. Python subprocess/resource supplied resource measurements because /usr/bin/time was unavailable. This supersedes the pending-results paragraph above. Production still requires an exact-prefix identity bridge after the prior worker has actually stopped. Replay speed is separate from live latency, successful exits and trading profit.
