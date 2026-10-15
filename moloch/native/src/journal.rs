@@ -2,7 +2,7 @@
 use crate::Result;
 use serde_json::Value;
 use sha2::{Digest, Sha256};
-#[derive(Default)]
+#[derive(Default, Clone)]
 pub struct Journal {
     pub sequence: u64,
     pub previous: String,

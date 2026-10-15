@@ -335,6 +335,12 @@ pub struct RestSource {
     facts: BTreeMap<String, TradeFact>,
 }
 impl RestSource {
+    pub fn seed_trade_facts(&mut self, mut events: Vec<Value>) -> Result<()> {
+        let mut next = self.clone();
+        next.normalize_facts(&mut events)?;
+        *self = next;
+        Ok(())
+    }
     pub fn new(pairs: &Value, tournament: &str, started: &str) -> Result<Self> {
         let started = time(&json!(started))?;
         let mut scopes = BTreeMap::new();

@@ -1,5 +1,6 @@
 //! Serialized, read-only SIG transport. No order submission routes exist here.
 use moloch_replay::realtime::{Auth, Incoming, Realtime};
+use moloch_replay::session::{ExclusiveLock, Session};
 use moloch_replay::source::RestSource;
 use serde_json::{Value, json};
 use std::{
@@ -87,12 +88,18 @@ struct EventLog {
     sequence: u64,
     previous: String,
     last_processed: u64,
+    paper: Option<Session>,
+    source_id: String,
+    #[cfg(test)]
+    test_clock: Option<u64>,
 }
 impl EventLog {
     fn append(&mut self, events: Vec<Value>) -> Result<()> {
         use sha2::{Digest, Sha256};
         for mut event in events {
             let at = now();
+            #[cfg(test)]
+            let at = self.test_clock.unwrap_or(at);
             let received = chrono::DateTime::parse_from_rfc3339(
                 event["receivedAt"].as_str().ok_or("EVENT_RECEIPT")?,
             )?
@@ -101,6 +108,9 @@ impl EventLog {
                 return Err("CAPTURE_PROCESSING_CLOCK".into());
             }
             event["processedAt"] = json!(iso(at));
+            if let Some(paper) = &mut self.paper {
+                paper.accept(&self.source_id, self.sequence + 1, &event)?;
+            }
             self.sequence += 1;
             let body = json!({"sequence":self.sequence,"previous":self.previous,"event":event});
             let hash = format!("{:x}", Sha256::digest(serde_json::to_vec(&body)?));
@@ -122,24 +132,51 @@ fn drain_stream(
     log: &mut EventLog,
 ) -> Result<()> {
     if let Some(stream) = stream {
+        if now() >= stream.deadline_ms {
+            invalidate_all(source, log, &iso(now()))?;
+            return Err("CAPTURE_STREAM_DEADLINE".into());
+        }
+        if !stream.healthy() {
+            invalidate_all(source, log, &iso(now()))?;
+            return Err("CAPTURE_STREAM_STOPPED".into());
+        }
         while let Ok(event) = stream.incoming.try_recv() {
+            if !stream.healthy() {
+                invalidate_all(source, log, &iso(now()))?;
+                return Err("CAPTURE_STREAM_STOPPED".into());
+            }
             match event {
-                Incoming::Joined { received_at } => log.append(source.subscribed(&received_at)?)?,
+                Incoming::Joined { received_at } => invalidate_all(source, log, &received_at)?,
                 Incoming::Broadcast {
                     event,
                     payload,
                     received_at,
                 } => log.append(source.broadcast(&event, &payload, &received_at)?)?,
                 Incoming::Failed(code) => {
-                    log.append(source.subscribed(&iso(now()))?)?;
+                    invalidate_all(source, log, &iso(now()))?;
                     return Err(code.into());
                 }
             }
         }
         if !stream.healthy() {
-            log.append(source.subscribed(&iso(now()))?)?;
+            invalidate_all(source, log, &iso(now()))?;
             return Err("CAPTURE_STREAM_STOPPED".into());
         }
+    }
+    Ok(())
+}
+fn invalidate_all(source: &mut RestSource, log: &mut EventLog, received: &str) -> Result<()> {
+    let mut ids = std::collections::BTreeSet::new();
+    for gap in source.subscribed(received)? {
+        ids.insert(gap["exchangeId"].as_str().ok_or("GAP_SCOPE")?.to_owned());
+    }
+    if let Some(paper) = &log.paper {
+        ids.extend(paper.engine().known_exchanges());
+    }
+    if !ids.is_empty() {
+        log.append(vec![
+            json!({"type":"gap","exchangeIds":ids,"receivedAt":received}),
+        ])?;
     }
     Ok(())
 }
@@ -235,11 +272,43 @@ fn key(p: &Path) -> Result<String> {
     }
     Ok(s)
 }
-struct Lock(PathBuf);
-impl Drop for Lock {
-    fn drop(&mut self) {
-        let _ = fs::remove_file(&self.0);
+#[derive(Clone)]
+struct PlannedRead {
+    pair: usize,
+    book: bool,
+    url: Option<reqwest::Url>,
+    page: usize,
+}
+fn prioritize_exit_book(
+    queue: &mut std::collections::VecDeque<PlannedRead>,
+    pairs: &[Value],
+    windows: &[(String, i64, i64)],
+    budget: &Value,
+    at: u64,
+) -> Result<bool> {
+    let global = admission(budget, at)?;
+    for (exchange, activation, end) in windows {
+        let Some(pair) = pairs.iter().position(|p| p["exchangeId"] == *exchange) else {
+            continue;
+        };
+        let route = format!(
+            "/markets/{}/orderbook",
+            pairs[pair]["marketId"].as_str().ok_or("PAIR_MARKET")?
+        );
+        let next = global.max(budget["endpointNextAt"][&route].as_u64().unwrap_or(0));
+        if next < *activation as u64 || next >= *end as u64 {
+            continue;
+        }
+        if let Some(index) = queue.iter().position(|q| q.pair == pair && q.book) {
+            if index > 0 {
+                let item = queue.remove(index).ok_or("CAPTURE_PLAN")?;
+                queue.push_front(item);
+                return Ok(true);
+            }
+            return Ok(false);
+        }
     }
+    Ok(false)
 }
 fn capture(
     state: &Path,
@@ -248,7 +317,7 @@ fn capture(
     cycles: usize,
     realtime: bool,
 ) -> Result<()> {
-    guard(state)?;
+    let control = guard(state)?;
     let pairs = read(pairs_file)?;
     let pairs = pairs.as_array().ok_or("SCOPES")?;
     if pairs.is_empty() || pairs.len() > 4 || cycles == 0 || cycles > 60 / pairs.len() {
@@ -269,14 +338,7 @@ fn capture(
             return Err("DUPLICATE_SCOPE".into());
         }
     }
-    let lock = state.join("capture.lock");
-    let mut f = OpenOptions::new()
-        .write(true)
-        .create_new(true)
-        .open(&lock)?;
-    let _lock = Lock(lock);
-    write!(f, "{}", std::process::id())?;
-    f.sync_all()?;
+    let _lock = ExclusiveLock::acquire(&state.join("capture.lock"))?;
     let bp = state.join("sig-read-budget.json");
     let mut b = if bp.exists() {
         read(&bp)?
@@ -285,6 +347,33 @@ fn capture(
     };
     if b["blocked"] != false {
         return Err("CAPTURE_BUDGET_BLOCKED".into());
+    }
+    let paper = if let Some(config) = control.get("paperSession") {
+        let directory = config["directory"]
+            .as_str()
+            .ok_or("PAPER_DIRECTORY_REQUIRED")?;
+        let seed = config["seedSnapshotFile"]
+            .as_str()
+            .ok_or("PAPER_SEED_REQUIRED")?;
+        let policy = read(Path::new(
+            config["policyFile"]
+                .as_str()
+                .ok_or("PAPER_POLICY_REQUIRED")?,
+        ))?;
+        Some(Session::open(
+            Path::new(directory),
+            Some(Path::new(seed)),
+            &policy,
+        )?)
+    } else {
+        None
+    };
+    if let Some(paper) = &paper {
+        for exchange in paper.engine().required_exchanges() {
+            if !pairs.iter().any(|p| p["exchangeId"] == exchange) {
+                return Err("PAPER_EXPOSURE_OUTSIDE_CAPTURE_SCOPE".into());
+            }
+        }
     }
     let credential = key(&state.join("credentials/sig-api.key"))?;
     fs::create_dir(out)?;
@@ -298,6 +387,9 @@ fn capture(
         .build()?;
     let started_at = iso(now());
     let mut source = RestSource::new(&json!(pairs), TOURNAMENT, &started_at)?;
+    if let Some(paper) = &paper {
+        source.seed_trade_facts(paper.source_facts())?;
+    }
     let events = OpenOptions::new()
         .append(true)
         .create_new(true)
@@ -306,17 +398,31 @@ fn capture(
         .append(true)
         .create_new(true)
         .open(out.join("source-journal.jsonl"))?;
+    use sha2::{Digest, Sha256};
+    let source_id = format!(
+        "capture:{:x}",
+        Sha256::digest(serde_json::to_vec(
+            &json!({"directory":fs::canonicalize(out)?.to_str().ok_or("CAPTURE_DIRECTORY_ENCODING")?,"startedAt":started_at,"pairs":pairs,"realtime":realtime})
+        )?)
+    );
+    let financial_integration = paper.is_some();
+    let paper_manifest = paper.as_ref().map(|p| p.manifest_hash().clone());
     let mut event_log = EventLog {
         events,
         journal,
         sequence: 0,
         previous: String::new(),
         last_processed: 0,
+        paper,
+        source_id: source_id.clone(),
+        #[cfg(test)]
+        test_clock: None,
     };
     save(
         &out.join("manifest.json"),
-        &json!({"runtime":"rust","mode":"official_sig_capture","realtime":realtime,"startedAt":started_at,"pairs":pairs,"tournamentId":TOURNAMENT,"readLimitPerMinute":100,"contestOrders":0,"financialIntegration":false,"tokenPersistence":false}),
+        &json!({"runtime":"rust","mode":"official_sig_capture","sourceId":source_id,"realtime":realtime,"startedAt":started_at,"pairs":pairs,"tournamentId":TOURNAMENT,"readLimitPerMinute":100,"contestOrders":0,"financialIntegration":financial_integration,"paperManifestHash":paper_manifest,"authoritativeJournal":if financial_integration{"paper session events.jsonl"}else{"source-journal.jsonl"},"tokenPersistence":false}),
     )?;
+    invalidate_all(&mut source, &mut event_log, &iso(now()))?;
     let mut stream = None;
     if realtime {
         loop {
@@ -344,7 +450,7 @@ fn capture(
         let connected = Realtime::connect(Auth::parse(auth)?, TOURNAMENT)?;
         match connected.incoming.recv_timeout(Duration::from_secs(12)) {
             Ok(Incoming::Joined { received_at }) => {
-                event_log.append(source.subscribed(&received_at)?)?
+                invalidate_all(&mut source, &mut event_log, &received_at)?
             }
             _ => return Err("CAPTURE_STREAM_JOIN_FAILED".into()),
         }
@@ -352,17 +458,76 @@ fn capture(
     }
     let deadline = (now() + cycles as u64 * pairs.len() as u64 * 24000)
         .min(stream.as_ref().map_or(u64::MAX, |s| s.deadline_ms));
-    let mut cursor_page: Option<(usize, reqwest::Url, usize)> = None;
-    for i in 0..cycles * 20 * pairs.len() * 2 {
+    let mut queue = std::collections::VecDeque::new();
+    for _ in 0..cycles * 20 {
+        for pair in 0..pairs.len() {
+            queue.push_back(PlannedRead {
+                pair,
+                book: true,
+                url: None,
+                page: 1,
+            });
+            queue.push_back(PlannedRead {
+                pair,
+                book: false,
+                url: None,
+                page: 1,
+            });
+        }
+    }
+    if let Some(paper) = &event_log.paper {
+        let mut initial = std::collections::VecDeque::new();
+        for (pair, p) in pairs.iter().enumerate() {
+            if let Some((from, to)) = paper.engine().expired_recovery_window(
+                p["exchangeId"].as_str().ok_or("PAIR_EXCHANGE")?,
+                now() as i64,
+            )? {
+                let mut url = reqwest::Url::parse(&format!(
+                    "https://sig.thesuper.market/api/v1/exchanges/{}/trades",
+                    p["exchangeId"].as_str().ok_or("PAIR_EXCHANGE")?
+                ))?;
+                url.query_pairs_mut()
+                    .append_pair("tournamentId", TOURNAMENT)
+                    .append_pair("limit", "200")
+                    .append_pair("from", &from)
+                    .append_pair("to", &to);
+                initial.push_back(PlannedRead {
+                    pair,
+                    book: true,
+                    url: None,
+                    page: 1,
+                });
+                initial.push_back(PlannedRead {
+                    pair,
+                    book: false,
+                    url: Some(url),
+                    page: 1,
+                });
+            }
+        }
+        initial.append(&mut queue);
+        queue = initial;
+    }
+    while !queue.is_empty() {
         if now() >= deadline || out.join("STOP").exists() {
             break;
         }
         guard(state)?;
         drain_stream(&stream, &mut source, &mut event_log)?;
-        let continuation = cursor_page.take();
-        let pair_index = continuation.as_ref().map_or((i / 2) % pairs.len(), |c| c.0);
+        if let Some(paper) = &event_log.paper {
+            prioritize_exit_book(
+                &mut queue,
+                pairs,
+                &paper.engine().exit_book_windows(),
+                &b,
+                now(),
+            )?;
+        }
+        let planned = queue.pop_front().ok_or("CAPTURE_PLAN")?;
+        let continuation = planned.url.map(|url| (planned.pair, url, planned.page));
+        let pair_index = planned.pair;
         let p = &pairs[pair_index];
-        let book = continuation.is_none() && i % 2 == 0;
+        let book = planned.book;
         let route = if book {
             format!("/markets/{}/orderbook", p["marketId"].as_str().unwrap())
         } else {
@@ -406,7 +571,15 @@ fn capture(
                 q.append_pair("depth", "200");
             } else {
                 q.append_pair("limit", "200");
-                q.append_pair("from", &iso(started.saturating_sub(900000)));
+                let from = if let Some(paper) = &event_log.paper {
+                    paper.engine().recovery_from(
+                        p["exchangeId"].as_str().ok_or("PAIR_EXCHANGE")?,
+                        started as i64,
+                    )?
+                } else {
+                    iso(started.saturating_sub(900000))
+                };
+                q.append_pair("from", &from);
                 q.append_pair("to", &iso(started));
             }
         }
@@ -442,7 +615,12 @@ fn capture(
                         .query_pairs_mut()
                         .extend_pairs(query)
                         .append_pair("cursor", next);
-                    cursor_page = Some((pair_index, next_url, page + 1));
+                    queue.push_front(PlannedRead {
+                        pair: pair_index,
+                        url: Some(next_url),
+                        book: false,
+                        page: page + 1,
+                    });
                 }
             }
             None => {
@@ -467,6 +645,69 @@ fn iso(ms: u64) -> String {
     chrono::DateTime::from_timestamp_millis(ms as i64)
         .expect("timestamp")
         .to_rfc3339_opts(chrono::SecondsFormat::Millis, true)
+}
+fn run_paper(state: &Path) -> Result<()> {
+    loop {
+        let control = guard(state)?;
+        if !control["paperSession"].is_object() {
+            return Err("PAPER_SESSION_REQUIRED".into());
+        }
+        let pairs_file = control["pairsFile"]
+            .as_str()
+            .map(PathBuf::from)
+            .unwrap_or_else(|| state.join("pairs.json"));
+        let pairs = read(&pairs_file)?;
+        let count = pairs
+            .as_array()
+            .filter(|p| !p.is_empty() && p.len() <= 4)
+            .ok_or("SCOPES")?
+            .len();
+        let cycles = control["captureCycles"]
+            .as_u64()
+            .map(|v| v as usize)
+            .unwrap_or(60 / count);
+        if cycles == 0 || cycles > 60 / count {
+            return Err("CAPTURE_CYCLES".into());
+        }
+        let captures = state.join("captures");
+        fs::create_dir_all(&captures)?;
+        let nonce = SystemTime::now().duration_since(UNIX_EPOCH)?.as_nanos();
+        let out = captures.join(format!("{}-{nonce}", std::process::id()));
+        let result = capture(state, &pairs_file, &out, cycles, true);
+        let controlled_deadline = result
+            .as_ref()
+            .err()
+            .is_some_and(|e| e.to_string() == "CAPTURE_STREAM_DEADLINE");
+        if result.is_err() {
+            if out.is_dir() {
+                let mut stats = if out.join("stats.json").exists() {
+                    read(&out.join("stats.json")).unwrap_or(json!({}))
+                } else {
+                    json!({})
+                };
+                stats["runtime"] = json!("rust");
+                stats["phase"] = json!(if controlled_deadline {
+                    "completed"
+                } else {
+                    "failed"
+                });
+                stats["at"] = json!(iso(now()));
+                stats["code"] = json!(if controlled_deadline {
+                    "TOKEN_WINDOW_CLOSED"
+                } else {
+                    "CAPTURE_STOPPED_FAIL_CLOSED"
+                });
+                let _ = save(&out.join("stats.json"), &stats);
+            }
+            if !controlled_deadline {
+                return result;
+            }
+        }
+        let after = guard(state)?;
+        if after["continuousPaper"] != true {
+            return Ok(());
+        }
+    }
 }
 fn benchmark(output: &Path) -> Result<()> {
     // The benchmark cannot select a remote host and never loads credentials.
@@ -547,6 +788,7 @@ fn run() -> Result<()> {
         )
     }));
     match args.first().map(String::as_str) {
+        Some("run") if args.len() == 1 => run_paper(&state),
         Some("benchmark") if args.len() == 2 => benchmark(Path::new(&args[1])),
         Some("check") => {
             let c = read(&state.join("deployment.json"))?;
@@ -577,6 +819,201 @@ fn main() {
 #[cfg(test)]
 mod tests {
     use super::*;
+    fn test_log(root: &Path, policy: &Value) -> EventLog {
+        EventLog {
+            events: OpenOptions::new()
+                .append(true)
+                .create_new(true)
+                .open(root.join("normalized.jsonl"))
+                .unwrap(),
+            journal: OpenOptions::new()
+                .append(true)
+                .create_new(true)
+                .open(root.join("source.jsonl"))
+                .unwrap(),
+            sequence: 0,
+            previous: String::new(),
+            last_processed: 0,
+            paper: Some(Session::open(&root.join("bank"), None, policy).unwrap()),
+            source_id: "fixture".into(),
+            test_clock: None,
+        }
+    }
+    #[test]
+    fn complete_source_to_persistent_paper_path_matches_reference() {
+        let root = std::env::temp_dir().join(format!(
+            "moloch-collector-integration-{}-{}",
+            std::process::id(),
+            SystemTime::now()
+                .duration_since(UNIX_EPOCH)
+                .unwrap()
+                .as_nanos()
+        ));
+        fs::create_dir(&root).unwrap();
+        let corpus: Value =
+            serde_json::from_str(include_str!("../../tests/reference/realtime-golden.json"))
+                .unwrap();
+        let c = &corpus["config"];
+        let mut source = RestSource::new(
+            &c["pairs"],
+            c["tournamentId"].as_str().unwrap(),
+            c["startedAt"].as_str().unwrap(),
+        )
+        .unwrap();
+        let mut expected = moloch_replay::engine::Engine::new(&json!({})).unwrap();
+        let mut log = test_log(&root, &json!({}));
+        for step in corpus["steps"].as_array().unwrap() {
+            let input = &step["input"];
+            let received = if input["kind"] == "rest" {
+                &input["receipt"]["receivedAt"]
+            } else {
+                &input["receivedAt"]
+            };
+            log.test_clock = Some(
+                chrono::DateTime::parse_from_rfc3339(received.as_str().unwrap())
+                    .unwrap()
+                    .timestamp_millis() as u64,
+            );
+            match input["kind"].as_str().unwrap() {
+                "subscribed" => {
+                    invalidate_all(&mut source, &mut log, received.as_str().unwrap()).unwrap()
+                }
+                "rest" => log
+                    .append(source.accept(&input["receipt"]).unwrap())
+                    .unwrap(),
+                "broadcast" => log
+                    .append(
+                        source
+                            .broadcast(
+                                input["event"].as_str().unwrap(),
+                                &input["payload"],
+                                received.as_str().unwrap(),
+                            )
+                            .unwrap(),
+                    )
+                    .unwrap(),
+                _ => panic!("fixture"),
+            };
+            for event in step["expected"].as_array().unwrap() {
+                expected.advance(event).unwrap();
+            }
+            let actual = log.paper.as_ref().unwrap().engine().report().unwrap();
+            let reference = expected.report().unwrap();
+            for field in [
+                "events",
+                "cash",
+                "realized",
+                "fees",
+                "ownedCost",
+                "reservedCash",
+                "positions",
+                "fills",
+                "orders",
+                "activeOrders",
+                "unresolvedOrders",
+                "counts",
+            ] {
+                assert_eq!(actual[field], reference[field], "pipeline field {field}");
+            }
+        }
+        let before = log.paper.as_ref().unwrap().engine().report().unwrap();
+        drop(log);
+        let reopened = Session::open(&root.join("bank"), None, &json!({})).unwrap();
+        assert_eq!(reopened.engine().report().unwrap(), before);
+        drop(reopened);
+        fs::remove_dir_all(root).unwrap();
+    }
+    #[test]
+    fn startup_invalidation_is_one_event_and_covers_unobserved_cached_books() {
+        let root = std::env::temp_dir().join(format!(
+            "moloch-atomic-startup-{}-{}",
+            std::process::id(),
+            SystemTime::now()
+                .duration_since(UNIX_EPOCH)
+                .unwrap()
+                .as_nanos()
+        ));
+        fs::create_dir(&root).unwrap();
+        let at = "2026-10-14T00:00:00.000Z";
+        let mut log = test_log(&root, &json!({"entriesEnabled":false}));
+        log.paper.as_mut().unwrap().accept("old",1,&json!({"type":"book","receivedAt":at,"book":{"tournamentId":"cup","marketId":"99","exchangeId":"99","sequence":"1","requestStartedAt":at,"sourceAt":at,"receivedAt":at,"bids":[{"price":"0.450000","quantity":100}],"asks":[{"price":"0.455000","quantity":100}]}})).unwrap();
+        let mut source = RestSource::new(
+            &json!([{"marketId":"11","exchangeId":"22"},{"marketId":"33","exchangeId":"44"}]),
+            "cup",
+            at,
+        )
+        .unwrap();
+        let received = "2026-10-14T00:00:01.000Z";
+        log.test_clock = Some(
+            chrono::DateTime::parse_from_rfc3339(received)
+                .unwrap()
+                .timestamp_millis() as u64,
+        );
+        invalidate_all(&mut source, &mut log, received).unwrap();
+        assert_eq!(log.sequence, 1);
+        let raw = fs::read_to_string(root.join("source.jsonl")).unwrap();
+        let row: Value = serde_json::from_str(raw.trim()).unwrap();
+        assert_eq!(row["event"]["exchangeIds"], json!(["22", "44", "99"]));
+        assert_eq!(
+            log.paper.as_ref().unwrap().engine().report().unwrap()["events"],
+            2
+        );
+        drop(log);
+        fs::remove_dir_all(root).unwrap();
+    }
+    #[test]
+    fn exit_priority_moves_existing_reads_without_adding_or_dropping_tape() {
+        use std::collections::VecDeque;
+        let pairs = vec![
+            json!({"marketId":"1","exchangeId":"2"}),
+            json!({"marketId":"3","exchangeId":"4"}),
+        ];
+        let mut queue = VecDeque::from([
+            PlannedRead {
+                pair: 0,
+                book: false,
+                url: None,
+                page: 1,
+            },
+            PlannedRead {
+                pair: 1,
+                book: true,
+                url: None,
+                page: 1,
+            },
+            PlannedRead {
+                pair: 0,
+                book: true,
+                url: None,
+                page: 1,
+            },
+        ]);
+        let budget = json!({"times":[],"nextAt":0,"endpointNextAt":{}});
+        assert!(
+            prioritize_exit_book(
+                &mut queue,
+                &pairs,
+                &[("2".into(), 1000, 2000)],
+                &budget,
+                1000
+            )
+            .unwrap()
+        );
+        assert_eq!(queue.len(), 3);
+        assert!(queue[0].book);
+        assert_eq!(queue[0].pair, 0);
+        assert!(!queue[1].book);
+        assert!(
+            !prioritize_exit_book(
+                &mut queue,
+                &pairs,
+                &[("4".into(), 1000, 1100)],
+                &json!({"times":[],"nextAt":1200}),
+                1000
+            )
+            .unwrap()
+        );
+    }
     #[test]
     fn retry_after_is_preserved() {
         assert_eq!(retry_delay(Some("120"), 0), 120000);

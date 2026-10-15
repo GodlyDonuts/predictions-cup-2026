@@ -133,3 +133,27 @@ Baal and Moloch must be evaluated under the same fill, fee, capital, and timing
 assumptions before choosing the combined strategy. Keep existing losses and
 wallet histories; no reset or transfer is implied by a new executable. One bot,
 one collector and one account-wide budget is the requested final deployment.
+
+## Durable paper session verification
+
+The Rust collector now feeds one authoritative disk-backed financial session.
+Its journal is synced before the committed head, rejects changed or truncated
+source prefixes, and rebuilds derived reports on restart. Kernel-backed account
+and session locks survive process death without admitting competing workers.
+Startup invalidates cached books atomically; pending exposure remains inside
+capture scope, with original quote recovery windows and persisted trade clocks.
+
+On the ARM VPS, all 42 tests passed, including a killed-process lock recovery
+check and REST/realtime-source-to-session parity. The release build succeeded.
+A captured 786-event input committed 786 events on first ingestion and zero on
+restart, with identical complete reports. Restart took 0.529 seconds; this is
+recovery timing, not fresh-ingestion or exchange latency. A separate session
+seeded from the audited historical wallet retained 60 fills, 151 orders and
+-150.280000 realized P&L through both ingestions. All probes used zero network
+requests and zero contest orders.
+
+The collector's bounded `run` supervisor requires an explicit paperSession
+configuration and existing network guards. This code is staged and verified;
+the VPS deployment still uses the previous disabled service until the Rust-only
+release, readiness wrapper and strategy comparison are complete. No winner or
+profitability claim follows from migration parity.

@@ -1719,6 +1719,94 @@ impl Engine {
     pub fn fills(&self) -> &[Value] {
         &self.fills
     }
+    pub fn policy(&self) -> &Value {
+        &self.policy.raw
+    }
+    pub fn recovery_from(&self, exchange: &str, now_ms: i64) -> Result<String> {
+        let mut from = now_ms.checked_sub(900000).ok_or("RECOVERY_CLOCK")?;
+        for q in self
+            .orders
+            .iter()
+            .filter(|q| !q.retired && q.exchange == exchange)
+        {
+            from = from.min(q.activation);
+        }
+        if let Some(at) = self
+            .baseline
+            .as_ref()
+            .and_then(|v| v.get("at"))
+            .filter(|v| !v.is_null())
+        {
+            from = from.max(ms(at)?);
+        }
+        if from >= now_ms {
+            return Err("RECOVERY_CLOCK");
+        }
+        Ok(chrono::DateTime::from_timestamp_millis(from)
+            .ok_or("RECOVERY_CLOCK")?
+            .to_rfc3339_opts(chrono::SecondsFormat::Millis, true))
+    }
+    pub fn exit_book_windows(&self) -> Vec<(String, i64, i64)> {
+        self.orders
+            .iter()
+            .filter(|q| !q.retired && q.aon)
+            .map(|q| (q.exchange.clone(), q.activation, q.end()))
+            .collect()
+    }
+    pub fn required_exchanges(&self) -> BTreeSet<String> {
+        let mut required = BTreeSet::new();
+        for ((ex, _), lots) in &self.wallet.lots {
+            if lots.iter().any(|l| l.quantity > 0) {
+                required.insert(ex.clone());
+            }
+        }
+        for q in &self.orders {
+            if !q.retired {
+                required.insert(q.exchange.clone());
+            }
+        }
+        required
+    }
+    pub fn known_exchanges(&self) -> BTreeSet<String> {
+        self.books
+            .keys()
+            .cloned()
+            .chain(self.required_exchanges())
+            .collect()
+    }
+    pub fn expired_recovery_window(
+        &self,
+        exchange: &str,
+        now_ms: i64,
+    ) -> Result<Option<(String, String)>> {
+        let expired = self
+            .orders
+            .iter()
+            .filter(|q| !q.retired && q.exchange == exchange && q.end() <= now_ms)
+            .collect::<Vec<_>>();
+        if expired.is_empty() {
+            return Ok(None);
+        }
+        let from = expired
+            .iter()
+            .map(|q| q.activation)
+            .min()
+            .ok_or("RECOVERY_WINDOW")?;
+        let to = expired
+            .iter()
+            .map(|q| q.end())
+            .max()
+            .ok_or("RECOVERY_WINDOW")?;
+        if from >= to {
+            return Err("RECOVERY_WINDOW");
+        }
+        let iso = |t| {
+            chrono::DateTime::from_timestamp_millis(t)
+                .map(|v| v.to_rfc3339_opts(chrono::SecondsFormat::Millis, true))
+                .ok_or("RECOVERY_WINDOW")
+        };
+        Ok(Some((iso(from)?, iso(to)?)))
+    }
     pub fn order_records(&self) -> Vec<Value> {
         self.orders.iter().map(|q|{let mut v=json!({"id":q.id,"marketId":q.market,"exchangeId":q.exchange,"side":label(q.side),"action":if q.buy{"buy"}else{"sell"},"quantity":q.quantity,"filled":q.filled,"price":money(q.limit),"createdAt":q.created,"activationAt":q.activation,"expiresAt":q.expires,"retired":q.retired,"participationCredit":q.credit,"barrier":q.barrier.map(|(sequence,end)|json!({"sequence":sequence.to_string(),"endAt":end}))});
         if let Some(at)=q.cancel{v["cancelEffectiveAt"]=json!(at)}if q.aon{v["executionStyle"]=json!("inventoryAON")}if q.age_reason{v["inventoryExitReason"]=json!("maximumAge")}if q.participation!=100{v["participationBps"]=json!(q.participation)}if q.through{v["throughFillCapacity"]=json!(true)}if q.conditional{v["fillModel"]=json!("conditionalFifo");v["touchAttributionBps"]=json!(q.touch_bps);v["queueAhead"]=json!((q.same+q.better).to_string());v["queueSame"]=json!(q.same.to_string());v["queueBetter"]=json!(q.better.to_string());v["queueVisibleSame"]=json!(q.visible_same.to_string());v["queueVisibleBetter"]=json!(q.visible_better.to_string());v["touchRemainder"]=json!(q.touch_remainder)}v}).collect()
