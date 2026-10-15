@@ -41,6 +41,7 @@ export function createMoloch(policy={}){
   check(Number.isSafeInteger(p.maximumHedgeOvershoot??0)&&(p.maximumHedgeOvershoot??0)>=0&&(p.maximumHedgeOvershoot??0)<=p.quantity,'HEDGE_OVERSHOOT');
   check(['strictThrough','conditionalFifo'].includes(p.fillModel)&&Number.isSafeInteger(p.touchAttributionBps)&&p.touchAttributionBps>=0&&p.touchAttributionBps<=10000,'FILL_MODEL');
   check(Number.isSafeInteger(p.insideTicks)&&p.insideTicks>=0&&p.insideTicks<=3,'INSIDE_TICKS');
+  check(p.entryStopAt===undefined||typeof p.entryStopAt==='string'&&Number.isFinite(ms(p.entryStopAt)),'ENTRY_STOP_CLOCK');
   check(p.entryBackoffTicks===undefined||Number.isSafeInteger(p.entryBackoffTicks)&&p.entryBackoffTicks>=0&&p.entryBackoffTicks<=10&&p.insideTicks===0,'ENTRY_BACKOFF');
   check(Number.isSafeInteger(p.renewBeforeMs)&&p.renewBeforeMs>=0&&p.renewBeforeMs<p.lifetimeMs-p.latencyMs-p.minimumQuoteAgeMs,'RENEWAL_WINDOW');
   for(const k of ['quantity','maximumMarkets','latencyMs','lifetimeMs','bookAgeMs','maximumSourceSilenceMs','minimumSpreadTicks','participationBps','minimumQuoteAgeMs','writeGapMs','writesPerMinute'])check(Number.isSafeInteger(p[k])&&p[k]>0,'POLICY_'+k);
@@ -72,7 +73,7 @@ function fill(s,q,n,at,sourceId,executedAt=at){
   if(pairs){const costs=take(p.YES,pairs)+take(p.NO,pairs),payout=SCALE*BigInt(pairs);s.cash=money(amount(s.cash)+payout);s.realized=money(amount(s.realized)+payout-costs);s.redemptions.push({exchangeId:q.exchangeId,quantity:pairs,payout:money(payout),cost:money(costs),at,counterfactual:true,mechanism:'engine_opposite_buy_fifo_netting'});}
   prune(s);
 }
-const entryAllowed=(s,exchangeId)=>s.policy.entriesEnabled!==false&&(s.policy.entryExchangeIds==null||s.policy.entryExchangeIds.includes(exchangeId));
+const entryAllowed=(s,exchangeId)=>s.policy.entriesEnabled!==false&&(s.policy.entryStopAt===undefined||s.lastAt===null||ns(s.lastAt)<ns(s.policy.entryStopAt))&&(s.policy.entryExchangeIds==null||s.policy.entryExchangeIds.includes(exchangeId));
 function retainableHedge(s,q){
   if(s.policy.retainProfitableHedge!==true||!entryAllowed(s,q.exchangeId)||q.action!=='buy'||remaining(q)<1||q.cancelEffectiveAt!==undefined)return false;
   const side=q.side==='YES'?'NO':'YES',lots=position(s,q.exchangeId)[side],held=qty(lots);
