@@ -1,0 +1,1896 @@
+{
+  "contestOrders": 0,
+  "deployedWalletChanged": false,
+  "events": 4204,
+  "independentDiagnosticBanks": true,
+  "limitations": [
+    "Retrospective captured-market diagnostic; no untouched forward holdout.",
+    "Variants share capital, sizing, fees, fill model, latency, entry deadline and source clocks.",
+    "These are named Rust policy variants, not a verified reproduction of the entire Baal runtime.",
+    "Unclosed positions and hypothetical queue fills cannot establish realized profitability."
+  ],
+  "mode": "offline_equal_condition_comparison",
+  "networkRequests": 0,
+  "processingClocksUnchanged": true,
+  "profitabilityEstablished": false,
+  "runtime": "rust",
+  "selectedWinner": null,
+  "sourceChainVerified": true,
+  "sourceSha256": "773bca40abeaced54ccde54b611e6e9695239e084639bb54aa9776343a767535",
+  "terminalSnapshotSha256": "afd1e8ab3b1ed265a9cc4178132d880629a580f9cd00fa7b68737ab931cc2af5",
+  "variants": [
+    {
+      "fillsSha256": "875895638bdc17a659a12f9d07b11acf8c93d1b95e9aa5a5d507ce2d559bab54",
+      "name": "paired",
+      "policy": {
+        "bookAgeMs": 10000,
+        "entriesEnabled": true,
+        "entryDepthBps": 10000,
+        "entryExchangeIds": [
+          "1073"
+        ],
+        "entryStopAt": "2026-10-15T01:24:01.769Z",
+        "feeBps": 0,
+        "feePerShare": "0.000000",
+        "fillModel": "strictThrough",
+        "initialCash": "100000.000000",
+        "insideTicks": 0,
+        "inventoryAgeClock": "execution",
+        "inventoryExitMode": "fixedGain",
+        "inventoryMinimumGain": "0.005000",
+        "inventoryTakerAfterMs": 0,
+        "latencyMs": 3000,
+        "lifetimeMs": 600000,
+        "maximumCommitted": "40000.000000",
+        "maximumHedgeOvershoot": 0,
+        "maximumInventoryAgeMs": 1800000,
+        "maximumMarketCost": "10000.000000",
+        "maximumMarkets": 4,
+        "maximumSourceSilenceMs": 60000,
+        "minimumEdge": "0.001000",
+        "minimumQuoteAgeMs": 2500,
+        "minimumSpreadTicks": 1,
+        "participationBps": 100,
+        "quantity": 10000,
+        "quoteMode": "pairedSpread",
+        "renewBeforeMs": 0,
+        "retainProfitableHedge": false,
+        "touchAttributionBps": 10000,
+        "writeGapMs": 2500,
+        "writesPerMinute": 24
+      },
+      "report": {
+        "activeOrders": 1,
+        "at": "2026-10-15T01:29:15.915Z",
+        "bot": "Moloch",
+        "cash": "99253.600000",
+        "conditionalQueueFills": 0,
+        "contestOrders": 0,
+        "continuation": null,
+        "counts": {
+          "cancels": 2,
+          "duplicateTrades": 3298,
+          "gaps": 2,
+          "submissionBatches": 2,
+          "uniqueTrades": 245,
+          "writeBudgetHolds": 70
+        },
+        "events": 4204,
+        "fees": "0.000000",
+        "fillModel": "strictThrough",
+        "fills": 47,
+        "netLiquidationPnl": "-116.815000",
+        "networkRequests": 0,
+        "orders": 3,
+        "ownedCost": "746.400000",
+        "policyHash": "d44cf04ed989938ab762ec475b7198bb3d0a38c1e739b3f6cee327ab537b9185",
+        "positions": {
+          "1073": {
+            "NO": [
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 6
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 3
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 10
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 50
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 1111
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 10
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 41
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 133
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 3
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 65
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 34
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 43
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 181
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 1
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 133
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 605
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 95
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 56
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 216
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 147
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 15
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 9
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 3
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 60
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 100
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 13
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 180
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 53
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 1
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 2
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 300
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 1
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 7
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 560
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 1
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 150
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 1
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 7
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 1
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 1
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 280
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 108
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 120
+              },
+              {
+                "executedAt": "2026-10-15T01:20:58.690068900Z",
+                "price": "0.150000",
+                "quantity": 30
+              },
+              {
+                "executedAt": "2026-10-15T01:20:59.593366100Z",
+                "price": "0.150000",
+                "quantity": 10
+              },
+              {
+                "executedAt": "2026-10-15T01:20:59.895619500Z",
+                "price": "0.150000",
+                "quantity": 10
+              },
+              {
+                "executedAt": "2026-10-15T01:21:00.221659500Z",
+                "price": "0.150000",
+                "quantity": 10
+              }
+            ],
+            "YES": []
+          }
+        },
+        "profitSignalEligible": false,
+        "profitabilityEstablished": false,
+        "realized": "0.000000",
+        "reservedCash": "0.000000",
+        "runtime": "rust",
+        "unresolvedOrders": 1
+      }
+    },
+    {
+      "fillsSha256": "875895638bdc17a659a12f9d07b11acf8c93d1b95e9aa5a5d507ce2d559bab54",
+      "name": "microprice",
+      "policy": {
+        "bookAgeMs": 10000,
+        "entriesEnabled": true,
+        "entryDepthBps": 10000,
+        "entryExchangeIds": [
+          "1073"
+        ],
+        "entryStopAt": "2026-10-15T01:24:01.769Z",
+        "feeBps": 0,
+        "feePerShare": "0.000000",
+        "fillModel": "strictThrough",
+        "initialCash": "100000.000000",
+        "insideTicks": 0,
+        "inventoryAgeClock": "execution",
+        "inventoryExitMode": "fixedGain",
+        "inventoryMinimumGain": "0.005000",
+        "inventoryTakerAfterMs": 0,
+        "latencyMs": 3000,
+        "lifetimeMs": 600000,
+        "maximumCommitted": "40000.000000",
+        "maximumHedgeOvershoot": 0,
+        "maximumInventoryAgeMs": 1800000,
+        "maximumMarketCost": "10000.000000",
+        "maximumMarkets": 4,
+        "maximumSourceSilenceMs": 60000,
+        "minimumEdge": "0.001000",
+        "minimumQuoteAgeMs": 2500,
+        "minimumSpreadTicks": 1,
+        "participationBps": 100,
+        "quantity": 10000,
+        "quoteMode": "microprice",
+        "renewBeforeMs": 0,
+        "retainProfitableHedge": false,
+        "touchAttributionBps": 10000,
+        "writeGapMs": 2500,
+        "writesPerMinute": 24
+      },
+      "report": {
+        "activeOrders": 1,
+        "at": "2026-10-15T01:29:15.915Z",
+        "bot": "Moloch",
+        "cash": "99253.600000",
+        "conditionalQueueFills": 0,
+        "contestOrders": 0,
+        "continuation": null,
+        "counts": {
+          "cancels": 2,
+          "duplicateTrades": 3298,
+          "gaps": 2,
+          "submissionBatches": 2,
+          "uniqueTrades": 245,
+          "writeBudgetHolds": 67
+        },
+        "events": 4204,
+        "fees": "0.000000",
+        "fillModel": "strictThrough",
+        "fills": 47,
+        "netLiquidationPnl": "-116.815000",
+        "networkRequests": 0,
+        "orders": 3,
+        "ownedCost": "746.400000",
+        "policyHash": "cd3efcc0c6e741f5236bb16843df083ebff918a136c39832e6cf16045b4d7fe7",
+        "positions": {
+          "1073": {
+            "NO": [
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 6
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 3
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 10
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 50
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 1111
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 10
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 41
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 133
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 3
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 65
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 34
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 43
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 181
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 1
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 133
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 605
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 95
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 56
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 216
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 147
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 15
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 9
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 3
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 60
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 100
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 13
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 180
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 53
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 1
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 2
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 300
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 1
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 7
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 560
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 1
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 150
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 1
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 7
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 1
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 1
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 280
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 108
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 120
+              },
+              {
+                "executedAt": "2026-10-15T01:20:58.690068900Z",
+                "price": "0.150000",
+                "quantity": 30
+              },
+              {
+                "executedAt": "2026-10-15T01:20:59.593366100Z",
+                "price": "0.150000",
+                "quantity": 10
+              },
+              {
+                "executedAt": "2026-10-15T01:20:59.895619500Z",
+                "price": "0.150000",
+                "quantity": 10
+              },
+              {
+                "executedAt": "2026-10-15T01:21:00.221659500Z",
+                "price": "0.150000",
+                "quantity": 10
+              }
+            ],
+            "YES": []
+          }
+        },
+        "profitSignalEligible": false,
+        "profitabilityEstablished": false,
+        "realized": "0.000000",
+        "reservedCash": "0.000000",
+        "runtime": "rust",
+        "unresolvedOrders": 1
+      }
+    },
+    {
+      "fillsSha256": "875895638bdc17a659a12f9d07b11acf8c93d1b95e9aa5a5d507ce2d559bab54",
+      "name": "paired-retained-hedge",
+      "policy": {
+        "bookAgeMs": 10000,
+        "entriesEnabled": true,
+        "entryDepthBps": 10000,
+        "entryExchangeIds": [
+          "1073"
+        ],
+        "entryStopAt": "2026-10-15T01:24:01.769Z",
+        "feeBps": 0,
+        "feePerShare": "0.000000",
+        "fillModel": "strictThrough",
+        "initialCash": "100000.000000",
+        "insideTicks": 0,
+        "inventoryAgeClock": "execution",
+        "inventoryExitMode": "fixedGain",
+        "inventoryMinimumGain": "0.005000",
+        "inventoryTakerAfterMs": 0,
+        "latencyMs": 3000,
+        "lifetimeMs": 600000,
+        "maximumCommitted": "40000.000000",
+        "maximumHedgeOvershoot": 0,
+        "maximumInventoryAgeMs": 1800000,
+        "maximumMarketCost": "10000.000000",
+        "maximumMarkets": 4,
+        "maximumSourceSilenceMs": 60000,
+        "minimumEdge": "0.001000",
+        "minimumQuoteAgeMs": 2500,
+        "minimumSpreadTicks": 1,
+        "participationBps": 100,
+        "quantity": 10000,
+        "quoteMode": "pairedSpread",
+        "renewBeforeMs": 0,
+        "retainProfitableHedge": true,
+        "touchAttributionBps": 10000,
+        "writeGapMs": 2500,
+        "writesPerMinute": 24
+      },
+      "report": {
+        "activeOrders": 1,
+        "at": "2026-10-15T01:29:15.915Z",
+        "bot": "Moloch",
+        "cash": "99253.600000",
+        "conditionalQueueFills": 0,
+        "contestOrders": 0,
+        "continuation": null,
+        "counts": {
+          "cancels": 2,
+          "duplicateTrades": 3298,
+          "gaps": 2,
+          "submissionBatches": 2,
+          "uniqueTrades": 245,
+          "writeBudgetHolds": 70
+        },
+        "events": 4204,
+        "fees": "0.000000",
+        "fillModel": "strictThrough",
+        "fills": 47,
+        "netLiquidationPnl": "-116.815000",
+        "networkRequests": 0,
+        "orders": 3,
+        "ownedCost": "746.400000",
+        "policyHash": "0b8264b032bc920a49caf0823b185e48caf9e2074e204fd93f99ab58593a7d1d",
+        "positions": {
+          "1073": {
+            "NO": [
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 6
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 3
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 10
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 50
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 1111
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 10
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 41
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 133
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 3
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 65
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 34
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 43
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 181
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 1
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 133
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 605
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 95
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 56
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 216
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 147
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 15
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 9
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 3
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 60
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 100
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 13
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 180
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 53
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 1
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 2
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 300
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 1
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 7
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 560
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 1
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 150
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 1
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 7
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 1
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 1
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 280
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 108
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 120
+              },
+              {
+                "executedAt": "2026-10-15T01:20:58.690068900Z",
+                "price": "0.150000",
+                "quantity": 30
+              },
+              {
+                "executedAt": "2026-10-15T01:20:59.593366100Z",
+                "price": "0.150000",
+                "quantity": 10
+              },
+              {
+                "executedAt": "2026-10-15T01:20:59.895619500Z",
+                "price": "0.150000",
+                "quantity": 10
+              },
+              {
+                "executedAt": "2026-10-15T01:21:00.221659500Z",
+                "price": "0.150000",
+                "quantity": 10
+              }
+            ],
+            "YES": []
+          }
+        },
+        "profitSignalEligible": false,
+        "profitabilityEstablished": false,
+        "realized": "0.000000",
+        "reservedCash": "0.000000",
+        "runtime": "rust",
+        "unresolvedOrders": 1
+      }
+    },
+    {
+      "fillsSha256": "e64af6c15024988d9e9f8c243ab66d425c96761c5cb399f38fdc749492618756",
+      "name": "paired-one-tick-backoff",
+      "policy": {
+        "bookAgeMs": 10000,
+        "entriesEnabled": true,
+        "entryBackoffTicks": 1,
+        "entryDepthBps": 10000,
+        "entryExchangeIds": [
+          "1073"
+        ],
+        "entryStopAt": "2026-10-15T01:24:01.769Z",
+        "feeBps": 0,
+        "feePerShare": "0.000000",
+        "fillModel": "strictThrough",
+        "initialCash": "100000.000000",
+        "insideTicks": 0,
+        "inventoryAgeClock": "execution",
+        "inventoryExitMode": "fixedGain",
+        "inventoryMinimumGain": "0.005000",
+        "inventoryTakerAfterMs": 0,
+        "latencyMs": 3000,
+        "lifetimeMs": 600000,
+        "maximumCommitted": "40000.000000",
+        "maximumHedgeOvershoot": 0,
+        "maximumInventoryAgeMs": 1800000,
+        "maximumMarketCost": "10000.000000",
+        "maximumMarkets": 4,
+        "maximumSourceSilenceMs": 60000,
+        "minimumEdge": "0.001000",
+        "minimumQuoteAgeMs": 2500,
+        "minimumSpreadTicks": 1,
+        "participationBps": 100,
+        "quantity": 10000,
+        "quoteMode": "pairedSpread",
+        "renewBeforeMs": 0,
+        "retainProfitableHedge": false,
+        "touchAttributionBps": 10000,
+        "writeGapMs": 2500,
+        "writesPerMinute": 24
+      },
+      "report": {
+        "activeOrders": 1,
+        "at": "2026-10-15T01:29:15.915Z",
+        "bot": "Moloch",
+        "cash": "99288.485000",
+        "conditionalQueueFills": 0,
+        "contestOrders": 0,
+        "continuation": null,
+        "counts": {
+          "cancels": 2,
+          "duplicateTrades": 3298,
+          "gaps": 2,
+          "submissionBatches": 2,
+          "uniqueTrades": 245,
+          "writeBudgetHolds": 66
+        },
+        "events": 4204,
+        "fees": "0.000000",
+        "fillModel": "strictThrough",
+        "fills": 43,
+        "netLiquidationPnl": "-90.555000",
+        "networkRequests": 0,
+        "orders": 3,
+        "ownedCost": "711.515000",
+        "policyHash": "a6a18bdd7957bf914545854f45485eeb8db372dbc6aa9086f742f0cae6b576e8",
+        "positions": {
+          "1073": {
+            "NO": [
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.145000",
+                "quantity": 1111
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.145000",
+                "quantity": 10
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.145000",
+                "quantity": 41
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.145000",
+                "quantity": 133
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.145000",
+                "quantity": 3
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.145000",
+                "quantity": 65
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.145000",
+                "quantity": 34
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.145000",
+                "quantity": 43
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.145000",
+                "quantity": 181
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.145000",
+                "quantity": 1
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.145000",
+                "quantity": 133
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.145000",
+                "quantity": 605
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.145000",
+                "quantity": 95
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.145000",
+                "quantity": 56
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.145000",
+                "quantity": 216
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.145000",
+                "quantity": 147
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.145000",
+                "quantity": 15
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.145000",
+                "quantity": 9
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.145000",
+                "quantity": 3
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.145000",
+                "quantity": 60
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.145000",
+                "quantity": 100
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.145000",
+                "quantity": 13
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.145000",
+                "quantity": 180
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.145000",
+                "quantity": 53
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.145000",
+                "quantity": 1
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.145000",
+                "quantity": 2
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.145000",
+                "quantity": 300
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.145000",
+                "quantity": 1
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.145000",
+                "quantity": 7
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.145000",
+                "quantity": 560
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.145000",
+                "quantity": 1
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.145000",
+                "quantity": 150
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.145000",
+                "quantity": 1
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.145000",
+                "quantity": 7
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.145000",
+                "quantity": 1
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.145000",
+                "quantity": 1
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.145000",
+                "quantity": 280
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.145000",
+                "quantity": 108
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.145000",
+                "quantity": 120
+              },
+              {
+                "executedAt": "2026-10-15T01:20:58.690068900Z",
+                "price": "0.145000",
+                "quantity": 30
+              },
+              {
+                "executedAt": "2026-10-15T01:20:59.593366100Z",
+                "price": "0.145000",
+                "quantity": 10
+              },
+              {
+                "executedAt": "2026-10-15T01:20:59.895619500Z",
+                "price": "0.145000",
+                "quantity": 10
+              },
+              {
+                "executedAt": "2026-10-15T01:21:00.221659500Z",
+                "price": "0.145000",
+                "quantity": 10
+              }
+            ],
+            "YES": []
+          }
+        },
+        "profitSignalEligible": false,
+        "profitabilityEstablished": false,
+        "realized": "0.000000",
+        "reservedCash": "0.000000",
+        "runtime": "rust",
+        "unresolvedOrders": 1
+      }
+    },
+    {
+      "fillsSha256": "875895638bdc17a659a12f9d07b11acf8c93d1b95e9aa5a5d507ce2d559bab54",
+      "name": "paired-without-flow-gate",
+      "policy": {
+        "bookAgeMs": 10000,
+        "entriesEnabled": true,
+        "entryDepthBps": 10000,
+        "entryExchangeIds": [
+          "1073"
+        ],
+        "entryStopAt": "2026-10-15T01:24:01.769Z",
+        "feeBps": 0,
+        "feePerShare": "0.000000",
+        "fillModel": "strictThrough",
+        "initialCash": "100000.000000",
+        "insideTicks": 0,
+        "inventoryAgeClock": "execution",
+        "inventoryExitMode": "fixedGain",
+        "inventoryMinimumGain": "0.005000",
+        "inventoryTakerAfterMs": 0,
+        "latencyMs": 3000,
+        "lifetimeMs": 600000,
+        "maximumCommitted": "40000.000000",
+        "maximumHedgeOvershoot": 0,
+        "maximumInventoryAgeMs": 1800000,
+        "maximumMarketCost": "10000.000000",
+        "maximumMarkets": 4,
+        "maximumSourceSilenceMs": 60000,
+        "minimumEdge": "0.001000",
+        "minimumQuoteAgeMs": 2500,
+        "minimumSpreadTicks": 1,
+        "participationBps": 100,
+        "quantity": 10000,
+        "quoteMode": "pairedSpread",
+        "renewBeforeMs": 0,
+        "requireCurrentFlow": false,
+        "retainProfitableHedge": false,
+        "touchAttributionBps": 10000,
+        "writeGapMs": 2500,
+        "writesPerMinute": 24
+      },
+      "report": {
+        "activeOrders": 1,
+        "at": "2026-10-15T01:29:15.915Z",
+        "bot": "Moloch",
+        "cash": "99253.600000",
+        "conditionalQueueFills": 0,
+        "contestOrders": 0,
+        "continuation": null,
+        "counts": {
+          "cancels": 2,
+          "duplicateTrades": 3298,
+          "gaps": 2,
+          "submissionBatches": 2,
+          "uniqueTrades": 245,
+          "writeBudgetHolds": 70
+        },
+        "events": 4204,
+        "fees": "0.000000",
+        "fillModel": "strictThrough",
+        "fills": 47,
+        "netLiquidationPnl": "-116.815000",
+        "networkRequests": 0,
+        "orders": 3,
+        "ownedCost": "746.400000",
+        "policyHash": "bd946f4ffdc8de3fd2004ab69ca1ca6429a5c9dfa7b065f330d05f4d4b1a82fe",
+        "positions": {
+          "1073": {
+            "NO": [
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 6
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 3
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 10
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 50
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 1111
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 10
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 41
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 133
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 3
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 65
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 34
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 43
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 181
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 1
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 133
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 605
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 95
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 56
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 216
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 147
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 15
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 9
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 3
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 60
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 100
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 13
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 180
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 53
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 1
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 2
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 300
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 1
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 7
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 560
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 1
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 150
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 1
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 7
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 1
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 1
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 280
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 108
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 120
+              },
+              {
+                "executedAt": "2026-10-15T01:20:58.690068900Z",
+                "price": "0.150000",
+                "quantity": 30
+              },
+              {
+                "executedAt": "2026-10-15T01:20:59.593366100Z",
+                "price": "0.150000",
+                "quantity": 10
+              },
+              {
+                "executedAt": "2026-10-15T01:20:59.895619500Z",
+                "price": "0.150000",
+                "quantity": 10
+              },
+              {
+                "executedAt": "2026-10-15T01:21:00.221659500Z",
+                "price": "0.150000",
+                "quantity": 10
+              }
+            ],
+            "YES": []
+          }
+        },
+        "profitSignalEligible": false,
+        "profitabilityEstablished": false,
+        "realized": "0.000000",
+        "reservedCash": "0.000000",
+        "runtime": "rust",
+        "unresolvedOrders": 1
+      }
+    },
+    {
+      "fillsSha256": "875895638bdc17a659a12f9d07b11acf8c93d1b95e9aa5a5d507ce2d559bab54",
+      "name": "microprice-without-flow-gate",
+      "policy": {
+        "bookAgeMs": 10000,
+        "entriesEnabled": true,
+        "entryDepthBps": 10000,
+        "entryExchangeIds": [
+          "1073"
+        ],
+        "entryStopAt": "2026-10-15T01:24:01.769Z",
+        "feeBps": 0,
+        "feePerShare": "0.000000",
+        "fillModel": "strictThrough",
+        "initialCash": "100000.000000",
+        "insideTicks": 0,
+        "inventoryAgeClock": "execution",
+        "inventoryExitMode": "fixedGain",
+        "inventoryMinimumGain": "0.005000",
+        "inventoryTakerAfterMs": 0,
+        "latencyMs": 3000,
+        "lifetimeMs": 600000,
+        "maximumCommitted": "40000.000000",
+        "maximumHedgeOvershoot": 0,
+        "maximumInventoryAgeMs": 1800000,
+        "maximumMarketCost": "10000.000000",
+        "maximumMarkets": 4,
+        "maximumSourceSilenceMs": 60000,
+        "minimumEdge": "0.001000",
+        "minimumQuoteAgeMs": 2500,
+        "minimumSpreadTicks": 1,
+        "participationBps": 100,
+        "quantity": 10000,
+        "quoteMode": "microprice",
+        "renewBeforeMs": 0,
+        "requireCurrentFlow": false,
+        "retainProfitableHedge": false,
+        "touchAttributionBps": 10000,
+        "writeGapMs": 2500,
+        "writesPerMinute": 24
+      },
+      "report": {
+        "activeOrders": 1,
+        "at": "2026-10-15T01:29:15.915Z",
+        "bot": "Moloch",
+        "cash": "99253.600000",
+        "conditionalQueueFills": 0,
+        "contestOrders": 0,
+        "continuation": null,
+        "counts": {
+          "cancels": 2,
+          "duplicateTrades": 3298,
+          "gaps": 2,
+          "submissionBatches": 2,
+          "uniqueTrades": 245,
+          "writeBudgetHolds": 67
+        },
+        "events": 4204,
+        "fees": "0.000000",
+        "fillModel": "strictThrough",
+        "fills": 47,
+        "netLiquidationPnl": "-116.815000",
+        "networkRequests": 0,
+        "orders": 3,
+        "ownedCost": "746.400000",
+        "policyHash": "949cdc248278dced026260f8437a8bf9925b6251a81767662bfb29049746cecb",
+        "positions": {
+          "1073": {
+            "NO": [
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 6
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 3
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 10
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 50
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 1111
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 10
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 41
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 133
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 3
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 65
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 34
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 43
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 181
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 1
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 133
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 605
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 95
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 56
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 216
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 147
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 15
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 9
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 3
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 60
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 100
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 13
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 180
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 53
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 1
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 2
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 300
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 1
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 7
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 560
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 1
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 150
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 1
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 7
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 1
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 1
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 280
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 108
+              },
+              {
+                "executedAt": "2026-10-15T01:20:53.774173500Z",
+                "price": "0.150000",
+                "quantity": 120
+              },
+              {
+                "executedAt": "2026-10-15T01:20:58.690068900Z",
+                "price": "0.150000",
+                "quantity": 30
+              },
+              {
+                "executedAt": "2026-10-15T01:20:59.593366100Z",
+                "price": "0.150000",
+                "quantity": 10
+              },
+              {
+                "executedAt": "2026-10-15T01:20:59.895619500Z",
+                "price": "0.150000",
+                "quantity": 10
+              },
+              {
+                "executedAt": "2026-10-15T01:21:00.221659500Z",
+                "price": "0.150000",
+                "quantity": 10
+              }
+            ],
+            "YES": []
+          }
+        },
+        "profitSignalEligible": false,
+        "profitabilityEstablished": false,
+        "realized": "0.000000",
+        "reservedCash": "0.000000",
+        "runtime": "rust",
+        "unresolvedOrders": 1
+      }
+    }
+  ]
+}

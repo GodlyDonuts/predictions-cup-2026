@@ -9,7 +9,7 @@ test ! -e "$base/shared/NETWORK_ENABLED"
 ! systemctl --user is-active --quiet moloch-capture.service
 mkdir -m 700 "$release"
 mkdir -m 700 "$release/bin"
-for name in moloch-collector moloch-paper moloch-replay moloch-seed moloch-session moloch-source moloch-ready; do
+for name in moloch-collector moloch-paper moloch-replay moloch-seed moloch-session moloch-source moloch-ready moloch-compare; do
  install -m 700 "$base/rust-build/target/release/$name" "$release/bin/$name"
 done
 (cd "$release"; sha256sum bin/* > SHA256SUMS)

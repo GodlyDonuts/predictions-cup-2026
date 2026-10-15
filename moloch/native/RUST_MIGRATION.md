@@ -1,9 +1,9 @@
 # Rust runtime migration
 
-The new `src/bin/moloch-collector.rs` is a native serialized GET collector, not
-yet the deployed service. It has no order endpoints. The existing Node release
-and disabled systemd service remain untouched until the whole replacement is
-verified.
+The deployed service now points to the native Rust serialized collector. It has
+no order endpoints. Its paper bank preserves the audited historical wallet,
+and network access and trading remain disabled. The dedicated Node runtime
+has been removed. Earlier checks below record migration milestones.
 
 Verified on the Linux ARM64 VPS during this migration:
 
@@ -179,3 +179,29 @@ final checksum command after switching the service. The script was normalized,
 syntax-checked, and all seven checksums plus readiness were verified explicitly.
 This receipt does not claim a live feed, active strategy or profitable deployment.
 Strategy comparison and independent forward paper evidence remain outstanding.
+
+## Equal-condition Rust strategy diagnostics
+
+`moloch-compare LEGACY_JOURNAL TERMINAL_SNAPSHOT CONFIG NEW_REPORT` verifies
+canonical legacy event hashes, the complete journal chain and the sealed terminal
+snapshot. It advances independent strategy variants over identical recorded
+processing clocks. Overrides cannot change capital, quantity, fees, latency,
+fill assumptions or the entry deadline. Its two tests cover these confounds and
+variant-name ambiguity. The release comparator is installed on the VPS; all
+eight executable hashes and disabled readiness were checked afterward.
+
+The phase-85 diagnostic contains 1,373 events. Four current-flow-gated variants
+had no fills and zero return. Paired entries without the gate made two modeled
+fills and +0.015000 realized; microprice without the gate made three and +0.010000.
+These tiny retrospective outcomes do not establish profitability. The separate
+phase-76 diagnostic uses its original 1073 scope and entry deadline: 4,204 events,
+47 fills and 746.400000 owned cost for the paired variant, with -116.815000 marked
+liquidation P&L and one unresolved quote. One-tick backoff reduced fills to 43 and
+the marked loss to -90.555000, still with an unresolved quote. These are independent
+per-window banks; their cash and gains must not be summed as a continuous wallet.
+
+Results and exact policies are in `moloch/results/rust-strategy-comparison-*.json`.
+An exploratory phase-76 run using phase-85 scope produced no orders and is excluded
+from strategy evidence. No winner was selected, no deployed policy changed, and
+no actual order or SIG request was made. These are Rust policy variants rather
+than a verified reproduction of the entire historical Baal runtime.
