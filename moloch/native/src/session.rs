@@ -60,6 +60,14 @@ pub struct ExclusiveLock {
     _file: File,
 }
 impl ExclusiveLock {
+    /// Identity of the descriptor actually holding the OS lock; no path open.
+    pub fn descriptor_identity(&self) -> Result<Value> {
+        #[cfg(unix)] { use std::os::unix::fs::MetadataExt;
+            let m = self._file.metadata()?;
+            Ok(json!({"schemaVersion":1,"device":m.dev(),"inode":m.ino(),"bytes":m.len()}))
+        }
+        #[cfg(not(unix))] { Err("LOCK_DESCRIPTOR_IDENTITY_UNSUPPORTED".into()) }
+    }
     pub fn acquire(path: &Path) -> Result<Self> {
         let (file, new) = match options().read(true).write(true).create_new(true).open(path) {
             Ok(f) => (f, true),

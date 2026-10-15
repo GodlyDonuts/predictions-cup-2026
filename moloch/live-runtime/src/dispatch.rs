@@ -6,6 +6,10 @@ use std::{fs::{self,File,OpenOptions},io::{BufRead,BufReader,Write},path::Path,c
 fn hash(v:&Value)->String{format!("{:x}",Sha256::digest(serde_json::to_vec(v).unwrap()))}
 pub struct DispatchLog {file:File,sequence:u64,previous:String,pub intents:BTreeMap<u64,Value>,pub acknowledgments:BTreeMap<u64,Value>,pub recovered:BTreeMap<u64,Value>,pub attempted:BTreeSet<u64>,pub closed:BTreeSet<u64>,pub cancel_acknowledged:BTreeSet<u64>}
 impl DispatchLog {
+ pub fn descriptor_identity(&self)->Result<Value>{
+  #[cfg(unix)]{use std::os::unix::fs::MetadataExt;let m=self.file.metadata()?;Ok(json!({"schemaVersion":1,"device":m.dev(),"inode":m.ino(),"bytes":m.len(),"sequence":self.sequence,"previous":self.previous}))}
+  #[cfg(not(unix))]{Err("DISPATCH_DESCRIPTOR_IDENTITY_UNSUPPORTED".into())}
+ }
  pub fn open(path:&Path)->Result<Self>{
   let mut options=OpenOptions::new();options.read(true).append(true).create(true);
   #[cfg(unix)]{use std::os::unix::fs::OpenOptionsExt;options.mode(0o600);}
