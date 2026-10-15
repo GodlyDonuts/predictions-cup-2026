@@ -49,6 +49,10 @@ impl DurableIntent{
 /// Token cannot be deserialized, cloned or minted by a caller. On restart there
 /// is no capability to turn an earlier attempt into a local not-sent result.
 pub struct AttemptToken{nonce:u64,package_id:String,attempt_head:String}
+/// Minted only by a fresh read of this held original journal. There is no
+/// Deserialize, Clone, public constructor or evidence-selected source path.
+pub(crate) struct VerifiedNeverAttempted{evidence:Value}
+impl VerifiedNeverAttempted{pub(crate) fn evidence(&self)->&Value{&self.evidence}}
 #[derive(Clone)]
 struct Record{intent:DurableIntent,phase:String,attempted_at:Option<String>,outcome:Option<Value>}
 #[derive(Clone,Default)]struct Projection{records:BTreeMap<String,Record>,sequence:u64,previous:String,last_clock:Option<i64>}
@@ -91,6 +95,11 @@ impl Projection{
   if let Some(t)=started{need(at>=t,"PACKAGE_LOG_CLOCK")?;}
   match kind{
    "attempt"=>{need(!unresolved&&r.phase=="intent"&&at<r.intent.permit.expires_at_ms as i64,"PACKAGE_LOG_REPEAT_EXPIRED_OR_UNRESOLVED")?;r.phase="attempt".into();r.attempted_at=Some(e["at"].as_str().unwrap().into());},
+   "never_attempted"=>{
+    need(r.phase=="intent"&&r.attempted_at.is_none()&&r.outcome.is_none(),"PACKAGE_LOG_NEVER_AFTER_ATTEMPT")?;
+    need(e.as_object().is_some_and(|v|v.len()==6)&&e["admissionHash"]==hash(&serde_json::to_value(&r.intent)?)?&&e["priorHead"]==json!({"sequence":self.sequence,"hash":self.previous}),"PACKAGE_LOG_NEVER_BINDING")?;
+    r.phase="never_attempted".into();r.outcome=Some(e.clone());
+   },
    "unknown"=>{need(matches!(r.phase.as_str(),"attempt"|"unknown"),"PACKAGE_LOG_UNKNOWN_PHASE")?;need(e["error"]["mayHaveExecuted"]==true,"PACKAGE_LOG_UNKNOWN_ERROR")?;r.phase="unknown".into();r.outcome=Some(e.clone());},
    "ack"=>{need(matches!(r.phase.as_str(),"attempt"|"unknown"),"PACKAGE_LOG_ACK_PHASE")?;let receipt:Receipt=serde_json::from_value(e["receipt"].clone())?;multi_leg::reported_fill(&receipt,&r.intent.basket)?;need(clock(&receipt.request_started_at)? >= started.ok_or("PACKAGE_LOG_NO_ATTEMPT")?&&clock(&receipt.received_at)?<=at,"PACKAGE_LOG_ACK_CLOCK")?;r.phase="ack".into();r.outcome=Some(e.clone());},
    "definitive_zero"=>{need(matches!(r.phase.as_str(),"attempt"|"unknown"),"PACKAGE_LOG_ZERO_PHASE")?;let evidence=response_evidence(&e["evidence"])?;let response=validate_zero(&r.intent,&evidence)?;need(e["response"]==response&&clock(&evidence.request_started_at)? >= started.ok_or("PACKAGE_LOG_NO_ATTEMPT")?&&clock(&evidence.request_started_at)?<=clock(&evidence.received_at)?&&clock(&evidence.received_at)?<=at,"PACKAGE_LOG_ZERO_CLOCK_OR_CHANGED")?;r.phase="definitive_zero".into();r.outcome=Some(e.clone());},
@@ -105,7 +114,21 @@ impl Projection{
 }
 // Bounded line reads: an oversized/torn row is never allocated in full.
 fn read_line(reader:&mut BufReader<File>)->Result<Option<Vec<u8>>>{let mut out=Vec::new();loop{let buf=reader.fill_buf()?;if buf.is_empty(){return if out.is_empty(){Ok(None)}else{Err("PACKAGE_LOG_TORN_TAIL".into())}}let end=buf.iter().position(|b|*b==b'\n');let n=end.map_or(buf.len(),|p|p+1);need(out.len().saturating_add(n)<=MAX_ROW,"PACKAGE_LOG_ROW_SIZE")?;out.extend_from_slice(&buf[..n]);reader.consume(n);if end.is_some(){return Ok(Some(out))}}}
-fn load(path:&Path)->Result<Projection>{let mut state=Projection::initial();let mut reader=BufReader::new(File::open(path)?);while let Some(bytes)=read_line(&mut reader)?{let mut row:Value=serde_json::from_slice(&bytes)?;let claimed=row.as_object_mut().ok_or("PACKAGE_LOG_ROW")?.remove("hash").ok_or("PACKAGE_LOG_HASH")?;need(row["schemaVersion"]==1&&row["sequence"]==state.sequence+1&&row["previous"]==state.previous&&claimed==hash(&row)?,"PACKAGE_LOG_CHAIN")?;state.apply(&row["event"])?;state.sequence+=1;state.previous=claimed.as_str().ok_or("PACKAGE_LOG_HASH")?.into();}Ok(state)}
+struct Scan{state:Projection,fence:Option<Value>,bytes:u64,sha256:String}
+fn scan(path:&Path,target:Option<&str>)->Result<Scan>{
+ let mut state=Projection::initial();let mut reader=BufReader::new(File::open(path)?);let mut digest=Sha256::new();let mut total=0u64;let mut fence=None;
+ while let Some(bytes)=read_line(&mut reader)?{
+  digest.update(&bytes);total=total.checked_add(bytes.len() as u64).ok_or("PACKAGE_LOG_SIZE")?;
+  let mut row:Value=serde_json::from_slice(&bytes)?;let claimed=row.as_object_mut().ok_or("PACKAGE_LOG_ROW")?.remove("hash").ok_or("PACKAGE_LOG_HASH")?;
+  need(row["schemaVersion"]==1&&row["sequence"]==state.sequence+1&&row["previous"]==state.previous&&claimed==hash(&row)?,"PACKAGE_LOG_CHAIN")?;
+  state.apply(&row["event"])?;state.sequence+=1;state.previous=claimed.as_str().ok_or("PACKAGE_LOG_HASH")?.into();
+  if target.is_some_and(|id|row["event"]["packageId"]==id&&row["event"]["kind"]=="never_attempted"){
+   need(fence.is_none(),"PACKAGE_LOG_REPEAT_NEVER_FENCE")?;row["hash"]=claimed;fence=Some(row);
+  }
+ }
+ Ok(Scan{state,fence,bytes:total,sha256:format!("{:x}",digest.finalize())})
+}
+fn load(path:&Path)->Result<Projection>{Ok(scan(path,None)?.state)}
 impl PackageDispatchLog{
  pub fn open(directory:&Path)->Result<Self>{
   fs::create_dir_all(directory)?;let lock=ExclusiveLock::acquire(&directory.join("package-dispatch.lock"))?;
@@ -125,6 +148,34 @@ impl PackageDispatchLog{
  }
  pub fn intent(&mut self,intent:DurableIntent,at:&str)->Result<()>{self.append(json!({"kind":"intent","packageId":intent.package_id(),"at":at,"admission":intent}))}
  pub fn attempt(&mut self,id:&str,at:&str)->Result<AttemptToken>{let request=self.state.records.get(id).ok_or("PACKAGE_LOG_UNKNOWN_ID")?.intent.request_hash.clone();self.append(json!({"kind":"attempt","packageId":id,"at":at,"requestHash":request}))?;Ok(AttemptToken{nonce:self.nonce,package_id:id.into(),attempt_head:self.state.previous.clone()})}
+ /// Irrevocable local boundary BEFORE any physical-attempt capability exists.
+ /// Already fenced records reverify without appending, making a crash between
+ /// this durable fence and native release safely recoverable on startup.
+ pub fn abandon_before_attempt(&mut self,id:&str,at:&str)->Result<()>{
+  self.pin_original_descriptor()?;
+  let record=self.verified_record(id)?;
+  if record["phase"]=="never_attempted"{
+   need(clock(at)? >= clock(record["outcome"]["at"].as_str().ok_or("PACKAGE_LOG_CLOCK")?)?,"PACKAGE_LOG_CLOCK_REGRESSION")?;
+   self.verified_never_attempted(id)?;return Ok(())
+  }
+  need(record["phase"]=="intent"&&record.get("attemptedAt")==Some(&Value::Null)&&record.get("outcome")==Some(&Value::Null),"PACKAGE_LOG_NEVER_AFTER_ATTEMPT")?;
+  let admission=self.state.records.get(id).ok_or("PACKAGE_LOG_UNKNOWN_ID")?.intent.clone();
+  self.append(json!({"kind":"never_attempted","packageId":id,"at":at,"requestHash":admission.request_hash,"admissionHash":hash(&serde_json::to_value(&admission)?)?,"priorHead":{"sequence":self.state.sequence,"hash":self.state.previous}}))?;
+  self.verified_never_attempted(id)?;Ok(())
+ }
+ fn pin_original_descriptor(&self)->Result<()>{
+  need(!self.poisoned,"PACKAGE_LOG_POISONED")?;
+  #[cfg(unix)]{use std::os::unix::fs::MetadataExt;let held=self.file.metadata()?;let named=fs::metadata(&self.path)?;need(held.dev()==named.dev()&&held.ino()==named.ino(),"PACKAGE_LOG_DESCRIPTOR_CHANGED")?;Ok(())}
+  #[cfg(not(unix))]{Err("PACKAGE_LOG_DESCRIPTOR_IDENTITY_UNSUPPORTED".into())}
+ }
+ pub(crate) fn verified_never_attempted(&self,id:&str)->Result<VerifiedNeverAttempted>{
+  self.pin_original_descriptor()?;let original=scan(&self.path,Some(id))?;self.pin_original_descriptor()?;
+  need(original.state.sequence==self.state.sequence&&original.state.previous==self.state.previous&&original.bytes==self.file.metadata()?.len(),"PACKAGE_LOG_CHANGED")?;
+  let r=original.state.records.get(id).ok_or("PACKAGE_LOG_UNKNOWN_ID")?;
+  need(r.phase=="never_attempted"&&r.attempted_at.is_none()&&r.outcome.as_ref().is_some_and(|e|e["kind"]=="never_attempted"),"PACKAGE_LOG_NEVER_FENCE_REQUIRED")?;
+  let record=json!({"admission":r.intent,"phase":r.phase,"attemptedAt":r.attempted_at,"outcome":r.outcome});
+  Ok(VerifiedNeverAttempted{evidence:json!({"dispatchRecordHash":hash(&record)?,"dispatchRecord":record,"dispatchFenceRow":original.fence.ok_or("PACKAGE_LOG_NEVER_FENCE_REQUIRED")?,"dispatchHead":self.head(),"journalBytes":original.bytes,"journalSha256":original.sha256,"journalLastClockMs":original.state.last_clock.ok_or("PACKAGE_LOG_CLOCK")?})})
+ }
  fn outcome(&mut self,id:&str,kind:&str,at:&str,mut extra:Value)->Result<()>{let request=&self.state.records.get(id).ok_or("PACKAGE_LOG_UNKNOWN_ID")?.intent.request_hash;extra["kind"]=json!(kind);extra["packageId"]=json!(id);extra["at"]=json!(at);extra["requestHash"]=json!(request);self.append(extra)}
  pub fn acknowledged(&mut self,id:&str,r:&Receipt,at:&str)->Result<()>{self.outcome(id,"ack",at,json!({"receipt":r}))}
  pub fn definitive_zero(&mut self,id:&str,e:&ResponseEvidence,at:&str)->Result<()>{let intent=&self.state.records.get(id).ok_or("PACKAGE_LOG_UNKNOWN_ID")?.intent;let data=validate_zero(intent,e)?;self.outcome(id,"definitive_zero",at,json!({"evidence":e,"response":data}))}

@@ -13,6 +13,9 @@
 //! Unknown retains every unexecuted reservation. An attempt can release funding
 //! only through typed, complete, allowlisted zero-execution response evidence, or
 //! ordinary verified actual terminal/fill feedback. ACK alone never credits cash.
+//! An Attempted-only dispatch_never_attempted_v1 proof is a separate local
+//! boundary: the original dispatch log irrevocably fenced its still-intent row
+//! before issuing any physical-attempt token. No queue absence inference applies.
 //!
 //! Complete requires every original quantity actually filled and every actual
 //! binding terminal-reconciled. Component positions remain protected from all
@@ -105,6 +108,8 @@ impl Engine {
     if snapshot.phase==Phase::Reserved {
      exact_keys(proof,&["kind","confirmedNetworkAttempts"])?;
      if proof["kind"]!="never_attempted"||proof["confirmedNetworkAttempts"].as_u64()!=Some(0){return Err("PACKAGE_NEVER_ATTEMPTED_PROOF")}
+    }else if proof["kind"]=="dispatch_never_attempted_v1"{
+     dispatch_never_attempted(&snapshot,proof,at)?;
     }else if proof["kind"]=="local_queue_not_sent_v1"{
      local_not_sent(&snapshot,proof,at)?;
     }else{
@@ -171,6 +176,38 @@ impl Engine {
   }
   self.live_packages.insert(package_name.clone(),LivePackage{id:package_name,proof,scope,economics,created:at,expires,phase:Phase::Reserved,legs,request:None,key:None,attempted_at:None,zero_evidence:None});Ok(())
  }
+}
+
+// Replay checks the exact admitted request/intent/fence binding. Authenticity
+// comes from the runtime's opaque proof over the retained original locked log,
+// not from arbitrary JSON, a hash alone, or an empty account queue.
+fn dispatch_never_attempted(p:&LivePackage,proof:&Value,at:i64)->Result<()>{
+ exact_keys(proof,&["kind","requestHash","requestJson","dispatchRecord","dispatchRecordHash","dispatchFenceRow","dispatchHead","journalBytes","journalSha256","journalLastClockMs"])?;
+ if p.phase!=Phase::Attempted||at<0||proof["requestHash"].as_str()!=p.request.as_deref(){return Err("PACKAGE_NEVER_ATTEMPTED_PHASE")}
+ let record=&proof["dispatchRecord"];let admission=&record["admission"];
+ if digest(&proof["dispatchRecordHash"])?!=hash(record)||record["phase"]!="never_attempted"||record.get("attemptedAt")!=Some(&Value::Null)||record["outcome"]["kind"]!="never_attempted"{return Err("PACKAGE_NEVER_DISPATCH_RECORD")}
+ let text=proof["requestJson"].as_str().filter(|s|s.len()<=8*1024*1024).ok_or("PACKAGE_NEVER_REQUEST")?;
+ let request:Value=serde_json::from_str(text).map_err(|_|"PACKAGE_NEVER_REQUEST")?;
+ if format!("{:x}",Sha256::digest(text.as_bytes()))!=p.request.as_deref().ok_or("PACKAGE_NEVER_REQUEST")?||admission["request_hash"].as_str()!=p.request.as_deref()||request!=admission["spec"]||request["method"]!="POST"||request["endpoint"]!="/orders/multi-leg"||request["body"]["executionMode"]!="allOrNone"||request["body"]["idempotencyKey"].as_str()!=p.key.as_deref()||admission["basket"]["idempotencyKey"].as_str()!=p.key.as_deref(){return Err("PACKAGE_NEVER_REQUEST")}
+ let reserve=&admission["reserve"];let permit=&admission["permit"];let scope=&admission["scope"];
+ if reserve["type"]!="live_package_reserve"||reserve["source"]!="moloch_live_dispatcher"||reserve["packageId"]!=p.id||reserve["proofHash"]!=p.proof||reserve["bankScope"]!=p.scope||reserve["economics"]!=p.economics||hash(&admission["proof"])!=p.proof||admission["proof"]["wireLegs"]!=reserve["legs"]||ms(&reserve["receivedAt"])?!=p.created||ms(&reserve["expiresAt"])?!=p.expires||permit["runId"]!=p.scope["runId"]||permit["intentId"]!=p.id||scope["tournamentId"]!=p.scope["tournamentId"]{return Err("PACKAGE_NEVER_ADMISSION")}
+ let reserved=reserve["legs"].as_array().filter(|xs|xs.len()==p.legs.len()).ok_or("PACKAGE_NEVER_LEGS")?;
+ let wire=request["body"]["legs"].as_array().filter(|xs|xs.len()==p.legs.len()).ok_or("PACKAGE_NEVER_LEGS")?;
+ for((l,r),w)in p.legs.iter().zip(reserved).zip(wire){
+  if r["marketId"]!=l.market||r["exchangeId"]!=l.exchange||r["side"]!=label(l.side)||r["quantity"]!=l.quantity||r["limitPrice"]!=money(l.limit)||r["bookHash"]!=l.book_hash||w["exchangeId"]!=l.exchange||w["side"]!=(if l.side==Side::Yes{"yes"}else{"no"})||w["action"]!="buy"||w["quantity"]!=l.quantity||w["tournamentId"]!=p.scope["tournamentId"]||amount(&w["price"].to_string())?!=l.limit||scope["exchanges"][&l.exchange]!=l.market{return Err("PACKAGE_NEVER_LEGS")}
+ }
+ let binding=&admission["queue_binding"];
+ if admission["queue_scope"].as_str().is_none_or(|s|s.is_empty())||binding["intent"]!=format!("{}:{}",p.scope["runId"].as_str().ok_or("PACKAGE_NEVER_RUN")?,p.id)||binding["key"].as_str()!=p.key.as_deref()||binding["payload_hash"]!=hash(&json!({"scope":scope,"spec":request})){return Err("PACKAGE_NEVER_QUEUE_BINDING")}
+ let outcome=&record["outcome"];exact_keys(outcome,&["kind","packageId","at","requestHash","admissionHash","priorHead"])?;
+ if outcome["packageId"]!=p.id||outcome["requestHash"].as_str()!=p.request.as_deref()||outcome["admissionHash"]!=hash(admission){return Err("PACKAGE_NEVER_FENCE_BINDING")}
+ let row=&proof["dispatchFenceRow"];exact_keys(row,&["schemaVersion","sequence","previous","event","hash"])?;
+ let mut body=row.clone();body.as_object_mut().ok_or("PACKAGE_NEVER_FENCE")?.remove("hash");
+ let sequence=row["sequence"].as_u64().filter(|n|*n>0).ok_or("PACKAGE_NEVER_FENCE_SEQUENCE")?;
+ if row["schemaVersion"]!=1||row["event"]!=*outcome||digest(&row["hash"])?!=hash(&body)||row["previous"]!=outcome["priorHead"]["hash"]||outcome["priorHead"]["sequence"].as_u64().and_then(|n|n.checked_add(1))!=Some(sequence)||digest(&row["previous"]).is_err(){return Err("PACKAGE_NEVER_FENCE")}
+ let head=&proof["dispatchHead"];exact_keys(head,&["sequence","hash","poisoned"])?;
+ let last=proof["journalLastClockMs"].as_i64().ok_or("PACKAGE_NEVER_CLOCK")?;let fenced=ms(&outcome["at"])?;
+ if head["poisoned"]!=false||head["sequence"].as_u64().is_none_or(|n|n<sequence)||digest(&head["hash"]).is_err()||(head["sequence"]==sequence&&head["hash"]!=row["hash"])||proof["journalBytes"].as_u64().is_none_or(|n|n==0)||digest(&proof["journalSha256"]).is_err()||p.attempted_at.is_none_or(|n|fenced<n)||last<fenced||last>at{return Err("PACKAGE_NEVER_HEAD_OR_CLOCK")}
+ Ok(())
 }
 
 // These embedded rows are independently checked by the read-only SDK source
