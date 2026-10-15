@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "sourceCommit": "01ed6ef0",
+  "architecture": "aarch64",
+  "binarySha256": "4fe304b0f4e515f1c89551aaaa8d1016d7223a02a8a5e357cfcaeb38927e6b9e",
+  "financialEngineIdentity": "0321e7458ed45da08bca7b030369d4e86ae2a9c0127b39fa7d4d49d33d5d0562",
+  "runtimeChecks": 189,
+  "unchangedNativeChecks": 111,
+  "unchangedSdkChecks": 150,
+  "logs": {
+    "v22-runtime-tests.log": {
+      "sha256": "97700d6ac98de3d0ee2a466a928146a8477a15f6947e576be4ef5d6c5adffc02",
+      "passed": 189,
+      "failure": false
+    },
+    "v22-runtime-release.log": {
+      "sha256": "290ce38e33515b3bcd944aee05bf04749f52a38c0ec1f68a7f24810df91147a7",
+      "passed": 0,
+      "failure": false
+    }
+  },
+  "sourceSha256": {
+    "moloch/live-runtime/src/worker.rs": "dfb7422e6de9becab8c1d6904e1fa2f91ce358139a680a9aa485b8dde5a1ffe1",
+    "moloch/live-runtime/src/lib.rs": "1fad4870ca6c68243531c5d0f12a9b14295c534f28e06137069520bc9684b7ac",
+    "moloch/live-runtime/src/stream_recovery.rs": "acd10b6a6825eb6f9c64b58b1b73aacad7829d5a0563f377cef6685287c39e26",
+    "moloch/live-runtime/tests/exit_refresh_lifecycle.rs": "3eed742e5296baa855a613fb86366d89ce824fb49daba02bb3c7a13e769c8099",
+    "backend-rust/account-queue/src/v2.rs": "d7efad95d8a6d0733cf86ffe9506adc199e1f6b309b2ace7b9692105d3580776",
+    "backend-rust/transport-service/src/admission_v2_tests.rs": "1512b68d85197c8381f499ba853cbe39b3f485fb5b398d27261a21aabf128a77"
+  },
+  "queueMigrated": false,
+  "deployed": false
+}

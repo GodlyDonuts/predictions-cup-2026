@@ -22,6 +22,8 @@ Protocol/JSON/topic/join rejection or timeout, heartbeat rejection/pending proto
 
 ## Root integration requirements, not implemented here
 
+The pure module above remains free of I/O. Root subsequently implemented the worker requirements below in source `52cbb376` plus `01ed6ef0`, including strict active/manual/global-unknown gates, immediate three-attempt exhaustion, initial durable budget creation, missing-after-use refusal, final replacement health verification and earlier-window propagation into urgent exits. All189 combined ARM64 runtime checks and the locked release pass. Deployment is tracked separately in [the V22 rollout](MOLOCH_V22_RECOVERY_20261015.md).
+
 1. Preserve STOP/control and existing stream failure authority. At a safe worker boundary downcast only the typed stream error and require `is_recoverable`. Uncertain writes, source/protocol/Session/durability failures remain fatal/untyped. Failed replacement mint/connect/JOIN is fatal, not an automatic retry loop. Recurring successfully recovered outages still consume at most three attempts in each rolling10min.
 2. Check every actual attempt is resolved and the real shared queue global-unknown state is explicitly empty. Drop/join the old socket before a replacement; keep exactly one account Transport/limiter and one realtime worker. Reconciliation/account unknowns are not cleared by reconnecting.
 3. Load/validate the existing budget. Wait STOP-responsively until both `next_allowed` and the existing durable auth mint marker's at-least60s boundary. Record and durably persist this attempt BEFORE calling the existing `connect_stream` through the same Transport/read budget. A long Retry-After/activation expiry still applies; this helper does not extend it.

@@ -1,5 +1,11 @@
 # Moloch current production ownership — October 15
 
+## Latest: V21 trading; V22 checked for controlled promotion
+
+At 12:37:05 UTC, V21 PID172804 had a healthy stream, no execution STOP, 162 acknowledged orders and 35 actual fills: 23 new acknowledgments and four new fills since its 12:22:27 launch. Its first complete cycle finished12:28:40 UTC. New trading realized is −3.320000 SUSQies, kept separate from17.990000 inherited gross. Higher activity has not established a profitable strategy.
+
+V22 source `01ed6ef0` passes189 runtime checks and a locked ARM64 release. It adds typed, bounded read-only stream recovery and actual target tape recovery before fresh urgent-exit facts. Same financial identity, risk, attributed bank, queue v1 and original14:44:34.413 UTC entry cutoff; no write retry, queue reset or fourth financial bridge. The live V21 release remains immutable during candidate development. [Checks, recovery limits and rollout](MOLOCH_V22_RECOVERY_20261015.md).
+
 ## Latest: V20 stream stop; V21 repair being checked
 
 V20 reached fresh live progress at 12:11:22 UTC with a healthy stream, 31 actual fills and 139 acknowledged orders. It reconciled and cancelled stale orders, then stopped at 12:12:52 UTC with `LIVE_EXIT_REFRESH_STREAM_FAILED`. The manifest-selected queue has no unknown acceptance, active admission or manual review. The generic error does not establish the exact stream failure cause. V21 adds sanitized out-of-band failure reasons and a bounded64-frame drain within the existing64-slot receiver. All111 native and173 runtime checks plus the locked ARM64 release pass; restart is pending at this checkpoint. [Failure evidence and candidate scope](MOLOCH_V20_ROLLOUT_20261015.md#subsequent-live-failure-and-v21-candidate).
