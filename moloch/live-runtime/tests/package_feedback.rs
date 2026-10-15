@@ -1,6 +1,4 @@
-use moloch_live_runtime::{feedback,package_dispatch};
-#[path="../src/package_not_sent_evidence.rs"]mod package_not_sent_evidence;
-#[path="../src/package_feedback.rs"] mod package_feedback;
+use moloch_live_runtime::{feedback,package_dispatch,package_not_sent_evidence,package_feedback};
 use baal_transport_service::{Scope,Permit,Receipt,TransportError,multi_leg::{self,Basket,Leg,Side,ResponseEvidence,ZeroExecutionReason}};
 use moloch_replay::session::Session;
 use serde_json::{Value,json};
