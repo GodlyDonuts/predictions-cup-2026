@@ -6,6 +6,7 @@ use crate::{Reservation, Result, SCALE, Side, TICK, Wallet, amount, fee, money, 
 use serde_json::{Value, json};
 use sha2::{Digest, Sha256};
 use std::collections::{BTreeMap, BTreeSet};
+use std::sync::Arc;
 fn ns(v: &Value) -> Result<i64> {
     chrono::DateTime::parse_from_rfc3339(v.as_str().ok_or("TIMESTAMP")?)
         .map_err(|_| "TIMESTAMP")?
@@ -391,7 +392,7 @@ impl Order {
 }
 #[derive(Clone)]
 struct Target {
-    book: Book,
+    book: Arc<Book>,
     side: Side,
     buy: bool,
     quantity: u64,
@@ -438,7 +439,7 @@ pub struct Engine {
     inherited: Option<InheritedInventory>,
     policy: Policy,
     pub wallet: Wallet,
-    books: BTreeMap<String, Book>,
+    books: BTreeMap<String, Arc<Book>>,
     orders: Vec<Order>,
     fills: Vec<Value>,
     seen: BTreeMap<String, (String, i64, i128, u64)>,
@@ -1357,9 +1358,9 @@ impl Engine {
                 }
                 self.orders.push(Order {
                     id,
-                    market: t.book.market,
-                    exchange: t.book.exchange,
-                    tournament: t.book.tournament,
+                    market: t.book.market.clone(),
+                    exchange: t.book.exchange.clone(),
+                    tournament: t.book.tournament.clone(),
                     side: t.side,
                     buy: t.buy,
                     quantity: t.quantity,
@@ -1501,7 +1502,7 @@ impl Engine {
                         q.barrier = Some((b.sequence, q.end()))
                     }
                 }
-                self.books.insert(b.exchange.clone(), b);
+                self.books.insert(b.exchange.clone(), Arc::new(b));
             }
             "trade" => {
                 let exchange = id(&e["exchangeId"])?;
@@ -1668,7 +1669,10 @@ impl Engine {
                         return Err("GAP_SCOPE");
                     }
                     if let Some(b) = self.books.get_mut(&ex) {
-                        b.invalid = true
+                        // Transactional Engine/Session clones and desired
+                        // targets may share this immutable snapshot. Invalidate
+                        // only this candidate's owned copy, never another fork.
+                        Arc::make_mut(b).invalid = true
                     }
                     self.count("gaps");
                 }
