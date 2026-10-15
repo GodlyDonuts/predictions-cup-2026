@@ -19,15 +19,20 @@ export function validateRead(input) {
 }
 
 const codes=new Set(['EAI_AGAIN','ENOTFOUND','ECONNRESET','ECONNREFUSED','ETIMEDOUT','EPIPE','ERR_TLS_CERT_ALTNAME_INVALID','CERT_HAS_EXPIRED','UNABLE_TO_VERIFY_LEAF_SIGNATURE','READ_TIMEOUT','READ_BODY_LIMIT','READ_BODY_ABORTED']);
-export function readGet(input,{request=https.request,lookup,timeoutMs=30000,maxBytes=16*1024*1024}={}) {
- const url=validateRead(input),dns=[];
+export function readGet(input,options={}) {return httpsOnce(validateRead(input),input.headers,options);}
+export function httpsOnce(url,headers,{method='GET',request=https.request,lookup,timeoutMs=30000,maxBytes=16*1024*1024}={}) {
+ if(url.protocol!=='https:'||url.hostname!=='sig.thesuper.market'||url.port||url.username||url.password||url.hash)throw Error('HTTPS_DESTINATION_INVALID');
+ if(method==='GET')validateRead({endpoint:url.pathname.replace(/^\/api\/v1/,'')+url.search,headers});
+ else if(method!=='POST'||url.pathname!=='/api/v1/realtime/token'||url.search)throw Error('HTTPS_METHOD_INVALID');
+ if(!headers||Object.keys(headers).length!==1||typeof headers.Authorization!=='string'||!/^Bearer [^\s\r\n]+$/.test(headers.Authorization))throw Error('HTTPS_AUTH_INVALID');
+ const dns=[];
  return new Promise(resolve=>{
   let req,timer,done=false;
   const finish=packet=>{if(done)return;done=true;clearTimeout(timer);resolve({...packet,dns});};
   const failure=error=>finish({status:0,content:null,retryAfterSeconds:60,transport:{category:['EAI_AGAIN','ENOTFOUND'].includes(error?.code)?'transport_dns':'transport_network',typed:true,transportCode:codes.has(error?.code)?error.code:'OTHER'}});
   timer=setTimeout(()=>{failure({code:'READ_TIMEOUT'});req?.destroy();},timeoutMs);
   try{
-   req=request(url,{method:'GET',headers:{Authorization:input.headers.Authorization},lookup:lookup??boundedLookup(e=>dns.push(e)),rejectUnauthorized:true},res=>{
+   req=request(url,{method,headers:{Authorization:headers.Authorization},lookup:lookup??boundedLookup(e=>dns.push(e)),rejectUnauthorized:true},res=>{
     let size=0;const chunks=[];
     res.on('data',chunk=>{if(done)return;size+=chunk.length;if(size>maxBytes){failure({code:'READ_BODY_LIMIT'});res.destroy();req.destroy();return;}chunks.push(chunk);});
     res.on('error',failure);res.on('aborted',()=>failure({code:'READ_BODY_ABORTED'}));

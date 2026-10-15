@@ -25,17 +25,18 @@ $ErrorActionPreference='Stop'
 Import-Module (Join-Path $PSScriptRoot 'read-failure.psm1') -Force
 Import-Module (Join-Path $PSScriptRoot 'exit-book-priority.psm1') -Force
 function Invoke-MolochNodeRead {
-  param([string]$Endpoint,$Headers)
+  param([string]$Endpoint,$Headers,[ValidateSet('read-get.mjs','auth-token.mjs')][string]$ScriptName='read-get.mjs')
   $taskReadInfo=[Diagnostics.ProcessStartInfo]::new()
   $taskReadInfo.FileName=(Get-Command node).Source
-  $taskReadInfo.ArgumentList.Add((Join-Path $PSScriptRoot 'realtime/read-get.mjs'))
+  $taskReadInfo.ArgumentList.Add((Join-Path $PSScriptRoot ('realtime/'+$ScriptName)))
   $taskReadInfo.UseShellExecute=$false;$taskReadInfo.CreateNoWindow=$true
   $taskReadInfo.RedirectStandardInput=$true;$taskReadInfo.RedirectStandardOutput=$true;$taskReadInfo.RedirectStandardError=$true
   $taskReader=[Diagnostics.Process]::new();$taskReader.StartInfo=$taskReadInfo
   try {
     if(-not $taskReader.Start()){throw 'NODE_READ_START_FAILED'}
     $taskReadOut=$taskReader.StandardOutput.ReadToEndAsync();$taskReadErr=$taskReader.StandardError.ReadToEndAsync()
-    $taskReader.StandardInput.WriteLine((@{endpoint=$Endpoint;headers=$Headers;method='GET'} | ConvertTo-Json -Compress))
+    $taskRequestInput=if($ScriptName -eq 'auth-token.mjs'){@{headers=$Headers}}else{@{endpoint=$Endpoint;headers=$Headers;method='GET'}}
+    $taskReader.StandardInput.WriteLine(($taskRequestInput | ConvertTo-Json -Compress));$taskRequestInput=$null
     $taskReader.StandardInput.Close()
     if(-not $taskReader.WaitForExit(35000)){$taskReader.Kill();$taskReader.WaitForExit();throw 'NODE_READ_TIMEOUT'}
     if($taskReader.ExitCode -ne 0){throw 'NODE_READ_FAILED'}
@@ -188,7 +189,11 @@ try {
     $taskMethod=if($taskRequest.method){$taskRequest.method}else{'Get'}
     $taskNodePacket=$null
     try {
-      if($taskRequest.dnsRetry){
+      if($taskRequest.kind -eq 'realtime'){
+        $taskNodePacket=Invoke-MolochNodeRead -Headers $taskHeaders -ScriptName 'auth-token.mjs'
+        if($taskNodePacket.status -ne 200){throw 'NODE_AUTH_REQUEST_FAILED'}
+        $taskResponse=[pscustomobject]@{StatusCode=200;Content=$taskNodePacket.content}
+      }elseif($taskRequest.dnsRetry){
         if($taskMethod -ne 'Get'){throw 'NODE_RECOVERY_GET_ONLY'}
         $taskNodePacket=Invoke-MolochNodeRead -Endpoint $taskRequest.endpoint -Headers $taskHeaders
         if($taskNodePacket.status -ne 200){throw 'NODE_RECOVERY_REQUEST_FAILED'}
@@ -241,7 +246,7 @@ try {
       if($UniversePairsFile){$taskInit.pairs=$taskUniverse;$taskInit.aggregate=$true}
       $taskStream.StandardInput.WriteLine(($taskInit | ConvertTo-Json -Depth 20 -Compress));$taskStream.StandardInput.Flush()
       # This authentication response is never added to receipts, stdout, files or environment variables.
-      $taskInit=$null;$taskData=$null;$taskResponse=$null
+      $taskInit=$null;$taskData=$null;$taskResponse=$null;$taskNodePacket=$null
       Start-Sleep -Seconds 12
       continue
     }
