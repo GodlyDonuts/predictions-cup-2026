@@ -7,7 +7,7 @@ use moloch_replay::{money,session::Session};
 use serde_json::{Value,json};
 use sha2::{Digest,Sha256};
 use std::collections::{BTreeMap,BTreeSet};
-fn hash(v:&Value)->Result<String>{Ok(format!("{:x}",Sha256::digest(serde_json::to_vec(v)?)))}
+fn hash<T:serde::Serialize>(v:&T)->Result<String>{Ok(format!("{:x}",Sha256::digest(serde_json::to_vec(v)?)))}
 fn need(ok:bool,why:&'static str)->Result<()>{if ok{Ok(())}else{Err(why.into())}}
 fn levels(raw:&Value,key:&str,ascending:bool)->Result<Vec<Level>>{
  let rows=raw[key].as_array().filter(|a|!a.is_empty()&&a.len()<=200).ok_or("PACKAGE_BOOK_DEPTH")?;
@@ -45,7 +45,7 @@ impl Admission{
  pub fn certificate_sha256(&self)->&str{&self.certificate}
  /// V1 keeps its exact original receipt contract. V2 may refresh transport
  /// clocks, but every reviewed rule-body field and exact endpoint stay pinned.
- pub(crate) fn validate_physical_rule(&self,exchange:&str,r:&Receipt)->Result<()>{
+ pub fn validate_physical_rule(&self,exchange:&str,r:&Receipt)->Result<()>{
   let b=self.rule_bindings.get(exchange).ok_or("PACKAGE_RULE_BINDING")?;
   need(r.status==200&&r.endpoint==b["endpoint"]&&self.proof["ruleBindings"][exchange]==*b,"PACKAGE_RULE_BINDING")?;
   match b["kind"].as_str(){Some("exact_receipt_v1")=>need(hash(r)?==b["sha256"],"PACKAGE_RULE_RECEIPT_CHANGED"),Some("complete_rule_body_v2")=>need(hash(&r.data)?==b["sha256"],"PACKAGE_RULE_BODY_CHANGED"),_=>Err("PACKAGE_RULE_BINDING".into())}
