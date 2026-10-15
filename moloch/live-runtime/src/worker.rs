@@ -2,6 +2,7 @@ use baal_transport_service::{self as api,Authority,Config,Endpoint,Order,Permit,
 use moloch_live_runtime::{authority::{Activation,ProductionAuthority,SharedAuthority,SnapshotSet},dispatch::DispatchLog,feedback::{self,Result}};
 use moloch_replay::{session::{Session,ExclusiveLock,atomic_json},source::RestSource,money};
 use moloch_replay::realtime::{Auth,Incoming,Realtime};
+use moloch_live_runtime::breadth::Recorder;
 use serde::{Serialize,Deserialize};
 use serde_json::{Value,json};
 use sha2::{Digest,Sha256};
@@ -110,10 +111,10 @@ fn connect_stream(t:&mut Transport,c:&Control,bank:&mut Session,source:&mut Rest
   _=>return Err("LIVE_STREAM_JOIN_FAILED".into())
  }Ok(stream)
 }
-fn drain_stream(stream:&Realtime,bank:&mut Session,source:&mut RestSource)->Result<()>{
+fn drain_stream(stream:&Realtime,bank:&mut Session,source:&mut RestSource,breadth:&mut Option<Recorder>)->Result<()>{
  if !stream.healthy(){return Err("LIVE_STREAM_FAILED".into())}
  while let Ok(input)=stream.incoming.try_recv(){match input{
-  Incoming::Broadcast{event,payload,received_at}=>{for e in source.broadcast(&event,&payload,&received_at)?{accept(bank,&e)?}},
+  Incoming::Broadcast{event,payload,received_at}=>{if let Some(recorder)=breadth{recorder.observe(&event,&payload,&received_at)}for e in source.broadcast(&event,&payload,&received_at)?{accept(bank,&e)?}},
   Incoming::Failed(code)=>return Err(code.into()),
   Incoming::Joined{..}=>return Err("LIVE_STREAM_UNEXPECTED_REJOIN".into())
  }}
@@ -150,6 +151,9 @@ pub fn main()->Result<()>{
   let start=now();let mut source_state=RestSource::new(&pairs,&c.scope.tournament_id,&iso(start))?;source_state.seed_trade_facts(bank.source_facts())?;
   let mut stream=Some(connect_stream(&mut t,&c,&mut bank,&mut source_state)?);
   authority.bind_stream(stream.as_ref().unwrap().failure_signal(),stream.as_ref().unwrap().deadline_ms);
+  let breadth_path=c.root.join(format!("breadth-{}-{}.jsonl",std::process::id(),now()));
+  let mut breadth=Recorder::new(&breadth_path).ok();
+  if let Some(r)=&mut breadth{r.observe("stream_reset",&json!({"localBoundary":true,"reason":"confirmed_subscription"}),&iso(now()))}
   let mut windows:std::collections::BTreeMap<String,u64>=c.scope.exchanges.keys().map(|e|(e.clone(),start.saturating_sub(60000))).collect();
   let mut cycles=0u64;
   loop{
@@ -157,14 +161,15 @@ pub fn main()->Result<()>{
    if now()>=stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?.deadline_ms{
     drop(stream.take());stream=Some(connect_stream(&mut t,&c,&mut bank,&mut source_state)?);
     authority.bind_stream(stream.as_ref().unwrap().failure_signal(),stream.as_ref().unwrap().deadline_ms);
+    if let Some(r)=&mut breadth{r.observe("stream_reset",&json!({"localBoundary":true,"reason":"confirmed_resubscription"}),&iso(now()))}
     for from in windows.values_mut(){*from=now().saturating_sub(60000)}
    }
-   drain_stream(stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?,&mut bank,&mut source_state)?;
+   drain_stream(stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?,&mut bank,&mut source_state,&mut breadth)?;
    reconcile(&mut t,&c,&mut bank,&mut log)?;
    accept(&mut bank,&json!({"type":"tick","receivedAt":iso(now())}))?;
-   for (ex,market) in &c.scope.exchanges{let from=windows[ex];let next=source(&mut t,&c,&mut bank,&mut source_state,ex,market,from)?;windows.insert(ex.clone(),next);drain_stream(stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?,&mut bank,&mut source_state)?;dispatch(&mut t,&c,&mut bank,&mut log,&authority,&mut source_state)?;}
+   for (ex,market) in &c.scope.exchanges{let from=windows[ex];let next=source(&mut t,&c,&mut bank,&mut source_state,ex,market,from)?;windows.insert(ex.clone(),next);drain_stream(stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?,&mut bank,&mut source_state,&mut breadth)?;dispatch(&mut t,&c,&mut bank,&mut log,&authority,&mut source_state)?;}
    cycles+=1;
-   atomic_json(&c.root.join("status.json"),&json!({"at":iso(now()),"pid":std::process::id(),"mode":"actual-contest-trading","runId":c.activation.run_id,"cycles":cycles,"realtimeHealthy":stream.as_ref().is_some_and(|s|s.healthy()),"sourceScopes":source_state.scopes(),"report":bank.engine().report()?,"queue":t.admission_state()?,"actualOrders":log.acknowledgments.len(),"terminalOrders":log.closed.len(),"entryUntil":iso(c.activation.entry_until_ms),"profitabilityEstablished":false}))?;
+   atomic_json(&c.root.join("status.json"),&json!({"at":iso(now()),"pid":std::process::id(),"mode":"actual-contest-trading","runId":c.activation.run_id,"cycles":cycles,"realtimeHealthy":stream.as_ref().is_some_and(|s|s.healthy()),"sourceScopes":source_state.scopes(),"breadthCapture":{"path":breadth_path,"state":breadth.as_ref().map(Recorder::status)},"report":bank.engine().report()?,"queue":t.admission_state()?,"actualOrders":log.acknowledgments.len(),"terminalOrders":log.closed.len(),"entryUntil":iso(c.activation.entry_until_ms),"profitabilityEstablished":false}))?;
    if cycles%20==0{t.compact()?;}
    std::thread::sleep(Duration::from_millis(100));
   }

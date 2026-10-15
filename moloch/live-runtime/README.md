@@ -63,6 +63,17 @@ networkRequests field describes its network-free calculations; use the
 transport queue, private receipts and dispatch journal for network activity.
 Correctness tests and active connectivity do not establish profitable trading.
 
+Market-wide broadcast frames are also written to a separate private hash chain,
+bounded to 128 MiB per process. It records no authentication messages and makes
+no extra API requests. A recording error disables that diagnostic path without
+changing order or inventory management. Subscription boundaries are explicit.
+The moloch-breadth executable verifies an immutable journal prefix and ranks
+fresh spreads and recent two-sided relative flow using original nanosecond
+clocks, prior received books and stable price regimes. Its output is discovery
+evidence, not executable profit, queue priority or authorization to trade a
+new market. A proposed scope still needs fresh official reconciliation and a
+separately frozen forward comparison.
+
 The service runs an immutable versioned binary. Future work is built separately.
 Do not hot-replace an executable, mutate the funded policy, reuse a paper bank,
 reset an active bank, or extend the entry deadline through an ordinary restart.
