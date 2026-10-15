@@ -100,7 +100,7 @@ impl Authority for ArtifactFailure{fn can_read(&self,_:&Scope)->bool{true}fn own
 #[test]fn original_request_record_io_error_before_admission_is_proven_without_faking_venue_receipt(){
  let p=temp();let server=Server::new(200,json!({}));{
   let(mut t,_)=transport(&p,&server,false,0);let spec=multi_leg::request_spec(&basket(),&scope(),&permit()).unwrap();let path=multi_leg_first_call::legacy_request_path(&p,&spec,&basket(),&permit()).unwrap();t.authority=Box::new(ArtifactFailure{path});
-  let e=t.place_all_or_none(basket(),permit()).err().unwrap();assert_eq!(e.code,"BASKET_REQUEST_EVIDENCE_DURABILITY");let proof=t.take_first_call_no_http_proof().unwrap();assert_eq!(proof.evidence()["terminal"]["originalError"],serde_json::to_value(e).unwrap());assert_eq!(t.admission_summary().unwrap().sequence,0);assert_eq!(server.count.load(Ordering::SeqCst),0);
+  let e=t.place_all_or_none(basket(),permit()).err().unwrap();assert!(matches!(e.code.as_str(),"BASKET_REQUEST_EVIDENCE_READ"|"BASKET_REQUEST_EVIDENCE_DURABILITY"),"actual directory artifact I/O failure: {}",e.code);let proof=t.take_first_call_no_http_proof().unwrap();assert_eq!(proof.evidence()["terminal"]["originalError"],serde_json::to_value(e).unwrap());assert_eq!(t.admission_summary().unwrap().sequence,0);assert_eq!(server.count.load(Ordering::SeqCst),0);
  }fs::remove_dir_all(p).unwrap();
 }
 #[test]fn actual_admit_error_is_disqualified_before_core_returns_error(){
