@@ -4,13 +4,13 @@ import {pairedClock} from './paired-clock.mjs';import {payloadHash} from '../exe
 import {streamActivity,selectActivePairs} from './research/stream-activity.mjs';
 const [parentDirectory,sourceParent,universeFile,warmNumber,studyNumber,selectionMethod='recentTrades',comparisonMode='entryInside']=process.argv.slice(2);
 if(!['recentTrades','balancedFlow'].includes(selectionMethod))throw Error('FAST_SELECTION_METHOD');
-if(!['entryInside','queueFill'].includes(comparisonMode))throw Error('FAST_COMPARISON_MODE');
+if(!['entryInside','queueFill','entryBackoff'].includes(comparisonMode))throw Error('FAST_COMPARISON_MODE');
 if(!studyNumber||![warmNumber,studyNumber].every(n=>/^\d+$/.test(n)))throw Error('Usage: terminal-bank source-parent universe warm-number study-number');
 const base='runtime/moloch/',warm=path.resolve(base+`live-sig-20261014-${warmNumber}`),study=path.resolve(base+`live-sig-20261014-${studyNumber}`);
-const parent=completedTail(parentDirectory),exit={inventoryExitMode:'fixedGain',inventoryMinimumGain:'0.005000',inventoryTakerAfterMs:0,maximumInventoryAgeMs:1800000};
+const parent=completedTail(parentDirectory),exit={inventoryExitMode:'fixedGain',inventoryMinimumGain:'0.005000',inventoryTakerAfterMs:0,maximumInventoryAgeMs:comparisonMode==='entryBackoff'?60000:1800000};
 // Verify wealth before observation; do not spend the fresh selection's lifetime
 // replaying the parent again. Its exact-byte proof is rechecked at each fork.
-for(const entryPolicy of comparisonMode==='queueFill'?[{fillModel:'strictThrough'},{fillModel:'conditionalFifo',touchAttributionBps:5000}]:[{insideTicks:0},{insideTicks:1}])flatEntryTransition(structuredClone(parent.snapshot.state),true,exit,entryPolicy);
+for(const entryPolicy of comparisonMode==='queueFill'?[{fillModel:'strictThrough'},{fillModel:'conditionalFifo',touchAttributionBps:5000}]:comparisonMode==='entryBackoff'?[{insideTicks:0,entryBackoffTicks:0},{insideTicks:0,entryBackoffTicks:4}]:[{insideTicks:0},{insideTicks:1}])flatEntryTransition(structuredClone(parent.snapshot.state),true,exit,entryPolicy);
 await live({marketId:'233',exchangeId:'922',outputDirectory:warm,cycles:4,resumeDirectory:sourceParent,pairsFile:base+'pairs-20261014-65.json',realtime:true,drain:true,policyFile:base+'policy-20261014-65.json',universeFile,dnsReadRecovery:true});
 const stream=path.join(warm,'capture','stream'),stats=JSON.parse(fs.readFileSync(path.join(stream,'stats.json'))),manifest=JSON.parse(fs.readFileSync(path.join(stream,'manifest.json')));
 if(stats.status!=='completed'||stats.failure)throw Error('FAST_SELECTION_FAILED_OBSERVATION');
@@ -21,7 +21,7 @@ const minimumSpreadTicks=comparisonMode==='entryInside'&&selectionMethod==='bala
 reuseCompletedTail(parent);
 const pairs=selected.map(({marketId,exchangeId})=>({marketId,exchangeId})),ids=pairs.map(p=>p.exchangeId),dirs=['control','candidate'].map(side=>path.resolve(base+`fast-${side}-20261014-${studyNumber}`));
 const write=(file,value)=>fs.writeFileSync(file,JSON.stringify(value,null,2)+'\n',{flag:'wx'}),pairsFile=base+`pairs-20261014-${studyNumber}.json`,policyFile=base+`policy-20261014-${studyNumber}.json`,exitFile=base+`exit-20261014-${studyNumber}.json`,entryFile=base+`entry-20261014-${studyNumber}.json`,controlEntryFile=base+`control-entry-20261014-${studyNumber}.json`;
-const entryStopAt=new Date(Date.now()+240000).toISOString(),entryPolicies=comparisonMode==='queueFill'?[{entryStopAt,fillModel:'strictThrough'},{entryStopAt,fillModel:'conditionalFifo',touchAttributionBps:5000}]:[{entryStopAt},{entryStopAt,insideTicks:1}];
+const entryStopAt=new Date(Date.now()+240000).toISOString(),entryPolicies=comparisonMode==='queueFill'?[{entryStopAt,fillModel:'strictThrough'},{entryStopAt,fillModel:'conditionalFifo',touchAttributionBps:5000}]:comparisonMode==='entryBackoff'?[{entryStopAt,insideTicks:0,entryBackoffTicks:0},{entryStopAt,insideTicks:0,entryBackoffTicks:4}]:[{entryStopAt},{entryStopAt,insideTicks:1}];
 write(pairsFile,pairs);write(policyFile,{entryExchangeIds:ids});write(exitFile,exit);write(entryFile,entryPolicies[1]);write(controlEntryFile,entryPolicies[0]);
 const states=[0,1].map(()=>structuredClone(parent.snapshot.state));for(let i=0;i<2;i++){entryPolicyTransition(states[i],ids);flatEntryTransition(states[i],true,exit,entryPolicies[i]);}
 write(`data/moloch-fast-registration-20261014-${studyNumber}.json`,{schemaVersion:1,registeredAt:new Date().toISOString(),parent:parent.directory,parentSnapshotHash:parent.snapshot.hash,source:study,pairs,cycles:15,comparisonMode,entryStopAt,controlEntryPolicyFile:path.resolve(controlEntryFile),controlPolicy:states[0].policy,candidatePolicy:states[1].policy,controlPolicyHash:states[0].policyHash,candidatePolicyHash:states[1].policyHash,selectionMethod,selectionConstraints:{minimumRecentTrades:2,minimumSpreadTicks,bothRelativeSidesRequired:selectionMethod==='balancedFlow',tie:'exchange-ID'},selectionClock:stats.at,selectionSourceSequence:sequence,selectionSourcePrevious:previous,selected,newAccountCapital:'0',contestOrders:0,profitabilityEstablished:false});

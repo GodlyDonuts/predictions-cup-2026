@@ -19,3 +19,9 @@ test('fill-assumption experiment requires a flat bank and preserves participatio
  const s=createMoloch({entriesEnabled:false}),cash=s.cash,participation=s.policy.participationBps;flatEntryTransition(s,true,null,{fillModel:'conditionalFifo',touchAttributionBps:5000});assert.equal(s.cash,cash);assert.equal(s.policy.participationBps,participation);assert.equal(s.policy.fillModel,'conditionalFifo');assert.equal(s.policy.touchAttributionBps,5000);
  assert.throws(()=>flatEntryTransition(s,true,null,{fillModel:'invented'}));assert.throws(()=>flatEntryTransition(s,true,null,{participationBps:10000}),/ENTRY_POLICY_SCOPE/);
 });
+test('flat price-backoff experiment preserves wealth and cannot combine with inside quoting',()=>{
+ const s=createMoloch({entriesEnabled:false}),clean=({policy,policyHash,...f})=>f,before=payloadHash(clean(s)),limits=[s.policy.quantity,s.policy.maximumCommitted,s.policy.participationBps];
+ flatEntryTransition(s,true,{maximumInventoryAgeMs:60000},{insideTicks:0,entryBackoffTicks:4});
+ assert.equal(payloadHash(clean(s)),before);assert.deepEqual([s.policy.quantity,s.policy.maximumCommitted,s.policy.participationBps],limits);assert.equal(s.policy.entryBackoffTicks,4);
+ assert.throws(()=>flatEntryTransition(s,true,null,{insideTicks:1,entryBackoffTicks:4}),/ENTRY_BACKOFF/);
+});

@@ -1,0 +1,146 @@
+{
+  "schemaVersion": 1,
+  "mode": "price",
+  "at": "2026-10-15T01:41:23.595Z",
+  "parentSnapshotHash": "1ec4de396a7ad7fdcf9e6ba287f856c5b70da176c6add18ee63490fa681a7a59",
+  "recordedSnapshotHash": "31c5ba500718ac658e27c9055ca93770a94bd4492031ece933877b0eb73b859f",
+  "sourceSha256": "4cd253f83e1080ce30c4ac6a93571fe0d1607ab3418ef31980af907bae1183a4",
+  "eventCount": 4204,
+  "baselineFullStateParity": true,
+  "inheritedRealized": "-1.000000",
+  "initialCash": "99999.000000",
+  "results": [
+    {
+      "overrides": {},
+      "cash": "99252.600000",
+      "realized": "-1.000000",
+      "ownedCost": "746.400000",
+      "unresolved": 1,
+      "newFills": 47,
+      "closed": false,
+      "lastFresh": {
+        "at": "2026-10-15T01:29:15.915Z",
+        "pnl": "-117.815000"
+      },
+      "worstFresh": {
+        "at": "2026-10-15T01:21:01.889Z",
+        "pnl": "-299.560000"
+      },
+      "maximumAgeExits": 0
+    },
+    {
+      "overrides": {
+        "entryBackoffTicks": 0,
+        "maximumInventoryAgeMs": 60000
+      },
+      "cash": "99899.480000",
+      "realized": "-100.520000",
+      "ownedCost": "0.000000",
+      "unresolved": 0,
+      "newFills": 48,
+      "closed": true,
+      "lastFresh": {
+        "at": "2026-10-15T01:29:15.915Z",
+        "pnl": "-100.520000"
+      },
+      "worstFresh": {
+        "at": "2026-10-15T01:21:01.889Z",
+        "pnl": "-299.560000"
+      },
+      "maximumAgeExits": 1
+    },
+    {
+      "overrides": {
+        "entryBackoffTicks": 1,
+        "maximumInventoryAgeMs": 60000
+      },
+      "cash": "99925.395000",
+      "realized": "-74.605000",
+      "ownedCost": "0.000000",
+      "unresolved": 0,
+      "newFills": 44,
+      "closed": true,
+      "lastFresh": {
+        "at": "2026-10-15T01:29:15.915Z",
+        "pnl": "-74.605000"
+      },
+      "worstFresh": {
+        "at": "2026-10-15T01:21:01.889Z",
+        "pnl": "-270.885000"
+      },
+      "maximumAgeExits": 1
+    },
+    {
+      "overrides": {
+        "entryBackoffTicks": 2,
+        "maximumInventoryAgeMs": 60000
+      },
+      "cash": "99963.560000",
+      "realized": "-36.440000",
+      "ownedCost": "0.000000",
+      "unresolved": 0,
+      "newFills": 38,
+      "closed": true,
+      "lastFresh": {
+        "at": "2026-10-15T01:29:15.915Z",
+        "pnl": "-36.440000"
+      },
+      "worstFresh": {
+        "at": "2026-10-15T01:21:01.889Z",
+        "pnl": "-178.200000"
+      },
+      "maximumAgeExits": 1
+    },
+    {
+      "overrides": {
+        "entryBackoffTicks": 3,
+        "maximumInventoryAgeMs": 60000
+      },
+      "cash": "99987.090000",
+      "realized": "-12.910000",
+      "ownedCost": "0.000000",
+      "unresolved": 0,
+      "newFills": 28,
+      "closed": true,
+      "lastFresh": {
+        "at": "2026-10-15T01:29:15.915Z",
+        "pnl": "-12.910000"
+      },
+      "worstFresh": {
+        "at": "2026-10-15T01:20:59.448Z",
+        "pnl": "-108.640000"
+      },
+      "maximumAgeExits": 1
+    },
+    {
+      "overrides": {
+        "entryBackoffTicks": 4,
+        "maximumInventoryAgeMs": 60000
+      },
+      "cash": "99999.025000",
+      "realized": "-0.975000",
+      "ownedCost": "0.000000",
+      "unresolved": 0,
+      "newFills": 24,
+      "closed": true,
+      "lastFresh": {
+        "at": "2026-10-15T01:29:15.915Z",
+        "pnl": "-0.975000"
+      },
+      "worstFresh": {
+        "at": "2026-10-15T01:20:59.448Z",
+        "pnl": "-79.320000"
+      },
+      "maximumAgeExits": 1
+    }
+  ],
+  "newAccountCapital": "0",
+  "contestOrders": 0,
+  "profitabilityEstablished": false,
+  "limitations": [
+    "Retrospective policy intervention on an already inspected period, not a new independent holdout.",
+    "Same initial wallet, execution clocks, participation, entry deadline, funding, latency and cancel coverage retained for every case.",
+    "Public depth and trade-through fills are counterfactual; an exit remains conditional on later full quantity depth.",
+    "Open results remain censored; reducing inventory age does not by itself establish positive expected return."
+  ]
+}
