@@ -38,8 +38,9 @@ fn blocked(a:&Analysis,code:&str){assert_eq!(a.public.blocked_reason_counts.get(
 struct AdmissionBank{bank:moloch_replay::session::Session,activation:moloch_live_runtime::authority::Activation,path:PathBuf}
 impl Drop for AdmissionBank{fn drop(&mut self){let _=std::fs::remove_dir_all(&self.path);}}
 fn admission_bank(f:&Fixture)->AdmissionBank{admission_bank_mode(f,false)}
+static NEXT_BANK:std::sync::atomic::AtomicU64=std::sync::atomic::AtomicU64::new(0);
 fn admission_bank_mode(f:&Fixture,quoted:bool)->AdmissionBank{
- let path=std::env::temp_dir().join(format!("package-admission-{}-{}",std::process::id(),std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_nanos()));
+ let path=std::env::temp_dir().join(format!("package-admission-{}-{}-{}",std::process::id(),std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_nanos(),NEXT_BANK.fetch_add(1,std::sync::atomic::Ordering::Relaxed)));
  let end=now()+60_000;let until=chrono::DateTime::from_timestamp_millis(end as i64).unwrap().to_rfc3339_opts(chrono::SecondsFormat::Millis,true);
  let policy=json!({"initialCash":"1000.000000","maximumCommitted":"1000.000000","maximumMarketCost":"100.000000","quantity":100,"maximumMarkets":3,"minimumSpreadTicks":if quoted{2}else{200},"entryStopAt":until});
  let seed=json!({"runId":"package-fixture","availableCash":"1000.000000","accountSnapshotHash":"a".repeat(64),"observedAt":AT});

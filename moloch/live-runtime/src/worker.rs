@@ -12,7 +12,7 @@ use sha2::{Digest,Sha256};
 use std::{fs,path::{Path,PathBuf},sync::Arc,time::{SystemTime,UNIX_EPOCH,Duration}};
 #[derive(Clone,Serialize,Deserialize)]
 #[serde(rename_all="camelCase",deny_unknown_fields)]
-struct Control{#[serde(default)]collateral_accounting:bool,#[serde(default)]execution_model:Option<moloch_live_runtime::execution_edge::Config>,#[serde(default)]packages:Option<moloch_live_runtime::package_settings::Settings>,#[serde(default)]daily_entry_windows:Option<moloch_live_runtime::daily_windows::DailyEntryWindows>,activation:Activation,scope:Scope,policy:Value,root:PathBuf,credentials:PathBuf,owner_lock:PathBuf,account_scope:String,#[serde(default)]all_markets:bool,#[serde(default="default_bank")]bank_name:String,#[serde(default)]predecessor_bank:Option<String>,#[serde(default)]manage_existing_positions:bool}
+struct Control{#[serde(default)]package_allocation:Option<moloch_live_runtime::package_allocation::Settings>,#[serde(default)]collateral_accounting:bool,#[serde(default)]execution_model:Option<moloch_live_runtime::execution_edge::Config>,#[serde(default)]packages:Option<moloch_live_runtime::package_settings::Settings>,#[serde(default)]daily_entry_windows:Option<moloch_live_runtime::daily_windows::DailyEntryWindows>,activation:Activation,scope:Scope,policy:Value,root:PathBuf,credentials:PathBuf,owner_lock:PathBuf,account_scope:String,#[serde(default)]all_markets:bool,#[serde(default="default_bank")]bank_name:String,#[serde(default)]predecessor_bank:Option<String>,#[serde(default)]manage_existing_positions:bool}
 fn default_bank()->String{"bank".into()}
 const MAX_REALTIME_FRAMES_PER_DRAIN:usize=64;
 const RELATIONSHIP_CENSUS_REFRESH_MS:u64=300_000;
@@ -198,10 +198,56 @@ fn ordinary_liability_due(bank:&Session,log:&DispatchLog,at:u64)->Result<bool>{
   if q["action"]=="sell"&&q["inventoryExitReason"]=="maximumAge"&&log.never_attempted(id)&&expires>at&&!cancel_due{return Ok(true)}
  }Ok(false)
 }
+fn allocation_budget(t:&Transport,c:&Control,bank:&Session,cash:&Receipt)->Result<moloch_live_runtime::package_allocation::Budget>{
+ let state=t.package_queue_quiet()?;let at=now();
+ if state.state.last_clock>at||state.state.writes.iter().any(|v|*v>at){return Err("LIVE_ALLOCATION_QUEUE_CLOCK".into())}
+ let cap=c.policy["writesPerMinute"].as_u64().filter(|v|(1..=24).contains(v)).ok_or("LIVE_ALLOCATION_WRITE_CAP")?;
+ let used=state.state.writes.iter().filter(|v|at.saturating_sub(**v)<=60_000).count() as u64;
+ let available=if state.state.cooldown>at{0}else{cap.saturating_sub(used)};
+ moloch_live_runtime::package_allocation::Budget::from_receipt(bank,&c.activation,cash,available as u32,at)
+}
+fn package_component_busy(bank:&Session,ordinary:&DispatchLog,exchanges:&std::collections::BTreeSet<String>)->bool{
+ bank.engine().order_records().iter().any(|q|q["exchangeId"].as_str().is_some_and(|e|exchanges.contains(e))&&(ordinary.acknowledgments.contains_key(&q["id"].as_u64().unwrap_or(0))&&!ordinary.closed.contains(&q["id"].as_u64().unwrap_or(0))||q["retired"]==false&&!bank.engine().is_package_order(q["id"].as_u64().unwrap_or(0))&&!ordinary.never_attempted(q["id"].as_u64().unwrap_or(0))))
+}
+fn allocation_certificate(t:&mut Transport,c:&Control,bank:&Session,ordinary:&DispatchLog,authority:&ProductionAuthority,census:&moloch_live_runtime::relationship_census::Census,canonical:&Receipt,bundle:&moloch_live_runtime::package_settings::Bundle,approved:&[&moloch_live_runtime::relationship_strategy::SettlementCertificate],start:usize,config:&moloch_live_runtime::package_allocation::Settings,fairness:&mut moloch_live_runtime::package_allocation::Fairness)->Result<Option<usize>>{
+ use moloch_live_runtime::{package_allocation as allocation,package_portfolio,relationship_strategy::{self,Certificates}};
+ config.validate()?;let at=now();let mut reviewed=Vec::new();
+ for n in 0..approved.len().min(32){let index=(start+n)%approved.len();let cert=approved[index];let digest=relationship_strategy::certificate_sha256(cert)?;if config.costs_for(&digest,at).is_some(){reviewed.push((index,digest));}}
+ if reviewed.is_empty(){atomic_json(&c.root.join("package-allocation.json"),&json!({"at":iso(at),"state":"no_current_reviewed_cost_policy","executionAuthority":false}))?;return Ok(None)}
+ let cash=request(t,&c.root,Endpoint::Account)?;let budget=match allocation_budget(t,c,bank,&cash){Ok(v)=>v,Err(e)=>{atomic_json(&c.root.join("package-allocation.json"),&json!({"at":iso(now()),"state":"budget_unavailable","reason":e.to_string(),"executionAuthority":false}))?;return Ok(None)}};let settings=c.packages.as_ref().ok_or("LIVE_ALLOCATION_PACKAGE_SETTINGS")?;
+ let mut hints=Vec::new();let mut fallback=None;let mut deferred=std::collections::BTreeMap::new();
+ for(index,digest)in &reviewed{
+  let cert=approved[*index];let exchanges=cert.contracts.iter().map(|v|v.exchange_id.clone()).collect();
+  if package_component_busy(bank,ordinary,&exchanges){deferred.insert(digest.clone(),"existing_physical_component_liability".to_string());continue}
+  let Some(costs)=config.costs_for(digest,now())else{continue};if fallback.is_none(){fallback=Some(*index)}
+  let policy=settings.policy(&c.activation,now(),cert.contracts.len())?;let certs=Certificates{values:std::slice::from_ref(cert),trusted_sha256:&settings.trusted_certificate_sha256,rule_receipts:&bundle.original_receipts};
+  let component=match relationship_strategy::certified_component(census,canonical,&certs,&cert.relationship_id,&policy){Ok(v)=>v,Err(e)=>{deferred.insert(digest.clone(),e.to_string());continue}};
+  let records=bank.engine().package_records();let parent=records.as_array().ok_or("LIVE_PACKAGE_RECORDS")?.iter().find(|p|p["phase"]=="complete"&&p.get("protectionReleased")!=Some(&json!(true))&&p["legs"].as_array().is_some_and(|legs|!legs.is_empty()&&legs.iter().all(|l|l["exchangeId"].as_str().is_some_and(|e|exchanges.contains(e))))).and_then(|p|p["packageId"].as_str());
+  if let Some(parent)=parent{if let Ok(Some(plan))=package_portfolio::whole_unwind(bank,&c.activation,&component,parent,&policy,authority.entry_until_ms()){
+   if let Ok(hint)=allocation::ReadHint::portfolio(bank,&plan,&budget,&costs,now()){hints.push(hint);continue}
+  }}
+  match allocation::ReadHint::scan(bank,&c.activation,&component,&policy,&budget,&costs){Ok(Some(hint))=>hints.push(hint),Ok(None)=>{deferred.insert(digest.clone(),"no_current_funded_hint".into());},Err(e)=>{deferred.insert(digest.clone(),e.to_string());}}
+ }
+ let(selected,decision)=match allocation::select_hints(bank,&budget,fairness,hints,now()){Ok(v)=>v,Err(e)=>{atomic_json(&c.root.join("package-allocation.json"),&json!({"at":iso(now()),"state":"selection_unavailable","reason":e.to_string(),"executionAuthority":false}))?;return Ok(None)}};
+ let index=if let Some(hint)=&selected{reviewed.iter().find(|(_,digest)|digest==hint.certificate_sha256()).map(|(index,_)|*index)}else{fallback};
+ atomic_json(&c.root.join("package-allocation.json"),&json!({"at":iso(now()),"state":if selected.is_some(){"ranked_source_refresh"}else{"reviewed_source_refresh_only"},"decision":decision,"sourceDeferred":deferred,"executionAuthority":false}))?;Ok(index)
+}
+fn allocation_plan_selected(t:&Transport,c:&Control,bank:&Session,cash:&Receipt,admission:Option<&moloch_live_runtime::package_admission::Admission>,plan:Option<&moloch_live_runtime::package_portfolio::Plan>)->Result<bool>{
+ use moloch_live_runtime::package_allocation as allocation;
+ let Some(config)=&c.package_allocation else{return Ok(true)};let at=now();
+ let certificate=match(admission,plan){(Some(p),None)=>p.certificate_sha256(),(None,Some(p))=>p.proof()["component"]["certificateSha256"].as_str().ok_or("LIVE_ALLOCATION_CERTIFICATE")?,_=>return Err("LIVE_ALLOCATION_PLAN_KIND".into())};
+ let Some(costs)=config.costs_for(certificate,at)else{return Ok(false)};let budget=match allocation_budget(t,c,bank,cash){Ok(v)=>v,Err(e)=>{atomic_json(&c.root.join("package-allocation-final.json"),&json!({"at":iso(at),"state":"budget_unavailable","reason":e.to_string(),"executionAuthority":false}))?;return Ok(false)}};
+ let eligibility=if let Some(p)=admission{allocation::Eligible::admission(bank,p,&budget,&costs,at)}else{allocation::Eligible::portfolio(bank,plan.unwrap(),&budget,&costs,at)};
+ let eligible=match eligibility{Ok(v)=>v,Err(e)=>{atomic_json(&c.root.join("package-allocation-final.json"),&json!({"at":iso(at),"state":"plan_unavailable","reason":e.to_string(),"executionAuthority":false}))?;return Ok(false)}};
+ // Final eligibility must not erase other candidates' source-selection waits.
+ let mut validation_fairness=allocation::Fairness::new(config.maximum_wait)?;
+ let(selected,decision)=allocation::select_plans(bank,&budget,&mut validation_fairness,vec![eligible],at)?;
+ atomic_json(&c.root.join("package-allocation-final.json"),&json!({"at":iso(at),"decision":decision,"executionAuthority":false}))?;Ok(selected.is_some())
+}
 /// One bounded certificate cohort per scan. All reads/writes borrow the existing
 /// account worker. Every price still passes the ordinary source adapter and the
 /// complete physical package authority; indicative selection is not authority.
-fn package_opportunity(t:&mut Transport,c:&Control,bank:&mut Session,ordinary:&mut DispatchLog,authority:&ProductionAuthority,packages:&mut moloch_live_runtime::package_dispatch::PackageDispatchLog,census:&mut Option<moloch_live_runtime::relationship_census::Census>,source_state:&mut RestSource,stream:&Realtime,breadth:&mut Option<Recorder>,universe:&mut Option<Universe>,windows:&mut std::collections::BTreeMap<String,u64>,last_scan:&mut u64,cursor:&mut usize)->Result<()>{
+fn package_opportunity(t:&mut Transport,c:&Control,bank:&mut Session,ordinary:&mut DispatchLog,authority:&ProductionAuthority,packages:&mut moloch_live_runtime::package_dispatch::PackageDispatchLog,census:&mut Option<moloch_live_runtime::relationship_census::Census>,source_state:&mut RestSource,stream:&Realtime,breadth:&mut Option<Recorder>,universe:&mut Option<Universe>,windows:&mut std::collections::BTreeMap<String,u64>,last_scan:&mut u64,cursor:&mut usize,allocation_fairness:&mut Option<moloch_live_runtime::package_allocation::Fairness>)->Result<()>{
  use moloch_live_runtime::{package_worker,package_admission,package_portfolio,package_portfolio_worker,relationship_strategy::{self,Certificates}};
  let Some(settings)=&c.packages else{return Ok(())};let at=now();if !authority.can_read(&c.scope){return Err("LIVE_PACKAGE_OWNER_LOST".into())}require_stream(stream)?;
  // Existing due cancellations and covered inventory exits retain priority over
@@ -218,7 +264,15 @@ fn package_opportunity(t:&mut Transport,c:&Control,bank:&mut Session,ordinary:&m
   if fresh.report.transport_guard_observed{return Err("LIVE_PACKAGE_CENSUS_GUARD".into())}*census=Some(fresh);
   drain_stream(stream,bank,source_state,breadth,universe)?;
  }
- let chosen=approved[*cursor%approved.len()];*cursor=(*cursor).wrapping_add(1);
+ let start=*cursor%approved.len();*cursor=(*cursor).wrapping_add(1);
+ let selected=if let Some(config)=&c.package_allocation{
+  let Some(current)=census.as_ref()else{return Ok(())};
+  if current.cache.relationships.is_none()||current.report.active_relationship_count==0{return Ok(())}
+  let canonical=canonical_package_receipt(current)?;
+  let selected=allocation_certificate(t,c,bank,ordinary,authority,current,&canonical,&bundle,&approved,start,config,allocation_fairness.as_mut().ok_or("LIVE_ALLOCATION_FAIRNESS")?)?;
+  let Some(selected)=selected else{return Ok(())};selected
+ }else{start};
+ let chosen=approved[selected];
  let exchanges:std::collections::BTreeSet<_>=chosen.contracts.iter().map(|r|r.exchange_id.clone()).collect();
  let held=chosen.contracts.iter().any(|r|bank.engine().wallet.quantity(&r.exchange_id,moloch_replay::Side::Yes)>0||bank.engine().wallet.quantity(&r.exchange_id,moloch_replay::Side::No)>0);
  let records=bank.engine().order_records();
@@ -246,8 +300,11 @@ fn package_opportunity(t:&mut Transport,c:&Control,bank:&mut Session,ordinary:&m
  if quotes.iter().any(|q|!ordinary.never_attempted(q["id"].as_u64().unwrap_or(0))){return Ok(())}
  for q in &quotes{retire_for_package(bank,ordinary,q)?;}
  // No source/tick occurs between retirement and the durable package reserve.
+ // Source refresh/retirement invalidated any hint's head. Obtain actual current
+ // cash on the same Transport and rebuild the selected opaque financial plan.
+ let cash_receipt=request(t,&c.root,Endpoint::Account)?;
+ let cash=baal_transport_service::relationships::parse_buying_power(&cash_receipt.data,&c.scope)?.gross_cash_units.ok_or("LIVE_PACKAGE_GROSS_CASH_UNAVAILABLE")?;
  let at=now();let policy=settings.policy(&c.activation,at,chosen.contracts.len())?;
- let cash=census.as_ref().and_then(|v|v.cache.buying_power.as_ref()).and_then(|p|p.gross_cash_units).ok_or("LIVE_PACKAGE_GROSS_CASH_UNAVAILABLE")?;
  let certs=Certificates{values:std::slice::from_ref(chosen),trusted_sha256:&settings.trusted_certificate_sha256,rule_receipts:&rules};
  if held{
   let component=relationship_strategy::certified_component(census.as_ref().unwrap(),&canonical,&certs,&chosen.relationship_id,&policy)?;
@@ -258,6 +315,7 @@ fn package_opportunity(t:&mut Transport,c:&Control,bank:&mut Session,ordinary:&m
   let mut plan=if let Some(id)=parent{package_portfolio::whole_unwind(bank,&c.activation,&component,id,&policy,authority.entry_until_ms())?}else{None};
   if plan.is_none()&&now()<authority.entry_until_ms(){plan=package_portfolio::acquire(bank,&c.activation,&component,cash,&policy,authority.entry_until_ms())?;}
   let Some(plan)=plan else{atomic_json(&c.root.join("package-status.json"),&json!({"at":iso(now()),"state":"no_current_portfolio_executable_edge","ordersSubmitted":0}))?;return Ok(())};
+  if !allocation_plan_selected(t,c,bank,&cash_receipt,None,Some(&plan))?{return Ok(())}
   if plan.minimum_statewise_delta()<=0{atomic_json(&c.root.join("package-status.json"),&json!({"at":iso(now()),"state":"portfolio_floor_hedge_requires_explicit_risk_policy","ordersSubmitted":0}))?;return Ok(())}
   let permit=Permit{run_id:c.activation.run_id.clone(),intent_id:plan.package_id().into(),owner:"Codex".into(),expires_at_ms:plan.expires_at_ms(),maximum_quantity:c.activation.maximum_quantity,maximum_cost:money(plan.gross_funding())};
   let activation=plan.proof()["atMs"].as_u64().ok_or("LIVE_PACKAGE_ACTIVATION")?.checked_add(bank.engine().policy()["latencyMs"].as_u64().ok_or("LIVE_PACKAGE_ACTIVATION")?).ok_or("LIVE_PACKAGE_ACTIVATION")?;
@@ -276,6 +334,7 @@ fn package_opportunity(t:&mut Transport,c:&Control,bank:&mut Session,ordinary:&m
  if now()>=authority.entry_until_ms(){return Ok(())}
  let admission=package_admission::admit(bank,&c.activation,census.as_ref().unwrap(),&canonical,&certs,cash,&policy,authority.entry_until_ms())?;
  let Some(admission)=admission else{atomic_json(&c.root.join("package-status.json"),&json!({"at":iso(now()),"state":"no_current_certified_executable_surplus","ordersSubmitted":0}))?;return Ok(())};
+ if !allocation_plan_selected(t,c,bank,&cash_receipt,Some(&admission),None)?{return Ok(())}
  let permit=Permit{run_id:c.activation.run_id.clone(),intent_id:admission.package_id().into(),owner:"Codex".into(),expires_at_ms:admission.expires_at_ms(),maximum_quantity:c.activation.maximum_quantity,maximum_cost:admission.basket().maximum_cost.clone()};
  let receipts=c.root.join("package-receipts");let mut backend=package_worker::Live{transport:t,authority,ordinary_dispatch:ordinary,receipts:&receipts};
  let staged=package_worker::stage(bank,packages,&backend,&admission,permit)?;
@@ -459,7 +518,9 @@ fn dispatch(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,a
   return Ok(()) // Ineligible refresh still consumes this pass; never another packet.
  }
  // At most one new physical order per pass; subsequent fills change funding.
- let quotes=bank.engine().order_records();
+ // Retired history and already-physical orders have separate reconciliation
+ // paths above; they cannot become a new submission or consume its ranking.
+ let quotes:Vec<_>=bank.engine().order_records().into_iter().filter(|q|q["retired"]==false&&q["id"].as_u64().is_some_and(|id|log.never_attempted(id)&&!bank.engine().is_package_order(id))).collect();
  let keys:Vec<String>=quotes.iter().map(|q|format!("{}:{}:{}",q["exchangeId"].as_str().unwrap_or(""),q["side"].as_str().unwrap_or(""),q["action"].as_str().unwrap_or(""))).collect();
  let selection=moloch_live_runtime::quote_priority::from_native(bank,&c.scope,&quotes,now(),preflight_cursor.as_deref())?;
  let _=atomic_json(&c.root.join("quote-priority.json"),&json!({"at":iso(now()),"selection":selection,"pricesChanged":false,"profitabilityEstablished":false}));
@@ -566,6 +627,7 @@ pub fn main()->Result<()>{
  let args:Vec<_>=std::env::args().collect();if args.len()!=3||!["preflight","run"].contains(&args[1].as_str()){return Err("usage: moloch-live-runtime preflight|run /absolute/control.json".into())}
  let path=PathBuf::from(&args[2]);if !path.is_absolute(){return Err("LIVE_CONTROL_ABSOLUTE".into())}let c:Control=serde_json::from_value(load(&path)?)?;
  validate_collateral_accounting(&c)?;
+ if let Some(settings)=&c.package_allocation{settings.validate()?;if c.packages.is_none(){return Err("LIVE_ALLOCATION_PACKAGE_SETTINGS".into())}}
  if !c.bank_name.starts_with("bank")||c.bank_name.contains(['/', '\\'])||c.predecessor_bank.as_ref().is_some_and(|p|p==&c.bank_name){return Err("LIVE_BANK_NAME".into())}
  if !c.root.is_absolute()||!c.credentials.is_absolute()||!c.owner_lock.is_absolute()||c.activation.maximum_committed!=c.policy["maximumCommitted"].as_str().unwrap_or("")||c.activation.maximum_market_cost!=c.policy["maximumMarketCost"].as_str().unwrap_or("")||c.policy["quantity"].as_u64()!=Some(c.activation.maximum_quantity as u64)||c.policy["entryStopAt"]!=iso(c.activation.entry_until_ms){return Err("LIVE_CONTROL_POLICY_BINDING".into())}
  if let Some(settings)=&c.packages{settings.load(&c.scope)?;} if let Some(cfg)=&c.execution_model{cfg.validate()?;}
@@ -622,6 +684,7 @@ pub fn main()->Result<()>{
   let (connected,joined_at)=connect_with_budget(&mut t,&c,&mut bank,&log,&authority,&mut source_state,&mut recovery_budget)?;require_stream(&connected)?;let mut stream=Some(connected);
   authority.bind_stream(stream.as_ref().unwrap().failure_signal(),stream.as_ref().unwrap().deadline_ms);
   let mut relationship_census=None;let mut preflight_cursor=None;let mut package_last_scan=0;let mut package_certificate_cursor=0;
+  let mut package_allocation_fairness=c.package_allocation.as_ref().map(|v|moloch_live_runtime::package_allocation::Fairness::new(v.maximum_wait)).transpose()?;
   let mut reconciliation_schedule=moloch_live_runtime::scheduling::ReconciliationSchedule::new(10_000)?;
   let pending_version=|log:&DispatchLog|moloch_live_runtime::scheduling::PendingVersion{acknowledged:log.acknowledgments.len() as u64,terminal:log.closed.len() as u64};
   let breadth_path=c.root.join(format!("breadth-{}-{}.jsonl",std::process::id(),now()));
@@ -649,7 +712,7 @@ pub fn main()->Result<()>{
     }
     ensure_entry_window(&c,&mut bank,&authority)?;
     if !package_blocked&&!collateral_blocked&&reconciliation_schedule.permits_submission(now(),pending_version(&log))?{
-     package_opportunity(&mut t,&c,&mut bank,&mut log,&authority,&mut packages,&mut relationship_census,&mut source_state,stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?,&mut breadth,&mut universe,&mut windows,&mut package_last_scan,&mut package_certificate_cursor)?;
+     package_opportunity(&mut t,&c,&mut bank,&mut log,&authority,&mut packages,&mut relationship_census,&mut source_state,stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?,&mut breadth,&mut universe,&mut windows,&mut package_last_scan,&mut package_certificate_cursor,&mut package_allocation_fairness)?;
     }
     package_blocked=recover_packages(&mut t,&c,&mut bank,&log,&authority,&mut packages)?;
     collateral_blocked=collateral_accounting(&mut t,&c,&mut bank,&log,&packages,lease.as_ref(),&mut collateral_last_check)?;

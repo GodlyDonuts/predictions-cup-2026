@@ -62,10 +62,23 @@ settlement source, prove a holding duration, or grant execution authority.
    mandatory. A changed bank invalidates the budget/selection and requires
    recomputation; it is never a retry or renewal of a physical package.
 
-At present the production loop picks a certificate round-robin before recomputing
-an opportunity. Root owns its wiring and immutable settings. These APIs enable a
-bounded source-only hint pass followed by selection of a real recomputed proposal;
-this source module alone does not claim the production ranking has been wired.
+Production V28 still picks a certificate round-robin before recomputing an
+opportunity. The next worker source now accepts optional immutable
+`packageAllocation` settings, validates them before opening the account client,
+and maintains separate source-selection fairness. It ranks at most32 existing
+certified source hints, including genuine quiet covered-unwind plans. Missing
+current books can select only a reviewed source-refresh cohort, with no claim of
+an executable positive edge. Actual physical liabilities cannot be cleared by a
+selection. Both held and flat paths then rebuild their opaque proposal after
+refresh/retirement using a new original account cash receipt and actual SDK queue
+headroom, and run final allocator eligibility before the existing stage.
+
+Unavailable advisory budgets, stale proposals and expired selection inputs
+withhold a package rather than stopping ordinary account reconciliation. Actual
+Transport/persistence failures and all financial authority checks retain their
+existing behavior. Final single-plan validation uses separate fairness state so
+it cannot erase the other source candidates' accumulated waits. This wiring is
+checked source, not a claim of production allocation, calibrated alpha or profit.
 Missing canonical/independent evidence produces no candidate, never a synthesized
 relationship or an inferred positive floor.
 
