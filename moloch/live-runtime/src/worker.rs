@@ -176,6 +176,8 @@ pub fn main()->Result<()>{
   let start=now();let mut source_state=RestSource::new(&pairs,&c.scope.tournament_id,&iso(start))?;source_state.seed_trade_facts(bank.source_facts())?;
   let (connected,joined_at)=connect_stream(&mut t,&c,&mut bank,&mut source_state)?;let mut stream=Some(connected);
   authority.bind_stream(stream.as_ref().unwrap().failure_signal(),stream.as_ref().unwrap().deadline_ms);
+  let relationship_census=moloch_live_runtime::relationship_census::capture(&mut t,&c.scope,&c.root.join("relationship-receipts"),&[]);
+  atomic_json(&c.root.join("relationship-census.json"),&serde_json::to_value(&relationship_census.report)?)?;
   let breadth_path=c.root.join(format!("breadth-{}-{}.jsonl",std::process::id(),now()));
   let mut breadth=Recorder::new(&breadth_path).ok();
   if let Some(r)=&mut breadth{r.observe("stream_reset",&json!({"localBoundary":true,"reason":"confirmed_subscription"}),&joined_at)}
