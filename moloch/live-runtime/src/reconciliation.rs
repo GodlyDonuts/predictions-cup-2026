@@ -69,7 +69,7 @@ impl Reconciler {
     }
     if member_observation.is_none(){stats.hint_fallbacks+=1;}
    }
-   let (fills,events,terminal)=if let Some((fills,events))=member_observation{
+   let (fills,events,exact_order)=if let Some((fills,events))=member_observation{
     stats.validated_member_observations+=1;(fills,events,None)
    }else{
     stats.exact_order_reads+=1;
@@ -78,11 +78,18 @@ impl Reconciler {
     let fills=b.read(Endpoint::OwnedFills{order_id:owned.actual_order_id.clone()})?;
     let at=iso(b.now_ms())?;
     let events=feedback::fills(&q,&owned.actual_order_id,&scope.tournament_id,&fills,&at)?;
-    // Validate terminal/fill temporal order before applying ANY tape events.
-    let terminal=feedback::terminal(&q,&owned.actual_order_id,&scope.tournament_id,&order,&fills,&at)?.map(|e|(e,order));
-    (fills,events,terminal)
+    (fills,events,Some(order))
    };
    for event in events{b.apply(&event)?;}
+   // Preserve the original exact-read order: valid own fills are durably
+   // credited even if the independent terminal projection disagrees. Such a
+   // disagreement still stops execution, without advancing a hint watermark.
+   let terminal=if let Some(order)=exact_order{
+    match feedback::terminal(&q,&owned.actual_order_id,&scope.tournament_id,&order,&fills,&iso(b.now_ms())?){
+     Ok(event)=>event.map(|event|(event,order)),
+     Err(error)=>{self.fills.remove(&owned.actual_order_id);return Err(error)},
+    }
+   }else{None};
    // A cache failure cannot discard valid, durably applied fills or stop later
    // owned-order reconciliation. The next cycle simply uses exact reads.
    let current=b.quote(owned.logical_id)?;
