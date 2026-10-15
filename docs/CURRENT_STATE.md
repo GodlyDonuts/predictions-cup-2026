@@ -1,3 +1,9 @@
+# October 15: V28 fresh trading verified
+
+At23:18:45UTC, V28 PID292646 has the exact checked executable, no STOP and fresh healthy trading progress. One new retained official acknowledgment brings the total to555;90 actual fills remain unchanged. The derived report seal verifies at sequence115154. New-trading realized remains−116.020000SUSQies, inherited gross+38.075000 and total−77.945000. No new fill, profit or scheduler-speed improvement is inferred from the acknowledgment. [Fresh verification](../research/moloch-quote-priority-20261015/live-verification.json).
+
+The following launch/restoration observations are history. Current portfolio execution requires independently approved source certificates; the approved set is empty. Collateral stays off, the execution observer is diagnostic, and live allocation/portfolio-valued ordinary pricing/calibrated external forecasting remain unfinished Paper2 work.
+
 # October 15: V28 quote-priority and portfolio release launched; restoration pending
 
 V28 PID292646 started23:06:27UTC from checked immutable binary57d1bf257df7d27d93a57a8be337271752fa089030d7e3186d3a4e36892492ab. The entire stopped114,865-event/317,931,441-byte bank reproduces exact financial report, orders, fills and source cursors in344,475ms with the exact runtime-linked verifier. All554 physical attempts are acknowledged; the actual SDK queue retains847 bindings with no active/unknown/manual-review state. The sixth explicit identity bridge preserves all five earlier approvals, original attributed bank/history, queuev1, daily mandate and40,000/10,000 limits. [Full rollout and replay evidence](../research/moloch-quote-priority-20261015/production-rollout.json).
