@@ -5,29 +5,29 @@ terminal/policy reads through22:41:54Z. This was a bounded read-only SSH study:
 no account HTTP request, SDK client, runtime/control edit or order operation.
 The separate SSH session was closed after the reads.
 
-The last20 normal physical intents in that observation all had genuine retained
+The last 20 normal physical intents in that observation all had genuine retained
 HTTP200 POST acknowledgments and zero recorded actual fills.16 were covered
-SELLs and4 were BUYs. **14 of the16 SELL limits were above even the contemporaneous
-best ask.** The other2 joined the ask; all4 BUYs joined the bid in a one-tick
+SELLs and 4 were BUYs. **14 of the 16 SELL limits were above even the contemporaneous
+best ask.** The other 2 joined the ask; all 4 BUYs joined the bid in a one-tick
 spread. None had executable opposite-side quantity at its frozen limit in the
 observed POST preflight book. Joining a displayed best price does not establish
 queue position, fill probability or a profitable future exit.
 
 ## Price evidence
 
-These books were received1.101--1.349seconds before their corresponding ACKs.
+These books were received 1.101--1.349seconds before their corresponding ACKs.
 They describe actual fresh preflight observations, not a stale mark substituted
 for executable depth. Prices below use the quoted outcome; NO prices are exact
 complements of the YES book.
 
 | Exchange/outcome | Submitted SELL | Best bid / ask | Consequence at that observation |
 | --- | ---: | ---: | --- |
-|1048 NO|0.690|0.635 /0.640|10ticks above the ask on its later posting|
-|1058 YES|0.300|0.250 /0.255|9ticks above the ask on its later posting|
-|1066 NO|0.315|0.265 /0.270|9ticks above the ask|
-|1076 YES|0.905|0.840 /0.845|12ticks above the ask on its earlier posting|
-|1068 YES|0.975|0.945 /0.950|5ticks above the ask|
-|1075 NO|0.900|0.895 /0.900|Joins the ask; zero immediately executable bids at0.900|
+|1048 NO|0.690|0.635 /0.640|10 ticks above the ask on its later posting|
+|1058 YES|0.300|0.250 /0.255|9 ticks above the ask on its later posting|
+|1066 NO|0.315|0.265 /0.270|9 ticks above the ask|
+|1076 YES|0.905|0.840 /0.845|12 ticks above the ask on its earlier posting|
+|1068 YES|0.975|0.945 /0.950|5 ticks above the ask|
+|1075 NO|0.900|0.895 /0.900|Joins the ask; zero immediately executable bids at 0.900|
 
 The immutable policy observation has `inventoryExitMode="fixedGain"`,
 `inventoryMinimumGain="0.005000"`, `inventoryTakerAfterMs=0`,
@@ -46,34 +46,34 @@ net economics as the corresponding covered sale.
 
 ## Time and opportunity costs
 
-Fresh posting works: intent-to-ACK took0.603--0.870seconds in these20 cases. The
+Fresh posting works: intent-to-ACK took0.603--0.870seconds in these 20 cases. The
 large delay precedes physical submission. The four BUYs spent185.426,
 252.501,257.840 and277.638seconds between native creation and actual ACK;
 their mean was243.351seconds. Their remaining lifetimes after acknowledgment
-were322.362--414.574seconds. Across all20 quotes the range was322.362--517.658
+were 322.362--414.574seconds. Across all 20 quotes the range was322.362--517.658
 seconds. The10-minute lifetime starts at native creation, not at the later POST.
 
 One BUY was created22:27:53.386Z and acknowledged22:32:11.226Z. Three distant
 SELLs were physically posted at22:30:20.142Z,22:30:42.772Z and22:31:06.908Z
 while that BUY already existed. This proves three competing submission
-opportunities, not a counterfactual257-second speed improvement: mandatory
+opportunities, not a counterfactual 257 second speed improvement: mandatory
 cancellations, actual cached-book freshness and intervening reads still matter.
 
-There was cancellation/expiry churn without fills. One0.975SELL was acknowledged
+There was cancellation/expiry churn without fills. One 0.975 SELL was acknowledged
 22:24:06.816Z, canceled by official ACK22:28:49.402Z and observed terminal
-`UserRequested`22:29:06.848Z; a later offer on the same exchange again used0.975.
-One ask-joining0.900SELL was canceled22:29:41.490Z and later reoffered at0.900.
+`UserRequested`22:29:06.848Z; a later offer on the same exchange again used 0.975.
+One ask-joining 0.900 SELL was canceled22:29:41.490Z and later reoffered at 0.900.
 Other sampled zero-fill orders ended `Expired`. None of those sampled inherited
 SELLs had `inventoryExitReason="maximumAge"`. The records do not identify a
 single common trigger for every local cancellation, so this study does not
 attribute every cancellation to price movement.
 
-The observed normal POST cadence was far below the24writes/minute ceiling.
+The observed normal POST cadence was far below the 24 writes/minute ceiling.
 The issue demonstrated here is competition for serialized selection/preflight
 opportunities and read packets, not proof that the physical write limit was
 exhausted. An ordinary preflight contains seven actual reads. Crucially, the
-book used in this study was its last read: **14avoided POSTs does not prove
-98avoided reads**. A before-preflight gate only saves that packet if an already
+book used in this study was its last read: **14 avoided POSTs does not prove
+98 avoided reads**. A before-preflight gate only saves that packet if an already
 admitted current native book is fresh at selection time.
 
 ## Narrow selection change
@@ -100,8 +100,8 @@ and final physical authority remain mandatory. Existing inventory is still
 watched; this policy does not release a reservation, cancel a physical order,
 cross a spread or force a historical loss.
 
-Replaying the20observed POST/preflight observations gives14distant floors
-deferred and6competitive candidates retained, including all4 BUYs. This is a
+Replaying the 20 observed POST/preflight observations gives 14 distant floors
+deferred and 6 competitive candidates retained, including all 4 BUYs. This is a
 selection-count result. It is not a measured scheduler latency improvement,
 profitable fill, forecast of profit or proof that the remaining quotes have
 positive executable EV. The four BUYs were still unfilled; lack of aggressive
@@ -115,11 +115,11 @@ Private retained source paths under
 
 - `dispatch.ndjson`: original normal intents, POST acknowledgments, cancellation
   acknowledgments and terminal proof references.
-- `bank-all-markets-v1/events.jsonl`: a bounded32MiB tail of the captured
-  298,867,486-byte prefix;15,466complete parsed events,20:50:05.410--22:38:35.356Z.
+- `bank-all-markets-v1/events.jsonl`: a bounded 32MiB tail of the captured
+  298,867,486-byte prefix; 15,466 complete parsed events,20:50:05.410--22:38:35.356Z.
   This study did not independently verify the entire cryptographic chain.
 - `bank-all-markets-v1/report.json`: coherent derived bank observation at
-  22:38:35.356Z,90 actual fills; unchanged recorded cash/PnL across this sample.
+  22:38:35.356Z, 90 actual fills; unchanged recorded cash/PnL across this sample.
 - `bank-all-markets-v1/manifest.json`: original immutable policy. The current
   replayed managed-market allowance and inherited fresh-market allowance are
   separate from that original manifest observation.
@@ -129,7 +129,7 @@ Private retained source paths under
   status file was older, so it was not presented as the current financial view.
 
 The latest target books at the main observation were22:38:10--22:38:20Z,
-15--25seconds old and therefore stale under the10-second rule. They were not
+15--25seconds old and therefore stale under the 10 second rule. They were not
 treated as a fresh current execution offer. Public print observations do not
 establish actual owned fills or an aggressor. All observations are retained-file
 evidence, not a new atomic account snapshot.
