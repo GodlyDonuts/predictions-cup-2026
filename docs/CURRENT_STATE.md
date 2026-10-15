@@ -1,3 +1,11 @@
+# October 15: Paper 2 portfolio and quote-priority candidate checked, staged only
+
+The merged candidate passes187 native,204 SDK and443 runtime checks, including14 quote-priority cases, and a locked offline ARM64 release. Immutable binary57d1bf257df7d27d93a57a8be337271752fa089030d7e3186d3a4e36892492ab is staged, with its SHA re-read and verified. It prioritizes urgent exits and competitive quotes over distant sell floors, connects certified held-portfolio acquisition/unwind, and records causal execution-model diagnostics. The existing sole account Transport, daily mandate, attributed history and40,000/10,000 limits remain. [Staging evidence](../research/moloch-quote-priority-20261015/staged-release.json), [measured execution problem and selection limits](../research/moloch-quote-priority-20261015/README.md).
+
+This candidate is not yet deployed. Full fresh stopped-bank financial equivalence and the next explicit identity bridge remain required. Collateral accounting stays disabled; execution-model training does not yet allocate capital or gate quotes. Paper2 remains incomplete: live capital/time/rank allocation, portfolio-valued ordinary market-making, calibrated external forecasting and actual economic validation remain substantial work.
+
+V27 PID265648 remains the production service. Its22:57:09UTC ledger has90 actual fills, last20:52:51.959UTC; the22:51:40UTC full status has544 acknowledgments. New-trading realized remains−116.020000SUSQies, distinct from inherited gross+38.075000; profitability remains unestablished. Successful acknowledgments are not executions.
+
 # October 15: V27 fresh production trading verified
 
 At22:00:39UTC, V27 PID265648 was running the exact checked immutable binary with no STOP. Fresh healthy trading progress at22:00:32UTC reports485 acknowledged orders/90 actual fills; five original official HTTP200 acknowledgments occurred after launch. The derived bank report seal verifies at sequence104040. Acknowledgments are not fills: no new fill is claimed by this verification. Total realized remains−77.945000SUSQies; the previously verified new-trading contribution is−116.020000, separate from inherited gross+38.075000. Profitability remains unestablished. [Sanitized verification](../research/moloch-package-execution-20261015/live-verification.json).

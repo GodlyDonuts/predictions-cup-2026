@@ -140,3 +140,18 @@ unchanged quote values, actual native Session WS/REST freshness and committed
 source-gap invalidation. Local diff checks pass. Linux checks and any production
 integration are owned by the parent; no unrun test or live strategy result is
 claimed here.
+
+## Root integration checkpoint, 23:00 UTC
+
+The quote-priority policy is now connected both before ordinary preflight and
+after its actual fresh book observation. The combined source passes187 native,
+204 SDK and443 runtime checks, including all14 cases above, and its locked
+offline ARM64 release. The immutable staged binary hash was re-read and matched;
+[staging evidence](staged-release.json) records the checked artifact. The
+portfolio execution, causal observer and collateral-source adapters are included
+in the checked source. Collateral accounting remains disabled; the observer is
+diagnostic and does not yet allocate capital or select profitable quotes.
+
+Production remains V27. No scheduler-speed improvement, new fill or profit is
+attributed to this staged candidate. Fresh stopped-bank equivalence, explicit
+identity approval and controlled same-service promotion remain outstanding.

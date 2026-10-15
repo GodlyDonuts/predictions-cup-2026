@@ -1,0 +1,18 @@
+{
+  "at": "2026-10-15T22:54:36.357903+00:00",
+  "binarySha256": "57d1bf257df7d27d93a57a8be337271752fa089030d7e3186d3a4e36892492ab",
+  "priorBinarySha256": "88176e888205647e4bbe74ae9019059b5e23fbff8038981ddeb36d06d5f396e7",
+  "release": "/home/archon/apps/moloch/releases/paper2-priority-57d1bf257df7/bin/moloch-live-runtime",
+  "control": "/home/archon/apps/moloch/shared/moloch-live-paper2-priority-20261015.json",
+  "nativeChecks": 187,
+  "sdkChecks": 204,
+  "runtimeChecks": 443,
+  "lockedArm64Release": true,
+  "nativeArchiveSha256": "db8ac195793d807da36aa2186a6ecf6665c2af53d7fe1c808814af79ace9967a",
+  "runtimeArchiveSha256": "e28437cc793faf2eceba3dadb25829c375759792ac1a07c343ddcff6f00006cb",
+  "collateralAccountingEnabled": false,
+  "executionModelEnabled": true,
+  "physicalActivation": false,
+  "financialParityPending": true,
+  "profitabilityEstablished": false
+}
