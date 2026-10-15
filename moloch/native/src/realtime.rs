@@ -5,9 +5,9 @@ use serde_json::{Value, json};
 use std::{
     net::{TcpStream, ToSocketAddrs},
     sync::{
-        Arc,
+        Arc, Mutex,
         atomic::{AtomicBool, Ordering},
-        mpsc::{self, Receiver, SyncSender},
+        mpsc::{self, Receiver, SyncSender, TrySendError},
     },
     thread::{self, JoinHandle},
     time::{Duration, Instant, SystemTime, UNIX_EPOCH},
@@ -84,6 +84,56 @@ pub enum Incoming {
         received_at: String,
     },
     Failed(&'static str),
+}
+/// Only these fixed internal codes may cross the diagnostic boundary. Never
+/// retain a socket error, URL, credential, server payload, or panic payload.
+fn sanitized_exit(code: &'static str) -> &'static str {
+    match code {
+        "STREAM_FRAME" | "STREAM_JOIN_REJECTED" | "STREAM_HEARTBEAT_REJECTED"
+        | "STREAM_REPLY_REF" | "STREAM_TOPIC" | "STREAM_BEFORE_JOIN"
+        | "STREAM_BROADCAST" | "STREAM_SYSTEM_REJECTED" | "STREAM_CHANNEL_CLOSED"
+        | "STREAM_EVENT" | "STREAM_HEARTBEAT_PENDING" | "STREAM_JOIN_TIMEOUT"
+        | "STREAM_HEARTBEAT_TIMEOUT" | "STREAM_HEARTBEAT_SEND" | "STREAM_JSON"
+        | "STREAM_QUEUE_FULL" | "STREAM_CONSUMER_DISCONNECTED" | "STREAM_SOCKET_CLOSED"
+        | "STREAM_NON_TEXT" | "STREAM_READ_FAILED" | "STREAM_FLUSH"
+        | "STREAM_DEADLINE_REACHED" | "STREAM_STOP_REQUESTED"
+        | "STREAM_WORKER_PANICKED" | "STREAM_WORKER_EXIT_UNEXPLAINED" => code,
+        _ => "STREAM_WORKER_EXIT_UNEXPLAINED",
+    }
+}
+struct ExitReporter {
+    reason: Arc<Mutex<Option<&'static str>>>,
+    failed: Arc<AtomicBool>,
+    published: bool,
+}
+impl ExitReporter {
+    fn publish(&mut self, code: &'static str) {
+        {
+            // A poisoned diagnostic mutex must never suppress the failed gate.
+            let mut reason=self.reason.lock().unwrap_or_else(|p|p.into_inner());
+            if reason.is_none(){*reason=Some(sanitized_exit(code));}
+        }
+        self.failed.store(true, Ordering::SeqCst);
+        self.published=true;
+    }
+}
+impl Drop for ExitReporter {
+    fn drop(&mut self) {
+        if !self.published {
+            self.publish(if thread::panicking(){"STREAM_WORKER_PANICKED"}else{"STREAM_WORKER_EXIT_UNEXPLAINED"});
+        }
+    }
+}
+fn deliver(tx:&SyncSender<Incoming>, incoming:Incoming)->Result<()> {
+    tx.try_send(incoming).map_err(|e|match e {
+        TrySendError::Full(_)=>"STREAM_QUEUE_FULL",
+        TrySendError::Disconnected(_)=>"STREAM_CONSUMER_DISCONNECTED",
+    })
+}
+#[derive(Clone,Copy,Debug,PartialEq,Eq)]
+enum PlannedExit { RequestedStop, Deadline }
+impl PlannedExit {
+    fn code(self)->&'static str{match self{Self::RequestedStop=>"STREAM_STOP_REQUESTED",Self::Deadline=>"STREAM_DEADLINE_REACHED"}}
 }
 struct Protocol {
     topic: String,
@@ -188,6 +238,7 @@ pub struct Realtime {
     pub incoming: Receiver<Incoming>,
     stop: Arc<AtomicBool>,
     failed: Arc<AtomicBool>,
+    exit_reason: Arc<Mutex<Option<&'static str>>>,
     worker: Option<JoinHandle<()>>,
     pub deadline_ms: u64,
 }
@@ -246,22 +297,25 @@ impl Realtime {
         let (tx, incoming) = mpsc::sync_channel(64);
         let stop = Arc::new(AtomicBool::new(false));
         let failed = Arc::new(AtomicBool::new(false));
+        let exit_reason=Arc::new(Mutex::new(None));
         let worker_stop = stop.clone();
-        let worker_failed = failed.clone();
+        let mut reporter=ExitReporter{reason:exit_reason.clone(),failed:failed.clone(),published:false};
         let worker = thread::spawn(move || {
-            if let Err(code) =
-                run_socket(&mut socket, &mut protocol, &tx, &worker_stop, deadline_ms)
-            {
-                worker_failed.store(true, Ordering::SeqCst);
-                let _ = tx.try_send(Incoming::Failed(code));
+            match run_socket(&mut socket, &mut protocol, &tx, &worker_stop, deadline_ms) {
+                Err(code)=>{
+                    let code=sanitized_exit(code);
+                    reporter.publish(code); // Out-of-band reason precedes the failed flag.
+                    let _ = tx.try_send(Incoming::Failed(code)); // Compatibility, never authority.
+                },
+                Ok(exit)=>reporter.publish(exit.code()),
             }
-            worker_failed.store(true, Ordering::SeqCst);
             let _ = socket.close(None);
         });
         Ok(Self {
             incoming,
             stop,
             failed,
+            exit_reason,
             worker: Some(worker),
             deadline_ms,
         })
@@ -271,6 +325,12 @@ impl Realtime {
             && self.worker.as_ref().is_some_and(|t| !t.is_finished())
     }
     pub fn failure_signal(&self)->Arc<AtomicBool>{self.failed.clone()}
+    /// Out-of-band diagnostic remains readable when the incoming queue is full.
+    /// None means no exit has been published, not proof of healthy operation.
+    pub fn exit_reason(&self)->Option<&'static str>{
+        let reason=*self.exit_reason.lock().unwrap_or_else(|p|p.into_inner());
+        reason.or_else(||self.worker.as_ref().is_none_or(|w|w.is_finished()).then_some("STREAM_WORKER_EXIT_UNEXPLAINED"))
+    }
 }
 impl Drop for Realtime {
     fn drop(&mut self) {
@@ -286,7 +346,7 @@ fn run_socket(
     tx: &SyncSender<Incoming>,
     stop: &AtomicBool,
     deadline: u64,
-) -> Result<()> {
+) -> Result<PlannedExit> {
     let began = Instant::now();
     let mut heartbeat = Instant::now();
     while !stop.load(Ordering::SeqCst) && now() < deadline {
@@ -310,7 +370,7 @@ fn run_socket(
             Ok(Message::Text(text)) => {
                 let v: Value = serde_json::from_str(text.as_str()).map_err(|_| "STREAM_JSON")?;
                 if let Some(incoming) = protocol.accept(&v)? {
-                    tx.try_send(incoming).map_err(|_| "STREAM_QUEUE_FULL")?;
+                    deliver(tx,incoming)?;
                 }
             }
             Ok(Message::Ping(_)) | Ok(Message::Pong(_)) => {}
@@ -323,12 +383,76 @@ fn run_socket(
         };
         socket.flush().map_err(|_| "STREAM_FLUSH")?;
     }
-    Ok(())
+    Ok(if stop.load(Ordering::SeqCst){PlannedExit::RequestedStop}else{PlannedExit::Deadline})
 }
 #[cfg(test)]
 mod tests {
     use super::*;
     const CUP: &str = "bda92870-621e-47b0-bc3c-3602c5c26f55";
+    fn reporter()->(ExitReporter,Arc<Mutex<Option<&'static str>>>,Arc<AtomicBool>){
+        let reason=Arc::new(Mutex::new(None));let failed=Arc::new(AtomicBool::new(false));
+        (ExitReporter{reason:reason.clone(),failed:failed.clone(),published:false},reason,failed)
+    }
+    #[test]
+    fn saturated_queue_cannot_hide_published_reason_or_weaken_failed_gate(){
+        let(tx,rx)=mpsc::sync_channel(64);
+        for _ in 0..64{deliver(&tx,Incoming::Joined{received_at:"fixture".into()}).unwrap();}
+        let error=deliver(&tx,Incoming::Joined{received_at:"overflow".into()}).unwrap_err();
+        assert_eq!(error,"STREAM_QUEUE_FULL");
+        let(mut reporter,reason,failed)=reporter();reporter.publish(error);
+        assert!(tx.try_send(Incoming::Failed(error)).is_err());
+        let stream=Realtime{incoming:rx,stop:Arc::new(AtomicBool::new(false)),failed,exit_reason:reason,worker:None,deadline_ms:0};
+        assert_eq!(stream.exit_reason(),Some("STREAM_QUEUE_FULL"));assert!(!stream.healthy());assert!(stream.failure_signal().load(Ordering::SeqCst));
+        // Existing queued data was neither consumed to find a reason nor dropped.
+        assert_eq!(stream.incoming.try_iter().count(),64);
+    }
+    #[test]
+    fn disconnected_consumer_is_not_queue_capacity_failure(){
+        let(tx,rx)=mpsc::sync_channel(64);drop(rx);
+        assert_eq!(deliver(&tx,Incoming::Joined{received_at:"fixture".into()}).unwrap_err(),"STREAM_CONSUMER_DISCONNECTED");
+    }
+    #[test]
+    fn failed_signal_observer_always_finds_reason_already_published(){
+        let(mut reporter,reason,failed)=reporter();let observed=failed.clone();
+        let reader=thread::spawn(move||{while !observed.load(Ordering::SeqCst){thread::yield_now();}assert_eq!(*reason.lock().unwrap(),Some("STREAM_HEARTBEAT_TIMEOUT"));});
+        reporter.publish("STREAM_HEARTBEAT_TIMEOUT");reader.join().unwrap();
+    }
+    #[test]
+    fn first_reason_survives_later_cleanup_and_reporter_drop(){
+        let(mut reporter,reason,failed)=reporter();reporter.publish("STREAM_SOCKET_CLOSED");reporter.publish("STREAM_FLUSH");drop(reporter);
+        assert_eq!(*reason.lock().unwrap(),Some("STREAM_SOCKET_CLOSED"));assert!(failed.load(Ordering::SeqCst));
+    }
+    #[test]
+    fn unwind_reports_fixed_panic_code_without_retaining_payload(){
+        let(reporter,reason,failed)=reporter();let worker=thread::spawn(move||{let _reporter=reporter;panic!("fixture panic payload");});
+        assert!(worker.join().is_err());assert_eq!(*reason.lock().unwrap(),Some("STREAM_WORKER_PANICKED"));assert!(failed.load(Ordering::SeqCst));
+    }
+    #[test]
+    fn unreported_return_is_fixed_unexplained_and_unknown_input_is_sanitized(){
+        let(reporter,reason,failed)=reporter();drop(reporter);
+        assert_eq!(*reason.lock().unwrap(),Some("STREAM_WORKER_EXIT_UNEXPLAINED"));assert!(failed.load(Ordering::SeqCst));
+        assert_eq!(sanitized_exit("https://fixture.invalid/?token=DO_NOT_STORE"),"STREAM_WORKER_EXIT_UNEXPLAINED");
+        assert_eq!(sanitized_exit("server body DO_NOT_STORE"),"STREAM_WORKER_EXIT_UNEXPLAINED");
+    }
+    #[test]
+    fn poisoned_diagnostic_mutex_still_publishes_failure(){
+        let(mut reporter,reason,failed)=reporter();let poisoned=reason.clone();
+        assert!(thread::spawn(move||{let _guard=poisoned.lock().unwrap();panic!("fixture mutex poison");}).join().is_err());
+        reporter.publish("STREAM_READ_FAILED");assert!(failed.load(Ordering::SeqCst));assert_eq!(*reason.lock().unwrap_err().into_inner(),Some("STREAM_READ_FAILED"));
+    }
+    #[test]
+    fn planned_deadline_and_requested_stop_have_distinct_socket_results(){
+        for requested in [false,true]{
+            let listener=std::net::TcpListener::bind("127.0.0.1:0").unwrap();let address=listener.local_addr().unwrap();
+            let server=thread::spawn(move||{let(stream,_)=listener.accept().unwrap();let _ws=tungstenite::accept(stream).unwrap();});
+            let(mut socket,_)=tungstenite::connect(format!("ws://{address}/fixture")).unwrap();
+            let(tx,_rx)=mpsc::sync_channel(64);let mut protocol=Protocol::new(CUP).unwrap();let stop=AtomicBool::new(requested);
+            let exit=run_socket(&mut socket,&mut protocol,&tx,&stop,if requested{now()+10_000}else{0}).unwrap();
+            assert_eq!(exit,if requested{PlannedExit::RequestedStop}else{PlannedExit::Deadline});
+            let(mut reporter,reason,failed)=reporter();reporter.publish(exit.code());
+            assert_eq!(*reason.lock().unwrap(),Some(if requested{"STREAM_STOP_REQUESTED"}else{"STREAM_DEADLINE_REACHED"}));assert!(failed.load(Ordering::SeqCst));server.join().unwrap();
+        }
+    }
     #[test]
     fn protocol_requires_ack_and_known_topic() {
         let mut p = Protocol::new(CUP).unwrap();
