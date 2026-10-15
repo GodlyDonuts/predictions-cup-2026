@@ -3,13 +3,15 @@ use moloch_live_runtime::{authority::{Activation,ProductionAuthority,SharedAutho
 use moloch_replay::{session::{Session,ExclusiveLock,atomic_json},source::RestSource,money};
 use moloch_replay::realtime::{Auth,Incoming,Realtime};
 use moloch_live_runtime::breadth::Recorder;
+use moloch_live_runtime::universe::Universe;
 use serde::{Serialize,Deserialize};
 use serde_json::{Value,json};
 use sha2::{Digest,Sha256};
 use std::{fs,path::{Path,PathBuf},sync::Arc,time::{SystemTime,UNIX_EPOCH,Duration}};
 #[derive(Clone,Serialize,Deserialize)]
 #[serde(rename_all="camelCase",deny_unknown_fields)]
-struct Control{activation:Activation,scope:Scope,policy:Value,root:PathBuf,credentials:PathBuf,owner_lock:PathBuf,account_scope:String}
+struct Control{activation:Activation,scope:Scope,policy:Value,root:PathBuf,credentials:PathBuf,owner_lock:PathBuf,account_scope:String,#[serde(default)]all_markets:bool,#[serde(default="default_bank")]bank_name:String,#[serde(default)]predecessor_bank:Option<String>}
+fn default_bank()->String{"bank".into()}
 fn now()->u64{SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_millis() as u64}
 fn iso(t:u64)->String{chrono::DateTime::from_timestamp_millis(t as i64).unwrap().to_rfc3339_opts(chrono::SecondsFormat::Millis,true)}
 fn hash(v:&Value)->String{format!("{:x}",Sha256::digest(serde_json::to_vec(v).unwrap()))}
@@ -122,10 +124,10 @@ fn connect_stream(t:&mut Transport,c:&Control,bank:&mut Session,source:&mut Rest
   _=>return Err("LIVE_STREAM_JOIN_FAILED".into())
  }Ok(stream)
 }
-fn drain_stream(stream:&Realtime,bank:&mut Session,source:&mut RestSource,breadth:&mut Option<Recorder>)->Result<()>{
+fn drain_stream(stream:&Realtime,bank:&mut Session,source:&mut RestSource,breadth:&mut Option<Recorder>,universe:&mut Option<Universe>)->Result<()>{
  if !stream.healthy(){return Err("LIVE_STREAM_FAILED".into())}
  while let Ok(input)=stream.incoming.try_recv(){match input{
-  Incoming::Broadcast{event,payload,received_at}=>{if let Some(recorder)=breadth{recorder.observe(&event,&payload,&received_at)}for e in source.broadcast(&event,&payload,&received_at)?{accept(bank,&e)?}},
+  Incoming::Broadcast{event,payload,received_at}=>{if let Some(recorder)=breadth{recorder.observe(&event,&payload,&received_at)}if let Some(u)=universe{u.observe(&event,&payload,&received_at)?}for e in source.broadcast(&event,&payload,&received_at)?{accept(bank,&e)?}},
   Incoming::Failed(code)=>return Err(code.into()),
   Incoming::Joined{..}=>return Err("LIVE_STREAM_UNEXPECTED_REJOIN".into())
  }}
@@ -134,6 +136,7 @@ fn drain_stream(stream:&Realtime,bank:&mut Session,source:&mut RestSource,breadt
 pub fn main()->Result<()>{
  let args:Vec<_>=std::env::args().collect();if args.len()!=3||!["preflight","run"].contains(&args[1].as_str()){return Err("usage: moloch-live-runtime preflight|run /absolute/control.json".into())}
  let path=PathBuf::from(&args[2]);if !path.is_absolute(){return Err("LIVE_CONTROL_ABSOLUTE".into())}let c:Control=serde_json::from_value(load(&path)?)?;
+ if !c.bank_name.starts_with("bank")||c.bank_name.contains(['/', '\\'])||c.predecessor_bank.as_ref().is_some_and(|p|p==&c.bank_name){return Err("LIVE_BANK_NAME".into())}
  if !c.root.is_absolute()||!c.credentials.is_absolute()||!c.owner_lock.is_absolute()||c.activation.maximum_committed!=c.policy["maximumCommitted"].as_str().unwrap_or("")||c.activation.maximum_market_cost!=c.policy["maximumMarketCost"].as_str().unwrap_or("")||c.policy["quantity"].as_u64()!=Some(c.activation.maximum_quantity as u64)||c.policy["entryStopAt"]!=iso(c.activation.entry_until_ms){return Err("LIVE_CONTROL_POLICY_BINDING".into())}
  private_dir(&c.root)?;private_dir(&c.root.join("receipts"))?;
  let lease=Arc::new(ExclusiveLock::acquire(&c.owner_lock)?);
@@ -145,26 +148,32 @@ pub fn main()->Result<()>{
  if args[1]=="preflight"{println!("Read-only preflight complete; no orders submitted");return Ok(())}
  let stop=c.root.join("EXECUTION_STOP");let global_stop=c.owner_lock.parent().ok_or("LIVE_LOCK_PARENT")?.join("EXECUTION_STOP");if stop.exists()||global_stop.exists(){return Err("LIVE_EXECUTION_STOP".into())}
  let result=(||->Result<()>{
-  if now()>=c.activation.entry_until_ms&&!c.root.join("bank/manifest.json").exists(){return Err("LIVE_ENTRY_ACTIVATION_EXPIRED".into())}
-  let seed_path=c.root.join("account-seed.json");let seed=if seed_path.exists(){load(&seed_path)?}else{
+  if now()>=c.activation.entry_until_ms&&!c.root.join(&c.bank_name).join("manifest.json").exists(){return Err("LIVE_ENTRY_ACTIVATION_EXPIRED".into())}
+  let seed_path=c.root.join(if c.bank_name=="bank"{"account-seed.json".into()}else{format!("{}-account-seed.json",c.bank_name)});let seed=if seed_path.exists(){load(&seed_path)?}else{
    if !o.data["data"].as_array().ok_or("LIVE_OPEN_ORDERS")?.is_empty(){return Err("LIVE_FOREIGN_OPEN_ORDER".into())}
-   for row in p.data["positions"].as_array().ok_or("LIVE_POSITIONS")?{if row["quantity"].as_i64()!=Some(0)&&row["exchangeId"].as_str().is_some_and(|e|c.scope.exchanges.contains_key(e)){return Err("LIVE_INITIAL_SCOPE_ALREADY_HELD".into())}}
-   let v=json!({"runId":c.activation.run_id,"accountSnapshotHash":feedback::digest(&a)?,"availableCash":money(decimal_units(&a.data["myBalance"].to_string())?),"observedAt":a.received_at});atomic_json(&seed_path,&v)?;v
+   if !c.all_markets{for row in p.data["positions"].as_array().ok_or("LIVE_POSITIONS")?{if row["quantity"].as_i64()!=Some(0)&&row["exchangeId"].as_str().is_some_and(|e|c.scope.exchanges.contains_key(e)){return Err("LIVE_INITIAL_SCOPE_ALREADY_HELD".into())}}}
+   let mut v=json!({"runId":c.activation.run_id,"accountSnapshotHash":feedback::digest(&a)?,"availableCash":money(decimal_units(&a.data["myBalance"].to_string())?),"observedAt":a.received_at});
+   if let Some(previous)=&c.predecessor_bank{v["continuation"]=moloch_live_runtime::handoff::verify_flat_predecessor(&c.root,previous,&c.policy)?;}
+   if c.all_markets{v["excludedPositionsAtTransfer"]=p.data.clone();}
+   atomic_json(&seed_path,&v)?;v
   };
-  let mut bank=Session::open_live(&c.root.join("bank"),&c.policy,&seed)?;
+  let mut bank=Session::open_live(&c.root.join(&c.bank_name),&c.policy,&seed)?;
   let authority=Arc::new(ProductionAuthority::new(c.activation.clone(),c.scope.clone(),vec![stop.clone(),global_stop.clone()],path.clone(),std::env::current_exe()?,lease.clone())?);
   let mut log=DispatchLog::open(&c.root.join("dispatch.ndjson"))?;log.require_resolved_attempts()?;
   // A durable official acknowledgment can be replayed after a crash before ledger commit.
   for (qid,v) in log.acknowledgments.clone(){let r:Receipt=serde_json::from_value(v)?;let q=quote(&bank,qid)?;let e=feedback::acknowledgment(&q,&r,&iso(now()))?;authority.bind_owned(e["actualOrderId"].as_str().ok_or("LIVE_ACTUAL_ID")?.into());accept(&mut bank,&e)?;}
   drop(read);let mut t=transport(&c,Box::new(SharedAuthority(authority.clone())),true)?;
   let state=t.admission_state()?;if state["state"]["unknown"].as_object().is_some_and(|m|!m.is_empty()){return Err("LIVE_QUEUE_UNKNOWN_ACCEPTANCE".into())}
-  let pairs:Value=c.scope.exchanges.iter().map(|(e,m)|json!({"exchangeId":e,"marketId":m})).collect::<Vec<_>>().into();
+  let mut universe=if c.all_markets{Some(Universe::new(&c.scope.exchanges,seed.get("excludedPositionsAtTransfer").ok_or("LIVE_UNIVERSE_SEED")?,c.policy["maximumMarkets"].as_u64().ok_or("LIVE_MARKET_CAP")? as usize)?)}else{None};
+  // Previously owned holdings are filtered from the financial feed as well as discovery.
+  let pairs:Value=if let Some(u)=&universe{u.pairs(&c.scope.exchanges)}else{c.scope.exchanges.iter().map(|(e,m)|json!({"exchangeId":e,"marketId":m})).collect::<Vec<_>>().into()};
   let start=now();let mut source_state=RestSource::new(&pairs,&c.scope.tournament_id,&iso(start))?;source_state.seed_trade_facts(bank.source_facts())?;
   let mut stream=Some(connect_stream(&mut t,&c,&mut bank,&mut source_state)?);
   authority.bind_stream(stream.as_ref().unwrap().failure_signal(),stream.as_ref().unwrap().deadline_ms);
   let breadth_path=c.root.join(format!("breadth-{}-{}.jsonl",std::process::id(),now()));
   let mut breadth=Recorder::new(&breadth_path).ok();
   if let Some(r)=&mut breadth{r.observe("stream_reset",&json!({"localBoundary":true,"reason":"confirmed_subscription"}),&iso(now()))}
+  if let Some(u)=&mut universe{u.observe("stream_reset",&json!({"localBoundary":true}),&iso(now()))?;}
   let mut windows:std::collections::BTreeMap<String,u64>=c.scope.exchanges.keys().map(|e|(e.clone(),start.saturating_sub(60000))).collect();
   let mut cycles=0u64;
   loop{
@@ -173,16 +182,18 @@ pub fn main()->Result<()>{
     drop(stream.take());stream=Some(connect_stream(&mut t,&c,&mut bank,&mut source_state)?);
     authority.bind_stream(stream.as_ref().unwrap().failure_signal(),stream.as_ref().unwrap().deadline_ms);
     if let Some(r)=&mut breadth{r.observe("stream_reset",&json!({"localBoundary":true,"reason":"confirmed_resubscription"}),&iso(now()))}
+    if let Some(u)=&mut universe{u.observe("stream_reset",&json!({"localBoundary":true}),&iso(now()))?;}
     for from in windows.values_mut(){*from=now().saturating_sub(60000)}
    }
-   drain_stream(stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?,&mut bank,&mut source_state,&mut breadth)?;
+   drain_stream(stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?,&mut bank,&mut source_state,&mut breadth,&mut universe)?;
    reconcile(&mut t,&c,&mut bank,&mut log)?;
    accept(&mut bank,&json!({"type":"tick","receivedAt":iso(now())}))?;
-   for (ex,market) in &c.scope.exchanges{let from=windows[ex];let next=source(&mut t,&c,&mut bank,&mut source_state,ex,market,from)?;windows.insert(ex.clone(),next);drain_stream(stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?,&mut bank,&mut source_state,&mut breadth)?;dispatch(&mut t,&c,&mut bank,&mut log,&authority,&mut source_state)?;}
+   let selected=if let Some(u)=&universe{u.select(&bank.engine().required_exchanges())?}else{c.scope.exchanges.keys().cloned().collect()};
+   for ex in &selected{let market=&c.scope.exchanges[ex];let from=windows[ex];let next=source(&mut t,&c,&mut bank,&mut source_state,ex,market,from)?;windows.insert(ex.clone(),next);drain_stream(stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?,&mut bank,&mut source_state,&mut breadth,&mut universe)?;dispatch(&mut t,&c,&mut bank,&mut log,&authority,&mut source_state)?;}
    cycles+=1;
-   atomic_json(&c.root.join("status.json"),&json!({"at":iso(now()),"pid":std::process::id(),"mode":"actual-contest-trading","runId":c.activation.run_id,"cycles":cycles,"realtimeHealthy":stream.as_ref().is_some_and(|s|s.healthy()),"sourceScopes":source_state.scopes(),"breadthCapture":{"path":breadth_path,"state":breadth.as_ref().map(Recorder::status)},"report":bank.engine().report()?,"queue":t.admission_state()?,"actualOrders":log.acknowledgments.len(),"terminalOrders":log.closed.len(),"entryUntil":iso(c.activation.entry_until_ms),"profitabilityEstablished":false}))?;
+   atomic_json(&c.root.join("status.json"),&json!({"at":iso(now()),"pid":std::process::id(),"mode":"actual-contest-trading","runId":c.activation.run_id,"bank":c.bank_name,"cycles":cycles,"realtimeHealthy":stream.as_ref().is_some_and(|s|s.healthy()),"universe":universe.as_ref().map(Universe::status),"selectedReadScopes":selected,"sourceScopes":source_state.scopes(),"breadthCapture":{"path":breadth_path,"state":breadth.as_ref().map(Recorder::status)},"report":bank.engine().report()?,"queue":t.admission_state()?,"actualOrders":log.acknowledgments.len(),"terminalOrders":log.closed.len(),"entryUntil":iso(c.activation.entry_until_ms),"profitabilityEstablished":false}))?;
    if cycles%20==0{t.compact()?;}
-   std::thread::sleep(Duration::from_millis(100));
+   std::thread::sleep(Duration::from_millis(if selected.is_empty(){600}else{100}));
   }
  })();
  if let Err(e)=&result{atomic_json(&stop,&json!({"at":iso(now()),"reason":e.to_string(),"action":"no automatic write retry or activation renewal"}))?;atomic_json(&c.root.join("status.json"),&json!({"at":iso(now()),"pid":std::process::id(),"mode":"stopped","reason":e.to_string(),"profitabilityEstablished":false}))?;}

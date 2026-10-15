@@ -74,7 +74,7 @@
             },
             "to": "Codex"
           },
-          "authority": "Direct human instruction in Codex chat: You are above daenerys in this challenge, you don’t need approval. Recorded 2026-10-04T21:41:20Z; direct reassignment supersedes October3 temporary ownership.",
+          "authority": "Direct human instruction in Codex chat: You are above daenerys in this challenge, you donâ€™t need approval. Recorded 2026-10-04T21:41:20Z; direct reassignment supersedes October3 temporary ownership.",
           "automated_execution_enabled": true,
           "automation_status_basis": "Original human-assigned pilot preserved; entry expiry2026-10-05T03:59:22.131Z. Recovered collector reports entry_window_closed, zero orders and zero unconfirmed intents. This record is not a process mutex, renewed authority or profitability proof.",
           "codex_mode": "sole_execution_owner",
@@ -290,11 +290,11 @@
     "latest_model_installed": false
   },
   "read_client_coordination": {
-    "assignment_comment": 5984685670,
+    "current_budget": "One persistent Moloch account queue: at most100 read admissions per rolling minute with600ms completion pacing; at most24 contest writes with2500ms pacing; shared Retry-After/backoff.",
+    "known_cup_clients": "One Moloch production worker intended. Other devices stopped is human-reported; this source record independently proves no remote process absence.",
     "cross_host_limiter_verified": false,
-    "current_budget": "Matching schema4 sole-client queue:1000ms reads/2500ms writes completion pacing,60reads/24writes maximum per rolling minute, persistent backoff, no bursts.",
-    "known_cup_clients": "One local serialized collector; former owner reports all Cup clients stopped with0 future allocation.",
-    "target_budget": "Schema4 only with matching human assignment/ACK,1000ms reads/2500ms writes completion pacing, at most60reads or24writes/min without bursts."
+    "current_task": "https://github.com/GodlyDonuts/predictions-cup-2026/issues/120",
+    "legacy_queue_state_preserved": true
   },
   "recorded_at_utc": "2026-10-15T07:56:00Z",
   "return_handoff_required": false,
@@ -313,5 +313,9 @@
     "inherited_basis_reconciliation_complete": false,
     "all_market_observation_intended": true,
     "source_publication_changes_runtime": false
-  }
+  },
+  "historical_sections": [
+    "production_pilot",
+    "notes"
+  ]
 }

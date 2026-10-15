@@ -1,4 +1,4 @@
-# Moloch main integration — October 15
+# Moloch main integration â€” October 15
 
 The human explicitly directed Moloch to update GitHub, take over the main directory and retain beneficial Rhaegal code. Source integration is delegated to Viserion/main-takeover-20261015 in [task #121](https://github.com/GodlyDonuts/predictions-cup-2026/issues/121); the parent remains the actual production execution owner in [task #120](https://github.com/GodlyDonuts/predictions-cup-2026/issues/120). This is a direct human assignment, not a fabricated agent RELEASE.
 
@@ -22,6 +22,6 @@ Actual order submission, fill, inventory and P&L claims require fresh official e
 
 ## Verification
 
-The source merge is conflict-free. The initial local offline Node run passed 175 checks with one skipped; three test files could not load optional reference-tool dependencies (`@supabase/supabase-js` or `ws`) in the new checkout. This is a dependency setup limitation, not a Rust production test result. Exact native/live Rust validation and deployed release evidence are recorded in the parent task and will be linked at final publication. No account request or service is launched by this integration task.
+The source merge is conflict-free. The merged local offline Node suite passes 189 checks, zero failures, with one Rust-binary-dependent parity check skipped on this Windows checkout. A frozen dependency install and declaration of the already-imported direct `ws` dependency repaired the initial reference-test setup failures. Those Node checks are separate from the actual Rust production validation. Exact native/live Rust validation and deployed release evidence are recorded in the parent task and will be linked at final publication. No account request or service is launched by this integration task.
 
 Profitability remains unproven. Source integration completion is not completion of the production-profit objective.
