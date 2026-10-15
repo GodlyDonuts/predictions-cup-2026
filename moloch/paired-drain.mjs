@@ -6,7 +6,8 @@ import {createHash} from 'node:crypto';import {fileURLToPath} from 'node:url';
 
 // One explicitly started, finite continuation. No capital reset, policy fitting,
 // auth refresh, competing collector, or automatic retry of a failed capture.
-const [sourceParent,controlParent,candidateParent,pairsFile,number,cycleArg='60']=process.argv.slice(2);
+const [sourceParent,controlParent,candidateParent,pairsFile,number,cycleArg='60',depthArg]=process.argv.slice(2);
+if(depthArg!==undefined&&(!/^\d+$/.test(depthArg)||Number(depthArg)<1||Number(depthArg)>10000))throw Error('DRAIN_EXIT_DEPTH_INVALID');
 if(!/^\d+$/.test(number??'')||!/^\d+$/.test(cycleArg)||Number(cycleArg)<1||Number(cycleArg)>60)throw Error('Usage: source-parent control-parent candidate-parent pairs phase [cycles<=60]');
 if(path.resolve(controlParent)===path.resolve(candidateParent))throw Error('DRAIN_DISTINCT_PARENTS');
 const pairs=JSON.parse(fs.readFileSync(pairsFile,'utf8'));
@@ -14,13 +15,13 @@ if(!Array.isArray(pairs)||pairs.length<1||pairs.length>4||Number(cycleArg)>Math.
 const parents=[controlParent,candidateParent].map(dir=>completedTail(dir));
 const source=path.resolve(`runtime/moloch/live-sig-20261014-${number}`),dirs=['control','candidate'].map(side=>path.resolve(`runtime/moloch/fast-${side}-20261014-${number}`));
 for(const dir of [source,...dirs])if(fs.existsSync(dir))throw Error('DRAIN_OUTPUT_EXISTS');
-const registration={schemaVersion:1,registeredAt:new Date().toISOString(),driverSha256:createHash('sha256').update(fs.readFileSync(fileURLToPath(import.meta.url))).digest('hex'),sourceParent:path.resolve(sourceParent),source,parents:parents.map(p=>({directory:p.directory,snapshotHash:p.snapshot.hash,cash:p.snapshot.state.cash,realized:p.snapshot.state.realized})),pairs,maximumCycles:Number(cycleArg),entriesEnabled:false,newAccountCapital:'0',contestOrders:0,profitabilityEstablished:false};
+const registration={schemaVersion:1,registeredAt:new Date().toISOString(),driverSha256:createHash('sha256').update(fs.readFileSync(fileURLToPath(import.meta.url))).digest('hex'),sourceParent:path.resolve(sourceParent),source,parents:parents.map(p=>({directory:p.directory,snapshotHash:p.snapshot.hash,cash:p.snapshot.state.cash,realized:p.snapshot.state.realized})),pairs,maximumCycles:Number(cycleArg),entriesEnabled:false,...(depthArg?{inventoryExitDepthBps:Number(depthArg)}:{}),newAccountCapital:'0',contestOrders:0,profitabilityEstablished:false};
 fs.writeFileSync(`data/moloch-paired-drain-registration-20261014-${number}.json`,JSON.stringify(registration,null,2)+'\n',{flag:'wx'});
 let captureFailure=null,paperFailure=null;
 const capture=live({marketId:pairs[0].marketId,exchangeId:pairs[0].exchangeId,outputDirectory:source,cycles:Number(cycleArg),resumeDirectory:sourceParent,pairsFile,restRecovery:true,drain:true,recoveryTail:parents.map(p=>p.directory),preparedRecoveryTails:parents,watchPaper:dirs,dnsReadRecovery:true,exitPriorityBooks:true}).catch(e=>{captureFailure=e;});
 while(!fs.existsSync(path.join(source,'events.jsonl'))){if(captureFailure)throw captureFailure;await new Promise(r=>setTimeout(r,250));}
 const barrier=pairedClock();
-const jobs=dirs.map((directory,i)=>run(['--input',path.join(source,'events.jsonl'),'--format','journal','--follow','--seconds','3600','--resume',parents[i].directory,'--drain','--output',directory],{processingClock:barrier.clock(i),verifiedParent:parents[i]}).catch(e=>{barrier.abort(e);throw e;}));
+const jobs=dirs.map((directory,i)=>run(['--input',path.join(source,'events.jsonl'),'--format','journal','--follow','--seconds','3600','--resume',parents[i].directory,'--drain',...(depthArg?['--drain-exit-depth-bps',depthArg]:[]),'--output',directory],{processingClock:barrier.clock(i),verifiedParent:parents[i]}).catch(e=>{barrier.abort(e);throw e;}));
 const completion=Promise.all(jobs).catch(e=>{paperFailure=e;fs.writeFileSync(path.join(source,'STOP'),'paper failure; preserve liabilities\n');});
 const closed=directory=>{
  const file=path.join(directory,'state.json');if(!fs.existsSync(file))return false;

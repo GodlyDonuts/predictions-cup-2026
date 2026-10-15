@@ -42,6 +42,7 @@ export function createMoloch(policy={}){
   check(['strictThrough','conditionalFifo'].includes(p.fillModel)&&Number.isSafeInteger(p.touchAttributionBps)&&p.touchAttributionBps>=0&&p.touchAttributionBps<=10000,'FILL_MODEL');
   check(Number.isSafeInteger(p.insideTicks)&&p.insideTicks>=0&&p.insideTicks<=3,'INSIDE_TICKS');
   check(p.entryStopAt===undefined||typeof p.entryStopAt==='string'&&Number.isFinite(ms(p.entryStopAt)),'ENTRY_STOP_CLOCK');
+  check(p.inventoryExitDepthBps===undefined||Number.isSafeInteger(p.inventoryExitDepthBps)&&p.inventoryExitDepthBps>0&&p.inventoryExitDepthBps<=10000,'INVENTORY_EXIT_DEPTH');
   check(p.entryBackoffTicks===undefined||Number.isSafeInteger(p.entryBackoffTicks)&&p.entryBackoffTicks>=0&&p.entryBackoffTicks<=10&&p.insideTicks===0,'ENTRY_BACKOFF');
   check(Number.isSafeInteger(p.renewBeforeMs)&&p.renewBeforeMs>=0&&p.renewBeforeMs<p.lifetimeMs-p.latencyMs-p.minimumQuoteAgeMs,'RENEWAL_WINDOW');
   for(const k of ['quantity','maximumMarkets','latencyMs','lifetimeMs','bookAgeMs','maximumSourceSilenceMs','minimumSpreadTicks','participationBps','minimumQuoteAgeMs','writeGapMs','writesPerMinute'])check(Number.isSafeInteger(p[k])&&p[k]>0,'POLICY_'+k);
@@ -101,7 +102,7 @@ function desired(s,at){
       const birth=!lastBuy?null:s.policy.inventoryAgeClock==='execution'?p[side].reduce((oldest,l)=>Math.min(oldest,ms(l.executedAt)),Infinity):ms(lastBuy.at);
       const maximumAge=birth!==null&&s.policy.maximumInventoryAgeMs!==undefined&&at-birth>=s.policy.maximumInventoryAgeMs;
       const profitableAge=birth!==null&&s.policy.inventoryTakerAfterMs!==undefined&&at-birth>=s.policy.inventoryTakerAfterMs&&executable-worstBasis-fee(worstBasis,1,s.policy)-fee(executable,1,s.policy)>=amount(s.policy.inventoryMinimumGain??'0.000000');
-      if(quantity>0&&(maximumAge||profitableAge)){candidates.push({marketId:b.marketId,exchangeId:b.exchangeId,side,action:'sell',quantity,price:money(executable),executionStyle:'inventoryAON',...(maximumAge?{inventoryExitReason:'maximumAge'}:{}),rank:1e12,source:b});continue;}
+      if(quantity>0&&(maximumAge||profitableAge)){const exitQuantity=s.policy.inventoryExitDepthBps===undefined?quantity:Math.min(quantity,Number(BigInt(side==='YES'?b.bids[0].quantity:b.asks[0].quantity)*BigInt(s.policy.inventoryExitDepthBps)/10000n));if(!exitQuantity)continue;candidates.push({marketId:b.marketId,exchangeId:b.exchangeId,side,action:'sell',quantity:exitQuantity,price:money(executable),executionStyle:'inventoryAON',...(maximumAge?{inventoryExitReason:'maximumAge'}:{}),rank:1e12,source:b});continue;}
       if(s.policy.repriceProfitableHedge&&!maximumAge&&!profitableAge&&entryAllowed(s,b.exchangeId)){
         const hedgeSide=side==='YES'?'NO':'YES',limit=side==='YES'?SCALE-bestAsk:bestBid,worst=p[side].reduce((n,l)=>amount(l.price)>n?amount(l.price):n,0n),existingHedge=unresolved(s).filter(q=>q.exchangeId===b.exchangeId&&q.side===hedgeSide&&q.action==='buy'&&end(q)>at).reduce((n,q)=>n+remaining(q),0),quantity=Math.min(s.policy.quantity,available+existingHedge);
         if(quantity>0&&SCALE-worst-limit-fee(worst,1,s.policy)-fee(limit,1,s.policy)>=amount(s.policy.minimumEdge)){candidates.push({marketId:b.marketId,exchangeId:b.exchangeId,side:hedgeSide,action:'buy',quantity,price:money(limit),hedgeForSide:side,rank:1e12,source:b});continue;}
