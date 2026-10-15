@@ -2,6 +2,15 @@
 
 ## October 15 V28 signed portfolio and quote-priority launch
 
+Source follow-up: end-of-cycle discovery now refreshes the existing relationship,
+constraint, collateral and account census no more than once per five minutes,
+after ordinary trading has run, even while certificate approval is empty.
+Previously the package scan returned before refreshing and the end-of-cycle
+fallback captured only once, so a running empty-registry worker could not notice
+new official relationships. All actual pagination/admissions still use the same
+Transport and limiter; this creates no approval or order. This follow-up is not
+part of V28 and remains undeployed until checked.
+
 Checked main342ed3a8 passes187 native/204 SDK/443 runtime checks and its locked ARM64 release. V28 PID292646 started23:06:27UTC after full fresh114,865-event financial parity, all554 acknowledged physical attempts and an actually quiet original account queue. The exact immutable binary hash and absent STOP verify at23:06:48UTC; fresh trading remains pending history restoration. [Complete launch evidence](../research/moloch-quote-priority-20261015/production-rollout.json).
 
 Certified held-portfolio acquisition and whole-package unwind now share the original native bank, Transport, journal and authority. Ordinary dispatch prioritizes urgent exits and competitive quotes before and after fresh preflight; it retains original prices and risk limits. The causal observer records original owned attempts/fills/source coverage but does not yet drive allocation or quote selection. Native collateral accounting and original-receipt adapters are checked source; the live mixed worker still refuses enabling collateral accounting. Empty independent certificate approval creates zero package orders. These engineering changes establish neither executable alpha nor profitability.

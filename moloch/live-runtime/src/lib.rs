@@ -37,3 +37,4 @@ pub mod package_portfolio_feedback;
 pub mod collateral_feedback;
 pub mod package_portfolio_worker;
 pub mod quote_priority;
+pub mod package_allocation;

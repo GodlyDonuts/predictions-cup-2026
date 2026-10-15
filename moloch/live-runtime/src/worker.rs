@@ -15,6 +15,7 @@ use std::{fs,path::{Path,PathBuf},sync::Arc,time::{SystemTime,UNIX_EPOCH,Duratio
 struct Control{#[serde(default)]collateral_accounting:bool,#[serde(default)]execution_model:Option<moloch_live_runtime::execution_edge::Config>,#[serde(default)]packages:Option<moloch_live_runtime::package_settings::Settings>,#[serde(default)]daily_entry_windows:Option<moloch_live_runtime::daily_windows::DailyEntryWindows>,activation:Activation,scope:Scope,policy:Value,root:PathBuf,credentials:PathBuf,owner_lock:PathBuf,account_scope:String,#[serde(default)]all_markets:bool,#[serde(default="default_bank")]bank_name:String,#[serde(default)]predecessor_bank:Option<String>,#[serde(default)]manage_existing_positions:bool}
 fn default_bank()->String{"bank".into()}
 const MAX_REALTIME_FRAMES_PER_DRAIN:usize=64;
+const RELATIONSHIP_CENSUS_REFRESH_MS:u64=300_000;
 fn now()->u64{SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_millis() as u64}
 fn iso(t:u64)->String{chrono::DateTime::from_timestamp_millis(t as i64).unwrap().to_rfc3339_opts(chrono::SecondsFormat::Millis,true)}
 fn hash(v:&Value)->String{format!("{:x}",Sha256::digest(serde_json::to_vec(v).unwrap()))}
@@ -660,9 +661,11 @@ pub fn main()->Result<()>{
    }
    cycles+=1; if let Some(model)=moloch_live_runtime::execution_edge::observer_diagnostic(){let _=atomic_json(&c.root.join("execution-model.json"),&json!({"at":iso(now()),"model":model,"executionAuthority":false}));}
    atomic_json(&c.root.join("status.json"),&json!({"at":iso(now()),"pid":std::process::id(),"mode":"actual-contest-trading","runId":c.activation.run_id,"bank":c.bank_name,"cycles":cycles,"realtimeHealthy":stream.as_ref().is_some_and(|s|s.healthy()),"universe":universe.as_ref().map(Universe::status),"selectedReadScopes":selected,"ownedReconciliation":reconciled,"sourceScopes":source_state.scopes(),"breadthCapture":{"path":breadth_path,"state":breadth.as_ref().map(Recorder::status)},"report":bank.engine().report()?,"queue":t.admission_state()?,"actualOrders":log.acknowledgments.len(),"terminalOrders":log.closed.len(),"entryAnchor":iso(c.activation.entry_until_ms),"entryUntil":iso(authority.entry_until_ms()),"profitabilityEstablished":false}))?;
-   // Existing orders and the first trading cycle precede optional research reads.
-   // Diagnostic persistence never blocks the financial journal or ordinary trading.
-   if relationship_census.is_none(){let census=moloch_live_runtime::relationship_census::capture(&mut t,&c.scope,&c.root.join("relationship-receipts"),&[]);if let Ok(report)=serde_json::to_value(&census.report){let _=atomic_json(&c.root.join("relationship-census.json"),&report);}relationship_census=Some(census);}
+   // Ordinary trading precedes optional discovery. Empty certificate approval
+   // must not freeze official relationship/collateral discovery until restart.
+   // Four logical surfaces share the actual Transport, including all pagination
+   // admissions/backoff; at most one census per five minutes on this path.
+   if relationship_census.as_ref().is_none_or(|v|now().saturating_sub(v.report.completed_at_ms)>=RELATIONSHIP_CENSUS_REFRESH_MS){let census=moloch_live_runtime::relationship_census::capture(&mut t,&c.scope,&c.root.join("relationship-receipts"),&[]);if let Ok(report)=serde_json::to_value(&census.report){let _=atomic_json(&c.root.join("relationship-census.json"),&report);}relationship_census=Some(census);}
    if cycles%20==0{t.compact()?;}
    std::thread::sleep(Duration::from_millis(if selected.is_empty(){600}else{100}));
    Ok(())})();
