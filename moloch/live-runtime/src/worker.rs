@@ -10,7 +10,7 @@ use sha2::{Digest,Sha256};
 use std::{fs,path::{Path,PathBuf},sync::Arc,time::{SystemTime,UNIX_EPOCH,Duration}};
 #[derive(Clone,Serialize,Deserialize)]
 #[serde(rename_all="camelCase",deny_unknown_fields)]
-struct Control{activation:Activation,scope:Scope,policy:Value,root:PathBuf,credentials:PathBuf,owner_lock:PathBuf,account_scope:String,#[serde(default)]all_markets:bool,#[serde(default="default_bank")]bank_name:String,#[serde(default)]predecessor_bank:Option<String>}
+struct Control{activation:Activation,scope:Scope,policy:Value,root:PathBuf,credentials:PathBuf,owner_lock:PathBuf,account_scope:String,#[serde(default)]all_markets:bool,#[serde(default="default_bank")]bank_name:String,#[serde(default)]predecessor_bank:Option<String>,#[serde(default)]manage_existing_positions:bool}
 fn default_bank()->String{"bank".into()}
 fn now()->u64{SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_millis() as u64}
 fn iso(t:u64)->String{chrono::DateTime::from_timestamp_millis(t as i64).unwrap().to_rfc3339_opts(chrono::SecondsFormat::Millis,true)}
@@ -158,13 +158,19 @@ pub fn main()->Result<()>{
    atomic_json(&seed_path,&v)?;v
   };
   let mut bank=Session::open_live(&c.root.join(&c.bank_name),&c.policy,&seed)?;
+  if c.manage_existing_positions&&bank.engine().report()?.get("inheritedInventory").is_none(){
+   let event=moloch_live_runtime::inventory::adoption(&p,bank.engine(),&c.scope.tournament_id,&c.scope.tournament_slug,&c.scope.exchanges,&iso(now()))?;
+   accept(&mut bank,&event)?;atomic_json(&c.root.join("inherited-position-transfer.json"),&json!({"positionsReceipt":p,"event":event,"report":bank.engine().report()?,"sourceBankPreserved":true}))?;
+  }
   let authority=Arc::new(ProductionAuthority::new(c.activation.clone(),c.scope.clone(),vec![stop.clone(),global_stop.clone()],path.clone(),std::env::current_exe()?,lease.clone())?);
   let mut log=DispatchLog::open(&c.root.join("dispatch.ndjson"))?;log.require_resolved_attempts()?;
   // A durable official acknowledgment can be replayed after a crash before ledger commit.
   for (qid,v) in log.acknowledgments.clone(){let r:Receipt=serde_json::from_value(v)?;let q=quote(&bank,qid)?;let e=if let Some(recovery)=log.recovered.get(&qid){feedback::recovered_acknowledgment(&q,recovery["actualOrderId"].as_str().ok_or("LIVE_RECOVERY_ACTUAL_ID")?,&c.scope.tournament_id,&r,&serde_json::from_value(recovery["fills"].clone())?,&iso(now()))?}else{feedback::acknowledgment(&q,&r,&iso(now()))?};authority.bind_owned(e["actualOrderId"].as_str().ok_or("LIVE_ACTUAL_ID")?.into());accept(&mut bank,&e)?;}
   drop(read);let mut t=transport(&c,Box::new(SharedAuthority(authority.clone())),true)?;
   let state=t.admission_state()?;if state["state"]["unknown"].as_object().is_some_and(|m|!m.is_empty()){return Err("LIVE_QUEUE_UNKNOWN_ACCEPTANCE".into())}
-  let mut universe=if c.all_markets{Some(Universe::new(&c.scope.exchanges,seed.get("excludedPositionsAtTransfer").ok_or("LIVE_UNIVERSE_SEED")?,c.policy["maximumMarkets"].as_u64().ok_or("LIVE_MARKET_CAP")? as usize)?)}else{None};
+  let fully_managed=bank.engine().report()?.get("inheritedInventory").is_some();
+  let empty_positions=json!({"positions":[]});
+  let mut universe=if c.all_markets{Some(Universe::new(&c.scope.exchanges,if fully_managed{&empty_positions}else{seed.get("excludedPositionsAtTransfer").ok_or("LIVE_UNIVERSE_SEED")?},c.policy["maximumMarkets"].as_u64().ok_or("LIVE_MARKET_CAP")? as usize)?)}else{None};
   // Previously owned holdings are filtered from the financial feed as well as discovery.
   let pairs:Value=if let Some(u)=&universe{u.pairs(&c.scope.exchanges)}else{c.scope.exchanges.iter().map(|(e,m)|json!({"exchangeId":e,"marketId":m})).collect::<Vec<_>>().into()};
   let start=now();let mut source_state=RestSource::new(&pairs,&c.scope.tournament_id,&iso(start))?;source_state.seed_trade_facts(bank.source_facts())?;
@@ -188,7 +194,7 @@ pub fn main()->Result<()>{
    drain_stream(stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?,&mut bank,&mut source_state,&mut breadth,&mut universe)?;
    reconcile(&mut t,&c,&mut bank,&mut log)?;
    accept(&mut bank,&json!({"type":"tick","receivedAt":iso(now())}))?;
-   let selected=if let Some(u)=&universe{u.select(&bank.engine().required_exchanges())?}else{c.scope.exchanges.keys().cloned().collect()};
+   let selected=if let Some(u)=&mut universe{u.select(&bank.engine().required_exchanges())?}else{c.scope.exchanges.keys().cloned().collect()};
    for ex in &selected{let market=&c.scope.exchanges[ex];let from=windows[ex];let next=source(&mut t,&c,&mut bank,&mut source_state,ex,market,from)?;windows.insert(ex.clone(),next);drain_stream(stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?,&mut bank,&mut source_state,&mut breadth,&mut universe)?;dispatch(&mut t,&c,&mut bank,&mut log,&authority,&mut source_state)?;}
    cycles+=1;
    atomic_json(&c.root.join("status.json"),&json!({"at":iso(now()),"pid":std::process::id(),"mode":"actual-contest-trading","runId":c.activation.run_id,"bank":c.bank_name,"cycles":cycles,"realtimeHealthy":stream.as_ref().is_some_and(|s|s.healthy()),"universe":universe.as_ref().map(Universe::status),"selectedReadScopes":selected,"sourceScopes":source_state.scopes(),"breadthCapture":{"path":breadth_path,"state":breadth.as_ref().map(Recorder::status)},"report":bank.engine().report()?,"queue":t.admission_state()?,"actualOrders":log.acknowledgments.len(),"terminalOrders":log.closed.len(),"entryUntil":iso(c.activation.entry_until_ms),"profitabilityEstablished":false}))?;

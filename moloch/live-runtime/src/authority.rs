@@ -30,7 +30,7 @@ impl ProductionAuthority {
   let ex=quote["exchangeId"].as_str().ok_or("LIVE_INTENT_SCOPE")?;
   let expected_signed=bank.engine().wallet.quantity(ex,moloch_replay::Side::Yes) as i128-bank.engine().wallet.quantity(ex,moloch_replay::Side::No) as i128;
   let market_cost=bank.engine().wallet.market_cost(ex)+bank.engine().order_records().iter().filter(|q|q["exchangeId"]==ex&&q["action"]=="buy"&&q["retired"]==false).map(|q|decimal_units(q["price"].as_str().unwrap_or("invalid")).map(|p|p*(q["quantity"].as_u64().unwrap_or(0)-q["filled"].as_u64().unwrap_or(0)) as i128)).collect::<std::result::Result<Vec<_>,_>>()?.iter().sum::<i128>();
-  let expected_cash=decimal_units(bank.live_account_seed().ok_or("LIVE_ACCOUNT_SEED")?["availableCash"].as_str().ok_or("LIVE_ACCOUNT_SEED")?)?+bank.engine().wallet.cash-bank.engine().wallet.initial;
+  let expected_cash=decimal_units(bank.live_account_seed().ok_or("LIVE_ACCOUNT_SEED")?["availableCash"].as_str().ok_or("LIVE_ACCOUNT_SEED")?)?+bank.engine().wallet.cash-bank.engine().wallet.initial+bank.engine().opening_inventory_cost();
   *self.ready.lock().unwrap()=Some(Ready{spec,permit,quote,ledger:bank.engine().report()?,snapshots,owned,expected_signed,market_cost,expected_cash});Ok(())
  }
  fn check(&self,scope:&Scope,spec:&RequestSpec,p:&Permit,network:bool,now:u64)->Result<()> {
