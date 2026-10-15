@@ -1,7 +1,7 @@
 //! Offline adapter from an already received canonical census to exact packages.
 //! No files, network, account mutation or execution authority.
 use crate::relationship_census::{Availability,Census};
-use baal_transport_service::{Receipt,decimal_units};
+use baal_transport_service::{Receipt,Scope,decimal_units};
 use baal_transport_service::relationships::{self,DirectionKind,NodeRole,Relationship,RelationshipStatus,RelationshipType};
 use moloch_relationship_arbitrage::{self as arb,Book,Contract,Declaration,Instrument,Logic,Plan,Settlement,Side,Source};
 use serde::{Deserialize,Serialize};
@@ -44,6 +44,10 @@ pub struct ContractCertificate {
  /// Exact canonical node outcome label; meaning reviewed by the verifier.
  pub canonical_outcome:String,
  pub rule_receipt_sha256:String,pub rule_endpoint:String,
+ /// V2 binds every field of the reviewed rule body, independently of receipt
+ /// transport clocks. None preserves the exact V1 serialization/hash.
+ #[serde(default,skip_serializing_if="Option::is_none")]
+ pub rule_data_sha256:Option<String>,
  pub ordinary_yes_payout:String,pub ordinary_no_payout:String,
  pub ordinary_no_yes_payout:String,pub ordinary_no_no_payout:String,
  pub terminal_rules_complete:bool,pub exceptions:Vec<ExceptionalPayout>,
@@ -54,6 +58,14 @@ pub struct ExceptionalPayout {pub yes_payout:String,pub no_payout:String}
 
 pub fn certificate_sha256(c:&SettlementCertificate)->Result<String>{hash(c)}
 pub fn canonical_relationship_sha256(r:&Relationship)->Result<String>{hash(r)}
+/// V2 semantic digest removes ONLY dynamic node.currentPrice. Version, status,
+/// timestamps, direction, contracts, predicates and all other typed fields stay.
+pub fn relationship_semantics_sha256(r:&Relationship)->Result<String>{
+ let mut v=serde_json::to_value(r).map_err(|_|"STRATEGY_SERIALIZATION")?;
+ for n in v["nodes"].as_array_mut().ok_or("STRATEGY_CANONICAL_SCHEMA")?{n.as_object_mut().ok_or("STRATEGY_CANONICAL_SCHEMA")?.remove("currentPrice");}
+ hash(&v)
+}
+pub fn rule_data_sha256(r:&Receipt)->Result<String>{hash(&r.data)}
 pub fn receipt_sha256(r:&Receipt)->Result<String>{hash(r)}
 
 pub struct Certificates<'a> {
@@ -61,7 +73,9 @@ pub struct Certificates<'a> {
  /// Independently approved by the existing owner/verifier. Merely loading a
  /// supplied certificate must not add its own digest to this set.
  pub trusted_sha256:&'a BTreeSet<String>,
- /// Already received official contract/node receipts, not URLs to fetch.
+ /// Already received official rule receipts AND original reviewed relationship
+ /// attestation receipts. These are evidence, never URLs to fetch. V2 keeps the
+ /// immutable original attestation while independently validating current data.
  pub rule_receipts:&'a [Receipt],
 }
 #[derive(Debug,Clone)]
@@ -129,6 +143,53 @@ fn canonical_source(census:&Census,receipt:&Receipt,p:&Policy)->Result<Source>{
  Ok(source)
 }
 
+fn relationship_endpoint(endpoint:&str,scope:&Scope)->bool{
+ let mut pieces=endpoint.split('?');if pieces.next()!=Some("/relationships"){return false}
+ let Some(query)=pieces.next() else{return false};if pieces.next().is_some(){return false}
+ let ids:Vec<_>=query.split('&').filter_map(|v|v.strip_prefix("tournamentId=")).collect();
+ ids.len()==1&&ids[0]==scope.tournament_id
+}
+fn rule_scope(r:&Receipt,c:&ContractCertificate,scope:&Scope,v2:bool)->Result<()>{
+ let market=r.data.get("market_id").or_else(||r.data.get("id")).and_then(|v|v.as_str().map(str::to_owned).or_else(||v|v.as_u64().map(|n|n.to_string())));
+ need(market.as_ref()==Some(&c.market_id),"STRATEGY_RULE_MARKET_SCOPE")?;
+ if !v2{return need(r.endpoint==c.rule_endpoint&&(r.endpoint==format!("/markets/{}/nodes",c.market_id)||r.endpoint==format!("/markets/{}",c.market_id)),"STRATEGY_RULE_ENDPOINT")}
+ need(scope.exchanges.get(&c.exchange_id)==Some(&c.market_id),"STRATEGY_RULE_MARKET_SCOPE")?;
+ let mut parts=r.endpoint.split('?');let base=parts.next().unwrap_or("");
+ need(base==format!("/markets/{}/nodes",c.market_id)||base==format!("/markets/{}",c.market_id),"STRATEGY_RULE_ENDPOINT")?;
+ if let Some(query)=parts.next(){need(parts.next().is_none()&&query==format!("tournamentId={}",scope.tournament_id),"STRATEGY_RULE_TOURNAMENT_SCOPE")?;}
+ for key in ["tournamentId","tournament_id"]{if let Some(t)=r.data.get(key){need(t.as_str()==Some(scope.tournament_id.as_str()),"STRATEGY_RULE_TOURNAMENT_SCOPE")?;}}
+ Ok(())
+}
+/// Selects verified CURRENT rule evidence, suitable for admission expiry.
+/// V1 preserves exact original freshness. V2 compares every rule-body field and
+/// never lets older matching evidence hide a newer changed/unsuccessful receipt.
+pub fn validated_rule_receipt<'a>(cert:&SettlementCertificate,c:&ContractCertificate,certificates:&Certificates<'a>,scope:&Scope,p:&Policy)->Result<&'a Receipt>{
+ need(matches!(cert.version,1|2),"STRATEGY_CERTIFICATE_BINDING")?;
+ let originals:Vec<_>=certificates.rule_receipts.iter().filter(|r|hash(*r).ok().as_ref()==Some(&c.rule_receipt_sha256)).collect();
+ need(originals.len()==1,"STRATEGY_RULE_RECEIPT_MISSING_OR_AMBIGUOUS")?;let original=originals[0];
+ rule_scope(original,c,scope,cert.version==2)?;
+ if cert.version==1{fresh(original,p.now_ms,p.max_rule_age_ms)?;return Ok(original)}
+ need(original.endpoint==c.rule_endpoint&&original.status==200&&clock(&original.request_started_at)?<=clock(&original.received_at)?&&clock(&original.received_at)?<=cert.issued_at_ms,"STRATEGY_RULE_ATTESTATION_BINDING")?;
+ let expected=c.rule_data_sha256.as_ref().ok_or("STRATEGY_RULE_DATA_HASH_REQUIRED")?;
+ need(rule_data_sha256(original)?==*expected,"STRATEGY_RULE_DATA_CHANGED")?;
+ let base=original.endpoint.split('?').next().unwrap_or("");let mut candidates=Vec::new();
+ for r in certificates.rule_receipts{
+  if r.endpoint.split('?').next()==Some(base){rule_scope(r,c,scope,true)?;candidates.push((clock(&r.received_at)?,clock(&r.request_started_at)?,r));}
+ }
+ let latest=candidates.iter().map(|(received,started,_)|(*received,*started)).max().ok_or("STRATEGY_RULE_RECEIPT_MISSING_OR_AMBIGUOUS")?;
+ let current:Vec<_>=candidates.iter().filter(|(r,s,_)|(*r,*s)==latest).map(|(_,_,r)|*r).collect();
+ need(current.len()==1,"STRATEGY_RULE_RECEIPT_MISSING_OR_AMBIGUOUS")?;let r=current[0];
+ fresh(r,p.now_ms,p.max_rule_age_ms)?;need(rule_data_sha256(r)?==*expected,"STRATEGY_RULE_DATA_CHANGED")?;Ok(r)
+}
+fn validate_v2_attestation(row:&Relationship,cert:&SettlementCertificate,certificates:&Certificates<'_>,scope:&Scope)->Result<()>{
+ let originals:Vec<_>=certificates.rule_receipts.iter().filter(|r|hash(*r).ok().as_ref()==Some(&cert.relationship_receipt_sha256)).collect();
+ need(originals.len()==1,"STRATEGY_RELATIONSHIP_ATTESTATION_MISSING_OR_AMBIGUOUS")?;let r=originals[0];
+ need(r.status==200&&relationship_endpoint(&r.endpoint,scope)&&clock(&r.request_started_at)?<=clock(&r.received_at)?&&clock(&r.received_at)?<=cert.issued_at_ms,"STRATEGY_RELATIONSHIP_ATTESTATION_BINDING")?;
+ let list=relationships::parse_list(&r.data,scope).map_err(|_|"STRATEGY_CANONICAL_SCHEMA")?;need(!list.pagination.has_more,"STRATEGY_RELATIONSHIPS_INCOMPLETE")?;
+ let matches:Vec<_>=list.data.iter().filter(|old|old.id==row.id).collect();need(matches.len()==1,"STRATEGY_RELATIONSHIP_ATTESTATION_BINDING")?;let old=matches[0];
+ need(old.status==RelationshipStatus::Active&&old.version==cert.relationship_version&&relationship_semantics_sha256(old)?==cert.canonical_relationship_sha256&&relationship_semantics_sha256(row)?==cert.canonical_relationship_sha256,"STRATEGY_CERTIFICATE_BINDING")
+}
+
 fn compile_row(row:&Relationship,census:&Census,source:&Source,certificates:&Certificates<'_>,p:&Policy)->Result<(arb::Compiled,String)>{
  need(row.status==RelationshipStatus::Active,"STRATEGY_RELATIONSHIP_INACTIVE")?;
  need((2..=3).contains(&row.nodes.len()),"STRATEGY_COMPONENT_SIZE")?;
@@ -139,7 +200,8 @@ fn compile_row(row:&Relationship,census:&Census,source:&Source,certificates:&Cer
  need(matching.len()==1,"STRATEGY_CERTIFICATE_MISSING_OR_AMBIGUOUS")?;
  let cert=matching[0];let digest=certificate_sha256(cert)?;
  need(certificates.trusted_sha256.contains(&digest),"STRATEGY_CERTIFICATE_NOT_APPROVED")?;
- need(cert.version==1&&cert.tournament_id==census.cache.scope.tournament_id&&cert.relationship_version==row.version&&cert.canonical_relationship_sha256==hash(row)?&&cert.relationship_receipt_sha256==source.sha256,"STRATEGY_CERTIFICATE_BINDING")?;
+ need(matches!(cert.version,1|2)&&cert.tournament_id==census.cache.scope.tournament_id&&cert.relationship_version==row.version,"STRATEGY_CERTIFICATE_BINDING")?;
+ if cert.version==1{need(cert.canonical_relationship_sha256==hash(row)?&&cert.relationship_receipt_sha256==source.sha256,"STRATEGY_CERTIFICATE_BINDING")?;}else{validate_v2_attestation(row,cert,certificates,&census.cache.scope)?;}
  need(cert.issued_at_ms<=p.now_ms&&p.now_ms<cert.expires_at_ms&&!cert.verifier_id.is_empty()&&cert.verifier_id.len()<=256&&!cert.verifier_id.chars().any(char::is_control),"STRATEGY_CERTIFICATE_CLOCK_OR_VERIFIER")?;
  need(cert.contracts.len()==row.nodes.len(),"STRATEGY_CERTIFICATE_CONTRACTS")?;
  let logic=match (&cert.logic,row.r#type) {
@@ -151,18 +213,15 @@ fn compile_row(row:&Relationship,census:&Census,source:&Source,certificates:&Cer
  for (n,c) in row.nodes.iter().zip(&cert.contracts){
   need(n.exchange_id==c.exchange_id&&n.market_id.as_ref()==Some(&c.market_id)&&n.contract_id.as_ref()==Some(&c.contract_id)&&n.outcome.as_ref()==Some(&c.canonical_outcome)&&census.cache.scope.exchanges.get(&c.exchange_id)==Some(&c.market_id),"STRATEGY_CERTIFICATE_CONTRACT_SCOPE")?;
   need(exact(&c.ordinary_yes_payout)?==arb::UNIT&&exact(&c.ordinary_no_payout)?==0&&exact(&c.ordinary_no_yes_payout)?==0&&exact(&c.ordinary_no_no_payout)?==arb::UNIT&&c.terminal_rules_complete,"STRATEGY_ORDINARY_PAYOFF_UNVERIFIED")?;
-  let receipts:Vec<_>=certificates.rule_receipts.iter().filter(|r|hash(*r).ok().as_ref()==Some(&c.rule_receipt_sha256)).collect();
-  need(receipts.len()==1,"STRATEGY_RULE_RECEIPT_MISSING_OR_AMBIGUOUS")?;let r=receipts[0];
-  need(r.endpoint==c.rule_endpoint&&(r.endpoint==format!("/markets/{}/nodes",c.market_id)||r.endpoint==format!("/markets/{}",c.market_id)),"STRATEGY_RULE_ENDPOINT")?;
-  let receipt_market=r.data.get("market_id").or_else(||r.data.get("id")).and_then(|v|v.as_str().map(str::to_owned).or_else(||v.as_u64().map(|n|n.to_string())));
-  need(receipt_market.as_ref()==Some(&c.market_id),"STRATEGY_RULE_MARKET_SCOPE")?;
+  let r=validated_rule_receipt(cert,c,certificates,&census.cache.scope,p)?;
   let rule_source=fresh(r,p.now_ms,p.max_rule_age_ms)?;oldest_rule=oldest_rule.min(rule_source.received_ms);
   let exceptions=c.exceptions.iter().map(|e|Ok((exact(&e.yes_payout)?,exact(&e.no_payout)?))).collect::<Result<Vec<_>>>()?;
   contracts.push(Contract{exchange_id:c.exchange_id.clone(),market_id:c.market_id.clone(),contract_id:c.contract_id.clone(),settlement:Settlement::Verified{rules:rule_source,complete:true,exceptions}});
  }
  // The approved certificate binds the complete relation interpretation and all
  // underlying rule hashes. It is not an API receipt or a discovered payout floor.
- let proof=Source{sha256:digest.clone(),received_ms:cert.issued_at_ms.min(oldest_rule)};
+ // V2 time is revalidation against current evidence, never new approval.
+ let proof=Source{sha256:digest.clone(),received_ms:if cert.version==2{source.received_ms.min(oldest_rule)}else{cert.issued_at_ms.min(oldest_rule)}};
  let compiled=arb::compile(contracts,&[Declaration{relationship_id:row.id.clone(),version:row.version,active:true,source:source.clone(),settlement_logic_source:Some(proof),logic}],p.now_ms,p.max_rule_age_ms.max(p.max_relationship_age_ms))?;
  Ok((compiled,digest))
 }
@@ -178,6 +237,7 @@ pub fn analyze(census:&Census,canonical_receipt:&Receipt,certificates:&Certifica
  if rows.len()>4096{block(&mut a,"STRATEGY_RELATIONSHIP_BUDGET");return a}
  for row in rows{
   if row.status==RelationshipStatus::Active&&matches!(row.r#type,RelationshipType::MutuallyExclusive|RelationshipType::Complementary){a.public.supported_active_relationships+=1;}
+  if certificates.values.iter().any(|c|c.relationship_id==row.id&&c.version==2)&&!relationship_endpoint(&canonical_receipt.endpoint,&census.cache.scope){block(&mut a,"STRATEGY_RELATIONSHIP_RECEIPT_BINDING");continue}
   let (compiled,digest)=match compile_row(row,census,&source,certificates,p){Ok(c)=>c,Err(e)=>{block(&mut a,e);continue}};
   a.public.certified_components+=1;
   let normalized:Vec<_>=compiled.contracts().iter().filter_map(|c|books.get(&c.exchange_id).cloned()).collect();
