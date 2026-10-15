@@ -1,6 +1,7 @@
 import {amount,money,price,SCALE,TICK,fee} from '../paper/fixed.mjs';
 import {instantNs,timestamp} from '../feed/contract.mjs';
 import {payloadHash} from '../execution/ledger.mjs';
+import {observeEntryFlow,currentFlowReady} from './entry-flow.mjs';
 
 export const DEFAULT_POLICY=Object.freeze({initialCash:'1000.000000',maximumCommitted:'40.000000',
   maximumMarketCost:'10.000000',quantity:5,maximumMarkets:4,latencyMs:3000,lifetimeMs:120000,
@@ -42,6 +43,7 @@ export function createMoloch(policy={}){
   check(['strictThrough','conditionalFifo'].includes(p.fillModel)&&Number.isSafeInteger(p.touchAttributionBps)&&p.touchAttributionBps>=0&&p.touchAttributionBps<=10000,'FILL_MODEL');
   check(Number.isSafeInteger(p.insideTicks)&&p.insideTicks>=0&&p.insideTicks<=3,'INSIDE_TICKS');
   check(p.entryStopAt===undefined||typeof p.entryStopAt==='string'&&Number.isFinite(ms(p.entryStopAt)),'ENTRY_STOP_CLOCK');
+  check(p.requireCurrentFlow===undefined||typeof p.requireCurrentFlow==='boolean','CURRENT_FLOW_POLICY');
   check(p.inventoryExitDepthBps===undefined||Number.isSafeInteger(p.inventoryExitDepthBps)&&p.inventoryExitDepthBps>0&&p.inventoryExitDepthBps<=10000,'INVENTORY_EXIT_DEPTH');
   check(p.entryBackoffTicks===undefined||Number.isSafeInteger(p.entryBackoffTicks)&&p.entryBackoffTicks>=0&&p.entryBackoffTicks<=10&&p.insideTicks===0,'ENTRY_BACKOFF');
   check(Number.isSafeInteger(p.renewBeforeMs)&&p.renewBeforeMs>=0&&p.renewBeforeMs<p.lifetimeMs-p.latencyMs-p.minimumQuoteAgeMs,'RENEWAL_WINDOW');
@@ -117,7 +119,7 @@ function desired(s,at){
       if(quantity>0)candidates.push({marketId:b.marketId,exchangeId:b.exchangeId,side,action:'sell',quantity,price:money(exitPrice),rank:1e12,source:b});
       continue;
     }
-    if(!entryAllowed(s,b.exchangeId)||spread<TICK*BigInt(s.policy.minimumSpreadTicks))continue;
+    if(!entryAllowed(s,b.exchangeId)||!currentFlowReady(s,b,at)||spread<TICK*BigInt(s.policy.minimumSpreadTicks))continue;
     for(let step=0;step<(s.policy.insideTicks??0);step++){
       const sides=micro-bid>=ask-micro?['YES','NO']:['NO','YES'];
       for(const side of sides){const nextBid=bid+(side==='YES'?TICK:0n),nextAsk=ask-(side==='NO'?TICK:0n),limit=side==='YES'?nextBid:SCALE-nextAsk,value=side==='YES'?micro:SCALE-micro;
@@ -244,6 +246,7 @@ export function advanceMoloch(s,event){
     // Complete original quote window plus a post-end engine barrier, not wall time alone.
     for(const q of unresolved(s).filter(q=>q.marketId===event.marketId&&q.exchangeId===event.exchangeId&&q.tournamentId===event.tournamentId))if(q.barrier&&q.barrier.endAt===end(q)&&ns(event.from)<=BigInt(q.activationAt)*1000000n&&ns(event.to)>=BigInt(end(q))*1000000n&&BigInt(event.projectedThroughSequence)>=BigInt(q.barrier.sequence))q.retired=true;
   }
+  observeEntryFlow(s,event,duplicate);
   if(duplicate)count(s,'duplicateTrades');reconcile(s,at);assertMoloch(s);return s;
 }
 export function assertMoloch(s){
