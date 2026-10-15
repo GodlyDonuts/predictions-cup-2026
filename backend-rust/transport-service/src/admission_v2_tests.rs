@@ -94,8 +94,8 @@ mod unix {
     }
     #[test]fn transport_global_unknown_blocks_unrelated_write_then_exact_recovery_keeps_key(){
         let dir=migrated(|a|unknowns(a,1));let ack=json!({"orderId":42,"exchangeId":"994","open":true,"remainingQuantity":1,"quantity":1,"quantityTraded":0,"totalCost":0,"fillPrice":null,"price":0.12,"side":"no","action":"buy","all":{}});let server=Server::new(vec![ack]);let loads=Arc::new(AtomicU64::new(0));let mut t=transport(&dir,&server,loads.clone());
-        let lookup=t.admission_lookup_intent("fixture:new").unwrap();assert!(lookup.binding.is_none()&&lookup.has_unknown);assert_eq!(t.place(order(),permit()).unwrap_err().code,"UNKNOWN_ACCEPTANCE_RECONCILE_FIRST");assert_eq!(server.count.load(Ordering::SeqCst),0);assert_eq!(loads.load(Ordering::SeqCst),0);
+        let lookup=t.admission_lookup_intent("fixture:new").unwrap();assert!(lookup.binding.is_none()&&lookup.has_unknown);assert_eq!(t.place(order(),permit()).err().unwrap().code,"UNKNOWN_ACCEPTANCE_RECONCILE_FIRST");assert_eq!(server.count.load(Ordering::SeqCst),0);assert_eq!(loads.load(Ordering::SeqCst),0);
         t.reconcile_unknown(serde_json::to_value(binding(0)).unwrap()).unwrap();let lookup=t.admission_lookup_intent("intent-0").unwrap();assert!(lookup.binding.is_some()&&lookup.unknown_binding.is_none());assert!(!t.admission_summary().unwrap().has_unknown);
-        assert!(t.place(order(),permit()).is_ok());assert_eq!(t.place(order(),permit()).unwrap_err().code,"KNOWN_INTENT_RECONCILE_FIRST");assert_eq!(server.count.load(Ordering::SeqCst),1);assert_eq!(loads.load(Ordering::SeqCst),1);drop(t);fs::remove_dir_all(dir).unwrap();
+        assert!(t.place(order(),permit()).is_ok());assert_eq!(t.place(order(),permit()).err().unwrap().code,"KNOWN_INTENT_RECONCILE_FIRST");assert_eq!(server.count.load(Ordering::SeqCst),1);assert_eq!(loads.load(Ordering::SeqCst),1);drop(t);fs::remove_dir_all(dir).unwrap();
     }
 }
