@@ -86,7 +86,7 @@ fn dispatch(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,a
   let expired=old["expiresAt"].as_u64().is_none_or(|t|t<=now());let canceled=old["cancelEffectiveAt"].as_u64().is_some_and(|t|t<=now());
   if !expired&&!canceled{continue}
   if log.never_attempted(qid){retire_never_sent(bank,log,old)?;continue}
-  if expired||log.closed.contains(&qid){continue} // Server expiration is reconciled, never assumed.
+  if expired||log.closed.contains(&qid)||log.cancel_acknowledged.contains(&qid){continue} // Wait for authoritative terminal GET; never repeat a confirmed cancellation.
   let actual=bank.engine().live_order_bindings().get(&qid).ok_or("LIVE_CANCEL_BINDING")?.clone();
   let p=Permit{run_id:c.activation.run_id.clone(),intent_id:format!("{qid}-cancel"),owner:"Codex".into(),expires_at_ms:now()+10000,maximum_quantity:c.activation.maximum_quantity,maximum_cost:c.activation.maximum_committed.clone()};
   let spec=RequestSpec{method:"DELETE".into(),endpoint:format!("/orders/{actual}"),body:None,body_json:None};
