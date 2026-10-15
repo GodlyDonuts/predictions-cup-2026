@@ -1,4 +1,5 @@
-import test from 'node:test';import assert from 'node:assert/strict';import {streamActivity,selectActivePairs,relativeFlowSide} from './research/stream-activity.mjs';
+import test from 'node:test';import assert from 'node:assert/strict';import {streamActivity,selectActivePairs,relativeFlowSide,currentPriceCandidates} from './research/stream-activity.mjs';
+import {payloadHash} from '../execution/ledger.mjs';
 const at=n=>new Date(Date.parse('2026-10-14T00:00:00Z')+n*1000).toISOString(),pairs=[{marketId:'101',exchangeId:'101'}];
 const row=(n,options={})=>({event:{kind:'broadcast',source:'official_sig_realtime',event:'market_batch',marketId:'101',receivedAt:at(n),duplicate:false,gap:false,payload:{resyncRequired:false,books:[{exchangeId:'101',asOf:{at:at(n),sequence:n},bids:[{price:0.45,quantity:100}],asks:[{price:0.46,quantity:100}]}],trades:[],...options}}});
 const trade={id:'trade',sequence:1,exchangeId:'101',marketId:'101',quantity:100,price:0.455,executedAt:at(1)};
@@ -24,4 +25,12 @@ test('price-relative flow never classifies with a future, stale or post-match bo
 });
 test('balanced-flow selection rejects one-sided high activity',()=>{
  const c=[{exchangeId:'1',eligible:true,recentTrades:100,balancedFlowScore:0},{exchangeId:'2',eligible:true,recentTrades:4,balancedFlowScore:1}];assert.equal(selectActivePairs(c,1,'balancedFlow')[0].exchangeId,'2');
+});
+test('current-price selector cannot combine prints from expired bid and ask regimes',()=>{
+ const events=[row(0),row(5,{trades:[{...trade,id:'bid',sequence:4,price:.45,executedAt:at(4)}]}),row(10,{trades:[{...trade,id:'ask',sequence:9,price:.46,executedAt:at(9)}]})];
+ const chain=list=>{let previous='';return list.map((r,i)=>{const body={sequence:i+1,previous,event:r.event},sealed={...body,hash:payloadHash(body)};previous=sealed.hash;return sealed;});};
+ const valid=chain(events);assert.ok(currentPriceCandidates(valid,at(10),pairs)[0].balancedFlowScore>0);
+ const moved=row(11);moved.event.payload.books[0].bids[0].price=.455;moved.event.payload.books[0].asks[0].price=.465;
+ const c=currentPriceCandidates(chain([...events,moved]),at(11),pairs)[0];assert.ok(c.rawBalancedFlowScore>0);assert.equal(c.balancedFlowScore,0);assert.equal(c.currentPriceRegimeCompatibleTrades,0);assert.deepEqual(selectActivePairs([c],1,'balancedFlow'),[]);
+ assert.throws(()=>currentPriceCandidates([{...valid[0],hash:'edited'}],at(10),pairs),/CHAIN/);
 });

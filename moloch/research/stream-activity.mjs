@@ -1,6 +1,7 @@
 import fs from 'node:fs';import path from 'node:path';import {pathToFileURL} from 'node:url';
 import {payloadHash} from '../../execution/ledger.mjs';import {amount,money} from '../../paper/fixed.mjs';
 import {instantNs} from '../../feed/contract.mjs';
+import {ActivityStudy} from '../activity.mjs';
 const wireAmount=value=>{const n=Number(value);if(!Number.isFinite(n)||n<=0||n>=1||Math.abs(n*200-Math.round(n*200))>=1e-7)throw Error('ACTIVITY_PRICE_TICK');return BigInt(Math.round(n*200))*5000n;};
 
 export function selectActivePairs(candidates,count=1,method='recentTrades'){
@@ -16,6 +17,11 @@ export function relativeFlowSide(trade,history){
  if(value<=wireAmount(book.bids[0].price))return 'bid';
  if(value>=wireAmount(book.asks[0].price))return 'ask';
  return 'unknown';
+}
+export function currentPriceCandidates(rows,referenceAt,pairs){
+ const study=new ActivityStudy();for(const row of rows)study.row(row);
+ const current=new Map(study.report(referenceAt).map(c=>[c.exchangeId,c]));
+ return streamActivity(rows,referenceAt,pairs).map(c=>{const now=current.get(c.exchangeId);return{...c,rawBalancedFlowScore:c.balancedFlowScore,balancedFlowScore:now?.bothSideQueueTurnover??0,eligible:c.eligible&&Boolean(now?.eligibleForFurtherReconciliation),currentPriceRegimeCompatibleTrades:now?.priceRegimeCompatibleTrades??0,currentBidCompatibleShares:String(now?.bidCompatibleVolume??0),currentAskCompatibleShares:String(now?.askCompatibleVolume??0),currentBidRegimeFrom:now?.bidRegimeFrom??null,currentAskRegimeFrom:now?.askRegimeFrom??null,authoritativeResyncRequired:true};});
 }
 export function streamActivity(rows,referenceAt,pairs){
  const known=new Map(pairs.map(p=>[p.exchangeId,p.marketId])),markets=new Map(),seen=new Map(),brokenMarkets=new Set(),at=instantNs(referenceAt);

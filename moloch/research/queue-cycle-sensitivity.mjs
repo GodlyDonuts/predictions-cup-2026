@@ -2,6 +2,7 @@ import fs from 'node:fs';import path from 'node:path';
 import {completedTail,entryPolicyTransition,drainPolicyTransition,flatEntryTransition} from '../run.mjs';
 import {advanceMoloch} from '../engine.mjs';import {replayVariant} from '../compare.mjs';import {payloadHash} from '../../execution/ledger.mjs';
 const output=process.argv[2];if(!output)throw Error('new output required');
+const mode=process.argv[3]??'queue';if(!['queue','entryPrice'].includes(mode))throw Error('cycle mode queue or entryPrice required');
 const read=file=>JSON.parse(fs.readFileSync(file)),registration=read('data/moloch-fast-registration-20261014-67.json'),parent=completedTail(registration.parent);
 if(parent.snapshot.hash!==registration.parentSnapshotHash)throw Error('QUEUE_STUDY_PARENT');
 let baseline=structuredClone(parent.snapshot.state),previousParentHash=parent.snapshot.hash;const episodes=[];
@@ -20,7 +21,7 @@ for(let phase=67;phase<=70;phase++){
  episodes.push({phase,snapshotHash:hash,policy:snapshot.state.policy,events:rows.map(r=>r.event)});previousParentHash=hash;
 }
 const entryStopAt=new Date(Date.parse(registration.registeredAt)+240000).toISOString();
-const cases=[['strictActual',{}],['queue25',{fillModel:'conditionalFifo',touchAttributionBps:2500}],['queue50',{fillModel:'conditionalFifo',touchAttributionBps:5000}],['queue100',{fillModel:'conditionalFifo',touchAttributionBps:10000}],['deadlineStrict',{entryStopAt}],['deadlineQueue50',{entryStopAt,fillModel:'conditionalFifo',touchAttributionBps:5000}]],results=[];
+const cases=mode==='entryPrice'?[['recorded',{}],['joinFast',{insideTicks:0,maximumInventoryAgeMs:60000}],['protectedFast',{insideTicks:0,entryBackoffTicks:4,maximumInventoryAgeMs:60000}],['protectedFastDeadline',{insideTicks:0,entryBackoffTicks:4,maximumInventoryAgeMs:60000,entryStopAt}]]:[['strictActual',{}],['queue25',{fillModel:'conditionalFifo',touchAttributionBps:2500}],['queue50',{fillModel:'conditionalFifo',touchAttributionBps:5000}],['queue100',{fillModel:'conditionalFifo',touchAttributionBps:10000}],['deadlineStrict',{entryStopAt}],['deadlineQueue50',{entryStopAt,fillModel:'conditionalFifo',touchAttributionBps:5000}]],results=[];
 for(const [name,overrides]of cases){
  let state=structuredClone(parent.snapshot.state);const stages=[];
  for(const episode of episodes){const result=replayVariant(state,episode.events,{...episode.policy,...overrides});state=result.state;stages.push({phase:episode.phase,realized:result.report.realized,cash:result.report.cash,ownedCost:result.report.ownedCost,unresolved:result.report.unresolvedOrders,lastFreshLiquidation:result.lastFreshLiquidation,worstFreshLiquidation:result.worstFreshLiquidation});}
