@@ -27,14 +27,14 @@ fn instant(v:&Value)->Result<i64>{chrono::DateTime::parse_from_rfc3339(v.as_str(
 fn numeric(v:&Value)->Result<String>{let s=v.as_str().map(str::to_owned).or_else(||v.as_u64().map(|n|n.to_string())).ok_or("BREADTH_ID")?;if s.is_empty()||s.starts_with('0')||!s.bytes().all(|b|b.is_ascii_digit()){return Err("BREADTH_ID".into())}Ok(s)}
 #[derive(Clone)]struct Book{bid:i128,ask:i128,bid_qty:u64,ask_qty:u64,source:i64,received:i64,sequence:u64,bid_since:i64,ask_since:i64}
 #[derive(Clone)]struct Print{at:i64,side:u8,price:i128,quantity:u64}
-#[derive(Default)]struct Market{market:String,exchange:String,revision:Option<u64>,book:Option<Book>,prints:VecDeque<Print>,seen:BTreeMap<String,Value>,gaps:u64,observed:u64,unclassified:u64}
+#[derive(Default)]struct Market{market:String,exchange:String,revision:Option<u64>,book:Option<Book>,history:VecDeque<Book>,prints:VecDeque<Print>,seen:BTreeMap<String,Value>,gaps:u64,observed:u64,unclassified:u64}
 #[derive(Default)]pub struct Study{markets:BTreeMap<String,Market>,last:Option<i64>,frames:u64}
 impl Study{
  pub fn accept(&mut self,e:&Value)->Result<()>{
   if e["source"]!="official_sig_realtime"{return Err("BREADTH_SOURCE".into())}let at=instant(&e["receivedAt"])?;if self.last.is_some_and(|old|at<old){return Err("BREADTH_RECEIPT_ORDER".into())}
   self.last=Some(at);self.frames+=1;
-  if e["event"]=="stream_reset"{if e["payload"]["localBoundary"]!=true{return Err("BREADTH_RESET_PROOF".into())}for m in self.markets.values_mut(){m.book=None;m.prints.clear();m.revision=None;m.gaps+=1;}return Ok(())}
-  if e["event"]!="markets_batch"{for m in self.markets.values_mut().filter(|m|e["payload"]["marketId"]==m.market){m.book=None;m.prints.clear();m.gaps+=1;}return Ok(())}
+  if e["event"]=="stream_reset"{if e["payload"]["localBoundary"]!=true{return Err("BREADTH_RESET_PROOF".into())}for m in self.markets.values_mut(){m.book=None;m.history.clear();m.prints.clear();m.revision=None;m.gaps+=1;}return Ok(())}
+  if e["event"]!="markets_batch"{for m in self.markets.values_mut().filter(|m|e["payload"]["marketId"]==m.market){m.book=None;m.history.clear();m.prints.clear();m.gaps+=1;}return Ok(())}
   let rows=e["payload"]["markets"].as_array().ok_or("BREADTH_BATCH")?;let mut seen=BTreeSet::new();
   for row in rows{let market=numeric(&row["marketId"])?;if !seen.insert(market.clone()){return Err("BREADTH_DUPLICATE_MARKET".into())}
    let b=&row["batch"];let d=&b["delivery"];let revision=d["revision"].as_u64().ok_or("BREADTH_REVISION")?;let previous=d["previousRevision"].as_u64().ok_or("BREADTH_REVISION")?;
@@ -44,7 +44,7 @@ impl Study{
    for exchange in exchanges{
     let m=self.markets.entry(exchange.clone()).or_default();if !m.market.is_empty()&&m.market!=market{return Err("BREADTH_SCOPE".into())}m.market=market.clone();m.exchange=exchange.clone();
     let duplicate=m.revision.is_some_and(|r|revision<=r);let gap=m.revision.is_some_and(|r|previous>r)||b["resyncRequired"]==true||b["marketSettled"].as_array().is_some_and(|a|!a.is_empty());
-    if gap{m.gaps+=1;m.book=None;m.prints.clear();}if !duplicate{m.revision=Some(revision);}
+    if gap{m.gaps+=1;m.book=None;m.history.clear();m.prints.clear();}if !duplicate{m.revision=Some(revision);}
     if !duplicate&&!gap{
      for t in trades.into_iter().flatten().filter(|t|numeric(&t["exchangeId"]).ok().as_deref()==Some(exchange.as_str())){
       if numeric(&t["marketId"])?!=market{return Err("BREADTH_TRADE_SCOPE".into())}
@@ -54,20 +54,20 @@ impl Study{
       let facts=json!([market,exchange,t["price"],qty,t["executedAt"],seq]);
       if let Some(old)=m.seen.get(&id){if old!=&facts{return Err("BREADTH_TRADE_CONFLICT".into())}continue}m.seen.insert(id,facts);m.observed+=1;
       let mut side=0;let mut quote=price;
-      if let Some(book)=&m.book{if book.sequence<seq&&book.source<executed&&book.received<=executed&&executed-book.source<=10_000_000_000{
+      if let Some(book)=m.history.iter().rev().find(|book|book.sequence<seq&&book.source<executed&&book.received<=executed&&executed-book.source<=10_000_000_000){
        if price<=book.bid&&executed-book.bid_since>=3_000_000_000{side=1;quote=book.bid}else if price>=book.ask&&executed-book.ask_since>=3_000_000_000{side=2;quote=book.ask}
-      }}
+      }
       if side==0{m.unclassified+=1}m.prints.push_back(Print{at:executed,side,price:quote,quantity:qty});
      }
     }
     for book in books.into_iter().flatten().filter(|b|numeric(&b["exchangeId"]).ok().as_deref()==Some(exchange.as_str())){
      let source=instant(&book["asOf"]["at"])?;let sequence=book["asOf"]["sequence"].as_u64().ok_or("BREADTH_BOOK_SEQUENCE")?;
      if source>at{return Err("BREADTH_FUTURE_BOOK".into())}if m.book.as_ref().is_some_and(|old|old.sequence>sequence){continue}
-     let (Some(bid),Some(ask))=(book["bids"].as_array().and_then(|a|a.first()),book["asks"].as_array().and_then(|a|a.first()))else{m.book=None;m.prints.clear();continue};
+     let (Some(bid),Some(ask))=(book["bids"].as_array().and_then(|a|a.first()),book["asks"].as_array().and_then(|a|a.first()))else{m.book=None;m.history.clear();m.prints.clear();continue};
      let bid_price=official_tick_units(&bid["price"])?;let ask_price=official_tick_units(&ask["price"])?;let bid_qty=bid["quantity"].as_u64().filter(|q|*q>0).ok_or("BREADTH_DEPTH")?;let ask_qty=ask["quantity"].as_u64().filter(|q|*q>0).ok_or("BREADTH_DEPTH")?;if bid_price>=ask_price{return Err("BREADTH_CROSSED".into())}
      if m.book.as_ref().is_some_and(|old|old.sequence==sequence&&(old.bid!=bid_price||old.ask!=ask_price||old.bid_qty!=bid_qty||old.ask_qty!=ask_qty)){return Err("BREADTH_BOOK_CONFLICT".into())}
      let bid_since=m.book.as_ref().filter(|b|b.bid==bid_price).map_or(at,|b|b.bid_since);let ask_since=m.book.as_ref().filter(|b|b.ask==ask_price).map_or(at,|b|b.ask_since);
-     m.book=Some(Book{bid:bid_price,ask:ask_price,bid_qty,ask_qty,source,received:at,sequence,bid_since,ask_since});
+     let next=Book{bid:bid_price,ask:ask_price,bid_qty,ask_qty,source,received:at,sequence,bid_since,ask_since};m.history.push_back(next.clone());m.history.retain(|b|b.received>=at-180_000_000_000);m.book=Some(next);
     }
     m.prints.retain(|t|t.at>=at-180_000_000_000);
    }
@@ -102,8 +102,13 @@ pub fn replay(path:&Path)->Result<Value>{
  #[test]fn equivalent_numeric_ids_are_supported(){let mut s=Study::default();let mut f=frame(0,1,0,0.4,0.6,json!([]));f["payload"]["markets"][0]["marketId"]=json!(1);f["payload"]["markets"][0]["batch"]["books"][0]["exchangeId"]=json!(2);s.accept(&f).unwrap();assert_eq!(s.report()["candidates"][0]["exchangeId"],"2");}
  #[test]fn submillisecond_later_receipts_cannot_classify_earlier_execution(){
   let mut s=Study::default();s.accept(&frame(0,1,0,0.4,0.6,json!([]))).unwrap();
-  let mut b=frame(4,2,1,0.4,0.6,json!([]));b["receivedAt"]=json!("2026-10-15T00:00:04.000900Z");b["payload"]["markets"][0]["batch"]["books"][0]["asOf"]["at"]=json!("2026-10-15T00:00:04.000100Z");s.accept(&b).unwrap();
-  let mut t=trade("early",4,21,0.4);t["executedAt"]=json!("2026-10-15T00:00:04.000500Z");s.accept(&frame(5,3,2,0.4,0.6,json!([t]))).unwrap();assert_eq!(s.report()["candidates"][0]["currentBidCompatibleShares"],"0");
+  let mut b=frame(4,2,1,0.405,0.6,json!([]));b["receivedAt"]=json!("2026-10-15T00:00:04.000900Z");b["payload"]["markets"][0]["batch"]["books"][0]["asOf"]["at"]=json!("2026-10-15T00:00:04.000100Z");s.accept(&b).unwrap();
+  let mut t=trade("early",4,21,0.405);t["executedAt"]=json!("2026-10-15T00:00:04.000500Z");s.accept(&frame(5,3,2,0.4,0.6,json!([t]))).unwrap();assert_eq!(s.report()["candidates"][0]["recentBidCompatibleShares"],"0");
+ }
+ #[test]fn delayed_print_can_use_an_older_received_book(){
+  let mut s=Study::default();s.accept(&frame(0,1,0,0.4,0.6,json!([]))).unwrap();s.accept(&frame(5,2,1,0.4,0.6,json!([]))).unwrap();
+  s.accept(&frame(6,3,2,0.4,0.6,json!([trade("late",4,11,0.4)]))).unwrap();
+  assert_eq!(s.report()["candidates"][0]["currentBidCompatibleShares"],"5");
  }
  #[test]fn durable_recording_replays_and_tampering_fails(){let p=std::env::temp_dir().join(format!("breadth-{}.jsonl",std::process::id()));{let mut r=Recorder::new(&p).unwrap();let f=frame(0,1,0,0.4,0.6,json!([]));r.observe("markets_batch",&f["payload"],f["receivedAt"].as_str().unwrap());assert!(r.error.is_none());}assert_eq!(replay(&p).unwrap()["sourceSequence"],1);let s=std::fs::read_to_string(&p).unwrap().replace("\"marketId\":\"1\"","\"marketId\":\"3\"");std::fs::write(&p,s).unwrap();assert!(replay(&p).is_err());std::fs::remove_file(p).unwrap();}
 }
