@@ -1,6 +1,15 @@
 # Moloch current production ownership — October 15
 
-## V18 is live; exact-cash repair in verification
+## V19: exact-cash repair deployed; fresh official orders verified
+
+At 2026-10-15T11:17:50Z, V19 PID151390 had resumed actual exchange submissions after repairing the rounded-cash mismatch. A fixed five-order cohort received five HTTP200 acknowledgments between11:15:32.009Z and11:16:34.275Z. No fill is inferred from an ACK. The native bank still had27 actual fills, realized17.825000, inherited17.935000 and new trading−0.110000. Execution STOP was absent. [Sanitized exact-source evidence](../data/moloch-v19-live-repair-20261015.json).
+
+V19 started11:14:01.236202Z after V18 gracefully stopped11:13:36.405Z. Every preceding submission attempt was bound to one original/recovered acknowledgment;163queue intent bindings remained with no active/unknown operation or manual review. Checked source1470d38a passed136runtime checks and locked ARM64 release. Immutable binary SHA256 is cf5821a7feb2b1d242a8c574728e76daf717a05985c159dce01ef719c86a4dcd. Native identity, full funded bank, old receipts, inherited lots, authority caps and14:44:34.413Z entry cutoff remain unchanged.
+
+The worker now compares exact gross cash from scoped /account rather than rounded Tournament.myBalance, rotates one costly preflight attempt per pass across stable market/side/action scopes, and refreshes owned reconciliation between selected scopes when ten seconds have elapsed since completion or durable ACK/terminal membership changes. It retains complete fill tapes and all independent authority guards. Ordered websocket draining remains an unwired tested candidate: neither a hard reconciliation deadline nor fast full-cycle completion is established. At this observation the first broad31-scope cycle remained in progress, so dated status still contained the old stopped worker; live PID, fresh journal and original official acknowledgments were checked separately. [Cash source](MOLOCH_EXACT_CASH_RECONCILIATION_20261015.md), [scheduling scope](MOLOCH_BOUNDED_SCHEDULING_20261015.md).
+
+
+## Historical V18 cash blocker
 
 At 2026-10-15T11:11Z, sole VPS worker PID145818 was processing fresh journal events and official account/contract/book reads, with no execution STOP. V18 started10:58:35Z after a clean maintenance drain; source a8d33913, binary SHA256022f3fd1c671dbc930240069aea9ed3cc550bdc455a7e82e0d9b2a546cea4512. The first broad-read cycle had not completed, and status still contained the prior stopped PID; live process and source advancement were verified independently. Submission deferrals report LIVE_ACCOUNT_CASH_RECONCILIATION_REQUIRED.
 

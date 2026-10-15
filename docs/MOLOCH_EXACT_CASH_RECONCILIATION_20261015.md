@@ -15,3 +15,5 @@ Primary contract: saved `runtime/moloch/api-spec-ioc-20261014.json`, SHA256 `6b5
 The combined bounded-preflight/reconciliation integration adds eighteen scheduling/rotation tests to the 118-check exact-cash suite. Promotion requires the combined Linux suite/build, not just the earlier exact-cash result. Broader ordered websocket draining remains unwired.
 
 Final combined ARM64 validation: 136 runtime checks pass, locked release build passes. Candidate binary SHA256 is cf5821a7feb2b1d242a8c574728e76daf717a05985c159dce01ef719c86a4dcd. Native financial identity remains the checked V18 identity; no new engine bridge or financial history change is required.
+
+V19 rollout: source1470d38a / SHAcf5821a7feb2b1d242a8c574728e76daf717a05985c159dce01ef719c86a4dcd started11:14:01Z asPID151390. Fresh scoped startup cash70851.605 exactly matched the unchanged ledger expectation. A fixed five-order cohort received five official HTTP200 acknowledgments11:15:32–11:16:34Z. There were still27 actual fills and new-trading realized−0.110000 at11:17:47Z; submissions are restored, profitability is unproven. See data/moloch-v19-live-repair-20261015.json and CURRENT_STATE.

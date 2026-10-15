@@ -62,3 +62,5 @@ Checkpoint serialization includes admitted identities, observed facts, pending c
 ## Offline checks
 
 The standalone module contains nine tests covering complete-cohort ordering without authority; cumulative dedup/missing-history detection; a late older opposite fill retained after checkpoint restoration; high checkpoint plus active-order refusal; scoped engine/legacy epoch separation; shared trade IDs across orders; ambiguous ties and preserved conflicts; partial pages/terminal clock/unknown/freeze fences; and changed plan/checkpoint/anchor rejection. It can be compiled in a temporary harness that includes this file without editing production module wiring. Parent Linux verification is pending; local Windows has no Cargo toolchain. No API, account, runtime, bank or production changes were made.
+
+Parent ARM64 verification: the standalone test harness passes all nine module regressions. It is committed under tests/fill_staging_review.rs so normal tests compile the candidate while lib.rs/worker/feedback remain unwired. This provides chronology and failure-case evidence, not production integration, an authenticated barrier, or an execution grant.
