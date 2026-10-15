@@ -80,6 +80,7 @@ impl State {
  /// The caller must retain original private bytes BEFORE invoking this method.
  pub fn observe(&mut self,tape:Tape){
   let receipt=tape.receipt_sha256.clone();self.receipt_references.insert(receipt.clone());
+  if self.audit().is_err(){self.problem("CHECKPOINT_STATE_INVALID",&receipt);return}
   let checked=(||->Result<Tape,String>{
    if tape.scope!=self.scope||tape.source!=self.source{return Err("SCOPE_OR_SOURCE_EPOCH".into())}
    if !hex(&receipt)||!numeric(&tape.order_id)||!tape.complete||tape.has_more||tape.next_cursor.is_some()||tape.fills.len()>10000{return Err("INCOMPLETE_OR_INVALID_TAPE".into())}
@@ -106,6 +107,7 @@ impl State {
   self.latest_tapes.insert(tape.order_id.clone(),tape);
  }
  pub fn plan(&self,roster:&ClosedRoster)->Plan{
+  if self.audit().is_err(){return Plan{eligible_for_review:false,execution_authority:false,reasons:vec!["CHECKPOINT_STATE_INVALID".into()],staged_fills:self.observed.values().cloned().collect(),receipt_references:self.receipt_references.iter().cloned().collect(),prepared_against:self.fingerprint(),closed_cohort_reviewed:false}}
   let mut reasons=self.issues.iter().map(|i|i.code.clone()).collect::<Vec<_>>();
   if !roster.submissions_frozen||!roster.all_owned_orders_included||!ident(&roster.dispatcher_generation)||roster.unknown_attempts!=0||roster.foreign_or_unbound_exposure{reasons.push("DISPATCHER_ROSTER_NOT_FROZEN_OR_UNCERTAIN".into())}
   let mut orders=BTreeSet::new();
@@ -127,6 +129,7 @@ impl State {
  /// Called only AFTER the caller verifies the corresponding immutable bank
  /// prefix actually admitted exactly these facts. It neither writes nor trades.
  pub fn record_admitted(&self,plan:&Plan,bank_anchor:BankAnchor)->Result<Self,String>{
+  self.audit()?;
   if !plan.eligible_for_review||plan.execution_authority||!plan.reasons.is_empty()||!plan.closed_cohort_reviewed||plan.prepared_against!=self.fingerprint()||!self.issues.is_empty()||!hex(&bank_anchor.hash)||bank_anchor.sequence<self.bank_anchor.sequence||(!plan.staged_fills.is_empty()&&bank_anchor.sequence==self.bank_anchor.sequence){return Err("ADMISSION_REQUIRES_VERIFIED_BANK_PREFIX".into())}
   let mut next=self.clone();let expected=self.observed.iter().filter(|(key,_)|!self.admitted.contains_key(*key)).map(|(key,f)|(key.clone(),f.clone())).collect::<BTreeMap<_,_>>();
   let received=plan.staged_fills.iter().map(|f|(f.key(),f.clone())).collect::<BTreeMap<_,_>>();if expected!=received||received.len()!=plan.staged_fills.len(){return Err("ADMISSION_FACTS_CHANGED".into())}
