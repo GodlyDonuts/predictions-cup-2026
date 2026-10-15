@@ -86,7 +86,7 @@ pub fn submit_once<B:Backend>(bank:&mut Session,log:&mut PackageDispatchLog,b:&m
  // This is deliberately the next queue-capable operation after the attempt.
  let outcome=b.send(a.basket().clone(),staged.permit.clone());
  let result=(||->Result<SendResult>{match outcome{
-  Ok(Outcome::FullFillReported{receipt,evidence,request_evidence:e,..})=>{request_evidence(&e,&spec,a.basket(),&staged.permit)?;let body=response_evidence(&evidence,&spec)?;need(receipt.data==body&&receipt.status==evidence.status&&receipt.request_started_at==evidence.request_started_at&&receipt.received_at==evidence.received_at,"PACKAGE_WORKER_ACK_SOURCE")?;retain(b.evidence_directory(),&receipt)?;log.acknowledged(id,&receipt,&iso(b.now_ms())?)?;let event=events::acknowledgment(bank,&current(bank,id)?,a.basket(),&staged.scope,&staged.permit,&receipt,&iso(b.now_ms())?)?;accept(bank,&event)?;bind(bank,id,b)?;Ok(SendResult::Acknowledged)},
+  Ok(Outcome::FullFillReported{receipt,evidence,request_evidence:e,..})=>{request_evidence(&e,&spec,a.basket(),&staged.permit)?;let body=response_evidence(&evidence,&spec)?;need(receipt.data==body&&receipt.status==evidence.status&&receipt.request_started_at==evidence.request_started_at&&clock(&receipt.request_started_at)?<=clock(&evidence.received_at)?&&clock(&evidence.received_at)?<=clock(&receipt.received_at)?&&clock(&receipt.received_at)?<=b.now_ms(),"PACKAGE_WORKER_ACK_SOURCE")?;retain(b.evidence_directory(),&receipt)?;log.acknowledged(id,&receipt,&iso(b.now_ms())?)?;let event=events::acknowledgment(bank,&current(bank,id)?,a.basket(),&staged.scope,&staged.permit,&receipt,&iso(b.now_ms())?)?;accept(bank,&event)?;bind(bank,id,b)?;Ok(SendResult::Acknowledged)},
   Ok(Outcome::NoExecution{error,reason,evidence,request_evidence:e})=>{request_evidence(&e,&spec,a.basket(),&staged.permit)?;response_evidence(&evidence,&spec)?;let event=events::no_execution(bank,&current(bank,id)?,a.basket(),&staged.scope,&staged.permit,&error,&reason,&evidence,&iso(b.now_ms())?)?;log.definitive_zero(id,&evidence,&iso(b.now_ms())?)?;accept(bank,&event)?;Ok(SendResult::DefinitiveZero)},
   Ok(Outcome::Unknown{error,request_evidence:e,..})=>{request_evidence(&e,&spec,a.basket(),&staged.permit)?;unknown(bank,log,b,id,error)},
   Err(error)=>{
@@ -110,7 +110,8 @@ fn abandon<B:Backend>(bank:&mut Session,log:&mut PackageDispatchLog,b:&B,id:&str
 fn frozen<B:Backend>(log:&PackageDispatchLog,id:&str,b:&B,bank:&Session)->Result<Frozen>{let row=log.verified_record(id)?;let i=&row["admission"];let scope:Scope=serde_json::from_value(i["scope"].clone())?;need(hash(&scope)?==hash(b.scope())?&&i["queue_scope"]==b.account_scope()&&i["reserve"]["bankScope"]["bankManifestHash"]==*bank.manifest_hash()&&bank.live_account_seed().is_some_and(|seed|i["reserve"]["bankScope"]["runId"]==seed["runId"]),"PACKAGE_WORKER_RESTART_SCOPE")?;Ok(Frozen{basket:serde_json::from_value(i["basket"].clone())?,scope,permit:serde_json::from_value(i["permit"].clone())?,row})}
 /// Restore already durable outcomes. No admission object is recreated and no
 /// physical write is possible here. Unknown/attempted stay blocking; reads and
-/// actual fill reconciliation for other known bindings are still performed.
+/// actual fill reconciliation for every verified known binding still proceeds,
+/// including a partially mapped package whose remaining acceptance is unknown.
 pub fn recover<B:Backend>(bank:&mut Session,log:&mut PackageDispatchLog,b:&mut B)->Result<Recovery>{
  let mut report=Recovery::default();
  for record in log.records(){let id=record["admission"]["permit"]["intentId"].as_str().ok_or("PACKAGE_WORKER_ID")?.to_owned();let f=frozen(log,&id,b,bank)?;
@@ -120,21 +121,24 @@ pub fn recover<B:Backend>(bank:&mut Session,log:&mut PackageDispatchLog,b:&mut B
   need(p["proofHash"]==f.row["admission"]["reserve"]["proofHash"]&&p["bankScope"]==f.row["admission"]["reserve"]["bankScope"],"PACKAGE_WORKER_NATIVE_RESTART_BINDING")?;
   bind(bank,&id,b)?;
   if p["phase"]=="complete"{need(f.row["phase"]=="ack","PACKAGE_WORKER_COMPLETE_DISPATCH_CONTRADICTION")?;continue}if p["phase"]=="no_execution"{need(matches!(f.row["phase"].as_str(),Some("not_sent"|"definitive_zero")),"PACKAGE_WORKER_ZERO_DISPATCH_CONTRADICTION")?;continue}
+  let unresolved_acceptance=matches!(f.row["phase"].as_str(),Some("attempt"|"unknown"));
   match f.row["phase"].as_str(){
    Some("ack")=>{let receipt:Receipt=serde_json::from_value(f.row["outcome"]["receipt"].clone())?;let event=events::acknowledgment(bank,&current(bank,&id)?,&f.basket,&f.scope,&f.permit,&receipt,&iso(b.now_ms())?)?;accept(bank,&event)?;bind(bank,&id,b)?;report.acknowledged_packages+=1;},
    Some("definitive_zero")=>{let e=response_from(&f.row["outcome"]["evidence"])?;let response=multi_leg::evidenced_response(&e)?;let reason=multi_leg::zero_execution_reason(e.status,&response,f.basket.legs.len()).ok_or("PACKAGE_WORKER_ZERO_UNVERIFIED")?;let error=TransportError{code:"OFFICIAL_REQUEST_REJECTED".into(),status:Some(e.status),may_have_executed:false,retry_after_ms:0,order_id:None,api_code:response["error"]["code"].as_str().map(str::to_owned)};let event=events::no_execution(bank,&current(bank,&id)?,&f.basket,&f.scope,&f.permit,&error,&reason,&e,&iso(b.now_ms())?)?;accept(bank,&event)?;continue},
    Some("not_sent")=>{let binding:ImmutableBinding=serde_json::from_value(f.row["admission"]["queue_binding"].clone())?;let request=f.row["outcome"]["queueEvidence"]["request"].as_str().ok_or("PACKAGE_WORKER_NOT_SENT_REQUEST")?;let minimum=clock(f.row["attemptedAt"].as_str().ok_or("PACKAGE_WORKER_ATTEMPT_CLOCK")?)?;
     let proof=b.retained_not_sent(&binding,request,minimum)?;let original=read_json(&b.evidence_directory().join(format!("not-sent-{}.json",f.row["admission"]["request_hash"].as_str().ok_or("PACKAGE_WORKER_REQUEST_HASH")?)))?;let mut checked=proof.evidence().clone();checked.as_object_mut().ok_or("PACKAGE_WORKER_NOT_SENT_PROOF")?.remove("currentTailRecord");checked.as_object_mut().unwrap().remove("currentTailStateJson");need(checked==original,"PACKAGE_WORKER_ORIGINAL_NOT_SENT_PROOF_CHANGED")?;let error=error_from(&f.row["outcome"]["error"])?;let event=events::local_not_sent(bank,&current(bank,&id)?,&f.basket,&f.scope,&f.permit,log,&proof,&error,&iso(b.now_ms())?)?;accept(bank,&event)?;continue},
-   Some("attempt"|"unknown")=>{report.blocks_new_submissions=true;continue},
+   Some("attempt"|"unknown")=>{report.blocks_new_submissions=true;},
    _=>return Err("PACKAGE_WORKER_DISPATCH_PHASE".into()),
   }
-  for index in 0..f.basket.legs.len(){let p=current(bank,&id)?;let l=&p["legs"][index];if l["terminalReconciled"]==true{continue}let actual=l["actualOrderId"].as_str().ok_or("PACKAGE_WORKER_ACTUAL_ID")?.to_owned();let order=b.read(Endpoint::OwnedOrder{order_id:actual.clone()})?;retain(b.evidence_directory(),&order)?;let tape=b.read(Endpoint::OwnedFills{order_id:actual})?;retain(b.evidence_directory(),&tape)?;need(order.status==200&&tape.status==200,"PACKAGE_WORKER_READ_STATUS")?;
+  // Unknown acceptance stays blocking, but verified owned IDs still get fresh
+  // complete tapes. Never infer an ID, an overall ACK or a final release.
+  for index in 0..f.basket.legs.len(){let p=current(bank,&id)?;let l=&p["legs"][index];if l["terminalReconciled"]==true{continue}let Some(actual)=l["actualOrderId"].as_str()else{need(unresolved_acceptance,"PACKAGE_WORKER_ACTUAL_ID")?;continue};let actual=actual.to_owned();let order=b.read(Endpoint::OwnedOrder{order_id:actual.clone()})?;retain(b.evidence_directory(),&order)?;let tape=b.read(Endpoint::OwnedFills{order_id:actual})?;retain(b.evidence_directory(),&tape)?;need(order.status==200&&tape.status==200,"PACKAGE_WORKER_READ_STATUS")?;
    // Prevalidate the COMPLETE tape before any credit. Persist genuine fills even
    // if the separate later terminal-state validation fails and stops this cycle.
    let fills=events::fills(bank,&current(bank,&id)?,&f.scope,index,&tape,&iso(b.now_ms())?)?;for event in fills{let before=bank.engine().fills().len();accept(bank,&event)?;report.fill_events+=bank.engine().fills().len().saturating_sub(before);}
    if let Some(event)=events::terminal(bank,&current(bank,&id)?,&f.scope,index,&order,&tape,&iso(b.now_ms())?)?{accept(bank,&event)?;}
   }
-  let p=current(bank,&id)?;if p["legs"].as_array().ok_or("PACKAGE_WORKER_LEGS")?.iter().all(|l|l["terminalReconciled"]==true&&l["filled"]==l["quantity"]){let event=events::complete(bank,&p,&f.scope,&iso(b.now_ms())?)?;accept(bank,&event)?;report.completed_packages+=1;}
+  let p=current(bank,&id)?;if !unresolved_acceptance&&p["legs"].as_array().ok_or("PACKAGE_WORKER_LEGS")?.iter().all(|l|l["terminalReconciled"]==true&&l["filled"]==l["quantity"]){let event=events::complete(bank,&p,&f.scope,&iso(b.now_ms())?)?;accept(bank,&event)?;report.completed_packages+=1;}
  }
  report.blocks_new_submissions|=log.unresolved()||bank.engine().package_blocks_submissions();Ok(report)
 }
