@@ -1,0 +1,560 @@
+{
+  "accountCalls": 0,
+  "completedAtUtc": "2026-10-15T10:10:38.322941+00:00",
+  "compressionCurrent": {
+    "finalBindings": 77,
+    "independentFileCompression": true,
+    "initialBindings": 70,
+    "inputBytes": 16748740,
+    "limitation": "current synthetic cohort/size only; repeated-state ratios do not establish late-stage or cross-archive ratios; large dictionaries need measured RAM",
+    "measurements": [
+      {
+        "codec": "xz",
+        "compressSeconds": 0.3729682220000541,
+        "decompressAndHashSeconds": 0.09134781199827557,
+        "dictionaryMiB": 8,
+        "inputBytes": 16748740,
+        "outputBytes": 43352,
+        "preset": 3,
+        "ratio": 386.34295995571136,
+        "roundTripSha256": "c5f454b76f3f76368e9535ab1ab492952a3580f10de7bd5f62dc4b35593f83c5",
+        "roundTripVerified": true
+      },
+      {
+        "codec": "xz",
+        "compressSeconds": 0.3855941959991469,
+        "decompressAndHashSeconds": 0.07787186399946222,
+        "dictionaryMiB": 64,
+        "inputBytes": 16748740,
+        "outputBytes": 43568,
+        "preset": 3,
+        "ratio": 384.4275615130371,
+        "roundTripSha256": "c5f454b76f3f76368e9535ab1ab492952a3580f10de7bd5f62dc4b35593f83c5",
+        "roundTripVerified": true
+      },
+      {
+        "codec": "zstd",
+        "compressSeconds": 0.04425351499958197,
+        "decompressAndHashSeconds": 0.0417285509975045,
+        "inputBytes": 16748740,
+        "level": 3,
+        "outputBytes": 40759,
+        "ratio": 410.92126892220125,
+        "roundTripSha256": "c5f454b76f3f76368e9535ab1ab492952a3580f10de7bd5f62dc4b35593f83c5",
+        "roundTripVerified": true,
+        "threads": 1,
+        "version": "*** Zstandard CLI (64-bit) v1.5.5, by Yann Collet ***",
+        "windowLog": 23
+      },
+      {
+        "codec": "zstd",
+        "compressSeconds": 0.04244290700080455,
+        "decompressAndHashSeconds": 0.04201291099889204,
+        "inputBytes": 16748740,
+        "level": 3,
+        "outputBytes": 40386,
+        "ratio": 414.71648591095925,
+        "roundTripSha256": "c5f454b76f3f76368e9535ab1ab492952a3580f10de7bd5f62dc4b35593f83c5",
+        "roundTripVerified": true,
+        "threads": 1,
+        "version": "*** Zstandard CLI (64-bit) v1.5.5, by Yann Collet ***",
+        "windowLog": 27
+      }
+    ],
+    "records": 557,
+    "sourceSha256": "c5f454b76f3f76368e9535ab1ab492952a3580f10de7bd5f62dc4b35593f83c5",
+    "zstdAvailable": true
+  },
+  "compressionLate": {
+    "accountCalls": 0,
+    "finalBindings": 100000,
+    "initialBindings": 100000,
+    "inputBytes": 39000363,
+    "measurements": [
+      {
+        "codec": "zstd",
+        "compressChildCpuSeconds": 0.55872,
+        "compressWallSeconds": 0.5662564699996437,
+        "inputBytes": 39000363,
+        "level": 3,
+        "outputBytes": 8686428,
+        "ratio": 4.489804439753602,
+        "roundTripSha256": "020168f542606cc49526c357bb2ad0869adf21bf683e760fb2895613739a7cd2",
+        "roundTripVerified": true,
+        "threads": 1,
+        "windowLog": 23
+      },
+      {
+        "codec": "zstd",
+        "compressChildCpuSeconds": 0.494733,
+        "compressWallSeconds": 0.4665536639986385,
+        "inputBytes": 39000363,
+        "level": 3,
+        "outputBytes": 6718297,
+        "ratio": 5.8050965892100335,
+        "roundTripSha256": "020168f542606cc49526c357bb2ad0869adf21bf683e760fb2895613739a7cd2",
+        "roundTripVerified": true,
+        "threads": 1,
+        "windowLog": 27
+      },
+      {
+        "codec": "xz",
+        "compressSeconds": null,
+        "dictionaryMiB": 8,
+        "inputBytes": 39000363,
+        "outputBytes": 9114500,
+        "ratio": 4.278936090844259,
+        "roundTripSha256": "020168f542606cc49526c357bb2ad0869adf21bf683e760fb2895613739a7cd2",
+        "roundTripVerified": true
+      }
+    ],
+    "productionModified": false,
+    "records": 1,
+    "sourceSha256": "020168f542606cc49526c357bb2ad0869adf21bf683e760fb2895613739a7cd2",
+    "xz64MiBStatus": "120-second batch timeout; partial output NOT validated and NOT counted"
+  },
+  "measurementLimits": {
+    "cpuPipeline": "wall clock for clone/hash/serialization under live host/nice10; not OS process CPU time",
+    "cpuSamplesPerPoint": 7,
+    "fsyncMedian": "upper middle of two samples; report range, not stable latency percentile",
+    "fsyncSamplesPerPoint": 2,
+    "largerCase": "100000 bindings for compression only",
+    "largestCpuSampleBindings": 10000
+  },
+  "measurements": [
+    {
+      "bindings": 0,
+      "clone": {
+        "maxMicros": 0,
+        "minMicros": 0,
+        "p50Micros": 0,
+        "p95Micros": 0,
+        "samples": 7
+      },
+      "cloneHashSerialize": {
+        "maxMicros": 25,
+        "minMicros": 25,
+        "p50Micros": 25,
+        "p95Micros": 25,
+        "samples": 7
+      },
+      "hash": {
+        "maxMicros": 20,
+        "minMicros": 20,
+        "p50Micros": 20,
+        "p95Micros": 20,
+        "samples": 7
+      },
+      "persistWithFsync": {
+        "maxMicros": 1363,
+        "minMicros": 1242,
+        "p50Micros": 1363,
+        "p95Micros": 1363,
+        "samples": 2
+      },
+      "recordBytes": 2163,
+      "serialize": {
+        "maxMicros": 5,
+        "minMicros": 4,
+        "p50Micros": 4,
+        "p95Micros": 5,
+        "samples": 7
+      },
+      "sparseRecordBytes": 429,
+      "stateBytes": 1987,
+      "statusWithFsyncMicros": 1374,
+      "uniquePayloadHashes": 0,
+      "writtenFixtureBytes": 6425
+    },
+    {
+      "bindings": 70,
+      "clone": {
+        "maxMicros": 41,
+        "minMicros": 40,
+        "p50Micros": 40,
+        "p95Micros": 41,
+        "samples": 7
+      },
+      "cloneHashSerialize": {
+        "maxMicros": 633,
+        "minMicros": 349,
+        "p50Micros": 451,
+        "p95Micros": 633,
+        "samples": 7
+      },
+      "hash": {
+        "maxMicros": 221,
+        "minMicros": 220,
+        "p50Micros": 220,
+        "p95Micros": 221,
+        "samples": 7
+      },
+      "persistWithFsync": {
+        "maxMicros": 1415,
+        "minMicros": 1390,
+        "p50Micros": 1415,
+        "p95Micros": 1415,
+        "samples": 2
+      },
+      "recordBytes": 29461,
+      "serialize": {
+        "maxMicros": 41,
+        "minMicros": 40,
+        "p50Micros": 41,
+        "p95Micros": 41,
+        "samples": 7
+      },
+      "sparseRecordBytes": 27727,
+      "stateBytes": 29285,
+      "statusWithFsyncMicros": 1808,
+      "uniquePayloadHashes": 70,
+      "writtenFixtureBytes": 88319
+    },
+    {
+      "bindings": 98,
+      "clone": {
+        "maxMicros": 74,
+        "minMicros": 72,
+        "p50Micros": 73,
+        "p95Micros": 74,
+        "samples": 7
+      },
+      "cloneHashSerialize": {
+        "maxMicros": 576,
+        "minMicros": 552,
+        "p50Micros": 554,
+        "p95Micros": 576,
+        "samples": 7
+      },
+      "hash": {
+        "maxMicros": 483,
+        "minMicros": 370,
+        "p50Micros": 371,
+        "p95Micros": 483,
+        "samples": 7
+      },
+      "persistWithFsync": {
+        "maxMicros": 7821,
+        "minMicros": 1642,
+        "p50Micros": 7821,
+        "p95Micros": 7821,
+        "samples": 2
+      },
+      "recordBytes": 40381,
+      "serialize": {
+        "maxMicros": 69,
+        "minMicros": 69,
+        "p50Micros": 69,
+        "p95Micros": 69,
+        "samples": 7
+      },
+      "sparseRecordBytes": 38647,
+      "stateBytes": 40205,
+      "statusWithFsyncMicros": 1964,
+      "uniquePayloadHashes": 98,
+      "writtenFixtureBytes": 121079
+    },
+    {
+      "bindings": 1000,
+      "clone": {
+        "maxMicros": 700,
+        "minMicros": 682,
+        "p50Micros": 688,
+        "p95Micros": 700,
+        "samples": 7
+      },
+      "cloneHashSerialize": {
+        "maxMicros": 5493,
+        "minMicros": 5451,
+        "p50Micros": 5472,
+        "p95Micros": 5493,
+        "samples": 7
+      },
+      "hash": {
+        "maxMicros": 2976,
+        "minMicros": 2956,
+        "p50Micros": 2963,
+        "p95Micros": 2976,
+        "samples": 7
+      },
+      "persistWithFsync": {
+        "maxMicros": 7684,
+        "minMicros": 7539,
+        "p50Micros": 7684,
+        "p95Micros": 7684,
+        "samples": 2
+      },
+      "recordBytes": 392161,
+      "serialize": {
+        "maxMicros": 555,
+        "minMicros": 545,
+        "p50Micros": 547,
+        "p95Micros": 555,
+        "samples": 7
+      },
+      "sparseRecordBytes": 390427,
+      "stateBytes": 391985,
+      "statusWithFsyncMicros": 10049,
+      "uniquePayloadHashes": 1000,
+      "writtenFixtureBytes": 1176419
+    },
+    {
+      "bindings": 10000,
+      "clone": {
+        "maxMicros": 9201,
+        "minMicros": 8857,
+        "p50Micros": 9037,
+        "p95Micros": 9201,
+        "samples": 7
+      },
+      "cloneHashSerialize": {
+        "maxMicros": 62135,
+        "minMicros": 61266,
+        "p50Micros": 61569,
+        "p95Micros": 62135,
+        "samples": 7
+      },
+      "hash": {
+        "maxMicros": 30459,
+        "minMicros": 29958,
+        "p50Micros": 30066,
+        "p95Micros": 30459,
+        "samples": 7
+      },
+      "persistWithFsync": {
+        "maxMicros": 68507,
+        "minMicros": 64167,
+        "p50Micros": 68507,
+        "p95Micros": 68507,
+        "samples": 2
+      },
+      "recordBytes": 3902161,
+      "serialize": {
+        "maxMicros": 6029,
+        "minMicros": 5694,
+        "p50Micros": 5805,
+        "p95Micros": 6029,
+        "samples": 7
+      },
+      "sparseRecordBytes": 3900427,
+      "stateBytes": 3901985,
+      "statusWithFsyncMicros": 94360,
+      "uniquePayloadHashes": 10000,
+      "writtenFixtureBytes": 11706419
+    }
+  ],
+  "notImplemented": [
+    "production history compression/removal",
+    "queue delta format",
+    "Store/core/SDK/worker changes",
+    "cross-archive solid compression"
+  ],
+  "observedProductionContext": {
+    "activeJournalBytes": 67108252,
+    "availableDiskReported": "198G",
+    "intentCharactersMax": 34,
+    "intentCharactersMin": 25,
+    "intents": 98,
+    "keys": 98,
+    "observedAt": "2026-10-15T09:40:00Z",
+    "previousBindings": 70,
+    "previousRotationAt": "2026-10-15T09:30:00Z",
+    "scopeCharacters": 26,
+    "source": "parent #120 sanitized observation; identity lengths in the model are explicit synthetic assumptions",
+    "stateJsonBytes": 39628,
+    "unknowns": 0
+  },
+  "productionModified": false,
+  "projection": {
+    "assumptions": {
+      "archives": "old generations/checkpoints retained; journal model excludes checkpoint additions, so total storage is larger",
+      "bytesPerAdditionalRetainedBinding": 390,
+      "days": 20,
+      "freeDiskBudgetBytes": 211514302464,
+      "identityShape": "fixed synthetic lengths, not a claim that actual future identities stay fixed",
+      "initialRetainedBindings": 98,
+      "recordByteBase": 427,
+      "stateCpu": "full State clone/hash/serialization still scales with retained bindings even if archives are compressed"
+    },
+    "scenarios": [
+      {
+        "contestWritesPerMinute": 1,
+        "firstOversizedRecordBindingCount": 172073,
+        "minimumRetainedMapsStringPayloadBytes": 8727196,
+        "offered": {
+          "checkpointArchiveBytesIncluded": false,
+          "compressionRatioNeededForJournalAlone": 233.28466706027243,
+          "counterfactualAfterSingleRecordCap": false,
+          "freeDiskBudgetReachedDay": 1.2479166666666666,
+          "journalBytesFixedModel20Days": 49343043628800,
+          "linearComputeWallExtrapolation": {
+            "averageComputeWallSecondsPerWallMinute": 27.043201833600005,
+            "lastMinuteComputeWallSecondsPerWallMinute": 53.8960799136,
+            "method": "p50 clone+hash+serialization work measured with Instant under nice10/live host; WALL time, not OS process CPU; uncertain outside measured range; excludes IO/status/apply",
+            "serializedWorkerTimeBudgetExceededAtEnd": false
+          },
+          "minimumQueueRecords": 8726400,
+          "readsPerMinute": 100,
+          "statusWaitActiveRollingSequenceOverheadIncluded": false,
+          "terabytesDecimal": 49.3430436288
+        },
+        "offeredPacingSecondsPerMinute": 62.5,
+        "pacingNote": "100 reads plus any write rate exceeds shared completion pacing; zero-latency bound also ignores inclusive rolling-window and real network costs",
+        "pacingUpperBound": {
+          "checkpointArchiveBytesIncluded": false,
+          "compressionRatioNeededForJournalAlone": 221.7359290527528,
+          "counterfactualAfterSingleRecordCap": false,
+          "freeDiskBudgetReachedDay": 1.28125,
+          "journalBytesFixedModel20Days": 46900320364800,
+          "linearComputeWallExtrapolation": {
+            "averageComputeWallSecondsPerWallMinute": 25.704429465600004,
+            "lastMinuteComputeWallSecondsPerWallMinute": 51.2279571456,
+            "method": "p50 clone+hash+serialization work measured with Instant under nice10/live host; WALL time, not OS process CPU; uncertain outside measured range; excludes IO/status/apply",
+            "serializedWorkerTimeBudgetExceededAtEnd": false
+          },
+          "minimumQueueRecords": 8294400,
+          "readsPerMinute": 95,
+          "statusWaitActiveRollingSequenceOverheadIncluded": false,
+          "terabytesDecimal": 46.9003203648
+        },
+        "retainedBindingsAfter20Days": 28898,
+        "singleRecordBytesAt20Days": 11270647,
+        "singleRecordLimitDayAtOfferedWriteRate": 119.42708333333333,
+        "zeroLatencyPacingUpperBoundReadsPerMinute": 95
+      },
+      {
+        "contestWritesPerMinute": 5,
+        "firstOversizedRecordBindingCount": 172073,
+        "minimumRetainedMapsStringPayloadBytes": 43517596,
+        "offered": {
+          "checkpointArchiveBytesIncluded": false,
+          "compressionRatioNeededForJournalAlone": 1205.9894903202378,
+          "counterfactualAfterSingleRecordCap": false,
+          "freeDiskBudgetReachedDay": 0.5631944444444444,
+          "journalBytesFixedModel20Days": 255084025824000,
+          "linearComputeWallExtrapolation": {
+            "averageComputeWallSecondsPerWallMinute": 139.779653328,
+            "lastMinuteComputeWallSecondsPerWallMinute": 279.361445328,
+            "method": "p50 clone+hash+serialization work measured with Instant under nice10/live host; WALL time, not OS process CPU; uncertain outside measured range; excludes IO/status/apply",
+            "serializedWorkerTimeBudgetExceededAtEnd": true
+          },
+          "minimumQueueRecords": 9072000,
+          "readsPerMinute": 100,
+          "statusWaitActiveRollingSequenceOverheadIncluded": false,
+          "terabytesDecimal": 255.084025824
+        },
+        "offeredPacingSecondsPerMinute": 72.5,
+        "pacingNote": "100 reads plus any write rate exceeds shared completion pacing; zero-latency bound also ignores inclusive rolling-window and real network costs",
+        "pacingUpperBound": {
+          "checkpointArchiveBytesIncluded": false,
+          "compressionRatioNeededForJournalAlone": 964.792070181318,
+          "counterfactualAfterSingleRecordCap": false,
+          "freeDiskBudgetReachedDay": 0.63125,
+          "journalBytesFixedModel20Days": 204067321747200,
+          "linearComputeWallExtrapolation": {
+            "averageComputeWallSecondsPerWallMinute": 111.82372266239999,
+            "lastMinuteComputeWallSecondsPerWallMinute": 223.4891562624,
+            "method": "p50 clone+hash+serialization work measured with Instant under nice10/live host; WALL time, not OS process CPU; uncertain outside measured range; excludes IO/status/apply",
+            "serializedWorkerTimeBudgetExceededAtEnd": true
+          },
+          "minimumQueueRecords": 7257600,
+          "readsPerMinute": 79,
+          "statusWaitActiveRollingSequenceOverheadIncluded": false,
+          "terabytesDecimal": 204.0673217472
+        },
+        "retainedBindingsAfter20Days": 144098,
+        "singleRecordBytesAt20Days": 56198647,
+        "singleRecordLimitDayAtOfferedWriteRate": 23.885416666666668,
+        "zeroLatencyPacingUpperBoundReadsPerMinute": 79
+      },
+      {
+        "contestWritesPerMinute": 24,
+        "firstOversizedRecordBindingCount": 172073,
+        "minimumRetainedMapsStringPayloadBytes": 208771996,
+        "offered": {
+          "checkpointArchiveBytesIncluded": false,
+          "compressionRatioNeededForJournalAlone": 6828.833148515042,
+          "counterfactualAfterSingleRecordCap": true,
+          "freeDiskBudgetReachedDay": 0.23958333333333334,
+          "journalBytesFixedModel20Days": 1444395880051200,
+          "linearComputeWallExtrapolation": {
+            "averageComputeWallSecondsPerWallMinute": 791.4630228864,
+            "lastMinuteComputeWallSecondsPerWallMinute": 1582.6923809664,
+            "method": "p50 clone+hash+serialization work measured with Instant under nice10/live host; WALL time, not OS process CPU; uncertain outside measured range; excludes IO/status/apply",
+            "serializedWorkerTimeBudgetExceededAtEnd": true
+          },
+          "minimumQueueRecords": 10713600,
+          "readsPerMinute": 100,
+          "statusWaitActiveRollingSequenceOverheadIncluded": false,
+          "terabytesDecimal": 1444.3958800512
+        },
+        "offeredPacingSecondsPerMinute": 120.0,
+        "pacingNote": "100 reads plus any write rate exceeds shared completion pacing; zero-latency bound also ignores inclusive rolling-window and real network costs",
+        "pacingUpperBound": {
+          "checkpointArchiveBytesIncluded": false,
+          "compressionRatioNeededForJournalAlone": 1321.7481839970749,
+          "counterfactualAfterSingleRecordCap": true,
+          "freeDiskBudgetReachedDay": 0.5479166666666667,
+          "journalBytesFixedModel20Days": 279568645171200,
+          "linearComputeWallExtrapolation": {
+            "averageComputeWallSecondsPerWallMinute": 153.1863915264,
+            "lastMinuteComputeWallSecondsPerWallMinute": 306.32755760640003,
+            "method": "p50 clone+hash+serialization work measured with Instant under nice10/live host; WALL time, not OS process CPU; uncertain outside measured range; excludes IO/status/apply",
+            "serializedWorkerTimeBudgetExceededAtEnd": true
+          },
+          "minimumQueueRecords": 2073600,
+          "readsPerMinute": 0,
+          "statusWaitActiveRollingSequenceOverheadIncluded": false,
+          "terabytesDecimal": 279.5686451712
+        },
+        "retainedBindingsAfter20Days": 691298,
+        "singleRecordBytesAt20Days": 269606647,
+        "singleRecordLimitDayAtOfferedWriteRate": 4.976128472222222,
+        "zeroLatencyPacingUpperBoundReadsPerMinute": 0
+      }
+    ]
+  },
+  "provenance": {
+    "downloadedResultsTarSha256": "da296ced7f84ca8913fbe57d3160a8bc84a2ff6aa151ae6067614c099f01817c",
+    "execution": "separate private VPS fixture; nice10; all SSH/build jobs ended",
+    "originalBenchmarkJsonSha256": "28aa739e8a958a34cca2f9151e6cd1b33447c848e391dca63263fa9c08b590af",
+    "platform": {
+      "architecture": "aarch64",
+      "os": "linux"
+    },
+    "rustSourceCommit": "6245c838",
+    "sourceCoreSha256": "f187ccd0c8c78d7821760e422eb8c9a1eb708e607bbacaabad11fb3533ae652a"
+  },
+  "schemaVersion": 1,
+  "sizeModel": {
+    "intentBytes": 29,
+    "keyBytes": 29,
+    "meaning": "affine intercept for positive binding counts; empty maps omit two commas; fixed synthetic lengths; excludes rolling vectors, active flight, larger sequence digits and status/wait records",
+    "payloadHashBytes": 64,
+    "perRetainedBindingBytes": 390,
+    "scopeBytes": 26,
+    "sparseEmptyRecordBytes": 429,
+    "sparseRecordBaseBytes": 427
+  },
+  "syntheticFixture": {
+    "actualNetworkRequests": 0,
+    "bytes": 16748740,
+    "completeSyntheticRequests": 185,
+    "finalActive": true,
+    "finalBindings": 77,
+    "initialBindings": 70,
+    "path": "private synthetic queue-compression-fixture.jsonl; original retained",
+    "payloadHashesUnique": true,
+    "records": 557,
+    "sha256": "c5f454b76f3f76368e9535ab1ab492952a3580f10de7bd5f62dc4b35593f83c5"
+  },
+  "task": 129,
+  "verification": {
+    "lockedOfflineReleaseBuild": "passed",
+    "nonrecursiveStartupAnchorObservation": "passed; synthetic old archive renamed with bytes retained",
+    "pythonProjectionTestsPassed": 3,
+    "rustTestsFailed": 0,
+    "rustTestsPassed": 36,
+    "v1Version2ManifestRejection": "passed"
+  }
+}

@@ -83,11 +83,11 @@ def projection(benchmark, free_bytes):
                 final_us = cpu_base + cpu_slope * (final_bindings - left['bindings'])
                 average_bindings = initial + writes * MINUTES / 2
                 average_us = cpu_base + cpu_slope * (average_bindings - left['bindings'])
-                item['linearCpuExtrapolation'] = {
-                    'method': 'p50 current clone+hash+serialization pipeline; extrapolation beyond measured points is uncertain, excludes IO/status/apply',
-                    'lastMinuteCpuSecondsPerWallMinute': final_us * 3 * (reads + writes) / 1e6,
-                    'averageCpuSecondsPerWallMinute': average_us * 3 * (reads + writes) / 1e6,
-                    'singleCoreCapacityExceededAtEnd': final_us * 3 * (reads + writes) > 60e6}
+                item['linearComputeWallExtrapolation'] = {
+                    'method': 'p50 clone+hash+serialization work measured with Instant under nice10/live host; WALL time, not OS process CPU; uncertain outside measured range; excludes IO/status/apply',
+                    'lastMinuteComputeWallSecondsPerWallMinute': final_us * 3 * (reads + writes) / 1e6,
+                    'averageComputeWallSecondsPerWallMinute': average_us * 3 * (reads + writes) / 1e6,
+                    'serializedWorkerTimeBudgetExceededAtEnd': final_us * 3 * (reads + writes) > 60e6}
             row[label] = item
         scenarios.append(row)
     return {'assumptions': {'days': 20, 'initialRetainedBindings': initial, 'recordByteBase': base,
