@@ -24,6 +24,16 @@ fn row(id:u64)->Value{json!({"id":id,"tournamentId":"bda92870-621e-47b0-bc3c-360
 fn page(rows:Vec<Value>,next:Option<&str>)->String{json!({"data":rows,"coverage":{"complete":true,"projectedThroughSequence":10},"pagination":{"limit":200,"hasMore":next.is_some(),"nextCursor":next}}).to_string()}
 fn order()->Order{Order{idempotency_key:"fixture-one".into(),exchange_id:"994".into(),side:"no".into(),action:"buy".into(),quantity:1,price:"0.120000".into(),expiration_date:"2030-01-01T00:00:00Z".into(),tournament_id:"bda92870-621e-47b0-bc3c-3602c5c26f55".into()}}
 fn permit(id:&str)->Permit{Permit{run_id:"fixture".into(),intent_id:id.into(),owner:"Codex".into(),expires_at_ms:10_000_000,maximum_quantity:1,maximum_cost:"1.000000".into()}}
+#[test]fn node_scope_accepts_documented_contract_types_without_dropping_context_or_leaf_checks(){
+ let server=Server::new(vec![]);let dir=temp();{
+ let t=transport(&dir,&server,false,Arc::new(AtomicU64::new(1000)));
+ let original=json!({"market_id":"305","contexts":[{"type":"tournament","tournament":{"id":"bda92870-621e-47b0-bc3c-3602c5c26f55"}}],"root":{"node_id":"101","contract_id":"101","node_type":"contract","contract_type":"Freeform"}});
+ for contract_type in [json!("Freeform"),json!("Election Outcome"),Value::Null]{let mut v=original.clone();v["root"]["contract_type"]=contract_type;t.validate(&Endpoint::Nodes{market_id:"305".into()},&v).unwrap();}
+ let mut wrong=original.clone();wrong["market_id"]=json!("306");assert!(t.validate(&Endpoint::Nodes{market_id:"305".into()},&wrong).is_err());
+ let mut wrong=original.clone();wrong["contexts"][0]["tournament"]["id"]=json!("other");assert!(t.validate(&Endpoint::Nodes{market_id:"305".into()},&wrong).is_err());
+ let mut wrong=original;wrong["root"]["node_type"]=json!("operator");assert!(t.validate(&Endpoint::Nodes{market_id:"305".into()},&wrong).is_err());
+ }fs::remove_dir_all(dir).unwrap();
+}
 fn ack()->String{json!({"orderId":42,"exchangeId":"994","open":true,"remainingQuantity":1,"quantity":1,"quantityTraded":0,"totalCost":0,"fillPrice":null,"price":0.12,"side":"no","action":"buy","all":{}}).to_string()}
 
 #[test]fn decimal_money_is_exact_and_never_rounded(){assert_eq!(decimal_units("100000.123456").unwrap(),100000123456);assert_eq!(decimal_units("-0.005000").unwrap(),-5000);assert!(decimal_units("0.0000001").is_err());assert_eq!(decimal_units("1e-6").unwrap(),1);assert_eq!(decimal_units("5e-3").unwrap(),5000);assert_eq!(decimal_units("1e+5").unwrap(),100000000000);assert_eq!(decimal_units("0.12000000").unwrap(),120000);assert!(decimal_units("1.2345671").is_err());assert!(decimal_units("1e9999").is_err());}
