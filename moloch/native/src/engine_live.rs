@@ -10,7 +10,7 @@ impl Engine {
   if e["type"]=="actual_position_adoption" {return self.adopt_positions(e,_at)}
   if e["type"]=="unsubmitted_intent_retired" {
    if e["source"]!="moloch_live_dispatcher"||e["confirmedNetworkAttempts"].as_u64()!=Some(0)||e["receiptHash"].as_str().is_none_or(|s|s.len()!=64||!s.bytes().all(|b|b.is_ascii_hexdigit())){return Err("UNSUBMITTED_INTENT_PROOF")}
-   let qid=e["orderId"].as_u64().ok_or("ACTUAL_INTENT_ID")?;let index=self.orders.iter().position(|q|q.id==qid).ok_or("ACTUAL_UNOWNED_ORDER")?;
+   let qid=e["orderId"].as_u64().ok_or("ACTUAL_INTENT_ID")?;if self.is_package_order(qid){return Err("PACKAGE_CANNOT_BE_ABANDONED_AS_ORDINARY_INTENT")};let index=self.orders.iter().position(|q|q.id==qid).ok_or("ACTUAL_UNOWNED_ORDER")?;
    if self.live_orders.contains_key(&qid)||self.orders[index].filled!=0||self.orders[index].retired{return Err("DISPATCHED_INTENT_CANNOT_BE_ABANDONED")}
    if self.orders[index].buy{self.wallet.release(&qid.to_string())?}self.orders[index].retired=true;self.count("unsubmittedIntentsRetired");return Ok(())
   }
@@ -22,6 +22,7 @@ impl Engine {
   if e["type"]=="actual_order_ack" {
    let q=&self.orders[index];
    let admitted=e["quantity"].as_u64().filter(|n|*n>0&&*n<=q.quantity).ok_or("ACTUAL_ACK_QUANTITY")?;
+   self.package_ack_guard(qid,admitted)?;
    if e["exchangeId"]!=q.exchange||e["marketId"]!=q.market||e["price"]!=money(q.limit)||e["side"]!=label(q.side)||e["action"]!=if q.buy{"buy"}else{"sell"}{return Err("ACTUAL_ACK_INTENT_MISMATCH")}
    if let Some(old)=self.live_orders.get(&qid){if old!=&actual||admitted!=q.quantity{return Err("ACTUAL_ORDER_BINDING_CHANGED")};return Ok(())}
    if self.orders[index].retired||self.live_orders.values().any(|v|v==&actual){return Err("ACTUAL_ORDER_ALREADY_BOUND")}
@@ -30,13 +31,13 @@ impl Engine {
     if q.buy{let r=Reservation{exchange:q.exchange.clone(),side:q.side,quantity:admitted,limit:q.limit};self.wallet.release(&qid.to_string())?;self.wallet.reserve(&qid.to_string(),r)?;}
     self.orders[index].quantity=admitted;self.count("actualOrderResizes");
    }
-   self.live_orders.insert(qid,actual);self.count("actualOrderAcknowledgments");return Ok(())
+   self.live_orders.insert(qid,actual);self.package_acknowledged(qid);self.count("actualOrderAcknowledgments");return Ok(())
   }
   if self.live_orders.get(&qid)!=Some(&actual){return Err("ACTUAL_UNOWNED_ORDER")}
   if e["type"]=="actual_order_terminal" {
    let q=&self.orders[index];let status=e["status"].as_str().ok_or("ACTUAL_TERMINAL_STATUS")?;
    if !["canceled","expired","filled"].contains(&status)||e["fillsComplete"]!=true||e["filledQuantity"].as_u64()!=Some(q.filled)||(status=="filled"&&q.filled!=q.quantity){return Err("ACTUAL_TERMINAL_FILL_RECONCILIATION_REQUIRED")}
-   if !q.retired {if q.buy{self.wallet.release(&qid.to_string())?};self.orders[index].retired=true;self.count("actualOrderTerminals")};return Ok(())
+   if !q.retired {if q.buy{self.wallet.release(&qid.to_string())?};self.orders[index].retired=true;self.count("actualOrderTerminals")};self.package_terminal(qid);return Ok(())
   }
   let fill_id=id(&e["fillId"])?;let n=e["quantity"].as_u64().filter(|n|*n>0).ok_or("ACTUAL_FILL_QUANTITY")?;
   let executed=ns(&e["executedAt"])?;let p=price(dec(&e["price"])?)?;let charge=dec(&e["fee"])?;
@@ -93,6 +94,7 @@ impl Engine {
   Ok(())
  }
  fn adopt_positions(&mut self,e:&Value,at:i64)->Result<()>{
+  if !self.live_packages.is_empty(){return Err("PACKAGE_STATE_CANNOT_BE_REPLACED_BY_ADOPTION")}
   if self.inherited.is_some(){return Err("ADOPTION_ALREADY_RECORDED")}
   if e["source"]!="official_sig_api_v1"||e["authority"]!="human_moloch_inherited_management_20261015"||e["complete"]!=true{return Err("ADOPTION_AUTHORITY_OR_COVERAGE")}
   let receipt=e["receiptHash"].as_str().filter(|s|s.len()==64&&s.bytes().all(|b|b.is_ascii_hexdigit())).ok_or("ACTUAL_RECEIPT_HASH")?;

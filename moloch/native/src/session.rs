@@ -96,6 +96,7 @@ pub fn engine_identity() -> String {
     for bytes in [
         include_bytes!("engine.rs").as_slice(),
         include_bytes!("engine_live.rs").as_slice(),
+        include_bytes!("engine_packages.rs").as_slice(),
         include_bytes!("lib.rs").as_slice(),
         include_bytes!("legacy.rs").as_slice(),
         include_bytes!("journal.rs").as_slice(),

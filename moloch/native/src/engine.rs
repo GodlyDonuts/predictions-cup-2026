@@ -2,6 +2,8 @@
 //! actual exchange acknowledgment. Cancellation alone never frees cash.
 #[path = "engine_live.rs"]
 mod live;
+#[path = "engine_packages.rs"]
+mod packages;
 use crate::{Reservation, Result, SCALE, Side, TICK, Wallet, amount, fee, money, price};
 use serde_json::{Value, json};
 use sha2::{Digest, Sha256};
@@ -438,6 +440,8 @@ pub struct Engine {
     live_fill_ids: BTreeMap<String,String>,
     inherited: Option<InheritedInventory>,
     daily_entry_windows: Option<Value>,
+    live_packages: BTreeMap<String, packages::LivePackage>,
+    package_orders: BTreeMap<u64,String>,
     policy: Policy,
     pub wallet: Wallet,
     books: BTreeMap<String, Arc<Book>>,
@@ -458,6 +462,9 @@ pub struct Engine {
 }
 impl Engine {
     pub fn from_seed_state(state: &Value) -> Result<Self> {
+        if state.get("livePackages").is_some_and(|v|!v.is_null()) {
+            return Err("SEED_LIVE_PACKAGES_REQUIRE_REPLAY");
+        }
         // A standalone continuation cannot silently discard a live mandate.
         // Durable live windows are restored by replaying their original events.
         if state.get("dailyEntryWindows").is_some_and(|v|!v.is_null()) {
@@ -529,6 +536,7 @@ impl Engine {
     }
     fn audit(&self) -> Result<()> {
         self.wallet.audit()?;
+        self.audit_packages()?;
         for (ex, side) in self.wallet.lots.keys() {
             let held = self.wallet.quantity(ex, *side);
             if held < self.pledge(ex, *side) + held.min(self.opposite_buys(ex, *side)) {
@@ -684,6 +692,8 @@ impl Engine {
             live_fill_ids: BTreeMap::new(),
             inherited: None,
             daily_entry_windows: None,
+            live_packages: BTreeMap::new(),
+            package_orders: BTreeMap::new(),
         })
     }
     fn count(&mut self, k: &str) {
@@ -794,6 +804,7 @@ impl Engine {
         let mut out = Vec::new();
         let p = &self.policy;
         for b in self.books.values() {
+            if self.package_protects_exchange(&b.exchange) {continue;}
             if !b.fresh(p, at) {
                 continue;
             }
@@ -1168,6 +1179,7 @@ impl Engine {
         }
         for i in 0..self.orders.len() {
             let q = &self.orders[i];
+            if self.is_package_order(q.id) {continue;}
             if q.retired || q.end() <= at || q.cancel.is_some() {
                 continue;
             }
@@ -1422,6 +1434,7 @@ impl Engine {
         let mut duplicate = false;
         match kind {
             "actual_order_ack" | "actual_fill" | "actual_order_terminal" | "unsubmitted_intent_retired" | "actual_position_adoption" | "live_entry_window" => self.apply_live(e,at)?,
+            "live_package_reserve" | "live_package_attempt" | "live_package_no_execution" | "live_package_ack" | "live_package_unknown" | "live_package_complete" => self.apply_package(e,at)?,
             "book" => {
                 let b = Book::parse(&e["book"], &e["receivedAt"])?;
                 if let Some(old) = self.books.get(&b.exchange) {
@@ -1738,7 +1751,7 @@ impl Engine {
         self.observe_entry_flow(e, duplicate)?;
         // This durable authorization transition changes only the entry cutoff;
         // an ordinary subsequent tick/book performs normal quote planning.
-        if kind!="live_entry_window"{self.reconcile(at)?;}
+        if kind!="live_entry_window"&&!kind.starts_with("live_package_"){self.reconcile(at)?;}
         Ok(())
     }
     pub fn report(&self) -> Result<Value> {
@@ -1782,6 +1795,7 @@ impl Engine {
         if let Some(mandate)=&self.daily_entry_windows {
             report["dailyEntryWindows"]=json!({"mandate":mandate,"entryStopAt":self.policy.raw["entryStopAt"]});
         }
+        if !self.live_packages.is_empty(){report["livePackages"]=json!({"records":self.package_records(),"blocksNewSubmissions":self.package_blocks_new_submissions()});}
         Ok(report)
     }
     pub fn fills(&self) -> &[Value] {
