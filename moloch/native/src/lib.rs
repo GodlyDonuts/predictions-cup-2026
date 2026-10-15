@@ -3,6 +3,7 @@
 use std::collections::{BTreeMap, VecDeque};
 pub mod engine;
 pub mod journal;
+pub mod legacy;
 pub mod realtime;
 pub mod source;
 pub const SCALE: i128 = 1_000_000;
@@ -86,6 +87,7 @@ impl Side {
 struct Lot {
     quantity: u64,
     price: i128,
+    executed_at: Option<serde_json::Value>,
 }
 #[derive(Clone, Debug)]
 pub struct Reservation {
@@ -115,7 +117,14 @@ impl Wallet {
             }
             out[ex][if *side == Side::Yes { "YES" } else { "NO" }] = serde_json::json!(
                 lots.iter()
-                    .map(|l| serde_json::json!({"quantity":l.quantity,"price":money(l.price)}))
+                    .map(|l| {
+                        let mut v =
+                            serde_json::json!({"quantity":l.quantity,"price":money(l.price)});
+                        if let Some(at) = &l.executed_at {
+                            v["executedAt"] = at.clone();
+                        }
+                        v
+                    })
                     .collect::<Vec<_>>()
             );
         }
@@ -139,11 +148,7 @@ impl Wallet {
         fee_bps: u32,
         fee_per_share: i128,
     ) -> Result<Self> {
-        if initial <= 0
-            || maximum_committed <= 0
-            || maximum_committed > initial
-            || fee_per_share < 0
-        {
+        if initial <= 0 || maximum_committed <= 0 || fee_per_share < 0 {
             return Err("WALLET_POLICY");
         }
         Ok(Self {
@@ -252,6 +257,7 @@ impl Wallet {
             .push_back(Lot {
                 quantity: n,
                 price: r.limit,
+                executed_at: None,
             });
         if n == r.quantity {
             next.reservations.remove(id);
@@ -305,6 +311,120 @@ impl Wallet {
             return Err("ACCOUNTING_IDENTITY");
         }
         Ok(())
+    }
+    pub fn restore_record(
+        state: &serde_json::Value,
+        maximum_committed: i128,
+        fee_bps: u32,
+        fee_per_share: i128,
+    ) -> Result<Self> {
+        use serde_json::{Value, json};
+        let decimal = |v: &Value| amount(v.as_str().ok_or("SEED_DECIMAL")?);
+        let mut replay = Self::new(
+            decimal(&state["policy"]["initialCash"])?,
+            i128::MAX,
+            fee_bps,
+            fee_per_share,
+        )?;
+        let mut redemptions = Vec::new();
+        for f in state["fills"].as_array().ok_or("SEED_FILLS")? {
+            let exchange = f["exchangeId"]
+                .as_str()
+                .filter(|s| {
+                    !s.is_empty() && !s.starts_with('0') && s.bytes().all(|b| b.is_ascii_digit())
+                })
+                .ok_or("SEED_EXCHANGE")?;
+            let side = match f["side"].as_str() {
+                Some("YES") => Side::Yes,
+                Some("NO") => Side::No,
+                _ => return Err("SEED_SIDE"),
+            };
+            let n = f["quantity"]
+                .as_u64()
+                .filter(|n| *n > 0 && *n <= 2_147_483_647)
+                .ok_or("SEED_QUANTITY")?;
+            let limit = price(decimal(&f["price"])?)?;
+            let charge = decimal(&f["fee"])?;
+            if charge < 0 {
+                return Err("SEED_FEE");
+            }
+            let value = limit * n as i128;
+            match f["action"].as_str() {
+                Some("buy") => {
+                    if replay.cash < value + charge {
+                        return Err("SEED_CASH");
+                    }
+                    replay.cash -= value + charge;
+                    replay.realized -= charge;
+                    replay
+                        .lots
+                        .entry((exchange.to_owned(), side))
+                        .or_default()
+                        .push_back(Lot {
+                            quantity: n,
+                            price: limit,
+                            executed_at: f.get("executedAt").cloned(),
+                        });
+                }
+                Some("sell") => {
+                    let cost = replay.take(exchange, side, n)?;
+                    replay.cash += value - charge;
+                    replay.realized += value - cost - charge;
+                }
+                _ => return Err("SEED_ACTION"),
+            }
+            replay.fees += charge;
+            let pairs = replay
+                .quantity(exchange, Side::Yes)
+                .min(replay.quantity(exchange, Side::No));
+            if pairs > 0 {
+                let cost = replay.take(exchange, Side::Yes, pairs)?
+                    + replay.take(exchange, Side::No, pairs)?;
+                let payout = SCALE * pairs as i128;
+                replay.cash += payout;
+                replay.realized += payout - cost;
+                redemptions.push(json!({"exchangeId":exchange,"quantity":pairs,"cost":money(cost),"payout":money(payout)}));
+            }
+            replay.audit()?;
+        }
+        let declared = state["redemptions"].as_array().ok_or("SEED_REDEMPTIONS")?;
+        if declared.len() != redemptions.len() {
+            return Err("SEED_REDEMPTIONS");
+        }
+        for (actual, old) in redemptions.iter().zip(declared) {
+            for key in ["exchangeId", "quantity", "cost", "payout"] {
+                if actual[key] != old[key] {
+                    return Err("SEED_REDEMPTION_FACTS");
+                }
+            }
+        }
+        if replay.cash != decimal(&state["cash"])?
+            || replay.realized != decimal(&state["realized"])?
+            || replay.fees != decimal(&state["fees"])?
+        {
+            return Err("SEED_FINANCIAL_HISTORY");
+        }
+        let positions = state["positions"].as_object().ok_or("SEED_POSITIONS")?;
+        let actual = replay.positions();
+        for (ex, p) in positions {
+            for side in ["YES", "NO"] {
+                let lots = p[side].as_array().ok_or("SEED_LOTS")?;
+                let owned = actual[ex][side].as_array();
+                if !lots.is_empty() && owned.is_none() || owned.is_some_and(|a| a != lots) {
+                    return Err("SEED_FIFO_POSITIONS");
+                }
+            }
+        }
+        for (ex, p) in actual.as_object().unwrap() {
+            for side in ["YES", "NO"] {
+                if !p[side].as_array().unwrap().is_empty() && positions.get(ex).is_none() {
+                    return Err("SEED_MISSING_POSITION");
+                }
+            }
+        }
+        replay.maximum_committed = maximum_committed;
+        replay.audit()?;
+        Ok(replay)
     }
 }
 #[cfg(test)]

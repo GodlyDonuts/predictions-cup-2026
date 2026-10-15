@@ -71,6 +71,17 @@ impl Policy {
             "entryDepthBps",
             "maximumEntryPrice",
             "requireCurrentFlow",
+            "inventoryTakerAfterMs",
+            "maximumInventoryAgeMs",
+            "inventoryMinimumGain",
+            "inventoryExitMode",
+            "inventoryAgeClock",
+            "inventoryExitDepthBps",
+            "retainProfitableHedge",
+            "repriceProfitableHedge",
+            "maximumHedgeOvershoot",
+            "throughFillCapacity",
+            "minimumDepthImbalanceBps",
         ];
         for (k, v) in overrides.as_object().ok_or("POLICY_OBJECT")? {
             if raw.get(k).is_none() && !allowed.contains(&k.as_str()) {
@@ -170,6 +181,65 @@ impl Policy {
             if x <= 0 || x > SCALE / 2 {
                 return Err("ENTRY_PRICE");
             }
+        }
+        for key in ["inventoryTakerAfterMs", "maximumInventoryAgeMs"] {
+            if raw
+                .get(key)
+                .is_some_and(|v| !v.as_u64().is_some_and(|n| n <= 86400000))
+            {
+                return Err("INVENTORY_AGE_POLICY");
+            }
+        }
+        for key in [
+            "retainProfitableHedge",
+            "repriceProfitableHedge",
+            "throughFillCapacity",
+        ] {
+            if raw.get(key).is_some_and(|v| !v.is_boolean()) {
+                return Err("POLICY_BOOL");
+            }
+        }
+        if raw["repriceProfitableHedge"] == true && raw["retainProfitableHedge"] != true
+            || raw["throughFillCapacity"] == true && p.conditional
+        {
+            return Err("HEDGE_OR_CAPACITY_POLICY");
+        }
+        if raw
+            .get("maximumHedgeOvershoot")
+            .is_some_and(|v| !v.as_u64().is_some_and(|n| n <= p.quantity))
+        {
+            return Err("HEDGE_OVERSHOOT");
+        }
+        if let Some(v) = raw.get("inventoryMinimumGain") {
+            let x = dec(v)?;
+            if x < 0 || x >= SCALE {
+                return Err("INVENTORY_GAIN");
+            }
+        }
+        if let Some(v) = raw.get("inventoryExitMode") {
+            if v != "join"
+                && (v != "fixedGain"
+                    || !raw["maximumInventoryAgeMs"].as_u64().is_some_and(|n| n > 0))
+            {
+                return Err("INVENTORY_EXIT_MODE");
+            }
+        }
+        if raw
+            .get("inventoryAgeClock")
+            .is_some_and(|v| v != "receipt" && v != "execution")
+        {
+            return Err("INVENTORY_AGE_CLOCK");
+        }
+        if raw
+            .get("inventoryExitDepthBps")
+            .is_some_and(|v| !v.as_u64().is_some_and(|n| n > 0 && n <= 10000))
+        {
+            return Err("INVENTORY_EXIT_DEPTH");
+        }
+        if raw.get("minimumDepthImbalanceBps").is_some_and(|v| {
+            p.quote != "microprice" || !v.as_u64().is_some_and(|n| n > 0 && n <= 10000)
+        }) {
+            return Err("DEPTH_IMBALANCE");
         }
         Wallet::new(p.initial, p.committed, p.fee_bps, p.fee_share)?;
         Ok(p)
@@ -299,6 +369,12 @@ struct Order {
     visible_same: u64,
     visible_better: u64,
     touch_remainder: u64,
+    aon: bool,
+    age_reason: bool,
+    through: bool,
+    participation: u64,
+    conditional: bool,
+    touch_bps: u64,
 }
 impl Order {
     fn end(&self) -> i64 {
@@ -319,6 +395,9 @@ struct Target {
     quantity: u64,
     limit: i128,
     rank: f64,
+    aon: bool,
+    age_reason: bool,
+    hedge_for: Option<Side>,
 }
 impl Target {
     fn key(&self) -> (String, Side, bool) {
@@ -354,8 +433,74 @@ pub struct Engine {
     events: u64,
     counts: BTreeMap<String, u64>,
     entry_flow: BTreeMap<String, EntryFlow>,
+    aon_consumed: BTreeMap<(String, String, Side, u128), u128>,
+    prior_orders: u64,
+    legacy_seen: std::sync::Arc<BTreeMap<String, String>>,
+    baseline: Option<Value>,
 }
 impl Engine {
+    pub fn from_seed_state(state: &Value) -> Result<Self> {
+        if state["policyHash"].as_str() != Some(hash(&state["policy"]).as_str()) {
+            return Err("SEED_POLICY_HASH");
+        }
+        let orders = state["orders"].as_array().ok_or("SEED_ORDERS")?;
+        if orders.iter().any(|q| q["retired"] != true) {
+            return Err("SEED_UNRESOLVED_ORDERS");
+        }
+        if state["nextOrderId"].as_u64() != Some(orders.len() as u64 + 1) {
+            return Err("SEED_ORDER_IDS");
+        }
+        let mut engine = Self::new(&state["policy"])?;
+        engine.wallet = Wallet::restore_record(
+            state,
+            engine.policy.committed,
+            engine.policy.fee_bps,
+            engine.policy.fee_share,
+        )?;
+        engine.fills = state["fills"].as_array().ok_or("SEED_FILLS")?.clone();
+        engine.prior_orders = orders.len() as u64;
+        engine.last = state
+            .get("lastAt")
+            .filter(|v| !v.is_null())
+            .map(ns)
+            .transpose()?;
+        engine.last_string = state["lastAt"].clone();
+        engine.events = state["events"].as_u64().ok_or("SEED_EVENTS")?;
+        for (k, v) in state["counts"].as_object().ok_or("SEED_COUNTS")? {
+            engine
+                .counts
+                .insert(k.clone(), v.as_u64().ok_or("SEED_COUNT")?);
+        }
+        for (k, v) in state["seen"].as_object().ok_or("SEED_SEEN")? {
+            let h = v
+                .as_str()
+                .filter(|s| s.len() == 64 && s.bytes().all(|b| b.is_ascii_hexdigit()))
+                .ok_or("SEED_TRADE_HASH")?;
+            std::sync::Arc::make_mut(&mut engine.legacy_seen).insert(k.clone(), h.into());
+        }
+        for v in state["writes"].as_array().ok_or("SEED_WRITES")? {
+            engine.writes.push(v.as_i64().ok_or("SEED_WRITE")?);
+        }
+        engine.baseline = Some(
+            json!({"mode":"verified_financial_continuation","cash":state["cash"],"realized":state["realized"],"fees":state["fees"],"priorRetiredOrders":orders.len(),"priorFills":engine.fills.len(),"at":state["lastAt"],"sourcePolicyHash":state["policyHash"],"booksRequireFreshResync":true}),
+        );
+        engine.audit()?;
+        Ok(engine)
+    }
+    pub fn update_policy(&mut self, overrides: &Value) -> Result<()> {
+        let policy = Policy::new(overrides)?;
+        if policy.initial != self.policy.initial {
+            return Err("INITIAL_CAPITAL_CHANGED");
+        }
+        let mut next = self.clone();
+        next.wallet.maximum_committed = policy.committed;
+        next.wallet.fee_bps = policy.fee_bps;
+        next.wallet.fee_per_share = policy.fee_share;
+        next.policy = policy;
+        next.audit()?;
+        *self = next;
+        Ok(())
+    }
     fn audit(&self) -> Result<()> {
         self.wallet.audit()?;
         for (ex, side) in self.wallet.lots.keys() {
@@ -504,6 +649,10 @@ impl Engine {
             events: 0,
             counts: BTreeMap::new(),
             entry_flow: BTreeMap::new(),
+            aon_consumed: BTreeMap::new(),
+            prior_orders: 0,
+            legacy_seen: std::sync::Arc::new(BTreeMap::new()),
+            baseline: None,
         })
     }
     fn count(&mut self, k: &str) {
@@ -523,6 +672,40 @@ impl Engine {
             .map(Order::remaining)
             .sum()
     }
+    fn retainable_hedge(&self, q: &Order, at: i64) -> Result<bool> {
+        if self.policy.raw["retainProfitableHedge"] != true
+            || !self.policy.entry(&q.exchange, at)
+            || !q.buy
+            || q.remaining() == 0
+            || q.cancel.is_some()
+        {
+            return Ok(false);
+        }
+        let side = q.side.other();
+        let held = self.wallet.quantity(&q.exchange, side);
+        if held == 0
+            || self.opposite_buys(&q.exchange, side) + self.pledge(&q.exchange, side)
+                > held
+                    + self.policy.raw["maximumHedgeOvershoot"]
+                        .as_u64()
+                        .unwrap_or(0)
+        {
+            return Ok(false);
+        }
+        let worst = self
+            .wallet
+            .lots
+            .get(&(q.exchange.clone(), side))
+            .into_iter()
+            .flatten()
+            .map(|l| l.price)
+            .max()
+            .unwrap_or(0);
+        Ok(
+            SCALE - worst - q.limit - self.policy.fee(worst, 1)? - self.policy.fee(q.limit, 1)?
+                >= self.policy.edge,
+        )
+    }
     fn visible(b: &Book, side: Side, buy: bool, limit: i128) -> (u64, u64) {
         let yes = if side == Side::Yes {
             limit
@@ -541,14 +724,34 @@ impl Engine {
         }
         (same, better)
     }
-    fn fill(&mut self, i: usize, n: u64, at: &Value, source: &Value) -> Result<()> {
+    fn fill(
+        &mut self,
+        i: usize,
+        n: u64,
+        at: &Value,
+        source: &Value,
+        executed: &Value,
+    ) -> Result<()> {
         let q = &self.orders[i];
         if q.buy {
-            self.wallet.buy_fill(&q.id.to_string(), n)?
+            self.wallet.buy_fill(&q.id.to_string(), n)?;
+            if self.policy.raw["inventoryAgeClock"] == "execution" {
+                if let Some(lot) = self
+                    .wallet
+                    .lots
+                    .get_mut(&(q.exchange.clone(), q.side))
+                    .and_then(|lots| lots.back_mut())
+                {
+                    lot.executed_at = Some(executed.clone());
+                }
+            }
         } else {
             self.wallet.sell_fill(&q.exchange, q.side, n, q.limit)?
         }
         self.fills.push(json!({"orderId":q.id,"marketId":q.market,"exchangeId":q.exchange,"side":label(q.side),"action":if q.buy{"buy"}else{"sell"},"quantity":n,"price":money(q.limit),"fee":money(self.policy.fee(q.limit,n)?),"at":at,"sourceId":source,"counterfactual":true}));
+        if self.policy.raw["inventoryAgeClock"] == "execution" {
+            self.fills.last_mut().unwrap()["executedAt"] = executed.clone();
+        }
         let q = &mut self.orders[i];
         q.filled += n;
         if q.remaining() == 0 {
@@ -571,6 +774,27 @@ impl Engine {
             let yes = self.wallet.quantity(&b.exchange, Side::Yes);
             let no = self.wallet.quantity(&b.exchange, Side::No);
             if yes > 0 || no > 0 {
+                if p.raw["repriceProfitableHedge"] != true {
+                    for q in &self.orders {
+                        if !q.retired
+                            && q.exchange == b.exchange
+                            && q.end() > at
+                            && self.retainable_hedge(q, at)?
+                        {
+                            out.push(Target {
+                                book: b.clone(),
+                                side: q.side,
+                                buy: true,
+                                quantity: q.remaining(),
+                                limit: q.limit,
+                                rank: 1e12,
+                                aon: false,
+                                age_reason: false,
+                                hedge_for: None,
+                            });
+                        }
+                    }
+                }
                 let side = if yes > 0 { Side::Yes } else { Side::No };
                 let existing: u64 = self
                     .orders
@@ -584,11 +808,10 @@ impl Engine {
                     })
                     .map(Order::remaining)
                     .sum();
-                let n = p.quantity.min(
-                    self.wallet.quantity(&b.exchange, side).saturating_sub(
-                        self.pledge(&b.exchange, side) + self.opposite_buys(&b.exchange, side),
-                    ) + existing,
-                );
+                let available = self.wallet.quantity(&b.exchange, side) as i128
+                    - self.pledge(&b.exchange, side) as i128
+                    - self.opposite_buys(&b.exchange, side) as i128;
+                let n = (p.quantity as i128).min((available + existing as i128).max(0)) as u64;
                 let base = if side == Side::Yes {
                     best_ask
                 } else {
@@ -604,11 +827,158 @@ impl Engine {
                     .map(|l| l.price)
                     .max()
                     .unwrap_or(0);
+                let executable = if side == Side::Yes {
+                    best_bid
+                } else {
+                    SCALE - best_ask
+                };
+                let last_buy = if p.raw.get("inventoryTakerAfterMs").is_some()
+                    || p.raw.get("maximumInventoryAgeMs").is_some()
+                {
+                    self.fills.iter().rev().find(|f| {
+                        f["exchangeId"] == b.exchange
+                            && f["side"] == label(side)
+                            && f["action"] == "buy"
+                    })
+                } else {
+                    None
+                };
+                let birth = if let Some(fill) = last_buy {
+                    if p.raw["inventoryAgeClock"] == "execution" {
+                        let mut oldest = None;
+                        for lot in self
+                            .wallet
+                            .lots
+                            .get(&(b.exchange.clone(), side))
+                            .into_iter()
+                            .flatten()
+                        {
+                            let t = ms(lot
+                                .executed_at
+                                .as_ref()
+                                .ok_or("INVENTORY_EXECUTION_CLOCK_MISSING")?)?;
+                            oldest = Some(oldest.map_or(t, |old: i64| old.min(t)));
+                        }
+                        oldest
+                    } else {
+                        Some(ms(&fill["at"])?)
+                    }
+                } else {
+                    None
+                };
+                let maximum_age = birth.is_some_and(|t| {
+                    p.raw["maximumInventoryAgeMs"]
+                        .as_u64()
+                        .is_some_and(|age| at - t >= age as i64)
+                });
+                let profitable_age = if let Some(birth) = birth {
+                    p.raw["inventoryTakerAfterMs"]
+                        .as_u64()
+                        .is_some_and(|age| at - birth >= age as i64)
+                        && executable - worst - p.fee(worst, 1)? - p.fee(executable, 1)?
+                            >= p.raw
+                                .get("inventoryMinimumGain")
+                                .map(dec)
+                                .transpose()?
+                                .unwrap_or(0)
+                } else {
+                    false
+                };
+                if n > 0 && (maximum_age || profitable_age) {
+                    let quantity = if let Some(bps) = p.raw["inventoryExitDepthBps"].as_u64() {
+                        n.min(
+                            ((if side == Side::Yes {
+                                b.bids[0].1
+                            } else {
+                                b.asks[0].1
+                            }) as u128
+                                * bps as u128
+                                / 10000) as u64,
+                        )
+                    } else {
+                        n
+                    };
+                    if quantity > 0 {
+                        out.push(Target {
+                            book: b.clone(),
+                            side,
+                            buy: false,
+                            quantity,
+                            limit: executable,
+                            rank: 1e12,
+                            aon: true,
+                            age_reason: maximum_age,
+                            hedge_for: None,
+                        });
+                    }
+                    continue;
+                }
+                if p.raw["repriceProfitableHedge"] == true
+                    && !maximum_age
+                    && !profitable_age
+                    && p.entry(&b.exchange, at)
+                {
+                    let hedge_side = side.other();
+                    let limit = if side == Side::Yes {
+                        SCALE - best_ask
+                    } else {
+                        best_bid
+                    };
+                    let existing_hedge: u64 = self
+                        .orders
+                        .iter()
+                        .filter(|q| {
+                            !q.retired
+                                && q.exchange == b.exchange
+                                && q.side == hedge_side
+                                && q.buy
+                                && q.end() > at
+                        })
+                        .map(Order::remaining)
+                        .sum();
+                    let quantity = (p.quantity as i128)
+                        .min((available + existing_hedge as i128).max(0))
+                        as u64;
+                    if quantity > 0
+                        && SCALE - worst - limit - p.fee(worst, 1)? - p.fee(limit, 1)? >= p.edge
+                    {
+                        out.push(Target {
+                            book: b.clone(),
+                            side: hedge_side,
+                            buy: true,
+                            quantity,
+                            limit,
+                            rank: 1e12,
+                            aon: false,
+                            age_reason: false,
+                            hedge_for: Some(side),
+                        });
+                        continue;
+                    }
+                }
                 while improve > 0
                     && base - improve - worst - p.fee(worst, 1)? - p.fee(base - improve, 1)?
                         < p.edge
                 {
                     improve -= TICK;
+                }
+                let mut exit_price = base - improve;
+                if p.raw["inventoryExitMode"] == "fixedGain" {
+                    let gain = p
+                        .raw
+                        .get("inventoryMinimumGain")
+                        .map(dec)
+                        .transpose()?
+                        .unwrap_or(p.edge);
+                    exit_price = (worst + gain + TICK - 1) / TICK * TICK;
+                    while exit_price < SCALE
+                        && exit_price - worst - p.fee(worst, 1)? - p.fee(exit_price, 1)? < gain
+                    {
+                        exit_price += TICK;
+                    }
+                    if exit_price >= SCALE {
+                        continue;
+                    }
                 }
                 if n > 0 {
                     out.push(Target {
@@ -616,8 +986,11 @@ impl Engine {
                         side,
                         buy: false,
                         quantity: n,
-                        limit: base - improve,
+                        limit: exit_price,
                         rank: 1e12,
+                        aon: false,
+                        age_reason: false,
+                        hedge_for: None,
                     })
                 }
                 continue;
@@ -679,6 +1052,14 @@ impl Engine {
                 (Side::Yes, bid, micro),
                 (Side::No, SCALE - ask, SCALE - micro),
             ] {
+                if let Some(bps) = p.raw["minimumDepthImbalanceBps"].as_i64() {
+                    let bids: i128 = b.bids.iter().map(|(_, n)| *n as i128).sum();
+                    let asks: i128 = b.asks.iter().map(|(_, n)| *n as i128).sum();
+                    let signed = (bids - asks) * if side == Side::Yes { 1 } else { -1 };
+                    if signed * 10000 < (bps as i128) * (bids + asks) {
+                        continue;
+                    }
+                }
                 if p.quote == "microprice" && value - limit - p.fee(limit, 1)? < p.edge {
                     continue;
                 }
@@ -713,6 +1094,9 @@ impl Engine {
                     quantity: p.quantity,
                     limit,
                     rank,
+                    aon: false,
+                    age_reason: false,
+                    hedge_for: None,
                 });
             }
         }
@@ -747,6 +1131,7 @@ impl Engine {
                 self.wallet.quantity(&q.exchange, Side::Yes)
                     + self.wallet.quantity(&q.exchange, Side::No)
                     == 0
+                    || self.retainable_hedge(q, at)?
             } else {
                 self.wallet.quantity(&q.exchange, q.side) >= q.remaining()
             };
@@ -765,7 +1150,7 @@ impl Engine {
                 && book.is_some_and(|b| b.fresh(&self.policy, at))
                 && self.policy.renew > 0
                 && q.expires - at <= self.policy.renew;
-            if (target.is_none_or(|t| t.limit != q.limit) || renew)
+            if (target.is_none_or(|t| t.limit != q.limit || t.aon != q.aon) || renew)
                 && at - q.created >= self.policy.min_age
             {
                 self.orders[i].cancel = Some(at + self.policy.latency);
@@ -808,6 +1193,7 @@ impl Engine {
                 .iter()
                 .any(|q| !q.retired && q.end() > at && q.key() == t.key())
                 || batch.len() >= 8
+                || t.aon && !batch.is_empty()
             {
                 continue;
             }
@@ -825,6 +1211,12 @@ impl Engine {
                         ),
                 );
             } else {
+                if let Some(side) = t.hedge_for {
+                    n = n.min(self.wallet.quantity(&t.book.exchange, side).saturating_sub(
+                        self.pledge(&t.book.exchange, side)
+                            + self.opposite_buys(&t.book.exchange, side),
+                    ));
+                }
                 let mate = batch
                     .iter()
                     .find(|q| q.book.exchange == t.book.exchange && q.buy && q.side != t.side);
@@ -899,11 +1291,14 @@ impl Engine {
             target.quantity = n;
             markets.insert(t.book.exchange.clone());
             batch.push(target);
+            if t.aon {
+                break;
+            }
         }
         if !batch.is_empty() {
             self.writes.push(at);
             for t in batch {
-                let id = self.orders.len() as u64 + 1;
+                let id = self.prior_orders + self.orders.len() as u64 + 1;
                 let (same, better) = Self::visible(&t.book, t.side, t.buy, t.limit);
                 if t.buy {
                     self.wallet.reserve(
@@ -928,7 +1323,12 @@ impl Engine {
                     limit: t.limit,
                     created: at,
                     activation: at + self.policy.latency,
-                    expires: at + self.policy.lifetime,
+                    expires: at
+                        + if t.aon {
+                            self.policy.latency + self.policy.book_age
+                        } else {
+                            self.policy.lifetime
+                        },
                     cancel: None,
                     retired: false,
                     credit: 0,
@@ -938,6 +1338,12 @@ impl Engine {
                     visible_same: same,
                     visible_better: better,
                     touch_remainder: 0,
+                    aon: t.aon,
+                    age_reason: t.age_reason,
+                    through: self.policy.raw["throughFillCapacity"] == true,
+                    participation: self.policy.participation,
+                    conditional: self.policy.conditional,
+                    touch_bps: self.policy.touch,
                 });
             }
             self.count("submissionBatches");
@@ -969,7 +1375,8 @@ impl Engine {
                     if old.market != b.market
                         || old.tournament != b.tournament
                         || b.sequence < old.sequence
-                        || b.sequence == old.sequence && b.source < old.source
+                        || b.sequence == old.sequence
+                            && ns(&b.raw["sourceAt"])? < ns(&old.raw["sourceAt"])?
                     {
                         return Err("BOOK_ROLLBACK_SCOPE");
                     }
@@ -980,11 +1387,59 @@ impl Engine {
                         return Err("BOOK_CONFLICT");
                     }
                 }
+                for i in 0..self.orders.len() {
+                    let q = &self.orders[i];
+                    if q.retired
+                        || !q.aon
+                        || q.exchange != b.exchange
+                        || !b.fresh(&self.policy, at)
+                        || b.clock() < q.activation
+                        || b.clock() >= q.end()
+                    {
+                        continue;
+                    }
+                    let capacity: u128 = (if q.side == Side::Yes {
+                        &b.bids
+                    } else {
+                        &b.asks
+                    })
+                    .iter()
+                    .filter(|(p, _)| {
+                        if q.side == Side::Yes {
+                            *p >= q.limit
+                        } else {
+                            SCALE - *p >= q.limit
+                        }
+                    })
+                    .map(|(_, n)| *n as u128)
+                    .sum();
+                    let key = (q.tournament.clone(), q.exchange.clone(), q.side, b.sequence);
+                    let consumed = self.aon_consumed.get(&key).copied().unwrap_or(0);
+                    let eligible = capacity.saturating_sub(consumed);
+                    let n = if eligible >= q.remaining() as u128 {
+                        q.remaining()
+                    } else {
+                        0
+                    };
+                    let reason = q.age_reason;
+                    let source = json!(format!("book:{}:{}:{}", b.exchange, b.sequence, q.id));
+                    if n > 0 {
+                        self.aon_consumed.insert(key, consumed + n as u128);
+                        self.fill(i, n, clock, &source, clock)?;
+                        let f = self.fills.last_mut().unwrap();
+                        f["executionStyle"] = json!("inventoryAON");
+                        if reason {
+                            f["inventoryExitReason"] = json!("maximumAge");
+                        }
+                    }
+                    self.orders[i].retired = true;
+                    self.count("inventoryAonEvaluations");
+                }
                 for q in &mut self.orders {
                     if q.retired || q.exchange != b.exchange {
                         continue;
                     }
-                    if self.policy.conditional {
+                    if q.conditional {
                         let (same, better) = Self::visible(&b, q.side, q.buy, q.limit);
                         if same > q.visible_same
                             && ns(&b.raw["sourceAt"])? <= q.activation * 1_000_000
@@ -1026,6 +1481,34 @@ impl Engine {
                 }
                 let key = format!("{tournament}:{exchange}:{trade_id}");
                 let facts = (market.clone(), executed, trade_price, quantity);
+                if !self.seen.contains_key(&key) {
+                    if let Some(expected) = self.legacy_seen.get(&key) {
+                        let stamp = chrono::DateTime::from_timestamp_nanos(executed)
+                            .to_rfc3339_opts(chrono::SecondsFormat::Nanos, true);
+                        let prefix = &stamp[..19];
+                        let fraction = &stamp[20..29];
+                        let mut matched = false;
+                        for digits in 0..=9 {
+                            let t = if digits == 0 {
+                                format!("{prefix}Z")
+                            } else {
+                                format!("{prefix}.{}Z", &fraction[..digits])
+                            };
+                            if ns(&json!(t))? == executed
+                                && hash(
+                                    &json!({"marketId":market,"executedAt":t,"yesPrice":e["yesPrice"],"quantity":quantity}),
+                                ) == *expected
+                            {
+                                matched = true;
+                                break;
+                            }
+                        }
+                        if !matched {
+                            return Err("LEGACY_TRADE_PROVENANCE_REQUIRED");
+                        }
+                        duplicate = true;
+                    }
+                }
                 if let Some(old) = self.seen.get(&key) {
                     if old != &facts {
                         return Err("TRADE_CONFLICT");
@@ -1043,6 +1526,7 @@ impl Engine {
                     for i in 0..self.orders.len() {
                         let q = &mut self.orders[i];
                         if q.retired
+                            || q.aon
                             || q.exchange != exchange
                             || q.market != market
                             || q.tournament != tournament
@@ -1062,17 +1546,17 @@ impl Engine {
                         } else {
                             trade_price >= limit + TICK
                         };
-                        let touch = self.policy.conditional && trade_price == limit;
+                        let touch = q.conditional && trade_price == limit;
                         if !through && !touch {
                             continue;
                         }
                         let mut eligible = quantity;
-                        if through && self.policy.conditional {
+                        if through && q.conditional {
                             q.same = 0;
                             q.better = 0
                         }
                         if touch {
-                            let numerator = quantity * self.policy.touch + q.touch_remainder;
+                            let numerator = quantity * q.touch_bps + q.touch_remainder;
                             let attributed = numerator / 10000;
                             q.touch_remainder = numerator % 10000;
                             if attributed > 0 {
@@ -1081,18 +1565,34 @@ impl Engine {
                             let consumed = attributed.min(q.same);
                             q.same -= consumed;
                             eligible = attributed - consumed;
+                            if eligible == 0 {
+                                self.count("conditionalTouches");
+                                break;
+                            }
                         }
-                        q.credit += eligible * self.policy.participation;
+                        if through && q.through {
+                            let n = quantity.min(q.remaining());
+                            if n > 0 {
+                                self.fill(i, n, clock, &e["id"], &e["executedAt"])?;
+                                self.fills.last_mut().unwrap()["throughCapacityFill"] = json!(true);
+                                self.count("throughCapacityFills");
+                                break;
+                            }
+                        }
+                        q.credit += eligible * q.participation;
                         let n = quantity
                             .min(q.remaining())
                             .min(q.credit / 10000)
-                            .min((quantity * self.policy.participation / 10000).max(1));
+                            .min((quantity * q.participation / 10000).max(1));
                         if n > 0 {
                             q.credit -= n * 10000;
-                            self.fill(i, n, clock, &e["id"])?;
+                            let touch_bps = q.touch_bps;
+                            self.fill(i, n, clock, &e["id"], &e["executedAt"])?;
                             if touch {
                                 self.fills.last_mut().unwrap()["conditionalQueueFill"] =
                                     json!(true);
+                                self.fills.last_mut().unwrap()["touchAttributionBps"] =
+                                    json!(touch_bps);
                             }
                             if touch {
                                 self.count("conditionalTouches")
@@ -1213,10 +1713,14 @@ impl Engine {
         let unresolved = self.orders.iter().filter(|q| !q.retired).count();
         let pnl = self.wallet.cash + liquidation - self.wallet.initial;
         Ok(
-            json!({"bot":"Moloch","runtime":"rust","at":self.last_string,"policyHash":hash(&self.policy.raw),"events":self.events,"cash":money(self.wallet.cash),"realized":money(self.wallet.realized),"fees":money(self.wallet.fees),"ownedCost":money(self.wallet.owned_cost()),"reservedCash":money(self.wallet.reserved()?),"netLiquidationPnl":if known{json!(money(pnl))}else{Value::Null},"positions":self.wallet.positions(),"fills":self.fills.len(),"orders":self.orders.len(),"activeOrders":self.orders.iter().filter(|q|!q.retired&&self.last.is_some_and(|t|q.end()>t/1_000_000)).count(),"unresolvedOrders":unresolved,"fillModel":if self.policy.conditional{"conditionalFifo"}else{"strictThrough"},"conditionalQueueFills":self.fills.iter().filter(|f|f["conditionalQueueFill"]==true).count(),"profitSignalEligible":!self.policy.conditional&&unresolved==0&&known&&self.wallet.realized>0&&pnl>0,"counts":self.counts,"contestOrders":0,"networkRequests":0,"profitabilityEstablished":false}),
+            json!({"bot":"Moloch","runtime":"rust","at":self.last_string,"policyHash":hash(&self.policy.raw),"events":self.events,"cash":money(self.wallet.cash),"realized":money(self.wallet.realized),"fees":money(self.wallet.fees),"ownedCost":money(self.wallet.owned_cost()),"reservedCash":money(self.wallet.reserved()?),"netLiquidationPnl":if known{json!(money(pnl))}else{Value::Null},"positions":self.wallet.positions(),"fills":self.fills.len(),"orders":self.prior_orders+self.orders.len() as u64,"activeOrders":self.orders.iter().filter(|q|!q.retired&&self.last.is_some_and(|t|q.end()>t/1_000_000)).count(),"unresolvedOrders":unresolved,"fillModel":if self.policy.conditional{"conditionalFifo"}else{"strictThrough"},"conditionalQueueFills":self.fills.iter().filter(|f|f["conditionalQueueFill"]==true).count(),"profitSignalEligible":!self.policy.conditional&&!self.fills.iter().any(|f|f["conditionalQueueFill"]==true||f["throughCapacityFill"]==true||f["executionStyle"]=="inventoryAON")&&unresolved==0&&known&&self.wallet.realized>0&&pnl>0,"counts":self.counts,"continuation":self.baseline,"contestOrders":0,"networkRequests":0,"profitabilityEstablished":false}),
         )
     }
     pub fn fills(&self) -> &[Value] {
         &self.fills
+    }
+    pub fn order_records(&self) -> Vec<Value> {
+        self.orders.iter().map(|q|{let mut v=json!({"id":q.id,"marketId":q.market,"exchangeId":q.exchange,"side":label(q.side),"action":if q.buy{"buy"}else{"sell"},"quantity":q.quantity,"filled":q.filled,"price":money(q.limit),"createdAt":q.created,"activationAt":q.activation,"expiresAt":q.expires,"retired":q.retired,"participationCredit":q.credit,"barrier":q.barrier.map(|(sequence,end)|json!({"sequence":sequence.to_string(),"endAt":end}))});
+        if let Some(at)=q.cancel{v["cancelEffectiveAt"]=json!(at)}if q.aon{v["executionStyle"]=json!("inventoryAON")}if q.age_reason{v["inventoryExitReason"]=json!("maximumAge")}if q.participation!=100{v["participationBps"]=json!(q.participation)}if q.through{v["throughFillCapacity"]=json!(true)}if q.conditional{v["fillModel"]=json!("conditionalFifo");v["touchAttributionBps"]=json!(q.touch_bps);v["queueAhead"]=json!((q.same+q.better).to_string());v["queueSame"]=json!(q.same.to_string());v["queueBetter"]=json!(q.better.to_string());v["queueVisibleSame"]=json!(q.visible_same.to_string());v["queueVisibleBetter"]=json!(q.visible_better.to_string());v["touchRemainder"]=json!(q.touch_remainder)}v}).collect()
     }
 }

@@ -9,9 +9,26 @@ use std::{
 };
 fn run() -> Result<(), Box<dyn std::error::Error>> {
     let mut a = env::args().skip(1).collect::<Vec<_>>();
-    let journal_input = a.first().is_some_and(|s| s == "--journal");
-    if journal_input {
-        a.remove(0);
+    let mut journal_input = false;
+    let mut seed_path = None;
+    while a.first().is_some_and(|s| s.starts_with("--")) {
+        match a[0].as_str() {
+            "--journal" => {
+                if journal_input {
+                    return Err("DUPLICATE_OPTION".into());
+                }
+                journal_input = true;
+                a.remove(0);
+            }
+            "--seed" => {
+                if seed_path.is_some() || a.len() < 2 {
+                    return Err("SEED_OPTION".into());
+                }
+                seed_path = Some(a.remove(1));
+                a.remove(0);
+            }
+            _ => return Err("UNKNOWN_OPTION".into()),
+        }
     }
     if a.len() != 3 {
         return Err("USAGE: moloch-paper EVENTS_JSONL POLICY_JSON NEW_REPORT_JSON".into());
@@ -20,7 +37,16 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
         return Err("PRESERVE_EXISTING_RUN".into());
     }
     let policy: Value = serde_json::from_reader(File::open(&a[1])?)?;
-    let mut engine = Engine::new(&policy)?;
+    let mut seed_source = Value::Null;
+    let mut engine = if let Some(path) = seed_path {
+        let (mut engine, snapshot, digest) =
+            moloch_replay::legacy::load_snapshot(std::path::Path::new(&path))?;
+        engine.update_policy(&policy)?;
+        seed_source = json!({"sourceFileSha256":digest,"sourceSnapshotHash":snapshot["hash"]});
+        engine
+    } else {
+        Engine::new(&policy)?
+    };
     let mut digest = Sha256::new();
     let mut journal = moloch_replay::journal::Journal::default();
     let start = Instant::now();
@@ -39,7 +65,7 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
         }
         line.clear();
     }
-    let report = json!({"report":engine.report()?,"fills":engine.fills(),"sourceSha256":format!("{:x}",digest.finalize()),"sourceJournal":if journal_input{json!({"sequence":journal.sequence,"previous":journal.previous})}else{Value::Null},"wallSeconds":start.elapsed().as_secs_f64(),"networkRequests":0,"contestOrders":0});
+    let report = json!({"report":engine.report()?,"fills":engine.fills(),"seed":seed_source,"sourceSha256":format!("{:x}",digest.finalize()),"sourceJournal":if journal_input{json!({"sequence":journal.sequence,"previous":journal.previous})}else{Value::Null},"wallSeconds":start.elapsed().as_secs_f64(),"networkRequests":0,"contestOrders":0});
     let mut out = OpenOptions::new()
         .write(true)
         .create_new(true)

@@ -7,7 +7,7 @@ verified.
 
 Verified on the Linux ARM64 VPS during this migration:
 
-- `cargo test --locked`: twenty-five tests passed on ARM64, including source cursor,
+- `cargo test --locked`: thirty tests passed on ARM64, including source cursor,
   initial-resync, Retry-After, and source-parity tests. The resolved dependency
   lock is included.
 - Event-engine parity compares 668 intermediate reports in 20 scenarios against
@@ -38,9 +38,17 @@ engine on eight quotes, 19.900000 reserved, no fills, and zero P&L. The integrat
 replay took 0.010904 seconds for 50.859 source seconds. This small fixture is not
 a sustained-throughput benchmark or evidence of profitable trading.
 
-Unsupported optional policy fields fail explicitly with `POLICY_NOT_PORTED`;
-they are never silently ignored. Inventory AON/age/hedge extensions and complete
-historical wallet continuation are still pending.
+Unknown policy fields fail explicitly with `POLICY_NOT_PORTED`; they are never
+silently ignored. The existing engine's inventory age, execution clocks,
+minimum-gain/fixed-gain exits, depth sizing, delayed AON execution, retained and
+repriced hedges, depth imbalance, and explicit fill-capacity sensitivity are now
+ported. AON depth cannot be reused at the same side/engine sequence, and old
+quotes preserve their original fill and participation assumptions.
+
+An additional corpus traces successful paths from nine existing test files:
+85 paths and 291 checkpoints compare complete fill and order records as well as
+the financial report. This includes large covered exits, maximum-age losses,
+oldest remaining FIFO execution age, fees, late fills and paced replacements.
 
 `moloch-source RECEIPTS_JSONL CONFIG_JSON NEW_EVENTS_JSONL NEW_STATS_JSON` performs
 offline receipt conversion through the same adapter as collection. Configuration
@@ -95,10 +103,31 @@ an independent default-policy test, not a replacement for the original wallet.
 No live SIG authentication or connection was attempted. The `--realtime`
 disabled probe exited before creating output, and the service stayed inactive.
 
-Remaining before replacing the deployment: remaining
-inventory strategies and full journal parity, restart/source-journal verification,
-Rust readiness/service wrappers, Rust-only release installation, and removal of
-the dedicated Node installation after the replacement passes verification.
+## Financial continuation
+
+`moloch-seed LEGACY_SNAPSHOT NEW_AUDIT_REPORT` verifies the original snapshot hash,
+including legacy numeric-key ordering and ECMAScript number serialization. It
+then rebuilds cash, fees, FIFO lots and opposite-side netting from all historical
+fills and compares all declared redemptions and remaining positions. Unresolved
+legacy quotes are rejected, and changing initial capital cannot erase losses.
+
+The actual closed strict wallet snapshot passed this audit on the VPS: 60 fills,
+151 retired orders, 99,849.720000 cash, -150.280000 realized P&L, zero inventory and
+zero reserved funds. The immutable 587,415-byte snapshot is stored privately on
+the VPS under its content-addressed filename. No credentials were copied.
+
+`moloch-paper --seed LEGACY_SNAPSHOT [--journal] EVENTS POLICY NEW_REPORT` resumes
+from verified finance and requires fresh source resynchronization. Retired order
+IDs remain reserved, historical fills and counters remain attributed, and old
+books are not reused for new quotes. Plain and restarted replay of a subsequent
+tick produced identical reports, including the full cumulative loss. The release
+ELF binaries also passed this comparison with Node absent from their environment.
+This is checkpoint/replay verification, not proof of an active daemon or profits.
+
+Remaining before replacing the deployment: integrated live paper lifecycle and
+restart recovery, combined strategy selection, Rust readiness/service wrappers,
+Rust-only release installation, and removal of the dedicated Node installation
+after the replacement passes verification.
 
 Baal and Moloch must be evaluated under the same fill, fee, capital, and timing
 assumptions before choosing the combined strategy. Keep existing losses and
