@@ -18,6 +18,10 @@ The worker checks STOP/control, resolved dispatch attempts and the global queue 
 
 All206 matching Linux runtime checks pass, including12 focused retry-policy checks. The focused checks cover charging startup, persisted restart history, shared spacing/exhaustion, boundary clocks, unchanged success budgets and refusal to treat arbitrary error text as retry authority. They do not simulate the production DNS outage end to end.
 
-The locked ARM64 release passed at19:36UTC. Its binary SHA256 is `2c7c14d38d10a1fd1e44769f80b92f30ab2216d37473ee5b2c3d3eec8a9c4546b`. Controlled rollout is pending at this checkpoint. This candidate is built from checked main in a separate directory. The incomplete Paper2 financial-package engine is excluded. Native financial source, attributed bank, existing bridge, queue version1,40,000 total and10,000-per-market limits, daily authorization and strategy are unchanged. A controlled version change must still verify the exact old process/binary, durable stopped boundary, quiet queue, checked new binary and fresh live activity.
+The locked ARM64 release passed at19:36UTC. Its binary SHA256 is `2c7c14d38d10a1fd1e4769f80b92f30ab2216d37473ee5b2c3d3eec8a9c4546b`. Controlled rollout is pending at this checkpoint. This candidate is built from checked main in a separate directory. The incomplete Paper2 financial-package engine is excluded. Native financial source, attributed bank, existing bridge, queue version1,40,000 total and10,000-per-market limits, daily authorization and strategy are unchanged. A controlled version change must still verify the exact old process/binary, durable stopped boundary, quiet queue, checked new binary and fresh live activity.
 
 This repairs availability; it does not establish profitability. Paper2 package execution and its remaining strategy/accounting work are tracked separately in [task143](https://github.com/GodlyDonuts/predictions-cup-2026/issues/143).
+
+## Production launch
+
+V24 started at2026-10-15T19:37:18.274Z as PID211334. The stopped boundary had366 acknowledged physical attempts out of366,539 retained queue intents, no unknown acceptance, active admission or manual review. The financial bridge, risk limits, daily mandate and account queue version1 were preserved. Startup replay and fresh trading verification are pending; this process launch alone is not a successful live cycle.
