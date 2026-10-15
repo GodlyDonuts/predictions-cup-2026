@@ -91,7 +91,7 @@ pub struct OwnedPosition {pub exchange_id:String,pub side:Side,pub quantity:u64}
 #[derive(Debug,Clone,Serialize)]
 #[serde(rename_all="camelCase")]
 pub struct PublicDiagnostic {
- pub version:u32,pub at_ms:u64,pub canonical_relationships:usize,
+ pub version:u32,pub at_ms:u64,pub canonical_feed_state:String,pub canonical_relationships:usize,
  pub supported_active_relationships:usize,pub certified_components:usize,
  pub positive_candidates:usize,pub retained_candidates:usize,pub blocked_reason_counts:BTreeMap<String,usize>,
  pub execution_authority:bool,
@@ -168,7 +168,8 @@ fn compile_row(row:&Relationship,census:&Census,source:&Source,certificates:&Cer
 }
 
 pub fn analyze(census:&Census,canonical_receipt:&Receipt,certificates:&Certificates<'_>,books:&BTreeMap<String,Book>,positions:&[OwnedPosition],capital:&Capital,p:&Policy)->Analysis{
- let mut a=Analysis{public:PublicDiagnostic{version:1,at_ms:p.now_ms,canonical_relationships:0,supported_active_relationships:0,certified_components:0,positive_candidates:0,retained_candidates:0,blocked_reason_counts:BTreeMap::new(),execution_authority:false},candidates:vec![]};
+ let state=match census.report.relationships.availability{Availability::Available=>"available",Availability::Empty=>"available_empty",Availability::Forbidden=>"forbidden",Availability::Unavailable=>"unavailable",Availability::Invalid=>"invalid",Availability::NotRequested=>"not_requested"};
+ let mut a=Analysis{public:PublicDiagnostic{version:1,at_ms:p.now_ms,canonical_feed_state:state.into(),canonical_relationships:0,supported_active_relationships:0,certified_components:0,positive_candidates:0,retained_candidates:0,blocked_reason_counts:BTreeMap::new(),execution_authority:false},candidates:vec![]};
  let source=match canonical_source(census,canonical_receipt,p){Ok(s)=>s,Err(e)=>{block(&mut a,e);return a}};
  let limits=match capital.limits(p){Ok(l)=>l,Err(e)=>{block(&mut a,e);return a}};
  if positions.len()>1024||certificates.values.len()>4096||certificates.rule_receipts.len()>4096||books.len()>1024||!(1..=256).contains(&p.maximum_retained_candidates){block(&mut a,"STRATEGY_INPUT_BUDGET");return a}
