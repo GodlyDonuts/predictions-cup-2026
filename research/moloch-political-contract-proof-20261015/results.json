@@ -1,0 +1,302 @@
+{
+  "schemaVersion": 1,
+  "createdAt": "2026-10-15T09:10:09.355Z",
+  "sourceArtifacts": [
+    {
+      "path": "data/dual-no-sprint-initialization-20261005.json",
+      "sha256": "8f377e179e7ddba4cbba7a4a5ead1cc318d05ecb02aaebd0a4941d9bcf21a547"
+    },
+    {
+      "path": "data/moloch-structural-economics-20261014-40.json",
+      "sha256": "07941fd04e7d7b7f71eef247d1dd6810468a13352957205e79244c754b1008d8"
+    }
+  ],
+  "historicalMichiganRootReview": {
+    "recordedAt": "2026-10-05T21:13:58.712Z",
+    "expiredAt": "2026-10-05T22:00:00.000Z",
+    "originalSourceReceiptAvailable": false,
+    "sameContestMetadata": true,
+    "contest": {
+      "raceId": "76735",
+      "stageId": "118938",
+      "usState": "MI",
+      "raceStage": "General",
+      "officeLevel": "State",
+      "electionDate": "2026-11-03"
+    },
+    "predicates": [
+      {
+        "marketId": "305",
+        "exchangeId": "994",
+        "contractId": "306",
+        "party": "Democratic Party"
+      },
+      {
+        "marketId": "306",
+        "exchangeId": "995",
+        "contractId": "307",
+        "party": "Republican Party"
+      }
+    ],
+    "ordinaryExclusionCertified": false,
+    "allStatePayoutFloorCertified": false,
+    "missingEvidence": [
+      "Current exact per-contract party-affiliation/fusion resolution text and version.",
+      "Source-backed mapping from every possible certified winner to each contract predicate.",
+      "Coupled versus independent N/A/cancellation policy and exact refundable basis.",
+      "Fresh scoped raw node/market receipts and account eligibility."
+    ],
+    "executionAuthority": false
+  },
+  "historicalStructuralScan": {
+    "window": {
+      "from": "2026-10-14T19:51:04.837Z",
+      "to": "2026-10-14T20:00:51.485Z"
+    },
+    "matchedTitlePairs": 117,
+    "racesWithObservations": 61,
+    "observations": 1550,
+    "settlementProofEstablished": false,
+    "currentExecutionQuotes": false
+  },
+  "highestHistoricalConditionalCandidates": [
+    {
+      "race": "MN-05 House race",
+      "receivedAt": "2026-10-14T19:54:45.015Z",
+      "legs": [
+        {
+          "marketId": "338",
+          "exchangeId": "1027"
+        },
+        {
+          "marketId": "339",
+          "exchangeId": "1028"
+        }
+      ],
+      "purchaseLimits": [
+        "0.080000",
+        "0.875000"
+      ],
+      "cost": "0.955000",
+      "ordinaryConditionalSurplus": "0.045000",
+      "immediateRoundTripPnl": "-0.010000",
+      "settlementRulesVerified": false
+    },
+    {
+      "race": "Delaware Senate",
+      "receivedAt": "2026-10-14T20:00:34.189Z",
+      "legs": [
+        {
+          "marketId": "353",
+          "exchangeId": "1042"
+        },
+        {
+          "marketId": "386",
+          "exchangeId": "1075"
+        }
+      ],
+      "purchaseLimits": [
+        "0.075000",
+        "0.885000"
+      ],
+      "cost": "0.960000",
+      "ordinaryConditionalSurplus": "0.040000",
+      "immediateRoundTripPnl": "-0.015000",
+      "settlementRulesVerified": false
+    },
+    {
+      "race": "California Governor",
+      "receivedAt": "2026-10-14T19:59:30.790Z",
+      "legs": [
+        {
+          "marketId": "161",
+          "exchangeId": "850"
+        },
+        {
+          "marketId": "162",
+          "exchangeId": "851"
+        }
+      ],
+      "purchaseLimits": [
+        "0.095000",
+        "0.870000"
+      ],
+      "cost": "0.965000",
+      "ordinaryConditionalSurplus": "0.035000",
+      "immediateRoundTripPnl": "-0.015000",
+      "settlementRulesVerified": false
+    }
+  ],
+  "historicalMichiganCurrentScanStress": {
+    "purchaseCosts": [
+      "0.105000",
+      "0.885000"
+    ],
+    "totalCost": "0.990000",
+    "ordinaryExclusionIsAssumption": true,
+    "scenarios": [
+      {
+        "id": "A_party_wins_only",
+        "payouts": [
+          "0.000000",
+          "1.000000"
+        ],
+        "totalPayout": "1.000000",
+        "netReturn": "0.010000"
+      },
+      {
+        "id": "B_party_wins_only",
+        "payouts": [
+          "1.000000",
+          "0.000000"
+        ],
+        "totalPayout": "1.000000",
+        "netReturn": "0.010000"
+      },
+      {
+        "id": "another_party_wins",
+        "payouts": [
+          "1.000000",
+          "1.000000"
+        ],
+        "totalPayout": "2.000000",
+        "netReturn": "1.010000"
+      },
+      {
+        "id": "both_party_predicates_resolve_yes",
+        "payouts": [
+          "0.000000",
+          "0.000000"
+        ],
+        "totalPayout": "0.000000",
+        "netReturn": "-0.990000"
+      },
+      {
+        "id": "A_refunded_B_no_loses",
+        "payouts": [
+          "0.105000",
+          "0.000000"
+        ],
+        "totalPayout": "0.105000",
+        "netReturn": "-0.885000"
+      },
+      {
+        "id": "B_refunded_A_no_loses",
+        "payouts": [
+          "0.000000",
+          "0.885000"
+        ],
+        "totalPayout": "0.885000",
+        "netReturn": "-0.105000"
+      },
+      {
+        "id": "both_refunded_at_original_purchase_cost",
+        "payouts": [
+          "0.105000",
+          "0.885000"
+        ],
+        "totalPayout": "0.990000",
+        "netReturn": "0.000000"
+      }
+    ],
+    "ordinaryConditionalSurplus": "0.010000",
+    "allStatesMinimumNetReturn": "-0.990000",
+    "zeroPayoutExceptionBreakEvenProbability": {
+      "numerator": "10000",
+      "denominator": "1000000",
+      "estimated": false
+    },
+    "notes": [
+      "Refund examples assume a newly bought fully remaining lot has refundable basis equal to its shown purchase cost. Inherited unknown basis cannot use that assumption.",
+      "The break-even ratio assumes all ordinary outcomes pay exactly one and the exceptional outcome pays zero; no exception probability is estimated."
+    ],
+    "executionAuthority": false
+  },
+  "bestHistoricalPackageStress": {
+    "purchaseCosts": [
+      "0.080000",
+      "0.875000"
+    ],
+    "totalCost": "0.955000",
+    "ordinaryExclusionIsAssumption": true,
+    "scenarios": [
+      {
+        "id": "A_party_wins_only",
+        "payouts": [
+          "0.000000",
+          "1.000000"
+        ],
+        "totalPayout": "1.000000",
+        "netReturn": "0.045000"
+      },
+      {
+        "id": "B_party_wins_only",
+        "payouts": [
+          "1.000000",
+          "0.000000"
+        ],
+        "totalPayout": "1.000000",
+        "netReturn": "0.045000"
+      },
+      {
+        "id": "another_party_wins",
+        "payouts": [
+          "1.000000",
+          "1.000000"
+        ],
+        "totalPayout": "2.000000",
+        "netReturn": "1.045000"
+      },
+      {
+        "id": "both_party_predicates_resolve_yes",
+        "payouts": [
+          "0.000000",
+          "0.000000"
+        ],
+        "totalPayout": "0.000000",
+        "netReturn": "-0.955000"
+      },
+      {
+        "id": "A_refunded_B_no_loses",
+        "payouts": [
+          "0.080000",
+          "0.000000"
+        ],
+        "totalPayout": "0.080000",
+        "netReturn": "-0.875000"
+      },
+      {
+        "id": "B_refunded_A_no_loses",
+        "payouts": [
+          "0.000000",
+          "0.875000"
+        ],
+        "totalPayout": "0.875000",
+        "netReturn": "-0.080000"
+      },
+      {
+        "id": "both_refunded_at_original_purchase_cost",
+        "payouts": [
+          "0.080000",
+          "0.875000"
+        ],
+        "totalPayout": "0.955000",
+        "netReturn": "0.000000"
+      }
+    ],
+    "ordinaryConditionalSurplus": "0.045000",
+    "allStatesMinimumNetReturn": "-0.955000",
+    "zeroPayoutExceptionBreakEvenProbability": {
+      "numerator": "45000",
+      "denominator": "1000000",
+      "estimated": false
+    },
+    "notes": [
+      "Refund examples assume a newly bought fully remaining lot has refundable basis equal to its shown purchase cost. Inherited unknown basis cannot use that assumption.",
+      "The break-even ratio assumes all ordinary outcomes pay exactly one and the exceptional outcome pays zero; no exception probability is estimated."
+    ],
+    "executionAuthority": false
+  },
+  "currentProfitableTradeEstablished": false,
+  "executionAuthority": false
+}
