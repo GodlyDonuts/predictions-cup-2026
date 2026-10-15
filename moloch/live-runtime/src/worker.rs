@@ -12,7 +12,7 @@ use sha2::{Digest,Sha256};
 use std::{fs,path::{Path,PathBuf},sync::Arc,time::{SystemTime,UNIX_EPOCH,Duration}};
 #[derive(Clone,Serialize,Deserialize)]
 #[serde(rename_all="camelCase",deny_unknown_fields)]
-struct Control{#[serde(default)]daily_entry_windows:Option<moloch_live_runtime::daily_windows::DailyEntryWindows>,activation:Activation,scope:Scope,policy:Value,root:PathBuf,credentials:PathBuf,owner_lock:PathBuf,account_scope:String,#[serde(default)]all_markets:bool,#[serde(default="default_bank")]bank_name:String,#[serde(default)]predecessor_bank:Option<String>,#[serde(default)]manage_existing_positions:bool}
+struct Control{#[serde(default)]packages:Option<moloch_live_runtime::package_settings::Settings>,#[serde(default)]daily_entry_windows:Option<moloch_live_runtime::daily_windows::DailyEntryWindows>,activation:Activation,scope:Scope,policy:Value,root:PathBuf,credentials:PathBuf,owner_lock:PathBuf,account_scope:String,#[serde(default)]all_markets:bool,#[serde(default="default_bank")]bank_name:String,#[serde(default)]predecessor_bank:Option<String>,#[serde(default)]manage_existing_positions:bool}
 fn default_bank()->String{"bank".into()}
 const MAX_REALTIME_FRAMES_PER_DRAIN:usize=64;
 fn now()->u64{SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_millis() as u64}
@@ -104,6 +104,92 @@ fn snapshots(t:&mut Transport,c:&Control,q:&Value)->Result<SnapshotSet>{
  let contract=request(t,&c.root,Endpoint::Nodes{market_id:market_id.clone()})?;
  let book=request(t,&c.root,Endpoint::OrderBook{market_id,depth:20})?;
  Ok(SnapshotSet{account,cash_balance,positions,open_orders,market,contract,book})
+}
+/// Recovery is unconditional: removing new-entry configuration never drops
+/// already durable package liabilities or opens a second transport.
+fn recover_packages(t:&mut Transport,c:&Control,bank:&mut Session,ordinary:&DispatchLog,authority:&ProductionAuthority,packages:&mut moloch_live_runtime::package_dispatch::PackageDispatchLog)->Result<bool>{
+ for p in bank.engine().package_records().as_array().ok_or("LIVE_PACKAGE_RECORDS")?{let id=p["packageId"].as_str().ok_or("LIVE_PACKAGE_ID")?;if packages.record(id).is_none(){return Err("LIVE_PACKAGE_ORIGINAL_JOURNAL_MISSING".into())}}
+ let receipts=c.root.join("package-receipts");let mut backend=moloch_live_runtime::package_worker::Live{transport:t,authority,ordinary_dispatch:ordinary,receipts:&receipts};
+ let result=moloch_live_runtime::package_worker::recover(bank,packages,&mut backend)?;Ok(result.blocks_new_submissions)
+}
+fn canonical_package_receipt(census:&moloch_live_runtime::relationship_census::Census)->Result<Receipt>{
+ let source=census.report.relationships.source.as_ref().ok_or("LIVE_PACKAGE_CANONICAL_UNAVAILABLE")?;
+ let name=Path::new(&source.private_file);if name.components().count()!=1||name.file_name().is_none(){return Err("LIVE_PACKAGE_CANONICAL_PATH".into())}
+ let path=census.cache.private_evidence_directory.join(name);let m=fs::symlink_metadata(&path)?;if !m.is_file()||m.file_type().is_symlink()||m.len()>8*1024*1024{return Err("LIVE_PACKAGE_CANONICAL_FILE".into())}
+ use std::io::Read;let mut bytes=Vec::new();fs::File::open(path)?.take(8*1024*1024+1).read_to_end(&mut bytes)?;if bytes.len()>8*1024*1024{return Err("LIVE_PACKAGE_CANONICAL_FILE".into())}let r:Receipt=serde_json::from_slice(&bytes)?;if feedback::digest(&r)?!=source.receipt_sha256||r.request_started_at!=source.request_started_at||r.received_at!=source.received_at||r.status!=source.status{return Err("LIVE_PACKAGE_CANONICAL_CHANGED".into())}Ok(r)
+}
+fn retire_for_package(bank:&mut Session,log:&mut DispatchLog,q:&Value)->Result<()>{
+ let id=q["id"].as_u64().ok_or("LIVE_QUOTE_ID")?;if !log.never_attempted(id){return Err("LIVE_PACKAGE_COMPONENT_ALREADY_ATTEMPTED".into())}
+ let proof=log.proof(id);log.append(json!({"kind":"not_sent","qid":id,"proof":proof}))?;
+ accept(bank,&json!({"type":"unsubmitted_intent_retired","source":"moloch_live_dispatcher","orderId":id,"confirmedNetworkAttempts":0,"receiptHash":hash(&proof),"deferPlanningForPackage":true,"receivedAt":iso(now())}))
+}
+fn ordinary_liability_due(bank:&Session,log:&DispatchLog,at:u64)->Result<bool>{
+ for q in bank.engine().order_records(){let id=q["id"].as_u64().ok_or("LIVE_QUOTE_ID")?;
+  if bank.engine().is_package_order(id)||q["retired"]==true{continue}
+  let expires=q["expiresAt"].as_u64().ok_or("LIVE_QUOTE_EXPIRY")?;
+  let cancel_due=q["cancelEffectiveAt"].as_u64().is_some_and(|t|t<=at);
+  if expires>at&&cancel_due&&!log.never_attempted(id)&&!log.closed.contains(&id)&&!log.cancel_acknowledged.contains(&id){return Ok(true)}
+  if q["action"]=="sell"&&q["inventoryExitReason"]=="maximumAge"&&log.never_attempted(id)&&expires>at&&!cancel_due{return Ok(true)}
+ }Ok(false)
+}
+/// One bounded certificate cohort per scan. All reads/writes borrow the existing
+/// account worker. Every price still passes the ordinary source adapter and the
+/// complete physical package authority; indicative selection is not authority.
+fn package_opportunity(t:&mut Transport,c:&Control,bank:&mut Session,ordinary:&mut DispatchLog,authority:&ProductionAuthority,packages:&mut moloch_live_runtime::package_dispatch::PackageDispatchLog,census:&mut Option<moloch_live_runtime::relationship_census::Census>,source_state:&mut RestSource,stream:&Realtime,breadth:&mut Option<Recorder>,universe:&mut Option<Universe>,windows:&mut std::collections::BTreeMap<String,u64>,last_scan:&mut u64,cursor:&mut usize)->Result<()>{
+ use moloch_live_runtime::{package_worker,package_admission,relationship_strategy::Certificates};
+ let Some(settings)=&c.packages else{return Ok(())};let at=now();
+ // Existing due cancellations and covered inventory exits retain priority over
+ // this optional, expensive new-entry source cohort on every pass.
+ if ordinary_liability_due(bank,ordinary,at)?{return Ok(())}
+ if *last_scan>at{return Err("LIVE_PACKAGE_SCAN_CLOCK".into())}if *last_scan>0&&at-*last_scan<settings.refresh_ms{return Ok(())}*last_scan=at;
+ if packages.unresolved()||bank.engine().package_blocks_submissions()||at>=authority.entry_until_ms(){return Ok(())}
+ let bundle=settings.load(&c.scope)?;
+ let approved=settings.approved(&bundle,now())?;
+ if approved.is_empty(){atomic_json(&c.root.join("package-status.json"),&json!({"at":iso(now()),"state":"no_current_independently_approved_certificate","ordersSubmitted":0}))?;return Ok(())}
+ if census.as_ref().is_none_or(|v|at.saturating_sub(v.report.completed_at_ms)>=settings.refresh_ms){
+  let fresh=moloch_live_runtime::relationship_census::capture(t,&c.scope,&c.root.join("relationship-receipts"),&[]);
+  atomic_json(&c.root.join("relationship-census.json"),&serde_json::to_value(&fresh.report)?)?;
+  if fresh.report.transport_guard_observed{return Err("LIVE_PACKAGE_CENSUS_GUARD".into())}*census=Some(fresh);
+  drain_stream(stream,bank,source_state,breadth,universe)?;
+ }
+ let chosen=approved[*cursor%approved.len()];*cursor=(*cursor).wrapping_add(1);
+ let exchanges:std::collections::BTreeSet<_>=chosen.contracts.iter().map(|r|r.exchange_id.clone()).collect();
+ if chosen.contracts.iter().any(|r|bank.engine().wallet.quantity(&r.exchange_id,moloch_replay::Side::Yes)>0||bank.engine().wallet.quantity(&r.exchange_id,moloch_replay::Side::No)>0)||bank.engine().order_records().iter().any(|q|q["retired"]==false&&q["exchangeId"].as_str().is_some_and(|e|exchanges.contains(e))&&!ordinary.never_attempted(q["id"].as_u64().unwrap_or(0))){return Ok(())}
+ let Some(current)=census.as_ref() else{return Ok(())};if current.cache.relationships.is_none()||current.report.active_relationship_count==0{return Ok(())}
+ let canonical=canonical_package_receipt(current)?;let mut rules=bundle.original_receipts.clone();
+ for contract in &chosen.contracts{
+  rules.push(request(t,&c.root,Endpoint::Nodes{market_id:contract.market_id.clone()})?);
+  drain_stream(stream,bank,source_state,breadth,universe)?;
+  let from=*windows.get(&contract.exchange_id).ok_or("LIVE_PACKAGE_SOURCE_WINDOW")?;
+  let next=source(t,c,bank,source_state,&contract.exchange_id,&contract.market_id,from)?;windows.insert(contract.exchange_id.clone(),next);
+  drain_stream(stream,bank,source_state,breadth,universe)?;
+ }
+ // Do not clear a resting/unknown account order to make a package fit. Only
+ // original dispatcher-proven, never-physical native quotes can yield priority.
+ let quotes:Vec<_>=bank.engine().order_records().into_iter().filter(|q|q["retired"]==false&&q["exchangeId"].as_str().is_some_and(|e|exchanges.contains(e))).collect();
+ if quotes.iter().any(|q|!ordinary.never_attempted(q["id"].as_u64().unwrap_or(0))){return Ok(())}
+ for q in &quotes{retire_for_package(bank,ordinary,q)?;}
+ // No source/tick occurs between retirement and the durable package reserve.
+ let at=now();let policy=settings.policy(&c.activation,at,chosen.contracts.len())?;
+ let cash=census.as_ref().and_then(|v|v.cache.buying_power.as_ref()).and_then(|p|p.gross_cash_units).ok_or("LIVE_PACKAGE_GROSS_CASH_UNAVAILABLE")?;
+ let certs=Certificates{values:std::slice::from_ref(chosen),trusted_sha256:&settings.trusted_certificate_sha256,rule_receipts:&rules};
+ let admission=package_admission::admit(bank,&c.activation,census.as_ref().unwrap(),&canonical,&certs,cash,&policy,authority.entry_until_ms())?;
+ let Some(admission)=admission else{atomic_json(&c.root.join("package-status.json"),&json!({"at":iso(now()),"state":"no_current_certified_executable_surplus","ordersSubmitted":0}))?;return Ok(())};
+ let permit=Permit{run_id:c.activation.run_id.clone(),intent_id:admission.package_id().into(),owner:"Codex".into(),expires_at_ms:admission.expires_at_ms(),maximum_quantity:c.activation.maximum_quantity,maximum_cost:admission.basket().maximum_cost.clone()};
+ let receipts=c.root.join("package-receipts");let mut backend=package_worker::Live{transport:t,authority,ordinary_dispatch:ordinary,receipts:&receipts};
+ let staged=package_worker::stage(bank,packages,&backend,&admission,permit)?;
+ let activation=admission.proof()["atMs"].as_u64().ok_or("LIVE_PACKAGE_ACTIVATION")?.checked_add(bank.engine().policy()["latencyMs"].as_u64().ok_or("LIVE_PACKAGE_ACTIVATION")?).ok_or("LIVE_PACKAGE_ACTIVATION")?;
+ while now()<activation{if !authority.can_read(&c.scope){return Err("LIVE_PACKAGE_OWNER_LOST".into())}require_stream(stream)?;drain_stream(stream,bank,source_state,breadth,universe)?;std::thread::sleep(Duration::from_millis(activation.saturating_sub(now()).min(100)));}
+ let facts=moloch_live_runtime::package_preflight::collect(&mut backend,&c.scope,admission.basket(),|r|{
+  record_receipt(&c.root,r)?;if !authority.can_read(&c.scope){return Err("LIVE_PACKAGE_OWNER_LOST".into())}require_stream(stream)?;
+  // Real books enter via RestSource; it can withhold them pending complete tape.
+  for contract in &chosen.contracts{if r.endpoint==format!("/markets/{}/orderbook?tournamentId={}&depth=20",contract.market_id,c.scope.tournament_id){let wrap=json!({"source":"official_sig_api_v1","kind":"book","tournamentId":c.scope.tournament_id,"marketId":contract.market_id,"exchangeId":contract.exchange_id,"endpoint":r.endpoint,"status":r.status,"requestStartedAt":r.request_started_at,"receivedAt":r.received_at,"data":r.data});accept_source_events(bank,&source_state.accept(&wrap)?)?;}}
+  drain_stream(stream,bank,source_state,breadth,universe)
+ });
+ let facts=match facts{Ok(f)=>f,Err(error)=>{package_worker::recover(bank,packages,&mut backend)?;return Err(error)}};
+ let result=package_worker::submit_once(bank,packages,&mut backend,staged,facts)?;
+ let recovered=package_worker::recover(bank,packages,&mut backend)?;
+ atomic_json(&c.root.join("package-status.json"),&json!({"at":iso(now()),"state":format!("{result:?}"),"blocksNewSubmissions":recovered.blocks_new_submissions,"actualFillEvents":recovered.fill_events,"completedPackages":recovered.completed_packages,"profitabilityEstablished":false}))?;Ok(())
 }
 fn cancel_snapshots(t:&mut Transport,c:&Control)->Result<CancelSnapshotSet>{
  // Four real reads through the existing sole transport/limiter; no unused
@@ -376,7 +462,8 @@ pub fn main()->Result<()>{
  let path=PathBuf::from(&args[2]);if !path.is_absolute(){return Err("LIVE_CONTROL_ABSOLUTE".into())}let c:Control=serde_json::from_value(load(&path)?)?;
  if !c.bank_name.starts_with("bank")||c.bank_name.contains(['/', '\\'])||c.predecessor_bank.as_ref().is_some_and(|p|p==&c.bank_name){return Err("LIVE_BANK_NAME".into())}
  if !c.root.is_absolute()||!c.credentials.is_absolute()||!c.owner_lock.is_absolute()||c.activation.maximum_committed!=c.policy["maximumCommitted"].as_str().unwrap_or("")||c.activation.maximum_market_cost!=c.policy["maximumMarketCost"].as_str().unwrap_or("")||c.policy["quantity"].as_u64()!=Some(c.activation.maximum_quantity as u64)||c.policy["entryStopAt"]!=iso(c.activation.entry_until_ms){return Err("LIVE_CONTROL_POLICY_BINDING".into())}
- private_dir(&c.root)?;private_dir(&c.root.join("receipts"))?;
+ if let Some(settings)=&c.packages{settings.load(&c.scope)?;}
+ private_dir(&c.root)?;private_dir(&c.root.join("receipts"))?;private_dir(&c.root.join("package-receipts"))?;
  let lease=Arc::new(ExclusiveLock::acquire(&c.owner_lock)?);
  let mut read=transport(&c,Box::new(ReadOnlyAuthority),false)?;
  let marker=c.root.join("quiet-boundary.json");if !marker.exists(){read.reserve_legacy_migration_boundary(0,false)?;atomic_json(&marker,&json!({"at":iso(now()),"reason":"single-owner account budget migration"}))?;}
@@ -407,6 +494,10 @@ pub fn main()->Result<()>{
   // A durable official acknowledgment can be replayed after a crash before ledger commit.
   for (qid,v) in log.acknowledgments.clone(){let r:Receipt=serde_json::from_value(v)?;let q=quote(&bank,qid)?;let e=if let Some(recovery)=log.recovered.get(&qid){feedback::recovered_acknowledgment(&q,recovery["actualOrderId"].as_str().ok_or("LIVE_RECOVERY_ACTUAL_ID")?,&c.scope.tournament_id,&r,&serde_json::from_value(recovery["fills"].clone())?,&iso(now()))?}else{feedback::acknowledgment(&q,&r,&iso(now()))?};authority.bind_owned(e["actualOrderId"].as_str().ok_or("LIVE_ACTUAL_ID")?.into());accept(&mut bank,&e)?;}
   drop(read);let mut t=transport(&c,Box::new(SharedAuthority(authority.clone())),true)?;
+  // Always recover original liabilities even when new package scanning is off.
+  // Recovery never recreates a Staged capability or retries a physical send.
+  let mut packages=moloch_live_runtime::package_dispatch::PackageDispatchLog::open(&c.root.join("package-dispatch"))?;
+  recover_packages(&mut t,&c,&mut bank,&log,&authority,&mut packages)?;
   let state=t.admission_state()?;if state["state"]["unknown"].as_object().is_some_and(|m|!m.is_empty()){return Err("LIVE_QUEUE_UNKNOWN_ACCEPTANCE".into())}
   ensure_entry_window(&c,&mut bank,&authority)?;
   let fully_managed=bank.engine().report()?.get("inheritedInventory").is_some();
@@ -423,7 +514,7 @@ pub fn main()->Result<()>{
   if !recovery_budget_path.exists(){atomic_json(&recovery_budget_path,&serde_json::to_value(&recovery_budget)?)?;}
   let (connected,joined_at)=connect_with_budget(&mut t,&c,&mut bank,&log,&authority,&mut source_state,&mut recovery_budget)?;require_stream(&connected)?;let mut stream=Some(connected);
   authority.bind_stream(stream.as_ref().unwrap().failure_signal(),stream.as_ref().unwrap().deadline_ms);
-  let mut relationship_census=None;let mut preflight_cursor=None;
+  let mut relationship_census=None;let mut preflight_cursor=None;let mut package_last_scan=0;let mut package_certificate_cursor=0;
   let mut reconciliation_schedule=moloch_live_runtime::scheduling::ReconciliationSchedule::new(10_000)?;
   let pending_version=|log:&DispatchLog|moloch_live_runtime::scheduling::PendingVersion{acknowledged:log.acknowledgments.len() as u64,terminal:log.closed.len() as u64};
   let breadth_path=c.root.join(format!("breadth-{}-{}.jsonl",std::process::id(),now()));
@@ -437,6 +528,7 @@ pub fn main()->Result<()>{
    if stop.exists()||global_stop.exists(){return Err("LIVE_EXECUTION_STOP".into())}
    ensure_entry_window(&c,&mut bank,&authority)?;
    drain_stream(stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?,&mut bank,&mut source_state,&mut breadth,&mut universe)?;
+   let mut package_blocked=recover_packages(&mut t,&c,&mut bank,&log,&authority,&mut packages)?;
    let mut reconciled=reconcile(&mut t,&c,&mut bank,&mut log,&mut reconciliation_cache)?;
    reconciliation_schedule.completed(now(),pending_version(&log),reconciled.blocks_new_submissions)?;
    accept(&mut bank,&json!({"type":"tick","receivedAt":iso(now())}))?;
@@ -446,8 +538,14 @@ pub fn main()->Result<()>{
      reconciled=reconcile(&mut t,&c,&mut bank,&mut log,&mut reconciliation_cache)?;
      reconciliation_schedule.completed(now(),pending_version(&log),reconciled.blocks_new_submissions)?;
     }
-    let permit_new=reconciliation_schedule.permits_submission(now(),pending_version(&log))?;
     ensure_entry_window(&c,&mut bank,&authority)?;
+    if !package_blocked&&reconciliation_schedule.permits_submission(now(),pending_version(&log))?{
+     package_opportunity(&mut t,&c,&mut bank,&mut log,&authority,&mut packages,&mut relationship_census,&mut source_state,stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?,&mut breadth,&mut universe,&mut windows,&mut package_last_scan,&mut package_certificate_cursor)?;
+    }
+    package_blocked=recover_packages(&mut t,&c,&mut bank,&log,&authority,&mut packages)?;
+    // Package preflight consumes real account time; never reuse an expired
+    // ordinary reconciliation permission after those paced reads.
+    let permit_new=!package_blocked&&reconciliation_schedule.permits_submission(now(),pending_version(&log))?;
     dispatch(&mut t,&c,&mut bank,&mut log,&authority,&mut source_state,permit_new,&mut preflight_cursor,stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?,&windows)?;
     let _=atomic_json(&c.root.join("progress.json"),&json!({"at":iso(now()),"pid":std::process::id(),"phase":"trading","completedReadScopes":selected_index+1,"selectedReadScopes":selected.len(),"maximumRealtimeFramesPerDrain":MAX_REALTIME_FRAMES_PER_DRAIN,"realtimeHealthy":stream.as_ref().is_some_and(|s|s.healthy()),"actualOrders":log.acknowledgments.len(),"terminalOrders":log.closed.len(),"actualFills":bank.engine().fills().len(),"profitabilityEstablished":false}));
    }
@@ -522,4 +620,26 @@ pub fn main()->Result<()>{
  use super::*;
  #[test]fn cancellation_read_path_consumes_exactly_four_account_operations(){let mut endpoints=vec![];let f=cancel_snapshots_with(|ep|{endpoints.push(serde_json::to_value(&ep).unwrap());Ok(Receipt{endpoint:format!("read-{}",endpoints.len()),request_started_at:"2026-10-15T00:00:00Z".into(),received_at:"2026-10-15T00:00:00Z".into(),status:200,data:match ep{Endpoint::Tournament=>json!({"status":"active"}),Endpoint::Positions=>json!({"positions":[]}),Endpoint::Orders{..}=>json!({"coverage":{"complete":true},"pagination":{"hasMore":false},"data":[]}),Endpoint::Account=>json!({"balance":1000}),_=>panic!("irrelevant contract/book GET")}})}).unwrap();let expected=[Endpoint::Tournament,Endpoint::Positions,Endpoint::Orders{status:"open".into()},Endpoint::Account].iter().map(|e|serde_json::to_value(e).unwrap()).collect::<Vec<_>>();assert_eq!(endpoints,expected);assert_eq!(f.cash_balance.endpoint,"read-4");}
  #[test]fn incomplete_account_cancellation_reads_fail_before_cash_without_fabricated_receipts(){let mut count=0;let r=cancel_snapshots_with(|ep|{count+=1;Ok(Receipt{endpoint:"fixture".into(),request_started_at:"2026-10-15T00:00:00Z".into(),received_at:"2026-10-15T00:00:00Z".into(),status:200,data:match ep{Endpoint::Tournament=>json!({"status":"active"}),Endpoint::Orders{..}=>json!({"coverage":{"complete":false},"pagination":{"hasMore":false}}),_=>json!({})}})});assert!(r.is_err());assert_eq!(count,3);}
+}
+
+#[cfg(test)]mod package_hook_tests{
+ use super::*;
+ struct Temp(PathBuf);impl Temp{fn new()->Self{Self(std::env::temp_dir().join(format!("moloch-package-hook-{}-{}",std::process::id(),SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_nanos())))}}impl Drop for Temp{fn drop(&mut self){let _=fs::remove_dir_all(&self.0);}}
+ fn setup(path:&Path,n:usize)->(Session,DispatchLog,Value,Value){
+  private_dir(path).unwrap();let at=now().saturating_sub(7500);let policy=json!({"initialCash":"1000.000000","maximumCommitted":"100.000000","maximumMarketCost":"50.000000","quantity":12,"maximumMarkets":3,"entryStopAt":iso(at+60_000)});let seed=json!({"runId":"package-hook-fixture","availableCash":"1000.000000","accountSnapshotHash":"a".repeat(64),"observedAt":iso(at)});
+  let mut bank=Session::open_live(&path.join("bank"),&policy,&seed).unwrap();
+  for i in 0..n{let ex=(101+i).to_string();let stamp=iso(at+i as u64*2500);bank.accept("official-book",i as u64+1,&json!({"type":"book","receivedAt":stamp,"book":{"tournamentId":"cup","marketId":ex,"exchangeId":ex,"sequence":"1","sourceAt":stamp,"requestStartedAt":stamp,"receivedAt":stamp,"bids":[{"price":"0.400000","quantity":100}],"asks":[{"price":"0.450000","quantity":100}]}})).unwrap();}
+  (bank,DispatchLog::open(&path.join("dispatch.ndjson")).unwrap(),policy,seed)
+ }
+ #[test]fn original_dispatch_proved_retirement_does_not_recreate_component_quotes_and_replays(){
+  for n in [2,3]{let temp=Temp::new();let(mut bank,mut log,policy,seed)=setup(&temp.0,n);let original=bank.engine().order_records();assert_eq!(original.len(),n*2);assert!(!ordinary_liability_due(&bank,&log,now()).unwrap());
+   for q in &original{retire_for_package(&mut bank,&mut log,q).unwrap();assert_eq!(bank.engine().order_records().len(),original.len());}
+   assert!(bank.engine().order_records().iter().all(|q|q["retired"]==true));let report=bank.engine().report().unwrap();assert_eq!(report["reservedCash"],"0.000000");assert_eq!(report["cash"],"1000.000000");assert!(bank.engine().fills().is_empty());drop(log);drop(bank);
+   let mut bank=Session::open_live(&temp.0.join("bank"),&policy,&seed).unwrap();let log=DispatchLog::open(&temp.0.join("dispatch.ndjson")).unwrap();assert_eq!(bank.engine().report().unwrap(),report);assert!(original.iter().all(|q|log.never_attempted(q["id"].as_u64().unwrap())));
+   accept(&mut bank,&json!({"type":"tick","receivedAt":iso(now())})).unwrap();assert!(bank.engine().order_records().len()>original.len());
+  }
+ }
+ #[test]fn physical_attempt_in_original_dispatch_journal_cannot_yield_to_a_package(){
+  let temp=Temp::new();let(mut bank,mut log,_,_)=setup(&temp.0,2);let q=bank.engine().order_records()[0].clone();let id=q["id"].as_u64().unwrap();log.append(json!({"kind":"intent","qid":id})).unwrap();log.append(json!({"kind":"attempt","qid":id})).unwrap();let report=bank.engine().report().unwrap();let rows=fs::read(temp.0.join("dispatch.ndjson")).unwrap();assert!(retire_for_package(&mut bank,&mut log,&q).is_err());assert_eq!(bank.engine().report().unwrap(),report);assert_eq!(fs::read(temp.0.join("dispatch.ndjson")).unwrap(),rows);assert!(log.require_resolved_attempts().is_err());
+ }
 }
