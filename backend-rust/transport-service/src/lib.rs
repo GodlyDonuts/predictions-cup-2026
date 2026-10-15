@@ -3,6 +3,7 @@ pub mod credentials;
 pub mod prices;
 pub mod relationships;
 pub mod multi_leg;
+pub mod multi_leg_portfolio;
 pub mod multi_leg_first_call;
 
 use std::{collections::{BTreeMap,BTreeSet}, path::PathBuf, time::{Duration,SystemTime,UNIX_EPOCH}, io::Read};
@@ -371,6 +372,56 @@ impl Transport {
   }
   result
  }
+ /// Signed all-or-none portfolios. The same physical Authority must verify
+ /// covered SELL inventory and the exact full-gross request; no net cash/credit
+ /// shortcut, market order, synthetic expiry, retry or new client is created.
+ pub fn place_portfolio_all_or_none(&mut self,basket:multi_leg_portfolio::Basket,permit:Permit)->Result<multi_leg_portfolio::Outcome>{
+  self.local_not_sent=None;self.first_call_proof=None;self.first_call_active=None;self.last_basket_response=None;
+  let spec=multi_leg_portfolio::request_spec(&basket,&self.config.scope,&permit)?;
+  let ticket=match multi_leg_first_call::Ticket::begin_portfolio(&self.config.queue_dir,&self.config.account_scope,&self.config.scope,&basket,&permit,&spec,self.clock.now_ms()){
+   Ok(ticket)=>ticket,Err(error)=>{self.poisoned=true;return Err(error)}
+  };
+  self.first_call_active=Some(ticket);
+  let eligibility=(||->Result<(u64,String)>{
+   need(!self.poisoned,"STOPPED_OR_OWNER_LOST")?;
+   let before=self.queue.summary().map_err(|e|fail(&e))?;need(before.schema_version==1,"FIRST_CALL_V1_REQUIRED")?;
+   need(!before.has_unknown&&before.state.active.is_none()&&!before.state.manual_review,"PACKAGE_QUEUE_NOT_QUIET")?;
+   let binding=multi_leg_first_call::binding_key(&self.config.scope,&spec,&basket.idempotency_key,&permit)?;
+   let intent=self.queue.lookup_intent(&binding.intent).map_err(|e|fail(&e))?;
+   let key=self.queue.lookup_key(&binding.key).map_err(|e|fail(&e))?;
+   need(intent.binding.is_none()&&intent.unknown_binding.is_none()&&!intent.has_unknown&&intent.global_unknown_count==0&&key.is_none(),"FIRST_CALL_PRIOR_BINDING")?;
+   let legacy=multi_leg_first_call::legacy_request_value_path(&self.config.queue_dir,&spec,&serde_json::to_value(&basket).map_err(|_|fail("PORTFOLIO_SERIALIZATION"))?,&permit)?;
+   match std::fs::symlink_metadata(legacy){Err(e)if e.kind()==std::io::ErrorKind::NotFound=>{},_=>return Err(fail("FIRST_CALL_PRIOR_REQUEST_ARTIFACT"))}
+   let after=self.queue.summary().map_err(|e|fail(&e))?;need(!after.has_unknown&&after.state.active.is_none()&&!after.state.manual_review&&before.sequence==after.sequence&&before.previous==after.previous,"FIRST_CALL_CONTROLLER_CHANGED")?;Ok((after.sequence,after.previous))
+  })();
+  let first_call_head=match eligibility{Ok(head)=>head,Err(error)=>{self.first_call_active=None;return Err(error)}};
+  self.first_call_active.as_mut().expect("private active ticket").qualify();
+  let result=(||->Result<multi_leg_portfolio::Outcome>{
+  self.guard(&spec,Some(&permit),false)?;
+  let request_evidence=multi_leg_portfolio::record_request(&self.config.queue_dir,&spec,&basket,&permit)?;
+  let acknowledgment=std::cell::RefCell::new(None);
+  let result=self.perform(spec,Some(&permit),|_,value|{*acknowledgment.borrow_mut()=Some(multi_leg_portfolio::validate_ack(value,&basket)?);Ok(())});
+  match result {
+   Ok(receipt)=>match (acknowledgment.into_inner(),self.last_basket_response.clone()){
+    (Some(acknowledgment),Some(evidence))=>Ok(multi_leg_portfolio::Outcome::FullFillReported{receipt,acknowledgment,evidence,request_evidence}),
+    _=>{self.poisoned=true;let mut error=fail("BASKET_VALIDATED_EVIDENCE_MISSING");error.may_have_executed=true;Ok(multi_leg_portfolio::Outcome::Unknown{error,evidence:self.last_basket_response.clone(),request_evidence})},
+   },
+   Err(error)=>{
+    if !error.may_have_executed {if let Some(evidence)=self.last_basket_response.clone(){if let Ok(body)=multi_leg::read_evidenced_error(&evidence){if let Some(reason)=multi_leg::zero_execution(evidence.status,&body,basket.legs.len()){return Ok(multi_leg_portfolio::Outcome::NoExecution{error,reason,evidence,request_evidence});}}}return Err(error);}
+    Ok(multi_leg_portfolio::Outcome::Unknown{error,evidence:self.last_basket_response.clone(),request_evidence})
+   }
+  }
+  })();
+  if let Some(ticket)=self.first_call_active.take(){
+   if ticket.can_seal(){if let Err(error)=&result{
+    match ticket.finish(error,self.clock.now_ms()){
+     Ok(proof)=>self.first_call_proof=Some((proof,first_call_head.0,first_call_head.1)),
+     Err(_)=>{self.poisoned=true;return Err(TransportError{code:"FIRST_CALL_PROOF_DURABILITY_UNCERTAIN".into(),..error.clone()})}
+    }
+   }}
+  }
+  result
+ }
  /// Consume the latest original first-call failure's local no-HTTP proof.
  /// No caller paths, synthetic responses, retries or health claims are accepted.
  pub fn take_first_call_no_http_proof(&mut self)->Result<multi_leg_first_call::Proof>{
@@ -414,3 +465,5 @@ fn safe_api_code(code:&str)->Option<String>{["MISSING_API_KEY","INVALID_API_KEY"
 #[cfg(test)]#[path="transport_not_sent_tests.rs"]mod transport_not_sent_tests;
 
 #[cfg(test)]#[path="multi_leg_first_call_tests.rs"]mod multi_leg_first_call_tests;
+
+#[cfg(test)]#[path="multi_leg_portfolio_tests.rs"]mod multi_leg_portfolio_tests;

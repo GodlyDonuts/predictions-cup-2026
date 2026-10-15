@@ -55,12 +55,21 @@ fn read(root:&Path,path:&Path)->Result<Value>{
  let value:Value=serde_json::from_slice(&data).map_err(|_|fail("FIRST_CALL_SOURCE_INVALID"))?;
  need(bytes(&value)?==data,"FIRST_CALL_SOURCE_NONCANONICAL")?;check(&value)?;Ok(value)
 }
-pub(crate) fn binding(scope:&Scope,spec:&RequestSpec,basket:&Basket,permit:&Permit)->Result<ImmutableBinding>{Ok(ImmutableBinding{intent:format!("{}:{}",permit.run_id,permit.intent_id),key:basket.idempotency_key.clone(),payload_hash:hash(&json!({"scope":scope,"spec":spec}))?})}
-pub(crate) fn legacy_request_path(root:&Path,spec:&RequestSpec,basket:&Basket,permit:&Permit)->Result<PathBuf>{Ok(root.join(format!("basket-request-{}.json",hash(&json!({"request":spec,"basket":basket,"runId":permit.run_id,"intentId":permit.intent_id,"owner":permit.owner}))?)))}
+pub(crate) fn binding_key(scope:&Scope,spec:&RequestSpec,key:&str,permit:&Permit)->Result<ImmutableBinding>{Ok(ImmutableBinding{intent:format!("{}:{}",permit.run_id,permit.intent_id),key:key.into(),payload_hash:hash(&json!({"scope":scope,"spec":spec}))?})}
+pub(crate) fn binding(scope:&Scope,spec:&RequestSpec,basket:&Basket,permit:&Permit)->Result<ImmutableBinding>{binding_key(scope,spec,&basket.idempotency_key,permit)}
+pub(crate) fn legacy_request_value_path(root:&Path,spec:&RequestSpec,basket:&Value,permit:&Permit)->Result<PathBuf>{Ok(root.join(format!("basket-request-{}.json",hash(&json!({"request":spec,"basket":basket,"runId":permit.run_id,"intentId":permit.intent_id,"owner":permit.owner}))?)))}
+pub(crate) fn legacy_request_path(root:&Path,spec:&RequestSpec,basket:&Basket,permit:&Permit)->Result<PathBuf>{legacy_request_value_path(root,spec,&serde_json::to_value(basket).map_err(|_|fail("FIRST_CALL_SERIALIZATION"))?,permit)}
 impl Ticket{
  pub(crate) fn begin(root:&Path,account:&str,scope:&Scope,basket:&Basket,permit:&Permit,spec:&RequestSpec,now:u64)->Result<Self>{
-  let root=safe_root(root)?;let binding=binding(scope,spec,basket,permit)?;
-  let ticket=seal(json!({"schemaVersion":1,"kind":"sdk_first_logical_invocation","accountScope":account,"root":root,"scope":scope,"basket":basket,"permit":permit,"request":spec,"requestSha256":digest(&serde_json::to_vec(spec).map_err(|_|fail("FIRST_CALL_SERIALIZATION"))?),"binding":binding,"createdAtMs":now,"invocationId":format!("{}-{now}-{}",std::process::id(),SERIAL.fetch_add(1,Ordering::SeqCst))}))?;
+  Self::begin_json(root,account,scope,&serde_json::to_value(basket).map_err(|_|fail("FIRST_CALL_SERIALIZATION"))?,&basket.idempotency_key,permit,spec,now,None)
+ }
+ pub(crate) fn begin_portfolio(root:&Path,account:&str,scope:&Scope,basket:&crate::multi_leg_portfolio::Basket,permit:&Permit,spec:&RequestSpec,now:u64)->Result<Self>{
+  Self::begin_json(root,account,scope,&serde_json::to_value(basket).map_err(|_|fail("FIRST_CALL_SERIALIZATION"))?,&basket.idempotency_key,permit,spec,now,Some("portfolio_v1"))
+ }
+ fn begin_json(root:&Path,account:&str,scope:&Scope,basket:&Value,key:&str,permit:&Permit,spec:&RequestSpec,now:u64,operation:Option<&str>)->Result<Self>{
+  let root=safe_root(root)?;let binding=binding_key(scope,spec,key,permit)?;
+  let mut ticket=json!({"schemaVersion":1,"kind":"sdk_first_logical_invocation","accountScope":account,"root":root,"scope":scope,"basket":basket,"permit":permit,"request":spec,"requestSha256":digest(&serde_json::to_vec(spec).map_err(|_|fail("FIRST_CALL_SERIALIZATION"))?),"binding":binding,"createdAtMs":now,"invocationId":format!("{}-{now}-{}",std::process::id(),SERIAL.fetch_add(1,Ordering::SeqCst))});
+  if let Some(operation)=operation{ticket["operation"]=json!(operation);}let ticket=seal(ticket)?;
   let key=seal(json!({"schemaVersion":1,"kind":"sdk_first_logical_key","accountScope":account,"key":binding.key,"ticketSha256":ticket["sha256"],"intent":binding.intent}))?;
   write_new(&root,&root.join(name(account,&binding.intent,"intent")),&ticket)?;
   write_new(&root,&root.join(name(account,&binding.key,"key")),&key)?;
@@ -85,10 +94,13 @@ pub(crate) fn recover(root:&Path,account:&str,scope:&Scope,binding:&ImmutableBin
  let key=read(&root,&root.join(name(account,&binding.key,"key")))?;
  let terminal=read(&root,&root.join(name(account,&binding.intent,"terminal")))?;
  need(ticket["schemaVersion"]==1&&ticket["kind"]=="sdk_first_logical_invocation"&&ticket["root"]==json!(root)&&ticket["accountScope"]==account&&ticket["scope"]==serde_json::to_value(scope).map_err(|_|fail("FIRST_CALL_SCOPE"))?&&ticket["binding"]==serde_json::to_value(binding).map_err(|_|fail("FIRST_CALL_BINDING"))?&&ticket["requestSha256"]==request_sha256,"FIRST_CALL_TICKET_BINDING")?;
- let basket:Basket=serde_json::from_value(ticket["basket"].clone()).map_err(|_|fail("FIRST_CALL_BASKET"))?;
  let permit:Permit=serde_json::from_value(ticket["permit"].clone()).map_err(|_|fail("FIRST_CALL_PERMIT"))?;
- let spec=multi_leg::request_spec(&basket,scope,&permit)?;
- need(ticket["request"]==serde_json::to_value(&spec).map_err(|_|fail("FIRST_CALL_REQUEST"))?&&digest(&serde_json::to_vec(&spec).map_err(|_|fail("FIRST_CALL_REQUEST"))?)==request_sha256&&self::binding(scope,&spec,&basket,&permit)?==*binding,"FIRST_CALL_REQUEST_BINDING")?;
+ let(spec,basket_key)=match ticket.get("operation"){
+  None=>{let basket:Basket=serde_json::from_value(ticket["basket"].clone()).map_err(|_|fail("FIRST_CALL_BASKET"))?;(multi_leg::request_spec(&basket,scope,&permit)?,basket.idempotency_key)},
+  Some(v)if v=="portfolio_v1"=>{let basket:crate::multi_leg_portfolio::Basket=serde_json::from_value(ticket["basket"].clone()).map_err(|_|fail("FIRST_CALL_PORTFOLIO"))?;(crate::multi_leg_portfolio::request_spec(&basket,scope,&permit)?,basket.idempotency_key)},
+  _=>return Err(fail("FIRST_CALL_OPERATION")),
+ };
+ need(ticket["request"]==serde_json::to_value(&spec).map_err(|_|fail("FIRST_CALL_REQUEST"))?&&digest(&serde_json::to_vec(&spec).map_err(|_|fail("FIRST_CALL_REQUEST"))?)==request_sha256&&binding_key(scope,&spec,&basket_key,&permit)?==*binding,"FIRST_CALL_REQUEST_BINDING")?;
  need(key["schemaVersion"]==1&&key["kind"]=="sdk_first_logical_key"&&key["accountScope"]==account&&key["key"]==binding.key&&key["intent"]==binding.intent&&key["ticketSha256"]==ticket["sha256"],"FIRST_CALL_KEY_BINDING")?;
  need(terminal["schemaVersion"]==1&&terminal["kind"]=="sdk_before_first_admit_no_http"&&terminal["accountScope"]==account&&terminal["binding"]==ticket["binding"]&&terminal["requestSha256"]==request_sha256&&terminal["ticketSha256"]==ticket["sha256"]&&terminal["keyIndexSha256"]==key["sha256"]&&terminal["invocationId"]==ticket["invocationId"]&&terminal["startedAtMs"]==ticket["createdAtMs"]&&terminal["stage"]=="before_first_admit_invocation"&&terminal["admitInvocations"]==0&&terminal["httpInvocations"]==0&&terminal["queueHealth"]=="not_established","FIRST_CALL_TERMINAL_BINDING")?;
  let error=&terminal["originalError"];
