@@ -14,7 +14,7 @@ import re
 import sys
 
 SCALE = 1_000_000
-MATURITY_NS = 600_000 * 1_000_000
+OBSERVATION_LAG_NS = 600_000 * 1_000_000
 
 
 class AnalysisError(ValueError):
@@ -105,8 +105,9 @@ class Lot:
     cohort: int | None = None
 
 
-def analyze(envelope, adoption, *, source_hashes=None):
+def analyze(envelope, adoption, *, inventory_age_ms, source_hashes=None):
     """Return only redacted aggregates; inputs and FIFO matching remain private."""
+    holding_age_ns = integer(inventory_age_ms, positive=True) * 1_000_000
     if adoption.get("type") != "actual_position_adoption" and "event" in adoption:
         adoption = adoption["event"]
     require(adoption.get("type") == "actual_position_adoption"
@@ -203,7 +204,7 @@ def analyze(envelope, adoption, *, source_hashes=None):
             cost += lot.price * k
             gross += gain
             age = None if lot.inherited else executed - lot.executed
-            age_class = "inherited" if lot.inherited else ("executionClockReversal" if age < 0 else ("matured600000ms" if age >= MATURITY_NS else "freshUnder600000ms"))
+            age_class = "inherited" if lot.inherited else ("executionClockReversal" if age < 0 else ("maturedAtThreshold" if age >= holding_age_ns else "freshUnderThreshold"))
             key = ("inherited" if lot.inherited else "new", reason, style, mechanism, age_class)
             mix = stats[ex]["exitMix"].setdefault(key, {"fragments": 0, "shares": 0, "gross": 0})
             mix["fragments"] += 1
@@ -260,7 +261,7 @@ def analyze(envelope, adoption, *, source_hashes=None):
         maximum_execution = executed if maximum_execution is None else max(executed, maximum_execution)
         execution_times.append(executed)
         delays.append(observed - executed)
-        counts["observedAtLeast600000msAfterExecution"] += observed - executed >= MATURITY_NS
+        counts["observedAtLeast600000msAfterExecution"] += observed - executed >= OBSERVATION_LAG_NS
         reason = q.get("inventoryExitReason", "unspecified")
         style = q.get("executionStyle", "unspecified")
         # Only allow fixed public labels, never arbitrary account payload strings.
@@ -347,14 +348,17 @@ def analyze(envelope, adoption, *, source_hashes=None):
         valid = [c["age"] for c in rows if c["age"] >= 0]
         return {"fragments": len(rows), "shares": sum(c["quantity"] for c in rows),
                 "grossRealized": money(sum(c["gross"] for c in rows)),
-                "freshUnder600000msShares": sum(c["quantity"] for c in rows if 0 <= c["age"] < MATURITY_NS),
-                "matured600000msShares": sum(c["quantity"] for c in rows if c["age"] >= MATURITY_NS),
+                "holdingAgeThresholdMs": inventory_age_ms,
+                "freshUnderThresholdShares": sum(c["quantity"] for c in rows if 0 <= c["age"] < holding_age_ns),
+                "maturedAtThresholdShares": sum(c["quantity"] for c in rows if c["age"] >= holding_age_ns),
                 "executionClockReversalShares": sum(c["quantity"] for c in rows if c["age"] < 0),
                 "entryObservedAfterExitExecutedShares": sum(c["quantity"] for c in rows if c["lateEntryObservation"]),
                 "nonnegativeHoldingAgeMsMin": duration_ms(min(valid)) if valid else None,
                 "nonnegativeHoldingAgeMsMax": duration_ms(max(valid)) if valid else None}
 
-    return {"schemaVersion": 1, "analysis": "actual_fill_fifo_economics", "bankSequence": sequence,
+    return {"schemaVersion": 2, "analysis": "actual_fill_fifo_economics", "bankSequence": sequence,
+            "holdingAgeThresholdMs": inventory_age_ms,
+            "holdingAgeThresholdProvenance": "explicit_operator_supplied_policy_value_not_inferred_from_fills",
             "sourceSha256": source_hashes or {}, "parity": "exact_fifo_quantities_cost_cash_realized_inherited_fees",
             "accounting": {"initialCashDerivedFromBankIdentity": money(seed), "cash": money(cash),
                            "openingInventoryCost": money(opening), "cashImmediatelyAfterAdoption": money(seed - opening),
@@ -364,6 +368,7 @@ def analyze(envelope, adoption, *, source_hashes=None):
                            "inheritedBasis": "opening_lot_principal_not_official_account_realized_pnl"},
             "fills": {"recordedActualFills": len(fills), "ordering": "recorded_bank_order_never_resorted",
                       **{k: counts[k] for k in ("adjacentExecutionClockReversals", "adjacentExecutionClockTies", "executedBeforePreviouslyRecordedFill", "observedAtLeast600000msAfterExecution")},
+                      "observationLagDiagnosticThresholdMs": OBSERVATION_LAG_NS // 1_000_000,
                       "observationLagMsMin": duration_ms(min(delays)) if delays else None,
                       "observationLagMsMax": duration_ms(max(delays)) if delays else None},
             "newBuyLotCohorts": {"total": len(cohorts), "fullyClosed": len(closed),
@@ -392,12 +397,16 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--report", required=True, help="Private report.json envelope")
     parser.add_argument("--adoption", required=True, help="Private adoption event (or journal row)")
+    parser.add_argument("--inventory-age-ms", required=True, type=int,
+                        help="Positive actual maximumInventoryAgeMs policy value; not order lifetime")
     parser.add_argument("--output", help="Public aggregate JSON; stdout when omitted")
     args = parser.parse_args()
     try:
+        integer(args.inventory_age_ms, positive=True)
         envelope, report_hash = load(args.report)
         adoption, adoption_hash = load(args.adoption)
-        result = analyze(envelope, adoption, source_hashes={"report": report_hash, "adoption": adoption_hash})
+        result = analyze(envelope, adoption, inventory_age_ms=args.inventory_age_ms,
+                         source_hashes={"report": report_hash, "adoption": adoption_hash})
         rendered = json.dumps(result, indent=2, sort_keys=True) + "\n"
         if args.output:
             require(Path(args.output).resolve() not in (Path(args.report).resolve(), Path(args.adoption).resolve()), "OUTPUT_OVERWRITES_INPUT")

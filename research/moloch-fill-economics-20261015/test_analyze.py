@@ -63,12 +63,12 @@ class EconomicsTests(unittest.TestCase):
                       fill(2, "sell", 6, "0.7", fee="0.06", executed=12)],
                      cash="99.7", cost="1.5", realized="1.2", inherited="1.1", new="0.1", fees="0.1",
                      positions={"21": {"YES": [{"quantity": 3, "price": "0.5"}], "NO": []}})
-        r = analyze(e, a)
+        r = analyze(e, a, inventory_age_ms=600000)
         self.assertEqual(r["accounting"]["initialCashDerivedFromBankIdentity"], "100.000000")
         self.assertEqual(r["accounting"]["cashImmediatelyAfterAdoption"], "97.600000")
         self.assertEqual(r["accounting"]["newTradingRealized"], "0.100000")
         self.assertEqual(r["newBuyLotCohorts"]["partiallyClosed"], 1)
-        self.assertEqual(r["newBuyLotCohorts"]["closedFragments"]["matured600000msShares"], 1)
+        self.assertEqual(r["newBuyLotCohorts"]["closedFragments"]["maturedAtThresholdShares"], 1)
         self.assertEqual(r["perMarket"][0]["remainingUnmarkedCost"], {"inherited": "0.000000", "new": "1.500000"})
         mix = r["perMarket"][0]["exitMix"]
         self.assertEqual(sum(m["closedShares"] for m in mix if m["cohort"] == "inherited"), 5)
@@ -78,11 +78,11 @@ class EconomicsTests(unittest.TestCase):
         e = bind_opening(envelope([fill(1, "buy", 5, "0.5", s="NO", fee="0.05")],
                                  cash="99.25", cost="1", realized="0.25", inherited="0.3", new="-0.05", fees="0.05",
                                  positions={"21": {"YES": [], "NO": [{"quantity": 2, "price": "0.5"}]}}), a)
-        r = analyze(e, a)
+        r = analyze(e, a, inventory_age_ms=600000)
         self.assertEqual(r["perMarket"][0]["pairRedeemedShares"], 3)
         self.assertEqual(r["accounting"]["inheritedRealizedGross"], "0.300000")
         self.assertEqual(r["newBuyLotCohorts"]["closedFragments"]["grossRealized"], "0.000000")
-        self.assertEqual(r["newBuyLotCohorts"]["closedFragments"]["freshUnder600000msShares"], 3)
+        self.assertEqual(r["newBuyLotCohorts"]["closedFragments"]["freshUnderThresholdShares"], 3)
 
     def test_new_against_new_pair_profit_belongs_older_side_not_double_counted(self):
         a = adoption(((1, "0.4"),))
@@ -90,11 +90,11 @@ class EconomicsTests(unittest.TestCase):
               fill(3, "buy", 2, "0.6", s="NO", fee="0.02", executed=12)]
         e = bind_opening(envelope(fs, cash="99.54", cost="0.6", realized="0.14", inherited="0", new="0.14", fees="0.06",
                                  positions={"21": {"YES": [{"quantity": 2, "price": "0.3"}], "NO": []}}), a)
-        r = analyze(e, a)
+        r = analyze(e, a, inventory_age_ms=600000)
         self.assertEqual(r["newBuyLotCohorts"]["fullyClosedGrossFlat"], 1)
         self.assertEqual(r["newBuyLotCohorts"]["closedFragments"]["grossRealized"], "0.200000")
-        self.assertEqual(r["newBuyLotCohorts"]["closedFragments"]["matured600000msShares"], 2)
-        self.assertEqual(r["newBuyLotCohorts"]["closedFragments"]["freshUnder600000msShares"], 2)
+        self.assertEqual(r["newBuyLotCohorts"]["closedFragments"]["maturedAtThresholdShares"], 2)
+        self.assertEqual(r["newBuyLotCohorts"]["closedFragments"]["freshUnderThresholdShares"], 2)
 
     def test_reverse_and_tied_execution_clocks_keep_bank_order_and_flag_negative_age(self):
         a = adoption(((1, "0.4"),))
@@ -102,7 +102,7 @@ class EconomicsTests(unittest.TestCase):
               fill(2, "sell", 1, "0.6", executed=9, observed=21),
               fill(3, "sell", 1, "0.55", executed=9, observed=22)]
         e = bind_opening(envelope(fs, cash="100.25", cost="0", realized="0.25", inherited="0.2", new="0.05"), a)
-        r = analyze(e, a)
+        r = analyze(e, a, inventory_age_ms=600000)
         self.assertEqual(r["fills"]["recordedActualFills"], 3)
         self.assertEqual(r["fills"]["adjacentExecutionClockReversals"], 1)
         self.assertEqual(r["fills"]["adjacentExecutionClockTies"], 1)
@@ -112,19 +112,58 @@ class EconomicsTests(unittest.TestCase):
         sorted_e = copy.deepcopy(e)
         sorted_e["fills"].sort(key=lambda f: f["executedAt"])
         with self.assertRaises(AnalysisError):
-            analyze(sorted_e, a)
+            analyze(sorted_e, a, inventory_age_ms=600000)
 
     def test_maximum_age_exit_can_close_fresh_and_matured_new_lots_plus_inherited(self):
         a = adoption(((1, "0.4"),))
         e = bind_opening(envelope([fill(1, "buy", 1, "0.5"), fill(2, "buy", 1, "0.6", executed=12),
                                   fill(3, "sell", 3, "0.45", executed=13)],
                                  cash="99.85", cost="0", realized="-0.15", inherited="0.05", new="-0.2", forced=(3,)), a)
-        r = analyze(e, a)
+        r = analyze(e, a, inventory_age_ms=600000)
         forced = r["newBuyLotCohorts"]["maximumAgeExitFragments"]
-        self.assertEqual((forced["shares"], forced["freshUnder600000msShares"], forced["matured600000msShares"]), (2, 1, 1))
+        self.assertEqual((forced["shares"], forced["freshUnderThresholdShares"], forced["maturedAtThresholdShares"]), (2, 1, 1))
         self.assertEqual(forced["nonnegativeHoldingAgeMsMin"], "60000.000000")
         self.assertEqual(forced["grossRealized"], "-0.200000")
         self.assertEqual(r["newBuyLotCohorts"]["fullyClosedGrossLosses"], 2)
+
+    def test_actual_60_second_policy_differs_from_ten_minute_bin(self):
+        a = adoption(((1, "0.4"),))
+        closing = fill(2, "sell", 2, "0.6", executed=2, observed=20)
+        closing["executedAt"] = "2026-10-15T00:02:18.061Z"
+        e = bind_opening(envelope([fill(1, "buy", 1, "0.5"), closing],
+                                 cash="100.3", cost="0", realized="0.3", inherited="0.2", new="0.1", forced=(2,)), a)
+        actual = analyze(e, a, inventory_age_ms=60000)
+        ten_minute_bin = analyze(e, a, inventory_age_ms=600000)
+        actual_exit = actual["newBuyLotCohorts"]["maximumAgeExitFragments"]
+        comparison = ten_minute_bin["newBuyLotCohorts"]["maximumAgeExitFragments"]
+        self.assertEqual(actual["holdingAgeThresholdMs"], 60000)
+        self.assertEqual(actual_exit["nonnegativeHoldingAgeMsMin"], "78061.000000")
+        self.assertEqual((actual_exit["freshUnderThresholdShares"], actual_exit["maturedAtThresholdShares"]), (0, 1))
+        self.assertEqual((comparison["freshUnderThresholdShares"], comparison["maturedAtThresholdShares"]), (1, 0))
+        self.assertEqual(actual["accounting"], ten_minute_bin["accounting"])
+        self.assertEqual(actual["fills"], ten_minute_bin["fills"])
+        self.assertEqual(actual["fills"]["observationLagDiagnosticThresholdMs"], 600000)
+        self.assertEqual(actual["fills"]["observedAtLeast600000msAfterExecution"], 1)
+        boundary = copy.deepcopy(e)
+        boundary["fills"][1]["executedAt"] = stamp(2)
+        at_boundary = analyze(boundary, a, inventory_age_ms=60000)
+        self.assertEqual(at_boundary["newBuyLotCohorts"]["maximumAgeExitFragments"]["maturedAtThresholdShares"], 1)
+
+    def test_inventory_age_threshold_must_be_positive_and_explicit(self):
+        for value in (0, -1, True, 60000.0):
+            with self.subTest(value=value), self.assertRaises(AnalysisError):
+                analyze({}, {}, inventory_age_ms=value)
+        with self.assertRaises(TypeError):
+            analyze({}, {})
+        script = str(Path(__file__).with_name("analyze.py"))
+        args = [sys.executable, script, "--report", "missing-private.json", "--adoption", "missing-adoption.json"]
+        missing = subprocess.run(args, capture_output=True, text=True)
+        self.assertEqual(missing.returncode, 2)
+        self.assertIn("--inventory-age-ms", missing.stderr)
+        for value in ("0", "-1"):
+            invalid = subprocess.run(args + ["--inventory-age-ms", value], capture_output=True, text=True)
+            self.assertEqual(invalid.returncode, 2)
+            self.assertIn("INTEGER_RANGE", invalid.stderr)
 
     def test_partial_fills_share_one_order_without_losing_any_records(self):
         a = adoption(((1, "0.4"),))
@@ -134,7 +173,7 @@ class EconomicsTests(unittest.TestCase):
                                  positions={"21": {"YES": [{"quantity": 1, "price": "0.4"}, {"quantity": 1, "price": "0.5"},
                                                            {"quantity": 2, "price": "0.5"}], "NO": []}}), a)
         e["orders"] = [dict(e["orders"][0], quantity=3, filled=3)]
-        r = analyze(e, a)
+        r = analyze(e, a, inventory_age_ms=600000)
         self.assertEqual(r["fills"]["recordedActualFills"], 2)
         self.assertEqual(r["newBuyLotCohorts"]["total"], 2)
 
@@ -145,7 +184,7 @@ class EconomicsTests(unittest.TestCase):
               fill(4, "buy", 1, "0.3", s="NO", executed=4)]
         e = bind_opening(envelope(fs, cash="99.7", cost="0.6", realized="0.3", inherited="0.2", new="0.1",
                                  positions={"21": {"YES": [], "NO": [{"quantity": 1, "price": "0.3"}, {"quantity": 1, "price": "0.3"}]}}), a)
-        r = analyze(e, a)
+        r = analyze(e, a, inventory_age_ms=600000)
         self.assertEqual(r["perMarket"][0]["reentriesAfterFlat"], 1)
 
     def test_negative_no_adoption_and_reported_basis_difference_are_preserved_as_classification(self):
@@ -154,7 +193,7 @@ class EconomicsTests(unittest.TestCase):
         row.update(reportedCostBasis="0.91", reportedMinusLotPrincipal="0.11", basisClassification="reported_discrepancy")
         e = bind_opening(envelope([fill(1, "sell", 1, "0.6", s="NO")], cash="99.8", cost="0.4", realized="0.2",
                                  inherited="0.2", new="0", positions={"21": {"YES": [], "NO": [{"quantity": 1, "price": "0.4"}]}}), a)
-        r = analyze(e, a)
+        r = analyze(e, a, inventory_age_ms=600000)
         self.assertEqual(r["perMarket"][0]["basisClassifications"], {"reported_discrepancy": 1})
         self.assertEqual(r["accounting"]["inheritedRealizedGross"], "0.200000")
 
@@ -163,7 +202,7 @@ class EconomicsTests(unittest.TestCase):
         a["processedAt"] = stamp(2)
         e = bind_opening(envelope([fill(1, "sell", 1, "0.5")], cash="100.1", cost="0", realized="0.1", inherited="0.1", new="0"), a)
         with self.assertRaisesRegex(AnalysisError, "FILLS_PRECEDE_ADOPTION"):
-            analyze(e, a)
+            analyze(e, a, inventory_age_ms=600000)
 
     def test_rejects_bad_principal_fee_realized_and_fifo_amounts(self):
         a = adoption(((1, "0.4"),))
@@ -183,7 +222,7 @@ class EconomicsTests(unittest.TestCase):
         cases.append((wrong, a, "ENDING_FIFO_POSITIONS_MISMATCH"))
         for report, adoption_event, error in cases:
             with self.subTest(error=error), self.assertRaisesRegex(AnalysisError, error):
-                analyze(report, adoption_event)
+                analyze(report, adoption_event, inventory_age_ms=600000)
 
     def test_rejects_duplicate_fill_scope_mismatch_and_incomplete_order_join(self):
         a = adoption(((2, "0.4"),))
@@ -193,21 +232,21 @@ class EconomicsTests(unittest.TestCase):
         bad["fills"].append(copy.deepcopy(bad["fills"][0]))
         bad["report"]["fills"] = 2
         with self.assertRaisesRegex(AnalysisError, "DUPLICATE_ACTUAL_FILL"):
-            analyze(bad, a)
+            analyze(bad, a, inventory_age_ms=600000)
         bad = copy.deepcopy(e)
         bad["orders"][0]["side"] = "NO"
         with self.assertRaisesRegex(AnalysisError, "FILL_ORDER_SCOPE"):
-            analyze(bad, a)
+            analyze(bad, a, inventory_age_ms=600000)
         bad = copy.deepcopy(e)
         bad["orders"] = []
         with self.assertRaisesRegex(AnalysisError, "FILL_ORDER_MISSING"):
-            analyze(bad, a)
+            analyze(bad, a, inventory_age_ms=600000)
 
     def test_86_records_are_not_reduced_to_orders_or_trades(self):
         a = adoption(((86, "0.4"),))
         fs = [fill(i + 1, "sell", 1, "0.5", executed=1) for i in range(86)]
         e = bind_opening(envelope(fs, cash="108.6", cost="0", realized="8.6", inherited="8.6", new="0"), a)
-        r = analyze(e, a)
+        r = analyze(e, a, inventory_age_ms=600000)
         self.assertEqual(r["fills"]["recordedActualFills"], 86)
         self.assertEqual(r["fills"]["adjacentExecutionClockTies"], 85)
         self.assertEqual(r["perMarket"][0]["sellShares"], 86)
@@ -229,7 +268,7 @@ class EconomicsTests(unittest.TestCase):
             rp.write_text(json.dumps(e), encoding="utf-8")
             ap.write_text(json.dumps({"event": a}), encoding="utf-8")
             result = subprocess.run([sys.executable, str(Path(__file__).with_name("analyze.py")), "--report", str(rp),
-                                     "--adoption", str(ap), "--output", str(out)], capture_output=True, text=True)
+                                     "--adoption", str(ap), "--inventory-age-ms", "60000", "--output", str(out)], capture_output=True, text=True)
             self.assertEqual(result.returncode, 0, result.stderr)
             raw = out.read_text(encoding="utf-8")
             r = json.loads(raw)
