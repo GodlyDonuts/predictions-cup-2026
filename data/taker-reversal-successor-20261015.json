@@ -1,0 +1,158 @@
+{
+  "schemaVersion": 1,
+  "task": 45,
+  "followUp": "20261015-taker-reversal-successor",
+  "title": "Frozen successor replay of latency-aware taker reversal",
+  "generatedAt": "2026-10-15T01:00:32Z",
+  "paperCounterfactualOnly": true,
+  "actualOrders": 0,
+  "executionAuthority": false,
+  "profitabilityEstablished": false,
+  "source": {
+    "path": "LOCALAPPDATA/SigTradingCup/paper-runtime/public-books.jsonl",
+    "completeLinePrefixBytes": 338959383,
+    "sha256": "72dcf4adc449971e2f418f66ae39fb9bb068ccf9f8d120c740541a0751725f1a",
+    "originalFrozenPrefixBytes": 311939460,
+    "originalFrozenPrefixSha256": "eab7f22431b26c634bfb9627d3bfb522f99a842e95a4379d62f1c58ac8a14ad8",
+    "originalPrefixMatch": true,
+    "stableDuringHash": true,
+    "completeLines": 146792,
+    "validBookRecords": 143962,
+    "duplicateSequences": 0,
+    "invalidLines": 0,
+    "invalidSnapshots": 0
+  },
+  "holdout": {
+    "startsStrictlyAfter": "2026-10-13T14:27:23.327Z",
+    "firstEligibleBookAt": "2026-10-13T14:27:42.628Z",
+    "lastEligibleBookAt": "2026-10-14T23:52:14.079Z",
+    "elapsedHours": 33.40873638888889,
+    "postCutoffBookPoints": 9763,
+    "marketExchangeStreams": 221,
+    "streamsWithAtLeastTwoPoints": 221,
+    "excludedGovernorContractsFromTask118": 16,
+    "allMarketCaptureRatePerSecond": 0.08117470870123618
+  },
+  "frozenPolicy": {
+    "inheritedFrom": "research/taker-reversal-latency-v1.mjs",
+    "trigger": "first 10-second YES-mid displacement >= 0.02, re-arm inside the 0.02 band",
+    "maxLookbackStalenessMs": 2000,
+    "sizeShares": 1,
+    "horizonsMs": [
+      1000,
+      3000,
+      10000
+    ],
+    "feesPerShare": 0,
+    "executablePrices": "YES ask to enter and YES bid to exit; NO uses binary complement",
+    "depth": "at least one visible share at both legs; stale/missing legs censored",
+    "maximumObservationLagMs": 2000,
+    "discoveryLatencySamples": 96555,
+    "discoveryLatencyQuantilesMs": {
+      "0.5": 223,
+      "0.9": 534,
+      "0.99": 1721
+    },
+    "latencyUsage": "same request-start-to-receipt proxy at both legs; order-write latency is unobserved",
+    "thresholdChangedAfterScoring": false,
+    "governorContractExclusions": [
+      [
+        "368",
+        "1057"
+      ],
+      [
+        "298",
+        "987"
+      ],
+      [
+        "299",
+        "988"
+      ],
+      [
+        "301",
+        "990"
+      ],
+      [
+        "303",
+        "992"
+      ],
+      [
+        "370",
+        "1059"
+      ],
+      [
+        "305",
+        "994"
+      ],
+      [
+        "307",
+        "996"
+      ],
+      [
+        "372",
+        "1061"
+      ],
+      [
+        "186",
+        "875"
+      ],
+      [
+        "384",
+        "1073"
+      ],
+      [
+        "194",
+        "883"
+      ],
+      [
+        "310",
+        "999"
+      ],
+      [
+        "312",
+        "1001"
+      ],
+      [
+        "314",
+        "1003"
+      ],
+      [
+        "316",
+        "1005"
+      ]
+    ]
+  },
+  "result": {
+    "scenarios": 9,
+    "eachScenario": {
+      "eligibleSignals": 0,
+      "attempted": 0,
+      "completedRoundTrips": 0,
+      "marketClusters": 0,
+      "meanPnlPerShare": null,
+      "confidenceInterval": null,
+      "interpretableSample": false
+    },
+    "reversal": "No signal fired in any of the 1s, 3s, or 10s horizons at p50/p90/p99 latency.",
+    "momentumControl": "No triggers, so no trades.",
+    "noTradeBaseline": "0 P&L.",
+    "conclusion": "This fixed 2-cent/10-second strategy was inactive on the measured successor suffix. That is not evidence of a losing trade edge; it is also not profitability evidence. The hypothesis remains untested on this suffix because the strategy generated no candidate trades."
+  },
+  "validation": {
+    "discoveryLatencyQuantilesReproducedExactly": true,
+    "sourceHashVerifiedBeforeScoring": true,
+    "priorFrozenPrefixHashVerified": true,
+    "existingScorerFocusedTests": "10/10 pass",
+    "successorReplayRuntimeMs": 2466,
+    "noApiReads": true,
+    "noRuntimeChanges": true,
+    "noContestOrders": true,
+    "noLocalReportWrite": true
+  },
+  "limitations": [
+    "A 2-cent move trigger produced no observations, so no P&L or uncertainty interval can be estimated.",
+    "The file records roughly one public-book record every 12.3 seconds in aggregate across the entire sampled universe, not a per-market high-frequency feed.",
+    "One-share top-of-book counterfactuals do not model queue position, market impact, or actual order-write latency.",
+    "The explored suffix cannot be reused to tune a lower threshold and then call that result out-of-sample."
+  ]
+}
