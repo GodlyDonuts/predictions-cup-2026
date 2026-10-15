@@ -107,23 +107,26 @@ mod current {
                 "initialBindings":shape.fixture_initial_bindings,"finalBindings":store.state.intents.len(),"finalActive":store.state.active.is_some(),
                 "payloadHashesUnique":true,"actualNetworkRequests":0});
         }clean_fixture(&dir)?;
-        let s0=state(shape,0,false);let s1=state(shape,1,false);
+        let s0=state(shape,0,false);let s1=state(shape,1,false);let s2=state(shape,2,false);
+        let per_binding=bytes(&s2).len()-bytes(&s1).len();
         Ok(json!({"schemaVersion":1,"source":"unchanged backend-rust/account-queue/src/main.rs included in private module",
             "coreSourceSha256":format!("{:x}",Sha256::digest(include_bytes!(concat!(env!("CARGO_MANIFEST_DIR"),"/../../backend-rust/account-queue/src/main.rs")))),
             "platform":{"os":std::env::consts::OS,"architecture":std::env::consts::ARCH},"measurements":rows,
             "sizeModel":{"scopeBytes":shape.scope_bytes,"intentBytes":shape.intent_bytes,"keyBytes":shape.key_bytes,"payloadHashBytes":64,
-                "sparseRecordBaseBytes":bytes(&s0).len(),"perRetainedBindingBytes":bytes(&s1).len()-bytes(&s0).len(),
-                "meaning":"fixed synthetic identity lengths; sparse baseline excludes rolling vectors, active flight, larger sequence digits and status/wait records"},
+                "sparseEmptyRecordBytes":bytes(&s0).len(),"sparseRecordBaseBytes":bytes(&s1).len()-per_binding,"perRetainedBindingBytes":per_binding,
+                "meaning":"affine intercept for positive binding counts; empty maps omit two commas; fixed synthetic lengths; excludes rolling vectors, active flight, larger sequence digits and status/wait records"},
             "compressionFixture":fixture_info,"observedProduction":shape.observed_production,"accountCalls":0,"productionModified":false}))
     }
 
     #[cfg(test)]mod benchmark_tests {
         use super::*;
         fn shape()->Shape{serde_json::from_str(include_str!("../shape.json")).unwrap()}
-        #[test]fn byte_growth_is_exactly_affine_for_both_permanent_maps(){let sh=shape();let b0=bytes(&state(&sh,0,false)).len();let b1=bytes(&state(&sh,1,false)).len();for n in [2,70,98,1000]{assert_eq!(bytes(&state(&sh,n,false)).len(),b0+n*(b1-b0));}}
+        #[test]fn byte_growth_is_exactly_affine_after_first_entry_in_both_maps(){let sh=shape();let b0=bytes(&state(&sh,0,false)).len();let b1=bytes(&state(&sh,1,false)).len();let step=bytes(&state(&sh,2,false)).len()-b1;assert_eq!(b0,b1-step+2);for n in [1,2,70,98,1000]{assert_eq!(bytes(&state(&sh,n,false)).len(),b1+(n-1)*step);}}
         #[test]fn fixture_payload_hashes_are_distinct_not_artificial_zero_runs(){let s=state(&shape(),98,false);assert_eq!(s.intents.values().map(|b|b.payload_hash.clone()).collect::<std::collections::BTreeSet<_>>().len(),98);for b in s.intents.values(){assert_eq!(s.keys[&b.key],*b);}}
         #[test]fn measured_bytes_use_the_actual_chained_record_format(){let s=state(&shape(),98,true);let b=bytes(&s);let r:Record=serde_json::from_slice(&b).unwrap();assert_eq!(r.hash,record_hash(r.sequence,&r.previous,&r.state));assert_eq!(r.state,s);assert_eq!(b.last(),Some(&b'\n'));}
         #[test]fn synthetic_labels_remain_fixed_width_and_unique(){let sh=shape();assert_ne!(binding(&sh,1),binding(&sh,2));assert_eq!(binding(&sh,691200).intent.len(),sh.intent_bytes);assert_eq!(binding(&sh,691200).key.len(),sh.key_bytes);}
+        #[test]fn old_core_refuses_version_two_manifest_without_falling_back_to_v1_journal(){let sh=shape();let dir=fixture_root().unwrap();{let mut s=Store::open(&dir,&"s".repeat(sh.scope_bytes),"first").unwrap();s.persist(state(&sh,70,false)).unwrap();s.command(Command{op:"compact".into(),scope:s.state.scope.clone(),now:CLOCK,..Default::default()}).unwrap();}let path=dir.join("account-queue-manifest.json");let mut v:Value=serde_json::from_slice(&fs::read(&path).unwrap()).unwrap();v["schema_version"]=json!(2);fs::write(&path,serde_json::to_vec(&v).unwrap()).unwrap();let error=Store::open(&dir,&"s".repeat(sh.scope_bytes),"old-reader").err().unwrap();assert_eq!(error,"MANIFEST_SCOPE_OR_PATH_FAILURE");clean_fixture(&dir).unwrap();}
+        #[test]fn startup_does_not_recursively_open_anchor_source_but_history_is_retained(){let sh=shape();let dir=fixture_root().unwrap();let expected=state(&sh,70,false);{let mut s=Store::open(&dir,&expected.scope,"first").unwrap();s.persist(expected.clone()).unwrap();s.command(Command{op:"compact".into(),scope:expected.scope.clone(),now:CLOCK,..Default::default()}).unwrap();}let old=dir.join("account-queue.jsonl");let retained=dir.join("retained-original-synthetic-journal.jsonl");fs::rename(&old,&retained).unwrap();{let s=Store::open(&dir,&expected.scope,"second").unwrap();assert_eq!(s.state,expected);assert!(retained.exists());}clean_fixture(&dir).unwrap();}
     }
 }
 
