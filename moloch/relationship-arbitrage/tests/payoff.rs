@@ -12,7 +12,7 @@ fn exclusion() -> Compiled { component(Logic::MutuallyExclusive {members:vec![0,
 fn ins(contract: usize,side: Side) -> Instrument { Instrument{contract,side} }
 fn levels(p: i128) -> Vec<Level> { vec![Level{price:p,quantity:100}] }
 fn books() -> Vec<Book> {
-    (0..2).map(|i|Book {exchange_id:format!("{}",i+1),source:source(),yes_asks:levels(600_000),no_asks:levels(if i==0 {450_000}else{505_000}),yes_bids:levels(595_000),no_bids:levels(if i==0 {445_000}else{500_000})}).collect()
+    (0..2).map(|i|Book {exchange_id:format!("{}",i+1),source:source(),observed_ms:1000,yes_asks:levels(600_000),no_asks:levels(if i==0 {450_000}else{505_000}),yes_bids:levels(595_000),no_bids:levels(if i==0 {445_000}else{500_000})}).collect()
 }
 fn limits() -> Limits {
     Limits {now_ms:1000,max_book_age_ms:20,max_book_skew_ms:10,cash_available:100*UNIT,max_package_cost:100*UNIT,max_orphan_cash_loss:100*UNIT,fee_per_share_per_leg:0,buffer_per_share:5000,minimum_surplus:1,max_quantity:100}
@@ -148,8 +148,14 @@ fn dual_no() -> Vec<Instrument> {vec![ins(0,Side::No),ins(1,Side::No)]}
     assert_eq!(c.evaluate(&dual_no(),1,&b,&limits()).unwrap_err(),"SOURCE_STALE");
     b[0].source.received_ms=1001;
     assert_eq!(c.evaluate(&dual_no(),1,&b,&limits()).unwrap_err(),"SOURCE_STALE");
-    b[0].source.received_ms=985;
+    b[0].source.received_ms=985;b[0].observed_ms=985;
     assert_eq!(c.evaluate(&dual_no(),1,&b,&limits()).unwrap_err(),"BOOK_SKEW");
+}
+#[test] fn fresh_receipt_does_not_make_stale_snapshot_fresh() {
+    let mut b=books();b[0].observed_ms=979;
+    assert_eq!(exclusion().evaluate(&dual_no(),1,&b,&limits()).unwrap_err(),"BOOK_SNAPSHOT_STALE");
+    b[0].observed_ms=1001;
+    assert_eq!(exclusion().evaluate(&dual_no(),1,&b,&limits()).unwrap_err(),"BOOK_SNAPSHOT_STALE");
 }
 #[test] fn stale_compiled_proofs_rejected() {
     let mut l=limits();l.now_ms=1101;

@@ -189,6 +189,9 @@ pub struct Level { pub price: i128, pub quantity: u64 }
 pub struct Book {
     pub exchange_id: String,
     pub source: Source,
+    /// Verified snapshot clock, or conservative request-start clock when the
+    /// venue omits a snapshot clock. Never a newly assigned cache-read clock.
+    pub observed_ms: u64,
     pub yes_asks: Vec<Level>,
     pub no_asks: Vec<Level>,
     pub yes_bids: Vec<Level>,
@@ -257,19 +260,22 @@ impl Compiled {
         let mut seen = BTreeSet::new();
         let mut leg_costs = vec![];
         let mut sources = vec![];
+        let mut snapshot_clocks = vec![];
         let mut unwind = vec![];
         for i in instruments {
             need(i.contract < self.contracts.len() && seen.insert(*i), "INSTRUMENT_SCOPE")?;
             let b = &books[i.contract];
             need(b.exchange_id == self.contracts[i.contract].exchange_id, "BOOK_SCOPE")?;
             b.source.validate(l.now_ms,l.max_book_age_ms)?;
+            need(b.observed_ms <= b.source.received_ms && l.now_ms - b.observed_ms <= l.max_book_age_ms, "BOOK_SNAPSHOT_STALE")?;
             let (asks,bids) = match i.side { Side::Yes => (&b.yes_asks,&b.yes_bids),Side::No => (&b.no_asks,&b.no_bids) };
             leg_costs.push(depth_cost(asks,quantity,true)?);
             unwind.push(depth_cost(bids,quantity,false).ok());
             sources.push(b.source.clone());
+            snapshot_clocks.push(b.observed_ms);
         }
-        let first = sources.iter().map(|s|s.received_ms).min().unwrap();
-        let last = sources.iter().map(|s|s.received_ms).max().unwrap();
+        let first = snapshot_clocks.iter().min().unwrap();
+        let last = snapshot_clocks.iter().max().unwrap();
         need(last-first <= l.max_book_skew_ms, "BOOK_SKEW")?;
         let cost = leg_costs.iter().try_fold(0,|a,b|add(a,*b))?;
         let fees = mul(mul(l.fee_per_share_per_leg,i128::from(quantity))?,instruments.len() as i128)?;
