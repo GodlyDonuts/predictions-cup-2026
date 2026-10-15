@@ -189,7 +189,9 @@ impl Authority for SharedAuthority {
  }
  pub(super) fn fixture()->(PathBuf,ProductionAuthority,Session,Scope,RequestSpec,Permit,SnapshotSet,u64){fixture_with_cash("1000.000000")}
  fn fixture_with_cash(exact:&str)->(PathBuf,ProductionAuthority,Session,Scope,RequestSpec,Permit,SnapshotSet,u64){
-  let root=std::env::temp_dir().join(format!("live-authority-{}-{}",std::process::id(),std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_nanos()));fs::create_dir(&root).unwrap();
+  static NEXT_FIXTURE:std::sync::atomic::AtomicU64=std::sync::atomic::AtomicU64::new(0);
+  let serial=NEXT_FIXTURE.fetch_add(1,std::sync::atomic::Ordering::Relaxed);
+  let root=std::env::temp_dir().join(format!("live-authority-{}-{}-{serial}",std::process::id(),std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_nanos()));fs::create_dir(&root).unwrap();
   let binary=root.join("binary");fs::write(&binary,b"fixture executable").unwrap();let control=root.join("control");fs::write(&control,b"immutable").unwrap();
   let lease=Arc::new(ExclusiveLock::acquire(&root.join("owner.lock")).unwrap());let scope=Scope{tournament_id:"cup".into(),tournament_slug:"cup".into(),exchanges:[("101".into(),"101".into())].into()};
   let now=clock("2026-10-13T00:00:04Z").unwrap();let activation=Activation{run_id:"fixture".into(),entry_until_ms:now+3600000,maximum_committed:"40.000000".into(),maximum_market_cost:"10.000000".into(),maximum_quantity:1,tournament_id:"cup".into(),tournament_slug:"cup".into(),binary_sha256:hash_bytes(b"fixture executable")};
