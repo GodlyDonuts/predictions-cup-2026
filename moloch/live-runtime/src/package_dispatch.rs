@@ -51,7 +51,7 @@ impl DurableIntent{
 pub struct AttemptToken{nonce:u64,package_id:String,attempt_head:String}
 #[derive(Clone)]
 struct Record{intent:DurableIntent,phase:String,attempted_at:Option<String>,outcome:Option<Value>}
-#[derive(Clone,Default)]struct Projection{records:BTreeMap<String,Record>,sequence:u64,previous:String}
+#[derive(Clone,Default)]struct Projection{records:BTreeMap<String,Record>,sequence:u64,previous:String,last_clock:Option<i64>}
 /// Queue evidence remains a trusted caller attestation of the original local
 /// SDK completion. Empty status/lookup alone never proves no physical send.
 #[derive(Serialize,Deserialize)]
@@ -75,6 +75,8 @@ impl Projection{
  fn apply(&mut self,e:&Value)->Result<()>{
   let id=e["packageId"].as_str().ok_or("PACKAGE_LOG_ID")?;let kind=e["kind"].as_str().ok_or("PACKAGE_LOG_KIND")?;
   let at=clock(e["at"].as_str().ok_or("PACKAGE_LOG_CLOCK")?)?;
+  need(self.last_clock.is_none_or(|last|at>=last),"PACKAGE_LOG_CLOCK_REGRESSION")?;
+  self.last_clock=Some(at);
   if kind=="intent"{
    need(!self.records.contains_key(id)&&!self.unresolved(),"PACKAGE_LOG_DUPLICATE_OR_UNRESOLVED")?;
    let i=DurableIntent::restore(&e["admission"])?;need(i.package_id()==id,"PACKAGE_LOG_ID")?;
