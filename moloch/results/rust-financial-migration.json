@@ -1,0 +1,28 @@
+{
+  "mode": "offline_rust_migration_verification",
+  "platform": "linux-aarch64",
+  "rustTestsPassed": 13,
+  "parityScenarios": 20,
+  "intermediateFinancialCheckpoints": 668,
+  "parityFields": ["policyHash", "events", "cash", "realized", "fees", "ownedCost", "reservedCash", "netLiquidationPnl", "positions", "fills", "orders", "activeOrders", "unresolvedOrders", "fillModel", "conditionalQueueFills", "profitSignalEligible", "counts"],
+  "publicArchiveReplay": {
+    "input": "data/maker-public-book-export-20261012.json",
+    "events": 20,
+    "sourceSeconds": 50.859,
+    "wallSeconds": 0.010903861,
+    "financialEngine": "rust",
+    "nodeAvailableInEnvironment": false,
+    "orders": 8,
+    "fills": 0,
+    "reservedCash": "19.900000",
+    "cash": "1000.000000",
+    "realized": "0.000000",
+    "eventFileSha256": "4b41658917de0933f1d3d1e8332df497184dc3937c0bcd4471cf7c11f35574dc"
+  },
+  "serviceActive": false,
+  "sigRequests": 0,
+  "contestOrders": 0,
+  "migrationComplete": false,
+  "profitabilityEstablished": false,
+  "limitations": ["The release is built in the VPS staging directory; the service has not been switched.", "Inventory age/AON/hedge policy extensions and original wallet continuation remain incomplete.", "Realtime transport and persisted source coverage are not yet integrated into the Rust collector.", "Parity is against the modeled engine, not proof of exchange fills or profits."]
+}

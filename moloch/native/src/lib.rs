@@ -1,6 +1,7 @@
 //! Exact paper accounting shared by replay and the future live strategy loop.
 //! No networking or contest order submission is performed by this library.
 use std::collections::{BTreeMap, VecDeque};
+pub mod engine;
 pub const SCALE: i128 = 1_000_000;
 pub const TICK: i128 = 5_000;
 pub type Result<T> = std::result::Result<T, &'static str>;
@@ -103,6 +104,32 @@ pub struct Wallet {
     reservations: BTreeMap<String, Reservation>,
 }
 impl Wallet {
+    pub fn positions(&self) -> serde_json::Value {
+        let mut out = serde_json::json!({});
+        for ((ex, side), lots) in &self.lots {
+            if out.get(ex).is_none() {
+                out[ex] = serde_json::json!({"YES":[],"NO":[]});
+            }
+            out[ex][if *side == Side::Yes { "YES" } else { "NO" }] = serde_json::json!(
+                lots.iter()
+                    .map(|l| serde_json::json!({"quantity":l.quantity,"price":money(l.price)}))
+                    .collect::<Vec<_>>()
+            );
+        }
+        out
+    }
+    pub fn market_cost(&self, exchange: &str) -> i128 {
+        [Side::Yes, Side::No]
+            .into_iter()
+            .flat_map(|side| {
+                self.lots
+                    .get(&(exchange.to_owned(), side))
+                    .into_iter()
+                    .flatten()
+            })
+            .map(|l| l.price * l.quantity as i128)
+            .sum()
+    }
     pub fn new(
         initial: i128,
         maximum_committed: i128,

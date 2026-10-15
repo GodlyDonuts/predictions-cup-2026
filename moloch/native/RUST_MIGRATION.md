@@ -7,8 +7,13 @@ verified.
 
 Verified on the Linux ARM64 VPS during this migration:
 
-- `cargo test --locked`: five accounting tests, two collector tests and four
-  existing replay tests passed on ARM64. The resolved dependency lock is included.
+- `cargo test`: thirteen tests passed on ARM64: five accounting, two collector,
+  four replay, and two event-engine integration tests. The resolved dependency
+  lock is included.
+- Event-engine parity compares 668 intermediate reports in 20 scenarios against
+  the existing implementation, including strict/conditional fills, delayed
+  executions, fee rounding, unresolved reservations, cancellation coverage,
+  seeded changing books, and the causal current-flow entry gate.
 - `cargo run --bin moloch-collector -- check`: Rust runtime, configured 100 reads
   per minute, network/trading disabled, both stop markers present.
 - Disabled capture invocation exited 1 before creating output.
@@ -22,11 +27,24 @@ The accounting library now implements integer decimal parsing, tick validation,
 upward fee rounding, per-share reservation headroom, partial fills, FIFO inventory,
 opposite-side netting, and atomic rejection of invalid wallet mutations. Tests
 preserve realized losses and enforce cash + owned cost - initial = realized.
-This library is not yet connected to the event engine or persisted wallet replay.
+The library is connected to the Rust event engine and both replay executables.
+`moloch-paper EVENTS_JSONL POLICY_JSON NEW_REPORT_JSON` replays original events
+without waiting or networking. `moloch-replay` now includes the financial engine
+directly; its report no longer asks the user to run a JavaScript wallet.
+
+Both release executables successfully replayed the twenty-book public archive
+with an empty environment and `/usr/bin:/bin` PATH. They agree with the original
+engine on eight quotes, 19.900000 reserved, no fills, and zero P&L. The integrated
+replay took 0.010904 seconds for 50.859 source seconds. This small fixture is not
+a sustained-throughput benchmark or evidence of profitable trading.
+
+Unsupported optional policy fields fail explicitly with `POLICY_NOT_PORTED`;
+they are never silently ignored. Inventory AON/age/hedge extensions, complete
+historical wallet continuation, and realtime source integration are still pending.
 
 Remaining before replacing the deployment: persistent server Retry-After detail,
-paginated tape coverage, realtime transport, causal event normalization, exact
-financial accounting and strategy parity, restart/source-journal verification,
+paginated tape coverage, realtime transport, causal event normalization, remaining
+inventory strategies and full journal parity, restart/source-journal verification,
 Rust readiness/service wrappers, Rust-only release installation, and removal of
 the dedicated Node installation after the replacement passes verification.
 
