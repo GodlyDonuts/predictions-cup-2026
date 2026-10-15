@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "at": "2026-10-15T02:04:08.052Z",
+  "sourceSequence": 3180,
+  "sourcePrevious": "1c29fc190fee817bf7021bd703a6c22e8cc606fa8366777c75367400d74d71ca",
+  "authenticationWrites": 1,
+  "streamConnectionVerified": true,
+  "officialReceipts": 8,
+  "universeExchanges": 237,
+  "rawBalancedFlowEligible": 2,
+  "currentTwoSidedFlow": 0,
+  "currentPriceEligible": 0,
+  "financialTrialCreated": false,
+  "newAccountCapital": "0",
+  "contestOrders": 0,
+  "profitabilityEstablished": false
+}
