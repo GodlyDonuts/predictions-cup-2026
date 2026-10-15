@@ -182,6 +182,33 @@ pub struct Session {
     facts: BTreeMap<String, Value>,
     poisoned: bool,
 }
+/// Admission bounds include duplicates. Bytes bound serialized raw inputs and,
+/// separately, the final journal append; existing engine/history memory is not
+/// claimed to fit in this budget.
+pub const SESSION_BATCH_MAX_EVENTS:usize=32;
+pub const SESSION_BATCH_MAX_BYTES:usize=8*1024*1024;
+pub struct BatchEntry<'a>{pub source_id:&'a str,pub sequence:u64,pub event:&'a Value}
+#[derive(Debug)]
+pub struct BatchOutcome{pub accepted:Vec<bool>,pub appended_rows:usize,pub encoded_journal_bytes:usize}
+struct BatchJson{bytes:Vec<u8>,maximum:usize}
+impl Write for BatchJson{
+    fn write(&mut self,bytes:&[u8])->std::io::Result<usize>{
+        if bytes.len()>self.maximum.saturating_sub(self.bytes.len()){return Err(std::io::Error::other("PAPER_BATCH_BYTE_LIMIT"))}
+        self.bytes.extend_from_slice(bytes);Ok(bytes.len())
+    }
+    fn flush(&mut self)->std::io::Result<()>{Ok(())}
+}
+fn batch_shape(event:&Value)->Result<()>{
+    let mut stack=vec![(event,0usize)];let mut nodes=0usize;
+    while let Some((value,depth))=stack.pop(){
+        nodes+=1;if nodes>262144||depth>64{return Err("PAPER_BATCH_SHAPE_LIMIT".into())}
+        match value{
+            Value::Array(xs)=>{if xs.len()>262144usize.saturating_sub(nodes+stack.len()){return Err("PAPER_BATCH_SHAPE_LIMIT".into())}stack.extend(xs.iter().map(|v|(v,depth+1)));},
+            Value::Object(xs)=>{if xs.len()>262144usize.saturating_sub(nodes+stack.len()){return Err("PAPER_BATCH_SHAPE_LIMIT".into())}stack.extend(xs.values().map(|v|(v,depth+1)));},
+            _=>{},
+        }
+    }Ok(())
+}
 impl Session {
     pub fn open(root: &Path, seed: Option<&Path>, policy: &Value) -> Result<Self> {
         Self::open_mode(root,seed,policy,None)
@@ -411,6 +438,57 @@ impl Session {
         self.publish_report()?;
         self.poisoned = false;
         Ok(true)
+    }
+    /// Validate the whole bounded candidate before I/O. Every accepted event
+    /// keeps its original individual row/hash/cursor semantics; no batch marker.
+    /// Success follows journal+head+report durability. Any I/O failure poisons.
+    /// A crash can recover a COMPLETE SERIAL PREFIX, not an atomic whole batch.
+    pub fn accept_batch(&mut self,entries:&[BatchEntry<'_>])->Result<BatchOutcome>{
+        if self.poisoned{return Err("PAPER_SESSION_POISONED".into())}
+        if entries.len()>SESSION_BATCH_MAX_EVENTS{return Err("PAPER_BATCH_EVENT_LIMIT".into())}
+        let mut accepted=Vec::with_capacity(entries.len());let mut rows=Vec::new();
+        let mut staged_refs:BTreeMap<(String,u64),String>=BTreeMap::new();
+        let mut staged_cursors:BTreeMap<String,u64>=BTreeMap::new();
+        let mut staged_events=Vec::new();let mut next=None;let mut chain=self.chain.clone();let mut input_bytes=0usize;
+        for input in entries{
+            let(source_id,sequence,event)=(input.source_id,input.sequence,input.event);
+            if !event.is_object(){return Err("PAPER_EVENT".into())}
+            if event.get("sourceRef").is_some(){return Err("PAPER_SOURCE_REF_RESERVED".into())}
+            if source_id.is_empty()||source_id.len()>256||source_id.contains(['\r','\n'])||sequence==0{return Err("PAPER_SOURCE_ID".into())}
+            batch_shape(event)?;
+            let mut raw=BatchJson{bytes:Vec::new(),maximum:SESSION_BATCH_MAX_BYTES-input_bytes};
+            serde_json::to_writer(&mut raw,event)?;input_bytes+=raw.bytes.len();
+            let digest=format!("{:x}",Sha256::digest(&raw.bytes));drop(raw);
+            let key=(source_id.to_owned(),sequence);
+            if let Some(old)=staged_refs.get(&key).or_else(||self.refs.get(&key)){
+                if old!=&digest{return Err("PAPER_SOURCE_PREFIX_CHANGED".into())}
+                accepted.push(false);continue;
+            }
+            let previous=staged_cursors.get(source_id).or_else(||self.cursors.get(source_id)).copied().unwrap_or(0);
+            if previous.checked_add(1)!=Some(sequence){return Err("PAPER_SOURCE_SEQUENCE_GAP".into())}
+            let mut event=event.clone();event["sourceRef"]=json!({"id":source_id,"sequence":sequence,"hash":digest});
+            next.get_or_insert_with(||self.engine.clone()).advance(&event)?;
+            let number=chain.sequence.checked_add(1).ok_or("PAPER_BATCH_SEQUENCE_RANGE")?;
+            let row=sealed(json!({"sequence":number,"previous":chain.previous,"event":event}));
+            chain.accept(&row)?;
+            let mut encoded=BatchJson{bytes:rows,maximum:SESSION_BATCH_MAX_BYTES};
+            serde_json::to_writer(&mut encoded,&row)?;encoded.write_all(b"\n")?;rows=encoded.bytes;
+            staged_refs.insert(key,digest);staged_cursors.insert(source_id.to_owned(),sequence);staged_events.push(event);accepted.push(true);
+        }
+        let Some(next)=next else{return Ok(BatchOutcome{accepted,appended_rows:0,encoded_journal_bytes:0})};
+        // Render/hash all fallible candidate projections BEFORE the first write.
+        let head=sealed(json!({"manifestHash":self.manifest["hash"],"sequence":chain.sequence,"previous":chain.previous}));
+        let mut cursors=self.cursors.clone();cursors.extend(staged_cursors.clone());
+        let report=sealed(json!({"manifestHash":self.manifest["hash"],"sequence":chain.sequence,"previous":chain.previous,"report":next.report()?,"orders":next.order_records(),"fills":next.fills(),"sourceCursors":cursors,"contestOrders":next.live_order_bindings().len()}));
+        serde_json::to_writer(std::io::sink(),&head)?;serde_json::to_writer(std::io::sink(),&report)?;
+        self.poisoned=true;
+        self.file.write_all(&rows)?;self.file.sync_all()?;
+        atomic_json(&self.root.join("head.json"),&head)?;
+        atomic_json(&self.root.join("report.json"),&report)?;
+        self.engine=next;self.chain=chain;self.refs.extend(staged_refs);self.cursors.extend(staged_cursors);
+        for event in &staged_events{Self::remember(event,&mut self.facts)}
+        self.poisoned=false;
+        Ok(BatchOutcome{accepted,appended_rows:staged_events.len(),encoded_journal_bytes:rows.len()})
     }
     pub fn engine(&self) -> &Engine {
         &self.engine
