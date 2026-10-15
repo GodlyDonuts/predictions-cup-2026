@@ -34,7 +34,7 @@ pub fn native_books(bank:&Session,scope:&baal_transport_service::Scope,at:u64,ag
 }
 fn worst_limit(levels:&[Level],quantity:u64)->Result<i128>{let mut left=quantity;for level in levels{left=left.saturating_sub(level.quantity);if left==0{return Ok(level.price)}}Err("PACKAGE_DEPTH_MISSING".into())}
 #[derive(Clone)]
-pub struct Admission{proof:Value,proof_hash:String,package_id:String,basket:multi_leg::Basket,reserve:Value,expires:u64,certificate:String}
+pub struct Admission{proof:Value,proof_hash:String,package_id:String,basket:multi_leg::Basket,reserve:Value,expires:u64,certificate:String,rule_bindings:BTreeMap<String,Value>}
 impl Admission{
  pub fn proof(&self)->&Value{&self.proof}
  pub fn proof_hash(&self)->&str{&self.proof_hash}
@@ -43,6 +43,13 @@ impl Admission{
  pub fn reserve_event(&self)->&Value{&self.reserve}
  pub fn expires_at_ms(&self)->u64{self.expires}
  pub fn certificate_sha256(&self)->&str{&self.certificate}
+ /// V1 keeps its exact original receipt contract. V2 may refresh transport
+ /// clocks, but every reviewed rule-body field and exact endpoint stay pinned.
+ pub(crate) fn validate_physical_rule(&self,exchange:&str,r:&Receipt)->Result<()>{
+  let b=self.rule_bindings.get(exchange).ok_or("PACKAGE_RULE_BINDING")?;
+  need(r.status==200&&r.endpoint==b["endpoint"]&&self.proof["ruleBindings"][exchange]==*b,"PACKAGE_RULE_BINDING")?;
+  match b["kind"].as_str(){Some("exact_receipt_v1")=>need(hash(r)?==b["sha256"],"PACKAGE_RULE_RECEIPT_CHANGED"),Some("complete_rule_body_v2")=>need(hash(&r.data)?==b["sha256"],"PACKAGE_RULE_BODY_CHANGED"),_=>Err("PACKAGE_RULE_BINDING".into())}
+ }
 }
 /// Select the best *recomputed* certified package fitting the unchanged bank.
 /// No new API calls, ledger changes, collateral borrowing or physical dispatch.
@@ -76,15 +83,21 @@ pub fn admit(bank:&Session,a:&Activation,census:&Census,canonical:&Receipt,certi
   if wire_cost<=0||wire_cost>available||wire_cost>remaining||surplus<p.minimum_surplus{continue}
   let relationship_end=daily_windows::clock(&canonical.received_at)?.checked_add(p.max_relationship_age_ms).ok_or("PACKAGE_CLOCK_RANGE")?;
   let certificate=certificates.values.iter().find(|c|strategy::certificate_sha256(c).ok().as_deref()==Some(&candidate.certificate_sha256)).ok_or("PACKAGE_CERTIFICATE_MISSING")?;
-  let mut expires=p.now_ms.checked_add(policy["bookAgeMs"].as_u64().ok_or("PACKAGE_NATIVE_POLICY")?.min(10_000)).ok_or("PACKAGE_CLOCK_RANGE")?.min(entry_until).min(relationship_end).min(certificate.expires_at_ms);
-  for c in &certificate.contracts{let r=strategy::validated_rule_receipt(certificate,c,certificates,&census.cache.scope,p)?;expires=expires.min(daily_windows::clock(&r.received_at)?.checked_add(p.max_rule_age_ms).ok_or("PACKAGE_CLOCK_RANGE")?);}
+  // The intent retains frozen limits, not a promise that its original book is
+  // still executable. Reserve, attempt and physical authorization independently
+  // recheck CURRENT books. A ten-second original-book expiry made paced fresh
+  // preflight plus the native activation delay infeasible.
+  let mut expires=p.now_ms.checked_add(policy["lifetimeMs"].as_u64().filter(|n|*n>0).ok_or("PACKAGE_NATIVE_POLICY")?).ok_or("PACKAGE_CLOCK_RANGE")?.min(entry_until).min(relationship_end).min(certificate.expires_at_ms);
+  let mut rule_bindings=BTreeMap::new();
+  for c in &certificate.contracts{let r=strategy::validated_rule_receipt(certificate,c,certificates,&census.cache.scope,p)?;expires=expires.min(daily_windows::clock(&r.received_at)?.checked_add(p.max_rule_age_ms).ok_or("PACKAGE_CLOCK_RANGE")?);let(kind,digest)=if certificate.version==1{("exact_receipt_v1",hash(r)?)}else{("complete_rule_body_v2",strategy::rule_data_sha256(r)?)};need(rule_bindings.insert(c.exchange_id.clone(),json!({"kind":kind,"endpoint":r.endpoint,"sha256":digest})).is_none(),"PACKAGE_RULE_BINDING")?;}
   let _required_surplus=p.minimum_surplus.checked_add(plan.buffer).ok_or("PACKAGE_COST_RANGE")?;
   if expires<=p.now_ms.checked_add(policy["latencyMs"].as_u64().ok_or("PACKAGE_NATIVE_POLICY")?).ok_or("PACKAGE_CLOCK_RANGE")?{continue}
   let proof=json!({"version":1,"runId":a.run_id,"bankManifestHash":bank.manifest_hash(),"tournamentId":a.tournament_id,"atMs":p.now_ms,"entryUntilMs":entry_until,"expiresAtMs":expires,"candidate":candidate.private_json(),"wireLegs":native,"maximumCost":money(wire_cost),"minimumPayout":money(plan.terminal_floor),"buffer":money(plan.buffer),"minimumSurplus":money(p.minimum_surplus),"maximumCommitted":a.maximum_committed,"maximumMarketCost":a.maximum_market_cost,"maximumQuantity":a.maximum_quantity,"usesFutureCollateral":false});
+  let mut proof=proof;proof["ruleBindings"]=json!(rule_bindings);
   let digest=hash(&proof)?;let id=format!("pkg-{digest}");let wire_key=format!("{}:{id}",a.run_id);need(wire_key.len()<=255,"PACKAGE_ID_LENGTH")?;
   let basket=multi_leg::Basket{idempotency_key:wire_key,tournament_id:a.tournament_id.clone(),legs,maximum_cost:money(wire_cost),relationship_constraint:Some(candidate.relationship_id.clone())};
   let stamp=daily_windows::iso(p.now_ms)?;let reserve=json!({"type":"live_package_reserve","source":"moloch_live_dispatcher","receivedAt":stamp,"processedAt":stamp,"packageId":id,"proofHash":digest,"bankScope":{"runId":a.run_id,"bankManifestHash":bank.manifest_hash(),"tournamentId":a.tournament_id},"expiresAt":daily_windows::iso(expires)?,"economics":{"maximumCost":money(wire_cost),"minimumPayout":money(plan.terminal_floor),"minimumSurplus":money(plan.terminal_floor-wire_cost),"feeTotal":"0.000000"},"legs":native});
-  let admitted=Admission{proof,proof_hash:digest,package_id:id,basket,reserve,expires,certificate:candidate.certificate_sha256};
+  let admitted=Admission{proof,proof_hash:digest,package_id:id,basket,reserve,expires,certificate:candidate.certificate_sha256,rule_bindings};
   if selected.as_ref().is_none_or(|(best,_)|surplus>*best){selected=Some((surplus,admitted));}
  }
  Ok(selected.map(|(_,v)|v))

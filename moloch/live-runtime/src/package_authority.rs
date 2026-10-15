@@ -65,7 +65,10 @@ impl Prepared{
   need(reserve_total>=total&&reserve_total<=cash&&owned.checked_add(reserve_total).is_some_and(|n|n<=decimal_units(&a.maximum_committed).unwrap_or(-1)),"PACKAGE_AUTH_FULL_FUNDING")?;
   let seed=dec(&bank.live_account_seed().ok_or("PACKAGE_AUTH_SEED")?["availableCash"])?;
   let expected_cash=seed.checked_add(e.wallet.cash).and_then(|n|n.checked_sub(e.wallet.initial)).and_then(|n|n.checked_add(e.opening_inventory_cost())).ok_or("PACKAGE_AUTH_RANGE")?;
-  let rule_sources=proof["candidate"]["proofSources"].as_array().ok_or("PACKAGE_AUTH_PROOF_SOURCES")?.iter().map(|s|s["receiptSha256"].as_str().map(str::to_owned).ok_or_else(||"PACKAGE_AUTH_PROOF_SOURCES".into())).collect::<Result<BTreeSet<_>>>()?;
+  // Admission owns the independently reviewed rule bindings. Fresh transport
+  // timestamps may differ only for a V2 full-body certificate; V1 stays exact.
+  let mut rule_sources=BTreeSet::new();
+  for l in &legs{let f=facts.components.get(&l.exchange).ok_or("PACKAGE_AUTH_COMPONENT_FACTS")?;admission.validate_physical_rule(&l.exchange,&f.contract)?;rule_sources.insert(hash(&f.contract)?);}
   let prepared=Self{spec,permit,scope:scope.clone(),legs,facts,prepared:now,expires:admission.expires_at_ms(),entry_cutoff:effective_entry_cutoff,expected_cash,maximum_cost:total,reserved_total:reserve_total,rule_sources};
   // Owned IDs are supplied at physical authorization; validate all other facts
   // here while retaining immutable official snapshots for the queue boundary.

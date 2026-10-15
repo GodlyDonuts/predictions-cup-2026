@@ -50,6 +50,30 @@ fn production_authority(f:&F)->authority::ProductionAuthority{
  let auth=authority::ProductionAuthority::new(a,f.scope.clone(),vec![f.path.join("STOP")],control,binary,lease).unwrap();
  auth.bind_stream(std::sync::Arc::new(std::sync::atomic::AtomicBool::new(false)),f.at+60_000);auth
 }
+fn refresh_physical_facts(f:&mut F,at:u64){
+ f.at=at;
+ for r in [&mut f.facts.account,&mut f.facts.cash_balance,&mut f.facts.positions,&mut f.facts.open_orders]{r.request_started_at=stamp(at);r.received_at=stamp(at);}
+ for c in f.facts.components.values_mut(){for r in [&mut c.market,&mut c.contract,&mut c.book]{r.request_started_at=stamp(at);r.received_at=stamp(at);}for b in c.book.data["contexts"][0]["orderbook"]["exchanges"].as_array_mut().unwrap(){b["asOf"]["at"]=json!(stamp(at));b["asOf"]["sequence"]=json!(2);}}
+}
+#[test]fn paced_preflight_can_refresh_complete_v2_rules_and_books_after_initial_ten_seconds(){
+ let mut f=F::new();assert_eq!(f.admission.expires_at_ms(),now()+30_000);
+ let original=f.facts.components["101"].contract.clone();
+ refresh_physical_facts(&mut f,now()+15_000);assert_ne!(sha(&original),sha(&f.facts.components["101"].contract));assert_eq!(original.data,f.facts.components["101"].contract.data);
+ f.ready().unwrap().authorize(&f.spec,&f.permit,f.at,&BTreeSet::new(),f.a.entry_until_ms).unwrap();assert!(f.bank.engine().fills().is_empty());
+}
+#[test]fn longer_intent_does_not_authorize_old_financial_books_or_stale_account_facts(){
+ let mut f=F::new();f.at=now()+15_000;assert!(f.ready().is_err());
+ refresh_physical_facts(&mut f,now()+15_000);f.facts.components.get_mut("101").unwrap().book.data["contexts"][0]["orderbook"]["exchanges"][0]["asOf"]["at"]=json!(AT);assert!(f.ready().is_err());
+}
+#[test]fn refreshed_v2_rule_cannot_change_any_reviewed_body_field_or_endpoint(){
+ for changed in ["rule","endpoint"]{let mut f=F::new();refresh_physical_facts(&mut f,now()+15_000);let r=&mut f.facts.components.get_mut("101").unwrap().contract;if changed=="rule"{r.data["resolutionException"]=json!("changed")}else{r.endpoint.push_str("&other=1")};assert!(f.ready().is_err());}
+}
+#[test]fn v1_physical_rule_receipt_stays_exact_despite_new_intent_lifetime(){
+ let mut f=F::make_version(true,1);f.ready().unwrap();refresh_physical_facts(&mut f,now()+15_000);assert!(f.ready().is_err());
+}
+#[test]fn current_books_cannot_extend_expired_relationship_bounded_intent(){
+ let mut f=F::new();let expiry=f.admission.expires_at_ms();refresh_physical_facts(&mut f,expiry);assert!(f.ready().is_err());
+}
 #[test]fn production_boundary_authorizes_only_staged_package_and_clears_it(){
  use baal_transport_service::Authority;
  let f=F::new();let a=production_authority(&f);let log=moloch_live_runtime::dispatch::DispatchLog::open(&f.path.join("ordinary-dispatch.ndjson")).unwrap();
@@ -68,7 +92,8 @@ fn production_authority(f:&F)->authority::ProductionAuthority{
  }
 }
 impl F{
- fn make(attempt:bool)->Self{let mut f=fixture(2,false);f.certs[0].version=2;f.certs[0].canonical_relationship_sha256=relationship_semantics_sha256(&f.census.cache.relationships.as_ref().unwrap().data[0]).unwrap();for(i,r)in f.rules.iter_mut().enumerate(){r.endpoint=format!("/markets/{}/nodes?tournamentId={T}",201+i);r.data["contexts"]=json!([{"type":"tournament","tournament":{"id":T}}]);f.certs[0].contracts[i].rule_endpoint=r.endpoint.clone();f.certs[0].contracts[i].rule_receipt_sha256=receipt_sha256(r).unwrap();f.certs[0].contracts[i].rule_data_sha256=Some(rule_data_sha256(r).unwrap());}f.rules.push(f.canonical.clone());f.approve();
+ fn make(attempt:bool)->Self{Self::make_version(attempt,2)}
+ fn make_version(attempt:bool,version:u32)->Self{let mut f=fixture(2,false);f.certs[0].version=version;f.certs[0].canonical_relationship_sha256=if version==2{relationship_semantics_sha256(&f.census.cache.relationships.as_ref().unwrap().data[0]).unwrap()}else{canonical_relationship_sha256(&f.census.cache.relationships.as_ref().unwrap().data[0]).unwrap()};for(i,r)in f.rules.iter_mut().enumerate(){r.endpoint=format!("/markets/{}/nodes?tournamentId={T}",201+i);r.data["contexts"]=json!([{"type":"tournament","tournament":{"id":T}}]);f.certs[0].contracts[i].rule_endpoint=r.endpoint.clone();f.certs[0].contracts[i].rule_receipt_sha256=receipt_sha256(r).unwrap();f.certs[0].contracts[i].rule_data_sha256=if version==2{Some(rule_data_sha256(r).unwrap())}else{None};}f.rules.push(f.canonical.clone());f.approve();
  let path=std::env::temp_dir().join(format!("package-authority-{}-{}",std::process::id(),std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_nanos()));let end=now()+60000;
  let policy=json!({"initialCash":"1000.000000","maximumCommitted":"1000.000000","maximumMarketCost":"100.000000","quantity":100,"maximumMarkets":3,"minimumSpreadTicks":200,"entryStopAt":stamp(end)});let seed=json!({"runId":"fixture","availableCash":"1000.000000","accountSnapshotHash":"a".repeat(64),"observedAt":AT});let mut bank=Session::open_live(&path,&policy,&seed).unwrap();let scope=f.census.cache.scope.clone();let mut components=BTreeMap::new();
  for(index,(ex,b))in f.books.iter().enumerate(){let m=&scope.exchanges[ex];let bids:Vec<_>=b.no_asks.iter().map(|l|json!({"price":moloch_replay::money(UNIT-l.price),"quantity":l.quantity})).collect();let asks:Vec<_>=b.yes_asks.iter().map(|l|json!({"price":moloch_replay::money(l.price),"quantity":l.quantity})).collect();let raw=json!({"tournamentId":T,"marketId":m,"exchangeId":ex,"sequence":"1","requestStartedAt":AT,"sourceAt":AT,"receivedAt":AT,"bids":bids,"asks":asks});bank.accept("book",index as u64+1,&json!({"type":"book","receivedAt":AT,"book":raw})).unwrap();
