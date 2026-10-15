@@ -1,0 +1,50 @@
+{
+  "checkedAt": "2026-10-15T23:54:44.275437+00:00",
+  "source": "retained official v1 owned-fill receipt and exact adopted FIFO lots",
+  "fill": {
+    "action": "sell",
+    "actualOrderId": "41384692",
+    "at": "2026-10-15T23:45:33.728Z",
+    "counterfactual": false,
+    "exchangeId": "966",
+    "executedAt": "2026-10-15T23:45:23.228Z",
+    "fee": "0.000000",
+    "marketId": "277",
+    "orderId": 2562,
+    "price": "0.100000",
+    "quantity": 48,
+    "receiptHash": "532226bd8002e173caf8040d967763a6f3a4d09e8e603d19dd02f9636a8559e3",
+    "side": "NO",
+    "sourceId": "172646561"
+  },
+  "originalTypedReceiptSha256Verified": true,
+  "officialPaginationComplete": true,
+  "openingLot": {
+    "basisClassification": "exact",
+    "exchangeId": "966",
+    "marketId": "277",
+    "quantity": -48,
+    "lotPrincipal": "2.400000",
+    "lots": [
+      {
+        "entryPrice": "0.050000",
+        "lotId": "104467234",
+        "openedAt": "2026-10-09T02:28:45.8911434+00:00",
+        "quantity": 48,
+        "side": "NO"
+      }
+    ]
+  },
+  "earlierBotFillsInExchange": 0,
+  "proceeds": "4.800000",
+  "attributedCost": "2.400000",
+  "inheritedGrossProfit": "2.400000",
+  "newEntryProfit": "0.000000",
+  "feeBasis": "existing zero-fee competition policy; owned-fill row has no fee field",
+  "reportSnapshotSha256": "3e475f844a45738e4ac49eddce5d606a1672492ddfb1b034248db8866fa97c57",
+  "newTradingRealized": "-116.020000",
+  "inheritedRealizedGross": "40.775000",
+  "totalRealized": "-75.245000",
+  "accountRequests": 0,
+  "profitabilityEstablished": false
+}
