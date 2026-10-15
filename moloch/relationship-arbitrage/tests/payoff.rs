@@ -20,7 +20,7 @@ fn limits() -> Limits {
 fn dual_no() -> Vec<Instrument> {vec![ins(0,Side::No),ins(1,Side::No)]}
 
 #[test] fn exclusion_no_floor_does_not_need_exhaustiveness() {
-    let c=exclusion(); assert_eq!(c.states.len(),3);
+    let c=exclusion(); assert_eq!(c.states().len(),3);
     let p=c.evaluate(&dual_no(),10,&books(),&limits()).unwrap();
     assert_eq!(p.terminal_floor,10*UNIT); assert_eq!(p.acquisition_cost,9_550_000);
     assert_eq!(p.guaranteed_surplus,400_000); assert_eq!(p.worst_orphan_cash_loss,9_550_000);
@@ -43,7 +43,7 @@ fn dual_no() -> Vec<Instrument> {vec![ins(0,Side::No),ins(1,Side::No)]}
     let mut a=contract(0);
     a.settlement=Settlement::Verified{rules:source(),complete:true,exceptions:vec![(0,0)]};
     let c=compile(vec![a,contract(1)],&[declaration(Logic::MutuallyExclusive{members:vec![0,1],exhaustive:false})],1000,100).unwrap();
-    assert_eq!(c.states.len(),5);
+    assert_eq!(c.states().len(),5);
     assert!(c.evaluate(&dual_no(),1,&books(),&limits()).is_err());
 }
 #[test] fn half_refunds_reduce_the_floor() {
@@ -91,9 +91,9 @@ fn dual_no() -> Vec<Instrument> {vec![ins(0,Side::No),ins(1,Side::No)]}
 #[test] fn and_and_or_truth_tables() {
     for logic in [Logic::And{inputs:vec![0,1],output:2},Logic::Or{inputs:vec![0,1],output:2}] {
         let c=compile(vec![contract(0),contract(1),contract(2)],&[declaration(logic)],1000,100).unwrap();
-        assert_eq!(c.states.len(),4);
+        assert_eq!(c.states().len(),4);
     }
-    assert_eq!(component(Logic::Not{input:0,output:1}).states.len(),2);
+    assert_eq!(component(Logic::Not{input:0,output:1}).states().len(),2);
 }
 #[test] fn three_leg_exhaustive_package() {
     let c=compile(vec![contract(0),contract(1),contract(2)],&[declaration(Logic::MutuallyExclusive{members:vec![0,1,2],exhaustive:true})],1000,100).unwrap();

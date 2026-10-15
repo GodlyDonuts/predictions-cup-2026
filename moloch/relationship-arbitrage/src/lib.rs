@@ -72,12 +72,13 @@ pub enum Side { Yes, No }
 pub struct Instrument { pub contract: usize, pub side: Side }
 #[derive(Clone, Debug)]
 pub struct Compiled {
-    pub contracts: Vec<Contract>,
-    pub relationships: Vec<(String, u64)>,
+    contracts: Vec<Contract>,
+    relationships: Vec<(String, u64)>,
     /// Each row contains (YES, NO) terminal payouts for every contract.
-    pub states: Vec<Vec<(i128, i128)>>,
-    pub compiled_ms: u64,
-    pub source_expiry_ms: u64,
+    states: Vec<Vec<(i128, i128)>>,
+    compiled_ms: u64,
+    source_expiry_ms: u64,
+    proof_sources: Vec<Source>,
 }
 
 fn need(ok: bool, why: &'static str) -> Result<()> { if ok { Ok(()) } else { Err(why) } }
@@ -123,12 +124,14 @@ pub fn compile(contracts: Vec<Contract>, declarations: &[Declaration], now: u64,
     let mut exchanges = BTreeSet::new();
     let mut contract_ids = BTreeSet::new();
     let mut expiry = u64::MAX;
+    let mut proof_sources = vec![];
     let mut variants = vec![];
     for c in &contracts {
         need(clean(&c.exchange_id) && clean(&c.market_id) && clean(&c.contract_id), "CONTRACT_ID")?;
         need(exchanges.insert(&c.exchange_id) && contract_ids.insert(&c.contract_id), "DUPLICATE_CONTRACT")?;
         let Settlement::Verified { rules,complete,exceptions } = &c.settlement else { return Err("SETTLEMENT_UNKNOWN") };
         rules.validate(now,max_age)?;
+        proof_sources.push(rules.clone());
         expiry = expiry.min(rules.received_ms.saturating_add(max_age));
         need(*complete && exceptions.len() <= 4, "SETTLEMENT_INCOMPLETE")?;
         let mut v = vec![(UNIT,0),(0,UNIT)];
@@ -148,6 +151,7 @@ pub fn compile(contracts: Vec<Contract>, declarations: &[Declaration], now: u64,
         d.source.validate(now,max_age)?;
         let proof = d.settlement_logic_source.as_ref().ok_or("SETTLEMENT_LOGIC_UNVERIFIED")?;
         proof.validate(now,max_age)?;
+        proof_sources.push(d.source.clone()); proof_sources.push(proof.clone());
         expiry = expiry.min(d.source.received_ms.saturating_add(max_age)).min(proof.received_ms.saturating_add(max_age));
         let refs = d.logic.references()?;
         let unique: BTreeSet<_> = refs.iter().copied().collect();
@@ -176,7 +180,7 @@ pub fn compile(contracts: Vec<Contract>, declarations: &[Declaration], now: u64,
         if exception || allowed { states.push(row); }
     }
     need(ordinary_count > 0 && !states.is_empty(), "INCONSISTENT_LOGIC")?;
-    Ok(Compiled { contracts,relationships:declarations.iter().map(|d|(d.relationship_id.clone(),d.version)).collect(),states,compiled_ms:now,source_expiry_ms:expiry })
+    Ok(Compiled { contracts,relationships:declarations.iter().map(|d|(d.relationship_id.clone(),d.version)).collect(),states,compiled_ms:now,source_expiry_ms:expiry,proof_sources })
 }
 
 #[derive(Clone, Copy, Debug)]
@@ -239,8 +243,12 @@ pub struct Plan {
     pub observed_orphan_unwind_loss: Option<i128>,
     pub relationship_versions: Vec<(String,u64)>,
     pub book_sources: Vec<Source>,
+    pub proof_sources: Vec<Source>,
 }
 impl Compiled {
+    pub fn contracts(&self) -> &[Contract] { &self.contracts }
+    pub fn states(&self) -> &[Vec<(i128,i128)>] { &self.states }
+    pub fn source_expiry_ms(&self) -> u64 { self.source_expiry_ms }
     pub fn evaluate(&self, instruments: &[Instrument], quantity: u64, books: &[Book], l: &Limits) -> Result<Plan> {
         need((2..=3).contains(&instruments.len()) && quantity > 0 && quantity <= l.max_quantity, "PACKAGE_BUDGET")?;
         need(l.now_ms >= self.compiled_ms && l.now_ms <= self.source_expiry_ms, "COMPILED_STALE")?;
@@ -295,7 +303,7 @@ impl Compiled {
             observed = match (observed,received) { (Some(a),Some(b))=>Some(a.max(paid.saturating_sub(b).max(0))),_=>None };
         }
         need(orphan <= l.max_orphan_cash_loss, "ORPHAN_CASH_BOUND")?;
-        Ok(Plan { instruments:instruments.to_vec(),quantity,leg_costs,acquisition_cost:cost,fees,buffer,terminal_floor:floor,guaranteed_surplus:surplus,worst_orphan_cash_loss:orphan,observed_orphan_unwind_loss:observed,relationship_versions:self.relationships.clone(),book_sources:sources })
+        Ok(Plan { instruments:instruments.to_vec(),quantity,leg_costs,acquisition_cost:cost,fees,buffer,terminal_floor:floor,guaranteed_surplus:surplus,worst_orphan_cash_loss:orphan,observed_orphan_unwind_loss:observed,relationship_versions:self.relationships.clone(),book_sources:sources,proof_sources:self.proof_sources.clone() })
     }
 
     pub fn portfolio_floor(&self, positions: &[(Instrument,u64)]) -> Result<i128> {
