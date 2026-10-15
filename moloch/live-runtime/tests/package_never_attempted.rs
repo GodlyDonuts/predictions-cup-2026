@@ -18,6 +18,7 @@ struct Fixture{bank:Session,root:PathBuf,policy:Value,seed:Value,proof:Value,res
 impl Fixture{
  fn new(attempted:bool)->Self{
   let root=std::env::temp_dir().join(format!("package-never-attempted-{}-{}",std::process::id(),std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_nanos()));
+  fs::create_dir(&root).unwrap();
   let policy=json!({"initialCash":"100.000000","maximumCommitted":"40.000000","maximumMarketCost":"10.000000","quantity":15,"maximumMarkets":3,"minimumSpreadTicks":1000,"entryStopAt":iso(100000)});
   let seed=json!({"runId":"run-1","availableCash":"100.000000","accountSnapshotHash":"a".repeat(64),"observedAt":iso(0)});
   let mut bank=Session::open_live(&root.join("bank"),&policy,&seed).unwrap();for(i,ex)in ["101","102"].into_iter().enumerate(){bank.accept("books",i as u64+1,&book(ex)).unwrap();}
