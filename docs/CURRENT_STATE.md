@@ -2,6 +2,8 @@
 
 ## V20 checked and staged; production restart verified separately
 
+V20 subsequently started12:09:21.859251Z asPID167865 after a graceful stopped-owner boundary and exact fresh31,161-event financial-prefix parity check. Three chained native identity approvals preserve all historical financial projections; account queue stays v1. The same risk limits, attributed holdings,212 retained queue intents and14:44:34.413Z entry cutoff remain. Source replay/first healthy trading cycle is pending at this launch checkpoint. [Rollout and exact proof](MOLOCH_V20_ROLLOUT_20261015.md#checked-production-promotion).
+
 Candidate sourcef1f5160f passes103 native,173 runtime and150 SDK checks plus locked ARM64 releases. It batches public-source durability, bounds each websocket drain to eight complete frames, adds per-scope private progress, and refreshes expired never-submitted maximum-age exits into distinct new native quotes with original activation/expiry. Production queue remains v1. A474-event synthetic fixture improves3.553s to0.3015s with exact journal/restart parity;16,535 original financial events replay unchanged. This is not measured live speed or profitability. [Rollout, limits and evidence](MOLOCH_V20_ROLLOUT_20261015.md).
 
 V19 PID151390 stopped11:45:17Z onLIVE_STREAM_FAILED. After verifying all129 submission attempts had ACK/recoveredACK and the manifest-selected queue was clear of unknown/active/manual-review state, the parent restarted the unchanged release12:01:51Z as PID165813. By12:06:08Z its native journal had resumed advancing. Complete-cycle health remained pending at this checkpoint. Original risk, attributed lots, history and14:44:34.413Z entry cutoff remain unchanged. V20 is staged, not yet deployed at this documentation checkpoint.

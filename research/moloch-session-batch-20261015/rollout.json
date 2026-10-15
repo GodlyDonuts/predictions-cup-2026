@@ -1,0 +1,14 @@
+{
+  "at": "2026-10-15T12:09:21.859251+00:00",
+  "sourceCommit": "e30feb4e",
+  "binarySha256": "ff286193026880b255a6734c76feb88e17451082e82d026f435229c40b2bc57f",
+  "prefixSequence": 31161,
+  "prefixSha256": "ac40f766ef211002576c19cc5edbdd8a0660ce08df1c01ade44ea1a7619fbff9",
+  "bridgeHash": "09273dbad792c2449b5c8e6432e460c18c6b4fcec23161b342b111190e9d5630",
+  "bridgeEntries": 3,
+  "queueMigrated": false,
+  "fundingReset": false,
+  "entryUntilMs": 1792075474413,
+  "mainPid": "167865",
+  "healthyCyclePending": true
+}
