@@ -1,5 +1,13 @@
 # Paper 2 package execution: implementation and remaining work
 
+## October 15 V27 production launch
+
+V27 PID265648 started at21:46:42UTC with immutable binary88176e888205647e4bbe74ae9019059b5e23fbff8038981ddeb36d06d5f396e7 and financial identity93d508192627e5cb5524984bd4c08d5fbda5e6904493aea7e50f3a9490c2df87. The actual stopped bank's103,127 events/283,910,439 bytes reproduced exact financial report, orders, fills and source cursors in281,140ms with the checker linked against the exact runtime compiler-artifact libraries. Zero account requests and no source mutation occurred during verification. [Launch and complete stopped-prefix evidence](../research/moloch-package-execution-20261015/production-rollout.json).
+
+The planned guard stopped V26; all480 physical submission attempts had acknowledgments. The checked official SDK queue implementation verified731 retained immutable bindings, no active request, no unknown acceptance, no manual review and the original100-read/600ms profile. The fifth explicit financial identity approval retains all four earlier approvals. Existing bank/seed/attribution, account queuev1, daily windows and risk caps are unchanged. Only the checked immutable release, matching binary control binding, package inputs and that identity approval were promoted. The specifically identified planned STOP was archived after verifying its stopped PID and timestamp; no unrelated STOP was cleared.
+
+The package bundle and trust set are initially empty. Every approved certificate must be independently reviewed and pinned; the rollout creates no package edge or fill. At this checkpoint the new process is actively restoring the preserved history. Fresh trading and package-status verification remain pending. Paper2 is incomplete; the engineering/model requirements below remain distinct from this deployed lifecycle.
+
 ## October 15 worker hook and original SDK failure recovery
 
 The sole production worker now has a source implementation for optional package settings, original-liability startup recovery, current relationship/rule/book collection, cooperative activation, bounded preflight and consumed-once submission. Settings pin the exact certificate bundle bytes and a separate independently approved certificate digest set. Loading a certificate cannot approve it. An absent or empty approved set creates no package orders. Recovery remains enabled even when new scanning is disabled, and a native package without its original dispatch record stops rather than manufacturing a replacement record.
@@ -66,7 +74,7 @@ The actual snapshot has25 fully closed new BUY lots:3 gross wins,18 losses and4 
 | Authoritative connected contract graph | Official scoped census and graph adapters; observed tournament registry empty | Refresh through the sole worker, verify any newly available components and retain current provenance |
 | Terminal payoff compiler and structural scanner | Exact two/three-leg ordinary and exceptional-state tests; conservative executable cost | Current real qualifying packages, broader supported logic/templates and continuing rule validation |
 | Collateral characterization and accounting | Official parsers and diagnostic cash/debt consistency planner | Integrate actual advances, repayments and settlement into the native ledger; reconcile independent source evidence before sizing with buying power |
-| Atomic package execution | Funded native lifecycle, SDK, admission, authorization, feedback and physical journal checked | Complete worker/startup/error wiring, fresh-prefix equivalence, controlled financial rollout and actual package fills |
+| Atomic package execution | Worker/startup/error lifecycle, funded native ledger, SDK and authority checked; full fresh-prefix equivalence and V27 launch verified | Fresh healthy trading after restoration, independently certified current opportunities and actual package fills |
 | Portfolio marginal value | Offline scanner accounts for existing portfolio floor | Live admission currently flat-component only; implement marginal acquisition and whole-package unwind |
 | Queue/flow and conditional markout models | Existing research plus new owned-fill diagnostic | Verified current coverage, causal training/holdout and integration specifically for package acquisition/hedging |
 | Opportunity and rank-aware allocation | Existing finite risk caps | Implement ranking by executable package economics, remaining time and leaderboard gap without treating leverage as profit |

@@ -1,0 +1,49 @@
+{
+  "at": "2026-10-15T21:46:42.178176+00:00",
+  "pid": 265648,
+  "previousPid": 227437,
+  "binarySha256": "88176e888205647e4bbe74ae9019059b5e23fbff8038981ddeb36d06d5f396e7",
+  "financialIdentity": "93d508192627e5cb5524984bd4c08d5fbda5e6904493aea7e50f3a9490c2df87",
+  "bridgeHash": "9fa8a15236882eb3e8fd8e60b8a45d417674683be9c3e7b081abfaac281fef72",
+  "bridgeEntries": 5,
+  "stoppedSequence": 103127,
+  "stoppedPrefixSha256": "0a4b655eb2ddad52f32da5da526dba211bd8221cc4737f1691206d5ed1b2fbe0",
+  "resolvedPhysicalAttempts": 480,
+  "queueUnknown": 0,
+  "retainedQueueBindings": 731,
+  "riskUnchanged": true,
+  "approvedCertificates": 0,
+  "startupVerified": true,
+  "freshTradingVerified": false,
+  "paper2Complete": false,
+  "freshStoppedPrefix": {
+    "accountRequests": 0,
+    "elapsedMs": 281140,
+    "engineIdentity": "93d508192627e5cb5524984bd4c08d5fbda5e6904493aea7e50f3a9490c2df87",
+    "executionAuthorized": false,
+    "fillsSha256": "4949ef26d8f7ae1b497aef341227e336bb5e13643ff9a6d2d3cf1633242269cd",
+    "financialParity": true,
+    "financialReportSha256": "7528fa4c4655645a1869cfac91c25c57700efabdc02181ab47250f24d8daa625",
+    "mode": "read_only_live_prefix_equivalence",
+    "orderRecordsSha256": "5a82b2c5c6eebfd7a00f0b1f6b2537bc03689d51e13c88d43ba0cca949e2e143",
+    "prefixBytes": 283910439,
+    "prefixSha256": "0a4b655eb2ddad52f32da5da526dba211bd8221cc4737f1691206d5ed1b2fbe0",
+    "previous": "98cdf4700ddceab4a6d949315cc8e38b164fbfd19076bb6867dfbd646bffe2fe",
+    "schemaVersion": 1,
+    "sequence": 103127,
+    "sourceCursorsSha256": "dd3b5c058a1bb427e243c9534c1f9712f30f864400cc1e76d967ec3cc4b13aeb",
+    "sourceMutated": false
+  },
+  "queueBoundary": {
+    "schemaVersion": 1,
+    "sequence": 90675,
+    "globalUnknownCount": 0,
+    "active": null,
+    "manualReview": false,
+    "retainedBindings": 731,
+    "readProfile": {
+      "cap": 100,
+      "gap_ms": 600
+    }
+  }
+}
