@@ -105,6 +105,8 @@ impl Engine {
     if snapshot.phase==Phase::Reserved {
      exact_keys(proof,&["kind","confirmedNetworkAttempts"])?;
      if proof["kind"]!="never_attempted"||proof["confirmedNetworkAttempts"].as_u64()!=Some(0){return Err("PACKAGE_NEVER_ATTEMPTED_PROOF")}
+    }else if proof["kind"]=="local_queue_not_sent_v1"{
+     local_not_sent(&snapshot,proof,at)?;
     }else{
      if proof["kind"]!="official_multi_leg_zero_execution"||proof["completeBody"]!=true||proof["requestHash"].as_str()!=snapshot.request.as_deref()||digest(&proof["receiptHash"]).is_err()||digest(&proof["responseHash"])?!=hash(&proof["response"])||!zero_execution(proof["status"].as_u64().ok_or("PACKAGE_ZERO_STATUS")?,&proof["response"],snapshot.legs.len()){return Err("PACKAGE_TYPED_ZERO_EXECUTION_REQUIRED")}
      let started=ms(&proof["requestStartedAt"])?;let received=ms(&proof["receivedAt"])?;
@@ -169,4 +171,41 @@ impl Engine {
   }
   self.live_packages.insert(package_name.clone(),LivePackage{id:package_name,proof,scope,economics,created:at,expires,phase:Phase::Reserved,legs,request:None,key:None,attempted_at:None,zero_evidence:None});Ok(())
  }
+}
+
+// These embedded rows are independently checked by the read-only SDK source
+// verifier. Native hash/transition validation is a binding fence, not proof of
+// authenticity or a replacement for the original private queue/dispatch files.
+fn local_queue_state(row:&Value,raw:&Value)->Result<Value>{
+ let text=raw.as_str().filter(|s|s.len()<=8*1024*1024).ok_or("PACKAGE_LOCAL_QUEUE_STATE")?;
+ let state:Value=serde_json::from_str(text).map_err(|_|"PACKAGE_LOCAL_QUEUE_STATE")?;
+ if state!=row["state"]||state["schema_version"]!=1{return Err("PACKAGE_LOCAL_QUEUE_STATE")}
+ let sequence=row["sequence"].as_u64().ok_or("PACKAGE_LOCAL_QUEUE_SEQUENCE")?;
+ let previous=row["previous"].as_str().ok_or("PACKAGE_LOCAL_QUEUE_PREVIOUS")?;
+ let bytes=format!("[{},{},{}]",sequence,serde_json::to_string(previous).map_err(|_|"PACKAGE_LOCAL_QUEUE_STATE")?,text);
+ if digest(&row["hash"])?!=format!("{:x}",Sha256::digest(bytes.as_bytes())){return Err("PACKAGE_LOCAL_QUEUE_ROW_HASH")};Ok(state)
+}
+fn local_not_sent(p:&LivePackage,proof:&Value,at:i64)->Result<()>{
+ if p.phase!=Phase::Attempted||proof["kind"]!="local_queue_not_sent_v1"||proof["requestHash"].as_str()!=p.request.as_deref(){return Err("PACKAGE_LOCAL_NOT_SENT_PHASE")}
+ let error=&proof["sdkError"];
+ if error["mayHaveExecuted"]!=false||error.get("status")!=Some(&Value::Null)||error.get("orderId")!=Some(&Value::Null)||error.get("apiCode")!=Some(&Value::Null)||!error["code"].as_str().is_some_and(|s|!s.is_empty()){return Err("PACKAGE_LOCAL_NOT_SENT_ERROR")}
+ let dispatch=&proof["dispatchRecord"];if digest(&proof["dispatchRecordHash"])?!=hash(dispatch)||dispatch["phase"]!="not_sent"||dispatch["outcome"]["kind"]!="not_sent"||dispatch["outcome"]["error"]!=*error||proof["dispatchHead"]["poisoned"]!=false||proof["dispatchHead"]["sequence"].as_u64().is_none_or(|n|n==0)||digest(&proof["dispatchHead"]["hash"]).is_err(){return Err("PACKAGE_LOCAL_DISPATCH_PROOF")}
+ let admission=&dispatch["admission"];let request_text=proof["requestJson"].as_str().ok_or("PACKAGE_LOCAL_REQUEST")?;let request:Value=serde_json::from_str(request_text).map_err(|_|"PACKAGE_LOCAL_REQUEST")?;
+ if admission["request_hash"].as_str()!=p.request.as_deref()||format!("{:x}",Sha256::digest(request_text.as_bytes()))!=p.request.as_deref().ok_or("PACKAGE_LOCAL_REQUEST")?||request!=admission["spec"]||request["method"]!="POST"||request["endpoint"]!="/orders/multi-leg"||request["body"]["executionMode"]!="allOrNone"||request["body"]["idempotencyKey"].as_str()!=p.key.as_deref()||admission["reserve"]["packageId"]!=p.id||admission["reserve"]["proofHash"]!=p.proof||admission["reserve"]["bankScope"]!=p.scope||admission["permit"]["runId"]!=p.scope["runId"]||admission["permit"]["intentId"]!=p.id{return Err("PACKAGE_LOCAL_REQUEST")}
+ let scope=&admission["scope"];if scope["tournamentId"]!=p.scope["tournamentId"]{return Err("PACKAGE_LOCAL_REQUEST_SCOPE")}
+ let legs=request["body"]["legs"].as_array().filter(|l|l.len()==p.legs.len()).ok_or("PACKAGE_LOCAL_REQUEST_LEGS")?;
+ for(l,w)in p.legs.iter().zip(legs){if w["exchangeId"]!=l.exchange||w["side"]!=(if l.side==Side::Yes{"yes"}else{"no"})||w["action"]!="buy"||w["quantity"]!=l.quantity||w["tournamentId"]!=p.scope["tournamentId"]||amount(&w["price"].to_string())?!=l.limit||scope["exchanges"][&l.exchange]!=l.market{return Err("PACKAGE_LOCAL_REQUEST_LEGS")}}
+ let q=&proof["queueProof"];let binding=&q["binding"];let queue_scope=q["queueScope"].as_str().filter(|s|!s.is_empty()).ok_or("PACKAGE_LOCAL_QUEUE_SCOPE")?;
+ if q["schemaVersion"]!=1||admission["queue_scope"]!=queue_scope||binding!=&admission["queue_binding"]||binding["intent"]!=format!("{}:{}",p.scope["runId"].as_str().ok_or("PACKAGE_LOCAL_RUN")?,p.id)||binding["key"].as_str()!=p.key.as_deref()||binding["payload_hash"]!=hash(&json!({"scope":scope,"spec":request})){return Err("PACKAGE_LOCAL_QUEUE_BINDING")}
+ let before=local_queue_state(&q["beforeRecord"],&q["beforeStateJson"])?;let after=local_queue_state(&q["completionRecord"],&q["completionStateJson"])?;let tail=local_queue_state(&q["tailRecord"],&q["tailStateJson"])?;
+ let request_id=q["request"].as_str().filter(|s|!s.is_empty()).ok_or("PACKAGE_LOCAL_QUEUE_REQUEST")?;
+ let before_clock=before["last_clock"].as_u64().ok_or("PACKAGE_LOCAL_QUEUE_CLOCK")?;let completion_clock=after["last_clock"].as_u64().ok_or("PACKAGE_LOCAL_QUEUE_CLOCK")?;let tail_clock=tail["last_clock"].as_u64().ok_or("PACKAGE_LOCAL_QUEUE_CLOCK")?;
+ if before_clock<p.attempted_at.ok_or("PACKAGE_LOCAL_ATTEMPT")? as u64||completion_clock<before_clock||tail_clock<completion_clock||tail_clock>at as u64||q["completionRecord"]["sequence"].as_u64()!=q["beforeRecord"]["sequence"].as_u64().and_then(|n|n.checked_add(1))||q["completionRecord"]["previous"]!=q["beforeRecord"]["hash"]||q["tailRecord"]["sequence"].as_u64()<q["completionRecord"]["sequence"].as_u64(){return Err("PACKAGE_LOCAL_QUEUE_CLOCK_OR_CHAIN")}
+ for state in [&before,&after,&tail]{if state["scope"]!=queue_scope||state["manual_review"]!=false||!state["unknown"].as_object().is_some_and(|m|m.is_empty())||state["intents"][binding["intent"].as_str().ok_or("PACKAGE_LOCAL_QUEUE_BINDING")?]!=*binding||state["keys"][binding["key"].as_str().ok_or("PACKAGE_LOCAL_QUEUE_BINDING")?]!=*binding{return Err("PACKAGE_LOCAL_QUEUE_GLOBAL")}}
+ if before["active"]["request"]!=request_id||before["active"]["write"]!=true||before["active"]["network_started"]!=false||before["active"]["binding"]!=*binding||after.get("active")!=Some(&Value::Null)||tail.get("active")!=Some(&Value::Null){return Err("PACKAGE_LOCAL_QUEUE_NETWORK")}
+ let mut expected=before.clone();expected["last_clock"]=json!(completion_clock);expected["active"]=Value::Null;
+ for field in ["reads","writes"]{let history=before[field].as_array().ok_or("PACKAGE_LOCAL_QUEUE_HISTORY")?.iter().map(Value::as_u64).collect::<Option<Vec<_>>>().ok_or("PACKAGE_LOCAL_QUEUE_HISTORY")?;expected[field]=json!(history.into_iter().filter(|n|completion_clock.saturating_sub(*n)<=60_000).collect::<Vec<_>>());}
+ let next=before["next"].as_u64().ok_or("PACKAGE_LOCAL_QUEUE_NEXT")?.max(completion_clock.checked_add(2500).ok_or("PACKAGE_LOCAL_QUEUE_NEXT")?).max(before["cooldown"].as_u64().ok_or("PACKAGE_LOCAL_QUEUE_NEXT")?);expected["next"]=json!(next);
+ if expected!=after||digest(&q["journalSha256"]).is_err()||q["journalBytes"].as_u64().is_none_or(|n|n==0||n>64*1024*1024)||dispatch["outcome"]["queueEvidence"]["request"]!=request_id||dispatch["outcome"]["queueEvidence"]["binding"]!=*binding{return Err("PACKAGE_LOCAL_QUEUE_TRANSITION")};
+ if ms(&dispatch["outcome"]["at"])? > at{return Err("PACKAGE_LOCAL_DISPATCH_CLOCK")};Ok(())
 }

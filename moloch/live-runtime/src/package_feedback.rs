@@ -86,3 +86,19 @@ pub fn complete(bank:&Session,p:&Value,s:&Scope,processed:&str)->Result<Value>{
  for (i,l) in p["legs"].as_array().ok_or("PACKAGE_LEGS")?.iter().enumerate(){let(q,_)=component(bank,p,s,i)?;need(l["filled"]==l["quantity"]&&l["terminalReconciled"]==true&&q["filled"]==q["quantity"]&&q["retired"]==true)?;}
  envelope("live_package_complete",p,processed,processed)
 }
+
+/// Release an attempted package ONLY after its original in-process not-sent
+/// result is durable AND the genuine V1 queue shows the positive pre-network
+/// completion transition. No empty-queue or caller boolean inference is used.
+/// Original private files must remain retained; this returns an event only.
+pub fn local_not_sent(bank:&Session,p:&Value,b:&Basket,s:&Scope,permit:&Permit,dispatch:&crate::package_dispatch::PackageDispatchLog,original:&crate::package_not_sent_evidence::VerifiedNotSent,error:&TransportError,processed:&str)->Result<Value>{
+ let spec=bound(bank,p,b,s,permit)?;need(p["phase"]=="attempted"&&!dispatch.unresolved()&&!error.may_have_executed&&error.status.is_none()&&error.order_id.is_none()&&error.api_code.is_none())?;
+ let id=p["packageId"].as_str().ok_or("PACKAGE_ID")?;let record=dispatch.record(id).ok_or("PACKAGE_DISPATCH_MISSING")?;
+ let q=original.evidence();let attestation=serde_json::to_value(original.attestation()?)?;
+ need(record["phase"]=="not_sent"&&record["outcome"]["error"]==serde_json::to_value(error)?&&record["outcome"]["queueEvidence"]==attestation&&record["admission"]["spec"]==serde_json::to_value(&spec)?&&record["admission"]["queue_binding"]==q["binding"]&&record["admission"]["queue_scope"]==q["queueScope"]&&record["admission"]["reserve"]["proofHash"]==p["proofHash"]&&record["admission"]["reserve"]["bankScope"]==p["bankScope"])?;
+ let start=q["beforeRecord"]["state"]["last_clock"].as_i64().ok_or("PACKAGE_QUEUE_CLOCK")?;let received=q["tailRecord"]["state"]["last_clock"].as_i64().ok_or("PACKAGE_QUEUE_CLOCK")?;
+ need(start>=p["attemptedAt"].as_i64().ok_or("PACKAGE_ATTEMPT_CLOCK")?&&clock(record["attemptedAt"].as_str().ok_or("PACKAGE_DISPATCH_CLOCK")?)?<=start&&clock(record["outcome"]["at"].as_str().ok_or("PACKAGE_DISPATCH_CLOCK")?)?>=received&&clock(processed)? >= received)?;
+ let stamp=chrono::DateTime::from_timestamp_millis(received).ok_or("PACKAGE_QUEUE_CLOCK")?.to_rfc3339_opts(chrono::SecondsFormat::Millis,true);
+ let mut event=envelope("live_package_no_execution",p,&stamp,processed)?;
+ event["evidence"]=json!({"kind":"local_queue_not_sent_v1","requestHash":p["requestHash"],"sdkError":error,"requestJson":serde_json::to_string(&spec)?,"dispatchRecordHash":hash(&record)?,"dispatchRecord":record,"dispatchHead":dispatch.head(),"queueProof":q});Ok(event)
+}

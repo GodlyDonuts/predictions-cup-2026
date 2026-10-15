@@ -153,3 +153,89 @@ mod adapter_v2_tests;
  #[test]fn failed_directory_pin_stops_before_original_admission_is_replayed(){let dir=fixture();{let mut a=opened(&dir);a.v1_mut().maximum_bytes=a.v1().active_bytes+10;let previous=a.v1().state.clone();let mut pins=0;assert_eq!(a.command_with_maintenance_sync(command("admit",2000),|_|{pins+=1;Err("injected".into())}).unwrap_err(),"COMPACTION_DURABILITY_FAILURE");assert_eq!(pins,1);assert_eq!(a.v1().state,previous);assert!(a.v1().poisoned);assert!(a.v1().state.intents.is_empty());assert_eq!(a.command_with_maintenance(command("admit",2000)).unwrap_err(),"DURABILITY_FAILURE");}fs::remove_dir_all(dir).unwrap();}
  #[test]fn explicit_compaction_also_requires_directory_pin(){let dir=fixture();{let mut a=opened(&dir);assert_eq!(a.command_with_maintenance_sync(command("compact",2000),|_|Err("injected".into())).unwrap_err(),"COMPACTION_DURABILITY_FAILURE");assert!(a.v1().poisoned);}fs::remove_dir_all(dir).unwrap();}
 }
+
+/// Positive, read-only V1 queue witness. This is private source evidence, not
+/// authority to send, retry, clear unknown acceptance, or acquire another lease.
+/// Opaque and deliberately not Deserialize: construct only by verifying the
+/// original sole-worker files while that worker prevents further admissions.
+pub struct VerifiedLocalNotSentV1 { evidence:Value }
+impl VerifiedLocalNotSentV1 { pub fn evidence(&self)->&Value{&self.evidence} }
+struct NotSentPinnedFile { path:PathBuf,file:File,bytes:Vec<u8>,metadata:fs::Metadata }
+impl NotSentPinnedFile {
+ fn read(path:&Path,maximum:u64)->std::result::Result<Self,String>{
+  let before=fs::symlink_metadata(path).map_err(|_|"NOT_SENT_SOURCE_MISSING")?;
+  need(before.is_file()&&!before.file_type().is_symlink()&&before.len()<=maximum,"NOT_SENT_SOURCE_TYPE_OR_SIZE")?;
+  let mut options=OpenOptions::new();options.read(true);
+  // Prevent replacement while pinned on Windows; writes are independently
+  // detected by a full byte recheck. Unix pins inode/device below.
+  #[cfg(windows)]{use std::os::windows::fs::OpenOptionsExt;options.share_mode(3);}
+  let mut file=options.open(path).map_err(|_|"NOT_SENT_SOURCE_OPEN")?;let metadata=file.metadata().map_err(|_|"NOT_SENT_SOURCE_STAT")?;
+  let mut bytes=Vec::new();(&mut file).take(maximum+1).read_to_end(&mut bytes).map_err(|_|"NOT_SENT_SOURCE_READ")?;
+  need(bytes.len() as u64<=maximum&&bytes.len() as u64==metadata.len(),"NOT_SENT_SOURCE_CHANGED")?;
+  Ok(Self{path:path.into(),file,bytes,metadata})
+ }
+ fn unchanged(&mut self)->std::result::Result<(),String>{
+  let path_meta=fs::symlink_metadata(&self.path).map_err(|_|"NOT_SENT_SOURCE_CHANGED")?;
+  need(path_meta.is_file()&&!path_meta.file_type().is_symlink()&&path_meta.len()==self.metadata.len()&&path_meta.modified().ok()==self.metadata.modified().ok(),"NOT_SENT_SOURCE_CHANGED")?;
+  #[cfg(unix)]{use std::os::unix::fs::MetadataExt;need(path_meta.dev()==self.metadata.dev()&&path_meta.ino()==self.metadata.ino(),"NOT_SENT_SOURCE_REPLACED")?;}
+  self.file.seek(SeekFrom::Start(0)).map_err(|_|"NOT_SENT_SOURCE_READ")?;let mut again=Vec::new();(&mut self.file).take(self.metadata.len()+1).read_to_end(&mut again).map_err(|_|"NOT_SENT_SOURCE_READ")?;need(again==self.bytes,"NOT_SENT_SOURCE_CHANGED")
+ }
+}
+fn not_sent_transition(before:&State,after:&State,binding:&Binding,request:&str)->bool{
+ if before.scope!=after.scope||before.schema_version!=1||after.schema_version!=1||before.manual_review||after.manual_review||!before.unknown.is_empty()||!after.unknown.is_empty()||after.active.is_some()||after.last_clock<before.last_clock{return false}
+ let Some(f)=&before.active else{return false};
+ if f.request!=request||!f.write||f.network_started||f.binding.as_ref()!=Some(binding)||before.intents.get(&binding.intent)!=Some(binding)||before.keys.get(&binding.key)!=Some(binding){return false}
+ // Use the ACTUAL queue transition implementation, not a parallel guessed
+ // networkStarted/outcome flag. Only this exact canonical command can explain
+ // the adjacent states without a durable network marker.
+ let mut expected=before.clone();
+ let command=Command{op:"complete".into(),scope:before.scope.clone(),now:after.last_clock,request:request.into(),outcome:"not_sent".into(),..Default::default()};
+ expected.apply(&command).is_ok()&&expected==*after
+}
+/// Verify whole bounded current V1 generation and a positive adjacent local
+/// completion. A checkpoint is validated with the actual private State hash;
+/// if compaction removed the witness, this function refuses absence inference.
+/// No locks, queue commands, recovery, HTTP calls, compaction or writes occur.
+pub fn verify_local_not_sent_v1(directory:&Path,scope:&str,binding:&ImmutableBinding,request:&str,minimum_clock:u64)->std::result::Result<VerifiedLocalNotSentV1,String>{
+ need(!scope.is_empty()&&!request.is_empty()&&minimum_clock<=MAX_TIME,"NOT_SENT_ARGUMENT")?;valid_binding(binding)?;
+ let dir_meta=fs::symlink_metadata(directory).map_err(|_|"NOT_SENT_DIRECTORY")?;need(dir_meta.is_dir()&&!dir_meta.file_type().is_symlink(),"NOT_SENT_DIRECTORY")?;
+ let actual=Binding{intent:binding.intent.clone(),key:binding.key.clone(),payload_hash:binding.payload_hash.clone()};
+ let mut pins=Vec::new();let mut journal="account-queue.jsonl".to_owned();let mut sequence=0u64;let mut previous=String::new();let mut manifest_hash:Option<String>=None;let mut checkpoint_digest:Option<String>=None;
+ let manifest_path=directory.join("account-queue-manifest.json");let guard_path=directory.join("account-queue-generation.guard");
+ if manifest_path.exists(){
+  let manifest_pin=NotSentPinnedFile::read(&manifest_path,4096)?;let manifest:Manifest=serde_json::from_slice(&manifest_pin.bytes).map_err(|_|"NOT_SENT_MANIFEST")?;
+  need(manifest.schema_version==1&&manifest.scope==scope&&local_name(&manifest.journal)&&local_name(&manifest.checkpoint),"NOT_SENT_V1_SCOPE_OR_PATH_REQUIRED")?;
+  manifest_hash=Some(format!("{:x}",Sha256::digest(&manifest_pin.bytes)));pins.push(manifest_pin);
+  let guard=NotSentPinnedFile::read(&guard_path,4096)?;need(guard.bytes==scope.as_bytes(),"NOT_SENT_GUARD")?;pins.push(guard);
+  let checkpoint_pin=NotSentPinnedFile::read(&directory.join(&manifest.checkpoint),MAX_CHECKPOINT_BYTES)?;let checkpoint:Checkpoint=serde_json::from_slice(&checkpoint_pin.bytes).map_err(|_|"NOT_SENT_CHECKPOINT")?;
+  need(checkpoint.schema_version==1&&checkpoint.state.schema_version==1&&checkpoint.state.scope==scope&&checkpoint.hash==manifest.checkpoint_hash&&checkpoint.hash==checkpoint_hash(&checkpoint.anchor,&checkpoint.state)&&local_name(&checkpoint.anchor.source_journal),"NOT_SENT_CHECKPOINT_HASH")?;
+  sequence=checkpoint.anchor.sequence;previous=checkpoint.anchor.previous;checkpoint_digest=Some(checkpoint.hash);pins.push(checkpoint_pin);journal=manifest.journal;
+ }else{need(!guard_path.exists(),"NOT_SENT_MANIFEST_REQUIRED")?;}
+ let journal_pin=NotSentPinnedFile::read(&directory.join(journal),MAX_ACTIVE_JOURNAL_BYTES)?;
+ need(journal_pin.bytes.last()==Some(&b'\n'),"NOT_SENT_TORN_OR_EMPTY_JOURNAL")?;
+ let mut last:Option<Record>=None;let mut witness:Option<Value>=None;
+ for line in journal_pin.bytes.split_inclusive(|b|*b==b'\n'){
+  let row:Record=serde_json::from_slice(line).map_err(|_|"NOT_SENT_JOURNAL_INVALID")?;
+  need(row.sequence==sequence+1&&row.previous==previous&&row.state.schema_version==1&&row.state.scope==scope&&row.hash==record_hash(row.sequence,&row.previous,&row.state),"NOT_SENT_JOURNAL_CHAIN")?;
+  need(row.state.last_clock<=MAX_TIME,"NOT_SENT_CLOCK")?;
+  if let Some(before)=&last{
+   need(row.state.last_clock>=before.state.last_clock,"NOT_SENT_CLOCK_REGRESSION")?;
+   if not_sent_transition(&before.state,&row.state,&actual,request){
+    need(witness.is_none()&&before.state.last_clock>=minimum_clock,"NOT_SENT_REPEAT_OR_PREMATURE")?;
+    witness=Some(json!({"schemaVersion":1,"queueScope":scope,"request":request,"binding":binding,"beforeRecord":before,"completionRecord":row,"beforeStateJson":serde_json::to_string(&before.state).map_err(|_|"NOT_SENT_SERIALIZE")?,"completionStateJson":serde_json::to_string(&row.state).map_err(|_|"NOT_SENT_SERIALIZE")?}));
+   }
+  }
+  sequence=row.sequence;previous=row.hash.clone();last=Some(row);
+ }
+ let tail=last.ok_or("NOT_SENT_POSITIVE_TRANSITION_REQUIRED")?;
+ need(tail.state.active.is_none()&&tail.state.unknown.is_empty()&&!tail.state.manual_review&&tail.state.intents.get(&actual.intent)==Some(&actual)&&tail.state.keys.get(&actual.key)==Some(&actual),"NOT_SENT_CURRENT_GLOBAL_STATE")?;
+ let mut evidence=witness.ok_or("NOT_SENT_POSITIVE_TRANSITION_REQUIRED")?;
+ evidence["tailRecord"]=serde_json::to_value(&tail).map_err(|_|"NOT_SENT_SERIALIZE")?;evidence["tailStateJson"]=json!(serde_json::to_string(&tail.state).map_err(|_|"NOT_SENT_SERIALIZE")?);
+ evidence["journalSha256"]=json!(format!("{:x}",Sha256::digest(&journal_pin.bytes)));evidence["journalBytes"]=json!(journal_pin.bytes.len());evidence["manifestSha256"]=json!(manifest_hash);evidence["checkpointHash"]=json!(checkpoint_digest);pins.push(journal_pin);
+ for source in &mut pins{source.unchanged()?;}
+ if manifest_hash.is_none(){need(!manifest_path.exists()&&!guard_path.exists(),"NOT_SENT_GENERATION_CHANGED")?;}
+ let final_dir=fs::symlink_metadata(directory).map_err(|_|"NOT_SENT_DIRECTORY_CHANGED")?;need(final_dir.is_dir()&&!final_dir.file_type().is_symlink(),"NOT_SENT_DIRECTORY_CHANGED")?;
+ #[cfg(unix)]{use std::os::unix::fs::MetadataExt;need(final_dir.dev()==dir_meta.dev()&&final_dir.ino()==dir_meta.ino(),"NOT_SENT_DIRECTORY_CHANGED")?;}
+ Ok(VerifiedLocalNotSentV1{evidence})
+}
+#[cfg(test)]#[path="admission_not_sent_tests.rs"]mod admission_not_sent_tests;
