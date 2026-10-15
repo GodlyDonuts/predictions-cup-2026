@@ -148,6 +148,10 @@ fn scan(path:&Path,target:Option<&str>)->Result<Scan>{
 }
 fn load(path:&Path)->Result<Projection>{Ok(scan(path,None)?.state)}
 impl PackageDispatchLog{
+ pub fn descriptor_identity(&self)->Result<Value>{
+  #[cfg(unix)]{use std::os::unix::fs::MetadataExt;let m=self.file.metadata()?;Ok(json!({"schemaVersion":1,"device":m.dev(),"inode":m.ino(),"bytes":m.len(),"sequence":self.state.sequence,"previous":self.state.previous,"poisoned":self.poisoned}))}
+  #[cfg(not(unix))]{Err("PACKAGE_LOG_DESCRIPTOR_IDENTITY_UNSUPPORTED".into())}
+ }
  pub fn open(directory:&Path)->Result<Self>{
   fs::create_dir_all(directory)?;let lock=ExclusiveLock::acquire(&directory.join("package-dispatch.lock"))?;
   let path=directory.join("package-dispatch.ndjson");let mut options=OpenOptions::new();options.read(true).append(true).create(true);#[cfg(unix)]{use std::os::unix::fs::OpenOptionsExt;options.mode(0o600);}
