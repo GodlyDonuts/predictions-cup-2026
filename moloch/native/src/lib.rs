@@ -2,6 +2,8 @@
 //! No networking or contest order submission is performed by this library.
 use std::collections::{BTreeMap, VecDeque};
 pub mod engine;
+pub mod journal;
+pub mod source;
 pub const SCALE: i128 = 1_000_000;
 pub const TICK: i128 = 5_000;
 pub type Result<T> = std::result::Result<T, &'static str>;

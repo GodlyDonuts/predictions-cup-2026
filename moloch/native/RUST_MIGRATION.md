@@ -7,8 +7,8 @@ verified.
 
 Verified on the Linux ARM64 VPS during this migration:
 
-- `cargo test`: thirteen tests passed on ARM64: five accounting, two collector,
-  four replay, and two event-engine integration tests. The resolved dependency
+- `cargo test --locked`: twenty tests passed on ARM64, including source cursor,
+  initial-resync, Retry-After, and source-parity tests. The resolved dependency
   lock is included.
 - Event-engine parity compares 668 intermediate reports in 20 scenarios against
   the existing implementation, including strict/conditional fills, delayed
@@ -42,8 +42,34 @@ Unsupported optional policy fields fail explicitly with `POLICY_NOT_PORTED`;
 they are never silently ignored. Inventory AON/age/hedge extensions, complete
 historical wallet continuation, and realtime source integration are still pending.
 
-Remaining before replacing the deployment: persistent server Retry-After detail,
-paginated tape coverage, realtime transport, causal event normalization, remaining
+`moloch-source RECEIPTS_JSONL CONFIG_JSON NEW_EVENTS_JSONL NEW_STATS_JSON` performs
+offline receipt conversion through the same adapter as collection. Configuration
+contains `pairs`, `tournamentId`, and `startedAt`. Initial book events stay invalid
+until a subsequent authoritative book and complete tape window cover startup.
+Cursor coverage requires the complete original window and up to five correctly
+ordered pages, taking the minimum projection checkpoint. Source events are also
+compared exactly against four scenarios from the existing source adapter.
+
+A sanitized pre-existing SIG capture (48 receipts, four markets) produced 454
+events in Rust. Its paper result matched all 17 checked financial report fields:
+998.200000 cash, 1.800000 inventory cost, 4.975000 reserved, zero realized P&L,
+and two unresolved orders. This is an independent default-policy migration
+fixture, not the historical Moloch wallet and not realized profit. It made no
+new SIG market-data requests.
+
+`moloch-paper --journal` also verifies sequence, previous hash and full event hash
+before applying each row. Replaying a 454-event hash chain reproduced the raw
+event replay exactly. Changed, skipped and repeated journal rows are rejected.
+
+The Rust collector now appends raw receipts, normalized events, and a hash-chained
+source journal. Persistent failures retain numeric or dated Retry-After delays
+with a 60-second minimum. It does not automatically reset a blocked budget.
+
+`moloch-collector benchmark NEW_REPORT` is a credential-free loopback benchmark.
+On the ARM64 VPS it completed 100 HTTP requests in 59,407ms, minimum 600ms start
+spacing and maximum 100 requests in a rolling minute. It makes zero SIG requests.
+
+Remaining before replacing the deployment: realtime transport, remaining
 inventory strategies and full journal parity, restart/source-journal verification,
 Rust readiness/service wrappers, Rust-only release installation, and removal of
 the dedicated Node installation after the replacement passes verification.

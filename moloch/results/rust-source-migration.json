@@ -1,0 +1,36 @@
+{
+  "mode": "offline_rust_source_migration_verification",
+  "platform": "linux-aarch64",
+  "rustTestsPassed": 20,
+  "sourceParityScenarios": 4,
+  "financialParityCheckpoints": 668,
+  "existingCapture": {
+    "receipts": 48,
+    "markets": 4,
+    "normalizedEvents": 454,
+    "receiptFileSha256": "b9d3d69bc0f332c994415eb7498be5dcbfb1407517e53eec84288c38ec71c03a2",
+    "matchingFinancialFields": 17,
+    "hashChainReplayAlsoMatched": true,
+    "cash": "998.200000",
+    "realized": "0.000000",
+    "ownedCost": "1.800000",
+    "reservedCash": "4.975000",
+    "unresolvedOrders": 2,
+    "scope": "independent default-policy migration fixture; not the historical Moloch wallet"
+  },
+  "rustLoopbackBenchmark": {
+    "requests": 100,
+    "elapsedMs": 59407,
+    "minimumStartSpacingMs": 600,
+    "maximumRequestsInRollingMinute": 100,
+    "credentialsLoaded": false,
+    "sigRequests": 0
+  },
+  "disabledCaptureProbe": {"exitCode": 1, "createdOutput": false},
+  "serviceActive": false,
+  "contestOrders": 0,
+  "newSigMarketDataRequests": 0,
+  "migrationComplete": false,
+  "profitabilityEstablished": false,
+  "remaining": ["Realtime transport and source gap recovery", "Remaining inventory policies and complete original-wallet continuation", "Strategy comparison and selection for the single combined bot", "Rust service installation and removal of the dedicated Node runtime"]
+}

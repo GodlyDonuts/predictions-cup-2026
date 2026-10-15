@@ -1,6 +1,8 @@
 // Development-only reference generator. Not shipped or invoked by the Rust VPS.
 import fs from 'node:fs';
 import {createMoloch,advanceMoloch,reportMoloch} from '../../../engine.mjs';
+import {StreamSource} from '../../../stream-source.mjs';
+import {TapeCoverage} from '../../../tape-coverage.mjs';
 const at=n=>new Date(Date.parse('2026-10-13T00:00:00Z')+n*1000).toISOString();
 const book=(n,ex='101',sequence=1,bid='0.450000',ask='0.455000')=>({type:'book',receivedAt:at(n),book:{tournamentId:'cup',marketId:ex,exchangeId:ex,sequence:String(sequence),requestStartedAt:at(n),sourceAt:at(n),receivedAt:at(n),bids:[{price:bid,quantity:1000}],asks:[{price:ask,quantity:1000}]}});
 const trade=(n,id,yesPrice='0.440000',quantity=100,executed=n)=>({type:'trade',receivedAt:at(n),executedAt:at(executed),id,tournamentId:'cup',marketId:'101',exchangeId:'101',yesPrice,quantity});
@@ -31,3 +33,11 @@ for(const fillModel of ['strictThrough','conditionalFifo'])for(const quoteMode o
 const fields=['policyHash','events','cash','realized','fees','ownedCost','reservedCash','netLiquidationPnl','positions','fills','orders','activeOrders','unresolvedOrders','fillModel','conditionalQueueFills','profitSignalEligible','counts'];
 const output=scenarios.map(([name,policy,events])=>{const s=createMoloch(policy);return {name,policy,steps:events.map(event=>{advanceMoloch(s,event);const r=reportMoloch(s);return{event,expected:structuredClone(Object.fromEntries(fields.map(k=>[k,r[k]])))};})};});
 fs.writeFileSync(new URL('./golden.json',import.meta.url),JSON.stringify(output)+'\n');console.log(`${output.length} scenarios, ${output.reduce((n,s)=>n+s.steps.length,0)} event checkpoints`);
+const start='2026-10-14T00:00:00Z',end='2026-10-14T00:01:00Z';
+const page=(cursor,next,sequence=100)=>({kind:'trades',source:'official_sig_api_v1',status:200,marketId:'1',exchangeId:'2',tournamentId:'cup',requestStartedAt:end,receivedAt:'2026-10-14T00:01:01Z',endpoint:`/exchanges/2/trades?tournamentId=cup&from=${start}&to=${end}${cursor?'&cursor='+cursor:''}`,data:{marketId:'1',exchangeId:'2',from:start,to:end,data:[],pagination:{hasMore:next!==null,nextCursor:next},coverage:{complete:true,projectedThroughSequence:sequence}}});
+const restBook={kind:'book',source:'official_sig_api_v1',status:200,marketId:'1',exchangeId:'2',tournamentId:'cup',requestStartedAt:start,receivedAt:'2026-10-14T00:00:01Z',endpoint:'/markets/1/orderbook?tournamentId=cup&depth=200',data:{contexts:[{type:'tournament',tournament:{id:'cup'},orderbook:{exchanges:[{exchangeId:'2',asOf:{sequence:100,at:start},bids:[{price:.45,quantity:100}],asks:[{price:.455,quantity:100}]}]}}]}};
+const oldBook=structuredClone(restBook);oldBook.receivedAt='2026-10-14T00:01:02Z';oldBook.data.contexts[0].orderbook.exchanges[0].asOf.sequence=99;
+const withPrints=page(null,null);withPrints.data.data=[{id:'b',price:.455,size:100,createdAt:'2026-10-14T00:00:05Z'},{id:'a',price:.45,size:20,createdAt:'2026-10-14T00:00:04Z'}];
+const restScenarios=[['single page',[restBook,withPrints,oldBook]],['three page',[restBook,page(null,'a',100),page('a','b',105),page('b',null,103)]],['missing prefix',[restBook,page('a',null)]],['incomplete checkpoint',[restBook,page(null,'a',null),page('a',null)]]];
+const rest=restScenarios.map(([name,receipts])=>{const pairs=[{marketId:'1',exchangeId:'2'}],source=new StreamSource(pairs,'cup',start),tape=new TapeCoverage();return{name,config:{pairs,tournamentId:'cup',startedAt:start},steps:receipts.map(receipt=>({receipt,expected:structuredClone(source.rest(receipt,tape.row(receipt)))}))};});
+fs.writeFileSync(new URL('./rest-golden.json',import.meta.url),JSON.stringify(rest)+'\n');console.log(`${rest.length} REST source scenarios`);
