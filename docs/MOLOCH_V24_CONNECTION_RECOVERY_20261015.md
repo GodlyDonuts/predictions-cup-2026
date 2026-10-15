@@ -25,3 +25,7 @@ This repairs availability; it does not establish profitability. Paper2 package e
 ## Production launch
 
 V24 started at2026-10-15T19:37:18.274Z as PID211334. The stopped boundary had366 acknowledged physical attempts out of366,539 retained queue intents, no unknown acceptance, active admission or manual review. The financial bridge, risk limits, daily mandate and account queue version1 were preserved. Startup replay and fresh trading verification are pending; this process launch alone is not a successful live cycle.
+
+## Launch rejected; V23 restored
+
+The V24 process failed at19:37:34.922Z on UPGRADE_TARGET_IDENTITY before historical bank restoration. Unchanged Git source did not establish identical raw build inputs. No financial bridge was altered to bypass that rejection. After rechecking366/366 acknowledged physical attempts and the quiet global queue, the exact prior control and service unit were restored. Checked V23 restarted19:41:58.005Z as PID215346 with the existing bridge unchanged. Fresh trading verification is again pending replay. V24 remains rejected until the build identity discrepancy is independently resolved.
