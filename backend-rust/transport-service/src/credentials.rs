@@ -47,3 +47,40 @@ fn verify_restricted_acl(file:&std::path::Path)->Result<()> {
   }Ok(())
  })();unsafe{LocalFree(descriptor);}result
 }
+
+/// Explicitly provisioned Unix runtime storage. This provider never creates a key.
+#[cfg(unix)]
+pub struct UnixFileCredentials { file:PathBuf }
+#[cfg(unix)]
+impl UnixFileCredentials { pub fn approved_file(file:PathBuf)->Result<Self>{need(file.is_absolute(),"APPROVED_STORAGE_PATH")?;Ok(Self{file})} }
+#[cfg(unix)]
+impl CredentialProvider for UnixFileCredentials {
+ fn load(&self)->Result<Zeroizing<String>> {
+  use std::{fs,io::Read,os::unix::fs::MetadataExt};
+  let parent=self.file.parent().ok_or_else(||fail("APPROVED_STORAGE_PATH"))?;
+  let home=std::env::var_os("HOME").ok_or_else(||fail("APPROVED_STORAGE_UNAVAILABLE"))?;
+  let uid=fs::metadata(home).map_err(|_|fail("APPROVED_STORAGE_UNAVAILABLE"))?.uid();
+  let directory=fs::symlink_metadata(parent).map_err(|_|fail("APPROVED_CREDENTIAL_UNAVAILABLE"))?;
+  need(directory.is_dir()&&!directory.file_type().is_symlink()&&directory.uid()==uid&&directory.mode()&0o077==0,"CREDENTIAL_DIRECTORY_PERMISSIONS")?;
+  let before=fs::symlink_metadata(&self.file).map_err(|_|fail("APPROVED_CREDENTIAL_UNAVAILABLE"))?;
+  need(before.is_file()&&!before.file_type().is_symlink()&&before.uid()==uid&&before.mode()&0o077==0&&before.len()<=4096,"CREDENTIAL_FILE_PERMISSIONS")?;
+  let file=fs::File::open(&self.file).map_err(|_|fail("APPROVED_CREDENTIAL_UNAVAILABLE"))?;
+  let opened=file.metadata().map_err(|_|fail("APPROVED_CREDENTIAL_UNAVAILABLE"))?;
+  need(opened.ino()==before.ino()&&opened.dev()==before.dev()&&opened.uid()==uid&&opened.mode()&0o077==0&&opened.is_file(),"CREDENTIAL_FILE_CHANGED")?;
+  let mut contents=Zeroizing::new(String::new());file.take(4097).read_to_string(&mut contents).map_err(|_|fail("APPROVED_CREDENTIAL_FORMAT"))?;
+  let after=fs::symlink_metadata(&self.file).map_err(|_|fail("CREDENTIAL_FILE_CHANGED"))?;
+  need(after.ino()==opened.ino()&&after.dev()==opened.dev()&&!after.file_type().is_symlink()&&after.uid()==uid&&after.mode()&0o077==0,"CREDENTIAL_FILE_CHANGED")?;
+  let text=contents.trim();need((16..=256).contains(&text.len())&&text.starts_with("ace_")&&text.bytes().all(|b|b.is_ascii_alphanumeric()||b==b'_'),"APPROVED_CREDENTIAL_FORMAT")?;
+  Ok(Zeroizing::new(text.to_owned()))
+ }
+}
+#[cfg(all(test,unix))]
+mod unix_file_tests {
+ use super::*;use std::{fs,os::unix::fs::{PermissionsExt,symlink},sync::atomic::{AtomicU64,Ordering}};
+ static NEXT:AtomicU64=AtomicU64::new(0);
+ fn root()->PathBuf{let p=std::env::temp_dir().join(format!("moloch-credential-test-{}-{}",std::process::id(),NEXT.fetch_add(1,Ordering::Relaxed)));fs::create_dir(&p).unwrap();fs::set_permissions(&p,fs::Permissions::from_mode(0o700)).unwrap();p}
+ fn fake_key(p:&std::path::Path){fs::write(p,"ace_invented_fixture_only_12345678\n").unwrap();fs::set_permissions(p,fs::Permissions::from_mode(0o600)).unwrap();}
+ #[test]fn restricted_file_loads_without_creating_storage(){let p=root();let f=p.join("key");let c=UnixFileCredentials::approved_file(f.clone()).unwrap();assert!(c.load().is_err());assert!(!f.exists());fake_key(&f);assert_eq!(c.load().unwrap().as_str(),"ace_invented_fixture_only_12345678");fs::remove_dir_all(p).unwrap();}
+ #[test]fn public_permissions_and_symlinks_rejected(){let p=root();let f=p.join("key");fake_key(&f);let c=UnixFileCredentials::approved_file(f.clone()).unwrap();fs::set_permissions(&f,fs::Permissions::from_mode(0o644)).unwrap();assert!(c.load().is_err());fs::set_permissions(&f,fs::Permissions::from_mode(0o600)).unwrap();fs::set_permissions(&p,fs::Permissions::from_mode(0o755)).unwrap();assert!(c.load().is_err());fs::set_permissions(&p,fs::Permissions::from_mode(0o700)).unwrap();fs::rename(&f,p.join("actual")).unwrap();symlink(p.join("actual"),&f).unwrap();assert!(c.load().is_err());fs::remove_dir_all(p).unwrap();}
+ #[test]fn malformed_and_oversized_values_rejected(){let p=root();let f=p.join("key");fake_key(&f);let c=UnixFileCredentials::approved_file(f.clone()).unwrap();for text in ["not-a-key".to_owned(),"ace_has spaces_inside_123".to_owned(),"ace_".to_owned()+&"x".repeat(5000)]{fs::write(&f,text).unwrap();assert!(c.load().is_err());}fs::remove_dir_all(p).unwrap();}
+}

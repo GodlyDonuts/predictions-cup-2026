@@ -11,11 +11,15 @@ serde = { version = "1", features = ["derive"] }
 serde_json = { version = "1", features = ["arbitrary_precision"] }
 sha2 = "0.10"
 httpdate = "1"
-reqwest = { version = "0.12", default-features = false, features = ["blocking", "native-tls"] }
+
 chrono = { version = "0.4", default-features = false, features = ["std"] }
 zeroize = "1"
 
+[target.'cfg(not(windows))'.dependencies]
+reqwest = { version = "0.12", default-features = false, features = ["blocking", "rustls-tls"] }
+
 [target.'cfg(windows)'.dependencies]
+reqwest = { version = "0.12", default-features = false, features = ["blocking", "native-tls"] }
 windows-sys = { version = "0.59", features = ["Win32_Foundation", "Win32_Security", "Win32_Security_Authorization", "Win32_Security_Cryptography", "Win32_System_Memory", "Win32_System_Threading"] }
 
 [profile.release]
