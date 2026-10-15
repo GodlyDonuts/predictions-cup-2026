@@ -56,12 +56,12 @@ mod current {
         need(actual.parent()==Some(root.as_path())&&actual.file_name().is_some_and(|s|s.to_string_lossy().starts_with("moloch-queue-benchmark-")),"BENCH_CLEANUP_BOUNDARY")?;
         fs::remove_dir_all(actual).map_err(|_|"BENCH_TEMP_CLEANUP".into())
     }
-    pub fn run(shape:&Shape,output:&Path)->Result<Value> {
+    pub fn benchmark(shape:&Shape,output:&Path)->Result<Value> {
         need((16..=128).contains(&shape.scope_bytes)&&(16..=128).contains(&shape.intent_bytes)&&(16..=128).contains(&shape.key_bytes)
             &&(16..=128).contains(&shape.request_bytes)&&!shape.binding_samples.is_empty()&&shape.binding_samples.len()<=8
             &&shape.binding_samples.iter().all(|n|*n<=10_000)&&(3..=15).contains(&shape.cpu_samples)
             &&(1..=3).contains(&shape.persist_samples)&&(1_048_576..=64*1024*1024).contains(&shape.fixture_maximum_bytes)
-            &&shape.fixture_initial_bindings<=1000&&(2..=1000).contains(&shape.fixture_write_every_requests),"BENCH_BOUNDS")?;
+            &&shape.fixture_initial_bindings<=100_000&&(2..=1000).contains(&shape.fixture_write_every_requests),"BENCH_BOUNDS")?;
         let mut rows=Vec::new();
         for &n in &shape.binding_samples {
             let s=state(shape,n,true);let sparse=state(shape,n,false);let mut row=json!({"bindings":n,"stateBytes":serde_json::to_vec(&s).unwrap().len(),
@@ -131,7 +131,7 @@ fn main()->Result<(),Box<dyn std::error::Error>> {
     let args:Vec<_>=std::env::args().collect();if args.len()!=3{return Err("usage: moloch-queue-state-benchmark SHAPE.json NEW_OUTPUT.json".into())}
     let shape:Shape=serde_json::from_slice(&fs::read(&args[1])?)?;let out=PathBuf::from(&args[2]);
     if !out.is_absolute()||!out.parent().is_some_and(|p|p.is_dir())||out.exists(){return Err("output must be a NEW absolute path in an existing benchmark directory".into())}
-    let result=current::run(&shape,&out)?;
+    let result=current::benchmark(&shape,&out)?;
     use std::io::Write;let mut file=fs::OpenOptions::new().write(true).create_new(true).open(&out)?;file.write_all(&serde_json::to_vec_pretty(&result)?)?;file.sync_all()?;
     println!("{}",json!({"output":out,"accountCalls":0,"productionModified":false}));Ok(())
 }
