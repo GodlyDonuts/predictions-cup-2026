@@ -926,7 +926,7 @@
     "realized": "0.000000",
     "verifiedAt": "2026-10-07T06:16:58.422Z"
   },
-  "updatedAt": "2026-10-15T01:00:32Z",
+  "updatedAt": "2026-10-15T01:06:30Z",
   "foreignCandidateRepair": {
     "commit": "17b544005c7578c95df4dc4f2f30ee8e2cc75a19",
     "collector": 32364,
@@ -1014,7 +1014,7 @@
     "actualFillsProven": false,
     "contestOrders": 0
   },
-  "nextProfitabilityWork": "Current evidence shows no verified running paper bot and no demonstrated scalable profit. Latest saved paper stats have zero observations; tracked historical competition realization is +0.005 over six orders. Keep EXECUTION_STOP. This PC's C: volume has zero free bytes, so do not start a writer; the captured successor replay found no 2-cent/10-second trigger.",
+  "nextProfitabilityWork": "No profitable policy or live paper process is verified. Move the strategy research to a longer horizon with real executable depth and a truly subsequent capture; do not mistake this journal's sparse, bursty per-market observations for a platform-wide API ceiling. Fresh capture cannot resume while C: has zero free bytes; EXECUTION_STOP remains set.",
   "oracle3Transfer20261014": {
     "issue": 113,
     "implementedAt": "2026-10-14 20:23:03 UTC",
@@ -1301,7 +1301,7 @@
       "profitabilityEstablished": false
     },
     "tests": "Existing frozen scorer suite 10/10 pass; source and discovery latency invariants rechecked.",
-    "interpretation": "Fixed threshold did not fire in the successor suffix; this does not establish either a losing or profitable trade edge.",
+    "interpretation": "No 2-cent/10-second signal fired. This journal's per-market observations are bursty (2.83-minute median interval, 40.1-minute p90), so it cannot validate subsecond HFT; this is a capture limitation, not proof of the platform's maximum feed rate.",
     "currentRuntimeCheck": {
       "paperStatsReportedAt": "2026-10-14T23:52:15Z",
       "lastObservationAt": "2026-10-14T12:43:46Z",
@@ -1318,6 +1318,26 @@
     },
     "apiReads": 0,
     "runtimeChanges": 0,
-    "contestOrders": 0
+    "contestOrders": 0,
+    "captureCadenceDiagnostic": {
+      "scope": "successor suffix after 2026-10-13T14:27:23.327Z, after excluding the 16 Governor contracts used in task #118",
+      "sourcePrefixSha256": "72dcf4adc449971e2f418f66ae39fb9bb068ccf9f8d120c740541a0751725f1a",
+      "sameMarketIntervals": 9542,
+      "intervalsMs": {
+        "p50": 169712,
+        "p90": 2408410,
+        "p99": 45571009
+      },
+      "intervalsAtOrBelowMs": {
+        "1000": 0,
+        "10000": 2,
+        "60000": 3775,
+        "300000": 5117,
+        "3600000": 8735
+      },
+      "streamsWith20OrMorePoints": 221,
+      "streamsWith50OrMorePoints": 7,
+      "interpretation": "Recorded observations in this saved journal are sparse and bursty: median same-market interval is 2.83 minutes, p90 40.1 minutes, and only 2/9,542 intervals are <=10 seconds. This limits what this capture can test for HFT; it does not establish a platform-wide feed/API ceiling."
+    }
   }
 }
