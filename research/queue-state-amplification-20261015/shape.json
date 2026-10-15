@@ -1,0 +1,27 @@
+{
+  "scopeBytes": 26,
+  "intentBytes": 29,
+  "keyBytes": 29,
+  "requestBytes": 32,
+  "bindingSamples": [0, 70, 98, 1000, 10000],
+  "cpuSamples": 7,
+  "persistSamples": 2,
+  "fixtureMaximumBytes": 16777216,
+  "fixtureInitialBindings": 70,
+  "fixtureWriteEveryRequests": 24,
+  "observedProduction": {
+    "observedAt": "2026-10-15T09:40:00Z",
+    "stateJsonBytes": 39628,
+    "intents": 98,
+    "keys": 98,
+    "scopeCharacters": 26,
+    "intentCharactersMin": 25,
+    "intentCharactersMax": 34,
+    "activeJournalBytes": 67108252,
+    "unknowns": 0,
+    "previousRotationAt": "2026-10-15T09:30:00Z",
+    "previousBindings": 70,
+    "availableDiskReported": "198G",
+    "source": "parent #120 sanitized observation; identity lengths in the model are explicit synthetic assumptions"
+  }
+}
