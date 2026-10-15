@@ -1,0 +1,12 @@
+mod feedback{pub use moloch_live_runtime::feedback::*;}
+#[path="../src/inventory.rs"]mod inventory;
+use baal_transport_service::Receipt;
+use moloch_replay::engine::Engine;
+use serde_json::json;
+use std::collections::BTreeMap;
+fn receipt()->Receipt{Receipt{endpoint:"/tournaments/fixture/portfolio/positions".into(),status:200,request_started_at:"2026-10-15T00:00:00Z".into(),received_at:"2026-10-15T00:00:00.001Z".into(),data:json!({"positions":[{"exchangeId":"900","marketId":"211","quantity":-5,"costBasis":3.45,"avgCost":0.69,"lots":[{"lotId":"104421690","quantity":5,"side":"NO","entryPrice":0.69,"openedAt":"2026-10-09T02:23:38.1711908+00:00"}]}],"summary":{"totalCostBasis":3.45}})}}
+fn engine()->Engine{Engine::new_live(&json!({"maximumCommitted":"100.000000","maximumMarkets":3})).unwrap()}
+fn scope()->BTreeMap<String,String>{[("900".into(),"211".into())].into()}
+#[test]fn real_shape_seven_digit_clock_and_exact_lot_basis_normalize_without_fills(){let mut e=engine();let event=inventory::adoption(&receipt(),&e,"cup","fixture",&scope(),"2026-10-15T00:00:00.002Z").unwrap();assert_eq!(event["openingCost"],"3.450000");assert_eq!(event["positions"][0]["lots"][0]["entryPrice"],"0.690000");e.advance(&event).unwrap();assert_eq!(e.report().unwrap()["fills"],0);assert_eq!(e.report().unwrap()["ownedCost"],"3.450000");assert!(inventory::adoption(&receipt(),&e,"cup","fixture",&scope(),"2026-10-15T00:00:00.003Z").is_err());}
+#[test]fn rounding_and_material_reported_basis_are_preserved_without_blocking_all_positions(){for (cost,label,difference) in [(3.455,"cent_rounding","0.005000"),(3.0,"reported_discrepancy","-0.450000")]{let mut r=receipt();r.data["positions"][0]["costBasis"]=json!(cost);let mut e=engine();let event=inventory::adoption(&r,&e,"cup","fixture",&scope(),"2026-10-15T00:00:00.002Z").unwrap();assert_eq!(event["positions"][0]["basisClassification"],label);assert_eq!(event["positions"][0]["reportedMinusLotPrincipal"],difference);e.advance(&event).unwrap();}}
+#[test]fn unknown_scope_partial_response_side_or_quantity_cannot_be_normalized(){for case in ["scope","pagination","side","quantity"]{let mut r=receipt();match case{"scope"=>r.data["positions"][0]["exchangeId"]=json!("901"),"pagination"=>r.data["pagination"]=json!({"hasMore":false}),"side"=>r.data["positions"][0]["lots"][0]["side"]=json!("YES"),_=>r.data["positions"][0]["lots"][0]["quantity"]=json!(6)}assert!(inventory::adoption(&r,&engine(),"cup","fixture",&scope(),"2026-10-15T00:00:00.002Z").is_err(),"{case}");}}
