@@ -158,3 +158,64 @@ Parent Linux compilation and publication are recorded in task
 [#143](https://github.com/GodlyDonuts/predictions-cup-2026/issues/143). Source alone
 does not establish current coverage, deployment, profitable trading or completion
 of Paper 2.
+
+## October15 unavailable-attempt and transport correction
+
+The execution owner inspected frozen V28 suffix317931441 without a new account
+request. Its first original attempt was BUY5 NO/exchange1023 at0.730 at
+23:18:39.610Z. The last admitted book was processed23:18:39.161, with
+source23:18:38.976233, request23:18:38.777 and receipt23:18:39.109: all were fresh.
+The most recent complete trade window ended23:18:27.583 with projected sequence
+172430631, behind the book's172432504 by1873 revisions; the last gap was17:59.918.
+This is owner-read retained evidence, not independently fetched by this task.
+The confirmed model defect was that a normal key eligibility error permanently
+disabled the observer **before recording the original attempt**. The observed
+cause was missing past continuity, not stale timestamps or an old WS subscription.
+
+Two explicit changes are separate:
+
+* Current quote-only features (spread, distance, quantity, original limit) require
+  the exact original durable intent/attempt and fresh authoritative native depth.
+  They do not consume public historical trades. Consequently lagging **past**
+  public-trade coverage is no longer a prerequisite for capturing those features.
+  This adds no OFI/trade-history feature and manufactures no public prints.
+  Native invalidity, scope/source membership and clock guards remain. Every
+  future actual-fill→first-markout-book coverage/projection check and gap censor
+  remains mandatory; later favorable books/tapes cannot replace an unavailable
+  first horizon observation.
+* Missing/stale/insufficient current depth or unavailable passive eligibility is
+  recorded as a bounded censored original entry attempt with exact quote digest,
+  coarse known quote identity, time and reason. No later book backfills its
+  unknown features or labels. Observer processing continues. Original entry
+  counts include these cases; feature-qualified independent cohorts are counted
+  separately. Invalid bank/policy/source cursor/bytes/original dispatch binding
+  and exhausted memory/integrity bounds still disable model confidence only.
+
+Censored attempts match estimates conservatively by known exchange/market/side/
+quantity/limit, without inventing unknown spread/distance. They enter the sample
+coverage denominator; actually full-filled censored attempts also enter missing
+conditional-mark coverage after their actual fill horizon. Unclosed mature
+attempts remain open. They do not count as zero-fill labels or positive samples.
+The conservative probability lower score includes the censored denominator before
+its configured haircut. Later genuine independent samples can meet the configured
+coverage ratio (for example9 observed plus1 censored at90%); one missing attempt
+is not a permanent coarse-key veto. These remain empirical coverage rules, not
+statistical confidence or adversarial all-state EV guarantees. Retention is the
+configured training window, with the existing pending bound covering both known-
+feature and unavailable attempts; bounds never grow silently.
+
+Transport provenance is retained: WS effective freshness uses ORIGINAL source,
+receipt and processing clocks; REST requires ORIGINAL source, request, receipt
+and processing freshness. Processing delivery remains bounded separately. An old
+WS update cannot become fresh merely because it arrived now, and old REST
+`asOf.at` is not waived. The actual realtime producer currently normalizes
+requestStartedAt=receivedAt; a test with an older subscription request is a
+semantic safeguard, not an assertion about the observed V28 failure.
+
+Cold-start own-liquidity shadows stay conservative for retired native orders.
+Retirement alone never proves physical closure. At the next genuine original
+ordinary attempt, only a matching actual original DispatchLog.closed entry,
+original ACK actual ID/native binding, immutable intent identity and retired
+native quote permits terminal tombstoning/removal. No future batch-end lookup or
+invented terminal receipt is used. Tombstones retain their4096 bound. This repairs
+historical closed-order shadows while ambiguous/unknown physical orders remain.

@@ -40,7 +40,7 @@ impl Config{pub fn validate(&self)->Result<()>{
 }}
 #[derive(Clone,Debug,Serialize,PartialEq,Eq,PartialOrd,Ord)]
 pub struct Key{pub exchange:String,pub market:String,pub side:String,pub action:String,pub quantity:u64,pub limit_units:i128,pub spread_ticks:i128,pub distance_ticks:i128}
-#[derive(Clone)]struct Book{market:String,exchange:String,sequence:u128,source:u64,request:u64,received:u64,observed:u64,invalid:bool,bids:Vec<(i128,u64)>,asks:Vec<(i128,u64)>,sha:String}
+#[derive(Clone)]struct Book{market:String,exchange:String,sequence:u128,source:u64,request:u64,received:u64,observed:u64,realtime:bool,invalid:bool,bids:Vec<(i128,u64)>,asks:Vec<(i128,u64)>,sha:String}
 #[derive(Clone)]struct Own{market:String,exchange:String,yes_bid:bool,price:i128,quantity:u64}
 #[derive(Clone)]struct Coverage{from:u64,to:u64,sequence:u128}
 #[derive(Clone)]struct Mark{value:Option<i128>,available:u64,reason:&'static str,source_sha:String}
@@ -58,8 +58,9 @@ pub struct Estimate{
  pub conservative_fill_probability_bps:Option<u32>,pub last_label_available_at_ms:Option<u64>,
  pub statistical_confidence_claimed:bool,
 }
-#[derive(Default,Serialize)]pub struct Diagnostics{pub attempted:u64,pub overlapping_attempts:u64,pub unattributed_fills:u64,pub ignored_nonentry:u64,pub duplicate_events:u64,pub censored_late_fills:u64,pub completed_marks:u64,pub unavailable_marks:u64}
-pub struct Model{config:Config,manifest:Value,run:Value,policy_sha:String,tournament:Option<String>,last:u64,disabled:Option<&'static str>,cursors:BTreeMap<String,(u64,String)>,books:BTreeMap<String,Book>,coverage:BTreeMap<String,Coverage>,own:BTreeMap<u64,Own>,terminal:BTreeSet<u64>,buckets:BTreeMap<Key,Bucket>,cluster_until:BTreeMap<String,u64>,pending:BTreeMap<u64,Exposure>,pub diagnostics:Diagnostics}
+#[derive(Default,Serialize)]pub struct Diagnostics{pub attempted:u64,pub original_entry_attempts:u64,pub feature_qualified_attempts:u64,pub unavailable_attempts:u64,pub censored_attempt_fill_events:u64,pub overlapping_attempts:u64,pub unattributed_fills:u64,pub ignored_nonentry:u64,pub duplicate_events:u64,pub censored_late_fills:u64,pub completed_marks:u64,pub unavailable_marks:u64}
+struct UnavailableAttempt{exchange:String,market:String,side:String,quantity:u64,limit:i128,at:u64,reason:&'static str,quote_sha:String,terminal:bool,filled_quantity:u64,fill_ids:BTreeSet<String>,full_fill_at:Option<u64>}
+pub struct Model{config:Config,manifest:Value,run:Value,policy_sha:String,tournament:Option<String>,last:u64,disabled:Option<&'static str>,cursors:BTreeMap<String,(u64,String)>,books:BTreeMap<String,Book>,coverage:BTreeMap<String,Coverage>,own:BTreeMap<u64,Own>,terminal:BTreeSet<u64>,buckets:BTreeMap<Key,Bucket>,cluster_until:BTreeMap<String,u64>,pending:BTreeMap<u64,Exposure>,unavailable:BTreeMap<u64,UnavailableAttempt>,unavailable_reasons:BTreeMap<&'static str,u64>,pub diagnostics:Diagnostics}
 fn levels(v:&Value,descending:bool)->Result<Vec<(i128,u64)>>{
  let rows=v.as_array().ok_or("EDGE_LEVELS")?;need(rows.len()<=64,"EDGE_DEPTH_BOUND")?;let mut out=Vec::with_capacity(rows.len());
  for l in rows{let p=money(&l["price"])?;let q=l["quantity"].as_u64().filter(|n|*n>0).ok_or("EDGE_LEVEL_QUANTITY")?;need((0..=UNIT).contains(&p)&&out.last().is_none_or(|(old,_)|if descending{*old>p}else{*old<p}),"EDGE_LEVEL_ORDER")?;out.push((p,q));}Ok(out)
@@ -69,7 +70,7 @@ fn book(v:&Value,at:u64)->Result<Book>{
  need(source<=received&&request<=received&&received<=at,"EDGE_BOOK_CLOCK")?;
  let bids=levels(&v["bids"],true)?;let asks=levels(&v["asks"],false)?;
  need(bids.first().zip(asks.first()).is_none_or(|(b,a)|b.0<a.0),"EDGE_CROSSED_BOOK")?;
- Ok(Book{market:v["marketId"].as_str().ok_or("EDGE_MARKET")?.into(),exchange:v["exchangeId"].as_str().ok_or("EDGE_EXCHANGE")?.into(),sequence:v["sequence"].as_str().ok_or("EDGE_SEQUENCE")?.parse().map_err(|_|"EDGE_SEQUENCE")?,source,request,received,observed:at,invalid:v["invalid"]==true,bids,asks,sha:hash(v)?})
+ Ok(Book{market:v["marketId"].as_str().ok_or("EDGE_MARKET")?.into(),exchange:v["exchangeId"].as_str().ok_or("EDGE_EXCHANGE")?.into(),sequence:v["sequence"].as_str().ok_or("EDGE_SEQUENCE")?.parse().map_err(|_|"EDGE_SEQUENCE")?,source,request,received,observed:at,realtime:v["transport"]=="official_sig_realtime",invalid:v["invalid"]==true,bids,asks,sha:hash(v)?})
 }
 fn depth(b:&Book,side:&str,buy:bool,quantity:u64)->Result<Option<i128>>{
  let rows=match(side,buy){("YES",false)|("NO",true)=>&b.bids,("YES",true)|("NO",false)=>&b.asks,_=>return Err("EDGE_SIDE")};
@@ -94,9 +95,9 @@ impl Model{
  let mut own=BTreeMap::new();for q in bank.engine().order_records(){let id=q["id"].as_u64().ok_or("EDGE_QID")?;if bank.engine().live_order_bindings().contains_key(&id){let quantity=q["quantity"].as_u64().ok_or("EDGE_QUANTITY")?.checked_sub(q["filled"].as_u64().ok_or("EDGE_QUANTITY")?).ok_or("EDGE_QUANTITY")?;if quantity>0{own.insert(id,Self::own_order(&q,quantity)?);}}}need(own.len()<=4096,"EDGE_OWN_ORDER_BOUND")?;
  let cursors=["moloch-live","moloch-package"].into_iter().map(|id|(id.into(),(bank.last_source_sequence(id),String::new()))).collect();
  let last=bank.engine().report().map_err(|_|"EDGE_BANK_REPORT")?["at"].as_str().filter(|s|!s.is_empty()).map(|s|time(&json!(s))).transpose()?.unwrap_or(0);
- Ok(Self{config,manifest:bank.manifest_hash().clone(),run:seed["runId"].clone(),policy_sha:hash(bank.engine().policy())?,tournament:None,last,disabled:None,cursors,books:BTreeMap::new(),coverage:BTreeMap::new(),own,terminal:BTreeSet::new(),buckets:BTreeMap::new(),cluster_until:BTreeMap::new(),pending:BTreeMap::new(),diagnostics:Diagnostics::default()})}
+ Ok(Self{config,manifest:bank.manifest_hash().clone(),run:seed["runId"].clone(),policy_sha:hash(bank.engine().policy())?,tournament:None,last,disabled:None,cursors,books:BTreeMap::new(),coverage:BTreeMap::new(),own,terminal:BTreeSet::new(),buckets:BTreeMap::new(),cluster_until:BTreeMap::new(),pending:BTreeMap::new(),unavailable:BTreeMap::new(),unavailable_reasons:BTreeMap::new(),diagnostics:Diagnostics::default()})}
  fn bind(&self,bank:&Session)->Result<()>{need(bank.manifest_hash()==&self.manifest&&bank.live_account_seed().is_some_and(|s|s["runId"]==self.run)&&hash(bank.engine().policy())?==self.policy_sha,"EDGE_BANK_OR_POLICY_CHANGED")}
- fn fresh(&self,b:&Book,now:u64)->bool{!b.invalid&&[b.source,b.request,b.received,b.observed].iter().all(|t|*t<=now&&now-*t<=self.config.maximum_book_age_ms)&&b.observed-b.received<=self.config.maximum_delivery_ms}
+ fn fresh(&self,b:&Book,now:u64)->bool{!b.invalid&&[b.source,b.received,b.observed].iter().all(|t|*t<=now&&now-*t<=self.config.maximum_book_age_ms)&&(b.realtime||b.request<=now&&now-b.request<=self.config.maximum_book_age_ms)&&b.observed-b.received<=self.config.maximum_delivery_ms}
  fn continuous(&self,exchange:&str,from:u64,b:&Book)->bool{self.coverage.get(exchange).is_some_and(|c|c.from<=from&&c.to>=b.source&&c.sequence>=b.sequence)}
  // Never price a hypothetical close against known own resting liquidity.
  // Historical bound orders without an observed complete terminal are removed
@@ -105,7 +106,10 @@ impl Model{
  fn external_depth(&self,_bank:&Session,b:&Book)->Result<Book>{let mut external=b.clone();for q in self.own.values(){if q.market!=b.market||q.exchange!=b.exchange{continue}let rows=if q.yes_bid{&mut external.bids}else{&mut external.asks};for(l,n)in rows.iter_mut(){if *l==q.price{*n=n.saturating_sub(q.quantity)}}rows.retain(|(_,n)|*n>0);}Ok(external)}
  fn key(&self,bank:&Session,q:&Value,at:u64)->Result<Key>{
  let exchange=q["exchangeId"].as_str().ok_or("EDGE_EXCHANGE")?;let raw=self.books.get(exchange).ok_or("EDGE_NO_BOOK")?;let external=self.external_depth(bank,raw)?;let b=&external;
- need(self.fresh(b,at)&&self.continuous(exchange,b.source,b),"EDGE_CURRENT_COVERAGE_OR_FRESHNESS")?;
+ // Spread, distance, quantity and limit use this current authoritative
+ // depth snapshot only. Past public-trade coverage is not one of these
+ // features. Future fill-to-markout continuity remains mandatory below.
+ need(self.fresh(b,at),"EDGE_CURRENT_COVERAGE_OR_FRESHNESS")?;
  let market=q["marketId"].as_str().ok_or("EDGE_MARKET")?;need(market==b.market,"EDGE_MARKET_SCOPE")?;
  let side=q["side"].as_str().filter(|s|matches!(*s,"YES"|"NO")).ok_or("EDGE_SIDE")?;need(q["action"]=="buy"&&q["executionStyle"]!="inventoryAON","EDGE_ENTRY_ONLY")?;
  let price=money(&q["price"])?;let quantity=q["quantity"].as_u64().filter(|n|*n>0).ok_or("EDGE_QUANTITY")?;
@@ -121,18 +125,33 @@ impl Model{
  pub fn track_attempt(&mut self,bank:&Session,log:&DispatchLog,qid:u64,now:u64)->Result<bool>{
  self.bind(bank)?;need(self.disabled.is_none()&&now>=self.last,"EDGE_DISABLED_OR_PAST_QUERY")?;
  need(log.attempted.contains(&qid)&&!log.acknowledgments.contains_key(&qid)&&!log.closed.contains(&qid),"EDGE_ORIGINAL_ATTEMPT_REQUIRED")?;
- if self.pending.contains_key(&qid){return Ok(false)}
+ if self.pending.contains_key(&qid)||self.unavailable.contains_key(&qid){return Ok(false)}
  let q=bank.engine().order_records().into_iter().find(|q|q["id"]==qid).ok_or("EDGE_QUOTE")?;
  need(q["retired"]==false&&q["filled"]==0&&log.intents.get(&qid).is_some_and(|i|i["quote"]==q),"EDGE_ORIGINAL_QUOTE")?;
  need(!bank.engine().is_package_order(qid),"EDGE_PACKAGE_NOT_ORDINARY")?;
  if q["action"]!="buy"||q["executionStyle"]=="inventoryAON"{self.diagnostics.ignored_nonentry+=1;return Ok(false)}
- let key=self.key(bank,&q,now)?;need(self.pending.len()<self.config.maximum_pending,"EDGE_PENDING_BOUND")?;
+ self.diagnostics.original_entry_attempts+=1;
+ self.refresh_closed_shadow(bank,log)?;
+ self.expire(now)?;need(self.pending.len()+self.unavailable.len()<self.config.maximum_pending,"EDGE_PENDING_BOUND")?;
+ let key=match self.key(bank,&q,now){Ok(key)=>key,Err(reason)if matches!(reason,"EDGE_NO_BOOK"|"EDGE_CURRENT_COVERAGE_OR_FRESHNESS"|"EDGE_NO_DEPTH"|"EDGE_NOT_DISPLAYED_PASSIVE"|"EDGE_NO_FULL_EXIT_DEPTH")=>{
+  let unavailable=UnavailableAttempt{exchange:q["exchangeId"].as_str().ok_or("EDGE_EXCHANGE")?.into(),market:q["marketId"].as_str().ok_or("EDGE_MARKET")?.into(),side:q["side"].as_str().filter(|s|matches!(*s,"YES"|"NO")).ok_or("EDGE_SIDE")?.into(),quantity:q["quantity"].as_u64().filter(|n|*n>0).ok_or("EDGE_QUANTITY")?,limit:money(&q["price"] )?,at:now,reason,quote_sha:hash(&q)?,terminal:false,filled_quantity:0,fill_ids:BTreeSet::new(),full_fill_at:None};
+  self.unavailable.insert(qid,unavailable);self.diagnostics.attempted+=1;self.diagnostics.unavailable_attempts+=1;*self.unavailable_reasons.entry(reason).or_default()+=1;self.last=now;return Ok(false)
+ },Err(error)=>return Err(error)};
  if !self.buckets.contains_key(&key){need(self.buckets.len()<self.config.maximum_keys,"EDGE_KEY_BOUND")?;self.buckets.insert(key.clone(),Bucket::default());}
  if self.cluster_until.get(&key.exchange).is_some_and(|end|now<*end){self.diagnostics.overlapping_attempts+=1;return Ok(false)}
  let deadline=now.checked_add(self.config.fill_window_ms).ok_or("EDGE_CLOCK_OVERFLOW")?;
  let cluster_end=deadline.checked_add(self.config.markout_ms).and_then(|n|n.checked_add(self.config.post_window_ms)).and_then(|n|n.checked_add(self.config.embargo_ms)).ok_or("EDGE_CLOCK_OVERFLOW")?;self.cluster_until.insert(key.exchange.clone(),cluster_end);
- self.pending.insert(qid,Exposure{key,attempt:now,deadline,quote_hash:hash(&q)?,filled:false,first_fill:false,filled_quantity:0,principal:0,fee:0,first_executed:None,fill_ids:BTreeSet::new(),mark:None,mark_done:false,terminal:false,probability_done:false});self.diagnostics.attempted+=1;self.last=now;Ok(true)
+ self.pending.insert(qid,Exposure{key,attempt:now,deadline,quote_hash:hash(&q)?,filled:false,first_fill:false,filled_quantity:0,principal:0,fee:0,first_executed:None,fill_ids:BTreeSet::new(),mark:None,mark_done:false,terminal:false,probability_done:false});self.diagnostics.attempted+=1;self.diagnostics.feature_qualified_attempts+=1;self.last=now;Ok(true)
  }
+ // Retired native quotes alone do not prove physical closure. At cold start
+ // keep their conservative shadows until this exact original ordinary dispatch
+ // log proves closure, matching its ACK and immutable intent to native identity.
+ fn refresh_closed_shadow(&mut self,bank:&Session,log:&DispatchLog)->Result<()>{
+ let ids:Vec<_>=self.own.keys().filter(|id|log.closed.contains(id)).copied().collect();if ids.is_empty(){return Ok(())}
+ let orders: BTreeMap<_,_>=bank.engine().order_records().into_iter().filter_map(|q|q["id"].as_u64().map(|id|(id,q))).collect();for id in ids{let q=orders.get(&id).ok_or("EDGE_CLOSED_QUOTE")?;let ack=log.acknowledgments.get(&id).ok_or("EDGE_CLOSED_ACK")?;let actual=ack.pointer("/data/orderId").or_else(||ack.get("id")).or_else(||ack.get("orderId")).and_then(|v|v.as_str().map(str::to_owned).or_else(||v.as_u64().map(|n|n.to_string()))).ok_or("EDGE_CLOSED_ACK_ID")?;let original=&log.intents.get(&id).ok_or("EDGE_CLOSED_INTENT")?["quote"];
+ need(q["retired"]==true&&bank.engine().live_order_bindings().get(&id)==Some(&actual)&&["id","marketId","exchangeId","side","action","price"].iter().all(|k|q[*k]==original[*k])&&(q["quantity"]==original["quantity"]||ack.pointer("/data/quantity").or_else(||ack.get("quantity")).and_then(Value::as_u64)==q["quantity"].as_u64()&&q["quantity"].as_u64().zip(original["quantity"].as_u64()).is_some_and(|(n,o)|n>0&&n<=o)),"EDGE_CLOSED_DISPATCH_BINDING")?;
+ need(self.terminal.contains(&id)||self.terminal.len()<4096,"EDGE_TERMINAL_BOUND")?;self.terminal.insert(id);self.own.remove(&id);
+ }Ok(())}
  /// Feed the ACTUAL successfully committed prepared events, in original bank
  /// order, including processedAt. Do not reconstruct old events from latest
  /// prices or public prints. An error disables MODEL confidence only; it must
@@ -166,7 +185,7 @@ impl Model{
  // actual independently committed fill events remain the only fill labels.
  Some("live_package_ack")=>{let rows=e["acknowledgments"].as_array().filter(|r|(1..=6).contains(&r.len())).ok_or("EDGE_PACKAGE_ACK_ROWS")?;for row in rows{need(row["type"]=="actual_order_ack"&&row["source"]=="official_sig_api_v1","EDGE_PACKAGE_ACK_ROW")?;self.observe_ack(row)?;}},
  Some("actual_fill")=>self.actual_fill(bank,e,at)?,
- Some("actual_order_terminal")=>{need(e["source"]=="official_sig_api_v1"&&e["fillsComplete"]==true,"EDGE_TERMINAL_COMPLETE")?;let id=e["orderId"].as_u64().ok_or("EDGE_QID")?;need(self.terminal.contains(&id)||self.terminal.len()<4096,"EDGE_TERMINAL_BOUND")?;self.terminal.insert(id);self.own.remove(&id);
+ Some("actual_order_terminal")=>{need(e["source"]=="official_sig_api_v1"&&e["fillsComplete"]==true,"EDGE_TERMINAL_COMPLETE")?;let id=e["orderId"].as_u64().ok_or("EDGE_QID")?;need(self.terminal.contains(&id)||self.terminal.len()<4096,"EDGE_TERMINAL_BOUND")?;self.terminal.insert(id);self.own.remove(&id);if let Some(p)=self.unavailable.get_mut(&id){p.terminal=true;}
   if let Some(p)=self.pending.get_mut(&id){let q=bank.engine().order_records().into_iter().find(|q|q["id"]==id).ok_or("EDGE_QUOTE")?;need(q["retired"]==true&&q["filled"]==e["filledQuantity"],"EDGE_TERMINAL_NATIVE")?;p.terminal=true;}
  },_=>{}
  }
@@ -176,7 +195,7 @@ impl Model{
  fn actual_fill(&mut self,bank:&Session,e:&Value,at:u64)->Result<()>{
  need(e["source"]=="official_sig_api_v1"&&e["receiptHash"].as_str().is_some_and(hex),"EDGE_OFFICIAL_FILL")?;
  need(bank.engine().fills().iter().any(|f|f["counterfactual"]==false&&f["sourceId"]==e["fillId"]&&f["orderId"]==e["orderId"]&&f["actualOrderId"]==e["actualOrderId"]&&f["price"]==e["price"]&&f["fee"]==e["fee"]&&f["quantity"]==e["quantity"]&&f["executedAt"]==e["executedAt"]),"EDGE_FILL_NOT_IN_BANK")?;
- let id=e["orderId"].as_u64().ok_or("EDGE_QID")?;let Some(p)=self.pending.get_mut(&id)else{self.diagnostics.unattributed_fills+=1;return Ok(())};
+ let id=e["orderId"].as_u64().ok_or("EDGE_QID")?;if let Some(p)=self.unavailable.get_mut(&id){let fill=e["fillId"].as_str().ok_or("EDGE_FILL_ID")?;if p.fill_ids.contains(fill){return Ok(())}need(p.fill_ids.len()<128,"EDGE_FILL_ROWS_BOUND")?;p.fill_ids.insert(fill.into());let executed=time(&e["executedAt"])?;if executed>=p.at&&executed<=p.at.saturating_add(self.config.fill_window_ms){p.filled_quantity=p.filled_quantity.checked_add(e["quantity"].as_u64().ok_or("EDGE_FILL_QUANTITY")?).ok_or("EDGE_OVERFLOW")?;need(p.filled_quantity<=p.quantity,"EDGE_FILL_QUANTITY_CHANGED")?;if p.filled_quantity==p.quantity{p.full_fill_at=Some(executed);}}self.diagnostics.censored_attempt_fill_events+=1;return Ok(())}let Some(p)=self.pending.get_mut(&id)else{self.diagnostics.unattributed_fills+=1;return Ok(())};
  let executed=time(&e["executedAt"])?;need(executed>=p.attempt&&executed<=at&&e["exchangeId"]==p.key.exchange&&e["marketId"]==p.key.market&&e["side"]==p.key.side&&e["action"]==p.key.action,"EDGE_FILL_FEATURE_CLOCK_OR_SCOPE")?;
  if executed>p.deadline{return Ok(())}
  let fill_id=e["fillId"].as_str().ok_or("EDGE_FILL_ID")?;
@@ -201,16 +220,17 @@ impl Model{
  }
  fn finish_mark(&mut self,id:u64,value:Option<i128>,at:u64,reason:&'static str,source_sha:String)->Result<()>{let p=self.pending.get_mut(&id).ok_or("EDGE_PENDING")?;p.mark=None;p.mark_done=true;let b=self.buckets.get_mut(&p.key).ok_or("EDGE_BUCKET")?;b.marks.push_back(Mark{value,available:at,reason,source_sha});while b.marks.len()>self.config.retained_samples{b.marks.pop_front();}if value.is_some(){self.diagnostics.completed_marks+=1}else{self.diagnostics.unavailable_marks+=1}Ok(())}
  fn expire(&mut self,at:u64)->Result<()>{
+ self.unavailable.retain(|_,p|at.saturating_sub(p.at)<=self.config.maximum_training_age_ms);
  let expired:Vec<_>=self.pending.iter().filter(|(_,p)|p.mark.as_ref().is_some_and(|m|at>m.until.saturating_add(self.config.maximum_delivery_ms))).map(|(id,_)|*id).collect();for id in expired{self.finish_mark(id,None,at,"no_book_in_window",String::new())?;}
  let ready:Vec<_>=self.pending.iter().filter(|(_,p)|p.terminal&&!p.probability_done).map(|(id,_)|*id).collect();
  for id in ready{let p=self.pending.get_mut(&id).unwrap();let value=if p.filled{Some(true)}else if at>=p.deadline{Some(false)}else{None};let b=self.buckets.get_mut(&p.key).unwrap();b.probability.push_back(Prob{value,available:at});while b.probability.len()>self.config.retained_samples{b.probability.pop_front();}p.probability_done=true;}
  self.pending.retain(|_,p|!(p.probability_done&&(p.mark_done||!p.first_fill)));Ok(())
  }
  pub fn estimate(&self,key:&Key,now:u64)->Estimate{
- let bucket=self.buckets.get(key);let since=now.saturating_sub(self.config.maximum_training_age_ms);let values:Vec<_>=bucket.map(|b|b.marks.iter().filter(|m|m.available>=since).filter_map(|m|m.value).collect()).unwrap_or_default();let marks=bucket.map_or(0,|b|b.marks.iter().filter(|m|m.available>=since).count());let probs:Vec<_>=bucket.map(|b|b.probability.iter().filter(|p|p.available>=since).filter_map(|p|p.value).collect()).unwrap_or_default();let censored=bucket.map_or(0,|b|b.probability.iter().filter(|p|p.available>=since&&p.value.is_none()).count());let open=self.pending.values().filter(|p|p.key==*key&&now>=p.deadline&&!p.probability_done).count();
+ let bucket=self.buckets.get(key);let since=now.saturating_sub(self.config.maximum_training_age_ms);let values:Vec<_>=bucket.map(|b|b.marks.iter().filter(|m|m.available>=since).filter_map(|m|m.value).collect()).unwrap_or_default();let marks=bucket.map_or(0,|b|b.marks.iter().filter(|m|m.available>=since).count());let probs:Vec<_>=bucket.map(|b|b.probability.iter().filter(|p|p.available>=since).filter_map(|p|p.value).collect()).unwrap_or_default();let unavailable=self.unavailable.values().filter(|p|p.at>=since&&p.at<=now&&p.exchange==key.exchange&&p.market==key.market&&p.side==key.side&&p.quantity==key.quantity&&p.limit==key.limit_units).collect::<Vec<_>>();let censored_marks=unavailable.iter().filter(|p|p.full_fill_at.is_some_and(|at|now>=at.saturating_add(self.config.markout_ms))).count();let marks=marks+censored_marks;let censored=bucket.map_or(0,|b|b.probability.iter().filter(|p|p.available>=since&&p.value.is_none()).count())+unavailable.len();let open_unavailable=unavailable.iter().filter(|p|!p.terminal&&now>=p.at.saturating_add(self.config.fill_window_ms)).count();let open=self.pending.values().filter(|p|p.key==*key&&now>=p.deadline&&!p.probability_done).count()+open_unavailable;
  let mean=if values.is_empty(){None}else{values.iter().try_fold(0i128,|a,v|a.checked_add(*v)).map(|s|s/values.len() as i128)};let worst=values.iter().min().copied();let stressed=worst.and_then(|w|w.checked_sub(self.config.uncertainty_per_share));let prob=if probs.is_empty(){None}else{Some((probs.iter().filter(|p|**p).count()*10_000/probs.len()) as u32)};
- let reason=if self.disabled.is_some(){"model_disabled"}else if now<self.last{"future_state_not_queryable"}else if !values.is_empty()&&(mean.is_none()||stressed.is_none()){"arithmetic_unavailable"}else if values.len()<self.config.minimum_samples||probs.len()<self.config.minimum_samples{"insufficient_independent_samples"}else if values.len()*10_000<marks*self.config.minimum_coverage_bps as usize||probs.len()*10_000<(probs.len()+censored)*self.config.minimum_coverage_bps as usize||open>0{"incomplete_or_open_coverage"}else{"empirical_coverage_qualified"};
- Estimate{available:reason=="empirical_coverage_qualified",reason:reason.into(),valid_marks:values.len(),matured_marks:marks,complete_exposures:probs.len(),censored_exposures:censored,unresolved_mature_exposures:open,mean_conditional_per_share:mean,worst_conditional_per_share:worst,stressed_conditional_per_share:stressed,fill_probability_bps:prob,conservative_fill_probability_bps:prob.map(|p|p.saturating_sub(self.config.probability_haircut_bps)),last_label_available_at_ms:bucket.and_then(|b|b.marks.back().map(|m|m.available)),statistical_confidence_claimed:false}
+ let reason=if self.disabled.is_some(){"model_disabled"}else if now<self.last{"future_state_not_queryable"}else if !values.is_empty()&&(mean.is_none()||stressed.is_none()){"arithmetic_unavailable"}else if values.len()<self.config.minimum_samples||probs.len()<self.config.minimum_samples{"insufficient_independent_samples"}else if values.len()*10_000<marks*self.config.minimum_coverage_bps as usize||probs.len()*10_000<(probs.len()+censored)*self.config.minimum_coverage_bps as usize||open>0{if !unavailable.is_empty(){"unavailable_original_attempt_features"}else{"incomplete_or_open_coverage"}}else{"empirical_coverage_qualified"};
+ Estimate{available:reason=="empirical_coverage_qualified",reason:reason.into(),valid_marks:values.len(),matured_marks:marks,complete_exposures:probs.len(),censored_exposures:censored,unresolved_mature_exposures:open,mean_conditional_per_share:mean,worst_conditional_per_share:worst,stressed_conditional_per_share:stressed,fill_probability_bps:prob,conservative_fill_probability_bps:if probs.len()+censored==0{None}else{Some(((probs.iter().filter(|p|**p).count()*10_000/(probs.len()+censored)) as u32).saturating_sub(self.config.probability_haircut_bps))},last_label_available_at_ms:bucket.and_then(|b|b.marks.back().map(|m|m.available)),statistical_confidence_claimed:false}
  }
  /// Returns a planning score only. Existing physical authority, cash, book,
  /// unknown/STOP, portfolio risk and durable intent checks remain mandatory.
@@ -221,7 +241,7 @@ impl Model{
  let gross=mul(key.limit_units,key.quantity as i128)?;let candidate=gain.filter(|n|*n>0).map(|n|Candidate{id:format!("ordinary:{qid}"),basis:Basis::OwnFillConditionalEstimate,net_gain_units:n,gross_funding_units:gross,capital_locked_units:gross,holding_horizon_ms:costs.horizon.milliseconds,valid_until_ms:[self.books[&key.exchange].source,self.books[&key.exchange].request,self.books[&key.exchange].received,self.books[&key.exchange].observed].into_iter().min().unwrap().saturating_add(self.config.maximum_book_age_ms).min(q["expiresAt"].as_u64().unwrap()),risk_groups:vec![key.exchange.clone()],source_sha256:self.policy_sha.clone(),horizon_source_sha256:costs.horizon.source_sha256.clone(),write_admissions:1});
  Ok(MakerEvaluation{key,estimate,estimated_net_gain_units:gain,candidate})
  }
- pub fn diagnostic_json(&self)->Value{let reasons=self.buckets.values().flat_map(|b|b.marks.iter()).fold(BTreeMap::<String,u64>::new(),|mut map,m|{*map.entry(m.reason.into()).or_default()+=1;map});let mut labels=Sha256::new();for m in self.buckets.values().flat_map(|b|b.marks.iter()){labels.update(m.source_sha.as_bytes());}let mut attempts=Sha256::new();for p in self.pending.values(){attempts.update(p.quote_hash.as_bytes());}json!({"disabled":self.disabled,"lastObservedAtMs":self.last,"committedSourceSequences":self.cursors.iter().map(|(source,(sequence,_))|(source.clone(),json!(sequence))).collect::<BTreeMap<_,_>>(),"knownOwnLiquidityOrders":self.own.len(),"knownTerminalOrders":self.terminal.len(),"keys":self.buckets.len(),"pending":self.pending.len(),"diagnostics":self.diagnostics,"markReasons":reasons,"labelSourceDigest":format!("{:x}",labels.finalize()),"activeAttemptQuoteDigest":format!("{:x}",attempts.finalize()),"confidenceKind":"empirical_worst_sample_stress_not_statistical","executionAuthority":false})}
+ pub fn diagnostic_json(&self)->Value{let reasons=self.buckets.values().flat_map(|b|b.marks.iter()).fold(BTreeMap::<String,u64>::new(),|mut map,m|{*map.entry(m.reason.into()).or_default()+=1;map});let mut labels=Sha256::new();for m in self.buckets.values().flat_map(|b|b.marks.iter()){labels.update(m.source_sha.as_bytes());}let mut attempts=Sha256::new();for p in self.pending.values(){attempts.update(p.quote_hash.as_bytes());}for p in self.unavailable.values(){attempts.update(p.quote_sha.as_bytes());attempts.update(p.reason.as_bytes());}json!({"disabled":self.disabled,"lastObservedAtMs":self.last,"committedSourceSequences":self.cursors.iter().map(|(source,(sequence,_))|(source.clone(),json!(sequence))).collect::<BTreeMap<_,_>>(),"knownOwnLiquidityOrders":self.own.len(),"knownTerminalOrders":self.terminal.len(),"keys":self.buckets.len(),"pending":self.pending.len(),"unavailableOriginalAttempts":self.unavailable.len(),"unavailableAttemptReasons":self.unavailable_reasons,"diagnostics":self.diagnostics,"markReasons":reasons,"labelSourceDigest":format!("{:x}",labels.finalize()),"activeAttemptQuoteDigest":format!("{:x}",attempts.finalize()),"confidenceKind":"empirical_worst_sample_stress_not_statistical","executionAuthority":false})}
 
 }
 #[derive(Clone,Debug,Serialize)]pub struct CapitalHorizon{pub milliseconds:u64,pub source_sha256:String}
