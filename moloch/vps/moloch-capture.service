@@ -1,12 +1,12 @@
 [Unit]
-Description=Moloch bounded paper data collector (disabled deployment)
+Description=Moloch Rust paper collector (disabled deployment)
 ConditionPathExists=%h/apps/moloch/shared/NETWORK_ENABLED
 
 [Service]
 Type=simple
 WorkingDirectory=%h/apps/moloch/current
 EnvironmentFile=%h/apps/moloch/shared/runtime.env
-ExecStart=%h/opt/node-current/bin/node moloch/vps/capture.mjs --pairs %h/apps/moloch/shared/pairs.json --output %h/apps/moloch/shared/capture --cycles 1 --realtime
+ExecStart=%h/apps/moloch/current/bin/moloch-collector run
 Restart=no
 UMask=0077
 NoNewPrivileges=yes

@@ -205,3 +205,27 @@ An exploratory phase-76 run using phase-85 scope produced no orders and is exclu
 from strategy evidence. No winner was selected, no deployed policy changed, and
 no actual order or SIG request was made. These are Rust policy variants rather
 than a verified reproduction of the entire historical Baal runtime.
+
+## Continuous comparison through closing observations
+
+The comparator now accepts optional continuationEpisodes (journal/snapshot pairs)
+in its configuration. It verifies each complete sealed source before advancing
+any variant, then keeps every variant's existing cash, fees, inventory, pending
+quotes and policy. Recorded event clocks remain unchanged. A golden-fixture test
+carries a filled lot between two separately sealed episodes and checks its later
+netting, fees and exact realized P&L; a corrupt terminal snapshot is rejected
+without advancing state. All three comparator tests pass on the VPS.
+
+Across phases 76, 78, 79 and 85, 7,342 events closed the paired variant at
+-149.280000 realized after 48 modeled fills, with no inventory or unresolved
+orders. One-tick backoff closed at -122.675000 after 44 fills. The current-flow
+variants made no fills and retained zero return across this same sequence.
+The deployed current-flow policy was left unchanged: avoiding these losses is
+useful evidence, but inactivity does not demonstrate profitable market making.
+The earlier +0.015000 diagnostic on a different scope is not added to this bank.
+
+The continuous comparator was installed on the Rust VPS and all eight binary
+checksums plus financial readiness passed. Node remained absent; the service
+remained disabled/inactive with MainPID=0. The repository service template and
+VPS instructions now match that Rust deployment instead of the historical Node
+setup. Exact continuous results and policies are checked in separately.
