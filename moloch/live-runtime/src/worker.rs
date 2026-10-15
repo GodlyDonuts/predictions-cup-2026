@@ -5,6 +5,7 @@ use moloch_replay::realtime::{Auth,Incoming,Realtime};
 use moloch_live_runtime::breadth::Recorder;
 use moloch_live_runtime::universe::Universe;
 use moloch_live_runtime::reconciliation::{self,Reconciler};
+use moloch_live_runtime::stream_recovery::{StreamFailure,RecoveryBudget,RECOVERY_WINDOW_MS,RECOVERY_MAXIMUM_ATTEMPTS};
 use serde::{Serialize,Deserialize};
 use serde_json::{Value,json};
 use sha2::{Digest,Sha256};
@@ -120,9 +121,12 @@ fn queue_unknown_from_state(state:&Value)->Result<bool>{
  Ok(!state["state"]["unknown"].as_object().ok_or("LIVE_QUEUE_UNKNOWN_SHAPE")?.is_empty())
 }
 fn native_head(c:&Control)->Result<[u8;32]>{Ok(Sha256::digest(fs::read(c.root.join(&c.bank_name).join("head.json"))?).into())}
+fn require_stream(stream:&Realtime)->Result<()>{
+ if !stream.healthy(){return Err(StreamFailure::new(stream.exit_reason().unwrap_or("STREAM_WORKER_EXIT_UNEXPLAINED")).into())}
+ if now()>=stream.deadline_ms{return Err(StreamFailure::new("STREAM_DEADLINE_REACHED").into())}Ok(())
+}
 fn refresh_controls(c:&Control,authority:&ProductionAuthority,stream:&Realtime)->Result<()>{
- if !stream.healthy(){return Err(format!("LIVE_EXIT_REFRESH_STREAM_FAILED:{}",stream.exit_reason().unwrap_or("STREAM_WORKER_EXIT_UNEXPLAINED")).into())}
- if now()>=stream.deadline_ms{return Err("LIVE_EXIT_REFRESH_STREAM_FAILED:STREAM_DEADLINE_REACHED".into())}
+ require_stream(stream)?;
  if !authority.can_read(&c.scope){return Err("LIVE_EXIT_REFRESH_CONTROL_OR_STOP".into())}Ok(())
 }
 fn refresh_safety(c:&Control,bank:&Session,log:&DispatchLog,authority:&ProductionAuthority,stream:&Realtime,q:&Value,global_unknown:bool)->Result<moloch_live_runtime::exit_refresh::Safety>{
@@ -142,9 +146,22 @@ fn refresh_safety(c:&Control,bank:&Session,log:&DispatchLog,authority:&Productio
  Ok(moloch_live_runtime::exit_refresh::Safety{never_attempted:log.never_attempted(qid),has_intent:log.intents.contains_key(&qid),unresolved_attempts:false,global_unknown,stop:false,stream_healthy:true,owned_quantity:bank.engine().wallet.quantity(ex,side),reserved_sell_quantity:reserved,same_exchange_pending_physical_order:physical,lifecycle_fingerprint:Sha256::digest(serde_json::to_vec(&lifecycle)?).into(),native_head_fingerprint:native_head(c)?})
 }
 fn refresh_deferred(c:&Control,stage:&str,error:&dyn std::fmt::Display)->Result<()>{atomic_json(&c.root.join("exit-refresh.json"),&json!({"at":iso(now()),"stage":stage,"code":error.to_string(),"expiryExtended":false,"writeAttempted":false}))}
-fn refresh_exit(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,authority:&Arc<ProductionAuthority>,source:&mut RestSource,stream:&Realtime,old:&Value,hint:&moloch_live_runtime::exit_refresh::ReadHint,flow_started:u64,maximum_qid_before:u64,unknown:bool)->Result<()>{
+fn exit_recovery_from(source:&RestSource,market:&str,prior_window:u64)->Option<u64>{source.recovery_start_ms(market).map(|from|from.min(prior_window))}
+fn refresh_exit(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,authority:&Arc<ProductionAuthority>,source:&mut RestSource,stream:&Realtime,old:&Value,hint:&moloch_live_runtime::exit_refresh::ReadHint,flow_started:u64,maximum_qid_before:u64,unknown:bool,prior_window:u64)->Result<()>{
  use moloch_live_runtime::exit_refresh::{RefreshFacts,BookAcceptance,RefreshPlan,RefreshStage};
  refresh_controls(c,authority,stream)?;
+ // A fresh book alone cannot unblock a source after a real delivery gap. Recover
+ // its exact missing trade interval before starting the timed seven-fact packet.
+ let market=old["marketId"].as_str().ok_or("LIVE_MARKET_ID")?;
+ if let Some(from)=exit_recovery_from(source,market,prior_window){
+  let ex=old["exchangeId"].as_str().ok_or("LIVE_SCOPE")?;let through=now();
+  let tape=request(t,&c.root,Endpoint::Trades{exchange_id:ex.into(),from:iso(from),to:iso(through)})?;
+  let wrapped=json!({"source":"official_sig_api_v1","kind":"trades","tournamentId":c.scope.tournament_id,"marketId":market,"exchangeId":ex,"endpoint":tape.endpoint,"status":tape.status,"requestStartedAt":tape.request_started_at,"receivedAt":tape.received_at,"data":tape.data});
+  accept_source_events(bank,&source.accept(&wrapped)?)?;
+  let scopes=source.scopes();let scope=scopes.as_array().ok_or("LIVE_SOURCE_SCOPES")?.iter().find(|s|s["marketId"]==market).ok_or("LIVE_SOURCE_SCOPE")?;
+  if !scope["tapeReady"].as_bool().ok_or("LIVE_SOURCE_TAPE_STATE")?{refresh_deferred(c,"coverage_ineligible",&"COMPLETE_TARGET_TAPE_REQUIRED")?;return Ok(())}
+  refresh_controls(c,authority,stream)?;
+ }
  let facts=snapshots(t,c,old)?;
  let bound=match RefreshFacts::new(&c.scope,hint,[facts.account.clone(),facts.positions.clone(),facts.open_orders.clone(),facts.cash_balance.clone(),facts.market.clone(),facts.contract.clone(),facts.book.clone()],now()){
   Ok(v)=>v,Err(e) if matches!(e.to_string().as_str(),"EXIT_REFRESH_FACTS_STALE"|"EXIT_REFRESH_BOOK_STALE")=>{refresh_deferred(c,"facts_ineligible",e.as_ref())?;return Ok(())},Err(e)=>return Err(e)
@@ -186,7 +203,7 @@ fn latest_refresh_hints(orders:&[Value],at:u64,eligible:impl Fn(u64)->bool)->Res
   if latest.get(&key).is_none_or(|old|old["id"].as_u64().unwrap()<id){latest.insert(key,q.clone());}
  }Ok(latest)
 }
-fn dispatch(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,authority:&Arc<ProductionAuthority>,source:&mut RestSource,allow_new_submissions:bool,preflight_cursor:&mut Option<String>,stream:&Realtime)->Result<()>{
+fn dispatch(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,authority:&Arc<ProductionAuthority>,source:&mut RestSource,allow_new_submissions:bool,preflight_cursor:&mut Option<String>,stream:&Realtime,windows:&std::collections::BTreeMap<String,u64>)->Result<()>{
  let orders=bank.engine().order_records();
  let flow_started=now();let maximum_qid_before=orders.iter().filter_map(|q|q["id"].as_u64()).max().unwrap_or(0);
  let mut hints=std::collections::BTreeMap::<String,(Value,moloch_live_runtime::exit_refresh::ReadHint)>::new();
@@ -227,7 +244,7 @@ fn dispatch(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,a
   let keys:Vec<_>=hints.keys().cloned().collect();let index=moloch_live_runtime::scheduling::preflight_rotation(&keys,preflight_cursor.as_deref())[0];let key=&keys[index];
   let(old,hint)=hints.get(key).ok_or("LIVE_EXIT_REFRESH_HINT")?;
   if !preflight_budget.try_start(){return Ok(())}*preflight_cursor=Some(key.clone());
-  refresh_exit(t,c,bank,log,authority,source,stream,old,hint,flow_started,maximum_qid_before,refresh_unknown)?;
+  refresh_exit(t,c,bank,log,authority,source,stream,old,hint,flow_started,maximum_qid_before,refresh_unknown,*windows.get(hint.exchange()).ok_or("LIVE_RECOVERY_WINDOW_MISSING")?)?;
   return Ok(()) // Ineligible refresh still consumes this pass; never another packet.
  }
  // At most one new physical order per pass; subsequent fills change funding.
@@ -265,13 +282,52 @@ fn connect_stream(t:&mut Transport,c:&Control,bank:&mut Session,source:&mut Rest
  };Ok((stream,joined_at))
 }
 fn drain_stream(stream:&Realtime,bank:&mut Session,source:&mut RestSource,breadth:&mut Option<Recorder>,universe:&mut Option<Universe>)->Result<()>{
- if !stream.healthy(){return Err(format!("LIVE_STREAM_FAILED:{}",stream.exit_reason().unwrap_or("STREAM_WORKER_EXIT_UNEXPLAINED")).into())}
- for _ in 0..MAX_REALTIME_FRAMES_PER_DRAIN{if !stream.healthy(){return Err(format!("LIVE_STREAM_FAILED:{}",stream.exit_reason().unwrap_or("STREAM_WORKER_EXIT_UNEXPLAINED")).into())}let Ok(input)=stream.incoming.try_recv()else{break};match input{
+ require_stream(stream)?;
+ for _ in 0..MAX_REALTIME_FRAMES_PER_DRAIN{require_stream(stream)?;let Ok(input)=stream.incoming.try_recv()else{break};match input{
   Incoming::Broadcast{event,payload,received_at}=>{if let Some(recorder)=breadth{recorder.observe(&event,&payload,&received_at)}if let Some(u)=universe{u.observe(&event,&payload,&received_at)?}accept_source_events(bank,&source.broadcast(&event,&payload,&received_at)?)?;},
-  Incoming::Failed(code)=>return Err(code.into()),
+  Incoming::Failed(code)=>return Err(StreamFailure::new(code).into()),
   Incoming::Joined{..}=>return Err("LIVE_STREAM_UNEXPECTED_REJOIN".into())
  }}
  Ok(())
+}
+fn recovery_budget(path:&Path,at:u64)->Result<RecoveryBudget>{
+ let budget:RecoveryBudget=match fs::symlink_metadata(path){
+  Ok(m)=>{if !m.is_file()||m.file_type().is_symlink()||m.len()>4096{return Err("LIVE_RECOVERY_BUDGET_FILE".into())}let bytes=fs::read(path)?;if bytes.len()>4096{return Err("LIVE_RECOVERY_BUDGET_FILE".into())}serde_json::from_slice(&bytes)?},
+  Err(e)if e.kind()==std::io::ErrorKind::NotFound=>RecoveryBudget::new(at)?,Err(e)=>return Err(e.into()),
+ };budget.validate(at)?;Ok(budget)
+}
+fn recovery_queue_clear(state:&Value)->Result<()>{
+ if queue_unknown_from_state(state)?{return Err("LIVE_STREAM_RECOVERY_UNKNOWN_ACCEPTANCE".into())}
+ let s=&state["state"];if !s.get("active").is_some_and(Value::is_null)||s["manual_review"].as_bool()!=Some(false){return Err("LIVE_STREAM_RECOVERY_QUEUE_NOT_QUIET".into())}Ok(())
+}
+fn recovery_not_before(budget:&RecoveryBudget,at:u64,auth:u64)->Result<u64>{
+ budget.validate(at)?;
+ if budget.attempts().iter().filter(|old|at-**old<=RECOVERY_WINDOW_MS).count()>=RECOVERY_MAXIMUM_ATTEMPTS{return Err("LIVE_STREAM_RECOVERY_ATTEMPTS_EXHAUSTED".into())}
+ if auth>at{return Err("LIVE_AUTH_MINT_CLOCK_REGRESSION".into())}
+ Ok(budget.next_allowed(at)?.max(auth.checked_add(60_000).ok_or("LIVE_AUTH_MINT_CLOCK_RANGE")?))
+}
+fn recover_stream(t:&mut Transport,c:&Control,bank:&mut Session,log:&DispatchLog,authority:&Arc<ProductionAuthority>,source:&mut RestSource,stream:&mut Option<Realtime>,budget:&mut RecoveryBudget,failure:StreamFailure,breadth:&mut Option<Recorder>,universe:&mut Option<Universe>,windows:&mut std::collections::BTreeMap<String,u64>)->Result<()>{
+ if !failure.is_recoverable(){return Err(failure.into())}
+ log.require_resolved_attempts()?;recovery_queue_clear(&t.admission_state()?)?;
+ if !authority.can_read(&c.scope){return Err("LIVE_STREAM_RECOVERY_CONTROL_OR_STOP".into())}
+ let at=now();
+ let auth=load(&c.root.join("stream-auth-admission.json"))?["atMs"].as_u64().ok_or("LIVE_AUTH_MINT_MARKER")?;
+ let until=recovery_not_before(budget,at,auth)?;
+ // Drop joins the sole old socket before any replacement token or connection.
+ drop(stream.take());authority.clear_ready();
+ atomic_json(&c.root.join("stream-recovery.json"),&json!({"at":iso(at),"stage":"waiting","reason":failure.reason(),"notBefore":iso(until),"orderRetried":false}))?;
+ while now()<until{budget.validate(now())?;if !authority.can_read(&c.scope){return Err("LIVE_STREAM_RECOVERY_CONTROL_OR_STOP".into())}std::thread::sleep(Duration::from_millis(until.saturating_sub(now()).min(200)));}
+ if !authority.can_read(&c.scope){return Err("LIVE_STREAM_RECOVERY_CONTROL_OR_STOP".into())}
+ log.require_resolved_attempts()?;recovery_queue_clear(&t.admission_state()?)?;
+ budget.record_attempt(now())?;atomic_json(&c.root.join("stream-recovery-budget.json"),&serde_json::to_value(&*budget)?)?;
+ // One replacement attempt only. Auth/join/source/durability failures propagate
+ // to STOP, never become a generic retry or erase this durable attempt.
+ let(connected,joined_at)=connect_stream(t,c,bank,source)?;
+ if let Some(r)=breadth{r.observe("stream_reset",&json!({"localBoundary":true,"reason":"confirmed_recovery"}),&joined_at)}
+ if let Some(u)=universe{u.observe("stream_reset",&json!({"localBoundary":true}),&joined_at)?;}
+ let from=now().saturating_sub(60_000);for old in windows.values_mut(){*old=(*old).min(from);}
+ atomic_json(&c.root.join("stream-recovery.json"),&json!({"at":iso(now()),"stage":"joined_requires_scope_recovery","reason":failure.reason(),"joinedAt":joined_at,"attempts":budget.attempts(),"orderRetried":false,"coverageResetToHealthy":false}))?;
+ require_stream(&connected)?;*stream=Some(connected);let connected=stream.as_ref().unwrap();authority.bind_stream(connected.failure_signal(),connected.deadline_ms);Ok(())
 }
 pub fn main()->Result<()>{
  let args:Vec<_>=std::env::args().collect();if args.len()!=3||!["preflight","run"].contains(&args[1].as_str()){return Err("usage: moloch-live-runtime preflight|run /absolute/control.json".into())}
@@ -319,7 +375,8 @@ pub fn main()->Result<()>{
   // Previously owned holdings are filtered from the financial feed as well as discovery.
   let pairs:Value=if let Some(u)=&universe{u.pairs(&c.scope.exchanges)}else{c.scope.exchanges.iter().map(|(e,m)|json!({"exchangeId":e,"marketId":m})).collect::<Vec<_>>().into()};
   let start=now();let mut source_state=RestSource::new(&pairs,&c.scope.tournament_id,&iso(start))?;source_state.seed_trade_facts(bank.source_facts())?;
-  let (connected,joined_at)=connect_stream(&mut t,&c,&mut bank,&mut source_state)?;let mut stream=Some(connected);
+  let mut recovery_budget=recovery_budget(&c.root.join("stream-recovery-budget.json"),now())?;
+  let (connected,joined_at)=connect_stream(&mut t,&c,&mut bank,&mut source_state)?;require_stream(&connected)?;let mut stream=Some(connected);
   authority.bind_stream(stream.as_ref().unwrap().failure_signal(),stream.as_ref().unwrap().deadline_ms);
   let mut relationship_census=None;let mut preflight_cursor=None;
   let mut reconciliation_schedule=moloch_live_runtime::scheduling::ReconciliationSchedule::new(10_000)?;
@@ -331,26 +388,20 @@ pub fn main()->Result<()>{
   let mut windows:std::collections::BTreeMap<String,u64>=c.scope.exchanges.keys().map(|e|(e.clone(),start.saturating_sub(60000))).collect();
   let mut cycles=0u64;let mut reconciliation_cache=Reconciler::default();
   loop{
+   let cycle_result=(||->Result<()>{
    if stop.exists()||global_stop.exists(){return Err("LIVE_EXECUTION_STOP".into())}
-   if now()>=stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?.deadline_ms{
-    drop(stream.take());let (connected,joined_at)=connect_stream(&mut t,&c,&mut bank,&mut source_state)?;stream=Some(connected);
-    authority.bind_stream(stream.as_ref().unwrap().failure_signal(),stream.as_ref().unwrap().deadline_ms);
-    if let Some(r)=&mut breadth{r.observe("stream_reset",&json!({"localBoundary":true,"reason":"confirmed_resubscription"}),&joined_at)}
-    if let Some(u)=&mut universe{u.observe("stream_reset",&json!({"localBoundary":true}),&joined_at)?;}
-    for from in windows.values_mut(){*from=now().saturating_sub(60000)}
-   }
    drain_stream(stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?,&mut bank,&mut source_state,&mut breadth,&mut universe)?;
    let mut reconciled=reconcile(&mut t,&c,&mut bank,&mut log,&mut reconciliation_cache)?;
    reconciliation_schedule.completed(now(),pending_version(&log),reconciled.blocks_new_submissions)?;
    accept(&mut bank,&json!({"type":"tick","receivedAt":iso(now())}))?;
    let selected=if let Some(u)=&mut universe{u.select(&bank.engine().required_exchanges())?}else{c.scope.exchanges.keys().cloned().collect()};
-   for (selected_index,ex) in selected.iter().enumerate(){let market=&c.scope.exchanges[ex];let from=windows[ex];let next=source(&mut t,&c,&mut bank,&mut source_state,ex,market,from)?;windows.insert(ex.clone(),next);drain_stream(stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?,&mut bank,&mut source_state,&mut breadth,&mut universe)?;
+   for (selected_index,ex) in selected.iter().enumerate(){require_stream(stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?)?;let market=&c.scope.exchanges[ex];let from=windows[ex];let next=source(&mut t,&c,&mut bank,&mut source_state,ex,market,from)?;windows.insert(ex.clone(),next);drain_stream(stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?,&mut bank,&mut source_state,&mut breadth,&mut universe)?;
     if reconciliation_schedule.due(now(),pending_version(&log))?.is_some(){
      reconciled=reconcile(&mut t,&c,&mut bank,&mut log,&mut reconciliation_cache)?;
      reconciliation_schedule.completed(now(),pending_version(&log),reconciled.blocks_new_submissions)?;
     }
     let permit_new=reconciliation_schedule.permits_submission(now(),pending_version(&log))?;
-    dispatch(&mut t,&c,&mut bank,&mut log,&authority,&mut source_state,permit_new,&mut preflight_cursor,stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?)?;
+    dispatch(&mut t,&c,&mut bank,&mut log,&authority,&mut source_state,permit_new,&mut preflight_cursor,stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?,&windows)?;
     let _=atomic_json(&c.root.join("progress.json"),&json!({"at":iso(now()),"pid":std::process::id(),"phase":"trading","completedReadScopes":selected_index+1,"selectedReadScopes":selected.len(),"maximumRealtimeFramesPerDrain":MAX_REALTIME_FRAMES_PER_DRAIN,"realtimeHealthy":stream.as_ref().is_some_and(|s|s.healthy()),"actualOrders":log.acknowledgments.len(),"terminalOrders":log.closed.len(),"actualFills":bank.engine().fills().len(),"profitabilityEstablished":false}));
    }
    cycles+=1;
@@ -360,6 +411,10 @@ pub fn main()->Result<()>{
    if relationship_census.is_none(){let census=moloch_live_runtime::relationship_census::capture(&mut t,&c.scope,&c.root.join("relationship-receipts"),&[]);if let Ok(report)=serde_json::to_value(&census.report){let _=atomic_json(&c.root.join("relationship-census.json"),&report);}relationship_census=Some(census);}
    if cycles%20==0{t.compact()?;}
    std::thread::sleep(Duration::from_millis(if selected.is_empty(){600}else{100}));
+   Ok(())})();
+   if let Err(error)=cycle_result{if let Some(failure)=error.downcast_ref::<StreamFailure>(){
+    recover_stream(&mut t,&c,&mut bank,&log,&authority,&mut source_state,&mut stream,&mut recovery_budget,*failure,&mut breadth,&mut universe,&mut windows)?;
+   }else{return Err(error)}}
   }
  })();
  if let Err(e)=&result{atomic_json(&stop,&json!({"at":iso(now()),"reason":e.to_string(),"action":"no automatic write retry or activation renewal"}))?;atomic_json(&c.root.join("status.json"),&json!({"at":iso(now()),"pid":std::process::id(),"mode":"stopped","reason":e.to_string(),"profitabilityEstablished":false}))?;}
@@ -372,6 +427,20 @@ pub fn main()->Result<()>{
  impl BankTemp{fn new()->Self{static NEXT:std::sync::atomic::AtomicU64=std::sync::atomic::AtomicU64::new(0);Self(std::env::temp_dir().join(format!("moloch-worker-batch-{}-{}-{}",std::process::id(),now(),NEXT.fetch_add(1,std::sync::atomic::Ordering::SeqCst))))}}
  impl Drop for BankTemp{fn drop(&mut self){let _=fs::remove_dir_all(&self.0);}}
  fn source_ticks(n:usize)->Vec<Value>{(0..n).map(|i|json!({"type":"tick","receivedAt":iso(1_760_000_000_000+i as u64)})).collect()}
+ #[test]fn urgent_other_scope_keeps_pre_outage_window_after_late_join(){
+  let old=1_760_000_000_000;let joined=old+900_000;let mut source=RestSource::new(&json!([{"marketId":"1","exchangeId":"2"}]),"fixture",&iso(old)).unwrap();source.subscribed(&iso(joined)).unwrap();assert!(source.recovery_start_ms("1").unwrap()>old);assert_eq!(exit_recovery_from(&source,"1",old),Some(old));assert_eq!(exit_recovery_from(&source,"1",joined+1),Some(joined-1));
+ }
+ #[test]fn recovery_combines_auth_budget_and_refuses_exhaustion_without_long_auto_wait(){
+  let mut budget=RecoveryBudget::new(0).unwrap();budget.record_attempt(0).unwrap();assert_eq!(recovery_not_before(&budget,1000,500).unwrap(),60_500);assert!(recovery_not_before(&budget,1000,1001).is_err());budget.record_attempt(60_000).unwrap();budget.record_attempt(120_000).unwrap();assert!(recovery_not_before(&budget,180_000,120_000).is_err());assert!(budget.next_allowed(180_000).unwrap()>180_000);assert_eq!(recovery_not_before(&budget,600_001,500_000).unwrap(),600_001);
+ }
+ #[test]fn stream_recovery_requires_global_quiet_queue_without_inferred_missing_fields(){
+  assert!(recovery_queue_clear(&json!({"state":{"unknown":{},"active":null,"manual_review":false}})).is_ok());
+  for state in [json!({}),json!({"state":{"unknown":{}}}),json!({"state":{"unknown":{},"active":null,"manual_review":true}}),json!({"state":{"unknown":{},"active":{"request":"ongoing"},"manual_review":false}}),json!({"state":{"unknown":{"other":{"intent":"uncertain"}},"active":null,"manual_review":false}})]{assert!(recovery_queue_clear(&state).is_err());}
+ }
+ #[test]fn durable_stream_budget_corruption_or_regressed_restart_never_reseeds(){
+  let temp=BankTemp::new();fs::create_dir(&temp.0).unwrap();let path=temp.0.join("budget.json");assert!(recovery_budget(&path,1000).unwrap().attempts().is_empty());let mut budget=RecoveryBudget::new(1000).unwrap();budget.record_attempt(1000).unwrap();atomic_json(&path,&serde_json::to_value(&budget).unwrap()).unwrap();let before=fs::read(&path).unwrap();assert!(recovery_budget(&path,999).is_err());assert_eq!(fs::read(&path).unwrap(),before);assert_eq!(recovery_budget(&path,2000).unwrap().attempts(),&[1000]);
+  for bytes in [b"{}".to_vec(),vec![b' ';4097]]{fs::write(&path,&bytes).unwrap();assert!(recovery_budget(&path,2000).is_err());assert_eq!(fs::read(&path).unwrap(),bytes);}
+ }
  #[test]fn source_chunks_preserve_restart_cursor_and_stop_at_invalid_batch_without_replaying_prefix(){
   for bad in [false,true]{let temp=BankTemp::new();let policy=json!({});let mut bank=Session::open(&temp.0,None,&policy).unwrap();let mut events=source_ticks(65);if bad{events[40]["type"]=json!("unsupported");}
    let result=accept_source_events(&mut bank,&events);assert_eq!(result.is_err(),bad);let expected=if bad{32}else{65};assert_eq!(bank.last_source_sequence("moloch-live"),expected);
