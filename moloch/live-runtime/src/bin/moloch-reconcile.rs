@@ -19,6 +19,7 @@ fn main()->Result<(),Box<dyn std::error::Error>>{
  let control:Value=serde_json::from_slice(&fs::read(&args[1])?)?;let root=PathBuf::from(control["root"].as_str().ok_or("RECOVERY_ROOT")?);let lock=PathBuf::from(control["ownerLock"].as_str().ok_or("RECOVERY_LOCK")?);let _lease=ExclusiveLock::acquire(&lock)?;
  let mut log=DispatchLog::open(&root.join("dispatch.ndjson"))?;let mut qid=None;
  for line in fs::read_to_string(root.join("dispatch.ndjson"))?.lines(){let row:Value=serde_json::from_str(line)?;let e=&row["event"];if e["kind"]=="error"&&e["error"]["orderId"]==args[2]{let id=e["qid"].as_u64().ok_or("RECOVERY_QID")?;if !log.attempted.contains(&id)||!log.intents.contains_key(&id){return Err("RECOVERY_NOT_ATTEMPTED".into())}qid=Some(id);}}
+ if qid.is_none()&&!apply{for (id,receipt) in &log.acknowledgments{let v=&receipt["data"];let actual=v.get("orderId").or_else(||v.get("id"));if actual.is_some_and(|v|v.as_str()==Some(args[2].as_str())||v.as_u64().map(|n|n.to_string()).as_deref()==Some(args[2].as_str())){qid=Some(*id);break;}}}
  let qid=qid.ok_or("RECOVERY_ORDER_NOT_RECORDED")?;let scope:Scope=serde_json::from_value(control["scope"].clone())?;
  if args.len()==4&&args[3]=="--retire-unsent"{
   if !root.join("EXECUTION_STOP").exists(){return Err("RECOVERY_REQUIRES_STOPPED_WRITER".into())}log.require_resolved_attempts()?;if log.acknowledgments.keys().any(|q|!log.closed.contains(q)){return Err("RECOVERY_HAS_LIVE_ORDERS".into())}
