@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "task": 23,
+  "followUp": "Rhaegal/20261015-long-horizon-dip",
+  "generatedAt": "2026-10-15T01:15:56Z",
+  "mode": "exploratory_offline_entry_coverage_test",
+  "paperCounterfactualOnly": true,
+  "actualOrders": 0,
+  "actualFillsProven": false,
+  "profitabilityEstablished": false,
+  "source": {
+    "path": "LOCALAPPDATA/SigTradingCup/paper-runtime/public-books.jsonl",
+    "bytes": 338959383,
+    "sha256": "72dcf4adc449971e2f418f66ae39fb9bb068ccf9f8d120c740541a0751725f1a",
+    "priorFrozenPrefixBytes": 311939460,
+    "priorFrozenPrefixSha256": "eab7f22431b26c634bfb9627d3bfb522f99a842e95a4379d62f1c58ac8a14ad8",
+    "priorPrefixMatch": true
+  },
+  "calibration": {
+    "cutoffAt": "2026-10-10T06:32:28.562Z",
+    "historyHours": 24,
+    "minimumEarlierObservations": 20,
+    "minimumHistorySpanHours": 18,
+    "maximumHistoryGapHours": 6,
+    "positiveHistoricalMidMinusExecutableAskObservations": 14652,
+    "thresholdQuantile": 0.95,
+    "frozenDiscountThreshold": 0.0125,
+    "laterOutcomeDataUsedForCalibration": false
+  },
+  "holdout": {
+    "startsStrictlyAfter": "2026-10-13T14:27:23.327Z",
+    "firstEligibleBookAt": "2026-10-13T14:27:42.628Z",
+    "lastBookAt": "2026-10-14T23:52:14.079Z",
+    "books": 9763,
+    "marketExchangeStreams": 221,
+    "excludedGovernorContracts": 16,
+    "eligibleFeatureEvaluations": 6470,
+    "dipSignals": 27
+  },
+  "entryRule": {
+    "side": "Buy the YES or NO outcome whose current executable ask is >=1.25 cents below its own trailing 24-hour median midpoint.",
+    "quantity": 1,
+    "postSignalLatencyProxyMs": 1721,
+    "maximumFreshBookArrivalWindowMs": 2000,
+    "topDepthRequiredShares": 1,
+    "feePerShare": 0,
+    "quoteAgeMaximumMs": 2000,
+    "recheckDiscountAtArrival": true
+  },
+  "results": {
+    "signals": 27,
+    "timelyPostLatencyBooks": 0,
+    "persistentDiscountEntryCandidates": 0,
+    "oneShareEntryFillProxies": 0,
+    "completedRoundTrips": 0,
+    "realizedOrCounterfactualPnl": null,
+    "conclusion": "The training-calibrated historical dip rule produced signals, but none had a subsequent same-market book inside the fixed 2-second arrival window after the 1.721-second latency proxy. The saved capture therefore cannot validate an executable entry, and no trade P&L or profitability conclusion is available."
+  },
+  "interpretation": {
+    "decision": "Do not deploy this rule from this capture.",
+    "reason": "0/27 signals had a timely post-latency quote; treating the signal-time ask as filled would invent an unobserved fill.",
+    "scope": "The capture was examined for other policies; this is exploratory, not pristine out-of-sample profitability evidence.",
+    "nextDataNeed": "A subsequent capture with timely same-market book receipts and attributable fills or verified executable depth."
+  },
+  "validation": {
+    "sourceHashVerified": true,
+    "originalFrozenPrefixHashReproduced": true,
+    "thresholdTrainedOnlyBeforeCutoff": true,
+    "governorOverlapExcluded": true,
+    "testSuiteChanged": false,
+    "apiReads": 0,
+    "runtimeChanges": 0,
+    "contestOrders": 0
+  }
+}
