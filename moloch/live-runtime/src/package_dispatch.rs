@@ -2,7 +2,7 @@
 //! This stores caller-validated admission/evidence; it creates no account or
 //! execution authority. A crash after attempt is unresolved even before HTTP.
 //! Hash chains detect damage, not a hostile rewrite/re-hash of the whole file.
-use baal_transport_service::{Scope,Permit,RequestSpec,Receipt,TransportError,multi_leg::{self,Basket,ResponseEvidence}};
+use baal_transport_service::{Scope,Permit,RequestSpec,Receipt,TransportError,multi_leg::{self,Basket,ResponseEvidence},multi_leg_portfolio as signed};
 use moloch_replay::session::ExclusiveLock;
 use serde::{Serialize,Deserialize};
 use serde_json::{Value,json};
@@ -19,30 +19,46 @@ fn sync_directory(path:&Path)->Result<()>{#[cfg(unix)]File::open(path)?.sync_all
 /// Construct using the private Admission accessors. It is an immutable durable
 /// description, not a reconstituted scanner certificate or dispatch permission.
 #[derive(Clone,Serialize)]
-pub struct DurableIntent{proof:Value,reserve:Value,basket:Basket,scope:Scope,permit:Permit,queue_scope:String,spec:RequestSpec,request_hash:String,queue_binding:Value}
+#[serde(untagged)]
+enum FrozenBasket{Legacy(Basket),Portfolio(signed::Basket)}
+impl FrozenBasket{
+ fn key(&self)->&str{match self{Self::Legacy(v)=>&v.idempotency_key,Self::Portfolio(v)=>&v.idempotency_key}}
+ fn len(&self)->usize{match self{Self::Legacy(v)=>v.legs.len(),Self::Portfolio(v)=>v.legs.len()}}
+ fn request(&self,s:&Scope,p:&Permit)->Result<RequestSpec>{Ok(match self{Self::Legacy(v)=>multi_leg::request_spec(v,s,p)?,Self::Portfolio(v)=>signed::request_spec(v,s,p)?})}
+ fn acknowledgment(&self,r:&Receipt)->Result<()>{match self{Self::Legacy(v)=>{multi_leg::reported_fill(r,v)?;},Self::Portfolio(v)=>{signed::reported_fill(r,v)?;}}Ok(())}
+}
+#[derive(Clone,Serialize)]
+pub struct DurableIntent{proof:Value,reserve:Value,basket:FrozenBasket,scope:Scope,permit:Permit,queue_scope:String,spec:RequestSpec,request_hash:String,queue_binding:Value}
 impl DurableIntent{
- pub fn new(proof:Value,reserve:Value,basket:Basket,scope:Scope,permit:Permit,queue_scope:&str)->Result<Self>{
+ pub fn new(proof:Value,reserve:Value,basket:Basket,scope:Scope,permit:Permit,queue_scope:&str)->Result<Self>{Self::build(proof,reserve,FrozenBasket::Legacy(basket),scope,permit,queue_scope)}
+ pub fn new_portfolio(proof:Value,reserve:Value,basket:signed::Basket,scope:Scope,permit:Permit,queue_scope:&str)->Result<Self>{Self::build(proof,reserve,FrozenBasket::Portfolio(basket),scope,permit,queue_scope)}
+ fn build(proof:Value,reserve:Value,basket:FrozenBasket,scope:Scope,permit:Permit,queue_scope:&str)->Result<Self>{
   let digest=hash(&proof)?;let id=format!("pkg-{digest}");
   need(reserve["type"]=="live_package_reserve"&&reserve["source"]=="moloch_live_dispatcher"&&reserve["proofHash"]==digest&&reserve["packageId"]==id&&permit.intent_id==id,"PACKAGE_INTENT_PROOF")?;
   need(proof["runId"]==permit.run_id&&proof["bankManifestHash"]==reserve["bankScope"]["bankManifestHash"]&&proof["tournamentId"]==scope.tournament_id&&reserve["bankScope"]["runId"]==permit.run_id&&reserve["bankScope"]["tournamentId"]==scope.tournament_id&&hex(reserve["bankScope"]["bankManifestHash"].as_str().ok_or("PACKAGE_INTENT_MANIFEST")?),"PACKAGE_INTENT_SCOPE")?;
   need(!queue_scope.is_empty()&&queue_scope.len()<=512&&!queue_scope.chars().any(char::is_control)&&!permit.run_id.is_empty()&&!permit.owner.is_empty(),"PACKAGE_INTENT_OWNER")?;
-  need(basket.idempotency_key==format!("{}:{id}",permit.run_id)&&basket.maximum_cost==reserve["economics"]["maximumCost"]&&proof["maximumCost"]==basket.maximum_cost&&proof["usesFutureCollateral"]==false,"PACKAGE_INTENT_ECONOMICS")?;
+  need(basket.key()==format!("{}:{id}",permit.run_id)&&proof["usesFutureCollateral"]==false,"PACKAGE_INTENT_ECONOMICS")?;
+  match &basket{FrozenBasket::Legacy(b)=>need(reserve.get("portfolio").is_none()&&b.maximum_cost==reserve["economics"]["maximumCost"]&&proof["maximumCost"]==b.maximum_cost,"PACKAGE_INTENT_ECONOMICS")?,FrozenBasket::Portfolio(b)=>need(reserve.get("portfolio").is_some()&&proof["portfolio"]==reserve["portfolio"]&&b.maximum_gross_buy_cost==reserve["economics"]["maximumCost"]&&proof["grossFunding"]==b.maximum_gross_buy_cost&&proof["minimumCashProceeds"]==b.minimum_gross_sell_proceeds,"PACKAGE_INTENT_PORTFOLIO_ECONOMICS")?;}
   let created=clock(reserve["receivedAt"].as_str().ok_or("PACKAGE_INTENT_CLOCK")?)?;let expires=clock(reserve["expiresAt"].as_str().ok_or("PACKAGE_INTENT_CLOCK")?)?;
   need(created>=0&&expires>created&&proof["atMs"].as_i64()==Some(created)&&proof["expiresAtMs"].as_i64()==Some(expires)&&permit.expires_at_ms==expires as u64,"PACKAGE_INTENT_CLOCK")?;
   need(proof["wireLegs"]==reserve["legs"],"PACKAGE_INTENT_LEGS")?;
-  let legs=reserve["legs"].as_array().ok_or("PACKAGE_INTENT_LEGS")?;need(legs.len()==basket.legs.len(),"PACKAGE_INTENT_LEGS")?;
-  for (l,w) in legs.iter().zip(&basket.legs){need(l["exchangeId"]==w.exchange_id&&l["marketId"].as_str()==scope.exchanges.get(&w.exchange_id).map(String::as_str)&&l["side"]==(if w.side==multi_leg::Side::Yes{"YES"}else{"NO"})&&l["quantity"]==w.quantity&&l["limitPrice"]==w.limit_price&&hex(l["bookHash"].as_str().ok_or("PACKAGE_INTENT_BOOK")?),"PACKAGE_INTENT_LEGS")?;}
-  let spec=multi_leg::request_spec(&basket,&scope,&permit)?;let request_hash=hash(&spec)?;
-  let queue_binding=json!({"intent":format!("{}:{}",permit.run_id,permit.intent_id),"key":basket.idempotency_key,"payload_hash":hash(&json!({"scope":scope,"spec":spec}))?});
+  let legs=reserve["legs"].as_array().ok_or("PACKAGE_INTENT_LEGS")?;need(legs.len()==basket.len(),"PACKAGE_INTENT_LEGS")?;
+  match &basket{
+   FrozenBasket::Legacy(b)=>for(l,w)in legs.iter().zip(&b.legs){need(l.get("action").is_none()&&l["exchangeId"]==w.exchange_id&&l["marketId"].as_str()==scope.exchanges.get(&w.exchange_id).map(String::as_str)&&l["side"]==(if w.side==multi_leg::Side::Yes{"YES"}else{"NO"})&&l["quantity"]==w.quantity&&l["limitPrice"]==w.limit_price&&hex(l["bookHash"].as_str().ok_or("PACKAGE_INTENT_BOOK")?),"PACKAGE_INTENT_LEGS")?;},
+   FrozenBasket::Portfolio(b)=>for(l,w)in legs.iter().zip(&b.legs){need(l["exchangeId"]==w.exchange_id&&l["marketId"].as_str()==scope.exchanges.get(&w.exchange_id).map(String::as_str)&&l["side"]==(if w.side==multi_leg::Side::Yes{"YES"}else{"NO"})&&l["action"]==(if w.action==signed::Action::Buy{"buy"}else{"sell"})&&l["quantity"]==w.quantity&&l["limitPrice"]==w.limit_price&&hex(l["bookHash"].as_str().ok_or("PACKAGE_INTENT_BOOK")?),"PACKAGE_INTENT_LEGS")?;},
+  }
+  let spec=basket.request(&scope,&permit)?;let request_hash=hash(&spec)?;
+  let queue_binding=json!({"intent":format!("{}:{}",permit.run_id,permit.intent_id),"key":basket.key(),"payload_hash":hash(&json!({"scope":scope,"spec":spec}))?});
   Ok(Self{proof,reserve,basket,scope,permit,queue_scope:queue_scope.into(),spec,request_hash,queue_binding})
  }
  pub fn package_id(&self)->&str{self.permit.intent_id.as_str()}
  pub fn request_spec(&self)->&RequestSpec{&self.spec}
  pub fn request_hash(&self)->&str{&self.request_hash}
  pub fn queue_binding(&self)->&Value{&self.queue_binding}
- pub fn basket(&self)->&Basket{&self.basket}
+ pub fn basket(&self)->Result<&Basket>{match &self.basket{FrozenBasket::Legacy(v)=>Ok(v),_=>Err("PACKAGE_INTENT_IS_PORTFOLIO".into())}}
+ pub fn portfolio_basket(&self)->Option<&signed::Basket>{match &self.basket{FrozenBasket::Portfolio(v)=>Some(v),_=>None}}
  fn restore(v:&Value)->Result<Self>{
-  let restored=Self::new(v["proof"].clone(),v["reserve"].clone(),serde_json::from_value(v["basket"].clone())?,serde_json::from_value(v["scope"].clone())?,serde_json::from_value(v["permit"].clone())?,v["queue_scope"].as_str().ok_or("PACKAGE_INTENT_QUEUE_SCOPE")?)?;
+  let basket=if v["reserve"].get("portfolio").is_some(){FrozenBasket::Portfolio(serde_json::from_value(v["basket"].clone())?)}else{FrozenBasket::Legacy(serde_json::from_value(v["basket"].clone())?)};let restored=Self::build(v["proof"].clone(),v["reserve"].clone(),basket,serde_json::from_value(v["scope"].clone())?,serde_json::from_value(v["permit"].clone())?,v["queue_scope"].as_str().ok_or("PACKAGE_INTENT_QUEUE_SCOPE")?)?;
   need(serde_json::to_value(&restored)?==*v,"PACKAGE_INTENT_CHANGED")?;Ok(restored)
  }
 }
@@ -71,13 +87,14 @@ fn validate_zero(intent:&DurableIntent,e:&ResponseEvidence)->Result<Value>{
  let meta:Value=serde_json::from_slice(&fs::read(&e.private_metadata_path)?)?;
  need(meta["evidence"]==serde_json::to_value(e)?&&meta["request"]==serde_json::to_value(&intent.spec)?,"PACKAGE_ZERO_METADATA")?;
  let response=multi_leg::evidenced_response(e)?;
- need(multi_leg::zero_execution_reason(e.status,&response,intent.basket.legs.len()).is_some(),"PACKAGE_ZERO_UNKNOWN")?;Ok(response)
+ need(multi_leg::zero_execution_reason(e.status,&response,intent.basket.len()).is_some(),"PACKAGE_ZERO_UNKNOWN")?;Ok(response)
 }
 // Replay validates binding/integrity only. Original authenticity is supplied
 // at append by the SDK-owned opaque Proof; restart must reverify that source.
 pub(crate) fn validate_first_call(admission:&Value,error:&Value,proof:&Value,attempted:i64,at:i64)->Result<()>{
  need(attempted>=0&&at>=attempted&&proof["kind"]=="sdk_before_first_admit_no_http","PACKAGE_FIRST_CALL_KIND_OR_CLOCK")?;
  let t=&proof["ticket"];let k=&proof["keyIndex"];let end=&proof["terminal"];
+ if admission["reserve"].get("portfolio").is_some(){need(t["operation"]=="portfolio_v1","PACKAGE_FIRST_CALL_OPERATION")?;}
  for v in [t,k,end]{let mut body=v.clone();let claimed=body.as_object_mut().ok_or("PACKAGE_FIRST_CALL_OBJECT")?.remove("sha256").ok_or("PACKAGE_FIRST_CALL_HASH")?;need(claimed==hash(&body)?,"PACKAGE_FIRST_CALL_HASH")?;}
  need(t["schemaVersion"]==1&&t["kind"]=="sdk_first_logical_invocation"&&t["accountScope"]==admission["queue_scope"]&&t["binding"]==admission["queue_binding"]&&t["scope"]==admission["scope"]&&t["basket"]==admission["basket"]&&t["permit"]==admission["permit"]&&t["request"]==admission["spec"]&&t["requestSha256"]==admission["request_hash"],"PACKAGE_FIRST_CALL_BINDING")?;
  need(k["schemaVersion"]==1&&k["kind"]=="sdk_first_logical_key"&&k["accountScope"]==t["accountScope"]&&k["key"]==t["binding"]["key"]&&k["intent"]==t["binding"]["intent"]&&k["ticketSha256"]==t["sha256"],"PACKAGE_FIRST_CALL_KEY")?;
@@ -97,7 +114,7 @@ impl Projection{
   if kind=="intent"{
    need(!self.records.contains_key(id)&&!self.unresolved(),"PACKAGE_LOG_DUPLICATE_OR_UNRESOLVED")?;
    let i=DurableIntent::restore(&e["admission"])?;need(i.package_id()==id,"PACKAGE_LOG_ID")?;
-   need(self.records.values().all(|r|r.intent.basket.idempotency_key!=i.basket.idempotency_key),"PACKAGE_LOG_KEY_REUSE")?;
+   need(self.records.values().all(|r|r.intent.basket.key()!=i.basket.key()),"PACKAGE_LOG_KEY_REUSE")?;
    need(at>=clock(i.reserve["receivedAt"].as_str().ok_or("PACKAGE_INTENT_CLOCK")?)?,"PACKAGE_LOG_CLOCK")?;
    self.records.insert(id.into(),Record{intent:i,phase:"intent".into(),attempted_at:None,outcome:None});return Ok(())
   }
@@ -114,7 +131,7 @@ impl Projection{
     r.phase="never_attempted".into();r.outcome=Some(e.clone());
    },
    "unknown"=>{need(matches!(r.phase.as_str(),"attempt"|"unknown"),"PACKAGE_LOG_UNKNOWN_PHASE")?;need(e["error"]["mayHaveExecuted"]==true,"PACKAGE_LOG_UNKNOWN_ERROR")?;r.phase="unknown".into();r.outcome=Some(e.clone());},
-   "ack"=>{need(matches!(r.phase.as_str(),"attempt"|"unknown"),"PACKAGE_LOG_ACK_PHASE")?;let receipt:Receipt=serde_json::from_value(e["receipt"].clone())?;multi_leg::reported_fill(&receipt,&r.intent.basket)?;need(clock(&receipt.request_started_at)? >= started.ok_or("PACKAGE_LOG_NO_ATTEMPT")?&&clock(&receipt.received_at)?<=at,"PACKAGE_LOG_ACK_CLOCK")?;r.phase="ack".into();r.outcome=Some(e.clone());},
+   "ack"=>{need(matches!(r.phase.as_str(),"attempt"|"unknown"),"PACKAGE_LOG_ACK_PHASE")?;let receipt:Receipt=serde_json::from_value(e["receipt"].clone())?;r.intent.basket.acknowledgment(&receipt)?;need(clock(&receipt.request_started_at)? >= started.ok_or("PACKAGE_LOG_NO_ATTEMPT")?&&clock(&receipt.received_at)?<=at,"PACKAGE_LOG_ACK_CLOCK")?;r.phase="ack".into();r.outcome=Some(e.clone());},
    "definitive_zero"=>{need(matches!(r.phase.as_str(),"attempt"|"unknown"),"PACKAGE_LOG_ZERO_PHASE")?;let evidence=response_evidence(&e["evidence"])?;let response=validate_zero(&r.intent,&evidence)?;need(e["response"]==response&&clock(&evidence.request_started_at)? >= started.ok_or("PACKAGE_LOG_NO_ATTEMPT")?&&clock(&evidence.request_started_at)?<=clock(&evidence.received_at)?&&clock(&evidence.received_at)?<=at,"PACKAGE_LOG_ZERO_CLOCK_OR_CHANGED")?;r.phase="definitive_zero".into();r.outcome=Some(e.clone());},
    "first_call_not_sent"=>{
     need(r.phase=="attempt","PACKAGE_LOG_FIRST_CALL_PHASE")?;
@@ -231,4 +248,3 @@ impl PackageDispatchLog{
  /// Test-only durability fault after complete write but before sync/commit.
  #[cfg(test)]pub fn inject_sync_failure(&mut self){self.fail_after_write=true;}
 }
-
