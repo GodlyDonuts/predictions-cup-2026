@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "exportedAt": "2026-10-15T11:23:10.298911+00:00",
+  "release": "rust-live-v19",
+  "sourceCommit": "1470d38a",
+  "cohort": "first V19 verified owned fill only",
+  "fill": {
+    "action": "buy",
+    "actualOrderId": "39912772",
+    "at": "2026-10-15T11:19:21.791Z",
+    "counterfactual": false,
+    "exchangeId": "1012",
+    "executedAt": "2026-10-15T11:18:59.839Z",
+    "fee": "0.000000",
+    "marketId": "323",
+    "orderId": 466,
+    "price": "0.685000",
+    "quantity": 525,
+    "receiptHash": "6312aff86dd81ce8678b403d0d141e876d777a7bc477ac536f994448e574f6a1",
+    "side": "NO",
+    "sourceId": "166575251"
+  },
+  "officialFullTape": {
+    "receivedAt": "2026-10-15T11:19:21.787Z",
+    "httpStatus": 200,
+    "complete": true,
+    "hasMore": false,
+    "privateReceiptFileSha256": "83d504c6137c834af2242dfbc69f1d0344e821d9a349cb5aae5831cd54868235"
+  },
+  "capitalSpent": "359.625000",
+  "realizedProfitNotInferred": true,
+  "profitabilityEstablished": false,
+  "accountRequestsByExport": 0
+}

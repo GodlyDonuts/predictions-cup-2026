@@ -56,3 +56,5 @@ The preceding manifest-fence candidate38cb3acb passed55 tests and a locked offli
 
 
 Historical manifest-fence binary SHA256: `630b08ca90d82b0bb47c2b3ddb15bb5f9f280d1b1b909b9241b9002c252a92df`. Historical source/test hashes: `823a72b7a9c29b72d5ab50c4967e5662caaba8789a460181c67756ae3c13bc94` / `4b4d9351e627c0c240dd774a4ab27d2d4bd029fd4ab34fc7a575fa5b74522f22`; historical tar `121653aed969392f095dd4e8e7c6de8a0f6c8d44583bc72f56cfa8ae6966b502`. This older candidate is superseded by the compact-poison repair above.
+
+Parent compatibility check after importing the isolated prototype into the unchanged SDK include tree: all135 transport-service tests pass on ARM64. The v1 SDK still opens only v1 Store; no live manifest, SDK backend or production queue was migrated. Core standalone61tests/locked release and independent bed683dc review pass. Production adoption still needs the typed summary/lookup adapter, actual large-tail recovery and resident-memory measurements under the512MiB service bound.

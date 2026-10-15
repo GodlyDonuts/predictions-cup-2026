@@ -2,6 +2,9 @@
 
 ## V19: exact-cash repair deployed; fresh official orders verified
 
+Latest complete-cycle observation11:28:30.338Z: PID151390,114officialACK/108dispatch-terminal bindings,28actualfills, realtimehealthy andSTOPfalse. Selected26RESTscopes; managedcapacity31/discovery3 and237observedexchanges verified. First full cycle took about14.5minutes including startup; this is a live latency limitation. A new525NO BUY at0.685 executed11:18:59.839Z, source-bound by [complete official fill evidence](../data/moloch-v19-first-owned-fill-20261015.json). Realized remains17.825000, comprising inherited17.935000 and newTrading−0.110000. This new holding is not realized profit. The checked urgent-exit follow-up remains separate from this running binary.
+
+
 At 2026-10-15T11:17:50Z, V19 PID151390 had resumed actual exchange submissions after repairing the rounded-cash mismatch. A fixed five-order cohort received five HTTP200 acknowledgments between11:15:32.009Z and11:16:34.275Z. No fill is inferred from an ACK. The native bank still had27 actual fills, realized17.825000, inherited17.935000 and new trading−0.110000. Execution STOP was absent. [Sanitized exact-source evidence](../data/moloch-v19-live-repair-20261015.json).
 
 V19 started11:14:01.236202Z after V18 gracefully stopped11:13:36.405Z. Every preceding submission attempt was bound to one original/recovered acknowledgment;163queue intent bindings remained with no active/unknown operation or manual review. Checked source1470d38a passed136runtime checks and locked ARM64 release. Immutable binary SHA256 is cf5821a7feb2b1d242a8c574728e76daf717a05985c159dce01ef719c86a4dcd. Native identity, full funded bank, old receipts, inherited lots, authority caps and14:44:34.413Z entry cutoff remain unchanged.
