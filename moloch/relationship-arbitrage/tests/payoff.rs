@@ -59,6 +59,13 @@ fn dual_no() -> Vec<Instrument> {vec![ins(0,Side::No),ins(1,Side::No)]}
     let mut a=contract(0);a.settlement=Settlement::Verified{rules:source(),complete:false,exceptions:vec![]};
     assert_eq!(compile(vec![a],&[],1000,100).unwrap_err(),"SETTLEMENT_INCOMPLETE");
 }
+#[test] fn refund_equal_to_ordinary_payout_is_still_exceptional() {
+    let mut a=contract(0);
+    a.settlement=Settlement::Verified{rules:source(),complete:true,exceptions:vec![(0,UNIT)]};
+    let c=compile(vec![a,contract(1)],&[declaration(Logic::Complement{a:0,b:1})],1000,100).unwrap();
+    let mut b=books();b[0].yes_asks=levels(400_000);b[1].yes_asks=levels(400_000);
+    assert!(c.evaluate(&[ins(0,Side::Yes),ins(1,Side::Yes)],1,&b,&limits()).is_err());
+}
 #[test] fn active_price_constraint_is_not_a_settlement_certificate() {
     let mut d=declaration(Logic::Complement{a:0,b:1});d.settlement_logic_source=None;
     assert_eq!(compile(vec![contract(0),contract(1)],&[d],1000,100).unwrap_err(),"SETTLEMENT_LOGIC_UNVERIFIED");

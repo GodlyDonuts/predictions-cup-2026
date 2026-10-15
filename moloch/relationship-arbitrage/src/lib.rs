@@ -134,7 +134,10 @@ pub fn compile(contracts: Vec<Contract>, declarations: &[Declaration], now: u64,
         let mut v = vec![(UNIT,0),(0,UNIT)];
         for &(y,n) in exceptions {
             need((0..=UNIT).contains(&y) && (0..=UNIT).contains(&n), "REFUND_PAYOUT")?;
-            if !v.contains(&(y,n)) { v.push((y,n)); }
+            // Keep an exception even if its numerical payout equals an ordinary
+            // YES/NO outcome: ordinary relationship constraints may not apply
+            // to that cancellation state. Deduplication here can invent a floor.
+            v.push((y,n));
         }
         variants.push(v);
     }
