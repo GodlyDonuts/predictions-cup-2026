@@ -29,3 +29,7 @@ V24 started at2026-10-15T19:37:18.274Z as PID211334. The stopped boundary had366
 ## Launch rejected; V23 restored
 
 The V24 process failed at19:37:34.922Z on UPGRADE_TARGET_IDENTITY before historical bank restoration. Unchanged Git source did not establish identical raw build inputs. No financial bridge was altered to bypass that rejection. After rechecking366/366 acknowledged physical attempts and the quiet global queue, the exact prior control and service unit were restored. Checked V23 restarted19:41:58.005Z as PID215346 with the existing bridge unchanged. Fresh trading verification is again pending replay. V24 remains rejected until the build identity discrepancy is independently resolved.
+
+## V25 corrected build profile
+
+The original build embeds a mixed line-ending profile: engine.rs, engine_live.rs and session.rs retain their original bytes; lib.rs, legacy.rs, journal.rs and native Cargo.lock use LF. Applying precisely that profile reproduces the approved engine identity 8520add404082af22ae484409cfcb972a895ffe612dec014c9d668c70b7ca282. The identity was also independently executed from the exact compiled native dependency emitted by the corrected runtime Cargo build (matching thin-LTO linkage). All206 runtime checks and the locked ARM64 release pass again. The corrected immutable release is V25, binary SHA256 5be7240f4e5b2b213a0a32838316f47ecea12af534eb57380059295e4faae165. No fifth bridge or financial policy change is needed. Controlled launch remains pending at this checkpoint.
