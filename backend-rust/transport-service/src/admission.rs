@@ -13,8 +13,31 @@ impl AccountAdmission {
     }
     pub fn open(directory:&Path,scope:&str,token:&str)->std::result::Result<Self,String>{Ok(Self{store:Store::open(directory,scope,token)?})}
     pub fn command(&mut self,command:Value)->std::result::Result<Value,String>{let c:Command=serde_json::from_value(command).map_err(|_|"INVALID_COMMAND".to_string())?;self.store.command(c)}
+    /// Retry only a rejected local append after explicit preserving compaction.
+    /// This never sends or repeats an HTTP request; all active/unknown bindings,
+    /// rate history and backoff survive the checked checkpoint transition.
+    pub fn command_with_maintenance(&mut self,command:Value)->std::result::Result<Value,String>{
+        let c:Command=serde_json::from_value(command.clone()).map_err(|_|"INVALID_COMMAND".to_string())?;
+        let scope=c.scope.clone();let now=c.now;let compact=c.op=="compact";
+        match self.store.command(c){Err(code) if !compact&&matches!(code.as_str(),"EXPLICIT_COMPACTION_REQUIRED"|"RECOVERY_COMPACTION_REQUIRED")=>{
+            self.command(serde_json::json!({"op":"compact","scope":scope,"now":now}))?;
+            self.command(command)
+        },result=>result}
+    }
     pub fn seed_legacy_headroom(&mut self,now:u64,until:u64,manual_review:bool)->std::result::Result<(),String>{
         need((self.store.sequence==0||self.store.sequence==1&&self.store.state.read_profile.is_some())&&self.store.state.last_clock==0&&self.store.state.reads.is_empty()&&self.store.state.writes.is_empty()&&self.store.state.active.is_none()&&self.store.state.intents.is_empty(),"MIGRATION_BOUNDARY_REQUIRES_FRESH_QUEUE")?;
         need(now<=until&&until<=MAX_TIME,"INVALID_MIGRATION_CLOCK")?;let mut state=self.store.state.clone();state.last_clock=now;state.next=until;state.cooldown=until;state.manual_review=manual_review;self.store.persist(state)
     }
+}
+
+#[cfg(test)]mod maintenance_tests{
+ use super::*;
+ fn fixture()->PathBuf{let p=std::env::temp_dir().join(format!("sdk-maintenance-{}-{}",std::process::id(),std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_nanos()));fs::create_dir(&p).unwrap();p}
+ fn command(op:&str,now:u64)->Value{serde_json::json!({"op":op,"scope":"maintenance","now":now,"request":"request","write":true,"binding":{"intent":"intent","key":"key","payload_hash":"a".repeat(64)},"authorized":true,"lease_valid":true,"permit_valid":true,"outcome":"success","status":200})}
+ fn opened(dir:&Path)->AccountAdmission{let mut a=AccountAdmission{store:Store::open(dir,"maintenance","first").unwrap()};for now in 1..10{a.command(serde_json::json!({"op":"status","scope":"maintenance","now":now})).unwrap();}a}
+ #[test]fn capacity_rotation_replays_one_local_admission_without_forgetting_bindings(){let dir=fixture();{let mut a=opened(&dir);a.store.maximum_bytes=a.store.active_bytes+10;assert_eq!(a.command_with_maintenance(command("admit",2000)).unwrap()["admitted"],true);assert_eq!(a.store.state.intents.len(),1);assert_eq!(a.store.state.keys.len(),1);assert_eq!(a.store.state.writes,vec![2000]);assert!(dir.join("account-queue-manifest.json").exists());}fs::remove_dir_all(dir).unwrap();}
+ #[test]fn capacity_rotation_before_network_marker_preserves_crash_uncertainty(){let dir=fixture();{let mut a=opened(&dir);a.command(command("admit",2000)).unwrap();a.store.maximum_bytes=a.store.active_bytes+10;a.command_with_maintenance(command("network",2000)).unwrap();assert!(a.store.state.active.as_ref().unwrap().network_started);}let a=AccountAdmission{store:Store::open(&dir,"maintenance","second").unwrap()};assert_eq!(a.store.state.unknown.len(),1);assert_eq!(a.store.state.intents.len(),1);drop(a);fs::remove_dir_all(dir).unwrap();}
+ #[test]fn completion_rotation_persists_existing_outcome_without_a_second_network_admission(){let dir=fixture();{let mut a=opened(&dir);a.command(command("admit",2000)).unwrap();a.command(command("network",2000)).unwrap();a.store.maximum_bytes=a.store.active_bytes+10;a.command_with_maintenance(command("complete",2500)).unwrap();assert!(a.store.state.active.is_none());assert!(a.store.state.unknown.is_empty());assert_eq!(a.store.state.writes,vec![2000]);assert_eq!(a.store.state.intents.len(),1);assert_eq!(a.store.state.next,5000);}fs::remove_dir_all(dir).unwrap();}
+ #[test]fn recovery_compaction_retains_unknown_and_blocks_a_new_write(){let dir=fixture();let cap;{let mut a=opened(&dir);a.command(command("admit",2000)).unwrap();a.command(command("network",2000)).unwrap();cap=a.store.active_bytes;}let mut a=AccountAdmission{store:Store::open_with_limit(&dir,"maintenance","second",cap).unwrap()};assert!(a.store.recovery_compaction_required);a.command_with_maintenance(serde_json::json!({"op":"status","scope":"maintenance","now":3000})).unwrap();assert_eq!(a.store.state.unknown.len(),1);assert_eq!(a.store.state.writes,vec![2000]);assert_eq!(a.command_with_maintenance(command("admit",5000)).unwrap_err(),"UNKNOWN_ACCEPTANCE_RECONCILE_FIRST");drop(a);fs::remove_dir_all(dir).unwrap();}
+ #[test]fn lease_and_durability_failures_never_trigger_maintenance(){for poisoned in [true,false]{let dir=fixture();let mut a=opened(&dir);if poisoned{a.store.poisoned=true;}else{fs::write(&a.store.lock_path,b"other-owner").unwrap();}assert_eq!(a.command_with_maintenance(command("status",2000)).unwrap_err(),if poisoned{"DURABILITY_FAILURE"}else{"SCOPED_LEASE_LOST"});assert!(!dir.join("account-queue-manifest.json").exists());drop(a);fs::remove_dir_all(dir).unwrap();}}
 }

@@ -91,7 +91,7 @@ impl Transport {
   let client=Client::builder().no_proxy().redirect(Policy::none()).timeout(Duration::from_secs(20)).connect_timeout(Duration::from_secs(10)).build().map_err(|_|fail("HTTP_CLIENT_UNAVAILABLE"))?;
   Ok(Self{config,credentials,clock,authority,client,base,queue,request_sequence:0,poisoned:false,full_account_observation:false,last_basket_response:None})
  }
- fn command(&mut self,mut c:Value)->Result<Value>{c["scope"]=json!(self.config.account_scope);c["now"]=json!(self.clock.now_ms());self.queue.command(c).map_err(|e|fail(&e))}
+ fn command(&mut self,mut c:Value)->Result<Value>{c["scope"]=json!(self.config.account_scope);c["now"]=json!(self.clock.now_ms());self.queue.command_with_maintenance(c).map_err(|e|fail(&e))}
  fn guard(&self,spec:&RequestSpec,permit:Option<&Permit>,network:bool)->Result<()> {
   need(!self.poisoned&&self.authority.can_read(&self.config.scope),"STOPPED_OR_OWNER_LOST")?;
   if spec.method!="GET"&&!(spec.method=="POST"&&spec.endpoint=="/realtime/token"&&spec.body.is_none()&&spec.body_json.is_none()){need(self.config.writes_enabled,"WRITES_DISABLED")?;let p=permit.ok_or_else(||fail("PERMIT_REQUIRED"))?;need(p.owner=="Codex"&&p.expires_at_ms>self.clock.now_ms()&&!p.run_id.is_empty()&&!p.intent_id.is_empty(),"PERMIT_EXPIRED_OR_INVALID")?;self.authority.authorize(&self.config.scope,spec,p,network,self.clock.now_ms())?;need(self.authority.can_read(&self.config.scope),"STOPPED_OR_OWNER_LOST")?;}
