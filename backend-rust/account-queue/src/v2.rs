@@ -237,11 +237,11 @@ fn read_checkpoint(path:&Path,scope:&str,expected:&str)->Result<(State,Header)>{
 }
 
 pub(super) struct V2Store {
-    file:File,state:State,sequence:u64,previous:String,lock_path:PathBuf,identity:Vec<u8>,poisoned:bool,
-    dir:PathBuf,journal_name:String,checkpoint_hash:String,migration:MigrationProof,active_bytes:u64,maximum_bytes:u64,
+    file:File,state:State,sequence:u64,previous:String,lock_path:PathBuf,identity:Vec<u8>,pub(super) poisoned:bool,
+    dir:PathBuf,journal_name:String,checkpoint_hash:String,migration:MigrationProof,active_bytes:u64,pub(super) maximum_bytes:u64,
 }
 impl V2Store {
-    fn owned(&self)->Result<()>{need(!self.poisoned,"DURABILITY_FAILURE")?;need(fs::read(&self.lock_path).ok().as_deref()==Some(&self.identity),"SCOPED_LEASE_LOST")}
+    pub(super) fn owned(&self)->Result<()>{need(!self.poisoned,"DURABILITY_FAILURE")?;need(fs::read(&self.lock_path).ok().as_deref()==Some(&self.identity),"SCOPED_LEASE_LOST")}
     pub(super) fn open(dir:&Path,scope:&str,token:&str)->Result<Self>{
         need(!scope.is_empty() && !token.is_empty(),"SCOPE_TOKEN_REQUIRED")?;
         let lock_path=dir.join("offline-account-queue.lock");
@@ -339,7 +339,7 @@ impl V2Store {
         self.owned()?;
         match result{Ok(_) if full=>Ok(json!({"state":self.state})),Ok(_) if summary=>Ok(self.summary()),Ok(_) if lookup.is_some()=>self.lookup_intent(lookup.as_deref().unwrap()),r=>r}
     }
-    fn summary(&self)->Value{
+    pub(super) fn summary(&self)->Value{
         json!({"summarySchemaVersion":1,"globalUnknownCount":self.state.unknown.len(),"hasUnknown":!self.state.unknown.is_empty(),"state":Operational::capture(&self.state),"immutable_bindings":self.state.intents.len(),"idempotency_keys":self.state.keys.len(),"unknown_acceptances":self.state.unknown.len(),"sequence":self.sequence,"previous":self.previous,"active_journal_bytes":self.active_bytes,"schema_version":2})
     }
     pub(super) fn lookup_intent(&self,intent:&str)->Result<Value>{self.owned()?;need(!intent.is_empty(),"INTENT_ID_REQUIRED")?;Ok(json!({"lookupSchemaVersion":1,"intent":intent,"binding":self.state.intents.get(intent),"unknownBinding":self.state.unknown.get(intent),"globalUnknownCount":self.state.unknown.len(),"hasUnknown":!self.state.unknown.is_empty()}))}

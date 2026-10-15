@@ -101,7 +101,18 @@ impl Transport {
  fn perform(&mut self,spec:RequestSpec,permit:Option<&Permit>,validator:impl Fn(&Self,&Value)->Result<()>)->Result<Receipt>{
   self.guard(&spec,permit,false)?;self.request_sequence+=1;let request=format!("request-{}-{}",self.clock.now_ms(),self.request_sequence);let write=spec.method!="GET"&&spec.endpoint!="/realtime/token";
   let binding=if write{let p=permit.unwrap();let key=spec.body.as_ref().and_then(|b|b.get("idempotencyKey")).and_then(Value::as_str).map(str::to_string).unwrap_or_else(||format!("{}:{}:cancel",p.run_id,p.intent_id));Some(json!({"intent":format!("{}:{}",p.run_id,p.intent_id),"key":key,"payload_hash":digest(serde_json::to_string(&json!({"scope":self.config.scope,"spec":spec})).unwrap().as_bytes())}))}else{None};
-  loop{self.guard(&spec,permit,false)?;let c=json!({"op":"admit","request":request,"write":write,"binding":binding,"authorized":write,"lease_valid":write,"permit_valid":write});let r=self.command(c)?;if r["admitted"]==true{break;}let until=r["wait_until"].as_u64().ok_or_else(||fail("QUEUE_RESPONSE"))?;self.wait(until,&spec,permit)?;}
+  // The bounded summary is authoritative for GLOBAL uncertainty. An exact
+  // lookup may be empty while another intent is unknown; never infer emptiness
+  // from the requested intent. Core admission independently repeats its fences.
+  let queue=self.admission_summary()?;
+  if write{
+   let b=binding.as_ref().unwrap();let intent=b["intent"].as_str().ok_or_else(||fail("INVALID_BINDING"))?;
+   let known=self.admission_lookup_intent(intent)?;
+   need(known.global_unknown_count==queue.global_unknown_count&&known.has_unknown==queue.has_unknown,"QUEUE_UNKNOWN_SNAPSHOT_CHANGED")?;
+  }
+  // Let core admission evaluate clock/manual/active/immutable errors in their
+  // original order. An SDK precheck must not hide durable clock regression.
+  loop{self.guard(&spec,permit,false)?;let c=json!({"op":"admit","request":request,"write":write,"binding":binding,"authorized":write,"lease_valid":write,"permit_valid":write});let r=self.command(c)?;if r["admitted"]==true{if write&&queue.has_unknown{self.poisoned=true;return Err(fail("UNKNOWN_ACCEPTANCE_RECONCILE_FIRST"));}break;}let until=r["wait_until"].as_u64().ok_or_else(||fail("QUEUE_RESPONSE"))?;self.wait(until,&spec,permit)?;}
   let network_guard=self.guard(&spec,permit,true);if let Err(error)=network_guard{let _=self.command(json!({"op":"complete","request":request,"outcome":"not_sent"}));return Err(error);}
   // Authentication is loaded only after scoped admission, never at process startup.
   let key=match self.credentials.load(){Ok(k)=>k,Err(e)=>{let _=self.command(json!({"op":"complete","request":request,"outcome":"not_sent"}));return Err(e)}};
@@ -142,7 +153,15 @@ impl Transport {
    need(parse_clock(&v["expiresAt"]).is_some_and(|t|t>s.clock.now_ms()+60000),"REALTIME_AUTH_EXPIRY")
   })?;Ok(r.data)
  }
- pub fn admission_state(&mut self)->Result<Value>{self.command(json!({"op":"status"}))}
+ /// Legacy full-state diagnostic. Explicitly migrated v2 queues require typed
+ /// consumers; returning a summary in this shape would fail old unknown guards.
+ pub fn admission_state(&mut self)->Result<Value>{need(!self.queue.is_v2(),"V2_TYPED_SUMMARY_REQUIRED")?;self.command(json!({"op":"status"}))}
+ /// Bounded snapshot of the last durable operation; querying does not advance
+ /// its clock, prune rate samples or append another queue transition.
+ pub fn admission_summary(&self)->Result<admission::AdmissionSummary>{self.queue.summary().map_err(|e|fail(&e))}
+ pub fn admission_lookup_intent(&self,intent:&str)->Result<admission::BindingLookup>{self.queue.lookup_intent(intent).map_err(|e|fail(&e))}
+ /// Explicit O(N) full-state diagnostic on either selected queue version.
+ pub fn admission_diagnostic_state(&mut self)->Result<Value>{self.command(json!({"op":"diagnostic_status"}))}
  pub fn reserve_legacy_migration_boundary(&mut self,legacy_next:u64,manual_review:bool)->Result<()> {
   // Parent must first prove the old account owner/requests are stopped. This
   // conservative quiet minute prevents an empty Rust history from forgetting
@@ -273,7 +292,12 @@ impl Transport {
  pub fn last_basket_response_evidence(&self)->Option<&multi_leg::ResponseEvidence>{self.last_basket_response.as_ref()}
  pub fn cancel(&mut self,order_id:String,permit:Permit)->Result<Receipt>{self.owned(&order_id)?;self.perform(RequestSpec{method:"DELETE".into(),endpoint:format!("/orders/{order_id}"),body:None,body_json:None},Some(&permit),|s,v|need(id_value(&v["orderId"]).as_ref()==Some(&order_id)&&v["tournamentId"]==s.config.scope.tournament_id,"CANCEL_ACK_SCOPE"))}
  pub fn reconcile(&mut self)->Result<AccountReconciliation>{let started=utc(self.clock.now_ms())?;let tournament=self.request(Endpoint::Tournament)?;let positions=self.request(Endpoint::Positions)?;let orders=self.request(Endpoint::Orders{status:"all".into()})?;let cash=tournament.data["myBalance"].to_string();decimal_units(&cash)?;Ok(AccountReconciliation{tournament,positions,orders,exact_cash:cash,started_at:started,completed_at:utc(self.clock.now_ms())?,adopts_holdings:false})}
- pub fn reconcile_unknown(&mut self,binding:Value)->Result<()> {self.authority.reconcile_unknown(&self.config.scope,&binding,self.clock.now_ms())?;self.command(json!({"op":"reconcile","binding":binding,"reconciled":true,"lease_valid":true,"permit_valid":true}))?;Ok(())}
+ pub fn reconcile_unknown(&mut self,binding:Value)->Result<()> {
+  let expected:admission::ImmutableBinding=serde_json::from_value(binding.clone()).map_err(|_|fail("INVALID_BINDING"))?;
+  let summary=self.admission_summary()?;let exact=self.admission_lookup_intent(&expected.intent)?;
+  need(summary.has_unknown&&summary.global_unknown_count==exact.global_unknown_count&&exact.has_unknown&&exact.unknown_binding.as_ref()==Some(&expected),"UNKNOWN_BINDING_MISMATCH")?;
+  self.authority.reconcile_unknown(&self.config.scope,&binding,self.clock.now_ms())?;self.command(json!({"op":"reconcile","binding":binding,"reconciled":true,"lease_valid":true,"permit_valid":true}))?;Ok(())
+ }
 }
 fn percent(text:&str)->String {text.as_bytes().iter().map(|b|if b.is_ascii_alphanumeric()||b"-_.~".contains(b){(*b as char).to_string()}else{format!("%{b:02X}")}).collect()}
 fn parse_clock(v:&Value)->Option<u64>{v.as_str().and_then(|s|DateTime::parse_from_rfc3339(s).ok()).and_then(|d|u64::try_from(d.timestamp_millis()).ok())}
