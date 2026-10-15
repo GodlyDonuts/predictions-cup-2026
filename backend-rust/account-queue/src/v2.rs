@@ -113,6 +113,21 @@ enum Entry {Header(Header),Binding(Binding),Unknown(Binding),Footer{bindings:usi
 struct CheckpointRow {index:u64,previous:String,entry:Entry,hash:String}
 fn row_hash(index:u64,previous:&str,entry:&Entry)->String{hash(&(2u32,index,previous,entry))}
 
+fn manifest_bytes(dir:&Path)->Result<Option<Vec<u8>>>{
+    let file=match File::open(dir.join("account-queue-manifest.json")){
+        Ok(file)=>file,Err(e) if e.kind()==std::io::ErrorKind::NotFound=>return Ok(None),Err(_)=>return Err("MANIFEST_UNAVAILABLE".into())};
+    let mut bytes=Vec::new();file.take(4097).read_to_end(&mut bytes).map_err(|_|"MANIFEST_UNAVAILABLE")?;
+    need(bytes.len()<=4096,"MANIFEST_TOO_LARGE")?;Ok(Some(bytes))
+}
+fn selected_manifest(dir:&Path,version:u32,scope:&str,journal:&str,checkpoint:Option<&str>)->Result<Option<Vec<u8>>>{
+    let bytes=manifest_bytes(dir)?;
+    if let Some(bytes)=&bytes{
+        let m:Manifest=serde_json::from_slice(bytes).map_err(|_|"MANIFEST_INVALID")?;
+        need(m.schema_version==version && m.scope==scope && m.journal==journal && Some(m.checkpoint_hash.as_str())==checkpoint,"V2_MANIFEST_CHANGED")?;
+    }else{need(version==1 && checkpoint.is_none(),"GENERATION_MANIFEST_REQUIRED")?;}
+    Ok(bytes)
+}
+
 fn pin_directory(dir:&Path)->Result<()>{
     #[cfg(unix)] {File::open(dir).and_then(|f|f.sync_all()).map_err(|_|"V2_DIRECTORY_DURABILITY_FAILURE".into())}
     // No pretend durability on unsupported platforms. Windows fixture tests
@@ -244,12 +259,13 @@ impl V2Store {
     pub(super) fn lookup_intent(&self,intent:&str)->Result<Value>{self.owned()?;need(!intent.is_empty(),"INTENT_ID_REQUIRED")?;Ok(json!({"lookupSchemaVersion":1,"intent":intent,"binding":self.state.intents.get(intent),"unknownBinding":self.state.unknown.get(intent),"globalUnknownCount":self.state.unknown.len(),"hasUnknown":!self.state.unknown.is_empty()}))}
     fn compact_with_hook(&mut self,mut hook:impl FnMut(&str)->Result<()>,mut pin:impl FnMut(&Path)->Result<()>)->Result<Value>{
         self.owned()?;self.poisoned=true;
+        let expected_manifest=selected_manifest(&self.dir,2,&self.state.scope,&self.journal_name,Some(&self.checkpoint_hash))?;
         self.file.sync_all().map_err(|_|"COMPACTION_DURABILITY_FAILURE")?;
         let (source_bytes,source_sha256)=source_digest(&self.dir.join(&self.journal_name))?;
         need(source_bytes==self.active_bytes,"SOURCE_JOURNAL_CHANGED")?;
         let anchor=Anchor{sequence:self.sequence,previous:self.previous.clone(),source_journal:self.journal_name.clone(),source_bytes,source_sha256,prior_checkpoint_hash:Some(self.checkpoint_hash.clone())};
         let h=Header{schema_version:2,anchor,operational:Operational::capture(&self.state),migration:self.migration.clone(),bindings:self.state.intents.len(),unknowns:self.state.unknown.len()};
-        let (journal_name,checkpoint_hash)=switch_generation(&self.dir,&self.lock_path,&self.identity,&self.state,h,&mut hook,&mut pin)?;
+        let (journal_name,checkpoint_hash)=switch_generation(&self.dir,&self.lock_path,&self.identity,&self.state,h,expected_manifest.as_deref(),&mut hook,&mut pin)?;
         self.file=OpenOptions::new().append(true).open(self.dir.join(&journal_name)).map_err(|_|"ACTIVE_JOURNAL_OPEN_FAILED")?;
         self.journal_name=journal_name;self.checkpoint_hash=checkpoint_hash;self.active_bytes=0;self.poisoned=false;self.owned()?;Ok(json!({"compacted":true,"sequence":self.sequence,"previous":self.previous,"immutable_bindings":self.state.intents.len(),"unknown_acceptances":self.state.unknown.len(),"active_journal_bytes":0}))
     }
@@ -257,10 +273,13 @@ impl V2Store {
     fn migrate_with_hook(mut old:Store,proof:&MigrationProof,mut hook:impl FnMut(&str)->Result<()>,mut pin:impl FnMut(&Path)->Result<()>)->Result<Self>{
         old.owned()?;need(!old.recovery_compaction_required && old.state.active.is_none(),"V2_MIGRATION_RECONCILE_FIRST")?;
         need(&MigrationProof::capture(&old)?==proof,"V2_MIGRATION_SOURCE_PROOF_MISMATCH")?;validate_maps(&old.state)?;
+        let expected_manifest=selected_manifest(&old.dir,1,&old.state.scope,&old.journal_name,old.checkpoint_hash.as_deref())?;
+        let expected_hash=expected_manifest.as_ref().map(|bytes|format!("{:x}",Sha256::digest(bytes)));
+        need(expected_hash==proof.manifest_sha256,"V2_MIGRATION_SOURCE_PROOF_MISMATCH")?;
         let anchor=Anchor{sequence:old.sequence,previous:old.previous.clone(),source_journal:old.journal_name.clone(),source_bytes:proof.source_bytes,source_sha256:proof.source_sha256.clone(),prior_checkpoint_hash:old.checkpoint_hash.clone()};
         let h=Header{schema_version:2,anchor,operational:Operational::capture(&old.state),migration:proof.clone(),bindings:old.state.intents.len(),unknowns:old.state.unknown.len()};
         old.poisoned=true;
-        let (journal_name,checkpoint_hash)=switch_generation(&old.dir,&old.lock_path,&old.identity,&old.state,h,&mut hook,&mut pin)?;
+        let (journal_name,checkpoint_hash)=switch_generation(&old.dir,&old.lock_path,&old.identity,&old.state,h,expected_manifest.as_deref(),&mut hook,&mut pin)?;
         let file=OpenOptions::new().append(true).open(old.dir.join(&journal_name)).map_err(|_|"ACTIVE_JOURNAL_OPEN_FAILED")?;
         // Transfer this exact lease; old Drop must not remove the successor lock.
         let identity=std::mem::take(&mut old.identity);
@@ -270,7 +289,7 @@ impl V2Store {
 }
 impl Drop for V2Store {fn drop(&mut self){if fs::read(&self.lock_path).ok().as_deref()==Some(&self.identity){let _=fs::remove_file(&self.lock_path);}}}
 
-fn switch_generation(dir:&Path,lock:&Path,identity:&[u8],state:&State,h:Header,hook:&mut impl FnMut(&str)->Result<()>,pin:&mut impl FnMut(&Path)->Result<()>)->Result<(String,String)>{
+fn switch_generation(dir:&Path,lock:&Path,identity:&[u8],state:&State,h:Header,expected_manifest:Option<&[u8]>,hook:&mut impl FnMut(&str)->Result<()>,pin:&mut impl FnMut(&Path)->Result<()>)->Result<(String,String)>{
     let nonce=std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).map_err(|_|"COMPACTION_NONCE_FAILED")?.as_nanos();
     let checkpoint_name=format!("checkpoint-v2-{}-{nonce}.jsonl",h.anchor.sequence);
     let journal_name=format!("queue-v2-{}-{nonce}.jsonl",h.anchor.sequence);
@@ -287,6 +306,11 @@ fn switch_generation(dir:&Path,lock:&Path,identity:&[u8],state:&State,h:Header,h
     // the first manifest is fail-closed, never an old-history fallback.
     pin(dir)?;hook("generation_pinned")?;
     need(fs::read(lock).ok().as_deref()==Some(identity),"SCOPED_LEASE_LOST")?;
+    // The lease is necessary but insufficient if an unrelated maintenance
+    // process replaces the selection without honoring it. Compare the exact
+    // captured bytes (including expected absence) immediately before rename.
+    // This detects a changed selection; it is not a filesystem compare-and-swap.
+    need(manifest_bytes(dir)?.as_deref()==expected_manifest,"V2_MANIFEST_CHANGED")?;
     fs::rename(dir.join(&temp),dir.join("account-queue-manifest.json")).map_err(|_|"MANIFEST_ATOMIC_SWITCH_FAILED")?;
     hook("manifest_switched")?;pin(dir)?;hook("manifest_pinned")?;
     need(fs::read(lock).ok().as_deref()==Some(identity),"SCOPED_LEASE_LOST")?;Ok((journal_name,digest))

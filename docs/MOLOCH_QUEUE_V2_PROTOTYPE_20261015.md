@@ -20,6 +20,8 @@ Streaming bounds serialization memory, not resident history. The two complete pe
 
 Checkpoint publication fsyncs the file, creates/syncs an empty successor tail and temporary manifest, verifies the source bytes/hash again, pins all directory entries and the generation guard, then atomically renames and directory-fsyncs the schema2 manifest. Failure poisons the writer. A first guard without its manifest makes both readers fail closed; an older manifest is never implicitly selected. Unix directory fsync is required. Unsupported platforms return `V2_DIRECTORY_FSYNC_UNSUPPORTED`; they do not pretend to provide equivalent durability.
 
+Generation staging captures the exact current manifest bytes, or its verified absence, after matching the loaded selection. Immediately before the rename it rechecks those same bytes under the unchanged lease. A changed/removed/created manifest returns `V2_MANIFEST_CHANGED`, preserves the replacement or absence, and poisons the writer. Tests inject changes at the final pre-rename boundary during both v1 migration and v2 compaction. This is a detection fence, not a filesystem compare-and-swap: all compliant writers must still honor the exclusive lease; an actor bypassing it can race after any userspace check.
+
 All prior journals/checkpoints remain. No history, binding, archive, key or unknown is deleted, reset or compressed. Startup reads the current streamed checkpoint and bounded delta suffix; the original migration proof is carried through later checkpoints and remains bound while the suffix grows.
 
 ## Offline migration interface

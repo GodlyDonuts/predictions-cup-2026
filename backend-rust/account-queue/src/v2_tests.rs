@@ -154,6 +154,23 @@ mod durable {
         let (dir,mut s)=migrated();let source=dir.join(&s.journal_name);let before=fs::read(dir.join("account-queue-manifest.json")).unwrap();
         assert_eq!(s.compact_with_hook(|point|{if point=="checkpoint_synced"{OpenOptions::new().append(true).open(&source).unwrap().write_all(b"invalid\n").unwrap();}Ok(())},pin_directory).unwrap_err(),"SOURCE_JOURNAL_CHANGED");assert!(s.poisoned);assert_eq!(fs::read(dir.join("account-queue-manifest.json")).unwrap(),before);drop(s);fs::remove_dir_all(dir).unwrap();
     }
+    #[test] fn migration_preserves_concurrently_changed_manifest_under_same_lease(){
+        for original_present in [false,true]{
+            let dir=fixture();let mut old=Store::open(&dir,"fixture-scope","token").unwrap();old.command(command("status",10,false)).unwrap();if original_present{old.command(command("compact",10,false)).unwrap();}
+            let proof=MigrationProof::capture(&old).unwrap();let lock=old.lock_path.clone();let identity=old.identity.clone();let source=dir.join(&old.journal_name);let source_before=fs::read(&source).unwrap();let path=dir.join("account-queue-manifest.json");let replacement=b"{\"concurrentSelection\":true}\n";
+            assert_eq!(V2Store::migrate_with_hook(old,&proof,|point|{if point=="generation_pinned"{assert_eq!(fs::read(&lock).unwrap(),identity);fs::write(&path,replacement).unwrap();}Ok(())},pin_directory).err().unwrap(),"V2_MANIFEST_CHANGED");
+            assert_eq!(fs::read(&path).unwrap(),replacement);assert_eq!(fs::read(&source).unwrap(),source_before);fs::remove_dir_all(dir).unwrap();
+        }
+    }
+    #[test] fn compaction_preserves_concurrently_changed_or_removed_manifest_and_poisons(){
+        for removed in [false,true]{
+            let (dir,mut s)=migrated();let path=dir.join("account-queue-manifest.json");let lock=s.lock_path.clone();let identity=s.identity.clone();let source=dir.join(&s.journal_name);let source_before=fs::read(&source).unwrap();let before=s.state.clone();let replacement=b"{\"concurrentSelection\":true}\n";
+            assert_eq!(s.compact_with_hook(|point|{if point=="generation_pinned"{assert_eq!(fs::read(&lock).unwrap(),identity);if removed{fs::remove_file(&path).unwrap();}else{fs::write(&path,replacement).unwrap();}}Ok(())},pin_directory).unwrap_err(),"V2_MANIFEST_CHANGED");
+            assert!(s.poisoned);assert_eq!(s.state,before);assert_eq!(s.command(command("admit",1000,false)).unwrap_err(),"DURABILITY_FAILURE");
+            if removed{assert!(!path.exists());}else{assert_eq!(fs::read(&path).unwrap(),replacement);}
+            assert_eq!(fs::read(&source).unwrap(),source_before);drop(s);fs::remove_dir_all(dir).unwrap();
+        }
+    }
     #[test] fn cap_refusal_is_nonmutating_and_preserves_recovery_reserve(){
         let (dir,mut s)=migrated();s.maximum_bytes=MAX_ROW_BYTES;let before=s.state.clone();assert_eq!(s.command(command("admit",1000,true)).unwrap_err(),"EXPLICIT_COMPACTION_REQUIRED");assert_eq!(s.state,before);assert!(!s.poisoned);s.maximum_bytes=MAX_ACTIVE_JOURNAL_BYTES;s.command(command("admit",1000,true)).unwrap();let bytes=s.active_bytes;assert!(bytes+MAX_ROW_BYTES<=s.maximum_bytes);drop(s);let s=V2Store::open(&dir,"fixture-scope","new").unwrap();assert_eq!(s.state.unknown.len(),1);drop(s);fs::remove_dir_all(dir).unwrap();
     }
