@@ -1,4 +1,5 @@
-use moloch_live_runtime::{daily_windows, dispatch, feedback, package_admission,fundamental_policy};
+// Use the genuine exported capability type accepted by ProductionAuthority.
+use moloch_live_runtime::{daily_windows, dispatch, fundamental_policy};
 use fundamental_policy::*;
 use baal_transport_service::{RequestSpec,Scope,Permit};
 use moloch_replay::session::{ExclusiveLock,Session};
@@ -193,5 +194,39 @@ fn approve(r:ReviewInput,trust:&mut BTreeSet<String>,now:u64)->Reviewed{
         let mut changed=spec.clone();changed.body.as_mut().unwrap()["quantity"]=json!(2);assert!(f.store.as_mut().unwrap().bind_quantity(&f.bank,&f.log,&f.scope,id,1,&changed,&f.trust,NOW+1).is_err());
         assert_eq!(f.store.as_ref().unwrap().managed_exchanges(),["101".to_string()].into());
         let unrelated=json!({"type":"actual_order_ack","exchangeId":"999","quantity":3});f.store.as_ref().unwrap().validate_acknowledgment(999,&unrelated).unwrap();
+    }
+    #[test]fn genuine_review_sized_capability_authorizes_production_and_rejects_changed_quantity(){
+        use baal_transport_service::{Authority,Receipt};
+        use moloch_live_runtime::authority::{Activation,ProductionAuthority,SnapshotSet};
+        let mut f=F::new();let(q,spec)=f.slice_spec();let id=q["id"].as_u64().unwrap();let at=NOW+1;
+        f.store.as_mut().unwrap().bind_quantity(&f.bank,&f.log,&f.scope,id,1,&spec,&f.trust,at).unwrap();
+        let mut permit=f.permit(&q,at);permit.maximum_quantity=1;permit.maximum_cost=q["price"].as_str().unwrap().into();let reviewed=f.authority();
+        let token=Arc::new(f.store.as_ref().unwrap().physical_decision(&f.bank,&f.log,&f.scope,id,&spec,&permit,&reviewed,at).unwrap());
+        let binary=f.root.join("synthetic-authority-binary");let control=f.root.join("synthetic-authority-control");let binary_bytes=b"synthetic test executable; never executed";std::fs::write(&binary,binary_bytes).unwrap();std::fs::write(&control,b"synthetic immutable Control").unwrap();
+        let activation=Activation{run_id:"fundamental-fixture".into(),entry_until_ms:NOW+3600000,maximum_committed:"1000.000000".into(),maximum_market_cost:"100.000000".into(),maximum_quantity:2,tournament_id:"cup".into(),tournament_slug:"cup".into(),binary_sha256:sha(binary_bytes)};
+        let authority=ProductionAuthority::new(activation,f.scope.clone(),vec![f.root.join("STOP")],control,binary,f.owner.clone()).unwrap();authority.bind_stream(Arc::new(std::sync::atomic::AtomicBool::new(false)),at+60000);
+        authority.require_fundamental_exchanges(&f.store.as_ref().unwrap().managed_exchanges()).unwrap();authority.require_maker_review(&"c".repeat(64)).unwrap();
+        let receipt=|endpoint:&str,data:Value|Receipt{endpoint:endpoint.into(),request_started_at:iso(at-1),received_at:iso(at),status:200,data};
+        let facts=SnapshotSet{
+            account:receipt("/tournaments/cup",json!({"id":"cup","slug":"cup","status":"active","endDate":iso(NOW+3600000)})),
+            cash_balance:receipt("/account?tournamentId=cup",json!({"balance":1000,"availableAdvance":0,"buyingPower":1000})),
+            positions:receipt("/tournaments/cup/portfolio/positions",json!({"positions":[]})),
+            open_orders:receipt("/orders?status=open&limit=200&tournamentId=cup",json!({"data":[],"coverage":{"complete":true},"pagination":{"hasMore":false,"nextCursor":null}})),
+            market:receipt("/markets/201",json!({"id":"201","status":"open","isComposite":false,"isMultiOutcome":false,"contexts":[{"status":"open"}]})),
+            contract:receipt("/contracts/201",json!({"market_id":"201","root":{"node_type":"contract","node_id":"301","contract_id":"301","children":[],"parent_id":null,"contract_type":"Party Winner","contract_details":{}}})),
+            book:receipt("/markets/201/orderbook?depth=20",json!({"contexts":[{"orderbook":{"exchanges":[{"exchangeId":"101","asOf":{"sequence":3,"at":iso(at)},"bids":[{"price":0.10,"quantity":100}],"asks":[{"price":0.12,"quantity":100}]}]}}]})),
+        };
+        assert!(authority.prepare(&f.bank,id,spec.clone(),permit.clone(),facts.clone()).is_err(),"managed BUY cannot silently use the legacy maker path");
+        authority.prepare_with_policies(&f.bank,id,spec.clone(),permit.clone(),facts.clone(),None,Some(token.clone())).unwrap();
+        authority.authorize(&f.scope,&spec,&permit,false,at).unwrap();
+        f.log_intent(&q,&spec);f.store.as_ref().unwrap().check_bound(&f.bank,&f.log,&f.scope,id,&spec,&f.trust,at).unwrap();
+        authority.authorize(&f.scope,&spec,&permit,true,at).unwrap();assert!(f.log.require_resolved_attempts().is_err(),"no HTTP is performed and the supplemental capability cannot resolve unknown acceptance");
+        let mut changed=spec.clone();changed.body.as_mut().unwrap()["quantity"]=json!(2);
+        assert!(authority.authorize(&f.scope,&changed,&permit,true,at).is_err());
+        // Re-preparing the same larger native quote is also insufficient: the
+        // genuine opaque policy capability remains bound to physical slice1.
+        authority.prepare_with_policies(&f.bank,id,changed.clone(),permit.clone(),facts,None,Some(token)).unwrap();
+        assert!(authority.authorize(&f.scope,&changed,&permit,true,at).is_err());
+        assert_eq!(f.bank.engine().order_records().into_iter().find(|x|x["id"]==id).unwrap()["quantity"],2);
     }
 }
