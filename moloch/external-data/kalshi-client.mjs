@@ -128,8 +128,17 @@ export class ReadClient {
     return { source: 'kalshi_official_v2', path: url.pathname + url.search, requestStartedAt, receivedAt: new Date().toISOString(), status: response.status, bodySha256: crypto.createHash('sha256').update(bodyText).digest('hex'), bodyText, body };
   }
   async initialize() {
-    const limits = await this.get('/account/limits'); this.admission.configure(limits.body);
-    const costs = await this.get('/account/endpoint_costs'); this.costs = costTable(costs.body);
+    const read = async suffix => {
+      for (let attempt = 0; ; attempt++) {
+        try { return await this.get(suffix); }
+        catch (error) {
+          if (attempt >= 2 || !(['network', 'json', 429].includes(error.code) || Number(error.code) >= 500)) throw error;
+          await sleep(500 * 2 ** attempt);
+        }
+      }
+    };
+    const limits = await read('/account/limits'); this.admission.configure(limits.body);
+    const costs = await read('/account/endpoint_costs'); this.costs = costTable(costs.body);
     return { limits, costs };
   }
 }
