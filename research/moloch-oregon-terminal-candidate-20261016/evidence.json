@@ -1,0 +1,131 @@
+{
+  "schemaVersion": 1,
+  "status": "inactive_draft_root_validation_required",
+  "executionAuthority": false,
+  "reviewCanonicalSha256": "95cba695472972baf1b512f753578d035f42a7842ed6b1a762cd68430ccfbf44",
+  "observedAt": "2026-10-16T18:40:18.890612+00:00",
+  "sourcePins": [
+    {
+      "file": "forecast.html",
+      "url": "https://www.callthemap.com/senate/oregon",
+      "status": 200,
+      "requestStartedAt": "2026-10-16T18:34:54.923969+00:00",
+      "receivedAt": "2026-10-16T18:34:55.251800+00:00",
+      "httpDate": "Fri, 16 Oct 2026 18:11:05 GMT",
+      "lastModified": null,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 156691,
+      "sha256": "7e6f07c53525903c7ae12ef2fb6e344028539d2f3ee8d8c498f17c07125563d1"
+    },
+    {
+      "file": "methodology.html",
+      "url": "https://www.callthemap.com/methodology",
+      "status": 200,
+      "requestStartedAt": "2026-10-16T18:34:54.924500+00:00",
+      "receivedAt": "2026-10-16T18:34:55.248241+00:00",
+      "httpDate": "Fri, 16 Oct 2026 17:59:09 GMT",
+      "lastModified": null,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 507665,
+      "sha256": "93d3a5e674c0aa7d59a10815d5dd2f57f5cb7a3d328663467c61ceba6af14330"
+    },
+    {
+      "file": "official-candidates.html",
+      "url": "https://www.co.umatilla.or.us/departments/elections/general-election/contest-and-candidate-listing-for-the-november-3-2026-general-election",
+      "status": 200,
+      "requestStartedAt": "2026-10-16T18:34:54.924500+00:00",
+      "receivedAt": "2026-10-16T18:34:59.736501+00:00",
+      "httpDate": "Fri, 16 Oct 2026 18:34:59 GMT",
+      "lastModified": null,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 61500,
+      "sha256": "82753be8eb22a0741fe402c0cb841b37f187cad0fef50c65e3ddd6c8bb4a9f64"
+    },
+    {
+      "file": "scrutinel.html",
+      "url": "https://scrutinel.com/race/or-sen/",
+      "status": 200,
+      "requestStartedAt": "2026-10-16T18:37:24.205617+00:00",
+      "receivedAt": "2026-10-16T18:37:24.487078+00:00",
+      "httpDate": "Fri, 16 Oct 2026 18:37:24 GMT",
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 26936,
+      "sha256": "1d51ba94d1d11c01f40242e128ad8eae381a8c0795fffcba41179fc21d8725d9"
+    },
+    {
+      "file": "99chambers.html",
+      "url": "https://99chambers.app/senate/or",
+      "status": 200,
+      "requestStartedAt": "2026-10-16T18:37:24.205617+00:00",
+      "receivedAt": "2026-10-16T18:37:24.807469+00:00",
+      "httpDate": "Fri, 16 Oct 2026 18:37:24 GMT",
+      "contentType": "text/html",
+      "bytes": 85898,
+      "sha256": "70f3dd9785fa2127845ac5bbf99dd75353f7cc2580870f82c01abbed4bf3965c"
+    }
+  ],
+  "officialNode": {
+    "originalBytesSha256": "9bca4722d2a06e32e0d86360b43c6aae6e4336876dec40a5a50b4cb70f9568f1",
+    "originalReceivedAt": "2026-10-15T12:37:03.505Z",
+    "canonicalRootSha256": "ebe719c4fc2796abfc66e2669db45e84abf9c1c7310e00dc298f05f5c2c60d15",
+    "marketId": "288",
+    "exchangeId": "977",
+    "contractId": "289",
+    "resolutionType": "Party Winner",
+    "winnerName": "Republican Party",
+    "electionDate": "2026-11-03",
+    "settlementDate": "2026-11-04T17:00:00.000Z",
+    "referenceMaximumAgeMs": 172800000,
+    "freshPhysicalRootRequired": true
+  },
+  "forecast": {
+    "selected": "Call the Map",
+    "probability": "0.995",
+    "publisherDateModified": "2026-10-16T17:57:26.000Z",
+    "probabilityIsModelAssumption": true,
+    "scrutinelCorroboration": "0.997",
+    "scrutinelDisplayedUpdated": "Oct 16, 2026, 11:50 AM EDT",
+    "99chambersContradiction": "Original page displays 98% main forecast and 97% second history; neither is silently selected as the entry probability."
+  },
+  "arithmetic": {
+    "exceptionAllowance": "0.03",
+    "minimumExceptionalPayout": "0",
+    "margin": "0.01",
+    "expectedTerminalPayout": "0.96515",
+    "marginAdjustedValue": "0.95515",
+    "tickEntryCeiling": "0.955",
+    "historicalAsk": "0.925",
+    "historicalAskSource": "Root retained capture; not a current executable quote",
+    "breakEvenProbabilityIncludingMargin": "0.9639175257731958762886597938",
+    "maximumPrincipal": "2000.000000",
+    "sensitivity": [
+      {
+        "ordinaryProbability": ".995",
+        "marginAdjustedValue": "0.95515",
+        "tickFloor": "0.955"
+      },
+      {
+        "ordinaryProbability": ".98",
+        "marginAdjustedValue": "0.9406",
+        "tickFloor": "0.94"
+      },
+      {
+        "ordinaryProbability": ".97",
+        "marginAdjustedValue": "0.9309",
+        "tickFloor": "0.93"
+      },
+      {
+        "ordinaryProbability": ".9639175257731958762886597938",
+        "marginAdjustedValue": "0.9250000000000000000000000000",
+        "tickFloor": "0.925"
+      }
+    ]
+  },
+  "limitations": [
+    "No empirical exceptional-event probability bound",
+    "No calibrated Oregon tail lower confidence bound",
+    "No current executable price/depth claim",
+    "County candidate page publication clock unknown; review zero sentinel documented",
+    "No activation/control/account requests; root must validate typed ReviewInput against originals before activation"
+  ]
+}
