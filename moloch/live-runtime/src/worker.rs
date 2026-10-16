@@ -227,6 +227,17 @@ fn committed_adoption_from(bank:&Session,mut reader:impl std::io::BufRead)->Resu
   return Ok((id.into(),sequence,event.clone()))
  }Err("LIVE_COMMITTED_ADOPTION_REQUIRED".into())
 }
+fn open_worker_fundamental(c:&Control,loaded:fundamental::LoadedSettings,bank:&mut Session,log:&mut DispatchLog,lease:Arc<ExclusiveLock>,t:&Transport)->Result<(Cohorts,ReviewAuthority,Vec<String>,std::collections::BTreeSet<String>)>{
+ let existing=loaded.existing_exchanges();
+ let(cohorts,authority,stale)=if existing.is_empty(){loaded.open(&c.root,bank,log,lease,now())?}else{
+  let(id,sequence,event)=committed_adoption(bank,&c.root.join(&c.bank_name).join("events.jsonl"))?;
+  t.package_queue_quiet()?;
+  // Scope selection is not adoption authority. The actual committed source,
+  // inherited FIFO, queue, lease, report and policy remain checked separately.
+  for ex in &existing{retire_existing_drafts(bank,log,ex)?;}
+  loaded.open_with_existing(&c.root,bank,log,lease,now(),t,&id,sequence,&event)?
+ };Ok((cohorts,authority,stale,existing))
+}
 /// Recovery is unconditional: removing new-entry configuration never drops
 /// already durable package liabilities or opens a second transport.
 fn recover_packages(t:&mut Transport,c:&Control,bank:&mut Session,ordinary:&DispatchLog,authority:&ProductionAuthority,packages:&mut moloch_live_runtime::package_dispatch::PackageDispatchLog)->Result<bool>{
@@ -865,16 +876,7 @@ pub fn main()->Result<()>{
   // it cannot create an independent account client or infer unknown absence.
   drop(read);let mut t=transport(&c,Box::new(SharedAuthority(authority.clone())),true)?;
   let mut fundamental=if let Some(loaded)=fundamental_loaded{
-   let existing=loaded.existing_exchanges();
-   let(cohorts,review_authority,stale)=if existing.is_empty(){loaded.open(&c.root,&bank,&log,lease.clone(),now())?}else{
-    let(id,sequence,event)=committed_adoption(&bank,&c.root.join(&c.bank_name).join("events.jsonl"))?;
-    // Approved scope selection is not adoption authority. Original source,
-    // actual inherited FIFO, queue, lease, report and policy are independently
-    // checked by open_with_existing after only proven never-sent cleanup.
-    t.package_queue_quiet()?;
-    for ex in &existing{retire_existing_drafts(&mut bank,&mut log,ex)?;}
-    loaded.open_with_existing(&c.root,&bank,&log,lease.clone(),now(),&t,&id,sequence,&event)?
-   };
+   let(cohorts,review_authority,stale,existing)=open_worker_fundamental(&c,loaded,&mut bank,&mut log,lease.clone(),&t)?;
    authority.require_fundamental_exchanges(&cohorts.managed_exchanges())?;atomic_json(&c.root.join("fundamental-policy.json"),&json!({"at":iso(now()),"managedExchanges":cohorts.managed_exchanges(),"existingOriginExchanges":existing,"staleReviews":stale,"initializationDoesNotSubmit":true}))?;Some(FundamentalRuntime{cohorts,authority:review_authority})}else{
    if c.root.join("fundamental.initialized.json").exists()||c.root.join("fundamental.ndjson").exists(){return Err("LIVE_FUNDAMENTAL_SETTINGS_REQUIRED_FOR_EXISTING_COHORT".into())}None
   };
@@ -1032,6 +1034,66 @@ pub fn main()->Result<()>{
  use super::*;
  #[test]fn cancellation_read_path_consumes_exactly_four_account_operations(){let mut endpoints=vec![];let f=cancel_snapshots_with(|ep|{endpoints.push(serde_json::to_value(&ep).unwrap());Ok(Receipt{endpoint:format!("read-{}",endpoints.len()),request_started_at:"2026-10-15T00:00:00Z".into(),received_at:"2026-10-15T00:00:00Z".into(),status:200,data:match ep{Endpoint::Tournament=>json!({"status":"active"}),Endpoint::Positions=>json!({"positions":[]}),Endpoint::Orders{..}=>json!({"coverage":{"complete":true},"pagination":{"hasMore":false},"data":[]}),Endpoint::Account=>json!({"balance":1000}),_=>panic!("irrelevant contract/book GET")}})}).unwrap();let expected=[Endpoint::Tournament,Endpoint::Positions,Endpoint::Orders{status:"open".into()},Endpoint::Account].iter().map(|e|serde_json::to_value(e).unwrap()).collect::<Vec<_>>();assert_eq!(endpoints,expected);assert_eq!(f.cash_balance.endpoint,"read-4");}
  #[test]fn incomplete_account_cancellation_reads_fail_before_cash_without_fabricated_receipts(){let mut count=0;let r=cancel_snapshots_with(|ep|{count+=1;Ok(Receipt{endpoint:"fixture".into(),request_started_at:"2026-10-15T00:00:00Z".into(),received_at:"2026-10-15T00:00:00Z".into(),status:200,data:match ep{Endpoint::Tournament=>json!({"status":"active"}),Endpoint::Orders{..}=>json!({"coverage":{"complete":false},"pagination":{"hasMore":false}}),_=>json!({})}})});assert!(r.is_err());assert_eq!(count,3);}
+}
+
+#[cfg(test)]mod reviewed_existing_worker_tests{
+ use super::*;
+ struct Temp(PathBuf);impl Temp{fn new()->Self{static NEXT:std::sync::atomic::AtomicU64=std::sync::atomic::AtomicU64::new(0);Self(std::env::temp_dir().join(format!("reviewed-existing-worker-{}-{}-{}",std::process::id(),now(),NEXT.fetch_add(1,std::sync::atomic::Ordering::Relaxed))))}}impl Drop for Temp{fn drop(&mut self){let _=fs::remove_dir_all(&self.0);}}
+ const TID:&str="11111111-1111-1111-1111-111111111111";
+ fn scope()->Scope{Scope{tournament_id:TID.into(),tournament_slug:"cup".into(),exchanges:[("101".into(),"201".into())].into()}}
+ fn fixture()->(Temp,Session,DispatchLog,Value,Value,Value){
+  let root=Temp::new();private_dir(&root.0).unwrap();let at=now()-7500;
+  let policy=json!({"initialCash":"1000.000000","maximumCommitted":"1000.000000","maximumMarketCost":"100.000000","maximumMarkets":3,"quantity":2,"entryStopAt":iso(at+3600000),"inventoryExitMode":"fixedGain","inventoryMinimumGain":"0.005000","maximumInventoryAgeMs":60000,"inventoryAgeClock":"execution"});
+  let seed=json!({"runId":"existing-worker-fixture","availableCash":"1000.000000","accountSnapshotHash":"a".repeat(64),"observedAt":iso(at-1000)});
+  let mut bank=Session::open_live(&root.0.join("bank"),&policy,&seed).unwrap();
+  let adoption=json!({"type":"actual_position_adoption","source":"official_sig_api_v1","authority":"human_moloch_inherited_management_20261015","complete":true,"receiptHash":"d".repeat(64),"requestStartedAt":iso(at-1),"receivedAt":iso(at),"processedAt":iso(at),"tournamentId":TID,"openingCost":"1.900000","effectiveMaximumMarkets":4,"positions":[{"exchangeId":"101","marketId":"201","quantity":-3,"lotPrincipal":"1.900000","reportedCostBasis":"1.900000","reportedMinusLotPrincipal":"0.000000","basisClassification":"exact","lots":[{"lotId":"501","quantity":1,"side":"NO","entryPrice":"0.900000","openedAt":iso(at-86400000)},{"lotId":"502","quantity":2,"side":"NO","entryPrice":"0.500000","openedAt":iso(at-43200000)}]}]});
+  bank.accept("original-adoption",1,&adoption).unwrap();let at=at+1000;
+  bank.accept("original-book",1,&json!({"type":"book","receivedAt":iso(at),"book":{"marketId":"201","exchangeId":"101","tournamentId":TID,"sequence":"1","sourceAt":iso(at),"requestStartedAt":iso(at),"receivedAt":iso(at),"bids":[{"price":"0.300000","quantity":100}],"asks":[{"price":"0.320000","quantity":100}]}})).unwrap();
+  let log=DispatchLog::open(&root.0.join("dispatch.ndjson")).unwrap();(root,bank,log,adoption,policy,seed)
+ }
+ fn control(root:&Path)->Control{serde_json::from_value(json!({"activation":{"runId":"existing-worker-fixture","entryUntilMs":now()+3600000,"maximumCommitted":"1000.000000","maximumMarketCost":"100.000000","maximumQuantity":2,"tournamentId":TID,"tournamentSlug":"cup","binarySha256":"a".repeat(64)},"scope":scope(),"policy":{},"root":root,"credentials":"/unused","ownerLock":root.join("owner.lock"),"accountScope":"synthetic-existing-worker"})).unwrap()}
+ fn receipt(data:Value,at:u64)->Receipt{Receipt{endpoint:"synthetic original receipt".into(),request_started_at:iso(at-1),received_at:iso(at),status:200,data}}
+ fn packet(c:&Control,at:u64)->SnapshotSet{snapshots_for_market(c,"201",|ep|Ok(receipt(match ep{Endpoint::Tournament=>json!({"status":"active"}),Endpoint::Orders{..}=>json!({"data":[],"coverage":{"complete":true},"pagination":{"hasMore":false}}),_=>json!({})},at))).unwrap()}
+ fn reserve_event(bank:&Session,adoption:&Value)->Value{
+  let at=now();let(_,hashes)=moloch_live_runtime::package_admission::native_books(bank,&scope(),at,10_000).unwrap();
+  json!({"type":"reviewed_inventory_exit_reserved_v1","source":"moloch_live_dispatcher","receivedAt":iso(at),"bankScope":{"runId":"existing-worker-fixture","bankManifestHash":bank.manifest_hash(),"tournamentId":TID},"bankHead":bank.durable_head(),"expectedReportSha256":hash(&bank.engine().report().unwrap()),"exchangeId":"101","marketId":"201","side":"NO","quantity":2,"limitPrice":"0.680000","expiresAt":iso(at+60000),"originSha256":"a".repeat(64),"reviewSha256":"b".repeat(64),"adoptionRef":{"id":"original-adoption","sequence":1,"sha256":hash(adoption)},"adoptionReceiptHash":adoption["receiptHash"],"expectedPositionSha256":hash(&bank.engine().wallet.positions()["101"]),"bookSha256":hashes["101"],"reason":"refreshed_value_exit","expectedPayout":"0.600000","reviewCurrentUntilMs":at+60000,"holdingDeadlineMs":at+600000,"revoked":false})
+ }
+ #[test]fn original_adoption_is_recovered_from_the_committed_bank_not_a_transfer_projection(){
+  let(root,mut bank,_,adoption,policy,seed)=fixture();let original=fs::read(root.0.join("bank/events.jsonl")).unwrap();let(id,n,event)=committed_adoption(&bank,&root.0.join("bank/events.jsonl")).unwrap();assert_eq!((id.as_str(),n),("original-adoption",1));let mut expected=adoption.clone();expected["sourceRef"]=json!({"id":id,"sequence":n,"hash":hash(&adoption)});assert_eq!(event,expected);
+  accept(&mut bank,&json!({"type":"tick","receivedAt":iso(now())})).unwrap();drop(bank);let bank=Session::open_live(&root.0.join("bank"),&policy,&seed).unwrap();assert_eq!(committed_adoption(&bank,&root.0.join("bank/events.jsonl")).unwrap().2,event);
+  let derived=serde_json::to_vec(&json!({"event":adoption})).unwrap();assert!(committed_adoption_from(&bank,std::io::Cursor::new([derived,b"\n".to_vec()].concat())).is_err());assert!(original.starts_with(b"{"));
+ }
+ #[test]fn copied_or_mutated_adoption_refs_never_gain_session_membership_and_torn_rows_fail(){
+  let(root,bank,_,_,_,_)=fixture();let bytes=fs::read(root.0.join("bank/events.jsonl")).unwrap();let first=bytes.split_inclusive(|b|*b==b'\n').next().unwrap();let row:Value=serde_json::from_slice(first).unwrap();
+  for key in ["sequence","hash","receipt","positions"]{let mut bad=row.clone();match key{"sequence"=>bad["event"]["sourceRef"]["sequence"]=json!(2),"hash"=>bad["event"]["sourceRef"]["hash"]=json!("f".repeat(64)),"receipt"=>bad["event"]["receiptHash"]=json!("f".repeat(64)),_=>bad["event"]["positions"][0]["quantity"]=json!(-2)}let mut data=serde_json::to_vec(&bad).unwrap();data.push(b'\n');assert!(committed_adoption_from(&bank,std::io::Cursor::new(data)).is_err(),"{key}");}
+  assert!(committed_adoption_from(&bank,std::io::Cursor::new(&first[..first.len()-1])).is_err());assert!(committed_adoption_from(&bank,std::io::Cursor::new(Vec::<u8>::new())).is_err());
+ }
+ #[test]fn read_hint_gets_exactly_seven_original_facts_without_a_fabricated_native_qid(){
+  let root=Temp::new();let c=control(&root.0);let mut reads=Vec::new();let facts=snapshots_for_market(&c,"201",|ep|{reads.push(serde_json::to_value(&ep).unwrap());Ok(receipt(match ep{Endpoint::Tournament=>json!({"status":"active"}),Endpoint::Orders{..}=>json!({"coverage":{"complete":true},"pagination":{"hasMore":false},"data":[]}),_=>json!({})},now()))}).unwrap();
+  let expected=[Endpoint::Tournament,Endpoint::Positions,Endpoint::Orders{status:"open".into()},Endpoint::Account,Endpoint::Market{market_id:"201".into()},Endpoint::Nodes{market_id:"201".into()},Endpoint::OrderBook{market_id:"201".into(),depth:20}].iter().map(|e|serde_json::to_value(e).unwrap()).collect::<Vec<_>>();assert_eq!(reads,expected);assert_eq!(facts.book.status,200);
+  let mut called=false;assert!(snapshots_for_market(&c,"foreign",|_|{called=true;unreachable!()}).is_err());assert!(!called);
+ }
+ #[test]fn incomplete_original_account_packet_stops_before_contract_or_book_reads(){
+  let root=Temp::new();let c=control(&root.0);let mut count=0;let result=snapshots_for_market(&c,"201",|ep|{count+=1;Ok(receipt(match ep{Endpoint::Tournament=>json!({"status":"active"}),Endpoint::Orders{..}=>json!({"coverage":{"complete":false},"pagination":{"hasMore":false},"data":[]}),_=>json!({})},now()))});assert!(result.is_err());assert_eq!(count,3);
+ }
+ #[test]fn original_fact_window_includes_the_whole_packet_and_rejects_future_or_reversed_receipts(){
+  let root=Temp::new();let c=control(&root.0);let at=now();let f=packet(&c,at);assert_eq!(existing_facts_until(&f,at).unwrap(),Some(at+9999));assert!(existing_facts_until(&f,at+9999).unwrap().is_none());
+  for case in ["old_account","old_contract","future","reversed","status"]{let mut bad=f.clone();match case{"old_account"=>bad.account.request_started_at=iso(at-20_000),"old_contract"=>bad.contract.request_started_at=iso(at-10_000),"future"=>bad.book.received_at=iso(at+1),"reversed"=>bad.positions.request_started_at=iso(at+1),_=>bad.cash_balance.status=503}assert!(existing_facts_until(&bad,at).unwrap().is_none(),"{case}");}
+ }
+ #[test]fn proven_drafts_retire_once_then_real_reviewed_reservation_waits_activation_and_keeps_fifo(){
+  let(root,mut bank,mut log,adoption,policy,seed)=fixture();let old=bank.engine().order_records();assert!(!old.is_empty());let original_cash=bank.engine().wallet.cash;let original_lots=bank.engine().wallet.positions();
+  assert!(retire_existing_drafts(&mut bank,&mut log,"101").unwrap()>0);assert!(bank.engine().order_records().iter().all(|q|q["retired"]==true));assert_eq!(bank.engine().order_records().len(),old.len());assert!(!existing_target_busy(&bank,&log,"101").unwrap());
+  let event=reserve_event(&bank,&adoption);let q=commit_existing_reservation(&mut bank,&event).unwrap().unwrap();let id=q["id"].as_u64().unwrap();assert!(id>old.iter().filter_map(|q|q["id"].as_u64()).max().unwrap());assert_eq!(q["side"],"NO");assert_eq!(q["price"],"0.680000");assert_eq!(q["quantity"],2);assert_eq!(bank.engine().wallet.cash,original_cash);assert_eq!(bank.engine().wallet.positions(),original_lots);assert!(bank.engine().fills().is_empty());assert!(log.intents.is_empty());assert!(existing_target_busy(&bank,&log,"101").unwrap());
+  let activation=q["activationAt"].as_u64().unwrap();assert_eq!(existing_reservation_stage(&q,&q,activation-1,activation+10000).unwrap(),Some(activation));assert_eq!(existing_reservation_stage(&q,&q,activation,activation+10000).unwrap(),None);assert!(existing_reservation_stage(&q,&q,activation,activation).is_err());let mut changed=q.clone();changed["quantity"]=json!(1);assert!(existing_reservation_stage(&changed,&q,activation,activation+10000).is_err());
+  let head=bank.durable_head();assert_eq!(retire_existing_drafts(&mut bank,&mut log,"101").unwrap(),0);assert_eq!(bank.durable_head(),head);let report=bank.engine().report().unwrap();drop(log);drop(bank);let bank=Session::open_live(&root.0.join("bank"),&policy,&seed).unwrap();assert_eq!(bank.engine().report().unwrap(),report);assert_eq!(quote(&bank,id).unwrap(),q);
+ }
+ #[test]fn unknown_original_attempt_blocks_cleanup_without_erasing_native_or_dispatch_history(){
+  let(root,mut bank,mut log,_,_,_)=fixture();let q=bank.engine().order_records()[0].clone();let id=q["id"].as_u64().unwrap();log.append(json!({"kind":"intent","qid":id,"quote":q})).unwrap();log.append(json!({"kind":"attempt","qid":id})).unwrap();let head=bank.durable_head();let bytes=fs::read(root.0.join("dispatch.ndjson")).unwrap();assert!(retire_existing_drafts(&mut bank,&mut log,"101").is_err());assert!(existing_target_busy(&bank,&log,"101").is_err());assert_eq!(bank.durable_head(),head);assert_eq!(fs::read(root.0.join("dispatch.ndjson")).unwrap(),bytes);
+ }
+ #[test]fn known_actual_target_cannot_be_retired_as_an_unsubmitted_draft(){
+  let(_root,mut bank,mut log,_,_,_)=fixture();let q=bank.engine().order_records()[0].clone();let id=q["id"].as_u64().unwrap();let ack=json!({"type":"actual_order_ack","source":"official_sig_api_v1","receiptHash":"a".repeat(64),"orderId":id,"actualOrderId":"901","exchangeId":"101","marketId":"201","side":q["side"],"action":q["action"],"quantity":q["quantity"],"price":q["price"],"receivedAt":iso(now())});
+  for row in [json!({"kind":"intent","qid":id,"quote":q}),json!({"kind":"attempt","qid":id}),json!({"kind":"ack","qid":id,"receipt":{"data":{"orderId":"901"}}})]{log.append(row).unwrap();}accept(&mut bank,&ack).unwrap();assert!(existing_target_busy(&bank,&log,"101").unwrap());retire_existing_drafts(&mut bank,&mut log,"101").unwrap();assert_eq!(quote(&bank,id).unwrap()["retired"],false);assert_eq!(bank.engine().live_order_bindings().get(&id).map(String::as_str),Some("901"));assert!(!log.closed.contains(&id));
+ }
 }
 
 #[cfg(test)]mod package_hook_tests{
