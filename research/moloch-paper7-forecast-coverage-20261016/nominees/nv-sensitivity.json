@@ -1,0 +1,266 @@
+{
+  "allocationAuthority": false,
+  "assumptionsAndUnresolved": [
+    "CTM .783 is an unreplicated publisher model point; none of these exception allowances is an empirical risk bound.",
+    "Official ballot includes DanielleFord NPP and AaronD.Ford DEM; captured CTM visible candidate-win table omits a Danielle win probability. Full-field calibration remains unknown.",
+    "Joe/Joseph identity and continuing Republican affiliation/resolver correspondence require explicit review; replacements/partychanges/fusion/cancellation/refunds/discretionaryupdates are not proven away.",
+    "Original source/publication/receipt clocks are unchanged. No new source TTL, reviewedAt, reviewer, label, approval hash or Control generation is minted.",
+    "ScheduledNov4 settlement is metadata, not guaranteed certification/cash timing. A terminal hold is economically different from early liquidation.",
+    "Budget illustrations use zero fees and the old .460 top-level price/depth only; no hypothetical touch is represented as an actual fill.",
+    "Current held exposure/reservations/account/unknown/funding/contract/root/book/depth/caps and current source validity must be checked by the sole worker before any genuine future physical order.",
+    "Replicating the same risk through another party NO is not assumed equivalent or diversifying."
+  ],
+  "baseDossierCommit": "abe027ee583e8482e2234780504a9e17cf9f875c",
+  "budgetInterpretationAssumption": "Illustrative incremental capital after genuine existing held/reservation charges; no current flatness, available capital, cohort membership or aggregate-review-cap eligibility is asserted.",
+  "candidateIdentityAssumption": {
+    "exactSourceStringsEqual": false,
+    "forecastName": "Joe Lombardo",
+    "kind": "explicit_common_name_identity_inference",
+    "officialName": "LOMBARDO, JOSEPH"
+  },
+  "causalBacktest": false,
+  "contractId": "184",
+  "currentExecutableQuote": false,
+  "exactOriginalContract": {
+    "contractId": "184",
+    "exchangeId": "872",
+    "forecastCandidate": {
+      "candidateWinModelPoint": "0.783",
+      "name": "Joe Lombardo",
+      "reportedParty": "R",
+      "strictLowerIfCensored": null,
+      "strictUpperIfCensored": null,
+      "unpublishedProbability": false
+    },
+    "forecastPublishedDateModified": "2026-10-16T17:57:26.000Z",
+    "forecastSource": {
+      "bytes": 191356,
+      "file": "governors-nevada.html",
+      "headersSha256": "d7785f60dd8c30f762f693275682cfeb3da18888b392b338ccc3e25c301515ec",
+      "httpDate": "Fri, 16 Oct 2026 18:34:39 GMT",
+      "lastModified": null,
+      "receivedAt": "2026-10-16T22:51:15.121401+00:00",
+      "requestStartedAt": "2026-10-16T22:51:14.823130+00:00",
+      "sha256": "a32349a41a5e3db86bb8c4fc7c8e04fb8aa99b9d1264f835429ffb1f938a5980",
+      "status": 200,
+      "url": "https://www.callthemap.com/governors/nevada"
+    },
+    "marketId": "183",
+    "nodeReceipt": {
+      "bytes": 908,
+      "endpoint": "/markets/183/nodes?tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55",
+      "path": "nodes/market-183-13b18d2b206b4dee.json",
+      "receivedAt": "2026-10-16T18:23:37.746Z",
+      "requestStartedAt": "2026-10-16T18:23:37.466Z",
+      "sha256": "13b18d2b206b4deed547ef4694dd5d261594c0de21889f0f9189d2cc565366eb"
+    },
+    "predicate": {
+      "contractType": "Election Outcome",
+      "electionDate": "2026-11-03",
+      "officeLevel": "State",
+      "raceId": "76762",
+      "raceName": "Governor of Nevada",
+      "raceStage": "General",
+      "resolutionType": "Party Winner",
+      "stageId": "118965",
+      "usState": "NV",
+      "winnerName": "Republican Party"
+    },
+    "rootSha256": "2f719ff73551d460ebac7077d3a59f11fa0f102bb17a06ef777b364b680a0541",
+    "scheduledSettlementAt": "2026-11-04T17:00:00.000Z",
+    "side": "YES"
+  },
+  "exchangeId": "872",
+  "executionAuthority": false,
+  "forecastClockInterpretation": "Original forecastPublishedDateModified field is the page's JSON-LD dateModified, not independently verified first forecast publication or availability. Original HTTP request/receipt clocks are separate and unchanged.",
+  "kind": "inactive_nevada_explicit_stress_nomination_for_root_review",
+  "marketId": "183",
+  "mixtureInterpretationAssumption": "For this scenario arithmetic only, interpret CTM .783 as the ordinary-regime Republican-win probability and impose exception-regime mass e with payout0. CTM does not identify that conditional probability or calibrate e; this formula is not a guaranteed probability bound or a proven dependence model.",
+  "nominationForIndependentRootReview": {
+    "exceptionAllowanceAssumption": "0.30",
+    "largerPrincipalSensitivityOnly": "5000",
+    "margin": "0.01",
+    "payoutFloorAssumption": "0",
+    "principalBudgetForDiscussion": "3000",
+    "reason": "Largest of four explicitly hypothetical exception stresses still clears the dated reference ask; this does not validate either the point or the exception probability.",
+    "researchEntryCeiling": "0.535",
+    "state": "inactive_not_a_RuntimeReviewInput_or_authority",
+    "variant": "largest_tested_exception_stress"
+  },
+  "noneOption": {
+    "canWinElection": false,
+    "label": "NONE OF THESE CANDIDATES",
+    "source": "NRS293.269(2)",
+    "sourceSha256": "4ce9599105f7005e65fec7d73faddc76d11bb692fda4ceedfd11db5cfea977af"
+  },
+  "objective": "terminal_party_winner_not_early_liquidation_value",
+  "officialNamedCandidates": [
+    {
+      "nameOnBallot": "FORD, AARON D.",
+      "partyOnBallot": "DEM"
+    },
+    {
+      "nameOnBallot": "FORD, DANIELLE",
+      "partyOnBallot": "NPP"
+    },
+    {
+      "nameOnBallot": "LOMBARDO, JOSEPH",
+      "partyOnBallot": "REP"
+    }
+  ],
+  "officialSources": [
+    {
+      "bytes": 164026,
+      "contentType": "text/html; charset=utf-8",
+      "exitCode": 0,
+      "file": "nv-douglas-official.html",
+      "headersSha256": "6ec5e43f64d591fcab0dabeb4d86d5a87248b992aa856698e2db8100497d6b79",
+      "httpDate": "Fri, 16 Oct 2026 23:06:41 GMT",
+      "httpLastModified": null,
+      "httpStatus": 200,
+      "receivedAt": "2026-10-16T23:06:41.941786+00:00",
+      "requestStartedAt": "2026-10-16T23:06:38.841941+00:00",
+      "sha256": "b431f8dfcbbb5cfaab259b2021890da6a6e8668f8018574cbefcc118db5146b2",
+      "url": "https://cltr.douglasnv.us/elections/2026-election-information/2026_general_election/who-is-on-my-ballot",
+      "witnessClass": "original_primary_document"
+    },
+    {
+      "bytes": 113956,
+      "contentType": "text/html; charset=UTF-8",
+      "exitCode": 0,
+      "file": "nv-washoe-official.html",
+      "headersSha256": "a29f6547b1171b8c9e39b89f39711f5afb53162ca45a31edadb91b9539d99c9d",
+      "httpDate": "Fri, 16 Oct 2026 23:06:46 GMT",
+      "httpLastModified": null,
+      "httpStatus": 200,
+      "receivedAt": "2026-10-16T23:06:47.405884+00:00",
+      "requestStartedAt": "2026-10-16T23:06:42.099478+00:00",
+      "sha256": "5db3c26ee46fead0e3cbbc07bc7eb6dbbf20ba08b3f70a9b095f356bc6e9a310",
+      "url": "https://www.washoecounty.gov/voters/information/",
+      "witnessClass": "original_primary_document"
+    },
+    {
+      "bytes": 1031544,
+      "contentType": "text/html",
+      "exitCode": 0,
+      "file": "nv-none-law.html",
+      "headersSha256": "9aa8b79dfae84ff7de0b21533f347fdd962ecb0998c1e6327315d25ee0b35254",
+      "httpDate": "Fri, 16 Oct 2026 23:09:45 GMT",
+      "httpLastModified": "Mon, 21 Sep 2026 20:49:48 GMT",
+      "httpStatus": 200,
+      "receivedAt": "2026-10-16T23:09:45.983709+00:00",
+      "requestStartedAt": "2026-10-16T23:09:43.340279+00:00",
+      "sha256": "4ce9599105f7005e65fec7d73faddc76d11bb692fda4ceedfd11db5cfea977af",
+      "url": "https://www.leg.state.nv.us/nrs/NRS-293.html",
+      "witnessClass": "original_primary_document"
+    }
+  ],
+  "operatorApproval": false,
+  "originalReferenceBook": {
+    "ageAtOriginalBundleExtractionMs": 15956963,
+    "artifact": "orderbook/market-183-ba38de180cfd5576.json",
+    "currentExecutable": false,
+    "exchangeId": "872",
+    "fullProviderContinuityVerified": false,
+    "noAskComplement": "0.545",
+    "noAskDepth": "4",
+    "originalAsOf": {
+      "at": "2026-10-16T18:24:57.0360082+00:00",
+      "sequence": 181009565
+    },
+    "receivedAt": "2026-10-16T18:24:57.162Z",
+    "requestStartedAt": "2026-10-16T18:24:56.819Z",
+    "sourceSha256": "ba38de180cfd55768c2b1a981d10c178c6a78be5c886cd1a97211bc6c643ea32",
+    "yesAsk": "0.46",
+    "yesAskDepth": "4353"
+  },
+  "principalAndQuantityIllustrations": [
+    {
+      "cashAndQuantityCeilingIgnoringDepth": 6521,
+      "cashOnlyQuantityCeilingIgnoringDepth": 6521,
+      "furtherDepthOrActualFillClaimed": false,
+      "hypotheticalPrincipalAtOldAskIgnoringDepth": "2999.660",
+      "incrementIfOrdinaryRepublicanWinsAtTopDepthIllustration": "2350.620",
+      "lossIfOrdinaryRepublicanLosesAtTopDepthIllustration": "-2002.380",
+      "oldTopDepthOnlyPrincipalIllustration": "2002.380",
+      "oldTopDepthOnlyQuantityIllustration": 4353,
+      "ordinaryRepublicanLosesPayoutAssumption": "0",
+      "ordinaryRepublicanWinsPayoutAssumption": "1",
+      "principalBudgetIllustration": "3000",
+      "quantityCapAssumption": 10000,
+      "unusedPrincipalBudgetWithOnlyOldTopDepth": "997.620"
+    },
+    {
+      "cashAndQuantityCeilingIgnoringDepth": 10000,
+      "cashOnlyQuantityCeilingIgnoringDepth": 10869,
+      "furtherDepthOrActualFillClaimed": false,
+      "hypotheticalPrincipalAtOldAskIgnoringDepth": "4600.000",
+      "incrementIfOrdinaryRepublicanWinsAtTopDepthIllustration": "2350.620",
+      "lossIfOrdinaryRepublicanLosesAtTopDepthIllustration": "-2002.380",
+      "oldTopDepthOnlyPrincipalIllustration": "2002.380",
+      "oldTopDepthOnlyQuantityIllustration": 4353,
+      "ordinaryRepublicanLosesPayoutAssumption": "0",
+      "ordinaryRepublicanWinsPayoutAssumption": "1",
+      "principalBudgetIllustration": "5000",
+      "quantityCapAssumption": 10000,
+      "unusedPrincipalBudgetWithOnlyOldTopDepth": "2997.620"
+    }
+  ],
+  "scenarios": [
+    {
+      "assumedPayoutPerShare": "0.75951",
+      "ceilingMinusHistoricalAsk": "0.285",
+      "exceptionAllowanceAssumption": "0.03",
+      "exceptionPayoutAssumption": "0",
+      "hypotheticalExpectedIncrementPerShareAtHistoricalAskUnderBothAssumptions": "0.29951",
+      "margin": "0.01",
+      "ordinaryCandidateWinModelPoint": "0.783",
+      "passesHistoricalAskArithmeticOnly": true,
+      "preTickCeiling": "0.74951",
+      "probabilityModelCalibratedBound": false,
+      "tickFlooredEntryCeiling": "0.745"
+    },
+    {
+      "assumedPayoutPerShare": "0.70470",
+      "ceilingMinusHistoricalAsk": "0.230",
+      "exceptionAllowanceAssumption": "0.10",
+      "exceptionPayoutAssumption": "0",
+      "hypotheticalExpectedIncrementPerShareAtHistoricalAskUnderBothAssumptions": "0.24470",
+      "margin": "0.01",
+      "ordinaryCandidateWinModelPoint": "0.783",
+      "passesHistoricalAskArithmeticOnly": true,
+      "preTickCeiling": "0.69470",
+      "probabilityModelCalibratedBound": false,
+      "tickFlooredEntryCeiling": "0.690"
+    },
+    {
+      "assumedPayoutPerShare": "0.62640",
+      "ceilingMinusHistoricalAsk": "0.155",
+      "exceptionAllowanceAssumption": "0.20",
+      "exceptionPayoutAssumption": "0",
+      "hypotheticalExpectedIncrementPerShareAtHistoricalAskUnderBothAssumptions": "0.16640",
+      "margin": "0.01",
+      "ordinaryCandidateWinModelPoint": "0.783",
+      "passesHistoricalAskArithmeticOnly": true,
+      "preTickCeiling": "0.61640",
+      "probabilityModelCalibratedBound": false,
+      "tickFlooredEntryCeiling": "0.615"
+    },
+    {
+      "assumedPayoutPerShare": "0.54810",
+      "ceilingMinusHistoricalAsk": "0.075",
+      "exceptionAllowanceAssumption": "0.30",
+      "exceptionPayoutAssumption": "0",
+      "hypotheticalExpectedIncrementPerShareAtHistoricalAskUnderBothAssumptions": "0.08810",
+      "margin": "0.01",
+      "ordinaryCandidateWinModelPoint": "0.783",
+      "passesHistoricalAskArithmeticOnly": true,
+      "preTickCeiling": "0.53810",
+      "probabilityModelCalibratedBound": false,
+      "tickFlooredEntryCeiling": "0.535"
+    }
+  ],
+  "scheduledSettlementMetadata": "2026-11-04T17:00:00.000Z",
+  "schemaVersion": 1,
+  "side": "YES"
+}
