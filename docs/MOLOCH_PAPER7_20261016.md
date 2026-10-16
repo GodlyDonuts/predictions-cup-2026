@@ -6,6 +6,24 @@ Received October16,2026. Private attachment SHA256
 The paper is research input. Its embedded source identifiers and schedules are
 not verified API evidence, execution authority or measured deployment results.
 
+## Live and research update at23:11UTC
+
+Production205/d9f5 is now fresh37/37 with matching-PID full status, eight new
+ACKs and zero new fill rows. [Current live evidence](../research/moloch-turnover-live-verification-20261016/README.md)
+retains the −136.230000 combined realized result; Paper7 source is not deployed.
+
+The [new forecast coverage screen](../research/moloch-paper7-forecast-coverage-20261016/README.md)
+is independently reproduced from74 original public bodies and312 retained
+sole-worker receipts:71 races,77 structured contracts/49races,46 historical
+price leads/33additionalraces. Eleven focused checks pass; exact derived Git
+bytes/SHA4b8059d75d match. These are nomination arithmetic, not a causal backtest
+or approved models. Official nominee/party and resolver checks remain separate.
+
+Current work also repairs obsolete exit-hint priority and adds an optional
+owner-authenticated generation reload to avoid repeating full native history
+restoration for each reviewed model update. Both preserve original entry
+attribution; neither grants new economic authority from a message or source hash.
+
 ## Checked implementation at22:44UTC
 
 Three optional components now pass585 actual ARM64 checks and optimized release:
@@ -57,9 +75,9 @@ prefix validation and deployment remain pending. Source publication is not activ
 
 | Work | Current state | Required useful result |
 |---|---|---|
-| Joint maker qualification | Child source work, default-off option | Actual zero/partial/full outcomes, block uncertainty and full capital-time economics determine qualification; old score remains diagnostic |
-| Own-account realtime | Official semantics audited; prospective source work | Existing socket carries private account invalidations and prioritizes exact REST reconciliation; no WS financial booking |
-| Acquisition distribution | Data/API audit | Distinguish acquisition quantity/timing from terminal or deadline value |
+| Joint maker qualification | Checked/release-built, default-off, not deployed | Actual zero/partial/full outcomes, block uncertainty and full capital-time economics determine qualification; old score remains diagnostic |
+| Own-account realtime | Checked/release-built, default-off, not deployed | Existing socket carries private account invalidations and prioritizes exact REST reconciliation; no WS financial booking |
+| Acquisition distribution | Checked acquisition shadow; forecast value unqualified | Distinguish acquisition quantity/timing from terminal or deadline value |
 | Calibrated joint posterior | Historical/as-of dataset audit | Immutable, independently validated artifact with source/training fences and correlated outcomes; no claimed calibration yet |
 | Kalshi innovations | Existing checked event-trigger observer; V7 resource stop | Complete original-input cohorts, causal source clocks, fixed out-of-sample comparison; no qualified alpha yet |
 | Whole-account/rank objective | Existing research components, future integration | Complete holdings/refunds/debt and source-bound opponent scenarios before rank-based risk allocation |

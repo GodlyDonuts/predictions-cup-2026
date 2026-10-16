@@ -1,0 +1,33 @@
+{
+  "apiRequests": 0,
+  "derivedOnly": true,
+  "exitRefreshDiagnostic": {
+    "at": "2026-10-16T23:11:25.969Z",
+    "code": "EXIT_REFRESH_NO_FRESH_CANDIDATE",
+    "expiryExtended": false,
+    "stage": "candidate_ineligible",
+    "writeAttempted": false
+  },
+  "financialReportAt": "2026-10-16T23:11:54.764Z",
+  "fullStatusAt": "2026-10-16T23:11:26.055Z",
+  "fullStatusPid": 565108,
+  "fundamentalEntryDiagnostic": {
+    "at": "2026-10-16T23:10:22.455Z",
+    "exchangeId": "1067",
+    "nativeRiskCapsChanged": false,
+    "physicalAttempted": false,
+    "reason": "FUNDAMENTAL_ENTRY_RECEIPT_SCOPE_OR_STALE",
+    "stage": "preflight"
+  },
+  "observedAt": "2026-10-16T23:11:55.788908+00:00",
+  "ordinaryACKsAreNotFillsOrProfit": true,
+  "originalFullStatusSha256": "ff0360e0847786928e7fc6667a60fb0cf3948c0fd394d466eea74d305ad2f877",
+  "originalReportSha256": "4c015a8d82f23f6706c16beddafc3581d15802ce79ea401a6ededb7498820375",
+  "reviewChangeUrgency": {
+    "existingOriginalORReviewSha256": "fa933826010a22a23b338725c5e016fc224f2bd8d27890eb6463b202015951ec",
+    "installedORReviewSha256": "5b28aa82f283cd80aa53bae0bc93b3492d1093f81f05689edc7fd4252970a3a2",
+    "liveCausality": "plausible confirmed source path; exact current selection not instrumented; no fix deployed",
+    "reviewRevisionAloneIsNotEconomicRevocation": true,
+    "sourceFunction": "fundamental_policy::exit_refresh_needed"
+  }
+}

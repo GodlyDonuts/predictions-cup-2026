@@ -1,11 +1,13 @@
-# Moloch turnover release — October 16, 22:34 UTC
+# Moloch turnover release — October 16, updated23:11UTC
 
 Production PID **565108** is running the optimized ARM64 release from
 `20543435f9354ae5a599866545cbf1aae6a03cfa`, binary
 `d9f5cbc628dd2e2d2d4f970106706029b8af56b723b5ac51f80ac1939ab48b3d`,
 native engine `b5b28a476fc057de93f5784f7b3600116418aa7e775f25576cfd2906ecd77713`.
-The initial verification confirms the actual executable and no STOP, but history
-restoration is still underway. **Fresh trading and post-upgrade fills are pending.**
+The actual executable and no STOP are verified. At23:11UTC the worker is fresh
+trading, realtime healthy and37/37 complete with matching full-cycle status.
+**Eight new official ACKs, zero new fill rows**; cash/owned/realized remain as
+below. [Dated live proof](../research/moloch-turnover-live-verification-20261016/README.md).
 [Original deployment evidence](../research/moloch-turnover-deployment-20261016/README.md).
 
 ## Trading changes
@@ -78,8 +80,7 @@ not established. A new PID is not evidence of new trading.
 ## Paper 7 is a separate candidate
 
 Joint maker qualification, fundamental acquisition collection and own-account
-realtime invalidation are integrated locally with defaults off. The first
-native90/runtime222/worker109 checks pass; maker fixture corrections and remaining
-integration/release checks are underway. They are **not in the production205
+realtime invalidation pass585 actual ARM64 checks and optimized release, with
+defaults off. Checked source is published. They are **not in the production205
 binary**. No empirical maker model, correlated posterior or tournament rank
 strategy is qualified. See [Paper 7](MOLOCH_PAPER7_20261016.md).

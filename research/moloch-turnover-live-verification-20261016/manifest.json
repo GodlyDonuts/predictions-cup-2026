@@ -1,0 +1,48 @@
+{
+  "apiRequests": 0,
+  "capturedAt": "2026-10-16T23:11:55.798057+00:00",
+  "files": [
+    {
+      "bytes": 1442,
+      "derived": true,
+      "path": "health.json",
+      "sha256": "54574175423194263c909200ae6a388d8cb793623c85608d6f640aa3fb16d130",
+      "sourcePath": "/tmp/moloch-turnover-live-verification-20261016.json"
+    },
+    {
+      "bytes": 265,
+      "derived": true,
+      "path": "progress.json",
+      "sha256": "0a1986a1dbbe9a4b8b4907f25858b6ef2a8c33aa1ad474493d8bf290034f9f5b",
+      "sourcePath": "/home/archon/apps/moloch/shared/live-production-v1/progress.json"
+    },
+    {
+      "bytes": 991,
+      "derived": false,
+      "path": "v8-rollout.json",
+      "sha256": "75fb54e648515ecca401da49fde5a096a3d635d0f9de068567f647a15cd8f32b",
+      "sourcePath": "/tmp/moloch-v8-trace-rollout-20261016.json"
+    },
+    {
+      "bytes": 1544,
+      "derived": true,
+      "path": "v8-status.json",
+      "sha256": "e0459eaa3ff6fbe96ae580b6f766e33d6f49d7316f96c166d2d3c6511b52fd17",
+      "sourcePath": "/home/archon/apps/moloch/shared/crossvenue-observer-trade-trace-v8/status.json"
+    },
+    {
+      "bytes": 4678,
+      "derived": false,
+      "path": "v8-operator.py",
+      "sha256": "fb1cd6c94c39c655e6de9659f416a975e32b749a1656fe630aae13c7a96ab893",
+      "sourcePath": "/tmp/start_moloch_v8_trace_20261016.py"
+    },
+    {
+      "bytes": 1396,
+      "derived": true,
+      "path": "diagnostic-summary.json",
+      "sha256": "8b93694a348362e57d99f194c50086f634189e458e7e1af2fcb319543ea673bc"
+    }
+  ],
+  "kind": "file-only-live-verification"
+}

@@ -1,3 +1,30 @@
+# Latest research baseline — October16,23:11UTC
+
+Sole **565108/source20543435/binaryd9f5cbc6/nativeb5** is fresh trading,
+realtime healthy, with matching full status and 37/37 scopes completed. Since
+launch: **8 official ACKs, zero new fill rows**; 241 cumulative fills. Cash is
+**70,762.850000**, owned cost **24,680.835000**, combined attributed realized
+**−136.230000**. Full95,579.915000 capital, one account queue, daily windows and
+original financial history remain. ACKs are distinct from executions/profit.
+[Actual live verification and source pins](../research/moloch-turnover-live-verification-20261016/README.md).
+
+Paper7's joint maker qualification, fundamental acquisition evidence and
+existing-socket account invalidation pass **585 ARM64 checks and optimized
+release**; source is published but **not in production205**. Correlated posterior,
+qualified empirical alpha and complete account/rank allocation are unfinished.
+[Checked execution implementation](MOLOCH_PAPER7_EXECUTION_20261016.md).
+
+A separately reproduced public-forecast screen covers71 races and77 exact
+structured contracts/49races. It finds46 historical leads across33 additional
+races, pending official nominee/settlement review and fresh physical prices.
+[Mapping, original source clocks and limits](../research/moloch-paper7-forecast-coverage-20261016/README.md).
+
+Read-only V8 observer569117 is running on actual565108's journal; original V7
+incomplete seal remains unchanged. New-entry diagnostics are still22:30:
+a cap-only review revision can incorrectly give expired exit hints perpetual
+priority. A narrow source repair and owner-authenticated model-generation reload
+are in development; neither is deployed. Current production remains active.
+
 # Latest research baseline — October16,22:34UTC
 
 Production is **565108/source20543435/binaryd9f5cbc6/nativeb5**, currently

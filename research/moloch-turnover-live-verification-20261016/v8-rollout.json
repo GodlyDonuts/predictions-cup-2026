@@ -1,0 +1,21 @@
+{
+  "at": "2026-10-16T22:54:58.954047+00:00",
+  "pid": 569117,
+  "producerSha256": "3d3b5d43a6c79293d28b424fc4ab31626267acdd1c1b71918d9cdefd94824cd7",
+  "mappingSha256": "3f8dd6fa3ef6e5e20a6f19030b347f47fa72e3103609c70f6c7e0ab3293b21b0",
+  "journal": "/home/archon/apps/moloch/shared/live-production-v1/breadth-565108-1792191283952.jsonl",
+  "output": "/home/archon/apps/moloch/shared/crossvenue-observer-trade-trace-v8",
+  "durationSeconds": 3600,
+  "restart": "no",
+  "traceBudgetBytes": 2147483648,
+  "traceMinimumFreeBytes": 10737418240,
+  "priorV7SealSha256": "e408be92c8e4192a4f9c5f6647a2db49aa1f4ca27c313452fbee88af3ba00234",
+  "priorV7Complete": false,
+  "priorUnitSha256": "2eb1a855df000517c9efd78f57d533eb816fa3a5f8d12db464660c3b2522ea33",
+  "newUnitSha256": "579f0e0e10bcf69a2344512feb0988bcc07f5f78aa95f95a1036a626c022832e",
+  "sigPidUnchanged": 565108,
+  "sourceAgeCriteriaChanged": false,
+  "sigRequestsAdded": 0,
+  "newKalshiAccountClient": false,
+  "modelQualified": false
+}
