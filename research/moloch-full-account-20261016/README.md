@@ -1,5 +1,12 @@
 # Full-account production release — October16
 
+Latest follow-up12:22:54UTC: worker494293 remains fresh, with healthy realtime,
+matching binary and no STOP. It has34 new official acknowledgments/one actual
+post-launch fill row, and its complete-cycle status now matches the new PID.
+Capital and attributed realized remain unchanged. The linked live-verification
+file is the latest dated derived observation; the initial observation below
+remains historical. No buffering candidate has replaced this release yet.
+
 At11:51:16UTC, the sole SIG worker494293 was verified trading with healthy
 realtime, the expected immutable binary and no execution STOP. Since launch it
 had seven new official acknowledgments and one newly executed fill row. Its

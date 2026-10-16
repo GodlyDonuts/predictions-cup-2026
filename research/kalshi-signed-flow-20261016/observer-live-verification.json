@@ -1,0 +1,46 @@
+{
+  "checkedAt": "2026-10-16T12:05:08.493032+00:00",
+  "observerPid": 496491,
+  "observerSourceSha256": "674264745ced43b053881ad7408a5031a6e389c8652ff950b23bca0e1448b34d",
+  "originalClockFlowValidation": {
+    "validatedFlowExports": 237,
+    "exportsWithObserved30sTradeEvidence": 1
+  },
+  "actual30sTradeEvidenceSha256": [
+    "843a0ff6ac1dee9e21f77456c9c3b1778e65e85de83727e31bec792dec1878a0"
+  ],
+  "completeRecordedDecisionRowsRead": 456,
+  "decisionRowsWithFlowSnapshot": 456,
+  "decisionRowsWithIdentifiedObservedSignedQuantity": 1,
+  "currentGzipIsSealed": false,
+  "status": {
+    "at": "2026-10-16T12:05:03.879Z",
+    "captureSegment": 0,
+    "counters": {
+      "externalDuplicates": 49593,
+      "externalInvalidOrOneSided": 686,
+      "externalPolls": 286,
+      "externalSourceChanges": 2961,
+      "externalStaleOrFuture": 9986,
+      "externalWsWithdrawn": 527,
+      "labels": 503,
+      "labelsMissingTimelyBook": 946,
+      "noCurrentExternal": 4,
+      "samples": 456,
+      "sigBooks": 6711
+    },
+    "executionAuthority": false,
+    "format": "breadth",
+    "historyPrefixVerified": false,
+    "journalPosition": 128178410,
+    "journalSequence": 954,
+    "observedMarkets": 196,
+    "originalJournalHash": "b5b1ed003a806d93256e638524689cf0fa8d73e60c4ec05c439479cb4302b786",
+    "pendingSamples": 311,
+    "pid": 496491,
+    "readOnly": true,
+    "state": "observing"
+  },
+  "executionAuthority": false,
+  "profitabilityEstablished": false
+}

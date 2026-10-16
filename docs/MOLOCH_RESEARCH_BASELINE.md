@@ -1,4 +1,26 @@
-# Current research baseline: October16,11:51UTC
+# Current research baseline: October16,12:22UTC
+
+Production remains sole SIG494293/`e7bb62d1`; full-capital95,579.915000 and
+daily migration are committed. Latest fresh check12:22:54UTC:34 new ACKs/one
+post-launch fill row, complete-cycle status matches the PID, realized−74.405000.
+Owner cash is not profit. [Actual deployment](../research/moloch-full-account-20261016/README.md).
+
+Kalshi public signed-flow source is now deployed on9240/supervisor33752, and
+the causal observer496491 reads rotating all-market capture. At12:21:48 the
+feed had237 valid books, one connection,135 trade frames,20 REST starts/sec,
+six recoverable network errors and no throttles. [Live source evidence](../research/kalshi-signed-flow-20261016/README.md).
+Physical Kalshi pricing remains unqualified. The larger sealed1,348-decision
+study selected zero after-cost trades; its944 complete toxicity states were
+allQUIET. More source fields and better intercept MSE do not establish alpha.
+
+The measured native report writer emits millions of tiny syscalls and the
+first35-scope pass took19m21s. Buffered source`31aefba5` is checked and building
+separately, preserving byte parity and durable saves. It is not the deployed
+binary and no whole-loop speedup has been measured. [Original timing audit](../research/moloch-hotpath-20261016/README.md).
+Certified floors, a qualified cross-venue rule, tournament-prize utility and
+genuine election-night vintages remain unfinished.
+
+# Historical research baseline: October16,11:51UTC
 
 Actual production is sole SIG494293/source`e7bb62d1`/binary`d0a3113c…`.
 Fresh per-scope trading/realtime verified11:51:16UTC, seven new official ACKs

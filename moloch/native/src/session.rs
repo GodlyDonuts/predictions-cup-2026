@@ -6,7 +6,7 @@ use sha2::{Digest, Sha256};
 use std::{
     collections::BTreeMap,
     fs::{self, File, OpenOptions},
-    io::{BufRead, BufReader, Read, Write},
+    io::{BufRead, BufReader, BufWriter, Read, Write},
     path::{Path, PathBuf},
     time::{SystemTime, UNIX_EPOCH},
 };
@@ -45,12 +45,23 @@ fn sync_dir(path: &Path) -> Result<()> {
     File::open(path)?.sync_all()?;
     Ok(())
 }
+// serde_json emits many tiny writes. Keep their exact bytes while bounding the
+// buffer and explicitly surfacing its final write/flush error before fsync.
+fn write_json_buffered(writer: impl Write, value: &Value) -> Result<()> {
+    let mut buffered = BufWriter::with_capacity(64 * 1024, writer);
+    serde_json::to_writer(&mut buffered, value)?;
+    buffered.write_all(b"\n")?;
+    buffered.flush()?;
+    Ok(())
+}
 pub fn atomic_json(path: &Path, value: &Value) -> Result<()> {
+    atomic_json_with(path, value, |file, value| write_json_buffered(file, value))
+}
+fn atomic_json_with(path: &Path, value: &Value, write: impl FnOnce(&mut File, &Value) -> Result<()>) -> Result<()> {
     let nonce = SystemTime::now().duration_since(UNIX_EPOCH)?.as_nanos();
     let temp = path.with_extension(format!("{}.{}.pending", std::process::id(), nonce));
     let mut f = options().write(true).create_new(true).open(&temp)?;
-    serde_json::to_writer(&mut f, value)?;
-    f.write_all(b"\n")?;
+    write(&mut f, value)?;
     f.sync_all()?;
     fs::rename(&temp, path)?;
     sync_dir(path.parent().ok_or("PAPER_PARENT")?)?;
@@ -630,6 +641,40 @@ mod tests {
         fn drop(&mut self) {
             let _ = fs::remove_dir_all(&self.0);
         }
+    }
+    #[test]
+    fn atomic_json_buffered_exact_bytes_and_bounded_write_count() {
+        #[derive(Default)] struct Count { bytes: Vec<u8>, calls: usize, flushes: usize }
+        impl Write for Count {
+            fn write(&mut self, bytes:&[u8])->std::io::Result<usize>{self.calls+=1;self.bytes.extend_from_slice(bytes);Ok(bytes.len())}
+            fn flush(&mut self)->std::io::Result<()>{self.flushes+=1;Ok(())}
+        }
+        let value=json!({"escaped":"line\n\"\\\u{0001}","unicode":"é🦎","numbers":[-0.0,1.25e-7,10000000],"orders":(0..4000).map(|n|json!({"id":n,"price":"0.123456","side":"NO","retired":true})).collect::<Vec<_>>()});
+        let mut old=Count::default();serde_json::to_writer(&mut old,&value).unwrap();old.write_all(b"\n").unwrap();
+        let mut new=Count::default();write_json_buffered(&mut new,&value).unwrap();
+        assert_eq!(new.bytes,old.bytes);assert_eq!(new.flushes,1);
+        assert!(new.calls<=new.bytes.len().div_ceil(64*1024)+1);assert!(old.calls>new.calls*100);
+        let temp=Temp::new();let path=temp.0.join("report.json");atomic_json(&path,&value).unwrap();assert_eq!(fs::read(path).unwrap(),old.bytes);
+    }
+    #[test]
+    fn atomic_json_buffer_write_or_flush_failure_never_publishes() {
+        struct Fail<'a>{file:&'a mut File,remaining:usize,flush_fails:bool}
+        impl Write for Fail<'_>{
+            fn write(&mut self,bytes:&[u8])->std::io::Result<usize>{if self.remaining==0{return Err(std::io::Error::other("injected write"))}let n=bytes.len().min(self.remaining);let written=self.file.write(&bytes[..n])?;self.remaining-=written;Ok(written)}
+            fn flush(&mut self)->std::io::Result<()>{if self.flush_fails{Err(std::io::Error::other("injected flush"))}else{self.file.flush()}}
+        }
+        for flush_fails in [false,true]{let temp=Temp::new();let path=temp.0.join("report.json");atomic_json(&path,&json!({"old":"durable"})).unwrap();let before=fs::read(&path).unwrap();
+            let value=json!({"replacement":"x".repeat(150000)});
+            assert!(atomic_json_with(&path,&value,|file,value|write_json_buffered(Fail{file,remaining:if flush_fails{usize::MAX}else{70000},flush_fails},value)).is_err());
+            assert_eq!(fs::read(&path).unwrap(),before);assert_eq!(fs::read_dir(&temp.0).unwrap().count(),2);
+        }
+    }
+    #[test]
+    fn atomic_json_failed_rename_preserves_destination_and_complete_temp() {
+        let temp=Temp::new();let path=temp.0.join("report.json");fs::create_dir(&path).unwrap();fs::write(path.join("unchanged"),b"original").unwrap();
+        let value=json!({"new":true});assert!(atomic_json(&path,&value).is_err());assert_eq!(fs::read(path.join("unchanged")).unwrap(),b"original");
+        let pending=fs::read_dir(&temp.0).unwrap().map(|e|e.unwrap().path()).find(|p|p.extension().is_some_and(|x|x=="pending")).unwrap();
+        let mut expected=serde_json::to_vec(&value).unwrap();expected.push(b'\n');assert_eq!(fs::read(pending).unwrap(),expected);
     }
     fn events() -> Vec<Value> {
         let c: Value =

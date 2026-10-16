@@ -1,0 +1,133 @@
+{
+  "schemaVersion": 1,
+  "verifiedAt": "2026-10-16T12:21:49.0260014Z",
+  "rollout": {
+    "schemaVersion": 1,
+    "startedAt": "2026-10-16T12:00:47.2216319Z",
+    "sourceCommit": "47f8693c9f2f5182e45fe3ba7b8344c477ed9298",
+    "oldSupervisorPid": 26492,
+    "oldCollectorPid": 16540,
+    "newSupervisorPid": 33752,
+    "sourceHashes": {
+      "kalshi-client.mjs": "982589a64aab8be7fe955a47f8b8887eccb61ca2d234e1b87ac41a2f34ab669e",
+      "kalshi-collector.mjs": "aca80ada1271c51625b3ed7a9882a223ec302d00fba2cb906183814a11f253be",
+      "kalshi-supervisor.mjs": "7e814e1a781deed93caa4d051930a3be1c71b61e2e9cf80a7761e284c381c3bf",
+      "kalshi-universe.mjs": "443c8f34275e19ef3af1fa0b45e219b1b50bb13973bd61a3224a5aa403ea8884",
+      "kalshi-websocket.mjs": "b27b1148a0a1b1b51d29ce566624320442e1fdb52d221a01cce1f2d8accb470d"
+    },
+    "dependency": "ws8.22.0",
+    "snapshotRefreshMs": 30000,
+    "sigWorkerRestarted": false,
+    "originalJournalsPreserved": true,
+    "executionAuthority": false,
+    "liveConnectionVerified": false
+  },
+  "supervisor": {
+    "childPid": 9240,
+    "restarts": 4,
+    "starts": 5,
+    "pid": 33752,
+    "state": "running"
+  },
+  "collector": {
+    "schemaVersion": 1,
+    "at": "2026-10-16T12:21:48.99Z",
+    "pid": 9240,
+    "startedAt": "2026-10-16T12:01:27.057Z",
+    "state": "collecting",
+    "origin": "kalshi_official_v2",
+    "readOnly": true,
+    "targetRequestsPerSecond": 20,
+    "targetStartIntervalMs": 50,
+    "rollingRequestCeiling": 20,
+    "totalMappedTickers": 237,
+    "activeTickers": 237,
+    "successfullyCachedTickers": 237,
+    "unmappedSigMarketIds": [
+      "191",
+      "276",
+      "280"
+    ],
+    "idealBookRotationSeconds": 11.85,
+    "inFlight": 3,
+    "observedStartsLastSecond": 20,
+    "observedStartsLastMinute": 1193,
+    "oldestCachedReceiptAgeMs": 11932,
+    "blockedUntil": "2026-10-16T12:21:48.99Z",
+    "attempts": 24228,
+    "successfulBooks": 24219,
+    "successfulMetadata": 0,
+    "errors": 6,
+    "throttles": 0,
+    "maximumInFlightObserved": 64,
+    "lastError": {
+      "at": "2026-10-16T12:04:22.029Z",
+      "ticker": "GOVPARTYNM-26-R",
+      "code": "network"
+    },
+    "websocket": {
+      "enabled": true,
+      "state": "receiving",
+      "frames": 36095,
+      "snapshots": 9717,
+      "deltas": 23536,
+      "trades": 135,
+      "tickers": 2704,
+      "lastReceiptAt": "2026-10-16T12:21:48.863Z",
+      "coverage": {
+        "socketDiagnostic": {
+          "connection": null,
+          "errorCode": null,
+          "closeCode": null
+        },
+        "running": true,
+        "stopped": false,
+        "pendingBytes": 0,
+        "pendingFrames": 0,
+        "wireFrames": 36095,
+        "wireBytes": 23881356,
+        "connections": 1,
+        "coverage": {
+          "trackedMarkets": 237,
+          "snapshottedMarkets": 237,
+          "validBooks": 237,
+          "invalidOrMissingBooks": 0,
+          "activeSubscriptions": 3,
+          "pendingSubscriptions": 0,
+          "snapshotRefreshPending": 0,
+          "frames": 36095,
+          "snapshots": 9717,
+          "deltas": 23536,
+          "duplicates": 0,
+          "sequenceGaps": 0,
+          "resubscriptions": 0,
+          "invalidFrames": 0,
+          "staleRefreshes": 40,
+          "snapshotTimeouts": 0,
+          "futureSourceFrames": 24633,
+          "maxSourceAheadMs": 11,
+          "pricingAuthority": false
+        },
+        "pricingAuthority": false
+      }
+    },
+    "coverage": {
+      "sigMarkets": 237,
+      "mappedSigMarkets": 234,
+      "unmappedSigMarkets": 3,
+      "uniqueTickers": 234,
+      "idealSweepSecondsAt20ReadsPerSecond": 11.7,
+      "recordedLeadRows": 451,
+      "rejectedReferenceRows": 0,
+      "directMappedSigMarkets": 234,
+      "analogCoveredSigMarkets": 3,
+      "totalReferenceCoveredSigMarkets": 237,
+      "uniqueCandidateAnalogTickers": 3,
+      "idealCombinedReferenceSweepSecondsAt20ReadsPerSecond": 11.85
+    },
+    "fatalCode": null
+  },
+  "publicDataOnly": true,
+  "sigWorkerRestarted": false,
+  "productionPricingActivated": false
+}
