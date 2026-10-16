@@ -540,9 +540,24 @@ pub fn verify_frozen_ordinary_pre_admission(config:&Config,spec:&RequestSpec,p:&
  seal_unadmitted_proof(config,spec,p,at,error,context,capture)
 }
 fn seal_unadmitted_proof(config:&Config,spec:&RequestSpec,p:&Permit,at:u64,error:&TransportError,context:Value,mut capture:admission::FrozenUnadmittedSource)->Result<OrdinaryPreAdmissionProof>{
- let source=capture.snapshot();let value=json!({"context":context,"source":source});let bytes=serde_json::to_vec(&value).map_err(|_|fail("UNADMITTED_SERIALIZE"))?;need(bytes.len()<=768*1024*1024,"UNADMITTED_ARCHIVE_BOUND")?;let path=unadmitted_archive(config,&context);
+ let source=capture.snapshot();let value=json!({"context":context,"source":source});let mut bytes=serde_json::to_vec(&value).map_err(|_|fail("UNADMITTED_SERIALIZE"))?;need(bytes.len()<=768*1024*1024,"UNADMITTED_ARCHIVE_BOUND")?;let path=unadmitted_archive(config,&context);
  use std::io::Write;let mut options=std::fs::OpenOptions::new();options.write(true).create_new(true);#[cfg(unix)]{use std::os::unix::fs::OpenOptionsExt;options.mode(0o600);}
- let mut file=options.open(&path).map_err(|_|fail("UNADMITTED_ARCHIVE_ALREADY_EXISTS_OR_UNAVAILABLE"))?;file.write_all(&bytes).and_then(|_|file.sync_all()).map_err(|_|fail("UNADMITTED_ARCHIVE_DURABILITY"))?;
+ match options.open(&path){
+  Ok(mut file)=>{file.write_all(&bytes).and_then(|_|file.sync_all()).map_err(|_|fail("UNADMITTED_ARCHIVE_DURABILITY"))?;},
+  Err(error)if error.kind()==std::io::ErrorKind::AlreadyExists=>{
+   // A crash may precede the dispatch-abort append. A new genuine capture
+   // lease can differ; every economic source byte/head must remain identical.
+   // Preserve the ORIGINAL archive/lease/proof rather than substituting today's
+   // lease into history. The full retained verifier below checks that original.
+   let original=unadmitted_read(&path)?;let retained:Value=serde_json::from_slice(&original).map_err(|_|fail("UNADMITTED_ARCHIVE_JSON"))?;
+   need(retained.as_object().is_some_and(|m|m.len()==2)&&retained["context"]==context
+     &&serde_json::to_vec(&retained).map_err(|_|fail("UNADMITTED_SERIALIZE"))?==original,"UNADMITTED_ARCHIVE_CANONICAL_CONTEXT")?;
+   let mut old=retained["source"].clone();let mut fresh=source.clone();
+   for v in [&mut old,&mut fresh]{let o=v.as_object_mut().ok_or_else(||fail("UNADMITTED_ARCHIVE_SOURCE"))?;o.remove("originalLease");o.remove("leaseKind");}
+   need(old==fresh,"UNADMITTED_ARCHIVE_FRESH_SOURCE_CHANGED")?;bytes=original;
+  },
+  Err(_)=>return Err(fail("UNADMITTED_ARCHIVE_ALREADY_EXISTS_OR_UNAVAILABLE")),
+ }
  #[cfg(unix)]std::fs::File::open(&config.queue_dir).and_then(|f|f.sync_all()).map_err(|_|fail("UNADMITTED_ARCHIVE_DURABILITY"))?;
  let mut evidence=context;evidence["sourceArchive"]=json!(path.file_name().and_then(|s|s.to_str()).ok_or_else(||fail("UNADMITTED_ARCHIVE_NAME"))?);evidence["sourceArchiveSha256"]=json!(digest(&bytes));evidence["originalHead"]=source["verifiedHead"].clone();
  let verified=verify_retained_ordinary_pre_admission(config,spec,p,at,error,&evidence)?;capture.unchanged().map_err(|e|fail(&e))?;Ok(verified)
