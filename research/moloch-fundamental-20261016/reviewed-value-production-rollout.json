@@ -1,0 +1,125 @@
+{
+  "at": "2026-10-16T02:33:51.570734+00:00",
+  "oldPid": 341432,
+  "newPid": 354070,
+  "sourceCommit": "124bbd9e5f03701b4d6471c0eb1acfb3c7fb479f",
+  "binarySha256": "548b5f3d8606974136986775fd200e65ca4c73b7a557423a259507ad13b79c70",
+  "release": "/home/archon/apps/moloch/releases/reviewed-value-548b5f3d8606/bin/moloch-live-runtime",
+  "control": "/home/archon/apps/moloch/shared/moloch-live-reviewed-value-20261016.json",
+  "engineIdentity": "3cc0a797458c9aaff4d743769d95c8fdc37299b1dc0434e6df48d6d2f74f0123",
+  "financialBridgeEntries": 8,
+  "controlChanges": [
+    "activation.binarySha256",
+    "fundamentalPolicy"
+  ],
+  "freshTradingVerified": false,
+  "profitabilityEstablished": false,
+  "boundary": {
+    "at": "2026-10-16T02:30:42.160159+00:00",
+    "stoppedPid": 341432,
+    "stop": {
+      "action": "no automatic write retry or activation renewal",
+      "at": "2026-10-16T02:30:38.360Z",
+      "reason": "STOPPED_OR_OWNER_LOST"
+    },
+    "bankHead": {
+      "hash": "0ae260798ea19836e06ff1e3f224314b6dd2bc371538f2c0631fcfd0c446f0d2",
+      "manifestHash": "78acaef952ed95b9bff24a3349ece669ccbe88ef7294b27dd9c2aa7d09cae325",
+      "previous": "da297a1ad76e5675d926edc21c0d20754325eafcced26259323999a337518bc7",
+      "sequence": 140387
+    },
+    "bankReportHash": "ce7ee9e08041f8e48a5cb788184e93dd2df98aefbfd1f267f90b33494f4b5c76",
+    "prefixBytes": 397019972,
+    "prefixSha256": "5761128ca314abd40007b3e1233232509765ba122553f4d6a7efd843c543e805",
+    "priorBridgeSha256": "45392a936b9b108b29e7a549ebccfb1eda596db36e2678f9b24878215f6c70b9",
+    "bridgeEntries": 7,
+    "dispatch": {
+      "sequence": 5840,
+      "hash": "e9bcd80b3ecfb57f852b15ecb1a2b86f2c698d48661f05ec43aabf30a5f2afcb",
+      "acknowledgedAttempts": 662,
+      "unknownOrdinaryAttempts": 0
+    },
+    "queue": {
+      "summarySchemaVersion": 1,
+      "globalUnknownCount": 0,
+      "hasUnknown": false,
+      "state": {
+        "schema_version": 1,
+        "scope": "sig-midterm-shared-account",
+        "last_clock": 1792117837300,
+        "next": 1792117837900,
+        "cooldown": 1792111209852,
+        "manual_review": false,
+        "reads": [
+          1792117781988,
+          1792117782863,
+          1792117783992,
+          1792117784889,
+          1792117785697,
+          1792117786573,
+          1792117787398,
+          1792117788206,
+          1792117791277,
+          1792117792238,
+          1792117793227,
+          1792117794043,
+          1792117795021,
+          1792117795938,
+          1792117796826,
+          1792117798284,
+          1792117799276,
+          1792117824812,
+          1792117825634,
+          1792117826456,
+          1792117827275,
+          1792117829356,
+          1792117830381,
+          1792117831438,
+          1792117832283,
+          1792117833252,
+          1792117834067,
+          1792117834961,
+          1792117836610
+        ],
+        "writes": [],
+        "active": null,
+        "read_profile": {
+          "cap": 100,
+          "gap_ms": 600
+        }
+      },
+      "immutable_bindings": 1018,
+      "idempotency_keys": 1018,
+      "unknown_acceptances": 0,
+      "sequence": 117865,
+      "previous": "1f498456280ca5a9f13396adcc61a6f351c3008352ea4267543cb8306a15f2d4",
+      "active_journal_bytes": 46124123,
+      "schema_version": 1
+    },
+    "offline": "/home/archon/apps/moloch/offline-reviewed-prefix-140387-20261016",
+    "fundamentalSidecarSha256": "c27313d43d703b56cc2ec19148c94e15a18d1e47b62f3c381bf4b8ab5ec063fa",
+    "fundamentalMarkerSha256": "cb5efd642c6ab79ff57db55e36a17dcd7497a7f3f160be3fff2546d7a34021c1",
+    "actualFills": 115,
+    "realized": "-75.705000"
+  },
+  "prefixParity": {
+    "bookState": 21,
+    "contestOrders": 0,
+    "elapsedMs": 107546,
+    "engineIdentity": "3cc0a797458c9aaff4d743769d95c8fdc37299b1dc0434e6df48d6d2f74f0123",
+    "financialReportEnvelopeByteIdentical": true,
+    "headEnvelopeByteIdentical": true,
+    "nativeHead": {
+      "hash": "0ae260798ea19836e06ff1e3f224314b6dd2bc371538f2c0631fcfd0c446f0d2",
+      "manifestHash": "78acaef952ed95b9bff24a3349ece669ccbe88ef7294b27dd9c2aa7d09cae325",
+      "previous": "da297a1ad76e5675d926edc21c0d20754325eafcced26259323999a337518bc7",
+      "sequence": 140387
+    },
+    "networkRequests": 0,
+    "offlineOnly": true,
+    "originalFillCount": 115,
+    "originalSourceCursorsAndOrdersAndFillsIncluded": true,
+    "profitabilityEstablished": false,
+    "upgrades": 8
+  }
+}
