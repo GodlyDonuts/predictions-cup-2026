@@ -66,7 +66,8 @@ impl Decision{
  pub fn priority(&self)->u8{match self.class{Class::OwnedExit|Class::CoveredHedge=>0,Class::Qualified=>1,Class::Exploration=>2,Class::Deferred=>3}}
  pub fn validate_frozen(&self,quote:&Value,ledger:&Value,qid:u64,now:u64)->Result<()>{need(self.allowed()&&now<self.expires&&self.quote==*quote&&self.quote["id"].as_u64()==Some(qid)&&hash(ledger)?==self.ledger_sha,"MAKER_FROZEN_READY_CHANGED")}
  pub fn validate_current(&self,bank:&Session,review:&Reviewed,log:&DispatchLog,now:u64)->Result<()>{
-  need(self.allowed()&&now<self.expires&&bank.durable_head()==self.head&&dispatch(log)==self.dispatch&&review.sha==self.settings_sha,"MAKER_DECISION_CHANGED")?;review.bind(bank)?;log.require_resolved_attempts()?;
+  need(now<self.expires,"MAKER_DECISION_EXPIRED")?;
+  need(self.allowed()&&bank.durable_head()==self.head&&dispatch(log)==self.dispatch&&review.sha==self.settings_sha,"MAKER_DECISION_CHANGED")?;review.bind(bank)?;log.require_resolved_attempts()?;
   let id=self.quote["id"].as_u64().ok_or("MAKER_QID")?;need(bank.engine().order_records().iter().any(|q|q==&self.quote)&&log.never_attempted(id),"MAKER_QUOTE_CHANGED")?;
   if let Some(m)=&self.model{m.validate_current(bank,id,now)?;}Ok(())
  }
@@ -103,6 +104,7 @@ fn covered_hedge(bank:&Session,log:&DispatchLog,q:&Value)->Result<bool>{
 pub fn partial_risk_charge(gross:i128,p:u32)->Result<i128>{need(gross>=0&&p<=10000,"MAKER_RISK_BOUND")?;Ok(add(mul(gross,(10000-p)as i128)?,9999)?/10000)}
 pub fn decide(bank:&Session,scope:&Scope,log:&DispatchLog,review:&Reviewed,qid:u64,now:u64)->Result<Decision>{
  review.bind(bank)?;log.require_resolved_attempts()?;let q=bank.engine().order_records().into_iter().find(|q|q["id"].as_u64()==Some(qid)).ok_or("MAKER_QUOTE")?;
+ need(q["expiresAt"].as_u64().ok_or("MAKER_QUOTE_STATE")?>now,"MAKER_QUOTE_EXPIRED")?;
  need(!bank.engine().is_package_order(qid)&&q["retired"]==false&&q["filled"]==0&&q.get("cancelEffectiveAt").is_none_or(Value::is_null)&&log.never_attempted(qid)&&q["expiresAt"].as_u64().is_some_and(|t|t>now),"MAKER_QUOTE_STATE")?;
  need(scope.exchanges.get(q["exchangeId"].as_str().ok_or("MAKER_SCOPE")?).is_some_and(|m|q["marketId"]==*m),"MAKER_SCOPE")?;
  let mut d=Decision{class:Class::Deferred,reason:"not_evaluated".into(),proof:json!({}),ledger_sha:hash(&bank.engine().report()?)?,head:bank.durable_head(),dispatch:dispatch(log),settings_sha:review.sha.clone(),run:review.settings.run_id.clone(),tournament:scope.tournament_id.clone(),expires:q["expiresAt"].as_u64().unwrap(),quote:q.clone(),model:None};

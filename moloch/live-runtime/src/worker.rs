@@ -20,6 +20,7 @@ fn validate_maker_configuration(c:&Control)->Result<()>{
   if model.markout_ms!=settings.expected_inventory_age_ms||c.policy["maximumInventoryAgeMs"].as_u64()!=Some(settings.expected_inventory_age_ms)||c.policy["inventoryAgeClock"]!="execution"{return Err("LIVE_MAKER_HORIZON_MISMATCH".into())}
  }Ok(())
 }
+fn expected_maker_expiry(error:&dyn std::error::Error)->bool{matches!(error.to_string().as_str(),"MAKER_DECISION_EXPIRED"|"MAKER_QUOTE_EXPIRED")}
 const MAX_REALTIME_FRAMES_PER_DRAIN:usize=64;
 const RELATIONSHIP_CENSUS_REFRESH_MS:u64=300_000;
 fn now()->u64{SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_millis() as u64}
@@ -381,7 +382,9 @@ fn physical_order(c:&Control,q:&Value)->Result<(Order,RequestSpec,Permit)>{
 }
 fn submit_order(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,authority:&Arc<ProductionAuthority>,q:&Value,facts:SnapshotSet,maker:Option<(Arc<moloch_live_runtime::maker_policy::Decision>,&moloch_live_runtime::maker_policy::Reviewed)>)->Result<()>{
  let qid=q["id"].as_u64().ok_or("LIVE_QUOTE_ID")?;let(order,request_spec,p)=physical_order(c,q)?;
- if let Some((decision,review))=&maker{decision.validate_current(bank,review,log,now())?;}
+ if let Some((decision,review))=&maker{if let Err(error)=decision.validate_current(bank,review,log,now()){
+  if !expected_maker_expiry(error.as_ref()){return Err(error)}authority.clear_ready();atomic_json(&c.root.join("maker-policy-deferred.json"),&json!({"at":iso(now()),"qid":qid,"reason":error.to_string(),"physicalAttempted":false}))?;return Ok(())
+ }}
  authority.prepare_with_maker(bank,qid,request_spec.clone(),p.clone(),facts,maker.as_ref().map(|(decision,_)|decision.clone()))?;
  if let Err(e)=authority.authorize(&c.scope,&request_spec,&p,false,now()){authority.clear_ready();atomic_json(&c.root.join("deferred.json"),&json!({"at":iso(now()),"qid":qid,"code":e.code}))?;return Ok(())}
  if log.intents.contains_key(&qid)||!log.never_attempted(qid){return Err("LIVE_EXISTING_UNRESOLVED_INTENT".into())}
@@ -534,7 +537,7 @@ fn dispatch(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,a
  let mut ranked=Vec::new();let mut maker_assessments=Vec::new();
  for index in selection.ordered_indices{
   let q=&quotes[index];if q["action"]=="buy"{if let Some(review)=maker_review{
-   let decision=moloch_live_runtime::maker_policy::decide(bank,&c.scope,log,review,q["id"].as_u64().ok_or("LIVE_QUOTE_ID")?,now())?;
+   let decision=match moloch_live_runtime::maker_policy::decide(bank,&c.scope,log,review,q["id"].as_u64().ok_or("LIVE_QUOTE_ID")?,now()){Ok(d)=>d,Err(error)if expected_maker_expiry(error.as_ref())=>{continue},Err(error)=>return Err(error)};
    maker_assessments.push(decision.proof().clone());if !decision.allowed(){continue}ranked.push((decision.priority(),index));continue;
   }}ranked.push((0,index));
  }
@@ -561,7 +564,7 @@ fn dispatch(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,a
   let refreshed=moloch_live_runtime::quote_priority::from_native(bank,&c.scope,std::slice::from_ref(&current),now(),None)?;
   if refreshed.ordered_indices.is_empty(){authority.clear_ready();let _=atomic_json(&c.root.join("quote-priority-deferred.json"),&json!({"at":iso(now()),"qid":qid,"assessment":refreshed,"physicalAttempted":false,"priceChanged":false}));return Ok(())}
   let maker=if current["action"]=="buy"{if let Some(review)=maker_review{
-   let decision=Arc::new(moloch_live_runtime::maker_policy::decide(bank,&c.scope,log,review,qid,now())?);
+   let decision=match moloch_live_runtime::maker_policy::decide(bank,&c.scope,log,review,qid,now()){Ok(d)=>Arc::new(d),Err(error)if expected_maker_expiry(error.as_ref())=>{authority.clear_ready();continue},Err(error)=>return Err(error)};
    if !decision.allowed(){authority.clear_ready();let _=atomic_json(&c.root.join("maker-policy-deferred.json"),&json!({"at":iso(now()),"decision":decision.proof(),"physicalAttempted":false}));continue}
    Some((decision,review))
   }else{None}}else{None};
