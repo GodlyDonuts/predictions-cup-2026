@@ -13,10 +13,10 @@ pub struct Activation {pub run_id:String,pub entry_until_ms:u64,pub maximum_comm
 /// Cancellation never consumes a contract/book observation. Keep its actual
 /// four official account receipts distinct rather than inventing unused facts.
 #[derive(Clone)]pub struct CancelSnapshotSet {pub account:Receipt,pub cash_balance:Receipt,pub positions:Receipt,pub open_orders:Receipt}
-#[derive(Clone)]struct OrderReady {spec:RequestSpec,permit:Permit,quote:Value,ledger:Value,snapshots:SnapshotSet,owned:u64,expected_signed:i128,market_cost:i128,expected_cash:i128,entry_until:u64,maker:Option<Arc<crate::maker_policy::Decision>>}
+#[derive(Clone)]struct OrderReady {spec:RequestSpec,permit:Permit,quote:Value,ledger:Value,snapshots:SnapshotSet,owned:u64,expected_signed:i128,market_cost:i128,expected_cash:i128,entry_until:u64,maker:Option<Arc<crate::maker_policy::Decision>>,fundamental:Option<Arc<crate::fundamental_policy::PhysicalDecision>>}
 #[derive(Clone)]struct CancelReady {spec:RequestSpec,permit:Permit,snapshots:CancelSnapshotSet}
 #[derive(Clone)]enum Ready {Order(OrderReady),Cancel(CancelReady)}
-pub struct ProductionAuthority {maker_review:Mutex<Option<String>>,package_ready:Mutex<Option<crate::package_authority::Prepared>>,daily:Mutex<Option<(DailyEntryWindows,u64)>>,activation:Activation,scope:Scope,stops:Vec<PathBuf>,control:PathBuf,control_hash:String,binary:PathBuf,_lease:Arc<ExclusiveLock>,ready:Mutex<Option<Ready>>,owned:Mutex<std::collections::BTreeSet<String>>,recovery:Mutex<Option<String>>,stream:Mutex<Option<(Arc<std::sync::atomic::AtomicBool>,u64)>>}
+pub struct ProductionAuthority {fundamental_exchanges:Mutex<Option<std::collections::BTreeSet<String>>>,maker_review:Mutex<Option<String>>,package_ready:Mutex<Option<crate::package_authority::Prepared>>,daily:Mutex<Option<(DailyEntryWindows,u64)>>,activation:Activation,scope:Scope,stops:Vec<PathBuf>,control:PathBuf,control_hash:String,binary:PathBuf,_lease:Arc<ExclusiveLock>,ready:Mutex<Option<Ready>>,owned:Mutex<std::collections::BTreeSet<String>>,recovery:Mutex<Option<String>>,stream:Mutex<Option<(Arc<std::sync::atomic::AtomicBool>,u64)>>}
 /// Actual attributed cash only. Borrowed principal remains outside unlevered
 /// Wallet sizing; until original fill economics reconcile it cannot authorize
 /// a replacement physical order. Cancellation keeps its separate authority.
@@ -35,12 +35,21 @@ fn fresh(r:&Receipt,now:u64,max_age:u64)->bool{r.status==200&&clock(&r.request_s
 impl ProductionAuthority {
  pub fn new(activation:Activation,scope:Scope,stops:Vec<PathBuf>,control:PathBuf,binary:PathBuf,lease:Arc<ExclusiveLock>)->Result<Self>{
   if activation.run_id.is_empty()||activation.maximum_quantity==0||activation.maximum_quantity>10000||decimal_units(&activation.maximum_committed)?<=0||decimal_units(&activation.maximum_market_cost)?<=0||scope.tournament_id!=activation.tournament_id||scope.tournament_slug!=activation.tournament_slug||hash_bytes(&fs::read(&binary)?)!=activation.binary_sha256{return Err("LIVE_ACTIVATION_BINDING".into())}
-  let control_hash=hash_bytes(&fs::read(&control)?);Ok(Self{maker_review:Mutex::new(None),package_ready:Mutex::new(None),daily:Mutex::new(None),activation,scope,stops,control,control_hash,binary,_lease:lease,ready:Mutex::new(None),owned:Mutex::new(Default::default()),recovery:Mutex::new(None),stream:Mutex::new(None)})
+  let control_hash=hash_bytes(&fs::read(&control)?);Ok(Self{fundamental_exchanges:Mutex::new(None),maker_review:Mutex::new(None),package_ready:Mutex::new(None),daily:Mutex::new(None),activation,scope,stops,control,control_hash,binary,_lease:lease,ready:Mutex::new(None),owned:Mutex::new(Default::default()),recovery:Mutex::new(None),stream:Mutex::new(None)})
  }
  pub fn require_maker_review(&self,sha:&str)->Result<()>{
   if sha.len()!=64||!sha.bytes().all(|b|b.is_ascii_digit()||(b'a'..=b'f').contains(&b)){return Err("LIVE_MAKER_REVIEW_HASH".into())}
   let mut required=self.maker_review.lock().unwrap();if required.as_ref().is_some_and(|old|old!=sha){return Err("LIVE_MAKER_REVIEW_CHANGED".into())}*required=Some(sha.into());drop(required);self.clear_ready();Ok(())
  }
+ /// Immutable scoped routing requirement; registering even an empty set seals
+ /// the choice for this authority. It cannot be removed to bypass a held review.
+ pub fn require_fundamental_exchanges(&self,exchanges:&std::collections::BTreeSet<String>)->Result<()>{
+  if exchanges.len()>self.scope.exchanges.len()||exchanges.iter().any(|e|!self.scope.exchanges.contains_key(e)){return Err("LIVE_FUNDAMENTAL_EXCHANGE_SCOPE".into())}
+  let mut required=self.fundamental_exchanges.lock().unwrap();
+  if required.as_ref().is_some_and(|old|old!=exchanges){return Err("LIVE_FUNDAMENTAL_EXCHANGES_CHANGED".into())}
+  *required=Some(exchanges.clone());drop(required);self.clear_ready();Ok(())
+ }
+ fn fundamental_required(&self,exchange:&str)->bool{self.fundamental_exchanges.lock().unwrap().as_ref().is_some_and(|e|e.contains(exchange))}
  pub fn entry_until_ms(&self)->u64{self.daily.lock().unwrap().as_ref().map_or(self.activation.entry_until_ms,|(_,end)|*end)}
  pub fn bind_entry_window(&self,bank:&Session,cfg:&DailyEntryWindows,at:u64)->Result<()>{
   cfg.validate(&self.activation,at)?;
@@ -59,19 +68,25 @@ impl ProductionAuthority {
   self.prepare_with_maker(bank,qid,spec,permit,snapshots,None)
  }
  pub fn prepare_with_maker(&self,bank:&Session,qid:u64,spec:RequestSpec,permit:Permit,snapshots:SnapshotSet,maker:Option<Arc<crate::maker_policy::Decision>>)->Result<()> {
+  self.prepare_with_policies(bank,qid,spec,permit,snapshots,maker,None)
+ }
+ pub fn prepare_with_policies(&self,bank:&Session,qid:u64,spec:RequestSpec,permit:Permit,snapshots:SnapshotSet,maker:Option<Arc<crate::maker_policy::Decision>>,fundamental:Option<Arc<crate::fundamental_policy::PhysicalDecision>>)->Result<()> {
   self.clear_ready();
   if spec.method=="DELETE"{return Err("LIVE_CANCEL_REQUIRES_ACCOUNT_FACTS".into())}
   if !bank.engine().is_live(){return Err("PAPER_BANK_CANNOT_AUTHORIZE_WRITES".into())}
   if bank.engine().is_package_order(qid){return Err("PACKAGE_REQUIRES_BASKET_AUTHORITY".into())}
   if spec.method=="POST"&&bank.engine().package_blocks_submissions(){return Err("PACKAGE_UNRESOLVED".into())}
   let quote=bank.engine().order_records().into_iter().find(|q|q["id"].as_u64()==Some(qid)&&q["retired"]==false).ok_or("LIVE_INTENT_NOT_FUNDED")?;
-  if quote["action"]=="buy"{if let Some(required)=self.maker_review.lock().unwrap().as_ref(){if maker.as_ref().is_none_or(|m|m.review_sha256()!=required){return Err("LIVE_MAKER_DECISION_REQUIRED".into())}}}
+  let exchange=quote["exchangeId"].as_str().ok_or("LIVE_INTENT_SCOPE")?;
+  if self.fundamental_required(exchange)&&fundamental.is_none(){return Err("LIVE_FUNDAMENTAL_DECISION_REQUIRED".into())}
+  if fundamental.as_ref().is_some_and(|proof|proof.native_head()!=&bank.durable_head()){return Err("LIVE_FUNDAMENTAL_NATIVE_HEAD_CHANGED".into())}
+  if quote["action"]=="buy"{if let Some(required)=self.maker_review.lock().unwrap().as_ref(){if fundamental.is_none()&&maker.as_ref().is_none_or(|m|m.review_sha256()!=required){return Err("LIVE_MAKER_DECISION_REQUIRED".into())}}}
   let owned=bank.engine().wallet.quantity(quote["exchangeId"].as_str().ok_or("LIVE_INTENT_SCOPE")?,if quote["side"]=="YES"{moloch_replay::Side::Yes}else{moloch_replay::Side::No});
   let ex=quote["exchangeId"].as_str().ok_or("LIVE_INTENT_SCOPE")?;
   let expected_signed=bank.engine().wallet.quantity(ex,moloch_replay::Side::Yes) as i128-bank.engine().wallet.quantity(ex,moloch_replay::Side::No) as i128;
   let market_cost=bank.engine().wallet.market_cost(ex)+bank.engine().order_records().iter().filter(|q|q["exchangeId"]==ex&&q["action"]=="buy"&&q["retired"]==false).map(|q|decimal_units(q["price"].as_str().unwrap_or("invalid")).map(|p|p*(q["quantity"].as_u64().unwrap_or(0)-q["filled"].as_u64().unwrap_or(0)) as i128)).collect::<std::result::Result<Vec<_>,_>>()?.iter().sum::<i128>();
   let expected_cash=reconciled_expected_cash(bank)?;
-  *self.ready.lock().unwrap()=Some(Ready::Order(OrderReady{spec,permit,quote,ledger:bank.engine().report()?,snapshots,owned,expected_signed,market_cost,expected_cash,entry_until:self.entry_until_ms(),maker}));Ok(())
+  *self.ready.lock().unwrap()=Some(Ready::Order(OrderReady{spec,permit,quote,ledger:bank.engine().report()?,snapshots,owned,expected_signed,market_cost,expected_cash,entry_until:self.entry_until_ms(),maker,fundamental}));Ok(())
  }
  pub fn prepare_cancel(&self,bank:&Session,qid:u64,spec:RequestSpec,permit:Permit,snapshots:CancelSnapshotSet)->Result<()> {
   self.clear_ready();
@@ -83,6 +98,7 @@ impl ProductionAuthority {
  }
  pub fn prepare_package(&self,bank:&Session,admission:&crate::package_admission::Admission,permit:Permit,facts:crate::package_authority::PackageSnapshotSet,log:&crate::dispatch::DispatchLog,at:u64)->Result<()> {
   self.clear_ready();log.require_resolved_attempts()?;
+  if admission.basket().legs.iter().any(|leg|self.fundamental_required(&leg.exchange_id)){return Err("LIVE_FUNDAMENTAL_PACKAGE_COMPONENT_DENIED".into())}
   let orders=bank.engine().order_records();
   for qid in log.acknowledgments.keys().filter(|qid|!log.closed.contains(qid)){
    let q=orders.iter().find(|q|q["id"].as_u64()==Some(*qid)).ok_or("PACKAGE_PRIOR_ACK_QUOTE_MISSING")?;
@@ -95,6 +111,7 @@ impl ProductionAuthority {
   use baal_transport_service::{multi_leg,multi_leg_portfolio as wire};
   self.clear_ready();log.require_resolved_attempts()?;
   let orders=bank.engine().order_records();let component=plan.proof()["portfolio"]["componentExchanges"].as_array().ok_or("PORTFOLIO_COMPONENTS")?;
+  for exchange in component{if self.fundamental_required(exchange.as_str().ok_or("PORTFOLIO_COMPONENTS")?){return Err("LIVE_FUNDAMENTAL_PACKAGE_COMPONENT_DENIED".into())}}
   for qid in log.acknowledgments.keys().filter(|id|!log.closed.contains(id)){let q=orders.iter().find(|q|q["id"]==*qid).ok_or("PORTFOLIO_PRIOR_QUOTE")?;if component.iter().any(|ex|*ex==q["exchangeId"]){return Err("PORTFOLIO_PRIOR_ACK_UNRECONCILED".into())}}
   let basket=wire::Basket{idempotency_key:format!("{}:{}",self.activation.run_id,plan.package_id()),tournament_id:self.scope.tournament_id.clone(),maximum_gross_buy_cost:plan.proof()["grossFunding"].as_str().ok_or("PORTFOLIO_FUNDING")?.into(),minimum_gross_sell_proceeds:plan.proof()["minimumCashProceeds"].as_str().ok_or("PORTFOLIO_PROCEEDS")?.into(),relationship_constraint:None,legs:plan.legs().iter().map(|l|Ok(wire::Leg{exchange_id:l.exchange_id.clone(),side:if l.side=="YES"{multi_leg::Side::Yes}else{multi_leg::Side::No},action:if l.action=="buy"{wire::Action::Buy}else{wire::Action::Sell},quantity:u32::try_from(l.quantity)?,limit_price:l.limit_price.clone()})).collect::<Result<_>>()?};
   let prepared=crate::package_authority::Prepared::new_portfolio(bank,&self.activation,&self.scope,plan,&basket,permit,facts,at,self.entry_until_ms())?;*self.package_ready.lock().unwrap()=Some(prepared);Ok(())
@@ -103,6 +120,10 @@ impl ProductionAuthority {
   if !self.can_read(scope)||p.owner!="Codex"||p.run_id!=self.activation.run_id||p.expires_at_ms<=now{return Err("LIVE_OWNER_OR_ACTIVATION".into())}
   if network&&hash_bytes(&fs::read(&self.binary)?)!=self.activation.binary_sha256{return Err("LIVE_BINARY_CHANGED".into())}
   if spec.endpoint=="/orders/multi-leg"{
+   let has_managed=self.fundamental_exchanges.lock().unwrap().as_ref().is_some_and(|set|!set.is_empty());
+   if has_managed{
+    for leg in spec.body.as_ref().ok_or("LIVE_PACKAGE_BODY")?["legs"].as_array().ok_or("LIVE_PACKAGE_LEGS")?{if self.fundamental_required(leg["exchangeId"].as_str().ok_or("LIVE_PACKAGE_LEG_SCOPE")?){return Err("LIVE_FUNDAMENTAL_PACKAGE_COMPONENT_DENIED".into())}}
+   }
    if self.stream.lock().unwrap().as_ref().is_none_or(|(failed,deadline)|*deadline<=now||failed.load(std::sync::atomic::Ordering::SeqCst)){return Err("LIVE_VERIFIED_STREAM_REQUIRED".into())}
    let end=self.entry_until_ms();
    if self.daily.lock().unwrap().as_ref().is_some_and(|(cfg,bound)|cfg.end_at(now).ok()!=Some(*bound)){return Err("LIVE_ENTRY_OR_ACCOUNT_CASH".into())}
@@ -117,8 +138,10 @@ impl ProductionAuthority {
    if spec.method!="DELETE"||!self.owns_order(id){return Err("LIVE_CANCEL_UNOWNED".into())}return Ok(())
   }};
   if serde_json::to_value(spec)?!=serde_json::to_value(&f.spec)?||serde_json::to_value(p)?!=serde_json::to_value(&f.permit)?{return Err("LIVE_REQUEST_CHANGED".into())}
-  if f.quote["action"]=="buy"{if let Some(required)=self.maker_review.lock().unwrap().as_ref(){if f.maker.as_ref().is_none_or(|m|m.review_sha256()!=required){return Err("LIVE_MAKER_DECISION_REQUIRED".into())}}}
+  if self.fundamental_required(f.quote["exchangeId"].as_str().ok_or("LIVE_INTENT_SCOPE")?)&&f.fundamental.is_none(){return Err("LIVE_FUNDAMENTAL_DECISION_REQUIRED".into())}
+  if f.quote["action"]=="buy"{if let Some(required)=self.maker_review.lock().unwrap().as_ref(){if f.fundamental.is_none()&&f.maker.as_ref().is_none_or(|m|m.review_sha256()!=required){return Err("LIVE_MAKER_DECISION_REQUIRED".into())}}}
   if let Some(maker)=&f.maker{maker.validate_frozen(&f.quote,&f.ledger,f.quote["id"].as_u64().ok_or("LIVE_QUOTE_ID")?,now)?;maker.authorize(scope,spec,p,now)?;}
+  if let Some(fundamental)=&f.fundamental{fundamental.validate_frozen(&f.quote,&f.ledger,f.quote["id"].as_u64().ok_or("LIVE_QUOTE_ID")?,now)?;fundamental.authorize(scope,spec,p,now)?;}
   for r in [&f.snapshots.account,&f.snapshots.cash_balance,&f.snapshots.positions,&f.snapshots.open_orders]{if !fresh(r,now,20000){return Err("LIVE_ACCOUNT_STALE".into())}}
   if f.snapshots.account.data["id"]!=scope.tournament_id||f.snapshots.account.data["slug"]!=scope.tournament_slug||f.snapshots.account.data["status"]!="active"||f.snapshots.open_orders.data["pagination"]["hasMore"]!=false{return Err("LIVE_ACCOUNT_SCOPE".into())}
   if spec.method=="DELETE"{return Err("LIVE_CANCEL_REQUIRES_ACCOUNT_FACTS".into())}
@@ -143,7 +166,11 @@ impl ProductionAuthority {
   let b=f.snapshots.book.data["contexts"][0]["orderbook"]["exchanges"].as_array().ok_or("LIVE_BOOK_SCOPE")?.iter().find(|b|b["exchangeId"]==ex).ok_or("LIVE_BOOK_SCOPE")?;
   if !b["asOf"]["sequence"].is_u64()||clock(b["asOf"]["at"].as_str().ok_or("LIVE_BOOK_CLOCK")?).is_none_or(|t|t>now||now-t>10000){return Err("LIVE_BOOK_STALE".into())}
   if body["action"]=="buy"{let opposite=if body["side"]=="yes"{&b["asks"]}else{&b["bids"]};let level=opposite.as_array().and_then(|a|a.first()).ok_or("LIVE_EMPTY_BOOK")?;let yes=baal_transport_service::prices::official_tick_units(&level["price"])?;let ask=if body["side"]=="yes"{yes}else{1_000_000-yes};if price>=ask{return Err("LIVE_ENTRY_MUST_BE_PASSIVE".into())}}
-  if body["tournamentId"]!=scope.tournament_id||body["exchangeId"]!=ex||body["side"].as_str()!=f.quote["side"].as_str().map(|s|if s=="YES"{"yes"}else{"no"})||body["action"]!=f.quote["action"]||n!=f.quote["quantity"].as_u64().unwrap_or(0)||price!=decimal_units(f.quote["price"].as_str().ok_or("LIVE_ORDER_PRICE")?)?||n>p.maximum_quantity as u64||price*n as i128>decimal_units(&p.maximum_cost)?{return Err("LIVE_ORDER_INTENT_MISMATCH".into())}
+  let native_quantity=f.quote["quantity"].as_u64().ok_or("LIVE_ORDER_QUANTITY")?;
+  // A fixed slice is permitted only by an opaque policy token that already
+  // authorized this exact spec/permit; ordinary requests remain full native.
+  let quantity_matches=if f.fundamental.is_some(){n>0&&n<=native_quantity}else{n==native_quantity};
+  if body["tournamentId"]!=scope.tournament_id||body["exchangeId"]!=ex||body["side"].as_str()!=f.quote["side"].as_str().map(|s|if s=="YES"{"yes"}else{"no"})||body["action"]!=f.quote["action"]||!quantity_matches||price!=decimal_units(f.quote["price"].as_str().ok_or("LIVE_ORDER_PRICE")?)?||n>p.maximum_quantity as u64||price*n as i128>decimal_units(&p.maximum_cost)?{return Err("LIVE_ORDER_INTENT_MISMATCH".into())}
   if body["action"]=="buy" {if now>=self.entry_until_ms()||f.entry_until!=self.entry_until_ms()||self.daily.lock().unwrap().as_ref().is_some_and(|(cfg,end)|cfg.end_at(now).ok()!=Some(*end)||f.snapshots.account.data["endDate"].as_str().and_then(clock).is_none_or(|t|t<*end))||cash_economics.gross_cash_units.ok_or("LIVE_ACCOUNT_CASH_REQUIRED")?<price*n as i128{return Err("LIVE_ENTRY_OR_ACCOUNT_CASH".into())}}
   else if body["action"]!="sell"||n>f.owned{return Err("LIVE_SELL_NOT_COVERED".into())}
   Ok(())
@@ -249,7 +276,7 @@ impl Authority for SharedAuthority {
  }
  fn qid(p:&Permit)->u64{p.intent_id.strip_suffix("-cancel").unwrap().parse().unwrap()}
  #[test]fn requiring_maker_evidence_never_blocks_original_owned_cancel_authority(){
-  let(root,a,b,s,r,p,f,n)=fixture();a.require_maker_review(&"a".repeat(64)).unwrap();a.prepare_cancel(&b,qid(&p),r.clone(),p.clone(),f).unwrap();a.authorize(&s,&r,&p,true,n).unwrap();drop(b);drop(a);fs::remove_dir_all(root).unwrap();
+  let(root,a,b,s,r,p,f,n)=fixture();a.require_maker_review(&"a".repeat(64)).unwrap();a.require_fundamental_exchanges(&["101".into()].into()).unwrap();a.prepare_cancel(&b,qid(&p),r.clone(),p.clone(),f).unwrap();a.authorize(&s,&r,&p,true,n).unwrap();drop(b);drop(a);fs::remove_dir_all(root).unwrap();
  }
  #[test]fn configured_maker_review_cannot_be_skipped_with_legacy_buy_prepare(){
   let(root,a,b,_,r,p,f,_)=super::tests::fixture();a.require_maker_review(&"a".repeat(64)).unwrap();assert_eq!(a.prepare(&b,p.intent_id.parse().unwrap(),r,p,f).unwrap_err().to_string(),"LIVE_MAKER_DECISION_REQUIRED");assert!(a.ready.lock().unwrap().is_none());assert!(a.require_maker_review(&"b".repeat(64)).is_err());drop(b);drop(a);fs::remove_dir_all(root).unwrap();
@@ -260,4 +287,24 @@ impl Authority for SharedAuthority {
  #[test]fn cancellation_facts_cannot_authorize_a_buy_or_mismatched_native_binding(){for case in ["post","actual","body","intent"]{let(root,a,b,_,mut r,mut p,f,_)=fixture();let id=qid(&p);match case{"post"=>{r.method="POST".into();r.endpoint="/orders".into();},"actual"=>r.endpoint="/orders/202".into(),"body"=>r.body=Some(json!({})),_=>p.intent_id="999-cancel".into()};assert!(a.prepare_cancel(&b,id,r,p,f).is_err(),"{case}");assert!(a.ready.lock().unwrap().is_none());drop(b);drop(a);fs::remove_dir_all(root).unwrap();}}
  #[test]fn ordinary_buy_keeps_all_three_contract_and_book_freshness_gates(){for case in ["market","contract","book"]{let(root,a,b,s,r,p,mut f,n)=super::tests::fixture();match case{"market"=>f.market.status=503,"contract"=>f.contract.status=503,_=>f.book.status=503};a.prepare(&b,p.intent_id.parse().unwrap(),r.clone(),p.clone(),f).unwrap();assert_eq!(a.authorize(&s,&r,&p,true,n).unwrap_err().code,"LIVE_CONTRACT_OR_BOOK_STALE");drop(b);drop(a);fs::remove_dir_all(root).unwrap();}}
  #[test]fn changing_fact_variants_clears_previously_prepared_authority(){let(root,a,b,s,r,p,f,n)=fixture();a.prepare_cancel(&b,qid(&p),r.clone(),p.clone(),f.clone()).unwrap();let mut buy=r.clone();buy.method="POST".into();assert!(a.authorize(&s,&buy,&p,true,n).is_err());a.clear_ready();assert!(a.authorize(&s,&r,&p,true,n).is_err());drop(b);drop(a);fs::remove_dir_all(root).unwrap();}
+}
+#[cfg(test)]mod fundamental_tests{
+ use super::*;
+ #[test]fn managed_buy_requires_real_token_through_all_legacy_prepare_entrypoints(){
+  for path in 0..3{let(root,a,b,_,r,p,f,_)=super::tests::fixture();a.require_fundamental_exchanges(&["101".into()].into()).unwrap();a.require_maker_review(&"a".repeat(64)).unwrap();let id=p.intent_id.parse().unwrap();let result=match path{0=>a.prepare(&b,id,r,p,f),1=>a.prepare_with_maker(&b,id,r,p,f,None),_=>a.prepare_with_policies(&b,id,r,p,f,None,None)};assert_eq!(result.unwrap_err().to_string(),"LIVE_FUNDAMENTAL_DECISION_REQUIRED");assert!(a.ready.lock().unwrap().is_none());drop(b);drop(a);fs::remove_dir_all(root).unwrap();}
+ }
+ #[test]fn fundamental_managed_set_is_immutable_scoped_and_clears_old_ready(){
+  let(root,a,b,s,r,p,f,n)=super::tests::fixture();a.prepare(&b,p.intent_id.parse().unwrap(),r.clone(),p.clone(),f).unwrap();a.authorize(&s,&r,&p,true,n).unwrap();let managed=["101".into()].into();a.require_fundamental_exchanges(&managed).unwrap();assert!(a.ready.lock().unwrap().is_none());a.require_fundamental_exchanges(&managed).unwrap();assert_eq!(a.require_fundamental_exchanges(&Default::default()).unwrap_err().to_string(),"LIVE_FUNDAMENTAL_EXCHANGES_CHANGED");assert_eq!(a.require_fundamental_exchanges(&["999".into()].into()).unwrap_err().to_string(),"LIVE_FUNDAMENTAL_EXCHANGE_SCOPE");drop(b);drop(a);fs::remove_dir_all(root).unwrap();
+ }
+ #[test]fn physical_gate_independently_rejects_managed_ready_without_token(){
+  let(root,a,b,s,r,p,f,n)=super::tests::fixture();a.prepare(&b,p.intent_id.parse().unwrap(),r.clone(),p.clone(),f).unwrap();*a.fundamental_exchanges.lock().unwrap()=Some(["101".into()].into());assert_eq!(a.authorize(&s,&r,&p,true,n).unwrap_err().code,"LIVE_FUNDAMENTAL_DECISION_REQUIRED");drop(b);drop(a);fs::remove_dir_all(root).unwrap();
+ }
+ #[test]fn managed_sell_from_actual_owned_fill_also_requires_real_token(){
+  let(root,a,mut bank,_,r,p,f,n)=super::tests::fixture();let qid=p.intent_id.parse::<u64>().unwrap();let q=bank.engine().order_records().into_iter().find(|q|q["id"]==qid).unwrap();let stamp=|at|crate::daily_windows::iso(at).unwrap();let event=|kind:&str|json!({"type":kind,"source":"official_sig_api_v1","receiptHash":"a".repeat(64),"orderId":qid,"actualOrderId":"201","marketId":q["marketId"],"exchangeId":q["exchangeId"],"side":q["side"],"action":"buy","quantity":1,"price":q["price"],"fee":"0.000000","fillId":"301","executedAt":stamp(n),"receivedAt":stamp(n)});
+  bank.accept("fundamental-owned",1,&event("actual_order_ack")).unwrap();bank.accept("fundamental-owned",2,&event("actual_fill")).unwrap();let mut seq=2;for old in bank.engine().order_records(){let id=old["id"].as_u64().unwrap();if old["retired"]==false&&!bank.engine().live_order_bindings().contains_key(&id){seq+=1;bank.accept("fundamental-owned",seq,&json!({"type":"unsubmitted_intent_retired","source":"moloch_live_dispatcher","receiptHash":"b".repeat(64),"confirmedNetworkAttempts":0,"deferPlanningForPackage":true,"orderId":id,"receivedAt":stamp(n)})).unwrap();}}
+  seq+=1;bank.accept("fundamental-owned",seq,&json!({"type":"tick","receivedAt":stamp(n+3000)})).unwrap();let sell=bank.engine().order_records().into_iter().find(|q|q["retired"]==false&&q["action"]=="sell").expect("owned native SELL after unsubmitted hedge retirement");a.require_fundamental_exchanges(&["101".into()].into()).unwrap();assert_eq!(a.prepare_with_policies(&bank,sell["id"].as_u64().unwrap(),r,p,f,None,None).unwrap_err().to_string(),"LIVE_FUNDAMENTAL_DECISION_REQUIRED");assert!(a.ready.lock().unwrap().is_none());drop(bank);drop(a);fs::remove_dir_all(root).unwrap();
+ }
+ #[test]fn package_physical_guard_cannot_consume_managed_inventory(){
+  let(root,a,b,s,mut r,p,_,n)=super::tests::fixture();a.require_fundamental_exchanges(&["101".into()].into()).unwrap();r.endpoint="/orders/multi-leg".into();r.body=Some(json!({"legs":[{"exchangeId":"101","action":"sell"}]}));r.body_json=Some(serde_json::to_string(r.body.as_ref().unwrap()).unwrap());assert_eq!(a.authorize(&s,&r,&p,true,n).unwrap_err().code,"LIVE_FUNDAMENTAL_PACKAGE_COMPONENT_DENIED");drop(b);drop(a);fs::remove_dir_all(root).unwrap();
+ }
 }
