@@ -1,17 +1,23 @@
-# Current research baseline: October 16, 15:12 UTC
+# Current research baseline: October 16, 15:35 UTC
 
-Sole516085/870ce889/d2ad93b5 is fresh trading/realtime/no STOP at15:12:22:
-24 new ACKs,180 total fill rows, attributed realized−118.810000 after partial
-exits from a6503NO@.865 new entry. No profit is inferred from capital deployment.
-Full attributed capital remains95,579.915000.
-[Current SIG evidence](../research/moloch-trade-trigger-20261016/deployment/sig-live-verification.json).
+Sole516085/source870ce889/binaryd2ad93b5 remains fresh trading, healthy
+realtime/no STOP at15:33:55UTC:50 successor ACKs/194 cumulative fill rows.
+Attributed realized P&L is−143.860000, cash72,704.540000/owned22,731.515000;
+full attributed capital95,579.915000 is separate from profit.
+[Actual SIG proof](../research/moloch-preflight-service-20261016/deployment/prior-live-verification.json).
 
-Read-only trade-trigger516505/source4e4649 is active in a separate cohort;
-sampling and ten-feature/four-model analysis protocols were frozen/published
-before activation.78 Python checks pass. Zero eligible samples at15:12:21,
-mostly stale target SIG books; no new outcomes inspected or age-rule retune.
-Original v10 is sealed; v9/v7 findings below are preserved.
-[Actual prospective state and coverage](../research/moloch-trade-trigger-20261016/README.md).
+The source-age probe measured7.924s median original receipt-to-probe delay;
+worker append versus observer consumption is not yet separated. A worker-only
+candidate services the existing source before physical preflight GETs without
+changing quote terms, clocks, capital, rate limits or daily windows. Preliminary
+ARM64 compile and corrected full89-worker suite passed; the optimized build
+is running, with no candidate deployment yet.
+[Measured scope and validation status](../research/moloch-preflight-service-20261016/README.md).
+
+Trade observer516505/source4e4649 has three eligible samples at15:35:21;
+its original frozen protocol remains, active data is unsealed and outcomes
+uninspected. No economic model or profitability is established.
+[Actual observer proof](../research/moloch-preflight-service-20261016/deployment/prior-observer-verification.json).
 
 # Historical research baseline: October 16, 14:57 UTC
 

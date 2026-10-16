@@ -1,18 +1,23 @@
-# October 16, 15:12 UTC: production trading; trade-trigger cohort active
+# October 16, 15:35 UTC: production trading; source-delay repair under validation
 
-Actual sole516085/source870ce889/d2ad93b5 remains fresh trading, healthy
-realtime/no STOP:24 successor ACKs/180 cumulative fill rows at15:12:22UTC.
-The new6503NO@.865 entry cost5,625.095; later partial exits add losses.
-Attributed realized is now−118.810000, cash69,236.720000/owned26,224.385000.
-Full capital95,579.915000 remains; no reset or profitable model claim.
-[Current actual SIG proof](../research/moloch-trade-trigger-20261016/deployment/sig-live-verification.json).
+Sole516085/source870ce889/binaryd2ad93b5 remains fresh trading, healthy
+realtime/no STOP at15:33:55UTC:50 successor ACKs/194 cumulative fill rows.
+Attributed realized P&L is−143.860000, cash72,704.540000/owned22,731.515000;
+full attributed capital95,579.915000 is separate from profit.
+[Actual SIG proof](../research/moloch-preflight-service-20261016/deployment/prior-live-verification.json).
 
-Read-only trade observer516505/source4e4649 replaced default v10 after sealing
-it, without changing the SIG PID/start. Sampling and analysis choices were
-published before activation;78 Python checks passed. Fresh source/status but
-zero eligible samples at15:12:21:50stale-SIG,4old-trade,1missing-SIG skips.
-Original clocks/bounds remain; a bounded original-frame metadata probe is
-investigating coverage. [Actual deployment and evidence limits](../research/moloch-trade-trigger-20261016/README.md).
+The source-age probe measured7.924s median original receipt-to-probe delay;
+worker append versus observer consumption is not yet separated. A worker-only
+candidate services the existing source before physical preflight GETs without
+changing quote terms, clocks, capital, rate limits or daily windows. Preliminary
+ARM64 compile and corrected full89-worker suite passed; the optimized build
+is running, with no candidate deployment yet.
+[Measured scope and validation status](../research/moloch-preflight-service-20261016/README.md).
+
+Trade observer516505/source4e4649 has three eligible samples at15:35:21;
+its original frozen protocol remains, active data is unsealed and outcomes
+uninspected. No economic model or profitability is established.
+[Actual observer proof](../research/moloch-preflight-service-20261016/deployment/prior-observer-verification.json).
 
 # Historical October 16, 14:57 UTC: entry filter verified in fresh production
 

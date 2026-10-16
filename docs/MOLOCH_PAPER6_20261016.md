@@ -9,18 +9,26 @@ collateral into trading profit. Original financial history remains attributed.
 Embedded citations and historical balances in the paper are research leads,
 separate from current observations and the human's direct authorization.
 
-## Latest operation and qualification at 15:12 UTC
+## Latest operation and qualification at15:35UTC
 
-Sole516085/source870ce889/d2ad93b5 is fresh trading/realtime/no STOP with24
-new ACKs/180 total fill rows at15:12:22. A6503NO@.865 entry cost5,625.095;
-partial exits add losses, bringing attributed realized to−118.810000. Full
-capital95,579.915000 remains. [Actual proof](../research/moloch-trade-trigger-20261016/deployment/sig-live-verification.json).
+Sole516085/source870ce889/binaryd2ad93b5 remains fresh trading, healthy
+realtime/no STOP at15:33:55UTC:50 successor ACKs/194 cumulative fill rows.
+Attributed realized P&L is−143.860000, cash72,704.540000/owned22,731.515000;
+full attributed capital95,579.915000 is separate from profit.
+[Actual SIG proof](../research/moloch-preflight-service-20261016/deployment/prior-live-verification.json).
 
-Separate trade-trigger observer516505/source4e4649 is active after78 Python
-checks, with sampling/analysis choices published before activation. Zero eligible
-samples at15:12:21, mainly stale target SIG books. Source clocks and frozen
-bounds remain intact; no economic outcome/model approval is claimed.
-[Deployment and research limits](../research/moloch-trade-trigger-20261016/README.md).
+The source-age probe measured7.924s median original receipt-to-probe delay;
+worker append versus observer consumption is not yet separated. A worker-only
+candidate services the existing source before physical preflight GETs without
+changing quote terms, clocks, capital, rate limits or daily windows. Preliminary
+ARM64 compile and corrected full89-worker suite passed; the optimized build
+is running, with no candidate deployment yet.
+[Measured scope and validation status](../research/moloch-preflight-service-20261016/README.md).
+
+Trade observer516505/source4e4649 has three eligible samples at15:35:21;
+its original frozen protocol remains, active data is unsealed and outcomes
+uninspected. No economic model or profitability is established.
+[Actual observer proof](../research/moloch-preflight-service-20261016/deployment/prior-observer-verification.json).
 
 ## Historical operation and qualification at 14:57 UTC
 
