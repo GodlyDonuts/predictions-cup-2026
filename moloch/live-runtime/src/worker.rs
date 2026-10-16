@@ -1267,6 +1267,7 @@ pub fn main()->Result<()>{
   if let Some(u)=&mut universe{u.observe("stream_reset",&json!({"localBoundary":true}),&joined_at)?;}
   let mut windows:std::collections::BTreeMap<String,u64>=c.scope.exchanges.keys().map(|e|(e.clone(),start.saturating_sub(60000))).collect();
   let mut cycles=0u64;let mut reconciliation_cache=Reconciler::default();let mut collateral_last_check=0u64;
+  let mut owned_age_reads=moloch_live_runtime::owned_age_reads::Scheduler::new(&c.scope)?;
   loop{
    let cycle_result=(||->Result<()>{
    if stop.exists()||global_stop.exists(){return Err("LIVE_EXECUTION_STOP".into())}
@@ -1287,7 +1288,7 @@ pub fn main()->Result<()>{
     let _=atomic_json(&c.root.join("discovery-schedule.json"),&json!({"at":iso(now()),"pid":std::process::id(),"nativeHead":bank.durable_head(),"maximumDiscoveryReads":read_budget.maximum_discovery_reads(),"maximumManagedMarkets":read_budget.maximum_managed_markets(),"requiredScopeCount":required.len(),"urgentOwned":urgent,"selectedScopes":order.scopes,"diagnostic":order.diagnostic,"readSchedulingOnly":true,"monetaryCapsChanged":false}));
     order.scopes
    }else{selected};
-   for (selected_index,ex) in selected.iter().enumerate(){require_stream(stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?)?;let market=&c.scope.exchanges[ex];let from=windows[ex];let next=source(&mut t,&c,&mut bank,&mut source_state,ex,market,from)?;windows.insert(ex.clone(),next);drain_stream(stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?,&mut bank,&mut source_state,&mut breadth,&mut universe)?;
+   for (selected_index,ex) in selected.iter().enumerate(){require_stream(stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?)?;let market=&c.scope.exchanges[ex];let from=windows[ex];let source_started=now();let next=source(&mut t,&c,&mut bank,&mut source_state,ex,market,from)?;owned_age_reads.record_source_read(ex,source_started,now())?;windows.insert(ex.clone(),next);drain_stream(stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?,&mut bank,&mut source_state,&mut breadth,&mut universe)?;
     if reconciliation_schedule.due(now(),pending_version(&log))?.is_some(){
      reconciled=reconcile(&mut t,&c,&mut bank,&mut log,&mut reconciliation_cache)?;
      reconciliation_schedule.completed(now(),pending_version(&log),reconciled.blocks_new_submissions)?;
@@ -1299,6 +1300,25 @@ pub fn main()->Result<()>{
     }
     package_blocked=recover_packages(&mut t,&c,&mut bank,&log,&authority,&mut packages)?;
     collateral_blocked=collateral_accounting(&mut t,&c,&mut bank,&log,&packages,lease.as_ref(),&mut collateral_last_check)?;
+    // A new owned lot may age after its selected scope was already visited.
+    // Nominate a bounded real source refresh without waiting for another full
+    // breadth pass or requiring a maximum-age SELL draft to exist first.
+    // This grants reads only; unchanged dispatch obtains its own exact facts.
+    let managed=fundamental.as_ref().map(|f|f.cohorts.managed_exchanges()).unwrap_or_default();
+    if let Some(hint)=owned_age_reads.nominate(&bank,&c.scope,&managed,ex,now())?{
+     require_stream(stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?)?;
+     let target=hint.exchange_id().to_owned();let market=hint.market_id().to_owned();
+     let started=now();let from=*windows.get(&target).ok_or("LIVE_OWNED_REFRESH_WINDOW")?;
+     let next=source(&mut t,&c,&mut bank,&mut source_state,&target,&market,from)?;
+     owned_age_reads.complete_read(&hint,started,now())?;windows.insert(target.clone(),next);
+     let _=atomic_json(&c.root.join("owned-age-refresh.json"),&json!({"at":iso(now()),"pid":std::process::id(),"exchangeId":target,"marketId":market,"oldestExecutionMs":hint.oldest_execution_ms(),"dueAtMs":hint.due_at_ms(),"sourceStartedAt":iso(started),"nativeHead":bank.durable_head(),"readOnlyNomination":true,"financialPolicyChanged":false}));
+     drain_stream(stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?,&mut bank,&mut source_state,&mut breadth,&mut universe)?;
+     if reconciliation_schedule.due(now(),pending_version(&log))?.is_some(){
+      reconciled=reconcile(&mut t,&c,&mut bank,&mut log,&mut reconciliation_cache)?;
+      reconciliation_schedule.completed(now(),pending_version(&log),reconciled.blocks_new_submissions)?;
+     }
+     ensure_entry_window(&c,&mut bank,&authority)?;
+    }
     // Package preflight consumes real account time; never reuse an expired
     // ordinary reconciliation permission after those paced reads.
     let permit_new=!package_blocked&&!collateral_blocked&&reconciliation_schedule.permits_submission(now(),pending_version(&log))?;
