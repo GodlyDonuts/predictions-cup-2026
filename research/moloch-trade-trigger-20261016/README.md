@@ -1,5 +1,11 @@
 # Separate prospective public-trade sampling
 
+## Original timing diagnosis and offline evaluation source
+
+The finite original-suffix [timing probe](source-age-probe/README.md) observed777 accepted books across226 exchanges: median source age8.824s and receipt-to-probe age7.924s, with no same-sequence/newer-source case. It verifies substantial delay after the original socket receipt, but lacks an append clock and cannot split producer queue/append from observer-tail/cache time. A narrow cooperative preflight-service source change is being developed separately; no post-change speedup is claimed.
+
+The independent [offline reader](analyze.py) implements the unchanged predeclared ten-feature/four-model protocol. Root reviewed it and passed22 synthetic original-shaped checks. It accepts only an explicitly hashed sealed-source manifest and preserves event deduplication before completeness, original sample IDs, causal clocks, held-out folds and exact counterfactual costs. It has not opened the collecting cohort. Embedded source hashes are references: independent underlying trade/SIG-journal verification remains unavailable until those original witnesses are supplied. Model approval and financial authority remain false.
+
 ## Actual deployment and present coverage, 15:12 UTC
 
 Read-only observer **PID516505**, source bytes `4e4649c054a469baed4ba57651fae6c201aed8a479ba6f8551e5d28e0e0d891e`, started15:05:34 UTC in new `crossvenue-observer-trade-v1`. The [analysis protocol](analysis-protocol.json) was published/read back on main`4b0b2d2b` before activation; Git-LF SHA `dbf827a8cab904595b6173873949cd8c5f9666769754993b5c7636344bddc291`. Root independently passed all78 Python checks. The switch preserved the actual SIG PID516085 and its process start. Old v10's two gzip segments were closed, decompressed/JSON-checked and sealed. [Actual rollout](deployment/production-rollout.json).
