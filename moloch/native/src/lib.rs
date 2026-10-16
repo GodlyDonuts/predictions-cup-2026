@@ -314,6 +314,14 @@ impl Wallet {
         next.realized=next.realized.checked_add(payout-cost).ok_or("SETTLEMENT_RANGE")?;
         next.audit()?;*self=next;Ok(cost)
     }
+    /// Owner attribution of already-existing cash, never a fill/deposit/profit.
+    /// Engine admission supplies the original scoped account and mandate proof.
+    pub(crate) fn allocate_owner_cash_exact(&mut self, delta:i128, maximum:i128)->Result<()> {
+        if delta<=0||maximum!=self.maximum_committed.checked_add(delta).ok_or("CAPITAL_RANGE")?{return Err("CAPITAL_WALLET_DELTA")}
+        let cash=self.cash.checked_add(delta).ok_or("CAPITAL_RANGE")?;
+        let initial=self.initial.checked_add(delta).ok_or("CAPITAL_RANGE")?;
+        let mut next=self.clone();next.cash=cash;next.initial=initial;next.maximum_committed=maximum;next.audit()?;*self=next;Ok(())
+    }
     pub fn audit(&self) -> Result<()> {
         let reserved = self.reserved()?;
         let owned = self.owned_cost();
@@ -339,6 +347,7 @@ impl Wallet {
         fee_per_share: i128,
     ) -> Result<Self> {
         use serde_json::{Value, json};
+        if state.get("ownerCapitalAllocation").is_some(){return Err("SEED_OWNER_CAPITAL_REQUIRE_REPLAY")}
         let decimal = |v: &Value| amount(v.as_str().ok_or("SEED_DECIMAL")?);
         let mut replay = Self::new(
             decimal(&state["policy"]["initialCash"])?,

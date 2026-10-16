@@ -1,4 +1,4 @@
-use moloch_live_runtime::{feedback,package_authority,package_worker,daily_windows,package_portfolio};
+use moloch_live_runtime::{feedback,package_authority,package_worker,daily_windows,package_portfolio,probabilistic_portfolio_worker};
 #[path="../src/package_preflight.rs"]mod package_preflight;
 use baal_transport_service::{Scope,Receipt,Endpoint,Permit,multi_leg::{Basket,Leg,Side,Outcome},admission::{BindingLookup,ImmutableBinding}};
 use moloch_live_runtime::{package_admission::Admission,package_authority::PackageSnapshotSet,package_not_sent_evidence::VerifiedNotSent};

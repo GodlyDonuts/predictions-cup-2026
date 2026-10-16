@@ -1,0 +1,145 @@
+{
+  "schemaVersion": 1,
+  "kind": "official_general_ballot_source_inventory_not_authority",
+  "observedAt": "2026-10-16T06:00:52.350616+00:00",
+  "taskIssue": 151,
+  "sources": [
+    {
+      "state": "KS",
+      "marketId": "356",
+      "exchangeId": "1045",
+      "office": "U.S. Senate",
+      "election": "2026 General",
+      "democraticNominee": "Adam Hamilton",
+      "republicanNominee": "Roger Marshall",
+      "kind": "official_ballot",
+      "sourceType": "official_county_current_general_candidate_table",
+      "originalPrivatePath": "C:\\Users\\csram\\AppData\\Local\\Temp\\moloch-atlas-official-ballots-20261016\\kansas-sedgwick-general-candidates.html",
+      "originalReceiptPrivatePath": "C:\\Users\\csram\\AppData\\Local\\Temp\\moloch-atlas-official-ballots-20261016\\kansas-sedgwick-general-candidates.html.receipt.json",
+      "receipt": {
+        "url": "https://www.sedgwickcounty.org/elections/current-candidates/?page=1",
+        "finalUrl": "https://www.sedgwickcounty.org/elections/current-candidates/?page=1",
+        "status": 200,
+        "requestStartedAt": "2026-10-16T05:59:21.901431+00:00",
+        "receivedAt": "2026-10-16T05:59:22.717673+00:00",
+        "sha256": "207a97e4d915b505be3e8cce46bdcf7c38866977b8b5a7a5a96c86c5013e01e2",
+        "bytes": 70708,
+        "httpLastModified": null,
+        "contentType": "text/html; charset=utf-8"
+      },
+      "publication": {
+        "publishedAtMs": null,
+        "note": "Official dynamic county table has no visible publication clock; receipt clock is availability, not publication."
+      },
+      "verification": {
+        "rawSha256MatchesReceipt": true,
+        "generalElectionNotPrimary": true,
+        "candidatePartyAndOfficeExplicit": true,
+        "iowaFirstPageVisuallyChecked": false,
+        "entireSlateExhaustive": false
+      },
+      "namedPollContinuity": {
+        "originalPrivatePath": "C:\\Users\\csram\\AppData\\Local\\Temp\\moloch-atlas-current-primary-20261016\\emerson-kansas.html",
+        "originalSha256": "df44ade35d3c2f2dc0df43b2dd9961aa653fb60f6a1f7f5574b261bd10d90259",
+        "democraticCandidate": "Adam Hamilton",
+        "republicanCandidate": "Roger Marshall",
+        "sameOfficeAndCandidatePairExplicitInOriginalProse": true,
+        "percentDem": 45,
+        "percentRep": 43,
+        "genericBallotOrHypothetical": false
+      },
+      "limitations": [
+        "Present official general list does not prove no later withdrawal/replacement/party change.",
+        "Does not certify SIG exceptional/refund/resolver rules.",
+        "Atlas ordinary-only two-party outcomes remain a research simplification; third-party outcomes are not assigned probability here."
+      ]
+    },
+    {
+      "state": "IA",
+      "marketId": "260",
+      "exchangeId": "949",
+      "office": "U.S. Senate",
+      "election": "2026 General",
+      "democraticNominee": "Josh Turek",
+      "republicanNominee": "Ashley Hinson",
+      "kind": "official_ballot",
+      "sourceType": "official_state_general_candidate_list",
+      "originalPrivatePath": "C:\\Users\\csram\\AppData\\Local\\Temp\\moloch-atlas-official-ballots-20261016\\iowa-general-candidates.pdf",
+      "originalReceiptPrivatePath": "C:\\Users\\csram\\AppData\\Local\\Temp\\moloch-atlas-official-ballots-20261016\\iowa-general-candidates.pdf.receipt.json",
+      "receipt": {
+        "url": "https://sos.iowa.gov/sites/default/files/2026-08/2026%20General%20-%20Candidate%20List%20Database%20-%20All%20Elections_1.pdf",
+        "finalUrl": "https://sos.iowa.gov/sites/default/files/2026-08/2026%20General%20-%20Candidate%20List%20Database%20-%20All%20Elections_1.pdf",
+        "status": 200,
+        "requestStartedAt": "2026-10-16T05:59:21.293400+00:00",
+        "receivedAt": "2026-10-16T05:59:21.898137+00:00",
+        "sha256": "df70d066973b16c7b51e5c2a2bbf9f7fdb166bba9404311a945404c83813af38",
+        "bytes": 222898,
+        "httpLastModified": "Wed, 19 Aug 2026 18:37:51 GMT",
+        "contentType": "application/pdf"
+      },
+      "publication": {
+        "printedLastUpdated": "8/19/2026 1:36 PM",
+        "printedTimezone": null,
+        "pdfCreationDate": "D:20260819133600-05'00'",
+        "publishedAtMs": null,
+        "note": "Printed local date not silently treated as UTC release; metadata timezone and HTTP Last-Modified separately retained."
+      },
+      "verification": {
+        "rawSha256MatchesReceipt": true,
+        "generalElectionNotPrimary": true,
+        "candidatePartyAndOfficeExplicit": true,
+        "iowaFirstPageVisuallyChecked": true,
+        "entireSlateExhaustive": false
+      },
+      "namedPollContinuity": {
+        "originalPrivatePath": "C:\\Users\\csram\\AppData\\Local\\Temp\\moloch-atlas-current-primary-20261016\\emerson-iowa-october.html",
+        "originalSha256": "0493d0414b438f125b785c7995dc754e5309bb914d2d29fb9f8bd3a89fe0fc71",
+        "democraticCandidate": "Josh Turek",
+        "republicanCandidate": "Ashley Hinson",
+        "sameOfficeAndCandidatePairExplicitInOriginalProse": true,
+        "percentDem": 45,
+        "percentRep": 47,
+        "genericBallotOrHypothetical": false
+      },
+      "limitations": [
+        "Present official general list does not prove no later withdrawal/replacement/party change.",
+        "Does not certify SIG exceptional/refund/resolver rules.",
+        "Atlas ordinary-only two-party outcomes remain a research simplification; third-party outcomes are not assigned probability here."
+      ]
+    },
+    {
+      "state": "NC",
+      "marketId": "277",
+      "exchangeId": "966",
+      "kind": "official_ballot",
+      "sourceType": "official_state_general_candidate_list",
+      "originalPrivatePath": "C:\\Users\\csram\\AppData\\Local\\Temp\\moloch-public-primary-20261016\\nc-senate\\official-general-candidates.pdf",
+      "originalReceiptPrivatePath": "C:\\Users\\csram\\AppData\\Local\\Temp\\moloch-public-primary-20261016\\nc-senate\\official-general-candidates.pdf.receipt.json",
+      "receipt": {
+        "url": "https://s3.amazonaws.com/dl.ncsbe.gov/Elections/2026/Candidate%20Filing/2026_general_candidate_list_by_contest_federal_and_state.pdf",
+        "requestStartedAt": "2026-10-16T04:55:12.073049+00:00",
+        "status": 200,
+        "finalUrl": "https://s3.amazonaws.com/dl.ncsbe.gov/Elections/2026/Candidate%20Filing/2026_general_candidate_list_by_contest_federal_and_state.pdf",
+        "observedAt": "2026-10-16T04:55:16.391019+00:00",
+        "bytes": 170443,
+        "sha256": "378ca3dde9e97f65a921c922171aa34942bcc68582ef46e713b371e0b6caf11d",
+        "contentType": "application/pdf",
+        "lastModified": "Tue, 13 Oct 2026 16:47:39 GMT"
+      },
+      "printedGenerationClock": "2026-10-13 12:25 PM, timezone not printed",
+      "page": 1,
+      "democraticNominee": "Roy Cooper",
+      "republicanNominee": "Michael Whatley",
+      "otherListedNominees": [
+        "Michael Dublin (GRE)",
+        "Shannon W. Bray (LIB)"
+      ],
+      "previouslyVerifiedPacket": "C:\\Users\\csram\\AppData\\Local\\Temp\\moloch-public-primary-20261016\\nc-senate\\evidence-packet.json",
+      "existingReviewChanged": false
+    }
+  ],
+  "accountRequests": 0,
+  "runtimeChanges": 0,
+  "reviewChanges": 0,
+  "rawSourcesCommitted": false
+}

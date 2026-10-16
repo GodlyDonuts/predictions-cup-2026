@@ -42,6 +42,20 @@ pub fn collect_portfolio_plan<B:Backend,F:FnMut(&Receipt)->Result<()>>(b:&mut B,
  let distinct:BTreeSet<_>=exchanges.iter().collect();need((2..=3).contains(&exchanges.len())&&distinct.len()==exchanges.len()&&exchanges.iter().all(|ex|numeric(ex)&&s.exchanges.get(ex).is_some_and(|m|numeric(m)))&&basket.legs.iter().all(|l|exchanges.contains(&l.exchange_id)),"PORTFOLIO_PREFLIGHT_COMPONENTS")?;
  collect_components(b,s,&exchanges,after)
 }
+/// Refresh the complete immutable probabilistic qualification, including held
+/// components that have no wire leg. Staged is the original opaque factory
+/// product; these receipts alone neither qualify a model nor authorize a write.
+pub fn collect_probabilistic_staged<B:Backend,F:FnMut(&Receipt)->Result<()>>(b:&mut B,s:&Scope,staged:&crate::probabilistic_portfolio_worker::Staged,after:F)->Result<PackageSnapshotSet>{
+ same_scope(b,s)?;let reservation=staged.reservation();reservation.validate_plan(staged.plan())?;
+ let event=reservation.event();let basket=staged.basket();
+ need(event["type"]=="probabilistic_portfolio_reserve_v1"&&event["bankScope"]["tournamentId"]==s.tournament_id&&event["qualification"]["kind"]=="reviewed_probabilistic_portfolio"&&basket.tournament_id==s.tournament_id&&(1..=6).contains(&basket.legs.len())&&!basket.idempotency_key.is_empty()&&decimal_units(&basket.maximum_gross_buy_cost)?>=0&&decimal_units(&basket.minimum_gross_sell_proceeds)?>=0,"PROBABILISTIC_PREFLIGHT_CONFIG")?;
+ let contracts=event["qualification"]["contracts"].as_array().filter(|rows|(1..=6).contains(&rows.len())).ok_or("PROBABILISTIC_PREFLIGHT_COMPONENTS")?;
+ let mut exchanges=Vec::with_capacity(contracts.len());let mut distinct=BTreeSet::new();
+ for contract in contracts{let ex=contract["exchangeId"].as_str().ok_or("PROBABILISTIC_PREFLIGHT_COMPONENTS")?;let market=contract["marketId"].as_str().ok_or("PROBABILISTIC_PREFLIGHT_COMPONENTS")?;let id=contract["contractId"].as_str().ok_or("PROBABILISTIC_PREFLIGHT_COMPONENTS")?;
+  need(numeric(ex)&&numeric(market)&&numeric(id)&&distinct.insert(ex)&&s.exchanges.get(ex).is_some_and(|m|m==market),"PROBABILISTIC_PREFLIGHT_COMPONENTS")?;exchanges.push(ex.to_owned());}
+ let mut wire=BTreeSet::new();for leg in &basket.legs{let p=decimal_units(&leg.limit_price)?;need(distinct.contains(leg.exchange_id.as_str())&&wire.insert(&leg.exchange_id)&&leg.quantity>0&&(5000..=995000).contains(&p)&&p%5000==0,"PROBABILISTIC_PREFLIGHT_WIRE_SUBSET")?;}
+ collect_components(b,s,&exchanges,after)
+}
 fn collect_components<B:Backend,F:FnMut(&Receipt)->Result<()>>(b:&mut B,s:&Scope,exchanges:&[String],mut after:F)->Result<PackageSnapshotSet>{
  let mut last=b.now_ms();let account=read(b,s,Endpoint::Tournament,format!("/tournaments/{}",s.tournament_slug),20000,&mut last,&mut after)?;
  need(account.data["id"]==s.tournament_id&&account.data["slug"]==s.tournament_slug&&account.data["status"]=="active"&&clock(account.data["endDate"].as_str().ok_or("PACKAGE_PREFLIGHT_TOURNAMENT")?)?>b.now_ms(),"PACKAGE_PREFLIGHT_TOURNAMENT")?;

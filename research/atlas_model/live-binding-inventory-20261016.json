@@ -1,0 +1,491 @@
+{
+  "schemaVersion": 1,
+  "kind": "retained_original_binding_inventory_not_authority",
+  "observedAt": "2026-10-16T05:57:23.344086+00:00",
+  "tournamentId": "bda92870-621e-47b0-bc3c-3602c5c26f55",
+  "atlasModelSha256": "5c7867789bb52fd8f26c86abfb8a219926e55cc3de0fc544cdbb40f31e3af09c",
+  "catalogSource": {
+    "localRelativePath": "runtime/moloch/catalog-20261014-4/receipts.jsonl",
+    "sha256": "c731fcdd5de13029d9f6f1ba5e20193040a63d2e2648dca52597a750b75d2829"
+  },
+  "derivedSources": [
+    {
+      "path": "data/evidence/breadth-identity-20261002-0530/identities.json",
+      "sha256": "aa0d904172c0d39152f597afd3dbf8ea5118f5d96b368126c226ecf60af8a43d",
+      "originalSourceIndependentlyVerified": false
+    },
+    {
+      "path": "research/profit-sprint-20261005/market-identities.json",
+      "sha256": "eb7f9997712256c9d67a12f8d208f7667422b38a273a36a0c6af4e1a89b2ad66",
+      "originalSourceIndependentlyVerified": false
+    }
+  ],
+  "races": [
+    {
+      "atlasRaceId": "2026:senate:NC",
+      "catalogLocators": [
+        {
+          "marketId": "278",
+          "exchanges": [
+            {
+              "id": "967",
+              "option": "YES",
+              "latestPrice": 0.145,
+              "initialPrice": 0.5
+            }
+          ],
+          "originalLine": 2,
+          "originalLineSha256ExcludingDelimiter": "f5a06304297c0f436346fd063e3667f58f9d93b5388e1e4a56b856b7d12a01e6",
+          "requestStartedAt": "2026-10-14T22:56:18.220Z",
+          "receivedAt": "2026-10-14T22:56:18.844Z",
+          "evidenceRole": "catalog_locator_only_not_party_predicate"
+        },
+        {
+          "marketId": "277",
+          "exchanges": [
+            {
+              "id": "966",
+              "option": "YES",
+              "latestPrice": 0.885,
+              "initialPrice": 0.5
+            }
+          ],
+          "originalLine": 2,
+          "originalLineSha256ExcludingDelimiter": "f5a06304297c0f436346fd063e3667f58f9d93b5388e1e4a56b856b7d12a01e6",
+          "requestStartedAt": "2026-10-14T22:56:18.220Z",
+          "receivedAt": "2026-10-14T22:56:18.844Z",
+          "evidenceRole": "catalog_locator_only_not_party_predicate"
+        }
+      ],
+      "bindingStatus": "original_democratic_node_verified_diagnostic_only",
+      "contractId": "278",
+      "verifiedSemanticRootSha256": "56670f0ec4ec7e9837de07ca07cc7573996a89e94d578f9db675252613936da1",
+      "marketId": "277",
+      "exchangeId": "966",
+      "originalReceiptSha256": "d26657b5578452c5ad819693ab6c55e1ed0ddc1dff7b25a52fa4d1a30ccf1111",
+      "originalPrivateBasename": "277.receipt.json",
+      "endpoint": "/markets/277/nodes?tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55",
+      "status": 200,
+      "requestStartedAt": "2026-10-16T05:54:07.431Z",
+      "receivedAt": "2026-10-16T05:54:07.744Z",
+      "predicate": {
+        "contractType": "Election Outcome",
+        "electionDate": "2026-11-03",
+        "officeLevel": "Federal",
+        "raceId": "62975",
+        "raceName": "U.S. Senate North Carolina",
+        "raceStage": "General",
+        "resolutionType": "Party Winner",
+        "stageId": "98105",
+        "usState": "NC",
+        "winnerName": "Democratic Party"
+      },
+      "scheduledSettlementAt": "2026-11-04T17:00:00.000Z",
+      "settledWith": null,
+      "diagnosticSemanticMaximumAgeMs": 86400000,
+      "physicalFreshnessEstablished": false,
+      "selectedOrdinarySide": "YES"
+    },
+    {
+      "atlasRaceId": "2026:senate:KS",
+      "catalogLocators": [
+        {
+          "marketId": "357",
+          "exchanges": [
+            {
+              "id": "1046",
+              "option": "YES",
+              "latestPrice": 0.61,
+              "initialPrice": 0.5
+            }
+          ],
+          "originalLine": 1,
+          "originalLineSha256ExcludingDelimiter": "5df26ea306deba0c365ad4eaf0a9ba691ea6c51cf77d030e019b87951adca412",
+          "requestStartedAt": "2026-10-14T22:56:05.217Z",
+          "receivedAt": "2026-10-14T22:56:06.186Z",
+          "evidenceRole": "catalog_locator_only_not_party_predicate"
+        },
+        {
+          "marketId": "356",
+          "exchanges": [
+            {
+              "id": "1045",
+              "option": "YES",
+              "latestPrice": 0.415,
+              "initialPrice": 0.5
+            }
+          ],
+          "originalLine": 1,
+          "originalLineSha256ExcludingDelimiter": "5df26ea306deba0c365ad4eaf0a9ba691ea6c51cf77d030e019b87951adca412",
+          "requestStartedAt": "2026-10-14T22:56:05.217Z",
+          "receivedAt": "2026-10-14T22:56:06.186Z",
+          "evidenceRole": "catalog_locator_only_not_party_predicate"
+        }
+      ],
+      "bindingStatus": "original_democratic_node_verified_diagnostic_only",
+      "contractId": "357",
+      "verifiedSemanticRootSha256": "39acdb6801c5f8f10f675de9fa3f3aa997c5c20788e6790e1d3d21eba8e76156",
+      "derivedHistoricalLocators": [
+        {
+          "marketId": "357",
+          "title": "Will the Republican Party win the Kansas Senate?",
+          "exchanges": [
+            {
+              "exchangeId": "1046",
+              "option": "YES"
+            }
+          ],
+          "node": {
+            "title": "Will the Republican Party win the Kansas Senate?",
+            "contractType": "Election Outcome",
+            "resolutionType": "Party Winner",
+            "winnerName": "Republican Party",
+            "raceId": "62962",
+            "raceName": "U.S. Senate Kansas",
+            "raceStage": "General",
+            "stageId": "98092",
+            "usState": "KS",
+            "officeLevel": "Federal",
+            "electionDate": "2026-11-03",
+            "settlementDate": "2026-11-04T17:00:00.000Z"
+          },
+          "nodeRequestAt": "2026-10-01T19:10:42.841Z",
+          "nodeReceivedAt": "2026-10-01T19:10:55.006Z"
+        },
+        {
+          "marketId": "356",
+          "title": "Will the Democratic Party win the Kansas Senate?",
+          "exchanges": [
+            {
+              "exchangeId": "1045",
+              "option": "YES"
+            }
+          ],
+          "node": {
+            "title": "Will the Democratic Party win the Kansas Senate?",
+            "contractType": "Election Outcome",
+            "resolutionType": "Party Winner",
+            "winnerName": "Democratic Party",
+            "raceId": "62962",
+            "raceName": "U.S. Senate Kansas",
+            "raceStage": "General",
+            "stageId": "98092",
+            "usState": "KS",
+            "officeLevel": "Federal",
+            "electionDate": "2026-11-03",
+            "settlementDate": "2026-11-04T17:00:00.000Z"
+          },
+          "nodeRequestAt": "2026-10-01T19:10:44.754Z",
+          "nodeReceivedAt": "2026-10-01T19:10:49.296Z"
+        }
+      ],
+      "historicalMetadataArchiveLocators": [],
+      "marketId": "356",
+      "exchangeId": "1045",
+      "originalReceiptSha256": "9daa5d5458a8417634b2f3fd0fc4075c42f26b52542c6e40cc556684446c595f",
+      "originalPrivateBasename": "356.receipt.json",
+      "endpoint": "/markets/356/nodes?tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55",
+      "status": 200,
+      "requestStartedAt": "2026-10-15T19:08:55.214Z",
+      "receivedAt": "2026-10-15T19:08:55.461Z",
+      "predicate": {
+        "contractType": "Election Outcome",
+        "electionDate": "2026-11-03",
+        "officeLevel": "Federal",
+        "raceId": "62962",
+        "raceName": "U.S. Senate Kansas",
+        "raceStage": "General",
+        "resolutionType": "Party Winner",
+        "stageId": "98092",
+        "usState": "KS",
+        "winnerName": "Democratic Party"
+      },
+      "scheduledSettlementAt": "2026-11-04T17:00:00.000Z",
+      "settledWith": null,
+      "diagnosticSemanticMaximumAgeMs": 86400000,
+      "physicalFreshnessEstablished": false,
+      "selectedOrdinarySide": "YES"
+    },
+    {
+      "atlasRaceId": "2026:senate:IA",
+      "catalogLocators": [
+        {
+          "marketId": "261",
+          "exchanges": [
+            {
+              "id": "950",
+              "option": "YES",
+              "latestPrice": 0.56,
+              "initialPrice": 0.5
+            }
+          ],
+          "originalLine": 2,
+          "originalLineSha256ExcludingDelimiter": "f5a06304297c0f436346fd063e3667f58f9d93b5388e1e4a56b856b7d12a01e6",
+          "requestStartedAt": "2026-10-14T22:56:18.220Z",
+          "receivedAt": "2026-10-14T22:56:18.844Z",
+          "evidenceRole": "catalog_locator_only_not_party_predicate"
+        },
+        {
+          "marketId": "260",
+          "exchanges": [
+            {
+              "id": "949",
+              "option": "YES",
+              "latestPrice": 0.455,
+              "initialPrice": 0.5
+            }
+          ],
+          "originalLine": 2,
+          "originalLineSha256ExcludingDelimiter": "f5a06304297c0f436346fd063e3667f58f9d93b5388e1e4a56b856b7d12a01e6",
+          "requestStartedAt": "2026-10-14T22:56:18.220Z",
+          "receivedAt": "2026-10-14T22:56:18.844Z",
+          "evidenceRole": "catalog_locator_only_not_party_predicate"
+        }
+      ],
+      "bindingStatus": "original_democratic_node_verified_diagnostic_only",
+      "contractId": "261",
+      "verifiedSemanticRootSha256": "640582be18719ff760c07baf831de419b234fa0d2f1addd67907b19a969250ce",
+      "derivedHistoricalLocators": [
+        {
+          "marketId": "261",
+          "title": "Will the Republican Party win the Iowa Senate?",
+          "exchanges": [
+            {
+              "exchangeId": "950",
+              "option": "YES"
+            }
+          ],
+          "node": null,
+          "nodeRequestAt": null,
+          "nodeReceivedAt": null
+        },
+        {
+          "marketId": "260",
+          "title": "Will the Democratic Party win the Iowa Senate?",
+          "exchanges": [
+            {
+              "exchangeId": "949",
+              "option": "YES"
+            }
+          ],
+          "node": null,
+          "nodeRequestAt": null,
+          "nodeReceivedAt": null
+        }
+      ],
+      "historicalMetadataArchiveLocators": [
+        {
+          "marketId": "260",
+          "predicate": {
+            "raceId": "62961",
+            "stageId": "98091",
+            "usState": "IA",
+            "raceName": "U.S. Senate Iowa",
+            "raceStage": "General",
+            "winnerName": "Democratic Party",
+            "officeLevel": "Federal",
+            "contractType": "Election Outcome",
+            "electionDate": "2026-11-03",
+            "resolutionType": "Party Winner"
+          },
+          "rootHash": "640582be18719ff760c07baf831de419b234fa0d2f1addd67907b19a969250ce",
+          "receivedAt": "2026-10-05T18:42:04.466Z",
+          "sourceFile": "production-metadata/current-marist-20261005-v2/260.json",
+          "sourceHash": "4ce72a5d4f37c724ce80eb434839655cc1b50f9cfba7afda5e9baeaebe29133f"
+        },
+        {
+          "marketId": "260",
+          "predicate": {
+            "raceId": "62961",
+            "stageId": "98091",
+            "usState": "IA",
+            "raceName": "U.S. Senate Iowa",
+            "raceStage": "General",
+            "winnerName": "Democratic Party",
+            "officeLevel": "Federal",
+            "contractType": "Election Outcome",
+            "electionDate": "2026-11-03",
+            "resolutionType": "Party Winner"
+          },
+          "rootHash": "640582be18719ff760c07baf831de419b234fa0d2f1addd67907b19a969250ce",
+          "receivedAt": "2026-10-05T11:24:28.216Z",
+          "sourceFile": "production-metadata/current-poll-breadth-20261005-v1/260.json",
+          "sourceHash": "e5829917f60c3c424a6af8d773c132b8de1bed6a920f2166a5a36157a36bbc5e"
+        },
+        {
+          "marketId": "261",
+          "predicate": {
+            "raceId": "62961",
+            "stageId": "98091",
+            "usState": "IA",
+            "raceName": "U.S. Senate Iowa",
+            "raceStage": "General",
+            "winnerName": "Republican Party",
+            "officeLevel": "Federal",
+            "contractType": "Election Outcome",
+            "electionDate": "2026-11-03",
+            "resolutionType": "Party Winner"
+          },
+          "rootHash": "d77552ed69fac7a5a63a8edf51c3e160f2afdecb75a61c7cb73e90a3dc79ac5e",
+          "receivedAt": "2026-10-05T11:23:02.449Z",
+          "sourceFile": "production-metadata/current-poll-breadth-20261005-v1/261.json",
+          "sourceHash": "7e4a6a91ad805ea37fd83ba5580e1ebee407f23c1e406af2d37b1f5acd4942e9"
+        },
+        {
+          "marketId": "260",
+          "predicate": {
+            "raceId": "62961",
+            "stageId": "98091",
+            "usState": "IA",
+            "raceName": "U.S. Senate Iowa",
+            "raceStage": "General",
+            "winnerName": "Democratic Party",
+            "officeLevel": "Federal",
+            "contractType": "Election Outcome",
+            "electionDate": "2026-11-03",
+            "resolutionType": "Party Winner"
+          },
+          "rootHash": "640582be18719ff760c07baf831de419b234fa0d2f1addd67907b19a969250ce",
+          "receivedAt": "2026-10-05T11:35:53.194Z",
+          "sourceFile": "production-metadata/current-poll-post-assessment-20261005-v1/260.json",
+          "sourceHash": "61da78fa240a97ed911a217187d6745d61e1ea68746d4a6c356ec39eb400c981"
+        },
+        {
+          "marketId": "261",
+          "predicate": {
+            "raceId": "62961",
+            "stageId": "98091",
+            "usState": "IA",
+            "raceName": "U.S. Senate Iowa",
+            "raceStage": "General",
+            "winnerName": "Republican Party",
+            "officeLevel": "Federal",
+            "contractType": "Election Outcome",
+            "electionDate": "2026-11-03",
+            "resolutionType": "Party Winner"
+          },
+          "rootHash": "d77552ed69fac7a5a63a8edf51c3e160f2afdecb75a61c7cb73e90a3dc79ac5e",
+          "receivedAt": "2026-10-05T11:34:20.269Z",
+          "sourceFile": "production-metadata/current-poll-post-assessment-20261005-v1/261.json",
+          "sourceHash": "890d99dded052bff9f71565c7e3ba014db352bea9f4305258cd81509d5f63dbd"
+        }
+      ],
+      "marketId": "260",
+      "exchangeId": "949",
+      "originalReceiptSha256": "da6b42629c556908490cc54940b0b00d894f180db825c7c8c0316e46f83ca0d0",
+      "originalPrivateBasename": "260.receipt.json",
+      "endpoint": "/markets/260/nodes?tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55",
+      "status": 200,
+      "requestStartedAt": "2026-10-15T13:31:27.052Z",
+      "receivedAt": "2026-10-15T13:31:27.356Z",
+      "predicate": {
+        "contractType": "Election Outcome",
+        "electionDate": "2026-11-03",
+        "officeLevel": "Federal",
+        "raceId": "62961",
+        "raceName": "U.S. Senate Iowa",
+        "raceStage": "General",
+        "resolutionType": "Party Winner",
+        "stageId": "98091",
+        "usState": "IA",
+        "winnerName": "Democratic Party"
+      },
+      "scheduledSettlementAt": "2026-11-04T17:00:00.000Z",
+      "settledWith": null,
+      "diagnosticSemanticMaximumAgeMs": 86400000,
+      "physicalFreshnessEstablished": false,
+      "selectedOrdinarySide": "YES"
+    },
+    {
+      "atlasRaceId": "2026:governor:NY",
+      "catalogLocators": [
+        {
+          "marketId": "185",
+          "exchanges": [
+            {
+              "id": "874",
+              "option": "YES",
+              "latestPrice": 0.1,
+              "initialPrice": 0.5
+            }
+          ],
+          "originalLine": 3,
+          "originalLineSha256ExcludingDelimiter": "877dcfd7d23e682d43324d931dc978b1709600646111d9b7159165d1841d6c0c",
+          "requestStartedAt": "2026-10-14T22:56:30.864Z",
+          "receivedAt": "2026-10-14T22:56:31.410Z",
+          "evidenceRole": "catalog_locator_only_not_party_predicate"
+        },
+        {
+          "marketId": "184",
+          "exchanges": [
+            {
+              "id": "873",
+              "option": "YES",
+              "latestPrice": 0.84,
+              "initialPrice": 0.5
+            }
+          ],
+          "originalLine": 3,
+          "originalLineSha256ExcludingDelimiter": "877dcfd7d23e682d43324d931dc978b1709600646111d9b7159165d1841d6c0c",
+          "requestStartedAt": "2026-10-14T22:56:30.864Z",
+          "receivedAt": "2026-10-14T22:56:31.410Z",
+          "evidenceRole": "catalog_locator_only_not_party_predicate"
+        }
+      ],
+      "bindingStatus": "missing_original_nodes",
+      "contractId": null,
+      "verifiedSemanticRootSha256": null,
+      "derivedHistoricalLocators": [
+        {
+          "marketId": "185",
+          "title": "Will the Republican Party win the New York Governor?",
+          "exchanges": [
+            {
+              "exchangeId": "874",
+              "option": "YES"
+            }
+          ],
+          "node": null,
+          "nodeRequestAt": null,
+          "nodeReceivedAt": null
+        },
+        {
+          "marketId": "184",
+          "title": "Will the Democratic Party win the New York Governor?",
+          "exchanges": [
+            {
+              "exchangeId": "873",
+              "option": "YES"
+            }
+          ],
+          "node": null,
+          "nodeRequestAt": null,
+          "nodeReceivedAt": null
+        }
+      ],
+      "historicalMetadataArchiveLocators": [],
+      "requiredEvidence": {
+        "endpoints": [
+          "/markets/184/nodes?tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55",
+          "/markets/185/nodes?tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55"
+        ],
+        "requirements": [
+          "original status200 receipt with original request/received clocks",
+          "complete root and explicit contract_id",
+          "canonical root SHA256 rederived from original bytes",
+          "structured Party Winner predicate, state, office, stage, race ID and election date",
+          "explicit exceptional/refund resolution review; ordinary Atlas scenarios alone do not certify exceptions"
+        ]
+      }
+    }
+  ],
+  "limitations": [
+    "No account requests; no runtime, review or authority changes.",
+    "NC reviewed forecast p=.919 is distinct from Atlas research p=.975236; neither modified.",
+    "Atlas ordinary race outcomes omit exceptional/refund probabilities. Exact reviewed contract semantics and current original rules remain mandatory.",
+    "Contract IDs for missing originals remain null; never inferred from market ID arithmetic.",
+    "Derived historical root hashes are archive lookup hints, not verified current roots.",
+    "Absent historical metadata directory: LOCALAPPDATA/SigTradingCup/paper-runtime/production-metadata.",
+    "Parent supplied three existing private original node files copied from sole-worker retained archive; exact SHA256 matched supplied archive index. No new API requests. Semantic 24h allowance is diagnostic policy only; current physical books/rules and separately approved model mapping remain required."
+  ]
+}

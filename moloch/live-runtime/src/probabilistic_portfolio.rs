@@ -52,9 +52,36 @@ pub struct Metrics{
  pub modeled_sleeve_basis:i128,
 }
 pub struct Plan{head:Value,report_sha:String,dispatch_sha:String,policy_sha:String,model_sha:String,semantic_sha:String,legs:Vec<Leg>,metrics:Metrics,expires:u64,proof:Value}
+/// Genuine original qualification capability. A JSON clone is an audit value,
+/// never a replacement for this non-deserializable immutable factory product.
+pub struct Reservation{event:Value,plan_sha:String}
+impl Reservation{
+ pub fn event(&self)->&Value{&self.event}pub fn plan_sha(&self)->&str{&self.plan_sha}
+ pub fn validate_plan(&self,plan:&Plan)->Result<()>{need(hash(plan.proof())?==self.plan_sha&&self.event["qualification"]["planSha256"]==self.plan_sha&&hash(&self.event["qualification"])?==self.event["proofHash"],"PROB_RESERVATION_PLAN_CHANGED")}
+}
 impl Plan{
  pub fn legs(&self)->&[Leg]{&self.legs}pub fn metrics(&self)->&Metrics{&self.metrics}pub fn proof(&self)->&Value{&self.proof}pub fn expires_at_ms(&self)->u64{self.expires}
  pub fn model_sha256(&self)->&str{&self.model_sha}pub fn semantic_review_sha256(&self)->&str{&self.semantic_sha}
+ pub fn qualified_reservation(&self,bank:&Session,log:&DispatchLog,scope:&Scope,surface:&BoundSurface,c:&Compiled,p:&Policy,now:u64)->Result<Reservation>{let event=self.reserve_event(bank,log,scope,surface,c,p,now)?;let r=Reservation{event,plan_sha:hash(&self.proof)?};r.validate_plan(self)?;Ok(r)}
+ /// Native capability is a DIFFERENT event/class from guaranteed-floor
+ /// packages. Research surfaces can be optimized offline but cannot mint it.
+ /// The immutable model artifact, review and risk allowlists remain runtime
+ /// authority; native verifies arithmetic, funding and durable prefix only.
+ pub fn reserve_event(&self,bank:&Session,log:&DispatchLog,scope:&Scope,surface:&BoundSurface,c:&Compiled,p:&Policy,now:u64)->Result<Value>{
+  self.validate_current(bank,log,scope,p,now)?;surface.validate_current(bank,scope,now)?;c.validate_time(now)?;
+  need(!surface.surface().is_research()&&surface.source_sha256()==self.model_sha&&c.review_sha256()==self.semantic_sha&&p.input.fee_per_share==0,"PROB_MODEL_NOT_EXECUTION_QUALIFIED")?;
+  let latency=bank.engine().policy()["latencyMs"].as_u64().ok_or("PROB_POLICY")?;need(now.checked_add(latency).is_some_and(|at|at<self.expires),"PROB_RESERVATION_WINDOW")?;
+  let sides:Vec<_>=surface.contracts().iter().map(|c|if c.side==NativeSide::Yes{Side::Yes}else{Side::No}).collect();let states=scenarios(surface,c,&sides)?;
+  let wire_legs:Vec<_>=self.legs.iter().map(|l|json!({"marketId":l.market_id,"exchangeId":l.exchange_id,"side":label(l.side),"action":l.action,"quantity":l.quantity,"limitPrice":money(l.limit_price),"bookHash":l.book_sha256})).collect();
+  let factors=p.input.factors.iter().map(|(id,f)|(id.clone(),json!({"maximumAbsoluteSharesMicros":f.maximum_absolute_shares_micros.to_string(),"loadingPpm":f.loading_ppm.iter().map(i128::to_string).collect::<Vec<_>>()}))).collect::<BTreeMap<_,_>>();
+  let metrics=&self.metrics;let cfg=&p.input;
+  let qualification=json!({"version":1,"kind":"reviewed_probabilistic_portfolio","planSha256":hash(&self.proof)?,"semanticReviewSha256":self.semantic_sha,"modelSha256":self.model_sha,"policySha256":self.policy_sha,"dispatchSha256":self.dispatch_sha,"positionsSha256":hash(&bank.engine().wallet.positions())?,"validUntilMs":self.expires,
+   "contracts":c.contracts().iter().zip(&sides).map(|(r,s)|json!({"marketId":r.market_id,"exchangeId":r.exchange_id,"contractId":r.contract_id,"side":label(*s),"officialRootSha256":r.official_root_sha256})).collect::<Vec<_>>(),
+   "states":states.iter().map(|s|json!({"id":s.id,"weightPpm":s.weight,"outcomes":s.outcomes})).collect::<Vec<_>>(),
+   "risk":{"minimumExpectedGain":money(cfg.minimum_expected_gain),"maximumIncrementalCvarLoss":money(cfg.maximum_incremental_cvar_loss),"maximumTerminalCvarLoss":money(cfg.maximum_terminal_cvar_loss),"tailPpm":cfg.tail_ppm,"maximumGrossBuyFunding":money(cfg.maximum_gross_buy_cost),"capitalRatePpmPerDay":cfg.capital_rate_ppm_per_day,"horizonMs":surface.horizon_ms(),"factors":factors},
+   "metrics":{"expectedIncrementNumerator":metrics.expected_increment_numerator.to_string(),"incrementalCvarLoss":money(metrics.incremental_cvar_loss),"terminalCvarLoss":money(metrics.terminal_cvar_loss),"minimumModeledIncrement":money(metrics.minimum_modeled_increment),"grossBuyFunding":money(metrics.gross_buy_funding),"minimumSellProceeds":money(metrics.minimum_sell_proceeds),"capitalOpportunityCost":money(metrics.capital_opportunity_cost)},"wireLegs":wire_legs});
+  let proof=hash(&qualification)?;Ok(json!({"type":"probabilistic_portfolio_reserve_v1","source":"moloch_live_dispatcher","receivedAt":crate::daily_windows::iso(now)?,"processedAt":crate::daily_windows::iso(now)?,"bankScope":{"runId":cfg.run_id,"bankManifestHash":bank.manifest_hash(),"tournamentId":scope.tournament_id},"bankHead":self.head,"expectedReportSha256":self.report_sha,"packageId":format!("prob-{proof}"),"proofHash":proof,"expiresAt":crate::daily_windows::iso(self.expires)?,"qualification":qualification,"legs":wire_legs}))
+ }
  pub fn validate_current(&self,bank:&Session,log:&DispatchLog,scope:&Scope,p:&Policy,now:u64)->Result<()>{
   need(self.proof["atMs"].as_u64().is_some_and(|at|now>=at)&&now<self.expires&&bank.durable_head()==self.head&&hash(&bank.engine().report()?)?==self.report_sha&&hash(&log.descriptor_identity()?)?==self.dispatch_sha&&p.sha==self.policy_sha,"PROB_PLAN_CHANGED_OR_EXPIRED")?;
   log.require_resolved_attempts()?;let(_,books)=package_admission::native_books(bank,scope,now,p.input.maximum_book_age_ms)?;
@@ -70,7 +97,7 @@ impl Plan{
 }
 #[derive(Clone)]struct Instrument{side:Side,quantity:u64,principal:i128,lots:Vec<(u64,i128)>}
 #[derive(Clone)]struct OptionLeg{leg:Leg,cost:i128,proceeds:i128,fee:i128,sold_principal:i128}
-struct Scenario{weight:u32,outcomes:Vec<semantics::PayoutRule>}
+struct Scenario{id:String,weight:u32,outcomes:Vec<semantics::PayoutRule>}
 /// Exact lower-tail CVaR of LOSS. Negative gains are losses; profits do not
 /// cancel another scenario's loss. Fractional boundary mass is retained.
 pub fn cvar_loss(gains:&[(i128,u32)],tail_ppm:u32)->Result<i128>{
@@ -95,9 +122,9 @@ fn scenarios(surface:&BoundSurface,c:&Compiled,sides:&[Side])->Result<Vec<Scenar
  for s in surface.scenarios(){let t=c.states().iter().find(|t|t.id==s.id).ok_or("PROB_STATE_MAPPING_MISSING")?;
   need(t.kind==semantics::StateKind::PartyWinner&&s.payout_micros.len()==sides.len(),"PROB_ORDINARY_STATE")?;
   for(i,side)in sides.iter().enumerate(){need(surface.contracts()[i].side==ns(*side)&&t.outcomes[i].payout(*side,1,0)?==s.payout_micros[i],"PROB_ORDINARY_PAYOUT_MISMATCH")?;}
-  need(used.insert(t.id.clone())&&!exceptions.contains_key(&t.id),"PROB_DUPLICATE_SCENARIO")?;out.push(Scenario{weight:weights[&s.id],outcomes:t.outcomes.clone()});
+  need(used.insert(t.id.clone())&&!exceptions.contains_key(&t.id),"PROB_DUPLICATE_SCENARIO")?;out.push(Scenario{id:t.id.clone(),weight:weights[&s.id],outcomes:t.outcomes.clone()});
  }
- for(id,w)in exceptions{let t=c.states().iter().find(|t|&t.id==id).ok_or("PROB_STATE_MAPPING_MISSING")?;need(used.insert(id.clone()),"PROB_DUPLICATE_SCENARIO")?;out.push(Scenario{weight:*w,outcomes:t.outcomes.clone()});}
+ for(id,w)in exceptions{let t=c.states().iter().find(|t|&t.id==id).ok_or("PROB_STATE_MAPPING_MISSING")?;need(used.insert(id.clone()),"PROB_DUPLICATE_SCENARIO")?;out.push(Scenario{id:t.id.clone(),weight:*w,outcomes:t.outcomes.clone()});}
  need(used.len()==c.states().len(),"PROB_UNWEIGHTED_STATE")?;Ok(out)
 }
 fn fifo(lots:&[(u64,i128)],q:u64)->Result<i128>{let mut left=q;let mut cost=0;for(n,p)in lots{let take=left.min(*n);cost=add(cost,mul(*p,take as i128)?)?;left-=take;if left==0{return Ok(cost)}}need(left==0,"PROB_UNCOVERED_SELL")?;Ok(cost)}

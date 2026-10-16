@@ -5,13 +5,14 @@ use crate::{feedback::Result,value_surface::{BoundSurface,UNIT}};
 use baal_transport_service::{decimal_units,Scope};
 use moloch_relationship_arbitrage::{depth_cost,Level};
 use moloch_replay::{session::Session,Side};
-use serde::Serialize;
+use serde::{Deserialize,Serialize};
 use std::collections::BTreeMap;
 use sha2::{Digest,Sha256};
 fn need(b:bool,e:&'static str)->Result<()>{if b{Ok(())}else{Err(e.into())}}
 fn add(a:i128,b:i128)->Result<i128>{a.checked_add(b).ok_or("CURVE_RANGE".into())}
 fn mul(a:i128,b:u64)->Result<i128>{a.checked_mul(b as i128).ok_or("CURVE_RANGE".into())}
-#[derive(Clone,Debug,Serialize)]
+#[derive(Clone,Debug,Serialize,Deserialize)]
+#[serde(rename_all="camelCase",deny_unknown_fields)]
 pub struct FitPolicy{pub factor_id:String,pub minimum_races:usize,pub maximum_depth_weight:u64,pub maximum_factor_abs:f64,pub minimum_residual_micros:i128}
 impl FitPolicy{fn validate(&self)->Result<()>{need(!self.factor_id.is_empty()&&(3..=128).contains(&self.minimum_races)&&(1..=10000).contains(&self.maximum_depth_weight)&&self.maximum_factor_abs.is_finite()&&self.maximum_factor_abs>0.&&self.maximum_factor_abs<=10.&&(0..=UNIT).contains(&self.minimum_residual_micros),"CURVE_POLICY")}}
 #[derive(Clone,Debug,Serialize)]
@@ -48,7 +49,8 @@ pub fn fit(surface:&BoundSurface,p:&FitPolicy)->Result<Fit>{
  }
  let mut fit=Fit{factor_id:p.factor_id.clone(),factor_lower:lo,factor_upper:hi,weighted_interval_loss:loss,distinct_races:observations.len(),observations,residuals,source_sha:surface.source_sha256().into(),head:surface.bound_head().clone(),valid_until:surface.valid_until_ms(),minimum_residual:p.minimum_residual_micros,seal_sha:String::new()};fit.seal_sha=fit_sha(&fit)?;Ok(fit)
 }
-#[derive(Clone,Debug,Serialize)]
+#[derive(Clone,Debug,Serialize,Deserialize)]
+#[serde(rename_all="camelCase",deny_unknown_fields)]
 pub struct HedgeLimits{pub maximum_quantity_per_leg:u64,pub maximum_gross_funding:i128,pub maximum_absolute_factor_exposure:i128,pub minimum_model_gain:i128,pub tail_probability_ppm:u32,pub maximum_tail_loss:i128}
 #[derive(Clone,Debug,Serialize)]
 pub struct HedgeLeg{pub exchange_id:String,pub market_id:String,pub side:String,pub quantity:u64,pub limit_price:i128,pub visible_cost:i128}
