@@ -12,9 +12,9 @@ fn original_digest(v:&Value)->Result<String>{
  #[derive(serde::Serialize)]#[serde(rename_all="camelCase")]struct Receipt<'a>{endpoint:&'a Value,request_started_at:&'a Value,received_at:&'a Value,status:&'a Value,data:&'a Value}
  Ok(format!("{:x}",Sha256::digest(serde_json::to_vec(&Receipt{endpoint:&v["endpoint"],request_started_at:&v["requestStartedAt"],received_at:&v["receivedAt"],status:&v["status"],data:&v["data"]}).map_err(|_|"CAPITAL_RECEIPT")?)))
 }
-fn receipt(v:&Value,endpoint:&str,at:i64)->Result<(i64,i64)>{
+fn receipt(v:&Value,endpoint:&str,at:i64,maximum_age:i64)->Result<(i64,i64)>{
  need(v["endpoint"]==endpoint&&v["status"]==200,"CAPITAL_RECEIPT_SCOPE")?;let start=ms(&v["requestStartedAt"])?;let end=ms(&v["receivedAt"])?;
- need(start>=0&&start<=end&&end<=at&&at-start<=20_000,"CAPITAL_RECEIPT_CLOCK")?;Ok((start,end))
+ need(start>=0&&start<=end&&end<=at&&at-start<=maximum_age,"CAPITAL_RECEIPT_CLOCK")?;Ok((start,end))
 }
 impl Engine{
  pub fn owner_capital_allocation_record(&self)->Option<Value>{self.capital_allocation.clone()}
@@ -47,6 +47,7 @@ impl Engine{
  }Ok(())}
  pub(super)fn apply_owner_capital(&mut self,e:&Value,at:i64)->Result<()>{
   let full=e["authorizationId"]=="human_moloch_full_account_20261016";
+  let source_age=if full{need(e["maximumSourceAgeMs"]==10000,"CAPITAL_SOURCE_AGE_MANDATE")?;10_000}else{20_000};
   need(self.live_mode&&e["source"]=="moloch_live_dispatcher"&&(full||e["authorizationId"]=="human_moloch_additional_cash_20261016"),"CAPITAL_AUTHORITY")?;
   if full{sha(&e["currentControlSha256"])?;need(ms(&e["mandateApprovedAt"])? >=ms(&json!("2026-10-16T09:43:45Z"))?&&ms(&e["mandateApprovedAt"])?<=at,"CAPITAL_MANDATE_APPROVAL")?;}
   need(ms(&e["processedAt"])?==at&&ms(&e["receivedAt"])?<=at,"CAPITAL_EVENT_CLOCK")?;
@@ -74,8 +75,8 @@ impl Engine{
   for book in self.books.values(){need(scope.get(&book.exchange)==Some(&json!(book.market)),"CAPITAL_EXCHANGE_SCOPE")?;}
   let rs=&e["receipts"];let endpoints=[("account",format!("/account?tournamentId={tid}")),("collateral",format!("/portfolio/collateral?tournamentId={tid}")),("positions",format!("/tournaments/{slug}/portfolio/positions")),("orders",format!("/orders?status=open&limit=200&tournamentId={tid}"))];
   let evidence=e["originalSourceEvidence"].as_array().filter(|v|v.len()==4).ok_or("CAPITAL_ORIGINAL_SOURCE")?;let mut clocks=Vec::new();
-  for((name,path),proof)in endpoints.iter().zip(evidence){clocks.push(receipt(&rs[*name],path,at)?);need(proof["receiptSha256"]==original_digest(&rs[*name])?,"CAPITAL_ORIGINAL_SOURCE")?;sha(&proof["retainedBytesSha256"])?;}
-  clocks.sort();need(clocks.windows(2).all(|w|w[0].1<=w[1].0)&&clocks.last().unwrap().1-clocks[0].0<=20_000,"CAPITAL_RECEIPT_OVERLAP")?;
+  for((name,path),proof)in endpoints.iter().zip(evidence){clocks.push(receipt(&rs[*name],path,at,source_age)?);need(proof["receiptSha256"]==original_digest(&rs[*name])?,"CAPITAL_ORIGINAL_SOURCE")?;sha(&proof["retainedBytesSha256"])?;}
+  clocks.sort();need(clocks.windows(2).all(|w|w[0].1<=w[1].0)&&clocks.last().unwrap().1-clocks[0].0<=source_age,"CAPITAL_RECEIPT_OVERLAP")?;
   let a=&rs["account"]["data"];let c=&rs["collateral"]["data"];
   need(a["id"]==s["profileId"]&&monetary(&a["availableAdvance"])?==0&&monetary(&c["availableAdvance"])?==0&&monetary(&a["balance"])?==monetary(&a["buyingPower"])?&&self.wallet.cash.checked_add(delta).is_some_and(|cash|cash<=monetary(&a["balance"]).unwrap_or(-1)),"CAPITAL_CASH_OR_ADVANCE")?;
   let components=c["data"].as_array().filter(|v|v.len()<=4096).ok_or("CAPITAL_COMPONENTS")?;let mut component_ids=BTreeSet::new();for row in components{need(row["profileId"]==s["profileId"]&&row["tournamentId"]==tid&&row["componentId"].as_str().is_some_and(|id|!id.is_empty()&&component_ids.insert(id.to_owned()))&&monetary(&row["outstandingAdvance"])?==0,"CAPITAL_DEBT_OR_COMPONENT_SCOPE")?;}
@@ -85,7 +86,7 @@ impl Engine{
   need(self.wallet.lots.iter().all(|((ex,_),lots)|lots.iter().all(|l|l.quantity==0)||seen.contains(ex)),"CAPITAL_POSITION_MISSING")?;
   let mut raw=self.policy.raw.clone();raw["maximumCommitted"]=json!(money(committed));let policy=Policy::new(&raw)?;
   contributions.push(json!({"allocationId":allocation,"delta":money(delta),"controlSha256":e["controlSha256"],"mandateSha256":e["mandateSha256"],"originalSourceEvidence":evidence,"boundary":b,"at":e["processedAt"],"previousAllocationSha256":prior}));
-  if full{let contribution=contributions.last_mut().ok_or("CAPITAL_RECORD")?;contribution["authorizationId"]=e["authorizationId"].clone();contribution["approvedAt"]=e["mandateApprovedAt"].clone();contribution["currentControlSha256"]=e["currentControlSha256"].clone();}
+  if full{let contribution=contributions.last_mut().ok_or("CAPITAL_RECORD")?;contribution["maximumSourceAgeMs"]=json!(source_age);contribution["authorizationId"]=e["authorizationId"].clone();contribution["approvedAt"]=e["mandateApprovedAt"].clone();contribution["currentControlSha256"]=e["currentControlSha256"].clone();}
   let mut record=json!({"schemaVersion":1,"bankScope":s,"originalInitialCash":money(self.policy.initial),"netContributions":money(net),"effectiveInitialCash":money(effective),"effectiveMaximumCommitted":money(committed),"contributions":contributions});record["sha256"]=json!(hash(&record));
   self.wallet.allocate_owner_cash_exact(delta,committed)?;self.policy=policy;self.capital_allocation=Some(record);Ok(())
  }

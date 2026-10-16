@@ -38,7 +38,7 @@ impl ApprovedMandate{
 impl<'a>Sources<'a>{fn rows(&self)->[&'a RetainedReceipt;4]{[self.account,self.collateral,self.positions,self.orders]}}
 /// Consumed immediately. Final commit rechecks actual held file descriptors,
 /// raw receipt bytes, original dispatch heads, quiet queue and native head.
-pub struct Prepared<'a>{event:Value,captured:Value,sources:Sources<'a>,minted:Instant,processed:String,valid_until:i64}
+pub struct Prepared<'a>{event:Value,captured:Value,sources:Sources<'a>,minted:Instant,processed:String,valid_until:i64,source_maximum_age_ms:i64}
 pub struct Committed{pub source_sequence:u64,pub event_sha256:String,pub durable_head:Value,pub report:Value}
 pub fn prepare<'a>(bank:&Session,b:&Boundary<'_>,mandate:&ApprovedMandate,sources:Sources<'a>,processed:&str)->Result<Prepared<'a>>{
  prepare_inner(bank,b,mandate,sources,processed,None)
@@ -50,17 +50,17 @@ pub fn prepare_with_control<'a>(bank:&Session,b:&Boundary<'_>,mandate:&ApprovedM
  prepare_inner(bank,b,mandate,sources,processed,Some(current_control_sha256))
 }
 fn prepare_inner<'a>(bank:&Session,b:&Boundary<'_>,mandate:&ApprovedMandate,sources:Sources<'a>,processed:&str,current_control_sha256:Option<&str>)->Result<Prepared<'a>>{
- let at=clock(processed)?;let m=&mandate.input;need(clock(&m.approved_at)?<=at&&at<clock(&m.valid_until)?,"CAPITAL_MANDATE_EXPIRED")?;
+ let at=clock(processed)?;let m=&mandate.input;let source_maximum_age_ms=if m.authorization_id=="human_moloch_full_account_20261016"{10_000}else{20_000};need(clock(&m.approved_at)?<=at&&at<clock(&m.valid_until)?,"CAPITAL_MANDATE_EXPIRED")?;
  let seed=bank.live_account_seed().ok_or("CAPITAL_LIVE_BANK")?;let scope=b.transport.scope();
  need(bank.manifest_hash().as_str()==Some(m.bank_manifest_hash.as_str())&&seed["runId"]==m.run_id&&m.account_scope==b.transport.account_scope()&&scope.tournament_id==m.tournament_id&&scope.tournament_slug==m.tournament_slug&&hash(&scope)?==m.scope_sha256,"CAPITAL_MANDATE_SCOPE")?;
  let delta=amount(&m.delta)?;let effective=bank.engine().wallet.initial.checked_add(delta).ok_or("CAPITAL_RANGE")?;let maximum=amount(bank.engine().policy()["maximumCommitted"].as_str().ok_or("CAPITAL_POLICY")?)?.checked_add(delta).ok_or("CAPITAL_RANGE")?;
  let previous=bank.engine().owner_capital_allocation_record();let prior_net=previous.as_ref().map_or(Ok(0),|r|amount(r["netContributions"].as_str().ok_or("CAPITAL_PREVIOUS")?))?;
  need(prior_net.checked_add(delta).is_some_and(|n|n<=amount(&m.maximum_extra).unwrap_or(-1))&&effective<=amount(&m.maximum_effective_initial)?&&maximum<=amount(&m.maximum_committed)?,"CAPITAL_MANDATE_LIMIT")?;
  let captured=collateral_feedback::allocation_boundary(bank,b,at)?;
- for r in sources.rows(){r.verify_root(b.root)?;let receipt=r.receipt();let start=clock(&receipt.request_started_at)?;let end=clock(&receipt.received_at)?;need(receipt.status==200&&start>=0&&start<=end&&end<=at&&at-start<=20_000,"CAPITAL_ORIGINAL_SOURCE_CLOCK")?;}
+ for r in sources.rows(){r.verify_root(b.root)?;let receipt=r.receipt();let start=clock(&receipt.request_started_at)?;let end=clock(&receipt.received_at)?;need(receipt.status==200&&start>=0&&start<=end&&end<=at&&at-start<=source_maximum_age_ms,"CAPITAL_ORIGINAL_SOURCE_CLOCK")?;}
  need(sources.account.receipt().data["id"]==m.profile_id,"CAPITAL_PROFILE")?;
  let mut event=json!({"type":"live_capital_allocation_v1","source":"moloch_live_dispatcher","authorizationId":m.authorization_id,"allocationId":m.allocation_id,"controlSha256":m.control_sha256,"mandateSha256":mandate.sha256,"receivedAt":processed,"processedAt":processed,"bankScope":{"runId":m.run_id,"bankManifestHash":bank.manifest_hash(),"tournamentId":scope.tournament_id,"tournamentSlug":scope.tournament_slug,"profileId":m.profile_id},"expectedReportHash":captured["reportHash"],"expectedPolicySha256":hash(bank.engine().policy())?,"expectedPreviousAllocationSha256":previous.map_or(Value::Null,|r|r["sha256"].clone()),"expectedInitialCash":money(bank.engine().wallet.initial),"expectedMaximumCommitted":bank.engine().policy()["maximumCommitted"],"delta":m.delta,"effectiveInitialCash":money(effective),"effectiveMaximumCommitted":money(maximum),"scopeExchanges":scope.exchanges,"boundary":{"nativeHead":captured["nativeHead"],"ordinaryDispatchHash":captured["ordinarySha256"],"packageDispatchHash":captured["packageSha256"],"queueHeadHash":hash(&captured["queue"])?,"ownerLeaseHash":captured["ownerLeaseSha256"],"unknownCount":0,"activeRequest":null,"unsubmittedOrderIds":captured["unsubmitted"],"provedNoNetworkOrderIds":captured["provedNoNetworkOrderIds"]},"receipts":{"account":sources.account.receipt(),"collateral":sources.collateral.receipt(),"positions":sources.positions.receipt(),"orders":sources.orders.receipt()}});
- if m.authorization_id=="human_moloch_full_account_20261016"{event["currentControlSha256"]=json!(current_control_sha256.ok_or("CAPITAL_CURRENT_CONTROL_REQUIRED")?);event["mandateApprovedAt"]=json!(m.approved_at);event["historicalApprovalControlSha256"]=json!(m.control_sha256);}
+ if m.authorization_id=="human_moloch_full_account_20261016"{event["maximumSourceAgeMs"]=json!(source_maximum_age_ms);event["currentControlSha256"]=json!(current_control_sha256.ok_or("CAPITAL_CURRENT_CONTROL_REQUIRED")?);event["mandateApprovedAt"]=json!(m.approved_at);event["historicalApprovalControlSha256"]=json!(m.control_sha256);}
  event["originalSourceEvidence"]=json!(sources.rows().iter().map(|r|r.evidence()).collect::<Result<Vec<_>>>()?);
  // Native Session independently verifies seed cash/prior unallocated capital at
  // accept; preview here enforces all event economics without durable changes.
@@ -68,13 +68,13 @@ fn prepare_inner<'a>(bank:&Session,b:&Boundary<'_>,mandate:&ApprovedMandate,sour
  let official=baal_transport_service::decimal_units(&sources.account.receipt().data["balance"].as_str().map(str::to_owned).unwrap_or_else(||sources.account.receipt().data["balance"].to_string()))?;
  need(official==crate::authority::reconciled_expected_cash(bank)?,"CAPITAL_ORIGINAL_CASH_MISMATCH")?;
  need(collateral_feedback::allocation_boundary(bank,b,at)?==captured,"CAPITAL_BOUNDARY_CHANGED")?;for r in sources.rows(){r.verify_root(b.root)?;}
- Ok(Prepared{event,captured,sources,minted:Instant::now(),processed:processed.into(),valid_until:clock(&m.valid_until)?})
+ Ok(Prepared{event,captured,sources,minted:Instant::now(),processed:processed.into(),valid_until:clock(&m.valid_until)?,source_maximum_age_ms})
 }
 impl Prepared<'_>{
  pub fn commit(self,bank:&mut Session,b:&Boundary<'_>,now:&str)->Result<Committed>{
   let at=clock(now)?;need(self.minted.elapsed()<=Duration::from_secs(2)&&at>=clock(&self.processed)?&&at<self.valid_until&&at-clock(&self.processed)?<=2000,"CAPITAL_COMMIT_EXPIRED")?;
   need(collateral_feedback::allocation_boundary(bank,b,at)?==self.captured,"CAPITAL_BOUNDARY_CHANGED")?;
-  for r in self.sources.rows(){r.verify_root(b.root)?;need(at-clock(&r.receipt().request_started_at)?<=20_000,"CAPITAL_ORIGINAL_SOURCE_CLOCK")?;}
+  for r in self.sources.rows(){r.verify_root(b.root)?;need(at-clock(&r.receipt().request_started_at)?<=self.source_maximum_age_ms,"CAPITAL_ORIGINAL_SOURCE_CLOCK")?;}
   let sequence=bank.last_source_sequence(SOURCE).checked_add(1).ok_or("CAPITAL_RANGE")?;let digest=hash(&self.event)?;
   need(bank.accept(SOURCE,sequence,&self.event)?,"CAPITAL_ALREADY_COMMITTED")?;need(bank.committed_source_hash(SOURCE,sequence)==Some(digest.as_str()),"CAPITAL_COMMIT_REFERENCE")?;
   Ok(Committed{source_sequence:sequence,event_sha256:digest,durable_head:bank.durable_head(),report:bank.engine().report().map_err(|s|->Box<dyn std::error::Error>{s.into()})?})
