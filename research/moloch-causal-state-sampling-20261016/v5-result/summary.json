@@ -1,0 +1,62 @@
+{
+  "witnessedExchangeUnitDenominator": 158,
+  "oldThreeSecondBookEligibility": {
+    "false": 157,
+    "true": 1
+  },
+  "sourceAgeBands": {
+    "10000": 95,
+    "3000": 1,
+    "300000": 1,
+    "60000": 61
+  },
+  "horizonAvailability": {
+    "1000": {
+      "available": 13,
+      "gap_crossing": 3,
+      "no_timely_target_book": 109,
+      "spacing_exclusion": 33
+    },
+    "10000": {
+      "available": 12,
+      "gap_crossing": 6,
+      "no_timely_target_book": 107,
+      "spacing_exclusion": 33
+    },
+    "120000": {
+      "available": 4,
+      "gap_crossing": 39,
+      "no_timely_target_book": 82,
+      "spacing_exclusion": 33
+    },
+    "3000": {
+      "available": 12,
+      "gap_crossing": 4,
+      "no_timely_target_book": 109,
+      "spacing_exclusion": 33
+    },
+    "30000": {
+      "available": 7,
+      "gap_crossing": 15,
+      "no_timely_target_book": 103,
+      "spacing_exclusion": 33
+    }
+  },
+  "uniqueUnitExclusions": {
+    "mapping_not_direct_party_reference": 5,
+    "old_trigger_or_export": 97
+  },
+  "exchangeDenominatorKnownComplete": false,
+  "providerTradeTapeComplete": false,
+  "wholeWitnessVerified": false,
+  "exactInputReplayVerified": true,
+  "economicOutcomesEvaluated": false,
+  "modelFit": false,
+  "executionAuthority": false,
+  "completedAt": "2026-10-16T19:42:18.350611+00:00",
+  "outputRows": 23,
+  "horizonLabels": 15,
+  "broadWitnessDisclaimerIsNotPredictiveFitGate": true,
+  "minimumFrozenOosDecisions": 100,
+  "minimumFrozenSelectedDecisions": 100
+}
