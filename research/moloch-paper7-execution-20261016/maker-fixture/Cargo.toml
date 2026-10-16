@@ -1,0 +1,14 @@
+[package]
+name="moloch-paper7-maker-fixture"
+version="0.1.0"
+edition="2024"
+[dependencies]
+moloch-live-runtime={path="/tmp/moloch-paper7-7f5caaa0-20261016/moloch/live-runtime"}
+moloch-replay={path="/tmp/moloch-paper7-7f5caaa0-20261016/moloch/native"}
+baal-transport-service={path="/tmp/moloch-paper7-7f5caaa0-20261016/backend-rust/transport-service",features=["offline-fixtures"]}
+serde_json={version="1",features=["arbitrary_precision"]}
+sha2="0.10"
+chrono = { version = "0.4", default-features = false, features = ["std"] }
+[[test]]
+name="maker_policy"
+path="maker_policy.rs"

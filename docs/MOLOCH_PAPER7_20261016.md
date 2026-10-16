@@ -6,6 +6,16 @@ Received October16,2026. Private attachment SHA256
 The paper is research input. Its embedded source identifiers and schedules are
 not verified API evidence, execution authority or measured deployment results.
 
+## Checked implementation at22:44UTC
+
+Three optional components now pass585 actual ARM64 checks and optimized release:
+joint maker qualification, separate fundamental acquisition evidence and
+own-account realtime invalidation on the existing socket. Native financial
+engineb5 is unchanged. Full source/build/failure evidence and feature boundaries
+are in [the checked execution implementation](MOLOCH_PAPER7_EXECUTION_20261016.md).
+They are **not activated** in production20543435/d9f5. Correlated posterior,
+causal model qualification and complete account/rank execution remain unfinished.
+
 ## Current update at22:34UTC
 
 Turnover source20543435 is now physically deployed as565108/binaryd9f5cbc6,

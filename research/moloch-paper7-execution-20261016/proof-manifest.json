@@ -1,0 +1,145 @@
+{
+  "schemaVersion": 1,
+  "createdAt": "2026-10-16T22:44:59.761070+00:00",
+  "productionSourceCommit": "7f5caaa090a2002c96bdcc6ccb25c2a75e737bc3",
+  "correctedFixtureCommit": "862dedea0cd8206154c9aa8e0c728dedb3df8e0b",
+  "productionActivated": false,
+  "binarySha256": "b35da250ac3f95f74a506eb9cccc8c9da860b42332dce1bcbfb41b6bea05f908",
+  "engineIdentity": "b5b28a476fc057de93f5784f7b3600116418aa7e775f25576cfd2906ecd77713",
+  "passedTests": 585,
+  "existingIgnoredNativeBenchmark": 1,
+  "originalFailedFixtureAndWrapperLogsRetained": true,
+  "financialCoreSameAsTurnoverCandidate": true,
+  "files": {
+    "validation.json": {
+      "sha256": "2c0d0e856ea2e628efdcf5a1c376875c5df1f8b0957445878a7adc47b3ad299f",
+      "bytes": 5216,
+      "originalSource": "/tmp/moloch-paper7-7f5caaa0-20261016/validation.json"
+    },
+    "integrated-source-manifest.json": {
+      "sha256": "3d9ed5ce49fd58fee3d8a6e8e5f5234f75fecd08aef7e25c60a893b486a1baff",
+      "bytes": 31000,
+      "originalSource": "/tmp/moloch-paper7-7f5caaa0-20261016/integrated-source-manifest.json"
+    },
+    "checks/native-library.log": {
+      "sha256": "3a40261511a9035d32a5b1e84be8ba32924e5f114d00b4b5dea45055da038694",
+      "bytes": 15846,
+      "originalSource": "/tmp/moloch-paper7-7f5caaa0-20261016/native-library.log"
+    },
+    "checks/runtime-library.log": {
+      "sha256": "47190c7205d52b97d59cc5cd167edf27d6dd9af7948e09734ac4983ba1496566",
+      "bytes": 32968,
+      "originalSource": "/tmp/moloch-paper7-7f5caaa0-20261016/runtime-library.log"
+    },
+    "checks/worker.log": {
+      "sha256": "33cf2cdd2a43e24d49651f86d88816ee12501b2bb5cf1a63993127e8413b86b2",
+      "bytes": 23218,
+      "originalSource": "/tmp/moloch-paper7-7f5caaa0-20261016/worker.log"
+    },
+    "checks/maker_policy.log": {
+      "sha256": "2f1f2d627d23fbfdbd819a8b41368eda7120025604b072a9b4bee84d7caf1158",
+      "bytes": 15160,
+      "originalSource": "/tmp/moloch-paper7-7f5caaa0-20261016/maker_policy.log"
+    },
+    "checks/maker-fixture-lock.log": {
+      "sha256": "96fc511faf4b0226fe968cc94a257489d298991497ea7b58a13027c2fa6684a5",
+      "bytes": 69,
+      "originalSource": "/tmp/moloch-paper7-7f5caaa0-20261016/maker-fixture-lock.log"
+    },
+    "checks/maker-fixture-typed-config.log": {
+      "sha256": "fc9e18e15cdb34b4255ae5590070847c08fc239a136ce7947477bc188c3ebc45",
+      "bytes": 11970,
+      "originalSource": "/tmp/moloch-paper7-7f5caaa0-20261016/maker-fixture-typed-config.log"
+    },
+    "checks/maker-fixture-lock-r2.log": {
+      "sha256": "6b1e35c1fb5125a8383045136994554f4db8a02d4e9f50be07cbb8071c620379",
+      "bytes": 448,
+      "originalSource": "/tmp/moloch-paper7-7f5caaa0-20261016/maker-fixture-lock-r2.log"
+    },
+    "checks/maker-fixture-lock-r3.log": {
+      "sha256": "96fc511faf4b0226fe968cc94a257489d298991497ea7b58a13027c2fa6684a5",
+      "bytes": 69,
+      "originalSource": "/tmp/moloch-paper7-7f5caaa0-20261016/maker-fixture-lock-r3.log"
+    },
+    "checks/maker-fixture-typed-config-r3.log": {
+      "sha256": "c9feb7eef00b245442c6daef0fd0d02afc8a137dcbc7a79717d6388b28ed85cf",
+      "bytes": 13138,
+      "originalSource": "/tmp/moloch-paper7-7f5caaa0-20261016/maker-fixture-typed-config-r3.log"
+    },
+    "checks/execution_distribution.log": {
+      "sha256": "cc600f60fe6962df9ef4d237e3b7da30c923c7f9bcaa8e29210ce5cd640d060c",
+      "bytes": 12716,
+      "originalSource": "/tmp/moloch-paper7-7f5caaa0-20261016/execution_distribution.log"
+    },
+    "checks/fundamental_acquisition.log": {
+      "sha256": "0a61baec09b5d7502e0fa8f23691f02edc3fa0d18c96b24a8c6507b6b7cbb09a",
+      "bytes": 11698,
+      "originalSource": "/tmp/moloch-paper7-7f5caaa0-20261016/fundamental_acquisition.log"
+    },
+    "checks/fundamental_policy.log": {
+      "sha256": "8dc61fd16454f3ee210c1ed89dad542fa684a8777fa803bf4ec544ca4e3e8e45",
+      "bytes": 20865,
+      "originalSource": "/tmp/moloch-paper7-7f5caaa0-20261016/fundamental_policy.log"
+    },
+    "checks/release.log": {
+      "sha256": "020bc463405e2818d0d9c50d739f082aa95beb859189ad4d9e5a503a9750eb14",
+      "bytes": 188916,
+      "originalSource": "/tmp/moloch-paper7-7f5caaa0-20261016/release.log"
+    },
+    "checks/engine-probe-build.log": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "originalSource": "/tmp/moloch-paper7-7f5caaa0-20261016/engine-probe-build.log"
+    },
+    "checks/engine-probe-run.log": {
+      "sha256": "80f79583bc1ba42e61d5826b6f17a05bfd04f0a9a42eaef7c51fa56b48b5f2ca",
+      "bytes": 65,
+      "originalSource": "/tmp/moloch-paper7-7f5caaa0-20261016/engine-probe-run.log"
+    },
+    "maker-fixture/Cargo.toml": {
+      "sha256": "0baf297316fa8d9f901106d29ce0913f178321ba068c8d739764abdfb91b86d2",
+      "bytes": 578,
+      "originalSource": "/tmp/moloch-joint-maker-fixture-862dedea-20261016/Cargo.toml"
+    },
+    "maker-fixture/Cargo.lock": {
+      "sha256": "02f4eb503cd991f6f5af2596fbca71a2ee7e64edac0fecae2a0d9ef398d25b91",
+      "bytes": 43443,
+      "originalSource": "/tmp/moloch-joint-maker-fixture-862dedea-20261016/Cargo.lock"
+    },
+    "maker-fixture/Cargo.toml.before-wrapper-chrono": {
+      "sha256": "0a1872a45572355fc922913b9aed20f2e45d3049feebeb119e5baaa9034f2092",
+      "bytes": 503,
+      "originalSource": "/tmp/moloch-joint-maker-fixture-862dedea-20261016/Cargo.toml.before-wrapper-chrono"
+    },
+    "maker-fixture/Cargo.lock.before-wrapper-chrono": {
+      "sha256": "a0ed24d734bc1ac6ebea6fba997c2774b471f26975274ba5431bc7e6e7d20ed4",
+      "bytes": 43432,
+      "originalSource": "/tmp/moloch-joint-maker-fixture-862dedea-20261016/Cargo.lock.before-wrapper-chrono"
+    },
+    "maker-fixture/Cargo.toml.before-wrapper-chrono-features": {
+      "sha256": "8fea8c983ce7d8c7cf409f603b9760f751743e5168dc9ccea9b4ed36c6cd35ad",
+      "bytes": 516,
+      "originalSource": "/tmp/moloch-joint-maker-fixture-862dedea-20261016/Cargo.toml.before-wrapper-chrono-features"
+    },
+    "scripts/initial-build.py": {
+      "sha256": "65275cc51f31ba30b6d1e26787d5e9875f2b0f58b97fac43d8959005462b2e66",
+      "bytes": 4750,
+      "originalSource": "/tmp/build_moloch_paper7_7f5caaa0_20261016.py"
+    },
+    "scripts/resume-build.py": {
+      "sha256": "ca9f69c839937dafc42dcac3ab7d345969bbd1fea9c80de4f32ec5215157bb76",
+      "bytes": 4274,
+      "originalSource": "/tmp/resume_moloch_paper7_7f5caaa0_20261016.py"
+    },
+    "scripts/resume-build-r1.py": {
+      "sha256": "ea156bfa6a5a8124e3a79d57e8ca69639d6021faeb62955bf0405f646e35f26e",
+      "bytes": 4167,
+      "originalSource": "/tmp/resume_moloch_paper7_7f5caaa0_20261016_r1.py"
+    },
+    "scripts/resume-build-r2.py": {
+      "sha256": "475c92bb96a6812a5532eb7eb7eec80852b0aa3527b160da08104452fe423b85",
+      "bytes": 4223,
+      "originalSource": "/tmp/resume_moloch_paper7_7f5caaa0_20261016_r2.py"
+    }
+  }
+}

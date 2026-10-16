@@ -1,0 +1,92 @@
+# Paper 7 execution components — checked source, not activated
+
+The integrated ARM64 candidate uses production source
+`7f5caaa090a2002c96bdcc6ccb25c2a75e737bc3`, corrected maker fixture `862dedea`,
+binary prefix `b35da250` and unchanged financial engine `b5b28a47`.
+At22:44:07UTC its optimized release and actual engine-identity probe pass.
+Actual585 tests pass across native90, runtime222, worker109, maker33,
+ordinary-distribution25, acquisition10 and fundamental96. One existing native
+benchmark remains explicitly ignored. [Original evidence](../research/moloch-paper7-execution-20261016/README.md).
+
+These components are **not in production20543435/binaryd9f5cbc6**. They default
+off, retain the original ordinary distribution, and grant no execution authority.
+The turnover deployment and its fresh-trading verification remain separate.
+
+## Joint ordinary maker qualification
+
+`makerPolicy.jointExecution` binds the actual observer's typed configuration
+digest, the actual maker review and native policy. It requires at least100
+completed observations in20 distinct time blocks, all zero/partial/full classes,
+complete usable values and capital accounting, no unresolved observations, and
+a finite positive whole-request score after the declared uncertainty, tail,
+write, capital-time and additional portfolio charges. Higher reviewed/config
+minimums still apply. The old per-fill score is source eligibility/diagnostic
+input rather than the joint qualification rule.
+
+Complete informative canceled zero/partial orders remain valid observations.
+Missing value or capital evidence is not a zero result; a missing observation
+in the retained matched pool withholds qualification. Zero fills do not incur
+invented owned capital, and non-full outcomes are not charged full principal a
+second time. Ranking uses the joint whole-request economics. The observation
+and configuration evidence is frozen and checked again at the physical boundary.
+
+Cold-start exploration retains the existing explicit20/order,100 total deployed,
+20 additional realized-loss bounds and original quote terms. It is labeled
+unqualified.100/20 coverage is a descriptive policy threshold, not calibrated
+probabilities or a guarantee of positive expected return.
+
+## Fundamental acquisition evidence
+
+`fundamentalAcquisition` is an independent optional collector. Original tagged
+intent, exact sliced physical request, durable attempt, official ACK/fill and
+verified complete terminal/tape determine acquisition outcomes. Native expiry,
+cancel ACK, missing reads and unknown submissions cannot manufacture a confirmed
+zero. Original timestamps and first-observed receipt identities are retained;
+repeated tapes cannot renew them.
+
+It measures fill timing, acquired fraction, reservation principal-time and
+observation-clock owned FIFO principal-time, explicitly excluding fees. It
+does **not** label terminal value, cash profit, a calibrated execution model or
+expected return. Ordinary passive samples are unchanged and remain separate.
+Restart opens an explicit new cohort; prior pending attempts are unscored and
+prior inventory is unattributed to new observations. Evidence/bounds failures
+disable the diagnostic collector rather than manufacturing observations.
+
+## Own-account realtime invalidation
+
+`accountRealtime:true` uses the existing socket/token with a second independent
+join acknowledgment for the official private user topic. It records original
+authenticated account broadcasts in a private bounded journal; tokens and join
+frames are excluded. Revisions use retained canonical-payload identity for
+duplicates. A changed same/lower revision or unverifiable old revision invalidates
+all account context before capture, preserves the frame and fails closed.
+
+New account messages change a shared generation at socket receipt, before private
+capture I/O or the worker's market queue. Prepared account facts must begin after
+the latest account mutation and retain the same stream identity/generation at
+the final network boundary. Known original owned liabilities get REST priority.
+Gap/reconnect and quiet periodic reconciliation remain covered. WS window totals,
+nullable fills, refunds, collateral changes and settlement messages never become
+financial journal entries or adoption authority.
+
+Only the typed generation-change condition before any original intent/attempt
+may defer a proposed action. STOP/control/durable failures and post-intent errors
+retain their original behavior. One socket, token, account queue and limiter
+remain; this adds no account allowance or competing collector.
+
+## Retained failures and remaining work
+
+The initial maker27-pass/5-fail invocation used a fixture digest of sorted JSON
+Value keys instead of original typed Config serialization. The corrected fixture
+uses the genuine getter/hash and passes33 against unchanged7f production libraries.
+Its initial wrapper also lacked chrono, then requested uncached default features;
+the final wrapper uses the exact original dependency. All failure logs remain.
+These are not silently relabeled successful original invocations.
+
+Paper7 remains unfinished. Production activation of these optional components,
+prospective sample/value coverage, a calibrated correlated election posterior,
+complete account/rank scenarios and any batch execution remain open. The existing
+historical dataset has no publication/availability clocks and horizon mismatch;
+it cannot establish an as-of production calibration. No empirical maker model,
+posterior, rank-risk policy, measured production latency gain or overall
+profitability is claimed by these585 correctness checks.
