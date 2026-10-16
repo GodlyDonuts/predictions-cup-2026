@@ -44,9 +44,9 @@ No independent authenticated client or credential access was used.
 |153,154|CONTROLS-2026-D / CONTROLS-2026-R|2026U.S.Senate control party rules|
 |303,304|GOVPARTYKS-27-D / GOVPARTYKS-27-R|Rules explicitly2026election; event subtitle says2027|
 |372,373|GOVPARTYNH-28-D / GOVPARTYNH-28-R|Rules and subtitle explicitly2026 despite28ticker suffix|
-|191|GOVPARTYRI-26-KBLO|KenBlock-specific, not all Independent-party winners; not poll-eligible|
-|276|SENATEMT-26-IND|SethBodnar-specific, not all Independent-party winners; not poll-eligible|
-|280|SENATENE-26-DOSB|DanOsborn-specific, not all Independent-party winners; not poll-eligible|
+|191|GOVPARTYRI-26-KBLO|KenBlock-specific, not all Independent-party winners; candidate analog only; no pricing authority|
+|276|SENATEMT-26-IND|SethBodnar-specific, not all Independent-party winners; candidate analog only; no pricing authority|
+|280|SENATENE-26-DOSB|DanOsborn-specific, not all Independent-party winners; candidate analog only; no pricing authority|
 
 `SENATE` and `KXSENATE` series/events/markets returned200empty; the actual
 returned series catalog identified `CONTROLS`, whose event response supplied
@@ -74,3 +74,21 @@ not certify special/regular equivalence. Full cross-venue settlement treatment
 independent affiliation and accelerated determination) remains unverified for
 every mapping. Candidate analogs are retained separately and never silently
 substitute for the generic Independent-party contracts.
+
+## Separate candidate-reference coverage
+
+`candidateAnalogMarkets` contains the three exact returned KenBlock, SethBodnar
+and DanOsborn market identities, each pinned to original receipt/body/metadata
+hashes and the original event's explicit `In 2026` field. The normal `markets`
+array remains234same-party primary discovery mappings. The three independent
+SIGmarkets remain in `unmappedSigMarketIds`; analog observation does not change
+that qualification. Each analog has `mappingKind:candidate_reference_analog`,
+`resolutionEquivalenceVerified:false`, `pricingAuthority:false` and an explicit
+narrower-candidate-rule caveat. A collector may collect these separately after
+checking the exact live metadata identity; they must not enter a same-party
+pricing/settlement pipeline.
+
+Summary separates234direct mapped SIGidentities,3analog-covered identities and
+237total identities with some reference. The combined237unique tickers require
+an ideal11.85seconds at20read starts/second, before overhead. Neither that
+arithmetic nor all237reference coverage establishes237equivalent contracts.

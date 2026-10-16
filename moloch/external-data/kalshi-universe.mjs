@@ -104,7 +104,18 @@ export function extendUniverse(base,supplement,readReceipt) {
     row.sigMappings.push(sigMapping);row.sigMarketIds=sorted([...row.sigMarketIds,mapping.sigMarketId]);seen.add(mapping.sigMarketId);
   }
   out.markets.sort((a,b)=>a.ticker.localeCompare(b.ticker));out.unmappedSigMarketIds=base.unmappedSigMarketIds.filter(id=>!seen.has(id));out.supplementCloseMatches=supplement.closeMatches??[];
-  out.summary={...out.summary,mappedSigMarkets:base.summary.mappedSigMarkets+seen.size,unmappedSigMarkets:out.unmappedSigMarketIds.length,uniqueTickers:out.markets.length,idealSweepSecondsAt20ReadsPerSecond:out.markets.length/20};return out;
+  if(!Array.isArray(out.supplementCloseMatches)||out.supplementCloseMatches.length>32)throw Error('UNIVERSE_ANALOG_BOUND');
+  out.candidateAnalogMarkets=[];const analogIds=new Set();
+  for(const a of out.supplementCloseMatches){
+    if(!out.unmappedSigMarketIds.includes(a.sigMarketId)||analogIds.has(a.sigMarketId)||!a.ruleMismatch||a.verifiedElectionYear!==2026||!/^research\/moloch-kalshi-mapping-20261016\/receipts\/[A-Za-z0-9_-]+\.receipt\.json\.gz$/.test(a.receiptPath)||!/^\/body\/events\/\d+\/markets\/\d+$/.test(a.marketPointer)||a.eventPointer!==a.marketPointer.replace(/\/markets\/\d+$/,''))throw Error('UNIVERSE_ANALOG_IDENTITY');
+    const {receipt,raw,compressed}=readReceipt(a.receiptPath);
+    if(sha(raw)!==a.receiptSha256||sha(compressed)!==a.compressedSha256||receipt.status!==200||sha(receipt.bodyText)!==receipt.bodySha256||receipt.bodySha256!==a.bodySha256||JSON.stringify(JSON.parse(receipt.bodyText))!==JSON.stringify(receipt.body))throw Error('UNIVERSE_ANALOG_SOURCE_HASH');
+    if(receipt.receivedAt!==a.receivedAt||receipt.requestStartedAt!==a.requestStartedAt||!Number.isFinite(Date.parse(receipt.receivedAt))||!Number.isFinite(Date.parse(receipt.requestStartedAt))||Date.parse(receipt.requestStartedAt)>Date.parse(receipt.receivedAt)||!receipt.path.startsWith('/trade-api/v2/events?'))throw Error('UNIVERSE_ANALOG_CLOCK');
+    const m=pointer(receipt,a.marketPointer),e=pointer(receipt,a.eventPointer);
+    if(!m||m.ticker!==a.ticker||m.event_ticker!==a.eventTicker||e?.event_ticker!==a.eventTicker||e.sub_title!=='In 2026'||m.rules_primary!==a.rulesPrimary||/\b2028\b/.test(m.rules_primary)||metadataIdentitySha256(m)!==a.metadataIdentitySha256||out.markets.some(v=>v.ticker===a.ticker))throw Error('UNIVERSE_ANALOG_METADATA');
+    out.candidateAnalogMarkets.push({ticker:a.ticker,eventTicker:a.eventTicker,sigMarketId:a.sigMarketId,sigMarketIds:[a.sigMarketId],candidateName:a.candidateName,verifiedElectionYear:2026,metadataIdentitySha256:a.metadataIdentitySha256,mappingKind:'candidate_reference_analog',resolutionEquivalenceVerified:false,pricingAuthority:false,conditional_resolution_unverified:true,ruleMismatch:a.ruleMismatch,rulesPrimary:m.rules_primary,referenceObservedAt:receipt.receivedAt,sourceEvidence:{receiptPath:a.receiptPath,receiptSha256:a.receiptSha256,marketPointer:a.marketPointer}});analogIds.add(a.sigMarketId);
+  }
+  out.summary={...out.summary,mappedSigMarkets:base.summary.mappedSigMarkets+seen.size,directMappedSigMarkets:base.summary.mappedSigMarkets+seen.size,analogCoveredSigMarkets:analogIds.size,totalReferenceCoveredSigMarkets:base.summary.mappedSigMarkets+seen.size+analogIds.size,unmappedSigMarkets:out.unmappedSigMarketIds.length,uniqueTickers:out.markets.length,uniqueCandidateAnalogTickers:new Set(out.candidateAnalogMarkets.map(a=>a.ticker)).size,idealSweepSecondsAt20ReadsPerSecond:out.markets.length/20,idealCombinedReferenceSweepSecondsAt20ReadsPerSecond:(new Set([...out.markets,...out.candidateAnalogMarkets].map(v=>v.ticker))).size/20};return out;
 }
 
 /** Load original repository gzip bytes, preserving their hashes and clocks. */

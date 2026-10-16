@@ -196,7 +196,18 @@
       "status": "candidate_specific_not_all_independent_party_winners",
       "pollEligible": false,
       "receiptPath": "research/moloch-kalshi-mapping-20261016/receipts/events-GOVPARTYRI.receipt.json.gz",
-      "receivedAt": "2026-10-16T09:28:39.777Z"
+      "receivedAt": "2026-10-16T09:28:39.777Z",
+      "eventTicker": "GOVPARTYRI-26",
+      "candidateName": "Ken Block",
+      "receiptSha256": "0f34945b10f4d3fa0389ad215b0da88005c1118181f959504999ee5ccb405ef7",
+      "compressedSha256": "74097852a10ad1f27ce24c3c88d8870831737a28a598ca3bad3fcad122759512",
+      "marketPointer": "/body/events/0/markets/2",
+      "eventPointer": "/body/events/0",
+      "requestStartedAt": "2026-10-16T09:28:39.718Z",
+      "bodySha256": "4644b1f8babd975f4668a4d52e24a7516848a5a36f27cdb52b988b680c954ab8",
+      "verifiedElectionYear": 2026,
+      "ruleMismatch": "Named candidate winning/seating is narrower than any Independent-party winner; replacement/other independent outcomes differ.",
+      "metadataIdentitySha256": "2694b33232f2d895ddbed83b91dce0e43c5ccabde5db998bee21f3229b94aa0e"
     },
     {
       "sigMarketId": "276",
@@ -205,7 +216,18 @@
       "status": "candidate_specific_not_all_independent_party_winners",
       "pollEligible": false,
       "receiptPath": "research/moloch-kalshi-mapping-20261016/receipts/events-SENATEMT.receipt.json.gz",
-      "receivedAt": "2026-10-16T09:28:40.321Z"
+      "receivedAt": "2026-10-16T09:28:40.321Z",
+      "eventTicker": "SENATEMT-26",
+      "candidateName": "Seth Bodnar",
+      "receiptSha256": "19e0df09548f9b0d440b7694f1c225bef6ae79ca491c53feae74136f8c53515c",
+      "compressedSha256": "ab824567e70e788f1c9ac62fc633335a59614a4c18fd48f096bf1c859238237a",
+      "marketPointer": "/body/events/0/markets/2",
+      "eventPointer": "/body/events/0",
+      "requestStartedAt": "2026-10-16T09:28:40.267Z",
+      "bodySha256": "1dac7872bcdf9b6c7d7eaa03d021af3f3bbde3cf8e4105db10ce4ea76fae1f1d",
+      "verifiedElectionYear": 2026,
+      "ruleMismatch": "Named candidate winning/seating is narrower than any Independent-party winner; replacement/other independent outcomes differ.",
+      "metadataIdentitySha256": "566bbefc25be3e4cfe65398d092dc6c8efee67795bffce89d60bb208e4c71560"
     },
     {
       "sigMarketId": "280",
@@ -214,7 +236,18 @@
       "status": "candidate_specific_not_all_independent_party_winners",
       "pollEligible": false,
       "receiptPath": "research/moloch-kalshi-mapping-20261016/receipts/events-SENATENE.receipt.json.gz",
-      "receivedAt": "2026-10-16T09:28:41.597Z"
+      "receivedAt": "2026-10-16T09:28:41.597Z",
+      "eventTicker": "SENATENE-26",
+      "candidateName": "Dan Osborn",
+      "receiptSha256": "c77e59821a154e74811003e5294815b69ec4ffd9e6cf6d51e8fb4ae7c6ca02ca",
+      "compressedSha256": "2afed14bb5a47e96a95e0849a3a1dac259d183adc840119fa884d9a576c45370",
+      "marketPointer": "/body/events/0/markets/2",
+      "eventPointer": "/body/events/0",
+      "requestStartedAt": "2026-10-16T09:28:41.528Z",
+      "bodySha256": "54244623b483a8c6c34abfb06fbf497504a1b470eea7dc8be49856ee7ccfd210",
+      "verifiedElectionYear": 2026,
+      "ruleMismatch": "Named candidate winning/seating is narrower than any Independent-party winner; replacement/other independent outcomes differ.",
+      "metadataIdentitySha256": "1de78b4f66beae2c117aafcb1b9ed05e53d55d91aa7336d7a346b20bc961e97c"
     }
   ]
 }
