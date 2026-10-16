@@ -32,7 +32,9 @@ There is no separate ordinary-side-edge test file: its15 tests are inline, with 
 
 All six hashes independently match the named Git commit's LF bytes locally. This verifies the source pin, not remote builder fidelity or build success. Root independently checked the full native input map unchanged; stage must still check all actual builder bytes.
 
-## Actual tests, subsets and pending release
+## Actual tests, subsets and original release prerequisite
+
+Update 14:35 UTC: root subsequently verified the optimized release completed at 14:27:04 UTC and staged the candidate. [Actual build evidence](build-evidence.json) binds source, all 278 checks, logs and executable. Pending-release statements below preserve the original review freeze; they are not the current build status. Production has not yet switched to this candidate.
 
 Root's locked/offline command `test --lib --bin moloch-live-runtime --test stream_token_retry --test stream_connect_retry` exited0 in128.724seconds. Original log `/tmp/moloch-side-edge-20261016-r1/runtime-tests.log` SHA256 is `d2cf119731c7703dd6af56718229db866dd2bc108e97ea36b56e3a20e4f01336`. Its four groups in order are:
 

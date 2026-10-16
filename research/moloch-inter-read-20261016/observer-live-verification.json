@@ -1,0 +1,37 @@
+{
+  "checkedAt": "2026-10-16T14:07:25.723647+00:00",
+  "pid": 510713,
+  "sigPid": 510591,
+  "sourceSha256": "674264745ced43b053881ad7408a5031a6e389c8652ff950b23bca0e1448b34d",
+  "status": {
+    "at": "2026-10-16T14:07:22.730Z",
+    "captureSegment": 0,
+    "counters": {
+      "externalDuplicates": 36657,
+      "externalInvalidOrOneSided": 519,
+      "externalPolls": 210,
+      "externalSourceChanges": 2356,
+      "externalStaleOrFuture": 7209,
+      "externalWsWithdrawn": 14,
+      "labels": 2329,
+      "labelsMissingTimelyBook": 4462,
+      "noCurrentExternal": 19,
+      "samples": 1994,
+      "sigBooks": 5688
+    },
+    "executionAuthority": false,
+    "format": "breadth",
+    "historyPrefixVerified": false,
+    "journalPosition": 37248598,
+    "journalSequence": 262,
+    "observedMarkets": 232,
+    "originalJournalHash": "700b7c8e57437d8fa04d1a8f417f0f343ae10547a83bd53a03623842b9033a98",
+    "pendingSamples": 1790,
+    "pid": 510713,
+    "readOnly": true,
+    "state": "observing"
+  },
+  "originalDatasetsPreserved": true,
+  "accountRequests": 0,
+  "executionAuthority": false
+}

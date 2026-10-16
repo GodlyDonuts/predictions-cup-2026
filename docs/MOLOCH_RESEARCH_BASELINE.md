@@ -1,4 +1,18 @@
-# Current research baseline: October16,14:04UTC
+# Current research baseline: October 16, 14:35 UTC
+
+Sole current PID510591/source4ee16356 is fresh trading:40 new ACKs/eight new
+fill rows at14:33:40 UTC; realized−106.485000. Candidate870ce889/d2ad93b5 is
+built and staged after278 distinct ARM64 checks, with explicit ordinary-side
+enforcement for unhedged BUYs plus bounded typed token-HTTP recovery. It is
+not yet active. Exact native engine, original bank/twelve bridges, funding,
+limits and daily windows remain. [Build, intended activation and qualification](../research/moloch-ordinary-side-edge-20261016/README.md).
+
+The measured original realtime processing delay is now median2.960s/p9012.304s,
+versus12.524s/24.467s before, in different naturally occurring windows. CPU
+usage did not improve in the bounded sample; no equivalent-workload causal
+cycle gain or profitability follows. [Original live audit](../research/moloch-inter-read-20261016/README.md).
+
+# Historical research baseline: October16,14:04UTC
 
 Sole510591/source4ee16356/binary011ffde0 verified fresh14:03:28 with healthy
 realtime/no STOP and one new official ACK; five ACKs/zero new fill rows by

@@ -1,0 +1,52 @@
+{
+  "at": "2026-10-16T14:29:13.471578+00:00",
+  "sourceCommit": "870ce889d51a04c654a93785277c47ea33b52bea",
+  "sourceManifestSha256": "ed95fa74a9d8a7c798b8e66d1f06d87da9cc935dd079e6f75432aa3fbebef0ca",
+  "checks": {
+    "runtimeLibrary": {
+      "passed": 175,
+      "failed": 0,
+      "ignored": 0,
+      "filteredOut": 0
+    },
+    "runtimeWorker": {
+      "passed": 85,
+      "failed": 0,
+      "ignored": 0,
+      "filteredOut": 0
+    },
+    "streamConnectRetry": {
+      "passed": 12,
+      "failed": 0,
+      "ignored": 0,
+      "filteredOut": 0
+    },
+    "streamTokenRetry": {
+      "passed": 6,
+      "failed": 0,
+      "ignored": 0,
+      "filteredOut": 0
+    },
+    "distinctPassed": 278,
+    "subsets": {
+      "ordinarySideEdgeLibrary": 15,
+      "prizeUtility": 13,
+      "ordinarySideEdgeWorker": 4
+    },
+    "release": {
+      "passed": true,
+      "exitCode": 0
+    }
+  },
+  "binarySha256": "d2ad93b50af64122b626bb197ce79bcfcbdf6f22d8ec0e738b11ebf9b6f6a023",
+  "engineIdentity": "8acc461bc02fb9236100058fe464b203d5da005375632af05c176223c7246754",
+  "testLogSha256": "d2cf119731c7703dd6af56718229db866dd2bc108e97ea36b56e3a20e4f01336",
+  "releaseLogSha256": "34c1e990cba145534ac10004c3da9a3d9210f84cf8e310d21aa0e6981ed5b9b0",
+  "originalValidationReportSha256": "a7bc2c1faace9a1de115f388163df35f3e30eb9930b04f53f1249f97dbd6fc57",
+  "sourceFileCount": 248,
+  "nativeSourcesByteIdentical": true,
+  "productionChanged": false,
+  "releaseBuilt": true,
+  "binaryBytes": 12936488,
+  "elapsedMs": 427308
+}

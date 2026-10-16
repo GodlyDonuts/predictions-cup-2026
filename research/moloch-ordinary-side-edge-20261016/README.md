@@ -1,5 +1,11 @@
 # Ordinary paired-spread side criterion
 
+## Checked release and staged selection, 14:35 UTC
+
+Root ran the actual locked/offline ARM64 suite: **278 distinct checks passed** (175 library, 85 worker, 12 stream-connect retry, six token-HTTP retry). The 15 side-edge library checks, four side-edge worker checks and 13 prize-library checks are subsets, not additional checks. The optimized release completed at 14:27:04 UTC. Source `870ce889d51a04c654a93785277c47ea33b52bea`, 248 input hashes and unchanged native engine `8acc461b…` bind executable `d2ad93b50af64122b626bb197ce79bcfcbdf6f22d8ec0e738b11ebf9b6f6a023`. [Actual source/log/build evidence](build-evidence.json).
+
+The execution owner staged explicit **enforce** mode, applying the existing minimum side criterion to independent ordinary BUYs. At 14:33:40 UTC prior PID 510591 remained the sole fresh trading worker: 40 new ACKs, eight new fill rows, attributed realized −106.485000. The staged candidate is not yet active. Promotion changes only the binary binding and this mode, preserving the same engine, bank, twelve bridges, funding, daily windows and other controls. This is a prospective selection experiment; a depth-weighted microprice is not calibrated expected profit. The source-task authorship and pending-build statements below describe the earlier handoff, before root's checks.
+
 Task [155](https://github.com/GodlyDonuts/predictions-cup-2026/issues/155). This runtime selection hypothesis is not a calibrated forecast or demonstrated positive EV. The native financial policy, order prices/quantities, source clocks, sixty-second execution-age rule and physical-account authority remain unchanged.
 
 The native `pairedSpread` planner checks the combined YES/NO discount but ordinarily submits its legs separately. Its existing per-side microprice edge criterion applies to `microprice` mode and inside-price improvement, rather than every zero-inside-tick paired-spread leg. A passive one-sided fill can therefore have little contemporaneous depth-weighted side edge even when the combined discount is positive.
