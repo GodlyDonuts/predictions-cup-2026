@@ -40,5 +40,12 @@ impl F{
   let report=f.b().engine().report().unwrap();let head=f.b().durable_head();assert!(f.put(&e).is_err(),"{case}");assert_eq!(f.b().engine().report().unwrap(),report,"{case}");assert_eq!(f.b().durable_head(),head,"{case}");
  }
 }
-#[test]fn capacity_uses_current_daily_cutoff_not_original_manifest_policy(){let mut f=F::new(false);let mut policy=f.b().engine().policy().clone();policy["entryStopAt"]=json!(iso(7200000));let mut e=f.event(0);e["expectedPolicySha256"]=json!(hash(&policy));assert!(f.put(&e).is_err());let e=f.event(0);f.put(&e).unwrap();assert_eq!(f.b().engine().policy()["entryStopAt"],f.policy["entryStopAt"]);}
+#[test]fn capacity_uses_current_daily_cutoff_not_original_manifest_policy(){
+ let mut f=F::new(false);let day=86_400_000;let at=3_600_000;let end=at+day;
+ let mandate=json!({"authorizationId":"capacity-test-original-daily-window","approvedAt":iso(0),"anchorMs":BASE+at,"campaignEndMs":BASE+at+2*day,"intervalMs":day,"maximumCommitted":"40000.000000","maximumMarketCost":"10000.000000","maximumQuantity":10000});
+ f.put(&json!({"type":"live_entry_window","source":"moloch_live_dispatcher","receivedAt":iso(at),"processedAt":iso(at),"previousEntryStopAt":iso(at),"entryStopAt":iso(end),"mandate":mandate})).unwrap();
+ let current=f.b().engine().policy().clone();assert_ne!(current["entryStopAt"],f.policy["entryStopAt"]);
+ let mut stale=f.event(at);stale["expectedPolicySha256"]=json!(hash(&f.policy));assert!(f.put(&stale).is_err());
+ let e=f.event(at);f.put(&e).unwrap();let mut expected=current;expected["maximumMarkets"]=json!(12);assert_eq!(f.b().engine().policy(),&expected);assert_eq!(f.b().engine().policy()["entryStopAt"],iso(end));
+}
 #[test]fn paper_and_standalone_seed_cannot_inherit_unproved_capacity(){let mut f=F::new(false);let e=f.event(0);let mut paper=Engine::new(&f.policy).unwrap();let before=paper.report().unwrap();assert!(paper.advance(&e).is_err());assert_eq!(paper.report().unwrap(),before);f.put(&e).unwrap();assert!(matches!(Engine::from_seed_state(&f.b().engine().report().unwrap()),Err("SEED_LIVE_MARKET_CAPACITY_REQUIRE_REPLAY")));}
