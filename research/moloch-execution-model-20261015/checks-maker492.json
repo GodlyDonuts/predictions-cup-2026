@@ -1,0 +1,26 @@
+{
+  "at": "2026-10-16T00:24:16.257024+00:00",
+  "sourceCommit": "616f2fc45e3540bd2f6be6e5055b0268703aad10",
+  "runtimeChecks": 492,
+  "runtimeSuites": 33,
+  "lockedOfflineArm64Release": true,
+  "binarySha256": "1b02e344178b5835789acf7167a4cee8ac025f1a140b9ee28f02f7c0018c02cb",
+  "release": "/home/archon/apps/moloch/releases/maker-1b02e344178b/bin/moloch-live-runtime",
+  "sourceSha256": {
+    "moloch/live-runtime/src/lib.rs": "e0a8353037598f6c465aca578f95dee8dc57c0cae0c8760b4f2033b793dd2cf2",
+    "moloch/live-runtime/src/maker_policy.rs": "e8ad08e740323895d585c278b9a455efdc1589a04b0c668265fdd3e2a726faaf",
+    "moloch/live-runtime/src/worker.rs": "bbcf85a3cef3d6f94ba99a7cf1f6f78898a3d073a0cb9e8b6fc0eb948913df1c",
+    "moloch/live-runtime/src/authority.rs": "90f19fd32b7dc530e7fc69413b161243f002c8b2acb85dfb91d4f3712003dfe6",
+    "moloch/live-runtime/tests/maker_policy.rs": "c37f2de59d24085c33e9498bc350522f2e88ce813412eab1025fe04c9d107c18"
+  },
+  "logs": {
+    "moloch-maker-integration-full-tests.log": "82cf08fb39d0daac89646b797b43abaede279a228d9f2d252f7adb99f1d1cd6e",
+    "moloch-maker-integration-release.log": "1543557acc7ce8917b6bb706ce7e7840f0ba4f7cc7a47470921ff6fbccb059bf"
+  },
+  "makerPolicyActivated": false,
+  "qualifiedGainRankingIncluded": false,
+  "prospectiveAttemptAnchorsIncluded": false,
+  "productionPid": 313333,
+  "productionUnchanged": true,
+  "profitabilityEstablished": false
+}
