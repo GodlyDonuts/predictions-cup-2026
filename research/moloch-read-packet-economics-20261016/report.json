@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "sourceCommit": "ed050666",
+  "study": "finite retained reads and source-only request arithmetic",
+  "originalInputs": [
+    {
+      "name": "final-decision-trace-latest.json",
+      "bytes": 1522,
+      "sha256": "7c7b30baa7b93712e15c7fab5c76e989db7d7f3c417a1ee0e11653f187c99cad"
+    },
+    {
+      "name": "second-decision-trace-latest.json",
+      "bytes": 1522,
+      "sha256": "11c8c177d96a7e7d652df962bd02b41f4bccffa90d9eba72893e7a1e0fd9b84a"
+    },
+    {
+      "name": "second-discovery-schedule.json",
+      "bytes": 744,
+      "sha256": "28ceea6900b03b6ba3824bab70b2d5ab8e05a88a0094a635cd7599c598eca875"
+    },
+    {
+      "name": "final-progress.json",
+      "bytes": 265,
+      "sha256": "8bd08bd3363725faa6877528a26ada3efa5698f1a3e5fde902668ac0137d943b"
+    },
+    {
+      "name": "second-preflight.json",
+      "bytes": 101376,
+      "sha256": "850efede608e8ca706c979f5a3712f459f13893be75420ccf9ac41f9568c6331"
+    },
+    {
+      "name": "final-dispatch.ndjson",
+      "bytes": 6763718,
+      "sha256": "b279669b0a2aa609322682d3aa20e72fe7afe8d12396bf381004cd68cc3c3ea6"
+    },
+    {
+      "name": "bank-events.suffix.jsonl",
+      "bytes": 33554432,
+      "sha256": "86f1c16f09212476ad458023145760a3f4cf7332ac2b2b9bcac6bfdb2ca2a83a"
+    }
+  ],
+  "measuredQuote": {
+    "qid": 8178,
+    "createdAtMs": 1792171923612,
+    "firstReadAtMs": 1792172038398,
+    "ackAtMs": 1792172046060,
+    "createdToFirstReadMs": 114786,
+    "firstReadToAckMs": 7662,
+    "bookReceiptToAckMs": 1465,
+    "recordedSpansAreEndpointUnlabelled": true
+  },
+  "readOperations": {
+    "perSourceScopeMinimum": 2,
+    "perOrdinaryPreflightMinimum": 7,
+    "perCancelPreflightMinimum": 4,
+    "reconciliationPendingNAboveOneMinimum": "1+N; 1+2N if all exact fallback; pages/retries additional"
+  },
+  "hypothetical35SourceScopes35Preflights": {
+    "baselineMinimum": 315,
+    "reuse35EligibleSourceBooksMinimum": 280,
+    "rolling60SteadyStateSecondsEquivalent": 315,
+    "rolling100SteadyStateSecondsEquivalent": 189,
+    "notMeasuredLatencyPrediction": true
+  },
+  "writeFreeBurstSavings": {
+    "baseline": "7*K",
+    "fourGlobalShared": "4+3*K",
+    "maximumSaved": "4*(K-1)",
+    "subjectToOriginal20sTTL": true
+  },
+  "limits": {
+    "sourceReadCap": 100,
+    "sourceReadCompletionGapMs": 600,
+    "requestedComparisonReadCap": 60,
+    "contestWritesPerMinute": 24,
+    "contestCompletionGapMs": 2500,
+    "actualQueueProfileNotCaptured": true
+  },
+  "executionAuthority": false,
+  "accountRequests": 0,
+  "runtimeChanged": false,
+  "totalCycleEndpointCensusAvailable": false
+}
