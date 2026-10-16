@@ -137,6 +137,19 @@ impl Runtime{
  }
  pub fn source_sha256(&self)->&str{self.surface.source_sha256()}
  pub fn original_source_hashes(&self)->&BTreeSet<String>{&self.source_hashes}
+ /// Read targets only, from already approved cached execution sources. This
+ /// cheap gate precedes optional HTTP; no current book or permit is invented.
+ /// The opportunity lane deliberately bounds a whole cohort to three roots.
+ pub fn execution_read_targets(&self,bank:&Session,scope:&Scope,dispatch:&DispatchLog,now:u64)->Result<Vec<(String,String)>>{
+  let cfg=self.execution.as_ref().ok_or("P5_EXECUTION_NOT_CONFIGURED")?;
+  need(!self.surface.is_research(),"P5_EXECUTION_RESEARCH_MODEL")?;
+  need(now>=self.surface.observed_at_ms()&&now<self.surface.valid_until_ms()&&now<cfg.input.valid_until_ms,"P5_EXECUTION_ORIGINAL_MODEL_CLOCK")?;cfg.semantics.validate_time(now)?;
+  need(scope.exchanges.len()<=1024&&dispatch.intents.len()<=self.settings.maximum_dispatch_records&&dispatch.attempted.len()<=self.settings.maximum_dispatch_records&&bank.durable_head()["sequence"].as_u64().is_some_and(|n|n<=self.settings.maximum_bank_sequence),"P5_EXECUTION_WORK_BOUND")?;
+  dispatch.require_resolved_attempts()?;
+  need(bank.live_account_seed().is_some_and(|s|s["runId"]==cfg.input.run_id)&&bank.manifest_hash().as_str()==Some(cfg.input.bank_manifest_sha256.as_str())&&scope.tournament_id==cfg.semantics.tournament_id()&&scope.tournament_slug==cfg.semantics.tournament_slug(),"P5_EXECUTION_SCOPE")?;
+  need((1..=3).contains(&cfg.semantics.contracts().len()),"P5_EXECUTION_TARGET_BOUND")?;
+  cfg.semantics.contracts().iter().map(|c|{need(scope.exchanges.get(&c.exchange_id)==Some(&c.market_id),"P5_EXECUTION_SCOPE")?;let r=self.reviews.iter().find(|r|r.exchange_id()==c.exchange_id&&r.market_id()==c.market_id).ok_or("P5_EXECUTION_SEMANTIC_SET")?;need(r.is_current(now),"P5_EXECUTION_REVIEW_EXPIRED")?;Ok((c.exchange_id.clone(),c.market_id.clone()))}).collect()
+ }
  /// Original official current-node receipts come from the EXISTING worker's
  /// preflight/cache. Missing/stale records do not trigger any extra API reads.
  /// This must run BEFORE reservation/attempt/preflight permit-critical work.
