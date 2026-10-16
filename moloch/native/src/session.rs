@@ -109,6 +109,7 @@ pub fn engine_identity() -> String {
         include_bytes!("ordinary_entry_exclusions.rs").as_slice(),
         include_bytes!("live_market_capacity.rs").as_slice(),
         include_bytes!("engine_capital.rs").as_slice(),
+        include_bytes!("semantic_floor.rs").as_slice(),
         include_bytes!("engine_packages.rs").as_slice(),
         include_bytes!("probabilistic_packages.rs").as_slice(),
         include_bytes!("engine_collateral.rs").as_slice(),

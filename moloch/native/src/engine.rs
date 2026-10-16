@@ -481,7 +481,7 @@ pub struct Engine {
 }
 impl Engine {
     pub fn from_seed_state(state: &Value) -> Result<Self> {
-        if state.get("ownerCapitalAllocation").is_some(){return Err("SEED_OWNER_CAPITAL_REQUIRE_REPLAY")}
+        if state.get("ownerCapitalAllocation").is_some()||state.get("ownerMandateRevision").is_some(){return Err("SEED_OWNER_CAPITAL_REQUIRE_REPLAY")}
         if state.get("liveMarketCapacity").is_some(){return Err("SEED_LIVE_MARKET_CAPACITY_REQUIRE_REPLAY")}
         if state.get("ordinaryEntryExclusions").is_some(){return Err("SEED_ORDINARY_ENTRY_EXCLUSIONS_REQUIRE_REPLAY")}
         if state.get("reviewedInventoryExitReservations").is_some(){return Err("SEED_REVIEWED_EXIT_REQUIRE_REPLAY")}

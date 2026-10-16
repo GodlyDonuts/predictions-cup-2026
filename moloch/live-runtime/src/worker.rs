@@ -1387,7 +1387,7 @@ fn recover_stream(t:&mut Transport,c:&Control,bank:&mut Session,log:&DispatchLog
 }
 pub fn main()->Result<()>{
  let args:Vec<_>=std::env::args().collect();if args.len()!=3||!["preflight","run","recover-unadmitted"].contains(&args[1].as_str()){return Err("usage: moloch-live-runtime preflight|run|recover-unadmitted /absolute/control.json".into())}
- let path=PathBuf::from(&args[2]);if !path.is_absolute(){return Err("LIVE_CONTROL_ABSOLUTE".into())}let c:Control=serde_json::from_value(load(&path)?)?;
+ let path=PathBuf::from(&args[2]);if !path.is_absolute(){return Err("LIVE_CONTROL_ABSOLUTE".into())}let original_control_bytes=fs::read(&path)?;let c:Control=serde_json::from_slice(&original_control_bytes)?;
  validate_collateral_accounting(&c)?;
  validate_maker_configuration(&c)?;
  let fundamental_loaded=c.fundamental_policy.as_ref().map(fundamental::Settings::load).transpose()?;
@@ -1422,7 +1422,9 @@ pub fn main()->Result<()>{
    let event=moloch_live_runtime::inventory::adoption(&p,bank.engine(),&c.scope.tournament_id,&c.scope.tournament_slug,&c.scope.exchanges,&iso(now()))?;
    accept(&mut bank,&event)?;atomic_json(&c.root.join("inherited-position-transfer.json"),&json!({"positionsReceipt":p,"event":event,"report":bank.engine().report()?,"sourceBankPreserved":true}))?;
   }
+  if fs::read(&path)?!=original_control_bytes{return Err("LIVE_CONTROL_CHANGED_DURING_STARTUP".into())}
   let authority=Arc::new(ProductionAuthority::new(c.activation.clone(),c.scope.clone(),vec![stop.clone(),global_stop.clone()],path.clone(),std::env::current_exe()?,lease.clone())?);
+  if fs::read(&path)?!=original_control_bytes{return Err("LIVE_CONTROL_CHANGED_DURING_STARTUP".into())}
   let maker_review=c.maker_policy.as_ref().map(|settings|moloch_live_runtime::maker_policy::Reviewed::load(settings.clone(),&bank)).transpose()?;
   if let Some(review)=&maker_review{review.validate_model(c.execution_model.as_ref().ok_or("LIVE_MAKER_MODEL_REQUIRED")?)?;authority.require_maker_review(review.sha256())?;}
   let mut log=DispatchLog::open(&c.root.join("dispatch.ndjson"))?;reverify_aborted_records(&c,&mut log)?;log.require_resolved_attempts()?;
