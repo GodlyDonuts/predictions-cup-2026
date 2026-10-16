@@ -57,6 +57,16 @@ pub struct SourceBytes<'a>{pub sha256:&'a str,pub bytes:&'a [u8]}
 #[derive(Clone,Debug,Serialize,Deserialize,PartialEq,Eq)]
 #[serde(rename_all="camelCase",deny_unknown_fields)]
 pub struct ExistingApproval{pub adoption_receipt_sha256:String,pub adopted_position_sha256:String}
+#[derive(Clone,Copy,Debug,Serialize,Deserialize,PartialEq,Eq)]
+#[serde(rename_all="camelCase")]
+pub enum ExecutionMode{JoinBid,ImproveOneTick,BoundedLimitMayRest}
+impl ExecutionMode{
+    fn alpha(self)->crate::alpha_proposal::Mode{match self{Self::JoinBid=>crate::alpha_proposal::Mode::JoinBid,Self::ImproveOneTick=>crate::alpha_proposal::Mode::ImproveOneTick,Self::BoundedLimitMayRest=>crate::alpha_proposal::Mode::BoundedLimitMayRest}}
+    fn wire(self)->&'static str{match self{Self::JoinBid=>"joinBid",Self::ImproveOneTick=>"improveOneTick",Self::BoundedLimitMayRest=>"boundedLimitMayRest"}}
+}
+#[derive(Clone,Debug,Serialize,Deserialize)]
+#[serde(rename_all="camelCase",deny_unknown_fields)]
+pub struct ExecutionPolicy{pub version:u32,pub allowed_modes:Vec<ExecutionMode>}
 #[derive(Clone,Debug,Serialize,Deserialize)]
 #[serde(rename_all="camelCase",deny_unknown_fields)]
 pub struct ReviewInput {
@@ -68,6 +78,10 @@ pub struct ReviewInput {
     pub official_contract_root_sha256:String,
     #[serde(default,skip_serializing_if="Option::is_none")]
     pub existing_origin:Option<ExistingApproval>,
+    /// Separately operator-approved execution choices. Omission preserves the
+    /// exact historical canonical review bytes/hash and join-only behavior.
+    #[serde(default,skip_serializing_if="Option::is_none")]
+    pub execution_policy:Option<ExecutionPolicy>,
     /// Conditional probability of ordinary $1 payout, explicitly a model assumption.
     pub ordinary_probability:String, pub exceptional_probability_allowance:String,
     pub minimum_exceptional_payout:String, pub margin_per_share:String,
@@ -79,6 +93,9 @@ pub struct ReviewInput {
 }
 pub fn review_sha256(input:&ReviewInput)->Result<String>{digest(input)}
 fn structure(r:&ReviewInput)->Result<i128>{
+    if let Some(p)=&r.execution_policy{need(p.version==1&&!p.allowed_modes.is_empty()&&p.allowed_modes.len()<=3,"FUNDAMENTAL_EXECUTION_POLICY")?;
+        for(i,m)in p.allowed_modes.iter().enumerate(){need(!p.allowed_modes[..i].contains(m),"FUNDAMENTAL_DUPLICATE_EXECUTION_MODE")?;}}
+
     if let Some(a)=&r.existing_origin{need(hex(&a.adoption_receipt_sha256)&&hex(&a.adopted_position_sha256),"FUNDAMENTAL_EXISTING_APPROVAL")?;}
     need(r.version==1&&atom(&r.reviewer_id)&&atom(&r.run_id)&&hex(&r.bank_manifest_sha256)
         &&atom(&r.tournament_id)&&atom(&r.market_id)&&atom(&r.exchange_id)&&atom(&r.contract_id)&&hex(&r.official_contract_root_sha256)
@@ -102,6 +119,23 @@ fn structure(r:&ReviewInput)->Result<i128>{
     need(["forecast","official_ballot","official_contract_node"].iter().all(|k|kinds.contains(k)),"FUNDAMENTAL_REQUIRED_SOURCE")?;
     // Floor once, after combining numerators: do not round a risky payout up.
     Ok(add(mul(UNIT-e,p)?,mul(e,exceptional)?)?/UNIT-margin)
+}
+fn execution_model_sha(r:&ReviewInput)->Result<String>{
+    digest(&json!({"model":"operator_conditional_binary_mixture_v1","ordinaryProbability":r.ordinary_probability,"exceptionalProbabilityAllowance":r.exceptional_probability_allowance,"minimumExceptionalPayout":r.minimum_exceptional_payout,"marginPerShare":r.margin_per_share,"assumptionLabel":r.assumption_label,"payoutMappingIsOperatorAssumption":r.payout_mapping_is_operator_assumption,"horizonBasis":"remaining_operator_holding_deadline_not_cash_release"}))
+}
+fn execution_ceiling(r:&ReviewInput)->Result<i128>{Ok(structure(r)?.min(UNIT-5000)/5000*5000)}
+fn execution_for_quote(r:&ReviewInput,q:&Value)->Result<ExecutionMode>{
+    let metadata=&q["reviewedFundamentalEntry"];
+    if r.execution_policy.is_none()&&metadata.is_null(){return Ok(ExecutionMode::JoinBid)}
+    need(metadata.is_object()&&metadata["reviewSha256"]==digest(r)?,"FUNDAMENTAL_EXECUTION_REVIEW_BINDING")?;
+    let mode=match metadata.get("executionMode").and_then(Value::as_str){None|Some("joinBid")=>ExecutionMode::JoinBid,Some("improveOneTick")=>ExecutionMode::ImproveOneTick,Some("boundedLimitMayRest")=>ExecutionMode::BoundedLimitMayRest,_=>return Err("FUNDAMENTAL_EXECUTION_MODE".into())};
+    need(r.execution_policy.as_ref().map_or(mode==ExecutionMode::JoinBid,|p|p.allowed_modes.contains(&mode)),"FUNDAMENTAL_EXECUTION_MODE_NOT_APPROVED")?;
+    if mode!=ExecutionMode::JoinBid{
+        need(q["action"]=="buy"&&q["side"]==r.side&&metadata["modelSha256"]==execution_model_sha(r)?&&metadata["sourceSha256"]==digest(&r.sources)?
+            &&metadata["acquisitionCeiling"]==money(execution_ceiling(r)?)&&metadata["reservedQuantity"]==q["quantity"]
+            &&metadata["actionSpec"]==json!({"marketId":r.market_id,"exchangeId":r.exchange_id,"tournamentId":r.tournament_id,"side":r.side,"action":"buy","quantity":q["quantity"],"limitPrice":q["price"]})
+            &&amount(q["price"].as_str().ok_or("FUNDAMENTAL_EXECUTION_PRICE")?)?<=execution_ceiling(r)?,"FUNDAMENTAL_EXECUTION_PROVENANCE")?;
+    }Ok(mode)
 }
 fn current(r:&ReviewInput,now:u64)->bool{
     now>=r.reviewed_at_ms&&now<r.expires_at_ms&&r.sources.iter().all(|s|
@@ -426,7 +460,7 @@ impl LoadedSettings{
 /// attempt nor retry authority. No public constructor, Clone or Deserialize.
 /// ProductionAuthority must call BOTH methods on its own frozen prepared data.
 pub struct PhysicalDecision{
-    qid:u64,planned_quantity:u64,native_head:Value,quote_sha:String,ledger_sha:String,scope_sha:String,
+    marketable_reviewed_buy:bool,qid:u64,planned_quantity:u64,native_head:Value,quote_sha:String,ledger_sha:String,scope_sha:String,
     spec_sha:String,permit_sha:String,review_sha:String,trust_sha:String,
     contract_market:String,contract_id:String,contract_tournament:String,contract_root_sha:String,
     minted:u64,expires:u64,sidecar:FilePin,marker:FilePin,sidecar_sequence:u64,sidecar_tail:String,
@@ -434,6 +468,9 @@ pub struct PhysicalDecision{
     _owner:Arc<ExclusiveLock>,
 }
 impl PhysicalDecision{
+    /// True only for an opaque token minted from the exact approved native
+    /// bounded action. The caller MUST validate_frozen and authorize first.
+    pub fn allows_marketable_reviewed_buy(&self)->bool{self.marketable_reviewed_buy}
     pub fn native_head(&self)->&Value{&self.native_head}
     pub fn planned_quantity(&self)->u64{self.planned_quantity}
     pub fn expires_at_ms(&self)->u64{self.expires}
@@ -618,7 +655,7 @@ impl Cohorts{
         let mut until=r.expires_at_ms.min(r.hold_until_ms);for source in &r.sources{until=until.min(source.observed_at_ms.checked_add(source.maximum_age_ms).ok_or("FUNDAMENTAL_SOURCE_CLOCK_RANGE")?);}
         if let Some(stop)=bank.engine().policy()["entryStopAt"].as_str().map(daily_windows::clock).transpose()?{until=until.min(stop);}
         if until<=now{return Ok(None)}
-        let model_sha=digest(&json!({"model":"operator_conditional_binary_mixture_v1","ordinaryProbability":r.ordinary_probability,"exceptionalProbabilityAllowance":r.exceptional_probability_allowance,"minimumExceptionalPayout":r.minimum_exceptional_payout,"marginPerShare":r.margin_per_share,"assumptionLabel":r.assumption_label,"payoutMappingIsOperatorAssumption":r.payout_mapping_is_operator_assumption,"horizonBasis":"remaining_operator_holding_deadline_not_cash_release"}))?;
+        let model_sha=execution_model_sha(r)?;
         let bounds=crate::alpha_proposal::ReviewBounds{exchange_id:r.exchange_id.clone(),market_id:r.market_id.clone(),side:if r.side=="YES"{Side::Yes}else{Side::No},review_sha256:review_sha,
             model_sha256:model_sha,source_sha256:digest(&r.sources)?,reviewed_at_ms:r.reviewed_at_ms,valid_until_ms:until,horizon_ms:r.hold_until_ms.checked_sub(now).ok_or("FUNDAMENTAL_COMPARISON_HORIZON")?,
             expected_payout:add(structure(r)?,amount(&r.margin_per_share)?)?,acquisition_ceiling:ceiling,maximum_principal:amount(&r.maximum_principal)?,maximum_quantity:r.maximum_quantity,
@@ -665,14 +702,22 @@ impl Cohorts{
         let Some(bid)=bids.first()else{return Ok(None)};let Some(ask)=asks.first()else{return Ok(None)};
         if bid.price<=0||bid.price>=ask.price||bid.price>structure(r)?{return Ok(None)}
         need(policy["feeBps"]==0&&amount(policy["feePerShare"].as_str().ok_or("FUNDAMENTAL_ENTRY_FEES")?)?==0,"FUNDAMENTAL_ENTRY_UNKNOWN_FEES")?;
+        let mut selected_mode=ExecutionMode::JoinBid;let mut selected_limit=bid.price;let mut selected_maximum=r.maximum_quantity;
+        if let Some(execution)=&r.execution_policy{
+            let Some(comparison)=self.compare_entry_actions_with_authority(bank,scope,hint,authority,now)?else{return Ok(None)};
+            let Some((mode,candidate))=execution.allowed_modes.iter().find_map(|mode|comparison.candidates.iter().find(|c|c.mode()==mode.alpha()).map(|c|(*mode,c)))else{return Ok(None)};
+            need(candidate.provenance()["reviewSha256"]==digest(r)?&&candidate.provenance()["modelSha256"]==execution_model_sha(r)?&&candidate.provenance()["sourceSha256"]==digest(&r.sources)?,"FUNDAMENTAL_EXECUTION_CANDIDATE")?;
+            selected_mode=mode;selected_limit=candidate.limit_price();selected_maximum=candidate.quantity();
+        }
         let mut until=r.expires_at_ms.min(r.hold_until_ms);for source in &r.sources{until=until.min(source.observed_at_ms.checked_add(source.maximum_age_ms).ok_or("FUNDAMENTAL_CLOCK_RANGE")?);}
         if let Some(stop)=policy["entryStopAt"].as_str().map(daily_windows::clock).transpose()?{until=until.min(stop);}
         let expires=now.checked_add(policy["lifetimeMs"].as_u64().ok_or("FUNDAMENTAL_LIFETIME")?).ok_or("FUNDAMENTAL_CLOCK_RANGE")?.min(until);
         if expires<=now.checked_add(policy["latencyMs"].as_u64().ok_or("FUNDAMENTAL_LATENCY")?).ok_or("FUNDAMENTAL_CLOCK_RANGE")?{return Ok(None)}
         let head=bank.durable_head();let report_sha=digest(&bank.engine().report()?)?;let dispatch=log.descriptor_identity()?;
         let origin=digest(&json!({"review":r,"receipts":receipts,"scope":scope,"bankHead":head,"dispatch":dispatch,"queue":queue}))?;
-        let event=json!({"type":"reviewed_fundamental_entry_reserved_v1","source":"moloch_live_dispatcher","receivedAt":daily_windows::iso(now)?,"bankScope":{"runId":self.run,"bankManifestHash":self.manifest,"tournamentId":tid},"bankHead":head,"expectedReportSha256":report_sha,
-            "marketId":market,"exchangeId":hint.exchange_id,"side":hint.side,"originSha256":origin,"reviewSha256":hint.review_sha256,"bookSha256":hashes.get(&hint.exchange_id).ok_or("FUNDAMENTAL_BOOK_HASH")?,"reviewCurrentUntilMs":until,"reviewMaximumQuantity":r.maximum_quantity,"reviewMaximumPrincipal":r.maximum_principal,"expectedPayout":money(add(structure(r)?,amount(&r.margin_per_share)?)?),"marginPerShare":r.margin_per_share,"limitPrice":money(bid.price),"expiresAt":daily_windows::iso(expires)?});
+        let mut event=json!({"type":"reviewed_fundamental_entry_reserved_v1","source":"moloch_live_dispatcher","receivedAt":daily_windows::iso(now)?,"bankScope":{"runId":self.run,"bankManifestHash":self.manifest,"tournamentId":tid},"bankHead":head,"expectedReportSha256":report_sha,
+            "marketId":market,"exchangeId":hint.exchange_id,"side":hint.side,"originSha256":origin,"reviewSha256":hint.review_sha256,"bookSha256":hashes.get(&hint.exchange_id).ok_or("FUNDAMENTAL_BOOK_HASH")?,"reviewCurrentUntilMs":until,"reviewMaximumQuantity":selected_maximum,"reviewMaximumPrincipal":r.maximum_principal,"expectedPayout":money(add(structure(r)?,amount(&r.margin_per_share)?)?),"marginPerShare":r.margin_per_share,"limitPrice":money(selected_limit),"expiresAt":daily_windows::iso(expires)?});
+        if selected_mode!=ExecutionMode::JoinBid{event["executionMode"]=json!(selected_mode.wire());event["modelSha256"]=json!(execution_model_sha(r)?);event["sourceSha256"]=json!(digest(&r.sources)?);event["acquisitionCeiling"]=json!(money(execution_ceiling(r)?));}
         let plan=EntryPlan{event,scope_sha:digest(scope)?,head,report_sha,dispatch,queue,account_sha:bytes_sha(transport.account_scope().as_bytes()),review:r.clone(),minted:now,until:fact_until.min(until).min(expires).min(book.observed_ms.checked_add(age).ok_or("FUNDAMENTAL_CLOCK_RANGE")?).min(book.source.received_ms.checked_add(age).ok_or("FUNDAMENTAL_CLOCK_RANGE")?),
             sidecar:FilePin::from_held(self.file.try_clone()?,self.path.clone(),MAX_LOG,None)?,marker:self.marker.duplicate()?,authority:authority.pin.duplicate()?,_owner:self._owner.clone()};
         plan.validate_current(bank,log,transport,authority,now)?;Ok(Some(plan))
@@ -749,7 +794,7 @@ impl Cohorts{
         }else{need(now>=c.hold_until_ms.min(r.hold_until_ms),"FUNDAMENTAL_DEADLINE_NOT_REACHED")?;}
         need(now>=self.clock&&expires>now,"FUNDAMENTAL_PHYSICAL_WINDOW_EMPTY")?;
         let ordinary_file=File::open(&self.ordinary_path)?;need(identity(&ordinary_file)?==self.ordinary_identity,"FUNDAMENTAL_ORIGINAL_DISPATCH_REQUIRED")?;
-        Ok(PhysicalDecision{qid,planned_quantity:n,native_head:bank.durable_head(),quote_sha:digest(&q)?,ledger_sha:digest(&bank.engine().report()?)?,scope_sha:digest(scope)?,spec_sha:digest(spec)?,permit_sha:digest(permit)?,review_sha:digest(r)?,trust_sha:digest(authority.trusted())?,minted:now,expires,
+        Ok(PhysicalDecision{marketable_reviewed_buy:q["action"]=="buy"&&execution_for_quote(r,&q)?==ExecutionMode::BoundedLimitMayRest,qid,planned_quantity:n,native_head:bank.durable_head(),quote_sha:digest(&q)?,ledger_sha:digest(&bank.engine().report()?)?,scope_sha:digest(scope)?,spec_sha:digest(spec)?,permit_sha:digest(permit)?,review_sha:digest(r)?,trust_sha:digest(authority.trusted())?,minted:now,expires,
             contract_market:r.market_id.clone(),contract_id:r.contract_id.clone(),contract_tournament:r.tournament_id.clone(),contract_root_sha:r.official_contract_root_sha256.clone(),
             sidecar:FilePin::from_held(self.file.try_clone()?,self.path.clone(),MAX_LOG,None)?,marker:self.marker.duplicate()?,sidecar_sequence:self.sequence,sidecar_tail:self.previous.clone(),authority:authority.pin.duplicate()?,ordinary_file,ordinary_path:self.ordinary_path.clone(),ordinary_identity:self.ordinary_identity.clone(),_owner:self._owner.clone()})
     }
@@ -1059,7 +1104,9 @@ impl Cohorts{
         let source_until=r.sources.iter().try_fold(r.expires_at_ms,|end,s|Ok::<_,Box<dyn std::error::Error>>(end.min(s.observed_at_ms.checked_add(s.maximum_age_ms).ok_or("FUNDAMENTAL_SOURCE_CLOCK_RANGE")?)))?;
         if q["expiresAt"].as_u64().is_none_or(|t|t>source_until){return Ok(hold("native_order_outlives_reviewed_source_window"))}
         let asks=if r.side=="YES"{&book.yes_asks}else{&book.no_asks};
-        if asks.first().is_none_or(|l|price>=l.price){return Ok(hold("ordinary_entry_must_remain_passive"))}
+        let execution=match execution_for_quote(r,&q){Ok(mode)=>mode,Err(_)=>return Ok(hold("reviewed_execution_reservation_required_or_changed"))};
+        if execution!=ExecutionMode::JoinBid{need(n==native,"FUNDAMENTAL_EXECUTION_WHOLE_NATIVE_REQUEST")?;}
+        if execution!=ExecutionMode::BoundedLimitMayRest&&asks.first().is_none_or(|l|price>=l.price){return Ok(hold("ordinary_entry_must_remain_passive"))}
         if price>ceiling||n>r.maximum_quantity||mul(price,n as i128)?>amount(&r.maximum_principal)?{return Ok(hold("whole_native_quote_exceeds_reviewed_value_or_risk_cap"))}
         Ok(Decision::Entry{review_sha256:digest(r)?,maximum_principal:r.maximum_principal.clone(),ceiling:money(ceiling)})
     }
@@ -1144,7 +1191,8 @@ impl Cohorts{
             need(planned<=r.maximum_quantity&&mul(amount(b.quote["price"].as_str().ok_or("FUNDAMENTAL_PRICE")?)?,planned as i128)?<=amount(&r.maximum_principal)?,"FUNDAMENTAL_PHYSICAL_SLICE_CAP")?;
             let(books,_)=package_admission::native_books(bank,scope,now,bank.engine().policy()["bookAgeMs"].as_u64().ok_or("FUNDAMENTAL_BOOK_POLICY")?)?;
             let book=books.get(ex).ok_or("FUNDAMENTAL_PHYSICAL_BOOK_STALE")?;let asks=if r.side=="YES"{&book.yes_asks}else{&book.no_asks};let price=amount(b.quote["price"].as_str().ok_or("FUNDAMENTAL_PRICE")?)?;
-            need(price<=structure(r)?&&asks.first().is_some_and(|l|price<l.price),"FUNDAMENTAL_PHYSICAL_ENTRY_EDGE")?;
+            let execution=execution_for_quote(r,&q)?;if execution!=ExecutionMode::JoinBid{need(planned==q["quantity"].as_u64().ok_or("FUNDAMENTAL_QUANTITY")?,"FUNDAMENTAL_EXECUTION_WHOLE_NATIVE_REQUEST")?;}
+            need(price<=structure(r)?&&(execution==ExecutionMode::BoundedLimitMayRest||asks.first().is_some_and(|l|price<l.price)),"FUNDAMENTAL_PHYSICAL_ENTRY_EDGE")?;
         }else{need(matches!(self.assess(bank,log,scope,qid,trusted,now)?,Decision::Exit{..}),"FUNDAMENTAL_PHYSICAL_EXIT_NOT_ELIGIBLE")?;}
         Ok(())
     }
