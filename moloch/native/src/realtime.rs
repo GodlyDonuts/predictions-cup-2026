@@ -106,7 +106,9 @@ pub struct AccountOptions {
 }
 fn validate_account_options(channel:&str,options:&AccountOptions)->Result<()>{
     let profile=channel.strip_prefix("user:").ok_or("STREAM_ACCOUNT_AUTH")?;
-    if profile.len()!=36||!profile.bytes().enumerate().all(|(i,b)|if [8,13,18,23].contains(&i){b==b'-'}else{b.is_ascii_hexdigit()})
+    // The official response supplies this exact authorized profile topic.
+    // Its schema says string, not UUID; do not invent a UUID-only requirement.
+    if profile.is_empty()||profile.len()>128||!profile.bytes().all(|b|b.is_ascii_alphanumeric()||b==b'-'||b==b'_')
         ||options.exchanges.len()>1000||options.exchanges.iter().any(|(ex,m)|[ex,m].iter().any(|s|s.is_empty()||s.starts_with('0')||!s.bytes().all(|b|b.is_ascii_digit()))){return Err("STREAM_ACCOUNT_AUTH")}
     Ok(())
 }
@@ -692,6 +694,6 @@ mod tests {
         let stream=Realtime::start_configured(socket,"DUMMY_TEST_TOKEN".into(),CUP,now()+5000,Some((format!("user:{CUP}"),options))).unwrap();let signal=stream.account_signal().unwrap();let until=Instant::now()+Duration::from_secs(2);while signal.generation()<2&&Instant::now()<until{thread::sleep(Duration::from_millis(1));}
         assert_eq!(signal.generation(),2);assert!(signal.requires_reconciliation());assert_eq!(captured.lock().unwrap().len(),1);assert!(matches!(stream.incoming.try_recv().unwrap(),Incoming::Joined{..}));assert!(!matches!(stream.incoming.try_recv(),Ok(Incoming::Broadcast{..})));drop(stream);server.join().unwrap();
     }
-    #[test]fn account_authentication_is_exact_and_cannot_request_an_arbitrary_topic(){let(_,_,_)=account_protocol();let options=AccountOptions{exchanges:Default::default(),capture:Box::new(|_,_,_,_|Ok(()))};validate_account_options(&format!("user:{CUP}"),&options).unwrap();for topic in ["", "realtime:user:other", "market:101", "user:not-a-profile", "user:00000000/0000/0000/0000/000000000001"]{assert!(validate_account_options(topic,&options).is_err());}}
+    #[test]fn account_authentication_is_exact_and_cannot_request_an_arbitrary_topic(){let(_,_,_)=account_protocol();let options=AccountOptions{exchanges:Default::default(),capture:Box::new(|_,_,_,_|Ok(()))};validate_account_options(&format!("user:{CUP}"),&options).unwrap();validate_account_options("user:12345",&options).unwrap();for topic in ["", "realtime:user:other", "market:101", "user:", "user:another:topic", "user:00000000/0000/0000/0000/000000000001"]{assert!(validate_account_options(topic,&options).is_err());}}
 
 }
