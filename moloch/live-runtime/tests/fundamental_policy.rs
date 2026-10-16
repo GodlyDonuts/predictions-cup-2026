@@ -1,6 +1,4 @@
-// Include the owned NEW module until the execution parent registers its export.
-use moloch_live_runtime::{daily_windows, dispatch, feedback, package_admission};
-#[path="../src/fundamental_policy.rs"]mod fundamental_policy;
+use moloch_live_runtime::{daily_windows, dispatch, feedback, package_admission,fundamental_policy};
 use fundamental_policy::*;
 use baal_transport_service::{RequestSpec,Scope};
 use moloch_replay::session::{ExclusiveLock,Session};
