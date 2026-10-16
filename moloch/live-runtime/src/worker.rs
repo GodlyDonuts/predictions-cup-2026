@@ -385,7 +385,8 @@ fn record_original_attempt(bank:&Session,log:&mut DispatchLog,qid:u64,config:Opt
  if !log.never_attempted(qid)||log.intents.get(&qid).is_none_or(|intent|intent["quote"]!=q){return Err("LIVE_ATTEMPT_ORIGINAL_QUOTE_REQUIRED".into())}
  let sources:[(&str,u64);2]=[("moloch-live",bank.last_source_sequence("moloch-live")),("moloch-package",bank.last_source_sequence("moloch-package"))];
  let frontier:Value=sources.into_iter().map(|(source,sequence)|(source.to_owned(),json!({"sequence":sequence,"originalPreparedEventSha256":bank.committed_source_hash(source,sequence)}))).collect::<serde_json::Map<String,Value>>().into();
- let event=json!({"kind":"attempt","qid":qid,"at":iso(at),"captureAtMs":at,"evidenceVersion":1,"nativeHead":bank.durable_head(),"sourceFrontier":frontier,"originalQuoteSha256":hash(&q),"dispatchBefore":log.proof(qid),"modelConfigSha256":config.map(feedback::digest).transpose()?,"modelAlgorithmSha256":format!("{:x}",Sha256::digest(include_bytes!("execution_edge.rs")))});
+ let config_sha=config.map(serde_json::to_value).transpose()?.as_ref().map(hash);
+ let event=json!({"kind":"attempt","qid":qid,"at":iso(at),"captureAtMs":at,"evidenceVersion":1,"nativeHead":bank.durable_head(),"sourceFrontier":frontier,"originalQuoteSha256":hash(&q),"dispatchBefore":log.proof(qid),"modelConfigSha256":config_sha,"modelAlgorithmSha256":format!("{:x}",Sha256::digest(include_bytes!("execution_edge.rs")))});
  log.append(event)?;moloch_live_runtime::execution_edge::track_runtime_attempt(bank,log,qid,at);Ok(())
 }
 fn submit_order(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,authority:&Arc<ProductionAuthority>,q:&Value,facts:SnapshotSet,maker:Option<(Arc<moloch_live_runtime::maker_policy::Decision>,&moloch_live_runtime::maker_policy::Reviewed)>)->Result<()>{
