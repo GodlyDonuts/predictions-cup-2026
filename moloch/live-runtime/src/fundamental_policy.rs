@@ -891,6 +891,25 @@ impl Cohorts{
     }
     pub fn manages(&self,exchange:&str)->bool{self.policies.contains_key(exchange)}
     pub fn managed_exchanges(&self)->BTreeSet<String>{self.policies.keys().cloned().collect()}
+    /// STARTUP RESTORATION ONLY. A closed-zero archive may replay its original
+    /// immutable official ACK after independent closure proof is reverified.
+    /// This accepts no new actual ID, economics, receipt or physical attempt.
+    /// Normal live ACK admission MUST continue using validate_acknowledgment.
+    pub fn validate_restored_acknowledgment(&self,bank:&Session,log:&DispatchLog,qid:u64,event:&Value)->Result<()>{
+        self.check(bank,log)?;let Some(archive)=self.abandoned.get(&qid)else{return self.validate_acknowledgment(qid,event)};
+        let proof=archive.closed_zero.as_ref().ok_or("FUNDAMENTAL_NEVER_SENT_ARCHIVE_HAS_NO_ACK")?;let binding=archive.cohort.entry.as_ref().ok_or("FUNDAMENTAL_REARM_ORIGIN")?;
+        let(records,_)=self.original_closed_records(log,&[qid].into())?;
+        need(records.get(&qid).map(serde_json::to_value).transpose()?.as_ref()==Some(&proof["rows"]),"FUNDAMENTAL_RESTORED_ORIGINAL_CHANGED")?;
+        validate_zero_closure(binding,proof,&archive.retirement["event"])?;
+        let ack:Receipt=serde_json::from_value(proof["ack"].clone())?;let processed=event["processedAt"].as_str().ok_or("FUNDAMENTAL_RESTORED_ACK_CLOCK")?;
+        need(daily_windows::clock(processed)?>=daily_windows::clock(archive.retirement["event"]["processedAt"].as_str().ok_or("FUNDAMENTAL_REARM_TERMINAL_CLOCK")?)?,"FUNDAMENTAL_RESTORED_ACK_PRECEDES_CLOSURE")?;
+        let expected=if proof["recovered"].is_null(){crate::feedback::acknowledgment(&binding.quote,&ack,processed)?}else{
+            let fills:Receipt=serde_json::from_value(proof["recovered"]["fills"].clone())?;
+            crate::feedback::recovered_acknowledgment(&binding.quote,proof["actualId"].as_str().ok_or("FUNDAMENTAL_REARM_ACTUAL_ID")?,binding.spec.body.as_ref().and_then(|v|v["tournamentId"].as_str()).ok_or("FUNDAMENTAL_REARM_TOURNAMENT")?,&ack,&fills,processed)?
+        };
+        need(*event==expected&&log.acknowledgments.get(&qid)==Some(&proof["ack"])&&log.closed.contains(&qid)
+            &&bank.engine().live_order_bindings().get(&qid).is_some_and(|id|proof["actualId"]==*id),"FUNDAMENTAL_RESTORED_ACK_NOT_ORIGINAL")
+    }
     /// Original POST and recovered-GET events pass here BEFORE native accept.
     /// The original quote's larger reservation is not proof of slice size.
     pub fn validate_acknowledgment(&self,qid:u64,event:&Value)->Result<()>{
@@ -945,8 +964,8 @@ impl Cohorts{
         need(current(&r.input,now),"FUNDAMENTAL_INSTALL_REVIEW_EXPIRED")?;
         self.append(json!({"kind":"review","review":r.input,"sha256":r.sha}),now)
     }
-    /// No sidecar closing/reset shortcut: a completed flat cohort stays excluded
-    /// until a separately reviewed future lifecycle is deliberately implemented.
+    /// Ordinary assessment never resets a cohort. Explicit opaque abandonment
+    /// or independently proved closed-zero rearm is required for that transition.
     pub fn assess(&self,bank:&Session,log:&DispatchLog,scope:&Scope,qid:u64,trusted:&BTreeSet<String>,now:u64)->Result<Decision>{
         let n=bank.engine().order_records().into_iter().find(|q|q["id"]==qid).and_then(|q|q["quantity"].as_u64()).ok_or("FUNDAMENTAL_QUANTITY")?;
         self.assess_quantity(bank,log,scope,qid,n,trusted,now)
