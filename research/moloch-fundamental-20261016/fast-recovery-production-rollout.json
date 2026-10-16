@@ -1,0 +1,100 @@
+{
+  "at": "2026-10-16T01:40:02.970044+00:00",
+  "oldPid": 336006,
+  "newPid": 341432,
+  "sourceCommit": "53bf188598d4dc32b3d089b6d19433cb9c3ad3bd",
+  "binarySha256": "ccfe4213f9c01598c4d66c47807371b894617c595a66c3726a6b6ca3159fd879",
+  "release": "/home/archon/apps/moloch/releases/fast-recovery-ccfe4213f9c0/bin/moloch-live-runtime",
+  "control": "/home/archon/apps/moloch/shared/moloch-live-fast-recovery-20261016.json",
+  "engineIdentity": "1a8f8fdc77f650661061da98434dd1eeddead3ae98129eb3aed7fa0f6914b3f6",
+  "financialBridgeEntries": 7,
+  "controlChanges": [
+    "activation.binarySha256"
+  ],
+  "fundamentalReviewUnchanged": true,
+  "freshTradingVerified": false,
+  "profitabilityEstablished": false,
+  "boundary": {
+    "stoppedPid": 336006,
+    "stop": {
+      "action": "no automatic write retry or activation renewal",
+      "at": "2026-10-16T01:24:16.826Z",
+      "reason": "FUNDAMENTAL_ACK_WITHOUT_BINDING"
+    },
+    "bankHead": {
+      "hash": "af11e24a7cd42cab52373738dd773497382aaf9491c903955d5fa6161d4d5c57",
+      "manifestHash": "78acaef952ed95b9bff24a3349ece669ccbe88ef7294b27dd9c2aa7d09cae325",
+      "previous": "b71692c673304d8bb27af70703b9793e6ad886c44431258731b2422b45af9551",
+      "sequence": 131875
+    },
+    "bankReportHash": "e793865c53cd9e05dd313bdc902dc09046e7bd4cef323784a7ed67a8ddb2e4ce",
+    "bankSequence": 131875,
+    "prefixBytes": 369233057,
+    "prefixSha256": "6d260b3a7f8877f3c1a776918c0177c6ba3ca827633395ddaa01b3d6dad2183b",
+    "dispatchSequence": 5474,
+    "dispatchHash": "e9bbed289d67f61473f0ae80c3edce27384b050cecb86ac93eaf8bc72494350e",
+    "acknowledgedAttempts": 630,
+    "unknownOrdinaryAttempts": 0,
+    "queue": {
+      "summarySchemaVersion": 1,
+      "globalUnknownCount": 0,
+      "hasUnknown": false,
+      "state": {
+        "schema_version": 1,
+        "scope": "sig-midterm-shared-account",
+        "last_clock": 1792114397526,
+        "next": 1792114398126,
+        "cooldown": 1792111209852,
+        "manual_review": false,
+        "reads": [
+          1792114394250,
+          1792114395405,
+          1792114396250,
+          1792114397206
+        ],
+        "writes": [],
+        "active": null,
+        "read_profile": {
+          "cap": 100,
+          "gap_ms": 600
+        }
+      },
+      "immutable_bindings": 966,
+      "idempotency_keys": 966,
+      "unknown_acceptances": 0,
+      "sequence": 112384,
+      "previous": "f7ff0f8c41a3aacef4c05479eecf559bd00834c0ee7957bd4809ee6fdade54ef",
+      "active_journal_bytes": 49614266,
+      "schema_version": 1
+    },
+    "priorBridgeSha256": "b458192646eec7eebcb69bd0604bd828e40293d75900f41f469e1e0a25a748ce",
+    "newBridgeSha256": "45392a936b9b108b29e7a549ebccfb1eda596db36e2678f9b24878215f6c70b9",
+    "bridgeEntries": 7,
+    "exactSealedPrefixFinancialParity": {
+      "bookState": 11,
+      "contestOrders": 0,
+      "elapsedMs": 98495,
+      "engineIdentity": "1a8f8fdc77f650661061da98434dd1eeddead3ae98129eb3aed7fa0f6914b3f6",
+      "financialReportEnvelopeByteIdentical": true,
+      "headEnvelopeByteIdentical": true,
+      "nativeHead": {
+        "hash": "af11e24a7cd42cab52373738dd773497382aaf9491c903955d5fa6161d4d5c57",
+        "manifestHash": "78acaef952ed95b9bff24a3349ece669ccbe88ef7294b27dd9c2aa7d09cae325",
+        "previous": "b71692c673304d8bb27af70703b9793e6ad886c44431258731b2422b45af9551",
+        "sequence": 131875
+      },
+      "networkRequests": 0,
+      "offlineOnly": true,
+      "originalFillCount": 114,
+      "originalSourceCursorsAndOrdersAndFillsIncluded": true,
+      "profitabilityEstablished": false,
+      "upgrades": 7
+    },
+    "fundamentalSidecarSha256": "647e8ee132c5a3e66e3df129b4313e725c6697bcfefb7a59c992815218a662a0",
+    "fundamentalMarkerSha256": "cb5efd642c6ab79ff57db55e36a17dcd7497a7f3f160be3fff2546d7a34021c1",
+    "actualFills": 114,
+    "newTradingRealized": "-116.020000",
+    "inheritedRealizedGross": "43.395000",
+    "totalRealized": "-72.625000"
+  }
+}
