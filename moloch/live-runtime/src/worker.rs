@@ -810,6 +810,7 @@ fn refresh_deferred(c:&Control,stage:&str,error:&dyn std::fmt::Display)->Result<
 fn exit_recovery_from(source:&RestSource,market:&str,prior_window:u64)->Option<u64>{source.recovery_start_ms(market).map(|from|from.min(prior_window))}
 fn refresh_exit(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,authority:&Arc<ProductionAuthority>,source:&mut RestSource,stream:&Realtime,old:&Value,hint:&moloch_live_runtime::exit_refresh::ReadHint,flow_started:u64,maximum_qid_before:u64,unknown:bool,prior_window:u64,breadth:&mut Option<Recorder>,universe:&mut Option<Universe>,fundamental:Option<&mut FundamentalRuntime>)->Result<()>{
  use moloch_live_runtime::exit_refresh::{RefreshFacts,BookAcceptance,RefreshPlan,RefreshStage};
+ atomic_json(&c.root.join("exit-refresh-nominee.json"),&json!({"at":iso(now()),"qid":old["id"],"exchangeId":old["exchangeId"],"side":old["side"],"reason":old["inventoryExitReason"],"physicalAttempted":false,"expiryExtended":false}))?;
  refresh_controls(c,authority,stream)?;
  // A fresh book alone cannot unblock a source after a real delivery gap. Recover
  // its exact missing trade interval before starting the timed seven-fact packet.
@@ -864,12 +865,36 @@ fn latest_refresh_hints(orders:&[Value],at:u64,eligible:impl Fn(u64)->bool)->Res
   if latest.get(&key).is_none_or(|old|old["id"].as_u64().unwrap()<id){latest.insert(key,q.clone());}
  }Ok(latest)
 }
+/// A historical maximumAge label is only a read hint. Recompute its deadline
+/// from CURRENT remaining FIFO lots; never restart a timer from observation time.
+fn remaining_exit_age_due(policy:&Value,positions:&Value,inherited:&Value,ex:&str,side:&str,at:u64)->Result<bool>{
+ if policy["inventoryAgeClock"]!="execution"{return Ok(true)} // Unsupported clocks retain conservative priority.
+ let Some(age)=policy["maximumInventoryAgeMs"].as_u64()else{return Ok(true)};
+ let lots=positions.get(ex).and_then(|v|v.get(side)).and_then(Value::as_array).ok_or("LIVE_EXIT_AGE_LOTS")?;
+ let has_unclocked=lots.iter().any(|l|l.get("executedAt").is_none_or(Value::is_null));
+ let adopted=if has_unclocked{
+  // Only positive native inherited provenance permits the opening-lot exception.
+  if inherited["basis"]!="verified_open_lot_principal_fifo"||!inherited["adoptedExchangeIds"].as_array().is_some_and(|a|a.iter().any(|v|v==ex)){return Ok(true)}
+  Some(moloch_live_runtime::daily_windows::clock(inherited["managementStartedAt"].as_str().ok_or("LIVE_EXIT_AGE_ADOPTION_CLOCK")?)?)
+ }else{None};
+ let mut oldest=None;
+ for l in lots{
+  if l["quantity"].as_u64().is_none_or(|n|n==0){return Err("LIVE_EXIT_AGE_LOT_QUANTITY".into())}
+  if let Some(clock)=l.get("executedAt").filter(|v|!v.is_null()){
+   let t=moloch_live_runtime::daily_windows::clock(clock.as_str().ok_or("LIVE_EXIT_AGE_EXECUTION_CLOCK")?)?;
+   if t>at{return Err("LIVE_EXIT_AGE_FUTURE_EXECUTION".into())}
+   if adopted.is_none_or(|a|t>=a){oldest=Some(oldest.map_or(t,|old:u64|old.min(t)));}
+  }
+ }
+ match oldest{Some(t)=>Ok(t.checked_add(age).ok_or("LIVE_EXIT_AGE_CLOCK_RANGE")?<=at),None=>Ok(false)}
+}
 /// Selection only. Retired history or a forecast Hold cannot justify a queue
 /// status write/full lifecycle fingerprint. Surviving candidates still require
 /// the ORIGINAL current queue observation, complete Safety and typed ReadHint.
 fn prepare_expired_exit_hints(
  orders:&[Value],at:u64,eligible:impl Fn(u64)->bool,
  mut owned:impl FnMut(&str,&str)->Result<u64>,mut policy_allows:impl FnMut(&str)->Result<bool>,
+ mut age_due:impl FnMut(&str,&str)->Result<bool>,
  mut queue_unknown:impl FnMut()->Result<bool>,
  mut safety:impl FnMut(&Value,bool)->Result<moloch_live_runtime::exit_refresh::Safety>,
 )->Result<(std::collections::BTreeMap<String,(Value,moloch_live_runtime::exit_refresh::ReadHint)>,bool)>{
@@ -879,7 +904,7 @@ fn prepare_expired_exit_hints(
   .filter_map(|q|Some(format!("{}:{}:sell",q["exchangeId"].as_str()?,q["side"].as_str()?))).collect();
  for(key,old)in latest{
   let ex=old["exchangeId"].as_str().ok_or("LIVE_QUOTE_SCOPE")?;let side=old["side"].as_str().ok_or("LIVE_SIDE")?;
-  if owned(ex,side)?==0||live_sells.contains(&key)||!policy_allows(ex)?{continue}candidates.push((key,old));
+  if owned(ex,side)?==0||live_sells.contains(&key)||!policy_allows(ex)?||!age_due(ex,side)?{continue}candidates.push((key,old));
  }
  if candidates.is_empty(){return Ok((hints,false))}
  let unknown=queue_unknown()?;
@@ -1389,10 +1414,17 @@ fn dispatch(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,a
  }
  let orders=bank.engine().order_records();
  let flow_started=now();let maximum_qid_before=orders.iter().filter_map(|q|q["id"].as_u64()).max().unwrap_or(0);
+ let mut age_positions=None;let mut age_inherited=None;
  let(hints,refresh_unknown)=if allow_new_submissions{prepare_expired_exit_hints(&orders,flow_started,
   |id|log.never_attempted(id)&&!log.intents.contains_key(&id),
   |ex,side|Ok(bank.engine().wallet.quantity(ex,match side{"YES"=>moloch_replay::Side::Yes,"NO"=>moloch_replay::Side::No,_=>return Err("LIVE_SIDE".into())})),
   |ex|{if let Some(f)=fundamental.as_ref(){f.authority.validate()?;if f.cohorts.manages(ex){return f.cohorts.exit_refresh_needed(bank,log,&c.scope,ex,f.authority.trusted(),flow_started)}}Ok(true)},
+  |ex,side|{
+   if age_positions.is_none(){age_positions=Some(bank.engine().wallet.positions());}
+   let positions=age_positions.as_ref().unwrap();
+   if age_inherited.is_none()&&positions.get(ex).and_then(|v|v.get(side)).and_then(Value::as_array).is_some_and(|lots|lots.iter().any(|l|l.get("executedAt").is_none_or(Value::is_null))){age_inherited=Some(bank.engine().report()?["inheritedInventory"].clone());}
+   remaining_exit_age_due(bank.engine().policy(),positions,age_inherited.as_ref().unwrap_or(&Value::Null),ex,side,flow_started)
+  },
   ||queue_has_unknown(t),|old,unknown|refresh_safety(c,bank,log,authority,stream,old,unknown))?
  }else{(std::collections::BTreeMap::new(),false)};
  // Cancellations and reconciliation take priority over new purchases.
@@ -2040,6 +2072,21 @@ pub fn main()->Result<()>{
   let mut events=source_ticks(18);for e in &mut events{e["padding"]=json!("x".repeat(512*1024));}pending.push_at(&mut bank,&events,1_760_000_001_000).unwrap();assert!(bank.last_source_sequence("moloch-live")>0);pending.finish(&mut bank,Ok(())).unwrap();assert_eq!(bank.last_source_sequence("moloch-live"),18);
   let large=json!({"type":"tick","receivedAt":iso(1_760_000_002_000),"padding":"y".repeat(5*1024*1024)});pending.push_at(&mut bank,&[large],1_760_000_002_000).unwrap();assert!(pending.prepared.is_empty());assert_eq!(bank.last_source_sequence("moloch-live"),19);
  }
+ #[test]fn remaining_fifo_deadline_does_not_inherit_historical_quote_age(){
+  let policy=json!({"inventoryAgeClock":"execution","maximumInventoryAgeMs":60000});let at=100000;
+  let young=json!({"1012":{"NO":[{"quantity":3,"executedAt":iso(50000)}]}});
+  assert!(!remaining_exit_age_due(&policy,&young,&Value::Null,"1012","NO",at).unwrap());
+  let due=json!({"1012":{"NO":[{"quantity":1,"executedAt":iso(40000)},{"quantity":2,"executedAt":iso(50000)}]}});
+  assert!(remaining_exit_age_due(&policy,&due,&Value::Null,"1012","NO",at).unwrap());
+  let future=json!({"1012":{"NO":[{"quantity":1,"executedAt":iso(at+1)}]}});
+  assert!(remaining_exit_age_due(&policy,&future,&Value::Null,"1012","NO",at).is_err());
+  assert!(remaining_exit_age_due(&json!({"inventoryAgeClock":"receipt"}),&young,&Value::Null,"1012","NO",at).unwrap());
+ }
+ #[test]fn not_due_remaining_lots_skip_queue_and_fingerprint_without_altering_original_hint(){
+  use std::cell::Cell;let orders=vec![expired_hint_quote(1,"1012")];let original=orders.clone();let touched=Cell::new(0);
+  let(hints,unknown)=prepare_expired_exit_hints(&orders,20000,|_|true,|_,_|Ok(3),|_|Ok(true),|_,_|Ok(false),||{touched.set(touched.get()+1);Ok(false)},|_,u|{touched.set(touched.get()+1);Ok(hint_safety(u))}).unwrap();
+  assert!(hints.is_empty());assert!(!unknown);assert_eq!(touched.get(),0);assert_eq!(orders,original);
+ }
  #[test]fn long_expired_history_coalesces_by_scope_without_reviving_attempted_or_cancelled_hints(){
   let mut orders=(1..=10_002u64).map(|id|json!({"id":id,"action":"sell","inventoryExitReason":"maximumAge","executionStyle":"inventoryAON","filled":0,"expiresAt":100,"exchangeId":format!("ex{}",id%3),"side":"NO","retired":true})).collect::<Vec<_>>();
   let mut cancelled=orders.last().unwrap().clone();cancelled["id"]=json!(10_003);cancelled["cancelEffectiveAt"]=json!(101);orders.push(cancelled);
@@ -2050,27 +2097,27 @@ pub fn main()->Result<()>{
  fn hint_safety(unknown:bool)->moloch_live_runtime::exit_refresh::Safety{moloch_live_runtime::exit_refresh::Safety{never_attempted:true,has_intent:false,unresolved_attempts:false,global_unknown:unknown,stop:false,stream_healthy:true,owned_quantity:300,reserved_sell_quantity:0,same_exchange_pending_physical_order:false,lifecycle_fingerprint:[1;32],native_head_fingerprint:[2;32]}}
  #[test]fn flat_expired_history_performs_no_queue_status_or_full_fingerprint(){
   use std::cell::Cell;let orders:Vec<_>=(1..=10000).map(|id|expired_hint_quote(id,&format!("{}",1010+id%3))).collect();let owned=Cell::new(0);let policies=Cell::new(0);let queues=Cell::new(0);let fingerprints=Cell::new(0);
-  let(hints,unknown)=prepare_expired_exit_hints(&orders,20000,|_|true,|_,_|{owned.set(owned.get()+1);Ok(0)},|_|{policies.set(policies.get()+1);Ok(true)},||{queues.set(queues.get()+1);Ok(false)},|_,u|{fingerprints.set(fingerprints.get()+1);Ok(hint_safety(u))}).unwrap();
+  let(hints,unknown)=prepare_expired_exit_hints(&orders,20000,|_|true,|_,_|{owned.set(owned.get()+1);Ok(0)},|_|{policies.set(policies.get()+1);Ok(true)},|_,_|Ok(true),||{queues.set(queues.get()+1);Ok(false)},|_,u|{fingerprints.set(fingerprints.get()+1);Ok(hint_safety(u))}).unwrap();
   assert!(hints.is_empty()&&!unknown);assert_eq!(owned.get(),3,"latest coalescing precedes ownership lookups");assert_eq!((policies.get(),queues.get(),fingerprints.get()),(0,0,0));
  }
  #[test]fn forecast_hold_and_current_same_side_sell_skip_expensive_refresh_work(){
   use std::cell::Cell;for live_sell in [false,true]{let mut orders=vec![expired_hint_quote(1,"1012")];if live_sell{let mut q=expired_hint_quote(2,"1012");q["retired"]=json!(false);q["createdAt"]=json!(18000);q["activationAt"]=json!(21000);q["expiresAt"]=json!(31000);orders.push(q);}let policies=Cell::new(0);let queues=Cell::new(0);let fingerprints=Cell::new(0);
-   let(hints,_)=prepare_expired_exit_hints(&orders,20000,|_|true,|_,_|Ok(300),|_|{policies.set(policies.get()+1);Ok(false)},||{queues.set(queues.get()+1);Ok(false)},|_,u|{fingerprints.set(fingerprints.get()+1);Ok(hint_safety(u))}).unwrap();assert!(hints.is_empty());assert_eq!((queues.get(),fingerprints.get()),(0,0));assert_eq!(policies.get(),if live_sell{0}else{1});
+   let(hints,_)=prepare_expired_exit_hints(&orders,20000,|_|true,|_,_|Ok(300),|_|{policies.set(policies.get()+1);Ok(false)},|_,_|Ok(true),||{queues.set(queues.get()+1);Ok(false)},|_,u|{fingerprints.set(fingerprints.get()+1);Ok(hint_safety(u))}).unwrap();assert!(hints.is_empty());assert_eq!((queues.get(),fingerprints.get()),(0,0));assert_eq!(policies.get(),if live_sell{0}else{1});
   }
  }
  #[test]fn owned_expired_candidates_share_one_real_queue_observation_and_keep_original_typed_guards(){
   use std::cell::Cell;let orders=vec![expired_hint_quote(1,"1012"),expired_hint_quote(2,"1012"),expired_hint_quote(3,"1013")];for unknown in [false,true]{let queues=Cell::new(0);let fingerprints=Cell::new(0);
-   let(hints,checked_unknown)=prepare_expired_exit_hints(&orders,20000,|_|true,|_,_|Ok(300),|_|Ok(true),||{queues.set(queues.get()+1);Ok(unknown)},|_,u|{assert_eq!(u,unknown);fingerprints.set(fingerprints.get()+1);Ok(hint_safety(u))}).unwrap();assert_eq!(checked_unknown,unknown);assert_eq!((queues.get(),fingerprints.get()),(1,2));assert_eq!(hints.len(),if unknown{0}else{2});if !unknown{assert_eq!(hints["1012:NO:sell"].1.old_qid(),2);assert_eq!(hints["1012:NO:sell"].0,orders[1]);assert_eq!(hints["1013:NO:sell"].1.old_qid(),3);}
+   let(hints,checked_unknown)=prepare_expired_exit_hints(&orders,20000,|_|true,|_,_|Ok(300),|_|Ok(true),|_,_|Ok(true),||{queues.set(queues.get()+1);Ok(unknown)},|_,u|{assert_eq!(u,unknown);fingerprints.set(fingerprints.get()+1);Ok(hint_safety(u))}).unwrap();assert_eq!(checked_unknown,unknown);assert_eq!((queues.get(),fingerprints.get()),(1,2));assert_eq!(hints.len(),if unknown{0}else{2});if !unknown{assert_eq!(hints["1012:NO:sell"].1.old_qid(),2);assert_eq!(hints["1012:NO:sell"].0,orders[1]);assert_eq!(hints["1013:NO:sell"].1.old_qid(),3);}
   }
  }
  #[test]fn attempted_history_does_not_mask_prior_eligible_hint_and_other_live_scope_does_not_suppress_it(){
   use std::cell::Cell;let mut current=expired_hint_quote(4,"1013");current["retired"]=json!(false);current["expiresAt"]=json!(30000);let orders=vec![expired_hint_quote(1,"1012"),expired_hint_quote(2,"1012"),expired_hint_quote(3,"1013"),current];let queues=Cell::new(0);let fingerprints=Cell::new(0);
-  let(hints,_)=prepare_expired_exit_hints(&orders,20000,|id|id!=2,|_,_|Ok(300),|_|Ok(true),||{queues.set(queues.get()+1);Ok(false)},|_,u|{fingerprints.set(fingerprints.get()+1);Ok(hint_safety(u))}).unwrap();assert_eq!((queues.get(),fingerprints.get()),(1,1));assert_eq!(hints.len(),1);assert_eq!(hints["1012:NO:sell"].1.old_qid(),1);
+  let(hints,_)=prepare_expired_exit_hints(&orders,20000,|id|id!=2,|_,_|Ok(300),|_|Ok(true),|_,_|Ok(true),||{queues.set(queues.get()+1);Ok(false)},|_,u|{fingerprints.set(fingerprints.get()+1);Ok(hint_safety(u))}).unwrap();assert_eq!((queues.get(),fingerprints.get()),(1,1));assert_eq!(hints.len(),1);assert_eq!(hints["1012:NO:sell"].1.old_qid(),1);
  }
  #[test]fn refresh_prefilter_preserves_authoritative_queue_and_safety_failures(){
-  let orders=vec![expired_hint_quote(1,"1012")];assert_eq!(prepare_expired_exit_hints(&orders,20000,|_|true,|_,_|Ok(300),|_|Ok(true),||Err("queue_durability_failure".into()),|_,u|Ok(hint_safety(u))).err().unwrap().to_string(),"queue_durability_failure");
-  assert_eq!(prepare_expired_exit_hints(&orders,20000,|_|true,|_,_|Ok(300),|_|Ok(true),||Ok(false),|_,_|Err("safety_source_failure".into())).err().unwrap().to_string(),"safety_source_failure");
-  let(hints,_)=prepare_expired_exit_hints(&orders,20000,|_|true,|_,_|Ok(300),|_|Ok(true),||Ok(false),|_,u|Ok(moloch_live_runtime::exit_refresh::Safety{same_exchange_pending_physical_order:true,..hint_safety(u)})).unwrap();assert!(hints.is_empty());
+  let orders=vec![expired_hint_quote(1,"1012")];assert_eq!(prepare_expired_exit_hints(&orders,20000,|_|true,|_,_|Ok(300),|_|Ok(true),|_,_|Ok(true),||Err("queue_durability_failure".into()),|_,u|Ok(hint_safety(u))).err().unwrap().to_string(),"queue_durability_failure");
+  assert_eq!(prepare_expired_exit_hints(&orders,20000,|_|true,|_,_|Ok(300),|_|Ok(true),|_,_|Ok(true),||Ok(false),|_,_|Err("safety_source_failure".into())).err().unwrap().to_string(),"safety_source_failure");
+  let(hints,_)=prepare_expired_exit_hints(&orders,20000,|_|true,|_,_|Ok(300),|_|Ok(true),|_,_|Ok(true),||Ok(false),|_,u|Ok(moloch_live_runtime::exit_refresh::Safety{same_exchange_pending_physical_order:true,..hint_safety(u)})).unwrap();assert!(hints.is_empty());
  }
  fn control()->Control{serde_json::from_value(json!({"activation":{"runId":"new-run","entryUntilMs":9_000_000,"maximumCommitted":"800.000000","maximumMarketCost":"100.000000","maximumQuantity":300,"tournamentId":"cup","tournamentSlug":"cup","binarySha256":"a".repeat(64)},"scope":{"tournamentId":"cup","tournamentSlug":"cup","exchanges":{"1012":"525"}},"policy":{},"root":"/fixture","credentials":"/unused","ownerLock":"/unused.lock","accountScope":"fixture"})).unwrap()}
  #[test]fn rebuilt_physical_binding_uses_new_qid_quantity_price_and_original_expiry(){
@@ -2108,6 +2155,16 @@ pub fn main()->Result<()>{
   bank.accept("original-adoption",1,&adoption).unwrap();let at=at+1000;
   bank.accept("original-book",1,&json!({"type":"book","receivedAt":iso(at),"book":{"marketId":"201","exchangeId":"101","tournamentId":TID,"sequence":"1","sourceAt":iso(at),"requestStartedAt":iso(at),"receivedAt":iso(at),"bids":[{"price":"0.300000","quantity":100}],"asks":[{"price":"0.320000","quantity":100}]}})).unwrap();
   let log=DispatchLog::open(&root.0.join("dispatch.ndjson")).unwrap();(root,bank,log,adoption,policy,seed)
+ }
+ #[test]fn real_adopted_fifo_lots_have_no_new_entry_deadline_and_restart_preserves_that(){
+  let at=now()-20000;let(root,bank,_log,_,policy,seed)=fixture_at(at);let before=bank.durable_head();let report=bank.engine().report().unwrap();
+  assert_eq!(bank.engine().wallet.quantity("101",moloch_replay::Side::No),3);
+  assert!(!remaining_exit_age_due(bank.engine().policy(),&report["positions"],&report["inheritedInventory"],"101","NO",at+100000).unwrap());
+  // Missing positive native provenance never turns an unclocked lot into a safe skip.
+  assert!(remaining_exit_age_due(bank.engine().policy(),&report["positions"],&Value::Null,"101","NO",at+100000).unwrap());
+  assert_eq!(bank.durable_head(),before);drop(bank);
+  let restored=Session::open_live(&root.0.join("bank"),&policy,&seed).unwrap();let r=restored.engine().report().unwrap();
+  assert!(!remaining_exit_age_due(restored.engine().policy(),&r["positions"],&r["inheritedInventory"],"101","NO",at+100000).unwrap());assert_eq!(restored.durable_head(),before);
  }
  fn control(root:&Path)->Control{serde_json::from_value(json!({"activation":{"runId":"existing-worker-fixture","entryUntilMs":now()+3600000,"maximumCommitted":"1000.000000","maximumMarketCost":"100.000000","maximumQuantity":2,"tournamentId":TID,"tournamentSlug":"cup","binarySha256":"a".repeat(64)},"scope":scope(),"policy":{},"root":root,"credentials":"/unused","ownerLock":root.join("owner.lock"),"accountScope":"synthetic-existing-worker"})).unwrap()}
  fn receipt(data:Value,at:u64)->Receipt{Receipt{endpoint:"synthetic original receipt".into(),request_started_at:iso(at-1),received_at:iso(at),status:200,data}}
