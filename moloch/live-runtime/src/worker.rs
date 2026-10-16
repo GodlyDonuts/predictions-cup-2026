@@ -320,6 +320,20 @@ fn retire_existing_drafts(bank:&mut Session,log:&mut DispatchLog,exchange:&str)-
   retire_for_package(bank,log,&q)?;retired+=1;
  }Ok(retired)
 }
+/// Configured reviewed managers own these markets. Ordinary planning must not
+/// reserve their flat-entry slots, even when current forecast prices deny entry.
+/// This never retires an intent/attempt/ACK, reviewed reservation or package.
+fn install_managed_entry_exclusions(c:&Control,control_path:&Path,bank:&mut Session,log:&mut DispatchLog,f:Option<&FundamentalRuntime>)->Result<()>{
+ let managed=if let Some(f)=f{f.authority.validate()?;f.cohorts.managed_exchanges()}else{Default::default()};
+ if managed.iter().any(|ex|!c.scope.exchanges.contains_key(ex)){return Err("LIVE_MANAGED_EXCLUSION_SCOPE".into())}
+ if bank.engine().ordinary_entry_exclusions()!=managed{
+  let reviewed=if let Some(f)=f{hash(&serde_json::to_value(f.authority.trusted())?)}else{hash(&json!([]))};
+  let at=now();let event=json!({"type":"ordinary_entry_exclusions_v1","source":"moloch_live_dispatcher","receivedAt":iso(at),"processedAt":iso(at),"bankScope":{"runId":c.activation.run_id,"bankManifestHash":bank.manifest_hash(),"tournamentId":c.scope.tournament_id},"bankHead":bank.durable_head(),"expectedReportSha256":hash(&bank.engine().report()?),"managedExchangeIds":managed,"approvedReviewSetSha256":reviewed,"controlSha256":format!("{:x}",Sha256::digest(fs::read(control_path)?)),"expectedPreviousExclusionSha256":bank.engine().ordinary_entry_exclusion_record().map(|v|v["sha256"].clone()).unwrap_or(Value::Null)});
+  if let Some(f)=f{f.authority.validate()?;}accept(bank,&event)?;
+ }
+ let mut retired=0;for ex in &managed{retired+=retire_existing_drafts(bank,log,ex)?;}
+ let _=atomic_json(&c.root.join("ordinary-entry-exclusions.json"),&json!({"at":iso(now()),"record":bank.engine().ordinary_entry_exclusion_record(),"retiredProvedNeverSentDrafts":retired,"doesNotSubmit":true}));Ok(())
+}
 fn existing_target_busy(bank:&Session,log:&DispatchLog,exchange:&str)->Result<bool>{
  log.require_resolved_attempts()?;let orders=bank.engine().order_records();
  for id in log.acknowledgments.keys().filter(|id|!log.closed.contains(id)){
@@ -1200,6 +1214,7 @@ pub fn main()->Result<()>{
    authority.require_fundamental_exchanges(&cohorts.managed_exchanges())?;atomic_json(&c.root.join("fundamental-policy.json"),&json!({"at":iso(now()),"managedExchanges":cohorts.managed_exchanges(),"existingOriginExchanges":existing,"staleReviews":stale,"initializationDoesNotSubmit":true}))?;Some(FundamentalRuntime{cohorts,authority:review_authority})}else{
    if c.root.join("fundamental.initialized.json").exists()||c.root.join("fundamental.ndjson").exists(){return Err("LIVE_FUNDAMENTAL_SETTINGS_REQUIRED_FOR_EXISTING_COHORT".into())}None
   };
+  install_managed_entry_exclusions(&c,&path,&mut bank,&mut log,fundamental.as_ref())?;
   // A durable official acknowledgment can be replayed after a crash before ledger commit.
   for (qid,v) in log.acknowledgments.clone(){let r:Receipt=serde_json::from_value(v)?;let q=quote(&bank,qid)?;let e=if let Some(recovery)=log.recovered.get(&qid){feedback::recovered_acknowledgment(&q,recovery["actualOrderId"].as_str().ok_or("LIVE_RECOVERY_ACTUAL_ID")?,&c.scope.tournament_id,&r,&serde_json::from_value(recovery["fills"].clone())?,&iso(now()))?}else{feedback::acknowledgment(&q,&r,&iso(now()))?};if let Some(f)=fundamental.as_ref(){if !closed_legacy_ack(&bank,&log,qid,&e){f.cohorts.validate_restored_acknowledgment(&bank,&log,qid,&e)?;}}authority.bind_owned(e["actualOrderId"].as_str().ok_or("LIVE_ACTUAL_ID")?.into());restore_ack(&mut bank,&e)?;}
   // Always recover original liabilities even when new package scanning is off.
