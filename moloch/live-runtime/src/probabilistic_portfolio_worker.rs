@@ -37,7 +37,7 @@ impl Backend for Live<'_>{
 }
 /// One in-process reviewed probability-bound plan, never reconstructed to send.
 pub struct Staged{admission:Plan,reservation:Reservation,basket:Basket,permit:Permit,scope:Scope,queue_scope:String}
-impl Staged{pub fn package_id(&self)->&str{self.reservation.event()["packageId"].as_str().expect("factory package ID")}pub fn plan(&self)->&Plan{&self.admission}pub fn reservation(&self)->&Reservation{&self.reservation}pub fn basket(&self)->&Basket{&self.basket}}
+impl Staged{pub fn package_id(&self)->&str{self.reservation.event()["packageId"].as_str().expect("factory package ID")}pub fn plan(&self)->&Plan{&self.admission}pub fn reservation(&self)->&Reservation{&self.reservation}pub fn basket(&self)->&Basket{&self.basket}pub fn permit(&self)->&Permit{&self.permit}}
 #[derive(Debug,PartialEq,Eq)]pub enum SendResult{Acknowledged,DefinitiveZero,LocalNotSent,NeverAttempted,Unknown}
 #[derive(Debug,Default)]pub struct Recovery{pub acknowledged_packages:usize,pub fill_events:usize,pub completed_packages:usize,pub abandoned_unattempted:usize,pub blocks_new_submissions:bool}
 /// Original intent is fsynced before native funding. Qualification is minted
