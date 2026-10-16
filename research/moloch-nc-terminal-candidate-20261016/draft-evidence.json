@@ -1,0 +1,28 @@
+{
+  "acquisitionCeilingMicros": 881430,
+  "ballotOriginalSha256": "378ca3dde9e97f65a921c922171aa34942bcc68582ef46e713b371e0b6caf11d",
+  "ballotPublicationClockProvenance": "Unchanged original review publication timestamp for identical rawPDF; not replaced with fetch time. PDF generatedOct13 12:25PM.",
+  "candidateExpiresAtUtc": "2026-10-16T23:45:21.269000+00:00",
+  "candidateRawSha256": "c7821b55cc37fb07353e973412fdaf89c6ab6cdba74d555d0d13aac11cec24e4",
+  "candidateReviewedAtUtc": "2026-10-16T18:32:50.985000+00:00",
+  "effectiveValueMicros": 891430,
+  "exceptionAndMarginUnchanged": true,
+  "executionAuthority": false,
+  "forecastOriginalSha256": "fbe3194c1c938057f36bffb6d6ab27910175affcecdddf4fef6112342a171de2",
+  "forecastPublisherModifiedAt": "2026-10-16T17:57:26.000Z",
+  "nodeClocksUnchanged": true,
+  "nodeOriginalSha256": "58a98acc30aa5c67510de0b505550df49d3dd58892a141c17eb8b51b05b9434e",
+  "principalChange": {
+    "candidate": "2000.000000",
+    "previous": "400.000000",
+    "rootApprovedDraftOnly": true
+  },
+  "priorOriginalReviewSha256": "33408bf8ff412d9577d119bd0a760781d713123c2a391ad1448177feeb6e6344",
+  "productionActivated": false,
+  "requiredMarginMicros": 10000,
+  "rustReviewSha256": "PENDING_ROOT_OFFLINE_TYPED_DESERIALIZATION",
+  "sourceArtifactsPrivateDirectory": "C:\\Users\\csram\\AppData\\Local\\Temp\\moloch-nc-terminal-candidate-20261016",
+  "status": "INACTIVE_DRAFT_NOT_INSTALLED",
+  "tickCeilingMicros": 880000,
+  "version": 1
+}
