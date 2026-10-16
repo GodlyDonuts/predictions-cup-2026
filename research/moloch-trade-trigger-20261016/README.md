@@ -1,5 +1,20 @@
 # Separate prospective public-trade sampling
 
+## Cohort v1 sealed at15:49:48UTC
+
+Observer516505 stopped after its original SIG516085 stopped for the checked
+runtime upgrade. Its original gzip is sealed: four samples/four labels, eight
+rows/6,024bytes, raw SHA4a5770c2. No economic outcomes were inspected; no model
+is qualified. [Original seal](../moloch-preflight-service-20261016/deployment/prior-trade-cohort-seal.json).
+Successor518852 is restoring original history; a separate observer cohort must
+bind its actual breadth source. Original sampling choices and age bounds remain.
+
+The [original-source verifier](witness/README.md) now checks raw trade/SIG-body
+membership and first recorded same-segment book. Root reviewed it and independently
+passed12 synthetic checks. Original observer consumption/availability traces remain
+missing, so whole-witness/model eligibility stays false. This limitation is not
+filled by source hashes or a caller's complete flag.
+
 ## Original timing diagnosis and offline evaluation source
 
 The finite original-suffix [timing probe](source-age-probe/README.md) observed777 accepted books across226 exchanges: median source age8.824s and receipt-to-probe age7.924s, with no same-sequence/newer-source case. It verifies substantial delay after the original socket receipt, but lacks an append clock and cannot split producer queue/append from observer-tail/cache time. A narrow cooperative preflight-service source change is being developed separately; no post-change speedup is claimed.

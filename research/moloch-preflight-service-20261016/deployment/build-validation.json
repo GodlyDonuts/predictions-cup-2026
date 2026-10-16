@@ -1,0 +1,30 @@
+{
+  "sourceCommit": "2225b1efba5a16078cea875f5162f96742514d3a",
+  "sourceManifestSha256": "0440c7982aec7fd7efe0a608201aa65f3a6235018b24ea5897e86d1d9f476402",
+  "engineIdentity": "8acc461bc02fb9236100058fe464b203d5da005375632af05c176223c7246754",
+  "testLogSha256": "108471854261cc1447f232301be725ae423a2284ec125f2ded1b3b4cbf00eab2",
+  "releaseLogSha256": "9350abd2d934b2c81a5a20aab698305b84abc4eb00203df3bf979aa751ff4e6b",
+  "binarySha256": "fb55f7392c5172c14d442e0335ca5f2ea003309334b78c86c5204d3ed54bad31",
+  "binaryBytes": 12997904,
+  "binaryPath": "/home/archon/apps/moloch/buffered-json-target-20261016/release/moloch-live-runtime",
+  "startedAt": "2026-10-16T15:39:24.342984+00:00",
+  "testCompletedAt": "2026-10-16T15:39:51.294775+00:00",
+  "completedAt": "2026-10-16T15:44:54.369932+00:00",
+  "elapsedSeconds": 330.02700512099545,
+  "checks": {
+    "runtimeWorker": {
+      "passed": 89,
+      "failed": 0,
+      "ignored": 0,
+      "filteredOut": 0
+    },
+    "distinctPassed": 89,
+    "subsets": {
+      "cooperativePreflight": 4
+    },
+    "release": {
+      "passed": true,
+      "exitCode": 0
+    }
+  }
+}

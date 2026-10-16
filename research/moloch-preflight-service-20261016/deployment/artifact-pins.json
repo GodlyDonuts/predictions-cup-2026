@@ -1,0 +1,56 @@
+{
+  "pins": {
+    "SOURCE": "2225b1efba5a16078cea875f5162f96742514d3a",
+    "CHANGES": {
+      "moloch/live-runtime/src/worker.rs": "606f3feb682fc16cd3d6d122341dea7fb5011c43c1773822be063f2d6d53ccaf"
+    },
+    "EXPECTED_CHECKS": {
+      "runtimeWorker": 89
+    },
+    "EXPECTED_SUBSETS": {
+      "cooperativePreflight": 4
+    },
+    "TEST_LOG": "108471854261cc1447f232301be725ae423a2284ec125f2ded1b3b4cbf00eab2",
+    "RELEASE_LOG": "9350abd2d934b2c81a5a20aab698305b84abc4eb00203df3bf979aa751ff4e6b",
+    "BINARY_SHA": "fb55f7392c5172c14d442e0335ca5f2ea003309334b78c86c5204d3ed54bad31",
+    "SOURCE_MANIFEST_SHA": "0440c7982aec7fd7efe0a608201aa65f3a6235018b24ea5897e86d1d9f476402",
+    "VALIDATION_SHA": "814026b1257a44bdd673dfcab5d84ddaa26f691e1513be2f7b3030b1469c7396",
+    "BUILD_SOURCE": "/tmp/moloch-preflight-service-20261016-r1",
+    "PRIOR_RECEIPT": "9773cff2319b1430d80b303d6e9f36e49342016f637c5ddca338f8b4c0983616",
+    "PRIOR_CONTROL": "5b673d2b0423edd43f9712994f492d4fccdfa2f6ca69acf85f79109371cc9189",
+    "PRIOR_UNIT": "58dfcac5eb3799f23c44c24055136ac8b916ec86833841a7038cedc95e6d6b8b"
+  },
+  "manifestPath": "/tmp/moloch-paper6-preflight-service-approved-manifest.json",
+  "manifestSha256": "dda556e3fe0ce40542f36557f9c6fbf55e4242c9f9b4e64c489566d185f8f670",
+  "validation": {
+    "sourceCommit": "2225b1efba5a16078cea875f5162f96742514d3a",
+    "sourceManifestSha256": "0440c7982aec7fd7efe0a608201aa65f3a6235018b24ea5897e86d1d9f476402",
+    "engineIdentity": "8acc461bc02fb9236100058fe464b203d5da005375632af05c176223c7246754",
+    "testLogSha256": "108471854261cc1447f232301be725ae423a2284ec125f2ded1b3b4cbf00eab2",
+    "releaseLogSha256": "9350abd2d934b2c81a5a20aab698305b84abc4eb00203df3bf979aa751ff4e6b",
+    "binarySha256": "fb55f7392c5172c14d442e0335ca5f2ea003309334b78c86c5204d3ed54bad31",
+    "binaryBytes": 12997904,
+    "binaryPath": "/home/archon/apps/moloch/buffered-json-target-20261016/release/moloch-live-runtime",
+    "startedAt": "2026-10-16T15:39:24.342984+00:00",
+    "testCompletedAt": "2026-10-16T15:39:51.294775+00:00",
+    "completedAt": "2026-10-16T15:44:54.369932+00:00",
+    "elapsedSeconds": 330.02700512099545,
+    "checks": {
+      "runtimeWorker": {
+        "passed": 89,
+        "failed": 0,
+        "ignored": 0,
+        "filteredOut": 0
+      },
+      "distinctPassed": 89,
+      "subsets": {
+        "cooperativePreflight": 4
+      },
+      "release": {
+        "passed": true,
+        "exitCode": 0
+      }
+    }
+  },
+  "failedFixtureLogSha256": "0b26fd615c51db333527d25e6269daf26e4213fb273d084d40ea618840e1e042"
+}

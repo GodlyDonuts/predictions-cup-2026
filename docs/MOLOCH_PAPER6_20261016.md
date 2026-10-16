@@ -9,26 +9,29 @@ collateral into trading profit. Original financial history remains attributed.
 Embedded citations and historical balances in the paper are research leads,
 separate from current observations and the human's direct authorization.
 
-## Latest operation and qualification at15:35UTC
+## Latest operation and qualification at15:50UTC
 
-Sole516085/source870ce889/binaryd2ad93b5 remains fresh trading, healthy
-realtime/no STOP at15:33:55UTC:50 successor ACKs/194 cumulative fill rows.
-Attributed realized P&L is−143.860000, cash72,704.540000/owned22,731.515000;
-full attributed capital95,579.915000 is separate from profit.
-[Actual SIG proof](../research/moloch-preflight-service-20261016/deployment/prior-live-verification.json).
+Runtime-only upgrade started sole518852/source2225b1ef/binaryfb55f739 at
+15:48:53UTC after89/89 ARM64 worker checks and the optimized release passed.
+At15:49:48 the executable matched/no STOP; original-history restoration is still
+pending, so fresh trading and new orders are not yet verified. Original194fills,
+realized−143.860000, cash72,704.540000/owned22,731.515000 remain. Full attributed
+capital95,579.915000, same bank/native engine/twelve bridge bytes remain; the
+only control change is activation.binarySha256. No latency/profit gain claimed.
+[Actual promotion and readiness boundary](../research/moloch-preflight-service-20261016/README.md).
 
-The source-age probe measured7.924s median original receipt-to-probe delay;
-worker append versus observer consumption is not yet separated. A worker-only
-candidate services the existing source before physical preflight GETs without
-changing quote terms, clocks, capital, rate limits or daily windows. Preliminary
-ARM64 compile and corrected full89-worker suite passed; the optimized build
-is running, with no candidate deployment yet.
-[Measured scope and validation status](../research/moloch-preflight-service-20261016/README.md).
+The preflight hook services the existing source before logical GETs, retaining
+all seven original receipts and exact quote validity. It targets a measured
+receipt-to-probe delay7.924s median; its actual after-change effect is pending.
+[Source review](../research/moloch-preflight-service-20261016/source-review.md).
 
-Trade observer516505/source4e4649 has three eligible samples at15:35:21;
-its original frozen protocol remains, active data is unsealed and outcomes
-uninspected. No economic model or profitability is established.
-[Actual observer proof](../research/moloch-preflight-service-20261016/deployment/prior-observer-verification.json).
+Old read-only trade cohortv1 is sealed15:49:48 with four samples/four labels.
+No economic outcomes have been inspected and no model is qualified. A new
+cohort must bind successor breadth after restoration. The original-body verifier
+passed12 synthetic checks, but missing consumption/availability traces still
+prevent complete witness qualification.
+[Sealed original cohort](../research/moloch-preflight-service-20261016/deployment/prior-trade-cohort-seal.json),
+[witness limitations](../research/moloch-trade-trigger-20261016/witness/README.md).
 
 ## Historical operation and qualification at 14:57 UTC
 

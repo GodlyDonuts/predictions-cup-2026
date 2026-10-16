@@ -1,0 +1,36 @@
+{
+  "reviewedAt": "2026-10-16T15:48:42.164862+00:00",
+  "controlledStopRequest": {
+    "operator": "paper6_preflight_service_rollout_v1",
+    "token": "78e72afb7e9f4a96a299f0ef3ab6ceec",
+    "at": "2026-10-16T15:47:09.896516+00:00",
+    "oldPid": 516085,
+    "reason": "CONTROLLED_PREFLIGHT_SERVICE_RUNTIME_UPGRADE",
+    "action": "finish operation, no new account requests or writes"
+  },
+  "workerStop": {
+    "action": "no automatic write retry or activation renewal",
+    "at": "2026-10-16T15:47:10.507Z",
+    "reason": "LIVE_RELATIONSHIP_CENSUS_GUARD"
+  },
+  "workerStatus": {
+    "at": "2026-10-16T15:47:10.513Z",
+    "mode": "stopped",
+    "pid": 516085,
+    "profitabilityEstablished": false,
+    "reason": "LIVE_RELATIONSHIP_CENSUS_GUARD"
+  },
+  "censusGuardedGraph": "236",
+  "censusGuardCode": "STOPPED_OR_OWNER_LOST",
+  "censusCompletedAtMs": 1792165629947,
+  "stopResponseSeconds": 0.610484,
+  "globalStopAbsent": true,
+  "oldOwnerAbsent": true,
+  "priorControlUnchanged": true,
+  "pendingAutoRestartCanceled": true,
+  "queueQuiet": {
+    "globalUnknownCount": 0,
+    "active": null,
+    "manualReview": false
+  }
+}

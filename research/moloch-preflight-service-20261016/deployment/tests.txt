@@ -1,0 +1,201 @@
+warning: unnecessary parentheses around `if` condition
+  --> /tmp/moloch-preflight-service-20261016-r1/moloch/native/src/engine_collateral.rs:90:254
+   |
+90 | ....snapshot.end&&before.end<=after.start&&after.end-before.start<=if (e["type"]=="actual_collateral_ordinary_cash_sync"||e["type"]=="actual_collateral_checkpoint"){86_400_000}else{120_000},"COLLATERAL_WINDOW_OR_BEFORE")?;
+   |                                                                       ^                                                                                            ^
+   |
+   = note: `#[warn(unused_parens)]` (part of `#[warn(unused)]`) on by default
+help: remove these parentheses
+   |
+90 -   need(before.cash==l.snapshot.cash&&before.debt==l.snapshot.debt&&before.power==l.snapshot.power&&before.components==l.snapshot.components&&before.start>=l.snapshot.start&&before.end>=l.snapshot.end&&before.end<=after.start&&after.end-before.start<=if (e["type"]=="actual_collateral_ordinary_cash_sync"||e["type"]=="actual_collateral_checkpoint"){86_400_000}else{120_000},"COLLATERAL_WINDOW_OR_BEFORE")?;
+90 +   need(before.cash==l.snapshot.cash&&before.debt==l.snapshot.debt&&before.power==l.snapshot.power&&before.components==l.snapshot.components&&before.start>=l.snapshot.start&&before.end>=l.snapshot.end&&before.end<=after.start&&after.end-before.start<=if e["type"]=="actual_collateral_ordinary_cash_sync"||e["type"]=="actual_collateral_checkpoint" {86_400_000}else{120_000},"COLLATERAL_WINDOW_OR_BEFORE")?;
+   |
+
+warning: unnecessary parentheses around function argument
+  --> /tmp/moloch-preflight-service-20261016-r1/backend-rust/transport-service/src/multi_leg_portfolio.rs:84:63
+   |
+84 |   let last=prices::official_tick_units(&d["fillPrice"])?;need((if l.action==Action::Buy{0<=last&&last<=limit}else{limit<=last&&last<=1_000_000}),"PORTFOLIO_ACK_FILL_LIMIT")?;
+   |                                                               ^                                                                                ^
+   |
+   = note: `#[warn(unused_parens)]` (part of `#[warn(unused)]`) on by default
+help: remove these parentheses
+   |
+84 -   let last=prices::official_tick_units(&d["fillPrice"])?;need((if l.action==Action::Buy{0<=last&&last<=limit}else{limit<=last&&last<=1_000_000}),"PORTFOLIO_ACK_FILL_LIMIT")?;
+84 +   let last=prices::official_tick_units(&d["fillPrice"])?;need(if l.action==Action::Buy{0<=last&&last<=limit}else{limit<=last&&last<=1_000_000},"PORTFOLIO_ACK_FILL_LIMIT")?;
+   |
+
+warning: `moloch-replay` (lib) generated 1 warning (run `cargo fix --lib -p moloch-replay` to apply 1 suggestion)
+warning: `baal-transport-service` (lib) generated 1 warning (run `cargo fix --lib -p baal-transport-service` to apply 1 suggestion)
+warning: unused import: `self`
+ --> src/package_worker.rs:5:77
+  |
+5 | use crate::{authority::ProductionAuthority,dispatch::DispatchLog,feedback::{self,Result},package_admission::Admission,package_authority::PackageSnapshotSet,package_dispatch::{DurableIntent,PackageDispatchLog},package_feedback as even...
+  |                                                                             ^^^^
+  |
+  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused import: `UNIT`
+ --> src/package_portfolio.rs:6:75
+  |
+6 | use moloch_relationship_arbitrage::{Instrument,Side,Book,Level,depth_cost,UNIT};
+  |                                                                           ^^^^
+
+warning: unused imports: `authority::ProductionAuthority`, `dispatch::DispatchLog`, `package_not_sent_evidence::VerifiedNotSent`, and `self`
+ --> src/package_portfolio_worker.rs:5:13
+  |
+5 | ...::{authority::ProductionAuthority,dispatch::DispatchLog,feedback::{self,Result},package_portfolio::Plan,package_authority::PackageSnapshotSet,package_dispatch::{DurableIntent,PackageDispatchLog},package_portfolio_feedback as events,package_not_sent_evidence::VerifiedNotSent};
+  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ ^^^^^^^^^^^^^^^^^^^^^            ^^^^                                                                                                                                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused imports: `BindingLookup` and `Transport`
+ --> src/package_portfolio_worker.rs:6:30
+  |
+6 | ...::{Transport,Scope,Permit,RequestSpec,Receipt,Endpoint,TransportError,multi_leg::{self,ResponseEvidence,RequestEvidence},multi_leg_portfolio::{self as signed,Basket,Outcome,Action,Leg},admission::{ImmutableBinding,BindingLookup}};
+  |       ^^^^^^^^^                                                                                                                                                                                                          ^^^^^^^^^^^^^
+
+warning: unused imports: `SystemTime` and `UNIX_EPOCH`
+  --> src/package_portfolio_worker.rs:11:32
+   |
+11 | use std::{fs,path::Path,time::{SystemTime,UNIX_EPOCH}};
+   |                                ^^^^^^^^^^ ^^^^^^^^^^
+
+warning: unused import: `UNIT`
+ --> src/package_allocation.rs:6:49
+  |
+6 | use moloch_relationship_arbitrage::{Limits,Side,UNIT};
+  |                                                 ^^^^
+
+warning: unused imports: `authority::ProductionAuthority`, `package_not_sent_evidence::VerifiedNotSent`, and `self`
+ --> src/probabilistic_portfolio_worker.rs:5:13
+  |
+5 | ...::{authority::ProductionAuthority,dispatch::DispatchLog,feedback::{self,Result},probabilistic_portfolio::{Plan,Reservation,Policy},package_authority::PackageSnapshotSet,package_dispatch::{DurableIntent,PackageDispatchLog},package_portfolio_feedback as events,package_not_sent_evidence::VerifiedNotSent};
+  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^                                  ^^^^                                                                                                                                                                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused imports: `Action`, `BindingLookup`, `Leg`, and `Transport`
+ --> src/probabilistic_portfolio_worker.rs:6:30
+  |
+6 | ...::{Transport,Scope,Permit,RequestSpec,Receipt,Endpoint,TransportError,multi_leg::{self,ResponseEvidence,RequestEvidence},multi_leg_portfolio::{self as signed,Basket,Outcome,Action,Leg},admission::{ImmutableBinding,BindingLookup}};
+  |       ^^^^^^^^^                                                                                                                                                                 ^^^^^^ ^^^                               ^^^^^^^^^^^^^
+
+warning: unused imports: `SystemTime` and `UNIX_EPOCH`
+  --> src/probabilistic_portfolio_worker.rs:11:32
+   |
+11 | use std::{fs,path::Path,time::{SystemTime,UNIX_EPOCH}};
+   |                                ^^^^^^^^^^ ^^^^^^^^^^
+
+warning: variable does not need to be mutable
+  --> src/package_preflight.rs:24:90
+   |
+24 | pub fn collect<B:Backend,F:FnMut(&Receipt)->Result<()>>(b:&mut B,s:&Scope,basket:&Basket,mut after:F)->Result<PackageSnapshotSet>{
+   |                                                                                          ----^^^^^
+   |                                                                                          |
+   |                                                                                          help: remove this `mut`
+   |
+   = note: `#[warn(unused_mut)]` (part of `#[warn(unused)]`) on by default
+
+warning: field `completed` is never read
+  --> src/execution_distribution.rs:51:77
+   |
+51 | #[derive(Clone)]struct Sample{key:Option<PoolKey>,market:String,attempt:u64,completed:u64,requested:u64,filled:u64,gain:Option<i128>,reservation_capital_time:i128,status:String,proof_sha:String}
+   |                        ------ field in this struct                          ^^^^^^^^^
+   |
+   = note: `Sample` has a derived impl for the trait `Clone`, but this is intentionally ignored during dead code analysis
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: `moloch-live-runtime` (lib) generated 11 warnings (run `cargo fix --lib -p moloch-live-runtime` to apply 10 suggestions)
+   Compiling moloch-live-runtime v0.1.0 (/tmp/moloch-preflight-service-20261016-r1/moloch/live-runtime)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 10.14s
+     Running unittests src/main.rs (/home/archon/apps/moloch/buffered-json-target-20261016/debug/deps/moloch_live_runtime-71cf53d9368be1d6)
+
+running 89 tests
+test worker::cancel_snapshot_tests::incomplete_account_cancellation_reads_fail_before_cash_without_fabricated_receipts ... ok
+test worker::cancel_snapshot_tests::cancellation_read_path_consumes_exactly_four_account_operations ... ok
+test worker::collateral_accounting_config_tests::explicit_enable_cannot_activate_unsupported_passive_flow ... ok
+test worker::collateral_accounting_config_tests::old_controls_keep_accounting_disabled ... ok
+test worker::discovery_urgent_tests::physical_liabilities_and_risk_exits_precede_discovery_without_promoting_flat_drafts ... ok
+test worker::ordinary_side_edge_worker_tests::actual_native_quote_shadow_records_but_enforce_defers_without_a_financial_event ... ok
+test worker::cooperative_preflight_tests::changed_quote_is_expected_defer_before_next_get_without_new_intent ... ok
+test worker::cooperative_preflight_tests::unreserved_read_target_still_collects_all_original_facts_after_source_changes_drafts ... ok
+test worker::owner_capital_startup_tests::allocation_uses_four_original_shared_reads_in_order_without_realtime_or_writes ... ok
+test worker::owner_capital_startup_tests::expired_funding_is_a_buy_only_defer_and_integrity_errors_remain_fatal ... ok
+test worker::owner_capital_startup_tests::legacy_controls_do_not_change_cap_binding_and_opt_in_requires_verified_approval ... ok
+test worker::ordinary_side_edge_worker_tests::old_control_disabled_does_not_assess_or_write_a_diagnostic ... ok
+test worker::cooperative_preflight_tests::stable_native_buy_completes_exact_seven_original_receipts_despite_head_progress ... ok
+test worker::ordinary_side_edge_worker_tests::unavailable_is_a_defer_only_in_enforce_and_managed_cohorts_bypass ... ok
+test worker::ordinary_side_edge_worker_tests::genuine_opposite_owned_fills_bypass_only_when_the_entire_buy_is_covered ... ok
+test worker::cooperative_preflight_tests::hook_failure_before_first_or_later_get_is_fatal_even_with_invalidation_text ... ok
+test worker::owner_capital_startup_tests::pending_original_bank_withholds_buys_but_not_owned_sell_lane ... ok
+test worker::package_hook_tests::attempt_anchor_cannot_reinterpret_a_changed_original_intent_as_the_native_quote ... ok
+test worker::package_hook_tests::optional_paper5_ineligibility_does_not_hide_io_integrity_or_unknown_errors ... ok
+test worker::package_hook_tests::execution_observer_sees_only_exact_successfully_committed_prepared_bytes ... ok
+test worker::package_hook_tests::contradicted_verified_abort_blocks_native_binding_actual_fill_or_ack_even_if_marked_closed ... ok
+test worker::package_hook_tests::known_binding_never_skips_native_validation_of_changed_ack_identity_and_terms ... ok
+test worker::package_hook_tests::ordinary_actual_evidence_requires_terminal_closure_without_creating_a_retry ... ok
+test worker::package_hook_tests::later_reconcile_hook_failure_cannot_erase_already_durable_partial_fill_or_terminal ... ok
+test worker::package_hook_tests::paper5_scan_is_bounded_without_renewing_a_clock_or_allowing_backwards_time ... ok
+test worker::package_hook_tests::original_attempt_persists_one_clock_exact_native_head_and_dispatch_frontier_without_financial_write ... ok
+test worker::package_hook_tests::only_closed_original_untagged_native_ack_uses_legacy_forecast_restore ... ok
+test worker::package_hook_tests::paper5_draft_selection_is_readonly_then_yields_only_positive_original_unsent_components ... ok
+test worker::package_hook_tests::physical_attempt_in_original_dispatch_journal_cannot_yield_to_a_package ... ok
+test worker::package_hook_tests::reconcile_services_source_between_exact_reads_then_applies_original_partial_tape_and_terminal_without_hook ... ok
+test worker::package_hook_tests::refresh_liability_uses_original_sdk_proof_and_requires_restart_reverification ... ok
+test worker::package_hook_tests::paper5_keeps_original_physical_and_unknown_liabilities_without_cancel_or_replacement ... ok
+test worker::paper5_cache_tests::original_node_clock_is_not_refreshed_and_foreign_scope_is_not_imported ... ok
+test worker::package_hook_tests::recovered_ack_is_durable_once_then_restart_revalidation_writes_no_duplicate_history ... ok
+test worker::refresh_worker_tests::attempted_history_does_not_mask_prior_eligible_hint_and_other_live_scope_does_not_suppress_it ... ok
+test worker::paper5_cache_tests::receipt_cache_is_bounded_and_failed_or_nonnode_reads_are_ignored ... ok
+test worker::refresh_worker_tests::exact_unknown_shape_is_required_and_nonempty_global_state_blocks ... ok
+test worker::refresh_worker_tests::durable_stream_budget_corruption_or_regressed_restart_never_reseeds ... ok
+test worker::refresh_worker_tests::forecast_hold_and_current_same_side_sell_skip_expensive_refresh_work ... ok
+test worker::package_hook_tests::reconcile_stream_failure_before_get_keeps_actual_binding_and_does_not_fetch_or_clear_tapes ... ok
+test worker::refresh_worker_tests::owned_expired_candidates_share_one_real_queue_observation_and_keep_original_typed_guards ... ok
+test worker::package_hook_tests::stale_cleanup_preserves_actual_pending_mate_while_another_flat_exchange_yields ... ok
+test worker::package_hook_tests::stale_two_draft_batch_uses_each_current_original_proof_and_restarts_without_new_cash_or_orders ... ok
+test worker::package_hook_tests::original_dispatch_proved_retirement_does_not_recreate_component_quotes_and_replays ... ok
+test worker::refresh_worker_tests::long_expired_history_coalesces_by_scope_without_reviving_attempted_or_cancelled_hints ... ok
+test worker::refresh_worker_tests::rebuilt_physical_binding_uses_new_qid_quantity_price_and_original_expiry ... ok
+test worker::refresh_worker_tests::recovery_combines_auth_budget_and_refuses_exhaustion_without_long_auto_wait ... ok
+test worker::refresh_worker_tests::refresh_prefilter_preserves_authoritative_queue_and_safety_failures ... ok
+test worker::refresh_worker_tests::queued_native_failure_propagates_without_replaying_or_appending_invalid_batch ... ok
+test worker::refresh_worker_tests::stream_recovery_requires_global_quiet_queue_without_inferred_missing_fields ... ok
+test worker::refresh_worker_tests::urgent_other_scope_keeps_pre_outage_window_after_late_join ... ok
+test worker::reviewed_existing_worker_tests::actual_native_activation_cancel_and_expiry_guard_determine_union_membership ... ok
+test worker::refresh_worker_tests::flat_expired_history_performs_no_queue_status_or_full_fingerprint ... ok
+test worker::reviewed_existing_worker_tests::bulk_default_disabled_and_single_scope_never_add_an_optional_read ... ok
+test worker::refresh_worker_tests::source_chunks_preserve_restart_cursor_and_stop_at_invalid_batch_without_replaying_prefix ... ok
+test worker::refresh_worker_tests::queued_valid_prefix_is_durable_before_source_or_stream_failure ... ok
+test worker::reviewed_existing_worker_tests::bulk_veto_expiry_at_rotation_preserves_both_original_candidates ... ok
+test worker::reviewed_existing_worker_tests::cohort_retirement_lookup_requires_exact_original_session_membership_after_restart ... ok
+test worker::reviewed_existing_worker_tests::bulk_urgent_reviewed_and_managed_choices_bypass_the_extra_read ... ok
+test worker::reviewed_existing_worker_tests::bulk_late_missing_null_or_wrong_endpoint_is_never_positive_authority ... ok
+test worker::reviewed_existing_worker_tests::copied_or_mutated_adoption_refs_never_gain_session_membership_and_torn_rows_fail ... ok
+test worker::refresh_worker_tests::queued_frames_keep_exact_clocks_rows_cursors_and_restart_state ... ok
+test worker::reviewed_existing_worker_tests::foreign_scope_before_optional_read_fails_without_any_request ... ok
+test worker::reviewed_existing_worker_tests::incomplete_original_account_packet_stops_before_contract_or_book_reads ... ok
+test worker::reviewed_existing_worker_tests::fresh_cap_fallback_releases_only_a_whole_proven_flat_ordinary_draft_market ... ok
+test worker::reviewed_existing_worker_tests::no_ready_physical_quote_still_performs_fundamental_refresh ... ok
+test worker::reviewed_existing_worker_tests::one_cursor_services_multiple_read_hints_and_ready_physical_quotes ... ok
+test worker::reviewed_existing_worker_tests::fresh_ordinary_choice_does_not_pay_bulk_cost_for_other_stale_candidates ... ok
+test worker::reviewed_existing_worker_tests::known_actual_target_cannot_be_retired_as_an_unsubmitted_draft ... ok
+test worker::reviewed_existing_worker_tests::original_fact_window_includes_the_whole_packet_and_rejects_future_or_reversed_receipts ... ok
+test worker::reviewed_existing_worker_tests::one_original_bulk_veto_bound_to_real_native_quote_changes_no_bank_or_intent ... ok
+test worker::reviewed_existing_worker_tests::competitor_with_a_review_intent_or_actual_execution_is_never_discarded_for_capacity ... ok
+test worker::reviewed_existing_worker_tests::perpetually_unqualified_nc_read_cannot_starve_ready_ordinary_quote ... ok
+test worker::reviewed_existing_worker_tests::original_adoption_is_recovered_from_the_committed_bank_not_a_transfer_projection ... ok
+test worker::reviewed_existing_worker_tests::pure_entry_denials_defer_but_durability_source_and_unknown_failures_are_fatal ... ok
+test worker::reviewed_existing_worker_tests::read_hint_gets_exactly_seven_original_facts_without_a_fabricated_native_qid ... ok
+test worker::reviewed_existing_worker_tests::real_same_key_quote_supersedes_read_hint_and_urgent_exit_preempts_union ... ok
+test worker::reviewed_existing_worker_tests::original_negative_screen_rotates_to_another_real_native_scope_in_the_same_pass ... ok
+test worker::reviewed_existing_worker_tests::denied_or_failed_optional_read_preserves_existing_stop_and_read_errors ... ok
+test worker::reviewed_existing_worker_tests::passing_bulk_still_reads_the_entire_original_seven_facts_and_prefilter_book ... ok
+test worker::reviewed_existing_worker_tests::retained_terminal_receipts_reject_changed_bytes_wrong_hash_and_symlink ... ok
+test worker::reviewed_existing_worker_tests::stale_holding_refresh_and_reviewed_entry_share_one_cursor_without_ttl_starvation ... ok
+test worker::reviewed_existing_worker_tests::proven_drafts_retire_once_then_real_reviewed_reservation_waits_activation_and_keeps_fifo ... ok
+test worker::reviewed_existing_worker_tests::refreshed_competitive_native_sell_still_requires_seven_new_independent_facts ... ok
+test worker::reviewed_existing_worker_tests::unknown_original_attempt_blocks_cleanup_without_erasing_native_or_dispatch_history ... ok
+test worker::reviewed_existing_worker_tests::stale_far_native_sell_reads_only_original_book_and_never_an_account_packet ... ok
+test worker::reviewed_existing_worker_tests::reviewed_read_only_book_screen_can_decline_without_account_reads_and_preserves_unknown_guard ... ok
+test worker::reviewed_existing_worker_tests::unknown_queue_or_expired_native_quote_cannot_use_book_prefilter_for_a_retry ... ok
+test worker::refresh_worker_tests::queued_large_events_flush_before_aggregate_byte_limit_and_preserve_individual_large_event ... ok
+
+test result: ok. 89 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 16.74s
+

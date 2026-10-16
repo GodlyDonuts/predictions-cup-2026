@@ -1,0 +1,138 @@
+{
+  "at": "2026-10-16T15:48:53.057961+00:00",
+  "oldPid": 516085,
+  "newPid": 518852,
+  "sourceCommit": "2225b1efba5a16078cea875f5162f96742514d3a",
+  "binarySha256": "fb55f7392c5172c14d442e0335ca5f2ea003309334b78c86c5204d3ed54bad31",
+  "engineIdentity": "8acc461bc02fb9236100058fe464b203d5da005375632af05c176223c7246754",
+  "control": "/home/archon/apps/moloch/shared/moloch-live-paper6-preflight-service-20261016.json",
+  "release": "/home/archon/apps/moloch/releases/paper6-preflight-service-fb55f7392c51/moloch-live-runtime",
+  "approvedManifestSha256": "dda556e3fe0ce40542f36557f9c6fbf55e4242c9f9b4e64c489566d185f8f670",
+  "priorRolloutSha256": "9773cff2319b1430d80b303d6e9f36e49342016f637c5ddca338f8b4c0983616",
+  "boundary": {
+    "manifestSha256": "dda556e3fe0ce40542f36557f9c6fbf55e4242c9f9b4e64c489566d185f8f670",
+    "snapshot": {
+      "head": {
+        "hash": "48b2b9f4471706c582d765c438cdf471bce772efc1bcf2ddf09ab8c73a9860aa",
+        "manifestHash": "78acaef952ed95b9bff24a3349ece669ccbe88ef7294b27dd9c2aa7d09cae325",
+        "previous": "af9243f21e1e340995beb1bc005b0f37b6533b81606e8eb85bd18e14ed63a25e",
+        "sequence": 281121
+      },
+      "reportSha256": "ba227be0695ffcf4bddebf9950d9d6527022a1b050c52726013ad030b1e4456b",
+      "manifestSha256": "d74b52eb107ea97388c106505d36fce14700b082723c9f7bfa229f2aedafef9e",
+      "prefixBytes": 874114009,
+      "prefixSha256": "891851615dcd20a676d388fe10e0ea0b7d33a4a8b85fd4dd73b4754cf16300b5",
+      "bridgeSha256": "76fab91acccfe26cfb1a80010a7b1fb00df7f92f02dc20d5127192258bcf0723",
+      "dispatch": {
+        "sequence": 12119,
+        "hash": "3eb9d87058e1c37b581871695b5709ff32f400b24473e4c91be4ed1153e9bf03",
+        "acknowledged": 1148,
+        "provedAborted": {
+          "3411": "c9c4bb4bade0edf0f52f1ae5d41d93f4518770f99844578f8a3a319a75d94de7"
+        },
+        "unknownOrdinaryAttempts": 0
+      },
+      "dispatchSha256": "efe6262ddd967cedee83d7159f900896e15a71e1c68dff514a5c09289d86ea2f",
+      "fundamentalSha256": "8978760b7db639076903ba477cb9769ecef0d44b4862e6a4bcc63a9a057e8011",
+      "fundamentalMarkerSha256": "cb5efd642c6ab79ff57db55e36a17dcd7497a7f3f160be3fff2546d7a34021c1",
+      "packageDispatchSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bridgeEntriesCanonicalSha256": "f8a7ddcb5270eb9283eb6d79b9738a84f6b91ee3e9a125dfca40fff16e954f01"
+    },
+    "requestSha256": "f3be3a24e7123a4c3aca014ce9bec9300e6d3e1a1a39c18514e236eac3f1124c",
+    "stopSha256": "c6589ab8467498d4388bf935c6358a9e6c542d77a5bbe31c3c4b223aacc98f36",
+    "workerStatusSha256": "2d455e8eac987266770a2f71caf0fef4778d8989b41ac9e9aa654bb5f4f90463",
+    "queueQuiet": {
+      "globalUnknownCount": 0,
+      "active": null,
+      "manualReview": false
+    }
+  },
+  "testLogSha256": "108471854261cc1447f232301be725ae423a2284ec125f2ded1b3b4cbf00eab2",
+  "releaseLogSha256": "9350abd2d934b2c81a5a20aab698305b84abc4eb00203df3bf979aa751ff4e6b",
+  "checks": {
+    "runtimeWorker": {
+      "passed": 89,
+      "failed": 0,
+      "ignored": 0,
+      "filteredOut": 0
+    },
+    "distinctPassed": 89,
+    "subsets": {
+      "cooperativePreflight": 4
+    },
+    "release": {
+      "passed": true,
+      "exitCode": 0
+    }
+  },
+  "unchangedBridgeSha256": "76fab91acccfe26cfb1a80010a7b1fb00df7f92f02dc20d5127192258bcf0723",
+  "restartDropinSha256": "ff4237fb5e0b5f2a68159e4fa43d737eefc68ebdd422f56eea068c4ffba0e795",
+  "restartBackupSha256": "ddbe320f3fcd657d719a2ec28f67282ce2eb0c90ff8bf03eff9308871121936e",
+  "controlChanges": [
+    "activation.binarySha256"
+  ],
+  "bridgeWritten": false,
+  "freshTradingVerified": false,
+  "profitabilityEstablished": false,
+  "originalReceipt": {
+    "path": "/tmp/moloch-paper6-preflight-service-production-rollout.json",
+    "rawSha256": "b0d8d36314fa91df224872cd056523cb3be389f9c5ed00e4e814e061edf6a54f",
+    "bytes": 41734741,
+    "publicForm": "summary; original private receipt preserved"
+  },
+  "bridgeEntriesSummary": {
+    "count": 12,
+    "canonicalEntriesSha256": "f8a7ddcb5270eb9283eb6d79b9738a84f6b91ee3e9a125dfca40fff16e954f01",
+    "entries": [
+      {
+        "fromEngineIdentity": "64dd76fe0dbd932f5bb58e466bd7eff925fdd50f7b8d430d7297d0251f2ae954",
+        "toEngineIdentity": "e33d92b8c37e670f5f4f9568633ef187060186c8591f84595ed71029329563e6"
+      },
+      {
+        "fromEngineIdentity": "e33d92b8c37e670f5f4f9568633ef187060186c8591f84595ed71029329563e6",
+        "toEngineIdentity": "e65585c817fb3e75912ea30276010b8b3d2e8d163b31ccd291836d328d297947"
+      },
+      {
+        "fromEngineIdentity": "e65585c817fb3e75912ea30276010b8b3d2e8d163b31ccd291836d328d297947",
+        "toEngineIdentity": "0321e7458ed45da08bca7b030369d4e86ae2a9c0127b39fa7d4d49d33d5d0562"
+      },
+      {
+        "fromEngineIdentity": "0321e7458ed45da08bca7b030369d4e86ae2a9c0127b39fa7d4d49d33d5d0562",
+        "toEngineIdentity": "8520add404082af22ae484409cfcb972a895ffe612dec014c9d668c70b7ca282"
+      },
+      {
+        "fromEngineIdentity": "8520add404082af22ae484409cfcb972a895ffe612dec014c9d668c70b7ca282",
+        "toEngineIdentity": "93d508192627e5cb5524984bd4c08d5fbda5e6904493aea7e50f3a9490c2df87"
+      },
+      {
+        "fromEngineIdentity": "93d508192627e5cb5524984bd4c08d5fbda5e6904493aea7e50f3a9490c2df87",
+        "toEngineIdentity": "b3c975d3ac37138035728e28aeb6ffe7e99b9b525394f72b3be55e9b01ddf4d2"
+      },
+      {
+        "fromEngineIdentity": "b3c975d3ac37138035728e28aeb6ffe7e99b9b525394f72b3be55e9b01ddf4d2",
+        "toEngineIdentity": "1a8f8fdc77f650661061da98434dd1eeddead3ae98129eb3aed7fa0f6914b3f6"
+      },
+      {
+        "fromEngineIdentity": "1a8f8fdc77f650661061da98434dd1eeddead3ae98129eb3aed7fa0f6914b3f6",
+        "toEngineIdentity": "3cc0a797458c9aaff4d743769d95c8fdc37299b1dc0434e6df48d6d2f74f0123"
+      },
+      {
+        "fromEngineIdentity": "3cc0a797458c9aaff4d743769d95c8fdc37299b1dc0434e6df48d6d2f74f0123",
+        "toEngineIdentity": "4b50ec49ba7331eb051e7983e33ffa0ce55df19b9a9e4a7d9d5d8d8a5477ff98"
+      },
+      {
+        "fromEngineIdentity": "4b50ec49ba7331eb051e7983e33ffa0ce55df19b9a9e4a7d9d5d8d8a5477ff98",
+        "toEngineIdentity": "c3731d88e8db875c773350f62559daf9d8636818ec269862c7540d54424e1d82"
+      },
+      {
+        "fromEngineIdentity": "c3731d88e8db875c773350f62559daf9d8636818ec269862c7540d54424e1d82",
+        "toEngineIdentity": "653fa63717821cccf346799b5e9af7d2f95c24c38d7124b9ffa87d25a7ffeac3"
+      },
+      {
+        "fromEngineIdentity": "653fa63717821cccf346799b5e9af7d2f95c24c38d7124b9ffa87d25a7ffeac3",
+        "toEngineIdentity": "8acc461bc02fb9236100058fe464b203d5da005375632af05c176223c7246754"
+      }
+    ]
+  },
+  "operatorSha256": "405be53c6cf64a126582c4af4acd72d9bb2bcd1e73039b94db45c42f00bd5676"
+}
