@@ -1,6 +1,6 @@
 //! Offline, conditional tournament utility. No reservation or execution authority.
 //! Whole actual portfolio only: a sleeve expectation cannot stand in for wealth.
-use crate::{feedback::Result,semantic_states::{self,Compiled,PayoutRule,Side,UNIT},value_surface::BoundSurface,probabilistic_portfolio::{self,Plan,Policy,Leg},collateral_feedback::RetainedReceipt,dispatch::DispatchLog};
+use crate::{feedback::Result,semantic_states::{self,Compiled,PayoutRule,Side,UNIT},value_surface::BoundSurface,probabilistic_portfolio::{self,Plan,Policy,Leg},collateral_feedback::{RetainedReceipt,ReceiptStore},dispatch::DispatchLog};
 use baal_transport_service::{Scope,decimal_units,relationships};
 use moloch_replay::session::Session;
 use serde::{Serialize,Deserialize};
@@ -97,6 +97,21 @@ fn states(surface:&BoundSurface,c:&Compiled)->Result<Vec<State>>{
 }
 /// Original retained account evidence; no HTTP request or JSON receipt minting.
 pub struct AccountEvidence<'a>{pub root:&'a std::path::Path,pub account:&'a RetainedReceipt,pub positions:&'a RetainedReceipt,pub open_orders:&'a RetainedReceipt,pub collateral:&'a RetainedReceipt}
+fn profile_uuid(s:&str)->bool{s.len()==36&&s.bytes().enumerate().all(|(i,b)|if [8,13,18,23].contains(&i){b==b'-'}else{b.is_ascii_hexdigit()})}
+fn instant(s:&str)->Result<i64>{chrono::DateTime::parse_from_rfc3339(s)?.timestamp_nanos_opt().ok_or_else(||"PRIZE_LOT_CLOCK".into())}
+fn curve(lots:&[(u64,i128)])->Result<Vec<(u64,i128)>>{let mut out:Vec<(u64,i128)>=vec![];for(n,p)in lots{if let Some(last)=out.last_mut().filter(|l|l.1==*p){last.0=last.0.checked_add(*n).ok_or("PRIZE_RANGE")?;}else{out.push((*n,*p));}}Ok(out)}
+fn official_lots(row:&Value,received:&str,expected:&[(u64,i128)],ids:&mut BTreeSet<String>)->Result<()>{
+ let signed=row["quantity"].as_i64().filter(|q|*q!=i64::MIN).ok_or("PRIZE_LOT_QUANTITY")?;let side=if signed<0{"NO"}else{"YES"};let received=instant(received)?;
+ let rows=row["lots"].as_array().filter(|r|r.len()<=65536).ok_or("PRIZE_OFFICIAL_LOTS_REQUIRED")?;let mut ordered=vec![];let mut quantity=0u64;
+ for l in rows{let id=l["lotId"].as_str().map(str::to_owned).or_else(||l["lotId"].as_u64().map(|id|id.to_string())).ok_or("PRIZE_LOT_ID")?;
+  need(!id.is_empty()&&!id.starts_with('0')&&id.bytes().all(|b|b.is_ascii_digit())&&ids.insert(id),"PRIZE_DUPLICATE_LOT_ID")?;let n=l["quantity"].as_u64().filter(|q|*q>0).ok_or("PRIZE_LOT_QUANTITY")?;
+  let price=baal_transport_service::prices::official_tick_units(&l["entryPrice"])?;let at=instant(l["openedAt"].as_str().ok_or("PRIZE_LOT_CLOCK")?)?;
+  need(l["side"]==side&&at<=received,"PRIZE_LOT_SIDE_OR_CLOCK")?;quantity=quantity.checked_add(n).ok_or("PRIZE_RANGE")?;ordered.push((at,n,price));
+ }
+ need(quantity==signed.unsigned_abs(),"PRIZE_LOT_QUANTITY")?;ordered.sort_by_key(|l|l.0);
+ need(ordered.windows(2).all(|w|w[0].0!=w[1].0||w[0].2==w[1].2),"PRIZE_FIFO_ORDER_AMBIGUOUS")?;
+ let official=ordered.iter().map(|(_,n,p)|(*n,*p)).collect::<Vec<_>>();need(curve(&official)?==curve(expected)?,"PRIZE_FIFO_BASIS_MISMATCH")
+}
 fn account(bank:&Session,scope:&Scope,e:&AccountEvidence<'_>,review:&Reviewed,now:u64)->Result<(i128,i128,Vec<String>)>{
  let paths=[format!("/account?tournamentId={}",scope.tournament_id),format!("/tournaments/{}/portfolio/positions",scope.tournament_slug),format!("/orders?status=open&limit=200&tournamentId={}",scope.tournament_id),format!("/portfolio/collateral?tournamentId={}",scope.tournament_id)];let mut hashes=vec![];let mut min=u64::MAX;let mut max=0;
  for(r,path)in [e.account,e.positions,e.open_orders,e.collateral].iter().zip(paths){r.verify_root(e.root)?;let r=r.receipt();let start=crate::daily_windows::clock(&r.request_started_at)?;let end=crate::daily_windows::clock(&r.received_at)?;
@@ -104,11 +119,21 @@ fn account(bank:&Session,scope:&Scope,e:&AccountEvidence<'_>,review:&Reviewed,no
  }need(max-min<=20_000,"PRIZE_ACCOUNT_WINDOW")?;
  let a=e.account.receipt();let economics=relationships::parse_buying_power(&a.data,scope)?;let cash=economics.gross_cash_units.ok_or("PRIZE_CASH_UNKNOWN")?;
  need(cash==crate::authority::reconciled_expected_cash(bank)?,"PRIZE_CASH_NOT_RECONCILED")?;
- let collateral=relationships::parse_collateral(&e.collateral.receipt().data,scope)?;need(a.data["id"].as_str().is_some_and(|id|!id.is_empty())&&collateral.components.iter().all(|x|a.data["id"]==x.profile_id),"PRIZE_PROFILE")?;
+ // Historical identity evidence is bound by the immutable seed, not renewed.
+ // Its old receipt is NOT subject to the fresh account packet's20s window.
+ let seed=bank.live_account_seed().ok_or("PRIZE_ACCOUNT_SEED")?;let origin=RetainedReceipt::from_recorded_digest(e.root,seed["accountSnapshotHash"].as_str().ok_or("PRIZE_ACCOUNT_SEED")?,ReceiptStore::Ordinary)?;origin.verify_root(e.root)?;let original=origin.receipt();
+ let original_start=crate::daily_windows::clock(&original.request_started_at)?;let original_end=crate::daily_windows::clock(&original.received_at)?;let seed_at=crate::daily_windows::clock(seed["observedAt"].as_str().ok_or("PRIZE_ACCOUNT_SEED")?)?;
+ need(original.status==200&&original.endpoint==format!("/account?tournamentId={}",scope.tournament_id)&&original_start<=original_end&&original_end==seed_at&&seed_at<=now
+  &&original.data["id"].as_str().is_some_and(profile_uuid)&&a.data["id"]==original.data["id"]&&relationships::parse_buying_power(&original.data,scope)?.gross_cash_units==Some(decimal_units(seed["availableCash"].as_str().ok_or("PRIZE_ACCOUNT_SEED")?)?),"PRIZE_PROFILE_ORIGIN")?;
+ for receipt in [original,a]{if let Some(tid)=receipt.data.get("tournamentId"){need(tid==&scope.tournament_id,"PRIZE_PROFILE_TOURNAMENT")?;}}
+ if let Some(allocation)=bank.engine().owner_capital_allocation_record(){need(allocation["bankScope"]["profileId"]==a.data["id"],"PRIZE_PROFILE_ALLOCATION")?;}
+ hashes.push(crate::feedback::digest(original)?);
+ let collateral=relationships::parse_collateral(&e.collateral.receipt().data,scope)?;need(collateral.components.iter().all(|x|a.data["id"]==x.profile_id),"PRIZE_PROFILE")?;
  if collateral.outstanding_liability_units>0{need(review.input.terminal_debt_equals_observed,"PRIZE_TERMINAL_LIABILITY_UNMODELED")?;}
- let p=&e.positions.receipt().data;need(p.get("pagination").is_none(),"PRIZE_POSITIONS_INCOMPLETE")?;let rows=p["positions"].as_array().ok_or("PRIZE_POSITIONS")?;let mut seen=BTreeSet::new();let held=inventory(&bank.engine().wallet.positions())?;
+ let p=&e.positions.receipt().data;need(p.get("pagination").is_none(),"PRIZE_POSITIONS_INCOMPLETE")?;let rows=p["positions"].as_array().filter(|r|r.len()<=4096).ok_or("PRIZE_POSITIONS")?;let mut seen=BTreeSet::new();let mut lot_ids=BTreeSet::new();let held=inventory(&bank.engine().wallet.positions())?;
  for row in rows{let ex=row["exchangeId"].as_str().ok_or("PRIZE_POSITION_SCOPE")?;need(seen.insert(ex.to_owned())&&scope.exchanges.get(ex)==row["marketId"].as_str().map(|s|s.to_owned()).as_ref(),"PRIZE_POSITION_SCOPE")?;
   let yes=bank.engine().wallet.quantity(ex,moloch_replay::Side::Yes);let no=bank.engine().wallet.quantity(ex,moloch_replay::Side::No);need(yes.min(no)==0&&row["quantity"].as_i64().map(i128::from)==Some(yes as i128-no as i128),"PRIZE_POSITION_MISMATCH")?;
+  let expected=held.iter().find(|h|h.exchange==ex&&h.side==if no>0{Side::No}else{Side::Yes}).map(|h|h.lots.as_slice()).unwrap_or(&[]);official_lots(row,&e.positions.receipt().received_at,expected,&mut lot_ids)?;
  }need(held.iter().all(|h|seen.contains(&h.exchange)),"PRIZE_UNATTRIBUTED_HOLDING")?;
  let o=&e.open_orders.receipt().data;need(o["coverage"]["complete"]==true&&o["pagination"]["hasMore"]==false&&o["pagination"].get("nextCursor")==Some(&Value::Null)&&o["data"].as_array().is_some_and(Vec::is_empty)&&bank.engine().wallet.reserved()?==0,"PRIZE_OPEN_LIABILITY")?;
  Ok((cash,collateral.outstanding_liability_units,hashes))
@@ -186,4 +211,30 @@ fn evaluate_inner(bank:&Session,log:&DispatchLog,scope:&Scope,surface:&BoundSurf
  #[test]fn no_action_same_states_has_exactly_zero_prize_increment(){let(r,b)=fixture_input();let r=load(&r,&b,200).unwrap();let states=vec![state("win",500000,PayoutRule::ResolvedYes),state("lose",500000,PayoutRule::ResolvedNo)];let w=vec![("win".into(),1000*UNIT),("lose".into(),UNIT)];assert_eq!(score(&r,&states,&w,&w).unwrap().1,Exact::new(0,1).unwrap());}
  #[test]fn stale_missing_source_wrong_scope_and_bad_prize_order_withhold(){let(mut r,b)=fixture_input();assert!(load(&r,&b,1100).is_err());assert!(load(&r,&b[..2],200).is_err());r.prizes=vec!["1".into(),"2".into()];assert!(load(&r,&b,200).is_err());let(r,b)=fixture_input();let r=load(&r,&b,200).unwrap();let scope=Scope{tournament_id:"wrong".into(),tournament_slug:"cup".into(),exchanges:BTreeMap::new()};assert!(r.context("run",&"b".repeat(64),&scope,&"c".repeat(64),&"d".repeat(64)).is_err());}
  #[test]fn actual_live_bank_cash_is_not_added_to_starting_capital_again(){let p=std::env::temp_dir().join(format!("prize-bank-{}-{}",std::process::id(),std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_nanos()));let seed=json!({"runId":"run","availableCash":"1000.000000","accountSnapshotHash":"a".repeat(64),"observedAt":"2026-10-13T00:00:00Z"});let bank=Session::open_live(&p,&json!({}),&seed).unwrap();let held=inventory(&bank.engine().wallet.positions()).unwrap();let s=State{id:"cash-only".into(),weight:1_000_000,payouts:vec![]};assert_eq!(wealth(bank.engine().wallet.cash,0,&held,&[],&s).unwrap(),1000*UNIT);assert_eq!(bank.engine().wallet.initial,1000*UNIT);drop(bank);std::fs::remove_dir_all(p).unwrap();}
+ #[cfg(unix)]#[test]fn original_opaque_account_adapter_rejects_profile_and_fifo_substitution(){
+  use baal_transport_service::Receipt;use std::{fs,path::Path,os::unix::fs::PermissionsExt};
+  struct Temp(std::path::PathBuf);impl Drop for Temp{fn drop(&mut self){let _=fs::remove_dir_all(&self.0);}}
+  fn receipt(path:&str,data:Value,at:u64)->Receipt{Receipt{endpoint:path.into(),status:200,request_started_at:crate::daily_windows::iso(at.saturating_sub(1)).unwrap(),received_at:crate::daily_windows::iso(at).unwrap(),data}}
+  fn retain(root:&Path,r:&Receipt)->RetainedReceipt{let digest=crate::feedback::digest(r).unwrap();fs::write(root.join("receipts").join(format!("{digest}.json")),serde_json::to_vec(r).unwrap()).unwrap();RetainedReceipt::open(root,r,ReceiptStore::Ordinary).unwrap()}
+  let root=Temp(std::env::temp_dir().join(format!("prize-original-adapter-{}-{}",std::process::id(),std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_nanos())));fs::create_dir(&root.0).unwrap();fs::set_permissions(&root.0,fs::Permissions::from_mode(0o700)).unwrap();fs::create_dir(root.0.join("receipts")).unwrap();
+  let scope=Scope{tournament_id:"cup".into(),tournament_slug:"cup".into(),exchanges:[("101".into(),"201".into())].into()};let profile="11111111-1111-1111-1111-111111111111";
+  let origin=receipt("/account?tournamentId=cup",json!({"id":profile,"balance":1000,"buyingPower":1000,"availableAdvance":0}),0);let _original=retain(&root.0,&origin);let original_digest=crate::feedback::digest(&origin).unwrap();
+  let seed=json!({"runId":"run","availableCash":"1000.000000","accountSnapshotHash":original_digest,"observedAt":origin.received_at});let mut bank=Session::open_live(&root.0.join("bank"),&json!({}),&seed).unwrap();
+  let lot=|id,qty,price,at|json!({"lotId":id,"quantity":qty,"entryPrice":price,"side":"YES","openedAt":crate::daily_windows::iso(at).unwrap()});
+  let original_positions=receipt("/tournaments/cup/portfolio/positions",json!({"positions":[{"exchangeId":"101","marketId":"201","quantity":4,"costBasis":2,"lots":[lot("101",2,0.2,10000),lot("103",2,0.8,10002)]}],"summary":{"totalMarketValue":2,"totalCostBasis":2,"totalUnrealizedPnl":0}}),30000);
+  let adoption=crate::inventory::adoption(&original_positions,bank.engine(),"cup","cup",&scope.exchanges,&crate::daily_windows::iso(30000).unwrap()).unwrap();bank.accept("original-adoption",1,&adoption).unwrap();assert_eq!(bank.engine().wallet.cash,998*UNIT);
+  let latest=receipt("/account?tournamentId=cup",origin.data.clone(),30500);let account_receipt=retain(&root.0,&latest);
+  let mut valid_positions=original_positions.clone();valid_positions.request_started_at=crate::daily_windows::iso(30499).unwrap();valid_positions.received_at=crate::daily_windows::iso(30500).unwrap();
+  valid_positions.data["positions"][0]["lots"]=json!([lot("101",1,0.2,10000),lot("102",1,0.2,10001),lot("103",2,0.8,10002)]);valid_positions.data["positions"][0]["costBasis"]=json!(2.01); // Rounded/reported aggregate is not original FIFO principal.
+  let positions=retain(&root.0,&valid_positions);let orders=retain(&root.0,&receipt("/orders?status=open&limit=200&tournamentId=cup",json!({"data":[],"coverage":{"complete":true},"pagination":{"hasMore":false,"nextCursor":null,"limit":200}}),30500));let collateral=retain(&root.0,&receipt("/portfolio/collateral?tournamentId=cup",json!({"availableAdvance":0,"data":[]}),30500));
+  let(mut input,bytes)=fixture_input();input.bank_manifest_sha256=bank.manifest_hash().as_str().unwrap().into();input.reviewed_at_ms=30000;input.valid_until_ms=32000;for s in &mut input.sources{s.observed_at_ms=30000;}let review=load(&input,&bytes,30500).unwrap();
+  let evidence=AccountEvidence{root:&root.0,account:&account_receipt,positions:&positions,open_orders:&orders,collateral:&collateral};let actual=account(&bank,&scope,&evidence,&review,30500).unwrap();assert_eq!((actual.0,actual.1),(1000*UNIT,0)); // Historical origin0 is intentionally older than20s.
+  let mut wrong=latest.clone();wrong.data["id"]=json!("22222222-2222-2222-2222-222222222222");let wrong=retain(&root.0,&wrong);let foreign=AccountEvidence{account:&wrong,..evidence};assert_eq!(account(&bank,&scope,&foreign,&review,30500).unwrap_err().to_string(),"PRIZE_PROFILE_ORIGIN");
+  for mode in ["basis","same-principal-different-fifo","ambiguous","duplicate-id"]{
+   let mut changed=valid_positions.clone();let lots=&mut changed.data["positions"][0]["lots"];
+   match mode{"basis"=>{lots[0]["entryPrice"]=json!(0.3);lots[1]["entryPrice"]=json!(0.3);},"same-principal-different-fifo"=>{lots[0]["entryPrice"]=json!(0.3);lots[1]["entryPrice"]=json!(0.3);lots[2]["entryPrice"]=json!(0.7);},"ambiguous"=>lots[2]["openedAt"]=lots[0]["openedAt"].clone(),_=>lots[2]["lotId"]=lots[0]["lotId"].clone()}
+   let changed=retain(&root.0,&changed);let changed=AccountEvidence{positions:&changed,..evidence};let err=account(&bank,&scope,&changed,&review,30500).unwrap_err().to_string();assert!(err.starts_with("PRIZE_FIFO_")||err=="PRIZE_DUPLICATE_LOT_ID","{mode}: {err}");
+  }
+  fs::remove_file(root.0.join("receipts").join(format!("{original_digest}.json"))).unwrap();assert!(account(&bank,&scope,&evidence,&review,30500).is_err());drop(bank);
+ }
 }

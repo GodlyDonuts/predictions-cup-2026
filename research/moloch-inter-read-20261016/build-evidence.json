@@ -1,0 +1,43 @@
+{
+  "sourceCommit": "4ee163561b8018e58d945b38b4f4eea5cd7b09ee",
+  "at": "2026-10-16T13:31:55.808366+00:00",
+  "sourceManifestSha256": "2f53e211cd1c5d9476f71f94b596fb75bc1bbcb541789f8750f4d62da25fbefa",
+  "originalValidationReportSha256": "3165ccc286f2df224bc0a48ff377684b6dab0fbad3c9b1d134d2731dbbfbfe15",
+  "sourceFileCount": 245,
+  "baseSourceFileCount": 244,
+  "nativeSourcesByteIdentical": true,
+  "engineIdentity": "8acc461bc02fb9236100058fe464b203d5da005375632af05c176223c7246754",
+  "checks": {
+    "worker-tests": {
+      "exitCode": 0,
+      "elapsedMs": 92038,
+      "logSha256": "8e81b770f2279c234b7a0258de9e368200da14b651c0c87777a7845905ba5e66",
+      "testResults": [
+        {
+          "passed": 81,
+          "failed": 0,
+          "ignored": 0
+        }
+      ]
+    },
+    "runtime-release": {
+      "exitCode": 0,
+      "elapsedMs": 300680,
+      "logSha256": "b8353790e6338a1baee4ef90c0dae44cab858427c66fdcace8bbb552f89b1b46",
+      "testResults": []
+    }
+  },
+  "binary": {
+    "sha256": "011ffde0a00a959959acf99ef1824328c9b75f176ac66eda6c8eba6e96832c37",
+    "bytes": 12926328
+  },
+  "elapsedMs": 392721,
+  "r1FixtureFailureEvidenceRetained": true,
+  "earlierPrizeHelperTests": {
+    "passed": 12,
+    "failed": 0,
+    "sourceCommit": "7f7a9b887c719dd81396a61a2c9e892d6ef1b021",
+    "evidenceSha256": "10808cda7e49ba8c2b431acaca810b1d76f8f28deb96940d4468e5cf12bbd761"
+  },
+  "countsAreDistinctGroupsNotSummedRepeatedTests": true
+}

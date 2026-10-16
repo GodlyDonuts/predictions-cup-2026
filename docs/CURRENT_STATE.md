@@ -1,4 +1,29 @@
-# October16,13:15UTC: production fills resumed; realtime latency remains material
+# October16,13:43UTC: inter-read successor restoring; financial history retained
+
+Sole SIG506740/source`4ee16356`/binary`011ffde0…` started13:36:03UTC with
+the actual executable verified. At13:43:24UTC it was restoring original history;
+fresh successor trading, ACKs and fills are pending. Same exact native engine,
+bank, funding and twelve bridges remain; no new bridge or detached-copy replay.
+Only activation.binarySha256 changed in control. The new hook services the
+existing official stream before ordinary reconciliation reads and passed81
+worker checks plus an optimized ARM64 build.
+[Actual promotion and checks](../research/moloch-inter-read-20261016/README.md).
+
+Stopped boundary:163 cumulative fill rows, cash72,741.915000, owned22,731.515000,
+ordinary realized−151.615000 and inherited gross45.130000, combined−106.485000.
+Full attributed capital/commitment95,579.915000 is preserved without recredit.
+Kalshi9240 remained collecting at13:43:23UTC:237 valid books,19 read starts in
+the latest second/1,189 in the minute, one WS connection and zero gaps/throttles.
+Old read-only observer503257 was stopped and its v8 gzip files sealed after its
+SIG source ended; it will be rebound only after genuine successor readiness.
+
+The offline prize account-origin/FIFO fix passed13 focused ARM64 checks at
+13:39:41UTC. It remains an offline source change, with no financial integration.
+[Adapter proof](../research/moloch-prize-utility-20261016/README.md).
+Next: actual fresh trading, bounded post-restore latency measurement and
+original-fill adverse-selection analysis. Paper6 profitability remains unproved.
+
+# Historical October16,13:15UTC: production fills resumed; realtime latency remains material
 
 Sole SIG503120/source`31aefba5`/binary`0fa66973…` is fresh and trading with
 healthy realtime and no STOP. At13:14:49UTC it had26 new official ACKs and
