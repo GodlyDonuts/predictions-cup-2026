@@ -67,6 +67,31 @@ impl ExecutionMode{
 #[derive(Clone,Debug,Serialize,Deserialize)]
 #[serde(rename_all="camelCase",deny_unknown_fields)]
 pub struct ExecutionPolicy{pub version:u32,pub allowed_modes:Vec<ExecutionMode>}
+/// V2 economic objective. Scheduled settlement is evidence, never a promise of
+/// payout or liquidity by that time. Terminal holdings survive a delayed payout;
+/// only explicit revocation/value exits (or official settlement) may close them.
+#[derive(Clone,Debug,Serialize,Deserialize,PartialEq,Eq)]
+#[serde(tag="kind",rename_all="camelCase",rename_all_fields="camelCase",deny_unknown_fields)]
+pub enum ValuationObjective {
+    TerminalSettlement { timing_source_sha256:String, timing_json_pointer:String,
+        scheduled_settlement_at_ms:u64, delay_policy:TerminalDelayPolicy },
+    DeadlineLiquidation { deadline_ms:u64, expected_cash_per_share:String,
+        source_sha256:String, model_sha256:String },
+}
+#[derive(Clone,Debug,Serialize,Deserialize,PartialEq,Eq)]
+#[serde(rename_all="camelCase")]
+pub enum TerminalDelayPolicy { HoldForActualSettlement }
+/// Retained, explicitly reviewed MODEL artifact, not an official cash receipt
+/// or a calibration certificate. Neither terminal probability nor the current
+/// executable bid is automatically a forecast of deadline liquidation cash.
+#[derive(Clone,Debug,Serialize,Deserialize)]
+#[serde(rename_all="camelCase",deny_unknown_fields)]
+pub struct DeadlineLiquidationEvidence {
+    pub version:u32, pub kind:String, pub tournament_id:String, pub market_id:String,
+    pub exchange_id:String, pub contract_id:String, pub side:String, pub deadline_ms:u64,
+    pub expected_cash_per_share:String, pub model_sha256:String, pub model:Value,
+    pub assumption_label:String,
+}
 #[derive(Clone,Debug,Serialize,Deserialize)]
 #[serde(rename_all="camelCase",deny_unknown_fields)]
 pub struct ReviewInput {
@@ -82,6 +107,9 @@ pub struct ReviewInput {
     /// exact historical canonical review bytes/hash and join-only behavior.
     #[serde(default,skip_serializing_if="Option::is_none")]
     pub execution_policy:Option<ExecutionPolicy>,
+    /// Omission preserves exact V1 review bytes, hashes and replay behavior.
+    #[serde(default,skip_serializing_if="Option::is_none")]
+    pub valuation_objective:Option<ValuationObjective>,
     /// Conditional probability of ordinary $1 payout, explicitly a model assumption.
     pub ordinary_probability:String, pub exceptional_probability_allowance:String,
     pub minimum_exceptional_payout:String, pub margin_per_share:String,
@@ -97,7 +125,7 @@ fn structure(r:&ReviewInput)->Result<i128>{
         for(i,m)in p.allowed_modes.iter().enumerate(){need(!p.allowed_modes[..i].contains(m),"FUNDAMENTAL_DUPLICATE_EXECUTION_MODE")?;}}
 
     if let Some(a)=&r.existing_origin{need(hex(&a.adoption_receipt_sha256)&&hex(&a.adopted_position_sha256),"FUNDAMENTAL_EXISTING_APPROVAL")?;}
-    need(r.version==1&&atom(&r.reviewer_id)&&atom(&r.run_id)&&hex(&r.bank_manifest_sha256)
+    need(matches!(r.version,1|2)&&atom(&r.reviewer_id)&&atom(&r.run_id)&&hex(&r.bank_manifest_sha256)
         &&atom(&r.tournament_id)&&atom(&r.market_id)&&atom(&r.exchange_id)&&atom(&r.contract_id)&&hex(&r.official_contract_root_sha256)
         &&matches!(r.side.as_str(),"YES"|"NO")&&r.payout_mapping_is_operator_assumption
         &&!r.assumption_label.trim().is_empty()&&r.assumption_label.len()<=4096,"FUNDAMENTAL_REVIEW_SCOPE_OR_ASSUMPTION")?;
@@ -110,18 +138,76 @@ fn structure(r:&ReviewInput)->Result<i128>{
     need((3..=8).contains(&r.sources.len()),"FUNDAMENTAL_SOURCES")?;
     let mut kinds=BTreeSet::new();let mut hashes=BTreeSet::new();
     for s in &r.sources{
-        need(matches!(s.kind.as_str(),"forecast"|"official_ballot"|"official_contract_node"|"resolver")
+        need(matches!(s.kind.as_str(),"forecast"|"official_ballot"|"official_contract_node"|"resolver"|"official_settlement_timing"|"deadline_liquidation_model")
             &&s.url.starts_with("https://")&&s.url.len()<=2048&&!s.url.contains('@')
             &&hex(&s.sha256)&&hashes.insert(&s.sha256)&&kinds.insert(s.kind.as_str())
             &&s.published_at_ms<=s.observed_at_ms&&s.observed_at_ms<=r.reviewed_at_ms
             &&s.maximum_age_ms>0&&s.maximum_age_ms<=366*86_400_000,"FUNDAMENTAL_SOURCE_BINDING")?;
     }
     need(["forecast","official_ballot","official_contract_node"].iter().all(|k|kinds.contains(k)),"FUNDAMENTAL_REQUIRED_SOURCE")?;
-    // Floor once, after combining numerators: do not round a risky payout up.
-    Ok(add(mul(UNIT-e,p)?,mul(e,exceptional)?)?/UNIT-margin)
+    let terminal=add(mul(UNIT-e,p)?,mul(e,exceptional)?)?/UNIT;
+    let value=match (r.version,&r.valuation_objective) {
+        (1,None)=>terminal,
+        (2,Some(ValuationObjective::TerminalSettlement{timing_source_sha256,timing_json_pointer,scheduled_settlement_at_ms,..}))=>{
+            need(hex(timing_source_sha256)&&timing_json_pointer.starts_with('/')&&timing_json_pointer.len()<=256
+                &&matches!(timing_json_pointer.rsplit('/').next(),Some("settlement_date"|"scheduledSettlementAt"|"scheduled_settlement_at"))
+                &&*scheduled_settlement_at_ms>r.reviewed_at_ms&&r.hold_until_ms>=*scheduled_settlement_at_ms
+                &&r.sources.iter().any(|s|&s.sha256==timing_source_sha256&&matches!(s.kind.as_str(),"official_contract_node"|"official_settlement_timing")),"FUNDAMENTAL_TERMINAL_TIMING")?;
+            terminal
+        },
+        (2,Some(ValuationObjective::DeadlineLiquidation{deadline_ms,expected_cash_per_share,source_sha256,model_sha256}))=>{
+            need(*deadline_ms==r.hold_until_ms&&hex(source_sha256)&&hex(model_sha256)
+                &&r.sources.iter().any(|s|&s.sha256==source_sha256&&s.kind=="deadline_liquidation_model"),"FUNDAMENTAL_DEADLINE_MODEL_BINDING")?;
+            let cash=amount(expected_cash_per_share)?;need(cash<=UNIT,"FUNDAMENTAL_DEADLINE_CASH_VALUE")?;cash
+        },
+        _=>return Err("FUNDAMENTAL_VALUATION_VERSION_OR_OBJECTIVE".into()),
+    };
+    // Every entry/exit/comparator consumes THIS objective-specific value.
+    Ok(value-margin)
 }
 fn execution_model_sha(r:&ReviewInput)->Result<String>{
-    digest(&json!({"model":"operator_conditional_binary_mixture_v1","ordinaryProbability":r.ordinary_probability,"exceptionalProbabilityAllowance":r.exceptional_probability_allowance,"minimumExceptionalPayout":r.minimum_exceptional_payout,"marginPerShare":r.margin_per_share,"assumptionLabel":r.assumption_label,"payoutMappingIsOperatorAssumption":r.payout_mapping_is_operator_assumption,"horizonBasis":"remaining_operator_holding_deadline_not_cash_release"}))
+    if r.version==1 {return digest(&json!({"model":"operator_conditional_binary_mixture_v1","ordinaryProbability":r.ordinary_probability,"exceptionalProbabilityAllowance":r.exceptional_probability_allowance,"minimumExceptionalPayout":r.minimum_exceptional_payout,"marginPerShare":r.margin_per_share,"assumptionLabel":r.assumption_label,"payoutMappingIsOperatorAssumption":r.payout_mapping_is_operator_assumption,"horizonBasis":"remaining_operator_holding_deadline_not_cash_release"}))}
+    let economic_model=match &r.valuation_objective {
+        Some(ValuationObjective::TerminalSettlement{..})=>json!({"model":"reviewed_terminal_mixture_v2","ordinaryProbability":r.ordinary_probability,"exceptionalProbabilityAllowance":r.exceptional_probability_allowance,"minimumExceptionalPayout":r.minimum_exceptional_payout}),
+        Some(ValuationObjective::DeadlineLiquidation{model_sha256,..})=>json!({"model":"reviewed_deadline_cash_v2","modelSha256":model_sha256}),
+        None=>return Err("FUNDAMENTAL_VALUATION_VERSION_OR_OBJECTIVE".into()),
+    };
+    digest(&json!({"version":2,"economicModel":economic_model,"valuationObjective":r.valuation_objective,"marginPerShare":r.margin_per_share,"assumptionLabel":r.assumption_label}))
+}
+fn terminal_hold(r:&ReviewInput)->bool {matches!(&r.valuation_objective,Some(ValuationObjective::TerminalSettlement{..}))}
+fn liquidation_due(r:&ReviewInput,c:&Cohort,now:u64)->bool {!terminal_hold(r)&&now>=c.hold_until_ms.min(r.hold_until_ms)}
+fn same_objective_horizon(old:&ReviewInput,new:&ReviewInput)->bool {
+    if old.version!=new.version{return false}
+    match (&old.valuation_objective,&new.valuation_objective) {
+        (None,None)=>true,
+        (Some(ValuationObjective::DeadlineLiquidation{deadline_ms:a,..}),Some(ValuationObjective::DeadlineLiquidation{deadline_ms:b,..}))=>a==b,
+        (Some(a@ValuationObjective::TerminalSettlement{..}),Some(b@ValuationObjective::TerminalSettlement{..}))=>a==b,
+        _=>false,
+    }
+}
+fn validate_objective_sources(r:&ReviewInput,originals:&[SourceBytes<'_>])->Result<()> {
+    match &r.valuation_objective {
+        None=>Ok(()),
+        Some(ValuationObjective::TerminalSettlement{timing_source_sha256,timing_json_pointer,scheduled_settlement_at_ms,..})=>{
+            let original=originals.iter().find(|s|s.sha256==timing_source_sha256).ok_or("FUNDAMENTAL_TIMING_SOURCE_MISSING")?;
+            let data:Value=serde_json::from_slice(original.bytes)?;
+            let timing=data.pointer(timing_json_pointer).and_then(Value::as_str).ok_or("FUNDAMENTAL_OFFICIAL_TIMING_UNAVAILABLE")?;
+            need(daily_windows::clock(timing)?==*scheduled_settlement_at_ms,"FUNDAMENTAL_OFFICIAL_TIMING_CHANGED")?;
+            // A separately retained timing document must bind the same contract;
+            // a node receipt already gets exact root/scope validation below.
+            if r.sources.iter().any(|s|s.sha256==*timing_source_sha256&&s.kind=="official_settlement_timing") {
+                need(data["tournamentId"]==r.tournament_id&&data["marketId"]==r.market_id&&data["contractId"]==r.contract_id,"FUNDAMENTAL_TIMING_CONTRACT_SCOPE")?;
+            } Ok(())
+        },
+        Some(ValuationObjective::DeadlineLiquidation{deadline_ms,expected_cash_per_share,source_sha256,model_sha256})=>{
+            let original=originals.iter().find(|s|s.sha256==source_sha256).ok_or("FUNDAMENTAL_DEADLINE_SOURCE_MISSING")?;
+            let model:DeadlineLiquidationEvidence=serde_json::from_slice(original.bytes)?;
+            need(model.version==1&&model.kind=="reviewed_deadline_liquidation_cash_value"&&model.tournament_id==r.tournament_id
+                &&model.market_id==r.market_id&&model.exchange_id==r.exchange_id&&model.contract_id==r.contract_id&&model.side==r.side
+                &&model.deadline_ms==*deadline_ms&&model.expected_cash_per_share==*expected_cash_per_share&&model.model_sha256==*model_sha256
+                &&model.model.is_object()&&digest(&model.model)?==*model_sha256&&!model.assumption_label.trim().is_empty()&&model.assumption_label.len()<=4096,"FUNDAMENTAL_DEADLINE_SOURCE_ECONOMICS")
+        },
+    }
 }
 fn execution_ceiling(r:&ReviewInput)->Result<i128>{Ok(structure(r)?.min(UNIT-5000)/5000*5000)}
 fn execution_for_quote(r:&ReviewInput,q:&Value)->Result<ExecutionMode>{
@@ -169,7 +255,7 @@ fn verify_snapshot(input:ReviewInput,originals:&[SourceBytes<'_>],trusted:&BTree
             };
             validate_contract_data(&input,data)?;
         }
-    }Ok(Reviewed{input,sha})
+    }validate_objective_sources(&input,originals)?;Ok(Reviewed{input,sha})
 }
 impl Reviewed{
     /// The allowlist is from the separately pinned execution-owner control.
@@ -180,6 +266,11 @@ impl Reviewed{
     }
     pub fn sha256(&self)->&str{&self.sha}
     pub fn entry_ceiling(&self)->Result<String>{Ok(money(structure(&self.input)?))}
+    /// Explicit migration signal; V1 remains usable for original cohort management
+    /// and exact bound-entry recovery, but cannot originate a new logical cohort.
+    pub fn supports_new_cohort(&self)->bool{self.input.version==2}
+    pub fn valuation_objective(&self)->Option<&ValuationObjective>{self.input.valuation_objective.as_ref()}
+
 }
 #[derive(Clone,Debug,Serialize,Deserialize)]
 #[serde(rename_all="camelCase",deny_unknown_fields)]
@@ -629,7 +720,7 @@ impl Cohorts{
     pub fn entry_hints(&self,bank:&Session,log:&DispatchLog,scope:&Scope,trusted:&BTreeSet<String>,now:u64)->Result<Vec<EntryHint>>{
         self.check(bank,log)?;log.require_resolved_attempts()?;let mut out=Vec::new();
         for (ex,r) in &self.policies{
-            if r.existing_origin.is_some()||self.cohorts.contains_key(ex)||r.revoke_existing||!current(r,now)||now>=r.hold_until_ms||!trusted.contains(&digest(r)?)||structure(r)?<=0{continue}
+            if r.version!=2||r.existing_origin.is_some()||self.cohorts.contains_key(ex)||r.revoke_existing||!current(r,now)||now>=r.hold_until_ms||!trusted.contains(&digest(r)?)||structure(r)?<=0{continue}
             need(scope.tournament_id==r.tournament_id&&scope.exchanges.get(ex)==Some(&r.market_id),"FUNDAMENTAL_ENTRY_SCOPE")?;
             if bank.engine().wallet.quantity(ex,Side::Yes)>0||bank.engine().wallet.quantity(ex,Side::No)>0{continue}
             if bank.engine().order_records().iter().any(|q|q["exchangeId"]==*ex&&q["id"].as_u64().is_some_and(|id|physical_pending(bank,log,id))){continue}
@@ -656,7 +747,7 @@ impl Cohorts{
         let Some(r)=self.policies.get(&hint.exchange_id)else{return Ok(None)};let review_sha=digest(r)?;
         need(hint.market_id==r.market_id&&hint.contract_id==r.contract_id&&hint.side==r.side&&hint.review_sha256==review_sha
             &&scope.tournament_id==r.tournament_id&&scope.exchanges.get(&r.exchange_id)==Some(&r.market_id),"FUNDAMENTAL_COMPARISON_HINT_CHANGED")?;
-        if self.cohorts.contains_key(&r.exchange_id)||r.existing_origin.is_some()||r.revoke_existing||!trusted.contains(&review_sha)||!current(r,now)||now>=r.hold_until_ms
+        if r.version!=2||self.cohorts.contains_key(&r.exchange_id)||r.existing_origin.is_some()||r.revoke_existing||!trusted.contains(&review_sha)||!current(r,now)||now>=r.hold_until_ms
             ||bank.engine().wallet.quantity(&r.exchange_id,Side::Yes)!=0||bank.engine().wallet.quantity(&r.exchange_id,Side::No)!=0{return Ok(None)}
         let ceiling=structure(r)?.min(UNIT-5000);if ceiling<5000{return Ok(None)}
         let mut until=r.expires_at_ms.min(r.hold_until_ms);for source in &r.sources{until=until.min(source.observed_at_ms.checked_add(source.maximum_age_ms).ok_or("FUNDAMENTAL_SOURCE_CLOCK_RANGE")?);}
@@ -734,7 +825,7 @@ impl Cohorts{
         let Some(c)=self.cohorts.get(exchange).filter(|c|c.existing.is_some())else{return Ok(None)};
         if self.owned(bank,exchange,c)?==0||c.exits.keys().any(|id|log.attempted.contains(id)&&!log.closed.contains(id)){return Ok(None)}
         let r=&self.policies[exchange];need(scope.tournament_id==r.tournament_id&&scope.exchanges.get(exchange)==Some(&r.market_id),"FUNDAMENTAL_EXISTING_SCOPE")?;
-        let reason=if now>=c.hold_until_ms.min(r.hold_until_ms){"reviewed_holding_deadline"}
+        let reason=if liquidation_due(r,c,now){"reviewed_holding_deadline"}
             else if !trusted.contains(&digest(r)?)||!current(r,now){return Ok(None)}
             else if r.revoke_existing{"reviewed_source_revocation"}
             else{let(books,_)=package_admission::native_books(bank,scope,now,bank.engine().policy()["bookAgeMs"].as_u64().ok_or("FUNDAMENTAL_BOOK_POLICY")?)?;
@@ -764,7 +855,7 @@ impl Cohorts{
         need(digest(scope)?==digest(transport.scope())?&&scope.tournament_id==r.tournament_id&&scope.exchanges.get(exchange)==Some(&r.market_id),"FUNDAMENTAL_EXISTING_SCOPE")?;
         no_existing_liability(bank,log,exchange)?;
         let deadline=c.hold_until_ms.min(r.hold_until_ms);let approved=trusted.contains(&digest(r)?)&&current(r,now);let payout=add(structure(r)?,amount(&r.margin_per_share)?)?.max(0);
-        let reason=if now>=deadline{"reviewed_holding_deadline"}else if approved&&r.revoke_existing{"reviewed_source_revocation"}else if approved{"refreshed_value_exit"}else{return Ok(None)};
+        let reason=if liquidation_due(r,c,now){"reviewed_holding_deadline"}else if approved&&r.revoke_existing{"reviewed_source_revocation"}else if approved{"refreshed_value_exit"}else{return Ok(None)};
         let policy=bank.engine().policy();let (books,hashes)=package_admission::native_books(bank,scope,now,policy["bookAgeMs"].as_u64().ok_or("FUNDAMENTAL_BOOK_POLICY")?)?;let Some(book)=books.get(exchange)else{return Ok(None)};
         let cap=owned.min(r.maximum_quantity).min(policy["quantity"].as_u64().ok_or("FUNDAMENTAL_QUANTITY")?);let levels=if r.side=="YES"{&book.yes_bids}else{&book.no_bids};let mut n=0u64;let mut limit=None;
         for l in levels{if reason=="refreshed_value_exit"&&l.price<payout{break}let take=(cap-n).min(l.quantity);if take>0{n+=take;limit=Some(l.price)}if n==cap{break}}
@@ -798,7 +889,7 @@ impl Cohorts{
         if !deadline_exit{
             expires=expires.min(r.expires_at_ms).min(r.hold_until_ms);
             for s in &r.sources{expires=expires.min(s.observed_at_ms.checked_add(s.maximum_age_ms).and_then(|n|n.checked_add(1)).ok_or("FUNDAMENTAL_CLOCK_RANGE")?);}
-        }else{need(now>=c.hold_until_ms.min(r.hold_until_ms),"FUNDAMENTAL_DEADLINE_NOT_REACHED")?;}
+        }else{need(liquidation_due(r,c,now),"FUNDAMENTAL_DEADLINE_NOT_REACHED")?;}
         need(now>=self.clock&&expires>now,"FUNDAMENTAL_PHYSICAL_WINDOW_EMPTY")?;
         let ordinary_file=File::open(&self.ordinary_path)?;need(identity(&ordinary_file)?==self.ordinary_identity,"FUNDAMENTAL_ORIGINAL_DISPATCH_REQUIRED")?;
         Ok(PhysicalDecision{marketable_reviewed_buy:q["action"]=="buy"&&execution_for_quote(r,&q)?==ExecutionMode::BoundedLimitMayRest,qid,planned_quantity:n,native_head:bank.durable_head(),quote_sha:digest(&q)?,ledger_sha:digest(&bank.engine().report()?)?,scope_sha:digest(scope)?,spec_sha:digest(spec)?,permit_sha:digest(permit)?,review_sha:digest(r)?,trust_sha:digest(authority.trusted())?,minted:now,expires,
@@ -864,7 +955,8 @@ impl Cohorts{
                 need(event["sha256"]==review_sha256(&r)?&&r.run_id==self.run&&r.bank_manifest_sha256==self.manifest,"FUNDAMENTAL_REVIEW_BANK")?;
                 if let Some(old)=self.policies.get(&r.exchange_id){need(old.market_id==r.market_id&&old.contract_id==r.contract_id&&old.tournament_id==r.tournament_id&&old.side==r.side&&old.existing_origin==r.existing_origin&&r.reviewed_at_ms>old.reviewed_at_ms,"FUNDAMENTAL_REVIEW_REVISION")?;}
                 need(self.policies.contains_key(&r.exchange_id)||self.policies.len()<32,"FUNDAMENTAL_POLICY_COUNT")?;
-                if let Some(c)=self.cohorts.get(&r.exchange_id){need(r.hold_until_ms<=c.hold_until_ms,"FUNDAMENTAL_CANNOT_EXTEND_COHORT")?;}
+                if let Some(c)=self.cohorts.get(&r.exchange_id){need(r.hold_until_ms<=c.hold_until_ms,"FUNDAMENTAL_CANNOT_EXTEND_COHORT")?;
+                    need(self.policies.get(&r.exchange_id).is_some_and(|old|same_objective_horizon(old,&r)),"FUNDAMENTAL_CANNOT_REINTERPRET_COHORT_OBJECTIVE")?;}
                 self.policies.insert(r.exchange_id.clone(),r);
             },
             Some("entry")=>{let ex=event["exchangeId"].as_str().ok_or("FUNDAMENTAL_EXCHANGE")?;let c:Cohort=serde_json::from_value(event["cohort"].clone())?;
@@ -1015,7 +1107,7 @@ impl Cohorts{
         if self.owned(bank,exchange,c)?==0||c.pending_entry(log)
             ||c.exits.keys().any(|id|log.attempted.contains(id)&&!log.closed.contains(id)){return Ok(false)}
         need(scope.tournament_id==r.tournament_id&&scope.exchanges.get(exchange)==Some(&r.market_id),"FUNDAMENTAL_SCOPE_CHANGED")?;
-        if now>=c.hold_until_ms.min(r.hold_until_ms){return Ok(true)}
+        if liquidation_due(r,c,now){return Ok(true)}
         if !trusted.contains(&digest(r)?)||!current(r,now){return Ok(false)}
         if r.revoke_existing||c.entry.as_ref().is_some_and(|b|digest(r).is_ok_and(|h|h!=b.review_sha256)){return Ok(true)}
         let(books,_)=package_admission::native_books(bank,scope,now,bank.engine().policy()["bookAgeMs"].as_u64().ok_or("FUNDAMENTAL_BOOK_POLICY")?)?;
@@ -1092,15 +1184,16 @@ impl Cohorts{
             // Depth is an observation, not a guaranteed execution price. A
             // value exit must retain that value in its physical native limit.
             let payout=add(ceiling,amount(&r.margin_per_share)?)?.max(0);
-            let reason=if now>=c.hold_until_ms.min(r.hold_until_ms){Some("reviewed_holding_deadline")}
+            let reason=if liquidation_due(r,c,now){Some("reviewed_holding_deadline")}
                 else if approved&&r.revoke_existing{Some("reviewed_source_revocation")}
                 else if approved&&price>=payout&&proceeds>=mul(payout,n as i128)?{Some("refreshed_value_exit")}
                 else{None};
             if c.existing.is_some(){need(q["reviewedInventoryExit"]["originSha256"]==c.origin_sha()?,"FUNDAMENTAL_EXISTING_EXIT_ORIGIN_CHANGED")?;
                 if q["reviewedInventoryExit"]["reviewSha256"]!=digest(r)?{return Ok(hold("reviewed_existing_exit_review_changed"))}}
-            return Ok(reason.map_or_else(||hold(if approved{"terminal_value_hold_not_native_age_exit"}else{"stale_review_hold_until_deadline"}),|s|Decision::Exit{reason:s.into(),owned_quantity:owned}))
+            return Ok(reason.map_or_else(||hold(if terminal_hold(r){"terminal_settlement_hold_for_actual_payout"}else if approved{"terminal_value_hold_not_native_age_exit"}else{"stale_review_hold_until_deadline"}),|s|Decision::Exit{reason:s.into(),owned_quantity:owned}))
             }
         }
+        if r.version==1&&!self.cohorts.get(ex).is_some_and(|c|c.entry_id()==Some(qid)){return Ok(hold("legacy_review_requires_explicit_valuation_objective_for_new_cohort"))}
         if !approved||r.revoke_existing||now>=r.hold_until_ms{return Ok(hold("current_review_required_for_entry"))}
         if q["action"]!="buy"||q["side"]!=r.side{return Ok(hold("reviewed_entry_side_only"))}
         if bank.engine().wallet.quantity(ex,Side::Yes)!=0||bank.engine().wallet.quantity(ex,Side::No)!=0{return Ok(hold("existing_inventory_cannot_be_adopted"))}
@@ -1145,7 +1238,7 @@ impl Cohorts{
             let Some(entry)=&c.entry else{continue};
             if !log.closed.contains(&entry.qid)&&log.acknowledgments.contains_key(&entry.qid)
                 &&bank.engine().order_records().iter().any(|q|q["id"]==entry.qid&&q["retired"]==false)
-                &&(!current(r,now)||r.revoke_existing||!trusted.contains(&digest(r)?)||digest(r)?!=entry.review_sha256||now>=c.hold_until_ms.min(r.hold_until_ms)){
+                &&(!current(r,now)||r.revoke_existing||!trusted.contains(&digest(r)?)||digest(r)?!=entry.review_sha256||liquidation_due(r,c,now)){
                 out.push(entry.qid);
             }
         }Ok(out)
