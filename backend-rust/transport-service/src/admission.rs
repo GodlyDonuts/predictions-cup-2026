@@ -279,6 +279,13 @@ impl UnadmittedCaptureLease{
 }
 impl Drop for UnadmittedCaptureLease{fn drop(&mut self){if fs::read(&self.path).ok().as_deref()==Some(self.identity.as_slice()){let _=fs::remove_file(&self.path);if let Some(dir)=self.path.parent(){let _=File::open(dir).and_then(|f|f.sync_all());}}}}
 impl AccountAdmission{
+ /// Distinct current-END witness for an SDK-observed never-admitted DELETE.
+ /// The exclusive cutoff is not a claimed dispatch attempt timestamp. Actual
+ /// retained last_clock may equal call end after an original admit(wait).
+ pub(crate) fn capture_current_cancel_unadmitted(&self,binding:&ImmutableBinding,ended:u64)->std::result::Result<FrozenUnadmittedSource,String>{
+  let cutoff=ended.checked_add(1).filter(|n|*n<=MAX_TIME).ok_or("CANCEL_NO_HTTP_CAPTURE_CLOCK")?;
+  self.capture_current_unadmitted(binding,cutoff)
+ }
  pub(crate) fn capture_current_unadmitted(&self,binding:&ImmutableBinding,attempt:u64)->std::result::Result<FrozenUnadmittedSource,String>{
   let Backend::V1(store)=&self.store else{return Err("UNADMITTED_V1_REQUIRED".into())};store.owned()?;
   need(store.state.active.is_none()&&!store.state.manual_review&&store.state.unknown.is_empty()&&store.state.last_clock<attempt
