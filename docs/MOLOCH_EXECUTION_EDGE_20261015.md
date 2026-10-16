@@ -220,6 +220,42 @@ native quote permits terminal tombstoning/removal. No future batch-end lookup or
 invented terminal receipt is used. Tombstones retain their4096 bound. This repairs
 historical closed-order shadows while ambiguous/unknown physical orders remain.
 
+## October16 maker-policy physical integration checkpoint
+
+Checked main616f2fc4 passes492 ARM64 runtime checks and a locked offline release;
+[the immutable staged artifact](../research/moloch-execution-model-20261015/checks-maker492.json)
+is not the active production binary. V29 model recovery remains production.
+The17 maker cases and two additional production-authority cases use synthetic
+events through real native Sessions and original DispatchLogs; they are code
+validation, not actual-market profitability observations.
+
+Optional immutable `makerPolicy` settings bind the actual bank/run, reviewed
+baseline head/report digest, source review, native execution-age horizon and
+explicit risk budgets. Qualified candidates use the actual private thread-local
+observer, conservative full-fill probability and an explicit full-loss charge for
+non-full-fill trials plus the reviewed portfolio charge. This charge is a policy
+stress, not a calibrated partial-fill model. Configured new BUYs cannot bypass
+their opaque decision through legacy production prepare. Final authority checks
+its frozen quote/report and exact physical request in addition to all existing
+account, book, lease, STOP, mandate and uncertainty checks. Owned covered SELLs
+and cancellation/reconciliation retain their original paths.
+
+Unqualified exploration is clearly labeled. Its policy ceilings are20 SUSQies per
+whole original order and100 of deployed new capital including pending actual BUY
+obligations; it never silently resizes native quotes. Inherited capital is
+excluded only through original adoption-lot/FIFO provenance. The additional20
+realized-loss admission stop is **not a maximum-loss guarantee**: up to100 of open
+exploratory principal can remain at risk after admission stops. The reviewed
+historical loss baseline is trusted operator policy, pinned to a sealed observation;
+historical ancestry is not falsely certified by comparing sequence numbers.
+The review's bank observation clock must not be replaced by a later artifact
+writing clock. These settings do not raise the existing overall40,000/10,000 caps.
+
+At this checkpoint, within-qualified capital-time ranking and dedicated
+pre-intent expiry deferrals are subsequent source pending checks, along with
+prospective exact attempt anchors and terminal-value holding integration.
+The source does not establish a current qualified positive edge or finish Paper2.
+
 ### Integrity follow-up and private runtime maker evidence
 
 Censored actual fills retain exact market/exchange/side/BUY, original-attempt <= execution <= processing, positive quantity and known fee checks. Realtime candidate expiry now uses the same source/receipt/processing clocks as freshness; REST retains request age too. These changes do not reinterpret the retained V28 failure, whose clocks were fresh but tape lagged.
