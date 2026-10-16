@@ -13,7 +13,7 @@ use sha2::{Digest,Sha256};
 use std::{fs,path::{Path,PathBuf},sync::Arc,time::{SystemTime,UNIX_EPOCH,Duration}};
 #[derive(Clone,Serialize,Deserialize)]
 #[serde(rename_all="camelCase",deny_unknown_fields)]
-struct Control{#[serde(default)]ordinary_side_edge:moloch_live_runtime::ordinary_side_edge::Mode,#[serde(default)]owner_capital_allocation:Option<moloch_live_runtime::capital_allocation::Settings>,#[serde(default)]bulk_negative_screen:bool,#[serde(default)]paper5:Option<moloch_live_runtime::paper5_runtime::Settings>,#[serde(default)]execution_distribution:Option<moloch_live_runtime::execution_distribution::Config>,#[serde(default)]fundamental_policy:Option<fundamental::Settings>,#[serde(default)]maker_policy:Option<moloch_live_runtime::maker_policy::Settings>,#[serde(default)]package_allocation:Option<moloch_live_runtime::package_allocation::Settings>,#[serde(default)]collateral_accounting:bool,#[serde(default)]execution_model:Option<moloch_live_runtime::execution_edge::Config>,#[serde(default)]packages:Option<moloch_live_runtime::package_settings::Settings>,#[serde(default)]daily_entry_windows:Option<moloch_live_runtime::daily_windows::DailyEntryWindows>,activation:Activation,scope:Scope,policy:Value,root:PathBuf,credentials:PathBuf,owner_lock:PathBuf,account_scope:String,#[serde(default)]all_markets:bool,#[serde(default="default_bank")]bank_name:String,#[serde(default)]predecessor_bank:Option<String>,#[serde(default)]manage_existing_positions:bool}
+struct Control{#[serde(default)]defensive_cancel:bool,#[serde(default)]ordinary_side_edge:moloch_live_runtime::ordinary_side_edge::Mode,#[serde(default)]owner_capital_allocation:Option<moloch_live_runtime::capital_allocation::Settings>,#[serde(default)]bulk_negative_screen:bool,#[serde(default)]paper5:Option<moloch_live_runtime::paper5_runtime::Settings>,#[serde(default)]execution_distribution:Option<moloch_live_runtime::execution_distribution::Config>,#[serde(default)]fundamental_policy:Option<fundamental::Settings>,#[serde(default)]maker_policy:Option<moloch_live_runtime::maker_policy::Settings>,#[serde(default)]package_allocation:Option<moloch_live_runtime::package_allocation::Settings>,#[serde(default)]collateral_accounting:bool,#[serde(default)]execution_model:Option<moloch_live_runtime::execution_edge::Config>,#[serde(default)]packages:Option<moloch_live_runtime::package_settings::Settings>,#[serde(default)]daily_entry_windows:Option<moloch_live_runtime::daily_windows::DailyEntryWindows>,activation:Activation,scope:Scope,policy:Value,root:PathBuf,credentials:PathBuf,owner_lock:PathBuf,account_scope:String,#[serde(default)]all_markets:bool,#[serde(default="default_bank")]bank_name:String,#[serde(default)]predecessor_bank:Option<String>,#[serde(default)]manage_existing_positions:bool}
 fn default_bank()->String{"bank".into()}
 struct FundamentalRuntime{cohorts:Cohorts,authority:ReviewAuthority}
 impl FundamentalRuntime{
@@ -1230,6 +1230,71 @@ fn retire_stale_entry_drafts(c:&Control,bank:&mut Session,log:&mut DispatchLog,m
  atomic_json(&c.root.join("stale-entry-drafts.json"),&json!({"at":iso(now()),"pid":std::process::id(),"reason":"stale_unsubmitted_ordinary_buy","originalNativeHead":selected.native_head(),"originalDispatchDescriptor":selected.dispatch_descriptor_identity(),"retired":rows,"nativeHead":bank.durable_head(),"networkRequests":0,"physicalOrdersCanceled":0,"pricesChanged":false}))?;
  Ok(rows.len())
 }
+/// A prior durable cancellation is not a retry ticket, even when the original
+/// process died before SDK admission. Exact order/fill reconciliation continues.
+fn cancel_may_start(log:&DispatchLog,qid:u64)->bool{!log.closed.contains(&qid)&&!log.cancel_acknowledged.contains(&qid)&&!log.cancel_attempted(qid)}
+fn defensive_cancel_window(valid_until:u64,at:u64,write_gap:u64)->Option<u64>{
+ let end=valid_until.min(at.checked_add(10_000)?);(write_gap>=2500&&at.checked_add(write_gap).is_some_and(|ready|ready<end)).then_some(end)
+}
+fn defensive_cancel_current(decision:&moloch_live_runtime::ordinary_side_edge::RestingDecision,bank:&Session,scope:&Scope,log:&DispatchLog,managed:&std::collections::BTreeSet<String>,at:u64)->Result<bool>{
+ match decision.validate_current(bank,scope,log,managed,at){Ok(())=>Ok(true),Err(e)if matches!(e.to_string().as_str(),"RESTING_EDGE_EXPIRED"|"RESTING_EDGE_NO_LONGER_BELOW"|"RESTING_EDGE_CONTEXT_CHANGED")=>Ok(false),Err(e)=>Err(e)}
+}
+fn record_cancel_ack(c:&Control,log:&mut DispatchLog,qid:u64,ack:&Receipt)->Result<()>{
+ record_receipt(&c.root,ack)?;log.append(json!({"kind":"cancel_ack","qid":qid,"receipt":ack}))
+}
+/// Both mandatory and optional lanes retain the original DELETE/ACK/full-tape
+/// lifecycle. Neither ACK nor a local error changes native financial state.
+fn cancel_owned(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,authority:&ProductionAuthority,old:&Value,facts:CancelSnapshotSet,defense:Option<&moloch_live_runtime::ordinary_side_edge::RestingDecision>)->Result<()>{
+ let qid=old["id"].as_u64().ok_or("LIVE_QUOTE_ID")?;if !cancel_may_start(log,qid){return Ok(())}
+ let actual=bank.engine().live_order_bindings().get(&qid).ok_or("LIVE_CANCEL_BINDING")?.clone();let at=now();
+ let expires=if let Some(decision)=defense{
+  if decision.qid()!=qid||decision.actual_order_id()!=actual{return Err("LIVE_DEFENSIVE_CANCEL_BINDING".into())}
+  let gap=bank.engine().policy()["writeGapMs"].as_u64().ok_or("LIVE_DEFENSIVE_CANCEL_WRITE_GAP")?;
+  let Some(end)=defensive_cancel_window(decision.valid_until_ms(),at,gap)else{return Ok(())};end
+ }else{at.checked_add(10_000).ok_or("LIVE_CANCEL_CLOCK_RANGE")?};
+ // Facts and the final current signal precede permit creation. A queued SDK
+ // call still retains this original expiry and every physical guard.
+ let p=Permit{run_id:c.activation.run_id.clone(),intent_id:format!("{qid}-cancel"),owner:"Codex".into(),expires_at_ms:expires,maximum_quantity:c.activation.maximum_quantity,maximum_cost:c.activation.maximum_committed.clone()};
+ let spec=RequestSpec{method:"DELETE".into(),endpoint:format!("/orders/{actual}"),body:None,body_json:None};
+ authority.prepare_cancel(bank,qid,spec.clone(),p.clone(),facts)?;
+ if let Err(e)=authority.authorize(&c.scope,&spec,&p,false,now()){authority.clear_ready();atomic_json(&c.root.join("deferred.json"),&json!({"at":iso(now()),"qid":qid,"code":e.code,"optionalDefensiveCancel":defense.is_some()}))?;return Ok(())}
+ if now()>=expires{authority.clear_ready();return Ok(())}
+ log.append(json!({"kind":"cancel_attempt","qid":qid,"spec":spec,"permit":p,"at":iso(now()),"defensive":defense.map(|d|d.evidence())}))?;
+ let ack=match t.cancel(actual.clone(),p){Ok(r)=>r,Err(e)=>{
+  log.append(json!({"kind":"error","operation":"cancel","qid":qid,"error":e,"at":iso(now())}))?;authority.clear_ready();
+  if moloch_live_runtime::read_recovery::reconcilable_cancel_rejection(&e){
+   let observed=request(t,&c.root,Endpoint::OwnedOrder{order_id:actual.clone()})?;let filled=request(t,&c.root,Endpoint::OwnedFills{order_id:actual.clone()})?;
+   // No source hook may interrupt a returned actual fill tape and its commit.
+   for e in feedback::fills(old,&actual,&c.scope.tournament_id,&filled,&iso(now()))?{accept(bank,&e)?}
+   if let Some(e)=feedback::terminal(old,&actual,&c.scope.tournament_id,&observed,&filled,&iso(now()))?{accept(bank,&e)?;log.append(json!({"kind":"closed","qid":qid,"orderReceiptHash":feedback::digest(&observed)?,"fillReceiptHash":feedback::digest(&filled)?,"afterRejectedCancel":true}))?;moloch_live_runtime::execution_distribution::confirm_runtime_terminal(bank,log,qid,&observed,&filled,now());return Ok(())}
+  }
+  // Deliberately no mayHaveExecuted/string-based no-network inference. This
+  // default-off prototype needs typed DELETE evidence before activation.
+  return Err("LIVE_CANCEL_REJECTED_RECONCILIATION_REQUIRED".into())
+ }};record_cancel_ack(c,log,qid,&ack)?;authority.clear_ready();Ok(())
+}
+fn defensive_cancel_candidate(c:&Control,bank:&Session,log:&DispatchLog,managed:&std::collections::BTreeSet<String>,cursor:Option<&str>,at:u64)->Result<Option<(String,moloch_live_runtime::ordinary_side_edge::RestingDecision)>>{
+ if !c.defensive_cancel{return Ok(None)}log.require_resolved_attempts()?;
+ let mut nominations=Vec::new();for id in log.acknowledgments.keys().copied(){if !cancel_may_start(log,id){continue}
+  let assessed=moloch_live_runtime::ordinary_side_edge::assess_resting(bank,&c.scope,log,managed,id,at);
+  if let Some(decision)=assessed.into_nomination(){let gap=bank.engine().policy()["writeGapMs"].as_u64().ok_or("LIVE_DEFENSIVE_CANCEL_WRITE_GAP")?;if defensive_cancel_window(decision.valid_until_ms(),at,gap).is_none(){continue}let q=quote(bank,id)?;let key=format!("{}:{}:cancel",q["exchangeId"].as_str().ok_or("LIVE_SCOPE")?,q["side"].as_str().ok_or("LIVE_SIDE")?);nominations.push((key,decision));}
+ }
+ let keys:Vec<_>=nominations.iter().map(|(k,_)|k.clone()).collect();let Some(index)=moloch_live_runtime::scheduling::preflight_rotation(&keys,cursor).first().copied()else{return Ok(None)};Ok(Some(nominations.swap_remove(index)))
+}
+/// Four original global facts only. Re-evaluate after source service/reads;
+/// stale/unavailable/covered/filled input cannot become cancellation authority.
+fn defensive_cancel_preflight(c:&Control,bank:&mut Session,log:&DispatchLog,source:&mut RestSource,managed:&std::collections::BTreeSet<String>,qid:u64,reads:&mut impl OrdinaryPreflightReads)->Result<Option<(moloch_live_runtime::ordinary_side_edge::RestingDecision,CancelSnapshotSet)>>{
+ if !c.defensive_cancel||!cancel_may_start(log,qid)||!reads.guarded()?{return Ok(None)}
+ let Some(initial)=moloch_live_runtime::ordinary_side_edge::assess_resting(bank,&c.scope,log,managed,qid,reads.now_ms()).into_nomination()else{return Ok(None)};
+ let gap=bank.engine().policy()["writeGapMs"].as_u64().ok_or("LIVE_DEFENSIVE_CANCEL_WRITE_GAP")?;
+ if defensive_cancel_window(initial.valid_until_ms(),reads.now_ms(),gap).is_none(){return Ok(None)}
+ let facts=cancel_snapshots_with(|ep|preflight_read(bank,source,reads,None,ep))?;
+ if !reads.guarded()?||!cancel_may_start(log,qid){return Ok(None)}
+ let Some(decision)=moloch_live_runtime::ordinary_side_edge::assess_resting(bank,&c.scope,log,managed,qid,reads.now_ms()).into_nomination()else{return Ok(None)};
+ let gap=bank.engine().policy()["writeGapMs"].as_u64().ok_or("LIVE_DEFENSIVE_CANCEL_WRITE_GAP")?;
+ if defensive_cancel_window(decision.valid_until_ms(),reads.now_ms(),gap).is_none(){return Ok(None)}
+ if !defensive_cancel_current(&decision,bank,&c.scope,log,managed,reads.now_ms())?{return Ok(None)}Ok(Some((decision,facts)))
+}
 fn dispatch(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,authority:&Arc<ProductionAuthority>,source:&mut RestSource,allow_new_submissions:bool,preflight_cursor:&mut Option<String>,stream:&Realtime,breadth:&mut Option<Recorder>,universe:&mut Option<Universe>,windows:&std::collections::BTreeMap<String,u64>,maker_review:Option<&moloch_live_runtime::maker_policy::Reviewed>,mut fundamental:Option<&mut FundamentalRuntime>)->Result<()>{
  if allow_new_submissions&&!bank.engine().package_blocks_submissions(){
   let managed=if let Some(f)=fundamental.as_ref(){f.authority.validate()?;f.cohorts.managed_exchanges()}else{Default::default()};
@@ -1251,20 +1316,8 @@ fn dispatch(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,a
   if !expired&&!canceled&&!fundamental_cancels.contains(&qid){continue}
   if log.never_attempted(qid){retire_never_sent(bank,log,old)?;continue}
   if expired||log.closed.contains(&qid)||log.cancel_acknowledged.contains(&qid){continue} // Wait for authoritative terminal GET; never repeat a confirmed cancellation.
-  let actual=bank.engine().live_order_bindings().get(&qid).ok_or("LIVE_CANCEL_BINDING")?.clone();
-  let p=Permit{run_id:c.activation.run_id.clone(),intent_id:format!("{qid}-cancel"),owner:"Codex".into(),expires_at_ms:now()+10000,maximum_quantity:c.activation.maximum_quantity,maximum_cost:c.activation.maximum_committed.clone()};
-  let spec=RequestSpec{method:"DELETE".into(),endpoint:format!("/orders/{actual}"),body:None,body_json:None};
-  let facts=cancel_snapshots(t,c)?;authority.prepare_cancel(bank,qid,spec.clone(),p.clone(),facts)?;
-  if let Err(e)=authority.authorize(&c.scope,&spec,&p,false,now()){authority.clear_ready();atomic_json(&c.root.join("deferred.json"),&json!({"at":iso(now()),"qid":qid,"code":e.code}))?;return Ok(())}
-  log.append(json!({"kind":"cancel_attempt","qid":qid,"spec":spec,"permit":p,"at":iso(now())}))?;
-  let ack=match t.cancel(actual.clone(),p){Ok(r)=>r,Err(e)=>{
-   log.append(json!({"kind":"error","operation":"cancel","qid":qid,"error":e,"at":iso(now())}))?;authority.clear_ready();
-   if moloch_live_runtime::read_recovery::reconcilable_cancel_rejection(&e){
-    let observed=request(t,&c.root,Endpoint::OwnedOrder{order_id:actual.clone()})?;let filled=request(t,&c.root,Endpoint::OwnedFills{order_id:actual.clone()})?;
-    for e in feedback::fills(old,&actual,&c.scope.tournament_id,&filled,&iso(now()))?{accept(bank,&e)?}
-    if let Some(e)=feedback::terminal(old,&actual,&c.scope.tournament_id,&observed,&filled,&iso(now()))?{accept(bank,&e)?;log.append(json!({"kind":"closed","qid":qid,"orderReceiptHash":feedback::digest(&observed)?,"fillReceiptHash":feedback::digest(&filled)?,"afterRejectedCancel":true}))?;moloch_live_runtime::execution_distribution::confirm_runtime_terminal(bank,log,qid,&observed,&filled,now());return Ok(())}
-   }return Err("LIVE_CANCEL_REJECTED_RECONCILIATION_REQUIRED".into())
-  }};record_receipt(&c.root,&ack)?;log.append(json!({"kind":"cancel_ack","qid":qid,"receipt":ack}))?;authority.clear_ready();return Ok(())
+  if !cancel_may_start(log,qid){continue} // Unmatched prior attempt waits for exact reconciliation, never a repeat.
+  let facts=cancel_snapshots(t,c)?;cancel_owned(t,c,bank,log,authority,old,facts,None)?;return Ok(())
  }
  if !allow_new_submissions||bank.engine().package_blocks_submissions(){return Ok(())}
  if let Some(f)=fundamental.as_deref_mut(){if refresh_fundamental_cohort(t,c,bank,log,authority,stream,f)?{return Ok(())}}
@@ -1312,6 +1365,21 @@ fn dispatch(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,a
   let managed=fundamental.as_ref().is_some_and(|f|f.cohorts.manages(q["exchangeId"].as_str().unwrap_or("")));
   let urgent=q["action"]=="sell"&&(managed||selection.assessments.iter().any(|a|a.index==*index&&matches!(a.decision.class,moloch_live_runtime::quote_priority::Class::RiskExit|moloch_live_runtime::quote_priority::Class::CoveredMarketable)));
   physical.push((keys[*index].clone(),*index,urgent));
+ }
+ // Mandatory cancels and actual urgent exits above retain priority. One
+ // optional defense replaces this pass's speculative packet, never adds one.
+ if c.defensive_cancel&&!physical.iter().any(|(_,_,urgent)|*urgent){
+  let managed=fundamental.as_ref().map(|f|f.cohorts.managed_exchanges()).unwrap_or_default();
+  if let Some((key,decision))=defensive_cancel_candidate(c,bank,log,&managed,preflight_cursor.as_deref(),now())?{
+   if !preflight_budget.try_start(){return Ok(())}*preflight_cursor=Some(key);
+   let qid=decision.qid();let _=decision;
+   if let Some((current,facts))=defensive_cancel_preflight(c,bank,log,source,&managed,qid,&mut LivePreflightReads{t,c,authority,stream,breadth,universe})?{
+    refresh_controls(c,authority,stream)?;
+    match t.package_queue_quiet(){Ok(_)=>{},Err(e)if e.code=="PACKAGE_QUEUE_NOT_QUIET"=>return Ok(()),Err(e)=>return Err(e.into())}
+    if !defensive_cancel_current(&current,bank,&c.scope,log,&managed,now())?{return Ok(())}
+    let q=quote(bank,qid)?;cancel_owned(t,c,bank,log,authority,&q,facts,Some(&current))?;
+   }return Ok(())
+  }
  }
  let mut chosen=shared_preflight_rotation(&stale_existing_hints,&entry_hints,&physical,preflight_cursor.as_deref());
  if let Some((SharedPreflight::Physical(index),key))=&chosen{
