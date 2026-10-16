@@ -180,3 +180,10 @@ pub fn observer_diagnostic()->Option<Value>{OBSERVER.with(|s|s.borrow().as_ref()
 pub fn estimate_runtime_attempt(qid:u64,at:u64)->Result<Estimate>{OBSERVER.with(|s|{let s=s.borrow();let m=s.as_ref().ok_or("DIST_RUNTIME_UNAVAILABLE")?;let p=m.exposures.get(&qid).ok_or("DIST_EXPOSURE")?;m.estimate(p.key.as_ref().ok_or("DIST_UNQUALIFIED_FEATURES")?,&p.market,at)})}
 /// No observer initialization, fit import, account reads or lifecycle mutations.
 pub fn estimate_runtime_action(bank:&Session,scope:&baal_transport_service::Scope,action:&Value,strategy_sha:&str,created_at:u64,expiry:u64,horizon:u64,at:u64)->Result<Estimate>{OBSERVER.with(|s|s.borrow().as_ref().ok_or("DIST_RUNTIME_UNAVAILABLE")?.estimate_action(bank,scope,action,strategy_sha,created_at,expiry,horizon,at))}
+
+/// Read-only identity of the actual configured observer, never imported fits.
+/// The caller must still use estimate_runtime_action for current source proof.
+pub fn runtime_configuration(bank:&Session)->Result<(Config,String)>{OBSERVER.with(|slot|{
+ let observer=slot.borrow();let model=observer.as_ref().ok_or("DIST_RUNTIME_UNAVAILABLE")?;
+ model.bind(bank)?;Ok((model.config.clone(),digest(&model.config)?))
+})}
