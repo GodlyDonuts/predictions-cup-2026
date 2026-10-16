@@ -152,7 +152,7 @@ fn verify_originals(r:ReviewInput,originals:&[Vec<u8>])->moloch_live_runtime::fe
 
 #[cfg(unix)]mod actual_session{
     use super::*;
-    struct F{root:PathBuf,bank:Session,log:dispatch::DispatchLog,owner:Arc<ExclusiveLock>,store:Option<Cohorts>,scope:Scope,trust:BTreeSet<String>,seq:u64,review:ReviewInput}
+    struct F{root:PathBuf,bank:Session,log:dispatch::DispatchLog,owner:Arc<ExclusiveLock>,store:Option<Cohorts>,scope:Scope,trust:BTreeSet<String>,seq:u64,book_version:u128,review:ReviewInput}
     impl Drop for F{fn drop(&mut self){self.store.take();let _=std::fs::remove_dir_all(&self.root);}}
     impl F{
         fn new()->Self{
@@ -166,18 +166,22 @@ fn verify_originals(r:ReviewInput,originals:&[Vec<u8>])->moloch_live_runtime::fe
             let seed=json!({"runId":"fundamental-fixture","availableCash":"1000.000000","accountSnapshotHash":"a".repeat(64),"observedAt":iso(NOW-10000)});
             let bank=Session::open_live(&root.join("bank"),&policy,&seed).unwrap();let log=dispatch::DispatchLog::open(&root.join("dispatch.ndjson")).unwrap();
             let mut review=horizon_input(bank.manifest_hash().as_str().unwrap(),NOW);review.tournament_id=tournament.into();set_deadline_cash(&mut review,"0.940500");let scope=Scope{tournament_id:tournament.into(),tournament_slug:"cup".into(),exchanges:[("101".into(),"201".into())].into()};
-            let mut f=Self{root,bank,log,owner,store:None,scope,trust:BTreeSet::new(),seq:0,review};
+            let mut f=Self{root,bank,log,owner,store:None,scope,trust:BTreeSet::new(),seq:0,book_version:0,review};
             f.book(NOW-5000,"0.100000","0.120000");f.book(NOW-4000,"0.100000","0.120000");
             f.store=Some(Cohorts::initialize(&f.root,&f.bank,&f.log,f.owner.clone()).unwrap());if install{f.install(f.review.clone(),NOW);}f
         }
         fn install(&mut self,r:ReviewInput,at:u64){let reviewed=approve(r,&mut self.trust,at);self.store.as_mut().unwrap().install(reviewed,&self.bank,&self.log,at).unwrap();}
-        fn book(&mut self,at:u64,bid:&str,ask:&str){self.seq+=1;let version=self.bank.engine().live_package_books().iter().find(|b|b["exchangeId"]=="101").and_then(|b|b["sequence"].as_str().and_then(|s|s.parse::<u64>().ok())).unwrap_or(0)+1;self.bank.accept("fixture-books",self.seq,&json!({"type":"book","receivedAt":iso(at),"book":{"marketId":"201","exchangeId":"101","tournamentId":self.scope.tournament_id,"sequence":version.to_string(),"sourceAt":iso(at),"requestStartedAt":iso(at),"receivedAt":iso(at),"bids":[{"price":bid,"quantity":100}],"asks":[{"price":ask,"quantity":100}]}})).unwrap();}
+        // The native getter omits gap-invalidated books, but native rollback
+        // checks retain their original versions. Remember the venue watermark
+        // before invalidation, independently of the consecutive Session cursor.
+        fn remember_book_version(&mut self){if let Some(b)=self.bank.engine().live_package_books().iter().find(|b|b["exchangeId"]=="101"){self.book_version=self.book_version.max(b["sequence"].as_str().unwrap().parse::<u128>().unwrap());}}
+        fn book(&mut self,at:u64,bid:&str,ask:&str){self.remember_book_version();self.seq+=1;self.book_version=self.book_version.checked_add(1).unwrap();self.bank.accept("fixture-books",self.seq,&json!({"type":"book","receivedAt":iso(at),"book":{"marketId":"201","exchangeId":"101","tournamentId":self.scope.tournament_id,"sequence":self.book_version.to_string(),"sourceAt":iso(at),"requestStartedAt":iso(at),"receivedAt":iso(at),"bids":[{"price":bid,"quantity":100}],"asks":[{"price":ask,"quantity":100}]}})).unwrap();}
         fn entry(&self)->Value{self.bank.engine().order_records().into_iter().find(|q|q["side"]=="NO"&&q["action"]=="buy"&&q["retired"]==false).unwrap()}
         fn spec(&self,q:&Value)->RequestSpec{RequestSpec{method:"POST".into(),endpoint:"/orders".into(),body:Some(json!({"idempotencyKey":format!("fundamental-fixture:{}",q["id"].as_u64().unwrap()),"tournamentId":self.scope.tournament_id,"exchangeId":"101","side":if q["side"]=="NO"{"no"}else{"yes"},"action":q["action"],"quantity":q["quantity"],"price":serde_json::from_str::<Value>(q["price"].as_str().unwrap()).unwrap(),"expirationDate":iso(q["expiresAt"].as_u64().unwrap())})),body_json:None}}
         fn bind_entry(&mut self)->(Value,RequestSpec){let q=self.entry();let spec=self.spec(&q);assert!(matches!(self.store.as_mut().unwrap().bind(&self.bank,&self.log,&self.scope,q["id"].as_u64().unwrap(),&spec,&self.trust,NOW).unwrap(),Decision::Entry{..}));(q,spec)}
         fn slice_spec(&mut self)->(Value,RequestSpec){let q=self.entry();let mut r=self.review.clone();r.reviewed_at_ms=NOW+1;r.maximum_quantity=1;r.maximum_principal=q["price"].as_str().unwrap().into();self.install(r,NOW+1);let mut spec=self.spec(&q);spec.body.as_mut().unwrap()["quantity"]=json!(1);(q,spec)}
         fn log_intent(&mut self,q:&Value,spec:&RequestSpec){let qid=q["id"].as_u64().unwrap();self.log.append(json!({"kind":"intent","qid":qid,"quote":q,"spec":spec,"fundamental":self.store.as_ref().unwrap().durable_tag(qid).unwrap()})).unwrap();self.log.append(json!({"kind":"attempt","qid":qid})).unwrap();}
-        fn event(&mut self,e:Value){let n=self.bank.last_source_sequence("fixture-official")+1;self.bank.accept("fixture-official",n,&e).unwrap();}
+        fn event(&mut self,e:Value){self.remember_book_version();let n=self.bank.last_source_sequence("fixture-official")+1;self.bank.accept("fixture-official",n,&e).unwrap();self.remember_book_version();}
         fn base(q:&Value,kind:&str,at:u64,actual:&str)->Value{json!({"type":kind,"source":"official_sig_api_v1","receiptHash":"b".repeat(64),"orderId":q["id"],"actualOrderId":actual,"exchangeId":q["exchangeId"],"marketId":q["marketId"],"side":q["side"],"action":q["action"],"quantity":q["quantity"],"price":q["price"],"receivedAt":iso(at)})}
         fn fill_entry(&mut self,partial:bool)->u64{
             let(q,spec)=self.bind_entry();let id=q["id"].as_u64().unwrap();self.log_intent(&q,&spec);
@@ -202,6 +206,12 @@ fn verify_originals(r:ReviewInput,originals:&[Vec<u8>])->moloch_live_runtime::fe
         fn authority(&self)->ReviewAuthority{let path=self.root.join("review-authority.json");let bytes=serde_json::to_vec(&json!({"version":1,"trustedReviewSha256":self.trust})).unwrap();std::fs::write(&path,&bytes).unwrap();ReviewAuthority::load(&path,&sha(&bytes)).unwrap()}
         fn permit(&self,q:&Value,at:u64)->Permit{Permit{run_id:"fundamental-fixture".into(),intent_id:q["id"].as_u64().unwrap().to_string(),owner:"Codex".into(),expires_at_ms:at+10000,maximum_quantity:q["quantity"].as_u64().unwrap() as u32,maximum_cost:moloch_replay::money(baal_transport_service::decimal_units(q["price"].as_str().unwrap()).unwrap()*q["quantity"].as_u64().unwrap() as i128)}}
         fn retire_drafts(&mut self,at:u64){for q in self.bank.engine().order_records(){let id=q["id"].as_u64().unwrap();if q["retired"]==false&&self.log.never_attempted(id){self.event(json!({"type":"unsubmitted_intent_retired","source":"moloch_live_dispatcher","orderId":id,"confirmedNetworkAttempts":0,"receiptHash":"c".repeat(64),"receivedAt":iso(at),"deferPlanningForPackage":true}));}}}
+    }
+    #[test]fn fixture_venue_watermark_survives_gap_without_skipping_session_cursor(){
+        let mut f=F::new();f.event(json!({"type":"gap","exchangeId":"101","receivedAt":iso(NOW+1)}));assert!(f.bank.engine().live_package_books().is_empty());f.book(NOW+2,"0.100000","0.120000");assert_eq!(f.bank.engine().live_package_books()[0]["sequence"],"3");assert_eq!(f.bank.last_source_sequence("fixture-books"),3);
+        let(mut f,_transport,_facts)=entry_fixture();assert_eq!(f.bank.engine().live_package_books()[0]["sequence"],"99");assert_eq!(f.bank.last_source_sequence("fixture-books"),2);
+        for (at,version,cursor) in [(NOW+30,"100",3),(NOW+32,"101",4)]{f.event(json!({"type":"gap","exchangeId":"101","receivedAt":iso(at)}));assert!(f.bank.engine().live_package_books().is_empty());f.book(at+1,"0.100000","0.120000");let raw=f.bank.engine().live_package_books().remove(0);assert_eq!(raw["sequence"],version);assert_eq!(raw["sourceAt"],iso(at+1));assert_eq!(f.bank.last_source_sequence("fixture-books"),cursor);}
+        let mut rollback=f.bank.engine().live_package_books().remove(0);rollback["sequence"]=json!("100");rollback["sourceAt"]=json!(iso(NOW+34));rollback["requestStartedAt"]=json!(iso(NOW+34));rollback["receivedAt"]=json!(iso(NOW+34));let head=f.bank.durable_head();assert!(f.bank.accept("fixture-real-rollback",1,&json!({"type":"book","receivedAt":iso(NOW+34),"book":rollback})).is_err());assert_eq!(f.bank.durable_head(),head);
     }
     #[test]fn original_seven_receipt_entry_plan_uses_reviewed_deadline_cash_not_terminal_payout(){
         let(mut f,t,facts)=entry_fixture();let mut r=f.review.clone();r.reviewed_at_ms=NOW+1;r.ordinary_probability="0.999999".into();set_deadline_cash(&mut r,"0.910000");f.install(r.clone(),NOW+1);
