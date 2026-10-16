@@ -1453,6 +1453,9 @@ pub fn main()->Result<()>{
  fn prefilter_fixture()->(Temp,Session,DispatchLog,Control,RestSource,Value){
   let old=now()-20000;let(root,mut bank,log,_,_,_)=fixture_at(old);let c=control(&root.0);
   let mut source=RestSource::new(&json!([{"marketId":"201","exchangeId":"101"}]),TID,&iso(old)).unwrap();
+  // Seed the same ORIGINAL old book before its original tape coverage. This
+  // models an already recovered source, not a new reconnect invalidation.
+  source.accept(&json!({"kind":"book","source":"official_sig_api_v1","status":200,"marketId":"201","exchangeId":"101","tournamentId":TID,"requestStartedAt":iso(old+1000),"receivedAt":iso(old+1000),"endpoint":format!("/markets/201/orderbook?tournamentId={TID}&depth=20"),"data":{"contexts":[{"type":"tournament","tournament":{"id":TID},"orderbook":{"exchanges":[{"exchangeId":"101","asOf":{"sequence":1,"at":iso(old+1000)},"bids":[{"price":"0.300000","quantity":100}],"asks":[{"price":"0.320000","quantity":100}]}]}}]}})).unwrap();
   let r=json!({"kind":"trades","source":"official_sig_api_v1","status":200,"marketId":"201","exchangeId":"101","tournamentId":TID,"requestStartedAt":iso(old+1000),"receivedAt":iso(old+1000),"endpoint":format!("/exchanges/101/trades?tournamentId={TID}&from={}&to={}",iso(old-1),iso(old+1000)),"data":{"marketId":"201","exchangeId":"101","from":iso(old-1),"to":iso(old+1000),"data":[],"pagination":{"hasMore":false,"nextCursor":null},"coverage":{"complete":true,"projectedThroughSequence":1}}});
   for(i,e)in source.accept(&r).unwrap().iter().enumerate(){bank.accept("prefilter-original-coverage",i as u64+1,e).unwrap();}
   let q=bank.engine().order_records().into_iter().find(|q|q["action"]=="sell"&&q["retired"]==false).unwrap();
