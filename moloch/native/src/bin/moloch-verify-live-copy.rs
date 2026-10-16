@@ -45,7 +45,7 @@ mod tests{
  use super::*;use std::{os::unix::fs::PermissionsExt,time::{SystemTime,UNIX_EPOCH}};
  struct Fixture(std::path::PathBuf);impl Drop for Fixture{fn drop(&mut self){let _=fs::remove_dir_all(&self.0);}}
  fn fixture()->Fixture{
-  let p=std::env::temp_dir().join(format!("moloch-copy-{}-{}",std::process::id(),SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_nanos()));fs::create_dir(&p).unwrap();fs::set_permissions(&p,fs::Permissions::from_mode(0o700)).unwrap();
+  let p=std::env::temp_dir().join(format!("moloch-copy-{}-{}",std::process::id(),SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_nanos()));
   let seed=json!({"runId":"copy-fixture","availableCash":"1000.000000","accountSnapshotHash":"a".repeat(64),"observedAt":"2026-10-13T00:00:00Z"});let mut s=Session::open_live(&p,&json!({"quantity":1}),&seed).unwrap();
   let golden:Value=serde_json::from_str(include_str!("../../tests/reference/golden.json")).unwrap();s.accept("books",1,&golden[0]["steps"][0]["event"]).unwrap();drop(s);
   let m=json!({"kind":"moloch_offline_prefix_copy_v1","copyOnly":true,"accountRequests":0,"originalHead":sealed(&p.join("head.json")).unwrap(),"manifestSha256":file_hash(&p.join("manifest.json")).unwrap().1,"reportSha256":file_hash(&p.join("report.json")).unwrap().1,"prefixBytes":file_hash(&p.join("events.jsonl")).unwrap().0,"prefixSha256":file_hash(&p.join("events.jsonl")).unwrap().1,"bridgeSha256":null});
