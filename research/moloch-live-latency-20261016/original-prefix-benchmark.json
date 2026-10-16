@@ -1,0 +1,54 @@
+{
+  "batchCommitNs": 1621782095,
+  "batchRestartNs": 137963444299,
+  "batchRestoreNs": 132129529187,
+  "batchSize": 32,
+  "bytesEqual": true,
+  "events": 64,
+  "files": {
+    "events.jsonl": {
+      "batchBytes": 430963210,
+      "batchSha256": "1a38a374617d240daaf035d57dac5251103949da4f1906abf13625d3a7ad315d",
+      "equal": true,
+      "serialBytes": 430963210,
+      "serialSha256": "1a38a374617d240daaf035d57dac5251103949da4f1906abf13625d3a7ad315d"
+    },
+    "head.json": {
+      "batchBytes": 254,
+      "batchSha256": "8928820c7ac08529e3cca0e296fd0aa4f2dc415cf62a77cc91c2857b336f5291",
+      "equal": true,
+      "serialBytes": 254,
+      "serialSha256": "8928820c7ac08529e3cca0e296fd0aa4f2dc415cf62a77cc91c2857b336f5291"
+    },
+    "manifest.json": {
+      "batchBytes": 16090,
+      "batchSha256": "d74b52eb107ea97388c106505d36fce14700b082723c9f7bfa229f2aedafef9e",
+      "equal": true,
+      "serialBytes": 16090,
+      "serialSha256": "d74b52eb107ea97388c106505d36fce14700b082723c9f7bfa229f2aedafef9e"
+    },
+    "report.json": {
+      "batchBytes": 1093814,
+      "batchSha256": "0ba855f56464e35d4d8cbc74e4accc06ead5f6e1f517647a504f493a88f34d10",
+      "equal": true,
+      "serialBytes": 1093814,
+      "serialSha256": "0ba855f56464e35d4d8cbc74e4accc06ead5f6e1f517647a504f493a88f34d10"
+    }
+  },
+  "fixture": "64_original_consecutive_journal_rows_single_event_frames",
+  "inputSha256": "1646518fc24b6675c8f86c36c5c079c876def5bba56cb4d8e49f8411020bcf6d",
+  "networkRequests": 0,
+  "originalRowsEqual": true,
+  "restartEqual": true,
+  "schemaVersion": 1,
+  "semanticEqual": true,
+  "serialCommitNs": 31898828176,
+  "serialRestartNs": 135498795482,
+  "serialRestoreNs": 133901325385,
+  "stateCounts": {
+    "contestOrders": 682,
+    "fills": 118,
+    "orders": 3405,
+    "sequence": 149663
+  }
+}

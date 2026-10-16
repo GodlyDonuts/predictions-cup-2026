@@ -8,7 +8,7 @@
 | --- | --- |
 | Service |Sole `moloch-live.service`, PID381131, VPS; running, no execution STOP|
 | Deployed source |`4148fe5dd3bb1bd4c1ba53855ab1422d80d6f61d`|
-| Executable SHA256 |`da4202e064ffb89cac1eb4aab2dcb076a1d2bcc3cde3c1a2197799f6cf9c5fefc`|
+| Executable SHA256 |`da4202e064ffb89cac1eb4aab2dcb076a1d2bc3cde3c1a2197799f6cf9c5fefc`|
 | Native engine identity |`4b50ec49ba7331eb051e7983e33ffa0ce55df19b9a9e4a7d9d5d8d8a5477ff98`, nine explicit financial identity bridges|
 | Account/bank |One serialized SDK V1 queue and original funded bank; no second collector/writer|
 | Fresh activity |Healthy realtime/trading;696 total acknowledged orders,119 actual fill rows;14 new ACKs/1 new fill since03:58 recovery launch|
