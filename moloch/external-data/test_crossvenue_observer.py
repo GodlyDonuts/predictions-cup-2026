@@ -1,9 +1,10 @@
 import hashlib
+import copy
 import json
 from pathlib import Path
 import tempfile
 import unittest
-from crossvenue_observer import Study, Tail, compact, stamp, decimal
+from crossvenue_observer import Study, Tail, compact, stamp, decimal, FLOW_FIELDS, validate_trade_flow
 
 
 def row(at, seq=1, market="1", bid="0.400000", ask="0.420000", source=None):
@@ -24,6 +25,22 @@ def websocket(at, sequence=1, sid=1, sha="c"*64, **kwargs):
     e["source"] = "kalshi_official_ws_v2"
     e["markets"][0].update(valid=True, sid=sid, sequence=sequence, stateChainSha256=sha, sourceTsMs=at)
     return e
+
+
+def public_flow(at, direction=1, epoch=1):
+    record = dict(zip(FLOW_FIELDS, ['public-test-trade', 'RACE-26-D', 'b'*64, at-104, at-90, at-100,
+                                  3, 1, epoch, '1.250000', '0.3900', '0.6100', direction, False]))
+    evidence = [record]
+    digest = hashlib.sha256(json.dumps(evidence, separators=(',', ':'), ensure_ascii=False).encode()).hexdigest()
+    window = {'observedTradeCount': 1, 'observedQuantity': '1.250000', 'knownSignedQuantity': '1.250000' if direction == 1 else '-1.250000' if direction == -1 else '0.000000',
+              'signedQuantity': '1.250000' if direction == 1 else '-1.250000' if direction == -1 else None,
+              'unknownDirectionQuantity': '1.250000' if direction is None else '0.000000', 'missingExecutionClockCount': 0,
+              'receiptOnlyActivityQuantity': '0.000000', 'blockTradeCount': 0, 'unknownBlockClassificationCount': 0,
+              'observedSubscriptionDurationMs': 30000, 'windowObservedSinceSubscription': True, 'completeTradeTape': False,
+              'evidenceSha256': digest, 'evidence': evidence, 'evidenceComplete': True}
+    return {'source': 'kalshi_official_ws_v2_public_trade', 'ticker': 'RACE-26-D', 'streamEpoch': epoch,
+            'sid': 3, 'asOfMs': at, 'observing': True, 'windows': {str(ms): copy.deepcopy(window) for ms in (1000,5000,30000)},
+            'bookFreshnessRenewed': False, 'pricingAuthority': False, 'executionAuthority': False}
 
 
 class ObserverTests(unittest.TestCase):
@@ -402,6 +419,61 @@ class ObserverTests(unittest.TestCase):
             s.accept(row(at), at)
             self.assertIsNone(out[-1]['externalLagAnchors']['30000'])
             self.assertIsNone(out[-1]['externalLogitChanges']['30000'])
+
+    def test_original_flow_survives_rest_book_fallback_without_renewing_evidence(self):
+        out=[];s=Study(out.append);s.external_update(websocket(10000),10000)
+        s.external_update(external(40000),40000)
+        e=websocket(10000);e['markets'][0].update(valid=False,invalidReason='stale',tradeFlow=public_flow(40000))
+        e['websocket']={'coverage':{'connections':1}}
+        s.external_update(e,40000);s.accept(row(40000),40000)
+        sample=out[-1];flow=sample['externalTradeFlow']
+        self.assertEqual(sample['external']['source'],'kalshi_official_v2')
+        self.assertEqual(flow['inputs']['1000']['observedSignedQuantity'],'1.250000')
+        self.assertEqual(flow['sourceSnapshot']['windows']['1000']['evidence'][0]['receivedMs'],39896)
+        s.external_update(e,40100)
+        self.assertEqual(s.external_flow['1']['availableMs'],40000)
+        self.assertIsNone(s._flow_for_decision('1',42001))
+        later=s._flow_for_decision('1',41000)
+        self.assertIsNone(later['inputs']['1000']['observedSignedQuantity'])  # Actual execution aged out.
+        self.assertEqual(later['inputs']['5000']['observedSignedQuantity'],'1.250000')
+
+    def test_unknown_partial_or_missing_flow_never_becomes_complete_signed_input(self):
+        for mode in ('unknown','partial','missingclock'):
+            flow=public_flow(40000,direction=None if mode=='unknown' else 1)
+            for w in flow['windows'].values():
+                if mode=='partial':
+                    w.update(observedTradeCount=2,observedQuantity='2.500000',knownSignedQuantity='2.500000',signedQuantity='2.500000',evidenceComplete=False,evidenceSha256='c'*64)
+                if mode=='missingclock':w.update(missingExecutionClockCount=1,receiptOnlyActivityQuantity='1.000000',signedQuantity=None)
+            e=websocket(40000);e['markets'][0]['tradeFlow']=flow;s=Study(lambda _:None);s.external_update(e,40000)
+            result=s._flow_for_decision('1',40000)
+            self.assertIsNotNone(result)
+            self.assertIsNone(result['inputs']['1000']['observedSignedQuantity'])
+            self.assertFalse(result['inputs']['1000']['completeTradeTape'])
+            self.assertFalse(result['executionAuthority'])
+
+    def test_invalid_flow_is_local_missing_not_observer_or_book_failure(self):
+        for mode in ('future','receipt','hash','quantity','scope','epoch','coverage','sid'):
+            flow=public_flow(40000);w=flow['windows']['1000'];r=w['evidence'][0]
+            if mode=='future':flow['asOfMs']=40001
+            elif mode=='receipt':r['availableMs']=40001
+            elif mode=='hash':w['evidenceSha256']='d'*64
+            elif mode=='quantity':w['signedQuantity']='2.000000'
+            elif mode=='scope':flow['ticker']='OTHER'
+            elif mode=='epoch':flow['streamEpoch']=2
+            elif mode=='coverage':w['completeTradeTape']=True
+            else:r['sid']=4
+            s=Study(lambda _:None);e=websocket(40000);e['websocket']={'coverage':{'connections':1}};e['markets'][0]['tradeFlow']=flow
+            s.external_update(e,40000)
+            self.assertIsNone(s._flow_for_decision('1',40000),mode)
+            self.assertIn('1',s.external)
+            self.assertEqual(s.counts['tradeFlowInvalid'],1)
+
+    def test_flow_disconnection_withdrawal_and_source_snapshot_digest_are_explicit(self):
+        s=Study(lambda _:None);e=websocket(40000);flow=public_flow(40000);e['markets'][0]['tradeFlow']=flow
+        s.external_update(e,40000);cached=s._flow_for_decision('1',40000)
+        self.assertEqual(cached['sourceSnapshotSha256'],hashlib.sha256(compact(flow).encode()).hexdigest())
+        flow['observing']=False;s.external_update(e,40001)
+        self.assertIsNone(s._flow_for_decision('1',40001))
 
 
 if __name__ == "__main__":
