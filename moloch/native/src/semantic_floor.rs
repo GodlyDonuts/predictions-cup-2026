@@ -124,6 +124,7 @@ pub fn solve(certificate:Option<&ExhaustivePayoffCertificate>,context:&Context<'
 fn solve_checked(cert:Option<&ExhaustivePayoffCertificate>,c:&Context<'_>,candidates:&[Candidate])->Result<Decision>{
  let cert=cert.ok_or("FLOOR_NO_EXHAUSTIVE_CERTIFICATE")?;
  need(c.now_ms>=cert.input.reviewed_at_ms&&c.now_ms<cert.until&&c.tournament_id==cert.input.tournament_id&&c.tournament_slug==cert.input.tournament_slug&&atom(c.run_id)&&hex(c.native_head_sha256)&&c.unencumbered_cash_units>=0&&c.minimum_net_surplus_units>0&&(1..=10_000).contains(&c.maximum_book_age_ms)&&(1..=10_000).contains(&c.maximum_plan_age_ms)&&candidates.len()<=4096&&c.book_receipts.len()<=10,"FLOOR_CONTEXT")?;
+ need(candidates.len().saturating_mul(cert.input.states.len()).saturating_mul(10)<=1_000_000,"FLOOR_SOLVER_WORK_BOUND")?;
  let cash=receipt(c.cash_receipt)?;let mut until=cert.until.min(fresh(&cash,&format!("/tournaments/{}",c.tournament_slug),c.now_ms,20_000)?).min(c.now_ms.checked_add(c.maximum_plan_age_ms).ok_or("FLOOR_OVERFLOW")?);
  need(cash["data"]["id"]==c.tournament_id&&cash["data"]["slug"]==c.tournament_slug&&units(&cash["data"]["myBalance"])? >=c.unencumbered_cash_units,"FLOOR_CASH_SCOPE")?;
  need(c.node_receipts.len()==cert.input.contracts.len(),"FLOOR_CURRENT_RULES_REQUIRED")?;let mut nodes=BTreeSet::new();let mut node_hashes=Vec::new();
