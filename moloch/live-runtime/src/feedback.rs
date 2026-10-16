@@ -40,7 +40,20 @@ pub fn fills(q:&Value,actual:&str,tournament:&str,r:&Receipt,processed_at:&str)-
  // the original receipt and its hash. This orders one complete tape only, not
  // late observations across separately reconciled orders or historical events.
  events.sort_by(|a,b|a.0.cmp(&b.0));
- for pair in events.windows(2){if pair[0].0==pair[1].0&&pair[0].1["price"]!=pair[1].1["price"]{return Err("ACCOUNT_FILL_ORDER_AMBIGUOUS".into())}}
+ let mut start=0;
+ while start<events.len(){
+  let mut end=start+1;while end<events.len()&&events[end].0==events[start].0{end+=1}
+  if events[start+1..end].iter().any(|row|row.1["price"]!=events[start].1["price"]){
+   if q["action"]!="sell"{return Err("ACCOUNT_FILL_ORDER_AMBIGUOUS".into())}
+   // One complete original order tape, one covered SELL. Total proceeds and
+   // total FIFO basis consumed do not depend on within-timestamp sale order.
+   // Stable sort retains original tape order, NOT invented ID/price chronology.
+   // Per-fill lot attribution is canonical bookkeeping, not finer venue time.
+   let count=end-start;
+   for(index,(_,event))in events[start..end].iter_mut().enumerate(){event["tiedFillAccounting"]=json!({"kind":"same_owned_sell_timestamp_original_tape_order_v1","groupSize":count,"originalTiePosition":index,"chronologyInferred":false});}
+  }
+  start=end;
+ }
  Ok(events.into_iter().map(|(_,event)|event).collect())
 }
 /// A closed-order quantity is interpreted separately from a resting remainder.
@@ -86,6 +99,32 @@ pub fn terminal(q:&Value,actual:&str,tournament:&str,order:&Receipt,filled:&Rece
   assert_eq!(money(wallet.cash),"99.900000");assert_eq!(money(wallet.realized),"0.300000");assert_eq!(money(wallet.owned_cost()),"0.400000");assert_eq!(wallet.quantity("994",Side::Yes),1);assert_eq!(wallet.quantity("994",Side::No),0);wallet.audit().unwrap();
  }
  #[test]fn unequal_price_timestamp_ties_fail_without_inventing_trade_id_order(){let(quote,mut receipt)=varied_buy();receipt.data["data"][1]["filledAt"]=receipt.data["data"][0]["filledAt"].clone();assert!(fills(&quote,"201","cup",&receipt,"2026-10-15T00:00:06Z").is_err());receipt.data["data"][1]["price"]=json!(0.40);assert_eq!(fills(&quote,"201","cup",&receipt,"2026-10-15T00:00:06Z").unwrap().len(),2);}
+ #[test]fn tied_different_price_sell_preserves_original_rows_and_explains_nonchronological_accounting(){
+  let mut receipt=tape();receipt.data["data"][1]["filledAt"]=receipt.data["data"][0]["filledAt"].clone();let original=receipt.clone();let hash=digest(&receipt).unwrap();
+  let events=fills(&q(),"201","cup",&receipt,"2026-10-15T00:00:06Z").unwrap();assert_eq!(receipt.data,original.data);assert_eq!(digest(&receipt).unwrap(),hash);assert_eq!(events[0]["fillId"],"301");assert_eq!(events[1]["fillId"],"302");assert_eq!(events[0]["price"],"0.060000");assert_eq!(events[1]["price"],"0.055000");
+  for(i,e)in events.iter().enumerate(){assert_eq!(e["receiptHash"],hash);assert_eq!(e["executedAt"],receipt.data["data"][i]["filledAt"]);assert_eq!(e["tiedFillAccounting"]["chronologyInferred"],false);assert_eq!(e["tiedFillAccounting"]["originalTiePosition"],i);assert_eq!(e["quantity"],1);}
+ }
+ #[test]fn production_shaped_tied_no_sell_has_exact_proceeds_and_fifo_residual_in_either_tape_order(){
+  use moloch_replay::{Wallet,Reservation,Side,amount};
+  let mut quote=q();quote["quantity"]=json!(447);quote["price"]=json!("0.100000");
+  let mut receipt=tape();receipt.data["totalQuantityFilled"]=json!(-447);receipt.data["data"]=json!([
+   {"id":181052050,"price":0.1,"quantity":-432,"side":"no","filledAt":"2026-10-15T00:00:02Z"},
+   {"id":181052044,"price":0.105,"quantity":-15,"side":"no","filledAt":"2026-10-15T00:00:02Z"}]);
+  let make=||{let mut w=Wallet::new(amount("1000").unwrap(),amount("1000").unwrap(),0,0).unwrap();w.reserve("one",Reservation{exchange:"994".into(),side:Side::No,quantity:440,limit:amount("0.2").unwrap()}).unwrap();w.buy_fill_exact("one",440,amount("0.2").unwrap(),0).unwrap();w.reserve("two",Reservation{exchange:"994".into(),side:Side::No,quantity:10,limit:amount("0.4").unwrap()}).unwrap();w.buy_fill_exact("two",10,amount("0.4").unwrap(),0).unwrap();w};
+  for reverse in [false,true]{if reverse{receipt.data["data"].as_array_mut().unwrap().reverse();}let events=fills(&quote,"201","cup",&receipt,"2026-10-15T00:00:06Z").unwrap();let mut w=make();let mut proceeds=0;
+   for e in &events{let n=e["quantity"].as_u64().unwrap();let p=amount(e["price"].as_str().unwrap()).unwrap();proceeds+=p*n as i128;w.sell_fill_exact("994",Side::No,n,p,0).unwrap();}
+   assert_eq!(money(proceeds),"44.775000");assert_eq!(money(w.cash),"952.775000");assert_eq!(money(w.realized),"-46.025000");assert_eq!(money(w.owned_cost()),"1.200000");assert_eq!(w.quantity("994",Side::No),3);w.audit().unwrap();
+  }
+ }
+ #[test]fn sell_tie_does_not_relax_duplicate_total_or_coverage_guards(){
+  for change in 0..3{let mut receipt=tape();receipt.data["data"][1]["filledAt"]=receipt.data["data"][0]["filledAt"].clone();match change{0=>receipt.data["data"][1]["id"]=receipt.data["data"][0]["id"].clone(),1=>receipt.data["totalQuantityFilled"]=json!(-3),_=>receipt.data["coverage"]["complete"]=json!(false)}assert!(fills(&q(),"201","cup",&receipt,"2026-10-15T00:00:06Z").is_err());}
+ }
+ #[test]fn exact_447_sale_numeric_case_closes_native_inventory_with_minus_2160_realized(){
+  use moloch_replay::{Wallet,Reservation,Side,amount};
+  let mut w=Wallet::new(amount("1000").unwrap(),amount("1000").unwrap(),0,0).unwrap();w.reserve("owned",Reservation{exchange:"850".into(),side:Side::No,quantity:447,limit:amount("0.105").unwrap()}).unwrap();w.buy_fill_exact("owned",447,amount("0.105").unwrap(),0).unwrap();
+  for(n,p)in [(432,"0.100"),(15,"0.105")]{w.sell_fill_exact("850",Side::No,n,amount(p).unwrap(),0).unwrap();}
+  assert_eq!(w.quantity("850",Side::No),0);assert_eq!(money(w.owned_cost()),"0.000000");assert_eq!(money(w.realized),"-2.160000");assert_eq!(money(w.cash),"997.840000");w.audit().unwrap();
+ }
  #[test]fn sorting_one_tape_does_not_prove_cross_order_late_observation_fifo(){
   let(mut quote,mut receipt)=varied_buy();quote["quantity"]=json!(1);receipt.data["totalQuantityFilled"]=json!(1);
   let older=receipt.data["data"][1].clone();receipt.data["data"]=json!([receipt.data["data"][0].clone()]);
