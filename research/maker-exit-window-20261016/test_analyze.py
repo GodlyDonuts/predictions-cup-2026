@@ -77,4 +77,18 @@ class ExitWindowTests(unittest.TestCase):
         raw=(json.dumps(value,sort_keys=True,separators=(",",":"))+"\n").encode();self.assertEqual(A.RAW.native_row(raw)["sequence"],1)
         with self.assertRaises(ValueError):A.RAW.native_row(raw.replace(b'"sequence":1',b'"sequence":2'))
 
+    def test_genuine_stage_clocks_keep_ack_before_passive_fill_and_missing_distinct(self):
+        data=F.mixed();orders={str(q["id"]):q for q in data["orders"]};orders["2"]["createdAt"]=A.clock(F.stamp(75))//A.MS
+        cs,rows=A.trace(data["events"],orders);summary=A.clock_summary(cs,rows,{"1":A.clock(F.stamp(5))})
+        self.assertEqual(summary["nativeFillIngestionToExitQuoteCreated"]["medianMs"],"65000")
+        self.assertEqual(summary["exitQuoteCreatedToActualFillExecution"]["medianMs"],"5000")
+        self.assertEqual(summary["originalPostAckBeforeBuyExecutionCohorts"],1)
+        self.assertEqual(summary["buyExecutionToOriginalPostAckReceiptSigned"]["medianMs"],"-5000")
+        self.assertEqual(A.clock_summary(cs,rows,{})["originalPostAckMissingOrRecoveredCohorts"],1)
+
+    def test_public_breadth_packet_does_not_become_native_book_observation(self):
+        c=cohort();public=book();A.observe([c],public);self.assertNotIn("first_native_post_execution",c)
+        native=book(71);native["lane"]="native";A.observe([c],native)
+        self.assertEqual(c["first_native_post_execution"],A.clock(F.stamp(71)))
+
 if __name__=="__main__":unittest.main()
