@@ -1409,8 +1409,9 @@ pub fn main()->Result<()>{
  struct Temp(PathBuf);impl Temp{fn new()->Self{static NEXT:std::sync::atomic::AtomicU64=std::sync::atomic::AtomicU64::new(0);Self(std::env::temp_dir().join(format!("reviewed-existing-worker-{}-{}-{}",std::process::id(),now(),NEXT.fetch_add(1,std::sync::atomic::Ordering::Relaxed))))}}impl Drop for Temp{fn drop(&mut self){let _=fs::remove_dir_all(&self.0);}}
  const TID:&str="11111111-1111-1111-1111-111111111111";
  fn scope()->Scope{Scope{tournament_id:TID.into(),tournament_slug:"cup".into(),exchanges:[("101".into(),"201".into())].into()}}
- fn fixture()->(Temp,Session,DispatchLog,Value,Value,Value){
-  let root=Temp::new();private_dir(&root.0).unwrap();let at=now()-7500;
+ fn fixture()->(Temp,Session,DispatchLog,Value,Value,Value){fixture_at(now()-7500)}
+ fn fixture_at(at:u64)->(Temp,Session,DispatchLog,Value,Value,Value){
+  let root=Temp::new();private_dir(&root.0).unwrap();
   let policy=json!({"initialCash":"1000.000000","maximumCommitted":"1000.000000","maximumMarketCost":"100.000000","maximumMarkets":3,"quantity":2,"entryStopAt":iso(at+3600000),"inventoryExitMode":"fixedGain","inventoryMinimumGain":"0.005000","maximumInventoryAgeMs":60000,"inventoryAgeClock":"execution"});
   let seed=json!({"runId":"existing-worker-fixture","availableCash":"1000.000000","accountSnapshotHash":"a".repeat(64),"observedAt":iso(at-1000)});
   let mut bank=Session::open_live(&root.0.join("bank"),&policy,&seed).unwrap();
@@ -1421,6 +1422,49 @@ pub fn main()->Result<()>{
  }
  fn control(root:&Path)->Control{serde_json::from_value(json!({"activation":{"runId":"existing-worker-fixture","entryUntilMs":now()+3600000,"maximumCommitted":"1000.000000","maximumMarketCost":"100.000000","maximumQuantity":2,"tournamentId":TID,"tournamentSlug":"cup","binarySha256":"a".repeat(64)},"scope":scope(),"policy":{},"root":root,"credentials":"/unused","ownerLock":root.join("owner.lock"),"accountScope":"synthetic-existing-worker"})).unwrap()}
  fn receipt(data:Value,at:u64)->Receipt{Receipt{endpoint:"synthetic original receipt".into(),request_started_at:iso(at-1),received_at:iso(at),status:200,data}}
+ struct PrefilterReads{at:u64,allow:bool,book_price:i128,endpoints:Vec<Endpoint>,guards:usize,book_reads:u64}
+ impl OrdinaryPreflightReads for PrefilterReads{
+  fn now_ms(&self)->u64{self.at}
+  fn guarded(&mut self)->Result<bool>{self.guards+=1;Ok(self.allow)}
+  fn read(&mut self,ep:Endpoint)->Result<Receipt>{
+   self.endpoints.push(ep.clone());let mut r=receipt(match &ep{
+    Endpoint::Tournament=>json!({"status":"active"}),
+    Endpoint::Orders{..}=>json!({"coverage":{"complete":true},"pagination":{"hasMore":false},"data":[]}),
+    Endpoint::OrderBook{..}=>{self.book_reads+=1;json!({"contexts":[{"type":"tournament","tournament":{"id":TID},"orderbook":{"exchanges":[{"exchangeId":"101","asOf":{"sequence":1+self.book_reads,"at":iso(self.at-1)},"bids":[{"price":money(self.book_price),"quantity":100}],"asks":[{"price":money(self.book_price+20000),"quantity":100}]}]}}]})},
+    _=>json!({})},self.at);
+   if matches!(ep,Endpoint::OrderBook{..}){r.endpoint=format!("/markets/201/orderbook?tournamentId={TID}&depth=20");}Ok(r)
+  }
+ }
+ fn prefilter_fixture()->(Temp,Session,DispatchLog,Control,RestSource,Value){
+  let old=now()-20000;let(root,mut bank,log,_,_,_)=fixture_at(old);let c=control(&root.0);
+  let mut source=RestSource::new(&json!([{"marketId":"201","exchangeId":"101"}]),TID,&iso(old)).unwrap();
+  let r=json!({"kind":"trades","source":"official_sig_api_v1","status":200,"marketId":"201","exchangeId":"101","tournamentId":TID,"requestStartedAt":iso(old+1000),"receivedAt":iso(old+1000),"endpoint":format!("/exchanges/101/trades?tournamentId={TID}&from={}&to={}",iso(old-1),iso(old+1000)),"data":{"marketId":"201","exchangeId":"101","from":iso(old-1),"to":iso(old+1000),"data":[],"pagination":{"hasMore":false,"nextCursor":null},"coverage":{"complete":true,"projectedThroughSequence":1}}});
+  for(i,e)in source.accept(&r).unwrap().iter().enumerate(){bank.accept("prefilter-original-coverage",i as u64+1,e).unwrap();}
+  let q=bank.engine().order_records().into_iter().find(|q|q["action"]=="sell"&&q["retired"]==false).unwrap();
+  assert_eq!(moloch_live_runtime::quote_priority::from_native(&bank,&c.scope,&[q.clone()],now(),None).unwrap().assessments[0].decision.class,moloch_live_runtime::quote_priority::Class::NeedsRefresh);
+  (root,bank,log,c,source,q)
+ }
+ #[test]fn stale_far_native_sell_reads_only_original_book_and_never_an_account_packet(){
+  let(_root,mut bank,log,c,mut source,q)=prefilter_fixture();let before=bank.engine().report().unwrap();let mut r=PrefilterReads{at:now(),allow:true,book_price:300000,endpoints:vec![],guards:0,book_reads:0};
+  assert!(ordinary_preflight(&c,&mut bank,&log,&mut source,&q,&mut r).unwrap().is_none());assert_eq!(r.endpoints.len(),1);assert!(matches!(r.endpoints[0],Endpoint::OrderBook{..}));
+  let current=quote(&bank,q["id"].as_u64().unwrap()).unwrap();assert_eq!(current["price"],q["price"]);assert_eq!(current["expiresAt"],q["expiresAt"]);assert_eq!(current["quantity"],q["quantity"]);assert!(log.intents.is_empty());assert!(log.attempted.is_empty());
+  let after=bank.engine().report().unwrap();for key in ["cash","ownedCost","realized","fills"]{assert_eq!(before[key],after[key],"{key}");}
+ }
+ #[test]fn refreshed_competitive_native_sell_still_requires_seven_new_independent_facts(){
+  let(_root,mut bank,log,c,mut source,q)=prefilter_fixture();let price=decimal_units(q["price"].as_str().unwrap()).unwrap();
+  let mut r=PrefilterReads{at:now(),allow:true,book_price:1_000_000-price,endpoints:vec![],guards:0,book_reads:0};
+  let(current,facts)=ordinary_preflight(&c,&mut bank,&log,&mut source,&q,&mut r).unwrap().unwrap();assert_eq!(r.endpoints.len(),8);assert!(matches!(r.endpoints[0],Endpoint::OrderBook{..}));
+  let expected=[Endpoint::Tournament,Endpoint::Positions,Endpoint::Orders{status:"open".into()},Endpoint::Account,Endpoint::Market{market_id:"201".into()},Endpoint::Nodes{market_id:"201".into()},Endpoint::OrderBook{market_id:"201".into(),depth:20}];
+  assert_eq!(serde_json::to_value(&r.endpoints[1..]).unwrap(),serde_json::to_value(expected).unwrap());assert_eq!(r.book_reads,2);assert_eq!(facts.book.data["contexts"][0]["orderbook"]["exchanges"][0]["asOf"]["sequence"],3);assert_eq!(current["price"],q["price"]);assert_eq!(current["expiresAt"],q["expiresAt"]);assert!(log.attempted.is_empty());
+ }
+ #[test]fn unknown_queue_or_expired_native_quote_cannot_use_book_prefilter_for_a_retry(){
+  for expired in [false,true]{let(_root,mut bank,log,c,mut source,q)=prefilter_fixture();let head=bank.durable_head();let mut r=PrefilterReads{at:if expired{q["expiresAt"].as_u64().unwrap()}else{now()},allow:false,book_price:300000,endpoints:vec![],guards:0,book_reads:0};
+   assert!(ordinary_preflight(&c,&mut bank,&log,&mut source,&q,&mut r).unwrap().is_none());assert!(r.endpoints.is_empty());assert_eq!(r.guards,usize::from(!expired));assert_eq!(bank.durable_head(),head);assert!(log.attempted.is_empty());}
+ }
+ #[test]fn reviewed_read_only_book_screen_can_decline_without_account_reads_and_preserves_unknown_guard(){
+  for allow in [true,false]{let(_root,mut bank,_log,c,mut source,q)=prefilter_fixture();let mut r=PrefilterReads{at:now(),allow,book_price:300000,endpoints:vec![],guards:0,book_reads:0};let mut evaluated=false;
+   assert!(!reviewed_book_prefilter(&c,&mut bank,&mut source,&q,&mut r,|bank,at|{evaluated=true;let current=quote(bank,q["id"].as_u64().unwrap())?;let s=moloch_live_runtime::quote_priority::from_native(bank,&c.scope,&[current],at,None)?;assert_eq!(s.assessments[0].decision.reason,"sell_floor_above_current_ask");Ok(false)}).unwrap());assert_eq!(evaluated,allow);assert_eq!(r.endpoints.len(),usize::from(allow));}
+ }
  #[test]fn cohort_retirement_lookup_requires_exact_original_session_membership_after_restart(){
   let(root,mut bank,mut log,_,policy,seed)=fixture();let q=bank.engine().order_records().into_iter().find(|q|q["retired"]==false).unwrap();let qid=q["id"].as_u64().unwrap();
   retire_never_sent(&mut bank,&mut log,&q).unwrap();let path=root.0.join("bank/events.jsonl");let(source,seq,event)=committed_cohort_event(&bank,&path,qid,"unsubmitted_intent_retired").unwrap();
