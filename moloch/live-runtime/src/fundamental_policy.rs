@@ -656,6 +656,7 @@ impl Cohorts{
                 // preflight BEFORE original intent/attempt; never replace it.
             }else{
             if q["action"]!="sell"||q["side"]!=r.side||owned==0{return Ok(hold("exclusive_cohort_no_additional_or_opposite_entry"))}
+            if c.existing.is_some()&&q.get("reviewedInventoryExit").is_none(){return Ok(hold("reviewed_existing_exit_reservation_required"))}
             need(n==native,"FUNDAMENTAL_EXIT_MUST_MATCH_NATIVE_QUANTITY")?;
             if c.pending_entry(log)||c.exits.keys().any(|id|*id!=qid&&log.attempted.contains(id)&&!log.closed.contains(id)){return Ok(hold("prior_owned_order_reconciliation_required"))}
             need(n<=owned,"FUNDAMENTAL_UNCOVERED_EXIT")?;
@@ -671,7 +672,8 @@ impl Cohorts{
                 else if approved&&r.revoke_existing{Some("reviewed_source_revocation")}
                 else if approved&&price>=payout&&proceeds>=mul(payout,n as i128)?{Some("refreshed_value_exit")}
                 else{None};
-            if c.existing.is_some(){need(q["reviewedInventoryExit"]["originSha256"]==c.origin_sha()?&&q["reviewedInventoryExit"]["reviewSha256"]==digest(r)?,"FUNDAMENTAL_EXISTING_EXIT_REQUIRES_NATIVE_RESERVATION")?;}
+            if c.existing.is_some(){need(q["reviewedInventoryExit"]["originSha256"]==c.origin_sha()?,"FUNDAMENTAL_EXISTING_EXIT_ORIGIN_CHANGED")?;
+                if q["reviewedInventoryExit"]["reviewSha256"]!=digest(r)?{return Ok(hold("reviewed_existing_exit_review_changed"))}}
             return Ok(reason.map_or_else(||hold(if approved{"terminal_value_hold_not_native_age_exit"}else{"stale_review_hold_until_deadline"}),|s|Decision::Exit{reason:s.into(),owned_quantity:owned}))
             }
         }

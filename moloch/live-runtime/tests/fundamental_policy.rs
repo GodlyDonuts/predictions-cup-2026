@@ -339,4 +339,9 @@ fn verify_with_node(mut review:ReviewInput,node:&[u8])->moloch_live_runtime::fee
         assert_eq!(f.store.as_ref().unwrap().existing_exit_hint(&f.bank,&f.log,&f.scope,"101",&f.trust,NOW+20000).unwrap().unwrap().reason,"reviewed_inventory_book_refresh");
         assert_eq!(f.store.as_ref().unwrap().existing_exit_hint(&f.bank,&f.log,&f.scope,"101",&f.trust,NOW+600001).unwrap().unwrap().reason,"reviewed_holding_deadline");
     }
+    #[test]fn an_executable_ordinary_inherited_sell_is_a_policy_hold_until_reviewed_native_reservation(){
+        let(mut f,transport,adoption)=inherited_fixture();install_inherited(&mut f,&transport,&adoption,"0.600000");f.book(NOW+4000,"0.020000","0.040000");
+        let q=f.bank.engine().order_records().into_iter().find(|q|q["retired"]==false&&q["action"]=="sell").unwrap();assert!(q.get("reviewedInventoryExit").is_none());
+        assert_eq!(f.assess(&q,NOW+4000),Decision::Hold{reason:"reviewed_existing_exit_reservation_required".into()},"normal unsubmitted proposals must be vetoed without stopping the worker or pretending they have an origin-bound reservation");
+    }
 }
