@@ -735,6 +735,12 @@ fn reviewed_fundamental_entry(t:&mut Transport,c:&Control,bank:&mut Session,log:
  if ready.checked_add(latency).is_none_or(|end|end>=facts_until){return fundamental_entry_deferred(c,ex,"facts","INSUFFICIENT_ORIGINAL_PACKET_WINDOW")}
  while now()<ready{refresh_controls(c,authority,stream)?;f.authority.validate()?;std::thread::sleep(Duration::from_millis(ready.saturating_sub(now()).clamp(1,100)));}
  refresh_controls(c,authority,stream)?;
+ // Compare review-bound actions at this genuine fresh prefix. This diagnostic
+ // cannot change the currently join-only reservation or physical capability.
+ let comparison=match f.cohorts.compare_entry_actions_with_authority(bank,&c.scope,hint,&f.authority,now()){
+  Ok(v)=>json!({"comparison":v,"executionAuthority":false,"activeExecutionMode":"joinBid"}),
+  Err(e)=>json!({"state":"unavailable","reason":e.to_string(),"executionAuthority":false,"activeExecutionMode":"joinBid"}),
+ };let _=atomic_json(&c.root.join("fundamental-actions.json"),&json!({"at":iso(now()),"exchangeId":ex,"result":comparison}));
  let mut yielded=Vec::new();let(plan,event)=loop{
   let plan=match f.cohorts.prepare_entry(bank,log,t,&c.scope,hint,&facts,&f.authority,now()){Ok(Some(v))=>v,Ok(None)=>return fundamental_entry_deferred(c,ex,"value","NO_CURRENT_REVIEWED_ENTRY"),Err(e)if expected_fundamental_entry_denial(&e.to_string())=>return fundamental_entry_deferred(c,ex,"preflight",&e.to_string()),Err(e)=>return Err(e)};
   if let Err(e)=plan.validate_current(bank,log,t,&f.authority,now()){if expected_fundamental_entry_denial(&e.to_string()){return fundamental_entry_deferred(c,ex,"current",&e.to_string())}return Err(e)}
