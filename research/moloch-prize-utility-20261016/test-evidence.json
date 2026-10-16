@@ -1,0 +1,25 @@
+{
+  "sourceCommit": "7f7a9b88",
+  "at": "2026-10-16T13:05:31.730803+00:00",
+  "elapsedMs": 55642,
+  "exitCode": 0,
+  "logSha256": "79aada3a223ccdd277e29c9b661676bb3868beeda074e87b9d12998afc71d1bb",
+  "sourceManifestSha256": "36944aee8741c4c7e9a4ee81a9a033c54bd92ac3e71a8693e7d7cb40d4db6b90",
+  "newSourceHashes": {
+    "moloch/live-runtime/src/lib.rs": "20e0e6123dd2bf5c29b71c81e4623a4037488e7428a53e97c45190ce1430335b",
+    "moloch/live-runtime/src/prize_utility.rs": "bd2d1dc41759f4d39d89d5c6c920dcbaa5ec3afe23b267c82b4a1920b685305c"
+  },
+  "productionChanged": false,
+  "networkRequests": 0,
+  "releaseBuilt": false,
+  "sourceCommitFull": "7f7a9b887c719dd81396a61a2c9e892d6ef1b021",
+  "testGroup": "prize_utility::tests",
+  "passed": 12,
+  "failed": 0,
+  "ignored": 0,
+  "filteredOutNotCredited": 147,
+  "originalEvidenceSha256": "ceefe93a301be1d3cc7f8dc9b452668f93e3886c8e5df1360cd4a5603299be6f",
+  "entireAdapterIntegrationTested": false,
+  "calibratedModelQualified": false,
+  "executionAuthority": false
+}

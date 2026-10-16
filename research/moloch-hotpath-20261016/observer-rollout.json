@@ -1,0 +1,16 @@
+{
+  "at": "2026-10-16T12:58:15.846183+00:00",
+  "oldPid": 496491,
+  "newPid": 503257,
+  "sourceSha256": "674264745ced43b053881ad7408a5031a6e389c8652ff950b23bca0e1448b34d",
+  "unitSha256": "e8ebad1bf8cd67ad6d8b5e3886aace87c90c704bb7e58cfe355aefb4475d8000",
+  "priorUnitSha256": "62ddfac568a423c648322facdeb46dba0f80d4129e76f080e5c1616928d0b653",
+  "journal": "/home/archon/apps/moloch/shared/live-production-v1/breadth-503120-1792155419380.jsonl",
+  "output": "/home/archon/apps/moloch/shared/crossvenue-observer-v8",
+  "sigPid": 503120,
+  "sourceUnchanged": true,
+  "originalDatasetsPreserved": true,
+  "accountRequests": 0,
+  "executionAuthority": false,
+  "freshObserverDataVerified": false
+}

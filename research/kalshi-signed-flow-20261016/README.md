@@ -1,6 +1,11 @@
 # Original public Kalshi directional flow
 
-## Actual deployment at12:21UTC
+Current SIG deployment is503120 and its read-only observer is503257/v8;
+the unchanged signed-flow observer source now follows the replacement's capture.
+[Current deployment and actual timing comparison](../moloch-hotpath-20261016/deployment-README.md).
+The dated feed-only release below did not cause that later SIG replacement.
+
+## Historical actual deployment at12:21UTC
 
 The checked public-data release from`47f8693c` is live: supervisor33752,
 collector9240, with the original cache/journals and pinned`ws8.22.0`. At12:21:48UTC

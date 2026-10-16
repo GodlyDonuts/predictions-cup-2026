@@ -1,0 +1,164 @@
+{
+  "actualDetachedReplay": {
+    "accountRequests": 0,
+    "bridgeSha256": "76fab91acccfe26cfb1a80010a7b1fb00df7f92f02dc20d5127192258bcf0723",
+    "copyOnly": true,
+    "elapsedMs": 455108,
+    "engineIdentity": "8acc461bc02fb9236100058fe464b203d5da005375632af05c176223c7246754",
+    "executionAuthorized": false,
+    "fillsSha256": "47b4b0b4f74ff3c06b4e211cefa673a0dcc29521fa5467051c1ccfdba95461ea",
+    "financialParity": true,
+    "financialReportSha256": "a491c0cc270a194cc00a578d2076a513e0a18aede36dc3b23e178bc0a951eaa0",
+    "headSha256": "17b98a3d8500f042180dd74f79b82a7aa002ae9c4bb4439afce080ea565d0307",
+    "manifestSha256": "d74b52eb107ea97388c106505d36fce14700b082723c9f7bfa229f2aedafef9e",
+    "mode": "offline_copy_live_prefix_equivalence",
+    "orderRecordsSha256": "f65946483d91768d4479708204a87c8ef82d245e7acbfbab6645b818fb1f9f4d",
+    "originalSourceUnchanged": true,
+    "prefixBytes": 766664625,
+    "prefixSha256": "ce911a642021c323de0e2e775c5af4d7176281b302d00562672c69aff5cfec4e",
+    "previous": "44a2fac04bff757b6a4160c24bc381c4f7773664e7c2b4a7039b179385580cb8",
+    "reportSha256": "ddb640fb18831762451b533e5e01d1d87a7c762381f30ecb9efcf563ed51cecf",
+    "schemaVersion": 1,
+    "sequence": 247652,
+    "sourceCursorsSha256": "92f5facf7ab09a5fcb856ba166d4bc9a6f33d9b4a98f88ff7234ab5b1e5e920e",
+    "sourceMutated": false
+  },
+  "approvedManifestSha256": "4bb3760385368bde654a35aaf96cc0211d70ff371daa1896f5e13ee0b5c4334f",
+  "binarySha256": "0fa66973f3f51144b1e56dadd0f1453b9ac6c49f9d0279a61a53aee8a99e22f4",
+  "bridges": {
+    "archivedOldSha256": "cee9b05e967f4c22eac05b40cbcbad98a74141efbcda28020e8e311a051efacd",
+    "entries": 12,
+    "prior11Preserved": true,
+    "sha256": "76fab91acccfe26cfb1a80010a7b1fb00df7f92f02dc20d5127192258bcf0723"
+  },
+  "checks": {
+    "bufferedJson": {
+      "failed": 0,
+      "passed": 3,
+      "subsetOfNativeLibrary": true
+    },
+    "copyHelper": {
+      "failed": 0,
+      "passed": 4
+    },
+    "helpers": {
+      "passed": true
+    },
+    "native": {
+      "components": [
+        {
+          "package": "moloch-replay",
+          "passed": 72,
+          "target": "lib"
+        },
+        {
+          "package": "moloch-live-runtime",
+          "passed": 147,
+          "target": "lib"
+        }
+      ],
+      "failed": 0,
+      "passed": 219
+    },
+    "offlineBenchmark": {
+      "passed": true,
+      "sourceReportSha256": "79f03bf77de3db808e6656bd748cebf0f5d8b5a4b1015be2e85e9b70e82de8e9",
+      "wallSpeedupFactor": 49.94577069630253,
+      "wholeLoopSpeedupClaimed": false,
+      "writeSyscallsAfter": 29,
+      "writeSyscallsBefore": 668119
+    },
+    "release": {
+      "passed": true
+    },
+    "runtimeWorker": {
+      "failed": 0,
+      "passed": 78
+    }
+  },
+  "controlChanges": [
+    "activation.binarySha256"
+  ],
+  "controlSha256": "b26e00ea5669a01afb5bbce7df0750ad7325422dbaa274e5567b3c0842689dd4",
+  "engineIdentity": "8acc461bc02fb9236100058fe464b203d5da005375632af05c176223c7246754",
+  "latestHealth": {
+    "actualFills": 147,
+    "bankSequence": 247942,
+    "binarySha256Matches": true,
+    "cash": "72773.995000",
+    "checkedAt": "2026-10-16T12:58:14.904151+00:00",
+    "derivedReportSealVerified": true,
+    "effectiveInitialCash": "95579.915000",
+    "effectiveMaximumCommitted": "95579.915000",
+    "engineIdentity": "8acc461bc02fb9236100058fe464b203d5da005375632af05c176223c7246754",
+    "executionStopPresent": false,
+    "freshTradingVerified": true,
+    "fullStatusMatchesNewPid": false,
+    "fundingAt": "2026-10-16T11:47:43.042Z",
+    "fundingReason": null,
+    "fundingState": "original_cash_attributed",
+    "inheritedRealizedGross": "45.130000",
+    "lastActualFill": "2026-10-16T11:49:05.423Z",
+    "newAcknowledgmentsSinceLaunch": 3,
+    "newFillRowsSinceLaunch": 0,
+    "newTradingRealized": "-119.535000",
+    "ownedCost": "22731.515000",
+    "ownerMandateRevisionPresent": true,
+    "ownerNetContributions": "55579.915000",
+    "pid": 503120,
+    "profitabilityEstablished": false,
+    "progress": {
+      "actualFills": 147,
+      "actualOrders": 995,
+      "at": "2026-10-16T12:58:05.340Z",
+      "completedReadScopes": 3,
+      "maximumRealtimeFramesPerDrain": 64,
+      "phase": "trading",
+      "pid": 503120,
+      "profitabilityEstablished": false,
+      "realtimeHealthy": true,
+      "selectedReadScopes": 30,
+      "terminalOrders": 992
+    },
+    "running": true,
+    "sourceCommit": "31aefba5c22b529d60acab65659876294f2e0c8d",
+    "totalRealized": "-74.405000"
+  },
+  "newPid": 503120,
+  "observedAt": "2026-10-16T12:58:39.520247+00:00",
+  "oldPid": 494293,
+  "operatorSha256": "d0594a6ea25e4cdf73269a639aca06aa476c2a00aafa10ef1acb43fa9d0dfdfb",
+  "originalFinancialState": {
+    "cash": "72773.995000",
+    "inheritedRealizedGross": "45.130000",
+    "newTradingRealized": "-119.535000",
+    "ownedCost": "22731.515000",
+    "ownerCapitalAllocation": {
+      "effectiveInitialCash": "95579.915000",
+      "effectiveMaximumCommitted": "95579.915000",
+      "netContributions": "55579.915000"
+    },
+    "realized": "-74.405000"
+  },
+  "originalPrefix": {
+    "bankManifestHash": "78acaef952ed95b9bff24a3349ece669ccbe88ef7294b27dd9c2aa7d09cae325",
+    "bytes": 766664625,
+    "reportRawSha256": "ddb640fb18831762451b533e5e01d1d87a7c762381f30ecb9efcf563ed51cecf",
+    "sequence": 247652,
+    "sha256": "ce911a642021c323de0e2e775c5af4d7176281b302d00562672c69aff5cfec4e"
+  },
+  "priorControlSha256": "d11c454ea609905b4929d22ab42174cbe58d024a9cecb75a66c18175d24e3d76",
+  "profitabilityEstablished": false,
+  "restartDropinSha256": "ddbe320f3fcd657d719a2ec28f67282ce2eb0c90ff8bf03eff9308871121936e",
+  "rolloutReceiptSha256": "e132657b7ef53068b91d73d41187f5e355031d97277772c281b84aaf18a841d5",
+  "schemaVersion": 1,
+  "sourceCommit": "31aefba5c22b529d60acab65659876294f2e0c8d",
+  "sourceManifestSha256": "0e3afb5a72e392704b803c7f5ab05ed95c4ac8b98e7e546aded1e33406932ad8",
+  "startedAt": "2026-10-16T12:46:26.668442+00:00",
+  "stoppedQueue": {
+    "active": null,
+    "globalUnknownCount": 0,
+    "manualReview": false
+  },
+  "wholeLoopSpeedupMeasured": false
+}

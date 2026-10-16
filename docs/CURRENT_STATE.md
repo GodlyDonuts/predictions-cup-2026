@@ -1,4 +1,45 @@
-# October16,12:40UTC: buffered writer built; original-history promotion in progress
+# October16,13:15UTC: production fills resumed; realtime latency remains material
+
+Sole SIG503120/source`31aefba5`/binary`0fa66973…` is fresh and trading with
+healthy realtime and no STOP. At13:14:49UTC it had26 new official ACKs and
+seven post-launch fill rows;154 cumulative fills and attributed realized−81.215000.
+Cash72,183.235000 and owned cost23,315.465000 reconcile. Ordinary realized
+−126.345000 and inherited gross45.130000 remain separate. Full capital/commitment
+95,579.915000 is retained and the contribution was not credited again.
+[Actual deployment and dated evidence](../research/moloch-hotpath-20261016/deployment-README.md).
+
+The actual455,108ms detached replay reproduced all247,652 original events,
+766,664,625 bytes and twelve genuine bridges with exact financial parity.
+The original bank/first eleven bridges, daily windows, liabilities and restart
+drop-in were preserved. Only activation.binarySha256 changed in control.
+The same-report writer benchmark improved49.95times, but live realtime median
+lag remains12.524s versus11.383s before. No broad latency win was established.
+The first30-scope pass completed13:10:59 in13m41.923s; the earlier35-scope pass
+took19m21.122s with different work, so these are not equivalent workloads.
+[Timing and separate later completion](../research/moloch-hotpath-20261016/buffered-production/README.md),
+[completion evidence](../research/moloch-hotpath-20261016/first-cycle.json).
+The controlled worker upgrade took about21min. A narrow inter-read stream
+service change is being developed while production continues.
+
+Read-only observer503257/source`67426474…` now records a separate v8 cohort
+from this worker. Original v7 is sealed:3,883 decisions/5,837 labels; no
+decision had all three identified flow windows, so the fixed comparison was
+unfitted. This is a coverage result, not predictive success or failure.
+[Fixed v7 study](../research/moloch-crossvenue-economics-20261016/v7-flow/README.md).
+
+Actual ordinary capacity is already12 fresh/40 total exchanges; the old seed3
+is not a live cap. [Capital audit](../research/moloch-capital-utilization-20261016/README.md).
+Primary rules prove same-market netting, but canonical paired taker acquisition
+costs1+spread and refunds prevent a strictly positive all-state terminal floor.
+[Semantic proof boundary](../research/moloch-semantic-floor-20261016/README.md).
+No profitable certified package or calibrated external-price strategy is claimed.
+The offline whole-account tournament-prize scorer now compiles and passes12
+focused ARM64 checks. It preserves joint opponent/state assumptions, exact
+costs/ties and a do-nothing comparison; current whole-account coverage and
+execution integration remain unavailable.
+[Actual scorer and limits](../research/moloch-prize-utility-20261016/README.md).
+
+# Historical October16,12:40UTC: buffered writer built; original-history promotion in progress
 
 The narrow writer update `31aefba5` has an actual ARM64 release and 301
 distinct passing Rust checks. Same-original-report writing measured 682.431ms
