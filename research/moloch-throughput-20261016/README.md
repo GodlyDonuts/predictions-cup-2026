@@ -2,6 +2,12 @@
 
 The human reported only three completed trades over two hours. Task [#147](https://github.com/GodlyDonuts/predictions-cup-2026/issues/147) prioritizes actual execution throughput before further Paper5 expansion. Checked source is `52116911781177eddacf85662de1a6dd9a6069c4`; deployment and fresh results must be established separately by the dated evidence linked below.
 
+## Latest actual production —07:26 UTC
+
+Current sourceea733f6f/PID419050 is fresh and running; original financial history and ten bridges preserved. Nine new ACKs; six fill rows are ONE67-share BUY at.605, cost40.535, still open. Original request68 reflects100% paired best-level sizing (bid68/ask1428), not the10,000-share ceiling. Deeper depth is currently ignored. Earlier tiny inherited sales and unfilled1868-share requests are different cases. [Sizing aggregate](flow-sizing-observation.json), [live observation](flow-live-verification.json).
+
+Actual discovery selects12 new/31 total scopes; first pass17/31 at07:26:13. [Schedule](flow-discovery-schedule.json). Recent-print ranking is deployed; sustained fill throughput is not established. Newly filled1019 waits for another book evaluation behind this pass, delaying the60s inventory target. Owned-age read priority is the next repair while production continues. Ordinary realized-119.10/inherited gross45.13/combined-73.97; no new profitability claim. The older sections below are dated rollout history.
+
 ## Confirmed bottlenecks
 
 - Stale ordinary candidates could consume a full seven-fact account packet before their book showed that their price was uncompetitive. The same issue affected reviewed inventory refresh hints and unqualified forecast entries.

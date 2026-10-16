@@ -1,0 +1,76 @@
+{
+  "observedAt": "2026-10-16T07:26:30.209817+00:00",
+  "bankSequence": 181553,
+  "nativeQuote": {
+    "id": 4510,
+    "exchangeId": "1019",
+    "side": "YES",
+    "action": "buy",
+    "createdAt": 1792135236865,
+    "quantity": 68,
+    "price": "0.605000",
+    "filled": 67,
+    "retired": true
+  },
+  "matchedFills": [
+    {
+      "executedAt": "2026-10-16T07:21:25.946Z",
+      "fee": "0.000000",
+      "price": "0.605000",
+      "quantity": 36
+    },
+    {
+      "executedAt": "2026-10-16T07:21:32.029Z",
+      "fee": "0.000000",
+      "price": "0.605000",
+      "quantity": 19
+    },
+    {
+      "executedAt": "2026-10-16T07:21:37.258Z",
+      "fee": "0.000000",
+      "price": "0.605000",
+      "quantity": 7
+    },
+    {
+      "executedAt": "2026-10-16T07:21:42.940Z",
+      "fee": "0.000000",
+      "price": "0.605000",
+      "quantity": 3
+    },
+    {
+      "executedAt": "2026-10-16T07:21:47.203Z",
+      "fee": "0.000000",
+      "price": "0.605000",
+      "quantity": 1
+    },
+    {
+      "executedAt": "2026-10-16T07:21:51.055Z",
+      "fee": "0.000000",
+      "price": "0.605000",
+      "quantity": 1
+    }
+  ],
+  "sourceBook": {
+    "rawReceiptFileSha256": "35e1095b3543bb6ea713c0e708db509571384b1f444b65bf44a655a612ea4fa3",
+    "requestStartedAt": "2026-10-16T07:20:36.499Z",
+    "receivedAt": "2026-10-16T07:20:36.818Z",
+    "bestBid": {
+      "price": 0.605,
+      "quantity": 68
+    },
+    "bestAsk": {
+      "price": 0.61,
+      "quantity": 1428
+    }
+  },
+  "policy": {
+    "maximumOrderQuantity": 10000,
+    "maximumTotalCommitment": "40000.000000",
+    "maximumMarketCost": "10000.000000",
+    "entryDepthBps": 10000,
+    "entryDepthCoverage": "best level; both sides in paired mode",
+    "deeperBookLevelsUsedForEntrySizing": false
+  },
+  "interpretation": "68-share maker request bounded by 68-share best bid, then matched in separate partial fills; not evidence of optimal sizing or profit",
+  "publicationNote": "Aggregate sizing evidence; raw account fill/order identifiers and receipt payloads omitted."
+}
