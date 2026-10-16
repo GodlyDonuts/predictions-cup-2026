@@ -1,0 +1,82 @@
+{
+  "at": "2026-10-16T12:31:08.023983+00:00",
+  "benchmarkEvidenceSha256": "8007c404151eb51f9c8042a0ba7ab6fa6868a1ee165dc4f29b407090a40f28b7",
+  "binarySha256": "0fa66973f3f51144b1e56dadd0f1453b9ac6c49f9d0279a61a53aee8a99e22f4",
+  "buildEvidenceSha256": "4bb36514560e6f115b90e20e9f5cae1681470aeab95a562332afc31f9c96a904",
+  "checks": {
+    "bufferedJson": {
+      "failed": 0,
+      "passed": 3,
+      "subsetOfNativeLibrary": true
+    },
+    "copyHelper": {
+      "failed": 0,
+      "passed": 4
+    },
+    "helpers": {
+      "passed": true
+    },
+    "native": {
+      "components": [
+        {
+          "package": "moloch-replay",
+          "passed": 72,
+          "target": "lib"
+        },
+        {
+          "package": "moloch-live-runtime",
+          "passed": 147,
+          "target": "lib"
+        }
+      ],
+      "failed": 0,
+      "passed": 219
+    },
+    "offlineBenchmark": {
+      "passed": true,
+      "sourceReportSha256": "79f03bf77de3db808e6656bd748cebf0f5d8b5a4b1015be2e85e9b70e82de8e9",
+      "wallSpeedupFactor": 49.94577069630253,
+      "wholeLoopSpeedupClaimed": false,
+      "writeSyscallsAfter": 29,
+      "writeSyscallsBefore": 668119
+    },
+    "release": {
+      "passed": true
+    },
+    "runtimeWorker": {
+      "failed": 0,
+      "passed": 78
+    }
+  },
+  "engineIdentity": "8acc461bc02fb9236100058fe464b203d5da005375632af05c176223c7246754",
+  "executionAuthority": false,
+  "newCheckLogs": {
+    "copy-helper-tests": {
+      "elapsedMs": 19496,
+      "exitCode": 0,
+      "logSha256": "86b73deb957083387e45e0f847c9224cd1a2ec45de483f79c5bb361c89e53f47",
+      "testResults": [
+        {
+          "failed": 0,
+          "ignored": 0,
+          "passed": 4
+        }
+      ]
+    },
+    "runtime-library-tests": {
+      "elapsedMs": 33203,
+      "exitCode": 0,
+      "logSha256": "6fd812d7c58f58bc074814b09275de0fc30b0aa804c72cbad6ab6aae6565641c",
+      "testResults": [
+        {
+          "failed": 0,
+          "ignored": 0,
+          "passed": 147
+        }
+      ]
+    }
+  },
+  "productionModified": false,
+  "sourceCommit": "31aefba5c22b529d60acab65659876294f2e0c8d",
+  "sourceManifestSha256": "0e3afb5a72e392704b803c7f5ab05ed95c4ac8b98e7e546aded1e33406932ad8"
+}

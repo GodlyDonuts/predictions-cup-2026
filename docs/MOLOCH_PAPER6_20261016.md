@@ -9,7 +9,27 @@ collateral into trading profit. Original financial history remains attributed.
 Embedded citations and historical balances in the paper are research leads,
 separate from current observations and the human's direct authorization.
 
-## Latest operation and qualification at12:22UTC
+## Latest operation and qualification at12:40UTC
+
+The checked buffered writer has built separately and passed301 distinct Rust
+checks. On the exact original production report it reduced physical write
+calls668,119to29 and wall time682.431ms to13.663ms, with exact byte parity
+and file/directory syncs retained. Whole-loop speed remains to be measured.
+[Actual benchmark](../research/moloch-hotpath-20261016/buffered-benchmark-README.md).
+
+Original494293 stopped cooperatively12:36:21 for this narrow promotion; the
+actual247,652-event stopped prefix is under detached-copy verification before
+the genuine twelfth bridge and replacement start. Full funding, daily windows,
+bank and outstanding liabilities are preserved; new trading is not yet claimed.
+
+The fixed v6 ablation establishes almost no observed external-price variation:
+all available1s/5s changes are zero. SIG-local ridge beats the full model at
+four horizons, all models select zero trades, and no incremental Kalshi edge
+is identified. This is a useful negative diagnosis, separate from the new
+signed public-flow cohort and from complete Paper6 strategy qualification.
+[Ablation](../research/moloch-crossvenue-economics-20261016/v6-ablation/README.md).
+
+## Historical operation and qualification at12:22UTC
 
 The full-capital worker494293 remains the actual deployment, with34 new ACKs
 and one post-launch fill row at12:22:54UTC; attributed realized remains−74.405000.

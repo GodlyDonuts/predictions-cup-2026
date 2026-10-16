@@ -1,4 +1,25 @@
-# Current research baseline: October16,12:22UTC
+# Current research baseline: October16,12:40UTC
+
+The buffered report writer has a genuine ARM64 release,301 distinct passing
+Rust checks and exact-byte/fsync parity on an original production report.
+Report serialization improved49.95times in one sequential pair; no live
+whole-loop improvement has yet been measured.
+[Benchmark and validation](../research/moloch-hotpath-20261016/buffered-benchmark-README.md).
+
+Original494293 stopped cleanly12:36:21UTC for the narrow replacement.
+Full247,652-event/766,664,625-byte detached-copy parity is in progress; the
+replacement is not yet verified trading. Existing95,579.915 allocation,
+daily windows, liabilities and financial history remain unchanged.
+
+The sealed v6 ablation has no nonzero available1s/5s Kalshi innovations;
+only three30s observations move. The unchanged SIG BBO and SIG-local model
+are necessary comparators: all select zero trades, and local-only ridge
+beats the full model at four horizons. Better intercept MSE alone is not
+external-price discovery or executable alpha.
+[Fixed exploratory ablation](../research/moloch-crossvenue-economics-20261016/v6-ablation/README.md).
+The signed-flow feed is live independently; it is not part of this old cohort.
+
+# Historical research baseline: October16,12:22UTC
 
 Production remains sole SIG494293/`e7bb62d1`; full-capital95,579.915000 and
 daily migration are committed. Latest fresh check12:22:54UTC:34 new ACKs/one
