@@ -1,6 +1,6 @@
 # Moloch research baseline
 
-**As of2026-10-16 04:16:26UTC.** This is the starting point for new papers. It describes the actual deployed bot and separates source-only work. Observations age; consult the newest [CURRENT_STATE](CURRENT_STATE.md) entry and linked evidence before making a current live claim. Older dated documents are historical unless this baseline identifies them as current specifications.
+**As of2026-10-16 04:33:41UTC.** This is the starting point for new papers. It describes the actual deployed bot and separates source-only work. Observations age; consult the newest [CURRENT_STATE](CURRENT_STATE.md) entry and linked evidence before making a current live claim. Older dated documents are historical unless this baseline identifies them as current specifications.
 
 ## Exact deployed system
 
@@ -11,7 +11,7 @@
 | Executable SHA256 |`da4202e064ffb89cac1eb4aab2dcb076a1d2bcc3cde3c1a2197799f6cf9c5fefc`|
 | Native engine identity |`4b50ec49ba7331eb051e7983e33ffa0ce55df19b9a9e4a7d9d5d8d8a5477ff98`, nine explicit financial identity bridges|
 | Account/bank |One serialized SDK V1 queue and original funded bank; no second collector/writer|
-| Fresh activity |Healthy realtime/trading;688 total acknowledged orders,119 actual fill rows;6 new ACKs/1 new fill since03:58 recovery launch|
+| Fresh activity |Healthy realtime/trading;696 total acknowledged orders,119 actual fill rows;14 new ACKs/1 new fill since03:58 recovery launch|
 | Risk limits |40,000 total commitment;10,000 per market;10,000 shares maximum order; existing holdings separately attributed|
 | Read/write limits |100-read rolling ceiling/600ms completion gap;24-write ceiling/2500ms gap. These are admission ceilings, not measured achieved throughput|
 | Entry schedule |Human-authorized daily windows; current cutoff14:44:34.413UTC October16, fixed campaign end17:00UTC November4; exits continue|
@@ -49,3 +49,5 @@ Rhode Island official September primary nomination evidence is retained, with it
 ## How to base the next paper
 
 Pin `git rev-parse HEAD`, this baseline's observation UTC and the separately recorded deployed source/binary. Read [PAPER_INTAKE](PAPER_INTAKE.md), the current capability specification and actual economic evidence. Label each proposed improvement as already deployed, checked but inactive, or missing. Use official semantics and executable depth; separate assumptions, counterfactual outcomes, actual fills, attributed realized P&L and dashboard marks. Include the precise files/behavior to change and an attributable economic outcome to measure. Task evidence: [production #120](https://github.com/GodlyDonuts/predictions-cup-2026/issues/120), [Paper3 #144](https://github.com/GodlyDonuts/predictions-cup-2026/issues/144), [incident #145](https://github.com/GodlyDonuts/predictions-cup-2026/issues/145), [actual economics #146](https://github.com/GodlyDonuts/predictions-cup-2026/issues/146).
+
+Current checked but inactive performance work: queued-frame source batching d1e15194 passes38 worker checks and its ARM64 release build; an original-prefix serial/batch benchmark is still running. This is not the deployed service. [Measured cycle-latency work](../research/moloch-live-latency-20261016/README.md).

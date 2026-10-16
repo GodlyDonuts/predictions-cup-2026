@@ -1,0 +1,15 @@
+# Live cycle latency — October 16
+
+Production381131 remains running on source4148fe5d. The queued-frame batching candidate d1e15194 is **checked source, not yet deployed** at this writing. It changes no native financial engine, trading policy, account queue, risk limit or execution authority.
+
+The original private receipt window04:01:47–04:22:22UTC contains454 distinct recorded logical receipts across ordinary/relationship/package receipt locations, covering1,233.448seconds:22.084433 logical receipts/minute. Median recorded service span is.3065seconds and p95 is.551seconds. The union of recorded service spans is152.221seconds;1,081.227seconds lies outside them. [Source-bound aggregate](receipt-window.json).
+
+Logical receipts do not establish physical HTTP count: pagination, retries, token handling and unrecorded paths can differ. Service spans include SDK guard/completion/durability work, not isolated server latency. Outside-span time includes pacing, admission, native/ledger/stream work and any unrecorded calls. This observation does not assign all elapsed time to one cause or establish achievable throughput.
+
+The existing drain processes up to64 queued frames but commits each frame's normalized events separately. Typical small frames therefore miss the existing32-event Session batching benefit. Candidate `QueuedSourceBatch` combines only already-queued events, preserving event order and per-frame processedAt. It flushes by32events, conservative4MiB byte budget, drain end/empty input, or before propagating source/stream errors. A single large event still uses the Session's exact existing bound. A native commit failure propagates once without retry. No book/gap/trade is coalesced or dropped. Actual fills/ACKs are outside this public-frame path.
+
+This reduces repeated outer Session clones, full report/head projections and journal/report/head fsync operations. Per-event Engine advances/clones still occur; no32x all-engine-clone reduction is claimed. Source normalization/discovery does not depend on an intermediate bank commit.
+
+ARM64 worker checks38/38 and the locked release build pass. They cover exact row/head/report parity across65 one-event frames, original clocks/cursors and restart state, valid prefix before source/stream errors, native failure without append, aggregate-byte flushing and individually valid large events.
+
+The isolated `moloch-drain-benchmark` compares64 original consecutive rows149600–149663 on two separate copies of the original sealed149599 bank. It measures restore separately, then64 serial accepts versus two32-event batches, and verifies exact original journal suffix, final financial/native/source state and restart parity. The original prefix and live worker are not modified. The benchmark is running; timing/parity results and any later promotion will be recorded separately. A fixture speedup is not an achieved live-cycle speedup or profitability result. [Task #147](https://github.com/GodlyDonuts/predictions-cup-2026/issues/147).

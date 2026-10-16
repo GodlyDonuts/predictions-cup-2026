@@ -1,0 +1,97 @@
+{
+  "schemaVersion": 1,
+  "windowStartUtc": "2026-10-16T04:01:47Z",
+  "windowEndUtc": "2026-10-16T04:22:22Z",
+  "distinctRecordedLogicalReceipts": 454,
+  "coveredWallSeconds": 1233.448,
+  "recordedLogicalReceiptsPerMinute": 22.084433,
+  "logicalServiceSecondsP50": 0.3065,
+  "logicalServiceSecondsP95": 0.551,
+  "logicalServiceUnionSeconds": 152.221,
+  "outsideRecordedServiceSpansSeconds": 1081.227,
+  "sourceCanonicalReceiptsDigest": "22101439057202b7f290ab240789192b118c2ed8c6a9f2fb586d1783c6793dfc",
+  "folders": {
+    "receipts": 447,
+    "relationship-receipts": 7
+  },
+  "endpointGroups": [
+    {
+      "endpointClass": "/orders",
+      "logicalReceipts": 72,
+      "sumServiceSeconds": 26.073999
+    },
+    {
+      "endpointClass": "/markets/:id/orderbook",
+      "logicalReceipts": 69,
+      "sumServiceSeconds": 25.911001
+    },
+    {
+      "endpointClass": "/orders/:id/fills",
+      "logicalReceipts": 83,
+      "sumServiceSeconds": 23.514999
+    },
+    {
+      "endpointClass": "/tournaments/midterm-elections/portfolio/positions",
+      "logicalReceipts": 35,
+      "sumServiceSeconds": 13.753
+    },
+    {
+      "endpointClass": "/exchanges/:id/trades",
+      "logicalReceipts": 38,
+      "sumServiceSeconds": 12.925001
+    },
+    {
+      "endpointClass": "/account",
+      "logicalReceipts": 36,
+      "sumServiceSeconds": 12.706999
+    },
+    {
+      "endpointClass": "/tournaments/midterm-elections",
+      "logicalReceipts": 35,
+      "sumServiceSeconds": 11.24
+    },
+    {
+      "endpointClass": "/markets/:id/nodes",
+      "logicalReceipts": 33,
+      "sumServiceSeconds": 10.102
+    },
+    {
+      "endpointClass": "/markets/:id",
+      "logicalReceipts": 33,
+      "sumServiceSeconds": 8.234
+    },
+    {
+      "endpointClass": "/orders/:id",
+      "logicalReceipts": 14,
+      "sumServiceSeconds": 5.979
+    },
+    {
+      "endpointClass": "/relationships/graph",
+      "logicalReceipts": 3,
+      "sumServiceSeconds": 0.915
+    },
+    {
+      "endpointClass": "/portfolio/collateral",
+      "logicalReceipts": 1,
+      "sumServiceSeconds": 0.327
+    },
+    {
+      "endpointClass": "/relationships/constraints",
+      "logicalReceipts": 1,
+      "sumServiceSeconds": 0.274
+    },
+    {
+      "endpointClass": "/relationships",
+      "logicalReceipts": 1,
+      "sumServiceSeconds": 0.265
+    }
+  ],
+  "limitations": [
+    "Recorded logical receipts are not physical HTTP counts; aggregate pagination/retries/token paths can differ.",
+    "Receipt service spans include SDK guard, completion/durability work and network; they are not isolated server latency.",
+    "Outside recorded spans includes account pacing, SDK admission work, local ledger/planning/stream work and any unrecorded calls; no individual cause is proved.",
+    "One active-production window, not a controlled throughput or profitability benchmark."
+  ],
+  "productionStopped": false,
+  "additionalAccountRequests": 0
+}

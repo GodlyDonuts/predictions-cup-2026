@@ -1,3 +1,9 @@
+# October 16, 04:33 UTC: production continues; bounded source-batching candidate checked
+
+Worker381131/source4148fe5d remains healthy with STOP absent, matching binary and fresh trading/realtime. It has696 acknowledged orders/119 actual fills,14 new acknowledgments and the one reconciled430YES Delaware fill since recovery. New/inherited/combined realized remain−119.100000/+43.395000/−75.705000. [Live observation](../research/moloch-permit-recovery-20261016/live-verification.json).
+
+Source d1e15194 adds bounded batching of already-queued public source events, preserving event order/per-frame clocks and flushing valid prefixes before source/stream errors. ARM64 worker38/38 and locked release pass. It is **not deployed**; the original149599-prefix/64-follow-on-row serial-versus-batch comparison is running on isolated copies while production continues. No native/SDK/policy/risk changes in this candidate. Measured existing logical receipt throughput is22.08/minute in the frozen04:01:47–04:22:22 window, distinct from the100-read admission ceiling. [Evidence and limitations](../research/moloch-live-latency-20261016/README.md).
+
 # October 16, 04:16 UTC: production trading; first reviewed forecast fill and exact economics audit
 
 The sole worker PID381131/source4148fe5d remains running with matching immutable binary, STOP absent, fresh realtime/trading and a current full-cycle status. At04:16:26UTC it has688 acknowledged orders/119 actual fill rows: **six new acknowledgments and one new actual fill since recovery**. The fill bought430 Delaware YES1042 at.920, principal395.600000, zero fees, executed04:02:17.490UTC, order41846939/q3420. It is an open reviewed holding with zero realized profit. [Current live observation](../research/moloch-permit-recovery-20261016/live-verification.json).
