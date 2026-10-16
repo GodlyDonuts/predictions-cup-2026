@@ -114,7 +114,7 @@ fn validate_account_options(channel:&str,options:&AccountOptions)->Result<()>{
 }
 struct AccountTracker {
     tournament:String, topic:String, options:AccountOptions, signal:Arc<AccountSignal>,
-    joined:bool, revision:Option<u64>, standalone:std::collections::BTreeSet<String>,
+    joined:bool, revision:Option<u64>, revisions:std::collections::BTreeMap<u64,String>, standalone:std::collections::BTreeSet<String>,
 }
 fn account_integer(v:&Value)->Result<u64>{v.as_u64().or_else(||v.as_str().and_then(|s|s.parse().ok())).ok_or("STREAM_ACCOUNT_REVISION")}
 impl AccountTracker {
@@ -130,7 +130,20 @@ impl AccountTracker {
                 ||payload.get("resyncRequired").is_some_and(|v|!v.is_boolean()){return Err("STREAM_ACCOUNT_DELIVERY")}
             if d["sourceSequenceFrom"].is_null()!=d["sourceSequenceThrough"].is_null(){return Err("STREAM_ACCOUNT_SEQUENCE")}
             if !d["sourceSequenceFrom"].is_null()&&account_integer(&d["sourceSequenceFrom"])? >account_integer(&d["sourceSequenceThrough"])?{return Err("STREAM_ACCOUNT_SEQUENCE")}
+            let digest=format!("{:x}",sha2::Sha256::digest(serde_json::to_vec(payload).map_err(|_|"STREAM_ACCOUNT_DELIVERY")?));
             duplicate=self.revision.is_some_and(|last|revision<=last);
+            if duplicate{
+                // A revision number alone cannot authenticate an economic duplicate.
+                // Capture the original conflicting frame, then fail closed. An old
+                // revision outside bounded retained identity is equally unverified.
+                if self.revisions.get(&revision)!=Some(&digest){
+                    (self.options.capture)(event,raw,payload,received)?;
+                    return Err(if self.revisions.contains_key(&revision){"STREAM_ACCOUNT_REVISION_CONFLICT"}else{"STREAM_ACCOUNT_REVISION_UNVERIFIABLE"});
+                }
+            }else{
+                self.revisions.insert(revision,digest);
+                if self.revisions.len()>4096{self.revisions.pop_first();}
+            }
             global=!duplicate&&(payload["resyncRequired"]==true||self.revision.is_none_or(|last|previous>last));
             if !duplicate{self.revision=Some(revision);}
             if payload["resyncRequired"]!=true{
@@ -181,7 +194,7 @@ pub enum Incoming {
 /// retain a socket error, URL, credential, server payload, or panic payload.
 fn sanitized_exit(code: &'static str) -> &'static str {
     match code {
-        "STREAM_ACCOUNT_AUTH"|"STREAM_ACCOUNT_REVISION"|"STREAM_ACCOUNT_DELIVERY"|"STREAM_ACCOUNT_SEQUENCE"|"STREAM_ACCOUNT_ARRAY"|"STREAM_ACCOUNT_ROW"|"STREAM_ACCOUNT_SCOPE"|"STREAM_ACCOUNT_EVENT"|"STREAM_ACCOUNT_CAPTURE"|"STREAM_ACCOUNT_GENERATION"|"STREAM_ACCOUNT_LOCK"|"STREAM_ACCOUNT_CLOCK"|"STREAM_ACCOUNT_STANDALONE_BOUND"|"STREAM_FRAME" | "STREAM_JOIN_REJECTED" | "STREAM_HEARTBEAT_REJECTED"
+        "STREAM_ACCOUNT_REVISION_CONFLICT"|"STREAM_ACCOUNT_REVISION_UNVERIFIABLE"|"STREAM_ACCOUNT_AUTH"|"STREAM_ACCOUNT_REVISION"|"STREAM_ACCOUNT_DELIVERY"|"STREAM_ACCOUNT_SEQUENCE"|"STREAM_ACCOUNT_ARRAY"|"STREAM_ACCOUNT_ROW"|"STREAM_ACCOUNT_SCOPE"|"STREAM_ACCOUNT_EVENT"|"STREAM_ACCOUNT_CAPTURE"|"STREAM_ACCOUNT_GENERATION"|"STREAM_ACCOUNT_LOCK"|"STREAM_ACCOUNT_CLOCK"|"STREAM_ACCOUNT_STANDALONE_BOUND"|"STREAM_FRAME" | "STREAM_JOIN_REJECTED" | "STREAM_HEARTBEAT_REJECTED"
         | "STREAM_REPLY_REF" | "STREAM_TOPIC" | "STREAM_BEFORE_JOIN"
         | "STREAM_BROADCAST" | "STREAM_SYSTEM_REJECTED" | "STREAM_CHANNEL_CLOSED"
         | "STREAM_EVENT" | "STREAM_HEARTBEAT_PENDING" | "STREAM_JOIN_TIMEOUT"
@@ -410,7 +423,7 @@ impl Realtime {
         let signal=if let Some((channel,options))=options{
             validate_account_options(&channel,&options)?;
             let signal=Arc::new(AccountSignal::default());protocol.next_ref=3;
-            protocol.account=Some(AccountTracker{tournament:tournament.into(),topic:format!("realtime:{channel}"),options,signal:signal.clone(),joined:false,revision:None,standalone:Default::default()});Some(signal)
+            protocol.account=Some(AccountTracker{tournament:tournament.into(),topic:format!("realtime:{channel}"),options,signal:signal.clone(),joined:false,revision:None,revisions:Default::default(),standalone:Default::default()});Some(signal)
         }else{None};
         socket
             .send(Message::Text(protocol.join(&token).to_string().into()))
@@ -667,7 +680,7 @@ mod tests {
     }
     fn account_protocol()->(Protocol,Arc<AccountSignal>,Arc<Mutex<Vec<Value>>>){
         let mut p=Protocol::new(CUP).unwrap();let signal=Arc::new(AccountSignal::default());let captured=Arc::new(Mutex::new(Vec::new()));let sink=captured.clone();
-        p.account=Some(AccountTracker{tournament:CUP.into(),topic:format!("realtime:user:{CUP}"),joined:false,revision:None,standalone:Default::default(),signal:signal.clone(),options:AccountOptions{exchanges:[("101".into(),"201".into())].into(),capture:Box::new(move|event,raw,payload,received|{sink.lock().unwrap().push(json!({"event":event,"raw":raw,"payload":payload,"receivedAt":received}));Ok(())})}});p.next_ref=3;(p,signal,captured)
+        p.account=Some(AccountTracker{tournament:CUP.into(),topic:format!("realtime:user:{CUP}"),joined:false,revision:None,revisions:Default::default(),standalone:Default::default(),signal:signal.clone(),options:AccountOptions{exchanges:[("101".into(),"201".into())].into(),capture:Box::new(move|event,raw,payload,received|{sink.lock().unwrap().push(json!({"event":event,"raw":raw,"payload":payload,"receivedAt":received}));Ok(())})}});p.next_ref=3;(p,signal,captured)
     }
     fn joined_account(p:&mut Protocol){let market=json!({"topic":p.topic,"event":"phx_reply","ref":"1","payload":{"status":"ok"}});assert!(p.accept(&market).unwrap().is_none());let account=json!({"topic":format!("realtime:user:{CUP}"),"event":"phx_reply","ref":"2","payload":{"status":"ok"}});assert!(matches!(p.accept(&account).unwrap(),Some(Incoming::Joined{..})));}
     fn account_batch(revision:u64,previous:u64)->Value{json!({"fills":[],"orderUpdates":[],"settlements":[],"refunds":[],"collateralChanges":[],"delivery":{"model":"best-effort-authoritative-resync","correlationId":"fixture","revision":revision,"previousRevision":previous,"sourceSequenceFrom":null,"sourceSequenceThrough":null}})}
@@ -695,5 +708,8 @@ mod tests {
         assert_eq!(signal.generation(),2);assert!(signal.requires_reconciliation());assert_eq!(captured.lock().unwrap().len(),1);assert!(matches!(stream.incoming.try_recv().unwrap(),Incoming::Joined{..}));assert!(!matches!(stream.incoming.try_recv(),Ok(Incoming::Broadcast{..})));drop(stream);server.join().unwrap();
     }
     #[test]fn account_authentication_is_exact_and_cannot_request_an_arbitrary_topic(){let(_,_,_)=account_protocol();let options=AccountOptions{exchanges:Default::default(),capture:Box::new(|_,_,_,_|Ok(()))};validate_account_options(&format!("user:{CUP}"),&options).unwrap();validate_account_options("user:12345",&options).unwrap();for topic in ["", "realtime:user:other", "market:101", "user:", "user:another:topic", "user:00000000/0000/0000/0000/000000000001"]{assert!(validate_account_options(topic,&options).is_err());}}
+
+    #[test]fn changed_same_revision_is_captured_and_fails_closed_instead_of_hiding_mutation(){let(mut p,signal,captured)=account_protocol();joined_account(&mut p);let original=account_message(account_batch(1,0));p.accept(&original).unwrap();let before=(signal.generation(),signal.last_received_ms());let mut changed=account_batch(1,0);changed["fills"]=json!([{"orderId":"901","exchangeId":"101","marketId":"201","quantity":1,"price":0.4,"tournamentId":CUP}]);let bad=account_message(changed);assert_eq!(p.accept_original(&bad,"EXACT_CONFLICTING_ORIGINAL_BODY").err(),Some("STREAM_ACCOUNT_REVISION_CONFLICT"));assert_eq!(captured.lock().unwrap().last().unwrap()["raw"],"EXACT_CONFLICTING_ORIGINAL_BODY");assert_eq!((signal.generation(),signal.last_received_ms()),before);assert_eq!(sanitized_exit("STREAM_ACCOUNT_REVISION_CONFLICT"),"STREAM_ACCOUNT_REVISION_CONFLICT");}
+    #[test]fn lower_revision_requires_retained_exact_identity_and_unknown_old_revision_fails(){let(mut p,signal,_)=account_protocol();joined_account(&mut p);let original=account_message(account_batch(1,0));p.accept(&original).unwrap();p.accept(&account_message(account_batch(2,1))).unwrap();let before=(signal.generation(),signal.last_received_ms());p.accept(&original).unwrap();assert_eq!((signal.generation(),signal.last_received_ms()),before);p.account.as_mut().unwrap().revisions.remove(&1);assert_eq!(p.accept(&original).err(),Some("STREAM_ACCOUNT_REVISION_UNVERIFIABLE"));}
 
 }
