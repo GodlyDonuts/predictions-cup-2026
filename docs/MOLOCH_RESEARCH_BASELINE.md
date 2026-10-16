@@ -1,3 +1,7 @@
+# Latest observation: October16,08:32:54UTC
+
+Production remains solePID421878/source5577e984, fresh trading/realtime with matching binary and no STOP. Since launch:43 new official ACKs, zero new fill rows; cumulative132fill rows. Last actual fill07:41:06.571UTC. Cash17,194.18/owned cost22,731.515/attributed combined realized−74.305. Dashboard daily marks are a different measure. The [current-state entry](CURRENT_STATE.md) and [reservation audit](../research/moloch-throughput-20261016/reservation-throughput-audit.md) supersede earlier observations for this timestamp. Root is developing runtime-only stale-draft retirement and covered-exit source nomination; neither is active yet. Current small fills reflect residual quantities, top-level maker sizing and partial execution; large requested sizes remain unfilled.
+
 # Moloch research baseline
 
 **As of2026-10-16 07:53UTC.** This is the starting point for new papers. It describes the actual deployed bot and separates source-only work. Observations age; consult the newest [CURRENT_STATE](CURRENT_STATE.md) entry and linked evidence before making a current live claim. Older dated documents are historical unless this baseline identifies them as current specifications.
@@ -66,7 +70,3 @@ Pin `git rev-parse HEAD`, this baseline's observation UTC and the separately rec
 Deployed performance work: queued-frame source batching d1e15194 passes38 worker checks and its ARM64 release build. The original-prefix64-row benchmark completed31.90s serial versus1.62s batched commits with exact financial/journal/restart parity. SDK proof-archive recovery fca914f0/bfd51082 is also deployed. Actual live-cycle improvement remains to be measured; the fixture ratio is not live throughput. [Measured cycle-latency work](../research/moloch-live-latency-20261016/README.md).
 
 Paper5 received: [current implementation map](MOLOCH_PAPER5_20261016.md). Explicit V2 valuation horizons and two exit-processing fixes are checked source, pending combined promotion; the proposed NorthCarolina400-SUSQie terminal review is not active. Atlas/curve/nowcasting are not deployed.
-# Latest observation: October16,08:32:54UTC
-
-Production remains solePID421878/source5577e984, fresh trading/realtime with matching binary and no STOP. Since launch:43 new official ACKs, zero new fill rows; cumulative132fill rows. Last actual fill07:41:06.571UTC. Cash17,194.18/owned cost22,731.515/attributed combined realized−74.305. Dashboard daily marks are a different measure. The [current-state entry](CURRENT_STATE.md) and [reservation audit](../research/moloch-throughput-20261016/reservation-throughput-audit.md) supersede earlier observations for this timestamp. Root is developing runtime-only stale-draft retirement and covered-exit source nomination; neither is active yet. Current small fills reflect residual quantities, top-level maker sizing and partial execution; large requested sizes remain unfilled.
-
