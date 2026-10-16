@@ -1,0 +1,4 @@
+31 artifact checks PASS
+Raw manifest and result hashes independently verified after Base64 transfer.
+Original proof flags/counts and no-model count bound checked.
+No replay rerun; detached original exit status unavailable.

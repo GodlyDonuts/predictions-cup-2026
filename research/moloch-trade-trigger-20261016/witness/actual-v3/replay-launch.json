@@ -1,0 +1,18 @@
+{
+  "startedAtUtc": "2026-10-16T17:28:27.384284+00:00",
+  "pid": 525789,
+  "command": [
+    "nice",
+    "-n",
+    "19",
+    "python3",
+    "/tmp/moloch-trace-replay-source-20261016/research/moloch-trade-trigger-20261016/witness/trace_replay.py",
+    "/tmp/moloch-trace-v3-inputs-20261016-170514-viserion-r1/manifest.json",
+    "--manifest-sha256",
+    "1f378823eb8662ad36de732d146547985e985bef6ba228c5d9e077f668fa8bde"
+  ],
+  "replaySourceSha256": "38e9b96cbc7030ba5c47ccd5e8ffb59192124e678a20b7132a7d05415b212122",
+  "knownSamplerSourceSha256": "200abfd0701f56f43183b1b7b60cd1cdf11525f0fb9daea72e9bf6f08d90bc40",
+  "manifestSha256": "1f378823eb8662ad36de732d146547985e985bef6ba228c5d9e077f668fa8bde",
+  "outcomesOpenedBeforeManifestPin": false
+}

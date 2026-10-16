@@ -1,0 +1,54 @@
+{
+  "mapping": {
+    "bytes": 326009,
+    "path": "/tmp/moloch-trace-v3-inputs-20261016-170514-viserion-r1/kalshi-universe-3f8dd6fa3ef6e5e2.json",
+    "sha256": "3f8dd6fa3ef6e5e20a6f19030b347f47fa72e3103609c70f6c7e0ab3293b21b0"
+  },
+  "producer": {
+    "bytes": 61865,
+    "path": "/tmp/moloch-trace-v3-inputs-20261016-170514-viserion-r1/crossvenue-observer-200abfd0701f56f4.py",
+    "sha256": "200abfd0701f56f43183b1b7b60cd1cdf11525f0fb9daea72e9bf6f08d90bc40"
+  },
+  "samples": {
+    "bytes": 9833,
+    "path": "/tmp/moloch-trace-v3-inputs-20261016-170514-viserion-r1/trace-samples-v1.jsonl.gz",
+    "sha256": "1df3455c06387661db074348e3742a7c43c1ba292a12c05fc3d09fdeb9e6e15c"
+  },
+  "seal": {
+    "bytes": 1730,
+    "path": "/tmp/moloch-trace-v3-inputs-20261016-170514-viserion-r1/input-trace-seal.json",
+    "sha256": "2d24582b78d2183122e5542fdc86bd3a6ee0123ccf6f26cc7b65ed9116ce2946"
+  },
+  "sigSources": [
+    {
+      "bytes": 134199634,
+      "path": "/tmp/moloch-trace-v3-inputs-20261016-170514-viserion-r1/breadth-518852-1792166549922-part-0001.jsonl",
+      "recordedDevice": 66305,
+      "recordedInode": 12444870,
+      "recordedPath": "/home/archon/apps/moloch/shared/live-production-v1/breadth-518852-1792166549922-part-0001.jsonl",
+      "sha256": "84c627e8b929cda9a28d4f799ba41be5b9924c374749860abfd9e2f54ee8f532"
+    },
+    {
+      "bytes": 134126708,
+      "path": "/tmp/moloch-trace-v3-inputs-20261016-170514-viserion-r1/breadth-518852-1792166549922-part-0002.jsonl",
+      "recordedDevice": 66305,
+      "recordedInode": 12445712,
+      "recordedPath": "/home/archon/apps/moloch/shared/live-production-v1/breadth-518852-1792166549922-part-0002.jsonl",
+      "sha256": "a48d9f1704ef817d5730c64e610eae3b09e87a57e990a6c8f3a14b7b0fb63011"
+    },
+    {
+      "bytes": 44294759,
+      "path": "/tmp/moloch-trace-v3-inputs-20261016-170514-viserion-r1/breadth-518852-1792166549922-part-0003.jsonl",
+      "recordedDevice": 66305,
+      "recordedInode": 12446531,
+      "recordedPath": "/home/archon/apps/moloch/shared/live-production-v1/breadth-518852-1792166549922-part-0003.jsonl",
+      "sha256": "a759636f78304b71166715d17c1f3f27b0d6b17c0884270a58adbae5ac557f0e"
+    }
+  ],
+  "trace": {
+    "bytes": 567929376,
+    "path": "/tmp/moloch-trace-v3-inputs-20261016-170514-viserion-r1/input-trace-v1.jsonl.gz",
+    "sha256": "2d257bc0ef816c2a9a1f18a2c796cc94ada8d87c0a2c8ae9f3f36ccd837add91"
+  },
+  "version": 1
+}

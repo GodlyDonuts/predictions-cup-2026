@@ -1,0 +1,21 @@
+{
+  "economicOutcomesOpenedBeforePin": false,
+  "extraOriginalInputs": {
+    "samplingPolicy": {
+      "bytes": 674,
+      "path": "/tmp/moloch-trace-v3-inputs-20261016-170514-viserion-r1/sampling-policy.json",
+      "sha256": "9a30e098bb551595f0dfda0afb5808c7e0d4a0e025249486c4e0a5f4240f3047"
+    },
+    "stoppedStatus": {
+      "bytes": 1595,
+      "path": "/tmp/moloch-trace-v3-inputs-20261016-170514-viserion-r1/status.json",
+      "sha256": "4fbd4094a5ee70de494ef80bea22794424e441db3b4c2c8a643d90015d2c481c"
+    }
+  },
+  "manifestBytes": 2424,
+  "manifestSha256": "1f378823eb8662ad36de732d146547985e985bef6ba228c5d9e077f668fa8bde",
+  "originalSealSha256": "2d24582b78d2183122e5542fdc86bd3a6ee0123ccf6f26cc7b65ed9116ce2946",
+  "pinnedAtUtc": "2026-10-16T17:27:22.919752+00:00",
+  "replayStartedBeforePin": false,
+  "sealedProducerStopped": true
+}

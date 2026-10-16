@@ -1,0 +1,33 @@
+{
+  "adapterLfSha256": "4d4f9e7bc1a1c7e386b8aef57204e30ae100fe85668347ec57403554005ded2c",
+  "analysisProtocolSha256": "dbf827a8cab904595b6173873949cd8c5f9666769754993b5c7636344bddc291",
+  "cohorts": [
+    {
+      "cohortId": "trade-trace-v2",
+      "configSha256": "86efd2cd31303017e983659a7d64db103aee86a8f05db90a5da5223dbcf1a39d",
+      "mappingSha256": "3f8dd6fa3ef6e5e20a6f19030b347f47fa72e3103609c70f6c7e0ab3293b21b0",
+      "originalInputManifest": {
+        "bytes": 1520,
+        "path": "/tmp/moloch-trace-v2-inputs-20261016-163140-r1/manifest.json",
+        "sha256": "fcb8dadea57b1d5799441579db2fec10293b7de51f0a61339a5e57414e4c6962"
+      },
+      "samplingPolicySha256": "031edcb2d4d6ca144e89d86b467e6b879113f1e172c3ef19457f2b577996717b"
+    },
+    {
+      "cohortId": "trade-trace-v3",
+      "configSha256": "3675dde4299b4bca517c8b1cd728549b47d1c9a70ef30b6b6cd07cdcb3442b77",
+      "mappingSha256": "3f8dd6fa3ef6e5e20a6f19030b347f47fa72e3103609c70f6c7e0ab3293b21b0",
+      "originalInputManifest": {
+        "bytes": 2424,
+        "path": "/tmp/moloch-trace-v3-inputs-20261016-170514-viserion-r1/manifest.json",
+        "sha256": "1f378823eb8662ad36de732d146547985e985bef6ba228c5d9e077f668fa8bde"
+      },
+      "samplingPolicySha256": "031edcb2d4d6ca144e89d86b467e6b879113f1e172c3ef19457f2b577996717b"
+    }
+  ],
+  "cutoffUtc": "2026-10-16T17:05:13.914Z",
+  "fixedBeforeEconomicAnalysisAtUtc": "2026-10-16T17:31:26.650862+00:00",
+  "knownMathLfSha256": "6fb96218a54e1d6aa2b46d524cda1db1afab35f5f06c5bdaf8c16b324ad484e2",
+  "selectionTuningPermitted": false,
+  "sourceBaseCommit": "db87606d2166a4e3a7d9e68aae2f980e1bcd9490"
+}

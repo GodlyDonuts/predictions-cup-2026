@@ -1,0 +1,12 @@
+{
+  "checkedAtUtc": "2026-10-16T17:39:32.017726+00:00",
+  "exitCode": null,
+  "exitCodeLimitation": "Detached original process was not waited by its launcher; terminal result JSON and absence are observed, exit status was not captured.",
+  "originalReplaySourceSha256": "38e9b96cbc7030ba5c47ccd5e8ffb59192124e678a20b7132a7d05415b212122",
+  "processAbsent": true,
+  "resultBytes": 897,
+  "resultSha256": "e64c96d9ecfc0a240e6830644dd8d48fd114d110f8fbaf49d16e8a3286ca7f96",
+  "stderrBytes": 0,
+  "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "version": 1
+}
