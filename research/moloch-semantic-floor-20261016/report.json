@@ -1,0 +1,122 @@
+{
+  "schemaVersion": 1,
+  "auditAtUtc": "2026-10-16T12:56:57.2712554Z",
+  "sourceBaseCommit": "114ac179",
+  "classification": "no_source_certified_positive_executable_floor_established",
+  "certificateMinted": false,
+  "executionAuthority": false,
+  "accountRequests": 0,
+  "sources": [
+    {
+      "kind": "original_official_public_html",
+      "url": "https://sig.thesuper.market/docs/markets-and-trading",
+      "observedAtUtc": "2026-10-16T12:56:56.8423171Z",
+      "sha256": "269a8e81c4ea9c45ee6145e43ea7d0a99cbf9e28050d8fcf088eb1fdcbb56c19",
+      "bytes": 48624,
+      "originalRetainedPrivately": true
+    },
+    {
+      "kind": "original_official_public_html",
+      "url": "https://sig.thesuper.market/docs/settlement-and-payouts",
+      "observedAtUtc": "2026-10-16T12:56:57.2712554Z",
+      "sha256": "24da48d573e203a62de3e9916334af8ca7f78d864fae9004e46cf38a97725874",
+      "bytes": 44847,
+      "originalRetainedPrivately": true
+    },
+    {
+      "kind": "retained_original_official_openapi",
+      "fileBasename": "sig-openapi-20261016.json",
+      "sha256": "a43e8ef27d03daede2004e2ebaaf90cf6d498a5d8f3186bed0195b46902ff9dd",
+      "originalCaptureUtcVerifiedHere": false,
+      "pointers": [
+        "/paths/~1orders/post/description",
+        "/paths/~1orders~1multi-leg/post/description",
+        "/components/schemas/MarketTreeContractNode/properties/contract_details/description"
+      ]
+    },
+    {
+      "kind": "retained_original_official_node_receipt",
+      "fileBasename": "moloch-nc-original-node-277.json",
+      "sha256": "58a98acc30aa5c67510de0b505550df49d3dd58892a141c17eb8b51b05b9434e",
+      "canonicalRootSha256": "56670f0ec4ec7e9837de07ca07cc7573996a89e94d578f9db675252613936da1",
+      "endpoint": "/markets/277/nodes?tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55",
+      "requestStartedAt": "2026-10-15T23:45:20.991Z",
+      "receivedAt": "2026-10-15T23:45:21.269Z",
+      "status": 200,
+      "marketId": "277",
+      "contractId": "278",
+      "freshForExecution": false,
+      "fullResolverAndRefundCouplingPresent": false
+    },
+    {
+      "kind": "retained_original_official_catalog_receipts",
+      "sha256": "c731fcdd5de13029d9f6f1ba5e20193040a63d2e2648dca52597a750b75d2829",
+      "bytes": 142365,
+      "line1Based": 2,
+      "receivedAt": "2026-10-14T22:56:18.844Z",
+      "marketId": "277",
+      "exchangeId": "966",
+      "isComposite": false,
+      "isMultiOutcome": false,
+      "currentEligibilityAsserted": false
+    }
+  ],
+  "provedMechanic": {
+    "kind": "same_market_immediate_opposite_buy_netting",
+    "cashCreditPerPairedShare": "1.000000",
+    "canonicalNewPairCost": "1 + YES_ask - YES_bid",
+    "statement": "Maximum possible new-pair return is zero before fees on any noncrossed canonical book; positive spread gives a loss.",
+    "terminalSettlementAssumed": false,
+    "currentExecutableDepthObserved": false,
+    "noncrossedBookNewPairMaximumNetBeforeFees": "0.000000"
+  },
+  "arithmeticChecks": {
+    "integerUnitsPerSUSQie": 1000000,
+    "canonicalBboTickUnits": 5000,
+    "canonicalNoncrossedBboCases": 19900,
+    "positiveNetCases": 0,
+    "minimumNetUnits": -990000,
+    "maximumNetUnits": 0,
+    "allPrincipalRefundNetWithZeroFeesUnits": 0,
+    "allPrincipalRefundNetWith1000UnitsNonrefundedFee": -1000,
+    "actualMarketScan": false
+  },
+  "crossMarketCounterexample": {
+    "historicalPair": "Michigan Governor Democratic/Republican Party Winner dual NO",
+    "source": "research/moloch-political-contract-proof-20261015/results.json",
+    "originalNodeReceiptsAvailable": false,
+    "currentExecutionCandidate": false,
+    "newFullyRemainingLotCosts": [
+      "0.105000",
+      "0.885000"
+    ],
+    "ordinaryExclusionConditionalNet": "0.010000",
+    "firstRefundedSecondNoLosesNet": "-0.885000",
+    "bothRefundedNet": "0.000000",
+    "exceptionProbabilitiesEstimated": false,
+    "theseExceptionStatesProvenImpossible": false
+  },
+  "unresolvedProofObligations": [
+    "Actual rule version and designated finality/resolver mapping, not title or common race identifiers.",
+    "Fusion, independent, replacement, runoff and other admissible predicate outcomes.",
+    "Joint versus independent administrative cancellation and N/A refunds, including remaining refundable basis.",
+    "Current original scoped account, node and complete executable depth receipts plus proven fee bounds.",
+    "An independently reviewed completeness source; finite enumeration or probability zero is insufficient.",
+    "A strictly positive executable all-state net after fees; all-principal refund would cap it at zero."
+  ],
+  "codeReviewed": [
+    {
+      "path": "moloch/native/src/semantic_floor.rs",
+      "sha256": "7d15b750e99cd1b133043fe30d0f0556b372f5ab1c9d2a0407678cfe131bab9e",
+      "finding": "Separately approved completeness evidence and positive net required; RefundPrincipal adds zero principal gain."
+    },
+    {
+      "path": "moloch/live-runtime/src/semantic_states.rs",
+      "sha256": "de2934f92d9cb67795a74cc5dfb68ca594942f9c8dba5dd0f6ca0d41a7dffff6",
+      "finding": "Reviewed finite probabilistic semantics are not an exhaustive guarantee."
+    }
+  ],
+  "smallestUsefulNextStep": "Use existing source-bound owned FIFO netting/covered-SELL comparison when actual depth offers a gain; do not create a new certificate from canonical complement alone.",
+  "productionChanged": false,
+  "profitabilityEstablished": false
+}
