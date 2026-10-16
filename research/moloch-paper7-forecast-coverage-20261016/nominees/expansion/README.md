@@ -1,0 +1,40 @@
+# Five additional nominee dossiers; four original-source checks and one partial
+
+These are the next five distinct **direct-party YES** leads ranked by the original 3% stress ceiling less the original ask, after excluding the six active races plus Nevada, Vermont and Minnesota. This is a finite source and arithmetic screen, with **no review approval, Settings, allocation authority, current executable quote or fill**. [dossier.json](dossier.json) pins exact structured roots, original receipts/forecasts, safe nominee fields, missing evidence and all 15 stress results.
+
+| Race | Market/exchange/contract | CTM candidate | Model point | Historical YES ask x top depth | Ceiling e=3% | e=10% | e=20% | Historical top quantity after 10k share illustration / cost |
+|---|---|---|---:|---:|---:|---:|---:|---:|
+| WI governors | 315/1004/316 | Tom Tiffany | 0.377 | 0.225 x 3678 | 0.355 | 0.325 | 0.290 | 3678 / 827.550 |
+| TX governors | 196/885/197 | Greg Abbott | 0.864 | 0.715 x 822 | 0.825 | 0.765 | 0.680 | 822 / 587.730 |
+| KS governors | 304/993/305 | Ty Masterson | 0.84 | 0.715 x 29772 | 0.800 | 0.745 | 0.660 | 10000 / 7150.000 |
+| FL senate | 355/1044/356 | Ashley Moody | 0.933 | 0.82 x 2165 | 0.895 | 0.825 | 0.735 | 2165 / 1775.30 |
+| AK governors | 368/1057/369 | Jonathan Kreiss-Tomkins | 0.856 | 0.755 x 2554 | 0.820 | 0.760 | 0.670 | 2554 / 1928.270 |
+
+For arithmetic only, V=(1-e)*p, exceptional payout and fee are assumed zero, margin is .01 and ceilings floor to .005. Interpreting CTM's point as an ordinary-regime conditional probability is itself unvalidated. These exception masses are **unestimated stress choices**, not frequencies, calibrated confidence bounds or a proven dependence model. Four Republican outcomes and one Democrat from the same publisher do not establish independent or factor-neutral exposure.
+
+All five pass their dated ask under 3% and 10%; only Wisconsin passes under 20%. Alaska's 10% ceiling is only .005 above its old ask. These comparisons do not establish positive current EV. Historical visible depth is small in several races: increasing capital alone cannot create depth. The Kansas illustration is capped at 10,000 shares despite larger old top depth. Every principal amount shown could be lost in full if the ordinary YES payout were zero; actual fees, holdings, reservations and current eligibility remain to be reconciled.
+
+## Primary nominee evidence and gaps
+
+- **Wisconsin:** [Green County's original current list](https://www.greencountywi.org/354/Elections) agrees with its [Nov 3 official Monroe ballot](https://www.greencountywi.org/DocumentCenter/View/4639/C-Monroe-): Tom Tiffany/David Varnam Republican, David Crowley/Sarah Godlewski Democratic, plus separate governor/lieutenant-governor write-in lines. The first PDF page was visually checked as well as text-parsed. Write-in probability is unknown, not zero.
+- **Texas:** the [state's final ballot certification](https://www.sos.state.tx.us/elections/forms/2026-ballot-cert.pdf), signed Aug 28, 2026, lists Greg Abbott REP, Gina Hinojosa DEM and Pat Dixon LIB for Governor on its first county sheet. The 1,396-page original PDF was pinned; cover and first county sheet were parsed and the sheet visually checked. CTM supplies no visible Pat Dixon win probability. Separately certified write-ins are not independently enumerated here.
+- **Kansas:** [Sedgwick County's current original list](https://www.sedgwickcounty.org/elections/current-candidates/?page=1) explicitly labels Masterson/Klemp Republican and Holscher/Ohaebosim Democratic as Governor, **2026 General**. This verifies current nominee correspondence, not statewide final-ballot or write-in completeness. Primary-filing candidates are not substituted.
+- **Florida, PARTIAL:** the [official state candidate representation](https://dos.elections.myflorida.com/candidates/CanDetail.asp?account=89119) identifies Ashley Moody Republican for U.S. Senator. [Pinellas' official general-election page](https://www.votepinellas.gov/382/November-3-2026-General-Election-Informa) and the [official Hillsborough ballot representation](https://www.votehillsborough.gov/DocumentCenter/View/2615/) show Moody REP, Angie Nixon DEM and Neil J. Gillespie NPA. **Original raw nominee/ballot bodies were not obtained:** state and Hillsborough downloads returned 403; Pinellas DNS failed. Those failures are retained. The tool's primary-document representations are not mislabeled original HTTP SourceBytes. This lane cannot supply a complete prospective runtime source packet yet. No Gillespie probability is imputed, and exact seat/term attribution still needs review.
+- **Alaska:** the [original certified general candidate list](https://www.elections.alaska.gov/candidates/?election=26genr) has four printed tickets and two certified write-ins. JKT's governor registration is Democrat; Zac Johnson is nonpartisan. Another write-in ticket mixes a Republican governor and Democratic mate. Never infer governor party from the mate. CTM's Jonathan Kreiss-Tomkins versus official Jonathan S. JKT is an explicit name inference. The [official election-information source](https://www.elections.alaska.gov/election-information/) specifies ranked-choice general voting; the original CTM page expressly describes its win point after transfers, not first-choice share. The CTM table contains .856 JKT/.132 Wilson/.012 Bronson/Taylor <.001. Taylor's censored value remains censored; DeWitt/Parkin write-in probabilities are unknown.
+
+The Republican or Democratic named candidate's victory is treated only as an **assumed ordinary subset** of the exact Party Winner predicate. No complementary party-NO identity, complete outcome partition, candidate replacement rule, refund floor or resolver guarantee is certified. Continuing affiliations/ticket composition, discretionary updates, ties, write-ins, certification and delayed cash release remain explicit. Nov 4 at 17:00 UTC is scheduled settlement metadata, not assured cash availability.
+
+## Source clocks and reproduction
+
+Every original node/root, CTM body and reference-book clock/hash is retained in the JSON. The five CTM bodies were originally received Oct 16 around 22:51 UTC; page dateModified 17:57:26 UTC does **not** independently establish first forecast publication. Official new captures retain request/receipt clocks and HTTP metadata separately. No clock or reference TTL is renewed. Texas's original node received Oct 15 at 14:45:27.480 UTC is already older than 24h at this preparation; a future reviewer cannot silently treat it as fresh.
+
+Raw official files, including candidate contact columns, stay private under Temp/moloch-paper7-nominee-expansion-20261016. Only safe name/party/ticket/year/office extracts are committed. There were 11 bounded ordinary public-source capture attempts: six original HTTP 200 bodies and five blocked/unavailable attempts. No SIG/account reads, authentication, SSH, challenge bypass, model fit or live operation occurred.
+
+The reproduction uses standard Python plus pypdf for the two original PDF documents. It verifies every retained capture/body/header pin, reruns the existing 71-race/312-official-receipt derivation, checks each exact original target root/book/forecast, re-extracts four original nominee fields and recomputes all 15 stress ceilings. Florida remains explicitly partial.
+
+```powershell
+python -B -m unittest discover -s research/moloch-paper7-forecast-coverage-20261016/nominees/expansion -p test_verify.py
+python -B research/moloch-paper7-forecast-coverage-20261016/nominees/expansion/verify.py PRIVATE_EXPANSION_DIR ORIGINAL_OFFICIAL_BUNDLE_DIR ORIGINAL_CTM_RAW_DIR
+```
+
+Next concrete review is Wisconsin's higher-stress source dossier, then independent current source/ownership/depth checks for the other original-backed nominees. Florida first needs an actual original nominee witness. Root alone selects budgets, prepares any typed review, approves sources and obtains genuine current scoped physical facts through the existing sole worker. This dossier does not deploy idle cash by assumption.

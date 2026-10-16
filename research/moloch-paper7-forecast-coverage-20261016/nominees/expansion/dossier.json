@@ -1,0 +1,1056 @@
+{
+  "accountRequests": 0,
+  "allocationAuthority": false,
+  "baseCoverageCommit": "6a9fb00b6a7c607f98308c5a21e23fb808227bf0",
+  "candidates": [
+    {
+      "allOriginalVisibleForecastCandidates": [
+        {
+          "candidateWinModelPoint": "0.623",
+          "name": "David Crowley",
+          "reportedParty": "D",
+          "strictLowerIfCensored": null,
+          "strictUpperIfCensored": null,
+          "unpublishedProbability": false
+        },
+        {
+          "candidateWinModelPoint": "0.377",
+          "name": "Tom Tiffany",
+          "reportedParty": "R",
+          "strictLowerIfCensored": null,
+          "strictUpperIfCensored": null,
+          "unpublishedProbability": false
+        }
+      ],
+      "allocationAuthority": false,
+      "contractId": "316",
+      "exchangeId": "1004",
+      "executionAuthority": false,
+      "forecastCandidate": {
+        "candidateWinModelPoint": "0.377",
+        "name": "Tom Tiffany",
+        "reportedParty": "R",
+        "strictLowerIfCensored": null,
+        "strictUpperIfCensored": null,
+        "unpublishedProbability": false
+      },
+      "forecastFirstPublicationIndependentlyVerified": false,
+      "forecastPageDateModified": "2026-10-16T17:57:26.000Z",
+      "forecastSource": {
+        "bytes": 186177,
+        "file": "governors-wisconsin.html",
+        "headersSha256": "8581aeda35bd263b29d07be8646b493219c1bd4b684001d7d649a7095161ecf1",
+        "httpDate": "Fri, 16 Oct 2026 22:19:41 GMT",
+        "lastModified": null,
+        "receivedAt": "2026-10-16T22:51:19.340213+00:00",
+        "requestStartedAt": "2026-10-16T22:51:18.745397+00:00",
+        "sha256": "bcc2890759e11e0002456dd46f32e6a0852dbc1c9545a84a9e9d2873cd33fd5d",
+        "status": 200,
+        "url": "https://www.callthemap.com/governors/wisconsin"
+      },
+      "historicalDepthIllustrationOnly": {
+        "currentExecutable": false,
+        "feeAssumption": "0",
+        "furtherDepthOrFillClaimed": false,
+        "lossIfOrdinaryPayoutZero": "-827.550",
+        "oldTopOnlyPrincipalWithShareCap": "827.550",
+        "oldTopOnlyQuantityWithShareCap": 3678,
+        "quantityCapIllustration": 10000
+      },
+      "historicalReferenceBook": {
+        "ageAtOriginalBundleExtractionMs": 2621779,
+        "artifact": "orderbook/market-315-b7d9f7e803c26bdd.json",
+        "currentExecutable": false,
+        "exchangeId": "1004",
+        "fullProviderContinuityVerified": false,
+        "noAskComplement": "0.785",
+        "noAskDepth": "1000",
+        "originalAsOf": {
+          "at": "2026-10-16T22:07:12.220499+00:00",
+          "sequence": 182918416
+        },
+        "receivedAt": "2026-10-16T22:07:12.379Z",
+        "requestStartedAt": "2026-10-16T22:07:11.998Z",
+        "sourceSha256": "b7d9f7e803c26bddb9fb5f39f41b929c8f7585985bbb3e8204bbe1c9a91089e0",
+        "yesAsk": "0.225",
+        "yesAskDepth": "3678"
+      },
+      "historicalSelectedRank": 1,
+      "marketId": "315",
+      "office": "governors",
+      "officialNominee": {
+        "noContactFieldsPublished": true,
+        "originalGeneralElectionNomineeSourceBodyVerified": true,
+        "pdfSelectedPageVisuallyReviewed": true,
+        "safeExtractedField": [
+          {
+            "name": "Tom Tiffany / David Varnam",
+            "party": "Republican"
+          },
+          {
+            "name": "David Crowley / Sarah Godlewski",
+            "party": "Democratic"
+          }
+        ],
+        "sources": [
+          {
+            "bytes": 213924,
+            "contentType": "text/html; charset=utf-8",
+            "exitCode": 0,
+            "file": "wi-official-general-index.html",
+            "headersSha256": "033e7f35fbcf1f056c87cba43c7456949a29572d4ce5b370b699f4010e5b544a",
+            "httpDate": "Fri, 16 Oct 2026 23:45:59 GMT",
+            "httpLastModified": null,
+            "httpStatus": 200,
+            "receivedAt": "2026-10-16T23:46:00.414158+00:00",
+            "requestStartedAt": "2026-10-16T23:45:59.200452+00:00",
+            "sha256": "5d74d7063ca10dfdefa3ca94c5a300caa21e8b8ef2a0bfe98f00cb6f62656ca0",
+            "url": "https://www.greencountywi.org/354/Elections"
+          },
+          {
+            "bytes": 792279,
+            "contentType": "application/pdf",
+            "exitCode": 0,
+            "file": "wi-official-monroe-general-ballot.pdf",
+            "headersSha256": "eb05c2c94f9a8015730ad105ba0c6773698683af592359b22c321a97aebd80f3",
+            "httpDate": "Fri, 16 Oct 2026 23:47:32 GMT",
+            "httpLastModified": null,
+            "httpStatus": 200,
+            "receivedAt": "2026-10-16T23:47:33.695115+00:00",
+            "requestStartedAt": "2026-10-16T23:47:32.734337+00:00",
+            "sha256": "10d7fd0ed0279c84225899aabaa5b17423d4f974e1a472b2d7cc4dfb6b015082",
+            "url": "https://www.greencountywi.org/DocumentCenter/View/4639/C-Monroe-"
+          }
+        ],
+        "visualPageIndexZeroBased": 0
+      },
+      "operatorApproval": false,
+      "originalContract": {
+        "contractId": "316",
+        "marketId": "315",
+        "party": "Republican Party",
+        "predicate": {
+          "contractType": "Election Outcome",
+          "electionDate": "2026-11-03",
+          "officeLevel": "State",
+          "raceId": "76872",
+          "raceName": "Governor of Wisconsin",
+          "raceStage": "General",
+          "resolutionType": "Party Winner",
+          "stageId": "119075",
+          "usState": "WI",
+          "winnerName": "Republican Party"
+        },
+        "receipt": {
+          "bytes": 914,
+          "endpoint": "/markets/315/nodes?tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55",
+          "path": "nodes/market-315-e118a58d9a861b26.json",
+          "receivedAt": "2026-10-16T06:25:34.661Z",
+          "requestStartedAt": "2026-10-16T06:25:34.407Z",
+          "sha256": "e118a58d9a861b267808bae049165e4fd7f44009e51d2a8d7bd3095a51c3391f"
+        },
+        "scheduledSettlementAt": "2026-11-04T17:00:00.000Z",
+        "semanticRootSha256": "2cca6e43ea335ebc70f161abd50b03f70490fd669bb48663e12ee5b2364e420b"
+      },
+      "party": "Republican Party",
+      "reviewStatus": "original_nominee_evidence_available_not_approval",
+      "side": "YES",
+      "state": "WI",
+      "stressScenarios": [
+        {
+          "assumedPayoutPerShare": "0.36569",
+          "calibratedProbabilityBound": false,
+          "ceilingMinusHistoricalAsk": "0.130",
+          "exceptionAllowanceAssumption": "0.03",
+          "exceptionPayoutAssumption": "0",
+          "margin": "0.01",
+          "passesHistoricalPriceArithmeticOnly": true,
+          "tick": "0.005",
+          "tickFlooredResearchCeiling": "0.355"
+        },
+        {
+          "assumedPayoutPerShare": "0.33930",
+          "calibratedProbabilityBound": false,
+          "ceilingMinusHistoricalAsk": "0.100",
+          "exceptionAllowanceAssumption": "0.10",
+          "exceptionPayoutAssumption": "0",
+          "margin": "0.01",
+          "passesHistoricalPriceArithmeticOnly": true,
+          "tick": "0.005",
+          "tickFlooredResearchCeiling": "0.325"
+        },
+        {
+          "assumedPayoutPerShare": "0.30160",
+          "calibratedProbabilityBound": false,
+          "ceilingMinusHistoricalAsk": "0.065",
+          "exceptionAllowanceAssumption": "0.20",
+          "exceptionPayoutAssumption": "0",
+          "margin": "0.01",
+          "passesHistoricalPriceArithmeticOnly": true,
+          "tick": "0.005",
+          "tickFlooredResearchCeiling": "0.290"
+        }
+      ],
+      "unresolvedContingencies": [
+        "Official Nov3 Monroe ballot has Tiffany/Varnam Republican and Crowley/Godlewski Democratic plus governor and lieutenant-governor write-in lines; CTM lists the two major candidates only. Write-in outcome probability is not established as zero.",
+        "The governor member of the ticket is the candidate relation. Continuing eligibility/party attribution, tie/certification/refund/discretionary resolver treatment remain unverified."
+      ]
+    },
+    {
+      "allOriginalVisibleForecastCandidates": [
+        {
+          "candidateWinModelPoint": "0.136",
+          "name": "Gina Hinojosa",
+          "reportedParty": "D",
+          "strictLowerIfCensored": null,
+          "strictUpperIfCensored": null,
+          "unpublishedProbability": false
+        },
+        {
+          "candidateWinModelPoint": "0.864",
+          "name": "Greg Abbott",
+          "reportedParty": "R",
+          "strictLowerIfCensored": null,
+          "strictUpperIfCensored": null,
+          "unpublishedProbability": false
+        }
+      ],
+      "allocationAuthority": false,
+      "contractId": "197",
+      "exchangeId": "885",
+      "executionAuthority": false,
+      "forecastCandidate": {
+        "candidateWinModelPoint": "0.864",
+        "name": "Greg Abbott",
+        "reportedParty": "R",
+        "strictLowerIfCensored": null,
+        "strictUpperIfCensored": null,
+        "unpublishedProbability": false
+      },
+      "forecastFirstPublicationIndependentlyVerified": false,
+      "forecastPageDateModified": "2026-10-16T17:57:26.000Z",
+      "forecastSource": {
+        "bytes": 236562,
+        "file": "governors-texas.html",
+        "headersSha256": "4b3a6de4cf6a01ae6425f2a5e94b9bdee2495b4598f2ef330097281a9911e99f",
+        "httpDate": "Fri, 16 Oct 2026 19:36:53 GMT",
+        "lastModified": null,
+        "receivedAt": "2026-10-16T22:51:18.506016+00:00",
+        "requestStartedAt": "2026-10-16T22:51:18.155547+00:00",
+        "sha256": "3d40246e1a227206c6d690e9626ea0009449ef1417aeccac64878f70fd32388f",
+        "status": 200,
+        "url": "https://www.callthemap.com/governors/texas"
+      },
+      "historicalDepthIllustrationOnly": {
+        "currentExecutable": false,
+        "feeAssumption": "0",
+        "furtherDepthOrFillClaimed": false,
+        "lossIfOrdinaryPayoutZero": "-587.730",
+        "oldTopOnlyPrincipalWithShareCap": "587.730",
+        "oldTopOnlyQuantityWithShareCap": 822,
+        "quantityCapIllustration": 10000
+      },
+      "historicalReferenceBook": {
+        "ageAtOriginalBundleExtractionMs": 115525162,
+        "artifact": "orderbook/market-196-59bffbfa71c9bbaf.json",
+        "currentExecutable": false,
+        "exchangeId": "885",
+        "fullProviderContinuityVerified": false,
+        "noAskComplement": "0.29",
+        "noAskDepth": "2530",
+        "originalAsOf": {
+          "at": "2026-10-15T14:45:28.8367911+00:00",
+          "sequence": 168345363
+        },
+        "receivedAt": "2026-10-15T14:45:28.925Z",
+        "requestStartedAt": "2026-10-15T14:45:28.091Z",
+        "sourceSha256": "59bffbfa71c9bbaf2680b473d2df76bdc7c39900e88b1ed2b6d1610f06fd4e3b",
+        "yesAsk": "0.715",
+        "yesAskDepth": "822"
+      },
+      "historicalSelectedRank": 2,
+      "marketId": "196",
+      "office": "governors",
+      "officialNominee": {
+        "noContactFieldsPublished": true,
+        "originalGeneralElectionNomineeSourceBodyVerified": true,
+        "pdfSelectedPageVisuallyReviewed": true,
+        "safeExtractedField": [
+          {
+            "name": "GREG ABBOTT",
+            "party": "REP"
+          },
+          {
+            "name": "GINA HINOJOSA",
+            "party": "DEM"
+          },
+          {
+            "name": "PAT DIXON",
+            "party": "LIB"
+          }
+        ],
+        "sources": [
+          {
+            "bytes": 5919631,
+            "contentType": "application/pdf",
+            "exitCode": 0,
+            "file": "tx-official-ballot-certification.pdf",
+            "headersSha256": "1bc34dbed72351ce6ad66ef3154d5d4bcb65ccf368b7541f9383680e6bcba1e5",
+            "httpDate": "Fri, 16 Oct 2026 23:46:00 GMT",
+            "httpLastModified": "Mon, 31 Aug 2026 22:32:22 GMT",
+            "httpStatus": 200,
+            "receivedAt": "2026-10-16T23:45:59.910359+00:00",
+            "requestStartedAt": "2026-10-16T23:45:59.200989+00:00",
+            "sha256": "c13ffb4ebeee389fa9818d47b31f77b4e260ea6e6f5389cb7bf0f36d9b44d87c",
+            "url": "https://www.sos.state.tx.us/elections/forms/2026-ballot-cert.pdf"
+          }
+        ],
+        "visualPageIndexZeroBased": 1
+      },
+      "operatorApproval": false,
+      "originalContract": {
+        "contractId": "197",
+        "marketId": "196",
+        "party": "Republican Party",
+        "predicate": {
+          "contractType": "Election Outcome",
+          "electionDate": "2026-11-03",
+          "officeLevel": "State",
+          "raceId": "76845",
+          "raceName": "Governor of Texas",
+          "raceStage": "General",
+          "resolutionType": "Party Winner",
+          "stageId": "119048",
+          "usState": "TX",
+          "winnerName": "Republican Party"
+        },
+        "receipt": {
+          "bytes": 906,
+          "endpoint": "/markets/196/nodes?tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55",
+          "path": "nodes/market-196-b62aa0be1caf88b6.json",
+          "receivedAt": "2026-10-15T14:45:27.480Z",
+          "requestStartedAt": "2026-10-15T14:45:27.194Z",
+          "sha256": "b62aa0be1caf88b6fc49fad807ef60462fb6c8e5e26ce21d9e0547cb596209d2"
+        },
+        "scheduledSettlementAt": "2026-11-04T17:00:00.000Z",
+        "semanticRootSha256": "f9eb65ec8e8a98ae7927432c8334e0cf61ce2d68eb6c4868d23e6dacde3082f1"
+      },
+      "party": "Republican Party",
+      "reviewStatus": "original_nominee_evidence_available_not_approval",
+      "side": "YES",
+      "state": "TX",
+      "stressScenarios": [
+        {
+          "assumedPayoutPerShare": "0.83808",
+          "calibratedProbabilityBound": false,
+          "ceilingMinusHistoricalAsk": "0.110",
+          "exceptionAllowanceAssumption": "0.03",
+          "exceptionPayoutAssumption": "0",
+          "margin": "0.01",
+          "passesHistoricalPriceArithmeticOnly": true,
+          "tick": "0.005",
+          "tickFlooredResearchCeiling": "0.825"
+        },
+        {
+          "assumedPayoutPerShare": "0.77760",
+          "calibratedProbabilityBound": false,
+          "ceilingMinusHistoricalAsk": "0.050",
+          "exceptionAllowanceAssumption": "0.10",
+          "exceptionPayoutAssumption": "0",
+          "margin": "0.01",
+          "passesHistoricalPriceArithmeticOnly": true,
+          "tick": "0.005",
+          "tickFlooredResearchCeiling": "0.765"
+        },
+        {
+          "assumedPayoutPerShare": "0.69120",
+          "calibratedProbabilityBound": false,
+          "ceilingMinusHistoricalAsk": "-0.035",
+          "exceptionAllowanceAssumption": "0.20",
+          "exceptionPayoutAssumption": "0",
+          "margin": "0.01",
+          "passesHistoricalPriceArithmeticOnly": false,
+          "tick": "0.005",
+          "tickFlooredResearchCeiling": "0.680"
+        }
+      ],
+      "unresolvedContingencies": [
+        "Original Aug28 final state certification, first county sheet, lists Abbott REP, Hinojosa DEM, Dixon LIB. CTM table omits Pat Dixon win probability; do not invent zero or a complete two-party partition. Separately certified write-ins are not independently enumerated here.",
+        "Original node received Oct15T14:45:27.480Z already exceeds24h at this preparation; no renewed source clock or reference TTL approval is supplied. Genuine current physical exact-root facts and independent source validity review remain mandatory."
+      ]
+    },
+    {
+      "allOriginalVisibleForecastCandidates": [
+        {
+          "candidateWinModelPoint": "0.16",
+          "name": "Cindy Holscher",
+          "reportedParty": "D",
+          "strictLowerIfCensored": null,
+          "strictUpperIfCensored": null,
+          "unpublishedProbability": false
+        },
+        {
+          "candidateWinModelPoint": "0.84",
+          "name": "Ty Masterson",
+          "reportedParty": "R",
+          "strictLowerIfCensored": null,
+          "strictUpperIfCensored": null,
+          "unpublishedProbability": false
+        }
+      ],
+      "allocationAuthority": false,
+      "contractId": "305",
+      "exchangeId": "993",
+      "executionAuthority": false,
+      "forecastCandidate": {
+        "candidateWinModelPoint": "0.84",
+        "name": "Ty Masterson",
+        "reportedParty": "R",
+        "strictLowerIfCensored": null,
+        "strictUpperIfCensored": null,
+        "unpublishedProbability": false
+      },
+      "forecastFirstPublicationIndependentlyVerified": false,
+      "forecastPageDateModified": "2026-10-16T17:57:26.000Z",
+      "forecastSource": {
+        "bytes": 179790,
+        "file": "governors-kansas.html",
+        "headersSha256": "df5d5ad50a27cfe229ab48b8ce995724f12712eb2145016d06ddf206c5c411c6",
+        "httpDate": "Fri, 16 Oct 2026 22:20:51 GMT",
+        "lastModified": null,
+        "receivedAt": "2026-10-16T22:51:13.090202+00:00",
+        "requestStartedAt": "2026-10-16T22:51:12.726198+00:00",
+        "sha256": "c3dce92c2aadb4657f3d6a7934cda2c59076f3b558d844ff75d5d86ff80f2f86",
+        "status": 200,
+        "url": "https://www.callthemap.com/governors/kansas"
+      },
+      "historicalDepthIllustrationOnly": {
+        "currentExecutable": false,
+        "feeAssumption": "0",
+        "furtherDepthOrFillClaimed": false,
+        "lossIfOrdinaryPayoutZero": "-7150.000",
+        "oldTopOnlyPrincipalWithShareCap": "7150.000",
+        "oldTopOnlyQuantityWithShareCap": 10000,
+        "quantityCapIllustration": 10000
+      },
+      "historicalReferenceBook": {
+        "ageAtOriginalBundleExtractionMs": 21806532,
+        "artifact": "orderbook/market-304-42326fa2a6a744db.json",
+        "currentExecutable": false,
+        "exchangeId": "993",
+        "fullProviderContinuityVerified": false,
+        "noAskComplement": "0.29",
+        "noAskDepth": "13",
+        "originalAsOf": {
+          "at": "2026-10-16T16:47:27.4673864+00:00",
+          "sequence": 180288806
+        },
+        "receivedAt": "2026-10-16T16:47:27.574Z",
+        "requestStartedAt": "2026-10-16T16:47:27.209Z",
+        "sourceSha256": "42326fa2a6a744db1e31900c07b46c10f82a3d5f416b921ea81df7634c7e316b",
+        "yesAsk": "0.715",
+        "yesAskDepth": "29772"
+      },
+      "historicalSelectedRank": 3,
+      "marketId": "304",
+      "office": "governors",
+      "officialNominee": {
+        "noContactFieldsPublished": true,
+        "originalGeneralElectionNomineeSourceBodyVerified": true,
+        "safeExtractedField": [
+          [
+            "Republican",
+            "Ty Masterson / Jeffrey Klemp",
+            "Governor",
+            "2026 General"
+          ],
+          [
+            "Democratic",
+            "Cindy Holscher / KC Ohaebosim",
+            "Governor",
+            "2026 General"
+          ]
+        ],
+        "sources": [
+          {
+            "bytes": 70708,
+            "contentType": "text/html; charset=utf-8",
+            "exitCode": 0,
+            "file": "ks-official-current-candidates.html",
+            "headersSha256": "6a39232c97d530bd7ff4bc2f4f8048d1f1cf47d20f0d46f8521abff2f8625bd2",
+            "httpDate": "Fri, 16 Oct 2026 23:46:01 GMT",
+            "httpLastModified": null,
+            "httpStatus": 200,
+            "receivedAt": "2026-10-16T23:46:02.993492+00:00",
+            "requestStartedAt": "2026-10-16T23:45:59.923619+00:00",
+            "sha256": "207a97e4d915b505be3e8cce46bdcf7c38866977b8b5a7a5a96c86c5013e01e2",
+            "url": "https://www.sedgwickcounty.org/elections/current-candidates/?page=1"
+          }
+        ]
+      },
+      "operatorApproval": false,
+      "originalContract": {
+        "contractId": "305",
+        "marketId": "304",
+        "party": "Republican Party",
+        "predicate": {
+          "contractType": "Election Outcome",
+          "electionDate": "2026-11-03",
+          "officeLevel": "State",
+          "raceId": "76703",
+          "raceName": "Governor of Kansas",
+          "raceStage": "General",
+          "resolutionType": "Party Winner",
+          "stageId": "118906",
+          "usState": "KS",
+          "winnerName": "Republican Party"
+        },
+        "receipt": {
+          "bytes": 908,
+          "endpoint": "/markets/304/nodes?tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55",
+          "path": "nodes/market-304-feb9412053603d24.json",
+          "receivedAt": "2026-10-16T16:23:17.885Z",
+          "requestStartedAt": "2026-10-16T16:23:17.575Z",
+          "sha256": "feb9412053603d24db5e8004a926f991a33512b910d9e33b57b9a628c58a368d"
+        },
+        "scheduledSettlementAt": "2026-11-04T17:00:00.000Z",
+        "semanticRootSha256": "d452289674a0cf21a59329f2ec80bf3285b556d712bb7b0ab9fd9a99d40b800d"
+      },
+      "party": "Republican Party",
+      "reviewStatus": "original_nominee_evidence_available_not_approval",
+      "side": "YES",
+      "state": "KS",
+      "stressScenarios": [
+        {
+          "assumedPayoutPerShare": "0.8148",
+          "calibratedProbabilityBound": false,
+          "ceilingMinusHistoricalAsk": "0.085",
+          "exceptionAllowanceAssumption": "0.03",
+          "exceptionPayoutAssumption": "0",
+          "margin": "0.01",
+          "passesHistoricalPriceArithmeticOnly": true,
+          "tick": "0.005",
+          "tickFlooredResearchCeiling": "0.800"
+        },
+        {
+          "assumedPayoutPerShare": "0.7560",
+          "calibratedProbabilityBound": false,
+          "ceilingMinusHistoricalAsk": "0.030",
+          "exceptionAllowanceAssumption": "0.10",
+          "exceptionPayoutAssumption": "0",
+          "margin": "0.01",
+          "passesHistoricalPriceArithmeticOnly": true,
+          "tick": "0.005",
+          "tickFlooredResearchCeiling": "0.745"
+        },
+        {
+          "assumedPayoutPerShare": "0.6720",
+          "calibratedProbabilityBound": false,
+          "ceilingMinusHistoricalAsk": "-0.055",
+          "exceptionAllowanceAssumption": "0.20",
+          "exceptionPayoutAssumption": "0",
+          "margin": "0.01",
+          "passesHistoricalPriceArithmeticOnly": false,
+          "tick": "0.005",
+          "tickFlooredResearchCeiling": "0.660"
+        }
+      ],
+      "unresolvedContingencies": [
+        "Official current county rows specify Republican Ty Masterson/Jeffrey Klemp and Democratic Cindy Holscher/KC Ohaebosim, Governor,2026 General. This is current nominee corroboration, not statewide final-ballot/write-in completeness.",
+        "CTM governor name agrees with the governor member of the ticket. Joint-ticket replacement/eligibility/party attribution and exact Party Winner resolver/tie/refund/finality rules require review."
+      ]
+    },
+    {
+      "allOriginalVisibleForecastCandidates": [
+        {
+          "candidateWinModelPoint": "0.067",
+          "name": "Angie Nixon",
+          "reportedParty": "D",
+          "strictLowerIfCensored": null,
+          "strictUpperIfCensored": null,
+          "unpublishedProbability": false
+        },
+        {
+          "candidateWinModelPoint": "0.933",
+          "name": "Ashley Moody",
+          "reportedParty": "R",
+          "strictLowerIfCensored": null,
+          "strictUpperIfCensored": null,
+          "unpublishedProbability": false
+        }
+      ],
+      "allocationAuthority": false,
+      "contractId": "356",
+      "exchangeId": "1044",
+      "executionAuthority": false,
+      "forecastCandidate": {
+        "candidateWinModelPoint": "0.933",
+        "name": "Ashley Moody",
+        "reportedParty": "R",
+        "strictLowerIfCensored": null,
+        "strictUpperIfCensored": null,
+        "unpublishedProbability": false
+      },
+      "forecastFirstPublicationIndependentlyVerified": false,
+      "forecastPageDateModified": "2026-10-16T17:57:26.000Z",
+      "forecastSource": {
+        "bytes": 205504,
+        "file": "senate-florida.html",
+        "headersSha256": "2159897225b52b375ca7080199f45440af8d58834861a77a95bc52d2578d6a4f",
+        "httpDate": "Fri, 16 Oct 2026 22:01:59 GMT",
+        "lastModified": null,
+        "receivedAt": "2026-10-16T22:51:21.078214+00:00",
+        "requestStartedAt": "2026-10-16T22:51:20.797035+00:00",
+        "sha256": "8fa9852aa1ed7599d3fbe0dba3f9997e2259d2afce532c3460438964b233497f",
+        "status": 200,
+        "url": "https://www.callthemap.com/senate/florida"
+      },
+      "historicalDepthIllustrationOnly": {
+        "currentExecutable": false,
+        "feeAssumption": "0",
+        "furtherDepthOrFillClaimed": false,
+        "lossIfOrdinaryPayoutZero": "-1775.30",
+        "oldTopOnlyPrincipalWithShareCap": "1775.30",
+        "oldTopOnlyQuantityWithShareCap": 2165,
+        "quantityCapIllustration": 10000
+      },
+      "historicalReferenceBook": {
+        "ageAtOriginalBundleExtractionMs": 15773878,
+        "artifact": "orderbook/market-355-d4bdc5c24b30c43a.json",
+        "currentExecutable": false,
+        "exchangeId": "1044",
+        "fullProviderContinuityVerified": false,
+        "noAskComplement": "0.185",
+        "noAskDepth": "800",
+        "originalAsOf": {
+          "at": "2026-10-16T18:28:00.1211589+00:00",
+          "sequence": 181030710
+        },
+        "receivedAt": "2026-10-16T18:28:00.257Z",
+        "requestStartedAt": "2026-10-16T18:27:59.901Z",
+        "sourceSha256": "d4bdc5c24b30c43a5d4de02861c4b3721693a8a84c999e58e0a3cc1695ff99db",
+        "yesAsk": "0.82",
+        "yesAskDepth": "2165"
+      },
+      "historicalSelectedRank": 4,
+      "marketId": "355",
+      "office": "senate",
+      "officialNominee": {
+        "failedOriginalCaptures": [
+          {
+            "bytes": 5536,
+            "contentType": "text/html; charset=UTF-8",
+            "exitCode": 0,
+            "file": "fl-official-moody.html",
+            "headersSha256": "3efc4f017d8f9f2a87352af4753d15d6f53ecb7d34d6a11a3dbeed16073e9339",
+            "httpDate": "Fri, 16 Oct 2026 23:46:01 GMT",
+            "httpLastModified": null,
+            "httpStatus": 403,
+            "receivedAt": "2026-10-16T23:46:01.277929+00:00",
+            "requestStartedAt": "2026-10-16T23:46:01.031160+00:00",
+            "sha256": "a2ac9dbc6d0eeb6724e26f100bd51666c45ec284792d3eb582d6fea61b60c14b",
+            "url": "https://dos.elections.myflorida.com/candidates/CanDetail.asp?account=89119"
+          },
+          {
+            "bytes": 5418,
+            "contentType": "text/html; charset=UTF-8",
+            "exitCode": 0,
+            "file": "fl-official-candidate-index.html",
+            "headersSha256": "acec2f5026a2509ca39c154755bbf40b7bac6d8ab4e2e93d30658fe2aadbaac0",
+            "httpDate": "Fri, 16 Oct 2026 23:46:01 GMT",
+            "httpLastModified": null,
+            "httpStatus": 403,
+            "receivedAt": "2026-10-16T23:46:01.453484+00:00",
+            "requestStartedAt": "2026-10-16T23:46:01.368402+00:00",
+            "sha256": "4948334cc8ab310d15431d405faad4047ab4b1824ac88e44216951e84861d6d7",
+            "url": "https://dos.elections.myflorida.com/candidates/"
+          },
+          {
+            "contentType": null,
+            "error": "curl: (6) Could not resolve host: www.votepinellas.gov\r\n",
+            "exitCode": 6,
+            "file": "fl-official-pinellas-general.html",
+            "headersSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "httpDate": null,
+            "httpLastModified": null,
+            "httpStatus": null,
+            "receivedAt": "2026-10-16T23:47:38.788801+00:00",
+            "requestStartedAt": "2026-10-16T23:47:32.733337+00:00",
+            "url": "https://www.votepinellas.gov/382/November-3-2026-General-Election-Informa"
+          },
+          {
+            "bytes": 5484,
+            "contentType": "text/html; charset=UTF-8",
+            "exitCode": 0,
+            "file": "fl-official-hillsborough-general.html",
+            "headersSha256": "a179cd9ec1a480dd9304b3118a805dd222fc9a895df75c8c3e656611cbb5639a",
+            "httpDate": "Fri, 16 Oct 2026 23:48:18 GMT",
+            "httpLastModified": null,
+            "httpStatus": 403,
+            "receivedAt": "2026-10-16T23:48:18.566721+00:00",
+            "requestStartedAt": "2026-10-16T23:48:18.358873+00:00",
+            "sha256": "88cb9a5acdc4b1236ef2c051a23076b669f041f3e64cdd888a63b99babae068a",
+            "url": "https://www.votehillsborough.gov/291/2026-General-Election"
+          },
+          {
+            "bytes": 5484,
+            "contentType": "text/html; charset=UTF-8",
+            "exitCode": 0,
+            "file": "fl-official-hillsborough-general-ballot.pdf",
+            "headersSha256": "63fd74e21e81e01e218c06278222a45c53e64cdad58a193111ab92793ccc76db",
+            "httpDate": "Fri, 16 Oct 2026 23:48:18 GMT",
+            "httpLastModified": null,
+            "httpStatus": 403,
+            "receivedAt": "2026-10-16T23:48:18.574721+00:00",
+            "requestStartedAt": "2026-10-16T23:48:18.358873+00:00",
+            "sha256": "ef46b5fe8d73750102a7736c1e44ede6fc37c07701c0335a533bc0de1b3fafc7",
+            "url": "https://www.votehillsborough.gov/DocumentCenter/View/2615/"
+          }
+        ],
+        "noContactFieldsPublished": true,
+        "originalGeneralElectionNomineeSourceBodyVerified": false,
+        "primaryRepresentationsNotOriginalBodies": [
+          {
+            "rawOriginalBodyVerified": false,
+            "reportedFields": [
+              "2026 General Election",
+              "United States Senator",
+              "Ashley Moody",
+              "Republican",
+              "Qualified"
+            ],
+            "url": "https://dos.elections.myflorida.com/candidates/CanDetail.asp?account=89119"
+          },
+          {
+            "rawOriginalBodyVerified": false,
+            "reportedFields": [
+              "November3,2026 General",
+              "United States Senator",
+              "Ashley Moody REP",
+              "Angie Nixon DEM",
+              "Neil J.Gillespie NPA"
+            ],
+            "url": "https://www.votepinellas.gov/382/November-3-2026-General-Election-Informa"
+          },
+          {
+            "rawOriginalBodyVerified": false,
+            "reportedFields": [
+              "November3,2026 General",
+              "United States Senator",
+              "Ashley Moody REP",
+              "Angie Nixon DEM",
+              "Neil J.Gillespie NPA"
+            ],
+            "url": "https://www.votehillsborough.gov/DocumentCenter/View/2615/"
+          }
+        ],
+        "safeExtractedField": [],
+        "sources": []
+      },
+      "operatorApproval": false,
+      "originalContract": {
+        "contractId": "356",
+        "marketId": "355",
+        "party": "Republican Party",
+        "predicate": {
+          "contractType": "Election Outcome",
+          "electionDate": "2026-11-03",
+          "officeLevel": "Federal",
+          "raceId": "201483",
+          "raceName": "U.S. Senate Florida",
+          "raceStage": "General",
+          "resolutionType": "Party Winner",
+          "stageId": "299058",
+          "usState": "FL",
+          "winnerName": "Republican Party"
+        },
+        "receipt": {
+          "bytes": 911,
+          "endpoint": "/markets/355/nodes?tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55",
+          "path": "nodes/market-355-cc9932fc12489929.json",
+          "receivedAt": "2026-10-16T15:05:43.336Z",
+          "requestStartedAt": "2026-10-16T15:05:43.045Z",
+          "sha256": "cc9932fc1248992966991c1e6a0f68f0350cdec820cb1a601266143e7c354b9d"
+        },
+        "scheduledSettlementAt": "2026-11-04T17:00:00.000Z",
+        "semanticRootSha256": "4e3073492a9b50531b101d9f0f9b2a248e52c3b0d5f923928c9a7ce297f393b5"
+      },
+      "party": "Republican Party",
+      "reviewStatus": "partial_original_nominee_source_missing",
+      "side": "YES",
+      "state": "FL",
+      "stressScenarios": [
+        {
+          "assumedPayoutPerShare": "0.90501",
+          "calibratedProbabilityBound": false,
+          "ceilingMinusHistoricalAsk": "0.075",
+          "exceptionAllowanceAssumption": "0.03",
+          "exceptionPayoutAssumption": "0",
+          "margin": "0.01",
+          "passesHistoricalPriceArithmeticOnly": true,
+          "tick": "0.005",
+          "tickFlooredResearchCeiling": "0.895"
+        },
+        {
+          "assumedPayoutPerShare": "0.83970",
+          "calibratedProbabilityBound": false,
+          "ceilingMinusHistoricalAsk": "0.005",
+          "exceptionAllowanceAssumption": "0.10",
+          "exceptionPayoutAssumption": "0",
+          "margin": "0.01",
+          "passesHistoricalPriceArithmeticOnly": true,
+          "tick": "0.005",
+          "tickFlooredResearchCeiling": "0.825"
+        },
+        {
+          "assumedPayoutPerShare": "0.74640",
+          "calibratedProbabilityBound": false,
+          "ceilingMinusHistoricalAsk": "-0.085",
+          "exceptionAllowanceAssumption": "0.20",
+          "exceptionPayoutAssumption": "0",
+          "margin": "0.01",
+          "passesHistoricalPriceArithmeticOnly": false,
+          "tick": "0.005",
+          "tickFlooredResearchCeiling": "0.735"
+        }
+      ],
+      "unresolvedContingencies": [
+        "Original state candidate and Hillsborough ballot requests returned403; Pinellas hostname failed original capture. No access-control bypass or arbitrary endpoint was used. Official page representations report Moody REP/Nixon DEM/Gillespie NPA, but no independently pinned raw nominee body was obtained.",
+        "Raw ballot/source remains missing; no prospective runtime review can treat these representations as an original SourceBytes witness. CTM table omits Gillespie probability; exact Senate seat/term, candidate/party, resolver/refund/replacement/finality mapping remain unresolved."
+      ]
+    },
+    {
+      "allOriginalVisibleForecastCandidates": [
+        {
+          "candidateWinModelPoint": "0.856",
+          "name": "Jonathan Kreiss-Tomkins",
+          "reportedParty": "D",
+          "strictLowerIfCensored": null,
+          "strictUpperIfCensored": null,
+          "unpublishedProbability": false
+        },
+        {
+          "candidateWinModelPoint": "0.132",
+          "name": "Bernadette Wilson",
+          "reportedParty": "R",
+          "strictLowerIfCensored": null,
+          "strictUpperIfCensored": null,
+          "unpublishedProbability": false
+        },
+        {
+          "candidateWinModelPoint": "0.012",
+          "name": "Dave Bronson",
+          "reportedParty": "R",
+          "strictLowerIfCensored": null,
+          "strictUpperIfCensored": null,
+          "unpublishedProbability": false
+        },
+        {
+          "candidateWinModelPoint": null,
+          "name": "Treg Taylor",
+          "reportedParty": "R",
+          "strictLowerIfCensored": null,
+          "strictUpperIfCensored": "0.001",
+          "unpublishedProbability": false
+        }
+      ],
+      "allocationAuthority": false,
+      "contractId": "369",
+      "exchangeId": "1057",
+      "executionAuthority": false,
+      "forecastCandidate": {
+        "candidateWinModelPoint": "0.856",
+        "name": "Jonathan Kreiss-Tomkins",
+        "reportedParty": "D",
+        "strictLowerIfCensored": null,
+        "strictUpperIfCensored": null,
+        "unpublishedProbability": false
+      },
+      "forecastFirstPublicationIndependentlyVerified": false,
+      "forecastPageDateModified": "2026-10-16T17:57:26.000Z",
+      "forecastSource": {
+        "bytes": 193993,
+        "file": "governors-alaska.html",
+        "headersSha256": "5e3a1f1741dbf1bf579613808b84dde84deadf5fa715ffad3f76295f028fc97a",
+        "httpDate": "Fri, 16 Oct 2026 18:15:10 GMT",
+        "lastModified": null,
+        "receivedAt": "2026-10-16T22:51:09.677088+00:00",
+        "requestStartedAt": "2026-10-16T22:51:09.293730+00:00",
+        "sha256": "a5f22c10bf55977ca28f87952fc968716914cd6bfbf2cf7f7b68d03f648a20e4",
+        "status": 200,
+        "url": "https://www.callthemap.com/governors/alaska"
+      },
+      "historicalDepthIllustrationOnly": {
+        "currentExecutable": false,
+        "feeAssumption": "0",
+        "furtherDepthOrFillClaimed": false,
+        "lossIfOrdinaryPayoutZero": "-1928.270",
+        "oldTopOnlyPrincipalWithShareCap": "1928.270",
+        "oldTopOnlyQuantityWithShareCap": 2554,
+        "quantityCapIllustration": 10000
+      },
+      "historicalReferenceBook": {
+        "ageAtOriginalBundleExtractionMs": 2596099,
+        "artifact": "orderbook/market-368-5671dc208b48dce8.json",
+        "currentExecutable": false,
+        "exchangeId": "1057",
+        "fullProviderContinuityVerified": false,
+        "noAskComplement": "0.25",
+        "noAskDepth": "4500",
+        "originalAsOf": {
+          "at": "2026-10-16T22:07:37.9001174+00:00",
+          "sequence": 182921796
+        },
+        "receivedAt": "2026-10-16T22:07:38.065Z",
+        "requestStartedAt": "2026-10-16T22:07:37.688Z",
+        "sourceSha256": "5671dc208b48dce8f44d75d7b731b3abddc476ae4a39fb66d122459147485200",
+        "yesAsk": "0.755",
+        "yesAskDepth": "2554"
+      },
+      "historicalSelectedRank": 5,
+      "marketId": "368",
+      "office": "governors",
+      "officialNominee": {
+        "noContactFieldsPublished": true,
+        "originalGeneralElectionNomineeSourceBodyVerified": true,
+        "safeExtractedField": [
+          "Bronson, Dave / Church, Josh (Registered Republican) (Certified)",
+          "Certified Write-In DeWitt, Meda / Steere, Christopher “Chris” (Nonpartisan) (Certified)",
+          "Kreiss-Tomkins, Jonathan S. “JKT” / Johnson, Zac (Registered Democrat / Nonpartisan) (Certified)",
+          "Certified Write-In Parkin, James W. “JP4” / Greer, Ramadhani “Ram” (Registered Republican / Registered Democrat) (Certified)",
+          "Taylor, Treg/ English, Candi (Registered Republican) (Certified)",
+          "Wilson, Bernadette M. / Shower, Michael K. (Registered Republican) (Certified)"
+        ],
+        "sources": [
+          {
+            "bytes": 243821,
+            "contentType": "text/html; charset=UTF-8",
+            "exitCode": 0,
+            "file": "ak-official-general-candidates.html",
+            "headersSha256": "a99f22c980c3ddb1510a7757e345208a37079d13f87bfc1640131140e3f5c2ff",
+            "httpDate": "Fri, 16 Oct 2026 23:46:04 GMT",
+            "httpLastModified": null,
+            "httpStatus": 200,
+            "receivedAt": "2026-10-16T23:46:04.133993+00:00",
+            "requestStartedAt": "2026-10-16T23:46:01.498575+00:00",
+            "sha256": "e1b227550af708059a7623521d1e0f8c55785dc392efa7c8a82b0150d4eca9c1",
+            "url": "https://www.elections.alaska.gov/candidates/?election=26genr"
+          },
+          {
+            "bytes": 186972,
+            "contentType": "text/html; charset=UTF-8",
+            "exitCode": 0,
+            "file": "ak-official-election-information.html",
+            "headersSha256": "29ab9ebae93803fedbc4fee8938267089c3994e4fb062b0d9a2a57dd6dc68683",
+            "httpDate": "Fri, 16 Oct 2026 23:40:25 GMT",
+            "httpLastModified": null,
+            "httpStatus": 200,
+            "receivedAt": "2026-10-16T23:47:33.857060+00:00",
+            "requestStartedAt": "2026-10-16T23:47:33.701115+00:00",
+            "sha256": "ceea6a75a154f37f59d7abe957420ee93aa338413d3c8464d2880ed6a77168cd",
+            "url": "https://www.elections.alaska.gov/election-information/"
+          }
+        ]
+      },
+      "operatorApproval": false,
+      "originalContract": {
+        "contractId": "369",
+        "marketId": "368",
+        "party": "Democratic Party",
+        "predicate": {
+          "contractType": "Election Outcome",
+          "electionDate": "2026-11-03",
+          "officeLevel": "State",
+          "raceId": "76612",
+          "raceName": "Governor of Alaska",
+          "raceStage": "General",
+          "resolutionType": "Party Winner",
+          "stageId": "118815",
+          "usState": "AK",
+          "winnerName": "Democratic Party"
+        },
+        "receipt": {
+          "bytes": 908,
+          "endpoint": "/markets/368/nodes?tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55",
+          "path": "nodes/market-368-9688bb55504720ff.json",
+          "receivedAt": "2026-10-16T22:07:37.075Z",
+          "requestStartedAt": "2026-10-16T22:07:36.462Z",
+          "sha256": "9688bb55504720ffb0521dfbf4980bde9846064b222829a8b679f58c7c674cd7"
+        },
+        "scheduledSettlementAt": "2026-11-04T17:00:00.000Z",
+        "semanticRootSha256": "7c4aeb47cb580e3587c660603ed27eda5a01e2f921c9981b8521bd824693f08a"
+      },
+      "party": "Democratic Party",
+      "reviewStatus": "original_nominee_evidence_available_not_approval",
+      "side": "YES",
+      "state": "AK",
+      "stressScenarios": [
+        {
+          "assumedPayoutPerShare": "0.83032",
+          "calibratedProbabilityBound": false,
+          "ceilingMinusHistoricalAsk": "0.065",
+          "exceptionAllowanceAssumption": "0.03",
+          "exceptionPayoutAssumption": "0",
+          "margin": "0.01",
+          "passesHistoricalPriceArithmeticOnly": true,
+          "tick": "0.005",
+          "tickFlooredResearchCeiling": "0.820"
+        },
+        {
+          "assumedPayoutPerShare": "0.77040",
+          "calibratedProbabilityBound": false,
+          "ceilingMinusHistoricalAsk": "0.005",
+          "exceptionAllowanceAssumption": "0.10",
+          "exceptionPayoutAssumption": "0",
+          "margin": "0.01",
+          "passesHistoricalPriceArithmeticOnly": true,
+          "tick": "0.005",
+          "tickFlooredResearchCeiling": "0.760"
+        },
+        {
+          "assumedPayoutPerShare": "0.68480",
+          "calibratedProbabilityBound": false,
+          "ceilingMinusHistoricalAsk": "-0.085",
+          "exceptionAllowanceAssumption": "0.20",
+          "exceptionPayoutAssumption": "0",
+          "margin": "0.01",
+          "passesHistoricalPriceArithmeticOnly": false,
+          "tick": "0.005",
+          "tickFlooredResearchCeiling": "0.670"
+        }
+      ],
+      "unresolvedContingencies": [
+        "Official certified general table includes4 printed tickets and2 certified write-ins. JKT is registered Democrat with a nonpartisan running mate; Parkin write-in ticket has a Republican governor and Democratic running mate. Do not derive governor party from the mate.",
+        "CTM Jonathan Kreiss-Tomkins versus official Kreiss-Tomkins,Jonathan S.JKT is an explicit middle-initial/nickname name inference. Official RCV source and original CTM after-transfer win description are retained; .856 is not first-choice vote share.",
+        "CTM lists JKT.856,Wilson.132,Bronson.012,Taylor<.001. The censored Taylor point is not imputed; certified DeWitt and Parkin write-in probabilities are not supplied. Transfer/exhaustion, mixed ticket affiliation, replacement/resolver/refunds and delayed finality remain unverified."
+      ]
+    }
+  ],
+  "executionAuthority": false,
+  "globalAssumptionsAndLimits": [
+    "Unreplicated CTM model points are not calibrated bounds. Interpreting them as ordinary-regime conditional probabilities in the illustrative mixtures is an assumption, not a publisher-established conditional.",
+    "Exception3%/10%/20%, exceptional payout0,fee0,margin.01,tick.005 are unestimated stress choices, not empirical frequencies, confidence intervals, independence or guaranteed floors.",
+    "Four Republican exposures and one Democrat from the same publisher are not a factor-neutral hedge; national/state/party/model error correlates these races and existing forecasts.",
+    "All reference books are dated original observations, not executable quotes, causal backtests or fills. No extra depth or financial result is manufactured. Root must independently obtain genuine current scoped physical facts and exact ownership/funding/unknown/cap reconciliation.",
+    "Page dateModified and HTTP Last-Modified are separate metadata, not independently verified first forecast publication. Original request/receipt/observation clocks are unchanged.",
+    "All scheduled Nov4 cash clocks are metadata, not guaranteed finality/payout availability. Exact resolver, affiliation/replacement/fusion/tie/refund/cancellation/discretionary-update and certification risks remain unverified.",
+    "Only safe names/party/ticket/election extracts and hashes/clocks are committed. Raw official files may contain contact information and stay private.",
+    "No allocation approval, RuntimeReviewInput, Settings, authority allowlist, model activation or physical action is created."
+  ],
+  "kind": "finite_five_additional_nominee_research_dossier",
+  "operatorApproval": false,
+  "originalCaptureAttempts": 11,
+  "originalHttp200Bodies": 6,
+  "originalNomineeBodyVerification": {
+    "partialRaces": 1,
+    "partialState": "FL",
+    "verifiedRaces": 4
+  },
+  "preparedAt": "2026-10-16T23:51:43.076192+00:00",
+  "privateOriginalDirectoryBasename": "moloch-paper7-nominee-expansion-20261016",
+  "privateOriginalManifestSha256": "f75d9331866b3fecb56758e21ab9d7aa6d56e76f15beb5f2f0c4402731562fd1",
+  "runtimeReviewsOrSettingsCreated": false,
+  "schemaVersion": 1,
+  "selection": "Next5 strongest positive historical direct-party YES ceiling-minus-ask leads from frozen coverage.json after excluding6 active races,NV,VT,MN; no outcome or current executable price tuning.",
+  "sshCalls": 0
+}
