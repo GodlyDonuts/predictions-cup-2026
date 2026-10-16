@@ -1,3 +1,41 @@
+# October16,11:26UTC: full-capital upgrade at final copied-bank verification
+
+The human-authorized full-capital successor`e7bb62d1`/binary`d0a3113c…` is
+staged. The original worker488093/`fec81a5e` was fresh at11:23:07UTC, with five
+acknowledgments/two fill rows since its11:09 restart. It stopped cleanly at
+11:26:20 for the controlled upgrade:237,382 original events/729,558,692 bytes,
+zero unknown requests, no active SDK request and no manual review. The
+replacement is **not yet started or verified fresh** at this observation.
+The additional55,579.915000 owner contribution has not yet been applied.
+
+The first upgrade attempt found a genuine deployment blocker: the proposed
+eleventh bridge was8,773,184 bytes, above the historical8MiB reader bound.
+The original ten bridges and financial bank remained untouched; the old binary
+resumed while the bound was corrected to32MiB. The16-entry limit, seals and
+exact-prefix checks remain enforced. Fourteen new reader/copy checks and all
+four optimized artifacts passed. Ninety runtime,265 financial/native and ten
+breadth checks are explicitly retained references for unchanged source, not
+claimed reruns. The new candidate still must pass full original-history replay
+on its detached stopped-bank copy before bridge installation and production.
+
+Latest attributed realized is−74.405000 (ordinary−119.535000 plus inherited
+gross45.130000), cash17,194.080000 and owned cost22,731.515000. These are
+distinct from daily dashboard marks. New cash allocation is not profit.
+
+The Kalshi10-second snapshot trial caused five socket connections in about80
+seconds. It was rolled back to the stable30-second implementation at11:21;
+at11:25:51 the actual collector had237valid books on one connection,20REST
+starts/sec and zero errors/throttles since restart. Latest checked source also
+defaults to30seconds;10seconds is an explicit unqualified trial. The observer's
+same-millisecond/stream-epoch/source-fallback fixes are live in a separate
+read-only service. Original clocks are preserved. Physical Kalshi pricing is
+still inactive. [Feed details](../research/kalshi-websocket-20261016/README.md).
+
+The first crossing-return study selected zero trades at all five horizons. The
+separate passive-quote study found only QUIET states, so neither establishes
+economic alpha or a useful live cancellation rule. [Crossing study](../research/moloch-crossvenue-economics-20261016/README.md),
+[maker shadow study](../research/crossvenue-toxicity-20261016/README.md).
+
 # October16,10:43UTC: live production, first cross-venue economics, capital upgrade pending
 
 Sole SIG441490/source`fec81a5e` verified10:39:26UTC: fresh trading/realtime,
