@@ -2,6 +2,11 @@
 
 Received October16. Original human attachment SHA256 `33c814784629925f2385d8cc8c506c80e2415a0d1d009726144bfb70c62f1440`,43,431 bytes, retained privately. Embedded research citations are source leads, not independently verified evidence or additional human instructions. Parent task [#149](https://github.com/GodlyDonuts/predictions-cup-2026/issues/149).
 
+## Runtime update — October16, 07:16UTC
+
+Sourceea733f6f/PID419050 is the current production replacement, restoring after07:14:45UTC. It includes the native-authorized12-market discovery and observed-public-print read ranking repair; original ten identity bridges, bank, reviews and40k/10k monetary limits are unchanged. Native accounting identity remainsc3731d88…. No additional Atlas/curve/nowcast, probabilistic package or collateral activation is implied. The prior worker produced28 new ACKs and three fill rows across two inherited exit orders (+.405gross); new passive buys had no fills in the audit. These are different measures. [Latest state](CURRENT_STATE.md), [rollout](../research/moloch-throughput-20261016/flow-production-rollout.json), [actual selection diagnosis](../research/moloch-throughput-20261016/fill-throughput-audit.md).
+
+The older sections below retain their observation times. Paper5, ordinary batch placement, calibration of execution outcomes and final-settlement ownership integration remain incomplete. Current source presence and focused tests are not evidence of live model activation or profitable performance.
 ## Implementation update — October16, 05:40UTC
 
 Production source58a578bb/PID390439 started05:16UTC with V2 terminal/deadline objectives, delayed-settlement management and the reviewed NC terminal cohort. The stopped162313-row financial boundary, nine native bridges, original DE/MA reviews and risk limits are preserved. At05:39:40UTC it is fresh/healthy with713 ACKs/119 fills, **zero new ACKs or fills since launch**. Repeated unqualified forecast preflights were starving ordinary physical candidates; the shared eligible-key rotation fix is being checked for immediate promotion. Healthy collection alone does not prove working execution. [Actual rollout](../research/moloch-paper5-20261016/terminal-production-rollout.json), [fresh observation](../research/moloch-paper5-20261016/terminal-live-verification.json).
