@@ -1420,6 +1420,9 @@ fn dispatch(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,a
   |ex,side|Ok(bank.engine().wallet.quantity(ex,match side{"YES"=>moloch_replay::Side::Yes,"NO"=>moloch_replay::Side::No,_=>return Err("LIVE_SIDE".into())})),
   |ex|{if let Some(f)=fundamental.as_ref(){f.authority.validate()?;if f.cohorts.manages(ex){return f.cohorts.exit_refresh_needed(bank,log,&c.scope,ex,f.authority.trusted(),flow_started)}}Ok(true)},
   |ex,side|{
+   // Managed cohorts already passed their CURRENT reviewed deadline/revocation/
+   // executable-value gate. Their explicit objective must not inherit native age.
+   if fundamental.as_ref().is_some_and(|f|f.cohorts.manages(ex)){return Ok(true)}
    if age_positions.is_none(){age_positions=Some(bank.engine().wallet.positions());}
    let positions=age_positions.as_ref().unwrap();
    if age_inherited.is_none()&&positions.get(ex).and_then(|v|v.get(side)).and_then(Value::as_array).is_some_and(|lots|lots.iter().any(|l|l.get("executedAt").is_none_or(Value::is_null))){age_inherited=Some(bank.engine().report()?["inheritedInventory"].clone());}
