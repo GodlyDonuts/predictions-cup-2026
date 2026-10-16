@@ -1,3 +1,27 @@
+# October16,23:35UTC: automatic submission stop under investigation
+
+Production565108 stopped at23:27:35UTC with
+`LIVE_WRITE_NOT_CONFIRMED_NO_RETRY`; **it is not currently trading**. Root did
+not request this stop. Last qid10701 has original intent/attempt and a
+`LIVE_CONTRACT_OR_BOOK_STALE` denial with mayHaveExecuted=false. The local SDK
+has zero unknowns, no active request and no manual-review flag, but the current
+proof helper rejects this exact error class. Its original no-retry STOP remains.
+Root is extending only that proof case with full durable SDK absence checks;
+no replacement, resend or STOP clearance has occurred. [Incident/task155](https://github.com/GodlyDonuts/predictions-cup-2026/issues/155).
+
+At23:34 verification:12 post-launch ACKs/zero new fill rows,241 cumulative,
+cash70,762.850000/owned24,680.835000/combined attributed realized−136.230000.
+The earlier23:11 healthy full-cycle evidence below remains historical.
+
+Paper7 joint maker/account/acquisition source previously passed585 checks.
+The combined generation candidate passes native90/runtime228/worker113/maker33/
+distribution25/acquisition10. Its new generation fixture still needs corrected
+complete account economics; original failure logs are retained and no combined
+release is deployed. The separate production typed Settings-digest mismatch is
+fixed in candidate source. Nevada's explicit .30 exception scenario/cap3000
+passes original-source and typed model/settings checks but remains inactive.
+No calibration, profitable alpha or Paper7 completion is claimed.
+
 # Latest research baseline — October16,23:11UTC
 
 Sole **565108/source20543435/binaryd9f5cbc6/nativeb5** is fresh trading,
