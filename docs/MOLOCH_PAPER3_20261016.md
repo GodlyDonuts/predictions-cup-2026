@@ -43,8 +43,6 @@ Actual ARM64 final checks pass:645 complete runtime tests and56 native unit test
 
 A prospective Delaware review `9523497c40e24eb5c66b2251cb59d1c839b874d15fbdcccee4c8c9ea5b254cef6` explicitly prefers bounded limit, one-tick improvement, then join. Only execution policy, its actual review clock and explanatory assumption label changed. New principal remains400, expiry09:00UTC October16 and fixed holding deadline17:00UTC October19. Forecast/source clocks, probability.95, exceptional allowance.01, margin.01 and Massachusetts original-lot review are unchanged. The execution owner supplies these assumptions under the human's production mandate; no separate human forecast approval or calibrated lower bound is claimed. [Prepared review evidence](../research/moloch-paper3-20261016/reviewed-execution.json). These settings are not yet the active service control.
 
-## Remaining hypotheses and measurement
-
 ## Production boundary, October16 03:28UTC
 
 Source b514eede was promoted as immutable binary2bba9365a3a342b1185492b231bb89cbe36d6d0f943ee28833928df626de62f2, PID374227. The full149599-row original stopped prefix is financially byte-identical under native identity4b50ec49ba7331eb051e7983e33ffa0ce55df19b9a9e4a7d9d5d8d8a5477ff98, with nine explicit bridges and all eight prior entries preserved. Original account queue and risk limits remain. At the initial03:28:46 observation the service is restoring history; fresh trades or use of the new modes have not yet been verified. [Actual rollout](../research/moloch-paper3-20261016/production-rollout.json), [launch verification](../research/moloch-paper3-20261016/live-verification.json). Prospective outcome collection, model qualification and the broader research below remain open.
