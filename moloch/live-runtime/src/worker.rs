@@ -753,6 +753,8 @@ pub fn main()->Result<()>{
   let (connected,joined_at)=connect_with_budget(&mut t,&c,&mut bank,&log,&authority,&mut source_state,&mut recovery_budget)?;require_stream(&connected)?;let mut stream=Some(connected);
   authority.bind_stream(stream.as_ref().unwrap().failure_signal(),stream.as_ref().unwrap().deadline_ms);
   let mut relationship_census=None;let mut preflight_cursor=None;let mut package_last_scan=0;let mut package_certificate_cursor=0;
+  let graph_rotation_path=c.root.join("relationship-graph-rotation.json");
+  let(mut graph_rotation,mut graph_rotation_state_error)=match moloch_live_runtime::graph_discovery::Rotation::load(&graph_rotation_path,&c.scope){Ok(state)=>(state,None),Err(reason)=>(moloch_live_runtime::graph_discovery::Rotation::new(&c.scope),Some(reason))};
   let mut package_allocation_fairness=c.package_allocation.as_ref().map(|v|moloch_live_runtime::package_allocation::Fairness::new(v.maximum_wait)).transpose()?;
   let mut reconciliation_schedule=moloch_live_runtime::scheduling::ReconciliationSchedule::new(10_000)?;
   let pending_version=|log:&DispatchLog|moloch_live_runtime::scheduling::PendingVersion{acknowledged:log.acknowledgments.len() as u64,terminal:log.closed.len() as u64};
@@ -796,9 +798,19 @@ pub fn main()->Result<()>{
    atomic_json(&c.root.join("status.json"),&json!({"at":iso(now()),"pid":std::process::id(),"mode":"actual-contest-trading","runId":c.activation.run_id,"bank":c.bank_name,"cycles":cycles,"realtimeHealthy":stream.as_ref().is_some_and(|s|s.healthy()),"universe":universe.as_ref().map(Universe::status),"selectedReadScopes":selected,"ownedReconciliation":reconciled,"sourceScopes":source_state.scopes(),"breadthCapture":{"path":breadth_path,"state":breadth.as_ref().map(Recorder::status)},"report":bank.engine().report()?,"queue":t.admission_state()?,"actualOrders":log.acknowledgments.len(),"terminalOrders":log.closed.len(),"entryAnchor":iso(c.activation.entry_until_ms),"entryUntil":iso(authority.entry_until_ms()),"profitabilityEstablished":false}))?;
    // Ordinary trading precedes optional discovery. Empty certificate approval
    // must not freeze official relationship/collateral discovery until restart.
-   // Four logical surfaces share the actual Transport, including all pagination
-   // admissions/backoff; at most one census per five minutes on this path.
-   if relationship_census.as_ref().is_none_or(|v|now().saturating_sub(v.report.completed_at_ms)>=RELATIONSHIP_CENSUS_REFRESH_MS){let census=moloch_live_runtime::relationship_census::capture(&mut t,&c.scope,&c.root.join("relationship-receipts"),&[]);if let Ok(report)=serde_json::to_value(&census.report){let _=atomic_json(&c.root.join("relationship-census.json"),&report);}relationship_census=Some(census);}
+   // Four logical surfaces plus <=3 rotating graph roots share the actual
+   // Transport/pagination/backoff. The existing five-minute due gate is unchanged.
+   if relationship_census.as_ref().is_none_or(|v|now().saturating_sub(v.report.completed_at_ms)>=RELATIONSHIP_CENSUS_REFRESH_MS){
+    let managed=fundamental.as_ref().map(|f|f.cohorts.managed_exchanges()).unwrap_or_default();
+    let owned=c.scope.exchanges.keys().filter(|ex|bank.engine().wallet.quantity(ex,moloch_replay::Side::Yes)>0||bank.engine().wallet.quantity(ex,moloch_replay::Side::No)>0).cloned().collect();
+    let mut roots=match graph_rotation.next(&c.scope,&managed,&owned){Ok(roots)=>roots,Err(reason)=>{graph_rotation_state_error=Some(reason);vec![]}};
+    // Durable scheduling prevents repeated process restarts scanning first3.
+    // A failed optional cursor write withholds graph probes, not account trading.
+    if !roots.is_empty()&&serde_json::to_value(&graph_rotation).ok().and_then(|v|atomic_json(&graph_rotation_path,&v).ok()).is_none(){graph_rotation_state_error=Some("GRAPH_ROTATION_PERSISTENCE");roots.clear();}
+    let census=moloch_live_runtime::relationship_census::capture(&mut t,&c.scope,&c.root.join("relationship-receipts"),&roots);
+    if let Ok(mut report)=serde_json::to_value(&census.report){let observed:Vec<_>=census.report.graphs.iter().filter(|(_,surface)|surface.source.is_some()).map(|(root,_)|root.clone()).collect();report["graphDiscovery"]=json!({"requestedRoots":roots,"observedRoots":observed,"allGraphsComplete":false,"maximumRootsPerCensus":3,"rotationStateError":graph_rotation_state_error,"executionAuthority":false});let _=atomic_json(&c.root.join("relationship-census.json"),&report);}
+    if census.report.transport_guard_observed{return Err("LIVE_RELATIONSHIP_CENSUS_GUARD".into())}relationship_census=Some(census);
+   }
    if cycles%20==0{t.compact()?;}
    std::thread::sleep(Duration::from_millis(if selected.is_empty(){600}else{100}));
    Ok(())})();

@@ -40,3 +40,5 @@ pub mod quote_priority;
 pub mod package_allocation;
 pub mod maker_policy;
 pub mod fundamental_policy;
+
+pub mod graph_discovery;
