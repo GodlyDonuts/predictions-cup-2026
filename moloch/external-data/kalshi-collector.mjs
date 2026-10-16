@@ -153,6 +153,10 @@ export async function run(options) {
       shadow = new ShadowFeed({ auth, tickers: states.map(s => s.ticker),
         onReceipt: async receipt => {
           await journal.append({ kind: 'websocket', ...receipt });
+          if (receipt.type === 'invalid_frame') {
+            stats.websocket.lastValidationCode = receipt.validationCode;
+            await atomicJson(path.join(cache, 'websocket-last-rejected.json'), receipt);
+          }
           const s = stats.websocket; s.frames++; s.lastReceiptAt = receipt.receivedAt; s.state = 'receiving';
           const name = { orderbook_snapshot: 'snapshots', orderbook_delta: 'deltas', trade: 'trades', ticker: 'tickers' }[receipt.type]; if (name) s[name]++;
         },
