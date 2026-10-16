@@ -19,7 +19,10 @@
 //! Native live age exits are proposals, not fills: this module vetoes their
 //! physical submission while preserving all real native ACK/fill accounting.
 //! It never edits a price, quantity, expiry, cash balance or financial policy.
-//! An entry must fit the WHOLE existing native quote. Stale/revoked forecast
+//! Default entry APIs require the WHOLE native quote; explicit quantity APIs
+//! bind one fixed review-sized physical slice before any attempt. Native price,
+//! original quote/reservation and actual ACK/fill semantics remain unchanged.
+//! Stale/revoked forecast
 //! review stops entry; stale value retains the cohort only until its immutable
 //! deadline, while explicit reviewed revocation/adverse value permits a covered
 //! native exit. There is no settlement-floor/arbitrage certificate here.
@@ -231,7 +234,7 @@ impl LoadedSettings{
 /// attempt nor retry authority. No public constructor, Clone or Deserialize.
 /// ProductionAuthority must call BOTH methods on its own frozen prepared data.
 pub struct PhysicalDecision{
-    qid:u64,native_head:Value,quote_sha:String,ledger_sha:String,scope_sha:String,
+    qid:u64,planned_quantity:u64,native_head:Value,quote_sha:String,ledger_sha:String,scope_sha:String,
     spec_sha:String,permit_sha:String,review_sha:String,trust_sha:String,
     minted:u64,expires:u64,sidecar:FilePin,marker:FilePin,sidecar_sequence:u64,sidecar_tail:String,
     authority:FilePin,ordinary_file:File,ordinary_path:PathBuf,ordinary_identity:Value,
@@ -239,6 +242,7 @@ pub struct PhysicalDecision{
 }
 impl PhysicalDecision{
     pub fn native_head(&self)->&Value{&self.native_head}
+    pub fn planned_quantity(&self)->u64{self.planned_quantity}
     pub fn expires_at_ms(&self)->u64{self.expires}
     pub fn review_sha256(&self)->&str{&self.review_sha}
     fn time(&self,now:u64)->Result<()>{need(now>=self.minted&&now<self.expires,"FUNDAMENTAL_PHYSICAL_TOKEN_EXPIRED_OR_REGRESSED")}
@@ -268,7 +272,7 @@ impl Cohorts{
         authority.validate()?;self.check_bound(bank,log,scope,qid,spec,authority.trusted(),now)?;
         let (ex,c)=self.cohorts.iter().find(|(_,c)|c.entry.qid==qid||c.exits.contains_key(&qid)).ok_or("FUNDAMENTAL_DURABLE_BINDING_REQUIRED")?;
         let r=&self.policies[ex];let q=bank.engine().order_records().into_iter().find(|q|q["id"]==qid).ok_or("FUNDAMENTAL_QUOTE")?;
-        let n=q["quantity"].as_u64().ok_or("FUNDAMENTAL_QUANTITY")?;let price=amount(q["price"].as_str().ok_or("FUNDAMENTAL_PRICE")?)?;
+        let n=request_quantity(spec)?;let price=amount(q["price"].as_str().ok_or("FUNDAMENTAL_PRICE")?)?;
         need(q["retired"]==false&&q["activationAt"].as_u64().is_some_and(|t|t<=now)&&!q["cancelEffectiveAt"].is_u64()
             &&permit.owner=="Codex"&&permit.run_id==self.run&&permit.intent_id==qid.to_string()
             &&u64::from(permit.maximum_quantity)>=n&&amount(&permit.maximum_cost)?>=mul(price,n as i128)?,"FUNDAMENTAL_PHYSICAL_PERMIT_OR_NATIVE_WINDOW")?;
@@ -286,7 +290,7 @@ impl Cohorts{
         }else{need(now>=c.hold_until_ms.min(r.hold_until_ms),"FUNDAMENTAL_DEADLINE_NOT_REACHED")?;}
         need(now>=self.clock&&expires>now,"FUNDAMENTAL_PHYSICAL_WINDOW_EMPTY")?;
         let ordinary_file=File::open(&self.ordinary_path)?;need(identity(&ordinary_file)?==self.ordinary_identity,"FUNDAMENTAL_ORIGINAL_DISPATCH_REQUIRED")?;
-        Ok(PhysicalDecision{qid,native_head:bank.durable_head(),quote_sha:digest(&q)?,ledger_sha:digest(&bank.engine().report()?)?,scope_sha:digest(scope)?,spec_sha:digest(spec)?,permit_sha:digest(permit)?,review_sha:digest(r)?,trust_sha:digest(authority.trusted())?,minted:now,expires,
+        Ok(PhysicalDecision{qid,planned_quantity:n,native_head:bank.durable_head(),quote_sha:digest(&q)?,ledger_sha:digest(&bank.engine().report()?)?,scope_sha:digest(scope)?,spec_sha:digest(spec)?,permit_sha:digest(permit)?,review_sha:digest(r)?,trust_sha:digest(authority.trusted())?,minted:now,expires,
             sidecar:FilePin::from_held(self.file.try_clone()?,self.path.clone(),MAX_LOG,None)?,marker:self.marker.duplicate()?,sidecar_sequence:self.sequence,sidecar_tail:self.previous.clone(),authority:authority.pin.duplicate()?,ordinary_file,ordinary_path:self.ordinary_path.clone(),ordinary_identity:self.ordinary_identity.clone(),_owner:self._owner.clone()})
     }
     /// Explicit one-time owner operation; never invoked as missing-file recovery.
@@ -381,10 +385,12 @@ impl Cohorts{
         for(ex,c)in &self.cohorts{
             for b in std::iter::once(&c.entry).chain(c.exits.values()){
                 need(digest(&b.spec)?==b.spec_sha256,"FUNDAMENTAL_BINDING_HASH")?;
+                let n=request_quantity(&b.spec)?;request_matches(&b.spec,&b.quote,&self.run,&self.policies[ex].tournament_id,n)?;
                 if let Some(original)=log.intents.get(&b.qid){let s:RequestSpec=serde_json::from_value(original["spec"].clone())?;need(digest(&s)?==b.spec_sha256&&original.get("fundamental")==self.durable_tag(b.qid).as_ref(),"FUNDAMENTAL_DISPATCH_REQUEST_OR_TAG_CHANGED")?;}
                 else{need(log.never_attempted(b.qid),"FUNDAMENTAL_MISSING_ORIGINAL_INTENT")?;}
                 let q=bank.engine().order_records().into_iter().find(|q|q["id"]==b.qid).ok_or("FUNDAMENTAL_NATIVE_QUOTE_MISSING")?;
-                need(q["exchangeId"]==*ex&&q["side"]==b.quote["side"]&&q["marketId"]==b.quote["marketId"]&&q["action"]==b.quote["action"]&&q["price"]==b.quote["price"]&&q["quantity"].as_u64().is_some_and(|n|n<=b.quote["quantity"].as_u64().unwrap_or(0)),"FUNDAMENTAL_NATIVE_BINDING_CHANGED")?;
+                let expected=if bank.engine().live_order_bindings().contains_key(&b.qid){n}else{b.quote["quantity"].as_u64().ok_or("FUNDAMENTAL_QUANTITY")?};
+                need(q["exchangeId"]==*ex&&q["side"]==b.quote["side"]&&q["marketId"]==b.quote["marketId"]&&q["action"]==b.quote["action"]&&q["price"]==b.quote["price"]&&q["quantity"].as_u64()==Some(expected),"FUNDAMENTAL_NATIVE_BINDING_CHANGED")?;
             }
             self.owned(bank,ex,c)?;
         }Ok(())
@@ -405,6 +411,16 @@ impl Cohorts{
         need(bank.engine().wallet.quantity(ex,side)==held&&bank.engine().wallet.quantity(ex,opposite)==0,"FUNDAMENTAL_UNATTRIBUTED_HOLDING")?;Ok(held)
     }
     pub fn manages(&self,exchange:&str)->bool{self.policies.contains_key(exchange)}
+    pub fn managed_exchanges(&self)->BTreeSet<String>{self.policies.keys().cloned().collect()}
+    /// Original POST and recovered-GET events pass here BEFORE native accept.
+    /// The original quote's larger reservation is not proof of slice size.
+    pub fn validate_acknowledgment(&self,qid:u64,event:&Value)->Result<()>{
+        let binding=self.cohorts.values().find_map(|c|if c.entry.qid==qid{Some(&c.entry)}else{c.exits.get(&qid)});
+        let Some(b)=binding else{return need(event["exchangeId"].as_str().is_none_or(|ex|!self.manages(ex)),"FUNDAMENTAL_ACK_WITHOUT_BINDING")};
+        need(event["type"]=="actual_order_ack"&&event["source"]=="official_sig_api_v1"&&event["orderId"]==qid
+            &&event["quantity"].as_u64()==Some(request_quantity(&b.spec)?)&&event["exchangeId"]==b.quote["exchangeId"]
+            &&event["marketId"]==b.quote["marketId"]&&event["side"]==b.quote["side"]&&event["action"]==b.quote["action"]&&event["price"]==b.quote["price"],"FUNDAMENTAL_ACK_ADMISSION_MISMATCH")
+    }
     /// An expired native quote is not a submit candidate, so `assess` cannot be
     /// used for the expired-quote read hint. This separate gate permits bounded
     /// refresh at the fixed deadline, reviewed revocation/revision, or an already
@@ -446,6 +462,12 @@ impl Cohorts{
     /// No sidecar closing/reset shortcut: a completed flat cohort stays excluded
     /// until a separately reviewed future lifecycle is deliberately implemented.
     pub fn assess(&self,bank:&Session,log:&DispatchLog,scope:&Scope,qid:u64,trusted:&BTreeSet<String>,now:u64)->Result<Decision>{
+        let n=bank.engine().order_records().into_iter().find(|q|q["id"]==qid).and_then(|q|q["quantity"].as_u64()).ok_or("FUNDAMENTAL_QUANTITY")?;
+        self.assess_quantity(bank,log,scope,qid,n,trusted,now)
+    }
+    /// Explicit one-shot planned size. Only new entries may be smaller than the
+    /// immutable native draft; covered exits retain their full native quantity.
+    pub fn assess_quantity(&self,bank:&Session,log:&DispatchLog,scope:&Scope,qid:u64,planned_quantity:u64,trusted:&BTreeSet<String>,now:u64)->Result<Decision>{
         self.check(bank,log)?;
         let q=bank.engine().order_records().into_iter().find(|q|q["id"]==qid).ok_or("FUNDAMENTAL_QUOTE")?;
         let ex=q["exchangeId"].as_str().ok_or("FUNDAMENTAL_EXCHANGE")?;let Some(r)=self.policies.get(ex)else{return Ok(Decision::Unmanaged)};
@@ -456,10 +478,18 @@ impl Cohorts{
         let ceiling=structure(r)?;
         let (books,_)=package_admission::native_books(bank,scope,now,bank.engine().policy()["bookAgeMs"].as_u64().ok_or("FUNDAMENTAL_BOOK_POLICY")?)?;
         let Some(book)=books.get(ex)else{return Ok(hold("fresh_official_book_required"))};
-        let price=amount(q["price"].as_str().ok_or("FUNDAMENTAL_PRICE")?)?;let n=q["quantity"].as_u64().filter(|n|*n>0).ok_or("FUNDAMENTAL_QUANTITY")?;
+        let price=amount(q["price"].as_str().ok_or("FUNDAMENTAL_PRICE")?)?;let native=q["quantity"].as_u64().filter(|n|*n>0).ok_or("FUNDAMENTAL_QUANTITY")?;
+        need(planned_quantity>0&&planned_quantity<=native,"FUNDAMENTAL_PLANNED_QUANTITY")?;let n=planned_quantity;
         if let Some(c)=self.cohorts.get(ex){
             let owned=self.owned(bank,ex,c)?;
+            if qid==c.entry.qid&&log.never_attempted(qid)&&!log.intents.contains_key(&qid)&&owned==0{
+                need(n==request_quantity(&c.entry.spec)?&&q==c.entry.quote,"FUNDAMENTAL_BOUND_ENTRY_CANNOT_CHANGE")?;
+                if digest(r)?!=c.entry.review_sha256{return Ok(hold("bound_entry_review_changed"))}
+                // Continue only this exact sealed draft after a crash/stale
+                // preflight BEFORE original intent/attempt; never replace it.
+            }else{
             if q["action"]!="sell"||q["side"]!=r.side||owned==0{return Ok(hold("exclusive_cohort_no_additional_or_opposite_entry"))}
+            need(n==native,"FUNDAMENTAL_EXIT_MUST_MATCH_NATIVE_QUANTITY")?;
             if !log.closed.contains(&c.entry.qid)||c.exits.keys().any(|id|*id!=qid&&log.attempted.contains(id)&&!log.closed.contains(id)){return Ok(hold("prior_owned_order_reconciliation_required"))}
             need(n<=owned,"FUNDAMENTAL_UNCOVERED_EXIT")?;
             // Verify actual depth, not the last print or nominal quote price.
@@ -475,6 +505,7 @@ impl Cohorts{
                 else if approved&&price>=payout&&proceeds>=mul(payout,n as i128)?{Some("refreshed_value_exit")}
                 else{None};
             return Ok(reason.map_or_else(||hold(if approved{"terminal_value_hold_not_native_age_exit"}else{"stale_review_hold_until_deadline"}),|s|Decision::Exit{reason:s.into(),owned_quantity:owned}))
+            }
         }
         if !approved||r.revoke_existing||now>=r.hold_until_ms{return Ok(hold("current_review_required_for_entry"))}
         if q["action"]!="buy"||q["side"]!=r.side{return Ok(hold("reviewed_entry_side_only"))}
@@ -491,6 +522,25 @@ impl Cohorts{
         if price>ceiling||n>r.maximum_quantity||mul(price,n as i128)?>amount(&r.maximum_principal)?{return Ok(hold("whole_native_quote_exceeds_reviewed_value_or_risk_cap"))}
         Ok(Decision::Entry{review_sha256:digest(r)?,maximum_principal:r.maximum_principal.clone(),ceiling:money(ceiling)})
     }
+    /// Advisory size becomes authority only after explicit bind_quantity seals
+    /// that exact number in the original RequestSpec. No price/quote mutation.
+    pub fn planned_entry_quantity(&self,bank:&Session,log:&DispatchLog,scope:&Scope,qid:u64,trusted:&BTreeSet<String>,now:u64)->Result<Option<u64>>{
+        self.check(bank,log)?;
+        let q=bank.engine().order_records().into_iter().find(|q|q["id"]==qid).ok_or("FUNDAMENTAL_QUOTE")?;
+        let ex=q["exchangeId"].as_str().ok_or("FUNDAMENTAL_EXCHANGE")?;
+        let Some(r)=self.policies.get(ex)else{return Ok(None)};
+        if q["action"]!="buy"||q["side"]!=r.side{return Ok(None)}
+        if let Some(c)=self.cohorts.get(ex){
+            if qid!=c.entry.qid||!log.never_attempted(qid)||log.intents.contains_key(&qid){return Ok(None)}
+            let n=request_quantity(&c.entry.spec)?;
+            return Ok(if matches!(self.assess_quantity(bank,log,scope,qid,n,trusted,now)?,Decision::Entry{..}){Some(n)}else{None})
+        }
+        let price=amount(q["price"].as_str().ok_or("FUNDAMENTAL_PRICE")?)?;
+        let mut n=q["quantity"].as_u64().ok_or("FUNDAMENTAL_QUANTITY")?.min(r.maximum_quantity);
+        if price>0{n=n.min(u64::try_from((amount(&r.maximum_principal)?/price).min(u64::MAX as i128))?);}
+        if n==0{return Ok(None)}
+        Ok(if matches!(self.assess_quantity(bank,log,scope,qid,n,trusted,now)?,Decision::Entry{..}){Some(n)}else{None})
+    }
     /// Qids with known actual ACKs only. Queue/original-log unknowns remain on
     /// their original recovery path; never invent an actual ID to cancel.
     pub fn entry_cancellations(&self,bank:&Session,log:&DispatchLog,trusted:&BTreeSet<String>,now:u64)->Result<Vec<u64>>{
@@ -506,11 +556,20 @@ impl Cohorts{
     /// Persist exact original request BEFORE any physical attempt, never after
     /// observing a fill. No partial-size substitution or guessed ACK is allowed.
     pub fn bind(&mut self,bank:&Session,log:&DispatchLog,scope:&Scope,qid:u64,spec:&RequestSpec,trusted:&BTreeSet<String>,now:u64)->Result<Decision>{
-        let decision=self.assess(bank,log,scope,qid,trusted,now)?;
+        let n=bank.engine().order_records().into_iter().find(|q|q["id"]==qid).and_then(|q|q["quantity"].as_u64()).ok_or("FUNDAMENTAL_QUANTITY")?;
+        self.bind_quantity(bank,log,scope,qid,n,spec,trusted,now)
+    }
+    pub fn bind_quantity(&mut self,bank:&Session,log:&DispatchLog,scope:&Scope,qid:u64,planned_quantity:u64,spec:&RequestSpec,trusted:&BTreeSet<String>,now:u64)->Result<Decision>{
+        let decision=self.assess_quantity(bank,log,scope,qid,planned_quantity,trusted,now)?;
         need(matches!(decision,Decision::Entry{..}|Decision::Exit{..}),"FUNDAMENTAL_NOT_ELIGIBLE")?;
         need(log.never_attempted(qid)&&!log.intents.contains_key(&qid),"FUNDAMENTAL_BIND_MUST_PRECEDE_DISPATCH")?;
         let q=bank.engine().order_records().into_iter().find(|q|q["id"]==qid).ok_or("FUNDAMENTAL_QUOTE")?;let ex=q["exchangeId"].as_str().unwrap();let r=&self.policies[ex];
-        request_matches(spec,&q,&self.run,&r.tournament_id)?;
+        request_matches(spec,&q,&self.run,&r.tournament_id,planned_quantity)?;
+        if let Some(old)=self.cohorts.get(ex).and_then(|c|if c.entry.qid==qid{Some(&c.entry)}else{c.exits.get(&qid)}){
+            need(old.spec_sha256==digest(spec)?&&old.quote==q&&old.review_sha256==digest(r)?
+                &&request_quantity(&old.spec)?==planned_quantity,"FUNDAMENTAL_BOUND_REQUEST_CANNOT_CHANGE")?;
+            return Ok(decision)
+        }
         let b=Binding{qid,spec:spec.clone(),spec_sha256:digest(spec)?,quote:q.clone(),review_sha256:digest(r)?,bound_at_ms:now};
         if matches!(decision,Decision::Entry{..}){let c=Cohort{entry:b,first_fill_index:bank.engine().fills().len(),prior_fills_sha256:digest(&bank.engine().fills())?,bank_head_at_entry:bank.durable_head(),hold_until_ms:r.hold_until_ms,exits:BTreeMap::new()};self.append(json!({"kind":"entry","exchangeId":ex,"cohort":c}),now)?;}
         else{self.append(json!({"kind":"exit","exchangeId":ex,"binding":b}),now)?;}
@@ -530,7 +589,8 @@ impl Cohorts{
             let q=bank.engine().order_records().into_iter().find(|q|q["id"]==qid).ok_or("FUNDAMENTAL_QUOTE")?;
             need(q["retired"]==false&&q["quantity"]==b.quote["quantity"]&&q["activationAt"].as_u64().is_some_and(|t|t<=now)
                 &&q["expiresAt"].as_u64().is_some_and(|t|t>now)&&!q["cancelEffectiveAt"].is_u64(),"FUNDAMENTAL_PHYSICAL_NATIVE_INACTIVE")?;
-            request_matches(spec,&b.quote,&self.run,&r.tournament_id)?;
+            let planned=request_quantity(&b.spec)?;request_matches(spec,&b.quote,&self.run,&r.tournament_id,planned)?;
+            need(planned<=r.maximum_quantity&&mul(amount(b.quote["price"].as_str().ok_or("FUNDAMENTAL_PRICE")?)?,planned as i128)?<=amount(&r.maximum_principal)?,"FUNDAMENTAL_PHYSICAL_SLICE_CAP")?;
             let(books,_)=package_admission::native_books(bank,scope,now,bank.engine().policy()["bookAgeMs"].as_u64().ok_or("FUNDAMENTAL_BOOK_POLICY")?)?;
             let book=books.get(ex).ok_or("FUNDAMENTAL_PHYSICAL_BOOK_STALE")?;let asks=if r.side=="YES"{&book.yes_asks}else{&book.no_asks};let price=amount(b.quote["price"].as_str().ok_or("FUNDAMENTAL_PRICE")?)?;
             need(price<=structure(r)?&&asks.first().is_some_and(|l|price<l.price),"FUNDAMENTAL_PHYSICAL_ENTRY_EDGE")?;
@@ -538,11 +598,13 @@ impl Cohorts{
         Ok(())
     }
 }
-fn request_matches(s:&RequestSpec,q:&Value,run:&str,tournament:&str)->Result<()>{
+fn request_quantity(s:&RequestSpec)->Result<u64>{s.body.as_ref().and_then(|b|b["quantity"].as_u64()).filter(|n|*n>0).ok_or("FUNDAMENTAL_PHYSICAL_QUANTITY".into())}
+fn request_matches(s:&RequestSpec,q:&Value,run:&str,tournament:&str,planned_quantity:u64)->Result<()>{
     let b=s.body.as_ref().ok_or("FUNDAMENTAL_BODY")?;
     let expected_side=if q["side"]=="YES"{"yes"}else{"no"};
     need(s.method=="POST"&&s.endpoint=="/orders"&&b["idempotencyKey"]==format!("{run}:{}",q["id"].as_u64().ok_or("FUNDAMENTAL_QID")?)&&b["tournamentId"]==tournament
-        &&b["exchangeId"]==q["exchangeId"]&&b["side"]==expected_side&&b["action"]==q["action"]&&b["quantity"]==q["quantity"]
+        &&planned_quantity>0&&q["quantity"].as_u64().is_some_and(|n|planned_quantity<=n)
+        &&b["exchangeId"]==q["exchangeId"]&&b["side"]==expected_side&&b["action"]==q["action"]&&b["quantity"].as_u64()==Some(planned_quantity)
         &&decimal_units(&b["price"].to_string())?==amount(q["price"].as_str().ok_or("FUNDAMENTAL_PRICE")?)?
         &&daily_windows::clock(b["expirationDate"].as_str().ok_or("FUNDAMENTAL_EXPIRATION")?)?==q["expiresAt"].as_u64().ok_or("FUNDAMENTAL_EXPIRATION")?,"FUNDAMENTAL_EXACT_NATIVE_REQUEST")?;
     if let Some(raw)=&s.body_json{need(serde_json::from_str::<Value>(raw)?==*b,"FUNDAMENTAL_RAW_BODY_CHANGED")?;}Ok(())

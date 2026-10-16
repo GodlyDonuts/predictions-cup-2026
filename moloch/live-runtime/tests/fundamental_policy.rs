@@ -66,6 +66,7 @@ fn approve(r:ReviewInput,trust:&mut BTreeSet<String>,now:u64)->Reviewed{
         fn entry(&self)->Value{self.bank.engine().order_records().into_iter().find(|q|q["side"]=="NO"&&q["action"]=="buy"&&q["retired"]==false).unwrap()}
         fn spec(&self,q:&Value)->RequestSpec{RequestSpec{method:"POST".into(),endpoint:"/orders".into(),body:Some(json!({"idempotencyKey":format!("fundamental-fixture:{}",q["id"].as_u64().unwrap()),"tournamentId":"cup","exchangeId":"101","side":if q["side"]=="NO"{"no"}else{"yes"},"action":q["action"],"quantity":q["quantity"],"price":serde_json::from_str::<Value>(q["price"].as_str().unwrap()).unwrap(),"expirationDate":iso(q["expiresAt"].as_u64().unwrap())})),body_json:None}}
         fn bind_entry(&mut self)->(Value,RequestSpec){let q=self.entry();let spec=self.spec(&q);assert!(matches!(self.store.as_mut().unwrap().bind(&self.bank,&self.log,&self.scope,q["id"].as_u64().unwrap(),&spec,&self.trust,NOW).unwrap(),Decision::Entry{..}));(q,spec)}
+        fn slice_spec(&mut self)->(Value,RequestSpec){let q=self.entry();let mut r=self.review.clone();r.reviewed_at_ms=NOW+1;r.maximum_quantity=1;r.maximum_principal=q["price"].as_str().unwrap().into();self.install(r,NOW+1);let mut spec=self.spec(&q);spec.body.as_mut().unwrap()["quantity"]=json!(1);(q,spec)}
         fn log_intent(&mut self,q:&Value,spec:&RequestSpec){let qid=q["id"].as_u64().unwrap();self.log.append(json!({"kind":"intent","qid":qid,"quote":q,"spec":spec,"fundamental":self.store.as_ref().unwrap().durable_tag(qid).unwrap()})).unwrap();self.log.append(json!({"kind":"attempt","qid":qid})).unwrap();}
         fn event(&mut self,e:Value){let n=self.bank.last_source_sequence("fixture-official")+1;self.bank.accept("fixture-official",n,&e).unwrap();}
         fn base(q:&Value,kind:&str,at:u64,actual:&str)->Value{json!({"type":kind,"source":"official_sig_api_v1","receiptHash":"b".repeat(64),"orderId":q["id"],"actualOrderId":actual,"exchangeId":q["exchangeId"],"marketId":q["marketId"],"side":q["side"],"action":q["action"],"quantity":q["quantity"],"price":q["price"],"receivedAt":iso(at)})}
@@ -133,4 +134,64 @@ fn approve(r:ReviewInput,trust:&mut BTreeSet<String>,now:u64)->Reviewed{
     fn settings(f:&F)->Settings{let authority=f.authority();let review=f.root.join("review-input.json");let bytes=serde_json::to_vec(&f.review).unwrap();std::fs::write(&review,&bytes).unwrap();let sources=ORIGINALS.iter().enumerate().map(|(i,b)|{let path=f.root.join(format!("source-{i}.bin"));std::fs::write(&path,b).unwrap();SourceFile{path,sha256:sha(b)}}).collect();let authority_path=f.root.join("review-authority.json");Settings{version:1,authority_sha256:sha(&std::fs::read(&authority_path).unwrap()),authority_path,reviews:vec![ReviewFile{path:review,file_sha256:sha(&bytes),source_files:sources}],allow_initialization:false}}
     #[test]fn settings_loads_exact_immutable_files_and_recovers_stale_cohort_without_extending_it(){let mut f=F::new();f.fill_entry(false);let config=settings(&f);let loaded=config.load().unwrap();f.store.take();let(store,authority,stale)=loaded.open(&f.root,&f.bank,&f.log,f.owner.clone(),NOW+130000).unwrap();assert_eq!(stale.len(),1);assert!(store.manages("101"));assert!(authority.trusted().contains(&review_sha256(&f.review).unwrap()));f.store=Some(store);}
     #[test]fn settings_hashes_reject_mutated_source_and_initialization_flag_cannot_reset(){let mut f=F::new();let mut config=settings(&f);std::fs::write(&config.reviews[0].source_files[0].path,b"replacement").unwrap();assert!(config.load().is_err());config=settings(&f);config.allow_initialization=true;f.store.take();std::fs::remove_file(f.root.join("fundamental.ndjson")).unwrap();assert!(config.load().unwrap().open(&f.root,&f.bank,&f.log,f.owner.clone(),NOW).is_err());}
+    #[test]fn explicit_slice_keeps_native_quote_and_reservation_until_actual_smaller_ack(){
+        let mut f=F::new();let(q,spec)=f.slice_spec();let id=q["id"].as_u64().unwrap();assert_eq!(q["quantity"],2);
+        let before=f.bank.engine().wallet.reserved().unwrap();let price=baal_transport_service::decimal_units(q["price"].as_str().unwrap()).unwrap();
+        assert!(matches!(f.assess(&q,NOW+1),Decision::Hold{..}),"ordinary whole-native API retains its size guard");
+        assert_eq!(f.store.as_ref().unwrap().planned_entry_quantity(&f.bank,&f.log,&f.scope,id,&f.trust,NOW+1).unwrap(),Some(1));
+        f.store.as_mut().unwrap().bind_quantity(&f.bank,&f.log,&f.scope,id,1,&spec,&f.trust,NOW+1).unwrap();
+        assert_eq!(f.bank.engine().order_records().into_iter().find(|x|x["id"]==id).unwrap(),q);assert_eq!(f.bank.engine().wallet.reserved().unwrap(),before);
+        let mut permit=f.permit(&q,NOW+1);permit.maximum_quantity=1;permit.maximum_cost=moloch_replay::money(price);let authority=f.authority();
+        let token=f.store.as_ref().unwrap().physical_decision(&f.bank,&f.log,&f.scope,id,&spec,&permit,&authority,NOW+1).unwrap();assert_eq!(token.planned_quantity(),1);
+        token.validate_frozen(&q,&f.bank.engine().report().unwrap(),id,NOW+1).unwrap();token.authorize(&f.scope,&spec,&permit,NOW+1).unwrap();
+        f.log_intent(&q,&spec);let mut ack=F::base(&q,"actual_order_ack",NOW+2,"201");ack["quantity"]=json!(1);
+        f.store.as_ref().unwrap().validate_acknowledgment(id,&ack).unwrap();f.log.append(json!({"kind":"ack","qid":id,"receipt":{"orderId":"201","quantity":1}})).unwrap();f.event(ack);
+        assert_eq!(f.bank.engine().wallet.reserved().unwrap(),before-price);assert_eq!(f.bank.engine().order_records().into_iter().find(|x|x["id"]==id).unwrap()["quantity"],1);
+        let mut fill=F::base(&q,"actual_fill",NOW+4,"201");fill["quantity"]=json!(1);fill["fillId"]=json!("401");fill["executedAt"]=json!(iso(NOW+3));fill["fee"]=json!("0.000000");f.event(fill);
+        let mut terminal=F::base(&q,"actual_order_terminal",NOW+5,"201");terminal["status"]=json!("filled");terminal["fillsComplete"]=json!(true);terminal["filledQuantity"]=json!(1);f.event(terminal);f.log.append(json!({"kind":"closed","qid":id})).unwrap();
+        f.reopen();assert_eq!(f.bank.engine().wallet.quantity("101",moloch_replay::Side::No),1);assert_eq!(f.bank.engine().fills().len(),1);
+        assert!(f.store.as_ref().unwrap().planned_entry_quantity(&f.bank,&f.log,&f.scope,id,&f.trust,NOW+5).unwrap().is_none());
+    }
+    #[test]fn review_sizing_floors_principal_and_never_changes_native_price(){
+        let mut f=F::new();let q=f.entry();let id=q["id"].as_u64().unwrap();let price=baal_transport_service::decimal_units(q["price"].as_str().unwrap()).unwrap();
+        let mut r=f.review.clone();r.reviewed_at_ms=NOW+1;r.maximum_quantity=5;r.maximum_principal=moloch_replay::money(2*price-1);f.install(r,NOW+1);
+        assert_eq!(f.store.as_ref().unwrap().planned_entry_quantity(&f.bank,&f.log,&f.scope,id,&f.trust,NOW+1).unwrap(),Some(1));
+        assert_eq!(f.bank.engine().order_records().into_iter().find(|x|x["id"]==id).unwrap(),q);
+        let mut r=f.review.clone();r.reviewed_at_ms=NOW+2;r.maximum_principal=moloch_replay::money(price-1);f.install(r,NOW+2);
+        assert_eq!(f.store.as_ref().unwrap().planned_entry_quantity(&f.bank,&f.log,&f.scope,id,&f.trust,NOW+2).unwrap(),None);
+    }
+    #[test]fn exact_unattempted_binding_continues_after_restart_without_another_sidecar_append(){
+        let mut f=F::new();let(q,spec)=f.slice_spec();let id=q["id"].as_u64().unwrap();
+        f.store.as_mut().unwrap().bind_quantity(&f.bank,&f.log,&f.scope,id,1,&spec,&f.trust,NOW+1).unwrap();let bytes=std::fs::read(f.root.join("fundamental.ndjson")).unwrap();f.reopen();
+        assert_eq!(f.store.as_ref().unwrap().planned_entry_quantity(&f.bank,&f.log,&f.scope,id,&f.trust,NOW+2).unwrap(),Some(1));
+        assert!(matches!(f.store.as_ref().unwrap().assess_quantity(&f.bank,&f.log,&f.scope,id,1,&f.trust,NOW+2).unwrap(),Decision::Entry{..}));
+        f.store.as_mut().unwrap().bind_quantity(&f.bank,&f.log,&f.scope,id,1,&spec,&f.trust,NOW+2).unwrap();assert_eq!(std::fs::read(f.root.join("fundamental.ndjson")).unwrap(),bytes);
+        let mut changed=spec.clone();changed.body_json=Some(serde_json::to_string(changed.body.as_ref().unwrap()).unwrap());
+        assert!(f.store.as_mut().unwrap().bind_quantity(&f.bank,&f.log,&f.scope,id,1,&changed,&f.trust,NOW+2).is_err());
+        let full=f.spec(&q);assert!(f.store.as_mut().unwrap().bind_quantity(&f.bank,&f.log,&f.scope,id,2,&full,&f.trust,NOW+2).is_err());
+        assert!(f.store.as_ref().unwrap().planned_entry_quantity(&f.bank,&f.log,&f.scope,id,&f.trust,NOW+20000).unwrap().is_none());
+        let mut revised=f.review.clone();revised.reviewed_at_ms=NOW+3;f.install(revised,NOW+3);
+        assert!(f.store.as_ref().unwrap().planned_entry_quantity(&f.bank,&f.log,&f.scope,id,&f.trust,NOW+3).unwrap().is_none(),"a new review cannot silently replace the bound entry capability");
+    }
+    #[test]fn intent_or_unknown_attempt_cannot_resume_or_mint_replacement_slices(){
+        for attempted in [false,true]{let mut f=F::new();let(q,spec)=f.slice_spec();let id=q["id"].as_u64().unwrap();f.store.as_mut().unwrap().bind_quantity(&f.bank,&f.log,&f.scope,id,1,&spec,&f.trust,NOW+1).unwrap();
+            f.log.append(json!({"kind":"intent","qid":id,"quote":q,"spec":spec,"fundamental":f.store.as_ref().unwrap().durable_tag(id).unwrap()})).unwrap();if attempted{f.log.append(json!({"kind":"attempt","qid":id})).unwrap();}f.reopen();
+            assert!(f.store.as_ref().unwrap().planned_entry_quantity(&f.bank,&f.log,&f.scope,id,&f.trust,NOW+2).unwrap().is_none());
+            assert!(f.store.as_mut().unwrap().bind_quantity(&f.bank,&f.log,&f.scope,id,1,&spec,&f.trust,NOW+2).is_err());
+        }
+    }
+    #[test]fn actual_ack_requires_the_fixed_slice_even_when_native_would_accept_more(){
+        let mut f=F::new();let(q,spec)=f.slice_spec();let id=q["id"].as_u64().unwrap();f.store.as_mut().unwrap().bind_quantity(&f.bank,&f.log,&f.scope,id,1,&spec,&f.trust,NOW+1).unwrap();f.log_intent(&q,&spec);
+        let mut ack=F::base(&q,"actual_order_ack",NOW+2,"201");for n in [0,2,3]{ack["quantity"]=json!(n);assert!(f.store.as_ref().unwrap().validate_acknowledgment(id,&ack).is_err());}ack["quantity"]=json!(1);f.store.as_ref().unwrap().validate_acknowledgment(id,&ack).unwrap();
+        let mut changed=ack.clone();changed["exchangeId"]=json!("102");assert!(f.store.as_ref().unwrap().validate_acknowledgment(id,&changed).is_err());
+        assert!(f.store.as_ref().unwrap().validate_acknowledgment(id+100,&ack).is_err());
+        ack["quantity"]=json!(2);f.event(ack);f.store.take();assert!(Cohorts::open(&f.root,&f.bank,&f.log,f.owner.clone()).is_err(),"native's generic <=original guard is insufficient; replay requires sealed physical n");
+    }
+    #[test]fn explicit_slice_rejects_zero_increase_and_unsealed_body_quantity(){
+        let mut f=F::new();let(q,spec)=f.slice_spec();let id=q["id"].as_u64().unwrap();
+        for n in [0,3]{assert!(f.store.as_mut().unwrap().bind_quantity(&f.bank,&f.log,&f.scope,id,n,&spec,&f.trust,NOW+1).is_err());}
+        let mut changed=spec.clone();changed.body.as_mut().unwrap()["quantity"]=json!(2);assert!(f.store.as_mut().unwrap().bind_quantity(&f.bank,&f.log,&f.scope,id,1,&changed,&f.trust,NOW+1).is_err());
+        assert_eq!(f.store.as_ref().unwrap().managed_exchanges(),["101".to_string()].into());
+        let unrelated=json!({"type":"actual_order_ack","exchangeId":"999","quantity":3});f.store.as_ref().unwrap().validate_acknowledgment(999,&unrelated).unwrap();
+    }
 }
