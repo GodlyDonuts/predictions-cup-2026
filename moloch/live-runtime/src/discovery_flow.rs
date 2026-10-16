@@ -13,7 +13,7 @@ const MAX_ARRAY: usize = 100_000;
 struct Print { market: String, exchange: String, executed: i64, received: i64,
     sequence: u64, price: i128, quantity: u64 }
 pub struct Flow { mapping: BTreeMap<String,String>, tournament: Option<String>,
-    seen: BTreeMap<String,Print>, settled: BTreeSet<String>, last_received: Option<i64>, last_ranked: Option<u64> }
+    seen: BTreeMap<(String,String),Print>, settled: BTreeSet<String>, last_received: Option<i64>, last_ranked: Option<u64> }
 fn id(v: &Value) -> Result<String> {
     let s = v.as_str().map(str::to_owned).or_else(|| v.as_u64().map(|n|n.to_string()))
         .ok_or("DISCOVERY_FLOW_ID")?;
@@ -119,6 +119,7 @@ impl Flow {
                 if self.mapping.get(&exchange)!=Some(&market){return Err("DISCOVERY_FLOW_EXCHANGE_SCOPE".into())}
                 let key=t["id"].as_str().filter(|s|!s.is_empty()&&s.len()<=128)
                     .ok_or("DISCOVERY_FLOW_PRINT_ID")?;
+                let key=(exchange.clone(),key.to_owned());
                 let executed=clock(t["executedAt"].as_str().ok_or("DISCOVERY_FLOW_CLOCK")?)?;
                 if executed>received{return Err("DISCOVERY_FLOW_FUTURE".into())}
                 let print=Print {market:market.clone(),exchange,executed,received,
@@ -127,7 +128,7 @@ impl Flow {
                     quantity:t["quantity"].as_u64().filter(|n|*n>0&&*n<=9_007_199_254_740_991)
                         .ok_or("DISCOVERY_FLOW_QUANTITY")?};
                 if self.settled.contains(&market){continue}
-                if let Some(old)=self.seen.get(key){
+                if let Some(old)=self.seen.get(&key){
                     // Re-delivery clocks are not original trade facts, and
                     // must never replace the first observation's clock.
                     if old.market!=print.market || old.exchange!=print.exchange
@@ -137,7 +138,7 @@ impl Flow {
                     }continue;
                 }
                 if self.seen.len()>=MAX_REMEMBERED_PRINTS{return Err("DISCOVERY_FLOW_CAPACITY".into())}
-                self.seen.insert(key.into(),print);
+                self.seen.insert(key,print);
             }}
         } Ok(())
     }

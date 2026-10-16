@@ -334,6 +334,12 @@ fn install_managed_entry_exclusions(c:&Control,control_path:&Path,bank:&mut Sess
  let mut retired=0;for ex in &managed{retired+=retire_existing_drafts(bank,log,ex)?;}
  let _=atomic_json(&c.root.join("ordinary-entry-exclusions.json"),&json!({"at":iso(now()),"record":bank.engine().ordinary_entry_exclusion_record(),"retiredProvedNeverSentDrafts":retired,"doesNotSubmit":true}));Ok(())
 }
+fn urgent_source_exchanges(orders:&[Value],pending:&std::collections::BTreeSet<u64>)->Result<std::collections::BTreeSet<String>>{
+ let mut urgent=std::collections::BTreeSet::new();
+ for q in orders{if q["retired"]==true{continue}let id=q["id"].as_u64().ok_or("LIVE_SOURCE_QUOTE_ID")?;
+  if pending.contains(&id)||q["inventoryExitReason"]=="maximumAge"||q["executionStyle"]=="inventoryAON"{urgent.insert(q["exchangeId"].as_str().ok_or("LIVE_SOURCE_QUOTE_SCOPE")?.to_owned());}
+ }Ok(urgent)
+}
 fn install_human_market_breadth(c:&Control,control_path:&Path,bank:&mut Session)->Result<()>{
  if !c.all_markets||bank.engine().fresh_market_limit()>=12{return Ok(())}
  let policy=bank.engine().policy();
@@ -1236,9 +1242,10 @@ pub fn main()->Result<()>{
   let empty_positions=json!({"positions":[]});
   // Verified adoption updates the native managed-market limit while preserving
   // the original fresh-entry limit. REST coverage must use that replayed limit.
-  let managed_market_limit=bank.engine().policy()["maximumMarkets"].as_u64().ok_or("LIVE_MARKET_CAP")? as usize;
-  let discovery_read_limit=c.policy["maximumMarkets"].as_u64().ok_or("LIVE_MARKET_CAP")? as usize;
-  let mut universe=if c.all_markets{Some(Universe::new(&c.scope.exchanges,if fully_managed{&empty_positions}else{seed.get("excludedPositionsAtTransfer").ok_or("LIVE_UNIVERSE_SEED")?},managed_market_limit)?.with_discovery_limit(discovery_read_limit)?.with_tournament(&c.scope.tournament_id)?)}else{None};
+  let mut universe=if c.all_markets{
+   let budget=moloch_live_runtime::throughput_discovery::ReadBudget::from_bank(&bank,&c.scope)?;
+   Some(Universe::new(&c.scope.exchanges,if fully_managed{&empty_positions}else{seed.get("excludedPositionsAtTransfer").ok_or("LIVE_UNIVERSE_SEED")?},budget.maximum_managed_markets())?.with_discovery_limit(budget.maximum_discovery_reads())?.with_tournament(&c.scope.tournament_id)?)
+  }else{None};
   // Previously owned holdings are filtered from the financial feed as well as discovery.
   let pairs:Value=if let Some(u)=&universe{u.pairs(&c.scope.exchanges)}else{c.scope.exchanges.iter().map(|(e,m)|json!({"exchangeId":e,"marketId":m})).collect::<Vec<_>>().into()};
   if let Err(error)=moloch_live_runtime::execution_distribution::initialize_observer(&bank,c.execution_distribution.clone()){let _=atomic_json(&c.root.join("execution-distribution.json"),&json!({"at":iso(now()),"state":"unavailable","reason":error,"executionAuthority":false}));}
@@ -1272,6 +1279,14 @@ pub fn main()->Result<()>{
    accept(&mut bank,&json!({"type":"tick","receivedAt":iso(now())}))?;
    let mut required=bank.engine().required_exchanges();if let Some(f)=fundamental.as_ref(){required.extend(f.cohorts.managed_exchanges());}
    let selected=if let Some(u)=&mut universe{u.select_at(&required,now())?}else{c.scope.exchanges.keys().cloned().collect()};
+   let selected=if universe.is_some(){
+    let read_budget=moloch_live_runtime::throughput_discovery::ReadBudget::from_bank(&bank,&c.scope)?;
+    let pending=log.acknowledgments.keys().filter(|id|!log.closed.contains(id)).copied().collect();
+    let urgent=urgent_source_exchanges(&bank.engine().order_records(),&pending)?;
+    let order=read_budget.order(&selected,&required,&urgent);
+    let _=atomic_json(&c.root.join("discovery-schedule.json"),&json!({"at":iso(now()),"pid":std::process::id(),"nativeHead":bank.durable_head(),"maximumDiscoveryReads":read_budget.maximum_discovery_reads(),"maximumManagedMarkets":read_budget.maximum_managed_markets(),"requiredScopeCount":required.len(),"urgentOwned":urgent,"selectedScopes":order.scopes,"diagnostic":order.diagnostic,"readSchedulingOnly":true,"monetaryCapsChanged":false}));
+    order.scopes
+   }else{selected};
    for (selected_index,ex) in selected.iter().enumerate(){require_stream(stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?)?;let market=&c.scope.exchanges[ex];let from=windows[ex];let next=source(&mut t,&c,&mut bank,&mut source_state,ex,market,from)?;windows.insert(ex.clone(),next);drain_stream(stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?,&mut bank,&mut source_state,&mut breadth,&mut universe)?;
     if reconciliation_schedule.due(now(),pending_version(&log))?.is_some(){
      reconciled=reconcile(&mut t,&c,&mut bank,&mut log,&mut reconciliation_cache)?;
@@ -1318,6 +1333,17 @@ pub fn main()->Result<()>{
  })();
  if let Err(e)=&result{atomic_json(&stop,&json!({"at":iso(now()),"reason":e.to_string(),"action":"no automatic write retry or activation renewal"}))?;atomic_json(&c.root.join("status.json"),&json!({"at":iso(now()),"pid":std::process::id(),"mode":"stopped","reason":e.to_string(),"profitabilityEstablished":false}))?;}
  result
+}
+#[cfg(test)]mod discovery_urgent_tests{
+ use super::*;
+ #[test]fn physical_liabilities_and_risk_exits_precede_discovery_without_promoting_flat_drafts(){
+  let q=|id,ex:&str|json!({"id":id,"exchangeId":ex,"retired":false});
+  let mut age=q(3,"103");age["inventoryExitReason"]=json!("maximumAge");
+  let mut aon=q(4,"104");aon["executionStyle"]=json!("inventoryAON");
+  let mut retired=q(5,"105");retired["retired"]=json!(true);
+  let orders=vec![q(1,"101"),q(2,"102"),age,aon,retired];
+  assert_eq!(urgent_source_exchanges(&orders,&[1,5].into()).unwrap(),["101".into(),"103".into(),"104".into()].into());
+ }
 }
 #[cfg(test)]mod collateral_accounting_config_tests{
  use super::*;

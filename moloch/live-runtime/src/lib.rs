@@ -15,6 +15,8 @@ pub mod dispatch;
 pub mod breadth;
 pub mod read_recovery;
 pub mod universe;
+pub mod throughput_discovery;
+pub mod discovery_flow;
 pub mod handoff;
 pub mod inventory;
 pub mod relationship_census;
