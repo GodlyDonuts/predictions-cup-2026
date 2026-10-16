@@ -1,0 +1,90 @@
+{
+  "executionAuthority": false,
+  "kalshiCommonSemantics": {
+    "acceleration": "Four of eight designated media calls and no contrary designated call can accelerate determination.",
+    "longStop": "First10AM ET after seating or one year after popular vote, subject to outcome review.",
+    "partyDefinition": "Membership on election day; later party switching before seating does not alter that classification.",
+    "refundFusionTieRunoff": "No blanket harmonized refund or fusion/independent/runoff rule established by these family PDFs; do not infer matching SIG exceptions.",
+    "winnerPredicate": "Person sworn into the specified office/term; vacancy before seating explicitly permits first temporary or permanent replacement."
+  },
+  "proxyPriorAssessment": "Potentially useful bounded subjective electoral-party proxy, conditional on exact SIG predicate review and explicit replacement/refund/timing assumptions; neither equivalent payout nor calibrated expected value.",
+  "publicPrimaryPdfOriginals": [
+    {
+      "bytes": 42437,
+      "receivedAt": "2026-10-16T18:15:16.744270+00:00",
+      "requestStartedAt": "2026-10-16T18:15:16.508452+00:00",
+      "sha256": "a2f18f91c123f81141ed20be5f019a3f54413b35b11ca2459327dc71cd46bce8",
+      "status": 200,
+      "url": "https://assets.kalshi.com/contract_terms/SENATEPARTY.pdf"
+    },
+    {
+      "bytes": 42772,
+      "receivedAt": "2026-10-16T18:15:16.913692+00:00",
+      "requestStartedAt": "2026-10-16T18:15:16.744270+00:00",
+      "sha256": "e9aafc182fff1ab5a8889ff60b156ac5387a39725a11d4154eba74454be85c2c",
+      "status": 200,
+      "url": "https://assets.kalshi.com/contract_terms/GOVPARTY.pdf"
+    }
+  ],
+  "retainedMarketMetadata": [
+    {
+      "contractTermsUrl": "https://assets.kalshi.com/contract_terms/GOVPARTY.pdf",
+      "currentRuleRevisionVerified": false,
+      "expectedExpirationTime": "2027-01-02T15:00:00Z",
+      "expirationTime": "2027-11-03T15:00:00Z",
+      "metadataOriginalRawAvailableInCompactBundle": false,
+      "observedAt": "2026-10-02T05:15:54.615017+00:00",
+      "office": "Governor",
+      "party": "Democratic",
+      "referenceFileSha256": "b4c4c2cf6cfc1de7b5e505356422d741de49a81aee230f4880fda1ebe195b034",
+      "referenceRecordSha256": "79aecc4ada47c9614b5d518c6529207d3b4cc7f10eea409887a1477e227694f7",
+      "retainedReferenceFile": "research\\public_reference_2026-10-02\\reference.json.gz",
+      "state": "ME",
+      "statusAtObservation": "active",
+      "ticker": "GOVPARTYME-26-D"
+    },
+    {
+      "additionalOriginalReceipt": {
+        "observedAt": "2026-10-01T22:13:16.220921+00:00",
+        "path": "research\\public_reference_2026-10-01\\raw\\SENATENC-26.json",
+        "pointer": "/data/markets/0",
+        "scopeNote": "Exact retained ticker at pointer is SENATENC-26-R.",
+        "sha256": "d0ff6113866d834d0a00dab3efa41908384d9049cdc9300dcc222ed96bcf4b2c",
+        "url": "https://external-api.kalshi.com/trade-api/v2/events/SENATENC-26"
+      },
+      "contractTermsUrl": "https://assets.kalshi.com/contract_terms/SENATEPARTY.pdf",
+      "currentRuleRevisionVerified": false,
+      "expectedExpirationTime": "2027-01-04T15:00:00Z",
+      "expirationTime": "2027-11-03T15:00:00Z",
+      "metadataOriginalRawAvailableInCompactBundle": false,
+      "observedAt": "2026-10-02T05:16:19.090045+00:00",
+      "office": "Senate",
+      "party": "Republican",
+      "referenceFileSha256": "b4c4c2cf6cfc1de7b5e505356422d741de49a81aee230f4880fda1ebe195b034",
+      "referenceRecordSha256": "85e0afba7885f0462ee7b5b357653b885a97d35c2eaf1b4dfefc04ae19acef8e",
+      "retainedReferenceFile": "research\\public_reference_2026-10-02\\reference.json.gz",
+      "state": "NC",
+      "statusAtObservation": "active",
+      "ticker": "SENATENC-26-R"
+    },
+    {
+      "contractTermsUrl": "https://assets.kalshi.com/contract_terms/SENATEPARTY.pdf",
+      "currentRuleRevisionVerified": false,
+      "expectedExpirationTime": "2027-01-04T15:00:00Z",
+      "expirationTime": "2027-11-03T15:00:00Z",
+      "metadataOriginalRawAvailableInCompactBundle": false,
+      "observedAt": "2026-10-02T05:16:19.090045+00:00",
+      "office": "Senate",
+      "party": "Republican",
+      "referenceFileSha256": "b4c4c2cf6cfc1de7b5e505356422d741de49a81aee230f4880fda1ebe195b034",
+      "referenceRecordSha256": "e9414d8b3591e1266fc435789db8761bd2a2b4bdbdadb308b86bcfd728745e42",
+      "retainedReferenceFile": "research\\public_reference_2026-10-02\\reference.json.gz",
+      "state": "OR",
+      "statusAtObservation": "active",
+      "ticker": "SENATEOR-26-R"
+    }
+  ],
+  "ruleReviewObservedAtUtc": "2026-10-16T18:15:16.913692+00:00",
+  "sigExactOriginalRulesStatus": "Awaiting retained exact278/176/288 official node receipts from execution owner; UI identity and current scoped book are not a resolver.",
+  "version": 1
+}
