@@ -1338,7 +1338,7 @@ fn early_native_side_filter(mode:moloch_live_runtime::ordinary_side_edge::Mode,b
   if *urgent{return true}
   let Some(q)=quotes.get(*index)else{return true};let Some(qid)=q["id"].as_u64()else{return true};
   let assessment=screen.assess(bank,scope,log,managed,qid,at);
-  let veto=mode==Mode::Enforce&&assessment.negative().is_some_and(|d|d.validate_current(bank,scope,log,managed,at).is_ok());
+  let veto=mode==Mode::Enforce&&assessment.negative().is_some_and(|d|d.validate_current(bank,scope,log,managed,now()).is_ok());
   diagnostics.push(json!({"qid":qid,"class":assessment.class,"reason":&assessment.reason,"evidence":assessment.negative().map(|d|d.evidence()),"vetoedThisPass":veto}));!veto
  });diagnostics
 }
