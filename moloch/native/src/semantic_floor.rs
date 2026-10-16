@@ -103,7 +103,14 @@ pub struct Candidate{pub id:String,pub legs:Vec<Leg>}
 /// must supply genuine originals and still revalidate immediately before POST.
 pub struct Context<'a>{pub tournament_id:&'a str,pub tournament_slug:&'a str,pub run_id:&'a str,pub native_head_sha256:&'a str,pub unencumbered_cash_units:i128,pub cash_receipt:&'a[u8],pub node_receipts:&'a[&'a[u8]],pub book_receipts:&'a[&'a[u8]],pub now_ms:u64,pub maximum_book_age_ms:u64,pub maximum_plan_age_ms:u64,pub minimum_net_surplus_units:i128}
 #[derive(Debug,Serialize)]#[serde(rename_all="camelCase")]
-pub struct AtomicProposal{pub execution_mode:&'static str,pub tournament_id:String,pub candidate:Candidate,pub gross_limit_funding_units:i128,pub observed_depth_cost_units:i128,pub maximum_fees_units:i128,pub minimum_state_net_units:i128,pub state_net_units:BTreeMap<String,i128>,pub certificate_sha256:String,pub native_head_sha256:String,pub run_id:String,pub cash_receipt_sha256:String,pub node_receipt_sha256:Vec<String>,pub book_receipt_sha256:Vec<String>,pub valid_until_ms:u64}
+pub struct AtomicProposal{execution_mode:&'static str,tournament_id:String,candidate:Candidate,gross_limit_funding_units:i128,observed_depth_cost_units:i128,maximum_fees_units:i128,minimum_state_net_units:i128,state_net_units:BTreeMap<String,i128>,certificate_sha256:String,native_head_sha256:String,run_id:String,cash_receipt_sha256:String,node_receipt_sha256:Vec<String>,book_receipt_sha256:Vec<String>,valid_until_ms:u64}
+impl AtomicProposal{
+ pub fn execution_mode(&self)->&'static str{self.execution_mode}pub fn tournament_id(&self)->&str{&self.tournament_id}pub fn candidate(&self)->&Candidate{&self.candidate}
+ pub fn gross_limit_funding_units(&self)->i128{self.gross_limit_funding_units}pub fn observed_depth_cost_units(&self)->i128{self.observed_depth_cost_units}pub fn maximum_fees_units(&self)->i128{self.maximum_fees_units}
+ pub fn minimum_state_net_units(&self)->i128{self.minimum_state_net_units}pub fn state_net_units(&self)->&BTreeMap<String,i128>{&self.state_net_units}pub fn valid_until_ms(&self)->u64{self.valid_until_ms}
+ pub fn certificate_sha256(&self)->&str{&self.certificate_sha256}pub fn native_head_sha256(&self)->&str{&self.native_head_sha256}pub fn run_id(&self)->&str{&self.run_id}
+ pub fn cash_receipt_sha256(&self)->&str{&self.cash_receipt_sha256}pub fn node_receipt_sha256(&self)->&[String]{&self.node_receipt_sha256}pub fn book_receipt_sha256(&self)->&[String]{&self.book_receipt_sha256}
+}
 #[derive(Debug,Serialize)]#[serde(tag="kind",content="evidence",rename_all="camelCase")]
 pub enum Decision{Uncertified{reason:&'static str},NoOpportunity{evaluated:usize},GuaranteedFloor(AtomicProposal)}
 fn receipt(bytes:&[u8])->Result<Value>{need(!bytes.is_empty()&&bytes.len()<=8*1024*1024,"FLOOR_RECEIPT_BOUND")?;serde_json::from_slice(bytes).map_err(|_|"FLOOR_RECEIPT_JSON")}
