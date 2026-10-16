@@ -1076,10 +1076,6 @@ fn reviewed_book_prefilter(c:&Control,bank:&mut Session,source:&mut RestSource,t
  accept_fresh_book(bank,c,target,&book,source)?;
  eligible(bank,reads.now_ms())
 }
-/// A stale book is not evidence that a quote is competitive. Refresh only the
-/// original book first; a far floor must not consume six unrelated account
-/// reads. A positive result still obtains the entire independent seven-fact
-/// packet. No earlier book is substituted for its final physical book receipt.
 // Additional reviewed runtime selection only. A shadow/logging failure cannot
 // change the old dispatch flow; Enforce still defers if evidence is unavailable.
 fn ordinary_side_edge_allows(c:&Control,bank:&Session,log:&DispatchLog,q:&Value,book:&Receipt,fundamental_managed:bool,at:u64)->bool{
@@ -1088,13 +1084,25 @@ fn ordinary_side_edge_allows(c:&Control,bank:&Session,log:&DispatchLog,q:&Value,
  let opposite=match q["side"].as_str(){Some("YES")=>Some(moloch_replay::Side::No),Some("NO")=>Some(moloch_replay::Side::Yes),_=>None};
  if let(Some(side),Some(ex))=(opposite,q["exchangeId"].as_str()){
   let held=bank.engine().wallet.quantity(ex,side);
-  if held>0{let unclosed=log.attempted.difference(&log.closed).copied().collect();if ordinary_side_edge::fully_covered_opposite_buy(q,held,&bank.engine().order_records(),&unclosed){return true}}
+  if held>0{
+   let records=bank.engine().order_records();
+   let unclosed=log.attempted.difference(&log.closed).filter(|id|{
+    // Only the SDK-hydrated capability can clear this encumbrance. A raw
+    // replayed abort is untrusted, and any actual execution evidence wins.
+    !log.proved_no_network(**id)||log.acknowledgments.contains_key(*id)||bank.engine().live_order_bindings().contains_key(*id)||!records.iter().any(|o|o["id"]==**id&&o["retired"]==true&&o["filled"]==0)
+   }).copied().collect();
+   if ordinary_side_edge::fully_covered_opposite_buy(q,held,&records,&unclosed){return true}
+  }
  }
  let assessment=ordinary_side_edge::assess_original(bank.engine().policy(),&c.scope,q,book,at);
  let deferred=c.ordinary_side_edge.defers(&assessment);
  let _=atomic_json(&c.root.join("ordinary-side-edge.json"),&json!({"at":iso(at),"qid":q["id"],"mode":c.ordinary_side_edge,"assessment":assessment,"nativeHead":bank.durable_head(),"deferred":deferred,"physicalAttempted":false,"priceChanged":false,"quantityChanged":false,"executionAuthority":false}));
  !deferred
 }
+/// A stale book is not evidence that a quote is competitive. Refresh only the
+/// original book first; a far floor must not consume six unrelated account
+/// reads. A positive result still obtains the entire independent seven-fact
+/// packet. No earlier book is substituted for its final physical book receipt.
 fn ordinary_preflight(c:&Control,bank:&mut Session,log:&DispatchLog,source:&mut RestSource,q:&Value,reads:&mut impl OrdinaryPreflightReads)->Result<Option<(Value,SnapshotSet)>>{
  use moloch_live_runtime::quote_priority::{self,Class};
  log.require_resolved_attempts()?;let id=q["id"].as_u64().ok_or("LIVE_QUOTE_ID")?;
@@ -1614,9 +1622,10 @@ pub fn main()->Result<()>{
  use moloch_live_runtime::ordinary_side_edge::Mode;
  struct Temp(PathBuf);impl Drop for Temp{fn drop(&mut self){let _=fs::remove_dir_all(&self.0);}}
  const T:&str="11111111-1111-4111-8111-111111111111";
- fn fixture()->(Temp,Control,Session,DispatchLog,Value,Receipt){
+ fn fixture()->(Temp,Control,Session,DispatchLog,Value,Receipt){fixture_with_hedge(false)}
+ fn fixture_with_hedge(retain:bool)->(Temp,Control,Session,DispatchLog,Value,Receipt){
   let at=now();let root=Temp(std::env::temp_dir().join(format!("ordinary-side-edge-{}-{}",std::process::id(),SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_nanos())));private_dir(&root.0).unwrap();
-  let policy=json!({"quantity":2,"entryStopAt":iso(at+600000)});let seed=json!({"runId":"side-edge-fixture","availableCash":"1000.000000","accountSnapshotHash":"a".repeat(64),"observedAt":iso(at-5000)});
+  let policy=json!({"quantity":2,"entryStopAt":iso(at+600000),"retainProfitableHedge":retain,"maximumHedgeOvershoot":1});let seed=json!({"runId":"side-edge-fixture","availableCash":"1000.000000","accountSnapshotHash":"a".repeat(64),"observedAt":iso(at-5000)});
   let mut bank=Session::open_live(&root.0.join("bank"),&policy,&seed).unwrap();let stamp=iso(at-4000);
   bank.accept("original-fixture-book",1,&json!({"type":"book","receivedAt":stamp,"book":{"tournamentId":T,"marketId":"201","exchangeId":"101","sequence":"1","sourceAt":stamp,"requestStartedAt":stamp,"receivedAt":stamp,"bids":[{"price":"0.400000","quantity":10}],"asks":[{"price":"0.410000","quantity":990}]}})).unwrap();
   let q=bank.engine().order_records().into_iter().find(|q|q["action"]=="buy"&&q["side"]=="YES"&&q["retired"]==false).unwrap();
@@ -1638,6 +1647,18 @@ pub fn main()->Result<()>{
  #[test]fn unavailable_is_a_defer_only_in_enforce_and_managed_cohorts_bypass(){
   let(root,mut c,bank,log,q,mut r)=fixture();r.endpoint.push_str("&forged=1");c.ordinary_side_edge=Mode::Enforce;assert!(!ordinary_side_edge_allows(&c,&bank,&log,&q,&r,false,now()));let d=load(&root.0.join("ordinary-side-edge.json")).unwrap();assert_eq!(d["assessment"]["class"],"unavailable");
   c.ordinary_side_edge=Mode::Shadow;assert!(ordinary_side_edge_allows(&c,&bank,&log,&q,&r,false,now()));fs::remove_file(root.0.join("ordinary-side-edge.json")).unwrap();c.ordinary_side_edge=Mode::Enforce;assert!(ordinary_side_edge_allows(&c,&bank,&log,&q,&r,true,now()));assert!(!root.0.join("ordinary-side-edge.json").exists());assert!(log.intents.is_empty()&&log.attempted.is_empty());
+ }
+ #[test]fn genuine_opposite_owned_fills_bypass_only_when_the_entire_buy_is_covered(){
+  for filled in [1u64,2]{let(root,mut c,mut bank,log,q,book)=fixture_with_hedge(true);c.ordinary_side_edge=Mode::Enforce;
+   let mate=bank.engine().order_records().into_iter().find(|q|q["action"]=="buy"&&q["side"]=="NO"&&q["retired"]==false).unwrap();let at=now();
+   let ack=Receipt{endpoint:"/orders".into(),request_started_at:iso(at-2000),received_at:iso(at-1000),status:200,data:json!({"orderId":"9001","exchangeId":"101","side":"no","action":"buy","quantity":2,"price":0.590})};
+   let event=feedback::acknowledgment(&mate,&ack,&iso(at-1000)).unwrap();bank.accept("original-owned-fixture",1,&event).unwrap();
+   let tape=Receipt{endpoint:"/orders/9001/fills?limit=200".into(),request_started_at:iso(at-100),received_at:iso(at),status:200,data:json!({"orderId":"9001","tournamentId":T,"exchangeId":"101","coverage":{"complete":true},"pagination":{"hasMore":false,"nextCursor":null,"limit":200},"totalQuantityFilled":-(filled as i64),"data":[{"id":"8001","side":"no","quantity":-(filled as i64),"price":0.590,"filledAt":iso(at-500)}]})};
+   let events=feedback::fills(&mate,"9001",T,&tape,&iso(at)).unwrap();assert_eq!(events.len(),1);bank.accept("original-owned-fixture",2,&events[0]).unwrap();
+   assert_eq!(bank.engine().wallet.quantity("101",moloch_replay::Side::No),filled);let current=quote(&bank,q["id"].as_u64().unwrap()).unwrap();assert_eq!(current["quantity"],2);assert!(!current["cancelEffectiveAt"].is_u64());let head=bank.durable_head();
+   assert_eq!(ordinary_side_edge_allows(&c,&bank,&log,&current,&book,false,now()),filled==2);assert_eq!(bank.durable_head(),head);
+   if filled==1{assert_eq!(load(&root.0.join("ordinary-side-edge.json")).unwrap()["assessment"]["class"],"below_minimum");}else{assert!(!root.0.join("ordinary-side-edge.json").exists());}
+  }
  }
 }
 #[cfg(test)]mod discovery_urgent_tests{

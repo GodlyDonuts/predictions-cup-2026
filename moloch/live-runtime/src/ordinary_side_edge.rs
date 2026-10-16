@@ -108,6 +108,9 @@ fn checked(policy:&Value,scope:&Scope,q:&Value,r:&Receipt,now:u64)->Checked<Asse
     for row in rows {
         let id=row["exchangeId"].as_str().ok_or("SIDE_EDGE_BOOK_SCOPE")?;
         need(expected.contains(id)&&seen.insert(id),"SIDE_EDGE_BOOK_SCOPE")?;
+        // An unrelated outcome may legitimately be stale or one-sided. Its
+        // identity is needed for complete scope, not this target's proxy.
+        if id!=ex{continue}
         let source=clock(row["asOf"]["at"].as_str().ok_or("SIDE_EDGE_SOURCE_CLOCK")?)?;
         let sequence=row["asOf"]["sequence"].as_u64().ok_or("SIDE_EDGE_SOURCE_SEQUENCE")?;
         need(source<=received&&now-source<=age,"SIDE_EDGE_SOURCE_CLOCK")?;
@@ -212,6 +215,10 @@ mod tests {
     }
     #[test]fn invalid_ordered_depth_crossed_book_and_fractional_sizes_never_get_filled_in(){
         let(p,s,q,r)=f("YES");for n in 0..4{let mut bad=r.clone();match n{0=>row(&mut bad)["bids"].as_array_mut().unwrap().push(json!({"price":0.405,"quantity":5})),1=>row(&mut bad)["asks"][0]["price"]=json!(0.400),2=>row(&mut bad)["asks"][0]["quantity"]=json!(1.5),_=>row(&mut bad)["bids"][0]["quantity"]=json!(9_007_199_254_740_992u64)};assert_eq!(a(&p,&s,&q,&bad).class,Class::Unavailable);}
+    }
+    #[test]fn unrelated_stale_one_sided_outcome_does_not_veto_a_valid_target(){
+        let(p,mut s,q,mut r)=f("NO");s.exchanges.insert("102".into(),"201".into());let extra=json!({"exchangeId":"102","asOf":{"sequence":1,"at":iso(AT-86400000)},"bids":[],"asks":[]});r.data["contexts"][0]["orderbook"]["exchanges"].as_array_mut().unwrap().push(extra);
+        assert_eq!(a(&p,&s,&q,&r).class,Class::MeetsMinimum);r.data["contexts"][0]["orderbook"]["exchanges"][1]["exchangeId"]=json!("101");assert_eq!(a(&p,&s,&q,&r).class,Class::Unavailable);
     }
     #[test]fn overflow_or_missing_native_policy_stays_unavailable(){
         let(p,s,q,r)=f("YES");for n in 0..5{let mut bad=p.clone();match n{0=>bad["feePerShare"]=json!("170141183460469231731687303715884.105728"),1=>{bad["feePerShare"]=json!("170141183460469231731687303715884.105727");bad["feeBps"]=json!(1);},2=>bad["bookAgeMs"]=json!(u64::MAX),3=>bad["minimumEdge"]=Value::Null,_=>bad["feeBps"]=json!(u64::MAX)};assert_eq!(a(&bad,&s,&q,&r).class,Class::Unavailable,"policy{n}");}
