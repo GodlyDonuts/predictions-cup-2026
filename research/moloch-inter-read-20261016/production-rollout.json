@@ -1,0 +1,40 @@
+{
+  "at": "2026-10-16T13:42:16.833473+00:00",
+  "sourceCommit": "4ee163561b8018e58d945b38b4f4eea5cd7b09ee",
+  "binarySha256": "011ffde0a00a959959acf99ef1824328c9b75f176ac66eda6c8eba6e96832c37",
+  "engineIdentity": "8acc461bc02fb9236100058fe464b203d5da005375632af05c176223c7246754",
+  "oldPid": 503120,
+  "newPid": 506740,
+  "startedAt": "2026-10-16T13:36:03.724993+00:00",
+  "actualRunningBinaryVerified": true,
+  "originalRolloutSha256": "0692468f0b6125275ea548a271dfd50ccf73ac56d182fc848fd3d97cb9f4a7f0",
+  "approvedManifestSha256": "9f923d1fed1c8a79110d03b956641c608f21596caa8d63297d60a269d89147b7",
+  "operatorSha256": "4619c47fc7639f18a468bbb3f4fd8d85136cfe5f6dbb4ddf3cd31b4b334e75fd",
+  "controlChanges": [
+    "activation.binarySha256"
+  ],
+  "controlSha256": "7e7cb15ab9dc853887edec5768690fc682f01753d59c9109f102dd6f20641fa2",
+  "priorControlSha256": "b26e00ea5669a01afb5bbce7df0750ad7325422dbaa274e5567b3c0842689dd4",
+  "unchangedBankManifestHash": "78acaef952ed95b9bff24a3349ece669ccbe88ef7294b27dd9c2aa7d09cae325",
+  "stoppedBankSequence": 260738,
+  "stoppedPrefixBytes": 812173436,
+  "stoppedPrefixSha256": "f28cd4167540406635c3b039b6a962d101e1fcd51d13d3019223b7a8ce3f032b",
+  "unchangedBridgeSha256": "76fab91acccfe26cfb1a80010a7b1fb00df7f92f02dc20d5127192258bcf0723",
+  "bridgeCount": 12,
+  "bridgeWritten": false,
+  "extraDetachedReplayPerformed": false,
+  "fullStartupHistoryRestoreStillRequired": true,
+  "quietBoundary": {
+    "globalUnknownCount": 0,
+    "active": null,
+    "manualReview": false
+  },
+  "stopRequestAt": "2026-10-16T13:35:02.823852+00:00",
+  "priorWorkerStoppedAt": "2026-10-16T13:35:03.569Z",
+  "independentStopWitnessSha256": "b105de80c726f9b0cb0d710f162b1cbe1f079cbc5d9e2acd3820b8c607cc80a2",
+  "restartDropinSha256": "ddbe320f3fcd657d719a2ec28f67282ce2eb0c90ff8bf03eff9308871121936e",
+  "capitalContributionRecredited": false,
+  "freshTradingVerified": false,
+  "profitabilityEstablished": false,
+  "ownedStopReason": "STOPPED_OR_OWNER_LOST"
+}

@@ -1,4 +1,21 @@
-# Current research baseline: October16,13:15UTC
+# Current research baseline: October16,13:43UTC
+
+Sole SIG506740/source4ee16356/executable011ffde0 started13:36:03UTC and was
+still restoring original history at13:43:24. Fresh trading is not yet claimed.
+The exact native engine/bank/funding/twelve bridges are unchanged; no additional
+bridge or detached-copy replay. The runtime services its existing official stream
+before each ordinary reconciliation read;81 worker tests and the optimized
+ARM64 build passed. [Actual build/promotion](../research/moloch-inter-read-20261016/README.md).
+At stopped sequence260738 there were163 actual fill rows and attributed
+realized−106.485000. Full95,579.915000 capital remains principal, not trading gain.
+The later offline prize account-origin/FIFO adapter separately passed13 focused
+checks. No qualified prize optimizer or incremental cross-venue alpha is claimed.
+[Scorer evidence](../research/moloch-prize-utility-20261016/README.md).
+Kalshi9240 retained237 valid WebSocket books/zero gaps at13:43:23; source observer
+v8 is sealed pending a new ready SIG source. Next measure actual latency and
+genuine fill-conditioned executable values before claiming strategy improvement.
+
+# Historical research baseline: October16,13:15UTC
 
 Actual production is sole SIG503120/source31aefba5/binary0fa66973, verified
 fresh trading/realtime/noSTOP at13:14:49UTC.26 new ACKs, seven post-launch fill

@@ -1,0 +1,21 @@
+# Paper6: service original source frames between reconciliation reads
+
+The sole production worker was replaced at **13:36:03UTC, October16** by PID506740, source `4ee163561b8018e58d945b38b4f4eea5cd7b09ee`, executable SHA256 `011ffde0a00a959959acf99ef1824328c9b75f176ac66eda6c8eba6e96832c37`. The actual process executable was verified. At13:43:24UTC it was still restoring original history: **fresh trading was not yet verified**, with no successor ACKs or fills claimed. [Dated verification](live-verification.json).
+
+The existing bounded official-stream drain now runs before each ordinary reconciliation read. Its three callers use the existing Session, source state and recorder. A returned order/fill receipt still passes directly through full validation, fill application and terminal processing; no drain was inserted between receipt and fill application. One blocking HTTP request, internal pagination, admission/backoff and other synchronous preflight paths can still delay source service. This change does not guarantee a particular latency or profitable execution.
+
+## Actual checks and promotion
+
+The corrected R2 source passed all81 ARM64 worker checks, including three new actual-Session regressions for original partial-fill/terminal clocks and hashes, restart parity, failure before GET and failure after a previously committed fill. The optimized runtime release built successfully. All245 actual input hashes, original test/release logs and executable bytes were independently checked. The first candidate's three fixture failures remain retained; the correction used canonical tournament IDs in test fixtures. [Actual build evidence](build-evidence.json).
+
+This is a runtime-only change to the exact existing native engine `8acc461bc02fb9236100058fe464b203d5da005375632af05c176223c7246754`. Every native input byte is unchanged. The original bank, funding and twelve engine bridges were preserved; **no thirteenth bridge, detached-copy replay, funding reset or recredit occurred**. Normal startup still restores and validates original history. The control changes only `activation.binarySha256`; daily windows, account rates, full commitment95,579.915000, per-market limits, liabilities and bounded restart drop-in remain.
+
+The prior worker503120 cooperatively stopped at13:35:03UTC. The owner independently matched its requested stop with the worker-written STOP and status. Its real shared capture lock was available; unknown requests0, active requestnone, manual reviewfalse. The stopped bank was sequence260738. Bank prefix/head/report, dispatch and package/fundamental journals and all twelve bridge entries were checked unchanged immediately before the single successor start. [Aggregate promotion evidence](production-rollout.json), [operator review](rollout-review.md).
+
+At the stopped boundary there were163 cumulative fill rows, cash72,741.915000 and owned cost22,731.515000. Ordinary realized−151.615000 plus inherited gross45.130000 gives combined attributed realized **−106.485000**. Funding is not profit; fills are not evidence of positive expected returns.
+
+## Measurement and financial use
+
+The pre-hook frozen live comparison found12.524s median and24.467s p90 original receipt-to-processing-start delay. A new source-bound bounded measurement must exclude restoration and compare original clocks and actual work coverage. The old inspector's original baseline hash remains intact; a separate explicit comparison uses the frozen pre-hook aggregate. [Measurement protocol](measurement-plan.md). No improvement is claimed before that observation.
+
+The executable links the separately checked earlier offline prize library, whose12 helper tests passed. The worker does not invoke it. The later [account-origin/FIFO adapter fix](../moloch-prize-utility-20261016/README.md) separately passed13 focused ARM64 tests at13:39:41UTC and is published as source only. Neither variant provides a qualified portfolio posterior, complete current holdings coverage, actual opponent terminal model or authority to place prize-optimized trades.

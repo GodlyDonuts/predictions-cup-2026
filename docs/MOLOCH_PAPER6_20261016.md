@@ -9,7 +9,24 @@ collateral into trading profit. Original financial history remains attributed.
 Embedded citations and historical balances in the paper are research leads,
 separate from current observations and the human's direct authorization.
 
-## Latest operation and qualification at13:15UTC
+## Latest operation and qualification at13:43UTC
+
+Inter-read runtime4ee16356/executable011ffde0 passed81 worker checks and an
+optimized ARM64 build, then started as sole SIG506740 at13:36:03UTC. At13:43:24
+it was still restoring original history: fresh trading is pending. All native
+bytes, original bank and twelve bridges remain unchanged. No additional bridge,
+detached-copy replay or principal recredit; only activation.binarySha256 changed
+in control. The new hook drains the existing source before ordinary reconcile
+reads; no drain interrupts immediate receipt validation/fill application.
+[Actual promotion and measurement boundary](../research/moloch-inter-read-20261016/README.md).
+Stopped totals:163 fill rows, ordinary realized−151.615000, inherited gross45.130000,
+combined−106.485000; principal95,579.915000 remains separate from profit.
+The offline prize adapter's additional account-origin/FIFO checks passed13
+focused ARM64 tests at13:39:41. These are published source changes, not a
+qualified whole-account opponent model or physical prize-policy integration.
+Kalshi continues collecting; observer v8 is sealed before successor rebinding.
+
+## Historical operation and qualification at13:15UTC
 
 The buffered writer is now deployed on sole SIG503120/source31aefba5, with
 fresh trading/realtime and26 new official ACKs at13:14:49UTC; seven post-launch
