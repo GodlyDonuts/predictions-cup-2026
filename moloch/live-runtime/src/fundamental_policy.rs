@@ -222,6 +222,13 @@ fn no_existing_liability(bank:&Session,log:&DispatchLog,ex:&str)->Result<()>{
         &&!bank.engine().package_records().as_array().ok_or("FUNDAMENTAL_PACKAGE_RECORDS")?.iter().any(|p|p["phase"]!="no_execution"&&p["protectionReleased"]!=true
             &&(p["legs"].as_array().is_some_and(|a|a.iter().any(|l|l["exchangeId"]==ex))||p["portfolio"]["componentExchanges"].as_array().is_some_and(|a|a.iter().any(|x|x==ex)))),"FUNDAMENTAL_EXISTING_LIABILITY")
 }
+// A durable abort is not a venue ACK/terminal or a never-attempted intent.
+// Exclude only SDK-proved no-network attempts; actual bindings/ACKs still win
+// over any contradictory local proof. Cohort lifecycle remains separately held.
+fn physical_pending(bank:&Session,log:&DispatchLog,id:u64)->bool{
+    !log.closed.contains(&id)&&(bank.engine().live_order_bindings().contains_key(&id)||log.acknowledgments.contains_key(&id)
+        ||(log.attempted.contains(&id)&&!log.proved_no_network(id)))
+}
 fn queue_view(transport:&Transport)->Result<Value>{let q=transport.package_queue_quiet()?;Ok(json!({"sequence":q.sequence,"previous":q.previous}))}
 impl ExistingSnapshot{
     pub fn approval(&self)->&ExistingApproval{&self.origin.approval}
@@ -625,7 +632,7 @@ impl Cohorts{
             if r.existing_origin.is_some()||self.cohorts.contains_key(ex)||r.revoke_existing||!current(r,now)||now>=r.hold_until_ms||!trusted.contains(&digest(r)?)||structure(r)?<=0{continue}
             need(scope.tournament_id==r.tournament_id&&scope.exchanges.get(ex)==Some(&r.market_id),"FUNDAMENTAL_ENTRY_SCOPE")?;
             if bank.engine().wallet.quantity(ex,Side::Yes)>0||bank.engine().wallet.quantity(ex,Side::No)>0{continue}
-            if bank.engine().order_records().iter().any(|q|q["exchangeId"]==*ex&&q["id"].as_u64().is_some_and(|id|(!log.never_attempted(id)||bank.engine().live_order_bindings().contains_key(&id))&&!log.closed.contains(&id))){continue}
+            if bank.engine().order_records().iter().any(|q|q["exchangeId"]==*ex&&q["id"].as_u64().is_some_and(|id|physical_pending(bank,log,id))){continue}
             if bank.engine().package_records().as_array().ok_or("FUNDAMENTAL_PACKAGE_RECORDS")?.iter().any(|p|p["phase"]!="no_execution"&&p["protectionReleased"]!=true
                 &&(p["legs"].as_array().is_some_and(|ls|ls.iter().any(|l|l["exchangeId"]==*ex))||p["portfolio"]["componentExchanges"].as_array().is_some_and(|ls|ls.iter().any(|l|l==ex)))){continue}
             let policy=bank.engine().policy();if policy["entriesEnabled"]!=true||policy["entryStopAt"].as_str().map(daily_windows::clock).transpose()?.is_some_and(|t|now>=t){continue}
@@ -1033,7 +1040,7 @@ impl Cohorts{
             let ex=&r.input.exchange_id;
             need(bank.engine().wallet.quantity(ex,Side::Yes)==0&&bank.engine().wallet.quantity(ex,Side::No)==0
                 &&!bank.engine().order_records().iter().any(|q|q["exchangeId"]==*ex
-                    &&q["id"].as_u64().is_some_and(|id|log.attempted.contains(&id)&&!log.closed.contains(&id)))
+                    &&q["id"].as_u64().is_some_and(|id|physical_pending(bank,log,id)))
                 &&!bank.engine().package_records().as_array().ok_or("FUNDAMENTAL_PACKAGE_RECORDS")?.iter().any(|p|
                     p["phase"]!="no_execution"&&p.get("protectionReleased")!=Some(&json!(true))
                     &&p["legs"].as_array().is_some_and(|legs|legs.iter().any(|l|l["exchangeId"]==*ex))),
@@ -1054,6 +1061,7 @@ impl Cohorts{
         self.check(bank,log)?;
         let q=bank.engine().order_records().into_iter().find(|q|q["id"]==qid).ok_or("FUNDAMENTAL_QUOTE")?;
         let ex=q["exchangeId"].as_str().ok_or("FUNDAMENTAL_EXCHANGE")?;let Some(r)=self.policies.get(ex)else{return Ok(Decision::Unmanaged)};
+        if log.proved_no_network(qid){return Ok(hold("proved_aborted_intent_cannot_retry"))}
         need(scope.tournament_id==r.tournament_id&&scope.exchanges.get(ex)==Some(&r.market_id)&&q["marketId"]==r.market_id,"FUNDAMENTAL_SCOPE_CHANGED")?;
         if bank.engine().is_package_order(qid){return Ok(hold("package_cannot_consume_fundamental_inventory"))}
         if q["retired"]!=false||q["expiresAt"].as_u64().is_none_or(|t|t<=now)||q["cancelEffectiveAt"].is_u64(){return Ok(hold("inactive_native_quote"))}
@@ -1096,9 +1104,9 @@ impl Cohorts{
         if !approved||r.revoke_existing||now>=r.hold_until_ms{return Ok(hold("current_review_required_for_entry"))}
         if q["action"]!="buy"||q["side"]!=r.side{return Ok(hold("reviewed_entry_side_only"))}
         if bank.engine().wallet.quantity(ex,Side::Yes)!=0||bank.engine().wallet.quantity(ex,Side::No)!=0{return Ok(hold("existing_inventory_cannot_be_adopted"))}
-        if log.attempted.iter().any(|id|!log.acknowledgments.contains_key(id)){return Ok(hold("unknown_physical_acceptance"))}
+        if log.attempted.iter().any(|id|!log.acknowledgments.contains_key(id)&&!log.proved_no_network(*id)){return Ok(hold("unknown_physical_acceptance"))}
         if bank.engine().order_records().iter().any(|other|other["exchangeId"]==ex
-            &&other["id"].as_u64().is_some_and(|id|log.attempted.contains(&id)&&!log.closed.contains(&id))){return Ok(hold("same_exchange_physical_order_open"))}
+            &&other["id"].as_u64().is_some_and(|id|physical_pending(bank,log,id))){return Ok(hold("same_exchange_physical_order_open"))}
         if bank.engine().package_blocks_submissions(){return Ok(hold("unresolved_package"))}
         if now>=daily_windows::clock(bank.engine().policy()["entryStopAt"].as_str().ok_or("FUNDAMENTAL_ENTRY_DEADLINE")?)?{return Ok(hold("original_entry_window_expired"))}
         let source_until=r.sources.iter().try_fold(r.expires_at_ms,|end,s|Ok::<_,Box<dyn std::error::Error>>(end.min(s.observed_at_ms.checked_add(s.maximum_age_ms).ok_or("FUNDAMENTAL_SOURCE_CLOCK_RANGE")?)))?;
@@ -1177,11 +1185,12 @@ impl Cohorts{
     /// The SDK/original dispatch retain unknown-acceptance and rate controls.
     pub fn check_bound(&self,bank:&Session,log:&DispatchLog,scope:&Scope,qid:u64,spec:&RequestSpec,trusted:&BTreeSet<String>,now:u64)->Result<()>{
         self.check(bank,log)?;
+        need(!log.proved_no_network(qid),"FUNDAMENTAL_ABORTED_INTENT_CANNOT_RETRY")?;
         let(ex,c)=self.cohorts.iter().find(|(_,c)|c.binding(qid).is_some()).ok_or("FUNDAMENTAL_DURABLE_BINDING_REQUIRED")?;
         let b=c.binding(qid).unwrap();need(digest(spec)?==b.spec_sha256,"FUNDAMENTAL_PHYSICAL_REQUEST_CHANGED")?;
         if c.entry_id()==Some(qid){
             let r=&self.policies[ex];need(trusted.contains(&digest(r)?)&&digest(r)?==b.review_sha256&&current(r,now)&&!r.revoke_existing&&now<c.hold_until_ms,"FUNDAMENTAL_PHYSICAL_REVIEW_CHANGED")?;
-            need(self.owned(bank,ex,c)?==0&&log.attempted.iter().all(|id|*id==qid||log.acknowledgments.contains_key(id)),"FUNDAMENTAL_PHYSICAL_ENTRY_OWNERSHIP")?;
+            need(self.owned(bank,ex,c)?==0&&log.attempted.iter().all(|id|*id==qid||log.acknowledgments.contains_key(id)||log.proved_no_network(*id)),"FUNDAMENTAL_PHYSICAL_ENTRY_OWNERSHIP")?;
             need(scope.tournament_id==r.tournament_id&&scope.exchanges.get(ex)==Some(&r.market_id)
                 &&now<daily_windows::clock(bank.engine().policy()["entryStopAt"].as_str().ok_or("FUNDAMENTAL_ENTRY_DEADLINE")?)?,"FUNDAMENTAL_PHYSICAL_SCOPE_OR_DEADLINE")?;
             let q=bank.engine().order_records().into_iter().find(|q|q["id"]==qid).ok_or("FUNDAMENTAL_QUOTE")?;
