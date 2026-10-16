@@ -1,0 +1,56 @@
+{
+  "at": "2026-10-16T08:55:43.764814+00:00",
+  "oldPid": 421878,
+  "newPid": 441490,
+  "sourceCommit": "fec81a5eb00710f01ed15d5d3701be865c9f8baa",
+  "binarySha256": "e38a64d6a7394aba3bd32fd2b14ebe7b45352b7314ec20b9d93fb9b85314dfdb",
+  "engineIdentity": "c3731d88e8db875c773350f62559daf9d8636818ec269862c7540d54424e1d82",
+  "nativeSourcesByteIdentical": true,
+  "financialBridgeEntries": 10,
+  "existingFinancialBridgeByteIdentical": true,
+  "controlChanges": [
+    "activation.binarySha256"
+  ],
+  "runtimeChanges": [
+    "retire only stale proven unsent flat-wallet ordinary BUY drafts; protect pending mates",
+    "source-bound genuine covered native SELL read nomination",
+    "unchanged physical reconciliation, source clocks, risk and accounting"
+  ],
+  "profitabilityEstablished": false,
+  "checks": {
+    "ownedAgeReads": {
+      "passed": 17,
+      "failed": 0
+    },
+    "worker": {
+      "passed": 58,
+      "failed": 0
+    },
+    "staleEntryDrafts": {
+      "passed": 10,
+      "failed": 0
+    },
+    "release": {
+      "passed": true
+    },
+    "lockedRelease": {
+      "passed": true
+    },
+    "sourceHashes": {
+      "passed": true
+    }
+  },
+  "originalBoundary": {
+    "at": "2026-10-16T08:55:19.219819+00:00",
+    "prefixBytes": 619330732,
+    "prefixSha256": "b84797d215cdb8988f53e2be6d5b5b9611aa7bacaa83ef6f86c3cdc9fbe58704",
+    "actualFills": 132,
+    "queueQuiet": {
+      "globalUnknownCount": 0,
+      "active": null,
+      "manualReview": false
+    },
+    "sequence": 205233,
+    "reportSha256": "566bf7a325e8a5a58678554ceb2544c023963e394c6f9138a25c9f0582f4525c"
+  }
+}

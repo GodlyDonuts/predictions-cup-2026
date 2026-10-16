@@ -1,3 +1,7 @@
+# Fresh production verified09:04:37UTC
+
+Sole441490/sourcefec81a5e is trading/realtime, matching binary/STOP absent, with three newACKs/zero newfills since restart.132cumulativefillrows and realized−74.305 unchanged. No new retirement/owned-read diagnostic observed yet; no actual release amount or improved returns claimed. [Actual rollout](draft-refresh-production-rollout.json), [dated verification](draft-refresh-live-verification.json). Additional allocation and bulk screening are separately being validated and inactive.
+
 # Runtime repair deployed08:55:43UTC; restoration pending
 
 SolePID441490/sourcefec81a5e/binarye38a64d6… started with original205233events/132fillrows, nativec3731d88… and ten byte-identical financial bridges. At08:56:09 it is restoring, not yet fresh-trading verified. The release retires only stale proven-unsent ordinaryBUY drafts while protecting held/pending mates, and nominates genuine covered nativeSELL scopes for bounded fresh reads.17owned-read+10selector+58worker checks and locked release pass; no risk/price/capital increase. Source integrated onmaina149303b. Current realized−74.305 remains separate from dashboard marks; no new fills/profit claimed. [Current state](../../docs/CURRENT_STATE.md).

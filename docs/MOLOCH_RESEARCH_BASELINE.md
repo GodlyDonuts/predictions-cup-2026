@@ -1,3 +1,7 @@
+# Latest verification: October16,09:04:37UTC
+
+Sole441490/sourcefec81a5e is fresh trading/realtime, binary verified/STOP absent, three newACKs and zero newfillrows since08:55:43 restart.132cumulativefillrows/attributed realized−74.305 unchanged. No new stale-retirement/owned-read diagnostic observed yet. [Dated evidence](../research/moloch-throughput-20261016/draft-refresh-live-verification.json). Capital allocation, optional bulk screening and the unified advanced Paper5 source are in separate implementation/validation; none is newly activated. These source changes are not evidence of increased returns.
+
 # Latest deployment: October16,08:55:43UTC
 
 SolePID441490/sourcefec81a5e replaces421878 with the stale never-submitted reservation repair and genuine covered-exit source nomination. At08:56:09, matching binary/STOP absent but **restoration pending; fresh trading not yet verified**. The original205233-event bank,132fills, accounting identityc3731d88… and ten unchanged bridges are preserved.85focused checks and locked release passed. No sizing/price/capital mandate changed. [Dated state](CURRENT_STATE.md), [supported API capabilities and idle-capital reconciliation](../research/moloch-capabilities-20261016.md). Native clone optimization and probabilistic execution are still separate source work, not this deployment. Additional owner funding and bulk negative screening are being implemented separately.

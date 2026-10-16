@@ -1,0 +1,377 @@
+{
+  "schemaVersion": 1,
+  "status": "original_initial_inventory_preserved_current_discovery_in_supplement",
+  "source": {
+    "path": "research/crossvenue_screen_2026-10-02/join_records.json.gz",
+    "sha256": "09dc1f23977c14a9c444630837dda764b08ceb84d44f98e49572d56c800ec47a"
+  },
+  "markets": [
+    {
+      "cup_market_id": "373",
+      "cup_title": "Will the Republican Party win the New Hampshire Governor?",
+      "cup_party": "Republican",
+      "cup_race": "New Hampshire Governor",
+      "cup_url": "https://sig.thesuper.market/markets/373",
+      "cup_office": "Governor",
+      "cup_state_code": "NH",
+      "cup_district": null,
+      "cup_election_year": 2026,
+      "cup_election_year_source_url": "https://predictionscup.com/rules/",
+      "cup_election_year_evidence": "Official tournament-wide 2026 Midterm Elections scope, supplied and verified by parent; scoped market IDs are from same Cup inventory",
+      "cup_special_election": null,
+      "cup_stage": null,
+      "cup_identity_observed_at": "2026-10-02T05:29:41Z",
+      "cup_identity_live_reverified_today": true,
+      "cup_identity_provenance": [
+        {
+          "source_kind": "prior_saved_official_ui_catalog",
+          "source_url": "https://sig.thesuper.market/markets",
+          "observed_at": "2026-10-01T18:48:51.435Z",
+          "evidence_path": "/workspace/shared/predictions_cup/public_market_inventory_2026-10-01_184851.json",
+          "href": "https://sig.thesuper.market/markets/373"
+        },
+        {
+          "source_kind": "live_official_ui_directory",
+          "source_url": "https://sig.thesuper.market/markets",
+          "observed_at": "2026-10-02T05:29:41Z",
+          "href": "/markets/373",
+          "category_label": "Election"
+        }
+      ]
+    },
+    {
+      "cup_market_id": "372",
+      "cup_title": "Will the Democratic Party win the New Hampshire Governor?",
+      "cup_party": "Democratic",
+      "cup_race": "New Hampshire Governor",
+      "cup_url": "https://sig.thesuper.market/markets/372",
+      "cup_office": "Governor",
+      "cup_state_code": "NH",
+      "cup_district": null,
+      "cup_election_year": 2026,
+      "cup_election_year_source_url": "https://predictionscup.com/rules/",
+      "cup_election_year_evidence": "Official tournament-wide 2026 Midterm Elections scope, supplied and verified by parent; scoped market IDs are from same Cup inventory",
+      "cup_special_election": null,
+      "cup_stage": null,
+      "cup_identity_observed_at": "2026-10-02T05:29:41Z",
+      "cup_identity_live_reverified_today": true,
+      "cup_identity_provenance": [
+        {
+          "source_kind": "prior_saved_official_ui_catalog",
+          "source_url": "https://sig.thesuper.market/markets",
+          "observed_at": "2026-10-01T18:48:51.435Z",
+          "evidence_path": "/workspace/shared/predictions_cup/public_market_inventory_2026-10-01_184851.json",
+          "href": "https://sig.thesuper.market/markets/372"
+        },
+        {
+          "source_kind": "live_official_ui_directory",
+          "source_url": "https://sig.thesuper.market/markets",
+          "observed_at": "2026-10-02T05:29:41Z",
+          "href": "/markets/372",
+          "category_label": "Election"
+        }
+      ]
+    },
+    {
+      "cup_market_id": "304",
+      "cup_title": "Will the Republican Party win the Kansas Governor?",
+      "cup_party": "Republican",
+      "cup_race": "Kansas Governor",
+      "cup_url": "https://sig.thesuper.market/markets/304",
+      "cup_office": "Governor",
+      "cup_state_code": "KS",
+      "cup_district": null,
+      "cup_election_year": 2026,
+      "cup_election_year_source_url": "https://predictionscup.com/rules/",
+      "cup_election_year_evidence": "Official tournament-wide 2026 Midterm Elections scope, supplied and verified by parent; scoped market IDs are from same Cup inventory",
+      "cup_special_election": null,
+      "cup_stage": null,
+      "cup_identity_observed_at": "2026-10-01T18:48:51.435Z",
+      "cup_identity_live_reverified_today": false,
+      "cup_identity_provenance": [
+        {
+          "source_kind": "prior_saved_official_ui_catalog",
+          "source_url": "https://sig.thesuper.market/markets",
+          "observed_at": "2026-10-01T18:48:51.435Z",
+          "evidence_path": "/workspace/shared/predictions_cup/public_market_inventory_2026-10-01_184851.json",
+          "href": "https://sig.thesuper.market/markets/304"
+        }
+      ]
+    },
+    {
+      "cup_market_id": "303",
+      "cup_title": "Will the Democratic Party win the Kansas Governor?",
+      "cup_party": "Democratic",
+      "cup_race": "Kansas Governor",
+      "cup_url": "https://sig.thesuper.market/markets/303",
+      "cup_office": "Governor",
+      "cup_state_code": "KS",
+      "cup_district": null,
+      "cup_election_year": 2026,
+      "cup_election_year_source_url": "https://predictionscup.com/rules/",
+      "cup_election_year_evidence": "Official tournament-wide 2026 Midterm Elections scope, supplied and verified by parent; scoped market IDs are from same Cup inventory",
+      "cup_special_election": null,
+      "cup_stage": null,
+      "cup_identity_observed_at": "2026-10-01T18:48:51.435Z",
+      "cup_identity_live_reverified_today": false,
+      "cup_identity_provenance": [
+        {
+          "source_kind": "prior_saved_official_ui_catalog",
+          "source_url": "https://sig.thesuper.market/markets",
+          "observed_at": "2026-10-01T18:48:51.435Z",
+          "evidence_path": "/workspace/shared/predictions_cup/public_market_inventory_2026-10-01_184851.json",
+          "href": "https://sig.thesuper.market/markets/303"
+        }
+      ]
+    },
+    {
+      "cup_market_id": "280",
+      "cup_title": "Will the Independent Party win the Nebraska Senate?",
+      "cup_party": "Independent",
+      "cup_race": "Nebraska Senate",
+      "cup_url": "https://sig.thesuper.market/markets/280",
+      "cup_office": "Senate",
+      "cup_state_code": "NE",
+      "cup_district": null,
+      "cup_election_year": 2026,
+      "cup_election_year_source_url": "https://predictionscup.com/rules/",
+      "cup_election_year_evidence": "Official tournament-wide 2026 Midterm Elections scope, supplied and verified by parent; scoped market IDs are from same Cup inventory",
+      "cup_special_election": null,
+      "cup_stage": null,
+      "cup_identity_observed_at": "2026-10-01T18:48:51.435Z",
+      "cup_identity_live_reverified_today": false,
+      "cup_identity_provenance": [
+        {
+          "source_kind": "prior_saved_official_ui_catalog",
+          "source_url": "https://sig.thesuper.market/markets",
+          "observed_at": "2026-10-01T18:48:51.435Z",
+          "evidence_path": "/workspace/shared/predictions_cup/public_market_inventory_2026-10-01_184851.json",
+          "href": "https://sig.thesuper.market/markets/280"
+        }
+      ]
+    },
+    {
+      "cup_market_id": "276",
+      "cup_title": "Will the Independent Party win the Montana Senate?",
+      "cup_party": "Independent",
+      "cup_race": "Montana Senate",
+      "cup_url": "https://sig.thesuper.market/markets/276",
+      "cup_office": "Senate",
+      "cup_state_code": "MT",
+      "cup_district": null,
+      "cup_election_year": 2026,
+      "cup_election_year_source_url": "https://predictionscup.com/rules/",
+      "cup_election_year_evidence": "Official tournament-wide 2026 Midterm Elections scope, supplied and verified by parent; scoped market IDs are from same Cup inventory",
+      "cup_special_election": null,
+      "cup_stage": null,
+      "cup_identity_observed_at": "2026-10-01T18:48:51.435Z",
+      "cup_identity_live_reverified_today": false,
+      "cup_identity_provenance": [
+        {
+          "source_kind": "prior_saved_official_ui_catalog",
+          "source_url": "https://sig.thesuper.market/markets",
+          "observed_at": "2026-10-01T18:48:51.435Z",
+          "evidence_path": "/workspace/shared/predictions_cup/public_market_inventory_2026-10-01_184851.json",
+          "href": "https://sig.thesuper.market/markets/276"
+        }
+      ]
+    },
+    {
+      "cup_market_id": "269",
+      "cup_title": "Will the Republican Party win the Louisiana Senate?",
+      "cup_party": "Republican",
+      "cup_race": "Louisiana Senate",
+      "cup_url": "https://sig.thesuper.market/markets/269",
+      "cup_office": "Senate",
+      "cup_state_code": "LA",
+      "cup_district": null,
+      "cup_election_year": 2026,
+      "cup_election_year_source_url": "https://predictionscup.com/rules/",
+      "cup_election_year_evidence": "Official tournament-wide 2026 Midterm Elections scope, supplied and verified by parent; scoped market IDs are from same Cup inventory",
+      "cup_special_election": null,
+      "cup_stage": null,
+      "cup_identity_observed_at": "2026-10-01T18:48:51.435Z",
+      "cup_identity_live_reverified_today": false,
+      "cup_identity_provenance": [
+        {
+          "source_kind": "prior_saved_official_ui_catalog",
+          "source_url": "https://sig.thesuper.market/markets",
+          "observed_at": "2026-10-01T18:48:51.435Z",
+          "evidence_path": "/workspace/shared/predictions_cup/public_market_inventory_2026-10-01_184851.json",
+          "href": "https://sig.thesuper.market/markets/269"
+        }
+      ]
+    },
+    {
+      "cup_market_id": "268",
+      "cup_title": "Will the Democratic Party win the Louisiana Senate?",
+      "cup_party": "Democratic",
+      "cup_race": "Louisiana Senate",
+      "cup_url": "https://sig.thesuper.market/markets/268",
+      "cup_office": "Senate",
+      "cup_state_code": "LA",
+      "cup_district": null,
+      "cup_election_year": 2026,
+      "cup_election_year_source_url": "https://predictionscup.com/rules/",
+      "cup_election_year_evidence": "Official tournament-wide 2026 Midterm Elections scope, supplied and verified by parent; scoped market IDs are from same Cup inventory",
+      "cup_special_election": null,
+      "cup_stage": null,
+      "cup_identity_observed_at": "2026-10-01T18:48:51.435Z",
+      "cup_identity_live_reverified_today": false,
+      "cup_identity_provenance": [
+        {
+          "source_kind": "prior_saved_official_ui_catalog",
+          "source_url": "https://sig.thesuper.market/markets",
+          "observed_at": "2026-10-01T18:48:51.435Z",
+          "evidence_path": "/workspace/shared/predictions_cup/public_market_inventory_2026-10-01_184851.json",
+          "href": "https://sig.thesuper.market/markets/268"
+        }
+      ]
+    },
+    {
+      "cup_market_id": "191",
+      "cup_title": "Will the Independent Party win the Rhode Island Governor?",
+      "cup_party": "Independent",
+      "cup_race": "Rhode Island Governor",
+      "cup_url": "https://sig.thesuper.market/markets/191",
+      "cup_office": "Governor",
+      "cup_state_code": "RI",
+      "cup_district": null,
+      "cup_election_year": 2026,
+      "cup_election_year_source_url": "https://predictionscup.com/rules/",
+      "cup_election_year_evidence": "Official tournament-wide 2026 Midterm Elections scope, supplied and verified by parent; scoped market IDs are from same Cup inventory",
+      "cup_special_election": null,
+      "cup_stage": null,
+      "cup_identity_observed_at": "2026-10-01T18:48:51.435Z",
+      "cup_identity_live_reverified_today": false,
+      "cup_identity_provenance": [
+        {
+          "source_kind": "prior_saved_official_ui_catalog",
+          "source_url": "https://sig.thesuper.market/markets",
+          "observed_at": "2026-10-01T18:48:51.435Z",
+          "evidence_path": "/workspace/shared/predictions_cup/public_market_inventory_2026-10-01_184851.json",
+          "href": "https://sig.thesuper.market/markets/191"
+        }
+      ]
+    },
+    {
+      "cup_market_id": "154",
+      "cup_title": "Will the Republican Party win the U.S. Senate?",
+      "cup_party": "Republican",
+      "cup_race": "U.S. Senate",
+      "cup_url": "https://sig.thesuper.market/markets/154",
+      "cup_office": null,
+      "cup_state_code": null,
+      "cup_district": null,
+      "cup_election_year": 2026,
+      "cup_election_year_source_url": "https://predictionscup.com/rules/",
+      "cup_election_year_evidence": "Official tournament-wide 2026 Midterm Elections scope, supplied and verified by parent; scoped market IDs are from same Cup inventory",
+      "cup_special_election": null,
+      "cup_stage": null,
+      "cup_identity_observed_at": "2026-10-02T05:29:27Z",
+      "cup_identity_live_reverified_today": true,
+      "cup_identity_provenance": [
+        {
+          "source_kind": "prior_saved_official_ui_catalog",
+          "source_url": "https://sig.thesuper.market/markets",
+          "observed_at": "2026-10-01T18:48:51.435Z",
+          "evidence_path": "/workspace/shared/predictions_cup/public_market_inventory_2026-10-01_184851.json",
+          "href": "https://sig.thesuper.market/markets/154"
+        },
+        {
+          "source_kind": "live_official_ui_home_featured_races",
+          "source_url": "https://sig.thesuper.market/",
+          "observed_at": "2026-10-02T05:29:27Z",
+          "href": "sig.thesuper.market/markets/154?tournament=midterm-elections",
+          "category_label": "Other"
+        }
+      ]
+    },
+    {
+      "cup_market_id": "153",
+      "cup_title": "Will the Democratic Party win the U.S. Senate?",
+      "cup_party": "Democratic",
+      "cup_race": "U.S. Senate",
+      "cup_url": "https://sig.thesuper.market/markets/153",
+      "cup_office": null,
+      "cup_state_code": null,
+      "cup_district": null,
+      "cup_election_year": 2026,
+      "cup_election_year_source_url": "https://predictionscup.com/rules/",
+      "cup_election_year_evidence": "Official tournament-wide 2026 Midterm Elections scope, supplied and verified by parent; scoped market IDs are from same Cup inventory",
+      "cup_special_election": null,
+      "cup_stage": null,
+      "cup_identity_observed_at": "2026-10-01T18:48:51.435Z",
+      "cup_identity_live_reverified_today": false,
+      "cup_identity_provenance": [
+        {
+          "source_kind": "prior_saved_official_ui_catalog",
+          "source_url": "https://sig.thesuper.market/markets",
+          "observed_at": "2026-10-01T18:48:51.435Z",
+          "evidence_path": "/workspace/shared/predictions_cup/public_market_inventory_2026-10-01_184851.json",
+          "href": "https://sig.thesuper.market/markets/153"
+        }
+      ]
+    },
+    {
+      "cup_market_id": "152",
+      "cup_title": "Will the Republican Party win the U.S. House?",
+      "cup_party": "Republican",
+      "cup_race": "U.S. House",
+      "cup_url": "https://sig.thesuper.market/markets/152",
+      "cup_office": null,
+      "cup_state_code": null,
+      "cup_district": null,
+      "cup_election_year": 2026,
+      "cup_election_year_source_url": "https://predictionscup.com/rules/",
+      "cup_election_year_evidence": "Official tournament-wide 2026 Midterm Elections scope, supplied and verified by parent; scoped market IDs are from same Cup inventory",
+      "cup_special_election": null,
+      "cup_stage": null,
+      "cup_identity_observed_at": "2026-10-01T18:48:51.435Z",
+      "cup_identity_live_reverified_today": false,
+      "cup_identity_provenance": [
+        {
+          "source_kind": "prior_saved_official_ui_catalog",
+          "source_url": "https://sig.thesuper.market/markets",
+          "observed_at": "2026-10-01T18:48:51.435Z",
+          "evidence_path": "/workspace/shared/predictions_cup/public_market_inventory_2026-10-01_184851.json",
+          "href": "https://sig.thesuper.market/markets/152"
+        }
+      ]
+    },
+    {
+      "cup_market_id": "151",
+      "cup_title": "Will the Democratic Party win the U.S. House?",
+      "cup_party": "Democratic",
+      "cup_race": "U.S. House",
+      "cup_url": "https://sig.thesuper.market/markets/151",
+      "cup_office": null,
+      "cup_state_code": null,
+      "cup_district": null,
+      "cup_election_year": 2026,
+      "cup_election_year_source_url": "https://predictionscup.com/rules/",
+      "cup_election_year_evidence": "Official tournament-wide 2026 Midterm Elections scope, supplied and verified by parent; scoped market IDs are from same Cup inventory",
+      "cup_special_election": null,
+      "cup_stage": null,
+      "cup_identity_observed_at": "2026-10-02T05:29:27Z",
+      "cup_identity_live_reverified_today": true,
+      "cup_identity_provenance": [
+        {
+          "source_kind": "prior_saved_official_ui_catalog",
+          "source_url": "https://sig.thesuper.market/markets",
+          "observed_at": "2026-10-01T18:48:51.435Z",
+          "evidence_path": "/workspace/shared/predictions_cup/public_market_inventory_2026-10-01_184851.json",
+          "href": "https://sig.thesuper.market/markets/151"
+        },
+        {
+          "source_kind": "live_official_ui_home_featured_races",
+          "source_url": "https://sig.thesuper.market/",
+          "observed_at": "2026-10-02T05:29:27Z",
+          "href": "sig.thesuper.market/markets/151?tournament=midterm-elections",
+          "category_label": "Other"
+        }
+      ]
+    }
+  ],
+  "currentDiscovery": "research/moloch-kalshi-mapping-20261016/supplement.json"
+}
