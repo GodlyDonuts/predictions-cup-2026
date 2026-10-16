@@ -1,0 +1,69 @@
+{
+  "version": 2,
+  "reviewerId": "Rhaegal-Viserion-paper6-20261016",
+  "assumptionLabel": "Execution-owner reviewed terminal experiment: Call the Map published Merkley win probability0.995 is a model point assumption, not a calibrated lower bound. Ordinary Democratic victory is used as a conservative proxy for Republican Party Winner NO under the exact structured Oregon General contract; party-resolution details remain operator assumptions. Official list gives Merkley Democrat/Working Families and Smith Republican; fusion, affiliation, replacement, independent victory, refund and resolver exceptions are unresolved. The0.03 exceptional allowance is an operator stress allowance, not an estimated frequency; exceptional payout lower bound0 and margin0.01. Other forecasts share inputs and are not averaged or multiplied; Kalshi is not fair value. Hold through actual settlement if delayed. Source expiry blocks new entries, not forced liquidation. Original historical node48h reference TTL is explicitly approved and never renews its original clock; current physical node/root verification remains mandatory. Official ballot publication time is unknown: publishedAtMs0 is an explicit unknown sentinel, not a claimed1970 publication. Principal2000 is an explicit execution-owner risk allocation within the existing full-account mandate.. Root turnover review: aggregate held-plus-new principal ceiling 5000.000000, maximum10000 total cohort shares, at most2 independently closed/attributed same-side physical entries. Original model point, exceptional assumptions, source bytes/clocks, contract and settlement objective unchanged. Risk caps are operator limits, not Kelly or calibrated confidence bounds. Prior actual ACK closure, FIFO ownership, fresh execution facts, exact limits and final authority remain mandatory; no retry or recredit. Authorized same-cohort top-up does not renew an expired source.",
+  "runId": "moloch-live-20261015-v1",
+  "bankManifestSha256": "78acaef952ed95b9bff24a3349ece669ccbe88ef7294b27dd9c2aa7d09cae325",
+  "tournamentId": "bda92870-621e-47b0-bc3c-3602c5c26f55",
+  "marketId": "288",
+  "exchangeId": "977",
+  "contractId": "289",
+  "officialContractRootSha256": "ebe719c4fc2796abfc66e2669db45e84abf9c1c7310e00dc298f05f5c2c60d15",
+  "side": "NO",
+  "ordinaryProbability": "0.995000",
+  "exceptionalProbabilityAllowance": "0.030000",
+  "minimumExceptionalPayout": "0.000000",
+  "marginPerShare": "0.010000",
+  "maximumPrincipal": "5000.000000",
+  "maximumQuantity": 10000,
+  "reviewedAtMs": 1792189365399,
+  "expiresAtMs": 1792240623505,
+  "holdUntilMs": 1793811600000,
+  "payoutMappingIsOperatorAssumption": true,
+  "revokeExisting": false,
+  "sources": [
+    {
+      "kind": "forecast",
+      "url": "https://www.callthemap.com/senate/oregon",
+      "sha256": "7e6f07c53525903c7ae12ef2fb6e344028539d2f3ee8d8c498f17c07125563d1",
+      "publishedAtMs": 1792173446000,
+      "observedAtMs": 1792175695251,
+      "maximumAgeMs": 86400000
+    },
+    {
+      "kind": "official_ballot",
+      "url": "https://www.co.umatilla.or.us/departments/elections/general-election/contest-and-candidate-listing-for-the-november-3-2026-general-election",
+      "sha256": "82753be8eb22a0741fe402c0cb841b37f187cad0fef50c65e3ddd6c8bb4a9f64",
+      "publishedAtMs": 0,
+      "observedAtMs": 1792175699736,
+      "maximumAgeMs": 86400000
+    },
+    {
+      "kind": "official_contract_node",
+      "url": "https://sig.thesuper.market/api/v1/markets/288/nodes?tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55",
+      "sha256": "9bca4722d2a06e32e0d86360b43c6aae6e4336876dec40a5a50b4cb70f9568f1",
+      "publishedAtMs": 1792067823505,
+      "observedAtMs": 1792067823505,
+      "maximumAgeMs": 172800000
+    }
+  ],
+  "executionPolicy": {
+    "version": 1,
+    "allowedModes": [
+      "boundedLimitMayRest",
+      "improveOneTick",
+      "joinBid"
+    ]
+  },
+  "valuationObjective": {
+    "kind": "terminalSettlement",
+    "timingSourceSha256": "9bca4722d2a06e32e0d86360b43c6aae6e4336876dec40a5a50b4cb70f9568f1",
+    "timingJsonPointer": "/data/root/settlement_date",
+    "scheduledSettlementAtMs": 1793811600000,
+    "delayPolicy": "holdForActualSettlement"
+  },
+  "sameSideTopUps": {
+    "version": 1,
+    "maximumEntries": 2
+  }
+}

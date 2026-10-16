@@ -1,0 +1,113 @@
+{
+  "at": "2026-10-16T22:33:20.520550+00:00",
+  "operator": "moloch-turnover-20261016-v1",
+  "oldPid": 545165,
+  "newPid": 565108,
+  "sourceCommit": "20543435f9354ae5a599866545cbf1aae6a03cfa",
+  "binarySha256": "d9f5cbc628dd2e2d2d4f970106706029b8af56b723b5ac51f80ac1939ab48b3d",
+  "engineIdentity": "b5b28a476fc057de93f5784f7b3600116418aa7e775f25576cfd2906ecd77713",
+  "release": "/home/archon/apps/moloch/releases/paper6-turnover-d9f5cbc628dd/moloch-live-runtime",
+  "control": "/home/archon/apps/moloch/shared/moloch-live-paper6-turnover-20261016.json",
+  "controlSha256": "46b659026c88d28cd912574c376abc312a94d95608f7aa7681105585829145f3",
+  "stagingSha256": "5e60caf4c224db264668284ed2f596cecf1d5da0fd775f5b77e83e11a01b3d55",
+  "approvalSha256": "3afc1797bded6237d90979baed084dc4bae1922369f89873ca7b0f075b9a2c20",
+  "bridgeSha256": "ab988f8d063b3b4a76167a193eb70576c5667ff28e3fe603865fa5229a5ce348",
+  "financialBridgeEntries": 13,
+  "boundary": {
+    "at": "2026-10-16T22:31:05.344419+00:00",
+    "operator": "moloch-turnover-20261016-v1",
+    "stagingSha256": "5e60caf4c224db264668284ed2f596cecf1d5da0fd775f5b77e83e11a01b3d55",
+    "snapshot": {
+      "head": {
+        "hash": "869192e9fa009729a3fd613f9cd590b74c83b7c85b9aa11a1166b8f5522501e0",
+        "manifestHash": "78acaef952ed95b9bff24a3349ece669ccbe88ef7294b27dd9c2aa7d09cae325",
+        "previous": "37d98937fb8afa7f0e95c00644b1826399770acb6e65a246b2ac91db7dc8f435",
+        "sequence": 348466
+      },
+      "reportSha256": "85f0b6f09e873f6c6b29bf5e75e49b4106cd504a6116333a0b5dd4d39ac75615",
+      "prefixBytes": 1083938002,
+      "prefixSha256": "c7ad0eec182ac9fd2d676f49f1682b8891bd4964a5c15b7ace3840407fab1a38",
+      "dispatch": {
+        "sequence": 15754,
+        "hash": "b1a3c420ed7f238ad959d35175bcc935aada6199b209af2b42677b70be231084",
+        "acknowledged": 1360,
+        "provedAborted": {
+          "3411": "c9c4bb4bade0edf0f52f1ae5d41d93f4518770f99844578f8a3a319a75d94de7"
+        },
+        "unknownOrdinaryAttempts": 0
+      },
+      "pins": {
+        "/home/archon/apps/moloch/shared/live-production-v1/bank-all-markets-v1/manifest.json": "d74b52eb107ea97388c106505d36fce14700b082723c9f7bfa229f2aedafef9e",
+        "/home/archon/apps/moloch/shared/live-production-v1/bank-all-markets-v1/engine-upgrade-v1.json": "76fab91acccfe26cfb1a80010a7b1fb00df7f92f02dc20d5127192258bcf0723",
+        "/home/archon/apps/moloch/shared/live-production-v1/dispatch.ndjson": "f2ff74d3e530865ca9034a7b5c2a2a0278f8ef8256eaa8cbe4803df00e3b24b2",
+        "/home/archon/apps/moloch/shared/live-production-v1/fundamental.ndjson": "44a5a733af319945f376364394dbc41ef335280f51c71fe0ca72f9eee72122b7",
+        "/home/archon/apps/moloch/shared/live-production-v1/fundamental.initialized.json": "cb5efd642c6ab79ff57db55e36a17dcd7497a7f3f160be3fff2546d7a34021c1",
+        "/home/archon/apps/moloch/shared/live-production-v1/package-dispatch/package-dispatch.ndjson": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "fills": 241,
+      "reportRealized": "-136.230000"
+    },
+    "financialPrefixParity": {
+      "path": "/tmp/moloch-native-flow-benchmark-turnover-b5-20261016/result.json",
+      "sha256": "d439392d7559023025a94be023b6256a45e9cacc49b2d917fab6576cf6ca2a29"
+    },
+    "requestSha256": "9dc9c2850225c0853fab07e5268bac421f6224b27bca197e217215fb9c2b2118",
+    "stopSha256": "a08af84342cb4b5e60f8f38f281cba92f5623b0a72e9a85958f6fe2f0a3e0c05",
+    "workerStatusSha256": "8aeb2ff05ac5c17191000f6aab4e0997323928e46bf6bb98dca77bd1592863ef",
+    "workerStatus": {
+      "at": "2026-10-16T22:30:52.907Z",
+      "mode": "stopped",
+      "pid": 545165,
+      "profitabilityEstablished": false,
+      "reason": "STOPPED_OR_OWNER_LOST"
+    },
+    "queueQuiet": {
+      "globalUnknownCount": 0,
+      "active": null,
+      "manualReview": false
+    }
+  },
+  "controlChanges": [
+    "activation.binarySha256",
+    "fundamentalPolicy",
+    "profitableDepthMode"
+  ],
+  "reviewDeltas": [
+    {
+      "exchangeId": "977",
+      "priorReviewPath": "/home/archon/apps/moloch/shared/fundamental-paper6-sell-recovery-20261016/or-review.json",
+      "priorReviewRawSha256": "f4371abd456ecf0a920f98391d6e014a6f9a641c93986da079b41d17d62b956e",
+      "priorPrincipal": "2000.000000",
+      "newPrincipal": "5000.000000",
+      "maximumEntries": 2,
+      "reviewedAtMs": 1792189365399,
+      "originalSourcesAndLifetimesUnchanged": true,
+      "valuationObjectiveUnchanged": true
+    },
+    {
+      "exchangeId": "1067",
+      "priorReviewPath": "/home/archon/apps/moloch/shared/fundamental-paper6-cold-six-forecast-20261016/alaska-review.json",
+      "priorReviewRawSha256": "ae008cd18567b7912c24fe53be1b06fe9bf5d30e994bbf7f6de77e90c6baf661",
+      "priorPrincipal": "2000.000000",
+      "newPrincipal": "3000.000000",
+      "maximumEntries": 2,
+      "reviewedAtMs": 1792189365399,
+      "originalSourcesAndLifetimesUnchanged": true,
+      "valuationObjectiveUnchanged": true
+    },
+    {
+      "exchangeId": "865",
+      "priorReviewPath": "/home/archon/apps/moloch/shared/fundamental-paper6-cold-six-forecast-20261016/maine-review.json",
+      "priorReviewRawSha256": "2cb3c4ca88a638bafa95d3756752df92dc72cf6de40228d36f4a34cc0ffdac97",
+      "priorPrincipal": "2000.000000",
+      "newPrincipal": "3000.000000",
+      "maximumEntries": 2,
+      "reviewedAtMs": 1792189365399,
+      "originalSourcesAndLifetimesUnchanged": true,
+      "valuationObjectiveUnchanged": true
+    }
+  ],
+  "financialHistoryChangedByOperator": false,
+  "freshTradingVerified": false,
+  "profitabilityEstablished": false
+}

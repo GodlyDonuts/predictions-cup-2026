@@ -1,3 +1,27 @@
+# October16,22:34UTC: turnover release installed; restoring original history
+
+Sole new PID **565108/source20543435/binaryd9f5cbc6/nativeb5** is physically
+verified, no STOP, restoring history. Fresh trading/full matching-PID status and
+post-upgrade executions remain pending. The final old-worker boundary348466 has
+241 fill rows, cash70,762.850000/owned24,680.835000 and combined realized
+**−136.230000**. Original financial history, twelve prior bridge entries and all
+losses are preserved by the current-boundary thirteenth bridge.
+
+The release fixes the confirmed post-reservation activation expiry, enables
+cumulative profitable-depth ordinary exits and reviewed aggregate top-ups:
+OR5,000/AK3,000/ME3,000 principal,max2 physical entries,10,000 total shares.
+All original forecast/source clocks/objectives and DE/MA/NC entries remain.
+Full95,579.915 account capital, one queue, limiter and daily windows continue.
+Actual original308166-event financial-prefix parity and optimized release pass;
+212/106/96/8/76/14 source checks pass, one existing native benchmark ignored.
+[Current release, original evidence and limits](MOLOCH_TURNOVER_RELEASE_20261016.md).
+
+Paper7 remains a separate local candidate, not in the production binary. Its
+native90/runtime222/worker109 checks pass; remaining checks/build are underway.
+No qualified empirical maker/posterior/rank model or overall profit is claimed.
+V7 observer's original incomplete resource-stop seal remains retained; a new
+V8 cohort must bind the actual restored worker. No extra SIG account client.
+
 # October16,22:09UTC: live fills continue; turnover source checks pass
 
 Sole545165/source774f94fe/binary1180882d is fresh trading, healthy and without

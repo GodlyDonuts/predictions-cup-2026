@@ -1,0 +1,181 @@
+{
+  "schemaVersion": 1,
+  "createdAt": "2026-10-16T22:35:11.273048+00:00",
+  "sourceCommit": "20543435f9354ae5a599866545cbf1aae6a03cfa",
+  "binarySha256": "d9f5cbc628dd2e2d2d4f970106706029b8af56b723b5ac51f80ac1939ab48b3d",
+  "productionStarted": true,
+  "freshTradingVerified": false,
+  "profitabilityEstablished": false,
+  "originalBytesPreservedExceptExplicitDerivedSummary": true,
+  "files": {
+    "checks/release-component-validation.json": {
+      "bytes": 3465,
+      "sha256": "496fc474ed9b1278755e16d46e636fd931d9ac6d1d83058f3bd56258f9b6a400",
+      "originalSource": "/tmp/moloch-turnover-20543435-20261016/release-component-validation.json"
+    },
+    "checks/source-manifest.json": {
+      "bytes": 31311,
+      "sha256": "4e40355421e9a9eab1209b6e3c359d5782e259d992d3138642e6c6a224684577",
+      "originalSource": "/tmp/moloch-turnover-20543435-20261016/source-manifest.json"
+    },
+    "checks/runtime-library.log": {
+      "bytes": 30216,
+      "sha256": "9f1ed5e3139207cddb5f92847f1f5b706801f489eb1b0da392493d9d515be084",
+      "originalSource": "/tmp/moloch-turnover-20543435-20261016/runtime-library.log"
+    },
+    "checks/worker.log": {
+      "bytes": 21123,
+      "sha256": "2d085d5fed9ae5afe0e06886034937c5f9ebfd100ed98bdccff65cbed6e9c78b",
+      "originalSource": "/tmp/moloch-turnover-20543435-20261016/worker.log"
+    },
+    "checks/fundamental-policy-original-failure.log": {
+      "bytes": 24314,
+      "sha256": "48bce28ef243cd75f8e26d87b0ff4aeb7c49c5a24dd5921e28b6677b0966fce9",
+      "originalSource": "/tmp/moloch-turnover-20543435-20261016/fundamental-policy.log"
+    },
+    "checks/value-surface.log": {
+      "bytes": 9407,
+      "sha256": "2723eaa752583d37c33e60cfc0ce2d48addd42365e0af89bc530e0029f78f6e6",
+      "originalSource": "/tmp/moloch-turnover-20543435-20261016/value-surface.log"
+    },
+    "checks/profitable-depth.log": {
+      "bytes": 2980,
+      "sha256": "f737830656b6014d8ad94b6199ec9c11b0b6b23159963c9294b603be570f1198",
+      "originalSource": "/tmp/moloch-turnover-20543435-20261016/profitable-depth.log"
+    },
+    "checks/release.log": {
+      "bytes": 181161,
+      "sha256": "9143e63d2dcdf9eba34ce16145f69018fea391135cdb82c17c7d69fe73a58c76",
+      "originalSource": "/tmp/moloch-turnover-20543435-20261016/release.log"
+    },
+    "checks/native-library.log": {
+      "bytes": 9219,
+      "sha256": "800156a7878c275ddef234ac8762bfe0613633f48deddb93f0def28e803e3ca2",
+      "originalSource": "/tmp/moloch-turnover-730c0962-20261016/native-library.log"
+    },
+    "checks/corrected-fundamental-validation.json": {
+      "bytes": 1102,
+      "sha256": "41f2463515b4d8a2b60e7de26776c229bf29603469d3f3645657224b0d40bb62",
+      "originalSource": "/tmp/moloch-fundamental-fixture-a40888d7-20261016/validation.json"
+    },
+    "checks/corrected-fundamental-tests.log": {
+      "bytes": 19412,
+      "sha256": "3878cf97bcb02d99a1d5680525e58fd95e760e09f73ac7a60e991827dba63bb5",
+      "originalSource": "/tmp/moloch-fundamental-fixture-a40888d7-20261016/tests.log"
+    },
+    "checks/corrected-fundamental-Cargo.toml": {
+      "bytes": 526,
+      "sha256": "925b7f816d0592ba41e5023dce54b24c185b241b8d9e9f84fc101e28050e0ae0",
+      "originalSource": "/tmp/moloch-fundamental-fixture-a40888d7-20261016/Cargo.toml"
+    },
+    "checks/corrected-fundamental-Cargo.lock": {
+      "bytes": 43437,
+      "sha256": "80c487824f3d766b7b45006302cac4614699449b3dd29fce7b0fc75ed1cfd131",
+      "originalSource": "/tmp/moloch-fundamental-fixture-a40888d7-20261016/Cargo.lock"
+    },
+    "parity/original-prefix-result.json": {
+      "bytes": 2535,
+      "sha256": "d439392d7559023025a94be023b6256a45e9cacc49b2d917fab6576cf6ca2a29",
+      "originalSource": "/tmp/moloch-native-flow-benchmark-turnover-b5-20261016/result.json"
+    },
+    "parity/input-pins.json": {
+      "bytes": 9606,
+      "sha256": "d2cbcb9ee6000bbf3a0b501dc81c12b2205ac65739c4663f3aa76eb0b19d4318",
+      "originalSource": "/tmp/moloch-native-flow-benchmark-turnover-b5-20261016/input-pins.json"
+    },
+    "parity/candidate-replay.execution.json": {
+      "bytes": 571,
+      "sha256": "36c34ec023e3421550762ac5a3099711916e2719a5e9d3074e5dbe5e0b9345e9",
+      "originalSource": "/tmp/moloch-native-flow-benchmark-turnover-b5-20261016/candidate-replay.execution.json"
+    },
+    "deployment/staging.json": {
+      "bytes": 10226,
+      "sha256": "5e60caf4c224db264668284ed2f596cecf1d5da0fd775f5b77e83e11a01b3d55",
+      "originalSource": "/tmp/moloch-turnover-20261016-staging.json"
+    },
+    "deployment/boundary.json": {
+      "bytes": 2787,
+      "sha256": "453ffaa2e4d0391efd73cdcb867b46e0f2e91cb2a326419c615e3312b2bc179e",
+      "originalSource": "/tmp/moloch-turnover-20261016-boundary.json"
+    },
+    "deployment/root-approval.json": {
+      "bytes": 738,
+      "sha256": "3afc1797bded6237d90979baed084dc4bae1922369f89873ca7b0f075b9a2c20",
+      "originalSource": "/tmp/moloch-turnover-20261016-root-approval.json"
+    },
+    "deployment/production-rollout.json": {
+      "bytes": 5577,
+      "sha256": "d3230003c9d6b3a9a83d4c47f2863b2ffa7c20b0afed30256e193e96a1c82cc2",
+      "originalSource": "/tmp/moloch-turnover-20261016-production-rollout.json"
+    },
+    "deployment/initial-restoring-health.json": {
+      "bytes": 1246,
+      "sha256": "271db35fe15110e7aa1b576c87262e3cc75fc3521876f26179c457a1bfb16cac",
+      "originalSource": "/tmp/moloch-turnover-live-verification-20261016.json"
+    },
+    "deployment/operator.py": {
+      "bytes": 19579,
+      "sha256": "42bba43a7a6cd3a6f76b3349479a47788c37198e1f3228f6675b4ae0ab10f0cf",
+      "originalSource": "/tmp/moloch_turnover_rollout_20261016.py"
+    },
+    "deployment/health.py": {
+      "bytes": 3612,
+      "sha256": "1be8f047ba5f191c9541458a1951e064e8b1b9d620a81e9a3c3b9ca025e46aea",
+      "originalSource": "/tmp/moloch-turnover-health-20261016.py"
+    },
+    "deployment/decision-watch.py": {
+      "bytes": 938,
+      "sha256": "f7cac52d4a4f6942119eebb5d74ae82007c137bef22b3f19d9ea553c43bda9d6",
+      "originalSource": "/tmp/moloch-turnover-decision-watch-20261016.py"
+    },
+    "models/typed-reviews.json": {
+      "bytes": 957,
+      "sha256": "687cd5a47faf4706fd7f2af8cf1c00d6470aa8f4b80207b5c9fa695542f2f7c0",
+      "originalSource": "/home/archon/apps/moloch/shared/fundamental-paper6-turnover-20261016/typed-reviews.json"
+    },
+    "models/typed-settings.json": {
+      "bytes": 229,
+      "sha256": "f64b68250ee6d212547464502aa954292ba1686f1177f3f6c6c17603eed0dfd5",
+      "originalSource": "/home/archon/apps/moloch/shared/fundamental-paper6-turnover-20261016/typed-settings.json"
+    },
+    "models/977-review.json": {
+      "bytes": 4246,
+      "sha256": "5a1280aca6c1f7dc1293a9b28b0e3a4f72211d7cd9cbc7554ab65b81096f78e8",
+      "originalSource": "/home/archon/apps/moloch/shared/fundamental-paper6-turnover-20261016/977-review.json"
+    },
+    "models/1067-review.json": {
+      "bytes": 4514,
+      "sha256": "ac1f3eff35c82a2d1fb9f9258ffa70053c90d6f4705136e3cc53489cb5ead7d2",
+      "originalSource": "/home/archon/apps/moloch/shared/fundamental-paper6-turnover-20261016/1067-review.json"
+    },
+    "models/865-review.json": {
+      "bytes": 4472,
+      "sha256": "06f06495b6b77d80ae001604151dfd4e24975650c82ee7b0469f486241d7419d",
+      "originalSource": "/home/archon/apps/moloch/shared/fundamental-paper6-turnover-20261016/865-review.json"
+    },
+    "models/settings.json": {
+      "bytes": 5950,
+      "sha256": "2df95719a5f4ad19c0adfba2fb79cb71b31e665b22c85258a52f3d3e71ad4c03",
+      "originalSource": "/home/archon/apps/moloch/shared/fundamental-paper6-turnover-20261016/settings.json"
+    },
+    "models/authority.json": {
+      "bytes": 842,
+      "sha256": "6ddf480b088ce252fd9908ab28a78ddd1c1272e949d8ac331ea46dbecae85697",
+      "originalSource": "/home/archon/apps/moloch/shared/fundamental-paper6-turnover-20261016/authority.json"
+    },
+    "resources/completed-debug-cache-reclamation.json": {
+      "bytes": 366,
+      "sha256": "bc5aa10715d14215a42a381879dfb97dc7102127db559e09c2cff7e7db17ed29",
+      "originalSource": "/tmp/moloch-completed-debug-cache-reclamation-20261016.json"
+    },
+    "deployment/bridge-proposal-summary.json": {
+      "bytes": 1902,
+      "sha256": "4e0dbd9edc4934a92a2d8bd07a9a88ce6dec5a22e8cfce730864cca8e074b83d",
+      "originalSource": "explicit derived bridge summary"
+    }
+  },
+  "privateOmissions": [
+    "complete engine upgrade descriptors/report envelopes, immutable originals retained on VPS",
+    "raw official candidate workbook and account credentials/events"
+  ]
+}

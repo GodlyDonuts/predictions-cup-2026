@@ -1,0 +1,116 @@
+{
+  "allowInitialization": true,
+  "authorityPath": "/home/archon/apps/moloch/shared/fundamental-paper6-turnover-20261016/authority.json",
+  "authoritySha256": "6ddf480b088ce252fd9908ab28a78ddd1c1272e949d8ac331ea46dbecae85697",
+  "reviews": [
+    {
+      "fileSha256": "7c590da5833c7637107cc2fbe2b817cea41dfdfe3c8ebb6de6c24bc1e32a9e89",
+      "path": "/home/archon/apps/moloch/shared/fundamental-paper3-actions-20261016/review.json",
+      "sourceFiles": [
+        {
+          "path": "/home/archon/apps/moloch/shared/fundamental-delaware-democratic-20261016/call-the-map-delaware.html",
+          "sha256": "f45d33e0c3f55884fbbe32f608d87566cb5b786d57e928f146dbb8dc7dda5a54"
+        },
+        {
+          "path": "/home/archon/apps/moloch/shared/fundamental-delaware-democratic-20261016/delaware-general-candidate-list.html",
+          "sha256": "18f8523e0c9317bc88cd09c464164b09ae858c66466a94e4163af65bb1ef82d3"
+        },
+        {
+          "path": "/home/archon/apps/moloch/shared/fundamental-delaware-democratic-20261016/official-contract-node.json",
+          "sha256": "1ffb57719716cb23cfe3538cc0eff223c7c9028845c03d9e3bd63211755259f5"
+        }
+      ]
+    },
+    {
+      "fileSha256": "1abebbb714e8929740ed4d43ab37317bb6b8fb9542d1b70782a10d15a5568e45",
+      "path": "/home/archon/apps/moloch/shared/fundamental-massachusetts-inherited-20261016/review.json",
+      "sourceFiles": [
+        {
+          "path": "/home/archon/apps/moloch/shared/fundamental-massachusetts-inherited-20261016/call-the-map-ma-senate.html",
+          "sha256": "a416e1a3d023756150adef500d8545fbcd68e45a3f4b91f764a78f47cd20c46f"
+        },
+        {
+          "path": "/home/archon/apps/moloch/shared/fundamental-massachusetts-inherited-20261016/ma-official-senate-primary-detail.html",
+          "sha256": "696fbe73451f182cb0032eaf29b7f353ae9ef3d7444eaf75e062713c4a6910c4"
+        },
+        {
+          "path": "/home/archon/apps/moloch/shared/fundamental-massachusetts-inherited-20261016/official-contract-node-379.json",
+          "sha256": "d49709f0b2a4f64a7c0e067cb7639a270faf153b7e89e2c66bcc72b75621b230"
+        }
+      ]
+    },
+    {
+      "fileSha256": "b339c77da9e98bdbd54fe898f06afe85f3105bb6baf18ed5e0cee737c38f3e84",
+      "path": "/home/archon/apps/moloch/shared/fundamental-paper6-sell-recovery-20261016/nc-review.json",
+      "sourceFiles": [
+        {
+          "path": "/home/archon/apps/moloch/shared/fundamental-paper6-sell-recovery-20261016/nc-callthemap.html",
+          "sha256": "fbe3194c1c938057f36bffb6d6ab27910175affcecdddf4fef6112342a171de2"
+        },
+        {
+          "path": "/home/archon/apps/moloch/shared/fundamental-paper6-sell-recovery-20261016/nc-ncsbe-general-candidates.pdf",
+          "sha256": "378ca3dde9e97f65a921c922171aa34942bcc68582ef46e713b371e0b6caf11d"
+        },
+        {
+          "path": "/home/archon/apps/moloch/shared/fundamental-paper6-sell-recovery-20261016/nc-official-contract-node-277.original.json",
+          "sha256": "58a98acc30aa5c67510de0b505550df49d3dd58892a141c17eb8b51b05b9434e"
+        }
+      ]
+    },
+    {
+      "fileSha256": "5a1280aca6c1f7dc1293a9b28b0e3a4f72211d7cd9cbc7554ab65b81096f78e8",
+      "path": "/home/archon/apps/moloch/shared/fundamental-paper6-turnover-20261016/977-review.json",
+      "sourceFiles": [
+        {
+          "path": "/home/archon/apps/moloch/shared/fundamental-paper6-sell-recovery-20261016/or-forecast.html",
+          "sha256": "7e6f07c53525903c7ae12ef2fb6e344028539d2f3ee8d8c498f17c07125563d1"
+        },
+        {
+          "path": "/home/archon/apps/moloch/shared/fundamental-paper6-sell-recovery-20261016/or-official-candidates.html",
+          "sha256": "82753be8eb22a0741fe402c0cb841b37f187cad0fef50c65e3ddd6c8bb4a9f64"
+        },
+        {
+          "path": "/home/archon/apps/moloch/shared/fundamental-paper6-sell-recovery-20261016/or-official-contract-node.json",
+          "sha256": "9bca4722d2a06e32e0d86360b43c6aae6e4336876dec40a5a50b4cb70f9568f1"
+        }
+      ]
+    },
+    {
+      "fileSha256": "ac1f3eff35c82a2d1fb9f9258ffa70053c90d6f4705136e3cc53489cb5ead7d2",
+      "path": "/home/archon/apps/moloch/shared/fundamental-paper6-turnover-20261016/1067-review.json",
+      "sourceFiles": [
+        {
+          "path": "/home/archon/apps/moloch/shared/fundamental-paper6-cold-six-forecast-20261016/sources/alaska/ak-senate.html",
+          "sha256": "955c9d1d819ffc6e1194aa0027d378dfb5d6eeabd9dd04345433ffe0dcd7aaf8"
+        },
+        {
+          "path": "/home/archon/apps/moloch/shared/fundamental-paper6-cold-six-forecast-20261016/sources/alaska/ak-official-candidates.html",
+          "sha256": "a5676ae3baa845a4cb618fe97fa7551d786103df0f7c5a02bc55898450dd26f2"
+        },
+        {
+          "path": "/home/archon/apps/moloch/shared/fundamental-paper6-cold-six-forecast-20261016/sources/alaska/official-contract-node-378.original.json",
+          "sha256": "38ad364b1d91ae1825a38e3e8c135ba49d2a79554fd46210e835772ef40b19c0"
+        }
+      ]
+    },
+    {
+      "fileSha256": "06f06495b6b77d80ae001604151dfd4e24975650c82ee7b0469f486241d7419d",
+      "path": "/home/archon/apps/moloch/shared/fundamental-paper6-turnover-20261016/865-review.json",
+      "sourceFiles": [
+        {
+          "path": "/home/archon/apps/moloch/shared/fundamental-paper6-cold-six-forecast-20261016/sources/maine/forecast.html",
+          "sha256": "0b6f1861631f02cc66d07587008a9164bdb97a9d4223a283c083f7c6c9602ce5"
+        },
+        {
+          "path": "/home/archon/apps/moloch/shared/fundamental-paper6-cold-six-forecast-20261016/sources/maine/official-candidates.xlsx",
+          "sha256": "c628e48fa6298b6862e709166adf3145f7bc4a3f60929c3e6ef5a3ea324e03ea"
+        },
+        {
+          "path": "/home/archon/apps/moloch/shared/fundamental-paper6-cold-six-forecast-20261016/sources/maine/official-contract-node.json",
+          "sha256": "fc46cb639d50b0714af5bc8af7e48271ee6e98ae4565f55d830a6171272cf499"
+        }
+      ]
+    }
+  ],
+  "version": 1
+}
