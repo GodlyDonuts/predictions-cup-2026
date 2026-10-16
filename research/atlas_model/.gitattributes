@@ -1,0 +1,5 @@
+# Preserve reproducible published artifact bytes across Windows/Linux checkouts.
+*.json text eol=lf
+*.py text eol=lf
+*.mjs text eol=lf
+README.md text eol=lf
