@@ -8,6 +8,8 @@ mod packages;
 mod collateral;
 #[path = "reviewed_inventory_exit.rs"]
 mod reviewed_inventory_exit;
+#[path = "reviewed_fundamental_entry.rs"]
+mod reviewed_fundamental_entry;
 use crate::{Reservation, Result, SCALE, Side, TICK, Wallet, amount, fee, money, price};
 use serde_json::{Value, json};
 use sha2::{Digest, Sha256};
@@ -448,6 +450,7 @@ pub struct Engine {
     live_packages: BTreeMap<String, packages::LivePackage>,
     package_orders: BTreeMap<u64,String>,
     reviewed_inventory_exits: BTreeMap<u64,Value>,
+    reviewed_fundamental_entries: BTreeMap<u64,Value>,
     policy: Policy,
     pub wallet: Wallet,
     books: BTreeMap<String, Arc<Book>>,
@@ -469,6 +472,7 @@ pub struct Engine {
 impl Engine {
     pub fn from_seed_state(state: &Value) -> Result<Self> {
         if state.get("reviewedInventoryExitReservations").is_some(){return Err("SEED_REVIEWED_EXIT_REQUIRE_REPLAY")}
+        if state.get("reviewedFundamentalEntryReservations").is_some(){return Err("SEED_REVIEWED_ENTRY_REQUIRE_REPLAY")}
         if state.get("collateralAccounting").is_some_and(|v|!v.is_null()){return Err("SEED_ACTUAL_COLLATERAL_REQUIRE_REPLAY")}
         if state.get("livePackages").is_some_and(|v|!v.is_null()) {
             return Err("SEED_LIVE_PACKAGES_REQUIRE_REPLAY");
@@ -705,6 +709,7 @@ impl Engine {
             live_packages: BTreeMap::new(),
             package_orders: BTreeMap::new(),
             reviewed_inventory_exits: BTreeMap::new(),
+            reviewed_fundamental_entries: BTreeMap::new(),
         })
     }
     fn count(&mut self, k: &str) {
@@ -826,6 +831,10 @@ impl Engine {
                 / (b.bids[0].1 as i128 + b.asks[0].1 as i128);
             let yes = self.wallet.quantity(&b.exchange, Side::Yes);
             let no = self.wallet.quantity(&b.exchange, Side::No);
+            // A reviewed resting BUY owns this flat scope's entry selection.
+            // Filled inventory still uses normal exit generation, with runtime
+            // review authority controlling every physical disposition.
+            if yes==0&&no==0&&self.orders.iter().any(|q|q.exchange==b.exchange&&!q.retired&&self.reviewed_fundamental_entries.contains_key(&q.id)){continue;}
             if yes > 0 || no > 0 {
                 if p.raw["repriceProfitableHedge"] != true {
                     for q in &self.orders {
@@ -1190,7 +1199,7 @@ impl Engine {
         }
         for i in 0..self.orders.len() {
             let q = &self.orders[i];
-            if self.is_package_order(q.id)||self.reviewed_inventory_exits.contains_key(&q.id) {continue;}
+            if self.is_package_order(q.id)||self.reviewed_inventory_exits.contains_key(&q.id)||self.reviewed_fundamental_entries.contains_key(&q.id) {continue;}
             if q.retired || q.end() <= at || q.cancel.is_some() {
                 continue;
             }
@@ -1454,6 +1463,7 @@ impl Engine {
         let mut duplicate = false;
         match kind {
             "reviewed_inventory_exit_reserved_v1" => self.reserve_reviewed_inventory_exit(e,at)?,
+            "reviewed_fundamental_entry_reserved_v1" => self.reserve_reviewed_fundamental_entry(e,at)?,
             "actual_order_ack" | "actual_fill" | "actual_order_terminal" | "unsubmitted_intent_retired" | "actual_position_adoption" | "live_entry_window" | "actual_collateral_baseline" | "actual_collateral_execution" | "actual_collateral_settlement" | "actual_collateral_checkpoint" | "actual_collateral_ordinary_cash_sync" => self.apply_live(e,at)?,
             "live_package_reserve" | "live_package_attempt" | "live_package_no_execution" | "live_package_ack" | "live_package_unknown" | "live_package_complete" => self.apply_package(e,at)?,
             "book" => {
@@ -1777,7 +1787,7 @@ impl Engine {
         // No persistent state is set: a subsequent tick/book plans normally.
         if kind!="unsubmitted_intent_retired"&&e.get("deferPlanningForPackage").is_some(){return Err("PACKAGE_PLANNING_FLAG_EVENT")}
         let defer_package_plan=kind=="unsubmitted_intent_retired"&&e["deferPlanningForPackage"]==true;
-        if kind!="live_entry_window"&&kind!="reviewed_inventory_exit_reserved_v1"&&!kind.starts_with("live_package_")&&!kind.starts_with("actual_collateral_")&&!defer_package_plan{self.reconcile(at)?;}
+        if kind!="live_entry_window"&&kind!="reviewed_inventory_exit_reserved_v1"&&kind!="reviewed_fundamental_entry_reserved_v1"&&!kind.starts_with("live_package_")&&!kind.starts_with("actual_collateral_")&&!defer_package_plan{self.reconcile(at)?;}
         Ok(())
     }
     pub fn report(&self) -> Result<Value> {
@@ -1812,6 +1822,7 @@ impl Engine {
         let pnl = self.wallet.cash + liquidation - self.wallet.initial;
         let mut report = json!({"bot":"Moloch","runtime":"rust","at":self.last_string,"policyHash":hash(&self.policy.raw),"events":self.events,"cash":money(self.wallet.cash),"realized":money(self.wallet.realized),"fees":money(self.wallet.fees),"ownedCost":money(self.wallet.owned_cost()),"reservedCash":money(self.wallet.reserved()?),"netLiquidationPnl":if known{json!(money(pnl))}else{Value::Null},"positions":self.wallet.positions(),"fills":self.fills.len(),"orders":self.prior_orders+self.orders.len() as u64,"activeOrders":self.orders.iter().filter(|q|!q.retired&&self.last.is_some_and(|t|q.end()>t/1_000_000)).count(),"unresolvedOrders":unresolved,"executionMode":if self.live_mode{"live"}else{"paper"},"fillModel":if self.live_mode{"actualAccountFills"}else if self.policy.conditional{"conditionalFifo"}else{"strictThrough"},"conditionalQueueFills":self.fills.iter().filter(|f|f["conditionalQueueFill"]==true).count(),"profitSignalEligible":!self.policy.conditional&&!self.fills.iter().any(|f|f["conditionalQueueFill"]==true||f["throughCapacityFill"]==true||f["executionStyle"]=="inventoryAON")&&unresolved==0&&known&&self.wallet.realized>0&&pnl>0,"counts":self.counts,"continuation":self.baseline,"contestOrders":if self.live_mode{self.live_orders.len()}else{0},"networkRequests":0,"profitabilityEstablished":false});
         if !self.reviewed_inventory_exits.is_empty(){report["reviewedInventoryExitReservations"]=json!(self.reviewed_inventory_exits);}
+        if !self.reviewed_fundamental_entries.is_empty(){report["reviewedFundamentalEntryReservations"]=json!(self.reviewed_fundamental_entries);}
         if let Some(inherited) = &self.inherited {
             report["openingInventoryCost"] = json!(money(inherited.opening_cost));
             if self.wallet.realized - inherited.realized_gross <= 0 { report["profitSignalEligible"] = json!(false); }
@@ -1920,6 +1931,7 @@ impl Engine {
     pub fn order_records(&self) -> Vec<Value> {
         self.orders.iter().map(|q|{let mut v=json!({"id":q.id,"marketId":q.market,"exchangeId":q.exchange,"side":label(q.side),"action":if q.buy{"buy"}else{"sell"},"quantity":q.quantity,"filled":q.filled,"price":money(q.limit),"createdAt":q.created,"activationAt":q.activation,"expiresAt":q.expires,"retired":q.retired,"participationCredit":q.credit,"barrier":q.barrier.map(|(sequence,end)|json!({"sequence":sequence.to_string(),"endAt":end}))});
         if let Some(proof)=self.reviewed_inventory_exits.get(&q.id){v["reviewedInventoryExit"]=proof.clone();}
+        if let Some(proof)=self.reviewed_fundamental_entries.get(&q.id){v["reviewedFundamentalEntry"]=proof.clone();}
         if let Some(at)=q.cancel{v["cancelEffectiveAt"]=json!(at)}if q.aon{v["executionStyle"]=json!("inventoryAON")}if q.age_reason{v["inventoryExitReason"]=json!("maximumAge")}if q.participation!=100{v["participationBps"]=json!(q.participation)}if q.through{v["throughFillCapacity"]=json!(true)}if q.conditional{v["fillModel"]=json!("conditionalFifo");v["touchAttributionBps"]=json!(q.touch_bps);v["queueAhead"]=json!((q.same+q.better).to_string());v["queueSame"]=json!(q.same.to_string());v["queueBetter"]=json!(q.better.to_string());v["queueVisibleSame"]=json!(q.visible_same.to_string());v["queueVisibleBetter"]=json!(q.visible_better.to_string());v["touchRemainder"]=json!(q.touch_remainder)}v}).collect()
     }
 }
