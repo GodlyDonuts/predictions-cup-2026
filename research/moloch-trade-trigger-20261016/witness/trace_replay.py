@@ -15,9 +15,19 @@ MAX_DECODED=32*1024**3
 MAX_LINE=32*1024**2
 MAX_RECORDS=10_000_000
 MAX_BODY=16*1024**2
-KNOWN_PRODUCERS={
-    '1f63cf06d05b68e46d2febe57607125d9eb95d6e87db3f4d29b401d39d8e700b',
-    '200abfd0701f56f43183b1b7b60cd1cdf11525f0fb9daea72e9bf6f08d90bc40',
+HISTORICAL_LF='200abfd0701f56f43183b1b7b60cd1cdf11525f0fb9daea72e9bf6f08d90bc40'
+HISTORICAL_CRLF='1f63cf06d05b68e46d2febe57607125d9eb95d6e87db3f4d29b401d39d8e700b'
+BOOK_VERSION_LF='2fa9b142b672f4a9076e185ac91be0b288945b0e1bba6afb0797594ed6678529'
+# Capture producer hashes select a fixed reviewed version, NEVER a code path.
+PRODUCER_VERSIONS={HISTORICAL_LF:'historical_200ab',HISTORICAL_CRLF:'historical_200ab',BOOK_VERSION_LF:'book_version_2fa9'}
+KNOWN_PRODUCERS=set(PRODUCER_VERSIONS)
+SAMPLERS={
+    'historical_200ab':(
+        'research/moloch-trade-trigger-20261016/witness/known-samplers/crossvenue_observer_200ab.py',
+        frozenset({HISTORICAL_LF,HISTORICAL_CRLF})),
+    'book_version_2fa9':(
+        'moloch/external-data/crossvenue_observer.py',
+        frozenset({BOOK_VERSION_LF,'4a2d585d9b2ce81add31cc2a6a8ba99fb6df6bcd019dbf167535e4e1910f3471'})),
 }
 
 class Rejected(ValueError): pass
@@ -77,11 +87,19 @@ def lines(pin):
             yield loads(line)
 
 
-def known_sampler():
-    path=Path(__file__).resolve().parents[3]/'moloch/external-data/crossvenue_observer.py'
-    need(path.stat().st_size<=1024**2,'LOCAL_PRODUCER_BOUND')
+def known_sampler(producer_sha=HISTORICAL_LF):
+    need(producer_sha in PRODUCER_VERSIONS,'UNREVIEWED_CAPTURE_PRODUCER')
+    relative,expected=SAMPLERS[PRODUCER_VERSIONS[producer_sha]]
+    path=Path(__file__).resolve().parents[3]/relative
+    before=path.lstat()
+    need(stat.S_ISREG(before.st_mode) and before.st_nlink==1 and before.st_size<=1024**2,'LOCAL_PRODUCER_BOUND')
     raw=path.read_bytes()
-    need(sha(raw) in KNOWN_PRODUCERS,'UNREVIEWED_LOCAL_PRODUCER')
+    after=path.lstat()
+    identity=lambda m:(m.st_dev,m.st_ino,m.st_size,m.st_mtime_ns)
+    need(identity(before)==identity(after) and len(raw)==before.st_size,'LOCAL_PRODUCER_CHANGED')
+    # Only these exact reviewed LF/CRLF byte variants are accepted. No general
+    # normalization, manifest-selected module or unrelated cached .pyc is used.
+    need(sha(raw) in expected,'UNREVIEWED_LOCAL_PRODUCER')
     # Compile ONLY the exact checked fixed-repository bytes, never a manifest
     # path or a potentially unrelated cached .pyc file.
     module=types.ModuleType('_reviewed_trace_sampler');module.__file__=str(path)
@@ -177,7 +195,7 @@ def verify(manifest_path,manifest_sha256):
         need(len(refs)==1 and (refs[0].get('sha256'),refs[0].get('bytes'))==(pins[name].sha,pins[name].bytes),'SEAL_FILE_PIN')
     for name,key in [('producer','producer'),('mapping','mappingFileReference')]:
         need((seal[key].get('sha256'),seal[key].get('bytes'))==(pins[name].sha,pins[name].bytes),'SEAL_REFERENCE_PIN')
-    module=known_sampler();sources=Sources(manifest.get('sigSources'))
+    module=known_sampler(pins['producer'].sha);sources=Sources(manifest.get('sigSources'))
     expected=iter(lines(pins['samples']));outputs=0;horizon_labels=0;counts={'polls':0,'failedPolls':0,'cacheApplies':0,'sigApplies':0,'rotations':0}
     def emit(value):
         nonlocal outputs,horizon_labels

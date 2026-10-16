@@ -26,30 +26,34 @@ def rawline(event,sequence,previous):
     return (O.compact({'event':event,'hash':v.sha(unsigned.encode()),'sequence':sequence,'previous':previous})+'\n').encode()
 
 class Fixture:
-    def __init__(self,root,mode='book',format='native',initial=b'',after_open=b''):
+    def __init__(self,root,mode='book',format='native',initial=b'',after_open=b'',sampler=None):
+        self.sampler=sampler or O
+        S=self.sampler
         self.root=root;self.out=root/'capture';self.out.mkdir()
         self.mapping=root/'universe.json';self.mapping.write_text('{"markets":[],"pricingAuthority":false}',encoding='utf-8')
-        self.source=root/'source.jsonl';self.source.write_bytes(initial);self.tail=O.Tail(self.source)
+        self.source=root/'source.jsonl';self.source.write_bytes(initial);self.tail=S.Tail(self.source)
         if after_open:
             with self.source.open('ab') as out:out.write(after_open)
         self.clock=10000
         self.config={'samplingMode':mode,'format':format,'journal':str(self.source),'durationSeconds':10,
                      'horizonsMs':[1000,3000,10000,30000,120000],'sigMaximumAgeMs':3000,'externalMaximumAgeMs':20000,'labelSlackMs':3000}
         with patch.object(O.shutil,'disk_usage',return_value=type('D',(),{'free':40*1024**3})()):
-            self.trace=O.InputTrace(self.out,self.mapping,self.config,self.tail.bookmark(),clock=lambda:self.clock)
-        self.study=O.Study(self.trace.emit,sampling_mode=mode)
+            self.trace=S.InputTrace(self.out,self.mapping,self.config,self.tail.bookmark(),clock=lambda:self.clock)
+        self.study=S.Study(self.trace.emit,sampling_mode=mode)
         self.source_paths=[self.source];self.identities={str(self.source):self.tail.identity}
     def polls(self):
         for route,body in [('/v1/quotes',external(self.clock-1000)),('/v1/ws/quotes',websocket(self.clock-1000))]:
             O.trace_cache_poll(self.study,route,self.trace,lambda *a,body=body,**k:Response(O.compact(body).encode()))
-    def sig(self,at,seq=1,previous='',**kwargs):
-        with self.source.open('ab') as stream:stream.write(rawline(row(at,seq,**kwargs)['event'],seq,previous))
+    def sig(self,at,seq=1,previous='',book_sequence=None,**kwargs):
+        event=row(at,seq,**kwargs)['event']
+        if book_sequence is not None:event['book']['sequence']=str(book_sequence)
+        with self.source.open('ab') as stream:stream.write(rawline(event,seq,previous))
         for item in self.tail.read():self.trace.consume_sig(self.tail,item,self.study.breadth if self.config['format']=='breadth' else self.study.accept,self.clock)
     def close(self):self.trace.close();self.tail.close()
     def finish(self):
         seal=self.trace.seal(True,'normal_stop',self.tail.bookmark())
         self.manifest={'version':1,'seal':pin(self.out/'input-trace-seal.json'),'trace':pin(self.out/'input-trace-v1.jsonl.gz'),
-            'samples':pin(self.out/'trace-samples-v1.jsonl.gz'),'producer':pin(Path(O.__file__)),'mapping':pin(self.mapping),
+            'samples':pin(self.out/'trace-samples-v1.jsonl.gz'),'producer':pin(Path(self.sampler.__file__)),'mapping':pin(self.mapping),
             'sigSources':[{**pin(p),'recordedPath':str(p),'recordedDevice':self.identities[str(p)][0],
                            'recordedInode':self.identities[str(p)][1]} for p in self.source_paths]}
         self.save();return seal
@@ -214,5 +218,55 @@ class ReplayTests(unittest.TestCase):
         f=self.valid();seal_path=Path(f.manifest['seal']['path']);seal=json.loads(seal_path.read_text());seal['complete']=False
         seal_path.write_text(O.compact(seal));f.manifest['seal']=pin(seal_path);f.save()
         with self.assertRaisesRegex(v.Rejected,'INCOMPLETE_SEAL'):f.verify()
+
+    def test_fixed_versions_replay_same_sequence_new_read_differently_without_reinterpreting_old(self):
+        results={}
+        for name,producer,expected_rows in [('historical',v.HISTORICAL_LF,1),('historical_crlf',v.HISTORICAL_CRLF,1),('new_read_version',v.BOOK_VERSION_LF,3)]:
+            root=self.root/name;root.mkdir()
+            sampler=v.known_sampler(producer)
+            # A capture's producer is an exact pinned INPUT. Replay still loads
+            # only its fixed repository module, not this temporary data path.
+            captured=root/'captured-producer.py'
+            raw=Path(sampler.__file__).read_bytes().replace(b'\r\n',b'\n')
+            if producer==v.HISTORICAL_CRLF:raw=raw.replace(b'\n',b'\r\n')
+            self.assertEqual(v.sha(raw),producer)
+            captured.write_bytes(raw);sampler.__file__=str(captured)
+            f=Fixture(root,sampler=sampler);self.addCleanup(f.close)
+            f.polls();f.sig(10000);f.clock=11000
+            f.sig(11000,2,f.tail.previous,book_sequence=1)
+            f.finish();result=f.verify();results[name]=result
+            self.assertEqual(result['outputRows'],expected_rows)
+            self.assertEqual(result['producerSha256'],producer)
+            self.assertFalse(result['wholeWitnessVerified']);self.assertFalse(result['eligibleForModelValidation'])
+        self.assertFalse(results['historical']['firstConsumedBookReplayVerified'])
+        self.assertTrue(results['new_read_version']['firstConsumedBookReplayVerified'])
+
+    def test_historical_lf_and_known_crlf_select_same_fixed_archived_sampler(self):
+        first=v.known_sampler(v.HISTORICAL_LF);second=v.known_sampler(v.HISTORICAL_CRLF)
+        self.assertEqual(Path(first.__file__),Path(second.__file__))
+        self.assertIn('known-samplers',Path(first.__file__).parts)
+        for module in (first,second):
+            study=module.Study(lambda _:None,sampling_mode='trade')
+            study.accept(row(10000),10000);study.accept(row(11000),11000)
+            self.assertEqual(study.counts['sigBooks'],1)
+
+    def test_current_source_cannot_substitute_for_historical_trusted_bytes(self):
+        old=Path(O.__file__);current=Path(v.known_sampler(v.BOOK_VERSION_LF).__file__)
+        original=Path.read_bytes;replacement=current.read_bytes()
+        with patch.object(Path,'read_bytes',lambda p:replacement if p==old else original(p)):
+            with self.assertRaisesRegex(v.Rejected,'LOCAL_PRODUCER_CHANGED|UNREVIEWED_LOCAL_PRODUCER'):v.known_sampler(v.HISTORICAL_LF)
+
+    def test_mutated_exact_repository_bytes_refused_for_each_selected_version(self):
+        for producer in (v.HISTORICAL_LF,v.BOOK_VERSION_LF):
+            target=Path(v.known_sampler(producer).__file__);original=Path.read_bytes
+            raw=target.read_bytes();changed=raw.replace(b'no network',b'NO NETWORK',1)
+            if changed==raw:changed=b'#'+raw[1:]
+            self.assertNotEqual(v.sha(changed),v.sha(raw))
+            with patch.object(Path,'read_bytes',lambda p:changed if p==target else original(p)):
+                with self.assertRaisesRegex(v.Rejected,'UNREVIEWED_LOCAL_PRODUCER'):v.known_sampler(producer)
+
+    def test_unreviewed_capture_hash_and_manifest_code_path_never_select_a_module(self):
+        with self.assertRaisesRegex(v.Rejected,'UNREVIEWED_CAPTURE_PRODUCER'):v.known_sampler('0'*64)
+        with self.assertRaisesRegex(v.Rejected,'UNREVIEWED_CAPTURE_PRODUCER'):v.known_sampler(str(self.root/'unreviewed.py'))
 
 if __name__=='__main__':unittest.main()

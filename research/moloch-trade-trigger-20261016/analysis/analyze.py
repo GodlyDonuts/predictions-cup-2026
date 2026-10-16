@@ -11,7 +11,7 @@ import types
 
 HERE=Path(__file__).resolve().parent
 READER_LF_SHA='6fb96218a54e1d6aa2b46d524cda1db1afab35f5f06c5bdaf8c16b324ad484e2'
-REPLAY_LF_SHA='38e9b96cbc7030ba5c47ccd5e8ffb59192124e678a20b7132a7d05415b212122'
+REPLAY_LF_SHA='a51f89856d4848d4bc576d8aa15e0e51db942513db21fd8dac8a09d53702d57b'
 
 
 def sha(raw):return hashlib.sha256(raw).hexdigest()
