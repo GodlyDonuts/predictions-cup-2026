@@ -322,8 +322,8 @@ fn source(t:&mut Transport,c:&Control,bank:&mut Session,s:&mut RestSource,ex:&st
  let book=request(t,&c.root,Endpoint::OrderBook{market_id:market.into(),depth:20})?;
  accept_source_events(bank,&s.accept(&wrap(&book,"book"))?)?;Ok(to.saturating_sub(2000))
 }
-fn snapshots(t:&mut Transport,c:&Control,q:&Value)->Result<SnapshotSet>{
- snapshots_for_market(c,q["marketId"].as_str().ok_or("LIVE_MARKET_ID")?,|ep|request(t,&c.root,ep))
+fn snapshots(t:&mut Transport,c:&Control,authority:&ProductionAuthority,bank:&mut Session,source:&mut RestSource,stream:&Realtime,breadth:&mut Option<Recorder>,universe:&mut Option<Universe>,q:&Value)->Result<SnapshotSet>{
+ preflight_snapshots(c,bank,source,q["marketId"].as_str().ok_or("LIVE_MARKET_ID")?,None,&mut LivePreflightReads{t,c,authority,stream,breadth,universe})
 }
 /// A read-only target is not a native quote. In particular, inherited value
 /// exits obtain all seven original facts BEFORE creating a genuine SELL qid.
@@ -783,7 +783,7 @@ fn refresh_safety(c:&Control,bank:&Session,log:&DispatchLog,authority:&Productio
 }
 fn refresh_deferred(c:&Control,stage:&str,error:&dyn std::fmt::Display)->Result<()>{atomic_json(&c.root.join("exit-refresh.json"),&json!({"at":iso(now()),"stage":stage,"code":error.to_string(),"expiryExtended":false,"writeAttempted":false}))}
 fn exit_recovery_from(source:&RestSource,market:&str,prior_window:u64)->Option<u64>{source.recovery_start_ms(market).map(|from|from.min(prior_window))}
-fn refresh_exit(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,authority:&Arc<ProductionAuthority>,source:&mut RestSource,stream:&Realtime,old:&Value,hint:&moloch_live_runtime::exit_refresh::ReadHint,flow_started:u64,maximum_qid_before:u64,unknown:bool,prior_window:u64,fundamental:Option<&mut FundamentalRuntime>)->Result<()>{
+fn refresh_exit(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,authority:&Arc<ProductionAuthority>,source:&mut RestSource,stream:&Realtime,old:&Value,hint:&moloch_live_runtime::exit_refresh::ReadHint,flow_started:u64,maximum_qid_before:u64,unknown:bool,prior_window:u64,breadth:&mut Option<Recorder>,universe:&mut Option<Universe>,fundamental:Option<&mut FundamentalRuntime>)->Result<()>{
  use moloch_live_runtime::exit_refresh::{RefreshFacts,BookAcceptance,RefreshPlan,RefreshStage};
  refresh_controls(c,authority,stream)?;
  // A fresh book alone cannot unblock a source after a real delivery gap. Recover
@@ -798,7 +798,7 @@ fn refresh_exit(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchL
   if !scope["tapeReady"].as_bool().ok_or("LIVE_SOURCE_TAPE_STATE")?{refresh_deferred(c,"coverage_ineligible",&"COMPLETE_TARGET_TAPE_REQUIRED")?;return Ok(())}
   refresh_controls(c,authority,stream)?;
  }
- let facts=snapshots(t,c,old)?;
+ let facts=snapshots(t,c,authority,bank,source,stream,breadth,universe,old)?;
  let bound=match RefreshFacts::new(&c.scope,hint,[facts.account.clone(),facts.positions.clone(),facts.open_orders.clone(),facts.cash_balance.clone(),facts.market.clone(),facts.contract.clone(),facts.book.clone()],now()){
   Ok(v)=>v,Err(e) if matches!(e.to_string().as_str(),"EXIT_REFRESH_FACTS_STALE"|"EXIT_REFRESH_BOOK_STALE")=>{refresh_deferred(c,"facts_ineligible",e.as_ref())?;return Ok(())},Err(e)=>return Err(e)
  };
@@ -889,7 +889,7 @@ fn commit_existing_reservation(bank:&mut Session,event:&Value)->Result<Option<Va
  let candidates:Vec<_>=bank.engine().order_records().into_iter().filter(|q|q["id"].as_u64().is_some_and(|n|n>before)&&q["retired"]==false&&q["exchangeId"]==event["exchangeId"]&&q["action"]=="sell"&&q["reviewedInventoryExit"]["originSha256"]==event["originSha256"]&&q["reviewedInventoryExit"]["reviewSha256"]==event["reviewSha256"]).collect();
  if candidates.len()!=1{return Err("LIVE_EXISTING_NATIVE_RESERVATION_NOT_UNIQUE".into())}Ok(candidates.into_iter().next())
 }
-fn reviewed_existing_exit(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,authority:&Arc<ProductionAuthority>,source:&mut RestSource,stream:&Realtime,f:&mut FundamentalRuntime,hint:&fundamental::ExistingExitHint,prior_window:u64)->Result<()>{
+fn reviewed_existing_exit(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,authority:&Arc<ProductionAuthority>,source:&mut RestSource,stream:&Realtime,f:&mut FundamentalRuntime,hint:&fundamental::ExistingExitHint,prior_window:u64,breadth:&mut Option<Recorder>,universe:&mut Option<Universe>)->Result<()>{
  let ex=hint.exchange_id.as_str();let market=hint.market_id.as_str();refresh_controls(c,authority,stream)?;log.require_resolved_attempts()?;f.authority.validate()?;
  if existing_target_busy(bank,log,ex)?{return Ok(())}
  // A REST book cannot heal an unobserved tape interval by itself.
@@ -902,12 +902,12 @@ fn reviewed_existing_exit(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut
  refresh_controls(c,authority,stream)?;
  if hint.reason=="reviewed_inventory_book_refresh"{
   let target=json!({"marketId":market,"exchangeId":ex});
-  let eligible=reviewed_book_prefilter(c,bank,source,&target,&mut LivePreflightReads{t,c,authority,stream},|bank,at|{
+  let eligible=reviewed_book_prefilter(c,bank,source,&target,&mut LivePreflightReads{t,c,authority,stream,breadth,universe},|bank,at|{
    Ok(f.cohorts.existing_exit_hint(bank,log,&c.scope,ex,f.authority.trusted(),at)?.is_some())
   })?;
   if !eligible{return existing_exit_deferred(c,ex,"book_prefilter","NO_CURRENT_EXECUTABLE_REVIEWED_EXIT")}
  }
- let facts=snapshots_for_market(c,market,|ep|request(t,&c.root,ep))?;
+ let facts=preflight_snapshots(c,bank,source,market,None,&mut LivePreflightReads{t,c,authority,stream,breadth,universe})?;
  let Some(facts_until)=existing_facts_until(&facts,now())?else{return existing_exit_deferred(c,ex,"facts","ORIGINAL_PACKET_STALE")};
  let target=json!({"marketId":market,"exchangeId":ex});accept_fresh_book(bank,c,&target,&facts.book,source)?;
  if existing_target_busy(bank,log,ex)?{return existing_exit_deferred(c,ex,"liability","EXISTING_TARGET_PENDING")}
@@ -1016,6 +1016,25 @@ trait OrdinaryPreflightReads{
  fn now_ms(&self)->u64;
  fn guarded(&mut self)->Result<bool>;
  fn read(&mut self,endpoint:Endpoint)->Result<Receipt>;
+  fn service_before_read(&mut self,_bank:&mut Session,_source:&mut RestSource)->Result<()>{Ok(())}
+}
+// Only this private typed error is an expected quote invalidation. A stream,
+// STOP, SDK or durable failure with similar text must not be swallowed.
+#[derive(Debug)]struct PreflightQuoteInvalidated;
+impl std::fmt::Display for PreflightQuoteInvalidated{fn fmt(&self,f:&mut std::fmt::Formatter<'_>)->std::fmt::Result{f.write_str("LIVE_PREFLIGHT_QUOTE_INVALIDATED")}}
+impl std::error::Error for PreflightQuoteInvalidated{}
+fn preflight_read(bank:&mut Session,source:&mut RestSource,reads:&mut impl OrdinaryPreflightReads,expected:Option<&Value>,endpoint:Endpoint)->Result<Receipt>{
+ reads.service_before_read(bank,source)?;
+ if let Some(original)=expected{
+  let id=original["id"].as_u64().ok_or("LIVE_QUOTE_ID")?;let current=quote(bank,id)?;
+  if current!=*original||current["retired"]!=false||current.get("cancelEffectiveAt").is_some_and(|v|!v.is_null())||current["expiresAt"].as_u64().is_none_or(|end|end<=reads.now_ms()){return Err(PreflightQuoteInvalidated.into())}
+ }
+ // There is deliberately no callback after the returned receipt. Its original
+ // identity/clocks reach the existing validation/application unchanged.
+ reads.read(endpoint)
+}
+fn preflight_snapshots(c:&Control,bank:&mut Session,source:&mut RestSource,market:&str,expected:Option<&Value>,reads:&mut impl OrdinaryPreflightReads)->Result<SnapshotSet>{
+ snapshots_for_market(c,market,|ep|preflight_read(bank,source,reads,expected,ep))
 }
 fn bulk_ordinary_quote(q:&Value,managed:&std::collections::BTreeSet<String>)->bool{
  q["exchangeId"].as_str().is_some_and(|ex|!managed.contains(ex))
@@ -1062,17 +1081,22 @@ fn apply_bulk_vetoes(scope:&Scope,quotes:&[Value],physical:&mut Vec<(String,usiz
   if vetoed{chosen_deferred|=item.1==chosen;}else{kept.push(item.clone());}
  }*physical=kept;Ok(chosen_deferred)
 }
-struct LivePreflightReads<'a>{t:&'a mut Transport,c:&'a Control,authority:&'a ProductionAuthority,stream:&'a Realtime}
+struct LivePreflightReads<'a>{t:&'a mut Transport,c:&'a Control,authority:&'a ProductionAuthority,stream:&'a Realtime,breadth:&'a mut Option<Recorder>,universe:&'a mut Option<Universe>}
 impl OrdinaryPreflightReads for LivePreflightReads<'_>{
  fn now_ms(&self)->u64{now()}
  fn guarded(&mut self)->Result<bool>{refresh_controls(self.c,self.authority,self.stream)?;Ok(!queue_has_unknown(self.t)?)}
  fn read(&mut self,ep:Endpoint)->Result<Receipt>{request(self.t,&self.c.root,ep)}
+  fn service_before_read(&mut self,bank:&mut Session,source:&mut RestSource)->Result<()>{
+   refresh_controls(self.c,self.authority,self.stream)?;
+   drain_stream(self.stream,bank,source,self.breadth,self.universe)?;
+   refresh_controls(self.c,self.authority,self.stream)
+  }
 }
 /// The callback evaluates the genuine newly admitted book and pinned policy.
 /// It can only decline an expensive packet, never replace its physical facts.
 fn reviewed_book_prefilter(c:&Control,bank:&mut Session,source:&mut RestSource,target:&Value,reads:&mut impl OrdinaryPreflightReads,mut eligible:impl FnMut(&Session,u64)->Result<bool>)->Result<bool>{
  if !reads.guarded()?{return Ok(false)}
- let book=reads.read(Endpoint::OrderBook{market_id:target["marketId"].as_str().ok_or("LIVE_MARKET_ID")?.into(),depth:20})?;
+ let book=preflight_read(bank,source,reads,None,Endpoint::OrderBook{market_id:target["marketId"].as_str().ok_or("LIVE_MARKET_ID")?.into(),depth:20})?;
  accept_fresh_book(bank,c,target,&book,source)?;
  eligible(bank,reads.now_ms())
 }
@@ -1114,7 +1138,7 @@ fn ordinary_preflight(c:&Control,bank:&mut Session,log:&DispatchLog,source:&mut 
  if !reads.guarded()?{return Ok(None)}
  if class==Class::NeedsRefresh{
   let market=current["marketId"].as_str().ok_or("LIVE_MARKET_ID")?.to_owned();
-  let book=reads.read(Endpoint::OrderBook{market_id:market,depth:20})?;
+  let book=match preflight_read(bank,source,reads,Some(&current),Endpoint::OrderBook{market_id:market,depth:20}){Ok(r)=>r,Err(e)if e.is::<PreflightQuoteInvalidated>()=>return Ok(None),Err(e)=>return Err(e)};
   accept_fresh_book(bank,c,&current,&book,source)?;current=quote(bank,id)?;
   let at=reads.now_ms();
   if !physical_preflight_ready(&current,log.never_attempted(id),log.intents.contains_key(&id),at){return Ok(None)}
@@ -1123,11 +1147,12 @@ fn ordinary_preflight(c:&Control,bank:&mut Session,log:&DispatchLog,source:&mut 
   if matches!(class,Class::NeedsRefresh|Class::Deferred|Class::Inactive){return Ok(None)}
   if !reads.guarded()?{return Ok(None)}
  }
- let facts=snapshots_for_market(c,current["marketId"].as_str().ok_or("LIVE_MARKET_ID")?,|ep|reads.read(ep))?;
+ let facts=match preflight_snapshots(c,bank,source,current["marketId"].as_str().ok_or("LIVE_MARKET_ID")?,Some(&current),reads){Ok(f)=>f,Err(e)if e.is::<PreflightQuoteInvalidated>()=>return Ok(None),Err(e)=>return Err(e)};
  accept_fresh_book(bank,c,&current,&facts.book,source)?;
- Ok(Some((quote(bank,id)?,facts)))
+ let final_quote=quote(bank,id)?;if final_quote!=current{return Ok(None)}
+ Ok(Some((final_quote,facts)))
 }
-fn reviewed_fundamental_entry(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,authority:&Arc<ProductionAuthority>,source:&mut RestSource,stream:&Realtime,f:&mut FundamentalRuntime,hint:&fundamental::EntryHint,prior_window:u64)->Result<()>{
+fn reviewed_fundamental_entry(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,authority:&Arc<ProductionAuthority>,source:&mut RestSource,stream:&Realtime,f:&mut FundamentalRuntime,hint:&fundamental::EntryHint,prior_window:u64,breadth:&mut Option<Recorder>,universe:&mut Option<Universe>)->Result<()>{
  let ex=hint.exchange_id.as_str();let market=hint.market_id.as_str();refresh_controls(c,authority,stream)?;log.require_resolved_attempts()?;f.authority.validate()?;
  if existing_target_busy(bank,log,ex)?{return Ok(())}
  if let Some(from)=exit_recovery_from(source,market,prior_window){let tape=request(t,&c.root,Endpoint::Trades{exchange_id:ex.into(),from:iso(from),to:iso(now())})?;
@@ -1135,13 +1160,13 @@ fn reviewed_fundamental_entry(t:&mut Transport,c:&Control,bank:&mut Session,log:
   let scopes=source.scopes();if !scopes.as_array().ok_or("LIVE_SOURCE_SCOPES")?.iter().find(|s|s["marketId"]==market).ok_or("LIVE_SOURCE_SCOPE")?["tapeReady"].as_bool().ok_or("LIVE_SOURCE_TAPE_STATE")?{return fundamental_entry_deferred(c,ex,"coverage","COMPLETE_TARGET_TAPE_REQUIRED")}
  }
  let target=json!({"marketId":market,"exchangeId":ex});
- let eligible=reviewed_book_prefilter(c,bank,source,&target,&mut LivePreflightReads{t,c,authority,stream},|bank,at|{
+ let eligible=reviewed_book_prefilter(c,bank,source,&target,&mut LivePreflightReads{t,c,authority,stream,breadth,universe},|bank,at|{
   let(books,_)=moloch_live_runtime::package_admission::native_books(bank,&c.scope,at,bank.engine().policy()["bookAgeMs"].as_u64().ok_or("LIVE_BOOK_POLICY")?)?;
   if !books.contains_key(ex){return Ok(true)} // Unavailable/legacy comparison is not price evidence.
   Ok(f.cohorts.compare_entry_actions_with_authority(bank,&c.scope,hint,&f.authority,at)?.is_none_or(|comparison|!comparison.candidates.is_empty()))
  })?;
  if !eligible{return fundamental_entry_deferred(c,ex,"book_prefilter","NO_CURRENT_REVIEWED_VALUE_OR_DEPTH")}
- let facts=snapshots_for_market(c,market,|ep|request(t,&c.root,ep))?;let Some(facts_until)=existing_facts_until(&facts,now())?else{return fundamental_entry_deferred(c,ex,"facts","ORIGINAL_PACKET_STALE")};
+ let facts=preflight_snapshots(c,bank,source,market,None,&mut LivePreflightReads{t,c,authority,stream,breadth,universe})?;let Some(facts_until)=existing_facts_until(&facts,now())?else{return fundamental_entry_deferred(c,ex,"facts","ORIGINAL_PACKET_STALE")};
  let target=json!({"marketId":market,"exchangeId":ex});accept_fresh_book(bank,c,&target,&facts.book,source)?;if existing_target_busy(bank,log,ex)?{return fundamental_entry_deferred(c,ex,"liability","EXISTING_TARGET_PENDING")}
  retire_existing_drafts(bank,log,ex)?;
  let gap=bank.engine().policy()["writeGapMs"].as_u64().filter(|v|*v<=3000).ok_or("LIVE_EXISTING_NATIVE_WRITE_GAP")?;let latency=bank.engine().policy()["latencyMs"].as_u64().filter(|v|*v<=3000).ok_or("LIVE_EXISTING_NATIVE_ACTIVATION")?;let ready=now().checked_add(gap).ok_or("LIVE_EXISTING_CLOCK_RANGE")?;
@@ -1175,7 +1200,9 @@ fn reviewed_fundamental_entry(t:&mut Transport,c:&Control,bank:&mut Session,log:
  // Activation and native write pacing intentionally consume time. Obtain a
  // FINAL genuine seven-receipt packet after that wait instead of dispatching
  // against the earlier planning packet. Keep the exact funded qid and price.
- let final_facts=snapshots_for_market(c,market,|ep|request(t,&c.root,ep))?;
+ let final_facts=match preflight_snapshots(c,bank,source,market,Some(q),&mut LivePreflightReads{t,c,authority,stream,breadth,universe}){
+  Ok(facts)=>facts,Err(e)if e.is::<PreflightQuoteInvalidated>()=>return fundamental_entry_deferred(c,ex,"final_facts","RESERVED_QUOTE_CHANGED_OR_RETIRED"),Err(e)=>return Err(e)
+ };
  accept_fresh_book(bank,c,&target,&final_facts.book,source)?;
  let current=quote(bank,id)?;
  if current!=*q||current["retired"]!=false{return fundamental_entry_deferred(c,ex,"final_facts","RESERVED_QUOTE_CHANGED_OR_RETIRED")}
@@ -1203,7 +1230,7 @@ fn retire_stale_entry_drafts(c:&Control,bank:&mut Session,log:&mut DispatchLog,m
  atomic_json(&c.root.join("stale-entry-drafts.json"),&json!({"at":iso(now()),"pid":std::process::id(),"reason":"stale_unsubmitted_ordinary_buy","originalNativeHead":selected.native_head(),"originalDispatchDescriptor":selected.dispatch_descriptor_identity(),"retired":rows,"nativeHead":bank.durable_head(),"networkRequests":0,"physicalOrdersCanceled":0,"pricesChanged":false}))?;
  Ok(rows.len())
 }
-fn dispatch(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,authority:&Arc<ProductionAuthority>,source:&mut RestSource,allow_new_submissions:bool,preflight_cursor:&mut Option<String>,stream:&Realtime,windows:&std::collections::BTreeMap<String,u64>,maker_review:Option<&moloch_live_runtime::maker_policy::Reviewed>,mut fundamental:Option<&mut FundamentalRuntime>)->Result<()>{
+fn dispatch(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,authority:&Arc<ProductionAuthority>,source:&mut RestSource,allow_new_submissions:bool,preflight_cursor:&mut Option<String>,stream:&Realtime,breadth:&mut Option<Recorder>,universe:&mut Option<Universe>,windows:&std::collections::BTreeMap<String,u64>,maker_review:Option<&moloch_live_runtime::maker_policy::Reviewed>,mut fundamental:Option<&mut FundamentalRuntime>)->Result<()>{
  if allow_new_submissions&&!bank.engine().package_blocks_submissions(){
   let managed=if let Some(f)=fundamental.as_ref(){f.authority.validate()?;f.cohorts.managed_exchanges()}else{Default::default()};
   retire_stale_entry_drafts(c,bank,log,&managed)?;
@@ -1248,14 +1275,14 @@ fn dispatch(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,a
   for ex in f.cohorts.managed_exchanges(){if !existing_target_busy(bank,log,&ex)?{if let Some(hint)=f.cohorts.existing_exit_hint(bank,log,&c.scope,&ex,f.authority.trusted(),now())?{if hint.reason=="reviewed_inventory_book_refresh"{stale_existing_hints.push(hint)}else{existing_hints.push(hint);}}}}
   if !existing_hints.is_empty(){let keys:Vec<_>=existing_hints.iter().map(|h|format!("{}:{}:sell",h.exchange_id,h.side)).collect();let index=moloch_live_runtime::scheduling::preflight_rotation(&keys,preflight_cursor.as_deref())[0];
    if !preflight_budget.try_start(){return Ok(())}*preflight_cursor=Some(keys[index].clone());let hint=&existing_hints[index];
-   reviewed_existing_exit(t,c,bank,log,authority,source,stream,f,hint,*windows.get(&hint.exchange_id).ok_or("LIVE_RECOVERY_WINDOW_MISSING")?)?;return Ok(())
+   reviewed_existing_exit(t,c,bank,log,authority,source,stream,f,hint,*windows.get(&hint.exchange_id).ok_or("LIVE_RECOVERY_WINDOW_MISSING")?,breadth,universe)?;return Ok(())
   }
  }
  if !hints.is_empty(){
   let keys:Vec<_>=hints.keys().cloned().collect();let index=moloch_live_runtime::scheduling::preflight_rotation(&keys,preflight_cursor.as_deref())[0];let key=&keys[index];
   let(old,hint)=hints.get(key).ok_or("LIVE_EXIT_REFRESH_HINT")?;
   if !preflight_budget.try_start(){return Ok(())}*preflight_cursor=Some(key.clone());
-  refresh_exit(t,c,bank,log,authority,source,stream,old,hint,flow_started,maximum_qid_before,refresh_unknown,*windows.get(hint.exchange()).ok_or("LIVE_RECOVERY_WINDOW_MISSING")?,fundamental.as_deref_mut().filter(|f|f.cohorts.manages(hint.exchange())))?;
+  refresh_exit(t,c,bank,log,authority,source,stream,old,hint,flow_started,maximum_qid_before,refresh_unknown,*windows.get(hint.exchange()).ok_or("LIVE_RECOVERY_WINDOW_MISSING")?,breadth,universe,fundamental.as_deref_mut().filter(|f|f.cohorts.manages(hint.exchange())))?;
   return Ok(()) // Ineligible refresh still consumes this pass; never another packet.
  }
  let entry_hints=if !owner_capital_ready(c,bank)?{Vec::new()}else if let Some(f)=fundamental.as_ref(){f.authority.validate()?;f.cohorts.entry_hints(bank,log,&c.scope,f.authority.trusted(),now())?.into_iter().filter(|h|!bank.engine().order_records().iter().any(|q|q["exchangeId"]==h.exchange_id&&q["retired"]==false&&q.get("reviewedFundamentalEntry").is_some())).collect::<Vec<_>>()}else{Vec::new()};
@@ -1289,7 +1316,7 @@ fn dispatch(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,a
  let mut chosen=shared_preflight_rotation(&stale_existing_hints,&entry_hints,&physical,preflight_cursor.as_deref());
  if let Some((SharedPreflight::Physical(index),key))=&chosen{
   let managed=fundamental.as_ref().map(|f|f.cohorts.managed_exchanges()).unwrap_or_default();
-  let vetoes=bulk_negative_vetoes(c,&quotes,&physical,&selection,&managed,*index,&mut LivePreflightReads{t,c,authority,stream})?;
+  let vetoes=bulk_negative_vetoes(c,&quotes,&physical,&selection,&managed,*index,&mut LivePreflightReads{t,c,authority,stream,breadth,universe})?;
   if !vetoes.is_empty(){
    if apply_bulk_vetoes(&c.scope,&quotes,&mut physical,&vetoes,*index,now())?{*preflight_cursor=Some(key.clone());}
    chosen=shared_preflight_rotation(&stale_existing_hints,&entry_hints,&physical,preflight_cursor.as_deref());
@@ -1301,8 +1328,8 @@ fn dispatch(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,a
   SharedPreflight::ExistingRead(index)|SharedPreflight::EntryRead(index)=>{
    if !preflight_budget.try_start(){return Ok(())}*preflight_cursor=Some(key);
    let f=fundamental.as_deref_mut().ok_or("LIVE_FUNDAMENTAL_READ_RUNTIME")?;f.authority.validate()?;
-   if matches!(chosen,SharedPreflight::ExistingRead(_)){let hint=&stale_existing_hints[index];reviewed_existing_exit(t,c,bank,log,authority,source,stream,f,hint,*windows.get(&hint.exchange_id).ok_or("LIVE_RECOVERY_WINDOW_MISSING")?)?;}
-   else{let hint=&entry_hints[index];reviewed_fundamental_entry(t,c,bank,log,authority,source,stream,f,hint,*windows.get(&hint.exchange_id).ok_or("LIVE_RECOVERY_WINDOW_MISSING")?)?;}return Ok(())
+   if matches!(chosen,SharedPreflight::ExistingRead(_)){let hint=&stale_existing_hints[index];reviewed_existing_exit(t,c,bank,log,authority,source,stream,f,hint,*windows.get(&hint.exchange_id).ok_or("LIVE_RECOVERY_WINDOW_MISSING")?,breadth,universe)?;}
+   else{let hint=&entry_hints[index];reviewed_fundamental_entry(t,c,bank,log,authority,source,stream,f,hint,*windows.get(&hint.exchange_id).ok_or("LIVE_RECOVERY_WINDOW_MISSING")?,breadth,universe)?;}return Ok(())
   }
  };
  ranked.retain(|(_,index)|*index==chosen_index);
@@ -1316,7 +1343,7 @@ fn dispatch(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,a
   // same read-only facts. No intent/attempt or HTTP write exists at this stage.
   if !preflight_budget.try_start(){return Ok(())}*preflight_cursor=Some(keys[index].clone());
   if early_exit_prefetch{let _=atomic_json(&c.root.join("exit-prefetch.json"),&json!({"at":iso(prefetch_started),"qid":qid,"stage":"started","createdAtMs":q["createdAt"],"activationAtMs":q["activationAt"],"expiresAtMs":q["expiresAt"],"prefetchStartedAtMs":prefetch_started,"expiryExtended":false}));}
-  let Some((current,facts))=ordinary_preflight(c,bank,log,source,&q,&mut LivePreflightReads{t,c,authority,stream})?else{
+  let Some((current,facts))=ordinary_preflight(c,bank,log,source,&q,&mut LivePreflightReads{t,c,authority,stream,breadth,universe})?else{
    authority.clear_ready();let assessment=moloch_live_runtime::quote_priority::from_native(bank,&c.scope,&[quote(bank,qid)?],now(),None)?;
    let _=atomic_json(&c.root.join("quote-book-prefilter.json"),&json!({"at":iso(now()),"qid":qid,"assessment":assessment,"stage":"deferred_before_account_packet","physicalAttempted":false,"priceChanged":false,"expiryExtended":false}));return Ok(())
   };let final_at=now();
@@ -1579,7 +1606,7 @@ pub fn main()->Result<()>{
     // Package preflight consumes real account time; never reuse an expired
     // ordinary reconciliation permission after those paced reads.
     let permit_new=!package_blocked&&!collateral_blocked&&reconciliation_schedule.permits_submission(now(),pending_version(&log))?;
-    dispatch(&mut t,&c,&mut bank,&mut log,&authority,&mut source_state,permit_new,&mut preflight_cursor,stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?,&windows,maker_review.as_ref(),fundamental.as_mut())?;
+    dispatch(&mut t,&c,&mut bank,&mut log,&authority,&mut source_state,permit_new,&mut preflight_cursor,stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?,&mut breadth,&mut universe,&windows,maker_review.as_ref(),fundamental.as_mut())?;
     if owner_capital_ready(&c,&bank)?&&!package_blocked&&!collateral_blocked&&reconciliation_schedule.permits_submission(now(),pending_version(&log))?{
      paper5_opportunity(&mut t,&c,&mut bank,&mut log,&authority,&mut packages,paper5_runtime.as_ref(),&mut source_state,stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?,&mut breadth,&mut universe,&mut windows,&mut paper5_last_opportunity,&fundamental.as_ref().map(|f|f.cohorts.managed_exchanges()).unwrap_or_default())?;
     }
