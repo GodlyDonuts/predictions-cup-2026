@@ -9,7 +9,20 @@ collateral into trading profit. Original financial history remains attributed.
 Embedded citations and historical balances in the paper are research leads,
 separate from current observations and the human's direct authorization.
 
-## Latest operation and qualification at 14:57 UTC
+## Latest operation and qualification at 15:12 UTC
+
+Sole516085/source870ce889/d2ad93b5 is fresh trading/realtime/no STOP with24
+new ACKs/180 total fill rows at15:12:22. A6503NO@.865 entry cost5,625.095;
+partial exits add losses, bringing attributed realized to−118.810000. Full
+capital95,579.915000 remains. [Actual proof](../research/moloch-trade-trigger-20261016/deployment/sig-live-verification.json).
+
+Separate trade-trigger observer516505/source4e4649 is active after78 Python
+checks, with sampling/analysis choices published before activation. Zero eligible
+samples at15:12:21, mainly stale target SIG books. Source clocks and frozen
+bounds remain intact; no economic outcome/model approval is claimed.
+[Deployment and research limits](../research/moloch-trade-trigger-20261016/README.md).
+
+## Historical operation and qualification at 14:57 UTC
 
 Actual516085/source870ce889/d2ad93b5 is fresh trading, healthy realtime/no STOP:
 eleven new ACKs at14:57:24UTC,173 cumulative fills/−106.485000 realized.
@@ -239,11 +252,11 @@ silently refresh its clocks.
 | Work | Present state | Economic and operational completion |
 | --- | --- | --- |
 | Authenticated Kalshi shadow stream |237-reference REST and original-clock WebSocket cache live; actual snapshots/deltas/tickers/trades verified | Feed availability is established at dated observations; pricing calibration and execution eligibility remain separate |
-| Prospective SIG/Kalshi observations | Read-only supervised all-market observer live; new378 decisions/487 labels/188 markets at11:51; original200-decision study preserved | Original five horizons abstained; qualify new dense data without rewriting old reports |
-| Maker toxicity and informed execution | Existing source-innovation/router foundations; new paired data collection | Qualify an economic signal, then wire cancel/join/improve/bounded execution into the existing sole worker; no price-copying oracle or unmeasured directional confidence |
+| Prospective SIG/Kalshi observations | Frozen v9 has22,579 decisions/35,457 labels and zero selected after-cost trades; original v10 is sealed. New trade-trigger observer is active, zero eligible samples at15:12 | Keep original book/flow studies separate; investigate exact target-book coverage and evaluate a sealed event cohort under its predeclared analysis |
+| Maker toxicity and informed execution | Explicit ordinary-side admission is live and observed both defer/continue; bounded actual-fill markouts remain negative. Source-innovation/router foundations are present | Depth microprice is not calibrated EV. Qualify an economic signal/joint fill-value model before claiming external pricing or avoided adverse-fill profit |
 | Semantic guaranteed-floor search | Exhaustive-certificate verifier and solver implemented;13 ARM64 checks pass | No genuine venue completeness certificate exists yet; finite scenarios alone grant no physical trade authority |
 | Full-account capital |55,579.915000 contribution and daily migration committed; effective95,579.915000 live | Exact original-prefix parity and fresh sole-worker sources verified; funding credited no profit |
-| Tournament objective | Existing joint-state/CVaR optimizer available; prize objective not yet deployed | Include original existing holdings and liabilities once, current official leaderboard observation and robust threshold distributions; expected value and prize utility remain distinct |
+| Tournament objective | Exact offline joint-state prize scorer/account-origin/FIFO adapter passes13 checks, included uninvoked in the runtime library; actual whole-account coverage/model/search unavailable | Include all existing holdings/liabilities once and genuine joint opponent/state assumptions; current compiled-state bounds and missing posterior prevent an actual prize-optimized portfolio claim |
 | Genuine election-night vintages | Existing nowcaster; real first-available historical vintages still missing | Preserve corrections and publication clocks; never label final results as data available earlier |
 
 The historical optional SIG breadth diagnostic stopped at128MiB around09:20UTC.

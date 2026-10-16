@@ -1,5 +1,13 @@
 # Separate prospective public-trade sampling
 
+## Actual deployment and present coverage, 15:12 UTC
+
+Read-only observer **PID516505**, source bytes `4e4649c054a469baed4ba57651fae6c201aed8a479ba6f8551e5d28e0e0d891e`, started15:05:34 UTC in new `crossvenue-observer-trade-v1`. The [analysis protocol](analysis-protocol.json) was published/read back on main`4b0b2d2b` before activation; Git-LF SHA `dbf827a8cab904595b6173873949cd8c5f9666769754993b5c7636344bddc291`. Root independently passed all78 Python checks. The switch preserved the actual SIG PID516085 and its process start. Old v10's two gzip segments were closed, decompressed/JSON-checked and sealed. [Actual rollout](deployment/production-rollout.json).
+
+At15:12:21 the observer has fresh process/status, matching source/policy and sampling enabled, but **zero eligible trade samples**. Counters report13,305 accepted SIG books,50 stale-SIG trigger skips, four old trades and one unavailable SIG scope. These are coverage counters, not outcomes; process health is not proof of current target books or a qualified model. [Dated actual verification](deployment/live-verification.json). No old source clock, age rule, v7 result or missing flow is rewritten. Active data is unsealed and has not been analyzed for returns. [Official coverage boundaries](unchanged-book-coverage.md).
+
+At15:12:22 sole SIG production is fresh trading with24 successor ACKs and180 cumulative fill rows. A new6,503-share NO entry at.865 cost5,625.095; subsequent partial exits have brought total attributed realized to**−118.810000**. Cash69,236.720000/owned26,224.385000 and full95,579.915000 capital reconcile. Entry size/fill count is not return. [Actual SIG observation](deployment/sig-live-verification.json). Source-task-only statements below describe the handoff before root deployment.
+
 This opt-in read-only observer mode samples information arrivals directly,
 instead of waiting for a coincident SIG book update. It is source-only and has
 not been deployed by this task. It adds no account requests, external client,

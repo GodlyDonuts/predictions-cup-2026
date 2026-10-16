@@ -1,4 +1,19 @@
-# Current research baseline: October 16, 14:57 UTC
+# Current research baseline: October 16, 15:12 UTC
+
+Sole516085/870ce889/d2ad93b5 is fresh trading/realtime/no STOP at15:12:22:
+24 new ACKs,180 total fill rows, attributed realized−118.810000 after partial
+exits from a6503NO@.865 new entry. No profit is inferred from capital deployment.
+Full attributed capital remains95,579.915000.
+[Current SIG evidence](../research/moloch-trade-trigger-20261016/deployment/sig-live-verification.json).
+
+Read-only trade-trigger516505/source4e4649 is active in a separate cohort;
+sampling and ten-feature/four-model analysis protocols were frozen/published
+before activation.78 Python checks pass. Zero eligible samples at15:12:21,
+mostly stale target SIG books; no new outcomes inspected or age-rule retune.
+Original v10 is sealed; v9/v7 findings below are preserved.
+[Actual prospective state and coverage](../research/moloch-trade-trigger-20261016/README.md).
+
+# Historical research baseline: October 16, 14:57 UTC
 
 Actual sole516085/source870ce889/executabled2ad93b5 is fresh trading, healthy
 realtime/no STOP,11 new ACKs at14:57:24UTC;173 cumulative fills/−106.485000

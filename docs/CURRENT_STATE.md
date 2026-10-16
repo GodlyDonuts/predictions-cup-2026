@@ -1,4 +1,20 @@
-# October 16, 14:57 UTC: entry filter verified in fresh production
+# October 16, 15:12 UTC: production trading; trade-trigger cohort active
+
+Actual sole516085/source870ce889/d2ad93b5 remains fresh trading, healthy
+realtime/no STOP:24 successor ACKs/180 cumulative fill rows at15:12:22UTC.
+The new6503NO@.865 entry cost5,625.095; later partial exits add losses.
+Attributed realized is now−118.810000, cash69,236.720000/owned26,224.385000.
+Full capital95,579.915000 remains; no reset or profitable model claim.
+[Current actual SIG proof](../research/moloch-trade-trigger-20261016/deployment/sig-live-verification.json).
+
+Read-only trade observer516505/source4e4649 replaced default v10 after sealing
+it, without changing the SIG PID/start. Sampling and analysis choices were
+published before activation;78 Python checks passed. Fresh source/status but
+zero eligible samples at15:12:21:50stale-SIG,4old-trade,1missing-SIG skips.
+Original clocks/bounds remain; a bounded original-frame metadata probe is
+investigating coverage. [Actual deployment and evidence limits](../research/moloch-trade-trigger-20261016/README.md).
+
+# Historical October 16, 14:57 UTC: entry filter verified in fresh production
 
 Sole PID516085/source870ce889/executabled2ad93b5 is fresh trading with healthy
 realtime/no STOP, first confirmed14:51:18UTC. Eleven new ACKs at14:57:24;

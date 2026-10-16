@@ -1,0 +1,36 @@
+{
+  "at": "2026-10-16T15:05:34.482270+00:00",
+  "oldPid": 516305,
+  "newPid": 516505,
+  "sigPid": 516085,
+  "sigProcessAndStartUnchanged": true,
+  "sourcePath": "/home/archon/apps/moloch/sidecars/crossvenue-observer-4e4649c054a469ba.py",
+  "sourceSha256": "4e4649c054a469baed4ba57651fae6c201aed8a479ba6f8551e5d28e0e0d891e",
+  "samplingPolicySha256": "031edcb2d4d6ca144e89d86b467e6b879113f1e172c3ef19457f2b577996717b",
+  "analysisProtocolPublishedCommit": "4b0b2d2b79e4c5ae9c19253b3379df346db978fb",
+  "analysisProtocolGitLfSha256": "dbf827a8cab904595b6173873949cd8c5f9666769754993b5c7636344bddc291",
+  "output": "/home/archon/apps/moloch/shared/crossvenue-observer-trade-v1",
+  "priorUnitSha256": "e9da2b19b86ee21c5ab031a80fdefc010add3ea2aeccd8081fff226d370d998a",
+  "unitSha256": "49b412b9c443ef0320937e7c838013bed1ede021135dcef048674698e78572d2",
+  "priorCohortSealed": [
+    {
+      "path": "/home/archon/apps/moloch/shared/crossvenue-observer-v10/20261016T14-1792162303260233076.jsonl.gz",
+      "sha256": "ad708862a1532fa74f11d074b479664627e857c10b0ec12d2bf504266d73c033",
+      "bytes": 3072909,
+      "rows": 10560,
+      "gzipAndJsonVerified": true
+    },
+    {
+      "path": "/home/archon/apps/moloch/shared/crossvenue-observer-v10/20261016T15-1792162810346006458.jsonl.gz",
+      "sha256": "5fb9c615b179cf1e0f5440b8092d44b54be1b772895edd2f1a11a743c80d5167",
+      "bytes": 893779,
+      "rows": 2920,
+      "gzipAndJsonVerified": true
+    }
+  ],
+  "testsDistinctPassed": 78,
+  "accountRequests": 0,
+  "executionAuthority": false,
+  "freshTradeSamplesVerified": false,
+  "restartRequiresNewCohort": true
+}
