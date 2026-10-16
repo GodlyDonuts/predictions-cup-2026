@@ -14,6 +14,8 @@ mod reviewed_fundamental_entry;
 mod ordinary_entry_exclusions;
 #[path = "live_market_capacity.rs"]
 mod live_market_capacity;
+#[path = "engine_capital.rs"]
+mod capital;
 use crate::{Reservation, Result, SCALE, Side, TICK, Wallet, amount, fee, money, price};
 use serde_json::{Value, json};
 use sha2::{Digest, Sha256};
@@ -457,6 +459,7 @@ pub struct Engine {
     reviewed_fundamental_entries: BTreeMap<u64,Value>,
     ordinary_entry_exclusions: Option<Value>,
     live_market_capacity: Option<Value>,
+    capital_allocation: Option<Value>,
     policy: Policy,
     pub wallet: Wallet,
     books: BTreeMap<String, Arc<Book>>,
@@ -477,6 +480,7 @@ pub struct Engine {
 }
 impl Engine {
     pub fn from_seed_state(state: &Value) -> Result<Self> {
+        if state.get("ownerCapitalAllocation").is_some(){return Err("SEED_OWNER_CAPITAL_REQUIRE_REPLAY")}
         if state.get("liveMarketCapacity").is_some(){return Err("SEED_LIVE_MARKET_CAPACITY_REQUIRE_REPLAY")}
         if state.get("ordinaryEntryExclusions").is_some(){return Err("SEED_ORDINARY_ENTRY_EXCLUSIONS_REQUIRE_REPLAY")}
         if state.get("reviewedInventoryExitReservations").is_some(){return Err("SEED_REVIEWED_EXIT_REQUIRE_REPLAY")}
@@ -558,6 +562,7 @@ impl Engine {
         self.wallet.audit()?;
         self.audit_packages()?;
         self.audit_collateral()?;
+        self.audit_owner_capital()?;
         for (ex, side) in self.wallet.lots.keys() {
             let held = self.wallet.quantity(ex, *side);
             if held < self.pledge(ex, *side) + held.min(self.opposite_buys(ex, *side)) {
@@ -720,6 +725,7 @@ impl Engine {
             reviewed_fundamental_entries: BTreeMap::new(),
             ordinary_entry_exclusions: None,
             live_market_capacity: None,
+            capital_allocation: None,
         })
     }
     fn count(&mut self, k: &str) {
@@ -1480,6 +1486,7 @@ impl Engine {
             "reviewed_fundamental_entry_reserved_v1" => self.reserve_reviewed_fundamental_entry(e,at)?,
             "ordinary_entry_exclusions_v1" => self.apply_ordinary_entry_exclusions(e,at)?,
             "live_market_capacity_v1" => self.apply_live_market_capacity(e,at)?,
+            "live_capital_allocation_v1" => self.apply_owner_capital(e,at)?,
             "actual_order_ack" | "actual_fill" | "actual_order_terminal" | "unsubmitted_intent_retired" | "actual_position_adoption" | "live_entry_window" | "actual_collateral_baseline" | "actual_collateral_execution" | "actual_collateral_settlement" | "actual_collateral_checkpoint" | "actual_collateral_ordinary_cash_sync" => self.apply_live(e,at)?,
             "live_package_reserve" | "live_package_attempt" | "live_package_no_execution" | "live_package_ack" | "live_package_unknown" | "live_package_complete" => self.apply_package(e,at)?,
             "probabilistic_portfolio_reserve_v1" | "probabilistic_portfolio_attempt_v1" | "probabilistic_portfolio_no_execution_v1" | "probabilistic_portfolio_ack_v1" | "probabilistic_portfolio_unknown_v1" | "probabilistic_portfolio_complete_v1" => self.apply_probabilistic_package(e,at)?,
@@ -1804,7 +1811,7 @@ impl Engine {
         // No persistent state is set: a subsequent tick/book plans normally.
         if kind!="unsubmitted_intent_retired"&&e.get("deferPlanningForPackage").is_some(){return Err("PACKAGE_PLANNING_FLAG_EVENT")}
         let defer_package_plan=kind=="unsubmitted_intent_retired"&&e["deferPlanningForPackage"]==true;
-        if kind!="live_entry_window"&&kind!="ordinary_entry_exclusions_v1"&&kind!="live_market_capacity_v1"&&kind!="reviewed_inventory_exit_reserved_v1"&&kind!="reviewed_fundamental_entry_reserved_v1"&&!kind.starts_with("live_package_")&&!kind.starts_with("probabilistic_portfolio_")&&!kind.starts_with("actual_collateral_")&&!defer_package_plan{self.reconcile(at)?;}
+        if kind!="live_entry_window"&&kind!="ordinary_entry_exclusions_v1"&&kind!="live_market_capacity_v1"&&kind!="live_capital_allocation_v1"&&kind!="reviewed_inventory_exit_reserved_v1"&&kind!="reviewed_fundamental_entry_reserved_v1"&&!kind.starts_with("live_package_")&&!kind.starts_with("probabilistic_portfolio_")&&!kind.starts_with("actual_collateral_")&&!defer_package_plan{self.reconcile(at)?;}
         Ok(())
     }
     pub fn report(&self) -> Result<Value> {
@@ -1842,6 +1849,7 @@ impl Engine {
         if !self.reviewed_fundamental_entries.is_empty(){report["reviewedFundamentalEntryReservations"]=json!(self.reviewed_fundamental_entries);}
         if let Some(record)=&self.ordinary_entry_exclusions{report["ordinaryEntryExclusions"]=record.clone();}
         if let Some(record)=&self.live_market_capacity{report["liveMarketCapacity"]=record.clone();}
+        if let Some(record)=&self.capital_allocation{report["ownerCapitalAllocation"]=record.clone();}
         if let Some(inherited) = &self.inherited {
             report["openingInventoryCost"] = json!(money(inherited.opening_cost));
             if self.wallet.realized - inherited.realized_gross <= 0 { report["profitSignalEligible"] = json!(false); }

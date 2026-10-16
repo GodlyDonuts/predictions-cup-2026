@@ -42,6 +42,7 @@ impl RetainedReceipt {
   need(feedback::digest(&receipt)?==digest,"COLLATERAL_SOURCE_DIGEST")?;Self::open(root,&receipt,store)
  }
  pub fn receipt(&self)->&Receipt{&self.receipt}
+ pub(crate) fn verify_root(&self,root:&Path)->Result<()>{need(self.root==root.canonicalize()?,"COLLATERAL_RECEIPT_OTHER_ROOT")?;self.verify()}
  pub fn open(root:&Path,receipt:&Receipt,store:ReceiptStore)->Result<Self>{
   no_links(root)?;let root=root.canonicalize()?;let digest=feedback::digest(receipt)?;
   let path=match store{ReceiptStore::Ordinary=>root.join("receipts").join(format!("{digest}.json")),ReceiptStore::Package=>root.join("package-receipts").join(format!("receipt-{digest}.json"))};
@@ -50,8 +51,8 @@ impl RetainedReceipt {
   need(value==serde_json::to_value(receipt)?,"COLLATERAL_ORIGINAL_RECEIPT_CHANGED")?;
   let r=Self{file,path,root,identity,raw_sha256:raw_hash(&raw),receipt:receipt.clone()};r.verify()?;Ok(r)
  }
- fn verify(&self)->Result<()>{pin(&self.path,&self.identity)?;need(metadata(&self.file.metadata()?)?==self.identity&&raw_hash(&bounded(&self.file,MAX_RECEIPT)?)==self.raw_sha256,"COLLATERAL_ORIGINAL_RECEIPT_CHANGED")?;pin(&self.path,&self.identity)}
- fn evidence(&self)->Result<Value>{Ok(json!({"receiptSha256":feedback::digest(&self.receipt)?,"retainedBytesSha256":self.raw_sha256,"descriptor":self.identity}))}
+ pub(crate) fn verify(&self)->Result<()>{pin(&self.path,&self.identity)?;need(metadata(&self.file.metadata()?)?==self.identity&&raw_hash(&bounded(&self.file,MAX_RECEIPT)?)==self.raw_sha256,"COLLATERAL_ORIGINAL_RECEIPT_CHANGED")?;pin(&self.path,&self.identity)}
+ pub(crate) fn evidence(&self)->Result<Value>{Ok(json!({"receiptSha256":feedback::digest(&self.receipt)?,"retainedBytesSha256":self.raw_sha256,"descriptor":self.identity}))}
 }
 #[derive(Clone,Copy)]pub struct Snapshot<'a>{pub account:&'a RetainedReceipt,pub collateral:&'a RetainedReceipt}
 impl Snapshot<'_>{fn value(&self)->Value{json!({"account":self.account.receipt,"collateral":self.collateral.receipt})}}
@@ -66,23 +67,27 @@ pub enum Operation<'a>{
 /// JSON. These must borrow its ORIGINAL held objects; opening a copy is not a
 /// new source of execution authority. Transport rechecks its actual authority.
 pub struct Boundary<'a>{pub root:&'a Path,pub owner_lock_path:&'a Path,pub owner_lease:&'a ExclusiveLock,pub transport:&'a Transport,pub ordinary:&'a DispatchLog,pub packages:&'a PackageDispatchLog}
-struct Journal {sha256:String,acks:BTreeSet<String>,attempted:BTreeSet<u64>,closed:BTreeSet<u64>,acknowledged:BTreeSet<u64>}
+struct Journal {sha256:String,acks:BTreeSet<String>,attempted:BTreeSet<u64>,closed:BTreeSet<u64>,acknowledged:BTreeSet<u64>,aborted:BTreeMap<u64,Value>}
 /// Stream the original retained chain with bounded rows; compare its actual
 /// head to the held object before and after scanning. Never repairs a tail.
 fn journal(path:&Path,held:&Value,package:bool)->Result<Journal>{
  pin(path,held)?;need(held["bytes"].as_u64().is_some_and(|n|n<=MAX_JOURNAL),"COLLATERAL_JOURNAL_SIZE")?;
  let f=File::open(path)?;let opened=metadata(&f.metadata()?)?;for k in ["schemaVersion","device","inode","bytes"]{need(opened[k]==held[k],"COLLATERAL_DESCRIPTOR_CHANGED")?;}pin(path,&opened)?;let mut r=BufReader::new(f);let(mut seq,mut previous)=(0u64,"0".repeat(64));let mut digest=Sha256::new();let mut size=0u64;
- let mut out=Journal{sha256:String::new(),acks:BTreeSet::new(),attempted:BTreeSet::new(),closed:BTreeSet::new(),acknowledged:BTreeSet::new()};
+ let mut out=Journal{sha256:String::new(),acks:BTreeSet::new(),attempted:BTreeSet::new(),closed:BTreeSet::new(),acknowledged:BTreeSet::new(),aborted:BTreeMap::new()};
  loop{let mut row=Vec::new();let n=Read::take(&mut r,MAX_RECEIPT+1).read_until(b'\n',&mut row)?;if n==0{break}need(n as u64<=MAX_RECEIPT&&row.last()==Some(&b'\n'),"COLLATERAL_JOURNAL_TAIL_OR_ROW")?;size=size.checked_add(n as u64).ok_or("COLLATERAL_RANGE")?;need(size<=MAX_JOURNAL,"COLLATERAL_JOURNAL_SIZE")?;digest.update(&row);
   let mut v:Value=serde_json::from_slice(&row)?;let claimed=v.as_object_mut().ok_or("COLLATERAL_JOURNAL_ROW")?.remove("hash").ok_or("COLLATERAL_JOURNAL_HASH")?;
   need(v["sequence"]==seq+1&&v["previous"]==previous&&claimed==hash(&v)?,"COLLATERAL_JOURNAL_CHAIN")?;seq+=1;previous=claimed.as_str().ok_or("COLLATERAL_JOURNAL_HASH")?.into();let e=&v["event"];
   if e["kind"]=="ack"{let receipt:Receipt=serde_json::from_value(e["receipt"].clone())?;out.acks.insert(feedback::digest(&receipt)?);}
-  if !package{let q=e["qid"].as_u64().ok_or("COLLATERAL_JOURNAL_QID")?;match e["kind"].as_str(){Some("attempt")=>{out.attempted.insert(q);},Some("ack"|"recovered_ack")=>{out.acknowledged.insert(q);},Some("closed")=>{out.closed.insert(q);},_=>{}}}
+  if !package{let q=e["qid"].as_u64().ok_or("COLLATERAL_JOURNAL_QID")?;match e["kind"].as_str(){Some("attempt")=>{out.attempted.insert(q);},Some("ack"|"recovered_ack")=>{out.acknowledged.insert(q);},Some("closed")=>{out.closed.insert(q);},Some("aborted_before_admission")=>{out.aborted.insert(q,e.clone());},_=>{}}}
  }
  need(seq==held["sequence"].as_u64().ok_or("COLLATERAL_JOURNAL_HEAD")?&&held["previous"]==previous&&held["bytes"]==size,"COLLATERAL_JOURNAL_HEAD")?;
  pin(path,held)?;out.sha256=format!("{:x}",digest.finalize());Ok(out)
 }
-fn capture(bank:&Session,b:&Boundary<'_>,at:i64)->Result<Value>{
+fn capture(bank:&Session,b:&Boundary<'_>,at:i64)->Result<Value>{capture_checked(bank,b,at,false)}
+/// Allocation only: original positively verified no-network terminal audit may
+/// coexist with closed physical history. Existing collateral semantics unchanged.
+pub(crate) fn allocation_boundary(bank:&Session,b:&Boundary<'_>,at:i64)->Result<Value>{capture_checked(bank,b,at,true)}
+fn capture_checked(bank:&Session,b:&Boundary<'_>,at:i64,allow_proved:bool)->Result<Value>{
  no_links(b.root)?;let root=b.root.canonicalize()?;let queue=b.transport.package_queue_quiet()?;
  need(queue.state.scope==b.transport.account_scope()&&queue.state.last_clock<=u64::try_from(at)?&&queue.global_unknown_count==0&&!queue.has_unknown&&queue.state.active.is_none()&&!queue.state.manual_review,"COLLATERAL_QUEUE_BOUNDARY")?;
  let lease=b.owner_lease.descriptor_identity()?;pin(b.owner_lock_path,&lease)?;let lease_file=File::open(b.owner_lock_path)?;let lease_bytes=bounded(&lease_file,4096)?;let lease_json:Value=serde_json::from_slice(&lease_bytes)?;
@@ -90,12 +95,18 @@ fn capture(bank:&Session,b:&Boundary<'_>,at:i64)->Result<Value>{
  let ordinary=b.ordinary.descriptor_identity()?;let packages=b.packages.descriptor_identity()?;
  let o=journal(&root.join("dispatch.ndjson"),&ordinary,false)?;let p=journal(&root.join("package-dispatch/package-dispatch.ndjson"),&packages,true)?;
  b.ordinary.require_resolved_attempts()?;need(o.attempted==b.ordinary.attempted&&o.acknowledged==b.ordinary.acknowledgments.keys().copied().collect()&&o.closed==b.ordinary.closed,"COLLATERAL_DISPATCH_PROJECTION")?;
- need(o.attempted.is_subset(&o.closed)&&!b.packages.unresolved()&&!bank.engine().package_blocks_new_submissions(),"COLLATERAL_UNRESOLVED_EXECUTION")?;
+ let mut allocation_aborted=BTreeSet::new();
+ if allow_proved{need(o.aborted==*b.ordinary.aborted_records(),"CAPITAL_ABORT_PROJECTION")?;for q in o.attempted.difference(&o.closed){
+  let original=bank.engine().order_records().into_iter().find(|r|r["id"]==*q).ok_or("CAPITAL_ABORT_NATIVE_QUOTE")?;
+  need(b.ordinary.proved_no_network(*q)&&o.aborted.contains_key(q)&&original["retired"]==true&&!b.ordinary.acknowledgments.contains_key(q)&&!bank.engine().live_order_bindings().contains_key(q)&&!bank.engine().fills().iter().any(|f|f["orderId"]==*q),"CAPITAL_UNVERIFIED_ABORT")?;allocation_aborted.insert(*q);
+ }}
+ need(o.attempted.iter().all(|q|o.closed.contains(q)||allocation_aborted.contains(q))&&!b.packages.unresolved()&&!bank.engine().package_blocks_new_submissions(),"COLLATERAL_UNRESOLVED_EXECUTION")?;
  let pending:Vec<_>=bank.engine().order_records().into_iter().filter(|q|q["retired"]==false).map(|q|q["id"].as_u64().ok_or("COLLATERAL_QUOTE_ID")).collect::<std::result::Result<_,_>>()?;
  need(pending.iter().all(|q|!o.attempted.contains(q)&&b.ordinary.never_attempted(*q)&&!bank.engine().live_order_bindings().contains_key(q)),"COLLATERAL_UNSUBMITTED_PROOF")?;
  need(ordinary==b.ordinary.descriptor_identity()?&&packages==b.packages.descriptor_identity()?,"COLLATERAL_DISPATCH_CHANGED")?;
  let seed=bank.live_account_seed().ok_or("COLLATERAL_LIVE_BANK")?;
- Ok(json!({"root":root,"scope":b.transport.scope(),"accountScope":b.transport.account_scope(),"runId":seed["runId"],"manifestHash":bank.manifest_hash(),"reportHash":hash(&bank.engine().report()?)?,"nativeHead":bank.durable_head(),"ordinaryDescriptor":ordinary,"packageDescriptor":packages,"ordinarySha256":o.sha256,"packageSha256":p.sha256,"originalAckReceiptHashes":o.acks.union(&p.acks).collect::<Vec<_>>(),"queue":queue,"leaseDescriptor":lease,"ownerLeaseSha256":raw_hash(&lease_bytes),"unsubmitted":pending}))
+ let captured=json!({"root":root,"scope":b.transport.scope(),"accountScope":b.transport.account_scope(),"runId":seed["runId"],"manifestHash":bank.manifest_hash(),"reportHash":hash(&bank.engine().report()?)?,"nativeHead":bank.durable_head(),"ordinaryDescriptor":ordinary,"packageDescriptor":packages,"ordinarySha256":o.sha256,"packageSha256":p.sha256,"originalAckReceiptHashes":o.acks.union(&p.acks).collect::<Vec<_>>(),"queue":queue,"leaseDescriptor":lease,"ownerLeaseSha256":raw_hash(&lease_bytes),"unsubmitted":pending});
+ if allow_proved{let mut c=captured;c["provedNoNetworkOrderIds"]=json!(allocation_aborted);Ok(c)}else{Ok(captured)}
 }
 fn receipt_clocks(r:&Receipt,at:i64)->Result<()> {let start=clock(&r.request_started_at)?;let end=clock(&r.received_at)?;need(r.status==200&&start>=0&&start<=end&&end<=at,"COLLATERAL_RECEIPT_CLOCK_OR_STATUS")}
 fn sources<'a>(op:&Operation<'a>)->Vec<&'a RetainedReceipt>{let mut v=Vec::new();match op{Operation::Baseline{after}=>v.extend([after.account,after.collateral]),Operation::Checkpoint{before,after}=>v.extend([before.account,before.collateral,after.account,after.collateral]),Operation::Execution{before,after,acknowledgments,fill_tapes}|Operation::OrdinaryCashSync{before,after,acknowledgments,fill_tapes}=>{v.extend([before.account,before.collateral,after.account,after.collateral]);v.extend_from_slice(acknowledgments);v.extend_from_slice(fill_tapes);},Operation::Settlement{before,after,settlements,..}=>v.extend([before.account,before.collateral,after.account,after.collateral,*settlements])}v}

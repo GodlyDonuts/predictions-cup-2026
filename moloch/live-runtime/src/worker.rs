@@ -13,7 +13,7 @@ use sha2::{Digest,Sha256};
 use std::{fs,path::{Path,PathBuf},sync::Arc,time::{SystemTime,UNIX_EPOCH,Duration}};
 #[derive(Clone,Serialize,Deserialize)]
 #[serde(rename_all="camelCase",deny_unknown_fields)]
-struct Control{#[serde(default)]paper5:Option<moloch_live_runtime::paper5_runtime::Settings>,#[serde(default)]execution_distribution:Option<moloch_live_runtime::execution_distribution::Config>,#[serde(default)]fundamental_policy:Option<fundamental::Settings>,#[serde(default)]maker_policy:Option<moloch_live_runtime::maker_policy::Settings>,#[serde(default)]package_allocation:Option<moloch_live_runtime::package_allocation::Settings>,#[serde(default)]collateral_accounting:bool,#[serde(default)]execution_model:Option<moloch_live_runtime::execution_edge::Config>,#[serde(default)]packages:Option<moloch_live_runtime::package_settings::Settings>,#[serde(default)]daily_entry_windows:Option<moloch_live_runtime::daily_windows::DailyEntryWindows>,activation:Activation,scope:Scope,policy:Value,root:PathBuf,credentials:PathBuf,owner_lock:PathBuf,account_scope:String,#[serde(default)]all_markets:bool,#[serde(default="default_bank")]bank_name:String,#[serde(default)]predecessor_bank:Option<String>,#[serde(default)]manage_existing_positions:bool}
+struct Control{#[serde(default)]bulk_negative_screen:bool,#[serde(default)]paper5:Option<moloch_live_runtime::paper5_runtime::Settings>,#[serde(default)]execution_distribution:Option<moloch_live_runtime::execution_distribution::Config>,#[serde(default)]fundamental_policy:Option<fundamental::Settings>,#[serde(default)]maker_policy:Option<moloch_live_runtime::maker_policy::Settings>,#[serde(default)]package_allocation:Option<moloch_live_runtime::package_allocation::Settings>,#[serde(default)]collateral_accounting:bool,#[serde(default)]execution_model:Option<moloch_live_runtime::execution_edge::Config>,#[serde(default)]packages:Option<moloch_live_runtime::package_settings::Settings>,#[serde(default)]daily_entry_windows:Option<moloch_live_runtime::daily_windows::DailyEntryWindows>,activation:Activation,scope:Scope,policy:Value,root:PathBuf,credentials:PathBuf,owner_lock:PathBuf,account_scope:String,#[serde(default)]all_markets:bool,#[serde(default="default_bank")]bank_name:String,#[serde(default)]predecessor_bank:Option<String>,#[serde(default)]manage_existing_positions:bool}
 fn default_bank()->String{"bank".into()}
 struct FundamentalRuntime{cohorts:Cohorts,authority:ReviewAuthority}
 impl FundamentalRuntime{
@@ -949,6 +949,51 @@ trait OrdinaryPreflightReads{
  fn guarded(&mut self)->Result<bool>;
  fn read(&mut self,endpoint:Endpoint)->Result<Receipt>;
 }
+fn bulk_ordinary_quote(q:&Value,managed:&std::collections::BTreeSet<String>)->bool{
+ q["exchangeId"].as_str().is_some_and(|ex|!managed.contains(ex))
+  &&q.get("reviewedInventoryExit").is_none_or(Value::is_null)&&q.get("reviewedFundamentalEntry").is_none_or(Value::is_null)
+  &&q["executionStyle"]!="inventoryAON"&&q["inventoryExitReason"]!="maximumAge"
+}
+/// One optional negative-only request per dispatch pass. Only a chosen stale
+/// ordinary quote plus at least one OTHER eligible scope justifies this read.
+/// Positive/unknown/expired observations still need every original book/fact.
+fn bulk_negative_vetoes(c:&Control,quotes:&[Value],physical:&[(String,usize,bool)],selection:&moloch_live_runtime::quote_priority::Selection,managed:&std::collections::BTreeSet<String>,chosen:usize,reads:&mut impl OrdinaryPreflightReads)->Result<Vec<(usize,moloch_live_runtime::bulk_price_screen::Deferral)>>{
+ use moloch_live_runtime::{bulk_price_screen as bulk,quote_priority::Class};
+ if !c.bulk_negative_screen{return Ok(Vec::new())}
+ let eligible=|index:usize,urgent:bool|->Result<bool>{let q=quotes.get(index).ok_or("LIVE_BULK_QUOTE_INDEX")?;
+  let a=selection.assessments.iter().find(|a|a.index==index).ok_or("LIVE_BULK_ASSESSMENT")?;
+  Ok(!urgent&&a.decision.class==Class::NeedsRefresh&&bulk_ordinary_quote(q,managed))};
+ let Some((_,_,urgent))=physical.iter().find(|(_,i,_)|*i==chosen)else{return Err("LIVE_BULK_CHOICE".into())};
+ if !eligible(chosen,*urgent)?{return Ok(Vec::new())}
+ let mut indices=vec![chosen];for(_,index,urgent)in physical{if *index!=chosen&&eligible(*index,*urgent)?{indices.push(*index)}}
+ let mut ids=Vec::new();let mut seen=std::collections::BTreeSet::new();let mut included=Vec::new();
+ for index in indices{let q=&quotes[index];let ex=q["exchangeId"].as_str().ok_or("LIVE_BULK_SCOPE")?;
+  if c.scope.exchanges.get(ex).is_none_or(|m|q["marketId"]!=*m){return Err("LIVE_BULK_SCOPE".into())}
+  if seen.contains(ex){included.push(index);continue}
+  if ids.len()==bulk::MAXIMUM_IDS{continue}seen.insert(ex.to_owned());ids.push(ex.to_owned());included.push(index);
+ }
+ if ids.len()<2{return Ok(Vec::new())}
+ let endpoint=bulk::endpoint(&c.scope,&ids)?;
+ if !reads.guarded()?{return Ok(Vec::new())}
+ let receipt=reads.read(endpoint)?;let parsed=bulk::Batch::from_original(&c.scope,&ids,&receipt,reads.now_ms());
+ let batch=match parsed{Ok(batch)=>batch,Err(error)=>{
+  atomic_json(&c.root.join("bulk-negative-screen.json"),&json!({"at":iso(reads.now_ms()),"state":"unavailable_original_response","reason":error.to_string(),"requestedExchangeCount":ids.len(),"negativeOnly":true,"executionAuthority":false}))?;return Ok(Vec::new())
+ }};
+ if !reads.guarded()?{return Ok(Vec::new())}
+ let mut vetoes=Vec::new();for index in included{if let Some(veto)=batch.defer(&c.scope,&quotes[index],reads.now_ms())?{
+  if veto.matches_quote(&c.scope,&quotes[index],reads.now_ms())?{vetoes.push((index,veto));}
+ }}
+ atomic_json(&c.root.join("bulk-negative-screen.json"),&json!({"at":iso(reads.now_ms()),"state":"original_negative_screen","receiptSha256":batch.receipt_sha256(),"validUntilMs":batch.valid_until_ms(),"requestedExchangeCount":ids.len(),"vetoedQids":vetoes.iter().map(|(i,_)|quotes[*i]["id"].clone()).collect::<Vec<_>>(),"negativeOnly":true,"executionAuthority":false,"pricesChanged":false,"expiryExtended":false}))?;
+ Ok(vetoes)
+}
+/// Recheck original quote binding and receipt TTL at the actual rotation boundary.
+fn apply_bulk_vetoes(scope:&Scope,quotes:&[Value],physical:&mut Vec<(String,usize,bool)>,vetoes:&[(usize,moloch_live_runtime::bulk_price_screen::Deferral)],chosen:usize,at:u64)->Result<bool>{
+ let mut kept=Vec::new();let mut chosen_deferred=false;
+ for item in physical.iter(){let q=quotes.get(item.1).ok_or("LIVE_BULK_QUOTE_INDEX")?;
+  let vetoed=if item.2{false}else{match vetoes.iter().find(|(i,_)|*i==item.1){Some((_,v))=>v.matches_quote(scope,q,at)?,None=>false}};
+  if vetoed{chosen_deferred|=item.1==chosen;}else{kept.push(item.clone());}
+ }*physical=kept;Ok(chosen_deferred)
+}
 struct LivePreflightReads<'a>{t:&'a mut Transport,c:&'a Control,authority:&'a ProductionAuthority,stream:&'a Realtime}
 impl OrdinaryPreflightReads for LivePreflightReads<'_>{
  fn now_ms(&self)->u64{now()}
@@ -1131,7 +1176,7 @@ fn dispatch(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,a
  let selection=moloch_live_runtime::quote_priority::from_native(bank,&c.scope,&quotes,now(),preflight_cursor.as_deref())?;
  let _=atomic_json(&c.root.join("quote-priority.json"),&json!({"at":iso(now()),"selection":selection,"pricesChanged":false,"profitabilityEstablished":false}));
  let mut ranked=Vec::new();let mut maker_assessments=Vec::new();let mut maker_decisions=Vec::new();
- for index in selection.ordered_indices{
+ for index in selection.ordered_indices.iter().copied(){
   let q=&quotes[index];
   if let Some(f)=fundamental.as_ref(){if f.cohorts.manages(q["exchangeId"].as_str().ok_or("LIVE_QUOTE_SCOPE")?){if f.eligible(bank,log,&c.scope,q["id"].as_u64().ok_or("LIVE_QUOTE_ID")?,now())?{ranked.push((if q["action"]=="sell"{0}else{1},index));}continue}}
   if q["action"]=="buy"{if let Some(review)=maker_review{
@@ -1150,7 +1195,16 @@ fn dispatch(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,a
   let urgent=q["action"]=="sell"&&(managed||selection.assessments.iter().any(|a|a.index==*index&&matches!(a.decision.class,moloch_live_runtime::quote_priority::Class::RiskExit|moloch_live_runtime::quote_priority::Class::CoveredMarketable)));
   physical.push((keys[*index].clone(),*index,urgent));
  }
- let Some((chosen,key))=shared_preflight_rotation(&stale_existing_hints,&entry_hints,&physical,preflight_cursor.as_deref())else{return Ok(())};
+ let mut chosen=shared_preflight_rotation(&stale_existing_hints,&entry_hints,&physical,preflight_cursor.as_deref());
+ if let Some((SharedPreflight::Physical(index),key))=&chosen{
+  let managed=fundamental.as_ref().map(|f|f.cohorts.managed_exchanges()).unwrap_or_default();
+  let vetoes=bulk_negative_vetoes(c,&quotes,&physical,&selection,&managed,*index,&mut LivePreflightReads{t,c,authority,stream})?;
+  if !vetoes.is_empty(){
+   if apply_bulk_vetoes(&c.scope,&quotes,&mut physical,&vetoes,*index,now())?{*preflight_cursor=Some(key.clone());}
+   chosen=shared_preflight_rotation(&stale_existing_hints,&entry_hints,&physical,preflight_cursor.as_deref());
+  }
+ }
+ let Some((chosen,key))=chosen else{return Ok(())};
  let chosen_index=match chosen{
   SharedPreflight::Physical(index)=>index,
   SharedPreflight::ExistingRead(index)|SharedPreflight::EntryRead(index)=>{
@@ -1621,6 +1675,38 @@ pub fn main()->Result<()>{
   assert_eq!(moloch_live_runtime::quote_priority::from_native(&bank,&c.scope,&[q.clone()],now(),None).unwrap().assessments[0].decision.class,moloch_live_runtime::quote_priority::Class::NeedsRefresh);
   (root,bank,log,c,source,q)
  }
+ struct BulkReads{inner:PrefilterReads,scope:Scope,mode:&'static str,delay:u64,deny_after:usize}
+ impl OrdinaryPreflightReads for BulkReads{
+  fn now_ms(&self)->u64{self.inner.at}
+  fn guarded(&mut self)->Result<bool>{self.inner.guards+=1;Ok(self.inner.allow&&self.inner.guards<self.deny_after)}
+  fn read(&mut self,ep:Endpoint)->Result<Receipt>{
+   if let Endpoint::Prices{exchange_ids}=&ep{
+    self.inner.endpoints.push(ep.clone());if self.mode=="read_error"{return Err("FIXTURE_BULK_READ_ERROR".into())}
+    let started=self.inner.at;self.inner.at+=self.delay;
+    let rows:Vec<_>=exchange_ids.iter().map(|ex|{let bid=if self.mode=="passing"&&ex=="101"{0.095}else{0.4};json!({"exchangeId":ex,"marketId":self.scope.exchanges[ex],"option":if self.mode=="null"{Value::Null}else{json!("YES")},"latestPrice":bid,"bestBid":bid,"bestAsk":if ex=="102"{0.45}else{bid+0.02},"spread":if ex=="102"{0.05}else{0.02}})}).collect();
+    let data=if self.mode=="missing"{json!({"data":[],"missingIds":exchange_ids})}else{json!({"data":rows,"missingIds":[]})};
+    return Ok(Receipt{endpoint:if self.mode=="wrong_scope"{"/exchanges/prices?foreign".into()}else{format!("/exchanges/prices?ids={}&tournamentId={}",exchange_ids.join(","),self.scope.tournament_id)},request_started_at:iso(started),received_at:iso(self.inner.at),status:200,data})
+   }self.inner.read(ep)
+  }
+ }
+ fn bulk_fixture()->(Temp,Session,DispatchLog,Control,RestSource,Vec<Value>,Vec<(String,usize,bool)>,moloch_live_runtime::quote_priority::Selection){
+  let(root,mut bank,log,mut c,source,q)=prefilter_fixture();c.bulk_negative_screen=true;c.scope.exchanges.insert("102".into(),"202".into());let at=now()-15000;
+  bank.accept("bulk-fixture-book",1,&json!({"type":"book","receivedAt":iso(at),"book":{"marketId":"202","exchangeId":"102","tournamentId":TID,"sequence":"1","sourceAt":iso(at),"requestStartedAt":iso(at),"receivedAt":iso(at),"bids":[{"price":"0.400000","quantity":100}],"asks":[{"price":"0.450000","quantity":100}]}})).unwrap();
+  let other=bank.engine().order_records().into_iter().find(|q|q["exchangeId"]=="102"&&q["action"]=="buy"&&q["retired"]==false).unwrap();
+  let quotes=vec![q,other];let physical=quotes.iter().enumerate().map(|(i,q)|(format!("{}:{}:{}",q["exchangeId"].as_str().unwrap(),q["side"].as_str().unwrap(),q["action"].as_str().unwrap()),i,false)).collect();
+  let selection=moloch_live_runtime::quote_priority::from_native(&bank,&c.scope,&quotes,now(),None).unwrap();(root,bank,log,c,source,quotes,physical,selection)
+ }
+ fn bulk_reads(c:&Control,mode:&'static str)->BulkReads{BulkReads{inner:PrefilterReads{at:now(),allow:true,book_price:95000,endpoints:vec![],guards:0,book_reads:0},scope:c.scope.clone(),mode,delay:0,deny_after:usize::MAX}}
+ #[test]fn bulk_default_disabled_and_single_scope_never_add_an_optional_read(){let(_r,_b,_l,mut c,_s,q,p,a)=bulk_fixture();assert!(!control(Path::new("/fixture")).bulk_negative_screen);c.bulk_negative_screen=false;let mut reads=bulk_reads(&c,"far");assert!(bulk_negative_vetoes(&c,&q,&p,&a,&Default::default(),0,&mut reads).unwrap().is_empty());assert!(reads.inner.endpoints.is_empty());c.bulk_negative_screen=true;assert!(bulk_negative_vetoes(&c,&q,&p[..1],&a,&Default::default(),0,&mut reads).unwrap().is_empty());assert!(reads.inner.endpoints.is_empty());}
+ #[test]fn bulk_urgent_reviewed_and_managed_choices_bypass_the_extra_read(){for kind in ["urgent","reviewed","managed"]{let(_r,_b,_l,c,_s,mut q,mut p,a)=bulk_fixture();let mut managed=std::collections::BTreeSet::new();match kind{"urgent"=>p[0].2=true,"reviewed"=>q[0]["reviewedInventoryExit"]=json!({"source":"actualfixture"}),_=>{managed.insert("101".into());}}let mut reads=bulk_reads(&c,"far");assert!(bulk_negative_vetoes(&c,&q,&p,&a,&managed,0,&mut reads).unwrap().is_empty());assert!(reads.inner.endpoints.is_empty(),"{kind}");}}
+ #[test]fn one_original_bulk_veto_bound_to_real_native_quote_changes_no_bank_or_intent(){let(_r,b,l,c,_s,q,p,a)=bulk_fixture();let before=b.engine().report().unwrap();let mut reads=bulk_reads(&c,"far");let vetoes=bulk_negative_vetoes(&c,&q,&p,&a,&Default::default(),0,&mut reads).unwrap();assert_eq!(reads.inner.endpoints.len(),1);assert!(matches!(&reads.inner.endpoints[0],Endpoint::Prices{exchange_ids}if exchange_ids.len()==2));assert!(vetoes.iter().any(|(i,_)|*i==0));let veto=&vetoes.iter().find(|(i,_)|*i==0).unwrap().1;assert!(veto.matches_quote(&c.scope,&q[0],reads.now_ms()).unwrap());let mut changed=q[0].clone();changed["price"]=json!("0.900000");assert!(!veto.matches_quote(&c.scope,&changed,reads.now_ms()).unwrap());assert_eq!(b.engine().report().unwrap(),before);assert!(l.intents.is_empty()&&l.attempted.is_empty());}
+ #[test]fn original_negative_screen_rotates_to_another_real_native_scope_in_the_same_pass(){let(_r,b,l,c,_s,q,mut p,a)=bulk_fixture();let before=b.engine().report().unwrap();let mut reads=bulk_reads(&c,"far");let vetoes=bulk_negative_vetoes(&c,&q,&p,&a,&Default::default(),0,&mut reads).unwrap();assert!(apply_bulk_vetoes(&c.scope,&q,&mut p,&vetoes,0,reads.now_ms()).unwrap());assert_eq!(p.len(),1);assert_eq!(p[0].1,1);let cursor=format!("physical:{}",format!("{}:{}:{}",q[0]["exchangeId"].as_str().unwrap(),q[0]["side"].as_str().unwrap(),q[0]["action"].as_str().unwrap()));let next=shared_preflight_rotation(&[],&[],&p,Some(&cursor)).unwrap();assert!(matches!(next.0,SharedPreflight::Physical(1)));assert_eq!(reads.inner.endpoints.len(),1);assert_eq!(b.engine().report().unwrap(),before);assert!(l.intents.is_empty()&&l.attempted.is_empty());}
+ #[test]fn bulk_veto_expiry_at_rotation_preserves_both_original_candidates(){let(_r,_b,_l,c,_s,q,mut p,a)=bulk_fixture();let mut reads=bulk_reads(&c,"far");let vetoes=bulk_negative_vetoes(&c,&q,&p,&a,&Default::default(),0,&mut reads).unwrap();assert!(!vetoes.is_empty());assert!(!apply_bulk_vetoes(&c.scope,&q,&mut p,&vetoes,0,reads.now_ms()+1500).unwrap());assert_eq!(p.len(),2);}
+ #[test]fn bulk_late_missing_null_or_wrong_endpoint_is_never_positive_authority(){for mode in ["late","missing","null","wrong_scope"]{let(_r,b,l,c,_s,q,p,a)=bulk_fixture();let before=b.engine().report().unwrap();let mut reads=bulk_reads(&c,mode);if mode=="late"{reads.delay=1500;}assert!(bulk_negative_vetoes(&c,&q,&p,&a,&Default::default(),0,&mut reads).unwrap().is_empty(),"{mode}");assert_eq!(reads.inner.endpoints.len(),1);assert_eq!(b.engine().report().unwrap(),before);assert!(l.attempted.is_empty());}}
+ #[test]fn passing_bulk_still_reads_the_entire_original_seven_facts_and_prefilter_book(){let(_r,mut b,l,c,mut s,q,p,a)=bulk_fixture();let mut reads=bulk_reads(&c,"passing");let vetoes=bulk_negative_vetoes(&c,&q,&p,&a,&Default::default(),0,&mut reads).unwrap();assert!(!vetoes.iter().any(|(i,_)|*i==0));let(current,facts)=ordinary_preflight(&c,&mut b,&l,&mut s,&q[0],&mut reads).unwrap().unwrap();assert_eq!(current["id"],q[0]["id"]);assert_eq!(reads.inner.endpoints.len(),9);assert!(matches!(reads.inner.endpoints[0],Endpoint::Prices{..}));assert_eq!(reads.inner.book_reads,2);assert_eq!(facts.book.data["contexts"][0]["orderbook"]["exchanges"][0]["asOf"]["sequence"],3);assert!(l.intents.is_empty());}
+ #[test]fn denied_or_failed_optional_read_preserves_existing_stop_and_read_errors(){for kind in ["before","after","read_error"]{let(_r,_b,_l,c,_s,q,p,a)=bulk_fixture();let mut reads=bulk_reads(&c,kind);if kind=="before"{reads.inner.allow=false;}if kind=="after"{reads.deny_after=2;}let result=bulk_negative_vetoes(&c,&q,&p,&a,&Default::default(),0,&mut reads);if kind=="read_error"{assert_eq!(result.err().unwrap().to_string(),"FIXTURE_BULK_READ_ERROR");}else{assert!(result.unwrap().is_empty());}assert_eq!(reads.inner.endpoints.len(),usize::from(kind!="before"));}}
+ #[test]fn fresh_ordinary_choice_does_not_pay_bulk_cost_for_other_stale_candidates(){let(_r,_b,_l,c,_s,q,p,mut a)=bulk_fixture();a.assessments[0].decision.class=moloch_live_runtime::quote_priority::Class::Competitive;let mut reads=bulk_reads(&c,"far");assert!(bulk_negative_vetoes(&c,&q,&p,&a,&Default::default(),0,&mut reads).unwrap().is_empty());assert!(reads.inner.endpoints.is_empty());}
+ #[test]fn foreign_scope_before_optional_read_fails_without_any_request(){let(_r,_b,_l,c,_s,mut q,p,a)=bulk_fixture();q[1]["marketId"]=json!("999");let mut reads=bulk_reads(&c,"far");assert!(bulk_negative_vetoes(&c,&q,&p,&a,&Default::default(),0,&mut reads).is_err());assert!(reads.inner.endpoints.is_empty());}
  #[test]fn stale_far_native_sell_reads_only_original_book_and_never_an_account_packet(){
   let(_root,mut bank,log,c,mut source,q)=prefilter_fixture();let before=bank.engine().report().unwrap();let mut r=PrefilterReads{at:now(),allow:true,book_price:300000,endpoints:vec![],guards:0,book_reads:0};
   assert!(ordinary_preflight(&c,&mut bank,&log,&mut source,&q,&mut r).unwrap().is_none());assert_eq!(r.endpoints.len(),1);assert!(matches!(r.endpoints[0],Endpoint::OrderBook{..}));

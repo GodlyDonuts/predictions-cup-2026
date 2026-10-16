@@ -39,6 +39,26 @@ pub fn decimal_units(text:&str)->Result<i128>{
  Ok(if negative{-n}else{n})
 }
 fn money_value(v:&Value)->Result<i128>{need(v.is_number(),"INVALID_MONEY_NUMBER")?;decimal_units(&v.to_string())}
+/// Validate ORIGINAL bulk price fields without changing their JSON. BBOs use
+/// the existing exact IEEE tick protocol; an arithmetic spread is accepted
+/// only when its bits reproduce subtraction of those verified BBOs. This is
+/// never a money/cash rounding policy or an executable-depth certificate.
+pub fn validate_bulk_price_fields(row:&Value)->Result<()> {
+ let mut bbo=[None,None];
+ for(i,field)in ["bestBid","bestAsk"].iter().enumerate(){let v=row.get(*field).ok_or_else(||fail("PRICE_FIELDS"))?;need(v.is_null()||v.is_number(),"PRICE_NUMBER")?;if !v.is_null(){bbo[i]=Some(prices::official_tick_units(v)?);}}
+ let latest=row.get("latestPrice").ok_or_else(||fail("PRICE_FIELDS"))?;
+ if !latest.is_null(){need((0..=1_000_000).contains(&money_value(latest)?),"PRICE_NUMBER")?;}
+ let spread=row.get("spread").ok_or_else(||fail("PRICE_FIELDS"))?;if spread.is_null(){return Ok(())}need(spread.is_number(),"PRICE_NUMBER")?;
+ // Preserve the pre-existing exact-decimal spread range check. This display
+ // field is not used to manufacture a book or execution probability.
+ if let Ok(n)=money_value(spread){return need((0..=1_000_000).contains(&n),"PRICE_SPREAD")}
+ let (bid,ask)=bbo[0].zip(bbo[1]).ok_or_else(||fail("PRICE_SPREAD"))?;
+ need(ask>=bid,"PRICE_SPREAD")?;
+ let reported=spread.as_f64().filter(|n|n.is_finite()).ok_or_else(||fail("PRICE_SPREAD"))?;
+ let raw_bid=row["bestBid"].as_f64().ok_or_else(||fail("PRICE_SPREAD"))?;let raw_ask=row["bestAsk"].as_f64().ok_or_else(||fail("PRICE_SPREAD"))?;
+ let canonical=|n:i128|format!("{}.{:06}",n/1_000_000,n%1_000_000).parse::<f64>().unwrap();
+ need([raw_ask-raw_bid,canonical(ask)-canonical(bid)].iter().any(|n|n.to_bits()==reported.to_bits()),"PRICE_SPREAD")
+}
 pub trait CredentialProvider:Send {fn load(&self)->Result<Zeroizing<String>>;}
 pub trait Clock:Send {fn now_ms(&self)->u64;fn sleep_ms(&mut self,ms:u64)->Result<()>;}
 pub struct SystemClock;
@@ -281,7 +301,7 @@ impl Transport {
     need(actual==expected,"INCOMPLETE_BOOK_EXCHANGES")?;
    },
    Endpoint::Nodes{market_id}=>need(v["market_id"]==*market_id&&v["contexts"].as_array().is_some_and(|a|a.len()==1&&a[0]["type"]=="tournament"&&a[0]["tournament"]["id"]==self.config.scope.tournament_id)&&v["root"]["node_type"]=="contract"&&(v["root"]["contract_type"].is_string()||v["root"]["contract_type"].is_null()),"ROOT_SCOPE")?,
-   Endpoint::Prices{exchange_ids}=>{let rows=v["data"].as_array().ok_or_else(||fail("PRICE_ARRAY"))?;let mut seen=BTreeSet::new();for row in rows{let e=row["exchangeId"].as_str().ok_or_else(||fail("PRICE_SCOPE"))?;need(exchange_ids.iter().any(|x|x==e)&&seen.insert(e.to_string())&&self.config.scope.exchanges.get(e).is_some_and(|m|row["marketId"]==*m),"PRICE_SCOPE")?;for field in ["bestBid","bestAsk","latestPrice","spread"]{if !row[field].is_null(){let p=money_value(&row[field])?;need((0..=1_000_000).contains(&p),"PRICE_NUMBER")?;}}}for id in v["missingIds"].as_array().ok_or_else(||fail("MISSING_IDS"))?{let e=id.as_str().ok_or_else(||fail("MISSING_IDS"))?;need(exchange_ids.iter().any(|x|x==e)&&seen.insert(e.into()),"MISSING_IDS")?;}need(seen.len()==exchange_ids.len(),"INCOMPLETE_PRICE_RESPONSE")?;},
+   Endpoint::Prices{exchange_ids}=>{let rows=v["data"].as_array().ok_or_else(||fail("PRICE_ARRAY"))?;let mut seen=BTreeSet::new();for row in rows{let e=row["exchangeId"].as_str().ok_or_else(||fail("PRICE_SCOPE"))?;need(exchange_ids.iter().any(|x|x==e)&&seen.insert(e.to_string())&&self.config.scope.exchanges.get(e).is_some_and(|m|row["marketId"]==*m),"PRICE_SCOPE")?;validate_bulk_price_fields(row)?;}for id in v["missingIds"].as_array().ok_or_else(||fail("MISSING_IDS"))?{let e=id.as_str().ok_or_else(||fail("MISSING_IDS"))?;need(exchange_ids.iter().any(|x|x==e)&&seen.insert(e.into()),"MISSING_IDS")?;}need(seen.len()==exchange_ids.len(),"INCOMPLETE_PRICE_RESPONSE")?;},
    Endpoint::History{exchange_id,to}=>{need(v["exchangeId"]==*exchange_id&&self.config.scope.exchanges.get(exchange_id).is_some_and(|m|v["marketId"]==*m)&&v["resolution"]=="1m","HISTORY_SCOPE")?;let end=parse_clock(&v["to"]).ok_or_else(||fail("HISTORY_CLOCK"))?;let start=parse_clock(&v["from"]).ok_or_else(||fail("HISTORY_CLOCK"))?;let requested=DateTime::parse_from_rfc3339(to).map_err(|_|fail("HISTORY_CLOCK"))?.timestamp_millis() as u64;need(start<end&&end<=requested&&end<=self.clock.now_ms()&&end%60000==0,"HISTORY_CLOCK")?;self.coverage(&v["coverage"],false)?;let rows=v["candles"].as_array().ok_or_else(||fail("HISTORY_CANDLES"))?;need(rows.len()<=500,"HISTORY_CANDLES")?;let mut seen=BTreeSet::new();for row in rows{let time=parse_clock(&row["time"]).ok_or_else(||fail("CANDLE_CLOCK"))?;need(time>=start&&time.checked_add(60000).is_some_and(|t|t<=end)&&time%60000==0&&seen.insert(time)&&money_value(&row["volume"])? >=0&&row["tradeCount"].as_u64().is_some(),"CANDLE_CLOCK")?;for field in ["open","high","low","close","vwap"]{if !row[field].is_null(){let p=money_value(&row[field])?;need((0..=1_000_000).contains(&p),"CANDLE_PRICE")?;}}}},
    Endpoint::Trades{exchange_id,from,to}=>{need(v["exchangeId"]==*exchange_id&&self.config.scope.exchanges.get(exchange_id).is_some_and(|m|v["marketId"]==*m)&&parse_clock(&v["from"])==parse_clock(&json!(from))&&parse_clock(&v["to"])==parse_clock(&json!(to)),"TRADE_WINDOW_SCOPE")?;self.coverage(&v["coverage"],true)?;pagination(v)?;let start=parse_clock(&v["from"]).ok_or_else(||fail("TRADE_WINDOW"))?;let end=parse_clock(&v["to"]).ok_or_else(||fail("TRADE_WINDOW"))?;for row in v["data"].as_array().ok_or_else(||fail("TRADE_ARRAY"))?{need(row["id"].as_str().is_some_and(numeric)&&parse_clock(&row["createdAt"]).is_some_and(|t|t>=start&&t<end)&&row["size"].as_u64().is_some_and(|n|n>0)&&row["side"].as_str().is_some_and(|s|s=="YES"||s=="NO"),"INVALID_TRADE")?;prices::official_tick_units(&row["price"])?;}},
    Endpoint::PortfolioFills=>{self.coverage(&v["coverage"],true)?;pagination(v)?;for row in v["data"].as_array().ok_or_else(||fail("PORTFOLIO_FILL_ARRAY"))?{let e=row["exchangeId"].as_str().ok_or_else(||fail("FILL_SCOPE"))?;need((self.config.scope.exchanges.get(e).is_some_and(|m|row["marketId"]==*m)||self.full_account_observation&&!self.config.scope.exchanges.contains_key(e)&&numeric(e)&&row["marketId"].as_str().is_some_and(numeric))&&id_value(&row["id"]).is_some()&&(row["orderId"].is_null()||id_value(&row["orderId"]).is_some())&&parse_clock(&row["filledAt"]).is_some()&&row["quantity"].as_i64().is_some_and(|q|q>0&&row["side"]=="yes"||q<0&&row["side"]=="no"),"INVALID_PORTFOLIO_FILL")?;if !row["price"].is_null(){let p=prices::official_tick_units(&row["price"])?;need((0..=1_000_000).contains(&p),"INVALID_FILL_PRICE")?;}}},
