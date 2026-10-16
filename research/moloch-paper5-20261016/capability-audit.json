@@ -1,0 +1,39 @@
+{
+  "observedAt": "2026-10-16T04:53:00Z",
+  "sourceUrl": "https://sig.thesuper.market/api/v1/docs",
+  "parsedSpecSha256": "de0628e7967b1c68848a28586b16ac325c0896e7826150c3d59f38b2085a9159",
+  "observationClockPrecision": "minute; retrieved during04:52-04:53UTC",
+  "capabilities": {
+    "ordinaryOrders": "YES/NO limit and market, opposite BUY netting, covered SELL and complement canonicalization",
+    "batchOrders": {
+      "maximumOrders": 50,
+      "atomic": false
+    },
+    "multiLeg": {
+      "maximumLegs": 10,
+      "atomicPlacement": true,
+      "defaultMayPartiallyFillOrRest": true,
+      "allOrNone": "whole basket fills immediately within limits or no execution/resting"
+    },
+    "relationships": "participant read access; create/deactivate admin only",
+    "collateral": "component guaranteed payout advances exposed in account/portfolio surfaces",
+    "managedLiquidity": "DMM/admin only",
+    "signalPurchaseOrLeaseEndpointsFound": false
+  },
+  "productionAtObservation": {
+    "sourceCommit": "bfd51082",
+    "pid": 383074,
+    "ordinaryOrders": true,
+    "batchOrders": false,
+    "multiLegSubmitted": 0,
+    "approvedPackageCertificates": 0,
+    "collateralAccounting": false,
+    "latestRetainedRelationshipCount": 0,
+    "latestRetainedCensusAt": "2026-10-16T04:37:43.577Z"
+  },
+  "limitations": [
+    "Public documentation fetched without account access; no feature activation or account request.",
+    "No signal endpoint in this fetched specification is not proof the platform has no internal signal categories.",
+    "Retained census is separately dated, not a new complete current graph scan."
+  ]
+}

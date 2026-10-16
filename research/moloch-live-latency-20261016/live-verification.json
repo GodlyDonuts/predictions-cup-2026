@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-10-16T04:49:42.076422+00:00",
+  "checkedAt": "2026-10-16T05:02:48.055472+00:00",
   "pid": 383074,
   "running": true,
   "binarySha256Matches": true,
@@ -7,20 +7,20 @@
   "freshTradingVerified": true,
   "progress": {
     "actualFills": 119,
-    "actualOrders": 702,
-    "at": "2026-10-16T04:49:40.373Z",
-    "completedReadScopes": 5,
+    "actualOrders": 708,
+    "at": "2026-10-16T05:02:47.853Z",
+    "completedReadScopes": 22,
     "maximumRealtimeFramesPerDrain": 64,
     "phase": "trading",
     "pid": 383074,
     "profitabilityEstablished": false,
     "realtimeHealthy": true,
-    "selectedReadScopes": 22,
-    "terminalOrders": 700
+    "selectedReadScopes": 23,
+    "terminalOrders": 705
   },
-  "newAcknowledgmentsSinceLaunch": 2,
+  "newAcknowledgmentsSinceLaunch": 8,
   "newFillRowsSinceLaunch": 0,
-  "bankSequence": 157082,
+  "bankSequence": 159372,
   "derivedReportSealVerified": true,
   "actualFills": 119,
   "lastActualFill": "2026-10-16T04:02:17.490Z",
@@ -30,5 +30,5 @@
   "inheritedRealizedGross": "43.395000",
   "totalRealized": "-75.705000",
   "profitabilityEstablished": false,
-  "fullStatusMatchesNewPid": false
+  "fullStatusMatchesNewPid": true
 }

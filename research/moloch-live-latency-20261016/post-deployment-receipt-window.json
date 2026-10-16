@@ -1,0 +1,21 @@
+{
+  "observedAt": "2026-10-16T04:58:31.522592+00:00",
+  "workerPid": 383074,
+  "sourceCommit": "bfd51082",
+  "windowStart": "2026-10-16T04:49:00Z",
+  "windowEnd": "2026-10-16T04:58:30.977382+00:00",
+  "logicalReceiptCount": 387,
+  "seconds": 570.9773819446564,
+  "logicalReceiptsPerMinute": 40.667110001654436,
+  "recordedServiceUnionSeconds": 110.17400169372559,
+  "outsideRecordedServiceSeconds": 460.8033802509308,
+  "serviceMedianSeconds": 0.27699995040893555,
+  "serviceP95Seconds": 0.4090001583099365,
+  "canonicalReceiptSetSha256": "9fc485971424fb09b5c0c96b7419a9e2e1dc2622c4a80321ff06c47c72c797e1",
+  "limitations": [
+    "Logical receipts are not physical HTTP admissions; pagination/retries/unrecorded operations differ.",
+    "Recorded service contains SDK work and is not isolated server latency.",
+    "Outside spans include all other worker/pacing/processing/unrecorded time.",
+    "Different live window/order workload from prior release; not a controlled speedup measurement."
+  ]
+}
