@@ -114,6 +114,38 @@ Rhode Island's tested market response reported YES bid `0.9850` for `11.00` shar
 - Match exact office, state, district, year, regular/special election, party/candidate and full payout rules. RI's returned rule specifies a Democratic representative sworn in for the term beginning in 2027, with accelerated-determination language. Do not assume that is identical to SIG's resolver.
 - Refresh SIG through its existing authorized worker and shared limiter. This test did not create a second SIG collector or obtain simultaneous SIG depth, so no current cross-market edge is established.
 
+## Basic-tier token budgets and three-second idle cap
+
+Verified against the [official rate-limit rules](https://docs.kalshi.com/getting_started/rate_limits) and our authenticated limits receipt:
+
+| Predictions bucket | Refill | Capacity | Idle time to fill from empty |
+| --- | ---: | ---: | ---: |
+| Read | 200 tokens/second | 600 tokens | 3 seconds |
+| Write | 100 tokens/second | 100 tokens | 1 second |
+
+Tokens refill continuously, without fixed resets. At capacity, extra idle time earns nothing. **Basic's three-second storage applies to Read; Basic Write stores only one second.** These accounting tokens are unrelated to API credentials or per-request signatures.
+
+`GET /account/endpoint_costs` returned HTTP200 at **2026-10-16T09:05:12.434Z**, with `default_cost:10`. Its exception list contained no overrides for our event, market or order-book GETs. The [cost endpoint](https://docs.kalshi.com/api-reference/account/list-non-default-endpoint-costs) returns only non-default costs: omitted endpoints inherit `default_cost`. Fetch it and `/account/limits` during collector initialization; cache them and refresh deliberately rather than polling them per request.
+
+For these 10-token reads, derived capacity is **20 requests/second sustained**, or **60 requests from a full bucket** before accounting for concurrent refill. Example from empty: 0.5s idle earns100 tokens/10 reads; 1s earns200/20; 3s earns600/60; 30s still earns600/60. These are theoretical admission counts, not observed throughput or a collector target.
+
+429 currently has no Retry-After/rate-limit headers; use exponential backoff. Honor Retry-After if subsequently supplied. Batch operations can charge per item, so do not assume batching reduces token cost. WebSocket message budgets must be checked separately.
+
+### Collector implementation guidance
+
+Use a central Kalshi limiter across this application's workers/keys, separate from the existing SIG limiter. This is a proposed implementation, not a deployed feature. Initialize conservatively with zero local tokens; another client may already have spent the account budget. Use a monotonic clock, reserve cost before sending, and coordinate concurrent reservations:
+
+```text
+tokens = min(capacity, tokens + refill_per_second * elapsed_seconds)
+if tokens < request_cost:
+    wait at least (request_cost - tokens) / refill_per_second
+    recompute under the same admission lock
+tokens -= request_cost
+send request
+```
+
+Illustrative calculation: an empty read bucket needs 10/200 = 0.05 seconds to fund one default read. A production scheduler should leave headroom for other consumers and network bursts; local estimates cannot certify server-side remaining tokens. Persist backoff across restart and apply jitter to avoid synchronized retry storms. Do not refund local tokens based on an assumed server refund after a failed request. A request costing more than capacity requires investigation, not an endless wait. This guide's one-shot example intentionally stops on errors and does not implement this scheduler.
+
 ## Streaming and limits of this verification
 
 REST authentication and the GETs listed above were tested. WebSocket connectivity was **not** tested in this task. For a later authenticated streaming test, official docs specify `wss://external-api-ws.kalshi.com/trade-api/ws/v2`, with the same three authentication headers on the handshake and signature text `timestamp + GET + /trade-api/ws/v2`. A client must support custom handshake headers; the basic browser-style WebSocket API is insufficient. Consult current channel docs for subscriptions, initial snapshots, deltas, sequence/gap handling and resynchronization. Never claim a complete reconstructed book after a delivery gap.
@@ -127,3 +159,5 @@ The initial bounded probes made ten serial REST GETs (one-second completion spac
 - [Event discovery](https://docs.kalshi.com/api-reference/events/get-events)
 - [Order books](https://docs.kalshi.com/api-reference/market/get-market-orderbook)
 - [WebSocket setup](https://docs.kalshi.com/getting_started/quick_start_websockets)
+- [Token budgets, capacities and throttling](https://docs.kalshi.com/getting_started/rate_limits)
+- [Current endpoint token costs](https://docs.kalshi.com/api-reference/account/list-non-default-endpoint-costs)
