@@ -142,7 +142,10 @@ fn path_pin(path:&Path,want:&Value)->Result<()>{
 impl Cohorts{
     /// Explicit one-time owner operation; never invoked as missing-file recovery.
     pub fn initialize(root:&Path,bank:&Session,ordinary:&DispatchLog,owner:Arc<ExclusiveLock>)->Result<Self>{
-        owner.descriptor_identity()?;let path=root.join("fundamental.ndjson");
+        need(root.is_absolute()&&!fs::symlink_metadata(root)?.file_type().is_symlink(),"FUNDAMENTAL_ROOT")?;
+        owner.descriptor_identity()?;let d=ordinary.descriptor_identity()?;
+        path_pin(&root.join("dispatch.ndjson"),&json!({"device":d["device"],"inode":d["inode"]}))?;
+        let path=root.join("fundamental.ndjson");
         let mut options=OpenOptions::new();options.write(true).create_new(true);
         #[cfg(unix)]{use std::os::unix::fs::OpenOptionsExt;options.mode(0o600);}
         let f=options.open(path)?;f.sync_all()?;File::open(root)?.sync_all()?;
@@ -212,6 +215,10 @@ impl Cohorts{
         for(id,row)in &log.intents{if row.get("fundamental").is_some_and(|v|!v.is_null()){
             need(self.durable_tag(*id).as_ref()==row.get("fundamental"),"FUNDAMENTAL_REQUIRED_SIDECAR_TAG_MISSING")?;
         }}
+        for ex in self.policies.keys().filter(|ex|!self.cohorts.contains_key(*ex)){
+            need(bank.engine().wallet.quantity(ex,Side::Yes)==0&&bank.engine().wallet.quantity(ex,Side::No)==0,
+                "FUNDAMENTAL_UNTAGGED_POSITION_AFTER_POLICY_INSTALL")?;
+        }
         for(ex,c)in &self.cohorts{
             for b in std::iter::once(&c.entry).chain(c.exits.values()){
                 need(digest(&b.spec)?==b.spec_sha256,"FUNDAMENTAL_BINDING_HASH")?;
@@ -353,8 +360,9 @@ impl Cohorts{
 }
 fn request_matches(s:&RequestSpec,q:&Value,run:&str,tournament:&str)->Result<()>{
     let b=s.body.as_ref().ok_or("FUNDAMENTAL_BODY")?;
+    let expected_side=if q["side"]=="YES"{"yes"}else{"no"};
     need(s.method=="POST"&&s.endpoint=="/orders"&&b["idempotencyKey"]==format!("{run}:{}",q["id"].as_u64().ok_or("FUNDAMENTAL_QID")?)&&b["tournamentId"]==tournament
-        &&b["exchangeId"]==q["exchangeId"]&&b["side"]==if q["side"]=="YES"{"yes"}else{"no"}&&b["action"]==q["action"]&&b["quantity"]==q["quantity"]
+        &&b["exchangeId"]==q["exchangeId"]&&b["side"]==expected_side&&b["action"]==q["action"]&&b["quantity"]==q["quantity"]
         &&decimal_units(&b["price"].to_string())?==amount(q["price"].as_str().ok_or("FUNDAMENTAL_PRICE")?)?
         &&daily_windows::clock(b["expirationDate"].as_str().ok_or("FUNDAMENTAL_EXPIRATION")?)?==q["expiresAt"].as_u64().ok_or("FUNDAMENTAL_EXPIRATION")?,"FUNDAMENTAL_EXACT_NATIVE_REQUEST")?;
     if let Some(raw)=&s.body_json{need(serde_json::from_str::<Value>(raw)?==*b,"FUNDAMENTAL_RAW_BODY_CHANGED")?;}Ok(())
