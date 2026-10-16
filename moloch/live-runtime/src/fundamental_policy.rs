@@ -1,8 +1,9 @@
 //! Runtime policy for explicitly reviewed, risky terminal-value cohorts.
 //!
 //! Integration contract (sole-worker owner, no new client): open this ORIGINAL
-//! sidecar before any dispatch; install reviewed policies; call `assess` before
-//! exit-refresh hints, ordinary priority/preflight, and after fresh preflight.
+//! sidecar before any dispatch; install reviewed policies; call
+//! `exit_refresh_needed` before expired-exit hints, and `assess` before ordinary
+//! priority/preflight and after fresh preflight.
 //! Call `bind` before appending the ordinary physical-attempt event, and call
 //! `check_bound` in physical authority with the exact request. Exclude `manages`
 //! Add `durable_tag(qid)` as `fundamental` on that ORIGINAL ordinary intent row;
@@ -246,6 +247,23 @@ impl Cohorts{
         need(bank.engine().wallet.quantity(ex,side)==held&&bank.engine().wallet.quantity(ex,opposite)==0,"FUNDAMENTAL_UNATTRIBUTED_HOLDING")?;Ok(held)
     }
     pub fn manages(&self,exchange:&str)->bool{self.policies.contains_key(exchange)}
+    /// An expired native quote is not a submit candidate, so `assess` cannot be
+    /// used for the expired-quote read hint. This separate gate permits bounded
+    /// refresh at the fixed deadline, reviewed revocation/revision, or an already
+    /// observed executable value exit; final `assess` must still pass afterward.
+    pub fn exit_refresh_needed(&self,bank:&Session,log:&DispatchLog,scope:&Scope,exchange:&str,trusted:&BTreeSet<String>,now:u64)->Result<bool>{
+        self.check(bank,log)?;let Some(r)=self.policies.get(exchange)else{return Ok(true)};
+        let Some(c)=self.cohorts.get(exchange)else{return Ok(false)};
+        if self.owned(bank,exchange,c)?==0||!log.closed.contains(&c.entry.qid)
+            ||c.exits.keys().any(|id|log.attempted.contains(id)&&!log.closed.contains(id)){return Ok(false)}
+        need(scope.tournament_id==r.tournament_id&&scope.exchanges.get(exchange)==Some(&r.market_id),"FUNDAMENTAL_SCOPE_CHANGED")?;
+        if now>=c.hold_until_ms.min(r.hold_until_ms){return Ok(true)}
+        if !trusted.contains(&digest(r)?)||!current(r,now){return Ok(false)}
+        if r.revoke_existing||digest(r)?!=c.entry.review_sha256{return Ok(true)}
+        let(books,_)=package_admission::native_books(bank,scope,now,bank.engine().policy()["bookAgeMs"].as_u64().ok_or("FUNDAMENTAL_BOOK_POLICY")?)?;
+        let value=add(structure(r)?,amount(&r.margin_per_share)?)?;
+        Ok(books.get(exchange).and_then(|b|if r.side=="YES"{b.yes_bids.first()}else{b.no_bids.first()}).is_some_and(|l|l.price>=value))
+    }
     pub fn durable_tag(&self,qid:u64)->Option<Value>{
         for c in self.cohorts.values(){if let Some(b)=if c.entry.qid==qid{Some(&c.entry)}else{c.exits.get(&qid)}{
             return Some(json!({"version":1,"bankManifestHash":self.manifest,"runId":self.run,"entryQid":c.entry.qid,"qid":qid,"bindingSha256":digest(b).ok()?}));
