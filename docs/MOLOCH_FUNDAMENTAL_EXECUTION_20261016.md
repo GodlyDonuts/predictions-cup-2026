@@ -1,6 +1,16 @@
 # Reviewed forecast positions in the existing Moloch worker
 
-The Paper 2 forecast path values an ordinary settlement payout, rather than assuming every position should exit after sixty seconds. It uses the existing account worker, queue, native reservations, official receipts and attributed financial journal. The module adds a durable policy sidecar; it does not introduce another account client or change the native financial engine.
+The Paper 2 forecast path values an ordinary settlement payout, rather than assuming every position should exit after sixty seconds. It uses the existing account worker, queue, native reservations, official receipts and attributed financial journal. The policy sidecar supplies reviewed authorization; actual official fills determine accounting.
+
+## October16 extension: independent entries and inherited positions
+
+The initial deployed policy only gated existing ordinary quotes. A required REST read did not create a forecast opportunity: the ordinary planner still selected pairs using spread, flow and scarce fresh-market slots. The new candidate adds an independent read-only entry nomination, original seven-receipt preflight and opaque native reservation plan. Missing or stale native quotes can trigger fresh reads without granting order authority. Native `reviewed_fundamental_entry_reserved_v1` creates one genuine funded BUY at the current same-side best bid, clipped by reviewed principal/quantity, actual available cash and reservations, total/per-market commitments, fresh-market slots, quantity, depth and write pacing. It cannot cross the ask, duplicate a target liability or manufacture a fill. A resting reviewed BUY remains pinned against unrelated ordinary replanning until actual terminal feedback or the existing retirement paths.
+
+Inherited positions use a distinct verified origin, with no fabricated entry qid. The original committed adoption event, official receipt hash, original position row, exact remaining FIFO lots, financial head/fill prefix, original dispatch log and actual quiet account queue must agree. An immutable review explicitly pins that origin. Known historical fills and costs retain their inherited attribution.
+
+After fresh facts and positive retirement of blocking never-sent drafts, native `reviewed_inventory_exit_reserved_v1` can reserve a genuinely covered SELL at current executable depth. A current reviewed value, explicit current revocation or the original fixed deadline supplies its reason. This allows an economically justified sale below historical cost; the eventual official fill records the real loss. Basis is accounting evidence, not an obligation to wait for break-even. A stale forecast alone cannot authorize an adverse-value sale before the fixed deadline. Native source/head/book/position/depth/quantity/budget checks and existing physical authority still apply.
+
+Both new native events change the financial engine identity. Deployment requires the explicit stopped-process identity bridge and exact sealed-prefix report/head comparison; code compilation alone is insufficient. Source and tests are integrated in the candidate, with final worker wiring/release pending. Current production activation and actual forecast fills must be verified separately in CURRENT_STATE; this section does not claim the extension deployed or Paper2 complete.
 
 ## Entry and valuation
 
