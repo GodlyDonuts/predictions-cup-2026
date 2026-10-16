@@ -9,7 +9,7 @@ import { once } from 'node:events';
 import { setTimeout as sleep } from 'node:timers/promises';
 import * as collector from './kalshi-collector.mjs';
 const { acquire, atomicJson } = collector;
-async function fixture(fn) { const root = await fs.mkdtemp(path.join(os.tmpdir(), 'kalshi-collector-offline-')); try { await fn(root); } finally { await fs.rm(root, { recursive: true, force: true }); } }
+async function fixture(fn) { const parent = path.resolve(os.tmpdir()); const root = await fs.mkdtemp(path.join(parent, 'kalshi-collector-offline-')); assert.equal(path.dirname(path.resolve(root)), parent); assert.match(path.basename(root), /^kalshi-collector-offline-/); try { await fn(root); } finally { await fs.rm(root, { recursive: true, force: true }); } }
 async function deadPid() { const child = spawn(process.execPath, ['-e', 'process.exit(0)'], { stdio: 'ignore' }); const [code] = await once(child, 'exit'); assert.equal(code, 0); assert.throws(() => process.kill(child.pid, 0), error => error.code === 'ESRCH'); return child.pid; }
 function timeout(promise, ms = 2000) { let timer; return Promise.race([promise, new Promise((_, reject) => { timer = setTimeout(() => reject(Error('TEST_OPERATION_HUNG')), ms); })]).finally(() => clearTimeout(timer)); }
 
