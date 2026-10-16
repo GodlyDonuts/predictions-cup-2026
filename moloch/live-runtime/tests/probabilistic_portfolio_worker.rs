@@ -36,7 +36,7 @@ impl base::Backend for Wire{
  fn send(&mut self,_:multi_leg::Basket,_:Permit)->sdk::Result<multi_leg::Outcome>{panic!("legacy SDK send forbidden")}
  fn take_not_sent(&mut self)->feedback::Result<VerifiedNotSent>{Ok(VerifiedNotSent::from_sdk(self.transport.take_local_not_sent_proof()?))}fn retained_not_sent(&mut self,b:&ImmutableBinding,r:&str,min:u64)->feedback::Result<VerifiedNotSent>{Ok(VerifiedNotSent::from_sdk(self.transport.verify_retained_local_not_sent(b,r,min)?))}
  fn take_first_call_not_sent(&mut self)->feedback::Result<sdk::multi_leg_first_call::Proof>{Ok(self.transport.take_first_call_no_http_proof()?)}fn retained_first_call_not_sent(&mut self,b:&ImmutableBinding,r:&str)->feedback::Result<sdk::multi_leg_first_call::Proof>{Ok(self.transport.verify_retained_first_call_no_http(b,r)?)}
- fn bind_owned(&mut self,id:&str){self.state.lock().unwrap().owned.insert(id.into());}fn read(&mut self,e:Endpoint)->feedback::Result<Receipt>{Ok(self.transport.read(e)?)}
+ fn bind_owned(&mut self,id:&str){self.state.lock().unwrap().owned.insert(id.into());}fn read(&mut self,e:Endpoint)->feedback::Result<Receipt>{Ok(self.transport.request(e)?)}
 }
 impl worker::Backend for Wire{
  fn ordinary_dispatch(&self)->&DispatchLog{&self.ordinary}
