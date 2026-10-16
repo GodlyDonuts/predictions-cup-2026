@@ -1688,6 +1688,69 @@ pub fn main()->Result<()>{
   }
  }
 }
+#[cfg(test)]mod cooperative_preflight_tests{
+ use super::*;
+ // Real Session-generated quotes and original typed receipt fixtures; no
+ // network, extra client or fabricated native qid.
+ struct Temp(PathBuf);impl Drop for Temp{fn drop(&mut self){let _=fs::remove_dir_all(&self.0);}}
+ const T:&str="11111111-1111-4111-8111-111111111111";
+ fn fixture()->(Temp,Control,Session,DispatchLog,RestSource,Value,Receipt){
+  let at=now();let root=Temp(std::env::temp_dir().join(format!("cooperative-preflight-{}-{}",std::process::id(),SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_nanos())));private_dir(&root.0).unwrap();
+  let policy=json!({"quantity":2,"entryStopAt":iso(at+600000)});let seed=json!({"runId":"cooperative-preflight","availableCash":"1000.000000","accountSnapshotHash":"a".repeat(64),"observedAt":iso(at-5000)});let stamp=iso(at-4000);
+  let book=Receipt{endpoint:format!("/markets/201/orderbook?tournamentId={T}&depth=20"),request_started_at:stamp.clone(),received_at:stamp.clone(),status:200,data:json!({"contexts":[{"type":"tournament","tournament":{"id":T},"orderbook":{"exchanges":[{"exchangeId":"101","asOf":{"sequence":1,"at":stamp},"bids":[{"price":0.4,"quantity":10}],"asks":[{"price":0.41,"quantity":990}]}]}}]})};
+  let mut bank=Session::open_live(&root.0.join("bank"),&policy,&seed).unwrap();bank.accept("original-fixture-book",1,&json!({"type":"book","receivedAt":stamp,"book":{"tournamentId":T,"marketId":"201","exchangeId":"101","sequence":"1","sourceAt":stamp,"requestStartedAt":stamp,"receivedAt":stamp,"bids":[{"price":"0.400000","quantity":10}],"asks":[{"price":"0.410000","quantity":990}]}})).unwrap();
+  let mut source=RestSource::new(&json!([{"marketId":"201","exchangeId":"101"},{"marketId":"202","exchangeId":"102"}]),T,&iso(at-4001)).unwrap();
+  // Restore the real source adapter's initial book+complete empty-tape state.
+  // Its initial blocked book is not admitted as a new current bank decision.
+  let wrap=json!({"kind":"book","source":"official_sig_api_v1","status":200,"marketId":"201","exchangeId":"101","tournamentId":T,"requestStartedAt":book.request_started_at,"receivedAt":book.received_at,"endpoint":book.endpoint,"data":book.data});source.accept(&wrap).unwrap();
+  let tape=json!({"kind":"trades","source":"official_sig_api_v1","status":200,"marketId":"201","exchangeId":"101","tournamentId":T,"requestStartedAt":stamp,"receivedAt":stamp,"endpoint":format!("/exchanges/101/trades?tournamentId={T}&from={}&to={}",iso(at-4002),stamp),"data":{"marketId":"201","exchangeId":"101","from":iso(at-4002),"to":stamp,"data":[],"pagination":{"hasMore":false,"nextCursor":null},"coverage":{"complete":true,"projectedThroughSequence":1}}});accept_source_events(&mut bank,&source.accept(&tape).unwrap()).unwrap();
+  let q=bank.engine().order_records().into_iter().find(|q|q["action"]=="buy"&&q["side"]=="YES"&&q["exchangeId"]=="101"&&q["retired"]==false&&q.get("cancelEffectiveAt").is_none_or(Value::is_null)).unwrap();
+  let c:Control=serde_json::from_value(json!({"activation":{"runId":"cooperative-preflight","entryUntilMs":at+600000,"maximumCommitted":"40.000000","maximumMarketCost":"10.000000","maximumQuantity":2,"tournamentId":T,"tournamentSlug":"cup","binarySha256":"a".repeat(64)},"scope":{"tournamentId":T,"tournamentSlug":"cup","exchanges":{"101":"201","102":"202"}},"policy":policy,"root":root.0,"credentials":"/unused","ownerLock":root.0.join("owner.lock"),"accountScope":"offline-cooperative-preflight"})).unwrap();
+  let log=DispatchLog::open(&root.0.join("dispatch.ndjson")).unwrap();(root,c,bank,log,source,q,book)
+ }
+ struct Reads{calls:usize,fail_at:Option<usize>,invalidate_at:Option<usize>,book:Receipt,trace:Vec<&'static str>,endpoints:Vec<Value>,returned:Vec<Value>}
+ impl Reads{fn new(book:Receipt)->Self{Self{calls:0,fail_at:None,invalidate_at:None,book,trace:vec![],endpoints:vec![],returned:vec![]}}}
+ impl OrdinaryPreflightReads for Reads{
+  fn now_ms(&self)->u64{now()}
+  fn guarded(&mut self)->Result<bool>{Ok(true)}
+  fn service_before_read(&mut self,bank:&mut Session,_source:&mut RestSource)->Result<()>{
+   self.calls+=1;self.trace.push("service");if self.fail_at==Some(self.calls){return Err("LIVE_PREFLIGHT_QUOTE_INVALIDATED".into())}
+   let change=self.invalidate_at==Some(self.calls);let(ex,market,bid,ask)=if change{("101","201","0.405000","0.415000")}else{("102","202","0.200000","0.220000")};let at=iso(now());
+   accept_source_events(bank,&[json!({"type":"book","receivedAt":at,"book":{"tournamentId":T,"marketId":market,"exchangeId":ex,"sequence":(self.calls+1).to_string(),"sourceAt":at,"requestStartedAt":at,"receivedAt":at,"transport":"official_sig_realtime","bids":[{"price":bid,"quantity":100}],"asks":[{"price":ask,"quantity":100}]}})])
+  }
+  fn read(&mut self,ep:Endpoint)->Result<Receipt>{
+   assert_eq!(self.calls,self.endpoints.len()+1,"one service must immediately precede each GET");self.trace.push("get");self.endpoints.push(serde_json::to_value(&ep)?);let at=iso(now());
+   let(path,data)=match ep{
+    Endpoint::Tournament=>("/tournaments/cup".into(),json!({"status":"active"})),
+    Endpoint::Positions=>("/tournaments/cup/portfolio/positions".into(),json!({"positions":[],"summary":{"totalMarketValue":0,"totalCostBasis":0,"totalUnrealizedPnl":0}})),
+    Endpoint::Orders{status}=>(format!("/orders?status={status}&limit=200&tournamentId={T}"),json!({"data":[],"coverage":{"complete":true},"pagination":{"hasMore":false,"nextCursor":null,"limit":200}})),
+    Endpoint::Account=>(format!("/account?tournamentId={T}"),json!({"balance":1000})),
+    Endpoint::Market{market_id}=>(format!("/markets/{market_id}?tournamentId={T}"),json!({"id":market_id,"status":"open"})),
+    Endpoint::Nodes{market_id}=>(format!("/markets/{market_id}/nodes?tournamentId={T}"),json!({"market_id":market_id,"root":{"node_type":"contract","contract_id":"301"}})),
+    Endpoint::OrderBook{..}=>(self.book.endpoint.clone(),self.book.data.clone()),
+    _=>return Err("FIXTURE_UNEXPECTED_READ".into())
+   };let r=Receipt{endpoint:path,request_started_at:at.clone(),received_at:at,status:200,data};self.returned.push(serde_json::to_value(&r)?);Ok(r)
+  }
+ }
+ fn original_read_order(f:&SnapshotSet)->Value{serde_json::to_value([&f.account,&f.positions,&f.open_orders,&f.cash_balance,&f.market,&f.contract,&f.book]).unwrap()}
+ #[test]fn stable_native_buy_completes_exact_seven_original_receipts_despite_head_progress(){
+  let(_root,c,mut bank,log,mut source,q,book)=fixture();let head=bank.durable_head();let before=bank.engine().report().unwrap();let mut reads=Reads::new(book);
+  let(current,facts)=ordinary_preflight(&c,&mut bank,&log,&mut source,&q,&mut reads).unwrap().expect("benign source progress must not veto every entry");
+  let expected=[Endpoint::Tournament,Endpoint::Positions,Endpoint::Orders{status:"open".into()},Endpoint::Account,Endpoint::Market{market_id:"201".into()},Endpoint::Nodes{market_id:"201".into()},Endpoint::OrderBook{market_id:"201".into(),depth:20}];
+  assert_eq!(reads.calls,7);assert_eq!(reads.endpoints,expected.iter().map(|e|serde_json::to_value(e).unwrap()).collect::<Vec<_>>());assert_eq!(reads.trace,["service","get"].repeat(7));assert_eq!(original_read_order(&facts),json!(reads.returned));assert_eq!(current,q);assert_eq!(quote(&bank,q["id"].as_u64().unwrap()).unwrap(),q);assert_ne!(head,bank.durable_head());
+  for key in ["cash","ownedCost","realized","fills"]{assert_eq!(before[key],bank.engine().report().unwrap()[key]);}assert!(log.intents.is_empty()&&log.attempted.is_empty());
+ }
+ #[test]fn hook_failure_before_first_or_later_get_is_fatal_even_with_invalidation_text(){
+  for at in [1usize,3]{let(_root,c,mut bank,log,mut source,q,book)=fixture();let mut reads=Reads::new(book);reads.fail_at=Some(at);let error=ordinary_preflight(&c,&mut bank,&log,&mut source,&q,&mut reads).err().expect("untyped stream/durable error must propagate");assert_eq!(error.to_string(),"LIVE_PREFLIGHT_QUOTE_INVALIDATED");assert!(!error.is::<PreflightQuoteInvalidated>());assert_eq!(reads.endpoints.len(),at-1);assert_eq!(reads.calls,at);assert_eq!(reads.trace.last(),Some(&"service"));assert!(log.intents.is_empty()&&log.attempted.is_empty());}
+ }
+ #[test]fn changed_quote_is_expected_defer_before_next_get_without_new_intent(){
+  let(_root,c,mut bank,log,mut source,q,book)=fixture();let mut reads=Reads::new(book);reads.invalidate_at=Some(1);let frozen=q.clone();
+  assert!(ordinary_preflight(&c,&mut bank,&log,&mut source,&q,&mut reads).unwrap().is_none());assert_eq!(reads.calls,1);assert!(reads.endpoints.is_empty());let current=quote(&bank,q["id"].as_u64().unwrap()).unwrap();assert!(current["cancelEffectiveAt"].is_u64());for key in ["id","price","quantity","createdAt","activationAt","expiresAt"]{assert_eq!(current[key],frozen[key]);}assert!(log.intents.is_empty()&&log.attempted.is_empty());
+ }
+ #[test]fn unreserved_read_target_still_collects_all_original_facts_after_source_changes_drafts(){
+  let(_root,c,mut bank,log,mut source,_q,book)=fixture();let mut reads=Reads::new(book);reads.invalidate_at=Some(1);let facts=preflight_snapshots(&c,&mut bank,&mut source,"201",None,&mut reads).unwrap();assert_eq!(reads.calls,7);assert_eq!(reads.trace,["service","get"].repeat(7));assert_eq!(original_read_order(&facts),json!(reads.returned));assert!(log.intents.is_empty()&&log.attempted.is_empty());
+ }
+}
 #[cfg(test)]mod discovery_urgent_tests{
  use super::*;
  #[test]fn physical_liabilities_and_risk_exits_precede_discovery_without_promoting_flat_drafts(){
