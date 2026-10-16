@@ -1428,6 +1428,15 @@ impl Engine {
         *self = next;
         Ok(())
     }
+    /// Only for construction of an unpublished replay owner. The engine is
+    /// consumed, so an apply/audit error drops the whole possibly changed state
+    /// instead of exposing it to any caller. Same semantic checks as advance;
+    /// live admission retains its transactional clone and rollback contract.
+    pub(crate) fn advance_replay_unpublished(mut self, event: &Value) -> Result<Self> {
+        self.apply(event)?;
+        self.audit()?;
+        Ok(self)
+    }
     fn apply(&mut self, e: &Value) -> Result<()> {
         let received = ns(&e["receivedAt"])?;
         let clock = e.get("processedAt").unwrap_or(&e["receivedAt"]);

@@ -319,7 +319,10 @@ impl Session {
             let row: Value = serde_json::from_slice(&line)?;
             let event = chain.accept(&row)?;
             Self::restore_ref(&event, &mut refs, &mut cursors)?;
-            engine.advance(&event)?;
+            // Nothing is published or returned until the entire original
+            // journal/source/head/upgrade prefix has passed. On error the
+            // consuming API drops this whole unpublished replay owner.
+            engine = engine.advance_replay_unpublished(&event)?;
             Self::remember(&event, &mut facts);
             if let Some(proof)=&mut upgrade{proof.check_prefix(prefix_bytes,&prefix_digest,&chain,&engine,&cursors)?;}
             if chain.sequence == head_sequence && chain.previous != head_previous {
@@ -675,5 +678,49 @@ mod tests {
         assert_eq!(s.engine.report().unwrap()["orders"], 2);
         assert!(!s.accept("fixture", 1, &original).unwrap());
         assert_eq!(verified(&root.join("head.json")).unwrap()["sequence"], 1);
+    }
+    fn exact_engine_state(engine:&Engine)->Value {
+        json!({"report":engine.report().unwrap(),"orders":engine.order_records(),"fills":engine.fills(),"actualBindings":engine.live_order_bindings(),"books":engine.live_package_books(),"packages":engine.package_records()})
+    }
+    #[test]
+    fn consuming_unpublished_replay_matches_transactional_every_reference_prefix() {
+        let policy=json!({"quantity":1,"feePerShare":"0.000100"});
+        let mut transactional=Engine::new(&policy).unwrap();
+        let mut unpublished=Engine::new(&policy).unwrap();
+        for event in events(){transactional.advance(&event).unwrap();unpublished=unpublished.advance_replay_unpublished(&event).unwrap();assert_eq!(exact_engine_state(&unpublished),exact_engine_state(&transactional));}
+        assert_eq!(unpublished.report().unwrap()["realized"],"0.004800");
+    }
+    #[test]
+    fn live_restart_replays_original_ack_fill_terminal_and_sources_exactly() {
+        let t=Temp::new();let root=t.0.join("live-bank");let policy=json!({"quantity":1});
+        let seed=json!({"runId":"unpublished-replay-fixture","availableCash":"1000.000000","accountSnapshotHash":"a".repeat(64),"observedAt":"2026-10-13T00:00:00Z"});
+        let mut bank=Session::open_live(&root,&policy,&seed).unwrap();bank.accept("books",1,&events()[0]).unwrap();
+        let q=bank.engine.order_records().into_iter().find(|q|q["side"]=="YES").unwrap();
+        let mut e=json!({"type":"actual_order_ack","source":"official_sig_api_v1","receiptHash":"b".repeat(64),"orderId":q["id"],"actualOrderId":"201","marketId":q["marketId"],"exchangeId":q["exchangeId"],"side":q["side"],"action":q["action"],"quantity":1,"price":q["price"],"receivedAt":"2026-10-13T00:00:04Z","executedAt":"2026-10-13T00:00:04Z","fee":"0.000000","fillId":"301"});
+        bank.accept("official",1,&e).unwrap();e["type"]=json!("actual_fill");bank.accept("official",2,&e).unwrap();e["type"]=json!("actual_order_terminal");e["status"]=json!("filled");e["filledQuantity"]=json!(1);e["fillsComplete"]=json!(true);bank.accept("official",3,&e).unwrap();
+        let expected=exact_engine_state(&bank.engine);let head=bank.durable_head();let refs=bank.refs.clone();let cursors=bank.cursors.clone();let facts=bank.source_facts();let journal=fs::read(root.join("events.jsonl")).unwrap();drop(bank);
+        let bank=Session::open_live(&root,&policy,&seed).unwrap();assert_eq!(exact_engine_state(&bank.engine),expected);assert_eq!(bank.durable_head(),head);assert_eq!(bank.refs,refs);assert_eq!(bank.cursors,cursors);assert_eq!(bank.source_facts(),facts);assert_eq!(fs::read(root.join("events.jsonl")).unwrap(),journal);
+    }
+    #[test]
+    fn failed_unpublished_replay_never_publishes_partial_head_or_report() {
+        for failure in ["native_clock","source_digest","journal_digest"] {
+            let t=Temp::new();let root=t.0.join("bank");let mut bank=Session::open(&root,None,&json!({})).unwrap();bank.accept("fixture",1,&events()[0]).unwrap();
+            let head=fs::read(root.join("head.json")).unwrap();let report=fs::read(root.join("report.json")).unwrap();
+            let mut event=json!({"type":"tick","receivedAt":if failure=="native_clock"{"2026-10-12T23:59:59Z"}else{"2026-10-13T00:00:01Z"}});
+            let source_digest=if failure=="source_digest"{"0".repeat(64)}else{hash(&event)};
+            event["sourceRef"]=json!({"id":"fixture","sequence":2,"hash":source_digest});
+            let mut row=sealed(json!({"sequence":2,"previous":bank.chain.previous,"event":event}));if failure=="journal_digest"{row["hash"]=json!("0".repeat(64));}
+            writeln!(bank.file,"{}",row).unwrap();bank.file.sync_all().unwrap();drop(bank);
+            let original_journal=fs::read(root.join("events.jsonl")).unwrap();let error=Session::open(&root,None,&json!({})).err().unwrap().to_string();
+            assert_eq!(error,match failure{"native_clock"=>"NONCAUSAL_EVENT","source_digest"=>"PAPER_SOURCE_CHAIN",_=>"JOURNAL_HASH_MISMATCH"});
+            assert_eq!(fs::read(root.join("head.json")).unwrap(),head);assert_eq!(fs::read(root.join("report.json")).unwrap(),report);assert_eq!(fs::read(root.join("events.jsonl")).unwrap(),original_journal);
+        }
+    }
+    #[test]
+    fn live_accept_still_rolls_back_and_preserves_all_published_bytes_on_error() {
+        let t=Temp::new();let root=t.0.join("bank");let mut bank=Session::open(&root,None,&json!({})).unwrap();bank.accept("fixture",1,&events()[0]).unwrap();
+        let before=exact_engine_state(&bank.engine);let head=fs::read(root.join("head.json")).unwrap();let report=fs::read(root.join("report.json")).unwrap();let journal=fs::read(root.join("events.jsonl")).unwrap();let refs=bank.refs.clone();let cursors=bank.cursors.clone();
+        assert!(bank.accept("fixture",2,&json!({"type":"tick","receivedAt":"2026-10-12T23:59:59Z"})).is_err());
+        assert_eq!(exact_engine_state(&bank.engine),before);assert_eq!(bank.refs,refs);assert_eq!(bank.cursors,cursors);assert_eq!(fs::read(root.join("head.json")).unwrap(),head);assert_eq!(fs::read(root.join("report.json")).unwrap(),report);assert_eq!(fs::read(root.join("events.jsonl")).unwrap(),journal);assert!(!bank.poisoned);
     }
 }
