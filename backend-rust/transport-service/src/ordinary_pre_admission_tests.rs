@@ -27,7 +27,7 @@ fn original_error(dir:&std::path::Path)->TransportError{
  let p=temp();let error=original_error(&p);let c=config(&p);let first=verify_frozen_ordinary_pre_admission(&c,&spec(),&permit(),2000,&error).unwrap();let archive=p.join(first.evidence()["sourceArchive"].as_str().unwrap());let original=fs::read(&archive).unwrap();let inode={use std::os::unix::fs::MetadataExt;fs::metadata(&archive).unwrap().ino()};
  // No dispatch-abort row was written. A later actual SDK owner has a different
  // token and leaseKind, but performs NO queue command or account operation.
- assert!(!p.join("dispatch.ndjson").exists());let clock=Arc::new(AtomicU64::new(1200));let t=Transport::new_for_mock(c.clone(),Box::new(DisabledCredentials),Box::new(TestClock(clock)),Box::new(ReadOnlyAuthority),"http://127.0.0.1:9/api/v1".into()).unwrap();let held=t.verify_current_ordinary_pre_admission(&spec(),&permit(),2000,&error).unwrap();assert_eq!(held.evidence(),first.evidence());drop(t);
+ assert!(!p.join("dispatch.ndjson").exists());let clock=Arc::new(AtomicU64::new(2500));let t=Transport::new_for_mock(c.clone(),Box::new(DisabledCredentials),Box::new(TestClock(clock)),Box::new(ReadOnlyAuthority),"http://127.0.0.1:9/api/v1".into()).unwrap();let held=t.verify_current_ordinary_pre_admission(&spec(),&permit(),2000,&error).unwrap();assert_eq!(held.evidence(),first.evidence());drop(t);
  let next=verify_frozen_ordinary_pre_admission(&c,&spec(),&permit(),2000,&error).unwrap();assert_eq!(next.evidence(),first.evidence());assert_eq!(fs::read(&archive).unwrap(),original);{use std::os::unix::fs::MetadataExt;assert_eq!(fs::metadata(&archive).unwrap().ino(),inode);}assert!(!p.join("offline-account-queue.lock").exists());fs::remove_dir_all(p).unwrap();
 }
 
