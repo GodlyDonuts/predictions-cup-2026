@@ -1,0 +1,4 @@
+# Preserve the exact raw bytes pinned by the artifact manifest.
+build/* -text
+forecast/* -text
+deployment/* -text

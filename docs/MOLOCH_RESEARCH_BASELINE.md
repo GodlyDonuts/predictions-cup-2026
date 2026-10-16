@@ -1,3 +1,30 @@
+# Current research baseline: October16,19:28UTC
+
+The recovery worker534982/sourceec8b0fef genuinely reached fresh trading at
+19:17:19 UTC with healthy realtime. It automatically reconciled the original
+447NO sale, increasing booked fill rows204→206 and adding the actual−2.160000
+loss. Combined booked realized P&L is−133.625000; no manual ledger repair occurred.
+
+The new Oregon terminal model then bought2,094NO shares for1,949.320000 SUSQies
+in official order43530180, within its.935 limit/.955 reviewed ceiling. SIG reports
+five fills at.930/.935 with the identical19:17:18.513 timestamp. The BUY tie guard
+stopped the worker at19:17:27.979 before booking those five rows. This is another
+parser failure, not an operator pause. Zero SDK unknowns, original ACK/closed
+order/complete tape and previously flat Oregon inventory are verified. Expected
+post-reconciliation cash/owned cost are70,765.455000/24,680.835000; these are
+explicit expected ledger values, not a claim that the missing rows are booked.
+
+Root and graph are implementing explicit deterministic accounting for tied BUY
+lots, retaining original fill IDs/prices/quantities and first-accepted journal
+order without claiming finer venue chronology. The new STOP remains pending
+that checked recovery. Full95,579.915000 capital, original bank/native8acc and
+twelve bridges are preserved. NC/Oregon terminal reviews are installed; Maine
+and reviewed-refresh architecture are inactive research. V5 exact original-input
+replay reproduces23 rows/15 labels, but missing source witnesses still prevent
+model qualification; its frozen metadata coverage audit is running. Paper6 and
+the profitability objective remain open.
+[Exact latest failure and accounting evidence](../research/moloch-fill-order-recovery-20261016/deployment/second-fill-order-failure.json).
+
 # Current research baseline: October16,18:49UTC
 
 Production525450/sourceb112c6c1 **stopped18:31:17UTC** with

@@ -1,3 +1,17 @@
+# Actual deployment and subsequent BUY-tie failure — October16,19:28UTC
+
+The recovery deployed at18:57:57 as PID534982 and restored the complete original
+history. At19:17 it genuinely traded and automatically booked the earlier447NO
+SELL loss of2.160000, with206 cumulative fill rows. Its first new official order
+bought2,094Oregon NO for1,949.320000, but the BUY mixed-price timestamp guard
+stopped it at19:17:27 before booking those five fills. The original known ACK,
+closed order, complete tape and flat prior inventory are verified; SDK unknowns
+are zero. No fill was manually appended. See deployment/production-summary.json
+for the actual rollout and deployment/second-fill-order-failure.json for the
+later failure. The historical checked build/model evidence below remains valid;
+it does not establish current uptime or profitability. The second recovery is
+in progress and requires an explicit tied-BUY accounting convention.
+
 # Recovery of legitimate simultaneous SELL fills
 
 Production525450 stopped at18:31:17 UTC, October16, with
