@@ -81,14 +81,36 @@ fn ensure_entry_window(c:&Control,bank:&mut Session,authority:&ProductionAuthori
  if authority.entry_until_ms()!=end||end==cfg.anchor_ms{authority.bind_entry_window(bank,cfg,at)?;}Ok(())
 }
 fn accept_source_events(bank:&mut Session,events:&[Value])->Result<()>{
- use moloch_replay::session::{BatchEntry,SESSION_BATCH_MAX_EVENTS};
+ use moloch_replay::session::SESSION_BATCH_MAX_EVENTS;
  for chunk in events.chunks(SESSION_BATCH_MAX_EVENTS){
-  let first=bank.last_source_sequence("moloch-live").checked_add(1).ok_or("LIVE_SOURCE_SEQUENCE_RANGE")?;
   let prepared:Vec<_>=chunk.iter().map(|event|{let mut e=event.clone();e["processedAt"]=json!(iso(now()));e}).collect();
-  let entries:Vec<_>=prepared.iter().enumerate().map(|(index,event)|Ok(BatchEntry{source_id:"moloch-live",sequence:first.checked_add(index as u64).ok_or("LIVE_SOURCE_SEQUENCE_RANGE")?,event})).collect::<Result<_>>()?;
+  accept_prepared_source_events(bank,&prepared)?;
+ }Ok(())
+}
+fn accept_prepared_source_events(bank:&mut Session,prepared:&[Value])->Result<()>{
+ use moloch_replay::session::{BatchEntry,SESSION_BATCH_MAX_EVENTS};
+ for chunk in prepared.chunks(SESSION_BATCH_MAX_EVENTS){
+  let first=bank.last_source_sequence("moloch-live").checked_add(1).ok_or("LIVE_SOURCE_SEQUENCE_RANGE")?;
+  let entries:Vec<_>=chunk.iter().enumerate().map(|(index,event)|Ok(BatchEntry{source_id:"moloch-live",sequence:first.checked_add(index as u64).ok_or("LIVE_SOURCE_SEQUENCE_RANGE")?,event})).collect::<Result<_>>()?;
   let outcome=bank.accept_batch(&entries)?;
   if outcome.appended_rows!=entries.len()||outcome.accepted.len()!=entries.len()||outcome.accepted.iter().any(|accepted|!*accepted){return Err("LIVE_SOURCE_BATCH_PREFIX".into())} for entry in &entries{observe_execution(bank,entry.sequence,entry.event);}
  }Ok(())
+}
+#[derive(Default)]
+struct QueuedSourceBatch{prepared:Vec<Value>,bytes:usize}
+impl QueuedSourceBatch{
+ fn push_at(&mut self,bank:&mut Session,events:&[Value],at:u64)->Result<()>{
+  for event in events{let mut e=event.clone();e["processedAt"]=json!(iso(at));let bytes=serde_json::to_vec(&e)?.len().checked_add(1024).ok_or("LIVE_SOURCE_BATCH_BYTES")?;
+   let budget=moloch_replay::session::SESSION_BATCH_MAX_BYTES/2;
+   if !self.prepared.is_empty()&&self.bytes.checked_add(bytes).is_none_or(|n|n>budget){self.flush(bank)?;}
+   self.bytes=self.bytes.checked_add(bytes).ok_or("LIVE_SOURCE_BATCH_BYTES")?;self.prepared.push(e);
+   if self.prepared.len()==moloch_replay::session::SESSION_BATCH_MAX_EVENTS||self.bytes>=budget{self.flush(bank)?;}
+  }Ok(())
+ }
+ fn flush(&mut self,bank:&mut Session)->Result<()>{
+  if !self.prepared.is_empty(){accept_prepared_source_events(bank,&self.prepared)?;self.prepared.clear();self.bytes=0;}Ok(())
+ }
+ fn finish(&mut self,bank:&mut Session,result:Result<()>)->Result<()>{self.flush(bank)?;result}
 }
 fn record_receipt(root:&Path,r:&Receipt)->Result<()> {let p=root.join("receipts").join(format!("{}.json",feedback::digest(r)?));if !p.exists(){atomic_json(&p,&serde_json::to_value(r)?)?}Ok(())}
 fn validate_collateral_accounting(c:&Control)->Result<()>{
@@ -931,12 +953,16 @@ fn connect_stream(t:&mut Transport,c:&Control,bank:&mut Session,source:&mut Rest
 }
 fn drain_stream(stream:&Realtime,bank:&mut Session,source:&mut RestSource,breadth:&mut Option<Recorder>,universe:&mut Option<Universe>)->Result<()>{
  require_stream(stream)?;
- for _ in 0..MAX_REALTIME_FRAMES_PER_DRAIN{require_stream(stream)?;let Ok(input)=stream.incoming.try_recv()else{break};match input{
-  Incoming::Broadcast{event,payload,received_at}=>{if let Some(recorder)=breadth{recorder.observe(&event,&payload,&received_at)}if let Some(u)=universe{u.observe(&event,&payload,&received_at)?}accept_source_events(bank,&source.broadcast(&event,&payload,&received_at)?)?;},
-  Incoming::Failed(code)=>return Err(StreamFailure::new(code).into()),
-  Incoming::Joined{..}=>return Err("LIVE_STREAM_UNEXPECTED_REJOIN".into())
+ let mut pending=QueuedSourceBatch::default();
+ for _ in 0..MAX_REALTIME_FRAMES_PER_DRAIN{if let Err(error)=require_stream(stream){return pending.finish(bank,Err(error))}let Ok(input)=stream.incoming.try_recv()else{break};match input{
+  Incoming::Broadcast{event,payload,received_at}=>{
+   let events=(||->Result<Vec<Value>>{if let Some(recorder)=breadth{recorder.observe(&event,&payload,&received_at)}if let Some(u)=universe{u.observe(&event,&payload,&received_at)?}Ok(source.broadcast(&event,&payload,&received_at)?)})();
+   match events{Ok(events)=>pending.push_at(bank,&events,now())?,Err(error)=>return pending.finish(bank,Err(error))}
+  },
+  Incoming::Failed(code)=>return pending.finish(bank,Err(StreamFailure::new(code).into())),
+  Incoming::Joined{..}=>return pending.finish(bank,Err("LIVE_STREAM_UNEXPECTED_REJOIN".into()))
  }}
- Ok(())
+ pending.finish(bank,Ok(()))
 }
 fn recovery_budget(path:&Path,at:u64)->Result<RecoveryBudget>{
  let budget:RecoveryBudget=match fs::symlink_metadata(path){
@@ -1173,6 +1199,26 @@ pub fn main()->Result<()>{
    let mut restored=Session::open(&temp.0,None,&policy).unwrap();assert_eq!(restored.last_source_sequence("moloch-live"),expected);assert_eq!(restored.engine().report().unwrap(),report);
    if bad{events[40]["type"]=json!("tick");accept_source_events(&mut restored,&events[32..]).unwrap();assert_eq!(restored.last_source_sequence("moloch-live"),65);}
   }
+ }
+ #[test]fn queued_frames_keep_exact_clocks_rows_cursors_and_restart_state(){
+  let a=BankTemp::new();let b=BankTemp::new();let policy=json!({});let mut serial=Session::open(&a.0,None,&policy).unwrap();let mut batched=Session::open(&b.0,None,&policy).unwrap();let mut pending=QueuedSourceBatch::default();
+  for(i,event)in source_ticks(65).iter().enumerate(){let at=1_760_000_001_000+i as u64;let mut prepared=event.clone();prepared["processedAt"]=json!(iso(at));accept_prepared_source_events(&mut serial,&[prepared]).unwrap();pending.push_at(&mut batched,&[event.clone()],at).unwrap();assert!(pending.prepared.len()<32);}
+  pending.finish(&mut batched,Ok(())).unwrap();assert_eq!(batched.last_source_sequence("moloch-live"),65);assert!(pending.prepared.is_empty());
+  for name in ["events.jsonl","head.json","report.json"]{assert_eq!(fs::read(a.0.join(name)).unwrap(),fs::read(b.0.join(name)).unwrap(),"{name}")}
+  let report=batched.engine().report().unwrap();drop(batched);let restored=Session::open(&b.0,None,&policy).unwrap();assert_eq!(restored.engine().report().unwrap(),report);
+ }
+ #[test]fn queued_valid_prefix_is_durable_before_source_or_stream_failure(){
+  for reason in ["source_failed","stream_failed","unexpected_rejoin"]{let temp=BankTemp::new();let policy=json!({});let mut bank=Session::open(&temp.0,None,&policy).unwrap();let mut pending=QueuedSourceBatch::default();for(i,event)in source_ticks(5).iter().enumerate(){pending.push_at(&mut bank,&[event.clone()],1_760_000_001_000+i as u64).unwrap();}assert_eq!(bank.last_source_sequence("moloch-live"),0);
+   assert_eq!(pending.finish(&mut bank,Err(reason.into())).unwrap_err().to_string(),reason);assert_eq!(bank.last_source_sequence("moloch-live"),5);drop(bank);assert_eq!(Session::open(&temp.0,None,&policy).unwrap().last_source_sequence("moloch-live"),5);
+  }
+ }
+ #[test]fn queued_native_failure_propagates_without_replaying_or_appending_invalid_batch(){
+  let temp=BankTemp::new();let mut bank=Session::open(&temp.0,None,&json!({})).unwrap();let mut pending=QueuedSourceBatch::default();let mut events=source_ticks(32);events[17]["type"]=json!("unsupported");let result=pending.push_at(&mut bank,&events,1_760_000_001_000);assert!(result.is_err());assert_eq!(bank.last_source_sequence("moloch-live"),0);assert_eq!(fs::metadata(temp.0.join("events.jsonl")).unwrap().len(),0);
+ }
+ #[test]fn queued_large_events_flush_before_aggregate_byte_limit_and_preserve_individual_large_event(){
+  let temp=BankTemp::new();let mut bank=Session::open(&temp.0,None,&json!({})).unwrap();let mut pending=QueuedSourceBatch::default();
+  let mut events=source_ticks(18);for e in &mut events{e["padding"]=json!("x".repeat(512*1024));}pending.push_at(&mut bank,&events,1_760_000_001_000).unwrap();assert!(bank.last_source_sequence("moloch-live")>0);pending.finish(&mut bank,Ok(())).unwrap();assert_eq!(bank.last_source_sequence("moloch-live"),18);
+  let large=json!({"type":"tick","receivedAt":iso(1_760_000_002_000),"padding":"y".repeat(5*1024*1024)});pending.push_at(&mut bank,&[large],1_760_000_002_000).unwrap();assert!(pending.prepared.is_empty());assert_eq!(bank.last_source_sequence("moloch-live"),19);
  }
  #[test]fn long_expired_history_coalesces_by_scope_without_reviving_attempted_or_cancelled_hints(){
   let mut orders=(1..=10_002u64).map(|id|json!({"id":id,"action":"sell","inventoryExitReason":"maximumAge","executionStyle":"inventoryAON","filled":0,"expiresAt":100,"exchangeId":format!("ex{}",id%3),"side":"NO","retired":true})).collect::<Vec<_>>();
