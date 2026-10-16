@@ -27,7 +27,7 @@
 //! deadline, while explicit reviewed revocation/adverse value permits a covered
 //! native exit. There is no settlement-floor/arbitrage certificate here.
 use crate::{daily_windows, dispatch::DispatchLog, feedback::Result, package_admission};
-use baal_transport_service::{RequestSpec, Scope, Permit, decimal_units};
+use baal_transport_service::{RequestSpec, Scope, Permit, Receipt, decimal_units};
 use moloch_replay::{Side, money, session::{ExclusiveLock, Session}};
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
@@ -60,6 +60,9 @@ pub struct ReviewInput {
     pub version:u32, pub reviewer_id:String, pub assumption_label:String,
     pub run_id:String, pub bank_manifest_sha256:String, pub tournament_id:String,
     pub market_id:String, pub exchange_id:String, pub contract_id:String, pub side:String,
+    /// Canonical semantic SHA of the ORIGINAL official node root, verified from
+    /// the approved SourceBytes and rechecked against current physical facts.
+    pub official_contract_root_sha256:String,
     /// Conditional probability of ordinary $1 payout, explicitly a model assumption.
     pub ordinary_probability:String, pub exceptional_probability_allowance:String,
     pub minimum_exceptional_payout:String, pub margin_per_share:String,
@@ -72,7 +75,7 @@ pub struct ReviewInput {
 pub fn review_sha256(input:&ReviewInput)->Result<String>{digest(input)}
 fn structure(r:&ReviewInput)->Result<i128>{
     need(r.version==1&&atom(&r.reviewer_id)&&atom(&r.run_id)&&hex(&r.bank_manifest_sha256)
-        &&atom(&r.tournament_id)&&atom(&r.market_id)&&atom(&r.exchange_id)&&atom(&r.contract_id)
+        &&atom(&r.tournament_id)&&atom(&r.market_id)&&atom(&r.exchange_id)&&atom(&r.contract_id)&&hex(&r.official_contract_root_sha256)
         &&matches!(r.side.as_str(),"YES"|"NO")&&r.payout_mapping_is_operator_assumption
         &&!r.assumption_label.trim().is_empty()&&r.assumption_label.len()<=4096,"FUNDAMENTAL_REVIEW_SCOPE_OR_ASSUMPTION")?;
     let p=amount(&r.ordinary_probability)?;let e=amount(&r.exceptional_probability_allowance)?;
@@ -99,6 +102,17 @@ fn current(r:&ReviewInput,now:u64)->bool{
         now>=s.observed_at_ms&&now-s.observed_at_ms<=s.maximum_age_ms)
 }
 pub struct Reviewed{input:ReviewInput,sha:String}
+/// Canonical root hashing ignores object-key ordering but preserves every root
+/// field and value. It is a change detector, not resolver-authentication proof.
+pub fn official_contract_root_sha256(data:&Value)->Result<String>{
+    need(data["root"].is_object()&&data["root"]["node_type"]=="contract","FUNDAMENTAL_OFFICIAL_CONTRACT_ROOT")?;
+    digest(&data["root"])
+}
+fn validate_contract_data(input:&ReviewInput,data:&Value)->Result<()>{
+    need(data["market_id"]==input.market_id&&data["root"]["node_type"]=="contract"
+        &&data["root"]["node_id"]==input.contract_id&&data["root"]["contract_id"]==input.contract_id
+        &&official_contract_root_sha256(data)?==input.official_contract_root_sha256,"FUNDAMENTAL_REVIEWED_CONTRACT_CHANGED")
+}
 fn verify_snapshot(input:ReviewInput,originals:&[SourceBytes<'_>],trusted:&BTreeSet<String>)->Result<Reviewed>{
     structure(&input)?;let sha=review_sha256(&input)?;
     need(trusted.contains(&sha),"FUNDAMENTAL_REVIEW_NOT_CURRENTLY_APPROVED")?;
@@ -107,6 +121,14 @@ fn verify_snapshot(input:ReviewInput,originals:&[SourceBytes<'_>],trusted:&BTree
         let found=originals.iter().filter(|v|v.sha256==s.sha256).collect::<Vec<_>>();
         need(found.len()==1&&!found[0].bytes.is_empty()&&found[0].bytes.len()<=8*1024*1024
             &&bytes_sha(found[0].bytes)==s.sha256,"FUNDAMENTAL_ORIGINAL_SOURCE_HASH")?;
+        if s.kind=="official_contract_node"{
+            let original:Value=serde_json::from_slice(found[0].bytes)?;
+            let data=if original.get("root").is_some(){&original}else{
+                need(original["status"]==200&&original["endpoint"]==format!("/markets/{}/nodes?tournamentId={}",input.market_id,input.tournament_id),"FUNDAMENTAL_ORIGINAL_CONTRACT_RECEIPT")?;
+                &original["data"]
+            };
+            validate_contract_data(&input,data)?;
+        }
     }Ok(Reviewed{input,sha})
 }
 impl Reviewed{
@@ -236,6 +258,7 @@ impl LoadedSettings{
 pub struct PhysicalDecision{
     qid:u64,planned_quantity:u64,native_head:Value,quote_sha:String,ledger_sha:String,scope_sha:String,
     spec_sha:String,permit_sha:String,review_sha:String,trust_sha:String,
+    contract_market:String,contract_id:String,contract_tournament:String,contract_root_sha:String,
     minted:u64,expires:u64,sidecar:FilePin,marker:FilePin,sidecar_sequence:u64,sidecar_tail:String,
     authority:FilePin,ordinary_file:File,ordinary_path:PathBuf,ordinary_identity:Value,
     _owner:Arc<ExclusiveLock>,
@@ -245,6 +268,12 @@ impl PhysicalDecision{
     pub fn planned_quantity(&self)->u64{self.planned_quantity}
     pub fn expires_at_ms(&self)->u64{self.expires}
     pub fn review_sha256(&self)->&str{&self.review_sha}
+    pub fn validate_contract(&self,receipt:&Receipt)->Result<()>{
+        need(receipt.status==200&&receipt.endpoint==format!("/markets/{}/nodes?tournamentId={}",self.contract_market,self.contract_tournament)
+            &&receipt.data["market_id"]==self.contract_market&&receipt.data["root"]["node_type"]=="contract"
+            &&receipt.data["root"]["node_id"]==self.contract_id&&receipt.data["root"]["contract_id"]==self.contract_id
+            &&official_contract_root_sha256(&receipt.data)?==self.contract_root_sha,"FUNDAMENTAL_PHYSICAL_CONTRACT_CHANGED")
+    }
     fn time(&self,now:u64)->Result<()>{need(now>=self.minted&&now<self.expires,"FUNDAMENTAL_PHYSICAL_TOKEN_EXPIRED_OR_REGRESSED")}
     pub fn validate_frozen(&self,quote:&Value,ledger:&Value,qid:u64,now:u64)->Result<()>{
         self.time(now)?;need(qid==self.qid&&quote["id"]==qid&&digest(quote)?==self.quote_sha&&digest(ledger)?==self.ledger_sha,"FUNDAMENTAL_PHYSICAL_FROZEN_STATE_CHANGED")
@@ -291,6 +320,7 @@ impl Cohorts{
         need(now>=self.clock&&expires>now,"FUNDAMENTAL_PHYSICAL_WINDOW_EMPTY")?;
         let ordinary_file=File::open(&self.ordinary_path)?;need(identity(&ordinary_file)?==self.ordinary_identity,"FUNDAMENTAL_ORIGINAL_DISPATCH_REQUIRED")?;
         Ok(PhysicalDecision{qid,planned_quantity:n,native_head:bank.durable_head(),quote_sha:digest(&q)?,ledger_sha:digest(&bank.engine().report()?)?,scope_sha:digest(scope)?,spec_sha:digest(spec)?,permit_sha:digest(permit)?,review_sha:digest(r)?,trust_sha:digest(authority.trusted())?,minted:now,expires,
+            contract_market:r.market_id.clone(),contract_id:r.contract_id.clone(),contract_tournament:r.tournament_id.clone(),contract_root_sha:r.official_contract_root_sha256.clone(),
             sidecar:FilePin::from_held(self.file.try_clone()?,self.path.clone(),MAX_LOG,None)?,marker:self.marker.duplicate()?,sidecar_sequence:self.sequence,sidecar_tail:self.previous.clone(),authority:authority.pin.duplicate()?,ordinary_file,ordinary_path:self.ordinary_path.clone(),ordinary_identity:self.ordinary_identity.clone(),_owner:self._owner.clone()})
     }
     /// Explicit one-time owner operation; never invoked as missing-file recovery.

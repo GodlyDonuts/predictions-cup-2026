@@ -7,12 +7,12 @@ use serde_json::{Value,json};
 use sha2::{Digest,Sha256};
 use std::{collections::BTreeSet,path::PathBuf,sync::Arc};
 const NOW:u64=1_792_108_800_000;
-const ORIGINALS:[&[u8];3]=[b"synthetic forecast fixture, not a live publisher",b"synthetic official ballot fixture",b"synthetic official structured contract fixture"];
+const ORIGINALS:[&[u8];3]=[b"synthetic forecast fixture, not a live publisher",b"synthetic official ballot fixture",br#"{"market_id":"201","root":{"node_type":"contract","node_id":"301","contract_id":"301","contract_type":"Election Outcome","contract_details":{"contractType":"Election Outcome","resolutionType":"Party Winner","winnerName":"Republican Party","electionDate":"2026-11-03","officeLevel":"Federal","usState":"Synthetic","raceId":1,"stageId":2,"raceName":"Synthetic fixture","raceStage":"General"},"settled_with":null,"settlement_date":null,"title":"Synthetic Republican Party Winner fixture"}}"#];
 fn sha(b:&[u8])->String{format!("{:x}",Sha256::digest(b))}
 fn iso(at:u64)->String{daily_windows::iso(at).unwrap()}
 fn input(manifest:&str,at:u64)->ReviewInput{
     ReviewInput{version:1,reviewer_id:"test-operator".into(),assumption_label:"Synthetic fixture: model probability and Republican-party mapping assumed; not a guaranteed payoff".into(),
-        run_id:"fundamental-fixture".into(),bank_manifest_sha256:manifest.into(),tournament_id:"cup".into(),market_id:"201".into(),exchange_id:"101".into(),contract_id:"301".into(),side:"NO".into(),
+        run_id:"fundamental-fixture".into(),bank_manifest_sha256:manifest.into(),tournament_id:"cup".into(),market_id:"201".into(),exchange_id:"101".into(),contract_id:"301".into(),side:"NO".into(),official_contract_root_sha256:official_contract_root_sha256(&serde_json::from_slice(ORIGINALS[2]).unwrap()).unwrap(),
         ordinary_probability:"0.950000".into(),exceptional_probability_allowance:"0.010000".into(),minimum_exceptional_payout:"0.000000".into(),margin_per_share:"0.010000".into(),maximum_principal:"4.000000".into(),maximum_quantity:5,
         reviewed_at_ms:at,expires_at_ms:at+120000,hold_until_ms:NOW+600000,payout_mapping_is_operator_assumption:true,revoke_existing:false,
         sources:["forecast","official_ballot","official_contract_node"].iter().enumerate().map(|(i,k)|SourceRef{kind:k.to_string(),url:format!("https://fixture.invalid/{k}"),sha256:sha(ORIGINALS[i]),published_at_ms:at-100,observed_at_ms:at-50,maximum_age_ms:120000}).collect()}
@@ -43,6 +43,25 @@ fn approve(r:ReviewInput,trust:&mut BTreeSet<String>,now:u64)->Reviewed{
         let trust=[review_sha256(&r).unwrap()].into();let hashes=ORIGINALS.iter().map(|b|sha(b)).collect::<Vec<_>>();let sources=ORIGINALS.iter().enumerate().map(|(i,b)|SourceBytes{sha256:&hashes[i],bytes:b}).collect::<Vec<_>>();
         assert!(Reviewed::verify(r,&sources,&trust,NOW).is_err(),"{case}");
     }
+}
+fn verify_with_node(mut review:ReviewInput,node:&[u8])->moloch_live_runtime::feedback::Result<Reviewed>{
+    let mut originals=ORIGINALS.iter().map(|b|b.to_vec()).collect::<Vec<_>>();originals[2]=node.to_vec();
+    let hashes=originals.iter().map(|b|sha(b)).collect::<Vec<_>>();review.sources[2].sha256=hashes[2].clone();
+    let trust=[review_sha256(&review)?].into();let sources=originals.iter().enumerate().map(|(i,b)|SourceBytes{sha256:&hashes[i],bytes:b}).collect::<Vec<_>>();
+    Reviewed::verify(review,&sources,&trust,NOW)
+}
+#[test]fn approved_original_node_bytes_must_match_exact_contract_scope_and_root_semantics(){
+    for case in ["market","node_id","contract_id","node_type","party","review_hash"]{
+        let mut review=input(&"a".repeat(64),NOW);let mut node:Value=serde_json::from_slice(ORIGINALS[2]).unwrap();
+        match case{"market"=>node["market_id"]=json!("202"),"node_id"=>node["root"]["node_id"]=json!("302"),"contract_id"=>node["root"]["contract_id"]=json!("302"),"node_type"=>node["root"]["node_type"]=json!("group"),"party"=>node["root"]["contract_details"]["winnerName"]=json!("Democratic Party"),_=>review.official_contract_root_sha256="b".repeat(64)}
+        assert!(verify_with_node(review,&serde_json::to_vec(&node).unwrap()).is_err(),"even an explicitly approved raw source hash cannot bypass {case}");
+    }
+}
+#[test]fn original_node_receipt_envelope_is_accepted_only_for_the_exact_official_scope(){
+    let review=input(&"a".repeat(64),NOW);let mut receipt=json!({"endpoint":"/markets/201/nodes?tournamentId=cup","requestStartedAt":iso(NOW-100),"receivedAt":iso(NOW-50),"status":200,"data":serde_json::from_slice::<Value>(ORIGINALS[2]).unwrap()});
+    verify_with_node(review.clone(),&serde_json::to_vec(&receipt).unwrap()).unwrap();
+    receipt["endpoint"]=json!("/markets/201/nodes?tournamentId=other");assert!(verify_with_node(review.clone(),&serde_json::to_vec(&receipt).unwrap()).is_err());
+    receipt["endpoint"]=json!("/markets/201/nodes?tournamentId=cup");receipt["status"]=json!(503);assert!(verify_with_node(review,&serde_json::to_vec(&receipt).unwrap()).is_err());
 }
 
 #[cfg(unix)]mod actual_session{
@@ -215,7 +234,7 @@ fn approve(r:ReviewInput,trust:&mut BTreeSet<String>,now:u64)->Reviewed{
             positions:receipt("/tournaments/cup/portfolio/positions",json!({"positions":[]})),
             open_orders:receipt("/orders?status=open&limit=200&tournamentId=cup",json!({"data":[],"coverage":{"complete":true},"pagination":{"hasMore":false,"nextCursor":null}})),
             market:receipt("/markets/201",json!({"id":"201","status":"open","isComposite":false,"isMultiOutcome":false,"contexts":[{"status":"open"}]})),
-            contract:receipt("/contracts/201",json!({"market_id":"201","root":{"node_type":"contract","node_id":"301","contract_id":"301","children":[],"parent_id":null,"contract_type":"Party Winner","contract_details":{}}})),
+            contract:receipt("/markets/201/nodes?tournamentId=cup",serde_json::from_slice(ORIGINALS[2]).unwrap()),
             book:receipt("/markets/201/orderbook?depth=20",json!({"contexts":[{"orderbook":{"exchanges":[{"exchangeId":"101","asOf":{"sequence":3,"at":iso(at)},"bids":[{"price":0.10,"quantity":100}],"asks":[{"price":0.12,"quantity":100}]}]}}]})),
         };
         assert!(authority.prepare(&f.bank,id,spec.clone(),permit.clone(),facts.clone()).is_err(),"managed BUY cannot silently use the legacy maker path");
@@ -230,5 +249,12 @@ fn approve(r:ReviewInput,trust:&mut BTreeSet<String>,now:u64)->Reviewed{
         authority.prepare_with_policies(&f.bank,id,changed.clone(),permit.clone(),facts,None,Some(token)).unwrap();
         assert!(authority.authorize(&f.scope,&changed,&permit,true,at).is_err());
         assert_eq!(f.bank.engine().order_records().into_iter().find(|x|x["id"]==id).unwrap()["quantity"],2);
+    }
+    #[test]fn opaque_contract_gate_rechecks_the_reviewed_root_before_any_physical_authorization(){
+        use baal_transport_service::Receipt;
+        let mut f=F::new();let(q,spec)=f.bind_entry();let id=q["id"].as_u64().unwrap();let permit=f.permit(&q,NOW);let authority=f.authority();let token=f.store.as_ref().unwrap().physical_decision(&f.bank,&f.log,&f.scope,id,&spec,&permit,&authority,NOW).unwrap();
+        let receipt=Receipt{endpoint:"/markets/201/nodes?tournamentId=cup".into(),request_started_at:iso(NOW-1),received_at:iso(NOW),status:200,data:serde_json::from_slice(ORIGINALS[2]).unwrap()};token.validate_contract(&receipt).unwrap();
+        for case in ["market","node_id","contract_id","party","title","endpoint","status"]{let mut changed=receipt.clone();match case{"market"=>changed.data["market_id"]=json!("202"),"node_id"=>changed.data["root"]["node_id"]=json!("302"),"contract_id"=>{changed.data["root"]["contract_id"]=json!("302");changed.data["root"]["id"]=json!("301");},"party"=>changed.data["root"]["contract_details"]["winnerName"]=json!("Democratic Party"),"title"=>changed.data["root"]["title"]=json!("Changed resolver description"),"endpoint"=>changed.endpoint="/markets/201/nodes?tournamentId=other".into(),_=>changed.status=503}assert!(token.validate_contract(&changed).is_err(),"changed {case}");}
+        let mut reordered=receipt.clone();let root=serde_json::to_string_pretty(&reordered.data["root"]).unwrap();reordered.data["root"]=serde_json::from_str(&root).unwrap();token.validate_contract(&reordered).unwrap();
     }
 }
