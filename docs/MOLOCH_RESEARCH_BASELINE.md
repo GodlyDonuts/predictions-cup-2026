@@ -1,3 +1,11 @@
+# Latest deployment: October16,08:55:43UTC
+
+SolePID441490/sourcefec81a5e replaces421878 with the stale never-submitted reservation repair and genuine covered-exit source nomination. At08:56:09, matching binary/STOP absent but **restoration pending; fresh trading not yet verified**. The original205233-event bank,132fills, accounting identityc3731d88… and ten unchanged bridges are preserved.85focused checks and locked release passed. No sizing/price/capital mandate changed. [Dated state](CURRENT_STATE.md), [supported API capabilities and idle-capital reconciliation](../research/moloch-capabilities-20261016.md). Native clone optimization and probabilistic execution are still separate source work, not this deployment. Additional owner funding and bulk negative screening are being implemented separately.
+
+# Latest observation: October16,08:32:54UTC
+
+Production remains solePID421878/source5577e984, fresh trading/realtime with matching binary and no STOP. Since launch:43 new official ACKs, zero new fill rows; cumulative132fill rows. Last actual fill07:41:06.571UTC. Cash17,194.18/owned cost22,731.515/attributed combined realized−74.305. Dashboard daily marks are a different measure. The [current-state entry](CURRENT_STATE.md) and [reservation audit](../research/moloch-throughput-20261016/reservation-throughput-audit.md) supersede earlier observations for this timestamp. Root is developing runtime-only stale-draft retirement and covered-exit source nomination; neither is active yet. Current small fills reflect residual quantities, top-level maker sizing and partial execution; large requested sizes remain unfilled.
+
 # Moloch research baseline
 
 **As of2026-10-16 07:53UTC.** This is the starting point for new papers. It describes the actual deployed bot and separates source-only work. Observations age; consult the newest [CURRENT_STATE](CURRENT_STATE.md) entry and linked evidence before making a current live claim. Older dated documents are historical unless this baseline identifies them as current specifications.

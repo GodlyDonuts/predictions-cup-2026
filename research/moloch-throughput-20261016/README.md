@@ -1,3 +1,11 @@
+# Runtime repair deployed08:55:43UTC; restoration pending
+
+SolePID441490/sourcefec81a5e/binarye38a64d6… started with original205233events/132fillrows, nativec3731d88… and ten byte-identical financial bridges. At08:56:09 it is restoring, not yet fresh-trading verified. The release retires only stale proven-unsent ordinaryBUY drafts while protecting held/pending mates, and nominates genuine covered nativeSELL scopes for bounded fresh reads.17owned-read+10selector+58worker checks and locked release pass; no risk/price/capital increase. Source integrated onmaina149303b. Current realized−74.305 remains separate from dashboard marks; no new fills/profit claimed. [Current state](../../docs/CURRENT_STATE.md).
+
+# Follow-up observation:08:32:54UTC
+
+Production421878/source5577e984 remains fresh trading/realtime with matching binary and STOP absent;43 newACKs/zero newfillrows since07:43:57 launch. Tiny actual quantities differ from large unfilled requests: best-level maker sizing capped the recent68-share request;67filled before this launch. The [sealed reservation audit](reservation-throughput-audit.md) identifies87.26% of reserved cash in never-attempted drafts and late physical admissions. Runtime-only repairs are in development and not yet deployed. Attributed combined realized remains−74.305, separate from dashboard marked P&L; profitability is unproven.
+
 # Moloch throughput repair — October 16
 
 The human reported only three completed trades over two hours. Task [#147](https://github.com/GodlyDonuts/predictions-cup-2026/issues/147) prioritizes actual execution throughput before further Paper5 expansion. Checked source is `52116911781177eddacf85662de1a6dd9a6069c4`; deployment and fresh results must be established separately by the dated evidence linked below.

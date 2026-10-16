@@ -988,7 +988,30 @@ fn reviewed_fundamental_entry(t:&mut Transport,c:&Control,bank:&mut Session,log:
  // genuine quote/slice, never the read hint or an invented quantity.
  submit_order(t,c,bank,log,authority,&current,final_facts,None,Some(f))
 }
+/// Release only local, never-dispatched reservations. The selector protects
+/// held inventory, pending mates, reviewed managers and all package scopes.
+/// No source/transport work may interleave validation and this serialized batch.
+fn retire_stale_entry_drafts(c:&Control,bank:&mut Session,log:&mut DispatchLog,managed:&std::collections::BTreeSet<String>)->Result<usize>{
+ let at=now();let selected=moloch_live_runtime::stale_entry_drafts::select(bank,log,&c.scope,managed,at)?;
+ if selected.drafts().is_empty(){return Ok(0)}
+ selected.validate_current(bank,log,&c.scope,managed,now())?;
+ let mut rows=Vec::new();
+ for draft in selected.drafts(){let id=draft.qid();let current=quote(bank,id)?;
+  if current!=*draft.quote()||!log.never_attempted(id)||log.intents.contains_key(&id)||bank.engine().live_order_bindings().contains_key(&id)||bank.engine().fills().iter().any(|f|f["orderId"]==id){return Err("LIVE_STALE_DRAFT_ORIGINAL_CHANGED".into())}
+  let proof=log.proof(id);log.append(json!({"kind":"not_sent","qid":id,"proof":proof}))?;
+  // Existing native defer flag suppresses immediate replanning. It grants no
+  // package authority and does not cancel or release any physical order.
+  accept(bank,&json!({"type":"unsubmitted_intent_retired","source":"moloch_live_dispatcher","orderId":id,"confirmedNetworkAttempts":0,"receiptHash":hash(&proof),"deferPlanningForPackage":true,"receivedAt":iso(now())}))?;
+  rows.push(json!({"qid":id,"releasedLocalReservationUnits":draft.reserved_units().to_string()}));
+ }
+ atomic_json(&c.root.join("stale-entry-drafts.json"),&json!({"at":iso(now()),"pid":std::process::id(),"reason":"stale_unsubmitted_ordinary_buy","originalNativeHead":selected.native_head(),"originalDispatchDescriptor":selected.dispatch_descriptor_identity(),"retired":rows,"nativeHead":bank.durable_head(),"networkRequests":0,"physicalOrdersCanceled":0,"pricesChanged":false}))?;
+ Ok(rows.len())
+}
 fn dispatch(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,authority:&Arc<ProductionAuthority>,source:&mut RestSource,allow_new_submissions:bool,preflight_cursor:&mut Option<String>,stream:&Realtime,windows:&std::collections::BTreeMap<String,u64>,maker_review:Option<&moloch_live_runtime::maker_policy::Reviewed>,mut fundamental:Option<&mut FundamentalRuntime>)->Result<()>{
+ if allow_new_submissions&&!bank.engine().package_blocks_submissions(){
+  let managed=if let Some(f)=fundamental.as_ref(){f.authority.validate()?;f.cohorts.managed_exchanges()}else{Default::default()};
+  retire_stale_entry_drafts(c,bank,log,&managed)?;
+ }
  let orders=bank.engine().order_records();
  let flow_started=now();let maximum_qid_before=orders.iter().filter_map(|q|q["id"].as_u64()).max().unwrap_or(0);
  let(hints,refresh_unknown)=if allow_new_submissions{prepare_expired_exit_hints(&orders,flow_started,
@@ -1325,7 +1348,8 @@ pub fn main()->Result<()>{
      let started=now();let from=*windows.get(&target).ok_or("LIVE_OWNED_REFRESH_WINDOW")?;
      let next=source(&mut t,&c,&mut bank,&mut source_state,&target,&market,from)?;
      owned_age_reads.complete_read(&hint,started,now())?;windows.insert(target.clone(),next);
-     let _=atomic_json(&c.root.join("owned-age-refresh.json"),&json!({"at":iso(now()),"pid":std::process::id(),"exchangeId":target,"marketId":market,"oldestExecutionMs":hint.oldest_execution_ms(),"dueAtMs":hint.due_at_ms(),"sourceStartedAt":iso(started),"nativeHead":bank.durable_head(),"readOnlyNomination":true,"financialPolicyChanged":false}));
+     let execution_clock=if hint.reason()=="new_lot_maximum_age"{Some(hint.oldest_execution_ms())}else{None};
+     let _=atomic_json(&c.root.join("owned-age-refresh.json"),&json!({"at":iso(now()),"pid":std::process::id(),"exchangeId":target,"marketId":market,"reason":hint.reason(),"nativeQid":hint.native_qid(),"oldestExecutionMs":execution_clock,"dueAtMs":hint.due_at_ms(),"sourceStartedAt":iso(started),"nativeHead":bank.durable_head(),"readOnlyNomination":true,"financialPolicyChanged":false}));
      drain_stream(stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?,&mut bank,&mut source_state,&mut breadth,&mut universe)?;
      if reconciliation_schedule.due(now(),pending_version(&log))?.is_some(){
       reconciled=reconcile(&mut t,&c,&mut bank,&mut log,&mut reconciliation_cache)?;
@@ -1660,6 +1684,22 @@ pub fn main()->Result<()>{
   let mut bank=Session::open_live(&path.join("bank"),&policy,&seed).unwrap();
   for i in 0..n{let ex=(101+i).to_string();let stamp=iso(at+i as u64*2500);bank.accept("official-book",i as u64+1,&json!({"type":"book","receivedAt":stamp,"book":{"tournamentId":"cup","marketId":ex,"exchangeId":ex,"sequence":"1","sourceAt":stamp,"requestStartedAt":stamp,"receivedAt":stamp,"bids":[{"price":"0.400000","quantity":100}],"asks":[{"price":"0.450000","quantity":100}]}})).unwrap();}
   (bank,DispatchLog::open(&path.join("dispatch.ndjson")).unwrap(),policy,seed)
+ }
+ fn stale_fixture(path:&Path,n:usize)->(Control,Session,DispatchLog,Value,Value){
+  private_dir(path).unwrap();let at=now()-65_000;let policy=json!({"initialCash":"1000.000000","maximumCommitted":"100.000000","maximumMarketCost":"50.000000","quantity":12,"maximumMarkets":3,"entryStopAt":iso(at+3_600_000),"lifetimeMs":600000});let seed=json!({"runId":"stale-worker-fixture","availableCash":"1000.000000","accountSnapshotHash":"a".repeat(64),"observedAt":iso(at)});let mut bank=Session::open_live(&path.join("bank"),&policy,&seed).unwrap();
+  let exchanges=(0..n).map(|i|((101+i).to_string(),(101+i).to_string())).collect::<std::collections::BTreeMap<_,_>>();for(i,ex)in exchanges.keys().enumerate(){let stamp=iso(at+i as u64*2500);bank.accept("stale-original-book",i as u64+1,&json!({"type":"book","receivedAt":stamp,"book":{"tournamentId":"cup","marketId":ex,"exchangeId":ex,"sequence":"1","sourceAt":stamp,"requestStartedAt":stamp,"receivedAt":stamp,"bids":[{"price":"0.400000","quantity":100}],"asks":[{"price":"0.450000","quantity":100}]}})).unwrap();}
+  let c:Control=serde_json::from_value(json!({"activation":{"runId":"stale-worker-fixture","entryUntilMs":at+3_600_000,"maximumCommitted":"100.000000","maximumMarketCost":"50.000000","maximumQuantity":12,"tournamentId":"cup","tournamentSlug":"cup","binarySha256":"a".repeat(64)},"scope":{"tournamentId":"cup","tournamentSlug":"cup","exchanges":exchanges},"policy":policy,"root":path,"credentials":path.join("unused-fixture-path"),"ownerLock":path.join("unused-fixture-owner"),"accountScope":"no-account-client"})).unwrap();(c,bank,DispatchLog::open(&path.join("dispatch.ndjson")).unwrap(),policy,seed)
+ }
+ #[test]fn stale_two_draft_batch_uses_each_current_original_proof_and_restarts_without_new_cash_or_orders(){
+  let temp=Temp::new();let(c,mut bank,mut log,policy,seed)=stale_fixture(&temp.0,1);let original=bank.engine().order_records();assert_eq!(original.len(),2);let before=bank.engine().report().unwrap();assert!(bank.engine().wallet.reserved().unwrap()>0);
+  assert_eq!(retire_stale_entry_drafts(&c,&mut bank,&mut log,&Default::default()).unwrap(),2);let report=bank.engine().report().unwrap();for key in ["cash","ownedCost","realized","fees","positions"]{assert_eq!(report[key],before[key],"{key}");}assert_eq!(bank.engine().wallet.reserved().unwrap(),0);for old in &original{let mut expected=old.clone();expected["retired"]=json!(true);assert_eq!(quote(&bank,old["id"].as_u64().unwrap()).unwrap(),expected);}assert!(log.intents.is_empty()&&log.attempted.is_empty()&&log.acknowledgments.is_empty()&&log.closed.is_empty());assert!(bank.engine().fills().is_empty());
+  let rows=fs::read(temp.0.join("dispatch.ndjson")).unwrap();let events=std::str::from_utf8(&rows).unwrap().lines().map(|s|serde_json::from_str::<Value>(s).unwrap()).collect::<Vec<_>>();assert_eq!(events.len(),2);for row in events{assert_eq!(row["event"]["kind"],"not_sent");assert_eq!(row["event"]["proof"]["networkAttempts"],0);assert_eq!(row["event"]["proof"]["qid"],row["event"]["qid"]);assert_eq!(row["event"]["proof"]["sequence"].as_u64().unwrap()+1,row["sequence"].as_u64().unwrap());assert_eq!(row["event"]["proof"]["chain"],row["previous"]);}
+  let journal=fs::read(temp.0.join("bank/events.jsonl")).unwrap();assert_eq!(retire_stale_entry_drafts(&c,&mut bank,&mut log,&Default::default()).unwrap(),0);assert_eq!(fs::read(temp.0.join("dispatch.ndjson")).unwrap(),rows);assert_eq!(fs::read(temp.0.join("bank/events.jsonl")).unwrap(),journal);drop(log);drop(bank);
+  let mut bank=Session::open_live(&temp.0.join("bank"),&policy,&seed).unwrap();let mut log=DispatchLog::open(&temp.0.join("dispatch.ndjson")).unwrap();assert_eq!(bank.engine().report().unwrap(),report);assert_eq!(retire_stale_entry_drafts(&c,&mut bank,&mut log,&Default::default()).unwrap(),0);assert_eq!(fs::read(temp.0.join("bank/events.jsonl")).unwrap(),journal);assert_eq!(fs::read(temp.0.join("dispatch.ndjson")).unwrap(),rows);
+ }
+ #[test]fn stale_cleanup_preserves_actual_pending_mate_while_another_flat_exchange_yields(){
+  let temp=Temp::new();let(c,mut bank,mut log,_,_)=stale_fixture(&temp.0,2);let q=bank.engine().order_records().into_iter().find(|q|q["exchangeId"]=="101"&&q["side"]=="YES").unwrap();let id=q["id"].as_u64().unwrap();let mut event=ack(&q);event["receivedAt"]=json!(iso(q["activationAt"].as_u64().unwrap()));for row in [json!({"kind":"intent","qid":id,"quote":q}),json!({"kind":"attempt","qid":id}),json!({"kind":"ack","qid":id,"receipt":{"data":{"orderId":event["actualOrderId"]}}})]{log.append(row).unwrap();}bank.accept("stale-retained-actual-ack",1,&event).unwrap();let protected=bank.engine().order_records().into_iter().filter(|q|q["exchangeId"]=="101").collect::<Vec<_>>();let positions=bank.engine().wallet.positions();let cash=bank.engine().wallet.cash;let actual=bank.engine().live_order_bindings().clone();
+  assert_eq!(retire_stale_entry_drafts(&c,&mut bank,&mut log,&Default::default()).unwrap(),2);assert_eq!(bank.engine().order_records().into_iter().filter(|q|q["exchangeId"]=="101").collect::<Vec<_>>(),protected);assert!(bank.engine().order_records().iter().filter(|q|q["exchangeId"]=="102").all(|q|q["retired"]==true));assert_eq!(bank.engine().live_order_bindings(),&actual);assert_eq!(bank.engine().wallet.positions(),positions);assert_eq!(bank.engine().wallet.cash,cash);assert!(!log.closed.contains(&id));assert!(bank.engine().fills().is_empty());
  }
  #[test]fn execution_observer_sees_only_exact_successfully_committed_prepared_bytes(){
   use moloch_live_runtime::execution_edge::{self,Config};

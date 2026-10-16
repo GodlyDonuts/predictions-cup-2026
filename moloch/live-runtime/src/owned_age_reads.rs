@@ -6,13 +6,17 @@ use moloch_replay::session::Session;
 use serde_json::Value;
 use std::collections::{BTreeMap,BTreeSet};
 pub const RESAMPLE_MS:u64=30_000;
-pub struct ReadHint { exchange:String,market:String,oldest:u64,due:u64,at:u64,serial:u64,head:Value }
+pub struct ReadHint { exchange:String,market:String,oldest:u64,due:u64,at:u64,serial:u64,head:Value,reason:&'static str,qid:Option<u64> }
 impl ReadHint {
     pub fn exchange_id(&self)->&str{&self.exchange}
     pub fn market_id(&self)->&str{&self.market}
     pub fn oldest_execution_ms(&self)->u64{self.oldest}
     pub fn due_at_ms(&self)->u64{self.due}
     pub fn native_head(&self)->&Value{&self.head}
+    /// For covered native exits the timing fields are original quote creation
+    /// and activation, NOT an invented inherited execution/loss clock.
+    pub fn reason(&self)->&'static str{self.reason}
+    pub fn native_qid(&self)->Option<u64>{self.qid}
 }
 pub struct Scheduler {scope:Scope,completed:BTreeMap<String,u64>,cursor:Option<String>,
     last_clock:Option<u64>,alternate:bool,serial:u64,pending:Option<(u64,String)>,manifest:Option<Value>}
@@ -63,8 +67,7 @@ impl Scheduler {
         }
         self.time(now)?;self.manifest=Some(bank.manifest_hash().clone());
         let policy=bank.engine().policy();
-        if policy["inventoryAgeClock"]!="execution"{return Ok(None)}
-        let Some(age)=policy["maximumInventoryAgeMs"].as_u64().filter(|n|*n>0) else{return Ok(None)};
+        let age=if policy["inventoryAgeClock"]=="execution"{policy["maximumInventoryAgeMs"].as_u64().filter(|n|*n>0)}else{None};
         if self.alternate{self.alternate=false;return Ok(None)}
         let packages=bank.engine().package_records();let mut protected=BTreeSet::new();
         for p in packages.as_array().ok_or("OWNED_AGE_PACKAGES")?{
@@ -81,7 +84,7 @@ impl Scheduler {
             if !self.scope.exchanges.contains_key(ex){return Err("OWNED_AGE_POSITION_SCOPE".into())}
             if ex==current||managed.contains(ex)||protected.contains(ex){continue}
             if self.completed.get(ex).is_some_and(|t|now.saturating_sub(*t)<RESAMPLE_MS){continue}
-            let mut oldest=None;
+            let Some(age)=age else{continue};let mut oldest=None;
             for side in ["YES","NO"]{for lot in sides[side].as_array().ok_or("OWNED_AGE_LOTS")?{
                 let quantity=lot["quantity"].as_u64().ok_or("OWNED_AGE_QUANTITY")?;
                 if quantity==0{continue}
@@ -94,15 +97,40 @@ impl Scheduler {
             }}
             if let Some(oldest)=oldest{
                 let end=oldest.checked_add(age).ok_or("OWNED_AGE_CLOCK_RANGE")?;
-                if end<=now{due.insert(ex.clone(),(oldest,end));}
+                if end<=now{due.insert(ex.clone(),(oldest,end,"new_lot_maximum_age",None));}
             }
+        }
+        // A genuine native profitable-age exit can cover inherited inventory
+        // without a post-adoption executedAt. READ its scope while this exact
+        // native order is alive; never invent a replacement, price or SELL.
+        for q in bank.engine().order_records(){
+            if q["action"]!="sell"||q["executionStyle"]!="inventoryAON"||q["retired"]!=false||q.get("cancelEffectiveAt").is_some_and(|v|!v.is_null()){continue}
+            let ex=q["exchangeId"].as_str().ok_or("OWNED_AGE_QUOTE_SCOPE")?;
+            let market=self.scope.exchanges.get(ex).ok_or("OWNED_AGE_QUOTE_SCOPE")?;
+            if q["marketId"]!=*market{return Err("OWNED_AGE_QUOTE_SCOPE".into())}
+            if ex==current||managed.contains(ex)||protected.contains(ex)||self.completed.get(ex).is_some_and(|t|now.saturating_sub(*t)<RESAMPLE_MS){continue}
+            let qid=q["id"].as_u64().ok_or("OWNED_AGE_NATIVE_QUOTE")?;
+            if bank.engine().is_package_order(qid){continue}
+            let created=q["createdAt"].as_u64().ok_or("OWNED_AGE_NATIVE_QUOTE_CLOCK")?;
+            let activation=q["activationAt"].as_u64().ok_or("OWNED_AGE_NATIVE_QUOTE_CLOCK")?;
+            let expires=q["expiresAt"].as_u64().ok_or("OWNED_AGE_NATIVE_QUOTE_CLOCK")?;
+            if created>activation||activation>=expires{return Err("OWNED_AGE_NATIVE_QUOTE_CLOCK".into())}
+            if activation>now||expires<=now{continue}
+            let quantity=q["quantity"].as_u64().ok_or("OWNED_AGE_NATIVE_QUOTE_QUANTITY")?;
+            let filled=q["filled"].as_u64().ok_or("OWNED_AGE_NATIVE_QUOTE_QUANTITY")?;
+            let remaining=quantity.checked_sub(filled).ok_or("OWNED_AGE_NATIVE_QUOTE_QUANTITY")?;
+            let side=match q["side"].as_str(){Some("YES")=>moloch_replay::Side::Yes,Some("NO")=>moloch_replay::Side::No,_=>return Err("OWNED_AGE_NATIVE_QUOTE_SIDE".into())};
+            if remaining==0||bank.engine().wallet.quantity(ex,side)<remaining{continue}
+            // Prefer this stronger existing covered-exit provenance on the
+            // same scope; global round-robin/alternation remains unchanged.
+            due.insert(ex.into(),(created,activation,"sourcebound_covered_exit",Some(qid)));
         }
         let key=due.keys().find(|ex|self.cursor.as_ref().is_none_or(|c|*ex>c))
             .or_else(||due.keys().next()).cloned();
-        let Some(exchange)=key else{return Ok(None)};let(oldest,end)=due[&exchange];
+        let Some(exchange)=key else{return Ok(None)};let(oldest,end,reason,qid)=due[&exchange];
         self.serial=self.serial.checked_add(1).ok_or("OWNED_AGE_SERIAL")?;
         self.cursor=Some(exchange.clone());self.pending=Some((self.serial,exchange.clone()));self.alternate=true;
         Ok(Some(ReadHint{market:self.scope.exchanges[&exchange].clone(),exchange,oldest,due:end,at:now,
-            serial:self.serial,head:bank.durable_head()}))
+            serial:self.serial,head:bank.durable_head(),reason,qid}))
     }
 }
